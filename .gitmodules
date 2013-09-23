@@ -1,0 +1,3 @@
+[submodule "macgdb"]
+	path = macgdb
+	url = https://github.com/cooljeanius/macgdb.git
