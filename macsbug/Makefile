@@ -1,65 +1,72 @@
-########################################################################################
-#                                                                                      #
-#                                       Makefile                                       #
-#                                                                                      #
-#                       Makefile to build the gdb MacsBug plugin                       #
-#                                                                                      #
-#                                     Ira L. Ruben                                     #
-#                      Copyright Apple Computer, Inc. 2000-2006                        #
-#                                                                                      #
-########################################################################################
+#################################################################
+#                                                               #
+#                           Makefile                            #
+#                                                               #
+#           Makefile to build the gdb MacsBug plugin            #
+#                                                               #
+#                         Ira L. Ruben                          #
+#          Copyright Apple Computer, Inc. 2000-2006             #
+#                                                               #
+#################################################################
 
-# This Makefile can be used explicitly with make, or it can be used to install the
-# MacsBug plugin with buildit.
+# This Makefile can be used explicitly with make, or it can be used to
+# install the MacsBug plugin with buildit.
 
 # When used explicitly with make the following targets are available:
 
-# all		Build the entire MacsBug plugin tree and its gdb plugin API.
+# all		Build the entire MacsBug plugin tree and its gdb plugin
+#               API.
 # clean		Clean both the MacsBug and API objects and plugin.
 # cleanmb	Clean only the MacsBug objects and plugin.
 
-# The floowing defines may be set on the make line:
+# The following defines may be set on the make line:
 
-# VERSION	The version number of the MacsBug plugin (used for the DV command).
+# VERSION	The version number of the MacsBug plugin (used for the DV
+#               command).
 
 # SRCROOT	Which directory the MacsBug sources are in (default is .).
 
 # SYMROOT	Target directory to contain plugin (MacsBug, default is .).
 
-# OBJROOT	Directory to contain the Objects/ directory, i.e., where .o's go,
-#		default is ./Objects).
+# OBJROOT	Directory to contain the Objects/ directory, i.e.,
+#               where .o's go, default is ./Objects).
 
-# API_DIR	Directory containing the API sources and it's Makefile.  Currently
-#		the default is SRCROOT, i.e., the API is a directory located within
-#		the Macsbug directory.  If the API is made a separate project this
-#		will change.
+# API_DIR	Directory containing the API sources and its Makefile.
+#               Currently the default is SRCROOT, i.e., the API is a
+#               directory located within the Macsbug directory. If the API
+#               is made a separate project, this will then change.
 
-# When this Makefile is used with buildit BUILDIT_DIR should be set to where buildit
-# is to create its output.  Buildit expects and uses the following targets:
+# When this Makefile is used with buildit BUILDIT_DIR should be set to
+# where buildit is to create its output.  Buildit expects and uses the
+# following targets:
 
-# installsrc	Installs all the source and additional files for the build into
-#		SRCROOT.  Use buildit's -noinstallsrc to suppress the source copy.
+# installsrc	Installs all the source and additional files for the build
+#               into SRCROOT. Use buildit's -noinstallsrc to suppress the
+#               source copy.
 
-# clean		Clean both the MacsBug and API objects and plugin.  Use buildit's
+# clean		Clean both the MacsBug and API objects and plugin. Use
+#               buildit's
 #		-noclean to suppress the clean step.
 
-# installhdrs	Does nothing since there are no headers to install.  Buildit's
-#		-noinstallhdrs causes this step to be skipped.
+# installhdrs	Does nothing since there are no headers to install.
+#               Buildit's -noinstallhdrs causes this step to be skipped.
 
-# install	Installs the MacsBug plugin and assocated files into DSTROOT which is
-#		defined by buildit.  Currently the following layout describes where the
-#		default install places the files:
+# install	Installs the MacsBug plugin and assocated files into
+#               DSTROOT which is defined by buildit. Currently the
+#               following layout describes where the default install places
+#               the files:
 
-# 		/usr/libexec/gdb/plugins/MacsBug/
-#     			   	   		 MacsBug_plugin
-#     			   	   		 gdbinit-MacsBug-without-plugin
-#     			   	   		 gdbinit-MacsBug
-#     			   	   		 README.txt
-#     			   	   		 README.html
+# 	/usr/libexec/gdb/plugins/MacsBug/
+#     			   	   	 MacsBug_plugin
+#     			   	   	 gdbinit-MacsBug-without-plugin
+#     			   	   	 gdbinit-MacsBug
+#     			   	   	 README.txt
+#     			   	   	 README.html
 
-# As a reminder here some other possibly "useful" buildit options: -noverify, -nosum.
+# As a reminder here some other possibly "useful" buildit options:
+# -noverify, -nosum.
 
-#--------------------------------------------------------------------------------------#
+#----------------------------------------------------------------#
 
 PROJECT				=	MacsBug
 PLUGIN				=       MacsBug_plugin
@@ -88,10 +95,10 @@ ifndef GDB_BUILD_ROOT
 GDB_BUILD_ROOT = $(SDKROOT)
 endif
 
-# The following defines $(gdb_plugin_support.o) as a function of using the Makefile
-# by buildit or using it explicitly.  Only buildit will use the "install" target.  For
-# that we want the API library in the SYMROOT.  For explict builds we leave the library
-# in the API's own directory.
+# The following defines $(gdb_plugin_support.o) as a function of using the
+# Makefile by buildit or using it explicitly. Only buildit will use the
+# "install" target. For that we want the API library in the SYMROOT. For
+# explict builds we leave the library in the API's own directory.
 
 ifeq ($(filter install,$(MAKECMDGOALS)),install)
 gdb_plugin_support.o		=	$(SYMROOT)/gdb_plugin_support.o
@@ -133,7 +140,7 @@ ifneq ($(BUILD_VERSION),10.0)
 LDFLAGS				=	-bundle 			\
 					-bundle_loader $(GDBROOT)$(GDBDIR)/gdb-powerpc-apple-darwin \
 					-twolevel_namespace \
-					#-F$(BINUTILS_BUILD_ROOT)/System/Library/PrivateFrameworks -framework liberty
+					-F$(BINUTILS_BUILD_ROOT)/System/Library/PrivateFrameworks -framework liberty
 else
 LDFLAGS				=	-bundle 			\
 					-undefined suppress
@@ -154,12 +161,13 @@ INSTALL_FILES_PARTIAL_LIST	=	README.txt			\
 					README.html			\
 					$(OLD_GDBINIT)
 
-#INSTALL_FILES			=	$(INSTALL_FILES_PARTIAL_LIST:%=$(SRCROOT)/%)
+INSTALL_FILES_COMMENTED		=	$(INSTALL_FILES_PARTIAL_LIST:%=$(SRCROOT)/%)
 
-# The following is for my (Ira) own private builds.  I use a separate directory for
-# the set of MacsBug sources I'm currently working on and my expiremental plugin(s).
-# But I still use the system gdb.  Therefore I need to add an extra line to the link
-# step to setgid and change the group to procmod.  Sigh :-(                     Ira
+# The following is for my (Ira) own private builds. I use a separate
+# directory for the set of MacsBug sources I am currently working on and my
+# expiremental plugin(s). But I still use the system gdb. Therefore I need
+# to add an extra line to the link step to setgid and change the group to
+# procmod.  Sigh :-(                     Ira
 
 PRIVATE_BUILD			=	
 ifneq ($(PRIVATE_BUILD),,)
@@ -169,27 +177,27 @@ FIXUP				=
 endif
 
 # Note: Alternative FIXUP:
-#FIXUP 				=	dsymutil -o $(SYMROOT)/$(PLUGIN).dSYM $(SYMROOT)/$(PLUGIN); \
-#					strip -x $(SYMROOT)/$(PLUGIN)
-#					
+FIXUP_ALTERNATE 		=	dsymutil -o $(SYMROOT)/$(PLUGIN).dSYM $(SYMROOT)/$(PLUGIN); \
+					strip -x $(SYMROOT)/$(PLUGIN)
+					
 
-# While this mimics the full gdb build, for my private builds, I do not see any need
-# to do this since gdb is fully capable of using the embedded dwarf debug info (even
-# if it does save a few disk bytes).
+# While this mimics the full gdb build, for my private builds, I do not see
+# any need to do this since gdb is fully capable of using the embedded
+# dwarf debug info (even if it does save a few disk bytes).
 
-#--------------------------------------------------------------------------------------#
-#                       *----------------*
-#                       | Default Target |
-#                       *----------------*
+#------------------------------------------------------------------#
+#             *----------------*
+#             | Default Target |
+#             *----------------*
 
 all				: 	$(OFILE_DIR)  			\
 					$(SYMROOT)			\
 					$(SYMROOT)/$(PLUGIN)
 
-#--------------------------------------------------------------------------------------#
-#                       *-----------------*
-#                       | Buildit Targets |
-#                       *-----------------*
+#----------------------------------------------------------------#
+#            *-----------------*
+#            | Buildit Targets |
+#            *-----------------*
 
 installsrc			:
 	mkdir -p  $(SRCROOT)
@@ -206,18 +214,18 @@ installhdrs			:
 
 install				:	all $(DSTDIR)
 	install -p -m 644 README.txt README.html $(OLD_GDBINIT) $(DSTDIR)
-	#chmod 644 $(DSTDIR)/README.txt $(DSTDIR)/README.html $(DSTDIR)/$(OLD_GDBINIT)
+	chmod 644 $(DSTDIR)/README.txt $(DSTDIR)/README.html $(DSTDIR)/$(OLD_GDBINIT)
 	install -p -m 644 $(GDBINIT) "$(DSTDIR)/$(GDBINIT)"
-	#chmod 644 $(DSTDIR)/$(GDBINIT)
+	chmod 644 $(DSTDIR)/$(GDBINIT)
 	dsymutil -o $(SYMROOT)/$(PLUGIN).dSYM $(SYMROOT)/$(PLUGIN)
 	strip -x $(SYMROOT)/$(PLUGIN) -o $(DSTDIR)/$(PLUGIN)
 	install -m 755 $(DSTDIR)/$(PLUGIN) $(SYMROOT)/$(PLUGIN)
-	#chmod 755 $(DSTDIR)/$(PLUGIN)
+	chmod 755 $(DSTDIR)/$(PLUGIN)
 
-#--------------------------------------------------------------------------------------#
-#                        *-------------*
-#                        | Build Rules |
-#                        *-------------*
+#----------------------------------------------------------------#
+#             *-------------*
+#             | Build Rules |
+#             *-------------*
 
 $(SYMROOT)/$(PLUGIN) 		: 	gdb_plugin_support.o $(OBJS) 
 	$(CC) $(LDFLAGS) $(OBJS) -arch ppc $(gdb_plugin_support.o) -o $(SYMROOT)/$(PLUGIN)
@@ -244,10 +252,10 @@ force				:
 cleanmb				:
 	rm -rf $(OFILE_DIR) $(PLUGIN)
 
-#--------------------------------------------------------------------------------------#
-#                        *---------------*
-#                        | Private Rules |
-#                        *---------------*
+#----------------------------------------------------------------#
+#             *---------------*
+#             | Private Rules |
+#             *---------------*
 
 debug				:
 	$(MAKE) OPT=-O0 PRIVATE_BUILD=1
@@ -255,4 +263,4 @@ debug				:
 private				:
 	$(MAKE) PRIVATE_BUILD=1
 
-#--------------------------------------------------------------------------------------#
+#----------------------------------------------------------------#

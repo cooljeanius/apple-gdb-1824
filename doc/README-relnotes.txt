@@ -4,7 +4,7 @@ modify this file, make sure the case of your open and close tags
 agrees or their tools will have problems with it.  
 
 Use xmllint(1) to verify that the file is properly formed.  xmllint
-doesn't know the markup language so it will not detect improper tag
+does not know the markup language so it will not detect improper tag
 usage or improper tag nesting.  (e.g. not all tags are allowed to
 be children of other tags)
 
@@ -22,9 +22,9 @@ instructions included the document,
 
 http://pubsbuild.apple.com/Messier/Releases/InternalDrafts/documentation/AppleInternal/Conceptual/Using_Sweet_for_RN/index.html
 
-which is a Sweet User Guide for writing release notes.
+which is (dead link to) a Sweet User Guide for writing release notes.
 
-I don't know what book.xml and gdb.gutenberg are, or if they are required.
+I do not know what book.xml and gdb.gutenberg are, or if they are required.
 Sweet spit them out when I started the initial document so I'm keeping
 them for now.
 

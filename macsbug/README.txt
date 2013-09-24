@@ -3,9 +3,10 @@
 
 1. Introduction
 
-   The "MacsBug" supported here is an extension to gdb to support a subset of
-   the Mac Classic MacsBug commands and a MacsBug-like screen UI. Thus it
-   basically is a variant of Classic MacsBug with source-level debugging!
+   The "MacsBug" supported here is an extension to gdb to support a subset
+   of the Mac Classic MacsBug commands and a MacsBug-like screen UI. Thus
+   it basically is a variant of Classic MacsBug with source-level
+   debugging!
 
    Along with this README there are three other files in this directory:
 
@@ -14,48 +15,52 @@
    * MacsBug_plugin
 
    Both gdbinit-MacsBug-without-plugin and gdbinit-MacsBug are gdb command 
-   language scripts one of which you SOURCE from your ~/.gdbinit script (the
-   script that gdb always looks for, and for what it's worth, it looks for a
-   .gdbinit script in the current directory as well).  In the following sections
-   the difference in the two MacsBug scripts will be explained.
+   language scripts one of which you SOURCE from your ~/.gdbinit script
+   (the script that gdb always looks for, and for what it is worth, it
+   looks for a .gdbinit script in the current directory, as well). In the
+   following sections, the difference in the two MacsBug scripts will be
+   explained.
    
-   The MacsBug_plugin is just that; the gdb plugin that implement the MacsBug
-   UI and commands.  The plugin is loaded by the gdbinit-MacsBug script.
+   The MacsBug_plugin is just that; the gdb plugin that implement the
+   MacsBug UI and commands. The plugin is loaded by the gdbinit-MacsBug
+   script.
 
 
 2. Background
 
    Once upon a time there was an implementation of Classic MacsBug for gdb
-   using nothing but the command language provided by gdb.  The file was
-   called "gdbinit-MacsBug" (and since renamed gdbinit-MacsBug-without-plugin)
-   and it is included with this release. It supports about 40 of the MacsBug
-   commands.
+   using nothing but the command language provided by gdb. The file was
+   called "gdbinit-MacsBug" (and it has since been renamed as
+   gdbinit-MacsBug-without-plugin) and it is included with this release.
+   It supports about 40 of the MacsBugs commands.
 
-   It has the benefit of being totally portable, i.e., it should be able to be
-   used with any version of gdb, on any Unix system, anywhere.  It's down side
-   is that it cannot do any more that what is provided by the rather limited
-   gdb command language, is interpretive, and thus rather inefficient and in
-   some cases slow, and cannot provide a MacsBug-like screen UI.
+   It has the benefit of being totally portable, i.e., it should be able to
+   be used with any version of gdb, on any Unix system, anywhere. Its
+   downside is that it cannot do any more that what is provided by the
+   rather limited gdb command language, is interpretive, and thus rather
+   inefficient and in some cases slow, and cannot provide a MacsBug-like
+   screen UI.
 
    To get around these limitations the plugin support in Apple's gdb was
-   utilized which allows the implementation be done in a "real" language.  Thus
-   the script "gdbinit-MacsBug" is provided which appears to be a very reduced
-   form or "gdbinit-MacsBug-without-plugin" because most of the implementation
-   is provided in the plugin ("MacsBug_plugin") which "gdbinit-MacsBug" loads
-   with a LOAD-PLUGIN Apple gdb command.
+   utilized which allows the implementation be done in a "real" language.
+   Thus the script "gdbinit-MacsBug" is provided which appears to be a very
+   reduced form or "gdbinit-MacsBug-without-plugin" because most of the
+   implementation is provided in the plugin ("MacsBug_plugin") which
+   "gdbinit-MacsBug" loads with a LOAD-PLUGIN Apple gdb command.
 
    The benefit of using the plugin is that it is very efficient because it
-   "talks" directly to gdb.  It can provide functionality that the pure script
-   variant cannot like some additional MacsBug commands and behavior as well
-   as a MacsBug-like screen UI.  It's down side is of course that it is tied
-   directly to the version of gdb (and system) for which it was built. Further,
-   because the script uses the LOAD-PLUGIN gdb command it will only work with
-   Apple's version of gdb. Since MacsBug is mainly used by Mac developers this
-   should be not be a serious limitation.
+   "talks" directly to gdb. It can provide functionality that the pure
+   script variant cannot like some additional MacsBug commands and behavior
+   as well as a MacsBug-like screen UI. Its downside is of course that it
+   is tied directly to the version of gdb (and system) for which it was
+   built. Further, because the script uses the LOAD-PLUGIN gdb command it
+   will only work with Apple's version of gdb. Since MacsBug is mainly used
+   by Mac developers, this should be not be a serious limitation.
 
    You thus have two choices:
 
-   (1) Install the totally portable gdbinit-MacsBug-without-plugin script, or,
+   (1) Install the totally portable gdbinit-MacsBug-without-plugin script,
+   or,
    (2) Install the gdbinit-MacsBug script and the MacsBug_plugin file.
 
 
@@ -434,11 +439,11 @@
    * Fixed scroll mode disassembly displays to wrap lines instead of being chopped
      off by register sidebar.
 
-   * Added SET mb-sidebar mode setting command to enable/disable the display of the
-     register sidebar when the ID, IL, IP, SO, or SI commands are done in gdb
-     scroll mode.
+   * Added SET mb-sidebar mode setting command to enable/disable the
+     display of the register sidebar when the ID, IL, IP, SO, or SI
+     commands are done in gdb scroll mode.
 
-   * Moved TF from gdbinit-MacsBug to the plugin to allow the display to be more
-     MacsBug-like.
+   * Moved TF from gdbinit-MacsBug to the plugin to allow the display to be
+     more MacsBug-like.
 
    * Implemented TV.

@@ -1,62 +1,67 @@
-########################################################################################
-#                                                                                      #
-#                                       Makefile                                       #
-#                                                                                      #
-#                     Makefile to build the gdb plugin support API                     #
-#                                                                                      #
-#                                     Ira L. Ruben                                     #
-#                      Copyright Apple Computer, Inc. 2000-2005                        #
-#                                                                                      #
-########################################################################################
+################################################################
+#                                                              #
+#                           Makefile                           #
+#                                                              #
+#         Makefile to build the gdb plugin support API         #
+#                                                              #
+#                         Ira L. Ruben                         #
+#          Copyright Apple Computer, Inc. 2000-2005            #
+#                                                              #
+################################################################
 
-# This Makefile can be used explicitly with make, or it can be used to install the
-# plugin API with buildit.
+# This Makefile can be used explicitly with make, or it can be used to
+# install the plugin API with buildit.
 
 # When used explicitly with make the following targets are available:
 
-# all		Build the entire MacsBug plugin tree and its gdb plugin API.
+# all		Build the entire MacsBug plugin tree and its gdb plugin
+#               API.
 # clean		Clean both the MacsBug and API objects and plugin.
 
 # The following defines may be set on the make line:
 
 # SRCROOT	Which directory the API sources are in (default is .).
 
-# SYMROOT	Target directory to contain API LIBRARY (gdb_plugin_support.o, default
-#		is .).
+# SYMROOT	Target directory to contain API LIBRARY
+#               (gdb_plugin_support.o, default is .).
 
-# OBJROOT	Directory to contain the Objects/ directory, i.e., where .o's go,
-#		default is ./Objects).
+# OBJROOT	Directory to contain the Objects/ directory, i.e.,
+#               where .o's go, default is ./Objects).
 
-# When this Makefile is used with buildit BUILDIT_DIR should be set to where buildit
-# is to create its output.  Buildit expects and uses the following targets:
+# When this Makefile is used with buildit BUILDIT_DIR should be set to
+# where buildit is to create its output. Buildit expects and uses the
+# following targets:
 
-# installsrc	Installs all the source and additional files for the build into
-#		SRCROOT.  Use buildit's -noinstallsrc to suppress the source copy.
+# installsrc	Installs all the source and additional files for the build
+#               into SRCROOT. Use buildit's -noinstallsrc to suppress the
+#               source copy.
 
-# clean		Clean API objects.  Use buildit's -noclean to suppress the clean step.
+# clean		Clean API objects.  Use buildit's -noclean to suppress the
+#               clean step.
 
-# installhdrs	Installs the API header (gdb.h) into DSTROOT which is defined by buildit. 
-#		Currently the following layout describes where the default install places
-#		the header:
-
+# installhdrs	Installs the API header (gdb.h) into DSTROOT which is
+#               defined by buildit. Currently the following layout
+#               describes where the default install places the header:
+#
 #		/usr/include/gdb/gdb.h
 
-# install	Installs the API static library into DSTROOT which is defined by buildit.
-#		Currently the following layout describes where the default install places
-#		the files:
-
+# install	Installs the API static library into DSTROOT which is
+#               defined by buildit. Currently the following layout
+#               describes where the default install places the files:
+#
 # 		/usr/lib/gdb/gdb_plugin_support.o
 
 # As a reminder here some other possibly "useful" buildit options: -noverify, -nosum.
 
-#--------------------------------------------------------------------------------------#
+#----------------------------------------------------------------#
 
-# NOTE: THE API IS NOT YET RELEASED SEPARATELY.  THUS THE BUILDIT TARGETS ARE NOT BEING
-#       USED.  CURRENTLY THIS MAKEFILE IS USED SOLELY BY THE MACSBUG MAKEFILE EXPLICITLY.
-#	THUS THE LIBRARY IS PLACED WHERE THE MACSBUG MAKEFILE WANT'S IT AND THE HEADER
-#	IS KEPT IN THE API'S SOURCE DIRECTORY AND NOT INSTALLED ANYWHERE.
+# NOTE: THE API IS NOT YET RELEASED SEPARATELY. THUS THE BUILDIT TARGETS
+#       ARE NOT BEING USED. CURRENTLY THIS MAKEFILE IS USED SOLELY BY THE
+#       MACSBUG MAKEFILE EXPLICITLY. THUS THE LIBRARY IS PLACED WHERE THE
+#       MACSBUG MAKEFILE WANTS IT, AND THE HEADER IS KEPT IN THE API'S
+#       SOURCE DIRECTORY AND NOT INSTALLED ANYWHERE.
 
-#--------------------------------------------------------------------------------------#
+#----------------------------------------------------------------#
 
 SRCROOT				=	.
 SYMROOT				=	.
@@ -123,7 +128,7 @@ INSTALLSRC_FILES		=	$(CFILES)		\
 					$(HFILES)		\
 					Makefile
 
-#--------------------------------------------------------------------------------------#
+#----------------------------------------------------------------#
 #                       *----------------*
 #                       | Default Target |
 #                       *----------------*
@@ -132,7 +137,7 @@ all				:	$(OFILE_DIR) 		\
 					$(SYMROOT)		\
 					$(SYMROOT)/gdb_plugin_support.o
 
-#--------------------------------------------------------------------------------------#
+#----------------------------------------------------------------#
 #                       *-----------------*
 #                       | Buildit Targets |
 #                       *-----------------*
@@ -154,7 +159,7 @@ install				:	all $(DSTDIR)
 	strip -ru $(SYMROOT)/gdb_plugin_support.o -o $(DSTDIR)/gdb_plugin_support.o
 	chmod 444 $(DSTDIR)/gdb_plugin_support.o
 
-#--------------------------------------------------------------------------------------#
+#----------------------------------------------------------------#
 #                        *-------------*
 #                        | Build Rules |
 #                        *-------------*

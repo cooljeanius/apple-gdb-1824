@@ -5,8 +5,8 @@
 
 2008-03-05  Jason Molenda  (jmolenda@apple.com)
 
-        * Makefile: Define TARGET_POWERPC so the tdep.h file knows which arch
-        we're building for.
+        * Makefile: Define TARGET_POWERPC so the tdep.h file knows which
+        arch we are building for.
 
 2007-11-06  Jim	Ingham	<jingham@apple.com>
 

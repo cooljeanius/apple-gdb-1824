@@ -1,13 +1,13 @@
-#################################################################################
-#                                                                               #
-#                         gdbinit-MacsBug-without-plugin                        #
-#                                                                               #
-#                     Macsbug-style gdb command definitions                     #
-#                                                                               #
-#                                 Ira L. Ruben                                  #
-#                    Copyright Apple Computer, Inc. 2000-2001                   #
-#                                                                               #
-#################################################################################
+#######################################################################
+#                                                                     #
+#                    gdbinit-MacsBug-without-plugin                   #
+#                                                                     #
+#                Macsbug-style gdb command definitions                #
+#                                                                     #
+#                            Ira L. Ruben                             #
+#               Copyright Apple Computer, Inc. 2000-2001              #
+#                                                                     #
+#######################################################################
 
 # This file can be either sourced'ed in by .gdbinit or explicitly to define a set
 # of gdb commands that simulate a subset of MacsBug commands.  It is as faithful

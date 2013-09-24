@@ -1,35 +1,36 @@
-#################################################################################
-#                                                                               #
-#                                gdbinit-MacsBug                                #
-#                                                                               #
-#            Macsbug-style gdb command definitions and plugin loader            #
-#                                                                               #
-#                                 Ira L. Ruben                                  #
-#                   Copyright Apple Computer, Inc. 2000-2005                    #
-#                                                                               #
-#################################################################################
+#######################################################################
+#                                                                     #
+#                           gdbinit-MacsBug                           #
+#                                                                     #
+#       Macsbug-style gdb command definitions and plugin loader       #
+#                                                                     #
+#                            Ira L. Ruben                             #
+#              Copyright Apple Computer, Inc. 2000-2005               #
+#                                                                     #
+#######################################################################
 
-# This file can be either sourced'ed in by .gdbinit or explicitly to define a set
-# of gdb commands that simulate a subset of MacsBug commands.  It is as faithful
-# a simulation as possible within the limits of the environment.  There are also
-# some extensions where it makes sense in the context of the debugging paradigm
-# imposed by gdb.  Also a MacsBug-like UI is supported (use the MB command to
-# initiate the UI).
+# This file can be either sourced'ed in by .gdbinit or explicitly to define
+# a set of gdb commands that simulate a subset of MacsBug commands. It is
+# as faithful a simulation as possible within the limits of the
+# environment. There are also some extensions where it makes sense in the
+# context of the debugging paradigm imposed by gdb. Also a MacsBug-like UI
+# is supported (use the MB command to initiate the UI).
 
 # Once gdb is loaded type HELP to see a summary of all gdb command classes.  
 # There are three additional classes for MacsBug: "macsbug", "screen", and 
-# "useful".  Typing "help macsbug" give a summary of all MacsBug commands.  Typing 
-# "help screen" gives a summary of all MacsBug screen UI-related commands which
-# are additions to this MacsBug implementation.  Typing "help useful" give a list
-# of "useful" gdb commands that could be used to extend this script.  Some of
-# these are used internally, or are descendents from the original gdb script that
-# preceded this script, or are just plain useful in their own right and should
-# probably be in gdb in the first place!.
+# "useful".  Typing "help macsbug" give a summary of all MacsBug commands.
+# Typing "help screen" gives a summary of all MacsBug screen UI-related
+# commands which are additions to this MacsBug implementation. Typing
+# "help useful" give a list of "useful" gdb commands that could be used to
+# extend this script. Some of these are used internally, or are descendents
+# from the original gdb script that preceded this script, or are just plain
+# useful in their own right and should probably be in gdb in the first
+# place!
 
-# Two existing classes, "aliases" and "support" also list some MacsBug commands.
-# The "aliases" class lists aliases for some commands that don't follow the
-# standard gdb abbreviation conventions (e.g., SC6 is the same as SC).  The
-# "support" class lists the SET options.
+# Two existing classes, "aliases" and "support" also list some MacsBug
+# commands. The "aliases" class lists aliases for some commands that do not
+# follow the standard gdb abbreviation conventions (e.g., SC6 is the same
+# as SC). The "support" class lists the SET options.
 
 # As indicated at the end of the HELP class summary you can type "mb-notes" to
 # get some additional information specifically related to this implementation of

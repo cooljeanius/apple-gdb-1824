@@ -5,3 +5,4 @@
 *.status
 *.tmp
 config.h
+*(Autosaved)*

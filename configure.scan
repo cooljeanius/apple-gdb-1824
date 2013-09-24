@@ -34,5 +34,6 @@ AC_CONFIG_FILES([Makefile
                  bin/lib/tools/Makefile
                  macsbug/Makefile
                  macsbug/gdb_plugin_support/Makefile])
-AC_CONFIG_SUBDIRS([src])
+AC_CONFIG_SUBDIRS([macgdb
+                   src])
 AC_OUTPUT
