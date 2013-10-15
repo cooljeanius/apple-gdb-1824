@@ -1,0 +1,6 @@
+*.status
+Makefile
+*~
+core
+*.o
+a.out

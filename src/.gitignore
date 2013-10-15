@@ -63,5 +63,4 @@ update.sourceware
 dejagnu/*
 tcl/*
 expect/*
-utils/*
 sim/*

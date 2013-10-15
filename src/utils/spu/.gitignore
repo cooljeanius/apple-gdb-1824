@@ -1,0 +1,13 @@
+*.status
+Makefile
+config.h
+confdefs.h
+*.o
+spu
+*~
+file*.c
+file0.h
+filelib.c
+filelib.h
+file.out
+file.mk

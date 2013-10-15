@@ -1,0 +1,6 @@
+*.status
+Makefile
+confdefs.h
+config.h
+*.o
+cesetup

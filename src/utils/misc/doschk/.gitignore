@@ -1,0 +1,8 @@
+*.status
+Makefile
+config.h
+confdefs.h
+*.o
+core
+a.out
+doschk
