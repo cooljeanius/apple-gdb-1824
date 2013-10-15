@@ -1,0 +1,7 @@
+*.status
+Makefile
+confdefs.h
+config.h
+*.[oa]
+*~
+core

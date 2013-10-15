@@ -1,0 +1,27 @@
+*.status
+Makefile
+
+# gitignore directories until I have them working:
+arm/*
+d10v/*
+d30v/*
+erc32/*
+fr30/*
+h8300/*
+h8500/*
+i960/*
+igen/*
+m32r/*
+m68hc11/*
+mcore/*
+mips/*
+mn10200/*
+mn10300/*
+ppc/*
+sh/*
+sh64/*
+testsuite/*
+tic80/*
+v850/*
+w65/*
+z8k/*
