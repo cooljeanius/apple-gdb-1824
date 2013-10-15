@@ -23,5 +23,4 @@ stamp-h*
 # Too much to add to git at once; un-gitignore later:
 doc/*.html
 doc/*.dvi
-doc/*.pdf
 
