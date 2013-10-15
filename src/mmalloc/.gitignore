@@ -1,0 +1,16 @@
+*.status
+Makefile
+config.h
+confdefs.h
+*.framework
+*.a
+*.o
+core
+errs
+*~
+\#*
+TAGS
+*.E
+a.out
+errors
+stamp-*

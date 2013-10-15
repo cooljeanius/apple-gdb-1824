@@ -66,5 +66,4 @@ expect/*
 utils/*
 sim/*
 etc/*
-mmalloc/*
 
