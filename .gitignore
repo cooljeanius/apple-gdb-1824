@@ -25,5 +25,4 @@ doc/*.html
 doc/*.dvi
 doc/*.pdf
 doc/*.ps
-libcheckpoint/*
 
