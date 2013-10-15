@@ -1,15 +1,15 @@
 The ReleaseNotes.xml file is some markup language used by techpubs
-to generate the HTML and PDFs that go to customers.  If you hand
+to generate the HTML and PDFs that go to customers. If you hand
 modify this file, make sure the case of your open and close tags
 agrees or their tools will have problems with it.  
 
-Use xmllint(1) to verify that the file is properly formed.  xmllint
+Use xmllint(1) to verify that the file is properly formed. `xmllint`
 does not know the markup language so it will not detect improper tag
-usage or improper tag nesting.  (e.g. not all tags are allowed to
+usage or improper tag nesting. (e.g. not all tags are allowed to
 be children of other tags)
 
 Sweet is the techpubs tool that you can use to update this file in
-a GUI fashion.  If you save the file from within Sweet, it will
+a GUI fashion. If you save the file from within Sweet, it will
 remove all of the hand-written whitespace formatting of ReleaseNotes.xml
 that makes it easy to edit in vi/emacs right now.
 
@@ -29,5 +29,5 @@ Sweet spit them out when I started the initial document so I'm keeping
 them for now.
 
 Ideally, if you modify ReleaseNotes.xml, run it through xmllint,
-open it in Sweet and generate HTML in Gutenberg.  If there are 
+open it in Sweet and generate HTML in Gutenberg. If there are 
 any mistakes, one of these tools should point it out.
