@@ -87,6 +87,8 @@ PLUGIN_SUPPORT			= 	$(API_DIR)/gdb_plugin_support
 
 BUILD_VERSION			=	10.4
 
+SUBDIRS = gdb_plugin_support
+
 ifndef BINUTILS_BUILD_ROOT
 BINUTILS_BUILD_ROOT = $(SDKROOT)
 endif

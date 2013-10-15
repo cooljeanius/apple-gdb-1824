@@ -17,49 +17,71 @@
    Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+# include "config.h"
+#else
+# warning finddomain.c expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
 
-#include <ctype.h>
-#include <errno.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#else
+# warning finddomain.c expects <ctype.h> to be included.
+#endif /* HAVE_CTYPE_H */
+#ifdef HAVE_ERRNO_H
+# include <errno.h>
+#else
+# warning finddomain.c expects <errno.h> to be included.
+#endif /* HAVE_ERRNO_H */
+#ifdef HAVE_STDIO_H
+# include <stdio.h>
+#else
+# warning finddomain.c expects <stdio.h> to be included.
+#endif /* HAVE_STDIO_H */
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#else
+# warning finddomain.c expects <sys/types.h> to be included.
+#endif /* HAVE_SYS_TYPES_H */
 
-#if defined STDC_HEADERS || defined _LIBC
+#if defined STDC_HEADERS || defined _LIBC || defined HAVE_STDLIB_H
 # include <stdlib.h>
 #else
 # ifdef HAVE_MALLOC_H
 #  include <malloc.h>
+# elif defined(HAVE_MALLOC_MALLOC_H)
+#  include <malloc/malloc.h>
 # else
 void free ();
-# endif
-#endif
+# endif /* HAVE_MALLOC_H */
+#endif /* STDC_HEADERS || _LIBC || HAVE_STDLIB_H */
 
 #if defined HAVE_STRING_H || defined _LIBC
 # include <string.h>
-#else
+#elif defined HAVE_STRINGS_H
 # include <strings.h>
 # ifndef memcpy
 #  define memcpy(Dst, Src, Num) bcopy (Src, Dst, Num)
-# endif
-#endif
+# endif /* !memcpy */
+#endif /* HAVE_STRING_H || _LIBC */
 #if !HAVE_STRCHR && !defined _LIBC
 # ifndef strchr
 #  define strchr index
-# endif
-#endif
+# endif /* !strchr */
+#endif /* !HAVE_STRCHR && !_LIBC */
 
 #if defined HAVE_UNISTD_H || defined _LIBC
 # include <unistd.h>
-#endif
+#else
+# warning finddomain.c expects <unistd.h> to be included.
+#endif /* HAVE_UNISTD_H || _LIBC */
 
 #include "gettext.h"
 #include "gettextP.h"
-#ifdef _LIBC
+#if defined _LIBC || defined HAVE_LIBINTL_H
 # include <libintl.h>
 #else
 # include "libgettext.h"
-#endif
+#endif /* _LIBC || HAVE_LIBINTL_H */
 
 /* @@ end of prolog @@ */
 /* List of already loaded domains.  */
@@ -188,7 +210,7 @@ _nl_find_domain (dirname, locale, domainname)
 	}
     }
 
-  /* The room for an alias was dynamically allocated.  Free it now.  */
+  /* The room for an alias was dynamically allocated. Free it now.  */
   if (alias_value != NULL)
     free (locale);
 
@@ -213,4 +235,6 @@ free_mem (void)
 }
 
 text_set_element (__libc_subfreeres, free_mem);
-#endif
+#endif /* _LIBC */
+
+/* EOF */

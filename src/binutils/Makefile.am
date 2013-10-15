@@ -1,21 +1,24 @@
 ## Process this file with automake to generate Makefile.in
 
-AUTOMAKE_OPTIONS = cygnus dejagnu
+AUTOMAKE_OPTIONS = 1.9.6 dejagnu
+AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
-# APPLE LOCAL just skip the doc directory altogether - it's building
+ACLOCAL_AMFLAGS = -I m4
+
+# APPLE LOCAL just skip the doc directory altogether - it is building
 # info files in the srcdir and hosing B&I builds.
 SUBDIRS = po
 
 tooldir = $(exec_prefix)/$(target_alias)
 
-## These aren't set by automake, because they appear in
+## These are NOT set by automake, because they appear in
 ## bfd/acinclude.m4, which is included by binutils/acinclude.m4, and
 ## thus is not seen by automake.
 CC_FOR_BUILD = @CC_FOR_BUILD@
 EXEEXT_FOR_BUILD = @EXEEXT_FOR_BUILD@
 
 YACC = `if [ -f ../bison/bison ]; then echo ../bison/bison -y -L$(srcdir)/../bison/; else echo @YACC@; fi`
-YFLAGS = -d
+AM_YFLAGS = -d
 LEX = `if [ -f ../flex/flex ]; then echo ../flex/flex; else echo @LEX@; fi`
 
 WARN_CFLAGS = @WARN_CFLAGS@
@@ -71,12 +74,15 @@ INCDIR	= $(BASEDIR)/include
 
 MKDEP = gcc -MM
 
-INCLUDES = -D_GNU_SOURCE \
+EMULATION = @EMULATION@
+EMULATION_VECTOR = @EMULATION_VECTOR@
+
+AM_CPPFLAGS = -D_GNU_SOURCE \
 	 -I. -I$(srcdir) -I../bfd -I$(BFDDIR) -I$(INCDIR) \
 	 @HDEFINES@ \
 	 -I$(srcdir)/../intl -I../intl \
 	 -DLOCALEDIR="\"$(datadir)/locale\"" \
-	 -Dbin_dummy_emulation=$(EMULATION_VECTOR)
+	 -Dbin_dummy_emulation=@EMULATION_VECTOR@
 
 HFILES = \
 	arsup.h binemul.h bucomm.h budbg.h budemang.h \
@@ -121,8 +127,8 @@ po/POTFILES.in: @MAINT@ Makefile
 	for f in $(POTFILES); do echo $$f; done | LC_COLLATE= sort > tmp \
 	  && mv tmp $(srcdir)/po/POTFILES.in
 
-EXPECT = expect
-RUNTEST = runtest
+my_EXPECT = expect
+my_RUNTEST = runtest
 
 CC_FOR_TARGET = ` \
   if [ -f $$r/../gcc/xgcc ] ; then \
@@ -139,7 +145,7 @@ CC_FOR_TARGET = ` \
     fi; \
   fi`
 
-check-DEJAGNU: site.exp
+am_check-DEJAGNU: site.exp
 	srcdir=`cd $(srcdir) && pwd`; export srcdir; \
 	r=`pwd`; export r; \
 	EXPECT=$(EXPECT); export EXPECT; \
@@ -150,8 +156,9 @@ check-DEJAGNU: site.exp
 			$(RUNTESTFLAGS); \
 	else echo "WARNING: could not find \`runtest'" 1>&2; :;\
 	fi
+.PHONY: am_check-DEJAGNU
 
-installcheck:
+installcheck-local:
 	/bin/sh $(srcdir)/sanity.sh $(bindir)
 
 size_SOURCES = size.c $(BULIBS)
@@ -190,12 +197,12 @@ cxxfilt_LDADD = $(BFD) $(LIBIBERTY) $(INTLLIBS)
 cxxfilt_DEPENDENCIES = $(BFD_DEP) $(LIBIBERTY_DEP) $(INTLDEP)
 
 ar_SOURCES = arparse.y arlex.l ar.c not-ranlib.c arsup.c rename.c binemul.c \
-	emul_$(EMULATION).c $(BULIBS)
+	emul_@EMULATION@.c $(BULIBS)
 ar_LDADD = $(BFD) $(LIBIBERTY) @LEXLIB@ $(INTLLIBS)
 ar_DEPENDENCIES = $(BFD_DEP) $(LIBIBERTY_DEP) @LEXLIB@ $(INTLLIBS_DEP)
 
 ranlib_SOURCES = ar.c is-ranlib.c arparse.y arlex.l arsup.c rename.c \
-	binemul.c emul_$(EMULATION).c $(BULIBS)
+	binemul.c emul_@EMULATION@.c $(BULIBS)
 ranlib_LDADD = $(BFD) $(LIBIBERTY) @LEXLIB@ $(INTLLIBS)
 ranlib_DEPENDENCIES = $(BFD_DEP) $(LIBIBERTY_DEP) @LEXLIB@ $(INTLDEP)
 
@@ -205,21 +212,24 @@ addr2line_DEPENDENCIES = $(BFD_DEP) $(LIBIBERTY_DEP) $(INTLDEP)
 
 # The following is commented out for the conversion to automake.
 # This rule creates a single binary that switches between ar and ranlib
-# by looking at argv[0].  Use this kludge to save some disk space.
+# by looking at argv[0]. Use this kludge to save some disk space.
 # However, you have to install things by hand.
 # (That is after 'make install', replace the installed ranlib by a link to ar.)
 # Alternatively, you can install ranlib.sh as ranlib.
-# ar_with_ranlib: $(ADDL_DEPS) ar.o maybe-ranlib.o
-#	$(HLDENV) $(CC) $(HLDFLAGS) $(CFLAGS) $(LDFLAGS) -o $(AR_PROG) ar.o maybe-ranlib.o $(ADDL_LIBS) $(EXTRALIBS)
-#	-rm -f $(RANLIB_PROG)
-#	-ln $(AR_PROG) $(RANLIB_PROG)
+ar_with_ranlib_uncommented: $(ADDL_DEPS) ar.o maybe-ranlib.o
+	$(HLDENV) $(CC) $(HLDFLAGS) $(CFLAGS) $(LDFLAGS) -o $(AR_PROG) ar.o maybe-ranlib.o $(ADDL_LIBS) $(EXTRALIBS)
+	-rm -f $(RANLIB_PROG)
+	-ln $(AR_PROG) $(RANLIB_PROG)
+.PHONY: ar_with_ranlib_uncommented
+
 #
 # objcopy and strip in one binary that uses argv[0] to decide its action.
 #
-#objcopy_with_strip: $(ADDL_DEPS) objcopy.o maybe-strip.o
-#	$(HLDENV) $(CC) $(HLDFLAGS) $(CFLAGS) $(LDFLAGS) -o $(OBJCOPY_PROG) objcopy.o maybe-strip.o $(ADDL_LIBS) $(EXTRALIBS)
-#	-rm -f $(STRIP_PROG)
-#	-ln $(OBJCOPY_PROG) $(STRIP_PROG)
+objcopy_with_strip_uncommented: $(ADDL_DEPS) objcopy.o maybe-strip.o
+	$(HLDENV) $(CC) $(HLDFLAGS) $(CFLAGS) $(LDFLAGS) -o $(OBJCOPY_PROG) objcopy.o maybe-strip.o $(ADDL_LIBS) $(EXTRALIBS)
+	-rm -f $(STRIP_PROG)
+	-ln $(OBJCOPY_PROG) $(STRIP_PROG)
+.PHONY: objcopy_with_strip_uncommented
 
 sysroff.c: sysinfo$(EXEEXT_FOR_BUILD) sysroff.info 
 	./sysinfo$(EXEEXT_FOR_BUILD) -c <$(srcdir)/sysroff.info >sysroff.c
@@ -247,6 +257,7 @@ sysinfo.o:
 	fi
 
 # We need these for parallel make.
+#TODO: fix warnings about these overriding automake targets
 arparse.h: arparse.c
 defparse.h: defparse.c
 nlmheader.h: nlmheader.c
@@ -294,7 +305,7 @@ sysdump_SOURCES = sysdump.c $(BULIBS)
 sysdump_LDADD = $(BFD) $(LIBIBERTY) $(INTLLIBS)
 sysdump_DEPENDENCIES = $(BFD_DEP) $(LIBIBERTY_DEP) $(INTLDEP)
 
-# coff/sym.h and coff/ecoff.h won't be found by the automatic dependency
+# coff/sym.h and coff/ecoff.h will NOT be found by the automatic dependency
 # scripts, since they are only included conditionally.
 nlmconv.o: nlmconv.c $(INCDIR)/coff/sym.h $(INCDIR)/coff/ecoff.h
 	ldname=`echo ld | sed '$(transform)'`; \
@@ -322,7 +333,7 @@ all: info
 DISTCLEANFILES = sysinfo sysroff.c sysroff.h \
 	site.exp site.bak
 
-Makefile: $(BFDDIR)/configure.in
+Makefile_depends: $(BFDDIR)/configure.ac
 
 # Targets to rebuild dependencies in this Makefile.
 # Have to get rid of DEP1 here so that "$?" later includes all of $(CFILES).
@@ -340,7 +351,7 @@ DEP: dep.sed $(CFILES) $(HFILES) $(GENERATED_CFILES) $(GENERATED_HFILES) config.
 DEP1: $(CFILES) $(GENERATED_CFILES)
 	echo '# DO NOT DELETE THIS LINE -- mkdep uses it.' > DEP2
 	echo '# DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.' >> DEP2
-	$(MKDEP) $(INCLUDES) $(CFLAGS) $? >> DEP2
+	$(MKDEP) $(AM_CPPFLAGS) $(CFLAGS) $? >> DEP2 # the AM_CPPFLAGS used to be INCLUDES
 	mv -f DEP2 $@
 
 dep.sed: dep-in.sed config.status

@@ -1,0 +1,7 @@
+*.o
+*~
+core
+tmp.c
+tmp.s
+weird.s
+errs

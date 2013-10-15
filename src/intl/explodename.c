@@ -16,30 +16,41 @@
    Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+# include "config.h"
+#else
+# warning explodename.c expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
 
-#if defined STDC_HEADERS || defined _LIBC
+#if defined STDC_HEADERS || defined _LIBC || defined HAVE_STDLIB_H
 # include <stdlib.h>
-#endif
+#else
+# warning explodename.c expects <stdlib.h> to be included.
+#endif /* HAVE_STDLIB_H */
 
 #if defined HAVE_STRING_H || defined _LIBC
 # include <string.h>
-#else
+#elif defined HAVE_STRINGS_H
 # include <strings.h>
+#else
+# warning explodename.c expects either <string.h> or <strings.h> to be included.
 #endif
-#include <sys/types.h>
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#else
+# warning explodename.c expects <sys/types.h> to be included.
+#endif /* HAVE_SYS_TYPES_H */
 
 #include "loadinfo.h"
 
-/* On some strange systems still no definition of NULL is found.  Sigh!  */
+/* On some strange systems still no definition of NULL is found. Sigh!  */
 #ifndef NULL
 # if defined __STDC__ && __STDC__
 #  define NULL ((void *) 0)
 # else
 #  define NULL 0
-# endif
-#endif
+# endif /* __STDC__ && __STDC__ */
+#endif /* !NULL */
 
 /* @@ end of prolog @@ */
 

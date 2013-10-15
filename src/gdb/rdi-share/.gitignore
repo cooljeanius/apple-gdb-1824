@@ -1,0 +1,6 @@
+*.status
+Makefile
+config.h
+lib*.a
+*.o
+*deps/*.*o

@@ -23,14 +23,14 @@
 #  define PARAMS(Args) Args
 # else
 #  define PARAMS(Args) ()
-# endif
-#endif
+# endif /* __STDC__ */
+#endif /* !PARAMS */
 
 /* We assume to have `unsigned long int' value with at least 32 bits.  */
 #define HASHWORDBITS 32
 
 
-/* Defines the so called `hashpjw' function by P.J. Weinberger
+/* Defines the so-called `hashpjw' function by P.J. Weinberger
    [see Aho/Sethi/Ullman, COMPILERS: Principles, Techniques and Tools,
    1986, 1987 Bell Telephone Laboratories, Inc.]  */
 static unsigned long hash_string PARAMS ((const char *__str_param));

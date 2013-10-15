@@ -1,6 +1,7 @@
 ## Process this file with automake to generate Makefile.in
 
-AUTOMAKE_OPTIONS = 1.9 cygnus
+AUTOMAKE_OPTIONS = 1.9
+AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 DOCFILES = aoutx.texi  archive.texi archures.texi \
 	bfdt.texi  cache.texi coffcode.texi \
@@ -19,9 +20,9 @@ PROTOS = archive.p archures.p bfd.p \
 
 IPROTOS = cache.ip libbfd.ip reloc.ip init.ip archures.ip coffcode.ip
 
-# SRCDOC, SRCPROT, SRCIPROT only used to sidestep Sun Make bug in interaction 
-# between VPATH and suffix rules.  If you use GNU Make, perhaps other Makes,
-# you don't need these three:
+# SRCDOC, SRCPROT, SRCIPROT only used to sidestep Sun Make bug in
+# interaction  between VPATH and suffix rules. If you use GNU Make, perhaps
+# other Makes, you do NOT need these three:
 SRCDOC = $(srcdir)/../aoutx.h  $(srcdir)/../archive.c \
 	$(srcdir)/../archures.c $(srcdir)/../bfd.c \
 	$(srcdir)/../bfdio.c $(srcdir)/../bfdwin.c \
@@ -51,32 +52,32 @@ SRCIPROT = $(srcdir)/../cache.c $(srcdir)/../libbfd.c \
 
 TEXIDIR = $(srcdir)/../../texinfo/fsf
 
-info_TEXINFOS = bfd.texinfo
+info_TEXINFOS = bfd.texi
 
 MKDOC = chew$(EXEEXT_FOR_BUILD)
 
-INCLUDES = -I.. -I$(srcdir)/.. -I$(srcdir)/../../include \
+AM_CPPFLAGS = -I.. -I$(srcdir)/.. -I$(srcdir)/../../include \
 	-I$(srcdir)/../../intl -I../../intl
 
 $(MKDOC): $(srcdir)/chew.c
 	$(CC_FOR_BUILD) -o chew.$$$$ $(srcdir)/chew.c \
 	  $(CFLAGS_FOR_BUILD) $(LDFLAGS_FOR_BUILD) $(H_CFLAGS) \
-	  $(INCLUDES); \
+	  $(AM_CPPFLAGS); \
 	$(SHELL) $(srcdir)/../../move-if-change chew.$$$$ $(MKDOC)
 
 chew.o: chew.c
-	$(CC_FOR_BUILD) -c $(INCLUDES) $(H_CFLAGS) $(CFLAGS_FOR_BUILD) $(srcdir)/chew.c
+	$(CC_FOR_BUILD) -c $(AM_CPPFLAGS) $(H_CFLAGS) $(CFLAGS_FOR_BUILD) $(srcdir)/chew.c
 
 protos: libbfd.h libcoff.h bfd.h
 
 $(srcdir)/bfd.info bfd.dvi: $(DOCFILES) bfdsumm.texi bfd.texinfo
 
-# We can't replace these rules with an implicit rule, because
+# We cannot replace these rules with an implicit rule, because
 # makes without VPATH support couldn't find the .h files in `..'.
 
 # We do not depend on chew directly so that we can distribute the info
 # files, and permit people to rebuild them, without requiring the makeinfo
-# program.  If somebody tries to rebuild info, but none of the .texi files
+# program. If somebody tries to rebuild info, but none of the .texi files
 # have changed, then nothing will be rebuilt.
 
 aoutx.texi: chew.c $(srcdir)/../aoutx.h $(srcdir)/doc.str
@@ -288,5 +289,5 @@ DISTCLEANFILES = bfd.?? bfd.??? bfd.h libbfd.h libcoff.h texput.log
 MAINTAINERCLEANFILES = $(DOCFILES)
 
 # We want install to imply install-info as per GNU standards, despite the
-# cygnus option.
-install: install-info
+# (deprecated) cygnus option.
+install_my_texinfos: install-info

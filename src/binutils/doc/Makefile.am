@@ -1,6 +1,6 @@
 ## Process this file with automake to generate Makefile.in
 
-AUTOMAKE_OPTIONS = cygnus
+AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 # What version of the manual you want; "all" includes everything
 CONFIG=all
@@ -153,7 +153,7 @@ $(DEMANGLER_NAME).1: cxxfilt.man Makefile
 		> $(DEMANGLER_NAME).1
 
 # We want install to imply install-info as per GNU standards, despite the
-# cygnus option.
+# (deprecated) cygnus option.
 install-data-local: install-info
 
 # Maintenance

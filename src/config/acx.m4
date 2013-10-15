@@ -42,7 +42,7 @@ dnl # ACX_NONCANONICAL_BUILD
 dnl # Like underscored version, but AC_SUBST's.
 AC_DEFUN([ACX_NONCANONICAL_BUILD],
 [AC_REQUIRE([_GCC_TOPLEV_NONCANONICAL_BUILD]) []dnl
-AC_SUBST(build_noncanonical)
+AC_SUBST([build_noncanonical])
 ]) []dnl # ACX_NONCANONICAL_BUILD
 
 dnl ####
@@ -50,7 +50,7 @@ dnl # ACX_NONCANONICAL_HOST
 dnl # Like underscored version, but AC_SUBST's.
 AC_DEFUN([ACX_NONCANONICAL_HOST],
 [AC_REQUIRE([_GCC_TOPLEV_NONCANONICAL_HOST]) []dnl
-AC_SUBST(host_noncanonical)
+AC_SUBST([host_noncanonical])
 ]) []dnl # ACX_NONCANONICAL_HOST
 
 dnl ####
@@ -58,7 +58,7 @@ dnl # ACX_NONCANONICAL_TARGET
 dnl # Like underscored version, but AC_SUBST's.
 AC_DEFUN([ACX_NONCANONICAL_TARGET],
 [AC_REQUIRE([_GCC_TOPLEV_NONCANONICAL_TARGET]) []dnl
-AC_SUBST(target_noncanonical)
+AC_SUBST([target_noncanonical])
 ]) []dnl # ACX_NONCANONICAL_TARGET
 
 dnl ####
@@ -92,7 +92,7 @@ AC_SUBST([target_subdir]) []dnl
 
 
 ####
-# _NCN_TOOL_PREFIXES:  Some stuff that oughtta be done in AC_CANONICAL_SYSTEM 
+# _NCN_TOOL_PREFIXES: Some stuff that oughtta be done in AC_CANONICAL_SYSTEM 
 # or AC_INIT.
 # These demand that AC_CANONICAL_SYSTEM be called beforehand.
 AC_DEFUN([_NCN_TOOL_PREFIXES],
@@ -110,11 +110,11 @@ AC_DEFUN([NCN_STRICT_CHECK_TOOLS],
 [AC_REQUIRE([_NCN_TOOL_PREFIXES]) []dnl
 for ncn_progname in $2; do
   if test -n "$ncn_tool_prefix"; then
-    AC_CHECK_PROG([$1], [${ncn_tool_prefix}${ncn_progname}], 
-                  [${ncn_tool_prefix}${ncn_progname}], , [$4])
+    AC_CHECK_PROG([$1],[${ncn_tool_prefix}${ncn_progname}], 
+                  [${ncn_tool_prefix}${ncn_progname}],[],[$4])
   fi
   if test -z "$ac_cv_prog_$1" && test $build = $host ; then
-    AC_CHECK_PROG([$1], [${ncn_progname}], [${ncn_progname}], , [$4]) 
+    AC_CHECK_PROG([$1],[${ncn_progname}],[${ncn_progname}],[],[$4]) 
   fi
   test -n "$ac_cv_prog_$1" && break
 done
@@ -125,29 +125,29 @@ if test -z "$ac_cv_prog_$1" ; then
     $1="[$]2"
   else
     $1="${ncn_tool_prefix}[$]2"
-  fi], [$1="$3"])
+  fi],[$1="$3"])
 fi
 ]) []dnl # NCN_STRICT_CHECK_TOOLS
 
 ####
-# NCN_STRICT_CHECK_TARGET_TOOLS(variable, progs-to-check-for,[value-if-not-found],[path])
+# NCN_STRICT_CHECK_TARGET_TOOLS([variable],[progs-to-check-for],[value-if-not-found],[path])
 # Like CVS Autoconf AC_CHECK_TARGET_TOOLS, but require prefix if build!=target.
 
 AC_DEFUN([NCN_STRICT_CHECK_TARGET_TOOLS],
 [AC_REQUIRE([_NCN_TOOL_PREFIXES]) []dnl
 for ncn_progname in $2; do
   if test -n "$ncn_target_tool_prefix"; then
-    AC_CHECK_PROG([$1], [${ncn_target_tool_prefix}${ncn_progname}], 
-                  [${ncn_target_tool_prefix}${ncn_progname}], , [$4])
+    AC_CHECK_PROG([$1],[${ncn_target_tool_prefix}${ncn_progname}], 
+                  [${ncn_target_tool_prefix}${ncn_progname}],[],[$4])
   fi
   if test -z "$ac_cv_prog_$1" && test $build = $target ; then
-    AC_CHECK_PROG([$1], [${ncn_progname}], [${ncn_progname}], , [$4]) 
+    AC_CHECK_PROG([$1],[${ncn_progname}],[${ncn_progname}],[],[$4]) 
   fi
   test -n "$ac_cv_prog_$1" && break
 done
 
 if test -z "$ac_cv_prog_$1" ; then
-  ifelse([$3],[], [set dummy $2
+  ifelse([$3],[],[set dummy $2
   if test $build = $target ; then
     $1="[$]2"
   else
@@ -164,7 +164,7 @@ fi
 # preprocessor (matches 2.13 behavior; matching 2.58's behavior is a
 # bit harder from here).
 # Eventually autoconf will default to checking headers with the compiler
-# instead, and we'll have to do this differently.
+# instead, and we will have to do this differently.
 
 AC_DEFUN([AC_PROG_CPP_WERROR],
 [AC_REQUIRE([AC_PROG_CPP])dnl
@@ -180,9 +180,9 @@ ac_c_preproc_warn_flag=yes])# AC_PROG_CPP_WERROR
 AC_DEFUN([ACX_PROG_GNAT],
 [AC_REQUIRE([AC_CHECK_TOOL_PREFIX])
 AC_REQUIRE([AC_PROG_CC])
-AC_CHECK_TOOL(GNATBIND, gnatbind, no)
+AC_CHECK_TOOL([GNATBIND],[gnatbind],[no])
 AC_CACHE_CHECK([whether compiler driver understands Ada],
-		 acx_cv_cc_gcc_supports_ada,
+		 [acx_cv_cc_gcc_supports_ada],
 [cat >conftest.adb <<EOF
 procedure conftest is begin null; end conftest;
 EOF
@@ -208,14 +208,14 @@ else
 fi
 ])
 
-dnl 'make compare' can be significantly faster, if cmp itself can
-dnl skip bytes instead of using tail.  The test being performed is
-dnl "if cmp --ignore-initial=2 t1 t2 && ! cmp --ignore-initial=1 t1 t2"
-dnl but we need to sink errors and handle broken shells.  We also test
-dnl for the parameter format "cmp file1 file2 skip1 skip2" which is
-dnl accepted by cmp on some systems.
+dnl# 'make compare' can be significantly faster, if cmp itself can
+dnl# skip bytes instead of using tail.  The test being performed is
+dnl# "if cmp --ignore-initial=2 t1 t2 && ! cmp --ignore-initial=1 t1 t2"
+dnl# but we need to sink errors and handle broken shells.  We also test
+dnl# for the parameter format "cmp file1 file2 skip1 skip2" which is
+dnl# accepted by cmp on some systems.
 AC_DEFUN([ACX_PROG_CMP_IGNORE_INITIAL],
-[AC_CACHE_CHECK([how to compare bootstrapped objects], gcc_cv_prog_cmp_skip,
+[AC_CACHE_CHECK([how to compare bootstrapped objects], [gcc_cv_prog_cmp_skip],
 [ echo abfoo >t1
   echo cdfoo >t2
   gcc_cv_prog_cmp_skip='tail +16c $$f1 > tmp-foo1; tail +16c $$f2 > tmp-foo2; cmp tmp-foo1 tmp-foo2'
@@ -236,46 +236,49 @@ AC_DEFUN([ACX_PROG_CMP_IGNORE_INITIAL],
   rm t1 t2
 ])
 do_compare="$gcc_cv_prog_cmp_skip"
-AC_SUBST(do_compare)
+AC_SUBST([do_compare])
 ])
 
-dnl See whether we can include both string.h and strings.h.
+dnl# See whether we can include both string.h and strings.h.
 AC_DEFUN([ACX_HEADER_STRING],
-[AC_CACHE_CHECK([whether string.h and strings.h may both be included],
-  gcc_cv_header_string,
-[AC_TRY_COMPILE([#include <string.h>
-#include <strings.h>], , gcc_cv_header_string=yes, gcc_cv_header_string=no)])
+[AC_CHECK_HEADERS_ONCE([string.h strings.h])
+ AC_CACHE_CHECK([whether string.h and strings.h may both be included],
+  [gcc_cv_header_string],
+[AC_COMPILE_IFELSE([AC_LANG_SOURCE([[#include <string.h>
+#include <strings.h>]],[[]])],[gcc_cv_header_string=yes], [gcc_cv_header_string=no])])
 if test $gcc_cv_header_string = yes; then
-  AC_DEFINE(STRING_WITH_STRINGS, 1, [Define if you can safely include both <string.h> and <strings.h>.])
+  AC_DEFINE([STRING_WITH_STRINGS],[1],[Define if you can safely include both <string.h> and <strings.h>.])
 fi
 ])
 
-dnl See if stdbool.h properly defines bool and true/false.
-dnl Check whether _Bool is built-in.
+dnl# See if stdbool.h properly defines bool and true/false.
+dnl# Check whether _Bool is built-in.
 AC_DEFUN([ACX_HEADER_STDBOOL],
-[AC_CACHE_CHECK([for working stdbool.h],
-  ac_cv_header_stdbool_h,
-[AC_TRY_COMPILE([#include <stdbool.h>],
-[bool foo = false;],
-ac_cv_header_stdbool_h=yes, ac_cv_header_stdbool_h=no)])
+[AC_CHECK_HEADERS_ONCE([stdbool.h])
+ AC_CACHE_CHECK([for working stdbool.h],
+  [ac_cv_header_stdbool_h],
+[AC_COMPILE_IFELSE([AC_LANG_SOURCE([[#include <stdbool.h>]],
+[[bool foo = false;]])],
+[ac_cv_header_stdbool_h=yes],[ac_cv_header_stdbool_h=no])])
 if test $ac_cv_header_stdbool_h = yes; then
-  AC_DEFINE(HAVE_STDBOOL_H, 1,
+  AC_DEFINE([HAVE_STDBOOL_H],[1],
   [Define if you have a working <stdbool.h> header file.])
 fi
-AC_CACHE_CHECK(for built-in _Bool, gcc_cv_c__bool,
-[AC_TRY_COMPILE(,
-[_Bool foo;],
-gcc_cv_c__bool=yes, gcc_cv_c__bool=no)
+AC_CACHE_CHECK([for built-in _Bool],[gcc_cv_c__bool],
+[AC_COMPILE_IFELSE([AC_LANG_SOURCE([[]],
+[[_Bool foo;]])],
+[gcc_cv_c__bool=yes],[gcc_cv_c__bool=no])
 ])
 if test $gcc_cv_c__bool = yes; then
-  AC_DEFINE(HAVE__BOOL, 1, [Define if the \`_Bool' type is built-in.])
+  AC_DEFINE([HAVE__BOOL],[1],[Define if the \`_Bool' type is built-in.])
 fi
 ])
 
-dnl See if hard links work and if not, try to substitute $1 or simple copy.
+dnl# See if hard links work and if not, try to substitute $1 or simple
+dnl# copy.
 AC_DEFUN([ACX_PROG_LN],
-[AC_MSG_CHECKING(whether ln works)
-AC_CACHE_VAL(acx_cv_prog_LN,
+[AC_MSG_CHECKING([whether ln works])
+AC_CACHE_VAL([acx_cv_prog_LN],
 [rm -f conftestdata_t
 echo >conftestdata_f
 if ln conftestdata_f conftestdata_t 2>/dev/null
@@ -287,12 +290,12 @@ fi
 rm -f conftestdata_f conftestdata_t
 ])dnl
 if test $acx_cv_prog_LN = no; then
-  LN="ifelse([$1],,cp,[$1])"
+  LN="ifelse([$1],[],[cp],[$1])"
   AC_MSG_RESULT([no, using $LN])
 else
   LN="$acx_cv_prog_LN"
-  AC_MSG_RESULT(yes)
+  AC_MSG_RESULT([yes])
 fi
-AC_SUBST(LN)dnl
+AC_SUBST([LN])dnl
 ])
 

@@ -1,3 +1,6 @@
+# Top-level makefile for Apple's fork of gdb
+# If this Makefile does not work, try the one in ./src
+
 GDB_VERSION = 6.3.50-20050815
 GDB_RC_VERSION = 1824
 
@@ -5,7 +8,7 @@ BINUTILS_VERSION = 2.13-20021117
 BINUTILS_RC_VERSION = 46
 
 # Uncomment line below for debugging shell commands
-# SHELL = /bin/sh -x
+#SHELL = /bin/sh -x
 
 .PHONY: all clean configure build install installsrc installhdrs headers \
 	build-core build-binutils build-gdb \
@@ -18,6 +21,8 @@ BINUTILS_RC_VERSION = 46
 	cross-installhdrs \
 	cross-install-frameworks-headers \
 	cross-install-frameworks-headers-finalize
+
+SUBDIRS = src bin macsbug libcheckpoint
 
 
 # Get the correct setting for SYSTEM_DEVELOPER_TOOLS_DOC_DIR if 
@@ -174,13 +179,13 @@ CROSS_TARGETS := $(strip $(CROSS_TARGETS) $(foreach hostarch, $(CANONICAL_ARCHS)
 CROSS_TARGETS := $(filter-out x86_64-apple-darwin--i386-apple-darwin, $(CROSS_TARGETS))
 CROSS_TARGETS := $(filter-out i386-apple-darwin--x86_64-apple-darwin, $(CROSS_TARGETS))
 
-# We don't want to build a ppc cross anything gdb; no one 
+# We do NOT want to build a ppc cross anything gdb; Apple assumes that no one 
 # will need that these days.
 CROSS_TARGETS := $(filter-out powerpc-apple-darwin--x86_64-apple-darwin, $(CROSS_TARGETS))
 CROSS_TARGETS := $(filter-out powerpc-apple-darwin--i386-apple-darwin, $(CROSS_TARGETS))
 CROSS_TARGETS := $(filter-out powerpc-apple-darwin--arm-apple-darwin, $(CROSS_TARGETS))
 
-# Similarly, no one needs an arm x x86-64 debugger, for instance.
+# Similarly, Apple assumes that no one needs an arm x x86-64 debugger, for instance.
 CROSS_TARGETS := $(filter-out arm-apple-darwin--x86_64-apple-darwin, $(CROSS_TARGETS))
 CROSS_TARGETS := $(filter-out arm-apple-darwin--arm-apple-darwin, $(CROSS_TARGETS))
 CROSS_TARGETS := $(filter-out arm-apple-darwin--i386-apple-darwin, $(CROSS_TARGETS))
@@ -224,7 +229,6 @@ endif
 CFLAGS = $(strip $(RC_NONARCH_CFLAGS) $(CDEBUGFLAGS) -Wall -Wimplicit $(OS_DEP_CFLAGS) -Werror=implicit-function-declaration -funwind-tables -fasynchronous-unwind-tables)
 HOST_ARCHITECTURE = $(shell echo $* | sed -e 's/--.*//' -e 's/powerpc/ppc/' -e 's/-apple-macosx.*//' -e 's/-apple-macos.*//' -e 's/-apple-darwin.*//')
 endif
-
 
 
 MACOSX_FLAGS = \
@@ -339,7 +343,7 @@ crossarm:;
 # Build only a cross targets for host architectures. RC_ARCHS specifies
 # all of the host architectures to build for, and RC_CROSS_ARCHS specifies
 # all of the cross architectures to build for. This can save time when
-# building a cross target as you don't have to build all permutations of
+# building a cross target as you do NOT have to build all permutations of
 # RC_ARCHS. 
 #
 # SDKROOT can be used to specify a system root for cross builds, and
@@ -497,7 +501,7 @@ $(OBJROOT)/%/stamp-build-headers:
 	$(SUBMAKE) -C $(OBJROOT)/$* $(FFLAGS) stamp-framework-headers-binutils
 	$(SUBMAKE) -C $(OBJROOT)/$*/gdb/doc $(MFLAGS) VERSION='$(GDB_VERSION_STRING)'
 	$(SUBMAKE) -C $(OBJROOT)/$* $(MFLAGS) stamp-framework-headers-gdb
-	#touch $@
+	touch $@
 
 $(OBJROOT)/%/stamp-build-core:
 	$(SUBMAKE) -C $(OBJROOT)/$* configure-intl configure-libiberty configure-bfd configure-opcodes
@@ -509,13 +513,13 @@ $(OBJROOT)/%/stamp-build-core:
 	$(SUBMAKE) -C $(OBJROOT)/$* configure-readline configure-intl
 	$(SUBMAKE) -C $(OBJROOT)/$*/readline $(MFLAGS) all $(FRAMEWORK_TARGET)
 	$(SUBMAKE) -C $(OBJROOT)/$*/intl $(MFLAGS)
-	#touch $@
+	touch $@
 
 $(OBJROOT)/%/stamp-build-binutils:
 	$(SUBMAKE) -C $(OBJROOT)/$* configure-binutils
 	$(SUBMAKE) -C $(OBJROOT)/$*/binutils $(FSFLAGS) VERSION='$(BINUTILS_VERSION)' VERSION_STRING='$(BINUTILS_VERSION_STRING)' all
 	$(SUBMAKE) -C $(OBJROOT)/$* $(FFLAGS) stamp-framework-headers-binutils
-	#touch $@
+	touch $@
 
 $(OBJROOT)/%/stamp-build-gdb:
 	$(SUBMAKE) -C $(OBJROOT)/$* configure-gdb
@@ -526,7 +530,7 @@ $(OBJROOT)/%/stamp-build-gdb-framework:
 
 $(OBJROOT)/%/stamp-build-gdb-docs:
 	$(SUBMAKE) -C $(OBJROOT)/$*/gdb/doc $(MFLAGS) VERSION='$(GDB_VERSION_STRING)' gdb.info
-	#touch $@
+	touch $@
 
 TEMPLATE_HEADERS = config.h tm.h xm.h nm.h
 
@@ -721,8 +725,8 @@ install-gdb-macosx: install-gdb-macosx-common
 		cp $(DSTROOT)/$(LIBEXEC_GDB_DIR)/gdb-$${target} $(SYMROOT)/$(LIBEXEC_GDB_DIR)/gdb-$${target}; \
 	done
 
-# When this target is invoked, NATIVE is the binary that we'll be outputting and
-# HOSTCOMBOS are the binaries that will be combined into that.  For instance,
+# When this target is invoked, NATIVE is the binary that we will be outputting
+# and HOSTCOMBOS are the binaries that will be combined into that. For instance,
 #
 # HOSTCOMBOS == i386-apple-darwin--i386-apple-darwin x86_64-apple-darwin--x86_64-apple-darwin powerpc-apple-darwin--i386-apple-darwin
 # NATIVE == i386-apple-darwin
@@ -778,9 +782,11 @@ install-source:
 	$(TAR) --exclude=CVS --exclude=.svn -C $(SRCROOT) -cf - . | $(TAR) -C $(DSTROOT)/$(SOURCE_DIR) -xf -
 
 all: build
+	unset CPP && $(MAKE) -C src
 
 clean:
 	$(RM) -r $(OBJROOT)
+	$(MAKE) -C src clean
 
 check-args:
 ifneq (,$(filter-out i386-apple-darwin, $(filter-out powerpc-apple-darwin, $(filter-out x86_64-apple-darwin, $(filter-out arm-apple-darwin, $(CANONICAL_ARCHS))))))
@@ -801,16 +807,17 @@ ifneq ($(CROSS_TARGETS),)
 	$(SUBMAKE) $(patsubst %,$(OBJROOT)/%/stamp-rc-configure-cross, $(CROSS_TARGETS))
 endif
 
-build-headers:
+build-headers: configure
 	$(SUBMAKE) configure-headers
 ifneq ($(NATIVE_TARGETS),)
 	$(SUBMAKE) $(patsubst %,$(OBJROOT)/%/stamp-build-headers, $(NATIVE_TARGETS))
 endif
-#ifneq ($(CROSS_TARGETS),)
-#	$(SUBMAKE) $(patsubst %,$(OBJROOT)/%/stamp-build-headers, $(CROSS_TARGETS))
-#endif
+# This CROSS_TARGETS thing had previously been commented out:
+ifneq ($(CROSS_TARGETS),)
+	$(SUBMAKE) $(patsubst %,$(OBJROOT)/%/stamp-build-headers, $(CROSS_TARGETS))
+endif
 
-build-core:
+build-core: configure
 	$(SUBMAKE) configure
 ifneq ($(NATIVE_TARGETS),)
 	$(SUBMAKE) $(patsubst %,$(OBJROOT)/%/stamp-build-core, $(NATIVE_TARGETS)) 
@@ -819,13 +826,13 @@ ifneq ($(CROSS_TARGETS),)
 	$(SUBMAKE) $(patsubst %,$(OBJROOT)/%/stamp-build-core, $(CROSS_TARGETS))
 endif
 
-build-binutils:
+build-binutils: configure
 	$(SUBMAKE) configure
 ifneq ($(NATIVE_TARGETS),)
 	$(SUBMAKE) $(patsubst %,$(OBJROOT)/%/stamp-build-binutils, $(NATIVE_TARGETS))
 endif
 
-build-gdb:
+build-gdb: configure
 	$(SUBMAKE) configure
 ifneq ($(NATIVE_TARGETS),)
 	$(SUBMAKE) $(patsubst %,$(OBJROOT)/%/stamp-build-gdb, $(NATIVE_TARGETS))
@@ -835,7 +842,7 @@ ifneq ($(CROSS_TARGETS),)
 	$(SUBMAKE) $(patsubst %,$(OBJROOT)/%/stamp-build-gdb, $(CROSS_TARGETS))
 endif
 
-build-gdb-docs:
+build-gdb-docs: configure
 	$(MAKE) configure
 ifneq ($(NATIVE_TARGETS),)
 	$(MAKE) $(patsubst %,$(OBJROOT)/%/stamp-build-gdb-docs, $(NATIVE_TARGETS))
@@ -844,7 +851,7 @@ ifneq ($(CROSS_TARGETS),)
 	$(MAKE) $(patsubst %,$(OBJROOT)/%/stamp-build-gdb-docs, $(CROSS_TARGETS))
 endif
 
-build:
+build: check-args build-core build-binutils build-gdb build-gdb-docs
 	$(SUBMAKE) check-args
 	$(SUBMAKE) build-core
 	$(SUBMAKE) build-binutils
@@ -852,9 +859,9 @@ build:
 	$(SUBMAKE) build-gdb-docs 
 
 install-clean:
-	$(RM) -r $(DSTROOT)
+	$(RM) -rf $(DSTROOT)
 
-install-macosx:
+install-macosx: install-clean install-frameworks-macosx install-binutils-macosx install-gdb-fat dsym-and-strip-fat-gdbs install-chmod-macosx-noprocmod
 	$(SUBMAKE) install-clean
 	$(SUBMAKE) install-frameworks-macosx 
 	$(SUBMAKE) install-binutils-macosx 
@@ -876,13 +883,13 @@ endif
 install-macsbug:
 	$(SUBMAKE) -C $(SRCROOT)/macsbug GDB_BUILD_ROOT=$(DSTROOT) BINUTILS_BUILD_ROOT=$(DSTROOT) SRCROOT=$(SRCROOT)/macsbug OBJROOT=$(OBJROOT)/powerpc-apple-darwin--powerpc-apple-darwin/macsbug SYMROOT=$(SYMROOT) DSTROOT=$(DSTROOT) install
  
-install:
+install: check-args build install-macosx install-chmod-macosx-noprocmod
 	$(SUBMAKE) check-args
 	$(SUBMAKE) build
 	$(SUBMAKE) $(MACOSX_FLAGS) install-macosx
 	$(SUBMAKE) $(MACOSX_FLAGS) install-chmod-macosx-noprocmod
 
-installhdrs:
+installhdrs: check-args configure-headers build-headers install-clean install-frameworks-headers cross-installhdrs
 ifeq ($(RC_CROSS_ARCHS),)
 	$(SUBMAKE) check-args
 	$(SUBMAKE) configure-headers
@@ -894,10 +901,9 @@ else
 	$(SUBMAKE) $(MACOSX_FLAGS) cross-installhdrs
 endif
 
-installsrc:
+installsrc: check
 	$(SUBMAKE) check
 	$(TAR) --dereference --exclude=CVS --exclude=.svn --exclude=src/contrib --exclude=src/dejagnu --exclude=src/etc --exclude=src/expect --exclude=src/sim --exclude=src/tcl --exclude=src/texinfo --exclude=src/utils -cf - . | $(TAR) -C $(SRCROOT) -xf -
-
 
 
 check:
@@ -908,3 +914,4 @@ check:
            echo '    ' find . \\\( -name \\\*~ -o -name .#\\\* \\\) -exec rm -f \{\} \\\; -print ; \
            echo; \
            exit 1)
+	$(MAKE) -C src check

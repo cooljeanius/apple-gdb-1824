@@ -1,0 +1,5 @@
+*.status
+Makefile
+*libs/*
+*.lo
+confdefs.h

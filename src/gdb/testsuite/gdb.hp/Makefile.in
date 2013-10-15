@@ -16,7 +16,7 @@ check:
 
 clean mostlyclean:
 	-rm -f *~ core *.o
-	if [ x"${SUBDIRS}" != x ] ; then \
+	if test x"${SUBDIRS}" != "x"; then \
 	    for dir in ${SUBDIRS}; \
 	    do \
 		    echo "$$dir:"; \
@@ -30,7 +30,7 @@ distclean maintainer-clean realclean: clean
 	-rm -f Makefile config.status config.log
 	-rm -f *-init.exp
 	-rm -fr *.log summary detail *.plog *.sum *.psum site.*
-	if [ x"${SUBDIRS}" != x ] ; then \
+	if test x"${SUBDIRS}" != "x"; then \
 	    for dir in ${SUBDIRS}; \
 	    do \
 		    echo "$$dir:"; \
@@ -40,5 +40,5 @@ distclean maintainer-clean realclean: clean
 	    done ; \
 	else true; fi
 
-Makefile: $(srcdir)/Makefile.in $(srcdir)/configure.in
+Makefile: $(srcdir)/Makefile.in $(srcdir)/configure.ac
 	$(SHELL) ./config.status --recheck

@@ -23,23 +23,33 @@
 #if !defined _LIBINTL_H || !defined _LIBGETTEXT_H
 #ifndef _LIBINTL_H
 # define _LIBINTL_H	1
-#endif
+#endif /* !_LIBINTL_H */
 #define _LIBGETTEXT_H	1
 
 /* We define an additional symbol to signal that we use the GNU
    implementation of gettext.  */
 #define __USE_GNU_GETTEXT 1
 
-#include <sys/types.h>
+#ifdef HAVE_CONFIG_H
+# define _INCLUDING_CONFIG_H
+#endif /* HAVE_CONFIG_H */
+
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#else
+# warning libgettext.h expects <sys/types.h> to be included.
+#endif /* HAVE_SYS_TYPES_H */
 
 #if HAVE_LOCALE_H
 # include <locale.h>
-#endif
+#else
+# warning libgettext.h expects <locale.h> to be included.
+#endif /* HAVE_LOCALE_H */
 
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 /* @@ end of prolog @@ */
 
@@ -49,7 +59,7 @@ extern "C" {
 # else
 #  define PARAMS(args) ()
 # endif
-#endif
+#endif /* !PARAMS */
 
 #ifndef NULL
 # if !defined __cplusplus || defined __GNUC__
@@ -57,17 +67,17 @@ extern "C" {
 # else
 #  define NULL (0)
 # endif
-#endif
+#endif /* NULL */
 
 #if !HAVE_LC_MESSAGES
 /* This value determines the behaviour of the gettext() and dgettext()
-   function.  But some system does not have this defined.  Define it
+   function. But some system does not have this defined. Define it
    to a default value.  */
 # define LC_MESSAGES (-1)
-#endif
+#endif /* !HAVE_LC_MESSAGES */
 
 
-/* Declarations for gettext-using-catgets interface.  Derived from
+/* Declarations for gettext-using-catgets interface. Derived from
    Jim Meyering's libintl.h.  */
 struct _msg_ent
 {
@@ -81,7 +91,7 @@ struct _msg_ent
    generated file `cat-id-tbl.c'.  */
 extern const struct _msg_ent _msg_tbl[];
 extern int _msg_tbl_length;
-#endif
+#endif /* HAVE_CATGETS */
 
 
 /* For automatical extraction of messages sometimes no real
@@ -160,8 +170,8 @@ extern int _nl_msg_cat_cntr;
        __result = dcgettext__ (Domainname, Msgid, Category);		      \
      __result;								      \
     }))
-#  endif
-# endif
+#  endif /* __GNUC__ && __GNUC__ == 2 && __GNUC_MINOR__ >= 7 */
+# endif /* !HAVE_CATGETS && (!HAVE_GETTEXT || HAVE_DCGETTEXT) */
 
 #else
 
@@ -171,12 +181,12 @@ extern int _nl_msg_cat_cntr;
 # define textdomain(Domainname) ((char *) Domainname)
 # define bindtextdomain(Domainname, Dirname) ((char *) Dirname)
 
-#endif
+#endif /* ENABLE_NLS */
 
 /* @@ begin of epilog @@ */
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !_LIBINTL_H || !_LIBGETTEXT_H */

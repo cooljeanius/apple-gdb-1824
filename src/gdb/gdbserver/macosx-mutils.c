@@ -21,20 +21,62 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#include <mach/mach.h>
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# warning not including "config.h".
+#endif /* HAVE_CONFIG_H */
 
-#include <mach-o/nlist.h>
+#ifdef HAVE_MACH_MACH_H
+# include <mach/mach.h>
+#else
+# warning macosx-mutils.c expects <mach/mach.h> to be included.
+#endif /* HAVE_MACH_MACH_H */
 
-#include <mach/mach_error.h>
+#ifdef HAVE_MACH_O_NLIST_H
+# include <mach-o/nlist.h>
+#else
+# warning macosx-mutils.c expects <mach-o/nlist.h> to be included.
+#endif /* HAVE_MACH_O_NLIST_H */
 
-#include <sys/signal.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <limits.h>
+#ifdef HAVE_MACH_MACH_ERROR_H
+# include <mach/mach_error.h>
+#else
+# warning macosx-mutils.c expects <mach/mach_error.h> to be included.
+#endif /* HAVE_MACH_MACH_ERROR_H */
 
-#include <unistd.h>
+#ifdef HAVE_SYS_SIGNAL_H
+# include <sys/signal.h>
+#else
+# warning macosx-mutils.c expects <sys/signal.h> to be included.
+#endif /* HAVE_SYS_SIGNAL_H */
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#else
+# warning macosx-mutils.c expects <sys/types.h> to be included.
+#endif /* HAVE_SYS_TYPES_H */
+#ifdef HAVE_SYS_WAIT_H
+# include <sys/wait.h>
+#else
+# warning macosx-mutils.c expects <sys/wait.h> to be included.
+#endif /* HAVE_SYS_WAIT_H */
+#ifdef HAVE_LIMITS_H
+# include <limits.h>
+#else
+# warning macosx-mutils.c expects <limits.h> to be included.
+#endif /* HAVE_LIMITS_H */
 
-#include <AvailabilityMacros.h>
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#else
+# warning macosx-mutils.c expects <unistd.h> to be included.
+#endif /* HAVE_UNISTD_H */
+
+#ifdef HAVE_AVAILABILITYMACROS_H
+# include <AvailabilityMacros.h>
+#else
+# warning macosx-mutils.c expects <AvailabilityMacros.h> to be included.
+#endif /* HAVE_AVAILABILITYMACROS_H */
 
 #include "server.h"
 #include "macosx-low.h"
@@ -43,26 +85,36 @@
 #define MACH64 (MAC_OS_X_VERSION_MAX_ALLOWED >= 1040)
 
 #if MACH64
-
-#include <mach/mach_vm.h>
-
+# ifdef HAVE_MACH_MACH_VM_H
+#  include <mach/mach_vm.h>
+#  ifdef HAVE_UNSIGNED_INT
+#   ifndef HAVE_VM_SIZE_T
+#    warning We do not have the vm_size_t type, which this file needs.
+/* Try defining it as an "unsigned int". */
+#   else
+#    warning Your pre-existing definition for vm_size_t might conflict with the type that this file expects.
+#   endif /* !HAVE_VM_SIZE_T */
+#  else
+#   warning "macosx-mutils.h" (which this file includes) will want to use the "unsigned int" type.
+#  endif /* HAVE_UNSIGNED_INT */
+# else
+#  warning macosx-mutils.c expects <mach/mach_vm.h> to be included.
+# endif /* HAVE_MACH_MACH_VM_H */
 #else /* ! MACH64 */
-
-#define mach_vm_size_t vm_size_t
-#define mach_vm_address_t vm_address_t
-#define mach_vm_read vm_read
-#define mach_vm_write vm_write
-#define mach_vm_region vm_region
-#define mach_vm_protect vm_protect
-#define VM_REGION_BASIC_INFO_COUNT_64 VM_REGION_BASIC_INFO_COUNT
-#define VM_REGION_BASIC_INFO_64 VM_REGION_BASIC_INFO
-
+# define mach_vm_size_t vm_size_t
+# define mach_vm_address_t vm_address_t
+# define mach_vm_read vm_read
+# define mach_vm_write vm_write
+# define mach_vm_region vm_region
+# define mach_vm_protect vm_protect
+# define VM_REGION_BASIC_INFO_COUNT_64 VM_REGION_BASIC_INFO_COUNT
+# define VM_REGION_BASIC_INFO_64 VM_REGION_BASIC_INFO
 #endif /* MACH64 */
 
 #define MAX_INSTRUCTION_CACHE_WARNINGS 0
 
 /* MINUS_INT_MIN is the absolute value of the minimum value that can
-   be stored in a int.  We can't just use -INT_MIN, as that would
+   be stored in a int.  We cannot just use -INT_MIN, as that would
    implicitly be a int, not an unsigned int, and would overflow on 2's
    complement machines. */
 
@@ -71,7 +123,7 @@
 #ifdef DEBUG_MACOSX_MUTILS
 
 static FILE *mutils_stderr = NULL;
-static const char* g_macosx_protection_strs [8] = 
+static const char* g_macosx_protection_strs [8] =
 { "---", "--r", "-w-", "-wr", "x--", "x-r", "xw-", "xwr" };
 
 static void
@@ -89,14 +141,14 @@ mutils_debug (const char *fmt, ...)
   fflush (mutils_stderr);
 }
 
-#endif
+#endif /* DEBUG_MACOSX_MUTILS */
 
 #define CHECK_FATAL(expression) \
   ((void) ((expression) ? 0 : fatal ("on %s:%d - assert: %s", __FILE__, __LINE__, #expression)))
 
-
+/* macosx-mutils.h has child_get_pagesize as being of type unsigned int */
 vm_size_t
-child_get_pagesize ()
+child_get_pagesize (void)
 {
   kern_return_t status;
   static vm_size_t g_cached_child_page_size = 0;
@@ -105,8 +157,8 @@ child_get_pagesize ()
     {
       status = host_page_size (mach_host_self (), &g_cached_child_page_size);
       /* This is probably being over-careful, since if we
-         can't call host_page_size on ourselves, we probably
-         aren't going to get much further.  */
+         cannot call host_page_size on ourselves, we probably
+         are not going to get much further.  */
       if (status != KERN_SUCCESS)
         g_cached_child_page_size = 0;
       MACH_CHECK_ERROR (status);
@@ -116,7 +168,7 @@ child_get_pagesize ()
 }
 
 /* Copy LEN bytes to or from inferior's memory starting at MEMADDR
-   to debugger memory starting at MYADDR.   Copy to inferior if
+   to debugger memory starting at MYADDR. Copy to inferior if
    WRITE is nonzero.
 
    Returns the length copied. */
@@ -141,7 +193,7 @@ mach_xfer_memory_remainder (CORE_ADDR memaddr, char *myaddr,
   if (!write)
     {
       kret = mach_vm_read (task, pageaddr, pagesize, &mempointer, &memcopied);
-      
+
       if (kret != KERN_SUCCESS)
 	{
 #ifdef DEBUG_MACOSX_MUTILS
@@ -149,7 +201,7 @@ mach_xfer_memory_remainder (CORE_ADDR memaddr, char *myaddr,
 	    ("Unable to read page for region at 0x%8.8llx with length %lu from inferior: %s (0x%lx)\n",
 	     (uint64_t) pageaddr, (unsigned long) len,
 	     MACH_ERROR_STRING (kret), kret);
-#endif
+#endif /* DEBUG_MACOSX_MUTILS */
 	  return 0;
 	}
       if (memcopied != pagesize)
@@ -167,10 +219,10 @@ mach_xfer_memory_remainder (CORE_ADDR memaddr, char *myaddr,
 	     "vm_read returned %lu bytes instead of %lu\n",
 	     (uint64_t) pageaddr, (unsigned long) pagesize,
 	     (unsigned long) memcopied, (unsigned long) pagesize);
-#endif
+#endif /* DEBUG_MACOSX_MUTILS */
 	  return 0;
 	}
-      
+
       memcpy (myaddr, ((unsigned char *) 0) + mempointer
               + (memaddr - pageaddr), len);
       kret = vm_deallocate (mach_task_self (), mempointer, memcopied);
@@ -185,17 +237,17 @@ mach_xfer_memory_remainder (CORE_ADDR memaddr, char *myaddr,
   else
     {
       /* We used to read in a whole page, then modify the page
-	 contents, then write that page back out.  I bet we did that
-	 so we didn't break up page maps or something like that.
-	 However, in Leopard there's a bug in the shared cache
+	 contents, then write that page back out. I bet we did that
+	 so we did not break up page maps or something like that.
+	 However, in Leopard there is a bug in the shared cache
 	 implementation, such that if we write into it with whole
-	 pages the maximum page protections don't get set properly and
-	 we can no longer reset the execute bit.  In 64 bit Leopard
-	 apps, the execute bit has to be set or we can't run code from
+	 pages the maximum page protections do NOT get set properly and
+	 we can no longer reset the execute bit. In 64 bit Leopard
+	 apps, the execute bit has to be set or we cannot run code from
 	 there.
 
 	 If we figure out that not writing whole pages causes problems
-	 of it's own, then we will have to revisit this.  */
+	 of its own, then we will have to revisit this.  */
 
 #if defined (TARGET_POWERPC)
       vm_machine_attribute_val_t flush = MATTR_VAL_CACHE_FLUSH;
@@ -204,15 +256,15 @@ mach_xfer_memory_remainder (CORE_ADDR memaddr, char *myaddr,
 
       kret = vm_machine_attribute (mach_task_self (), mempointer,
                                    pagesize, MATTR_CACHE, &flush);
-#ifdef DEBUG_MACOSX_MUTILS
+# ifdef DEBUG_MACOSX_MUTILS
       if (kret != KERN_SUCCESS)
         {
           mutils_debug
             ("Unable to flush GDB's address space after memcpy prior to vm_write: %s (0x%lx)\n",
              MACH_ERROR_STRING (kret), kret);
         }
-#endif
-#endif
+# endif /* DEBUG_MACOSX_MUTILS */
+#endif /* TARGET_POWERPC */
       kret =
         mach_vm_write (task, memaddr, (pointer_t) myaddr, len);
       if (kret != KERN_SUCCESS)
@@ -222,7 +274,7 @@ mach_xfer_memory_remainder (CORE_ADDR memaddr, char *myaddr,
             ("Unable to write region at 0x%8.8llx with length %lu to inferior: %s (0x%lx)\n",
              (uint64_t) memaddr, (unsigned long) len,
              MACH_ERROR_STRING (kret), kret);
-#endif
+#endif /* DEBUG_MACOSX_MUTILS */
           return 0;
         }
     }
@@ -256,7 +308,7 @@ mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr,
             ("Unable to read region at 0x%8.8llx with length %lu from inferior: %s (0x%lx)\n",
              (uint64_t) memaddr, (unsigned long) len,
              MACH_ERROR_STRING (kret), kret);
-#endif
+#endif /* DEBUG_MACOSX_MUTILS */
           return 0;
         }
       if (memcopied != len)
@@ -274,7 +326,7 @@ mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr,
              "vm_read returned %lu bytes instead of %lu\n",
              (uint64_t) memaddr, (unsigned long) len,
              (unsigned long) memcopied, (unsigned long) len);
-#endif
+#endif /* DEBUG_MACOSX_MUTILS */
           return 0;
         }
       memcpy (myaddr, ((unsigned char *) 0) + mempointer, len);
@@ -298,7 +350,7 @@ mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr,
             ("Unable to write region at 0x%8.8llx with length %lu from inferior: %s (0x%lx)\n",
              (uint64_t) memaddr, (unsigned long) len,
              MACH_ERROR_STRING (kret), kret);
-#endif
+#endif /* DEBUG_MACOSX_MUTILS */
           return 0;
         }
     }
@@ -308,7 +360,7 @@ mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr,
 
 #if defined (VM_REGION_SUBMAP_SHORT_INFO_COUNT_64)
 
-/* We probably have a Leopard based build since 
+/* We probably have a Leopard based build since
    VM_REGION_SUBMAP_SHORT_INFO_COUNT_64 was defined, so we will assign
    the functions to call for MACOSX_GET_REGION_INFO and MACOSX_VM_PROTECT.  */
 
@@ -323,7 +375,7 @@ mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr,
    is pretty much the same speed.  Sadly, the defines for the short version
    are missing on Tiger.  So in that case, I supply the defines here, copied
    over.  Then we try the call, and if we get KERN_INVALID_ARGUMENT, we know
-   that we're on Tiger, and switch over to the long form.  */
+   that we are on Tiger, and switch over to the long form.  */
 
   struct vm_region_submap_short_info_64 {
     vm_prot_t		protection;     /* present access protection */
@@ -338,17 +390,17 @@ mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr,
     boolean_t		is_submap;	/* submap vs obj */
     vm_behavior_t		behavior;	/* access behavior hint */
     vm_offset_t		object_id;	/* obj/map name, not a handle */
-    unsigned short		user_wired_count; 
+    unsigned short		user_wired_count;
   };
-  
+
   typedef struct vm_region_submap_short_info_64	*vm_region_submap_short_info_64_t;
   typedef struct vm_region_submap_short_info_64	 vm_region_submap_short_info_data_64_t;
 
 #define VM_REGION_SUBMAP_SHORT_INFO_COUNT_64	((mach_msg_type_number_t) \
 						 (sizeof(vm_region_submap_short_info_data_64_t)/sizeof(int)))
 
-/* We probably have a Tiger based build since 
-   VM_REGION_SUBMAP_SHORT_INFO_COUNT_64 wasn't defined, so we will assign
+/* We probably have a Tiger-based build since
+   VM_REGION_SUBMAP_SHORT_INFO_COUNT_64 was not defined, so we will assign
    the functions to call for MACOSX_GET_REGION_INFO and MACOSX_VM_PROTECT.
    Use the get_region_info variant call that tries both the long and short
    and region subrange calls.  */
@@ -360,7 +412,7 @@ mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr,
 #endif   /* #else defined (VM_REGION_SUBMAP_SHORT_INFO_COUNT_64)  */
 
 static kern_return_t
-macosx_vm_region_recurse_long (task_t task, 
+macosx_vm_region_recurse_long (task_t task,
 			       mach_vm_address_t addr,
 			       mach_vm_address_t *r_start,
 			       mach_vm_size_t *r_size,
@@ -375,11 +427,11 @@ macosx_vm_region_recurse_long (task_t task,
   r_info_size = VM_REGION_SUBMAP_INFO_COUNT_64;
   r_depth = 1000;
   *r_start = addr;
-    
-  kret = mach_vm_region_recurse (task, 
+
+  kret = mach_vm_region_recurse (task,
 				 r_start, r_size,
 				 & r_depth,
-				 (vm_region_recurse_info_t) &r_long_data, 
+				 (vm_region_recurse_info_t) &r_long_data,
 				 &r_info_size);
   if (kret == KERN_SUCCESS)
     {
@@ -389,23 +441,23 @@ macosx_vm_region_recurse_long (task_t task,
       mutils_debug ("macosx_vm_region_recurse_long ( 0x%8.8llx ): [ 0x%8.8llx - 0x%8.8llx ) "
 		    "depth = %d, prot = %c%c%s max_prot = %c%c%s\n",
 		    (uint64_t) addr,
-		    (uint64_t) (*r_start), 
-		    (uint64_t) (*r_start + *r_size), 
-		    r_depth, 
+		    (uint64_t) (*r_start),
+		    (uint64_t) (*r_start + *r_size),
+		    r_depth,
 		    *prot & VM_PROT_COPY ? 'c' : '-',
 		    *prot & VM_PROT_NO_CHANGE ? '!' : '-',
 		    g_macosx_protection_strs[*prot & 7],
 		    *max_prot & VM_PROT_COPY ? 'c' : '-',
 		    *max_prot & VM_PROT_NO_CHANGE ? '!' : '-',
 		    g_macosx_protection_strs[*max_prot & 7]);
-#endif
+#endif /* DEBUG_MACOSX_MUTILS */
     }
   else
     {
 #ifdef DEBUG_MACOSX_MUTILS
       mutils_debug ("macosx_vm_region_recurse_long ( 0x%8.8llx ): ERROR %s\n",
 		    (uint64_t) addr, MACH_ERROR_STRING (kret));
-#endif
+#endif /* DEBUG_MACOSX_MUTILS */
       *r_start = 0;
       *r_size = 0;
       *prot = VM_PROT_NONE;
@@ -417,7 +469,7 @@ macosx_vm_region_recurse_long (task_t task,
 
 
 static kern_return_t
-macosx_vm_region_recurse_short (task_t task, 
+macosx_vm_region_recurse_short (task_t task,
 				mach_vm_address_t addr,
 				mach_vm_address_t *r_start,
 				mach_vm_size_t *r_size,
@@ -433,10 +485,10 @@ macosx_vm_region_recurse_short (task_t task,
   r_depth = 1000;
   *r_start = addr;
 
-  kret = mach_vm_region_recurse (task, 
+  kret = mach_vm_region_recurse (task,
 				 r_start, r_size,
 				 & r_depth,
-				 (vm_region_recurse_info_t) &r_short_data, 
+				 (vm_region_recurse_info_t) &r_short_data,
 				 &r_info_size);
   if (kret == KERN_SUCCESS)
     {
@@ -446,23 +498,23 @@ macosx_vm_region_recurse_short (task_t task,
       mutils_debug ("macosx_vm_region_recurse_short ( 0x%8.8llx ): [ 0x%8.8llx - 0x%8.8llx ) "
 		    "depth = %d, prot = %c%c%s max_prot = %c%c%s\n",
 		    (uint64_t) addr,
-		    (uint64_t) (*r_start), 
-		    (uint64_t) (*r_start + *r_size), 
-		    r_depth, 
+		    (uint64_t) (*r_start),
+		    (uint64_t) (*r_start + *r_size),
+		    r_depth,
 		    *prot & VM_PROT_COPY ? 'c' : '-',
 		    *prot & VM_PROT_NO_CHANGE ? '!' : '-',
 		    g_macosx_protection_strs[*prot & 7],
 		    *max_prot & VM_PROT_COPY ? 'c' : '-',
 		    *max_prot & VM_PROT_NO_CHANGE ? '!' : '-',
 		    g_macosx_protection_strs[*max_prot & 7]);
-#endif
+#endif /* DEBUG_MACOSX_MUTILS */
     }
   else
     {
 #ifdef DEBUG_MACOSX_MUTILS
       mutils_debug ("macosx_vm_region_recurse_short ( 0x%8.8llx ): ERROR %s\n",
 		    (uint64_t) addr, MACH_ERROR_STRING (kret));
-#endif
+#endif /* DEBUG_MACOSX_MUTILS */
       *r_start = 0;
       *r_size = 0;
       *prot = VM_PROT_NONE;
@@ -476,7 +528,7 @@ macosx_vm_region_recurse_short (task_t task,
 
 static kern_return_t
 macosx_vm_protect_range (task_t task,
-			 mach_vm_address_t region_start, 
+			 mach_vm_address_t region_start,
 			 mach_vm_size_t region_size,
 			 mach_vm_address_t addr,
 			 mach_vm_size_t size,
@@ -495,20 +547,20 @@ macosx_vm_protect_range (task_t task,
 #ifdef DEBUG_MACOSX_MUTILS
   mutils_debug ("macosx_vm_protect_range ( 0x%8.8llx ):  [ 0x%8.8llx - 0x%8.8llx ) %s = %c%c%s => %s\n",
 		(uint64_t) addr,
-		(uint64_t) protect_addr, 
-		(uint64_t) (protect_addr + protect_size), 
+		(uint64_t) protect_addr,
+		(uint64_t) (protect_addr + protect_size),
 		set_max ? "max_prot" : "prot",
 		prot & VM_PROT_COPY ? 'c' : '-',
 		prot & VM_PROT_NO_CHANGE ? '!' : '-',
 		g_macosx_protection_strs[prot & 7],
 		kret ? MACH_ERROR_STRING (kret) : "0");
-#endif
+#endif /* DEBUG_MACOSX_MUTILS */
   return kret;
 }
 
 static kern_return_t
 macosx_vm_protect_region (task_t task,
-			  mach_vm_address_t region_start, 
+			  mach_vm_address_t region_start,
 			  mach_vm_size_t region_size,
 			  mach_vm_address_t addr,
 			  mach_vm_size_t size,
@@ -518,7 +570,7 @@ macosx_vm_protect_region (task_t task,
   kern_return_t kret;
   mach_vm_address_t protect_addr;
   mach_vm_size_t protect_size;
-  
+
   /* On Tiger we want to set protections at the region level.  */
   protect_addr = region_start;
   protect_size = region_size;
@@ -528,19 +580,19 @@ macosx_vm_protect_region (task_t task,
 #ifdef DEBUG_MACOSX_MUTILS
   mutils_debug ("macosx_vm_protect_region ( 0x%8.8llx ):  [ 0x%8.8llx - 0x%8.8llx ) %s = %c%c%s => %s\n",
 		(uint64_t) addr,
-		(uint64_t) protect_addr, 
-		(uint64_t) (protect_addr + protect_size), 
+		(uint64_t) protect_addr,
+		(uint64_t) (protect_addr + protect_size),
 		set_max ? "max_prot" : "prot",
 		prot & VM_PROT_COPY ? 'c' : '-',
 		prot & VM_PROT_NO_CHANGE ? '!' : '-',
 		g_macosx_protection_strs[prot & 7],
 		kret ? MACH_ERROR_STRING (kret) : "0");
-#endif
+#endif /* DEBUG_MACOSX_MUTILS */
   return kret;
 }
 
 static kern_return_t
-macosx_get_region_info_both (task_t task, 
+macosx_get_region_info_both (task_t task,
 			     mach_vm_address_t addr,
 			     mach_vm_address_t *r_start,
 			     mach_vm_size_t *r_size,
@@ -550,10 +602,10 @@ macosx_get_region_info_both (task_t task,
   static int use_short_info = 1;
 
   kern_return_t kret;
-  
+
   if (use_short_info)
     {
-      kret = macosx_vm_region_recurse_short (task, addr, r_start, r_size, 
+      kret = macosx_vm_region_recurse_short (task, addr, r_start, r_size,
 					     prot, max_prot);
 
       if (kret == KERN_INVALID_ARGUMENT)
@@ -562,14 +614,14 @@ macosx_get_region_info_both (task_t task,
 #ifdef DEBUG_MACOSX_MUTILS
 	  mutils_debug ("vm_region_submap_short_info not supported, switching"
 			" to long info.\n");
-#endif
-	  kret = macosx_vm_region_recurse_long (task, addr, r_start, r_size, 
+#endif /* DEBUG_MACOSX_MUTILS */
+	  kret = macosx_vm_region_recurse_long (task, addr, r_start, r_size,
 						prot, max_prot);
 	}
     }
   else
     {
-      kret = macosx_vm_region_recurse_long (task, addr, r_start, r_size, 
+      kret = macosx_vm_region_recurse_long (task, addr, r_start, r_size,
 					    prot, max_prot);
     }
 
@@ -578,7 +630,7 @@ macosx_get_region_info_both (task_t task,
 
 
 int
-mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write, 
+mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
 		  task_t task)
 {
   mach_vm_address_t r_start = 0;
@@ -603,15 +655,15 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
       errno = EINVAL;
       return 0;
     }
-  
+
   if (len == 0)
     {
       return 0;
     }
-  
+
   CHECK_FATAL (myaddr != NULL);
   errno = 0;
-  
+
   /* check for case where memory available only at address greater than address specified */
   {
     kret = macosx_get_region_info (task, memaddr, &r_start, &r_size,
@@ -620,7 +672,7 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
       {
         return 0;
       }
-    
+
     if (r_start > memaddr)
       {
         if ((r_start - memaddr) <= MINUS_INT_MIN)
@@ -629,7 +681,7 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
             mutils_debug
               ("First available address near 0x%8.8llx is at 0x%8.8llx; returning\n",
                (uint64_t) memaddr, (uint64_t) r_start);
-#endif
+#endif /* DEBUG_MACOSX_MUTILS */
             return -(r_start - memaddr);
           }
         else
@@ -638,7 +690,7 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
             mutils_debug ("First available address near 0x%8.8llx is at 0x%8.8llx"
                           "(too far; returning 0)\n",
                           (uint64_t) memaddr, (uint64_t) r_start);
-#endif
+#endif /* DEBUG_MACOSX_MUTILS */
             return 0;
           }
       }
@@ -654,16 +706,16 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
 
       /* We want the inner-most map containing our address, so set
 	 the recurse depth to some high value, and call mach_vm_region_recurse.  */
-      kret = macosx_get_region_info (task, cur_memaddr, &r_start, &r_size, 
+      kret = macosx_get_region_info (task, cur_memaddr, &r_start, &r_size,
 				     &orig_protection, &max_orig_protection);
-      
+
       if (r_start > cur_memaddr)
         {
 #ifdef DEBUG_MACOSX_MUTILS
           mutils_debug
             ("Next available region for address at 0x%8.8llx is 0x%8.8llx\n",
              (uint64_t) cur_memaddr, (uint64_t) r_start);
-#endif
+#endif /* DEBUG_MACOSX_MUTILS */
           break;
         }
 
@@ -671,7 +723,7 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
         {
 	  /* Keep the execute permission if we modify protections.  */
 	  vm_prot_t new_prot = VM_PROT_READ | VM_PROT_WRITE;
-	  	  
+
 	  /* Do we need to modify our protections?  */
 	  if (orig_protection & VM_PROT_WRITE)
 	    {
@@ -681,7 +733,7 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
 	      mutils_debug ("We already have write access to the region "
 			    "containing: 0x%8.8llx, skipping permission modification.\n",
 			    (uint64_t) cur_memaddr);
-#endif
+#endif /* DEBUG_MACOSX_MUTILS */
 	    }
 	  else
 	    {
@@ -693,7 +745,7 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
 	      else
 		prot_size = cur_memaddr - r_start;
 
-	      kret = macosx_vm_protect (task, r_start, r_size, 
+	      kret = macosx_vm_protect (task, r_start, r_size,
 					cur_memaddr, prot_size, new_prot, 0);
 
 	      if (kret != KERN_SUCCESS)
@@ -701,9 +753,9 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
 #ifdef DEBUG_MACOSX_MUTILS
 		  mutils_debug ("Without COPY failed: %s (0x%lx)\n",
 				MACH_ERROR_STRING (kret), kret);
-#endif
-		  kret = macosx_vm_protect (task, r_start, r_size, 
-					    cur_memaddr, prot_size, 
+#endif /* DEBUG_MACOSX_MUTILS */
+		  kret = macosx_vm_protect (task, r_start, r_size,
+					    cur_memaddr, prot_size,
 					    VM_PROT_COPY | new_prot, 0);
 		}
 
@@ -713,7 +765,7 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
 		  mutils_debug
 		    ("Unable to add write access to region at 0x8.8llx: %s (0x%lx)\n",
 		     (uint64_t) r_start, MACH_ERROR_STRING (kret), kret);
-#endif
+#endif /* DEBUG_MACOSX_MUTILS */
 		  break;
 		}
 	    }
@@ -758,8 +810,8 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
 
       if (write)
         {
-	  /* This vm_machine_attribute isn't supported on i386,
-	     so let's not try.  */
+	  /* This vm_machine_attribute is NOT supported on i386,
+	     so we will not try.  */
 #if defined (TARGET_POWERPC)
 	  vm_machine_attribute_val_t flush = MATTR_VAL_CACHE_FLUSH;
           kret = vm_machine_attribute (task, r_start, r_size,
@@ -782,7 +834,7 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
                   warning ("No further warning messages will be given.");
                 }
             }
-#endif
+#endif /* TARGET_POWERPC */
 	  /* Try and restore permissions on the minimal address range.  */
 	  if (changed_protections)
 	    {
@@ -792,8 +844,8 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
 	      else
 		prot_size = cur_memaddr - r_start;
 
-	      kret = macosx_vm_protect (task, r_start, r_size, 
-					cur_memaddr, prot_size, 
+	      kret = macosx_vm_protect (task, r_start, r_size,
+					cur_memaddr, prot_size,
 					orig_protection, 0);
 	      if (kret != KERN_SUCCESS)
 		{
@@ -834,7 +886,7 @@ macosx_thread_valid (task_t task, thread_t thread)
   kret = task_threads (task, &thread_list, &thread_count);
 #ifdef DEBUG_MACOSX_MUTILS
   mutils_debug ("macosx_thread_valid - task_threads (%d, %p, %d) returned 0x%lx\n", task, &thread_list, thread_count, kret);
-#endif
+#endif /* DEBUG_MACOSX_MUTILS */
   if ((kret == KERN_INVALID_ARGUMENT)
       || (kret == MACH_SEND_INVALID_RIGHT) || (kret == MACH_RCV_INVALID_NAME))
     {
@@ -860,6 +912,6 @@ macosx_thread_valid (task_t task, thread_t thread)
       mutils_debug ("thread 0x%lx no longer valid for task 0x%lx\n",
                     (unsigned long) thread, (unsigned long) task);
     }
-#endif
+#endif /* DEBUG_MACOSX_MUTILS */
   return found;
 }

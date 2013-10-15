@@ -17,27 +17,31 @@
    Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+# include "config.h"
+#else
+# warning textdomain.c expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
 
-#if defined STDC_HEADERS || defined _LIBC
+#if defined STDC_HEADERS || defined _LIBC || defined HAVE_STDLIB_H
 # include <stdlib.h>
-#endif
+#else
+# warning dcgettext.c expects <stdlib.h> to be included.
+#endif /* HAVE_STDLIB_H */
 
 #if defined STDC_HEADERS || defined HAVE_STRING_H || defined _LIBC
 # include <string.h>
-#else
+#elif defined HAVE_STRINGS_H
 # include <strings.h>
 # ifndef memcpy
 #  define memcpy(Dst, Src, Num) bcopy (Src, Dst, Num)
-# endif
-#endif
+# endif /* !memcpy */
+#endif /* STDC_HEADERS || HAVE_STRING_H || _LIBC */
 
-#ifdef _LIBC
+#if defined _LIBC || defined HAVE_LIBINTL_H
 # include <libintl.h>
 #else
 # include "libgettext.h"
-#endif
+#endif /* _LIBC || HAVE_LIBINTL_H */
 
 /* @@ end of prolog @@ */
 
@@ -56,10 +60,10 @@ extern const char *_nl_current_default_domain;
 # define TEXTDOMAIN __textdomain
 # ifndef strdup
 #  define strdup(str) __strdup (str)
-# endif
+# endif /* !strdup */
 #else
 # define TEXTDOMAIN textdomain__
-#endif
+#endif /* _LIBC */
 
 /* Set the current default message catalog to DOMAINNAME.
    If DOMAINNAME is null, return the current default.
@@ -93,7 +97,7 @@ TEXTDOMAIN (domainname)
       if (cp != NULL)
 	memcpy (cp, domainname, len);
       _nl_current_default_domain = cp;
-#endif
+#endif /* _LIBC || HAVE_STRDUP */
     }
 
   if (old != _nl_default_default_domain)
@@ -105,4 +109,6 @@ TEXTDOMAIN (domainname)
 #ifdef _LIBC
 /* Alias for function name in GNU C Library.  */
 weak_alias (__textdomain, textdomain);
-#endif
+#endif /* _LIBC */
+
+/* EOF */

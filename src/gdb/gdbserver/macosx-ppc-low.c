@@ -1,3 +1,7 @@
+/*
+ * macosx-ppc-low.c
+ */
+
 #include <sys/wait.h>
 #include <stdio.h>
 #include <sys/param.h>
@@ -14,8 +18,8 @@
 #include "ppc-macosx-regnums.h"
 #include "ppc-macosx-thread-status.h"
 
-/* This is roughly cribbed from ppc-macosx-regs.c.  We don't have the
-   gdbarch stuff going in gdbserver, however.  So we can't just use it
+/* This is roughly cribbed from ppc-macosx-regs.c.  We do NOT have the
+   gdbarch stuff going in gdbserver, however.  So we cannot just use it
    exactly...  */
 
 void
@@ -24,7 +28,7 @@ store_unsigned_integer (void *addr, int len, unsigned long long val)
   unsigned char *p;
   unsigned char *startaddr = (unsigned char *) addr;
   unsigned char *endaddr = startaddr + len;
-  
+
   /* Start at the least significant end of the integer, and work towards
      the most significant.  */
   for (p = endaddr - 1; p >= startaddr; --p)
@@ -54,13 +58,13 @@ void
 ppc_macosx_fetch_gp_registers_64 (gdb_ppc_thread_state_64_t *gp_regs)
 {
   int i;
-  
+
   for (i = 0; i < PPC_MACOSX_NUM_GP_REGS; i++)
     {
       supply_unsigned_int_64 (PPC_MACOSX_FIRST_GP_REGNUM + i,
 			      gp_regs->gpregs[i]);
     }
-  
+
   supply_unsigned_int_64 (PPC_MACOSX_PC_REGNUM, gp_regs->srr0);
   supply_unsigned_int_64 (PPC_MACOSX_PS_REGNUM, gp_regs->srr1);
   supply_unsigned_int (PPC_MACOSX_CR_REGNUM, gp_regs->cr);
@@ -78,7 +82,7 @@ ppc_macosx_fetch_fp_registers (gdb_ppc_thread_fpstate_t *fp_regs)
 void
 ppc_macosx_fetch_vp_registers (gdb_ppc_thread_vpstate_t *vp_regs)
 {
-  
+
 }
 
 /* Read register values from the inferior process.
@@ -89,40 +93,40 @@ void
 ppc_fetch_inferior_registers (int regno)
 {
   thread_t current_thread = ((struct inferior_list_entry *) current_inferior)->id;
-  
+
   if ((regno == -1) || PPC_MACOSX_IS_GP_REGNUM (regno)
       || PPC_MACOSX_IS_GSP_REGNUM (regno))
     {
       gdb_ppc_thread_state_64_t gp_regs;
       unsigned int gp_count = GDB_PPC_THREAD_STATE_64_COUNT;
       kern_return_t ret = thread_get_state
-        (current_thread, GDB_PPC_THREAD_STATE_64, 
+        (current_thread, GDB_PPC_THREAD_STATE_64,
 	 (thread_state_t) & gp_regs,
          &gp_count);
       MACH_CHECK_ERROR (ret);
       ppc_macosx_fetch_gp_registers_64 (&gp_regs);
     }
-  
+
   if ((regno == -1) || PPC_MACOSX_IS_FP_REGNUM (regno)
       || PPC_MACOSX_IS_FSP_REGNUM (regno))
     {
       gdb_ppc_thread_fpstate_t fp_regs;
       unsigned int fp_count = GDB_PPC_THREAD_FPSTATE_COUNT;
       kern_return_t ret = thread_get_state
-        (current_thread, GDB_PPC_THREAD_FPSTATE, 
+        (current_thread, GDB_PPC_THREAD_FPSTATE,
 	 (thread_state_t) & fp_regs,
          &fp_count);
       MACH_CHECK_ERROR (ret);
       ppc_macosx_fetch_fp_registers (&fp_regs);
     }
-  
+
   if ((regno == -1) || PPC_MACOSX_IS_VP_REGNUM (regno)
       || PPC_MACOSX_IS_VSP_REGNUM (regno))
     {
       gdb_ppc_thread_vpstate_t vp_regs;
       unsigned int vp_count = GDB_PPC_THREAD_VPSTATE_COUNT;
       kern_return_t ret = thread_get_state
-        (current_thread, GDB_PPC_THREAD_VPSTATE, 
+        (current_thread, GDB_PPC_THREAD_VPSTATE,
 	 (thread_state_t) & vp_regs,
          &vp_count);
       MACH_CHECK_ERROR (ret);
@@ -165,13 +169,13 @@ void
 ppc_macosx_store_gp_registers_64 (gdb_ppc_thread_state_64_t *gp_regs)
 {
   int i;
-  
+
   for (i = 0; i < PPC_MACOSX_NUM_GP_REGS; i++)
     {
       collect_unsigned_int_64 (PPC_MACOSX_FIRST_GP_REGNUM + i,
                                &gp_regs->gpregs[i]);
     }
-  
+
   collect_unsigned_int_64 (PPC_MACOSX_PC_REGNUM, &gp_regs->srr0);
   collect_unsigned_int_64 (PPC_MACOSX_PS_REGNUM, &gp_regs->srr1);
   collect_unsigned_int (PPC_MACOSX_CR_REGNUM, &gp_regs->cr);
@@ -190,7 +194,7 @@ ppc_macosx_store_fp_registers (gdb_ppc_thread_fpstate_t *fp_regs)
 void
 ppc_macosx_store_vp_registers (gdb_ppc_thread_vpstate_t *vp_regs)
 {
-  
+
 }
 
 /* Store our register values back into the inferior.
@@ -201,9 +205,9 @@ void
 ppc_store_inferior_registers (int regno)
 {
   thread_t current_thread = ((struct inferior_list_entry *) current_inferior)->id;
-  
+
   // validate_inferior_registers (regno);
-  
+
   if ((regno == -1) || PPC_MACOSX_IS_GP_REGNUM (regno)
       || PPC_MACOSX_IS_GSP_REGNUM (regno))
     {
@@ -215,7 +219,7 @@ ppc_store_inferior_registers (int regno)
                               GDB_PPC_THREAD_STATE_64_COUNT);
       MACH_CHECK_ERROR (ret);
     }
-  
+
   if ((regno == -1) || PPC_MACOSX_IS_FP_REGNUM (regno)
       || PPC_MACOSX_IS_FSP_REGNUM (regno))
     {
@@ -227,7 +231,7 @@ ppc_store_inferior_registers (int regno)
                               GDB_PPC_THREAD_FPSTATE_COUNT);
       MACH_CHECK_ERROR (ret);
     }
-  
+
   if ((regno == -1) || PPC_MACOSX_IS_VP_REGNUM (regno)
       || PPC_MACOSX_IS_VSP_REGNUM (regno))
     {

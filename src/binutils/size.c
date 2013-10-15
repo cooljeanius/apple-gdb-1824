@@ -34,7 +34,7 @@
 #include "getopt.h"
 
 #ifndef BSD_DEFAULT
-#define BSD_DEFAULT 1
+# define BSD_DEFAULT 1
 #endif
 
 /* Program options.  */
@@ -94,7 +94,7 @@ usage (FILE *stream, int status)
   "berkeley"
 #else
   "sysv"
-#endif
+#endif /* BSD_DEFAULT */
 );
   list_supported_targets (program_name, stream);
   if (status == 0)
@@ -123,10 +123,10 @@ main (int argc, char **argv)
 
 #if defined (HAVE_SETLOCALE) && defined (HAVE_LC_MESSAGES)
   setlocale (LC_MESSAGES, "");
-#endif
+#endif /* HAVE_SETLOCALE && HAVE_LC_MESSAGES */
 #if defined (HAVE_SETLOCALE)
   setlocale (LC_CTYPE, "");
-#endif
+#endif /* HAVE_SETLOCALE */
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
@@ -166,7 +166,7 @@ main (int argc, char **argv)
 	temp = strtol (optarg, NULL, 10);
 #else
 	temp = atol (optarg);
-#endif
+#endif /* ANSI_LIBRARIES */
 	switch (temp)
 	  {
 	  case 10:
@@ -547,3 +547,5 @@ print_sizes (bfd *file)
   else
     print_sysv_format (file);
 }
+
+/* EOF */

@@ -19,11 +19,13 @@
 #ifndef _GETTEXT_H
 #define _GETTEXT_H 1
 
-#include <stdio.h>
+#ifdef HAVE_STDIO_H
+# include <stdio.h>
+#endif /* HAVE_STDIO_H */
 
 #if HAVE_LIMITS_H || _LIBC
 # include <limits.h>
-#endif
+#endif /* HAVE_LIMITS_H */
 
 /* @@ end of prolog @@ */
 
@@ -45,11 +47,11 @@
 # define UINT_MAX_32_BITS 4294967295U
 #else
 # define UINT_MAX_32_BITS 0xFFFFFFFF
-#endif
+#endif /* __STDC__ */
 
-/* If UINT_MAX isn't defined, assume it's a 32-bit type.
+/* If UINT_MAX is NOT defined, assume it is a 32-bit type.
    This should be valid for all systems GNU cares about because
-   that doesn't include 16-bit systems, and only modern systems
+   that does NOT include 16-bit systems, and only modern systems
    (that certainly have <limits.h>) have 64+-bit integral types.  */
 
 #ifndef UINT_MAX

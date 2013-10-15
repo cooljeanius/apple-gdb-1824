@@ -17,36 +17,49 @@
    Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
-
+# include "config.h"
+#else
+# warning l10nflist.c expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
 
 #if defined HAVE_STRING_H || defined _LIBC
 # ifndef _GNU_SOURCE
 #  define _GNU_SOURCE	1
 # endif
 # include <string.h>
-#else
+#elif defined HAVE_STRINGS_H
 # include <strings.h>
 # ifndef memcpy
 #  define memcpy(Dst, Src, Num) bcopy (Src, Dst, Num)
-# endif
+# endif /* !memcpy */
 #endif
 #if !HAVE_STRCHR && !defined _LIBC
 # ifndef strchr
 #  define strchr index
-# endif
-#endif
+# endif /* !strchr */
+#endif /* HAVE_STRING_H || _LIBC */
 
 #if defined _LIBC || defined HAVE_ARGZ_H
 # include <argz.h>
-#endif
-#include <ctype.h>
-#include <sys/types.h>
+#else
+# warning l10nflist.c expects <argz.h> to be included on some systems.
+#endif /* HAVE_ARGZ_H */
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#else
+# warning l10nflist.c expects <ctype.h> to be included.
+#endif /* HAVE_CTYPE_H */
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#else
+# warning l10nflist.c expects <sys/types.h> to be included.
+#endif /* HAVE_SYS_TYPES_H */
 
-#if defined STDC_HEADERS || defined _LIBC
+#if defined STDC_HEADERS || defined _LIBC || defined HAVE_STDLIB_H
 # include <stdlib.h>
-#endif
+#else
+# warning l10nflist.c expects <stdlib.h> to be included.
+#endif /* STDC_HEADERS || _LIBC || HAVE_STDLIB_H */
 
 #include "loadinfo.h"
 
@@ -56,8 +69,8 @@
 #  define NULL ((void *) 0)
 # else
 #  define NULL 0
-# endif
-#endif
+# endif /* __STDC__ && __STDC__ */
+#endif /* !NULL */
 
 /* @@ end of prolog @@ */
 
@@ -67,12 +80,12 @@
    file and the name space must not be polluted.  */
 # ifndef stpcpy
 #  define stpcpy(dest, src) __stpcpy(dest, src)
-# endif
+# endif /* !stpcpy */
 #else
 # ifndef HAVE_STPCPY
 static char *stpcpy PARAMS ((char *dest, const char *src));
-# endif
-#endif
+# endif /* !HAVE_STPCPY */
+#endif /* _LIBC */
 
 /* Define function which are usually not available.  */
 
@@ -283,7 +296,7 @@ _nl_make_l10nflist (l10nfile_list, dirlist, dirlist_len, mask, language,
 	  break;
 	if (compare < 0)
 	  {
-	    /* It's not in the list.  */
+	    /* It is (was?) not in the list.  */
 	    retval = NULL;
 	    break;
 	  }
@@ -323,7 +336,7 @@ _nl_make_l10nflist (l10nfile_list, dirlist, dirlist_len, mask, language,
 
   entries = 0;
   /* If the DIRLIST is a real list the RETVAL entry corresponds not to
-     a real file.  So we have to use the DIRLIST separation mechanism
+     a real file. So we have to use the DIRLIST separation mechanism
      of the inner loop.  */
   cnt = __argz_count (dirlist, dirlist_len) == 1 ? mask - 1 : mask;
   for (; cnt >= 0; --cnt)
@@ -347,8 +360,8 @@ _nl_make_l10nflist (l10nfile_list, dirlist, dirlist_len, mask, language,
   return retval;
 }
 
-/* Normalize codeset name.  There is no standard for the codeset
-   names.  Normalization allows the user to use any of the common
+/* Normalize codeset name. There is no standard for the codeset
+   names. Normalization allows the user to use any of the common
    names.  */
 const char *
 _nl_normalize_codeset (codeset, name_len)
@@ -394,9 +407,9 @@ _nl_normalize_codeset (codeset, name_len)
 
 /* @@ begin of epilog @@ */
 
-/* We don't want libintl.a to depend on any other library.  So we
-   avoid the non-standard function stpcpy.  In GNU C Library this
-   function is available, though.  Also allow the symbol HAVE_STPCPY
+/* We do NOT want libintl.a to depend on any other library. So we
+   avoid the non-standard function stpcpy. In GNU C Library this
+   function is available, though. Also allow the symbol HAVE_STPCPY
    to be defined.  */
 #if !_LIBC && !HAVE_STPCPY
 static char *
@@ -408,4 +421,6 @@ stpcpy (dest, src)
     /* Do nothing. */ ;
   return dest - 1;
 }
-#endif
+#endif /* !_LIBC && !HAVE_STPCPY */
+
+/* EOF */

@@ -10,7 +10,7 @@ Things that still need to be done: -*- Text -*-
      library).
 
  o - The storage needed by BFD data structures is also larger than strictly
-     needed.  This may be difficult to do much about.
+     needed. This may be difficult to do much about.
 
  o - implement bfd_abort, which should close the bfd but not alter the
      filesystem.
@@ -20,6 +20,5 @@ Things that still need to be done: -*- Text -*-
 
  o - upgrade the reloc handling as per Steve's suggestion.
 
-
-
-
+ o - I broke this directory; I need to fix it. -EBG
+   L__ Somehow I fixed it and I do not know how... figure that out...

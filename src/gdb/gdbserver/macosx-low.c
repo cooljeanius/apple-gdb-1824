@@ -1,3 +1,7 @@
+/*
+ * macosx-low.c
+ */
+
 #include <fcntl.h>
 #include <mach/mach.h>
 #include <signal.h>
@@ -31,7 +35,7 @@ static void terminal_ours (void);
 static int terminal_is_ours = 0;
 static int attached_to_process = 0;
 
-/* TTY state for the inferior.  We save it whenever the inferior stops, and
+/* TTY state for the inferior. We save it whenever the inferior stops, and
    restore it when it resumes.  */
 static int inferior_ttystate_err = -1;
 static struct termios inferior_ttystate;
@@ -39,7 +43,7 @@ static pid_t inferior_process_group = -1;
 static int inferior_tflags;
 
 /* Our own tty state, which we restore every time we need to deal with the
-   terminal.  We only set it once, when GDB first starts.  The settings of
+   terminal. We only set it once, when GDB first starts. The settings of
    flags which readline saves and restores and unimportant.  */
 static int our_ttystate_err = -1;
 static struct termios our_ttystate;
@@ -97,21 +101,21 @@ mach_warn_error (kern_return_t ret, const char *file,
 
 static struct macosx_process_info *create_process (pid_t pid);
 
-/* 
+/*
    The gdbserver code is a bit opaque because it (probably intentionally)
-   makes a fuzzy distinction between threads and processes.  But on
-   Mac OS X, threads aren't process-like.  We spawn ONE process, and it
-   has a bunch of threads.  That's all.  So I will store the information
-   for the current process in the macosx_thread_status.  Then
+   makes a fuzzy distinction between threads and processes. But on
+   Mac OS X, threads are NOT process-like. We spawn ONE process, and it
+   has a bunch of threads. That is all. So I will store the information
+   for the current process in the macosx_thread_status. Then
    every thread will get a pointer to the status for the current process.  */
 
 struct macosx_process_info current_macosx_process;
 
-/* create_process does the same thing as "add_process" in the 
+/* create_process does the same thing as "add_process" in the
    linux-low code.  There one "process" might have many LWP, so you
-   may need to add more than one process.  But on Mac OS X, we have
+   may need to add more than one process. But on Mac OS X, we have
    only one process, and then many threads.  */
-   
+
 static struct macosx_process_info *
 create_process (int pid)
 {
@@ -124,7 +128,7 @@ create_process (int pid)
 
   process->pid = pid;
 
-  /* Now start up the thread that's going to watch the
+  /* Now start up the thread that is going to watch the
      exception port.  */
 
   process->status = (macosx_exception_thread_status *)
@@ -132,7 +136,7 @@ create_process (int pid)
   macosx_exception_thread_init (process->status);
 
   kret = task_for_pid (mach_task_self (), pid, &(process->status->task));
-  
+
   if (kret != KERN_SUCCESS)
     {
       error ("Unable to find Mach task port for process-id %d: %s (0x%lx).",
@@ -193,16 +197,16 @@ macosx_check_new_threads (struct macosx_process_info *process)
     {
       if (find_inferior_id (&all_threads, thread_list[i]) == NULL)
 	{
-	  struct macosx_thread_info *new_thread = 
+	  struct macosx_thread_info *new_thread =
 	    (struct macosx_thread_info *) malloc (sizeof (struct macosx_thread_info));
 	  new_thread->process = process;
-	  /* FIXME - should probably get the user thread id too...  
+	  /* FIXME - should probably get the user thread id too...
 	     FIXME: The FSF added this "gdb_id" argument, which seems to be the pid.  But
-	     it also looks like they use it to match what's sent with the vCont message.  
-	     But that's supposed to be a TID.  So I'm redundantly supplying the thread id.  */
+	     it also looks like they use it to match what is sent with the vCont message.
+	     But that is supposed to be a TID.  So I am redundantly supplying the thread id.  */
 	  add_thread (thread_list[i], new_thread, thread_list[i]);
 	}
-    } 
+    }
   /* Free the memory given to use by the TASK_THREADS kernel call.  */
   kret = vm_deallocate (mach_task_self (), (vm_address_t) thread_list,
                         (vm_size_t) (nthreads * sizeof (thread_t)));
@@ -217,7 +221,7 @@ wait_for_stop (pid_t pid)
 
   wait_return = waitpid (pid, &status, WUNTRACED);
   if (wait_return == -1)
-    {  
+    {
       perror ("Error waiting for child to start up");
       return -1;
     }
@@ -253,16 +257,16 @@ macosx_create_inferior (char *program, char **allargs)
       /* signal (__SIGRTMIN + 1, SIG_DFL); */
 
       /* Set the process group ID of the child process (from within the
-         child process) to be in it's own process group. One of the 
-	 SETPGID calls in the parent or child process will be redundant, 
-	 but both are needed to avoid a race condition since we don't 
+         child process) to be in its own process group. One of the
+	 SETPGID calls in the parent or child process will be redundant,
+	 but both are needed to avoid a race condition since we do NOT
 	 know which process will get to execute first. Passing zero for
 	 the pid and pgrp will set the child's process group ID to match
 	 its pid. */
       setpgid (0, 0);
 
-      /* I am not sure why I need to sleep a bit here...  
-	 But if I don't then the gdbserver goes comatose, and
+      /* I am not sure why I need to sleep a bit here...
+	 But if I do not do so, then the gdbserver goes comatose, and
 	 actually locks up the terminal...  */
       sleep (1);
       execv (program, allargs);
@@ -270,12 +274,12 @@ macosx_create_inferior (char *program, char **allargs)
       error ("Cannot exec %s: %s.\n", program,
 	       strerror (errno));
     }
-  
-  
+
+
   /* Set the process group ID of the child process (from the parent
-     process) to be in it's own process group. One of the SETPGID calls 
-     in the parent or child process will be redundant, but both are 
-     needed to avoid a race condition since we don't know which process 
+     process) to be in its own process group. One of the SETPGID calls
+     in the parent or child process will be redundant, but both are
+     needed to avoid a race condition since we do NOT know which process
      will get to execute first.  */
   setpgid (pid, pid);
 
@@ -285,7 +289,7 @@ macosx_create_inferior (char *program, char **allargs)
   return pid;
 }
 
-/* FIXME - This hasn't been tested yet!  */
+/* FIXME - This has NOT been tested yet!  */
 static int
 macosx_attach (unsigned long pid)
 {
@@ -333,7 +337,7 @@ macosx_thread_alive (unsigned long tid)
   return alive;
 }
 
-/* This global pointer is not my fault, the linux code does this
+/* This global pointer is not my fault, the Linux code does this
    as well.  for_each_inferior should really take a void *.  */
 
 struct thread_resume *resume_ptr;
@@ -347,29 +351,29 @@ macosx_process_resume_requests (struct inferior_list_entry *entry)
     = inferior_target_data (thread);
   int index = 0;
   int ret;
-  
+
   process = get_thread_process (thread);
 
-  /* Why doesn't the upper layers do this?  */
+  /* Why do the upper layers NOT do this?  */
   regcache_invalidate_one (entry);
 
-  
-  /* We only call ptrace to update the thread if we were stopped by 
-     a soft signal.  Otherwise we'll get an error from the kernel.  
-     FIXME: How do we continue a thread with a signal if we weren't
+
+  /* We only call ptrace to update the thread if we were stopped by
+     a soft signal. Otherwise we will get an error from the kernel.
+     FIXME: How do we continue a thread with a signal if we were NOT
      originally stopped in softexc?  */
   if (process->status->stopped_in_softexc && process->stopped_thread == entry->id)
     {
       int sig;
 
       /* Only one resume_ptr entry with thread of -1 means apply this
-	 to all threads.  Otherwise, if the thread's not in the resume
+	 to all threads. Otherwise, if the thread is not in the resume
 	 request, continue it with a signal of 0.  */
       if (resume_ptr[0].thread == -1)
 	sig = resume_ptr[0].sig;
       else
 	{
-	  while (resume_ptr[index].thread != -1 
+	  while (resume_ptr[index].thread != -1
 		 && resume_ptr[index].thread != entry->id)
 	    index++;
 	  if (resume_ptr[index].thread == -1)
@@ -377,9 +381,9 @@ macosx_process_resume_requests (struct inferior_list_entry *entry)
 	  else
 	    sig = resume_ptr[index].sig;
 	}
-      
+
       macosx_low_debug (6, "Updating 0x%x with signal %d\n", entry->id, sig);
-      ret = ptrace (PT_THUPDATE, process->pid, (caddr_t) entry->id,  
+      ret = ptrace (PT_THUPDATE, process->pid, (caddr_t) entry->id,
 		    sig);
       if (ret != 0)
 	perror ("Error calling PT_THUPDATE");
@@ -393,7 +397,7 @@ macosx_process_resume_requests (struct inferior_list_entry *entry)
 	  thread_suspend (entry->id);
 	  macosx_thread->suspend_count++;
 	}
-      else 
+      else
 	{
 	  macosx_low_debug (6, "Single stepping thread 0x%x\n", entry->id);
 	  the_low_target.low_single_step_thread (entry->id, 1);
@@ -414,14 +418,14 @@ macosx_process_resume_requests (struct inferior_list_entry *entry)
 	  macosx_thread->suspend_count--;
 	}
       the_low_target.low_single_step_thread (entry->id, 0);
-      
+
     }
 }
 
 void
 macosx_resume (struct thread_resume *resume_info)
 {
-  
+
   struct macosx_process_info *process;
   unsigned char charbuf[1] = { 0 };
   int index;
@@ -430,7 +434,7 @@ macosx_resume (struct thread_resume *resume_info)
 
   process = get_thread_process (current_inferior);
 
-  
+
   /* Go through the resume info and figure out if we are stepping
      or not, and which thread we are stepping.  Stash that in the
      process, and then run through all the threads to set them up.  */
@@ -464,7 +468,7 @@ macosx_resume (struct thread_resume *resume_info)
   enable_async_io ();
   for_each_inferior (&all_threads, macosx_process_resume_requests);
   /* If we got a step request, suspend all the other threads.  */
-  
+
   write (process->status->transmit_to_fd, charbuf, 1);
 
 
@@ -489,7 +493,7 @@ macosx_add_to_port_set (struct macosx_exception_thread_status *excthread,
     }
 }
 
-static unsigned char 
+static unsigned char
 macosx_translate_exception (struct macosx_exception_thread_message *msg)
 {
   /* FIXME: We should check for new threads here.  */
@@ -539,11 +543,11 @@ macosx_translate_exception (struct macosx_exception_thread_message *msg)
 
 }
 
-/* This enum indicates the source for events.  This is
+/* This enum indicates the source for events. This is
    different from the event type, since we can get signal
    events, for instance, from the exception source...  */
 
-enum macosx_event_source 
+enum macosx_event_source
   {
     MACOSX_SOURCE_NONE,
     MACOSX_SOURCE_ERROR,
@@ -553,7 +557,7 @@ enum macosx_event_source
     MACOSX_SOURCE_SIGNALED
   };
 
-/* This is the actual event type.  Some of these are
+/* This is the actual event type. Some of these are
    synthetic, for instance the SINGLESTEP is a breakpoint
    event for the thread we were single-stepping...  */
 
@@ -567,12 +571,12 @@ enum macosx_event_type
   };
 
 /* This stuff is for managing the queue of simultaneous events.
-   We don't actually hold events past the call to macosx_wait.
-   You can't really do that, because the user might ask you to
+   We do NOT actually hold events past the call to macosx_wait.
+   You cannot really do that, because the user might ask you to
    do something that starts the target again (like call a function).
-   And you can't restart the target without replying to all the 
-   messages outstanding.  So instead we push back the events that
-   we aren't going to respond to.  */
+   And you cannot restart the target without replying to all the
+   messages outstanding. So instead we push back the events that
+   we are NOT going to respond to.  */
 
 struct macosx_event
 {
@@ -604,8 +608,8 @@ macosx_exception_event_type (struct macosx_process_info *inferior,
   if (mssg->exception_type == EXC_BREAKPOINT)
     return MACOSX_TYPE_BREAKPOINT;
 
-  if (mssg->exception_type == EXC_SOFTWARE 
-      && mssg->data_count == 2 
+  if (mssg->exception_type == EXC_SOFTWARE
+      && mssg->data_count == 2
       && mssg->exception_data[0] == EXC_SOFT_SIGNAL)
     return MACOSX_TYPE_SIGNAL;
 
@@ -647,7 +651,7 @@ macosx_add_to_events (struct macosx_process_info *inferior,
       error ("Unrecognized event type in macosx_add_to_events.\n");
     }
 
-  
+
   if (macosx_event_chain == NULL)
     {
       macosx_event_chain = new_event;
@@ -665,11 +669,11 @@ macosx_add_to_events (struct macosx_process_info *inferior,
   return new_event;
 }
 
-/* macosx_service_event sends EVENT to the gdb event queue.  It
+/* macosx_service_event sends EVENT to the gdb event queue. It
    returns the resume response that the upper layers of the server
    expect.  */
 static unsigned char
-macosx_service_event (struct macosx_process_info *inferior, 
+macosx_service_event (struct macosx_process_info *inferior,
 		      struct macosx_event *event)
 {
   macosx_exception_thread_message *mssg =
@@ -686,11 +690,11 @@ macosx_service_event (struct macosx_process_info *inferior,
 
   current_inferior = (struct thread_info *) this_inferior;
 
-  /* Now clear the stepping state.  If the kernel can single step
+  /* Now clear the stepping state. If the kernel can single step
      on this processor, then we just unset the stepping flag.
      Otherwise, we just delete the single stepping breakpoint.
      If we happened to stop in another thread, tough luck for now.
-     I'm just going to report the stop and be done with it.
+     I am just going to report the stop and be done with it.
 
      */
   if (inferior->stepping)
@@ -711,9 +715,9 @@ macosx_service_event (struct macosx_process_info *inferior,
       return (int) event->data;
     }
   else
-    error ("Message of unknown source: %d passed to macosx_service_event.\n", 
+    error ("Message of unknown source: %d passed to macosx_service_event.\n",
 	   event->source);
-	
+
   return (unsigned char) 0;
 
 }
@@ -742,7 +746,7 @@ macosx_clear_events ()
 /* FIXME: This is a place holder right now.  For ARM & PPC,
    the pc is left at the trap address when the trap is hit,
    so we have nothing to do here.  On x86, the PC is moved
-   over the trap.  So we would have to back it up in that 
+   over the trap.  So we would have to back it up in that
    case.  */
 void
 macosx_backup_threads_before_break (struct macosx_event *event_ptr)
@@ -750,8 +754,8 @@ macosx_backup_threads_before_break (struct macosx_event *event_ptr)
   return;
 }
 
-/* We keep a signal handler active for SIGCHLD.  That way if one of the waitpid
-   events is delivered for the child when we aren't waiting in select, we can
+/* We keep a signal handler active for SIGCHLD. That way if one of the waitpid
+   events is delivered for the child when we are NOT waiting in select, we can
    test for it before entering select.  */
 
 static int got_sigchld;
@@ -796,13 +800,13 @@ macosx_fetch_event (struct macosx_process_info *inferior,
   macosx_low_debug (6, "macosx_fetch_event called with timeout %d.\n", timeout);
 
   /* Check if we have a saved mach exception after a previous call to this
-     function had select interrupted by a signal that didn't have a 
+     function had select interrupted by a signal that did NOT have a
      matching exception posted to the exception thread.  */
   if (saved_msg.task_port != MACH_PORT_NULL)
     {
       macosx_low_debug (6, "Getting mach exception event from cache.\n");
       memcpy (buf, &saved_msg, sizeof (saved_msg));
-      /* Invalidate the task port sot this cached exception doesn't get 
+      /* Invalidate the task port so that this cached exception does NOT get
          used again.  */
       saved_msg.task_port = MACH_PORT_NULL;
       *retval = 0;
@@ -817,12 +821,12 @@ macosx_fetch_event (struct macosx_process_info *inferior,
       tv.tv_usec = timeout;
       tv_ptr = &tv;
     }
-  
+
   for (;;)
     {
       macosx_add_to_port_set (inferior->status, &fds);
       select_errno = 0;
-  
+
       if (check_for_sigchld ())
 	{
 	  macosx_low_debug (6, "sigchild handler got a hit before"
@@ -841,15 +845,15 @@ macosx_fetch_event (struct macosx_process_info *inferior,
       macosx_low_debug (6, "Woke up from select: bypass: %d ret: %d errno %d.\n",
 			bypass_select, ret, select_errno);
 
-      /* If we didn't call select, or if select was interrupted, we need to
+      /* If we did NOT call select, or if select was interrupted, we need to
          check for other special reasons we may have stopped.  */
       if (bypass_select || select_errno == EINTR)
         {
 	  pid_t retpid;
 	  int wstatus;
 
-	  /* If we got interrupted, check to make sure it wasn't
-	     because the process died.  Don't call waitpid with  */
+	  /* If we got interrupted, check to make sure it was NOT
+	     because the process died. Do NOT call waitpid with  */
 	  retpid = waitpid (-1, &wstatus, WNOHANG | WUNTRACED );
 	  if (retpid == 0)
 	    continue;
@@ -861,39 +865,39 @@ macosx_fetch_event (struct macosx_process_info *inferior,
 	    }
 	  if (WIFEXITED (wstatus))
 	    {
-	      macosx_low_debug (6, "Process %d exited with status %d\n", 
+	      macosx_low_debug (6, "Process %d exited with status %d\n",
 		      retpid, WEXITSTATUS (wstatus));
 	      *retval = WEXITSTATUS (wstatus);
 	      return MACOSX_SOURCE_EXITED;
 	    }
 	  else if (WIFSIGNALED (wstatus))
 	    {
-	      macosx_low_debug (6, "Process %d terminated with signal %d\n", 
+	      macosx_low_debug (6, "Process %d terminated with signal %d\n",
 		      retpid, WTERMSIG (wstatus));
 	      *retval = WTERMSIG (wstatus);
 	      return MACOSX_SOURCE_SIGNALED;
 	    }
 	  else if (WIFSTOPPED (wstatus))
 	    {
-	      macosx_low_debug (6, "Process %d stopped with signal %d\n", 
+	      macosx_low_debug (6, "Process %d stopped with signal %d\n",
 		      retpid, WSTOPSIG (wstatus));
 	      *retval = WSTOPSIG (wstatus);
-	      
-	      /* When a signal is sent to gdb and passed on to gdbserver, 
-	         macosx_send_signal () gets called which will issue a 
-		 kill (pid, signo) where PID is the process ID of the 
+
+	      /* When a signal is sent to gdb and passed on to gdbserver,
+	         macosx_send_signal () gets called which will issue a
+		 kill (pid, signo) where PID is the process ID of the
 		 inferior. This can cause the select function call above to
-		 return with an error code of -1 and errno set to EINTR. 
+		 return with an error code of -1 and errno set to EINTR.
 		 This indicates that the system call was interrupted. We
-		 may also get a matching mach exception posted to our 
-		 exception thread. We don't want to return that we stopped 
-		 due to a signal in this case because we could end up 
+		 may also get a matching mach exception posted to our
+		 exception thread. We do NOT want to return that we stopped
+		 due to a signal in this case because we could end up
 		 getting another identical mach exception version for this
-		 signal the next time through this function. So for now 
+		 signal the next time through this function. So for now
 		 we note that we found this kind of signal, and we will
 		 check our exception thread queue and see if we did indeed
 		 get a duplicate.  */
-	      if (*retval == last_sent_signal && !bypass_select 
+	      if (*retval == last_sent_signal && !bypass_select
 		  && select_errno == EINTR)
 		{
 		  macosx_low_debug (6, "select () was interrupted with signal "
@@ -941,33 +945,33 @@ macosx_fetch_event (struct macosx_process_info *inferior,
 	    {
 	      /* We got a signal from the from the exception thread that we need
 		 to check against the one we are looking for.  */
-		 
+
 	      if (((unsigned char) msg->exception_data[1]) == check_for_exc_signal)
 		{
 		  /* We got a signal from the exception thread that matches the
-		     one that interrupted select. We can disregard the signal 
+		     one that interrupted select. We can disregard the signal
 		     we detected by inspecting wstatus and return the one from
 		     the exception thread. */
 		  macosx_low_debug (6, "Matching mach exception event received "
 					"for signal %d.\n", check_for_exc_signal);
-		     
-		  /* Reset the LAST_SENT_SIGNAL if we find a match so that it 
-		     doesn't get used again.  */
+
+		  /* Reset the LAST_SENT_SIGNAL if we find a match so that it
+		     does NOT get used again.  */
 		  last_sent_signal = 0;
 
-		  /* Reset the *RETVAL to zero for the MACOSX_SOURCE_EXCEPTION 
+		  /* Reset the *RETVAL to zero for the MACOSX_SOURCE_EXCEPTION
 		     return code below.  */
 		  *retval = 0;
 		}
 	      else
 		{
-		  /* We found something in the exception thread that doesn't
-		     match the reason that select was interrupted. We need to 
-		     cache the exception message we just read for the next 
-		     call to this function and return MACOSX_SOURCE_STOPPED 
+		  /* We found something in the exception thread that does NOT
+		     match the reason that select was interrupted. We need to
+		     cache the exception message we just read for the next
+		     call to this function and return MACOSX_SOURCE_STOPPED
 		     with *RETVAL containing the signal number.  */
-		     
-		  macosx_low_debug (6, "Exception thread event signal (%d) doesn't "
+
+		  macosx_low_debug (6, "Exception thread event signal (%d) does NOT "
 				    "match the reason select was interrupted "
 				    "(%d).\n",
 				    (unsigned char) msg->exception_data[1], *retval);
@@ -982,14 +986,14 @@ macosx_fetch_event (struct macosx_process_info *inferior,
       return MACOSX_SOURCE_EXCEPTION;
     }
 
-  /* We shouldn't get here... */
+  /* We should never get here... */
 
   return MACOSX_SOURCE_ERROR;
 }
 
 static unsigned char
-macosx_wait_for_event (struct thread_info *child, 
-		       char *status, 
+macosx_wait_for_event (struct thread_info *child,
+		       char *status,
 		       unsigned int timeout)
 {
   struct macosx_process_info *inferior;
@@ -1004,14 +1008,14 @@ macosx_wait_for_event (struct thread_info *child,
   macosx_low_debug (6, "Called macosx_wait_for_event\n");
 
   inferior = get_thread_process (current_inferior);
- 
+
   macosx_clear_events (inferior);
 
   /* N.B. event_count is not necessarily the number of events that
      actually get added.  For instance, we sometimes break out of
-     select in macosx_fetch_event with a WIFSTOPPED message for a 
-     signal that we ALSO get an EXC_SOFTWARE signal for.  GO FIGURE...
-     That signal event we should just ignore, so I don't even bother
+     select in macosx_fetch_event with a WIFSTOPPED message for a
+     signal that we ALSO get an EXC_SOFTWARE signal for. GO FIGURE...
+     That signal event we should just ignore, so I do NOT even bother
      to queue it up (which then keeps me from having to ignore it
      later.  */
   event_count = 0;
@@ -1020,9 +1024,9 @@ macosx_wait_for_event (struct thread_info *child,
   /* In multi-threaded apps on Mac OS X, we you will occasionally get
      more than one exception event queued up before the first one is
      delivered to us.  This can cause a problem, for instance if we go
-     to single step one thread over a breakpoint.  If we don't drain
-     all the exceptions, then as soon as we restart the target, it's
-     going to hit another exception immediately.  SO...  what we do is
+     to single step one thread over a breakpoint. If we do NOT drain
+     all the exceptions, then as soon as we restart the target, it is
+     going to hit another exception immediately. SO... what we do is
      wait with whatever timeout we want for the first exception, then
      set the timeout to 0 and poll for whatever events remain.  Then
      we will handle one of these events, and push the others back to
@@ -1031,11 +1035,11 @@ macosx_wait_for_event (struct thread_info *child,
     {
       type = macosx_fetch_event (inferior, timeout, buf, &val);
 
-      /* We're going to sit in select till we get the first event.  Then
-	 make sure we can get the write lock here.  That will make sure
-	 we don't pass out of this loop while the exception thread is still
-	 in the process of writing more data.  Note, only do this the
-         first time through, since you can't grab a lock from yourself... */
+      /* We are going to sit in select till we get the first event. Then
+	 make sure we can get the write lock here. That will make sure
+	 we do NOT pass out of this loop while the exception thread is still
+	 in the process of writing more data. Note, only do this the
+         first time through, since you cannot grab a lock from yourself... */
       if (first_time && type != MACOSX_SOURCE_EXITED)
 	{
 	  first_time = 0;
@@ -1044,12 +1048,12 @@ macosx_wait_for_event (struct thread_info *child,
 	}
       switch (type)
 	{
-	  /* Note, if we were to get an exception event, and then 
+	  /* Note, if we were to get an exception event, and then
 	     notification that the target has exited without running
-	     in-between, we're going to drop the exception event on
-	     the floor here.  There's not much we could do with it,
-	     so this isn't a big deal.  */
-	  
+	     in-between, we are going to drop the exception event on
+	     the floor here. There is not much we could do with it,
+	     so this is NOT a big deal.  */
+
 	case MACOSX_SOURCE_EXITED:
 	  *status = 'W';
 	  macosx_exception_release_write_lock (inferior->status);
@@ -1062,7 +1066,7 @@ macosx_wait_for_event (struct thread_info *child,
 	  {
 	    struct macosx_event *event;
 	    warning ("Got stopped on signal not from SOFTEXC.\n");
-	    event = macosx_add_to_events (inferior, 
+	    event = macosx_add_to_events (inferior,
 					  MACOSX_SOURCE_STOPPED,
 					  (void *) val);
 	    event_count++;
@@ -1071,7 +1075,7 @@ macosx_wait_for_event (struct thread_info *child,
 	case MACOSX_SOURCE_EXCEPTION:
 	  {
 	    struct macosx_event *event;
-	    event = macosx_add_to_events (inferior, 
+	    event = macosx_add_to_events (inferior,
 					  MACOSX_SOURCE_EXCEPTION,
 					  buf);
 	    event_count++;
@@ -1092,8 +1096,8 @@ macosx_wait_for_event (struct thread_info *child,
 	}
       timeout = 0;
     }
-  
-  /* Okay, now the exception thread is waiting for us to wake it 
+
+  /* Okay, now the exception thread is waiting for us to wake it
      up.  We should release the lock so it will be able to
      acquire it when it wakes up & gets more data.  */
 
@@ -1116,13 +1120,13 @@ macosx_wait_for_event (struct thread_info *child,
 	case MACOSX_SOURCE_STOPPED:
 	  {
 	    *status = 'T';
-	    
+
 	    retval = (int) macosx_event_chain->data;
 	    break;
 	  }
 	default:
 	  error ("Only handling exceptions here");
-	} 
+	}
     }
   else if (stepping_event != NULL)
     {
@@ -1134,8 +1138,8 @@ macosx_wait_for_event (struct thread_info *child,
   else if (signal_event != NULL)
     {
       /* For now, handle the signal event, and discard
-	 the others...  Set the status to indicate an error,
-         but we'll set it back when we find the exception event.  */
+	 the others... Set the status to indicate an error,
+         but we will set it back when we find the exception event.  */
       macosx_backup_threads_before_break (NULL);
       retval = macosx_service_event (inferior, signal_event);
       *status = 'T';
@@ -1145,22 +1149,22 @@ macosx_wait_for_event (struct thread_info *child,
       struct macosx_event *event_ptr;
       int random_selector, nevents;
       /* At this point, we should only have breakpoint exception events.
-	 We want to pick some random one of these, and handle it.  Just
+	 We want to pick some random one of these, and handle it. Just
 	 in case some future change puts other types of events on the
-	 queue, I'm going to go through and explicitly pick out a 
+	 queue, I am going to go through and explicitly pick out a
 	 breakpoint event.  */
 
       nevents = 0;
-      for (event_ptr = macosx_event_chain; event_ptr != NULL; 
+      for (event_ptr = macosx_event_chain; event_ptr != NULL;
 	   event_ptr = event_ptr->next)
 	{
-	  if (event_ptr->source == MACOSX_SOURCE_EXCEPTION 
+	  if (event_ptr->source == MACOSX_SOURCE_EXCEPTION
 	      && event_ptr->type == MACOSX_TYPE_BREAKPOINT)
 	    nevents++;
 	}
-      
+
       random_selector = (int) ((nevents * (double) rand ()) / (RAND_MAX + 1.0));
-      for (event_ptr = macosx_event_chain; event_ptr != NULL; 
+      for (event_ptr = macosx_event_chain; event_ptr != NULL;
 	   event_ptr = event_ptr->next)
 	{
 	  if (random_selector == 0)
@@ -1168,14 +1172,14 @@ macosx_wait_for_event (struct thread_info *child,
 	  else
 	    random_selector--;
 	}
-      
+
       macosx_backup_threads_before_break (event_ptr);
       retval = macosx_service_event (inferior, event_ptr);
       *status = 'T';
     }
-  
+
   macosx_clear_events ();
-  return retval;  
+  return retval;
 }
 
 static unsigned char
@@ -1203,17 +1207,17 @@ macosx_fetch_registers (int regno)
 {
   struct macosx_process_info *inferior;
   inferior = get_thread_process (current_inferior);
-  
+
   the_low_target.low_fetch_registers (regno);
   macosx_low_debug (6, "Called macosx_fetch_registers (%d)\n", regno);
 }
 
-static void 
+static void
 macosx_store_registers (int regno)
 {
   struct macosx_process_info *inferior;
   inferior = get_thread_process (current_inferior);
-  
+
   the_low_target.low_store_registers (regno);
   macosx_low_debug (6, "Called macosx_store_registers (%d)\n", regno);
 }
@@ -1240,7 +1244,7 @@ static int
 macosx_write_memory (CORE_ADDR memaddr, const unsigned char *myaddr, int len)
 {
   struct macosx_process_info *inferior;
-  int result; 
+  int result;
 
   inferior = get_thread_process (current_inferior);
 
@@ -1262,7 +1266,7 @@ macosx_lookup_symbols (void)
 static void
 macosx_send_signal (int signum)
 {
-  macosx_low_debug (6, "Called macosx_send_signal -> kill (%d, %d);\n", 
+  macosx_low_debug (6, "Called macosx_send_signal -> kill (%d, %d);\n",
 		    signal_pid, signum);
   /* Save the last signal we sent to SIGNAL_PID in case it interrupts our
      select function call in macosx_fetch_event.  */
@@ -1320,7 +1324,7 @@ gdbserver_has_a_terminal (void)
       return 1;
 
     case have_not_checked:
-      /* Get all the current tty settings (including whether we have 
+      /* Get all the current tty settings (including whether we have
          a tty at all!).  We need to do this before the inferior is
 	 launched or attached to. */
       we_have_a_terminal = no;
@@ -1335,12 +1339,12 @@ gdbserver_has_a_terminal (void)
 	      our_process_group = tcgetpgrp (0);
 	    }
 	}
-      macosx_low_debug (6, "%s () => %d\n", __FUNCTION__, 
+      macosx_low_debug (6, "%s () => %d\n", __FUNCTION__,
 			we_have_a_terminal == yes);
       return we_have_a_terminal == yes;
 
     default:
-      /* "Can't happen".  */
+      /* "Cannot happen".  */
       break;
     }
   return 0;
@@ -1349,7 +1353,7 @@ gdbserver_has_a_terminal (void)
 static void
 terminal_inferior (void)
 {
-  if (gdbserver_has_a_terminal () && terminal_is_ours && 
+  if (gdbserver_has_a_terminal () && terminal_is_ours &&
       inferior_ttystate_err == 0)
     {
       int result;
@@ -1357,17 +1361,17 @@ terminal_inferior (void)
 
       /* Because we were careful to not change in or out of raw mode in
          terminal_ours, we will not change in our out of raw mode with
-         this call, so we don't flush any input.  */
+         this call, so we do NOT flush any input.  */
       result = tcsetattr (STDIN_FILENO, TCSANOW, &inferior_ttystate);
 
-      /* If attach_flag is set, we don't know whether we are sharing a
-         terminal with the inferior or not.  (attaching a process
+      /* If attach_flag is set, we do NOT know whether we are sharing a
+         terminal with the inferior or not. (attaching a process
          without a terminal is one case where we do not; attaching a
          process which we ran from the same shell as GDB via `&' is
          one case where we do, I think (but perhaps this is not
          `sharing' in the sense that we need to save and restore tty
-         state)).  I don't know if there is any way to tell whether we
-         are sharing a terminal.  So what we do is to go through all
+         state)). I do NOT know if there is any way to tell whether we
+         are sharing a terminal. So what we do is to go through all
          the saving and restoring of the tty state, but ignore errors
          setting the process group, which will happen if we are not
          sharing a terminal).  */
@@ -1404,7 +1408,7 @@ terminal_ours (void)
 	 erroneously swap the PID that you got from the process with
 	 the process group for gdb.  This will cause interrupting the
 	 process to fail later on.  So we will just NOT do this when
-	 we are attaching...  
+	 we are attaching...
 	 In the long run, we should just not use this terminal code for
          MacOS X, since it is broken in a bunch of ways... */
 
@@ -1420,11 +1424,11 @@ terminal_ours (void)
       if (our_process_group >= 0)
 	result = tcsetpgrp (STDIN_FILENO, our_process_group);
 
-      /* Is there a reason this is being done twice?  It happens both
-         places we use F_SETFL, so I'm inclined to think perhaps there
+      /* Is there a reason this is being done twice? It happens both
+         places we use F_SETFL, so I am inclined to think perhaps there
          is some reason, however perverse.  Perhaps not though...  */
       result = fcntl (STDIN_FILENO, F_SETFL, our_tflags);
-      
+
       /* Restore the previous signal handler.  */
       signal (SIGTTOU, osigttou);
 

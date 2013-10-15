@@ -1,18 +1,35 @@
-dnl Process this file file with autoconf to produce a configure script.
-dnl This file is a shell script fragment that supplies the information
-dnl necessary to tailor a template configure script into the configure
-dnl script appropriate for this directory.  For more information, check
-dnl any existing configure script.
+dnl#                                                     -*- Autoconf -*-
+dnl# Process this file file with autoconf to produce a configure script.
+dnl# This file is a shell script fragment that supplies the information
+dnl# necessary to tailor a template configure script into the configure
+dnl# script appropriate for this directory.  For more information, check
+dnl# any existing configure script.
 
-AC_PREREQ(2.5)
-AC_INIT(defs)
+AC_PREREQ([2.5])
+AC_INIT([gdb.gdbtk-testsuite],[1824],[])
+AC_CONFIG_SRCDIR([defs])
 
-CC=${CC-cc}
-AC_SUBST(CC)
-AC_CONFIG_AUX_DIR(`cd $srcdir;pwd`/../../..)
-AC_CANONICAL_SYSTEM
+MY_CC=${CC-cc}
+AC_SUBST([MY_CC])
+AC_CONFIG_AUX_DIR([../../..])
+AC_CANONICAL_TARGET
 
-dnl Check for exe extension set on certain hosts (e.g. Win32)
+dnl# Check for exe extension set on certain hosts (e.g. Win32)
 AC_EXEEXT
 
-AC_OUTPUT(Makefile)
+# Checks for programs
+if test "x$CC" = "x"; then
+	test -z "$CC"
+	AC_PROG_CC
+else
+	test ! -z "$CC"
+	AC_PROG_GCC_TRADITIONAL
+fi
+AC_PROG_CPP
+AC_PROG_CXX
+
+# Checks for library functions.
+AC_FUNC_MALLOC
+
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT

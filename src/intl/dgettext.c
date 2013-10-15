@@ -16,18 +16,22 @@
    Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+# include "config.h"
+#else
+# warning dgettext.c expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
 
 #if defined HAVE_LOCALE_H || defined _LIBC
 # include <locale.h>
-#endif
+#else
+# warning dgettext.c expects <locale.h> to be included.
+#endif /* HAVE_LOCALE_H */
 
-#ifdef _LIBC
+#if defined _LIBC || defined HAVE_LIBINTL_H
 # include <libintl.h>
 #else
 # include "libgettext.h"
-#endif
+#endif /* HAVE_LIBINTL_H */
 
 /* @@ end of prolog @@ */
 
@@ -41,7 +45,7 @@
 #else
 # define DGETTEXT dgettext__
 # define DCGETTEXT dcgettext__
-#endif
+#endif /* _LIBC */
 
 /* Look up MSGID in the DOMAINNAME message catalog of the current
    LC_MESSAGES locale.  */
@@ -56,4 +60,6 @@ DGETTEXT (domainname, msgid)
 #ifdef _LIBC
 /* Alias for function name in GNU C Library.  */
 weak_alias (__dgettext, dgettext);
-#endif
+#endif /* _LIBC */
+
+/* EOF */

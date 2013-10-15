@@ -30,6 +30,7 @@ targ_cflags=
 targ_underscore=no
 
 # Catch obsolete configurations.
+echo "catching obsolete configurations..."
 case $targ in
  m68*-apple-aux* | \
  m68*-apollo-* | \
@@ -67,8 +68,10 @@ case $targ in
     ;;
 esac
 
-/* APPLE LOCAL change arch ordering for powerpc */
+#
+# /* APPLE LOCAL change arch ordering for powerpc */
 targ_cpu=`echo $targ | sed 's/^\([^-]*\)-\([^-]*\)-\(.*\)$/\1/'`
+echo "looking up targ_cpu ${targ_cpu}..."
 case "${targ_cpu}" in
 alpha*)		 targ_archs=bfd_alpha_arch ;;
 arm*)		 targ_archs=bfd_arm_arch ;;

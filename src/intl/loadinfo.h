@@ -21,8 +21,8 @@
 #  define PARAMS(args) args
 # else
 #  define PARAMS(args) ()
-# endif
-#endif
+# endif /* __STDC__ */
+#endif /* !PARAMS */
 
 /* Encoding of locale name parts.  */
 #define CEN_REVISION		1
@@ -74,3 +74,5 @@ extern int _nl_explode_name PARAMS ((char *name, const char **language,
 				     const char **special,
 				     const char **sponsor,
 				     const char **revision));
+
+/* EOF */

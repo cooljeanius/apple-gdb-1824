@@ -64,7 +64,7 @@ test-pexecute: $(srcdir)/test-pexecute.c ../libiberty.a
 	$(TEST_COMPILE) -DHAVE_CONFIG_H -I.. -o test-pexecute \
 		$(srcdir)/test-pexecute.c ../libiberty.a
 
-# Standard (either GNU or Cygnus) rules we don't use.
+# Standard (either GNU or Cygnus) rules we do NOT use.
 info install-info clean-info dvi install etags tags installcheck:
 
 # The standard clean rules.

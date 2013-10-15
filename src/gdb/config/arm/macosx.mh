@@ -1,4 +1,4 @@
-# Host: ARM running Mac OS X using ELF
+# Host: ARM running Mac OS X using ELF(?)
 
 SER_HARDWIRE = ser-base.o ser-unix.o ser-tcp.o
 

@@ -1,3 +1,7 @@
+/*
+ * macosx-nat-cfmthread.h
+ */
+
 #ifndef __GDB_MACOSX_NAT_CFMTHREAD_H__
 #define __GDB_MACOSX_NAT_CFMTHREAD_H__
 #if WITH_CFM

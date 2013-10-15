@@ -20,7 +20,7 @@
    02110-1301, USA.  */
 
 /* We might put this in a library someday so it could be dynamically
-   loaded, but for now it's not necessary.  */
+   loaded, but for now it is not necessary.  */
 
 #include "bfd.h"
 #include "bfdver.h"
@@ -29,15 +29,27 @@
 #include "filenames.h"
 #include "libbfd.h"
 
-#include <sys/stat.h>
-#include <time.h>		/* ctime, maybe time_t */
-#include <assert.h>
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#else
+# warning bucomm.c expects <sys/stat.h> to be included.
+#endif /* HAVE_SYS_STAT_H */
+#ifdef HAVE_TIME_H
+# include <time.h>		/* ctime, maybe time_t */
+#else
+# warning bucomm.c expects <time.h> to be included.
+#endif /* HAVE_TIME_H */
+#ifdef HAVE_ASSERT_H
+# include <assert.h>
+#else
+# warning bucomm.c expects <assert.h> to be included.
+#endif /* HAVE_ASSERT_H */
 
 #ifndef HAVE_TIME_T_IN_TIME_H
-#ifndef HAVE_TIME_T_IN_TYPES_H
+# ifndef HAVE_TIME_T_IN_TYPES_H
 typedef long time_t;
-#endif
-#endif
+# endif /* HAVE_TIME_T_IN_TYPES_H */
+#endif /* HAVE_TIME_T_IN_TIME_H */
 
 static const char * endian_string (enum bfd_endian);
 static int display_target_list (void);
@@ -460,7 +472,7 @@ off_t
 get_file_size (const char * file_name)
 {
   struct stat statbuf;
-  
+
   if (stat (file_name, &statbuf) < 0)
     {
       if (errno == ENOENT)
@@ -468,7 +480,7 @@ get_file_size (const char * file_name)
       else
 	non_fatal (_("Warning: could not locate '%s'.  reason: %s"),
 		   file_name, strerror (errno));
-    }  
+    }
   else if (! S_ISREG (statbuf.st_mode))
     non_fatal (_("Warning: '%s' is not an ordinary file"), file_name);
   else
@@ -487,7 +499,7 @@ bfd_get_archive_filename (bfd *abfd)
   size_t needed;
 
   assert (abfd != NULL);
-  
+
   if (!abfd->my_archive)
     return bfd_get_filename (abfd);
 

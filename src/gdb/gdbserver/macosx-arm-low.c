@@ -1,3 +1,7 @@
+/*
+ * macosx-arm-low.c
+ */
+
 #include <sys/wait.h>
 #include <stdio.h>
 #include <sys/param.h>
@@ -63,7 +67,7 @@ store_unsigned_integer (void *addr, int len, unsigned long long val)
   unsigned char *p;
   unsigned char *startaddr = (unsigned char *) addr;
   unsigned char *endaddr = startaddr + len;
-  
+
   /* Start at the least significant end of the integer, and work towards
      the most significant.  */
   for (p = startaddr; p < endaddr; ++p)
@@ -126,7 +130,7 @@ arm_fetch_inferior_registers (int regno)
 {
   int i;
   thread_t current_thread = ((struct inferior_list_entry *) current_inferior)->id;
-  /* gdbserver will ask for all registers through gdbserver/regcache.c 
+  /* gdbserver will ask for all registers through gdbserver/regcache.c
      by passing zero as the value for REGNO. We also check for the standard
      gdb method of passing -1 for REGNO.  */
   int get_all = (regno == -1) || (regno == 0);
@@ -139,7 +143,7 @@ arm_fetch_inferior_registers (int regno)
          &gp_count);
       if (ret != KERN_SUCCESS)
        {
-         warning ("Error calling thread_get_state for GP registers for thread 0x%4.4x", 
+         warning ("Error calling thread_get_state for GP registers for thread 0x%4.4x",
 		  current_thread);
          MACH_CHECK_ERROR (ret);
        }
@@ -168,7 +172,7 @@ arm_fetch_inferior_registers (int regno)
                               &fp_count);
       if (ret != KERN_SUCCESS)
        {
-         warning ("Error calling thread_get_state for VFP registers for thread 0x%4.4x", 
+         warning ("Error calling thread_get_state for VFP registers for thread 0x%4.4x",
 		  current_thread);
          MACH_CHECK_ERROR (ret);
        }
@@ -209,7 +213,7 @@ arm_store_inferior_registers (int regno)
     }
 }
 
-/* The following "read_" functions are just so I can 
+/* The following "read_" functions are just so I can
    copy arm_get_next_pc from arm-tdep.c with minimal
    changes.  */
 
@@ -222,7 +226,7 @@ read_memory_integer (unsigned long addr, int size)
     error ("Called read_memory_integer with size: %d.", size);
 
   read_inferior_memory (addr, buf, size);
-  return extract_unsigned_integer (buf, size); 
+  return extract_unsigned_integer (buf, size);
 }
 
 static uint32_t
@@ -677,7 +681,7 @@ arm_get_next_pc (unsigned long pc)
 /* We are currently keeping only one single-step breakpoint
    around.  We don't need to step over it or anything, since
    we just want it to implement software single stepping.  When
-   we do that, we suspend all but the stepping thread, get the 
+   we do that, we suspend all but the stepping thread, get the
    next pc, put a breakpoint on that, continue, then remove that
    breakpoint and report that we've hit the step.  */
 
@@ -699,7 +703,7 @@ set_single_step_breakpoint (unsigned int where, int is_thumb)
 
   if (single_step_breakpoint.where != 0)
     warning ("set_single_step_breakpoint called with old breakpoint "
-	     " uncleared.  Old address: 0x%x", 
+	     " uncleared.  Old address: 0x%x",
 	     single_step_breakpoint.where);
 
   if (is_thumb)
@@ -714,7 +718,7 @@ set_single_step_breakpoint (unsigned int where, int is_thumb)
       breakpoint_len = 4;
       breakpoint_data = arm_le_breakpoint;
     }
-  
+
   single_step_breakpoint.where = where;
   (*the_target->read_memory) (where, single_step_breakpoint.old_data,
 			      breakpoint_len);
@@ -728,7 +732,7 @@ delete_single_step_breakpoint ()
   if (single_step_breakpoint.where == 0)
     return;
 
-  (*the_target->write_memory) (single_step_breakpoint.where, 
+  (*the_target->write_memory) (single_step_breakpoint.where,
 			       single_step_breakpoint.old_data,
 			       single_step_breakpoint.is_thumb ? 2 : 4);
   single_step_breakpoint.where = 0;
@@ -757,7 +761,7 @@ arm_single_step_thread (thread_t thread, int on)
 	  error ("Could not find inferior for thread %d while stepping.",
 		 thread);
 	}
-      
+
       collect_register_by_name ("pc", &pc);
       collect_register_by_name ("cpsr", &cpsr);
       is_thumb = (cpsr & FLAG_T) != 0;
@@ -767,7 +771,7 @@ arm_single_step_thread (thread_t thread, int on)
 	next_pc = arm_get_next_pc (pc);
 
       set_single_step_breakpoint (next_pc, is_thumb);
-      
+
       current_inferior = old_current;
     }
   else

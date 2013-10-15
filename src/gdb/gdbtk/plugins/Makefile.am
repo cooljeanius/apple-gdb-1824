@@ -1,4 +1,5 @@
 ## Process this file with automake to produce Makefile.in
 
-AUTOMAKE_OPTIONS = cygnus
+ACLOCAL_AMFLAGS = -I../../m4 --install
+AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 SUBDIRS = @make_subdirs@

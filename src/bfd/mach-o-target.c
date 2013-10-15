@@ -15,27 +15,27 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software 
+   along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #ifndef TARGET_NAME
-#error TARGET_NAME must be defined
+# error TARGET_NAME must be defined
 #endif /* TARGET_NAME */
 
 #ifndef TARGET_STRING
-#error TARGET_STRING must be defined
+# error TARGET_STRING must be defined
 #endif /* TARGET_STRING */
 
 #ifndef TARGET_BIG_ENDIAN
-#error TARGET_BIG_ENDIAN must be defined
+# error TARGET_BIG_ENDIAN must be defined
 #endif /* TARGET_BIG_ENDIAN */
 
 #ifndef TARGET_ARCHIVE
-#error TARGET_ARCHIVE must be defined
+# error TARGET_ARCHIVE must be defined
 #endif /* TARGET_ARCHIVE */
 
 #if ((TARGET_ARCHIVE) && (! TARGET_BIG_ENDIAN))
-#error Mach-O fat files must always be big-endian.
+# error Mach-O fat files must always be big-endian.
 #endif /* ((TARGET_ARCHIVE) && (! TARGET_BIG_ENDIAN)) */
 
 const bfd_target TARGET_NAME =

@@ -21,88 +21,119 @@
 #ifndef _BUCOMM_H
 #define _BUCOMM_H
 
-#include "ansidecl.h"
-#include <stdio.h>
-#include <sys/types.h>
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# warning bucomm.h expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
 
-#include "config.h"
+#include "ansidecl.h"
+#ifdef HAVE_STDIO_H
+# include <stdio.h>
+#else
+# warning bucomm.h expects <stdio.h> to be included.
+#endif /* HAVE_STDIO_H */
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#else
+# warning bucomm.h expects <sys/types.h> to be included.
+#endif /* HAVE_SYS_TYPES_H */
+
 #include "bin-bugs.h"
 
-#include <stdarg.h>
+#ifdef HAVE_STDARG_H
+# include <stdarg.h>
+#else
+# ifdef HAVE_VARARGS_H
+#  include <varargs.h>
+# else
+#  warning bucomm.h expects either <stdarg.h> or <varargs.h> to be included.
+# endif /* HAVE_VARARGS_H */
+#endif /* HAVE_STDARG_H */
 
 #ifdef USE_BINARY_FOPEN
-#include "fopen-bin.h"
+# include "fopen-bin.h"
 #else
-#include "fopen-same.h"
-#endif
+# include "fopen-same.h"
+#endif /* USE_BINARY_FOPEN */
 
-#include <errno.h>
+#ifdef HAVE_ERRNO_H
+# include <errno.h>
+#else
+# warning bucomm.h expects <errno.h> to be included.
+#endif /* HAVE_ERRNO_H */
 #ifndef errno
 extern int errno;
-#endif
+#endif /* !errno */
 
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+# include <unistd.h>
+#else
+# warning bucomm.h expects <unistd.h> to be included.
+#endif /* HAVE_UNISTD_H */
 
 #ifdef HAVE_STRING_H
-#include <string.h>
+# include <string.h>
 #else
-#ifdef HAVE_STRINGS_H
-#include <strings.h>
-#else
+# ifdef HAVE_STRINGS_H
+#  include <strings.h>
+# else
 extern char *strchr ();
 extern char *strrchr ();
-#endif
-#endif
+# endif /* HAVE_STRINGS_H */
+#endif /* HAVE_STRING_H */
 
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#else
+# warning bucomm.h expects <stdlib.h> to be included.
+#endif /* HAVE_STDLIB_H */
 
 #ifdef HAVE_FCNTL_H
-#include <fcntl.h>
+# include <fcntl.h>
 #else
-#ifdef HAVE_SYS_FILE_H
-#include <sys/file.h>
-#endif
-#endif
+# ifdef HAVE_SYS_FILE_H
+#  include <sys/file.h>
+# else
+#  warning bucomm.h expects either <fcntl.h> or <sys/file.h> to be included.
+# endif /* HAVE_SYS_FILE_H */
+#endif /* HAVE_FCNTL_H */
 
 #if !HAVE_DECL_STRSTR
 extern char *strstr ();
-#endif
+#endif /* !HAVE_DECL_STRSTR */
 
 #ifdef HAVE_SBRK
-#if !HAVE_DECL_SBRK
+# if !HAVE_DECL_SBRK
 extern char *sbrk ();
-#endif
-#endif
+# endif /* !HAVE_DECL_SBRK */
+#endif /* HAVE_SBRK */
 
 #if !HAVE_DECL_GETENV
 extern char *getenv ();
-#endif
+#endif /* !HAVE_DECL_GETENV */
 
 #if !HAVE_DECL_ENVIRON
 extern char **environ;
-#endif
+#endif /* !HAVE_DECL_ENVIRON */
 
 #ifndef O_RDONLY
-#define O_RDONLY 0
-#endif
+# define O_RDONLY 0
+#endif /* !O_RDONLY */
 
 #ifndef O_RDWR
-#define O_RDWR 2
-#endif
+# define O_RDWR 2
+#endif /* !O_RDWR */
 
 #ifndef SEEK_SET
-#define SEEK_SET 0
-#endif
+# define SEEK_SET 0
+#endif /* !SEEK_SET */
 #ifndef SEEK_CUR
-#define SEEK_CUR 1
-#endif
+# define SEEK_CUR 1
+#endif /* !SEEK_CUR */
 #ifndef SEEK_END
-#define SEEK_END 2
-#endif
+# define SEEK_END 2
+#endif /* !SEEK_END */
 
 #if defined(__GNUC__) && !defined(C_ALLOCA)
 # undef alloca
@@ -116,23 +147,29 @@ extern char **environ;
 char *alloca ();
 #   else
 void *alloca ();
-#   endif /* __STDC__, __hpux */
-#  endif /* alloca */
-# endif /* HAVE_ALLOCA_H */
-#endif
+#   endif /* !__STDC__, !__hpux */
+#  endif /* !alloca */
+# endif /* HAVE_ALLOCA_H && !C_ALLOCA */
+#endif /* __GNUC__ && !C_ALLOCA */
 
 #ifdef HAVE_LOCALE_H
 # include <locale.h>
-#endif
+#else
+# define NOT_PRINTING_A_WARNING_HERE 1 /* actually printing a warning causes too many, I think... */
+#endif /* HAVE_LOCALE_H */
 
 #ifdef ENABLE_NLS
-# include <libintl.h>
-# define _(String) gettext (String)
-# ifdef gettext_noop
-#  define N_(String) gettext_noop (String)
+# ifdef HAVE_LIBINTL_H
+#  include <libintl.h>
+#  define _(String) gettext (String)
+#  ifdef gettext_noop
+#   define N_(String) gettext_noop (String)
+#  else
+#   define N_(String) (String)
+#  endif /* gettext_noop */
 # else
-#  define N_(String) (String)
-# endif
+#  warning bucomm.h expects <libintl.h> to be included.
+# endif /* HAVE_LIBINTL_H */
 #else
 # define gettext(Msgid) (Msgid)
 # define dgettext(Domainname, Msgid) (Msgid)
@@ -141,7 +178,7 @@ void *alloca ();
 # define bindtextdomain(Domainname, Dirname) while (0) /* nothing */
 # define _(String) (String)
 # define N_(String) (String)
-#endif
+#endif /* ENABLE_NLS */
 
 /* Used by ar.c and objcopy.c.  */
 #define BUFSIZE 8192

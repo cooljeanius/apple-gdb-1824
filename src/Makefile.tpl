@@ -860,9 +860,10 @@ dir.info: do-install-info
 	else true ; \
 	fi
 
-dist:
-	@echo "Building a full distribution of this tree isn't done"
-	@echo "via 'make dist'.  Check out the etc/ subdirectory" 
+dist_target:
+	@echo "Building a full distribution of this tree is NOT done"
+	@echo "via 'make dist'. Check out the etc/ subdirectory" 
+.PHONY: dist_target
 
 etags tags: TAGS
 
@@ -1659,7 +1660,7 @@ all-gdb: $(gdbnlmrequirements) $(GDB_TK)
 # Multilib.out tells target dirs what multilibs they should build.
 # There is really only one copy.  We use the 'timestamp' method to
 # work around various timestamp bugs on some systems.
-# We use move-if-change so that it's only considered updated when it
+# We use move-if-change so that it is only considered updated when it
 # actually changes, because it has to depend on a phony target.
 multilib.out: maybe-all-gcc
 	@r=`${PWD_COMMAND}`; export r; \
@@ -1671,24 +1672,28 @@ multilib.out: maybe-all-gcc
 AUTOGEN = autogen
 $(srcdir)/Makefile.in: @MAINT@ $(srcdir)/Makefile.tpl $(srcdir)/Makefile.def
 	cd $(srcdir) && $(AUTOGEN) Makefile.def
+.PHONY: $(srcdir)/Makefile.in
 
 # Rebuilding Makefile.
-Makefile: $(srcdir)/Makefile.in config.status
+Makefile_target: $(srcdir)/Makefile.in config.status
 	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
+.PHONY: Makefile_target
 
-config.status: configure
+config.status_target: configure
 	CONFIG_SHELL="$(SHELL)" $(SHELL) ./config.status --recheck
+.PHONY: config.status_target
 
 # Rebuilding configure.
 AUTOCONF = autoconf
 $(srcdir)/configure: @MAINT@ $(srcdir)/configure.in $(srcdir)/config/acx.m4
 	cd $(srcdir) && $(AUTOCONF)
+.PHONY: $(srcdir)/configure
 
 # ------------------------------
 # Special directives to GNU Make
 # ------------------------------
 
-# Don't pass command-line variables to submakes.
+# Do NOT pass command-line variables to submakes.
 .NOEXPORT:
 MAKEOVERRIDES=
 

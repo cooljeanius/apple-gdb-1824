@@ -28,19 +28,19 @@
 #  define PARAMS(args) args
 # else
 #  define PARAMS(args) ()
-# endif
-#endif
+# endif /* __STDC__ */
+#endif /* !PARAMS */
 
 #ifndef internal_function
 # define internal_function
-#endif
+#endif /* !internal_function */
 
 #ifndef W
 # define W(flag, data) ((flag) ? SWAP (data) : (data))
-#endif
+#endif /* !W */
 
 
-#ifdef _LIBC
+#if defined _LIBC || defined HAVE_BYTESWAP_H
 # include <byteswap.h>
 # define SWAP(i) bswap_32 (i)
 #else
@@ -52,7 +52,7 @@ SWAP (i)
 {
   return (i << 24) | ((i & 0xff00) << 8) | ((i >> 8) & 0xff00) | (i >> 24);
 }
-#endif
+#endif /* _LIBC || HAVE_BYTESWAP_H */
 
 
 struct loaded_domain
@@ -87,3 +87,5 @@ void _nl_unload_domain PARAMS ((struct loaded_domain *__domain))
 /* @@ begin of epilog @@ */
 
 #endif /* gettextP.h  */
+
+/* EOF */

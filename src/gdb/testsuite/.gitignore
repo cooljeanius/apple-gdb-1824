@@ -1,0 +1,13 @@
+*.status
+Makefile
+gdb.*/Makefile
+gdb.*/*/Makefile
+*~
+core
+*.o
+a.out
+xgdb
+*.x
+*.grt
+site.bak
+site.exp

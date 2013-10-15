@@ -1,3 +1,7 @@
-buildit-1.1
 Objects/*
 */Objects/*
+
+# I am not sure if the buildit tarball I found on the web is the same
+# one that Apple references in its Makefiles and stuff, so gitignore
+# it for now:
+buildit-1.1/*

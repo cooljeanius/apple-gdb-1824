@@ -49,8 +49,8 @@
 
 2010-10-29  Jason Molenda  (jmolenda@apple.com)
 
-	* macho-o.c (bfd_mach_o_scan_read_command): Don't warn about recognized
-	load commands which don't have the LC_REQ_DYLD bit set.
+	* macho-o.c (bfd_mach_o_scan_read_command): Do NOT warn about
+	recognized load commands which do NOT have the LC_REQ_DYLD bit set.
 
 2010-09-06  Jim Ingham  <jingham@apple.com>
 
@@ -59,8 +59,10 @@
 
 2010-08-23  Jim Ingham  <jingham@apple.com>
 
-	* mach-o.h: Three new load commands: BFD_MACH_O_LC_VERSION_MIN_MACOSX,
-	BFD_MACH_O_LC_VERSION_MIN_IPHONEOS and BFD_MACH_O_LC_FUNCTION_STARTS.
+	* mach-o.h: Three new load commands:
+	BFD_MACH_O_LC_VERSION_MIN_MACOSX,
+	BFD_MACH_O_LC_VERSION_MIN_IPHONEOS, and
+	BFD_MACH_O_LC_FUNCTION_STARTS.
 	
 2010-02-18  Jim Ingham  <jingham@apple.com>
 
@@ -80,24 +82,24 @@
 
 2009-06-05  Caroline Tice  <ctice@apple.com>
 
-	* configure.host (HDEFINES):   Add -D_DARWIN_UNLIMITED_STREAMS to
+	* configure.host (HDEFINES): Add -D_DARWIN_UNLIMITED_STREAMS to
 	HDEFINES apple-darwin systems.
 
 2009-01-26  Jim Ingham  <jingham@apple.com>
 
-	* mach-o.c (bfd_mach_o_scan_start_address): Don't return a start
-	address for something that's not an executable.  You can't set the
+	* mach-o.c (bfd_mach_o_scan_start_address): Do NOT return a start
+	address for something that is not an executable. You cannot set the
 	start to be something outside the main executable.
 	
 2008-10-20  Jason Molenda  (jmolenda@apple.com)
 
-	* opncls.c (bfd_fopen): Mark bfd files as close-on-exec so we don't
-	leak them into the inferior process.
+	* opncls.c (bfd_fopen): Mark bfd files as close-on-exec so we do
+	NOT leak them into the inferior process.
 
 2008-10-17  Jason Molenda  (jmolenda@apple.com)
 
-	* mach-o.h (bfd_mach_o_load_command_type): Add BFD_MACH_O_LC_DYLD_INFO
-	and BFD_MACH_O_LC_DYLD_INFO_ONLY.
+	* mach-o.h (bfd_mach_o_load_command_type): Add
+	BFD_MACH_O_LC_DYLD_INFO and BFD_MACH_O_LC_DYLD_INFO_ONLY.
 	* mach-o.c (bfd_mach_o_write_contents): Ignore them.
 	(bfd_mach_o_scan_read_command): Ignore them.
 
@@ -114,13 +116,13 @@
 2008-08-20  Jason Molenda  (jmolenda@apple.com)
 
 	* mach-o.c (bfd_mach_o_core_file_matches_executable_p): Remove
-	ATTRIBUTE_UNUSED parameters to function; the compiler would choose to
-	do no comparison sometimes and just return 'true'.
+	ATTRIBUTE_UNUSED parameters to function; the compiler would choose
+	to do no comparison sometimes and just return 'true'.
 
 2008-08-13  Jim Ingham <jingham@apple.com>
 
 	* mach-o.c (bfd_mach_o_core_file_matches_executable_p): compare the
-	cputypes of the core files & return false if they don't match.
+	cputypes of the core files & return false if they do NOT match.
 	
 2008-07-22  Jason Molenda  (jmolenda@apple.com)
 
@@ -135,13 +137,14 @@
 
 2008-06-26  Jason Molenda  (jmolenda@apple.com)
 
-	* config.bfd: Remove recognition of x86_64 so we don't build for this
-	until it is fully working.
+	* config.bfd: Remove recognition of x86_64 so we do NOT build for
+	this until it is fully working.
 
 2008-06-26  Jason Molenda  (jmolenda@apple.com)
 
-	* mach-o.c (bfd_mach_o_scan_read_dysymtab_symbol): Correct expression
-	to mask off flag bits from the indirect symbol name index.
+	* mach-o.c (bfd_mach_o_scan_read_dysymtab_symbol): Correct
+	expression to mask off flag bits from the indirect symbol name
+	index.
 
 2008-06-16  Jason Molenda  (jmolenda@apple.com)
 
@@ -235,15 +238,16 @@
 	2006-04-27  Kaz Kojima  <kkojima@rr.iij4u.or.jp>
 
 	        PR binutils/2584
-        	* tekhex.c (getvalue): Change return type to bfd_boolean and
-        	add the new parameter.  Return false if the unexpected character
-        	is found.
+        	* tekhex.c (getvalue): Change return type to bfd_boolean
+        	and add the new parameter. Return false if the unexpected
+        	character is found.
         	(getsym): Likewise.
         	(first_phase): Change return type to bfd_boolean and return
         	false if the unexpected character is found.  Replace abort
         	with returning false.
-        	(pass_over): Change return type to bfd_boolean and the type of
-        	the second argument to bfd_boolean (*) (bfd *, int, char *).
+        	(pass_over): Change return type to bfd_boolean and the type
+        	of the second argument to 
+        	bfd_boolean (*) (bfd *, int, char *).
         	Return false if FUNC returns false.
         	(tekhex_object_p): Return NULL if pass_over fails.
 
@@ -289,16 +293,16 @@
 	
 2007-03-28  Jason Molenda  (jmolenda@apple.com)
 
-	* mach-o.c (bfd_mach_o_scan_read_command): Don't mask off LC_REQ_DYLD
-	flag from load command type.
+	* mach-o.c (bfd_mach_o_scan_read_command): Do NOT mask off
+	LC_REQ_DYLD flag from load command type.
 	(bfd_mach_o_load_command_types): Add LC_REQ_DYLD flag to
 	LC_LOAD_WEAK_DYLIB and LC_REEXPORT_DYLIB so the constants match
 	correctly.
 
 2007-03-28  Jason Molenda  (jmolenda@apple.com)
 
-	* mach-o.c (bfd_mach_o_scan_read_command): Skip LC_RPATH load commands
-	for now.
+	* mach-o.c (bfd_mach_o_scan_read_command): Skip LC_RPATH load
+	commands for now.
 
 2007-02-09  Jason Molenda  (jmolenda@apple.com)
 
@@ -323,14 +327,16 @@
 2006-10-03  Jason Molenda  (jmolenda@apple.com)
 
         * mach-o.h: (enum bfd_mach_o_load_command_type): Add new
-        LC_RPATH, LC_CODE_SIGNATURE, LC_SEGMENT_SPLIT_INFO, LC_REEXPORT_DYLIB.
+        LC_RPATH, LC_CODE_SIGNATURE, LC_SEGMENT_SPLIT_INFO,
+        LC_REEXPORT_DYLIB.
         * mach-o.c (bfd_mach_o_scan_read_command): Ignore LC_CODE_SIGNATURE
         and LC_SEGMENT_SPLIT_INFO.
 
 2006-08-18  Greg Clayton  (gclayton@apple.com)
 
 	* mach-o.c: Added thread state define macros.
-	(bfd_mach_o_i386_flavour_string): Use new thread state define macros.
+	(bfd_mach_o_i386_flavour_string): Use new thread state define
+	macros.
 	(bfd_mach_o_ppc_flavour_string): Ditto.
 	(bfd_mach_o_i386_flavour_from_string): New function.
 	(bfd_mach_o_ppc_flavour_from_string): New function.
@@ -340,12 +346,13 @@
 
 2006-03-22  Eric Albert  (ejalbert@apple.com)
 
-	* mach-o.h (bfd_mach_o_i386_thread_flavour): Add the x86-64 and virtual
-	flavors.
+	* mach-o.h (bfd_mach_o_i386_thread_flavour): Add the x86-64 and
+	virtual flavors.
 	* mach-o.c (bfd_mach_o_convert_architecture): Add
 	BFD_MACH_O_CPU_TYPE_X86_64.
-	(bfd_mach_o_i386_flavour_string): Add the x86-64 and virtual flavors.
-	(bfd_mach_o_scan_start_address): Handle x86-64 thread states.
+	(bfd_mach_o_i386_flavour_string): Add the x86-64 and virtual
+	flavors. (bfd_mach_o_scan_start_address): Handle x86-64 thread
+	states.
 
 2006-03-02  Jason Molenda  (jmolenda@apple.com)
 
@@ -367,14 +374,14 @@
         (bfd_mach_o_get_uuid): added this new function to allow
         access to the uuid data.
 
-        * mach-o.h : added uuid field to mach_o_data_struct structure and added
-        function prototype for bfd_mach_o_get_uuid().
+        * mach-o.h : added uuid field to mach_o_data_struct structure and
+        added function prototype for bfd_mach_o_get_uuid().
 
 2006-01-11  Jason Molenda  (jmolenda@apple.com)
 
 	* mach-o.h (bfd_mach_o_load_command_type): Add BFD_MACH_O_LC_UUID.
-	* mach-o.c (bfd_mach_o_scan_read_command): Ignore BFD_MACH_O_LC_UUID
-	for now.
+	* mach-o.c (bfd_mach_o_scan_read_command): Ignore
+	BFD_MACH_O_LC_UUID for now.
 
 2005-12-16  Jason Molenda  (jmolenda@apple.com)
 
@@ -392,7 +399,7 @@
         for file sizes, since a 64 bit executable might be loaded
         above 32 bits.
         (bfd_mach_o_core_fetch_environment): Handle both 32 and
-        64 bit segments.  Also use bfd_size_type.
+        64 bit segments. Also use bfd_size_type.
         (bfd_mach_o_core_file_failing_command) Ditto.
         
 2005-08-29  Eric Albert  (ejalbert@apple.com)
@@ -434,9 +441,9 @@
 
 2005-06-17  Klee Dienes  <kdienes@apple.com>
 
-	* cache.c (cache_bread): Revert the change from 06-13.  We'll
+	* cache.c (cache_bread): Revert the change from 06-13. We will
 	definitely need to revisit this later.
-	* bfdio.c (bfd_seek): Don't adjust for archives twice.
+	* bfdio.c (bfd_seek): Do NOT adjust for archives twice.
 
 2005-06-15  Klee Dienes  <kdienes@apple.com>
 
@@ -452,16 +459,17 @@
 	* configure.in: Enable AM_BINUTILS_WARNINGS, to pull in
 	warnings.m4 and get @WARN_CFLAGS@.
 	* format.c (bfd_check_format_matches): Revert to FSF sources
-	(there's a good chance we'll need to pull in our local changes later).
+	(there is a good chance we will need to pull in our local changes
+	later).
 	* libbfd-in.h (_bfd_io_close): Add prototype.
 	* libbfd.c: Remove duplicate definitions of *_PUT/GET_32/64.
 	* libbfd.h: Restore bfd_cache_lookup_null and BFD_CACHE_ITERATOR.
 	(_bfd_io_close): Add prototype.  
 
-	* mach-o.c: Update copyright notification.  Fix whitespace to FSF
-	sources.  Re-merge local changes into FSF sources.  Add
-	definitions of N_TEXT/N_DATA/N_BSS.  Reorganize sources to match
-	FSF layout.  Pull in the stabs-parsing code from macosx-tdep.c in
+	* mach-o.c: Update copyright notification. Fix whitespace to FSF
+	sources. Re-merge local changes into FSF sources. Add
+	definitions of N_TEXT/N_DATA/N_BSS. Reorganize sources to match
+	FSF layout. Pull in the stabs-parsing code from macosx-tdep.c in
 	the GDB sources:
 	(macosx_symbol_types): New static data.
 	(bfd_mach_o_symbool_type_base): New function.
@@ -476,21 +484,23 @@
 2005-05-11  Klee Dienes  <kdienes@apple.com>
 
 	* mach-o.c (bfd_mach_o_core_parse_environment): Add prototype; make
-	static.  Add comment.  Change the behavior to return -2 if we
-	can't find the beginning, instead of doing something completely
+	static. Add comment. Change the behavior to return -2 if we
+	cannot find the beginning, instead of doing something completely
 	useless.
 	(bfd_mach_o_core_fetch_environment): Change to return bfd_boolean.
 	Move the "resize the buffer as necessary" logic from
-	bfd_mach_o_core_parse_environment.  Also move the code to malloc the
-	result buffer.
-	* mach-o.h (bfd_mach_o_core_fetch_environment): Update to return bfd_boolean.
+	bfd_mach_o_core_parse_environment. Also move the code to malloc
+	the result buffer.
+	* mach-o.h (bfd_mach_o_core_fetch_environment): Update to return
+	bfd_boolean.
 	
 2005-03-24  Jason Molenda  (jmolenda@apple.com)
 
 	* configure.in: Force AC_FUNC_MMAP's result to 'yes' - it
 	needs to run a test case to say 'yes' so cross-host builds
 	end up with mmap support turned off.
-	* aclocal.m4, config.in, configure, po/SRC-POTFILES.in: Regenerated.
+	* aclocal.m4, config.in, configure, po/SRC-POTFILES.in:
+	Regenerated.
 
 2004-12-02  Jim Ingham  <jingham@apple.com>
 
@@ -584,17 +594,17 @@
 	(bfd_mach_o_scan_write_section_32): New function.
 	(bfd_mach_o_scan_read_segment_32): New function.
 	(bfd_mach_o_scan_write_segment_32): New function.
-	(bfd_mach_o_scan_write_symtab_symbols): Update to support Mach-O 2.0.
+	(bfd_mach_o_scan_write_symtab_symbols): Update to support
+	Mach-O 2.0.
 	(bfd_mach_o_scan_read_dysymtab): Update to support Mach-O 2.0.
 	
 2004-08-24  Jason Molenda  (jmolenda@apple.com)
 
 	* mach-o.c (bfd_mach_o_scan_read_dysymtab): Create two
-	new fake sections, LC_DYSYMTAB.localstabs and LC_DYSYMTAB.nonlocalstabs
-        to transmit the information from the DYSYMTAB load command
-	that the static link editor is creating.  Do a bunch of sanity
-	checks on the provided numbers to make sure the layout is as
-	expected before we create these sections.
+	new fake sections, LC_DYSYMTAB.localstabs and
+	LC_DYSYMTAB.nonlocalstabs to transmit the information from the
+	DYSYMTAB load command that the static link editor is creating. Do
+	a bunch of sanity checks on the provided numbers to make sure the 	layout is as expected before we create these sections.
 
 2004-08-23  Jim Ingham  <jingham@apple.com>
 
@@ -658,7 +668,7 @@
 	Update to recognize and dispatch 3.3R0-version files.
 	(Based on code from Miklos Fazekas <boga@mac.com>).
 
-	* xsym.h: Remove 'PARAMS' declarations.  Add constants and
+	* xsym.h: Remove 'PARAMS' declarations. Add constants and
 	prototypes for 3.3R0-style CodeWarrior xSym files.  
 	(Based on code from Miklos Fazekas <boga@mac.com>).
 
@@ -669,7 +679,8 @@
 
 2004-05-06  Klee Dienes <kdienes@apple.com>
 
-	* mach-o.h (bfd_mach_o_cpu_type): Add BFD_MACH_O_CPU_TYPE_POWERPC_64.
+	* mach-o.h (bfd_mach_o_cpu_type): Add
+	BFD_MACH_O_CPU_TYPE_POWERPC_64.
 	* mach-o.c (bfd_mach_o_convert_architecture): Add subtype
 	(machine) support for all architectures, including bfd_mach_ppc64.
 
@@ -679,12 +690,12 @@
 
 2003-08-06  Klee Dienes  <kdienes@apple.com>
 
-        * bfdio.c (bfd_get_mtime): When BFD_IN_MEMORY is set, don't try to
+        * bfdio.c (bfd_get_mtime): When BFD_IN_MEMORY is set, do NOT try to
         provide a valid mtime (since none exists).
 
 2003-07-22  Klee Dienes  <kdienes@apple.com>
 
-	* mach-o.c (bfd_mach_o_scan_read_symtab_symbol): Don't subtract 1
+	* mach-o.c (bfd_mach_o_scan_read_symtab_symbol): Do NOT subtract 1
 	from section, when looking it up in the section array, since we
 	already subtracted 1 when reading in the number in the first
 	place.
@@ -692,7 +703,8 @@
 2003-05-11  Klee Dienes  <kdienes@apple.com>
 
 	* archures.c (bfd_mach_ppc_970): New value.
-	* cpu-powerpc.c (bfd_powerpc_archs): New field for bfd_mach_ppc_970.
+	* cpu-powerpc.c (bfd_powerpc_archs): New field for
+	bfd_mach_ppc_970.
 	* mach-o.h (bfd_mach_o_section_type): Add
 	BFD_MACH_O_S_MOD_TERM_FUNC_POINTERS and BFD_MACH_O_S_COALESCED.
 	Also add BFD_MACH_O_SECTION_TYPE_MASK and
@@ -706,7 +718,7 @@
 
 2003-04-21  Klee Dienes  <kdienes@apple.com>
 
-	* opncls.c (bfd_mmap_file): Don't mark the mtime as cached.
+	* opncls.c (bfd_mmap_file): Do NOT mark the mtime as cached.
 
 2003-01-13  Klee Dienes  <kdienes@apple.com>
 
@@ -788,17 +800,17 @@
 
 2002-11-11  Klee Dienes  <kdienes@apple.com>
 
-	* mach-o.c (bfd_preserve): New structure.  Stores previous bfd
+	* mach-o.c (bfd_preserve): New structure. Stores previous bfd
 	state in case our parse fails and we need to revert to the
 	previous contents.
-	(bfd_preserve_save): New function.  Saves the existing bfd state;
-	creates a new tdata pointer of the specified size.  Returns true
+	(bfd_preserve_save): New function. Saves the existing bfd state;
+	creates a new tdata pointer of the specified size. Returns true
 	on success.
-	(bfd_preserve_restore): New function.  Restores the previous bfd
+	(bfd_preserve_restore): New function. Restores the previous bfd
 	state, freeing all memory allocated since bfd_save was called.
-	(bfd_preserve_finish): New function.  Frees any memory that may
+	(bfd_preserve_finish): New function. Frees any memory that may
 	have been allocated by a bfd_preserve, or by the bfd by targets
-	prior to the one currently being called.  To be used when a target
+	prior to the one currently being called. To be used when a target
 	is planning to return and replace the previous contents of
 	abfd->xvec.
 	(bfd_mach_o_object_p): Use bfd_preserve_save/restore/finish to
@@ -824,17 +836,17 @@
 
 2002-11-11  Klee Dienes  <kdienes@apple.com>
 
-	* mach-o.c (bfd_mach_o_scan_read_thread): Don't re-use 'i' when
-	looking for an unused section name; we'll need its original value
+	* mach-o.c (bfd_mach_o_scan_read_thread): Do NOT re-use 'i' when
+	looking for an unused section name; we will need its original value
 	later.
 
 2002-11-10  Klee Dienes  <kdienes@apple.com>
 
 	* pef.c: Move version check out of bfd_pef_scan and into
-	bfd_pef_object_p.  Only modify tdata if we have already recognized
-	the file correctly.  Ditto for bfd_pef_xlib_scan and
+	bfd_pef_object_p. Only modify tdata if we have already recognized
+	the file correctly. Ditto for bfd_pef_xlib_scan and
 	bfd_pef_xlib_object_p.
-	* xsym.c (bfd_sym_scan): New function.  Does the real work of
+	* xsym.c (bfd_sym_scan): New function. Does the real work of
 	parsing an already-recognized xSYM file (moved from
 	bfd_sym_object_p).
 	(bfd_sym_object_p): Only modify tdata if we have already
@@ -843,8 +855,9 @@
 	
 2002-11-08  Klee Dienes  <kdienes@apple.com>
 
-	* opncls.c (_bfd_delete_bfd): Clear the bfd structure before freeing.
-	* cache.c (ALL_BFD_CACHE): New macro.  Iterates through all
+	* opncls.c (_bfd_delete_bfd): Clear the bfd structure before
+	freeing.
+	* cache.c (ALL_BFD_CACHE): New macro. Iterates through all
 	the entries in the BFD cache, from least-recent to most-recent.
 	(close_one): Use ALL_BFD_CACHE.
 
@@ -905,26 +918,26 @@
 	
 	* pef.c (bfd_print_symbol): Print traceback table information for
 	"__traceback_X" symbols.
-	(bfd_pef_convert_architecture): New function.  Converts a
+	(bfd_pef_convert_architecture): New function. Converts a
 	PEF-style architecture 4-char 'm68k' or 'pwpc' to a
 	bfd_architecture.
 	(bfd_pef_parse_traceback_table): Add a 'file' argument.  If
 	non-NULL, print the parsed traceback information to that file.
 	Correctly add the length of the name string to the returned
-	traceback table length.  Store the length of the traceback table
+	traceback table length. Store the length of the traceback table
 	in the user-data field of the parsed symbol.
 	(bfd_pef_section_flags): New function.  Select appropriate section
 	flags based on the PEF 'kind' of the section.
 	(bfd_pef_make_bfd_section): Use bfd_pef_section_flags to set the
 	section flags.
-	(bfd_pef_print_loader_header): New function.  Print a dump of
+	(bfd_pef_print_loader_header): New function. Print a dump of
 	'header' to 'file'.
-	(bfd_pef_print_loader_section): New function.  Print a dump of the
+	(bfd_pef_print_loader_section): New function. Print a dump of the
 	loader section for 'abfd' to 'file'.
-	(bfd_pef_scan_start_address): New function.  Fetch the PEF start
+	(bfd_pef_scan_start_address): New function. Fetch the PEF start
 	address from the loader section and set it in 'abfd'.
 	(bfd_pef_scan): Call bfd_pef_convert_architecture to set the
-	architecture.  Call bfd_pef_scan_start_address to set the start
+	architecture. Call bfd_pef_scan_start_address to set the start
 	address.
 	* pef.h: Add prototypes for new functions.
 	
@@ -964,18 +977,20 @@
 2002-10-28  Klee Dienes  <kdienes@apple.com>
 
 	* bfd-in.h: Add declaration for struct stat.
-	(bfd_io_functions): Add new method 'stat_func', to implement bfd_stat.
+	(bfd_io_functions): Add new method 'stat_func', to implement
+	bfd_stat.
 	* bfd-in2.h: Regenerate.
 	* bfdio.c (bfd_stat): Instead of returning an error for
-	in-memory BFDs, return a zeroed-out stat, with st_size set to the size
-	of the in-memory buffer.  For an iofuncs BFD, pass to the
+	in-memory BFDs, return a zeroed-out stat, with st_size set to the
+	size of the in-memory buffer. For an iofuncs BFD, pass to the
 	stat_func method.
 
 2002-10-28  Klee Dienes  <kdienes@apple.com>
 
 	* Makefile.in: Regenerate.
 	* configure: Regenerate.
-	* libbfd-in.h: Include stdio.h, not sysdep.h (sysdep.h brings in too much).
+	* libbfd-in.h: Include stdio.h, not sysdep.h (sysdep.h brings in
+	too much).
 	* libbfd.h: Regenerate.
 
 2002-10-26  Klee Dienes  <kdienes@apple.com>
@@ -988,7 +1003,7 @@
 2002-10-12  Klee Dienes  <kdienes@apple.com>
 
 	* mach-o.c (bfd_mach_o_scan_read_symtab_symbol): Desc and value
-	must be unsigned, or they'll get sign-extension mauled when
+	must be unsigned, or they will get sign-extension mauled when
 	building with 64-bit BFD.
 
 2002-10-02  Klee Dienes  <kdienes@apple.com>
@@ -1010,7 +1025,8 @@
 	(bfd_bwrite): Actually write the data for the
 	BFD_IN_MEMORY case.
 
-	* bfd-in.h: (_bfd_get_file_window): Takes a ufile_ptr, not file_ptr.
+	* bfd-in.h: (_bfd_get_file_window): Takes a ufile_ptr, not
+	file_ptr.
 	* bfdwin.c (_bfd_get_file_window): Ditto.
 	(_bfd_get_file_window_mmap): Ditto.
 	(_bfd_get_file_window_mmalloc): Ditto.
@@ -1073,7 +1089,7 @@
 	
 2002-07-08  Jim Ingham <jingham@apple.com>
 
-	* pef.c (bfd_pef_parse_traceback_tables): Don't malloc space
+	* pef.c (bfd_pef_parse_traceback_tables): Do NOT malloc space
 	for the name field if you are only counting symbols.
 	(bfd_pef_parse_symbols): Initialize codebuf to NULL so we don't
 	try to free it.
@@ -1089,8 +1105,8 @@
 	* opncls.c (bfd_open): Initialize ret to true so we don't return
 	an uninitialized value.
         * config.bfd: Move the defines for powerpc-apple-macos10 BEFORE the
-	one for powerpc-*-macos*, so that we don't get the classic Mac OS bfd
-	targets for target=powerpc-apple-macos10.
+	one for powerpc-*-macos*, so that we do NOT get the classic Mac OS
+	bfd targets for target=powerpc-apple-macos10.
 
 2001-10-31  Klee Dienes  <kdienes@apple.com>
 

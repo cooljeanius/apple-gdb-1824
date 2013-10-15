@@ -23,41 +23,54 @@
    to manipulate files and their modes. */
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+# include <config.h>
+#else
+# warning fileman.c expects config.h to be included.
 #endif
 
 #include <sys/types.h>
 #ifdef HAVE_SYS_FILE_H
-#  include <sys/file.h>
-#endif
+# include <sys/file.h>
+#else
+# warning fileman.c expects sys/file.h to be included.
+#endif /* HAVE_SYS_FILE_H */
 #include <sys/stat.h>
 
 #ifdef HAVE_UNISTD_H
-#  include <unistd.h>
-#endif
+# include <unistd.h>
+#else
+# warning fileman.c expects unistd.h to be included.
+#endif /* HAVE_UNISTD_H */
 
 #include <fcntl.h>
 #include <stdio.h>
 #include <errno.h>
 
-#if defined (HAVE_STRING_H)
-#  include <string.h>
+#if defined(HAVE_STRING_H)
+# include <string.h>
 #else /* !HAVE_STRING_H */
+# if defined(HAVE_STRINGS_H)
 #  include <strings.h>
+# else
+#  warning fileman.c expects either string.h or strings.h to be included.
+# endif /* HAVE_STRINGS_H */
 #endif /* !HAVE_STRING_H */
 
 #ifdef HAVE_STDLIB_H
-#  include <stdlib.h>
-#endif
+# include <stdlib.h>
+#else
+# warning fileman.c expects stdlib.h to be included.
+#endif /* HAVE_STDLIB_H */
 
 #ifdef READLINE_LIBRARY
-#  include "readline.h"
-#  include "history.h"
+# include "readline.h"
+# include "history.h"
 #else
-#  include <readline/readline.h>
-#  include <readline/history.h>
-#endif
+# include <readline/readline.h>
+# include <readline/history.h>
+#endif /* READLINE_LIBRARY */
 
+/* Why is there a prototype for this here? */
 extern char *xmalloc ();
 
 /* The names of functions that actually do the manipulation. */
@@ -190,7 +203,7 @@ execute_line (line)
 }
 
 /* Look up NAME as the name of a command, and return a pointer to that
-   command.  Return a NULL pointer if NAME isn't a command name. */
+   command.  Return a NULL pointer if NAME is _not_ a command name. */
 COMMAND *
 find_command (name)
      char *name;
@@ -204,7 +217,7 @@ find_command (name)
   return ((COMMAND *)NULL);
 }
 
-/* Strip whitespace from the start and end of STRING.  Return a pointer
+/* Strip whitespace from the start and end of STRING. Return a pointer
    into STRING. */
 char *
 stripwhite (string)
@@ -214,7 +227,7 @@ stripwhite (string)
 
   for (s = string; whitespace (*s); s++)
     ;
-    
+
   if (*s == 0)
     return (s);
 
@@ -251,7 +264,7 @@ initialize_readline ()
    region of rl_line_buffer that contains the word to complete.  TEXT is
    the word to complete.  We can use the entire contents of rl_line_buffer
    in case we want to do some simple parsing.  Return the array of matches,
-   or NULL if there aren't any. */
+   or NULL if there are not any. */
 char **
 fileman_completion (text, start, end)
      const char *text;
@@ -262,7 +275,7 @@ fileman_completion (text, start, end)
   matches = (char **)NULL;
 
   /* If this word is at the start of the line, then it is a command
-     to complete.  Otherwise it is the name of a file in the current
+     to complete. Otherwise it is the name of a file in the current
      directory. */
   if (start == 0)
     matches = rl_completion_matches (text, command_generator);
@@ -270,7 +283,7 @@ fileman_completion (text, start, end)
   return (matches);
 }
 
-/* Generator function for command completion.  STATE lets us know whether
+/* Generator function for command completion. STATE lets us know whether
    to start from scratch; without any state (i.e. STATE == 0), then we
    start at the top of the list. */
 char *
@@ -281,7 +294,7 @@ command_generator (text, state)
   static int list_index, len;
   char *name;
 
-  /* If this is a new word to complete, initialize now.  This includes
+  /* If this is a new word to complete, initialize now. This includes
      saving the length of TEXT for efficiency, and initializing the index
      variable to 0. */
   if (!state)
@@ -331,7 +344,7 @@ com_view (arg)
     return 1;
 
 #if defined (__MSDOS__)
-  /* more.com doesn't grok slashes in pathnames */
+  /* more.com does NOT grok slashes in pathnames */
   sprintf (syscom, "less %s", arg);
 #else
   sprintf (syscom, "more %s", arg);
@@ -460,7 +473,7 @@ com_quit (arg)
   return (0);
 }
 
-/* Function which tells you that you can't do this. */
+/* Function which tells you that you cannot do this. */
 too_dangerous (caller)
      char *caller;
 {

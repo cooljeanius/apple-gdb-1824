@@ -1,14 +1,14 @@
-#! /bin/sh
+#!/bin/sh
 
 if [ -x "`dirname $0`/../../../usr/local/bin/bdgdb" ]
 then
-  echo Running bdgdb.
+  echo "Running bdgdb."
   exec "`dirname $0`/../../../usr/local/bin/bdgdb" "$@"
 fi
 
 if [ -x "`dirname $0`/../local/bin/bdgdb" ]
 then
-  echo Running bdgdb.
+  echo "Running bdgdb."
   exec "`dirname $0`/../local/bin/bdgdb" "$@"
 fi
 
@@ -19,9 +19,9 @@ architecture_to_use=""
 PATH=$PATH:/sbin:/bin:/usr/sbin:/usr/bin
 
 # gdb is setgid procmod and dyld will truncate any DYLD_FRAMEWORK_PATH etc
-# settings on exec.  The user is really trying to set these things
-# in their process, not gdb.  So we smuggle it over the setgid border in
-# GDB_DYLD_* where it'll be laundered inside gdb before invoking the inferior.
+# settings on exec. The user is really trying to set these things
+# in their process, not gdb. So we smuggle it over the setgid border in
+# GDB_DYLD_* where it will be laundered inside gdb before invoking the inferior.
 
 unset GDB_DYLD_FRAMEWORK_PATH
 unset GDB_DYLD_FALLBACK_FRAMEWORK_PATH
@@ -120,14 +120,13 @@ then
     i386 | x86_64 | arm*)
      ;;
     *)
-      echo Unrecognized architecture \'$requested_arch\', using host arch. >&2
+      echo "Unrecognized architecture \'$requested_arch\', using host arch." >&2
       requested_arch=""
       ;;
   esac
 fi
 
-
-# Determine if we're debugging a core file or an
+# Determine if we are debugging a core file or an
 # executable file.
 
 # Then get the list of architectures contained in
@@ -182,14 +181,14 @@ else
   if [ -n "$exec_file" ]
   then
     file_archs=`file "$exec_file" | grep -v universal | awk '{ print $NF }'`
-    # file(1) says "arm" instead of specifying WHICH arm architecture - 
+    # file(1) says "arm" instead of specifying WHICH arm architecture -
     # lipo -info can provide specifics.
     if echo "$file_archs" | grep 'arm' >/dev/null
     then
       if lipo -info "$exec_file" | egrep "^Architectures in the fat file|^Non-fat file" >/dev/null
       then
-        lipo_archs=`lipo -info "$exec_file" | 
-                    sed -e 's,^Archi.* are: ,,' -e 's,^Non-fat.*ture: ,,' | 
+        lipo_archs=`lipo -info "$exec_file" |
+                    sed -e 's,^Archi.* are: ,,' -e 's,^Non-fat.*ture: ,,' |
                     sed 's,(cputype (12) cpusubtype (11)),armv7s,' |
                     sed 's,cputype 12 cpusubtype 11,armv7s,' |
                     tr  ' ' '\n' | grep arm`
@@ -231,7 +230,7 @@ else
   # matches the host architecture by default.
   best_arch=
   # Iterate through the architectures and try and find the best match.
-  for file_arch in $file_archs 
+  for file_arch in $file_archs
   do
     # If we don't have any best architecture set yet, use this in case
     # none of them match the host architecture.
@@ -260,7 +259,7 @@ else
       fi
     fi
 
-    # if this is an armv7k system, the armv6 slice is the 
+    # if this is an armv7k system, the armv6 slice is the
     # next-best arch to pick if we don't have an exact match.
     if [ "$host_arch" = armv7k -a "$file_arch" = armv6 ]
     then
@@ -323,20 +322,20 @@ case "$architecture_to_use" in
   arm*)
     gdb="${GDB_ROOT}/usr/libexec/gdb/gdb-arm-apple-darwin"
       case "$architecture_to_use" in
-        armv6) 
-          osabiopts="--osabi DarwinV6" 
+        armv6)
+          osabiopts="--osabi DarwinV6"
           ;;
-        armv7) 
-          osabiopts="--osabi DarwinV7" 
+        armv7)
+          osabiopts="--osabi DarwinV7"
           ;;
         armv7k)
-          osabiopts="--osabi DarwinV7K" 
+          osabiopts="--osabi DarwinV7K"
           ;;
         armv7s)
-          osabiopts="--osabi DarwinV7S" 
+          osabiopts="--osabi DarwinV7S"
           ;;
         armv7f)
-          osabiopts="--osabi DarwinV7F" 
+          osabiopts="--osabi DarwinV7F"
           ;;
         *)
           # Make the REQUESTED_ARCHITECTURE the empty string so
@@ -351,15 +350,15 @@ case "$architecture_to_use" in
     ;;
 esac
 
-# If we have a core file and the user didn't specify an architecture, we need
-# to set the REQUESTED_ARCH to the architecture to use in case we have a 
+# If we have a core file and the user did NOT specify an architecture, we need
+# to set the REQUESTED_ARCH to the architecture to use in case we have a
 # universal executable with a core file (which is always skinny). This is a
-# bug in gdb currently that hasn't been fixed. If gdb ever does fix its 
-# ability to grab the correct slice from an executable given a core file, 
+# bug in gdb currently that has NOT been fixed. If gdb ever does fix its
+# ability to grab the correct slice from an executable given a core file,
 # then we can take the next 3 lines out.
 if [ -z "$requested_arch" -a -n "$core_file" ]
 then
-  requested_arch=$architecture_to_use;      
+  requested_arch=$architecture_to_use;
 fi
 
 if [ ! -x "$gdb" ]

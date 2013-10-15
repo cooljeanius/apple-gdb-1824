@@ -22,30 +22,32 @@
    59 Temple Place, Suite 330, Boston, MA 02111 USA. */
 #define READLINE_LIBRARY
 
-#if defined (HAVE_CONFIG_H)
-#  include <config.h>
-#endif
+#if defined(HAVE_CONFIG_H)
+# include "config.h"
+#else
+# warning readline.c expects config.h to be included.
+#endif /* HAVE_CONFIG_H */
 
 #include <sys/types.h>
 #include "posixstat.h"
 #include <fcntl.h>
 #if defined (HAVE_SYS_FILE_H)
-#  include <sys/file.h>
+# include <sys/file.h>
 #endif /* HAVE_SYS_FILE_H */
 
 #if defined (HAVE_UNISTD_H)
-#  include <unistd.h>
+# include <unistd.h>
 #endif /* HAVE_UNISTD_H */
 
 #if defined (HAVE_STDLIB_H)
-#  include <stdlib.h>
+# include <stdlib.h>
 #else
-#  include "ansi_stdlib.h"
+# include "ansi_stdlib.h"
 #endif /* HAVE_STDLIB_H */
 
-#if defined (HAVE_LOCALE_H)
-#  include <locale.h>
-#endif
+#if defined(HAVE_LOCALE_H)
+# include <locale.h>
+#endif /* HAVE_LOCALE_H */
 
 #include <stdio.h>
 #include "posixjmp.h"
@@ -55,8 +57,8 @@
 #include "rlmbutil.h"
 
 #if defined (__EMX__)
-#  define INCL_DOSPROCESS
-#  include <os2.h>
+# define INCL_DOSPROCESS
+# include <os2.h>
 #endif /* __EMX__ */
 
 /* Some standard library routines. */
@@ -68,12 +70,12 @@
 #include "xmalloc.h"
 
 #ifndef RL_LIBRARY_VERSION
-#  define RL_LIBRARY_VERSION "4.3"
-#endif
+# define RL_LIBRARY_VERSION "4.3"
+#endif /* !RL_LIBRARY_VERSION */
 
 #ifndef RL_READLINE_VERSION
-#  define RL_READLINE_VERSION	0x0403
-#endif
+# define RL_READLINE_VERSION	0x0403
+#endif /* RL_READLINE_VERSION */
 
 extern void _rl_free_history_entry PARAMS((HIST_ENTRY *));
 
@@ -206,12 +208,12 @@ int _rl_horizontal_scroll_mode = 0;
 
 /* Non-zero means to display an asterisk at the starts of history lines
    which have been modified. */
-int _rl_mark_modified_lines = 0;  
+int _rl_mark_modified_lines = 0;
 
 /* The style of `bell' notification preferred.  This can be set to NO_BELL,
    AUDIBLE_BELL, or VISIBLE_BELL. */
 int _rl_bell_preference = AUDIBLE_BELL;
-     
+
 /* String inserted into the line by rl_insert_comment (). */
 char *_rl_comment_begin;
 
@@ -271,7 +273,7 @@ rl_set_prompt (prompt)
   rl_visible_prompt_length = rl_expand_prompt (rl_prompt);
   return 0;
 }
-  
+
 /* Read a line of input.  Prompt with PROMPT.  An empty PROMPT means
    none.  A return value of NULL means that EOF was encountered. */
 char *
@@ -814,7 +816,7 @@ readline_initialize_everything ()
 
   /* Decide whether we should automatically go into eight-bit mode. */
   _rl_init_eightbit ();
-      
+
   /* Read in the init file. */
   rl_read_init_file ((char *)NULL);
 

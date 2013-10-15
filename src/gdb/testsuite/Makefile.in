@@ -42,7 +42,7 @@ ALL_SUBDIRS = gdb.ada gdb.arch gdb.asm gdb.base gdb.cp gdb.disasm \
 	gdb.threads gdb.trace \
 	$(SUBDIRS)
 
-EXPECT = `if [ -f $${rootme}/../../expect/expect ] ; then \
+EXPECT = `if test -f $${rootme}/../../expect/expect; then \
           echo $${rootme}/../../expect/expect ; \
           else echo expect ; fi`
 
@@ -51,7 +51,7 @@ RUNTEST = $(RUNTEST_FOR_TARGET)
 RUNTESTFLAGS =
 
 RUNTEST_FOR_TARGET = `\
-  if [ -f $${srcdir}/../../dejagnu/runtest ]; then \
+  if test -f $${srcdir}/../../dejagnu/runtest; then \
     echo $${srcdir}/../../dejagnu/runtest; \
   else \
     if [ "$(host_canonical)" = "$(target_canonical)" ]; then \

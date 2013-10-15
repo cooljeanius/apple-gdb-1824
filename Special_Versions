@@ -1,0 +1,22 @@
+This file contains a list of past versions of apple-gdb which were the
+last versions to contain certain files. I have tried to copy files from
+these older versions into this distribution when relevant. Feel free to
+add to this list if you are able to narrow down the last appearances of
+other files. (This would be so much easier if Apple would just open up
+their VCS to us...)
+
+	- 309: last version with src/contrib, src/etc, src/expect, src/sim,
+	src/tcl, src/texinfo, src/utils, and maybe a few other things...
+
+	- 356: last version with a toplevel dpkg directory and toplevel
+	ntbuild scripts
+
+	- 437: last version with src/mmalloc, src/mpw*, and a few other
+	things
+
+	- 967: last version with libcheckpoint
+
+# Versioning scheme and stuff comes from:
+http://www.opensource.apple.com/tarballs/gdb/
+and
+http://www.opensource.apple.com/source/gdb/

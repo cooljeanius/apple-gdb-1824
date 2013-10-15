@@ -1,0 +1,8 @@
+*.status
+Makefile
+config.h
+*~
+core
+*.o
+*.dSYM
+*_unstripped

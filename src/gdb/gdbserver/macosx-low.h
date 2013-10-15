@@ -1,3 +1,7 @@
+/*
+ * macosx-low.h
+ */
+
 #include "server.h"
 #include "target.h"
 
@@ -8,12 +12,12 @@
 				  find_inferior_id (&all_threads, \
 				  get_process (proc)->tid))
 
-/* The Linux side doesn't have a firm distinction between process and
-   thread.  But on MacOS X there is a process that is separate from it's
-   threads.  So I have a macosx_process_info - which is a singleton, and
-   then a macosx_thread_info for each thread.  Since I'm using the inferiors.c
+/* The Linux side does NOT have a firm distinction between process and
+   thread. But on MacOS X there is a process that is separate from its
+   threads. So I have a macosx_process_info - which is a singleton, and
+   then a macosx_thread_info for each thread. Since I am using the inferiors.c
    code to manage all the threads, I include a backpointer to the macosx_process_info
-   in the macosx_thread_info.  THat way I'm not just poking a global all the time.  */
+   in the macosx_thread_info. That way I am not just poking a global all the time.  */
 
 struct macosx_process_info
 {
@@ -27,13 +31,13 @@ struct macosx_process_info
      was a single-step.  */
   int stepping;
   thread_t thread_to_step;
-  
+
 
   /* This is the thread that we stopped on.  */
   thread_t stopped_thread;
 
-  /* FIXME: Not sure I'll need this yet...
-     A link used when resuming.  It is initialized from the resume request,
+  /* FIXME: Not sure if I will need this yet...
+     A link used when resuming. It is initialized from the resume request,
      and then processed and cleared in macosx_resume_one_process.  */
 
   struct thread_resume *resume;

@@ -21,7 +21,7 @@ struct dyld_objfile_entry;
 
 /* A representation of the address space of the inferior.
    We use this to slide libraries so nothing overlaps before execution
-   starts.  Once we've started execution we can rely on dyld to keep everything
+   starts. Once we have started execution we can rely on dyld to keep everything
    separate.  */
 
 struct pre_run_memory_map {
@@ -62,11 +62,11 @@ struct macosx_dyld_thread_status
   struct breakpoint *dyld_breakpoint;
 
   /* There are two ways to tell if libSystem's version of
-     malloc is initialized.  If dyld_version is 1, then 
-     you have to break on malloc_inited_breakpoint, and 
+     malloc is initialized. If dyld_version is 1, then
+     you have to break on malloc_inited_breakpoint, and
      if you hit it, then everything is kosher.  */
   struct breakpoint *malloc_inited_breakpoint;
-  /* if dyld_version is 2 or greater, there's a bool
+  /* if dyld_version is 2 or greater, there should be a bool
      in the dyld all_image_infos structure that tells us
      this directly.  */
 
@@ -78,11 +78,11 @@ struct macosx_dyld_thread_status
 
   /* The dyld mach header as found in inferior memory.  */
   struct mach_header dyld_mem_header;
-  /* When we're attaching to a process and dyld has slid (e.g. when attaching
+  /* When we are attaching to a process and dyld has slid (e.g. when attaching
      to something running under Rosetta translation, there is a native dyld
-     which we don't see and a ppc dyld that we do see, the ppc dyld has been
+     which we do NOT see and a ppc dyld that we do see, the ppc dyld has been
      slid to a new address range), at the very early startup the minsyms have
-     their unslid addresses and we need to apply dyld_slide to them.  But once
+     their unslid addresses and we need to apply dyld_slide to them. But once
      we slide the dyld objfile to its actual load address, we need to stop that
      by-hand address translation in lookup_dyld_address() */
   int dyld_minsyms_have_been_relocated;
@@ -91,12 +91,12 @@ struct macosx_dyld_thread_status
 
   struct dyld_objfile_info current_info;
   struct dyld_path_info path_info;
-  
+
   struct pre_run_memory_map *pre_run_memory_map;
 };
 typedef struct macosx_dyld_thread_status macosx_dyld_thread_status;
 
-void dyld_debug (const char *fmt, ...);
+void dyld_debug (const char *fmt, ...); /* ...duplicate symbol(?) */
 
 void dyld_print_status_info (macosx_dyld_thread_status *s, unsigned int mask,
                              char *args);

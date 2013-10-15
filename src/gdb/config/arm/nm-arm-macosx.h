@@ -1,4 +1,4 @@
-/* Native support for Mac OS X on PowerPC for GDB, the GNU debugger.
+/* Native support for Mac OS X on ARM for GDB, the GNU debugger.
    Copyright (C) 1997-2002,
    Free Software Foundation, Inc.
 

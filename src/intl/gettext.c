@@ -16,29 +16,35 @@
    Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+# include "config.h"
+#else
+# warning gettext.c expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
 
 #ifdef _LIBC
 # define __need_NULL
-# include <stddef.h>
+# ifdef HAVE_STDDEF_H
+#  include <stddef.h>
+# else
+#  warning gettext.c expects <stddef.h> to be included.
+# endif /* HAVE_STDDEF_H */
 #else
-# ifdef STDC_HEADERS
+# if defined STDC_HEADERS || defined HAVE_STDLIB_H
 #  include <stdlib.h>		/* Just for NULL.  */
 # else
 #  ifdef HAVE_STRING_H
 #   include <string.h>
 #  else
 #   define NULL ((void *) 0)
-#  endif
-# endif
-#endif
+#  endif /* HAVE_STRING_H */
+# endif /* STDC_HEADERS || HAVE_STDLIB_H */
+#endif /* _LIBC */
 
-#ifdef _LIBC
+#if defined _LIBC || defined HAVE_LIBINTL_H
 # include <libintl.h>
 #else
 # include "libgettext.h"
-#endif
+#endif /* _LIBC || HAVE_LIBINTL_H */
 
 /* @@ end of prolog @@ */
 
@@ -52,7 +58,7 @@
 #else
 # define GETTEXT gettext__
 # define DGETTEXT dgettext__
-#endif
+#endif /* _LIBC */
 
 /* Look up MSGID in the current default message catalog for the current
    LC_MESSAGES locale.  If not found, returns MSGID itself (the default
@@ -67,4 +73,6 @@ GETTEXT (msgid)
 #ifdef _LIBC
 /* Alias for function name in GNU C Library.  */
 weak_alias (__gettext, gettext);
-#endif
+#endif /* _LIBC */
+
+/* EOF */

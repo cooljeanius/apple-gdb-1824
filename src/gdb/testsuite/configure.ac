@@ -19,8 +19,9 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 
-AC_PREREQ(2.59)
-AC_INIT(gdb.base)
+AC_PREREQ([2.69])
+AC_INIT([gdb-testsuite],[1824],[])
+AC_CONFIG_SRCDIR([gdb.base])
 
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
@@ -29,12 +30,12 @@ AC_CANONICAL_TARGET
 # Add HP-specific tests when appropriate.
 case $target in
   hppa*-*-hpux*)
-    AC_CONFIG_SUBDIRS(gdb.hp) ;;
+    AC_CONFIG_SUBDIRS([gdb.hp]) ;;
 esac
 
 # With stabs.
-AC_ARG_WITH(stabs,
-[  --with-stabs            arrange to use stabs instead of host debug format],,
+AC_ARG_WITH([stabs],
+[AS_HELP_STRING([--with-stabs],[arrange to use stabs instead of host debug format])],[],
 [# We enable stabs tests by default on selected targets.
 case $target in
    *-apple-darwin* \
@@ -55,12 +56,12 @@ esac])
 
 # Add stabs tests when appropriate.
 if test $with_stabs = yes; then
-   AC_CONFIG_SUBDIRS(gdb.stabs)
+   AC_CONFIG_SUBDIRS([gdb.stabs])
 fi
 
 # Enable gdbtk.
-AC_ARG_ENABLE(gdbtk,
-[  --enable-gtk            enable gdbtk graphical user interface (GUI)],,
+AC_ARG_ENABLE([gdbtk],
+[AS_HELP_STRING([--enable-gtk],[enable gdbtk graphical user interface (GUI)])],[],
   [if test -d $srcdir/gdb.gdbtk; then
     enable_gdbtk=yes
   else
@@ -75,13 +76,13 @@ esac
 
 # Add gdbtk tests when appropriate.
 if test $enable_gdbtk = yes; then
-   AC_CONFIG_SUBDIRS(gdb.gdbtk)
+   AC_CONFIG_SUBDIRS([gdb.gdbtk])
 fi
 
 # Enable shared libraries.
-AC_ARG_ENABLE(shared,
-[  --enable-shared         build shared libraries [deault=yes]],,
-  enable_shared=yes)
+AC_ARG_ENABLE([shared],
+[AS_HELP_STRING([--enable-shared],[build shared libraries [deault=yes]])],[],
+  [enable_shared=yes])
 
 # If we have shared libraries, try to set RPATH_ENVVAR reasonably,
 # such that we can find the shared libraries in the build tree.
@@ -104,24 +105,53 @@ else
       RPATH_ENVVAR=SHLIB_PATH ;;
   esac
 fi
-AC_SUBST(RPATH_ENVVAR)
+AC_SUBST([RPATH_ENVVAR])
 
-AC_CHECK_HEADERS(pthread.h)
+# Checks for programs.
+AC_PROG_CC
+AC_PROG_CXX
+AC_PROG_INSTALL
 
+# Checks for header files.
+AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
+AC_CHECK_HEADERS([fcntl.h limits.h stddef.h stdio.h sys/time.h])
+AC_CHECK_HEADERS([pthread.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_TYPE_INT16_T
+AC_TYPE_INT32_T
+AC_TYPE_INT64_T
+AC_TYPE_OFF_T
+AC_TYPE_SIZE_T
+AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
+AC_TYPE_UINT64_T
+
+# Checks for library functions.
+AC_FUNC_ALLOCA
+AC_FUNC_FORK
+AC_FUNC_MALLOC
+AC_FUNC_MMAP
+AC_CHECK_FUNCS([alarm memset select])
+
+# Other
 AC_EXEEXT
 
 case "${target}" in
-    *-*-darwin*) AC_OUTPUT([gdb.apple/Makefile])
-                 AC_OUTPUT([gdb.apple/gused/Makefile])
-                 AC_OUTPUT([gdb.apple/ld-r/Makefile])
-		 AC_OUTPUT([gdb.apple/debug-in-ofile/Makefile])
-                 AC_OUTPUT([gdb.apple/xcode/Makefile]) ;;
+    *-*-darwin*) AC_CONFIG_FILES([gdb.apple/Makefile])
+                 AC_CONFIG_FILES([gdb.apple/gused/Makefile])
+                 AC_CONFIG_FILES([gdb.apple/ld-r/Makefile])
+		 AC_CONFIG_FILES([gdb.apple/debug-in-ofile/Makefile])
+                 AC_CONFIG_FILES([gdb.apple/xcode/Makefile])
+                 AC_CONFIG_SUBDIRS([gdb.apple])
+                 ;;
 esac
 
-AC_OUTPUT([Makefile \
+AC_CONFIG_FILES([Makefile \
   gdb.ada/Makefile \
   gdb.arch/Makefile gdb.asm/Makefile gdb.base/Makefile \
   gdb.cp/Makefile gdb.disasm/Makefile gdb.dwarf2/Makefile \
   gdb.fortran/Makefile gdb.server/Makefile \
   gdb.java/Makefile gdb.mi/Makefile \
   gdb.threads/Makefile gdb.trace/Makefile])
+AC_OUTPUT

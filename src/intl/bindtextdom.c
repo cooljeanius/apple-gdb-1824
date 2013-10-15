@@ -16,33 +16,35 @@
    Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #ifdef HAVE_CONFIG_H
-# include <config.h>
+# include "config.h"
+#else
+# warning bindtextdomain.c expects "config.h" to be included.
 #endif
 
-#if defined STDC_HEADERS || defined _LIBC
+#if defined STDC_HEADERS || defined _LIBC || defined HAVE_STDLIB_H
 # include <stdlib.h>
 #else
 # ifdef HAVE_MALLOC_H
 #  include <malloc.h>
 # else
 void free ();
-# endif
-#endif
+# endif /* HAVE_MALLOC_H */
+#endif /* HAVE_STDLIB_H */
 
 #if defined HAVE_STRING_H || defined _LIBC
 # include <string.h>
-#else
+#elif defined HAVE_STRINGS_H
 # include <strings.h>
 # ifndef memcpy
 #  define memcpy(Dst, Src, Num) bcopy (Src, Dst, Num)
-# endif
-#endif
+# endif /* !memcpy */
+#endif /* HAVE_STRING_H || _LIBC */
 
-#ifdef _LIBC
+#if defined _LIBC || defined HAVE_LIBINTL_H
 # include <libintl.h>
 #else
 # include "libgettext.h"
-#endif
+#endif /* _LIBC || HAVE_LIBINTL_H */
 #include "gettext.h"
 #include "gettextP.h"
 
@@ -63,10 +65,10 @@ extern struct binding *_nl_domain_bindings;
 # define BINDTEXTDOMAIN __bindtextdomain
 # ifndef strdup
 #  define strdup(str) __strdup (str)
-# endif
+# endif /* !strdup */
 #else
 # define BINDTEXTDOMAIN bindtextdomain__
-#endif
+#endif /* _LIBC */
 
 /* Specify that the DOMAINNAME message catalog will be found
    in DIRNAME rather than in the system locale data base.  */
@@ -101,8 +103,8 @@ BINDTEXTDOMAIN (domainname, dirname)
 
   if (binding != NULL)
     {
-      /* The domain is already bound.  If the new value and the old
-	 one are equal we simply do nothing.  Otherwise replace the
+      /* The domain is already bound. If the new value and the old
+	 one are equal we simply do nothing. Otherwise replace the
 	 old binding.  */
       if (strcmp (dirname, binding->dirname) != 0)
 	{
@@ -123,7 +125,7 @@ BINDTEXTDOMAIN (domainname, dirname)
 		return NULL;
 
 	      memcpy (new_dirname, dirname, len);
-#endif
+#endif /* _LIBC || HAVE_STRDUP */
 	    }
 
 	  if (binding->dirname != _nl_default_dirname)
@@ -137,7 +139,7 @@ BINDTEXTDOMAIN (domainname, dirname)
       /* We have to create a new binding.  */
 #if !defined _LIBC && !defined HAVE_STRDUP
       size_t len;
-#endif
+#endif /* !_LIBC && !HAVE_STRDUP */
       struct binding *new_binding =
 	(struct binding *) malloc (sizeof (*new_binding));
 
@@ -154,7 +156,7 @@ BINDTEXTDOMAIN (domainname, dirname)
       if (new_binding->domainname == NULL)
 	return NULL;
       memcpy (new_binding->domainname, domainname, len);
-#endif
+#endif /* _LIBC || HAVE_STRDUP */
 
       if (strcmp (dirname, _nl_default_dirname) == 0)
 	new_binding->dirname = (char *) _nl_default_dirname;
@@ -170,7 +172,7 @@ BINDTEXTDOMAIN (domainname, dirname)
 	  if (new_binding->dirname == NULL)
 	    return NULL;
 	  memcpy (new_binding->dirname, dirname, len);
-#endif
+#endif /* _LIBC || HAVE_STRDUP */
 	}
 
       /* Now enqueue it.  */
@@ -200,4 +202,6 @@ BINDTEXTDOMAIN (domainname, dirname)
 #ifdef _LIBC
 /* Alias for function name in GNU C Library.  */
 weak_alias (__bindtextdomain, bindtextdomain);
-#endif
+#endif /* _LIBC */
+
+/* EOF */

@@ -1,12 +1,21 @@
-AC_INIT(Make-rules)
-AC_CONFIG_AUX_DIR(../../..)
-AM_INIT_AUTOMAKE(insight, 1.0)
-AM_MAINTAINER_MODE
-AC_PROG_MAKE_SET
-AC_CANONICAL_HOST
-AC_PROG_CC
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_INIT([insight-plugins],[1.0],[])
+AC_CONFIG_SRCDIR([Make-rules])
+AC_CONFIG_AUX_DIR([../../..])
+AC_CONFIG_MACRO_DIR([../../m4])
+AC_CANONICAL_TARGET
 AC_OBJEXT
 AC_EXEEXT
+
+# Checks for programs.
+AC_PROG_CC
+AC_PROG_MAKE_SET
+
+# Automake
+AM_INIT_AUTOMAKE([foreign dejagnu -Wall])
+AM_MAINTAINER_MODE
 
 # Find Tcl, Tk, etc
 CYG_AC_PATH_TCLCONFIG
@@ -15,18 +24,19 @@ CYG_AC_PATH_TKCONFIG
 CYG_AC_LOAD_TKCONFIG
 CYG_AC_PATH_TCLH
 CYG_AC_PATH_TKH
-AC_SUBST(TCL_DBGX)
+AC_SUBST([TCL_DBGX])
 
 # Make sure TCL_SHLIB_SUFFIX is set
 if test x$TCL_SHLIB_SUFFIX = x ; then
   case "${host}" in
     *cygwin*) TCL_SHLIB_SUFFIX=".dll" ;;
+    *darwin*) TCL_SHLIB_SUFFIX=".dylib" ;;
     *) TCL_SHILB_SUFFIX=".so" ;;
   esac
 fi
-AC_SUBST(TCL_SHLIB_SUFFIX)
+AC_SUBST([TCL_SHLIB_SUFFIX])
 
-# Since we're not using autoconf > 2.1x, we cannot use AC_CONFIG_FILES.
+# Since we are not(?) using autoconf > 2.1x, we cannot use AC_CONFIG_FILES.
 make_subdirs=""
 
 # See if -mwin32 works for cygwin
@@ -34,7 +44,7 @@ case "${host}" in
   *cygwin*)
     ocflags=${CFLAGS}
     CFLAGS="${CFLAGS} -mwin32"
-    AC_TRY_COMPILE(,,,CFLAGS="${ocflags}")
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],[],[CFLAGS="${ocflags}"])
     ;;
   *) ;;
 esac
@@ -60,14 +70,17 @@ esac
 # Host-specific configury
 case "${host}" in
   *cygwin*)
-    AC_CHECK_TOOL(NM, nm, nm)
-    AC_CHECK_TOOL(AS, as, as)
-    AC_CHECK_TOOL(LD, ld, ld)
-    AC_MSG_CHECKING("for libcygwin.a")
+    AC_CHECK_TOOL([NM],[nm],[nm])
+    AC_CHECK_TOOL([AS],[as],[as])
+    AC_CHECK_TOOL([LD],[ld],[ld])
+    AC_MSG_CHECKING(["for libcygwin.a"])
     LIBCYGWIN_A=`$CC -print-file-name=libcygwin.a`
-    AC_MSG_RESULT($LIBCYGWIN_A)
-    AC_SUBST(LIBCYGWIN_A)
-    AC_CHECK_TOOL(DLLTOOL, dlltool)
+    AC_MSG_RESULT([$LIBCYGWIN_A])
+    AC_SUBST([LIBCYGWIN_A])
+    AC_CHECK_TOOL([DLLTOOL],[dlltool])
+    ;;
+  *)
+    AM_PROG_AS
     ;;
 esac
 
@@ -87,7 +100,8 @@ if test x${supported} = xyes; then
   done
 fi
 
-AC_SUBST(make_subdirs)
-AC_SUBST(plugin_builddir)
+AC_SUBST([make_subdirs])
+AC_SUBST([plugin_builddir])
 
-AC_OUTPUT(Makefile rhabout/Makefile:rhabout/Makefile.in:Make-rules rhabout/rhabout.tcl intel-pentium/Makefile:intel-pentium/Makefile.in:Make-rules intel-pentium/intel-pentium.tcl)
+AC_CONFIG_FILES([Makefile rhabout/Makefile:rhabout/Makefile.in:Make-rules rhabout/rhabout.tcl intel-pentium/Makefile:intel-pentium/Makefile.in:Make-rules intel-pentium/intel-pentium.tcl])
+AC_OUTPUT

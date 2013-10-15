@@ -1,6 +1,9 @@
 ## Process this file with automake to generate Makefile.in
 
-AUTOMAKE_OPTIONS = 1.9 cygnus
+AUTOMAKE_OPTIONS = 1.9.6 gnu dejagnu
+AUTOMAKE_DEPRECATED_OPTIONS = cygnus
+
+ACLOCAL_AMFLAGS = -I m4 --install
 
 # APPLE LOCAL dynamiclib
 NSLIBTOOL = cc -dynamiclib
@@ -17,12 +20,16 @@ SUBDIRS = doc po
 docdir = doc
 bfdlibdir = @bfdlibdir@
 bfdincludedir = @bfdincludedir@
+libbfddir = @bfdlibdir@
+libbfdincludedir = @bfdincludedir@
 
-bfdlib_LTLIBRARIES = libbfd.la
+my_bfdlib_LIBTOOL_ARCHIVE = libbfd.la
+libbfd_LTLIBRARIES = libbfd.la
 
 WARN_CFLAGS = @WARN_CFLAGS@
 NO_WERROR = @NO_WERROR@
 AM_CFLAGS = $(WARN_CFLAGS)
+AM_WARNFLAGS = $(WARN_CFLAGS)
 
 # bfd.h goes here, for now
 BFD_H = bfd.h
@@ -591,15 +598,15 @@ OPTIONAL_BACKENDS_CFILES = \
 	trad-core.c \
 	cisco-core.c
 
-# We want to rerun configure if configure.in, config.bfd or
-# configure.host change. configure.in is needed since the version
-# number in Makefile comes from configure.in.
+# We want to rerun configure if configure.ac, config.bfd or
+# configure.host change. configure.ac is needed since the version
+# number in Makefile comes from configure.ac.
 CONFIG_STATUS_DEPENDENCIES = \
-	$(srcdir)/configure.in \
+	$(srcdir)/configure.ac \
 	$(srcdir)/config.bfd \
 	$(srcdir)/configure.host
 
-# These are defined by configure.in:
+# These are defined by configure.ac:
 WORDSIZE = @wordsize@
 ALL_BACKENDS = @all_backends@
 BFD_BACKENDS = @bfd_backends@
@@ -607,7 +614,7 @@ BFD_LIBS = @bfd_libs@
 BFD_MACHINES = @bfd_machines@
 TDEFAULTS = @tdefaults@
 
-INCLUDES = @HDEFINES@ @COREFLAG@ @TDEFINES@ $(CSEARCH) $(CSWITCHES) -I$(srcdir)/../intl -I../intl
+AM_CPPFLAGS = @HDEFINES@ @COREFLAG@ @TDEFINES@ $(CSEARCH) $(CSWITCHES) -I$(srcdir)/../intl -I../intl
 
 # C source files that correspond to .o's.
 SOURCE_CFILES = \
@@ -683,14 +690,18 @@ libbfd_la_LIBADD = `cat ofiles` @WIN32LIBADD@
 libbfd_la_LDFLAGS = -release $(VERSION) @WIN32LDFLAGS@
 
 # libtool will build .libs/libbfd.a.  We create libbfd.a in the build
-# directory so that we don't have to convert all the programs that use
-# libbfd.a simultaneously.  This is a hack which should be removed if
-# everything else starts using libtool.  FIXME.
+# directory so that we do NOT have to convert all the programs that use
+# libbfd.a simultaneously. This is a hack which should be removed if
+# everything else starts using libtool. FIXME.
 
 noinst_LIBRARIES = libbfd.a
 libbfd_a_SOURCES =
+libbfd_a_DEPENDENCIES = $(OFILES) ofiles
+EXTRA_libbfd_a_DEPENDENCIES = 
+libbfd_a_LIBADD = `cat ofiles` @WIN32LIBADD@
 
-stamp-lib: libbfd.la
+# FIXME: Even the hack fails now...
+stamp-lib: libbfd.la ofiles
 	libtooldir=`$(LIBTOOL) --config | sed -n -e 's/^objdir=//p'`; \
 	if [ -f $$libtooldir/libbfd.a ]; then \
 	  cp $$libtooldir/libbfd.a libbfd.tmp; \
@@ -699,10 +710,14 @@ stamp-lib: libbfd.la
 	else true; fi
 	touch stamp-lib
 
-libbfd.a: stamp-lib ; @true
+libbfd_static_library: stamp-lib ; @true
+.PHONY: libbfd_static_library
+
+libbfd_la: libbfd.la
+.PHONY: libbfd_la
 
 # This file holds an array associating configuration triplets and
-# vector names.  It is built from config.bfd.  It is not compiled by
+# vector names. It is built from config.bfd. It is not compiled by
 # itself, but is included by targets.c.
 targmatch.h: config.bfd targmatch.sed
 	rm -f targmatch.h
@@ -748,22 +763,30 @@ pepigen.c : peXXigen.c
 	sed -e s/XX/pep/g < $(srcdir)/peXXigen.c > pepigen.new
 	mv -f pepigen.new pepigen.c
 
-BFD_H_DEPS= $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h
-LOCAL_H_DEPS= libbfd.h sysdep.h config.h
-$(BFD32_LIBS) \
- $(BFD64_LIBS) \
- $(ALL_MACHINES) \
- $(BFD32_BACKENDS) \
- $(BFD64_BACKENDS) \
- $(OPTIONAL_BACKENDS): $(BFD_H) $(BFD_H_DEPS) $(LOCAL_H_DEPS)
+BFD_H_DEPS = $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h
+LOCAL_H_DEPS = libbfd.h sysdep.h config.h
+COMMON_BFD_DEPS = $(BFD_H) $(BFD_H_DEPS) $(LOCAL_H_DEPS)
 
-install-bfdlibLTLIBRARIES: @INSTALL_LIBBFD_TRUE@install_libbfd
+# These targets had all previously been together;
+# splitting them up to ease debugging this Makefile
+$(BFD32_LIBS): $(COMMON_BFD_DEPS)
+$(BFD64_LIBS): $(COMMON_BFD_DEPS)
+$(ALL_MACHINES): $(COMMON_BFD_DEPS)
+#FIXME: BFD32_BACKENDS is currently broken because of libtool
+$(BFD32_BACKENDS): $(COMMON_BFD_DEPS)
+$(BFD64_BACKENDS): $(COMMON_BFD_DEPS)
+$(OPTIONAL_BACKENDS): $(COMMON_BFD_DEPS)
+
+install_my_bfdlibLTLIBRARIES: @INSTALL_LIBBFD_TRUE@install_libbfd
 	@$(NORMAL_INSTALL)
+.PHONY: install_my_bfdlibLTLIBRARIES
 
-uninstall-bfdlibLTLIBRARIES: @INSTALL_LIBBFD_TRUE@uninstall_libbfd
+uninstall_my_bfdlibLTLIBRARIES: @INSTALL_LIBBFD_TRUE@uninstall_libbfd
 	@$(NORMAL_UNINSTALL)
+.PHONY: uninstall_my_bfdlibLTLIBRARIES
 
 .PHONY: install_libbfd uninstall_libbfd
+.PHONY: all-am
 install_libbfd: $(bfdlib_LTLIBRARIES) $(BFD_H)
 	$(mkinstalldirs) $(DESTDIR)$(bfdlibdir)
 	$(mkinstalldirs) $(DESTDIR)$(bfdincludedir)
@@ -802,7 +825,7 @@ DEP: dep.sed $(CFILES) $(HFILES) bfd.h
 DEP1: $(CFILES)
 	echo '# DO NOT DELETE THIS LINE -- mkdep uses it.' > DEP2
 	echo '# DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.' >> DEP2
-	$(MKDEP) $(INCLUDES) $(CFLAGS) $? >> DEP2
+	$(MKDEP) $(AM_CPPFLAGS) $(CFLAGS) $? >> DEP2 # Not sure if AM_CPPFLAGS works perfectly as a 1-for-1 replacement for INCLUDES here...
 	mv -f DEP2 $@
 
 dep.sed: dep-in.sed config.status
@@ -853,7 +876,7 @@ LIBBFD_H_FILES = libbfd-in.h init.c libbfd.c bfdio.c bfdwin.c \
 LIBCOFF_H_FILES = libcoff-in.h coffcode.h
 
 # APPLE LOCAL begin framework building
-SYSTEM_FRAMEWORK = -L../intl -lintl -framework System -lcc_dynamic
+SYSTEM_FRAMEWORK = -L../intl -lintl -framework System @SYSTEM_FRAMEWORK_LIBS@
 
 FRAMEWORK = bfd
 FRAMEWORK_PREFIX =
@@ -861,7 +884,7 @@ FRAMEWORK_SUFFIX =
 FRAMEWORK_VERSION_SUFFIX =
 FRAMEWORK_VERSION = A
 FRAMEWORK_OFILES = `echo $(libbfd_la_OBJECTS) | sed -e 's/\.lo/\.o/g'` `cat ofiles | sed -e 's/\.lo/\.o/g'`
-FRAMEWORK_LIB = -F../libiberty -framework liberty -F../mmalloc -framework mmalloc $(SYSTEM_FRAMEWORK)
+FRAMEWORK_LIB = -F../libiberty -framework liberty -F../mmalloc -framework mmalloc $(SYSTEM_FRAMEWORK) $(LDFLAGS)
 
 stamp-framework-headers: bfd.h
 	$(RM) -f stamp-framework stamp-framework-headers

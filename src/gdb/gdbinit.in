@@ -2,12 +2,12 @@ echo Setting up the environment for debugging gdb.\n
 
 set complaints 1
 
-# APPLE LOCAL: I switched the order of these breakpoints.  For some reason
-# if the FIRST breakpoint succeeds, then you don't error out when the 
-# second one fails.  libSystem got an internal_error function in
+# APPLE LOCAL: I switched the order of these breakpoints. For some reason
+# if the FIRST breakpoint succeeds, then you do NOT error out when the 
+# second one fails. libSystem got an internal_error function in
 # SnowLeopard, so this was going all the way through in the target 
-# program.  Note, this is in general a REALLY hacky way to make the
-# .gdbinit work only for the gdb you're debugging, and not the inferior.
+# program. Note, this is in general a REALLY hacky way to make the
+# .gdbinit work only for the gdb you are debugging, and not the inferior.
 
 b info_command
 commands

@@ -25,16 +25,16 @@
 # serial 46 AC_PROG_LIBTOOL
 AC_DEFUN([AC_PROG_LIBTOOL],
 [AC_REQUIRE([_AC_PROG_LIBTOOL])dnl
-dnl If AC_PROG_CXX has already been expanded, run AC_LIBTOOL_CXX
-dnl immediately, otherwise, hook it in at the end of AC_PROG_CXX.
+dnl# If AC_PROG_CXX has already been expanded, run AC_LIBTOOL_CXX
+dnl# immediately, otherwise, hook it in at the end of AC_PROG_CXX.
   AC_PROVIDE_IFELSE([AC_PROG_CXX],
     [AC_LIBTOOL_CXX],
     [define([AC_PROG_CXX], defn([AC_PROG_CXX])[AC_LIBTOOL_CXX
 ])])
 
-dnl Quote A][M_PROG_GCJ so that aclocal doesn't bring it in needlessly.
-dnl If either AC_PROG_GCJ or A][M_PROG_GCJ have already been expanded, run
-dnl AC_LIBTOOL_GCJ immediately, otherwise, hook it in at the end of both.
+dnl# Quote A][M_PROG_GCJ so that aclocal does NOT bring it in needlessly.
+dnl# If either AC_PROG_GCJ or A][M_PROG_GCJ have already been expanded, run
+dnl# AC_LIBTOOL_GCJ immediately, otherwise, hook it in at the end of both.
   AC_PROVIDE_IFELSE([AC_PROG_GCJ],
     [AC_LIBTOOL_GCJ],
     [AC_PROVIDE_IFELSE([A][M_PROG_GCJ],
@@ -86,7 +86,7 @@ exec 5>>./config.log
 ])
 
 AC_DEFUN([AC_LIBTOOL_SETUP],
-[AC_PREREQ(2.13)dnl
+[AC_PREREQ([2.13])dnl
 AC_REQUIRE([AC_ENABLE_SHARED])dnl
 AC_REQUIRE([AC_ENABLE_STATIC])dnl
 AC_REQUIRE([AC_ENABLE_FAST_INSTALL])dnl
@@ -112,8 +112,8 @@ file_magic*)
   ;;
 esac
 
-AC_CHECK_TOOL(RANLIB, ranlib, :)
-AC_CHECK_TOOL(STRIP, strip, :)
+AC_CHECK_TOOL([RANLIB],[ranlib],[:])
+AC_CHECK_TOOL([STRIP],[strip],[:])
 
 # Check for any special flags to pass to ltconfig.
 libtool_flags="--cache-file=$cache_file"
@@ -127,13 +127,13 @@ ifdef([AC_PROVIDE_AC_LIBTOOL_DLOPEN],
 ifdef([AC_PROVIDE_AC_LIBTOOL_WIN32_DLL],
 [libtool_flags="$libtool_flags --enable-win32-dll"])
 AC_ARG_ENABLE(libtool-lock,
-  [  --disable-libtool-lock  avoid locking (might break parallel builds)])
+  [AS_HELP_STRING([--disable-libtool-lock],[avoid locking (might break parallel builds)])])
 test "x$enable_libtool_lock" = xno && libtool_flags="$libtool_flags --disable-lock"
 test x"$silent" = xyes && libtool_flags="$libtool_flags --silent"
 
-AC_ARG_WITH(pic,
-  [  --with-pic              try to use only PIC/non-PIC objects [default=use both]],
-     pic_mode="$withval", pic_mode=default)
+AC_ARG_WITH([pic],
+  [AS_HELP_STRING([--with-pic],[try to use only PIC/non-PIC objects [default=use both]])],
+     [pic_mode="$withval"],[pic_mode=default])
 test x"$pic_mode" = xyes && libtool_flags="$libtool_flags --prefer-pic"
 test x"$pic_mode" = xno && libtool_flags="$libtool_flags --prefer-non-pic"
 
@@ -193,11 +193,10 @@ ia64-*-hpux*)
   # On SCO OpenServer 5, we need -belf to get full-featured binaries.
   SAVE_CFLAGS="$CFLAGS"
   CFLAGS="$CFLAGS -belf"
-  AC_CACHE_CHECK([whether the C compiler needs -belf], lt_cv_cc_needs_belf,
-    [AC_LANG_SAVE
-     AC_LANG_C
-     AC_TRY_LINK([],[],[lt_cv_cc_needs_belf=yes],[lt_cv_cc_needs_belf=no])
-     AC_LANG_RESTORE])
+  AC_CACHE_CHECK([whether the C compiler needs -belf],[lt_cv_cc_needs_belf],
+    [AC_LANG_PUSH([C])
+     AC_LINK_IFELSE([AC_LANG_SOURCE([[]],[[]])],[lt_cv_cc_needs_belf=yes],[lt_cv_cc_needs_belf=no])
+     AC_LANG_POP])
   if test x"$lt_cv_cc_needs_belf" != x"yes"; then
     # this is probably gcc 2.8.0, egcs 1.0 or newer; no need for -belf
     CFLAGS="$SAVE_CFLAGS"
@@ -206,26 +205,26 @@ ia64-*-hpux*)
 
 ifdef([AC_PROVIDE_AC_LIBTOOL_WIN32_DLL],
 [*-*-cygwin* | *-*-mingw* | *-*-pw32*)
-  AC_CHECK_TOOL(DLLTOOL, dlltool, false)
-  AC_CHECK_TOOL(AS, as, false)
-  AC_CHECK_TOOL(OBJDUMP, objdump, false)
+  AC_CHECK_TOOL([DLLTOOL],[dlltool],[false])
+  AC_CHECK_TOOL([AS],[as],[false])
+  AC_CHECK_TOOL([OBJDUMP],[objdump],[false])
 
   # recent cygwin and mingw systems supply a stub DllMain which the user
   # can override, but on older systems we have to supply one
-  AC_CACHE_CHECK([if libtool should supply DllMain function], lt_cv_need_dllmain,
-    [AC_TRY_LINK([],
-      [extern int __attribute__((__stdcall__)) DllMain(void*, int, void*);
-      DllMain (0, 0, 0);],
+  AC_CACHE_CHECK([if libtool should supply DllMain function], [lt_cv_need_dllmain],
+    [AC_LINK_IFELSE([AC_LANG_SOURCE([[]],
+      [[extern int __attribute__((__stdcall__)) DllMain(void*, int, void*);
+      DllMain (0, 0, 0);]])],
       [lt_cv_need_dllmain=no],[lt_cv_need_dllmain=yes])])
 
   case $host/$CC in
   *-*-cygwin*/gcc*-mno-cygwin*|*-*-mingw*)
-    # old mingw systems require "-dll" to link a DLL, while more recent ones
-    # require "-mdll"
+    # old mingw systems require "-dll" to link a DLL, while more recent
+    # ones require "-mdll"
     SAVE_CFLAGS="$CFLAGS"
     CFLAGS="$CFLAGS -mdll"
-    AC_CACHE_CHECK([how to link DLLs], lt_cv_cc_dll_switch,
-      [AC_TRY_LINK([], [], [lt_cv_cc_dll_switch=-mdll],[lt_cv_cc_dll_switch=-dll])])
+    AC_CACHE_CHECK([how to link DLLs],[lt_cv_cc_dll_switch],
+      [AC_LINK_IFELSE([AC_LANG_SOURCE([[]],[[]])],[lt_cv_cc_dll_switch=-mdll],[lt_cv_cc_dll_switch=-dll])])
     CFLAGS="$SAVE_CFLAGS" ;;
   *-*-cygwin* | *-*-pw32*)
     # cygwin systems need to pass --dll to the linker, and not link
@@ -238,17 +237,17 @@ esac
 ])
 
 # AC_LIBTOOL_DLOPEN - enable checks for dlopen support
-AC_DEFUN([AC_LIBTOOL_DLOPEN], [AC_BEFORE([$0],[AC_LIBTOOL_SETUP])])
+AC_DEFUN([AC_LIBTOOL_DLOPEN],[AC_BEFORE([$0],[AC_LIBTOOL_SETUP])])
 
 # AC_LIBTOOL_WIN32_DLL - declare package support for building win32 dll's
-AC_DEFUN([AC_LIBTOOL_WIN32_DLL], [AC_BEFORE([$0], [AC_LIBTOOL_SETUP])])
+AC_DEFUN([AC_LIBTOOL_WIN32_DLL],[AC_BEFORE([$0], [AC_LIBTOOL_SETUP])])
 
 # AC_ENABLE_SHARED - implement the --enable-shared flag
 # Usage: AC_ENABLE_SHARED[(DEFAULT)]
 #   Where DEFAULT is either `yes' or `no'.  If omitted, it defaults to
 #   `yes'.
 AC_DEFUN([AC_ENABLE_SHARED],
-[define([AC_ENABLE_SHARED_DEFAULT], ifelse($1, no, no, yes))dnl
+[define([AC_ENABLE_SHARED_DEFAULT],[ifelse([$1],[no],[no],[yes])])dnl
 AC_ARG_ENABLE(shared,
 changequote(<<, >>)dnl
 <<  --enable-shared[=PKGS]  build shared libraries [default=>>AC_ENABLE_SHARED_DEFAULT],
@@ -269,11 +268,11 @@ no) enable_shared=no ;;
   IFS="$ac_save_ifs"
   ;;
 esac],
-enable_shared=AC_ENABLE_SHARED_DEFAULT)dnl
+[enable_shared=AC_ENABLE_SHARED_DEFAULT])dnl
 ])
 
 # AC_DISABLE_SHARED - set the default shared flag to --disable-shared
-AC_DEFUN([AC_DISABLE_SHARED], [AC_BEFORE([$0],[AC_LIBTOOL_SETUP])dnl
+AC_DEFUN([AC_DISABLE_SHARED],[AC_BEFORE([$0],[AC_LIBTOOL_SETUP])dnl
 AC_ENABLE_SHARED(no)])
 
 # AC_ENABLE_STATIC - implement the --enable-static flag
@@ -281,7 +280,7 @@ AC_ENABLE_SHARED(no)])
 #   Where DEFAULT is either `yes' or `no'.  If omitted, it defaults to
 #   `yes'.
 AC_DEFUN([AC_ENABLE_STATIC],
-[define([AC_ENABLE_STATIC_DEFAULT], ifelse($1, no, no, yes))dnl
+[define([AC_ENABLE_STATIC_DEFAULT],[ifelse([$1],[no],[no],[yes])])dnl
 AC_ARG_ENABLE(static,
 changequote(<<, >>)dnl
 <<  --enable-static[=PKGS]  build static libraries [default=>>AC_ENABLE_STATIC_DEFAULT],
@@ -292,7 +291,7 @@ yes) enable_static=yes ;;
 no) enable_static=no ;;
 *)
   enable_static=no
-  # Look at the argument we got.  We use all the common list separators.
+  # Look at the argument we got. We use all the common list separators.
   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:,"
   for pkg in $enableval; do
     if test "X$pkg" = "X$p"; then
@@ -308,8 +307,7 @@ enable_static=AC_ENABLE_STATIC_DEFAULT)dnl
 # AC_DISABLE_STATIC - set the default static flag to --disable-static
 AC_DEFUN([AC_DISABLE_STATIC],
 [AC_BEFORE([$0],[AC_LIBTOOL_SETUP])dnl
-AC_ENABLE_STATIC(no)])
-
+AC_ENABLE_STATIC([no])])
 
 # AC_ENABLE_FAST_INSTALL - implement the --enable-fast-install flag
 # Usage: AC_ENABLE_FAST_INSTALL[(DEFAULT)]
@@ -317,7 +315,7 @@ AC_ENABLE_STATIC(no)])
 #   `yes'.
 AC_DEFUN([AC_ENABLE_FAST_INSTALL],
 [define([AC_ENABLE_FAST_INSTALL_DEFAULT], ifelse($1, no, no, yes))dnl
-AC_ARG_ENABLE(fast-install,
+AC_ARG_ENABLE([fast-install],
 changequote(<<, >>)dnl
 <<  --enable-fast-install[=PKGS]  optimize for fast installation [default=>>AC_ENABLE_FAST_INSTALL_DEFAULT],
 changequote([, ])dnl
@@ -343,7 +341,7 @@ enable_fast_install=AC_ENABLE_FAST_INSTALL_DEFAULT)dnl
 # AC_DISABLE_FAST_INSTALL - set the default to --disable-fast-install
 AC_DEFUN([AC_DISABLE_FAST_INSTALL],
 [AC_BEFORE([$0],[AC_LIBTOOL_SETUP])dnl
-AC_ENABLE_FAST_INSTALL(no)])
+AC_ENABLE_FAST_INSTALL([no])])
 
 # AC_LIBTOOL_PICMODE - implement the --with-pic flag
 # Usage: AC_LIBTOOL_PICMODE[(MODE)]
@@ -357,7 +355,7 @@ pic_mode=ifelse($#,1,$1,default)])
 # AC_PATH_TOOL_PREFIX - find a file program which can recognise shared library
 AC_DEFUN([AC_PATH_TOOL_PREFIX],
 [AC_MSG_CHECKING([for $1])
-AC_CACHE_VAL(lt_cv_path_MAGIC_CMD,
+AC_CACHE_VAL([lt_cv_path_MAGIC_CMD],
 [case $MAGIC_CMD in
   /*)
   lt_cv_path_MAGIC_CMD="$MAGIC_CMD" # Let the user override the test with a path.
@@ -368,10 +366,10 @@ AC_CACHE_VAL(lt_cv_path_MAGIC_CMD,
   *)
   ac_save_MAGIC_CMD="$MAGIC_CMD"
   IFS="${IFS=   }"; ac_save_ifs="$IFS"; IFS=":"
-dnl $ac_dummy forces splitting on constant user-supplied paths.
-dnl POSIX.2 word splitting is done only on the output of word expansions,
-dnl not every word.  This closes a longstanding sh security hole.
-  ac_dummy="ifelse([$2], , $PATH, [$2])"
+dnl# $ac_dummy forces splitting on constant user-supplied paths.
+dnl# POSIX.2 word splitting is done only on the output of word expansions,
+dnl# not every word.  This closes a longstanding sh security hole.
+  ac_dummy="ifelse([$2],[],[$PATH],[$2])"
   for ac_dir in $ac_dummy; do
     test -z "$ac_dir" && ac_dir=.
     if test -f $ac_dir/$1; then
@@ -409,9 +407,9 @@ EOF
 esac])
 MAGIC_CMD="$lt_cv_path_MAGIC_CMD"
 if test -n "$MAGIC_CMD"; then
-  AC_MSG_RESULT($MAGIC_CMD)
+  AC_MSG_RESULT([$MAGIC_CMD])
 else
-  AC_MSG_RESULT(no)
+  AC_MSG_RESULT([no])
 fi
 ])
 
@@ -422,7 +420,7 @@ AC_DEFUN([AC_PATH_MAGIC],
 AC_PATH_TOOL_PREFIX(${ac_tool_prefix}file, /usr/bin:$PATH)
 if test -z "$lt_cv_path_MAGIC_CMD"; then
   if test -n "$ac_tool_prefix"; then
-    AC_PATH_TOOL_PREFIX(file, /usr/bin:$PATH)
+    AC_PATH_TOOL_PREFIX([file],[/usr/bin:$PATH])
   else
     MAGIC_CMD=:
   fi
@@ -432,12 +430,13 @@ fi
 
 # AC_PROG_LD - find the path to the GNU or non-GNU linker
 AC_DEFUN([AC_PROG_LD],
-[AC_ARG_WITH(gnu-ld,
-[  --with-gnu-ld           assume the C compiler uses GNU ld [default=no]],
-test "$withval" = no || with_gnu_ld=yes, with_gnu_ld=no)
+[AC_ARG_WITH([gnu-ld],
+[AS_HELP_STRING([--with-gnu-ld],[assume the C compiler uses GNU ld [default=no]])],
+[test "$withval" = no || with_gnu_ld=yes],[with_gnu_ld=no])
 AC_REQUIRE([AC_PROG_CC])dnl
 AC_REQUIRE([AC_CANONICAL_HOST])dnl
 AC_REQUIRE([AC_CANONICAL_BUILD])dnl
+AC_REQUIRE([AC_EXEEXT])dnl
 ac_prog=ld
 if test "$GCC" = yes; then
   # Check if gcc -print-prog-name=ld gives a path.
@@ -474,7 +473,7 @@ elif test "$with_gnu_ld" = yes; then
 else
   AC_MSG_CHECKING([for non-GNU ld])
 fi
-AC_CACHE_VAL(lt_cv_path_LD,
+AC_CACHE_VAL([lt_cv_path_LD],
 [if test -z "$LD"; then
   IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}${PATH_SEPARATOR-:}"
   for ac_dir in $PATH; do
@@ -497,9 +496,9 @@ else
 fi])
 LD="$lt_cv_path_LD"
 if test -n "$LD"; then
-  AC_MSG_RESULT($LD)
+  AC_MSG_RESULT([$LD])
 else
-  AC_MSG_RESULT(no)
+  AC_MSG_RESULT([no])
 fi
 test -z "$LD" && AC_MSG_ERROR([no acceptable ld found in \$PATH])
 AC_PROG_LD_GNU
@@ -507,7 +506,7 @@ AC_PROG_LD_GNU
 
 AC_DEFUN([AC_PROG_LD_GNU],
 [AC_CACHE_CHECK([if the linker ($LD) is GNU ld], lt_cv_prog_gnu_ld,
-[# I'd rather use --version here, but apparently some GNU ld's only accept -v.
+[# I would rather use --version here, but apparently some GNU ld's only accept -v.
 if $LD -v 2>&1 </dev/null | egrep '(GNU|with BFD)' 1>&5; then
   lt_cv_prog_gnu_ld=yes
 else
@@ -529,7 +528,7 @@ test -n "$reload_flag" && reload_flag=" $reload_flag"
 #  -- PORTME fill in with the dynamic library characteristics
 AC_DEFUN([AC_DEPLIBS_CHECK_METHOD],
 [AC_CACHE_CHECK([how to recognise dependant libraries],
-lt_cv_deplibs_check_method,
+[lt_cv_deplibs_check_method],
 [lt_cv_file_magic_cmd='$MAGIC_CMD'
 lt_cv_file_magic_test_file=
 lt_cv_deplibs_check_method='unknown'
@@ -700,7 +699,7 @@ deplibs_check_method=$lt_cv_deplibs_check_method
 # AC_PROG_NM - find the path to a BSD-compatible name lister
 AC_DEFUN([AC_PROG_NM],
 [AC_MSG_CHECKING([for BSD-compatible nm])
-AC_CACHE_VAL(lt_cv_path_NM,
+AC_CACHE_VAL([lt_cv_path_NM],
 [if test -n "$NM"; then
   # Let the user override the test.
   lt_cv_path_NM="$NM"
@@ -742,11 +741,11 @@ case $host in
   # These system don't have libm
   ;;
 *-ncr-sysv4.3*)
-  AC_CHECK_LIB(mw, _mwvalidcheckl, LIBM="-lmw")
-  AC_CHECK_LIB(m, main, LIBM="$LIBM -lm")
+  AC_CHECK_LIB([mw],[_mwvalidcheckl],[LIBM="-lmw"])
+  AC_CHECK_LIB([m],[main],[LIBM="$LIBM -lm"])
   ;;
 *)
-  AC_CHECK_LIB(m, main, LIBM="-lm")
+  AC_CHECK_LIB([m],[main],[LIBM="-lm"])
   ;;
 esac
 ])
@@ -812,7 +811,7 @@ ifdef([AC_PROVIDE_IFELSE],
                      [$2], [$3])])])
 
 # AC_LIBTOOL_CXX - enable support for C++ libraries
-AC_DEFUN([AC_LIBTOOL_CXX], [AC_REQUIRE([_AC_LIBTOOL_CXX])])
+AC_DEFUN([AC_LIBTOOL_CXX],[AC_REQUIRE([_AC_LIBTOOL_CXX])])
 
 AC_DEFUN([_AC_LIBTOOL_CXX],
 [AC_REQUIRE([AC_PROG_CXX])
@@ -820,8 +819,8 @@ AC_REQUIRE([AC_PROG_CXXCPP])
 LIBTOOL_DEPS=$LIBTOOL_DEPS" $ac_aux_dir/ltcf-cxx.sh"
 lt_save_CC="$CC"
 lt_save_CFLAGS="$CFLAGS"
-dnl Make sure LTCC is set to the C compiler, i.e. set LTCC before CC
-dnl is set to the C++ compiler.
+dnl# Make sure LTCC is set to the C compiler, i.e. set LTCC before CC
+dnl# is set to the C++ compiler.
 AR="$AR" LTCC="$CC" CC="$CXX" CXX="$CXX" CFLAGS="$CXXFLAGS" CPPFLAGS="$CPPFLAGS" \
 MAGIC_CMD="$MAGIC_CMD" LD="$LD" LDFLAGS="$LDFLAGS" LIBS="$LIBS" \
 LN_S="$LN_S" NM="$NM" RANLIB="$RANLIB" STRIP="$STRIP" \
@@ -874,7 +873,7 @@ CFLAGS="$lt_save_CFLAGS"
 exec 5>>./config.log
 ])
 
-dnl old names
+dnl# old names
 AC_DEFUN([AM_PROG_LIBTOOL],   [AC_PROG_LIBTOOL])
 AC_DEFUN([AM_ENABLE_SHARED],  [AC_ENABLE_SHARED($@)])
 AC_DEFUN([AM_ENABLE_STATIC],  [AC_ENABLE_STATIC($@)])
@@ -883,11 +882,11 @@ AC_DEFUN([AM_DISABLE_STATIC], [AC_DISABLE_STATIC($@)])
 AC_DEFUN([AM_PROG_LD],        [AC_PROG_LD])
 AC_DEFUN([AM_PROG_NM],        [AC_PROG_NM])
 
-dnl This is just to silence aclocal about the macro not being used
+dnl# This is just to silence aclocal about the macro not being used
 ifelse([AC_DISABLE_FAST_INSTALL])dnl
 
 AC_DEFUN([LT_AC_PROG_GCJ],
-[AC_CHECK_TOOL(GCJ, gcj, no)
+[AC_CHECK_TOOL([GCJ],[gcj],[no])
   test "x${GCJFLAGS+set}" = xset || GCJFLAGS="-g -O2"
   AC_SUBST(GCJFLAGS)
 ])

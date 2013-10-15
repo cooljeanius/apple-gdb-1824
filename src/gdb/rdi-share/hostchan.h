@@ -1,6 +1,6 @@
-/* 
+/*
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -16,11 +16,11 @@
 #define angsd_hostchan_h
 
 /* A temporary sop to older compilers */
-#if defined (__NetBSD__) || defined (unix)
+#if defined(__NetBSD__) || defined(unix) || defined(__APPLE__)
 #  ifndef __unix              /* (good for long-term portability?)  */
 #    define __unix    1
-#  endif
-#endif
+#  endif /* !__unix */
+#endif /* __NetBSD__ || unix */
 
 /* struct timeval */
 #if defined(__unix) || defined(__CYGWIN__)
@@ -46,7 +46,7 @@ enum AsyncMode
 
 #ifndef __cplusplus
 typedef enum AsyncMode AsyncMode;
-#endif
+#endif /* __cplusplus */
 
 /*
  * prototype for channels callback function
@@ -120,7 +120,7 @@ void Adp_SetLogEnable(int logEnableFlag);
  *                      completely free-form: it is the individual drivers
  *                      which do the necessary interpretation.
  *
- *              heartbeat_on  Incicates if the heartbeat is configured to be 
+ *              heartbeat_on  Incicates if the heartbeat is configured to be
  *                      used or not, true if it is, false otherwise
  *
  *   Returns:
@@ -187,7 +187,7 @@ AdpErrs Adp_Ioctl(int opcode, void *args);
     extern "C" {
 #endif
 
-    
+
 extern AdpErrs Adp_ChannelRegisterRead(const ChannelID chan,
                                const ChannelCallback cbfunc,
                                 void *cbstate);

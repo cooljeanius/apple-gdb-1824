@@ -61,7 +61,7 @@ VPATH = @srcdir@
 
 # Set this up with gcc if you have gnu ld and the loader will print out
 # line numbers for undefinded refs.
-#CC-LD=gcc -static
+CC-LD_STATIC="gcc -static"
 CC-LD=${CC}
 
 # Where is the "include" directory?  Traditionally ../include or ./include
@@ -74,7 +74,7 @@ BFD = $(BFD_DIR)/libbfd.a
 BFD_SRC = $(srcdir)/$(BFD_DIR)
 BFD_CFLAGS = -I$(BFD_DIR) -I$(BFD_SRC)
 
-# Where is the source dir for the READLINE library?  Traditionally in .. or .
+# Where is the srcdir for the READLINE library? Traditionally in .. or .
 # (For the binary library built from it, we use ${READLINE_DIR}${subdir}.)
 READLINE_DIR = ${srcdir}/../readline
 READLINE_DEP = $$(READLINE_DIR)
@@ -92,13 +92,17 @@ INCLUDE_CFLAGS = -I. -I${srcdir} -I$(srcdir)/../regformats $(PLATFORM_INCLUDE) -
 # M{H,T}_CFLAGS, if defined, has host- and target-dependent CFLAGS
 # from the config/ directory.
 GLOBAL_CFLAGS = ${MT_CFLAGS} ${MH_CFLAGS}
-#PROFILE_CFLAGS = -pg
+PROFILE_CFLAGS = -pg
 
 WARN_CFLAGS = -Wall
 
 # CFLAGS is specifically reserved for setting from the command line
-# when running make.  I.E.  "make CFLAGS=-Wmissing-prototypes".
+# when running make.  E.G.  "make CFLAGS=-Wmissing-prototypes".
 CFLAGS = @CFLAGS@
+
+# CPPFLAGS is specifically reserved for setting from the command line
+# when running make.  E.G.  "make CPPFLAGS=-I.".
+CPPFLAGS = @CPPFLAGS@ -DHAVE_CONFIG_H
 
 # INTERNAL_CFLAGS is the aggregate of all other *CFLAGS macros.
 INTERNAL_CFLAGS =  $(WARN_CFLAGS) ${CFLAGS} ${GLOBAL_CFLAGS} \
@@ -133,7 +137,7 @@ SFILES=	$(srcdir)/gdbreplay.c $(srcdir)/inferiors.c \
 	$(srcdir)/linux-sh-low.c $(srcdir)/linux-x86-64-low.c \
  	$(srcdir)/macosx-low.c $(srcdir)/macosx-excthread.c \
  	$(srcdir)/macosx-ppc-low.c $(srcdir)/macosx-threads.c \
- 	$(srcdir)/macosx-mutils.c
+ 	$(srcdir)/macosx-mutils.c $(srcdir)/macosx-i386-low.c
 
 DEPFILES = @GDBSERVER_DEPFILES@
 
@@ -149,7 +153,7 @@ GDBSERVER_LIBS = @GDBSERVER_LIBS@
 # Prevent Sun make from putting in the machine type.  Setting
 # TARGET_ARCH to nothing works for SunOS 3, 4.0, but not for 4.1.
 .c.o:
-	${CC} -c ${INTERNAL_CFLAGS} $<
+	${CC} -c $(CPPFLAGS) ${INTERNAL_CFLAGS} $<
 
 all: gdbserver gdbreplay
 
@@ -339,6 +343,7 @@ reg-s390x.c : $(srcdir)/../regformats/reg-s390x.dat $(regdat_sh)
 reg-sh.o : reg-sh.c $(regdef_h)
 reg-sh.c : $(srcdir)/../regformats/reg-sh.dat $(regdat_sh)
 	sh $(regdat_sh) $(srcdir)/../regformats/reg-sh.dat reg-sh.c
+# Yes, the underscore does change into a hyphen for x64_64 here...
 reg-x86-64.o : reg-x86-64.c $(regdef_h)
 reg-x86-64.c : $(srcdir)/../regformats/reg-x86-64.dat $(regdat_sh)
 	sh $(regdat_sh) $(srcdir)/../regformats/reg-x86-64.dat reg-x86-64.c

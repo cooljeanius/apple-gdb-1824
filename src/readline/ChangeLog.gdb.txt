@@ -35,9 +35,9 @@
 	* shell.c (pwd.h): Guard with HAVE_PWD_H.
 	(getpwuid): Guard with HAVE_GETPWUID.
 	(sh_unset_nodelay_mode): Guard use of fnctl with HAVE_FNCTL_H.
-	* signals.c (rl_signal_handler): Don't use SIGALRM or
+	* signals.c (rl_signal_handler): Do NOT use SIGALRM or
 	SIGQUIT if not defined.  Use "raise" if "kill" is not available.
-	(rl_set_signals): Don't set handlers for SIGQUIT or SIGALRM if
+	(rl_set_signals): Do NOT set handlers for SIGQUIT or SIGALRM if
 	they are not defined.
 	(rl_clear_signals): Likewise.
 	* tilde.c (pwd.h): Guard with HAVE_PWD_H.
@@ -81,7 +81,7 @@
 2003-12-28  Eli Zaretskii  <eliz@elta.co.il>
 
 	* readline.c (rl_save_state, rl_restore_state): Support systems
-	that don't define SIGWINCH.
+	that do NOT define SIGWINCH.
 
 2003-12-25  Eli Zaretskii  <eliz@elta.co.il>
 
@@ -93,7 +93,7 @@
 
 2003-12-23  Eli Zaretskii  <eliz@elta.co.il>
 
-	* display.c (_rl_move_vert) [__MSDOS__]: Don't use undeclared
+	* display.c (_rl_move_vert) [__MSDOS__]: Do NOT use undeclared
 	variable `l'.  Use `delta' instead recomputing its value anew.
 	Assign -delta to i instead of the other way around.
 
@@ -111,7 +111,7 @@
 
 2003-05-25  Mark Kettenis  <kettenis@gnu.org>
 
-	* aclocal.m4: Don't add wcwidth.o if we don't have wchar.h.
+	* aclocal.m4: Do NOT add wcwidth.o if we do NOT have wchar.h.
 	* configure: Regenerate.
 
 2003-05-13  Andreas Jaeger  <aj@suse.de>
@@ -153,8 +153,8 @@
 
 2002-12-16  Christopher Faylor  <cgf@redhat.com>
 
-	* configure.in: Remove --enable-shared option.  It shouldn't be used
-	for gdb.
+	* configure.in: Remove --enable-shared option.  It should NOT be
+	used for gdb.
 	* configure: Regenerate.
 
 2002-12-16  Christopher Faylor  <cgf@redhat.com>
@@ -164,7 +164,7 @@
 2002-12-06  Elena Zannoni  <ezannoni@redhat.com>
 
         Import of readline 4.3. NB: This import includes those gdb
-        local changes that aren't in the official readline sources.
+        local changes that are NOT in the official readline sources.
 
         * compat.c, mbutil.c, misc.c, rlmbutil.h, rltypedefs.h,
         text.c, doc/history.0, doc/history.3, support/wcwidth.c,
@@ -244,17 +244,17 @@
 	size via DJGPP-specific calls.
 	(_rl_init_terminal_io) [__MSDOS__]: DJGPP-specific terminal
 	initialization.
-	(_rl_backspace) [__MSDOS__]: Don't call tputs.
+	(_rl_backspace) [__MSDOS__]: Do NOT call tputs.
 	(ding) [__MSDOS__]: Use DJGPP-specific calls to support visible
 	bell.
 
 	* display.c (_rl_move_vert) [__MSDOS__]: Support cursor movement
 	upwards with DJGPP-specific calls.
-	(_rl_clear_to_eol) [__MSDOS__]: Don't call tputs.
+	(_rl_clear_to_eol) [__MSDOS__]: Do NOT call tputs.
 	(_rl_clear_screen) [__MSDOS__]: Support clear-screen with
 	DJGPP-specific calls.
-	(insert_some_chars) [__MSDOS__]: Don't call tputs.
-	(delete_chars) [__MSDOS__]: Don't call tputs.
+	(insert_some_chars) [__MSDOS__]: Do NOT call tputs.
+	(delete_chars) [__MSDOS__]: Do NOT call tputs.
 
 2000-07-09  Elena Zannoni  <ezannoni@kwikemart.cygnus.com>
 
@@ -278,29 +278,29 @@
 	(rl_re_read_init_file, rl_read_init_file): Allow for _inputrc on
 	DOS.
 
-	* complete.c (username_completion_function): Don't bypass getpw*
+	* complete.c (username_completion_function): Do NOT bypass getpw*
 	function calls for DJGPP.
 	(Filename_completion_function): Handle d:foo/bar file names.
 
 	* display.c (_rl_move_vert) [__GO32__]: fflush the stream, to make
 	sure cursor position is up to date.
 	(_rl_clear_screen) [__GO32__]: Clear screen and home the cursor.
-	(insert_some_characters, delete_characters) [__DJGPP__]: Don't use
+	(insert_some_characters, delete_characters) [__DJGPP__]: Do NOT use
 	memcpy.
 
 	* histfile.c (read_history_range, history_truncate_file)
 	(history_do_write) [__MSDOS__]: Allow for underscore instead of
 	the leading dot in file names.
 
-	* input.c: Don't use GO32-specific workarounds if HAVE_SELECT or
+	* input.c: Do NOT use GO32-specific workarounds if HAVE_SELECT or
 	HAVE_TERMIOS_H are defined.
 
-	* readline.c: Don't disable signals if __DJGPP__ is defined.
+	* readline.c: Do NOT disable signals if __DJGPP__ is defined.
 
-	* rltty.c: Don't disable signals and don't bypass termios code for
+	* rltty.c: Do NOT disable signals and don't bypass termios code for
 	DJGPP (if HAVE_TERMIOS_H is defined).
 
-	* signals.c: Don't disable signals for DJGPP.
+	* signals.c: Do NOT disable signals for DJGPP.
 
 	* terminal.c (_rl_get_screen_size) [__DJGPP__]: Initialize screen
 	dimensions.
@@ -326,7 +326,7 @@
 
 1999-07-13  Elena Zannoni  <ezannoni@kwikemart.cygnus.com>
 
-	* acconfig.h: Fix typo: it's GWINSZ_IN_SYS_IOCTL, not
+	* acconfig.h: Fix typo: it is GWINSZ_IN_SYS_IOCTL, not
 	TIOCGWINSZ_IN_SYS_IOCTL.
 
 	* config.h.in: Regenerate with autoheader.
@@ -343,7 +343,7 @@
 
 1999-04-22  Jason Molenda  (jsm@bugshack.cygnus.com)
 
-        * Makefile.in (install): Don't install the final libreadline.a
+        * Makefile.in (install): Do NOT install the final libreadline.a
         or .h files.
 
 Tue Mar 23 10:56:08 1999  Elena Zannoni  <ezannoni@kwikemart.cygnus.com>
@@ -430,12 +430,12 @@ Fri Dec  4 15:25:41 1998  David Taylor  <taylor@texas.cygnus.com>
  	made by HP; HP did not create ChangeLog entries.
 
 	* config/mp-enable-tui: New file.
-	(TUI_CFLAGS): Search devo's include directory, as long as we're
+	(TUI_CFLAGS): Search devo's include directory, as long as we are
  	totally ruining modularity.
 	(INCLUDE_SRCDIR): New var.
 	(GDB_TUI_SRCDIR): Fix syntax error.
 
-	* configure.in: Check the --enable-tui flag; if it's set, include
+	* configure.in: Check the --enable-tui flag; if it is set, include
  	a makefile fragment that #defines TUI and adds the needed #include
  	directories.
 	(*-*-hpux*): New host; use sysdep-hpux.h.
@@ -665,14 +665,14 @@ Thu Jun 30 15:21:54 1994  Steve Chamberlain  (sac@jonny.cygnus.com)
 	* parens.c (rl_insert_close): No FD_SET if using __GO32__.
 	* readline.c (rl_gather_tyi): Strip off spurious high bits.
 
-Sun Jun 12 03:51:52 1994  Peter Schauer  (pes@regent.e-technik.tu-muenchen.de)
+Sun Jun 12 03:51:52 1994  Peter Schauer (pes@regent.e-technik.tu-muenchen.de)
 
 	* history.c:  Swap inclusion of rldefs.h and chardefs.h to avoid
 	CTRL macro redefinition.
 
 Mon May  9 18:29:42 1994  Ian Lance Taylor  (ian@tweedledumb.cygnus.com)
 
-	* readline.c (readline_default_bindings): Don't compile if
+	* readline.c (readline_default_bindings): Do NOT compile if
 	__GO32__ is defined.
 	(_rl_set_screen_size): Likewise.
 	* rltty.c (rltty_set_default_bindings): Likewise.
@@ -689,10 +689,10 @@ Fri May  6 13:38:39 1994  Steve Chamberlain  (sac@cygnus.com)
 
 Wed May  4 14:36:53 1994  Stu Grossman  (grossman@cygnus.com)
 
-	* chardefs.h, rldefs.h:  Move decls of string funcs from chardefs.h
-	to rldefs.h so that they don't pollute apps that include
+	* chardefs.h, rldefs.h: Move decls of string funcs from chardefs.h
+	to rldefs.h so that they do NOT pollute apps that include
 	readline.h.
-	* history.c:  include rldefs.h to get decls of string funcs.
+	* history.c: include rldefs.h to get decls of string funcs.
 
 Wed May  4 12:15:11 1994  Stan Shebs  (shebs@andros.cygnus.com)
 
@@ -705,7 +705,7 @@ Wed Apr 20 10:43:52 1994  Jim Kingdon  (kingdon@lioth.cygnus.com)
 
 Wed Apr 13 21:28:44 1994  Jim Kingdon  (kingdon@deneb.cygnus.com)
 
-	* rltty.c (set_tty_settings): Don't set readline_echoing_p.
+	* rltty.c (set_tty_settings): Do NOT set readline_echoing_p.
 	(rl_deprep_terminal) [NEW_TTY_DRIVER]: Set readline_echoing_p.
 
 Sun Mar 13 09:13:12 1994  Jim Kingdon  (kingdon@lioth.cygnus.com)
@@ -748,12 +748,12 @@ Tue Feb 15 14:07:08 1994  Per Bothner  (bothner@kalessin.cygnus.com)
 
 	* readline.c (_rl_output_character_function), display.c:
 	Return int, not void, to conform with the expected arg of tputs.
-	* readline.c (init_terminal_io):  tgetflag only takes 1 arg.
-	* readline.c (_rl_savestring):  New function.
-	* chardefs.h:  To avoid conflicts and/or warnings, define
+	* readline.c (init_terminal_io): tgetflag only takes 1 arg.
+	* readline.c (_rl_savestring): New function.
+	* chardefs.h: To avoid conflicts and/or warnings, define
 	savestring as a macro wrapper for _rl_savestring.
-	* display.c (extern term_xn):  It's an int flag, not a string.
-	* charsdefs.h, rldefs.h:  Remove HAVE_STRING_H-related junk.
+	* display.c (extern term_xn): It is an int flag, not a string.
+	* charsdefs.h, rldefs.h: Remove HAVE_STRING_H-related junk.
 
 Sat Feb  5 08:32:30 1994  Jim Kingdon  (kingdon@lioth.cygnus.com)
 
@@ -776,7 +776,7 @@ Fri Jan 21 17:31:26 1994  Jim Kingdon  (kingdon@lisa.cygnus.com)
 Fri Jan 21 14:40:43 1994  Fred Fish  (fnf@cygnus.com)
 
 	* Makefile.in (distclean, realclean):  Expand local-distclean
-	inline after doing recursion.  You can't recurse after removing
+	inline after doing recursion. You cannot recurse after removing
 	Makefile.  Make them depend on local-clean.
 	* Makefile.in (local-distclean):  Remove now superfluous target.
 
@@ -790,7 +790,7 @@ Sun Jan 16 12:33:11 1994  Jim Kingdon  (kingdon@lioth.cygnus.com)
 	* complete.c, bind.c: Include <sys/stat.h>.
 	* complete.c: Define X_OK if not defined by a system header.
 
-	* chardefs.h: Don't declare xmalloc.
+	* chardefs.h: Do NOT declare xmalloc.
 
 	* keymaps.h: Include "chardefs.h" not <readline/chardefs.h>.
 
@@ -825,7 +825,7 @@ Fri Oct 22 07:55:08 1993  Jim Kingdon  (kingdon@lioth.cygnus.com)
 Tue Oct  5 12:33:51 1993  Jim Kingdon  (kingdon@lioth.cygnus.com)
 
 	* readline.c: Add stuff for HIUX to place where we detect termio
-	vs. sgtty (ugh, but I don't see a simple better way).
+	vs. sgtty (ugh, but I do NOT see a simple better way).
 
 Wed Sep 29 11:02:58 1993  Jim Kingdon  (kingdon@lioth.cygnus.com)
 
@@ -863,7 +863,7 @@ Fri May 21 17:09:28 1993  Jim Kingdon  (kingdon@lioth.cygnus.com)
 
 Sat Apr 17 00:40:12 1993  Jim Kingdon  (kingdon at calvin)
 
-	* readline.c, history.c: Don't include sys/types.h; sysdep.h does.
+	* readline.c, history.c: Do NOT include sys/types.h; sysdep.h does.
 
 	* config/mh-sysv: Define TIOCGWINSZ_BROKEN.
 	readline.c: Check it.
@@ -965,7 +965,7 @@ Mon Jun 15 13:50:34 1992  david d `zoo' zuhn  (zoo at cirdan.cygnus.com)
 
 Mon Jun 15 12:28:24 1992  Fred Fish  (fnf@cygnus.com)
 
-	* config/mh-ncr3000 (INSTALL):  Don't use /usr/ucb/install,
+	* config/mh-ncr3000 (INSTALL):  Do NOT use /usr/ucb/install,
 	it is broken on ncr 3000's.
 	* config/mh-ncr3000 (RANLIB):  Use RANLIB=true.
 
@@ -1001,7 +1001,7 @@ Mon Jun  8 23:10:07 1992  Fred Fish  (fnf@cygnus.com)
 
 Mon May 11 12:39:30 1992  John Gilmore  (gnu at cygnus.com)
 
-	* readline.c:  Can't initialize FILE *'s with stdin and stdout,
+	* readline.c:  Cannot initialize FILE *'s with stdin and stdout,
 	because they might not be constant.  Patch from Tom Quinn,
 	trq@dinoysos.thphys.ox.ac.uk.
 
@@ -1039,7 +1039,7 @@ Mon Feb 10 01:41:35 1992  Brian Fox  (bfox at gnuwest.fsf.org)
 	to write and write them in one fell swoop (lower overhead than
 	calling write () for each line).  Suggested by Peter Ho.
 
-	* vi_mode.c (rl_vi_subst) Don't forget to end the undo group.
+	* vi_mode.c (rl_vi_subst) Do NOT forget to end the undo group.
 
 Sat Mar  7 00:15:36 1992  K. Richard Pixley  (rich@rtl.cygnus.com)
 
@@ -1084,17 +1084,17 @@ Tue Dec 10 04:07:20 1991  K. Richard Pixley  (rich at rtl.cygnus.com)
 
 Fri Dec  6 23:23:14 1991  K. Richard Pixley  (rich at rtl.cygnus.com)
 
-	* Makefile.in: remove spaces following hyphens, bsd make can't
-	  cope. added clean-info.  added standards.text support.  Don't
+	* Makefile.in: remove spaces following hyphens, bsd make cannot
+	  cope. added clean-info. Added standards.text support. Do NOT
 	  know how to make info anymore.
 
 	* configure.in: commontargets is no longer a recognized hook, so
-	  remove it.  new subdir called doc.
+	  remove it. new subdir called doc.
 
 Thu Dec  5 22:46:10 1991  K. Richard Pixley  (rich at rtl.cygnus.com)
 
 	* Makefile.in: idestdir and ddestdir go away.  Added copyrights
-	  and shift gpl to v2.  Added ChangeLog if it didn't exist. docdir
+	  and shift gpl to v2.  Added ChangeLog if it did NOT exist. docdir
 	  and mandir now keyed off datadir by default.
 
 Fri Nov 22 09:02:32 1991  John Gilmore  (gnu at cygnus.com)
@@ -1121,7 +1121,7 @@ Thu Nov 21 14:40:29 1991  Stu Grossman  (grossman at cygnus.com)
 	first place.
 
 	* emacs_keymap.c, funmap.c, history.c, keymaps.c, vi_keymap.c,
-	vi_mode.c:  move config stuff to sysdep.h, update copyright notices.
+	vi_mode.c: move config stuff to sysdep.h, update copyright notices.
 
 Tue Nov 19 15:02:13 1991  Stu Grossman  (grossman at cygnus.com)
 
@@ -1254,7 +1254,7 @@ Thu Jan 11 10:54:04 1990  Brian Fox  (bfox at sbphy.ucsb.edu)
 
 Thu Jan  4 10:38:05 1990  Brian Fox  (bfox at sbphy.ucsb.edu)
 
-	* readline.c: start_insert ().  Only use IC if we don't have an im
+	* readline.c: start_insert (). Only use IC if we do NOT have an im
 	capability.
 
 Fri Sep  8 09:00:45 1989  Brian Fox  (bfox at aurel)
@@ -1274,9 +1274,9 @@ Sun Sep  3 08:57:40 1989  Brian Fox  (bfox at aurel)
 
 Tue Aug  8 18:13:57 1989  Brian Fox  (bfox at aurel)
 
-	* readline.c: Changed handling of EOF.  readline () returns
-	 (char *)EOF or consed string.  The EOF character is read from the
-	 tty, or if the tty doesn't have one, defaults to C-d.
+	* readline.c: Changed handling of EOF. readline () returns
+	 (char *)EOF or consed string. The EOF character is read from the
+	 tty, or if the tty does NOT have one, defaults to C-d.
 
 	* readline.c: Added support for event driven programs.
 	  rl_event_hook is the address of a function you want called
@@ -1302,7 +1302,7 @@ Tue Jul 11 06:25:01 1989  Brian Fox  (bfox at aurel)
 
 	* readline.c: new variable rl_tilde_expander.
 	  If non-null, this contains the address of a function to call if
-	  the standard meaning for expanding a tilde fails.  The function is
+	  the standard meaning for expanding a tilde fails. The function is
 	  called with the text sans tilde (as in "foo"), and returns a
 	  malloc()'ed string which is the expansion, or a NULL pointer if
 	  there is no expansion. 

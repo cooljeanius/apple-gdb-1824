@@ -1,3 +1,7 @@
+/*
+ * macosx-excthread.h
+ */
+
 #ifndef __GDB_MACOSX_NAT_EXCTHREAD_H__
 #define __GDB_MACOSX_NAT_EXCTHREAD_H__
 

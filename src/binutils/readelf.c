@@ -40,7 +40,8 @@
   There is also the case that readelf can provide more information about an
   ELF file than is provided by objdump.  In particular it can display DWARF
   debugging information which (at the moment) objdump cannot.  */
-
+
+/* #TODO: ifdef these includes */
 #include <assert.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -52,8 +53,8 @@
    as this will allow us to read in and parse 64bit and 32bit ELF files.
    Only do this if we believe that the compiler can support a 64 bit
    data type.  For now we only rely on GCC being able to do this.  */
-#define BFD64
-#endif
+# define BFD64
+#endif /* __GNUC__ >= 2 */
 
 #include "bfd.h"
 
@@ -8637,7 +8638,7 @@ read_and_display_attr_value (unsigned long attribute,
 	      debug_info_p->num_loc_offsets++;
 	    }
 	  break;
-	
+
 	case DW_AT_low_pc:
 	  if (need_base_address)
 	    debug_info_p->base_address = uvalue;
@@ -9195,7 +9196,7 @@ process_debug_info (Elf_Internal_Shdr *section, unsigned char *start,
 				     - bytes_read),
 		    abbrev_number,
 		    get_TAG_name (entry->tag));
- 
+
 	  switch (entry->tag)
 	    {
 	    default:
@@ -9222,27 +9223,27 @@ process_debug_info (Elf_Internal_Shdr *section, unsigned char *start,
 					  compunit.cu_version,
 					  &debug_information [unit],
 					  do_loc);
- 
+
  	  if (entry->children)
  	    ++level;
  	}
     }
- 
+
   /* Set num_debug_info_entries here so that it can be used to check if
      we need to process .debug_loc and .debug_ranges sections.  */
   if ((do_loc || do_debug_loc || do_debug_ranges)
       && num_debug_info_entries == 0)
     num_debug_info_entries = num_units;
-      
+
   if (!do_loc)
     {
       free_debug_range ();
       free_debug_str ();
-      free_debug_loc (); 
+      free_debug_loc ();
 
       printf ("\n");
     }
- 
+
   return 1;
 }
 
@@ -12200,7 +12201,7 @@ process_object (char *file_name, FILE *file)
       assert (num_dump_sects >= num_cmdline_dump_sects);
       memcpy (dump_sects, cmdline_dump_sects, num_cmdline_dump_sects);
     }
-  
+
   if (! process_file_header ())
     return 1;
 
@@ -12461,7 +12462,7 @@ process_archive (char *file_name, FILE *file)
 
       archive_file_offset = ftell (file);
       archive_file_size = strtoul (arhdr.ar_size, NULL, 10);
-      
+
       ret |= process_object (namealc, file);
 
       free (namealc);

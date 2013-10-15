@@ -17,12 +17,26 @@
    Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+# include "config.h"
+#else
+# warning localealias.c expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
 
-#include <ctype.h>
-#include <stdio.h>
-#include <sys/types.h>
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#else
+# warning localealias.c expects <ctype.h> to be included.
+#endif /* HAVE_CTYPE_H */
+#ifdef HAVE_STDIO_H
+# include <stdio.h>
+#else
+# warning localealias.c expects <stdio.h> to be included.
+#endif /* HAVE_STDIO_H */
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#else
+# warning localealias.c expects <sys/types.h> to be included.
+#endif /* HAVE_SYS_TYPES_H */
 
 #ifdef __GNUC__
 # define alloca __builtin_alloca
@@ -36,12 +50,12 @@
 #  else
 #   ifndef alloca
 char *alloca ();
-#   endif
-#  endif
-# endif
-#endif
+#   endif /* !alloca */
+#  endif /* _AIX */
+# endif /* HAVE_ALLOCA_H || _LIBC */
+#endif /* __GNUC__ */
 
-#if defined STDC_HEADERS || defined _LIBC
+#if defined STDC_HEADERS || defined _LIBC || defined HAVE_STDLIB_H
 # include <stdlib.h>
 #else
 char *getenv ();
@@ -49,25 +63,25 @@ char *getenv ();
 #  include <malloc.h>
 # else
 void free ();
-# endif
-#endif
+# endif /* HAVE_MALLOC_H */
+#endif /* STDC_HEADERS || _LIBC || HAVE_STDLIB_H */
 
 #if defined HAVE_STRING_H || defined _LIBC
 # ifndef _GNU_SOURCE
 #  define _GNU_SOURCE	1
-# endif
+# endif /* !_GNU_SOURCE */
 # include <string.h>
-#else
+#elif defined HAVE_STRINGS_H
 # include <strings.h>
 # ifndef memcpy
 #  define memcpy(Dst, Src, Num) bcopy (Src, Dst, Num)
-# endif
-#endif
+# endif /* !memcpy */
+#endif /* HAVE_STRING_H || _LIBC */
 #if !HAVE_STRCHR && !defined _LIBC
 # ifndef strchr
 #  define strchr index
-# endif
-#endif
+# endif /* !strchr */
+#endif /* !HAVE_STRCHR && !_LIBC */
 
 #include "gettext.h"
 #include "gettextP.h"
@@ -84,10 +98,12 @@ void free ();
 # define HAVE_MEMPCPY	1
 
 /* We need locking here since we can be called from different places.  */
-# include <bits/libc-lock.h>
+# ifdef HAVE_BITS_LIBC_LOCK_H
+#  include <bits/libc-lock.h>
+# endif /* HAVE_BITS_LIBC_LOCK_H */
 
 __libc_lock_define_initialized (static, lock);
-#endif
+#endif /* _LIBC */
 
 
 /* For those loosing systems which don't have `alloca' we have to add
@@ -160,7 +176,7 @@ _nl_expand_alias (name)
 
 #ifdef _LIBC
   __libc_lock_lock (lock);
-#endif
+#endif /* _LIBC */
 
   do
     {
@@ -177,7 +193,7 @@ _nl_expand_alias (name)
       else
 	retval = NULL;
 
-      /* We really found an alias.  Return the value.  */
+      /* We really found an alias. Return the value.  */
       if (retval != NULL)
 	{
 	  result = retval->value;
@@ -205,7 +221,7 @@ _nl_expand_alias (name)
 
 #ifdef _LIBC
   __libc_lock_unlock (lock);
-#endif
+#endif /* _LIBC */
 
   return result;
 }
@@ -219,7 +235,7 @@ read_alias_file (fname, fname_len)
 {
 #ifndef HAVE_ALLOCA
   struct block_list *block_list = NULL;
-#endif
+#endif /* !HAVE_ALLOCA */
   FILE *fp;
   char *full_fname;
   size_t added;
@@ -233,7 +249,7 @@ read_alias_file (fname, fname_len)
 #else
   memcpy (full_fname, fname, fname_len);
   memcpy (&full_fname[fname_len], aliasfile, sizeof aliasfile);
-#endif
+#endif /* HAVE_MEMPCPY */
 
   fp = fopen (full_fname, "r");
   if (fp == NULL)
@@ -259,14 +275,14 @@ read_alias_file (fname, fname_len)
 	/* EOF reached.  */
 	break;
 
-      /* Possibly not the whole line fits into the buffer.  Ignore
+      /* Possibly not the whole line fits into the buffer. Ignore
 	 the rest of the line.  */
       if (strchr (buf, '\n') == NULL)
 	{
 	  char altbuf[BUFSIZ];
 	  do
 	    if (fgets (altbuf, sizeof altbuf, fp) == NULL)
-	      /* Make sure the inner loop will be left.  The outer loop
+	      /* Make sure the inner loop will be left. The outer loop
 		 will exit at the `feof' test.  */
 	      break;
 	  while (strchr (altbuf, '\n') == NULL);
@@ -303,7 +319,7 @@ read_alias_file (fname, fname_len)
 	      if (cp[0] == '\n')
 		{
 		  /* This has to be done to make the following test
-		     for the end of line possible.  We are looking for
+		     for the end of line possible. We are looking for
 		     the terminating '\n' which do not overwrite here.  */
 		  *cp++ = '\0';
 		  *cp = '\n';
@@ -370,7 +386,7 @@ extend_alias_table ()
   new_map = (struct alias_map *) realloc (map, (new_size
 						* sizeof (struct alias_map)));
   if (new_map == NULL)
-    /* Simply don't extend: we don't have any more core.  */
+    /* Simply do NOT extend: we do NOT have any more core.  */
     return;
 
   map = new_map;
@@ -388,7 +404,7 @@ free_mem (void)
     free (map);
 }
 text_set_element (__libc_subfreeres, free_mem);
-#endif
+#endif /* _LIBC */
 
 
 static int
@@ -420,5 +436,7 @@ alias_compare (map1, map2)
   while (c1 == c2);
 
   return c1 - c2;
-#endif
+#endif /* _LIBC || HAVE_STRCASECMP */
 }
+
+/* EOF */

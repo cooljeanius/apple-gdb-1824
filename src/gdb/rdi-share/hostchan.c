@@ -1,6 +1,6 @@
-/* 
+/*
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -17,12 +17,18 @@
 
 #include <stdio.h>
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# warning not including "config.h".
+#endif /* HAVE_CONFIG_H */
+
 #ifdef HAVE_SYS_TIME_H
 #  include <sys/time.h>
 #else
 #  include "winsock.h"
 #  include "time.h"
-#endif
+#endif /* HAVE_SYS_TIME_H */
 #include "hsys.h"
 #include "host.h"
 #include "logging.h"
@@ -36,8 +42,8 @@
 #include "hostchan.h"
 
 #ifndef UNUSED
-#define UNUSED(x) (x = x)  /* Silence compiler warnings for unused arguments */
-#endif
+# define UNUSED(x) (x = x)  /* Silence compiler warnings for unused arguments */
+#endif /* !UNUSED */
 
 #define HEARTRATE 5000000
 
@@ -81,7 +87,7 @@ static int resending = FALSE;
 /* heartbeat_enabled is a flag used to indicate whether the heartbeat is
  * currently turned on, heartbeat_enabled will be false in situations
  * where even though a heartbeat is being used it is problematical or
- * dis-advantageous to have it turned on, for instance during the 
+ * dis-advantageous to have it turned on, for instance during the
  * initial stages of boot up
  */
 unsigned int heartbeat_enabled = FALSE;
@@ -90,7 +96,7 @@ unsigned int heartbeat_enabled = FALSE;
  * heartbeat_enabled it must not be changed during a session.  The logic for
  * deciding whether to send a heartbeat is: Is heartbeat_configured for this
  * session? if and only if it is then if heartbeat[is currently]_enabled and
- * we are due to send a pulse then send it 
+ * we are due to send a pulse then send it
  */
 unsigned int heartbeat_configured = TRUE;
 
@@ -500,7 +506,7 @@ static AdpErrs check_seq(unsigned char msg_home, unsigned char msg_oppo) {
   Packet *tmp_pkt;
 
   UNUSED(msg_oppo);
-  /* 
+  /*
    * check if we have got an ack for anything and if so remove it from the
    * queue
    */
@@ -538,18 +544,18 @@ static AdpErrs check_seq(unsigned char msg_home, unsigned char msg_oppo) {
     /* already received this message */
 #ifdef RET_DEBUG
     printf("sequence numbers low\n");
-#endif   
+#endif
     return adp_seq_low;
   }
   else {  /* we've missed something */
 #ifdef RET_DEBUG
     printf("sequence numbers high\n");
-#endif   
+#endif
     return adp_seq_high;
   }
 }
 
-static unsigned long tv_diff(const struct timeval *time_now, 
+static unsigned long tv_diff(const struct timeval *time_now,
                              const struct timeval *time_was)
 {
     return (  ((time_now->tv_sec * 1000000) + time_now->tv_usec)
@@ -581,7 +587,7 @@ static AdpErrs pacemaker(void)
   packet->pk_buffer[CF_FLAGS_BYTE_POS] = CF_RELIABLE | CF_HEARTBEAT;
   packet->pk_length = CF_DATA_BYTE_POS;
   return DevSW_Write(deviceToUse, packet, DC_DBUG);
-}  
+}
 
 #ifdef FAKE_BAD_LINE_RX
 static AdpErrs fake_bad_line_rx( const Packet *const packet, AdpErrs adp_err )
@@ -607,7 +613,7 @@ static void fake_bad_line_tx( void )
     static unsigned int bl_num = 0;
 
     /* give the thing a chance to boot then try corrupting stuff */
-    if ( (bl_num++ >= 20) && ((bl_num % FAKE_BAD_LINE_TX) == 0)) 
+    if ( (bl_num++ >= 20) && ((bl_num % FAKE_BAD_LINE_TX) == 0))
     {
         printf("DEBUG: faking a bad packet for tx\n");
         tmp_ch = writeQueueSend->pk_buffer[CF_FLAGS_BYTE_POS];
@@ -621,8 +627,8 @@ static void unfake_bad_line_tx( void )
 
     /*
      * must reset the packet so that its not corrupted when we
-     *  resend it 
-     */   
+     *  resend it
+     */
     if ( (bl_num >= 20) && ((bl_num % FAKE_BAD_LINE_TX) != 0))
     {
         writeQueueSend->pk_buffer[CF_FLAGS_BYTE_POS] = tmp_ch;
@@ -697,7 +703,7 @@ static void async_process_dbug_read( const AsyncMode mode,
             printf("\n");
 #endif
             /* now was it a resend request? */
-            if ((packet->pk_buffer[CF_FLAGS_BYTE_POS]) 
+            if ((packet->pk_buffer[CF_FLAGS_BYTE_POS])
                 & CF_RESEND) {
                 /* we've been asked for a resend so we had better resend */
                 /*
@@ -728,9 +734,9 @@ static void async_process_dbug_read( const AsyncMode mode,
                     }
                 }
                 else if (OppoSeq != msg_home) {
-                    /* 
+                    /*
                      * send a resend request telling the target where we think
-                     * the world is at 
+                     * the world is at
                      */
                     DevSW_FreePacket(packet);
                     send_resend_msg(DC_DBUG);
@@ -738,7 +744,7 @@ static void async_process_dbug_read( const AsyncMode mode,
             }
             else {
                 /* not a resend request, lets check the sequence numbers */
-                
+
                 if ((packet->pk_buffer[CF_CHANNEL_BYTE_POS] != CI_HBOOT) &&
                     (packet->pk_buffer[CF_CHANNEL_BYTE_POS] != CI_TBOOT)) {
                     adp_err = check_seq(msg_home, msg_oppo);
@@ -748,7 +754,7 @@ static void async_process_dbug_read( const AsyncMode mode,
                     }
                     else if (adp_err == adp_seq_high) {
                         /*
-                         * we must have missed a packet somewhere, discard this 
+                         * we must have missed a packet somewhere, discard this
                          * packet and tell the target where we are
                          */
                         DevSW_FreePacket(packet);
@@ -839,7 +845,7 @@ static void async_process_write( const AsyncMode mode,
         /* no point trying a new write */
         return;
     }
-      
+
     /*
      * now see whether there is anything to write
      */
@@ -847,7 +853,7 @@ static void async_process_write( const AsyncMode mode,
     if (resending) {
         packet = resend_pkt;
 #ifdef RET_DEBUG
-        printf("resending hseq 0x%x oseq 0x%x\n", 
+        printf("resending hseq 0x%x oseq 0x%x\n",
                packet->pk_buffer[CF_HOME_SEQ_BYTE_POS],
                packet->pk_buffer[CF_OPPO_SEQ_BYTE_POS]);
 #endif
@@ -894,7 +900,7 @@ static void async_process_write( const AsyncMode mode,
                 }
             }
             else {
-                /* 
+                /*
                  * move the packet we just sent from the send queue to the root
                  */
                 Packet *tmp_pkt, *tmp;

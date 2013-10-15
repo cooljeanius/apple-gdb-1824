@@ -9,11 +9,11 @@
 #                                                                     #
 #######################################################################
 
-# This file can be either sourced'ed in by .gdbinit or explicitly to define a set
-# of gdb commands that simulate a subset of MacsBug commands.  It is as faithful
-# a simulation as possible within the limits of the gdb command language.  There
-# may also be an extension or two where it makes sense in the context of the
-# debugging paradigm imposed by gdb.
+# This file can be either sourced'ed in by .gdbinit or explicitly to define
+# a set of gdb commands that simulate a subset of MacsBug commands. It is
+# as faithful a simulation as possible within the limits of the gdb command
+# language. There may also be an extension or two where it makes sense in
+# the context of the debugging paradigm imposed by gdb.
 
 # See MACSBUG_HELP below (or execute it) for summary documentation of the 
 # supported MacsBug commands.  See individual help documentation for more
@@ -24,115 +24,140 @@
 #       you are trying to debug any other language, you're probably 
 #	screwed!
 
-# The author has endeavored to produce as complete a set of MacsBug commands as
-# feasible within the restrictions imposed by the rather limited gdb command
-# language.  But others may have additional ideas.  So contributions and
-# embellishments are welcome, particularly to the types supported by the DM
-# command.  The only restrictions are that to be placed in this particular
-# universe of commands (i.e., this file), they must be variants of *EXISTING*
-# MacsBug commands.  Any other "flavors" do not belong here.
+# The author has endeavored to produce as complete a set of MacsBug
+# commands as feasible within the restrictions imposed by the rather
+# limited gdb command language. But others may have additional ideas. So
+# contributions and embellishments are welcome, particularly to the types
+# supported by the DM command. The only restrictions are that to be placed
+# in this particular universe of commands (i.e., this file), they must be
+# variants of *EXISTING* MacsBug commands. Any other "flavors" do not
+# belong here.
 
 # Revision history
 #
 #	 1-Sep-2000	ILR	Initial creation.
 #	 2-Sep-2000	ILR	Added basic type support to DM.
 #				Fixed DB and DW decimal display bug.
-#				Changed __print_char to bold octals and handle more
-#				  known escape letters.
-#				Fixed argument handling to not cause possible
-#				  reevaluation of their values in private 
-#				  functions.
-#				Prefixed all "local" internal function variables
-#				  with double underbars to minimize potential
-#				  name conflicts with their callers. Damn gdb!
+#				Changed __print_char to bold octals and
+#                                 handle more known escape letters.
+#				Fixed argument handling to not cause
+#                                 possible reevaluation of their values in
+#                                 private functions.
+#				Prefixed all "local" internal function
+#                                 variables with double underbars to
+#                                 minimize potential name conflicts with
+#                                 their callers. Damn gdb!
 #				More tutorial info in MACSBUG_HELP.
-#	 3-Sep-2000	ILR	Added ES, FIND, FB, FW, FL, and FILL commands.
-#				Allow SB, SW, SL, SM to have string values using
-#				  the same machinery created for FIND and FILL.
+#	 3-Sep-2000	ILR	Added ES, FIND, FB, FW, FL, and FILL
+#                                 commands.
+#				Allow SB, SW, SL, SM to have string values
+#                                 using the same machinery created for FIND
+#                                 and FILL.
 #	 4-Sept-2000	ILR	Fixed size checking in SM and set.
 #				Add __lower_case function.
-#				Set $dot in DM for addr n case and let DM call
-#				  __lower_case instead of doing it in DM command.
-#				Added GT, DMA, BRM, DX, MSET, and Rn commands.
-#				Enhanced DMA and __hexdump to check for repeated
-#				  lines under the MSET DITTO state switch.
-#				Polished everything up for initial "release",
-#				  whatever that means.
+#				Set $dot in DM for addr n case and let DM
+#                                 call __lower_case instead of doing it in
+#                                 DM command.
+#				Added GT, DMA, BRM, DX, MSET, and Rn
+#                                 commands.
+#				Enhanced DMA and __hexdump to check for
+#                                 repeated lines under the MSET DITTO
+#                                 state switch.
+#				Polished everything up for initial
+#                                 "release", whatever that means.
 #	 5-Sept-2000	ILR	Added PC command.
-#				Made memory and disassembly displays contiguous
-#				  when possible (i.e., removed the gdb prompt).
-#	 9-Sept-2000	ILR	Changed MacsBug S to SI since it's a superset of
-#				  gdb's S but essentially the same action.  This
-#				  free's up S to be gdb's S which executes single
-#				  statements including stepping into called functions.
-#				  I prefer to back the MacsBug compatibilty with S
-#				  to preserve gdb's S.
-#				Changed T command to call SO to emphasize their
-#				   same-ness and to have the actual code in one
-#				   place just like I do for other aliased commands.
-#	12-Sept-2000	ILR	Added 2nd argument to T, SO and SI to disassemble m
-#				  lines (default 4) instead of just 1.
-#				Removed a debugging printf from IP that I forgot
-#				  to previously remove when I was debugging it.
-#				T was not missing in the MACSBUG_HELP display.
-#				ID's "Disassembly from" format string was missing
-#				  a '%' causing a gdb error report.
-#	25-Sept-2000	ILR	Added __branch_taken to determine if a conditional
-#				  branch at $pc will be taken or not.
-#				Added routines to display the registers in various
-#				  ways along with disassembly.  Only added, it's
-#				  work in progress, and not yet hooked in.
-#	 9-Oct-2000	ILR	Call __display_registers_h from __disasmN so that
-#				  all disassemblies cause a register display at a
-#				  fixed place at the top to the screen.  This is
-#				  brain dead version, i.e., no split screen scrolling.
+#				Made memory and disassembly displays
+#                                 contiguous when possible (i.e., removed
+#                                 the gdb prompt).
+#	 9-Sept-2000	ILR	Changed MacsBug S to SI since it is a
+#                                 superset of gdb's S but essentially the
+#                                 same action. This frees up S to be gdb's
+#                                 S which executes single statements
+#                                 including stepping into called functions.
+#				  I prefer to back the MacsBug compatibilty
+#                                 with S to preserve gdb's S.
+#				Changed T command to call SO to emphasize
+#                                 their same-ness and to have the actual
+#                                 code in one place just like I do for
+#                                 other aliased commands.
+#	12-Sept-2000	ILR	Added 2nd argument to T, SO and SI to
+#                                 disassemble m lines (default 4) instead
+#                                 of just 1.
+#				Removed a debugging printf from IP that I
+#                                 forgot to previously remove when I was
+#                                 debugging it.
+#				T was not missing in the MACSBUG_HELP
+#                                 display.
+#				ID's "Disassembly from" format string was
+#                                 missing a '%' causing a gdb error report.
+#	25-Sept-2000	ILR	Added __branch_taken to determine if a
+#                                 conditional branch at $pc will be taken
+#                                 or not.
+#				Added routines to display the registers in
+#                                 various ways along with disassembly. Only
+#                                 added, it is a work in progress, and not
+#                                 yet hooked in.
+#	 9-Oct-2000	ILR	Call __display_registers_h from __disasmN
+#                                 so that all disassemblies cause a
+#                                 register display at a fixed place at the
+#                                 top to the screen. This is brain dead
+#                                 version, i.e., no split screen scrolling.
 #	 			SM of log values was missing 3rd byte.
-#	10-Oct-2000	ILR	MSET UNMANGLE used as toggle was not setting gdb.
-#	13-Oct-2000	ILR	Fix DM so that repeated DM commands even with
-#				  arguments (i.e., just hitting return to repeat the
-#				  DM) causes a contiguous hexdump display.
+#	10-Oct-2000	ILR	MSET UNMANGLE used as toggle was not
+#                                 setting gdb.
+#	13-Oct-2000	ILR	Fix DM so that repeated DM commands even
+#                                 with arguments (i.e., just hitting return
+#                                 to repeat the DM) causes a contiguous
+#                                 hexdump display.
 #				Similar fix for DMA.
-#	11-Nov-2000	ILR	__save_all_regs_h now saves compare and count portions
-#				  of $xer.
-#				__display_registers_h changed to display compare and
-#				  count portions of $xer.
-#				TD fixed to correct shift value of $xer to get compare
-#				  field.
-#	16-Nov-2000	ILR	Added test to __branch_taken to not consider "branch
-#				  always" branches as conditional branches.
-#				Changed __disasmN to use the vertical register display
-#				  instead of the horizontal since the horizontal form
-#				  screws up the scroll back.  Vertical has less impact.
-#	25-Nov-2000	ILR	DM did not default to displaying the amount of the
-#				  immediately preceeding DM.
-#				__display_registers_h and __display_registers_v changed
-#				  to use red and normal/off color instead of red and
-#				  black since black is not necessarily the same as
-#				  normal on some terminal color schemes.
-#       -------------------------------------------------------------------------------
+#	11-Nov-2000	ILR	__save_all_regs_h now saves compare and
+#                                 count portions of $xer.
+#				__display_registers_h changed to display
+#                                 compare and count portions of $xer.
+#				TD fixed to correct shift value of $xer to
+#                                 get compare field.
+#	16-Nov-2000	ILR	Added test to __branch_taken to not
+#                                 consider "branch always" branches as
+#                                 conditional branches.
+#				Changed __disasmN to use the vertical
+#                                 register display instead of the
+#                                 horizontal since the horizontal form
+#				  screws up the scroll back. Vertical has
+#                                 less impact.
+#	25-Nov-2000	ILR	DM did not default to displaying the amount
+#                                 of the immediately preceeding DM.
+#				__display_registers_h and
+#                                 __display_registers_v changed to use red
+#                                 and normal/off color instead of red and
+#                                 black since black is not necessarily the
+#                                 same as normal on some terminal color
+#                                 schemes.
+#--------------------------------------------------------------------------
 #	12-Dec-2000	ILR	Minor tweaks to various commands.
 #				Added RA command ("run again").
 #
-#	This script now deprecated.  For the Mac it has been replaced with a version
-#       that works in conjunction with the Mac gdb plugin support.  Not only does it
-#	do all the stuff this script does, it does so much more efficiently (i.e, 
-#	it's faster), genaralized many of the functions becuase they are not limited
-#	by the gdb command language, and also has a MacsBug-like UI!
+#	This script now deprecated. For the Mac it has been replaced with a
+#       version that works in conjunction with the Mac gdb plugin support.
+#       Not only does it do all the stuff this script does, it does so much
+#       more efficiently (i.e, it is faster), generalized many of the
+#       functions becuase they are not limited by the gdb command language,
+#       and also has a MacsBug-like UI!
 #
-###################################################################################
-###################################################################################
+###########################################################################
+###########################################################################
 
 # Current highest command identifier value for $__lastcmd__ is 41
 
-# In each command assign $__lastcmd__ to a unique command number for each new
-# command where applicable and update the above comment to make it easier to
-# remember what to assign to future commands.
+# In each command assign $__lastcmd__ to a unique command number for each
+# new command where applicable and update the above comment to make it
+# easier to remember what to assign to future commands.
 
-# $__lastcmd__ is not just "noise".  Some MacsBug simulated commands need to
-# know what the previous command was to perform the required MacsBug semantics. 
+# $__lastcmd__ is not just "noise". Some MacsBug simulated commands need
+# to know what the previous command was to perform the required MacsBug
+# semantics. 
 
-###################################################################################
-###################################################################################
+###########################################################################
+###########################################################################
 #
 # MACSBUG_HELP - List of supported commands.
 #
@@ -231,10 +256,11 @@ document MACSBUG_HELP
 MACSBUG_HELP <------- Summarize just the MacsBug commands -------
 end
 
-#printf "Type MACSBUG_HELP for help on the MacsBug commands.\n"
+# The next line had previously been commented out:
+printf "Type MACSBUG_HELP for help on the MacsBug commands.\n"
 
-###################################################################################
-###################################################################################
+###########################################################################
+###########################################################################
 #
 # BRC [addr]
 #
@@ -252,7 +278,7 @@ BRC [addr] -- Clear all breakpoints or one breakpoint at addr.
 See also gdb's DELETE command (clears breakpoints by number), and DISABLE.
 end
 
-###################################################################################
+###########################################################################
 #
 # BRD [n]
 #
@@ -269,7 +295,7 @@ document BRD
 BRD -- Show all breakpoints (or breakpoint n).
 end
 
-###################################################################################
+###########################################################################
 #
 # BRM regex
 #
@@ -329,7 +355,7 @@ in the BRM regular expression, where a word is a sequence of non-blanks
 characters.
 end
 
-###################################################################################
+###########################################################################
 #
 # BRP [gdb-spec [expr]]
 #
@@ -394,7 +420,7 @@ Macsbug features not supported: Interation count.
 Ê                               Only a single command is allowed.
 end
 
-###################################################################################
+###########################################################################
 #
 # DB [addr]
 #
@@ -402,11 +428,11 @@ define DB
     if ($argc == 0)
     	if ($__lastcmd__ == 3)
     	    set $dot = (unsigned char *)$dot + 1
-     	    # The following makes the displays contiguous by moving the cursor
-    	    # up over the gdb prompt.  But just in case the display would fail
-    	    # because the memory is inaccessible we try to access the first
-    	    # byte of the display and let gdb error it out before moving the
-    	    # cursor if the memory is inaccessible.
+     	    # The following makes the displays contiguous by moving the
+            # cursor up over the gdb prompt. But just in case the display
+            # would fail because the memory is inaccessible we try to
+            # access the first byte of the display and let gdb error it out
+            # before moving the cursor if the memory is inaccessible.
     	    set $accessible = *(char *)$dot
     	    printf "%c[2A\n", 0x1B
     	end
@@ -426,7 +452,7 @@ document DB
 DB addr -- Display in hex the byte at addr (or $dot).
 end
 
-###################################################################################
+###########################################################################
 #
 # DL [addr]
 #
@@ -434,11 +460,11 @@ define DL
     if ($argc == 0)
     	if ($__lastcmd__ == 4)
     	    set $dot = (unsigned char *)$dot + 4
-     	    # The following makes the displays contiguous by moving the cursor
-    	    # up over the gdb prompt.  But just in case the display would fail
-    	    # because the memory is inaccessible we try to access the first
-    	    # byte of the display and let gdb error it out before moving the
-    	    # cursor if the memory is inaccessible.
+     	    # The following makes the displays contiguous by moving the
+            # cursor up over the gdb prompt. But just in case the display
+            # would fail because the memory is inaccessible we try to
+            # access the first byte of the display and let gdb error it out
+            # before moving the cursor if the memory is inaccessible.
     	    set $accessible = *(char *)$dot
     	    printf "%c[2A\n", 0x1B
     	end
@@ -469,12 +495,12 @@ document DL
 DL [addr] -- Display in hex the 4 bytes at addr (or $dot).
 end
 
-# This is written assuming no alignment requiremnts.  However, most machines
-# actuall allow unaligned access.   We could actually get away with set
-# $value = *(unsigned long *)$addr.  But I'll leave it the way it is since
+# This is written assuming no alignment requiremnts. However, most machines
+# actuall allow unaligned access.  We could actually get away with set
+# $value = *(unsigned long *)$addr. But I will leave it the way it is since
 # that way never has alignement concerns.
 
-###################################################################################
+###########################################################################
 #
 # DM [addr [n | basic type]]
 #
@@ -482,11 +508,11 @@ define DM
     if ($argc == 0)
     	if ($__lastcmd__ == 5)
 	    set $dot = (unsigned char *)$dot + $__prev_dm_n__
-     	    # The following makes the displays contiguous by moving the cursor
-    	    # up over the gdb prompt.  But just in case the display would fail
-    	    # because the memory is inaccessible we try to access the first
-    	    # byte of the display and let gdb error it out before moving the
-    	    # cursor if the memory is inaccessible.
+     	    # The following makes the displays contiguous by moving the
+            # cursor up over the gdb prompt. But just in case the display
+            # would fail because the memory is inaccessible we try to
+            # access the first byte of the display and let gdb error it out
+            # before moving the cursor if the memory is inaccessible.
     	    set $accessible = *(char *)$dot
     	    printf "%c[2A\n", 0x1B
     	else
@@ -833,7 +859,7 @@ Macsbug features not supported: templates and the following basic types.
 Ê                               and Fract.
 end
 
-###################################################################################
+###########################################################################
 #
 # DMA [addr [n]]
 #
@@ -915,7 +941,7 @@ ASCII characters outside the range 0x20 to 0x7F are shown as '.'s.
 Also see MSET for DITTO mode.
 end
 
-###################################################################################
+###########################################################################
 #
 # DP [addr]
 #
@@ -946,7 +972,7 @@ document DP
 DP [addr] -- Display 128 bytes at addr (or $dot).
 end
 
-###################################################################################
+###########################################################################
 #
 # DW [addr]
 #
@@ -954,11 +980,11 @@ define DW
     if ($argc == 0)
     	if ($__lastcmd__ == 7)
     	    set $dot = (unsigned char *)$dot + 2
-     	    # The following makes the displays contiguous by moving the cursor
-    	    # up over the gdb prompt.  But just in case the display would fail
-    	    # because the memory is inaccessible we try to access the first
-    	    # byte of the display and let gdb error it out before moving the
-    	    # cursor if the memory is inaccessible.
+     	    # The following makes the displays contiguous by moving the
+            # cursor up over the gdb prompt. But just in case the display
+            # would fail because the memory is inaccessible we try to
+            # access the first byte of the display and let gdb error it out
+            # before moving the cursor if the memory is inaccessible.
     	    set $accessible = *(char *)$dot
     	    printf "%c[2A\n", 0x1B
     	end
@@ -983,22 +1009,23 @@ document DW
 DW [addr] -- Display in hex the two bytes at addr (or $dot).
 end
 
-# This is written assuming no alignment requiremnts.  However, most machines
-# actuall allow unaligned access.   We could actually get away with set
-# $value = *(unsigned short *)$addr.  But I'll leave it the way it is since
-# that way never has alignement concerns.
+# This is written assuming no alignment requiremnts. However, most machines
+# actuall allow unaligned access. We could actually get away with set
+# $value = *(unsigned short *)$addr. But I will leave it the way it is
+# since that way never has alignement concerns.
 
-###################################################################################
+###########################################################################
 #
 # DX [ON | OFF | NOW | SHOW]
 #
-# Note the "polarity" of the DX state switch is reversed, i.e., 0 means enabled/on,
-# 1 means disabled/off.  The reason for this is that if this command could be done
-# before the DX state switch is defined (void in gdb, setting it outside the function
-# has no effect).  We can only test undefined gdb convenience variables with 'if ($dx)'
-# (can't even negate it) which would be false when the switch is undefined, i.e., same
-# result as if it were 0.  Our initial default is to be ON, so undefined must also
-# mean ON.  Hence the polarity reversal.  #%$@!()& gdb!
+# Note the "polarity" of the DX state switch is reversed, i.e., 0 means
+# enabled/on, 1 means disabled/off. The reason for this is that if this
+# command could be done before the DX state switch is defined (void in gdb,
+# setting it outside the function has no effect). We can only test
+# undefined gdb convenience variables with 'if ($dx)' (cannot even negate
+# it) which would be false when the switch is undefined, i.e., same
+# result as if it were 0. Our initial default is to be ON, so undefined
+# must also mean ON. Hence the polarity reversal.  #%$@!()& gdb!
 #
 define DX
     if ($argc == 0)
@@ -1066,7 +1093,7 @@ SHOW is the same as NOW to display the current setting.  It was added
 since gdb uses SHOW to show settings.
 end
 
-###################################################################################
+###########################################################################
 #
 # ES
 #
@@ -1078,7 +1105,7 @@ document ES
 ES -- exit to shell (unconditionally quit gdb).
 end
 
-###################################################################################
+###########################################################################
 #
 # FB addr n expr|"string"
 #
@@ -1092,7 +1119,7 @@ The MacsBug FB command overrides the gdb FB alias for a gdb FUTURE_BREAK
 command.  Use FU for the FUTURE_BREAK command.
 end
 
-###################################################################################
+###########################################################################
 #
 # FILL addr n expr|"string"
 #
@@ -1168,12 +1195,12 @@ The fill is repeatedly used as a byte, word, or long (determined by the size
 of the expr value) or the string.
 end
 
-###################################################################################
+###########################################################################
 #
 # FIND addr n expr|"string" [size]
 #
-# The size is an INTERNAL option to be able to use the general FIND function for
-# FB, FW, and FL.
+# The size is an INTERNAL option to be able to use the general FIND
+# function for FB, FW, and FL.
 #
 define FIND
     set $e = 0
@@ -1291,20 +1318,21 @@ unit (byte, word or long) that contains its value.
 Restriction: The expr value may not have any embedded blanks.  For example
 Ê            a value like (unsigned char *)&a is invalid.
 Ê
-Macsbug features not supported: MacsBug F must be FIND here since F conflicts
-Ê                               with the gdb FRAME command abbreviation.
+Macsbug features not supported: MacsBug F must be FIND here since F
+                                conflicts with the gdb FRAME command
+                                abbreviation.
 Ê
-Ê                               Double quoted "string" instead of single quoted
-Ê                               'string'.
+Ê                               Double quoted "string" instead of single
+                                quoted 'string'.
 Ê
-Ê                               To keep the same semantics as MacsBug you run
-Ê                               the risk of trying to search beyond the end of
-Ê                               your memory since the comparison limit is based
-Ê                               on the first byte of the objects to be matched
-Ê                               rather than the last.
+Ê                               To keep the same semantics as MacsBug you
+                                run the risk of trying to search beyond the
+                                end of your memory since the comparison
+                                limit is based on the first byte of the
+                                objects to be matched rather than the last.
 end
 
-###################################################################################
+###########################################################################
 #
 # FL addr n expr|"string"
 #
@@ -1315,7 +1343,7 @@ document FL
 FL addr n expr|"string" -- Search from addr to addr+n-1 for the 4-byte long.
 end
 
-###################################################################################
+###########################################################################
 #
 # FW addr n expr|"string"
 #
@@ -1326,7 +1354,7 @@ document FW
 FW addr n expr|"string" -- Search from addr to addr+n-1 for the 2-byte word.
 end
 
-###################################################################################
+###########################################################################
 #
 # G [addr]
 #
@@ -1342,7 +1370,7 @@ document G
 G [addr] -- Continue execution (at addr if supplied)
 end
 
-###################################################################################
+###########################################################################
 #
 # GT gdb-spec
 #
@@ -1359,7 +1387,7 @@ documentation for further details.
 Macsbug features not supported: Command list not allowed.
 end
 
-###################################################################################
+###########################################################################
 #
 # ID [addr]
 #
@@ -1369,11 +1397,11 @@ define ID
     else
     	if ($__lastcmd__ == 9)
     	    set $dot = (unsigned char *)$dot + 4
-     	    # The following makes the displays contiguous by moving the cursor
-    	    # up over the gdb prompt.  But just in case the display would fail
-    	    # because the memory is inaccessible we try to access the first
-    	    # byte of the display and let gdb error it out before moving the
-    	    # cursor if the memory is inaccessible.
+     	    # The following makes the displays contiguous by moving the
+            # cursor up over the gdb prompt. But just in case the display
+            # would fail because the memory is inaccessible we try to
+            # access the first byte of the display and let gdb error it out
+            # before moving the cursor if the memory is inaccessible.
     	    set $accessible = *(char *)$dot
     	    printf "%c[%dA\n", 0x1B, 2+($branch_taken!=0)
     	else
@@ -1391,7 +1419,7 @@ ID [addr] -- Disassemble 1 line starting at addr (or pc).
 Macsbug features not supported: -c option.
 end
 
-###################################################################################
+###########################################################################
 #
 # IDP [addr]
 #
@@ -1401,14 +1429,14 @@ define IDP
     else
     	id
     end
-    
-    #set $__lastcmd__ = $__lastcmd__ 
+    # The next line had previously been commented out:
+    set $__lastcmd__ = $__lastcmd__ 
 end
 document IDP
 IDP [addr] -- Same as ID.
 end
 
-###################################################################################
+###########################################################################
 #
 # IL [addr [n]]
 #
@@ -1416,11 +1444,11 @@ define IL
     if ($argc == 0)
     	if ($__lastcmd__ == 11)
     	    set $dot = (unsigned char *)$dot + (4*20)
-     	    # The following makes the displays contiguous by moving the cursor
-    	    # up over the gdb prompt.  But just in case the display would fail
-    	    # because the memory is inaccessible we try to access the first
-    	    # byte of the display and let gdb error it out before moving the
-    	    # cursor if the memory is inaccessible.
+     	    # The following makes the displays contiguous by moving the
+            # cursor up over the gdb prompt. But just in case the display
+            # would fail because the memory is inaccessible, we try to
+            # access the first byte of the display and let gdb error it out
+            # before moving the cursor if the memory is inaccessible.
     	    set $accessible = *(char *)$dot
     	    printf "%c[%dA\n", 0x1B, 2+($branch_taken!=0)
    	else
@@ -1447,7 +1475,7 @@ IL [addr [n]] -- Disassemble n (default 20) lines from the addr or pc.
 Macsbug features not supported: -c option.
 end
 
-###################################################################################
+###########################################################################
 #
 # ILP [addr [n]]
 #
@@ -1461,14 +1489,14 @@ define ILP
     	    il $arg0 $arg1
     	end
     end
-    
-    #set $__lastcmd__ = $__lastcmd__ 
+    # The next line had previously been commented out:
+    set $__lastcmd__ = $__lastcmd__ 
 end
 document ILP
 ILP [addr [n]] -- Same as IL.
 end
 
-###################################################################################
+###########################################################################
 #
 # IP [addr]
 #
@@ -1478,11 +1506,11 @@ define IP
     else
     	if ($__lastcmd__ == 13)
     	    set $dot = (unsigned char *)$dot + (21*4)
-    	    # The following makes the displays contiguous by moving the cursor
-    	    # up over the gdb prompt.  But just in case the display would fail
-    	    # because the memory is inaccessible we try to access the first
-    	    # byte of the display and let gdb error it out before moving the
-    	    # cursor if the memory is inaccessible.
+    	    # The following makes the displays contiguous by moving the
+            # cursor up over the gdb prompt. But just in case the display
+            # would fail because the memory is inaccessible we try to
+            # access the first byte of the display and let gdb error it out
+            # before moving the cursor if the memory is inaccessible.
     	    set $accessible = *((char *)$dot - 40)
     	    printf "%c[%dA\n", 0x1B, 2+($branch_taken!=0)
     	else
@@ -1490,9 +1518,9 @@ define IP
     	end
     end
     
-    # __disasmN takes a third argument only used here.  This third argument is
-    # $dot so we can specially flag the $dot address in the disassembly to make
-    # it more easily identifiable in the display.
+    # __disasmN takes a third argument only used here. This third argument
+    # is $dot so we can specially flag the $dot address in the disassembly
+    # to make it more easily identifiable in the display.
     
     __disasmN ($dot-40) 21 $dot
     
@@ -1504,7 +1532,7 @@ IP [addr] -- Disassemble 20 lines centered around the addr (or pc).
 Macsbug features not supported: -c option.
 end
 
-###################################################################################
+###########################################################################
 #
 # IPP [addr]
 #
@@ -1514,14 +1542,14 @@ define IPP
     else
     	ip
     end
-    
-    #set $__lastcmd__ = $__lastcmd__
+    # The next line had previously been commented out:
+    set $__lastcmd__ = $__lastcmd__
 end
 document IPP
 IPP [addr] -- Same as IP.
 end
 
-###################################################################################
+###########################################################################
 #
 # MR
 #
@@ -1540,20 +1568,22 @@ MR -- Return from current frame.
 Macsbug features not supported: offset and addr arguments
 end
 
-###################################################################################
+###########################################################################
 #
 # MSET DITTO | UNMANGLE [ON | OFF | NOW | SHOW]
 #
-# Note that the initial settings for these state switches is OFF.  I'm mentioning this
-# to point out the fact because it is possible that this command could be executed
-# BEFORE the switches are defined (void in gdb, setting it outside the function has no
-# effect).  We can only test undefined gdb convenience variables with 'if ($dx)'
-# (can't even negate it) which would be false when the switch is undefined, i.e., same
-# result as if it were 0.  Our initial default for these switches is OFF, so undefined
-# and 0 have the same effect to indicate OFF.  Bit if any future switches are added,
-# and their default is to be ON, then their polarity will have to be reversed; 0 meaning
-# ON and 1 meaning OFF.  This is so the testing for those switches when they are
-# initially undefined has the desired effect.  #%$@!()& gdb!
+# Note that the initial settings for these state switches is OFF. I am
+# mentioning this to point out the fact because it is possible that this
+# command could be executed BEFORE the switches are defined (void in gdb,
+# setting it outside the function has no effect). We can only test
+# undefined gdb convenience variables with 'if ($dx)' (cannot even negate
+# it) which would be false when the switch is undefined, i.e., same
+# result as if it were 0.  Our initial default for these switches is OFF,
+# so undefined and 0 have the same effect to indicate OFF. Bit if any
+# future switches are added, and their default is to be ON, then their
+# polarity will have to be reversed; 0 meaning ON and 1 meaning OFF. This
+# is so the testing for those switches when they are initially undefined
+# has the desired effect.  #%$@!()& gdb!
 #
 define MSET
     set $e = 0
@@ -1674,26 +1704,29 @@ define MSET
 end
 document MSET
 MSET option [ON|OFF|NOW|SHOW] -- Temporarially change the specified gdb MacsBug behavior.
-On/off options toggle if you don't specify ON or OFF.  NOW or SHOW lets you check
-the setting without disturbing it.  The options are:
+On/off options toggle if you don't specify ON or OFF. NOW or SHOW lets you
+check the setting without disturbing it. The options are:
 Ê
-Ê  DITTO:    When on, DM and DMA show ditto marks (''''''') instead of groups
-Ê            of identical lines.
+Ê  DITTO:    When on, DM and DMA show ditto marks (''''''') instead of
+             groups of identical lines.
        
-Ê  UNMANGLE: When on, C++ symbols appear as in source code, such as "TFoo::Bar()".
-Ê            When off, you'll see stuff like "Bar__4TFooFv" instead.
+Ê  UNMANGLE: When on, C++ symbols appear as in source code, such as
+             "TFoo::Bar()". When off, you will see stuff like
+             "Bar__4TFooFv" instead.
 
-SHOW is the same as NOW to display the current setting.  It was added since gdb
-uses SHOW to show settings.
+SHOW is the same as NOW to display the current setting. It was added since
+gdb uses SHOW to show settings.
 Ê
-Macsbug features not supported: The is the MacsBug SET command was changed to
-Ê                               MSET since SET conflicts with the SET gdb command.
+Macsbug features not supported: The is the MacsBug SET command was changed
+                                to MSET since SET conflicts with the SET
+                                gdb command.
 Ê
-Ê                               Options AUTOGP, ECHO, MOUSE, MENUBAR, SCROLLPROMPT,
-Ê                               SUSPENDPROMPT, and SIMPLIFIED not supported.
+Ê                               Options AUTOGP, ECHO, MOUSE, MENUBAR,
+                                SCROLLPROMPT, SUSPENDPROMPT, and SIMPLIFIED
+                                not supported.
 end
 
-###################################################################################
+###########################################################################
 #
 # PC, R0 - R31
 #
@@ -1930,14 +1963,14 @@ end
 #
 # __rn reg - display a single register value
 #
-# This is the common routine used by all Rn (n = 0...31) functions.  The
+# This is the common routine used by all Rn (n = 0...31) functions. The
 # register arg is the actual register specified ($rn) in lower case (since
-# upper case $Ri appears to be a undefined convenience symbol).  This 
+# upper case $Ri appears to be a undefined convenience symbol). This 
 # internal routine is placed here since it is only for the singe register
 # command displays immediate above here.
 #
-# The format we use is identical to the DL command.  MacsBug also puts some
-# just in parenthesis after the value which I think is of dubious use.  So
+# The format we use is identical to the DL command. MacsBug also puts some
+# just in parenthesis after the value which I think is of dubious use. So
 # the hell with it.
 #
 define __Rn
@@ -1955,7 +1988,7 @@ document __Rn
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
 # RA
 #
@@ -1965,16 +1998,18 @@ define RA
     set confirm on
 end
 document RA
-RA -- Unconditionaly restart (run) with current argument list ("run again").
-This is identical to RUN except no prompt is displayed if the program is
-currently running.  The debugged program is unconditionally restarted.
+RA -- Unconditionaly restart (run) with current argument list ("run
+again"). This is identical to RUN except no prompt is displayed if the
+program is currently running. The debugged program is unconditionally
+restarted.
  
-Assumes confirmation is on, or it will be on after this command is executed.
+Assumes confirmation is on, or it will be on after this command is
+executed.
  
 Note, this is NOT a MacsBug command but it is useful in a gdb environment.
 end
 
-###################################################################################
+###########################################################################
 #
 # SB addr value1 [... value9]
 #
@@ -2026,7 +2061,8 @@ define SB
     				    else
     				    	set $value = $arg9
     				    	__is_string ($arg9)
-    				    	# gdb limits to 10 args and errors out for us
+    				    	# gdb limits to 10 args and errors
+    				    	# out for us
     				    end
     			    	end
     			    end
@@ -2077,21 +2113,22 @@ document SB
 SB addr values -- Assign up to 9 values to bytes starting at addr.
 String values are fully assigned at the next assignable byte.
 Ê
-Restrictions: The values value may not have any embedded blanks.  For example
-Ê             a value like (unsigned char *)0x1234 is invalid.
+Restrictions: The values value may not have any embedded blanks. For
+              example a value like (unsigned char *)0x1234 is invalid.
 Ê
 Ê             There is a limit of 9 values that can be set.
 Ê
-Macsbug features not supported: Double quoted "string" instead of single quoted
-Ê                               'string'.
+Macsbug features not supported: Double quoted "string" instead of single
+                                quoted 'string'.
 end
 
-# Note, SB, SL, SW, and SM are parse their args exactly the same way.  We could
-# generalize SM and let SB, SL, SW call it.  But that would mean taking away one
-# or two arguments from the possible total of 10.  So to keep them all consistent
-# with the 10 limit we repeat the code in each of these routines.
+# Note, SB, SL, SW, and SM are parse their args exactly the same way. We
+# could generalize SM and let SB, SL, SW call it. But that would mean
+# taking away one or two arguments from the possible total of 10. So to
+# keep them all consistent with the 10 limit we repeat the code in each of
+# these routines.
 
-###################################################################################
+###########################################################################
 #
 # SC
 #
@@ -2103,7 +2140,7 @@ document SC
 SC -- Display back trace.
 end
 
-###################################################################################
+###########################################################################
 #
 # SC6
 #
@@ -2115,7 +2152,7 @@ document SC6
 SC6 -- Same as SC.
 end
 
-###################################################################################
+###########################################################################
 #
 # SC7
 #
@@ -2127,7 +2164,7 @@ document SC7
 SC7 -- Same as SC.
 end
 
-###################################################################################
+###########################################################################
 #
 # SI [n] [m]
 #
@@ -2154,24 +2191,25 @@ define SI
     set $__lastcmd__ = 16
 end
 document SI
-SI [n] [m] -- Step n (or 1) instruction(s) and disassemble m (or 4) lines from new pc.
+SI [n] [m] -- Step n (or 1) instruction(s) and disassemble m (or 4) lines
+from new pc.
 See also gdb's next and step instructions, which step by source lines,
 not instructions.
 Ê
-The second argument is a extension to the MacsBug syntax to allow a disassembly
-of m lines to show the next instructions to be executed.  This approximates the
-disassembly window that MacsBug always shows.
+The second argument is a extension to the MacsBug syntax to allow a disassembly of m lines to show the next instructions to be executed. This
+approximates the disassembly window that MacsBug always shows.
 Ê
 Macsbug features not supported: S expr
 Ê
-Ê                               The MacsBug S is SI here.  This was done to preserve
-Ê                               gdb's definition of S[tep] to single statement step.
-Ê                               There is (was) a gdb SI to which does exactly what
-Ê                               this MacsBug SI does except that now the instruction
-Ê                               is also displayed at each instruction step.
+Ê                               The MacsBug S is SI here. This was done to
+                                preserve gdb's definition of S[tep] to
+                                single statement step. There is (was) a gdb
+                                SI to which does exactly what this MacsBug
+                                SI does except that now the instruction is
+                                also displayed at each instruction step.
 end
 
-###################################################################################
+###########################################################################
 #
 # SL addr value1 [... value9]
 #
@@ -2223,7 +2261,8 @@ define SL
     				    else
     				    	set $value = $arg9
     				    	__is_string ($arg9)
-    				    	# gdb limits to 10 args and errors out for us
+    				    	# gdb limits to 10 args and errors
+    				    	# out for us
     				    end
     			    	end
     			    end
@@ -2238,8 +2277,8 @@ define SL
 	    set $dot = $addr
 	end
 	
-	# Although we probably can use unaligned access, why take chances?  So
-	# the following sets memory a byte at a time.
+	# Although we probably can use unaligned access, why take chances?
+        # So the following sets memory a byte at a time.
 	
 	if ($string)
 	    __strlen $string
@@ -2287,21 +2326,22 @@ document SL
 SL addr values -- Assign up to 9 values to (4-byte) longs starting at addr.
 String values are fully assigned at the next assignable byte.
 Ê
-Restrictions: The values value may not have any embedded blanks.  For example
-Ê             a value like (unsigned char *)0x1234 is invalid.
+Restrictions: The values value may not have any embedded blanks. For
+              example a value like (unsigned char *)0x1234 is invalid.
 Ê
 Ê             There is a limit of 9 values that can be set.
 Ê
-Macsbug features not supported: Double quoted "string" instead of single quoted
-Ê                               'string'.
+Macsbug features not supported: Double quoted "string" instead of single
+                                quoted 'string'.
 end
 
-# Note, SB, SL, SW, and SM are parse their args exactly the same way.  We could
-# generalize SM and let SB, SL, SW call it.  But that would mean taking away one
-# or two arguments from the possible total of 10.  So to keep them all consistent
-# with the 10 limit we repeat the code in each of these routines.
+# Note, SB, SL, SW, and SM are parse their args exactly the same way. We
+# could generalize SM and let SB, SL, SW call it. But that would mean
+# taking away one or two arguments from the possible total of 10. So to
+# keep them all consistent with the 10 limit we repeat the code in each of
+# these routines.
 
-###################################################################################
+###########################################################################
 #
 # SM addr value1 [... value9]
 #
@@ -2353,7 +2393,8 @@ define SM
     				    else
     				    	set $value = $arg9
     				    	__is_string ($arg9)
-    				    	# gdb limits to 10 args and errors out for us
+    				    	# gdb limits to 10 args and errors
+    				    	# out for us
     				    end
     			    	end
     			    end
@@ -2368,8 +2409,8 @@ define SM
 	    set $dot = $addr
 	end
 	
-	# Although we probably can use unaligned access, why take chances?  So
-	# the following sets memory a byte at a time.
+	# Although we probably can use unaligned access, why take chances?
+        # So the following sets memory a byte at a time.
 	
 	if ($string)
 	    __strlen $string
@@ -2438,24 +2479,25 @@ end
 document SM
 SM addr value -- Assign up to 9 values to memory starting at addr.
 Each value determines the assignment size (byte, 2-byte word, or 4-byte
-long).  Specific sizes can be set using SB, SW, or SL.  String values
+long). Specific sizes can be set using SB, SW, or SL. String values
 are fully assigned at the next assignable byte.
 Ê
-Restrictions: The values value may not have any embedded blanks.  For example
-Ê             a value like (unsigned char *)0x1234 is invalid.
+Restrictions: The values value may not have any embedded blanks. For
+              example a value like (unsigned char *)0x1234 is invalid.
 Ê
 Ê             There is a limit of 9 values that can be set.
 Ê
-Macsbug features not supported: Double quoted "string" instead of single quoted
-Ê                               'string'.
+Macsbug features not supported: Double quoted "string" instead of single
+                                quoted 'string'.
 end
 
-# Note, SB, SL, SW, and SM are parse their args exactly the same way.  We could
-# generalize SM and let SB, SL, SW call it.  But that would mean taking away one
-# or two arguments from the possible total of 10.  So to keep them all consistent
-# with the 10 limit we repeat the code in each of these routines.
+# Note, SB, SL, SW, and SM are parse their args exactly the same way. We
+# could generalize SM and let SB, SL, SW call it. But that would mean
+# taking away one or two arguments from the possible total of 10. So to
+# keep them all consistent with the 10 limit we repeat the code in each of
+# these routines.
 
-###################################################################################
+###########################################################################
 #
 # SO [n] [m]
 #
@@ -2486,12 +2528,12 @@ SO [n] [m] -- Step over n instructions and disassemble m (or 4) lines from new p
 See also gdb's next and step instructions, which step by source lines,
 not instructions.
 Ê
-The second argument is a extension to the MacsBug syntax to allow a disassembly
-of m lines to show the next instructions to be executed.  This approximates the
-disassembly window that MacsBug always shows.
+The second argument is a extension to the MacsBug syntax to allow a
+disassembly of m lines to show the next instructions to be executed. This
+approximates the disassembly window that MacsBug always shows.
 end
 
-###################################################################################
+###########################################################################
 #
 # SW addr value1 [... value9]
 #
@@ -2543,7 +2585,8 @@ define sw
     				    else
     				    	set $value = $arg9
     				    	__is_string ($arg9)
-    				    	# gdb limits to 10 args and errors out for us
+    				    	# gdb limits to 10 args and errors
+    				    	# out for us
     				    end
     			    	end
     			    end
@@ -2610,12 +2653,13 @@ Macsbug features not supported: Double quoted "string" instead of single quoted
 Ê                               'string'.
 end
 
-# Note, SB, SL, SW, and SM are parse their args exactly the same way.  We could
-# generalize SM and let SB, SL, SW call it.  But that would mean taking away one
-# or two arguments from the possible total of 10.  So to keep them all consistent
-# with the 10 limit we repeat the code in each of these routines.
+# Note, SB, SL, SW, and SM are parse their args exactly the same way. We
+# could generalize SM and let SB, SL, SW call it. But that would mean
+# taking away one or two arguments from the possible total of 10. So to
+# keep them all consistent with the 10 limit, we repeat the code in each of
+# these routines.
 
-###################################################################################
+###########################################################################
 #
 # T [n] [m]
 #
@@ -2636,7 +2680,7 @@ document T
 T [n] [m] -- Trace n (or 1) instruction(s) and disassemble m (or 4) from pc (same as SO).
 end
 
-###################################################################################
+###########################################################################
 #
 # TD
 #
@@ -2702,7 +2746,7 @@ document TD
 TD -- Display integer and machine registers.
 end
 
-###################################################################################
+###########################################################################
 #
 # TF
 #
@@ -2719,9 +2763,9 @@ end
 # FPR30 = 000 0000000000000      0.000000000000000e+0 
 # FPR31 = 000 0000000000000      0.000000000000000e+0
 #
-# There's no way to display the floating regs in hex like this.  So we'll
-# just have to settle with what info registers $fN produces.  It's a
-# pretty good approximation so it isn't too bad.
+# There is no way to display the floating regs in hex like this. So we will
+# just have to settle with what info registers $fN produces. It is a
+# pretty good approximation, so it is not too bad.
 #
 define TF
     printf "PowerPC Vector Registers\n"
@@ -2780,7 +2824,7 @@ document TF
 TF -- Display the floating point registers.
 end
 
-###################################################################################
+###########################################################################
 #
 # TV
 #
@@ -2799,7 +2843,7 @@ end
 define TV
     printf "PowerPC Vector Registers\n"
     printf "%c[31m", 0x1B
-    printf " Not available - can't get or manipulate the vector registers yet! Sorry. Sigh :-(\n"
+    printf " Not available - cannot get or manipulate the vector registers yet! Sorry. Sigh :-(\n"
     printf "\n"
     printf "%c[0m\n", 0x1B
     info registers
@@ -2810,24 +2854,24 @@ document TV
 TV -- Display the vector registers (not yet supported).
 end
 
-###################################################################################
-###################################################################################
+###########################################################################
+###########################################################################
 
-#           ##########################################################
-#           # Internal helper functions for the above user functions #
-#           ##########################################################
+#    ##########################################################
+#    # Internal helper functions for the above user functions #
+#    ##########################################################
 
-# Because gdb doesn't have the concept of local function variables the convention
-# here is to define all "locals" with a double underbar prefix to try to keep them
-# distinct from their function's callers.  Indeed, we also follow the convention
-# for all these private function names as well.  It makes this stuff almost
-# unreadable but that's gdb for you.  Yuk!
+# Because gdb does not have the concept of local function variables, the
+# convention here is to define all "locals" with a double underbar prefix
+# to try to keep them distinct from their function's callers. Indeed, we
+# also follow the convention for all these private function names as well.
+# It makes this stuff almost unreadable, but that is gdb for you. Yuk!
 
 #
 # __binary value n
 #
-# Internal function to display $arg0 as $arg1 binary digits.  Only the right-
-# most $arg2 binary bits are displayed.  No newline is output here.
+# Internal function to display $arg0 as $arg1 binary digits. Only the
+# right-most $arg2 binary bits are displayed. No newline is output here.
 #
 define __binary
     set $__value = $arg0
@@ -2842,7 +2886,7 @@ document __binary
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
 # __branch_taken - determine if a conditional branch at $pc will be taken
 #
@@ -2850,9 +2894,9 @@ end
 #			= -1 if conditional branch will not be taken
 #			= 0  if not conditional branch at $pc
 #
-# The algorithm here is based on what is described in the IBM PPC Architecture book.
-# To paraphrase what's there in determining whether the branch is taken or not it
-# basically says:
+# The algorithm here is based on what is described in the IBM PPC
+# Architecture book. To paraphrase what is there in determining whether the
+# branch is taken or not, it basically says:
 #
 #   bc[l][a]  (primary = 16)
 #   bclr[l]   (primary = 19, extend = 16)
@@ -2875,8 +2919,8 @@ end
 #     if cond_ok then "will branch"
 #     else "will not branch"
 #
-# Note, for all these brances, of BO == 0x14 we have a "branch always" which are not
-# classed as conditional branches for our purposes.
+# Note, for all these brances, of BO == 0x14 we have a "branch always"
+# which are not classed as conditional branches for our purposes.
 #
 define __branch_taken
     # First decode the instruction to see if it's a conditional branch...
@@ -2929,15 +2973,16 @@ document __branch_taken
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
 # __flag_asm_line loc flag color
 #
-# This is called when a disassembly line for the specified location (loc) is 
-# output.  The cursor is positioned back to the start of the disassembly 
+# This is called when a disassembly line for the specified location (loc)
+# is output. The cursor is positioned back to the start of the disassembly 
 # (preceding) line and the location redisplayed to move the cursor to the
-# space that follows it (so we don't have to know how long it was).  That space
-# is then flagged with the specified flag character in the specified color.
+# space that follows it (so we do NOT have to know how long it was). That
+# space is then flagged with the specified flag character in the specified
+# color.
 #
 # The color value is the standard xterm color value.
 #
@@ -2954,7 +2999,7 @@ document __flag_asm_line
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
 # __flag_pc - shorthand for __flag_asm_line $pc '*' 31
 #
@@ -2965,7 +3010,7 @@ document __flag_pc
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
 # __flag_loc loc - shorthand for __flag_asm_line loc '*' 31
 #
@@ -2977,13 +3022,13 @@ document __flag_loc
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
 # __disasm1 loc flagloc
 #
-# Disassemble one instruction at loc.  If loc is equal to the flag_loc then flag
-# the line with the pc flag if flag_loc == $pc or the non-pc loc flag if loc ==
-# flag_loc.
+# Disassemble one instruction at loc. If loc is equal to the flag_loc then
+# flag the line with the pc flag if flag_loc == $pc or the non-pc loc flag
+# if loc == flag_loc.
 #
 define __disasm1
     set $__loc     = $arg0
@@ -3004,7 +3049,7 @@ document __disasm1
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
 # __disasmN addr n [flagloc]
 #
@@ -3043,9 +3088,10 @@ document __disasmN
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
-# __hexdump [addr [n]] - dump n (default 16) bytes starting at addr (default pc)
+# __hexdump [addr [n]] - dump n (default 16) bytes starting at addr
+# (default pc)
 #
 define __hexdump
     if ($argc == 0)
@@ -3125,21 +3171,22 @@ document __hexdump
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
 # __repeated_dump_line prev addr n - Check for repeated dump lines
 #
-# If the n bytes starting at the prev address is the same as the n bytes starting at addr then
-# set $repeated to 1.  Otherwise set it to 0.
+# If the n bytes starting at the prev address is the same as the n bytes
+# starting at addr, then set $repeated to 1. Otherwise set it to 0.
 #				       
-# This is used by __hexdump and DMA to control whether repeated lines are to be
-# displayed.  This is further controlled by the MSET DITTO setting.
+# This is used by __hexdump and DMA to control whether repeated lines are
+# to be displayed. This is further controlled by the MSET DITTO setting.
 #
 define __repeated_dump_line
     set $repeated = 0
     
-    # Test $__ditto__ as a single operand just in case it is still undefined. Gdb
-    # sets undefined convenience variables to void which tests as false.
+    # Test $__ditto__ as a single operand just in case it is still
+    # undefined. Gdb sets undefined convenience variables to void which
+    # tests as false.
     
     if ($__ditto__ && $arg0 < $arg1)
     	set $__p1 = (unsigned char *)$arg0
@@ -3161,15 +3208,15 @@ document __repeated_dump_line
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
 # __print_char char [isString] - print a (possibly escaped) character
 #
-# If isString (actually any 2nd argument) is specified then this character is
-# in the context of a "string" as opposed to a 'string' (i.e., the surrounding
-# quotes on the string) so that a single quote do not need to be escaped.  On
-# the other hand if this is the context of a double-quoted string then double
-# quotes need to be escaped.
+# If isString (actually any 2nd argument) is specified then this character
+# is in the context of a "string" as opposed to a 'string' (i.e., the
+# surrounding quotes on the string) so that a single quote do not need to
+# be escaped. On the other hand if this is the context of a double-quoted
+# string, then double quotes need to be escaped.
 #
 define __print_char
     set $__c = $arg0
@@ -3222,7 +3269,7 @@ document __print_char
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
 # __print_1 value
 #
@@ -3236,7 +3283,7 @@ document __print_1
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
 # __print_2 value
 #
@@ -3251,7 +3298,7 @@ document __print_2
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
 # __print_4 value
 #
@@ -3268,17 +3315,18 @@ document __print_4
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
 # __strcmp s1 s2 - set $strcmp != 0 if strings match else 0
 #
-# We could test for the existence of the function strcmp() and use it instead of
-# doing all this crap.  While the odds are that it would always be found (I think
-# it's part of the System Framework which most everything links in, and I did
-# always see it in my testing) having our own gdb strcmp is guaranteed and 100%
-# safe.  While the probability is very low, it is not zero that the user defined
-# his own strcmp() that doesn't do what the C/C++ strcmp() does.  Ok, I'm being
-# overly paranoid.
+# We could test for the existence of the function strcmp() and use it
+# instead of doing all this crap. While the odds are that it would always
+# be found (I think that it is part of the System Framework which most
+# everything links in, and I did always see it in my testing...), having
+# our own gdb strcmp is guaranteed and 100% safe. While the probability is
+# very low, it is not zero that the user defined his own strcmp() that does
+# NOT do what the C/C++ strcmp() does. Ok, I am being overly paranoid
+# here... sometimes that is necessary though.
 #
 define __strcmp
     set $__s1 = (unsigned char *)($arg0)
@@ -3302,9 +3350,10 @@ document __strcmp
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
-# __strncmp s1 s2 n - set $strncmp != 0 if n characters of strings match else 0
+# __strncmp s1 s2 n - set $strncmp != 0 if n characters of strings match
+# else 0
 #
 # Similar to __strcmp except that this one's the equivalent to strncmp().
 #
@@ -3332,7 +3381,7 @@ document __strncmp
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
 # __strlen s - return the length of the string (argument) in $strlen
 #
@@ -3346,7 +3395,7 @@ document __strlen
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
 # __memcpy s1 s2 n
 #
@@ -3363,12 +3412,13 @@ document __memcpy
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
 # __lower_case option_arg - lower case an option argument
 #
-# Returns $lower_case containing the lower cased copy of the option_arg.  The
-# option_arg must be an ACTUAL $argN symbol from the caller, not a value set from it.
+# Returns $lower_case containing the lower cased copy of the option_arg.
+# The option_arg must be an ACTUAL $argN symbol from the caller, not a
+# value set from it.
 #
 define __lower_case
     set $lower_case = (char *)"$arg0"
@@ -3384,37 +3434,41 @@ document __lower_case
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
 # __is_string arg - determine if arg is a value or "string"
 #
-# Returns $string set to the a pointer to the string if arg is a string and $string
-# is set to 0 if the arg is not a string.
+# Returns $string set to the a pointer to the string if arg is a string and
+# $string is set to 0 if the arg is not a string.
 #
-# This function uses the fact (determined after much expirimentation) that assigning
-# a value to a variable simply yields that value.  But assigning a string yields a
-# new instance of the pointer to the string and thus the resultant pointer will not
-# be the same as the original argument pointer.  If someone can figure out a simpler
-# way of determining a double quoted "string" argument from a value in this dumb
-# command language I'm open to it!
+# This function uses the fact (determined after much expirimentation) that
+# assigning a value to a variable simply yields that value. But assigning a
+# string yields a new instance of the pointer to the string and thus the
+# resultant pointer will not be the same as the original argument pointer.
+# If someone can figure out a simpler way of determining a double quoted
+# "string" argument from a value in this dumb command language I am open to
+# it!
 #
-# Note, the arg must be an ACTUAL $argN symbol, not a value set from it.  A set
-# assignment yields a pointer value.  We need the actual arg as written because
-# actual arg substitution is a string substitution which we are assuming here when
-# we do the (char *)$arg0 assignment.  We are actually doing (char *)"string" here
-# when the arg really was a string which allows us to do what we do here.
+# Note, the arg must be an ACTUAL $argN symbol, not a value set from it. A
+# set assignment yields a pointer value. We need the actual arg as written
+# because actual arg substitution is a string substitution which we are
+# assuming here when we do the (char *)$arg0 assignment. We are actually
+# doing (char *)"string" here when the arg really was a string which allows
+# us to do what we do here.
 #
 define __is_string
     if ((long)$arg0 < 0)
-    	# Negative values are assumed to be just that, values, and not strings.
+    	# Negative values are assumed to be just that, values, and not
+    	# strings.
     	set $string = 0
     else
     	# If value is not negative, get its value cast as a pointer...
         set $__p = (char *)$arg0
         
-        # If original value is same as pointer value then it's a value. Otherwise
-        # the set $__p created a new instance of the string (lucky for use) and
-        # it won't be the same when it's a string.  What a kludge!  What a language!
+        # If original value is same as pointer value, then it is a value.
+    	# Otherwise the set $__p created a new instance of the string
+        # (lucky for use) and it will not be the same when it is a string.
+    	# What a kludge!  What a language!
         if ($__p == $arg0)
             set $string = 0
         else
@@ -3426,7 +3480,7 @@ document __is_string
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
 # __save_all_regs_v - save current values of all registers
 #
@@ -3486,7 +3540,7 @@ document __save_all_regs_v
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
 # __save_all_regs_h - save current values of all registers
 #
@@ -3545,18 +3599,18 @@ document __save_all_regs_h
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
-# __color_change boolean-expression - set color to red or normal depending on
-#				      whether expression is true (red) or false
-#				      (0).
+# __color_change boolean-expression - set color to red or normal depending
+#                                     on whether expression is true (red)
+#                                     or false (0).
 #
-# This for coloring register value changes.  Once upon a time we used "%c[3%dm"
-# as the print format, where "\e[31m" was red and "\e[30m" was black.  Thus we
-# could use the boolean expresion directly in print statements and not need this
-# routine.  However, it turns out that black on some terminal color schemes is
-# not the same thing as normal/standard color which is "\e[0m".  Hence this more
-# elaborate scheme.  Sigh! :-(
+# This for coloring register value changes. Once upon a time we used
+# "%c[3%dm" as the print format, where "\e[31m" was red and "\e[30m" was
+# black. Thus we could use the boolean expresion directly in print
+# statements and not need this routine. However, it turns out that black on
+# some terminal color schemes is not the same thing as normal/standard
+# color which is "\e[0m". Hence this more elaborate scheme. Sigh! :-(
 #
 define __color_change
     if ($arg0)
@@ -3566,27 +3620,29 @@ define __color_change
     end
 end
 
-###################################################################################
+###########################################################################
 #
-# __display_registers_v [col] - display all registers in a fixed position vertically
-#				on the right side of the terminal window (or starting
-#				in the specified 1-relative column)
+# __display_registers_v [col] - display all registers in a fixed position
+#                               vertically on the right side of the
+#                               terminal window (or starting in the
+#                               specified 1-relative column)
 #
-# Any register which changes value from the previous display is shown in red.  The
-# "previous" display is one for which any compatible command was previously used
-# (e.g., so's, si's, il's, etc.).
+# Any register which changes value from the previous display is shown in
+# red. The "previous" display is one for which any compatible command was
+# previously used (e.g., so's, si's, il's, etc.).
 #
 define __display_registers_v
-    # Assume we will display in the last 14 columns of a 132-width display starting
-    # at the top of the window...
+    # Assume we will display in the last 14 columns of a 132-width display
+    # starting at the top of the window...
     
     set $screen_width = 132
     set $__row = 1
     
-    # We'll generalize this a bit to specify a starting column which defaults to
-    # the screen width minus 14.  We don't allow specifying the top row since
-    # scrolling always moves the display up when a command is entered and this
-    # display looks as best as we can when we start it on row 1.
+    # We will generalize this a bit to specify a starting column which
+    # defaults to the screen width minus 14. We do not allow specifying the
+    # top row since scrolling always moves the display up when a command is
+    # entered and this display looks as best as we can when we start it on
+    # row 1.
      
     if ($argc == 1)
 	set $__col = $arg0
@@ -3594,9 +3650,9 @@ define __display_registers_v
         set $__col = $screen_width - 14
     end
     
-    # If the previous command wasn't one that displayed the registers then init
-    # the previous values with the current values.  This also makes sure they 
-    # are defined the first time we ever use them.
+    # If the previous command was not one that displayed the registers,
+    # then init the previous values with the current values. This also
+    # makes sure they are defined the first time we ever use them.
     
     # Check for ID, IL, IP, SI, and SO...
     if ($__lastcmd__ != 9  && \
@@ -3610,12 +3666,13 @@ define __display_registers_v
         set $__saved_regs = 0
     end
         
-    # Finally print all these suckers.  We control the positioning for each registers
-    # and make sure we preserve the cursor's original position so we leave it where
-    # we found it.
+    # Finally print all these suckers. We control the positioning for each
+    # registers and make sure we preserve the cursor's original position so
+    # we leave it where we found it.
     
     printf "%c7", 0x1B
-    #set $__row += 0
+    # The next line had previously been commented out:
+    set $__row += 0
 
     printf "%c[%d;%dH| PC  %.8X%c[0K", 0x1B, $__row+ 0, $__col, $pc, 0x1B
     printf "%c[%d;%dH| SP  %.8X%c[0K", 0x1B, $__row+ 1, $__col, $sp, 0x1B
@@ -3802,7 +3859,7 @@ define __display_registers_v
     printf "%c[%d;%dH%c[0m+ÑÑÑÑÑÑÑÑÑÑÑÑÑ%c[0K", 0x1B, $__row+32, $__col, 0x1B, 0x1B
     printf "%c8", 0x1B
     
-    # Now that we know what's changed, save the values for the next time
+    # Now that we know what has changed, save the values for the next time
     # through here unless we already saved them.
     
     if (!$__saved_regs)
@@ -3813,13 +3870,14 @@ document __display_registers_v
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
-# __display_registers_h - display all registers horizontally at the top of the
-#			  screen
+# __display_registers_h - display all registers horizontally at the top of
+#                         the screen
 #
-# Any register which changes value from the previous display is shown in red.  The
-# "previous" display is one for which any compatible command was previously used
+# Any register which changes value from the previous display is shown in
+# red. The "previous" display is one for which any compatible command was
+# previously used
 # (e.g., so's, si's, il's, etc.).
 #
 # PC  00001D18        CR0  CR1  CR2  CR3  CR4  CR5  CR6  CR7
@@ -3837,9 +3895,9 @@ end
 # R7 0000000A     R15 00000000      R23 00000000      R31 00001D14
 #
 define __display_registers_h
-    # If the previous command wasn't one that displayed the registers then init
-    # the previous values with the current values.  This also makes sure they 
-    # are defined the first time we ever use them.
+    # If the previous command was not one that displayed the registers,
+    # then init the previous values with the current values. This also
+    # makes sure they are defined the first time we ever use them.
     
     # Check for ID, IL, IP, SI, and SO...
     if ($__lastcmd__ != 9  && \
@@ -4063,7 +4121,7 @@ define __display_registers_h
     printf "ÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑ%c[0K", 0x1B
     printf "%c8", 0x1B
     
-    # Now that we know what's changed, save the values for the next time
+    # Now that we know what has changed, save the values for the next time
     # through here unless we already saved them.
     
     if (!$__saved_regs)
@@ -4074,13 +4132,14 @@ document __display_registers_h
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
 # __scroll N - turn scrolling on (N > 0) or off (N < 0)
 #
-# If turned on, scrolling extends from line 15 through $arg0 to accomodate the
-# 14-line register display done by __display_registers_h starting at line 1.  If
-# scrolling is turned off, scrolling is set from line 1 through -$arg0
+# If turned on, scrolling extends from line 15 through $arg0 to accomodate
+# the 14-line register display done by __display_registers_h starting at
+# line 1. If scrolling is turned off, scrolling is set from line 1 through
+# -$arg0
 #
 define __scroll
     #set $screen_height = 60
@@ -4112,15 +4171,16 @@ document __scroll
 For internal use only -- do not use.
 end
 
-###################################################################################
+###########################################################################
 #
-# Intercept the RUN command to initialize our "global" convenience variables.  None
-# of the Macsbug commands make sense anyway until the user does a RUN command.  This
-# is fortunate since the only way to fire up execution is with a run command and
-# there is NO OTHER WAY to initialize convenience variables!  Simply setting them in
-# this script doesn't work since gdb wipes out the variables AFTER it runs the
-# script.  They also get wiped out when a FILE command is done (and a hook-file is
-# run before the variables are clobbered so that won't work either).
+# Intercept the RUN command to initialize our "global" convenience
+# variables. None of the Macsbug commands make sense anyway until the user
+# does a RUN command. This is fortunate since the only way to fire up
+# execution is with a run command and there is NO OTHER WAY to initialize
+# convenience variables! Simply setting them in this script does not work
+# since gdb wipes out the variables AFTER it runs the script. They also get
+# wiped out when a FILE command is done (and a hook-file is run before the
+# variables are clobbered, so that will not work either).
 #
 define hook-run
     set $dot            = 0
@@ -4130,10 +4190,11 @@ define hook-run
     set $__prev_dma_n__ = 0
     
     if ($__initialized__)
-    	# When $__initialized__ is undefined it will test false.  We can only test
-    	# undefined gdb convenience variables as shown (i.e., cannot mix with any
-    	# operators).  So this path of this if remains empty once we initialize the
-    	# state switches.  Of course a FILE command will uninialize everyting again.
+    	# When $__initialized__ is undefined it will test false. We can
+        # only test undefined gdb convenience variables as shown (i.e.,
+        # cannot mix with any operators). So this path of this if remains
+        # empty once we initialize the state switches. Of course a FILE
+        # command will uninialize everyting again.
     else
     	set $__unmangle__ = 0
     	set $__ditto__    = 0
@@ -4144,4 +4205,4 @@ define hook-run
     end
 end
 
-###################################################################################
+###########################################################################

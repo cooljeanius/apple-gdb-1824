@@ -21,7 +21,7 @@ case "${host}" in
 		        # APPLE LOCAL - Allow more than 256 streams to
 			# be open at a time.
 arm-apple-darwin*)	HDEFINES="-D_DARWIN_UNLIMITED_STREAMS -miphoneos-version-min=5.0" ;;
-*-apple-darwin*)	HDEFINES="-D_DARWIN_UNLIMITED_STREAMS -mmacosx-version-min=10.7" ;;
+*-apple-darwin*)	HDEFINES="-D_DARWIN_UNLIMITED_STREAMS -mmacosx-version-min=10.6" ;;
 hppa*-*-hpux*)		# HP/UX's ftello64 et.al. declarations are only
 			# visible when _LARGEFILE64_SOURCE is defined.
 			# Without those declarations, real_ftell et.al.
@@ -35,7 +35,7 @@ hppa*-*-osf*)		HDEFINES=-DHOST_HPPAOSF ;;
 ia64-*-*)		host64=true;;
 
 # Workaround for limitations on win9x where file contents are
-# not zero'd out if you seek past the end and then write.
+# not zeroed out if you seek past the end and then write.
 i[3-7]86-*-mingw32*)	HDEFINES=-D__USE_MINGW_FSEEK;;
 
 i[3-7]86-sequent-bsd*)	HDEFINES=-Dshared=genshared ;;
@@ -58,10 +58,10 @@ m68*-hp-hpux*)		HDEFINES=-DHOST_HP300HPUX ;;
 *-*-windows*)
 			HOST_64BIT_TYPE=__int64
 			HOST_U_64BIT_TYPE="unsigned __int64"
-# The following krock is necessary because we can't run the build compiler
+# The following krock is necessary because we cannot run the build compiler
 # (MSVC) on the configure host, so we have to explicitly set the values here.
-# Note that this file is never run through autoconf, so we can't use any
-# autoconf macros here.  Because of this, we have to muck with autoconf
+# Note that this file is never run through autoconf, so we cannot use any
+# autoconf macros here. Because of this, we have to muck with autoconf
 # variables explicitly.
 			ac_cv_func_mmap_fixed_mapped=no
 			ac_cv_header_time=no

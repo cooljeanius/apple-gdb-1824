@@ -52,14 +52,14 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_DATA = @INSTALL_DATA@
 
 CC_FOR_TARGET = ` \
-  if [ -f ../../gcc/xgcc ] ; then \
+  if test -f ../../gcc/xgcc; then \
     echo ../../gcc/xgcc -B../../gcc/; \
   else \
     t='$(program_transform_name)'; echo gcc | sed -e '' $$t; \
   fi`
 
 NLMCONV_FOR_TARGET = ` \
-  if [ -f ../../binutils/nlmconv ] ; then \
+  if test -f ../../binutils/nlmconv; then \
     echo ../../binutils/nlmconv; \
   else \
     t='$(program_transform_name)'; echo nlmconv | sed -e '' $$t; \
@@ -70,7 +70,7 @@ INCLUDE_CFLAGS = -I. -I${srcdir}
 
 # CFLAGS is specifically reserved for setting from the command line
 # when running make.  I.E.  "make CFLAGS=-Wmissing-prototypes".
-CFLAGS = -g
+CFLAGS = -g @CFLAGS@
 # INTERNAL_CFLAGS is the aggregate of all other *CFLAGS macros.
 INTERNAL_CFLAGS = ${CFLAGS} ${INCLUDE_CFLAGS} ${USER_CFLAGS} 
 LDFLAGS = $(CFLAGS)
@@ -90,7 +90,7 @@ DEPFILES = $(GDBSERVE_DEPFILES)
 SOURCES = $(ALLDEPFILES)
 TAGFILES = $(SOURCES) ${HFILES} ${ALLPARAM} ${POSSLIBS} 
 
-# Prevent Sun make from putting in the machine type.  Setting
+# Prevent Sun make from putting in the machine type. Setting
 # TARGET_ARCH to nothing works for SunOS 3, 4.0, but not for 4.1.
 .c.o:
 	${CC_FOR_TARGET} -c ${INTERNAL_CFLAGS} $<
@@ -102,7 +102,7 @@ all: gdbserve.nlm
 
 # Traditionally "install" depends on "all".  But it may be useful
 # not to; for example, if the user has made some trivial change to a 
-# source file and doesn't care about rebuilding or just wants to save the
+# source file and does NOT care about rebuilding or just wants to save the
 # time it takes for make to check that all is up to date.
 # install-only is intended to address that need.
 install: all install-only

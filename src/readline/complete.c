@@ -21,24 +21,28 @@
    59 Temple Place, Suite 330, Boston, MA 02111 USA. */
 #define READLINE_LIBRARY
 
-#if defined (HAVE_CONFIG_H)
-#  include <config.h>
-#endif
+#if defined(HAVE_CONFIG_H)
+# include <config.h>
+#else
+# warning complete.c expects config.h to be included.
+#endif /* HAVE_CONFIG_H */
 
 #include <sys/types.h>
 #include <fcntl.h>
-#if defined (HAVE_SYS_FILE_H)
-#include <sys/file.h>
-#endif
+#if defined(HAVE_SYS_FILE_H)
+# include <sys/file.h>
+#else
+# warning complete.c expects sys/file.h to be included.
+#endif /* HAVE_SYS_FILE_H */
 
 #if defined (HAVE_UNISTD_H)
 #  include <unistd.h>
 #endif /* HAVE_UNISTD_H */
 
 #if defined (HAVE_STDLIB_H)
-#  include <stdlib.h>
+# include <stdlib.h>
 #else
-#  include "ansi_stdlib.h"
+# include "ansi_stdlib.h"
 #endif /* HAVE_STDLIB_H */
 
 #include <stdio.h>
@@ -49,8 +53,8 @@ extern int errno;
 #endif /* !errno */
 
 #ifdef HAVE_PWD_H
-#include <pwd.h>
-#endif
+# include <pwd.h>
+#endif /* HAVE_PWD_H */
 
 #include "posixdir.h"
 #include "posixstat.h"
@@ -68,13 +72,13 @@ extern int errno;
 typedef int QSFUNC (const void *, const void *);
 #else
 typedef int QSFUNC ();
-#endif
+#endif /* __STDC__ */
 
 #ifdef HAVE_LSTAT
-#  define LSTAT lstat
+# define LSTAT lstat
 #else
-#  define LSTAT stat
-#endif
+# define LSTAT stat
+#endif /* HAVE_LSTAT */
 
 /* Unix version of a hidden file.  Could be different on other systems. */
 #define HIDDEN_FILE(fname)	((fname)[0] == '.')
@@ -95,12 +99,12 @@ extern struct passwd *getpwent PARAMS((void));
    longest string in that array. */
 rl_compdisp_func_t *rl_completion_display_matches_hook = (rl_compdisp_func_t *)NULL;
 
-#if defined (VISIBLE_STATS)
-#  if !defined (X_OK)
+#if defined(VISIBLE_STATS)
+#  if !defined(X_OK)
 #    define X_OK 1
-#  endif
+#  endif /* !X_OK */
 static int stat_char PARAMS((char *));
-#endif
+#endif /* VISIBLE_STATS */
 
 static char *rl_quote_filename PARAMS((char *, int, char *));
 
@@ -264,7 +268,7 @@ rl_compignore_func_t *rl_ignore_some_completions_function = (rl_compignore_func_
    and a pointer to the quoting character to be used, which the function can
    reset if desired. */
 rl_quote_func_t *rl_filename_quoting_function = rl_quote_filename;
-         
+
 /* Function to call to remove quoting characters from a filename.  Called
    before completion is attempted, so the embedded quotes do not interfere
    with matching names in the file system.  Readline doesn't do anything
@@ -560,7 +564,7 @@ print_filename (to_print, full_pathname)
     {
       PUTX (*s);
     }
-#else  
+#else
   char *s, c, *new_full_pathname;
   int extension_char, slen, tlen;
 
@@ -706,7 +710,7 @@ _rl_find_completion_word (fp, dp)
 	      else if (quote_char == '"')
 		found_quote |= RL_QF_DOUBLE_QUOTE;
 	      else
-		found_quote |= RL_QF_OTHER_QUOTE;      
+		found_quote |= RL_QF_OTHER_QUOTE;
 	    }
 	}
     }
@@ -818,7 +822,7 @@ gen_completion_matches (text, start, end, our_func, found_quote, quote_char)
 
   matches = rl_completion_matches (text, our_func);
   FREE (temp);
-  return matches;  
+  return matches;
 }
 
 /* Filter out duplicates in MATCHES.  This frees up the strings in
@@ -1220,7 +1224,7 @@ display_matches (matches)
       (*rl_completion_display_matches_hook) (matches, len, max);
       return;
     }
-	
+
   /* If there are many items, then ask the user if she really wants to
      see them all. */
   if (len >= rl_completion_query_items)
@@ -1981,7 +1985,7 @@ rl_menu_complete (count, ignore)
      rl_line_buffer[orig_start] and rl_line_buffer[rl_point] with
      matches[match_list_index], and add any necessary closing char. */
 
-  if (matches == 0 || match_list_size == 0) 
+  if (matches == 0 || match_list_size == 0)
     {
       rl_ding ();
       FREE (matches);

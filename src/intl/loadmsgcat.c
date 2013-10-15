@@ -16,24 +16,44 @@
    Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+# include "config.h"
+#else
+# warning loadmsgcat.c expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
 
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#else
+# warning loadmsgcat.c expects <fcntl.h> to be included.
+#endif /* HAVE_FCNTL_H */
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#else
+# warning loadmsgcat.c expects <sys/types.h> to be included.
+#endif /* HAVE_SYS_TYPES_H */
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#else
+# warning loadmsgcat.c expects <sys/stat.h> to be included.
+#endif /* HAVE_SYS_STAT_H */
 
-#if defined STDC_HEADERS || defined _LIBC
+#if defined STDC_HEADERS || defined _LIBC || defined HAVE_STDLIB_H
 # include <stdlib.h>
-#endif
+#else
+# warning loadmsgcat.c expects <stdlib.h> to be included.
+#endif /* HAVE_STDLIB_H || _LIBC || STDC_HEADERS */
 
 #if defined HAVE_UNISTD_H || defined _LIBC
 # include <unistd.h>
-#endif
+#else
+# warning loadmsgcat.c expects <unistd.h> to be included.
+#endif /* HAVE_UNISTD_H || _LIBC */
 
-#if (defined HAVE_MMAP && defined HAVE_MUNMAP) || defined _LIBC
+#if (defined HAVE_MMAP && defined HAVE_MUNMAP) || defined _LIBC || defined HAVE_SYS_MMAN_H
 # include <sys/mman.h>
-#endif
+#else
+# warning loadmsgcat.c expects <sys/mman.h> to be included.
+#endif /* (HAVE_MMAP && HAVE_MUNMAP) || _LIBC || HAVE_SYS_MMAN_H */
 
 #include "gettext.h"
 #include "gettextP.h"
@@ -41,7 +61,7 @@
 /* @@ end of prolog @@ */
 
 #ifdef _LIBC
-/* Rename the non ISO C functions.  This is required by the standard
+/* Rename the non ISO C functions. This is required by the standard
    because some ISO C functions will require linking with this object
    file and the name space must not be polluted.  */
 # define open   __open
@@ -49,15 +69,15 @@
 # define read   __read
 # define mmap   __mmap
 # define munmap __munmap
-#endif
+#endif /* _LIBC */
 
 /* We need a sign, whether a new catalog was loaded, which can be associated
-   with all translations.  This is important if the translations are
+   with all translations. This is important if the translations are
    cached by one of GCC's features.  */
 int _nl_msg_cat_cntr = 0;
 
 
-/* Load the message catalogs specified by FILENAME.  If it is no valid
+/* Load the message catalogs specified by FILENAME. If it is no valid
    message catalog do nothing.  */
 void
 internal_function
@@ -78,7 +98,7 @@ _nl_load_domain (domain_file)
   domain_file->data = NULL;
 
   /* If the record does not represent a valid locale the FILENAME
-     might be NULL.  This can happen when according to the given
+     might be NULL. This can happen when according to the given
      specification the locale file name is different for XPG and CEN
      syntax.  */
   if (domain_file->filename == NULL)
@@ -101,7 +121,7 @@ _nl_load_domain (domain_file)
 
 #if (defined HAVE_MMAP && defined HAVE_MUNMAP && !defined DISALLOW_MMAP) \
     || defined _LIBC
-  /* Now we are ready to load the file.  If mmap() is available we try
+  /* Now we are ready to load the file. If mmap() is available we try
      this first.  If not available or it failed we try to load it.  */
   data = (struct mo_file_header *) mmap (NULL, size, PROT_READ,
 					 MAP_PRIVATE, fd, 0);
@@ -112,7 +132,7 @@ _nl_load_domain (domain_file)
       close (fd);
       use_mmap = 1;
     }
-#endif
+#endif /* (HAVE_MMAP && HAVE_MUNMAP && !DISALLOW_MMAP) || _LIBC */
 
   /* If the data is not yet available (i.e. mmap'ed) we try to load
      it manually.  */
@@ -154,7 +174,7 @@ _nl_load_domain (domain_file)
       if (use_mmap)
 	munmap ((caddr_t) data, size);
       else
-#endif
+#endif /* (HAVE_MMAP && HAVE_MUNMAP && !DISALLOW_MMAP) || _LIBC */
 	free (data);
       return;
     }
@@ -169,7 +189,7 @@ _nl_load_domain (domain_file)
 #if (defined HAVE_MMAP && defined HAVE_MUNMAP && !defined DISALLOW_MMAP) \
     || defined _LIBC
   domain->use_mmap = use_mmap;
-#endif
+#endif /* (HAVE_MMAP && HAVE_MUNMAP && !DISALLOW_MMAP) || _LIBC */
   domain->mmap_size = size;
   domain->must_swap = data->magic != _MAGIC;
 
@@ -193,14 +213,14 @@ _nl_load_domain (domain_file)
       if (use_mmap)
 	munmap ((caddr_t) data, size);
       else
-#endif
+#endif /* (HAVE_MMAP && HAVE_MUNMAP && !DISALLOW_MMAP) || _LIBC */
 	free (data);
       free (domain);
       domain_file->data = NULL;
       return;
     }
 
-  /* Show that one domain is changed.  This might make some cached
+  /* Show that one domain is changed. This might make some cached
      translations invalid.  */
   ++_nl_msg_cat_cntr;
 }
@@ -219,4 +239,6 @@ _nl_unload_domain (domain)
 
   free (domain);
 }
-#endif
+#endif /* _LIBC */
+
+/* EOF */

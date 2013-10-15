@@ -16,10 +16,16 @@
    Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #ifdef HAVE_CONFIG_H
-# include <config.h>
-#endif
+# include "config.h"
+#else
+# warning dcgettext.c expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
 
-#include <sys/types.h>
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#else
+# warning dcgettext.c expects <sys/types.h> to be included.
+#endif /* HAVE_SYS_TYPES_H */
 
 #ifdef __GNUC__
 # define alloca __builtin_alloca
@@ -33,20 +39,24 @@
 #  else
 #   ifndef alloca
 char *alloca ();
-#   endif
-#  endif
-# endif
-#endif
+#   endif /* !alloca */
+#  endif /* _AIX */
+# endif /* HAVE_ALLOCA || _LIBC */
+#endif /* __GNUC__ */
 
-#include <errno.h>
+#ifdef HAVE_ERRNO_H
+# include <errno.h>
+#else
+# warning dcgettext.c expects <errno.h> to be included.
+#endif /* HAVE_ERRNO_H */
 #ifndef errno
 extern int errno;
-#endif
+#endif /* !errno */
 #ifndef __set_errno
 # define __set_errno(val) errno = (val)
-#endif
+#endif /* !__set_errno */
 
-#if defined STDC_HEADERS || defined _LIBC
+#if defined STDC_HEADERS || defined _LIBC || defined HAVE_STDLIB_H
 # include <stdlib.h>
 #else
 char *getenv ();
@@ -54,40 +64,42 @@ char *getenv ();
 #  include <malloc.h>
 # else
 void free ();
-# endif
-#endif
+# endif /* HAVE_MALLOC_H */
+#endif /* HAVE_STDLIB_H */
 
 #if defined HAVE_STRING_H || defined _LIBC
 # ifndef _GNU_SOURCE
 #  define _GNU_SOURCE	1
 # endif
 # include <string.h>
-#else
+#elif defined HAVE_STRINGS_H
 # include <strings.h>
-#endif
+#endif /* HAVE_STRING_H || _LIBC */
 #if !HAVE_STRCHR && !defined _LIBC
 # ifndef strchr
 #  define strchr index
-# endif
-#endif
+# endif /* !strchr */
+#endif /* !HAVE_STRCHR && !_LIBC */
 
 #if defined HAVE_UNISTD_H || defined _LIBC
 # include <unistd.h>
-#endif
+#else
+# warning dcgettext.c expects <unistd.h> to be included.
+#endif /* HAVE_UNISTD_H */
 
 #include "gettext.h"
 #include "gettextP.h"
-#ifdef _LIBC
+#if defined _LIBC || defined HAVE_LIBINTL_H
 # include <libintl.h>
 #else
 # include "libgettext.h"
-#endif
+#endif /* _LIBC || HAVE_LIBINTL_H */
 #include "hash-string.h"
 
 /* @@ end of prolog @@ */
 
 #ifdef _LIBC
-/* Rename the non ANSI C functions.  This is required by the standard
+/* Rename the non ANSI C functions. This is required by the standard
    because some ANSI C functions will require linking with this object
    file and the name space must not be polluted.  */
 # define getcwd __getcwd
@@ -96,15 +108,15 @@ void free ();
 # endif
 #else
 # if !defined HAVE_GETCWD
-char *getwd ();
+char *getwd (); /* You will get warnings saying to use getcwd instead, but this is for the case where that is not available. */
 #  define getcwd(buf, max) getwd (buf)
 # else
 char *getcwd ();
-# endif
+# endif /* !HAVE_GETCWD */
 # ifndef HAVE_STPCPY
 static char *stpcpy PARAMS ((char *dest, const char *src));
-# endif
-#endif
+# endif /* HAVE_STPCPY */
+#endif /* _LIBC */
 
 /* Amount to increase buffer size by in each try.  */
 #define PATH_INCR 32
@@ -115,28 +127,32 @@ static char *stpcpy PARAMS ((char *dest, const char *src));
    later included (as on MORE/BSD 4.3).  */
 #if defined(_POSIX_VERSION) || (defined(HAVE_LIMITS_H) && !defined(__GNUC__))
 # include <limits.h>
-#endif
+#else
+# warning dcgettext.c expects <limits.h> to be included.
+#endif /* (_POSIX_VERSION) || (HAVE_LIMITS_H && !__GNUC__ */
 
 #ifndef _POSIX_PATH_MAX
 # define _POSIX_PATH_MAX 255
-#endif
+#endif /* !_POSIX_PATH_MAX */
 
 #if !defined(PATH_MAX) && defined(_PC_PATH_MAX)
 # define PATH_MAX (pathconf ("/", _PC_PATH_MAX) < 1 ? 1024 : pathconf ("/", _PC_PATH_MAX))
 #endif
 
-/* Don't include sys/param.h if it already has been.  */
+/* Do NOT include sys/param.h if it already has been.  */
 #if defined(HAVE_SYS_PARAM_H) && !defined(PATH_MAX) && !defined(MAXPATHLEN)
 # include <sys/param.h>
-#endif
+#else
+# warning dcgettext.c expects <sys/param.h> to be included. (Ignore this warning if you know you already have done so.)
+#endif /* HAVE_SYS_PARAM_H && !PATH_MAX && !MAXPATHLEN */
 
 #if !defined(PATH_MAX) && defined(MAXPATHLEN)
 # define PATH_MAX MAXPATHLEN
-#endif
+#endif /* !PATH_MAX && !MAXPATHLEN */
 
 #ifndef PATH_MAX
 # define PATH_MAX _POSIX_PATH_MAX
-#endif
+#endif /* !PATH_MAX */
 
 /* XPG3 defines the result of `setlocale (category, NULL)' as:
    ``Directs `setlocale()' to query `category' and return the current
@@ -146,7 +162,7 @@ static char *stpcpy PARAMS ((char *dest, const char *src));
    system (e.g. those using GNU C Library).  */
 #ifdef _LIBC
 # define HAVE_LOCALE_NULL
-#endif
+#endif /* _LIBC */
 
 /* Name of the default domain used for gettext(3) prior any call to
    textdomain(3).  The default value for this is "messages".  */
@@ -215,7 +231,7 @@ struct block_list
 # define DCGETTEXT __dcgettext
 #else
 # define DCGETTEXT dcgettext__
-#endif
+#endif /* _LIBC */
 
 /* Look up MSGID in the DOMAINNAME message catalog for the current CATEGORY
    locale.  */
@@ -227,7 +243,7 @@ DCGETTEXT (domainname, msgid, category)
 {
 #ifndef HAVE_ALLOCA
   struct block_list *block_list = NULL;
-#endif
+#endif /* HAVE_ALLOCA */
   struct loaded_l10nfile *domain;
   struct binding *binding;
   const char *categoryname;
@@ -387,7 +403,7 @@ DCGETTEXT (domainname, msgid, category)
 #ifdef _LIBC
 /* Alias for function name in GNU C Library.  */
 weak_alias (__dcgettext, dcgettext);
-#endif
+#endif /* _LIBC */
 
 
 static char *
@@ -492,44 +508,44 @@ category_to_name (category)
   case LC_COLLATE:
     retval = "LC_COLLATE";
     break;
-#endif
+#endif /* LC_COLLATE */
 #ifdef LC_CTYPE
   case LC_CTYPE:
     retval = "LC_CTYPE";
     break;
-#endif
+#endif /* LC_CTYPE */
 #ifdef LC_MONETARY
   case LC_MONETARY:
     retval = "LC_MONETARY";
     break;
-#endif
+#endif /* LC_MONETARY */
 #ifdef LC_NUMERIC
   case LC_NUMERIC:
     retval = "LC_NUMERIC";
     break;
-#endif
+#endif /* LC_NUMERIC */
 #ifdef LC_TIME
   case LC_TIME:
     retval = "LC_TIME";
     break;
-#endif
+#endif /* LC_TIME */
 #ifdef LC_MESSAGES
   case LC_MESSAGES:
     retval = "LC_MESSAGES";
     break;
-#endif
+#endif /* LC_MESSAGES */
 #ifdef LC_RESPONSE
   case LC_RESPONSE:
     retval = "LC_RESPONSE";
     break;
-#endif
+#endif /* LC_RESPONSE */
 #ifdef LC_ALL
   case LC_ALL:
     /* This might not make sense but is perhaps better than any other
        value.  */
     retval = "LC_ALL";
     break;
-#endif
+#endif /* LC_ALL */
   default:
     /* If you have a better idea for a default value let me know.  */
     retval = "LC_XXX";
@@ -577,14 +593,14 @@ guess_category_value (category, categoryname)
   /* We use C as the default domain.  POSIX says this is implementation
      defined.  */
   return "C";
-#endif
+#endif /* HAVE_SETLOCALE && HAVE_LC_MESSAGES && HAVE_LOCALE_NULL */
 }
 
 /* @@ begin of epilog @@ */
 
-/* We don't want libintl.a to depend on any other library.  So we
-   avoid the non-standard function stpcpy.  In GNU C Library this
-   function is available, though.  Also allow the symbol HAVE_STPCPY
+/* We do NOT want libintl.a to depend on any other library. So we
+   avoid the non-standard function stpcpy. In GNU C Library this
+   function is available, though. Also allow the symbol HAVE_STPCPY
    to be defined.  */
 #if !_LIBC && !HAVE_STPCPY
 static char *
@@ -596,7 +612,7 @@ stpcpy (dest, src)
     /* Do nothing. */ ;
   return dest - 1;
 }
-#endif
+#endif /* !_LIBC && !HAVE_STPCPY */
 
 
 #ifdef _LIBC
@@ -621,4 +637,4 @@ free_mem (void)
 }
 
 text_set_element (__libc_subfreeres, free_mem);
-#endif
+#endif /* _LIBC */

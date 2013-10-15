@@ -9,7 +9,7 @@
 #
 # In addition, on GNU/Linux the following shell variables will be set:
 #   srv_linux_regsets	Set to "yes" if ptrace(PTRACE_GETREGS) and friends
-#			may be available on this platform;  unset otherwise.
+#			may be available on this platform; unset otherwise.
 #			They will only be used if <sys/ptrace.h> defines
 #			PTRACE_GETREGS.
 #   srv_linux_usrregs	Set to "yes" if we can get at registers via
@@ -95,6 +95,14 @@ case "${target}" in
 			;;
   powerpc-*-darwin*)  srv_regobj=reg-ppc64.o
 			srv_tgtobj="macosx-low.o macosx-excthread.o macosx-ppc-low.o macosx-threads.o macosx-mutils.o"
+			srv_platform_include="-I\$(srcdir)/../macosx"
+			;;
+  i386-*-darwin*)  srv_regobj=reg-i386.o
+			srv_tgtobj="macosx-low.o macosx-excthread.o macosx-i386-low.o macosx-threads.o macosx-mutils.o"
+			srv_platform_include="-I\$(srcdir)/../macosx"
+			;;
+  x86_64-*-darwin*)  srv_regobj=reg-x86-64.o
+			srv_tgtobj="macosx-low.o macosx-excthread.o macosx-i386-low.o macosx-threads.o macosx-mutils.o"
 			srv_platform_include="-I\$(srcdir)/../macosx"
 			;;
   arm-*-darwin*)  srv_regobj=reg-arm-macosx.o

@@ -1,6 +1,6 @@
-/* 
+/*
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -22,11 +22,19 @@
 #ifndef dbg_hif__h
 #define dbg_hif__h
 
-#ifdef STDC_HEADERS
-#  include <stdarg.h>
+#ifdef HAVE_CONFIG_H
+# include "config.h"
 #else
+# warning not including "config.h".
+#endif /* HAVE_CONFIG_H */
+
+#if defined(STDC_HEADERS) || defined(HAVE_STDARG_H)
+#  include <stdarg.h>
+#elif defined(HAVE_VARARGS_H)
 #  include <varargs.h>
-#endif
+#else
+#  warning dbg_hif.h expects either <stdarg.h> or <varargs.h> to be included.
+#endif /* STDC_HEADERS || HAVE_STDARG_H */
 
 typedef void Hif_DbgPrint(void *arg, const char *format, va_list ap);
 typedef void Hif_DbgPause(void *arg);

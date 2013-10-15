@@ -1,0 +1,11 @@
+*~
+*.o
+a.out
+*.x
+*.ci
+*.tmp
+core
+core.coremaker
+coremaker.core
+corefile
+*.x

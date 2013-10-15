@@ -1,0 +1,16 @@
+*.o
+*.ali
+b~*.ad[sb]
+*~
+a.out
+xgdb
+*.x
+*.ci
+*.tmp
+core
+core.coremaker
+coremaker.core
+corefile
+null_record/null_record
+fixed_points/fixed_points
+twice-tmp.c

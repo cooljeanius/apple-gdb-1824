@@ -71,10 +71,10 @@
 
 2004-09-09  Jason Molenda  (jmolenda@apple.com)
 
-	* configure.in (target==*darwin*): Don't configure/build tcl/expect;
-	we hae perfectly good versions in /usr/bin already.
-	Don't configure utils, sim, etc.  We don't use them so it's just wasted
-	time.
+	* configure.in (target==*darwin*): Do NOT configure/build
+	tcl/expect; we have perfectly good versions in /usr/bin already.
+	Do NOT configure utils, sim, etc. Apple does NOT use them so it is
+	just wasted time.
 
 2004-03-25  Jason Molenda  (jmolenda@apple.com)
 
@@ -251,11 +251,11 @@
 
 2002-08-02  Jason Molenda  (jmolenda@apple.com)
 
-	* configure: Set --build to $host_alias if we're not building
+	* configure: Set --build to $host_alias if we are not building
 	Canadian cross; avoids a noisy warning from the autoconf-2.52
 	generated configure files.
 
 2001-09-13  Jason Molenda  (jmolenda@apple.com)
 
-       * configure:  Darwin's /bin/sh doesn't let you write to $PWD, so don't.
-       Apple local change.
+       * configure:  Darwin's /bin/sh does NOT let you write to $PWD, so
+       do NOT do so. Apple local change.

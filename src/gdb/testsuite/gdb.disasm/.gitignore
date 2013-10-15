@@ -1,0 +1,9 @@
+*.o
+*.diff
+*~
+*.bad
+core
+h8300s
+hppa
+mn10300
+sh3

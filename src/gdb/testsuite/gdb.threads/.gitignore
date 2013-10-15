@@ -1,0 +1,9 @@
+*~
+*.o
+a.out
+xgdb
+*.x
+*.ci
+*.tmp
+core*
+pthreads

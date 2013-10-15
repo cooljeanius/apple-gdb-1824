@@ -1,6 +1,10 @@
 ## Process this file with automake to generate Makefile.in
 
-# APPLE MERGE ?? AUTOMAKE_OPTIONS = 1.9 cygnus
+# APPLE MERGE ??
+AUTOMAKE_OPTIONS = 1.10
+AUTOMAKE_DEPRECATED_OPTIONS = cygnus
+
+ACLOCAL_AMFLAGS = -I m4 --install
 
 SUBDIRS = po
 
@@ -12,6 +16,7 @@ MKDEP = gcc -MM
 WARN_CFLAGS = -Wall
 NO_WERROR = @NO_WERROR@
 AM_CFLAGS = $(WARN_CFLAGS)
+AM_WARNFLAGS = $(WARN_CFLAGS)
 
 bfdlibdir = @bfdlibdir@
 bfdincludedir = @bfdincludedir@
@@ -310,10 +315,10 @@ ALL_MACHINES = \
 OFILES = @BFD_MACHINES@
 
 # We should reconfigure whenever bfd/configure.in changes, because
-# that's where the version number in Makefile comes from.
+# that is where the version number in Makefile comes from.
 CONFIG_STATUS_DEPENDENCIES = $(BFDDIR)/configure.in
 
-INCLUDES = -D_GNU_SOURCE -I. -I$(srcdir) -I../bfd -I$(INCDIR) -I$(BFDDIR) @HDEFINES@ -I$(srcdir)/../intl -I../intl
+AM_CPPFLAGS = -D_GNU_SOURCE -I. -I$(srcdir) -I../bfd -I$(INCDIR) -I$(BFDDIR) @HDEFINES@ -I$(srcdir)/../intl -I../intl
 
 disassemble.lo: disassemble.c $(INCDIR)/dis-asm.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c @archdefs@ $(srcdir)/disassemble.c
@@ -347,7 +352,7 @@ stamp-lib: libopcodes.la
 libopcodes.a: stamp-lib ; @true
 
 # APPLE LOCAL begin framework building
-SYSTEM_FRAMEWORK = -framework System -lcc_dynamic
+SYSTEM_FRAMEWORK = -framework System @SYSTEM_FRAMEWORK_LIBS@
 
 FRAMEWORK = opcodes
 FRAMEWORK_ADDRESS = 0x0
@@ -356,7 +361,7 @@ FRAMEWORK_SUFFIX =
 FRAMEWORK_VERSION_SUFFIX =
 FRAMEWORK_VERSION = A
 FRAMEWORK_OFILES = `echo $(libopcodes_la_OBJECTS) $(libopcodes_la_LIBADD) | sed -e 's/\.lo/\.o/g'`
-FRAMEWORK_LIB = -F../bfd -framework bfd -F../libiberty -framework liberty -F../mmalloc -framework mmalloc $(SYSTEM_FRAMEWORK)
+FRAMEWORK_LIB = -F../bfd -L../bfd -framework bfd -F../libiberty -L../libiberty -framework liberty -F../mmalloc -L../mmalloc -framework mmalloc -L../intl -lintl $(SYSTEM_FRAMEWORK) $(LDFLAGS)
 
 stamp-framework-headers:
 	$(RM) -f stamp-framework stamp-framework-headers
@@ -590,7 +595,7 @@ DEP: dep.sed $(CFILES) $(HFILES) config.h
 DEP1: $(CFILES)
 	echo '# DO NOT DELETE THIS LINE -- mkdep uses it.' > DEP2
 	echo '# DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.' >> DEP2
-	$(MKDEP) $(INCLUDES) $(CFLAGS) $? >> DEP2
+	$(MKDEP) $(AM_CPPFLAGS) $(CFLAGS) $? >> DEP2 # Not sure if AM_CPPFLAGS works perfectly as a 1-for-1 replacement for INCLUDES here...
 	mv -f DEP2 $@
 
 dep.sed: dep-in.sed config.status

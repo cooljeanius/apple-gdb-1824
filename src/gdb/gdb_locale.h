@@ -21,18 +21,30 @@
 #ifndef GDB_LOCALE_H
 #define GDB_LOCALE_H
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# warning gdb_locale.h expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
+
 #ifdef HAVE_LOCALE_H
 # include <locale.h>
-#endif
+#else
+# warning gdb_locale.h expects <locale.h> to be included.
+#endif /* HAVE_LOCALE_H */
 
 #ifdef ENABLE_NLS
-# include <libintl.h>
+# ifdef HAVE_LIBINTL_H
+#  include <libintl.h>
+# else
+#  warning gdb_locale.h expects <libintl.h> to be included.
+# endif /* HAVE_LIBINTL_H */
 # define _(String) gettext (String)
 # ifdef gettext_noop
 #  define N_(String) gettext_noop (String)
 # else
 #  define N_(String) (String)
-# endif
+# endif /* gettext_noop */
 #else
 # define gettext(Msgid) (Msgid)
 # define dgettext(Domainname, Msgid) (Msgid)
@@ -41,6 +53,6 @@
 # define bindtextdomain(Domainname, Dirname) while (0) /* nothing */
 # define _(String) (String)
 # define N_(String) (String)
-#endif
+#endif /* ENABLE_NLS */
 
 #endif /* GDB_LOCALE_H */

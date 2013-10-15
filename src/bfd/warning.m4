@@ -1,16 +1,17 @@
-dnl Common configure.in fragment
+dnl# Common configure.in fragment
 
 AC_DEFUN([AM_BINUTILS_WARNINGS],[
 WARN_CFLAGS="-W -Wall -Wstrict-prototypes -Wmissing-prototypes"
 
-AC_ARG_ENABLE(werror,
-  [  --enable-werror    treat compile warnings as errors],
+AC_ARG_ENABLE([werror],
+  [AS_HELP_STRING([--enable-werror],[treat compile warnings as errors])],
   [case "${enableval}" in
      yes | y) ERROR_ON_WARNING="yes" ;;
      no | n)  ERROR_ON_WARNING="no" ;;
      *) AC_MSG_ERROR(bad value ${enableval} for --enable-werror) ;;
    esac])
 
+AC_REQUIRE([AC_PROG_CC])
 # Enable -Werror by default when using gcc
 if test "${GCC}" = yes -a -z "${ERROR_ON_WARNING}" ; then
     ERROR_ON_WARNING=yes
@@ -22,8 +23,8 @@ if test "${ERROR_ON_WARNING}" = yes ; then
     NO_WERROR="-Wno-error"
 fi
 		   
-AC_ARG_ENABLE(build-warnings,
-[  --enable-build-warnings Enable build-time compiler warnings],
+AC_ARG_ENABLE([build-warnings],
+[AS_HELP_STRING([--enable-build-warnings],[Enable build-time compiler warnings])],
 [case "${enableval}" in
   yes)	;;
   no)	WARN_CFLAGS="-w";;
@@ -38,6 +39,6 @@ if test x"$silent" != x"yes" && test x"$WARN_CFLAGS" != x""; then
   echo "Setting warning flags = $WARN_CFLAGS" 6>&1
 fi
 
-AC_SUBST(WARN_CFLAGS)
-AC_SUBST(NO_WERROR)
+AC_SUBST([WARN_CFLAGS])
+AC_SUBST([NO_WERROR])
 ])
