@@ -787,6 +787,10 @@ all: build
 clean:
 	$(RM) -r $(OBJROOT)
 	$(MAKE) -C src clean
+	$(RM) *~
+	$(RM) .DS_Store
+	$(RM) -r autom4te.cache
+	$(RM) autoscan.log
 
 check-args:
 ifneq (,$(filter-out i386-apple-darwin, $(filter-out powerpc-apple-darwin, $(filter-out x86_64-apple-darwin, $(filter-out arm-apple-darwin, $(CANONICAL_ARCHS))))))
