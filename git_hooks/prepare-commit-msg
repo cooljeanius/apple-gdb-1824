@@ -1,0 +1,20 @@
+#!/bin/sh
+#
+# Hook used to produce a commit message based on ChangeLog
+#
+
+FILE="$1"
+SOURCE="$2"
+COMMIT="$3"
+
+case $SOURCE in
+'')
+    TMP=$(mktemp) && \
+    cat $FILE >$TMP && \
+    git diff --cached ChangeLog | sed -n '/^+/p' | sed -n '/^+++/!p' | sed 's/^.\{1\}//g' >$FILE && \
+    cat $TMP >>$FILE && \
+    rm $TMP
+  ;;
+*)
+  ;;
+esac
