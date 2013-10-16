@@ -19,17 +19,17 @@ the Free Software Foundation, 51 Franklin Street - Fifth Floor, Boston, MA 02110
 
 
 #ifdef SEQUENT_COMPATABILITY
-#define DEF_MODEC 20
-#define DEF_MODEL 21
-#endif
+# define DEF_MODEC 20
+# define DEF_MODEL 21
+#endif /* SEQUENT_COMPATABILITY */
 
 #ifndef DEF_MODEC
-#define DEF_MODEC 20
-#endif
+# define DEF_MODEC 20
+#endif /* !DEF_MODE */
 
 #ifndef DEF_MODEL
-#define DEF_MODEL 20
-#endif
+# define DEF_MODEL 20
+#endif /* !DEF_MODEL */
 /*
    After deciding the instruction entry (via hash.c) the instruction parser
    will try to match the operands after the instruction to the required set
@@ -97,7 +97,7 @@ struct ns32k_opcode {
 /* This section was from the gdb version of this file. */
 
 #ifndef ns32k_opcodeT
-#define ns32k_opcodeT int
+# define ns32k_opcodeT int
 #endif /* no ns32k_opcodeT */
 
 struct not_wot			/* ns32k opcode table: wot to do with this */

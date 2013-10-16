@@ -874,18 +874,32 @@ AC_SUBST([WERROR_CFLAGS])
 
 
 dnl# Generate the Makefile in a target specific directory.
-dnl# Substitutions aren't performed on the file in AC_SUBST_FILE,
+dnl# Substitutions are NOT performed on the file in AC_SUBST_FILE,
 dnl# so this is a cover macro to tuck the details away of how we cope.
 dnl# We cope by having autoconf generate two files and then merge them into
-dnl# one afterwards.  The two pieces of the common fragment are inserted into
+dnl# one afterwards. The 2 pieces of the common fragment are inserted into
 dnl# the target's fragment at the appropriate points.
 
 AC_DEFUN([SIM_AC_OUTPUT],
-[
+[AC_REQUIRE([AC_PROG_LN_S])
 if test "x${sim_link_files}" = "x"; then
   test -z "${sim_link_files}"
   AC_MSG_WARN([the sim_link_files variable is empty; not making symlinks.])
+else
+  test ! -z "${sim_link_files}"
+  AC_MSG_NOTICE([sim_link_files should be "${sim_link_files}"])
 fi
+
+if test "x${sim_link_links}" = "x"; then
+  test -z "${sim_link_links}"
+  AC_MSG_WARN([the sim_link_links variable is empty; not making symlinks.])
+else
+  test ! -z "${sim_link_links}"
+  AC_MSG_NOTICE([sim_link_links should be "${sim_link_links}"])
+fi
+
+export CONFIG_FILES="Makefile.sim:Makefile.in Make-common.sim:../common/Make-common.in .gdbinit:../common/gdbinit.in"
+
 AC_DIAGNOSE([obsolete],[It is technically impossible to `autoupdate'
 cleanly from AC_LINK_FILES to AC_CONFIG_LINKS. `autoupdate' provides a
 functional but inelegant update, you should probably tune the result
@@ -895,10 +909,15 @@ ac_dests="$sim_link_links"
 while test -n "$ac_sources"; do
   set $ac_dests; ac_dest=$1; shift; ac_dests=$*
   set $ac_sources; ac_source=$1; shift; ac_sources=$*
-  ac_config_links_1="$ac_config_links_1 $ac_dest:$ac_source"
+  export ac_config_links_1="$ac_config_links_1 $ac_dest:$ac_source"
 done
 AC_CONFIG_LINKS([$ac_config_links_1])
+AC_SUBST([ac_config_links1])
+echo "symlinks to be made should be \"${ac_config_links1}\""
 AC_CONFIG_FILES([Makefile.sim:Makefile.in Make-common.sim:../common/Make-common.in .gdbinit:../common/gdbinit.in])
+echo "CONFIG_FILES should be \"$CONFIG_FILES\""
+echo "CONFIG_HEADERS should be \"$CONFIG_HEADERS\""
+AC_REQUIRE([AC_PROG_SED])
 AC_CONFIG_COMMANDS([default],[case "x$CONFIG_FILES" in
  xMakefile*)
    echo "Merging Makefile.sim+Make-common.sim into Makefile ..."
@@ -908,7 +927,16 @@ AC_CONFIG_COMMANDS([default],[case "x$CONFIG_FILES" in
    sed -e '/^## COMMON_PRE_/ r Makesim1.tmp' \
 	-e '/^## COMMON_POST_/ r Makesim2.tmp' \
 	<Makefile.sim >Makefile
-   rm -f Makefile.sim Make-common.sim Makesim1.tmp Makesim2.tmp
+   rm -f Makesim1.tmp Makesim2.tmp
+   if test -e Makefile.sim; then
+     rm -f Makefile.sim
+   fi
+   if test -e Make-common.sim; then
+     rm -f Make-common.sim
+   fi
+   ;;
+ x*)
+   echo "Done with Makefile cases..."
    ;;
  esac
  case "x$CONFIG_HEADERS" in xconfig.h:config.in) echo > stamp-h ;; esac
@@ -916,7 +944,7 @@ AC_CONFIG_COMMANDS([default],[case "x$CONFIG_FILES" in
 AC_OUTPUT
 ])
 
-# This file is derived from `gettext.m4'.  The difference is that the
+# This file is derived from `gettext.m4'. The difference is that the
 # included macros assume Cygnus-style source and build trees.
 
 # Macro to add for using GNU gettext.
