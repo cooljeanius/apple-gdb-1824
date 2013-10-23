@@ -1,1 +1,0 @@
-libgettext.h
