@@ -1225,8 +1225,8 @@ AC_SUBST([gmpinc])
 
 # Checks for header files.
 AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
-AC_CHECK_HEADERS([langinfo.h libintl.h limits.h locale.h malloc.h stddef.h stdio.h \
-                  wchar.h wctype.h])
+AC_CHECK_HEADERS([langinfo.h libintl.h limits.h locale.h malloc.h \
+                  malloc/malloc.h stddef.h stdio.h wchar.h wctype.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN

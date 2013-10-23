@@ -4718,6 +4718,16 @@ END
   fi
 fi
 
+  test -e "."
+  if test -e "Makefile"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: A Makefile is already present; removing it." >&5
+$as_echo "$as_me: A Makefile is already present; removing it." >&6;}
+    test -e "Makefile" && rm -f "Makefile"
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: No Makefile present..." >&5
+$as_echo "$as_me: No Makefile present..." >&6;}
+  fi
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable maintainer-specific portions of Makefiles" >&5
 $as_echo_n "checking whether to enable maintainer-specific portions of Makefiles... " >&6; }
     # Check whether --enable-maintainer-mode was given.
@@ -4740,7 +4750,18 @@ fi
   MAINT=$MAINTAINER_MODE_TRUE
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether build environment is sane" >&5
+
+
+  test -e "."
+  if test -e "Makefile"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: A Makefile is already present; removing it." >&5
+$as_echo "$as_me: A Makefile is already present; removing it." >&6;}
+    test -e "Makefile" && rm -f "Makefile"
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: No Makefile present, the sanity check should pass next..." >&5
+$as_echo "$as_me: No Makefile present, the sanity check should pass next..." >&6;}
+  fi
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether build environment is sane" >&5
 $as_echo_n "checking whether build environment is sane... " >&6; }
 # Reject unsafe characters in $srcdir or the absolute working directory
 # name.  Accept space and tab only in the latter.
@@ -4806,6 +4827,8 @@ if grep 'slept: no' conftest.file >/dev/null 2>&1; then
 fi
 
 rm -f conftest.file
+
+
 
 # Check whether --enable-largefile was given.
 if test "${enable_largefile+set}" = set; then :
@@ -16337,6 +16360,17 @@ fi
 INSTALL_STRIP_PROGRAM="\$(install_sh) -c -s"
 
 
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ln -s works" >&5
+$as_echo_n "checking whether ln -s works... " >&6; }
+LN_S=$as_ln_s
+if test "$LN_S" = "ln -s"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no, using $LN_S" >&5
+$as_echo "no, using $LN_S" >&6; }
+fi
 
 if test "x$RANLIB" = "x"; then
 	test -z "$RANLIB"

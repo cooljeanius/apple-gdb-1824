@@ -5,6 +5,29 @@ AC_PREREQ([2.69])
 AC_INIT([apple-gdb],[1824],[jmolenda@apple.com])
 AC_CONFIG_SRCDIR([template.h])
 AC_CONFIG_HEADERS([config.h])
+
+if test -x `which sw_vers`; then
+  if test ! -z "$(sw_vers -productVersion | cut -d\. -f2 2>/dev/null)"; then
+    if test "$(sw_vers -productVersion | cut -d\. -f2 2>/dev/null)" = "6"; then
+      if test -e ./.profile_snowleopard; then
+        AC_MSG_NOTICE([sourcing ./.profile_snowleopard])
+        . ./.profile_snowleopard
+      else
+        AC_MSG_WARN([there are some environment variables that you will have to set manually for this to work properly.])
+      fi
+    elif test "$(sw_vers -productVersion | cut -d\. -f2 2>/dev/null)" = "5"; then
+      if test -e ./.profile_leopard; then
+        AC_MSG_NOTICE([sourcing ./.profile_leopard])
+        . ./.profile_leopard
+      else
+        AC_MSG_WARN([there are some environment variables that you will have to set manually for this to work properly.])
+      fi
+    else
+      AC_MSG_WARN([you will have to find out what to do for this platform yourself.])
+    fi
+  fi
+fi
+
 AC_CANONICAL_TARGET
 AC_SYS_INTERPRETER
 

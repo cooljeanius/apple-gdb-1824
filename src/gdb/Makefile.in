@@ -150,6 +150,8 @@ INTL_SRC = $(srcdir)/$(INTL_DIR)
 INTL_CFLAGS = -I$(INTL_DIR) -I$(INTL_SRC)
 
 # Where is the ICONV library?  This can be empty if libc has iconv.
+# (If you are having troubles with the wrong libiconv being picked up,
+# you can try setting this to "/usr/lib/libiconv.dylib")
 LIBICONV = @LIBICONV@
 
 # APPLE LOCAL: location of carbon header files & libraries

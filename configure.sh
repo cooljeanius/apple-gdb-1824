@@ -2322,6 +2322,34 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 ac_config_headers="$ac_config_headers config.h"
 
+
+if test -x `which sw_vers`; then
+  if test ! -z "$(sw_vers -productVersion | cut -d\. -f2 2>/dev/null)"; then
+    if test "$(sw_vers -productVersion | cut -d\. -f2 2>/dev/null)" = "6"; then
+      if test -e ./.profile_snowleopard; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: sourcing ./.profile_snowleopard" >&5
+$as_echo "$as_me: sourcing ./.profile_snowleopard" >&6;}
+        . ./.profile_snowleopard
+      else
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: there are some environment variables that you will have to set manually for this to work properly." >&5
+$as_echo "$as_me: WARNING: there are some environment variables that you will have to set manually for this to work properly." >&2;}
+      fi
+    elif test "$(sw_vers -productVersion | cut -d\. -f2 2>/dev/null)" = "5"; then
+      if test -e ./.profile_leopard; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: sourcing ./.profile_leopard" >&5
+$as_echo "$as_me: sourcing ./.profile_leopard" >&6;}
+        . ./.profile_leopard
+      else
+        { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: there are some environment variables that you will have to set manually for this to work properly." >&5
+$as_echo "$as_me: WARNING: there are some environment variables that you will have to set manually for this to work properly." >&2;}
+      fi
+    else
+      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: you will have to find out what to do for this platform yourself." >&5
+$as_echo "$as_me: WARNING: you will have to find out what to do for this platform yourself." >&2;}
+    fi
+  fi
+fi
+
 ac_aux_dir=
 for ac_dir in "$srcdir" "$srcdir/.." "$srcdir/../.."; do
   if test -f "$ac_dir/install-sh"; then

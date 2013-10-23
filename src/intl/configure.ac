@@ -15,8 +15,27 @@ AC_OBJEXT
 AC_EXEEXT
 AC_USE_SYSTEM_EXTENSIONS
 AM_INIT_AUTOMAKE([1.7 gnu dejagnu])
-AM_MAINTAINER_MODE
-AM_SANITY_CHECK
+ifdef([AM_MAINTAINER_MODE],[
+  test -e "."
+  if test -e "Makefile"; then
+    AC_MSG_NOTICE([A Makefile is already present; removing it.])
+    test -e "Makefile" && rm -f "Makefile"
+  else
+    AC_MSG_NOTICE([No Makefile present...])
+  fi
+  AM_MAINTAINER_MODE
+])
+ifdef([AM_SANITY_CHECK],[
+  test -e "."
+  if test -e "Makefile"; then
+    AC_MSG_NOTICE([A Makefile is already present; removing it.])
+    test -e "Makefile" && rm -f "Makefile"
+  else
+    AC_MSG_NOTICE([No Makefile present, the sanity check should pass next...])
+  fi
+  AM_SANITY_CHECK
+])
+
 AC_SYS_LARGEFILE
 AC_SYS_LONG_FILE_NAMES
 
@@ -29,6 +48,7 @@ LT_LANG([C])
 AM_PROG_INSTALL_STRIP
 AC_PROG_INSTALL
 AC_SUBST([INSTALLdir])
+AC_PROG_LN_S
 if test "x$RANLIB" = "x"; then
 	test -z "$RANLIB"
 	AC_PROG_RANLIB
@@ -86,9 +106,10 @@ AC_CHECK_DECLS([index])
 AC_CHECK_DECLS([NULL])
 
 # Output
-AC_DIAGNOSE([obsolete],[It is technically impossible to `autoupdate' cleanly from AC_LINK_FILES
-to AC_CONFIG_LINKS. `autoupdate' provides a functional but inelegant
-update, you should probably tune the result yourself.])dnl
+AC_DIAGNOSE([obsolete],[It is technically impossible to `autoupdate'
+cleanly from AC_LINK_FILES to AC_CONFIG_LINKS. `autoupdate' provides a
+functional but inelegant update, you should probably tune the result
+yourself.])dnl
 ac_sources="$nls_cv_header_libgt"
 ac_dests="$nls_cv_header_intl"
 while test -n "$ac_sources"; do

@@ -24,6 +24,7 @@ bfd/doc/chew
 bfd/po/*POTFILES
 blockit
 cfg-paper.info
+confdefs.h
 config.h
 configure.aux
 configure.cp

@@ -8,7 +8,7 @@ BINUTILS_VERSION = 2.13-20021117
 BINUTILS_RC_VERSION = 46
 
 # Uncomment line below for debugging shell commands
-#SHELL = /bin/sh -x
+SHELL = /bin/sh -x
 
 .PHONY: all clean configure build install installsrc installhdrs headers \
 	build-core build-binutils build-gdb \
@@ -193,25 +193,26 @@ CROSS_TARGETS := $(filter-out arm-apple-darwin--powerpc-apple-darwin, $(CROSS_TA
 
 CROSS_TARGETS := $(sort $(CROSS_TARGETS))
 
+# These can be set to control the flags passed to the configure scripts in the
+# various subdirectories:
 CONFIG_VERBOSE=-v
 CONFIG_ENABLE_GDBTK=--enable-gdbtk=no
-CONFIG_ENABLE_GDBMI=
-CONFIG_ENABLE_BUILD_WARNINGS=--enable-build-warnings
+CONFIG_ENABLE_GDBMI=--enable-gdbmi
+CONFIG_ENABLE_BUILD_WARNINGS=--enable-build-warnings --disable-werror
 CONFIG_ENABLE_TUI=--disable-tui
-CONFIG_ALL_BFD_TARGETS=
-CONFIG_ALL_BFD_TARGETS=
+CONFIG_ALL_BFD_TARGETS=--enable-targets
 CONFIG_64_BIT_BFD=--enable-64-bit-bfd
 CONFIG_WITH_MMAP=--with-mmap
 CONFIG_ENABLE_SHARED=--disable-shared
 CONFIG_MAINTAINER_MODE=
 CONFIG_BUILD=--build=$(BUILD_ARCH)
-CONFIG_OTHER_OPTIONS?=--disable-serial-configure
+CONFIG_OTHER_OPTIONS?=--disable-serial-configure --disable-opts-test --with-x --enable-carbon-framework --enable-debug-symbols-framework
 
 ifneq ($(findstring macosx,$(CANONICAL_ARCHS))$(findstring darwin,$(CANONICAL_ARCHS)),)
 CC = clang -arch $(HOST_ARCHITECTURE)
 CC_FOR_BUILD = clang
 
-CDEBUGFLAGS = -g -Os
+CDEBUGFLAGS = -ggdb -Os
 
 # The -Wno-error=deprecated-declarations flag is not recognized by some 
 # compilers; disable it on a per-release basis.

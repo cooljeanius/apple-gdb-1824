@@ -1,0 +1,29 @@
+# Source me!
+
+echo "Hello from .profile_snowleopard"
+
+export INSTALLED_PRODUCT_ASIDES=YES
+export MACOSX_DEPLOYMENT_TARGET=10.6
+export NEXT_ROOT=""
+export RC_ARCHS="i386 x86_64"
+export RC_JASPER=YES
+export RC_NONARCH_CFLAGS="-pipe"
+export RC_OS=macos
+if test -d /private; then
+  export RC_PRIVATE=/private
+fi
+export RC_RELEASE=SnowLeopard
+export RC_TARGET_CONFIG=MacOSX
+export RC_XBS=YES
+if test -z "$SDKROOT" -a -d /Developer/SDKs/MacOSX10.6.sdk; then
+  if test -x /Developer/SDKs/MacOSX10.6.sdk/usr/bin/mig -a -x /Developer/SDKs/MacOSX10.6.sdk/usr/libexec/migcom; then
+    export SDKROOT=/Developer/SDKs/MacOSX10.6.sdk
+  else
+    echo "Not setting SDKROOT because that will mess up mig."
+  fi
+fi
+export SEPARATE_STRIP=YES
+export UNAME_RELEASE=10.8.0
+export UNAME_SYSNAME=Darwin
+
+echo "We should be done setting environment variables for Snow Leopard now."
