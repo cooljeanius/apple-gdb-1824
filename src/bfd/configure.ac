@@ -256,9 +256,9 @@ AC_CHECK_LIB([gnu],[main])
 
 # Checks for header files.
 AC_CHECK_HEADERS([ctype.h errno.h fcntl.h libintl.h limits.h \
-                  malloca.h malloc/malloc.h realloc.h \
-                  stddef.h stdio.h sys/file.h sys/param.h \
-                  sys/time.h time.h])
+                  mach-o/loader.h malloca.h malloc/malloc.h \
+                  realloc.h stddef.h stdio.h sys/file.h \
+                  sys/param.h sys/time.h time.h])
 GCC_HEADER_STDINT([bfd_stdint.h],[stdint.h])
 AC_HEADER_TIME
 AC_HEADER_DIRENT

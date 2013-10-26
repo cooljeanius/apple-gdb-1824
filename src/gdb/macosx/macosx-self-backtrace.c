@@ -38,6 +38,7 @@
 #include <sys/uio.h>
 #include <unistd.h>
 #include <stddef.h>
+/* end includes that need to be ifdef-ed */
 #include "macosx-self-backtrace.h"
 
 #define MACHO_SLIDE_TYPE int32_t

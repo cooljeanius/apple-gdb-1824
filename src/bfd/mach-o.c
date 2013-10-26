@@ -25,11 +25,14 @@
 #include "libiberty.h"
 #ifdef HAVE_CTYPE_H
 # include <ctype.h>
+#else
+# warning mach-o.c expects <ctype.h> to be included.
 #endif /* HAVE_CTYPE_H */
+#include <mach-o/loader.h> /* might need to ifdef this... */
 
 #ifndef BFD_IO_FUNCS
 # define BFD_IO_FUNCS 0
-#endif
+#endif /* !BFD_IO_FUNCS */
 
 #define bfd_mach_o_mkarchive                          _bfd_noarchive_mkarchive
 #define bfd_mach_o_read_ar_hdr                        _bfd_noarchive_read_ar_hdr

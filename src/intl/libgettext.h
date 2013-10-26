@@ -69,7 +69,7 @@ extern "C" {
 # endif /* !__cplusplus || __GNUC__ */
 #endif /* NULL */
 
-#ifdef LC_MESSAGES
+#if defined(LC_MESSAGES) && !defined(HAVE_LC_MESSAGES)
 # define HAVE_LC_MESSAGES (1) /* hack to silence some warnings */
 #endif /* LC_MESSAGES */
 

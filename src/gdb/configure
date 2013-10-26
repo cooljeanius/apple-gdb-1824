@@ -28547,6 +28547,46 @@ _ACEOF
 
 fi
 
+# FIXME: Replace `main' with a function in `-lgnu':
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lgnu" >&5
+$as_echo_n "checking for main in -lgnu... " >&6; }
+if ${ac_cv_lib_gnu_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lgnu  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_gnu_main=yes
+else
+  ac_cv_lib_gnu_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_gnu_main" >&5
+$as_echo "$ac_cv_lib_gnu_main" >&6; }
+if test "x$ac_cv_lib_gnu_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBGNU 1
+_ACEOF
+
+  LIBS="-lgnu $LIBS"
+
+fi
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for xmalloc in -liberty" >&5
 $as_echo_n "checking for xmalloc in -liberty... " >&6; }
 if ${ac_cv_lib_iberty_xmalloc+:} false; then :
@@ -29042,9 +29082,13 @@ for ac_header in link.h
 do :
   ac_fn_c_check_header_compile "$LINENO" "link.h" "ac_cv_header_link_h" "#if HAVE_SYS_TYPES_H
 # include <sys/types.h>
-#endif
+#else
+# warning this conftest expects <sys/types.h> to be included.
+#endif /* HAVE_SYS_TYPES_H */
 #if HAVE_NLIST_H
 # include <nlist.h>
+#else
+# warning this conftest expects <nlist.h> to be included.
 #endif /* HAVE_NLIST_H */
 
 "
@@ -29171,7 +29215,9 @@ for ac_header in sys/proc.h
 do :
   ac_fn_c_check_header_compile "$LINENO" "sys/proc.h" "ac_cv_header_sys_proc_h" "#if HAVE_SYS_PARAM_H
 # include <sys/param.h>
-#endif
+#else
+# warning this conftest expects <sys/param.h> to be included.
+#endif /* HAVE_SYS_PARAM_H */
 
 "
 if test "x$ac_cv_header_sys_proc_h" = xyes; then :
@@ -29237,6 +29283,8 @@ for ac_header in sys/user.h
 do :
   ac_fn_c_check_header_compile "$LINENO" "sys/user.h" "ac_cv_header_sys_user_h" "#if HAVE_SYS_PARAM_H
 # include <sys/param.h>
+#else
+# warning this conftest expects <sys/param.h> to be included.
 #endif
 
 "
@@ -29469,7 +29517,10 @@ fi
 
 done
 
-for ac_header in architecture/byte_order.h bits/endian.h linux/byteorder/big_endian.h linux/byteorder/little_endian.h
+for ac_header in architecture/byte_order.h bits/endian.h libgen.h \
+                  linux/byteorder/big_endian.h \
+                  linux/byteorder/little_endian.h \
+                  mach-o/loader.h mach-o/nlist.h sys/uio.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -32550,6 +32601,8 @@ else
 #include <sys/types.h>
 #ifdef HAVE_NLIST_H
 # include <nlist.h>
+#else
+# warning this conftest expects <nlist.h> to be included.
 #endif /* HAVE_NLIST_H */
 #include <link.h>
 int

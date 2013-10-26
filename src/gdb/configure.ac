@@ -442,6 +442,8 @@ AM_PROG_AS
 AC_PROG_CXX
 LT_INIT([disable-fast-install dlopen])
 LT_LANG([C])
+dnl# even though gdb is written only in C, it has tests written
+dnl# for debugging the following languages, so check them, too:
 LT_LANG([C++])
 LT_LANG([Java])
 LT_LANG([Fortran 77])
@@ -596,6 +598,8 @@ fi
 # Other libraries that autoscan added to configure.scan:
 # FIXME: Replace `main' with a function in `-lbfd':
 AC_CHECK_LIB([bfd],[main])
+# FIXME: Replace `main' with a function in `-lgnu':
+AC_CHECK_LIB([gnu],[main])
 AC_CHECK_LIB([iberty],[xmalloc])
 AC_CHECK_LIB([intl],[gettext])
 # FIXME: Replace `main' with a function in `-lopcodes':
@@ -621,9 +625,13 @@ AC_CHECK_HEADERS([nlist.h])
 AC_CHECK_HEADERS([link.h],[],[],
 [#if HAVE_SYS_TYPES_H
 # include <sys/types.h>
-#endif
+#else
+# warning this conftest expects <sys/types.h> to be included.
+#endif /* HAVE_SYS_TYPES_H */
 #if HAVE_NLIST_H
 # include <nlist.h>
+#else
+# warning this conftest expects <nlist.h> to be included.
 #endif /* HAVE_NLIST_H */
 ])
 AC_CHECK_HEADERS([machine/reg.h])
@@ -638,7 +646,9 @@ AC_CHECK_HEADERS([sys/ioctl.h])
 AC_CHECK_HEADERS([sys/proc.h],[],[],
 [#if HAVE_SYS_PARAM_H
 # include <sys/param.h>
-#endif
+#else
+# warning this conftest expects <sys/param.h> to be included.
+#endif /* HAVE_SYS_PARAM_H */
 ])
 AC_CHECK_HEADERS([sys/ptrace.h ptrace.h])
 AC_CHECK_HEADERS([sys/reg.h sys/debugreg.h])
@@ -647,6 +657,8 @@ AC_CHECK_HEADERS([sys/syscall.h])
 AC_CHECK_HEADERS([sys/user.h],[],[],
 [#if HAVE_SYS_PARAM_H
 # include <sys/param.h>
+#else
+# warning this conftest expects <sys/param.h> to be included.
 #endif
 ])
 AC_CHECK_HEADERS([sys/wait.h wait.h])
@@ -684,7 +696,10 @@ AC_CHECK_HEADERS([arpa/inet.h fcntl.h libintl.h limits.h locale.h \
 
 # Other headers needed for things that I have ifdef-ed:
 AC_CHECK_HEADERS([dlfcn.h errno.h regex.h stdarg.h sys/types.h varargs.h])
-AC_CHECK_HEADERS([architecture/byte_order.h bits/endian.h linux/byteorder/big_endian.h linux/byteorder/little_endian.h])
+AC_CHECK_HEADERS([architecture/byte_order.h bits/endian.h libgen.h \
+                  linux/byteorder/big_endian.h \
+                  linux/byteorder/little_endian.h \
+                  mach-o/loader.h mach-o/nlist.h sys/uio.h])
 
 # ------------------------- #
 # Checks for declarations.  #
@@ -1268,6 +1283,8 @@ if test ${host} = ${target} ; then
     [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
 #ifdef HAVE_NLIST_H
 # include <nlist.h>
+#else
+# warning this conftest expects <nlist.h> to be included.
 #endif /* HAVE_NLIST_H */
 #include <link.h>]],[[struct so_map lm; (void) lm.som_addr;]])],[gdb_cv_have_struct_so_map_with_som_members=yes],[gdb_cv_have_struct_so_map_with_som_members=no])])
   AC_MSG_RESULT([$gdb_cv_have_struct_so_map_with_som_members])

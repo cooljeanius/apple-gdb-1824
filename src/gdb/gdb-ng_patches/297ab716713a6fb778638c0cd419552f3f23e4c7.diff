@@ -1,0 +1,21 @@
+diff --git a/gdb/src/gdb/valops.c b/gdb/src/gdb/valops.c
+index 320a35f..6849825 100644
+--- a/gdb/src/gdb/valops.c
++++ b/gdb/src/gdb/valops.c
+@@ -715,11 +715,14 @@ struct value *
+       {
+ 	struct frame_info *frame;
+ 	int value_reg;
+-
++	
++	value_reg = VALUE_REGNUM (toval);
+ 	/* Figure out which frame this is in currently.  */
+ 	frame = frame_find_by_id (VALUE_FRAME_ID (toval));
+-	value_reg = VALUE_REGNUM (toval);
++	if (!frame)
++		frame = get_current_frame();
+ 
++	/* Probably never happens.  */
+ 	if (!frame)
+ 	  error (_("Value being assigned to is no longer active."));
+ 	

@@ -201,6 +201,9 @@
 /* Define if <sys/procfs.h> has lwpxstatus_t. */
 #undef HAVE_LWPXSTATUS_T
 
+/* Define to 1 if you have the <mach-o/loader.h> header file. */
+#undef HAVE_MACH_O_LOADER_H
+
 /* Define to 1 if you have the `madvise' function. */
 #undef HAVE_MADVISE
 
