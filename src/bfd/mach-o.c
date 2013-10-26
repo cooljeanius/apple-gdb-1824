@@ -18,6 +18,11 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# warning mach-o.c expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
 #include "mach-o.h"
 #include "bfd.h"
 #include "sysdep.h"
@@ -28,7 +33,11 @@
 #else
 # warning mach-o.c expects <ctype.h> to be included.
 #endif /* HAVE_CTYPE_H */
-#include <mach-o/loader.h> /* might need to ifdef this... */
+#ifdef HAVE_MACH_O_LOADER_H
+# include <mach-o/loader.h>
+#else
+# warning mach-o.c expects <mach-o/loader.h> to be included.
+#endif /* HAVE_MACH_O_LOADER_H */
 
 #ifndef BFD_IO_FUNCS
 # define BFD_IO_FUNCS 0
