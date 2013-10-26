@@ -4,14 +4,20 @@ dnl#
 
 AC_PREREQ([2.61])
 dnl# keep version number synced with the one in ../bfd
-AC_INIT([opcodes],[2.16.91],[])
+AC_INIT([opcodes],[2.16.91],[jmolenda@apple.com])
+dnl# bug report address is email address of last person to touch this
+dnl# directory, according to the Changelog-Apple in this directory
 AC_CONFIG_SRCDIR([z8k-dis.c])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_HEADERS([config.h:config.in])
+AC_CONFIG_HEADERS([config.h])
 
 AC_CANONICAL_TARGET
 AC_SEARCH_LIBS([strerror],[cposix])
 
+if test -f ${srcdir}/config.status; then
+  AC_MSG_NOTICE([config.status is already present, removing it.])
+  rm -f ${srcdir}/config.status
+fi
 AM_INIT_AUTOMAKE([1.10 gnu dejagnu])
 
 dnl# These must be called before AM_PROG_LIBTOOL, because it may want
@@ -57,7 +63,7 @@ esac])dnl
 
 dnl# APPLE LOCAL change is to omit the following:
 AM_BINUTILS_WARNINGS
-dnl# (I added it back in anyways)
+dnl# (I uncommented it to add it back in anyways)
 
 if test -z "$target" ; then
     AC_MSG_ERROR([Unrecognized target system type; please check config.sub.])
@@ -124,7 +130,7 @@ AC_CHECK_LIB([intl],[gettext])
 AC_CHECK_LIB([iconv],[iconv])
 
 # Checks for header files.
-AC_CHECK_HEADERS([errno.h gettext.h libintl.h setjmp.h stdio.h])
+AC_CHECK_HEADERS([errno.h gettext.h libintl.h malloc.h setjmp.h stdio.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
@@ -379,3 +385,11 @@ AC_CONFIG_FILES([Makefile \
 AC_CONFIG_COMMANDS([default],[[sed -e '/POTFILES =/r po/POTFILES' po/Makefile.in > po/Makefile]],[[]])
 
 AC_OUTPUT
+
+if test "${srcdir}" != "."; then
+  if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
+    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+  elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
+    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+  fi
+fi

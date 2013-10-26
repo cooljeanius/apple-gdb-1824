@@ -100,10 +100,16 @@ subdir = shlib
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.orig.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/inline.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
-	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/xalloc.m4 \
+am__aclocal_m4_deps =  \
+	$(top_srcdir)/m4/ax_check_page_aligned_malloc.m4 \
+	$(top_srcdir)/m4/ax_gcc_malloc_call.m4 \
+	$(top_srcdir)/m4/eealloc.m4 $(top_srcdir)/m4/inline.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/longlong.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/m4/malloc.m4 $(top_srcdir)/m4/malloca.m4 \
+	$(top_srcdir)/m4/realloc.m4 $(top_srcdir)/m4/stdlib_h.m4 \
+	$(top_srcdir)/m4/ulonglong.m4 $(top_srcdir)/m4/xalloc.m4 \
 	$(top_srcdir)/m4/xorg-macros.m4 $(top_srcdir)/acinclude.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -202,7 +208,66 @@ ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 FGREP = @FGREP@
+GNULIB_ATOLL = @GNULIB_ATOLL@
+GNULIB_CALLOC_POSIX = @GNULIB_CALLOC_POSIX@
+GNULIB_CANONICALIZE_FILE_NAME = @GNULIB_CANONICALIZE_FILE_NAME@
+GNULIB_GETLOADAVG = @GNULIB_GETLOADAVG@
+GNULIB_GETSUBOPT = @GNULIB_GETSUBOPT@
+GNULIB_GRANTPT = @GNULIB_GRANTPT@
+GNULIB_MALLOC_POSIX = @GNULIB_MALLOC_POSIX@
+GNULIB_MBTOWC = @GNULIB_MBTOWC@
+GNULIB_MKDTEMP = @GNULIB_MKDTEMP@
+GNULIB_MKOSTEMP = @GNULIB_MKOSTEMP@
+GNULIB_MKOSTEMPS = @GNULIB_MKOSTEMPS@
+GNULIB_MKSTEMP = @GNULIB_MKSTEMP@
+GNULIB_MKSTEMPS = @GNULIB_MKSTEMPS@
+GNULIB_POSIX_OPENPT = @GNULIB_POSIX_OPENPT@
+GNULIB_PTSNAME = @GNULIB_PTSNAME@
+GNULIB_PTSNAME_R = @GNULIB_PTSNAME_R@
+GNULIB_PUTENV = @GNULIB_PUTENV@
+GNULIB_RANDOM = @GNULIB_RANDOM@
+GNULIB_RANDOM_R = @GNULIB_RANDOM_R@
+GNULIB_REALLOC_POSIX = @GNULIB_REALLOC_POSIX@
+GNULIB_REALPATH = @GNULIB_REALPATH@
+GNULIB_RPMATCH = @GNULIB_RPMATCH@
+GNULIB_SETENV = @GNULIB_SETENV@
+GNULIB_STRTOD = @GNULIB_STRTOD@
+GNULIB_STRTOLL = @GNULIB_STRTOLL@
+GNULIB_STRTOULL = @GNULIB_STRTOULL@
+GNULIB_SYSTEM_POSIX = @GNULIB_SYSTEM_POSIX@
+GNULIB_UNLOCKPT = @GNULIB_UNLOCKPT@
+GNULIB_UNSETENV = @GNULIB_UNSETENV@
+GNULIB_WCTOMB = @GNULIB_WCTOMB@
+GNULIB__EXIT = @GNULIB__EXIT@
 GREP = @GREP@
+HAVE_ATOLL = @HAVE_ATOLL@
+HAVE_CANONICALIZE_FILE_NAME = @HAVE_CANONICALIZE_FILE_NAME@
+HAVE_DECL_GETLOADAVG = @HAVE_DECL_GETLOADAVG@
+HAVE_DECL_SETENV = @HAVE_DECL_SETENV@
+HAVE_DECL_UNSETENV = @HAVE_DECL_UNSETENV@
+HAVE_GETSUBOPT = @HAVE_GETSUBOPT@
+HAVE_GRANTPT = @HAVE_GRANTPT@
+HAVE_MKDTEMP = @HAVE_MKDTEMP@
+HAVE_MKOSTEMP = @HAVE_MKOSTEMP@
+HAVE_MKOSTEMPS = @HAVE_MKOSTEMPS@
+HAVE_MKSTEMP = @HAVE_MKSTEMP@
+HAVE_MKSTEMPS = @HAVE_MKSTEMPS@
+HAVE_POSIX_OPENPT = @HAVE_POSIX_OPENPT@
+HAVE_PTSNAME = @HAVE_PTSNAME@
+HAVE_PTSNAME_R = @HAVE_PTSNAME_R@
+HAVE_RANDOM = @HAVE_RANDOM@
+HAVE_RANDOM_H = @HAVE_RANDOM_H@
+HAVE_RANDOM_R = @HAVE_RANDOM_R@
+HAVE_REALPATH = @HAVE_REALPATH@
+HAVE_RPMATCH = @HAVE_RPMATCH@
+HAVE_SETENV = @HAVE_SETENV@
+HAVE_STRTOD = @HAVE_STRTOD@
+HAVE_STRTOLL = @HAVE_STRTOLL@
+HAVE_STRTOULL = @HAVE_STRTOULL@
+HAVE_STRUCT_RANDOM_DATA = @HAVE_STRUCT_RANDOM_DATA@
+HAVE_SYS_LOADAVG_H = @HAVE_SYS_LOADAVG_H@
+HAVE_UNLOCKPT = @HAVE_UNLOCKPT@
+HAVE__EXIT = @HAVE__EXIT@
 INSTALL = @INSTALL@
 INSTALLEDdir = @INSTALLEDdir@
 INSTALL_DATA = @INSTALL_DATA@
@@ -246,6 +311,20 @@ POW_LIB = @POW_LIB@
 RANLIB = @RANLIB@
 RAWCPP = @RAWCPP@
 RAWCPPFLAGS = @RAWCPPFLAGS@
+REPLACE_CALLOC = @REPLACE_CALLOC@
+REPLACE_CANONICALIZE_FILE_NAME = @REPLACE_CANONICALIZE_FILE_NAME@
+REPLACE_MALLOC = @REPLACE_MALLOC@
+REPLACE_MBTOWC = @REPLACE_MBTOWC@
+REPLACE_MKSTEMP = @REPLACE_MKSTEMP@
+REPLACE_PTSNAME_R = @REPLACE_PTSNAME_R@
+REPLACE_PUTENV = @REPLACE_PUTENV@
+REPLACE_RANDOM_R = @REPLACE_RANDOM_R@
+REPLACE_REALLOC = @REPLACE_REALLOC@
+REPLACE_REALPATH = @REPLACE_REALPATH@
+REPLACE_SETENV = @REPLACE_SETENV@
+REPLACE_STRTOD = @REPLACE_STRTOD@
+REPLACE_UNSETENV = @REPLACE_UNSETENV@
+REPLACE_WCTOMB = @REPLACE_WCTOMB@
 RL_MAJOR = @RL_MAJOR@
 RL_MINOR = @RL_MINOR@
 RL_VERSION = @RL_VERSION@
@@ -369,15 +448,17 @@ SHARED_LIBS = $(SHARED_READLINE) $(SHARED_HISTORY)
 CSOURCES = $(topdir)/readline.c $(topdir)/funmap.c $(topdir)/keymaps.c \
 	   $(topdir)/vi_mode.c $(topdir)/parens.c $(topdir)/rltty.c \
 	   $(topdir)/complete.c $(topdir)/bind.c $(topdir)/isearch.c \
-	   $(topdir)/display.c $(topdir)/signals.c $(topdir)/emacs_keymap.c \
-	   $(topdir)/vi_keymap.c $(topdir)/util.c $(topdir)/kill.c \
-	   $(topdir)/undo.c $(topdir)/macro.c $(topdir)/input.c \
-	   $(topdir)/callback.c $(topdir)/terminal.c $(topdir)/xmalloc.c \
-	   $(topdir)/history.c $(topdir)/histsearch.c $(topdir)/histexpand.c \
+	   $(topdir)/display.c $(topdir)/signals.c \
+	   $(topdir)/emacs_keymap.c $(topdir)/vi_keymap.c \
+	   $(topdir)/util.c $(topdir)/kill.c $(topdir)/undo.c \
+	   $(topdir)/macro.c $(topdir)/input.c$(topdir)/callback.c \
+	   $(topdir)/terminal.c $(topdir)/xmalloc.c $(topdir)/history.c \
+	   $(topdir)/histsearch.c $(topdir)/histexpand.c \
 	   $(topdir)/histfile.c $(topdir)/nls.c $(topdir)/search.c \
 	   $(topdir)/shell.c $(topdir)/savestring.c $(topdir)/tilde.c \
 	   $(topdir)/text.c $(topdir)/misc.c $(topdir)/compat.c \
-	   $(topdir)/mbutil.c $(WCWIDTH_SRC)
+	   $(topdir)/mbutil.c $(topdir)/malloc.c $(topdir)/realloc.c \
+	   $(WCWIDTH_SRC)
 
 
 # The header files for this library.
@@ -385,15 +466,15 @@ HSOURCES = readline.h rldefs.h chardefs.h keymaps.h history.h histlib.h \
 	   posixstat.h posixdir.h posixjmp.h tilde.h rlconf.h rltty.h \
 	   ansi_stdlib.h tcap.h xmalloc.h rlprivate.h rlshell.h rlmbutil.h
 
-SHARED_HISTOBJ = history.so histexpand.so histfile.so histsearch.so shell.so \
-		 mbutil.so
+SHARED_HISTOBJ = history.so histexpand.so histfile.so histsearch.so \
+		 malloc.so realloc.so shell.so mbutil.so
 
 SHARED_TILDEOBJ = tilde.so
-SHARED_OBJ = readline.so vi_mode.so funmap.so keymaps.so parens.so search.so \
-	  rltty.so complete.so bind.so isearch.so display.so signals.so \
-	  util.so kill.so undo.so macro.so input.so callback.so terminal.so \
-	  text.so nls.so misc.so xmalloc.so $(SHARED_HISTOBJ) $(SHARED_TILDEOBJ) \
-	  compat.so $(WCWIDTH_OBJ)
+SHARED_OBJ = readline.so vi_mode.so funmap.so keymaps.so parens.so \
+	  search.so rltty.so complete.so bind.so isearch.so display.so \
+	  signals.so util.so kill.so undo.so macro.so input.so \
+	  callback.so terminal.so text.so nls.so misc.so xmalloc.so \
+	  $(SHARED_HISTOBJ) $(SHARED_TILDEOBJ) compat.so $(WCWIDTH_OBJ)
 
 all: all-am
 
@@ -682,11 +763,11 @@ unsupported:
 	@echo "Please send the changes you made to bash-maintainers@gnu.org"
 	@echo "for inclusion in future bash and readline releases."
 
-$(SHARED_READLINE):	$(SHARED_OBJ)
+$(SHARED_READLINE): $(SHARED_OBJ)
 	$(RM) $@
 	$(SHOBJ_LD) ${SHOBJ_LDFLAGS} ${SHLIB_XLDFLAGS} -o $@ $(SHARED_OBJ) $(SHLIB_LIBS)
 
-$(SHARED_HISTORY):	$(SHARED_HISTOBJ) xmalloc.so
+$(SHARED_HISTORY): $(SHARED_HISTOBJ) xmalloc.so
 	$(RM) $@
 	$(SHOBJ_LD) ${SHOBJ_LDFLAGS} ${SHLIB_XLDFLAGS} -o $@ $(SHARED_HISTOBJ) xmalloc.so $(SHLIB_LIBS)
 
@@ -918,11 +999,13 @@ isearch.so: $(topdir)/isearch.c
 keymaps.so: $(topdir)/keymaps.c $(topdir)/emacs_keymap.c $(topdir)/vi_keymap.c
 kill.so: $(topdir)/kill.c
 macro.so: $(topdir)/macro.c
+malloc.so: $(topdir)/malloc.c
 mbutil.so: $(topdir)/mbutil.c
 misc.so: $(topdir)/mbutil.c
 nls.so: $(topdir)/nls.c
 parens.so: $(topdir)/parens.c
 readline.so: $(topdir)/readline.c
+realloc.so: $(topdir)/realloc.c
 rltty.so: $(topdir)/rltty.c
 savestring.so: $(topdir)/savestring.c
 search.so: $(topdir)/search.c
@@ -952,10 +1035,12 @@ isearch.so: isearch.c
 keymaps.so: keymaps.c emacs_keymap.c vi_keymap.c
 kill.so: kill.c
 macro.so: macro.c
+malloc.so: malloc.c
 mbutil.so: mbutil.c
 misc.so: misc.c
 nls.so: nls.c
 parens.so: parens.c
+realloc.so: realloc.c
 readline.so: readline.c
 rltty.so: rltty.c
 savestring.so: savestring.c

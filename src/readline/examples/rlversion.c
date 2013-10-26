@@ -22,21 +22,36 @@
    have a copy of the license, write to the Free Software Foundation,
    59 Temple Place, Suite 330, Boston, MA 02111 USA. */
 
-#if defined (HAVE_CONFIG_H)
-#  include <config.h>
-#endif
+#if defined(HAVE_CONFIG_H)
+# include "config.h"
+#else
+# warning rlversion.c expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
 
-#include <stdio.h>
-#include <sys/types.h>
+#ifdef HAVE_STDIO_H
+# include <stdio.h>
+#else
+# warning rlversion.c expects <stdio.h> to be included.
+#endif /* HAVE_STDIO_H */
+#ifdef HAVE_STDLIB_H
+# include <stdlib.h>
+#else
+# warning rlversion.c expects <stdlib.h> to be included.
+#endif /* HAVE_STDLIB_H */
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#else
+# warning rlversion.c expects <sys/types.h> to be included.
+#endif /* HAVE_SYS_TYPES_H */
 #include "posixstat.h"
 
 #ifdef READLINE_LIBRARY
-#  include "readline.h"
+# include "readline.h"
 #else
-#  include <readline/readline.h>
-#endif
+# include <readline/readline.h>
+#endif /* READLINE_LIBRARY */
 
-main()
+int main()
 {
 	printf ("%s\n", rl_library_version ? rl_library_version : "unknown");
 	exit (0);

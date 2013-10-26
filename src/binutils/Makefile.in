@@ -91,7 +91,7 @@ subdir = .
 DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog \
 	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
-	$(srcdir)/config.in $(top_srcdir)/../mkinstalldirs \
+	$(srcdir)/config.h.in $(top_srcdir)/../mkinstalldirs \
 	$(top_srcdir)/po/Make-in arparse.h arparse.c arlex.c \
 	defparse.h defparse.c deflex.c nlmheader.h nlmheader.c \
 	rcparse.h rcparse.c rclex.c $(top_srcdir)/../depcomp \
@@ -101,14 +101,17 @@ DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog \
 	../install-sh ../missing ../mkinstalldirs ../texinfo.tex \
 	ylwrap ../ylwrap ../ltmain.sh ../ltconfig ../ltcf-c.sh \
 	../ltcf-cxx.sh ../ltcf-gcj.sh $(top_srcdir)/../compile \
-	$(top_srcdir)/../config.guess $(top_srcdir)/../config.sub \
-	$(top_srcdir)/../install-sh $(top_srcdir)/../ltmain.sh \
-	$(top_srcdir)/../missing
+	$(top_srcdir)/../config.guess $(top_srcdir)/../config.rpath \
+	$(top_srcdir)/../config.sub $(top_srcdir)/../install-sh \
+	$(top_srcdir)/../ltmain.sh $(top_srcdir)/../missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/acinclude.m4 $(top_srcdir)/../bfd/acinclude.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/iconv.m4 \
+	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/lib-ld.m4 \
+	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/acinclude.m4 \
+	$(top_srcdir)/../bfd/acinclude.m4 \
 	$(top_srcdir)/../config/acx.m4 $(top_srcdir)/../bfd/bfd.m4 \
 	$(top_srcdir)/../bfd/warning.m4 $(top_srcdir)/../libtool.m4 \
 	$(top_srcdir)/../gettext.m4 $(top_srcdir)/configure.ac
@@ -141,7 +144,7 @@ am__objects_1 = bucomm.$(OBJEXT) version.$(OBJEXT) filemode.$(OBJEXT)
 am_addr2line_OBJECTS = addr2line.$(OBJEXT) budemang.$(OBJEXT) \
 	$(am__objects_1)
 addr2line_OBJECTS = $(am_addr2line_OBJECTS)
-am__DEPENDENCIES_1 =
+am__DEPENDENCIES_1 = ../intl/libintl.a
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -285,7 +288,7 @@ am__recursive_targets = \
 AM_RECURSIVE_TARGETS = $(am__recursive_targets:-recursive=) TAGS CTAGS \
 	cscope distdir dist dist-all distcheck
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) \
-	$(LISP)config.in
+	$(LISP)config.h.in
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
 # *not* preserved.
@@ -407,6 +410,7 @@ GREP = @GREP@
 GT_NO = @GT_NO@
 GT_YES = @GT_YES@
 HDEFINES = @HDEFINES@
+ICONV_BIN = @ICONV_BIN@
 INCLUDE_LOCALE_H = @INCLUDE_LOCALE_H@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
@@ -415,19 +419,22 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 INSTOBJEXT = @INSTOBJEXT@
 INTLDEPS = @INTLDEPS@
-INTLLIBS = @INTLLIBS@
+INTLLIBS = ../intl/libintl.a @INTLLIBS@
 INTLOBJS = @INTLOBJS@
+INTL_MACOSX_LIBS = @INTL_MACOSX_LIBS@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
 LEX = `if [ -f ../flex/flex ]; then echo ../flex/flex; else echo @LEX@; fi`
 LEXLIB = @LEXLIB@
 LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
+LIBICONV = @LIBICONV@
 LIBM = @LIBM@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
 LIPO = @LIPO@
 LN_S = @LN_S@
+LTLIBICONV = @LTLIBICONV@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
@@ -529,7 +536,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = 1.9.6 dejagnu
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
-ACLOCAL_AMFLAGS = -I m4
+ACLOCAL_AMFLAGS = -I m4 --install
 
 # APPLE LOCAL just skip the doc directory altogether - it is building
 # info files in the srcdir and hosing B&I builds.
@@ -537,6 +544,7 @@ SUBDIRS = po
 tooldir = $(exec_prefix)/$(target_alias)
 AM_YFLAGS = -d
 AM_CFLAGS = $(WARN_CFLAGS)
+AM_LDFLAGS = -framework CoreFoundation
 
 # these two are almost the same program
 AR_PROG = ar
@@ -610,6 +618,9 @@ OPCODES = ../opcodes/libopcodes.la
 OPCODES_DEP = $(OPCODES)
 LIBIBERTY = ../libiberty/libiberty.a
 LIBIBERTY_DEP = $(LIBIBERTY)
+lt_INTLLIBS = ../intl/libintl.la
+INTLDEP = $(INTLLIBS)
+INTLLIBS_DEP = $(INTLLIBS)
 POTFILES = $(CFILES) $(DEBUG_SRCS) $(HFILES)
 my_EXPECT = expect
 my_RUNTEST = runtest
@@ -742,10 +753,10 @@ config.h: stamp-h1
 	@test -f $@ || rm -f stamp-h1
 	@test -f $@ || $(MAKE) $(AM_MAKEFLAGS) stamp-h1
 
-stamp-h1: $(srcdir)/config.in $(top_builddir)/config.status
+stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
 	@rm -f stamp-h1
 	cd $(top_builddir) && $(SHELL) ./config.status config.h
-$(srcdir)/config.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps) 
+$(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps) 
 	($(am__cd) $(top_srcdir) && $(AUTOHEADER))
 	rm -f stamp-h1
 	touch $@
@@ -1493,10 +1504,10 @@ objdump.o:objdump.c
 # This rule creates a single binary that switches between ar and ranlib
 # by looking at argv[0]. Use this kludge to save some disk space.
 # However, you have to install things by hand.
-# (That is after 'make install', replace the installed ranlib by a link to ar.)
-# Alternatively, you can install ranlib.sh as ranlib.
+# (That is after 'make install', replace the installed ranlib by a link to
+# ar.) Alternatively, you can install ranlib.sh as ranlib.
 ar_with_ranlib_uncommented: $(ADDL_DEPS) ar.o maybe-ranlib.o
-	$(HLDENV) $(CC) $(HLDFLAGS) $(CFLAGS) $(LDFLAGS) -o $(AR_PROG) ar.o maybe-ranlib.o $(ADDL_LIBS) $(EXTRALIBS)
+	$(HLDENV) $(CC) $(HLDFLAGS) $(CFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $(AR_PROG) ar.o maybe-ranlib.o $(ADDL_LIBS) $(EXTRALIBS)
 	-rm -f $(RANLIB_PROG)
 	-ln $(AR_PROG) $(RANLIB_PROG)
 .PHONY: ar_with_ranlib_uncommented
@@ -1505,7 +1516,7 @@ ar_with_ranlib_uncommented: $(ADDL_DEPS) ar.o maybe-ranlib.o
 # objcopy and strip in one binary that uses argv[0] to decide its action.
 #
 objcopy_with_strip_uncommented: $(ADDL_DEPS) objcopy.o maybe-strip.o
-	$(HLDENV) $(CC) $(HLDFLAGS) $(CFLAGS) $(LDFLAGS) -o $(OBJCOPY_PROG) objcopy.o maybe-strip.o $(ADDL_LIBS) $(EXTRALIBS)
+	$(HLDENV) $(CC) $(HLDFLAGS) $(CFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $(OBJCOPY_PROG) objcopy.o maybe-strip.o $(ADDL_LIBS) $(EXTRALIBS)
 	-rm -f $(STRIP_PROG)
 	-ln $(OBJCOPY_PROG) $(STRIP_PROG)
 .PHONY: objcopy_with_strip_uncommented
@@ -1519,7 +1530,7 @@ sysroff.h: sysinfo$(EXEEXT_FOR_BUILD) sysroff.info
 	./sysinfo$(EXEEXT_FOR_BUILD) -d <$(srcdir)/sysroff.info >sysroff.h
 
 sysinfo$(EXEEXT_FOR_BUILD): sysinfo.o syslex.o
-	$(CC_FOR_BUILD) $(CFLAGS) $(LDFLAGS) -o $@ sysinfo.o syslex.o
+	$(CC_FOR_BUILD) $(CFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ sysinfo.o syslex.o
 
 syslex.o:
 	if [ -r syslex.c ]; then \
@@ -1577,7 +1588,7 @@ nlmconv.o: nlmconv.c $(INCDIR)/coff/sym.h $(INCDIR)/coff/ecoff.h
 diststuff: $(EXTRA_DIST) info
 all: info
 
-Makefile_depends: $(BFDDIR)/configure.ac
+Makefile_depends: $(BFDDIR)/configure.ac config.status
 
 # Targets to rebuild dependencies in this Makefile.
 # Have to get rid of DEP1 here so that "$?" later includes all of $(CFILES).

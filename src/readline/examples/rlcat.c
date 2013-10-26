@@ -24,33 +24,58 @@
    have a copy of the license, write to the Free Software Foundation,
    59 Temple Place, Suite 330, Boston, MA 02111 USA. */
 
-#if defined (HAVE_CONFIG_H)
-#  include <config.h>
-#endif
+#if defined(HAVE_CONFIG_H)
+# include "config.h"
+#else
+# warning rlcat.c expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_UNISTD_H
-#  include <unistd.h>
-#endif
+# include <unistd.h>
+#else
+# warning rlcat.c expects unistd.h to be included.
+#endif /* HAVE_UNISTD_H */
 
-#include <sys/types.h>
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#else
+# warning rlcat.c expects <sys/types.h> to be included.
+#endif /* HAVE_SYS_TYPES_H */
 #include "posixstat.h"
 
-#include <stdio.h>
+#ifdef HAVE_STDIO_H
+# include <stdio.h>
+#else
+# warning rlcat.c expects <stdio.h> to be included.
+#endif /* HAVE_STDIO_H */
+#ifdef HAVE_STDLIB_H
+# include <stdlib.h>
+#else
+# warning rlcat.c expects <stdlib.h> to be included.
+#endif /* HAVE_STDLIB_H */
 #include <ctype.h>
-#include <string.h>
+#if defined(HAVE_STRING_H)
+# include <string.h>
+#else /* !HAVE_STRING_H */
+# if defined(HAVE_STRINGS_H)
+#  include <strings.h>
+# else
+#  warning rlcat.c expects either string.h or strings.h to be included.
+# endif /* HAVE_STRINGS_H */
+#endif /* !HAVE_STRING_H */
 #include <errno.h>
 
 #ifndef errno
 extern int errno;
-#endif
+#endif /* !errno */
 
-#if defined (READLINE_LIBRARY)
-#  include "readline.h"
-#  include "history.h"
+#if defined(READLINE_LIBRARY)
+# include "readline.h"
+# include "history.h"
 #else
-#  include <readline/readline.h>
-#  include <readline/history.h>
-#endif
+# include <readline/readline.h>
+# include <readline/history.h>
+#endif /* READLINE_LIBRARY */
 
 extern int optind;
 extern char *optarg;

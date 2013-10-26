@@ -23,21 +23,21 @@ Foundation, 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 #include <stdio.h>
 #include <stdarg.h>
 #ifdef HAVE_STRING_H
-#include <string.h>
-#endif
+# include <string.h>
+#endif /* HAVE_STRING_H */
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
 
 #undef _doprnt
 
 #ifdef HAVE__DOPRNT
-#define TEST
-#endif
+# define TEST
+#endif /* HAVE__DOPRNT */
 
 #ifdef TEST /* Make sure to use the internal one.  */
-#define _doprnt my_doprnt
-#endif
+# define _doprnt my_doprnt
+#endif /* TEST */
 
 #define COPY_VA_INT \
   do { \
@@ -80,7 +80,7 @@ _doprnt (const char *format, va_list ap, FILE *stream)
   const char * ptr = format;
   char specifier[128];
   int total_printed = 0;
-  
+
   while (*ptr != '\0')
     {
       if (*ptr != '%') /* While we have regular characters, print them.  */
@@ -89,7 +89,7 @@ _doprnt (const char *format, va_list ap, FILE *stream)
 	{
 	  char * sptr = specifier;
 	  int wide_width = 0, short_width = 0;
-	  
+
 	  *sptr++ = *ptr++; /* Copy the % and move forward.  */
 
 	  while (strchr ("-+ #0", *ptr)) /* Move past flags.  */
@@ -100,7 +100,7 @@ _doprnt (const char *format, va_list ap, FILE *stream)
 	  else
 	    while (ISDIGIT(*ptr)) /* Handle explicit numeric value.  */
 	      *sptr++ = *ptr++;
-	  
+
 	  if (*ptr == '.')
 	    {
 	      *sptr++ = *ptr++; /* Copy and go past the period.  */

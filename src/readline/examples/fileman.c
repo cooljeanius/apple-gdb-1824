@@ -23,18 +23,26 @@
    to manipulate files and their modes. */
 
 #ifdef HAVE_CONFIG_H
-# include <config.h>
+# include "config.h"
 #else
-# warning fileman.c expects config.h to be included.
-#endif
+# warning fileman.c expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
 
-#include <sys/types.h>
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#else
+# warning fileman.c expects <sys/types.h> to be included.
+#endif /* HAVE_SYS_TYPES_H */
 #ifdef HAVE_SYS_FILE_H
 # include <sys/file.h>
 #else
-# warning fileman.c expects sys/file.h to be included.
+# warning fileman.c expects <sys/file.h> to be included.
 #endif /* HAVE_SYS_FILE_H */
-#include <sys/stat.h>
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#else
+# warning fileman.c expects <sys/stat.h> to be included.
+#endif /* HAVE_SYS_STAT_H */
 
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
@@ -43,7 +51,11 @@
 #endif /* HAVE_UNISTD_H */
 
 #include <fcntl.h>
-#include <stdio.h>
+#ifdef HAVE_STDIO_H
+# include <stdio.h>
+#else
+# warning fileman.c expects <stdio.h> to be included.
+#endif /* HAVE_STDIO_H */
 #include <errno.h>
 
 #if defined(HAVE_STRING_H)
@@ -129,7 +141,7 @@ dupstr (s)
   return (r);
 }
 
-main (argc, argv)
+int main (argc, argv)
      int argc;
      char **argv;
 {
@@ -248,10 +260,10 @@ stripwhite (string)
 char *command_generator PARAMS((const char *, int));
 char **fileman_completion PARAMS((const char *, int, int));
 
-/* Tell the GNU Readline library how to complete.  We want to try to complete
+/* Tell the GNU Readline library how to complete. We want to try to complete
    on command names if this is the first word in the line, or on filenames
    if not. */
-initialize_readline ()
+int initialize_readline ()
 {
   /* Allow conditional parsing of the ~/.inputrc file. */
   rl_readline_name = "FileMan";
@@ -260,7 +272,7 @@ initialize_readline ()
   rl_attempted_completion_function = fileman_completion;
 }
 
-/* Attempt to complete on the contents of TEXT.  START and END bound the
+/* Attempt to complete on the contents of TEXT. START and END bound the
    region of rl_line_buffer that contains the word to complete.  TEXT is
    the word to complete.  We can use the entire contents of rl_line_buffer
    in case we want to do some simple parsing.  Return the array of matches,
@@ -304,7 +316,9 @@ command_generator (text, state)
     }
 
   /* Return the next name which partially matches from the command list. */
-  while (name = commands[list_index].name)
+	/* Turned this assignment into an equality comparison; if that was wrong,
+	 * use double parentheses instead. */
+  while (name == commands[list_index].name)
     {
       list_index++;
 
@@ -327,7 +341,7 @@ command_generator (text, state)
 static char syscom[1024];
 
 /* List the file(s) named in arg. */
-com_list (arg)
+int com_list (arg)
      char *arg;
 {
   if (!arg)
@@ -337,29 +351,29 @@ com_list (arg)
   return (system (syscom));
 }
 
-com_view (arg)
+int com_view (arg)
      char *arg;
 {
   if (!valid_argument ("view", arg))
     return 1;
 
-#if defined (__MSDOS__)
+#if defined(__MSDOS__)
   /* more.com does NOT grok slashes in pathnames */
   sprintf (syscom, "less %s", arg);
 #else
   sprintf (syscom, "more %s", arg);
-#endif
+#endif /* __MSDOS__ */
   return (system (syscom));
 }
 
-com_rename (arg)
+int com_rename (arg)
      char *arg;
 {
   too_dangerous ("rename");
   return (1);
 }
 
-com_stat (arg)
+int com_stat (arg)
      char *arg;
 {
   struct stat finfo;
@@ -387,7 +401,7 @@ com_stat (arg)
   return (0);
 }
 
-com_delete (arg)
+int com_delete (arg)
      char *arg;
 {
   too_dangerous ("delete");
@@ -396,7 +410,7 @@ com_delete (arg)
 
 /* Print out help for ARG, or for all of the commands if ARG is
    not present. */
-com_help (arg)
+int com_help (arg)
      char *arg;
 {
   register int i;
@@ -435,7 +449,7 @@ com_help (arg)
 }
 
 /* Change to the directory ARG. */
-com_cd (arg)
+int com_cd (arg)
      char *arg;
 {
   if (chdir (arg) == -1)
@@ -449,7 +463,7 @@ com_cd (arg)
 }
 
 /* Print out the current working directory. */
-com_pwd (ignore)
+int com_pwd (ignore)
      char *ignore;
 {
   char dir[1024], *s;
@@ -466,7 +480,7 @@ com_pwd (ignore)
 }
 
 /* The user wishes to quit using this program.  Just set DONE non-zero. */
-com_quit (arg)
+int com_quit (arg)
      char *arg;
 {
   done = 1;
@@ -474,12 +488,13 @@ com_quit (arg)
 }
 
 /* Function which tells you that you cannot do this. */
-too_dangerous (caller)
+int too_dangerous (caller)
      char *caller;
 {
   fprintf (stderr,
            "%s: Too dangerous for me to distribute.  Write it yourself.\n",
            caller);
+	return (0);
 }
 
 /* Return non-zero if ARG is a valid argument for CALLER, else print

@@ -19,32 +19,40 @@
    along with Readline; see the file COPYING.  If not, write to the Free
    Software Foundation, 59 Temple Place, Suite 330, Boston, MA 02111 USA. */
 
-#if defined (HAVE_CONFIG_H)
-#  include <config.h>
+#if defined(HAVE_CONFIG_H)
+# include "config.h"
+#else
+# warning tilde.c expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
+
+#if defined(HAVE_UNISTD_H)
+# ifdef _MINIX
+#  include <sys/types.h>
+# endif /* _MINIX */
+# include <unistd.h>
+#else
+# warning tilde.c expects <unistd.h> to be included.
 #endif
 
-#if defined (HAVE_UNISTD_H)
-#  ifdef _MINIX
-#    include <sys/types.h>
-#  endif
-#  include <unistd.h>
-#endif
-
-#if defined (HAVE_STRING_H)
-#  include <string.h>
+#if defined(HAVE_STRING_H)
+# include <string.h>
 #else /* !HAVE_STRING_H */
+# ifdef HAVE_STRINGS_H
 #  include <strings.h>
-#endif /* !HAVE_STRING_H */  
+# else
+#  warning tilde.c expects either <string.h> or <strings.h> to be included.
+# endif /* HAVE_STRINGS_H */
+#endif /* !HAVE_STRING_H */
 
 #if defined (HAVE_STDLIB_H)
-#  include <stdlib.h>
+# include <stdlib.h>
 #else
-#  include "ansi_stdlib.h"
+# include "ansi_stdlib.h"
 #endif /* HAVE_STDLIB_H */
 
 #include <sys/types.h>
 #ifdef HAVE_PWD_H
-#include <pwd.h>
+# include <pwd.h>
 #endif /* HAVE_PWD_H */
 
 #include "tilde.h"
@@ -52,7 +60,7 @@
 #if defined (TEST) || defined (STATIC_MALLOC)
 static void *xmalloc (), *xrealloc ();
 #else
-#  include "xmalloc.h"
+# include "xmalloc.h"
 #endif /* TEST || STATIC_MALLOC */
 
 #if defined (HAVE_GETPWNAM) && !defined (HAVE_GETPW_DECLS)
@@ -61,54 +69,54 @@ extern struct passwd *getpwnam PARAMS((const char *));
 #endif /* defined (HAVE_GETPWNAM) && !HAVE_GETPW_DECLS */
 
 #if !defined (savestring)
-#define savestring(x) strcpy ((char *)xmalloc (1 + strlen (x)), (x))
+# define savestring(x) strcpy ((char *)xmalloc (1 + strlen (x)), (x))
 #endif /* !savestring */
 
 #if !defined (NULL)
-#  if defined (__STDC__)
-#    define NULL ((void *) 0)
-#  else
-#    define NULL 0x0
-#  endif /* !__STDC__ */
+# if defined (__STDC__)
+#  define NULL ((void *) 0)
+# else
+#  define NULL 0x0
+# endif /* !__STDC__ */
 #endif /* !NULL */
 
 /* If being compiled as part of bash, these will be satisfied from
-   variables.o.  If being compiled as part of readline, they will
+   variables.o. If being compiled as part of readline, they will
    be satisfied from shell.o. */
 extern char *sh_get_home_dir PARAMS((void));
 extern char *sh_get_env_value PARAMS((const char *));
 
-/* The default value of tilde_additional_prefixes.  This is set to
+/* The default value of tilde_additional_prefixes. This is set to
    whitespace preceding a tilde so that simple programs which do not
    perform any word separation get desired behaviour. */
 static const char *default_prefixes[] =
   { " ~", "\t~", (const char *)NULL };
 
-/* The default value of tilde_additional_suffixes.  This is set to
+/* The default value of tilde_additional_suffixes. This is set to
    whitespace or newline so that simple programs which do not
    perform any word separation get desired behaviour. */
 static const char *default_suffixes[] =
   { " ", "\n", (const char *)NULL };
 
 /* If non-null, this contains the address of a function that the application
-   wants called before trying the standard tilde expansions.  The function
+   wants called before trying the standard tilde expansions. The function
    is called with the text sans tilde, and returns a malloc()'ed string
    which is the expansion, or a NULL pointer if the expansion fails. */
 tilde_hook_func_t *tilde_expansion_preexpansion_hook = (tilde_hook_func_t *)NULL;
 
 /* If non-null, this contains the address of a function to call if the
-   standard meaning for expanding a tilde fails.  The function is called
+   standard meaning for expanding a tilde fails. The function is called
    with the text (sans tilde, as in "foo"), and returns a malloc()'ed string
    which is the expansion, or a NULL pointer if there is no expansion. */
 tilde_hook_func_t *tilde_expansion_failure_hook = (tilde_hook_func_t *)NULL;
 
 /* When non-null, this is a NULL terminated array of strings which
-   are duplicates for a tilde prefix.  Bash uses this to expand
+   are duplicates for a tilde prefix. Bash uses this to expand
    `=~' and `:~'. */
 char **tilde_additional_prefixes = (char **)default_prefixes;
 
 /* When non-null, this is a NULL terminated array of strings which match
-   the end of a username, instead of just "/".  Bash sets this to
+   the end of a username, instead of just "/". Bash sets this to
    `:' and `=~'. */
 char **tilde_additional_suffixes = (char **)default_suffixes;
 
@@ -118,7 +126,7 @@ static char *isolate_tilde_prefix PARAMS((const char *, int *));
 static char *glue_prefix_and_suffix PARAMS((char *, const char *, int));
 
 /* Find the start of a tilde expansion in STRING, and return the index of
-   the tilde which starts the expansion.  Place the length of the text
+   the tilde which starts the expansion. Place the length of the text
    which identified this tilde starter in LEN, excluding the tilde itself. */
 static int
 tilde_find_prefix (string, len)
@@ -167,11 +175,11 @@ tilde_find_suffix (string)
 
   for (i = 0; i < string_len; i++)
     {
-#if defined (__MSDOS__)
+#if defined(__MSDOS__)
       if (string[i] == '/' || string[i] == '\\' /* || !string[i] */)
 #else
       if (string[i] == '/' /* || !string[i] */)
-#endif
+#endif /* __MSDOS__ */
 	break;
 
       for (j = 0; suffixes && suffixes[j]; j++)
@@ -192,7 +200,9 @@ tilde_expand (string)
   int result_size, result_index;
 
   result_index = result_size = 0;
-  if (result = strchr (string, '~'))
+	/* Turned the following assignment into an equality comparison; if that was
+	 * wrong, use double parentheses instead. */
+  if (result == strchr (string, '~'))
     result = (char *)xmalloc (result_size = (strlen (string) + 16));
   else
     result = (char *)xmalloc (result_size = (strlen (string) + 1));
@@ -239,7 +249,7 @@ tilde_expand (string)
       /* Fix for Cygwin to prevent ~user/xxx from expanding to //xxx when
 	 $HOME for `user' is /.  On cygwin, // denotes a network drive. */
       if (len > 1 || *expansion != '/' || *string != '/')
-#endif
+#endif /* __CYGWIN__ */
 	{
 	  if ((result_index + len + 1) > result_size)
 	    result = (char *)xrealloc (result, 1 + (result_size += (len + 20)));
@@ -255,7 +265,7 @@ tilde_expand (string)
   return (result);
 }
 
-/* Take FNAME and return the tilde prefix we want expanded.  If LENP is
+/* Take FNAME and return the tilde prefix we want expanded. If LENP is
    non-null, the index of the end of the prefix into FNAME is returned in
    the location it points to. */
 static char *
@@ -271,7 +281,7 @@ isolate_tilde_prefix (fname, lenp)
   for (i = 1; fname[i] && fname[i] != '/' && fname[i] != '\\'; i++)
 #else
   for (i = 1; fname[i] && fname[i] != '/'; i++)
-#endif
+#endif /* __MSDOS__ */
     ret[i - 1] = fname[i];
   ret[i - 1] = '\0';
   if (lenp)
@@ -299,8 +309,8 @@ glue_prefix_and_suffix (prefix, suffix, suffind)
   return ret;
 }
 
-/* Do the work of tilde expansion on FILENAME.  FILENAME starts with a
-   tilde.  If there is no expansion, call tilde_expansion_failure_hook.
+/* Do the work of tilde expansion on FILENAME. FILENAME starts with a
+   tilde. If there is no expansion, call tilde_expansion_failure_hook.
    This always returns a newly-allocated string, never static storage. */
 char *
 tilde_expand_word (filename)
@@ -346,7 +356,7 @@ tilde_expand_word (filename)
 	}
     }
 
-  /* No preexpansion hook, or the preexpansion hook failed.  Look in the
+  /* No preexpansion hook, or the preexpansion hook failed. Look in the
      password database. */
   dirname = (char *)NULL;
 #ifdef HAVE_GETPWNAM
@@ -354,7 +364,7 @@ tilde_expand_word (filename)
   if (user_entry == 0)
     {
       /* If the calling program has a special syntax for expanding tildes,
-	 and we couldn't find a standard expansion, then let them try. */
+	 and we could NOT find a standard expansion, then let them try. */
       if (tilde_expansion_failure_hook)
 	{
 	  expansion = (*tilde_expansion_failure_hook) (username);
@@ -365,7 +375,7 @@ tilde_expand_word (filename)
 	    }
 	}
       free (username);
-      /* If we don't have a failure hook, or if the failure hook did not
+      /* If we do NOT have a failure hook, or if the failure hook did not
 	 expand the tilde, return a copy of what we were passed. */
       if (dirname == 0)
 	dirname = savestring (filename);
@@ -377,16 +387,16 @@ tilde_expand_word (filename)
     }
 
   endpwent ();
-#endif
+#endif /* HAVE_GETPWNAM */
   return (dirname);
 }
 
 
-#if defined (TEST)
-#undef NULL
-#include <stdio.h>
+#if defined(TEST)
+# undef NULL
+# include <stdio.h>
 
-main (argc, argv)
+int main (argc, argv)
      int argc;
      char **argv;
 {

@@ -314,9 +314,9 @@ ALL_MACHINES = \
 
 OFILES = @BFD_MACHINES@
 
-# We should reconfigure whenever bfd/configure.in changes, because
+# We should reconfigure whenever bfd/configure.ac changes, because
 # that is where the version number in Makefile comes from.
-CONFIG_STATUS_DEPENDENCIES = $(BFDDIR)/configure.in
+CONFIG_STATUS_DEPENDENCIES = $(BFDDIR)/configure.ac
 
 AM_CPPFLAGS = -D_GNU_SOURCE -I. -I$(srcdir) -I../bfd -I$(INCDIR) -I$(BFDDIR) @HDEFINES@ -I$(srcdir)/../intl -I../intl
 
@@ -324,7 +324,7 @@ disassemble.lo: disassemble.c $(INCDIR)/dis-asm.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c @archdefs@ $(srcdir)/disassemble.c
 
 libopcodes_la_SOURCES =  dis-buf.c disassemble.c dis-init.c
-# It's desirable to list ../bfd/libbfd.la in DEPENDENCIES and LIBADD.
+# It is desirable to list ../bfd/libbfd.la in DEPENDENCIES and LIBADD.
 # Unfortunately this causes libtool to add -L$(libdir), referring to the
 # planned install directory of libbfd.  This can cause us to pick up an
 # old version of libbfd, or to pick up libbfd for the wrong architecture
@@ -333,14 +333,14 @@ libopcodes_la_DEPENDENCIES = $(OFILES)
 libopcodes_la_LIBADD = $(OFILES) @WIN32LIBADD@
 libopcodes_la_LDFLAGS = -release $(VERSION) @WIN32LDFLAGS@
 
-# libtool will build .libs/libopcodes.a.  We create libopcodes.a in
-# the build directory so that we don't have to convert all the
-# programs that use libopcodes.a simultaneously.  This is a hack which
-# should be removed if everything else starts using libtool.  FIXME.
+# libtool will build .libs/libopcodes.a. We create libopcodes.a in
+# the build directory so that we do NOT have to convert all the
+# programs that use libopcodes.a simultaneously. This is a hack which
+# should be removed if everything else starts using libtool. FIXME.
 
 noinst_LIBRARIES = libopcodes.a
 
-stamp-lib: libopcodes.la
+stamp-lib: libopcodes.la config.status
 	libtooldir=`$(LIBTOOL) --config | sed -n -e 's/^objdir=//p'`; \
 	if [ -f $$libtooldir/libopcodes.a ]; then \
 	  cp $$libtooldir/libopcodes.a libopcodes.tmp; \
@@ -467,7 +467,7 @@ IQ2000_DEPS =
 XSTORMY16_DEPS = 
 endif
 
-run-cgen:
+run-cgen: config.status
 	$(SHELL) $(srcdir)/cgen.sh opcodes $(srcdir) $(CGEN) \
 	  $(CGENDIR) "$(CGENFLAGS)" $(arch) $(prefix) $(archfile) $(opcfile) \
 	  "$(options)" "$(extrafiles)"
@@ -475,7 +475,7 @@ run-cgen:
 .PHONY: run-cgen
 
 # Maintainer utility rule to regenerate all cgen files.
-run-cgen-all:
+run-cgen-all: config.status
 	for c in $(CGEN_CPUS) ; \
 	do \
 		$(MAKE) stamp-$$c || exit 1 ; \

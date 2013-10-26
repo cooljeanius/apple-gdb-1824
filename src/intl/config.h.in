@@ -90,9 +90,17 @@
    */
 #undef HAVE_DECL_INDEX
 
+/* Define to 1 if you have the declaration of `malloc', and to 0 if you don't.
+   */
+#undef HAVE_DECL_MALLOC
+
 /* Define to 1 if you have the declaration of `NULL', and to 0 if you don't.
    */
 #undef HAVE_DECL_NULL
+
+/* Define to 1 if you have the declaration of `realloc', and to 0 if you
+   don't. */
+#undef HAVE_DECL_REALLOC
 
 /* Define to 1 if you have the `dgettext__' function. */
 #undef HAVE_DGETTEXT__
@@ -118,6 +126,9 @@
 /* Define to 1 if you have the `getcwd' function. */
 #undef HAVE_GETCWD
 
+/* Define to 1 if you have the `getenv' function. */
+#undef HAVE_GETENV
+
 /* Define to 1 if you have the `getpagesize' function. */
 #undef HAVE_GETPAGESIZE
 
@@ -130,8 +141,26 @@
 /* Define if you have the iconv() function and it works. */
 #undef HAVE_ICONV
 
+/* Define to 1 if you have the <iconv.h> header file. */
+#undef HAVE_ICONV_H
+
+/* Define to 1 if the system has the type `iconv_t'. */
+#undef HAVE_ICONV_T
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the `c' library (-lc). */
+#undef HAVE_LIBC
+
+/* Define to 1 if you have the `gnu' library (-lgnu). */
+#undef HAVE_LIBGNU
+
+/* Define to 1 if you have the `iberty' library (-liberty). */
+#undef HAVE_LIBIBERTY
+
+/* Define to 1 if you have the `iconv' library (-liconv). */
+#undef HAVE_LIBICONV
 
 /* Define to 1 if you have the <libintl.h> header file. */
 #undef HAVE_LIBINTL_H
@@ -252,6 +281,9 @@
 /* Define to 1 if you have the `__argz_stringify' function. */
 #undef HAVE___ARGZ_STRINGIFY
 
+/* Define as const if the declaration of iconv() needs const. */
+#undef ICONV_CONST
+
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
 #undef LT_OBJDIR
@@ -315,6 +347,9 @@
 
 /* Version number of package */
 #undef VERSION
+
+/* Define if using the dmalloc debugging malloc package */
+#undef WITH_DMALLOC
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */

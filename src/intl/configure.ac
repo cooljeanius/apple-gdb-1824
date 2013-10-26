@@ -14,6 +14,10 @@ AC_CANONICAL_TARGET
 AC_OBJEXT
 AC_EXEEXT
 AC_USE_SYSTEM_EXTENSIONS
+if test -f ${srcdir}/config.status; then
+  AC_MSG_NOTICE([config.status is already present, removing it.])
+  rm -f ${srcdir}/config.status
+fi
 AM_INIT_AUTOMAKE([1.7 gnu dejagnu])
 ifdef([AM_MAINTAINER_MODE],[
   test -e "."
@@ -59,6 +63,15 @@ AC_DEFUN([AC_REQUIRE_PROG_SED],[
   AC_REQUIRE([AC_PROG_SED])
 ])
 AC_REQUIRE_PROG_SED
+AC_PATH_PROG([ICONV_BIN],[iconv])
+AC_SUBST([ICONV_BIN])
+
+# Checks for libraries.
+AC_CHECK_LIB([c],[printf])
+# FIXME: Replace `main' with a function in `-liberty':
+AC_CHECK_LIB([iberty],[main])
+# FIXME: Replace `main' with a function in `-lgnu':
+AC_CHECK_LIB([gnu],[main])
 
 # Checks for header files.
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
@@ -66,7 +79,7 @@ AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
 ])
 AC_REQUIRE_HEADER_STDC
 AC_CHECK_HEADERS([argz.h bits/libc-lock.h byteswap.h ctype.h errno.h \
-                  fcntl.h libintl.h limits.h locale.h \
+                  fcntl.h iconv.h libintl.h limits.h locale.h \
                   malloc.h malloc/malloc.h nl_types.h \
                   stddef.h stdio.h sys/mman.h sys/param.h])
 
@@ -76,11 +89,22 @@ AC_C_INLINE
 AC_C_PROTOTYPES
 AC_TYPE_SIZE_T
 AC_TYPE_UINTMAX_T
+AC_CHECK_TYPES([iconv_t])
 
 # Checks for library functions.
 AM_GNU_GETTEXT([external])
 AC_SUBST([GT_YES])
 AC_SUBST([GT_NO])
+AC_DEFUN([AC_GETTEXT_SUBCHECKS],[
+  AC_REQUIRE([gt_INTL_MACOSX])
+  AC_REQUIRE([AM_ICONV])
+  AC_CHECK_LIB([iconv],[iconv],[],[
+    AC_CHECK_LIB([iconv],[libiconv],[],[
+      AC_CHECK_LIB([iconv],[main],[],[])
+    ])
+  ])
+])
+AC_GETTEXT_SUBCHECKS
 export DATADIRNAME=share
 AC_SUBST([DATADIRNAME])
 export MKINSTALLDIRS=../mkinstalldirs
@@ -89,6 +113,7 @@ AC_SUBST([l])
 AC_SUBST([INTLOBJS])
 export USE_INCLUDED_LIBINTL=yes
 AC_SUBST([USE_INCLUDED_LIBINTL])
+AM_WITH_DMALLOC
 AC_FUNC_ALLOCA
 AC_FUNC_MALLOC
 AC_FUNC_MMAP
@@ -96,7 +121,7 @@ AC_FUNC_REALLOC
 AC_FUNC_STRNLEN
 AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify \
                 dcgettext__ dgettext__ errno free fgets getcwd \
-                getwd memcpy mempcpy munmap putenv setenv \
+                getenv getwd memcpy mempcpy munmap putenv setenv \
                 setlocale stpcpy strcasecmp strchr strdup \
                 strlen tolower])
 AC_CHECK_DECLS([dcgettext__])
@@ -104,6 +129,10 @@ AC_CHECK_DECLS([dgettext__])
 AC_CHECK_DECLS([free])
 AC_CHECK_DECLS([index])
 AC_CHECK_DECLS([NULL])
+AC_CHECK_DECLS([malloc])
+AC_CHECK_DECLS([realloc])
+AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu])
+AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu])
 
 # Output
 AC_DIAGNOSE([obsolete],[It is technically impossible to `autoupdate'
@@ -122,8 +151,26 @@ AH_TOP([
 #define _INCLUDING_CONFIG_H
 ])
 
+if test -e libgettext.h -a ! -e libintl.h; then
+  ln -sv libgettext.h libintl.h
+elif test -e ${srcdir}/libgettext.h -a ! -e ${srcdir}/libintl.h; then
+  ln -sv ${srcdir}/libgettext.h ${srcdir}/libintl.h
+elif test -e ${srcdir}/libgettext.h -a ! -e libintl.h; then
+  ln -sv ${srcdir}/libgettext.h libintl.h
+elif test -e libgettext.h -a ! -e ${srcdir}/libintl.h; then
+  ln -sv libgettext.h ${srcdir}/libintl.h
+fi
+
 AC_CONFIG_FILES([Makefile \
                  Makefile.orig \
                  po/Makefile.in \
                  po/Makevars])
 AC_OUTPUT
+
+if test "${srcdir}" != "."; then
+  if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
+    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+  elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
+    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+  fi
+fi

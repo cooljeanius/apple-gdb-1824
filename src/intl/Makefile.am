@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 
-ACLOCAL_AMFLAGS = -I m4
+ACLOCAL_AMFLAGS = -I m4 --install
 
 SUBDIRS = . po
 
@@ -61,6 +61,7 @@ LDFLAGS = @LDFLAGS@
 
 AM_CPPFLAGS = -I$(srcdir)
 AM_WARNFLAGS = -Wall
+AM_LDFLAGS = -framework CoreFoundation
 
 COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(AM_WARNFLAGS) $(CPPFLAGS) $(CFLAGS) $(XCFLAGS) # $(AM_CPPFLAGS)
 .PHONY: -c -m 644 
@@ -94,12 +95,12 @@ SUFFIXES = .c .o .lo
 .c.lo:
 	$(LIBTOOL) --mode=compile $(COMPILE) $<
 
-all: all-@USE_INCLUDED_LIBINTL@
+all: config.status all-@USE_INCLUDED_LIBINTL@
 .PHONY: all-@USE_INCLUDED_LIBINTL@
 
-all-yes: libintl.la intlh.inst libintl.a
+all-yes: libintl.la intlh.inst libintl.a config.status
 	@test -e Makefile.orig && make -f Makefile.orig
-all-no:
+all-no: config.status
 	@test -e Makefile.orig && make -f Makefile.orig
 install-info-local:
 
@@ -109,7 +110,7 @@ libintl.a: $(OBJECTS) $(LTOBJECTS)
 	$(RANLIB) $@
 
 libintl.la: $(LTOBJECTS) $(OBJECTS)
-	$(LIBTOOL) --mode=link $(CC) $(LDFLAGS) -o $@ $(LTOBJECTS) \
+	$(LIBTOOL) --mode=link $(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ $(LTOBJECTS) \
 		   -version-info 1:0 -rpath $(libdir)
 
 ../po/cat-id-tbl.lo: ../po/cat-id-tbl.c $(top_srcdir)/po/$(PACKAGE).pot
@@ -118,9 +119,9 @@ libintl.la: $(LTOBJECTS) $(OBJECTS)
 ../po/cat-id-tbl.o: ../po/cat-id-tbl.c $(top_srcdir)/po/$(PACKAGE).pot
 	cd ../po && $(MAKE) cat-id-tbl.o
 
-check: all
+check: all config.status
 
-# This installation goal is only used in GNU gettext.  Packages which
+# This installation goal is only used in GNU gettext. Packages which
 # only use the library should use install instead.
 
 # We must not install the libintl.h/libintl.a files if we are on a
@@ -130,7 +131,7 @@ check: all
 # If you want to use the one which comes with this version of the
 # package, you have to use `configure --with-included-gettext'.
 install-libintl: install-exec-local install-data-local
-install-exec-local: all
+install-exec-local: all config.status
 	if test "$(PACKAGE)" = "gettext" \
 	   && test '@INTLOBJS@' = '$(GETTOBJS)'; then \
 	  if test -r $(MKINSTALLDIRS); then \
@@ -143,7 +144,7 @@ install-exec-local: all
 	else \
 	  : ; \
 	fi
-install-data-local: all
+install-data-local: all config.status
 	if test "$(PACKAGE)" = "gettext"; then \
 	  if test -r $(MKINSTALLDIRS); then \
 	    $(MKINSTALLDIRS) $(gettextsrcdir); \
@@ -189,16 +190,15 @@ id: ID-uppercase
 ID-uppercase: $(HEADERS) $(SOURCES)
 	here=`pwd`; cd $(srcdir) && mkid -f$$here/ID $(HEADERS) $(SOURCES)
 
-
-mostlyclean-local:
+mostlyclean-local: config.status
 	rm -f *.a *.o *.lo core core.*
 
-clean-local: mostlyclean-local
+clean-local: mostlyclean-local config.status
 
-distclean-local: clean-local
+distclean-local: clean-local config.status
 	rm -f Makefile ID TAGS po2msg.sed po2tbl.sed libintl.h config.log
 
-maintainer-clean-local: distclean-local
+maintainer-clean-local: distclean-local config.status
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
 

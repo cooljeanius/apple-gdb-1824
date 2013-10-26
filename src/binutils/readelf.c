@@ -41,12 +41,53 @@
   ELF file than is provided by objdump.  In particular it can display DWARF
   debugging information which (at the moment) objdump cannot.  */
 
-/* #TODO: ifdef these includes */
-#include <assert.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdio.h>
-#include <time.h>
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# warning readelf.c expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
+
+#if HAVE_LOCALE_H
+# include <locale.h>
+#else
+# warning readelf.c expects <locale.h> to be included.
+#endif /* HAVE_LOCALE_H */
+
+#ifdef HAVE_ASSERT_H
+# include <assert.h>
+#else
+# warning readelf.c expects <assert.h> to be included.
+#endif /* HAVE_ASSERT_H */
+#ifdef HAVE_LIBINTL_H
+# include <libintl.h>
+#else
+# warning readelf.c expects <libintl.h> to be included.
+#endif /* HAVE_LIBINTL_H */
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#else
+# warning readelf.c expects <sys/types.h> to be included.
+#endif /* HAVE_SYS_TYPES_H */
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#else
+# warning readelf.c expects <sys/stat.h> to be included.
+#endif /* HAVE_SYS_STAT_H */
+#ifdef HAVE_STDIO_H
+# include <stdio.h>
+#else
+# warning readelf.c expects <stdio.h> to be included.
+#endif /* HAVE_STDIO_H */
+#ifdef HAVE_STDLIB_H
+# include <stdlib.h>
+#else
+# warning readelf.c expects <stdlib.h> to be included.
+#endif /* HAVE_STDLIB_H */
+#ifdef HAVE_TIME_H
+# include <time.h>
+#else
+# warning readelf.c expects <time.h> to be included.
+#endif /* HAVE_TIME_H */
 
 #if __GNUC__ >= 2
 /* Define BFD64 here, even if our default architecture is 32 bit ELF
@@ -199,7 +240,7 @@ char *cmdline_dump_sects = NULL;
 unsigned num_cmdline_dump_sects = 0;
 
 /* A dynamic array of flags indicating for which sections a dump of
-   some kind has been requested.  It is reset on a per-object file
+   some kind has been requested. It is reset on a per-object file
    basis and then initialised from the cmdline_dump_sects array and
    the results of interpreting the -w switch.  */
 char *dump_sects = NULL;
@@ -379,10 +420,10 @@ byte_get_little_endian (unsigned char *field, int size)
 #ifndef BFD64
     case 8:
       /* We want to extract data from an 8 byte wide field and
-	 place it into a 4 byte wide field.  Since this is a little
+	 place it into a 4 byte wide field. Since this is a little
 	 endian source we can just use the 4 byte extraction code.  */
       /* Fall through.  */
-#endif
+#endif /* !BFD64 */
     case 4:
       return  ((unsigned long) (field[0]))
 	|    (((unsigned long) (field[1])) << 8)
@@ -399,7 +440,7 @@ byte_get_little_endian (unsigned char *field, int size)
 	|    (((bfd_vma) (field[5])) << 40)
 	|    (((bfd_vma) (field[6])) << 48)
 	|    (((bfd_vma) (field[7])) << 56);
-#endif
+#endif /* BFD64 */
     default:
       error (_("Unhandled data length: %d\n"), size);
       abort ();
@@ -504,7 +545,7 @@ print_hex_vma (bfd_vma vma)
     putchar (*--bufp);
   return nc;
 }
-#endif
+#endif /* BFD64 && !BFD_HOST_64BIT_LONG */
 
 /* Print a VMA value.  */
 static int
@@ -512,7 +553,7 @@ print_vma (bfd_vma vma, print_mode mode)
 {
 #ifdef BFD64
   if (is_32bit_elf)
-#endif
+#endif /* BFD64 */
     {
       switch (mode)
 	{
@@ -560,47 +601,47 @@ print_vma (bfd_vma vma, print_mode mode)
 	  /* Drop through.  */
 
 	case HEX:
-#if BFD_HOST_64BIT_LONG
+# if BFD_HOST_64BIT_LONG
 	  return nc + printf ("%lx", vma);
-#else
+# else
 	  return nc + print_hex_vma (vma);
-#endif
+# endif /* BFD_HOST_64BIT_LONG */
 
 	case DEC:
-#if BFD_HOST_64BIT_LONG
+# if BFD_HOST_64BIT_LONG
 	  return printf ("%ld", vma);
-#else
+# else
 	  return print_dec_vma (vma, 1);
-#endif
+# endif /* BFD_HOST_64BIT_LONG */
 
 	case DEC_5:
-#if BFD_HOST_64BIT_LONG
+# if BFD_HOST_64BIT_LONG
 	  if (vma <= 99999)
 	    return printf ("%5ld", vma);
 	  else
 	    return printf ("%#lx", vma);
-#else
+# else
 	  if (vma <= 99999)
 	    return printf ("%5ld", _bfd_int64_low (vma));
 	  else
 	    return print_hex_vma (vma);
-#endif
+# endif /* BFD_HOST_64BIT_LONG */
 
 	case UNSIGNED:
-#if BFD_HOST_64BIT_LONG
+# if BFD_HOST_64BIT_LONG
 	  return printf ("%lu", vma);
-#else
+# else
 	  return print_dec_vma (vma, 0);
-#endif
+# endif /* BFD_HOST_64BIT_LONG */
 	}
     }
-#endif
+#endif /* BFD64 */
   return 0;
 }
 
-/* Display a symbol on stdout.  If do_wide is not true then
+/* Display a symbol on stdout. If do_wide is not true then
    format the symbol to be at most WIDTH characters,
-   truncating as necessary.  If WIDTH is negative then
+   truncating as necessary. If WIDTH is negative then
    format the string to be exactly - WIDTH characters,
    truncating or padding as necessary.  */
 
@@ -632,7 +673,7 @@ byte_get_big_endian (unsigned char *field, int size)
 	 we are returning only 4 bytes of data.  */
       field += 4;
       /* Fall thru */
-#endif
+#endif /* !BFD64 */
     case 4:
       return ((unsigned long) (field[3]))
 	|   (((unsigned long) (field[2])) << 8)
@@ -649,7 +690,7 @@ byte_get_big_endian (unsigned char *field, int size)
 	|   (((bfd_vma) (field[2])) << 40)
 	|   (((bfd_vma) (field[1])) << 48)
 	|   (((bfd_vma) (field[0])) << 56);
-#endif
+#endif /* BFD64 */
 
     default:
       error (_("Unhandled data length: %d\n"), size);
@@ -791,7 +832,7 @@ guess_is_rela (unsigned long e_machine)
     case EM_SVX:
     case EM_ST19:
     default:
-      warn (_("Don't know about relocations on this machine architecture\n"));
+      warn (_("Do not know about relocations on this machine architecture\n"));
       return FALSE;
     }
 }
@@ -1054,7 +1095,7 @@ dump_relocations (FILE *file,
 	    type = ELF64_R_TYPE (info);
 
 	  symtab_index = ELF64_R_SYM  (info);
-#endif
+#endif /* BFD64 */
 	}
 
       if (is_32bit_elf)
@@ -1063,7 +1104,7 @@ dump_relocations (FILE *file,
 	  printf ("%8.8lx  %8.8lx ", _bfd_int64_low (offset), _bfd_int64_low (info));
 #else
 	  printf ("%8.8lx  %8.8lx ", offset, info);
-#endif
+#endif /* _bfd_int64_low */
 	}
       else
 	{
@@ -1080,7 +1121,7 @@ dump_relocations (FILE *file,
 		  ? "%16.16lx  %16.16lx "
 		  : "%12.12lx  %12.12lx ",
 		  offset, info);
-#endif
+#endif /* _bfd_int64_low */
 	}
 
       switch (elf_header.e_machine)
@@ -1293,7 +1334,7 @@ dump_relocations (FILE *file,
 	printf (_("unrecognized: %-7lx"), _bfd_int64_low (type));
 #else
 	printf (_("unrecognized: %-7lx"), type);
-#endif
+#endif /* _bfd_int64_low */
       else
 	printf (do_wide ? "%-22.22s" : "%-17.17s", rtype);
 
@@ -1404,7 +1445,7 @@ dump_relocations (FILE *file,
 	    printf (_("unrecognized: %-7lx"), _bfd_int64_low (type2));
 #else
 	    printf (_("unrecognized: %-7lx"), type2);
-#endif
+#endif /* _bfd_int64_low */
 	  else
 	    printf ("%-17.17s", rtype2);
 
@@ -1415,7 +1456,7 @@ dump_relocations (FILE *file,
 	    printf (_("unrecognized: %-7lx"), _bfd_int64_low (type3));
 #else
 	    printf (_("unrecognized: %-7lx"), type3);
-#endif
+#endif /* _bfd_int64_low */
 	  else
 	    printf ("%-17.17s", rtype3);
 
@@ -2734,7 +2775,7 @@ static struct option options[] =
   {"unwind",	       no_argument, 0, 'u'},
 #ifdef SUPPORT_DISASSEMBLY
   {"instruction-dump", required_argument, 0, 'i'},
-#endif
+#endif /* SUPPORT_DISASSEMBLY */
 
   {"version",	       no_argument, 0, 'v'},
   {"wide",	       no_argument, 0, 'W'},
@@ -2774,7 +2815,7 @@ usage (void)
   fprintf (stdout, _("\
   -i --instruction-dump=<number>\n\
                          Disassemble the contents of section <number>\n"));
-#endif
+#endif /* SUPPORT_DISASSEMBLY */
   fprintf (stdout, _("\
   -I --histogram         Display histogram of bucket list lengths\n\
   -W --wide              Allow output width to exceed 80 characters\n\
@@ -3063,7 +3104,7 @@ parse_args (int argc, char **argv)
 	      break;
 	    }
 	  goto oops;
-#endif
+#endif /* SUPPORT_DISASSEMBLY */
 	case 'v':
 	  print_version (program_name);
 	  break;
@@ -3983,7 +4024,7 @@ process_section_headers (FILE *file)
 	 GCC 4.0 marks EABI64 objects with a dummy .gcc_compiled_longXX
 	 section, where XX is the size of longs in bits.  Unfortunately,
 	 earlier compilers provided no way of distinguishing ILP32 objects
-	 from LP64 objects, so if there's any doubt, we should assume that
+	 from LP64 objects, so if there is any doubt, we should assume that
 	 the official LP64 form is being used.  */
       if ((elf_header.e_flags & EF_MIPS_ABI) == E_MIPS_ABI_EABI64
 	  && find_section (".gcc_compiled_long32") == NULL)
@@ -4301,7 +4342,7 @@ process_section_groups (FILE *file)
   char *strtab;
   size_t strtab_size;
 
-  /* Don't process section groups unless needed.  */
+  /* Do NOT process section groups unless needed.  */
   if (!do_unwind && !do_section_groups)
     return 1;
 
@@ -5607,7 +5648,7 @@ get_32bit_dynamic_section (FILE *file)
     return 0;
 
 /* SGI's ELF has more than one section in the DYNAMIC segment, and we
-   might not have the luxury of section headers.  Look for the DT_NULL
+   might not have the luxury of section headers. Look for the DT_NULL
    terminator to determine the number of entries.  */
   for (ext = edyn, dynamic_nent = 0;
        (char *) ext < (char *) edyn + dynamic_size;
@@ -5651,7 +5692,7 @@ get_64bit_dynamic_section (FILE *file)
     return 0;
 
 /* SGI's ELF has more than one section in the DYNAMIC segment, and we
-   might not have the luxury of section headers.  Look for the DT_NULL
+   might not have the luxury of section headers. Look for the DT_NULL
    terminator to determine the number of entries.  */
   for (ext = edyn, dynamic_nent = 0;
        (char *) ext < (char *) edyn + dynamic_size;
@@ -5752,7 +5793,7 @@ process_dynamic_section (FILE *file)
 
 	  /* Since we do not know how big the symbol table is,
 	     we default to reading in the entire file (!) and
-	     processing that.  This is overkill, I know, but it
+	     processing that. This is overkill, I know, but it
 	     should work.  */
 	  section.sh_offset = offset_from_vma (file, entry->d_un.d_val, 0);
 
@@ -5799,7 +5840,7 @@ process_dynamic_section (FILE *file)
 
 	  /* Since we do not know how big the string table is,
 	     we default to reading in the entire file (!) and
-	     processing that.  This is overkill, I know, but it
+	     processing that. This is overkill, I know, but it
 	     should work.  */
 
 	  offset = offset_from_vma (file, entry->d_un.d_val, 0);
@@ -5839,7 +5880,7 @@ process_dynamic_section (FILE *file)
 	  if (entry->d_tag == DT_SYMINENT)
 	    {
 	      /* Note: these braces are necessary to avoid a syntax
-		 error from the SunOS4 C compiler.  */
+		   * error from the SunOS4 C compiler.  */
 	      assert (sizeof (Elf_External_Syminfo) == entry->d_un.d_val);
 	    }
 	  else if (entry->d_tag == DT_SYMINSZ)
@@ -5854,7 +5895,7 @@ process_dynamic_section (FILE *file)
 	  Elf_External_Syminfo *extsyminfo, *extsym;
 	  Elf_Internal_Syminfo *syminfo;
 
-	  /* There is a syminfo section.  Read the data.  */
+	  /* There is a syminfo section. Read the data.  */
 	  extsyminfo = get_data (NULL, file, dynamic_syminfo_offset, 1,
 				 syminsz, _("symbol information"));
 	  if (!extsyminfo)
@@ -7330,7 +7371,7 @@ disassemble_section (Elf_Internal_Shdr *section, FILE *file)
 
   return 1;
 }
-#endif
+#endif /* SUPPORT_DISASSEMBLY */
 
 static int
 dump_section (Elf_Internal_Shdr *section, FILE *file)
@@ -7715,7 +7756,7 @@ debug_apply_rela_addends (FILE *file,
 	      if (ELF32_R_SYM (rp->r_info) != 0
 		  && ELF32_ST_TYPE (sym->st_info) != STT_SECTION
 		  /* Relocations against object symbols can happen,
-		     eg when referencing a global array.  For an
+		     eg when referencing a global array. For an
 		     example of this see the _clz.o binary in libgcc.a.  */
 		  && ELF32_ST_TYPE (sym->st_info) != STT_OBJECT)
 		{
@@ -7727,10 +7768,10 @@ debug_apply_rela_addends (FILE *file,
 	    }
 	  else
 	    {
-	      /* In MIPS little-endian objects, r_info isn't really a
-		 64-bit little-endian value: it has a 32-bit little-endian
-		 symbol index followed by four individual byte fields.
-		 Reorder INFO accordingly.  */
+	      /* In MIPS little-endian objects, r_info is NOT really a
+		   * 64-bit little-endian value: it has a 32-bit little-endian
+		   * symbol index followed by four individual byte fields.
+		   * Reorder INFO accordingly.  */
 	      if (elf_header.e_machine == EM_MIPS
 		  && elf_header.e_ident[EI_DATA] != ELFDATA2MSB)
 		rp->r_info = (((rp->r_info & 0xffffffff) << 32)
@@ -7762,8 +7803,8 @@ debug_apply_rela_addends (FILE *file,
   return 1;
 }
 
-/* FIXME:  There are better and more efficient ways to handle
-   these structures.  For now though, I just want something that
+/* FIXME: There are better and more efficient ways to handle
+   these structures. For now though, I just want something that
    is simple to implement.  */
 typedef struct abbrev_attr
 {
@@ -7884,8 +7925,8 @@ process_abbrev_section (unsigned char *start, unsigned char *end)
       start += bytes_read;
 
       /* A single zero is supposed to end the section according
-	 to the standard.  If there's more, then signal that to
-	 the caller.  */
+       * to the standard. If there is more, then signal that to
+       * the caller.  */
       if (entry == 0)
 	return start == end ? NULL : start;
 
@@ -8989,9 +9030,9 @@ read_and_display_attr (unsigned long attribute,
 }
 
 
-/* Process the contents of a .debug_info section.  If do_loc is non-zero
+/* Process the contents of a .debug_info section. If do_loc is non-zero
    then we are scanning for location lists and we do not want to display
-   anything to the user.  */
+   anything to the user. */
 
 static int
 process_debug_info (Elf_Internal_Shdr *section, unsigned char *start,
@@ -9011,8 +9052,8 @@ process_debug_info (Elf_Internal_Shdr *section, unsigned char *start,
       for (section_begin = start, num_units = 0; section_begin < end;
 	   num_units ++)
 	{
-	  /* Read the first 4 bytes.  For a 32-bit DWARF section, this
-	     will be the length.  For a 64-bit DWARF section, it'll be
+	  /* Read the first 4 bytes. For a 32-bit DWARF section, this
+	     will be the length. For a 64-bit DWARF section, it will be
 	     the escape code 0xffffffff followed by an 8 byte length.  */
 	  length = byte_get (section_begin, 4);
 
@@ -9249,10 +9290,10 @@ process_debug_info (Elf_Internal_Shdr *section, unsigned char *start,
 
 /* Retrieve the pointer size associated with the given compilation unit.
    Optionally the offset of this unit into the .debug_info section is
-   also retutned.  If there is no .debug_info section then an error
-   message is issued and 0 is returned.  If the requested comp unit has
+   also retutned. If there is no .debug_info section then an error
+   message is issued and 0 is returned. If the requested comp unit has
    not been defined in the .debug_info section then a warning message
-   is issued and the last know pointer size is returned.  This message
+   is issued and the last know pointer size is returned. This message
    is only issued once per section dumped per file dumped.  */
 
 static unsigned int
@@ -9290,9 +9331,9 @@ get_pointer_size_and_offset_of_comp_unit (unsigned int comp_unit,
 }
 
 /* Locate and scan the .debug_info section in the file and record the pointer
-   sizes and offsets for the compilation units in it.  Usually an executable
+   sizes and offsets for the compilation units in it. Usually an executable
    will have just one pointer size, but this is not guaranteed, and so we try
-   not to make any assumptions.  Returns zero upon failure, or the number of
+   not to make any assumptions. Returns zero upon failure, or the number of
    compilation units upon success.  */
 
 static unsigned int
@@ -10691,8 +10732,8 @@ display_debug_frames (Elf_Internal_Shdr *section,
 
 	  fc->pc_begin = get_encoded_value (start, fc->fde_encoding);
 	  if ((fc->fde_encoding & 0x70) == DW_EH_PE_pcrel
-	      /* Don't adjust for ET_REL since there's invariably a pcrel
-		 reloc here, which we haven't applied.  */
+	      /* Do NOT adjust for ET_REL since there is invariably a pcrel
+	       * reloc here, which we have NOT applied.  */
 	      && elf_header.e_type != ET_REL)
 	    fc->pc_begin += section->sh_addr + (start - section_start);
 	  start += encoded_ptr_size;
@@ -10723,12 +10764,12 @@ display_debug_frames (Elf_Internal_Shdr *section,
 	}
 
       /* At this point, fc is the current chunk, cie (if any) is set, and
-	 we're about to interpret instructions for the chunk.  */
+       * we are about to interpret instructions for the chunk.  */
       /* ??? At present we need to do this always, since this sizes the
-	 fc->col_type and fc->col_offset arrays, which we write into always.
-	 We should probably split the interpreted and non-interpreted bits
-	 into two different routines, since there's so much that doesn't
-	 really overlap between them.  */
+       * fc->col_type and fc->col_offset arrays, which we write into always.
+       * We should probably split the interpreted and non-interpreted bits
+       * into two different routines, since there is so much that does NOT
+       * really overlap between them.  */
       if (1 || do_debug_frames_interp)
 	{
 	  /* Start by making a pass over the chunk, allocating storage
@@ -10746,7 +10787,7 @@ display_debug_frames (Elf_Internal_Shdr *section,
 		op &= 0xc0;
 
 	      /* Warning: if you add any more cases to this switch, be
-		 sure to add them to the corresponding switch below.  */
+	       * sure to add them to the corresponding switch below.  */
 	      switch (op)
 		{
 		case DW_CFA_advance_loc:
@@ -10847,7 +10888,7 @@ display_debug_frames (Elf_Internal_Shdr *section,
 	}
 
       /* Now we know what registers are used, make a second pass over
-	 the chunk, this time actually printing out the info.  */
+       * the chunk, this time actually printing out the info.  */
 
       while (start < block_end)
 	{
@@ -11251,7 +11292,7 @@ process_section_contents (FILE *file)
 #ifdef SUPPORT_DISASSEMBLY
       if (dump_sects[i] & DISASS_DUMP)
 	disassemble_section (section, file);
-#endif
+#endif /* SUPPORT_DISASSEMBLY */
       if (dump_sects[i] & HEX_DUMP)
 	dump_section (section, file);
 
@@ -11826,7 +11867,7 @@ get_netbsd_elfcore_note_type (unsigned e_type)
     }
 
   /* As of Jan 2002 there are no other machine-independent notes
-     defined for NetBSD core files.  If the note type is less
+     defined for NetBSD core files. If the note type is less
      than the start of the machine-dependent note types, we don't
      understand it.  */
 
@@ -11896,7 +11937,7 @@ process_note (Elf_Internal_Note *pnote)
     nt = get_netbsd_elfcore_note_type (pnote->type);
 
   else
-    /* Don't recognize this note name; just use the default set of
+    /* Do NOT recognize this note name; just use the default set of
        note type strings.  */
       nt = get_note_type (pnote->type);
 
@@ -11953,10 +11994,10 @@ process_corefile_note_segment (FILE *file, bfd_vma offset, bfd_vma length)
 
       external = next;
 
-      /* Verify that name is null terminated.  It appears that at least
-	 one version of Linux (RedHat 6.0) generates corefiles that don't
-	 comply with the ELF spec by failing to include the null byte in
-	 namesz.  */
+      /* Verify that name is null terminated. It appears that at least
+       * one version of Linux (RedHat 6.0) generates corefiles that do NOT
+       * comply with the ELF spec by failing to include the null byte in
+       * namesz.  */
       if (inote.namedata[inote.namesz] != '\0')
 	{
 	  temp = malloc (inote.namesz + 1);
@@ -12119,7 +12160,7 @@ get_file_header (FILE *file)
 
       /* If we have been compiled with sizeof (bfd_vma) == 4, then
 	 we will not be able to cope with the 64bit data found in
-	 64 ELF files.  Detect this now and abort before we start
+	 64 ELF files. Detect this now and abort before we start
 	 overwriting things.  */
       if (sizeof (bfd_vma) < 8)
 	{
@@ -12148,8 +12189,8 @@ get_file_header (FILE *file)
 
   if (elf_header.e_shoff)
     {
-      /* There may be some extensions in the first section header.  Don't
-	 bomb if we can't read it.  */
+      /* There may be some extensions in the first section header. Do NOT
+       * bomb if we cannot read it.  */
       if (is_32bit_elf)
 	get_32bit_section_headers (file, 1);
       else
@@ -12160,7 +12201,7 @@ get_file_header (FILE *file)
 }
 
 /* Process one ELF object file according to the command line options.
-   This file may actually be stored in an archive.  The file is
+   This file may actually be stored in an archive. The file is
    positioned at the start of the ELF object.  */
 
 static int
@@ -12208,7 +12249,7 @@ process_object (char *file_name, FILE *file)
   if (! process_section_headers (file))
     {
       /* Without loaded section headers we cannot process lots of
-	 things.  */
+       * things.  */
       do_unwind = do_version = do_dump = do_arch = 0;
 
       if (! do_using_dynamic)
@@ -12324,8 +12365,8 @@ process_object (char *file_name, FILE *file)
   return 0;
 }
 
-/* Process an ELF archive.  The file is positioned just after the
-   ARMAG string.  */
+/* Process an ELF archive. The file is positioned just after the
+ * ARMAG string.  */
 
 static int
 process_archive (char *file_name, FILE *file)
@@ -12352,8 +12393,8 @@ process_archive (char *file_name, FILE *file)
 
   if (memcmp (arhdr.ar_name, "/               ", 16) == 0)
     {
-      /* This is the archive symbol table.  Skip it.
-	 FIXME: We should have an option to dump it.  */
+      /* This is the archive symbol table. Skip it.
+       * FIXME: We should have an option to dump it.  */
       size = strtoul (arhdr.ar_size, NULL, 10);
       if (fseek (file, size + (size & 1), SEEK_CUR) != 0)
 	{
@@ -12375,7 +12416,7 @@ process_archive (char *file_name, FILE *file)
   if (memcmp (arhdr.ar_name, "//              ", 16) == 0)
     {
       /* This is the archive string table holding long member
-	 names.  */
+       * names.  */
 
       longnames_size = strtoul (arhdr.ar_size, NULL, 10);
 
@@ -12549,7 +12590,7 @@ process_file (char *file_name)
 }
 
 #ifdef SUPPORT_DISASSEMBLY
-/* Needed by the i386 disassembler.  For extra credit, someone could
+/* Needed by the i386 disassembler. For extra credit, someone could
    fix this so that we insert symbolic addresses here, esp for GOT/PLT
    symbols.  */
 
@@ -12565,20 +12606,26 @@ db_task_printsym (unsigned int addr)
 {
   print_address (addr, stderr);
 }
-#endif
+#endif /* SUPPORT_DISASSEMBLY */
 
 int
 main (int argc, char **argv)
 {
   int err;
 
-#if defined (HAVE_SETLOCALE) && defined (HAVE_LC_MESSAGES)
+#if defined(HAVE_SETLOCALE) && defined(HAVE_LC_MESSAGES)
   setlocale (LC_MESSAGES, "");
-#endif
-#if defined (HAVE_SETLOCALE)
+#endif /* HAVE_SETLOCALE && HAVE_LC_MESSAGES */
+#if defined(HAVE_SETLOCALE)
   setlocale (LC_CTYPE, "");
-#endif
+#endif /* HAVE_SETLOCALE */
+#if !defined(HAVE_BINDTEXTDOMAIN) && !defined(bindtextdomain)
+# warning bindtextdomain is needed.
+#endif /* !HAVE_BINDTEXTDOMAIN && !bindtextdomain */
   bindtextdomain (PACKAGE, LOCALEDIR);
+#if !defined(HAVE_TEXTDOMAIN) && !defined(textdomain)
+# warning textdomain is needed.
+#endif /* !HAVE_TEXTDOMAIN && !textdomain */
   textdomain (PACKAGE);
 
   parse_args (argc, argv);
@@ -12610,3 +12657,6 @@ main (int argc, char **argv)
 
   return err;
 }
+
+/* (this file is way too long) */
+/* EOF */

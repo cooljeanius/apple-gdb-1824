@@ -70,6 +70,9 @@
 /* Define to 1 if FIONREAD sys/ioctl.h */
 #undef FIONREAD_IN_SYS_IOCTL
 
+/* most gcc compilers know a function __attribute__((__malloc__)) */
+#undef GCC_MALLOC_CALL
+
 /* Define to 1 if `TIOCGWINSZ' requires <sys/ioctl.h>. */
 #undef GWINSZ_IN_SYS_IOCTL
 
@@ -83,11 +86,17 @@
 /* Define to 1 if you have the <arpa/inet.h> header file. */
 #undef HAVE_ARPA_INET_H
 
+/* Define to 1 if you have the `atoi' function. */
+#undef HAVE_ATOI
+
 /* Define to 1 if we have BSD signals */
 #undef HAVE_BSD_SIGNALS
 
 /* Define to 1 if your system has a working `chown' function. */
 #undef HAVE_CHOWN
+
+/* Define to 1 if you have the `ctime' function. */
+#undef HAVE_CTIME
 
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
    */
@@ -120,6 +129,9 @@
 /* Define to 1 if you have the `fork' function. */
 #undef HAVE_FORK
 
+/* Define to 1 if you have the `fprintf' function. */
+#undef HAVE_FPRINTF
+
 /* Define to 1 if you have the `free' function. */
 #undef HAVE_FREE
 
@@ -128,6 +140,9 @@
 
 /* Define to 1 if you have the `getcwd' function. */
 #undef HAVE_GETCWD
+
+/* Define to 1 if you have the `getopt' function. */
+#undef HAVE_GETOPT
 
 /* Define to 1 if you have the `getpagesize' function. */
 #undef HAVE_GETPAGESIZE
@@ -176,6 +191,9 @@
 /* Define to 1 if you have the `history' library (-lhistory). */
 #undef HAVE_LIBHISTORY
 
+/* Define to 1 if you have the `iberty' library (-liberty). */
+#undef HAVE_LIBIBERTY
+
 /* Define to 1 if you have the `readline' library (-lreadline). */
 #undef HAVE_LIBREADLINE
 
@@ -184,6 +202,9 @@
 
 /* Define to 1 if you have the <locale.h> header file. */
 #undef HAVE_LOCALE_H
+
+/* Define to 1 if the system has the type 'long long int'. */
+#undef HAVE_LONG_LONG_INT
 
 /* Define to 1 if we have the lstat function */
 #undef HAVE_LSTAT
@@ -195,6 +216,21 @@
 /* Define to 1 if your system has a GNU libc compatible `malloc' function, and
    to 0 otherwise. */
 #undef HAVE_MALLOC
+
+/* Define to 1 if you have the <malloca.h> header file. */
+#undef HAVE_MALLOCA_H
+
+/* Define to 0 if REPLACE_MALLOC */
+#undef HAVE_MALLOC_GNU
+
+/* Define to 1 if you have the <malloc.h> header file. */
+#undef HAVE_MALLOC_H
+
+/* Define to 1 if you have the <malloc/malloc.h> header file. */
+#undef HAVE_MALLOC_MALLOC_H
+
+/* Define if the 'malloc' function is POSIX compliant. */
+#undef HAVE_MALLOC_POSIX
 
 /* Define to 1 if you have the `mbrlen' function. */
 #undef HAVE_MBRLEN
@@ -235,6 +271,10 @@
 /* Define to 1 if we have a 64-bit off_t */
 #undef HAVE_OFF_T_64
 
+/* Define if `malloc'ing more than one page always returns a page-aligned
+   address. */
+#undef HAVE_PAGE_ALIGNED_MALLOC
+
 /* Define to 1 if we have POSIX signals */
 #undef HAVE_POSIX_SIGNALS
 
@@ -259,6 +299,22 @@
 /* Define to 1 if your system has a GNU libc compatible `realloc' function,
    and to 0 otherwise. */
 #undef HAVE_REALLOC
+
+/* Define to 1 if your system has a GNU libc compatible 'realloc' function,
+   and to 0 otherwise. */
+#undef HAVE_REALLOC_GNU
+
+/* Define to 1 if you have the <realloc.h> header file. */
+#undef HAVE_REALLOC_H
+
+/* Define if the 'realloc' function is POSIX compliant. */
+#undef HAVE_REALLOC_POSIX
+
+/* Define to 1 if you have the `rpl_malloc' function. */
+#undef HAVE_RPL_MALLOC
+
+/* Define to 1 if you have the `rpl_realloc' function. */
+#undef HAVE_RPL_REALLOC
 
 /* Define to 1 if you have the `select' function. */
 #undef HAVE_SELECT
@@ -340,6 +396,9 @@
 /* Define to 1 if we have the struct stat.st_blocks */
 #undef HAVE_STRUCT_STAT_ST_BLOCKS
 
+/* Define to 1 if you have the `system' function. */
+#undef HAVE_SYSTEM
+
 /* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
    */
 #undef HAVE_SYS_DIR_H
@@ -396,6 +455,9 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
+/* Define to 1 if the system has the type `unsigned long long int'. */
+#undef HAVE_UNSIGNED_LONG_LONG_INT
+
 /* Define to 1 if we have some obscure third type of signal */
 #undef HAVE_USG_SIGHOLD
 
@@ -443,6 +505,9 @@
    */
 #undef LT_OBJDIR
 
+/* If malloc(0) is != NULL, define this to 1. Otherwise define this to 0. */
+#undef MALLOC_0_IS_NONNULL
+
 /* Define to 1 if it is necessary to reinstall sighandlers */
 #undef MUST_REINSTALL_SIGHANDLERS
 
@@ -469,6 +534,10 @@
 
 /* Define to 1 if the C compiler supports function prototypes. */
 #undef PROTOTYPES
+
+/* If realloc(NULL,0) is != NULL, define this to 1. Otherwise define this to
+   0. */
+#undef REALLOC_0_IS_NONNULL
 
 /* Define as the return type of signal handlers (`int' or `void'). */
 #undef RETSIGTYPE

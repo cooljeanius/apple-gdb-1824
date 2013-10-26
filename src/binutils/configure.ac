@@ -4,7 +4,9 @@ dnl#
 
 AC_PREREQ([2.57])
 dnl# keep version number synced with the one in ../bfd
-AC_INIT([binutils],[2.16.91],[])
+AC_INIT([binutils],[2.16.91],[jmolenda@apple.com])
+dnl# bug report address is email address of last person to touch this
+dnl# directory, according to the Changelog-Apple in this directory
 AC_CONFIG_SRCDIR([ar.c])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([..])
@@ -12,6 +14,11 @@ AC_CONFIG_AUX_DIR([..])
 AC_CANONICAL_TARGET
 AC_SEARCH_LIBS([strerror],[cposix])
 
+# Automake
+if test -f ${srcdir}/config.status; then
+  AC_MSG_NOTICE([config.status is already present, removing it.])
+  rm -f ${srcdir}/config.status
+fi
 AM_INIT_AUTOMAKE([1.9.6 gnu dejagnu])
 AM_SANITY_CHECK
 
@@ -48,7 +55,7 @@ esac])dnl
 
 AM_BINUTILS_WARNINGS
 		   
-AC_CONFIG_HEADERS([config.h:config.in])
+AC_CONFIG_HEADERS([config.h])
 AH_TOP([
 #ifndef HAVE_CONFIG_H
 # define HAVE_CONFIG_H
@@ -77,6 +84,8 @@ fi
 
 AC_PROG_YACC
 AM_PROG_LEX
+AC_PATH_PROG([ICONV_BIN],[iconv])
+AC_SUBST([ICONV_BIN])
 
 ALL_LINGUAS="fr tr ja es sv da zh_CN ru ro rw zh_TW"
 CY_GNU_GETTEXT
@@ -142,15 +151,37 @@ LT_LIB_M
 AC_SEARCH_LIBS([dcgettext],[intl])
 AC_SEARCH_LIBS([bindtextdomain],[intl])
 AC_SEARCH_LIBS([textdomain],[intl])
-AC_CHECK_LIB([intl],[gettext])
+AC_CHECK_LIB([intl],[gettext],[],[
+  AC_CHECK_LIB([intl],[main],[],[])
+])
+AC_DEFUN([AC_GETTEXT_SUBCHECKS],[
+  AC_REQUIRE([gt_INTL_MACOSX])
+  AC_REQUIRE([AM_ICONV])
+  AC_CHECK_LIB([iconv],[iconv],[],[
+    AC_CHECK_LIB([iconv],[libiconv],[],[
+      AC_CHECK_LIB([iconv],[main],[],[])
+    ])
+  ])
+])
+AC_GETTEXT_SUBCHECKS
 AC_CHECK_LIB([c],[printf])
 # FIXME: Replace `main' with a function in `-lcc_dynamic':
 AC_CHECK_LIB([cc_dynamic],[main])
 # FIXME: Replace `main' with a function in `-lgcc':
 AC_CHECK_LIB([gcc],[main])
+# FIXME: Replace `main' with a function in `-lcurses':
+AC_CHECK_LIB([curses],[main])
+# FIXME: Replace `main' with a function in `-lhistory':
+AC_CHECK_LIB([history],[main])
+# FIXME: Replace `main' with a function in `-lreadline':
+AC_CHECK_LIB([readline],[main])
+# FIXME: Replace `main' with a function in `-liberty':
+AC_CHECK_LIB([iberty],[main])
+# FIXME: Replace `main' with a function in `-lgnu':
+AC_CHECK_LIB([gnu],[main])
 
 # Checks for header files.
-AC_CHECK_HEADERS([assert.h errno.h fcntl.h libintl.h locale.h \
+AC_CHECK_HEADERS([assert.h errno.h fcntl.h iconv.h libintl.h locale.h \
                   malloc.h malloc/malloc.h stdarg.h stddef.h stdio.h \
                   sys/file.h sys/time.h utime.h varargs.h])
 AC_CHECK_HEADERS_ONCE([time.h])
@@ -166,8 +197,10 @@ AC_TYPE_INT32_T
 AC_TYPE_UINT8_T
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
+AC_CHECK_TYPES([iconv_t])
 
 # Checks for library functions.
+AM_WITH_DMALLOC
 AC_FUNC_ALLOCA
 AC_FUNC_CHOWN
 AC_FUNC_ERROR_AT_LINE
@@ -177,10 +210,13 @@ AC_FUNC_MALLOC
 AC_FUNC_OBSTACK
 AC_FUNC_REALLOC
 AC_FUNC_STRCOLL
-AC_CHECK_FUNCS([bindtextdomain ctime dcgettext dup2 getc_unlocked \
-                memchr memmove memset rmdir sbrk setmode strdup \
-                strerror strncasecmp strrchr strspn strstr strtol \
-                strtoul textdomain utime utimes])
+AC_CHECK_FUNCS([bindtextdomain ctime dcgettext dup2 fclose fopen \
+                fprintf fputs fread free getc_unlocked memchr memcmp \
+                memcpy memmove memset rmdir sbrk setlocale setmode \
+                strdup strerror strncasecmp strrchr strspn strstr \
+                strtol strtoul textdomain utime utimes])
+AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu])
+AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu])
 
 # Check whether fopen64 is available and whether _LARGEFILE64_SOURCE
 # needs to be defined for it
@@ -441,6 +477,8 @@ done
 
 AC_SUBST([EMULATION])
 AC_SUBST([EMULATION_VECTOR])
+AC_SUBST([INTLLIBS])
+AC_SUBST([INTLDEPS])
 
 AC_CONFIG_FILES([Makefile \
                  doc/Makefile \
@@ -453,3 +491,11 @@ esac
 ],[])
 
 AC_OUTPUT
+
+if test "${srcdir}" != "."; then
+  if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
+    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+  elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
+    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+  fi
+fi

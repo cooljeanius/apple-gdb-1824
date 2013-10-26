@@ -23,6 +23,10 @@ fi
 AC_USE_SYSTEM_EXTENSIONS
 
 # Automake
+if test -f ${srcdir}/config.status; then
+  AC_MSG_NOTICE([config.status is already present, removing it.])
+  rm -f ${srcdir}/config.status
+fi
 AM_INIT_AUTOMAKE([1.9.6 gnu dejagnu])
 AM_MAINTAINER_MODE
 AM_PROG_INSTALL_STRIP
@@ -242,12 +246,19 @@ if test -z "$SYSTEM_FRAMEWORK_LIBS"; then
 fi
 AC_SUBST([SYSTEM_FRAMEWORK_LIBS])
 AC_CHECK_LIB([c],[printf])
-AC_CHECK_LIB([intl],[gettext])
+AC_CHECK_LIB([intl],[gettext],[],[
+  AC_CHECK_LIB([intl],[main],[],[])
+])
+# FIXME: Replace `main' with a function in `-liberty':
+AC_CHECK_LIB([iberty],[main])
+# FIXME: Replace `main' with a function in `-lgnu':
+AC_CHECK_LIB([gnu],[main])
 
 # Checks for header files.
-AC_CHECK_HEADERS([ctype.h fcntl.h libintl.h limits.h])
-AC_CHECK_HEADERS([stddef.h sys/file.h sys/param.h])
-AC_CHECK_HEADERS([sys/time.h time.h])
+AC_CHECK_HEADERS([ctype.h errno.h fcntl.h libintl.h limits.h \
+                  malloca.h malloc/malloc.h realloc.h \
+                  stddef.h stdio.h sys/file.h sys/param.h \
+                  sys/time.h time.h])
 GCC_HEADER_STDINT([bfd_stdint.h],[stdint.h])
 AC_HEADER_TIME
 AC_HEADER_DIRENT
@@ -259,14 +270,17 @@ AC_C_PROTOTYPES
 AC_TYPE_PID_T
 
 # Checks for library functions.
-AC_CHECK_FUNCS([fcntl setitimer sysconf fdopen getuid getgid])
-AC_CHECK_FUNCS([strtoull])
-AC_CHECK_FUNCS([memchr memmove memset strdup strncasecmp strrchr strspn])
-AC_CHECK_FUNCS([strstr strtol strtoul])
+AM_WITH_DMALLOC
+AC_CHECK_FUNCS([fcntl fdopen getgid getuid memchr memmove memset \
+                rpl_malloc rpl_realloc setitimer strdup strncasecmp \
+                strrchr strspn strstr strtol strtoul strtoull sysconf \
+                system uname])
 AC_FUNC_FORK
 AC_FUNC_FSEEKO
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
+AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu])
+AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu])
 
 # Hack because AC_REQUIRE cannot be used outside of macro definitions
 AC_DEFUN([AC_POSSIBLE_DUPLICATE_CHECKS],
@@ -282,7 +296,7 @@ AC_DEFUN([AC_POSSIBLE_DUPLICATE_CHECKS],
  AC_REQUIRE([AC_PROG_EGREP])
  AC_REQUIRE([AC_PROG_MKDIR_P])
  AC_REQUIRE([AC_PROG_SED])
- AC_REQUIRE([AC_SYS_RESTARTABLE_SYSCALLS])
+ AC_REQUIRE([AC_HEADER_SYS_WAIT])
  AC_REQUIRE([GCC_STDINT_TYPES])
  AC_REQUIRE([ZW_GNU_GETTEXT_SISTER_DIR])
  if test "x$GETTEXT_MACRO_VERSION" = "x"; then
@@ -1172,3 +1186,10 @@ AC_SUBST([pdfdir])
 
 AC_OUTPUT
 
+if test "${srcdir}" != "."; then
+  if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
+    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+  elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
+    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+  fi
+fi

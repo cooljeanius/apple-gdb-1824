@@ -25,7 +25,8 @@ AC_CHECK_LIB([history], [main])
 AC_CHECK_LIB([readline], [main])
 
 # Checks for header files.
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h locale.h memory.h netdb.h netinet/in.h sgtty.h stddef.h stdlib.h string.h strings.h sys/file.h sys/ioctl.h sys/socket.h sys/time.h termio.h termios.h unistd.h wchar.h wctype.h])
+AC_FUNC_ALLOCA
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h locale.h memory.h netdb.h netinet/in.h sgtty.h stddef.h stdint.h stdlib.h string.h strings.h sys/file.h sys/ioctl.h sys/socket.h sys/time.h termio.h termios.h unistd.h wchar.h wctype.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -36,7 +37,6 @@ AC_TYPE_SIZE_T
 AC_CHECK_TYPES([ptrdiff_t])
 
 # Checks for library functions.
-AC_FUNC_ALLOCA
 AC_FUNC_CHOWN
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_FORK

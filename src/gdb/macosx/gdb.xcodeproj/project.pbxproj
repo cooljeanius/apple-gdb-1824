@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 42;
+	objectVersion = 45;
 	objects = {
 
 /* Begin PBXFileReference section */
@@ -4637,7 +4637,7 @@
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 1DEB928908733DD80010E9CD /* Build configuration list for PBXProject "gdb" */;
-			compatibilityVersion = "Xcode 2.4";
+			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
@@ -4669,14 +4669,42 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALLED_PRODUCT_ASIDES = YES;
 				LD_GENERATE_MAP_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = "";
+				"MACOSX_DEPLOYMENT_TARGET[sdk=macosx10.5][arch=*]" = 10.5;
+				"MACOSX_DEPLOYMENT_TARGET[sdk=macosx10.6][arch=*]" = 10.6;
+				NEXT_ROOT = "";
 				OBJROOT = "$(BUILD_DIR)/$(CONFIGURATION)";
 				PREBINDING = NO;
+				RC_ARCHS = "i386 x86_64";
+				"RC_ARCHS[sdk=macosx10.5][arch=i386]" = i386;
+				"RC_ARCHS[sdk=macosx10.6][arch=i386]" = "i386 x86_64";
+				"RC_ARCHS[sdk=macosx10.6][arch=x86_64]" = "i386 x86_64";
+				RC_JASPER = YES;
+				RC_NONARCH_CFLAGS = "";
+				"RC_NONARCH_CFLAGS[sdk=macosx10.5][arch=*]" = "-pipe -no-cpp-precomp";
+				"RC_NONARCH_CFLAGS[sdk=macosx10.6][arch=*]" = "-pipe";
+				RC_OS = macos;
+				"RC_OS[sdk=macosx*][arch=*]" = macos;
+				RC_PRIVATE = /private;
+				RC_RELEASE = "";
+				"RC_RELEASE[sdk=macosx10.5][arch=*]" = Leopard;
+				"RC_RELEASE[sdk=macosx10.6][arch=*]" = SnowLeopard;
+				RC_TARGET_CONFIG = MacOSX;
+				"RC_TARGET_CONFIG[sdk=macosx10.6][arch=*]" = MacOSX;
+				RC_XBS = YES;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
+				SEPARATE_STRIP = YES;
 				SRCROOT = "$(SOURCE_ROOT)/../../..";
 				SYMROOT = "$(BUILD_DIR)/$(CONFIGURATION)";
 				SYSTEM_DEVELOPER_TOOLS_DOC_DIR = /Developer/Documentation/DocSets/com.apple.ADC_Reference_Library.DeveloperTools.docset/Contents/Resources/Documents/documentation/DeveloperTools;
+				UNAME_RELEASE = "";
+				"UNAME_RELEASE[sdk=macosx10.5][arch=*]" = 9.6;
+				"UNAME_RELEASE[sdk=macosx10.6][arch=*]" = 10.8.0;
+				UNAME_SYSNAME = Darwin;
+				"UNAME_SYSNAME[sdk=macosx*][arch=*]" = Darwin;
 				VALIDATE_PRODUCT = YES;
 				VERBOSE_PBXCP = YES;
 			};

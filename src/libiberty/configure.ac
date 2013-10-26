@@ -148,16 +148,28 @@ dnl# configure option --enable-shared.
 AC_DISABLE_SHARED
 
 dnl# When we start using libtool:
+AC_DEFUN([AC_EXTRA_THINGS_LIBTOOL_WANTS],[
+  AC_REQUIRE([AC_PROG_AWK])
+  AC_REQUIRE([AC_PROG_CPP])
+  AC_REQUIRE([AC_PROG_CXX])
+  AC_REQUIRE([AC_PROG_MAKE_SET])
+])
+AC_EXTRA_THINGS_LIBTOOL_WANTS
 LT_INIT([disable-shared pic-only])
 
 AC_CONFIG_HEADERS([config.h])
 
 dnl# When we start using automake:
 AM_MAINTAINER_MODE
+
+dnl# back to non-automake-requiring things:
 AC_EXEEXT
+AC_OBJEXT
 
 dnl# When we start using automake:
 AM_PROG_INSTALL_STRIP
+
+dnl# back to non-automake-requiring things:
 AC_PROG_INSTALL
 AC_PROG_LN_S
 
@@ -239,12 +251,19 @@ AC_SUBST_FILE([host_makefile_frag])
 # It is OK to check for header files. Although the compiler may not be
 # able to link anything, it had better be able to at least compile
 # something.
-AC_CHECK_HEADERS([alloca.h fcntl.h float.h libintl.h limits.h \
-                  machine/hal_sysinfo.h malloc.h malloc/malloc.h \
-                  stddef.h stdio.h stdio_ext.h sys/file.h \
-                  sys/mman.h sys/param.h sys/pstat.h sys/resource.h \
-                  sys/sysctl.h sys/sysinfo.h sys/sysmp.h sys/systemcfg.h \
-                  sys/table.h sys/time.h time.h])
+AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
+  AC_REQUIRE([AC_HEADER_STDC])
+])
+AC_REQUIRE_HEADER_STDC
+AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
+AC_CHECK_HEADERS([alloca.h assert.h ctype.h fcntl.h float.h langinfo.h \
+                  libintl.h limits.h locale/coll-lookup.h locale/elem-hash.h \
+                  locale/localeinfo.h locale/weight.h locale/weightwc.h \
+                  machine/hal_sysinfo.h malloc.h malloc/malloc.h stddef.h \
+                  stdio.h stdio_ext.h sys/file.h sys/mman.h sys/param.h \
+                  sys/pstat.h sys/resource.h sys/sysctl.h sys/sysinfo.h \
+                  sys/sysmp.h sys/systemcfg.h sys/table.h sys/time.h \
+                  time.h wchar.h wctype.h])
 AC_HEADER_SYS_WAIT
 AC_HEADER_TIME
 
@@ -254,31 +273,41 @@ libiberty_AC_DECLARE_ERRNO
 AC_CHECK_SIZEOF([int])
 AC_CHECK_ALIGNOF([int])
 
-AC_CHECK_TYPE([uintptr_t],[unsigned long])
+AC_CHECK_TYPE([uintptr_t],[unsigned long]) dnl# do this instead of AC_TYPE_UINTPTR_T
 
 # Look for a 64-bit type.
 AC_MSG_CHECKING([for a 64-bit type])
 AC_CACHE_VAL([liberty_cv_uint64],
-[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#ifdef HAVE_STDINT_H
-#include <stdint.h>
-#endif]],[[extern uint64_t foo;]])],[liberty_cv_uint64=uint64_t],[
+[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#ifdef HAVE_STDINT_H
+# include <stdint.h>
+#else
+# warning this conftest expects <stdint.h> to be included.
+#endif /* HAVE_STDINT_H */
+]],[[extern uint64_t foo;]])],[liberty_cv_uint64=uint64_t],[
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 #ifdef HAVE_LIMITS_H
-#include <limits.h>
-#endif
+# include <limits.h>
+#else
+# warning this conftest expects <limits.h> to be included.
+#endif /* HAVE_LIMITS_H */
 #ifndef CHAR_BIT
-#define CHAR_BIT 8
-#endif]],[[
+# define CHAR_BIT 8
+#endif /* !CHAR_BIT */
+]],[[
 extern char foo[sizeof(long) * CHAR_BIT >= 64 ? 1 : -1];
 ]])],
 [liberty_cv_uint64="unsigned long"],
 [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 #ifdef HAVE_LIMITS_H
-#include <limits.h>
-#endif
+# include <limits.h>
+#else
+# warning this conftest expects <limits.h> to be included.
+#endif /* HAVE_LIMITS_H */
 #ifndef CHAR_BIT
-#define CHAR_BIT 8
-#endif]],[[
+# define CHAR_BIT 8
+#endif /* !CHAR_BIT */
+]],[[
 extern char foo[sizeof(long long) * CHAR_BIT >= 64 ? 1 : -1];
 ]])],
 [liberty_cv_uint64="unsigned long long"],[liberty_cv_uint64=none])])])])
@@ -296,6 +325,10 @@ AC_DEFINE([HAVE_UINTPTR_T],[1],[Define if you have the \`uintptr_t' type.])
 AC_TYPE_PID_T
 AC_CHECK_TYPES([ptrdiff_t])
 AC_TYPE_SIZE_T
+AC_TYPE_INT32_T
+AC_TYPE_UINT32_T
+AC_CHECK_TYPES([regex_t])
+AC_CHECK_TYPES([regmatch_t])
 
 # This is the list of functions which libiberty will provide if they
 # are not available on the host.
@@ -365,26 +398,27 @@ if test "x" = "y"; then
   AC_FUNC_ERROR_AT_LINE
   AC_FUNC_LSTAT dnl# Calls AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
   AC_FUNC_MALLOC
+  AC_FUNC_MBRTOWC
   AC_FUNC_OBSTACK
   AC_FUNC_REALLOC
   AC_FUNC_STRTOD
-  AC_CHECK_FUNCS([__fsetlocking asprintf atexit basename bcmp bcopy \
-                  bsearch bzero calloc canonicalize_file_name clock dup2 \
-                  ffs getcwd getpagesize getrusage getsysinfo \
-                  gettimeofday getwd index insque memchr memcmp memcpy \
+  AC_CHECK_FUNCS([__fsetlocking abort asprintf atexit basename bcmp bcopy \
+                  bsearch btowc bzero calloc canonicalize_file_name \
+                  clock dup2 ffs getcwd getpagesize getrusage getsysinfo \
+                  gettext gettimeofday getwd index insque memchr memcmp memcpy \
                   memmove mempcpy memset mkstemps on_exit pathconf \
                   psignal pstat_getdynamic pstat_getstatic putenv \
-                  random realpath rename rindex sbrk setenv sigsetmask \
-                  snprintf stpcpy stpncpy strcasecmp strchr strcspn \
-                  strdup strerror strncasecmp strndup strpbrk strrchr \
-                  strsignal strspn strstr strtod strtol strtoul \
-                  strverscmp sysconf sysctl sysmp table times tmpnam \
-                  vasprintf vfprintf vprintf vsnprintf vsprintf wait3 \
-                  wait4 waitpid])
+                  random realpath re_comp regcomp rename rindex sbrk \
+                  setenv sigsetmask snprintf stpcpy stpncpy strcasecmp \
+                  strchr strcspn strdup strerror strlen strncasecmp strndup \
+                  strpbrk strrchr strsignal strspn strstr strtod strtol \
+                  strtoul strverscmp sysconf sysctl sysmp system table \
+                  times tmpnam vasprintf vfprintf vprintf vsnprintf \
+                  vsprintf wait3 wait4 waitpid])
   AC_CHECK_DECLS([basename, ffs, asprintf, vasprintf, snprintf, vsnprintf])
   AC_CHECK_DECLS([sys_siglist])
   AC_DEFINE([HAVE_SYS_ERRLIST],[1],[Define if you have the sys_errlist variable.])
-  AC_DEFINE([HAVE_SYS_NERR],   [1],[Define if you have the sys_nerr variable.])
+  AC_DEFINE([HAVE_SYS_NERR],[1],[Define if you have the sys_nerr variable.])
   AC_DEFINE([HAVE_SYS_SIGLIST],[1],[Define if you have the sys_siglist variable.])
 fi
 
@@ -576,7 +610,7 @@ if test -z "${setobjs}"; then
   AC_SEARCH_LIBS([strerror],[cposix])
   AC_REPLACE_FUNCS([$funcs])
   libiberty_AC_FUNC_C_ALLOCA
-  AC_FUNC_FORK
+  AC_FUNC_FORK dnl# why is this macro giving warnings here? It does not normally do so...
   if test $ac_cv_func_vfork_works = no; then
     AC_LIBOBJ([vfork])
   fi

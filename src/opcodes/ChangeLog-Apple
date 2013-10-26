@@ -38,12 +38,12 @@
 
 2007-02-09  Jason Molenda  (jmolenda@apple.com)
 
-	* i386-dis.c: Reapply the changes from 2007-01-26 -- I can't reproduce
-	the failure that caused me to revert them now.
+	* i386-dis.c: Reapply the changes from 2007-01-26 -- I cannot
+	reproduce the failure that caused me to revert them now.
 
 2007-01-26  Jason Molenda  (jmolenda@apple.com)
 
-	* i386-dis.c: Revert today's changes for now.  There is another
+	* i386-dis.c: Revert today's changes for now. There is another
 	sign extension bug in the current version sources, either from a
 	merge mistake or another problem on the type Eric fixed in March
 	last year.
@@ -51,7 +51,7 @@
 2007-01-26  Jason Molenda  (jmolenda@apple.com)
 
 	* i386-dis.c (OP_E): Display negative offsets as decimal regardless
-	of whether we're using riprel mode or not.
+	of whether we are using riprel mode or not.
 
 2007-01-26  Jason Molenda  (jmolenda@apple.com)
 
@@ -63,7 +63,7 @@
 2007-01-26  Jason Molenda  (jmolenda@apple.com)
 
 	* i386-dis.c: Imported today's version of i386-dis.c from
-	the src.apple.com opcodes CVS source repository.  No Apple
+	the src.apple.com opcodes CVS source repository. No Apple
 	local modifications applied in this checkin.
 
 2006-06-22  Jason Molenda  (jmolenda@apple.com)
@@ -79,8 +79,8 @@
 		(dis386_twobyte): Use "movZ" for control register moves.
 	2006-02-11  H.J. Lu  <hongjiu.lu@intel.com>
 
-		* i386-dis.c (dis386_twobyte): Use "movZ" for debug register
-		moves.
+		* i386-dis.c (dis386_twobyte): Use "movZ" for debug
+		register moves.
 
 2006-05-02  Eric Albert (ejalbert@apple.com)
 
@@ -94,7 +94,7 @@
 2006-03-25  Eric Albert  (ejalbert@apple.com)
 
 	* i386-dis.c (OP_J): Displacements here are signed 32-bit values,
-	not unsigned.  Also, do math on them as signed values rather than
+	not unsigned. Also, do math on them as signed values rather than
 	unsigned values.
 	(print_insn): Do math on RIP-relative offsets as signed values
 	rather than unsigned values.
@@ -113,7 +113,7 @@
 
 2003-05-20 Klee Dienes   <kdienes@apple.com>
 
-        * po/Make-in: Don't error out if unable to write .po files to
+        * po/Make-in: Do NOT error out if unable to write .po files to
 	the source directory.
 
 2003-05-11 Klee Dienes   <kdienes@apple.com>
@@ -154,7 +154,7 @@
 2002-11-11  Klee Dienes  <kdienes@apple.com>
 
 	These were all submitted to the FSF, but in substantially modified
-	form.  They're not currently needed by our builds; I'm removing
+	form. They are not currently needed by our builds; I am removing
 	them and will expect to merge them in once they are accepted by
 	the FSF.
 	
@@ -170,9 +170,10 @@
 
 2002-11-01  Klee Dienes  <kdienes@apple.com>
 
-	* arc-ext.c (arc_ext_operand_value): Remove (unused, moved to arc-opc.c).
-	* arc-opc.c (arc_ext_operand_value): Add.  Remove initializer; rely on 
-	being compiled with -fno-common when building a dylib.
+	* arc-ext.c (arc_ext_operand_value): Remove (unused, moved to
+	arc-opc.c).
+	* arc-opc.c (arc_ext_operand_value): Add. Remove initializer; rely
+	on being compiled with -fno-common when building a dylib.
 	(ls_operand): Remove initializer.
 	(arc_operand_map): Remove initializer.
 	* or32-opc.c: Remove initializers for automata, nuncovered, ti,

@@ -863,6 +863,7 @@ enable_build_warnings
 enable_install_libbfd
 enable_nls
 with_included_gettext
+with_dmalloc
 enable_largefile
 '
       ac_precious_vars='build_alias
@@ -1536,6 +1537,7 @@ Optional Packages:
                           Look for global separate debug info in DIR
                           [[default=LIBDIR/debug]]
   --with-included-gettext use the GNU gettext library included here
+  --with-dmalloc          use dmalloc, as in http://www.dmalloc.com
 
 Some influential environment variables:
   CC          C compiler command
@@ -4916,6 +4918,11 @@ $as_echo "$ac_cv_safe_to_define___extensions__" >&6; }
 
 
 # Automake
+if test -f ${srcdir}/config.status; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: config.status is already present, removing it." >&5
+$as_echo "$as_me: config.status is already present, removing it." >&6;}
+  rm -f ${srcdir}/config.status
+fi
 am__api_version='1.14'
 
 # Find a good install program.  We prefer a C program (faster),
@@ -15832,37 +15839,136 @@ _ACEOF
 
   LIBS="-lintl $LIBS"
 
+else
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lintl" >&5
+$as_echo_n "checking for main in -lintl... " >&6; }
+if ${ac_cv_lib_intl_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lintl  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_intl_main=yes
+else
+  ac_cv_lib_intl_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_intl_main" >&5
+$as_echo "$ac_cv_lib_intl_main" >&6; }
+if test "x$ac_cv_lib_intl_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBINTL 1
+_ACEOF
+
+  LIBS="-lintl $LIBS"
+
+fi
+
+
+fi
+
+# FIXME: Replace `main' with a function in `-liberty':
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -liberty" >&5
+$as_echo_n "checking for main in -liberty... " >&6; }
+if ${ac_cv_lib_iberty_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-liberty  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_iberty_main=yes
+else
+  ac_cv_lib_iberty_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_iberty_main" >&5
+$as_echo "$ac_cv_lib_iberty_main" >&6; }
+if test "x$ac_cv_lib_iberty_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBIBERTY 1
+_ACEOF
+
+  LIBS="-liberty $LIBS"
+
+fi
+
+# FIXME: Replace `main' with a function in `-lgnu':
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lgnu" >&5
+$as_echo_n "checking for main in -lgnu... " >&6; }
+if ${ac_cv_lib_gnu_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lgnu  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_gnu_main=yes
+else
+  ac_cv_lib_gnu_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_gnu_main" >&5
+$as_echo "$ac_cv_lib_gnu_main" >&6; }
+if test "x$ac_cv_lib_gnu_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBGNU 1
+_ACEOF
+
+  LIBS="-lgnu $LIBS"
+
 fi
 
 
 # Checks for header files.
-for ac_header in ctype.h fcntl.h libintl.h limits.h
-do :
-  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
-ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
-if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
-  cat >>confdefs.h <<_ACEOF
-#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
-_ACEOF
-
-fi
-
-done
-
-for ac_header in stddef.h sys/file.h sys/param.h
-do :
-  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
-ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
-if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
-  cat >>confdefs.h <<_ACEOF
-#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
-_ACEOF
-
-fi
-
-done
-
-for ac_header in sys/time.h time.h
+for ac_header in ctype.h errno.h fcntl.h libintl.h limits.h \
+                  malloca.h malloc/malloc.h realloc.h \
+                  stddef.h stdio.h sys/file.h sys/param.h \
+                  sys/time.h time.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -16752,42 +16858,33 @@ fi
 
 
 # Checks for library functions.
-for ac_func in fcntl setitimer sysconf fdopen getuid getgid
-do :
-  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
-ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
-if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
-  cat >>confdefs.h <<_ACEOF
-#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
-_ACEOF
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if malloc debugging is wanted" >&5
+$as_echo_n "checking if malloc debugging is wanted... " >&6; }
 
+# Check whether --with-dmalloc was given.
+if test "${with_dmalloc+set}" = set; then :
+  withval=$with_dmalloc; if test "$withval" = yes; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+$as_echo "#define WITH_DMALLOC 1" >>confdefs.h
+
+  LIBS="$LIBS -ldmalloc"
+  LDFLAGS="$LDFLAGS -g"
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
 fi
-done
-
-for ac_func in strtoull
-do :
-  ac_fn_c_check_func "$LINENO" "strtoull" "ac_cv_func_strtoull"
-if test "x$ac_cv_func_strtoull" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_STRTOULL 1
-_ACEOF
-
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
 fi
-done
 
-for ac_func in memchr memmove memset strdup strncasecmp strrchr strspn
-do :
-  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
-ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
-if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
-  cat >>confdefs.h <<_ACEOF
-#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
-_ACEOF
 
-fi
-done
-
-for ac_func in strstr strtol strtoul
+for ac_func in fcntl fdopen getgid getuid memchr memmove memset \
+                rpl_malloc rpl_realloc setitimer strdup strncasecmp \
+                strrchr strspn strstr strtol strtoul strtoull sysconf \
+                system uname
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -17214,6 +17311,118 @@ $as_echo "#define realloc rpl_realloc" >>confdefs.h
 fi
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing rpl_realloc" >&5
+$as_echo_n "checking for library containing rpl_realloc... " >&6; }
+if ${ac_cv_search_rpl_realloc+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char rpl_realloc ();
+int
+main ()
+{
+return rpl_realloc ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' iberty c gnu; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_rpl_realloc=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_rpl_realloc+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_rpl_realloc+:} false; then :
+
+else
+  ac_cv_search_rpl_realloc=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_rpl_realloc" >&5
+$as_echo "$ac_cv_search_rpl_realloc" >&6; }
+ac_res=$ac_cv_search_rpl_realloc
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing rpl_malloc" >&5
+$as_echo_n "checking for library containing rpl_malloc... " >&6; }
+if ${ac_cv_search_rpl_malloc+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char rpl_malloc ();
+int
+main ()
+{
+return rpl_malloc ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' iberty c gnu; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_rpl_malloc=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_rpl_malloc+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_rpl_malloc+:} false; then :
+
+else
+  ac_cv_search_rpl_malloc=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_rpl_malloc" >&5
+$as_echo "$ac_cv_search_rpl_malloc" >&6; }
+ac_res=$ac_cv_search_rpl_malloc
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+
+fi
+
 
 # Hack because AC_REQUIRE cannot be used outside of macro definitions
 
@@ -17495,77 +17704,6 @@ $as_echo "$ac_cv_header_sys_wait_h" >&6; }
 if test $ac_cv_header_sys_wait_h = yes; then
 
 $as_echo "#define HAVE_SYS_WAIT_H 1" >>confdefs.h
-
-fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for restartable system calls" >&5
-$as_echo_n "checking for restartable system calls... " >&6; }
-if ${ac_cv_sys_restartable_syscalls+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test "$cross_compiling" = yes; then :
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "cannot run test program while cross compiling
-See \`config.log' for more details" "$LINENO" 5; }
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-/* Exit 0 (true) if wait returns something other than -1,
-   i.e. the pid of the child, which means that wait was restarted
-   after getting the signal.  */
-
-$ac_includes_default
-#include <signal.h>
-#ifdef HAVE_SYS_WAIT_H
-# include <sys/wait.h>
-#endif
-
-/* Some platforms explicitly require an extern "C" signal handler
-   when using C++. */
-#ifdef __cplusplus
-extern "C" void ucatch (int dummy) { }
-#else
-void ucatch (dummy) int dummy; { }
-#endif
-
-int
-main ()
-{
-  int i = fork (), status;
-
-  if (i == 0)
-    {
-      sleep (3);
-      kill (getppid (), SIGINT);
-      sleep (3);
-      return 0;
-    }
-
-  signal (SIGINT, ucatch);
-
-  status = wait (&i);
-  if (status == -1)
-    wait (&i);
-
-  return status == -1;
-}
-_ACEOF
-if ac_fn_c_try_run "$LINENO"; then :
-  ac_cv_sys_restartable_syscalls=yes
-else
-  ac_cv_sys_restartable_syscalls=no
-fi
-rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
-  conftest.$ac_objext conftest.beam conftest.$ac_ext
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sys_restartable_syscalls" >&5
-$as_echo "$ac_cv_sys_restartable_syscalls" >&6; }
-if test $ac_cv_sys_restartable_syscalls = yes; then
-
-$as_echo "#define HAVE_RESTARTABLE_SYSCALLS 1" >>confdefs.h
 
 fi
 
@@ -22909,3 +23047,10 @@ $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
 
 
+if test "${srcdir}" != "."; then
+  if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
+    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+  elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
+    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+  fi
+fi

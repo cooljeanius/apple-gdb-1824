@@ -89,6 +89,16 @@ extern char *strrchr ();
 # warning bucomm.h expects <stdlib.h> to be included.
 #endif /* HAVE_STDLIB_H */
 
+#ifdef HAVE_MALLOC_H
+# include <malloc.h>
+#else
+# ifdef HAVE_MALLOC_MALLOC_H
+#  include <malloc/malloc.h>
+# else
+#  warning bucomm.h expects a malloc-related header to be included.
+# endif /* HAVE_MALLOC_MALLOC_H */
+#endif /* HAVE_MALLOC_H */
+
 #ifdef HAVE_FCNTL_H
 # include <fcntl.h>
 #else

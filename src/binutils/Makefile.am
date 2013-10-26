@@ -3,7 +3,7 @@
 AUTOMAKE_OPTIONS = 1.9.6 dejagnu
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
-ACLOCAL_AMFLAGS = -I m4
+ACLOCAL_AMFLAGS = -I m4 --install
 
 # APPLE LOCAL just skip the doc directory altogether - it is building
 # info files in the srcdir and hosing B&I builds.
@@ -24,6 +24,7 @@ LEX = `if [ -f ../flex/flex ]; then echo ../flex/flex; else echo @LEX@; fi`
 WARN_CFLAGS = @WARN_CFLAGS@
 NO_WERROR = @NO_WERROR@
 AM_CFLAGS = $(WARN_CFLAGS)
+AM_LDFLAGS = -framework CoreFoundation
 
 # these two are almost the same program
 AR_PROG=ar
@@ -122,6 +123,11 @@ OPCODES_DEP = $(OPCODES)
 LIBIBERTY = ../libiberty/libiberty.a
 LIBIBERTY_DEP = $(LIBIBERTY)
 
+INTLLIBS = ../intl/libintl.a @INTLLIBS@
+lt_INTLLIBS = ../intl/libintl.la
+INTLDEP = $(INTLLIBS)
+INTLLIBS_DEP = $(INTLLIBS)
+
 POTFILES = $(CFILES) $(DEBUG_SRCS) $(HFILES)
 po/POTFILES.in: @MAINT@ Makefile
 	for f in $(POTFILES); do echo $$f; done | LC_COLLATE= sort > tmp \
@@ -214,10 +220,10 @@ addr2line_DEPENDENCIES = $(BFD_DEP) $(LIBIBERTY_DEP) $(INTLDEP)
 # This rule creates a single binary that switches between ar and ranlib
 # by looking at argv[0]. Use this kludge to save some disk space.
 # However, you have to install things by hand.
-# (That is after 'make install', replace the installed ranlib by a link to ar.)
-# Alternatively, you can install ranlib.sh as ranlib.
+# (That is after 'make install', replace the installed ranlib by a link to
+# ar.) Alternatively, you can install ranlib.sh as ranlib.
 ar_with_ranlib_uncommented: $(ADDL_DEPS) ar.o maybe-ranlib.o
-	$(HLDENV) $(CC) $(HLDFLAGS) $(CFLAGS) $(LDFLAGS) -o $(AR_PROG) ar.o maybe-ranlib.o $(ADDL_LIBS) $(EXTRALIBS)
+	$(HLDENV) $(CC) $(HLDFLAGS) $(CFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $(AR_PROG) ar.o maybe-ranlib.o $(ADDL_LIBS) $(EXTRALIBS)
 	-rm -f $(RANLIB_PROG)
 	-ln $(AR_PROG) $(RANLIB_PROG)
 .PHONY: ar_with_ranlib_uncommented
@@ -226,7 +232,7 @@ ar_with_ranlib_uncommented: $(ADDL_DEPS) ar.o maybe-ranlib.o
 # objcopy and strip in one binary that uses argv[0] to decide its action.
 #
 objcopy_with_strip_uncommented: $(ADDL_DEPS) objcopy.o maybe-strip.o
-	$(HLDENV) $(CC) $(HLDFLAGS) $(CFLAGS) $(LDFLAGS) -o $(OBJCOPY_PROG) objcopy.o maybe-strip.o $(ADDL_LIBS) $(EXTRALIBS)
+	$(HLDENV) $(CC) $(HLDFLAGS) $(CFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $(OBJCOPY_PROG) objcopy.o maybe-strip.o $(ADDL_LIBS) $(EXTRALIBS)
 	-rm -f $(STRIP_PROG)
 	-ln $(OBJCOPY_PROG) $(STRIP_PROG)
 .PHONY: objcopy_with_strip_uncommented
@@ -240,7 +246,7 @@ sysroff.h: sysinfo$(EXEEXT_FOR_BUILD) sysroff.info
 	./sysinfo$(EXEEXT_FOR_BUILD) -d <$(srcdir)/sysroff.info >sysroff.h
 
 sysinfo$(EXEEXT_FOR_BUILD): sysinfo.o syslex.o
-	$(CC_FOR_BUILD) $(CFLAGS) $(LDFLAGS) -o $@ sysinfo.o syslex.o
+	$(CC_FOR_BUILD) $(CFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ sysinfo.o syslex.o
 
 syslex.o:
 	if [ -r syslex.c ]; then \
@@ -333,7 +339,7 @@ all: info
 DISTCLEANFILES = sysinfo sysroff.c sysroff.h \
 	site.exp site.bak
 
-Makefile_depends: $(BFDDIR)/configure.ac
+Makefile_depends: $(BFDDIR)/configure.ac config.status
 
 # Targets to rebuild dependencies in this Makefile.
 # Have to get rid of DEP1 here so that "$?" later includes all of $(CFILES).

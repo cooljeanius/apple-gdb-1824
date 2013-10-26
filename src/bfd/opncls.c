@@ -27,45 +27,66 @@
 #include "libbfd.h"
 #include "libiberty.h"
 
-#if USE_MMAP 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# warning opncls.c expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
 
-#if HAVE_MMAP || HAVE_MPROTECT || HAVE_MADVISE
-#include <sys/types.h>
-#include <sys/mman.h>
-#endif
+#ifdef HAVE_MALLOC_H
+# include <malloc.h>
+#else
+# ifdef HAVE_MALLOC_MALLOC_H
+#  include <malloc/malloc.h>
+# else
+#  warning opncls.c expects a malloc-related header to be included.
+# endif /* HAVE_MALLOC_MALLOC_H */
+#endif /* HAVE_MALLOC_H */
 
-#if HAVE_MMAP || HAVE_MPROTECT || HAVE_MADVISE
-#include <sys/types.h>
-#include <sys/mman.h>
-#endif
+#if USE_MMAP
 
-#undef MAP_SHARED
-#define MAP_SHARED MAP_PRIVATE
+# if HAVE_MMAP || HAVE_MPROTECT || HAVE_MADVISE
+#  include <sys/types.h>
+#  include <sys/mman.h>
+# else
+#  warning not including mmap-related headers.
+# endif /* HAVE_MMAP || HAVE_MPROTECT || HAVE_MADVISE */
 
-#ifndef MAP_FILE
-#define MAP_FILE 0
-#endif
+/* Why is this done a second time? */
+# if HAVE_MMAP || HAVE_MPROTECT || HAVE_MADVISE
+#  include <sys/types.h>
+#  include <sys/mman.h>
+# else
+#  warning not including mmap-related headers.
+# endif /* HAVE_MMAP || HAVE_MPROTECT || HAVE_MADVISE */
+
+# undef MAP_SHARED
+# define MAP_SHARED MAP_PRIVATE
+
+# ifndef MAP_FILE
+#  define MAP_FILE 0
+# endif /* !MAP_FILE */
 
 #endif /* USE_MMAP */
- 
+
 #ifndef S_IXUSR
-#define S_IXUSR 0100	/* Execute by owner.  */
-#endif
+# define S_IXUSR 0100	/* Execute by owner.  */
+#endif /* !S_IXUSR */
 #ifndef S_IXGRP
-#define S_IXGRP 0010	/* Execute by group.  */
-#endif
+# define S_IXGRP 0010	/* Execute by group.  */
+#endif /* !S_IXGRP */
 #ifndef S_IXOTH
-#define S_IXOTH 0001	/* Execute by others.  */
-#endif
+# define S_IXOTH 0001	/* Execute by others.  */
+#endif /* !S_IXOTH */
 
 /* Counter used to initialize the bfd identifier.  */
 
 static unsigned int _bfd_id_counter = 0;
 
-/* fdopen is a loser -- we should use stdio exclusively.  Unfortunately
-   if we do that we can't use fcntl.  */
+/* fdopen is a loser -- we should use stdio exclusively. Unfortunately
+   if we do that, then we cannot use fcntl.  */
 
-/* Return a new BFD.  All BFD's are allocated through this routine.  */
+/* Return a new BFD. All BFD's are allocated through this routine.  */
 
 bfd *
 _bfd_new_bfd (void)
@@ -161,14 +182,14 @@ DESCRIPTION
 	Return a pointer to the created BFD.  If @var{fd} is not -1,
 	then <<fdopen>> is used to open the file; otherwise, <<fopen>>
 	is used.  @var{mode} is passed directly to <<fopen>> or
-	<<fdopen>>. 
+	<<fdopen>>.
 
 	Calls <<bfd_find_target>>, so @var{target} is interpreted as by
 	that function.
 
 	The new BFD is marked as cacheable iff @var{fd} is -1.
 
-	If <<NULL>> is returned then an error has occured.   Possible errors
+	If <<NULL>> is returned then an error has occured. Possible errors
 	are <<bfd_error_no_memory>>, <<bfd_error_invalid_target>> or
 	<<system_call>> error.
 */
@@ -182,7 +203,7 @@ bfd_fopen (const char *filename, const char *target, const char *mode, int fd)
   nbfd = _bfd_new_bfd ();
 #ifdef BFD_TRACK_OPEN_CLOSE
     printf ("Opening bfd 0x%lx: \"%s\"\n", (unsigned long) nbfd, filename);
-#endif
+#endif /* BFD_TRACK_OPEN_CLOSE */
   if (nbfd == NULL)
     return NULL;
 
@@ -192,12 +213,12 @@ bfd_fopen (const char *filename, const char *target, const char *mode, int fd)
       _bfd_delete_bfd (nbfd);
       return NULL;
     }
-  
+
 #ifdef HAVE_FDOPEN
   if (fd != -1)
     nbfd->iostream = fdopen (fd, mode);
   else
-#endif
+#endif /* HAVE_FDOPEN */
     nbfd->iostream = fopen (filename, mode);
   if (nbfd->iostream == NULL)
     {
@@ -206,7 +227,7 @@ bfd_fopen (const char *filename, const char *target, const char *mode, int fd)
       return NULL;
     }
 
-  /* APPLE LOCAL: Don't let this fd get inherited when we exec a child proc.  */
+  /* APPLE LOCAL: Do NOT let this fd get inherited when we exec a child proc.  */
   fcntl (fileno (nbfd->iostream), F_SETFD, 1);
 
   /* OK, put everything where it belongs.  */
@@ -214,7 +235,7 @@ bfd_fopen (const char *filename, const char *target, const char *mode, int fd)
 
   /* Figure out whether the user is opening the file for reading,
      writing, or both, by looking at the MODE argument.  */
-  if ((mode[0] == 'r' || mode[0] == 'w' || mode[0] == 'a') 
+  if ((mode[0] == 'r' || mode[0] == 'w' || mode[0] == 'a')
       && mode[1] == '+')
     nbfd->direction = both_direction;
   else if (mode[0] == 'r')
@@ -229,7 +250,7 @@ bfd_fopen (const char *filename, const char *target, const char *mode, int fd)
     }
   nbfd->opened_once = TRUE;
   /* If we opened the file by name, mark it cacheable; we can close it
-     and reopen it later.  However, if a file descriptor was provided,
+     and reopen it later. However, if a file descriptor was provided,
      then it may have been opened with special flags that make it
      unsafe to close and reopen the file.  */
   if (fd == -1)
@@ -253,7 +274,7 @@ bfd_boolean bfd_mmap_file (abfd, addr)
      bfd *abfd ATTRIBUTE_UNUSED;
      void *addr ATTRIBUTE_UNUSED;
 {
-#if USE_MMAP 
+#if USE_MMAP
   struct bfd_in_memory *mem;
   struct stat statbuf;
   FILE *fp;
@@ -267,7 +288,7 @@ bfd_boolean bfd_mmap_file (abfd, addr)
 
   mem = bfd_alloc (abfd, sizeof (struct bfd_in_memory));
   if (mem == NULL) {
-    return FALSE; 
+    return FALSE;
   }
 
   fp = bfd_cache_lookup (abfd);
@@ -302,13 +323,13 @@ bfd_boolean bfd_mmap_file (abfd, addr)
   } else {
     addr = NULL;
   }
-  
+
   mem->buffer = mmap (addr, mem->size, prot, flags, fd, 0);
   if ((caddr_t) mem->buffer == (caddr_t) -1) {
     bfd_set_error (bfd_error_system_call);
     return FALSE;
   }
-  
+
   BFD_ASSERT ((abfd->flags & BFD_IN_MEMORY) == 0);
   bfd_cache_close (abfd);
   abfd->iostream = mem;
@@ -355,16 +376,16 @@ bfd_memopenr (filename, target, addr, len)
   nbfd = _bfd_new_bfd ();
 #ifdef BFD_TRACK_OPEN_CLOSE
   printf ("Opening memory bfd 0x%lx for: \"%s\"\n", (unsigned long) nbfd, filename);
-#endif
+#endif /* BFD_TRACK_OPEN_CLOSE */
   if (nbfd == NULL)
     return NULL;
 
   mem = bfd_alloc (nbfd, sizeof (struct bfd_in_memory));
   if (mem == NULL)
-    return NULL; 
+    return NULL;
 
   target_vec = bfd_find_target (target, nbfd);
-  if (target_vec == NULL) 
+  if (target_vec == NULL)
     {
       objalloc_free ((struct objalloc *) nbfd->memory);
       free (nbfd);
@@ -408,13 +429,13 @@ bfd_openr (const char *filename, const char *target)
   return bfd_fopen (filename, target, FOPEN_RB, -1);
 }
 
-/* Don't try to `optimize' this function:
+/* Do NOT try to `optimize' this function:
 
    o - We lock using stack space so that interrupting the locking
-       won't cause a storage leak.
-   o - We open the file stream last, since we don't want to have to
-       close it if anything goes wrong.  Closing the stream means closing
-       the file descriptor too, even though we didn't open it.  */
+       will NOT cause a storage leak.
+   o - We open the file stream last, since we do NOT want to have to
+       close it if anything goes wrong. Closing the stream means closing
+       the file descriptor too, even though we did NOT open it.  */
 /*
 FUNCTION
 	bfd_fdopenr
@@ -447,9 +468,9 @@ bfd_fdopenr (const char *filename, const char *target, int fd)
   const char *mode;
 #if defined(HAVE_FCNTL) && defined(F_GETFL)
   int fdflags;
-#endif
+#endif /* HAVE_FCNTL && F_GETFL */
 
-#if ! defined(HAVE_FCNTL) || ! defined(F_GETFL)
+#if !defined(HAVE_FCNTL) || !defined(F_GETFL)
   mode = FOPEN_RUB; /* Assume full access.  */
 #else
   fdflags = fcntl (fd, F_GETFL, NULL);
@@ -467,7 +488,7 @@ bfd_fdopenr (const char *filename, const char *target, int fd)
     case O_RDWR:   mode = FOPEN_RUB; break;
     default: abort ();
     }
-#endif
+#endif /* !HAVE_FCNTL || !F_GETFL */
 
   return bfd_fopen (filename, target, mode, fd);
 }
@@ -481,7 +502,7 @@ SYNOPSIS
 
 DESCRIPTION
 
-	Open a BFD for read access on an existing stdio stream.  When
+	Open a BFD for read access on an existing stdio stream. When
 	the BFD is passed to <<bfd_close>>, the stream will be closed.
 */
 
@@ -778,7 +799,7 @@ bfd_close (bfd *abfd)
 
 #ifdef BFD_TRACK_OPEN_CLOSE
   printf ("Closing bfd 0x%lx: \"%s\"\n", (unsigned long) abfd, abfd->filename);
-#endif
+#endif /* BFD_TRACK_OPEN_CLOSE */
   if (bfd_write_p (abfd))
     {
       if (! BFD_SEND_FMT (abfd, _bfd_write_contents, (abfd)))
@@ -1129,7 +1150,7 @@ bfd_zalloc2 (bfd *abfd, bfd_size_type nmemb, bfd_size_type size)
 }
 
 /* Free a block allocated for a BFD.
-   Note:  Also frees all more recently allocated blocks!  */
+   Note: Also frees all more recently allocated blocks!  */
 
 void
 bfd_release (bfd *abfd, void *block)

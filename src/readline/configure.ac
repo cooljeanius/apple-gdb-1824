@@ -144,6 +144,8 @@ AC_CHECK_LIB([curses],[main])
 AC_CHECK_LIB([history],[main])
 # FIXME: Replace `main' with a function in `-lreadline':
 AC_CHECK_LIB([readline],[main])
+# FIXME: Replace `main' with a function in `-liberty':
+AC_CHECK_LIB([iberty],[main])
 
 MAKE_SHELL=/bin/sh
 AC_SUBST([MAKE_SHELL])
@@ -153,6 +155,7 @@ AC_C_BIGENDIAN
 AC_C_CONST
 AC_C_PROTOTYPES
 AC_C_CHAR_UNSIGNED
+AX_GCC_MALLOC_CALL
 dnl# Begin what used to be AC\_TYPE\_SIGNAL
 AC_CACHE_CHECK([return type of signal handlers],[ac_cv_type_signal],[
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
@@ -185,17 +188,32 @@ AC_FUNC_STAT
 AC_FUNC_STRCOLL
 AC_FUNC_STRNLEN
 AC_FUNC_STRTOD
-gl_XALLOC
+AC_DEFUN([gl__ALLOC_CHECKS],[
+  AC_REQUIRE([gl_EEALLOC])
+  AC_REQUIRE([gl_FUNC_MALLOC_GNU])
+  AC_REQUIRE([gl_FUNC_MALLOC_POSIX])
+  AC_REQUIRE([gl_FUNC_REALLOC_GNU])
+  AC_REQUIRE([gl_FUNC_REALLOC_POSIX])
+  AC_REQUIRE([gl_MALLOCA])
+  AC_REQUIRE([gl_XALLOC])
+])dnl
+gl__ALLOC_CHECKS
 XORG_CHECK_MALLOC_ZERO
 XORG_MEMORY_CHECK_FLAGS
-AC_CHECK_FUNCS([dup2 endpwent exit fcntl free ftruncate getcwd getpwent \
-                getpwnam getpwuid isascii isxdigit kill lstat mbrlen \
-                memmove memset munmap putenv select setenv setlocale \
-                strcasecmp strchr strcpy strdup strerror strlen strncpy \
-                strpbrk strrchr tcgetattr vsnprintf wcwidth xrealloc])
+AX_CHECK_PAGE_ALIGNED_MALLOC
+AC_CHECK_FUNCS([atoi ctime dup2 endpwent exit fcntl fprintf free \
+                ftruncate getcwd getopt getpwent getpwnam getpwuid \
+                isascii isxdigit kill lstat mbrlen memmove memset \
+                munmap putenv select setenv setlocale strcasecmp \
+                strchr strcpy strdup strerror strlen strncpy strpbrk \
+                strrchr system tcgetattr vsnprintf wcwidth xrealloc])
 AC_REPLACE_FUNCS([xmalloc])
-AC_SEARCH_LIBS([xmalloc],[c])
-AC_SEARCH_LIBS([xrealloc],[c])
+AC_SEARCH_LIBS([xmalloc],[iberty c gnu])
+AC_SEARCH_LIBS([xrealloc],[iberty c gnu])
+AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu])
+AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu])
+AC_REPLACE_FUNCS([rpl_malloc])
+AC_REPLACE_FUNCS([rpl_realloc])
 AC_CHECK_DECL([exit])
 AC_CHECK_DECL([free])
 AC_CHECK_DECL([strcpy])
@@ -208,12 +226,13 @@ AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
 AC_HEADER_STAT
 AC_HEADER_TIOCGWINSZ
 AC_CHECK_HEADERS([arpa/inet.h errno.h fcntl.h features.h limits.h \
-                  locale.h netdb.h netinet/in.h pwd.h readline/readline.h \
-                  readline/history.h select.h sgtty.h signal.h \
-                  stdarg.h stddef.h stdio.h sys/file.h sys/ioctl.h \
-                  sys/pte.h sys/ptem.h sys/select.h sys/socket.h \
-                  sys/stream.h sys/time.h termcap.h termio.h termios.h \
-                  varargs.h wchar.h wctype.h])
+                  locale.h malloc.h malloca.h malloc/malloc.h netdb.h \
+                  netinet/in.h pwd.h readline/readline.h \
+                  readline/history.h realloc.h select.h sgtty.h \
+                  signal.h stdarg.h stddef.h stdio.h sys/file.h \
+                  sys/ioctl.h sys/pte.h sys/ptem.h sys/select.h \
+                  sys/socket.h sys/stream.h sys/time.h termcap.h \
+                  termio.h termios.h varargs.h wchar.h wctype.h])
 
 # Checks using macros from Bash's configure script
 BASH_SYS_SIGNAL_VINTAGE
@@ -260,6 +279,10 @@ isc*)	LOCAL_CFLAGS=-Disc386 ;;
 esac
 
 # Automake
+if test -f ${srcdir}/config.status; then
+  AC_MSG_NOTICE([config.status is already present, removing it.])
+  rm -f ${srcdir}/config.status
+fi
 AM_INIT_AUTOMAKE([dejagnu gnu -Wall])
 AM_MAINTAINER_MODE
 
@@ -357,3 +380,11 @@ AC_CONFIG_COMMANDS([default],[
 echo "" > stamp-h
 ],[])
 AC_OUTPUT
+
+if test "${srcdir}" != "."; then
+  if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
+    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+  elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
+    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+  fi
+fi

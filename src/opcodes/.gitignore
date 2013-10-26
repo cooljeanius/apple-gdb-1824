@@ -6,6 +6,7 @@ po/cat-id-tbl.tmp
 po/*.o
 po/*.gmo
 po/Makefile.in
+po/POTFILES
 Makefile
 config.h
 libopcodes.la

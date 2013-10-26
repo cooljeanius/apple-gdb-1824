@@ -16,8 +16,10 @@
 #
 # You should have received a copy of the GNU Library General Public
 # License along with libiberty; see the file COPYING.LIB.  If not,
-# write to the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
-# Boston, MA 02110-1301, USA.
+# write to:
+#  The Free Software Foundation, Inc.
+#  51 Franklin Street - Fifth Floor
+#  Boston, MA 02110-1301, USA.
 #
 
 # This file was written by K. Richard Pixley <rich@cygnus.com>.
@@ -154,7 +156,7 @@ CFILES = alloca.c argv.c asprintf.c atexit.c				\
 	 pex-common.c pex-djgpp.c pex-msdos.c pex-one.c			\
 	 pex-unix.c pex-win32.c						\
          physmem.c putenv.c						\
-	random.c rename.c rindex.c				\
+	random.c regex.c rename.c rindex.c				\
 	safe-ctype.c setenv.c sigsetmask.c snprintf.c sort.c spaces.c	\
 	 splay-tree.c stpcpy.c stpncpy.c strcasecmp.c strchr.c strdup.c	\
 	 strerror.c strncasecmp.c strncmp.c strrchr.c strsignal.c	\
@@ -166,7 +168,7 @@ CFILES = alloca.c argv.c asprintf.c atexit.c				\
 	xatexit.c xexit.c xmalloc.c xmemdup.c xstrdup.c xstrerror.c	\
 	 xstrndup.c
 
-# These are always included in the library.  The first four are listed
+# These are always included in the library. The first four are listed
 # first and by compile time to optimize parallel builds.
 REQUIRED_OFILES = ./cplus-dem.o ./cp-demangle.o ./md5.o	\
 	./alloca.o ./argv.o						\
@@ -189,7 +191,7 @@ REQUIRED_OFILES = ./cplus-dem.o ./cp-demangle.o ./md5.o	\
 	 ./xstrerror.o ./xstrndup.o
 
 # These are all the objects that configure may add to the library via
-# $funcs or EXTRA_OFILES.  This list exists here only for "make
+# $funcs or EXTRA_OFILES. This list exists here only for "make
 # maint-missing" and "make check".
 CONFIGURED_OFILES = ./asprintf.o ./atexit.o				\
 	./basename.o ./bcmp.o ./bcopy.o ./bsearch.o ./bzero.o		\
@@ -445,7 +447,7 @@ Makefile: $(srcdir)/Makefile.in config.status
 	CONFIG_FILES=Makefile CONFIG_HEADERS= $(SHELL) ./config.status
 
 # Depending on Makefile makes sure that config.status has been re-run
-# if needed.  This prevents problems with parallel builds.
+# if needed. This prevents problems with parallel builds.
 config.h: stamp-h ; @true
 stamp-h: $(srcdir)/config.in config.status Makefile
 	CONFIG_FILES= CONFIG_HEADERS=config.h:$(srcdir)/config.in $(SHELL) ./config.status

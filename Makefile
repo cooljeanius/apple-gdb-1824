@@ -179,13 +179,14 @@ CROSS_TARGETS := $(strip $(CROSS_TARGETS) $(foreach hostarch, $(CANONICAL_ARCHS)
 CROSS_TARGETS := $(filter-out x86_64-apple-darwin--i386-apple-darwin, $(CROSS_TARGETS))
 CROSS_TARGETS := $(filter-out i386-apple-darwin--x86_64-apple-darwin, $(CROSS_TARGETS))
 
-# We do NOT want to build a ppc cross anything gdb; Apple assumes that no one 
-# will need that these days.
+# We do NOT want to build a ppc cross anything gdb; Apple assumes that
+# no one will need that these days.
 CROSS_TARGETS := $(filter-out powerpc-apple-darwin--x86_64-apple-darwin, $(CROSS_TARGETS))
 CROSS_TARGETS := $(filter-out powerpc-apple-darwin--i386-apple-darwin, $(CROSS_TARGETS))
 CROSS_TARGETS := $(filter-out powerpc-apple-darwin--arm-apple-darwin, $(CROSS_TARGETS))
 
-# Similarly, Apple assumes that no one needs an arm x x86-64 debugger, for instance.
+# Similarly, Apple assumes that no one needs an arm x x86-64 debugger,
+# for instance.
 CROSS_TARGETS := $(filter-out arm-apple-darwin--x86_64-apple-darwin, $(CROSS_TARGETS))
 CROSS_TARGETS := $(filter-out arm-apple-darwin--arm-apple-darwin, $(CROSS_TARGETS))
 CROSS_TARGETS := $(filter-out arm-apple-darwin--i386-apple-darwin, $(CROSS_TARGETS))
@@ -193,8 +194,8 @@ CROSS_TARGETS := $(filter-out arm-apple-darwin--powerpc-apple-darwin, $(CROSS_TA
 
 CROSS_TARGETS := $(sort $(CROSS_TARGETS))
 
-# These can be set to control the flags passed to the configure scripts in the
-# various subdirectories:
+# These can be set to control the flags passed to the configure scripts
+# in the various subdirectories:
 CONFIG_VERBOSE=-v
 CONFIG_ENABLE_GDBTK=--enable-gdbtk=no
 CONFIG_ENABLE_GDBMI=--enable-gdbmi
@@ -227,7 +228,7 @@ OS_DEP_CFLAGS =
 endif
 endif
 
-CFLAGS = $(strip $(RC_NONARCH_CFLAGS) $(CDEBUGFLAGS) -Wall -Wimplicit $(OS_DEP_CFLAGS) -Werror=implicit-function-declaration -funwind-tables -fasynchronous-unwind-tables)
+CFLAGS = $(strip $(RC_NONARCH_CFLAGS) $(CDEBUGFLAGS) -Wall -Wimplicit $(OS_DEP_CFLAGS) -funwind-tables -fasynchronous-unwind-tables)
 HOST_ARCHITECTURE = $(shell echo $* | sed -e 's/--.*//' -e 's/powerpc/ppc/' -e 's/-apple-macosx.*//' -e 's/-apple-macos.*//' -e 's/-apple-darwin.*//')
 endif
 
@@ -786,8 +787,8 @@ all: build
 	unset CPP && $(MAKE) -C src
 
 clean:
+	unset CPP && $(MAKE) -i -C src clean
 	$(RM) -r $(OBJROOT)
-	$(MAKE) -C src clean
 	$(RM) *~
 	$(RM) .DS_Store
 	$(RM) -r autom4te.cache

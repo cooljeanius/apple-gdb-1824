@@ -81,7 +81,7 @@ DISTFILES.gettext = libintl.glibc intlh.inst.in
 
 INCLUDES = -I. -I$(srcdir)
 
-all: all-@USE_INCLUDED_LIBINTL@
+all: config.status all-@USE_INCLUDED_LIBINTL@
 
 all-yes: libintl.$la intlh.inst
 all-no:
@@ -99,7 +99,7 @@ libintl.la: $(OBJECTS)
 ../po/cat-id-tbl.$lo: ../po/cat-id-tbl.c $(top_srcdir)/po/$(PACKAGE).pot
 	cd ../po && $(MAKE) cat-id-tbl.$lo
 
-check: all
+check: config.status all
 
 # This installation goal is only used in GNU gettext.  Packages which
 # only use the library should use install instead.
@@ -111,7 +111,7 @@ check: all
 # If you want to use the one which comes with this version of the
 # package, you have to use `configure --with-included-gettext'.
 install: install-exec install-data
-install-exec: all
+install-exec: all config.status
 	if test "$(PACKAGE)" = "gettext" \
 	   && test '@INTLOBJS@' = '$(GETTOBJS)'; then \
 	  if test -r $(MKINSTALLDIRS); then \
@@ -124,7 +124,7 @@ install-exec: all
 	else \
 	  : ; \
 	fi
-install-data: all
+install-data: all config.status
 	if test "$(PACKAGE)" = "gettext"; then \
 	  if test -r $(MKINSTALLDIRS); then \
 	    $(MKINSTALLDIRS) $(gettextsrcdir); \
@@ -166,15 +166,15 @@ ID: $(HEADERS) $(SOURCES)
 	here=`pwd`; cd $(srcdir) && mkid -f$$here/ID $(HEADERS) $(SOURCES)
 
 
-mostlyclean:
+mostlyclean: config.status
 	rm -f *.a *.o *.lo core core.*
 
-clean: mostlyclean
+clean: mostlyclean config.status
 
-distclean: clean
+distclean: clean config.status
 	rm -f Makefile ID TAGS po2msg.sed po2tbl.sed libintl.h config.log
 
-maintainer-clean: distclean
+maintainer-clean: distclean config.status
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
 
@@ -193,7 +193,7 @@ dist distdir: Makefile $(DISTFILES)
 	    || cp -p $(srcdir)/$$file $(distdir); \
 	done
 
-dist-libc:
+dist-libc: config.status
 	tar zcvf intl-glibc.tar.gz $(COMSRCS) $(COMHDRS) libintl.h.glibc
 
 Makefile: Makefile.in config.status

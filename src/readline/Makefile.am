@@ -101,15 +101,17 @@ WCWIDTH_OBJ = @WCWIDTH_OBJ@
 CSOURCES = $(srcdir)/readline.c $(srcdir)/funmap.c $(srcdir)/keymaps.c \
 	   $(srcdir)/vi_mode.c $(srcdir)/parens.c $(srcdir)/rltty.c \
 	   $(srcdir)/complete.c $(srcdir)/bind.c $(srcdir)/isearch.c \
-	   $(srcdir)/display.c $(srcdir)/signals.c $(srcdir)/emacs_keymap.c \
-	   $(srcdir)/vi_keymap.c $(srcdir)/util.c $(srcdir)/kill.c \
-	   $(srcdir)/undo.c $(srcdir)/macro.c $(srcdir)/input.c \
-	   $(srcdir)/callback.c $(srcdir)/terminal.c $(srcdir)/xmalloc.c \
-	   $(srcdir)/history.c $(srcdir)/histsearch.c $(srcdir)/histexpand.c \
+	   $(srcdir)/display.c $(srcdir)/signals.c \
+	   $(srcdir)/emacs_keymap.c $(srcdir)/vi_keymap.c \
+	   $(srcdir)/util.c $(srcdir)/kill.c $(srcdir)/undo.c \
+	   $(srcdir)/macro.c $(srcdir)/input.c $(srcdir)/callback.c \
+	   $(srcdir)/terminal.c $(srcdir)/xmalloc.c $(srcdir)/history.c \
+	   $(srcdir)/histsearch.c $(srcdir)/histexpand.c \
 	   $(srcdir)/histfile.c $(srcdir)/nls.c $(srcdir)/search.c \
 	   $(srcdir)/shell.c $(srcdir)/savestring.c $(srcdir)/tilde.c \
 	   $(srcdir)/text.c $(srcdir)/misc.c $(srcdir)/compat.c \
-	   $(srcdir)/mbutil.c $(srcdir)/support/wcwidth.c
+	   $(srcdir)/realloc.c $(srcdir)/mbutil.c $(srcdir)/malloc.c \
+	   $(srcdir)/support/wcwidth.c
 
 # The header files for this library.
 HSOURCES = readline.h rldefs.h chardefs.h keymaps.h history.h histlib.h \
@@ -117,13 +119,14 @@ HSOURCES = readline.h rldefs.h chardefs.h keymaps.h history.h histlib.h \
 	   ansi_stdlib.h tcap.h rlstdc.h xmalloc.h rlprivate.h rlshell.h \
 	   rltypedefs.h rlmbutil.h
 
-HISTOBJ = history.o histexpand.o histfile.o histsearch.o shell.o mbutil.o
+HISTOBJ = history.o histexpand.o histfile.o histsearch.o \
+	  malloc.o realloc.o shell.o mbutil.o
 TILDEOBJ = tilde.o
 OBJECTS = readline.o vi_mode.o funmap.o keymaps.o parens.o search.o \
 	  rltty.o complete.o bind.o isearch.o display.o signals.o \
 	  util.o kill.o undo.o macro.o input.o callback.o terminal.o \
-	  text.o nls.o misc.o compat.o $(XMALLOCOBJ) $(HISTOBJ) $(TILDEOBJ) \
-	  $(WCWIDTH_OBJ)
+	  text.o nls.o misc.o compat.o \
+	  $(XMALLOCOBJ) $(HISTOBJ) $(TILDEOBJ) $(WCWIDTH_OBJ)
 
 # The texinfo files which document this library.
 DOCSOURCE = doc/rlman.texinfo doc/rltech.texinfo doc/rluser.texinfo
@@ -144,12 +147,12 @@ INSTALLEDdir = @INSTALLEDdir@
 TARGETS = @STATIC_TARGET@ @SHARED_TARGET@
 INSTALL_TARGETS = @STATIC_INSTALL_TARGET@ @SHARED_INSTALL_TARGET@
 
-all: $(TARGETS)
+all: config.status $(TARGETS)
 
 # Hack: should not be treated as targets in the first place
 .PHONY: -c -m 644
 
-everything: all examples
+everything: config.status all examples
 
 static: $(STATIC_LIBS)
 
@@ -192,7 +195,7 @@ am_config.status: configure
 	$(SHELL) ./config.status --recheck
 .PHONY: am_config.status
 
-am_config.h:	stamp-h
+am_config.h: config.status stamp-h
 .PHONY: am_config.h
 
 stamp-h: config.status $(srcdir)/config.h.in
@@ -276,19 +279,19 @@ tags-local: force
 	$(my_CTAGS) $(CSOURCES) $(HSOURCES)
 .PHONY: tags-local
 
-clean-local:	force
+clean-local: config.status force
 	$(RM) $(OBJECTS) $(STATIC_LIBS)
 	$(RM) readline readline.exe
 	-( cd shlib && $(MAKE) $(MFLAGS) $@ )
 	-( cd doc && $(MAKE) $(MFLAGS) $@ )
 	-( cd examples && $(MAKE) $(MFLAGS) $@ )
 
-mostlyclean-local: clean-local
+mostlyclean-local: clean-local config.status
 	-( cd shlib && $(MAKE) $(MFLAGS) $@ )
 	-( cd doc && $(MAKE) $(MFLAGS) $@ )
 	-( cd examples && $(MAKE) $(MFLAGS) $@ )
 
-distclean-local maintainer-clean-local: clean-local
+distclean-local maintainer-clean-local: clean-local config.status
 	-( cd shlib && $(MAKE) $(MFLAGS) $@ )
 	-( cd doc && $(MAKE) $(MFLAGS) $@ )
 	-( cd examples && $(MAKE) $(MFLAGS) $@ )
@@ -534,11 +537,13 @@ isearch.o: $(srcdir)/isearch.c
 keymaps.o: $(srcdir)/keymaps.c $(srcdir)/emacs_keymap.c $(srcdir)/vi_keymap.c
 kill.o: $(srcdir)/kill.c
 macro.o: $(srcdir)/macro.c
+malloc.o: $(srcdir)/malloc.c
 mbutil.o: $(srcdir)/mbutil.c
 misc.o: $(srcdir)/misc.c
 nls.o: $(srcdir)/nls.c
 parens.o: $(srcdir)/parens.c
 readline.o: $(srcdir)/readline.c
+realloc.o: $(srcdir)/realloc.c
 rltty.o: $(srcdir)/rltty.c
 savestring.o: $(srcdir)/savestring.c
 search.o: $(srcdir)/search.c
@@ -568,11 +573,13 @@ isearch.o: isearch.c
 keymaps.o: keymaps.c emacs_keymap.c vi_keymap.c
 kill.o: kill.c
 macro.o: macro.c
+malloc.o: malloc.c
 mbutil.o: mbutil.c
 misc.o: misc.c
 nls.o: nls.c
 parens.o: parens.c
 readline.o: readline.c
+realloc.o: realloc.c
 rltty.o: rltty.c
 savestring.o: savestring.c
 search.o: search.c

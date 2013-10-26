@@ -84,7 +84,7 @@ subdir = .
 DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog \
 	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
-	$(srcdir)/config.in $(top_srcdir)/../mkinstalldirs \
+	$(srcdir)/config.h.in $(top_srcdir)/../mkinstalldirs \
 	$(top_srcdir)/po/Make-in $(top_srcdir)/../depcomp COPYING TODO \
 	$(top_srcdir)/../ar-lib $(top_srcdir)/../compile \
 	$(top_srcdir)/../config.guess $(top_srcdir)/../config.sub \
@@ -215,7 +215,7 @@ am__recursive_targets = \
 AM_RECURSIVE_TARGETS = $(am__recursive_targets:-recursive=) TAGS CTAGS \
 	cscope distdir dist dist-all distcheck
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) \
-	$(LISP)config.in
+	$(LISP)config.h.in
 # Read a list of newline-separated strings from the standard input,
 # and print each of them once, without duplicates.  Input order is
 # *not* preserved.
@@ -760,12 +760,12 @@ ALL_MACHINES = \
 
 OFILES = @BFD_MACHINES@
 
-# We should reconfigure whenever bfd/configure.in changes, because
+# We should reconfigure whenever bfd/configure.ac changes, because
 # that is where the version number in Makefile comes from.
-CONFIG_STATUS_DEPENDENCIES = $(BFDDIR)/configure.in
+CONFIG_STATUS_DEPENDENCIES = $(BFDDIR)/configure.ac
 AM_CPPFLAGS = -D_GNU_SOURCE -I. -I$(srcdir) -I../bfd -I$(INCDIR) -I$(BFDDIR) @HDEFINES@ -I$(srcdir)/../intl -I../intl
 libopcodes_la_SOURCES = dis-buf.c disassemble.c dis-init.c
-# It's desirable to list ../bfd/libbfd.la in DEPENDENCIES and LIBADD.
+# It is desirable to list ../bfd/libbfd.la in DEPENDENCIES and LIBADD.
 # Unfortunately this causes libtool to add -L$(libdir), referring to the
 # planned install directory of libbfd.  This can cause us to pick up an
 # old version of libbfd, or to pick up libbfd for the wrong architecture
@@ -774,10 +774,10 @@ libopcodes_la_DEPENDENCIES = $(OFILES)
 libopcodes_la_LIBADD = $(OFILES) @WIN32LIBADD@
 libopcodes_la_LDFLAGS = -release $(VERSION) @WIN32LDFLAGS@
 
-# libtool will build .libs/libopcodes.a.  We create libopcodes.a in
-# the build directory so that we don't have to convert all the
-# programs that use libopcodes.a simultaneously.  This is a hack which
-# should be removed if everything else starts using libtool.  FIXME.
+# libtool will build .libs/libopcodes.a. We create libopcodes.a in
+# the build directory so that we do NOT have to convert all the
+# programs that use libopcodes.a simultaneously. This is a hack which
+# should be removed if everything else starts using libtool. FIXME.
 noinst_LIBRARIES = libopcodes.a
 
 # APPLE LOCAL begin framework building
@@ -872,10 +872,10 @@ config.h: stamp-h1
 	@test -f $@ || rm -f stamp-h1
 	@test -f $@ || $(MAKE) $(AM_MAKEFLAGS) stamp-h1
 
-stamp-h1: $(srcdir)/config.in $(top_builddir)/config.status
+stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
 	@rm -f stamp-h1
 	cd $(top_builddir) && $(SHELL) ./config.status config.h
-$(srcdir)/config.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps) 
+$(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps) 
 	($(am__cd) $(top_srcdir) && $(AUTOHEADER))
 	rm -f stamp-h1
 	touch $@
@@ -1421,7 +1421,7 @@ uninstall-am: uninstall-bfdlibLTLIBRARIES
 disassemble.lo: disassemble.c $(INCDIR)/dis-asm.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c @archdefs@ $(srcdir)/disassemble.c
 
-stamp-lib: libopcodes.la
+stamp-lib: libopcodes.la config.status
 	libtooldir=`$(LIBTOOL) --config | sed -n -e 's/^objdir=//p'`; \
 	if [ -f $$libtooldir/libopcodes.a ]; then \
 	  cp $$libtooldir/libopcodes.a libopcodes.tmp; \
@@ -1491,7 +1491,7 @@ uninstall_libopcodes:
 	done
 	rm -f $(DESTDIR)$(bfdincludedir)/dis-asm.h
 
-run-cgen:
+run-cgen: config.status
 	$(SHELL) $(srcdir)/cgen.sh opcodes $(srcdir) $(CGEN) \
 	  $(CGENDIR) "$(CGENFLAGS)" $(arch) $(prefix) $(archfile) $(opcfile) \
 	  "$(options)" "$(extrafiles)"
@@ -1499,7 +1499,7 @@ run-cgen:
 .PHONY: run-cgen
 
 # Maintainer utility rule to regenerate all cgen files.
-run-cgen-all:
+run-cgen-all: config.status
 	for c in $(CGEN_CPUS) ; \
 	do \
 		$(MAKE) stamp-$$c || exit 1 ; \

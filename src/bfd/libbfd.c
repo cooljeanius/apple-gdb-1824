@@ -26,9 +26,25 @@
 
 #include "libiberty.h"
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# warning libbfd.c expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
+
+#ifdef HAVE_MALLOC_H
+# include <malloc.h>
+#else
+# ifdef HAVE_MALLOC_MALLOC_H
+#  include <malloc/malloc.h>
+# else
+#  warning libbfd.c expects a malloc-related header to be included.
+# endif /* HAVE_MALLOC_MALLOC_H */
+#endif /* HAVE_MALLOC_H */
+
 #ifndef HAVE_GETPAGESIZE
-#define getpagesize() 2048
-#endif
+# define getpagesize() 2048
+#endif /* !HAVE_GETPAGESIZE */
 
 /*
 SECTION
@@ -638,7 +654,7 @@ bfd_getl64 (const void *p ATTRIBUTE_UNUSED)
 #else
   BFD_FAIL();
   return 0;
-#endif
+#endif /* BFD_HOST_64_BIT */
 
 }
 
@@ -662,7 +678,7 @@ bfd_getb_signed_64 (const void *p ATTRIBUTE_UNUSED)
 #else
   BFD_FAIL();
   return 0;
-#endif
+#endif /* BFD_HOST_64_BIT */
 }
 
 bfd_int64_t
@@ -685,7 +701,7 @@ bfd_getl_signed_64 (const void *p ATTRIBUTE_UNUSED)
 #else
   BFD_FAIL();
   return 0;
-#endif
+#endif /* BFD_HOST_64_BIT */
 }
 
 void
@@ -723,7 +739,7 @@ bfd_putb64 (bfd_uint64_t data ATTRIBUTE_UNUSED, void *p ATTRIBUTE_UNUSED)
   addr[7] = (data >> (0*8)) & 0xff;
 #else
   BFD_FAIL();
-#endif
+#endif /* BFD_HOST_64_BIT */
 }
 
 void
@@ -741,7 +757,7 @@ bfd_putl64 (bfd_uint64_t data ATTRIBUTE_UNUSED, void *p ATTRIBUTE_UNUSED)
   addr[0] = (data >> (0*8)) & 0xff;
 #else
   BFD_FAIL();
-#endif
+#endif /* BFD_HOST_64_BIT */
 }
 
 void
@@ -815,8 +831,8 @@ _bfd_generic_get_section_contents (bfd *abfd,
 }
 
 /* APPLE LOCAL: Add a way to pass in the writeable mode.
-   This is only used if you are mmapping in the window.  
-   FIXME: I didn't propagate this to ALL the BFD targets,
+   This is only used if you are mmapping in the window.
+   FIXME: I did NOT propagate this to ALL the BFD targets,
    just to the ones we build.  */
 
 bfd_boolean
@@ -827,7 +843,7 @@ _bfd_generic_get_section_contents_in_window
    file_ptr offset ATTRIBUTE_UNUSED,
    bfd_size_type count ATTRIBUTE_UNUSED)
 {
-  return _bfd_generic_get_section_contents_in_window_with_mode 
+  return _bfd_generic_get_section_contents_in_window_with_mode
     (abfd, section, w, offset, count, FALSE);
 }
 
@@ -848,11 +864,11 @@ _bfd_generic_get_section_contents_in_window_with_mode
   if (abfd->xvec->_bfd_get_section_contents
       != _bfd_generic_get_section_contents)
     {
-      /* We don't know what changes the bfd's get_section_contents
-	 method may have to make.  So punt trying to map the file
-	 window, and let get_section_contents do its thing.  */
+      /* We do NOT know what changes the bfd's get_section_contents
+       * method may have to make. So punt trying to map the file
+       * window, and let get_section_contents do its thing.  */
       /* @@ FIXME : If the internal window has a refcount of 1 and was
-	 allocated with malloc instead of mmap, just reuse it.  */
+       * allocated with malloc instead of mmap, just reuse it.  */
       bfd_free_window (w);
       w->i = bfd_zmalloc (sizeof (bfd_window_internal));
       if (w->i == NULL)
@@ -880,8 +896,8 @@ _bfd_generic_get_section_contents_in_window_with_mode
 /* APPLE LOCAL end bfd */
 
 /* This generic function can only be used in implementations where creating
-   NEW sections is disallowed.  It is useful in patching existing sections
-   in read-write files, though.  See other set_section_contents functions
+   NEW sections is disallowed. It is useful in patching existing sections
+   in read-write files, though. See other set_section_contents functions
    to see why it doesn't work for new sections.  */
 bfd_boolean
 _bfd_generic_set_section_contents (bfd *abfd,
@@ -908,7 +924,7 @@ SYNOPSIS
 	unsigned int bfd_log2 (bfd_vma x);
 
 DESCRIPTION
-	Return the log base 2 of the value supplied, rounded up.  E.g., an
+	Return the log base 2 of the value supplied, rounded up. E.g., an
 	@var{x} of 1025 returns 11.  A @var{x} of 0 returns 0.
 */
 
@@ -931,7 +947,7 @@ bfd_generic_is_local_label_name (bfd *abfd, const char *name)
 }
 
 /*  Can be used from / for bfd_merge_private_bfd_data to check that
-    endianness matches between input and output file.  Returns
+    endianness matches between input and output file. Returns
     TRUE for a match, otherwise returns FALSE and emits an error.  */
 bfd_boolean
 _bfd_generic_verify_endian_match (bfd *ibfd, bfd *obfd)
@@ -965,13 +981,13 @@ warn_deprecated (const char *what,
 		 int line,
 		 const char *func)
 {
-  /* Poor man's tracking of functions we've already warned about.  */
+  /* Poor man's tracking of functions we have already warned about.  */
   static size_t mask = 0;
 
   if (~(size_t) func & ~mask)
     {
       /* Note: separate sentences in order to allow
-	 for translation into other languages.  */
+       * for translation into other languages.  */
       if (func)
 	fprintf (stderr, _("Deprecated %s called at %s line %d in %s\n"),
 		 what, file, line, func);

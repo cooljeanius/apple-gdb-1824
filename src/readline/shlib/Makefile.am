@@ -110,29 +110,31 @@ WCWIDTH_OBJ = @WCWIDTH_OBJ@
 CSOURCES = $(topdir)/readline.c $(topdir)/funmap.c $(topdir)/keymaps.c \
 	   $(topdir)/vi_mode.c $(topdir)/parens.c $(topdir)/rltty.c \
 	   $(topdir)/complete.c $(topdir)/bind.c $(topdir)/isearch.c \
-	   $(topdir)/display.c $(topdir)/signals.c $(topdir)/emacs_keymap.c \
-	   $(topdir)/vi_keymap.c $(topdir)/util.c $(topdir)/kill.c \
-	   $(topdir)/undo.c $(topdir)/macro.c $(topdir)/input.c \
-	   $(topdir)/callback.c $(topdir)/terminal.c $(topdir)/xmalloc.c \
-	   $(topdir)/history.c $(topdir)/histsearch.c $(topdir)/histexpand.c \
+	   $(topdir)/display.c $(topdir)/signals.c \
+	   $(topdir)/emacs_keymap.c $(topdir)/vi_keymap.c \
+	   $(topdir)/util.c $(topdir)/kill.c $(topdir)/undo.c \
+	   $(topdir)/macro.c $(topdir)/input.c$(topdir)/callback.c \
+	   $(topdir)/terminal.c $(topdir)/xmalloc.c $(topdir)/history.c \
+	   $(topdir)/histsearch.c $(topdir)/histexpand.c \
 	   $(topdir)/histfile.c $(topdir)/nls.c $(topdir)/search.c \
 	   $(topdir)/shell.c $(topdir)/savestring.c $(topdir)/tilde.c \
 	   $(topdir)/text.c $(topdir)/misc.c $(topdir)/compat.c \
-	   $(topdir)/mbutil.c $(WCWIDTH_SRC)
+	   $(topdir)/mbutil.c $(topdir)/malloc.c $(topdir)/realloc.c \
+	   $(WCWIDTH_SRC)
 
 # The header files for this library.
 HSOURCES = readline.h rldefs.h chardefs.h keymaps.h history.h histlib.h \
 	   posixstat.h posixdir.h posixjmp.h tilde.h rlconf.h rltty.h \
 	   ansi_stdlib.h tcap.h xmalloc.h rlprivate.h rlshell.h rlmbutil.h
 
-SHARED_HISTOBJ = history.so histexpand.so histfile.so histsearch.so shell.so \
-		 mbutil.so
+SHARED_HISTOBJ = history.so histexpand.so histfile.so histsearch.so \
+		 malloc.so realloc.so shell.so mbutil.so
 SHARED_TILDEOBJ = tilde.so
-SHARED_OBJ = readline.so vi_mode.so funmap.so keymaps.so parens.so search.so \
-	  rltty.so complete.so bind.so isearch.so display.so signals.so \
-	  util.so kill.so undo.so macro.so input.so callback.so terminal.so \
-	  text.so nls.so misc.so xmalloc.so $(SHARED_HISTOBJ) $(SHARED_TILDEOBJ) \
-	  compat.so $(WCWIDTH_OBJ)
+SHARED_OBJ = readline.so vi_mode.so funmap.so keymaps.so parens.so \
+	  search.so rltty.so complete.so bind.so isearch.so display.so \
+	  signals.so util.so kill.so undo.so macro.so input.so \
+	  callback.so terminal.so text.so nls.so misc.so xmalloc.so \
+	  $(SHARED_HISTOBJ) $(SHARED_TILDEOBJ) compat.so $(WCWIDTH_OBJ)
 
 ##########################################################################
 
@@ -151,11 +153,11 @@ unsupported:
 	@echo "Please send the changes you made to bash-maintainers@gnu.org"
 	@echo "for inclusion in future bash and readline releases."
 
-$(SHARED_READLINE):	$(SHARED_OBJ)
+$(SHARED_READLINE): $(SHARED_OBJ)
 	$(RM) $@
 	$(SHOBJ_LD) ${SHOBJ_LDFLAGS} ${SHLIB_XLDFLAGS} -o $@ $(SHARED_OBJ) $(SHLIB_LIBS)
 
-$(SHARED_HISTORY):	$(SHARED_HISTOBJ) xmalloc.so
+$(SHARED_HISTORY): $(SHARED_HISTOBJ) xmalloc.so
 	$(RM) $@
 	$(SHOBJ_LD) ${SHOBJ_LDFLAGS} ${SHLIB_XLDFLAGS} -o $@ $(SHARED_HISTOBJ) xmalloc.so $(SHLIB_LIBS)
 
@@ -387,11 +389,13 @@ isearch.so: $(topdir)/isearch.c
 keymaps.so: $(topdir)/keymaps.c $(topdir)/emacs_keymap.c $(topdir)/vi_keymap.c
 kill.so: $(topdir)/kill.c
 macro.so: $(topdir)/macro.c
+malloc.so: $(topdir)/malloc.c
 mbutil.so: $(topdir)/mbutil.c
 misc.so: $(topdir)/mbutil.c
 nls.so: $(topdir)/nls.c
 parens.so: $(topdir)/parens.c
 readline.so: $(topdir)/readline.c
+realloc.so: $(topdir)/realloc.c
 rltty.so: $(topdir)/rltty.c
 savestring.so: $(topdir)/savestring.c
 search.so: $(topdir)/search.c
@@ -421,10 +425,12 @@ isearch.so: isearch.c
 keymaps.so: keymaps.c emacs_keymap.c vi_keymap.c
 kill.so: kill.c
 macro.so: macro.c
+malloc.so: malloc.c
 mbutil.so: mbutil.c
 misc.so: misc.c
 nls.so: nls.c
 parens.so: parens.c
+realloc.so: realloc.c
 readline.so: readline.c
 rltty.so: rltty.c
 savestring.so: savestring.c

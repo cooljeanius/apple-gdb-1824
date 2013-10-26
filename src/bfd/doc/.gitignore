@@ -21,6 +21,7 @@ chew
 *.o
 *.lo
 bfd.info
+bfd.info-*
 site.bak
 site.exp
 bfd.sum

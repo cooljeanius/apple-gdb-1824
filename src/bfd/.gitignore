@@ -39,3 +39,5 @@ bfdver.h
 *site.exp
 *site.bak
 *.framework
+libtool
+libtool.old

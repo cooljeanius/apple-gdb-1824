@@ -13,6 +13,9 @@
 /* Define to 1 if using `alloca.c'. */
 #undef C_ALLOCA
 
+/* Define to 1 if you have the `abort' function. */
+#undef HAVE_ABORT
+
 /* Define to 1 if you have `alloca', as a function or macro. */
 #undef HAVE_ALLOCA
 
@@ -22,6 +25,9 @@
 
 /* Define to 1 if you have the `asprintf' function. */
 #undef HAVE_ASPRINTF
+
+/* Define to 1 if you have the <assert.h> header file. */
+#undef HAVE_ASSERT_H
 
 /* Define to 1 if you have the `atexit' function. */
 #undef HAVE_ATEXIT
@@ -38,6 +44,9 @@
 /* Define to 1 if you have the `bsearch' function. */
 #undef HAVE_BSEARCH
 
+/* Define to 1 if you have the `btowc' function. */
+#undef HAVE_BTOWC
+
 /* Define to 1 if you have the `bzero' function. */
 #undef HAVE_BZERO
 
@@ -49,6 +58,9 @@
 
 /* Define to 1 if you have the `clock' function. */
 #undef HAVE_CLOCK
+
+/* Define to 1 if you have the <ctype.h> header file. */
+#undef HAVE_CTYPE_H
 
 /* Define to 1 if you have the declaration of `asprintf', and to 0 if you
    don't. */
@@ -135,6 +147,9 @@
 /* Define to 1 if you have the `getsysinfo' function. */
 #undef HAVE_GETSYSINFO
 
+/* Define to 1 if you have the `gettext' function. */
+#undef HAVE_GETTEXT
+
 /* Define to 1 if you have the `gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
 
@@ -150,11 +165,29 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
+/* Define to 1 if you have the <langinfo.h> header file. */
+#undef HAVE_LANGINFO_H
+
 /* Define to 1 if you have the <libintl.h> header file. */
 #undef HAVE_LIBINTL_H
 
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
+
+/* Define to 1 if you have the <locale/coll-lookup.h> header file. */
+#undef HAVE_LOCALE_COLL_LOOKUP_H
+
+/* Define to 1 if you have the <locale/elem-hash.h> header file. */
+#undef HAVE_LOCALE_ELEM_HASH_H
+
+/* Define to 1 if you have the <locale/localeinfo.h> header file. */
+#undef HAVE_LOCALE_LOCALEINFO_H
+
+/* Define to 1 if you have the <locale/weightwc.h> header file. */
+#undef HAVE_LOCALE_WEIGHTWC_H
+
+/* Define to 1 if you have the <locale/weight.h> header file. */
+#undef HAVE_LOCALE_WEIGHT_H
 
 /* Define to 1 if `lstat' has the bug that it succeeds when given the
    zero-length file name argument. */
@@ -172,6 +205,9 @@
 
 /* Define to 1 if you have the <malloc/malloc.h> header file. */
 #undef HAVE_MALLOC_MALLOC_H
+
+/* Define to 1 if mbrtowc and mbstate_t are properly declared. */
+#undef HAVE_MBRTOWC
 
 /* Define to 1 if you have the `memchr' function. */
 #undef HAVE_MEMCHR
@@ -231,8 +267,20 @@
 /* Define to 1 if you have the `realpath' function. */
 #undef HAVE_REALPATH
 
+/* Define to 1 if you have the `regcomp' function. */
+#undef HAVE_REGCOMP
+
+/* Define to 1 if the system has the type `regex_t'. */
+#undef HAVE_REGEX_T
+
+/* Define to 1 if the system has the type `regmatch_t'. */
+#undef HAVE_REGMATCH_T
+
 /* Define to 1 if you have the `rename' function. */
 #undef HAVE_RENAME
+
+/* Define to 1 if you have the `re_comp' function. */
+#undef HAVE_RE_COMP
 
 /* Define to 1 if you have the `rindex' function. */
 #undef HAVE_RINDEX
@@ -248,6 +296,9 @@
 
 /* Define to 1 if you have the `snprintf' function. */
 #undef HAVE_SNPRINTF
+
+/* Define to 1 if stdbool.h conforms to C99. */
+#undef HAVE_STDBOOL_H
 
 /* Define to 1 if you have the <stddef.h> header file. */
 #undef HAVE_STDDEF_H
@@ -291,6 +342,9 @@
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
+/* Define to 1 if you have the `strlen' function. */
+#undef HAVE_STRLEN
+
 /* Define to 1 if you have the `strncasecmp' function. */
 #undef HAVE_STRNCASECMP
 
@@ -332,6 +386,9 @@
 
 /* Define to 1 if you have the `sysmp' function. */
 #undef HAVE_SYSMP
+
+/* Define to 1 if you have the `system' function. */
+#undef HAVE_SYSTEM
 
 /* Define if you have the sys_errlist variable. */
 #undef HAVE_SYS_ERRLIST
@@ -432,11 +489,20 @@
 /* Define to 1 if you have the `waitpid' function. */
 #undef HAVE_WAITPID
 
+/* Define to 1 if you have the <wchar.h> header file. */
+#undef HAVE_WCHAR_H
+
+/* Define to 1 if you have the <wctype.h> header file. */
+#undef HAVE_WCTYPE_H
+
 /* Define to 1 if `fork' works. */
 #undef HAVE_WORKING_FORK
 
 /* Define to 1 if `vfork' works. */
 #undef HAVE_WORKING_VFORK
+
+/* Define to 1 if the system has the type `_Bool'. */
+#undef HAVE__BOOL
 
 /* Define to 1 if you have the `_doprnt' function. */
 #undef HAVE__DOPRNT
@@ -515,6 +581,11 @@
 # endif
 #endif
 
+/* Define for Solaris 2.5.1 so the uint32_t typedef from <sys/synch.h>,
+   <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
+   #define below would cause a syntax error. */
+#undef _UINT32_T
+
 /* Define like PROTOTYPES; this can be used by system headers. */
 #undef __PROTOTYPES
 
@@ -527,6 +598,10 @@
 #undef inline
 #endif
 
+/* Define to the type of a signed integer type of width exactly 32 bits if
+   such a type exists and the standard includes do not define it. */
+#undef int32_t
+
 /* Define to rpl_malloc if the replacement function should be used. */
 #undef malloc
 
@@ -538,6 +613,10 @@
 
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 #undef size_t
+
+/* Define to the type of an unsigned integer type of width exactly 32 bits if
+   such a type exists and the standard includes do not define it. */
+#undef uint32_t
 
 /* Define to `unsigned long' if <sys/types.h> does not define. */
 #undef uintptr_t

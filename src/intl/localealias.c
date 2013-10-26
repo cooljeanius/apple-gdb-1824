@@ -62,7 +62,11 @@ char *getenv ();
 # ifdef HAVE_MALLOC_H
 #  include <malloc.h>
 # else
+#  ifdef HAVE_MALLOC_MALLOC_H
+#   include <malloc/malloc.h>
+#  else
 void free ();
+#  endif /* HAVE_MALLOC_MALLOC_H */
 # endif /* HAVE_MALLOC_H */
 #endif /* STDC_HEADERS || _LIBC || HAVE_STDLIB_H */
 

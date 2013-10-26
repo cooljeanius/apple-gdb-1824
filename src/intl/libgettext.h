@@ -58,7 +58,7 @@ extern "C" {
 #  define PARAMS(args) args
 # else
 #  define PARAMS(args) ()
-# endif
+# endif /* __STDC__ || __cplusplus */
 #endif /* !PARAMS */
 
 #ifndef NULL
@@ -66,12 +66,16 @@ extern "C" {
 #  define NULL ((void *) 0)
 # else
 #  define NULL (0)
-# endif
+# endif /* !__cplusplus || __GNUC__ */
 #endif /* NULL */
+
+#ifdef LC_MESSAGES
+# define HAVE_LC_MESSAGES (1) /* hack to silence some warnings */
+#endif /* LC_MESSAGES */
 
 #if !HAVE_LC_MESSAGES
 /* This value determines the behaviour of the gettext() and dgettext()
-   function. But some system does not have this defined. Define it
+   function. But some systems do not have this defined. Define it
    to a default value.  */
 # define LC_MESSAGES (-1)
 #endif /* !HAVE_LC_MESSAGES */

@@ -661,7 +661,9 @@ po/BLD-POTFILES.in: @MAINT@ Makefile $(BLD_POTFILES)
 	  | LC_COLLATE= sort > tmp.bld \
 	  && mv tmp.bld $(srcdir)/po/BLD-POTFILES.in
 
-all diststuff: info
+all: config.status info
+
+diststuff: config.status info
 
 # Various kinds of .o files to put in libbfd.a:
 # BFD_BACKENDS	Routines the configured targets need.
@@ -700,7 +702,7 @@ libbfd_a_DEPENDENCIES = $(OFILES) ofiles
 EXTRA_libbfd_a_DEPENDENCIES = 
 libbfd_a_LIBADD = `cat ofiles` @WIN32LIBADD@
 
-# FIXME: Even the hack fails now...
+# FIXME: Even the hack fails now... (does it still?)
 stamp-lib: libbfd.la ofiles
 	libtooldir=`$(LIBTOOL) --config | sed -n -e 's/^objdir=//p'`; \
 	if [ -f $$libtooldir/libbfd.a ]; then \
@@ -719,7 +721,7 @@ libbfd_la: libbfd.la
 # This file holds an array associating configuration triplets and
 # vector names. It is built from config.bfd. It is not compiled by
 # itself, but is included by targets.c.
-targmatch.h: config.bfd targmatch.sed
+targmatch.h: config.bfd config.status targmatch.sed
 	rm -f targmatch.h
 	sed -f $(srcdir)/targmatch.sed < $(srcdir)/config.bfd > targmatch.new
 	mv -f targmatch.new targmatch.h
@@ -853,7 +855,7 @@ host-aout.lo: Makefile
 
 # The following program can be used to generate a simple config file
 # which can be folded into an h-XXX file for a new host, with some editing.
-aout-params.h: gen-aout
+aout-params.h: gen-aout config.status
 	./gen-aout host > aout-params.h
 gen-aout: $(srcdir)/gen-aout.c Makefile
 	$(CC) -o gen-aout $(CFLAGS) $(LFLAGS) $(srcdir)/gen-aout.c
