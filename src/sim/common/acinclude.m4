@@ -231,17 +231,17 @@ dnl# Detect exe extension
 AC_REQUIRE([AC_EXEEXT])
 
 dnl# These are available to append to as desired.
-sim_link_files=
-sim_link_links=
+sim_link_files=""
+sim_link_links=""
 
 dnl# Create tconfig.h either from simulator's tconfig.in or default one
 dnl# in common.
-sim_link_links=tconfig.h
+sim_link_links="tconfig.h"
 if test -f ${srcdir}/tconfig.in
 then
-  export sim_link_files=tconfig.in
+  export sim_link_files="tconfig.in"
 else
-  export sim_link_files=../common/tconfig.in
+  export sim_link_files="../common/tconfig.in"
 fi
 
 # targ-vals.def points to the libc macro description file.
@@ -906,10 +906,10 @@ functional but inelegant update, you should probably tune the result
 yourself.])dnl
 ac_sources="$sim_link_files"
 ac_dests="$sim_link_links"
-while test -n "$ac_sources"; do
-  set $ac_dests; ac_dest=$1; shift; ac_dests=$*
-  set $ac_sources; ac_source=$1; shift; ac_sources=$*
-  export ac_config_links_1="$ac_config_links_1 $ac_dest:$ac_source"
+while test -n "${ac_sources}"; do
+  set ${ac_dests}; ac_dest=${1}; shift; ac_dests=$*
+  set ${ac_sources}; ac_source=${1}; shift; ac_sources=$*
+  export ac_config_links_1="${ac_config_links_1} ${ac_dest}:${ac_source}"
 done
 AC_CONFIG_LINKS([$ac_config_links_1])
 AC_SUBST([ac_config_links1])
@@ -942,6 +942,32 @@ AC_CONFIG_COMMANDS([default],[case "x$CONFIG_FILES" in
  case "x$CONFIG_HEADERS" in xconfig.h:config.in) echo > stamp-h ;; esac
 ],[])
 AC_OUTPUT
+
+if test ! -e tconfig.h; then
+  if test -f ${srcdir}/tconfig.in; then
+    ln -sv ${srcdir}/tconfig.in tconfig.h
+  elif test -f ../common/tconfig.in; then
+    ln -sv ../common/tconfig.in tconfig.h
+  else
+    echo "Warning: no tconfig.in present to make a tconfig.h out of"
+  fi
+else
+  echo "tconfig.h present"
+fi
+
+case "${target}" in
+*-*-*) TARG_VALS_DEF=../common/nltvals.def ;;
+esac
+if test ! -e targ-vals.def; then
+  if test -f ${TARG_VALS_DEF}; then
+    ln -sv ${TARG_VALS_DEF} targ-vals.def
+  else
+    echo "Warning: no TARG_VALS_DEF to link to targ-vals.def"
+  fi
+else
+  echo "targ-vals.def present"
+fi
+
 ])
 
 # This file is derived from `gettext.m4'. The difference is that the

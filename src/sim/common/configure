@@ -625,6 +625,7 @@ ac_includes_default="\
 
 ac_header_list=
 ac_subst_vars='LTLIBOBJS
+AM_CPPFLAGS
 TARGET_SUBDIR
 CPP_FOR_TARGET
 sim_profile
@@ -2290,6 +2291,7 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
 ac_config_headers="$ac_config_headers config.h"
+
 
 
 # Make sure we can run config.sub.
@@ -5743,26 +5745,50 @@ fi
 
 
 
-sim_link_files=
-sim_link_links=
+sim_link_files=""
+sim_link_links=""
 
-sim_link_links=tconfig.h
+sim_link_links="tconfig.h"
 if test -f ${srcdir}/tconfig.in
 then
-  sim_link_files=tconfig.in
+  export sim_link_files="tconfig.in"
 else
-  sim_link_files=../common/tconfig.in
+  export sim_link_files="../common/tconfig.in"
 fi
 
 # targ-vals.def points to the libc macro description file.
 case "${target}" in
 *-*-*) TARG_VALS_DEF=../common/nltvals.def ;;
 esac
-sim_link_files="${sim_link_files} ${TARG_VALS_DEF}"
-sim_link_links="${sim_link_links} targ-vals.def"
+export sim_link_files="${sim_link_files} ${TARG_VALS_DEF}"
+export sim_link_links="${sim_link_links} targ-vals.def"
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: Done with checks common to all simulators" >&5
 $as_echo "$as_me: Done with checks common to all simulators" >&6;}
+
+
+
+
+
+# Compiler
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for function prototypes" >&5
+$as_echo_n "checking for function prototypes... " >&6; }
+if test "$ac_cv_prog_cc_c89" != no; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+
+$as_echo "#define PROTOTYPES 1" >>confdefs.h
+
+
+$as_echo "#define __PROTOTYPES 1" >>confdefs.h
+
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
 
 
 
@@ -5796,6 +5822,29 @@ else
 fi
 
 
+if test -d "../../include"; then
+  CPPFLAGS="$CPPFLAGS -I../../include"
+  AM_CPPFLAGS="$AM_CPPFLAGS -I../../include"
+fi
+if test -d "${srcdir}"; then
+  CPPFLAGS="$CPPFLAGS -I${srcdir}"
+  AM_CPPFLAGS="$AM_CPPFLAGS -I${srcdir}"
+fi
+
+
+for ac_header in gdb/callback.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "gdb/callback.h" "ac_cv_header_gdb_callback_h" "$ac_includes_default"
+if test "x$ac_cv_header_gdb_callback_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_GDB_CALLBACK_H 1
+_ACEOF
+
+fi
+
+done
+
+
 # These are NOT all needed yet, but will be eventually.
 
 
@@ -5813,12 +5862,13 @@ fi
 done
 
 
-for ac_header in sys/times.h
+for ac_header in stdarg.h sys/times.h varargs.h
 do :
-  ac_fn_c_check_header_mongrel "$LINENO" "sys/times.h" "ac_cv_header_sys_times_h" "$ac_includes_default"
-if test "x$ac_cv_header_sys_times_h" = xyes; then :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
   cat >>confdefs.h <<_ACEOF
-#define HAVE_SYS_TIMES_H 1
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
 _ACEOF
 
 fi

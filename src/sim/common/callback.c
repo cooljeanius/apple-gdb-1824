@@ -22,25 +22,39 @@
    level.  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#else
+# warning callback.c expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
 #include "ansidecl.h"
-#ifdef ANSI_PROTOTYPES
-#include <stdarg.h>
+#if defined(ANSI_PROTOTYPES) || defined(PROTOTYPES) || defined(__PROTOTYPES)
+# ifdef HAVE_STDARG_H
+#  include <stdarg.h>
+# else
+#  warning callback.c expects <stdarg.h> to be included.
+# endif /* HAVE_STDARG_H */
 #else
-#include <varargs.h>
-#endif
+# ifdef HAVE_VARARGS_H
+#  include <varargs.h>
+# else
+#  warning callback.c expects <varargs.h> to be included.
+# endif /* HAVE_VARARGS_H */
+#endif /* ANSI_PROTOTYPES || PROTOTYPES || __PROTOTYPES */
 #include <stdio.h>
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-#ifdef HAVE_STRING_H
-#include <string.h>
+#if defined(HAVE_STDLIB_H) || defined(__STDC__)
+# include <stdlib.h>
 #else
-#ifdef HAVE_STRINGS_H
-#include <strings.h>
-#endif
-#endif
+# warning callback.c expects <stdlib.h> to be included.
+#endif /* HAVE_STDLIB_H || __STDC__ */
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# ifdef HAVE_STRINGS_H
+#  include <strings.h>
+# else
+#  warning callback.c expects a string-related header to be included.
+# endif /* HAVE_STRINGS_H */
+#endif /* HAVE_STRING_H */
 #include <errno.h>
 #include <fcntl.h>
 #include <time.h>
@@ -50,8 +64,10 @@
 #include "targ-vals.h"
 
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+# include <unistd.h>
+#else
+# warning callback.c expects <unistd.h> to be included.
+#endif /* HAVE_UNISTD_H */
 
 /* ??? sim_cb_printf should be cb_printf, but until the callback support is
    broken out of the simulator directory, these are here to not require
@@ -92,7 +108,7 @@ static int wrap PARAMS ((host_callback *, int));
 
 /* Set the callback copy of errno from what we see now.  */
 
-static int 
+static int
 wrap (p, val)
      host_callback *p;
      int val;
@@ -104,7 +120,7 @@ wrap (p, val)
 /* Make sure the FD provided is ok.  If not, return non-zero
    and set errno. */
 
-static int 
+static int
 fdbad (p, fd)
      host_callback *p;
      int fd;
@@ -117,7 +133,7 @@ fdbad (p, fd)
   return 0;
 }
 
-static int 
+static int
 fdmap (p, fd)
      host_callback *p;
      int fd;
@@ -125,7 +141,7 @@ fdmap (p, fd)
   return p->fdmap[fd];
 }
 
-static int 
+static int
 os_close (p, fd)
      host_callback *p;
      int fd;
@@ -165,7 +181,7 @@ os_poll_quit (p)
 	{
 	  return 1;
 	}
-      else 
+      else
 	{
 	  sim_cb_eprintf (p, "CTRL-A to quit, CTRL-B to quit harder\n");
 	}
@@ -185,7 +201,7 @@ os_poll_quit (p)
 #define os_poll_quit 0
 #endif /* defined(__GO32__) || defined(_MSC_VER) */
 
-static int 
+static int
 os_get_errno (p)
      host_callback *p;
 {
@@ -193,7 +209,7 @@ os_get_errno (p)
 }
 
 
-static int 
+static int
 os_isatty (p, fd)
      host_callback *p;
      int fd;
@@ -208,7 +224,7 @@ os_isatty (p, fd)
   return result;
 }
 
-static int 
+static int
 os_lseek (p, fd, off, way)
      host_callback *p;
      int fd;
@@ -224,7 +240,7 @@ os_lseek (p, fd, off, way)
   return result;
 }
 
-static int 
+static int
 os_open (p, name, flags)
      host_callback *p;
      const char *name;
@@ -250,7 +266,7 @@ os_open (p, name, flags)
   return -1;
 }
 
-static int 
+static int
 os_read (p, fd, buf, len)
      host_callback *p;
      int fd;
@@ -266,7 +282,7 @@ os_read (p, fd, buf, len)
   return result;
 }
 
-static int 
+static int
 os_read_stdin (p, buf, len)
      host_callback *p;
      char *buf;
@@ -275,7 +291,7 @@ os_read_stdin (p, buf, len)
   return wrap (p, read (0, buf, len));
 }
 
-static int 
+static int
 os_write (p, fd, buf, len)
      host_callback *p;
      int fd;
@@ -304,7 +320,7 @@ os_write (p, fd, buf, len)
   return result;
 }
 
-static int 
+static int
 os_write_stdout (p, buf, len)
      host_callback *p ATTRIBUTE_UNUSED;
      const char *buf;
@@ -320,7 +336,7 @@ os_flush_stdout (p)
   fflush (stdout);
 }
 
-static int 
+static int
 os_write_stderr (p, buf, len)
      host_callback *p ATTRIBUTE_UNUSED;
      const char *buf;
@@ -336,7 +352,7 @@ os_flush_stderr (p)
   fflush (stderr);
 }
 
-static int 
+static int
 os_rename (p, f1, f2)
      host_callback *p;
      const char *f1;
@@ -354,7 +370,7 @@ os_system (p, s)
   return wrap (p, system (s));
 }
 
-static long 
+static long
 os_time (p, t)
      host_callback *p;
      long *t;
@@ -363,7 +379,7 @@ os_time (p, t)
 }
 
 
-static int 
+static int
 os_unlink (p, f1)
      host_callback *p;
      const char *f1;
@@ -560,7 +576,7 @@ host_callback default_callback =
   0, /* open_map */
   0, /* signal_map */
   0, /* stat_map */
-	
+
   HOST_CALLBACK_MAGIC,
 };
 

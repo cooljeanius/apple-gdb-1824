@@ -10,6 +10,7 @@ AC_CONFIG_SRCDIR([Makefile.in])
 AC_CONFIG_AUX_DIR([../..])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
+AC_SUBST([DEFS])
 AC_COPYRIGHT([GPL-2])
 AC_CANONICAL_TARGET
 
@@ -18,6 +19,14 @@ AC_DEFUN([AC_REQUIRE_SIM_AC_COMMON],[
   AC_REQUIRE([SIM_AC_COMMON])
 ])
 AC_REQUIRE_SIM_AC_COMMON
+
+# Compiler
+AC_DEFUN([AC_REQUIRE_COMPILER],[
+  AC_REQUIRE([AC_PROG_CC])
+  AC_REQUIRE([AC_PROG_CPP])
+  AC_REQUIRE([AC_C_PROTOTYPES])
+])
+AC_REQUIRE_COMPILER
 
 # Put a useful copy of CPP_FOR_TARGET in Makefile.
 # This is only used to build the target values header files, which are
@@ -47,13 +56,25 @@ else
 fi
 AC_SUBST([TARGET_SUBDIR])
 
+if test -d "../../include"; then
+  CPPFLAGS="$CPPFLAGS -I../../include"
+  AM_CPPFLAGS="$AM_CPPFLAGS -I../../include"
+fi
+if test -d "${srcdir}"; then
+  CPPFLAGS="$CPPFLAGS -I${srcdir}"
+  AM_CPPFLAGS="$AM_CPPFLAGS -I${srcdir}"
+fi
+AC_SUBST([CPPFLAGS])
+AC_SUBST([AM_CPPFLAGS])
+AC_CHECK_HEADERS([gdb/callback.h])
+
 # These are NOT all needed yet, but will be eventually.
 AC_DEFUN([AC_REQUIRE_FUNC_MMAP],[
   AC_REQUIRE([AC_FUNC_MMAP])
   AC_CHECK_HEADERS([sys/mman.h])
 ])
 AC_REQUIRE_FUNC_MMAP
-AC_CHECK_HEADERS([sys/times.h])
+AC_CHECK_HEADERS([stdarg.h sys/times.h varargs.h])
 
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_COMMANDS([default],[case x$CONFIG_HEADERS in xcconfig.h:config.in) echo > stamp-h ;; esac],[])

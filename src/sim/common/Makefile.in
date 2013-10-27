@@ -58,8 +58,9 @@ TARGET_SUBDIR = @TARGET_SUBDIR@
 HDEFINES = @HDEFINES@
 TDEFINES =
 
+DEFS = @DEFS@
 CONFIG_CFLAGS = @DEFS@ $(SIM_CFLAGS) $(HDEFINES) $(TDEFINES)
-CSEARCH = -I. -I$(srcdir) -I$(srcroot)/include
+CSEARCH = -I. -I$(srcdir) -I$(srcroot)/include -I../../include
 ALL_CFLAGS = $(CFLAGS) $(CONFIG_CFLAGS) $(CSEARCH)
 BUILD_CFLAGS = -g -O $(CSEARCH)
 
@@ -88,7 +89,7 @@ headers:
 	$(SHELL) $(srcroot)/move-if-change nltvals.new nltvals.def
 
 .c.o:
-	$(CC) -c $< $(ALL_CFLAGS)
+	$(CC) -c $< $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 check:
 

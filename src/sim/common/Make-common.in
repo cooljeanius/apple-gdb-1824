@@ -70,6 +70,7 @@ INSTALL_DATA = @INSTALL_DATA@
 CC = @CC@
 CC_FOR_BUILD = @CC_FOR_BUILD@
 CFLAGS = @CFLAGS@
+CPPFLAGS = @CPPFLAGS@
 SIM_BSWAP = @sim_bswap@
 SIM_CFLAGS = @sim_cflags@
 SIM_DEBUG = @sim_debug@
@@ -111,7 +112,7 @@ MAKEINFO = makeinfo
 DEP = $(srcroot)/mkdep
 
 # Each simulator's Makefile.in defines one or more of these variables
-# to override our settings as necessary.  There is no need to define these
+# to override our settings as necessary. There is no need to define these
 # in the simulator's Makefile.in if one is using the default value. In fact
 # it is preferable not to.
 
@@ -139,7 +140,7 @@ SIM_EXTRA_DISTCLEAN =
 
 # Every time a new general purpose source file was added every target's
 # Makefile.in needed to be updated to include the file in SIM_OBJS.
-# This doesn't scale.
+# This does NOT scale.
 # This variable specifies all generic stuff common to newer simulators.
 # Things like sim-reason.o cannot go here as the cpu may provide its own
 # (though hopefully in time that will not be so). Things like sim-bits.o
@@ -195,6 +196,8 @@ CGEN_INCLUDE_DEPS = \
 ## End COMMON_PRE_CONFIG_FRAG
 
 ## COMMON_POST_CONFIG_FRAG
+
+DEFS = @DEFS@
 
 CONFIG_CFLAGS = \
 	@DEFS@ \
@@ -265,7 +268,7 @@ run: $(SIM_RUN_OBJS) libsim.a $(LIBDEPS)
 	  $(SIM_RUN_OBJS) libsim.a $(EXTRA_LIBS)
 
 run.o: $(srccom)/run.c config.h tconfig.h $(remote_sim_h) $(callback_h)
-	$(CC) -c $(srccom)/run.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/run.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 # FIXME: Ideally, callback.o and friends live in a library outside of
 # both the gdb and simulator source trees (e.g. devo/remote. Not
@@ -273,10 +276,10 @@ run.o: $(srccom)/run.c config.h tconfig.h $(remote_sim_h) $(callback_h)
 # a library).
 
 callback.o: $(srccom)/callback.c config.h tconfig.h $(callback_h) targ-vals.h
-	$(CC) -c $(srccom)/callback.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/callback.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 syscall.o: $(srccom)/syscall.c config.h tconfig.h $(callback_h) targ-vals.h
-	$(CC) -c $(srccom)/syscall.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/syscall.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 targ-map.o: targ-map.c targ-vals.h
 
@@ -367,54 +370,54 @@ BUILT_SRC_FROM_COMMON= \
 
 sim-abort.o: $(srccom)/sim-abort.c \
 	  $(SIM_EXTRA_DEPS)
-	$(CC) -c $(srccom)/sim-abort.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-abort.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-arange.o: $(srccom)/sim-arange.c $(sim-arange_h) $(SIM_EXTRA_DEPS)
-	$(CC) -c $(srccom)/sim-arange.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-arange.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-bits.o: $(srccom)/sim-bits.c $(sim-bits_h) $(sim-n-bits_h) \
 	  $(SIM_EXTRA_DEPS)
-	$(CC) -c $(srccom)/sim-bits.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-bits.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-config.o: $(srccom)/sim-config.c $(sim-config_h) \
 	  $(SIM_EXTRA_DEPS)
-	$(CC) -c $(srccom)/sim-config.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-config.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-core.o: $(srccom)/sim-core.c $(sim_main_headers) \
 	  $(sim-core_h) $(sim-n-core_h)
-	$(CC) -c $(srccom)/sim-core.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-core.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-cpu.o: $(srccom)/sim-cpu.c $(sim_main_headers)
-	$(CC) -c $(srccom)/sim-cpu.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-cpu.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-endian.o: $(srccom)/sim-endian.c $(sim-endian_h) $(sim-n-endian_h)
-	$(CC) -c $(srccom)/sim-endian.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-endian.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-engine.o: $(srccom)/sim-engine.c $(sim_main_headers) $(sim-engine_h)
-	$(CC) -c $(srccom)/sim-engine.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-engine.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-events.o: $(srccom)/sim-events.c $(sim-events_h) \
 	  $(SIM_EXTRA_DEPS)
-	$(CC) -c $(srccom)/sim-events.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-events.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-fpu.o: $(srccom)/sim-fpu.c $(sim-fpu_h) \
 	  $(SIM_EXTRA_DEPS)
-	$(CC) -c $(srccom)/sim-fpu.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-fpu.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-hload.o: $(srccom)/sim-hload.c $(sim-assert_h) $(remote_sim_h) \
 	  $(SIM_EXTRA_DEPS)
-	$(CC) -c $(srccom)/sim-hload.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-hload.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-hrw.o: $(srccom)/sim-hrw.c $(sim-assert_h) $(sim_core_h) $(remote_sim_h) \
 	  $(SIM_EXTRA_DEPS)
-	$(CC) -c $(srccom)/sim-hrw.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-hrw.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-hw.o: $(srccom)/sim-hw.c $(sim_main_headers)
-	$(CC) -c $(srccom)/sim-hw.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-hw.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-info.o: $(srccom)/sim-info.c $(sim-assert_h) $(remote_sim_h) \
 	  $(SIM_EXTRA_DEPS)
-	$(CC) -c $(srccom)/sim-info.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-info.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-inline.c: $(srccom)/sim-inline.c
 	rm -f $@ tmp-$@
@@ -424,62 +427,62 @@ sim-inline.c: $(srccom)/sim-inline.c
 
 sim-io.o: $(srccom)/sim-io.c $(sim_main_headers) $(sim-io_h) $(remote_sim_h) \
 	  targ-vals.h
-	$(CC) -c $(srccom)/sim-io.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-io.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-memopt.o: $(srccom)/sim-memopt.c $(sim_main_headers) \
 	  $(sim-io_h)
-	$(CC) -c $(srccom)/sim-memopt.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-memopt.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-module.o: $(srccom)/sim-module.c $(sim_main_headers) \
 	  $(sim-io_h)
-	$(CC) -c $(srccom)/sim-module.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-module.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-options.o: $(srccom)/sim-options.c $(sim_main_headers) \
 	  $(sim-options_h) $(sim-io_h)
-	$(CC) -c $(srccom)/sim-options.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-options.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-reason.o: $(srccom)/sim-reason.c $(sim_main_headers) $(remote_sim_h)
-	$(CC) -c $(srccom)/sim-reason.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-reason.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-reg.o: $(srccom)/sim-reg.c $(sim_main_headers) $(remote_sim_h)
-	$(CC) -c $(srccom)/sim-reg.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-reg.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-resume.o: $(srccom)/sim-resume.c $(sim_main_headers) $(remote_sim_h)
-	$(CC) -c $(srccom)/sim-resume.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-resume.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-run.o: $(srccom)/sim-run.c $(sim_main_headers)
-	$(CC) -c $(srccom)/sim-run.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-run.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-signal.o: $(srccom)/sim-signal.c $(sim_main_headers) $(sim-signal_h)
-	$(CC) -c $(srccom)/sim-signal.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-signal.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-stop.o: $(srccom)/sim-stop.c $(sim_main_headers)
-	$(CC) -c $(srccom)/sim-stop.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-stop.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-trace.o: $(srccom)/sim-trace.c $(sim_main_headers) \
 	  $(sim-options_h) $(sim-io_h)
-	$(CC) -c $(srccom)/sim-trace.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-trace.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-profile.o: $(srccom)/sim-profile.c $(sim_main_headers) \
 	  $(sim-options_h) $(sim-io_h)
-	$(CC) -c $(srccom)/sim-profile.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-profile.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-model.o: $(srccom)/sim-model.c $(sim_main_headers) \
 	  $(sim-io_h)
-	$(CC) -c $(srccom)/sim-model.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-model.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-utils.o: $(srccom)/sim-utils.c $(sim_main_headers)
-	$(CC) -c $(srccom)/sim-utils.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-utils.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-watch.o: $(srccom)/sim-watch.c $(sim_main_headers)
-	$(CC) -c $(srccom)/sim-watch.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-watch.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-load.o: $(srccom)/sim-load.c $(callback_h)
-	$(CC) -c $(srccom)/sim-load.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-load.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 sim-break.o: $(srccom)/sim-break.c $(sim_main_headers) \
 	  $(sim_break_h)
-	$(CC) -c $(srccom)/sim-break.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/sim-break.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 
 # FIXME This is one very simple-minded way of generating the file hw-config.h
@@ -498,54 +501,54 @@ hw-config.h: Makefile.in $(srccom)/Make-common.in config.status Makefile
 	mv tmp-hw.h hw-config.h
 
 hw-alloc.o: $(srccom)/hw-alloc.c $(hw_main_headers)
-	$(CC) -c $(srccom)/hw-alloc.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/hw-alloc.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 hw-base.o: $(srccom)/hw-base.c $(hw_main_headers) hw-config.h
-	$(CC) -c $(srccom)/hw-base.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/hw-base.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 hw-device.o: $(srccom)/hw-device.c $(hw_main_headers)
-	$(CC) -c $(srccom)/hw-device.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/hw-device.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 hw-events.o: $(srccom)/hw-events.c $(hw_main_headers) $(sim_main_headers)
-	$(CC) -c $(srccom)/hw-events.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/hw-events.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 test-hw-events: $(srccom)/hw-events.c libsim.a
 	$(CC) $(ALL_CFLAGS) -DMAIN -o test-hw-events$(EXEEXT) \
 		$(srccom)/hw-events.c libsim.a $(EXTRA_LIBS)
 
 hw-instances.o: $(srccom)/hw-instances.c $(hw_main_headers)
-	$(CC) -c $(srccom)/hw-instances.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/hw-instances.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 hw-handles.o: $(srccom)/hw-handles.c $(hw_main_headers)
-	$(CC) -c $(srccom)/hw-handles.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/hw-handles.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 hw-ports.o: $(srccom)/hw-ports.c $(hw_main_headers)
-	$(CC) -c $(srccom)/hw-ports.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/hw-ports.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 hw-properties.o: $(srccom)/hw-properties.c $(hw_main_headers)
-	$(CC) -c $(srccom)/hw-properties.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/hw-properties.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 hw-tree.o: $(srccom)/hw-tree.c $(hw_main_headers) $(hw-tree_h)
-	$(CC) -c $(srccom)/hw-tree.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/hw-tree.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 # Devices.
 
 dv-core.o: $(srccom)/dv-core.c $(hw_main_headers) $(sim_main_headers)
-	$(CC) -c $(srccom)/dv-core.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/dv-core.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 dv-glue.o: $(srccom)/dv-glue.c $(hw_main_headers) $(sim_main_headers)
-	$(CC) -c $(srccom)/dv-glue.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/dv-glue.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 dv-pal.o: $(srccom)/dv-pal.c $(hw_main_headers) $(sim_main_headers)
-	$(CC) -c $(srccom)/dv-pal.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/dv-pal.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 dv-sockser.o: $(srccom)/dv-sockser.h $(sim_main_headers)
-	$(CC) -c $(srccom)/dv-sockser.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/dv-sockser.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 
 nrun.o: $(srccom)/nrun.c config.h tconfig.h $(remote_sim_h) $(callback_h) \
 	  $(sim_main_headers)
-	$(CC) -c $(srccom)/nrun.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/nrun.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 # CGEN support.
 
@@ -559,27 +562,27 @@ CGEN_MAIN_CPU_DEPS = \
 	$(srccom)/cgen-fpu.h
 
 cgen-run.o: $(srccom)/cgen-run.c $(sim_main_headers)
-	$(CC) -c $(srccom)/cgen-run.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/cgen-run.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 cgen-scache.o: $(srccom)/cgen-scache.c $(sim_main_headers)
-	$(CC) -c $(srccom)/cgen-scache.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/cgen-scache.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 cgen-trace.o: $(srccom)/cgen-trace.c $(sim_main_headers)
-	$(CC) -c $(srccom)/cgen-trace.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/cgen-trace.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 cgen-fpu.o: $(srccom)/cgen-fpu.c $(sim_main_headers) $(sim-fpu_h)
-	$(CC) -c $(srccom)/cgen-fpu.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/cgen-fpu.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 cgen-accfp.o: $(srccom)/cgen-accfp.c $(sim_main_headers) $(sim-fpu_h)
-	$(CC) -c $(srccom)/cgen-accfp.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/cgen-accfp.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 cgen-utils.o: $(srccom)/cgen-utils.c $(sim_main_headers) \
 	  $(srccom)/cgen-mem.h $(srccom)/cgen-ops.h $(srccom)/cgen-engine.h
-	$(CC) -c $(srccom)/cgen-utils.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/cgen-utils.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 cgen-par.o: $(srccom)/cgen-par.c $(sim_main_headers) \
 	  $(srccom)/cgen-mem.h $(srccom)/cgen-par.h
-	$(CC) -c $(srccom)/cgen-par.c $(ALL_CFLAGS)
+	$(CC) -c $(srccom)/cgen-par.c $(ALL_CFLAGS) $(CPPFLAGS) $(DEFS)
 
 # Support targets.
 
@@ -631,7 +634,7 @@ distclean mostlyclean maintainer-clean realclean: clean $(SIM_EXTRA_DISTCLEAN)
 	rm -f targ-vals.def
 
 .c.o:
-	$(CC) -c $(ALL_CFLAGS) $<
+	$(CC) -c $(ALL_CFLAGS)  $(CPPFLAGS) $(DEFS) $<
 
 # Dummy target to force execution of dependent targets.
 force:
