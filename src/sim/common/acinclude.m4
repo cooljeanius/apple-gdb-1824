@@ -86,6 +86,7 @@ AC_MSG_NOTICE([sourcing ${srcdir}/../../bfd/configure.host])
 . ${srcdir}/../../bfd/configure.host
 
 dnl# check some members
+AC_CHECK_MEMBER([host_callback.fdbuddy])
 AC_CHECK_MEMBER([host_callback.fdopen])
 AC_CHECK_MEMBER([host_callback.alwaysopen])
 

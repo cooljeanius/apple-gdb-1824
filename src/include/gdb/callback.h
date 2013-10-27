@@ -46,6 +46,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #ifndef CALLBACK_H
 #define CALLBACK_H
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# warning not including "config.h"
+#endif /* HAVE_CONFIG_H */
+
 /* ??? The reason why we check for va_start here should be documented.  */
 
 #ifndef va_start
@@ -73,6 +79,8 @@ typedef struct host_callback_struct host_callback;
 
 struct host_callback_struct
 {
+/* where are `fdopen` and `alwaysopen` in here? */
+/* see https://sourceware.org/ml/gdb-patches/2004-06/msg00527.html perhaps? */
   int (*close) PARAMS ((host_callback *,int));
   int (*get_errno) PARAMS ((host_callback *));
   int (*isatty) PARAMS ((host_callback *, int));

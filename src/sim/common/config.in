@@ -1,4 +1,10 @@
 /* config.in.  Generated from configure.ac by autoheader.  */
+/*
+ * acconfig.h
+ */
+
+#ifndef _ACCONFIG_H
+#define _ACCONFIG_H
 
 /* Define to 1 if NLS is requested.  */
 #undef ENABLE_NLS
@@ -14,6 +20,8 @@
 
 /* Define if your locale.h file contains LC_MESSAGES.  */
 #undef HAVE_LC_MESSAGES
+
+#endif /* !_ACCONFIG_H */
 
 /* Define to one of `_getb67', `GETB67', `getb67' for Cray-2 and Cray-YMP
    systems. This function is required for `alloca.c' support on those systems.
@@ -54,6 +62,9 @@
 /* Define to 1 if you have the <fpu_control.h> header file. */
 #undef HAVE_FPU_CONTROL_H
 
+/* Define to 1 if you have the <gdb/callback.h> header file. */
+#undef HAVE_GDB_CALLBACK_H
+
 /* Define to 1 if you have the `getcwd' function. */
 #undef HAVE_GETCWD
 
@@ -71,6 +82,9 @@
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
+
+/* Define to 1 if we have LC_MESSAGES */
+#undef HAVE_LC_MESSAGES
 
 /* Define to 1 if you have the <libintl.h> header file. */
 #undef HAVE_LIBINTL_H
@@ -136,11 +150,17 @@
 /* Define to 1 if you have the `socket' function. */
 #undef HAVE_SOCKET
 
+/* Define to 1 if you have the <stdarg.h> header file. */
+#undef HAVE_STDARG_H
+
 /* Define to 1 if stdbool.h conforms to C99. */
 #undef HAVE_STDBOOL_H
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdio.h> header file. */
+#undef HAVE_STDIO_H
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
@@ -211,6 +231,9 @@
 /* Define to 1 if you have the <values.h> header file. */
 #undef HAVE_VALUES_H
 
+/* Define to 1 if you have the <varargs.h> header file. */
+#undef HAVE_VARARGS_H
+
 /* Define to 1 if the system has the type `_Bool'. */
 #undef HAVE__BOOL
 
@@ -244,6 +267,9 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
+/* Define to 1 if the C compiler supports function prototypes. */
+#undef PROTOTYPES
+
 /* Define as the return type of signal handlers (`int' or `void'). */
 #undef RETSIGTYPE
 
@@ -257,6 +283,9 @@
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
+
+/* Define like PROTOTYPES; this can be used by system headers. */
+#undef __PROTOTYPES
 
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const

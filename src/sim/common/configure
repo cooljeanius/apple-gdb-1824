@@ -5661,6 +5661,11 @@ fi
 $as_echo "$as_me: sourcing ${srcdir}/../../bfd/configure.host" >&6;}
 . ${srcdir}/../../bfd/configure.host
 
+ac_fn_c_check_member "$LINENO" "host_callback" "fdbuddy" "ac_cv_member_host_callback_fdbuddy" "$ac_includes_default"
+if test "x$ac_cv_member_host_callback_fdbuddy" = xyes; then :
+
+fi
+
 ac_fn_c_check_member "$LINENO" "host_callback" "fdopen" "ac_cv_member_host_callback_fdopen" "$ac_includes_default"
 if test "x$ac_cv_member_host_callback_fdopen" = xyes; then :
 
@@ -5890,16 +5895,23 @@ else
 fi
 
 
-if test -d "../../include"; then
-  CPPFLAGS="$CPPFLAGS -I../../include"
-  AM_CPPFLAGS="$AM_CPPFLAGS -I../../include"
-fi
-if test -d "${srcdir}"; then
-  CPPFLAGS="$CPPFLAGS -I${srcdir}"
-  AM_CPPFLAGS="$AM_CPPFLAGS -I${srcdir}"
-fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking additional directories to include headers from" >&5
+$as_echo_n "checking additional directories to include headers from... " >&6; }
+for includedir in $(echo "../../include ${srcdir} ../../bfd"); do
+  if test -d "${includedir}"; then
+    echo "${includedir} \c"
+    export CPPFLAGS="$CPPFLAGS -I${includedir}"
+    export AM_CPPFLAGS="$AM_CPPFLAGS -I${includedir}"
+  else
+    echo ""
+    echo "Warning: ${includedir} is not a directory; not including files from it."
+  fi
+done
 
 
+
+
+echo ""
 for ac_header in gdb/callback.h
 do :
   ac_fn_c_check_header_mongrel "$LINENO" "gdb/callback.h" "ac_cv_header_gdb_callback_h" "$ac_includes_default"
@@ -5930,7 +5942,7 @@ fi
 done
 
 
-for ac_header in stdarg.h sys/times.h varargs.h
+for ac_header in stdarg.h stdio.h sys/times.h varargs.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"

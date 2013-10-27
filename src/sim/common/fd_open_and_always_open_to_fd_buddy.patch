@@ -1,0 +1,222 @@
+2004-06-25  J"orn Rennecke <joern.rennecke@superh.com>
+
+include/gdb:
+	* callback.h (host_callback_struct): Replace members fdopen and
+	alwaysopen with fd_buddy.
+sim/common:
+	* callback.c: Changed all users.
+
+Index: include/gdb/callback.h
+===================================================================
+RCS file: /cvs/src/src/include/gdb/callback.h,v
+retrieving revision 1.2
+diff -p -r1.2 callback.h
+*** include/gdb/callback.h	15 Oct 2003 12:28:50 -0000	1.2
+--- include/gdb/callback.h	24 Jun 2004 23:27:20 -0000
+*************** struct host_callback_struct 
+*** 123,130 ****
+    int last_errno;		/* host format */
+  
+    int fdmap[MAX_CALLBACK_FDS];
+!   char fdopen[MAX_CALLBACK_FDS];
+!   char alwaysopen[MAX_CALLBACK_FDS];
+  
+    /* System call numbers.  */
+    CB_TARGET_DEFS_MAP *syscall_map;
+--- 123,137 ----
+    int last_errno;		/* host format */
+  
+    int fdmap[MAX_CALLBACK_FDS];
+!   /* fd_buddy is used to contruct circular lists of target fds that point to
+!      the same host fd.  A uniquely mapped fd points to itself; for a closed
+!      one, fd_buddy has the value -1.  The host file descriptors for stdin /
+!      stdout / stderr are never closed by the simulators, so they are put
+!      in a special fd_buddy circular list which also has MAX_CALLBACK_FDS
+!      as a member.  */
+!   /* ??? We don't have a callback entry for dup, although it is trival to
+!      implement now.  */
+!   short fd_buddy[MAX_CALLBACK_FDS+1];
+  
+    /* System call numbers.  */
+    CB_TARGET_DEFS_MAP *syscall_map;
+Index: sim/common/callback.c
+===================================================================
+RCS file: /cvs/src/src/sim/common/callback.c,v
+retrieving revision 1.8
+diff -p -r1.8 callback.c
+*** sim/common/callback.c	10 May 2004 16:18:03 -0000	1.8
+--- sim/common/callback.c	24 Jun 2004 23:26:25 -0000
+*************** fdbad (p, fd)
+*** 110,116 ****
+       host_callback *p;
+       int fd;
+  {
+!   if (fd < 0 || fd > MAX_CALLBACK_FDS || !p->fdopen[fd])
+      {
+        p->last_errno = EINVAL;
+        return -1;
+--- 110,116 ----
+       host_callback *p;
+       int fd;
+  {
+!   if (fd < 0 || fd > MAX_CALLBACK_FDS || p->fd_buddy[fd] < 0)
+      {
+        p->last_errno = EINVAL;
+        return -1;
+*************** os_close (p, fd)
+*** 132,144 ****
+       int fd;
+  {
+    int result;
+  
+    result = fdbad (p, fd);
+    if (result)
+      return result;
+!   result = wrap (p, close (fdmap (p, fd)));
+!   if (result == 0 && !p->alwaysopen[fd])
+!     p->fdopen[fd] = 0;
+  
+    return result;
+  }
+--- 132,151 ----
+       int fd;
+  {
+    int result;
++   int i, next;
+  
+    result = fdbad (p, fd);
+    if (result)
+      return result;
+!   /* If this file descripter has one or more buddies (originals /
+!      duplicates from a dup), just remove it from the circular list.  */
+!   for (i = fd; (next = p->fd_buddy[i]) != fd; )
+!     i = next;
+!   if (fd != i)
+!     p->fd_buddy[i] = p->fd_buddy[fd];
+!   else
+!     result = wrap (p, close (fdmap (p, fd)));
+!   p->fd_buddy[fd] = -1;
+  
+    return result;
+  }
+*************** os_open (p, name, flags)
+*** 234,240 ****
+    int i;
+    for (i = 0; i < MAX_CALLBACK_FDS; i++)
+      {
+!       if (!p->fdopen[i])
+  	{
+  	  int f = open (name, cb_target_to_host_open (p, flags), 0644);
+  	  if (f < 0)
+--- 241,247 ----
+    int i;
+    for (i = 0; i < MAX_CALLBACK_FDS; i++)
+      {
+!       if (p->fd_buddy[i] < 0)
+  	{
+  	  int f = open (name, cb_target_to_host_open (p, flags), 0644);
+  	  if (f < 0)
+*************** os_open (p, name, flags)
+*** 242,248 ****
+  	      p->last_errno = errno;
+  	      return f;
+  	    }
+! 	  p->fdopen[i] = 1;
+  	  p->fdmap[i] = f;
+  	  return i;
+  	}
+--- 249,255 ----
+  	      p->last_errno = errno;
+  	      return f;
+  	    }
+! 	  p->fd_buddy[i] = i;
+  	  p->fdmap[i] = f;
+  	  return i;
+  	}
+*************** static int
+*** 428,440 ****
+  os_shutdown (p)
+       host_callback *p;
+  {
+!   int i;
+    for (i = 0; i < MAX_CALLBACK_FDS; i++)
+      {
+!       if (p->fdopen[i] && !p->alwaysopen[i]) {
+  	close (p->fdmap[i]);
+- 	p->fdopen[i] = 0;
+-       }
+      }
+    return 1;
+  }
+--- 435,465 ----
+  os_shutdown (p)
+       host_callback *p;
+  {
+!   int i, next, j;
+    for (i = 0; i < MAX_CALLBACK_FDS; i++)
+      {
+!       int do_close = 1;
+! 
+!       next = p->fd_buddy[i];
+!       if (next < 0)
+! 	continue;
+!       do
+! 	{
+! 	  j = next;
+! 	  if (j == MAX_CALLBACK_FDS)
+! 	    do_close = 0;
+! 	  next = p->fd_buddy[j];
+! 	  p->fd_buddy[j] = -1;
+! 	  /* At the initial call of os_init, we got -1, 0, 0, 0, ...  */
+! 	  if (next < 0)
+! 	    {
+! 	      do_close = 0;
+! 	      break;
+! 	    }
+! 	}
+!       while (j != i);
+!       if (do_close)
+  	close (p->fdmap[i]);
+      }
+    return 1;
+  }
+*************** os_init (p)
+*** 449,457 ****
+    for (i = 0; i < 3; i++)
+      {
+        p->fdmap[i] = i;
+!       p->fdopen[i] = 1;
+!       p->alwaysopen[i] = 1;
+      }
+  
+    p->syscall_map = cb_init_syscall_map;
+    p->errno_map = cb_init_errno_map;
+--- 474,483 ----
+    for (i = 0; i < 3; i++)
+      {
+        p->fdmap[i] = i;
+!       p->fd_buddy[i] = i - 1;
+      }
++   p->fd_buddy[0] = MAX_CALLBACK_FDS;
++   p->fd_buddy[MAX_CALLBACK_FDS] = 2;
+  
+    p->syscall_map = cb_init_syscall_map;
+    p->errno_map = cb_init_errno_map;
+*************** host_callback default_callback =
+*** 580,587 ****
+    0, 		/* last errno */
+  
+    { 0, },	/* fdmap */
+!   { 0, },	/* fdopen */
+!   { 0, },	/* alwaysopen */
+  
+    0, /* syscall_map */
+    0, /* errno_map */
+--- 606,612 ----
+    0, 		/* last errno */
+  
+    { 0, },	/* fdmap */
+!   { -1, },	/* fd_buddy */
+  
+    0, /* syscall_map */
+    0, /* errno_map */

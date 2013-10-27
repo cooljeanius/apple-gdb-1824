@@ -56,16 +56,22 @@ else
 fi
 AC_SUBST([TARGET_SUBDIR])
 
-if test -d "../../include"; then
-  CPPFLAGS="$CPPFLAGS -I../../include"
-  AM_CPPFLAGS="$AM_CPPFLAGS -I../../include"
-fi
-if test -d "${srcdir}"; then
-  CPPFLAGS="$CPPFLAGS -I${srcdir}"
-  AM_CPPFLAGS="$AM_CPPFLAGS -I${srcdir}"
-fi
+AC_MSG_CHECKING([additional directories to include headers from])
+for includedir in $(echo "../../include ${srcdir} ../../bfd"); do
+  if test -d "${includedir}"; then
+    echo "${includedir} \c"
+    export CPPFLAGS="$CPPFLAGS -I${includedir}"
+    export AM_CPPFLAGS="$AM_CPPFLAGS -I${includedir}"
+  else
+    echo ""
+    echo "Warning: ${includedir} is not a directory; not including files from it."
+  fi
+done
+
 AC_SUBST([CPPFLAGS])
 AC_SUBST([AM_CPPFLAGS])
+
+echo ""
 AC_CHECK_HEADERS([gdb/callback.h])
 
 # These are NOT all needed yet, but will be eventually.
@@ -74,7 +80,7 @@ AC_DEFUN([AC_REQUIRE_FUNC_MMAP],[
   AC_CHECK_HEADERS([sys/mman.h])
 ])
 AC_REQUIRE_FUNC_MMAP
-AC_CHECK_HEADERS([stdarg.h sys/times.h varargs.h])
+AC_CHECK_HEADERS([stdarg.h stdio.h sys/times.h varargs.h])
 
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_COMMANDS([default],[case x$CONFIG_HEADERS in xcconfig.h:config.in) echo > stamp-h ;; esac],[])

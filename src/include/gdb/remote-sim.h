@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 /* This file is used when building stand-alone simulators, so isolate this
    file from gdb.  */
@@ -36,11 +36,11 @@ extern "C" {
 typedef unsigned int SIM_ADDR;
 #else
 typedef CORE_ADDR_TYPE SIM_ADDR;
-#endif
+#endif /* !CORE_ADDR_TYPE */
 
 
 /* Semi-opaque type used as result of sim_open and passed back to all
-   other routines.  "desc" is short for "descriptor".
+   other routines. "desc" is short for "descriptor".
    It is up to each simulator to define `sim_state'.  */
 
 typedef struct sim_state *SIM_DESC;
@@ -75,12 +75,12 @@ struct bfd;
    (This function is called when the simulator is selected from the
    gdb command line.)
 
-   KIND specifies how the simulator shall be used.  Currently there
+   KIND specifies how the simulator shall be used. Currently there
    are only two kinds: stand-alone and debug.
 
    CALLBACK specifies a standard host callback (defined in callback.h).
 
-   ABFD, when non NULL, designates a target program.  The program is
+   ABFD, when non NULL, designates a target program. The program is
    not loaded.
 
    ARGV is a standard ARGV pointer such as that passed from the
@@ -102,7 +102,7 @@ struct bfd;
    resume).
 
    Process simulator: that process is not created until a call to
-   sim_create_inferior.  FIXME: What should the state of the simulator
+   sim_create_inferior. FIXME: What should the state of the simulator
    be? */
 
 SIM_DESC sim_open PARAMS ((SIM_OPEN_KIND kind, struct host_callback_struct *callback, struct bfd *abfd, char **argv));
@@ -113,7 +113,7 @@ SIM_DESC sim_open PARAMS ((SIM_OPEN_KIND kind, struct host_callback_struct *call
    QUITTING is non-zero if we cannot hang on errors.
 
    This may involve freeing target memory and closing any open files
-   and mmap'd areas.  You cannot assume sim_kill has already been
+   and mmap'd areas. You cannot assume sim_kill has already been
    called. */
 
 void sim_close PARAMS ((SIM_DESC sd, int quitting));
@@ -126,8 +126,8 @@ void sim_close PARAMS ((SIM_DESC sd, int quitting));
 
    Hardware simulator: Normally, each program section is written into
    memory according to that sections LMA using physical (direct)
-   addressing.  The exception being systems, such as PPC/CHRP, which
-   support more complicated program loaders.  A call to this function
+   addressing. The exception being systems, such as PPC/CHRP, which
+   support more complicated program loaders. A call to this function
    should not effect the state of the processor registers.  Multiple
    calls to this function are permitted and have an accumulative
    effect.
@@ -151,9 +151,9 @@ SIM_RC sim_load PARAMS ((SIM_DESC sd, char *prog, struct bfd *abfd, int from_tty
    ARGV and ENV, if non NULL, are NULL terminated lists of pointers.
 
    Hardware simulator: This function shall initialize the processor
-   registers to a known value.  The program counter and possibly stack
+   registers to a known value. The program counter and possibly stack
    pointer shall be set using information obtained from ABFD (or
-   hardware reset defaults).  ARGV and ENV, dependant on the target
+   hardware reset defaults). ARGV and ENV, dependant on the target
    ABI, may be written to memory.
 
    Process simulator: After a call to this function, a new process
@@ -165,8 +165,8 @@ SIM_RC sim_load PARAMS ((SIM_DESC sd, char *prog, struct bfd *abfd, int from_tty
 SIM_RC sim_create_inferior PARAMS ((SIM_DESC sd, struct bfd *abfd, char **argv, char **env));
 
 
-/* Fetch LENGTH bytes of the simulated program's memory.  Start fetch
-   at virtual address MEM and store in BUF.  Result is number of bytes
+/* Fetch LENGTH bytes of the simulated program's memory. Start fetch
+   at virtual address MEM and store in BUF. Result is number of bytes
    read, or zero if error.  */
 
 int sim_read PARAMS ((SIM_DESC sd, SIM_ADDR mem, unsigned char *buf, int length));
@@ -180,7 +180,7 @@ int sim_write PARAMS ((SIM_DESC sd, SIM_ADDR mem, unsigned char *buf, int length
 
 
 /* Fetch register REGNO storing its raw (target endian) value in the
-   LENGTH byte buffer BUF.  Return the actual size of the register or
+   LENGTH byte buffer BUF. Return the actual size of the register or
    zero if REGNO is not applicable.
 
    Legacy implementations ignore LENGTH and always return -1.
@@ -222,14 +222,14 @@ void sim_info PARAMS ((SIM_DESC sd, int verbose));
    Hardware simulator: If the SIGRC value returned by
    sim_stop_reason() is passed back to the simulator via SIGGNAL then
    the hardware simulator shall correctly deliver the hardware event
-   indicated by that signal.  If a value of zero is passed in then the
+   indicated by that signal. If a value of zero is passed in then the
    simulation will continue as if there were no outstanding signal.
    The effect of any other SIGGNAL value is is implementation
    dependant.
 
    Process simulator: If SIGRC is non-zero then the corresponding
    signal is delivered to the simulated program and execution is then
-   continued.  A zero SIGRC value indicates that the program should
+   continued. A zero SIGRC value indicates that the program should
    continue as normal. */
 
 void sim_resume PARAMS ((SIM_DESC sd, int step, int siggnal));
@@ -253,7 +253,7 @@ int sim_stop PARAMS ((SIM_DESC sd));
    (SIGTRAP); a completed single step (SIGTRAP); an internal error
    condition (SIGABRT); an illegal instruction (SIGILL); Access to an
    undefined memory region (SIGSEGV); Mis-aligned memory access
-   (SIGBUS).  For some signals information in addition to the signal
+   (SIGBUS). For some signals information in addition to the signal
    number may be retained by the simulator (e.g. offending address),
    that information is not directly accessable via this interface.
 
@@ -277,6 +277,6 @@ void sim_do_command PARAMS ((SIM_DESC sd, char *cmd));
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif /* !defined (REMOTE_SIM_H) */
+#endif /* !defined(REMOTE_SIM_H) */

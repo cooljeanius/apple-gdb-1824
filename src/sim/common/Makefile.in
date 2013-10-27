@@ -60,7 +60,7 @@ TDEFINES =
 
 DEFS = @DEFS@
 CONFIG_CFLAGS = @DEFS@ $(SIM_CFLAGS) $(HDEFINES) $(TDEFINES)
-CSEARCH = -I. -I$(srcdir) -I$(srcroot)/include -I../../include
+CSEARCH = -I. -I$(srcdir) -I$(srcroot)/include -I../../include -I../../bfd
 ALL_CFLAGS = $(CFLAGS) $(CONFIG_CFLAGS) $(CSEARCH)
 BUILD_CFLAGS = -g -O $(CSEARCH)
 
@@ -77,7 +77,7 @@ all:
 # Generate nltvals.def for newlib/libgloss using devo and build tree.
 # This file is shipped with distributions so we build in the source dir.
 # Use `make headers' to rebuild.
-# Note: If gdb releases begin to contain target header files (not a good idea,
+# Note: If gdb releases begin to contain target headers (not a good idea,
 # but if they did ...), targ-vals.def coud be generated at build time.
 # An alternative is to slurp in the tables at runtime.
 .PHONY: headers

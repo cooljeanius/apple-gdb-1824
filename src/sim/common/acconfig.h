@@ -1,3 +1,9 @@
+/*
+ * acconfig.h
+ */
+
+#ifndef _ACCONFIG_H
+#define _ACCONFIG_H
 
 /* Define to 1 if NLS is requested.  */
 #undef ENABLE_NLS
@@ -13,3 +19,5 @@
 
 /* Define if your locale.h file contains LC_MESSAGES.  */
 #undef HAVE_LC_MESSAGES
+
+#endif /* !_ACCONFIG_H */

@@ -87,4 +87,4 @@ const char *map_to_str (unsigned map);
 const char *access_to_str (unsigned access);
 const char *transfer_to_str (unsigned transfer);
 
-#endif
+#endif /* !SIM_UTILS_H */

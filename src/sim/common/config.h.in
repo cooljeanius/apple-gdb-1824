@@ -1,4 +1,10 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
+/*
+ * acconfig.h
+ */
+
+#ifndef _ACCONFIG_H
+#define _ACCONFIG_H
 
 /* Define to 1 if NLS is requested.  */
 #undef ENABLE_NLS
@@ -14,6 +20,8 @@
 
 /* Define if your locale.h file contains LC_MESSAGES.  */
 #undef HAVE_LC_MESSAGES
+
+#endif /* !_ACCONFIG_H */
 
 /* Define to one of `_getb67', `GETB67', `getb67' for Cray-2 and Cray-YMP
    systems. This function is required for `alloca.c' support on those systems.
@@ -150,6 +158,9 @@
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdio.h> header file. */
+#undef HAVE_STDIO_H
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H

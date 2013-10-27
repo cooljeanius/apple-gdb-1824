@@ -21,12 +21,12 @@
    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
    02111-1307, USA.  */
 
-#if !defined (SIM_ARM_H)
+#if !defined(SIM_ARM_H)
 #define SIM_ARM_H
 
 #ifdef __cplusplus
 extern "C" { // }
-#endif
+#endif /* __cplusplus */
 
 enum sim_arm_regs
 {
@@ -109,6 +109,6 @@ enum sim_arm_regs
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !SIM_ARM_H */

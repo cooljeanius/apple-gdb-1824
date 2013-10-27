@@ -1,7 +1,7 @@
 /* This file defines the part of the interface between the standalone
    simaulator program - run - and simulator library - libsim.a - that
    is not used by GDB.  The GDB part is described in include/remote-sim.h.
-   
+
    Copyright 2002 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -26,14 +26,14 @@
 #ifdef SIM_TARGET_SWITCHES
   /* Parse the command line, extracting any target specific switches
      before the generic simulator code gets a chance to complain
-     about them.  Returns the adjusted value of argc.  */
+     about them. Returns the adjusted value of argc.  */
 int sim_target_parse_command_line PARAMS ((int, char **));
 
   /* Display a list of target specific switches supported by this
      target.  */
 void sim_target_display_usage PARAMS ((void));
 
-#endif
+#endif /* SIM_TARGET_SWITCHES */
 
 /* Provide simulator with a default (global) host_callback_struct.
    THIS PROCEDURE IS DEPRECATED.
@@ -91,4 +91,4 @@ void sim_set_profile_size PARAMS ((int n));
 
 void sim_kill PARAMS ((SIM_DESC sd));
 
-#endif
+#endif /* !RUN_SIM_H */
