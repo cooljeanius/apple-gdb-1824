@@ -55,11 +55,31 @@
 #  warning callback.c expects a string-related header to be included.
 # endif /* HAVE_STRINGS_H */
 #endif /* HAVE_STRING_H */
-#include <errno.h>
-#include <fcntl.h>
-#include <time.h>
-#include <sys/types.h>
-#include <sys/stat.h>
+#ifdef HAVE_ERRNO_H
+# include <errno.h>
+#else
+# warning callback.c expects <errno.h> to be included.
+#endif /* HAVE_ERRNO_H */
+#ifdef HAVE_FCNTL_H
+# include <fcntl.h>
+#else
+# warning callback.c expects <fcntl.h> to be included.
+#endif /* HAVE_FCNTL_H */
+#ifdef HAVE_TIME_H
+# include <time.h>
+#else
+# warning callback.c expects <time.h> to be included.
+#endif /* HAVE_TIME_H */
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#else
+# warning callback.c expects <sys/types.h> to be included.
+#endif /* HAVE_SYS_TYPES_H */
+#ifdef HAVE_SYS_STAT_H
+# include <sys/stat.h>
+#else
+# warning callback.c expects <sys/stat.h> to be included.
+#endif /* HAVE_SYS_STAT_H */
 #include "gdb/callback.h"
 #include "targ-vals.h"
 
@@ -117,7 +137,7 @@ wrap (p, val)
   return val;
 }
 
-/* Make sure the FD provided is ok.  If not, return non-zero
+/* Make sure the FD provided is ok. If not, return non-zero
    and set errno. */
 
 static int
@@ -125,7 +145,7 @@ fdbad (p, fd)
      host_callback *p;
      int fd;
 {
-  if (fd < 0 || fd > MAX_CALLBACK_FDS || !p->fdopen[fd])
+  if (fd < 0 || fd > MAX_CALLBACK_FDS/* || !p->fdopen[fd]*/)
     {
       p->last_errno = EINVAL;
       return -1;
@@ -152,7 +172,7 @@ os_close (p, fd)
   if (result)
     return result;
   result = wrap (p, close (fdmap (p, fd)));
-  if (result == 0 && !p->alwaysopen[fd])
+  if (result == 0/* && !p->alwaysopen[fd]*/)
     p->fdopen[fd] = 0;
 
   return result;
@@ -167,7 +187,7 @@ static int
 os_poll_quit (p)
      host_callback *p;
 {
-#if defined(__GO32__)
+# if defined(__GO32__)
   int kbhit ();
   int getkey ();
   if (kbhit ())
@@ -186,19 +206,19 @@ os_poll_quit (p)
 	  sim_cb_eprintf (p, "CTRL-A to quit, CTRL-B to quit harder\n");
 	}
     }
-#endif
-#if defined (_MSC_VER)
+# endif /* __GO32__ */
+# if defined (_MSC_VER)
   /* NB - this will not compile! */
   int k = win32pollquit();
   if (k == 1)
     return 1;
   else if (k == 2)
     return 1;
-#endif
+# endif /* _MSC_VER */
   return 0;
 }
 #else
-#define os_poll_quit 0
+# define os_poll_quit 0
 #endif /* defined(__GO32__) || defined(_MSC_VER) */
 
 static int
@@ -395,8 +415,8 @@ os_stat (p, file, buf)
 {
   /* ??? There is an issue of when to translate to the target layout.
      One could do that inside this function, or one could have the
-     caller do it.  It's more flexible to let the caller do it, though
-     I'm not sure the flexibility will ever be useful.  */
+     caller do it. It is more flexible to let the caller do it, though
+     I am not sure the flexibility will ever be useful.  */
   return wrap (p, stat (file, buf));
 }
 
@@ -410,8 +430,8 @@ os_fstat (p, fd, buf)
     return -1;
   /* ??? There is an issue of when to translate to the target layout.
      One could do that inside this function, or one could have the
-     caller do it.  It's more flexible to let the caller do it, though
-     I'm not sure the flexibility will ever be useful.  */
+     caller do it. It is more flexible to let the caller do it, though
+     I am not sure the flexibility will ever be useful.  */
   return wrap (p, fstat (fdmap (p, fd), buf));
 }
 
@@ -422,7 +442,7 @@ os_shutdown (p)
   int i;
   for (i = 0; i < MAX_CALLBACK_FDS; i++)
     {
-      if (p->fdopen[i] && !p->alwaysopen[i]) {
+      if (p->fdopen[i]/* && !p->alwaysopen[i]*/) {
 	close (p->fdmap[i]);
 	p->fdopen[i] = 0;
       }
@@ -455,13 +475,13 @@ os_init (p)
 
 /* VARARGS */
 static void
-#ifdef ANSI_PROTOTYPES
+#if defined(ANSI_PROTOTYPES) || defined(PROTOTYPES) || defined(__PROTOTYPES)
 os_printf_filtered (host_callback *p ATTRIBUTE_UNUSED, const char *format, ...)
 #else
 os_printf_filtered (p, va_alist)
      host_callback *p;
      va_dcl
-#endif
+#endif /* ANSI_PROTOTYPES || PROTOTYPES || __PROTOTYPES */
 {
   va_list args;
 #ifdef ANSI_PROTOTYPES
@@ -471,7 +491,7 @@ os_printf_filtered (p, va_alist)
 
   va_start (args);
   format = va_arg (args, char *);
-#endif
+#endif /* ANSI_PROTOTYPES || PROTOTYPES || __PROTOTYPES */
 
   vfprintf (stdout, format, args);
   va_end (args);
@@ -479,51 +499,51 @@ os_printf_filtered (p, va_alist)
 
 /* VARARGS */
 static void
-#ifdef ANSI_PROTOTYPES
+#if defined(ANSI_PROTOTYPES) || defined(PROTOTYPES) || defined(__PROTOTYPES)
 os_vprintf_filtered (host_callback *p ATTRIBUTE_UNUSED, const char *format, va_list args)
 #else
 os_vprintf_filtered (p, format, args)
      host_callback *p;
      const char *format;
      va_list args;
-#endif
+#endif /* ANSI_PROTOTYPES || PROTOTYPES || __PROTOTYPES */
 {
   vprintf (format, args);
 }
 
 /* VARARGS */
 static void
-#ifdef ANSI_PROTOTYPES
+#if defined(ANSI_PROTOTYPES) || defined(PROTOTYPES) || defined(__PROTOTYPES)
 os_evprintf_filtered (host_callback *p ATTRIBUTE_UNUSED, const char *format, va_list args)
 #else
 os_evprintf_filtered (p, format, args)
      host_callback *p;
      const char *format;
      va_list args;
-#endif
+#endif /* ANSI_PROTOTYPES || PROTOTYPES || __PROTOTYPES */
 {
   vfprintf (stderr, format, args);
 }
 
 /* VARARGS */
 static void
-#ifdef ANSI_PROTOTYPES
+#if defined(ANSI_PROTOTYPES) || defined(PROTOTYPES) || defined(__PROTOTYPES)
 os_error (host_callback *p ATTRIBUTE_UNUSED, const char *format, ...)
 #else
 os_error (p, va_alist)
      host_callback *p;
      va_dcl
-#endif
+#endif /* ANSI_PROTOTYPES || PROTOTYPES || __PROTOTYPES */
 {
   va_list args;
-#ifdef ANSI_PROTOTYPES
+#if defined(ANSI_PROTOTYPES) || defined(PROTOTYPES) || defined(__PROTOTYPES)
   va_start (args, format);
 #else
   char *format;
 
   va_start (args);
   format = va_arg (args, char *);
-#endif
+#endif /* ANSI_PROTOTYPES || PROTOTYPES || __PROTOTYPES */
 
   vfprintf (stderr, format, args);
   fprintf (stderr, "\n");
@@ -583,7 +603,7 @@ host_callback default_callback =
 /* Read in a file describing the target's system call values.
    E.g. maybe someone will want to use something other than newlib.
    This assumes that the basic system call recognition and value passing/
-   returning is supported.  So maybe some coding/recompilation will be
+   returning is supported. So maybe some coding/recompilation will be
    necessary, but not as much.
 
    If an error occurs, the existing mapping is not changed.  */
@@ -627,7 +647,7 @@ cb_read_target_syscall_maps (cb, file)
 }
 
 /* Translate the target's version of a syscall number to the host's.
-   This isn't actually the host's version, rather a canonical form.
+   This is NOT actually the host's version, rather a canonical form.
    ??? Perhaps this should be renamed to ..._canon_syscall.  */
 
 int
@@ -669,7 +689,7 @@ cb_host_to_target_errno (cb, host_val)
 
 /* Given a set of target bitmasks for the open system call,
    return the host equivalent.
-   Mapping open flag values is best done by looping so there's no need
+   Mapping open flag values is best done by looping so there is no need
    to machine generate this function.  */
 
 int
@@ -693,10 +713,10 @@ cb_target_to_host_open (cb, target_val)
 	      == m->target_val)
 	    host_val |= m->host_val;
 	  /* Handle the host/target differentiating between binary and
-             text mode.  Only one case is of importance */
-#if ! defined (TARGET_O_BINARY) && defined (O_BINARY)
+             text mode. Only one case is of importance */
+#if !defined(TARGET_O_BINARY) && defined(O_BINARY)
 	  host_val |= O_BINARY;
-#endif
+#endif /* !TARGET_O_BINARY && O_BINARY */
 	  break;
 	default :
 	  if ((m->target_val & target_val) == m->target_val)
@@ -800,9 +820,9 @@ cb_host_to_target_stat (cb, hs, ts)
 
    ??? If one thinks of the callbacks as a subsystem onto itself [or part of
    a larger "remote target subsystem"] with a well defined interface, then
-   one would think that the subsystem would provide these.  However, until
+   one would think that the subsystem would provide these. However, until
    one is allowed to create such a subsystem (with its own source tree
-   independent of any particular user), such a critter can't exist.  Thus
+   independent of any particular user), such a critter cannot exist. Thus
    these functions are here for the time being.  */
 
 void

@@ -85,6 +85,10 @@ AC_CHECK_LIB([nsl],[gethostbyname])
 AC_MSG_NOTICE([sourcing ${srcdir}/../../bfd/configure.host])
 . ${srcdir}/../../bfd/configure.host
 
+dnl# check some members
+AC_CHECK_MEMBER([host_callback.fdopen])
+AC_CHECK_MEMBER([host_callback.alwaysopen])
+
 dnl# Standard (and optional) simulator options.
 dnl# Eventually all simulators will support these.
 dnl# Do not add any here that cannot be supported by all simulators.

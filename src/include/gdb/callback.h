@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
-/* This interface isn't intended to be specific to any particular kind
-   of remote (hardware, simulator, whatever).  As such, support for it
+/* This interface is NOT intended to be specific to any particular kind
+   of remote (hardware, simulator, whatever). As such, support for it
    (e.g. sim/common/callback.c) should *not* live in the simulator source
    tree, nor should it live in the gdb source tree.  */
 
@@ -49,12 +49,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 /* ??? The reason why we check for va_start here should be documented.  */
 
 #ifndef va_start
-#include <ansidecl.h>
-#include <stdarg.h>
-#endif
+# include <ansidecl.h>
+# include <stdarg.h>
+#endif /* !va_start */
 /* Needed for enum bfd_endian.  */
 #include "bfd.h"
-
+
 /* Mapping of host/target values.  */
 /* ??? For debugging purposes, one might want to add a string of the
    name of the symbol.  */
@@ -71,7 +71,7 @@ struct stat;
 
 typedef struct host_callback_struct host_callback;
 
-struct host_callback_struct 
+struct host_callback_struct
 {
   int (*close) PARAMS ((host_callback *,int));
   int (*get_errno) PARAMS ((host_callback *));
@@ -131,12 +131,12 @@ struct host_callback_struct
 
   int fdmap[MAX_CALLBACK_FDS];
   /* fd_buddy is used to contruct circular lists of target fds that point to
-     the same host fd.  A uniquely mapped fd points to itself; for a closed
+     the same host fd. A uniquely mapped fd points to itself; for a closed
      one, fd_buddy has the value -1.  The host file descriptors for stdin /
      stdout / stderr are never closed by the simulators, so they are put
      in a special fd_buddy circular list which also has MAX_CALLBACK_FDS
      as a member.  */
-  /* ??? We don't have a callback entry for dup, although it is trival to
+  /* ??? We do NOT have a callback entry for dup, although it is trival to
      implement now.  */
   short fd_buddy[MAX_CALLBACK_FDS+1];
 
@@ -146,8 +146,8 @@ struct host_callback_struct
      end is closed.  */
   short ispipe[MAX_CALLBACK_FDS];
 
-  /* A writer stores the buffer at its index.  Consecutive writes
-     realloc the buffer and add to the size.  The reader indicates the
+  /* A writer stores the buffer at its index. Consecutive writes
+     realloc the buffer and add to the size. The reader indicates the
      read part in its .size, until it has consumed it all, at which
      point it deallocates the buffer and zeroes out both sizes.  */
   struct pipe_write_buffer
@@ -168,7 +168,7 @@ struct host_callback_struct
      The format is a series of "name,length" pairs separated by colons.
      Empty space is indicated with a `name' of "space".
      All padding must be explicitly mentioned.
-     Lengths are in bytes.  If this needs to be extended to bits,
+     Lengths are in bytes. If this needs to be extended to bits,
      use "name.bits".
      Example: "st_dev,4:st_ino,4:st_mode,4:..."  */
   const char *stat_map;
@@ -177,9 +177,9 @@ struct host_callback_struct
 
   /* Size of an "int" on the target (for syscalls whose ABI uses "int").
      This must include padding, and only padding-at-higher-address is
-     supported.  For example, a 64-bit target with 32-bit int:s which
+     supported. For example, a 64-bit target with 32-bit int:s which
      are padded to 64 bits when in an array, should supposedly set this
-     to 8.  The default is 4 which matches ILP32 targets and 64-bit
+     to 8. The default is 4 which matches ILP32 targets and 64-bit
      targets with 32-bit ints and no padding.  */
   int target_sizeof_int;
 
@@ -193,8 +193,8 @@ struct host_callback_struct
 extern host_callback default_callback;
 
 /* Canonical versions of system call numbers.
-   It's not intended to willy-nilly throw every system call ever heard
-   of in here.  Only include those that have an important use.
+   It is not intended to willy-nilly throw every system call ever heard
+   of in here. Only include those that have an important use.
    ??? One can certainly start a discussion over the ones that are currently
    here, but that will always be true.  */
 
@@ -319,4 +319,4 @@ void cb_store_target_endian PARAMS ((host_callback *, char *, int, long));
 /* Perform a system call.  */
 CB_RC cb_syscall PARAMS ((host_callback *, CB_SYSCALL *));
 
-#endif
+#endif /* CALLBACK_H */
