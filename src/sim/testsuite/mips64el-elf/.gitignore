@@ -1,0 +1,11 @@
+*.status
+Makefile
+*~
+core
+*.o
+a.out
+*.x
+*.grt
+*.run
+tmp-*
+diff-*

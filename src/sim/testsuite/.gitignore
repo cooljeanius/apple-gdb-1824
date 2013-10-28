@@ -18,4 +18,3 @@ d10v-elf/*
 d30v-elf/*
 fr30-elf/*
 m32r-elf/*
-mips64el-elf/*
