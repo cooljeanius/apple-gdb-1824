@@ -9,3 +9,4 @@ a.out
 *.run
 tmp-*
 diff-*
+gcc-root/*
