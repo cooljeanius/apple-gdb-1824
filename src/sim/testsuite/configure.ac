@@ -34,14 +34,14 @@ if test -r ${srcdir}/${testdir}/configure ; then
 fi
 
 # add any extra subdirectories
-case $target in
+case ${target} in
   *) ;;
 esac
 
 # Compute the target architecture.
 # FIXME: Will need to canonicalize some values.
 # FIXME: Should be in generally accessable place.
-case $target in
+case ${target} in
   *) arch=${target_cpu} ;;
 esac
 AC_SUBST([arch])
