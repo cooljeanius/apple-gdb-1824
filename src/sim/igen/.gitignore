@@ -1,0 +1,7 @@
+tmp-*
+*.[oasi]
+core
+igen
+*.status
+Makefile
+config.h
