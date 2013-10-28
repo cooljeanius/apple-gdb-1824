@@ -1,0 +1,21 @@
+*.status
+*~
+core
+*.o
+a.out
+xgdb
+*.x
+*.grt
+*.rum
+*.c
+*.dif
+*.*out
+Makefile
+
+# gitignore subdirectories with their own configure scripts
+# (until that I can verify that each of them works)
+d10v-elf/*
+d30v-elf/*
+fr30-elf/*
+m32r-elf/*
+mips64el-elf/*

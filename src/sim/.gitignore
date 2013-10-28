@@ -19,7 +19,6 @@ mn10300/*
 ppc/*
 sh/*
 sh64/*
-testsuite/*
 tic80/*
 v850/*
 w65/*
