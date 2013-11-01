@@ -13,6 +13,7 @@ AC_CONFIG_HEADERS([config.h])
 AC_SUBST([DEFS])
 AC_COPYRIGHT([GPL-2])
 AC_CANONICAL_TARGET
+AC_SYS_LONG_FILE_NAMES
 
 # This is intended for use by the target specific directories, and by us.
 AC_DEFUN([AC_REQUIRE_SIM_AC_COMMON],[
@@ -81,6 +82,10 @@ AC_DEFUN([AC_REQUIRE_FUNC_MMAP],[
 ])
 AC_REQUIRE_FUNC_MMAP
 AC_CHECK_HEADERS([stdarg.h stdio.h sys/times.h varargs.h])
+
+AC_CHECK_FUNCS([fprintf isascii])
+
+AC_SUBST([LDFLAGS])
 
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_COMMANDS([default],[case x$CONFIG_HEADERS in xcconfig.h:config.in) echo > stamp-h ;; esac],[])

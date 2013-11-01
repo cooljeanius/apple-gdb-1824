@@ -69,15 +69,15 @@ sim_addr_range_hit_p (ADDR_RANGE * /*ar*/, address_word /*addr*/);
   ((ar)->range_tree == NULL || sim_addr_range_hit_p ((ar), (addr)))
 
 #ifdef HAVE_INLINE
-#ifdef SIM_ARANGE_C
-#define SIM_ARANGE_INLINE INLINE
+# ifdef SIM_ARANGE_C
+#  define SIM_ARANGE_INLINE INLINE
+# else
+#  define SIM_ARANGE_INLINE EXTERN_INLINE
+# endif /* SIM_ARANGE_C */
+# include "sim-arange.c"
 #else
-#define SIM_ARANGE_INLINE EXTERN_INLINE
-#endif
-#include "sim-arange.c"
-#else
-#define SIM_ARANGE_INLINE
-#endif
+# define SIM_ARANGE_INLINE
+#endif /* HAVE_INLINE */
 #define SIM_ARANGE_C_INCLUDED
 
 #endif /* SIM_ARANGE_H */

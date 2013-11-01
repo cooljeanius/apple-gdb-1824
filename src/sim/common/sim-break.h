@@ -28,9 +28,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 MODULE_INSTALL_FN sim_break_install;
 
 /* Call this inside the simulator when we execute the potential
-   breakpoint insn.  If the breakpoint system knows about it, the
-   breakpoint is handled, and this routine never returns.  If this
-   isn't really a breakpoint, then it returns to allow the caller to
+   breakpoint insn. If the breakpoint system knows about it, the
+   breakpoint is handled, and this routine never returns. If this
+   is NOT really a breakpoint, then it returns to allow the caller to
    handle things.  */
 
 void sim_handle_breakpoint PARAMS ((SIM_DESC sd, sim_cpu *cpu, sim_cia cia));

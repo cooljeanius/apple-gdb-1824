@@ -50,6 +50,7 @@ CC = @CC@
 CC_FOR_BUILD = @CC_FOR_BUILD@
 CFLAGS = @CFLAGS@
 SIM_CFLAGS = @sim_cflags@
+LDFLAGS = @LDFLAGS@
 
 # These are used to rebuild nltvals.def.
 CPP_FOR_TARGET = @CPP_FOR_TARGET@
@@ -72,7 +73,13 @@ MAKEINFO = makeinfo
 .NOEXPORT:
 MAKEOVERRIDES=
 
-all:
+all: ansi2knr
+
+ansi2knr: ansi2knr.o
+	$(CC) ansi2knr.o -o ansi2knr $(LDFLAGS)
+
+ansi2knr.o: ansi2knr.c
+	$(CC) -c ./../common/ansi2knr.c -o ansi2knr.o $(ALL_CFLAGS)
 
 # Generate nltvals.def for newlib/libgloss using devo and build tree.
 # This file is shipped with distributions so we build in the source dir.
@@ -109,6 +116,7 @@ TAGS: force
 clean:
 	rm -f *.[oa] *~ core
 	rm -f $(ALL)
+	rm -f ansi2knr
 
 distclean mostlyclean maintainer-clean realclean: clean
 	rm -f TAGS

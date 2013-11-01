@@ -5,3 +5,5 @@ config.h
 *.[oa]
 *~
 core
+ansi2knr
+*.dSYM

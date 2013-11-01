@@ -18,29 +18,35 @@
    along with GAS; see the file COPYING.  If not, write to the Free Software
    Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
-/* This interface isn't intended to be specific to any particular kind
-   of remote (hardware, simulator, whatever).  As such, support for it
+/* This interface is NOT intended to be specific to any particular kind
+   of remote (hardware, simulator, whatever). As such, support for it
    (e.g. sim/common/callback.c) should *not* live in the simulator source
-   tree, nor should it live in the gdb source tree.  K&R C must be
-   supported.  */
+   tree, nor should it live in the gdb source tree. K&R C must be
+   supported. (still?) */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#else
+# warning <syscall.c> expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
 #include "ansidecl.h"
 #include "libiberty.h"
-#ifdef ANSI_PROTOTYPES
-#include <stdarg.h>
+#if defined(ANSI_PROTOTYPES) || defined(PROTOTYPES) || defined(__PROTOTYPES)
+# include <stdarg.h>
 #else
-#include <varargs.h>
-#endif
+# include <varargs.h>
+#endif /* ANSI_PROTOTYPES || PROTOTYPES || __PROTOTYPES */
 #include <stdio.h>
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#else
+# warning syscall.c expects <stdlib.h> to be included.
+#endif /* HAVE_STDLIB_H */
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+# include <unistd.h>
+#else
+# warning syscall.c expects <unistd.h> to be included.
+#endif /* HAVE_UNISTD_H */
 #include <errno.h>
 #include <fcntl.h>
 #include <time.h>
@@ -50,16 +56,16 @@
 #include "targ-vals.h"
 
 #ifndef ENOSYS
-#define ENOSYS EINVAL
-#endif
+# define ENOSYS EINVAL
+#endif /* !ENOSYS */
 #ifndef ENAMETOOLONG
-#define ENAMETOOLONG EINVAL
-#endif
+# define ENAMETOOLONG EINVAL
+#endif /* !ENAMETOOLONG */
 
 /* Maximum length of a path name.  */
 #ifndef MAX_PATH_LEN
-#define MAX_PATH_LEN 1024
-#endif
+# define MAX_PATH_LEN 1024
+#endif /* !MAX_PATH_LEN */
 
 /* When doing file read/writes, do this many bytes at a time.  */
 #define FILE_XFR_SIZE 4096
@@ -83,12 +89,12 @@ get_string (cb, sc, buf, buflen, addr)
 
   for (p = buf, pend = buf + buflen; p < pend; ++p, ++addr)
     {
-      /* No, it isn't expected that this would cause one transaction with
-	 the remote target for each byte.  The target could send the
-	 path name along with the syscall request, and cache the file
-	 name somewhere (or otherwise tweak this as desired).  */
+      /* No, it is NOT expected that this would cause one transaction with
+       * the remote target for each byte. The target could send the
+       * path name along with the syscall request, and cache the file
+       * name somewhere (or otherwise tweak this as desired).  */
       unsigned int count = (*sc->read_mem) (cb, sc, addr, p, 1);
-				    
+
       if (count != 1)
 	return EINVAL;
       if (*p == 0)
@@ -257,9 +263,9 @@ cb_syscall (cb, sc)
     case CB_SYS_read :
       {
 	/* ??? Perfect handling of error conditions may require only one
-	   call to cb->read.  One can't assume all the data is
+	   call to cb->read. One cannot assume all the data is
 	   contiguously stored in host memory so that would require
-	   malloc'ing/free'ing the space.  Maybe later.  */
+	   malloc'ing/free'ing the space. Maybe later.  */
 	char buf[FILE_XFR_SIZE];
 	int fd = sc->arg1;
 	TADDR addr = sc->arg2;
@@ -291,7 +297,7 @@ cb_syscall (cb, sc)
 	    bytes_read += result;
 	    count -= result;
 	    addr += result;
-	    /* If this is a short read, don't go back for more */
+	    /* If this is a short read, do NOT go back for more */
 	    if (result != FILE_XFR_SIZE)
 	      break;
 	  }
@@ -302,9 +308,9 @@ cb_syscall (cb, sc)
     case CB_SYS_write :
       {
 	/* ??? Perfect handling of error conditions may require only one
-	   call to cb->write.  One can't assume all the data is
+	   call to cb->write. One cannot assume all the data is
 	   contiguously stored in host memory so that would require
-	   malloc'ing/free'ing the space.  Maybe later.  */
+	   malloc'ing/free'ing the space. Maybe later.  */
 	char buf[FILE_XFR_SIZE];
 	int fd = sc->arg1;
 	TADDR addr = sc->arg2;
@@ -394,7 +400,7 @@ cb_syscall (cb, sc)
 	buf = xmalloc (buflen);
 	if (cb_host_to_target_stat (cb, &statbuf, buf) != buflen)
 	  {
-	    /* The translation failed.  This is due to an internal
+	    /* The translation failed. This is due to an internal
 	       host program error, not the target's fault.  */
 	    free (buf);
 	    errcode = ENOSYS;
@@ -426,7 +432,7 @@ cb_syscall (cb, sc)
 	buf = xmalloc (buflen);
 	if (cb_host_to_target_stat (cb, &statbuf, buf) != buflen)
 	  {
-	    /* The translation failed.  This is due to an internal
+	    /* The translation failed. This is due to an internal
 	       host program error, not the target's fault.  */
 	    free (buf);
 	    errcode = ENOSYS;
@@ -480,3 +486,5 @@ cb_syscall (cb, sc)
   sc->errcode = (*cb->get_errno) (cb);
   return CB_RC_OK;
 }
+
+/* EOF */

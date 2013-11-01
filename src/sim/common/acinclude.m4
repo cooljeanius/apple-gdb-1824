@@ -1153,7 +1153,7 @@ AC_DEFUN([CY_GNU_GETTEXT],
 
    AC_SEARCH_LIBS([strerror],[cposix])
    AC_CHECK_HEADERS([argz.h limits.h locale.h nl_types.h malloc.h \
-                     values.h])
+                     malloc/malloc.h values.h])
    AC_CHECK_FUNCS([getcwd munmap putenv setenv setlocale strchr \
                    strcasecmp __argz_count __argz_stringify __argz_next])
 

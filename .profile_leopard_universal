@@ -1,0 +1,19 @@
+# Source me!
+
+echo "Hello from .profile_leopard_universal"
+
+export INSTALLED_PRODUCT_ASIDES=YES
+export MACOSX_DEPLOYMENT_TARGET=10.5
+export NEXT_ROOT=""
+export RC_ARCHS="i386 ppc"
+export RC_JASPER=YES
+export RC_NONARCH_CFLAGS="-pipe -no-cpp-precomp"
+export RC_OS=macos
+export RC_PRIVATE=/private
+export RC_RELEASE=Leopard
+export RC_XBS=YES
+export SEPARATE_STRIP=YES
+export UNAME_RELEASE=9.6
+export UNAME_SYSNAME=Darwin
+
+echo "We should be done setting universal environment variables for Leopard now."

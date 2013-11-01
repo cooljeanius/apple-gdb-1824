@@ -9,10 +9,10 @@
 /* Define to 1 if NLS is requested.  */
 #undef ENABLE_NLS
 
-/* Define as 1 if you have catgets and don't want to use GNU gettext.  */
+/* Define as 1 if you have catgets and do NOT want to use GNU gettext.  */
 #undef HAVE_CATGETS
 
-/* Define as 1 if you have gettext and don't want to use GNU gettext.  */
+/* Define as 1 if you have gettext and do NOT want to use GNU gettext.  */
 #undef HAVE_GETTEXT
 
 /* Define as 1 if you have the stpcpy function.  */
@@ -59,6 +59,9 @@
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
+/* Define to 1 if you have the `fprintf' function. */
+#undef HAVE_FPRINTF
+
 /* Define to 1 if you have the <fpu_control.h> header file. */
 #undef HAVE_FPU_CONTROL_H
 
@@ -83,6 +86,9 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
+/* Define to 1 if you have the `isascii' function. */
+#undef HAVE_ISASCII
+
 /* Define to 1 if we have LC_MESSAGES */
 #undef HAVE_LC_MESSAGES
 
@@ -104,12 +110,18 @@
 /* Define to 1 if you have the <locale.h> header file. */
 #undef HAVE_LOCALE_H
 
+/* Define to 1 if you support file names longer than 14 characters. */
+#undef HAVE_LONG_FILE_NAMES
+
 /* Define to 1 if your system has a GNU libc compatible `malloc' function, and
    to 0 otherwise. */
 #undef HAVE_MALLOC
 
 /* Define to 1 if you have the <malloc.h> header file. */
 #undef HAVE_MALLOC_H
+
+/* Define to 1 if you have the <malloc/malloc.h> header file. */
+#undef HAVE_MALLOC_MALLOC_H
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H

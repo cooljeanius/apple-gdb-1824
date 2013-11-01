@@ -63,7 +63,7 @@ LSEXTRACTED (unsigned_word val,
   ASSERT (start >= stop);
 #if (WITH_TARGET_WORD_BITSIZE == 64)
   return LSEXTRACTED64 (val, start, stop);
-#endif
+#endif /* WITH_TARGET_WORD_BITSIZE == 64 */
 #if (WITH_TARGET_WORD_BITSIZE == 32)
   if (stop >= 32)
     return 0;
@@ -74,7 +74,7 @@ LSEXTRACTED (unsigned_word val,
       val >>= stop;
       return val;
     }
-#endif
+#endif /* WITH_TARGET_WORD_BITSIZE == 32 */
 #if (WITH_TARGET_WORD_BITSIZE == 16)
   if (stop >= 16)
     return 0;
@@ -85,7 +85,7 @@ LSEXTRACTED (unsigned_word val,
       val >>= stop;
       return val;
     }
-#endif
+#endif /* WITH_TARGET_WORD_BITSIZE == 16 */
 }
 
 
@@ -98,7 +98,7 @@ MSEXTRACTED (unsigned_word val,
   ASSERT (start <= stop);
 #if (WITH_TARGET_WORD_BITSIZE == 64)
   return MSEXTRACTED64 (val, start, stop);
-#endif
+#endif /* WITH_TARGET_WORD_BITSIZE == 64 */
 #if (WITH_TARGET_WORD_BITSIZE == 32)
   if (stop < 32)
     return 0;
@@ -109,7 +109,7 @@ MSEXTRACTED (unsigned_word val,
       val >>= (64 - stop - 1);
       return val;
     }
-#endif
+#endif /* WITH_TARGET_WORD_BITSIZE == 32 */
 #if (WITH_TARGET_WORD_BITSIZE == 16)
   if (stop < 16)
     return 0;
@@ -120,7 +120,7 @@ MSEXTRACTED (unsigned_word val,
       val >>= (64 - stop - 1);
       return val;
     }
-#endif
+#endif /* WITH_TARGET_WORD_BITSIZE == 16 */
 }
 
 
@@ -133,7 +133,7 @@ LSINSERTED (unsigned_word val,
   ASSERT (start >= stop);
 #if (WITH_TARGET_WORD_BITSIZE == 64)
   return LSINSERTED64 (val, start, stop);
-#endif
+#endif /* WITH_TARGET_WORD_BITSIZE == 64 */
 #if (WITH_TARGET_WORD_BITSIZE == 32)
   /* Bit numbers are 63..0, even for 32 bit targets.
      On 32 bit targets we ignore 63..32  */
@@ -145,7 +145,7 @@ LSINSERTED (unsigned_word val,
       val &= LSMASK (start, stop);
       return val;
     }
-#endif
+#endif /* WITH_TARGET_WORD_BITSIZE == 32 */
 #if (WITH_TARGET_WORD_BITSIZE == 16)
   /* Bit numbers are 63..0, even for 16 bit targets.
      On 16 bit targets we ignore 63..16  */
@@ -157,7 +157,7 @@ LSINSERTED (unsigned_word val,
       val &= LSMASK (start, stop);
       return val;
     }
-#endif
+#endif /* WITH_TARGET_WORD_BITSIZE == 16 */
 }
 
 INLINE_SIM_BITS\
@@ -169,7 +169,7 @@ MSINSERTED (unsigned_word val,
   ASSERT (start <= stop);
 #if (WITH_TARGET_WORD_BITSIZE == 64)
   return MSINSERTED64 (val, start, stop);
-#endif
+#endif /* WITH_TARGET_WORD_BITSIZE == 64 */
 #if (WITH_TARGET_WORD_BITSIZE == 32)
   /* Bit numbers are 0..63, even for 32 bit targets.
      On 32 bit targets we ignore 0..31.  */
@@ -181,7 +181,7 @@ MSINSERTED (unsigned_word val,
       val &= MSMASK (start, stop);
       return val;
     }
-#endif
+#endif /* WITH_TARGET_WORD_BITSIZE == 32 */
 #if (WITH_TARGET_WORD_BITSIZE == 16)
   /* Bit numbers are 0..63, even for 16 bit targets.
      On 16 bit targets we ignore 0..47.  */
@@ -193,9 +193,8 @@ MSINSERTED (unsigned_word val,
       val &= MSMASK (start, stop);
       return val;
     }
-#endif
+#endif /* WITH_TARGET_WORD_BITSIZE == 16 */
 }
-
 
 
 INLINE_SIM_BITS\
@@ -206,7 +205,7 @@ LSSEXT (signed_word val,
   ASSERT (sign_bit < 64);
 #if (WITH_TARGET_WORD_BITSIZE == 64)
   return LSSEXT64 (val, sign_bit);
-#endif
+#endif /* WITH_TARGET_WORD_BITSIZE == 64 */
 #if (WITH_TARGET_WORD_BITSIZE == 32)
   if (sign_bit >= 32)
     return val;
@@ -214,7 +213,7 @@ LSSEXT (signed_word val,
     val = LSSEXT32 (val, sign_bit);
     return val;
   }
-#endif
+#endif /* WITH_TARGET_WORD_BITSIZE == 32 */
 #if (WITH_TARGET_WORD_BITSIZE == 16)
   if (sign_bit >= 16)
     return val;
@@ -222,7 +221,7 @@ LSSEXT (signed_word val,
     val = LSSEXT16 (val, sign_bit);
     return val;
   }
-#endif
+#endif /* WITH_TARGET_WORD_BITSIZE == 16 */
 }
 
 INLINE_SIM_BITS\
@@ -233,7 +232,7 @@ MSSEXT (signed_word val,
   ASSERT (sign_bit < 64);
 #if (WITH_TARGET_WORD_BITSIZE == 64)
   return MSSEXT64 (val, sign_bit);
-#endif
+#endif /* WITH_TARGET_WORD_BITSIZE == 64 */
 #if (WITH_TARGET_WORD_BITSIZE == 32)
   if (sign_bit < 32)
     return val;
@@ -241,7 +240,7 @@ MSSEXT (signed_word val,
     val = MSSEXT32 (val, sign_bit - 32);
     return val;
   }
-#endif
+#endif /* WITH_TARGET_WORD_BITSIZE == 32 */
 #if (WITH_TARGET_WORD_BITSIZE == 16)
   if (sign_bit < 32 + 16)
     return val;
@@ -249,9 +248,8 @@ MSSEXT (signed_word val,
     val = MSSEXT16 (val, sign_bit - 32 - 16);
     return val;
   }
-#endif
+#endif /* WITH_TARGET_WORD_BITSIZE == 16 */
 }
-
 
 
 #define N 8

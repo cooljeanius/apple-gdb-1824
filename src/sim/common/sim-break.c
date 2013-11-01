@@ -18,6 +18,12 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# warning sim-break.c expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
+
 #include <stdio.h>
 
 #include "sim-main.h"
@@ -25,9 +31,9 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sim-break.h"
 
 #ifndef SIM_BREAKPOINT
-#define SIM_BREAKPOINT {0x00}
-#define SIM_BREAKPOINT_SIZE (1)
-#endif
+# define SIM_BREAKPOINT {0x00}
+# define SIM_BREAKPOINT_SIZE (1)
+#endif /* !SIM_BREAKPOINT */
 
 struct
 sim_breakpoint
@@ -85,8 +91,8 @@ remove_breakpoint (sd, bp)
   bp->flags &= ~SIM_BREAK_INSERTED;
 }
 
-/* Come here when a breakpoint insn is hit.  If it's really a breakpoint, we
-   halt things, and never return.  If it's a false hit, we return to let the
+/* Come here when a breakpoint insn is hit. If it is really a breakpoint, we
+   halt things, and never return. If it is a false hit, we return to let the
    caller handle things.  */
 
 void
@@ -145,8 +151,8 @@ sim_break_install (sd)
   return SIM_RC_OK;
 }
 
-/* Install a breakpoint.  This is a user-function.  The breakpoint isn't
-   actually installed here.  We just record it.  Resume_handler does the
+/* Install a breakpoint. This is a user-function. The breakpoint is NOT
+   actually installed here. We just record it. Resume_handler does the
    actual work.
 */
 
@@ -173,7 +179,7 @@ sim_set_breakpoint (sd, addr)
   return SIM_RC_OK;
 }
 
-/* Delete a breakpoint.  All knowlege of the breakpoint is removed from the
+/* Delete a breakpoint. All knowlege of the breakpoint is removed from the
    simulator.
 */
 
@@ -276,3 +282,5 @@ sim_disable_all_breakpoints (sd)
 
   return SIM_RC_OK;
 }
+
+/* EOF */

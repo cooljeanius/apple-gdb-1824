@@ -2461,6 +2461,46 @@ test -n "$target_alias" &&
   test "$program_prefix$program_suffix$program_transform_name" = \
     NONENONEs,x,x, &&
   program_prefix=${target_alias}-
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for long file names" >&5
+$as_echo_n "checking for long file names... " >&6; }
+if ${ac_cv_sys_long_file_names+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_cv_sys_long_file_names=yes
+# Test for long file names in all the places we know might matter:
+#      .		the current directory, where building will happen
+#      $prefix/lib	where we will be installing things
+#      $exec_prefix/lib	likewise
+#      $TMPDIR		if set, where it might want to write temporary files
+#      /tmp		where it might want to write temporary files
+#      /var/tmp		likewise
+#      /usr/tmp		likewise
+for ac_dir in . "$TMPDIR" /tmp /var/tmp /usr/tmp "$prefix/lib" "$exec_prefix/lib"; do
+  # Skip $TMPDIR if it is empty or bogus, and skip $exec_prefix/lib
+  # in the usual case where exec_prefix is '${prefix}'.
+  case $ac_dir in #(
+    . | /* | ?:[\\/]*) ;; #(
+    *) continue;;
+  esac
+  test -w "$ac_dir/." || continue # It is less confusing to not echo anything here.
+  ac_xdir=$ac_dir/cf$$
+  (umask 077 && mkdir "$ac_xdir" 2>/dev/null) || continue
+  ac_tf1=$ac_xdir/conftest9012345
+  ac_tf2=$ac_xdir/conftest9012346
+  touch "$ac_tf1" 2>/dev/null && test -f "$ac_tf1" && test ! -f "$ac_tf2" ||
+    ac_cv_sys_long_file_names=no
+  rm -f -r "$ac_xdir" 2>/dev/null
+  test $ac_cv_sys_long_file_names = no && break
+done
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sys_long_file_names" >&5
+$as_echo "$ac_cv_sys_long_file_names" >&6; }
+if test $ac_cv_sys_long_file_names = yes; then
+
+$as_echo "#define HAVE_LONG_FILE_NAMES 1" >>confdefs.h
+
+fi
+
 
 # This is intended for use by the target specific directories, and by us.
 
@@ -5060,7 +5100,7 @@ if test "$ac_res" != no; then :
 fi
 
    for ac_header in argz.h limits.h locale.h nl_types.h malloc.h \
-                     values.h
+                     malloc/malloc.h values.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -5954,6 +5994,21 @@ _ACEOF
 fi
 
 done
+
+
+for ac_func in fprintf isascii
+do :
+  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
+ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
+if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+done
+
+
 
 
 ac_config_files="$ac_config_files Makefile"

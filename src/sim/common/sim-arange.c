@@ -18,7 +18,13 @@ You should have received a copy of the GNU General Public License along
 with this program; if not, write to the Free Software Foundation, Inc.,
 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
-/* Tell sim-arange.h it's us.  */
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# warning sim-arange.c expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
+
+/* Tell sim-arange.h it is us.  */
 #define SIM_ARANGE_C
 
 #include "libiberty.h"
@@ -26,12 +32,20 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "sim-assert.h"
 
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#else
+# warning sim-arange.c expects <stdlib.h> to be included.
+#endif /* HAVE_STDLIB_H */
 
 #ifdef HAVE_STRING_H
-#include <string.h>
-#endif
+# include <string.h>
+#else
+# ifdef HAVE_STRINGS_H
+#  include <strings.h>
+# else
+#  warning sim-arange.c expects either <string.h> or <strings.h> to be included.
+# endif /* HAVE_STRINGS_H */
+#endif /* HAVE_STRING_H */
 
 #define DEFINE_INLINE_P (! defined (SIM_ARANGE_C_INCLUDED))
 #define DEFINE_NON_INLINE_P defined (SIM_ARANGE_C_INCLUDED)
@@ -213,7 +227,7 @@ free_search_tree (ADDR_RANGE_TREE *t)
 }
 
 /* Subroutine of build_search_tree to recursively build a balanced tree.
-   ??? It's not an optimum tree though.  */
+   ??? It is not an optimum tree though.  */
 
 static ADDR_RANGE_TREE *
 build_tree_1 (ADDR_SUBRANGE **asrtab, unsigned int n)
