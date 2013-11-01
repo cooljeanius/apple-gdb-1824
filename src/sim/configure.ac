@@ -48,6 +48,16 @@ only_if_gcc=no
 only_if_enabled=no
 extra_subdirs=common
 
+dnl# Macro for adding sim directory to subdirectories, assuming it exists:
+dnl# Usage: $1 = target subdir
+AC_DEFUN([AC_SIM_TARGET_SUBDIR],[
+	if test -d $1; then
+		sim_target=$1
+	else
+		AC_MSG_WARN([the $1 target was requested but the subdirectory for it is not present])
+	fi
+])
+
 # WHEN ADDING ENTRIES TO THIS MATRIX:
 #  Make sure that the left side always has two dashes. Otherwise you
 #  can get spurious matches. Even for unambiguous cases, do this as a
@@ -55,96 +65,108 @@ extra_subdirs=common
 
 case "${target}" in
   arm*-*-* | thumb*-*-*)
-	sim_target=arm
+	AC_SIM_TARGET_SUBDIR([arm])
 	extra_subdirs="${extra_subdirs} testsuite"
 	;;
   strongarm*-*-*)
-  	sim_target=arm
+	AC_SIM_TARGET_SUBDIR([arm])
 	extra_subdirs="${extra_subdirs} testsuite"
 	;;
   xscale-*-*)
-  	sim_target=arm
+	AC_SIM_TARGET_SUBDIR([arm])
 	extra_subdirs="${extra_subdirs} testsuite"
 	;;
-  d10v-*-*)		sim_target=d10v ;;
-  h8300*-*-*)		sim_target=h8300 ;;
-  h8500-*-*)		sim_target=h8500 ;;
-  i960-*-*)		sim_target=i960 ;;
-  m32r-*-*)		sim_target=m32r ;;
-  m68hc11-*-*|m6811-*-*) sim_target=m68hc11 ;;
-  mcore-*-*)		sim_target=mcore ;;
+  d10v-*-*)		AC_SIM_TARGET_SUBDIR([d10v]) ;;
+  h8300*-*-*)		AC_SIM_TARGET_SUBDIR([h8300]) ;;
+  h8500-*-*)		AC_SIM_TARGET_SUBDIR([h8500]) ;;
+  i960-*-*)		AC_SIM_TARGET_SUBDIR([i960]) ;;
+  m32r-*-*)		AC_SIM_TARGET_SUBDIR([m32r]) ;;
+  m68hc11-*-*|m6811-*-*) AC_SIM_TARGET_SUBDIR([m68hc11]) ;;
+  mcore-*-*)		AC_SIM_TARGET_SUBDIR([mcore]) ;;
   mips*-*-*)
 	# The MIPS simulator can only be compiled by gcc.
-	sim_target=mips
+	AC_SIM_TARGET_SUBDIR([mips])
 	only_if_gcc=yes
 	extra_subdirs="${extra_subdirs} igen"
 	;;
   mn10300*-*-*)
 	# The mn10300 simulator can only be compiled by gcc.
-	sim_target=mn10300
+	AC_SIM_TARGET_SUBDIR([mn10300])
 	only_if_gcc=yes
 	extra_subdirs="${extra_subdirs} igen"
 	;;
   mn10200*-*-*)
-	sim_target=mn10200
+	AC_SIM_TARGET_SUBDIR([mn10200])
 	;;
-  sh*-*-*)		sim_target=sh ;;
+  sh*-*-*)		AC_SIM_TARGET_SUBDIR([sh]) ;;
   powerpc*-*-eabi* | powerpc*-*-solaris* | powerpc*-*-sysv4* | \
-  powerpc*-*-elf* | powerpc*-*-linux* | powerpc*-*-netbsd* )
+  powerpc*-*-elf* | powerpc*-*-linux* | powerpc*-*-netbsd* | powerpc*-apple-darwin*)
 	# The PowerPC simulator uses the GCC extension long long as well as
 	# ANSI prototypes, so do NOT enable it for random host compilers
 	# unless asked to.
-	sim_target=ppc
+	AC_C_PROTOTYPES
+	AC_TYPE_INTMAX_T
+	AC_TYPE_UINTMAX_T
+	AC_TYPE_INTPTR_T
+	AC_TYPE_UINTPTR_T
+	AC_SIM_TARGET_SUBDIR([ppc])
 	only_if_gcc=yes
-	#extra_subdirs="${extra_subdirs}"
+	extra_subdirs="${extra_subdirs} igen"
 	;;
   tic80-*-*)
-	sim_target=tic80
+	AC_SIM_TARGET_SUBDIR([tic80])
 	only_if_gcc=yes
 	extra_subdirs="${extra_subdirs} igen"
 	;;
   v850-*-*)
 	# The V850 simulator can only be compiled by gcc.
-	sim_target=v850
+	AC_SIM_TARGET_SUBDIR([v850])
 	extra_subdirs="${extra_subdirs} igen"
 	only_if_gcc=yes
 	;;
   v850e-*-*)
 	# The V850 simulator can only be compiled by gcc.
-	sim_target=v850
+	AC_SIM_TARGET_SUBDIR([v850])
 	extra_subdirs="${extra_subdirs} igen"
 	only_if_gcc=yes
 	;;
   v850ea-*-*)
 	# The V850 simulator can only be compiled by gcc.
-	sim_target=v850
+	AC_SIM_TARGET_SUBDIR([v850])
 	extra_subdirs="${extra_subdirs} igen"
 	only_if_gcc=yes
 	;;
   w65-*-*)
-	sim_target=w65
+	AC_SIM_TARGET_SUBDIR([w65])
 	# The w65 is suffering from gradual decay.
 	only_if_enabled=yes
 	;;
-  z8k*-*-*)		sim_target=z8k ;;
+  z8k*-*-*)		AC_SIM_TARGET_SUBDIR([z8k]) ;;
   sparc64-*-*)
 	only_if_gcc=yes
-	sim_target=none # Don't build erc32 if sparc64.
+	sim_target=none # Do NOT build erc32 if sparc64.
 	;;
   sparclite*-*-* | sparc86x*-*-*)
 	# The SPARC simulator can only be compiled by gcc.
 	only_if_gcc=yes
-	sim_target=erc32
+	AC_SIM_TARGET_SUBDIR([erc32])
 	;;
   sparc*-*-*)
 	# The SPARC simulator can only be compiled by gcc.
 	only_if_gcc=yes
-	# Unfortunately erc32 won't build on many hosts, so only enable
+	# Unfortunately erc32 will NOT build on many hosts, so only enable
 	# it if the user really really wants it.
 	only_if_enabled=yes
-	sim_target=erc32
+	AC_SIM_TARGET_SUBDIR([erc32])
 	;;
-  *)			sim_target=none ;;
+  *)
+	# The "igen" subdir always successfully configures.
+	# So does the "testsuite" subdir, but that is checked farther below.
+	# Also the subdirs are useful to have regardless of which simulator
+	# you want.
+	extra_subdirs="${extra_subdirs} igen"
+	sim_target=none
+	;;
 esac
 
 
@@ -167,10 +189,12 @@ yes)
 	;;
 *)
 	if test ${only_if_enabled} = yes ; then
+		echo "The simulator was not explicitly enabled, so disabling."
 		sim_target=none
 	else
 		if test ${only_if_gcc} = yes ; then
 			if test "${GCC}" != yes ; then
+				echo "The requested simulator requires gcc, but you are not using gcc, so disabling."
 				sim_target=none
 			fi
 		fi
@@ -180,7 +204,11 @@ esac
 
 if test x"${sim_target}" != xnone ; then
 	configdirs="${extra_subdirs} ${sim_target}"
+	AC_MSG_NOTICE([config subdirs are "${configdirs}"])
 	AC_CONFIG_SUBDIRS([$configdirs])
+else
+	AC_MSG_NOTICE([config subdirs are just "${extra_subdirs}"])
+	AC_CONFIG_SUBDIRS([${extra_subdirs}])
 fi
 
 AC_CONFIG_FILES([Makefile])

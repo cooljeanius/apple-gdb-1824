@@ -1,7 +1,8 @@
 *.status
 Makefile
+conf*/*.awk
 
-# gitignore directories until I have them working:
+# I have failed to get these directories to work, so gitignore them:
 arm/*
 d10v/*
 d30v/*
@@ -10,13 +11,14 @@ fr30/*
 h8300/*
 h8500/*
 i960/*
+ppc/*
+# gitignore these untested directories until I have them working:
 m32r/*
 m68hc11/*
 mcore/*
 mips/*
 mn10200/*
 mn10300/*
-ppc/*
 sh/*
 sh64/*
 tic80/*
