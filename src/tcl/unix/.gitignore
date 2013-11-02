@@ -5,11 +5,17 @@ config.h
 *.a
 *.o
 libtcl*
+lib.exp
 core
 errs
+errors
 *~
 \#*
 TAGS
 *.E
 a.out
 *.cache
+SCRPtcl.*
+prototype
+tclsh
+tcltest

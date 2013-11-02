@@ -620,6 +620,7 @@ ac_includes_default="\
 #endif"
 
 ac_header_list=
+enable_option_checking=no
 ac_subst_vars='LTLIBOBJS
 TCL_PACKAGE_PATH
 BUILD_DLTEST
@@ -653,6 +654,7 @@ TCL_MINOR_VERSION
 TCL_MAJOR_VERSION
 TCL_VERSION
 ACLOCAL
+subdirs
 LDFLAGS_DEFAULT
 CFLAGS_DEFAULT
 INSTALL_STUB_LIB
@@ -792,7 +794,7 @@ CPP
 YACC
 YFLAGS
 no_pipe'
-
+ac_subdirs_all='dltest'
 
 # Initialize some variables set by options.
 ac_init_help=
@@ -1441,7 +1443,7 @@ Some influential environment variables:
   YFLAGS      The list of arguments that will be passed by default to $YACC.
               This script will default YFLAGS to the empty string to avoid a
               default value of `-d' given by some make applications.
-  no_pipe     Set to keep the compiler from using -pipe
+  no_pipe     Set to try to keep the compiler from using -pipe
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -4890,12 +4892,12 @@ $as_echo "no (default)" >&6; }
 #------------------------------------------------------------------------
 
 
-if test -z "$no_pipe"; then
-if test -n "$GCC"; then
+if test -z "${no_pipe}"; then
+if test -n "${GCC}"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking if the compiler understands -pipe" >&5
 $as_echo_n "checking if the compiler understands -pipe... " >&6; }
-  OLDCC="$CC"
-  CC="$CC -pipe"
+  OLDCC="${CC}"
+  CC="${CC} -pipe"
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -4911,7 +4913,7 @@ if ac_fn_c_try_compile "$LINENO"; then :
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 else
-  CC="$OLDCC"
+  CC="${OLDCC}"
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 fi
@@ -5419,7 +5421,7 @@ fi
 done
 
 # Nb: if getcwd uses popen and pwd(1) (like SunOS 4) we should really
-# define USEGETWD even if the posix getcwd exists. Add a test ?
+# define USEGETWD even if the posix getcwd exists. Add a test?
 
 ac_fn_c_check_func "$LINENO" "opendir" "ac_cv_func_opendir"
 if test "x$ac_cv_func_opendir" = xyes; then :
@@ -8794,7 +8796,7 @@ done
 
 # Add the threads support libraries
 
-LIBS="$LIBS$THREADS_LIBS"
+LIBS="${LIBS}${THREADS_LIBS}"
 
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking how to build libraries" >&5
@@ -9129,7 +9131,7 @@ fi
     TCL_TRIM_DOTS='`echo ${VERSION} | tr -d .`'
     ECHO_VERSION='`echo ${VERSION}`'
     TCL_LIB_VERSIONS_OK=ok
-    CFLAGS_DEBUG=-g
+    CFLAGS_DEBUG=-ggdb
     CFLAGS_OPTIMIZE=-O
     if test "$GCC" = "yes" ; then
 	CFLAGS_WARNING="-Wall -Wconversion -Wno-implicit-int"
@@ -10383,7 +10385,7 @@ $as_echo "enabled $tcl_ok debugging" >&6; }
     fi
 
 
-TCL_DBGX=${DBGX}
+TCL_DBGX="${DBGX}"
 
 #--------------------------------------------------------------------
 #	The statements below check for systems where POSIX-style
@@ -10603,7 +10605,14 @@ eval "TCL_INCLUDE_SPEC=\"-I${includedir}\""
 # tclConfig.sh refers to this by a different name
 #------------------------------------------------------------------------
 
-TCL_SHARED_BUILD=${SHARED_BUILD}
+TCL_SHARED_BUILD="${SHARED_BUILD}"
+if test "${TCL_SHARED_BUILD}" = "1"; then
+	test ! -z "${TCL_SHARED_BUILD}"
+
+
+subdirs="$subdirs dltest"
+
+fi
 
 
 
@@ -11935,6 +11944,151 @@ if test "$no_create" != yes; then
   # Use ||, not &&, to avoid exiting from the if with $? = 1, which
   # would make configure fail if this is the last instruction.
   $ac_cs_success || as_fn_exit 1
+fi
+
+#
+# CONFIG_SUBDIRS section.
+#
+if test "$no_recursion" != yes; then
+
+  # Remove --cache-file, --srcdir, and --disable-option-checking arguments
+  # so they do not pile up.
+  ac_sub_configure_args=
+  ac_prev=
+  eval "set x $ac_configure_args"
+  shift
+  for ac_arg
+  do
+    if test -n "$ac_prev"; then
+      ac_prev=
+      continue
+    fi
+    case $ac_arg in
+    -cache-file | --cache-file | --cache-fil | --cache-fi \
+    | --cache-f | --cache- | --cache | --cach | --cac | --ca | --c)
+      ac_prev=cache_file ;;
+    -cache-file=* | --cache-file=* | --cache-fil=* | --cache-fi=* \
+    | --cache-f=* | --cache-=* | --cache=* | --cach=* | --cac=* | --ca=* \
+    | --c=*)
+      ;;
+    --config-cache | -C)
+      ;;
+    -srcdir | --srcdir | --srcdi | --srcd | --src | --sr)
+      ac_prev=srcdir ;;
+    -srcdir=* | --srcdir=* | --srcdi=* | --srcd=* | --src=* | --sr=*)
+      ;;
+    -prefix | --prefix | --prefi | --pref | --pre | --pr | --p)
+      ac_prev=prefix ;;
+    -prefix=* | --prefix=* | --prefi=* | --pref=* | --pre=* | --pr=* | --p=*)
+      ;;
+    --disable-option-checking)
+      ;;
+    *)
+      case $ac_arg in
+      *\'*) ac_arg=`$as_echo "$ac_arg" | sed "s/'/'\\\\\\\\''/g"` ;;
+      esac
+      as_fn_append ac_sub_configure_args " '$ac_arg'" ;;
+    esac
+  done
+
+  # Always prepend --prefix to ensure using the same prefix
+  # in subdir configurations.
+  ac_arg="--prefix=$prefix"
+  case $ac_arg in
+  *\'*) ac_arg=`$as_echo "$ac_arg" | sed "s/'/'\\\\\\\\''/g"` ;;
+  esac
+  ac_sub_configure_args="'$ac_arg' $ac_sub_configure_args"
+
+  # Pass --silent
+  if test "$silent" = yes; then
+    ac_sub_configure_args="--silent $ac_sub_configure_args"
+  fi
+
+  # Always prepend --disable-option-checking to silence warnings, since
+  # different subdirs can have different --enable and --with options.
+  ac_sub_configure_args="--disable-option-checking $ac_sub_configure_args"
+
+  ac_popdir=`pwd`
+  for ac_dir in : $subdirs; do test "x$ac_dir" = x: && continue
+
+    # Do not complain, so a configure script can configure whichever
+    # parts of a large source tree are present.
+    test -d "$srcdir/$ac_dir" || continue
+
+    ac_msg="=== configuring in $ac_dir (`pwd`/$ac_dir)"
+    $as_echo "$as_me:${as_lineno-$LINENO}: $ac_msg" >&5
+    $as_echo "$ac_msg" >&6
+    as_dir="$ac_dir"; as_fn_mkdir_p
+    ac_builddir=.
+
+case "$ac_dir" in
+.) ac_dir_suffix= ac_top_builddir_sub=. ac_top_build_prefix= ;;
+*)
+  ac_dir_suffix=/`$as_echo "$ac_dir" | sed 's|^\.[\\/]||'`
+  # A ".." for each directory in $ac_dir_suffix.
+  ac_top_builddir_sub=`$as_echo "$ac_dir_suffix" | sed 's|/[^\\/]*|/..|g;s|/||'`
+  case $ac_top_builddir_sub in
+  "") ac_top_builddir_sub=. ac_top_build_prefix= ;;
+  *)  ac_top_build_prefix=$ac_top_builddir_sub/ ;;
+  esac ;;
+esac
+ac_abs_top_builddir=$ac_pwd
+ac_abs_builddir=$ac_pwd$ac_dir_suffix
+# for backward compatibility:
+ac_top_builddir=$ac_top_build_prefix
+
+case $srcdir in
+  .)  # We are building in place.
+    ac_srcdir=.
+    ac_top_srcdir=$ac_top_builddir_sub
+    ac_abs_top_srcdir=$ac_pwd ;;
+  [\\/]* | ?:[\\/]* )  # Absolute name.
+    ac_srcdir=$srcdir$ac_dir_suffix;
+    ac_top_srcdir=$srcdir
+    ac_abs_top_srcdir=$srcdir ;;
+  *) # Relative name.
+    ac_srcdir=$ac_top_build_prefix$srcdir$ac_dir_suffix
+    ac_top_srcdir=$ac_top_build_prefix$srcdir
+    ac_abs_top_srcdir=$ac_pwd/$srcdir ;;
+esac
+ac_abs_srcdir=$ac_abs_top_srcdir$ac_dir_suffix
+
+
+    cd "$ac_dir"
+
+    # Check for guested configure; otherwise get Cygnus style configure.
+    if test -f "$ac_srcdir/configure.gnu"; then
+      ac_sub_configure=$ac_srcdir/configure.gnu
+    elif test -f "$ac_srcdir/configure"; then
+      ac_sub_configure=$ac_srcdir/configure
+    elif test -f "$ac_srcdir/configure.in"; then
+      # This should be Cygnus configure.
+      ac_sub_configure=$ac_aux_dir/configure
+    else
+      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: no configuration information is in $ac_dir" >&5
+$as_echo "$as_me: WARNING: no configuration information is in $ac_dir" >&2;}
+      ac_sub_configure=
+    fi
+
+    # The recursion is here.
+    if test -n "$ac_sub_configure"; then
+      # Make the cache file name correct relative to the subdirectory.
+      case $cache_file in
+      [\\/]* | ?:[\\/]* ) ac_sub_cache_file=$cache_file ;;
+      *) # Relative name.
+	ac_sub_cache_file=$ac_top_build_prefix$cache_file ;;
+      esac
+
+      { $as_echo "$as_me:${as_lineno-$LINENO}: running $SHELL $ac_sub_configure $ac_sub_configure_args --cache-file=$ac_sub_cache_file --srcdir=$ac_srcdir" >&5
+$as_echo "$as_me: running $SHELL $ac_sub_configure $ac_sub_configure_args --cache-file=$ac_sub_cache_file --srcdir=$ac_srcdir" >&6;}
+      # The eval makes quoting arguments work.
+      eval "\$SHELL \"\$ac_sub_configure\" $ac_sub_configure_args \
+	   --cache-file=\"\$ac_sub_cache_file\" --srcdir=\"\$ac_srcdir\"" ||
+	as_fn_error $? "$ac_sub_configure failed for $ac_dir" "$LINENO" 5
+    fi
+
+    cd "$ac_popdir"
+  done
 fi
 if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: unrecognized options: $ac_unrecognized_opts" >&5

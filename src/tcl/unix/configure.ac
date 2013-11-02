@@ -72,13 +72,13 @@ SC_ENABLE_THREADS
 # It makes compiling go faster. (This is only a performance feature.)
 #------------------------------------------------------------------------
 
-AC_ARG_VAR([no_pipe],[Set to keep the compiler from using -pipe])
-if test -z "$no_pipe"; then
-if test -n "$GCC"; then
+AC_ARG_VAR([no_pipe],[Set to try to keep the compiler from using -pipe])
+if test -z "${no_pipe}"; then
+if test -n "${GCC}"; then
   AC_MSG_CHECKING([if the compiler understands -pipe])
-  OLDCC="$CC"  
-  CC="$CC -pipe"
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],[AC_MSG_RESULT([yes])],[CC="$OLDCC"
+  OLDCC="${CC}"  
+  CC="${CC} -pipe"
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],[AC_MSG_RESULT([yes])],[CC="${OLDCC}"
     AC_MSG_RESULT([no])])
 fi  
 fi
@@ -106,7 +106,7 @@ AC_C_BIGENDIAN
 # Check if Posix compliant getcwd exists, if not we will use getwd.
 AC_CHECK_FUNCS([getcwd],[],[AC_DEFINE([USEGETWD],[1],[Define to 1 if getcwd is missing and we have to use getwd as a fallback])])
 # Nb: if getcwd uses popen and pwd(1) (like SunOS 4) we should really
-# define USEGETWD even if the posix getcwd exists. Add a test ?
+# define USEGETWD even if the posix getcwd exists. Add a test?
 
 AC_REPLACE_FUNCS([opendir strstr])
 
@@ -474,7 +474,7 @@ SC_TCL_LINK_LIBS
 
 # Add the threads support libraries
 
-LIBS="$LIBS$THREADS_LIBS"
+LIBS="${LIBS}${THREADS_LIBS}"
 
 SC_ENABLE_SHARED
 
@@ -488,7 +488,7 @@ SC_CONFIG_CFLAGS
 
 SC_ENABLE_SYMBOLS
 
-TCL_DBGX=${DBGX}
+TCL_DBGX="${DBGX}"
 
 #--------------------------------------------------------------------
 #	The statements below check for systems where POSIX-style
@@ -598,7 +598,11 @@ eval "TCL_INCLUDE_SPEC=\"-I${includedir}\""
 # tclConfig.sh refers to this by a different name
 #------------------------------------------------------------------------
 
-TCL_SHARED_BUILD=${SHARED_BUILD}
+TCL_SHARED_BUILD="${SHARED_BUILD}"
+if test "${TCL_SHARED_BUILD}" = "1"; then
+	test ! -z "${TCL_SHARED_BUILD}"
+	AC_CONFIG_SUBDIRS([dltest])
+fi
 
 AC_SUBST([ACLOCAL])
 AC_SUBST([TCL_VERSION])

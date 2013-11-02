@@ -783,7 +783,7 @@ AC_DEFUN([SC_CONFIG_CFLAGS],[
     TCL_TRIM_DOTS='`echo ${VERSION} | tr -d .`'
     ECHO_VERSION='`echo ${VERSION}`'
     TCL_LIB_VERSIONS_OK=ok
-    CFLAGS_DEBUG=-g
+    CFLAGS_DEBUG=-ggdb
     CFLAGS_OPTIMIZE=-O
     if test "$GCC" = "yes" ; then
 	CFLAGS_WARNING="-Wall -Wconversion -Wno-implicit-int"
@@ -793,7 +793,8 @@ AC_DEFUN([SC_CONFIG_CFLAGS],[
     TCL_NEEDS_EXP_FILE=0
     TCL_BUILD_EXP_FILE=""
     TCL_EXP_FILE=""
-dnl# FIXME: Replace AC_CHECK_PROG with AC_CHECK_TOOL once cross compiling is fixed.
+dnl# FIXME: Replace AC_CHECK_PROG with AC_CHECK_TOOL once cross compiling
+dnl# is fixed.
     AC_CHECK_PROG([AR],[ar],[ar])
     STLIB_LD='${AR} cr'
     LD_LIBRARY_PATH_VAR="LD_LIBRARY_PATH"
