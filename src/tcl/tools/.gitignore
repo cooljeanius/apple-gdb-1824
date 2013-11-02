@@ -1,0 +1,9 @@
+*~
+*.log
+Makefile
+*.status
+tcl.hpj
+man2tcl
+*.o
+*.cnt
+*.rtf

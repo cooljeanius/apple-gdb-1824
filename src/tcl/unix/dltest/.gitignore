@@ -1,0 +1,14 @@
+# src/tcl/unix/dltest/.gitignore
+
+libtool
+Makefile
+Makefile.orig
+*.o
+*.dylib
+config.cache
+*.log
+*.status
+lib.exp
+../dltest.marker
+*libs/*
+*.lo

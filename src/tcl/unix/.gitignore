@@ -1,0 +1,15 @@
+*.status
+Makefile
+tclConfig.sh
+config.h
+*.a
+*.o
+libtcl*
+core
+errs
+*~
+\#*
+TAGS
+*.E
+a.out
+*.cache

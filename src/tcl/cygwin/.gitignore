@@ -1,0 +1,8 @@
+# src/tcl/cygwin/.gitignore
+
+*.status
+Makefile
+tclConfig.sh
+*deps/*.*o
+lib*.a
+*.o

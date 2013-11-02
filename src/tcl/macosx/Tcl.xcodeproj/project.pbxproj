@@ -1,0 +1,1189 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		A50F54D21808CA0D008BA312 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00E2F845016E82EB0ACA28DC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 00E2F84C016E8B780ACA28DC;
+			remoteInfo = Make;
+		};
+		A50F54D31808CA0D008BA312 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00E2F845016E82EB0ACA28DC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 00E2F84B016E8A830ACA28DC;
+			remoteInfo = Configure;
+		};
+		A50F556F1808CA1C008BA312 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00E2F845016E82EB0ACA28DC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A50F55681808CA1C008BA312;
+			remoteInfo = "Make (Copied)";
+		};
+		A50F55711808CA1C008BA312 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00E2F845016E82EB0ACA28DC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A50F55631808CA1C008BA312;
+			remoteInfo = "Configure (Copied)";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		00E2F84D016E92110ACA28DC /* Tcl.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Tcl.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A50F55611808CA1C008BA312 /* Info-Tcl__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Tcl__Upgraded_.plist"; sourceTree = "<group>"; };
+		A50F55621808CA1C008BA312 /* Tcl.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Tcl.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F53ACC5C031D9D11016F146B /* tclsh8.4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = tclsh8.4; path = ../../build/tclsh8.4; sourceTree = SOURCE_ROOT; };
+		F53ACC73031DA405016F146B /* tcltest */ = {isa = PBXFileReference; lastKnownFileType = text; name = tcltest; path = ../../build/tcltest; sourceTree = SOURCE_ROOT; };
+		F5A1836F018242A501DC9062 /* tclMacOSXBundle.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tclMacOSXBundle.c; sourceTree = "<group>"; };
+		F5C88656017D604601DC9062 /* genStubs.tcl */ = {isa = PBXFileReference; lastKnownFileType = text; name = genStubs.tcl; path = ../tools/genStubs.tcl; sourceTree = SOURCE_ROOT; };
+		F5C88657017D60C901DC9062 /* tcl.decls */ = {isa = PBXFileReference; lastKnownFileType = text; name = tcl.decls; path = ../generic/tcl.decls; sourceTree = SOURCE_ROOT; };
+		F5C88658017D60C901DC9062 /* tclInt.decls */ = {isa = PBXFileReference; lastKnownFileType = text; name = tclInt.decls; path = ../generic/tclInt.decls; sourceTree = SOURCE_ROOT; };
+		F5F24F6B016ECAA401DC9062 /* regcustom.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = regcustom.h; path = ../generic/regcustom.h; sourceTree = SOURCE_ROOT; };
+		F5F24F6C016ECAA401DC9062 /* regerrs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = regerrs.h; path = ../generic/regerrs.h; sourceTree = SOURCE_ROOT; };
+		F5F24F6D016ECAA401DC9062 /* regguts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = regguts.h; path = ../generic/regguts.h; sourceTree = SOURCE_ROOT; };
+		F5F24F6E016ECAA401DC9062 /* tcl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tcl.h; path = ../generic/tcl.h; sourceTree = SOURCE_ROOT; };
+		F5F24F6F016ECAA401DC9062 /* tclCompile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclCompile.h; path = ../generic/tclCompile.h; sourceTree = SOURCE_ROOT; };
+		F5F24F70016ECAA401DC9062 /* tclDecls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclDecls.h; path = ../generic/tclDecls.h; sourceTree = SOURCE_ROOT; };
+		F5F24F71016ECAA401DC9062 /* tclInitScript.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclInitScript.h; path = ../generic/tclInitScript.h; sourceTree = SOURCE_ROOT; };
+		F5F24F72016ECAA401DC9062 /* tclInt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclInt.h; path = ../generic/tclInt.h; sourceTree = SOURCE_ROOT; };
+		F5F24F73016ECAA401DC9062 /* tclIntDecls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclIntDecls.h; path = ../generic/tclIntDecls.h; sourceTree = SOURCE_ROOT; };
+		F5F24F74016ECAA401DC9062 /* tclIntPlatDecls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclIntPlatDecls.h; path = ../generic/tclIntPlatDecls.h; sourceTree = SOURCE_ROOT; };
+		F5F24F75016ECAA401DC9062 /* tclIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclIO.h; path = ../generic/tclIO.h; sourceTree = SOURCE_ROOT; };
+		F5F24F76016ECAA401DC9062 /* tclMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclMath.h; path = ../generic/tclMath.h; sourceTree = SOURCE_ROOT; };
+		F5F24F77016ECAA401DC9062 /* tclPlatDecls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclPlatDecls.h; path = ../generic/tclPlatDecls.h; sourceTree = SOURCE_ROOT; };
+		F5F24F78016ECAA401DC9062 /* tclRegexp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclRegexp.h; path = ../generic/tclRegexp.h; sourceTree = SOURCE_ROOT; };
+		F5F24F87016ECAFC01DC9062 /* regc_color.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = regc_color.c; path = ../generic/regc_color.c; sourceTree = SOURCE_ROOT; };
+		F5F24F88016ECAFC01DC9062 /* regc_cvec.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = regc_cvec.c; path = ../generic/regc_cvec.c; sourceTree = SOURCE_ROOT; };
+		F5F24F89016ECAFC01DC9062 /* regc_lex.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = regc_lex.c; path = ../generic/regc_lex.c; sourceTree = SOURCE_ROOT; };
+		F5F24F8A016ECAFC01DC9062 /* regc_locale.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = regc_locale.c; path = ../generic/regc_locale.c; sourceTree = SOURCE_ROOT; };
+		F5F24F8B016ECAFC01DC9062 /* regc_nfa.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = regc_nfa.c; path = ../generic/regc_nfa.c; sourceTree = SOURCE_ROOT; };
+		F5F24F8C016ECAFC01DC9062 /* regcomp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = regcomp.c; path = ../generic/regcomp.c; sourceTree = SOURCE_ROOT; };
+		F5F24F8D016ECAFC01DC9062 /* rege_dfa.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = rege_dfa.c; path = ../generic/rege_dfa.c; sourceTree = SOURCE_ROOT; };
+		F5F24F8E016ECAFC01DC9062 /* regerror.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = regerror.c; path = ../generic/regerror.c; sourceTree = SOURCE_ROOT; };
+		F5F24F8F016ECAFC01DC9062 /* regexec.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = regexec.c; path = ../generic/regexec.c; sourceTree = SOURCE_ROOT; };
+		F5F24F90016ECAFC01DC9062 /* regfree.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = regfree.c; path = ../generic/regfree.c; sourceTree = SOURCE_ROOT; };
+		F5F24F91016ECAFC01DC9062 /* regfronts.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = regfronts.c; path = ../generic/regfronts.c; sourceTree = SOURCE_ROOT; };
+		F5F24F92016ECAFC01DC9062 /* tclAlloc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclAlloc.c; path = ../generic/tclAlloc.c; sourceTree = SOURCE_ROOT; };
+		F5F24F93016ECAFC01DC9062 /* tclAsync.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclAsync.c; path = ../generic/tclAsync.c; sourceTree = SOURCE_ROOT; };
+		F5F24F94016ECAFC01DC9062 /* tclBasic.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclBasic.c; path = ../generic/tclBasic.c; sourceTree = SOURCE_ROOT; };
+		F5F24F95016ECAFC01DC9062 /* tclBinary.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclBinary.c; path = ../generic/tclBinary.c; sourceTree = SOURCE_ROOT; };
+		F5F24F96016ECAFC01DC9062 /* tclCkalloc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclCkalloc.c; path = ../generic/tclCkalloc.c; sourceTree = SOURCE_ROOT; };
+		F5F24F97016ECAFC01DC9062 /* tclClock.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclClock.c; path = ../generic/tclClock.c; sourceTree = SOURCE_ROOT; };
+		F5F24F98016ECAFC01DC9062 /* tclCmdAH.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclCmdAH.c; path = ../generic/tclCmdAH.c; sourceTree = SOURCE_ROOT; };
+		F5F24F99016ECAFC01DC9062 /* tclCmdIL.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclCmdIL.c; path = ../generic/tclCmdIL.c; sourceTree = SOURCE_ROOT; };
+		F5F24F9A016ECAFC01DC9062 /* tclCmdMZ.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclCmdMZ.c; path = ../generic/tclCmdMZ.c; sourceTree = SOURCE_ROOT; };
+		F5F24F9B016ECAFC01DC9062 /* tclCompCmds.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclCompCmds.c; path = ../generic/tclCompCmds.c; sourceTree = SOURCE_ROOT; };
+		F5F24F9C016ECAFC01DC9062 /* tclCompExpr.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclCompExpr.c; path = ../generic/tclCompExpr.c; sourceTree = SOURCE_ROOT; };
+		F5F24F9D016ECAFC01DC9062 /* tclCompile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclCompile.c; path = ../generic/tclCompile.c; sourceTree = SOURCE_ROOT; };
+		F5F24F9E016ECAFC01DC9062 /* tclDate.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclDate.c; path = ../generic/tclDate.c; sourceTree = SOURCE_ROOT; };
+		F5F24F9F016ECAFC01DC9062 /* tclEncoding.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclEncoding.c; path = ../generic/tclEncoding.c; sourceTree = SOURCE_ROOT; };
+		F5F24FA0016ECAFC01DC9062 /* tclEnv.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclEnv.c; path = ../generic/tclEnv.c; sourceTree = SOURCE_ROOT; };
+		F5F24FA1016ECAFC01DC9062 /* tclEvent.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclEvent.c; path = ../generic/tclEvent.c; sourceTree = SOURCE_ROOT; };
+		F5F24FA2016ECAFC01DC9062 /* tclExecute.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclExecute.c; path = ../generic/tclExecute.c; sourceTree = SOURCE_ROOT; };
+		F5F24FA3016ECAFC01DC9062 /* tclFCmd.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclFCmd.c; path = ../generic/tclFCmd.c; sourceTree = SOURCE_ROOT; };
+		F5F24FA4016ECAFC01DC9062 /* tclFileName.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclFileName.c; path = ../generic/tclFileName.c; sourceTree = SOURCE_ROOT; };
+		F5F24FA5016ECAFC01DC9062 /* tclGet.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclGet.c; path = ../generic/tclGet.c; sourceTree = SOURCE_ROOT; };
+		F5F24FA6016ECAFC01DC9062 /* tclHash.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclHash.c; path = ../generic/tclHash.c; sourceTree = SOURCE_ROOT; };
+		F5F24FA7016ECAFC01DC9062 /* tclHistory.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclHistory.c; path = ../generic/tclHistory.c; sourceTree = SOURCE_ROOT; };
+		F5F24FA8016ECAFC01DC9062 /* tclIndexObj.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclIndexObj.c; path = ../generic/tclIndexObj.c; sourceTree = SOURCE_ROOT; };
+		F5F24FA9016ECAFC01DC9062 /* tclInterp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclInterp.c; path = ../generic/tclInterp.c; sourceTree = SOURCE_ROOT; };
+		F5F24FAA016ECAFC01DC9062 /* tclIO.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclIO.c; path = ../generic/tclIO.c; sourceTree = SOURCE_ROOT; };
+		F5F24FAB016ECAFC01DC9062 /* tclIOCmd.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclIOCmd.c; path = ../generic/tclIOCmd.c; sourceTree = SOURCE_ROOT; };
+		F5F24FAC016ECAFC01DC9062 /* tclIOGT.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclIOGT.c; path = ../generic/tclIOGT.c; sourceTree = SOURCE_ROOT; };
+		F5F24FAD016ECAFC01DC9062 /* tclIOSock.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclIOSock.c; path = ../generic/tclIOSock.c; sourceTree = SOURCE_ROOT; };
+		F5F24FAE016ECAFC01DC9062 /* tclIOUtil.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclIOUtil.c; path = ../generic/tclIOUtil.c; sourceTree = SOURCE_ROOT; };
+		F5F24FAF016ECAFC01DC9062 /* tclLink.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclLink.c; path = ../generic/tclLink.c; sourceTree = SOURCE_ROOT; };
+		F5F24FB0016ECAFC01DC9062 /* tclListObj.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclListObj.c; path = ../generic/tclListObj.c; sourceTree = SOURCE_ROOT; };
+		F5F24FB1016ECAFC01DC9062 /* tclLiteral.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclLiteral.c; path = ../generic/tclLiteral.c; sourceTree = SOURCE_ROOT; };
+		F5F24FB2016ECAFC01DC9062 /* tclLoad.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclLoad.c; path = ../generic/tclLoad.c; sourceTree = SOURCE_ROOT; };
+		F5F24FB3016ECAFC01DC9062 /* tclLoadNone.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclLoadNone.c; path = ../generic/tclLoadNone.c; sourceTree = SOURCE_ROOT; };
+		F5F24FB4016ECAFC01DC9062 /* tclMain.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclMain.c; path = ../generic/tclMain.c; sourceTree = SOURCE_ROOT; };
+		F5F24FB5016ECAFC01DC9062 /* tclNamesp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclNamesp.c; path = ../generic/tclNamesp.c; sourceTree = SOURCE_ROOT; };
+		F5F24FB6016ECAFC01DC9062 /* tclNotify.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclNotify.c; path = ../generic/tclNotify.c; sourceTree = SOURCE_ROOT; };
+		F5F24FB7016ECAFC01DC9062 /* tclObj.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclObj.c; path = ../generic/tclObj.c; sourceTree = SOURCE_ROOT; };
+		F5F24FB8016ECAFC01DC9062 /* tclPanic.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclPanic.c; path = ../generic/tclPanic.c; sourceTree = SOURCE_ROOT; };
+		F5F24FB9016ECAFC01DC9062 /* tclParse.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclParse.c; path = ../generic/tclParse.c; sourceTree = SOURCE_ROOT; };
+		F5F24FBA016ECAFC01DC9062 /* tclParseExpr.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclParseExpr.c; path = ../generic/tclParseExpr.c; sourceTree = SOURCE_ROOT; };
+		F5F24FBB016ECAFC01DC9062 /* tclPipe.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclPipe.c; path = ../generic/tclPipe.c; sourceTree = SOURCE_ROOT; };
+		F5F24FBC016ECAFC01DC9062 /* tclPosixStr.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclPosixStr.c; path = ../generic/tclPosixStr.c; sourceTree = SOURCE_ROOT; };
+		F5F24FBD016ECAFC01DC9062 /* tclPreserve.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclPreserve.c; path = ../generic/tclPreserve.c; sourceTree = SOURCE_ROOT; };
+		F5F24FBE016ECAFC01DC9062 /* tclProc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclProc.c; path = ../generic/tclProc.c; sourceTree = SOURCE_ROOT; };
+		F5F24FBF016ECAFC01DC9062 /* tclRegexp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclRegexp.c; path = ../generic/tclRegexp.c; sourceTree = SOURCE_ROOT; };
+		F5F24FC0016ECAFC01DC9062 /* tclResolve.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclResolve.c; path = ../generic/tclResolve.c; sourceTree = SOURCE_ROOT; };
+		F5F24FC1016ECAFC01DC9062 /* tclResult.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclResult.c; path = ../generic/tclResult.c; sourceTree = SOURCE_ROOT; };
+		F5F24FC2016ECAFC01DC9062 /* tclScan.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclScan.c; path = ../generic/tclScan.c; sourceTree = SOURCE_ROOT; };
+		F5F24FC3016ECAFC01DC9062 /* tclStringObj.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclStringObj.c; path = ../generic/tclStringObj.c; sourceTree = SOURCE_ROOT; };
+		F5F24FC4016ECAFC01DC9062 /* tclStubInit.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclStubInit.c; path = ../generic/tclStubInit.c; sourceTree = SOURCE_ROOT; };
+		F5F24FC5016ECAFC01DC9062 /* tclStubLib.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclStubLib.c; path = ../generic/tclStubLib.c; sourceTree = SOURCE_ROOT; };
+		F5F24FC6016ECAFC01DC9062 /* tclTest.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclTest.c; path = ../generic/tclTest.c; sourceTree = SOURCE_ROOT; };
+		F5F24FC7016ECAFC01DC9062 /* tclTestObj.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclTestObj.c; path = ../generic/tclTestObj.c; sourceTree = SOURCE_ROOT; };
+		F5F24FC8016ECAFC01DC9062 /* tclTestProcBodyObj.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclTestProcBodyObj.c; path = ../generic/tclTestProcBodyObj.c; sourceTree = SOURCE_ROOT; };
+		F5F24FC9016ECAFC01DC9062 /* tclThread.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclThread.c; path = ../generic/tclThread.c; sourceTree = SOURCE_ROOT; };
+		F5F24FCA016ECAFC01DC9062 /* tclThreadJoin.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclThreadJoin.c; path = ../generic/tclThreadJoin.c; sourceTree = SOURCE_ROOT; };
+		F5F24FCB016ECAFC01DC9062 /* tclThreadTest.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclThreadTest.c; path = ../generic/tclThreadTest.c; sourceTree = SOURCE_ROOT; };
+		F5F24FCC016ECAFC01DC9062 /* tclTimer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclTimer.c; path = ../generic/tclTimer.c; sourceTree = SOURCE_ROOT; };
+		F5F24FCD016ECAFC01DC9062 /* tclUniData.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclUniData.c; path = ../generic/tclUniData.c; sourceTree = SOURCE_ROOT; };
+		F5F24FCE016ECAFC01DC9062 /* tclUtf.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclUtf.c; path = ../generic/tclUtf.c; sourceTree = SOURCE_ROOT; };
+		F5F24FCF016ECAFC01DC9062 /* tclUtil.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclUtil.c; path = ../generic/tclUtil.c; sourceTree = SOURCE_ROOT; };
+		F5F24FD0016ECAFC01DC9062 /* tclVar.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclVar.c; path = ../generic/tclVar.c; sourceTree = SOURCE_ROOT; };
+		F5F24FD1016ECB1E01DC9062 /* regex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = regex.h; path = ../generic/regex.h; sourceTree = SOURCE_ROOT; };
+		F5F24FD2016ECB1E01DC9062 /* tclPort.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclPort.h; path = ../generic/tclPort.h; sourceTree = SOURCE_ROOT; };
+		F5F24FD3016ECB4901DC9062 /* tclPkg.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclPkg.c; path = ../generic/tclPkg.c; sourceTree = SOURCE_ROOT; };
+		F5F24FD6016ECC0F01DC9062 /* tclUnixPort.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclUnixPort.h; path = ../unix/tclUnixPort.h; sourceTree = SOURCE_ROOT; };
+		F5F24FD7016ECC0F01DC9062 /* tclUnixThrd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclUnixThrd.h; path = ../unix/tclUnixThrd.h; sourceTree = SOURCE_ROOT; };
+		F5F24FD8016ECC0F01DC9062 /* tclAppInit.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclAppInit.c; path = ../unix/tclAppInit.c; sourceTree = SOURCE_ROOT; };
+		F5F24FD9016ECC0F01DC9062 /* tclLoadDyld.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclLoadDyld.c; path = ../unix/tclLoadDyld.c; sourceTree = SOURCE_ROOT; };
+		F5F24FDB016ECC0F01DC9062 /* tclUnixChan.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclUnixChan.c; path = ../unix/tclUnixChan.c; sourceTree = SOURCE_ROOT; };
+		F5F24FDC016ECC0F01DC9062 /* tclUnixEvent.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclUnixEvent.c; path = ../unix/tclUnixEvent.c; sourceTree = SOURCE_ROOT; };
+		F5F24FDD016ECC0F01DC9062 /* tclUnixFCmd.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclUnixFCmd.c; path = ../unix/tclUnixFCmd.c; sourceTree = SOURCE_ROOT; };
+		F5F24FDE016ECC0F01DC9062 /* tclUnixFile.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclUnixFile.c; path = ../unix/tclUnixFile.c; sourceTree = SOURCE_ROOT; };
+		F5F24FDF016ECC0F01DC9062 /* tclUnixInit.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclUnixInit.c; path = ../unix/tclUnixInit.c; sourceTree = SOURCE_ROOT; };
+		F5F24FE0016ECC0F01DC9062 /* tclUnixNotfy.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclUnixNotfy.c; path = ../unix/tclUnixNotfy.c; sourceTree = SOURCE_ROOT; };
+		F5F24FE1016ECC0F01DC9062 /* tclUnixPipe.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclUnixPipe.c; path = ../unix/tclUnixPipe.c; sourceTree = SOURCE_ROOT; };
+		F5F24FE2016ECC0F01DC9062 /* tclUnixSock.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclUnixSock.c; path = ../unix/tclUnixSock.c; sourceTree = SOURCE_ROOT; };
+		F5F24FE3016ECC0F01DC9062 /* tclUnixTest.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclUnixTest.c; path = ../unix/tclUnixTest.c; sourceTree = SOURCE_ROOT; };
+		F5F24FE4016ECC0F01DC9062 /* tclUnixThrd.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclUnixThrd.c; path = ../unix/tclUnixThrd.c; sourceTree = SOURCE_ROOT; };
+		F5F24FE5016ECC0F01DC9062 /* tclUnixTime.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclUnixTime.c; path = ../unix/tclUnixTime.c; sourceTree = SOURCE_ROOT; };
+		F5F24FE6016ECC0F01DC9062 /* tclXtNotify.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclXtNotify.c; path = ../unix/tclXtNotify.c; sourceTree = SOURCE_ROOT; };
+		F5F24FE7016ECC0F01DC9062 /* tclXtTest.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclXtTest.c; path = ../unix/tclXtTest.c; sourceTree = SOURCE_ROOT; };
+		F5F24FEF016ED0DF01DC9062 /* auto.tcl */ = {isa = PBXFileReference; lastKnownFileType = text; name = auto.tcl; path = ../library/auto.tcl; sourceTree = SOURCE_ROOT; };
+		F5F24FF0016ED0DF01DC9062 /* dde */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = folder; name = dde; path = ../library/dde; sourceTree = SOURCE_ROOT; };
+		F5F24FF3016ED0DF01DC9062 /* encoding */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = folder; name = encoding; path = ../library/encoding; sourceTree = SOURCE_ROOT; };
+		F5F24FF4016ED0DF01DC9062 /* history.tcl */ = {isa = PBXFileReference; lastKnownFileType = text; name = history.tcl; path = ../library/history.tcl; sourceTree = SOURCE_ROOT; };
+		F5F24FF5016ED0DF01DC9062 /* http */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = folder; name = http; path = ../library/http; sourceTree = SOURCE_ROOT; };
+		F5F24FF6016ED0DF01DC9062 /* http1.0 */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = folder; name = http1.0; path = ../library/http1.0; sourceTree = SOURCE_ROOT; };
+		F5F24FFA016ED0DF01DC9062 /* init.tcl */ = {isa = PBXFileReference; lastKnownFileType = text; name = init.tcl; path = ../library/init.tcl; sourceTree = SOURCE_ROOT; };
+		F5F24FFB016ED0DF01DC9062 /* ldAout.tcl */ = {isa = PBXFileReference; lastKnownFileType = text; name = ldAout.tcl; path = ../library/ldAout.tcl; sourceTree = SOURCE_ROOT; };
+		F5F24FFC016ED0DF01DC9062 /* msgcat */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = folder; name = msgcat; path = ../library/msgcat; sourceTree = SOURCE_ROOT; };
+		F5F24FFE016ED0DF01DC9062 /* opt */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = folder; name = opt; path = ../library/opt; sourceTree = SOURCE_ROOT; };
+		F5F25001016ED0DF01DC9062 /* package.tcl */ = {isa = PBXFileReference; lastKnownFileType = text; name = package.tcl; path = ../library/package.tcl; sourceTree = SOURCE_ROOT; };
+		F5F25002016ED0DF01DC9062 /* parray.tcl */ = {isa = PBXFileReference; lastKnownFileType = text; name = parray.tcl; path = ../library/parray.tcl; sourceTree = SOURCE_ROOT; };
+		F5F25003016ED0DF01DC9062 /* reg */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = folder; name = reg; path = ../library/reg; sourceTree = SOURCE_ROOT; };
+		F5F25005016ED0DF01DC9062 /* safe.tcl */ = {isa = PBXFileReference; lastKnownFileType = text; name = safe.tcl; path = ../library/safe.tcl; sourceTree = SOURCE_ROOT; };
+		F5F25007016ED0DF01DC9062 /* tclIndex */ = {isa = PBXFileReference; lastKnownFileType = text; name = tclIndex; path = ../library/tclIndex; sourceTree = SOURCE_ROOT; };
+		F5F25008016ED0DF01DC9062 /* tcltest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = folder; name = tcltest; path = ../library/tcltest; sourceTree = SOURCE_ROOT; };
+		F5F2500A016ED0DF01DC9062 /* word.tcl */ = {isa = PBXFileReference; lastKnownFileType = text; name = word.tcl; path = ../library/word.tcl; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworkTarget section */
+		00E2F84E016E92110ACA28DC /* Tcl */ = {
+			isa = PBXFrameworkTarget;
+			buildConfigurationList = A50F554B1808CA12008BA312 /* Build configuration list for PBXFrameworkTarget "Tcl" */;
+			buildPhases = (
+				F5877FB6031F97AF016F146B /* ShellScript */,
+				F50DC36A01703B7301DC9062 /* Sources */,
+				F50DC367017033D701DC9062 /* Frameworks */,
+				F50DC3680170344801DC9062 /* Resources */,
+				00E2F84F016E92110ACA28DC /* Headers */,
+				F5BE9BBF02FB5974016F146B /* ShellScript */,
+				00530A0D0173C8270ACA28DC /* ShellScript */,
+				00530A0E0173CC960ACA28DC /* ShellScript */,
+				F5877FBB031FA90A016F146B /* ShellScript */,
+				F59AE5E3017AC67A01DC9062 /* ShellScript */,
+			);
+			dependencies = (
+				F5877EB6031F79A4016F146B /* PBXTargetDependency */,
+			);
+			name = Tcl;
+			productInstallPath = /Library/Frameworks;
+			productName = TclLibrary;
+			productReference = 00E2F84D016E92110ACA28DC /* Tcl.framework */;
+			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>Tcl</string>
+	<key>CFBundleGetInfoString</key>
+	<string>Tcl Library 8.4, Copyright © 2002 Tcl Core Team.
+MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright © 2001-2002, Apple Computer, Inc.</string>
+	<key>CFBundleIconFile</key>
+	<string></string>
+	<key>CFBundleIdentifier</key>
+	<string>com.tcltk.tcllibrary</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Tcl Library 8.4</string>
+	<key>CFBundlePackageType</key>
+	<string>FMWK</string>
+	<key>CFBundleShortVersionString</key>
+	<string>8.4.0</string>
+	<key>CFBundleSignature</key>
+	<string>Tcl </string>
+	<key>CFBundleVersion</key>
+	<string>8.4.0</string>
+</dict>
+</plist>
+";
+		};
+/* End PBXFrameworkTarget section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A50F55551808CA1C008BA312 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F50DC367017033D701DC9062 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		00E2F846016E82EB0ACA28DC = {
+			isa = PBXGroup;
+			children = (
+				F5C88655017D604601DC9062 /* Header Tools */,
+				F5F24FEE016ED0DF01DC9062 /* Scripts */,
+				00E2F855016E922C0ACA28DC /* generic */,
+				00E2F857016E92B00ACA28DC /* macosx */,
+				00E2F85A016E92B00ACA28DC /* unix */,
+				00E2F84A016E8A830ACA28DC /* Products */,
+				A50F55611808CA1C008BA312 /* Info-Tcl__Upgraded_.plist */,
+			);
+			sourceTree = "<group>";
+		};
+		00E2F84A016E8A830ACA28DC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00E2F84D016E92110ACA28DC /* Tcl.framework */,
+				F53ACC5C031D9D11016F146B /* tclsh8.4 */,
+				F53ACC73031DA405016F146B /* tcltest */,
+				A50F55621808CA1C008BA312 /* Tcl.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00E2F854016E922C0ACA28DC /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				F5F24F87016ECAFC01DC9062 /* regc_color.c */,
+				F5F24F88016ECAFC01DC9062 /* regc_cvec.c */,
+				F5F24F89016ECAFC01DC9062 /* regc_lex.c */,
+				F5F24F8A016ECAFC01DC9062 /* regc_locale.c */,
+				F5F24F8B016ECAFC01DC9062 /* regc_nfa.c */,
+				F5F24F8C016ECAFC01DC9062 /* regcomp.c */,
+				F5F24F8D016ECAFC01DC9062 /* rege_dfa.c */,
+				F5F24F8E016ECAFC01DC9062 /* regerror.c */,
+				F5F24F8F016ECAFC01DC9062 /* regexec.c */,
+				F5F24F90016ECAFC01DC9062 /* regfree.c */,
+				F5F24F91016ECAFC01DC9062 /* regfronts.c */,
+				F5F24F92016ECAFC01DC9062 /* tclAlloc.c */,
+				F5F24F93016ECAFC01DC9062 /* tclAsync.c */,
+				F5F24F94016ECAFC01DC9062 /* tclBasic.c */,
+				F5F24F95016ECAFC01DC9062 /* tclBinary.c */,
+				F5F24F96016ECAFC01DC9062 /* tclCkalloc.c */,
+				F5F24F97016ECAFC01DC9062 /* tclClock.c */,
+				F5F24F98016ECAFC01DC9062 /* tclCmdAH.c */,
+				F5F24F99016ECAFC01DC9062 /* tclCmdIL.c */,
+				F5F24F9A016ECAFC01DC9062 /* tclCmdMZ.c */,
+				F5F24F9B016ECAFC01DC9062 /* tclCompCmds.c */,
+				F5F24F9C016ECAFC01DC9062 /* tclCompExpr.c */,
+				F5F24F9D016ECAFC01DC9062 /* tclCompile.c */,
+				F5F24F9E016ECAFC01DC9062 /* tclDate.c */,
+				F5F24F9F016ECAFC01DC9062 /* tclEncoding.c */,
+				F5F24FA0016ECAFC01DC9062 /* tclEnv.c */,
+				F5F24FA1016ECAFC01DC9062 /* tclEvent.c */,
+				F5F24FA2016ECAFC01DC9062 /* tclExecute.c */,
+				F5F24FA3016ECAFC01DC9062 /* tclFCmd.c */,
+				F5F24FA4016ECAFC01DC9062 /* tclFileName.c */,
+				F5F24FA5016ECAFC01DC9062 /* tclGet.c */,
+				F5F24FA6016ECAFC01DC9062 /* tclHash.c */,
+				F5F24FA7016ECAFC01DC9062 /* tclHistory.c */,
+				F5F24FA8016ECAFC01DC9062 /* tclIndexObj.c */,
+				F5F24FA9016ECAFC01DC9062 /* tclInterp.c */,
+				F5F24FAA016ECAFC01DC9062 /* tclIO.c */,
+				F5F24FAB016ECAFC01DC9062 /* tclIOCmd.c */,
+				F5F24FAC016ECAFC01DC9062 /* tclIOGT.c */,
+				F5F24FAD016ECAFC01DC9062 /* tclIOSock.c */,
+				F5F24FAE016ECAFC01DC9062 /* tclIOUtil.c */,
+				F5F24FAF016ECAFC01DC9062 /* tclLink.c */,
+				F5F24FB0016ECAFC01DC9062 /* tclListObj.c */,
+				F5F24FB1016ECAFC01DC9062 /* tclLiteral.c */,
+				F5F24FB2016ECAFC01DC9062 /* tclLoad.c */,
+				F5F24FB3016ECAFC01DC9062 /* tclLoadNone.c */,
+				F5F24FB4016ECAFC01DC9062 /* tclMain.c */,
+				F5F24FB5016ECAFC01DC9062 /* tclNamesp.c */,
+				F5F24FB6016ECAFC01DC9062 /* tclNotify.c */,
+				F5F24FB7016ECAFC01DC9062 /* tclObj.c */,
+				F5F24FB8016ECAFC01DC9062 /* tclPanic.c */,
+				F5F24FB9016ECAFC01DC9062 /* tclParse.c */,
+				F5F24FBA016ECAFC01DC9062 /* tclParseExpr.c */,
+				F5F24FBB016ECAFC01DC9062 /* tclPipe.c */,
+				F5F24FD3016ECB4901DC9062 /* tclPkg.c */,
+				F5F24FBC016ECAFC01DC9062 /* tclPosixStr.c */,
+				F5F24FBD016ECAFC01DC9062 /* tclPreserve.c */,
+				F5F24FBE016ECAFC01DC9062 /* tclProc.c */,
+				F5F24FBF016ECAFC01DC9062 /* tclRegexp.c */,
+				F5F24FC0016ECAFC01DC9062 /* tclResolve.c */,
+				F5F24FC1016ECAFC01DC9062 /* tclResult.c */,
+				F5F24FC2016ECAFC01DC9062 /* tclScan.c */,
+				F5F24FC3016ECAFC01DC9062 /* tclStringObj.c */,
+				F5F24FC4016ECAFC01DC9062 /* tclStubInit.c */,
+				F5F24FC5016ECAFC01DC9062 /* tclStubLib.c */,
+				F5F24FC6016ECAFC01DC9062 /* tclTest.c */,
+				F5F24FC7016ECAFC01DC9062 /* tclTestObj.c */,
+				F5F24FC8016ECAFC01DC9062 /* tclTestProcBodyObj.c */,
+				F5F24FC9016ECAFC01DC9062 /* tclThread.c */,
+				F5F24FCA016ECAFC01DC9062 /* tclThreadJoin.c */,
+				F5F24FCB016ECAFC01DC9062 /* tclThreadTest.c */,
+				F5F24FCC016ECAFC01DC9062 /* tclTimer.c */,
+				F5F24FCD016ECAFC01DC9062 /* tclUniData.c */,
+				F5F24FCE016ECAFC01DC9062 /* tclUtf.c */,
+				F5F24FCF016ECAFC01DC9062 /* tclUtil.c */,
+				F5F24FD0016ECAFC01DC9062 /* tclVar.c */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+		00E2F855016E922C0ACA28DC /* generic */ = {
+			isa = PBXGroup;
+			children = (
+				00E2F856016E92B00ACA28DC /* Headers */,
+				00E2F854016E922C0ACA28DC /* Sources */,
+			);
+			name = generic;
+			sourceTree = "<group>";
+		};
+		00E2F856016E92B00ACA28DC /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				F5F24F6B016ECAA401DC9062 /* regcustom.h */,
+				F5F24F6C016ECAA401DC9062 /* regerrs.h */,
+				F5F24F6D016ECAA401DC9062 /* regguts.h */,
+				F5F24F6E016ECAA401DC9062 /* tcl.h */,
+				F5F24F6F016ECAA401DC9062 /* tclCompile.h */,
+				F5F24F70016ECAA401DC9062 /* tclDecls.h */,
+				F5F24F71016ECAA401DC9062 /* tclInitScript.h */,
+				F5F24F72016ECAA401DC9062 /* tclInt.h */,
+				F5F24F73016ECAA401DC9062 /* tclIntDecls.h */,
+				F5F24F74016ECAA401DC9062 /* tclIntPlatDecls.h */,
+				F5F24F75016ECAA401DC9062 /* tclIO.h */,
+				F5F24F76016ECAA401DC9062 /* tclMath.h */,
+				F5F24F77016ECAA401DC9062 /* tclPlatDecls.h */,
+				F5F24F78016ECAA401DC9062 /* tclRegexp.h */,
+				F5F24FD1016ECB1E01DC9062 /* regex.h */,
+				F5F24FD2016ECB1E01DC9062 /* tclPort.h */,
+			);
+			name = Headers;
+			sourceTree = "<group>";
+		};
+		00E2F857016E92B00ACA28DC /* macosx */ = {
+			isa = PBXGroup;
+			children = (
+				00E2F858016E92B00ACA28DC /* Headers */,
+				00E2F859016E92B00ACA28DC /* Sources */,
+			);
+			name = macosx;
+			sourceTree = "<group>";
+		};
+		00E2F858016E92B00ACA28DC /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Headers;
+			sourceTree = "<group>";
+		};
+		00E2F859016E92B00ACA28DC /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				F5A1836F018242A501DC9062 /* tclMacOSXBundle.c */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+		00E2F85A016E92B00ACA28DC /* unix */ = {
+			isa = PBXGroup;
+			children = (
+				00E2F85B016E92B00ACA28DC /* Headers */,
+				00E2F85C016E92B00ACA28DC /* Sources */,
+			);
+			name = unix;
+			sourceTree = "<group>";
+		};
+		00E2F85B016E92B00ACA28DC /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				F5F24FD6016ECC0F01DC9062 /* tclUnixPort.h */,
+				F5F24FD7016ECC0F01DC9062 /* tclUnixThrd.h */,
+			);
+			name = Headers;
+			sourceTree = "<group>";
+		};
+		00E2F85C016E92B00ACA28DC /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				F5F24FD8016ECC0F01DC9062 /* tclAppInit.c */,
+				F5F24FD9016ECC0F01DC9062 /* tclLoadDyld.c */,
+				F5F24FDB016ECC0F01DC9062 /* tclUnixChan.c */,
+				F5F24FDC016ECC0F01DC9062 /* tclUnixEvent.c */,
+				F5F24FDD016ECC0F01DC9062 /* tclUnixFCmd.c */,
+				F5F24FDE016ECC0F01DC9062 /* tclUnixFile.c */,
+				F5F24FDF016ECC0F01DC9062 /* tclUnixInit.c */,
+				F5F24FE0016ECC0F01DC9062 /* tclUnixNotfy.c */,
+				F5F24FE1016ECC0F01DC9062 /* tclUnixPipe.c */,
+				F5F24FE2016ECC0F01DC9062 /* tclUnixSock.c */,
+				F5F24FE3016ECC0F01DC9062 /* tclUnixTest.c */,
+				F5F24FE4016ECC0F01DC9062 /* tclUnixThrd.c */,
+				F5F24FE5016ECC0F01DC9062 /* tclUnixTime.c */,
+				F5F24FE6016ECC0F01DC9062 /* tclXtNotify.c */,
+				F5F24FE7016ECC0F01DC9062 /* tclXtTest.c */,
+			);
+			name = Sources;
+			sourceTree = "<group>";
+		};
+		F5C88655017D604601DC9062 /* Header Tools */ = {
+			isa = PBXGroup;
+			children = (
+				F5C88656017D604601DC9062 /* genStubs.tcl */,
+				F5C88657017D60C901DC9062 /* tcl.decls */,
+				F5C88658017D60C901DC9062 /* tclInt.decls */,
+			);
+			name = "Header Tools";
+			sourceTree = "<group>";
+		};
+		F5F24FEE016ED0DF01DC9062 /* Scripts */ = {
+			isa = PBXGroup;
+			children = (
+				F5F24FEF016ED0DF01DC9062 /* auto.tcl */,
+				F5F24FF0016ED0DF01DC9062 /* dde */,
+				F5F24FF3016ED0DF01DC9062 /* encoding */,
+				F5F24FF4016ED0DF01DC9062 /* history.tcl */,
+				F5F24FF5016ED0DF01DC9062 /* http */,
+				F5F24FF6016ED0DF01DC9062 /* http1.0 */,
+				F5F24FFA016ED0DF01DC9062 /* init.tcl */,
+				F5F24FFB016ED0DF01DC9062 /* ldAout.tcl */,
+				F5F24FFC016ED0DF01DC9062 /* msgcat */,
+				F5F24FFE016ED0DF01DC9062 /* opt */,
+				F5F25001016ED0DF01DC9062 /* package.tcl */,
+				F5F25002016ED0DF01DC9062 /* parray.tcl */,
+				F5F25003016ED0DF01DC9062 /* reg */,
+				F5F25005016ED0DF01DC9062 /* safe.tcl */,
+				F5F25007016ED0DF01DC9062 /* tclIndex */,
+				F5F25008016ED0DF01DC9062 /* tcltest */,
+				F5F2500A016ED0DF01DC9062 /* word.tcl */,
+			);
+			name = Scripts;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		00E2F84F016E92110ACA28DC /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A50F55571808CA1C008BA312 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXLegacyTarget section */
+		00E2F84B016E8A830ACA28DC /* Configure */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "-c \"if [ \\\"${ACTION}\\\" != \\\"clean\\\" ]; then if [ -z \\\"`find . -name Makefile -newer \\\"${SRCROOT}/../unix/configure\\\"`\\\" ]; then \\\"${SRCROOT}/../unix/configure\\\" --prefix=/usr --mandir=/usr/share/man --libdir=\\\"${LIBDIR}\\\" --includedir=\\\"${LIBDIR}/Headers\\\" --enable-threads --enable-framework ${EXTRA_CONFIGURE_FLAGS}; mkdir -p Tcl.framework; ln -fs ../Tcl Tcl.framework/Tcl; fi; else rm -f Makefile; fi\"";
+			buildConfigurationList = A50F55491808CA12008BA312 /* Build configuration list for PBXLegacyTarget "Configure" */;
+			buildPhases = (
+			);
+			buildToolPath = /bin/sh;
+			buildWorkingDirectory = "${TEMP_DIR}/..";
+			dependencies = (
+			);
+			name = Configure;
+			passBuildSettingsInEnvironment = 1;
+			productName = Configure;
+		};
+		00E2F84C016E8B780ACA28DC /* Make */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "-c \"if [ \\\"${ACTION}\\\" != \\\"clean\\\" ]; then gnumake tclsh tcltest TCL_LIBRARY=\\\"@TCL_IN_FRAMEWORK@\\\" TCL_PACKAGE_PATH=\\\"~/Library/Tcl /Library/Tcl /Network/Library/Tcl /System/Library/Tcl\\\" DYLIB_INSTALL_DIR=\\\"${DYLIB_INSTALL_DIR}\\\" ${EXTRA_MAKE_FLAGS}; else gnumake clean; fi\"";
+			buildConfigurationList = A50F554A1808CA12008BA312 /* Build configuration list for PBXLegacyTarget "Make" */;
+			buildPhases = (
+			);
+			buildToolPath = /bin/sh;
+			buildWorkingDirectory = "${TEMP_DIR}/..";
+			dependencies = (
+				F5877EB5031F7997016F146B /* PBXTargetDependency */,
+			);
+			name = Make;
+			passBuildSettingsInEnvironment = 1;
+			productName = Make;
+		};
+		A50F55631808CA1C008BA312 /* Configure (Copied) */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "-c \"if [ \\\"${ACTION}\\\" != \\\"clean\\\" ]; then if [ -z \\\"`find . -name Makefile -newer \\\"${SRCROOT}/../unix/configure\\\"`\\\" ]; then \\\"${SRCROOT}/../unix/configure\\\" --prefix=/usr --mandir=/usr/share/man --libdir=\\\"${LIBDIR}\\\" --includedir=\\\"${LIBDIR}/Headers\\\" --enable-threads --enable-framework ${EXTRA_CONFIGURE_FLAGS}; mkdir -p Tcl.framework; ln -fs ../Tcl Tcl.framework/Tcl; fi; else rm -f Makefile; fi\"";
+			buildConfigurationList = A50F55641808CA1C008BA312 /* Build configuration list for PBXLegacyTarget "Configure (Copied)" */;
+			buildPhases = (
+			);
+			buildToolPath = /bin/sh;
+			buildWorkingDirectory = "${TEMP_DIR}/..";
+			dependencies = (
+			);
+			name = "Configure (Copied)";
+			passBuildSettingsInEnvironment = 1;
+			productName = Configure;
+		};
+		A50F55681808CA1C008BA312 /* Make (Copied) */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "-c \"if [ \\\"${ACTION}\\\" != \\\"clean\\\" ]; then gnumake tclsh tcltest TCL_LIBRARY=\\\"@TCL_IN_FRAMEWORK@\\\" TCL_PACKAGE_PATH=\\\"~/Library/Tcl /Library/Tcl /Network/Library/Tcl /System/Library/Tcl\\\" DYLIB_INSTALL_DIR=\\\"${DYLIB_INSTALL_DIR}\\\" ${EXTRA_MAKE_FLAGS}; else gnumake clean; fi\"";
+			buildConfigurationList = A50F556B1808CA1C008BA312 /* Build configuration list for PBXLegacyTarget "Make (Copied)" */;
+			buildPhases = (
+			);
+			buildToolPath = /bin/sh;
+			buildWorkingDirectory = "${TEMP_DIR}/..";
+			dependencies = (
+				A50F55721808CA1C008BA312 /* PBXTargetDependency */,
+			);
+			name = "Make (Copied)";
+			passBuildSettingsInEnvironment = 1;
+			productName = Make;
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXNativeTarget section */
+		A50F55501808CA1C008BA312 /* Tcl (Upgraded) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A50F555D1808CA1C008BA312 /* Build configuration list for PBXNativeTarget "Tcl (Upgraded)" */;
+			buildPhases = (
+				A50F55531808CA1C008BA312 /* ShellScript */,
+				A50F55541808CA1C008BA312 /* Sources */,
+				A50F55551808CA1C008BA312 /* Frameworks */,
+				A50F55561808CA1C008BA312 /* Resources */,
+				A50F55571808CA1C008BA312 /* Headers */,
+				A50F55581808CA1C008BA312 /* ShellScript */,
+				A50F55591808CA1C008BA312 /* ShellScript */,
+				A50F555A1808CA1C008BA312 /* ShellScript */,
+				A50F555B1808CA1C008BA312 /* ShellScript */,
+				A50F555C1808CA1C008BA312 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A50F55701808CA1C008BA312 /* PBXTargetDependency */,
+			);
+			name = "Tcl (Upgraded)";
+			productInstallPath = /Library/Frameworks;
+			productName = TclLibrary;
+			productReference = A50F55621808CA1C008BA312 /* Tcl.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		00E2F845016E82EB0ACA28DC /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = A50F55481808CA12008BA312 /* Build configuration list for PBXProject "Tcl" */;
+			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 00E2F846016E82EB0ACA28DC;
+			productRefGroup = 00E2F84A016E8A830ACA28DC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A50F55501808CA1C008BA312 /* Tcl (Upgraded) */,
+				A50F55631808CA1C008BA312 /* Configure (Copied) */,
+				A50F55681808CA1C008BA312 /* Make (Copied) */,
+				00E2F84E016E92110ACA28DC /* Tcl */,
+				00E2F84B016E8A830ACA28DC /* Configure */,
+				00E2F84C016E8B780ACA28DC /* Make */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A50F55561808CA1C008BA312 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F50DC3680170344801DC9062 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		00530A0D0173C8270ACA28DC /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# install to ${INSTALL_ROOT} with optional stripping\ncd ${TEMP_DIR}/..\nif test \"${INSTALL_STRIP}\" = \"YES\"; then\nexport INSTALL_PROGRAM='${INSTALL} ${INSTALL_STRIP_PROGRAM}'\nexport INSTALL_LIBRARY='${INSTALL} ${INSTALL_STRIP_LIBRARY}'\nelse\nexport INSTALL_PROGRAM='${INSTALL}'\nexport INSTALL_LIBRARY='${INSTALL}'\nfi\ngnumake install-binaries install-libraries TCL_LIBRARY=\"@TCL_IN_FRAMEWORK@\" INSTALL_ROOT=\"${INSTALL_ROOT}\" SCRIPT_INSTALL_DIR=\"${INSTALL_ROOT}${LIBDIR}/Resources/Scripts\" INSTALL_PROGRAM=\"${INSTALL_PROGRAM}\" INSTALL_LIBRARY=\"${INSTALL_LIBRARY}\"";
+		};
+		00530A0E0173CC960ACA28DC /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# fixup Framework structure\ncd \"${INSTALL_ROOT}${LIBDIR}\"\nln -fs Versions/Current/Headers ../..\nmv -f tclConfig.sh Resources\nif [ \"${BUILD_STYLE}\" = \"Development\" ]; then\n\t# keep copy of debug library around, so that\n\t# Deployment build can be installed on top\n\t# of Development build without overwriting\n\t# the debuglibrary\n\tcp -fp \"${PRODUCT_NAME}\" \"${PRODUCT_NAME}_debug\"\nfi";
+		};
+		A50F55531808CA1C008BA312 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 8;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/sh;
+			shellScript = "# ensure we can overwrite a previous install\nif [ -d \"${INSTALL_ROOT}${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}\" ]; then\n    chmod -RH u+w \"${INSTALL_ROOT}${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}\"\nfi";
+		};
+		A50F55581808CA1C008BA312 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# symolic link hackery to trick\n# 'make install INSTALL_ROOT=${TEMP_DIR}'\n# into building Tcl.framework and tclsh in ${SYMROOT}\ncd \"${TEMP_DIR}\"\nmkdir -p Library\nmkdir -p usr\nrm -f Library/Frameworks; ln -fs \"${SYMROOT}\" Library/Frameworks\nrm -f usr/bin; ln -fs \"${SYMROOT}\" usr/bin\nln -fs \"${TEMP_DIR}/../tcltest\" \"${SYMROOT}\"";
+		};
+		A50F55591808CA1C008BA312 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# install to ${INSTALL_ROOT} with optional stripping\ncd ${TEMP_DIR}/..\nif test \"${INSTALL_STRIP}\" = \"YES\"; then\nexport INSTALL_PROGRAM='${INSTALL} ${INSTALL_STRIP_PROGRAM}'\nexport INSTALL_LIBRARY='${INSTALL} ${INSTALL_STRIP_LIBRARY}'\nelse\nexport INSTALL_PROGRAM='${INSTALL}'\nexport INSTALL_LIBRARY='${INSTALL}'\nfi\ngnumake install-binaries install-libraries TCL_LIBRARY=\"@TCL_IN_FRAMEWORK@\" INSTALL_ROOT=\"${INSTALL_ROOT}\" SCRIPT_INSTALL_DIR=\"${INSTALL_ROOT}${LIBDIR}/Resources/Scripts\" INSTALL_PROGRAM=\"${INSTALL_PROGRAM}\" INSTALL_LIBRARY=\"${INSTALL_LIBRARY}\"";
+		};
+		A50F555A1808CA1C008BA312 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# fixup Framework structure\ncd \"${INSTALL_ROOT}${LIBDIR}\"\nln -fs Versions/Current/Headers ../..\nmv -f tclConfig.sh Resources\nif [ \"${BUILD_STYLE}\" = \"Development\" ]; then\n\t# keep copy of debug library around, so that\n\t# Deployment build can be installed on top\n\t# of Development build without overwriting\n\t# the debuglibrary\n\tcp -fp \"${PRODUCT_NAME}\" \"${PRODUCT_NAME}_debug\"\nfi";
+		};
+		A50F555B1808CA1C008BA312 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 8;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/sh;
+			shellScript = "if [ `echo \"${DYLIB_INSTALL_PATH:-}\" | grep -c \"@executable_path\"` -gt 0 ]; then\n# if we are embedding frameworks, don't install tclsh\nrm -f \"${INSTALL_ROOT}/usr/bin/tclsh${FRAMEWORK_VERSION}\"\nrmdir -p \"${INSTALL_ROOT}/usr/bin\"\necho \"tclsh removed\"\nelse\n# redo prebinding\ncd \"${INSTALL_ROOT}\"\nif [ ! -d usr/lib ]; then mkdir -p usr; ln -fs /usr/lib usr/; RM_USRLIB=1; fi\nif [ ! -d System ]; then ln -fs /System .; RM_SYSTEM=1; fi\nredo_prebinding -r . \"./usr/bin/tclsh${FRAMEWORK_VERSION}\"\nif [ -n \"${RM_USRLIB:-}\" ]; then rm -f usr/lib; rmdir -p usr; fi\nif [ -n \"${RM_SYSTEM:-}\" ]; then rm -f System; fi\nfi";
+		};
+		A50F555C1808CA1C008BA312 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 8;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/sh;
+			shellScript = "# build html documentation\nif [ \"${BUILD_STYLE}\" = \"Deployment\" ]; then\n    cd \"${TEMP_DIR}/..\"\n    gnumake html DISTDIR=\"${INSTALL_ROOT}${LIBDIR}/Resources/English.lproj/Documentation/Reference\"\n    cd \"${INSTALL_ROOT}${LIBDIR}/Resources/English.lproj/Documentation/Reference\"\n    ln -fs contents.htm html/index.html\n    rm -f \"${PRODUCT_NAME}\"; ln -fs html \"${PRODUCT_NAME}\"\nfi";
+		};
+		F5877FB6031F97AF016F146B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 8;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/sh;
+			shellScript = "# ensure we can overwrite a previous install\nif [ -d \"${INSTALL_ROOT}${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}\" ]; then\n    chmod -RH u+w \"${INSTALL_ROOT}${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}\"\nfi";
+		};
+		F5877FBB031FA90A016F146B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 8;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/sh;
+			shellScript = "if [ `echo \"${DYLIB_INSTALL_PATH:-}\" | grep -c \"@executable_path\"` -gt 0 ]; then\n# if we are embedding frameworks, don't install tclsh\nrm -f \"${INSTALL_ROOT}/usr/bin/tclsh${FRAMEWORK_VERSION}\"\nrmdir -p \"${INSTALL_ROOT}/usr/bin\"\necho \"tclsh removed\"\nelse\n# redo prebinding\ncd \"${INSTALL_ROOT}\"\nif [ ! -d usr/lib ]; then mkdir -p usr; ln -fs /usr/lib usr/; RM_USRLIB=1; fi\nif [ ! -d System ]; then ln -fs /System .; RM_SYSTEM=1; fi\nredo_prebinding -r . \"./usr/bin/tclsh${FRAMEWORK_VERSION}\"\nif [ -n \"${RM_USRLIB:-}\" ]; then rm -f usr/lib; rmdir -p usr; fi\nif [ -n \"${RM_SYSTEM:-}\" ]; then rm -f System; fi\nfi";
+		};
+		F59AE5E3017AC67A01DC9062 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 8;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/sh;
+			shellScript = "# build html documentation\nif [ \"${BUILD_STYLE}\" = \"Deployment\" ]; then\n    cd \"${TEMP_DIR}/..\"\n    gnumake html DISTDIR=\"${INSTALL_ROOT}${LIBDIR}/Resources/English.lproj/Documentation/Reference\"\n    cd \"${INSTALL_ROOT}${LIBDIR}/Resources/English.lproj/Documentation/Reference\"\n    ln -fs contents.htm html/index.html\n    rm -f \"${PRODUCT_NAME}\"; ln -fs html \"${PRODUCT_NAME}\"\nfi";
+		};
+		F5BE9BBF02FB5974016F146B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# symolic link hackery to trick\n# 'make install INSTALL_ROOT=${TEMP_DIR}'\n# into building Tcl.framework and tclsh in ${SYMROOT}\ncd \"${TEMP_DIR}\"\nmkdir -p Library\nmkdir -p usr\nrm -f Library/Frameworks; ln -fs \"${SYMROOT}\" Library/Frameworks\nrm -f usr/bin; ln -fs \"${SYMROOT}\" usr/bin\nln -fs \"${TEMP_DIR}/../tcltest\" \"${SYMROOT}\"";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A50F55541808CA1C008BA312 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F50DC36A01703B7301DC9062 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A50F55701808CA1C008BA312 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A50F55681808CA1C008BA312 /* Make (Copied) */;
+			targetProxy = A50F556F1808CA1C008BA312 /* PBXContainerItemProxy */;
+		};
+		A50F55721808CA1C008BA312 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A50F55631808CA1C008BA312 /* Configure (Copied) */;
+			targetProxy = A50F55711808CA1C008BA312 /* PBXContainerItemProxy */;
+		};
+		F5877EB5031F7997016F146B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 00E2F84B016E8A830ACA28DC /* Configure */;
+			targetProxy = A50F54D31808CA0D008BA312 /* PBXContainerItemProxy */;
+		};
+		F5877EB6031F79A4016F146B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 00E2F84C016E8B780ACA28DC /* Make */;
+			targetProxy = A50F54D21808CA0D008BA312 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		A50F553C1808CA11008BA312 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GENERATE_PKGINFO_FILE = YES;
+				GENERATE_PROFILING_CODE = YES;
+				LD_GENERATE_MAP_FILE = YES;
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+			};
+			name = Development;
+		};
+		A50F553D1808CA11008BA312 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Deployment;
+		};
+		A50F553E1808CA11008BA312 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+			};
+			name = Default;
+		};
+		A50F553F1808CA11008BA312 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = "${TEMP_DIR}";
+				EXTRA_CONFIGURE_FLAGS = "--enable-symbols";
+				EXTRA_MAKE_INSTALL_FLAGS = "";
+				FRAMEWORK_VERSION = 8.4;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /Library/Frameworks;
+				INSTALL_STRIP = NO;
+				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}/Versions/${FRAMEWORK_VERSION}";
+				PRODUCT_NAME = Tcl;
+				TEMP_DIR = "${OBJROOT}/Development.build/$(PROJECT_NAME).build/$(TARGET_NAME).build";
+				WRAPPER_EXTENSION = framework;
+				ZERO_LINK = YES;
+			};
+			name = Development;
+		};
+		A50F55401808CA11008BA312 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = "${TEMP_DIR}";
+				EXTRA_MAKE_INSTALL_FLAGS = "";
+				FRAMEWORK_VERSION = 8.4;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				INSTALL_PATH = /Library/Frameworks;
+				INSTALL_STRIP = YES;
+				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}/Versions/${FRAMEWORK_VERSION}";
+				PRODUCT_NAME = Tcl;
+				TEMP_DIR = "${OBJROOT}/Deployment.build/$(PROJECT_NAME).build/$(TARGET_NAME).build";
+				WRAPPER_EXTENSION = framework;
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		A50F55411808CA11008BA312 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = "${TEMP_DIR}";
+				EXTRA_MAKE_INSTALL_FLAGS = "";
+				FRAMEWORK_VERSION = 8.4;
+				INSTALL_PATH = /Library/Frameworks;
+				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}/Versions/${FRAMEWORK_VERSION}";
+				PRODUCT_NAME = Tcl;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Default;
+		};
+		A50F55421808CA11008BA312 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXTRA_CONFIGURE_FLAGS = "--enable-symbols";
+				FRAMEWORK_VERSION = 8.4;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /Library/Frameworks;
+				INSTALL_STRIP = NO;
+				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
+				PRODUCT_NAME = Tcl;
+				TEMP_DIR = "${OBJROOT}/Development.build/$(PROJECT_NAME).build/$(TARGET_NAME).build";
+				ZERO_LINK = YES;
+			};
+			name = Development;
+		};
+		A50F55431808CA11008BA312 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXTRA_CONFIGURE_FLAGS = "";
+				FRAMEWORK_VERSION = 8.4;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				INSTALL_PATH = /Library/Frameworks;
+				INSTALL_STRIP = YES;
+				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
+				PRODUCT_NAME = Tcl;
+				TEMP_DIR = "${OBJROOT}/Deployment.build/$(PROJECT_NAME).build/$(TARGET_NAME).build";
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		A50F55441808CA11008BA312 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXTRA_CONFIGURE_FLAGS = "";
+				FRAMEWORK_VERSION = 8.4;
+				INSTALL_PATH = /Library/Frameworks;
+				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
+				PRODUCT_NAME = Tcl;
+			};
+			name = Default;
+		};
+		A50F55451808CA11008BA312 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_INSTALL_DIR = "${DYLIB_INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
+				DYLIB_INSTALL_PATH = "${INSTALL_PATH}";
+				EXTRA_CONFIGURE_FLAGS = "--enable-symbols";
+				EXTRA_MAKE_FLAGS = "";
+				FRAMEWORK_VERSION = 8.4;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /Library/Frameworks;
+				INSTALL_STRIP = NO;
+				PRODUCT_NAME = Tcl;
+				TEMP_DIR = "${OBJROOT}/Development.build/$(PROJECT_NAME).build/$(TARGET_NAME).build";
+				ZERO_LINK = YES;
+			};
+			name = Development;
+		};
+		A50F55461808CA11008BA312 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_INSTALL_DIR = "${DYLIB_INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
+				DYLIB_INSTALL_PATH = "${INSTALL_PATH}";
+				EXTRA_MAKE_FLAGS = "";
+				FRAMEWORK_VERSION = 8.4;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				INSTALL_PATH = /Library/Frameworks;
+				INSTALL_STRIP = YES;
+				PRODUCT_NAME = Tcl;
+				TEMP_DIR = "${OBJROOT}/Deployment.build/$(PROJECT_NAME).build/$(TARGET_NAME).build";
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		A50F55471808CA11008BA312 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_INSTALL_DIR = "${DYLIB_INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
+				DYLIB_INSTALL_PATH = "${INSTALL_PATH}";
+				EXTRA_MAKE_FLAGS = "";
+				FRAMEWORK_VERSION = 8.4;
+				INSTALL_PATH = /Library/Frameworks;
+				PRODUCT_NAME = Tcl;
+			};
+			name = Default;
+		};
+		A50F555E1808CA1C008BA312 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = "${TEMP_DIR}";
+				EXTRA_CONFIGURE_FLAGS = "--enable-symbols";
+				EXTRA_MAKE_INSTALL_FLAGS = "";
+				FRAMEWORK_VERSION = 8.4;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INFOPLIST_FILE = "Info-Tcl__Upgraded_.plist";
+				INSTALL_PATH = /Library/Frameworks;
+				INSTALL_STRIP = NO;
+				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}/Versions/${FRAMEWORK_VERSION}";
+				PRODUCT_NAME = Tcl;
+				TEMP_DIR = "${OBJROOT}/Development.build/$(PROJECT_NAME).build/$(TARGET_NAME).build";
+				WRAPPER_EXTENSION = framework;
+				ZERO_LINK = YES;
+			};
+			name = Development;
+		};
+		A50F555F1808CA1C008BA312 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = "${TEMP_DIR}";
+				EXTRA_MAKE_INSTALL_FLAGS = "";
+				FRAMEWORK_VERSION = 8.4;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INFOPLIST_FILE = "Info-Tcl__Upgraded_.plist";
+				INSTALL_PATH = /Library/Frameworks;
+				INSTALL_STRIP = YES;
+				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}/Versions/${FRAMEWORK_VERSION}";
+				PRODUCT_NAME = Tcl;
+				TEMP_DIR = "${OBJROOT}/Deployment.build/$(PROJECT_NAME).build/$(TARGET_NAME).build";
+				WRAPPER_EXTENSION = framework;
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		A50F55601808CA1C008BA312 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = "${TEMP_DIR}";
+				EXTRA_MAKE_INSTALL_FLAGS = "";
+				FRAMEWORK_VERSION = 8.4;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				INFOPLIST_FILE = "Info-Tcl__Upgraded_.plist";
+				INSTALL_PATH = /Library/Frameworks;
+				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}/Versions/${FRAMEWORK_VERSION}";
+				PRODUCT_NAME = Tcl;
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Default;
+		};
+		A50F55651808CA1C008BA312 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXTRA_CONFIGURE_FLAGS = "--enable-symbols";
+				FRAMEWORK_VERSION = 8.4;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /Library/Frameworks;
+				INSTALL_STRIP = NO;
+				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
+				PRODUCT_NAME = Tcl;
+				TEMP_DIR = "${OBJROOT}/Development.build/$(PROJECT_NAME).build/$(TARGET_NAME).build";
+				ZERO_LINK = YES;
+			};
+			name = Development;
+		};
+		A50F55661808CA1C008BA312 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXTRA_CONFIGURE_FLAGS = "";
+				FRAMEWORK_VERSION = 8.4;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				INSTALL_PATH = /Library/Frameworks;
+				INSTALL_STRIP = YES;
+				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
+				PRODUCT_NAME = Tcl;
+				TEMP_DIR = "${OBJROOT}/Deployment.build/$(PROJECT_NAME).build/$(TARGET_NAME).build";
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		A50F55671808CA1C008BA312 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXTRA_CONFIGURE_FLAGS = "";
+				FRAMEWORK_VERSION = 8.4;
+				INSTALL_PATH = /Library/Frameworks;
+				LIBDIR = "${INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
+				PRODUCT_NAME = Tcl;
+			};
+			name = Default;
+		};
+		A50F556C1808CA1C008BA312 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_INSTALL_DIR = "${DYLIB_INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
+				DYLIB_INSTALL_PATH = "${INSTALL_PATH}";
+				EXTRA_CONFIGURE_FLAGS = "--enable-symbols";
+				EXTRA_MAKE_FLAGS = "";
+				FRAMEWORK_VERSION = 8.4;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				INSTALL_PATH = /Library/Frameworks;
+				INSTALL_STRIP = NO;
+				PRODUCT_NAME = Tcl;
+				TEMP_DIR = "${OBJROOT}/Development.build/$(PROJECT_NAME).build/$(TARGET_NAME).build";
+				ZERO_LINK = YES;
+			};
+			name = Development;
+		};
+		A50F556D1808CA1C008BA312 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_INSTALL_DIR = "${DYLIB_INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
+				DYLIB_INSTALL_PATH = "${INSTALL_PATH}";
+				EXTRA_MAKE_FLAGS = "";
+				FRAMEWORK_VERSION = 8.4;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				INSTALL_PATH = /Library/Frameworks;
+				INSTALL_STRIP = YES;
+				PRODUCT_NAME = Tcl;
+				TEMP_DIR = "${OBJROOT}/Deployment.build/$(PROJECT_NAME).build/$(TARGET_NAME).build";
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		A50F556E1808CA1C008BA312 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_INSTALL_DIR = "${DYLIB_INSTALL_PATH}/${PRODUCT_NAME}.framework/Versions/${FRAMEWORK_VERSION}";
+				DYLIB_INSTALL_PATH = "${INSTALL_PATH}";
+				EXTRA_MAKE_FLAGS = "";
+				FRAMEWORK_VERSION = 8.4;
+				INSTALL_PATH = /Library/Frameworks;
+				PRODUCT_NAME = Tcl;
+			};
+			name = Default;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A50F55481808CA12008BA312 /* Build configuration list for PBXProject "Tcl" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A50F553C1808CA11008BA312 /* Development */,
+				A50F553D1808CA11008BA312 /* Deployment */,
+				A50F553E1808CA11008BA312 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		A50F55491808CA12008BA312 /* Build configuration list for PBXLegacyTarget "Configure" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A50F55421808CA11008BA312 /* Development */,
+				A50F55431808CA11008BA312 /* Deployment */,
+				A50F55441808CA11008BA312 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		A50F554A1808CA12008BA312 /* Build configuration list for PBXLegacyTarget "Make" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A50F55451808CA11008BA312 /* Development */,
+				A50F55461808CA11008BA312 /* Deployment */,
+				A50F55471808CA11008BA312 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		A50F554B1808CA12008BA312 /* Build configuration list for PBXFrameworkTarget "Tcl" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A50F553F1808CA11008BA312 /* Development */,
+				A50F55401808CA11008BA312 /* Deployment */,
+				A50F55411808CA11008BA312 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		A50F555D1808CA1C008BA312 /* Build configuration list for PBXNativeTarget "Tcl (Upgraded)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A50F555E1808CA1C008BA312 /* Development */,
+				A50F555F1808CA1C008BA312 /* Deployment */,
+				A50F55601808CA1C008BA312 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		A50F55641808CA1C008BA312 /* Build configuration list for PBXLegacyTarget "Configure (Copied)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A50F55651808CA1C008BA312 /* Development */,
+				A50F55661808CA1C008BA312 /* Deployment */,
+				A50F55671808CA1C008BA312 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+		A50F556B1808CA1C008BA312 /* Build configuration list for PBXLegacyTarget "Make (Copied)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A50F556C1808CA1C008BA312 /* Development */,
+				A50F556D1808CA1C008BA312 /* Deployment */,
+				A50F556E1808CA1C008BA312 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 00E2F845016E82EB0ACA28DC /* Project object */;
+}
