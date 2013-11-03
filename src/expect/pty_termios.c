@@ -12,6 +12,8 @@ would appreciate credit if you use this file or parts of it.
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
+#else
+# define NOT_PRINTING_A_WARNING_HERE 1
 #endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>
@@ -41,62 +43,74 @@ extern char *TclGetRegError();
  * too.
  */
 # undef HAVE_PTMX
-#endif
+#endif /* HAVE_PTYM && HAVE_PTMX */
 
 #ifdef HAVE_UNISTD_H
-#  include <unistd.h>
+# include <unistd.h>
 #else
-#	warning pty_termios.c expects <unistd.h> to be included.
+# warning pty_termios.c expects <unistd.h> to be included.
 #endif /* HAVE_UNISTD_H */
 #ifdef HAVE_INTTYPES_H
-#  include <inttypes.h>
+# include <inttypes.h>
 #else
-#	warning pty_termios.c expects <inttypes.h> to be included.
+# warning pty_termios.c expects <inttypes.h> to be included.
 #endif /* HAVE_INTTYPES_H */
 #include <sys/types.h>
 #include <sys/stat.h>
 
 #ifdef NO_STDLIB_H
 # include "../compat/stdlib.h"
-#elif defined(HAVE_STDLIB_H)
-# include <stdlib.h>
 #else
-# warning pty_termios.c expects <stdlib.h> to be included.
+# ifdef HAVE_STDLIB_H
+#  include <stdlib.h>
+# else
+#  warning pty_termios.c expects <stdlib.h> to be included.
+# endif /* HAVE_STDLIB_H */
 #endif /* NO_STDLIB_H */
 
 #ifdef HAVE_SYSMACROS_H
 # include <sys/sysmacros.h>
 #else
-# warning pty_termios.c expects <sys/sysmacros.h> to be included.
+# if defined(__GNUC__) && defined(ANSI_PROTOTYPES) && defined(PROTOTYPES) && defined(__PROTOTYPES)
+#  warning pty_termios.c expects <sys/sysmacros.h> to be included.
+# endif /* __GNUC__ && ANSI_PROTOTYPES && PROTOTYPES && __PROTOTYPES */
 #endif /* HAVE_SYSMACROS_H */
 
 #if defined(HAVE_PTYTRAP) || defined(HAVE_SYS_PTYIO_H)
 # include <sys/ptyio.h>
 #else
-# warning pty_termios.c expects <sys/ptyio.h> to be included.
-#endif /* HAVE_PTYTRAP */
+# if defined(__GNUC__) && defined(HAVE_PTYTRAP)
+#  warning pty_termios.c expects <sys/ptyio.h> to be included.
+# endif /* __GNUC__ && HAVE_PTYTRAP */
+#endif /* HAVE_PTYTRAP || HAVE_SYS_PTYIO_H */
 
 #include <sys/file.h>
 
 #ifdef HAVE_SYS_FCNTL_H
-#  include <sys/fcntl.h>
-#elif defined(HAVE_FCNTL_H)
-#  include <fcntl.h>
+# include <sys/fcntl.h>
 #else
-#	warning pty_termios.c expects either <sys/fcntl.h> or <fcntl.h> to be included.
+# ifdef HAVE_FCNTL_H
+#  include <fcntl.h>
+# else
+#  warning pty_termios.c expects either <sys/fcntl.h> or <fcntl.h> to be included.
+# endif /* HAVE_FCNTL_H */
 #endif /* HAVE_SYS_FCNTL_H */
 
 #if defined(_SEQUENT_) && defined(HAVE_SYS_STRPTY_H)
-#  include <sys/strpty.h>
-#elif defined(_SEQUENT_)
-#	warning pty_termios.c expects <sys/strpty.h> to be included.
-#endif
+# include <sys/strpty.h>
+#else
+# if defined(__GNUC__) && defined(_SEQUENT_)
+#  warning pty_termios.c expects <sys/strpty.h> to be included.
+# endif /* __GNUC__ && _SEQUENT_ */
+#endif /* _SEQUENT_ && HAVE_SYS_STRPTY_H */
 
 #if defined(HAVE_PTMX) && !defined(__CYGWIN__) && defined(HAVE_SYS_STROPTS_H)
-#  include <sys/stropts.h>
-#elif defined(HAVE_PTMX) && !defined(__CYGWIN__)
-#	warning pty_termios.c expects <sys/stropts.h> to be included.
-#endif
+# include <sys/stropts.h>
+#else
+# if defined(__GNUC__) && defined(HAVE_PTMX) && !defined(__CYGWIN__) && !defined(__BSD__) && !defined(__APPLE__)
+#  warning pty_termios.c expects <sys/stropts.h> to be included.
+# endif /* __GNUC__ && HAVE_PTMX && !__CYGWIN__ && !__BSD__ && !__APPLE__ */
+#endif /* HAVE_PTMX && !__CYGWIN__ && HAVE_SYS_STROPTS_H */
 
 #include "exp_win.h"
 
@@ -112,7 +126,7 @@ void debuglog();
 #ifndef TRUE
 # define TRUE 1
 # define FALSE 0
-#endif
+#endif /* !TRUE */
 
 /* Convex getpty is different than older-style getpty */
 /* Convex getpty is really just a cover function that does the traversal */
@@ -121,8 +135,8 @@ void debuglog();
 /* wrong because it will allow you to allocate ptys that your own account */
 /* already has in use. */
 #if defined(HAVE_GETPTY) && defined(CONVEX)
-#undef HAVE_GETPTY
-#define HAVE_CONVEX_GETPTY
+# undef HAVE_GETPTY
+# define HAVE_CONVEX_GETPTY
 extern char *getpty();
 static char *master_name;
 static char slave_name[] = "/dev/ptyXX";
@@ -130,7 +144,7 @@ static char	*tty_bank;		/* ptr to char [p-z] denoting
 					   which bank it is */
 static char	*tty_num;		/* ptr to char [0-f] denoting
 					   which number it is */
-#endif
+#endif /* HAVE_GETPTY && CONVEX */
 
 #if defined(_SEQUENT_) && !defined(HAVE_PTMX)
 /* old-style SEQUENT, new-style uses ptmx */
@@ -140,14 +154,14 @@ static char *master_name, *slave_name;
 /* very old SGIs prefer _getpty over ptc */
 #if defined(HAVE__GETPTY) && defined(HAVE_PTC) && !defined(HAVE_GETPTY)
 # undef HAVE_PTC
-#endif
+#endif /* HAVE__GETPTY && HAVE_PTC && !HAVE_GETPTY */
 
 #if defined(HAVE_PTC)
 static char slave_name[] = "/dev/ttyqXXX";
 /* some machines (e.g., SVR4.0 StarServer) have all of these and */
 /* HAVE_PTC works best */
-#undef HAVE_GETPTY
-#undef HAVE__GETPTY
+# undef HAVE_GETPTY
+# undef HAVE__GETPTY
 #endif
 
 #if defined(HAVE__GETPTY) || defined(HAVE_PTC_PTS) || defined(HAVE_PTMX)
@@ -163,18 +177,18 @@ static char slave_name[MAXPTYNAMELEN];
 #endif
 
 #if !defined(HAVE_GETPTY) && !defined(HAVE__GETPTY) && !defined(HAVE_PTC) && !defined(HAVE_PTC_PTS) && !defined(HAVE_PTMX) && !defined(HAVE_CONVEX_GETPTY) && !defined(_SEQUENT_) && !defined(HAVE_SCO_CLIST_PTYS) && !defined(HAVE_OPENPTY)
-#ifdef HAVE_PTYM
+# ifdef HAVE_PTYM
 			/* strange order and missing d is intentional */
 static char	banks[] = "pqrstuvwxyzabcefghijklo";
 static char	master_name[] = "/dev/ptym/ptyXXXX";
 static char	slave_name[] = "/dev/pty/ttyXXXX";
 static char	*slave_bank;
 static char	*slave_num;
-#else
+# else
 static char	banks[] = "pqrstuvwxyzPQRSTUVWXYZ";
 static char	master_name[] = "/dev/ptyXX";
 static char	slave_name [] = "/dev/ttyXX";
-#endif /* HAVE_PTYM */
+# endif /* HAVE_PTYM */
 
 static char	*tty_type;		/* ptr to char [pt] denoting
 					   whether it is a pty or tty */
@@ -182,7 +196,7 @@ static char	*tty_bank;		/* ptr to char [p-z] denoting
 					   which bank it is */
 static char	*tty_num;		/* ptr to char [0-f] denoting
 					   which number it is */
-#endif
+#endif /* HAVE_GETPTY && !HAVE__GETPTY && !HAVE_PTC && !HAVE_PTC_PTS && !HAVE_PTMX && !HAVE_CONVEX_GETPTY && !_SEQUENT_ && !HAVE_SCO_CLIST_PTYS && !HAVE_OPENPTY */
 
 #if defined(HAVE_SCO_CLIST_PTYS)
 #  define MAXPTYNAMELEN 64
@@ -204,7 +218,7 @@ pty_stty(s,name)
 char *s;		/* args to stty */
 char *name;		/* name of pty */
 {
-#define MAX_ARGLIST 10240
+# define MAX_ARGLIST 10240
 	char buf[MAX_ARGLIST];	/* overkill is easier */
 	RETSIGTYPE (*old)();	/* save old sigalarm handler */
 	int pid;
@@ -271,12 +285,12 @@ char *name;		/* name of pty */
 #ifdef STTY_READS_STDOUT
 	sprintf(buf,"/bin/stty %s > %s",s,name);
 #else
-#ifdef __CYGWIN__
+# ifdef __CYGWIN__
         sprintf(buf,"stty %s < %s",s,name);
-#else
+# else
         sprintf(buf,"/bin/stty %s < %s",s,name);
-#endif
-#endif
+# endif /* __CYGWIN__ */
+#endif /* STTY_READS_STDOUT */
 	old = signal(SIGCHLD, SIG_DFL);
 	system(buf);
 	signal(SIGCHLD, old);	/* restore signal handler */
@@ -303,7 +317,7 @@ char *s;	/* stty args */
 		if (-1 == tcgetattr(fd, &exp_tty_original)) {
 #else
 		if (-1 == ioctl(fd, TCGETS, (char *)&exp_tty_original)) {
-#endif
+#endif /* HAVE_TCSETATTR */
 			knew_dev_tty = FALSE;
 			exp_dev_tty = -1;
 		}
@@ -314,17 +328,17 @@ char *s;	/* stty args */
 			(void) tcsetattr(fd, TCSADRAIN, &exp_tty_current);
 #else
 			(void) ioctl(fd, TCSETS, (char *)&exp_tty_current);
-#endif
+#endif /* HAVE_TCSETATTR */
 
 			exp_window_size_set(fd);
 		}
 
 #ifdef __CENTERLINE__
-#undef DFLT_STTY
-#define DFLT_STTY "sane"
-#endif
+# undef DFLT_STTY
+# define DFLT_STTY "sane"
+#endif /* __CENTERLINE__ */
 
-/* Apollo Domain doesn't need this */
+/* Apollo Domain does NOT need this */
 #ifdef DFLT_STTY
 		if (ttyinit) {
 			/* overlay parms originally supplied by Makefile */
@@ -334,7 +348,7 @@ char *s;	/* stty args */
 /*			debuglog("getptyslave: (default) stty %s\n",DFLT_STTY);*/
 			pty_stty(DFLT_STTY,slave_name);
 		}
-#endif
+#endif /* DFLT_STTY */
 
 		/* lastly, give user chance to override any terminal parms */
 		if (s) {
@@ -349,17 +363,17 @@ void
 exp_init_pty()
 {
 #if !defined(HAVE_GETPTY) && !defined(HAVE__GETPTY) && !defined(HAVE_PTC) && !defined(HAVE_PTC_PTS) && !defined(HAVE_PTMX) && !defined(HAVE_CONVEX_GETPTY) && !defined(_SEQUENT_) && !defined(HAVE_SCO_CLIST_PTYS) && !defined(HAVE_OPENPTY)
-#ifdef HAVE_PTYM
+# ifdef HAVE_PTYM
 	static char dummy;
 	tty_bank =  &master_name[strlen("/dev/ptym/pty")];
 	tty_num  =  &master_name[strlen("/dev/ptym/ptyX")];
 	slave_bank = &slave_name[strlen("/dev/pty/tty")];
 	slave_num  = &slave_name[strlen("/dev/pty/ttyX")];
-#else
+# else
 	tty_bank =  &master_name[strlen("/dev/pty")];
 	tty_num  =  &master_name[strlen("/dev/ptyp")];
 	tty_type =   &slave_name[strlen("/dev/")];
-#endif
+# endif /* !HAVE_GETPTY && !HAVE__GETPTY && !HAVE_PTC && !HAVE_PTC_PTS && !HAVE_PTMX && !HAVE_CONVEX_GETPTY && !_SEQUENT_ && !HAVE_SCO_CLIST_PTYS && !HAVE_OPENPTY */
 
 #endif /* HAVE_PTYM */
 
@@ -370,10 +384,10 @@ exp_init_pty()
 }
 
 #ifndef R_OK
-/* 3b2 doesn't define these according to jthomas@nmsu.edu. */
-#define R_OK 04
-#define W_OK 02
-#endif
+/* 3b2 does NOT define these according to jthomas@nmsu.edu. */
+# define R_OK 04
+# define W_OK 02
+#endif /* !R_OK */
 
 int
 getptymaster()
@@ -389,12 +403,12 @@ getptymaster()
 #define TEST_PTY 1
 
 #if defined(HAVE_PTMX) || defined(HAVE_PTMX_BSD)
-#undef TEST_PTY
-#if defined(HAVE_PTMX_BSD)
+# undef TEST_PTY
+# if defined(HAVE_PTMX_BSD)
         if ((master = open("/dev/ptmx_bsd", O_RDWR)) == -1) return(-1);
-#else
+# else
 	if ((master = open("/dev/ptmx", O_RDWR)) == -1) return(-1);
-#endif
+# endif /* HAVE_PTMX_BSD */
 	if ((slave_name = (char *)ptsname(master)) == NULL || unlockpt(master)) {
 		close(master);
 		return(-1);
@@ -405,25 +419,25 @@ getptymaster()
 		close(master);
 		return(-1);
 	}
-#ifdef TIOCFLUSH
+# ifdef TIOCFLUSH
 	(void) ioctl(master,TIOCFLUSH,(char *)0);
-#endif /* TIOCFLUSH */
+# endif /* TIOCFLUSH */
 
 	exp_pty_slave_name = slave_name;
 	return(master);
-#endif
+#endif /* HAVE_PTMX || HAVE_PTMX_BSD */
 
 #if defined(HAVE__GETPTY)		/* SGI needs it this way */
-#undef TEST_PTY
+# undef TEST_PTY
 	slave_name = _getpty(&master, O_RDWR, 0600, 0);
 	if (slave_name == NULL)
 		return (-1);
 	exp_pty_slave_name = slave_name;
 	return(master);
-#endif
+#endif /* HAVE__GETPTY */
 
 #if defined(HAVE_PTC) && !defined(HAVE__GETPTY)	/* old SGI, version 3 */
-#undef TEST_PTY
+# undef TEST_PTY
 	master = open("/dev/ptc", O_RDWR);
 	if (master >= 0) {
 		int ptynum;
@@ -437,18 +451,18 @@ getptymaster()
 	}
 	exp_pty_slave_name = slave_name;
 	return(master);
-#endif
+#endif /* HAVE_PTC && !HAVE__GETPTY */
 
 #if defined(HAVE_GETPTY) && !defined(HAVE__GETPTY)
-#undef TEST_PTY
+# undef TEST_PTY
 	master = getpty(master_name, slave_name, O_RDWR);
 	/* is it really necessary to verify slave side is usable? */
 	exp_pty_slave_name = slave_name;
 	return master;
-#endif
+#endif /* HAVE_GETPTY && !HAVE__GETPTY */
 
 #if defined(HAVE_PTC_PTS)
-#undef TEST_PTY
+# undef TEST_PTY
 	master = open("/dev/ptc",O_RDWR);
 	if (master >= 0) {
 		/* never fails */
@@ -456,10 +470,10 @@ getptymaster()
 	}
 	exp_pty_slave_name = slave_name;
 	return(master);
-#endif
+#endif /* HAVE_PTC_PTS */
 
 #if defined(_SEQUENT_) && !defined(HAVE_PTMX)
-#undef TEST_PTY
+# undef TEST_PTY
 	/* old-style SEQUENT, new-style uses ptmx */
 	master = getpseudotty(&slave_name, &master_name);
 	exp_pty_slave_name = slave_name;
@@ -467,7 +481,7 @@ getptymaster()
 #endif /* _SEQUENT_ && !HAVE_PTMX */
 
 #if defined(HAVE_OPENPTY)
-#undef TEST_PTY
+# undef TEST_PTY
 	if (openpty(&master, &slave, master_name, 0, 0) != 0) {
 		close(master);
 		close(slave);
@@ -485,7 +499,7 @@ getptymaster()
 	 */
 	if (exp_pty_test_start() == -1) return -1;
 
-#if !defined(HAVE_CONVEX_GETPTY) && !defined(HAVE_PTYM) && !defined(HAVE_SCO_CLIST_PTYS)
+# if !defined(HAVE_CONVEX_GETPTY) && !defined(HAVE_PTYM) && !defined(HAVE_SCO_CLIST_PTYS)
 	for (bank = banks;*bank;bank++) {
 		*tty_bank = *bank;
 		*tty_num = '0';
@@ -498,9 +512,9 @@ getptymaster()
 			if (master >= 0) goto done;
 		}
 	}
-#endif
+# endif /* !HAVE_CONVEX_GETPTY && !HAVE_PTYM && !HAVE_SCO_CLIST_PTYS */
 
-#ifdef HAVE_SCO_CLIST_PTYS
+# ifdef HAVE_SCO_CLIST_PTYS
         for (num = 0; ; num++) {
             char num_str [16];
 
@@ -514,9 +528,9 @@ getptymaster()
             if (master >= 0)
                 goto done;
         }
-#endif /* HAVE_SCO_CLIST_PTYS */
+# endif /* HAVE_SCO_CLIST_PTYS */
 
-#ifdef HAVE_PTYM
+# ifdef HAVE_PTYM
 	/* systems with PTYM follow this idea:
 
 	   /dev/ptym/pty[a-ce-z][0-9a-f]                master pseudo terminals
@@ -531,9 +545,9 @@ getptymaster()
 	   /dev/pty/tty[a-ce-z][0-9][0-9][0-9]          slave pseudo terminals
 
 	   The code does not distinguish between HPUX and SPPUX because there
-	   is no reason to.  HPUX will merely fail the extended SPPUX tests.
+	   is no reason to. HPUX will merely fail the extended SPPUX tests.
 	   In fact, most SPPUX systems will fail simply because few systems
-	   will actually have the extended ptys.  However, the tests are
+	   will actually have the extended ptys. However, the tests are
 	   fast so it is no big deal.
 	 */
 
@@ -588,9 +602,9 @@ getptymaster()
 		}
 	}
 
-#endif /* HAVE_PTYM */
+# endif /* HAVE_PTYM */
 
-#if defined(HAVE_CONVEX_GETPTY)
+# if defined(HAVE_CONVEX_GETPTY)
 	for (;;) {
 		if ((master_name = getpty()) == NULL) return -1;
 
@@ -602,7 +616,7 @@ getptymaster()
 		master = exp_pty_test(master_name,slave_name,*tty_bank,tty_num);
 		if (master >= 0) goto done;
 	}
-#endif /* HAVE_CONVEX_GETPTY */
+# endif /* HAVE_CONVEX_GETPTY */
 
  done:
 	exp_pty_test_end();
@@ -685,21 +699,21 @@ char *stty_args;
 # include <sys/ptyio.h>
 # include <sys/time.h>
 
-/* This function attempts to deal with HP's pty interface.  This
+/* This function attempts to deal with HP's pty interface. This
 function simply returns an indication of what was trapped (or -1 for
 failure), the parent deals with the details.
 
-Originally, I tried to just trap open's but that is not enough.  When
+Originally, I tried to just trap open's, but that is not enough. When
 the pty is initialized, ioctl's are generated and if not trapped will
-hang the child if no further trapping is done.  (This could occur if
-parent spawns a process and then immediatley does a close.)  So
-instead, the parent must trap the ioctl's.  It probably suffices to
+hang the child if no further trapping is done. (This could occur if
+parent spawns a process and then immediatley does a close.) So
+instead, the parent must trap the ioctl's. It probably suffices to
 trap the write ioctl's (and tiocsctty which some hp's need) -
 conceivably, stty could be smart enough not to do write's if the tty
-settings are already correct.  In that case, we'll have to rethink
+settings are already correct. In that case, we shall have to rethink
 this.
 
-Suggestions from HP engineers encouraged.  I cannot imagine how this
+Suggestions from HP engineers encouraged. I cannot imagine how this
 interface was intended to be used!
 
 */

@@ -48,7 +48,7 @@ would appreciate credit if this program or parts of it are used.
 #    include <termio.h>
 #   else
 #    warning exp_clib.c expects either <termios.h> or <termio.h> to be included.
-#   endif /* HAVE_TERMIO */
+#   endif /* HAVE_TERMIO_H */
 #  endif /* HAVE_TERMIOS */
 # endif /* !TCSETCTTY */
 #endif /* CRAY */
@@ -69,7 +69,9 @@ would appreciate credit if this program or parts of it are used.
 #  undef TIOCCONS
 # endif /* SRIOCSREDIR */
 #else
-# warning exp_clib.c expects <sys/strredir.h> to be included.
+# if defined(__GNUC__) && defined(SRIOCSREDIR)
+#  warning exp_clib.c expects <sys/strredir.h> to be included.
+# endif /* __GNUC__ && SRIOCSREDIR */
 #endif /* HAVE_STRREDIR_H */
 
 #include <signal.h>

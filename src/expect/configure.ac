@@ -669,7 +669,7 @@ unset ac_cv_func_gethostname
 unset ac_cv_func_select
 AC_CHECK_FUNCS([dup2 exit gethostname gettimeofday ioctl isascii memmove \
                 memset pow re_comp regcomp regexec select strchr \
-                strcspn strftime strlen strrchr strstr sysconf \
+                strcpy strcspn strftime strlen strrchr strstr sysconf \
                 system timezone])
 
 dnl# check for memcpy by hand

@@ -19,6 +19,9 @@
 /* Define to 1 if you have the <errno.h> header file. */
 #undef HAVE_ERRNO_H
 
+/* Define to 1 if you have the `exit' function. */
+#undef HAVE_EXIT
+
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
@@ -155,6 +158,9 @@
 
 /* Define to 1 if you have the `strchr' function. */
 #undef HAVE_STRCHR
+
+/* Define to 1 if you have the `strcpy' function. */
+#undef HAVE_STRCPY
 
 /* Define to 1 if you have the `strcspn' function. */
 #undef HAVE_STRCSPN
