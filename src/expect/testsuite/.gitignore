@@ -1,0 +1,12 @@
+*.status
+Makefile
+*~
+core
+*.o
+a.out
+*.x
+*.log
+summary
+detail
+site.bak
+exp_test
