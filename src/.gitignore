@@ -58,8 +58,3 @@ libtool
 lost+found
 update.out
 update.sourceware
-
-# Putting all these new directories into git at once makes git slow.
-# Un-gitignore them one at a time in separate futute commits.
-dejagnu/*
-

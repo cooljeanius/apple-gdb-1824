@@ -1,0 +1,14 @@
+*.log
+*.sum
+site.bak
+setval.tmp
+site.exp
+TAGS
+ID
+GTAGS
+GRTAGS
+GSYMS
+GPATH
+tags
+Makefile
+t

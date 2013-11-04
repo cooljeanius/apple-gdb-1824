@@ -1,0 +1,32 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ([2.69])
+AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
+AC_CONFIG_SRCDIR([config.h.in])
+AC_CONFIG_HEADERS([config.h])
+
+# Checks for programs.
+AC_PROG_CXX
+AC_PROG_CC
+
+# Checks for libraries.
+
+# Checks for header files.
+AC_CHECK_HEADERS([string.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_CHECK_HEADER_STDBOOL
+AC_C_INLINE
+
+# Checks for library functions.
+AC_CHECK_FUNCS([atexit regcomp])
+
+AC_CONFIG_FILES([Makefile
+                 example/Makefile
+                 testsuite/Makefile
+                 testsuite/libdejagnu/Makefile])
+AC_CONFIG_SUBDIRS([contrib/bluegnu2.0.3
+                   doc
+                   example/calc])
+AC_OUTPUT

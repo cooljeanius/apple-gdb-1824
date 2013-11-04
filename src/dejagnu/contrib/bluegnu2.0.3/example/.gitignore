@@ -1,0 +1,10 @@
+*.status
+Makefile
+*~
+core
+*-init.exp
+site.*
+*.log
+*.cache
+summary
+detail

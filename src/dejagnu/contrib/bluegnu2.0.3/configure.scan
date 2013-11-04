@@ -1,0 +1,25 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ([2.69])
+AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
+
+# Checks for programs.
+AC_PROG_INSTALL
+AC_PROG_CC
+
+# Checks for libraries.
+# FIXME: Replace `main' with a function in `-lLAR':
+AC_CHECK_LIB([LAR], [main])
+
+# Checks for header files.
+
+# Checks for typedefs, structures, and compiler characteristics.
+
+# Checks for library functions.
+
+AC_CONFIG_FILES([Makefile])
+AC_CONFIG_SUBDIRS([doc
+                   example
+                   testsuite])
+AC_OUTPUT

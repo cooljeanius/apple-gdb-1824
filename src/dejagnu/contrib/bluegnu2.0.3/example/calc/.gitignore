@@ -1,0 +1,17 @@
+*.status
+Makefile
+calc.h
+config.h
+a.out
+[Ee]rrs
+tags
+mklog
+core
+calc.o
+calc
+*.log
+*.plog
+*.sum
+*.psum
+*.cache
+site.exp

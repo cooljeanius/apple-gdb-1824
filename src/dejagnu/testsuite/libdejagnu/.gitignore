@@ -1,0 +1,16 @@
+unit
+*.o
+site.exp
+site.bak
+*.sum
+*.log
+*.tab.c
+TAGS
+ID
+GTAGS
+GRTAGS
+GSYMS
+GPATH
+tags
+*deps/*.*o
+Makefile
