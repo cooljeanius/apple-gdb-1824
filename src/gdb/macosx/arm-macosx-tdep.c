@@ -22,11 +22,17 @@
    Boston, MA 02111-1307, USA.  */
 
 
-/* When we're doing native debugging, and we attach to a process,
-   we start out by finding the in-memory dyld -- the osabi of that
-   dyld is stashed away here for use when picking the right osabi of
-   a fat file.  In the case of cross-debugging, none of this happens
-   and this global remains untouched.  */
+/* When we are doing native debugging, and we attach to a process,
+ * we start out by finding the in-memory dyld -- the osabi of that
+ * dyld is stashed away here for use when picking the right osabi of
+ * a fat file. In the case of cross-debugging, none of this happens
+ * and this global remains untouched.  */
+
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# define NOT_ISSUING_A_WARNING_HERE 1
+#endif /* HAVE_CONFIG_H */
 
 #include "defs.h"
 #include "frame.h"
@@ -59,10 +65,26 @@
 #include <sys/types.h>
 #include <sys/sysctl.h>
 #include "mach-o.h" /* for BFD mach definitions.  */
+#include "macosx-tdep.h"
+#include "arm-macosx-regnums.h"
+#include "arm-macosx-tdep.h"
+#include "arm-macosx-thread-status.h"
 
-/* A boolean indicating if we must use software single stepping. Some 
-   targets may not support using IMVA mismatching for a variety of reasons,
-   and some remote targets may not implement the "s" packet.  */
+#ifdef HAVE_MALLOC_H
+# include <malloc.h>
+#else
+# ifdef HAVE_MALLOC_MALLOC_H
+#  include <malloc/malloc.h>
+# else
+#  warning arm-macosx-tdep.c expects a malloc-related header to be included.
+# endif /* HAVE_MALLOC_MALLOC_H */
+#endif /* HAVE_MALLOC_H */
+
+/* end prologue */
+
+/* A boolean indicating if we must use software single stepping. Some
+ * targets may not support using IMVA mismatching for a variety of reasons,
+ * and some remote targets may not implement the "s" packet.  */
 static enum gdb_osabi arm_mach_o_osabi_sniffer_use_dyld_hint (bfd *abfd);
 static void arm_macosx_init_abi (struct gdbarch_info info,
                                  struct gdbarch *gdbarch);
@@ -93,10 +115,10 @@ static register_info_t g_reginfo_arm_vfpv1[] =
   { "sp",   0, &builtin_type_int32 },
   { "lr",   0, &builtin_type_int32 },
   { "pc",   0, &builtin_type_int32 },
-/* Set f0-f7 and fps reg names blank so they don't show up in 
+/* Set f0-f7 and fps reg names blank so they do NOT show up in
    "info all-registers" or "info float" commands. We reserve the register
-   numbers and register cache space for them so we can maintian FSF 
-   gdbserver compatability. If these register do need to be displayed, we 
+   numbers and register cache space for them so we can maintian FSF
+   gdbserver compatability. If these register do need to be displayed, we
    can re-set the names to valid values using a new command.  */
   { "",	    0, &builtin_type_arm_ext_littlebyte_bigword },
   { "",	    0, &builtin_type_arm_ext_littlebyte_bigword },
@@ -106,12 +128,12 @@ static register_info_t g_reginfo_arm_vfpv1[] =
   { "",	    0, &builtin_type_arm_ext_littlebyte_bigword },
   { "",	    0, &builtin_type_arm_ext_littlebyte_bigword },
   { "",	    0, &builtin_type_arm_ext_littlebyte_bigword },
-  { "",	    0, &builtin_type_arm_ext_littlebyte_bigword }, 
+  { "",	    0, &builtin_type_arm_ext_littlebyte_bigword },
   { "cpsr", 0, &builtin_type_arm_psr },
 
   /* VFPv1 registers.  */
   { "s0",   0, &builtin_type_ieee_single_little },
-  { "s1",   0, &builtin_type_ieee_single_little }, 
+  { "s1",   0, &builtin_type_ieee_single_little },
   { "s2",   0, &builtin_type_ieee_single_little },
   { "s3",   0, &builtin_type_ieee_single_little },
   { "s4",   0, &builtin_type_ieee_single_little },
@@ -143,7 +165,7 @@ static register_info_t g_reginfo_arm_vfpv1[] =
   { "s30",  0, &builtin_type_ieee_single_little },
   { "s31",  0, &builtin_type_ieee_single_little },
   { "fpscr",0, &builtin_type_arm_fpscr },
-  
+
   /* VFPv1 pseudo registers.  */
   { "d0",   0, &builtin_type_ieee_double_little },
   { "d1",   0, &builtin_type_ieee_double_little },
@@ -184,10 +206,10 @@ static register_info_t g_reginfo_arm_vfpv3[] =
   { "sp",   0, &builtin_type_int32 },
   { "lr",   0, &builtin_type_int32 },
   { "pc",   0, &builtin_type_int32 },
-/* Set f0-f7 and fps reg names blank so they don't show up in 
+/* Set f0-f7 and fps reg names blank so they do NOT show up in
    "info all-registers" or "info float" commands. We reserve the register
-   numbers and register cache space for them so we can maintian FSF 
-   gdbserver compatability. If these register do need to be displayed, we 
+   numbers and register cache space for them so we can maintian FSF
+   gdbserver compatability. If these register do need to be displayed, we
    can re-set the names to valid values using a new command.  */
   { "",	    0, &builtin_type_arm_ext_littlebyte_bigword },
   { "",	    0, &builtin_type_arm_ext_littlebyte_bigword },
@@ -197,12 +219,12 @@ static register_info_t g_reginfo_arm_vfpv3[] =
   { "",	    0, &builtin_type_arm_ext_littlebyte_bigword },
   { "",	    0, &builtin_type_arm_ext_littlebyte_bigword },
   { "",	    0, &builtin_type_arm_ext_littlebyte_bigword },
-  { "",	    0, &builtin_type_arm_ext_littlebyte_bigword }, 
+  { "",	    0, &builtin_type_arm_ext_littlebyte_bigword },
   { "cpsr", 0, &builtin_type_arm_psr },
-  
+
   /* VFPv1 registers.  */
   { "s0",   0, &builtin_type_ieee_single_little },
-  { "s1",   0, &builtin_type_ieee_single_little }, 
+  { "s1",   0, &builtin_type_ieee_single_little },
   { "s2",   0, &builtin_type_ieee_single_little },
   { "s3",   0, &builtin_type_ieee_single_little },
   { "s4",   0, &builtin_type_ieee_single_little },
@@ -273,7 +295,7 @@ static register_info_t g_reginfo_arm_vfpv3[] =
 
   /* SIMD pseudo registers.  */
   { "q0",   0, &builtin_type_vec128 },
-  { "q1",   0, &builtin_type_vec128 }, 
+  { "q1",   0, &builtin_type_vec128 },
   { "q2",   0, &builtin_type_vec128 },
   { "q3",   0, &builtin_type_vec128 },
   { "q4",   0, &builtin_type_vec128 },
@@ -309,7 +331,7 @@ build_builtin_type_arm_psr_mode_enum (void)
     {"sys",	0x1f }
   };
   uint32_t num_mode_enums = sizeof (mode_enums)/sizeof (mode_enums[0]);
-  return build_builtin_enum ("_arm_ext_psr_mode_enum", 4, 
+  return build_builtin_enum ("_arm_ext_psr_mode_enum", 4,
 			     TYPE_FLAG_UNSIGNED, mode_enums, num_mode_enums);
 }
 
@@ -339,7 +361,7 @@ build_builtin_type_arm_psr (void)
   };
 
   uint32_t num_psr_bitfields = sizeof (psr_bitfields)/sizeof (psr_bitfields[0]);
-  return build_builtin_bitfield ("_arm_ext_psr", 4, 
+  return build_builtin_bitfield ("_arm_ext_psr", 4,
 				psr_bitfields, num_psr_bitfields);
 }
 
@@ -377,7 +399,7 @@ build_builtin_type_arm_fpscr (void)
   };
   uint32_t num_fpscr_bitfields = sizeof (fpscr_bitfields)/
 				 sizeof (fpscr_bitfields[0]);
-  return build_builtin_bitfield ("_arm_ext_fpscr", 4, 
+  return build_builtin_bitfield ("_arm_ext_fpscr", 4,
 				fpscr_bitfields, num_fpscr_bitfields);
 }
 
@@ -417,7 +439,7 @@ arm_set_osabi_from_host_info ()
   gdbarch_info_fill (current_gdbarch, &info);
   info.byte_order = gdbarch_byte_order (current_gdbarch);
   info.osabi = arm_host_osabi ();
-  
+
   switch (info.osabi)
     {
       case GDB_OSABI_DARWIN:
@@ -447,10 +469,10 @@ arm_set_osabi_from_host_info ()
   return TARGET_OSABI;
 }
 
-/* Two functions in one!  If this is a "bfd_archive" (read: a MachO fat file),
+/* Two functions in one! If this is a "bfd_archive" (read: a MachO fat file),
    recurse for each separate slice of the fat file.
    If this is not a fat file, detect whether the file is arm32 or arm64.
-   Before either of these, check if we've already sniffed an appropriate
+   Before either of these, check if we have already sniffed an appropriate
    OSABI from dyld (in the case of attaching to a process) and prefer that.  */
 
 static enum gdb_osabi
@@ -458,8 +480,9 @@ arm_mach_o_osabi_sniffer (bfd *abfd)
 {
   enum gdb_osabi ret;
 
-  // If we have a thin (non-fat) file, the one slice that exists
-  // determines the osabi.
+  /* If we have a thin (non-fat) file, the one slice that exists
+   * determines the osabi.
+   */
 
   if (strcmp (bfd_get_target (abfd), "mach-o-le") == 0)
     {
@@ -483,8 +506,9 @@ arm_mach_o_osabi_sniffer (bfd *abfd)
 	}
     }
 
-  // If there's an exact match between the abfd slices and the 
-  // loaded dyld, that slice is the one to use.
+  /* If there is an exact match between the abfd slices and the
+   * loaded dyld, that slice is the one to use.
+   */
 
   ret = arm_mach_o_osabi_sniffer_use_dyld_hint (abfd);
   if (ret == GDB_OSABI_DARWINV6 || ret == GDB_OSABI_DARWIN ||
@@ -492,8 +516,9 @@ arm_mach_o_osabi_sniffer (bfd *abfd)
       ret == GDB_OSABI_DARWINV7S || ret == GDB_OSABI_DARWINV7K)
     return ret;
 
-  // Iterate over the available slices, pick the best match based
-  // on the host cpu type / cpu subtype.
+  /* Iterate over the available slices, pick the best match based
+   * on the host cpu type / cpu subtype.
+   */
 
   if (bfd_check_format (abfd, bfd_archive))
     {
@@ -511,13 +536,15 @@ arm_mach_o_osabi_sniffer (bfd *abfd)
 
 	  if (cur == host_osabi)
 	    return cur;
-          else 
+          else
             {
-              // The details here are derived from xnu's
-              // bsd/dev/arm/kern_machdep.c::grade_binary()
+              /* The details here are derived from xnu's
+               * bsd/dev/arm/kern_machdep.c::grade_binary()
+			   */
 
-              // If this an armv7k host, don't use any of the
-              // armv7{,f,s} slices.
+              /* If this an armv7k host, do NOT use any of the
+               * armv7{,f,s} slices.
+			   */
               if (host_osabi == GDB_OSABI_DARWINV7K
                   && (cur == GDB_OSABI_DARWINV7
                       || cur == GDB_OSABI_DARWINV7F
@@ -526,21 +553,23 @@ arm_mach_o_osabi_sniffer (bfd *abfd)
                   continue;
                 }
 
-              // If this is an armv7s host, avoid using the armv7f
-              // slice because the errata for that proc. aren't 
-              // needed on this system
+              /* If this is an armv7s host, avoid using the armv7f
+               * slice because the errata for that proc. are NOT
+               * needed on this system
+			   */
               if (host_osabi == GDB_OSABI_DARWINV7S
                    && cur == GDB_OSABI_DARWINV7F)
                 {
                   continue;
                 }
 
-              // Picking the "best" depends on the order of the
-              // GDB_OSABI constants - but armv7k is a bit of a 
-              // wrinkle; except on an armv7k system this is never
-              // a best slice to pick.  If we have any other armv7
-              // variant as the current "best", keep it.
-              if (cur == GDB_OSABI_DARWINV7K 
+              /* Picking the "best" depends on the order of the
+               * GDB_OSABI constants - but armv7k is a bit of a
+               * wrinkle; except on an armv7k system this is never
+               * a best slice to pick. If we have any other armv7
+               * variant as the current "best", keep it.
+			   */
+              if (cur == GDB_OSABI_DARWINV7K
                   && (best == GDB_OSABI_DARWINV7
                       || best == GDB_OSABI_DARWINV7F
                       || best == GDB_OSABI_DARWINV7S))
@@ -548,8 +577,9 @@ arm_mach_o_osabi_sniffer (bfd *abfd)
                   continue;
                 }
 
-              // On an armv7 host, don't try to use armv7f or armv7s
-              // slices.
+              /* On an armv7 host, do NOT try to use armv7f or armv7s
+               * slices.
+			   */
               if (host_osabi == GDB_OSABI_DARWINV7
                   && (cur == GDB_OSABI_DARWINV7F
                       || cur == GDB_OSABI_DARWINV7S))
@@ -570,9 +600,9 @@ arm_mach_o_osabi_sniffer (bfd *abfd)
   return GDB_OSABI_UNKNOWN;
 }
 
-/* If we're attaching to a process, we start by finding the dyld that
-   is loaded and go from there.  So when we're selecting the OSABI,
-   prefer the osabi of the actually-loaded dyld when we can.  */
+/* If we are attaching to a process, we start by finding the dyld that
+ * is loaded and go from there. So when we are selecting the OSABI,
+ * prefer the osabi of the actually-loaded dyld when we can.  */
 
 static enum gdb_osabi
 arm_mach_o_osabi_sniffer_use_dyld_hint (bfd *abfd)
@@ -597,7 +627,7 @@ arm_mach_o_osabi_sniffer_use_dyld_hint (bfd *abfd)
 	  if (arch_info->mach == bfd_mach_arm_4T
 	      && osabi_seen_in_attached_dyld == GDB_OSABI_DARWIN)
 	    return GDB_OSABI_DARWIN;
-	  
+
 	  if (arch_info->mach == bfd_mach_arm_6
 	      && osabi_seen_in_attached_dyld == GDB_OSABI_DARWINV6)
 	    return GDB_OSABI_DARWINV6;
@@ -637,7 +667,7 @@ arm_macosx_in_switch_glue (CORE_ADDR pc)
 	  char *end = name + strlen ("__switch");
 	  int len = strlen (end);
 	  if ((len == 1 && *end == '8')
-	      || (len == 2 
+	      || (len == 2
 		  && ((*end == 'u' && *(end + 1) == '8')
 		      || (*end == '1' && *(end + 1) == '6')
 		      || (*end == '3' && *(end + 1) == '2'))))
@@ -647,25 +677,26 @@ arm_macosx_in_switch_glue (CORE_ADDR pc)
 	}
       else
         {
-          // Check for the linker branch islands named as follows:
-          // <SYMBOL>$island
-          // <SYMBOL>$island$<N>
-          // <SYMBOL>_plus_<OFFSET>$island$<N>
-          // <SYMBOL>.island
-          // <SYMBOL>.island.<N>
-          // <SYMBOL>_plus_<OFFSET>.island.<N>
-          //
-          // Where <SYMBOL> is the symbol name, <OFFSET> is an offset
-          // from that symbol, and <N> is the island number in case more than
-          // one island is needed to branch to the target.
-          // 
-          // So basically below we just check for any symbol that
-          // contains ".island" or "$island".
+          /* Check for the linker branch islands named as follows:
+           * <SYMBOL>$island
+           * <SYMBOL>$island$<N>
+           * <SYMBOL>_plus_<OFFSET>$island$<N>
+           * <SYMBOL>.island
+           * <SYMBOL>.island.<N>
+           * <SYMBOL>_plus_<OFFSET>.island.<N>
+           *
+           * Where <SYMBOL> is the symbol name, <OFFSET> is an offset
+           * from that symbol, and <N> is the island number in case more than
+           * one island is needed to branch to the target.
+           *
+           * So basically below we just check for any symbol that
+           * contains ".island" or "$island".
+		   */
 
           const char *island = strstr (name, "island");
           if (island && island > name)
             {
-              // NAME contains "island", see if the previous character is '$' or '.'
+              /* NAME contains "island", see if the previous character is '$' or '.' */
               if (island[-1] == '$' || island[-1] == '.')
                 return 1;
             }
@@ -689,10 +720,10 @@ arm_macosx_keep_going (CORE_ADDR stop_pc)
   else if (step_over_calls != STEP_OVER_NONE)
     {
       /* We are doing a step over.  */
-      
-      /* See if we are in the ARM/Thumb __switchXXX functions. If we are*/
+
+      /* See if we are in the ARM/Thumb __switchXXX functions. If we are... */
       if (arm_macosx_in_switch_glue (stop_pc))
-	result = 1;  
+	result = 1;
     }
 
   return result;
@@ -704,12 +735,12 @@ arm_macosx_save_thread_inferior_status ()
   /* See if we have anything relevant to save?  */
   if (arm_macosx_tdep_inf_status.macosx_half_step_pc == (CORE_ADDR)-1)
     return NULL;
-  
+
   arm_macosx_tdep_inf_status_t *tdep_inf_status;
-  
+
   tdep_inf_status = XMALLOC (arm_macosx_tdep_inf_status_t);
   if (tdep_inf_status)
-    tdep_inf_status->macosx_half_step_pc = 
+    tdep_inf_status->macosx_half_step_pc =
 				arm_macosx_tdep_inf_status.macosx_half_step_pc;
   return tdep_inf_status;
 }
@@ -719,7 +750,7 @@ arm_macosx_restore_thread_inferior_status (void *tdep_inf_status)
 {
   if (tdep_inf_status != NULL)
     {
-      arm_macosx_tdep_inf_status.macosx_half_step_pc = 
+      arm_macosx_tdep_inf_status.macosx_half_step_pc =
 	((arm_macosx_tdep_inf_status_t *)tdep_inf_status)->macosx_half_step_pc;
     }
 }
@@ -749,8 +780,8 @@ arm_fetch_pointer_argument (struct frame_info *frame, int argi,
 /* Print interesting information about the floating point processor
    (if present) or emulator.  */
 static void
-arm_macosx_print_float_info_vfp (struct gdbarch *gdbarch, 
-				 struct ui_file *file, 
+arm_macosx_print_float_info_vfp (struct gdbarch *gdbarch,
+				 struct ui_file *file,
 				 struct frame_info *frame, const char *args)
 {
   static const char* enabled_strings[2] = {"disabled", "enabled"};
@@ -765,12 +796,12 @@ arm_macosx_print_float_info_vfp (struct gdbarch *gdbarch,
   printf (_("VFP fpscr = 0x%8.8x\n"), fpscr);
   printf (_("     N = %u  Set if comparison produces a less than result\n"),
 	  bit (fpscr, 31));
-  printf (_("     Z = %u  Set if comparison produces an equal result\n"), 
+  printf (_("     Z = %u  Set if comparison produces an equal result\n"),
 	  bit (fpscr, 30));
   printf (_("     C = %u  Set if comparison produces an equal, greater "
-	  "than, or unordered result\n"), 
+	  "than, or unordered result\n"),
 	  bit (fpscr, 29));
-  printf (_("     V = %u  Set if comparison produces an unordered result\n"), 
+  printf (_("     V = %u  Set if comparison produces an unordered result\n"),
 	  bit (fpscr, 28));
   b = bit (fpscr, 25);
   printf (_("    DN = %u  default NaN mode %s\n"), b, enabled_strings[b]);
@@ -795,8 +826,8 @@ arm_macosx_print_float_info_vfp (struct gdbarch *gdbarch,
 }
 
 static void
-arm_macosx_pseudo_register_read_vfpv1 (struct gdbarch *gdbarch, 
-				       struct regcache *regcache, int reg, 
+arm_macosx_pseudo_register_read_vfpv1 (struct gdbarch *gdbarch,
+				       struct regcache *regcache, int reg,
 				       gdb_byte *buf)
 {
   int s_reg_lsw = 2 * (reg - ARM_VFPV1_PSEUDO_REGNUM_D0) + ARM_VFP_REGNUM_S0;
@@ -807,7 +838,7 @@ arm_macosx_pseudo_register_read_vfpv1 (struct gdbarch *gdbarch,
 
 static void
 arm_macosx_pseudo_register_write_vfpv1 (struct gdbarch *gdbarch,
-				        struct regcache *regcache, int reg, 
+				        struct regcache *regcache, int reg,
 					const gdb_byte *buf)
 {
   int s_reg_lsw = 2 * (reg - ARM_VFPV1_PSEUDO_REGNUM_D0) + ARM_VFP_REGNUM_S0;
@@ -817,8 +848,8 @@ arm_macosx_pseudo_register_write_vfpv1 (struct gdbarch *gdbarch,
 }
 
 static void
-arm_macosx_pseudo_register_read_vfpv3 (struct gdbarch *gdbarch, 
-				       struct regcache *regcache, int reg, 
+arm_macosx_pseudo_register_read_vfpv3 (struct gdbarch *gdbarch,
+				       struct regcache *regcache, int reg,
 				       gdb_byte *buf)
 {
   int s_reg_lsw = 0;
@@ -832,12 +863,12 @@ arm_macosx_pseudo_register_read_vfpv3 (struct gdbarch *gdbarch,
       int d = reg - ARM_VFPV3_PSEUDO_REGNUM_D0;
       s_reg_lsw = 2 * d + ARM_VFP_REGNUM_S0;
       s_reg_msw = s_reg_lsw + 1;
-      
+
       /* Set the stride byte size to be 4 as each pseudo consecutive S register
          is 4 bytes in size.  */
       stride_byte_size = 4;
     }
-  else if (reg >= ARM_SIMD_PSEUDO_REGNUM_Q0 && 
+  else if (reg >= ARM_SIMD_PSEUDO_REGNUM_Q0 &&
 	   reg <= ARM_SIMD_PSEUDO_REGNUM_Q15)
     {
       int q = reg - ARM_SIMD_PSEUDO_REGNUM_Q0;
@@ -862,15 +893,15 @@ arm_macosx_pseudo_register_read_vfpv3 (struct gdbarch *gdbarch,
 	  stride_byte_size = 8;
 	}
     }
-    
+
   for (regno=s_reg_lsw; regno<=s_reg_msw; regno++)
-    regcache_cooked_read (regcache, regno, 
+    regcache_cooked_read (regcache, regno,
 			  buf + (stride_byte_size * (regno - s_reg_lsw)));
 }
 
 static void
-arm_macosx_pseudo_register_write_vfpv3 (struct gdbarch *gdbarch, 
-					struct regcache *regcache, int reg, 
+arm_macosx_pseudo_register_write_vfpv3 (struct gdbarch *gdbarch,
+					struct regcache *regcache, int reg,
 					const gdb_byte *buf)
 {
   int s_reg_lsw = 0;
@@ -884,12 +915,12 @@ arm_macosx_pseudo_register_write_vfpv3 (struct gdbarch *gdbarch,
       int d = reg - ARM_VFPV3_PSEUDO_REGNUM_D0;
       s_reg_lsw = 2 * d + ARM_VFP_REGNUM_S0;
       s_reg_msw = s_reg_lsw + 1;
-      
+
       /* Set the stride byte size to be 4 as each pseudo consecutive S register
          is 4 bytes in size.  */
       stride_byte_size = 4;
     }
-  else if (reg >= ARM_SIMD_PSEUDO_REGNUM_Q0 && 
+  else if (reg >= ARM_SIMD_PSEUDO_REGNUM_Q0 &&
 	   reg <= ARM_SIMD_PSEUDO_REGNUM_Q15)
     {
       int q = reg - ARM_SIMD_PSEUDO_REGNUM_Q0;
@@ -914,14 +945,14 @@ arm_macosx_pseudo_register_write_vfpv3 (struct gdbarch *gdbarch,
 	  stride_byte_size = 8;
 	}
     }
-    
+
   for (regno=s_reg_lsw; regno<=s_reg_msw; regno++)
-    regcache_cooked_write (regcache, regno, 
+    regcache_cooked_write (regcache, regno,
 			   buf + (stride_byte_size * (regno - s_reg_lsw)));
 }
 
-/* This is cribbed from arm-tdep.c.  I don't want to add all the mach-o 
-   code to that file, since then I'll have to deal with merge conflicts,
+/* This is cribbed from arm-tdep.c. I do NOT want to add all the mach-o
+   code to that file, since then I would have to deal with merge conflicts,
    but I need this bit.  */
 
 /*
@@ -949,12 +980,12 @@ arm_macosx_stab_reg_to_regnum (int num)
   int regnum;
 
   /* Check for the VFP floating point registers numbers.  */
-  if (num >= ARM_MACOSX_FIRST_VFP_STABS_REGNUM 
+  if (num >= ARM_MACOSX_FIRST_VFP_STABS_REGNUM
       && num <= ARM_MACOSX_LAST_VFP_STABS_REGNUM)
     regnum = ARM_VFP_REGNUM_S0 + num - ARM_MACOSX_FIRST_VFP_STABS_REGNUM;
   else
     regnum = num; /* Most registers do not need any modification.  */
-    
+
   return regnum;
 }
 
@@ -962,9 +993,9 @@ arm_macosx_stab_reg_to_regnum (int num)
    and return the type info string (without the "typeinfo for " bits).
    CURR_FRAME is the __cxa_throw frame.
    NOTE: We are getting the mangled name of the typeinfo object, and
-   demangling that.  We could instead look inside the object, and pull
+   demangling that. We could instead look inside the object, and pull
    out the string description field, but then we have to know where this
-   is in the typeinfo object, or call a function.  Getting the mangled
+   is in the typeinfo object, or call a function. Getting the mangled
    name seems much safer & easier.
 */
 
@@ -987,9 +1018,9 @@ arm_throw_catch_find_typeinfo (struct frame_info *curr_frame,
   else
     {
       /* This is hacky, the runtime code gets a pointer to an _Unwind_Exception,
-         which is actually contained in the __cxa_exception that we want.  But
-         the function that does the cast is a static inline, so we can't see it.
-         FIXME: we need to get the runtime to keep this so we aren't relying on
+         which is actually contained in the __cxa_exception that we want. But
+         the function that does the cast is a static inline, so we cannot see it.
+         FIXME: we need to get the runtime to keep this so we are NOT relying on
          the particular layout of the __cxa_exception...
          Anyway, then the first field of __cxa_exception is the type object. */
       ULONGEST type_obj_addr = 0;
@@ -998,7 +1029,7 @@ arm_throw_catch_find_typeinfo (struct frame_info *curr_frame,
                                       ARM_R0_REGNUM,
                                       &typeinfo_ptr);
 
-      /* This is also a bit bogus.  We assume that an unsigned integer is the
+      /* This is also a bit bogus. We assume that an unsigned integer is the
          same size as an address on our system.  */
       if (safe_read_memory_unsigned_integer
           (typeinfo_ptr - 44, 4, &type_obj_addr))
@@ -1020,8 +1051,8 @@ arm_throw_catch_find_typeinfo (struct frame_info *curr_frame,
 static void
 arm_macosx_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
-  /* We actually don't have any software float registers, so lets remove 
-     the float info printer so we don't crash on "info float" commands.  */
+  /* We actually don't have any software float registers, so lets remove
+     the float info printer so we do NOT crash on "info float" commands.  */
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
   tdep->fp_model = ARM_FLOAT_NONE;
   tdep->vfp_version = ARM_VFP_UNSUPPORTED;
@@ -1038,12 +1069,12 @@ arm_macosx_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
   set_gdbarch_num_regs (gdbarch, ARM_MACOSX_NUM_REGS);
 
   set_gdbarch_dbx_make_msymbol_special (gdbarch, arm_macosx_dbx_make_msymbol_special);
-  
+
   if (get_arm_single_step_mode () == arm_single_step_mode_auto)
     {
-     /* I don't believe that any ARMv4 devices will be able to use our hardware
-	single stepping methods, but we should check on this once we get 
-	some.  */
+     /* I do NOT believe that any ARMv4 devices will be able to use our hardware
+      * single stepping methods, but we should check on this once we get
+      * some.  */
 }
 }
 
@@ -1105,7 +1136,7 @@ arm_macosx_register_byte_vfpv3 (int regnum)
 }
 
 static CORE_ADDR
-arm_integer_to_address (struct gdbarch *gdbarch, struct type *type, 
+arm_integer_to_address (struct gdbarch *gdbarch, struct type *type,
                         const gdb_byte *buf)
 {
   gdb_byte *tmp = alloca (TYPE_LENGTH (builtin_type_void_data_ptr));
@@ -1137,17 +1168,17 @@ arm_macosx_init_abi_v6 (struct gdbarch_info info, struct gdbarch *gdbarch)
   set_gdbarch_sp_regnum (gdbarch, ARM_SP_REGNUM);
   set_gdbarch_pc_regnum (gdbarch, ARM_PC_REGNUM);
   set_gdbarch_register_name (gdbarch, arm_macosx_register_name_vfpv1);
-  set_gdbarch_deprecated_register_byte (gdbarch, 
+  set_gdbarch_deprecated_register_byte (gdbarch,
 					arm_macosx_register_byte_vfpv1);
   set_gdbarch_num_regs (gdbarch, ARM_V6_MACOSX_NUM_REGS);
   set_gdbarch_num_pseudo_regs (gdbarch, ARM_MACOSX_NUM_VFPV1_PSEUDO_REGS);
-  set_gdbarch_pseudo_register_read (gdbarch, 
+  set_gdbarch_pseudo_register_read (gdbarch,
 				    arm_macosx_pseudo_register_read_vfpv1);
-  set_gdbarch_pseudo_register_write (gdbarch, 
+  set_gdbarch_pseudo_register_write (gdbarch,
 				     arm_macosx_pseudo_register_write_vfpv1);
   set_gdbarch_register_type (gdbarch, arm_macosx_register_type_vfpv1);
-  
-  set_gdbarch_dbx_make_msymbol_special (gdbarch, 
+
+  set_gdbarch_dbx_make_msymbol_special (gdbarch,
 					arm_macosx_dbx_make_msymbol_special);
 
   set_gdbarch_integer_to_address (gdbarch, arm_integer_to_address);
@@ -1160,7 +1191,7 @@ arm_macosx_init_abi_v6 (struct gdbarch_info info, struct gdbarch *gdbarch)
          breakpoint registers on native builds.  */
       uint32_t num_hw_bkpts = 0;
       size_t num_hw_bkpts_len = sizeof(num_hw_bkpts);
-      if (sysctlbyname("hw.optional.breakpoint", &num_hw_bkpts, 
+      if (sysctlbyname("hw.optional.breakpoint", &num_hw_bkpts,
 		       &num_hw_bkpts_len, NULL, 0) == 0)
 	{
 	  if (num_hw_bkpts > 0)
@@ -1175,7 +1206,7 @@ arm_macosx_init_abi_v6 (struct gdbarch_info info, struct gdbarch *gdbarch)
       /* Assume we have a remote connection to debugserver which can now
          do single stepping.  */
       set_gdbarch_software_single_step (gdbarch, NULL);
-#endif
+#endif /* NM_NEXTSTEP */
     }
 }
 
@@ -1200,17 +1231,17 @@ arm_macosx_init_abi_v7 (struct gdbarch_info info, struct gdbarch *gdbarch)
   set_gdbarch_sp_regnum (gdbarch, ARM_SP_REGNUM);
   set_gdbarch_pc_regnum (gdbarch, ARM_PC_REGNUM);
   set_gdbarch_register_name (gdbarch, arm_macosx_register_name_vfpv3);
-  set_gdbarch_deprecated_register_byte (gdbarch, 
+  set_gdbarch_deprecated_register_byte (gdbarch,
 					arm_macosx_register_byte_vfpv3);
   set_gdbarch_num_regs (gdbarch, ARM_V7_MACOSX_NUM_REGS);
   set_gdbarch_num_pseudo_regs (gdbarch, ARM_MACOSX_NUM_VFPV3_PSEUDO_REGS);
-  set_gdbarch_pseudo_register_read (gdbarch, 
+  set_gdbarch_pseudo_register_read (gdbarch,
 				    arm_macosx_pseudo_register_read_vfpv3);
-  set_gdbarch_pseudo_register_write (gdbarch, 
+  set_gdbarch_pseudo_register_write (gdbarch,
 				     arm_macosx_pseudo_register_write_vfpv3);
   set_gdbarch_register_type (gdbarch, arm_macosx_register_type_vfpv3);
 
-  set_gdbarch_dbx_make_msymbol_special (gdbarch, 
+  set_gdbarch_dbx_make_msymbol_special (gdbarch,
 					arm_macosx_dbx_make_msymbol_special);
 
   set_gdbarch_integer_to_address (gdbarch, arm_integer_to_address);
@@ -1223,7 +1254,7 @@ arm_macosx_init_abi_v7 (struct gdbarch_info info, struct gdbarch *gdbarch)
          breakpoint registers on native builds.  */
       uint32_t num_hw_bkpts = 0;
       size_t num_hw_bkpts_len = sizeof(num_hw_bkpts);
-      if (sysctlbyname("hw.optional.breakpoint", &num_hw_bkpts, 
+      if (sysctlbyname("hw.optional.breakpoint", &num_hw_bkpts,
 		       &num_hw_bkpts_len, NULL, 0) == 0)
 	{
 	  if (num_hw_bkpts > 0)
@@ -1232,7 +1263,7 @@ arm_macosx_init_abi_v7 (struct gdbarch_info info, struct gdbarch *gdbarch)
       else
 	{
 	  /* Use hardware single stepping by default for armv7.  */
-	  /* Disable hardware single stepping on armv7 for now due to 
+	  /* Disable hardware single stepping on armv7 for now due to
 	     some issues with our current silicon where the debug registers
 	     weren't hooked up.
 	  set_gdbarch_software_single_step (gdbarch, NULL);
@@ -1242,7 +1273,7 @@ arm_macosx_init_abi_v7 (struct gdbarch_info info, struct gdbarch *gdbarch)
       /* Assume we have a remote connection to debugserver which can now
          do single stepping.  */
       set_gdbarch_software_single_step (gdbarch, NULL);
-#endif
+#endif /* NM_NEXTSTEP */
     }
 }
 
@@ -1260,7 +1291,7 @@ _initialize_arm_macosx_tdep ()
   for (i=1; i<g_reginfo_arm_vfpv1_count; i++)
     {
       if (g_reginfo_arm_vfpv1[i-1].type)
-	g_reginfo_arm_vfpv1[i].offset = g_reginfo_arm_vfpv1[i-1].offset + 
+	g_reginfo_arm_vfpv1[i].offset = g_reginfo_arm_vfpv1[i-1].offset +
                                  TYPE_LENGTH (*g_reginfo_arm_vfpv1[i-1].type);
     }
 
@@ -1269,11 +1300,11 @@ _initialize_arm_macosx_tdep ()
   for (i=1; i<g_reginfo_arm_vfpv3_count; i++)
     {
       if (g_reginfo_arm_vfpv3[i-1].type)
-	g_reginfo_arm_vfpv3[i].offset = g_reginfo_arm_vfpv3[i-1].offset + 
+	g_reginfo_arm_vfpv3[i].offset = g_reginfo_arm_vfpv3[i-1].offset +
                                  TYPE_LENGTH (*g_reginfo_arm_vfpv3[i-1].type);
     }
 
-  /* This is already done in arm-tdep.c.  I wonder if we shouldn't move this 
+  /* This is already done in arm-tdep.c.  I wonder if we shouldn't move this
      code into there so we can be sure all the initializations happen in the
      right order, etc.  */
 
@@ -1282,40 +1313,42 @@ _initialize_arm_macosx_tdep ()
   gdbarch_register_osabi_sniffer (bfd_arch_unknown, bfd_target_mach_o_flavour,
                                   arm_mach_o_osabi_sniffer);
 
-  gdbarch_register_osabi (bfd_arch_arm, 
-			  0, 
+  gdbarch_register_osabi (bfd_arch_arm,
+			  0,
 			  GDB_OSABI_DARWIN,
                           arm_macosx_init_abi);
 
-  gdbarch_register_osabi ((bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_4T))->arch, 
+  gdbarch_register_osabi ((bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_4T))->arch,
 			  bfd_mach_arm_4T,
 			  GDB_OSABI_DARWIN,
                           arm_macosx_init_abi);
 
-  gdbarch_register_osabi ((bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_6))->arch, 
+  gdbarch_register_osabi ((bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_6))->arch,
 			  bfd_mach_arm_6,
-                          GDB_OSABI_DARWINV6, 
+                          GDB_OSABI_DARWINV6,
 			  arm_macosx_init_abi_v6);
 
   /* Use the ARM_MACOSX_INIT_ABI_V6 function for armv7 as well.  */
-  gdbarch_register_osabi ((bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_7))->arch, 
+  gdbarch_register_osabi ((bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_7))->arch,
 			  bfd_mach_arm_7,
-                          GDB_OSABI_DARWINV7, 
+                          GDB_OSABI_DARWINV7,
 			  arm_macosx_init_abi_v7);
 
-  gdbarch_register_osabi ((bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_7f))->arch, 
+  gdbarch_register_osabi ((bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_7f))->arch,
 			  bfd_mach_arm_7f,
-                          GDB_OSABI_DARWINV7F, 
+                          GDB_OSABI_DARWINV7F,
 			  arm_macosx_init_abi_v7);
 
-  gdbarch_register_osabi ((bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_7k))->arch, 
+  gdbarch_register_osabi ((bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_7k))->arch,
 			  bfd_mach_arm_7k,
-                          GDB_OSABI_DARWINV7K, 
+                          GDB_OSABI_DARWINV7K,
 			  arm_macosx_init_abi_v7);
 
-  gdbarch_register_osabi ((bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_7s))->arch, 
+  gdbarch_register_osabi ((bfd_lookup_arch (bfd_arch_arm, bfd_mach_arm_7s))->arch,
 			  bfd_mach_arm_7s,
-                          GDB_OSABI_DARWINV7S, 
+                          GDB_OSABI_DARWINV7S,
 			  arm_macosx_init_abi_v7);
 
 }
+
+/* EOF */

@@ -659,7 +659,7 @@ AC_CHECK_HEADERS([sys/user.h],[],[],
 # include <sys/param.h>
 #else
 # warning this conftest expects <sys/param.h> to be included.
-#endif
+#endif /* HAVE_SYS_PARAM_H */
 ])
 AC_CHECK_HEADERS([sys/wait.h wait.h])
 AC_CHECK_HEADERS([termios.h termio.h sgtty.h])
@@ -697,18 +697,21 @@ unset ac_cv_header_limits_h
 unset ac_cv_header_locale_h
 unset ac_cv_header_sys_param_h
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h libintl.h limits.h locale.h \
-                  mach/mach.h netdb.h netinet/in.h paths.h sys/param.h \
-                  sys/socket.h sys/time.h])
+                  mach/mach.h malloc.h malloc/malloc.h \
+                  netdb.h netinet/in.h paths.h sys/param.h \
+                  sys/socket.h sys/sysctl.h sys/time.h])
 
 # Other headers needed for things that I have ifdef-ed:
 unset ac_cv_header_dlfcn_h
 unset ac_cv_header_memory_h
 unset ac_cv_header_sys_types_h
 AC_CHECK_HEADERS([dlfcn.h errno.h regex.h stdarg.h sys/types.h varargs.h])
-AC_CHECK_HEADERS([architecture/byte_order.h bits/endian.h gettext.h \
+AC_CHECK_HEADERS([CoreFoundation/CoreFoundation.h \
+                  architecture/byte_order.h bits/endian.h gettext.h \
                   libgen.h libgettext.h linux/byteorder/big_endian.h \
-                  linux/byteorder/little_endian.h mach-o/loader.h \
-                  mach-o/nlist.h memory.h pthread.h setjmp.h sys/uio.h])
+                  linux/byteorder/little_endian.h mach/thread_info.h \
+                  mach/thread_status.h mach-o/loader.h mach-o/nlist.h \
+                  memory.h pthread.h setjmp.h sys/uio.h])
 
 # ------------------------- #
 # Checks for declarations.  #

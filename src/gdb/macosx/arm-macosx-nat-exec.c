@@ -140,7 +140,7 @@ arm_macosx_fetch_vfpv1_regs_raw (gdb_arm_thread_vfpv1_state_t *fp_regs)
 {
   int i;
   for (i = 0; i < ARM_MACOSX_NUM_VFP_REGS; i++)
-    regcache_raw_supply (current_regcache, ARM_VFP_REGNUM_S0 + i, 
+    regcache_raw_supply (current_regcache, ARM_VFP_REGNUM_S0 + i,
 			 &fp_regs->r[i]);
   regcache_raw_supply (current_regcache, ARM_VFP_REGNUM_FPSCR, &fp_regs->fpscr);
 }
@@ -150,11 +150,11 @@ arm_macosx_fetch_vfpv3_regs_raw (gdb_arm_thread_vfpv3_state_t *fp_regs)
 {
   int i;
   for (i = 0; i < ARM_MACOSX_NUM_VFP_REGS; i++)
-    regcache_raw_supply (current_regcache, ARM_VFP_REGNUM_S0 + i, 
+    regcache_raw_supply (current_regcache, ARM_VFP_REGNUM_S0 + i,
 			 &fp_regs->s[i]);
   regcache_raw_supply (current_regcache, ARM_VFP_REGNUM_FPSCR, &fp_regs->fpscr);
   for (i = 0; i < ARM_MACOSX_NUM_VFPV3_REGS; i++)
-    regcache_raw_supply (current_regcache, ARM_VFPV3_REGNUM_D16 + i, 
+    regcache_raw_supply (current_regcache, ARM_VFPV3_REGNUM_D16 + i,
 			 &fp_regs->d[i]);
 }
 
@@ -185,7 +185,7 @@ arm_macosx_store_vfpv1_regs_raw (gdb_arm_thread_vfpv1_state_t *fp_regs)
 {
   int i;
   for (i = 0; i < ARM_MACOSX_NUM_VFP_REGS; i++)
-    regcache_raw_collect (current_regcache, ARM_VFP_REGNUM_S0 + i, 
+    regcache_raw_collect (current_regcache, ARM_VFP_REGNUM_S0 + i,
 			  &fp_regs->r[i]);
   regcache_raw_collect (current_regcache, ARM_VFP_REGNUM_FPSCR, &fp_regs->fpscr);
 }
@@ -195,11 +195,11 @@ arm_macosx_store_vfpv3_regs_raw (gdb_arm_thread_vfpv3_state_t *fp_regs)
 {
   int i;
   for (i = 0; i < ARM_MACOSX_NUM_VFP_REGS; i++)
-    regcache_raw_collect (current_regcache, ARM_VFP_REGNUM_S0 + i, 
+    regcache_raw_collect (current_regcache, ARM_VFP_REGNUM_S0 + i,
 			  &fp_regs->s[i]);
   regcache_raw_collect (current_regcache, ARM_VFP_REGNUM_FPSCR, &fp_regs->fpscr);
   for (i = 0; i < ARM_MACOSX_NUM_VFPV3_REGS; i++)
-    regcache_raw_collect (current_regcache, ARM_VFPV3_REGNUM_D16 + i, 
+    regcache_raw_collect (current_regcache, ARM_VFPV3_REGNUM_D16 + i,
 			  &fp_regs->d[i]);
 }
 
@@ -236,7 +236,7 @@ fetch_inferior_registers (int regno)
 
   if (TARGET_OSABI == GDB_OSABI_UNKNOWN)
     arm_set_osabi_from_host_info ();
-      
+
   if ((regno == -1) || ARM_MACOSX_IS_GP_RELATED_REGNUM (regno))
     {
       struct gdb_arm_thread_state gp_regs;
@@ -246,7 +246,7 @@ fetch_inferior_registers (int regno)
          &gp_count);
       if (ret != KERN_SUCCESS)
        {
-         printf ("Error calling thread_get_state for GP registers for thread 0x%ulx", 
+         printf ("Error calling thread_get_state for GP registers for thread 0x%ulx",
 		  current_thread);
          MACH_CHECK_ERROR (ret);
        }
@@ -256,7 +256,7 @@ fetch_inferior_registers (int regno)
 
   if ((regno == -1) || ARM_MACOSX_IS_FP_RELATED_REGNUM (regno))
     {
-      /* We don't have F0-F7, though they need to exist in our register
+      /* We do NOT have F0-F7, though they need to exist in our register
          numbering scheme so we can connect to remote gdbserver's that use
 	 FSF register numbers.  */
       for (i = ARM_F0_REGNUM; i <= ARM_F7_REGNUM; i++)
@@ -286,7 +286,7 @@ fetch_inferior_registers (int regno)
                                      &fp_count);
 	      if (ret != KERN_SUCCESS)
 		{
-		  printf ("Error calling thread_get_state for VFP registers for thread 0x%ulx", 
+		  printf ("Error calling thread_get_state for VFP registers for thread 0x%ulx",
 			  current_thread);
 		  MACH_CHECK_ERROR (ret);
 		}
@@ -303,7 +303,7 @@ fetch_inferior_registers (int regno)
 				      &fp_count);
 	      if (ret != KERN_SUCCESS)
 		{
-		  printf ("Error calling thread_get_state for VFP registers for thread 0x%ulx", 
+		  printf ("Error calling thread_get_state for VFP registers for thread 0x%ulx",
 		          current_thread);
 		  MACH_CHECK_ERROR (ret);
 		}
@@ -368,7 +368,7 @@ store_inferior_registers (int regno)
 	      MACH_CHECK_ERROR (ret);
 	    }
 	    break;
-	    
+
 	  case ARM_VFP_VERSION_3:
 	    {
 	      gdb_arm_thread_vfpv3_state_t fp_regs;
@@ -392,3 +392,5 @@ void
 macosx_complete_child_target (struct target_ops *target)
 {
 }
+
+/* EOF */

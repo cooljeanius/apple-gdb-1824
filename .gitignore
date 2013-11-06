@@ -20,3 +20,4 @@ stamp-h*
 */*site.exp
 *.sum
 obj/*
+tmpwrk*/*

@@ -29285,7 +29285,7 @@ do :
 # include <sys/param.h>
 #else
 # warning this conftest expects <sys/param.h> to be included.
-#endif
+#endif /* HAVE_SYS_PARAM_H */
 
 "
 if test "x$ac_cv_header_sys_user_h" = xyes; then :
@@ -29494,8 +29494,9 @@ unset ac_cv_header_limits_h
 unset ac_cv_header_locale_h
 unset ac_cv_header_sys_param_h
 for ac_header in arpa/inet.h fcntl.h libintl.h limits.h locale.h \
-                  mach/mach.h netdb.h netinet/in.h paths.h sys/param.h \
-                  sys/socket.h sys/time.h
+                  mach/mach.h malloc.h malloc/malloc.h \
+                  netdb.h netinet/in.h paths.h sys/param.h \
+                  sys/socket.h sys/sysctl.h sys/time.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -29526,10 +29527,12 @@ fi
 
 done
 
-for ac_header in architecture/byte_order.h bits/endian.h gettext.h \
+for ac_header in CoreFoundation/CoreFoundation.h \
+                  architecture/byte_order.h bits/endian.h gettext.h \
                   libgen.h libgettext.h linux/byteorder/big_endian.h \
-                  linux/byteorder/little_endian.h mach-o/loader.h \
-                  mach-o/nlist.h memory.h pthread.h setjmp.h sys/uio.h
+                  linux/byteorder/little_endian.h mach/thread_info.h \
+                  mach/thread_status.h mach-o/loader.h mach-o/nlist.h \
+                  memory.h pthread.h setjmp.h sys/uio.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"

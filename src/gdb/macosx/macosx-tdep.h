@@ -1,3 +1,7 @@
+/*
+ * macosx-tdep.h
+ */
+
 #ifndef __GDB_MACOSX_TDEP_H__
 #define __GDB_MACOSX_TDEP_H__
 
@@ -9,7 +13,7 @@
 # include "arm-macosx-tdep.h"
 #else
 # error "Unrecognized target architecture"
-#endif
+#endif /* TARGET_POWERPC || TARGET_I386 || TARGET_ARM */
 
 #include "symtab.h"
 

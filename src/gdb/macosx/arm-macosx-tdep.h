@@ -1,8 +1,13 @@
+/*
+ * arm-macosx-tdep.h
+ */
+
 #ifndef __GDB_ARM_MACOSX_TDEP_H__
 #define __GDB_ARM_MACOSX_TDEP_H__
 #include "defs.h"
 #include "arm-macosx-thread-status.h"
 #include "arm-macosx-regnums.h"
+#include "macosx-tdep.h"
 
 #define INVALID_ADDRESS ((CORE_ADDR) (-1))
 

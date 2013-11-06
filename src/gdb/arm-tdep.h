@@ -18,7 +18,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-/* Register numbers of various important registers.  Note that some of
+/* Register numbers of various important registers. Note that some of
    these values are "real" register numbers, and correspond to the
    general registers of the machine, and some are "phony" register
    numbers which are too large to be actual register numbers as far as
@@ -29,10 +29,10 @@
 
 /* APPLE LOCAL: Use R7 as FP for ARM. */
 #ifdef TM_NEXTSTEP
-#define __ARM_FP_REG 7
+# define __ARM_FP_REG 7
 #else
-#define __ARM_FP_REG 11
-#endif
+# define __ARM_FP_REG 11
+#endif /* TM_NEXTSTEP */
 
 enum gdb_regnum {
   ARM_R0_REGNUM = 0,
@@ -55,13 +55,13 @@ enum gdb_regnum {
   /* APPLE LOCAL: Use R7 as FP for ARM. */
   ARM_FP_REGNUM = __ARM_FP_REG,	/* Frame register in ARM code, if used.  */
   THUMB_FP_REGNUM = 7,		/* Frame register in Thumb code, if used.  */
-  ARM_NUM_ARG_REGS = 4, 
+  ARM_NUM_ARG_REGS = 4,
   ARM_LAST_ARG_REGNUM = ARM_A4_REGNUM,
   ARM_NUM_FP_ARG_REGS = 4,
   ARM_LAST_FP_ARG_REGNUM = ARM_F3_REGNUM,
 
   /* APPLE LOCAL START: Support for VFP.  */
-  /* The "ARM_VFP_REGNUM" registers are the VFPv1 register set of 32 
+  /* The "ARM_VFP_REGNUM" registers are the VFPv1 register set of 32
      32-bit registers that hold either integers or single precision
      floating point numbers (S0-S31), plus the floating point status control
      register (fpscr).  */
@@ -80,12 +80,12 @@ enum gdb_regnum {
      part of the VFPv1 registers (D16-D31). D0-D15 are numbered as pseudo
      registers since they ovarlap with S0-S31, so for VFPv3, we only need
      to define actual register values that do not overlap.   */
-  ARM_VFPV3_REGNUM_D16 = 59,	
+  ARM_VFPV3_REGNUM_D16 = 59,
   ARM_VFPV3_REGNUM_D31 = 74,
 
-  /* The "ARM_VFPV3_PSEUDO" registers are the "D variants" of the VFPv1 
-     register set: 16 64-bit double-precision floating point registers D0-D15. 
-     They overlap with the S0-S31 registers (S0 and S1 occupy the same 
+  /* The "ARM_VFPV3_PSEUDO" registers are the "D variants" of the VFPv1
+     register set: 16 64-bit double-precision floating point registers D0-D15.
+     They overlap with the S0-S31 registers (S0 and S1 occupy the same
      space as D0), but their pseudo numbers are higher in VFPv3 since they
      must come after the extra real registers (D16-D31).  */
 
@@ -93,13 +93,13 @@ enum gdb_regnum {
   ARM_VFPV3_PSEUDO_REGNUM_D15 = 90,
 
   /* The SIMD_PSEUDO registers are the quadword registers of the SIMD register
-     set: 16 128-bit quadword registers registers referred to as Q0-Q15. The 
-     Q0-Q7 registers overlap with the S0-S31 / D0-D15, and the Q8-Q15 
+     set: 16 128-bit quadword registers registers referred to as Q0-Q15. The
+     Q0-Q7 registers overlap with the S0-S31 / D0-D15, and the Q8-Q15
      registers overlap with the D16-D31 registers.  */
 
   ARM_SIMD_PSEUDO_REGNUM_Q0 = 91,
   ARM_SIMD_PSEUDO_REGNUM_Q15 = 106,
-  
+
   ARM_NUM_VFP_ARG_REGS = 4,
   ARM_NUM_VFPV1_PSEUDO_REGS = 16,
   ARM_NUM_VFPV3_PSEUDO_REGS = 32
@@ -124,7 +124,7 @@ enum gdb_regnum {
    header.  */
 #define STATUS_REGISTER_SIZE	4
 
-/* Number of machine registers.  The only define actually required 
+/* Number of machine registers.  The only define actually required
    is NUM_REGS.  The other definitions are used for documentation
    purposes and code readability.  */
 /* For 26 bit ARM code, a fake copy of the PC is placed in register 25 (PS)
@@ -194,11 +194,11 @@ enum gdb_regnum {
 /* Type of floating-point code in use by inferior.  There are really 3 models
    that are traditionally supported (plus the endianness issue), but gcc can
    only generate 2 of those.  The third is APCS_FLOAT, where arguments to
-   functions are passed in floating-point registers.  
+   functions are passed in floating-point registers.
 
-   In addition to the traditional models, VFP adds two more. 
+   In addition to the traditional models, VFP adds two more.
 
-   If you update this enum, don't forget to update fp_model_strings in 
+   If you update this enum, don't forget to update fp_model_strings in
    arm-tdep.c.  */
 
 enum arm_float_model
@@ -208,7 +208,7 @@ enum arm_float_model
   ARM_FLOAT_FPA,	/* FPA co-processor.  GCC calling convention.  */
   ARM_FLOAT_SOFT_VFP,	/* Soft-float with pure-endian doubles.  */
   ARM_FLOAT_VFP,	/* Full VFP calling convention.  */
-  ARM_FLOAT_NONE,	/* APPLE LOCAL: No floating point registers 
+  ARM_FLOAT_NONE,	/* APPLE LOCAL: No floating point registers
 			   (like libgcc).  */
   ARM_FLOAT_LAST	/* Keep at end.  */
 };
@@ -238,9 +238,9 @@ struct gdbarch_tdep
   enum arm_abi_kind arm_abi;
 
   enum arm_float_model fp_model; /* Floating point calling conventions.  */
-  enum arm_vfp_version vfp_version; /* Version for the VFP (when fp_model == 
+  enum arm_vfp_version vfp_version; /* Version for the VFP (when fp_model ==
 				       ARM_FLOAT_VFP).  */
-  CORE_ADDR lowest_pc;		/* Lowest address at which instructions 
+  CORE_ADDR lowest_pc;		/* Lowest address at which instructions
 				   will appear.  */
 
   const gdb_byte *arm_breakpoint;   /* Breakpoint pattern for an ARM insn.  */
@@ -248,7 +248,7 @@ struct gdbarch_tdep
   const gdb_byte *thumb_breakpoint; /* Breakpoint pattern for an ARM insn.  */
   int thumb_breakpoint_size;	    /* And its size.  */
 
-  int jb_pc;			/* Offset to PC value in jump buffer. 
+  int jb_pc;			/* Offset to PC value in jump buffer.
 				   If this is negative, longjmp support
 				   will be disabled.  */
   size_t jb_elt_size;		/* And the size of each entry in the buf.  */
@@ -265,8 +265,8 @@ struct register_info
 typedef struct register_info register_info_t;
 
 #ifndef LOWEST_PC
-#define LOWEST_PC (gdbarch_tdep (current_gdbarch)->lowest_pc)
-#endif
+# define LOWEST_PC (gdbarch_tdep (current_gdbarch)->lowest_pc)
+#endif /* !LOWEST_PC */
 
 /* Prototypes for internal interfaces needed by more than one MD file.  */
 int arm_pc_is_thumb_dummy (CORE_ADDR);
@@ -286,4 +286,4 @@ enum {
 int get_arm_single_step_mode ();
 int set_arm_single_step_mode (struct gdbarch *gdbarch, int single_step_mode);
 
-#endif
+#endif /* !__GDB_ARM_TDEP_H__ */
