@@ -1698,3 +1698,104 @@ $(srcdir)/configure: @MAINT@ $(srcdir)/configure.in $(srcdir)/config/acx.m4
 MAKEOVERRIDES=
 
 # end of Makefile.in
+
+NSLIBTOOL = cc -dynamiclib
+
+SYSTEM_FRAMEWORK = -framework System
+
+BINUTILS = binutils
+BINUTILS_ADDRESS = 0x0
+BINUTILS_PREFIX =
+BINUTILS_SUFFIX =
+BINUTILS_VERSION_SUFFIX =
+BINUTILS_VERSION = A
+BINUTILS_OFILES = binutils/version.o
+BINUTILS_LIB = $(SYSTEM_FRAMEWORK)
+
+stamp-framework-headers-binutils:
+	$(RM) -f stamp-framework-binutils stamp-framework-headers-binutils
+	$(RM) -rf $(BINUTILS).framework
+	mkdir -p $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/Headers
+	mkdir -p $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/PrivateHeaders
+	ln -s Versions/Current/Headers $(BINUTILS).framework/Headers
+	ln -s Versions/Current/PrivateHeaders $(BINUTILS).framework/PrivateHeaders
+	ln -s A $(BINUTILS).framework/Versions/Current
+	cp -rp $(srcdir)/include/* $(BINUTILS).framework/Versions/Current/Headers/
+	cp -rp $(srcdir)/intl/*.h $(BINUTILS).framework/Versions/Current/Headers/
+	cp -rp intl/*.h $(BINUTILS).framework/Versions/Current/Headers/
+	touch stamp-framework-headers-binutils
+
+stamp-framework-binutils: $(BINUTILS_OFILES)
+	$(RM) -f stamp-framework-headers-binutils
+	$(MAKE) stamp-framework-headers-binutils
+	mkdir -p $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/Resources
+	ln -s Versions/Current/Resources $(BINUTILS).framework/Resources
+	mkdir -p $(BINUTILS).framework/Versions/Current/Resources/English.lproj
+
+	set -e; if [ "$(BINUTILS_SUFFIX)" != "" ]; then \
+		$(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(BINUTILS_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) -o $(BINUTILS).framework/Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS_OFILES) $(BINUTILS_LIB); \
+		ln -s $(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS).framework/Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX); \
+		ln -s Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX); \
+		ln -s Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX); \
+		ln -s $(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX) $(BINUTILS).framework/$(BINUTILS); \
+	else \
+		$(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(BINUTILS_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/$(BINUTILS_PREFIX)$(BINUTILS) -o $(BINUTILS).framework/Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS) $(BINUTILS_OFILES) $(BINUTILS_LIB); \
+		ln -s Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS); \
+	fi
+	touch stamp-framework-binutils
+
+GDB = gdb
+GDB_ADDRESS = 0x0
+GDB_PREFIX =
+GDB_SUFFIX =
+GDB_VERSION_SUFFIX =
+GDB_VERSION = A
+GDB_OFILES = gdb/version.o
+GDB_LIB = $(SYSTEM_FRAMEWORK)
+
+TEMPLATE_HEADERS = config.h tm.h xm.h nm.h
+TEMPLATEdir = @TEMPLATEdir@
+
+stamp-framework-headers-gdb:
+	$(RM) -f stamp-framework-gdb stamp-framework-headers-gdb
+	$(RM) -rf $(GDB).framework
+	mkdir -p $(GDB).framework/Versions/$(GDB_VERSION)/Headers
+	mkdir -p $(GDB).framework/Versions/$(GDB_VERSION)/PrivateHeaders
+	ln -s Versions/Current/Headers $(GDB).framework/Headers
+	ln -s Versions/Current/PrivateHeaders $(GDB).framework/PrivateHeaders
+	ln -s A $(GDB).framework/Versions/Current
+	cp -p $(srcdir)/gdb/*.h $(GDB).framework/Versions/Current/Headers/
+	cp -p $(srcdir)/gdb/macosx/*.h $(GDB).framework/Versions/Current/Headers/
+	mkdir -p $(GDB).framework/Versions/Current/Headers/tui
+	cp -p $(srcdir)/gdb/tui/*.h $(GDB).framework/Versions/Current/Headers/tui
+	mkdir -p $(GDB).framework/Versions/Current/Headers/cli
+	cp -p $(srcdir)/gdb/cli/*.h $(GDB).framework/Versions/Current/Headers/cli
+	mkdir -p $(GDB).framework/Versions/Current/Headers/mi
+	cp -p $(srcdir)/gdb/mi/*.h $(GDB).framework/Versions/Current/Headers/mi
+	mkdir -p $(GDB).framework/Versions/Current/Headers/machine
+	cp -p gdb/*.h $(GDB).framework/Versions/Current/Headers/machine/
+	cp -rp $(srcdir)/gdb/config $(GDB).framework/Versions/Current/Headers/config
+	set -e; for h in $(TEMPLATE_HEADERS); do \
+		rm -f $(GDB).framework/Versions/A/Headers/$${h}; \
+		ln -s machine/$${h} $(GDB).framework/Versions/A/Headers/$${h}; \
+	done
+	touch stamp-framework-headers-gdb
+
+stamp-framework-gdb: $(GDB_OFILES)
+	$(RM) -f stamp-framework-headers-gdb
+	$(MAKE) stamp-framework-headers-gdb
+	mkdir -p $(GDB).framework/Versions/$(GDB_VERSION)/Resources
+	ln -s Versions/Current/Resources $(GDB).framework/Resources
+	mkdir -p $(GDB).framework/Versions/Current/Resources/English.lproj
+
+	set -e; if [ "$(GDB_SUFFIX)" != "" ]; then \
+		$(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(GDB_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(GDB).framework/Versions/$(GDB_VERSION)/$(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) -o $(GDB).framework/Versions/Current/$(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) $(GDB_OFILES) $(GDB_LIB); \
+		ln -s $(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) $(GDB).framework/Versions/Current/$(GDB_PREFIX)$(GDB)$(GDB_SUFFIX); \
+		ln -s Versions/Current/$(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) $(GDB).framework/$(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX); \
+		ln -s Versions/Current/$(GDB_PREFIX)$(GDB)$(GDB_SUFFIX) $(GDB).framework/$(GDB_PREFIX)$(GDB)$(GDB_SUFFIX); \
+		ln -s $(GDB_PREFIX)$(GDB)$(GDB_SUFFIX) $(GDB).framework/$(GDB); \
+	else \
+		$(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(GDB_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(GDB).framework/Versions/$(GDB_VERSION)/$(GDB_PREFIX)$(GDB) -o $(GDB).framework/Versions/Current/$(GDB_PREFIX)$(GDB) $(GDB_OFILES) $(GDB_LIB); \
+		ln -s Versions/Current/$(GDB_PREFIX)$(GDB) $(GDB).framework/$(GDB_PREFIX)$(GDB); \
+	fi
+	touch stamp-framework-gdb

@@ -143,7 +143,9 @@ static char *stpcpy PARAMS ((char *dest, const char *src));
 #if defined(HAVE_SYS_PARAM_H) && !defined(PATH_MAX) && !defined(MAXPATHLEN)
 # include <sys/param.h>
 #else
-# warning dcgettext.c expects <sys/param.h> to be included. (Ignore this warning if you know you already have done so.)
+# if !defined(PATH_MAX) && !defined(MAXPATHLEN)
+#  warning dcgettext.c expects <sys/param.h> to be included. (Ignore this warning if you know you already have done so.)
+# endif /* !PATH_MAX && !MAXPATHLEN */
 #endif /* HAVE_SYS_PARAM_H && !PATH_MAX && !MAXPATHLEN */
 
 #if !defined(PATH_MAX) && defined(MAXPATHLEN)

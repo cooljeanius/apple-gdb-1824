@@ -27,12 +27,16 @@
 #  define _GNU_SOURCE	1
 # endif
 # include <string.h>
-#elif defined HAVE_STRINGS_H
-# include <strings.h>
-# ifndef memcpy
-#  define memcpy(Dst, Src, Num) bcopy (Src, Dst, Num)
-# endif /* !memcpy */
-#endif
+#else
+# if defined HAVE_STRINGS_H
+#  include <strings.h>
+#  ifndef memcpy
+#   define memcpy(Dst, Src, Num) bcopy (Src, Dst, Num)
+#  endif /* !memcpy */
+# else
+#  warning l10nflist.c expects a string-related header to be included.
+# endif /* HAVE_STRINGS_H */
+#endif /* HAVE_STRING_H || _LIBC */
 #if !HAVE_STRCHR && !defined _LIBC
 # ifndef strchr
 #  define strchr index
@@ -42,7 +46,9 @@
 #if defined _LIBC || defined HAVE_ARGZ_H
 # include <argz.h>
 #else
-# warning l10nflist.c expects <argz.h> to be included on some systems.
+# if defined(__GNUC__) && defined(__STDC__) && defined(ANSI_PROTOTYPES)
+#  warning l10nflist.c expects <argz.h> to be included on some systems.
+# endif /* __GNUC__ && __STDC__ && ANSI_PROTOTYPES */
 #endif /* HAVE_ARGZ_H */
 #ifdef HAVE_CTYPE_H
 # include <ctype.h>

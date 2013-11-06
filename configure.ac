@@ -61,7 +61,10 @@ AC_PATH_PROG([BUILDIT],[buildit])
 AC_SUBST([BUILDIT])
 
 # Checks for libraries.
+AC_CHECK_LIB([c],[printf])
+AC_CHECK_LIB([dl],[dlopen])
 AC_CHECK_LIB([intl],[gettext])
+AC_CHECK_LIB([m],[sqrt])
 
 # Checks for header files.
 AC_CHECK_HEADERS([ApplicationServices/ApplicationServices.h fcntl.h \
