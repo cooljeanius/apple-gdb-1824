@@ -148,6 +148,7 @@ INTL = @INTLLIBS@
 INTL_DEP = @INTLDEPS@
 INTL_SRC = $(srcdir)/$(INTL_DIR)
 INTL_CFLAGS = -I$(INTL_DIR) -I$(INTL_SRC)
+INTL_LDFLAGS = -L$(INTL_DIR)
 
 # Where is the ICONV library?  This can be empty if libc has iconv.
 # (If you are having troubles with the wrong libiconv being picked up,
@@ -372,10 +373,10 @@ PROFILE_CFLAGS = @PROFILE_CFLAGS@
 # when running make.  I.E.  "make CFLAGS=-Wmissing-prototypes".
 CFLAGS = @CFLAGS@
 
-# Need to pass this to testsuite for "make check".  Probably should be
+# Need to pass this to testsuite for "make check". Probably should be
 # consistent with top-level Makefile.in and gdb/testsuite/Makefile.in
 # so "make check" has the same result no matter where it is run.
-CXXFLAGS = -g -O
+CXXFLAGS = -ggdb -O
 
 # INTERNAL_CFLAGS is the aggregate of all other *CFLAGS macros.
 INTERNAL_WARN_CFLAGS = \
@@ -398,7 +399,7 @@ LIBSQLITE3 = -lsqlite3
 # I think it is perfectly reasonable for a user to set -pg in CFLAGS
 # and have it work; that is why CFLAGS is here.
 # PROFILE_CFLAGS is _not_ included, however, because we use monstartup.
-INTERNAL_LDFLAGS = $(CFLAGS) $(GLOBAL_CFLAGS) $(MH_LDFLAGS) $(LDFLAGS) $(CONFIG_LDFLAGS)
+INTERNAL_LDFLAGS = $(CFLAGS) $(GLOBAL_CFLAGS) $(MH_LDFLAGS) $(LDFLAGS) $(CONFIG_LDFLAGS) $(INTL_LDFLAGS)
 
 # If your system is missing alloca(), or, more likely, it is there but
 # it does NOT work, then refer to libiberty.
@@ -439,7 +440,7 @@ RUNTEST = `if [ -f $${rootsrc}/../dejagnu/runtest ] ; then \
 RUNTESTFLAGS=
 
 # This is ser-unix.o for any system which supports a v7/BSD/SYSV/POSIX
-# interface to the serial port.  Hopefully if get ported to OS/2, VMS,
+# interface to the serial port. Hopefully if get ported to OS/2, VMS,
 # etc., then there will be (as part of the C library or perhaps as
 # part of libiberty) a POSIX interface.  But at least for now the
 # host-dependent makefile fragment might need to use something else
@@ -458,7 +459,7 @@ SIM_OBS =
 @target_makefile_frag@
 # End of host and target-dependent makefile fragments
 
-# Possibly ignore the simulator.  If the simulator is being ignored,
+# Possibly ignore the simulator. If the simulator is being ignored,
 # these expand into SIM= and SIM_OBJ=, overriding the entries from
 # target_makefile_frag
 #

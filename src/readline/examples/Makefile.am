@@ -38,7 +38,7 @@ CPPFLAGS = @CPPFLAGS@
 AM_CPPFLAGS = -I$(srcdir) -I$(top_srcdir) -I..
 
 CCFLAGS  = $(DEFS) $(LOCAL_CFLAGS) $(CPPFLAGS) $(INCLUDES) $(AM_CPPFLAGS) $(CFLAGS)
-AM_LDFLAGS = -g -L.. @LDFLAGS@
+AM_LDFLAGS = -ggdb -L.. @LDFLAGS@
 LIBS = @LIBS@
 
 READLINE_LIB = ../libreadline.a

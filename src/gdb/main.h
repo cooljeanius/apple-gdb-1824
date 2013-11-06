@@ -32,4 +32,4 @@ struct captured_main_args
 
 extern int gdb_main (struct captured_main_args *);
 
-#endif
+#endif /* !MAIN_H */

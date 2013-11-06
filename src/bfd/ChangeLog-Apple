@@ -271,7 +271,7 @@
 	* mach-o.c (bfd_mach_o_make_bfd_section, mach_o_scan_read_segment):
 	Use the segment_mark field of the bfd_section to differentiate
 	sections & segments from the Mach-O load commands.
-	* sections.c: Add a comment to segment_mark to indicate we're
+	* sections.c: Add a comment to segment_mark to indicate we are
 	using it this way.
 	* bfd-in2.h: Regenerate.
 	
@@ -451,8 +451,8 @@
 
 2005-06-13  Klee Dienes  <kdienes@apple.com>
 
-	* bfdio.c: Remove BFD_IO_FUNCS support (it's been replaced in
-	the upstream BFD by iovec).  Re-merge the other local changes
+	* bfdio.c: Remove BFD_IO_FUNCS support (it has been replaced in
+	the upstream BFD by iovec). Re-merge the other local changes
 	(mostly archive support and error-handling changes) into the new
 	upstream sources.
 	* cache.c (cache_bread): Change the code to match the comment.
@@ -524,7 +524,7 @@
 	
 2004-11-15  Jim Ingham  <jingham@apple.com>
 
-	* mach-o.c (bfd_mach_o_scan_read_dysymtab): Don't hard-code
+	* mach-o.c (bfd_mach_o_scan_read_dysymtab): Do NOT hard-code
 	the size of an nlist entry, get it from the mach-o version
 	like everybody else.
 	
@@ -609,8 +609,8 @@
 2004-08-23  Jim Ingham  <jingham@apple.com>
 
 	* Adding a xvec entry to specify the writeable mode
-	when getting the section contents.  Useful for getting
-	mmapped files you don't intend to alter.
+	when getting the section contents. Useful for getting
+	mmapped files you do NOT intend to alter.
         * bfd-in2.h: Define the new function, add it to the
 	xvec structure & the COPY macro.
 	* libbfd-in.h: declare the new _with_mode function.
@@ -926,7 +926,7 @@
 	Correctly add the length of the name string to the returned
 	traceback table length. Store the length of the traceback table
 	in the user-data field of the parsed symbol.
-	(bfd_pef_section_flags): New function.  Select appropriate section
+	(bfd_pef_section_flags): New function. Select appropriate section
 	flags based on the PEF 'kind' of the section.
 	(bfd_pef_make_bfd_section): Use bfd_pef_section_flags to set the
 	section flags.
@@ -1052,8 +1052,8 @@
 	* mach-o.c: Update prototypes for static functions.  K&R-ize
 	function declarations.
 	(bfd_mach_o_write_contents): No longer need to copy sections from
-	input file; they're already written by the time this function is
-	called.
+	input file; they should already be written by the time this
+	function is called.
 	(bfd_mach_o_scan_write_segment): Just read section information
 	from the output file, no need to use a "fake" file specified in
 	the header.
@@ -1091,7 +1091,7 @@
 
 	* pef.c (bfd_pef_parse_traceback_tables): Do NOT malloc space
 	for the name field if you are only counting symbols.
-	(bfd_pef_parse_symbols): Initialize codebuf to NULL so we don't
+	(bfd_pef_parse_symbols): Initialize codebuf to NULL so we do NOT
 	try to free it.
 
 2002-02-20  Jim Ingham <jingham@apple.com>
@@ -1102,7 +1102,7 @@
 
 2002-01-30  Jim Ingham <jingham@apple.com>
 
-	* opncls.c (bfd_open): Initialize ret to true so we don't return
+	* opncls.c (bfd_open): Initialize ret to true so we do NOT return
 	an uninitialized value.
         * config.bfd: Move the defines for powerpc-apple-macos10 BEFORE the
 	one for powerpc-*-macos*, so that we do NOT get the classic Mac OS

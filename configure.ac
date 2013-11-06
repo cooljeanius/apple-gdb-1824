@@ -64,8 +64,9 @@ AC_SUBST([BUILDIT])
 AC_CHECK_LIB([intl],[gettext])
 
 # Checks for header files.
-AC_CHECK_HEADERS([fcntl.h mach/mach.h stddef.h stdio.h \
-                  sys/file.h sys/ioctl.h sys/param.h termios.h])
+AC_CHECK_HEADERS([ApplicationServices/ApplicationServices.h fcntl.h \
+                  gettext.h libgettext.h libintl.h mach/mach.h stddef.h \
+                  stdio.h sys/file.h sys/ioctl.h sys/param.h termios.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
@@ -76,8 +77,8 @@ AC_TYPE_INT32_T
 AC_FUNC_FORK
 AC_FUNC_LSTAT dnl# calls AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
 AC_FUNC_MALLOC
-AC_CHECK_FUNCS([bzero memmove memset setenv strchr strerror strrchr \
-                strstr strtol strtoull])
+AC_CHECK_FUNCS([bzero dcgettext memmove memset setenv strchr strerror \
+                strrchr strstr strtol strtoull])
 
 AC_CONFIG_SUBDIRS([src])
 AC_OUTPUT

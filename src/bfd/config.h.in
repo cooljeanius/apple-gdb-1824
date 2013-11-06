@@ -147,8 +147,14 @@
 /* Define as 1 if you have gettext and do NOT want to use GNU gettext. */
 #undef HAVE_GETTEXT
 
+/* Define to 1 if you have the <gettext.h> header file. */
+#undef HAVE_GETTEXT_H
+
 /* Define to 1 if you have the `getuid' function. */
 #undef HAVE_GETUID
+
+/* Define to 1 if you have the <iconv.h> header file. */
+#undef HAVE_ICONV_H
 
 /* Define to 1 if the system has the type `intmax_t'. */
 #undef HAVE_INTMAX_T
@@ -164,6 +170,9 @@
 
 /* Define to 1 if you have the `c' library (-lc). */
 #undef HAVE_LIBC
+
+/* Define to 1 if you have the <libgettext.h> header file. */
+#undef HAVE_LIBGETTEXT_H
 
 /* Define to 1 if you have the `gnu' library (-lgnu). */
 #undef HAVE_LIBGNU
@@ -200,6 +209,9 @@
 
 /* Define if <sys/procfs.h> has lwpxstatus_t. */
 #undef HAVE_LWPXSTATUS_T
+
+/* Define to 1 if you have the <mach/mach.h> header file. */
+#undef HAVE_MACH_MACH_H
 
 /* Define to 1 if you have the <mach-o/loader.h> header file. */
 #undef HAVE_MACH_O_LOADER_H
@@ -304,6 +316,9 @@
 
 /* Define to 1 if you have the `setlocale' function. */
 #undef HAVE_SETLOCALE
+
+/* Define to 1 if you have the <stdarg.h> header file. */
+#undef HAVE_STDARG_H
 
 /* Define to 1 if you have the <stddef.h> header file. */
 #undef HAVE_STDDEF_H

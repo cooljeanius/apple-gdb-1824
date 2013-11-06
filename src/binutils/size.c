@@ -26,7 +26,7 @@
    o - We also handle core files.
    o - We also handle archives.
    If you write shell scripts which manipulate this info then you may be
-   out of luck; there's no --compatibility or --pedantic option.  */
+   out of luck; there is no --compatibility or --pedantic option.  */
 
 #include "bfd.h"
 #include "bucomm.h"
@@ -35,7 +35,7 @@
 
 #ifndef BSD_DEFAULT
 # define BSD_DEFAULT 1
-#endif
+#endif /* !BSD_DEFAULT */
 
 /* Program options.  */
 

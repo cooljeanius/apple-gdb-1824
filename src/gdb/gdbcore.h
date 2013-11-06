@@ -136,10 +136,10 @@ extern void validate_files (void);
 
 extern CORE_ADDR register_addr (int regno, CORE_ADDR blockend);
 
-#if !defined (KERNEL_U_ADDR)
+#if !defined(KERNEL_U_ADDR)
 extern CORE_ADDR kernel_u_addr;
-#define KERNEL_U_ADDR kernel_u_addr
-#endif
+# define KERNEL_U_ADDR kernel_u_addr
+#endif /* !KERNEL_U_ADDR */
 
 /* The target vector for core files. */
 

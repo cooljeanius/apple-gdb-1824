@@ -5662,8 +5662,9 @@ fi
 done
 
 
-for ac_header in fcntl.h mach/mach.h stddef.h stdio.h \
-                  sys/file.h sys/ioctl.h sys/param.h termios.h
+for ac_header in ApplicationServices/ApplicationServices.h fcntl.h \
+                  gettext.h libgettext.h libintl.h mach/mach.h stddef.h \
+                  stdio.h sys/file.h sys/ioctl.h sys/param.h termios.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -6329,8 +6330,8 @@ $as_echo "#define malloc rpl_malloc" >>confdefs.h
 fi
 
 
-for ac_func in bzero memmove memset setenv strchr strerror strrchr \
-                strstr strtol strtoull
+for ac_func in bzero dcgettext memmove memset setenv strchr strerror \
+                strrchr strstr strtol strtoull
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"

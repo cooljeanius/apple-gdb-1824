@@ -29364,6 +29364,8 @@ for ac_header in term.h
 do :
   ac_fn_c_check_header_compile "$LINENO" "term.h" "ac_cv_header_term_h" "#if HAVE_CURSES_H
 # include <curses.h>
+#else
+# warning this conftest expects <curses.h> to be included.
 #endif /* HAVE_CURSES_H */
 
 "
@@ -29487,7 +29489,11 @@ if test $ac_cv_header_stdbool_h = yes; then
 $as_echo "#define HAVE_STDBOOL_H 1" >>confdefs.h
 
 fi
- for ac_header in arpa/inet.h fcntl.h libintl.h limits.h locale.h \
+ unset ac_cv_header_libintl_h
+unset ac_cv_header_limits_h
+unset ac_cv_header_locale_h
+unset ac_cv_header_sys_param_h
+for ac_header in arpa/inet.h fcntl.h libintl.h limits.h locale.h \
                   mach/mach.h netdb.h netinet/in.h paths.h sys/param.h \
                   sys/socket.h sys/time.h
 do :
@@ -29504,6 +29510,9 @@ done
 
 
 # Other headers needed for things that I have ifdef-ed:
+unset ac_cv_header_dlfcn_h
+unset ac_cv_header_memory_h
+unset ac_cv_header_sys_types_h
 for ac_header in dlfcn.h errno.h regex.h stdarg.h sys/types.h varargs.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
@@ -29517,10 +29526,10 @@ fi
 
 done
 
-for ac_header in architecture/byte_order.h bits/endian.h libgen.h \
-                  linux/byteorder/big_endian.h \
-                  linux/byteorder/little_endian.h \
-                  mach-o/loader.h mach-o/nlist.h sys/uio.h
+for ac_header in architecture/byte_order.h bits/endian.h gettext.h \
+                  libgen.h libgettext.h linux/byteorder/big_endian.h \
+                  linux/byteorder/little_endian.h mach-o/loader.h \
+                  mach-o/nlist.h memory.h pthread.h setjmp.h sys/uio.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -31283,12 +31292,14 @@ fi
 done
 
 
-# Other functions that autoscan complains about missing:
+# Other functions (that autoscan complains about missing):
+unset ac_cv_func_strchr
 for ac_func in atexit bzero dup2 gethostbyaddr gethostbyname \
                 gethostname getpass gettimeofday inet_ntoa isascii \
-                memchr memmove memset pathconf pow re_comp regcomp \
-                select socket strcspn strerror strncasecmp strpbrk \
-                strrchr strspn strstr strtol strtoul uname
+                memchr memcmp memcpy memmove memset pathconf pow \
+                re_comp regcomp select socket strcspn strerror \
+                strncasecmp strpbrk strchr strrchr strspn strstr \
+                strtok strtol strtoul uname
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"

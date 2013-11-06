@@ -20,7 +20,7 @@
 # Makefile for mmalloc directory
 #
 
-# Directory containing source files.  Don't clean up the spacing,
+# Directory containing source files. Do NOT clean up the spacing,
 # this exact string is matched for by the "configure" script.
 
 VPATH = @srcdir@
@@ -54,7 +54,7 @@ INSTALL_DATA =	@INSTALL_DATA@
 
 AR =		@AR@
 AR_FLAGS =	qv
-CFLAGS =	-g -Wall -Wimplicit
+CFLAGS =	-ggdb -Wall -Wimplicit
 MAKEINFO =	makeinfo
 RANLIB =	@RANLIB@
 RM =		rm

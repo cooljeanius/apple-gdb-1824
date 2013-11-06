@@ -132,7 +132,7 @@ captured_main (void *data)
   char *cdarg = NULL;
   char *ttyarg = NULL;
   /* APPLE LOCAL: Set the osabi via option.  */
-  char *osabiarg = NULL;  
+  char *osabiarg = NULL;
 
 
   /* These are static so that we can take their address in an initializer.  */
@@ -167,30 +167,30 @@ captured_main (void *data)
 
 #if defined (HAVE_SETLOCALE) && defined (HAVE_LC_MESSAGES)
   setlocale (LC_MESSAGES, "");
-#endif
+#endif /* HAVE_SETLOCALE */
 #if defined (HAVE_SETLOCALE)
   setlocale (LC_CTYPE, "");
-#endif
+#endif /* HAVE_SETLOCALE */
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
   /* APPLE LOCAL memory */
 #ifdef USE_MMALLOC
   init_mmalloc_default_pool ((PTR) NULL);
-#endif
- 
+#endif /* USE_MMALLOC */
+
   /* This needs to happen before the first use of malloc.  */
   init_malloc (NULL);
 
 #ifdef HAVE_SBRK
   lim_at_start = (char *) sbrk (0);
-#endif
+#endif /* HAVE_SBRK */
 
-#if defined (ALIGN_STACK_ON_STARTUP)
+#if defined(ALIGN_STACK_ON_STARTUP)
   i = (int) &count & 0x3;
   if (i != 0)
     alloca (4 - i);
-#endif
+#endif /* ALIGN_STACK_ON_STARTUP */
 
   cmdsize = 1;
   cmdarg = (char **) xmalloc (cmdsize * sizeof (*cmdarg));
@@ -220,7 +220,7 @@ captured_main (void *data)
   /* APPLE LOCAL: set our main thread's name */
 #ifdef HAVE_PTHREAD_SETNAME_NP
   pthread_setname_np ("gdb main thread");
-#endif
+#endif /* HAVE_PTHREAD_SETNAME_NP */
 
   /* APPLE LOCAL: raise our file descriptor limit a lot.  */
   unlimit_file_rlimit ();
@@ -246,16 +246,16 @@ captured_main (void *data)
   else
     gdb_sysroot = TARGET_SYSTEM_ROOT;
 #else
-#if defined (TARGET_SYSTEM_ROOT)
+# if defined(TARGET_SYSTEM_ROOT)
   gdb_sysroot = TARGET_SYSTEM_ROOT;
-#else
+# else
   gdb_sysroot = "";
-#endif
-#endif
+# endif /* TARGET_SYSTEM_ROOT */
+#endif /* TARGET_SYSTEM_ROOT_RELOCATABLE */
 
-  /* There will always be an interpreter.  Either the one passed into
+  /* There will always be an interpreter. Either the one passed into
      this captured main, or one specified by the user at start up, or
-     the console.  Initialize the interpreter to the one requested by 
+     the console. Initialize the interpreter to the one requested by
      the application.  */
   interpreter_p = xstrdup (context->interpreter_p);
 
@@ -281,7 +281,7 @@ captured_main (void *data)
     {
 #if defined(TUI)
       {"tui", no_argument, 0, OPT_TUI},
-#endif
+#endif /* TUI */
       {"xdb", no_argument, &xdb_commands, 1},
       {"dbx", no_argument, &dbx_commands, 1},
       {"readnow", no_argument, &readnow_symbol_files, 1},
@@ -318,7 +318,7 @@ captured_main (void *data)
       {"tclcommand", required_argument, 0, 'z'},
       {"enable-external-editor", no_argument, 0, 'y'},
       {"editor-command", required_argument, 0, 'w'},
-#endif
+#endif /* GDBTK */
       {"ui", required_argument, 0, 'i'},
       {"interpreter", required_argument, 0, 'i'},
       {"i", required_argument, 0, 'i'},
@@ -404,10 +404,10 @@ captured_main (void *data)
 	  case OPT_ARCH:
 	    initial_arch = xstrdup (optarg);
 	    break;
-	  /* APPLE LOCAL: Set the osabi via option. This option was 
+	  /* APPLE LOCAL: Set the osabi via option. This option was
 	     added along with a modification to the gdb driver shell script
 	     for armv6. Binaries with the "arm" architecture (ARM v4T)
-	     and "armv6" (ARM v6) can be inter mixed on armv6 capaable 
+	     and "armv6" (ARM v6) can be inter mixed on armv6 capaable
 	     targets since all instructions in the ARM v4T instruction set
 	     are present in the ARM v6 instruction set. The same gdb
 	     executable is used for both, and the osabi set/show variable
@@ -423,7 +423,7 @@ captured_main (void *data)
 	  /* APPLE LOCAL END */
 	  case 'f':
 	    annotation_level = 1;
-/* We have probably been invoked from emacs.  Disable window interface.  */
+/* We have probably been invoked from emacs. Disable window interface.  */
 	    use_windows = 0;
 	    break;
 	  case 's':
@@ -496,7 +496,7 @@ extern int gdbtk_test (char *);
 	      i = strtol (optarg, &p, 0);
 	      if (i == 0 && p == optarg)
 
-		/* Don't use *_filtered or warning() (which relies on
+		/* Do NOT use *_filtered or warning() (which relies on
 		   current_target) until after initialize_all_files(). */
 
 		fprintf_unfiltered
@@ -514,7 +514,7 @@ extern int gdbtk_test (char *);
 	      i = strtol (optarg, &p, 0);
 	      if (i == 0 && p == optarg)
 
-		/* Don't use *_filtered or warning() (which relies on
+		/* Do NOT use *_filtered or warning() (which relies on
 		   current_target) until after initialize_all_files(). */
 
 		fprintf_unfiltered
@@ -542,7 +542,7 @@ extern int gdbtk_test (char *);
     if (set_args)
       {
 	/* The remaining options are the command-line options for the
-	   inferior.  The first one is the sym/exec file, and the rest
+	   inferior. The first one is the sym/exec file, and the rest
 	   are arguments.  */
 	if (optind >= argc)
 	  {
@@ -558,7 +558,7 @@ extern int gdbtk_test (char *);
       }
     else
       {
-	/* OK, that's all the options.  The other arguments are filenames.  */
+	/* OK, that is all the options. The other arguments are filenames.  */
 	count = 0;
 	for (; optind < argc; optind++)
 	  switch (++count)
@@ -568,7 +568,7 @@ extern int gdbtk_test (char *);
 	      execarg = argv[optind];
 	      break;
 	    case 2:
-	      /* The documentation says this can be a "ProcID" as well. 
+	      /* The documentation says this can be a "ProcID" as well.
 	         We will try it as both a corefile and a pid.  */
 	      corearg = argv[optind];
 	      break;
@@ -583,13 +583,13 @@ extern int gdbtk_test (char *);
       quiet = 1;
   }
 
-  /* Initialize all files.  Give the interpreter a chance to take
+  /* Initialize all files. Give the interpreter a chance to take
      control of the console via the deprecated_init_ui_hook ().  */
   gdb_init (argv[0]);
 
   /* Do these (and anything which might call wrap_here or *_filtered)
      after initialize_all_files() but before the interpreter has been
-     installed.  Otherwize the help/version messages will be eaten by
+     installed. Otherwize the help/version messages will be eaten by
      the interpreter's output handler.  */
 
   if (print_version)
@@ -608,16 +608,16 @@ extern int gdbtk_test (char *);
     }
 
   /* FIXME: cagney/2003-02-03: The big hack (part 1 of 2) that lets
-     GDB retain the old MI1 interpreter startup behavior.  Output the
-     copyright message before the interpreter is installed.  That way
-     it isn't encapsulated in MI output.  */
+     GDB retain the old MI1 interpreter startup behavior. Output the
+     copyright message before the interpreter is installed. That way
+     it is NOT encapsulated in MI output.  */
   if (!quiet && strcmp (interpreter_p, INTERP_MI1) == 0)
     {
-      /* APPLE LOCAL begin don't print dots */
+      /* APPLE LOCAL begin do NOT print dots */
       /* Print all the junk at the top. */
       print_gdb_version (gdb_stdout);
       printf_filtered ("\n");
-      /* APPLE LOCAL end don't print dots */
+      /* APPLE LOCAL end do NOT print dots */
       wrap_here ("");
       gdb_flush (gdb_stdout);	/* Force to screen during slow operations */
     }
@@ -629,9 +629,9 @@ extern int gdbtk_test (char *);
       state_change_hook (STATE_ACTIVE);
     }
   /* APPLE LOCAL end */
-  
-  /* Install the default UI.  All the interpreters should have had a
-     look at things by now.  Initialize the default interpreter. */
+
+  /* Install the default UI. All the interpreters should have had a
+     look at things by now. Initialize the default interpreter. */
 
   {
     /* Find it.  */
@@ -650,7 +650,7 @@ extern int gdbtk_test (char *);
   }
 
   /* FIXME: cagney/2003-02-03: The big hack (part 2 of 2) that lets
-     GDB retain the old MI1 interpreter startup behavior.  Output the
+     GDB retain the old MI1 interpreter startup behavior. Output the
      copyright message after the interpreter is installed when it is
      any sane interpreter.  */
   if (!quiet && !current_interp_named_p (INTERP_MI1))
@@ -672,8 +672,8 @@ extern int gdbtk_test (char *);
 
   /* APPLE LOCAL begin move inits up */
   /* Make sure that they are zero in case one of them fails (this
-     guarantees that they won't match if either exists).  */
-  
+     guarantees that they will NOT match if either exists).  */
+
   memset (&homebuf, 0, sizeof (struct stat));
   memset (&cwdbuf, 0, sizeof (struct stat));
   /* APPLE LOCAL end move inits up */
@@ -687,15 +687,15 @@ extern int gdbtk_test (char *);
     }
   do_cleanups (ALL_CLEANUPS);
   /* APPLE LOCAL end global gdbinit */
- 
+
   /* APPLE LOCAL: Set the $_Xcode convenience variable at '0' before sourcing
-     any .gdbinit files.  Xcode will override this to 1 when it is launching
-     gdb but we need to start with a value of 0 so .gdbinit files can use it 
+     any .gdbinit files. Xcode will override this to 1 when it is launching
+     gdb but we need to start with a value of 0 so .gdbinit files can use it
      in conditional expressions.  */
   set_internalvar (lookup_internalvar ("_Xcode"),
                    value_from_longest (builtin_type_int, (LONGEST) 0));
 
-  /* Read and execute $HOME/.gdbinit file, if it exists.  This is done
+  /* Read and execute $HOME/.gdbinit file, if it exists. This is done
      *before* all the command line arguments are processed; it sets
      global parameters, which are independent of what file you are
      debugging or what directory you are in.  */
@@ -724,18 +724,18 @@ extern int gdbtk_test (char *);
     catch_command_errors (directory_command, dirarg[i], 0, RETURN_MASK_ALL);
   xfree (dirarg);
 
-  /* APPLE LOCAL: If an architecture has been supplied, process it. 
-     FIXME: Note, this is a TOTAL hack.  There should be some gdbarch'y type
-     function that processes these options.  The odd thing is that you would
+  /* APPLE LOCAL: If an architecture has been supplied, process it.
+     FIXME: Note, this is a TOTAL hack. There should be some gdbarch'y type
+     function that processes these options. The odd thing is that you would
      want the SAME function for all the gdbarch'es that are registered, so
-     it actually lives a little above the gdbarch....  
-     Not sure how to do that.  So instead, I just hack...  */
-#if defined (USE_POSIX_SPAWN) || defined (USE_ARCH_FOR_EXEC)
+     it actually lives a little above the gdbarch....
+     Not sure how to do that. So instead, I just hack...  */
+#if defined(USE_POSIX_SPAWN) || defined(USE_ARCH_FOR_EXEC)
   if (initial_arch != NULL)
     {
       char *arch_string = NULL;
       char *osabi_string;
-#if defined (TARGET_POWERPC)
+# if defined(TARGET_POWERPC)
       if (strcmp (initial_arch, "ppc") == 0)
 	{
 	  arch_string = "powerpc:common";
@@ -749,7 +749,7 @@ extern int gdbtk_test (char *);
       else
 	  warning ("invalid argument \"%s\" for \"--arch\", should be one of "
 		 "\"ppc\" or \"ppc64\"\n", initial_arch);
-#elif defined (TARGET_I386)
+# elif defined(TARGET_I386)
       if (strcmp (initial_arch, "i386") == 0)
 	{
 	  arch_string = "i386";
@@ -763,7 +763,7 @@ extern int gdbtk_test (char *);
       else
 	warning ("invalid argument \"%s\" for \"--arch\", should be one of "
 		 "\"i386\" or \"x86_64\"\n", initial_arch);
-#elif defined (TARGET_ARM)
+# elif defined(TARGET_ARM)
       if (strcmp (initial_arch, "arm") == 0)
 	{
 	  arch_string = "arm";
@@ -786,9 +786,9 @@ extern int gdbtk_test (char *);
 	}
       else
 	warning ("invalid argument \"%s\" for \"--arch\", should be one of "
-		 "\"arm\", \"armv4*\", \"armv6*\", or \"armv7*\"\n", 
+		 "\"arm\", \"armv4*\", \"armv6*\", or \"armv7*\"\n",
 		 initial_arch);
-#endif
+# endif /* TARGET_POWERPC || TARGET_I386 || TARGET_ARM */
       if (arch_string != NULL)
 	{
 	  set_architecture_from_string (arch_string);
@@ -796,27 +796,27 @@ extern int gdbtk_test (char *);
 	}
       else
 	{
-#if defined (TARGET_ARM) && defined (NM_NEXTSTEP)
-	  /* Always set the OSABI so we are sure to pick up the right slices 
+# if defined(TARGET_ARM) && defined(NM_NEXTSTEP)
+	  /* Always set the OSABI so we are sure to pick up the right slices
 	     for ARM.  */
 	  extern enum gdb_osabi arm_set_osabi_from_host_info ();
 	  arm_set_osabi_from_host_info ();
-#endif	
+# endif /* TARGET_ARM && NM_NEXTSTEP */
     }
     }
-#if defined (TARGET_ARM) && defined (NM_NEXTSTEP)
+# if defined (TARGET_ARM) && defined (NM_NEXTSTEP)
   else
     {
-      /* Always set the OSABI so we are sure to pick up the right slices 
+      /* Always set the OSABI so we are sure to pick up the right slices
          for ARM.  */
       extern enum gdb_osabi arm_set_osabi_from_host_info ();
       arm_set_osabi_from_host_info ();
     }
-#endif	
+# endif /* TARGET_ARM && NM_NEXTSTEP */
 
 #else
   warning ("--arch option not supported in this gdb.");
-#endif
+#endif /* USE_POSIX_SPAWN || USE_ARCH_FOR_EXEC */
 
   /* APPLE LOCAL BEGIN: Set the osabi via option.  */
   if (osabiarg != NULL)
@@ -827,7 +827,7 @@ extern int gdbtk_test (char *);
       && symarg != NULL
       && strcmp (execarg, symarg) == 0)
     {
-      /* The exec file and the symbol-file are the same.  If we can't
+      /* The exec file and the symbol-file are the same. If we cannot
          open it, better only print one error message.
          catch_command_errors returns non-zero on success! */
       if (catch_command_errors (exec_file_attach, execarg, !batch, RETURN_MASK_ALL))
@@ -847,14 +847,14 @@ extern int gdbtk_test (char *);
       state_change_hook (STATE_INFERIOR_LOADED);
     }
   /* APPLE LOCAL end */
-  
+
   /* APPLE LOCAL begin */
   if (attach_waitfor != NULL)
     {
       printf_filtered ("\n");
       catch_command_errors (attach_command, attach_waitfor, 0, RETURN_MASK_ALL);
     }
-    
+
   /* After the symbol file has been read, print a newline to get us
      beyond the copyright line...  But errors should still set off
      the error message with a (single) blank line.  */
@@ -893,7 +893,7 @@ extern int gdbtk_test (char *);
   quit_pre_print = NULL;
   warning_pre_print = _("warning: ");
 
-  /* Read the .gdbinit file in the current directory, *if* it isn't
+  /* Read the .gdbinit file in the current directory, *if* it is NOT
      the same as the $HOME/.gdbinit file (it should exist, also).  */
 
   stat (gdbinit, &cwdbuf);
@@ -905,13 +905,13 @@ extern int gdbtk_test (char *);
         if (cwdbuf.st_uid == getuid ())
 	  catch_command_errors (source_file, gdbinit, 0, RETURN_MASK_ALL);
       }
-  
+
   /* These need to be set this late in the initialization to ensure that
-     they are defined for the current environment.  They define the
+     they are defined for the current environment. They define the
      radix variables needed by a save-breakpoints file to preserve the
      radix across the breakpoints restoration assuming they are restored
      using the -x (-command) command line options.  */
-     
+
   set_internalvar (lookup_internalvar ("input_radix"),
 		   value_from_longest (builtin_type_int, (LONGEST) input_radix));
   set_internalvar (lookup_internalvar ("output_radix"),
@@ -927,15 +927,15 @@ extern int gdbtk_test (char *);
 	  /* NOTE: I am commenting this out, because it is not clear
 	     where this feature is used. It is very old and
 	     undocumented. ezannoni: 1999-05-04 */
-#if 0
+# if 0
 	  if (cmdarg[i][0] == '-' && cmdarg[i][1] == '\0')
 	    read_command_file (stdin);
 	  else
-#endif
+# endif /* 0 */
 	    source_file (cmdarg[i], !batch);
 	  do_cleanups (ALL_CLEANUPS);
 	}
-#endif
+#endif /* 0 */
       catch_command_errors (source_file, cmdarg[i], !batch, RETURN_MASK_ALL);
     }
   xfree (cmdarg);
@@ -948,20 +948,20 @@ extern int gdbtk_test (char *);
       if (attach_flag)
 	/* Either there was a problem executing the command in the
 	   batch file aborted early, or the batch file forgot to do an
-	   explicit detach.  Explicitly detach the inferior ensuring
+	   explicit detach. Explicitly detach the inferior ensuring
 	   that there are no zombies.  */
 	target_detach (NULL, 0);
-      
+
       /* We have hit the end of the batch file.  */
       exit (0);
     }
 
-  /* Do any host- or target-specific hacks.  This is used for i960 targets
+  /* Do any host- or target-specific hacks. This is used for i960 targets
      to force the user to set a nindy target and spec its parameters.  */
 
 #ifdef BEFORE_MAIN_LOOP_HOOK
   BEFORE_MAIN_LOOP_HOOK;
-#endif
+#endif /* BEFORE_MAIN_LOOP_HOOK */
 
   /* Show time and/or space usage.  */
 
@@ -981,7 +981,7 @@ extern int gdbtk_test (char *);
 
       printf_unfiltered (_("Startup size: data size %ld\n"),
 			 (long) (lim - (char *) &environ));
-#endif
+#endif /* HAVE_SBRK */
     }
 
 #if 0
@@ -1010,7 +1010,7 @@ extern int gdbtk_test (char *);
      was thrown, everything would have already been cleaned up.  If
      command_loop() returned normally and quit_command() was called,
      either exit() or error() (again cleaning up) would be called. */
-#endif
+#endif /* 0 */
   /* NOTE: cagney/1999-11-07: There is probably no reason for not
      moving this loop and the code found in captured_command_loop()
      into the command_loop() proper.  The main thing holding back that
@@ -1033,7 +1033,7 @@ gdb_main (struct captured_main_args *args)
 }
 
 
-/* Don't use *_filtered for printing help.  We don't want to prompt
+/* Do NOT use *_filtered for printing help. We do NOT want to prompt
    for continue no matter how small the screen or how much we're going
    to print.  */
 
@@ -1088,7 +1088,7 @@ Options:\n\n\
   fputs_unfiltered (_("\
   --tui              Use a terminal user interface.\n\
 "), stream);
-#endif
+#endif /* TUI */
   fputs_unfiltered (_("\
   --version          Print version information and then exit.\n\
   -w                 Use a window interface.\n\
@@ -1119,4 +1119,4 @@ add_set_cmd (char *name,
 {
   return deprecated_add_set_cmd (name, class, var_type, var, doc, list);
 }
-#endif
+#endif /* 0 */

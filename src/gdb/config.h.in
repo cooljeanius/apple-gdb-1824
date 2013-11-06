@@ -198,6 +198,9 @@
 /* Define as 1 if you have gettext and do NOT want to use GNU gettext. */
 #undef HAVE_GETTEXT
 
+/* Define to 1 if you have the <gettext.h> header file. */
+#undef HAVE_GETTEXT_H
+
 /* Define to 1 if you have the `gettimeofday' function. */
 #undef HAVE_GETTIMEOFDAY
 
@@ -242,6 +245,9 @@
 
 /* Define to 1 if you have the <libgen.h> header file. */
 #undef HAVE_LIBGEN_H
+
+/* Define to 1 if you have the <libgettext.h> header file. */
+#undef HAVE_LIBGETTEXT_H
 
 /* Define to 1 if you have the `gnu' library (-lgnu). */
 #undef HAVE_LIBGNU
@@ -331,6 +337,12 @@
 
 /* Define to 1 if you have the `memchr' function. */
 #undef HAVE_MEMCHR
+
+/* Define to 1 if you have the `memcmp' function. */
+#undef HAVE_MEMCMP
+
+/* Define to 1 if you have the `memcpy' function. */
+#undef HAVE_MEMCPY
 
 /* Define to 1 if you have the `memmove' function. */
 #undef HAVE_MEMMOVE
@@ -434,6 +446,9 @@
 /* Define if <sys/procfs.h> has pstatus_t. */
 #undef HAVE_PSTATUS_T
 
+/* Define to 1 if you have the <pthread.h> header file. */
+#undef HAVE_PTHREAD_H
+
 /* Define to 1 if you have the `pthread_setname_np' function. */
 #undef HAVE_PTHREAD_SETNAME_NP
 
@@ -485,6 +500,9 @@
 
 /* Define to 1 if you have the `setenv' function. */
 #undef HAVE_SETENV
+
+/* Define to 1 if you have the <setjmp.h> header file. */
+#undef HAVE_SETJMP_H
 
 /* Define to 1 if you have the `setlocale' function. */
 #undef HAVE_SETLOCALE
@@ -572,6 +590,9 @@
 
 /* Define to 1 if you have the `strstr' function. */
 #undef HAVE_STRSTR
+
+/* Define to 1 if you have the `strtok' function. */
+#undef HAVE_STRTOK
 
 /* Define to 1 if you have the `strtol' function. */
 #undef HAVE_STRTOL

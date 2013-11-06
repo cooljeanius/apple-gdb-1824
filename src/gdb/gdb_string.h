@@ -24,46 +24,50 @@
 #define GDB_STRING_H
 
 #ifdef STDC_HEADERS
-#include <string.h>
+# include <string.h>
 #else
-#ifdef HAVE_STRING_H
-#include <string.h>
-#else
-#include <strings.h>
-#endif
+# ifdef HAVE_STRING_H
+#  include <string.h>
+# else
+#  ifdef HAVE_STRINGS_H
+#   include <strings.h>
+#  else
+#   warning gdb_string.h expects a string-related header to be included.
+#  endif /* HAVE_STRINGS_H */
+# endif /* HAVE_STRING_H */
 
-#ifndef strchr
+# ifndef strchr
 extern char *strchr (const char *, int);	/* X3.159-1989  4.11.5.2 */
-#endif
+# endif /* !strchr */
 
-#ifndef strrchr
+# ifndef strrchr
 extern char *strrchr (const char *, int);	/* X3.159-1989  4.11.5.5 */
-#endif
+# endif /* !strrchr */
 
-#ifndef strtok
+# ifndef strtok
 extern char *strtok (char *, const char *);	/* X3.159-1989  4.11.5.8 */
-#endif
+# endif /* !strtok */
 
-#ifdef HAVE_MEMORY_H
-#include <memory.h>
-#else
+# ifdef HAVE_MEMORY_H
+#  include <memory.h>
+# else
 extern void *memset ();
 extern void *memcpy ();
 extern void *memmove ();
 extern int memcmp ();
-#endif
+# endif /* HAVE_MEMORY_H */
 #endif /* STDC_HEADERS */
 
 #if !HAVE_DECL_STRERROR
-#ifndef strerror
+# ifndef strerror
 extern char *strerror (int);	/* X3.159-1989  4.11.6.2 */
-#endif
-#endif
+# endif /* !strerror */
+#endif /* !HAVE_DECL_STRERROR */
 
 #if !HAVE_DECL_STRSTR
-#ifndef strstr
+# ifndef strstr
 extern char *strstr (const char *, const char *); /* X3.159-1989  4.11.5.7 */
-#endif
-#endif
+# endif /* !strstr */
+#endif /* !HAVE_DECL_STRERROR */
 
 #endif /* !defined(GDB_STRING_H) */

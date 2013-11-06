@@ -31,7 +31,7 @@ struct CGRect {
   CGSize size;
 };
 typedef struct CGRect CGRect;
-#endif
+#endif /* 0 */
 
 typedef CGError       CGSError;
 typedef long          CGSWindowCount;
@@ -235,13 +235,13 @@ _gdbcp_cg_rollback (int cpid)
 		if (data[0])
 		  {
 		    numbytes = ((int) rect.size.height) * bytesPerRow[0];
-#if 0 /* uncomment to add colorful stripes */
+#if 0 /* un-ifdef to add colorful stripes */
 		    if (oldwinstate->contents0) { int k;
 		    for (k = 0; k < 100 * bytesPerRow[0]; ++k)
 		      if ((k / bytesPerRow[0]) % 2 == 0)
 			((int *) oldwinstate->contents0)[k] = k;
 		    }
-#endif
+#endif /* 0 */
 		    if (oldwinstate->contents0)
 		      memcpy (data[0], oldwinstate->contents0, numbytes);
 		    else
@@ -250,13 +250,13 @@ _gdbcp_cg_rollback (int cpid)
 		if (data[1])
 		  {
 		    numbytes = ((int) rect.size.height) * bytesPerRow[1];
-#if 0 /* uncomment to add colorful stripes */
+#if 0 /* un-ifdef to add colorful stripes */
 		    if (oldwinstate->contents1) { int k;
 		    for (k = 0; k < 100 * bytesPerRow[0]; ++k)
 		      if ((k / bytesPerRow[0]) % 2 == 0)
 			((int *) oldwinstate->contents1)[k] = k;
 		    }
-#endif
+#endif /* 0 */
 		    if (oldwinstate->contents1)
 		      memcpy (data[1], oldwinstate->contents1, numbytes);
 		    else
@@ -281,7 +281,7 @@ _gdbcp_cg_rollback (int cpid)
 	}
     }
   /* Now go through the remaining current windows and delete any
-     that didn't exist in the past.  */
+     that did NOT exist in the past.  */
   for (j = 0; j < num2; ++j)
     {
       if (buf2[j])

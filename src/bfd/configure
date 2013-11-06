@@ -15965,10 +15965,10 @@ fi
 
 
 # Checks for header files.
-for ac_header in ctype.h errno.h fcntl.h libintl.h limits.h \
-                  mach-o/loader.h malloca.h malloc/malloc.h \
-                  realloc.h stddef.h stdio.h sys/file.h \
-                  sys/param.h sys/time.h time.h
+for ac_header in ctype.h errno.h fcntl.h gettext.h iconv.h libgettext.h \
+                  libintl.h limits.h mach/mach.h mach-o/loader.h \
+                  malloca.h malloc/malloc.h realloc.h stdarg.h stddef.h \
+                  stdio.h sys/file.h sys/param.h sys/time.h time.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"

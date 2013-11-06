@@ -11,7 +11,7 @@
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
@@ -24,13 +24,13 @@
 
 struct ui_out;
 
-/* Return-code (RC) from a gdb library call.  (The abreviation RC is
+/* Return-code (RC) from a gdb library call. (The abreviation RC is
    taken from the sim/common directory.) */
 
 enum gdb_rc {
-  /* The operation failed.  The failure message can be fetched by
-     calling ``char *error_last_message(void)''.  The value is
-     determined by the catch_errors() interface.  The MSG parameter is
+  /* The operation failed. The failure message can be fetched by
+     calling ``char *error_last_message(void)''. The value is
+     determined by the catch_errors() interface. The MSG parameter is
      set to a freshly allocated copy of the error message.  */
   /* NOTE: Since ``defs.h:catch_errors()'' does not return an error /
      internal / quit indication it is not possible to return that
@@ -72,4 +72,4 @@ struct cleanup *make_cleanup_restore_current_thread (ptid_t inferior_ptid, int p
 enum gdb_rc gdb_list_thread_ids (struct ui_out *uiout,
 				 char **error_message);
 
-#endif
+#endif /* !GDB_H */

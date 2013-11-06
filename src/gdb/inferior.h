@@ -2,7 +2,7 @@
    Where it is, why it stopped, and how to step it.
 
    Copyright 1986, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995,
-   1996, 1998, 1999, 2000, 2001, 2003, 2004, 2005 
+   1996, 1998, 1999, 2000, 2001, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -398,14 +398,14 @@ extern int step_multi;
    the handling of SIGSTOP for a ptraced process has changed. Earlier
    versions of the kernel would ignore these SIGSTOPs, while now
    SIGSTOP is treated like any other signal, i.e. it is not muffled.
-   
+
    If the gdb user does a 'continue' after the 'attach', gdb passes
    the global variable stop_signal (which stores the signal from the
    attach, SIGSTOP) to the ptrace(PTRACE_CONT,...)  call.  This is
    problematic, because the kernel doesn't ignore such SIGSTOP
    now. I.e. it is reported back to gdb, which in turn presents it
    back to the user.
- 
+
    To avoid the problem, we use STOP_QUIETLY_NO_SIGSTOP, which allows
    gdb to clear the value of stop_signal after the attach, so that it
    is not passed back down to the kernel.  */
@@ -465,14 +465,14 @@ extern int attach_flag;
    START_INFERIOR_TRAPS_EXPECTED in tm.h. */
 #define STARTUP_WITH_SHELL 1
 #if !defined(START_INFERIOR_TRAPS_EXPECTED)
-#define START_INFERIOR_TRAPS_EXPECTED   2
-#endif
+# define START_INFERIOR_TRAPS_EXPECTED   2
+#endif /* !START_INFERIOR_TRAPS_EXPECTED */
 #if !defined(START_INFERIOR_TRAPS_EXPECTED_NOSHELL)
-#define START_INFERIOR_TRAPS_EXPECTED_NOSHELL	(START_INFERIOR_TRAPS_EXPECTED - 1)
-#endif
+# define START_INFERIOR_TRAPS_EXPECTED_NOSHELL	(START_INFERIOR_TRAPS_EXPECTED - 1)
+#endif /* !START_INFERIOR_TRAPS_EXPECTED_NOSHELL */
 
 /* This variable - defined in infcmd.c - can be used to dynamically
-   switch the start_with_shell feature.  
+   switch the start_with_shell feature.
    It is primed with STARTUP_WITH_SHELL */
 
 extern int start_with_shell_flag;

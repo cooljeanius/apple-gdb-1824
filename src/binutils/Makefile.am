@@ -24,7 +24,7 @@ LEX = `if [ -f ../flex/flex ]; then echo ../flex/flex; else echo @LEX@; fi`
 WARN_CFLAGS = @WARN_CFLAGS@
 NO_WERROR = @NO_WERROR@
 AM_CFLAGS = $(WARN_CFLAGS)
-AM_LDFLAGS = -framework CoreFoundation
+AM_LDFLAGS = -framework CoreFoundation -L../readline -L../intl
 
 # these two are almost the same program
 AR_PROG=ar
@@ -108,6 +108,22 @@ GENERATED_CFILES = \
 	arparse.c arlex.c sysroff.c sysinfo.c syslex.c \
 	defparse.c deflex.c nlmheader.c rcparse.c rclex.c
 
+OFILES = \
+	addr2line.o ar.o arsup.o binemul.o bucomm.o budemang.o \
+	coffdump.o coffgrok.o cxxfilt.o debug.o dlltool.o dllwrap.o \
+	emul_aix.o emul_vanilla.o filemode.o \
+	ieee.o is-ranlib.o is-strip.o maybe-ranlib.o maybe-strip.o \
+	nlmconv.o nm.o not-ranlib.o not-strip.o \
+	objcopy.o objdump.o prdbg.o \
+	rdcoff.o rddbg.o readelf.o rename.o \
+	resbin.o rescoff.o resrc.o resres.o \
+	size.o srconv.o stabs.o strings.o sysdump.o version.o \
+	windres.o winduni.o wrstabs.o
+
+GENERATED_OFILES = \
+	arparse.o arlex.o sysroff.o sysinfo.o syslex.o \
+	defparse.o deflex.o nlmheader.o rcparse.o rclex.o
+
 DEBUG_SRCS = rddbg.c debug.c stabs.c ieee.c rdcoff.c
 WRITE_DEBUG_SRCS = $(DEBUG_SRCS) wrstabs.c
 
@@ -127,6 +143,11 @@ INTLLIBS = ../intl/libintl.a @INTLLIBS@
 lt_INTLLIBS = ../intl/libintl.la
 INTLDEP = $(INTLLIBS)
 INTLLIBS_DEP = $(INTLLIBS)
+
+HISTORYLIBS = ../readline/libhistory.a
+READLINELIBS = ../readline/libhistory.a ../readline/libreadline.a
+READLINE_DEP = $(READLINELIBS)
+READLINELIBS_DEP = $(READLINELIBS)
 
 POTFILES = $(CFILES) $(DEBUG_SRCS) $(HFILES)
 po/POTFILES.in: @MAINT@ Makefile
@@ -385,6 +406,66 @@ dep-am: DEP
 	$(SHELL) $(srcdir)/../move-if-change tmp-Makefile.am $(srcdir)/Makefile.am
 
 .PHONY: dep dep-in dep-am
+
+# APPLE LOCAL begin framework building
+
+NSLIBTOOL = cc -dynamiclib
+
+SYSTEM_FRAMEWORK = -L../intl -lintl -framework System -framework CoreFoundation @SYSTEM_FRAMEWORK_LIBS@
+
+FRAMEWORK = binutils
+FRAMEWORK_PREFIX =
+FRAMEWORK_SUFFIX =
+FRAMEWORK_VERSION_SUFFIX =
+FRAMEWORK_VERSION = A
+FRAMEWORK_OFILES = $(OFILES) $(GENERATED_OFILES)
+FRAMEWORK_LIB = -F../bfd -framework bfd -F../opcodes -framework opcodes -F../libiberty -framework liberty -F../mmalloc -framework mmalloc $(SYSTEM_FRAMEWORK) $(LDFLAGS)
+
+stamp-framework-headers: bucomm.h stamp-framework-headers-binutils
+
+stamp-framework: stamp-framework-binutils
+
+BINUTILS = binutils
+BINUTILS_ADDRESS = 0x0
+BINUTILS_PREFIX =
+BINUTILS_SUFFIX =
+BINUTILS_VERSION_SUFFIX =
+BINUTILS_VERSION = A
+BINUTILS_OFILES = version.o
+BINUTILS_LIB = $(SYSTEM_FRAMEWORK)
+
+stamp-framework-headers-binutils:
+	$(RM) -f stamp-framework-binutils stamp-framework-headers-binutils
+	$(RM) -rf $(BINUTILS).framework
+	mkdir -p $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/Headers
+	mkdir -p $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/PrivateHeaders
+	ln -s Versions/Current/Headers $(BINUTILS).framework/Headers
+	ln -s Versions/Current/PrivateHeaders $(BINUTILS).framework/PrivateHeaders
+	ln -s A $(BINUTILS).framework/Versions/Current
+	cp -rp $(srcdir)/../include/* $(BINUTILS).framework/Versions/Current/Headers/
+	cp -rp $(srcdir)/../intl/*.h $(BINUTILS).framework/Versions/Current/Headers/
+	touch stamp-framework-headers-binutils
+
+stamp-framework-binutils: $(BINUTILS_OFILES)
+	$(RM) -f stamp-framework-headers-binutils
+	$(MAKE) stamp-framework-headers-binutils
+	mkdir -p $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/Resources
+	ln -s Versions/Current/Resources $(BINUTILS).framework/Resources
+	mkdir -p $(BINUTILS).framework/Versions/Current/Resources/English.lproj
+
+	set -e; if [ "$(BINUTILS_SUFFIX)" != "" ]; then \
+		$(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(BINUTILS_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) -o $(BINUTILS).framework/Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS_OFILES) $(BINUTILS_LIB); \
+		ln -s $(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS).framework/Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX); \
+		ln -s Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX); \
+		ln -s Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX); \
+		ln -s $(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX) $(BINUTILS).framework/$(BINUTILS); \
+	else \
+		$(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(BINUTILS_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/$(BINUTILS_PREFIX)$(BINUTILS) -o $(BINUTILS).framework/Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS) $(BINUTILS_OFILES) $(BINUTILS_LIB); \
+		ln -s Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS); \
+	fi
+	touch stamp-framework-binutils
+
+# APPLE LOCAL end framework building
 
 ###
 

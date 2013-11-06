@@ -91,4 +91,4 @@ extern void set_verbose (char *, int, struct cmd_list_element *);
 
 extern void do_restore_instream_cleanup (void *stream);
 
-#endif
+#endif /* !TOP_H */

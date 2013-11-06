@@ -1705,24 +1705,24 @@ AC_MSG_CHECKING([version of installed readline library])
 # What a pain in the ass this is.
 
 # save cpp and ld options
-_save_CFLAGS="$CFLAGS"
-_save_LDFLAGS="$LDFLAGS"
-_save_LIBS="$LIBS"
+_save_CFLAGS="${CFLAGS}"
+_save_LDFLAGS="${LDFLAGS}"
+_save_LIBS="${LIBS}"
 
 # Do NOT set ac_cv_rl_prefix if the caller has already assigned a value. This
 # allows the caller to do something like $_rl_prefix=$withval if the user
 # specifies --with-installed-readline=PREFIX as an argument to configure
 
-if test -z "$ac_cv_rl_prefix"; then
-test "x$prefix" = xNONE && ac_cv_rl_prefix=$ac_default_prefix || ac_cv_rl_prefix=${prefix}
+if test -z "${ac_cv_rl_prefix}"; then
+	test "x${prefix}" = "xNONE" && ac_cv_rl_prefix=${ac_default_prefix} || ac_cv_rl_prefix=${prefix}
 fi
 
 eval ac_cv_rl_includedir=${ac_cv_rl_prefix}/include
 eval ac_cv_rl_libdir=${ac_cv_rl_prefix}/lib
 
-LIBS="$LIBS -lreadline ${TERMCAP_LIB}"
-CFLAGS="$CFLAGS -I${ac_cv_rl_includedir}"
-LDFLAGS="$LDFLAGS -L${ac_cv_rl_libdir}"
+LIBS="${LIBS} -lreadline ${TERMCAP_LIB}"
+CFLAGS="${CFLAGS} -I${ac_cv_rl_includedir}"
+LDFLAGS="${LDFLAGS} -L${ac_cv_rl_libdir}"
 
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdio.h>
@@ -1739,15 +1739,15 @@ main()
 }
 ]])],[ac_cv_rl_version=`cat conftest.rlv`],[ac_cv_rl_version='0.0'],[ac_cv_rl_version='4.2'])
 
-CFLAGS="$_save_CFLAGS"
-LDFLAGS="$_save_LDFLAGS"
-LIBS="$_save_LIBS"
+CFLAGS="${_save_CFLAGS}"
+LDFLAGS="${_save_LDFLAGS}"
+LIBS="${_save_LIBS}"
 
 RL_MAJOR=0
 RL_MINOR=0
 
 # (
-case "$ac_cv_rl_version" in
+case "${ac_cv_rl_version}" in
 2*|3*|4*|5*|6*|7*|8*|9*)
 	RL_MAJOR=`echo $ac_cv_rl_version | sed 's:\..*$::'`
 	RL_MINOR=`echo $ac_cv_rl_version | sed -e 's:^.*\.::' -e 's:[[a-zA-Z]]*$::'`
@@ -1756,15 +1756,15 @@ esac
 
 # (((
 case $RL_MAJOR in
-[[0-9][0-9]])	_RL_MAJOR=$RL_MAJOR ;;
-[[0-9]])	_RL_MAJOR=0$RL_MAJOR ;;
+[[0-9][0-9]])	_RL_MAJOR=${RL_MAJOR} ;;
+[[0-9]])	_RL_MAJOR=0${RL_MAJOR} ;;
 *)		_RL_MAJOR=00 ;;
 esac
 
 # (((
-case $RL_MINOR in
-[[0-9][0-9]])	_RL_MINOR=$RL_MINOR ;;
-[[0-9]])	_RL_MINOR=0$RL_MINOR ;;
+case ${RL_MINOR} in
+[[0-9][0-9]])	_RL_MINOR=${RL_MINOR} ;;
+[[0-9]])	_RL_MINOR=0${RL_MINOR} ;;
 *)		_RL_MINOR=00 ;;
 esac
 
@@ -1772,30 +1772,30 @@ RL_VERSION="0x${_RL_MAJOR}${_RL_MINOR}"
 
 # Readline versions greater than 4.2 have these defines in readline.h
 
-if test $ac_cv_rl_version = '0.0' ; then
+if test "${ac_cv_rl_version}" = "0.0" ; then
 	AC_MSG_WARN([Could not test version of installed readline library.])
 elif test $RL_MAJOR -gt 4 || { test $RL_MAJOR = 4 && test $RL_MINOR -gt 2 ; } ; then
 	# set these for use by the caller
-	RL_PREFIX=$ac_cv_rl_prefix
-	RL_LIBDIR=$ac_cv_rl_libdir
-	RL_INCLUDEDIR=$ac_cv_rl_includedir
-	AC_MSG_RESULT([$ac_cv_rl_version])
+	RL_PREFIX=${ac_cv_rl_prefix}
+	RL_LIBDIR=${ac_cv_rl_libdir}
+	RL_INCLUDEDIR=${ac_cv_rl_includedir}
+	AC_MSG_RESULT([${ac_cv_rl_version}])
 else
 
-AC_DEFINE_UNQUOTED([RL_READLINE_VERSION],[$RL_VERSION],[encoded version of the installed readline library])
-AC_DEFINE_UNQUOTED([RL_VERSION_MAJOR],[$RL_MAJOR],[major version of installed readline library])
-AC_DEFINE_UNQUOTED([RL_VERSION_MINOR],[$RL_MINOR],[minor version of installed readline library])
+AC_DEFINE_UNQUOTED([RL_READLINE_VERSION],[${RL_VERSION}],[encoded version of the installed readline library])
+AC_DEFINE_UNQUOTED([RL_VERSION_MAJOR],[${RL_MAJOR}],[major version of installed readline library])
+AC_DEFINE_UNQUOTED([RL_VERSION_MINOR],[${RL_MINOR}],[minor version of installed readline library])
 
 AC_SUBST([RL_VERSION])
 AC_SUBST([RL_MAJOR])
 AC_SUBST([RL_MINOR])
 
 # set these for use by the caller
-RL_PREFIX=$ac_cv_rl_prefix
-RL_LIBDIR=$ac_cv_rl_libdir
-RL_INCLUDEDIR=$ac_cv_rl_includedir
+RL_PREFIX=${ac_cv_rl_prefix}
+RL_LIBDIR=${ac_cv_rl_libdir}
+RL_INCLUDEDIR=${ac_cv_rl_includedir}
 
-AC_MSG_RESULT([$ac_cv_rl_version])
+AC_MSG_RESULT([${ac_cv_rl_version}])
 
 fi
 ])

@@ -91,7 +91,8 @@ BUILD_CFLAGS = \
 BUILD_LDFLAGS = 
 
 all:	igen
-#all:	tmp-filter tmp-table tmp-ld-insn tmp-ld-cache tmp-ld-decode tmp-gen
+all_commented_out:	tmp-filter tmp-table tmp-ld-insn tmp-ld-cache tmp-ld-decode tmp-gen
+.PHONY: all_commented_out
 
 .c.o:
 	$(CC_FOR_BUILD) -c $(BUILD_CFLAGS) $<

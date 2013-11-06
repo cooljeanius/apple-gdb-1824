@@ -255,10 +255,10 @@ AC_CHECK_LIB([iberty],[main])
 AC_CHECK_LIB([gnu],[main])
 
 # Checks for header files.
-AC_CHECK_HEADERS([ctype.h errno.h fcntl.h libintl.h limits.h \
-                  mach-o/loader.h malloca.h malloc/malloc.h \
-                  realloc.h stddef.h stdio.h sys/file.h \
-                  sys/param.h sys/time.h time.h])
+AC_CHECK_HEADERS([ctype.h errno.h fcntl.h gettext.h iconv.h libgettext.h \
+                  libintl.h limits.h mach/mach.h mach-o/loader.h \
+                  malloca.h malloc/malloc.h realloc.h stdarg.h stddef.h \
+                  stdio.h sys/file.h sys/param.h sys/time.h time.h])
 GCC_HEADER_STDINT([bfd_stdint.h],[stdint.h])
 AC_HEADER_TIME
 AC_HEADER_DIRENT
@@ -578,24 +578,24 @@ changequote([,])dnl
 
   # ELF corefile support has several flavors, but all of
   # them use something called <sys/procfs.h>
-  AC_CHECK_HEADERS(sys/procfs.h)
+  AC_CHECK_HEADERS([sys/procfs.h])
   if test "$ac_cv_header_sys_procfs_h" = yes; then
-    BFD_HAVE_SYS_PROCFS_TYPE(prstatus_t)
-    BFD_HAVE_SYS_PROCFS_TYPE(prstatus32_t)
-    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER(prstatus_t, pr_who)
-    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER(prstatus32_t, pr_who)
-    BFD_HAVE_SYS_PROCFS_TYPE(pstatus_t)
-    BFD_HAVE_SYS_PROCFS_TYPE(pxstatus_t)
-    BFD_HAVE_SYS_PROCFS_TYPE(pstatus32_t)
-    BFD_HAVE_SYS_PROCFS_TYPE(prpsinfo_t)
-    BFD_HAVE_SYS_PROCFS_TYPE(prpsinfo32_t)
-    BFD_HAVE_SYS_PROCFS_TYPE(psinfo_t)
-    BFD_HAVE_SYS_PROCFS_TYPE(psinfo32_t)
-    BFD_HAVE_SYS_PROCFS_TYPE(lwpstatus_t)
-    BFD_HAVE_SYS_PROCFS_TYPE(lwpxstatus_t)
-    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER(lwpstatus_t, pr_context)
-    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER(lwpstatus_t, pr_reg)
-    BFD_HAVE_SYS_PROCFS_TYPE(win32_pstatus_t)
+    BFD_HAVE_SYS_PROCFS_TYPE([prstatus_t])
+    BFD_HAVE_SYS_PROCFS_TYPE([prstatus32_t])
+    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER([prstatus_t],[pr_who])
+    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER([prstatus32_t],[pr_who])
+    BFD_HAVE_SYS_PROCFS_TYPE([pstatus_t])
+    BFD_HAVE_SYS_PROCFS_TYPE([pxstatus_t])
+    BFD_HAVE_SYS_PROCFS_TYPE([pstatus32_t])
+    BFD_HAVE_SYS_PROCFS_TYPE([prpsinfo_t])
+    BFD_HAVE_SYS_PROCFS_TYPE([prpsinfo32_t])
+    BFD_HAVE_SYS_PROCFS_TYPE([psinfo_t])
+    BFD_HAVE_SYS_PROCFS_TYPE([psinfo32_t])
+    BFD_HAVE_SYS_PROCFS_TYPE([lwpstatus_t])
+    BFD_HAVE_SYS_PROCFS_TYPE([lwpxstatus_t])
+    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER([lwpstatus_t],[pr_context])
+    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER([lwpstatus_t],[pr_reg])
+    BFD_HAVE_SYS_PROCFS_TYPE([win32_pstatus_t])
   fi
 fi
 AC_SUBST([COREFILE])

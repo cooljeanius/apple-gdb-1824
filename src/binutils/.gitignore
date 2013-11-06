@@ -1,5 +1,6 @@
 # src/binutils/.gitignore
 
+*.framework
 *.lo
 *.o
 *deps/*.*o
@@ -21,6 +22,7 @@ config.h
 cxxfilt
 dep.sed
 doc/Makefile
+lex.yy.c
 libtool
 nm-new
 objcopy
@@ -39,6 +41,7 @@ readelf
 site.bak
 site.exp
 size
+stamp-*
 strings
 strip-new
 sysinfo

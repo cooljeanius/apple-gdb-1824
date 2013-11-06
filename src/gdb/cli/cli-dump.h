@@ -37,4 +37,4 @@ extern char *skip_spaces (char *inp);
 
 extern struct value *parse_and_eval_with_error (char *exp, const char *fmt, ...) ATTR_FORMAT (printf, 2, 3);
 
-#endif
+#endif /* !CLI_DUMP_H */

@@ -680,6 +680,8 @@ AC_CHECK_HEADERS([ncurses/term.h])
 AC_CHECK_HEADERS([term.h],[],[],
 [#if HAVE_CURSES_H
 # include <curses.h>
+#else
+# warning this conftest expects <curses.h> to be included.
 #endif /* HAVE_CURSES_H */
 ])
 
@@ -690,16 +692,23 @@ AC_CHECK_HEADERS([ctype.h time.h])
 
 # Other headers that autoscan complains about:
 AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
+unset ac_cv_header_libintl_h
+unset ac_cv_header_limits_h
+unset ac_cv_header_locale_h
+unset ac_cv_header_sys_param_h
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h libintl.h limits.h locale.h \
                   mach/mach.h netdb.h netinet/in.h paths.h sys/param.h \
                   sys/socket.h sys/time.h])
 
 # Other headers needed for things that I have ifdef-ed:
+unset ac_cv_header_dlfcn_h
+unset ac_cv_header_memory_h
+unset ac_cv_header_sys_types_h
 AC_CHECK_HEADERS([dlfcn.h errno.h regex.h stdarg.h sys/types.h varargs.h])
-AC_CHECK_HEADERS([architecture/byte_order.h bits/endian.h libgen.h \
-                  linux/byteorder/big_endian.h \
-                  linux/byteorder/little_endian.h \
-                  mach-o/loader.h mach-o/nlist.h sys/uio.h])
+AC_CHECK_HEADERS([architecture/byte_order.h bits/endian.h gettext.h \
+                  libgen.h libgettext.h linux/byteorder/big_endian.h \
+                  linux/byteorder/little_endian.h mach-o/loader.h \
+                  mach-o/nlist.h memory.h pthread.h setjmp.h sys/uio.h])
 
 # ------------------------- #
 # Checks for declarations.  #
@@ -865,12 +874,14 @@ AC_CHECK_FUNCS([syscall])
 AC_CHECK_FUNCS([ttrace])
 AC_CHECK_FUNCS([wborder])
 
-# Other functions that autoscan complains about missing:
+# Other functions (that autoscan complains about missing):
+unset ac_cv_func_strchr
 AC_CHECK_FUNCS([atexit bzero dup2 gethostbyaddr gethostbyname \
                 gethostname getpass gettimeofday inet_ntoa isascii \
-                memchr memmove memset pathconf pow re_comp regcomp \
-                select socket strcspn strerror strncasecmp strpbrk \
-                strrchr strspn strstr strtol strtoul uname])
+                memchr memcmp memcpy memmove memset pathconf pow \
+                re_comp regcomp select socket strcspn strerror \
+                strncasecmp strpbrk strchr strrchr strspn strstr \
+                strtok strtol strtoul uname])
 
 # ----- #
 # Other #

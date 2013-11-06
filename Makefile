@@ -799,6 +799,7 @@ ifneq (,$(filter-out i386-apple-darwin, $(filter-out powerpc-apple-darwin, $(fil
 	echo "Unknown architecture string: \"$(CANONICAL_ARCHS)\""
 	exit 1
 endif
+.PHONY: check-args
 
 configure-headers:
 ifneq ($(NATIVE_TARGETS),)

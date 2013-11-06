@@ -219,12 +219,12 @@ HOST_GMPINC = @gmpinc@
 
 SHELL = @config_shell@
 
-# pwd command to use.  Allow user to override default by setting PWDCMD in
-# the environment to account for automounters.  The make variable must not
+# pwd command to use. Allow user to override default by setting PWDCMD in
+# the environment to account for automounters. The make variable must not
 # be called PWDCMD, otherwise the value set here is passed to make
 # subprocesses and overrides the setting from the user's environment.
-# Don't use PWD since it is a common shell environment variable and we
-# don't want to corrupt it.
+# Do NOT use PWD since it is a common shell environment variable and we
+# do NOT want to corrupt it.
 PWD_COMMAND = $${PWDCMD-pwd}
 
 # compilers to use to create programs which must be run in the build
@@ -234,14 +234,14 @@ CFLAGS_FOR_BUILD = @CFLAGS_FOR_BUILD@
 
 CXX_FOR_BUILD = $(CXX)
 
-# Special variables passed down in EXTRA_GCC_FLAGS.  They are defined
+# Special variables passed down in EXTRA_GCC_FLAGS. They are defined
 # here so that they can be overridden by Makefile fragments.
 BUILD_PREFIX = @BUILD_PREFIX@
 BUILD_PREFIX_1 = @BUILD_PREFIX_1@
 
-# Flags to pass to stage2 and later makes.  They are defined
+# Flags to pass to stage2 and later makes. They are defined
 # here so that they can be overridden by Makefile fragments.
-BOOT_CFLAGS= -g -O2
+BOOT_CFLAGS= -ggdb -O
 
 CONFIGURED_BISON = @CONFIGURED_BISON@
 BISON = `if [ -f $$r/$(BUILD_SUBDIR)/bison/tests/bison ] ; then \
@@ -380,10 +380,10 @@ USUAL_CC_FOR_TARGET = ` \
   fi`
 
 # During gcc bootstrap, if we use some random cc for stage1 then
-# CFLAGS will be just -g.  We want to ensure that TARGET libraries
+# CFLAGS will be just -g. We want to ensure that TARGET libraries
 # (which we know are built with gcc) are built with optimizations so
 # prepend -O2 when setting CFLAGS_FOR_TARGET.
-CFLAGS_FOR_TARGET = -O2 $(CFLAGS) $(SYSROOT_CFLAGS_FOR_TARGET)
+CFLAGS_FOR_TARGET = -O $(CFLAGS) $(SYSROOT_CFLAGS_FOR_TARGET)
 SYSROOT_CFLAGS_FOR_TARGET = @SYSROOT_CFLAGS_FOR_TARGET@
 
 # If GCC_FOR_TARGET is not overriden on the command line, then this

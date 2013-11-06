@@ -3,8 +3,15 @@
 /* Define if building universal (internal helper macro) */
 #undef AC_APPLE_UNIVERSAL_BUILD
 
+/* Define to 1 if you have the <ApplicationServices/ApplicationServices.h>
+   header file. */
+#undef HAVE_APPLICATIONSERVICES_APPLICATIONSERVICES_H
+
 /* Define to 1 if you have the `bzero' function. */
 #undef HAVE_BZERO
+
+/* Define to 1 if you have the `dcgettext' function. */
+#undef HAVE_DCGETTEXT
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
@@ -12,11 +19,20 @@
 /* Define to 1 if you have the `fork' function. */
 #undef HAVE_FORK
 
+/* Define to 1 if you have the <gettext.h> header file. */
+#undef HAVE_GETTEXT_H
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
+/* Define to 1 if you have the <libgettext.h> header file. */
+#undef HAVE_LIBGETTEXT_H
+
 /* Define to 1 if you have the `intl' library (-lintl). */
 #undef HAVE_LIBINTL
+
+/* Define to 1 if you have the <libintl.h> header file. */
+#undef HAVE_LIBINTL_H
 
 /* Define to 1 if `lstat' has the bug that it succeeds when given the
    zero-length file name argument. */

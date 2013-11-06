@@ -37,7 +37,7 @@ extern struct gdb_exception interp_exec (struct interp *interp,
 					 const char *command);
 extern int interp_quiet_p (struct interp *interp);
 /* APPLE LOCAL: The complete function...  */
-extern int interp_complete (struct interp *interp, 
+extern int interp_complete (struct interp *interp,
 			    char *word, char *command_buffer,
 			    int cursor, int limit);
 
@@ -76,7 +76,7 @@ extern struct interp *interp_lookup (const char *name);
 extern struct interp *current_interp ();
 extern struct ui_out *interp_ui_out (struct interp *interp);
 /* APPLE LOCAL: Use for redirection an extant interpreter's output.  */
-extern struct ui_out *interp_set_ui_out (struct interp *interp, 
+extern struct ui_out *interp_set_ui_out (struct interp *interp,
 					 struct ui_out *new_uiout);
 
 extern int current_interp_named_p (const char *name);
@@ -93,4 +93,4 @@ extern void clear_interpreter_hooks (void);
 #define INTERP_MI		"mi"
 #define INTERP_TUI		"tui"
 
-#endif
+#endif /* !INTERPS_H */

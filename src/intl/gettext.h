@@ -19,12 +19,22 @@
 #ifndef _GETTEXT_H
 #define _GETTEXT_H 1
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# warning gettext.h expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
+
 #ifdef HAVE_STDIO_H
 # include <stdio.h>
+#else
+# warning gettext.h expects <stdio.h> to be included.
 #endif /* HAVE_STDIO_H */
 
 #if HAVE_LIMITS_H || _LIBC
 # include <limits.h>
+#else
+# warning gettext.h expects <limits.h> to be included.
 #endif /* HAVE_LIMITS_H */
 
 /* @@ end of prolog @@ */
@@ -56,7 +66,7 @@
 
 #ifndef UINT_MAX
 # define UINT_MAX UINT_MAX_32_BITS
-#endif
+#endif /* !UINT_MAX */
 
 #if UINT_MAX == UINT_MAX_32_BITS
 typedef unsigned nls_uint32;
@@ -70,9 +80,9 @@ typedef unsigned long nls_uint32;
   /* The following line is intended to throw an error.  Using #error is
      not portable enough.  */
   "Cannot determine unsigned 32-bit data type."
-#  endif
-# endif
-#endif
+#  endif /* ULONG_MAX == UINT_MAX_32_BITS */
+# endif /* USHRT_MAX == UINT_MAX_32_BITS */
+#endif /* UINT_MAX == UINT_MAX_32_BITS */
 
 
 /* Header for binary .mo file format.  */

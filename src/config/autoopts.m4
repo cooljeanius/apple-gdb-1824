@@ -206,7 +206,7 @@ _EOF_
 ])
           CFLAGS="$ac_save_CFLAGS"
           LIBS="$ac_save_LIBS"
-          AC_LANG_RESTORE
+          AC_LANG_POP
        fi
      fi
      AUTOGEN=:

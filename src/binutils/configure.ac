@@ -181,9 +181,10 @@ AC_CHECK_LIB([iberty],[main])
 AC_CHECK_LIB([gnu],[main])
 
 # Checks for header files.
-AC_CHECK_HEADERS([assert.h errno.h fcntl.h iconv.h libintl.h locale.h \
-                  malloc.h malloc/malloc.h stdarg.h stddef.h stdio.h \
-                  sys/file.h sys/time.h utime.h varargs.h])
+AC_CHECK_HEADERS([assert.h errno.h fcntl.h gettext.h iconv.h libgettext.h \
+                  libintl.h locale.h malloc.h malloc/malloc.h stdarg.h \
+                  stddef.h stdio.h sys/file.h sys/time.h utime.h \
+                  varargs.h])
 AC_CHECK_HEADERS_ONCE([time.h])
 AC_HEADER_SYS_WAIT
 
@@ -479,6 +480,7 @@ AC_SUBST([EMULATION])
 AC_SUBST([EMULATION_VECTOR])
 AC_SUBST([INTLLIBS])
 AC_SUBST([INTLDEPS])
+AC_SUBST([SYSTEM_FRAMEWORK_LIBS])
 
 AC_CONFIG_FILES([Makefile \
                  doc/Makefile \

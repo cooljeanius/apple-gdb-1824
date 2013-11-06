@@ -137,6 +137,9 @@
 /* Define as 1 if you have gettext and do NOT want to use GNU gettext. */
 #undef HAVE_GETTEXT
 
+/* Define to 1 if you have the <gettext.h> header file. */
+#undef HAVE_GETTEXT_H
+
 /* Does <utime.h> define struct utimbuf? */
 #undef HAVE_GOOD_UTIME_H
 
@@ -166,6 +169,9 @@
 
 /* Define to 1 if you have the `gcc' library (-lgcc). */
 #undef HAVE_LIBGCC
+
+/* Define to 1 if you have the <libgettext.h> header file. */
+#undef HAVE_LIBGETTEXT_H
 
 /* Define to 1 if you have the `gnu' library (-lgnu). */
 #undef HAVE_LIBGNU

@@ -17,3 +17,5 @@ int _gdbcp_fork ()
       sleep (1);
     }
 }
+
+/* EOF */

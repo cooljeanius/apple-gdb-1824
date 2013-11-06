@@ -230,6 +230,21 @@ extern int fseeko64 (FILE *stream, off64_t offset, int whence);
 # else
 #  define N_(String) (String)
 # endif /* gettext_noop */
+# ifndef gettext
+#  define gettext(Msgid) (Msgid)
+# endif /* !gettext */
+# ifndef dgettext
+#  define dgettext(Domainname, Msgid) (Msgid)
+# endif /* !dgettext */
+# ifndef dcgettext
+#  define dcgettext(Domainname, Msgid, Category) (Msgid)
+# endif /* !dcgettext */
+# ifndef textdomain
+#  define textdomain(Domainname) while (0) /* nothing */
+# endif /* !textdomain */
+# ifndef bindtextdomain
+#  define bindtextdomain(Domainname, Dirname) while (0) /* nothing */
+# endif /* !bindtextdomain */
 #else
 # define gettext(Msgid) (Msgid)
 # define dgettext(Domainname, Msgid) (Msgid)

@@ -177,8 +177,31 @@ void *alloca ();
 #  else
 #   define N_(String) (String)
 #  endif /* gettext_noop */
+#  ifndef gettext
+#   define gettext(Msgid) (Msgid)
+#  endif /* !gettext */
+#  ifndef dgettext
+#   define dgettext(Domainname, Msgid) (Msgid)
+#  endif /* !dgettext */
+#  ifndef dcgettext
+#   define dcgettext(Domainname, Msgid, Category) (Msgid)
+#  endif /* !dcgettext */
+#  ifndef textdomain
+#   define textdomain(Domainname) while (0) /* nothing */
+#  endif /* !textdomain */
+#  ifndef bindtextdomain
+#   define bindtextdomain(Domainname, Dirname) while (0) /* nothing */
+#  endif /* !bindtextdomain */
 # else
-#  warning bucomm.h expects <libintl.h> to be included.
+#  ifdef HAVE_LIBGETTEXT_H
+#   include <libgettext.h>
+#  else
+#   ifdef HAVE_GETTEXT_H
+#    include <gettext.h>
+#   else
+#    warning bucomm.h expects <libintl.h> (or another similar header) to be included.
+#   endif /* HAVE_GETTEXT_H */
+#  endif /* HAVE_LIBGETTEXT_H */
 # endif /* HAVE_LIBINTL_H */
 #else
 # define gettext(Msgid) (Msgid)

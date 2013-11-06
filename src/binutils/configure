@@ -636,6 +636,7 @@ ac_header_list=
 ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
+SYSTEM_FRAMEWORK_LIBS
 EMULATION_VECTOR
 EMULATION
 OBJDUMP_DEFS
@@ -20999,9 +21000,10 @@ fi
 
 
 # Checks for header files.
-for ac_header in assert.h errno.h fcntl.h iconv.h libintl.h locale.h \
-                  malloc.h malloc/malloc.h stdarg.h stddef.h stdio.h \
-                  sys/file.h sys/time.h utime.h varargs.h
+for ac_header in assert.h errno.h fcntl.h gettext.h iconv.h libgettext.h \
+                  libintl.h locale.h malloc.h malloc/malloc.h stdarg.h \
+                  stddef.h stdio.h sys/file.h sys/time.h utime.h \
+                  varargs.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -23094,6 +23096,7 @@ $as_echo "$as_me: EMULATION is $EMULATION" >&6;}
   { $as_echo "$as_me:${as_lineno-$LINENO}: EMULATION_VECTOR is $EMULATION_VECTOR" >&5
 $as_echo "$as_me: EMULATION_VECTOR is $EMULATION_VECTOR" >&6;}
 done
+
 
 
 

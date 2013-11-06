@@ -100,7 +100,7 @@
 /* For ``enum target_signal''.  */
 #include "gdb/signals.h"
 
-/* Just in case they're not defined in stdio.h.  */
+/* Just in case they are not defined in stdio.h.  */
 
 #ifndef SEEK_SET
 # define SEEK_SET 0
@@ -126,6 +126,60 @@
    in terms of the corresponding type from BFD.  */
 
 #include "bfd.h"
+
+/* NLS (from gettext/libintl) might be needed */
+#ifdef ENABLE_NLS
+# ifdef HAVE_LIBINTL_H
+#  include <libintl.h>
+#  define _(String) gettext (String)
+#  ifdef gettext_noop
+#   define N_(String) gettext_noop (String)
+#  else
+#   define N_(String) (String)
+#  endif /* gettext_noop */
+#  ifndef gettext
+#   define gettext(Msgid) (Msgid)
+#  endif /* !gettext */
+#  ifndef dgettext
+#   define dgettext(Domainname, Msgid) (Msgid)
+#  endif /* !dgettext */
+#  ifndef dcgettext
+#   define dcgettext(Domainname, Msgid, Category) (Msgid)
+#  endif /* !dcgettext */
+#  ifndef textdomain
+#   define textdomain(Domainname) while (0) /* nothing */
+#  endif /* !textdomain */
+#  ifndef bindtextdomain
+#   define bindtextdomain(Domainname, Dirname) while (0) /* nothing */
+#  endif /* !bindtextdomain */
+# else
+#  ifdef HAVE_LIBGETTEXT_H
+#   include <libgettext.h>
+#  else
+#   ifdef HAVE_GETTEXT_H
+#    include <gettext.h>
+#   else
+#    warning defs.h expects <libintl.h> (or another similar header) to be included.
+#   endif /* HAVE_GETTEXT_H */
+#  endif /* HAVE_LIBGETTEXT_H */
+# endif /* HAVE_LIBINTL_H */
+#else
+# ifndef gettext
+#  define gettext(Msgid) (Msgid)
+# endif /* !gettext */
+# ifndef dgettext
+#  define dgettext(Domainname, Msgid) (Msgid)
+# endif /* !dgettext */
+# ifndef dcgettext
+#  define dcgettext(Domainname, Msgid, Category) (Msgid)
+# endif /* !dcgettext */
+# ifndef textdomain
+#  define textdomain(Domainname) while (0) /* nothing */
+# endif /* !textdomain */
+# ifndef bindtextdomain
+#  define bindtextdomain(Domainname, Dirname) while (0) /* nothing */
+# endif /* !bindtextdomain */
+#endif /* ENABLE_NLS */
 
 /* A byte from the program being debugged.  */
 typedef bfd_byte gdb_byte;
