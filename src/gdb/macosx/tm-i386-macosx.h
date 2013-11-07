@@ -1,9 +1,13 @@
+/*
+ * tm-i386-macosx.h
+ */
+
 #ifndef __GDB_TM_i386_MACOSX_H__
 #define __GDB_TM_i386_MACOSX_H__
 
 
 int
-i386_fast_show_stack (unsigned int count_limit, 
+i386_fast_show_stack (unsigned int count_limit,
                       unsigned int print_start,
 		      unsigned int print_end,
                       unsigned int *count,

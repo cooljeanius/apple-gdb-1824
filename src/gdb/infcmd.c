@@ -55,13 +55,18 @@
 #include "inlining.h"
 #include "macosx/macosx-nat-dyld.h"
 
+#if defined(NM_NEXTSTEP) || defined(TM_NEXTSTEP)
+# include "nm-macosx.h"
+# include "macosx-nat-inferior.h"
+#endif /* NM_NEXTSTEP || TM_NEXTSTEP */
+
 /* APPLE LOCAL checkpoints */
 #include "checkpoint.h"
 
 /* APPLE LOCAL begin process completer */
 #ifndef PROCESS_COMPLETER
-#define PROCESS_COMPLETER noop_completer
-#endif
+# define PROCESS_COMPLETER noop_completer
+#endif /* !PROCESS_COMPLETER */
 
 extern char **process_completer (char *, char *);
 /* APPLE LOCAL end process completer */
@@ -260,7 +265,7 @@ struct gdb_environ *inferior_environ;
 
 /* Accessor routines. */
 
-void 
+void
 set_inferior_io_terminal (const char *terminal_name)
 {
   if (inferior_io_terminal)
@@ -501,7 +506,7 @@ run_command_1 (char *args, int from_tty, int tbreak_at_main)
   /* APPLE LOCAL: discard ObjC Runtime cleanups, and reset proceed_from_hand_call.  */
   do_hand_call_cleanups (ALL_CLEANUPS);
   proceed_from_hand_call = 0;
-  
+
   /* Purge old solib objfiles. */
   objfile_purge_solibs ();
 
@@ -610,7 +615,7 @@ run_command_1 (char *args, int from_tty, int tbreak_at_main)
       /* The target didn't manage to start for some reason.  Just in case
 	 we didn't clean up, let's set target_executing to 0 here. */
       target_executing = 0;
-      
+
       if (target_can_async_p ())
         {
           /* Simulate synchronous execution */
@@ -648,7 +653,7 @@ start_command (char *args, int from_tty)
 
   /* Run the program until reaching the main procedure...  */
   run_command_1 (args, from_tty, 1);
-} 
+}
 
 void
 continue_command (char *proc_count_exp, int from_tty)
@@ -710,8 +715,8 @@ continue_command (char *proc_count_exp, int from_tty)
   if (state_change_hook)
       state_change_hook (STATE_INFERIOR_LOGICALLY_RUNNING);
   /* APPLE LOCAL end */
-      
-  if (continue_command_hook) 
+
+  if (continue_command_hook)
     continue_command_hook();
 
   proceed ((CORE_ADDR) -1, TARGET_SIGNAL_DEFAULT, 0);
@@ -803,7 +808,7 @@ step_1_no_inlining (int skip_subroutines, int single_inst, char *count_string)
   /* APPLE LOCAL begin subroutine inlining  */
   if (!async_exec && target_can_async_p ()
       && !single_inst
-      && (skip_subroutines 
+      && (skip_subroutines
 	  || !at_inlined_call_site_p (&file_name, &line_num, &column)))
   /* APPLE LOCAL end subroutine inlining  */
     {
@@ -844,7 +849,7 @@ step_1_no_inlining (int skip_subroutines, int single_inst, char *count_string)
 	      if (step_range_end == 0)
 		{
 		  char *name;
-		  if (find_pc_partial_function_no_inlined (stop_pc, &name, 
+		  if (find_pc_partial_function_no_inlined (stop_pc, &name,
 							   &step_range_start,
 							   &step_range_end) == 0)
 		    error (_("Cannot find bounds of current function"));
@@ -937,7 +942,7 @@ step_1_inlining (int skip_subroutines, int single_inst, char *count_string)
   /* APPLE LOCAL begin subroutine inlining  */
   if (!async_exec && target_can_async_p ()
       && !single_inst
-      && (skip_subroutines 
+      && (skip_subroutines
 	  || !at_inlined_call_site_p (&file_name, &line_num, &column)))
   /* APPLE LOCAL end subroutine inlining  */
     {
@@ -951,7 +956,7 @@ step_1_inlining (int skip_subroutines, int single_inst, char *count_string)
     {
       enable_longjmp_breakpoint ();
       if (!target_can_async_p ())
-	cleanups = make_cleanup (disable_longjmp_breakpoint_cleanup, 
+	cleanups = make_cleanup (disable_longjmp_breakpoint_cleanup,
 				 0 /*ignore*/);
       else
         make_exec_cleanup (disable_longjmp_breakpoint_cleanup, 0 /*ignore*/);
@@ -988,11 +993,11 @@ step_1_inlining (int skip_subroutines, int single_inst, char *count_string)
 		{
 		  /* The inlined subroutine is the first bit of code for the
 		     line;  it might not be ALL the code for the line
-		     however.  First find the sal for the inlined 
+		     however.  First find the sal for the inlined
 		     subroutine.  */
 		  CORE_ADDR start_pc;
 
-		  start_pc = 
+		  start_pc =
 		         global_inlined_call_stack.records[stack_pos].start_pc;
 		  sal = find_pc_line (start_pc, 0);
 		  while (sal.entry_type != INLINED_CALL_SITE_LT_ENTRY
@@ -1040,7 +1045,7 @@ step_1_inlining (int skip_subroutines, int single_inst, char *count_string)
 		     line.  */
 
 		  gdb_assert (end_of_line != 0);
-		  
+
 		  if (in_inlined_function_call_p (&tmp_end))
 		    {
 		      if (tmp_end && tmp_end < end_of_line)
@@ -1059,9 +1064,9 @@ step_1_inlining (int skip_subroutines, int single_inst, char *count_string)
 	      /* Tell the user what's going on.  */
 
 	      if (dwarf2_debug_inlined_stepping)
-		ui_out_text (uiout, 
+		ui_out_text (uiout,
 			     "** Stepping over inlined function code.  **\n");
-	      
+
 	      /* Set up various necessary variables to make sure we actually
 		 stop at the right time.  */
 
@@ -1075,7 +1080,7 @@ step_1_inlining (int skip_subroutines, int single_inst, char *count_string)
 	      if (current_inlined_subroutine_stack_size() > 0
 		  && stack_pos > 0
 		  && stack_pos < current_inlined_subroutine_stack_size ())
-		stepping_ranges = 
+		stepping_ranges =
 		           global_inlined_call_stack.records[stack_pos].ranges;
 	      else
 		stepping_ranges = 0;
@@ -1101,15 +1106,15 @@ step_1_inlining (int skip_subroutines, int single_inst, char *count_string)
 
 		  step_into_current_inlined_subroutine ();
 
-		  sal = find_pc_line 
+		  sal = find_pc_line
 		            (current_inlined_subroutine_call_stack_start_pc (),
 			     0);
-		  
+
 		  for (cur = &sal; cur; cur = cur->next)
 		    if (cur->entry_type == INLINED_SUBROUTINE_LT_ENTRY
-			&& cur->pc == 
+			&& cur->pc ==
 			      current_inlined_subroutine_call_stack_start_pc ()
-			&& cur->end == 
+			&& cur->end ==
 			       current_inlined_subroutine_call_stack_end_pc ())
 		      {
 			sal.symtab = cur->symtab;
@@ -1139,20 +1144,20 @@ step_1_inlining (int skip_subroutines, int single_inst, char *count_string)
 		     subroutines less confusion: We've forced a stop
 		     at the call site, where there is not executable
 		     code, before diving into the subroutine.  */
-		 
+
 		  /* Find the INLINED_SUBROUTINE line table entry for
 		     the current PC, with information matching the
 		     current record in the
 		     global_inlined_call_stack.  */
 
 		  sal = find_pc_line (stop_pc, 0);
-		  
+
 		  while (!found)
 		    {
 		      if (sal.entry_type == INLINED_SUBROUTINE_LT_ENTRY
-			  && sal.pc == 
+			  && sal.pc ==
                               current_inlined_subroutine_call_stack_start_pc ()
-			  && sal.end == 
+			  && sal.end ==
 			       current_inlined_subroutine_call_stack_end_pc ())
 			found = 1;
 		      else
@@ -1163,13 +1168,13 @@ step_1_inlining (int skip_subroutines, int single_inst, char *count_string)
 			  sal = *cur;
 			}
 		    }
-		  
+
 		  /* Stepping into an inlined function requires
 		     creating a new INLINED_FRAME, at level 0, so we
 		     need to flush the current set of frames.  */
 
 		  flush_cached_frames ();
-		  
+
 		  /* Update the global_inlined_call_stack data
 		     appropriately.  */
 
@@ -1215,7 +1220,7 @@ step_1_inlining (int skip_subroutines, int single_inst, char *count_string)
 
 	      if (!single_inst
 		  && rest_of_line_contains_inlined_subroutine (&end_of_line))
-		find_next_inlined_subroutine (stop_pc, &inline_start_pc, 
+		find_next_inlined_subroutine (stop_pc, &inline_start_pc,
 					      end_of_line);
 
 	      clear_proceed_status ();
@@ -1232,7 +1237,7 @@ step_1_inlining (int skip_subroutines, int single_inst, char *count_string)
 
 	      if (!single_inst)
 		{
-		  find_pc_line_pc_range (stop_pc, &step_range_start, 
+		  find_pc_line_pc_range (stop_pc, &step_range_start,
 					 &step_range_end);
 
 		  if (inline_start_pc)
@@ -1247,11 +1252,11 @@ step_1_inlining (int skip_subroutines, int single_inst, char *count_string)
 			ui_out_text (uiout,
 		      "** Stepping to beginning of inlined subroutine.  **\n");
 		    }
-		  
+
 		  if (step_range_end == 0)
 		    {
 		      char *name;
-		      if (find_pc_partial_function (stop_pc, &name, 
+		      if (find_pc_partial_function (stop_pc, &name,
 						    &step_range_start,
 						&step_range_end) == 0)
 			error (_("Cannot find bounds of current function"));
@@ -1272,7 +1277,7 @@ which has no line number information.\n"), name);
 		       not even to functions lacking line numbers.  */
 		    step_over_calls = STEP_OVER_NONE;
 		}
-	      
+
 	      if (skip_subroutines)
 		step_over_calls = STEP_OVER_ALL;
 
@@ -1339,12 +1344,12 @@ step_1_continuation (struct continuation_arg *arg)
    called in case of step n with n>1, after the first step operation has
    been completed.*/
 /* APPLE LOCAL make step_once globally visible */
-void 
+void
 step_once (int skip_subroutines, int single_inst, int count)
-{ 
-  struct continuation_arg *arg1; 
+{
+  struct continuation_arg *arg1;
   struct continuation_arg *arg2;
-  struct continuation_arg *arg3; 
+  struct continuation_arg *arg3;
   struct frame_info *frame;
   /* APPLE LOCAL begin subroutine inlining  */
   char *file_name = NULL;
@@ -1357,7 +1362,7 @@ step_once (int skip_subroutines, int single_inst, int count)
 
   if (!single_inst
       && (stack_pos = at_inlined_call_site_p (&file_name, &line_num, &column)
-	  || rest_of_line_contains_inlined_subroutine (&end_of_line)) 
+	  || rest_of_line_contains_inlined_subroutine (&end_of_line))
       && skip_subroutines)
     {
       /* We're trying to 'next' over an inlined function call.  If so,
@@ -1394,11 +1399,11 @@ step_once (int skip_subroutines, int single_inst, int count)
 	  if (sal.entry_type == INLINED_CALL_SITE_LT_ENTRY
 	      && sal.line == line_num)
 	    sal.pc = sal.end;
-	  
+
 	  /* If there is more code to the line than the inlined
 	     subroutine, make the 'next' command step over the rest of
 	     the line as well.  */
-	  
+
 	  if (end_of_line != 0
 	      && sal.pc != end_of_line)
 	    sal.pc = end_of_line;
@@ -1418,7 +1423,7 @@ step_once (int skip_subroutines, int single_inst, int count)
 		}
 	    }
 
-	  
+
 	}
       else
 	{
@@ -1426,15 +1431,15 @@ step_once (int skip_subroutines, int single_inst, int count)
 	      subroutine; there may be code for this line after the
 	      inlined subroutine as well.  We want the 'next' command
 	      to step over ALL the code for the line.  */
-	  
+
 	  gdb_assert (end_of_line != 0);
-	 
+
 	  if (in_inlined_function_call_p (&tmp_end))
 	    {
 	      if (tmp_end && tmp_end < end_of_line)
 		end_of_line = tmp_end;
 	    }
- 
+
 	  sal = find_pc_line (stop_pc, 0);
 	  sal.pc = end_of_line;
 	  sal.end = end_of_line;
@@ -1448,7 +1453,7 @@ step_once (int skip_subroutines, int single_inst, int count)
 
       if (dwarf2_debug_inlined_stepping)
 	ui_out_text  (uiout, "** Stepping over inlined function code. **\n");
-	  
+
       /* Set up various necessary variables to make sure we actually stop when
 	 we get to the breakpoint.  */
 
@@ -1468,7 +1473,7 @@ step_once (int skip_subroutines, int single_inst, int count)
 
       proceed ((CORE_ADDR) -1, TARGET_SIGNAL_DEFAULT, 1);
     }
-  else if (!single_inst 
+  else if (!single_inst
 	   && at_inlined_call_site_p (&file_name, &line_num, &column))
     {
       /* APPLE LOCAL radar 6130399  */
@@ -1504,9 +1509,9 @@ step_once (int skip_subroutines, int single_inst, int count)
 	      }
 
 	  /* Flush the existing frames.  This is necessary because we will need
-	     to create a new INLINED_FRAME at level zero for the inlined 
+	     to create a new INLINED_FRAME at level zero for the inlined
 	     subroutine we are "stepping" into.  */
-	  
+
 	  flush_cached_frames ();
 
 	}
@@ -1521,14 +1526,14 @@ step_once (int skip_subroutines, int single_inst, int count)
 	     confusing: We've forced a stop at the call site, where
 	     there is no executable code, before diving into the
 	     subroutine.  */
-	  
-	  
+
+
 	  /* Find the INLINED_SUBROUTINE line table entry for the current PC,
-	     with information matching the current record in the 
+	     with information matching the current record in the
 	     global_inlined_call_stack.  */
-	  
+
 	  sal = find_pc_line (stop_pc, 0);
-	  
+
 	  while (!found)
 	    {
 	      if (sal.entry_type == INLINED_SUBROUTINE_LT_ENTRY
@@ -1543,25 +1548,25 @@ step_once (int skip_subroutines, int single_inst, int count)
 		  sal = *cur;
 		}
 	    }
-	  
+
 	  /* Stepping into an inlined function requires creating a new
 	     INLINED_FRAME, at level 0, so we need to flush the current
 	     set of frames.  */
-	  
+
 	  flush_cached_frames ();
 
 	  /* Update the global_inlined_call_stack data appropriately.  */
-	  
+
 	  step_into_current_inlined_subroutine ();
-	  
+
 	}
 
       /* Tell the user what we are doing.  */
       if (dwarf2_debug_inlined_stepping)
-	ui_out_text (uiout, 
+	ui_out_text (uiout,
 		     "** Simulating stepping into inlined subroutine.  **\n");
-	  
-      /* Tell emacs (or anything else using annotations) to update the 
+
+      /* Tell emacs (or anything else using annotations) to update the
 	 location.  */
 
       if (at_inlined_call_site_p (&file_name, &line_num, &column))
@@ -1578,19 +1583,19 @@ step_once (int skip_subroutines, int single_inst, int count)
       fi = get_current_frame ();
       print_inlined_frame (fi, 0, SRC_AND_LOC, 1, sal, func_first_line);
       if (annotation_level == 0)
-	print_source_lines (sal.symtab, func_first_line, 1, 0); 
+	print_source_lines (sal.symtab, func_first_line, 1, 0);
       else
 	identify_source_line (sal.symtab, func_first_line, 0, sal.pc);
       /* APPLE LOCAL end radar 6130399  */
 
       annotate_frame_end ();
       annotate_stopped ();
-	  
+
       /* Make sure the mi interpreter updates the current location
 	 appropriately (including fooling it into believing the
 	 inferior has run, so it can properly finish its 'step'
 	 command).  */
-	  
+
       target_executing = 0;
     }
   else
@@ -1601,15 +1606,15 @@ step_once (int skip_subroutines, int single_inst, int count)
 	  /* APPLE LOCAL begin subroutine inlining  */
 	  if (!single_inst
 	      && rest_of_line_contains_inlined_subroutine (&end_of_line))
-	    find_next_inlined_subroutine (stop_pc, &inline_start_pc, 
+	    find_next_inlined_subroutine (stop_pc, &inline_start_pc,
 					  end_of_line);
 	  /* APPLE LOCAL end subroutine inlining  */
-	      
+
 	  clear_proceed_status ();
 
 	  frame = get_current_frame ();
 
-	  while (frame 
+	  while (frame
 		 && get_frame_type (frame) == INLINED_FRAME)
 	    frame = get_prev_frame (frame);
 
@@ -1630,7 +1635,7 @@ step_once (int skip_subroutines, int single_inst, int count)
 		  inlined_step_range_end = inline_start_pc;
 		  stepping_into_inlined_subroutine = 1;
 		  if (dwarf2_debug_inlined_stepping)
-		    ui_out_text (uiout, 
+		    ui_out_text (uiout,
 		        "** Stepping to beginning of inlined subroutine.  **\n");
 		}
 	      /* APPLE LOCAL end subroutine inlining  */
@@ -1684,7 +1689,7 @@ which has no line number information.\n"), name);
 	  add_intermediate_continuation (step_1_continuation, arg1);
 	  proceed ((CORE_ADDR) -1, TARGET_SIGNAL_DEFAULT, 1);
 	}
-    /* APPLE LOCAL begin subroutine inlining  */  
+    /* APPLE LOCAL begin subroutine inlining  */
     }
     /* APPLE LOCAL end subroutine inlining  */
 }
@@ -1795,10 +1800,10 @@ re_exec_1_continuation (struct continuation_arg *arg)
     re_exec_once (count - 1);
 }
 
-void 
+void
 re_exec_once (int count)
-{ 
-  struct continuation_arg *arg1; 
+{
+  struct continuation_arg *arg1;
   struct frame_info *frame;
 
   if (count <= 0)
@@ -2229,7 +2234,7 @@ finish_command_continuation (struct continuation_arg *arg)
       gcc_compiled = BLOCK_GCC_COMPILED (SYMBOL_BLOCK_VALUE (function));
       struct_return = using_struct_return (value_type, gcc_compiled);
 
-      print_return_value (struct_return, value_type); 
+      print_return_value (struct_return, value_type);
     }
 
   do_exec_cleanups (cleanups);
@@ -2260,7 +2265,7 @@ finish_inlined_subroutine_command_continuation (struct continuation_arg *arg)
       if (!value_type)
 	internal_error (__FILE__, __LINE__,
 			_("finish_inlined_subroutine_command: function has no target type"));
-      
+
       if (TYPE_CODE (value_type) == TYPE_CODE_VOID)
 	{
 	  do_exec_cleanups (cleanups);
@@ -2287,7 +2292,7 @@ finish_inlined_subroutine_command_continuation (struct continuation_arg *arg)
 static void
 finish_inlined_subroutine_command (CORE_ADDR inline_end_pc)
 {
-  int i;  /* Position, in inlined call stack, of subroutine to be 
+  int i;  /* Position, in inlined call stack, of subroutine to be
 	     'finish'ed  */
   char *file_name;
   int line_num;
@@ -2321,7 +2326,7 @@ finish_inlined_subroutine_command (CORE_ADDR inline_end_pc)
   line_num  = global_inlined_call_stack.records[i].call_site_line;
   column    = global_inlined_call_stack.records[i].call_site_column;
   start_pc = global_inlined_call_stack.records[i].start_pc;
-  
+
   /* Get the correct sal.  */
 
   frame = get_current_frame ();
@@ -2339,9 +2344,9 @@ finish_inlined_subroutine_command (CORE_ADDR inline_end_pc)
       && sal.line == line_num)
     sal.pc = sal.end;
 
-  /* Proceed as if we are doing 'next' over the inlined subroutine, but 
+  /* Proceed as if we are doing 'next' over the inlined subroutine, but
      make sure to use prev_frame.  */
-  
+
   clear_proceed_status ();
   if (!frame)
     error (_("No current frame"));
@@ -2351,7 +2356,7 @@ finish_inlined_subroutine_command (CORE_ADDR inline_end_pc)
   step_over_calls = STEP_OVER_ALL;
   stepping_over_inlined_subroutine = 1;
   stepping_ranges = global_inlined_call_stack.records[i].ranges;
-  
+
   /* Clena up global inlined call stack to refect no longer being in
      the subroutien.  */
 
@@ -2367,9 +2372,9 @@ finish_inlined_subroutine_command (CORE_ADDR inline_end_pc)
 
   if (target_can_async_p ())
     {
-      arg1 = 
+      arg1 =
 	(struct continuation_arg *) xmalloc (sizeof (struct continuation_arg));
-      arg2 = 
+      arg2 =
 	(struct continuation_arg *) xmalloc (sizeof (struct continuation_arg));
       arg1->next = arg2;
       arg2->next = NULL;
@@ -2381,7 +2386,7 @@ finish_inlined_subroutine_command (CORE_ADDR inline_end_pc)
   finishing_inlined_subroutine = 1;
   proceed_to_finish = 1;
   proceed ((CORE_ADDR) -1, TARGET_SIGNAL_DEFAULT, 1);
-  
+
   if (!target_can_async_p ())
     {
       if (function != NULL)
@@ -2389,25 +2394,25 @@ finish_inlined_subroutine_command (CORE_ADDR inline_end_pc)
 	  struct type *value_type;
 	  int struct_return;
 	  int gcc_compiled;
-	  
+
 	  value_type = TYPE_TARGET_TYPE (SYMBOL_TYPE (function));
 	  if (!value_type)
 	    internal_error (__FILE__, __LINE__,
 	  _("finish_inlined_subroutine_command: function has no target type"));
-	  
+
 	  if (TYPE_CODE (value_type) == TYPE_CODE_VOID)
 	    {
 	      do_exec_cleanups (old_chain);
 	      return;
 	    }
-	  
+
 	  CHECK_TYPEDEF (value_type);
 	  gcc_compiled = BLOCK_GCC_COMPILED (SYMBOL_BLOCK_VALUE (function));
 	  struct_return = using_struct_return (value_type, gcc_compiled);
-	  
+
 	  print_return_value (struct_return, value_type);
 	}
-      
+
       do_exec_cleanups (old_chain);
     }
 }
@@ -2477,7 +2482,7 @@ finish_command (char *arg, int from_tty)
       sal = find_pc_line (get_frame_pc (frame), 0);
       sal.pc = get_frame_pc (frame);
 
-      breakpoint = set_momentary_breakpoint (sal, get_frame_id (frame), 
+      breakpoint = set_momentary_breakpoint (sal, get_frame_id (frame),
 					     bp_finish);
 
 
@@ -2487,9 +2492,9 @@ finish_command (char *arg, int from_tty)
 	old_chain = make_exec_cleanup_delete_breakpoint (breakpoint);
 
       /* Find the function we will return from.  */
-      
+
       function = find_pc_function (get_frame_pc (selected_frame));
-      
+
       /* Print info on the selected frame, including level number but not
 	 source.  */
       if (from_tty)
@@ -2497,7 +2502,7 @@ finish_command (char *arg, int from_tty)
 	  printf_filtered (_("Run till exit from "));
 	  print_stack_frame (selected_frame, 1, LOCATION);
 	}
-  
+
       /* If running asynchronously and the target support asynchronous
 	 execution, set things up for the rest of the finish command to be
 	 completed later on, when gdb has detected that the target has
@@ -2518,10 +2523,10 @@ finish_command (char *arg, int from_tty)
 	  arg3->data.pointer = old_chain;
 	  add_continuation (finish_command_continuation, arg1);
 	}
-      
+
       proceed_to_finish = 1;	/* We want stop_registers, please...  */
       proceed ((CORE_ADDR) -1, TARGET_SIGNAL_DEFAULT, 0);
-      
+
       /* Do this only if not running asynchronously or if the target
 	 cannot do async execution.  Otherwise, complete this command when
 	 the target actually stops, in fetch_inferior_event.  */
@@ -2534,23 +2539,23 @@ finish_command (char *arg, int from_tty)
 	      struct type *value_type;
 	      int struct_return;
 	      int gcc_compiled;
-	      
+
 	      value_type = TYPE_TARGET_TYPE (SYMBOL_TYPE (function));
 	      if (!value_type)
 		internal_error (__FILE__, __LINE__,
 				_("finish_command: function has no target type"));
-	      
+
 	      /* FIXME: Shouldn't we do the cleanups before returning?  */
 	      if (TYPE_CODE (value_type) == TYPE_CODE_VOID)
 		return;
-	      
+
 	      CHECK_TYPEDEF (value_type);
 	      gcc_compiled = BLOCK_GCC_COMPILED (SYMBOL_BLOCK_VALUE (function));
 	      struct_return = using_struct_return (value_type, gcc_compiled);
-	      
-	      print_return_value (struct_return, value_type); 
+
+	      print_return_value (struct_return, value_type);
 	    }
-	  
+
 	  do_cleanups (old_chain);
 	}
     /* APPLE LOCAL begin subroutine inlining  */
@@ -2669,7 +2674,7 @@ set_environment_command (char *arg, int from_tty)
   if (p != 0 && val != 0)
     {
       /* We have both a space and an equals.  If the space is before the
-         equals, walk forward over the spaces til we see a nonspace 
+         equals, walk forward over the spaces til we see a nonspace
          (possibly the equals). */
       if (p > val)
 	while (*val == ' ')
@@ -2915,7 +2920,7 @@ registers_info (char *addr_exp, int fpregs)
       while ((*addr_exp) != '\0' && !isspace ((*addr_exp)))
 	addr_exp++;
       end = addr_exp;
-      
+
       /* Figure out what we've found and display it.  */
 
       /* A register name?  */
@@ -2929,7 +2934,7 @@ registers_info (char *addr_exp, int fpregs)
 	    continue;
 	  }
       }
-	
+
       /* A register number?  (how portable is this one?).  */
       {
 	char *endptr;
@@ -3246,7 +3251,7 @@ No floating-point info available for this processor.\n");
 static void
 float_info (char *args, int from_tty)
 {
-  print_float_info (current_gdbarch, gdb_stdout, 
+  print_float_info (current_gdbarch, gdb_stdout,
 		    deprecated_selected_frame, args);
 }
 

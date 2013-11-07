@@ -20,13 +20,17 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#if !defined (BREAKPOINT_H)
+#if !defined(BREAKPOINT_H)
 #define BREAKPOINT_H 1
 
 #include "frame.h"
 #include "value.h"
 
 #include "gdb-events.h"
+
+#ifdef __i386__
+# include "config/i386/nm-i386.h"
+#endif /* __i386__ */
 
 struct value;
 struct block;
@@ -102,7 +106,7 @@ enum bptype
        dynamic libraries.  */
     bp_shlib_event,
 
-    /* Some multi-threaded systems can arrange for a location in the 
+    /* Some multi-threaded systems can arrange for a location in the
        inferior to be executed when certain thread-related events occur
        (such as thread creation or thread death).
 
@@ -115,10 +119,10 @@ enum bptype
     /* On the same principal, an overlay manager can arrange to call a
        magic location in the inferior whenever there is an interesting
        change in overlay status.  GDB can update its overlay tables
-       and fiddle with breakpoints in overlays when this breakpoint 
+       and fiddle with breakpoints in overlays when this breakpoint
        is hit.  */
 
-    bp_overlay_event, 
+    bp_overlay_event,
 
     /* These breakpoints are used to implement the "catch load" command
        on platforms whose dynamic linkers support such functionality.  */
@@ -160,14 +164,14 @@ enum enable_state
     bp_disabled,	/* The eventpoint is inactive, and cannot trigger. */
     bp_enabled,		/* The eventpoint is active, and can trigger. */
     bp_shlib_disabled,	/* The eventpoint's address is in an unloaded solib.
-			   The eventpoint will be automatically enabled 
+			   The eventpoint will be automatically enabled
 			   and reset when that solib is loaded. */
-    bp_call_disabled,	/* The eventpoint has been disabled while a call 
-			   into the inferior is "in flight", because some 
-			   eventpoints interfere with the implementation of 
-			   a call on some targets.  The eventpoint will be 
-			   automatically enabled and reset when the call 
-			   "lands" (either completes, or stops at another 
+    bp_call_disabled,	/* The eventpoint has been disabled while a call
+			   into the inferior is "in flight", because some
+			   eventpoints interfere with the implementation of
+			   a call on some targets.  The eventpoint will be
+			   automatically enabled and reset when the call
+			   "lands" (either completes, or stops at another
 			   eventpoint). */
     bp_hand_call_disabled, /* APPLE LOCAL. The eventpoint has been disabled
 			      while various mi commands update variables, so
@@ -276,7 +280,7 @@ struct bp_location
    will be called instead of the performing the default action for this
    bptype.  */
 
-struct breakpoint_ops 
+struct breakpoint_ops
 {
   /* The normal print routine for this breakpoint, called when we
      hit it.  */
@@ -295,12 +299,12 @@ struct breakpoint_ops
 enum bp_set_state
   {
     bp_state_unset, /* Breakpoint hasn't been set yet. */
-    bp_state_set,   /* Breakpoint is all ready to be 
+    bp_state_set,   /* Breakpoint is all ready to be
 		       inserted into the target.  */
-    bp_state_waiting_load /* We were able to find the breakpoint 
+    bp_state_waiting_load /* We were able to find the breakpoint
 			     in an objfile, but that objfile wasn't
 			     loaded into the target yet.  We need
-			     this extra state because breakpoint 
+			     this extra state because breakpoint
 			     resetting can happen between restarting
 			     the target and loading the objfile,
 			     at which point we can't read program text
@@ -449,13 +453,13 @@ struct breakpoint
     struct objfile *bp_objfile;
 
     /* APPLE LOCAL begin radar 5273932  */
-    /* Objfile name of where the bp was set.  Used to save the name 
+    /* Objfile name of where the bp was set.  Used to save the name
        of the objfile if the objfile pointer needs to be re-set to NULL.  */
 
     char *bp_objfile_name;
     /* APPLE LOCAL end radar 5273932  */
 
-    /* Used for save-breakpoints.  */ 
+    /* Used for save-breakpoints.  */
     int original_flags;
 
     /* Has this breakpoint been successfully set yet? */
@@ -478,7 +482,7 @@ extern void bpstat_clear (bpstat *);
    is part of the bpstat is copied as well.  */
 extern bpstat bpstat_copy (bpstat);
 
-extern bpstat bpstat_stop_status (CORE_ADDR pc, ptid_t ptid, 
+extern bpstat bpstat_stop_status (CORE_ADDR pc, ptid_t ptid,
 				  int stopped_by_watchpoint);
 
 /* This bpstat_what stuff tells wait_for_inferior what to do with a

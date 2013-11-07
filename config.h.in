@@ -89,6 +89,12 @@
 /* Define to 1 if you have the <libgettext.h> header file. */
 #undef HAVE_LIBGETTEXT_H
 
+/* Define to 1 if you have the `iberty' library (-liberty). */
+#undef HAVE_LIBIBERTY
+
+/* Define to 1 if you have the `iconv' library (-liconv). */
+#undef HAVE_LIBICONV
+
 /* Define to 1 if you have the `intl' library (-lintl). */
 #undef HAVE_LIBINTL
 
@@ -97,6 +103,12 @@
 
 /* Define to 1 if you have the `m' library (-lm). */
 #undef HAVE_LIBM
+
+/* Define to 1 if you have the `readline' library (-lreadline). */
+#undef HAVE_LIBREADLINE
+
+/* Define to 1 if you have the `sqlite3' library (-lsqlite3). */
+#undef HAVE_LIBSQLITE3
 
 /* Define to 1 if you have the `z' library (-lz). */
 #undef HAVE_LIBZ

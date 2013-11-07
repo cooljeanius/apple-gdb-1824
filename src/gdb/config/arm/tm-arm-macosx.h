@@ -1,4 +1,4 @@
-/* Target support for Mac OS X on PowerPC for GDB, the GNU debugger.
+/* Target support for Mac OS X on ARM for GDB, the GNU debugger.
    Copyright (C) 1997-2002,
    Free Software Foundation, Inc.
 
@@ -30,11 +30,11 @@ struct arm_macosx_tdep_inf_status {
 
 typedef struct arm_macosx_tdep_inf_status arm_macosx_tdep_inf_status_t;
 
-int arm_macosx_fast_show_stack (unsigned int count_limit, 
+int arm_macosx_fast_show_stack (unsigned int count_limit,
 				unsigned int print_start,
 				unsigned int print_end,
 				unsigned int *count,
-				void (print_fun) (struct ui_out * uiout, 
+				void (print_fun) (struct ui_out * uiout,
 				int *frame_num, CORE_ADDR pc, CORE_ADDR fp));
 
 #define FAST_COUNT_STACK_DEPTH(count_limit, print_start, print_end, count, print_fun) \

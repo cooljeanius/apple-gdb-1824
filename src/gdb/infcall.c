@@ -44,13 +44,13 @@
 extern void begin_inferior_call_checkpoints (void);
 extern void end_inferior_call_checkpoints (void);
 
-#if defined (NM_NEXTSTEP)
-#include "macosx-nat-infthread.h"
+#if defined(NM_NEXTSTEP) || defined(TM_NEXTSTEP)
+# include "macosx-nat-infthread.h"
+#endif /* NM_NEXTSTEP || TM_NEXTSTEP */
 
-#endif
 /* Whether to allow inferior function calls to be made or not.
    e.g. translated processes cannot do inferior function calls (or changing
-   the PC in any way) and can terminate the inferior if you try.  
+   the PC in any way) and can terminate the inferior if you try.
    There is also a set variable you can use to control this if you want to.  */
 int inferior_function_calls_disabled_p = 0;
 
@@ -67,7 +67,7 @@ ptid_t get_hand_call_ptid ()
   return hand_call_ptid;
 }
 
-static void 
+static void
 do_reset_hand_call_ptid ()
 {
   hand_call_ptid = minus_one_ptid;
@@ -146,7 +146,7 @@ set_unwind_on_signal_cleanup (void *new_val)
 struct cleanup *
 make_cleanup_set_restore_unwind_on_signal (int newval)
 {
-  struct cleanup *cleanup 
+  struct cleanup *cleanup
     = make_cleanup (set_unwind_on_signal_cleanup, (void *) unwind_on_signal_p);
   unwind_on_signal_p = newval;
   return cleanup;
@@ -335,7 +335,7 @@ generic_push_dummy_code (struct gdbarch *gdbarch,
       sp = gdbarch_frame_align (gdbarch, sp - bplen);
       (*bp_addr) = sp;
       /* Should the breakpoint size/location be re-computed here?  */
-    }      
+    }
   else
     {
       (*bp_addr) = sp;
@@ -360,7 +360,7 @@ push_dummy_code (struct gdbarch *gdbarch,
   if (gdbarch_push_dummy_code_p (gdbarch))
     return gdbarch_push_dummy_code (gdbarch, sp, funaddr, using_gcc,
 				    args, nargs, value_type, real_pc, bp_addr);
-  else    
+  else
     return generic_push_dummy_code (gdbarch, sp, funaddr, using_gcc,
 				    args, nargs, value_type, real_pc, bp_addr);
 }
@@ -371,7 +371,7 @@ push_dummy_code (struct gdbarch *gdbarch,
 static int timer_fired;
 static int hand_call_function_timeout;
 
-int 
+int
 set_hand_function_call_timeout (int newval)
 {
   int oldvalue = hand_call_function_timeout;
@@ -477,7 +477,7 @@ hand_function_call (struct value *function, struct type *expect_type,
   retbuf_cleanup = make_cleanup_regcache_xfree (retbuf);
 
   /* APPLE LOCAL: Calling into the ObjC runtime can block against other threads
-     that hold the runtime lock.  Since any random function call might go into 
+     that hold the runtime lock.  Since any random function call might go into
      the runtime, we added a gdb mode where hand_function_call ALWAYS checks
      whether the runtime is going to be a problem.  */
 
@@ -485,7 +485,7 @@ hand_function_call (struct value *function, struct type *expect_type,
   if (runtime_check_level)
     {
       enum objc_debugger_mode_result retval;
-      retval = make_cleanup_set_restore_debugger_mode (&runtime_cleanup, 
+      retval = make_cleanup_set_restore_debugger_mode (&runtime_cleanup,
                                                        runtime_check_level);
       if (retval == objc_debugger_mode_fail_objc_api_unavailable)
         if (target_check_safe_call (OBJC_SUBSYSTEM, CHECK_SCHEDULER_VALUE))
@@ -502,7 +502,7 @@ hand_function_call (struct value *function, struct type *expect_type,
                      "Issue the command:\n"
                      "    set objc-non-blocking-mode off \n"
                      "to override this check if you are sure your call doesn't use the malloc libraries or the ObjC runtime.");
-          
+
           else
             if (ui_out_is_mi_like_p (uiout))
               error ("");
@@ -516,7 +516,7 @@ hand_function_call (struct value *function, struct type *expect_type,
   else
     runtime_cleanup = make_cleanup (null_cleanup, 0);
 
-  /* APPLE LOCAL: Always arrange to stop on ObjC exceptions thrown while in 
+  /* APPLE LOCAL: Always arrange to stop on ObjC exceptions thrown while in
      a hand-called function: */
   if (objc_exceptions_interrupt_hand_call)
     make_cleanup_init_objc_exception_catcher ();
@@ -563,7 +563,7 @@ hand_function_call (struct value *function, struct type *expect_type,
 	/* Still aligned?  */
 	gdb_assert (sp == gdbarch_frame_align (current_gdbarch, sp));
 	/* NOTE: cagney/2002-09-18:
-	   
+
 	   On a RISC architecture, a void parameterless generic dummy
 	   frame (i.e., no parameters, no result) typically does not
 	   need to push anything the stack and hence can leave SP and
@@ -702,13 +702,13 @@ hand_function_call (struct value *function, struct type *expect_type,
       {
 	int prototyped;
 	struct type *param_type;
-	
+
 	/* FIXME drow/2002-05-31: Should just always mark methods as
 	   prototyped.  Can we respect TYPE_VARARGS?  Probably not.  */
 	/* APPLE LOCAL: If we don't have debug information for the
 	   function being called, assume that it IS prototyped.  That
-	   way if the person who has called it set the argument types 
-	   correctly, we won't override them (like coercing floats to 
+	   way if the person who has called it set the argument types
+	   correctly, we won't override them (like coercing floats to
 	   doubles.  */
 	if (ftype_has_debug_info_p (ftype) == 0)
 	  prototyped = 1;
@@ -723,7 +723,7 @@ hand_function_call (struct value *function, struct type *expect_type,
 	  param_type = TYPE_FIELD_TYPE (ftype, i);
 	else
 	  param_type = NULL;
-	
+
 	args[i] = value_arg_coerce (args[i], param_type, prototyped);
 
 	/* elz: this code is to handle the case in which the function
@@ -903,7 +903,7 @@ You must use a pointer to function type variable. Command ignored."), arg_name);
 
   /* Now proceed, having reached the desired place.  */
   clear_proceed_status ();
-    
+
   /* Execute a "stack dummy", a piece of code stored in the stack by
      the debugger to be executed in the inferior.
 
@@ -911,7 +911,7 @@ You must use a pointer to function type variable. Command ignored."), arg_name);
      hit.  If that is the first time the program stops,
      call_function_by_hand returns to its caller with that frame
      already gone and sets RC to 0.
-   
+
      Otherwise, set RC to a non-zero value.  If the called function
      receives a random signal, we do not allow the user to continue
      executing it as this may not work.  The dummy frame is poped and
@@ -939,12 +939,12 @@ You must use a pointer to function type variable. Command ignored."), arg_name);
       hand_call_function_hook ();
 
     static int hand_call_function_timer = -1;
-    struct cleanup *hand_call_cleanup = 
+    struct cleanup *hand_call_cleanup =
       start_timer (&hand_call_function_timer, "hand-call", "Starting hand-call");
-  
+
     if (target_can_async_p ())
       saved_async = target_async_mask (0);
-    
+
     /* APPLE LOCAL: Make the current ptid available to the
        lower level proceed logic so we can prefer that over
        other stop reasons.  */
@@ -955,17 +955,17 @@ You must use a pointer to function type variable. Command ignored."), arg_name);
       {
 	struct itimerval itval;
 	struct gdb_exception e;
-	
+
 	itval.it_interval.tv_sec = 0;
 	itval.it_interval.tv_usec = 0;
-	
+
 	itval.it_value.tv_sec = hand_call_function_timeout/1000000;
 	itval.it_value.tv_usec = hand_call_function_timeout% 1000000;
-	
+
 	timer_fired = 0;
 	signal (SIGALRM, handle_alarm_while_calling);
 	setitimer (ITIMER_REAL, &itval, NULL);
-	
+
 	TRY_CATCH (e, RETURN_MASK_ERROR)
 	  {
 	    proceed (real_pc, TARGET_SIGNAL_0, 0);
@@ -974,7 +974,7 @@ You must use a pointer to function type variable. Command ignored."), arg_name);
 	itval.it_value.tv_usec = 0;
 	setitimer (ITIMER_REAL, &itval, NULL);
 	signal (SIGALRM, SIG_DFL);
-	
+
 	if (e.reason != NO_ERROR)
             throw_exception (e);
       }
@@ -991,11 +991,11 @@ You must use a pointer to function type variable. Command ignored."), arg_name);
 
     if (saved_async)
       target_async_mask (saved_async);
-    
+
     /* APPLE LOCAL checkpointing */
     end_inferior_call_checkpoints ();
     enable_watchpoints_after_interactive_call_stop ();
-      
+
     discard_cleanups (old_cleanups);
     proceed_from_hand_call = 0;
   }
@@ -1006,7 +1006,7 @@ You must use a pointer to function type variable. Command ignored."), arg_name);
       error ("User called function timer expired.  Aborting call.");
     }
 
-  if (stopped_by_random_signal 
+  if (stopped_by_random_signal
       || !stop_stack_dummy)
     {
       /* Find the name of the function we're about to complain about.  */
@@ -1033,10 +1033,10 @@ You must use a pointer to function type variable. Command ignored."), arg_name);
 	    name = a;
 	  }
       }
-      /* APPLE LOCAL: Check to see if we were stopped at the ObjC fail breakpoint.  
+      /* APPLE LOCAL: Check to see if we were stopped at the ObjC fail breakpoint.
 	 If we are, then unwind if requested & then just fail.  */
 
-      if (stopped_by_random_signal 
+      if (stopped_by_random_signal
 	  || objc_pc_at_fail_point (stop_pc) != objc_no_fail)
 	{
 	  char *errstr = "";
@@ -1260,5 +1260,5 @@ A value of zero disables the timer.",
                             NULL,
                             NULL,
 			    &setlist, &showlist);
-   
+
 }

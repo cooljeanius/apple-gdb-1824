@@ -5896,6 +5896,96 @@ _ACEOF
 
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for xmalloc in -liberty" >&5
+$as_echo_n "checking for xmalloc in -liberty... " >&6; }
+if ${ac_cv_lib_iberty_xmalloc+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-liberty  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char xmalloc ();
+int
+main ()
+{
+return xmalloc ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_iberty_xmalloc=yes
+else
+  ac_cv_lib_iberty_xmalloc=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_iberty_xmalloc" >&5
+$as_echo "$ac_cv_lib_iberty_xmalloc" >&6; }
+if test "x$ac_cv_lib_iberty_xmalloc" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBIBERTY 1
+_ACEOF
+
+  LIBS="-liberty $LIBS"
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for iconv in -liconv" >&5
+$as_echo_n "checking for iconv in -liconv... " >&6; }
+if ${ac_cv_lib_iconv_iconv+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-liconv  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char iconv ();
+int
+main ()
+{
+return iconv ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_iconv_iconv=yes
+else
+  ac_cv_lib_iconv_iconv=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_iconv_iconv" >&5
+$as_echo "$ac_cv_lib_iconv_iconv" >&6; }
+if test "x$ac_cv_lib_iconv_iconv" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBICONV 1
+_ACEOF
+
+  LIBS="-liconv $LIBS"
+
+fi
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gettext in -lintl" >&5
 $as_echo_n "checking for gettext in -lintl... " >&6; }
 if ${ac_cv_lib_intl_gettext+:} false; then :
@@ -5983,6 +6073,96 @@ if test "x$ac_cv_lib_m_sqrt" = xyes; then :
 _ACEOF
 
   LIBS="-lm $LIBS"
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for rl_initialize in -lreadline" >&5
+$as_echo_n "checking for rl_initialize in -lreadline... " >&6; }
+if ${ac_cv_lib_readline_rl_initialize+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lreadline  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char rl_initialize ();
+int
+main ()
+{
+return rl_initialize ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_readline_rl_initialize=yes
+else
+  ac_cv_lib_readline_rl_initialize=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_readline_rl_initialize" >&5
+$as_echo "$ac_cv_lib_readline_rl_initialize" >&6; }
+if test "x$ac_cv_lib_readline_rl_initialize" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBREADLINE 1
+_ACEOF
+
+  LIBS="-lreadline $LIBS"
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for sqlite3_initialize in -lsqlite3" >&5
+$as_echo_n "checking for sqlite3_initialize in -lsqlite3... " >&6; }
+if ${ac_cv_lib_sqlite3_sqlite3_initialize+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lsqlite3  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char sqlite3_initialize ();
+int
+main ()
+{
+return sqlite3_initialize ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_sqlite3_sqlite3_initialize=yes
+else
+  ac_cv_lib_sqlite3_sqlite3_initialize=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_sqlite3_sqlite3_initialize" >&5
+$as_echo "$ac_cv_lib_sqlite3_sqlite3_initialize" >&6; }
+if test "x$ac_cv_lib_sqlite3_sqlite3_initialize" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBSQLITE3 1
+_ACEOF
+
+  LIBS="-lsqlite3 $LIBS"
 
 fi
 

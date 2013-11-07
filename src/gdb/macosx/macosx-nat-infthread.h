@@ -1,3 +1,7 @@
+/*
+ * macosx-nat-infthread.h
+ */
+
 #ifndef __GDB_MACOSX_NAT_INFTHREAD_H__
 #define __GDB_MACOSX_NAT_INFTHREAD_H__
 

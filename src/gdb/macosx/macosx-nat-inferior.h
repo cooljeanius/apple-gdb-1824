@@ -1,3 +1,7 @@
+/*
+ * macosx-nat-inferior.h
+ */
+
 #ifndef __GDB_MACOSX_NAT_INFERIOR_H__
 #define __GDB_MACOSX_NAT_INFERIOR_H__
 
@@ -8,7 +12,7 @@
 #include "macosx-nat-dyld-info.h"
 
 #if WITH_CFM
-#include "macosx-nat-cfmthread.h"
+# include "macosx-nat-cfmthread.h"
 #endif /* WITH_CFM */
 
 #include "defs.h"

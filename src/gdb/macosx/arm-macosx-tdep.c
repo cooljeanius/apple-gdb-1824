@@ -28,6 +28,18 @@
  * a fat file. In the case of cross-debugging, none of this happens
  * and this global remains untouched.  */
 
+#ifndef GDB_TM_FILE
+# define GDB_TM_FILE "config/arm/tm-arm-macosx.h"
+#else
+# warning GDB_TM_FILE already defined.
+#endif /* !GDB_TM_FILE */
+
+#ifndef DEFAULT_BFD_ARCH
+# define DEFAULT_BFD_ARCH bfd_arm_arch
+#else
+# warning DEFAULT_BFD_ARCH already defined.
+#endif /* !DEFAULT_BFD_ARCH */
+
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
@@ -35,6 +47,19 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "defs.h"
+
+#ifndef GDB_TM_FILE
+# define GDB_TM_FILE "config/arm/tm-arm-macosx.h"
+#else
+# define GDB_TM_FILE_ALREADY_DEFINED 1
+#endif /* !GDB_TM_FILE */
+
+#ifndef DEFAULT_BFD_ARCH
+# define DEFAULT_BFD_ARCH bfd_arm_arch
+#else
+# define DEFAULT_BFD_ARCH_ALREADY_DEFINED 1
+#endif /* !DEFAULT_BFD_ARCH */
+
 #include "frame.h"
 #include "inferior.h"
 #include "symtab.h"
@@ -69,6 +94,8 @@
 #include "arm-macosx-regnums.h"
 #include "arm-macosx-tdep.h"
 #include "arm-macosx-thread-status.h"
+#include "config/arm/tm-arm-macosx.h"
+#include "tm-arm-macosx.h"
 
 #ifdef HAVE_MALLOC_H
 # include <malloc.h>

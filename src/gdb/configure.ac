@@ -827,6 +827,8 @@ AC_CHECK_TYPES([unw_accessors_t],[],[],[
 # warning This conftest expects <libunwind.h> to be included.
 #endif /* HAVE_LIBUNWIND_H */
 ])
+dnl# The "x86_debug_state32_t" type is checked for in an APPLE_LOCAL
+dnl# section below.
 
 # ------------------------------------- #
 # Checks for compiler characteristics.  #
@@ -2012,24 +2014,43 @@ if test "${nativefile}" != ""; then
 fi
 AC_SUBST([nm_h])
 
-AC_DIAGNOSE([obsolete],[It is technically impossible to `autoupdate' cleanly from AC_LINK_FILES
-to AC_CONFIG_LINKS.  `autoupdate' provides a functional but inelegant
-update, you should probably tune the result yourself.])dnl
+if test "x${files}" = "x"; then
+  test -z "${files}"
+  AC_MSG_WARN([the files variable is empty; not making symlinks.])
+else
+  test ! -z "${files}"
+  AC_MSG_NOTICE([files should be "${files}"])
+fi
+
+if test "x${links}" = "x"; then
+  test -z "${links}"
+  AC_MSG_WARN([the links variable is empty; not making symlinks.])
+else
+  test ! -z "${links}"
+  AC_MSG_NOTICE([links should be "${links}"])
+fi
+
+AC_DIAGNOSE([obsolete],[It is technically impossible to `autoupdate'
+cleanly from AC_LINK_FILES to AC_CONFIG_LINKS. `autoupdate' provides a
+functional but inelegant update, you should probably tune the result
+yourself.])dnl
 ac_sources="$files"
 ac_dests="$links"
-while test -n "$ac_sources"; do
-  set $ac_dests; ac_dest=$1; shift; ac_dests=$*
-  set $ac_sources; ac_source=$1; shift; ac_sources=$*
-  ac_config_links_1="$ac_config_links_1 $ac_dest:$ac_source"
+while test -n "${ac_sources}"; do
+  set ${ac_dests}; ac_dest=${1}; shift; ac_dests=$*
+  set ${ac_sources}; ac_source=${1}; shift; ac_sources=$*
+  export ac_config_links_1="${ac_config_links_1} ${ac_dest}:${ac_source}"
 done
 AC_CONFIG_LINKS([$ac_config_links_1])
+AC_SUBST([ac_config_links1])
+echo "symlinks to be made should be \"${ac_config_links1}\""
 
 dnl# Check for exe extension set on certain hosts (e.g. Win32)
 AC_EXEEXT
 
 dnl#  Detect the character set used by this host.
 
-dnl#  At the moment, we just assume it's ISO-8859-1 (which is a
+dnl#  At the moment, we just assume it is ISO-8859-1 (which is a
 dnl#  superset of ASCII containing the characters needed for French,
 dnl#  German, Spanish, Italian, and possibly others), but if were
 dnl#  *were* to support any host character sets other than ISO-8859-1,

@@ -696,6 +696,7 @@ ac_header_list=
 enable_option_checking=no
 ac_subst_vars='LTLIBOBJS
 LIBICONV
+ac_config_links1
 nm_h
 tm_h
 xm_h
@@ -35069,15 +35070,37 @@ _ACEOF
 fi
 
 
+if test "x${files}" = "x"; then
+  test -z "${files}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the files variable is empty; not making symlinks." >&5
+$as_echo "$as_me: WARNING: the files variable is empty; not making symlinks." >&2;}
+else
+  test ! -z "${files}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: files should be \"${files}\"" >&5
+$as_echo "$as_me: files should be \"${files}\"" >&6;}
+fi
+
+if test "x${links}" = "x"; then
+  test -z "${links}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the links variable is empty; not making symlinks." >&5
+$as_echo "$as_me: WARNING: the links variable is empty; not making symlinks." >&2;}
+else
+  test ! -z "${links}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: links should be \"${links}\"" >&5
+$as_echo "$as_me: links should be \"${links}\"" >&6;}
+fi
+
 ac_sources="$files"
 ac_dests="$links"
-while test -n "$ac_sources"; do
-  set $ac_dests; ac_dest=$1; shift; ac_dests=$*
-  set $ac_sources; ac_source=$1; shift; ac_sources=$*
-  ac_config_links_1="$ac_config_links_1 $ac_dest:$ac_source"
+while test -n "${ac_sources}"; do
+  set ${ac_dests}; ac_dest=${1}; shift; ac_dests=$*
+  set ${ac_sources}; ac_source=${1}; shift; ac_sources=$*
+  export ac_config_links_1="${ac_config_links_1} ${ac_dest}:${ac_source}"
 done
 ac_config_links="$ac_config_links $ac_config_links_1"
 
+
+echo "symlinks to be made should be \"${ac_config_links1}\""
 
 
 

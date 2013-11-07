@@ -40,6 +40,10 @@
 /* APPLE LOCAL - subroutine inlining  */
 #include "inlining.h"
 
+#ifdef __i386__
+# include "tm-i386-macosx.h"
+#endif /* __i386__ */
+
 /* FIXME: There is no general mi header to put this kind of utility function.*/
 extern void mi_report_var_creation (struct ui_out *uiout, struct varobj *var);
 
@@ -50,13 +54,13 @@ void mi_interp_context_hook (int thread_id);
 /* This regexp pattern buffer is used for the file_list_statics
    and file_list_globals for the filter.  It doesn't look like the
    regexp package has an explicit pattern free, it tends to just reuse
-   one buffer.  I don't want to use their global buffer because the
+   one buffer. I do NOT want to use their global buffer because the
    psymtab->symtab code uses it to do C++ method detection.  So I am going
    to keep a separate one here.  */
 
 regex_t mi_symbol_filter;
 
-static char *print_values_bad_input_string = 
+static char *print_values_bad_input_string =
            "Unknown value for PRINT_VALUES: must be: 0 or \"--no-values\", "
 	   "1 or \"--all-values\", 2 or \"--simple-values\", "
            "3 or \"--make-varobj\"";
@@ -68,20 +72,20 @@ void mi_print_frame_more_info (struct ui_out *uiout,
 				struct symtab_and_line *sal,
 				struct frame_info *fi);
 
-static void list_args_or_locals (int locals, enum print_values values, 
+static void list_args_or_locals (int locals, enum print_values values,
 				 struct frame_info *fi,
 				 int all_blocks);
 
-static void print_syms_for_block (struct block *block, 
-				  struct frame_info *fi, 
+static void print_syms_for_block (struct block *block,
+				  struct frame_info *fi,
 				  struct ui_stream *stb,
-				  int locals, 
+				  int locals,
 				  int consts,
 				  enum print_values values,
 				  regex_t *filter);
 
 static void
-print_globals_for_symtab (struct symtab *file_symtab, 
+print_globals_for_symtab (struct symtab *file_symtab,
 			  struct ui_stream *stb,
 			  enum print_values values,
 			  int consts,
@@ -157,7 +161,7 @@ mi_cmd_stack_list_frames (char *command, char **argv, int argc)
    concrete frame.  It will be incremented once for each inlined frame
    that is printed in addition to the concrete frame.  */
 
-static void 
+static void
 mi_print_frame_info_lite_base (struct ui_out *uiout,
 			       int with_names,
 			       int *frame_num,
@@ -180,7 +184,7 @@ mi_print_frame_info_lite_base (struct ui_out *uiout,
   struct obj_section *osect = find_pc_sect_section (pc, NULL);
   if (osect != NULL && osect->objfile != NULL && osect->objfile->name != NULL)
       ui_out_field_string (uiout, "shlibname", osect->objfile->name);
-  else 
+  else
       ui_out_field_string (uiout, "shlibname", "<UNKNOWN>");
 
   if (with_names)
@@ -194,7 +198,7 @@ mi_print_frame_info_lite_base (struct ui_out *uiout,
          since we just want the function */
 
       pc_set_load_state (pc, OBJF_SYM_ALL, 0);
-      
+
       msym = lookup_minimal_symbol_by_pc (pc);
       if (msym == NULL)
 	ui_out_field_string (uiout, "func", "<\?\?\?\?>");
@@ -205,7 +209,7 @@ mi_print_frame_info_lite_base (struct ui_out *uiout,
 	    ui_out_field_string (uiout, "func", "<\?\?\?\?>");
 	  else
 	    ui_out_field_string (uiout, "func", name);
-	} 
+	}
       /* This is a pretty quick and dirty way to check whether there
 	 are debug symbols for this PC...  I don't care WHAT symbol
 	 contains the PC, just that there's some psymtab that
@@ -218,7 +222,7 @@ mi_print_frame_info_lite_base (struct ui_out *uiout,
 	    has_debug_info = 1;
 	  else
 	    has_debug_info = 0;
-	  
+
 	}
       ui_out_field_int (uiout, "has_debug", has_debug_info);
     }
@@ -246,7 +250,7 @@ mi_print_frame_info_lite (struct ui_out *uiout,
 
 /* Print a list of the PC and Frame Pointers for each frame in the stack;
    also return the total number of frames. An optional argument "-limit"
-   can be give to limit the number of frames printed. 
+   can be give to limit the number of frames printed.
    An optional "-names (0|1)" flag can be given which if 1 will cause the names to
    get printed with the backtrace.
   */
@@ -328,7 +332,7 @@ mi_cmd_stack_list_frames_lite (char *command, char **argv, int argc)
 	else
 	  error ("mi_cmd_stack_list_frames_lite: invalid flag: %s", argv[0]);
       }
-	
+
 
     if (names)
       print_fun = mi_print_frame_info_with_names_lite;
@@ -345,19 +349,19 @@ mi_cmd_stack_list_frames_lite (char *command, char **argv, int argc)
         ;
 
       fi = get_current_frame ();
-      
+
       if (fi == NULL)
         error ("mi_cmd_stack_list_frames_lite: No frames in stack.");
-      
+
       list_cleanup = make_cleanup_ui_out_list_begin_end (uiout, "frames");
-      
-      for (i = 0; fi != NULL; (fi = get_prev_frame (fi)), i++) 
+
+      for (i = 0; fi != NULL; (fi = get_prev_frame (fi)), i++)
 	{
 	  QUIT;
-	  
+
 	  if ((limit == -1) || (i >= start && i < limit))
 	    {
-	      print_fun (uiout, &i, get_frame_pc (fi), 
+	      print_fun (uiout, &i, get_frame_pc (fi),
                                         get_frame_base(fi));
               int j = frame_relative_level (fi);
               while ((j < i) && (fi != NULL))
@@ -371,23 +375,23 @@ mi_cmd_stack_list_frames_lite (char *command, char **argv, int argc)
 	  if (count_limit != -1 && i > count_limit)
 	    break;
 	}
-      
+
       count = i;
       valid = 1;
       do_cleanups (list_cleanup);
     }
 #endif
-    
+
     ui_out_text (uiout, "Valid: ");
     ui_out_field_int (uiout, "valid", valid);
     ui_out_text (uiout, "\nCount: ");
     ui_out_field_int (uiout, "count", count);
     ui_out_text (uiout, "\n");
-    
+
     return MI_CMD_DONE;
 }
 
-void 
+void
 mi_print_frame_more_info (struct ui_out *uiout,
 				struct symtab_and_line *sal,
 				struct frame_info *fi)
@@ -419,7 +423,7 @@ mi_print_frame_more_info (struct ui_out *uiout,
     }
   if (ofile != NULL && ofile->name != NULL)
     ui_out_field_string (uiout, "shlibname", ofile->name);
-  else 
+  else
     ui_out_field_string (uiout, "shlibname", "<UNKNOWN>");
 }
 
@@ -450,7 +454,7 @@ mi_cmd_stack_info_depth (char *command, char **argv, int argc)
 	QUIT;
     }
   ui_out_field_int (uiout, "depth", i);
-  
+
   return MI_CMD_DONE;
 }
 
@@ -570,16 +574,16 @@ mi_cmd_stack_list_args (char *command, char **argv, int argc)
     {
       struct cleanup *cleanup_frame;
       QUIT;
-      /* APPLE LOCAL: We need to store the frame id and then look the frame 
-         info back up after our call to list_args_or_locals() in case that 
-	 function calls any functions in the inferior in order to determine 
-	 the dynamic type of a variable (which will cause flush_cached_frames() 
-	 to be called resulting in our frame info chain being destroyed, 
+      /* APPLE LOCAL: We need to store the frame id and then look the frame
+         info back up after our call to list_args_or_locals() in case that
+	 function calls any functions in the inferior in order to determine
+	 the dynamic type of a variable (which will cause flush_cached_frames()
+	 to be called resulting in our frame info chain being destroyed,
 	 leaving FI pointing to invalid memory.  */
       struct frame_id stack_frame_id = get_frame_id (fi);
 
       cleanup_frame = make_cleanup_ui_out_tuple_begin_end (uiout, "frame");
-      ui_out_field_int (uiout, "level", i); 
+      ui_out_field_int (uiout, "level", i);
       list_args_or_locals (0, values, fi, 0);
       do_cleanups (cleanup_frame);
 
@@ -609,7 +613,7 @@ mi_cmd_stack_list_args (char *command, char **argv, int argc)
    blocks in the function that is in frame FI.*/
 
 static void
-list_args_or_locals (int locals, enum print_values values, 
+list_args_or_locals (int locals, enum print_values values,
                      struct frame_info *fi, int all_blocks)
 {
   struct block *block = NULL;
@@ -623,7 +627,7 @@ list_args_or_locals (int locals, enum print_values values,
   struct bfd_section *section;
 
   stb = ui_out_stream_new (uiout);
-  
+
   cleanup_list = make_cleanup_ui_out_list_begin_end (uiout, locals ? "locals" : "args");
 
   if (all_blocks)
@@ -632,13 +636,13 @@ list_args_or_locals (int locals, enum print_values values,
       int index;
       int nblocks;
       struct blockvector *bv;
-      
+
       /* CHECK - I assume that the function block in the innermost
 	 lexical block that starts at the start function of the
 	 PC.  If this is not correct, then I will have to run through
 	 the blockvector to match it to the block I get by:
-      */   
-	 
+      */
+
       fstart = get_pc_function_start (get_frame_pc (fi));
       if (fstart == 0)
 	{
@@ -671,7 +675,7 @@ list_args_or_locals (int locals, enum print_values values,
 	  /* APPLE LOCAL begin radar 6404668 locals vs. inlined subroutines  */
 	  if (block == containing_block
 	      || (block_inlined_function (block, section) == NULL))
-	    print_syms_for_block (block, fi, stb, locals, 1, 
+	    print_syms_for_block (block, fi, stb, locals, 1,
 				  values, NULL);
 	  /* APPLE LOCAL end radar 6404668 locals vs. inlined subroutines  */
 	  index++;
@@ -712,7 +716,7 @@ list_args_or_locals (int locals, enum print_values values,
 /* APPLE LOCAL begin -file-list-statics */
 /* This implements the command -file-list-statics.  It takes three or four
    arguments, a filename, a shared library, and the standard PRINT_VALUES
-   argument, and an optional filter.  
+   argument, and an optional filter.
    It prints all the static variables in the given file, in
    the given shared library.  If the shared library name is empty, then it
    looks in all shared libraries for the file.
@@ -728,7 +732,7 @@ list_args_or_locals (int locals, enum print_values values,
 #define CURRENT_FRAME_COOKIE "*CURRENT FRAME*"
 
 static int
-parse_statics_globals_args (char **argv, int argc, char **filename_ptr, char ** shlibname_ptr, 
+parse_statics_globals_args (char **argv, int argc, char **filename_ptr, char ** shlibname_ptr,
 			    enum print_values *values_ptr, regex_t **filterp_ptr,
 			    int *consts_ptr)
 {
@@ -739,15 +743,15 @@ parse_statics_globals_args (char **argv, int argc, char **filename_ptr, char ** 
   *filename_ptr = NULL;
   *shlibname_ptr = NULL;
   bad_args = 0;
-  
+
   if (argc > 2 && argc < 5)
     {
       *filename_ptr = argv[0];
       *shlibname_ptr = argv[1];
       *values_ptr = mi_decode_print_values (argv[2]);
-      if (*values_ptr == PRINT_BAD_INPUT) 
+      if (*values_ptr == PRINT_BAD_INPUT)
 	bad_args = 1;
-      if (argc == 4) 
+      if (argc == 4)
 	filter_arg = argv[3];
       *consts_ptr = 0;
     }
@@ -755,7 +759,7 @@ parse_statics_globals_args (char **argv, int argc, char **filename_ptr, char ** 
     {
       int got_values = 0;
 
-      while (argc > 0) 
+      while (argc > 0)
 	{
 	  int step = 2;
 	  if (strcmp (argv[0], "-file") == 0)
@@ -779,7 +783,7 @@ parse_statics_globals_args (char **argv, int argc, char **filename_ptr, char ** 
 	  else
 	    {
 	      *values_ptr = mi_decode_print_values (argv[0]);
-	      if (*values_ptr != PRINT_BAD_INPUT) 
+	      if (*values_ptr != PRINT_BAD_INPUT)
 		{
 		  got_values = 1;
 		  step = 1;
@@ -829,7 +833,7 @@ mi_cmd_file_list_statics (char *command, char **argv, int argc)
   int consts = 1;
 
 
-  if (!parse_statics_globals_args (argv, argc, &filename, &shlibname, &values, 
+  if (!parse_statics_globals_args (argv, argc, &filename, &shlibname, &values,
 				   &filterp, &consts))
     error ("mi_cmd_file_list_statics: Usage: -file FILE -shlib SHLIB"
 	   " VALUES"
@@ -840,7 +844,7 @@ mi_cmd_file_list_statics (char *command, char **argv, int argc)
     if (objfile_name_set_load_state (shlibname, OBJF_SYM_ALL, 0) == -1)
       warning ("Couldn't raise load level state for requested shlib: \"%s\"",
                 shlibname);
-  
+
   if (strcmp (filename, CURRENT_FRAME_COOKIE) == 0)
     {
       CORE_ADDR pc;
@@ -865,11 +869,11 @@ mi_cmd_file_list_statics (char *command, char **argv, int argc)
 	    {
 	      error ("mi_cmd_file_list_statics: Could not find shlib \"%s\".", shlibname);
 	    }
-	  
+
 	}
       else
 	cleanup_list = make_cleanup (null_cleanup, NULL);
-      
+
       /* Probably better to not restrict the objfile search, while
 	 doing the PSYMTAB to SYMTAB conversion to miss some types
 	 that are defined outside the current shlib.  So get the
@@ -878,21 +882,21 @@ mi_cmd_file_list_statics (char *command, char **argv, int argc)
       if (*filename != '\0')
 	{
 	  file_ps = lookup_partial_symtab (filename);
-	  
-	  
+
+
 	  /* FIXME: dbxread.c only uses the SECOND N_SO stab when making
 	     psymtabs.  It discards the first one.  But that means that if
 	     filename is an absolute path, it is likely
 	     lookup_partial_symtab will fail.  If it did, try again with
 	     the base name.  */
-	  
+
 	  if (file_ps == NULL)
 	    if (lbasename(filename) != filename)
 	      file_ps = lookup_partial_symtab (lbasename (filename));
 	}
       else
 	file_ps = NULL;
-      
+
       do_cleanups (cleanup_list);
 
     }
@@ -914,20 +918,20 @@ mi_cmd_file_list_statics (char *command, char **argv, int argc)
 	error ("mi_cmd_file_list_statics: "
 	       "Could not get symtab for file \"%s\".", filename);
     }
-  
+
   file_symtab = PSYMTAB_TO_SYMTAB (file_ps);
-  
+
   if (file_symtab == NULL)
     error ("Could not convert psymtab to symtab for file \"%s\"", filename);
 
   block = BLOCKVECTOR_BLOCK (file_symtab->blockvector, STATIC_BLOCK);
-      
+
   stb = ui_out_stream_new (uiout);
-  
+
   cleanup_list = make_cleanup_ui_out_list_begin_end (uiout, "statics");
-  
+
   print_syms_for_block (block, NULL, stb, -1, consts, values, filterp);
-  
+
   do_cleanups (cleanup_list);
   ui_out_stream_delete (stb);
 
@@ -936,7 +940,7 @@ mi_cmd_file_list_statics (char *command, char **argv, int argc)
 
 
 static void
-print_globals_for_symtab (struct symtab *file_symtab, 
+print_globals_for_symtab (struct symtab *file_symtab,
 			  struct ui_stream *stb,
 			  enum print_values values,
 			  int consts,
@@ -944,7 +948,7 @@ print_globals_for_symtab (struct symtab *file_symtab,
 {
   struct block *block;
   struct cleanup *cleanup_list;
- 
+
   block = BLOCKVECTOR_BLOCK (file_symtab->blockvector, GLOBAL_BLOCK);
 
   cleanup_list = make_cleanup_ui_out_list_begin_end (uiout, "globals");
@@ -961,7 +965,7 @@ print_globals_for_symtab (struct symtab *file_symtab,
    library.  If the shared library name is empty, then it looks in all
    shared libraries for the file.  If the filename is empty, then it
    looks in all files in the given shared library.  If both are empty
-   then it prints ALL globals.  
+   then it prints ALL globals.
    The third argument is the standard print-values argument.
    Finally, if there are four arguments, the last is a regular expression,
    to filter OUT all varobj's matching the regexp.  */
@@ -977,12 +981,12 @@ mi_cmd_file_list_globals (char *command, char **argv, int argc)
   regex_t *filterp;
   int consts = 1;
 
-  if (!parse_statics_globals_args (argv, argc, &filename, &shlibname, &values, 
+  if (!parse_statics_globals_args (argv, argc, &filename, &shlibname, &values,
 				   &filterp, &consts))
     error ("mi_cmd_file_list_globals: Usage: -file FILE -shlib SHLIB"
 	   " VALUES"
 	   " [-filter FILTER] [-constants 0/1]");
-  
+
   stb = ui_out_stream_new (uiout);
 
   /* APPLE LOCAL: Make sure we have symbols loaded for requested SHLIBNAME.  */
@@ -1001,10 +1005,10 @@ mi_cmd_file_list_globals (char *command, char **argv, int argc)
 	  if (cleanup_list == (void *) -1)
 	    {
 	      error ("mi_cmd_file_list_globals: "
-		     "Could not find shlib \"%s\".", 
+		     "Could not find shlib \"%s\".",
 		     shlibname);
 	    }
-	  
+
 	}
       else
 	cleanup_list = make_cleanup (null_cleanup, NULL);
@@ -1015,17 +1019,17 @@ mi_cmd_file_list_globals (char *command, char **argv, int argc)
 	 psymtab first, and then convert after cleaning up.  */
 
       file_ps = lookup_partial_symtab (filename);
-      
-      
+
+
       if (file_ps == NULL)
 	error ("mi_cmd_file_list_statics: "
-	       "Could not get symtab for file \"%s\".", 
+	       "Could not get symtab for file \"%s\".",
 	       filename);
-      
+
       do_cleanups (cleanup_list);
-      
+
       file_symtab = PSYMTAB_TO_SYMTAB (file_ps);
-      print_globals_for_symtab (file_symtab, stb, values, 
+      print_globals_for_symtab (file_symtab, stb, values,
 				consts, filterp);
     }
   else
@@ -1045,7 +1049,7 @@ mi_cmd_file_list_globals (char *command, char **argv, int argc)
 	    }
 	  if (requested_ofile == NULL)
 	    error ("mi_file_list_globals: "
-		   "Couldn't find shared library \"%s\"\n", 
+		   "Couldn't find shared library \"%s\"\n",
 		   shlibname);
 
 	  /* APPLE LOCAL: grab the dSYM file there is one.  */
@@ -1058,16 +1062,16 @@ mi_cmd_file_list_globals (char *command, char **argv, int argc)
 	      file_symtab = PSYMTAB_TO_SYMTAB (ps);
 	      if (!file_symtab)
 		continue;
-	      
-	      
+
+
 	      if (file_symtab->primary)
 		{
 		  struct cleanup *file_cleanup;
-		  file_cleanup = 
+		  file_cleanup =
 		    make_cleanup_ui_out_list_begin_end (uiout, "file");
-		  ui_out_field_string (uiout, "filename", 
+		  ui_out_field_string (uiout, "filename",
 				       file_symtab->filename);
-		  print_globals_for_symtab (file_symtab, stb, values, 
+		  print_globals_for_symtab (file_symtab, stb, values,
 					    consts, filterp);
 		  do_cleanups (file_cleanup);
 		}
@@ -1093,20 +1097,20 @@ mi_cmd_file_list_globals (char *command, char **argv, int argc)
 	      ALL_OBJFILE_PSYMTABS (ofile, ps)
 		{
 		  struct symtab *file_symtab;
-		  
+
 		  file_symtab = PSYMTAB_TO_SYMTAB (ps);
 		  if (!file_symtab)
 		    continue;
-		  
+
 		  if (file_symtab->primary)
 		    {
 		      struct cleanup *file_cleanup;
-		      file_cleanup = 
+		      file_cleanup =
 			make_cleanup_ui_out_list_begin_end (uiout, "file");
-		      ui_out_field_string (uiout, "filename", 
+		      ui_out_field_string (uiout, "filename",
 					   file_symtab->filename);
-		      print_globals_for_symtab (file_symtab, stb, 
-						values, 
+		      print_globals_for_symtab (file_symtab, stb,
+						values,
 						consts, filterp);
 		      do_cleanups (file_cleanup);
 		    }
@@ -1115,7 +1119,7 @@ mi_cmd_file_list_globals (char *command, char **argv, int argc)
 	    }
 	}
     }
-      
+
   ui_out_stream_delete (stb);
 
   return MI_CMD_DONE;
@@ -1126,21 +1130,21 @@ mi_cmd_file_list_globals (char *command, char **argv, int argc)
    print_values enum.
 
    LOCALS determines what scope of variables to print:
-     1 - print locals AND statics.  
-     0 - print args.  
-     -1  - print statics. 
+     1 - print locals AND statics.
+     0 - print args.
+     -1  - print statics.
    CONSTS - whether to print const symbols.  Const pointers are
    always printed anyway.
-   STB is the ui-stream to which the results are printed.  
-   And FI, if non-null, is the frame to bind the varobj to.  
+   STB is the ui-stream to which the results are printed.
+   And FI, if non-null, is the frame to bind the varobj to.
    If FILTER is non-null, then we skip symbols matching
    that compiled regexp.  */
 
 static void
-print_syms_for_block (struct block *block, 
-		      struct frame_info *fi, 
+print_syms_for_block (struct block *block,
+		      struct frame_info *fi,
 		      struct ui_stream *stb,
-		      int locals, 
+		      int locals,
 		      int consts,
 		      enum print_values values,
 		      regex_t *filter)
@@ -1153,7 +1157,7 @@ print_syms_for_block (struct block *block,
   struct frame_id stack_frame_id;
   if (fi)
     stack_frame_id = get_frame_id (fi);
-  
+
   if (dict_empty (BLOCK_DICT (block)))
     return;
 
@@ -1164,7 +1168,7 @@ print_syms_for_block (struct block *block,
     {
       print_me = 0;
 
-      /* If this is a const, and we aren't printing consts, then skop this one. 
+      /* If this is a const, and we aren't printing consts, then skop this one.
 	 However, we always print const pointers, 'cause they are interesting even
 	 if plain int/char/etc consts aren't.  */
 
@@ -1196,7 +1200,7 @@ print_syms_for_block (struct block *block,
 	  if (locals == 0)
 	    print_me = 1;
 	  break;
-	  
+
 	case LOC_STATIC:	/* static                */
 	  if (locals == -1 || locals == 1)
 	    print_me = 1;
@@ -1212,21 +1216,21 @@ print_syms_for_block (struct block *block,
 
       /* If we were asked not to print consts, make sure we don't.  */
 
-      if (print_me 
-	  && !consts && (SYMBOL_TYPE (sym) != NULL) 
+      if (print_me
+	  && !consts && (SYMBOL_TYPE (sym) != NULL)
 	  && TYPE_CONST (check_typedef (SYMBOL_TYPE (sym)))
 	  && (!(TYPE_CODE (check_typedef (SYMBOL_TYPE (sym))) == TYPE_CODE_PTR)))
 	print_me = 0;
-      
+
       if (print_me)
 	{
           struct symbol *sym2;
 	  int len = strlen (SYMBOL_NATURAL_NAME (sym));
 
-	  /* If we are about to print, compare against the regexp.  
+	  /* If we are about to print, compare against the regexp.
              If there's a match, skip this symbol.  */
-	  if (filter && re_search_oneshot (filter, SYMBOL_NATURAL_NAME (sym), 
-				   len, 0, len, 
+	  if (filter && re_search_oneshot (filter, SYMBOL_NATURAL_NAME (sym),
+				   len, 0, len,
 				   (struct re_registers *) 0) >= 0)
 	    continue;
 
@@ -1246,7 +1250,7 @@ print_syms_for_block (struct block *block,
 				  (struct symtab **) NULL);
 	  else
 	    sym2 = sym;
-	  
+
 	  if (values == PRINT_MAKE_VAROBJ)
 	    {
 	      /* APPLE LOCAL: If you pass an expression with a "::" in
@@ -1257,7 +1261,7 @@ print_syms_for_block (struct block *block,
 	      struct varobj *new_var;
 	      struct cleanup *tuple_cleanup, *expr_cleanup;
 	      char *expr = SYMBOL_NATURAL_NAME (sym2);
-	      if (strstr (expr, "::") != NULL) 
+	      if (strstr (expr, "::") != NULL)
 		{
 		  char *tmp;
 		  int len = strlen (expr);
@@ -1276,13 +1280,13 @@ print_syms_for_block (struct block *block,
 
 	      /* END APPLE LOCAL */
 	      if (fi)
-		new_var = varobj_create (varobj_gen_name (), 
+		new_var = varobj_create (varobj_gen_name (),
 				       expr,
 				       get_frame_base (fi),
 				       block,
 				       USE_BLOCK_IN_FRAME);
 	      else
-		new_var = varobj_create (varobj_gen_name (), 
+		new_var = varobj_create (varobj_gen_name (),
 				       expr,
 				       0,
 				       block,
@@ -1290,7 +1294,7 @@ print_syms_for_block (struct block *block,
 
 	      do_cleanups (expr_cleanup);
 
-	      /* FIXME: There should be a better way to report an error in 
+	      /* FIXME: There should be a better way to report an error in
 		 creating a variable here, but I am not sure how to do it,
 	         so I will just bag out for now. */
 
@@ -1303,13 +1307,13 @@ print_syms_for_block (struct block *block,
 		{
 		  char *value_str;
 		  struct ui_file *save_stderr;
-		  
+
 		  /* If we are using the varobj's, then print
 		     the value as the varobj would. */
-		  
+
 		  save_stderr = gdb_stderr;
 		  gdb_stderr = error_stb->stream;
-		  
+
 		  if (gdb_varobj_get_value (new_var, &value_str))
 		    {
 		      ui_out_field_string (uiout, "value", value_str);
@@ -1317,7 +1321,7 @@ print_syms_for_block (struct block *block,
 		  else
 		    {
 		      /* FIXME: can I get the error string & put it here? */
-		      ui_out_field_stream (uiout, "value", 
+		      ui_out_field_stream (uiout, "value",
 					   error_stb);
 		    }
 		  gdb_stderr = save_stderr;
@@ -1333,7 +1337,7 @@ print_syms_for_block (struct block *block,
 		}
 	      else
 		ui_out_field_skip (uiout, "value");
-	    
+
 	      mi_report_var_creation (uiout, new_var);
 	      do_cleanups (tuple_cleanup);
 	    }
@@ -1344,9 +1348,9 @@ print_syms_for_block (struct block *block,
 
 	      cleanup_tuple =
 		make_cleanup_ui_out_tuple_begin_end (uiout, NULL);
-	      
+
 	      ui_out_field_string (uiout, "name", SYMBOL_PRINT_NAME (sym));
-	      
+
 	      switch (values)
 		{
 		case PRINT_SIMPLE_VALUES:
@@ -1373,7 +1377,7 @@ print_syms_for_block (struct block *block,
 		}
               /* Re-fetch FI in case we ran the inferior and the frame cache
                  was flushed.  */
-              if (fi) 
+              if (fi)
                 {
                   fi = frame_find_by_id (stack_frame_id);
                   if (fi == NULL)
@@ -1402,7 +1406,7 @@ mi_cmd_stack_info_frame (char *command, char **argv, int argc)
 {
   if (argc > 0)
     error (_("mi_cmd_stack_info_frame: No arguments required"));
-  
+
   print_frame_info (get_selected_frame (NULL), 1, LOC_AND_ADDRESS, 0);
   return MI_CMD_DONE;
 }
@@ -1447,7 +1451,7 @@ mi_cmd_stack_check_threads (char *command, char **argv, int argc)
   num_patterns = argc - 2;
   argv += 2;
 
-  patterns = (regex_t *) xcalloc (num_patterns, 
+  patterns = (regex_t *) xcalloc (num_patterns,
 						   sizeof (regex_t));
   patterns_cleanup = make_cleanup (xfree, patterns);
 
@@ -1474,7 +1478,7 @@ mi_cmd_stack_check_threads (char *command, char **argv, int argc)
 }
 
 /* APPLE LOCAL begin hooks */
-void 
+void
 mi_interp_stack_changed_hook (void)
 {
   struct ui_out *saved_ui_out = uiout;
@@ -1487,14 +1491,14 @@ mi_interp_stack_changed_hook (void)
   uiout = saved_ui_out;
 }
 
-void 
+void
 mi_interp_frame_changed_hook (int new_frame_number)
 {
   struct ui_out *saved_ui_out = uiout;
   struct cleanup *list_cleanup;
 
   /* APPLE LOCAL: Don't report new_frame_number == -1, that is just the
-     invalidate frame message, and there is not much the UI can do with 
+     invalidate frame message, and there is not much the UI can do with
      that.  */
 
   if (new_frame_number == -1)

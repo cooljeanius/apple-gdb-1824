@@ -8,7 +8,7 @@ BINUTILS_VERSION = 2.13-20021117
 BINUTILS_RC_VERSION = 46
 
 # Uncomment line below for debugging shell commands
-SHELL = /bin/sh -x
+#SHELL = /bin/sh -x
 
 .PHONY: all clean configure build install installsrc installhdrs headers \
 	build-core build-binutils build-gdb \

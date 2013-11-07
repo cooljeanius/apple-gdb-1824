@@ -48,6 +48,10 @@
 #include "cp-support.h"
 #include "observer.h"
 
+#if defined(NM_NEXTSTEP) || defined(TM_NEXTSTEP)
+# include "macosx-nat-infthread.h"
+#endif /* NM_NEXTSTEP || TM_NEXTSTEP */
+
 extern int overload_debug;
 /* Local functions.  */
 
@@ -212,8 +216,8 @@ allocate_space_in_inferior_malloc (int len)
   if (target_check_safe_call (MALLOC_SUBSYSTEM, CHECK_SCHEDULER_VALUE) != 1)
     error ("No memory available to program now: unsafe to call malloc");
 
-  if (fval == NULL) 
-    fval = create_cached_function (NAME_OF_MALLOC, builtin_type_voidptrfuncptr); 
+  if (fval == NULL)
+    fval = create_cached_function (NAME_OF_MALLOC, builtin_type_voidptrfuncptr);
 
   blocklen = value_from_longest (builtin_type_int, (LONGEST) len);
 
@@ -507,7 +511,7 @@ value_cast_1 (struct type *type, struct value *arg2)
     }
 }
 
-/* APPLE LOCAL: The real value_cast returns in too many places to 
+/* APPLE LOCAL: The real value_cast returns in too many places to
    easily put the original type back in place.  So I made a little
    wrapper here.  This means I have to use the deprecated set_value_type,
    which is a shame, but for now it will have to do.  */
@@ -520,7 +524,7 @@ value_cast (struct type *type, struct value *arg2)
   /* If the incoming type was a typedef, undo the
      "check_typedef" since we want to actually cast this
      to the type we were asked to cast it to, not what
-     that type resolves to.  
+     that type resolves to.
      N.B. Don't do this in all cases, because we may have
      fixed up a valid type...  */
   if (TYPE_CODE (type) == TYPE_CODE_TYPEDEF)
@@ -644,7 +648,7 @@ value_assign (struct value *toval, struct value *fromval)
   /* APPLE LOCAL: Check to see if our current frame is the innermost frame,
      and don't attempt to re-find the frame by id if we are at the bottom of
      the stack. Sometimes if we modify a register that can change the stack,
-     we can cause a call to error to occur when executing frame_find_by_id. 
+     we can cause a call to error to occur when executing frame_find_by_id.
      If error is called, it will abort the current command or macro prematurely
      and cause things to fail.  */
   old_frame_level = frame_relative_level (deprecated_selected_frame);
@@ -722,7 +726,7 @@ value_assign (struct value *toval, struct value *fromval)
 
 	if (!frame)
 	  error (_("Value being assigned to is no longer active."));
-	
+
 	/* APPLE LOCAL begin literal register setting */
 	/* Don't do the special conversion stuff for registers
 	   mentioned directly by name.  */
@@ -764,7 +768,7 @@ value_assign (struct value *toval, struct value *fromval)
 	      amount_to_copy = byte_offset + 1;
 	    else
 	      amount_to_copy = byte_offset + TYPE_LENGTH (type);
-	    
+
 	    /* And a bounce buffer.  Be slightly over generous.  */
 	    buffer = alloca (amount_to_copy + MAX_REGISTER_SIZE);
 
@@ -773,7 +777,7 @@ value_assign (struct value *toval, struct value *fromval)
 		 amount_copied < amount_to_copy;
 		 amount_copied += register_size (current_gdbarch, regno), regno++)
 	      frame_register_read (frame, regno, buffer + amount_copied);
-	    
+
 	    /* Modify what needs to be modified.  */
 	    if (value_bitsize (toval))
 	      modify_field (buffer + byte_offset,
@@ -795,7 +799,7 @@ value_assign (struct value *toval, struct value *fromval)
 	observer_notify_target_changed (&current_target);
 	break;
       }
-      
+
     default:
       error (_("Left operand of assignment is not an lvalue."));
     }
@@ -836,7 +840,7 @@ value_assign (struct value *toval, struct value *fromval)
 	      if (fi != NULL)
 		select_frame (fi);
 	    }
-	    
+
 	  if (e.reason == RETURN_ERROR)
 	    {
 	      if (e.message != NULL)
@@ -849,7 +853,7 @@ value_assign (struct value *toval, struct value *fromval)
     default:
       break;
     }
-  
+
   /* If the field does not entirely fill a LONGEST, then zero the sign bits.
      If the field is signed, and is negative, then sign extend. */
   if ((value_bitsize (toval) > 0)
@@ -1143,7 +1147,7 @@ value_array (int lowbound, int highbound, struct value **elemvec)
    one copy of the string and put it in a hash table.  Then if we find
    the string already there the second time, we just return that.
 
-   You have to clear out the hash table on rerun.  
+   You have to clear out the hash table on rerun.
    I do this in generic_mourn_inferior.  */
 
 struct string_in_child
@@ -1681,7 +1685,7 @@ search_struct_method (char *name, struct value **arg1p,
 		      *static_memfuncp = 1;
 		    v = value_fn_field (arg1p, f, j, type, offset);
 		    if (v != NULL)
-		      return v;       
+		      return v;
 		  }
 		j--;
 	      }
@@ -1860,7 +1864,7 @@ value_struct_elt (struct value **argp, struct value **args,
     }
   else
     v = search_struct_method (name, argp, args, 0, static_memfuncp, t);
-  
+
   if (v == (struct value *) - 1)
     {
       error (_("One of the arguments you tried to pass to %s could not be converted to what the function wants."), name);
@@ -2072,7 +2076,7 @@ find_overload_match (struct type **arg_types, int nargs, char *name, int method,
             {
               if (!target_type)
                 error ("Could not get target type of obj in find_overload_match.");
-              
+
               obj_type_name = TYPE_NAME (target_type);
             }
 
@@ -2852,7 +2856,7 @@ value_full_object (struct value *argp, struct type *rtype, int xfull, int xtop,
       TRY_CATCH (e, RETURN_MASK_ERROR)
 	{
 	  real_type = value_rtti_type (argp, &full, &top, &using_enc);
-	}	
+	}
     }
 
   /* If no RTTI data, or if object is already complete, do nothing */
@@ -2957,9 +2961,9 @@ value_of_this (int complain)
   else if (current_language->la_language == language_objcplus)
     {
       /* INIT_SYMBOL_DEMANGLED_NAME sets the language of a function
-	 symbol to C++ if it's name passes the C++ demangler.  So 
+	 symbol to C++ if it's name passes the C++ demangler.  So
 	 let's use that to get the frame's language... */
-      struct symbol *sym = 
+      struct symbol *sym =
 	get_frame_function (get_selected_frame (NULL));
       if (sym)
 	if (SYMBOL_LANGUAGE (sym) == language_cplus)
@@ -3198,7 +3202,7 @@ safe_check_is_thread_unsafe (struct thread_info *tp, void *data)
   struct thread_is_safe_args *args = (struct thread_is_safe_args *) data;
   args->tp = tp;
   struct cleanup *old_chain;
-  
+
   old_chain = make_cleanup_restore_current_thread (inferior_ptid, 0);
 
   catch_errors ((catch_errors_ftype *) do_check_is_thread_unsafe, args,
@@ -3214,9 +3218,9 @@ safe_check_is_thread_unsafe (struct thread_info *tp, void *data)
    thread, but if it is turned on we check for all threads.  */
 
 int
-check_safe_call (regex_t unsafe_functions[], 
+check_safe_call (regex_t unsafe_functions[],
 		 int npatterns,
-		 int stack_depth, 
+		 int stack_depth,
 		 enum check_which_threads which_threads)
 {
   struct thread_is_safe_args args;
@@ -3242,7 +3246,7 @@ check_safe_call (regex_t unsafe_functions[],
       macosx_prune_threads (NULL, 0);
 #else
       prune_threads ();
-#endif
+#endif /* NM_NEXTSTEP */
       iterate_over_threads (safe_check_is_thread_unsafe, &args);
       do_cleanups (old_cleanups);
     }

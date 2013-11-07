@@ -67,8 +67,12 @@ AC_SUBST([BUILDIT])
 # Checks for libraries.
 AC_CHECK_LIB([c],[printf])
 AC_CHECK_LIB([dl],[dlopen])
+AC_CHECK_LIB([iberty],[xmalloc])
+AC_CHECK_LIB([iconv],[iconv])
 AC_CHECK_LIB([intl],[gettext])
 AC_CHECK_LIB([m],[sqrt])
+AC_CHECK_LIB([readline],[rl_initialize])
+AC_CHECK_LIB([sqlite3],[sqlite3_initialize])
 AC_CHECK_LIB([z],[gzopen])
 
 # Checks for header files.

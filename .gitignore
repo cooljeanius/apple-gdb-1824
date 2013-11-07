@@ -12,7 +12,9 @@
 *.perspectivev3
 *.status
 *.tmp
+confdefs.h
 config.h
+conftest*
 stamp-h*
 *(Autosaved)*
 *~
