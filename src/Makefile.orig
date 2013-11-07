@@ -10846,7 +10846,7 @@ STAMP = echo timestamp >
 # MAKEINFO and MAKEINFOFLAGS are explicitly passed here to make them
 # overrideable (for a bootstrap build stage1 also builds gcc.info).
 
-STAGE1_CFLAGS=-g
+STAGE1_CFLAGS=-ggdb
 STAGE1_LANGUAGES=c
 
 # We only want to compare .o files, so set this!

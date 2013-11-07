@@ -49,7 +49,9 @@ AC_CONFIG_FILES([Makefile
                  gdb.threads/Makefile
                  gdb.trace/Makefile])
 AC_CONFIG_SUBDIRS([gdb.apple
+                   gdb.chill
                    gdb.gdbtk
                    gdb.hp
+                   gdb.objc
                    gdb.stabs])
 AC_OUTPUT

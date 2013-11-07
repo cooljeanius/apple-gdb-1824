@@ -805,6 +805,10 @@
 /* Define to 1 if you have the <vfork.h> header file. */
 #undef HAVE_VFORK_H
 
+/* Define to 1 if you have the `wait3' system call. Deprecated, you should no
+   longer depend upon `wait3'. */
+#undef HAVE_WAIT3
+
 /* Define to 1 if you have the <wait.h> header file. */
 #undef HAVE_WAIT_H
 

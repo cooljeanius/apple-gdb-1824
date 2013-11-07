@@ -1,0 +1,8 @@
+*.status
+Makefile
+*.log
+*~
+*.o
+*.ci
+core
+myclass

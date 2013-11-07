@@ -144,14 +144,22 @@ case "${target}" in
 		 AC_CONFIG_FILES([gdb.apple/debug-in-ofile/Makefile])
                  AC_CONFIG_FILES([gdb.apple/xcode/Makefile])
                  AC_CONFIG_SUBDIRS([gdb.apple])
+                 AC_CONFIG_SUBDIRS([gdb.objc])
                  ;;
 esac
 
 AC_CONFIG_FILES([Makefile \
   gdb.ada/Makefile \
-  gdb.arch/Makefile gdb.asm/Makefile gdb.base/Makefile \
-  gdb.cp/Makefile gdb.disasm/Makefile gdb.dwarf2/Makefile \
-  gdb.fortran/Makefile gdb.server/Makefile \
-  gdb.java/Makefile gdb.mi/Makefile \
-  gdb.threads/Makefile gdb.trace/Makefile])
+  gdb.arch/Makefile \
+  gdb.asm/Makefile \
+  gdb.base/Makefile \
+  gdb.cp/Makefile \
+  gdb.disasm/Makefile \
+  gdb.dwarf2/Makefile \
+  gdb.fortran/Makefile \
+  gdb.server/Makefile \
+  gdb.java/Makefile \
+  gdb.mi/Makefile \
+  gdb.threads/Makefile \
+  gdb.trace/Makefile])
 AC_OUTPUT

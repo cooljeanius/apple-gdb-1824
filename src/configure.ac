@@ -16,7 +16,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+# Foundation, Inc, 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 
 ##########################################################################
 # WARNING: this file contains embedded tabs. Do NOT run untabify on this
@@ -157,7 +157,8 @@ build_libs="build-libiberty"
 # these tools are built for the build environment
 build_tools="build-texinfo build-byacc build-flex build-bison build-m4 build-fixincludes"
 
-# these libraries are used by various programs built for the host environment
+# these libraries are used by various programs built for the host
+# environment
 #
 host_libs="intl mmalloc libiberty opcodes bfd readline tcl tk itcl libgui zlib libcpp"
 
@@ -967,15 +968,16 @@ case "${host}" in
     # This is for a MIPS running RISC/os 4.52C.
 
     # This is needed for GDB, but needs to be in the top-level make because
-    # if a library is compiled with the bsd headers and gets linked with the
-    # sysv system libraries all hell can break loose (e.g. a jmp_buf might be
+    # if a library is compiled with BSD headers and gets linked with the
+    # sysv system libs all hell can break loose (e.g. a jmp_buf might be
     # a different size).
-    # ptrace(2) apparently has problems in the BSD environment.  No workaround is
-    # known except to select the sysv environment.  Could we use /proc instead?
-    # These "sysv environments" and "bsd environments" often end up being a pain.
+    # ptrace(2) apparently has problems in the BSD environment. No
+    # workaround is known except to select the sysv environment. Could we
+    # use /proc instead? These "sysv environments" and "bsd environments"
+    # often end up being a pain.
     #
-    # This is not part of CFLAGS because perhaps not all C compilers have this
-    # option.
+    # This is not part of CFLAGS because perhaps not all C compilers have
+    # this option.
     tentative_cc="cc -systype sysv"
     ;;
   i370-ibm-opened*)
@@ -998,15 +1000,17 @@ case "${host}" in
     # The NCR 3000 ships with a MetaWare compiler installed as /bin/cc.
     # This compiler not only emits obnoxious copyright messages every time
     # you run it, but it chokes and dies on a whole bunch of GNU source
-    # files.  Default to using the AT&T compiler installed in /usr/ccs/ATT/cc.
+    # files. Default to use the AT&T compiler installed in /usr/ccs/ATT/cc.
     tentative_cc="/usr/ccs/ATT/cc"
     host_makefile_frag="config/mh-ncr3000"
     ;;
   i[[3456789]]86-*-sco3.2v5*)
     ;;
   i[[3456789]]86-*-sco*)
-    # The native C compiler botches some simple uses of const.  Unfortunately,
-    # it does NOT define anything like "__sco__" for us to test for in ansidecl.h.
+    # The native C compiler botches some simple uses of const.
+    # Unfortunately, it does NOT define anything like "__sco__" for us to
+    # test for in ansidecl.h.
+    AC_C_CONST
     tentative_cc="cc -Dconst="
     host_makefile_frag="config/mh-sco"
     ;;
@@ -1046,7 +1050,7 @@ case "${host}" in
     tentative_cc="cc -Wp,-H256000"
     ;;
   rs6000-*-lynxos*)
-    # /bin/cc is less than useful for our purposes.  Always use GCC
+    # /bin/cc is less than useful for our purposes. Always use GCC
     tentative_cc="/usr/cygnus/progressive/bin/gcc"
     host_makefile_frag="config/mh-lynxrs6k"
     ;;
@@ -1054,7 +1058,7 @@ case "${host}" in
     host_makefile_frag="config/mh-ppc-darwin"
     ;;
   *-*-lynxos*)
-    # /bin/cc is less than useful for our purposes.  Always use GCC
+    # /bin/cc is less than useful for our purposes. Always use GCC
     tentative_cc="/bin/gcc"
     ;;
   *-*-sysv4*)
@@ -1121,10 +1125,12 @@ else
   fi
   AC_PROG_CPP
   AC_PROG_CXX
+  AC_PROG_OBJC
+  AC_PROG_OBJCPP
 
-  # We must set the default linker to the linker used by gcc for the correct
-  # operation of libtool. If LD is not defined and we are using gcc, try to
-  # set the LD default to the ld used by gcc.
+  # We must set the default linker to the linker used by gcc for the
+  # correct operation of libtool. If LD is not defined and we are using
+  # gcc, try to set the LD default to the ld used by gcc.
   if test -z "$LD"; then
     if test "$GCC" = yes; then
       case $build in
@@ -1204,7 +1210,7 @@ AC_MSG_CHECKING([for correct version of gmp.h])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include "gmp.h"]],[[
 #if __GNU_MP_VERSION < 3
 choke me
-#endif
+#endif /* __GNU_MP_VERSION < 3 */
 ]])],[AC_MSG_RESULT([yes])],[AC_MSG_RESULT([no]); have_gmp=no])
 
 if test x"$have_gmp" = xyes; then
@@ -1225,8 +1231,10 @@ AC_SUBST([gmpinc])
 
 # Checks for header files.
 AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
-AC_CHECK_HEADERS([langinfo.h libintl.h limits.h locale.h malloc.h \
-                  malloc/malloc.h stddef.h stdio.h wchar.h wctype.h])
+AC_CHECK_HEADERS([fcntl.h langinfo.h libintl.h limits.h locale.h \
+                  mach/mach.h malloc.h malloc/malloc.h netdb.h \
+                  netinet/in.h stddef.h stdio.h sys/file.h sys/ioctl.h \
+                  sys/param.h sys/socket.h sys/time.h wchar.h wctype.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
@@ -1234,14 +1242,22 @@ AC_C_INLINE
 AC_C_PROTOTYPES
 AC_C_RESTRICT
 AC_TYPE_INT32_T
+AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
 AC_TYPE_UINT32_T
 
 # Checks for library functions.
 AC_FUNC_ALLOCA
+AC_FUNC_ERROR_AT_LINE
+AC_FUNC_MALLOC
 AC_FUNC_OBSTACK
-AC_CHECK_FUNCS([gettimeofday memset printf re_comp regcomp strverscmp])
+AC_FUNC_REALLOC
+unset ac_cv_func_gethostbyname
+AC_CHECK_FUNCS([getcwd gethostbyaddr gethostbyname gettimeofday \
+                memmove memset printf putenv re_comp regcomp select \
+                socket strcasecmp strchr strerror strrchr strstr \
+                strtol strtoul strverscmp system])
 
 # By default, C is the only stage 1 language.
 stage1_languages=c
@@ -1319,14 +1335,15 @@ if test -d ${srcdir}/gcc; then
         need_gmp=
         . ${lang_frag}
         potential_languages="${potential_languages},${language}"
-        # This is quite sensitive to the ordering of the case statement arms.
+        # This is sensitive to the ordering of the case statement arms.
         case ,${enable_languages},:${language}:${have_gnat}:${build_by_default} in
           *::*:*)
             echo "${lang_frag} does not set \$language." 1>&2
             exit 1
             ;;
           *:ada:no:*)
-            # Ada was requested with no preexisting GNAT.  Disable unconditionally.
+            # Ada was requested with no preexisting GNAT. Disable
+            # unconditionally.
             add_this_lang=no
             ;;
           *,${language},*:*:*:*)
@@ -1339,7 +1356,7 @@ if test -d ${srcdir}/gcc; then
             add_this_lang=no
             ;;
           *,all,*:*:*:*)
-            # 'all' was selected and this is a default language; include it.
+            # 'all' was selected & this is a default language; include it.
             add_this_lang=yes
             ;;
           *)
@@ -1456,9 +1473,9 @@ if test -n "${target_configdirs}" ; then
   fi
 fi
 
-# Quietly strip out all directories which are NOT configurable in this tree.
-# This relies on all configurable subdirectories being autoconfiscated, which
-# is now the case.
+# Quietly strip out all directories which are NOT configurable in this
+# tree. This relies on all configurable subdirectories being
+# autoconfiscated, which is now the case.
 build_configdirs_all="$build_configdirs"
 build_configdirs=
 for i in ${build_configdirs_all} ; do
@@ -1486,9 +1503,9 @@ for i in ${target_configdirs_all} ; do
 done
 
 # Produce a warning message for the subdirs we cannot configure.
-# This is NOT especially interesting in the Cygnus tree, but in the individual
-# FSF releases, it is important to let people know when their machine is NOT
-# supported by the one or two programs in a package.
+# This is NOT especially interesting in the Cygnus tree, but in the
+# individual FSF releases, it is important to let people know when their
+# machine is NOT supported by the one or two programs in a package.
 
 if test -n "${notsupp}" && test -z "${norecursion}" ; then
   # If $appdirs is non-empty, at least one of those directories must still
@@ -1595,7 +1612,7 @@ while test $# != 0 ; do
     (cd $1; tar -cf - .) | (cd $2; tar -xpf -)
 
     # It is the responsibility of the user to correctly adjust all
-    # symlinks.  If somebody can figure out how to handle them correctly
+    # symlinks. If somebody can figure out how to handle them correctly
     # here, feel free to add the code.
 
     echo $1 > $2/COPIED
@@ -1618,7 +1635,7 @@ case "${target}" in
     target_makefile_frag="config/mt-linux"
     ;;
   *-*-aix4.[[3456789]]* | *-*-aix[[56789]].*)
-    # nm and ar from AIX 4.3 and above require -X32_64 flag to all ar and nm 
+    # nm and ar from AIX 4.3+ require -X32_64 flag to all ar and nm 
     # commands to handle both 32-bit and 64-bit objects. These flags are
     # harmless if we are using GNU nm or ar.
     extra_arflags_for_target=" -X32_64"
@@ -1688,7 +1705,7 @@ if test x${use_gnu_ld} = x &&
   extra_host_args="$extra_host_args --with-gnu-ld"
 fi
 
-# If using newlib, add --with-newlib to the extra_host_args so that gcc/configure
+# If using newlib, add --with-newlib to extra_host_args so gcc/configure
 # can detect this case.
 
 if test x${with_newlib} != xno && echo " ${target_configdirs} " | grep " target-newlib " > /dev/null 2>&1 ; then
@@ -1718,11 +1735,11 @@ esac
 
 # Some systems (e.g., one of the i386-aix systems the gas testers are
 # using) do NOT handle "\$" correctly, so do NOT use it here.
-# APPLE LOCAL: Use "host" instead of "host_alias" etc - autoconf 2.13/2.57 diff?
+# APPLE LOCAL: Use "host" over "host_alias" - autoconf 2.13/2.57 diff?
 tooldir='${exec_prefix}'/${target}
 build_tooldir=${tooldir}
 
-# Generate default definitions for YACC, M4, LEX and other programs that run
+# Generate default definitions for YACC, M4, LEX and other programs to run
 # on the build machine. These are used if the Makefile cannot locate these
 # programs in objdir.
 MISSING=`cd $ac_aux_dir && ${PWDCMD-pwd}`/missing
@@ -1874,7 +1891,7 @@ case "$have_compiler:$host:$target:$enable_bootstrap" in
   *:*:*:default)
     enable_bootstrap=no ;;
 
-  # We have a compiler and we are in a native configuration, bootstrap is ok
+  # We have a compiler & we are in a native configuration, bootstrap is ok
   yes:$build:$build:yes | yes:$build:$build:lean)
     ;;
 
@@ -2053,7 +2070,7 @@ baseargs="$baseargs --program-transform-name='${gcc_transform_name}'"
 # For the build-side libraries, we just need to pretend we are native,
 # and not use the same cache file.  Multilibs are neither needed nor
 # desired.
-# APPLE LOCAL: Use "host" instead of "host_alias" etc - autoconf 2.13/2.57 diff?
+# APPLE LOCAL: Use "host" over "host_alias" - autoconf 2.13/2.57 diff?
 build_configargs="$build_configargs --cache-file=../config.cache --build=${build} --host=${build} ${baseargs}"
 
 # For host modules, accept cache file option, or specification as blank.
@@ -2129,7 +2146,7 @@ case " $target_configdirs " in
      if test "${build}" != "${host}"; then
        # On Canadian crosses, CC_FOR_TARGET will have already been set
        # by `configure', so we will NOT have an opportunity to add -Bgcc/
-       # to it.  This is right: we do NOT want to search that directory
+       # to it. This is right: we do NOT want to search that directory
        # for binaries, but we want the header files in there, so add
        # them explicitly.
        FLAGS_FOR_TARGET=$FLAGS_FOR_TARGET' -isystem $$r/$(HOST_SUBDIR)/gcc/include'
@@ -2245,7 +2262,7 @@ AC_SUBST([CFLAGS])
 AC_SUBST([CFLAGS_FOR_BUILD])
 AC_SUBST([CXXFLAGS])
 
-# Target tools.  Do the tests using the names they may have passed in
+# Target tools. Do the tests using the names they may have passed in
 # the environment, then move it to CONFIGURED_*_FOR_TARGET.
 NCN_STRICT_CHECK_TARGET_TOOLS([AR_FOR_TARGET],[ar])
 NCN_STRICT_CHECK_TARGET_TOOLS([AS_FOR_TARGET],[as])
@@ -2335,10 +2352,11 @@ NM_FOR_TARGET=${NM_FOR_TARGET}${extra_nmflags_for_target}
 
 AC_MSG_CHECKING([whether to enable maintainer-specific portions of Makefiles])
 AC_ARG_ENABLE([maintainer-mode],
-[AS_HELP_STRING([--enable-maintainer-mode],[enable make rules and dependencies not useful
-                          (and sometimes confusing) to the casual installer])],
-      USE_MAINTAINER_MODE=$enableval,
-      USE_MAINTAINER_MODE=no)
+[AS_HELP_STRING([--enable-maintainer-mode],[enable make rules and
+                          dependencies not useful (and sometimes confusing)
+                          to the casual installer])],
+      [USE_MAINTAINER_MODE=${enableval}],
+      [USE_MAINTAINER_MODE=no])
 AC_MSG_RESULT([$USE_MAINTAINER_MODE])
 AC_SUBST([MAINTAINER_MODE_TRUE])
 AC_SUBST([MAINTAINER_MODE_FALSE])
@@ -2357,7 +2375,7 @@ AC_SUBST([MAINT])dnl
 # ---------------------
 
 # Stage specific cflags for build.
-stage1_cflags="-g"
+stage1_cflags="-ggdb"
 case $build in
   vax-*-*)
     case ${GCC} in

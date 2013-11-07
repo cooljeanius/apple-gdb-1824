@@ -5,6 +5,14 @@ add to this list if you are able to narrow down the last appearances of
 other files. (This would be so much easier if Apple would just open up
 their VCS to us...)
 
+	- 186.1: first version available
+
+	- 213: last version with src/gdb-next (most of this was transferred
+	to src/gdb/macosx, but not all of it...)
+
+	- 250: last version with src/gdb/29k-share and some other things in
+	src/gdb...
+
 	- 309: last version with src/contrib, src/etc, src/expect, src/sim,
 	src/tcl, src/texinfo, src/utils, and maybe a few other things...
 
@@ -15,6 +23,8 @@ their VCS to us...)
 	things
 
 	- 967: last version with libcheckpoint
+
+	- 1824: most recent version available as of November 2013
 
 # Versioning scheme and stuff comes from:
 http://www.opensource.apple.com/tarballs/gdb/

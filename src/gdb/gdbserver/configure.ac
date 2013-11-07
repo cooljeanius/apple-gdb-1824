@@ -26,7 +26,7 @@ AC_PREREQ([2.59])dnl
 
 AC_INIT([gdbserver],[1824],[gclayton@apple.com])
 AC_CONFIG_SRCDIR([server.c])
-AC_CONFIG_HEADER([config.h:config.in])
+AC_CONFIG_HEADER([config.h])
 AM_SANITY_CHECK
 AM_MAINTAINER_MODE
 
@@ -47,12 +47,13 @@ AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
 AC_REQUIRE_HEADER_STDC
 
 AC_CHECK_HEADERS([AvailabilityMacros.h arpa/inet.h fcntl.h limits.h \
-                  linux/elf.h mach/mach.h mach/mach_error.h mach/mach_types.h \
-                  mach/mach_vm.h mach/port.h mach-o/nlist.h netdb.h \
-                  netinet/in.h prctl.h proc_service.h sgtty.h signal.h stdio.h \
-                  sys/file.h sys/ioctl.h sys/param.h sys/ptrace.h sys/signal.h \
-                  sys/socket.h sys/procfs.h sys/reg.h sys/time.h sys/wait.h \
-                  termio.h termios.h thread_db.h])
+                  linux/elf.h mach/mach.h mach/mach_error.h \
+                  mach/mach_types.h mach/mach_vm.h mach/port.h \
+                  mach-o/nlist.h netdb.h netinet/in.h prctl.h \
+                  proc_service.h sgtty.h signal.h stdio.h sys/file.h \
+                  sys/ioctl.h sys/param.h sys/ptrace.h sys/signal.h \
+                  sys/socket.h sys/procfs.h sys/reg.h sys/time.h \
+                  sys/wait.h termio.h termios.h thread_db.h])
 
 # Checks for declarations
 AC_CHECK_DECLS([child_get_pagesize])
@@ -72,6 +73,13 @@ AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
 AC_TYPE_UINTMAX_T
 AC_TYPE_UINTPTR_T
+AC_CHECK_TYPES([task_t],[],[],[
+#ifdef HAVE_MACH_MACH_H
+# include <mach/mach.h>
+#else
+# warning this conftest expects <mach/mach.h> to be included.
+#endif /* HAVE_MACH_MACH_H */
+])
 AC_CHECK_TYPES([socklen_t],[],[],[
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -80,14 +88,14 @@ AC_CHECK_TYPES([mach_vm_size_t],[],[],[
 #ifdef HAVE_MACH_MACH_VM_H
 # include <mach/mach_vm.h>
 #else
-# warning the conftest for mach_vm_size_t is supposed to include <mach/mach_vm.h>
+# warning this conftest expects <mach/mach_vm.h> to be included.
 #endif /* HAVE_MACH_MACH_VM_H */
 ])
 AC_CHECK_TYPES([vm_size_t],[],[],[
 #ifdef HAVE_MACH_MACH_VM_H
 # include <mach/mach_vm.h>
 #else
-# warning the conftest for vm_size_t is supposed to include <mach/mach_vm.h>
+# warning this conftest expects <mach/mach_vm.h> to be included.
 #endif /* HAVE_MACH_MACH_VM_H */
 ])
 AC_CHECK_TYPES([gregset_t])

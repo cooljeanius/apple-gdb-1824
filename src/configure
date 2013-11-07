@@ -716,6 +716,10 @@ gmpinc
 gmplibs
 do_compare
 GNATBIND
+OBJCPP
+ac_ct_OBJC
+OBJCFLAGS
+OBJC
 ac_ct_CXX
 CXXFLAGS
 CXX
@@ -846,6 +850,9 @@ CPP
 CXX
 CXXFLAGS
 CCC
+OBJC
+OBJCFLAGS
+OBJCPP
 YACC
 YFLAGS
 CCAS
@@ -1524,6 +1531,9 @@ Some influential environment variables:
   CPP         C preprocessor
   CXX         C++ compiler command
   CXXFLAGS    C++ compiler flags
+  OBJC        Objective C compiler command
+  OBJCFLAGS   Objective C compiler flags
+  OBJCPP      Objective C preprocessor
   YACC        The `Yet Another Compiler Compiler' implementation to use.
               Defaults to the first program found out of: `bison -y', `byacc',
               `yacc'.
@@ -1880,6 +1890,81 @@ fi
   as_fn_set_status $ac_retval
 
 } # ac_fn_cxx_try_compile
+
+# ac_fn_objc_try_compile LINENO
+# -----------------------------
+# Try to compile conftest.$ac_ext, and return whether this succeeded.
+ac_fn_objc_try_compile ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  rm -f conftest.$ac_objext
+  if { { ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:${as_lineno-$LINENO}: $ac_try_echo\""
+$as_echo "$ac_try_echo"; } >&5
+  (eval "$ac_compile") 2>conftest.err
+  ac_status=$?
+  if test -s conftest.err; then
+    grep -v '^ *+' conftest.err >conftest.er1
+    cat conftest.er1 >&5
+    mv -f conftest.er1 conftest.err
+  fi
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } && {
+	 test -z "$ac_objc_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then :
+  ac_retval=0
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_retval=1
+fi
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+  as_fn_set_status $ac_retval
+
+} # ac_fn_objc_try_compile
+
+# ac_fn_objc_try_cpp LINENO
+# -------------------------
+# Try to preprocess conftest.$ac_ext, and return whether this succeeded.
+ac_fn_objc_try_cpp ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  if { { ac_try="$ac_cpp conftest.$ac_ext"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:${as_lineno-$LINENO}: $ac_try_echo\""
+$as_echo "$ac_try_echo"; } >&5
+  (eval "$ac_cpp conftest.$ac_ext") 2>conftest.err
+  ac_status=$?
+  if test -s conftest.err; then
+    grep -v '^ *+' conftest.err >conftest.er1
+    cat conftest.er1 >&5
+    mv -f conftest.er1 conftest.err
+  fi
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } > conftest.i && {
+	 test -z "$ac_objc_preproc_warn_flag$ac_objc_werror_flag" ||
+	 test ! -s conftest.err
+       }; then :
+  ac_retval=0
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+    ac_retval=1
+fi
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+  as_fn_set_status $ac_retval
+
+} # ac_fn_objc_try_cpp
 
 # ac_fn_c_check_header_compile LINENO HEADER VAR INCLUDES
 # -------------------------------------------------------
@@ -4379,7 +4464,8 @@ build_libs="build-libiberty"
 # these tools are built for the build environment
 build_tools="build-texinfo build-byacc build-flex build-bison build-m4 build-fixincludes"
 
-# these libraries are used by various programs built for the host environment
+# these libraries are used by various programs built for the host
+# environment
 #
 host_libs="intl mmalloc libiberty opcodes bfd readline tcl tk itcl libgui zlib libcpp"
 
@@ -6046,15 +6132,16 @@ case "${host}" in
     # This is for a MIPS running RISC/os 4.52C.
 
     # This is needed for GDB, but needs to be in the top-level make because
-    # if a library is compiled with the bsd headers and gets linked with the
-    # sysv system libraries all hell can break loose (e.g. a jmp_buf might be
+    # if a library is compiled with BSD headers and gets linked with the
+    # sysv system libs all hell can break loose (e.g. a jmp_buf might be
     # a different size).
-    # ptrace(2) apparently has problems in the BSD environment.  No workaround is
-    # known except to select the sysv environment.  Could we use /proc instead?
-    # These "sysv environments" and "bsd environments" often end up being a pain.
+    # ptrace(2) apparently has problems in the BSD environment. No
+    # workaround is known except to select the sysv environment. Could we
+    # use /proc instead? These "sysv environments" and "bsd environments"
+    # often end up being a pain.
     #
-    # This is not part of CFLAGS because perhaps not all C compilers have this
-    # option.
+    # This is not part of CFLAGS because perhaps not all C compilers have
+    # this option.
     tentative_cc="cc -systype sysv"
     ;;
   i370-ibm-opened*)
@@ -6077,15 +6164,97 @@ case "${host}" in
     # The NCR 3000 ships with a MetaWare compiler installed as /bin/cc.
     # This compiler not only emits obnoxious copyright messages every time
     # you run it, but it chokes and dies on a whole bunch of GNU source
-    # files.  Default to using the AT&T compiler installed in /usr/ccs/ATT/cc.
+    # files. Default to use the AT&T compiler installed in /usr/ccs/ATT/cc.
     tentative_cc="/usr/ccs/ATT/cc"
     host_makefile_frag="config/mh-ncr3000"
     ;;
   i[3456789]86-*-sco3.2v5*)
     ;;
   i[3456789]86-*-sco*)
-    # The native C compiler botches some simple uses of const.  Unfortunately,
-    # it does NOT define anything like "__sco__" for us to test for in ansidecl.h.
+    # The native C compiler botches some simple uses of const.
+    # Unfortunately, it does NOT define anything like "__sco__" for us to
+    # test for in ansidecl.h.
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for an ANSI C-conforming const" >&5
+$as_echo_n "checking for an ANSI C-conforming const... " >&6; }
+if ${ac_cv_c_const+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+#ifndef __cplusplus
+  /* Ultrix mips cc rejects this sort of thing.  */
+  typedef int charset[2];
+  const charset cs = { 0, 0 };
+  /* SunOS 4.1.1 cc rejects this.  */
+  char const *const *pcpcc;
+  char **ppc;
+  /* NEC SVR4.0.2 mips cc rejects this.  */
+  struct point {int x, y;};
+  static struct point const zero = {0,0};
+  /* AIX XL C 1.02.0.0 rejects this.
+     It does not let you subtract one const X* pointer from another in
+     an arm of an if-expression whose if-part is not a constant
+     expression */
+  const char *g = "string";
+  pcpcc = &g + (g ? g-g : 0);
+  /* HPUX 7.0 cc rejects these. */
+  ++pcpcc;
+  ppc = (char**) pcpcc;
+  pcpcc = (char const *const *) ppc;
+  { /* SCO 3.2v4 cc rejects this sort of thing.  */
+    char tx;
+    char *t = &tx;
+    char const *s = 0 ? (char *) 0 : (char const *) 0;
+
+    *t++ = 0;
+    if (s) return 0;
+  }
+  { /* Someone thinks the Sun supposedly-ANSI compiler will reject this.  */
+    int x[] = {25, 17};
+    const int *foo = &x[0];
+    ++foo;
+  }
+  { /* Sun SC1.0 ANSI compiler rejects this -- but not the above. */
+    typedef const int *iptr;
+    iptr p = 0;
+    ++p;
+  }
+  { /* AIX XL C 1.02.0.0 rejects this sort of thing, saying
+       "k.c", line 2.27: 1506-025 (S) Operand must be a modifiable lvalue. */
+    struct s { int j; const int *ap[3]; } bx;
+    struct s *b = &bx; b->j = 5;
+  }
+  { /* ULTRIX-32 V3.1 (Rev 9) vcc rejects this */
+    const int foo = 10;
+    if (!foo) return 0;
+  }
+  return !cs[0] && !zero.x;
+#endif
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_c_const=yes
+else
+  ac_cv_c_const=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_const" >&5
+$as_echo "$ac_cv_c_const" >&6; }
+if test $ac_cv_c_const = no; then
+
+$as_echo "#define const /**/" >>confdefs.h
+
+fi
+
     tentative_cc="cc -Dconst="
     host_makefile_frag="config/mh-sco"
     ;;
@@ -6125,7 +6294,7 @@ case "${host}" in
     tentative_cc="cc -Wp,-H256000"
     ;;
   rs6000-*-lynxos*)
-    # /bin/cc is less than useful for our purposes.  Always use GCC
+    # /bin/cc is less than useful for our purposes. Always use GCC
     tentative_cc="/usr/cygnus/progressive/bin/gcc"
     host_makefile_frag="config/mh-lynxrs6k"
     ;;
@@ -6133,7 +6302,7 @@ case "${host}" in
     host_makefile_frag="config/mh-ppc-darwin"
     ;;
   *-*-lynxos*)
-    # /bin/cc is less than useful for our purposes.  Always use GCC
+    # /bin/cc is less than useful for our purposes. Always use GCC
     tentative_cc="/bin/gcc"
     ;;
   *-*-sysv4*)
@@ -7301,10 +7470,394 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
+  ac_ext=m
+ac_cpp='$OBJCPP $CPPFLAGS'
+ac_compile='$OBJC -c $OBJCFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$OBJC -o conftest$ac_exeext $OBJCFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_objc_compiler_gnu
+if test -n "$ac_tool_prefix"; then
+  for ac_prog in gcc objcc objc cc CC
+  do
+    # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
+set dummy $ac_tool_prefix$ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_OBJC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$OBJC"; then
+  ac_cv_prog_OBJC="$OBJC" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_OBJC="$ac_tool_prefix$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
 
-  # We must set the default linker to the linker used by gcc for the correct
-  # operation of libtool. If LD is not defined and we are using gcc, try to
-  # set the LD default to the ld used by gcc.
+fi
+fi
+OBJC=$ac_cv_prog_OBJC
+if test -n "$OBJC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $OBJC" >&5
+$as_echo "$OBJC" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+    test -n "$OBJC" && break
+  done
+fi
+if test -z "$OBJC"; then
+  ac_ct_OBJC=$OBJC
+  for ac_prog in gcc objcc objc cc CC
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_ac_ct_OBJC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$ac_ct_OBJC"; then
+  ac_cv_prog_ac_ct_OBJC="$ac_ct_OBJC" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_ac_ct_OBJC="$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+ac_ct_OBJC=$ac_cv_prog_ac_ct_OBJC
+if test -n "$ac_ct_OBJC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_OBJC" >&5
+$as_echo "$ac_ct_OBJC" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$ac_ct_OBJC" && break
+done
+
+  if test "x$ac_ct_OBJC" = x; then
+    OBJC="gcc"
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    OBJC=$ac_ct_OBJC
+  fi
+fi
+
+# Provide some information about the compiler.
+$as_echo "$as_me:${as_lineno-$LINENO}: checking for Objective C compiler version" >&5
+set X $ac_compile
+ac_compiler=$2
+for ac_option in --version -v -V -qversion; do
+  { { ac_try="$ac_compiler $ac_option >&5"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:${as_lineno-$LINENO}: $ac_try_echo\""
+$as_echo "$ac_try_echo"; } >&5
+  (eval "$ac_compiler $ac_option >&5") 2>conftest.err
+  ac_status=$?
+  if test -s conftest.err; then
+    sed '10a\
+... rest of stderr output deleted ...
+         10q' conftest.err >conftest.er1
+    cat conftest.er1 >&5
+  fi
+  rm -f conftest.er1 conftest.err
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }
+done
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether we are using the GNU Objective C compiler" >&5
+$as_echo_n "checking whether we are using the GNU Objective C compiler... " >&6; }
+if ${ac_cv_objc_compiler_gnu+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+#ifndef __GNUC__
+       choke me
+#endif
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_objc_try_compile "$LINENO"; then :
+  ac_compiler_gnu=yes
+else
+  ac_compiler_gnu=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ac_cv_objc_compiler_gnu=$ac_compiler_gnu
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_objc_compiler_gnu" >&5
+$as_echo "$ac_cv_objc_compiler_gnu" >&6; }
+if test $ac_compiler_gnu = yes; then
+  GOBJC=yes
+else
+  GOBJC=
+fi
+ac_test_OBJCFLAGS=${OBJCFLAGS+set}
+ac_save_OBJCFLAGS=$OBJCFLAGS
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $OBJC accepts -g" >&5
+$as_echo_n "checking whether $OBJC accepts -g... " >&6; }
+if ${ac_cv_prog_objc_g+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_save_objc_werror_flag=$ac_objc_werror_flag
+   ac_objc_werror_flag=yes
+   ac_cv_prog_objc_g=no
+   OBJCFLAGS="-g"
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_objc_try_compile "$LINENO"; then :
+  ac_cv_prog_objc_g=yes
+else
+  OBJCFLAGS=""
+      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_objc_try_compile "$LINENO"; then :
+
+else
+  ac_objc_werror_flag=$ac_save_objc_werror_flag
+	 OBJCFLAGS="-g"
+	 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_objc_try_compile "$LINENO"; then :
+  ac_cv_prog_objc_g=yes
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+   ac_objc_werror_flag=$ac_save_objc_werror_flag
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_prog_objc_g" >&5
+$as_echo "$ac_cv_prog_objc_g" >&6; }
+if test "$ac_test_OBJCFLAGS" = set; then
+  OBJCFLAGS=$ac_save_OBJCFLAGS
+elif test $ac_cv_prog_objc_g = yes; then
+  if test "$GOBJC" = yes; then
+    OBJCFLAGS="-g -O2"
+  else
+    OBJCFLAGS="-g"
+  fi
+else
+  if test "$GOBJC" = yes; then
+    OBJCFLAGS="-O2"
+  else
+    OBJCFLAGS=
+  fi
+fi
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+  ac_ext=m
+ac_cpp='$OBJCPP $CPPFLAGS'
+ac_compile='$OBJC -c $OBJCFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$OBJC -o conftest$ac_exeext $OBJCFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_objc_compiler_gnu
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking how to run the Objective C preprocessor" >&5
+$as_echo_n "checking how to run the Objective C preprocessor... " >&6; }
+if test -z "$OBJCPP"; then
+  if ${ac_cv_prog_OBJCPP+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+      # Double quotes because OBJCPP needs to be expanded
+    for OBJCPP in "$OBJC -E" "/lib/cpp"
+    do
+      ac_preproc_ok=false
+for ac_objc_preproc_warn_flag in '' yes
+do
+  # Use a header file that comes with gcc, so configuring glibc
+  # with a fresh cross-compiler works.
+  # Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
+  # <limits.h> exists even on freestanding compilers.
+  # On the NeXT, cc -E runs the code through the compiler's parser,
+  # not just through cpp. "Syntax error" is here to catch this case.
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#ifdef __STDC__
+# include <limits.h>
+#else
+# include <assert.h>
+#endif
+		     Syntax error
+_ACEOF
+if ac_fn_objc_try_cpp "$LINENO"; then :
+
+else
+  # Broken: fails on valid input.
+continue
+fi
+rm -f conftest.err conftest.i conftest.$ac_ext
+
+  # OK, works on sane cases.  Now check whether nonexistent headers
+  # can be detected and how.
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <ac_nonexistent.h>
+_ACEOF
+if ac_fn_objc_try_cpp "$LINENO"; then :
+  # Broken: success on invalid input.
+continue
+else
+  # Passes both tests.
+ac_preproc_ok=:
+break
+fi
+rm -f conftest.err conftest.i conftest.$ac_ext
+
+done
+# Because of `break', _AC_PREPROC_IFELSE's cleaning code was skipped.
+rm -f conftest.i conftest.err conftest.$ac_ext
+if $ac_preproc_ok; then :
+  break
+fi
+
+    done
+    ac_cv_prog_OBJCPP=$OBJCPP
+
+fi
+  OBJCPP=$ac_cv_prog_OBJCPP
+else
+  ac_cv_prog_OBJCPP=$OBJCPP
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $OBJCPP" >&5
+$as_echo "$OBJCPP" >&6; }
+ac_preproc_ok=false
+for ac_objc_preproc_warn_flag in '' yes
+do
+  # Use a header file that comes with gcc, so configuring glibc
+  # with a fresh cross-compiler works.
+  # Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
+  # <limits.h> exists even on freestanding compilers.
+  # On the NeXT, cc -E runs the code through the compiler's parser,
+  # not just through cpp. "Syntax error" is here to catch this case.
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#ifdef __STDC__
+# include <limits.h>
+#else
+# include <assert.h>
+#endif
+		     Syntax error
+_ACEOF
+if ac_fn_objc_try_cpp "$LINENO"; then :
+
+else
+  # Broken: fails on valid input.
+continue
+fi
+rm -f conftest.err conftest.i conftest.$ac_ext
+
+  # OK, works on sane cases.  Now check whether nonexistent headers
+  # can be detected and how.
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <ac_nonexistent.h>
+_ACEOF
+if ac_fn_objc_try_cpp "$LINENO"; then :
+  # Broken: success on invalid input.
+continue
+else
+  # Passes both tests.
+ac_preproc_ok=:
+break
+fi
+rm -f conftest.err conftest.i conftest.$ac_ext
+
+done
+# Because of `break', _AC_PREPROC_IFELSE's cleaning code was skipped.
+rm -f conftest.i conftest.err conftest.$ac_ext
+if $ac_preproc_ok; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "Objective C preprocessor \"$OBJCPP\" fails sanity check
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+  # We must set the default linker to the linker used by gcc for the
+  # correct operation of libtool. If LD is not defined and we are using
+  # gcc, try to set the LD default to the ld used by gcc.
   if test -z "$LD"; then
     if test "$GCC" = yes; then
       case $build in
@@ -7714,7 +8267,7 @@ main ()
 
 #if __GNU_MP_VERSION < 3
 choke me
-#endif
+#endif /* __GNU_MP_VERSION < 3 */
 
   ;
   return 0;
@@ -7860,8 +8413,10 @@ if test $ac_cv_header_stdbool_h = yes; then
 $as_echo "#define HAVE_STDBOOL_H 1" >>confdefs.h
 
 fi
- for ac_header in langinfo.h libintl.h limits.h locale.h malloc.h \
-                  malloc/malloc.h stddef.h stdio.h wchar.h wctype.h
+ for ac_header in fcntl.h langinfo.h libintl.h limits.h locale.h \
+                  mach/mach.h malloc.h malloc/malloc.h netdb.h \
+                  netinet/in.h stddef.h stdio.h sys/file.h sys/ioctl.h \
+                  sys/param.h sys/socket.h sys/time.h wchar.h wctype.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -8215,6 +8770,17 @@ _ACEOF
 ;;
 esac
 
+ac_fn_c_check_type "$LINENO" "pid_t" "ac_cv_type_pid_t" "$ac_includes_default"
+if test "x$ac_cv_type_pid_t" = xyes; then :
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define pid_t int
+_ACEOF
+
+fi
+
 ac_fn_c_check_type "$LINENO" "size_t" "ac_cv_type_size_t" "$ac_includes_default"
 if test "x$ac_cv_type_size_t" = xyes; then :
 
@@ -8439,6 +9005,108 @@ _ACEOF
 
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for error_at_line" >&5
+$as_echo_n "checking for error_at_line... " >&6; }
+if ${ac_cv_lib_error_at_line+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <error.h>
+int
+main ()
+{
+error_at_line (0, 0, "", 0, "an error occurred");
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_error_at_line=yes
+else
+  ac_cv_lib_error_at_line=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_error_at_line" >&5
+$as_echo "$ac_cv_lib_error_at_line" >&6; }
+if test $ac_cv_lib_error_at_line = no; then
+  case " $LIBOBJS " in
+  *" error.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS error.$ac_objext"
+ ;;
+esac
+
+fi
+
+for ac_header in stdlib.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "stdlib.h" "ac_cv_header_stdlib_h" "$ac_includes_default"
+if test "x$ac_cv_header_stdlib_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_STDLIB_H 1
+_ACEOF
+
+fi
+
+done
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for GNU libc compatible malloc" >&5
+$as_echo_n "checking for GNU libc compatible malloc... " >&6; }
+if ${ac_cv_func_malloc_0_nonnull+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  ac_cv_func_malloc_0_nonnull=no
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if defined STDC_HEADERS || defined HAVE_STDLIB_H
+# include <stdlib.h>
+#else
+char *malloc ();
+#endif
+
+int
+main ()
+{
+return ! malloc (0);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_malloc_0_nonnull=yes
+else
+  ac_cv_func_malloc_0_nonnull=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_malloc_0_nonnull" >&5
+$as_echo "$ac_cv_func_malloc_0_nonnull" >&6; }
+if test $ac_cv_func_malloc_0_nonnull = yes; then :
+
+$as_echo "#define HAVE_MALLOC 1" >>confdefs.h
+
+else
+  $as_echo "#define HAVE_MALLOC 0" >>confdefs.h
+
+   case " $LIBOBJS " in
+  *" malloc.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS malloc.$ac_objext"
+ ;;
+esac
+
+
+$as_echo "#define malloc rpl_malloc" >>confdefs.h
+
+fi
+
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for obstacks" >&5
 $as_echo_n "checking for obstacks... " >&6; }
 if ${ac_cv_func_obstack+:} false; then :
@@ -8483,7 +9151,78 @@ esac
 
 fi
 
-for ac_func in gettimeofday memset printf re_comp regcomp strverscmp
+for ac_header in stdlib.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "stdlib.h" "ac_cv_header_stdlib_h" "$ac_includes_default"
+if test "x$ac_cv_header_stdlib_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_STDLIB_H 1
+_ACEOF
+
+fi
+
+done
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for GNU libc compatible realloc" >&5
+$as_echo_n "checking for GNU libc compatible realloc... " >&6; }
+if ${ac_cv_func_realloc_0_nonnull+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  ac_cv_func_realloc_0_nonnull=no
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#if defined STDC_HEADERS || defined HAVE_STDLIB_H
+# include <stdlib.h>
+#else
+char *realloc ();
+#endif
+
+int
+main ()
+{
+return ! realloc (0, 0);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_realloc_0_nonnull=yes
+else
+  ac_cv_func_realloc_0_nonnull=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_realloc_0_nonnull" >&5
+$as_echo "$ac_cv_func_realloc_0_nonnull" >&6; }
+if test $ac_cv_func_realloc_0_nonnull = yes; then :
+
+$as_echo "#define HAVE_REALLOC 1" >>confdefs.h
+
+else
+  $as_echo "#define HAVE_REALLOC 0" >>confdefs.h
+
+   case " $LIBOBJS " in
+  *" realloc.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS realloc.$ac_objext"
+ ;;
+esac
+
+
+$as_echo "#define realloc rpl_realloc" >>confdefs.h
+
+fi
+
+
+unset ac_cv_func_gethostbyname
+for ac_func in getcwd gethostbyaddr gethostbyname gettimeofday \
+                memmove memset printf putenv re_comp regcomp select \
+                socket strcasecmp strchr strerror strrchr strstr \
+                strtol strtoul strverscmp system
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -8572,14 +9311,15 @@ if test -d ${srcdir}/gcc; then
         need_gmp=
         . ${lang_frag}
         potential_languages="${potential_languages},${language}"
-        # This is quite sensitive to the ordering of the case statement arms.
+        # This is sensitive to the ordering of the case statement arms.
         case ,${enable_languages},:${language}:${have_gnat}:${build_by_default} in
           *::*:*)
             echo "${lang_frag} does not set \$language." 1>&2
             exit 1
             ;;
           *:ada:no:*)
-            # Ada was requested with no preexisting GNAT.  Disable unconditionally.
+            # Ada was requested with no preexisting GNAT. Disable
+            # unconditionally.
             add_this_lang=no
             ;;
           *,${language},*:*:*:*)
@@ -8592,7 +9332,7 @@ if test -d ${srcdir}/gcc; then
             add_this_lang=no
             ;;
           *,all,*:*:*:*)
-            # 'all' was selected and this is a default language; include it.
+            # 'all' was selected & this is a default language; include it.
             add_this_lang=yes
             ;;
           *)
@@ -8709,9 +9449,9 @@ if test -n "${target_configdirs}" ; then
   fi
 fi
 
-# Quietly strip out all directories which are NOT configurable in this tree.
-# This relies on all configurable subdirectories being autoconfiscated, which
-# is now the case.
+# Quietly strip out all directories which are NOT configurable in this
+# tree. This relies on all configurable subdirectories being
+# autoconfiscated, which is now the case.
 build_configdirs_all="$build_configdirs"
 build_configdirs=
 for i in ${build_configdirs_all} ; do
@@ -8739,9 +9479,9 @@ for i in ${target_configdirs_all} ; do
 done
 
 # Produce a warning message for the subdirs we cannot configure.
-# This is NOT especially interesting in the Cygnus tree, but in the individual
-# FSF releases, it is important to let people know when their machine is NOT
-# supported by the one or two programs in a package.
+# This is NOT especially interesting in the Cygnus tree, but in the
+# individual FSF releases, it is important to let people know when their
+# machine is NOT supported by the one or two programs in a package.
 
 if test -n "${notsupp}" && test -z "${norecursion}" ; then
   # If $appdirs is non-empty, at least one of those directories must still
@@ -8852,7 +9592,7 @@ while test $# != 0 ; do
     (cd $1; tar -cf - .) | (cd $2; tar -xpf -)
 
     # It is the responsibility of the user to correctly adjust all
-    # symlinks.  If somebody can figure out how to handle them correctly
+    # symlinks. If somebody can figure out how to handle them correctly
     # here, feel free to add the code.
 
     echo $1 > $2/COPIED
@@ -8875,7 +9615,7 @@ case "${target}" in
     target_makefile_frag="config/mt-linux"
     ;;
   *-*-aix4.[3456789]* | *-*-aix[56789].*)
-    # nm and ar from AIX 4.3 and above require -X32_64 flag to all ar and nm
+    # nm and ar from AIX 4.3+ require -X32_64 flag to all ar and nm
     # commands to handle both 32-bit and 64-bit objects. These flags are
     # harmless if we are using GNU nm or ar.
     extra_arflags_for_target=" -X32_64"
@@ -8945,7 +9685,7 @@ if test x${use_gnu_ld} = x &&
   extra_host_args="$extra_host_args --with-gnu-ld"
 fi
 
-# If using newlib, add --with-newlib to the extra_host_args so that gcc/configure
+# If using newlib, add --with-newlib to extra_host_args so gcc/configure
 # can detect this case.
 
 if test x${with_newlib} != xno && echo " ${target_configdirs} " | grep " target-newlib " > /dev/null 2>&1 ; then
@@ -8975,11 +9715,11 @@ esac
 
 # Some systems (e.g., one of the i386-aix systems the gas testers are
 # using) do NOT handle "\$" correctly, so do NOT use it here.
-# APPLE LOCAL: Use "host" instead of "host_alias" etc - autoconf 2.13/2.57 diff?
+# APPLE LOCAL: Use "host" over "host_alias" - autoconf 2.13/2.57 diff?
 tooldir='${exec_prefix}'/${target}
 build_tooldir=${tooldir}
 
-# Generate default definitions for YACC, M4, LEX and other programs that run
+# Generate default definitions for YACC, M4, LEX and other programs to run
 # on the build machine. These are used if the Makefile cannot locate these
 # programs in objdir.
 MISSING=`cd $ac_aux_dir && ${PWDCMD-pwd}`/missing
@@ -9607,7 +10347,7 @@ case "$have_compiler:$host:$target:$enable_bootstrap" in
   *:*:*:default)
     enable_bootstrap=no ;;
 
-  # We have a compiler and we are in a native configuration, bootstrap is ok
+  # We have a compiler & we are in a native configuration, bootstrap is ok
   yes:$build:$build:yes | yes:$build:$build:lean)
     ;;
 
@@ -9790,7 +10530,7 @@ baseargs="$baseargs --program-transform-name='${gcc_transform_name}'"
 # For the build-side libraries, we just need to pretend we are native,
 # and not use the same cache file.  Multilibs are neither needed nor
 # desired.
-# APPLE LOCAL: Use "host" instead of "host_alias" etc - autoconf 2.13/2.57 diff?
+# APPLE LOCAL: Use "host" over "host_alias" - autoconf 2.13/2.57 diff?
 build_configargs="$build_configargs --cache-file=../config.cache --build=${build} --host=${build} ${baseargs}"
 
 # For host modules, accept cache file option, or specification as blank.
@@ -9866,7 +10606,7 @@ case " $target_configdirs " in
      if test "${build}" != "${host}"; then
        # On Canadian crosses, CC_FOR_TARGET will have already been set
        # by `configure', so we will NOT have an opportunity to add -Bgcc/
-       # to it.  This is right: we do NOT want to search that directory
+       # to it. This is right: we do NOT want to search that directory
        # for binaries, but we want the header files in there, so add
        # them explicitly.
        FLAGS_FOR_TARGET=$FLAGS_FOR_TARGET' -isystem $$r/$(HOST_SUBDIR)/gcc/include'
@@ -11257,7 +11997,7 @@ fi
 
 
 
-# Target tools.  Do the tests using the names they may have passed in
+# Target tools. Do the tests using the names they may have passed in
 # the environment, then move it to CONFIGURED_*_FOR_TARGET.
  for ncn_progname in ar; do
   if test -n "$ncn_target_tool_prefix"; then
@@ -12407,7 +13147,7 @@ NM_FOR_TARGET=${NM_FOR_TARGET}${extra_nmflags_for_target}
 $as_echo_n "checking whether to enable maintainer-specific portions of Makefiles... " >&6; }
 # Check whether --enable-maintainer-mode was given.
 if test "${enable_maintainer_mode+set}" = set; then :
-  enableval=$enable_maintainer_mode; USE_MAINTAINER_MODE=$enableval
+  enableval=$enable_maintainer_mode; USE_MAINTAINER_MODE=${enableval}
 else
   USE_MAINTAINER_MODE=no
 fi
@@ -12430,7 +13170,7 @@ MAINT=$MAINTAINER_MODE_TRUE
 # ---------------------
 
 # Stage specific cflags for build.
-stage1_cflags="-g"
+stage1_cflags="-ggdb"
 case $build in
   vax-*-*)
     case ${GCC} in

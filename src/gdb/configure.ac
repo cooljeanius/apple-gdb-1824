@@ -867,6 +867,7 @@ AC_FUNC_MALLOC
 AM_WITH_DMALLOC
 AC_FUNC_OBSTACK
 AC_FUNC_REALLOC
+AC_FUNC_WAIT3
 AC_CHECK_FUNCS([canonicalize_file_name realpath])
 AC_CHECK_FUNCS([getuid getgid])
 AC_CHECK_FUNCS([poll])
@@ -1937,9 +1938,15 @@ AC_ARG_ENABLE([multi-ice],
     yes | no)
       ;;
     *) AC_MSG_ERROR([bad value $enableval for --enable-multi-ice]) ;;
-  esac])
-if test "x$enable_multi_ice" = xyes; then
-   AC_CONFIG_SUBDIRS([multi-ice])
+  esac
+])
+
+if test "x$enable_multi_ice" = "xyes"; then
+   if test -d multi-ice; then
+     AC_CONFIG_SUBDIRS([multi-ice])
+   else
+     AC_MSG_WARN([multi-ice is requested, but the subdir for it is not present.])
+   fi
 fi
 
 # We only build gdbserver automatically if host and target are the same.
@@ -1955,13 +1962,15 @@ if test "x$target" = "x$host"; then
 fi
 
 # We build rdi-share on ARM-based targets, as instructed by configure.tgt.
-if test "x$build_rdi_share" = xyes; then
+if test "x$build_rdi_share" = "xyes"; then
+  AC_ARG_VAR([build_rdi_share],[Try to override the decision to build in the rdi-share subdirectory (unsupported, might not work)])
    AC_CONFIG_SUBDIRS([rdi-share])
 fi
 
 # We configure the nlm subdirectory on netware targets, as instructed
 # by configure.tgt.
-if test "x$build_nlm" = xyes; then
+if test "x$build_nlm" = "xyes"; then
+  AC_ARG_VAR([build_nlm],[Try to override the decision to build in the nlm subdirectory (unsupported, might not work)])
    AC_CONFIG_SUBDIRS([nlm])
 fi
 

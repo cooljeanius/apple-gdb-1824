@@ -1,0 +1,7 @@
+*.status
+Makefile
+*.o
+*.exe
+*~
+core
+*.log

@@ -714,7 +714,8 @@ CPP'
 ac_subdirs_all='gdb.hp
 gdb.stabs
 gdb.gdbtk
-gdb.apple'
+gdb.apple
+gdb.objc'
 
 # Initialize some variables set by options.
 ac_init_help=
@@ -5054,6 +5055,8 @@ case "${target}" in
                  ac_config_files="$ac_config_files gdb.apple/xcode/Makefile"
 
                  subdirs="$subdirs gdb.apple"
+
+                 subdirs="$subdirs gdb.objc"
 
                  ;;
 esac

@@ -2466,7 +2466,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-ac_config_headers="$ac_config_headers config.h:config.in"
+ac_config_headers="$ac_config_headers config.h"
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether build environment is sane" >&5
 $as_echo_n "checking whether build environment is sane... " >&6; }
@@ -4000,12 +4000,13 @@ done
 
 
 for ac_header in AvailabilityMacros.h arpa/inet.h fcntl.h limits.h \
-                  linux/elf.h mach/mach.h mach/mach_error.h mach/mach_types.h \
-                  mach/mach_vm.h mach/port.h mach-o/nlist.h netdb.h \
-                  netinet/in.h prctl.h proc_service.h sgtty.h signal.h stdio.h \
-                  sys/file.h sys/ioctl.h sys/param.h sys/ptrace.h sys/signal.h \
-                  sys/socket.h sys/procfs.h sys/reg.h sys/time.h sys/wait.h \
-                  termio.h termios.h thread_db.h
+                  linux/elf.h mach/mach.h mach/mach_error.h \
+                  mach/mach_types.h mach/mach_vm.h mach/port.h \
+                  mach-o/nlist.h netdb.h netinet/in.h prctl.h \
+                  proc_service.h sgtty.h signal.h stdio.h sys/file.h \
+                  sys/ioctl.h sys/param.h sys/ptrace.h sys/signal.h \
+                  sys/socket.h sys/procfs.h sys/reg.h sys/time.h \
+                  sys/wait.h termio.h termios.h thread_db.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -4601,6 +4602,23 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 fi
 
 
+ac_fn_c_check_type "$LINENO" "task_t" "ac_cv_type_task_t" "
+#ifdef HAVE_MACH_MACH_H
+# include <mach/mach.h>
+#else
+# warning this conftest expects <mach/mach.h> to be included.
+#endif /* HAVE_MACH_MACH_H */
+
+"
+if test "x$ac_cv_type_task_t" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_TASK_T 1
+_ACEOF
+
+
+fi
+
 ac_fn_c_check_type "$LINENO" "socklen_t" "ac_cv_type_socklen_t" "
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -4619,7 +4637,7 @@ ac_fn_c_check_type "$LINENO" "mach_vm_size_t" "ac_cv_type_mach_vm_size_t" "
 #ifdef HAVE_MACH_MACH_VM_H
 # include <mach/mach_vm.h>
 #else
-# warning the conftest for mach_vm_size_t is supposed to include <mach/mach_vm.h>
+# warning this conftest expects <mach/mach_vm.h> to be included.
 #endif /* HAVE_MACH_MACH_VM_H */
 
 "
@@ -4636,7 +4654,7 @@ ac_fn_c_check_type "$LINENO" "vm_size_t" "ac_cv_type_vm_size_t" "
 #ifdef HAVE_MACH_MACH_VM_H
 # include <mach/mach_vm.h>
 #else
-# warning the conftest for vm_size_t is supposed to include <mach/mach_vm.h>
+# warning this conftest expects <mach/mach_vm.h> to be included.
 #endif /* HAVE_MACH_MACH_VM_H */
 
 "
@@ -6483,7 +6501,7 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
-    "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h:config.in" ;;
+    "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "default") CONFIG_COMMANDS="$CONFIG_COMMANDS default" ;;
 

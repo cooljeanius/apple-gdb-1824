@@ -1,3 +1,4 @@
+dnl#                                               -*- Autoconf -*-
 dnl# Process this file file with autoconf to produce a configure script.
 dnl# This file is a shell script fragment that supplies the information
 dnl# necessary to tailor a template configure script into the configure

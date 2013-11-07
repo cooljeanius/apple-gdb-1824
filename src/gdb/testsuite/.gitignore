@@ -11,3 +11,10 @@ xgdb
 *.grt
 site.bak
 site.exp
+*-init.exp
+*.log
+*.plog
+*.sum
+*.psum
+summary
+detail

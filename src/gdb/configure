@@ -700,6 +700,8 @@ ac_config_links1
 nm_h
 tm_h
 xm_h
+build_nlm
+build_rdi_share
 build_gdbserver
 frags
 target_subdir
@@ -1017,7 +1019,9 @@ OBJCXXFLAGS
 YACC
 YFLAGS
 XMKMF
-build_gdbserver'
+build_gdbserver
+build_rdi_share
+build_nlm'
 ac_subdirs_all='doc testsuite
 gdbtk
 multi-ice
@@ -1743,6 +1747,11 @@ Some influential environment variables:
   XMKMF       Path to xmkmf, Makefile generator for X Window System
   build_gdbserver
               Try to override the decision to build the gdbserver
+              (unsupported, might not work)
+  build_rdi_share
+              Try to override the decision to build in the rdi-share
+              subdirectory (unsupported, might not work)
+  build_nlm   Try to override the decision to build in the nlm subdirectory
               (unsupported, might not work)
 
 Use these variables to override the choices made by `configure' or to help
@@ -31170,6 +31179,70 @@ $as_echo "#define realloc rpl_realloc" >>confdefs.h
 fi
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for wait3 that fills in rusage" >&5
+$as_echo_n "checking for wait3 that fills in rusage... " >&6; }
+if ${ac_cv_func_wait3_rusage+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  ac_cv_func_wait3_rusage=no
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+#include <sys/time.h>
+#include <sys/resource.h>
+#include <sys/wait.h>
+/* HP-UX has wait3 but does not fill in rusage at all.  */
+int
+main ()
+{
+  struct rusage r;
+  int i;
+  /* Use a field that we can force nonzero --
+     voluntary context switches.
+     For systems like NeXT and OSF/1 that don't set it,
+     also use the system CPU time.  And page faults (I/O) for Linux.  */
+  r.ru_nvcsw = 0;
+  r.ru_stime.tv_sec = 0;
+  r.ru_stime.tv_usec = 0;
+  r.ru_majflt = r.ru_minflt = 0;
+  switch (fork ())
+    {
+    case 0: /* Child.  */
+      sleep(1); /* Give up the CPU.  */
+      _exit(0);
+      break;
+    case -1: /* What can we do?  */
+      _exit(0);
+      break;
+    default: /* Parent.  */
+      wait3(&i, 0, &r);
+      /* Avoid "text file busy" from rm on fast HP-UX machines.  */
+      sleep(2);
+      return (r.ru_nvcsw == 0 && r.ru_majflt == 0 && r.ru_minflt == 0
+	      && r.ru_stime.tv_sec == 0 && r.ru_stime.tv_usec == 0);
+    }
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_wait3_rusage=yes
+else
+  ac_cv_func_wait3_rusage=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_wait3_rusage" >&5
+$as_echo "$ac_cv_func_wait3_rusage" >&6; }
+if test $ac_cv_func_wait3_rusage = yes; then
+
+$as_echo "#define HAVE_WAIT3 1" >>confdefs.h
+
+fi
+
 for ac_func in canonicalize_file_name realpath
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
@@ -34973,11 +35046,18 @@ if test "${enable_multi_ice+set}" = set; then :
       ;;
     *) as_fn_error $? "bad value $enableval for --enable-multi-ice" "$LINENO" 5 ;;
   esac
+
 fi
 
-if test "x$enable_multi_ice" = xyes; then
-   subdirs="$subdirs multi-ice"
 
+if test "x$enable_multi_ice" = "xyes"; then
+   if test -d multi-ice; then
+     subdirs="$subdirs multi-ice"
+
+   else
+     { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: multi-ice is requested, but the subdir for it is not present." >&5
+$as_echo "$as_me: WARNING: multi-ice is requested, but the subdir for it is not present." >&2;}
+   fi
 fi
 
 # We only build gdbserver automatically if host and target are the same.
@@ -34997,14 +35077,16 @@ $as_echo "no" >&6; }
 fi
 
 # We build rdi-share on ARM-based targets, as instructed by configure.tgt.
-if test "x$build_rdi_share" = xyes; then
+if test "x$build_rdi_share" = "xyes"; then
+
    subdirs="$subdirs rdi-share"
 
 fi
 
 # We configure the nlm subdirectory on netware targets, as instructed
 # by configure.tgt.
-if test "x$build_nlm" = xyes; then
+if test "x$build_nlm" = "xyes"; then
+
    subdirs="$subdirs nlm"
 
 fi
