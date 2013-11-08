@@ -1,5 +1,6 @@
 # src/binutils/.gitignore
 
+*.dSYM
 *.framework
 *.lo
 *.o

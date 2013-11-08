@@ -49,11 +49,12 @@ AC_REQUIRE_HEADER_STDC
 AC_CHECK_HEADERS([AvailabilityMacros.h arpa/inet.h fcntl.h limits.h \
                   linux/elf.h mach/mach.h mach/mach_error.h \
                   mach/mach_types.h mach/mach_vm.h mach/port.h \
-                  mach-o/nlist.h netdb.h netinet/in.h prctl.h \
-                  proc_service.h sgtty.h signal.h stdio.h sys/file.h \
-                  sys/ioctl.h sys/param.h sys/ptrace.h sys/signal.h \
-                  sys/socket.h sys/procfs.h sys/reg.h sys/time.h \
-                  sys/wait.h termio.h termios.h thread_db.h])
+                  mach-o/nlist.h malloc.h malloc/malloc.h netdb.h \
+                  netinet/in.h prctl.h proc_service.h sgtty.h signal.h \
+                  stdio.h sys/file.h sys/ioctl.h sys/param.h \
+                  sys/ptrace.h sys/signal.h sys/socket.h sys/procfs.h \
+                  sys/reg.h sys/time.h sys/wait.h termio.h termios.h \
+                  thread_db.h])
 
 # Checks for declarations
 AC_CHECK_DECLS([child_get_pagesize])
@@ -120,8 +121,8 @@ AC_FUNC_ERROR_AT_LINE
 AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([atexit child_get_pagesize inet_ntoa memset select socket \
-                strchr strdup strerror strtol strtoul])
+AC_CHECK_FUNCS([atexit child_get_pagesize inet_ntoa memset select setenv \
+                socket strchr strdup strerror strrchr strtol strtoul])
 
 AC_MSG_NOTICE([sourcing ${srcdir}/configure.srv])
 . ${srcdir}/configure.srv

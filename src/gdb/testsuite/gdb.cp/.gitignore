@@ -22,3 +22,7 @@ userdef
 virtfunc
 namespace
 ref-types
+Makefile
+*.status
+*.log
+*.dSYM

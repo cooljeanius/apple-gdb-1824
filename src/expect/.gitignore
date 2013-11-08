@@ -1,4 +1,5 @@
 *.cache
+*.dSYM
 *.log
 *.status
 Makefile
@@ -10,11 +11,17 @@ expect_cf.h
 shared
 core
 expect-bld.sh
+expect
 expect.exe
+expect_installed
 expect_installed.exe
+expecti
 expecti.exe
+expecti_installed
 expecti_installed.exe
+expectk
 expectk.exe
+expectk_installed
 expectk_installed.exe
 dumb
 exho

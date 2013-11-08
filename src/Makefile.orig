@@ -125,7 +125,7 @@ BUILD_EXPORTS = \
 	WINDRES="$(WINDRES_FOR_BUILD)"; export WINDRES;
 
 # This is the list of directories to built for the host system.
-SUBDIRS =  intl mmalloc libiberty opcodes bfd readline tcl binutils sim gdb etc expect utils
+SUBDIRS =  intl mmalloc libiberty opcodes bfd readline tcl binutils sim gdb etc expect dejagnu utils
 # This is set by the configure script to the arguments to use when configuring
 # directories built for the host system.
 HOST_CONFIGARGS =     --disable-shared --enable-64-bit-bfd --disable-softfloat --disable-werror  --enable-carbon-framework --enable-debug-symbols-framework --cache-file=./config.cache --build=x86_64-apple-darwin10.8.0 --host=x86_64-apple-darwin10.8.0 --target=x86_64-apple-darwin10.8.0   --program-transform-name='s,y,y,'
@@ -3821,6 +3821,25 @@ maybe-maintainer-clean-bzip2:
 
 .PHONY: configure-dejagnu maybe-configure-dejagnu
 maybe-configure-dejagnu:
+maybe-configure-dejagnu: configure-dejagnu
+configure-dejagnu: 
+	@test ! -f $(HOST_SUBDIR)/dejagnu/Makefile || exit 0; \
+	$(SHELL) $(srcdir)/mkinstalldirs $(HOST_SUBDIR)/dejagnu ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	echo Configuring in $(HOST_SUBDIR)/dejagnu; \
+	cd "$(HOST_SUBDIR)/dejagnu" || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/dejagnu/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/dejagnu"; \
+	libsrcdir="$$s/dejagnu"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption}  \
+	  || exit 1
 
 
 
@@ -3828,47 +3847,270 @@ maybe-configure-dejagnu:
 
 .PHONY: all-dejagnu maybe-all-dejagnu
 maybe-all-dejagnu:
+TARGET-dejagnu=all
+maybe-all-dejagnu: all-dejagnu
+all-dejagnu: configure-dejagnu
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/dejagnu && \
+	  $(MAKE) $(FLAGS_TO_PASS)  $(TARGET-dejagnu))
 
 
 
 
 .PHONY: check-dejagnu maybe-check-dejagnu
 maybe-check-dejagnu:
+maybe-check-dejagnu: check-dejagnu
+
+check-dejagnu:
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/dejagnu && \
+	  $(MAKE) $(FLAGS_TO_PASS)  check)
+
 
 .PHONY: install-dejagnu maybe-install-dejagnu
 maybe-install-dejagnu:
+maybe-install-dejagnu: install-dejagnu
+
+install-dejagnu: installdirs
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/dejagnu && \
+	  $(MAKE) $(FLAGS_TO_PASS)  install)
+
 
 # Other targets (info, dvi, etc.)
 
 .PHONY: maybe-info-dejagnu info-dejagnu
 maybe-info-dejagnu:
+maybe-info-dejagnu: info-dejagnu
+
+info-dejagnu: \
+    configure-dejagnu 
+	@[ -f ./dejagnu/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing info in dejagnu" ; \
+	(cd $(HOST_SUBDIR)/dejagnu && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          info) \
+	  || exit 1
+
 
 .PHONY: maybe-dvi-dejagnu dvi-dejagnu
 maybe-dvi-dejagnu:
+maybe-dvi-dejagnu: dvi-dejagnu
+
+dvi-dejagnu: \
+    configure-dejagnu 
+	@[ -f ./dejagnu/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing dvi in dejagnu" ; \
+	(cd $(HOST_SUBDIR)/dejagnu && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          dvi) \
+	  || exit 1
+
 
 .PHONY: maybe-html-dejagnu html-dejagnu
 maybe-html-dejagnu:
+maybe-html-dejagnu: html-dejagnu
+
+html-dejagnu: \
+    configure-dejagnu 
+	@[ -f ./dejagnu/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing html in dejagnu" ; \
+	(cd $(HOST_SUBDIR)/dejagnu && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          html) \
+	  || exit 1
+
 
 .PHONY: maybe-TAGS-dejagnu TAGS-dejagnu
 maybe-TAGS-dejagnu:
+maybe-TAGS-dejagnu: TAGS-dejagnu
+
+TAGS-dejagnu: \
+    configure-dejagnu 
+	@[ -f ./dejagnu/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing TAGS in dejagnu" ; \
+	(cd $(HOST_SUBDIR)/dejagnu && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          TAGS) \
+	  || exit 1
+
 
 .PHONY: maybe-install-info-dejagnu install-info-dejagnu
 maybe-install-info-dejagnu:
+maybe-install-info-dejagnu: install-info-dejagnu
+
+install-info-dejagnu: \
+    configure-dejagnu \
+    info-dejagnu 
+	@[ -f ./dejagnu/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing install-info in dejagnu" ; \
+	(cd $(HOST_SUBDIR)/dejagnu && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          install-info) \
+	  || exit 1
+
 
 .PHONY: maybe-installcheck-dejagnu installcheck-dejagnu
 maybe-installcheck-dejagnu:
+maybe-installcheck-dejagnu: installcheck-dejagnu
+
+installcheck-dejagnu: \
+    configure-dejagnu 
+	@[ -f ./dejagnu/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing installcheck in dejagnu" ; \
+	(cd $(HOST_SUBDIR)/dejagnu && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          installcheck) \
+	  || exit 1
+
 
 .PHONY: maybe-mostlyclean-dejagnu mostlyclean-dejagnu
 maybe-mostlyclean-dejagnu:
+maybe-mostlyclean-dejagnu: mostlyclean-dejagnu
+
+mostlyclean-dejagnu: 
+	@[ -f ./dejagnu/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing mostlyclean in dejagnu" ; \
+	(cd $(HOST_SUBDIR)/dejagnu && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          mostlyclean) \
+	  || exit 1
+
 
 .PHONY: maybe-clean-dejagnu clean-dejagnu
 maybe-clean-dejagnu:
+maybe-clean-dejagnu: clean-dejagnu
+
+clean-dejagnu: 
+	@[ -f ./dejagnu/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing clean in dejagnu" ; \
+	(cd $(HOST_SUBDIR)/dejagnu && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          clean) \
+	  || exit 1
+
 
 .PHONY: maybe-distclean-dejagnu distclean-dejagnu
 maybe-distclean-dejagnu:
+maybe-distclean-dejagnu: distclean-dejagnu
+
+distclean-dejagnu: 
+	@[ -f ./dejagnu/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing distclean in dejagnu" ; \
+	(cd $(HOST_SUBDIR)/dejagnu && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          distclean) \
+	  || exit 1
+
 
 .PHONY: maybe-maintainer-clean-dejagnu maintainer-clean-dejagnu
 maybe-maintainer-clean-dejagnu:
+maybe-maintainer-clean-dejagnu: maintainer-clean-dejagnu
+
+maintainer-clean-dejagnu: 
+	@[ -f ./dejagnu/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing maintainer-clean in dejagnu" ; \
+	(cd $(HOST_SUBDIR)/dejagnu && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          maintainer-clean) \
+	  || exit 1
+
 
 
 

@@ -1156,11 +1156,11 @@ test-cp-name-parser$(EXEEXT): test-cp-name-parser.o $(LIBIBERTY)
 	$(CC_LD) $(INTERNAL_LDFLAGS) -o test-cp-name-parser$(EXEEXT) \
 		test-cp-name-parser.o $(LIBIBERTY)
 
-# We do this by grepping through sources.  If that turns out to be too slow,
-# maybe we could just require every .o file to have an initialization routine
+# We do this by grepping through sources. If that turns out to be too slow,
+# we could just require every .o file to have an initialization routine
 # of a given name (top.o -> _initialize_top, etc.).
 #
-# Formatting conventions:  The name of the _initialize_* routines must start
+# Formatting conventions: The name of the _initialize_* routines must start
 # in column zero, and must not be inside #if.
 #
 # Note that the set of files with init functions might change, or the names
@@ -1259,7 +1259,7 @@ init.o: init.c $(defs_h) $(call_cmds_h)
 LIBTOOL = @LIBTOOL@
 LINK = $(LIBTOOL) --mode=link $(CC_LD)
 
-# Removing the old gdb first works better if it is running, at least on SunOS.
+# Removing the old gdb 1st works better if running, at least on SunOS.
 gdb$(EXEEXT): gdb.o libgdb.a $(CONFIG_OBS) $(ADD_DEPS) $(CDEPS) $(TDEPLIBS)
 	$(MAKE) version.o
 	rm -f gdb$(EXEEXT)

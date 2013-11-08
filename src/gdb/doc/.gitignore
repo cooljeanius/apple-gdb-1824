@@ -1,5 +1,6 @@
 Makefile
 *.status
+*.log
 links2roff
 gdb.mm
 gdb.ms
@@ -44,3 +45,10 @@ sedref.dvi
 sedref.tex
 tmp.sed
 gdb-cfg.texi
+GDBvn.texi
+*.info*
+*.dvi
+*.ps
+*.html
+*.pdf
+

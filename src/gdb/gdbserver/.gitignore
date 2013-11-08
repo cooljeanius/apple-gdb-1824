@@ -1,8 +1,10 @@
 *.status
 Makefile
 config.h
+*.cache
 *.o
 *~
+*.log
 gdbserver
 gdbreplay
 core
@@ -21,3 +23,7 @@ reg-ppc64.c
 reg-cris.c
 reg-crisv32.c
 reg-arm-macosx.c
+tm.h
+xm.h
+nm.h
+stamp-*

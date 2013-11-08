@@ -39,15 +39,15 @@
 
 /* For the gdbarch_tdep structure so we can get the wordsize. */
 #if defined(TARGET_POWERPC)
-#include "ppc-tdep.h"
+# include "ppc-tdep.h"
 #elif defined (TARGET_I386)
-#include "amd64-tdep.h"
-#include "i386-tdep.h"
+# include "amd64-tdep.h"
+# include "i386-tdep.h"
 #elif defined (TARGET_ARM)
-#include "arm-tdep.h"
+# include "arm-tdep.h"
 #else
-#error "Unrecognized target architecture."
-#endif
+# error "Unrecognized target architecture."
+#endif /* TARGET_foo */
 #include "gdbarch.h"
 
 #include "mach-o.h"
@@ -99,7 +99,7 @@ macho_symfile_init (struct objfile *objfile)
 }
 
 /* Scan and build partial symbols for a file with special sections for stabs
-   and stabstrings.  The file has already been processed to get its minimal
+   and stabstrings. The file has already been processed to get its minimal
    symbols, and any other symbols that might be necessary to resolve GSYMs.
 
    This routine is the equivalent of dbx_symfile_init and dbx_symfile_read
@@ -137,7 +137,7 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
 #if 0
   init_minimal_symbol_collection ();
   make_cleanup (discard_minimal_symbols, 0);
-#endif
+#endif /* 0 */
 
   stabsect = bfd_get_section_by_name (sym_bfd, stab_name);
   stabstrsect = bfd_get_section_by_name (sym_bfd, stabstr_name);
@@ -158,15 +158,15 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
   gdb_assert (text_name != NULL);
   gdb_assert (data_name != NULL);
 
-  /* For text, data, coalesced text and bss we want to get the 
-     struct obj_section's instead of BFD asections.  The asection will have
-     the intended load address, but if the file slid at load-time those 
-     addresses will not be reliable.  For other sections, e.g. DBX_STRINGTAB,
-     it's fine to refer to the file's asection.  */
+  /* For text, data, coalesced text and bss we want to get the
+     struct obj_section's instead of BFD asections. The asection will have
+     the intended load address, but if the file slid at load-time those
+     addresses will not be reliable. For other sections, e.g. DBX_STRINGTAB,
+     it is fine to refer to the file's asection.  */
 
   DBX_TEXT_SECTION (objfile) = NULL;
   ALL_OBJFILE_OSECTIONS (objfile, os)
-    if (os->the_bfd_section && os->the_bfd_section->name  
+    if (os->the_bfd_section && os->the_bfd_section->name
         && strcmp (os->the_bfd_section->name, text_name) == 0)
       {
         DBX_TEXT_SECTION (objfile) = os;
@@ -175,7 +175,7 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
 
   DBX_DATA_SECTION (objfile) = NULL;
   ALL_OBJFILE_OSECTIONS (objfile, os)
-    if (os->the_bfd_section && os->the_bfd_section->name  
+    if (os->the_bfd_section && os->the_bfd_section->name
         && strcmp (os->the_bfd_section->name, data_name) == 0)
       {
         DBX_DATA_SECTION (objfile) = os;
@@ -184,10 +184,10 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
 
   /* If there is no __DATA, __data section we still need to come up
      with something for any symbols in the __DATA segment (e.g. something
-     in __DATA, __common) so let's point to the segment itself.  */
+     in __DATA, __common) so let us point to the segment itself.  */
   if (DBX_DATA_SECTION (objfile) == NULL)
     ALL_OBJFILE_OSECTIONS (objfile, os)
-      if (os->the_bfd_section && os->the_bfd_section->name  
+      if (os->the_bfd_section && os->the_bfd_section->name
           && strcmp (os->the_bfd_section->name, "LC_SEGMENT.__DATA") == 0)
         {
           DBX_DATA_SECTION (objfile) = os;
@@ -197,7 +197,7 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
   DBX_COALESCED_TEXT_SECTION (objfile) = NULL;
   if (coalesced_text_name != NULL)
     ALL_OBJFILE_OSECTIONS (objfile, os)
-      if (os->the_bfd_section && os->the_bfd_section->name  
+      if (os->the_bfd_section && os->the_bfd_section->name
           && strcmp (os->the_bfd_section->name, coalesced_text_name) == 0)
         {
           DBX_COALESCED_TEXT_SECTION (objfile) = os;
@@ -207,7 +207,7 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
   DBX_BSS_SECTION (objfile) = NULL;
   if (bss_name != NULL)
     ALL_OBJFILE_OSECTIONS (objfile, os)
-      if (os->the_bfd_section && os->the_bfd_section->name  
+      if (os->the_bfd_section && os->the_bfd_section->name
           && strcmp (os->the_bfd_section->name, bss_name) == 0)
         {
           DBX_BSS_SECTION (objfile) = os;
@@ -221,10 +221,10 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
       asection *text_sect = bfd_get_section_by_name (sym_bfd, text_name);
       if (text_sect)
         {
-          DBX_TEXT_SECTION (objfile) = (struct obj_section *) 
+          DBX_TEXT_SECTION (objfile) = (struct obj_section *)
                              obstack_alloc (&objfile->objfile_obstack,
                                      sizeof (struct obj_section));
-          DBX_TEXT_SECTION (objfile)->addr = 
+          DBX_TEXT_SECTION (objfile)->addr =
                                   bfd_section_vma (sym_bfd, text_sect);
           DBX_TEXT_SECTION (objfile)->endaddr =
                                   bfd_section_vma (sym_bfd, text_sect) +
@@ -234,13 +234,13 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
         }
       else
 	{
-	  /* Finally, if we can't find a text section at all, then
-	     make up an invalid one.  Code in dbxread.c looks up the
+	  /* Finally, if we cannot find a text section at all, then
+	     make up an invalid one. Code in dbxread.c looks up the
 	     DBX_TEXT_SECTION()->the_bfd_section without checking that
-	     DBX_TEXT_SECTION exists.  It's easier to just fake up one
+	     DBX_TEXT_SECTION exists. It is easier to just fake up one
 	     here.  */
 
-          DBX_TEXT_SECTION (objfile) = (struct obj_section *) 
+          DBX_TEXT_SECTION (objfile) = (struct obj_section *)
                              obstack_alloc (&objfile->objfile_obstack,
                                      sizeof (struct obj_section));
           DBX_TEXT_SECTION (objfile)->addr = INVALID_ADDRESS;
@@ -257,10 +257,10 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
       asection *data_sect = bfd_get_section_by_name (sym_bfd, data_name);
       if (data_sect)
         {
-          DBX_DATA_SECTION (objfile) = (struct obj_section *) 
+          DBX_DATA_SECTION (objfile) = (struct obj_section *)
                              obstack_alloc (&objfile->objfile_obstack,
                                      sizeof (struct obj_section));
-          DBX_DATA_SECTION (objfile)->addr = 
+          DBX_DATA_SECTION (objfile)->addr =
                                   bfd_section_vma (sym_bfd, data_sect);
           DBX_DATA_SECTION (objfile)->endaddr =
                                   bfd_section_vma (sym_bfd, data_sect) +
@@ -270,13 +270,13 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
         }
       else
 	{
-	  /* Finally, if we can't find a data section at all, then
-	     make up an invalid one.  Code in dbxread.c looks up the
+	  /* Finally, if we cannot find a data section at all, then
+	     make up an invalid one. Code in dbxread.c looks up the
 	     DBX_DATA_SECTION()->the_bfd_section without checking that
-	     DBX_DATA_SECTION exists.  It's easier to just fake up one
+	     DBX_DATA_SECTION exists. It is easier to just fake up one
 	     here.  */
 
-          DBX_DATA_SECTION (objfile) = (struct obj_section *) 
+          DBX_DATA_SECTION (objfile) = (struct obj_section *)
                              obstack_alloc (&objfile->objfile_obstack,
                                      sizeof (struct obj_section));
           DBX_DATA_SECTION (objfile)->addr = INVALID_ADDRESS;
@@ -290,14 +290,14 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
      obj_section.  */
   if (!DBX_COALESCED_TEXT_SECTION (objfile))
     {
-      asection *textcoal_sect = bfd_get_section_by_name (sym_bfd, 
+      asection *textcoal_sect = bfd_get_section_by_name (sym_bfd,
                                                          coalesced_text_name);
       if (textcoal_sect)
         {
-          DBX_COALESCED_TEXT_SECTION (objfile) = (struct obj_section *) 
+          DBX_COALESCED_TEXT_SECTION (objfile) = (struct obj_section *)
                              obstack_alloc (&objfile->objfile_obstack,
                                      sizeof (struct obj_section));
-          DBX_COALESCED_TEXT_SECTION (objfile)->addr = 
+          DBX_COALESCED_TEXT_SECTION (objfile)->addr =
                                   bfd_section_vma (sym_bfd, textcoal_sect);
           DBX_COALESCED_TEXT_SECTION (objfile)->endaddr =
                                   bfd_section_vma (sym_bfd, textcoal_sect) +
@@ -307,14 +307,14 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
         }
       else
 	{
-	  /* Finally, if we can't find a coalesced text section at
-	     all, then make up an invalid one.  Code in dbxread.c
+	  /* Finally, if we cannot find a coalesced text section at
+	     all, then make up an invalid one. Code in dbxread.c
 	     looks up the
 	     DBX_COALESCED_TEXT_SECTION()->the_bfd_section without
-	     checking that DBX_COALESCED_TEXT_SECTION exists.  It's
+	     checking that DBX_COALESCED_TEXT_SECTION exists. It is
 	     easier to just fake up one here.  */
 
-          DBX_COALESCED_TEXT_SECTION (objfile) = (struct obj_section *) 
+          DBX_COALESCED_TEXT_SECTION (objfile) = (struct obj_section *)
                              obstack_alloc (&objfile->objfile_obstack,
                                      sizeof (struct obj_section));
           DBX_COALESCED_TEXT_SECTION (objfile)->addr = INVALID_ADDRESS;
@@ -327,7 +327,7 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
   if (DBX_TEXT_SECTION (objfile))
     {
       DBX_TEXT_ADDR (objfile) = DBX_TEXT_SECTION (objfile)->addr;
-      DBX_TEXT_SIZE (objfile) = DBX_TEXT_SECTION (objfile)->endaddr - 
+      DBX_TEXT_SIZE (objfile) = DBX_TEXT_SECTION (objfile)->endaddr -
                                 DBX_TEXT_SECTION (objfile)->addr;
     }
   else
@@ -344,7 +344,7 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
       DBX_COALESCED_TEXT_ADDR (objfile) =
                                 DBX_COALESCED_TEXT_SECTION (objfile)->addr;
       DBX_COALESCED_TEXT_SIZE (objfile) =
-                                DBX_COALESCED_TEXT_SECTION (objfile)->endaddr - 
+                                DBX_COALESCED_TEXT_SECTION (objfile)->endaddr -
                                 DBX_COALESCED_TEXT_SECTION (objfile)->addr;
     }
   else
@@ -367,12 +367,12 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
   if (mmap_strtabflag && (bfd_in_memory == 0))
     {
 
-      /* currently breaks mapped symbol files (string table doesn't end up in objfile) */
+      /* currently breaks mapped symbol files (string table does NOT end up in objfile) */
 
       bfd_window w;
       bfd_init_window (&w);
 
-      /* APPLE LOCAL: Open the string table read only if possible.  Should
+      /* APPLE LOCAL: Open the string table read only if possible. Should
          be more efficient.  */
 
       val = bfd_get_section_contents_in_window_with_mode
@@ -386,13 +386,13 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
     }
   else
     {
-#endif
-#if defined (TARGET_ARM) && defined (NM_NEXTSTEP)
+#endif /* HAVE_MMAP */
+#if defined(TARGET_ARM) && defined(NM_NEXTSTEP)
       get_dyld_shared_cache_local_syms ();
       /* Hack for ARM native MacOSX targets where we can rely on anything
-	 in the shared cache being mapped in our process at the same 
-	 address. This can save us 10MB - 11MB which is a about a tenth
-	 of our available memory.   */
+       * in the shared cache being mapped in our process at the same
+       * address. This can save us 10MB - 11MB which is a about a tenth
+       * of our available memory.   */
       if (bfd_mach_o_in_shared_cached_memory (sym_bfd))
 	{
           static char *g_shared_cache_stringtab = NULL;
@@ -404,7 +404,7 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
 	      OBJSTAT (objfile, sz_strtab += DBX_STRINGTAB_SIZE (objfile) + 1);
 
 	      /* Now read in the string table in one big gulp.  */
-	      val = bfd_get_section_contents (sym_bfd, stabstrsect, 
+	      val = bfd_get_section_contents (sym_bfd, stabstrsect,
 					      g_shared_cache_stringtab, 0,
 	         			      DBX_STRINGTAB_SIZE (objfile));
 	      if (!val)
@@ -414,7 +414,7 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
 
           /* Pre-seed the minsyms for this objfile with the nlist records in
              the separate dyld_shared_cache file on iOS devices -- the in-memory
-             copy won't have the symbols.  */
+             copy will NOT have the symbols.  */
           struct gdb_copy_dyld_cache_local_symbols_entry *dsc_locsyms_entry = NULL;
           CORE_ADDR slide = 0;
           if (objfile->sections && objfile->sections[objfile->sect_index_text].the_bfd_section)
@@ -434,13 +434,13 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
             }
 	}
       else
-	{	
-#endif
+	{
+#endif /* TARGET_ARM && NM_NEXTSTEP */
       /* Only check the length if our bfd is not in memory since the bfd
-         read iovec functions we define in macosx-nat-dyld-info.c do not
-	 always have a length as our in memory executable images can now
-	 be scattered about memory with any segment data appearing at a
-	 lower address than our mach header.  */
+       * read iovec functions we define in macosx-nat-dyld-info.c do not
+       * always have a length as our in memory executable images can now
+       * be scattered about memory with any segment data appearing at a
+       * lower address than our mach header.  */
       if (bfd_in_memory == 0)
 	{
 	  if (DBX_STRINGTAB_SIZE (objfile) > bfd_get_size (sym_bfd))
@@ -461,12 +461,12 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
 
       if (!val)
         perror_with_name (name);
-#if defined (TARGET_ARM) && defined (NM_NEXTSTEP)
+#if defined(TARGET_ARM) && defined(NM_NEXTSTEP)
 	}
-#endif
+#endif /* TARGET_ARM && NM_NEXTSTEP */
 #if HAVE_MMAP
     }
-#endif
+#endif /* HAVE_MMAP */
 
   /* APPLE LOCAL: Get the "local" vs "nonlocal" nlist record locations
      from the LC_DYSYMTAB load command if it was provided. */
@@ -476,7 +476,7 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
     local_stabsect = nonlocal_stabsect = NULL;
 
   /* APPLE LOCAL: Initialize the local/non-local stab nlist record pointers
-     Set everything to 0 if there's no information provided by the static link
+     Set everything to 0 if there is no information provided by the static link
      editor -- users of these values should fall back to using the standard
      DBX_SYMTAB_OFFSET et al values for all stab records. */
   if (local_stabsect == NULL)
@@ -507,7 +507,7 @@ macho_build_psymtabs (struct objfile *objfile, int mainline,
 
 #if 0
   install_minimal_symbols (objfile);
-#endif
+#endif /* 0 */
 
   processing_acc_compilation = 1;
   dbx_symfile_read (objfile, mainline);
@@ -531,14 +531,14 @@ macho_symfile_read (struct objfile *objfile, int mainline)
   CHECK_FATAL (abfd->filename != NULL);
 
   /* If this objfile is pointing to a stub library -- a library whose text
-     and data have been stripped -- stop processing right now.  gdb will
+     and data have been stripped -- stop processing right now. gdb will
      try to examine the text or data and does not handle it gracefully when
      they are not present.  */
   if (bfd_mach_o_stub_library (abfd))
     return;
 
-  /* Also, if the binary is encrypted, then it will only confuse us.  We'll skip
-     reading this in, and gdb will read it from memory later on.  */
+  /* Also, if the binary is encrypted, then it will only confuse us. We will
+     skip reading this in, and gdb will read it from memory later on.  */
   if (bfd_mach_o_encrypted_binary (abfd))
     return;
 
@@ -546,7 +546,7 @@ macho_symfile_read (struct objfile *objfile, int mainline)
   minsym_cleanup = make_cleanup_discard_minimal_symbols ();
 
   /* If we are reinitializing, or if we have never loaded syms yet,
-     set table to empty.  MAINLINE is cleared so that *_read_psymtab
+     set table to empty. MAINLINE is cleared so that *_read_psymtab
      functions do not all also re-initialize the psymbol table. */
   if (mainline)
     {
@@ -555,8 +555,8 @@ macho_symfile_read (struct objfile *objfile, int mainline)
     }
 
   if (info_verbose
-      && macosx_bfd_is_in_memory (abfd) 
-      && target_is_remote () 
+      && macosx_bfd_is_in_memory (abfd)
+      && target_is_remote ()
       && !target_is_kdp_remote ())
     {
       warning ("Copying %s from device memory...", abfd->filename);
@@ -680,12 +680,12 @@ macho_read_indirect_symbols (bfd *abfd,
         }
 
       /* We need to find the correct section to get the offset
-	 for these symbols.  In the dyld shared cache, the IMPORT
-	 segments slides independently of the TEXT & DATA segments.
-	 so we can't just apply the TEXT offset.
-	 It's kind of annoying that the bfd index isn't the same as
-	 the objfile section_offsets index, so we have to search
-	 for it like this, but...  */
+       * for these symbols. In the dyld shared cache, the IMPORT
+       * segments slides independently of the TEXT & DATA segments.
+       * so we cannot just apply the TEXT offset.
+       * It is kind of annoying that the bfd index is NOT the same as
+       * the objfile section_offsets index, so we have to search
+       * for it like this, but...  */
 
       osect_idx = 0;
       found_it = 0;
@@ -771,13 +771,13 @@ macho_symfile_offsets (struct objfile *objfile,
   memset (objfile->section_offsets, 0,
           SIZEOF_N_SECTION_OFFSETS (objfile->num_sections));
 
-  /* This code is run when we first add the objfile with 
-     symfile_add_with_addrs_or_offsets, when "addrs" not "offsets" are passed 
-     in.  The place in symfile.c where the addrs are applied depends on the 
-     addrs having section names.  But in the dyld code we build an anonymous 
-     array of addrs, so that code is a no-op.  Because of that, we have to
-     apply the addrs to the sections here.  N.B. if an objfile slides after 
-     we've already created it, then it goes through objfile_relocate.  */
+  /* This code is run when we first add the objfile with
+     symfile_add_with_addrs_or_offsets, when "addrs" not "offsets" are passed
+     in. The place in symfile.c where the addrs are applied depends on the
+     addrs having section names. But in the dyld code we build an anonymous
+     array of addrs, so that code is a no-op. Because of that, we have to
+     apply the addrs to the sections here.  N.B. if an objfile slides after
+     we have already created it, then it goes through objfile_relocate.  */
 
   if (addrs->other[0].addr != 0)
     {
@@ -795,10 +795,10 @@ macho_symfile_offsets (struct objfile *objfile,
     }
 
   /* You might think you could use the index from the bfd_section here,
-     but you would be wrong.  We don't make objfile sections from ALL the
-     bfd_sections (the ones with 0 length get dropped.)  The sect_index_*
-     are used to index into the objfile's section_offsets, which in turn 
-     is supposed to map to the objfile sections.  So we have to do it this
+     but you would be wrong. We do NOT make objfile sections from ALL the
+     bfd_sections (the ones with 0 length get dropped.) The sect_index_*
+     are used to index into the objfile's section_offsets, which in turn
+     is supposed to map to the objfile sections. So we have to do it this
      way instead.  */
 
   /* NB: The code below is (mostly) a reimplementation of
@@ -827,7 +827,7 @@ macho_symfile_offsets (struct objfile *objfile,
 
 /* This function calculates the offset between the dsym file and
    the binary it was made from, if both were loaded at their
-   set addresses.  This may be different if the binary was rebased
+   set addresses. This may be different if the binary was rebased
    after the dsym file was made.  */
 
 static CORE_ADDR
@@ -861,10 +861,10 @@ macho_calculate_dsym_offset (bfd *exe_bfd, bfd *sym_bfd)
   return exe_text_addr - sym_text_addr;
 }
 
-/* This function takes either the addrs or the offsets array that the 
+/* This function takes either the addrs or the offsets array that the
    actual objfile for a separate_debug_file would use, and conses up
-   a section_offsets array for the separate debug objfile.  In the case
-   of macho it is just a copy of the objfile's section array, plus the 
+   a section_offsets array for the separate debug objfile. In the case
+   of macho it is just a copy of the objfile's section array, plus the
    potential offset between the dSYM and the objfile's load addresses.  */
 
 void
@@ -877,7 +877,7 @@ macho_calculate_offsets_for_dsym (struct objfile *main_objfile,
 				  int *sym_num_offsets)
 {
   bfd_boolean in_mem_shared_cache;
-  int i;  
+  int i;
   in_mem_shared_cache = bfd_mach_o_in_shared_cached_memory (main_objfile->obfd);
 
   if (in_mem_shared_cache)
@@ -886,11 +886,11 @@ macho_calculate_offsets_for_dsym (struct objfile *main_objfile,
       if (in_offsets)
 	{
 	 /* When we have a main_objfile that is in the shared cache and is
-	     also memory based, we need to figure out the differences of each
-	     section compared to the mach segment map that is found in modern
-	     dSYM files. dSYM files contain all of the segment load commands
-	     from the original executable and we can figure out the offsets
-	     or addresses accordingly.  */
+	  * also memory based, we need to figure out the differences of each
+	  * section compared to the mach segment map that is found in modern
+	  * dSYM files. dSYM files contain all of the segment load commands
+	  * from the original executable and we can figure out the offsets
+	  * or addresses accordingly.  */
 	  struct bfd_section *sym_sect = NULL;
 	  struct bfd_section *exe_sect = NULL;
 	  bfd *exe_bfd = main_objfile->obfd;
@@ -899,23 +899,23 @@ macho_calculate_offsets_for_dsym (struct objfile *main_objfile,
 	    xmalloc (SIZEOF_N_SECTION_OFFSETS (in_num_offsets));
 	  memset (*sym_offsets, 0,
 		  SIZEOF_N_SECTION_OFFSETS (in_num_offsets));
-	  
+
 	  i = 0;
 	  exe_sect = exe_bfd->sections;
 	  sym_sect = sym_bfd->sections;
-	  for (i = 0; 
-	       exe_sect != NULL && i < in_num_offsets; 
+	  for (i = 0;
+	       exe_sect != NULL && i < in_num_offsets;
 	       exe_sect = exe_sect->next, i++)
 	    {
 	      if (i > 0 && sym_sect != NULL)
 		sym_sect = sym_sect->next;
-  
+
 	      struct bfd_section *sect = NULL;
 	      if (sym_sect && strcmp (exe_sect->name, sym_sect->name) == 0)
 		sect = sym_sect;
 	      else
 		{
-		  /* Sections were out of order, lets search linearly for the
+		  /* Sections were out of order, let us search linearly for the
 		     section with the same name.  */
 		  for (sect = sym_bfd->sections; sect != NULL; sect = sect->next)
 		    {
@@ -923,7 +923,7 @@ macho_calculate_offsets_for_dsym (struct objfile *main_objfile,
 			break;
 		    }
 		}
-		
+
 	      (*sym_offsets)->offsets[i] = ANOFFSET (in_offsets, i);
 	      if (sect)
 		(*sym_offsets)->offsets[i] += exe_sect->vma - sect->vma;
@@ -932,8 +932,8 @@ macho_calculate_offsets_for_dsym (struct objfile *main_objfile,
 	  return;
 	}
     }
-    
-    
+
+
   CORE_ADDR dsym_offset = macho_calculate_dsym_offset (main_objfile->obfd,
 						       sym_bfd);
   if (in_offsets)
@@ -942,16 +942,16 @@ macho_calculate_offsets_for_dsym (struct objfile *main_objfile,
 	xmalloc (SIZEOF_N_SECTION_OFFSETS (in_num_offsets));
       for (i = 0; i < in_num_offsets; i++)
 	(*sym_offsets)->offsets[i] = ANOFFSET (in_offsets, i) + dsym_offset;
-      
+
       *sym_num_offsets = in_num_offsets;
     }
   else if (addrs)
     {
       /* This is kind of gross, but this is how add-symbol-file passes
-	 the addr down if the user just supplied a single address.  But they
-         didn't really intend for us JUST to offset the TEXT_SEGMENT, then
-         meant this is a constant slide.  So do that:  */
-      if (addrs->num_sections == 1 
+       * the addr down if the user just supplied a single address.  But they
+       * did NOT really intend for us JUST to offset the TEXT_SEGMENT, then
+       * meant this is a constant slide.  So do that:  */
+      if (addrs->num_sections == 1
 	  && strcmp (addrs->other[0].name, TEXT_SEGMENT_NAME) == 0)
 	{
 	  CORE_ADDR adjustment = dsym_offset;
@@ -964,29 +964,29 @@ macho_calculate_offsets_for_dsym (struct objfile *main_objfile,
 	  *sym_num_offsets = bfd_count_sections (sym_bfd);
 	  *sym_offsets = (struct section_offsets *)
 	    xmalloc (SIZEOF_N_SECTION_OFFSETS (*sym_num_offsets));
-	  for (i = 0; i < *sym_num_offsets; i++) 
+	  for (i = 0; i < *sym_num_offsets; i++)
 	    {
-	      (*sym_offsets)->offsets[i] = dsym_offset + addrs->other[0].addr 
+	      (*sym_offsets)->offsets[i] = dsym_offset + addrs->other[0].addr
 		+ adjustment;
 	    }
 	}
       else
 	{
 	  /* This branch assumes the addrs are in the same order as
-	     the offsets for this objfile.  I actually don't think
+	     the offsets for this objfile. I actually do NOT think
 	     that is right, since these addrs are generally right for
 	     the main objfile, and the dsym objfile has different
-	     sections.  
+	     sections.
 
 	     This works by because we usually only have a rigid slide,
 	     and we only care about the offsets for the text segment
 	     anyway (using that for baseaddr.)
 
-	     It also doesn't properly handle the
-	     !addrs->addrs_are_offsets case properly.  Then we should
+	     It also does NOT properly handle the
+	     !addrs->addrs_are_offsets case properly. Then we should
 	     look up the load address of each section and subtract
-	     that from the section addr.  
-	     I'm not going to fix this right now. */
+	     that from the section addr.
+	     I am not going to fix this right now. */
 
 	  *sym_offsets = (struct section_offsets *)
 	  xmalloc (SIZEOF_N_SECTION_OFFSETS (addrs->num_sections));
@@ -997,16 +997,16 @@ macho_calculate_offsets_for_dsym (struct objfile *main_objfile,
 		(*sym_offsets)->offsets[i] += addrs->other[0].addr;
               else
                 {
-                  /* This clause will be hit when we're doing add-kext -
+                  /* This clause will be hit when we are doing add-kext -
                      the kernel provides us the actual load addresses of
-                     the sections (so ADDRS is filled in) instead of 
+                     the sections (so ADDRS is filled in) instead of
                      offsets (so ADDRS_IS_OFFSETS is 0).  */
                   if (addrs->other[i].name)
                     {
                       asection *exe_sect;
-                      exe_sect = bfd_get_section_by_name (main_objfile->obfd, 
+                      exe_sect = bfd_get_section_by_name (main_objfile->obfd,
                                  addrs->other[i].name);
-                      (*sym_offsets)->offsets[i] = addrs->other[i].addr - 
+                      (*sym_offsets)->offsets[i] = addrs->other[i].addr -
                                                    exe_sect->vma;
                     }
                 }
@@ -1020,7 +1020,7 @@ macho_calculate_offsets_for_dsym (struct objfile *main_objfile,
 	xmalloc (SIZEOF_N_SECTION_OFFSETS (in_num_offsets));
       for (i = 0; i < in_num_offsets; i++)
 	(*sym_offsets)->offsets[i] = dsym_offset;
-      
+
       *sym_num_offsets = in_num_offsets;
     }
   else
@@ -1053,7 +1053,7 @@ Set if GDB should use mmap() to read STABS info."), _("\
 Show if GDB should use mmap() to read STABS info."), NULL,
 			   NULL, NULL,
 			   &setlist, &showlist);
-#endif
+#endif /* HAVE_MMAP */
 
   add_setshow_boolean_cmd ("use-eh-frame-info", class_obscure,
 			   &use_eh_frames_info, _("\
@@ -1069,3 +1069,5 @@ Show if GDB should process indirect function stub symbols from object files."), 
 			   NULL, NULL,
 			   &setlist, &showlist);
 }
+
+/* EOF */

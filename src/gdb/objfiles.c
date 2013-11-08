@@ -53,10 +53,10 @@
 #include "db-access-functions.h"
 
 #ifdef MACOSX_DYLD
-#include "inferior.h"
-#include "macosx-nat-dyld.h"
-#include "mach-o.h"
-#endif
+# include "inferior.h"
+# include "macosx-nat-dyld.h"
+# include "mach-o.h"
+#endif /* MACOSX_DYLD */
 
 /* Prototypes for local functions */
 
@@ -83,12 +83,12 @@ extern struct cmd_list_element *shliblist;
    See declarations in objfile.h for more info. */
 
 #ifndef TEXT_SECTION_NAME
-#define TEXT_SECTION_NAME ".text"
-#endif
+# define TEXT_SECTION_NAME ".text"
+#endif /* !TEXT_SECTION_NAME */
 
 #ifndef DATA_SECTION_NAME
-#define DATA_SECTION_NAME ".data"
-#endif
+# define DATA_SECTION_NAME ".data"
+#endif /* !DATA_SECTION_NAME */
 
 struct objfile *object_files;	/* Linked list of all objfiles */
 struct objfile *current_objfile;	/* For symbol file being read in */
@@ -100,24 +100,24 @@ struct objfile *rt_common_objfile;	/* For runtime common symbols */
    bfd_map_over_sections; we cast it back to its proper type.  */
 
 #ifndef TARGET_KEEP_SECTION
-#define TARGET_KEEP_SECTION(ASECT)      0
-#endif
+# define TARGET_KEEP_SECTION(ASECT)      0
+#endif /* !TARGET_KEEP_SECTION */
 
-/* APPLE LOCAL - with the advent of ZeroLink, it is not uncommon for Mac OS X 
-   applications to consist of 500+ shared libraries.  At that point searching
+/* APPLE LOCAL - with the advent of ZeroLink, it is not uncommon for Mac OS X
+   applications to consist of 500+ shared libraries. At that point searching
    linearly for address->obj_section becomes very costly, and it is a common
-   operation.  So we maintain an ordered array of obj_sections, and use that
-   to do a binary search for the matching section. 
+   operation. So we maintain an ordered array of obj_sections, and use that
+   to do a binary search for the matching section.
 
    N.B. We could just use an array of pointers to the obj_section
    instead of this struct, but this way the malloc'ed array contains
    all the elements we need to do the pc->obj_section lookup, so we
    can do the search only touching a couple of pages of memory, rather
-   than wandering all over the heap.  
+   than wandering all over the heap.
 
    FIXME: We really should merge this array with the to_sections array in
-   the target, but that doesn't have back-pointers to the obj_section.  I
-   am not sure how hard it would be to get that working.  This is simpler 
+   the target, but that does NOT have back-pointers to the obj_section. I
+   am not sure how hard it would be to get that working.  This is simpler
    for now.  */
 
 struct ordered_obj_section
@@ -128,7 +128,7 @@ struct ordered_obj_section
   CORE_ADDR endaddr;
 };
 
-/* This is the table of ordered_sections.  It is malloc'ed to
+/* This is the table of ordered_sections. It is malloc'ed to
    ORDERED_SECTIONS_CHUNK_SIZE originally, and then realloc'ed if we
    get more sections. */
 
@@ -190,7 +190,7 @@ add_to_objfile_sections (struct bfd *abfd, struct bfd_section *asect,
 /* APPLE LOCAL: The macosx code builds a set of section offsets
    when it is doing the dyld read.  It needs to only include in those
    offsets the bfd sections that are actually going into the objfile,
-   or the section won't be laid out correctly.  So I extracted the 
+   or the section will NOT be laid out correctly. So I extracted the
    code that does the test in build_objfile_section_table, so we can
    use it in both places.  */
 
@@ -198,12 +198,12 @@ int
 objfile_keeps_section (bfd *abfd, asection *asect)
 {
   flagword aflag;
-  
+
   aflag = bfd_get_section_flags (abfd, asect);
-  
+
   if (!(aflag & SEC_ALLOC) && !(TARGET_KEEP_SECTION (asect)))
     return 0;
-  
+
   if (0 == bfd_section_size (abfd, asect))
     return 0;
   return 1;
@@ -223,7 +223,7 @@ objfile_keeps_section (bfd *abfd, asection *asect)
    are initialized to zero.
 
    Also note that if anything else writes to the psymbol obstack while
-   we are building the table, we're pretty much hosed. */
+   we are building the table, we are pretty much hosed. */
 
 int
 build_objfile_section_table (struct objfile *objfile)
@@ -231,12 +231,12 @@ build_objfile_section_table (struct objfile *objfile)
   asection *asect;
   unsigned int i = 0;
   /* APPLE LOCAL: For separate debug objfiles, we need to use the main
-     symfile's bfd sections to build the section table.  We want to be
+     symfile's bfd sections to build the section table. We want to be
      able to ask the debug_objfile what the SECT_OFFSET_TEXT is, and
-     the dSYM sections don't know that...  So we would like to do something
-     like the following.  BUT... unfortunately, when we get called in
-     here for the dSYM, the backlinks haven't been set up yet.  So we
-     can't get our hands on the main objfile, and this is a no-op.  FIXME  */
+     the dSYM sections do NOT know that...  So we would like to do something
+     like the following. BUT... unfortunately, when we get called in
+     here for the dSYM, the backlinks have NOT been set up yet. So we
+     can't get our hands on the main objfile, and this is a no-op. FIXME  */
   bfd *abfd;
   if (objfile->separate_debug_objfile_backlink == NULL)
     abfd = objfile->obfd;
@@ -285,66 +285,66 @@ build_objfile_section_table (struct objfile *objfile)
 
 /* NOTE: carlton/2003-02-04: This function is called with args NULL, 0
    by jv-lang.c, to create an artificial objfile used to hold
-   information about dynamically-loaded Java classes.  Unfortunately,
-   that branch of this function doesn't get tested very frequently, so
-   it's prone to breakage.  (E.g. at one time the name was set to NULL
+   information about dynamically-loaded Java classes. Unfortunately,
+   that branch of this function does NOT get tested very frequently, so
+   it is prone to breakage. (E.g. at one time the name was set to NULL
    in that situation, which broke a loop over all names in the dynamic
-   library loader.)  If you change this function, please try to leave
+   library loader.) If you change this function, please try to leave
    things in a consistent state even if abfd is NULL.  */
 
 /* APPLE LOCAL: I added a version that allows you to replace the
-   contents of an objfile that's already been allocated.  We need this
-   because when you change the symbol load level, it's best not to
-   delete the objfile you were looking at and replace.  And the reason
-   for that's a curious reason - when you raise the symbol load level
-   on an objfile, we need to fix it's commpage objfile at the same
+   contents of an objfile that's already been allocated. We need this
+   because when you change the symbol load level, it is best not to
+   delete the objfile you were looking at and replace. And the reason
+   for that is a curious reason - when you raise the symbol load level
+   on an objfile, we need to fix its commpage objfile at the same
    time, but taking two objfiles out of the list at the same time
-   makes ALL_OBJFILES_SAFE no longer safe.  So it's better to edit the
+   makes ALL_OBJFILES_SAFE no longer safe. So it is better to edit the
    objfiles in place.  */
 
 struct objfile *
 allocate_objfile_internal (struct objfile *objfile,
-			   bfd *abfd, int flags, 
+			   bfd *abfd, int flags,
 			   int symflags, CORE_ADDR mapaddr,
 			   const char *prefix)
 {
-  
+
   objfile->symflags = symflags;
   objfile->flags |= flags;
-  
+
   /* Update the per-objfile information that comes from the bfd, ensuring
      that any data that is reference is saved in the per-objfile data
      region. */
-  
+
   objfile->obfd = abfd;
   if (objfile->name)
     objfile->name = xstrdup (objfile->name);
   else
     objfile->name = xstrdup (bfd_get_filename (abfd));
   objfile->mtime = bfd_get_mtime (abfd);
-  
+
   if (build_objfile_section_table (objfile))
-    error ("Can't find the file sections in `%s': %s",
+    error ("Cannot find the file sections in `%s': %s",
 	   objfile->name, bfd_errmsg (bfd_get_error ()));
-  
+
   /* FIXME: At some point this should be a host specific callout.
      Even though this is a Mac OS X specific copy of allocate_objfile,
      we should still fix this when we fix that...  */
   /* Added /usr/lib/system to the equivalence libraries list.  */
-  
+
   if (objfile->name != NULL &&
       (strstr (objfile->name, "libSystem") != NULL
        || strstr (objfile->name, "/usr/lib/system") == objfile->name))
     objfile->check_for_equivalence = 1;
   else
     objfile->check_for_equivalence = 0;
-  
+
   objfile->equivalence_table = NULL;
-  
+
   objfile->syms_only_objfile = 0;
 
   objfile->not_loaded_kext_filename = NULL;
-  
+
   return (objfile);
 }
 
@@ -355,7 +355,7 @@ allocate_objfile (bfd *abfd, int flags, int symflags, CORE_ADDR mapaddr,
   struct objfile *objfile = NULL;
 
   objfile = create_objfile (abfd);
-  objfile = allocate_objfile_internal (objfile, abfd, flags, 
+  objfile = allocate_objfile_internal (objfile, abfd, flags,
 				    symflags, mapaddr, prefix);
   link_objfile (objfile);
   return objfile;
@@ -363,12 +363,12 @@ allocate_objfile (bfd *abfd, int flags, int symflags, CORE_ADDR mapaddr,
 
 struct objfile *
 allocate_objfile_using_objfile (struct objfile *objfile,
-			       bfd *abfd, int flags, 
+			       bfd *abfd, int flags,
 			       int symflags, CORE_ADDR mapaddr,
 			       const char *prefix)
 {
   create_objfile_using_objfile (objfile, abfd);
-  return allocate_objfile_internal (objfile, abfd, flags, 
+  return allocate_objfile_internal (objfile, abfd, flags,
 				    symflags, mapaddr, prefix);
 }
 
@@ -413,17 +413,17 @@ create_objfile_using_objfile (struct objfile *objfile, bfd *abfd)
 }
 
 /* This is the quicksort compare routine for OBJ_SECTION_WITH_INDEX
-   objects.  It sorts by section start address in decreasing 
+   objects.  It sorts by section start address in decreasing
    order.  */
 
 static int
-backward_section_compare (const void *left_ptr, 
+backward_section_compare (const void *left_ptr,
 		 const void *right_ptr)
 {
-  
-  struct obj_section_with_index *left 
+
+  struct obj_section_with_index *left
     = (struct obj_section_with_index *) left_ptr;
-  struct obj_section_with_index * right 
+  struct obj_section_with_index * right
     = (struct obj_section_with_index *) right_ptr;
 
   if (left->section->addr > right->section->addr)
@@ -437,7 +437,7 @@ backward_section_compare (const void *left_ptr,
 /* Simple integer compare for quicksort */
 
 static int
-forward_int_compare (const void *left_ptr, 
+forward_int_compare (const void *left_ptr,
 		 const void *right_ptr)
 {
   int *left = (int *) left_ptr;
@@ -469,14 +469,14 @@ number_of_dots (const char *s)
 
 /* Delete all the obj_sections in OBJFILE from the ordered_sections
    global list.  N.B. this routine uses the addresses in the sections
-   in the objfile to find the entries in the ordered_sections list, 
+   in the objfile to find the entries in the ordered_sections list,
    so if you are going to relocate the obj_sections in an objfile,
-   call this BEFORE you relocate, then relocate, then call 
+   call this BEFORE you relocate, then relocate, then call
    objfile_add_to_ordered_sections.  */
 
 #define STATIC_DELETE_LIST_SIZE 256
 
-void 
+void
 objfile_delete_from_ordered_sections (struct objfile *objfile)
 {
   int i;
@@ -484,21 +484,21 @@ objfile_delete_from_ordered_sections (struct objfile *objfile)
   int delete_list_size;
   int static_delete_list[STATIC_DELETE_LIST_SIZE];
   int *delete_list = static_delete_list;
-  
+
   struct obj_section *s;
-  
-  /* APPLE LOCAL: we need to check if this is a separate debug files and try to 
+
+  /* APPLE LOCAL: we need to check if this is a separate debug files and try to
      remove the sections to the ordered list if so. The backlink will not be
-     setup when the separate debug objfile is in the process of being created, 
+     setup when the separate debug objfile is in the process of being created,
      so a flag was added to make sure we can tell.  */
-  if (objfile->separate_debug_objfile_backlink || 
+  if (objfile->separate_debug_objfile_backlink ||
       objfile->flags & OBJF_SEPARATE_DEBUG_FILE)
-	return;	
+	return;
 
   /* Do deletion of the sections by building up an array of
      "to be removed" indices, and then block compact the array using
      these indices.  */
-  
+
   delete_list_size = objfile->sections_end - objfile->sections;
   if (delete_list_size > STATIC_DELETE_LIST_SIZE)
     delete_list = (int *) xmalloc (delete_list_size * sizeof (int));
@@ -533,7 +533,7 @@ objfile_delete_from_ordered_sections (struct objfile *objfile)
   /* Stick a boundary on the end of the delete list - it makes the block
      shuffle algorithm easier.  I also have to set the boundary to one
      past the list end because it is supposed to be the next element
-     deleted, and I don't want to delete the last element.  */
+     deleted, and I do NOT want to delete the last element.  */
 
   delete_list[ndeleted] = num_ordered_sections;
 
@@ -550,7 +550,7 @@ objfile_delete_from_ordered_sections (struct objfile *objfile)
       bcopy (src, dest, len);
     }
 
-  
+
   num_ordered_sections -= ndeleted;
   if (delete_list != static_delete_list)
     xfree (delete_list);
@@ -576,7 +576,7 @@ get_insert_index_in_ordered_sections (struct obj_section *section)
 
 	  if (ordered_sections[mid].addr < section->addr)
 	    {
-	      if ((mid == num_ordered_sections - 1) 
+	      if ((mid == num_ordered_sections - 1)
 		  || (ordered_sections[mid + 1].addr >= section->addr))
 		{
 		  insert = mid;
@@ -618,14 +618,14 @@ objfile_add_to_ordered_sections (struct objfile *objfile)
   struct obj_section_with_index *insert_list = static_insert_list;
   int insert_list_size;
 
-  /* APPLE LOCAL: we need to check if this is a separate debug files and not 
+  /* APPLE LOCAL: we need to check if this is a separate debug files and not
      add the sections to the ordered list if so. The backlink will not be setup
-     when the separate debug objfile is in the process of being created, so a 
+     when the separate debug objfile is in the process of being created, so a
      flag was added to make sure it never gets added.  */
-  if (objfile->separate_debug_objfile_backlink || 
+  if (objfile->separate_debug_objfile_backlink ||
       objfile->flags & OBJF_SEPARATE_DEBUG_FILE)
 	return;
-	
+
   CHECK_FATAL (objfile != NULL);
 
   /* First find the index for insertion of all the sections in
@@ -635,7 +635,7 @@ objfile_add_to_ordered_sections (struct objfile *objfile)
 
   insert_list_size = objfile->sections_end - objfile->sections;
   if (insert_list_size > STATIC_INSERT_LIST_SIZE)
-    insert_list = (struct obj_section_with_index *) 
+    insert_list = (struct obj_section_with_index *)
       xmalloc (insert_list_size * sizeof (struct obj_section_with_index));
 
   total = 0;
@@ -653,7 +653,7 @@ objfile_add_to_ordered_sections (struct objfile *objfile)
       total++;
     }
 
-  qsort (insert_list, total, sizeof (struct obj_section_with_index), 
+  qsort (insert_list, total, sizeof (struct obj_section_with_index),
 	 backward_section_compare);
 
   /* Grow the array if needed */
@@ -662,20 +662,20 @@ objfile_add_to_ordered_sections (struct objfile *objfile)
     {
       max_num_ordered_sections = ORDERED_SECTIONS_CHUNK_SIZE;
       ordered_sections = (struct ordered_obj_section *)
-	xmalloc (max_num_ordered_sections 
+	xmalloc (max_num_ordered_sections
 		 * sizeof (struct ordered_obj_section));
     }
   else if (num_ordered_sections + total >= max_num_ordered_sections)
     {
-      /* TOTAL should be small, but on the off chance that it is not, 
+      /* TOTAL should be small, but on the off chance that it is not,
 	 just add it to the allocation as well.  */
       max_num_ordered_sections += ORDERED_SECTIONS_CHUNK_SIZE + total;
-      ordered_sections = (struct ordered_obj_section *) 
-	xrealloc (ordered_sections, 
-		  max_num_ordered_sections 
+      ordered_sections = (struct ordered_obj_section *)
+	xrealloc (ordered_sections,
+		  max_num_ordered_sections
 		  * sizeof (struct ordered_obj_section));
     }
-  
+
   num_left = total;
 
   for (i = 0; i < total; i++)
@@ -728,25 +728,25 @@ find_in_ordered_sections_index (CORE_ADDR addr, struct bfd_section *bfd_section)
   if (num_ordered_sections == 0)
     return -1;
 
-  do 
+  do
     {
       int mid = (top + bot) / 2;
 
-      obj_sect_ptr = &ordered_sections[mid]; 
+      obj_sect_ptr = &ordered_sections[mid];
       if (obj_sect_ptr->addr <= addr)
 	{
 	  if (addr < obj_sect_ptr->endaddr)
 	    {
-	      /* It is possible that the sections overlap.  This will
-		 happen in two cases that I know of.  One is when you
-		 have not run the app yet, so that a bunch of the
-		 sections are still mapped at 0, and haven't been.
-		 relocated yet.  The other is because on MacOS X we (I
-		 think errantly) make sections both for the segment
-		 command, and for the sections it contains.  In the former
-	         case, this becomes a linear search just like the original
-	         algorithm.  In the latter, we should find it in the
-	         near neighborhood pretty soon.  */
+	      /* It is possible that the sections overlap. This will
+	       * happen in two cases that I know of. One is when you
+	       * have not run the app yet, so that a bunch of the
+	       * sections are still mapped at 0, and have NOT been.
+	       * relocated yet. The other is because on MacOS X we (I
+	       * think errantly) make sections both for the segment
+	       * command, and for the sections it contains. In the former
+	       * case, this becomes a linear search just like the original
+	       * algorithm. In the latter, we should find it in the
+	       * near neighborhood pretty soon.  */
 
 	      if ((bfd_section == NULL )
 		  || (bfd_section == obj_sect_ptr->the_bfd_section))
@@ -774,8 +774,8 @@ find_in_ordered_sections_index (CORE_ADDR addr, struct bfd_section *bfd_section)
 			return pos;
 		    }
 
-		  /* If we don't find one that matches BOTH the address and the 
-		     section, then return -1.  Callers should be prepared to either
+		  /* If we do NOT find one that matches BOTH the address and the
+		     section, then return -1. Callers should be prepared to either
 		     fail in this case, or to look more broadly.  */
 		  return -1;
 		}
@@ -788,7 +788,7 @@ find_in_ordered_sections_index (CORE_ADDR addr, struct bfd_section *bfd_section)
 	}
     } while (bot <= top);
 
-  /* If we got here, we didn't find anything, so return -1. */
+  /* If we got here, we did NOT find anything, so return -1. */
   return -1;
 }
 
@@ -800,7 +800,7 @@ struct obj_section *
 find_pc_sect_in_ordered_sections (CORE_ADDR addr, struct bfd_section *bfd_section)
 {
   int index = find_in_ordered_sections_index (addr, bfd_section);
-  
+
   if (index == -1)
     return NULL;
   else
@@ -817,7 +817,7 @@ init_entry_point_info (struct objfile *objfile)
 
   if (bfd_get_file_flags (objfile->obfd) & EXEC_P)
     {
-      /* Executable file -- record its entry point so we'll recognize
+      /* Executable file -- record its entry point so we will recognize
          the startup file because it contains the entry point.  */
       objfile->ei.entry_point = bfd_get_start_address (objfile->obfd);
     }
@@ -857,7 +857,7 @@ terminate_minimal_symbol_table (struct objfile *objfile)
       = &objfile->msymbols[objfile->minimal_symbol_count];
 
     memset (m, 0, sizeof (*m));
-    /* Don't rely on these enumeration values being 0's.  */
+    /* Do NOT rely on these enumeration values being 0's.  */
     MSYMBOL_TYPE (m) = mst_unknown;
     SYMBOL_INIT_LANGUAGE_SPECIFIC (m, language_unknown);
   }
@@ -873,7 +873,7 @@ put_objfile_before (struct objfile *objfile, struct objfile *before_this)
   struct objfile **objp;
 
   unlink_objfile (objfile);
-  
+
   for (objp = &object_files; *objp != NULL; objp = &((*objp)->next))
     {
       if (*objp == before_this)
@@ -883,7 +883,7 @@ put_objfile_before (struct objfile *objfile, struct objfile *before_this)
 	  return;
 	}
     }
-  
+
   internal_error (__FILE__, __LINE__,
 		  _("put_objfile_before: before objfile not in list"));
 }
@@ -988,9 +988,9 @@ free_objfile_internal (struct objfile *objfile)
   varobj_delete_objfiles_vars (objfile);
 
   /* APPLE LOCAL: Remove all the obj_sections in this objfile from the
-     ordered_sections list.  Do this before deleting the bfd, since
+     ordered_sections list. Do this before deleting the bfd, since
      we need to use the bfd_sections to do it.  */
-  
+
   objfile_delete_from_ordered_sections (objfile);
 
   /* We always close the bfd. */
@@ -999,7 +999,7 @@ free_objfile_internal (struct objfile *objfile)
     {
       char *name = bfd_get_filename (objfile->obfd);
       /* APPLE LOCAL: we have to remove the bfd from the
-	 target's to_sections before we close it.  */
+       * target's to_sections before we close it.  */
 
       remove_target_sections (objfile->obfd);
 
@@ -1065,8 +1065,8 @@ free_objfile_internal (struct objfile *objfile)
     inlined_subroutine_free_objfile_call_sites (objfile->inlined_call_sites);
   /* APPLE LOCAL end subroutine inlining  */
 
-  /* Can't tell whether one of the sections in this objfile is
-     one of the one's we've cached over in symfile.c, so let's clear
+  /* Cannot tell whether one of the sections in this objfile is
+     one of the one's we have cached over in symfile.c, so let us clear
      it here to be safe.  */
   symtab_clear_cached_lookup_values ();
 
@@ -1076,7 +1076,7 @@ free_objfile_internal (struct objfile *objfile)
    associated with OBJFILE, but keeps all the links in
    place, so you can edit an objfile (for instance raise
    its load level) IN PLACE in the objfile chain.  Note,
-   if you use clear_objfile, and the objfile has a 
+   if you use clear_objfile, and the objfile has a
    separate_debug_objfile, you need to reconstitute it in
    place as well.  To do this, use allocate_objfile_with_objfile,
    and then read in the new objfiles.  */
@@ -1093,9 +1093,9 @@ clear_objfile (struct objfile *objfile)
       clear_objfile (objfile->separate_debug_objfile);
     }
 
-  free_objfile_internal (objfile);  
+  free_objfile_internal (objfile);
   /* Since we are going to reuse this, make sure we clean it
-     out, but don't nuke the various links, since clear_objfile
+     out, but do NOT nuke the various links, since clear_objfile
      is specifically for editing in place.  */
 
   next_tmp = objfile->next;
@@ -1108,7 +1108,7 @@ clear_objfile (struct objfile *objfile)
 }
 
 /* Destroy an objfile and all the symtabs and psymtabs under it.  Note
-   that as much as possible is allocated on the objfile_obstack 
+   that as much as possible is allocated on the objfile_obstack
    so that the memory can be efficiently freed.
 
    Things which we do NOT free because they are not in malloc'd memory
@@ -1128,7 +1128,7 @@ void
 free_objfile (struct objfile *objfile)
 {
   /* APPLE LOCAL: Give a chance for any breakpoints to mark themselves as
-     pending with the name of the objfile kept around for accurate 
+     pending with the name of the objfile kept around for accurate
      re-setting. */
   tell_breakpoints_objfile_removed (objfile);
 
@@ -1141,12 +1141,12 @@ free_objfile (struct objfile *objfile)
   if (objfile->separate_debug_objfile_backlink)
     {
       /* We freed the separate debug file, make sure the base objfile
-	 doesn't reference it.  */
+       * does NOT reference it.  */
       objfile->separate_debug_objfile_backlink->separate_debug_objfile = NULL;
     }
-  
+
   free_objfile_internal (objfile);
-  
+
   /* Remove it from the chain of all objfiles. */
 
   unlink_objfile (objfile);
@@ -1188,7 +1188,7 @@ void
 objfile_relocate (struct objfile *objfile, struct section_offsets *new_offsets)
 {
   struct section_offsets *delta =
-    ((struct section_offsets *) 
+    ((struct section_offsets *)
      alloca (SIZEOF_N_SECTION_OFFSETS (objfile->num_sections)));
 
   {
@@ -1204,7 +1204,7 @@ objfile_relocate (struct objfile *objfile, struct section_offsets *new_offsets)
     if (!something_changed)
       return;
   }
-  
+
   breakpoints_relocate (objfile, delta);
   /* APPLE LOCAL begin subroutine inlining  */
   /* Update all the inlined subroutine data for this objfile.  */
@@ -1247,13 +1247,13 @@ objfile_relocate (struct objfile *objfile, struct section_offsets *new_offsets)
 		num_discontinuities++;
 		discontinuity_index = i + 1;
 	      }
-	  
+
 	  if (num_discontinuities == 1)
 	    {
 	      struct linetable *new_linetable = NULL;
 	      size_t size = ((l->nitems - 1) * sizeof (struct linetable_entry))
 		+ sizeof (struct linetable);
-	      
+
 	      new_linetable = (struct linetable *) xmalloc (size);
 	      memcpy (new_linetable, l, sizeof (struct linetable));
 	      memcpy (new_linetable->item,
@@ -1272,8 +1272,8 @@ objfile_relocate (struct objfile *objfile, struct section_offsets *new_offsets)
 	      qsort (l->item, l->nitems, sizeof (struct linetable_entry), compare_line_numbers);
 	    }
 	}
-      
-      /* Don't relocate a shared blockvector more than once.  */
+
+      /* Do NOT relocate a shared blockvector more than once.  */
       if (!s->primary)
 	continue;
 
@@ -1293,9 +1293,9 @@ objfile_relocate (struct objfile *objfile, struct section_offsets *new_offsets)
 	      int j;
 	      for (j = 0; j < BLOCK_RANGES (b)->nelts; j++)
 		{
-		  BLOCK_RANGE_START (b, j) +=  ANOFFSET (delta, 
+		  BLOCK_RANGE_START (b, j) +=  ANOFFSET (delta,
 							 s->block_line_section);
-		  BLOCK_RANGE_END (b, j) +=  ANOFFSET (delta, 
+		  BLOCK_RANGE_END (b, j) +=  ANOFFSET (delta,
 						       s->block_line_section);
 		}
 	    }
@@ -1307,8 +1307,8 @@ objfile_relocate (struct objfile *objfile, struct section_offsets *new_offsets)
 
 	      /* The RS6000 code from which this was taken skipped
 	         any symbols in STRUCT_DOMAIN or UNDEF_DOMAIN.
-	         But I'm leaving out that test, on the theory that
-	         they can't possibly pass the tests below.  */
+	         But I am leaving out that test, on the theory that
+	         they cannot possibly pass the tests below.  */
 	      if ((SYMBOL_CLASS (sym) == LOC_LABEL
 		   || SYMBOL_CLASS (sym) == LOC_STATIC
 		   || SYMBOL_CLASS (sym) == LOC_INDIRECT)
@@ -1389,7 +1389,7 @@ objfile_relocate (struct objfile *objfile, struct section_offsets *new_offsets)
   DBX_TEXT_ADDR (objfile) += ANOFFSET (delta, SECT_OFF_TEXT (objfile));
   if (DBX_COALESCED_TEXT_ADDR (objfile) != 0)
     {
-      DBX_COALESCED_TEXT_ADDR (objfile) += ANOFFSET (delta, 
+      DBX_COALESCED_TEXT_ADDR (objfile) += ANOFFSET (delta,
                                                      SECT_OFF_TEXT (objfile));
     }
 
@@ -1456,7 +1456,7 @@ have_full_symbols (void)
 
 
 /* This operations deletes all objfile entries that represent solibs that
-   weren't explicitly loaded by the user, via e.g., the add-symbol-file
+   were NOT explicitly loaded by the user, via e.g., the add-symbol-file
    command.
  */
 void
@@ -1526,10 +1526,10 @@ find_pc_sect_section (CORE_ADDR pc, struct bfd_section *section)
     }
   /* APPLE LOCAL end cache lookup values for improved performance  */
   /* APPLE LOCAL end search in ordered sections */
-  
+
   ALL_OBJSECTIONS (objfile, s)
     if (objfile->separate_debug_objfile_backlink == NULL
-        && (section == 0 || section == s->the_bfd_section) 
+        && (section == 0 || section == s->the_bfd_section)
 	&& s->addr <= pc && pc < s->endaddr)
       /* APPLE LOCAL begin cache lookup values for improved performance  */
       {
@@ -1543,7 +1543,7 @@ find_pc_sect_section (CORE_ADDR pc, struct bfd_section *section)
   return (NULL);
 }
 
-/* Returns a section whose range includes PC or NULL if none found. 
+/* Returns a section whose range includes PC or NULL if none found.
    Backward compatibility, no section.  */
 
 struct obj_section *
@@ -1553,7 +1553,7 @@ find_pc_section (CORE_ADDR pc)
 }
 
 
-/* In SVR4, we recognize a trampoline by it's section name. 
+/* In SVR4, we recognize a trampoline by its section name.
    That is, if the pc is in a section named ".plt" then we are in
    a trampoline.  */
 
@@ -1619,12 +1619,12 @@ objfile_add_to_restrict_list (struct objfile *objfile)
 {
   struct objfile_list *new_objfile;
 
-  /* APPLE LOCAL: we need to check if this is a separate debug file and not 
-     add it, but add the original objfile file to the restrict list as the 
+  /* APPLE LOCAL: we need to check if this is a separate debug file and not
+     add it, but add the original objfile file to the restrict list as the
      objfile_get_first() and objfile_get_next() functions will correctly always
-     return the separate debug file first, followed by the original executable 
+     return the separate debug file first, followed by the original executable
      file.  */
-  if (objfile->separate_debug_objfile_backlink || 
+  if (objfile->separate_debug_objfile_backlink ||
       objfile->flags & OBJF_SEPARATE_DEBUG_FILE)
     {
       /* We need to check for the backlink as it may be NULL if we are in the
@@ -1634,10 +1634,10 @@ objfile_add_to_restrict_list (struct objfile *objfile)
       return;
     }
 
-  
-  /* APPLE LOCAL: First check to make sure the objfile isn't already in 
+
+  /* APPLE LOCAL: First check to make sure the objfile is NOT already in
      the list.  */
-  for (new_objfile = objfile_list; 
+  for (new_objfile = objfile_list;
        new_objfile != NULL;
        new_objfile = new_objfile->next)
     {
@@ -1659,7 +1659,7 @@ objfile_remove_from_restrict_list (struct objfile *objfile)
 {
   struct objfile_list **objpp;
   struct objfile_list *i;
-  
+
   for (objpp = &objfile_list; *objpp != NULL; objpp = &((*objpp)->next))
     {
       if ((*objpp)->objfile == objfile)
@@ -1726,7 +1726,7 @@ make_cleanup_restrict_to_objfile (struct objfile *objfile)
 
 /* APPLE LOCAL: Find an objfile called NAME.
    If EXACT, NAME must be a fully qualified, realpathed filename.
-   Else we're looking for a end-of-string match, e.g.
+   Else we are looking for a end-of-string match, e.g.
     Jabber.FireBundle/Contents/MacOS/Jabber
    or just "Jabber".  */
 
@@ -1747,9 +1747,10 @@ find_objfile_by_name (const char *name, int exact)
          return o;
     }
 
-  // In the case of a core file or objfile read from memory the name
-  // of the objfile will be in the form of 
-  // [memory object "/usr/lib/libbz2.1.0.dylib" at 0x9a45b000]
+  /* In the case of a core file or objfile read from memory the name
+   * of the objfile will be in the form of
+   * [memory object "/usr/lib/libbz2.1.0.dylib" at 0x9a45b000]
+   */
 
   const char *memobj_str = "[memory object \"";
   int memobj_strlen = strlen (memobj_str);
@@ -1840,7 +1841,7 @@ make_cleanup_restrict_to_objfile_list (struct objfile_list *objlist)
    OBJFILE comes from a cached symfile.  In that case, the OBJFILE name
    will be the cached symfile name, but the real shlib name will be in
    the OBFD for the OBJFILE.  So in the case of a cached symfile
-   we match against the bfd name instead.  
+   we match against the bfd name instead.
    Returns 1 for an exact match, 2 for a basename only match and 0 for
    no match.  */
 
@@ -1850,15 +1851,15 @@ objfile_matches_name (struct objfile *objfile, char *name)
   const char *filename;
   const char *bundlename;
   const char *real_name;
-  
+
   if (objfile->name == NULL)
     return objfile_no_match;
-  
+
   real_name = objfile->name;
-  
+
   if (strcmp (real_name, name) == 0)
     return objfile_match_exact;
-  
+
   bundlename = bundle_basename (real_name);
   if (bundlename && strcmp (bundlename, name) == 0)
     return objfile_match_base;
@@ -1866,7 +1867,7 @@ objfile_matches_name (struct objfile *objfile, char *name)
   filename = lbasename (real_name);
   if (filename == NULL)
     return objfile_no_match;
-  
+
   if (strcmp (filename, name) == 0)
     return objfile_match_base;
 
@@ -1874,10 +1875,10 @@ objfile_matches_name (struct objfile *objfile, char *name)
 }
 
 void
-push_front_restrict_list (struct objfile_list **requested_list_head, 
+push_front_restrict_list (struct objfile_list **requested_list_head,
                           struct objfile *objfile)
 {
-  struct objfile_list *new_requested_list_head 
+  struct objfile_list *new_requested_list_head
     = (struct objfile_list *) xmalloc (sizeof (struct objfile_list));
   new_requested_list_head->objfile = objfile;
   new_requested_list_head->next = *requested_list_head;
@@ -1894,7 +1895,7 @@ void clear_restrict_list (struct objfile_list **requested_list_head)
       xfree (list_ptr);
     }
 }
-/* Restricts the objfile search to the REQUESTED_SHILB.  Returns
+/* Restricts the objfile search to the REQUESTED_SHILB. Returns
    a cleanup for the restriction, or -1 if no such shlib is
    found.  */
 
@@ -1908,17 +1909,17 @@ make_cleanup_restrict_to_shlib (char *requested_shlib)
   if (requested_shlib == NULL)
     return NULL;
 
-  /* Find the requested_objfile, if it doesn't exist, then throw an error.  Look
-     for an exact match on the name, and if that doesn't work, look for a match
+  /* Find the requested_objfile, if it does NOT exist, then throw an error. Look
+     for an exact match on the name, and if that does NOT work, look for a match
      on the filename, in case the user just gave us the library name.  */
   ALL_OBJFILES (tmp_obj)
     {
-      enum objfile_matches_name_return match = 
-                             objfile_matches_name (tmp_obj, requested_shlib); 
+      enum objfile_matches_name_return match =
+                             objfile_matches_name (tmp_obj, requested_shlib);
       if (match == objfile_match_exact)
 	{
 	  /* Okay, we found an exact match, so throw away a list if we
-	     we had found any other matches, and break.  
+	     we had found any other matches, and break.
 	     APPLE LOCAL: If the exact match we found was a separate
 	     debug file (dSYM), then add the original executable
 	     first since objfile_get_first() and objfile_get_next()
@@ -1964,15 +1965,15 @@ objfile_get_first ()
   else
     {
       /* APPLE LOCAL: When iterating we always return a separate
-	 debug file first, and then return the objfile for the
-	 separate debug file second to make sure we get debug
-	 information from the separate debug file first, and then
-	 fall back onto the original executable file for any extra
-	 debug information that it may contain such as stabs
-	 information that is not part of the debug map.  */
+       * debug file first, and then return the objfile for the
+       * separate debug file second to make sure we get debug
+       * information from the separate debug file first, and then
+       * fall back onto the original executable file for any extra
+       * debug information that it may contain such as stabs
+       * information that is not part of the debug map.  */
 
       objfile_list_ptr = objfile_list->next;
-      if (objfile_list->objfile 
+      if (objfile_list->objfile
           && objfile_list->objfile->separate_debug_objfile)
 	return objfile_list->objfile->separate_debug_objfile;
       else
@@ -1980,16 +1981,16 @@ objfile_get_first ()
     }
 }
 
-/* Get the next objfile in the list.  
-   FIXME: Right now you can't nest calls to ALL_OBJFILES if 
-   restrict_search is on.  This isn't a problem in practice,
+/* Get the next objfile in the list.
+   FIXME: Right now you cannot nest calls to ALL_OBJFILES if
+   restrict_search is on. This is NOT a problem in practice,
    but is ugly.  */
 
 struct objfile *
 objfile_get_next (struct objfile *in_objfile)
 {
   struct objfile *objfile = NULL;
-  
+
   if (!restrict_search || objfile_list == NULL)
     {
       if (in_objfile)
@@ -2016,14 +2017,14 @@ objfile_get_next (struct objfile *in_objfile)
 	{
 	  objfile = objfile_list_ptr->objfile;
 	  objfile_list_ptr = objfile_list_ptr->next;
-	  
+
 	  if (objfile->separate_debug_objfile_backlink == NULL)
 	    break;
-	  
+
 	  if (objfile_list_ptr == NULL)
 	    return NULL;
 	}
-      
+
       /* Always return the separate debug file for an objfile first so we get
          any symbols we can out of this file first.  */
       if (objfile && objfile->separate_debug_objfile)
@@ -2037,7 +2038,7 @@ objfile_get_next (struct objfile *in_objfile)
 
 static int should_auto_raise_load_state = 0;
 
-/* FIXME: How to make this stuff platform independent???  
+/* FIXME: How to make this stuff platform independent???
    Right now I just have a lame #ifdef MACOSX_DYLD.  I think
    the long term plan is to move the shared library handling
    into the architecture vector.  At that point,
@@ -2048,8 +2049,8 @@ static int should_auto_raise_load_state = 0;
    this as a convenience to the user, set FORCE to 0, and this will
    allow the value of the "auto-raise-load-level" set variable to
    override the setting.  But if gdb needs to have this done, set
-   FORCE to 1.  
-   Returns the original load state, or -2 if the gdb auto-raise 
+   FORCE to 1.
+   Returns the original load state, or -2 if the gdb auto-raise
    settings rejected the change, or -1 for an error.  */
 
 int
@@ -2062,9 +2063,9 @@ objfile_set_load_state (struct objfile *o, int load_state, int force)
   if (o->symflags & OBJF_SYM_DONT_CHANGE)
     return -2;
 
-  /* FIXME: For now, we are not going to REDUCE the load state.  That is
-     because we can't track which varobj's would need to get reconstructed
-     if we were to change the state.  The only other option would be to
+  /* FIXME: For now, we are not going to REDUCE the load state. That is
+     because we cannot track which varobj's would need to get reconstructed
+     if we were to change the state. The only other option would be to
      throw away all the varobj's and that seems wasteful.  */
 
   if (o->symflags >= load_state)
@@ -2074,11 +2075,11 @@ objfile_set_load_state (struct objfile *o, int load_state, int force)
   return dyld_objfile_set_load_state (o, load_state);
 #else
   return -1;
-#endif
+#endif /* MACOSX_DYLD */
 }
 
 /* Set the symbol loading level of the objfile that includes
-   the address PC to LOAD_STATE.  FORCE has the same meaning
+   the address PC to LOAD_STATE. FORCE has the same meaning
    as for objfile_set_load_state, as does the return value.  */
 
 int
@@ -2097,7 +2098,7 @@ pc_set_load_state (CORE_ADDR pc, int load_state, int force)
     return -1;
 
   return objfile_set_load_state (s->objfile, load_state, force);
-  
+
 }
 
 /* Sets the load state of an objfile by name.  FORCE, LOAD_STATE
@@ -2116,18 +2117,18 @@ objfile_name_set_load_state (char *name, int load_state, int force)
 
   ALL_OBJFILES (tmp_obj)
     {
-      enum objfile_matches_name_return match 
+      enum objfile_matches_name_return match
 	= objfile_matches_name (tmp_obj, name);
       if (match == objfile_match_exact || match == objfile_match_base)
 	return objfile_set_load_state (tmp_obj, load_state, force);
     }
-  
+
   return -1;
 }
 
 /* END APPLE LOCAL set_load_state  */
 
-/* Return the first objfile that isn't marked as 'obsolete' (i.e. has been
+/* Return the first objfile that is NOT marked as 'obsolete' (i.e. has been
    replaced by a newer version in a fix-and-continue operation.  */
 
 /* APPLE LOCAL: The SKIP_OBSOLETE flag is used to skip over obsoleted
@@ -2219,7 +2220,7 @@ struct objfile_data_registration
   struct objfile_data *data;
   struct objfile_data_registration *next;
 };
-  
+
 struct objfile_data_registry
 {
   struct objfile_data_registration *registrations;
@@ -2291,7 +2292,7 @@ objfile_data (struct objfile *objfile, const struct objfile_data *data)
   return objfile->data[data->index];
 }
 
-struct objfile * 
+struct objfile *
 executable_objfile (struct objfile *objfile)
 {
   if (objfile && objfile->separate_debug_objfile_backlink)
@@ -2299,7 +2300,7 @@ executable_objfile (struct objfile *objfile)
   return objfile;
 }
 
-struct objfile * 
+struct objfile *
 separate_debug_objfile (struct objfile *objfile)
 {
   if (objfile && objfile->separate_debug_objfile)
@@ -2317,7 +2318,7 @@ objfile_section_offset (struct objfile *objfile, int sect_idx)
   struct objfile *exec_objfile = executable_objfile (objfile);
   if (exec_objfile == NULL)
     err_str = _("NULL objfile");
-  else 
+  else
     {
       if (exec_objfile->section_offsets == NULL)
 	err_str = _("Objfile section offsets are uninitialized");
@@ -2330,22 +2331,22 @@ objfile_section_offset (struct objfile *objfile, int sect_idx)
   if (err_str != NULL)
     {
       internal_error (__FILE__, __LINE__, "%s (exec_objfile '%s' objfile '%s')",
-                      err_str, 
-                      (exec_objfile ? exec_objfile->name : ""), 
+                      err_str,
+                      (exec_objfile ? exec_objfile->name : ""),
                       objfile->name);
       return (CORE_ADDR) -1;
     }
 
   /* APPLE LOCAL shared cache begin.  */
-  if (exec_objfile != objfile && 
+  if (exec_objfile != objfile &&
       bfd_mach_o_in_shared_cached_memory (exec_objfile->obfd))
     {
-      /* If we are reading from a memory based mach executable image that 
+      /* If we are reading from a memory based mach executable image that
 	 has a dSYM file, all executable image sections have zero offsets.
-	 The dSYM file will be based at the original executable link 
+	 The dSYM file will be based at the original executable link
 	 addresses and will need offsets to make symbols in dSYM match the
 	 shared cache loaded addresses. Core files currently run into this
-	 issue, and if we decide to load images from memory in the future, 
+	 issue, and if we decide to load images from memory in the future,
 	 those will as well.  */
       gdb_assert (exec_objfile->num_sections <= objfile->num_sections);
       gdb_assert (sect_idx < objfile->num_sections);
@@ -2356,8 +2357,8 @@ objfile_section_offset (struct objfile *objfile, int sect_idx)
 }
 
 /* APPLE LOCAL BEGIN: objfile section offsets.
-   The objfile_text_section_offset, objfile_data_section_offset, 
-   objfile_rodata_section_offset and objfile_bss_section_offset 
+   The objfile_text_section_offset, objfile_data_section_offset,
+   objfile_rodata_section_offset and objfile_bss_section_offset
    functions allow quick control over the many places that grab
    common section offsets.  */
 CORE_ADDR
@@ -2387,7 +2388,7 @@ objfile_bss_section_offset (struct objfile *objfile)
 /* APPLE LOCAL END: objfile section offsets.  */
 
 /* APPLE LOCAL: objfile hitlists.  */
-/* We want to record all the objfiles that contribute to the 
+/* We want to record all the objfiles that contribute to the
    parsing of an expression when making variable objects - so
    we know which ones to toss when an objfile gets deleted.
    So we set up an "objfile_hitlist" with objfile_init_hitlist,
@@ -2402,9 +2403,9 @@ struct objfile_hitlist
 };
 
 static struct objfile_hitlist *cur_objfile_hitlist;
-/* This is the alloc'ed size of the current objfile_hitlist. 
+/* This is the alloc'ed size of the current objfile_hitlist.
   I had it part of the objfile_hitlist, but it is only needed
-  when building up the hitlist, so that's a waste of space.  */
+  when building up the hitlist, so that is a waste of space.  */
 static int hitlist_max_elem;
 #define HITLIST_INITIAL_MAX_ELEM 1
 
@@ -2412,10 +2413,10 @@ static void
 objfile_init_hitlist ()
 {
   if (cur_objfile_hitlist != NULL)
-    internal_error (__FILE__, __LINE__, 
+    internal_error (__FILE__, __LINE__,
 		    "Tried to initialize hit list without "
 		    "closing previous hitlist.");
-  cur_objfile_hitlist = xmalloc (sizeof (struct objfile_hitlist) 
+  cur_objfile_hitlist = xmalloc (sizeof (struct objfile_hitlist)
 				 + HITLIST_INITIAL_MAX_ELEM * sizeof (struct objfile *));
   hitlist_max_elem = HITLIST_INITIAL_MAX_ELEM;
   cur_objfile_hitlist->num_elem = 0;
@@ -2447,8 +2448,8 @@ objfile_add_to_hitlist (struct objfile *ofile)
 }
 
 /* Use this to get control of the objfile_hitlist
-   you've been accumulating since the call to
-   make_cleanup_objfile_init_clear_hitlist.  You 
+   you have been accumulating since the call to
+   make_cleanup_objfile_init_clear_hitlist. You
    get a pointer to a malloc'ed hitlist structure.
    When you are done with it you can just free it.  */
 
@@ -2551,12 +2552,12 @@ partial_symbol_special_info (struct objfile *objfile,
     return NULL;
 
   struct partial_symbol **i;
-  i = bsearch (&psym, objfile->thumb_psyms, 
+  i = bsearch (&psym, objfile->thumb_psyms,
               objfile->num_thumb_psyms, sizeof (struct partial_symbol *),
               compare_psymbol_ptrs);
 
   if (i)
-      return (char *) (MSYMBOL_THUMB_FUNCTION); 
+      return (char *) (MSYMBOL_THUMB_FUNCTION);
 
   return NULL;
 }
@@ -2583,13 +2584,13 @@ objfile_add_special_psym (struct objfile *objfile,
   if (max_size == 0)
     {
       max_size = 100;
-      objfile->thumb_psyms = (struct partial_symbol **) malloc 
+      objfile->thumb_psyms = (struct partial_symbol **) malloc
                                   (max_size * sizeof (struct partial_symbol*));
     }
   else if (size >= max_size)
     {
       max_size = 2 * max_size;
-      objfile->thumb_psyms = (struct partial_symbol **) realloc 
+      objfile->thumb_psyms = (struct partial_symbol **) realloc
            (objfile->thumb_psyms, max_size * sizeof (struct partial_symbol *));
 
     }
@@ -2605,7 +2606,7 @@ objfile_add_special_psym (struct objfile *objfile,
    SLIDE if NEW_OFFSETS is NULL, to OBJFILE, and to the
    separate_debug_objfile, if it exists.  */
 
-void 
+void
 slide_objfile (struct objfile *objfile, CORE_ADDR slide,
                struct section_offsets *new_offsets)
 {
@@ -2627,8 +2628,8 @@ slide_objfile (struct objfile *objfile, CORE_ADDR slide,
       else
         offset_cleanup = make_cleanup (null_cleanup, NULL);
 
-      /* Note, I'm not calling tell_breakpoints_objfile_changed here, but
-         instead relying on objfile_relocate to relocate the breakpoints 
+      /* Note, I am not calling tell_breakpoints_objfile_changed here, but
+         instead relying on objfile_relocate to relocate the breakpoints
          in this objfile.  */
 
       objfile_relocate (objfile, new_offsets);
@@ -2645,7 +2646,7 @@ slide_objfile (struct objfile *objfile, CORE_ADDR slide,
           /* The offsets we apply are supposed to be the TOTAL offset,
              so we have to add the dsym offset to the one passed in
              for the objfile.  */
-          macho_calculate_offsets_for_dsym (objfile, 
+          macho_calculate_offsets_for_dsym (objfile,
                                             objfile->separate_debug_objfile->obfd,
                                             NULL,
                                             new_offsets,
@@ -2655,7 +2656,7 @@ slide_objfile (struct objfile *objfile, CORE_ADDR slide,
           make_cleanup (xfree, dsym_offsets);
           objfile_relocate (objfile->separate_debug_objfile, dsym_offsets);
         }
-      
+
 
       do_cleanups (offset_cleanup);
       if (info_verbose)
@@ -2669,7 +2670,7 @@ _initialize_objfiles (void)
   cached_symfile_path =
     xstrdup ("./gdb-symfile-cache:./syms:/usr/libexec/gdb/symfiles");
 
-  /* APPLE LOCAL: We don't want to raise load levels for MetroWerks.  */
+  /* APPLE LOCAL: We do NOT want to raise load levels for MetroWerks.  */
   add_setshow_boolean_cmd ("auto-raise-load-levels", class_obscure,
 			   &should_auto_raise_load_state, _("\
 Set if GDB should raise the symbol loading level on all frames found in backtraces."), _("\

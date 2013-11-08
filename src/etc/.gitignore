@@ -2,11 +2,13 @@
 Makefile
 confdefs.h
 *.aux
+*.cache
 *.cp
 *.cps
 *.dvi
 *.fn
 *.fns
+*.info*
 *.ky
 *.kys
 *.log

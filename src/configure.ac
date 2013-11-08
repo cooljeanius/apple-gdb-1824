@@ -25,6 +25,12 @@
 sinclude(config/acx.m4)
 
 AC_PREREQ([2.69])
+dnl# This is a hack because autoconf finds the AC\_INIT from
+dnl# config/override.m4 first if it is present.
+dnl# Feel free to re-define to whichever version of autoconf
+dnl# that you are using:
+m4_define([_GCC_AUTOCONF_VERSION],[2.69])
+dnl# OK, now that we have that out of the way, we can actually get started:
 AC_INIT([apple-gdb-src],[1824],[gclayton@apple.com])
 dnl# bug report address is email address of last person to touch this
 dnl# directory, according to the Changelog-Apple in this directory
@@ -213,7 +219,7 @@ build_configdirs=`echo ${build_libs} ${build_tools}`
 
 # Only make build modules if build != host.
 # This should be done more generally, but at the moment it does NOT matter.
-# APPLE LOCAL: Use "host" instead of "host_alias" - autoconf 2.13/2.57 diff?
+# APPLE LOCAL: Use "host" over "host_alias" - autoconf 2.13/2.57 diff?
 if test ${host} != ${build} ; then
   # This is the only build module.
   build_modules=libiberty
@@ -405,6 +411,18 @@ no)
     esac
 esac
 
+AC_ARG_ENABLE([64-bit-bfd],
+[AS_HELP_STRING([--enable-64-bit-bfd],[64-bit support (on hosts with narrower word sizes)])],
+[case "${enableval}" in
+  yes)  want64=true  ;;
+  no)   want64=false ;;
+  *)    AC_MSG_ERROR([bad value ${enableval} for 64-bit-bfd option]) ;;
+esac],[want64=false])dnl
+AC_SUBST([want64])
+
+if test "x${want64}" = "xtrue"; then
+  enable_64_bit_bfd=yes
+fi
 
 case "${target}" in
   *-*-chorusos)
@@ -417,9 +435,14 @@ case "${target}" in
     noconfigdirs="${noconfigdirs} ${libgcj}"
 # so far dejagnu works fine when configured on its own, but NOT as a
 # subdirectory for the top-level Makefile...
-    noconfigdirs="${noconfigdirs} dejagnu"
+    mynoconfigdirs="${noconfigdirs} dejagnu"
 # I do not know why Apple had these put under noconfigdirs:
     applespecifiednoconfigdirs="${noconfigdirs} mmalloc sim"
+    if test "${APPLE_INTERNAL_DIR}" = "/AppleInternal"; then
+      test -d "${APPLE_INTERNAL_DIR}"
+      AC_MSG_WARN([You appear to be at Apple, in that case disabling subdirectories that Apple says to disable (unset the APPLE_INTERNAL_DIR environment variable to avoid this)])
+      noconfigdirs="${applespecifiednoconfigdirs}"
+    fi
 # I also do not know about a lot of the rest of these:
     enable_shared=no
     enable_64_bit_bfd=yes

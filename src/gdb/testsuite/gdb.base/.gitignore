@@ -1,8 +1,16 @@
+Makefile
+*.status
 *.ci
+*.dSYM
 *.o
+*.log
+*.plog
+*.psum
 *.tmp
+*.sum
 *.x
 *~
+*-init.exp
 ../foobar.baz
 a.out
 all-types
@@ -26,6 +34,7 @@ coremaker
 coremaker.core
 coremmap.data
 dbx-test
+detail
 display
 ending-run
 execd-prog
@@ -64,6 +73,7 @@ shr1.sl
 shr2.sl
 sigall
 signals
+site.*
 so-impl-ld
 so-indr-cl
 solib
@@ -75,6 +85,7 @@ step-line
 step-test
 structs
 structs2
+summary
 twice-tmp
 twice-tmp.c
 varargs

@@ -18,31 +18,39 @@ CY_AC_PATH_TCLCONFIG
 CY_AC_LOAD_TCLCONFIG
 MY_CC=${TCL_CC}
 
-CFLAGSOLD=$CFLAGS
-CXXFLAGSOLD=$CXXFLAGS
-CPPFLAGSOLD=$CPPFLAGS
+# Save CFLAGS and friends first
+CFLAGSOLD=${CFLAGS}
+CXXFLAGSOLD=${CXXFLAGS}
+CPPFLAGSOLD=${CPPFLAGS}
 unset CFLAGS
 unset CXXFLAGS
 unset CPPFLAGS
+# CC might already have been checked
 if test "x$CC" = "x"; then
 	test -z "$CC"
 	AC_PROG_CC
 else
 	test ! -z "$CC"
-	if test "x$ac_cv_c_compiler_gnu" != "x:"; then
+	# The conditional is to try to avoid breakage
+	if test "x${ac_cv_c_compiler_gnu}" != "x:"; then
 		test ! -z "$GCC"
 		AC_PROG_GCC_TRADITIONAL
 	fi
+	# Check preprocessor
 	AC_PROG_CPP
-	if test "x$CYGNUS" != "x"; then
-		test ! -z "$CYGNUS"
+	# This is in a conditional because otherwise it might not work
+	if test "x${CYGNUS}" != "x"; then
+		test ! -z "${CYGNUS}"
+		# Check to make sure compiler actually works
 		CY_AC_C_WORKS
 	fi
 fi
-CFLAGS=$CFLAGSOLD
-CXXFLAGS=$CXXFLAGSOLD
-CPPFLAGS=$CPPFLAGSOLD
+# Now reset CFLAGS and friends
+CFLAGS=${CFLAGSOLD}
+CXXFLAGS=${CXXFLAGSOLD}
+CPPFLAGS=${CPPFLAGSOLD}
 
+# Checks for functions
 AC_CHECK_FUNCS([memset])
  
 # This is for LynxOS, which needs a flag to force true POSIX when
@@ -53,10 +61,15 @@ AC_CHECK_FUNCS([memset])
 # This modifies the value of $CC to have the POSIX flag added
 # so it will configure correctly
 CY_AC_TCL_LYNX_POSIX
+
+# Check for Tcl headers
 CY_AC_PATH_TCLH
 
+# Substitutions
 AC_SUBST([MY_CC])
 AC_SUBST([TCLHDIR])
 AC_SUBST([host])
+
+# Output
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

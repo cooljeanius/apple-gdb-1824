@@ -12,6 +12,7 @@
 *.log
 *.o
 *.status
+*.sum
 */*libs/*.a
 *~
 Makefile
@@ -45,6 +46,7 @@ configure.vrs
 conftest*
 core
 dir.info
+dist/*
 errs
 gcc/*/libgcc.a
 gcc/libgcc
@@ -56,5 +58,13 @@ libiberty/stamp*
 libiberty/xhost-mkfrag
 libtool
 lost+found
+maybedep.tmp
+mh-frag
+mt-frag
+serdep.tmp
 update.out
 update.sourceware
+
+# gitignoring temporarily to commit separately:
+libdecnumber/*
+

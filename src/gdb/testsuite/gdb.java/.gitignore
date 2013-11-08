@@ -3,3 +3,13 @@
 *.exe
 *~
 core
+Makefile
+*.status
+*.log
+*-init.exp
+summary
+detail
+*.plog
+*.sum
+*.psum
+site.*

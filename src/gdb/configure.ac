@@ -459,8 +459,10 @@ fi
 AC_PROG_INSTALL
 AM_PROG_INSTALL_STRIP
 AM_PROG_LEX
+AM_PATH_LISPDIR
 AC_PROG_LN_S
 AC_PROG_MKDIR_P
+AM_PATH_PYTHON
 AC_PROG_OBJC
 AC_PROG_OBJCXX
 if test "x$RANLIB" = "x"; then
@@ -697,9 +699,9 @@ unset ac_cv_header_limits_h
 unset ac_cv_header_locale_h
 unset ac_cv_header_sys_param_h
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h libintl.h limits.h locale.h \
-                  mach/mach.h malloc.h malloc/malloc.h \
-                  netdb.h netinet/in.h paths.h sys/param.h \
-                  sys/socket.h sys/sysctl.h sys/time.h])
+                  mach/mach.h malloc.h malloc/malloc.h netdb.h \
+                  netinet/in.h nl_types.h paths.h sys/param.h \
+                  sys/socket.h sys/sysctl.h sys/time.h wchar.h ])
 
 # Other headers needed for things that I have ifdef-ed:
 unset ac_cv_header_dlfcn_h
@@ -847,6 +849,7 @@ AC_C_BIGENDIAN([
   AC_CHECK_DECLS([__LITTLE_ENDIAN])
 ])
 AC_C_PROTOTYPES
+AC_C_RESTRICT
 
 # ------------------------------ #
 # Checks for library functions.  #
@@ -867,6 +870,8 @@ AC_FUNC_MALLOC
 AM_WITH_DMALLOC
 AC_FUNC_OBSTACK
 AC_FUNC_REALLOC
+AC_FUNC_STRNLEN
+AC_FUNC_STRTOD
 AC_FUNC_WAIT3
 AC_CHECK_FUNCS([canonicalize_file_name realpath])
 AC_CHECK_FUNCS([getuid getgid])
@@ -884,10 +889,10 @@ AC_CHECK_FUNCS([wborder])
 unset ac_cv_func_strchr
 AC_CHECK_FUNCS([atexit bzero dup2 gethostbyaddr gethostbyname \
                 gethostname getpass gettimeofday inet_ntoa isascii \
-                memchr memcmp memcpy memmove memset pathconf pow \
-                re_comp regcomp select socket strcspn strerror \
-                strncasecmp strpbrk strchr strrchr strspn strstr \
-                strtok strtol strtoul uname])
+                memchr memcmp memcpy memmove mempcpy memset nl_langinfo \
+                pathconf pow re_comp regcomp select socket strcspn strdup \
+                strerror strncasecmp strndup strpbrk strchr strrchr \
+                strspn strstr strtok strtol strtoul uname wcwidth])
 
 # ----- #
 # Other #
@@ -1584,7 +1589,7 @@ AC_SUBST([TARGET_SYSTEM_ROOT_DEFINE])
 build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
 -Wformat -Wparentheses -Wpointer-arith \
 -Wunused-label -Wunused-function \
--Wno-format-security -Werror=implicit-function-declaration"
+-Wno-format-security -Wno-format"
 
 # GCC supports -Wuninitialized only with -O or -On, n != 0.
 if test x${CFLAGS+set} = xset; then
@@ -2076,7 +2081,7 @@ esac
 
 AM_ICONV
 
-AC_CONFIG_FILES([Makefile .gdbinit:gdbinit.in])
+AC_CONFIG_FILES([Makefile .gdbinit:gdbinit.in gnulib/Makefile])
 AC_CONFIG_COMMANDS([default],[
 dnl# Autoconf does NOT provide a mechanism for modifying definitions 
 dnl# provided by makefile fragments.

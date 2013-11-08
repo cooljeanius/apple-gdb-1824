@@ -12,3 +12,13 @@ core.coremaker
 coremaker.core
 corefile 
 twice-tmp.c
+Makefile
+*.status
+*.log
+*-init.exp
+summary
+detail
+*.plog
+*.sum
+*.psum
+site.*

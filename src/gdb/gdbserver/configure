@@ -4002,11 +4002,12 @@ done
 for ac_header in AvailabilityMacros.h arpa/inet.h fcntl.h limits.h \
                   linux/elf.h mach/mach.h mach/mach_error.h \
                   mach/mach_types.h mach/mach_vm.h mach/port.h \
-                  mach-o/nlist.h netdb.h netinet/in.h prctl.h \
-                  proc_service.h sgtty.h signal.h stdio.h sys/file.h \
-                  sys/ioctl.h sys/param.h sys/ptrace.h sys/signal.h \
-                  sys/socket.h sys/procfs.h sys/reg.h sys/time.h \
-                  sys/wait.h termio.h termios.h thread_db.h
+                  mach-o/nlist.h malloc.h malloc/malloc.h netdb.h \
+                  netinet/in.h prctl.h proc_service.h sgtty.h signal.h \
+                  stdio.h sys/file.h sys/ioctl.h sys/param.h \
+                  sys/ptrace.h sys/signal.h sys/socket.h sys/procfs.h \
+                  sys/reg.h sys/time.h sys/wait.h termio.h termios.h \
+                  thread_db.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -5365,8 +5366,8 @@ $as_echo "#define realloc rpl_realloc" >>confdefs.h
 fi
 
 
-for ac_func in atexit child_get_pagesize inet_ntoa memset select socket \
-                strchr strdup strerror strtol strtoul
+for ac_func in atexit child_get_pagesize inet_ntoa memset select setenv \
+                socket strchr strdup strerror strrchr strtol strtoul
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"

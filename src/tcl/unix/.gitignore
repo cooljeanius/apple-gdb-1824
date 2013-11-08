@@ -19,3 +19,4 @@ SCRPtcl.*
 prototype
 tclsh
 tcltest
+*.dSYM

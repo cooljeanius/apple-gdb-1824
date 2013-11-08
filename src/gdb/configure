@@ -783,6 +783,7 @@ CONFIG_LDFLAGS
 MIG_CHECKING
 DEBUG_SYMBOLS_LIBS
 CARBON_LIBS
+POW_LIB
 LIBOBJS
 LIBM
 AM_BACKSLASH
@@ -805,7 +806,19 @@ OBJCXX
 ac_ct_OBJC
 OBJCFLAGS
 OBJC
+pkgpyexecdir
+pyexecdir
+pkgpythondir
+pythondir
+PYTHON_PLATFORM
+PYTHON_EXEC_PREFIX
+PYTHON_PREFIX
+PYTHON_VERSION
+PYTHON
 MKDIR_P
+lispdir
+EMACSLOADPATH
+EMACS
 LEXLIB
 LEX_OUTPUT_ROOT
 LEX
@@ -975,6 +988,7 @@ with_pic
 with_gnu_ld
 with_sysroot
 enable_libtool_lock
+with_lispdir
 enable_silent_rules
 with_dmalloc
 with_included_regex
@@ -1012,6 +1026,9 @@ F77
 FFLAGS
 FC
 FCFLAGS
+EMACS
+EMACSLOADPATH
+PYTHON
 OBJC
 OBJCFLAGS
 OBJCXX
@@ -1697,6 +1714,7 @@ Optional Packages:
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-sysroot=DIR Search for dependent libraries within DIR
                         (or the compiler's sysroot if not specified).
+  --with-lispdir          override the default lisp directory
   --with-dmalloc          use dmalloc, as in http://www.dmalloc.com
   --without-included-regex
                           Do NOT use included regex; this is the default on
@@ -1734,6 +1752,10 @@ Some influential environment variables:
   FFLAGS      Fortran 77 compiler flags
   FC          Fortran compiler command
   FCFLAGS     Fortran compiler flags
+  EMACS       the Emacs editor command
+  EMACSLOADPATH
+              the Emacs library search path
+  PYTHON      the Python interpreter
   OBJC        Objective C compiler command
   OBJCFLAGS   Objective C compiler flags
   OBJCXX      Objective C++ compiler command
@@ -26813,6 +26835,101 @@ fi
 if test "$LEX" = :; then
   LEX=${am_missing_run}flex
 fi
+ # If set to t, that means we are running in a shell under Emacs.
+ # If you have an Emacs named "t", then use the full path.
+ test x"$EMACS" = xt && EMACS=
+ for ac_prog in emacs xemacs
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_EMACS+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$EMACS"; then
+  ac_cv_prog_EMACS="$EMACS" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_EMACS="$ac_prog"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+EMACS=$ac_cv_prog_EMACS
+if test -n "$EMACS"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $EMACS" >&5
+$as_echo "$EMACS" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$EMACS" && break
+done
+test -n "$EMACS" || EMACS="no"
+
+
+
+
+# Check whether --with-lispdir was given.
+if test "${with_lispdir+set}" = set; then :
+  withval=$with_lispdir;  lispdir="$withval"
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking where .elc files should go" >&5
+$as_echo_n "checking where .elc files should go... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lispdir" >&5
+$as_echo "$lispdir" >&6; }
+else
+
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking where .elc files should go" >&5
+$as_echo_n "checking where .elc files should go... " >&6; }
+if ${am_cv_lispdir+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+   if test $EMACS != "no"; then
+     if test x${lispdir+set} != xset; then
+  # If $EMACS isn't GNU Emacs or XEmacs, this can blow up pretty badly
+  # Some emacsen will start up in interactive mode, requiring C-x C-c to exit,
+  #  which is non-obvious for non-emacs users.
+  # Redirecting /dev/null should help a bit; pity we can't detect "broken"
+  #  emacsen earlier and avoid running this altogether.
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: \$EMACS -batch -q -eval '(while load-path (princ (concat (car load-path) \"\\n\")) (setq load-path (cdr load-path)))' </dev/null >conftest.out"; } >&5
+  ($EMACS -batch -q -eval '(while load-path (princ (concat (car load-path) "\n")) (setq load-path (cdr load-path)))' </dev/null >conftest.out) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }
+	am_cv_lispdir=`sed -n \
+       -e 's,/$,,' \
+       -e '/.*\/lib\/x*emacs\/site-lisp$/{s,.*/lib/\(x*emacs/site-lisp\)$,${libdir}/\1,;p;q;}' \
+       -e '/.*\/share\/x*emacs\/site-lisp$/{s,.*/share/\(x*emacs/site-lisp\),${datarootdir}/\1,;p;q;}' \
+       conftest.out`
+       rm conftest.out
+     fi
+   fi
+   test -z "$am_cv_lispdir" && am_cv_lispdir='${datadir}/emacs/site-lisp'
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $am_cv_lispdir" >&5
+$as_echo "$am_cv_lispdir" >&6; }
+  lispdir="$am_cv_lispdir"
+
+fi
+
+
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ln -s works" >&5
 $as_echo_n "checking whether ln -s works... " >&6; }
 LN_S=$as_ln_s
@@ -26865,6 +26982,213 @@ fi
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $MKDIR_P" >&5
 $as_echo "$MKDIR_P" >&6; }
+
+
+
+
+
+
+
+        # Find any Python interpreter.
+    if test -z "$PYTHON"; then
+      for ac_prog in python python2 python3 python3.3 python3.2 python3.1 python3.0 python2.7  python2.6 python2.5 python2.4 python2.3 python2.2 python2.1 python2.0
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_PYTHON+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $PYTHON in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_PYTHON="$PYTHON" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_PYTHON="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+PYTHON=$ac_cv_path_PYTHON
+if test -n "$PYTHON"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $PYTHON" >&5
+$as_echo "$PYTHON" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$PYTHON" && break
+done
+test -n "$PYTHON" || PYTHON=":"
+
+    fi
+    am_display_PYTHON=python
+
+
+  if test "$PYTHON" = :; then
+      as_fn_error $? "no suitable Python interpreter found" "$LINENO" 5
+  else
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $am_display_PYTHON version" >&5
+$as_echo_n "checking for $am_display_PYTHON version... " >&6; }
+if ${am_cv_python_version+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  am_cv_python_version=`$PYTHON -c "import sys; sys.stdout.write(sys.version[:3])"`
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $am_cv_python_version" >&5
+$as_echo "$am_cv_python_version" >&6; }
+  PYTHON_VERSION=$am_cv_python_version
+
+
+
+  PYTHON_PREFIX='${prefix}'
+
+  PYTHON_EXEC_PREFIX='${exec_prefix}'
+
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $am_display_PYTHON platform" >&5
+$as_echo_n "checking for $am_display_PYTHON platform... " >&6; }
+if ${am_cv_python_platform+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  am_cv_python_platform=`$PYTHON -c "import sys; sys.stdout.write(sys.platform)"`
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $am_cv_python_platform" >&5
+$as_echo "$am_cv_python_platform" >&6; }
+  PYTHON_PLATFORM=$am_cv_python_platform
+
+
+  # Just factor out some code duplication.
+  am_python_setup_sysconfig="\
+import sys
+# Prefer sysconfig over distutils.sysconfig, for better compatibility
+# with python 3.x.  See automake bug#10227.
+try:
+    import sysconfig
+except ImportError:
+    can_use_sysconfig = 0
+else:
+    can_use_sysconfig = 1
+# Can't use sysconfig in CPython 2.7, since it's broken in virtualenvs:
+# <https://github.com/pypa/virtualenv/issues/118>
+try:
+    from platform import python_implementation
+    if python_implementation() == 'CPython' and sys.version[:3] == '2.7':
+        can_use_sysconfig = 0
+except ImportError:
+    pass"
+
+
+            { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $am_display_PYTHON script directory" >&5
+$as_echo_n "checking for $am_display_PYTHON script directory... " >&6; }
+if ${am_cv_python_pythondir+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "x$prefix" = xNONE
+     then
+       am_py_prefix=$ac_default_prefix
+     else
+       am_py_prefix=$prefix
+     fi
+     am_cv_python_pythondir=`$PYTHON -c "
+$am_python_setup_sysconfig
+if can_use_sysconfig:
+    sitedir = sysconfig.get_path('purelib', vars={'base':'$am_py_prefix'})
+else:
+    from distutils import sysconfig
+    sitedir = sysconfig.get_python_lib(0, 0, prefix='$am_py_prefix')
+sys.stdout.write(sitedir)"`
+     case $am_cv_python_pythondir in
+     $am_py_prefix*)
+       am__strip_prefix=`echo "$am_py_prefix" | sed 's|.|.|g'`
+       am_cv_python_pythondir=`echo "$am_cv_python_pythondir" | sed "s,^$am__strip_prefix,$PYTHON_PREFIX,"`
+       ;;
+     *)
+       case $am_py_prefix in
+         /usr|/System*) ;;
+         *)
+	  am_cv_python_pythondir=$PYTHON_PREFIX/lib/python$PYTHON_VERSION/site-packages
+	  ;;
+       esac
+       ;;
+     esac
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $am_cv_python_pythondir" >&5
+$as_echo "$am_cv_python_pythondir" >&6; }
+  pythondir=$am_cv_python_pythondir
+
+
+
+  pkgpythondir=\${pythondir}/$PACKAGE
+
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $am_display_PYTHON extension module directory" >&5
+$as_echo_n "checking for $am_display_PYTHON extension module directory... " >&6; }
+if ${am_cv_python_pyexecdir+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "x$exec_prefix" = xNONE
+     then
+       am_py_exec_prefix=$am_py_prefix
+     else
+       am_py_exec_prefix=$exec_prefix
+     fi
+     am_cv_python_pyexecdir=`$PYTHON -c "
+$am_python_setup_sysconfig
+if can_use_sysconfig:
+    sitedir = sysconfig.get_path('platlib', vars={'platbase':'$am_py_prefix'})
+else:
+    from distutils import sysconfig
+    sitedir = sysconfig.get_python_lib(1, 0, prefix='$am_py_prefix')
+sys.stdout.write(sitedir)"`
+     case $am_cv_python_pyexecdir in
+     $am_py_exec_prefix*)
+       am__strip_prefix=`echo "$am_py_exec_prefix" | sed 's|.|.|g'`
+       am_cv_python_pyexecdir=`echo "$am_cv_python_pyexecdir" | sed "s,^$am__strip_prefix,$PYTHON_EXEC_PREFIX,"`
+       ;;
+     *)
+       case $am_py_exec_prefix in
+         /usr|/System*) ;;
+         *)
+	   am_cv_python_pyexecdir=$PYTHON_EXEC_PREFIX/lib/python$PYTHON_VERSION/site-packages
+	   ;;
+       esac
+       ;;
+     esac
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $am_cv_python_pyexecdir" >&5
+$as_echo "$am_cv_python_pyexecdir" >&6; }
+  pyexecdir=$am_cv_python_pyexecdir
+
+
+
+  pkgpyexecdir=\${pyexecdir}/$PACKAGE
+
+
+
+  fi
+
 
 ac_ext=m
 ac_cpp='$OBJCPP $CPPFLAGS'
@@ -29504,9 +29828,9 @@ unset ac_cv_header_limits_h
 unset ac_cv_header_locale_h
 unset ac_cv_header_sys_param_h
 for ac_header in arpa/inet.h fcntl.h libintl.h limits.h locale.h \
-                  mach/mach.h malloc.h malloc/malloc.h \
-                  netdb.h netinet/in.h paths.h sys/param.h \
-                  sys/socket.h sys/sysctl.h sys/time.h
+                  mach/mach.h malloc.h malloc/malloc.h netdb.h \
+                  netinet/in.h nl_types.h paths.h sys/param.h \
+                  sys/socket.h sys/sysctl.h sys/time.h wchar.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -30529,6 +30853,52 @@ else
 $as_echo "no" >&6; }
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for C/C++ restrict keyword" >&5
+$as_echo_n "checking for C/C++ restrict keyword... " >&6; }
+if ${ac_cv_c_restrict+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_cv_c_restrict=no
+   # The order here caters to the fact that C++ does not require restrict.
+   for ac_kw in __restrict __restrict__ _Restrict restrict; do
+     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+typedef int * int_ptr;
+	int foo (int_ptr $ac_kw ip) {
+	return ip[0];
+       }
+int
+main ()
+{
+int s[1];
+	int * $ac_kw t = s;
+	t[0] = 0;
+	return foo(t)
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_c_restrict=$ac_kw
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+     test "$ac_cv_c_restrict" != no && break
+   done
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_restrict" >&5
+$as_echo "$ac_cv_c_restrict" >&6; }
+
+ case $ac_cv_c_restrict in
+   restrict) ;;
+   no) $as_echo "#define restrict /**/" >>confdefs.h
+ ;;
+   *)  cat >>confdefs.h <<_ACEOF
+#define restrict $ac_cv_c_restrict
+_ACEOF
+ ;;
+ esac
+
 
 # ------------------------------ #
 # Checks for library functions.  #
@@ -31179,6 +31549,176 @@ $as_echo "#define realloc rpl_realloc" >>confdefs.h
 fi
 
 
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for working strnlen" >&5
+$as_echo_n "checking for working strnlen... " >&6; }
+if ${ac_cv_func_strnlen_working+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  # Guess no on AIX systems, yes otherwise.
+		case "$host_os" in
+		  aix*) ac_cv_func_strnlen_working=no;;
+		  *)    ac_cv_func_strnlen_working=yes;;
+		esac
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+
+#define S "foobar"
+#define S_LEN (sizeof S - 1)
+
+  /* At least one implementation is buggy: that of AIX 4.3 would
+     give strnlen (S, 1) == 3.  */
+
+  int i;
+  for (i = 0; i < S_LEN + 1; ++i)
+    {
+      int expected = i <= S_LEN ? i : S_LEN;
+      if (strnlen (S, i) != expected)
+	return 1;
+    }
+  return 0;
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_strnlen_working=yes
+else
+  ac_cv_func_strnlen_working=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_strnlen_working" >&5
+$as_echo "$ac_cv_func_strnlen_working" >&6; }
+test $ac_cv_func_strnlen_working = no && case " $LIBOBJS " in
+  *" strnlen.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS strnlen.$ac_objext"
+ ;;
+esac
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for working strtod" >&5
+$as_echo_n "checking for working strtod... " >&6; }
+if ${ac_cv_func_strtod+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  ac_cv_func_strtod=no
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+$ac_includes_default
+#ifndef strtod
+double strtod ();
+#endif
+int
+main()
+{
+  {
+    /* Some versions of Linux strtod mis-parse strings with leading '+'.  */
+    char *string = " +69";
+    char *term;
+    double value;
+    value = strtod (string, &term);
+    if (value != 69 || term != (string + 4))
+      return 1;
+  }
+
+  {
+    /* Under Solaris 2.4, strtod returns the wrong value for the
+       terminating character under some conditions.  */
+    char *string = "NaN";
+    char *term;
+    strtod (string, &term);
+    if (term != string && *(term - 1) == 0)
+      return 1;
+  }
+  return 0;
+}
+
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_strtod=yes
+else
+  ac_cv_func_strtod=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_strtod" >&5
+$as_echo "$ac_cv_func_strtod" >&6; }
+if test $ac_cv_func_strtod = no; then
+  case " $LIBOBJS " in
+  *" strtod.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS strtod.$ac_objext"
+ ;;
+esac
+
+ac_fn_c_check_func "$LINENO" "pow" "ac_cv_func_pow"
+if test "x$ac_cv_func_pow" = xyes; then :
+
+fi
+
+if test $ac_cv_func_pow = no; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for pow in -lm" >&5
+$as_echo_n "checking for pow in -lm... " >&6; }
+if ${ac_cv_lib_m_pow+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lm  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char pow ();
+int
+main ()
+{
+return pow ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_m_pow=yes
+else
+  ac_cv_lib_m_pow=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_m_pow" >&5
+$as_echo "$ac_cv_lib_m_pow" >&6; }
+if test "x$ac_cv_lib_m_pow" = xyes; then :
+  POW_LIB=-lm
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: cannot find library containing definition of pow" >&5
+$as_echo "$as_me: WARNING: cannot find library containing definition of pow" >&2;}
+fi
+
+fi
+
+fi
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for wait3 that fills in rusage" >&5
 $as_echo_n "checking for wait3 that fills in rusage... " >&6; }
 if ${ac_cv_func_wait3_rusage+:} false; then :
@@ -31373,10 +31913,10 @@ done
 unset ac_cv_func_strchr
 for ac_func in atexit bzero dup2 gethostbyaddr gethostbyname \
                 gethostname getpass gettimeofday inet_ntoa isascii \
-                memchr memcmp memcpy memmove memset pathconf pow \
-                re_comp regcomp select socket strcspn strerror \
-                strncasecmp strpbrk strchr strrchr strspn strstr \
-                strtok strtol strtoul uname
+                memchr memcmp memcpy memmove mempcpy memset nl_langinfo \
+                pathconf pow re_comp regcomp select socket strcspn strdup \
+                strerror strncasecmp strndup strpbrk strchr strrchr \
+                strspn strstr strtok strtol strtoul uname wcwidth
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -33306,7 +33846,7 @@ fi
 build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
 -Wformat -Wparentheses -Wpointer-arith \
 -Wunused-label -Wunused-function \
--Wno-format-security -Werror=implicit-function-declaration"
+-Wno-format-security -Wno-format"
 
 # GCC supports -Wuninitialized only with -O or -On, n != 0.
 if test x${CFLAGS+set} = xset; then
@@ -35310,7 +35850,7 @@ _ACEOF
 
 
 
-ac_config_files="$ac_config_files Makefile .gdbinit:gdbinit.in"
+ac_config_files="$ac_config_files Makefile .gdbinit:gdbinit.in gnulib/Makefile"
 
 ac_config_commands="$ac_config_commands default"
 
@@ -36769,6 +37309,7 @@ do
     "$ac_config_links_1") CONFIG_LINKS="$CONFIG_LINKS $ac_config_links_1" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     ".gdbinit") CONFIG_FILES="$CONFIG_FILES .gdbinit:gdbinit.in" ;;
+    "gnulib/Makefile") CONFIG_FILES="$CONFIG_FILES gnulib/Makefile" ;;
     "default") CONFIG_COMMANDS="$CONFIG_COMMANDS default" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;

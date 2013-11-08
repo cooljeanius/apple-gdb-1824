@@ -14,3 +14,13 @@ corefile
 null_record/null_record
 fixed_points/fixed_points
 twice-tmp.c
+Makefile
+*.status
+*.log
+*-init.exp
+summary
+detail
+*.plog
+*.sum
+*.psum
+site.*

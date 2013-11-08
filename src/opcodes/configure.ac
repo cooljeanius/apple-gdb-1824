@@ -126,10 +126,13 @@ fi
 AC_SUBST([SYSTEM_FRAMEWORK_LIBS])
 AC_CHECK_LIB([c],[printf])
 AC_SEARCH_LIBS([dcgettext],[intl])
-AC_CHECK_LIB([intl],[gettext])
+AC_CHECK_LIB([intl],[gettext],[],[
+  AC_CHECK_LIB([intl],[main])
+])
 AC_CHECK_LIB([iconv],[iconv])
 
 # Checks for header files.
+AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
 AC_CHECK_HEADERS([errno.h gettext.h libintl.h malloc.h setjmp.h stdio.h])
 
 # Checks for typedefs, structures, and compiler characteristics.

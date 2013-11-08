@@ -17,4 +17,9 @@ Makefile
 d10v-elf/*
 d30v-elf/*
 fr30-elf/*
+frv-elf/*
 m32r-elf/*
+
+# gitignore other subdirectories that are so big that I will have
+# to commit them separately later:
+sim/*

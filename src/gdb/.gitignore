@@ -7,6 +7,8 @@ xm.h
 tm.h
 nm.h
 *.status
+*.log
+*.cache
 mach_excServer.c
 mach_excUser.c
 mach_exc.h
@@ -28,6 +30,12 @@ test-cp-name-parser
 observer.h
 observer.inc
 *.framework
+stamp-*
+y.output
+yacc.acts
+yacc.tmp
+y.tab.h
+*.dSYM
 
 # Some more Bison-generated parsers and flex-generated lexers I missed:
 ada-exp.c
@@ -39,3 +47,8 @@ jv-exp.c
 m2-exp.c
 objc-exp.c
 p-exp.c
+
+# gitignoring temporarily to commit separately:
+gnulib/*
+regformats/*
+

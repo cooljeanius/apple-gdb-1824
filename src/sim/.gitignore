@@ -13,12 +13,20 @@ h8500/*
 i960/*
 ppc/*
 # gitignore these untested directories until I have them working:
+avr/*
+cr16/*
+cris/*
+frv/*
+iq2000/*
+lm32/*
+m32c/*
 m32r/*
 m68hc11/*
 mcore/*
 mips/*
 mn10200/*
 mn10300/*
+moxie/*
 sh/*
 sh64/*
 tic80/*

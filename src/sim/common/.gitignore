@@ -7,3 +7,8 @@ config.h
 core
 ansi2knr
 *.dSYM
+TAGS
+*.cache
+*.log
+cconfig.h
+stamp-*

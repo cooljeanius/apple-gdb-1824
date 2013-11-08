@@ -108,6 +108,7 @@ fi
 AC_SUBST([RPATH_ENVVAR])
 
 # Checks for programs.
+AC_PROG_AWK
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
@@ -118,11 +119,16 @@ AC_CHECK_HEADERS([fcntl.h limits.h stddef.h stdio.h sys/time.h])
 AC_CHECK_HEADERS([pthread.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
+AC_C_INLINE
+AC_C_PROTOTYPES
+AC_TYPE_INT8_T
 AC_TYPE_INT16_T
 AC_TYPE_INT32_T
 AC_TYPE_INT64_T
 AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
+AC_TYPE_SSIZE_T
+AC_TYPE_UINT8_T
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
@@ -132,7 +138,7 @@ AC_FUNC_ALLOCA
 AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_MMAP
-AC_CHECK_FUNCS([alarm memset select])
+AC_CHECK_FUNCS([alarm memset select strerror])
 
 # Other
 AC_EXEEXT
@@ -148,6 +154,7 @@ case "${target}" in
                  ;;
 esac
 
+AC_CONFIG_SUBDIRS([gdb.cell])
 AC_CONFIG_FILES([Makefile \
   gdb.ada/Makefile \
   gdb.arch/Makefile \
@@ -160,6 +167,11 @@ AC_CONFIG_FILES([Makefile \
   gdb.server/Makefile \
   gdb.java/Makefile \
   gdb.mi/Makefile \
+  gdb.modula2/Makefile \
+  gdb.opt/Makefile \
+  gdb.pascal/Makefile \
+  gdb.reverse/Makefile \
   gdb.threads/Makefile \
-  gdb.trace/Makefile])
+  gdb.trace/Makefile \
+  gdb.xml/Makefile])
 AC_OUTPUT

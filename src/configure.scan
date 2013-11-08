@@ -49,6 +49,7 @@ AC_CONFIG_SUBDIRS([bfd
                    expect
                    gdb
                    intl
+                   libdecnumber
                    libiberty
                    libintl
                    mmalloc

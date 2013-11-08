@@ -5,3 +5,8 @@ igen
 *.status
 Makefile
 config.h
+TAGS
+*.cache
+defines.h
+stamp-*
+*.log

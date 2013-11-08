@@ -1,0 +1,5 @@
+po/Makefile
+po/Makefile.in
+info/Makefile
+doc/Makefile
+po/POTFILES

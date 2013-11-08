@@ -12,6 +12,7 @@ AC_DEFUN([CY_AC_TCL_LYNX_POSIX],
 [AC_REQUIRE([AC_PROG_CC])
 AC_REQUIRE([AC_PROG_CPP])
 AC_REQUIRE([AC_PROG_EGREP])
+# Do actual checking for LynxOS now
 AC_MSG_CHECKING([if running LynxOS])
 AC_CACHE_VAL([ac_cv_os_lynx],
 [AC_EGREP_CPP([LynxOSthing],
@@ -23,7 +24,7 @@ LynxOSthing
 #endif /* __Lynx__ || Lynx */
 ],[ac_cv_os_lynx=yes],[ac_cv_os_lynx=no])])
 #
-if test "$ac_cv_os_lynx" = "yes" ; then
+if test "x${ac_cv_os_lynx}" = "xyes" ; then
   AC_MSG_RESULT([yes])
   AC_DEFINE([LYNX],[1],[Define to 1 for LynxOS])
   AC_MSG_CHECKING([whether -mposix or -X is available])
@@ -36,7 +37,7 @@ if test "$ac_cv_os_lynx" = "yes" ; then
    */
   #if defined(__GNUC__) && __GNUC__ >= 2
   choke me
-  #endif
+  #endif /* __GNUC__ >= 2 */
   ]])],[ac_cv_c_posix_flag=" -mposix"],[ac_cv_c_posix_flag=" -X"])])
   CC="$CC $ac_cv_c_posix_flag"
   AC_MSG_RESULT([$ac_cv_c_posix_flag])
@@ -57,7 +58,7 @@ AC_DEFUN([CY_AC_C_WORKS],
 AC_MSG_CHECKING([whether the compiler ($CC) actually works])
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([[]],[[/* do NOT need anything here */]])],
         [c_compiles=yes],[c_compiles=no])
-
+# Now do linking test
 AC_LINK_IFELSE([AC_LANG_SOURCE([[
 #include <stdio.h>
 ]],[[
@@ -68,11 +69,13 @@ int main(void) {
         [c_links=yes],[c_links=no])
 
 if test x"${c_compiles}" = x"no" ; then
+  # error out
   AC_MSG_ERROR([the native compiler is broken and will NOT compile.])
 fi
 
 if test x"${c_links}" = x"no" ; then
   AC_MSG_RESULT([ ])
+  # Might fail even if it actually works, so just warn
   AC_MSG_WARN([the native linker might be broken.])
 else
   AC_MSG_RESULT([yes])
@@ -516,12 +519,14 @@ dnl# CY_AC_CYGWIN([])
 dnl# You might think we can do this by checking for a cygwin32-specific
 dnl# cpp define.
 AC_DEFUN([CY_AC_CYGWIN],
-[AC_CACHE_CHECK([for Cygwin32 environment],[ac_cv_cygwin32],
+[# Check for Cygwin
+AC_CACHE_CHECK([for Cygwin32 environment],[ac_cv_cygwin32],
 [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[]],[[int main () { return __CYGWIN__; }]])],
 [ac_cv_cygwin32=yes],[ac_cv_cygwin32=no])
 rm -f conftest*])
 CYGWIN=
 test "$ac_cv_cygwin32" = yes && CYGWIN=yes
+# done with Cygwin test
 ])
 
 # Check to see if we are running under Win32, without using
@@ -533,12 +538,23 @@ dnl# This knows we add .exe if we are building in the Cygwin32
 dnl# environment. But if we are not, then it compiles a test program
 dnl# to see if there is a suffix for executables.
 AC_DEFUN([CY_AC_EXEEXT],[
+AC_REQUIRE([AC_EXEEXT])
 AC_REQUIRE([AC_PROG_CC])
 AC_REQUIRE([AC_PROG_CPP])
+AC_REQUIRE([AC_PROG_GREP])
+AC_REQUIRE([AC_PROG_SED])
+AC_REQUIRE([AC_CANONICAL_TARGET])
 AC_REQUIRE([CY_AC_CYGWIN])
+# Do actual checking now
 AC_MSG_CHECKING([for executable suffix])
 AC_CACHE_VAL([ac_cv_exeext],
-[if test "$CYGWIN" = yes; then
+[case "${host_vendor}" in
+  *apple*)
+    unset CYGWIN
+    unset ac_cv_exeext
+    ;;
+esac
+if test "x${CYGWIN}" = "xyes"; then
 ac_cv_exeext=.exe
 else
 cat > ac_c_test.c << 'EOF'
@@ -546,15 +562,21 @@ int main() {
 /* Nothing needed here */
 }
 EOF
+# use blank CFLAGS because generating debug symbols can lead to .dSYM files
+# getting thrown into the mix
+OLD_CFLAGS=${CFLAGS}
+unset CFLAGS
 ${CC-cc} -o ac_c_test $CFLAGS $CPPFLAGS $LDFLAGS ac_c_test.c $LIBS 1>&5
 ac_cv_exeext=`ls ac_c_test.* | grep -v ac_c_test.c | sed -e s/ac_c_test//`
-rm -f ac_c_test*])
+CFLAGS=${OLD_CFLAGS}
+rm -rf ac_c_test*])
 test x"${ac_cv_exeext}" = x && ac_cv_exeext=no
 fi
 EXEEXT=""
 test x"${ac_cv_exeext}" != xno && EXEEXT=${ac_cv_exeext}
 AC_MSG_RESULT([${ac_cv_exeext}])
 AC_SUBST([EXEEXT])
+# Done with exeext check
 ])
 
 # Check for inttypes.h. On some older systems there is a

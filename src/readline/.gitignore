@@ -1,6 +1,7 @@
 *.aux
 *.bt
 *.bts
+*.cache
 *.core
 *.cp
 *.cps
@@ -12,12 +13,14 @@
 *.ky
 *.kys
 *.lo
+*.log
 *.o
 *.og
 *.pg
 *.pgs
 *.so
 *.sum
+*.status
 *.toc
 *.tp
 *.tps
@@ -53,3 +56,5 @@ site.exp
 shlib/Makefile
 shlib/Makefile.orig
 stamp-*
+TAGS
+tags

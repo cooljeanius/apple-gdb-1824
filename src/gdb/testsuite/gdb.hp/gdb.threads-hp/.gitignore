@@ -1,0 +1,17 @@
+*~
+*.o
+*.ci
+core
+usrthbasic
+usrthcore
+usrthfork
+Makefile
+*.status
+*.log
+*-init.exp
+summary
+detail
+*.plog
+*.sum
+*.psum
+site.*

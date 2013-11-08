@@ -10,3 +10,7 @@ core
 sh3
 hppa
 mn10300
+Makefile
+*.status
+*.log
+*.dSYM

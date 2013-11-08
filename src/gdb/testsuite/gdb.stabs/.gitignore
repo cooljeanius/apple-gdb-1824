@@ -5,3 +5,6 @@ tmp.c
 tmp.s
 weird.s
 errs
+Makefile
+*.status
+*.log

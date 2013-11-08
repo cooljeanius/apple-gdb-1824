@@ -12,14 +12,15 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-lcc_dynamic':
-AC_CHECK_LIB([cc_dynamic], [main])
+# FIXME: Replace `main' with a function in `-lintl':
+AC_CHECK_LIB([intl], [main])
 
 # Checks for header files.
 AC_FUNC_ALLOCA
 AC_CHECK_HEADERS([libintl.h stdint.h stdlib.h string.h strings.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
+AC_CHECK_HEADER_STDBOOL
 AC_C_INLINE
 AC_TYPE_INT16_T
 AC_TYPE_INT32_T

@@ -9997,12 +9997,22 @@ test "$ac_cv_cygwin32" = yes && CYGWIN=yes
 
 
 
+
+
+
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for executable suffix" >&5
 $as_echo_n "checking for executable suffix... " >&6; }
 if ${ac_cv_exeext+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test "$CYGWIN" = yes; then
+  case "${host_vendor}" in
+  *apple*)
+    unset CYGWIN
+    unset ac_cv_exeext
+    ;;
+esac
+if test "x${CYGWIN}" = "xyes"; then
 ac_cv_exeext=.exe
 else
 cat > ac_c_test.c << 'EOF'
@@ -10010,9 +10020,14 @@ int main() {
 /* Nothing needed here */
 }
 EOF
+# use blank CFLAGS because generating debug symbols can lead to .dSYM files
+# getting thrown into the mix
+OLD_CFLAGS=${CFLAGS}
+unset CFLAGS
 ${CC-cc} -o ac_c_test $CFLAGS $CPPFLAGS $LDFLAGS ac_c_test.c $LIBS 1>&5
 ac_cv_exeext=`ls ac_c_test.* | grep -v ac_c_test.c | sed -e s/ac_c_test//`
-rm -f ac_c_test*
+CFLAGS=${OLD_CFLAGS}
+rm -rf ac_c_test*
 fi
 
 test x"${ac_cv_exeext}" = x && ac_cv_exeext=no

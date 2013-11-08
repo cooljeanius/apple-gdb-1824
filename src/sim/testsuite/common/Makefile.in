@@ -1,5 +1,5 @@
-CC=gcc
-CFLAGS = -Wall -Werror -I../../common -I../../../include -g
+CC=@CC@
+CFLAGS = -Wall -I../../common -I../../../include -ggdb
 default: check
 
 
@@ -29,9 +29,10 @@ bits64m63.c: bits-gen bits-tst.c
 
 # Verify SIM-FPU
 #
-#check: fpu-tst.ok
-#all: fpu-tst
-
+check-sim-fpu: fpu-tst.ok
+.PHONY: check-sim-fpu
+all-sim-fpu: fpu-tst
+.PHONY: all-sim-fpu
 
 
 # Verify SIM-ALU

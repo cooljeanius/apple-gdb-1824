@@ -78,8 +78,9 @@ AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
   AC_REQUIRE([AC_HEADER_STDC])
 ])
 AC_REQUIRE_HEADER_STDC
+AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
 AC_CHECK_HEADERS([argz.h bits/libc-lock.h byteswap.h ctype.h errno.h \
-                  fcntl.h iconv.h libintl.h limits.h locale.h \
+                  fcntl.h iconv.h langinfo.h libintl.h limits.h locale.h \
                   malloc.h malloc/malloc.h nl_types.h \
                   stddef.h stdio.h sys/mman.h sys/param.h])
 
@@ -121,9 +122,9 @@ AC_FUNC_REALLOC
 AC_FUNC_STRNLEN
 AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify \
                 dcgettext__ dgettext__ errno free fgets getcwd \
-                getenv getwd memcpy mempcpy munmap putenv setenv \
-                setlocale stpcpy strcasecmp strchr strdup \
-                strlen tolower])
+                getenv getwd memcpy mempcpy munmap nl_langinfo putenv \
+                setenv setlocale stpcpy strcasecmp strchr strdup \
+                strlen strstr strtoul tolower])
 AC_CHECK_DECLS([dcgettext__])
 AC_CHECK_DECLS([dgettext__])
 AC_CHECK_DECLS([free])

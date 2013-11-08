@@ -10,3 +10,13 @@ coremaker.core
 corefile
 altivec-abi
 altivec-regs
+Makefile
+*.status
+*.log
+*-init.exp
+summary
+detail
+*.plog
+*.sum
+*.psum
+site.*

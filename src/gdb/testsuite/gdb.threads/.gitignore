@@ -7,3 +7,8 @@ xgdb
 *.tmp
 core*
 pthreads
+Makefile
+*.status
+*.log
+config.h
+*.dSYM

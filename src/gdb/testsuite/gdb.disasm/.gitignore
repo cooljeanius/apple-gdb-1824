@@ -7,3 +7,13 @@ h8300s
 hppa
 mn10300
 sh3
+Makefile
+*.status
+*.log
+*-init.exp
+summary
+detail
+*.plog
+*.sum
+*.psum
+site.*

@@ -9,3 +9,13 @@ core.coremaker
 coremaker.core
 corefile
 arch.inc
+Makefile
+*.status
+*.log
+*-init.exp
+summary
+detail
+*.plog
+*.sum
+*.psum
+site.*

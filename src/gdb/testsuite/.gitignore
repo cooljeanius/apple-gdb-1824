@@ -18,3 +18,19 @@ site.exp
 *.psum
 summary
 detail
+
+# gitignoring temporarily to commit separately:
+gdb.ada/*
+gdb.arch/*
+gdb.base/*
+gdb.cell/*
+gdb.cp/*
+gdb.dwarf2/*
+gdb.mi/*
+gdb.modula2/*
+gdb.opt/*
+gdb.pascal/*
+gdb.python/*
+gdb.reverse/*
+gdb.threads/*
+gdb.xml/*
