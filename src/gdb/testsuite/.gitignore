@@ -18,6 +18,3 @@ site.exp
 *.psum
 summary
 detail
-
-# gitignoring temporarily to commit separately:
-gdb.xml/*
