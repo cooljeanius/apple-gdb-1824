@@ -20,6 +20,5 @@ summary
 detail
 
 # gitignoring temporarily to commit separately:
-gdb.reverse/*
 gdb.threads/*
 gdb.xml/*
