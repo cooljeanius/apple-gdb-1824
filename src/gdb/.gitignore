@@ -47,7 +47,3 @@ jv-exp.c
 m2-exp.c
 objc-exp.c
 p-exp.c
-
-# gitignoring temporarily to commit separately:
-regformats/*
-
