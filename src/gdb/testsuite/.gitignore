@@ -20,7 +20,6 @@ summary
 detail
 
 # gitignoring temporarily to commit separately:
-gdb.arch/*
 gdb.base/*
 gdb.cell/*
 gdb.cp/*
