@@ -1,0 +1,9 @@
+*~
+*.o
+*.ci
+core
+Makefile
+*.status
+*.log
+*.dSYM
+unbounded1
