@@ -1,0 +1,11 @@
+*~
+*.o
+*.ci
+core
+py-value
+py-prettyprint
+py-template
+Makefile
+*.status
+*.log
+py-frame
