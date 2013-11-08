@@ -1,0 +1,616 @@
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    more gitlog scripts
+
+    Change-Id: I50d0d2417336e89686f55672d852a43947c98800
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    add script for converting git log to GNU ChangeLog
+
+    found via:
+    http://git.661346.n2.nabble.com/Generating-GNU-style-Changelog-from-git-commits-td6279979.html
+    which led to:
+    https://raw.github.com/cryos/avogadro/master/scripts/gitlog2changelog.py
+
+    Change-Id: I8693405a2ce9009618c0081e2084014e22cb54e5
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/sim/testsuite/sim/v850
+
+    Change-Id: I59a5cdd9a2f34aa3b31b0a90dc37b63067a3cf5a
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/sim/testsuite/sim/sh
+
+    Change-Id: If8f70bf942380d5e7b02c53101f8335c4174862d
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/sim/testsuite/sim/mips
+
+    Change-Id: I6751c4ce645029f6381874bd492d7c6410190412
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/sim/testsuite/sim/h8300
+
+    Change-Id: I8e7a71d24983c627b6681c7bcd4c03276c87d451
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/sim/testsuite/sim/frv
+
+    Change-Id: I7d84934177ceb54e661effb713e3b891a3d9155b
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/sim/testsuite/sim/cris
+
+    Change-Id: Ia04ef3fb9e2392f9e5ab6654de02d02639bbb885
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/sim/testsuite/sim/cr16
+
+    Change-Id: I4fd13444e30a5589c0fffc45ad19dc9e7172a454
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/sim/testsuite/sim/arm
+
+    Change-Id: I9b35d1dcdefff47e174188aedfc5889074ef7191
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    move gitignoring for src/sim/testsuite/sim deeper one level
+
+    Change-Id: I27717a979085d089abc6816e7a30578bf49b512a
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    move src/readline/examples/rlfe directory to
+    src/readline/examples/rlfe.dir
+
+    this way it avoids the gitignore and no longer conflicts with the
+    executable created by src/readline/examples/rlfe.c
+
+    Change-Id: I52b90e03dd7ce2811424bb3f245eaa13f2e08ccc
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/gdb/testsuite/gdb.xml
+
+    Change-Id: Ib2049d3314e563610f6d248822f365a9e04e0737
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore new files added to src/gdb/testsuite/gdb.threads
+
+    Change-Id: I9f4d76b6eae6d29629dfe40f5e0ede17bf89ef7e
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/gdb/testsuite/gdb.reverse
+
+    Change-Id: Ic41b8670dde5b958a9bcc3c48cd0e19268b3cbee
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/gdb/testsuite/gdb.python
+
+    Change-Id: Ic73fd3a132295a4eabdd4168757458d3713c6be1
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/gdb/testsuite/gdb.pascal
+
+    Change-Id: Ie20105d9396822af1b73ecb9c9e72d7c5937ff96
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/gdb/testsuite/gdb.opt
+
+    Change-Id: I3b2eced6a856a3ee8fb61370dc2eeead54b69db9
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/gdb/testsuite/gdb.modula2
+
+    Change-Id: Ie63c2fc8055dcc00124898b0a90317af3a8e3565
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore new files added to src/gdb/testsuite/gdb.mi
+
+    Change-Id: I2f52443659aca162c231e8e889fc15b1b51c6a44
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore new files added to src/gdb/testsuite/gdb.dwarf2
+
+    Change-Id: I282b1fc9a12b086fe5868635ce49c8e7c2ebcf41
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore new files added to src/gdb/testsuite/gdb.cp
+
+    Change-Id: Ied1c05fb1967807b91ad8a3b0cd62fd8a9ad142b
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/gdb/testsuite/gdb.cell
+
+    Change-Id: Ia674fb9fb126613bc3c75a63eda5d398ae1e0c62
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore new files added to src/gdb/testsuite/gdb.base
+
+    Change-Id: I1184642fce90fd5161b5f5ff6c2df980e34286e3
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore new files added to src/gdb/testsuite/gdb.arch
+
+    Change-Id: If81c6589f9ff97bf90e3bf941e0168e4704ed741
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore new files added to src/gdb/testsuite/gdb.ada
+
+    Change-Id: I320153e8fa37eab67e372247c8335b42ecc23968
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/gdb/regformats
+
+    Change-Id: I05f3e89915221a7b49dc51bcf151659f8e61a17a
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/gdb/gnulib
+
+    and get it to work properly
+
+    Change-Id: I60ee5ab9c113901f57ec9d41e047b9455f59ff31
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    generate binutils docs
+
+    (for some reason `make distclean` does NOT remove them, so I guess they
+    get to stay...)
+
+    Change-Id: I5afa5e1a516c06308e4a97b2462773e82b13f626
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/libdecnumber
+
+    Change-Id: Ib311bde998e1aaaa95e2696be728e2df39d7eb97
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    copy over some things from the macgdb git submodule
+
+    also:
+    - run testsuite
+    - gitignore more things
+    - add `--enable-64-bit-bfd` configure flag to configure script in src/
+    - let dejagnu be configured from the configure script in src/
+    - fix exeext being set for expect on platforms where it is NOT needed
+    (this allows expect-based testsuites to be run with this local copy of
+    expect)
+    - more comments in the configure script in src/expect/testsuite
+    - more configure checks in src/gdb/
+    - various other tweaks
+
+    Change-Id: I5f013e8f0aa1e1e4f77cdbc66b6bd3c814d6a1da
+
+2013-11-07  Eric Gallager  <egallager@comcast.net>
+
+    add back some more old files from older tarballs
+
+    Change-Id: Ifae1e63957a4e419ab4061c6093d346fbaf3fa17
+
+2013-11-06  Eric Gallager  <egallager@comcast.net>
+
+    delete file that should be gitignored
+
+    Change-Id: I402e8b145d05a8d3ebae39e0636b77c83ceac201
+
+2013-11-06  Eric Gallager  <egallager@comcast.net>
+
+    get a little farther in compiling with the top-level makefile
+
+    for some reason it complains about missing i386 symbols when
+    cross-compiling for ARM?
+
+    Change-Id: Ia8b6e3ec256d953d261dd8e1a3721a7ed44ef63c
+
+2013-11-06  Eric Gallager  <egallager@comcast.net>
+
+    more trying to get to build
+
+    - expand top-level configure script
+    - intltoolize
+    - make build-aux and m4 subdirectories at the top level
+    - work on arm tdep files
+
+    Change-Id: I92d1a82fac6aab2ea126a9248eb1cd1fa1acc77c
+
+2013-11-06  Eric Gallager  <egallager@comcast.net>
+
+    get top-level makefile to go a little farther
+
+    do this by fixing framework build in src/Makefile
+    also silence some warnings in src/intl
+    also run `tab2space` on src/gdb/ChangeLog-Apple
+    still broken: src/gdb/macosx/arm-macosx-tdep.c
+
+    Change-Id: I6f7baf032f0d518e8d1ce37cf5326a8c01f4bca9
+
+2013-11-06  Eric Gallager  <egallager@comcast.net>
+
+    should have been in previous commit
+
+    the top-level configure script gets moved aside
+    occasionally
+
+    Change-Id: I0f306672719e6d6bb42c776a2550eb9f95b85537
+
+2013-11-06  Eric Gallager  <egallager@comcast.net>
+
+    multiple miscellaneous tweaks
+
+    - set HOST_ARCHITECTURE in .profile_snowleopard
+    - some more configure checks
+    - prefer the -ggdb flag to the -g flag
+    - minor formatting and apostrophe-phobia
+    - make sure more headers define everything gettext-related properly, in
+    case that libintl.h does NOT do so properly
+    - try to fix building binutils as a framework (still broken)
+
+    Change-Id: I573a6892824a036e0329befaf18474201904b484
+
+2013-11-04  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/dejagnu
+
+    Change-Id: Iee956150a2f3d28f49fa7e9e431fbdfa8e9a9238
+
+2013-11-03  Eric Gallager  <egallager@comcast.net>
+
+    src/expect tweaks
+
+    - silence some warnings
+    - check a few more functions in the configure script
+
+    Change-Id: I1f3659ceff16e911d8b5ec88822d5b531535cde4
+
+2013-11-02  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/expect
+
+    Change-Id: I9b312656b01283230608011e26992c577abc48e2
+
+2013-11-02  Eric Gallager  <egallager@comcast.net>
+
+    try to get src/tcl/unix/dltest to work properly from its parent
+    directory
+
+    and other misc. src/tcl/unix changes
+
+    Change-Id: I754d4b0647cd94398eff94fc127ae2e4636bb1c0
+
+2013-11-02  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/tcl
+
+    Change-Id: I438b1fc4ad6e874ec0ab2445d9bfb527d6006859
+
+2013-11-01  Eric Gallager  <egallager@comcast.net>
+
+    improve src/sim
+
+    make it more robust to target subdirs getting deleted out from under
+    it, or them not being present due to being gitignored
+
+    Change-Id: I16d121cf5b8a5f8936279e14a19a1cebcb8575ab
+
+2013-11-01  Eric Gallager  <egallager@comcast.net>
+
+    more src/sim/common changes
+
+    - some files said in their commentary that they had to conform to K&R
+    C, so vendor in a copy of ansi2knr.c
+    - check for a few more things in the configure script
+    - more ifdef-ing
+    - more apostrophe-phobia
+    - formatting
+    - add a universal version of the top-level .profile_leopard (all that
+    is different is that it adds an extra arch flag)
+
+    Change-Id: Ib48912d745531acc399d3d7a806f10a7362b0086
+
+2013-10-28  Eric Gallager  <egallager@comcast.net>
+
+    minor variable quoting
+
+    Change-Id: I0000dc53f829b5814eab7d2f2d02ce162413f19e
+
+2013-10-28  Eric Gallager  <egallager@comcast.net>
+
+    minor gitignore update
+
+    Change-Id: I394aac0f14d38f271a77ecfd73e136cc52beaf28
+
+2013-10-28  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/sim/testsuite/*
+
+    it only works now because it does not actually contain any actual tests
+    yet
+
+    Change-Id: I832bef248e711531a63b2974f96931f267ced3ce
+
+2013-10-28  Eric Gallager  <egallager@comcast.net>
+
+    src/sim/testsuite works now
+
+    (still need to check its subdirs though)
+
+    Change-Id: I256a42eb358e4d12db16b9e944ceccbfc9ff1026
+
+2013-10-28  Eric Gallager  <egallager@comcast.net>
+
+    Update README.md
+
+    one more minor edit
+
+2013-10-28  Eric Gallager  <egallager@comcast.net>
+
+    Update README.md
+
+    minor edit
+
+2013-10-28  Eric Gallager  <egallager@comcast.net>
+
+    src/sim/igen works ok now
+
+    Change-Id: Ifc8ba003e8b1aeae93298d6ea6068c9f449d2533
+
+2013-10-27  Eric Gallager  <egallager@comcast.net>
+
+    more trying to get simulators to work
+
+    - add upstream patch changing `fdopen` and `alwaysopen` to `fd_buddy`
+    - configure tweaks
+
+    Change-Id: I4954cf3fe6e677e28a80e82d868df1456c45898f
+
+2013-10-27  Eric Gallager  <egallager@comcast.net>
+
+    try to fix more errors with src/sim/common/callback.c
+
+    (still broken)
+
+    Change-Id: Ie59bb28c4d079418e39dafbac66a6179b8f0bd0b
+
+2013-10-26  Eric Gallager  <egallager@comcast.net>
+
+    try to fix building of simulators (still broken)
+
+    Change-Id: I47a724a4be92b5a528c1780b331bbcacccccefc0
+
+2013-10-26  Eric Gallager  <egallager@comcast.net>
+
+    forgot to save this file in time for the previous commit
+
+    Change-Id: I649f13142258455afa78b1294406262e62564b51
+
+2013-10-26  Eric Gallager  <egallager@comcast.net>
+
+    add patches from fG!'s gdb-ng
+
+    https://github.com/gdbinit/gdb-ng
+
+    Change-Id: I78ee3c79c566a6b86506cb40a618a0c109392f52
+
+2013-10-26  Eric Gallager  <egallager@comcast.net>
+
+    try to do some more things to make buildable with the top-level
+    makefile
+
+    - make sure more Makefile targets depend on config.status, as we are
+    now removing and re-creating config.status-es to trick configure
+    scripts when cross-compiling
+    - add options to use dmalloc in more things
+    - try to deal with different modules having trouble finding the proper
+    malloc/realloc functions (this was especially bad with readline, so I
+    just copied the malloc.c and realloc.c sources from gnulib into that
+    module... I did NOT feel like doing that for all of them though...)
+    - add back some files that Apple removed from the distribution but left
+    referenced in their Xcode project
+    - link libintl against CoreFoundation
+    - Try to get binutils to properly link against libintl
+    - set same environment variables in the Xcode project as we do in the
+    .profile_snowleopard and .profile_leopard files at the top level
+    - silence warnings about re-defining LC_MESSAGES
+    - make some changes to libiberty's configure script now that regex.c
+    has been added back to its source (regex.c still has to be compiled
+    separately from the makefile though, with `gcc -c -DHAVE_CONFIG_H -g
+    -O2 -I. -I./../include -D_DARWIN_UNLIMITED_STREAMS
+    -mmacosx-version-min=10.6 -W -Wall -pedantic -Wwrite-strings
+    -Wstrict-prototypes ./regex.c -o regex.o`)
+    - some minor reformatting
+    - silence some clang-produced warnings for readline
+    - symlink src/intl to src/libintl (because that is the whole name
+    for it)
+
+    Change-Id: Ib073c3ca43523975c0157b1addf1b39fcc97dd67
+
+2013-10-23  Eric Gallager  <egallager@comcast.net>
+
+    these should have gone in the previous commit
+
+    Change-Id: I175b76754a9506125f1db3cfde9a0cdbfbc0567f
+
+2013-10-23  Eric Gallager  <egallager@comcast.net>
+
+    try setting some environment variables to get the toplevel
+    Makefile to work as Apple intended
+
+    Change-Id: I22e15c14c87af05afc98495b79f4c9be46af4b31
+
+2013-10-21  Eric Gallager  <egallager@comcast.net>
+
+    Update Readme.md
+
+    for darwinbuild
+
+2013-10-18  Eric Gallager  <egallager@comcast.net>
+
+    replace git hooks with versions actually used
+
+    Change-Id: I053d4c29e0105b94b347055bf427cf45cafbda57
+
+2013-10-16  Eric Gallager  <egallager@comcast.net>
+
+    clean a few more things with `make clean`
+
+    Change-Id: Ic13fee9ef47cab02d13a3b234c39431ea355dd06
+
+2013-10-16  Eric Gallager  <egallager@comcast.net>
+
+    touch some xml files to see if the git hooks will affect them.
+
+    Change-Id: I9f2877d2d1d06170fcdbeb0a67385f2822a1d14e
+
+2013-10-16  Eric Gallager  <egallager@comcast.net>
+
+    Add some git hooks
+
+    Change-Id: Ibcd0a0cd891d392b54a8b123269291a8c5419161
+
+2013-10-16  Eric Gallager  <egallager@comcast.net>
+
+    minor changelog formatting
+
+2013-10-16  Eric Gallager  <egallager@comcast.net>
+
+    try to get simulator symlinking working
+
+2013-10-15  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/sim
+
+2013-10-15  Eric Gallager  <egallager@comcast.net>
+
+    minor formatting
+
+2013-10-15  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/utils
+
+2013-10-15  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/etc
+
+2013-10-14  Eric Gallager  <egallager@comcast.net>
+
+    Create README.md
+
+    top-level one, that is
+
+2013-10-14  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore src/mmalloc
+
+2013-10-14  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore top-level html docs
+
+2013-10-14  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore top-level dvi docs
+
+2013-10-14  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore top-level pdf docs
+
+2013-10-14  Eric Gallager  <egallager@comcast.net>
+
+    ungitignore top-level postscript docs
+
+2013-10-14  Eric Gallager  <egallager@comcast.net>
+
+    I should have remembered that I hate submodules...
+
+2013-10-14  Eric Gallager  <egallager@comcast.net>
+
+    un-gitignore libcheckpoint
+
+2013-10-14  Eric Gallager  <egallager@comcast.net>
+
+    hoo boy, this is going to be a long changelog...
+
+    - gitignore more things
+    - make top-level makefile recurse into subdirectories
+    - have top-level configure script move itself aside after it runs
+    - wrap text more tightly in various files
+    - do stuff to try to fix src/Makefile (still not sure whether it
+    ultimately ends up getting generated by automake or autogen...)
+    - move deprecated "cygnus" Automake option to a separate unused
+    variable in various Makefile.am files
+    - make a bunch of changes to configure scripts (mostly silencing
+    autoscan/autoreconf warnings and stuff)
+    - I temporarily broke src/bfd, but managed to fix it again before
+    committing...
+    - lower -mmacosx-version-min from 10.7 to 10.6 wherever found
+    because I am still on Snow Leopard
+    - excessively "#ifdef" the includes of files that were giving me
+    compilation problems
+    - be more apostrophe-phobic
+    - chmod certain scripts to be executable
+    - get gdbserver to at least compile for i386/x86_64 darwin, via
+    gratuitous copying and pasting from the Linux versions of the
+    relevant i386 files
+    - try to get the Xcode project to work, but that is hopeless...
+    - some subdirectories that did not used to use autoheader now do,
+    as such some files might be missing an include for "config.h"
+    - Add a list of older tarballs that were the last versions to
+    contain certain files and directories
+    - Add said files from older tarballs
+    - Add a readme about the darwinbuild plist (still seeing some
+    errors with it)
+    - copy in some files from gnulib and other GNU sources
+
+2013-09-23  Eric Gallager  <egallager@comcast.net>
+
+    multiple changes
+
+    - wrap lines more tightly
+    - be more apostrophe-phobic
+    - xmllint doc/ReleaseNotes.xml
+    (still more editing to do)
+
+2013-09-23  Eric Gallager  <egallager@comcast.net>
+
+    Add cooljeanius/macgdb as a git submodule
+
+    I will eventually try to merge it with the `src` subdirectory
+
+2013-09-23  Eric Gallager  <egallager@comcast.net>
+
+    add a top-level configure script
+
+    also move darwinbuild plist to its own subdirectory
+
+2013-09-23  Eric Gallager  <egallager@comcast.net>
+
+    Initial import from tarball from opensource.apple.com
+

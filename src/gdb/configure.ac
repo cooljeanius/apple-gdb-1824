@@ -39,6 +39,13 @@ AM_PROG_CC_STDC
 
 AC_CONFIG_AUX_DIR([..])
 AC_CANONICAL_TARGET
+
+# Automake (we can use this now that gnulib has a Makefile.am, even if
+# srcdir itself still uses just a Makefile.in)
+if test -f ${srcdir}/config.status; then
+  AC_MSG_NOTICE([config.status is already present, removing it.])
+  rm -f ${srcdir}/config.status
+fi
 AM_INIT_AUTOMAKE([1.11 gnu dejagnu])
 AM_SANITY_CHECK
 
@@ -439,6 +446,11 @@ else
 	test -z "$AR"
 	AC_CHECK_TOOL([AR],[ar])
 fi
+if test -e ./config.cache; then
+	sed -i "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
+	sed -i "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
+	sed -i "s|ac_cv_exeext|bad_exeext|g" ./config.cache
+fi
 AM_PROG_AS
 AC_PROG_CXX
 LT_INIT([disable-fast-install dlopen])
@@ -499,6 +511,7 @@ AC_DEFUN([AM_INIT_MY_AUTOMAKE_LITE],[
   m4_pattern_allow([^AM_[A-Z]+FLAGS$])dnl
   AC_REQUIRE([AM_SET_CURRENT_AUTOMAKE_VERSION])dnl
   AC_REQUIRE([AC_PROG_INSTALL])dnl
+  AC_REQUIRE([AC_PROG_SED])dnl
 
   # test whether we have cygpath
   if test -z "$CYGPATH_W"; then
@@ -2111,5 +2124,13 @@ gdb_target_cpu=$gdb_target_cpu
 nativefile=$nativefile
 ])
 AC_OUTPUT
+
+if test "${srcdir}" != "."; then
+  if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
+    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+  elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
+    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+  fi
+fi
 
 exit 0
