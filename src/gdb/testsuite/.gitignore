@@ -20,7 +20,6 @@ summary
 detail
 
 # gitignoring temporarily to commit separately:
-gdb.dwarf2/*
 gdb.mi/*
 gdb.modula2/*
 gdb.opt/*
