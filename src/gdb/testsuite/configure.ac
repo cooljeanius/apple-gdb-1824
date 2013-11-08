@@ -74,6 +74,10 @@ case "${target}" in
     enable_gdbtk=no ;;
 esac
 
+# Other system-related checks
+AC_SYS_LARGEFILE
+AC_SYS_LONG_FILE_NAMES
+
 # Add gdbtk tests when appropriate.
 if test $enable_gdbtk = yes; then
    AC_CONFIG_SUBDIRS([gdb.gdbtk])
@@ -109,8 +113,13 @@ AC_SUBST([RPATH_ENVVAR])
 
 # Checks for programs.
 AC_PROG_AWK
-AC_PROG_CC
-AC_PROG_CXX
+AC_DEFUN([AC_REQUIRE_COMPILER],[
+  AC_REQUIRE([AC_PROG_CC])
+  AC_REQUIRE([AC_PROG_CPP])
+  AC_REQUIRE([AC_PROG_CXX])
+  AC_REQUIRE([AC_PROG_GCC_TRADITIONAL])
+])
+AC_REQUIRE_COMPILER
 AC_PROG_INSTALL
 
 # Checks for header files.

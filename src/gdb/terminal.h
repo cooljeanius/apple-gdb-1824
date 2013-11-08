@@ -23,7 +23,7 @@
 #define TERMINAL_H 1
 
 
-/* If we're using autoconf, it will define HAVE_TERMIOS_H,
+/* If we are using autoconf, it will define HAVE_TERMIOS_H,
    HAVE_TERMIO_H and HAVE_SGTTY_H for us. One day we can rewrite
    ser-unix.c and inflow.c to inspect those names instead of
    HAVE_TERMIOS, HAVE_TERMIO and the implicit HAVE_SGTTY (when neither
@@ -32,22 +32,22 @@
    thing. */
 
 #if !defined (HAVE_TERMIOS) && !defined(HAVE_TERMIO) && !defined(HAVE_SGTTY)
-#if defined(HAVE_TERMIOS_H)
-#define HAVE_TERMIOS
-#else /* ! defined (HAVE_TERMIOS_H) */
-#if defined(HAVE_TERMIO_H)
-#define HAVE_TERMIO
-#else /* ! defined (HAVE_TERMIO_H) */
-#if defined(HAVE_SGTTY_H)
-#define HAVE_SGTTY
-#endif /* ! defined (HAVE_SGTTY_H) */
-#endif /* ! defined (HAVE_TERMIO_H) */
-#endif /* ! defined (HAVE_TERMIOS_H) */
+# if defined(HAVE_TERMIOS_H)
+#  define HAVE_TERMIOS
+# else /* ! defined (HAVE_TERMIOS_H) */
+#  if defined(HAVE_TERMIO_H)
+#   define HAVE_TERMIO
+#  else /* ! defined (HAVE_TERMIO_H) */
+#   if defined(HAVE_SGTTY_H)
+#    define HAVE_SGTTY
+#   endif /* ! defined (HAVE_SGTTY_H) */
+#  endif /* ! defined (HAVE_TERMIO_H) */
+# endif /* ! defined (HAVE_TERMIOS_H) */
 #endif /* !defined (HAVE_TERMIOS) && !defined(HAVE_TERMIO) && !defined(HAVE_SGTTY) */
 
 #if defined(HAVE_TERMIOS)
-#include <termios.h>
-#endif
+# include <termios.h>
+#endif /* HAVE_TERMIOS */
 
 #if !defined(_WIN32) && !defined (HAVE_TERMIOS)
 
