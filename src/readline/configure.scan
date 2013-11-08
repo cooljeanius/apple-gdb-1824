@@ -53,5 +53,5 @@ AC_CONFIG_FILES([Makefile
                  doc/Makefile
                  examples/Makefile
                  shlib/Makefile])
-AC_CONFIG_SUBDIRS([examples/rlfe])
+AC_CONFIG_SUBDIRS([examples/rlfe.dir])
 AC_OUTPUT

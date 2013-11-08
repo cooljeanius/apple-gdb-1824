@@ -1,0 +1,13 @@
+*.status
+Makefile
+config.h
+rlfe.o
+pty.o
+rlfe
+*.o
+tty.c
+term.h
+comm.h
+osdef.h
+kmapdef.c
+core

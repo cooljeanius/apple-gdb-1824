@@ -374,7 +374,7 @@ AC_CONFIG_FILES([Makefile \
                  examples/Makefile.orig \
                  shlib/Makefile \
                  shlib/Makefile.orig])
-AC_CONFIG_SUBDIRS([examples/rlfe])
+AC_CONFIG_SUBDIRS([examples/rlfe.dir])
 AC_CONFIG_COMMANDS([default],[
 # Makefile uses this timestamp file to record whether config.h is up to
 # date.

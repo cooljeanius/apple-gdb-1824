@@ -98,7 +98,7 @@ host_triplet = @host@
 target_triplet = @target@
 subdir = shlib
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.orig.in
+	$(top_srcdir)/support/mkinstalldirs $(srcdir)/Makefile.orig.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps =  \
 	$(top_srcdir)/m4/ax_check_page_aligned_malloc.m4 \
@@ -114,7 +114,7 @@ am__aclocal_m4_deps =  \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
-mkinstalldirs = $(install_sh) -d
+mkinstalldirs = $(SHELL) $(top_srcdir)/support/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES = Makefile.orig
 CONFIG_CLEAN_VPATH_FILES =
@@ -414,6 +414,7 @@ psdir = @psdir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
+subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target = @target@
 target_alias = @target_alias@
