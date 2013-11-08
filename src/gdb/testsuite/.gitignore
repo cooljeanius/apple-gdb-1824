@@ -20,5 +20,4 @@ summary
 detail
 
 # gitignoring temporarily to commit separately:
-gdb.threads/*
 gdb.xml/*
