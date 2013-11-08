@@ -1,0 +1,14 @@
+binutils.dvi
+binutils.pdf
+binutils.ps
+binutils.html
+*libs/*
+binutils.t2d
+binutils.t2p
+c++filt.1
+*.lo
+site.exp
+site.bak
+*.sum
+*.log
+Makefile

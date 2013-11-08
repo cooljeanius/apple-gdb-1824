@@ -18,6 +18,7 @@ bfd.pdf
 bdf.ps
 bfd.html
 chew
+*.dSYM
 *.o
 *.lo
 bfd.info
