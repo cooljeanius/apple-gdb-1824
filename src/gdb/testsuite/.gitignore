@@ -20,7 +20,6 @@ summary
 detail
 
 # gitignoring temporarily to commit separately:
-gdb.pascal/*
 gdb.python/*
 gdb.reverse/*
 gdb.threads/*
