@@ -65,6 +65,3 @@ serdep.tmp
 update.out
 update.sourceware
 
-# gitignoring temporarily to commit separately:
-libdecnumber/*
-

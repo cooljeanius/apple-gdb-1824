@@ -1,0 +1,11 @@
+*.status
+Makefile
+config.h
+gstdint.h
+*.o
+libdecnumber.a
+*.cache
+stamp-*
+*.log
+configure*.lineno
+localedir.h*
