@@ -39,6 +39,7 @@ AM_PROG_CC_STDC
 
 AC_CONFIG_AUX_DIR([..])
 AC_CANONICAL_TARGET
+AM_INIT_AUTOMAKE([1.11 gnu dejagnu])
 AM_SANITY_CHECK
 
 dnl# List of object files and targets accumulated by configure.
@@ -487,8 +488,10 @@ AC_CHECK_TOOL([WINDRES],[windres])
 # (and for separate reasons for OS X)
 AC_CHECK_TOOL([MIG],[mig])
 
-dnl# We cannot actually use AM\_INIT\_AUTOMAKE here, but we do need
-dnl# some of its checks, so define this lite version of the macro:
+dnl# We could not originally use AM\_INIT\_AUTOMAKE here (I have since 
+dnl# added it above since then), but we might still need some of its
+dnl# checks separately, so define this lite version of the macro
+dnl# (only the AC\_REQUIRE'd parts, to prevent duplication):
 AC_DEFUN([AM_INIT_MY_AUTOMAKE_LITE],[
   AC_PREREQ([2.65])
   dnl# Autoconf wants to disallow AM_ names. We explicitly allow
@@ -529,7 +532,10 @@ AC_DEFUN([AM_INIT_MY_AUTOMAKE_LITE],[
   AC_REQUIRE([AM_MAINTAINER_MODE])dnl
   AC_REQUIRE([AC_PROG_GREP])dnl
   AC_REQUIRE([AM_PROG_CC_STDC])dnl
+  AC_REQUIRE([AM_SET_DEPDIR])dnl
+  AC_REQUIRE([AM_OUTPUT_DEPENDENCY_COMMANDS])dnl
   AC_REQUIRE([AM_MAKE_INCLUDE])dnl
+  AC_REQUIRE([AM_DEP_TRACK])dnl
 ])
 AM_INIT_MY_AUTOMAKE_LITE
 

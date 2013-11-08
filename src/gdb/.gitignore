@@ -49,6 +49,5 @@ objc-exp.c
 p-exp.c
 
 # gitignoring temporarily to commit separately:
-gnulib/*
 regformats/*
 
