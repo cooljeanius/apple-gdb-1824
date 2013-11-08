@@ -10,3 +10,17 @@ Makefile
 *.status
 *.log
 *.dSYM
+gdb669-pthreads
+gdb701
+mi-console
+mi-non-stop
+mi-non-stop-exit
+mi-nsintrall
+mi-nsmoribund
+mi-nsthrexec
+mi-read-memory
+mi-syn-frame
+mi-var-invalidate
+mi2-pthreads
+pthreads
+until

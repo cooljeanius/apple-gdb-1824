@@ -20,7 +20,6 @@ summary
 detail
 
 # gitignoring temporarily to commit separately:
-gdb.mi/*
 gdb.modula2/*
 gdb.opt/*
 gdb.pascal/*
