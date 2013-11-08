@@ -1,6 +1,5 @@
 # gitignore other subdirectories that are so big that I will have
 # to commit them separately later:
-arm/*
 cr16/*
 cris/*
 frv/*
