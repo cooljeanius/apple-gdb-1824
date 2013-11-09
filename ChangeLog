@@ -1,5 +1,13 @@
 2013-11-08  Eric Gallager  <egallager@comcast.net>
 
+	copy the gdb.plist file back to the top level now that I know where it *actually* goes
+
+	plus the top-level makefile looks for it in the top-level directory
+
+	Change-Id: I46ae5f8f199efe9d2069135d6baffb1a5c91869e
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
 	add gdb admin scripts and htdocs
 
 	`git cvsimport` did *not* seem to do anything for me, so instead I had
