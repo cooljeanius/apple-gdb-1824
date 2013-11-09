@@ -1,0 +1,307 @@
+#!/bin/sh -x
+
+# FIXME: brobecker/2009-11-10:  There is a short period of time during
+# which we have swapped in an incomplete copy of the onlinedocs, causing
+# temporary broken links.  The proper fix would be to do the swap after
+# everything has been installed in a temporary location.
+
+PATH=/home/gdbadmin/bin/texlive/2010/bin/i386-linux:/usr/local/bin:/bin:/usr/bin:$HOME/bin
+export PATH
+
+# Direct stderr into stdout but still hang onto stderr (/dev/fd/3)
+exec 3>&2 2>&1
+ECHO ()
+{
+#   echo "$@" | tee /dev/fd/3 1>&2
+    echo "$@" 1>&2
+    echo "$@" 1>&3
+}
+
+# Really mindless usage
+if test $# -ne 4
+then
+    echo "Usage: $0 <snapshot> <tmpdir> <destdir> <project>" 1>&2
+    exit 1
+fi
+snapshot=$1 ; shift
+tmpdir=$1 ; shift
+wwwdir=$1 ; shift
+project=$1 ; shift
+
+if [ ! -w ${wwwdir} -o ! -d ${wwwdir} ]
+then
+  echo ERROR: Can not write to directory ${wwwdir} >&2
+  exit 2
+fi
+
+if [ ! -r ${snapshot} ]
+then
+    echo ERROR: Can not read snapshot file 1>&2
+    exit 1
+fi
+
+
+echo `date`: Unpacking tar-ball ...
+/bin/rm -rf ${tmpdir}
+/bin/mkdir ${tmpdir}
+cd ${tmpdir} || exit 1
+case ${snapshot} in
+    *.tar.bz2 ) bzcat ${snapshot} ;;
+    *.tar ) cat ${snapshot} ;;
+    * ) ECHO Bad file ${snapshot} ; exit 1 ;;
+esac | tar xf -
+module=`basename ${snapshot}`
+module=`basename ${module} .bz2`
+module=`basename ${module} .tar`
+srcdir=${tmpdir}/`echo ${module}*`
+version_in=${srcdir}/gdb/version.in
+# We are now piggy-backing on BFD to get the source date...
+version_date=${srcdir}/bfd/version.h
+if [ ! -r ${version_in} ]
+then
+    echo "ERROR: missing version file ($version_in)" 1>&2
+    exit 1
+fi
+if [ ! -r ${version_date} ]
+then
+    echo "ERROR: missing version date file ($version_date)" 1>&2
+    exit 1
+fi
+date=`sed -n -e 's/^.* BFD_VERSION_DATE \(.*\)$/\1/p' ${version_date}`
+version=`cat ${version_in} | sed "s/DATE/$date/"`
+
+echo `date`: configure things
+cd ${srcdir}
+./configure
+make configure-${project}
+make info
+
+
+echo `date`: Create HTML files
+for dir in ${project}
+do
+    (
+	cd ${srcdir}/${dir}/doc
+	# First generate the HTML documentation in one single file.
+	make html MAKEHTMLFLAGS=--no-split >/dev/null
+        # Now, generate the "split" version of the documentation.
+	make html >/dev/null
+    )
+done
+
+
+echo `date`: Find all the HTML files in the repository, except those in directories
+# we do not care about (Attic, texinfo, etc).
+find ${project} -name \*.html -print \
+| egrep -v '/texinfo/|Attic|/etc/' \
+| if [ -f /sourceware/projects/${project}-home/doc-exclude ]
+then
+    fgrep -v -f/sourceware/projects/${project}-home/doc-exclude
+else
+    cat
+fi > FILES
+
+
+if [ ! -s FILES ]
+then
+    echo ERROR: No .html files found >&2
+    exit 4
+fi
+
+
+echo "`date`: Edit all the generated files adding in (C) and the like"
+cat FILES | while read file
+do
+    ed ${file} <<EOF
+/This document was generated/i
+
+<address>
+
+<p>Please send FSF &amp; GNU inquiries &amp; questions to <a
+href="mailto:gnu@gnu.org">gnu@gnu.org</a>.  There are also <a
+href="http://www.gnu.org/home.html#ContactInfo">other ways to
+contact</a> the FSF.</p>
+
+<p>These pages are maintained by <a
+href="http://www.gnu.org/software/gdb/">the GDB developers</a>.</p>
+
+<p>Copyright Free Software Foundation, Inc., 59 Temple Place - Suite
+330, Boston, MA 02111, USA.</p>
+
+<p>Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this notice is preserved.</p>
+
+</address>
+
+.
+w
+q
+EOF
+done
+
+
+echo `date`: And swap in the new html files to the web server
+rm -rf ${wwwdir}.new &&
+rsync -av --include='*.html' ${srcdir}/${dir}/doc/ ${wwwdir}.new/
+mv ${wwwdir} ${wwwdir}.old &&
+mv ${wwwdir}.new ${wwwdir} &&
+rm -rf ${wwwdir}.old
+
+status=$?
+echo "===> swaping status: $status. <==="
+
+echo `date`: Create PDF documents
+for dir in ${project}
+do
+    (
+	cd ${srcdir}/${dir}/doc
+	make -i pdf > pdf.log 2>&1
+	cp gdb.log gdb-pdf.log
+	for f in *.pdf
+	do
+	    gzip -c -v ${f} > ${wwwdir}/${f}.new
+	    rm -f ${wwwdir}/${f}.gz
+	    mv ${wwwdir}/${f}.new ${wwwdir}/${f}.gz
+	done
+    )
+done
+
+
+echo `date`: Create DVI documents
+for dir in ${project}
+do
+    (
+	cd ${srcdir}/${dir}/doc
+	make -i dvi > dvi.log 2>&1
+	cp gdb.log gdb-dvi.log
+	for f in *.dvi
+	do
+	    gzip -c -v ${f} > ${wwwdir}/${f}.new
+	    rm -f ${wwwdir}/${f}.gz
+	    mv ${wwwdir}/${f}.new ${wwwdir}/${f}.gz
+	done
+    )
+done
+
+echo `date`: Create POSTSCRIPT documents
+for dir in ${project}
+do
+    (
+	cd ${srcdir}/${dir}/doc
+	make -i ps > ps.log 2>&1
+	cp gdb.log gdb-ps.log
+	for f in *.ps
+	do
+	    gzip -c -v ${f} > ${wwwdir}/${f}.new
+	    rm -f ${wwwdir}/${f}.gz
+	    mv ${wwwdir}/${f}.new ${wwwdir}/${f}.gz
+	done
+    )
+done
+
+echo `date`: Create HTML tar ball
+( cd ${wwwdir} && ls */index.html ) | while read toc
+do
+(
+    doc=`echo $toc | sed -e 's/\/index\.html$//'`
+    tar cf ${doc}.html.tar $doc
+    gzip -c -v ${doc}.html.tar > ${wwwdir}/${doc}.new
+    rm -f ${wwwdir}/${doc}.html.tar.gz
+    mv ${wwwdir}/${doc}.new ${wwwdir}/${doc}.html.tar.gz
+)
+done
+
+echo `date`: create a very basic index.html
+
+cd ${wwwdir}
+rm -f index.html index.html.gz
+touch index.html
+cat <<EOF >> index.html
+<html>
+<head>
+<title>Documentation for GDB version ${version}</title>
+</head>
+<body>
+
+<center><h3>Documentation for GDB version ${version}</h3></center>
+
+<!-- body, update above using ../index.sh -->
+
+<center>
+Also available:
+<a href="../gdb/onlinedocs/">most recent branch</a>
+|
+<a href="../gdb/current/onlinedocs/">current</a>
+|
+<a href="../gdb/download/onlinedocs/">last release</a>
+</center>
+<center>Last updated: `date -u`</center>
+
+<dl>
+EOF
+( ls */index.html | sed -e 's/\/index\.html$//'
+  ls *.ps.gz | sed -e 's/\.ps\.gz$//'
+  ls *.pdf.gz | sed -e 's/\.pdf\.gz$//'
+) | sed -e '/\*/ d' | sort -u | while read doc
+do
+    if [ -r "${doc}/index.html" ]
+    then
+	toc=${doc}/index.html
+    else
+	toc=""
+    fi
+    if [ x"${toc}" != x ]
+    then
+	title=`sed -n \
+	    -e 's,</title>,,' -e 's,</TITLE>,,' \
+	    -e 's,:.*,,' \
+	    -e 's, -.*,,' \
+	    -e 's,<title>,,p' -e 's,<TITLE>,,p' \
+	    ${toc}` > /dev/null 2>&1
+    else
+	title=""
+    fi
+    if [ x"${title}" = x ]
+    then
+	title="${doc}"
+    fi
+    echo "<dt>"
+    if [ x"${toc}" != x ]
+    then
+	echo "<a href=\"${toc}\">${title}</a>"
+    else
+	echo "${title}"
+    fi
+    echo "</dt>"
+    echo "<dd>"
+    for s in pdf dvi ps html.tar
+    do
+	if [ -r "${doc}.${s}.gz" ]
+	then
+	    b=`wc -c < ${doc}.${s}.gz`
+	    k=`expr $b / 1024`
+	    echo " <a href=\"${doc}.${s}.gz\">${doc}.${s}.gz</a> $k KB<br>"
+	fi
+    done
+    echo "<br>"
+    echo "</dd>"
+done >> index.html
+cat <<EOF >> index.html
+</dl>
+<!-- /body, update below using ../index.sh -->
+</body>
+</html>
+EOF
+
+for i in . .. ../..
+do
+    x=${wwwdir}/${i}/index.sh
+    if test -x $x
+    then
+	$x index.html
+	break
+    fi
+done
+
+rm -rf ${tmpdir}
+exit 0

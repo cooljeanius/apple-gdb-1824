@@ -1,0 +1,49 @@
+
+<HTML>
+
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>A Typical Trace Debugging Session</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>A Typical Trace Debugging Session</H1> 
+ <P><UL>
+<LI><H2>Specify “tracepoints” (analogous to breakpoints).
+</H2>
+<UL>
+<LI>trace tree.c:find
+<LI>trace main.c:123
+</UL></UL><UL>
+<LI><H2>Specify variables, registers etc. to collect at each tracepoint.
+</H2>
+<UL>
+<LI>collect tree-&#062vector.p[tree-&#062vector.n - 1]
+<LI>collect $d1, $a2
+</UL></UL><UL>
+<LI><H2>Run the program.
+</H2>
+</UL><UL>
+<LI><H2>Replay at leisure the sequence of tracepoint ‘hits’, examining the collected data using any GDB command.
+</H2>
+<UL>
+<LI>tfind line 123
+<LI>display tree-&#062vector.p[tree-&#062vector.n - 1]
+<LI>tfind next</UL></UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld003.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld005.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld004.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

@@ -1,0 +1,49 @@
+#!/bin/sh -x
+
+# To test scripts, copy the current FTP directory into ${ftpdir} and
+# then run the various bits of this script.
+
+y=`date -u +%Y`
+m=`date -u +%m`
+d=`date -u +%d`
+today=${y}-${m}-${d}-gmt
+version=${y}${m}${d}
+tmpdir=/sourceware/snapshot-tmp/gdb/delete-me/tmp
+ftpdir=/sourceware/snapshot-tmp/gdb/delete-me/ftp
+wwwdir=/sourceware/snapshot-tmp/gdb/delete-me/www
+
+sh -x ./do-scp
+
+sssh ()
+{
+    ssh -o 'Protocol 2' gdbadmin@sourceware.org "$@"
+}
+
+sssh mkdir -p ${tmpdir}
+sssh mkdir -p ${wwwdir}
+sssh mkdir -p ${ftpdir}
+for module in gdb
+do
+    for task in update-web-ari # do-all-snapshots update-web-ari update-snapshot
+    do
+	case $task in
+	do-all-snapshots )
+	    sssh ./ss/do-all-snapshots `date -u '+%Y-%m-%d-gmt'`
+	    ;;
+	update-snapshot )
+	    sssh /bin/sh -x ./ss/update-snapshot ${tmpdir} $module ${version} ${ftpdir}
+	    ;;
+	update-web-ari | update-web-docs )
+	    sssh /bin/sh -x ./ss/${task} /sourceware/ftp/anonftp/pub/gdb/snapshots/current/gdb.tar.bz2 ${tmpdir} ${wwwdir} $module
+	    mkdir -p /tmp/ari
+	    rsync -v -r \
+		--exclude='*.gz' \
+		--exclude='new*' \
+		--exclude='old*' \
+		--exclude='ari.html' \
+		--rsh='ssh -2' \
+		gdbadmin@sourceware.org:${wwwdir}/* /tmp/ari
+	    ;;
+	esac
+    done
+done

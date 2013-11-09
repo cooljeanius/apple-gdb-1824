@@ -1,0 +1,19 @@
+* To regenerate the documentation:
+
+    update-web-docs \
+      /sourceware/snapshot-tmp/gdb/snapshot/gdb-${version}.tar \
+      ~/tmp/update-web-docs \
+      /www/sourceware/htdocs/gdb/current/onlinedocs \
+      gdb
+
+  If a dry-run is needed (or to do some testing), change the location
+  in the third argument: ~/tmp/staging/onlinedocs
+
+* To generate the documentation on the branch
+
+    update-web-docs \
+      /sourceware/snapshot-tmp/gdb/snapshot/gdb-${version}.tar \
+      ~/tmp/update-web-docs \
+      /www/sourceware/htdocs/gdb/onlinedocs \
+      gdb
+

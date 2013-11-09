@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html
+          PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="shortcut icon" type="image/x-icon" href="../gdb/images/archer-fish.ico" />
+<meta name="keywords" content="gdb" />
+
+<title>GDB: The GNU Project Debugger</title>
+
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#1F00FF" alink="#FF0000"
+vlink="#9900DD">
+
+<a href="../gdb/mascot/"> <img border="0"
+src="../gdb/images/archer.jpg" align="right" alt="[image of Archer
+Fish]" /></a>
+
+<center><h1>GDB: The GNU Project Debugger</h1></center>
+
+<center>
+<small>
+[<a href="../gdb/bugs/">bugs</a>]
+[<a href="../gdb/committee/">GDB Maintainers</a>]
+[<a href="../gdb/contribute/">contributing</a>]
+[<a href="../gdb/current/">current git</a>]
+[<a href="../gdb/documentation/">documentation</a>]
+[<a href="../gdb/download/">download</a>]
+[<a href="../gdb/">home</a>]
+[<a href="../gdb/irc/">irc</a>]
+[<a href="../gdb/links/">links</a>]
+[<a href="../gdb/mailing-lists/">mailing lists</a>]
+[<a href="../gdb/news/">news</a>]
+[<a href="../gdb/schedule/">schedule</a>]
+[<a href="../gdb/song/">song</a>]
+[<a href="http://sourceware.org/gdb/wiki/">wiki</a>]
+</small>
+</center>
+
+<center><h2>GDB: The GNU Project Debugger</h2></center>
+
+<!-- NB: CURRENT / LATEST refer to the trunk -->
+<!-- NB: MOST RECENT refers to the branch -->
+
+<!-- body, update above using ../gdb/index.sh -->
+
+<h3>What is GDB?</h3>
+
+<p>GDB, the GNU Project debugger, allows you to see what is going on
+`inside' another program while it executes -- or what another program
+was doing at the moment it crashed.
+
+<p>GDB can do four main kinds of things (plus other things in support
+of these) to help you catch bugs in the act:
+
+<ul>
+<li>Start your program, specifying anything that might affect its behavior.
+<li>Make your program stop on specified conditions.
+<li>Examine what has happened, when your program has stopped.
+<li>Change things in your program, so you can experiment with
+correcting the effects of one bug and go on to learn about another.
+</ul>
+
+The program being debugged can be written in Ada, C, C++, Objective-C,
+Pascal (and many other languages).  Those programs might be executing
+on the same machine as GDB (native) or on another machine (remote).  GDB
+can run on most popular UNIX and Microsoft Windows variants.<p>
+
+<h3>GDB version 7.6.1</h3>
+
+Version <a href="../gdb/download/ANNOUNCEMENT">7.6.1</a> of GDB, the GNU
+Debugger, is now available for <a
+href="../gdb/download/">download</a>.  See the <a
+href="../gdb/download/ANNOUNCEMENT">ANNOUNCEMENT</a> for details
+including changes in this release.<p>
+
+An errata list (<a
+href="http://sourceware.org/cgi-bin/cvsweb.cgi/~checkout~/src/gdb/PROBLEMS?content-type=text/x-cvsweb-markup&cvsroot=src"
+>PROBLEMS</a>) and <a
+href="http://sourceware.org/gdb/download/onlinedocs/">documentation</a>
+are also available.<p>
+
+<h3><a href="http://www.gnu.org/philosophy/sco/sco.html">FSF's Position regarding SCO's attacks on Free Software</a></h3>
+
+<h3>News</a></h3>
+
+<dl>
+
+<!-- PLEASE ADD ARTICLES TO BOTH news/index.html and index.html
+
+<dt>Month DD, YYYY: <b>Announcement</b></dt>
+<dd>
+<p> The message about the announcement goes here and can spread across
+several lines.  Each is proceeded by a P to make the indentation
+better.
+</p>
+</dd>
+
+-->
+
+<dt>August 30th, 2013: <b>GDB 7.6.1 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 7.6.1, is available for <a
+href="../gdb/download/">download</a>.
+<p>
+This is a minor corrective release over GDB 7.6, fixing the following
+issues:
+<ul>
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=15420">PR tdep/15420</a>
+     (Cannot debug threaded programs on newer versions of x86-solaris - Solaris 10, Update 10 or later)
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=15455">PR remote/15455</a> (QTro remote packet broken)
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=15476">PR build/15476</a> (Build failure due to incomplete enum type in utils.h)
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=15594">PR server/15594</a> (tls support in 64x32 x86 gdbserver doesn't extend address to 64 bit)
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=15075">PR server/15075</a> (dprintf inteferes with "next")
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=15434">PR server/15434</a> (dprintf uses a synchronous 'continue' even in non-stop mode)
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=14880">PR tui/14880</a> (In split register layouts, up results in assertion failure in value.c)
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=15519">PR c++/15519</a> (GDB 7.6 is 94x slower than GDB 7.5.1 using a certain core file)
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=15837">PR gdb/15837</a> (GDB prints entry values for local variables)
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=15415">PR gdb/15415</a> (gdb resolves symbolic links when passing argv[0])
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=15603">PR cli/15603</a> (CTRL-C can no longer interrupt inferior)
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=15604">PR gdb/15604</a> (gdbserver socket leak 7.5 regression)
+</ul>
+<p>
+</dd>
+
+<dt>April 26th, 2013: <b>GDB 7.6 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 7.6, is available for <a
+href="../gdb/download/">download</a>.
+<p>
+Changes in this release include:
+<ul>
+<li> New native configurations (ARM AArch64 GNU/Linux, FreeBSD/powerpc,
+     86_64/Cygwin and Tilera TILE-Gx GNU/Linux)
+<li> New target configurations (ARM AArch64, ARM AArch64 GNU/Linux,
+     Lynx 178 PowerPC, x86_64/Cygwin, and Tilera TILE-Gx GNU/Linux)
+<li> Support for the "mini debuginfo" section, .gnu_debugdata
+<li> The C++ ABI now defaults to the GNU v3 ABI
+<li> More Python scripting improvements
+<li> Some GDB/MI improvements
+<li> New configure options, new commands, and options
+<li> New remote packets
+<li> A new "target record-btrace" has been added while the "target record"
+     command has been renamed to "target record-full"
+</ul>
+
+See the NEWS file for a more complete and detailed list of what this
+release includes.
+<p>
+</dd>
+
+<dt>March 12th, 2013: <b>GDB 7.6 branch created</b></dt>
+<dd>
+<p> The GDB 7.6 branch (<tt>gdb_7_6-branch</tt>) has been created.
+To check out a copy of the branch use:
+<pre>
+git clone --branch gdb_7_6-branch git://sourceware.org/git/binutils-gdb.git
+</pre>
+<p>
+</dd>
+
+<dt>January 9, 2012: <b>Extensibility support using Guile</b></dt>
+<dd>
+<p> GDB ought to support extensibility using Guile, the GNU extensibility
+package (an implementation of Scheme).  We are looking for people to
+write the code to interface the two.  Please write to gdb-patches AT
+sourceware DOT org if you are interested.
+</p>
+</dd>
+
+<dt>September 30, 2011: <b>Release Mistakes in GDB Versions 6.0 - 7.3</b></dt>
+<dd>
+<p> A mistake has been detected in the release tar files for all
+GDB releases from version 6.0 to version 7.3 (included). The mistake
+has been corrected, and the FSF issued the following announcements:
+<ul>
+<li> <a href="http://www.sourceware.org/ml/gdb/2011-09/msg00135.html">
+     Making up for a release mistake in GDB versions 6.0 - 6.6</a>
+<li> <a href=http://www.sourceware.org/ml/gdb/2011-09/msg00136.html>
+     Making up for a release mistake in GDB versions 6.7 - 7.3</a>
+</ul>
+<p>
+</dd>
+
+<dt>Nov 28, 2006: <b>Reversible Debugging</b></dt>
+<dd>
+<p> The GDB maintainers are looking for contributors interested
+in <a href="news/reversible.html">reversible debugging</a>.
+</p>
+</dd>
+
+</dl>
+
+Late breaking information, such as recently added features, can be
+found in the <a
+href="http://sourceware.org/git/gitweb.cgi?p=binutils-gdb.git;a=blob;f=gdb/NEWS;hb=HEAD"
+>NEWS</a> file in the gdb source tree.  Old announcements are in the
+news <a href="../gdb/news">archive</a>.
+
+<!-- /body, update below using ../gdb/index.sh -->
+
+<p></p>
+
+<center>
+<small>
+[<a href="../gdb/bugs/">bugs</a>]
+[<a href="../gdb/committee/">GDB Maintainers</a>]
+[<a href="../gdb/contribute/">contributing</a>]
+[<a href="../gdb/current/">current git</a>]
+[<a href="../gdb/documentation/">documentation</a>]
+[<a href="../gdb/download/">download</a>]
+[<a href="../gdb/">home</a>]
+[<a href="../gdb/irc/">irc</a>]
+[<a href="../gdb/links/">links</a>]
+[<a href="../gdb/mailing-lists/">mailing lists</a>]
+[<a href="../gdb/news/">news</a>]
+[<a href="../gdb/schedule/">schedule</a>]
+[<a href="../gdb/song/">song</a>]
+[<a href="http://sourceware.org/gdb/wiki/">wiki</a>]
+</small>
+</center>
+
+<hr />
+
+<address>
+
+<p>Please send FSF &amp; GNU inquiries &amp; questions to <a
+href="mailto:gnu@gnu.org">gnu@gnu.org</a>.  There are also <a
+href="http://www.gnu.org/home.html#ContactInfo">other ways to
+contact</a> the FSF.</p>
+
+<p>This page is maintained by <a href="../gdb/">the GDB
+developers</a>.</p>
+
+<p>Copyright Free Software Foundation, Inc., 51 Franklin St - Fifth
+Floor, Boston, MA 02110-1301 USA.</p>
+
+<p>Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this notice is preserved.</p>
+
+<p>Last modified 2013-10-22.</p>
+</address>
+
+</body>
+</html>

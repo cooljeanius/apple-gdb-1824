@@ -1,0 +1,233 @@
+#!/bin/sh 
+
+# CRON can't cope with GDB's release schedule.  Instead handle it all here.
+
+# Number of seconds since the epoch (date +%s) that the last release,
+# respin or branch occured.  To alter the schedule, alter this
+# constant.  Update this constant after each release has been made.
+
+last_release=1020178955
+last_respin=1027459853
+#last_branch
+
+# Cycle length: there are ~three GDB releases each year
+
+rl=`expr 52 / 3`
+rw=${rl}
+
+# Branch length: it appears that 5 weeks is a good balance.
+
+bl=5
+bw=`expr ${rw} - ${bl}`
+
+# Respin length: time after a release that the respin occures.  The
+# warning goes out two weeks earlier.
+
+sl=6
+sw=${sl}
+
+
+# Usage: <ground-zero> [ <cycle> ]
+if test $# -gt 1
+then
+    cat <<EOF
+Usage: [ <release-phase> ]
+EOF
+    exit 1
+fi
+if [ $# -gt 0 ]
+then
+    what=$1
+fi
+
+
+# Usage: rdate <seconds-from-utc> <format>
+# BSD and GNU have differing idea's on what `date -r <opt>` should do.
+# BSD AWK things <opt> is number of seconds from EPOC while GNU AWK
+# things it is a file.  Ulgh.  Fortunatly everyone uses GNU awk ...
+rdate ()
+{
+    set - "$@" '%a %b %e (%Y-%m-%d-gmt)'
+    TZ= awk 'BEGIN { print strftime("'"$2"'",'"$1"'); }' < /dev/null
+}
+
+
+# set up some useful constants
+aday=`expr 24 \* 60 \* 60`
+aweek=`expr ${aday} \* 7`
+
+
+# Using the previous release, respin or branch date, compute the key
+# dates in the next release.
+
+# Round the last release date so that it is weekend aligned.
+week_day=`rdate ${last_release} %w`
+start_time=`expr ${last_release} + \( 6 - ${week_day} \) \* ${aday}`
+
+# If there is a re-spin schedule it 6 weeks (~1 month) after the
+# previous release.
+
+if test "${last_respin}" != ""
+then
+    respin_week=`rdate ${last_respin} %W`
+    start_time=`expr ${last_respin} - ${sw} \* ${aweek}`
+else
+    respin=`expr ${start_time} + ${sw} \* ${aweek}`
+    respin_week=`rdate ${respin} %W`
+fi
+
+# Date to cut the branch.
+
+if test "${last_branch}" != ""
+then
+    branch_week=`rdate ${last_branch} %W`
+    start_time=`expr ${last_branch} - ${bw} \* ${aweek}`
+else
+    branch=`expr ${start_time} + ${bw} \* ${aweek}`
+    branch_week=`rdate ${branch} %W`
+fi
+
+# Date to release
+release=`expr ${start_time} + ${rw} \* ${aweek}`
+release_week=`rdate ${release} %W`
+
+# Avoid any midnight/midweek problems.  Round NOW down to the start of
+# the current week.
+now=`date +%s`
+wd=`rdate ${now} %w`
+now=`expr ${now} - \( ${wd} \* ${aday} \)`
+week=`rdate ${now} %W`
+day=`rdate ${now} %A`
+
+
+if test x"${what}" = x
+then
+    case "${week}" in
+
+    `expr ${respin_week} - 2`) what=respin-warning ;;
+    `expr ${respin_week} - 1`) what=respin-warning ;;
+    `expr ${respin_week} - 0`) what=respin ;;
+
+    `expr ${branch_week} - 2 `) what=branch-warning ;;
+    `expr ${branch_week} - 1 `) what=branch-warning ;;
+    `expr ${branch_week} - 0 `) what=branch ;;
+    `expr ${branch_week} + 1 `) what=branch ;;
+
+    `expr ${release_week} - 2` ) what=release-warning ;;
+    `expr ${release_week} - 1` ) what=release-warning ;;
+    `expr ${release_week} - 0` ) what=release ;;
+
+    esac
+    if test ${day} != Saturday -o x"${what}" = x
+    then
+	exit
+    fi
+fi
+
+
+
+# Print the date N weeks + 1 day from the previous cycle (This entire
+# file is a 2037 bug).
+
+when ()
+{
+    when_time=`expr ${start_time} + \( $* \) \* ${aweek} + ${aday}`
+    rdate $when_time
+}
+
+
+case "$what" in
+
+
+
+    respin* ) cat <<EOF
+Subject: GDB Respin scheduled `when ${sw}`
+
+Hello,
+
+The current GDB branch is scheduled for a respin on or about:
+
+    RESPIN: `when ${sw}`
+EOF
+	;;
+
+
+
+    branch* ) cat <<EOF
+Subject: GDB Branch scheduled `when ${bw}`
+
+Hello,
+
+The branch for the next major release of GDB is scheduled to be cut:
+
+    BRANCH: `when ${bw}`
+
+The branch will then be given a chance to stablize.  The release is
+scheduled to occure ${bl} weeks (approx `expr ${bl} / 4` month) after the
+branch date on:
+
+    RELEASE: `when ${rw}`
+
+Now is a good time to update the files:
+
+    NEWS:     new features and changes
+    PROBLEMS: things that are broken or do not build
+
+and do things like check that GDB still builds for your favorite
+target.
+
+Now is probably not the time for dramatic change.
+EOF
+	;;
+
+
+
+    release* ) cat <<EOF
+Subject: GDB Release scheduled `when ${rw}`
+
+Hello,
+
+The current GDB branch is scheduled for release on or about:
+
+    RELEASE: `when ${rw}`
+EOF
+	;;
+
+
+
+esac
+
+
+
+cat <<EOF
+
+your local GDB admin.
+
+--
+
+GDB is trying to be on a ~`expr ${rl} / 4` month (${rl} week) release
+cycle.
+
+                   CURRENT                  NEXT
+Branch:   `when ${bw}`  `when ${bw} + ${rl}`
+Release:  `when ${rw}`  `when ${rw} + ${rl}`
+reSpin:   `when ${sw} + ${rl}`  `when ${sw} + ${rl} + ${rl}`
+
+EOF
+
+if test "${last_release}" != ""
+then
+    echo The last release was `rdate ${last_release}`.
+fi
+
+if test "${last_respin}" != ""
+then
+    echo The last respin was `rdate ${last_respin}`.
+else
+    echo The branch respin is scheduled on `when ${sw}`.
+fi
+
+if test "${last_branch}" != ""
+then
+    echo The last branch was `rdate ${last_branch}`.
+fi

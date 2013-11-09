@@ -1,0 +1,56 @@
+#!/bin/sh
+
+PATH=/bin:/usr/bin:/usr/local/bin:$HOME/bin
+export PATH
+
+if test $# -lt 1
+then
+    echo "Usage: $0 \`date -u '+%Y-%m-%d-gmt'\` [ <branch> ]" 1>&2
+    exit 1
+fi
+
+# midnight="`date -u +%Y-%m-%d-gmt`" # YYYY-MM-DD-gmt
+midnight=$1 ; shift
+today="`echo ${midnight} | sed -e 's/-gmt//' -e 's/-//g'`"          # YYYYMMDD
+
+# For the source cut-off time, we cannot use exactly midnight, as
+# we need to wait for BFD's version.h update, which usually completes
+# within 4 or 5 seconds after midnight.  Give it another few seconds
+# just to be safe.
+midnight="`echo ${midnight} | sed -e 's/-gmt//' -e 's/-/./g'`.00.00.15"
+
+if test -x $HOME/ss/do-snapshot
+then
+    x='sh'
+else
+    x=echo
+fi
+
+
+if test $# -ge 1
+then
+    branch=$1 ; shift
+    # gdb_5_1-2001-07-29-branch
+fi
+
+(
+    cat <<EOF
+gdb      current  gdb/current   ${today}
+#insight+dejagnu  current  DNE           ${today}
+EOF
+    test "${branch}" && cat <<EOF
+gdb      branch   gdb           ${today} ${branch}
+#gdb+dejagnu      branch   gdb           ${today} ${branch}
+#insight+dejagnu  branch   DNE           ${today} ${branch}
+EOF
+) | grep -v '#' | while read module ftp www today branch
+do
+    echo ""
+    date
+    echo ""
+    ( set -x ; $x $HOME/ss/do-snapshot $module $ftp $www $today $branch ) < /dev/null
+done
+
+echo ""
+date
+echo ""

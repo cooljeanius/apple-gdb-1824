@@ -1,0 +1,119 @@
+<HTML>
+<HEAD>
+<!-- Created by texi2html 1.57 from libgdb.texi on August, 24  1999 -->
+
+<TITLE>libGDB - Review of previous work</TITLE>
+</HEAD>
+<BODY >
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_1.html">Back</A>] &#160; [<A>Prev</A>] &#160; [<A>Up</A>] &#160; [<A>Next</A>] &#160; [<A HREF="libgdb_3.html">Forward</A>] &#160;<BR><HR><BR>
+
+
+<H1><A NAME="SEC2">Review of previous work</A></H1>
+
+
+
+<H2><A NAME="SEC3">DDD (and xgdb, xxgdb, mxgdb, ...)</A></H2>
+
+<P>
+Each of these debug GUI interfaces are implemented using an identical
+technique.  GDB (or some other debugger) is started as a separate server
+process, debug commands are sent to that process and all output is then
+parsed.  Of these, DDD is probably the most successful.
+
+
+<P>
+Unfortunately this technique has several limitations:
+
+
+
+<UL>
+<LI>
+
+it is very sensitive to changes in GDB's output
+<LI>
+
+performance is restricted by the speed of communication of between the
+GUI and GDB
+<LI>
+
+it was difficult to keep the GUI consistent with the CLI
+</UL>
+
+
+
+<H2><A NAME="SEC4">Insight (a.k.a. GDBtk)</A></H2>
+
+<P>
+The initial GDBtk implementation was very like DDD except that it was
+embedded in the same process as the debugger.  Commands would be sent to
+GDB and the resultant output would then be parsed.  As GDBtk evolved,
+and bottle-necks were identified, more direct calls into GDB's internals
+have been implemented (ex the assembler window).
+
+
+<P>
+Limitations of GDBtk can be identified:
+
+
+
+<UL>
+<LI>
+
+the need to share an event loop with GDB
+<BR>
+With the introduction of an event loop and the asynchronous in GDB it
+will finally becoming possible to address this issue.
+<LI>
+
+As with DDD GDBtk was often affected by changes to GDB's output
+<BR>
+The recently introduced gdb-file object should provide significant help.
+</UL>
+
+
+
+<H2><A NAME="SEC5">EMACS/annotate</A></H2>
+
+<P>
+GDB can produce annotated text output through the <CODE>set annotate</CODE>
+command.  In addition to the normal text, GDB includes numeric markers
+that identify key output tokens (a line number, a file name).  EMACS
+parses the annotations and makes use of that information.
+
+
+<P>
+The one key failing of this annotate mode is that the output fields are
+identified numerically instead of symbolically as found things like XML.
+
+
+<P>
+While the annotate code is not being actively developed it does have a
+significant installed base and consequently needs to be maintained.
+
+
+
+
+<H2><A NAME="SEC6">libgdb 1.0</A></H2>
+
+<P>
+libgdb 1.0 was an interesting learning experience.  Much of that
+experience is being transfered to libGDB.  Issues that libgdb didn't
+address were:
+
+
+
+<UL>
+<LI>
+
+an event model and a notify mechanism
+<LI>
+
+the assumption that reasonable performance could be achieved while
+relying purely on a textual interface.
+</UL>
+
+<P></P><HR>
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_1.html">Back</A>] &#160; [<A>Prev</A>] &#160; [<A>Up</A>] &#160; [<A>Next</A>] &#160; [<A HREF="libgdb_3.html">Forward</A>] &#160;
+
+</BODY>
+</HTML>

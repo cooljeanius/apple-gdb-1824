@@ -1,0 +1,370 @@
+<html>
+<head>
+<title>Using the Streaming SIMD Extensions on Linux</title>
+</head>
+<body>
+
+<h1>Using the Streaming SIMD Extensions on Linux</h1>
+
+<p> This page provides patches that extend the Linux kernel to
+support the Pentium III Streaming SIMD Extensions.
+
+<h3>What are the Streaming SIMD Extensions?</h3>
+
+<p> Intel's Pentium III processor contains some new instructions and
+registers, known collectively as the Streaming SIMD Extensions (SSE),
+which increase the Pentium III's floating-point performance.  With
+the proper attention from the programmer, the Streaming SIMD
+Extensions allow the Pentium III to handle floating-point-intensive
+applications like video and audio handling, 3-D modeling, and
+physical simulations much more quickly than its predecessors.
+
+<h3>Why do I need to patch my kernel in order to use the Streaming
+SIMD Extensions?</h3>
+
+<p> In a multi-tasking environment, the Streaming SIMD Extensions
+require support from the operating system: the SIMD registers must be
+handled properly by the operating system's context switching code.
+When the system switches control from one process to another, the old
+process's SIMD registers must be saved away, and the saved values of
+the new process's SIMD registers must be loaded into the processor.
+The Pentium III processor prohibits programs from using the Streaming
+SIMD Extensions unless the operating system tells the processor at
+system startup time that it is aware of the SIMD registers, and will
+manage them properly.
+
+<p> The patch available on this page is based on the Pentium III patch
+provided by Doug Ledford, available from his <a
+href="http://people.redhat.com/dledford/linux_kernel.html"> Linux
+Kernel Patch Page</a>.
+
+<h3> What version of the Linux kernel do these patches apply to? </h3>
+
+<p> There are two versions of the kernel patch: one for Linux 2.2.5,
+and one for Linux 2.2.12.  (These are the versions distributed with
+Red Hat Linux 6.0 and 6.1.)  When I wrote the patches, the basic SSE
+support had not yet appeared in the experimental 2.3 kernel series, so
+I was unable to produce a patch against a more recent kernel version.
+However, as soon as the SSE support does appear, I will produce a new
+set of patches for the debugging support.
+
+
+<h2>How to use the patches</h3>
+
+<p> There are four basic steps to applying the patches.  In summary:
+<ul>
+  <li> Build a kernel from the unpatched sources, and make sure it works.
+  <li> Patch the kernel, configure in the SSE support, rebuild, and install.
+  <li> Patch your system's header files.
+  <li> Configure and build GDB.
+</ul>
+
+<p> In full detail:
+
+<dl>
+
+<p>
+<dt><b>Build a kernel from the unmodified sources, and test it.</b>
+
+  <dd>
+  <p> It is <em>essential</em> to verify that you can build a kernel
+  straight from the sources, install it, and boot it up successfully,
+  before you apply any patches whatsoever.  Now is also a good time to
+  select the right set of drivers and modules, etc.
+
+  <p> This is your best opportunity to distinguish between problems
+  due to the patch, and problems due to the kernel configuration.  I
+  had a hard time getting everything going at first, and needed help
+  from someone with more experience.  The last thing you want to worry
+  about here are more random external influences, like patches from
+  strangers.
+
+  <p> Red Hat Linux includes instructions for building a custom kernel
+  in the Red Hat reference guide (the book you got with your
+  distribution).  In the Red Hat 6.1 distribution, look at section
+  2.8, ``Building a Custom Kernel''.  If you are unpacking your
+  sources from an RPM, make sure to execute the RPM's <tt>%prep</tt>
+  stage, to apply whatever patches are needed for your distribution.
+
+  <p> Make sure that you are actually running the kernel you compiled.
+  Put a new call to printk some place safe, like the
+  <tt>calibrate_delay</tt> function in <tt>init/main.c</tt>, and
+  verify that your kernel prints it out when it boots up.  (You might
+  find the <tt>dmesg</tt> command helpful here.)
+
+  <p> Make sure that you have recompiled and installed your kernel
+  modules.  If the boot process hangs after it says ``Finding module
+  dependencies'', one possibility is that you're trying to run your
+  new kernel with your old modules.
+
+  <p> If you ask me for help, and I find out that you haven't gotten a
+  straight kernel build working before getting in touch with me, I'm
+  going to be annoyed.  There are lots of people out there who have
+  more experience building kernels than I do, so you should find a
+  friend who knows this stuff and get their help.
+
+<p>
+<dt><b>Apply the kernel patches.</b>
+
+<dd>
+  <p> First of all, use your web browser to download the kernel patch
+  to a file somewhere convenient.  There are two separate patches: one
+  for version 2.2.5 of the Linux kernel:
+  <br>
+  <a href="jimb.linux-2.2.5-sse-ptrace-2.patch">http://sourceware.cygnus.com/gdb/papers/linux/jimb.linux-2.2.5-sse-ptrace-2.patch</a>
+  <br>
+  and one for version 2.2.12 of the kernel:
+  <br>  
+  <a href="jimb.linux-2.2.12-sse-ptrace-2.patch">http://sourceware.cygnus.com/gdb/papers/linux/jimb.linux-2.2.12-sse-ptrace-2.patch</a>
+  <br>
+
+  In these instructions, I assume you're using the 2.2.12 patch, but
+  the procedure is the same for the 2.2.5 patch; only the patch's filename
+  is different.  
+
+  <p> Now, cd to the top directory of your kernel source tree --- the
+  one that contains the files <tt>README.kernel-sources</tt>,
+  <tt>REPORTING-BUGS</tt>, and so on.
+  <pre>
+  $ cd /usr/src/linux
+  $ 
+  </pre>
+
+  <p> Use the <tt>patch</tt> command to apply the patch file to the
+  sources, as shown here:
+  <pre>
+  $ patch -p0 < ~/incoming/jimb.linux-2.2.12-sse-ptrace-2.patch 
+  patching file `Documentation/Configure.help'
+  patching file `arch/i386/Makefile'
+  patching file `arch/i386/config.in'
+  patching file `arch/i386/kernel/head.S'
+  patching file `arch/i386/kernel/i386_ksyms.c'
+  patching file `arch/i386/kernel/process.c'
+  patching file `arch/i386/kernel/ptrace.c'
+  patching file `arch/i386/kernel/setup.c'
+  patching file `arch/i386/kernel/signal.c'
+  patching file `arch/i386/kernel/smp.c'
+  patching file `arch/i386/kernel/traps.c'
+  patching file `arch/i386/lib/Makefile'
+  patching file `arch/i386/lib/simd.c'
+  patching file `arch/i386/lib/usercopy.c'
+  patching file `arch/i386/mm/init.c'
+  patching file `fs/binfmt_elf.c'
+  patching file `include/asm-i386/bugs.h'
+  patching file `include/asm-i386/i387.h'
+  patching file `include/asm-i386/processor.h'
+  patching file `include/asm-i386/ptrace.h'
+  patching file `include/asm-i386/string.h'
+  patching file `include/asm-i386/uaccess.h'
+  patching file `include/linux/elf.h'
+  $ 
+  </pre>
+
+<p>
+<dt><b>Configure the kernel to enable the SSE support.</b>
+
+<dd>
+  <p> There are several different ways to configure a Linux kernel;
+  these are generic instructions, which should work for any of the
+  configuration methods.
+  
+  <p> In the category ``Processor type and features'':
+
+    <ul>
+
+      <li> Select a CPU type of ``PPro/6x86MX/PII'' or
+      ``PIII/Xeon/Deschutes''.
+
+      <li> Select ``Enable PII/PIII Extended/Fast CPU save and restore
+      support''.
+
+      <li> Select ``Enable PIII Streaming XMM operations''.
+
+    </ul>
+
+  <p> Leave the rest of the configuration the way it was for your
+  previous working build.  (You do have a previous working build, don't
+  you?)
+
+<p>
+<dt><b>Build your patched kernel.</b>
+
+<dd>
+  <p> Use the same process here you did for your previous working build.
+
+<p>
+<dt><b>Install your kernel.</b>
+
+<dd>
+
+  <p> As before, make sure you have built and installed fresh modules,
+  to go along with your kernel.  Trying to use old modules with a new
+  kernel doesn't work too well.  If your kernel hangs while booting,
+  after saying ``Finding module dependencies'', then you may not have
+  installed your new modules the way you expected.
+
+  <p> Make sure to leave a kernel you know is useable in your
+  <tt>/etc/lilo.conf</tt> file, so if things blow up, you have
+  something to fall back to.  Once you've got it working, however, you
+  can make your new kernel the default; see the <tt>lilo.conf(5)</tt>
+  for more info here.
+
+<p>
+<dt><b>Reboot, using the new kernel.</b>
+
+<dd>
+
+  <p> When the <tt>lilo:</tt> prompt appears during the boot process,
+  type the name you gave your patched kernel in <tt>/etc/lilo.conf</tt>.
+
+<p>
+<dt><b>Verify that your kernel supports the Streaming SIMD Extensions</b>
+
+<dd>
+
+  <p> The file <tt>/proc/cpuinfo</tt> contains a list of the
+  CPU-related options you selected when you configured the kernel.  If
+  the Streaming SIMD Extensions support is enabled, the line labeled
+  <tt>flags:</tt> should contain the words <tt>fxsr</tt> and
+  <tt>xmm</tt>, usually at the end.  For example:
+
+  <pre>
+  $ cat /proc/cpuinfo
+  processor       : 0
+  vendor_id       : GenuineIntel
+  cpu family      : 6
+  model           : 7
+  model name      : Pentium III (Katmai)
+  stepping        : 2
+  cpu MHz         : 497.440714
+  cache size      : 512 KB
+  fdiv_bug        : no
+  hlt_bug         : no
+  sep_bug         : no
+  f00f_bug        : no
+  coma_bug        : no
+  fpu             : yes
+  fpu_exception   : yes
+  cpuid level     : 2
+  wp              : yes
+  flags           : fpu vme de pse tsc msr pae mce cx8 sep mtrr pge mca cmov pat pse36 mmx fxsr xmm
+  bogomips        : 496.44
+
+  $ 
+  </pre>
+
+<p>
+<dt><b>Patch your header files.</b>
+
+<dd>
+
+  <p> Among other things, the kernel patch extends some system calls to
+  give the debugger access to processes' SIMD registers.  However, we
+  need to extend the user-side descriptions of these system calls to
+  include the new functionality.
+
+  <p> So, use your web browser to download the header file patch to
+  somewhere convenient.  In these instructions, I assume you're
+  using the same filename I did: <tt>jimb.glibc-sse-ptrace.patch</tt>.
+
+  <p> The URL for the patch is <a href="jimb.glibc-sse-ptrace.patch">http://sourceware.cygnus.com/gdb/papers/linux/jimb.glibc-sse-ptrace.patch</a>.
+
+  <p> Now, cd to <tt>/usr/include/sys</tt> --- the directory
+  containing <tt>ptrace.h</tt> and <tt>user.h</tt>.
+
+  <p> These files are not usually world-writeable, so, as root, use
+  the <tt>patch</tt> command to apply the patch file to the sources,
+  as shown here:
+  <pre>
+  $ cd /usr/include/sys
+  $ su
+  Password: 
+  [root@zenia sys]# patch -p0 < ~jimb/incoming/jimb.glibc-sse-ptrace.patch 
+  patching file `ptrace.h'
+  patching file `user.h'
+  [root@zenia sys]# exit
+  $ 
+  </pre>
+
+  <p> You don't need to rebuild your kernel after applying this patch.
+  It's only interesting to debuggers.
+
+<p>
+<dt><b>Make sure you have the right sources for GDB.</b>
+
+<dd>
+
+  <p> We added support for the Streaming SIMD Extensions to GDB rather
+  recently.  To verify that your GDB sources contain this support,
+  look in <tt>gdb/ChangeLog</tt>.  There should be an entry no earlier
+  than November 1999 containing the text:
+
+  <pre>
+	Add support for SSE registers in core files.
+	* corelow.c (get_core_register_section): New function.
+  </pre>
+
+  <p> If the file contains these comments, then your GDB sources should
+  support the Streaming SIMD Extensions.
+
+<p>
+<dt><b>Configure and build GDB.</b>
+
+<dd>
+
+  <p> GDB's configuration process checks your system's header files to
+  see whether your system has been extended to support the Streaming
+  SIMD Extensions.  So, you must configure GDB after patching your
+  header files.  Follow the instructions in the README file at the top
+  of the source tree, or the instructions you received from Cygnus.
+
+<p>
+<dt><b>Verify that your GDB has been built properly.</b>
+
+<dd>
+
+  <p> Start up the GDB you just built, and try to print the value of
+  the SIMD register <tt>$xmm0</tt>.  Since you're not actually
+  debugging a program, GDB doesn't have any value to display for that
+  register, but it should at least recognize that it is a register name:
+
+  <pre>
+  $ /umbra/jimb/build/gdb/gdb -nw 
+  GNU gdb 4.18-PentiumIII-991112
+  Copyright 1998 Free Software Foundation, Inc.
+  GDB is free software, covered by the GNU General Public License, and you are
+  welcome to change it and/or distribute copies of it under certain conditions.
+  Type "show copying" to see the conditions.  This version of GDB is supported
+  for customers of Cygnus Solutions.  Type "show warranty" for details.
+  This GDB was configured as "i686-pc-linux-gnu".
+  (gdb) print $xmm0
+  No registers.
+  (gdb) print $foo
+  $1 = void
+  (gdb) 
+  </pre>
+
+  <p> As you can see, this GDB says that an undefined convenience variable
+  is <tt>void</tt>, but recognizes that <tt>$xmm0</tt> is the name of
+  a register.
+
+  <p> Of course, the final test is to try to debug a program that uses
+  the Streaming SIMD Extensions, either at the source level using the
+  Intel intrinsics interface, or at the assembly language level.
+
+</dl>
+
+<p>If you have any trouble with the patch or with these directions,
+please send mail to me, Jim Blandy &lt;<a
+href="mailto:jimb@cygnus.com">jimb@cygnus.com</a>&gt;.
+
+<p>Good luck!
+
+<hr>
+
+<p>Back to the <a href="index.html">Sourceware GDB Linux</a> page.
+<p>Back to the <a href="../..">Sourceware GDB page</a> page.
+
+</body>
+</html>
+

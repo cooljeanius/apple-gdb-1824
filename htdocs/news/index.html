@@ -1,0 +1,1131 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html
+          PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="shortcut icon" type="image/x-icon" href="../../gdb/images/archer-fish.ico" />
+<meta name="keywords" content="gdb" />
+
+<title>GDB News</title>
+
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#1F00FF" alink="#FF0000"
+vlink="#9900DD">
+
+<a href="../../gdb/mascot/"> <img border="0"
+src="../../gdb/images/archer.jpg" align="right" alt="[image of Archer
+Fish]" /></a>
+
+<center><h1>GDB: The GNU Project Debugger</h1></center>
+
+<center>
+<small>
+[<a href="../../gdb/bugs/">bugs</a>]
+[<a href="../../gdb/committee/">GDB Maintainers</a>]
+[<a href="../../gdb/contribute/">contributing</a>]
+[<a href="../../gdb/current/">current git</a>]
+[<a href="../../gdb/documentation/">documentation</a>]
+[<a href="../../gdb/download/">download</a>]
+[<a href="../../gdb/">home</a>]
+[<a href="../../gdb/irc/">irc</a>]
+[<a href="../../gdb/links/">links</a>]
+[<a href="../../gdb/mailing-lists/">mailing lists</a>]
+[<a href="../../gdb/news/">news</a>]
+[<a href="../../gdb/schedule/">schedule</a>]
+[<a href="../../gdb/song/">song</a>]
+[<a href="http://sourceware.org/gdb/wiki/">wiki</a>]
+</small>
+</center>
+
+<center><h2>GDB News</h2></center>
+
+<!-- NB: CURRENT / LATEST refer to the trunk -->
+<!-- NB: MOST RECENT refers to the branch -->
+
+<!-- body, update above using ../../gdb/index.sh -->
+
+<dl>
+
+<!-- PLEASE ADD ARTICLES TO BOTH news/index.html and index.html
+
+<dt>Month DD, YYYY: <b>Announcement</b></dt>
+<dd>
+<p> The message about the announcement goes here and can spread across
+several lines.  Each is proceeded by a P to make the indentation
+better.
+</p>
+</dd>
+
+-->
+
+<dt>August 30th, 2013: <b>GDB 7.6.1 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 7.6.1, is available for <a
+href="../../gdb/download/">download</a>.
+<p>
+This is a minor corrective release over GDB 7.6, fixing the following
+issues:
+<ul>
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=15420">PR tdep/15420</a>
+     (Cannot debug threaded programs on newer versions of x86-solaris - Solaris 10, Update 10 or later)
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=15455">PR remote/15455</a> (QTro remote packet broken)
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=15476">PR build/15476</a> (Build failure due to incomplete enum type in utils.h)
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=15594">PR server/15594</a> (tls support in 64x32 x86 gdbserver doesn't extend address to 64 bit)
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=15075">PR server/15075</a> (dprintf inteferes with "next")
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=15434">PR server/15434</a> (dprintf uses a synchronous 'continue' even in non-stop mode)
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=14880">PR tui/14880</a> (In split register layouts, up results in assertion failure in value.c)
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=15519">PR c++/15519</a> (GDB 7.6 is 94x slower than GDB 7.5.1 using a certain core file)
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=15837">PR gdb/15837</a> (GDB prints entry values for local variables)
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=15415">PR gdb/15415</a> (gdb resolves symbolic links when passing argv[0])
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=15603">PR cli/15603</a> (CTRL-C can no longer interrupt inferior)
+<li> <a href="http://sourceware.org/bugzilla/show_bug.cgi?id=15604">PR gdb/15604</a> (gdbserver socket leak 7.5 regression)
+</ul>
+<p>
+</dd>
+
+<dt>April 26th, 2013: <b>GDB 7.6 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 7.6, is available for <a
+href="../../gdb/download/">download</a>.
+<p>
+Changes in this release include:
+<ul>
+<li> New native configurations (ARM AArch64 GNU/Linux, FreeBSD/powerpc,
+     86_64/Cygwin and Tilera TILE-Gx GNU/Linux)
+<li> New target configurations (ARM AArch64, ARM AArch64 GNU/Linux,
+     Lynx 178 PowerPC, x86_64/Cygwin, and Tilera TILE-Gx GNU/Linux)
+<li> Support for the "mini debuginfo" section, .gnu_debugdata
+<li> The C++ ABI now defaults to the GNU v3 ABI
+<li> More Python scripting improvements
+<li> Some GDB/MI improvements
+<li> New configure options, new commands, and options
+<li> New remote packets
+<li> A new "target record-btrace" has been added while the "target record"
+     command has been renamed to "target record-full"
+</ul>
+
+See the NEWS file for a more complete and detailed list of what this
+release includes.
+<p>
+</dd>
+
+<dt>March 12th, 2013: <b>GDB 7.6 branch created</b></dt>
+<dd>
+<p> The GDB 7.6 branch (<tt>gdb_7_6-branch</tt>) has been created.
+To check out a copy of the branch use:
+<pre>
+cvs -d :pserver:anoncvs@sourceware.org:/cvs/src co -r gdb_7_6-branch gdb
+</pre>
+<p>
+</dd>
+
+<dt>November 29th, 2012: <b>GDB 7.5.1 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 7.5.1, is available for <a
+href="../../gdb/download/">download</a>.
+<p>
+This is a minor corrective release over GDB 7.5, fixing the following
+issues:
+<ul>
+<li> An "Attempt to dereference a generic pointer" errors (-var-create).
+<li> Backtrace problems on x32 (PR backtrace/14646).
+<li> next/step/finish problems on x32 (PR gdb/14647).
+<li> A "malformed linespec error: unexpected keyword, [...]" error
+     (PR breakpoints/14643).
+<li> GDB crash while stepping through powerpc (32bits) code.
+<li> A failed assertion in linux_ptrace_test_ret_to_nx.
+<li> A "!frame_id_inlined_p (frame_id)" failed assertion.
+<li> A "No more reverse-execution history." error during reverse
+     "next" execution (PR 14548).
+<li> Incomplete command descriptions in "apropos" output.
+<li> PR gdb/14494 (a GDB crash difficult to characterize).
+<li> Various build warnings.
+</ul>
+<p>
+</dd>
+
+<dt>August 17th, 2012: <b>GDB 7.5 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 7.5, is available for <a
+href="../../gdb/download/">download</a>.
+<p>
+Changes in this release include:
+<ul>
+<li> Go language support.
+<li> New targets (x32 ABI, microMIPS, Renesas RL78, HP OpenVMS ia64).
+<li> More Python scripting improvements.
+<li> SDT (Static Defined Tracing) probes support with SystemTap probes.
+<li> GDBserver improvements (stdio connections, target-side evaluation
+     of breakpoint conditions, remote protocol improvements).
+<li> Other miscellaneous improvements (ability to stop when a shared
+     library is loaded/unloaded, dynamic printf, etc).
+<li> Reverse debugging on ARM.
+<li> The binary "gdbtui" has been abandoned and can no longer be built.
+     Use "gdb -tui" instead.
+</ul>
+See the NEWS file for a more complete and detailed list of what this
+release includes.
+<p>
+</dd>
+
+<dt>July 17th, 2012: <b>GDB 7.5 branch created</b></dt>
+<dd>
+<p> The GDB 7.5 branch (<tt>gdb_7_5-branch</tt>) has been created.
+To check out a copy of the branch use:
+<pre>
+cvs -d :pserver:anoncvs@sourceware.org:/cvs/src co -r gdb_7_5-branch gdb
+</pre>
+<p>
+</dd>
+
+<dt>April 26th, 2012: <b>GDB 7.4.1 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 7.4.1, is available for <a
+href="../../gdb/download/">download</a>.
+<p>
+This is a minor corrective release over GDB 7.4, fixing the following
+issues:
+<ul>
+<li> [GDB/MI] Error when resuming program execution in all-stop mode
+     ("Cannot execute this command without a live selected thread").
+<li> [Pascal] Polluted display of class methods parameters.
+<li> [target remote] Errror when connecting to remote target where
+     disconnected tracing is in effect.
+<li> [AVX] Float and ymm* register values not available.
+<li> [GDB] Crash when using the "finish" command.
+<li> [build] makeinfo should not be required to build GDB.
+</ul>
+<p>
+</dd>
+
+<dt>January 24th, 2012: <b>GDB 7.4 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 7.4, is available for <a
+href="../../gdb/download/">download</a>.
+<p>
+Changes in this release include:
+<ul>
+<li> Many Python scripting improvements
+<li> Better support for ambiguous linespecs
+<li> Masked watchpoints
+<li> Tracepoint support improvements
+<li> Support for Texas Instruments TMS320C6x (tic6x-*-*)
+<li> A Renesas RL78 simulator (rl78-*-elf)
+<li> Some minor Remote protocol extensions and GDB/MI changes
+</ul>
+See the NEWS file for a more complete and detailed list of what this
+release includes.
+
+Note that the gdbtui binary is deprecated, starting with GDB 7.5.
+Use "gdb -tui" instead.
+<p>
+</dd>
+
+<dt>January 9, 2012: <b>Extensibility support using Guile</b></dt>
+<dd>
+<p> GDB ought to support extensibility using Guile, the GNU extensibility
+package (an implementation of Scheme).  We are looking for people to
+write the code to interface the two.  Please write to gdb-patches AT
+sourceware DOT org if you are interested.
+</p>
+</dd>
+
+<dt>December 13, 2011: <b>GDB 7.4 branch created</b></dt>
+<dd>
+<p> The GDB 7.4 branch (<tt>gdb_7_4-branch</tt>) has been created.
+To check out a copy of the branch use:
+<pre>
+cvs -d :pserver:anoncvs@sourceware.org:/cvs/src co -r gdb_7_4-branch gdb
+</pre>
+<p>
+</dd>
+
+<dt>September 30, 2011: <b>Release Mistakes in GDB Versions 6.0 - 7.3</b></dt>
+<dd>
+<p> A mistake has been detected in the release tar files for all
+GDB releases from version 6.0 to version 7.3 (included). The mistake
+has been corrected, and the FSF issued the following announcements:
+<ul>
+<li> <a href="http://www.sourceware.org/ml/gdb/2011-09/msg00135.html">
+     Making up for a release mistake in GDB versions 6.0 - 6.6</a>
+<li> <a href=http://www.sourceware.org/ml/gdb/2011-09/msg00136.html>
+     Making up for a release mistake in GDB versions 6.7 - 7.3</a>
+</ul>
+<p>
+</dd>
+
+<dt>September 4, 2011: <b>GDB 7.3.1 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 7.3.1, is available for <a
+href="../../gdb/download/">download</a>.
+<p>
+This is a minor corrective release over GDB 7.3 mostly bringing:
+<ul>
+<li> Build fixes for NetBSD / OpenBSD targets
+<li> ISBN and Edition number update of the GDB User's Manual
+</ul>
+<p>
+</dd>
+
+<dt>July 26, 2011: <b>GDB 7.3 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 7.3, is available for <a
+href="../../gdb/download/">download</a>.
+<p>
+Changes in this release include:
+<ul>
+<li> Initial OpenCL C support
+<li> C++ support enhancements
+<li> Improved Python support
+<li> ia64 HP-UX (native) and Blackfin (target) support
+<li> GDBserver support for PowerPC LynxOS, i686 LynxOS, and Blackfin Linux
+<li> Support for reading and writing a new .gdb_index section, containing
+     a fast index of DWARF debugging info
+</ul>
+See the NEWS file for a more complete and detailed list of what this
+release includes.
+<p>
+</dd>
+
+<dt>April 03, 2011: <b>GDB 7.3 branch created</b></dt>
+<dd>
+<p> The GDB 7.3 branch (<tt>gdb_7_3-branch</tt>) has been created.
+To check out a copy of the branch use:
+<pre>
+cvs -d :pserver:anoncvs@sourceware.org:/cvs/src co -r gdb_7_3-branch gdb
+</pre>
+<p>
+</dd>
+
+<dt>September 02, 2010: <b>GDB 7.2 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 7.2, is available for <a
+href="../../gdb/download/">download</a>.
+<p>
+Changes in this release include:
+<ul>
+<li> D language support
+<li> C++ support enhancements
+<li> Improved Python support
+<li> Tracepoint support enhancements, GDBserver support for tracepoints
+<li> GDBserver support for x86_64 Windows debugging
+<li> ARM Symbian support
+<li> Hardware-assisted watchpoint conditions on powerpc-linux
+</ul>
+See the NEWS file for a more complete and detailed list of what this
+release includes.
+<p>
+</dd>
+
+<dt>July 07, 2010: <b>GDB 7.2 branch created</b></dt>
+<dd>
+<p> The GDB 7.2 branch (<tt>gdb_7_2-branch</tt>) has been created.
+To check out a copy of the branch use:
+<pre>
+cvs -d :pserver:anoncvs@sourceware.org:/cvs/src co -r gdb_7_2-branch gdb
+</pre>
+<p>
+</dd>
+
+<dt>March 18, 2010: <b>GDB 7.1 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 7.1, is available for <a
+href="../../gdb/download/">download</a>.
+<p>
+Changes in this release include:
+<ul>
+<li> Multi-program debugging support;
+<li> Position Independent Executable (PIE) debugging support;
+<li> New targets (including a simulator): Xilinx MicroBlaze and Renesas
+RX;
+<li> Python support enhancements;
+<li> C++ support extended;
+<li> New tracepoint features;
+<li> Process Record improvements;
+<li> Remote Protocol extensions;
+</ul>
+See the NEWS file for a more complete and detailed list of what this
+release includes.
+<p>
+</dd>
+
+<dt>February 18, 2010: <b>GDB 7.1 branch created</b></dt>
+<dd>
+<p> The GDB 7.1 branch (<tt>gdb_7_1-branch</tt>) has been created.
+To check out a copy of the branch use:
+<pre>
+cvs -d :pserver:anoncvs@sourceware.org:/cvs/src co -r gdb_7_1-branch gdb
+</pre>
+<p>
+</dd>
+
+<dt>December 22, 2009: <b>GDB 7.0.1 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 7.0.1, is available for <a
+href="../../gdb/download/">download</a>.
+<p>
+This is a minor corrective release. The following fixes have been made
+over GDB 7.0:
+<ul>
+<li> GDB Crash due to stack overflow (PR gdb/10457);
+<li> Build failure on newer versions of FreeBSD;
+<li> Crash on solaris when reading symbols (PR gdb/10819);
+<li> Thumb2 debugging support;
+<li> Build failure on IRIX 5.3 (MAP_FAILED not defined);
+<li> Buffer overflow during function epilogue analysis
+     (debuggers targeted for x86_64 only);
+<li> Crash trying to complete the "catch exception" command;
+<li> GDB freeze (infinite loop);
+<li> GDB Crash accessing printing structure with bitfield (PR gdb/10884);
+<li> Various testsuite fixes (not affecting the debugger);
+<li> The manual now provides the correct GPL version licensing text.
+     Similarly, file gdb/COPYING now provides the text of the GPL version 3.
+</ul>
+<p>
+</dd>
+
+<dt>October 06, 2009: <b>GDB 7.0 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 7.0, is available for <a
+href="../../gdb/download/">download</a>.
+<p>
+Changes in this release include:
+<ul>
+<li>Support for native x86/x86_64 Darwin, x86_64 MinGW
+<li>Support for Lattice Mico32, x86/x86_64 DICOS, S+core 3 targets
+<li>gdbserver support for x86 Windows CE
+<li>Python scripting support
+<li>Reverse debugging, Process record and replay
+<li>Non-stop debugging
+<li>Multi-architecture debugging
+<li>Multi-inferior, multi-process debugging
+</ul>
+See the NEWS file for a more complete and detailed list of what this
+release includes.
+<p>
+</dd>
+
+<dt>September 16, 2009: <b>GDB 7.0 branch created</b></dt>
+<dd>
+<p> The GDB 7.0 branch (<tt>gdb_7_0-branch</tt>) has been created.
+To check out a copy of the branch use:
+<pre>
+cvs -d :pserver:anoncvs@sourceware.org:/cvs/src co -r gdb_7_0-branch gdb
+</pre>
+<p>
+</dd>
+
+<dt>September 6, 2009: <b>Update: Reverse Debugging</b></dt>
+<dd>
+<p> GDB version 7.0, due to be released later this month, will
+include the first public releases of reverse debugging and Process
+Record and Replay.  See the 
+<a href=http://sourceware.org/gdb/wiki/ReverseDebug>wiki page</a>.
+
+<p> The GDB maintainers are still looking for contributors interested
+in helping to extend and develop 
+<a href="reversible.html">reverse debugging</a>.
+</p>
+</dd>
+
+<dt>March 27, 2008: <b>GDB 6.8 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 6.8, is available for <a
+href="../../gdb/download/">download</a>.
+<p>
+Changes in this release include:
+<ul>
+<li>Support for native x86/Windows, NetBSD/hppa and Xtensa GNU/Linux
+<li>Support for multiple remote target architectures
+<li>Support for the Decimal Floating Point extension
+<li>Improved Ada and C++ debugging
+<li>GDB/MI interface improvements
+<li>Remote protocol and gdbserver enhancements
+<li>Various new commands
+</ul>
+See the NEWS file for a more complete and detailed list of what this
+release includes.
+<p>
+</dd>
+
+<dt>February 29, 2008: <b>GDB 6.8 branch created</b></dt>
+<dd>
+<p> The GDB 6.8 branch (<tt>gdb_6_8-branch</tt>) has been created.
+To check out a copy of the branch use:
+<pre>
+cvs -d :pserver:anoncvs@sourceware.org:/cvs/src co -r gdb_6_8-branch gdb
+</pre>
+<p>
+</dd>
+
+<dt>October 29, 2007: <b>GDB 6.7.1 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 6.7.1, is available for <a
+href="../../gdb/download/">download</a>.
+<p>
+See the <a href="../../gdb/download/ANNOUNCEMENT">ANNOUNCEMENT</a> file
+for a more complete and detailed list of what this release includes.
+<p>
+</dd>
+
+<dt>October 10, 2007: <b>GDB 6.7 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 6.7, is available for <a
+href="../../gdb/download/">download</a>.
+<p>
+Changes in this release include:
+<ul>
+<li>New targets (OpenBSD/sh, MIPS64 GNU/Linux, mep-elf)
+<li>Support for XML target description
+<li>Improved C++ debugging
+<li>Remote protocol enhancements
+<li>Various new commands
+<li>some removed obsolete configurations and features
+</ul>
+See the NEWS file for a more complete and detailed list of what this
+release includes.
+<p>
+</dd>
+
+<dt>September 11, 2007: <b>GDB 6.7 branch created</b></dt>
+<dd>
+<p> The GDB 6.7 branch (<tt>gdb_6_7-branch</tt>) has been created.
+To check out a copy of the branch use:
+<pre>
+cvs -d :pserver:anoncvs@sourceware.org:/cvs/src co -r gdb_6_7-branch gdb
+</pre>
+<p>
+</dd>
+
+<dt>December 18, 2006: <b>GDB 6.6 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 6.6, is available for <a
+href="../../gdb/download/">download</a>.
+<p>
+Changes in this release include:
+<ul>
+<li>New targets (xtensa-elf, spu-elf)
+<li>New remote stub ports (windows and cygwin)
+<li>GNU/Linux Thread Local Storage (TLS) enhancements
+<li>New remote protocol packets
+<li>Various new commands
+</ul>
+See the NEWS file for a more complete and detailed list of what this
+release includes.
+<p>
+</dd>
+
+<dt>Nov 28, 2006: <b>Reversible Debugging</b></dt>
+<dd>
+<p> The GDB maintainers are looking for contributors interested
+in <a href="reversible.html">reversible debugging</a>.
+</p>
+</dd>
+
+<dt>Nov 19, 2006: <b>GDB 6.6 branch created</b></dt>
+<dd>
+<p> The GDB 6.6 branch (<tt>gdb_6_6-branch</tt>) has been created.
+To check out a copy of the branch use:
+<pre>
+cvs -d :pserver:anoncvs@sourceware.org:/cvs/src co -r gdb_6_6-branch gdb
+</pre>
+<p>
+</dd>
+
+<dt>June 20, 2006: <b>GDB 6.5 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 6.5, is available for <a
+href="../../gdb/download/">download</a>.
+<p>
+Changes in this release include:
+<ul>
+<li>New targets (m32c-elf, ms1-elf)
+<li>Improved Modula-2 support
+<li>Improved Windows host support (i686-mingw32)
+<li>Various new commands (see gdb/NEWS)
+<li>Checkpoint support (currently only supported on GNU/Linux)<br>
+GDB is now able to save a snapshot of a program's state, called a
+checkpoint, and come back to it later. By effectively undoing everything
+that has happened since a checkpoint was saved, this feature is like
+going back in time since the checkpoint was saved.
+</ul>
+See the NEWS file for a more complete and detailed list of what this
+release includes.
+<p>
+</dd>
+
+<dt>May 16, 2006: <b>GDB 6.5 branch created</b></dt>
+<dd>
+<p> The GDB 6.5 branch (<tt>gdb_6_5-branch</tt>) has been created.
+To check out a copy of the branch use:
+<pre>
+cvs -d :pserver:anoncvs@sourceware.org:/cvs/src co -r gdb_6_5-branch gdb
+</pre>
+<p>
+</dd>
+
+<dt>December 2, 2005: <b>GDB 6.4 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 6.4, is available for <a
+href="../../gdb/download/">download</a>.
+<p>
+Changes in this release include:
+<ul>
+<li>New native configurations (OpenBSD/arm, OpenBSD/mips64)
+<li>New targets (ms1-elf, mn10300-elf)
+<li>User-level thread support in BSD<br>
+It is now possible to debug programs using the user-level threads
+library on selected targets running OpenBSD and FreeBSD.
+</ul>
+See the NEWS file for a more complete and detailed list of what this
+release includes.
+<p>
+</dd>
+
+<dt>November 2, 2005: <b>GDB 6.4 branch created</b></dt>
+<dd>
+<p> The GDB 6.4 branch (<tt>gdb_6_4-branch</tt>) has been created.
+To check out a copy of the branch use:
+<pre>
+cvs -d :pserver:anoncvs@sourceware.org:/cvs/src co -r gdb_6_4-branch gdb
+</pre>
+<p>
+</dd>
+
+<dt>November 9, 2004: <b>GDB 6.3 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 6.3, is available for <a
+href="../../gdb/download/">download</a>.
+<p>
+Changes in this release include:
+<ul>
+<li>GDB works with GCC -feliminate-dwarf2-dups<br>
+GDB now supports a more compact representation of DWARF-2 debug
+information using DW_FORM_ref_addr references.  These are produced
+by GCC with the option -feliminate-dwarf2-dups and also by some
+proprietary compilers.  With GCC, you must use GCC 3.3.4 or later
+to use -feliminate-dwarf2-dups.
+<li>Internationalization<br>
+When supported by the host system, GDB will be built with
+internationalization (libintl).  The task of marking up the sources is
+continued, we're looking forward to our first translation.
+<li>Ada<br>
+Initial support for debugging programs compiled with the GNAT 
+implementation of the Ada programming language has been integrated 
+into GDB.  In this release, support is limited to expression evaluation.
+</ul>
+<p>
+</dd>
+
+<dt>October 19, 2004: <b>GDB 6.3 branch created</b></dt>
+<dd>
+<p> The GDB 6.3 branch (<tt>gdb_6_3-branch</tt>) has been created.
+To check out a copy of the branch use:
+<pre>
+cvs -d :pserver:anoncvs@sourceware.org:/cvs/src co -r gdb_6_3-branch gdb
+</pre>
+<p>
+</dd>
+
+<dt>September 7, 2004: <b>GDB 6.2.1 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 6.2.1, is available for <a
+href="../../gdb/download/">download</a>.
+<p>
+Changes in this update include:
+<ul>
+<li>Improved i386 prologue analyzer<br>
+The i386 prologue analyzer was improved to deal better with the
+prologues generated by GCC 3.3 and later.  As a result GDB should
+produce better backtraces for code without DWARF Call Frame Info.
+<li>MIPS `break main; run' gave an heuristic-fence-post warning<br>
+When attempting to run even a simple program, a warning about
+heuristic-fence-post being hit would be reported.  This problem has
+been fixed.
+<li>MIPS IRIX 'long double' crashed GDB<br>
+When examining a long double variable, GDB would get a segmentation
+fault.  The crash has been fixed (but GDB 6.2 cannot correctly examine
+IRIX long double values).
+<li>VAX and "next"<br>
+A bug in the VAX stack code was causing problems with the "next"
+command.  This problem has been fixed.
+</ul>
+Thanks goes to Mark Kettenis and Joel Brobecker for contributing fixes.
+<p>
+</dd>
+
+<dt>July 30, 2004: <b>GDB 6.2 Released!</b></dt>
+<dd>
+<p> The latest version of GDB, version 6.2, is available for <a
+href="../../gdb/download/">download</a>.
+<p>
+Please note that GDB 6.2 has serious problems on MIPS native.  It will
+be addressed in the next update.
+<p>
+</dd>
+
+<dt>July 10, 2004: <b>GDB 6.2 branch created</b></dt>
+<dd>
+<p> The GDB 6.2 branch (<tt>gdb_6_2-branch</tt>) has been created.
+To check out a copy of the branch use:
+<pre>
+cvs -d :pserver:anoncvs@sourceware.org:/cvs/src co -r gdb_6_2-branch gdb
+</pre>
+<p>
+</dd>
+
+<dt>June 16, 2004: <b>GDB 6.1.1 Released!</b></dt>
+<dd>
+<p> GDB version 6.1.1 has been released. <br> Much thanks to all the
+contributors.
+<p>
+</dd>
+
+<dt>April 4, 2004: <b>GDB 6.1 Released!</b></dt>
+<dd>
+<p> GDB version 6.1 has been released. <br> Much thanks to all the
+contributors.
+<p>
+</dd>
+
+<dt>March 1, 2004: <b>GDB 6.1 branch created</b></dt>
+<dd>
+<p> The GDB 6.1 branch (<tt>gdb_6_1-branch</tt>) has been created.
+To check out a copy of the branch use:
+<pre>
+cvs -d :pserver:anoncvs@sourceware.org:/cvs/src co -r gdb_6_1-branch gdb+dejagnu
+</pre>
+<p>
+</dd>
+
+<dt>October 3, 2003: <b>GDB 6.0 Released!</b></dt>
+<dd>
+<p> GDB version 6.0 has been released. <br> Much thanks to all the
+contributors.
+<p>
+</dd>
+
+<dt>September 18, 2003: <b><a href="http://sourceware.org/ml/gdb-patches/2003-09/msg00403.html">New SPARC branch</a></b></dt>
+<dd>
+<p> Mark Kettenis has create a new SPARC branch
+(kettenis_sparc-20030918-branch) and is using it to reimplement the
+SPARC architecture so that it works with the latest frame and related
+changes.
+<p> People encountering problems with SPARC GDB should check out this
+branch.
+<p>
+</dd>
+
+<dt>June 23, 2003: <b>GDB 6 branch created</b></dt>
+<dd>
+<p> The GDB 6.0 branch (<tt>gdb_6_0-branch</tt>) has been created.
+To check out a copy of the branch use:
+<pre>
+cvs -d :pserver:anoncvs@sourceware.org:/cvs/src co -r gdb_6_0-branch gdb+dejagnu
+</pre>
+<p>
+</dd>
+
+<dt>February 26, 2003: <b>ADA 5.3 tar ball</b></dt>
+<dd>
+<p> Act have updated their <a
+href="ftp://sourceware.org/pub/gdb/contrib/gnat"> contrib </a>
+directory with a version of GDB 5.3 that includes Ada support.
+<p>
+</dd>
+
+<dt>December 12, 2002: <b>GDB 5.3 Released!</b></dt>
+<dd>
+<p> GDB version 5.3 has been released.<br> Much thanks to all the
+contributors.
+<p>
+</dd>
+
+<dt>September 4, 2002: <b>GDB 5.3 branch created</b></dt>
+<dd>
+<p> The GDB 5.3 branch (<tt>gdb_5_3-branch</tt>)has been created.
+To check out a copy of the branch use:
+<pre>
+cvs -d :pserver:anoncvs@sourceware.org:/cvs/src co -r gdb_5_3-branch gdb+dejagnu
+</pre>
+<p>
+</dd>
+
+<dt>August 01, 2002: <b>Obsolete functionality</b></dt>
+<dd>
+<p> The following GDB functionality has been made obsolete.
+<ul>
+<li>Mitsubishi D30V</li>
+<li>OS/9000</li>
+<li>Fujitsu FR30</li>
+<li>Motorola Delta 88000 running Sys V</li>
+<li>CHILL, a Pascal like language used by telecommunications companies.</li>
+</ul>
+<p>
+</dd>
+
+<dt>July 23, 2002: <b>GDB 5.2.1 Released!</b></dt> <dd>
+<p> GDB version 5.2.1 has been released.<br> Much thanks to all the
+contributors.
+<p>
+</dd>
+
+<dt>July 9, 2002: <b>FORTRAN 95 Code Dropping</b></dt>
+<dd>
+<p> Petr Sorfa (<a href="http://www.caldera.com/">Caldera</a>) has
+contributed <a
+href="ftp://sourceware.org/pub/gdb/contrib/caldera/">patches</a>
+against GDB 5.1.1 that add support for FORTRAN 95.  It even includes
+support for a location expression parser and support for many other
+DWARF[23] extensions.
+<p>
+</dd>
+
+<dt>May 5, 2002: <b>Macro Support</b></dt>
+<dd>
+<p> Jim Blandy (<a href="http://www.redhat.com">Red Hat</a>) has added
+support for C/C++ preprocessor macros to GDB.
+<p> GDB can expand preprocessor macro invocations in C/C++
+expressions, and provides various commands for showing macro
+definitions and how they expand.
+<p> Most compilers don't include information about macros in the
+debugging information by default.  In GCC 3.1, for example, you need
+to compile your program with the options <tt>-gdwarf-2 -g3</tt>.  If
+the macro information is present in the executable, GDB will read it.
+<p>
+</dd>
+
+<dt>April 30, 2002: <b>GDB 5.2 Released!</b></dt>
+<dd>
+<p> GDB version 5.2 has been released.<br> Much thanks to all the
+contributors.
+<p> The GDB 5.2 branch can be checked out using:
+<pre>
+cvs -d :pserver:anoncvs@anoncvs.cygnus.com:/cvs/src co -r gdb_5_2-branch gdb+dejagnu
+</pre>
+<p>
+</dd>
+
+<dt>March 5, 2002: <b>GDB 5.2 branch created</b></dt>
+<dd>
+<p> The branch tag is <tt>gdb_5_2-branch</tt> and the branch can be
+checked out using:
+<pre>
+cvs -d :pserver:anoncvs@anoncvs.cygnus.com:/cvs/src co -r gdb_5_2-branch gdb+dejagnu
+</pre>
+Alternativly, a snapshot take from the branch can be downloaded from
+the directory:
+<pre>
+<a href="ftp://sourceware.org/pub/gdb/snapshots/branch">
+ftp://sourceware.org/pub/gdb/snapshots/branch</a>
+</pre>
+These snapshots are <a
+href="http://sourceware.org/mirrors.html">mirrored</a> so it may
+pay to check for a more local site.
+<p>
+</dd>
+
+<dt>January 24, 2002: <b>GDB 5.1.1 Released!</b></dt>
+<dd>
+<p> GDB version <a href="../../gdb/5.1.1/">5.1.1</a> has been
+released.<br> Much thanks to all the contributors.
+<p> The GDB 5.1 branch can be checked out using:
+<pre>
+cvs -d :pserver:anoncvs@anoncvs.cygnus.com:/cvs/src co -r gdb_5_1-2001-07-29-branch gdb+dejagnu
+</pre>
+<p>
+</dd>
+
+<dt>December 16, 2001: <b>Code droppings</b></dt>
+<dd>
+<p> Jason Molenda (<a href="http://www.apple.com/">Apple</a>) and Paul
+Hilfinger <a href="http://www.gnat.com/">A.C.T.</a> have contributed
+major changes, in the form of snapshots, to GDB.
+<p> Apple's <a href="ftp://sourceware.org/pub/gdb/contrib/apple">
+snapshot </a> includes support for MacOS X and Objective C++.
+<p> Act's <a href="ftp://sourceware.org/pub/gdb/contrib/gnat">
+snapshot </a> contains support for GNU Ada.
+<p> While much much work is still needed before these changes can be
+integrated into GDB this does mean that the changes are available.
+<p>
+</dd>
+
+<dt>November 26, 2001: <b>GDB --args option</b></dt>
+<dd>
+<p> Tom Tromey has committed patches that add support for a --args option.
+It is now possible to enter sequences like:
+<pre>
+$  ./my broken program
+segmentation fault.
+$  gdb --args ./my broken program
+</pre>
+<p>
+</dd>
+
+<dt>November 21, 2001: <b>GDB 5.1 Released!</b></dt>
+<dd>
+<p> GDB version <a href="../../gdb/5.1/">5.1</a> has been
+released.<br> Much thanks to all the contributors.
+<p>
+</dd>
+
+<dt>November 11, 2001: <b>GDB 5.0.93 available</b></dt>
+<dd>
+<p> GDB 5.0.93, taken from the GDB 5.1 branch, is available.
+<p>
+</dd>
+
+<dt>November 8, 2001: <b>i386 target multi-arch enabled</b></dt>
+<dd>
+<p> All i386 targets have been partially multi-arched.  While their
+conversion to full multi-arch is on going, this does mean that the
+i386 target has access to features (such as multi-isa support) only
+available in a multi-arch GDB
+<p>
+</dd>
+
+<dt>November 7, 2001: <b>The partial-stab.h dragon is dead</b></dt>
+<dd>
+<p> Elena Zannoni has committed changes that slay the partial-stab.h
+dragon.  This dragon blocked the door of the non-dwarf symtab readers
+and would kill anyone that attempted to submit changes.
+<p>
+</dd>
+
+<dt>October, 30, 2001: <b>GDB 5.0.92 available</b></dt>
+<dd>
+<p> GDB 5.0.92, taken from the GDB 5.1 branch, has been made
+available.
+<p>
+</dd>
+
+<dt>September 13, 2001: <b>S390 target committed</b></dt>
+<dd>
+<p> DJ Barrow, of IBM, has contributed a port of GDB to the s390
+GNU/Linux platform.  It has been committed to both the trunk and the
+5.1 branch.
+<p>
+</dd>
+
+<dt>August 18, 2001: <b><tt>sourceware.org</tt> down Sunday
+morning 2001-08-19 UCT</b></dt>
+<dd>
+<p> The machine <tt>sourceware.org</tt>, which hosts the GDB CVS
+repository, mailing lists and these web pages, will be unavailable for
+roughly an hour from 2001-08-19 0700 UCT.  During this time the
+machine will be physically moved to a co-location.  This, among the
+many other advantages, will significantly improve the machines
+available bandwidth.
+<p>
+</dd>
+
+<dt>July 29, 2001: <b>GDB 5.1 branch created</b></dt>
+<dd>
+<p> The branch tag is <tt>gdb_5_1-2001-07-29-branch</tt>.<br>
+Snapshots of the branch are available for <a
+href="../../gdb/download">download</a> from the snapshots
+directory.<br> Alternativly, the branch can be checked out using the
+CVS command:
+<pre>
+cvs -d :pserver:anoncvs@anoncvs.cygnus.com:/cvs/src co -r gdb_5_1-2001-07-29-branch gdb dejagnu
+</pre>
+<p>
+</dd>
+
+<dt>July 11, 2001: <b>Tentative Release Schedule for GDB 5.1</b></dt>
+<dd>
+<p> A <a
+href="http://sourceware.org/ml/gdb/2001-07/msg00107.html">Tentative
+Relese Schedule</a> for GDB 5.1 has been posted.  At this stage, it is
+hoped that the 5.1 branch will be cut on or around 2001-07-22.
+<p>
+</dd>
+
+<dt>June 11, 2001: <b><a
+href="../../gdb/papers/multi-arch/real-multi-arch/">Multi-arch strategy white
+paper</a></b></dt>
+<dd>
+<p> A paper discussing the full set of changes necessary to complete
+the multi-arch work (so that targets with different architectures are
+supported) has been posted.
+<p>
+</dd>
+
+<dt>April 30, 2001: <b>5.1 Target elimination phase complete</b></dt>
+<dd>
+<p> As part of the 5.1 release cycle the following targets have been
+marked as obsolete:
+<pre>
+x86 FreeBSD before 2.2                i[3456]86*-freebsd{1,2.[01]}*, 
+Harris/CXUX m88k                      m88*-harris-cxux*
+Most ns32k hosts and targets          ns32k-*-mach3* ns32k-umax-*
+                                      ns32k-utek-sysv* ns32k-utek-*
+TI TMS320C80                          tic80-*-*
+WDC 65816                             w65-*-*
+Ultracomputer (29K) running Sym1      a29k-nyu-sym1 a29k-*-kern*
+PowerPC Solaris                       powerpcle-*-solaris*
+PowerPC Windows NT                    powerpcle-*-cygwin32
+PowerPC Netware                       powerpc-*-netware*
+SunOS 4.0.Xi on i386                  i[3456]86-*-sunos*
+Sony NEWS (68K) running NEWSOS 3.x    m68*-sony-sysv news
+ISI Optimum V (3.05) under 4.3bsd.    m68*-isi-*
+Apple Macintosh (MPW) host            N/A
+stuff.c (Program to stuff files into a specially prepared space in kdb)
+kdb-start.c (Main loop for the standalone kernel debugger)
+</pre>
+Configurations that have been declared obsolete in this release have
+been commented out.  Unless there is activity to revive these
+configurations, the next release of GDB will have their sources
+permanently REMOVED.
+<p>
+</dd>
+
+<dt>January 18, 2001: <b>GDB Test results web page</b></dt>
+<dd>
+<p> Chris Faylor and Tom Tromey have set up the <em>Terf</em> system
+as a way of publishing GDB testresults.  See <a
+href="http://sourceware.org/cgi-bin/gdb.cgi">http://sourceware.org/cgi-bin/gdb.cgi</a>
+<p>
+</dd>
+
+<dt>October 28, 2000: <b>Bug tracking system live</b></dt>
+<dd>
+<p> In an effort to stop bugs slipping through the cracks, a bug
+tracking database has been established.
+<p>
+</dd>
+
+<dt>July 10, 2000: <b>PARAMS free zone</b></dt>
+<dd>
+<p> The K&R compatible <tt>PARAMS</tt> macro has gone<br> Kevin
+Buettner as completed his elimination of the PARAMS macro from the GDB
+sources.  Developers no longer need to worry about old style
+declarations.
+<p>
+</dd>
+
+<dt>July 7, 2000: <b>Readline 4.1 imported</b></dt>
+<dd>
+<p> Elena Zannoni has completed the import of Readline 4.1</br> The
+updating of GDB's version of readline to 4.1 was one of the key
+objectives of GDB 5.1
+<p>
+</dd>
+
+<dt>June 8, 2000: <b>MIPS switched to multi-arch</b></dt>
+<dd>
+<p> All the MIPS targets (native or cross) have been swiched to the
+mult-arch framework.  That framework facilitates previous impossible
+functionality such as support for differing ISAs (Instruction Set
+Architectures) and ABIs (Application Binary Interfaces).
+<p> The branch <tt>gdb-premipsmulti-2000-06-06-branch</tt> has been
+created and was taken just before the switch was made.  If problems
+with your MIPS target are found please compare results with those from
+that branch.
+<p>
+</dd>
+
+<dt>May 24, 2000: <b>netwinder.org add GDB build farm</b></dt>
+<dd>
+<p> <a href="http://www.netwinder.org">netwinder.org</a> have added a
+GDB build farm.  Check <a
+href="http://www.netwinder.org/build/gdb.html">http://www.netwinder.org/build/gdb.html</a>. Both
+<tt>armv3l-unknown-linux-gnu</tt> and
+<tt>armv4l-unknown-linux-gnu</tt> are being build.
+<p>
+</dd>
+
+<dt>May 19, 2000: <b>GDB 5.0 Released!</b></dt>
+<dd>
+<p> GDB version <a href="../../gdb/5/">Five</a> has been released.<br>
+Much thanks to all the contributors.<br> Late breaking bugs and fixes
+are being added to the <a href="../../gdb/5/errata/">Errata</a> page
+<p>
+
+<dt>April 10, 2000: <b>GDB 5.0 branch created</b></dt>
+<dd>
+<p> The branch tag is <tt>gdb_5_0-2000-04-10-branch</tt>.<br>
+Snapshots of the branch are available for <a
+href="../../gdb/download">download</a> from the snapshots
+directory.<br> Alternativly, the branch can be checked out using the
+CVS command:
+<pre>
+cvs -z9 -d :pserver:anoncvs@anoncvs.cygnus.com:/cvs/src co -r gdb_5_0-2000-04-10-branch gdb dejagnu
+</pre>
+<p>
+</dd>
+
+<dt>Feb, 2000: <b>GDB 5.0 release cycle started</b></dt>
+<dd>
+<p> See the <a
+href="http://sourceware.org/cgi-bin/cvsweb.cgi/~checkout~/src/gdb/TODO?content-type=text/x-cvsweb-markup&cvsroot=src">TODO</a>
+file for an up-to-date status report.
+<p>
+</dd>
+
+<dt>April 10, 1999: <b>GDB 4.18 is released!</b></dt>
+<dd>
+<p> See the <a href="../../gdb/4.18/">GDB 4.18 announcement</a> for
+details about 4.18.
+<p>
+</dd>
+
+<dt>July 27, 1999: <b>Insight is released!</b></dt>
+<dd>
+<p> The first release of the <a
+href="http://sourceware.org/insight/">Insight GUI for GDB</a> has
+been made.  Insight is a tcl/tk based GUI for GDB which has been in
+development for about five years.  Check it out. <p>
+</dd>
+</dl>
+
+<!-- /body, update below using ../../gdb/index.sh -->
+
+<p></p>
+
+<center>
+<small>
+[<a href="../../gdb/bugs/">bugs</a>]
+[<a href="../../gdb/committee/">GDB Maintainers</a>]
+[<a href="../../gdb/contribute/">contributing</a>]
+[<a href="../../gdb/current/">current git</a>]
+[<a href="../../gdb/documentation/">documentation</a>]
+[<a href="../../gdb/download/">download</a>]
+[<a href="../../gdb/">home</a>]
+[<a href="../../gdb/irc/">irc</a>]
+[<a href="../../gdb/links/">links</a>]
+[<a href="../../gdb/mailing-lists/">mailing lists</a>]
+[<a href="../../gdb/news/">news</a>]
+[<a href="../../gdb/schedule/">schedule</a>]
+[<a href="../../gdb/song/">song</a>]
+[<a href="http://sourceware.org/gdb/wiki/">wiki</a>]
+</small>
+</center>
+
+<hr />
+
+<address>
+
+<p>Please send FSF &amp; GNU inquiries &amp; questions to <a
+href="mailto:gnu@gnu.org">gnu@gnu.org</a>.  There are also <a
+href="http://www.gnu.org/home.html#ContactInfo">other ways to
+contact</a> the FSF.</p>
+
+<p>This page is maintained by <a href="../../gdb/">the GDB
+developers</a>.</p>
+
+<p>Copyright Free Software Foundation, Inc., 51 Franklin St - Fifth
+Floor, Boston, MA 02110-1301 USA.</p>
+
+<p>Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this notice is preserved.</p>
+
+<p>Last modified 2013-10-22.</p>
+</address>
+
+</body>
+</html>

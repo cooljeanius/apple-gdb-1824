@@ -1,0 +1,71 @@
+<HTML>
+<HEAD>
+<!-- Created by texi2html 1.57 from libgdb.texinfo on August, 23  1999 -->
+
+<TITLE>Libgdb - Breakpoints</TITLE>
+</HEAD>
+<BODY >
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_11.html">Back</A>] &#160; [<A HREF="libgdb_11.html">Prev</A>] &#160; [<A HREF="libgdb_9.html">Up</A>] &#160; [<A HREF="libgdb_13.html">Next</A>] &#160; [<A HREF="libgdb_13.html">Forward</A>] &#160;<BR><HR><BR>
+
+
+<H2><A NAME="SEC12">The Application Can Have Its Own Breakpoints</A></H2>
+
+<P>
+The GDB breakpoint commands were written with a strong presumption that
+all breakpoints are managed by a human user.  Therefore, the command
+language contains commands like `delete' which affect all breakpoints
+without discrimination.
+
+
+<P>
+In libgdb, there is added support for breakpoints and watchpoints which
+are set by the application and which should not be affected by ordinary,
+indiscriminate commands.  These are called <EM>protected</EM> breakpoints.
+
+
+<P>
+<DL>
+<DT><U>Debugger Command:</U> <B>break-protected</B> <I>...</I>
+<DD><A NAME="IDX38"></A>
+<DT><U>Debugger Command:</U> <B>watch-protected</B> <I>...</I>
+<DD><A NAME="IDX39"></A>
+These work like <CODE>break</CODE> and <CODE>watch</CODE> except that the resulting
+breakpoint is given a negative number.  Negative numbered breakpoints do
+not appear in the output of <CODE>info breakpoints</CODE> but do in that of
+<CODE>info all-breakpoints</CODE>.  Negative numbered breakpoints are not
+affected by commands which ordinarily affect `all' breakpoints (e.g.
+<CODE>delete</CODE> with no arguments).
+
+
+<P>
+Note that libgdb itself creates protected breakpoints, so programs
+should not rely on being able to allocate particular protected
+breakpoint numbers for themselves.
+</DL>
+
+
+<P>
+More than one breakpoint may be set at a given location.  Libgdb adds
+the concept of <EM>priority</EM> to breakpoints.  A priority is an integer,
+assigned to each breakpoint.  When a breakpoint is reached, the
+conditions of all breakpoints at the same location are evaluated in
+order of ascending priority.  When breakpoint commands are executed,
+they are also executed in ascending priority (until all have been
+executed, an error occurs, or one set of commands continues the
+target).
+
+
+<P>
+<DL>
+<DT><U>Debugger Command:</U> <B>priority</B> <I>n bplist</I>
+<DD><A NAME="IDX40"></A>
+Set the priority for breakpoints <VAR>bplist</VAR> to <VAR>n</VAR>.
+By default, breakpoints are assigned a priority of zero.
+</DL>
+
+
+<P></P><HR>
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_11.html">Back</A>] &#160; [<A HREF="libgdb_11.html">Prev</A>] &#160; [<A HREF="libgdb_9.html">Up</A>] &#160; [<A HREF="libgdb_13.html">Next</A>] &#160; [<A HREF="libgdb_13.html">Forward</A>] &#160;
+
+</BODY>
+</HTML>

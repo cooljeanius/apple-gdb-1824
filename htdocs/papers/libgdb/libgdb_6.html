@@ -1,0 +1,62 @@
+<HTML>
+<HEAD>
+<!-- Created by texi2html 1.57 from libgdb.texinfo on August, 23  1999 -->
+
+<TITLE>Libgdb - Defining Commands</TITLE>
+</HEAD>
+<BODY >
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_5.html">Back</A>] &#160; [<A HREF="libgdb_5.html">Prev</A>] &#160; [<A>Up</A>] &#160; [<A HREF="libgdb_7.html">Next</A>] &#160; [<A HREF="libgdb_7.html">Forward</A>] &#160;<BR><HR><BR>
+
+
+<H1><A NAME="SEC6">How New Commands are Created</A></H1>
+<P>
+<A NAME="IDX31"></A>
+
+
+<P>
+Applications are, of course, free to take advantage of the existing GDB
+macro definition capability (the <CODE>define</CODE> and <CODE>document</CODE>
+functions).  
+
+
+<P>
+In addition, an application can add new primitives to the GDB command
+language.
+
+
+<P>
+<DL>
+<DT><U>Function:</U> void <B>gdb_define_app_command</B> <I>(<VAR>name</VAR>, <VAR>fn</VAR>, <VAR>doc</VAR>)</I>
+<DD><A NAME="IDX32"></A>
+
+<PRE>
+char * <VAR>name</VAR>;
+gdb_cmd_fn <VAR>fn</VAR>;
+char * <VAR>doc</VAR>;
+
+typedef void (*gdb_cmd_fn) (char * args);
+</PRE>
+
+<P>
+Create a new command call <VAR>name</VAR>.  The new command is in the
+<CODE>application</CODE> help class.  When invoked, the command-line arguments
+to the command are passed as a single string.
+
+
+<P>
+Calling this function twice with the same name replaces an earlier
+definition, but application commands can not replace builtin commands of
+the same name.
+
+
+<P>
+The documentation string of the command is set to a copy the string
+<VAR>doc</VAR>.
+</DL>
+
+
+<P></P><HR>
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_5.html">Back</A>] &#160; [<A HREF="libgdb_5.html">Prev</A>] &#160; [<A>Up</A>] &#160; [<A HREF="libgdb_7.html">Next</A>] &#160; [<A HREF="libgdb_7.html">Forward</A>] &#160;
+
+</BODY>
+</HTML>

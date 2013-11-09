@@ -1,0 +1,7 @@
+# SWARE is running in GMT.
+
+BRANCH=gdb_7_6-branch
+
+47 1 * * * sh%$HOME/ss/do-all-snapshots `date -u '+\%Y-\%m-\%d-gmt'` $BRANCH
+
+0 * * * * sh $HOME/ss/update-git-version  gdb/version.in clone --branch $BRANCH /git/binutils-gdb.git >>$HOME/log/update-cvs-version.$BRANCH 2>&1

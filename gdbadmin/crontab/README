@@ -1,0 +1,9 @@
+
+	This directory contains GDBADMIN's crontab file.
+
+
+After a change, the file must be manually installed.  Use a command
+like command:
+
+	$  ssh -2 gdbadmin@sources.redhat.com crontab - < crontab
+

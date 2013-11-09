@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html
+          PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="shortcut icon" type="image/x-icon" href="../../gdb/images/archer-fish.ico" />
+<meta name="keywords" content="gdb" />
+
+<title>Current GDB</title>
+
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#1F00FF" alink="#FF0000"
+vlink="#9900DD">
+
+<a href="../../gdb/mascot/"> <img border="0"
+src="../../gdb/images/archer.jpg" align="right" alt="[image of Archer
+Fish]" /></a>
+
+<center><h1>GDB: The GNU Project Debugger</h1></center>
+
+<center>
+<small>
+[<a href="../../gdb/bugs/">bugs</a>]
+[<a href="../../gdb/committee/">GDB Maintainers</a>]
+[<a href="../../gdb/contribute/">contributing</a>]
+[<a href="../../gdb/current/">current git</a>]
+[<a href="../../gdb/documentation/">documentation</a>]
+[<a href="../../gdb/download/">download</a>]
+[<a href="../../gdb/">home</a>]
+[<a href="../../gdb/irc/">irc</a>]
+[<a href="../../gdb/links/">links</a>]
+[<a href="../../gdb/mailing-lists/">mailing lists</a>]
+[<a href="../../gdb/news/">news</a>]
+[<a href="../../gdb/schedule/">schedule</a>]
+[<a href="../../gdb/song/">song</a>]
+[<a href="http://sourceware.org/gdb/wiki/">wiki</a>]
+</small>
+</center>
+
+<center><h2>Current GDB</h2></center>
+
+<!-- NB: CURRENT / LATEST refer to the trunk -->
+<!-- NB: MOST RECENT refers to the branch -->
+
+<!-- body, update above using ../../gdb/index.sh -->
+
+<h3>Source code</h3>
+
+The sources to GDB are available via FTP, git and WWW.<p>
+
+Since GDB's development process is iterative (continuous incremental
+change) current development sources can be considered stable and are
+available.<p>
+
+However, if you would like to try a version of gdb drawn from the most
+recent release branch, they are also available.<p>
+
+<ul>
+
+
+<li><b>Read-only git</b>:<p>
+
+You can check out a copy of the git repository directly using the
+command:
+
+<pre>
+git clone git://sourceware.org/git/binutils-gdb.git
+</pre>
+
+<li><b>Read-write git</b> (GDB developers only):<p>
+
+If you already have a read-only copy of git on hand then there is no
+need to re-check out a source tree.  Instead, you can edit your
+.git/config to change the remote to use the read-write URL.
+
+For example, you might have:
+
+<pre>
+[remote "origin"]
+        url = git://sourceware.org/git/binutils-gdb.git
+        fetch = +refs/heads/*:refs/remotes/origin/*
+</pre>
+
+And you would edit this to use "ssh:" rather than "git:":
+
+<pre>
+[remote "origin"]
+        url = ssh://sourceware.org/git/binutils-gdb.git
+        fetch = +refs/heads/*:refs/remotes/origin/*
+</pre>
+
+Alternatively, to check out a new read-write copy of the repository,
+use:
+
+<pre>
+git clone ssh://sourceware.org/git/binutils-gdb.git
+</pre>
+
+<p>
+
+<li><b>FTP</b>:<p>
+
+A daily snapshot of the current development sources (<a
+href="ftp://sourceware.org/pub/gdb/snapshots/current/">current</a>
+subdirectory) and most recent release branch (<a
+href="ftp://sourceware.org/pub/gdb/snapshots/branch/">branch</a>
+subdirectory) are available from:
+
+<pre>
+<a href="ftp://sourceware.org/pub/gdb/snapshots/"
+>ftp://sourceware.org/pub/gdb/snapshots/</a>
+</pre>
+
+These snapshots are <a
+href="http://sourceware.org/mirrors.html">mirrored</a> so it will
+pay to check for a more local site. <p>
+
+Differences between daily snapshots are also available.
+
+<li><b>WWW</b>:<p>
+
+Browse the git repository via the web using the <a
+href="http://sourceware.org/git/gitweb.cgi?p=binutils-gdb.git">gitweb
+interface</a>.
+
+</ul>
+
+<p>
+
+
+<h3>Web pages</h3>
+
+The web pages are maintained using CVS.  They are accessible using:
+
+<ul>
+
+<li><b>Read-only CVS</b>:<br>
+
+<pre>
+cvs -d :pserver:anoncvs@sourceware.org:/cvs/gdb login
+{enter "anoncvs" as the password}
+cvs -d :pserver:anoncvs@sourceware.org:/cvs/gdb co htdocs
+</pre>
+</li>
+
+<li><b>Read-write CVS</b> (GDB developers only):<br>
+
+<pre>
+CVS_RSH=ssh ; export CVS_RSH
+cvs -d :ext:YOURACCOUNT@sourceware.org:/cvs/gdb co htdocs
+</pre>
+</li>
+
+</ul>
+
+The script <tt>index.sh</tt> is used to add consistent headers and
+footers to each page. <p>
+
+
+<h3>Administration Scripts</h3>
+
+A number of scripts are used to update generated web pages and create
+source code snapshots.  The scripts are kept in a CVS repository and
+should be accessible using:
+
+<pre>
+cvs -z9 -d :pserver:anoncvs@sourceware.org:/cvs/gdbadmin login
+{enter "anoncvs" as the password}
+cvs -z9 -d :pserver:anoncvs@sourceware.org:/cvs/gdbadmin co .
+</pre>
+
+Write access to this repository is restricted.<p>
+
+<!-- /body, update below using ../../gdb/index.sh -->
+
+<p></p>
+
+<center>
+<small>
+[<a href="../../gdb/bugs/">bugs</a>]
+[<a href="../../gdb/committee/">GDB Maintainers</a>]
+[<a href="../../gdb/contribute/">contributing</a>]
+[<a href="../../gdb/current/">current git</a>]
+[<a href="../../gdb/documentation/">documentation</a>]
+[<a href="../../gdb/download/">download</a>]
+[<a href="../../gdb/">home</a>]
+[<a href="../../gdb/irc/">irc</a>]
+[<a href="../../gdb/links/">links</a>]
+[<a href="../../gdb/mailing-lists/">mailing lists</a>]
+[<a href="../../gdb/news/">news</a>]
+[<a href="../../gdb/schedule/">schedule</a>]
+[<a href="../../gdb/song/">song</a>]
+[<a href="http://sourceware.org/gdb/wiki/">wiki</a>]
+</small>
+</center>
+
+<hr />
+
+<address>
+
+<p>Please send FSF &amp; GNU inquiries &amp; questions to <a
+href="mailto:gnu@gnu.org">gnu@gnu.org</a>.  There are also <a
+href="http://www.gnu.org/home.html#ContactInfo">other ways to
+contact</a> the FSF.</p>
+
+<p>This page is maintained by <a href="../../gdb/">the GDB
+developers</a>.</p>
+
+<p>Copyright Free Software Foundation, Inc., 51 Franklin St - Fifth
+Floor, Boston, MA 02110-1301 USA.</p>
+
+<p>Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this notice is preserved.</p>
+
+<p>Last modified 2013-08-29.</p>
+</address>
+
+</body>
+</html>

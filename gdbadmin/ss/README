@@ -1,0 +1,37 @@
+	    GDB and INSIGHT Snapshot directory.
+       ftp://sourceware.org/pub/gdb/snapshots/
+
+See also:
+	http://sourceware.org/gdb
+	http://sourceware.org/insight
+
+To unpack a snap-shot you will need the BZIP2 program.  See:
+
+	http://sourceware.org/bzip2/
+  and	ftp://sourceware.org/pub/bzip2
+
+For rebuilding GDB snapshots, several useful utilities (especially
+automake) are available:
+
+	ftp://sourceware.org/pub/gdb/infrastructure/
+  and	ftp://sourceware.org/pub/binutils/
+
+The following snapshots are available:
+
+    branch/		Taken from the most recent release
+    current/		Taken from the head of GDB's mainline
+
+For each snapshot, the following archives are made available:
+
+    gdb+dejagnu*	Contains GDB and DEJAGNU
+    insight+dejagnu*	Containts INSIGHT, DEJAGNU and TCL/TK.
+    *.tar.bz2		A bzip2 tar archive
+    *.diff.bz2		Differences between two snapshots.
+
+Using 6.0 (previous) and 6.1 (next) as examples, snapshots in the
+branch/ are assigned the version numbers:
+
+    6.0.90, ...		Pre 6.1 release snapshots taken from
+			the gdb_6_1-branch.
+    6.1.0.90, ...	Post 6.1 (pre 6.1.1) release snapshots
+			taken from the gdb_6_1-branch.

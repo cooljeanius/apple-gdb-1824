@@ -1,0 +1,136 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.5 [en] (X11; I; FreeBSD 2.2.7-RELEASE i386) [Netscape]">
+   <meta name="Author" content="Andrew Cagney">
+   <title>GDBtk Architecture</title>
+</head>
+<body>
+
+<h1>
+GDBtk Architecture</h1>
+<i>Thanks to Jim Blandy and Stan Shebs who might even recognize the occasional
+sentence.</i>
+<p>GDB's original textual command line interface was inseparable from the
+GDB core code itself.&nbsp; Code that builds a response to a request is
+distributed through out the GDB core.&nbsp; The responses often being interspersed
+with both error messages and target responses.&nbsp;&nbsp; The code generating
+the responses and their formatting are both arbitrary.
+<p>GDBtk was implemented by attaching to GDB using two separate mechanism:
+firstly all text responses to commands were captured, and secondly by hooking
+into specific GDB functions.
+<center>
+<p><a href="gdbtk2.jpg"><img SRC="gdbtk.jpg" height=224 width=487></a></center>
+
+<h4>
+Text capture</h4>
+Graphical user requests were mapped, by the GUI, onto a sequence of one
+or more GDB commands.&nbsp; Each of these commands was then issued to GDB.&nbsp;
+Any output from the command being captured by the GUI (see gdbtk_fputs()).&nbsp;
+The GUI would then parse the command results (using pattern matching) and
+extract significant data returned by the query.
+<p>It should be immediately clear that this method is both complex and
+unreliable.&nbsp; Any changes to GDB's textual responses may result in
+a need to update the corresponding GUI parsing code.
+<h4>
+Hooks</h4>
+<i>Perhaps better described as source level patches.</i>
+<p>In addition to the capture of textual output from the GDB, GDBtk found
+it necessary to modify GDB so that the GUI was notified of certain internal
+events when they occurred.&nbsp; Those events, in general, were to advise
+the GUI that part of the GUI's internal state was no longer consistent
+with that of GDB and those structures (or displays) should be updated.
+<p>A simple example of this would be the run command.&nbsp;&nbsp; Before
+starting a target, GDB will check the executable being debugged to see
+if it has been modified.&nbsp; If it has been modified GDB will re-load
+any symbol information.&nbsp; For a GUI, such as GDBtk, that may in turn
+require the GUI to re-build its state (the display, variable windows).&nbsp;
+(see gdbtk_pre_add_symbol() and gdbtk_post_add_symbol()).
+<h3>
+Problems and limitations</h3>
+<i>Thanks to Keith Seitz and Stan Shebs</i>
+<h4>
+Error Handling</h4>
+
+<ul>
+<li>
+All errors go to gdb_stdout, so they get interspersed with the output from
+GDB commands.</li>
+
+<br>&nbsp;
+<li>
+Possible to get multiple error dialogs with GUI, since one GUI button could
+translate into multiple CLI commands</li>
+</ul>
+
+<h4>
+Warnings</h4>
+
+<ul>
+<li>
+All warnings go to gdb_stdout, so we could again get warnings in the output
+of normal GDB commands (e.g., protocol errors in variable window).</li>
+
+<br>&nbsp;
+<li>
+No priorities. Some warnings should interrupt the user ("Source file is
+newer than executable"), but others are rather superfluous.</li>
+</ul>
+
+<h4>
+User Interface API</h4>
+
+<ul>
+<li>
+All information retrieval assumes a terminal on which to print output in
+a user-friendly way (not at all in a convenient way for GUIs).</li>
+
+<br>&nbsp;
+<li>
+The output format of the GDB commands are not precisely defined. GDB's
+human readable output can (and often does) change in response to user feedback.</li>
+
+<br>&nbsp;
+<li>
+There is very little control over the volume of output, which means that
+a GUI will need to spend time sifting through a large volume of data to
+find just the values it requires.</li>
+
+<br>&nbsp;
+<li>
+GDB may mix output from several sources, such as when "display" commands
+are used and when a program issues output through GDB.</li>
+
+<br>&nbsp;
+<li>
+Many functions do too much work. Consider list_symtabs in symtab.c, which
+handles the commands rbreak, info functions, info types, info methods,
+and info variables. This one function was responsible for searching the
+symbol table, printing information on the matches, and setting breakpoints.</li>
+
+<br>&nbsp;
+<li>
+Streams (like gdb_stdout) offer a possible answer to all the problems.
+Unfortunately, too many places either don't use streams or ignore them.</li>
+
+<br>&nbsp;
+<li>
+Inconsistencies.&nbsp; Ex. print_command() and output_command() both output
+the value of a variable yet there is no common functionality shared by
+these two functions.</li>
+
+<br>&nbsp;
+<li>
+All target printing MUST go through gdb's *_(un)filtered functions. remote-rdi.c
+was one of several targets which was not doing this: it was using fwrite
+and fputc directly to stdout.</li>
+</ul>
+
+<h3>
+Errata</h3>
+Please add arguments and notes on errors here.
+<br>&nbsp;
+<br>&nbsp;
+</body>
+</html>

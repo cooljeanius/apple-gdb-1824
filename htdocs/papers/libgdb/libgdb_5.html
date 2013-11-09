@@ -1,0 +1,167 @@
+<HTML>
+<HEAD>
+<!-- Created by texi2html 1.57 from libgdb.texinfo on August, 23  1999 -->
+
+<TITLE>Libgdb - Invoking</TITLE>
+</HEAD>
+<BODY >
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_4.html">Back</A>] &#160; [<A HREF="libgdb_4.html">Prev</A>] &#160; [<A>Up</A>] &#160; [<A HREF="libgdb_6.html">Next</A>] &#160; [<A HREF="libgdb_6.html">Forward</A>] &#160;<BR><HR><BR>
+
+
+<H1><A NAME="SEC5">Invoking the Interpreter, Executing Commands</A></H1>
+<P>
+<A NAME="IDX23"></A>
+<A NAME="IDX24"></A>
+
+
+<P>
+This section introduces the libgdb functions which invoke the command
+interpreter. 
+
+
+<P>
+<DL>
+<DT><U>Function:</U> void <B>gdb_execute_command</B> <I>(<VAR>command</VAR>)</I>
+<DD><A NAME="IDX25"></A>
+
+<PRE>
+char * <VAR>command</VAR>;
+</PRE>
+
+<P>
+Interpret the argument debugger command.  An error handler must be set
+when this function is called. (See section <A HREF="libgdb_3.html#SEC3">You Provide the Top Level for the Libgdb Command Interpreter</A>.)
+</DL>
+
+
+<P>
+It is possible to override the current I/O vectors for the duration of a
+single command:
+
+
+<P>
+<DL>
+<DT><U>Function:</U> void <B>gdb_execute_with_io</B> <I>(<VAR>command</VAR>, <VAR>vecs</VAR>)</I>
+<DD><A NAME="IDX26"></A>
+
+<PRE>
+char * <VAR>command</VAR>;
+struct gdb_io_vecs * <VAR>vecs</VAR>;
+
+struct gdb_io_vecs
+{
+  struct gdb_input_vector * input;
+  struct gdb_output_vector * error;
+  struct gdb_output_vector * info;
+  struct gdb_output_vector * value;
+}
+</PRE>
+
+<P>
+Execute <VAR>command</VAR>, temporarily using the i/o vectors in <VAR>vecs</VAR>.
+
+
+<P>
+Any of the vectors may be NULL, indicating that the current value should
+be used.  An error handler must be in place when this function is used.
+</DL>
+
+
+<P>
+<DL>
+<DT><U>Function:</U> struct gdb_str_output <B>gdb_execute_for_strings</B> <I>(<VAR>cmd</VAR>)</I>
+<DD><A NAME="IDX27"></A>
+
+<PRE>
+char * cmd;
+</PRE>
+
+<P>
+<DT><U>Function:</U> struct gdb_str_output <B>gdb_execute_for_strings2</B> <I>(<VAR>cmd</VAR>, <VAR>input</VAR>)</I>
+<DD><A NAME="IDX28"></A>
+
+<PRE>
+char * cmd;
+struct gdb_input_vector * input;
+</PRE>
+
+
+<PRE>
+struct gdb_str_output
+{
+  char * error;
+  char * info;
+  char * value;
+};
+</PRE>
+
+<P>
+Execute <VAR>cmd</VAR>, collecting its output as strings.  If no error
+occurs, all three strings will be present in the structure, the
+empty-string rather than NULL standing for no output of a particular
+kind. 
+
+
+<P>
+If the command aborts with an error, then the <CODE>value</CODE> field will be
+NULL, though the other two strings will be present.
+
+
+<P>
+In all cases, the strings returned are allocated by malloc and should be
+freed by the caller.
+
+
+<P>
+The first form listed uses the current input vector, but overrides the
+current output vector.  The second form additionally allows the input
+vector to be overridden.
+
+
+<P>
+This function does not require that an error handler be installed.
+</DL>
+
+
+<P>
+<DL>
+<DT><U>Function:</U> void <B>execute_catching_errors</B> <I>(<VAR>command</VAR>)</I>
+<DD><A NAME="IDX29"></A>
+
+<PRE>
+char * <VAR>command</VAR>;
+</PRE>
+
+<P>
+Like <CODE>execute_command</CODE> except that no error handler is required.
+</DL>
+
+
+<P>
+<DL>
+<DT><U>Function:</U> void <B>execute_with_text</B> <I>(<VAR>command</VAR>, <VAR>text</VAR>)</I>
+<DD><A NAME="IDX30"></A>
+
+<PRE>
+char * <VAR>command</VAR>;
+char ** <VAR>text</VAR>;
+</PRE>
+
+<P>
+Like <CODE>execute_catching_errors</CODE>, except that the input vector is
+overridden.  The new input vector handles only calls to <CODE>query</CODE> (by
+returning 'y') and calls to <CODE>read_strings</CODE> by returning a copy of
+<VAR>text</VAR> and the strings it points to.
+
+
+<P>
+This form of execute_command is useful for commands like <CODE>define</CODE>,
+<CODE>document</CODE>, and <CODE>commands</CODE>.
+</DL>
+
+
+<P></P><HR>
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_4.html">Back</A>] &#160; [<A HREF="libgdb_4.html">Prev</A>] &#160; [<A>Up</A>] &#160; [<A HREF="libgdb_6.html">Next</A>] &#160; [<A HREF="libgdb_6.html">Forward</A>] &#160;
+
+</BODY>
+</HTML>

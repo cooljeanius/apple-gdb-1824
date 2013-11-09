@@ -1,0 +1,1325 @@
+<HTML>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- Created on June, 11  2001 by texi2html 1.64 -->
+<!-- 
+Written by: Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Olaf Bachmann <obachman@mathematik.uni-kl.de>
+Send bugs and suggestions to <texi2html@mathematik.uni-kl.de>
+ 
+-->
+<HEAD>
+<TITLE>Multi-arching Insight and GDB: </TITLE>
+
+<META NAME="description" CONTENT="Multi-arching Insight and GDB: ">
+<META NAME="keywords" CONTENT="Multi-arching Insight and GDB: ">
+<META NAME="resource-type" CONTENT="document">
+<META NAME="distribution" CONTENT="global">
+<META NAME="Generator" CONTENT="texi2html 1.64">
+
+</HEAD>
+
+<BODY LANG="" BGCOLOR="#FFFFFF" TEXT="#000000" LINK="#0000FF" VLINK="#800080" ALINK="#FF0000">
+
+<A NAME="SEC2"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC3"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<P>
+
+<A NAME="SEC1"></A>
+<H2> Acknowledgments </H2>
+<!--docid::SEC1::-->
+<P>
+</P><P>
+
+<H1> 1. Introduction </H1>
+<!--docid::SEC2::-->
+<P>
+
+<HR SIZE="6">
+<A NAME="SEC3"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC4"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H2> 1.1 Purpose </H2>
+<!--docid::SEC3::-->
+<P>
+
+This document discusses changes to GDB and Insight that will allow the
+debugging of unified memory, asymetric, multi-threaded targets.
+</P><P>
+
+<HR SIZE="6">
+<A NAME="SEC4"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC3"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC5"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H2> 1.2 Document structure </H2>
+<!--docid::SEC4::-->
+<P>
+
+Between Insight and GDB, the following layers and interfaces can be
+identified:
+</P><P>
+
+<UL>
+<LI>User Interface (Insight GUI)
+<LI>Insight
+<LI>Insight - GDB interface
+<LI>GDB
+<LI>GDB - target interface
+<LI>Target
+</UL>
+<P>
+
+The next chapter provides a brief review of multi-arch and what it means
+in the current context.
+</P><P>
+
+Follow that, succeeding chapters address each of the above layers and
+interfaces discussing the intended changes.  At each stage, the emphasis
+of the document is on the interfaces rather than the details of the
+internal changes.
+</P><P>
+
+This document refers to <EM>multi-threaded</EM> targets.  Such a target
+has multiple execution units.  Those execution units could equally be
+<EM>pthreads</EM> or <EM>processors</EM>.
+</P><P>
+
+<HR SIZE="6">
+<A NAME="SEC5"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC4"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC6"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H1> 2. Single-memory, asymetric, multi-threaded GDB </H1>
+<!--docid::SEC5::-->
+<P>
+
+<HR SIZE="6">
+<A NAME="SEC6"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC5"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC7"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H2> 2.1 Multi-arch </H2>
+<!--docid::SEC6::-->
+<P>
+
+The original GDB release included a number of architectural
+restrictions.  In particular, GDB was was only capable of debugging:
+</P><P>
+
+<UL>
+<LI>single thread (or processor)
+<LI>single instruction set architecture (symetric)
+<LI>single address space
+</UL>
+<P>
+
+Each of these can be viewed as largely orthogonal:
+</P><P>
+
+<CENTER><IMG SRC="multi.jpg" ALT="multi"></CENTER>
+</P><P>
+
+The elimination of these restrictions is a long term objective of GDB.
+</P><P>
+
+<HR SIZE="6">
+<A NAME="SEC7"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC6"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC8"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H2> 2.2 Current overall state of GDB </H2>
+<!--docid::SEC7::-->
+<P>
+
+As GDB has evolved, some of these restrictions have been partially
+addressed.  In particular:
+</P><P>
+
+<DL COMPACT>
+<DT><EM>multi-thread</EM>
+<DD>GDB includes support for multi-threaded targets.  Unfortunatly, that
+support does not allow GDB or Insight to debug more than one thread
+simultaneously - there is always a single current thread and the user
+must explicitly switch between them.
+<DT><EM>multi-arch - single architecture variant</EM>
+<DD>GDB includes support for debugging variants of an instruction set
+architecture.  Unfortunatly, that support does not allow GDB or Insight
+to debug different architecture variants simultaneously - all threads
+must have an identical architecture.
+</DL>
+<P>
+
+<HR SIZE="6">
+<A NAME="SEC8"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC7"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC9"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H2> 2.3 Single-memory, asymetric, multi-threaded GDB? </H2>
+<!--docid::SEC8::-->
+<P>
+
+The objective of this document is to address the restrictions that limit
+GDB's ability to debug multi-threaded targets where each thread can have
+a different instruction set architecture.
+</P><P>
+
+<CENTER><IMG SRC="path.jpg" ALT="path"></CENTER>
+</P><P>
+
+The restriction that GDB can not debug targets with multiple address
+spaces has not being addressed.
+</P><P>
+
+<HR SIZE="6">
+<A NAME="SEC9"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC8"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC10"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H1> 3. User/Insight Interface (the GUI and GDB CLI). </H1>
+<!--docid::SEC9::-->
+<P>
+
+<HR SIZE="6">
+<A NAME="SEC10"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC9"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC11"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H2> 3.1 Current Interface </H2>
+<!--docid::SEC10::-->
+<P>
+
+<HR SIZE="6">
+<A NAME="SEC11"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC10"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC16"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H3> 3.1.1 Display </H3>
+<!--docid::SEC11::-->
+<P>
+
+The current Insight interface provides a number of mechanisms for
+examining the target's state.  At any time, each of these mechanisms is
+providing a differeing view of a single thread (current thread) and one
+of its frame (current frame).
+</P><P>
+
+<A NAME="SEC12"></A>
+<H4> Source and Control Window </H4>
+<!--docid::SEC12::-->
+<P>
+
+<CENTER><IMG SRC="source-for-thread-3.jpg" ALT="source-for-thread-3"></CENTER>
+</P><P>
+
+The Source and Control window displays the source source (and assembler)
+for the current threads, current frame.
+</P><P>
+
+In addition, the Source and Control window provide:
+</P><P>
+
+<UL>
+<LI>
+mechanisms for controlling a program's execution.
+<LI>
+a source code browser (in conjunction with the Function Browser Window)
+</UL>
+<P>
+
+<A NAME="SEC13"></A>
+<H4> Local Varible Window </H4>
+<!--docid::SEC13::-->
+<P>
+
+The local variable window provides a way of examing the local variables
+found on the current thread's stack frame.
+</P><P>
+
+<CENTER><IMG SRC="var-with-struct-open.jpg" ALT="var-with-struct-open"></CENTER>
+</P><P>
+
+<A NAME="SEC14"></A>
+<H4> Memory Window </H4>
+<!--docid::SEC14::-->
+<P>
+
+<CENTER><IMG SRC="memory-for-thread-3.jpg" ALT="memory-for-thread-3"></CENTER>
+</P><P>
+
+The memory window displays the contents of the current threads address
+space.
+</P><P>
+
+<A NAME="SEC15"></A>
+<H4> Registers Window </H4>
+<!--docid::SEC15::-->
+<P>
+
+<CENTER><IMG SRC="registers-for-thread-3.jpg" ALT="registers-for-thread-3"></CENTER>
+</P><P>
+
+The register window displays the registers for the current thread's
+current frame.
+</P><P>
+
+<HR SIZE="6">
+<A NAME="SEC16"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC11"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC17"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H2> 3.2 Navigation </H2>
+<!--docid::SEC16::-->
+<P>
+
+Insight provides two mechanisms for changing the current target state
+being displayed by the Display Windows:
+</P><P>
+
+<UL>
+<LI>select thread
+<LI>select frame
+</UL>
+<P>
+
+That navigation provides a mechanism for navigating allows the user to move within
+a two dimentional space:
+</P><P>
+
+<CENTER><IMG SRC="thread-x-frame.jpg" ALT="thread-x-frame"></CENTER>
+</P><P>
+
+At all times, there is only a single current thread and stack frame.
+Selecting a new thread or frame will update all display windows:
+</P><P>
+
+<CENTER><IMG SRC="xform.jpg" ALT="xform"></CENTER>
+</P><P>
+
+<HR SIZE="6">
+<A NAME="SEC17"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC16"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC22"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H3> 3.2.1 Display Navigation </H3>
+<!--docid::SEC17::-->
+<P>
+
+Insight provides the following mechanisms for changing the current
+thread and that threads stack frame.
+</P><P>
+
+<A NAME="SEC18"></A>
+<H4> Stack Window </H4>
+<!--docid::SEC18::-->
+<P>
+
+<CENTER><IMG SRC="stack-for-thread-3.jpg" ALT="stack-for-thread-3"></CENTER>
+</P><P>
+
+The stack window provides a browserable list of the current threads
+stack frames.  This can be used to change the current frame for the
+current thread.
+</P><P>
+
+<A NAME="SEC19"></A>
+<H4> Thread/Process Window </H4>
+<!--docid::SEC19::-->
+<P>
+
+<CENTER><IMG SRC="threads-for-thread-3.jpg" ALT="threads-for-thread-3"></CENTER>
+</P><P>
+
+The thread/process window provides a browserable list of the targets
+threads.  This can be used to change the current thread (and hence the
+current stack).
+</P><P>
+
+<A NAME="SEC20"></A>
+<H4> Stack Frame Buttons </H4>
+<!--docid::SEC20::-->
+<P>
+
+Found on the source/control window, these buttons provide a mechanism
+for moving between the current threads stack frames.
+</P><P>
+
+<CENTER><IMG SRC="stack-buttons-3.jpg" ALT="stack-buttons-3"></CENTER>
+</P><P>
+
+<A NAME="SEC21"></A>
+<H4> Console Window </H4>
+<!--docid::SEC21::-->
+<P>
+
+The console window provides direct access to GDB's command line
+interpreter.  The console window can be used to directly display and
+modify the target state.
+</P><P>
+
+<HR SIZE="6">
+<A NAME="SEC22"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC17"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC24"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H2> 3.3 Other Windows </H2>
+<!--docid::SEC22::-->
+<P>
+
+The following are also available.
+</P><P>
+
+<A NAME="SEC23"></A>
+<H4> Function Browser Window </H4>
+<!--docid::SEC23::-->
+<P>
+
+The Function Browser Window allows the user to browse various source
+files.  It does not affect the current thread or current stack frame.
+</P><P>
+
+<HR SIZE="6">
+<A NAME="SEC24"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC22"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC25"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H2> 3.4 Changes </H2>
+<!--docid::SEC24::-->
+<P>
+
+The most significnat restriction in the existing Insight GUI interface
+its its inability to display more than one thread simultaneously.  As
+noted above, at any time Insight only displays the <EM>current</EM>
+thread/frame.
+</P><P>
+
+<HR SIZE="6">
+<A NAME="SEC25"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC24"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC26"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H3> 3.4.1 Navigating Way </H3>
+<!--docid::SEC25::-->
+<P>
+
+To address the restriction of only a current thread/frame, it is
+proposed that Insight be modified so that all Display Windows include
+mechanims for selecting the thread/frame being displayed.
+</P><P>
+
+When either the thread or frame is explicitly set, the window is
+described as being <EM>navigated away</EM> from <EM>current</EM>.  Once a
+Display Window has been navigated away from the current thread/frame, it
+is no longer affected by changes initiated by the Navigation Mechanims
+such as the Stack Window and Thread Window.
+</P><P>
+
+<CENTER><IMG SRC="away.jpg" ALT="away"></CENTER>
+</P><P>
+
+<HR SIZE="6">
+<A NAME="SEC26"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC25"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC29"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H3> 3.4.2 New Navigation Menus </H3>
+<!--docid::SEC26::-->
+<P>
+
+<A NAME="SEC27"></A>
+<H4> Select Thread </H4>
+<!--docid::SEC27::-->
+<P>
+
+<CENTER><IMG SRC="insight-thread.jpg" ALT="insight-thread"></CENTER>
+</P><P>
+
+The <EM>thread</EM> menu, present on display windows, allows the user to
+specify that:
+</P><P>
+
+<UL>
+<LI>the current thread
+<LI>a specific thread
+</UL>
+<P>
+
+is displayed.
+</P><P>
+
+<A NAME="SEC28"></A>
+<H4> Select Frame </H4>
+<!--docid::SEC28::-->
+<P>
+
+<CENTER><IMG SRC="insight-frame.jpg" ALT="insight-frame"></CENTER>
+</P><P>
+
+The <EM>Select Frame</EM> menu, present on display windows, allows the
+user to specify that the selected threads:
+</P><P>
+
+<UL>
+<LI>current stack frame
+<LI>specific stack frame
+</UL>
+<P>
+
+is displayed.
+</P><P>
+
+<HR SIZE="6">
+<A NAME="SEC29"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC26"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC30"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H1> 4. Insight internals </H1>
+<!--docid::SEC29::-->
+<P>
+
+<HR SIZE="6">
+<A NAME="SEC30"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC29"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC31"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H2> 4.1 Current State </H2>
+<!--docid::SEC30::-->
+<P>
+
+The current Insight implementation, reflecting GDB's internals, is very
+single architecture, single thread, single frame centric.  All display
+windows rely on global state and assume that that global state will
+rarely, if ever, change.
+</P><P>
+
+<HR SIZE="6">
+<A NAME="SEC31"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC30"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC32"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H2> 4.2 Changes </H2>
+<!--docid::SEC31::-->
+<P>
+
+The following structural changes have been identified.
+</P><P>
+
+<HR SIZE="6">
+<A NAME="SEC32"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC31"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC33"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H3> 4.2.1 Display Window have local state </H3>
+<!--docid::SEC32::-->
+<P>
+
+Each display window needs to modified that it uses local state to
+determine what to display.  In particular, each window will need to know
+its:
+</P><P>
+
+<UL>
+<LI>thread (or current thread)
+<LI>frame (or current frame)
+<LI>architecture (or current architecture)
+</UL>
+<P>
+
+<HR SIZE="6">
+<A NAME="SEC33"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC32"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC34"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H3> 4.2.2 Events </H3>
+<!--docid::SEC33::-->
+<P>
+
+So that Display Windows tracking the current thread, frame and
+architecture are kept synchronized, the event mechanism used by Insight
+will need to be extended to include the notifications:
+</P><P>
+
+<UL>
+<LI>change the current frame
+<LI>change the current thread
+<LI>change the current architecture
+</UL>
+<P>
+
+When a user changes the current thread, frame or architecture, the
+change event would be broadcast so that all interested display windows
+would update accordingly.
+</P><P>
+
+<HR SIZE="6">
+<A NAME="SEC34"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC33"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC35"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H1> 5. Insight/GDB Interface </H1>
+<!--docid::SEC34::-->
+<P>
+
+<HR SIZE="6">
+<A NAME="SEC35"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC34"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC36"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H2> 5.1 Current Interface </H2>
+<!--docid::SEC35::-->
+<P>
+
+The existing GDB / Insight interface assumes that there is only a single
+current architecture, thread and frame.  Moving between architectures,
+threads and frames is an expensive (threads), if not impossible
+(architecture) operation.
+</P><P>
+
+<HR SIZE="6">
+<A NAME="SEC36"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC35"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC37"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H2> 5.2 Changes </H2>
+<!--docid::SEC36::-->
+<P>
+
+Reflecting the changes to both the GUI and Insights internals, the
+GDB/Insight interface will need to be extended to support:
+</P><P>
+
+<UL>
+<LI>
+a mechanism for identifying individual frames (and their corresponding
+thread and architecture).
+<LI>
+a mechanism for tracking what GDB's CLI considers current (frame, thread
+and architecture). This would include an event mechanism for notifying
+Insight of any changes to the current frame, thread or architecture.
+</UL>
+<P>
+
+<HR SIZE="6">
+<A NAME="SEC37"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC36"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC38"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H1> 6. GDB internals </H1>
+<!--docid::SEC37::-->
+<P>
+
+<HR SIZE="6">
+<A NAME="SEC38"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC37"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC39"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H2> 6.1 Current State </H2>
+<!--docid::SEC38::-->
+<P>
+
+The current GDB architecture is based around a single global state.
+That global state includes:
+</P><P>
+
+<DL COMPACT>
+<DT><CODE>struct frame</CODE>
+<DD>abstracts the target ABI's stack frame
+<DT><CODE>struct gdbarch</CODE>
+<DD>the architecture of the target
+<DT><CODE>struct thread_info</CODE>
+<DD>the debug and run state of a target thread
+</DL>
+<P>
+
+Because of the way the global state is managed (eg changing threads
+invalidates all frames) there are also certain implicit relationships
+between that global states components.
+</P><P>
+
+GDB uses this single global state to track the current thread.  When
+ever a new thread is selected, the current state is discarded and a new
+state created.  This behavour has serious consequences for GUI
+interfaces which expect to be both displaying multiple-thread states
+simultaneously and quickly and efficiently switching between threads.
+</P><P>
+
+<HR SIZE="6">
+<A NAME="SEC39"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC38"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC40"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H2> 6.2 Changes </H2>
+<!--docid::SEC39::-->
+<P>
+
+The proposed change (discussed on <A HREF="mailto:gdb@sourceware.org">GDB
+Discussion Mailing List</A>) is to:
+</P><P>
+
+<UL>
+<LI>
+add an explicit object relationship between the thread, frame and
+architecture
+<LI>
+replace the global state with an explict thread and frame parameters
+<LI>
+Extend BFD so that it knows about more than one architecture within a
+single object file. This is so that given a particular address, GDB will
+be able to disassemble instructions at that address correctly,
+i.e. invoking the appropriate disassembler function. GDB will be able to
+map an architecture to an address using information provided by BFD.
+</UL>
+<P>
+
+<CENTER><IMG SRC="arch.jpg" ALT="arch"></CENTER>
+</P><P>
+
+By giving each frame an explict architecture, GDB's restriction that there can only be a single global architecture is removed.
+</P><P>
+
+By making the thread-frame relationship explicit, there is no longer a
+need to discard all thread/frame information when switching threads.
+</P><P>
+
+By making the frame an explicit parameter, the need, by GUI's to
+constantly switch the current thread/frame is removed.
+</P><P>
+
+<HR SIZE="6">
+<A NAME="SEC40"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC39"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC41"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H1> 7. GDB/Remote Target Inteface </H1>
+<!--docid::SEC40::-->
+<P>
+
+<HR SIZE="6">
+<A NAME="SEC41"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC40"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC42"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H2> 7.1 Current Interface </H2>
+<!--docid::SEC41::-->
+<P>
+
+GDB interacts with a remote target using the "GDB remote protocol".
+This protocol includes mechansims that allow GDB to obtain the current
+state of the target including:
+</P><P>
+
+<UL>
+<LI>stop reason
+<LI>current thread
+<LI>value of selected registers
+<LI>memory
+</UL>
+<P>
+
+Both GDB and the remote target assume the architecture of the current
+target.
+</P><P>
+
+The protocol uses target architecture dependant mechanisms when
+transfering registers.
+</P><P>
+
+<HR SIZE="6">
+<A NAME="SEC42"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC41"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC43"> &gt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H2> 7.2 Changes </H2>
+<!--docid::SEC42::-->
+<P>
+
+The protocol needs to be extended so that the target can notify GDB of
+the archhitecture of the current thread.
+</P><P>
+
+The protocol may also need to be extended so that support a target
+independant representation of registers.
+</P><P>
+
+<HR SIZE="6">
+<A NAME="SEC43"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC42"> &lt; </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[ &lt;&lt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2"> Up </A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[ &gt;&gt; ]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT"> &nbsp; <TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H3> 7.2.1 Protocol Changes </H3>
+<!--docid::SEC43::-->
+<P>
+
+Below are draft changes to the remote protocol that address the above:
+</P><P>
+
+<DL COMPACT>
+<DT><CODE>T00;...;Architecture=&#60;arch&#62;;...</CODE>
+<DD>The <CODE>T</CODE> packet is used to report the reason the target stopped to
+GDB.  That packet includes information such as the processor and that
+processors registers.  The packet can be extended to include the
+architecture of the processor that halted.
+<DT><CODE>qArchitecture</CODE>
+<DD>An alternative to extending the <CODE>T</CODE> status packet, is to add an
+architecture query packet to the protocol.
+<DT><CODE>T00;...;&#60;regnum&#62;!&#60;register-value&#62;;...</CODE>
+<DD>The current "GDB remote protocol" transfers registers using a target
+dependant byte ordering.  Using a target independant format would allow
+GDB to process register values received from the target without knowing
+that targets architecture.
+</DL>
+<P>
+
+<HR SIZE="6">
+<A NAME="SEC_Contents"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H1>Table of Contents</H1>
+<UL>
+<A NAME="TOC2" HREF="index.html#SEC2">1. Introduction</A>
+<BR>
+<UL>
+<A NAME="TOC3" HREF="index.html#SEC3">1.1 Purpose</A>
+<BR>
+<A NAME="TOC4" HREF="index.html#SEC4">1.2 Document structure</A>
+<BR>
+</UL>
+<A NAME="TOC5" HREF="index.html#SEC5">2. Single-memory, asymetric, multi-threaded GDB</A>
+<BR>
+<UL>
+<A NAME="TOC6" HREF="index.html#SEC6">2.1 Multi-arch</A>
+<BR>
+<A NAME="TOC7" HREF="index.html#SEC7">2.2 Current overall state of GDB</A>
+<BR>
+<A NAME="TOC8" HREF="index.html#SEC8">2.3 Single-memory, asymetric, multi-threaded GDB?</A>
+<BR>
+</UL>
+<A NAME="TOC9" HREF="index.html#SEC9">3. User/Insight Interface (the GUI and GDB CLI).</A>
+<BR>
+<UL>
+<A NAME="TOC10" HREF="index.html#SEC10">3.1 Current Interface</A>
+<BR>
+<UL>
+<A NAME="TOC11" HREF="index.html#SEC11">3.1.1 Display</A>
+<BR>
+</UL>
+<A NAME="TOC16" HREF="index.html#SEC16">3.2 Navigation</A>
+<BR>
+<UL>
+<A NAME="TOC17" HREF="index.html#SEC17">3.2.1 Display Navigation</A>
+<BR>
+</UL>
+<A NAME="TOC22" HREF="index.html#SEC22">3.3 Other Windows</A>
+<BR>
+<A NAME="TOC24" HREF="index.html#SEC24">3.4 Changes</A>
+<BR>
+<UL>
+<A NAME="TOC25" HREF="index.html#SEC25">3.4.1 Navigating Way</A>
+<BR>
+<A NAME="TOC26" HREF="index.html#SEC26">3.4.2 New Navigation Menus</A>
+<BR>
+</UL>
+</UL>
+<A NAME="TOC29" HREF="index.html#SEC29">4. Insight internals</A>
+<BR>
+<UL>
+<A NAME="TOC30" HREF="index.html#SEC30">4.1 Current State</A>
+<BR>
+<A NAME="TOC31" HREF="index.html#SEC31">4.2 Changes</A>
+<BR>
+<UL>
+<A NAME="TOC32" HREF="index.html#SEC32">4.2.1 Display Window have local state</A>
+<BR>
+<A NAME="TOC33" HREF="index.html#SEC33">4.2.2 Events</A>
+<BR>
+</UL>
+</UL>
+<A NAME="TOC34" HREF="index.html#SEC34">5. Insight/GDB Interface</A>
+<BR>
+<UL>
+<A NAME="TOC35" HREF="index.html#SEC35">5.1 Current Interface</A>
+<BR>
+<A NAME="TOC36" HREF="index.html#SEC36">5.2 Changes</A>
+<BR>
+</UL>
+<A NAME="TOC37" HREF="index.html#SEC37">6. GDB internals</A>
+<BR>
+<UL>
+<A NAME="TOC38" HREF="index.html#SEC38">6.1 Current State</A>
+<BR>
+<A NAME="TOC39" HREF="index.html#SEC39">6.2 Changes</A>
+<BR>
+</UL>
+<A NAME="TOC40" HREF="index.html#SEC40">7. GDB/Remote Target Inteface</A>
+<BR>
+<UL>
+<A NAME="TOC41" HREF="index.html#SEC41">7.1 Current Interface</A>
+<BR>
+<A NAME="TOC42" HREF="index.html#SEC42">7.2 Changes</A>
+<BR>
+<UL>
+<A NAME="TOC43" HREF="index.html#SEC43">7.2.1 Protocol Changes</A>
+<BR>
+</UL>
+</UL>
+</UL>
+<HR SIZE=1>
+<A NAME="SEC_OVERVIEW"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H1>Short Table of Contents</H1>
+<BLOCKQUOTE>
+<A NAME="TOC2" HREF="index.html#SEC2">1. Introduction</A>
+<BR>
+<A NAME="TOC5" HREF="index.html#SEC5">2. Single-memory, asymetric, multi-threaded GDB</A>
+<BR>
+<A NAME="TOC9" HREF="index.html#SEC9">3. User/Insight Interface (the GUI and GDB CLI).</A>
+<BR>
+<A NAME="TOC29" HREF="index.html#SEC29">4. Insight internals</A>
+<BR>
+<A NAME="TOC34" HREF="index.html#SEC34">5. Insight/GDB Interface</A>
+<BR>
+<A NAME="TOC37" HREF="index.html#SEC37">6. GDB internals</A>
+<BR>
+<A NAME="TOC40" HREF="index.html#SEC40">7. GDB/Remote Target Inteface</A>
+<BR>
+
+</BLOCKQUOTE>
+<HR SIZE=1>
+<A NAME="SEC_About"></A>
+<TABLE CELLPADDING=1 CELLSPACING=1 BORDER=0>
+<TR><TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC2">Top</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_Contents">Contents</A>]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[Index]</TD>
+<TD VALIGN="MIDDLE" ALIGN="LEFT">[<A HREF="index.html#SEC_About"> ? </A>]</TD>
+</TR></TABLE>
+<H1>About this document</H1>
+This document was generated by <I>Andrew Cagney</I> on <I>June, 11  2001</I>
+using <A HREF="http://www.mathematik.uni-kl.de/~obachman/Texi2html
+"><I>texi2html</I></A>
+<P></P>  
+The buttons in the navigation panels have the following meaning:
+<P></P>
+<table border = "1">
+<TR>
+<TH> Button </TH>
+<TH> Name </TH>
+<TH> Go to </TH>
+<TH> From 1.2.3 go to</TH>
+</TR>
+<TR>
+<TD ALIGN="CENTER">
+ [ &lt; ] </TD>
+<TD ALIGN="CENTER">
+Back
+</TD>
+<TD>
+previous section in reading order
+</TD>
+<TD>
+1.2.2
+</TD>
+</TR>
+<TR>
+<TD ALIGN="CENTER">
+ [ &gt; ] </TD>
+<TD ALIGN="CENTER">
+Forward
+</TD>
+<TD>
+next section in reading order
+</TD>
+<TD>
+1.2.4
+</TD>
+</TR>
+<TR>
+<TD ALIGN="CENTER">
+ [ &lt;&lt; ] </TD>
+<TD ALIGN="CENTER">
+FastBack
+</TD>
+<TD>
+previous or up-and-previous section 
+</TD>
+<TD>
+1.1
+</TD>
+</TR>
+<TR>
+<TD ALIGN="CENTER">
+ [ Up ] </TD>
+<TD ALIGN="CENTER">
+Up
+</TD>
+<TD>
+up section
+</TD>
+<TD>
+1.2
+</TD>
+</TR>
+<TR>
+<TD ALIGN="CENTER">
+ [ &gt;&gt; ] </TD>
+<TD ALIGN="CENTER">
+FastForward
+</TD>
+<TD>
+next or up-and-next section
+</TD>
+<TD>
+1.3
+</TD>
+</TR>
+<TR>
+<TD ALIGN="CENTER">
+ [Top] </TD>
+<TD ALIGN="CENTER">
+Top
+</TD>
+<TD>
+cover (top) of document
+</TD>
+<TD>
+ &nbsp; 
+</TD>
+</TR>
+<TR>
+<TD ALIGN="CENTER">
+ [Contents] </TD>
+<TD ALIGN="CENTER">
+Contents
+</TD>
+<TD>
+table of contents
+</TD>
+<TD>
+ &nbsp; 
+</TD>
+</TR>
+<TR>
+<TD ALIGN="CENTER">
+ [Index] </TD>
+<TD ALIGN="CENTER">
+Index
+</TD>
+<TD>
+concept index
+</TD>
+<TD>
+ &nbsp; 
+</TD>
+</TR>
+<TR>
+<TD ALIGN="CENTER">
+ [ ? ] </TD>
+<TD ALIGN="CENTER">
+About
+</TD>
+<TD>
+this page
+</TD>
+<TD>
+ &nbsp; 
+</TD>
+</TR>
+</TABLE>
+<P></P>
+where the <STRONG> Example </STRONG> assumes that the current position 
+is at <STRONG> Subsubsection One-Two-Three </STRONG> of a document of 
+the following structure:
+<UL>
+<LI> 1. Section One  </LI>
+<UL>
+<LI>1.1 Subsection One-One</LI>
+<UL>
+<LI> ... </LI>
+</UL>
+<LI>1.2 Subsection One-Two</LI>
+<UL>
+<LI>1.2.1 Subsubsection One-Two-One
+</LI><LI>1.2.2 Subsubsection One-Two-Two
+</LI><LI>1.2.3 Subsubsection One-Two-Three &nbsp; &nbsp; <STRONG>
+&lt;== Current Position </STRONG>
+</LI><LI>1.2.4 Subsubsection One-Two-Four
+</LI></UL>
+<LI>1.3 Subsection One-Three</LI>
+<UL>
+<LI> ... </LI>
+</UL>
+<LI>1.4 Subsection One-Four</LI>
+</UL>
+</UL>
+
+<HR SIZE=1>
+<BR>  
+<FONT SIZE="-1">
+This document was generated
+by <I>Andrew Cagney</I> on <I>June, 11  2001</I>
+using <A HREF="http://www.mathematik.uni-kl.de/~obachman/Texi2html
+"><I>texi2html</I></A>
+
+</BODY>
+</HTML>

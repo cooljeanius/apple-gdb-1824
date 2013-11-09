@@ -1,0 +1,53 @@
+
+<HTML>
+
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>Example: Walking a Tree</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>Example: Walking a Tree</H1> 
+ <P><UL>
+struct tree *
+</UL><UL>
+find (struct tree *tree, int key)
+</UL><UL>
+{
+</UL><UL>
+  if (! tree)
+</UL><UL>
+    return 0;
+</UL><UL>
+
+</UL><UL>
+  if (key &#060 tree-&#062key)
+</UL><UL>
+    return find (tree-&#062left, key);
+</UL><UL>
+  else if (key &#062 tree-&#062key)
+</UL><UL>
+    return find (tree-&#062right, key);
+</UL><UL>
+  else
+</UL><UL>
+    return tree;
+</UL><UL>
+}</UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld008.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld010.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld009.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

@@ -1,0 +1,87 @@
+<HTML>
+<HEAD>
+<!-- Created by texi2html 1.57 from libgdb.texinfo on August, 23  1999 -->
+
+<TITLE>Libgdb - Interpreter</TITLE>
+</HEAD>
+<BODY >
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_1.html">Back</A>] &#160; [<A HREF="libgdb_1.html">Prev</A>] &#160; [<A>Up</A>] &#160; [<A HREF="libgdb_3.html">Next</A>] &#160; [<A HREF="libgdb_3.html">Forward</A>] &#160;<BR><HR><BR>
+
+
+<H1><A NAME="SEC2">Libgdb is an Interpreter Based Server</A></H1>
+<P>
+<A NAME="IDX3"></A>
+<A NAME="IDX4"></A>
+
+
+<P>
+To understand libgdb, it is necessary to understand how the library is
+structured.  Historically, GDB is written as a small interpreter for a
+simple command language.  The commands of the language perform useful
+debugging functions.
+
+
+<P>
+Libgdb is built from GDB by turning the interpreter into a debugging
+server.  The server reads debugging commands from any source and
+interprets them, directing the output arbitrarily.
+
+
+<P>
+In addition to changing GDB from a tty-based program to a server, a
+number of new GDB commands have been added to make the server more
+useful for a program with a graphic interface.
+
+
+<P>
+Finally, libgdb includes provisions for asynchronous processing within
+the application.
+
+
+<P>
+Most operations that can be carried out with libgdb involve the GDB
+command interpreter.  The usual mode of operation is that the operation
+is expressed as a string of GDB commands, which the interpreter is then
+invoked to carry out.  The output from commands executed in this manner
+can be redirected in a variety of useful ways for further processing by
+the application.
+
+
+<P>
+The command interpreter provides an extensive system of hooks so an
+application can monitor any aspect of the debugging library's state.  An
+application can set its own breakpoints and attach commands and
+conditions to those.  It is possible to attach hooks to any debugger
+command; the hooks are invoked whenever that command is about to be
+invoked.  By means of these, the displays of a graphical interface can
+be kept fully up to date at all times.
+
+
+<P>
+We show you how to define new primitives in the command language.  By
+defining new primitives and using them in breakpoint scripts and command
+hooks, an application can schedule the execution of arbitrary C-code at
+almost any point of interest in the operation of libgdb.
+
+
+<P>
+We show you how to define new GDB convenience variables for which your
+code computes a value on demand.  Referring to such variables in a
+breakpoint condition is a convenient way to conditionalize breakpoints
+in novel ways.
+
+
+<P>
+To summarize: in libgdb, the gdb command language is turned into a
+debugging server.  The server takes commands as input, and the server's
+output is redirectable.  An application uses libgdb by formatting
+debugging commands and invoking the interpreter.  The application might
+maintain breakpoints, watchpoints and many kinds of hooks.  An application
+can define new primitives for the interpreter.
+
+
+<P></P><HR>
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_1.html">Back</A>] &#160; [<A HREF="libgdb_1.html">Prev</A>] &#160; [<A>Up</A>] &#160; [<A HREF="libgdb_3.html">Next</A>] &#160; [<A HREF="libgdb_3.html">Forward</A>] &#160;
+
+</BODY>
+</HTML>

@@ -1,0 +1,174 @@
+#!/bin/sh
+
+PATH=/bin:/usr/bin:/usr/local/bin:$HOME/bin
+export PATH
+
+if test $# -lt 4
+then
+    echo "Usage: $0 package ftp www today branch" 1>&2
+    exit 1
+fi
+
+package=$1 ; shift ; echo "package=$package"
+ftp=$1 ; shift ; echo "ftp=$ftp"
+www=$1 ; shift ; echo "www=$www"
+today=$1 ; shift ; echo "today=$today"
+branch=$1 ; shift ; echo "branch=$branch"
+
+ftpdir=/sourceware/ftp/anonftp/pub/gdb/snapshots/${ftp}
+wwwdir=/www/sourceware/htdocs/${www}
+
+ADMINS='brobecke tromey'
+
+REPO=/git/binutils-gdb.git
+coopts=""
+if test -n "$branch"; then
+    coopts="--branch $branch"
+fi
+# Note that we use the "file:" form here, because we want to ensure a
+# copy of the .git files is made.  This prevents us from messing up
+# the real repository, even by accident.
+coopts="$coopts --depth 1 file://$REPO src"
+
+version=`cd $REPO && git show ${branch:-master}:gdb/version.in 2> /dev/null`
+version=`echo ${version} | sed -e "
+s/-cvs//
+s/DATE/${today}/
+s/-/_/g
+"`
+
+snapdir=/sourceware/snapshot-tmp/gdb/snapshot
+tmpdir=${snapdir}/${ftp}-${package}
+logfile=$HOME/log/${package}.${ftp}
+
+rm -rf ${tmpdir}
+mkdir ${tmpdir} || exit
+rm -f ${logfile}
+
+
+( echo "" ; date ; echo "" ; echo "Starting make-snapshot" ; ) | tee -a ${logfile}
+
+
+if ( set -x ; sh $HOME/ss/make-snapshot \
+	${snapdir} \
+	${tmpdir}/make-snapshot \
+	${package} \
+	${version} \
+	clone ${coopts} \
+	>> ${logfile} )
+then
+    echo "make-snapshot ${package} ${ftp} done" | tee -a ${logfile}
+else
+    tail -50 ${logfile} | mail -s "make-snapshot ${package} ${ftp} failed" $ADMINS
+    exit 1
+fi
+
+
+( echo "" ; date ; echo "" ; echo "Starting update-snapshot" ; ) | tee -a ${logfile}
+
+
+if ( set -x ; sh $HOME/ss/update-snapshot \
+	${snapdir} \
+	${tmpdir}/update-snapshot \
+	${package} \
+	${version} \
+	${ftpdir} \
+	>> ${logfile} )
+then
+    echo "update-snapshot ${package} ${ftp} done" | tee -s ${logfile}
+    if cmp $HOME/ss/README ${ftpdir}/README
+    then
+	:
+    else
+	cp $HOME/ss/README ${ftpdir}/README
+    fi
+else
+    tail -50 ${logfile} | mail -s "update-snapshot ${package} ${ftp} failed" $ADMINS
+fi
+# ( cd ${ftpdir} && ls -l ${package}* )
+
+
+( echo "" ; date ; echo "" ; echo "Starting update-web-ari" ; ) | tee -a ${logfile}
+
+# Old ARI web pages are now in ari/old
+if ( set -x ; sh $HOME/ss/update-web-ari \
+	${snapdir}/${package}-${version}.tar \
+	${tmpdir}/update-web-ari \
+	${wwwdir}/ari/old \
+	gdb \
+	>> ${logfile} )
+then
+    echo "update-web-ari ${package} ${ftp} done" | tee -a ${logfile}
+else
+    tail -50 ${logfile} | mail -s "update-web-ari ${package} ${ftp} failed" $ADMINS
+fi
+
+# Check if source checkout contains also the update-web-ari script
+cvs_ari_script="${tmpdir}/update-web-ari/gdb-${version}/gdb/contrib/ari/update-web-ari.sh"
+if test -f  "${cvs_ari_script}"
+then
+  # Main ARI web pages are now created here
+  # Give directly the directory as third parameter
+  ( echo "" ; date ; echo "" ; echo "Starting update-web-ari.sh" ; ) | tee -a ${logfile}
+  if ( set -x ; sh ${cvs_ari_script} \
+	${tmpdir}/update-web-ari/gdb-${version}/ \
+	${tmpdir}/update-web-ari \
+	${wwwdir}/ari \
+	gdb \
+	>> ${logfile} )
+  then
+      echo "update-web-ari from git sources ${package} ${ftp} done" | tee -a ${logfile}
+      diff=${wwwdir}/ari/ari.source.diff
+      node=`uname -n`
+      if [ "x${branch}" != "x" ]; then
+	email_suffix="`date` in ${branch}"
+      else
+	email_suffix="`date`"
+      fi
+
+      if [ "${node}" = "sourceware.org" ]; then
+	warning_email=gdb-patches@sourceware.org
+      else
+	warning_email=muller@sourceware.org
+      fi
+
+      # Check if ${diff} is not empty
+      if [ -s ${diff} ]; then
+	# Send an email to muller@sourceware.org	
+	mutt -s "New ARI warning ${email_suffix}" \
+	    ${warning_email} < ${wwwdir}/ari/mail-message 
+      else
+        if [ -s ${wwwdir}/${mail-message} ]; then
+	  # Send an email to muller@sourceware.org	
+	  mutt -s "ARI warning list change ${email_suffix}" \
+	    muller@sourceware.org < ${wwwdir}/ari/mail-message 
+        fi
+      fi
+  else
+      ( echo "Script update-web-ari.sh failed" ; ) | tee -a ${logfile}
+      tail -50 ${logfile} | mail -s "update-web-ari from sources ${package} ${ftp} failed" $ADMINS muller
+  fi
+else
+  echo "File ${cvs_ari_script} not found" | tee -a ${logfile}
+fi
+
+
+
+
+( echo "" ; date ; echo "" ; echo "Starting update-web-docs" ; ) | tee -a ${logfile}
+
+
+if ( set -x ; sh $HOME/ss/update-web-docs \
+	${snapdir}/${package}-${version}.tar \
+	${tmpdir}/update-web-docs \
+	${wwwdir}/onlinedocs \
+	gdb \
+	>> ${logfile} )
+then
+    echo "update-web-docs ${package} ${ftp} done" | tee -a ${logfile}
+else
+    tail -50 ${logfile} | mail -s "update-web-docs ${package} ${ftp} failed" $ADMINS
+fi
+
+
+( echo "" ; date ; echo "" ) | tee -a ${logfile}

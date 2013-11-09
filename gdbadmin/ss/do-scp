@@ -1,0 +1,11 @@
+#!/bin/sh
+
+rm -f *~
+
+rsync \
+	--archive \
+	--verbose \
+	--delete \
+	--rsync-path=/usr/local/bin/rsync \
+	--rsh='ssh -2' \
+	. gdbadmin@sourceware.org:ss

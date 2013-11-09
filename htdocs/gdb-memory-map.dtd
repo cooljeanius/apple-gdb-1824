@@ -1,0 +1,18 @@
+<!-- ................................................... -->
+<!-- Memory Map XML DTD ................................ -->
+<!-- File: memory-map.dtd .............................. -->
+<!-- .................................... .............. -->
+<!-- memory-map.dtd -->
+<!-- memory-map: Root element with versioning -->
+<!ELEMENT memory-map (memory | property)>
+<!ATTLIST memory-map    version CDATA   #FIXED  "1.0.0">
+<!ELEMENT memory (property)>
+<!-- memory: Specifies a memory region,
+             and its type, or device. -->
+<!ATTLIST memory        type    CDATA   #REQUIRED
+                        start   CDATA   #REQUIRED
+                        length  CDATA   #REQUIRED
+                        device  CDATA   #IMPLIED>
+<!-- property: Generic attribute tag -->
+<!ELEMENT property (#PCDATA | property)*>
+<!ATTLIST property      name    CDATA   #REQUIRED>

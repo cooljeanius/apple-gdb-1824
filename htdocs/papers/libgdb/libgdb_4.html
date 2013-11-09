@@ -1,0 +1,266 @@
+<HTML>
+<HEAD>
+<!-- Created by texi2html 1.57 from libgdb.texinfo on August, 23  1999 -->
+
+<TITLE>Libgdb - I/O</TITLE>
+</HEAD>
+<BODY >
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_3.html">Back</A>] &#160; [<A HREF="libgdb_3.html">Prev</A>] &#160; [<A>Up</A>] &#160; [<A HREF="libgdb_5.html">Next</A>] &#160; [<A HREF="libgdb_5.html">Forward</A>] &#160;<BR><HR><BR>
+
+
+<H1><A NAME="SEC4">How the Server's I/O Can be Used</A></H1>
+<P>
+<A NAME="IDX7"></A>
+
+
+<P>
+In the last chapter it was pointed out that a libgdb application is
+responsible for providing commands for the interpreter to execute.
+However some commands require further input (for example, the "quit"
+command might ask for confirmation).  Almost all commands produce output
+of some kind.  The purpose of this section is to explain how libgdb
+performs its I/O, and how an application can take advantage of
+this.
+
+
+
+<H2>I/O Vectors</H2>
+
+<P>
+Libgdb has no fixed strategy for I/O.  Instead, all operations are
+performed by functions called via structures of function pointers.
+Applications supply theses structures and can change them at any
+time.
+
+
+<P>
+<DL>
+<DT><U>Type:</U> <B>struct gdb_input_vector</B>
+<DD><A NAME="IDX8"></A>
+<DT><U>Type:</U> <B>struct gdb_output_vector</B>
+<DD><A NAME="IDX9"></A>
+These structures contain a set of function pointers.  Each function
+determines how a particular type of i/o is performed.  The details of
+these strucutres are explained below.
+
+
+<P>
+The application allocates these structures, initializes them to all bits
+zero, fills in the function pointers, and then registers names for them
+them with libgdb.
+</DL>
+
+
+<P>
+<DL>
+<DT><U>Function:</U> void <B>gdb_name_input_vector</B> <I>(<VAR>name</VAR>, <VAR>vec</VAR>)</I>
+<DD><A NAME="IDX10"></A>
+<DT><U>Function:</U> void <B>gdb_remove_input_vector</B> <I>(<VAR>name</VAR>, <VAR>vec</VAR>)</I>
+<DD><A NAME="IDX11"></A>
+<DT><U>Function:</U> void <B>gdb_name_output_vector</B> <I>(<VAR>name</VAR>, <VAR>vec</VAR>)</I>
+<DD><A NAME="IDX12"></A>
+<DT><U>Function:</U> void <B>gdb_remove_input_vector</B> <I>(<VAR>name</VAR>, <VAR>vec</VAR>)</I>
+<DD><A NAME="IDX13"></A>
+
+<PRE>
+  char * <VAR>name</VAR>;
+  struct gdb_output_vector * <VAR>vec</VAR>;
+</PRE>
+
+<P>
+These functions are used to give and remove names to i/o vectors.  Note
+that if a name is used twice, the most recent definition applies.
+</DL>
+
+
+
+<H3>Output</H3>
+
+<P>
+An output vector is a structure with at least these fields: 
+
+
+
+<PRE>
+struct gdb_output_vector
+{
+  /* output */
+  void (*put_string) (struct gdb_output_vector *, char * str);
+}
+</PRE>
+
+<P>
+Use the function <CODE>memset</CODE> or something equivalent to initialize an
+output vector to all bits zero.  Then fill in the function pointer with
+your function.
+
+
+<P>
+A debugger command can produce three kinds of output: error messages
+(such as when trying to delete a non-existent breakpoint), informational
+messages (such as the notification printed when a breakpoint is hit),
+and the output specifically requested by a command (for example, the
+value printed by the "print" command).  At any given time, then,
+libgdb has three output vectors.  These are called the <EM>error</EM>,
+<EM>info</EM>, <EM>value</EM> vector respectively.  
+
+
+
+<H3>Input</H3>
+
+
+<PRE>
+struct gdb_input_vector
+{
+  int (*query) (struct gdb_input_vector *,
+                char * prompt,
+                int quit_allowed);
+  int * (*selection) (struct gdb_input_vector *,
+                      char * prompt,
+                      char ** choices);
+  char * (*read_string) (struct gdb_input_vector *,
+                         char * prompt);
+  char ** (*read_strings) (struct gdb_input_vector *,
+                           char * prompt);
+}
+</PRE>
+
+<P>
+Use the function <CODE>memset</CODE> or something equivalent to initialize an
+input vector to all bits zero.  Then fill in the function pointers with
+your functions.
+
+
+<P>
+There are four kinds of input requests explicitly made by libgdb.
+
+
+<P>
+A <EM>query</EM> is a yes or no question.  The user can respond to a query
+with an affirmative or negative answer, or by telling gdb to abort the
+command (in some cases an abort is not permitted).  Query should return
+'y' or 'n' or 0 to abort.
+
+
+<P>
+A <EM>selection</EM> is a list of options from which the user selects a subset.
+Selections should return a NULL terminated array of integers, which are
+indexes into the array of choices.  It can return NULL instead to abort
+the command.  The array returned by this function will be passed to
+<CODE>free</CODE> by libgdb.
+
+
+<P>
+A <EM>read_string</EM> asks the user to supply an arbitrary string.  It may
+return NULL to abort the command.  The string returned by <CODE>read_string</CODE>
+should be allocated by <CODE>malloc</CODE>; it will be freed by libgdb.
+
+
+<P>
+A <EM>read_strings</EM> asks the user to supply multiple lines of input
+(for example, the body of a command created using `define').  It, too,
+may return NULL to abort.  The array and the strings returned by this
+function will be freed by libgdb.
+
+
+
+<H2>I/O Redirection from the Application Top-Level</H2>
+
+<P>
+<DL>
+<DT><U>Function:</U> struct <B>gdb_io_vecs</B> <I>gdb_set_io (struct gdb_io_vecs *)</I>
+<DD><A NAME="IDX14"></A>
+
+<PRE>
+
+struct gdb_io_vecs
+{
+  struct gdb_input_vector * input;
+  struct gdb_output_vector * error;
+  struct gdb_output_vector * info;
+  struct gdb_output_vector * value;
+}
+</PRE>
+
+<P>
+This establishes a new set of i/o vectors, and returns the old setting.
+Any of the pointers in this structure may be NULL, indicating that the
+current value should be used.
+
+
+<P>
+This function is useful for setting up i/o vectors before any libgdb
+commands have been invoked (hence before any input or output has taken
+place).
+</DL>
+
+
+<P>
+It is explained in a later chapter how to redirect output temporarily.
+(See section <A HREF="libgdb_5.html#SEC5">Invoking the Interpreter, Executing Commands</A>.)
+
+
+
+<H2>I/O Redirection in Debugger Commands</H2>
+
+<P>
+A libgdb application creates input and output vectors and assigns them names.
+Which input and output vectors are used by libgdb is established by
+executing these debugger commands: 
+
+
+<P>
+<DL>
+<DT><U>Function:</U> <B>set input-vector</B> <I>name</I>
+<DD><A NAME="IDX15"></A>
+<DT><U>Function:</U> <B>set error-output-vector</B> <I>name</I>
+<DD><A NAME="IDX16"></A>
+<DT><U>Function:</U> <B>set info-output-vector</B> <I>name</I>
+<DD><A NAME="IDX17"></A>
+<DT><U>Function:</U> <B>set value-output-vector</B> <I>name</I>
+<DD><A NAME="IDX18"></A>
+Choose an I/O vector by name.
+</DL>
+
+
+<P>
+A few debugger commands are for use only within commands defined using
+the debugger command `define' (they have no effect at other times).
+These commands exist so that an application can maintain hooks which
+redirect output without affecting the global I/O vectors.
+
+
+<P>
+<DL>
+<DT><U>Function:</U> <B>with-input-vector</B> <I>name</I>
+<DD><A NAME="IDX19"></A>
+<DT><U>Function:</U> <B>with-error-output-vector</B> <I>name</I>
+<DD><A NAME="IDX20"></A>
+<DT><U>Function:</U> <B>with-info-output-vector</B> <I>name</I>
+<DD><A NAME="IDX21"></A>
+<DT><U>Function:</U> <B>with-value-output-vector</B> <I>name</I>
+<DD><A NAME="IDX22"></A>
+Set an I/O vector, but only temporarily.  The setting has effect only
+within the command definition in which it occurs.
+</DL>
+
+
+
+<H2>Initial Conditions</H2>
+
+<P>
+When libgdb is initialized, a set of default I/O vectors is put in
+place.  The default vectors are called <CODE>default-input-vector</CODE>,
+<CODE>default-output-vector</CODE>, &#38;c.  
+
+
+<P>
+The default query function always returns `y'.  Other input functions
+always abort.  The default output functions discard output silently.
+
+
+<P></P><HR>
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_3.html">Back</A>] &#160; [<A HREF="libgdb_3.html">Prev</A>] &#160; [<A>Up</A>] &#160; [<A HREF="libgdb_5.html">Next</A>] &#160; [<A HREF="libgdb_5.html">Forward</A>] &#160;
+
+</BODY>
+</HTML>

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html
+          PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="shortcut icon" type="image/x-icon" href="../../gdb/images/archer-fish.ico" />
+<meta name="keywords" content="gdb" />
+
+<title>Bugs in GDB</title>
+
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#1F00FF" alink="#FF0000"
+vlink="#9900DD">
+
+<a href="../../gdb/mascot/"> <img border="0"
+src="../../gdb/images/archer.jpg" align="right" alt="[image of Archer
+Fish]" /></a>
+
+<center><h1>GDB: The GNU Project Debugger</h1></center>
+
+<center>
+<small>
+[<a href="../../gdb/bugs/">bugs</a>]
+[<a href="../../gdb/committee/">GDB Maintainers</a>]
+[<a href="../../gdb/contribute/">contributing</a>]
+[<a href="../../gdb/current/">current git</a>]
+[<a href="../../gdb/documentation/">documentation</a>]
+[<a href="../../gdb/download/">download</a>]
+[<a href="../../gdb/">home</a>]
+[<a href="../../gdb/irc/">irc</a>]
+[<a href="../../gdb/links/">links</a>]
+[<a href="../../gdb/mailing-lists/">mailing lists</a>]
+[<a href="../../gdb/news/">news</a>]
+[<a href="../../gdb/schedule/">schedule</a>]
+[<a href="../../gdb/song/">song</a>]
+[<a href="http://sourceware.org/gdb/wiki/">wiki</a>]
+</small>
+</center>
+
+<center><h2>Bugs in GDB</h2></center>
+
+<!-- NB: CURRENT / LATEST refer to the trunk -->
+<!-- NB: MOST RECENT refers to the branch -->
+
+<!-- body, update above using ../../gdb/index.sh -->
+
+Please report bugs!<p>
+
+GDB has a <a
+href="http://sourceware.org/bugzilla/">Bug
+Database</a>.  It is used to track bugs (Problem Reports or PRs) and
+enhancements (Change Requests or CRs).  In addition to problems
+encountered when running GDB, bugs include: errors or missing
+documentation; missing test cases; web changes; work in progress;
+dummy reports for fixed but unreported bugs; entries of not-a-bugs;
+and even adminstrivia.<p>
+
+<!-- This paragraph was lifted from
+http://www.gnu.org/help/gethelp.html and then edited -->
+
+Please note that many companies now redistribute GDB, often as part of
+a GNU/Linux distribution.  When you find bugs in GDB that you
+installed with a given GNU/Linux distribution, it is often useful to
+first try reporting the bug directly to the distributor, not to us.
+Sometimes, distributors have modified the GNU software (as they are
+free to do so!) or they are running older versions.  Thus, they may be
+the best people to find a bug as it pertains to a particular
+distribution.<p>
+
+Before submitting a new PR/CR, try <a
+href="http://sourceware.org/bugzilla/">browsing</a>
+the database to see if the problem has already been reported or even
+fixed.<p>
+
+It is also very helpful if you can try reproducing the problem with a
+current GDB snapshot (see <a href="../../gdb/current/">current</a>).
+Often bugs in the most recent release (see <a
+href="../../gdb/download">download</a>) have already been fixed in the latest
+development sources.  Regardless, be sure to fill in the
+<b>Release</b> field.<p>
+
+The Bug Report Form has a number of fields, the intended use of some
+of them are less than obvious, the below may help in filling in the
+form:<p>
+
+<dl>
+
+<!-- <dt><b>Reporter's e-mail</b></dt> <dd></dd> -->
+
+<dt><b>CC these people on PR status e-mail</b></dt> <dd>A list of
+interested parties.  If converting an e-mail posting into a bug report
+consider including the CC line.</dd>
+
+<dt><b>Category</b></dt> <dd>Set this to <b>GDB</b>.</dd>
+
+<dt><b>Synopsis</b></dt> <dd>Since this is used for key word searches,
+including the operating system (GNU/Linux, ...), compiler (GCC, xcc,
+...) and language (C, C++, ...) can be helpful.</dd>
+
+<dt><b>Confidential</b></dt> <dd>Set this to <b>no</b>.  GDB's bug
+tracking database is not confidential.</dd>
+
+<dt><b>Severity</b></dt> <dd>How disastrous is the bug? The following
+is a rule of thumb.  <b>critical</b>: unusable (doesn't build, dumps
+core during startup, ...), testsuite regression; <b>serious</b>: most
+things (core dump, misleading behavour, ...); <b>non-critical</b>:
+obscure edge condition.</dd>
+
+<dt><b>Priority</b></dt> <dd>From the viewpoint of the GDB, how urgent
+is the bug fix? Select either <b>medium</b> or <b>low</b>.
+<b>High</b> is reserved.</dd>
+
+<!-- <dt><b>Class</b></dt> <dd></dd> -->
+
+<dt><b>Submitter-Id</b></dt> <dd>Set this to <b>net</b>.</dd>
+
+<!-- <dt><b>Originator</b></dt> <dd></dd> -->
+
+<dt><b>Release</b></dt> <dd>It appears as the first line of the GDB
+startup text (<tt>GNU gdb 2002-03-01-cvs</tt>, <tt>GDB 4.17</tt>).
+The more recent the release the better.</dd>
+
+<dt><b>Environment</b></dt> <dd>Three pieces of information are
+useful: <ul> <li>the operating system verson (output of <tt>uname
+-a</tt>)</li> <li>the compiler version (for GCC, the output from
+<tt>gcc -v</tt>)</li> <li>how GDB was configured (the <tt>This GDB was
+configured as</tt> line from GDB's startup text)</li> </ul> </dd>
+
+<!-- <dt><b>Description</b></dt> <dd>Should this mention that analys
+and stuff should be included here?</dd> -->
+
+<!-- <dt><b>File Attachments</b></dt> <dd></dd> -->
+
+<dt><b>How-To-Repeat</b></dt> <dd>A sequence (compiler invocation, gdb
+commands, ...) that can be used to reproduce the problem.  A new
+testcase would be briliant!</dd>
+
+<!-- <dt><b>Fix</b></dt> <dd>should this suggest that only patches
+should be included here?</dd> -->
+
+</dl>
+
+<!-- This paragraph was stolen from
+http://www.gnu.org/help/gethelp.html and then edited -->
+
+When the GDB developers receive a bug report, we usually try to fix
+the problem.  While our bug fixes may seem like individual assistance,
+they are not; they are part of preparing a new improved version.  We
+may send you a patch for a bug so that you can help us test the fix
+and ensure its quality.  If your bug report does not evoke a solution
+from us, you may still get one from another user who reads our mailing
+lists.  Otherwise, use the <a
+href="http://www.gnu.org/prep/service.html">GNU Service Directory</a>
+(a list of people who offer support and other consulting services).<p>
+
+If you're interested in participating in GDB's development (helping to
+fix bugs, write documentation, develop new code), see the <a
+href="../../gdb/mailing-lists/">mailing list</a> and <a
+href="../../gdb/contribute/">contribute</a> web pages.<p>
+
+We welcome feedback and contributions.<p>
+
+<!-- /body, update below using ../../gdb/index.sh -->
+
+<p></p>
+
+<center>
+<small>
+[<a href="../../gdb/bugs/">bugs</a>]
+[<a href="../../gdb/committee/">GDB Maintainers</a>]
+[<a href="../../gdb/contribute/">contributing</a>]
+[<a href="../../gdb/current/">current git</a>]
+[<a href="../../gdb/documentation/">documentation</a>]
+[<a href="../../gdb/download/">download</a>]
+[<a href="../../gdb/">home</a>]
+[<a href="../../gdb/irc/">irc</a>]
+[<a href="../../gdb/links/">links</a>]
+[<a href="../../gdb/mailing-lists/">mailing lists</a>]
+[<a href="../../gdb/news/">news</a>]
+[<a href="../../gdb/schedule/">schedule</a>]
+[<a href="../../gdb/song/">song</a>]
+[<a href="http://sourceware.org/gdb/wiki/">wiki</a>]
+</small>
+</center>
+
+<hr />
+
+<address>
+
+<p>Please send FSF &amp; GNU inquiries &amp; questions to <a
+href="mailto:gnu@gnu.org">gnu@gnu.org</a>.  There are also <a
+href="http://www.gnu.org/home.html#ContactInfo">other ways to
+contact</a> the FSF.</p>
+
+<p>This page is maintained by <a href="../../gdb/">the GDB
+developers</a>.</p>
+
+<p>Copyright Free Software Foundation, Inc., 51 Franklin St - Fifth
+Floor, Boston, MA 02110-1301 USA.</p>
+
+<p>Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this notice is preserved.</p>
+
+<p>Last modified 2013-08-29.</p>
+</address>
+
+</body>
+</html>

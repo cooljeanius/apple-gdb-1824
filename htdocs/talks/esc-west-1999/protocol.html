@@ -1,0 +1,701 @@
+<html>
+<title> protocol.html </title>
+
+<body bgcolor="#ffffff">
+
+<center><h2> GDB Remote Protocol Messages </h2></center>
+<hr>
+<table border="4">
+  <tr>
+    <td colspan=3> <b> SET THREAD </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> Hc&lt;n&gt; </td>
+    <td> Set step/continue thread (-1 == all threads). </td>
+  </tr>
+  <tr>
+    <td> </td>
+    <td> Hg&lt;n&gt; </td>
+    <td> Set general operation thread (0 == any thread). </td>
+  </tr>
+  <tr>
+    <td> Reply </td>
+    <td> OK, E&lt;n&gt; </td>
+    <td> n == two-digit error code. </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> READ REGISTERS </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> g </td>
+    <td> Get all cpu registers. </td>
+  </tr>
+  <tr>
+    <td> Reply </td>
+    <td> hex-data </td>
+    <td> Data consists of a single block of hex data representing the
+	 concatenation of the values of all registers.  GDB must know
+	 their order and size to pick the values apart.  Data is in 
+	 target byte order. </td>
+  </tr>
+  <tr>
+    <td> </td>
+    <td> E&lt;n&gt; </td>
+    <td> n == two-digit error code. </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> WRITE REGISTERS </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> G&lt;hex-data&gt; </td>
+    <td> Set all cpu registers. 
+         Data consists of a single block of hex data representing the
+	 concatenation of the values of all registers.  Stub must know
+	 their order and size to pick the values apart.  Data is in 
+	 target byte order. </td>
+  </tr>
+  <tr>
+    <td> Reply </td>
+    <td> OK, E&lt;n&gt; </td>
+    <td> n == two-digit error code. </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> WRITE SINGLE REGISTER </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax: </td>
+    <td> P&lt;n&gt;=&lt;value&gt; </td>
+    <td> Set value of selected register.  n == register number, 
+	 value == new value in hex (target byte order). </td>
+  </tr>
+  <tr>
+    <td> Reply </td>
+    <td> OK, E&lt;n&gt; </td>
+    <td> n == two-digit error code. </td>
+  </tr>
+  <tr>
+    <td> </td> 
+    <td> "" </td>
+    <td> WRITE SINGLE REGISTER not supported by this stub. </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> READ MEMORY </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> m&lt;addr&gt;,&lt;len&gt; </td>
+    <td> Read len bytes starting at memory address addr. </td>
+  </tr>
+  <tr>
+    <td> Reply </td>
+    <td> hex-data </td>
+    <td> The values of the requested memory in target byte order.
+	 May be shorter than requested, if some of the memory 
+	 could not be read. </td>
+  </tr>
+  <tr>
+    <td> </td> 
+    <td> E&lt;n&gt; </td>
+    <td> n == two-digit error code. </td>
+  </tr>
+  <tr>
+    <td> </td> <td> </td> 
+    <td> NOTE: partial success should be reported as an error. </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> WRITE MEMORY </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> M&lt;addr&gt;,&lt;len&gt;:&lt;hex-data&gt; </td>
+    <td> Write len bytes starting at memory address addr, with the values
+	 of the following data block (which is in target byte order). </td>
+  </tr>
+  <tr>
+    <td> Reply </td>
+    <td> OK, E&lt;n&gt; </td>
+    <td> n == two-digit error code. </td>
+  </tr>
+  <tr>
+    <td> </td> <td> </td> 
+    <td> NOTE: partial success should be reported as an error. </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> CONTINUE </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> c, or 
+	 c&lt;addr&gt; </td>
+    <td> Continue the target program (starting from addr if present, 
+	 else from last known program counter).  </td>
+  </tr>
+  <tr>
+    <td> Reply </td>
+    <td> </td>
+    <td> No reply is sent until the target stops; then the reply is 
+	 the same as for <a HREF="#stopping">GET REASON FOR STOPPING</a>. </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> CONTINUE WITH SIGNAL </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> C&lt;signal&gt;, or 
+	 C&lt;signal&gt;;&lt;addr&gt; </td>
+    <td> Continue the target program (starting from addr if present, 
+	 else from last known program counter), but cause it to behave
+	 as if receiving signal "signal".  </td>
+  </tr>
+  <tr>
+    <td> Reply </td>
+    <td> </td>
+    <td> No reply is sent until the target stops; then the reply is 
+	 the same as for <a HREF="#stopping">GET REASON FOR STOPPING</a>. </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> SINGLE-STEP </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> s, or 
+	 s&lt;addr&gt; </td>
+    <td> Single-step the target program (starting from addr if present, 
+	 else from last known program counter).  </td>
+  </tr>
+  <tr>
+    <td> Reply </td>
+    <td> </td>
+    <td> No reply is sent until the target stops; then the reply is 
+	 the same as for <a HREF="#stopping">GET REASON FOR STOPPING</a>. </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> SINGLE-STEP WITH SIGNAL </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> S&lt;signal&gt;, or 
+	 S&lt;signal&gt;;&lt;addr&gt; </td>
+    <td> Single-step the target program (starting from addr if present, 
+	 else from last known program counter), but cause it to behave
+	 as if receiving signal "signal".  </td>
+  </tr>
+  <tr>
+    <td> Reply </td>
+    <td> </td>
+    <td> No reply is sent until the target stops; then the reply is 
+	 the same as for <a HREF="#stopping">GET REASON FOR STOPPING</a>. </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <a NAME="#stopping"><b>GET REASON FOR STOPPING</b></a></td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> ? </td>
+    <td> Get the (unix-like) signal number representing the reason for
+	 the most recent target stop (usually an exception or trap).  </td>
+  </tr>
+  <tr>
+    <td> Reply </td>
+    <td> S&lt;signal&gt;</td>
+    <td> Target stopped with (unix-like) signal "signal".  </td>
+  </tr>
+  <tr>
+    <td> </td> 
+    <td> T&lt;signal&gt;[&lt;regnum&gt;:&lt;value&gt;]+ </td>
+    <td> Target stopped with (unix-like) signal "signal", and with the
+	 following list of register values in arbitrary order.  As always,
+	 register values (if present) are in target byte order.  Note that
+	 the "T" reply is an enhancement not implemented by all stubs. </td>
+  </tr>
+  <tr>
+    <td> </td> 
+    <td> W&lt;exitcode&gt; </td>
+    <td> Target process exited with exitcode.  
+	 Not supported by all stubs. </td>
+  </tr>
+  <tr>
+    <td> </td> 
+    <td> X&lt;signal&gt; </td>
+    <td> Target process terminated with signal "signal".  
+	 Not supported by all stubs. </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> IS THREAD ALIVE </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> T&lt;threadnum&gt; </td>
+    <td> Find out if thread threadnum is alive. </td>
+  </tr>
+  <tr>
+    <td> Reply </td>
+    <td> OK, E&lt;n&gt; </td>
+    <td> n is ignored; simply means thread is not alive. </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> REMOTE RESTART </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> R&lt;value&gt; </td>
+    <td> Restart the remote server. </td>
+  </tr>
+  <tr>
+    <td> Reply </td> <td> </td>
+    <td> No reply will be sent.  This message is normally followed by 
+	 <a HREF="#stopping">GET REASON FOR STOPPING</a>. </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> REMOTE KILL </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> k </td>
+    <td> Kill the remote process. </td>
+  </tr>
+  <tr>
+    <td> Reply </td>
+    <td> "" </td>
+    <td> Some stubs may reply with an empty packet; however
+	 GDB does not wait for a reply.  </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> REMOTE DETACH </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> D </td>
+    <td> Detach the remote process from the server/stub. 
+	 For most stubs, this is a no-op.  </td>
+  </tr>
+  <tr>
+    <td> Reply </td>
+    <td> "" </td>
+    <td> GDB does not wait for a reply.  </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> SET BAUDRATE </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> b&lt;n&gt; </td>
+    <td> n is the desired baudrate, in hex.  </td>
+  </tr>
+  <tr>
+    <td> Reply </td>
+    <td> OK </td>
+    <td> Baud rate was set to n.  </td>
+  </tr>
+  <tr>
+    <td> </td> 
+    <td> B01 </td>
+    <td> Not supported.  </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> TOGGLE DEBUG </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> d </td>
+    <td> Toggle the stub debug mode (on to off, or off to on).  </td>
+  </tr>
+  <tr>
+    <td> Reply </td>
+    <td> "" </td>
+    <td> This message is never used by GDB.  </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> REMOTE RESET </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> r </td>
+    <td> Reset the remote target board.  </td>
+  </tr>
+  <tr>
+    <td> Reply </td> <td> </td>
+    <td> Target will not reply, but will immediately reset.  </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> USE EXTENDED SYNTAX </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> ! </td>
+    <td> Use "extended remote protocol" extensions.  This message 
+	 is "sticky"; it only needs to be sent once. </td>
+  </tr>
+  <tr>
+    <td> Reply </td> 
+    <td> "" </td>
+    <td> Reply is ignored by GDB.  </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> GENERAL QUERY </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> q&lt;anything&gt; </td>
+    <td> A general purpose command for extending the protocol, or
+	 defining target-specific queries. </td>
+  </tr>
+  <tr>
+    <td> Reply </td> 
+    <td> &lt;anything&gt; </td>
+    <td> Replies will be defined for the specific query messages. </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> GENERAL SET </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> Q&lt;anything&gt; </td>
+    <td> A general purpose command for extending the protocol, or
+	 defining target-specific "set" requests. </td>
+  </tr>
+  <tr>
+    <td> Reply </td> 
+    <td> &lt;anything&gt; </td>
+    <td> Replies will be defined for the specific set messages. </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> UNKNOWN MESSAGE </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> Anything not covered above. </td>
+    <td> All stubs should ignore any message that is correctly formatted
+	 (with checksum), yet otherwise unknown to them. </td>
+  </tr>
+  <tr>
+    <td> Reply </td> 
+    <td> "" </td>
+    <td> The correct reply for an unrecognized message is an empty packet. 
+	 </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> VERBOSE REPLY </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> O&lthex-data&gt; </td>
+    <td> In certain circumstances (notably when the target process is 
+	 running, ie. between receipt of CONTINUE/STEP and the reply
+	 of <a HREF="#stopping">GET REASON FOR STOPPING</a>), the stub
+	 may send a verbose message to GDB.  This reply contains an
+	 arbitrary ascii string, encoded as two hex bytes per ascii
+	 character.  GDB is expected to display this string to the console.
+	 </td>
+  </tr>
+</table>
+
+<a NAME="TraceProtocol"> 
+<center><h2> Extensions to the GDB Remote Protocol for Tracing </h2></center>
+</a>
+
+<table border="4">
+  <tr>
+    <td colspan=3> <b> QUERY TRACE STATUS </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> qTStatus </td>
+    <td> Get the status of the target trace subsystem. </td>
+  </tr>
+  <tr>
+    <td> Reply </td> 
+    <td> T0 </td>
+    <td> Trace not running. </td>
+  </tr>
+  <tr>
+    <td> </td> 
+    <td> T1 </td>
+    <td> Trace is running. </td>
+  </tr>
+  <tr>
+    <td> </td> 
+    <td> "" </td>
+    <td> Empty packet: target does not support tracing. </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> INITIALIZE TRACE SUBSYSTEM </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> QTinit </td>
+    <td> Set trace subsystem to "initialized" state 
+	 (whatever that entails). </td>
+  </tr>
+  <tr>
+    <td> Reply </td> 
+    <td> OK </td>
+    <td> Target trace initialized. </td>
+  </tr>
+  <tr>
+    <td> </td> 
+    <td> "" </td>
+    <td> Empty packet: target does not support tracing. </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> START TRACE </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> QTStart </td>
+    <td> Set trace subsystem to "running" state 
+	 (insert trace traps etc., begin collecting data). </td>
+  </tr>
+  <tr>
+    <td> Reply </td> 
+    <td> OK </td>
+    <td> Target trace started, trace traps inserted. </td>
+  </tr>
+  <tr>
+    <td> </td> 
+    <td> "" </td>
+    <td> Empty packet: target does not support tracing. </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> STOP TRACE </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> QTStop </td>
+    <td> Set trace subsystem to "not running" state 
+	 (remove trace traps etc., cease collecting data). </td>
+  </tr>
+  <tr>
+    <td> Reply </td> 
+    <td> OK </td>
+    <td> Target trace stopped, trace traps removed. </td>
+  </tr>
+  <tr>
+    <td> </td> 
+    <td> "" </td>
+    <td> Empty packet: target does not support tracing. </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> SET TRACEPOINT </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> QTDP:[-]&lt;id&gt;:&lt;addr&gt;:&lt;attributes&gt;[-] </td>
+    <td> Set (define) a tracepoint with id, address and other attributes
+	 as follows.  If the message ends in a dash (-), then it is to
+	 be continued in the next message.  If the id is preceeded by
+	 a dash (-), then this message is a continuation of the 
+	 preceeding one. </td>
+  </tr>
+  <tr>
+    <td> Syntax of attributes: </td>
+    <td> &lt;enabled&gt;: </td>
+    <td> Values are 'E' (enabled) or 'D' (disabled).  Required and 
+	 position-dependent, can only cocur in the first message of a
+	 split SET TRACEPOINT request, following &lt;addr&gt;:
+  </tr>
+  <tr>
+    <td> </td>
+    <td> &lt;stepcount&gt;: </td>
+    <td> How many times to single-step after tracepoint trap.  Required
+	 and position dependent, can only occur in the first message of
+	 a split SET TRACEPOINT request, following &lt;enabled&gt;:
+  </tr>
+  <tr>
+    <td> </td>
+    <td> &lt;passcount&gt;: </td>
+    <td> Number of times to allow this tracepoint to be triggered before
+	 automatically invoking STOP TRACE.  Required
+	 and position dependent, can only occur in the first message of
+	 a split SET TRACEPOINT request, following &lt;stepcount&gt;:
+  </tr>
+  <tr>
+    <td> </td>
+    <td> R&lt;register-mask&gt; </td>
+    <td> Each 'on' bit in the register mask represents a register to be
+	 collected at the trace event.  With the rightmost bit 
+	 representing register zero, the registers are numbered in the
+	 same order that GDB and the stub already agree upon for all 
+	 other register operations. </td>
+  </tr>
+  <tr>
+    <td> </td>
+    <td> M&lt;regnum&gt;,&lt;offset&gt;,&lt;len&gt; </td>
+    <td> Memory range to be collected at the trace event.  Each 
+	 tracepoint definition may have an arbitrary number of 
+	 memrange attributes.  Regnum, offset and len are hex numbers.
+	 A positive integer regnum represents a memory range with a
+	 register-relative starting offset; otherwise the starting 
+	 offset is absolute. </td>
+  </tr>
+  <tr>
+    <td> </td>
+    <td> X&lt;len&gt;,&lt;bytecode&gt; </td>
+    <td> Bytecode string to be executed at the trace event.  Len 
+	 represents the length of the bytecode string.  Each tracepoint
+	 definition may have an arbitrary number of bytecode attributes.
+	 The format of the bytecode string is described in 
+	 <a HREF="agentexpr.html">
+	 The GDB Agent Expression Mechanism.</a>
+    </td>
+  </tr>
+  <tr>
+    <td> </td>
+    <td> S </td>
+    <td> Fencepost token, separating the preceeding R, M and X attributes
+	 (to be collected at the trace trap event) from the following
+	 R, M and X attributes (to be collectted while single-stepping).
+	 Optional, and there can be only one per tracepoint definition.
+	 If this token is not present, then all R, M and X attributes
+	 apply to the trace trap event (not to stepping events). </td>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+    <td> Reply </td>
+    <td> OK </td>
+    <td> Tracepoint definition accepted.  </td>
+  </tr>
+  <tr>
+    <td> </td> 
+    <td> E&lt;n&gt; </td>
+    <td> Tracepoint definition rejected (error codes TBD). </td>
+  </tr>
+  <tr>
+    <td> </td> 
+    <td> "" </td>
+    <td> Target does not support tracepoints.
+	 [NOTE: this may not mean that the target does not
+	 support tracing.  Some targets may support some 
+	 extremely simple form of tracing which might, 
+	 for instance, simply be "on" or "off".] </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <a NAME="QTFrame"> <b> REQUEST TRACE FRAME BY NUMBER
+					  </b> </a> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> QTFrame:&lt;n&gt; </td>
+    <td> Find the collected data associated with trace event number n. 
+	 Trace events are numbered sequentially from zero. </td>
+  </tr>
+  <tr>
+    <td> Reply </td> 
+    <td> F&lt;x&gt; </td>
+    <td> Frame x found.  X may not be equal to n, if the frame buffer
+	 is circular and if the oldest frame in the buffer is older than n
+	 (in which case x will be the oldest frame). </td>
+  </tr>
+  <tr>
+    <td> </td> 
+    <td> F&lt;x&gt;T&lt;y&gt; </td>
+    <td> As above, but y is the tracepoint id associated with trace frame
+	 x (if the target can provide this information). </td>
+  </tr>
+  <tr>
+    <td> </td> 
+    <td> F-1 </td>
+    <td> No corresponding trace frame found. </td>
+  </tr>
+  <tr>
+    <td> </td> 
+    <td> "" </td>
+    <td> Empty packet: target does not support tracing. </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> REQUEST TRACE FRAME BY PC </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> QTFrame:pc:&lt;addr&gt; </td>
+    <td> Find the next collected data associated with a
+	 trace event at program counter "addr". </td>
+  </tr>
+  <tr>
+    <td> Reply </td> <td> </td>
+    <td> See replies for <a HREF="#QTFrame"> REQUEST FRAME BY NUMBER </a>.
+    </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> REQUEST TRACE FRAME BY TRACEPOINT </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> QTFrame:tdp:&lt;n&gt; </td>
+    <td> Find the next collected data associated with a
+	 trace event associated with tracepoint number n. </td>
+  </tr>
+  <tr>
+    <td> Reply </td> <td> </td>
+    <td> See replies for <a HREF="#QTFrame"> REQUEST FRAME BY NUMBER </a>.
+    </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> REQUEST TRACE FRAME BY PC IN RANGE </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> QTFrame:range:&lt;start&gt;:&lt;stop&gt; </td>
+    <td> Find the next collected data associated with a
+	 trace event associated with a program counter 
+	 between "start" and "stop". </td>
+  </tr>
+  <tr>
+    <td> Reply </td> <td> </td>
+    <td> See replies for <a HREF="#QTFrame"> REQUEST FRAME BY NUMBER </a>.
+    </td>
+  </tr>
+
+  <tr>
+    <td colspan=3> <b> REQUEST TRACE FRAME BY PC OUTSIDE RANGE </b> </td>
+  </tr>
+  <tr>
+    <td> Syntax </td>
+    <td> QTFrame:outside:&lt;start&gt;:&lt;stop&gt; </td>
+    <td> Find the next collected data associated with a
+	 trace event associated with a program counter 
+	 that isn't between "start" and "stop". </td>
+  </tr>
+  <tr>
+    <td> Reply </td> <td> </td>
+    <td> See replies for <a HREF="#QTFrame"> REQUEST FRAME BY NUMBER </a>.
+    </td>
+  </tr>
+
+</table>
+
+</body>

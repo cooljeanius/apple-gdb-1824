@@ -1,0 +1,460 @@
+<html>
+<head><title> GDB Introspect Trace Debugging: Commands </title></head>
+
+<body bgcolor="#ffffff">
+ 
+<h1 align="center">GDB Tracing Commands</h1>
+<hr>
+
+<h1> Tracing program execution: the record/playback model </h1>
+<p>
+Some program behaviors can be analyzed only by collecting data over
+long periods of time for later analysis.  Other problems occur in
+sections of code that are too time-sensative to be debugged
+interactively.  In these cases, tracing may be more appropriate than
+breakpoint debugging.
+<p>
+This section discusses the following topics.
+<p>
+<ul>
+<li> <a href="#intro">       Tracepoints and trace experiments </a>
+<li> <a href="#tracepoints"> Setting tracepoints </a>
+<li> <a href="#menus">       Tracepoint menus </a>
+<li> <a href="#delete">      Deleting tracepoints </a>
+<li> <a href="#disable">     Disabling tracepoints </a>
+<li> <a href="#passcount">   Tracepoint passcounts </a>
+<li> <a href="#action">      Tracepoint action lists </a>
+<li> <a href="#info">        Listing tracepoints </a>
+<li> <a href="#start">       Starting/Stopping trace collection </a>
+<li> <a href="#tfind">       Reviewing trace results </a>
+<li> <a href="#save">        Saving tracepoint definitions </a>
+</ul>
+
+<h2><a name="intro">       Tracepoints and trace experiments </a> </h2>
+<p>
+Like a breakpoint, a tracepoint makes your program stop whenever a
+certain point in the program is reached.  However, while a breakpoint
+stops the program for a "long" time (while GDB prompts you and lets
+you type commands), a tracepoint stops the program for only a "short"
+time, after which the program gets to continue with minimal disruption
+of its behavior.  During this "short" interval, the trace mechanism
+records the fact that it has been there (ie. that the tracepoint was
+executed), and may also perform certain actions that you've requested
+such as recording the values of selected variables and registers.
+Thus it's not well defined how long a "short" time is, but in any
+event it will be thousands of times shorter than the time required for
+a human to do the same tasks interactively.
+<p>
+As with breakpoints, GDB assigns a number to each tracepoint when you
+create it.  Like breakpoint numbers, tracepoint numbers are successive
+integers starting from one.  Many of the commands associated with
+tracepoints use the tracepoint number to identify which tracepoint to
+delete, disable, etc.
+<p>
+A trace experiment must involve each of the following steps: defining
+the tracepoints and actions, running the experiment, and reviewing the
+results.  Many of the commands defined below (such as setting and
+deleting tracepoints) have no real effect until you actually begin
+running the trace experiment.  Moreover, many of them <b>also</b> have
+no effect <b>during</b> an already running trace experiment.  Once a
+trace experiment is running, changing the tracepoints or their
+attributes will have no effect unles you stop the experiment and start
+it again.
+<p>
+<h2><a name="tracepoints"> Setting tracepoints </a></h2>
+<p>
+Tracepoints are set with the <b>trace</b> command (abbreviated
+<b>tr</b>).  The debugger convenience variable <b>'$tpnum'</b> records
+the tracepoint number of the most recently set tracepoint; see <a
+href=#convenience>Convenience Variables</a> for a discussion of what
+you can do with convenience variables.
+<p>
+The location of a tracepoint can be specified in exactly the same ways
+as the location of a breakpoint, here reproduced for convenience.
+<p>
+<h3>trace <b>func_name</b> </h3>
+Set a tracepoint at entry to function <b>func_name</b>.  When using
+source languages that permit overloading of symbols, such as C++,
+<b>func_name</b> may refer to more than one possible place to trace.  See
+<a href=#menus>Tracepoint menus</a> for a discussion of that situation.
+
+<h3> trace <b> +offset </b></h3>
+<h3> trace <b> -offset </b></h3>
+Set a tracepoint some number of lines forward or back from the
+"current location".  Note that the "current location" is affected not
+only by stack walking commands such as <b>up</b> and <b>down</b>, but
+also by trace browsing commands such as <b>tfind</b> 
+(see <a href=#tfind>Reviewing trace results</a>).
+
+<h3> trace <b> linenum </b></h3>
+Set a tracepoint at line <b>linenum</b> in the current source file.  The
+current source file is the last file listed, or the last file in which
+execution stopped (eg. at a breakpoint), or the last file visited
+while browsing trace results (see <a href=#tfind>Reviewing trace results</a>).
+
+<h3> trace <b> filename:linenum </b></h3>
+Set a tracepoint at line <b>linenum</b> in source file <b>filename</b>.
+
+<h3> trace <b>filename:func_name </b></h3>
+Set a tracepoint at entry to function <b>func_name</b> found in file
+<b>filename</b>.  The filename is superfluous except when several source
+files contain functions with the same name.
+
+<h3> trace <b>*address </b></h3>
+Set a tracepoint at address <b>address</b>.  You can use this to set
+tracepoints in parts of your program which do not have debugging
+information or source files.
+<p>
+
+<h2><a name="menus">       Tracepoint menus </a></h2>
+Some programming languages (notably C++) permit a single function name
+to be defined several times, for application in different contexts.
+This is called <b>overloading</b>.  Tracepoints on overloaded functions
+behave exactly like breakpoints do (see "Breakpoint menus" in the GDB
+manual (available at <a href=http://sourceware.cygnus.com/gdb>http://sourceware.cygnus.com/gdb</a>)).
+
+<h2><a name="delete">      Deleting tracepoints </a></h2>
+Any tracepoint's definition can be permanently discarded using the
+<b>delete tracepoint</b> command (abbreviated <b>del tr</b>).  Give
+the tracepoint number(s) of the tracepoint(s) that you want to
+delete.  A deleted tracepoint no longer exists, in contrast with a 
+disabled tracepoint (which can be re-enabled).  Use the <b>info
+tracepoints</b> command to discover the numbers of your tracepoints.
+<p>
+<b>NOTE: </b>this command has no effect on a running trace experiment.  
+
+<h3> delete tracepoint <b>[tpnums...] </b></h3>
+Delete the tracepoint(s) of the numbers specified as arguments.  If no
+argument is specified, delete all tracepoints (GDB asks confirmation,
+unles you have <b>set confirm off</b>.  You can abbreviate this
+command as <b>del tr</b>.
+
+<h2><a name="disable">     Disabling tracepoints </a></h2>
+Rather than deleting a tracepoint, you might prefer to <b>disable</b>
+it.  This will make the tracepoint inoperative in the next trace
+experiment, but remembers the tracepoint and all it's attributes so
+that you can <b>enable</b> it again.  You disable and enable tracepoints
+with the <b>disable tracepoint</b> and <b>enable tracepoint</b>
+commands.  Use the <b>info tracepoints</b> command to find out the
+numbers of tracepoints and which ones are enabled.
+<p>
+<b>NOTE: </b>these commands have no effect on a running trace experiment.
+
+<h3> disable tracepoint <b>[tpnums...] </b></h3>
+Disable the specified tracepoints -- or all tracepoints if none are
+listed.  A disabled tracepoint will have no effect in the next trace
+experiment, but is not forgotten.  All its attributes are remembered,
+and will still be in effect if it is enabled again later.  You can
+abbrevkate this command as <b>dis tr</b>.
+
+<h3> enable tracepoint <b>[tpnums...] </b></h3>
+Enable the specified tracepoints (or all tracepoints).  They will
+become effective again the next time a trace experiment is started.
+You can abbreviate this command as <b>en tr</b>.
+
+<h2><a name="passcount">   Tracepoint passcounts </a></h2>
+Passcounts allow you to terminate a trace experiment automatically.
+If a tracepoint has a non-zero passcount of <n>, then the trace
+experiment will automatically terminate (and no more trace data will
+be collected) when that tracepoint has been executed <n> times.
+<p>
+Any number of tracepoints may have passcounts of any integer value.
+When the first tracepoint reaches its passcount, the trace experiment
+will terminate.
+<p>
+To clear a passcount, set it to zero.
+<p>
+<b>NOTE: </b>this command has no effect on a running trace experiment.
+
+<h3> passcount <b> &ltn&gt [tpnum] </b> </h3>
+Set the passcount of the given tracepoint to &ltn&gt.  If tpnum is
+omitted, set the passcount of the most recently defined tracepoint.
+You can abbreviate this command as <b>pas</b>.
+
+<h2><a name="action">      Tracepoint action lists </a></h2>
+A tracepoint can do <b>far</b> more than simply record where your
+program has been.  It can also save the values of selected program
+variables, machine registers, or memory locations for you to examine
+later at your leisure.  All of these data go into a single buffer, but
+except for the size of that buffer there is virtually no limit to the
+data you can collect at tracepoints.
+<p>
+The actions at a tracepoint may also include single-stepping for some
+number of machine instructions, collecting data at each step.  In this
+mode you can collect the changes in registers or variables over a
+range of instructions.
+<p>
+Here are the commands for defining the actions for a tracepoint.
+
+<h3> actions <b> [tpnum] </b> </h3>
+...action-list...
+<p>
+end
+<p>
+Specify a list of actions for tracepoint number <b>tpnum</b>.  The
+actions themselves appear on the following lines.  Type a line
+containing just <b>end</b> to terminate the actions.  To remove all
+actions from a tracepoint, type <b>actions [tpnum]</b> and follow it
+immediately with <b>end</b>; that is, give no actions.  With no
+<b>tpnum</b> argument, <b>actions</b> refers to the last tracepoint set.
+
+<h3> collect <b> [exprs] </b> </h3>
+Describes data to be collected at the tracepoint.  <b>Exprs</b> may be
+any legal C expression, or several expressions separated by commas.
+Any global, static, or local variables may be collected.
+In addition, the following special arguments are supported.
+<ul>
+<li>	$regs	- collect all machine registers
+<li>	$args	- collect all arguments of the traced function
+<li>	$locs	- collect all local variables of the traced function
+</ul>
+<h3> while-stepping <b>&ltn&gt</b> </h3>
+<pre>
+	while-stepping &ltn&gt
+	  collect [exprs]
+	end
+</pre>
+<p>
+After collecting any data requested at the tracepoint itself,
+execute &ltn&gt machine instructions, collecting the following expressions
+after each instruction.  Each step will generate a separate trace
+event in the trace buffer (see <a href=#tfind>Reviewing trace results</a>).
+
+<h3>end</h3>
+Terminates an action list, or a while-stepping collection list.
+If actions include stepping, two <b>end</b> commands are required.
+<p>
+<b>NOTE: </b>these commands have no effect on a running trace experiment.
+
+<h2><a name="info">        Listing tracepoints </a></h2>
+
+Use this command to list all existing tracepoints and their
+attributes.
+
+<h3> info tracepoints <b>[tpnum] </b> </h3>
+Print a list of all tracepoints that have been set and not deleted,
+together with the following information for each tracepoint.
+<ul>
+<li> Tracepoint Number
+<li> Enabled or Disabled
+  <ul>
+  <li>	Enabled tracepoints are marked with a 'y'; disabled
+	tracepoints display 'n'.
+  </ul>
+<li> Address
+  <ul>
+  <li>	The memory address in your program of the tracepoint.
+  </ul>
+<li> PassCount
+  <ul>
+  <li>	If non-zero, the trace experiment will be terminated when 
+	this tracepoint has been hit this many times.
+  </ul>
+<li> StepCount
+  <ul>
+  <li>	If non-zero, the tracepoint will also execute this many
+	machine instructions, collecting a trace event for each one.
+  </ul>
+<li> What
+  <ul>
+  <li>	Source file and line number of the tracepoint, if known.
+  </ul>
+<li> Actions
+  <ul>
+  <li>	Repeats the actions list for the tracepoint, as entered
+	by the user.
+  </ul>
+</ul>
+
+<h2><a name="start">       Starting and stopping trace collection </a></h2>
+
+None of the commands discussed so far will have any actual effect
+until you tell GDB to start a trace experiment.  Only then will the
+tracepoints begin collecting data.  Moreover, once you have started a
+trace experiment, none of the commands above have any effect on the
+running experiment.  Changes to your tracepoints will only go into
+effect the <b>next</b> time you start a trace experiment.  Therefore, if
+you delete, disable, enable, or define any new tracepoints, or change
+the actions or passcounts of existing tracepoints, you must stop any
+currently running trace collection experiment and start a new one
+before your changes will go into effect.  
+<p>
+You start and stop trace collection by using the <b>tstart</b> and
+<b>tstop</b> commands.
+
+<h3> tstart </h3>
+Start trace data collection.
+
+<h3> tstop </h3>
+Stop trace data collection.
+<p>
+<b>NOTE: </b>trace data collection may also be stopped automatically if any
+tracepoint's passcount is reached.  It may also stop automatically if
+the trace buffer becomes full, unles the trace buffer is set to
+operate in a continuous "circular buffer" mode.
+<p>
+Note also that starting trace collection has the side effect of
+discarding any old trace data in the buffer, so that the buffer starts
+out empty each time.  You may stop a trace experiment and still look
+at your saved data, but as soon as you start a new trace experiment,
+the previously collected data will be irretrievably gone.
+
+<h2><a name="tfind">       Reviewing trace results </a></h2>
+
+While a trace experiment is running, every time a tracepoint is
+executed generates a <b>trace event</b>, and every trace event generates
+a data record called a <b>trace frame</b> in a buffer called the
+<b>trace buffer</b>.  If a tracepoint's actions include single-stepping,
+each single-step also generates a trace event and a trace frame.
+<p>
+Each trace frame has a sequential identifying number starting from
+zero, plus the address (PC) of the event.  In addition, the trace
+frame contains any values collected by the actions for the 
+corresponding tracepoint.
+<p>
+
+The basic commands for selecting a trace frame and extracting data
+from it are <b>tfind</b> and <b>tdump</b>.  In addition, several
+built-in GDB variables are provided for identifying the currently
+selected trace frame.
+
+<h3> tfind <b>[&lt event id &gt | start | none | -]</b> </h3>
+Select a trace frame (event) by id number.  <b>"tfind start"</b> is a synonym
+for <b>tfind 0</b> (where zero is the lowest numbered trace frame).
+If no argument is specified, selects the next frame.  <b>"tfind -"</b>
+selects the previous frame, and <b>"tfind none"</b> selects no frame.
+
+<h3>tfind tracepoint <b>[&lt tracepoint id &gt] </b> </h3>
+Select the next trace frame (event) corresponding to the given tracepoint.  If
+no argument is given, find the next trace frame corresponding to the
+same tracepoint as the current frame.
+
+<h3>tfind pc <b>[&lt address &gt]</b> </h3>
+Select the next trace frame corresponding to the given code address.
+If no argument is given, find the next trace frame corresponding to
+the same PC as the current frame.
+
+<h3>tfind line <b>[linenum]</b> </h3>
+<h3>tfind line <b>[filename:linenum]</b> </h3>
+Select the next trace frame corresponding to the given source line.
+If no argument is given, then advance to the next trace frame from any
+source line <b>other than</b> the current one.  This is useful when a
+trace frame is collected for every machine instruction.  It has the
+effect of advancing past all the events for instructions in the
+current source line, thus getting to the next line traced.
+
+<h3>tdump</h3>
+Print all of the data collected at the current trace frame.  
+
+<h3><a name=convenience> Convenience variables</h3>
+<ul>
+<li>$trace_frame 
+  <ul>
+  <li> the ID of the currently selected frame 
+       (or -1 if no trace frame is selected).
+  </ul>
+<li>$tracepoint  
+  <ul>
+  <li> the ID of the tracepoint corresponding to $trace_frame
+  </ul>
+<li>$trace_line  
+  <ul>
+  <li> the source line number corresponding to $tracepoint
+  </ul>
+<li>$trace_file  
+  <ul>
+  <li> the source filename  corresponding to $tracepoint
+  </ul>
+<li>$trace_func  
+  <ul>
+  <li> the name of the function containing $tracepoint
+  </ul>
+</ul>
+<p>
+By using combinations of the above commands and convenience variables,
+together with GDB's built-in scripting language, there are many
+options for viewing the collected trace data.  The most
+straightforward (but not necessarily the most useful) would be to
+simply print out everything that was collected.
+<pre>
+	(gdb) tfind start
+	(gdb) while ($trace_frame != -1)
+	> tdump
+	> tfind
+	> end
+</pre>
+There are many ways to filter and format the data.  As a simple
+example, you might want to extract only the data for certain
+tracepoints. 
+<p>
+	(gdb) tfind start
+	(gdb) while ($trace_frame != -1)
+	> if ($tracepoint == 2 || $tracepoint == 7)
+	  > tdump
+	  > end
+	> tfind
+	> end
+<p>
+Whenever a trace frame is selected, all of GDB's existing commands for
+examining machine state and data will get their values from the trace
+frame.  Therefore you can use commands such as GDB's <b>printf</b>
+command to format the collected trace data any way you like (so long
+as you only attempt to print data that you've collected!).  For
+example, you might want to produce a verbose listing of certain values
+from each of several tracepoints.
+<pre>
+	(gdb) tfind start
+	(gdb) while ($trace_frame != -1)
+	> printf "Tracepoint %d, ", $tracepoint
+	> printf "line %d, ", $trace_line
+	> if ($tracepoint == 1)
+	  > printf "x == %d\n", x
+	  > end
+	> if ($tracepoint == 2)
+	  > printf "gradient == %d, ", gradient
+	  > printf "register D0 == 0x%x\n", $d0
+	  > end
+	> if ($tracepoint == 3)
+	  > printf "z / q == %f\n", z / q
+	  > end
+	> tfind
+	> end
+</pre>
+However, many people find that the most useful way to review the
+collected data is interactively.  Whenever you use the <b>tfind</b>
+command, GDB displays the source line corresponding to the selected
+trace frame, just as if you had stepped to that line or hit a
+breakpoint there.  The next tfind command takes you to the next source
+line, very much like stepping.  At each trace frame, you can use all
+of the customary GDB commands to examine the data collected, very much
+as you could if you were sitting at a breakpoint, except that you can
+only examine values that you collected earlier by listing them in the
+action lists of your tracepoints.  
+<p>
+In fact, if you plan ahead and collect a chunk of memory from the
+machine stack, you can even use GDB's <b>backtrace</b> or <b>up</b>
+and <b>down</b> commands to find out what functions called the
+function that you're tracing.
+<pre>
+	(gdb) trace foo
+	(gdb) actions
+	> collect $fp, *(long **) $sp @ 64
+	> end
+</pre>
+<h2><a name="save">        Saving tracepoint definitions </a></h2>
+
+Once you have defined a set of tracepoints and actions, you may want
+to save them to be used later in another debug session.  The
+<b>save-trace</b> command saves all tracepoints, passcounts and
+actions as a GDB command file, which can be imported later by using
+the <b>source</b> command (See "Command files" in the GDB
+manual (available at <a href=http://sourceware.cygnus.com/gdb>http://sourceware.cygnus.com/gdb</a>)).
+
+
+<h3> save-tracepoints <b> filename</b> </h3>
+Write all tracepoint definitions, passcounts, and actions out to the
+command file <b>'filename'</b>, suitable for reading with the
+<b>source</b> command.
+
+</body>
+</html>

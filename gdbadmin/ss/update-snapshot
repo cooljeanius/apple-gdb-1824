@@ -1,0 +1,266 @@
+#!/bin/sh -x
+
+# This script maintains a snapshots directory.  It builds new
+# snapshots, and diffs, and removes old snapshots.  This is based
+# closely on a script by Ken Raeburn.
+
+# Then maintained by Ian Lance Taylor.
+
+# Until it was stolen for GDB by Jason Molenda, 2000-02-10.
+
+# and smuggled out of the states by Cagney, 2000-03-02.
+
+# From there it snuck into Canada ....
+
+PATH=/bin:/usr/bin:/usr/local/bin:$HOME/bin
+export PATH
+
+# Direct stderr into stdout but still hang onto stderr (/dev/fd/3)
+exec 3>&2 2>&1
+set -x
+ECHO ()
+{
+#   echo "$@" | tee /dev/fd/3 1>&2
+    echo "$@" 1>&2
+    echo "$@" 1>&3
+}
+
+if test $# -ne 5
+then
+    echo "Usage: $0 <snapdir> <tmpdir> <package> <version> <ftpdir>" 1>&2
+    exit 1
+fi
+snapdir=$1 ; shift
+tmpdir=$1 ; shift
+package=$1 ; shift
+version=$1 ; shift
+ftpdir=$1 ; shift
+
+
+rm -rf ${tmpdir} || exit 1
+rm -rf ${ftpdir}/new || exit 1
+mkdir ${tmpdir} || exit 1
+mkdir ${tmpdir}/old || exit 1
+mkdir ${tmpdir}/new || exit 1
+mkdir ${ftpdir}/new || exit 1
+
+
+function do_diffs ()
+{ # <old> <new> 
+    diff -a -u -r --new-file --show-function-line='^[A-Za-z_]' $1 $2
+    if [ $? != 0 -a $? != 1 ]; then
+	echo "diff $1 $2 failed!" 1>&2
+	exit 1
+    fi
+    exit 0
+}
+
+
+function unpack ()
+{ # <archive.tar[.bz2]> <dstdir>
+    f=""
+    for ff in ${snapdir}/$1.tar ${ftpdir}/$1.tar.bz2
+    do
+	if test -r ${ff}
+	then
+	    f=${ff}
+	    break;
+	fi
+    done
+    if test x${f} = x
+    then
+	ECHO "No $1 file"
+        exit 1
+    fi
+    ECHO "Unpacking ${f}"
+    case ${f} in
+	*.tar.bz2 ) bzcat ${f} ;;
+	*.tar ) cat ${f} ;;
+	* ) ECHO Bad archive ${f} ; exit 1 ;;
+    esac | ( cd $2 && tar xf - ) || exit 1
+    echo ... tar extract succeeded
+    # Make sure we didn't run out of disk space.
+    testfile=$2/.xxxfoo$$
+    echo hi-there > $testfile
+    if [ -s $testfile ]; then
+	rm -f $testfile
+    else
+	echo "out of disk space?" 1>&2
+	exit 1
+    fi
+}
+
+
+
+snapshot=${package}-${version}.tar
+if test ! -r ${snapdir}/${package}-${version}.tar
+then
+    echo "No ${package}-${version}.tar file" 1>&2
+    exit 1
+fi
+
+
+echo `date`: Compressing ${package}-${version}.tar to ${ftpdir}/new ...
+if ( cd ${snapdir} && bzip2 -c ${package}-${version}.tar \
+	> ${ftpdir}/new/${package}-${version}.tar.bz2 )
+then
+    :
+else
+    echo Copy to ${ftpdir}/new failed, status $?.
+    exit $?
+fi
+( cd ${ftpdir}/new && set -x &&
+    ln -s ${package}-${version}.tar.bz2 ${package}.tar.bz2 )
+
+
+echo `date`: Unpacking new source tree ready for diffs...
+unpack ${package}-${version} ${tmpdir}/new || exit 1
+
+
+get_last ()
+{(
+    cd ${ftpdir}
+    ls  $1-[0-9_\.]*.tar.bz2 \
+	| sed -e "s/${1}-//" -e 's/\.tar\.bz2$//' \
+	| sort \
+	| tail -1
+);}
+
+echo `date`: Creating diffs with yesterday...
+last=`get_last ${package}`
+if [ -r ${ftpdir}/${package}-${last}.tar.bz2 ]
+then
+    echo ... unpacking old source tree...
+    unpack ${package}-${last} ${tmpdir}/old || exit 1
+
+    echo ... making daily diffs $diffs ...
+    diffs=${package}-${last}-${version}.diff
+    rm -f ${tmpdir}/diffs-${version}*
+    ( cd ${tmpdir}/new/${package}-* &&
+	do_diffs ${tmpdir}/old/${package}-* . ) > ${tmpdir}/${diffs} || exit 1
+    ( cd ${tmpdir} && bzip2 -c $diffs > ${ftpdir}/new/$diffs.bz2 ) || exit 1
+    rm -rf ${tmpdir}/old/*
+    # check that the diff is real
+    if [ `wc -c < ${tmpdir}/${diffs}` -eq 0 ]
+    then
+	# Oops, empty diffs file
+	echo ... 'No diffs??' 1>&2
+	exit 1
+    fi
+fi
+
+
+
+# Is it time for another weekly snapshot?
+
+# Silly algorithm: If it's Tuesday or Wednesday and it's been at least
+# 5 days, or if it's been at least 8 days and it's any other day.
+# That'll cause weekly snapshot dates to drift back to Tuesday (and
+# Wednesday as a fallback), but tries not to let them get too far
+# apart or too close together if this script only runs irregularly.
+
+# Use hard links as you don't know which of the weekly or the daily
+# will be removed first.  Softlinks in the wrong direction would
+# likely end up dangling.
+
+echo `date`: Creating diffs with last week, when needed...
+case `date -u +%a` in
+  Tue | Wed)	min=5 ;;
+  *)		min=8 ;;
+esac
+# When was last one?
+last=`get_last ${package}-weekly`
+if [ x"${last}" = x ]
+then
+    echo ... kick start - make this the first weekly
+    ( cd ${ftpdir}/new && set -x && \
+	ln ${package}-${version}.tar.bz2 ${package}-weekly-${version}.tar.bz2 )
+elif find ${ftpdir}/${package}-weekly-${last}.tar.bz2 -follow -mtime +${min} \
+	| grep bz2 > /dev/null
+then
+    ( cd ${ftpdir}/new && set -x && \
+	ln ${package}-${version}.tar.bz2 ${package}-weekly-${version}.tar.bz2 )
+    ( cd ${snapdir} && set -x && \
+	ln ${package}-${version}.tar ${package}-weekly-${version}.tar )
+    if [ -r ${ftpdir}/${package}-weekly-${last}.tar.bz2 ]
+    then
+	echo ... unpacking last weekly snapshot
+	unpack ${package}-weekly-${last} ${tmpdir}/old || exit 1
+	diffs=${package}-weekly-${last}-${version}.diff
+	echo ... making weekly diffs
+	( cd ${tmpdir}/new/${package}-* &&
+	    do_diffs ${tmpdir}/old/${package}-* . ) > ${tmpdir}/${diffs} || exit 1
+	( cd ${tmpdir} && bzip2 $diffs ) || exit 1
+	cp ${tmpdir}/$diffs.bz2 ${ftpdir}/new/$diffs.bz2 || exit 1
+	rm -rf ${tmpdir}/old/*
+	# check that the diff is real
+	if [ `bzcat ${ftpdir}/new/$diffs.bz2 | wc -c` -eq 0 ]
+	then
+	    # Oops, empty diffs file
+	    echo ... 'No weekly diffs??' 1>&2
+	    exit 1
+	fi
+    fi
+    if test -r ${snapdir}/${package}-CVS-${version}.tar
+    then
+	echo ... bziping weekly CVS snap
+	( cd ${snapdir} && bzip2 -c ${package}-CVS-${version}.tar \
+		> ${ftpdir}/new/${package}-weekly-CVS-${version}.tar.bz2 )
+    fi
+fi
+
+
+#		echo '**** ABORTING TEST ****' 1>&2 ; trap 0 ; exit 1
+
+
+
+echo `date`: Installing new snapshot in ${ftpdir}...
+# FIXME: mv is broken on RedHat 6.0
+# cd ${ftpdir}/new && mv -f * ../	|| exit 1
+cd ${ftpdir}/new
+for f in *; do mv -f $f ../ || exit 1; done
+rm -rf ${ftpdir}/new
+
+# FIXME: See last() above for a better way of doing this.
+
+# keeponly <numtokeep> <list>
+function keeponly ()
+{
+    n=$1 ; shift
+    echo Keeping $n of "$1" ...
+    ls -t | grep -e "$1" | while read f
+    do
+	if test $n -le 0 
+	then
+	    ( set -x ; rm -f ${f} )
+	else
+	    echo ${f}
+	fi
+	n=`expr $n - 1`
+    done
+}
+
+# Need a pattern as othewize don't know if need to match [0-9][0-9]*
+# or [0-9][0-9\.]_[0-9][0-9]* - they are very different.
+
+sversion=`echo ${version} | sed \
+    -e 's/^[0-9][0-9\.]*_/[0-9][0-9\\\\.]*_/' \
+    -e 's/[0-9][0-9]*$/[0-9][0-9]*/'`
+
+cd ${ftpdir}
+echo `date`: Removing old files from `pwd` ...
+keeponly 2 "^${package}-${sversion}.tar.bz2\$"
+keeponly 8 "^${package}-${sversion}-${sversion}.diff.bz2\$"
+keeponly 0 "^${package}-CVS-${sversion}.tar\$"
+keeponly 1 "^${package}-weekly-CVS-${sversion}.tar.bz2\$"
+keeponly 3 "^${package}-weekly-${sversion}.tar.bz2\$"
+keeponly 3 "^${package}-weekly-${sversion}-${sversion}.diff.bz2\$"
+
+cd ${snapdir}
+echo `date`: Removing cache files from `pwd` ...
+keeponly 1 "^${package}-${sversion}.tar\$"
+keeponly 0 "^${package}-CVS-${sversion}.tar\$"
+keeponly 1 "^${package}-weekly-${sversion}.tar\$"
+keeponly 0 "^${package}-weekly-CVS-${sversion}.tar\$"
+
+rm -rf ${tmpdir}

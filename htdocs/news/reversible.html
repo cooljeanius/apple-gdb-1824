@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html
+          PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="shortcut icon" type="image/x-icon" href="../../gdb/images/archer-fish.ico" />
+<meta name="keywords" content="gdb" />
+
+<title>GDB and Reverse Debugging</title>
+
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#1F00FF" alink="#FF0000"
+vlink="#9900DD">
+
+<a href="../../gdb/mascot/"> <img border="0"
+src="../../gdb/images/archer.jpg" align="right" alt="[image of Archer
+Fish]" /></a>
+
+<center><h1>GDB: The GNU Project Debugger</h1></center>
+
+<center>
+<small>
+[<a href="../../gdb/bugs/">bugs</a>]
+[<a href="../../gdb/committee/">GDB Maintainers</a>]
+[<a href="../../gdb/contribute/">contributing</a>]
+[<a href="../../gdb/current/">current git</a>]
+[<a href="../../gdb/documentation/">documentation</a>]
+[<a href="../../gdb/download/">download</a>]
+[<a href="../../gdb/">home</a>]
+[<a href="../../gdb/irc/">irc</a>]
+[<a href="../../gdb/links/">links</a>]
+[<a href="../../gdb/mailing-lists/">mailing lists</a>]
+[<a href="../../gdb/news/">news</a>]
+[<a href="../../gdb/schedule/">schedule</a>]
+[<a href="../../gdb/song/">song</a>]
+[<a href="http://sourceware.org/gdb/wiki/">wiki</a>]
+</small>
+</center>
+
+<center><h2>GDB and Reverse Debugging</h2></center>
+
+<!-- NB: CURRENT / LATEST refer to the trunk -->
+<!-- NB: MOST RECENT refers to the branch -->
+
+<!-- body, update above using ../../gdb/index.sh -->
+
+<h3>Overview</h3>
+
+<p>GDB version 7.0 (due September 2009) will be the first public release
+of gdb to support reverse debugging (the ability to make the program 
+being debugged step and continue in reverse).  See the 
+<a href=http://sourceware.org/gdb/wiki/ReverseDebug>wiki page</a>
+here.
+
+<p>Presently, only certain target debugging environments will support
+reverse debugging.  Those targets currently include:
+
+<ul>
+  <li> Native i386-linux ('target record')
+  <li> Native amd64-linux ('target record')
+  <li> Several remote targets, including:
+  <ul> 
+    <li> <a href=http://moxielogic.org/blog> moxie-elf simulator </a>
+    <li> <a href=http://www.virtutech.com/getting_started/learn.html>
+         Simics </a>
+    <li> <a href=http://communities.vmware.com/community/beta/workstation>
+         VMware Workstation 7.0 </a>
+    <li> <a href=http://sources.redhat.com/sid> the SID simulator (xstormy16 architecture) </a>
+    <li> <a href=http://www.chiark.greenend.org.uk/~pmaydell/chronicle-gdbserver> chronicle-gdbserver using valgrind </a>
+    <li> <a href=http://undo-software.com/undodb_rationale.html>UndoDB</a>
+  </ul>
+</ul>
+
+<p>All of those targets, plus any additional ones in the future, will
+support a common user interface for reverse debugging in gdb, including
+the new commands:
+
+<ul>
+  <li> <b>reverse-continue</b> ('rc') -- Continue program being debugged but run it in reverse
+  <li> <b>reverse-finish</b> -- Execute backward until just before the selected stack frame is called
+  <li> <b>reverse-next</b> ('rn') -- Step program backward, proceeding through subroutine calls.
+  <li> <b>reverse-nexti</b> ('rni') -- Step backward one instruction, but proceed through called subroutines.
+  <li> <b>reverse-step</b> ('rs') -- Step program backward until it reaches the beginning of a previous source line
+  <li> <b>reverse-stepi</b> -- Step backward exactly one instruction
+  <li> <b>set exec-direction (forward/reverse)</b> -- Set direction of execution.<br>
+       All subsequent execution commands (continue, step, until etc.) will run the program being debugged in the selected direction.
+</ul>
+
+<p>Breakpoints and watchpoints will work in reverse -- allowing you for 
+instance to proceed directly to the previous point at which a variable
+was modified.
+
+<h3>Still to do</h3>
+
+<p>Now that the core GDB contains support for reverse debugging, it should
+be possible to add revese execution support to existing GNU simulators 
+such as the ones built into GDB, as well as non-GNU targets such as
+valgrind, SID, and qemu.
+
+<p>For greater performance and fidelity in userspace and/or kernel reverse
+debugging, some work on GNU/Linux as well as other open source kernels
+might be done.
+
+<p>The built-in GDB target 'Process Record / Replay' currently only supports
+native reverse debugging on three platforms (i386-linux, amd64-linux, and
+moxie-elf).  Volunteers are needed to extend this functionality to other
+GNU/Linux platforms, and even to other operating systems.
+
+<p>The FSF and GDB maintainers are eagerly seeking new volunteers and 
+contributions in this area.  If anyone reading this is interested in
+contributing to this leading edge area of research and development, 
+we would welcome your help!
+
+<h3>Acknowledgements</h3>
+<ul>
+  <li> Tomas Holmberg contributed MI support for reverse debugging in Eclipse
+  <li> Oza Pawandeep contributed floating point reverse support for i386
+  <li> Anthony Green contributed a process record port for moxie-elf
+  <li> Hui Zhu contributed a process record port for amd64-linux 
+  <li> Hui Zhu contributed the process record framework, along with
+       the original port for i386-linux
+  <li> Dave Brolley contributed a reversible SID simulator for xstormy16<br>
+       (Note that sid is not a GNU project, but it is licensed under the GPL.)
+  <li> Michael Snyder contributed the core gdb framework for reverse debugging
+  <li> All of the gdb maintainers are to be thanked for invaluable 
+       discussion, suggestions, and code review.
+</ul>
+
+<!-- /body, update below using ../../gdb/index.sh -->
+
+<p></p>
+
+<center>
+<small>
+[<a href="../../gdb/bugs/">bugs</a>]
+[<a href="../../gdb/committee/">GDB Maintainers</a>]
+[<a href="../../gdb/contribute/">contributing</a>]
+[<a href="../../gdb/current/">current git</a>]
+[<a href="../../gdb/documentation/">documentation</a>]
+[<a href="../../gdb/download/">download</a>]
+[<a href="../../gdb/">home</a>]
+[<a href="../../gdb/irc/">irc</a>]
+[<a href="../../gdb/links/">links</a>]
+[<a href="../../gdb/mailing-lists/">mailing lists</a>]
+[<a href="../../gdb/news/">news</a>]
+[<a href="../../gdb/schedule/">schedule</a>]
+[<a href="../../gdb/song/">song</a>]
+[<a href="http://sourceware.org/gdb/wiki/">wiki</a>]
+</small>
+</center>
+
+<hr />
+
+<address>
+
+<p>Please send FSF &amp; GNU inquiries &amp; questions to <a
+href="mailto:gnu@gnu.org">gnu@gnu.org</a>.  There are also <a
+href="http://www.gnu.org/home.html#ContactInfo">other ways to
+contact</a> the FSF.</p>
+
+<p>This page is maintained by <a href="../../gdb/">the GDB
+developers</a>.</p>
+
+<p>Copyright Free Software Foundation, Inc., 51 Franklin St - Fifth
+Floor, Boston, MA 02110-1301 USA.</p>
+
+<p>Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this notice is preserved.</p>
+
+<p>Last modified 2012-11-07.</p>
+</address>
+
+</body>
+</html>

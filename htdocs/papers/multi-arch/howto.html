@@ -1,0 +1,202 @@
+<html>
+<head>
+<title>HOWTO multi-arch a target</title>
+</head>
+<body>
+
+<pre>
+From - Wed Aug 25 12:01:39 1999
+Path: cygnus.com!not-for-mail
+From: Andrew Cagney <ac131313@cygnus.com>
+Newsgroups: cygnus.gdb
+Subject: FAQ? How do I multi-arch my target?
+Date: Mon, 07 Jun 1999 13:58:22 +1000
+Organization: Cygnus Solutions
+Lines: 160
+Message-ID: <375B435E.866778C0@cygnus.com>
+NNTP-Posting-Host: rtl.cygnus.com
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Mailer: Mozilla 4.51 [en] (X11; I; FreeBSD 3.1-RELEASE i386)
+X-Accept-Language: en
+Xref: cygnus.com cygnus.gdb:7837
+</pre>
+
+Hello,
+
+<p>Here is the next in a set of notes about multi-arch - getting GDB
+to support architectural variants (and orthogonal architectures):
+
+<p>In this note I'll give some suggestions for how the maintainer of a
+given target should go about converting things so that they use the
+multi-arch framework.
+
+<p>Broadly there are two strategies:
+
+
+<ol>
+<li>Convert everything at once.<br>Fail
+<li>Incrementally convert/clean/commit your targets changes.<br>Succeed.
+</ol>
+
+<p>I'd recommend the second strategy using the following as guidelines
+for what to attack where.
+
+<p><hr><p>
+
+<h3>Preparation:</h3>
+
+<p>Step 0 is always establish that control - build / test your target
+as it currently stands.  While at it. it wouldn't hurt to fix a few
+bugs :-)
+
+<p>With the control established and tested freeze it.
+
+
+
+<h3>Suggested conversion sequence:</h3>
+
+<p>Remove EXTRA_FRAME_INFO and FRAME_FIND_SAVED_REGS:
+
+<p>These two macro's have been deprecated.
+
+<p>FRAME_FIND_SAVED_REGS was replaced by FRAME_INIT_SAVED_REGS.
+EXTRA_FRAME_INFO has been deleted.  For examples of how to re-do the
+code see the d10v and the mn10300.
+
+
+
+<h3>Replace REGISTER_NAMES with REGISTER_NAME():</h3>
+
+<p>The REGISTER_NAMES initialization string has been deprecated.
+
+<p>Instead there is a per architecture function.  See d10v-tdep.c for
+a very simple implementation.
+
+
+
+<h3>Replace replace CALL_DUMMY with CALL_DUMMY_WORDS
+SIZEOF_CALL_DUMMY_WORDS</h3>
+
+<p>The CALL_DUMMY initialization string has been deprecated.
+
+
+
+<h3>Incrementally convert all code and function macro's to proper C
+functions:</h3>
+
+<p>I've already converted a number of these.  However, for each target
+there are plenty more.  Ensure that each function being created
+maintains name-space purity (ex d10v_, mips_...).
+
+
+
+<h3>Create your XXX-tdep.c:XXX_gdbarch_init() function:</h3>
+
+<p>In theory, this function only needs the following:
+
+<pre>
+static struct gdbarch *
+d10v_gdbarch_init (info, arches)
+     struct gdbarch_info info;
+     struct gdbarch_list *arches;
+{
+  struct gdbarch *gdbarch;
+  /* there is only one d10v architecture */
+  if (arches != NULL)
+    return arches->gdbarch;
+  gdbarch = gdbarch_alloc (&info, NULL);
+  return gdbarch;
+}
+</pre>
+
+<p>In truth, as noted below, you may need to initialize several
+predicate macros.
+
+
+<h3>Check for any new predicate macros (*_P):</h3>
+
+<p>Glance through gdbarch.h, looking for any predicate macro's that
+your target doesn't define.  For each of these either add a definition
+to your tm-XXX.h file or add a line to your XXX_gdbarch_init()
+function providing an initial value.
+
+<p>Please let me know which macro's you identify.
+
+
+
+<h3>Update XXX-tdep.c:_initialize_XXX() and register your
+architecture.</h3>
+
+<p>EX:
+
+<pre>
+  if (GDB_MULTI_ARCH)
+    register_gdbarch_init (bfd_arch_d10v, d10v_gdbarch_init);
+</pre>
+
+
+<h3>Define GDB_MULTI_ARCH 1 in your tm-*.h file:</h3>
+
+<p>This is probably the most difficult stage.
+<p>Add:
+
+<pre>
+#ifndef GDB_MULTI_ARCH
+#define GDB_MULTI_ARCH 1
+#endif
+</pre>
+
+<p>to the top of your tm-XXX.h file.  Rebuild and then run GDB vis:
+
+<pre>
+gdb/gdb
+(gdb)
+(gdb) set archdebug 1
+(gdb) file x-y-z
+....
+</pre>
+
+<p>If all goes well, gdb will report the current value of all the
+architecture dependent macro's. At this stage must are still being
+taken from hardwired definitions in your tm-XXX.h file.  Failing that,
+an internal error message reporting an uninitialised architecture
+vector member will be reported.
+
+<p>Test it.  There will most likely be problems stemming from the
+introduction of new predicate macro's that test for target features.
+Please let me know of any problem macro's you find.
+
+
+
+<h3>Slowly convert your target macro's:</h3>
+
+<p>See d10v-tdep.c/config/d10v/tm-d10v.h.
+
+<p>Expand the XXX_gdbarch_init() function so that it fully populates
+the architecture vector.  As you convert each macro, wrap it in #if
+!GDB_MULTI_ARCH / #endif so that it is possible to revert the code
+back to pre-multi-arch days.
+
+<p>If you find a macro missing from the architecture vector, let me
+know and I'll add it.  At present the architecture vector only
+contains the minimum set of macro's to get a small set of targets up
+and running.
+
+
+
+<h3>Raise GDB_MULTI_ARCH to 2:</h3>
+
+<p>This final step enables a string of checks in gdbarch() that ensure
+that the target architecture vector was fully initialized.
+
+<p><hr><p>
+
+<p>Keep an eye on gdb@sourceware watching for updates and
+additions.
+
+<p><p>Andrew
+
+</body>
+</html>

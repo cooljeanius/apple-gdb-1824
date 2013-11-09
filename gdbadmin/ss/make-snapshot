@@ -1,0 +1,70 @@
+#!/bin/sh -x
+
+# This script makes a ${package} snapshot from the git sources.
+# This is based closely on a script by Ken Raeburn.
+
+PATH=/bin:/usr/bin:/usr/local/bin:$HOME/bin
+export PATH
+
+# Direct stderr into stdout but still hang onto stderr (/dev/fd/3)
+exec 3>&2 2>&1
+ECHO ()
+{
+    echo "$@" | tee /dev/fd/3 1>&2
+}
+
+if test $# -lt 5
+then
+    echo "Usage: $0 <snapdir> <tmpdir> <package> <version> <git-options> clone <clone-options>"
+    exit 1
+fi
+snapdir=$1 ; shift
+tmpdir=$1 ; shift
+package=$1 ; shift
+version=$1 ; shift
+
+
+mkdir ${tmpdir} || exit 1
+cd ${tmpdir} || exit 1
+
+
+echo Working in `pwd`. git "$@" ...
+git "$@"
+
+
+# Work out where things ended up, there are several possible names
+for root in src gcc ${package} ""
+do
+    test -d "${root}" && break
+done
+if [ "${root}" = "" ]
+then
+    echo "Can not find top level directory" 1>&2
+    exit 1
+fi
+
+
+echo Create the release snapshot ...
+
+if test -r ${root}/src-release
+then
+    makefile=src-release
+else
+    makefile=Makefile.in
+fi
+echo `date`: Making snapshot using ${makefile} ...
+( cd ${root} && make -f ${makefile} ${package}.tar -s </dev/null ) || exit 1
+
+
+echo `date`: Scanning for core files again...
+find ${root} -name core -print
+
+
+echo `date`: Saving tarball ...
+mv ${root}/${package}-${version}.tar ${snapdir}
+
+
+echo Created ${snapdir}/${package}-*${version}.tar*
+
+
+rm -rf ${tmpdir}

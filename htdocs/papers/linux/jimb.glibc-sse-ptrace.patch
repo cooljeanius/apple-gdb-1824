@@ -1,0 +1,92 @@
+Please send comments on these patches to jimb@cygnus.com.
+
+1999-10-28  Jim Blandy  <jimb@zenia.red-bean.com>
+
+	* ptrace.h (enum __ptrace_request): Add new requests
+	PTRACE_GETXFPREGS and PTRACE_SETXFPREGS, with aliases
+	PT_GETXFPREGS and PT_SETXFPREGS.
+	* user.h (struct user_xfpregs_struct): New structure.
+
+*** ptrace.h.~1~	Mon Sep 20 04:12:55 1999
+--- ptrace.h	Wed Oct 27 10:52:31 1999
+***************
+*** 99,106 ****
+  #define PT_DETACH PTRACE_DETACH
+  
+    /* Continue and stop at the next (return from) syscall.  */
+!   PTRACE_SYSCALL = 24
+  #define PTRACE_SYSCALL PTRACE_SYSCALL
+  };
+  
+  /* Perform process tracing functions.  REQUEST is one of the values
+--- 99,122 ----
+  #define PT_DETACH PTRACE_DETACH
+  
+    /* Continue and stop at the next (return from) syscall.  */
+!   PTRACE_SYSCALL = 24,
+  #define PTRACE_SYSCALL PTRACE_SYSCALL
++ 
++   /* Get all floating-point and SSE registers used by a process.  The
++      `data' argument should point to a `struct user_xfpregs_struct'.
++      This is not supported on all machines.  If your processor doesn't
++      have SSE registers, or your kernel doesn't support them, this
++      ptrace call will return ENOSYS.  */
++   PTRACE_GETXFPREGS = 25,
++ #define PT_GETXFPREGS PTRACE_GETXFPREGS
++ 
++   /* Set all floating-point and SSE registers used by a process.  The
++      `data' argument should point to a `struct user_xfpregs_struct'.
++      This is not supported on all machines.  If your processor doesn't
++      have SSE registers, or your kernel doesn't support them, this
++      ptrace call will return ENOSYS.  */
++   PTRACE_SETXFPREGS = 26
++ #define PT_SETXFPREGS PTRACE_SETXFPREGS
+  };
+  
+  /* Perform process tracing functions.  REQUEST is one of the values
+*** user.h.~1~	Mon Sep 20 04:12:55 1999
+--- user.h	Tue Oct 26 16:47:39 1999
+***************
+*** 35,40 ****
+--- 35,75 ----
+    long st_space [20];
+  };
+  
++ 
++ struct user_xfpregs_struct
++ {
++   /* This structure contains two copies of the FPU's control
++      registers.  When changing a process's FP state with ptrace, put
++      the values you want in the first set --- cwd, swd, etc.  The
++      second set --- fxcwd, fxswd, etc. is ignored.  */
++   long cwd;
++   long swd;
++   long twd;
++   long fip;
++   long fcs;
++   long foo;
++   long fos;
++   long __padding;
++ 
++   /* Don't place values in the fx* control registers, here.  They're
++      ignored.  Use the members above instead.  */
++   unsigned short fxcwd;
++   unsigned short fxswd;
++   unsigned short fxtwd;
++   unsigned short fxfopcode;
++   long fxfip;
++   short fxfcs;
++   short __reserved_00;
++   long fxfoo;
++   short fxfos;
++   short __reserved_01;
++   long mxcsr;
++   long __reserved_02;
++   char st_space[8][16];       /* 8*16 bytes for each FP/MMX-reg = 128 bytes */
++   float xmm_space[8][4];      /* 8 XMM regs, holding 4 floats each */
++   long __reserved_03 [14*4];  /* 14 16-byte lines for remainder */
++ };
++ 
+  struct user_regs_struct
+  {
+    long ebx;

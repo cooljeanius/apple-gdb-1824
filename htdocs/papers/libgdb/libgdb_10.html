@@ -1,0 +1,47 @@
+<HTML>
+<HEAD>
+<!-- Created by texi2html 1.57 from libgdb.texinfo on August, 23  1999 -->
+
+<TITLE>Libgdb - Command Hooks</TITLE>
+</HEAD>
+<BODY >
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_9.html">Back</A>] &#160; [<A HREF="libgdb_9.html">Prev</A>] &#160; [<A HREF="libgdb_9.html">Up</A>] &#160; [<A HREF="libgdb_11.html">Next</A>] &#160; [<A HREF="libgdb_11.html">Forward</A>] &#160;<BR><HR><BR>
+
+
+<H2><A NAME="SEC10">Setting Hooks to Execute With Debugger Commands.</A></H2>
+
+<P>
+Debugger commands support hooks.  A command hook is executed just before
+the interpreter invokes the hooked command.
+
+
+<P>
+There are two hooks allowed for every command.  By convention, one hook
+is for use by users, the other is for use by the application.
+
+
+<P>
+A user hook is created for a command XYZZY by using
+<CODE>define-command</CODE> to create a command called <CODE>hook-XYZZY</CODE>.
+
+
+<P>
+An application hook is created for a command XYZZY by using
+<CODE>define-command</CODE> to create a command called <CODE>apphook-XYZZY</CODE>.
+
+
+<P>
+Application hooks are useful for interfaces which wish to continuously
+monitor certain aspects of debugger state.  The application can set a
+hook on all commands that might modify the watched state.  When the hook
+is executed, it can use i/o redirection to notify parts of the
+application that previous data may be out of date.  After the top-level loop
+resumes, the application can recompute any values that may have changed.
+(See section <A HREF="libgdb_4.html#SEC4">How the Server's I/O Can be Used</A>.)
+
+
+<P></P><HR>
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_9.html">Back</A>] &#160; [<A HREF="libgdb_9.html">Prev</A>] &#160; [<A HREF="libgdb_9.html">Up</A>] &#160; [<A HREF="libgdb_11.html">Next</A>] &#160; [<A HREF="libgdb_11.html">Forward</A>] &#160;
+
+</BODY>
+</HTML>

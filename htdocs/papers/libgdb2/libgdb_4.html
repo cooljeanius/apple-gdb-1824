@@ -1,0 +1,163 @@
+<HTML>
+<HEAD>
+<!-- Created by texi2html 1.57 from libgdb.texi on August, 24  1999 -->
+
+<TITLE>libGDB - Implementation</TITLE>
+</HEAD>
+<BODY >
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_3.html">Back</A>] &#160; [<A>Prev</A>] &#160; [<A>Up</A>] &#160; [<A>Next</A>] &#160; [<A>Forward</A>] &#160;<BR><HR><BR>
+
+
+<H1><A NAME="SEC25">Implementation</A></H1>
+
+<P>
+This strategy outline the recommended strategy for implementing each of
+the components.
+
+
+
+
+<H2><A NAME="SEC26">Query</A></H2>
+
+<P>
+The set of possible requests, and their behavour will initially be based
+on a subset of the existing CLI command set.  In particular the commands:
+
+
+
+<UL>
+<LI>
+
+<CODE>show ...</CODE>
+<LI>
+
+<CODE>info ...</CODE>
+</UL>
+
+<P>
+would be used as a starting point.
+
+
+<P>
+Rather than clone those commands, the query methods would be implemented
+by modifying the existing code base so that it "builds" each result.
+The existing CLI would call the code with a simple text builder
+(<TT>`cli-out.[hc]'</TT>?); GUILE would make the same call but with its own
+complicated builder (<TT>`guile-out.[hc]'</TT>?).
+
+
+<P>
+As an example of the change required, the function <CODE>breakpoint_1()</CODE>
+in <TT>`breakpoint.c'</TT> would be modified from:
+
+
+
+<PRE>
+annotate_breakpoint (bs-&#62;breakpoint_at-&#62;number);
+printf_filtered ("\nBreakpoint %d, ", bs-&#62;breakpoint_at-&#62;number);
+</PRE>
+
+<P>
+to:
+
+
+
+<PRE>
+annotate_breakpoint (bs-&#62;breakpoint_at-&#62;number);
+ui_out_text (uiout, "\nBreakpoint ");
+ui_out_field_int (uiout, "bkptno", bs-&#62;breakpoint_at-&#62;number);
+ui_out_text (uiout, ", ");
+</PRE>
+
+<P>
+A GUILE builder would construct the internal structure:
+
+
+
+<PRE>
+(..... (bkptno 1) ...)
+</PRE>
+
+
+
+<H2><A NAME="SEC27">Notify</A></H2>
+
+<P>
+The notify mechanism is based on the hook system already provided to
+GDBtk.  The mechanism would need to be formalized
+(<TT>`gdb-hooks.[hc]'</TT>) (say).
+
+
+<P>
+The set of notify hooks would be expected to evolve over time as the
+needs of the clients are better understood.
+
+
+
+
+<H2><A NAME="SEC28">Operations</A></H2>
+
+<P>
+The control interface shall be based on GDB's existing set of <CODE>run</CODE>
+/ <CODE>stop</CODE> et.al. commands.
+
+
+
+
+<H2><A NAME="SEC29">ui-stream / gdb-file</A></H2>
+
+<P>
+The mechanism for capturing output directed to various streams (such as
+output from the remote target) is the gdb_file.  Apart from a number of
+minor refinements, that mechanism is already in place.
+
+
+<P>
+In the near term, gdb-file should be broken out of <TT>`utils.c'</TT> and
+moved to a new file <TT>`ui-stream.[hc]'</TT> (say).
+
+
+
+
+<H2><A NAME="SEC30">event-loop</A></H2>
+
+<P>
+The event loop is beyond the scope of this document.
+
+
+
+
+<H2><A NAME="SEC31">Start up</A></H2>
+
+<P>
+Although the initialization mechanism used by optional client's is
+still undefined, the below outlines one possible sequence:
+
+
+
+<OL>
+<LI>
+
+The alternative client is linked in with GDB. The top-level code
+contained in <TT>`XXX-top.c'</TT>.  This file includes a standard
+<VAR>__initialize_XXX</VAR> function.
+<LI>
+
+When GDB is started <VAR>--ui=NAME</VAR> is passed as an argument.  GDB saves
+NAME in a global variable.
+<LI>
+
+Eventually control reaches <VAR>__initialize_XXX</VAR>.  That function checks
+to see if it matches <VAR>NAME</VAR> and if it does, registers its custom
+version of the main event loop.
+<LI>
+
+GDB continues initialization and then, eventually calls <VAR>XXX</VAR>'s
+custom event loop.
+</OL>
+
+<P></P><HR>
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_3.html">Back</A>] &#160; [<A>Prev</A>] &#160; [<A>Up</A>] &#160; [<A>Next</A>] &#160; [<A>Forward</A>] &#160;
+
+</BODY>
+</HTML>

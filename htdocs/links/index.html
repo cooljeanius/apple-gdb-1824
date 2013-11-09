@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE html
+          PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link rel="shortcut icon" type="image/x-icon" href="../../gdb/images/archer-fish.ico" />
+<meta name="keywords" content="gdb" />
+
+<title>Sites and links related to GDB</title>
+
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#1F00FF" alink="#FF0000"
+vlink="#9900DD">
+
+<a href="../../gdb/mascot/"> <img border="0"
+src="../../gdb/images/archer.jpg" align="right" alt="[image of Archer
+Fish]" /></a>
+
+<center><h1>GDB: The GNU Project Debugger</h1></center>
+
+<center>
+<small>
+[<a href="../../gdb/bugs/">bugs</a>]
+[<a href="../../gdb/committee/">GDB Maintainers</a>]
+[<a href="../../gdb/contribute/">contributing</a>]
+[<a href="../../gdb/current/">current git</a>]
+[<a href="../../gdb/documentation/">documentation</a>]
+[<a href="../../gdb/download/">download</a>]
+[<a href="../../gdb/">home</a>]
+[<a href="../../gdb/irc/">irc</a>]
+[<a href="../../gdb/links/">links</a>]
+[<a href="../../gdb/mailing-lists/">mailing lists</a>]
+[<a href="../../gdb/news/">news</a>]
+[<a href="../../gdb/schedule/">schedule</a>]
+[<a href="../../gdb/song/">song</a>]
+[<a href="http://sourceware.org/gdb/wiki/">wiki</a>]
+</small>
+</center>
+
+<center><h2>Sites and links related to GDB</h2></center>
+
+<!-- NB: CURRENT / LATEST refer to the trunk -->
+<!-- NB: MOST RECENT refers to the branch -->
+
+<!-- body, update above using ../../gdb/index.sh -->
+
+<h3>
+Graphical Interfaces and Integrated Development Environments using GDB
+</h3>
+
+Many people have implemented a graphical user interface on top of GDB,
+the following are a sample:
+
+<ul>
+
+<li><a href="http://sourceware.org/insight/">Insight</a> is a GUI for GDB written in
+tcl/tk.
+
+<li><a href="http://www.gnu.org/software/ddd/">DDD</a> is a popular
+GUI for GDB and dbx.
+
+<li><a href="http://www.newplanetsoftware.com/medic/">Code Medic</a>
+is another GUI written for GDB. <br> It integrates with <a
+href="http://www.newplanetsoftware.com/jcc/">Code Crusader</a> for
+more IDE integration of the GNU development tools.
+
+<li><a href="http://members.telecom.at/~johsixt/kdbg.html">kdbg</a> is
+another GUI written for GDB, designed for the K Desktop Environment.
+
+<li><a href="http://www.hp.com/go/wdb/">HP Wildebeest (WDB) version of
+GDB</a> which is included in new versions of HPUX.
+
+<li><a href="http://gtkada.eu.org/gvd/gvd.html">GNU Visual Debugger</a> written in Ada and uses the GtkAda graphical toolkit.
+
+<li><a href="http://oss.sgi.com/projects/jessie/" >Jessie</a> written
+in Java.  Includes multi-thread and multi-process features.
+
+<li><a href="http://www.tu-chemnitz.de/~sho/rho/rhide.html">RHIDE is
+yet another IDE</a>, this one with a look and feel similar to the
+Borland 3.1 toolset.  It is based on DJGPP (GNU tools that run under
+DOS).
+
+</ul>
+
+If you are looking to implement your own GUI or extend one of the
+above, check the <b>GDB/MI</b> interface that was added to GDB 5.0 and
+enabled in GDB 5.1.
+
+<h3>
+Reference Material
+</h3>
+
+<ul>
+</ul>
+
+<ul>
+
+<li><a href="http://www.ptools.org/hpdf/" >High Performance Debugging
+Forum</a> is a group working on standards for debuggers on
+high-performance computers.
+
+<li><a href="http://www.cs.nmsu.edu/~mikau/aadebug.html" >Algorithmic
+and Automatic Debugging</a>, various information about debugging and
+testing.
+
+<li><a href="http://sourceware.org/cygwin" >Cygwin</a> tools for
+Windows, including <a
+href="http://sourceware.org/cygwin/cygwin-ug-net/gdb.html"
+>GDB</a>.
+
+<li><a href="http://www.mozilla.org/unix/debugging-faq.html" >Mozilla
+debugging FAQ</a> - parts read like a GDB TODO list (particularly
+concerning threads and shared libraries).
+
+<li><a href="http://slashdot.org/features/98/10/13/1423253.shtml"
+>Cathedrals, Bazaars and the Town Council</a>, Alan Cox</li>
+
+<li>The <a href="http://www.UNIX-systems.org/version3/online.html"
+>POSIX spec</a> is online.  Registration is required though, see the
+<a href="http://www.opengroup.org/onlinepubs/terms.htm" >terms</a>
+page for terms and conditions.
+
+<li><a href="http://www.iro.umontreal.ca/contrib/po/HTML/" >GNU
+Translation Project</a> for how you can help with the translation of
+GNU software (including GDB) to other languages.</p>
+
+</ul>
+
+<h3>
+Embedded Information
+</h3>
+
+<ul>
+
+<li><a
+href="http://sourceforge.net/project/?group_id=1541">gdbstubs</a>
+project (to debug remote embedded software; the GDB distribution
+itself also includes some stubs).
+
+<li><a href="http://world.std.com/~qqi/labslave/rproxy.html"
+>rproxy</a> - proxy for the GDB remote protocol.  Also <a
+href="http://world.std.com/~qqi/download/protocol.txt" >protocol
+documentation</a> from the same author.
+
+<li><a href="http://www.slac.stanford.edu/~strauman/gdb/index.html">
+WDB protocol (vxworks target)</a></li>
+
+<li><a href="http://www.kegel.com/linux/gdbserver.html">Remote
+Debugging with GDB.</a></li>
+
+</ul>
+
+<!-- /body, update below using ../../gdb/index.sh -->
+
+<p></p>
+
+<center>
+<small>
+[<a href="../../gdb/bugs/">bugs</a>]
+[<a href="../../gdb/committee/">GDB Maintainers</a>]
+[<a href="../../gdb/contribute/">contributing</a>]
+[<a href="../../gdb/current/">current git</a>]
+[<a href="../../gdb/documentation/">documentation</a>]
+[<a href="../../gdb/download/">download</a>]
+[<a href="../../gdb/">home</a>]
+[<a href="../../gdb/irc/">irc</a>]
+[<a href="../../gdb/links/">links</a>]
+[<a href="../../gdb/mailing-lists/">mailing lists</a>]
+[<a href="../../gdb/news/">news</a>]
+[<a href="../../gdb/schedule/">schedule</a>]
+[<a href="../../gdb/song/">song</a>]
+[<a href="http://sourceware.org/gdb/wiki/">wiki</a>]
+</small>
+</center>
+
+<hr />
+
+<address>
+
+<p>Please send FSF &amp; GNU inquiries &amp; questions to <a
+href="mailto:gnu@gnu.org">gnu@gnu.org</a>.  There are also <a
+href="http://www.gnu.org/home.html#ContactInfo">other ways to
+contact</a> the FSF.</p>
+
+<p>This page is maintained by <a href="../../gdb/">the GDB
+developers</a>.</p>
+
+<p>Copyright Free Software Foundation, Inc., 51 Franklin St - Fifth
+Floor, Boston, MA 02110-1301 USA.</p>
+
+<p>Verbatim copying and distribution of this entire article is
+permitted in any medium, provided this notice is preserved.</p>
+
+<p>Last modified 2013-08-29.</p>
+</address>
+
+</body>
+</html>

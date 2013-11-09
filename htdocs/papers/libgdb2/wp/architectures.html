@@ -1,0 +1,54 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.5 [en] (X11; I; FreeBSD 2.2.8-RELEASE i386) [Netscape]">
+   <meta name="Author" content="Andrew Cagney">
+   <title>Headless GDB Architectures
+</title>
+</head>
+<body>
+
+<center>
+<h1>
+Headless GDB Architectures</h1></center>
+This document will first describes the existing GDBtk architecture, identifying
+a number of its limitations.
+<br>It then presents two alternative architectures for GDB that address
+some of the existing designs limitations.
+<ul>
+<li>
+<a href="gdbtk.html">GDBtk</a></li>
+
+<br>This describes how TCL/TK have been used to implement a debugger GUI
+using GDB.</ul>
+
+<h3>
+New architectures</h3>
+
+<ul>
+<li>
+<a href="stream.html">streamGDB</a></li>
+
+<br>A relatively simple change to the existing GDBtk that addresses some
+of the limitations.
+<br>&nbsp;
+<li>
+<a href="server.html">serverGDB</a></li>
+
+<br>A second more ambitious design that addresses the same problem.</ul>
+
+<h3>
+Conclusion</h3>
+Both architectures have&nbsp; advantages and disadvantages.&nbsp; Importantly,
+while they differ,, both retain Stan's recommendation that a CLI like remote
+interface be provided.
+<p>While the second architecture appears to be more advantageous as a longer
+term change.&nbsp; It does so at considerable risk.
+<p>Finally, of the factors involved in any decision process, time is probably
+the one that will dominate.
+<h3>
+Errata:</h3>
+&nbsp;
+</body>
+</html>

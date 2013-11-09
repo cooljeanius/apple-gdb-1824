@@ -1,0 +1,2274 @@
+Please send comments on these patches to Jim Blandy <jimb@cygnus.com>.
+
+1999-11-03  Jim Blandy  <jimb@zenia.red-bean.com>
+
+	* Tagged: sse_core_works
+	
+	* arch/i386/kernel/process.c (dump_sse_regs): New function.
+	* include/linux/elf.h (NT_PRXFPREG): New note type.
+
+1999-10-28  Jim Blandy  <jimb@zenia.red-bean.com>
+
+	* Tagged: ptrace_sse_works_2
+	
+	* arch/i386/kernel/ptrace.c (sys_ptrace): Return EIO if the
+	processor doesn't support SSE, not ENOSYS.  That way, the response
+	is the same whether you have an old kernel or an old processor.
+
+1999-10-26  Jim Blandy  <jimb@zenia.red-bean.com>
+
+	* Tagged: ptrace_sse_works
+	
+	* include/asm-i386/ptrace.h (PTRACE_SETXFPREGS,
+	PTRACE_GETXFPREGS): New ptrace requests.
+	* arch/i386/kernel/ptrace.c (sys_ptrace): Implement new requests
+	PTRACE_SETXFPREGS and PTRACE_GETXFPREGS.
+
+1999-10-25  Jim Blandy  <jimb@zenia.red-bean.com>
+	
+	* Tagged: sse_context_works
+	
+	* It boots, and the patch works!
+	
+	* arch/i386/kernel/setup.c (cpu_models): Fix syntax error in
+	initializer, introduced while adapting Ledford's patch.
+
+	* arch/i386/kernel/signal.c (restore_i387_hard, save_i387_hard):
+	tsk->tss.i387.hard doesn't have a member named `status' any more;
+	it's `fsave.status' now.
+
+	* Tagged: applied_dledford_pentium_iii
+	
+	* Applied Doug Ledford's Pentium III support patches; see
+	http://people.redhat.com/dledford/linux_kernel.html
+
+	* Tagged: pre_pentium_iii
+	* Tagged: linux-2-2-12
+	
+	* Started with Linux 2.2.12, from the Red Hat 6.1 CD-ROM.
+
+And in fs/ChangeLog:
+
+1999-11-03  Jim Blandy  <jimb@zenia.red-bean.com>
+
+	* binfmt_elf.c (elf_core_dump): Change name for NT_PRXFPREG to
+	"LINUX", since this is a Linux-specific extension.
+	
+	* binfmt_elf.c (dump_sse_regs): New declaration.
+	(elf_core_dump): Dump the SSE regs, too.  This change is wrong,
+	because it includes x86-specific code in a non-x86 specific file.
+	But it does work for now.
+
+
+Index: Documentation/Configure.help
+===================================================================
+RCS file: /ecliptic/jimb/linux-cvs/linux/Documentation/Configure.help,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -c -r1.1.1.1 -r1.2
+*** Documentation/Configure.help	1999/10/24 04:59:55	1.1.1.1
+--- Documentation/Configure.help	1999/10/25 04:42:35	1.2
+***************
+*** 1659,1668 ****
+    all x86 CPU types (albeit not optimally fast), you can specify
+    "386" here.
+  
+!   If you specify one of "486" or "586" or "Pentium" or "PPro", then
+!   the kernel will not necessarily run on earlier architectures (e.g. a
+!   Pentium optimized kernel will run on a PPro, but not necessarily on
+!   a i486).
+  
+    Here are the settings recommended for greatest speed:
+     - "386" for the AMD/Cyrix/Intel 386DX/DXL/SL/SLC/SX, Cyrix/TI
+--- 1659,1668 ----
+    all x86 CPU types (albeit not optimally fast), you can specify
+    "386" here.
+  
+!   If you specify one of "486" or "586" or "Pentium" or "PPro" or "PIII",
+!   then the kernel will not necessarily run on earlier architectures 
+!   (e.g. a Pentium optimized kernel will run on a PPro, but not necessarily
+!   on a i486).
+  
+    Here are the settings recommended for greatest speed:
+     - "386" for the AMD/Cyrix/Intel 386DX/DXL/SL/SLC/SX, Cyrix/TI
+***************
+*** 1676,1683 ****
+--- 1676,1698 ----
+       K6-3D.
+     - "PPro" for the Cyrix/IBM/National Semiconductor 6x86MX, MII and
+       Intel Pentium II/Pentium Pro.
++    - "PIII/Xeon/Deschutes" for the PIII (Katmai), Xeon and later PIIs
++      with the Deschutes or Mendocino core. You have to chose this for
++      MMX2 support.
+  
+    If you don't know what to do, choose "386".
++ 
++ Disable PIII Serial Number at bootup
++ CONFIG_X86_PN_OFF
++   This makes the kernel disable the CPUID serial number that is embedded on
++   the new PIII CPUs at bootup.
++ 
++ Enable PIII Streaming XMM operations
++ CONFIG_X86_SIMD
++   This enables use of the new PIII streaming operations for things like
++   memcpy and memset.  These functions should significantly improve the
++   amount of available memory bandwidth that the CPU can use and also makes
++   better use of the L2 cache on the PIII CPUs.
+  
+  VGA text console
+  CONFIG_VGA_CONSOLE
+Index: arch/i386/Makefile
+===================================================================
+RCS file: /ecliptic/jimb/linux-cvs/linux/arch/i386/Makefile,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -c -r1.1.1.1 -r1.2
+*** arch/i386/Makefile	1999/10/24 04:59:57	1.1.1.1
+--- arch/i386/Makefile	1999/10/25 04:42:37	1.2
+***************
+*** 43,48 ****
+--- 43,52 ----
+  CFLAGS := $(CFLAGS) -m486 -malign-loops=2 -malign-jumps=2 -malign-functions=2 -DCPU=686
+  endif
+  
++ ifdef CONFIG_M686FX
++ CFLAGS := $(CFLAGS) -m486 -malign-loops=0 -malign-jumps=0 -malign-functions=0 -DCPU=686
++ endif
++ 
+  HEAD := arch/i386/kernel/head.o arch/i386/kernel/init_task.o
+  
+  SUBDIRS := $(SUBDIRS) arch/i386/kernel arch/i386/mm arch/i386/lib
+Index: arch/i386/config.in
+===================================================================
+RCS file: /ecliptic/jimb/linux-cvs/linux/arch/i386/config.in,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -c -r1.1.1.1 -r1.2
+*** arch/i386/config.in	1999/10/24 04:59:57	1.1.1.1
+--- arch/i386/config.in	1999/10/25 04:42:37	1.2
+***************
+*** 16,22 ****
+  	 486/Cx486		CONFIG_M486	\
+  	 586/K5/5x86/6x86	CONFIG_M586	\
+  	 Pentium/K6/TSC		CONFIG_M586TSC	\
+! 	 PPro/6x86MX		CONFIG_M686" PPro
+  #
+  # Define implied options from the CPU selection here
+  #
+--- 16,23 ----
+  	 486/Cx486		CONFIG_M486	\
+  	 586/K5/5x86/6x86	CONFIG_M586	\
+  	 Pentium/K6/TSC		CONFIG_M586TSC	\
+! 	 PPro/6x86MX/PII	CONFIG_M686 \
+! 	 PIII/Xeon/Deschutes	CONFIG_M686FX" PIII
+  #
+  # Define implied options from the CPU selection here
+  #
+***************
+*** 26,35 ****
+    define_bool CONFIG_X86_BSWAP y
+    define_bool CONFIG_X86_POPAD_OK y
+  fi
+! if [ "$CONFIG_M686" = "y" -o "$CONFIG_M586TSC" = "y" ]; then
+    define_bool CONFIG_X86_TSC y
+  fi
+! if [ "$CONFIG_M686" = "y" ]; then
+    define_bool CONFIG_X86_GOOD_APIC y
+  fi
+  
+--- 27,37 ----
+    define_bool CONFIG_X86_BSWAP y
+    define_bool CONFIG_X86_POPAD_OK y
+  fi
+! if [ "$CONFIG_M686FX" = "y" -o "$CONFIG_M686" = "y" \
+! 				-o "$CONFIG_M586TSC" = "y" ]; then
+    define_bool CONFIG_X86_TSC y
+  fi
+! if [ "$CONFIG_M686FX" = "y" -o "$CONFIG_M686" = "y" ]; then
+    define_bool CONFIG_X86_GOOD_APIC y
+  fi
+  
+***************
+*** 38,43 ****
+--- 40,50 ----
+  	 2GB		CONFIG_2GB" 1GB
+  
+  bool 'Math emulation' CONFIG_MATH_EMULATION
++ bool 'Disable the PII/PIII Serial Number at bootup' CONFIG_X86_PN_OFF y
++ bool 'Enable PII/PIII Extended/Fast FPU save and restore support' CONFIG_X86_FX y
++ if [ "$CONFIG_X86_FX" = "y" ]; then
++   bool 'Enable PIII Streaming XMM operations' CONFIG_X86_XMM y
++ fi
+  bool 'MTRR (Memory Type Range Register) support' CONFIG_MTRR
+  bool 'Symmetric multi-processing support' CONFIG_SMP
+  endmenu
+Index: arch/i386/kernel/head.S
+===================================================================
+RCS file: /ecliptic/jimb/linux-cvs/linux/arch/i386/kernel/head.S,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -c -r1.1.1.1 -r1.2
+*** arch/i386/kernel/head.S	1999/10/24 04:59:58	1.1.1.1
+--- arch/i386/kernel/head.S	1999/10/25 04:42:39	1.2
+***************
+*** 14,20 ****
+  #include <asm/page.h>
+  #include <asm/pgtable.h>
+  
+- 
+  #define CL_MAGIC_ADDR	0x90020
+  #define CL_MAGIC	0xA33F
+  #define CL_BASE_ADDR	0x90000
+--- 14,19 ----
+***************
+*** 32,38 ****
+  #define X86_HARD_MATH	CPU_PARAMS+6
+  #define X86_CPUID	CPU_PARAMS+8
+  #define X86_CAPABILITY	CPU_PARAMS+12
+! #define X86_VENDOR_ID	CPU_PARAMS+16
+  
+  /*
+   * swapper_pg_dir is the main page directory, address 0x00101000
+--- 31,38 ----
+  #define X86_HARD_MATH	CPU_PARAMS+6
+  #define X86_CPUID	CPU_PARAMS+8
+  #define X86_CAPABILITY	CPU_PARAMS+12
+! #define X86_MMU_CR4	CPU_PARAMS+16
+! #define X86_VENDOR_ID	CPU_PARAMS+20
+  
+  /*
+   * swapper_pg_dir is the main page directory, address 0x00101000
+***************
+*** 59,67 ****
+   *	NOTE! We have to correct for the fact that we're
+   *	not yet offset PAGE_OFFSET..
+   */
+- #define cr4_bits mmu_cr4_features-__PAGE_OFFSET
+  	movl %cr4,%eax		# Turn on 4Mb pages
+! 	orl cr4_bits,%eax
+  	movl %eax,%cr4
+  #endif
+  /*
+--- 59,66 ----
+   *	NOTE! We have to correct for the fact that we're
+   *	not yet offset PAGE_OFFSET..
+   */
+  	movl %cr4,%eax		# Turn on 4Mb pages
+! 	orl X86_MMU_CR4-__PAGE_OFFSET,%eax
+  	movl %eax,%cr4
+  #endif
+  /*
+Index: arch/i386/kernel/i386_ksyms.c
+===================================================================
+RCS file: /ecliptic/jimb/linux-cvs/linux/arch/i386/kernel/i386_ksyms.c,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -c -r1.1.1.1 -r1.2
+*** arch/i386/kernel/i386_ksyms.c	1999/10/24 04:59:58	1.1.1.1
+--- arch/i386/kernel/i386_ksyms.c	1999/10/25 04:42:39	1.2
+***************
+*** 119,121 ****
+--- 119,129 ----
+  #ifdef CONFIG_VT
+  EXPORT_SYMBOL(screen_info);
+  #endif
++ 
++ #ifdef CONFIG_X86_XMM
++ EXPORT_SYMBOL(__kni_memset);
++ EXPORT_SYMBOL(__kni_memcpy);
++ EXPORT_SYMBOL(kni_copy_to_user);
++ EXPORT_SYMBOL(kni_copy_from_user);
++ #endif
++ 
+Index: arch/i386/kernel/process.c
+===================================================================
+RCS file: /ecliptic/jimb/linux-cvs/linux/arch/i386/kernel/process.c,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -c -c -r1.1.1.1 -r1.3
+*** arch/i386/kernel/process.c	1999/10/24 04:59:58	1.1.1.1
+--- arch/i386/kernel/process.c	1999/11/04 03:08:49	1.3
+***************
+*** 42,47 ****
+--- 42,48 ----
+  #include <asm/ldt.h>
+  #include <asm/processor.h>
+  #include <asm/desc.h>
++ #include <asm/i387.h>
+  #ifdef CONFIG_MATH_EMULATION
+  #include <asm/math_emu.h>
+  #endif
+***************
+*** 582,587 ****
+--- 583,684 ----
+  }
+  
+  /*
++  * FPU state handling functions
++  */
++ 
++ int i387_hard_to_user ( struct user_i387_struct * user,
++ 				union i387_hard_union * hard)
++ {
++ #ifdef CONFIG_X86_FX
++ 	int i, err = 0;
++ 	short *tmp, *tmp2;
++ #else
++ 	int err = 0;
++ #endif
++ 
++ 	if (!access_ok(VERIFY_WRITE, user, sizeof(*user)))
++ 		return -EFAULT;
++ #ifdef CONFIG_X86_FX
++ 	if (boot_cpu_data.x86_capability & X86_FEATURE_FXSR) {
++ 		err = copy_to_user((void *)(user),
++ 				   (&(hard->fxsave.cwd)),
++ 				   sizeof(long) * 7);
++ 
++ 		tmp = (short *)&user->st_space;
++ 		tmp2 = (short *)&hard->fxsave.st_space;
++ 
++ 		/*
++ 		 * Transform the two layouts:
++ 		 * (we do not mix 32-bit access with 16-bit access because
++ 		 * thats suboptimal on PPros)
++ 		 */
++ 
++ 		for (i = 0; i < 8; i++) {
++ 			err |= __put_user(*tmp2, tmp); tmp++; tmp2++;
++ 			err |= __put_user(*tmp2, tmp); tmp++; tmp2++;
++ 			err |= __put_user(*tmp2, tmp); tmp++; tmp2++;
++ 			err |= __put_user(*tmp2, tmp); tmp++; tmp2++;
++ 			err |= __put_user(*tmp2, tmp); tmp++; tmp2 += 4;
++ 		}
++ 	} else {
++ 		err = copy_to_user((void *)(user),
++ 				   (&(hard->fsave.cwd)),
++ 				   sizeof(struct i387_hard_fsave));
++ 	}
++ #else
++ 	err = copy_to_user((void *)(user),
++ 			   (&(hard->fsave.cwd)),
++ 			   sizeof(struct i387_hard_fsave));
++ #endif
++ 	return err;
++ }
++ 
++ int i387_user_to_hard (union i387_hard_union * hard,
++ 			struct user_i387_struct * user)
++ {
++ #ifdef CONFIG_X86_FX
++ 	int i, err = 0;
++ 	short *tmp, *tmp2;
++ #else
++ 	int err = 0;
++ #endif
++ 
++ 	if (!access_ok(VERIFY_READ, user, sizeof(*user)))
++ 		return -EFAULT;
++ #ifdef CONFIG_X86_FX
++ 	if (boot_cpu_data.x86_capability & X86_FEATURE_FXSR) {
++ 		err = copy_from_user((&(hard->fxsave.cwd)),
++ 				     (void *)(user),
++ 				     sizeof(long) * 7);
++ 
++ 		tmp2 = (short *)&hard->fxsave.st_space;
++ 		tmp = (short *)&user->st_space;
++ 
++ 		for (i = 0; i < 8; i++) {
++ 			err |= __get_user(*tmp2, tmp); tmp++; tmp2++;
++ 			err |= __get_user(*tmp2, tmp); tmp++; tmp2++;
++ 			err |= __get_user(*tmp2, tmp); tmp++; tmp2++;
++ 			err |= __get_user(*tmp2, tmp); tmp++; tmp2++;
++ 			err |= __get_user(*tmp2, tmp); tmp++; tmp2++;
++ 			*tmp2 = 0; tmp2++;
++ 			*tmp2 = 0; tmp2++;
++ 			*tmp2 = 0; tmp2++;
++ 		}
++ 	} else {
++ 		err = copy_from_user((&(hard->fsave.cwd)),
++ 				     (void *)(user),
++ 				     sizeof(struct i387_hard_fsave));
++ 	}
++ #else
++ 	err = copy_from_user((&(hard->fsave.cwd)),
++ 			     (void *)(user),
++ 			     sizeof(struct i387_hard_fsave));
++ #endif
++ 	return err;
++ }
++ 
++ 
++ /*
+   * Save a segment.
+   */
+  #define savesegment(seg,value) \
+***************
+*** 626,643 ****
+   */
+  int dump_fpu (struct pt_regs * regs, struct user_i387_struct* fpu)
+  {
+  	int fpvalid;
+  	struct task_struct *tsk = current;
+! 
+  	fpvalid = tsk->used_math;
+  	if (fpvalid) {
+  		unlazy_fpu(tsk);
+  		memcpy(fpu,&tsk->tss.i387.hard,sizeof(*fpu));
+  	}
+  
+  	return fpvalid;
+  }
+  
+  /*
+   * fill in the user structure for a core dump..
+   */
+--- 723,782 ----
+   */
+  int dump_fpu (struct pt_regs * regs, struct user_i387_struct* fpu)
+  {
++ #ifdef CONFIG_X86_FX
++ 	int fpvalid, i;
++ 	short *tmp, *tmp2;
++ 	struct task_struct *tsk = current;
++ #else
+  	int fpvalid;
+  	struct task_struct *tsk = current;
+! #endif
+  	fpvalid = tsk->used_math;
+  	if (fpvalid) {
+  		unlazy_fpu(tsk);
++ #ifdef CONFIG_X86_FX
++ 		if (boot_cpu_data.x86_capability & X86_FEATURE_FXSR) {
++ 			memcpy(fpu,&tsk->tss.i387.hard.fxsave.cwd,
++ 				sizeof(long) * 7);
++ 
++ 			tmp = (void *)&fpu->st_space;
++ 			tmp2 = (void *)&tsk->tss.i387.hard.fxsave.st_space;
++ 
++ 			for (i = 0; i < 8; i++) {
++ 				*tmp = *tmp2; tmp++; tmp2++;
++ 				*tmp = *tmp2; tmp++; tmp2++;
++ 				*tmp = *tmp2; tmp++; tmp2++;
++ 				*tmp = *tmp2; tmp++; tmp2++;
++ 				*tmp = *tmp2; tmp++; tmp2+=4;
++ 			}
++ 		} else {
++ 			memcpy(fpu,&tsk->tss.i387.hard,sizeof(*fpu));
++ 		}
++ #else
+  		memcpy(fpu,&tsk->tss.i387.hard,sizeof(*fpu));
++ #endif
+  	}
+  
+  	return fpvalid;
+  }
+  
++ #ifdef CONFIG_X86_FX
++ int
++ dump_sse_regs (char **bits, int *len)
++ {
++   struct task_struct *tsk = current;
++ 
++   if (! (boot_cpu_data.x86_capability & X86_FEATURE_FXSR))
++     return 0;
++ 
++   *bits = (char *) &tsk->tss.i387.hard.fxsave;
++   *len  =   sizeof (tsk->tss.i387.hard.fxsave);
++ 
++   return 1;
++ }
++ #endif
++ 
++ 
+  /*
+   * fill in the user structure for a core dump..
+   */
+***************
+*** 692,699 ****
+  /*
+   *	switch_to(x,yn) should switch tasks from x to y.
+   *
+!  * We fsave/fwait so that an exception goes off at the right time
+!  * (as a call from the fsave or fwait in effect) rather than to
+   * the wrong process. Lazy FP saving no longer makes any sense
+   * with modern CPU's, and this simplifies a lot of things (SMP
+   * and UP become the same).
+--- 831,838 ----
+  /*
+   *	switch_to(x,yn) should switch tasks from x to y.
+   *
+!  * We fpu_save so that an exception goes off at the right time
+!  * (as a call from the f*save or fwait in effect) rather than to
+   * the wrong process. Lazy FP saving no longer makes any sense
+   * with modern CPU's, and this simplifies a lot of things (SMP
+   * and UP become the same).
+Index: arch/i386/kernel/ptrace.c
+===================================================================
+RCS file: /ecliptic/jimb/linux-cvs/linux/arch/i386/kernel/ptrace.c,v
+retrieving revision 1.1.1.1
+retrieving revision 1.4
+diff -c -c -r1.1.1.1 -r1.4
+*** arch/i386/kernel/ptrace.c	1999/10/24 04:59:58	1.1.1.1
+--- arch/i386/kernel/ptrace.c	1999/10/28 17:03:47	1.4
+***************
+*** 17,22 ****
+--- 17,23 ----
+  #include <asm/system.h>
+  #include <asm/processor.h>
+  #include <asm/debugreg.h>
++ #include <asm/i387.h>
+  
+  /*
+   * does not yet catch signals sent when the child dies.
+***************
+*** 616,621 ****
+--- 617,625 ----
+  		  };
+  
+  		case PTRACE_GETFPREGS: { /* Get the child FPU state. */
++ 			/*
++ 			 * user-space expects an 'old-style' FPU dump.
++ 			 */
+  			if (!access_ok(VERIFY_WRITE, (unsigned *)data,
+  				       sizeof(struct user_i387_struct)))
+  			  {
+***************
+*** 625,639 ****
+  			ret = 0;
+  			if ( !child->used_math ) {
+  			  /* Simulate an empty FPU. */
+! 			  child->tss.i387.hard.cwd = 0xffff037f;
+! 			  child->tss.i387.hard.swd = 0xffff0000;
+! 			  child->tss.i387.hard.twd = 0xffffffff;
+  			}
+  #ifdef CONFIG_MATH_EMULATION
+  			if ( boot_cpu_data.hard_math ) {
+  #endif
+! 				__copy_to_user((void *)data, &child->tss.i387.hard,
+! 						sizeof(struct user_i387_struct));
+  #ifdef CONFIG_MATH_EMULATION
+  			} else {
+  			  save_i387_soft(&child->tss.i387.soft,
+--- 629,645 ----
+  			ret = 0;
+  			if ( !child->used_math ) {
+  			  /* Simulate an empty FPU. */
+! 			  i387_set_cwd(child->tss.i387.hard, 0x037f);
+! 			  i387_set_swd(child->tss.i387.hard, 0x0000);
+! 			  i387_set_twd(child->tss.i387.hard, 0xffff);
+  			}
+  #ifdef CONFIG_MATH_EMULATION
+  			if ( boot_cpu_data.hard_math ) {
+  #endif
+! 				i387_hard_to_user(
+! 					(struct user_i387_struct *)data,
+! 					&child->tss.i387.hard
+! 				);
+  #ifdef CONFIG_MATH_EMULATION
+  			} else {
+  			  save_i387_soft(&child->tss.i387.soft,
+***************
+*** 654,661 ****
+  #ifdef CONFIG_MATH_EMULATION
+  			if ( boot_cpu_data.hard_math ) {
+  #endif
+! 			  __copy_from_user(&child->tss.i387.hard, (void *)data,
+! 					   sizeof(struct user_i387_struct));
+  #ifdef CONFIG_MATH_EMULATION
+  			} else {
+  			  restore_i387_soft(&child->tss.i387.soft,
+--- 660,669 ----
+  #ifdef CONFIG_MATH_EMULATION
+  			if ( boot_cpu_data.hard_math ) {
+  #endif
+! 				i387_user_to_hard(
+! 					&child->tss.i387.hard,
+! 					(struct user_i387_struct *)data
+! 				);
+  #ifdef CONFIG_MATH_EMULATION
+  			} else {
+  			  restore_i387_soft(&child->tss.i387.soft,
+***************
+*** 665,670 ****
+--- 673,745 ----
+  			ret = 0;
+  			goto out;
+  		  };
++  
++ 		/* Read state of FP and SSE registers.  */
++ 		case PTRACE_GETXFPREGS: {
++ 		        struct i387_hard_fxsave *fxsave;
++ 
++ 			if (! access_ok (VERIFY_WRITE, (unsigned *) data,
++ 					 sizeof (struct i387_hard_fxsave))){
++ 				ret = -EIO;
++ 				goto out;
++ 			}
++ #ifdef CONFIG_X86_FX
++ 			if (! (boot_cpu_data.x86_capability
++ 			       & X86_FEATURE_FXSR)) {
++ 				ret = -EIO;
++ 				goto out;
++ 			}
++ #ifdef CONFIG_MATH_EMULATION
++ 			if (! boot_cpu_data.hard_math) {
++ 				ret = -EIO;
++ 				goto out;
++ 			}
++ #endif
++ 			fxsave = &child->tss.i387.hard.fxsave;
++ 			if (! child->used_math) {
++ 				/* Simulate an empty FPU. */
++ 				fxsave->cwd = 0x037f;
++ 				fxsave->swd = 0x0000;
++ 				fxsave->twd = 0xffff;
++ 			}
++ 			ret = copy_to_user ((void *) data, (void *) fxsave,
++ 					    sizeof (struct i387_hard_fxsave));
++ #else
++ 			ret = -EIO;
++ #endif
++ 			goto out;
++ 		}
++ 
++ 		case PTRACE_SETXFPREGS: {
++ 		        struct i387_hard_fxsave *fxsave;
++ 		  
++ 			if (! access_ok (VERIFY_READ, (unsigned *) data,
++ 					 sizeof (struct i387_hard_fxsave))){
++ 				ret = -EIO;
++ 				goto out;
++ 			}
++ #ifdef CONFIG_X86_FX
++ 			if (! (boot_cpu_data.x86_capability
++ 			       & X86_FEATURE_FXSR)) {
++ 				ret = -EIO;
++ 				goto out;
++ 			}
++ #ifdef CONFIG_MATH_EMULATION
++ 			if (! boot_cpu_data.hard_math) {
++ 				ret = -EIO;
++ 				goto out;
++ 			}
++ #endif
++ 			child->used_math = 1;
++ 			fxsave = &child->tss.i387.hard.fxsave;
++ 			ret = copy_from_user ((void *) fxsave, (void *) data,
++ 					      sizeof
++ 					      (struct i387_hard_fxsave));
++ #else
++ 			ret = -EIO;
++ #endif
++ 			goto out;
++ 		}
+  
+  		default:
+  			ret = -EIO;
+Index: arch/i386/kernel/setup.c
+===================================================================
+RCS file: /ecliptic/jimb/linux-cvs/linux/arch/i386/kernel/setup.c,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -c -c -r1.1.1.1 -r1.3
+*** arch/i386/kernel/setup.c	1999/10/24 04:59:58	1.1.1.1
+--- arch/i386/kernel/setup.c	1999/10/25 22:40:44	1.3
+***************
+*** 717,725 ****
+  	    NULL, NULL, NULL, NULL }},
+  	{ X86_VENDOR_INTEL,	6,
+  	  { "Pentium Pro A-step", "Pentium Pro", NULL, "Pentium II (Klamath)", 
+! 	    NULL, "Pentium II (Deschutes)", "Mobile Pentium II", 
+!             "Pentium III (Katmai)", "Pentium III (Coppermine)", NULL, NULL, 
+!             NULL, NULL, NULL, NULL }},
+  	{ X86_VENDOR_AMD,	4,
+  	  { NULL, NULL, NULL, "486 DX/2", NULL, NULL, NULL, "486 DX/2-WB",
+  	    "486 DX/4", "486 DX/4-WB", NULL, NULL, NULL, NULL, "Am5x86-WT",
+--- 717,725 ----
+  	    NULL, NULL, NULL, NULL }},
+  	{ X86_VENDOR_INTEL,	6,
+  	  { "Pentium Pro A-step", "Pentium Pro", NULL, "Pentium II (Klamath)", 
+!  	    NULL, "Pentium II (Deschutes)", "Celeron (Mendocino)",
+!  	    "Pentium III (Katmai)", "Pentium III (Coppermine)", NULL, NULL,
+!  	    NULL, NULL, NULL, NULL, NULL }},
+  	{ X86_VENDOR_AMD,	4,
+  	  { NULL, NULL, NULL, "486 DX/2", NULL, NULL, NULL, "486 DX/2-WB",
+  	    "486 DX/4", "486 DX/4-WB", NULL, NULL, NULL, NULL, "Am5x86-WT",
+***************
+*** 980,987 ****
+  			x86_cap_flags[14] = "mca";
+  			x86_cap_flags[16] = "pat";
+  			x86_cap_flags[17] = "pse36";
+! 			x86_cap_flags[18] = "psn";
+! 			x86_cap_flags[24] = "osfxsr";
+  			break;
+  
+  		    case X86_VENDOR_CENTAUR:
+--- 980,988 ----
+  			x86_cap_flags[14] = "mca";
+  			x86_cap_flags[16] = "pat";
+  			x86_cap_flags[17] = "pse36";
+! 			x86_cap_flags[18] = "pn";
+! 			x86_cap_flags[24] = "fxsr";
+! 			x86_cap_flags[25] = "xmm";
+  			break;
+  
+  		    case X86_VENDOR_CENTAUR:
+Index: arch/i386/kernel/signal.c
+===================================================================
+RCS file: /ecliptic/jimb/linux-cvs/linux/arch/i386/kernel/signal.c,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -c -c -r1.1.1.1 -r1.3
+*** arch/i386/kernel/signal.c	1999/10/24 04:59:58	1.1.1.1
+--- arch/i386/kernel/signal.c	1999/10/25 22:40:47	1.3
+***************
+*** 21,26 ****
+--- 21,27 ----
+  #include <linux/stddef.h>
+  #include <asm/ucontext.h>
+  #include <asm/uaccess.h>
++ #include <asm/i387.h>
+  
+  #define DEBUG_SIG 0
+  
+***************
+*** 153,161 ****
+  
+  static inline int restore_i387_hard(struct _fpstate *buf)
+  {
+  	struct task_struct *tsk = current;
+  	clear_fpu(tsk);
+! 	return __copy_from_user(&tsk->tss.i387.hard, buf, sizeof(*buf));
+  }
+  
+  static inline int restore_i387(struct _fpstate *buf)
+--- 154,169 ----
+  
+  static inline int restore_i387_hard(struct _fpstate *buf)
+  {
++ 	int err = 0;
+  	struct task_struct *tsk = current;
+  	clear_fpu(tsk);
+! 
+! 	err = i387_user_to_hard(&tsk->tss.i387.hard,
+! 				(struct user_i387_struct *)buf);
+! #ifdef CONFIG_MATH_EMULATION
+! 	err |= get_user(tsk->tss.i387.hard.fsave.status, &buf->status);
+! #endif
+! 	return err;
+  }
+  
+  static inline int restore_i387(struct _fpstate *buf)
+***************
+*** 305,315 ****
+  
+  static inline int save_i387_hard(struct _fpstate * buf)
+  {
+  	struct task_struct *tsk = current;
+  
+  	unlazy_fpu(tsk);
+! 	tsk->tss.i387.hard.status = tsk->tss.i387.hard.swd;
+! 	if (__copy_to_user(buf, &tsk->tss.i387.hard, sizeof(*buf)))
+  		return -1;
+  	return 1;
+  }
+--- 313,328 ----
+  
+  static inline int save_i387_hard(struct _fpstate * buf)
+  {
++ 	int err = 0;
+  	struct task_struct *tsk = current;
+  
+  	unlazy_fpu(tsk);
+! 	err = i387_hard_to_user((struct user_i387_struct *)buf,
+! 			&tsk->tss.i387.hard);
+! #ifdef CONFIG_MATH_EMULATION
+! 	err |= put_user(tsk->tss.i387.hard.fsave.status, &buf->status);
+! #endif
+! 	if (err)
+  		return -1;
+  	return 1;
+  }
+Index: arch/i386/kernel/smp.c
+===================================================================
+RCS file: /ecliptic/jimb/linux-cvs/linux/arch/i386/kernel/smp.c,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -c -r1.1.1.1 -r1.2
+*** arch/i386/kernel/smp.c	1999/10/24 04:59:58	1.1.1.1
+--- arch/i386/kernel/smp.c	1999/10/25 04:42:39	1.2
+***************
+*** 889,894 ****
+--- 889,900 ----
+   */
+  int __init start_secondary(void *unused)
+  {
++ #ifdef CONFIG_X86_PN_OFF
++ 	disable_serial_nr();
++ #endif
++ #ifdef CONFIG_X86_XMM
++ 	load_default_mxcsr();
++ #endif
+  	/*
+  	 * Dont put anything before smp_callin(), SMP
+  	 * booting is too fragile that we want to limit the
+Index: arch/i386/kernel/traps.c
+===================================================================
+RCS file: /ecliptic/jimb/linux-cvs/linux/arch/i386/kernel/traps.c,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -c -r1.1.1.1 -r1.2
+*** arch/i386/kernel/traps.c	1999/10/24 04:59:58	1.1.1.1
+--- arch/i386/kernel/traps.c	1999/10/25 04:42:39	1.2
+***************
+*** 33,38 ****
+--- 33,39 ----
+  #include <asm/atomic.h>
+  #include <asm/debugreg.h>
+  #include <asm/desc.h>
++ #include <asm/i387.h>
+  
+  #include <asm/smp.h>
+  
+***************
+*** 452,468 ****
+  asmlinkage void math_state_restore(struct pt_regs regs)
+  {
+  	__asm__ __volatile__("clts");		/* Allow maths ops (or we recurse) */
+! 	if(current->used_math)
+! 		__asm__("frstor %0": :"m" (current->tss.i387));
+! 	else
+! 	{
+  		/*
+  		 *	Our first FPU usage, clean the chip.
+  		 */
+  		__asm__("fninit");
+  		current->used_math = 1;
+  	}
+! 	current->flags|=PF_USEDFPU;		/* So we fnsave on switch_to() */
+  }
+  
+  #ifndef CONFIG_MATH_EMULATION
+--- 453,471 ----
+  asmlinkage void math_state_restore(struct pt_regs regs)
+  {
+  	__asm__ __volatile__("clts");		/* Allow maths ops (or we recurse) */
+! 	if(current->used_math) {
+! 		i387_restore_hard(current->tss.i387);
+! 	} else {
+  		/*
+  		 *	Our first FPU usage, clean the chip.
+  		 */
+  		__asm__("fninit");
++ #ifdef CONFIG_X86_XMM
++ 		load_default_mxcsr();
++ #endif
+  		current->used_math = 1;
+  	}
+! 	current->flags|=PF_USEDFPU;	/* So we fpu_save on switch_to() */
+  }
+  
+  #ifndef CONFIG_MATH_EMULATION
+Index: arch/i386/lib/Makefile
+===================================================================
+RCS file: /ecliptic/jimb/linux-cvs/linux/arch/i386/lib/Makefile,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -c -r1.1.1.1 -r1.2
+*** arch/i386/lib/Makefile	1999/10/24 04:59:58	1.1.1.1
+--- arch/i386/lib/Makefile	1999/10/25 04:42:40	1.2
+***************
+*** 7,12 ****
+  
+  L_TARGET = lib.a
+  L_OBJS  = checksum.o old-checksum.o semaphore.o delay.o \
+! 	usercopy.o getuser.o putuser.o
+  
+  include $(TOPDIR)/Rules.make
+--- 7,12 ----
+  
+  L_TARGET = lib.a
+  L_OBJS  = checksum.o old-checksum.o semaphore.o delay.o \
+! 	usercopy.o getuser.o putuser.o simd.o
+  
+  include $(TOPDIR)/Rules.make
+Index: arch/i386/lib/simd.c
+===================================================================
+RCS file: simd.c
+diff -N simd.c
+*** arch/i386/lib/simd.c	Tue May  5 15:32:27 1998
+--- arch/i386/lib/simd.c	Thu Nov  4 02:26:13 1999
+***************
+*** 0 ****
+--- 1,211 ----
++ /*
++  * SIMD functions.  These replace the functions in asm-i386/string.h
++  * whenever it makes sense.  These also un-inline those functions.
++  *
++  * Copyright 1999, Doug Ledford <dledford@redhat.com>
++  *
++  * These functions are simple and trivial, consider them to be
++  * public domain
++  */
++ 
++ #include <linux/config.h>
++ #include <linux/kernel.h>
++ #include <linux/string.h>
++ #include <linux/sched.h>
++ #include <asm/processor.h>
++ 
++ #ifdef CONFIG_X86_XMM
++ 
++ extern void * __kni_memcpy(void * to, const void * from, size_t n)
++ {
++ 	char xmm_save[32];
++ 	int cr0;
++ 	void *ret=to;
++ 	size_t size;
++ 
++ 	/*
++ 	 * If we haven't set OSXFSR mode yet, then don't try XMM
++ 	 */
++ 	if (  (n < 96) ||
++ 	     !(boot_cpu_data.mmu_cr4_features & X86_CR4_OSFXSR) ||
++ 	     !(boot_cpu_data.x86_capability & X86_FEATURE_XMM) ) {
++ 		return(__memcpy(to, from, n));
++ 	}
++ 	__asm__ __volatile__("movl %%cr0,%0\n\t"
++ 			     "clts\n\t"
++ 			     "movups %%xmm0,%1\n\t"
++ 			     "movups %%xmm1,%2\n\t"
++ 			     : "=r" (cr0), "=m" (xmm_save[0]),
++ 			       "=m" (xmm_save[16]));
++ 	/*
++ 	 * Align the destination on a 16byte boundary.
++ 	 * The source doesn't have to be aligned.
++ 	 */
++ 	if ( (unsigned long)to & 0xf ) {
++ 		size = 0x10 - ((unsigned long)to & 0xf);
++ 		__asm__ __volatile__("movups (%0),%%xmm0\n\t"
++ 				     "movups %%xmm0,(%1)\n\t"
++ 				     :
++ 				     : "r" (from),
++ 				       "r" (to));
++ 		n -= size;
++ 		from += size;
++ 		to += size;
++ 	}
++ 	/*
++ 	 * If the copy would have tailings, take care of them
++ 	 * now instead of later
++ 	 */
++ 	if(n & 0xf) {
++ 		size = n - 0x10;
++ 		__asm__ __volatile__("movups (%0),%%xmm0\n\t"
++ 				     "movups %%xmm0,(%1)\n\t"
++ 				     :
++ 				     : "r" (from + size),
++ 				       "r" (to + size));
++ 		n &= ~0xf;
++ 	}
++ 	/*
++ 	 * Prefetch the first two cachelines now.
++ 	 */
++ 	__asm__ __volatile__("prefetchnta 0x00(%0)\n\t"
++ 			     "prefetchnta 0x20(%0)\n\t"
++ 			     :
++ 			     : "r" (from));
++ 	/*
++ 	 * Copy 32 bytes at a time.  The single unroll is good
++ 	 * for a 30% performance boost in the copy.  Additional
++ 	 * unrolls are not productive.  We are guaranteed to
++ 	 * have at least 32 bytes of data to copy since the
++ 	 * macro in string.h doesn't call into this function
++ 	 * with less than 64 bytes of copy and we lost < 32
++ 	 * bytes to alignment earlier.
++ 	 */
++ 	while (n >= 0x20) {
++ 		__asm__ __volatile__(
++ 				     "movups 0x00(%0),%%xmm0\n\t"
++ 				     "movups 0x10(%0),%%xmm1\n\t"
++ 				     "movntps %%xmm0,0x00(%1)\n\t"
++ 				     "movntps %%xmm1,0x10(%1)\n\t"
++ 				     : 
++ 				     : "r" (from), "r" (to)
++ 				     : "memory");
++ 		from += 0x20;
++ 		/*
++ 		 * Note: Intermixing the prefetch at *exactly* this point
++ 		 * in time has been shown to be the fastest possible.
++ 		 * Timing these prefetch instructions is a complete black
++ 		 * art with nothing but trial and error showing the way.
++ 		 * To that extent, this optimum version was found by using
++ 		 * a userland version of this routine that we clocked for
++ 		 * lots of runs.  We then fiddled with ordering until we
++ 		 * settled on our highest speen routines.  So, the long
++ 		 * and short of this is, don't mess with instruction ordering
++ 		 * here or suffer permance penalties you will.
++ 		 */
++ 		__asm__ __volatile__(
++ 				     "prefetchnta 0x20(%0)\n\t"
++ 				     : 
++ 				     : "r" (from));
++ 		to += 0x20;
++ 		n -= 0x20;
++ 	}
++ 	if (n) {
++ 		__asm__ __volatile__("movups 0x00(%0),%%xmm0\n\t"
++ 				     "movntps %%xmm0,0x00(%1)\n\t"
++ 				     : 
++ 				     : "r" (from), "r" (to)
++ 				     : "memory");
++ 	}
++ 	/*
++ 	 * Restore our registers
++ 	 */
++ 	__asm__ __volatile__("movups %0,%%xmm0\n\t"
++ 			     "movups %1,%%xmm1\n\t"
++ 			     "movl %2,%%cr0\n\t"
++ 			     :
++ 			     : "m" (xmm_save[0]), "m" (xmm_save[16]),
++ 			       "r" (cr0) );
++ 	__asm__ __volatile__("sfence":::"memory");
++ 	return(ret);
++ }
++ 
++ extern void * __kni_memset(void * s, char c, size_t count)
++ {
++ 	size_t size;
++ 	char xmm_save[16];
++ 	int cr0;
++ 	void *ret=s;
++ 
++ 	/*
++ 	 * If we haven't set OSXFSR mode yet, then don't try SIMD
++ 	 */
++ 	if (  (count < 96) ||
++ 	     !(boot_cpu_data.mmu_cr4_features & X86_CR4_OSFXSR) ||
++ 	     !(boot_cpu_data.x86_capability & X86_FEATURE_XMM) ) {
++ 		return(__memset_generic(s, c, count));
++ 	}
++ 	/*
++ 	 * Save our registers
++ 	 */
++ 	__asm__ __volatile__("movl %%cr0,%0\n\t"
++ 			     "clts\n\t"
++ 			     "movups %%xmm0,%1\n\t"
++ 			     : "=r" (cr0), "=m" (xmm_save[0]));
++ 	/*
++ 	 * Load up our XMM register with the stuff to set mem with
++ 	 */
++ 	if(c == '\0') {
++ 		__asm__ __volatile__("xorps %%xmm0,%%xmm0\n\t"
++ 				     "movups %%xmm0,(%0)\n\t"
++ 				     :
++ 				     : "r" (s));
++ 	} else {
++ 		__memset_generic(s, c, 0x10);
++ 		__asm__ __volatile__("movups (%0),%%xmm0"
++ 				     :
++ 				     : "r" (s));
++ 	}
++ 	/*
++ 	 * align the destination on a 16 byte boundary, we can simply
++ 	 * do the math to align things since we already populated the
++ 	 * first 16 bytes.
++ 	 */
++ 	size = (0x10 - ((unsigned long)s & 0xf));
++ 	count -= size;
++ 	s += size;
++ 	/*
++ 	 * On the off chance we have tailings due to alignment issues,
++ 	 * do them now to make later more efficient
++ 	 */
++ 	if(count & 0xf) {
++ 		__asm__ __volatile__("movups %%xmm0,(%0)"
++ 				     :
++ 				     : "r" (s + (count - 0x10))
++ 				     : "memory");
++ 		count &= ~0xf;
++ 	}
++ 	/*
++ 	 * Do the copy by plopping out the register to memory.
++ 	 * Note: Unrolling this was *totally* unproductive.  My benchmark
++ 	 * showed that one or two plops per iteration produced the same
++ 	 * speed to within .06 MByte/s of speed.  Considering that the
++ 	 * routine benchmarked at over 3000 MByte/s, .06 is not statistically
++ 	 * significant and only doing one drop per loop simplifies 
++ 	 * overhead of book keeping.
++ 	 */
++ 	while(count) {
++ 		__asm__ __volatile__("movntps %%xmm0,0x00(%0)\n\t"
++ 				     :
++ 				     : "r" (s));
++ 		s += 0x10;
++ 		count -= 0x10;
++ 	}
++ 	__asm__ __volatile__("movups %0,%%xmm0\n\t"
++ 			     "movl %1,%%cr0\n\t"
++ 			     :
++ 			     : "m" (xmm_save[0]), "r" (cr0));
++ 	__asm__ __volatile__("sfence":::"memory");
++ 	return(ret);
++ }
++ #endif /* CONFIG_X86_SIMD */
+Index: arch/i386/lib/usercopy.c
+===================================================================
+RCS file: /ecliptic/jimb/linux-cvs/linux/arch/i386/lib/usercopy.c,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -c -r1.1.1.1 -r1.2
+*** arch/i386/lib/usercopy.c	1999/10/24 04:59:58	1.1.1.1
+--- arch/i386/lib/usercopy.c	1999/10/25 04:42:40	1.2
+***************
+*** 23,28 ****
+--- 23,59 ----
+  	return n;
+  }
+  
++ #ifdef CONFIG_X86_XMM
++ unsigned long
++ kni_copy_to_user(void *to, const void *from, unsigned long n)
++ {
++ 	if (access_ok(VERIFY_WRITE, to, n)) {
++ 		if( (n >= 96) &&
++ 		    (boot_cpu_data.mmu_cr4_features & X86_CR4_OSFXSR) &&
++ 		    (boot_cpu_data.x86_capability & X86_FEATURE_XMM) ) {
++ 			__kni_copy_to_user(to,from,n);
++ 		} else {
++ 			__copy_user(to,from,n);
++ 		}
++ 	}
++ 	return n;
++ }
++ 
++ unsigned long
++ kni_copy_from_user(void *to, const void *from, unsigned long n)
++ {
++ 	if (access_ok(VERIFY_READ, from, n)) {
++ 		if( (n >= 96) &&
++ 		    (boot_cpu_data.mmu_cr4_features & X86_CR4_OSFXSR) &&
++ 		    (boot_cpu_data.x86_capability & X86_FEATURE_XMM) ) {
++ 			__kni_copy_from_user(to,from,n);
++ 		} else {
++ 			__copy_user_zeroing(to,from,n);
++ 		}
++ 	}
++ 	return n;
++ }
++ #endif /* CONFIG_X86_XMM */
+  
+  /*
+   * Copy a null terminated string from userspace.
+Index: arch/i386/mm/init.c
+===================================================================
+RCS file: /ecliptic/jimb/linux-cvs/linux/arch/i386/mm/init.c,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -c -r1.1.1.1 -r1.2
+*** arch/i386/mm/init.c	1999/10/24 05:00:00	1.1.1.1
+--- arch/i386/mm/init.c	1999/10/25 04:42:41	1.2
+***************
+*** 184,217 ****
+  extern char _text, _etext, _edata, __bss_start, _end;
+  extern char __init_begin, __init_end;
+  
+- #define X86_CR4_VME		0x0001		/* enable vm86 extensions */
+- #define X86_CR4_PVI		0x0002		/* virtual interrupts flag enable */
+- #define X86_CR4_TSD		0x0004		/* disable time stamp at ipl 3 */
+- #define X86_CR4_DE		0x0008		/* enable debugging extensions */
+- #define X86_CR4_PSE		0x0010		/* enable page size extensions */
+- #define X86_CR4_PAE		0x0020		/* enable physical address extensions */
+- #define X86_CR4_MCE		0x0040		/* Machine check enable */
+- #define X86_CR4_PGE		0x0080		/* enable global pages */
+- #define X86_CR4_PCE		0x0100		/* enable performance counters at ipl 3 */
+- 
+- /*
+-  * Save the cr4 feature set we're using (ie
+-  * Pentium 4MB enable and PPro Global page
+-  * enable), so that any CPU's that boot up
+-  * after us can get the correct flags.
+-  */
+- unsigned long mmu_cr4_features __initdata = 0;
+- 
+- static inline void set_in_cr4(unsigned long mask)
+- {
+- 	mmu_cr4_features |= mask;
+- 	__asm__("movl %%cr4,%%eax\n\t"
+- 		"orl %0,%%eax\n\t"
+- 		"movl %%eax,%%cr4\n"
+- 		: : "irg" (mask)
+- 		:"ax");
+- }
+- 
+  /*
+   * allocate page table(s) for compile-time fixed mappings
+   */
+--- 184,189 ----
+Index: fs/binfmt_elf.c
+===================================================================
+RCS file: /ecliptic/jimb/linux-cvs/linux/fs/binfmt_elf.c,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -c -c -r1.1.1.1 -r1.3
+*** fs/binfmt_elf.c	1999/10/24 05:00:24	1.1.1.1
+--- fs/binfmt_elf.c	1999/11/04 03:34:26	1.3
+***************
+*** 44,49 ****
+--- 44,53 ----
+  extern int dump_fpu (struct pt_regs *, elf_fpregset_t *);
+  extern void dump_thread(struct pt_regs *, struct user *);
+  
++ #ifdef CONFIG_X86_FX
++ extern int dump_sse_regs (char **bits, int *len);
++ #endif
++ 
+  #ifndef elf_addr_t
+  #define elf_addr_t unsigned long
+  #define elf_caddr_t char *
+***************
+*** 1066,1072 ****
+  	off_t offset = 0, dataoff;
+  	unsigned long limit = current->rlim[RLIMIT_CORE].rlim_cur;
+  	int numnote = 4;
+! 	struct memelfnote notes[4];
+  	struct elf_prstatus prstatus;	/* NT_PRSTATUS */
+  	elf_fpregset_t fpu;		/* NT_PRFPREG */
+  	struct elf_prpsinfo psinfo;	/* NT_PRPSINFO */
+--- 1070,1076 ----
+  	off_t offset = 0, dataoff;
+  	unsigned long limit = current->rlim[RLIMIT_CORE].rlim_cur;
+  	int numnote = 4;
+! 	struct memelfnote notes[5];
+  	struct elf_prstatus prstatus;	/* NT_PRSTATUS */
+  	elf_fpregset_t fpu;		/* NT_PRFPREG */
+  	struct elf_prpsinfo psinfo;	/* NT_PRPSINFO */
+***************
+*** 1250,1255 ****
+--- 1254,1281 ----
+  		notes[3].datasz = sizeof(fpu);
+  		notes[3].data = &fpu;
+  	}
++ 
++ #ifdef CONFIG_X86_FX
++ 	/* Dump the full SSE register state, too.
++            Note that binfmt_elf is supposed to be architecture-independent,
++            so including this code here is incorrect --- we need to add a
++            general interface by which architecture-specific code can add
++            notes.  */
++ 	{
++ 	  char *bits;
++ 	  int len;
++ 
++ 	  if (dump_sse_regs (&bits, &len))
++ 	    {
++ 	      notes[numnote].name = "LINUX";
++ 	      notes[numnote].type = NT_PRXFPREG;
++ 	      notes[numnote].datasz = len;
++ 	      notes[numnote].data = bits;
++ 	      numnote++;
++ 	    }
++ 	}
++ #endif
++ 
+  	
+  	/* Write notes phdr entry */
+  	{
+Index: include/asm-i386/bugs.h
+===================================================================
+RCS file: /ecliptic/jimb/linux-cvs/linux/include/asm-i386/bugs.h,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -c -r1.1.1.1 -r1.2
+*** include/asm-i386/bugs.h	1999/10/24 04:59:51	1.1.1.1
+--- include/asm-i386/bugs.h	1999/10/25 04:42:42	1.2
+***************
+*** 18,23 ****
+--- 18,24 ----
+   */
+  
+  #include <linux/config.h>
++ #include <linux/stddef.h>
+  #include <asm/processor.h>
+  #include <asm/msr.h>
+  
+***************
+*** 69,74 ****
+--- 70,118 ----
+  #endif
+  		return;
+  	}
++ #ifdef CONFIG_X86_FX
++ 	/*
++ 	 * If we got so far we can safely turn on FXSAVE/FXRESTORE,
++ 	 * but make sure we are 16-byte aligned first.
++ 	 */
++ 	if (offsetof(struct task_struct, tss.i387.hard.fxsave.fxcwd) & 15) {
++ 		/*
++ 		 * This triggers a link-time error if we manage to
++ 		 * break alignment somehow.
++ 		 */
++ 		extern void __buggy_fxsr_alignment(void);
++ 
++ 		__buggy_fxsr_alignment();
++ 	}
++ 	if (boot_cpu_data.x86_capability & X86_FEATURE_FXSR) {
++ 		printk("Enabling extended fast FPU save and restore...");
++ 		set_in_cr4(X86_CR4_OSFXSR);
++ 		printk("done.\n");
++ 	}
++ #endif
++ #ifdef CONFIG_X86_XMM
++ 	/*
++ 	 * Note, Katmai instructions are enabled as soon as you start
++ 	 * using the FXSAVE/RESTORE stuff.  This setting only
++ 	 * indicates support for the masked/unmasked exceptions on
++ 	 * the new PIII cpus. We don't have an Exception 16 handler
++ 	 * for this yet, but we set this bit anyway.  It'll kill us
++ 	 * the first time we take an umasked KNI exception, but since
++ 	 * no userland apps currently use KNI, it isn't an issue yet.
++ 	 * We should have the handler added by then.
++ 	 */
++ 	if (boot_cpu_data.x86_capability & X86_FEATURE_XMM) {
++ 		printk("Enabling KNI unmasked exception support...");
++ #if 0
++ 		set_in_cr4(X86_CR4_OSXMMEXCPT);
++ #endif
++ 		printk("done.\n");
++ 	}
++ 	load_default_mxcsr();
++ #endif
++ #ifdef CONFIG_X86_PN_OFF
++ 	disable_serial_nr();
++ #endif
+  	if (mca_pentium_flag) {
+  		/* The IBM Model 95 machines with pentiums lock up on
+  		 * fpu test, so we avoid it. All pentiums have inbuilt
+***************
+*** 117,139 ****
+  		return;
+  	if (!ignore_irq13) {
+  		printk("OK, FPU using old IRQ 13 error reporting\n");
+! 		return;
+  	}
+- 	__asm__("fninit\n\t"
+- 		"fldl %1\n\t"
+- 		"fdivl %2\n\t"
+- 		"fmull %2\n\t"
+- 		"fldl %1\n\t"
+- 		"fsubp %%st,%%st(1)\n\t"
+- 		"fistpl %0\n\t"
+- 		"fwait\n\t"
+- 		"fninit"
+- 		: "=m" (*&boot_cpu_data.fdiv_bug)
+- 		: "m" (*&x), "m" (*&y));
+- 	if (!boot_cpu_data.fdiv_bug)
+- 		printk("OK, FPU using exception 16 error reporting.\n");
+- 	else
+- 		printk("Hmm, FPU using exception 16 error reporting with FDIV bug.\n");
+  }
+  
+  __initfunc(static void check_hlt(void))
+--- 161,183 ----
+  		return;
+  	if (!ignore_irq13) {
+  		printk("OK, FPU using old IRQ 13 error reporting\n");
+! 	} else {
+! 		__asm__("fninit\n\t"
+! 			"fldl %1\n\t"
+! 			"fdivl %2\n\t"
+! 			"fmull %2\n\t"
+! 			"fldl %1\n\t"
+! 			"fsubp %%st,%%st(1)\n\t"
+! 			"fistpl %0\n\t"
+! 			"fwait\n\t"
+! 			"fninit"
+! 			: "=m" (*&boot_cpu_data.fdiv_bug)
+! 			: "m" (*&x), "m" (*&y));
+! 		if (!boot_cpu_data.fdiv_bug)
+! 			printk("OK, FPU using exception 16 error reporting.\n");
+! 		else
+! 			printk("Hmm, FPU using exception 16 error reporting with FDIV bug.\n");
+  	}
+  }
+  
+  __initfunc(static void check_hlt(void))
+Index: include/asm-i386/i387.h
+===================================================================
+RCS file: i387.h
+diff -N i387.h
+*** include/asm-i386/i387.h	Tue May  5 15:32:27 1998
+--- include/asm-i386/i387.h	Thu Nov  4 02:26:20 1999
+***************
+*** 0 ****
+--- 1,108 ----
++ /*
++  * include/asm-i386/i387.h
++  *
++  * Copyright (c) 1999 Doug Ledford <dledford@redhat.com>
++  *
++  * Made from various code bits pulled from other files
++  * in order to put things together in a way that made
++  * sense.
++  */
++ 
++ #ifndef __ASM_I386_I387_H
++ #define __ASM_I386_I387_H
++ 
++ extern int i387_hard_to_user ( struct user_i387_struct * user,
++ 	union i387_hard_union * hard);
++ extern int i387_user_to_hard (union i387_hard_union * hard,
++ 	struct user_i387_struct * user);
++ 
++ /*
++  * Fill out the reserved bits, treat it as an fsave struct since the
++  * union makes this work for both fsave and fxsave structs.
++  */
++ #ifdef CONFIG_X86_FX
++ 
++ /*
++  * GAS is not ready yet, so we encode the FXSAVE/FXRSTOR
++  * opcodes directly:
++  */
++ 
++ #define i387_save_hard(x) \
++ do { \
++ 	if (boot_cpu_data.x86_capability & X86_FEATURE_FXSR) { \
++ 		__asm__ __volatile__("fnstenv %0" \
++ 				     : "=m" (x.hard.fxsave.cwd)); \
++ 		__asm__ __volatile__("fxsave %0" \
++ 				     : "=m" (x.hard.fxsave.fxcwd)); \
++ 	} else { \
++ 		__asm__ __volatile__("fnsave %0; fwait;" \
++ 				     : "=m" (x.hard.fsave.cwd)); \
++ 	} \
++ } while(0)
++ 
++ 
++ #define i387_restore_hard(x) \
++ do { \
++ 	if (boot_cpu_data.x86_capability & X86_FEATURE_FXSR) { \
++                 __asm__ __volatile__("fxrstor %0" \
++ 				     : \
++ 				     : "m" (x.hard.fxsave.fxcwd)); \
++ 		__asm__ __volatile__("fldenv %0" \
++ 				     : \
++ 				     : "m" (x.hard.fxsave.cwd)); \
++ 	} else { \
++ 		__asm__ __volatile__("frstor %0" \
++ 				     : \
++ 				     :"m" (x.hard.fsave.cwd)); \
++ 	} \
++ } while(0)
++ 
++ #else /* CONFIG_X86_FX */
++ 
++ #define i387_save_hard(x) \
++ do { \
++ 	__asm__ __volatile__("fnsave %0; fwait;" \
++ 			     : "=m" (x.hard.fsave.cwd)); \
++ } while(0)
++ 
++ #define i387_restore_hard(x) \
++ do { \
++ 	__asm__ __volatile__("frstor %0" \
++ 			     : \
++ 			     :"m" (x.hard.fsave.cwd)); \
++ } while(0)
++ 
++ #endif /* CONFIG_X86_FX */
++ 
++ #define i387_set_cwd(x,v) \
++ do { (x).fsave.cwd = ((long)(v) | 0xffff0000); } while(0)
++ 
++ #define i387_set_swd(x,v) \
++ do { (x).fsave.swd = ((long)(v) | 0xffff0000); } while(0)
++ 
++ #define i387_set_twd(x,v) \
++ do { (x).fsave.twd = ((long)(v) | 0xffff0000); } while(0)
++ 
++ /*
++  * FPU lazy state save handling..
++  */
++ #define save_fpu(tsk) do { \
++ 	i387_save_hard(tsk->tss.i387); \
++ 	tsk->flags &= ~PF_USEDFPU; \
++ 	stts(); \
++ } while (0)
++ 
++ #define unlazy_fpu(tsk) do { \
++ 	if (tsk->flags & PF_USEDFPU) \
++ 		save_fpu(tsk); \
++ } while (0)
++ 
++ #define clear_fpu(tsk) do { \
++ 	if (tsk->flags & PF_USEDFPU) { \
++ 		tsk->flags &= ~PF_USEDFPU; \
++ 		stts(); \
++ 	} \
++ } while (0)
++ 
++ 
++ #endif /* __ASM_I386_I387_H */
+Index: include/asm-i386/processor.h
+===================================================================
+RCS file: /ecliptic/jimb/linux-cvs/linux/include/asm-i386/processor.h,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -c -r1.1.1.1 -r1.2
+*** include/asm-i386/processor.h	1999/10/24 04:59:52	1.1.1.1
+--- include/asm-i386/processor.h	1999/10/25 04:42:42	1.2
+***************
+*** 7,16 ****
+  #ifndef __ASM_I386_PROCESSOR_H
+  #define __ASM_I386_PROCESSOR_H
+  
+  #include <asm/vm86.h>
+  #include <asm/math_emu.h>
+- #include <asm/segment.h>
+  #include <asm/page.h>
+  
+  /*
+   *  CPU type and hardware bug flags. Kept separately for each CPU.
+--- 7,17 ----
+  #ifndef __ASM_I386_PROCESSOR_H
+  #define __ASM_I386_PROCESSOR_H
+  
++ #include <linux/config.h>
+  #include <asm/vm86.h>
+  #include <asm/math_emu.h>
+  #include <asm/page.h>
++ #include <asm/user.h>
+  
+  /*
+   *  CPU type and hardware bug flags. Kept separately for each CPU.
+***************
+*** 29,34 ****
+--- 30,36 ----
+  	char	rfu;
+  	int	cpuid_level;	/* Maximum supported CPUID level, -1=no CPUID */
+  	__u32	x86_capability;
++ 	__u32	mmu_cr4_features;
+  	char	x86_vendor_id[16];
+  	char	x86_model_id[64];
+  	int 	x86_cache_size;  /* in KB - valid for CPUS which support this
+***************
+*** 70,85 ****
+  #define X86_FEATURE_PGE		0x00002000	/* Page Global Enable */
+  #define X86_FEATURE_MCA		0x00004000	/* Machine Check Architecture */
+  #define X86_FEATURE_CMOV	0x00008000	/* CMOV instruction (FCMOVCC and FCOMI too if FPU present) */
+! #define X86_FEATURE_PAT	0x00010000	/* Page Attribute Table */
+  #define X86_FEATURE_PSE36	0x00020000	/* 36-bit PSEs */
+! #define X86_FEATURE_18		0x00040000
+  #define X86_FEATURE_19		0x00080000
+  #define X86_FEATURE_20		0x00100000
+  #define X86_FEATURE_21		0x00200000
+  #define X86_FEATURE_22		0x00400000
+  #define X86_FEATURE_MMX		0x00800000	/* multimedia extensions */
+  #define X86_FEATURE_FXSR	0x01000000	/* FXSAVE and FXRSTOR instructions (fast save and restore of FPU context), and CR4.OSFXSR (OS uses these instructions) available */
+! #define X86_FEATURE_25		0x02000000
+  #define X86_FEATURE_26		0x04000000
+  #define X86_FEATURE_27		0x08000000
+  #define X86_FEATURE_28		0x10000000
+--- 72,87 ----
+  #define X86_FEATURE_PGE		0x00002000	/* Page Global Enable */
+  #define X86_FEATURE_MCA		0x00004000	/* Machine Check Architecture */
+  #define X86_FEATURE_CMOV	0x00008000	/* CMOV instruction (FCMOVCC and FCOMI too if FPU present) */
+! #define X86_FEATURE_PAT		0x00010000	/* Page Attribute Table */
+  #define X86_FEATURE_PSE36	0x00020000	/* 36-bit PSEs */
+! #define X86_FEATURE_PN		0x00040000      /* 96 bit CPU serial # */
+  #define X86_FEATURE_19		0x00080000
+  #define X86_FEATURE_20		0x00100000
+  #define X86_FEATURE_21		0x00200000
+  #define X86_FEATURE_22		0x00400000
+  #define X86_FEATURE_MMX		0x00800000	/* multimedia extensions */
+  #define X86_FEATURE_FXSR	0x01000000	/* FXSAVE and FXRSTOR instructions (fast save and restore of FPU context), and CR4.OSFXSR (OS uses these instructions) available */
+! #define X86_FEATURE_XMM		0x02000000	/* Intel MMX2 instruction set */
+  #define X86_FEATURE_26		0x04000000
+  #define X86_FEATURE_27		0x08000000
+  #define X86_FEATURE_28		0x10000000
+***************
+*** 89,94 ****
+--- 91,162 ----
+  
+  extern struct cpuinfo_x86 boot_cpu_data;
+  
++ #define X86_CR4_VME		0x0001	/* enable vm86 extensions */
++ #define X86_CR4_PVI		0x0002	/* virtual interrupts flag enable */
++ #define X86_CR4_TSD		0x0004	/* disable time stamp at ipl 3 */
++ #define X86_CR4_DE		0x0008	/* enable debugging extensions */
++ #define X86_CR4_PSE		0x0010	/* enable page size extensions */
++ #define X86_CR4_PAE		0x0020	/* enable physical address extensions */
++ #define X86_CR4_MCE		0x0040	/* Machine check enable */
++ #define X86_CR4_PGE		0x0080	/* enable global pages */
++ #define X86_CR4_PCE		0x0100	/* enable performance counters at ipl 3 */
++ #define X86_CR4_OSFXSR		0x0200	/* fast FPU save/restore */
++ #define X86_CR4_OSXMMEXCPT	0x0400	/* KNI (MMX2) unmasked exception 16 */
++ 					/* handler is available */
++ 
++ /*
++  * Save the cr4 feature set we're using (ie
++  * Pentium 4MB enable and PPro Global page
++  * enable), so that any CPU's that boot up
++  * after us can get the correct flags.
++  */
++ 
++ static inline void set_in_cr4(unsigned long mask)
++ {
++ 	boot_cpu_data.mmu_cr4_features |= mask;
++ 	__asm__("movl %%cr4,%%eax\n\t"
++ 		"orl %0,%%eax\n\t"
++ 		"movl %%eax,%%cr4\n"
++ 		: : "irg" (mask)
++ 		:"ax");
++ }
++ 
++ #ifdef CONFIG_X86_PN_OFF
++ static inline void disable_serial_nr(void)
++ {
++ 	if (boot_cpu_data.x86_capability & X86_FEATURE_PN) {
++ 		printk("Disabling CPUID Serial number...");
++ 		__asm__ __volatile__( "movl $0x119,%%ecx\n\t"
++ 				"rdmsr\n\t"
++ 				"orl $0x00200000,%%eax\n\t"
++ 				"wrmsr":::"ax","dx","cx","memory");
++ 		/*
++ 		 * We might need to re-read the x86 capability set now to
++ 		 * make sure that the PN bit has been turned off so
++ 		 * we know that the serial number stuff is disabled
++ 		 *
++ 		 * Note: we don't need to re-read the registers.  We can tell
++ 		 * by rebooting that the flag is off since on reboots that
++ 		 * don't power the machine down the serial number doesn't
++ 		 * get disabled any more because it already is disabled.
++ 		 */
++ 		printk("done.\n");
++ 	}
++ }
++ #endif
++ 
++ #ifdef CONFIG_X86_XMM
++ static inline void load_default_mxcsr(void)
++ {
++ 	long mxcsr = 0x1f80;
++ 
++ 	if (boot_cpu_data.x86_capability & X86_FEATURE_XMM) {
++ 		__asm__("ldmxcsr %0": :"m" (mxcsr));
++ 	}
++ }
++ #endif
++ 
++ 
+  #ifdef __SMP__
+  extern struct cpuinfo_x86 cpu_data[];
+  #define current_cpu_data cpu_data[smp_processor_id()]
+***************
+*** 170,204 ****
+   * Size of io_bitmap in longwords: 32 is ports 0-0x3ff.
+   */
+  #define IO_BITMAP_SIZE	32
+  
+! struct i387_hard_struct {
+! 	long	cwd;
+! 	long	swd;
+! 	long	twd;
+! 	long	fip;
+! 	long	fcs;
+! 	long	foo;
+! 	long	fos;
+! 	long	st_space[20];	/* 8*10 bytes for each FP-reg = 80 bytes */
+! 	long	status;		/* software status information */
+  };
+  
+  struct i387_soft_struct {
+! 	long	cwd;
+! 	long	swd;
+! 	long	twd;
+! 	long	fip;
+! 	long	fcs;
+! 	long	foo;
+! 	long	fos;
+! 	long	st_space[20];	/* 8*10 bytes for each FP-reg = 80 bytes */
+! 	unsigned char	ftop, changed, lookahead, no_update, rm, alimit;
+! 	struct info	*info;
+! 	unsigned long	entry_eip;
+  };
+  
+  union i387_union {
+! 	struct i387_hard_struct hard;
+  	struct i387_soft_struct soft;
+  };
+  
+--- 238,310 ----
+   * Size of io_bitmap in longwords: 32 is ports 0-0x3ff.
+   */
+  #define IO_BITMAP_SIZE	32
++ 
++ struct i387_hard_fsave {
++ 	long     cwd;
++ 	long     swd;
++ 	long     twd;
++ 	long     fip;
++ 	long     fcs;
++ 	long     foo;
++ 	long     fos;
++ 	long     st_space[20];     /* 8*10 bytes for each FP-reg = 80 bytes */
++ 	long     status;           /* software status information */
++ };
++ 
++ /*
++  * has to be 128-bit aligned
++  */
++ #ifdef CONFIG_X86_FX
++ struct i387_hard_fxsave {
++ 	long     cwd;
++ 	long     swd;
++ 	long     twd;
++ 	long     fip;
++ 	long     fcs;
++ 	long     foo;
++ 	long     fos;
++ 	long     __padding;
++ 	unsigned short fxcwd;
++ 	unsigned short fxswd;
++ 	unsigned short fxtwd;
++ 	unsigned short fxfopcode;
++ 	long     fxfip;
++ 	short    fxfcs;
++ 	short    __reserved_00;
++ 	long     fxfoo;
++ 	short    fxfos;
++ 	short    __reserved_01;
++ 	long     mxcsr;
++ 	long     __reserved_02;
++ 	long     st_space[32];     /* 8*16 bytes for each FP/MMX-reg = 128 bytes */
++ 	long     xmm_space[32];    /* 8*16 bytes for each XMM-reg = 128 bytes */
++ 	long     __reserved_03 [14*4]; /* 14 16byte lines for remainder */
++ } __attribute__ ((aligned (16)));
++ #endif
+  
+! union i387_hard_union {
+! 	struct i387_hard_fsave     fsave;
+! #ifdef CONFIG_X86_FX
+! 	struct i387_hard_fxsave    fxsave;
+! #endif
+  };
+  
+  struct i387_soft_struct {
+! 	long     cwd;
+! 	long     swd;
+! 	long     twd;
+! 	long     fip;
+! 	long     fcs;
+! 	long     foo;
+! 	long     fos;
+! 	long     st_space[20];     /* 8*10 bytes for each FP-reg = 80 bytes */
+! 	unsigned char     ftop, changed, lookahead, no_update, rm, alimit;
+! 	struct info       *info;
+! 	unsigned long     entry_eip;
+  };
+  
+  union i387_union {
+! 	union i387_hard_union hard;
+  	struct i387_soft_struct soft;
+  };
+  
+***************
+*** 263,269 ****
+  	{~0, }, /* ioperm */					\
+  	_TSS(0), 0, 0, 0, (mm_segment_t) { 0 }, /* obsolete */	\
+  	{ 0, },							\
+! 	{ { 0, }, },  /* 387 state */				\
+  	NULL, 0, 0, 0, 0, 0, /* vm86_info */			\
+  }
+  
+--- 369,375 ----
+  	{~0, }, /* ioperm */					\
+  	_TSS(0), 0, 0, 0, (mm_segment_t) { 0 }, /* obsolete */	\
+  	{ 0, },							\
+! 	{ { { 0, }, }, },  /* 387 state */			\
+  	NULL, 0, 0, 0, 0, 0, /* vm86_info */			\
+  }
+  
+***************
+*** 289,315 ****
+  extern void copy_segments(int nr, struct task_struct *p, struct mm_struct * mm);
+  extern void release_segments(struct mm_struct * mm);
+  extern void forget_segments(void);
+- 
+- /*
+-  * FPU lazy state save handling..
+-  */
+- #define save_fpu(tsk) do { \
+- 	asm volatile("fnsave %0\n\tfwait":"=m" (tsk->tss.i387)); \
+- 	tsk->flags &= ~PF_USEDFPU; \
+- 	stts(); \
+- } while (0)
+- 
+- #define unlazy_fpu(tsk) do { \
+- 	if (tsk->flags & PF_USEDFPU) \
+- 		save_fpu(tsk); \
+- } while (0)
+- 
+- #define clear_fpu(tsk) do { \
+- 	if (tsk->flags & PF_USEDFPU) { \
+- 		tsk->flags &= ~PF_USEDFPU; \
+- 		stts(); \
+- 	} \
+- } while (0)
+  
+  /*
+   * Return saved PC of a blocked thread.
+--- 395,400 ----
+Index: include/asm-i386/ptrace.h
+===================================================================
+RCS file: /ecliptic/jimb/linux-cvs/linux/include/asm-i386/ptrace.h,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -c -r1.1.1.1 -r1.2
+*** include/asm-i386/ptrace.h	1999/10/24 04:59:52	1.1.1.1
+--- include/asm-i386/ptrace.h	1999/10/26 23:51:39	1.2
+***************
+*** 46,51 ****
+--- 46,53 ----
+  #define PTRACE_SETREGS            13
+  #define PTRACE_GETFPREGS          14
+  #define PTRACE_SETFPREGS          15
++ #define PTRACE_GETXFPREGS         25
++ #define PTRACE_SETXFPREGS         26
+  
+  #ifdef __KERNEL__
+  #define user_mode(regs) ((VM_MASK & (regs)->eflags) || (3 & (regs)->xcs))
+Index: include/asm-i386/string.h
+===================================================================
+RCS file: /ecliptic/jimb/linux-cvs/linux/include/asm-i386/string.h,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -c -r1.1.1.1 -r1.2
+*** include/asm-i386/string.h	1999/10/24 04:59:52	1.1.1.1
+--- include/asm-i386/string.h	1999/10/25 04:42:42	1.2
+***************
+*** 14,19 ****
+--- 14,23 ----
+  #include <asm/string-486.h>
+  #else
+  
++ #ifndef _LINUX_CONFIG_H
++ #include <linux/config.h>
++ #endif
++ 
+  /*
+   * This string-include defines all string functions as inline
+   * functions. Use gcc. It also assumes ds=es=data space, this should be
+***************
+*** 293,302 ****
+--- 297,316 ----
+  }
+  
+  #define __HAVE_ARCH_MEMCPY
++ #ifdef CONFIG_X86_XMM
++ extern void * __kni_memcpy(void * to, const void * from, size_t n);
++ #define memcpy(t, f, n) \
++ (__builtin_constant_p(n) ? \
++  (((n) < 96) ? \
++  __constant_memcpy((t),(f),(n)) : \
++  __kni_memcpy((t),(f),(n))) : \
++  __kni_memcpy((t),(f),(n)))
++ #else
+  #define memcpy(t, f, n) \
+  (__builtin_constant_p(n) ? \
+   __constant_memcpy((t),(f),(n)) : \
+   __memcpy((t),(f),(n)))
++ #endif
+  
+  #define __HAVE_ARCH_MEMMOVE
+  extern inline void * memmove(void * dest,const void * src, size_t n)
+***************
+*** 449,469 ****
+  #undef COMMON
+  }
+  
+! #define __constant_c_x_memset(s, c, count) \
+! (__builtin_constant_p(count) ? \
+!  __constant_c_and_count_memset((s),(c),(count)) : \
+!  __constant_c_memset((s),(c),(count)))
+  
+  #define __memset(s, c, count) \
+! (__builtin_constant_p(count) ? \
+!  __constant_count_memset((s),(c),(count)) : \
+   __memset_generic((s),(c),(count)))
+  
+  #define __HAVE_ARCH_MEMSET
+  #define memset(s, c, count) \
+! (__builtin_constant_p(c) ? \
+!  __constant_c_x_memset((s),(0x01010101UL*(unsigned char)(c)),(count)) : \
+   __memset((s),(c),(count)))
+  
+  /*
+   * find the first occurrence of byte 'c', or 1 past the area if none
+--- 463,493 ----
+  #undef COMMON
+  }
+  
+! #define __constant_x_count_memset(s, c, count) \
+! (__builtin_constant_p(c) ? \
+!  __constant_c_and_count_memset((s),(0x01010101UL*(unsigned char)(c)),(count)) :\
+!  __constant_count_memset((s),(c),(count)))
+  
+  #define __memset(s, c, count) \
+! (__builtin_constant_p(c) ? \
+!  __constant_c_memset((s),(0x01010101UL*(unsigned char)(c)),(count)) : \
+   __memset_generic((s),(c),(count)))
+  
+  #define __HAVE_ARCH_MEMSET
++ #ifdef CONFIG_X86_XMM
++ extern void * __kni_memset(void * s, char c, size_t count);
+  #define memset(s, c, count) \
+! (__builtin_constant_p(count) ? \
+!  (((count) < 96) ? \
+!  __constant_x_count_memset((s),(c),(count)) : \
+!  __kni_memset((s),(c),(count))) : \
+!  __kni_memset((s),(c),(count)))
+! #else
+! #define memset(s, c, count) \
+! (__builtin_constant_p(count) ? \
+!  __constant_x_count_memset((s),(c),(count)) : \
+   __memset((s),(c),(count)))
++ #endif
+  
+  /*
+   * find the first occurrence of byte 'c', or 1 past the area if none
+Index: include/asm-i386/uaccess.h
+===================================================================
+RCS file: /ecliptic/jimb/linux-cvs/linux/include/asm-i386/uaccess.h,v
+retrieving revision 1.1.1.1
+retrieving revision 1.2
+diff -c -c -r1.1.1.1 -r1.2
+*** include/asm-i386/uaccess.h	1999/10/24 04:59:52	1.1.1.1
+--- include/asm-i386/uaccess.h	1999/10/25 04:42:43	1.2
+***************
+*** 571,589 ****
+  	return n;
+  }
+  
+  #define copy_to_user(to,from,n)				\
+  	(__builtin_constant_p(n) ?			\
+  	 __constant_copy_to_user((to),(from),(n)) :	\
+! 	 __generic_copy_to_user((to),(from),(n)))
+  
+  #define copy_from_user(to,from,n)			\
+  	(__builtin_constant_p(n) ?			\
+  	 __constant_copy_from_user((to),(from),(n)) :	\
+! 	 __generic_copy_from_user((to),(from),(n)))
+  
+! #define copy_to_user_ret(to,from,n,retval) ({ if (copy_to_user(to,from,n)) return retval; })
+  
+! #define copy_from_user_ret(to,from,n,retval) ({ if (copy_from_user(to,from,n)) return retval; })
+  
+  #define __copy_to_user(to,from,n)			\
+  	(__builtin_constant_p(n) ?			\
+--- 571,841 ----
+  	return n;
+  }
+  
++ #ifdef CONFIG_X86_XMM
++ 
++ #define __kni_copy_to_user(to,from,size)				\
++ do {									\
++ 	char xmm_save[32];						\
++ 	int __d0, __d1, cr0, tmp, tmp2;					\
++ 	__asm__ __volatile__(						\
++ 		"	movl %%cr0,%0\n"				\
++ 		"	clts\n"						\
++ 		"	movups %%xmm0,%1\n"				\
++ 		"	movups %%xmm1,%2\n"				\
++ 		: "=r" (cr0), "=m" (xmm_save[0]), "=m" (xmm_save[16]));	\
++ 	__asm__ __volatile__(						\
++ 		"	movl %1,%4\n"					\
++ 		"	andl $0xf,%4\n"					\
++ 		"	movups (%2),%%xmm0\n"				\
++ 		"1:	movups %%xmm0,(%1)\n"				\
++ 		"	movl $0x10,%3\n"				\
++ 		"	subl %4,%3\n"					\
++ 		"	addl %3,%2\n"					\
++ 		"	addl %3,%1\n"					\
++ 		"	subl %3,%0\n"					\
++ 		"	prefetchnta 0x00(%2)\n"				\
++ 		"	prefetchnta 0x20(%2)\n"				\
++ 		"	jmp 200f\n"					\
++ 		"100:	movups 0x00(%2),%%xmm0\n"			\
++ 		"	movups 0x10(%2),%%xmm1\n"			\
++ 		"2:	movntps %%xmm0,0x00(%1)\n"			\
++ 		"3:	movntps %%xmm1,0x10(%1)\n"			\
++ 		"	addl $0x20,%2\n"				\
++ 		"	prefetchnta 0x20(%2)\n"				\
++ 		"	addl $0x20,%1\n"				\
++ 		"	subl $0x20,%0\n"				\
++ 		"200:	cmpl $0x1f,%0\n"				\
++ 		"	ja 100b\n"					\
++ 		"	cmpl $0xf,%0\n"					\
++ 		"	jbe 300f\n"					\
++ 		"	movups 0x00(%2),%%xmm0\n"			\
++ 		"4:	movntps %%xmm0,0x00(%1)\n"			\
++ 		"	addl $0x10,%2\n"				\
++ 		"	addl $0x10,%1\n"				\
++ 		"	subl $0x10,%0\n"				\
++ 		"300:	testl %0,%0\n"					\
++ 		"	je 400f\n"					\
++ 		"	movl $0x10,%3\n"				\
++ 		"	subl %0,%3\n"					\
++ 		"	subl %3,%1\n"					\
++ 		"	subl %3,%2\n"					\
++ 		"	movups 0x00(%2),%%xmm0\n"			\
++ 		"5:	movups %%xmm0,0x00(%1)\n"			\
++ 		"	addl $0x10,%2\n"				\
++ 		"	addl $0x10,%1\n"				\
++ 		"	xorl %0,%0\n"					\
++ 		"400:\n"						\
++ 		".section .fixup,\"ax\"\n"				\
++ 		"6:	jmp 400b\n"					\
++ 		"7:	addl $0x10,%1\n"				\
++ 		"	addl $0x10,%2\n"				\
++ 		"	subl $0x10,%0\n"				\
++ 		"	jmp 400b\n"					\
++ 		"8:	addl %3,%1\n"					\
++ 		"	addl %3,%2\n"					\
++ 		"	jmp 400b\n"					\
++ 		".previous\n"						\
++ 		".section __ex_table,\"a\"\n"				\
++ 		"	.align 4\n"					\
++ 		"	.long 1b,6b\n"					\
++ 		"	.long 2b,6b\n"					\
++ 		"	.long 3b,7b\n"					\
++ 		"	.long 4b,6b\n"					\
++ 		"	.long 5b,8b\n"					\
++ 		".previous"						\
++ 		: "=&c"(size), "=&D" (__d0), "=&S" (__d1), "=r"(tmp),	\
++ 		  "=r"(tmp2)						\
++ 		: "0"(size), "1"(to), "2"(from)				\
++ 		: "memory");						\
++ 	__asm__ __volatile__(						\
++ 		"	movups %2,%%xmm1\n"				\
++ 		"	movups %1,%%xmm0\n"				\
++ 		"	movl %0,%%cr0\n"				\
++ 		"	sfence\n"					\
++ 		:							\
++ 		: "r" (cr0), "m" (xmm_save[0]), "m" (xmm_save[16]));	\
++ } while (0)
++ 
++ #define __kni_copy_from_user(to,from,size)				\
++ do {									\
++ 	char xmm_save[32];						\
++ 	int __d0, __d1, cr0, tmp, tmp2;					\
++ 	__asm__ __volatile__(						\
++ 		"	movl %%cr0,%0\n"				\
++ 		"	clts\n"						\
++ 		"	movups %%xmm0,%1\n"				\
++ 		"	movups %%xmm1,%2\n"				\
++ 		: "=r" (cr0), "=m" (xmm_save[0]), "=m" (xmm_save[16]));	\
++ 	__asm__ __volatile__(						\
++ 		"	movl %1,%4\n"					\
++ 		"	andl $0xf,%4\n"					\
++ 		"1:	movups (%2),%%xmm0\n"				\
++ 		"	movups %%xmm0,(%1)\n"				\
++ 		"	movl $0x10,%3\n"				\
++ 		"	subl %4,%3\n"					\
++ 		"	addl %3,%2\n"					\
++ 		"	addl %3,%1\n"					\
++ 		"	subl %3,%0\n"					\
++ 		"	prefetchnta 0x00(%2)\n"				\
++ 		"	prefetchnta 0x20(%2)\n"				\
++ 		"	jmp 100f\n"					\
++ 		"2:	movups 0x00(%2),%%xmm0\n"			\
++ 		"3:	movups 0x10(%2),%%xmm1\n"			\
++ 		"	movntps %%xmm0,0x00(%1)\n"			\
++ 		"	movntps %%xmm1,0x10(%1)\n"			\
++ 		"	addl $0x20,%2\n"				\
++ 		"	prefetchnta 0x20(%2)\n"				\
++ 		"	addl $0x20,%1\n"				\
++ 		"	subl $0x20,%0\n"				\
++ 		"100:	cmpl $0x1f,%0\n"				\
++ 		"	ja 2b\n"					\
++ 		"	cmpl $0xf,%0\n"					\
++ 		"	jbe 200f\n"					\
++ 		"4:	movups 0x00(%2),%%xmm0\n"			\
++ 		"	movntps %%xmm0,0x00(%1)\n"			\
++ 		"	addl $0x10,%2\n"				\
++ 		"	addl $0x10,%1\n"				\
++ 		"	subl $0x10,%0\n"				\
++ 		"200:	testl %0,%0\n"					\
++ 		"	je 300f\n"					\
++ 		"	movl $0x10,%3\n"				\
++ 		"	subl %0,%3\n"					\
++ 		"	subl %3,%1\n"					\
++ 		"	subl %3,%2\n"					\
++ 		"5:	movups 0x00(%2),%%xmm0\n"			\
++ 		"	movups %%xmm0,0x00(%1)\n"			\
++ 		"	addl $0x10,%2\n"				\
++ 		"	addl $0x10,%1\n"				\
++ 		"	xorl %0,%0\n"					\
++ 		"300:\n"						\
++ 		".section .fixup,\"ax\"\n"				\
++ 		"6:	xorps %%xmm0,%%xmm0\n"				\
++ 		"	movups %%xmm0,(%1)\n"				\
++ 		"	movl $0x10,%3\n"				\
++ 		"	subl %4,%3\n"					\
++ 		"	addl %3,%1\n"					\
++ 		"	movl %3,%4\n"					\
++ 		"	movl %0,%3\n"					\
++ 		"	subl %4,%3\n"					\
++ 		"	jmp 600f\n"					\
++ 		"7:	subl $0x10,%0\n"				\
++ 		"	addl $0x10,%1\n"				\
++ 		"400:	movl %0,%3\n"					\
++ 		"	xorps %%xmm0,%%xmm0\n"				\
++ 		"	jmp 600f\n"					\
++ 		"500:	movntps %%xmm0,0x00(%1)\n"			\
++ 		"	movntps %%xmm0,0x10(%1)\n"			\
++ 		"	addl $0x20,%1\n"				\
++ 		"	subl $0x20,%3\n"				\
++ 		"600:	cmpl $0x1f,%3\n"				\
++ 		"	ja 500b\n"					\
++ 		"	cmpl $0xf,%3\n"					\
++ 		"	jbe 700f\n"					\
++ 		"	movntps %%xmm0,0x00(%1)\n"			\
++ 		"	addl $0x10,%1\n"				\
++ 		"	subl $0x10,%3\n"				\
++ 		"700:	testl %3,%3\n"					\
++ 		"	je 300b\n"					\
++ 		"	xorl %4,%4\n"					\
++ 		"	movb %4,(%1)\n"					\
++ 		"	inc %1\n"					\
++ 		"	dec %3\n"					\
++ 		"	jmp 700b\n"					\
++ 		"8:	addl %3,%1\n"					\
++ 		"	movl %0,%3\n"					\
++ 		"	jmp 700b\n"					\
++ 		".previous\n"						\
++ 		".section __ex_table,\"a\"\n"				\
++ 		"	.align 4\n"					\
++ 		"	.long 1b,6b\n"					\
++ 		"	.long 2b,400b\n"				\
++ 		"	.long 3b,7b\n"					\
++ 		"	.long 4b,400b\n"				\
++ 		"	.long 5b,8b\n"					\
++ 		".previous"						\
++ 		: "=&c"(size), "=&D" (__d0), "=&S" (__d1), "=r"(tmp),	\
++ 		  "=r"(tmp2)						\
++ 		: "0"(size), "1"(to), "2"(from)				\
++ 		: "memory");						\
++ 	__asm__ __volatile__(						\
++ 		"	movups %2,%%xmm1\n"				\
++ 		"	movups %1,%%xmm0\n"				\
++ 		"	movl %0,%%cr0\n"				\
++ 		"	sfence\n"					\
++ 		:							\
++ 		: "r" (cr0), "m" (xmm_save[0]), "m" (xmm_save[16]));	\
++ } while (0)
++ 
++ 
++ 
++ unsigned long kni_copy_to_user(void *, const void *, unsigned long);
++ unsigned long kni_copy_from_user(void *, const void *, unsigned long);
++ 
++ static inline unsigned long
++ __kni_copy_to_user_nocheck(void *to, const void *from, unsigned long n)
++ {
++ 	if( (n >= 96) &&
++ 	    (boot_cpu_data.mmu_cr4_features & X86_CR4_OSFXSR) &&
++ 	    (boot_cpu_data.x86_capability & X86_FEATURE_XMM) ) {
++ 		__kni_copy_to_user(to,from,n);
++ 	} else {
++ 		__copy_user(to,from,n);
++ 	}
++ 	return n;
++ }
++ 
++ static inline unsigned long
++ __kni_copy_from_user_nocheck(void *to, const void *from, unsigned long n)
++ {
++ 	if( (n >= 96) &&
++ 	    (boot_cpu_data.mmu_cr4_features & X86_CR4_OSFXSR) &&
++ 	    (boot_cpu_data.x86_capability & X86_FEATURE_XMM) ) {
++ 		__kni_copy_from_user(to,from,n);
++ 	} else {
++ 		__copy_user_zeroing(to,from,n);
++ 	}
++ 	return n;
++ }
++ 
+  #define copy_to_user(to,from,n)				\
+  	(__builtin_constant_p(n) ?			\
++ 	(((n) < 96) ? 					\
+  	 __constant_copy_to_user((to),(from),(n)) :	\
+! 	 kni_copy_to_user((to),(from),(n))) : 		\
+! 	 kni_copy_to_user((to),(from),(n)))
+  
+  #define copy_from_user(to,from,n)			\
+  	(__builtin_constant_p(n) ?			\
++ 	(((n) < 96) ? 					\
+  	 __constant_copy_from_user((to),(from),(n)) :	\
+! 	 kni_copy_from_user((to),(from),(n))) :		\
+! 	 kni_copy_from_user((to),(from),(n)))
+  
+! #define __copy_to_user(to,from,n)			\
+! 	(__builtin_constant_p(n) ?			\
+! 	(((n) < 96) ? 					\
+! 	 __constant_copy_to_user_nocheck((to),(from),(n)) :	\
+! 	 __kni_copy_to_user_nocheck((to),(from),(n))) :	\
+! 	 __kni_copy_to_user_nocheck((to),(from),(n)))
+  
+! #define __copy_from_user(to,from,n)			\
+! 	(__builtin_constant_p(n) ?			\
+! 	(((n) < 96) ? 					\
+! 	 __constant_copy_from_user_nocheck((to),(from),(n)) :	\
+! 	 __kni_copy_from_user_nocheck((to),(from),(n))) :	\
+! 	 __kni_copy_from_user_nocheck((to),(from),(n)))
+! 
+! #else /* CONFIG_X86_XMM */
+! 
+! #define copy_to_user(to,from,n)				\
+! 	(__builtin_constant_p(n) ?			\
+! 	 __constant_copy_to_user((to),(from),(n)) :	\
+! 	 __generic_copy_to_user((to),(from),(n)))
+! 
+! #define copy_from_user(to,from,n)			\
+! 	(__builtin_constant_p(n) ?			\
+! 	 __constant_copy_from_user((to),(from),(n)) :	\
+! 	 __generic_copy_from_user((to),(from),(n)))
+  
+  #define __copy_to_user(to,from,n)			\
+  	(__builtin_constant_p(n) ?			\
+***************
+*** 594,599 ****
+--- 846,856 ----
+  	(__builtin_constant_p(n) ?			\
+  	 __constant_copy_from_user_nocheck((to),(from),(n)) :	\
+  	 __generic_copy_from_user_nocheck((to),(from),(n)))
++ #endif
++ 
++ #define copy_to_user_ret(to,from,n,retval) ({ if (copy_to_user(to,from,n)) return retval; })
++ 
++ #define copy_from_user_ret(to,from,n,retval) ({ if (copy_from_user(to,from,n)) return retval; })
+  
+  long strncpy_from_user(char *dst, const char *src, long count);
+  long __strncpy_from_user(char *dst, const char *src, long count);
+Index: include/linux/elf.h
+===================================================================
+RCS file: /ecliptic/jimb/linux-cvs/linux/include/linux/elf.h,v
+retrieving revision 1.1.1.1
+retrieving revision 1.3
+diff -c -c -r1.1.1.1 -r1.3
+*** include/linux/elf.h	1999/10/24 04:59:52	1.1.1.1
+--- include/linux/elf.h	1999/11/04 06:18:32	1.3
+***************
+*** 557,562 ****
+--- 557,563 ----
+  #define NT_PRFPREG	2
+  #define NT_PRPSINFO	3
+  #define NT_TASKSTRUCT	4
++ #define NT_PRXFPREG     0x46e62b7f /* For x86: an i387_hard_fxsave structure */
+  
+  /* Note header in a PT_NOTE section */
+  typedef struct elf32_note {

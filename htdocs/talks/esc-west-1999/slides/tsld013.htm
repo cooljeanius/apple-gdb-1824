@@ -1,0 +1,60 @@
+
+<HTML>
+
+<HEAD>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html;charset=windows-1252">
+<meta name="GENERATOR" content="Microsoft Internet Assistant for PowerPoint 97">
+ <TITLE>The Results: Selecting a Logged Event</TITLE> 
+</HEAD>
+
+<BODY     >
+
+ <H1>The Results: Selecting a Logged Event</H1> 
+ <P><UL>
+<H2>(gdb) tfind start
+</H2>
+</UL><UL>
+<H2>Tracepoint 1, find (tree=0x8049a50, key=5) at tree.c:24
+</H2>
+</UL><UL>
+<H2>24        if (! tree)
+</H2>
+</UL><UL>
+<H2>(gdb) where
+</H2>
+</UL><UL>
+<H2>#0  find (tree=0x8049a50, key=5) at tree.c:24
+</H2>
+</UL><UL>
+<H2>#1  0x8048744 in main () at main.c:8
+</H2>
+</UL><UL>
+<H2>(gdb) print *tree
+</H2>
+</UL><UL>
+<H2>$1 = {left = 0x80499b0, right = 0x8049870, key = 100,
+</H2>
+</UL><UL>
+<H2>      vector = 0x8049a68}
+</H2>
+</UL><UL>
+<H2>(gdb) print tree-&#062key
+</H2>
+</UL><UL>
+<H2>$2 = 100</H2>
+</UL></P>
+<P></P> 
+<P>
+<TABLE>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld012.htm">Previous slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=100> <A HREF="tsld014.htm">Next slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="tsld001.htm">Back to first slide</A> </TD>
+  <TD HEIGHT=100 WIDTH=150> <A HREF="sld013.htm">View graphic version</A> </TD>
+</TABLE>
+<BR>
+</P>
+
+
+
+</Body>
+</HTML>

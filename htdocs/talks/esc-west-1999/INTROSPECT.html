@@ -1,0 +1,1665 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta http-equiv="Content-Style-Type" content="text/css">
+   <meta name="GENERATOR" content="Mozilla/4.51 [en] (WinNT; U) [Netscape]">
+   <title>The Heisenberg Debugging Technology</title>
+</head>
+<body bgcolor="#FFFFFF">
+
+<h1>
+<a NAME="pgfId-1003228"></a><a NAME="pgfId-1003229"></a>The Heisenberg
+Debugging Technology
+<hr></h1>
+
+<div ALIGN=right>
+<h2>
+October 1999</h2></div>
+
+<br>&nbsp;
+<br>&nbsp;
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>&nbsp;</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+
+<h3>
+<a NAME="pgfId-1003235"></a><a NAME="pgfId-1003236"></a><a NAME="pgfId-1003237"></a><a NAME="pgfId-1003238"></a><a NAME="pgfId-1003239"></a><a NAME="pgfId-1003240"></a>By
+Michael Snyder and Jim Blandy</h3>
+
+<div ALIGN=right>
+<h2>
+<a NAME="pgfId-1003244"></a>CYGNUS<sup>&reg;</sup></h2></div>
+
+<h2>
+<sup><a href="#pgfId-135252">Table of Contents</a>&nbsp;</sup>
+<hr WIDTH="100%"></h2>
+&nbsp;
+<div CLASS="Body"><a NAME="pgfId-1003245"></a>Copyright &copy;<i> </i>1999
+<i>CYGNUS SOLUTIONS, Inc.</i> All rights reserved.</div>
+<P>
+
+<div CLASS="Body"><a NAME="pgfId-1003246"></a>No part of this document
+may be reproduced in any form or by any means without the prior express
+written consent of <i>CYGNUS SOLUTIONS, Inc.</i></div>
+<P>
+<div CLASS="Body"><a NAME="pgfId-1003247"></a>No part of this document
+may be changed and/or modified without the prior express written consent
+of
+<i>CYGNUS SOLUTIONS, Inc.</i></div>
+<P>
+<div CLASS="Body"><a NAME="pgfId-1003248"></a>GNUPro<i>&reg;</i> , the
+GNUPro<i>&reg;</i> logo, and the Cygnus Solutions logo are all registered
+trademarks of <i>CYGNUS SOLUTIONS, Inc.</i> All other brand and product
+names are trademarks of their respective owners.</div>
+<P>
+<div CLASS="PartNumber"><a NAME="pgfId-1003252"></a>Part #: 300-400-1010087-1</div>
+
+<h2 CLASS="Heading1">
+<a NAME="pgfId-1003258"></a><a NAME="_Toc370542055"></a><a NAME="_Ref385833133"></a><a NAME="_Toc400851455"></a><a NAME="_Toc400854523"></a><a NAME="_Toc404473862"></a>How
+to contact Cygnus
+<hr WIDTH="100%"></h2>
+
+<div CLASS="TOCStart">Use the following means to contact Cygnus.</div>
+<P>
+<div CLASS="TOCStart">Cygnus Headquarters</div>
+
+<div CLASS="TOCStart">1325 Chesapeake Terrace</div>
+
+<div CLASS="TOCStart">Sunnyvale, CA 94089 USA</div>
+
+<div CLASS="TOCStart">Telephone (toll free) : +1 800 CYGNUS-1</div>
+
+<div CLASS="TOCStart">Telephone (main line) : +1 408 542 9600</div>
+
+<div CLASS="TOCStart">Telephone (hotline) : +1 408 542 9601</div>
+
+<div CLASS="TOCStart">FAX : +1-408 542 9699</div>
+
+<div CLASS="TOCStart">(Faxes are answered 8 a.m.-5 p.m., Monday through
+Friday.)</div>
+
+<div CLASS="TOCStart">email: info@cygnus.com</div>
+
+<div CLASS="TOCStart">Website: www.cygnus.com.</div>
+<P>
+<div CLASS="TOCStart">Cygnus Japan</div>
+
+<div CLASS="TOCStart">Nihon Cygnus Solutions</div>
+
+<div CLASS="TOCStart">Madre Matsuda Building</div>
+
+<div CLASS="TOCStart">4-13 Kioi-cho Chiyoda-ku</div>
+
+<div CLASS="TOCStart">Tokyo 102-0094</div>
+
+<div CLASS="TOCStart">Telephone: +81 3 3234 3896</div>
+
+<div CLASS="TOCStart">FAX: +81 3 3239 3300</div>
+
+<div CLASS="TOCStart">email: info@cygnus.co.jp</div>
+
+<div CLASS="TOCStart">Website: http://www.cygnus.co.jp/</div>
+<P>
+<div CLASS="TOCStart">Cygnus Europe</div>
+
+<div CLASS="TOCStart">35-36 Cambridge Place</div>
+
+<div CLASS="TOCStart">Cambridge CB2 1NS</div>
+
+<div CLASS="TOCStart">United Kingdom</div>
+
+<div CLASS="TOCStart">Telephone: +44 1223 728728</div>
+
+<div CLASS="TOCStart">FAX: +44 1223 7287777</div>
+
+<div CLASS="TOCStart">email: euroinfo@cygnus.com</div>
+
+<P>
+<div CLASS="TOCStart">Use the hotline (+1 408 542 9601) to get help, although
+the most reliable and most expedient means to resolve problems with</div>
+
+<div CLASS="TOCStart">GNUPro Toolkit is by using the Cygnus Web Support
+site:</div>
+
+<div CLASS="TOCStart">http://support.cygnus.com</div>
+<P>
+<P>
+<P>
+<h1>
+<a NAME="pgfId-135252"></a>Contents
+<hr WIDTH="100%"></h1>
+&nbsp;
+<blockquote><a NAME="pgfId-137794"></a><a href="#pgfId-1003258" CLASS="Index">How
+to contact Cygnus</a></blockquote>
+
+
+<h4 CLASS="IntroTitleTOC">
+<a NAME="pgfId-137796"></a><a href="#pgfId-462671" CLASS="Index">Introduction</a></h4>
+
+<div CLASS="IntroTitleTOC">
+<blockquote><a NAME="pgfId-137798"></a><a href="#pgfId-919209" CLASS="Index">The
+Problem</a></blockquote>
+</div>
+
+<h4 CLASS="ChapterTitleTOC">
+<a NAME="pgfId-137800"></a><a href="INTROSPECT.html#pgfId-930771" CLASS="Index">The
+Cygnus Solution: Introspect</a></h4>
+
+<div CLASS="ChapterTitleTOC">
+<blockquote><a NAME="pgfId-137802"></a><a href="INTROSPECT.html#pgfId-930862" CLASS="Index">Specification
+phase</a>
+<br><a NAME="pgfId-137804"></a><a href="INTROSPECT.html#pgfId-930898" CLASS="Index">Collection phase</a>
+<br><a NAME="pgfId-137806"></a><a href="INTROSPECT.html#pgfId-930913" CLASS="Index">Analysis
+phase</a></blockquote>
+</div>
+
+<div CLASS="ChapterTitleTOC">
+<blockquote><a NAME="pgfId-137808"></a><a href="INTROSPECT.html#pgfId-931021" CLASS="Index">The
+Implementation of Introspect</a></blockquote>
+</div>
+
+<div CLASS="ChapterTitleTOC">
+<blockquote><a NAME="pgfId-137810"></a><a href="INTROSPECT.html#pgfId-931131" CLASS="Index">Future
+Directions</a></blockquote>
+</div>
+
+<blockquote>
+<h6 CLASS="Introduction">
+<a NAME="pgfId-913144"></a></h6>
+</blockquote>
+
+<h1 CLASS="ChapterNumber">
+<a NAME="pgfId-462330"></a></h1>
+
+<div CLASS="IntroTitle">
+<h1>
+<a NAME="pgfId-462671"></a>Introduction
+<hr WIDTH="100%"></h1>
+</div>
+
+<div CLASS="BodyAfterHead"><a NAME="pgfId-919785"></a><a NAME="_Toc442250435"></a>Probably
+the most widely familiar method of debugging programs is breakpoint debugging.
+In this method, you are allowed to specify locations in your program (breakpoints)
+where the program execution will suddenly stop, giving you the opportunity
+to examine the program's state. You can then either let the program execute
+one or more instructions at a time, or allow it to continue until another
+breakpoint is reached, and examine the state again.</div>
+<P>
+
+<div CLASS="BodyAfterHead"><a NAME="pgfId-919786"></a>Breakpoint debugging
+works very well for serial programs that do not interact with any other
+dynamic entities (other programs or real-world devices). However, programs
+in the parallel and real-time domains may have their behavior and results
+altered if interrupted by a debugger. Events may go undetected, message
+queues may overflow, and moving parts may fail to stop in time, causing
+real-world damage to machines or people.</div>
+<P>
+
+<div CLASS="BodyAfterHead"><a NAME="pgfId-919787"></a>One solution is to
+instrument the code, but the most frequently used method is to insert print
+statements by hand, which has numerous disadvantages and limited power.
+A tool to instrument a program at runtime would need many of the capabilities
+of a debugger; and indeed, a typical debugger has most of the capabilities
+both to perform the instrumenting, and to help analyze the resulting trace
+data. A debugger could easily plant tracing instrumentation in the executing
+program, and just as easily display the values of program data and arbitrary
+expressions collected, together with the associated source code; and it
+could do it all interactively.</div>
+<P>
+
+<div CLASS="BodyAfterHead"><a NAME="pgfId-919788"></a>The Cygnus approach
+uses the popular GNU debugger, GDB, both to set up and to analyze trace
+experiments. In a trace experiment, the user specifies program locations
+to trace and what data to collect at each one (using the full power of
+the source language's symbolic expressions). A simplified, non-symbolic
+description of the trace experiment is downloaded to a separate trace collection
+program. Then the program is run while the specially written trace collection
+program collects the data. Finally, GDB is used again to review the traced
+events, stepping from one tracepoint execution to the next and displaying
+the recorded data values just as if debugging the program in real time;
+or GDB's scripting language is used to produce a report of the collected
+data, formatted to the user's specification.</div>
+
+<h2 CLASS="Heading2">
+<a NAME="pgfId-919209"></a>The Problem
+<hr WIDTH="100%"></h2>
+&nbsp;
+
+<div CLASS="Body"><a NAME="pgfId-919796"></a>The traditional way to debug
+a program using a debugger is to stop the program, examine its state, let
+it run some more, and so on. Each time you stop the program, aeons go by,
+from the machine's point of view.</div>
+<P>
+<div CLASS="Body"><a NAME="pgfId-919797"></a>This isn't a problem if your
+program is interacting only with other systems that will wait for it. However,
+if your code has important real-time deadlines to meet, the system may
+fall out of sync. Even worse, if your program is controlling a piece of
+machinery with physical parts (disk heads, robot arms) that are in motion,
+depending on your program to control them, you may do real damage by stopping
+the program. Worse yet, if the system you are debugging is deployed in
+the field, and controlling a traffic light, an elevator, or a motor vehicle,
+lives could be lost while you step through your code! This amounts to what
+could be called the "Heisenberg Principle of Software Development": debugging
+the system may change its behavior.</div>
+<P>
+<div CLASS="Body"><a NAME="pgfId-919799"></a>Debugging aids such as emulators
+and logic analyzers are very good at reducing or nearly eliminating this
+intrusive effect, but they require expensive hardware, and many developers
+don't really know how to use them. The learning curve can be steep, since
+these tools usually use quite a different metaphor from the traditional
+"stop, look around, and continue" cycle of breakpoint-based debugging.
+Some of the high-end (expensive) versions of these tools are at least loosely
+integrated with a debugger, but many of the middle- and low-end ones are
+not (or only superficially so).</div>
+<P>
+<div CLASS="Body"><a NAME="pgfId-919800"></a>The poor man's approach to
+debugging time-critical code, code running in the field, and sometimes
+code that only manifests a bug at odd intervals, has often been to instrument
+the source code by hand with instructions that will write debugging state
+information out to a console or to a file or buffer. We call this method
+"printf debugging", and it has an ancient and honorable history. However,
+as useful as it may be, it is also cumbersome and limited; to add or remove
+a trace, you must go through an entire edit / compile / load cycle. The
+output is only as readable and informative as you make it. Unless you're
+really dedicated to the technique (and keep libraries of debugging routines),
+you must reinvent the wheel every time you use it, and you usually have
+to remove it all before you deploy your software to the field.</div>
+<P>
+<div CLASS="Body"><a NAME="pgfId-919801"></a>These methods all share the
+advantage that you can let your program run at close to native speed, and
+then analyze what it did after the fact. How can we obtain this advantage
+without the disadvantages of expensive hardware, unfamiliar interface,
+and non-reusablility?</div>
+
+<div CLASS="Body"><a NAME="pgfId-919791"></a></div>
+
+<h6 CLASS="Chapter">
+<a NAME="pgfId-913144"></a></h6>
+
+<h1 CLASS="ChapterTitle">
+<a NAME="pgfId-930771"></a>The Cygnus Solution: Introspect
+<hr WIDTH="100%"></h1>
+&nbsp;
+<div CLASS="BodyAfterHead"><a NAME="pgfId-931154"></a>Introspect is an
+extension to GDB which provides flexible, efficient, and non-intrusive
+debugging for embedded systems. Introspect consists of code in GDB, and
+a software "agent" running on the target system, which together allow developers
+to specify 'tracepoints' (analogous to breakpoints). A tracepoint is a
+code location, and data to be collected whenever execution reaches that
+location. Introspect has a number of nice properties:</div>
+
+<ul>
+<li CLASS="Bullet">
+<a NAME="pgfId-931155"></a>Data collection is not instantaneous, but it
+is quick. Recording the data for a typical tracepoint takes a few thousand
+machine cycles - less than the time required to send a single character
+over a 9600 baud serial line. This latency is small enough to be tolerable
+when debugging many embedded applications.</li>
+
+<li CLASS="Bullet">
+<a NAME="pgfId-930799"></a>You choose what data to collect, and when to
+collect it, interactively at debug time. You can examine data collected,
+choose new tracepoints, and begin collection immediately, without recompiling
+and reloading the program.</li>
+
+<li CLASS="Bullet">
+<a NAME="pgfId-930800"></a>You can use arbitrary source language expressions
+to specify which data to collect. This notation is both familiar and powerful.</li>
+
+<li CLASS="Bullet">
+<a NAME="pgfId-930801"></a>You have the full power of GDB available to
+examine logged data. Once the user has selected a trace event, all GDB
+commands work normally, as long as they refer only to data (registers and
+memory values) actually collected at that event.</li>
+
+<li CLASS="Bullet">
+<a NAME="pgfId-930802"></a>Introspect requires no special-purpose hardware,
+like emulators or analyzers. It is implemented completely in software.</li>
+
+<li CLASS="Bullet">
+<a NAME="pgfId-930803"></a>Introspect's instrumentation can be removed
+as easily as it was added, so that if you are not actively recording data,
+it need not affect the software in the field at all.</li>
+</ul>
+
+<div CLASS="BodyAfterHead"><a NAME="pgfId-930806"></a>For example, suppose
+you want to observe the behavior of the following code:</div>
+
+<div CLASS="CodeExample">
+<blockquote><a NAME="pgfId-930808"></a><font face="Courier New,Courier">struct
+point {</font></blockquote>
+</div>
+
+<blockquote>&nbsp;
+<br><font face="Courier New,Courier">double x, y;</font>
+<br><font face="Courier New,Courier">};</font>
+<p><font face="Courier New,Courier">/* A vector is an array
+of points. N is the number of points, and p points to the first point in
+the array.</font>
+<br><font face="Courier New,Courier">*/</font>
+<br><font face="Courier New,Courier">struct vector {</font>
+<br><font face="Courier New,Courier">int n;</font>
+<br><font face="Courier New,Courier">struct point *p;</font>
+<br><font face="Courier New,Courier">};</font>
+<p><font face="Courier New,Courier">/* A binary tree of vectors,
+ordered by KEY. */</font>
+<br><font face="Courier New,Courier">struct tree {</font>
+<br><font face="Courier New,Courier">struct tree *left, *right;</font>
+<br><font face="Courier New,Courier">int key;</font>
+<br><font face="Courier New,Courier">struct vector *vector;</font>
+<br><font face="Courier New,Courier">};</font>
+<p><font face="Courier New,Courier">/* Return the node in
+TREE whose key is KEY. Return zero if there if no such node. */</font>
+<br><font face="Courier New,Courier">struct tree *</font>
+<br><font face="Courier New,Courier">find (struct tree *tree,
+int key)</font>
+<br><font face="Courier New,Courier">{</font>
+<br><font face="Courier New,Courier">if (! tree)</font>
+<br><font face="Courier New,Courier">return 0;</font>
+<p><font face="Courier New,Courier">if (key &lt; tree->key)</font>
+<br><font face="Courier New,Courier">return find (tree->left,
+key);</font>
+<br><font face="Courier New,Courier">else if (key > tree->key)</font>
+<br><font face="Courier New,Courier">return find (tree->right,
+key);</font>
+<br><font face="Courier New,Courier">else</font>
+<br><font face="Courier New,Courier">return tree;</font>
+<br><font face="Courier New,Courier">}</font></blockquote>
+
+<div CLASS="BodyAfterHead"><a NAME="pgfId-930844"></a>Each time the '<font face="Courier New,Courier">find</font>'
+function is invoked, you would like to see the call stack, the tree node
+being visited, and (to make things interesting) the last point in that
+tree node's vector.</div>
+<P>
+<div CLASS="BodyAfterHead"><a NAME="pgfId-930845"></a>We could certainly
+do this with an ordinary debugger. Many debuggers will let you set a breakpoint
+at a certain location, and then list some commands or macros that will
+be executed when the breakpoint is hit. You could use these to "collect"
+the values of program variables.</div>
+<P>
+<div CLASS="BodyAfterHead"><a NAME="pgfId-930846"></a>However, most debuggers
+don't provide any convenient way to record the data collected. Moreover,
+although the debugger could collect data much faster than a human could,
+it would often not be fast enough for some purposes - communication between
+the debugger and the target is usually slow, and the typical debugger's
+macro language is not especially efficient.</div>
+<P>
+<div CLASS="BodyAfterHead"><a NAME="pgfId-930847"></a>However, analyzing
+the collected data is something that a normal debugger is good at. Debuggers
+know how to reinterpret a set of raw register values and memory contents
+as source-level constructs like stack frames, variables with names and
+types, data structures, and so on. Given the name of a variable, a debugger
+knows how to look up the binding currently in scope for that name, determine
+its size and type, and find its value in a register, on the stack, or in
+static memory.</div>
+
+
+<p CLASS="BodyAfterHead"><a NAME="pgfId-930848"></a>So we see that a debugger
+could be used for two of the three tasks involved in trace debugging, but
+would not really be good at the central task - the actual data collection.
+Suppose we delegate that task to a separate trace collection agent, running
+on the target system and configured by GDB? Then a trace debugging experiment
+might look something like this:
+<ul>
+<li CLASS="Bullet">
+<a NAME="pgfId-930850"></a>Specify the trace experiment:</li>
+
+<br>Using the debugger, the user places tracepoints in his program. For
+each tracepoint, the user specifies the data to be collected using source
+code names and expressions, just as one would use in a print, watch or
+display command.
+<li CLASS="Bullet">
+<a NAME="pgfId-931461"></a>Run the experiment:</li>
+
+<br>After downloading the tracepoints to the trace collection agent, the
+debugger allows the program to run. Each time a tracepoint is reached,
+the trace collection agent (which may in fact be linked directly into the
+program) wakes up, quickly records the desired data in a memory buffer
+on the target board, and allows the program to resume. Note that this involves
+no interaction with the debugger, and therefore no communication over slow
+serial links.
+<li CLASS="Bullet">
+<a NAME="pgfId-931462"></a>Analyze the results:</li>
+
+<br>By querying the trace collection agent, the debugger can access the
+collected data, and "replay" the tracepoint events. The contents of each
+record in the trace buffer (each corresponding to the execution of a tracepoint)
+can be displayed in sequence or in any order.</ul>
+<P>
+<div CLASS="BodyAfterHead"><a NAME="pgfId-930859"></a>Although intrusive,
+this method will affect the timing of the running system far less than
+would be the case if the user, or even the debugger, were involved in collecting
+the data. No matter how long the trace collection agent requires to service
+an interrupt and collect the data, it will surely be less time than would
+be required to send a message over a serial line, or move a human's finger
+over a keyboard! The degree of intrusiveness can be reduced by careful
+optimization of the trace collection agent.</div>
+<P>
+<div CLASS="BodyAfterHead"><a NAME="pgfId-930861"></a>Let's look at the
+three phases in more detail.</div>
+
+<h2 CLASS="Heading2">
+<a NAME="pgfId-930862"></a>Specification phase
+<hr WIDTH="100%"></h2>
+
+<div CLASS="Body"><a NAME="pgfId-931618"></a>Using the traditional debugging
+model, you might ask your debugger to stop at the beginning of the '<font face="Courier New,Courier">find</font>'
+function, display the function call stack, and show the values of&nbsp;
+'<font face="Courier New,Courier">*tree</font>'<font face="Courier New,Courier">
+and 'tree->vector.p[tree->vector.n - 1]</font>'.</div>
+
+<div CLASS="Body"><a NAME="pgfId-931921"></a>Using GDB, you might accomplish
+that task using commands like these:</div>
+
+<br>&nbsp;
+<table>
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932104"></a><font face="Courier New,Courier"><b>(gdb)</b>
+break find</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932106"></a><font face="Courier New,Courier"><b>(gdb)</b>
+commands</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932108"></a><b><font face="Courier New,Courier">>
+where</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932110"></a><b><font face="Courier New,Courier">>
+print *tree</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932112"></a><b><font face="Courier New,Courier">>
+print tree->vector.p[tree->vector.n - 1]</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932114"></a><b><font face="Courier New,Courier">>
+continue</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932116"></a><b><font face="Courier New,Courier">>
+end</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932118"></a><b><font face="Courier New,Courier">(gdb)</font></b></div>
+</td>
+</tr>
+</table>
+
+
+<p CLASS="Body"><a NAME="pgfId-930875"></a>Suppose instead you wanted to
+set up a trace experiment to collect the same values. The analogous commands
+might look like this:
+<br>&nbsp;
+<table>
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932121"></a><font face="Courier New,Courier"><b>(gdb)</b>
+trace find</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932123"></a><font face="Courier New,Courier"><b>(gdb)</b>
+actions</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932125"></a><b><font face="Courier New,Courier">>
+collect $stack</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932127"></a></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932129"></a></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932131"></a><b><font face="Courier New,Courier">>
+collect $locals</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932133"></a><b><font face="Courier New,Courier">>
+collect *tree</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932135"></a><b><font face="Courier New,Courier">>
+collect tree->vector.p[tree->vector.n - 1]</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932137"></a><b><font face="Courier New,Courier">>
+end</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932139"></a><b><font face="Courier New,Courier">(gdb)</font></b></div>
+</td>
+</tr>
+</table>
+
+
+<p CLASS="Body"><a NAME="pgfId-931915"></a>In both cases, GDB does not
+immediately do anything, other than to remember what the user wants to
+happen later. Nothing really happens until the program is run, and '<font face="Courier New,Courier">find</font>'
+is called. Then, in the case of the breakpoint, the backtrace '<font face="Courier New,Courier">*tree</font>',
+and the vector's point are displayed right away. In the case of the tracepoint,
+the values are stored in the trace buffer for later retrieval.
+<P>
+<p CLASS="Body"><a NAME="pgfId-931578"></a>Special syntax is provided for
+collecting certain commonly useful sets of data:
+<blockquote>
+<div CLASS="CodeExample"><font face="Courier New,Courier">>
+collect $regs&nbsp;&nbsp; // all registers</font></div>
+
+<div CLASS="CodeExample"><font face="Courier New,Courier">>
+collect $locals // all locals and arguments</font></div>
+
+<div CLASS="CodeExample"><font face="Courier New,Courier">>
+collect $stack&nbsp; // a fixed-size chunk of stack</font></div>
+</blockquote>
+
+<div CLASS="Body"><a NAME="pgfId-931911"></a>Collecting a chunk of the
+program stack is especially useful during the analysis phase (see below).</div>
+
+<h2 CLASS="Heading2">
+<a NAME="pgfId-930898"></a>Collection phase
+<hr WIDTH="100%"></h2>
+
+<div CLASS="Body"><a NAME="pgfId-931619"></a>Each time the program reaches
+a tracepoint, the tracepoint's data is logged in a buffer on the target
+machine. Each log entry is called an "event"; each event contains the number
+of the tracepoint reached, and any register values and memory contents
+needed to evaluate the tracepoint's expressions.</div>
+<P>
+<div CLASS="Body"><a NAME="pgfId-930901"></a>It is important to understand
+that an event does not simply record the values of each expression to be
+collected. Rather, it records everything GDB might need to re-evaluate
+that expression later. In the example above, to collect '<font face="Courier New,Courier">*tree</font>',
+the event would record both the register containing the variable '<font face="Courier New,Courier">tree</font>',
+and the memory the tree node occupies.</div>
+<P>
+<div CLASS="Body"><a NAME="pgfId-930902"></a>To begin collection, we use
+GDB's '<font face="Courier New,Courier">tstart</font>'
+command, which downloads the trace experiment to the trace collection agent,
+and then let the program run:</div>
+
+<br>&nbsp;
+<table>
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932148"></a><font face="Courier New,Courier"><b>(gdb)</b>
+tstart</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932150"></a><font face="Courier New,Courier"><b>(gdb)</b>
+continue</font></div>
+</td>
+</tr>
+</table>
+
+
+<p CLASS="Body"><a NAME="pgfId-931906"></a>As the program runs, the agent
+will collect trace data.
+<h2 CLASS="Heading2">
+<a NAME="pgfId-930913"></a>Analysis phase
+<hr WIDTH="100%"></h2>
+
+<div CLASS="Body"><a NAME="pgfId-930915"></a>Again using the traditional
+debugging model, you might:</div>
+
+<ol>
+<li CLASS="Numbered">
+<a NAME="pgfId-930916"></a>Run until you reach a breakpoint</li>
+
+<li CLASS="NumberedNext">
+<a NAME="pgfId-930917"></a>Note where you are in the program</li>
+
+<li CLASS="NumberedNext">
+<a NAME="pgfId-931650"></a>Look at the values of data and/or registers</li>
+
+<li CLASS="NumberedNext">
+<a NAME="pgfId-931651"></a>Continue to the next breakpoint</li>
+</ol>
+
+<div CLASS="Body"><a NAME="pgfId-930921"></a>If instead you were debugging
+the results of a trace experiment, you would:</div>
+
+<ol>
+<li CLASS="Numbered">
+<a NAME="pgfId-931662"></a>Select a particular tracepoint event to example</li>
+
+<li CLASS="NumberedNext">
+<a NAME="pgfId-931663"></a>Note where that event occurred</li>
+
+<li CLASS="NumberedNext">
+<a NAME="pgfId-931664"></a>Look at the values of collected data and/or
+registers</li>
+
+<li CLASS="NumberedNext">
+<a NAME="pgfId-930925"></a>Select another tracepoint event</li>
+</ol>
+
+<div CLASS="Body"><a NAME="pgfId-932158"></a>Continuing our example above,
+we can use the '<font face="Courier New,Courier">tfind start</font>'
+command to select the first recorded event:</div>
+
+<br>&nbsp;
+<table>
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932165"></a><font face="Courier New,Courier"><b>(gdb)
+</b>tfind
+start</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932167"></a><b><font face="Courier New,Courier">Tracepoint
+1, find (tree=0x8049a50, key=5) at samp.c:24</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932169"></a><b><font face="Courier New,Courier">24
+if (! tree)</font></b></div>
+</td>
+</tr>
+</table>
+
+
+<p CLASS="Body"><a NAME="pgfId-932160"></a>Since we have collected '<font face="Courier New,Courier">$stack</font>',
+we can use GDB's '<font face="Courier New,Courier">where</font>'
+command to show the currently active frames. '<font face="Courier New,Courier">$stack</font>'
+saves only a fixed (configurable) number of bytes from the top of the stack,
+but usually saves enough to capture the top few frames.
+<br>&nbsp;
+<table>
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932172"></a><font face="Courier New,Courier"><b>gdb)
+</b>where</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932174"></a><b><font face="Courier New,Courier">#0
+find (tree=0x8049a50, key=5) at samp.c: 24</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932176"></a><b><font face="Courier New,Courier">#1
+0x8048744 in main () at main.c:8</font></b></div>
+</td>
+</tr>
+</table>
+
+
+<p CLASS="Body"><a NAME="pgfId-930939"></a>Since we have collected '<font face="Courier New,Courier">*tree</font>',
+we can examine that data structure.
+<br>&nbsp;
+<table>
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932318"></a><font face="Courier New,Courier"><b>gdb)
+</b>print
+*tree</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932320"></a><b><font face="Courier New,Courier">$1
+= {left = 0x80499b0, right = 0x8049870, key = 100,</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932322"></a><b><font face="Courier New,Courier">vector
+= 0x8049a68}</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932324"></a><font face="Courier New,Courier"><b>gdb)
+</b>print
+tree->key</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932326"></a><b><font face="Courier New,Courier">$2
+= 100</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932328"></a><font face="Courier New,Courier"><b>gdb)
+</b>print
+tree->left</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932330"></a><b><font face="Courier New,Courier">$3
+= (struct tree *) 0x80499b0</font></b></div>
+</td>
+</tr>
+</table>
+
+
+<p CLASS="Body"><a NAME="pgfId-930949"></a>Only those objects actually
+collected are available for inspection. Although the left subtree was collected
+at the next tracepoint event, it was not collected in this one:
+<br>&nbsp;
+<table>
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932201"></a><font face="Courier New,Courier"><b>(gdb)
+</b>print
+*tree->left</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932203"></a><b><font face="Courier New,Courier">Data
+not collected.</font></b></div>
+</td>
+</tr>
+</table>
+
+
+<p CLASS="Body"><a NAME="pgfId-930955"></a>However, in order to collect
+'<font face="Courier New,Courier">tree->vector.p[tree->vector.n
+- 1]</font>', the agent had to collect both '<font face="Courier New,Courier">tree->vector.p</font>'
+and '<font face="Courier New,Courier">tree->vector.n</font>',
+so the entire '<font face="Courier New,Courier">tree->vector</font>'
+structure is covered. Since the data is available, we can print it normally:
+<br>&nbsp;
+<table>
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932214"></a><font face="Courier New,Courier"><b>(gdb)
+</b>print
+*tree->vector</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932216"></a><b><font face="Courier New,Courier">$4
+= {n = 2, p = 0x8049a78}</font></b></div>
+</td>
+</tr>
+</table>
+
+
+<p CLASS="Body"><a NAME="pgfId-930960"></a>Introspect does not collect
+the entirety of every object mentioned in the expression. Rather, it collects
+the final value of the expression, along with any other data needed to
+evaluate the expression. Thus, although the last point in the vector was
+collected, none of the other points in the vector are available - they
+were never referenced while evaluating the expression.
+<br>&nbsp;
+<table>
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932219"></a><font face="Courier New,Courier"><b>(gdb)
+</b>print
+tree->vector.p[1]</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932221"></a><b><font face="Courier New,Courier">$5
+= {x = 3, y = -46}</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932223"></a><font face="Courier New,Courier"><b>(gdb)
+</b>print
+tree->vector.p[0]</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932225"></a><b><font face="Courier New,Courier">Data
+not collected.</font></b></div>
+</td>
+</tr>
+</table>
+
+
+<p CLASS="Body"><a NAME="pgfId-930967"></a>So far, we've been inspecting
+the first tracepoint event. Let's walk forward through a few events, to
+see where the tree search ended. The '<font face="Courier New,Courier">tfind</font>'
+command, given no arguments, selects the next trace event record:
+<br>&nbsp;
+<table>
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932228"></a><font face="Courier New,Courier"><b>(gdb)</b>
+tfind</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932230"></a><b><font face="Courier New,Courier">Tracepoint
+1, find (tree=0x80499b0, key=5) at samp.c:24</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932232"></a><b><font face="Courier New,Courier">24
+if (! tree)</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932234"></a></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932236"></a><font face="Courier New,Courier"><b>(gdb)</b>
+where</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932238"></a><b><font face="Courier New,Courier">#0
+find (tree=0x80499b0, key=5) at samp.c:24</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932240"></a><b><font face="Courier New,Courier">#1
+0x80484fa in find (tree=0x8049a50, key=5) at samp.c:28</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932242"></a><b><font face="Courier New,Courier">#2
+0x8048744 in main () at main.c:8</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932244"></a></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932246"></a><font face="Courier New,Courier"><b>(gdb)</b>
+print *tree</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932248"></a><b><font face="Courier New,Courier">$6
+= {left = 0x8049950, right = 0x80498f0, key = 3,&nbsp;</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932250"></a><b><font face="Courier New,Courier">vector
+= 0x80499c8}</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932252"></a></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932254"></a><font face="Courier New,Courier"><b>(gdb)</b>
+tfind</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932256"></a><b><font face="Courier New,Courier">Tracepoint
+1, find (tree=0x80498f0, key=5) at samp.c:24</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932258"></a><b><font face="Courier New,Courier">24
+if (! tree)</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932260"></a></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932262"></a><font face="Courier New,Courier"><b>(gdb)</b>
+where</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932264"></a><b><font face="Courier New,Courier">#0
+find (tree=0x80498f0, key=5) at samp.c:24</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932266"></a><b><font face="Courier New,Courier">#1
+0x8048523 in find (tree=0x80499b0, key=5) at samp.c:30</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932268"></a><b><font face="Courier New,Courier">#2
+0x80484fa in find (tree=0x8049a50, key=5) at samp.c:28</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932270"></a><b><font face="Courier New,Courier">#3
+0x8048744 in main () at main.c:8</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932272"></a></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932274"></a><font face="Courier New,Courier"><b>(gdb)</b>
+print *tree</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932276"></a><b><font face="Courier New,Courier">$7
+= {left = 0x0, right = 0x0, key = 5, vector = 0x8049908}</font></b></div>
+</td>
+</tr>
+</table>
+
+
+<p CLASS="Body"><a NAME="pgfId-930995"></a>Note that successive events
+record the growing stack as function '<font face="Courier New,Courier">find</font>'
+walks the tree recursively. Since we have found the tree node we were looking
+for, this is the last call to '<font face="Courier New,Courier">find</font>'
+and the last tracepoint event in the log:
+<br>&nbsp;
+<table>
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932279"></a><font face="Courier New,Courier"><b>(gdb)
+</b>tfind</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932281"></a><b><font face="Courier New,Courier">Target
+failed to find requested trace event.</font></b></div>
+</td>
+</tr>
+</table>
+
+
+<p CLASS="Body"><a NAME="pgfId-931000"></a>Because all the tracepoint events
+are stored in a buffer which may be accessed at random, Introspect provides
+the (somewhat eerie) ability to travel backwards in time. For example,
+the command '<font face="Courier New,Courier">tfind -</font>'
+will select the tracepoint event immediately preceding the current event.
+As earlier events are selected, the program will appear to '<font face="Courier New,Courier">un-make</font>'
+its recursive calls to find:
+<br>&nbsp;
+<table>
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932284"></a><font face="Courier New,Courier"><b>(gdb)
+</b>tfind
+-</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932286"></a><b><font face="Courier New,Courier">Tracepoint
+1, find (tree=0x80499b0, key=5) at samp.c:24</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932288"></a><b><font face="Courier New,Courier">24
+if (! tree)</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932290"></a></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932292"></a><font face="Courier New,Courier"><b>(gdb)
+</b>where</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932294"></a><b><font face="Courier New,Courier">#0
+find (tree=0x80499b0, key=5) at samp.c:24</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932296"></a><b><font face="Courier New,Courier">#1
+0x80484fa in find (tree=0x8049a50, key=5) at</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932298"></a><b><font face="Courier New,Courier">samp.c:28</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932300"></a><b><font face="Courier New,Courier">#2
+0x8048744 in main () at main.c:8</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932302"></a></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932304"></a><font face="Courier New,Courier"><b>(gdb)
+</b>tfind
+-</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932306"></a><b><font face="Courier New,Courier">Tracepoint
+1, find (tree=0x8049a50, key=5) at samp.c:24</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932308"></a><b><font face="Courier New,Courier">24
+if (! tree)</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932310"></a></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932312"></a><font face="Courier New,Courier"><b>(gdb)
+</b>where</font></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932314"></a><b><font face="Courier New,Courier">#0
+find (tree=0x8049a50, key=5) at samp.c:24</font></b></div>
+</td>
+</tr>
+
+<tr>
+<td>
+<div CLASS="CodeScreen2"><a NAME="pgfId-932316"></a><b><font face="Courier New,Courier">#1
+0x8048744 in main () at main.c:8</font></b></div>
+</td>
+</tr>
+</table>
+
+
+<p CLASS="Body"><a NAME="pgfId-931017"></a>Since all the events are available
+in the agent's buffer, you can examine them in any order you want. After
+examining one event, you could travel backwards in time, and examine the
+previous event.
+<P>
+<p CLASS="Body"><a NAME="pgfId-931018"></a>Using all of these familiar
+commands in combination with GDB's built-in scripting language, the user
+can generate a listing or report of the trace results, in any format desired.
+<h2 CLASS="Heading1">
+<a NAME="pgfId-931021"></a>The Implementation of Introspect
+<hr WIDTH="100%"></h2>
+
+<div CLASS="Body"><a NAME="pgfId-931024"></a>In embedded systems development,
+the debugger and the program being debugged are often separated by a relatively
+slow serial channel. In this case it is especially important to have a
+trace collection agent that is separate from the debugger, and resides
+on the target side's of the serial channel. The debugger handles interactive
+requests - creating tracepoints, examining trace events - while the trace
+collection agent handles the actual runtime collection of the trace data.</div>
+<P>
+<div CLASS="Body"><a NAME="pgfId-931025"></a>This target-side agent needs
+its own local tables describing the tracepoints (code locations, what to
+collect, and so on), and its own local buffers in which to store the collected
+data, so that it does not need to interact with the debugger in any way
+while the trace experiment is running. It is desirable to consume as little
+target memory and interrupt the user program for as short a time as possible,
+so the agent should not parse source language expressions or look up symbols.
+Therefore, we make the debugger download a highly simplified version of
+the trace experiment to the target-side agent, with all symbols replaced
+by addresses, registers and offsets, and all expressions compiled into
+a compact and efficient bytecode language.</div>
+<P>
+<div CLASS="Body"><a NAME="pgfId-931026"></a>The trace buffer itself is
+organized as a log of tracepoint events; each log entry records the data
+collected when the program reached a tracepoint. When the user selects
+a tracepoint event to examine, the target-side agent acts as a server,
+feeding the collected data back to the debugger on request.</div>
+<P>
+<div CLASS="Body"><a NAME="pgfId-931027"></a>In this example, each time
+the program reaches the tracepoint at the beginning of the '<font face="Courier New,Courier">find</font>'
+function, the GDB agent must record the contents of the tree node, and
+then evaluate the expression:</div>
+
+<div CLASS="CodeExample">
+<blockquote><a NAME="pgfId-931029"></a><font face="Courier New,Courier">tree->vector.p[tree->vector.n
+- 1]</font></blockquote>
+</div>
+
+<div CLASS="Body"><a NAME="pgfId-931031"></a>to find the element of the
+vector to record.</div>
+
+<div CLASS="Body"><a NAME="pgfId-931032"></a>Evaluating this expression
+is a non-trivial task. In order to find the expression's value, one needs
+to know:</div>
+
+<ul>
+<li CLASS="Bullet">
+<a NAME="pgfId-931033"></a>The syntax of C expressions, to parse our expression</li>
+
+<li CLASS="Bullet">
+<a NAME="pgfId-932017"></a>The list of arguments and local variables for
+'<font face="Courier New,Courier">find</font>', to
+help us associate the identifier '<font face="Courier New,Courier">tree</font>'
+with a specific variable in the program</li>
+
+<li CLASS="Bullet">
+<a NAME="pgfId-932018"></a>The location of the argument '<font face="Courier New,Courier">tree</font>',
+whether in a register or on the stack,</li>
+
+<li CLASS="Bullet">
+<a NAME="pgfId-932019"></a>The types of '<font face="Courier New,Courier">tree</font>',
+'<font face="Courier New,Courier">tree->vector</font>',
+'<font face="Courier New,Courier">tree->vector.p</font>',
+and so on, so one can find the offsets of members within their structures,
+scale integer values appropriately for pointer arithmetic, and so on</li>
+
+<li CLASS="Bullet">
+<a NAME="pgfId-931037"></a>Knowledge of C expression semantics, to help
+us execute the various operators.</li>
+</ul>
+
+<div CLASS="Body"><a NAME="pgfId-931039"></a>Representing this sort of
+information requires relatively large and complex data structures, and
+code for lexical analysis and parsing can be bulky. Although GDB has all
+this information readily available, since it is a source-level debugger,
+such complexity is usually beyond the scope of the GDB agent, which must
+execute on a target machine with limited resources.</div>
+<P>
+<div CLASS="Body"><a NAME="pgfId-931042"></a>So, the critical question
+is: How can Introspect accept arbitrary source-level expressions from user
+at debug time, and evaluate them on the target system using only a small
+amount of code and as quickly as possible?</div>
+<P>
+<div CLASS="Body"><a NAME="pgfId-931043"></a>The solution is to make the
+agent responsible for carrying out only machine-level operations - loads,
+register references, two's-complement arithmetic, and so on - and to isolate
+all symbolic processing in the debugger, which has the necessary information
+and resources. When the user gives GDB a tracepoint expression, GDB compiles
+it to a simple machine-independent bytecode language, and sends the bytecode
+to the agent for evaluation.</div>
+<P>
+<div CLASS="Body"><a NAME="pgfId-931044"></a>The vocabulary of machine-level
+operations needed to evaluate C expressions is rather small. The current
+bytecode interpreter understands around forty bytecodes, each of which
+is implemented by a line or two of C code. The interpreter, including error
+checking code, occupies three kilobytes of code on the target machine.</div>
+<P>
+<div CLASS="Body"><a NAME="pgfId-931045"></a>Consider the first expression
+collected in the example above:</div>
+
+<div CLASS="CodeExample">
+<blockquote><a NAME="pgfId-931047"></a><font face="Courier New,Courier">*tree</font></blockquote>
+</div>
+
+<div CLASS="Body"><a NAME="pgfId-931049"></a>In the '<font face="Courier New,Courier">find</font>'
+function, '<font face="Courier New,Courier">tree</font>'
+is the first argument. For the SPARC, GDB might compile this expression
+to the following bytecode sequence:</div>
+
+<div CLASS="CodeExample">
+<blockquote><a NAME="pgfId-931051"></a><font face="Courier New,Courier">reg
+8</font>
+<br><font face="Courier New,Courier">const8 16</font>
+<br><font face="Courier New,Courier">trace</font>
+<br><font face="Courier New,Courier">end</font></blockquote>
+</div>
+
+<div CLASS="Body"><a NAME="pgfId-931056"></a>The bytecode engine maintains
+a stack of values, which is empty when evaluation begins. Most instructions
+pop an argument or two off the stack, perform some operation on them, and
+push the result back on the stack, where the next instruction can find
+it. Taking each of the instructions above in turn:</div>
+
+<blockquote>
+<div CLASS="CodeExample"><a NAME="pgfId-931058"></a><font face="Courier New,Courier">reg
+8</font></div>
+</blockquote>
+
+<blockquote>
+<div CLASS="Body"><a NAME="pgfId-931059"></a>This bytecode pushes the value
+of register number eight on the stack. Each stack element is as wide as
+the largest value the processor directly supports. In our example, GDB
+knows that '<font face="Courier New,Courier">tree</font>'
+lives in register eight, so this instruction pushes the value of '<font face="Courier New,Courier">tree</font>'
+on the stack.</div>
+</blockquote>
+
+<blockquote>
+<div CLASS="CodeExample"><a NAME="pgfId-931060"></a><font face="Courier New,Courier">const8
+16</font></div>
+</blockquote>
+
+<blockquote>
+<div CLASS="Body"><a NAME="pgfId-931061"></a>This bytecode pushes the constant
+value 16 on the stack. The '<font face="Courier New,Courier">8</font>'
+in the instruction's name indicates that its operand is a single byte long;
+there are bytecode instructions named '<font face="Courier New,Courier">const16</font>'
+and '<font face="Courier New,Courier">const32</font>',
+for pushing larger instructions. In our example, GDB knows that the structure
+is sixteen bytes long, so this instruction pushes the size of '<font face="Courier New,Courier">*tree</font>'
+on the stack.</div>
+</blockquote>
+
+<blockquote>
+<div CLASS="CodeExample"><a NAME="pgfId-931063"></a><font face="Courier New,Courier">trace</font></div>
+</blockquote>
+<blockquote>
+<div CLASS="Body"><a NAME="pgfId-932033"></a>This bytecode pops an address
+and a length from the stack, and records that memory in the tracepoint
+event log. In our example, the stack contains the '<font face="Courier New,Courier">tree</font>'
+pointer, and the size of the node to which it points, so this instruction
+will record the full contents of that node. The trace instruction does
+not assume that the address is valid; if the interpreter gets a memory
+access fault when it attempts to record the value, it aborts execution
+of that expression.</div>
+</blockquote>
+<blockquote>
+<div CLASS="CodeExample"><a NAME="pgfId-931065"></a><font face="Courier New,Courier">end</font></div>
+</blockquote>
+<blockquote>
+<div CLASS="Body"><a NAME="pgfId-931066"></a>This instruction tells the
+engine to stop executing, marking the end of the bytecode expression.</div>
+</blockquote>
+<P>
+<div CLASS="Body"><a NAME="pgfId-931068"></a>In addition to the bytecode
+expression, GDB also sends the agent a mask of the registers the expression
+uses. When the agent hits a tracepoint, it records all the specified registers,
+in addition to running the bytecode expressions.</div>
+<P>
+<p CLASS="Body"><a NAME="pgfId-931069"></a>Thus, after evaluating this
+expression, the agent will have saved the value of register eight and the
+contents of the tree node in the event log. This gives us both the value
+of the pointer '<font face="Courier New,Courier">tree</font>',
+and the value of the node that it points to. Later, if the user selects
+this tracepoint event and asks GDB to '<font face="Courier New,Courier">print
+*tree</font>', GDB will:
+<ul>
+<li CLASS="Bullet">
+<a NAME="pgfId-931070"></a>Ask the target agent for the value of register
+8 (the pointer '<font face="Courier New,Courier">tree</font>'),
+and then</li>
+
+<li CLASS="Bullet">
+<a NAME="pgfId-931071"></a>Ask the target agent for the contents of memory
+at the address pointed to by the value it just fetched (the tree node).</li>
+</ul>
+
+<div CLASS="Body"><a NAME="pgfId-931073"></a>Since both values are in the
+trace buffer, both requests will succeed, and the expression '<font face="Courier New,Courier">*tree</font>'
+will be printed successfully.</div>
+
+<div CLASS="Body"><a NAME="pgfId-931074"></a>Let's consider a more complex
+example:</div>
+
+<div CLASS="CodeExample">
+<blockquote><font face="Courier New,Courier">tree->vector.p[tree->vector.n
+- 1]</font></blockquote>
+</div>
+
+<div CLASS="Body"><a NAME="pgfId-931078"></a>GDB will compile this expression
+to the bytecode:</div>
+
+<div CLASS="CodeExample">
+<blockquote><font face="Courier New,Courier">reg 8</font>
+<br><font face="Courier New,Courier">const8 8</font></blockquote>
+</div>
+
+<div CLASS="Body"><a NAME="pgfId-931782"></a>These instructions push the
+value of '<font face="Courier New,Courier">tree</font>'
+on the stack, followed by the constant value 8.</div>
+
+<blockquote>
+<div CLASS="CodeExample"><font face="Courier New,Courier">add</font></div>
+</blockquote>
+
+<blockquote>
+<div CLASS="Body"><a NAME="pgfId-931085"></a>The '<font face="Courier New,Courier">add</font>'
+instruction pops the top two values off the stack (in this case, '<font face="Courier New,Courier">tree</font>'
+and 8), adds them, and pushes the sum on the stack. This computes the address
+of '<font face="Courier New,Courier">tree->vector</font>',
+since '<font face="Courier New,Courier">offsetof (struct
+tree, vector)</font>' is eight.</div>
+</blockquote>
+
+<blockquote>
+<div CLASS="CodeExample"><font face="Courier New,Courier">trace_quick
+4</font></div>
+</blockquote>
+
+<blockquote>
+<div CLASS="Body"><a NAME="pgfId-931776"></a>This bytecode logs the value
+of the '<font face="Courier New,Courier">n</font>'
+bytes whose address is on the top of the stack, without disturbing the
+stack. In our case, the top of the stack is the address of '<font face="Courier New,Courier">tree->vector</font>',
+which is a pointer; since pointers are four bytes long on our target architecture,
+this records the value of '<font face="Courier New,Courier">tree->vector</font>'
+in the event log. Like '<font face="Courier New,Courier">trace</font>',
+it aborts evaluation of the expression if the address is invalid.</div>
+</blockquote>
+
+<blockquote>
+<div CLASS="CodeExample"><font face="Courier New,Courier">ref32</font></div>
+</blockquote>
+
+<blockquote>
+<div CLASS="Body"><a NAME="pgfId-931090"></a>This bytecode pops an address
+off the stack, and pushes the contents of the 32-bit word it points to.
+Thus, the stack now contains the value of '<font face="Courier New,Courier">tree->vector</font>',
+which is the address of the node's '<font face="Courier New,Courier">struct
+vector</font>'. Naturally, there are analogous instructions, '<font face="Courier New,Courier">ref16</font>'
+and '<font face="Courier New,Courier">ref8</font>',
+for fetching values of other sizes.</div>
+</blockquote>
+
+<blockquote>
+<div CLASS="CodeExample"><font face="Courier New,Courier">const8
+4</font></div>
+<font face="Courier New,Courier">add</font>
+<br><font face="Courier New,Courier">trace_quick 4</font>
+<br><font face="Courier New,Courier">ref32</font></blockquote>
+
+<div CLASS="Body"><a NAME="pgfId-931096"></a>These instructions compute
+the address of '<font face="Courier New,Courier">tree->vector.p</font>',
+record its contents in the event log, and leave its value on the top of
+the stack. At this point, the value of '<font face="Courier New,Courier">tree->vector.p</font>'
+is the only thing on the stack.</div>
+
+<blockquote>
+<div CLASS="CodeExample"><font face="Courier New,Courier">reg
+8</font></div>
+
+<div CLASS="CodeExample"><font face="Courier New,Courier">const8
+8</font></div>
+
+<div CLASS="CodeExample"><font face="Courier New,Courier">add</font></div>
+
+<div CLASS="CodeExample"><font face="Courier New,Courier">trace_quick
+4</font></div>
+
+<div CLASS="CodeExample"><font face="Courier New,Courier">ref32</font></div>
+
+<div CLASS="CodeExample"><font face="Courier New,Courier">trace_quick
+4</font></div>
+
+<div CLASS="CodeExample"><font face="Courier New,Courier">ref32</font></div>
+
+<div CLASS="CodeExample"><font face="Courier New,Courier"></font></div>&nbsp;
+</blockquote>
+
+<div CLASS="Body"><a NAME="pgfId-931105"></a>These instructions do the
+same for '<font face="Courier New,Courier">tree->vector.n</font>';
+since '<font face="Courier New,Courier">n</font>'
+is the first element of a '<font face="Courier New,Courier">struct
+vector</font>', its offset is zero, and we do not need to generate
+an '<font face="Courier New,Courier">add</font>' bytecode.
+At this point, the stack contains '<font face="Courier New,Courier">tree->vector.p</font>'
+(on the bottom) and '<font face="Courier New,Courier">tree->vector.n</font>'
+(on top).</div>
+
+<blockquote>
+<div CLASS="CodeExample"><font face="Courier New,Courier">const8
+1</font></div>
+
+<div CLASS="CodeExample"><font face="Courier New,Courier">sub</font></div>
+</blockquote>
+
+<div CLASS="Body"><a NAME="pgfId-931109"></a>The '<font face="Courier New,Courier">sub</font>'
+instruction pops the top two values off the stack, subtracts the first
+from the second, and pushes their difference back on the stack. Thus, these
+instructions subtract one from the top of the stack, yielding '<font face="Courier New,Courier">tree->vector.n
+- 1</font>'.</div>
+
+<blockquote>
+<div CLASS="CodeExample"><font face="Courier New,Courier">const8
+16</font></div>
+
+<div CLASS="CodeExample"><font face="Courier New,Courier">mul</font></div>
+
+<div CLASS="CodeExample"><font face="Courier New,Courier">add</font></div>
+</blockquote>
+
+<div CLASS="Body"><a NAME="pgfId-931116"></a>The C language's rules for
+pointer arithmetic state that, when we add a pointer to an integer, we
+must first multiply the integer by the size of the object pointed to. These
+bytecodes carry out that scaling operation, and then perform the addition.</div>
+
+
+<p CLASS="Body"><a NAME="pgfId-931117"></a>The top of the stack now contains
+the address of '<font face="Courier New,Courier">tree->vector.p[tree->vector.n
+- 1]</font>', which is a '<font face="Courier New,Courier">struct
+point</font>'.
+<blockquote>
+<div CLASS="CodeExample"><font face="Courier New,Courier">const8
+16</font></div>
+
+<div CLASS="CodeExample"><font face="Courier New,Courier">trace</font></div>
+
+<div CLASS="CodeExample"><font face="Courier New,Courier">end</font></div>
+</blockquote>
+
+<div CLASS="Body"><a NAME="pgfId-931122"></a>A '<font face="Courier New,Courier">struct
+point</font>' is sixteen bytes long, containing two doubles. We
+record the value of the '<font face="Courier New,Courier">struct
+point</font>' whose address is on the top of the stack, and exit.</div>
+
+
+<p CLASS="Body"><a NAME="pgfId-932072"></a>There are several things to
+note about this example.
+<ul>
+<li CLASS="Bullet">
+<a NAME="pgfId-932073"></a>Information implicit in the source code (the
+size of a '<font face="Courier New,Courier">struct tree</font>';
+the offset of '<font face="Courier New,Courier">p</font>'
+within a '<font face="Courier New,Courier">struct vector</font>')
+is made explicit in the bytecode. This means the agent does not need information
+about the expression's context - types, scopes, etc. - in order to evaluate
+it.</li>
+
+<li CLASS="Bullet">
+<a NAME="pgfId-931126"></a>The expression records not just the final value
+of the expression, but any data touched in the process of evaluating it.
+Thus, when GDB evaluates the same expression itself, everything it needs
+is sure to be in the agent's buffer.</li>
+
+<li CLASS="Bullet">
+<a NAME="pgfId-931127"></a>The expression only records the values it actually
+touches. For example, since this expression does not reference '<font face="Courier New,Courier">tree->left</font>'
+or '<font face="Courier New,Courier">tree->right</font>',
+those values will not be in the trace buffer. In the example session above,
+we actually collected '<font face="Courier New,Courier">*tree</font>'
+as well, so '<font face="Courier New,Courier">tree->left</font>'
+and '<font face="Courier New,Courier">tree->right</font>'
+were available.</li>
+
+<li CLASS="Bullet">
+<a NAME="pgfId-931128"></a>There are bytecodes available for manipulating
+64-bit values, on those targets that support them. This example was created
+on a 32-bit machine, so the 64-bit instructions do not appear.</li>
+</ul>
+
+<h2 CLASS="Heading2">
+<a NAME="pgfId-931131"></a>Future Directions
+<hr WIDTH="100%"></h2>
+
+<div CLASS="Body"><a NAME="pgfId-931133"></a>Cygnus currently has a highly
+portable and configurable version of the target collection agent. It can
+be built with or without certain components (such as the expression evaluator)
+in order to fit in a small memory footprint. The maximum size of the trace
+buffer is also configurable.</div>
+<P>
+<div CLASS="Body"><a NAME="pgfId-931134"></a>The current implementation
+of the expression evaluator is limited to expressions without side effects.
+Adding operators with side effects would not be at all difficult. A somewhat
+more ambitious enhancement would be adding function calls to the expression
+language. With both side-effect operators and function calls, you would
+have a fairly extensive ability to patch your program and modify its behavior
+on the fly.</div>
+<P>
+<div CLASS="Body"><a NAME="pgfId-931137"></a>Since we do have the expression
+evaluator on the target, it would be possible to attach a condition expression
+to each tracepoint, such that data would be collected only if the condition
+were true. The same might be done for breakpoints, making conditional breakpoints
+much faster (since the condition would no longer have to be evaluated by
+the debugger).</div>
+<P>
+<div CLASS="Body"><a NAME="pgfId-930777"></a>Finally, the current portable
+implementation requires that the target program be stopped at a breakpoint
+before GDB can query the trace buffer. A very powerful enhancement would
+be to allow GDB to read from the trace buffer even when the target is running.</div>
+
+</body>
+</html>

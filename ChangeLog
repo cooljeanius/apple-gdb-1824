@@ -1,5 +1,13 @@
 2013-11-08  Eric Gallager  <egallager@comcast.net>
 
+	Add FSF gdb as a git submodule
+
+	why am I doing this I hate git submodules arghhh
+
+	Change-Id: I72d4a85446a989daab98cf3d6689196974289c62
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
 	Add some more darwinbuild plists
 
 	Change-Id: Ibf5a8a978f3b8d29904f3216a127756aad0ca2a2

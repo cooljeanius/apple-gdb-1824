@@ -1,0 +1,86 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.5 [en] (X11; I; FreeBSD 2.2.7-RELEASE i386) [Netscape]">
+   <meta name="Author" content="Andrew Cagney">
+   <title>streamGDB Architecture</title>
+</head>
+<body>
+
+<h1>streamGDB Architecture</h1>
+
+Stan Shebs argues that, overall, the existing text based command line
+interface to GDB has served its clients well (xgdb, xxgdb, mxgdb, DDD,
+CrossWind).&nbsp; Stan does, however, identify a number of limitations
+with the existing text based mechanism:
+
+<ul>
+<li>
+The output format of the GDB commands are not precisely defined. GDB's
+human readable output can (and often does) change in response to user feedback.</li>
+
+<br>&nbsp;
+<li>
+There is very little control over the volume of output, which means that
+a GUI will need to spend time sifting through a large volume of data to
+find just the values it requires.</li>
+
+<br>&nbsp;
+<li>
+GDB may mix output from several sources, such as when "display" commands
+are used and when a program issues output through GDB.</li>
+</ul>
+To address these issues, Stan proposed:
+<blockquote><i>[...] an alternate form of the CLI that is regularized for
+the benefit of programmatic instead of human users.&nbsp;&nbsp; This interface
+will still be textual, but the commands will be shorter and have only a
+single fixed form, and the output will appear as structured data, also
+in fixed forms and identified by type</i></blockquote>
+Any code rendering data (such as breakpoint information or target variables)
+would need to be modified so that the the information could be displayed
+in both programmatic and more natural human readable forms.&nbsp; For instance,
+the function <tt>mips-tdep.c:mips_do_register_info()</tt> contains code
+to render the MIPS register set in a form palatable to humans.&nbsp; In
+the programmatic version of GDB, this code would be modified (duplicated?)
+so that the data was rendered in a more programmatic form.
+<center>
+<p><a href="stream2.jpg"><img SRC="stream.jpg" height=229 width=452></a></center>
+
+<p>A GUI debugger would then implement an adapter that matched their requirements
+with that of the programmatic GDB interface.
+<center>
+<p><img SRC="adapter.jpg" height=145 width=168></center>
+
+<h3>Problems and limitations</h3>
+
+Jim Blandy raises a number of concerns about this approach.&nbsp; In
+particular, Jim identifies the issues:
+
+<ul>
+<li>
+Amending GDB to produce two kinds of output increases both the complexity
+of the code and the maintenance overhead.</li>
+
+<br>&nbsp;
+<li>
+The current GDB allows the interspersion of data with error and warning
+messages and target console messages on the output stream.&nbsp; The proposal
+does not provide a formal (machine checkable) mechanism to ensures that&nbsp;
+non data output gets correctly directed away from the data output stream.&nbsp;
+Such a mechanism should ensure that both the existing occurrences of this
+problem were fixed and that future updates were not able to re-introduce
+this problem.</li>
+
+<br>&nbsp;
+<li>
+[the proposal does not] force programmers to be explicit about how the
+interface changes, make an opportunity to consider carefully how the interface
+should change, and provide a convenient focus for the person responsible
+for keeping that interface clean.</li>
+</ul>
+The clear resolution of these and other issues is part of the Headless
+GDB project.
+<br>&nbsp;
+</body>
+</html>

@@ -1,0 +1,55 @@
+<HTML>
+<HEAD>
+<!-- Created by texi2html 1.57 from libgdb.texinfo on August, 23  1999 -->
+
+<TITLE>Libgdb - View Commands</TITLE>
+</HEAD>
+<BODY >
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_10.html">Back</A>] &#160; [<A HREF="libgdb_10.html">Prev</A>] &#160; [<A HREF="libgdb_9.html">Up</A>] &#160; [<A HREF="libgdb_12.html">Next</A>] &#160; [<A HREF="libgdb_12.html">Forward</A>] &#160;<BR><HR><BR>
+
+
+<H2><A NAME="SEC11">View Commands Mirror Show Commands</A></H2>
+
+<P>
+The GDB command language contains many <CODE>set</CODE> and <CODE>show</CODE>
+commands.  These commands are used to modify or examine parameters to
+the debugger.
+
+
+<P>
+It is difficult to get the current state of a parameter from the
+<CODE>show</CODE> command because <CODE>show</CODE> is very verbose.
+
+
+
+<PRE>
+(gdb) show check type
+Type checking is "auto; currently off".
+(gdb) show width
+Number of characters gdb thinks are in a line is 80.
+</PRE>
+
+<P>
+For every <CODE>show</CODE> command, libgdb includes a <CODE>view</CODE> command.
+<CODE>view</CODE> is like <CODE>show</CODE> without the verbose commentary:
+
+
+
+<PRE>
+(gdb) view check type
+auto; currently off
+(gdb) view width
+80
+</PRE>
+
+<P>
+(The precise format of the ouput from <CODE>view</CODE> is subject to change.
+In particular, <CODE>view</CODE> may one-day print values which can be used as
+arguments to the corresponding <CODE>set</CODE> command.)
+
+
+<P></P><HR>
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_10.html">Back</A>] &#160; [<A HREF="libgdb_10.html">Prev</A>] &#160; [<A HREF="libgdb_9.html">Up</A>] &#160; [<A HREF="libgdb_12.html">Next</A>] &#160; [<A HREF="libgdb_12.html">Forward</A>] &#160;
+
+</BODY>
+</HTML>

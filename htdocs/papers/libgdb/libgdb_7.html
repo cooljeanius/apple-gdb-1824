@@ -1,0 +1,53 @@
+<HTML>
+<HEAD>
+<!-- Created by texi2html 1.57 from libgdb.texinfo on August, 23  1999 -->
+
+<TITLE>Libgdb - Variables</TITLE>
+</HEAD>
+<BODY >
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_6.html">Back</A>] &#160; [<A HREF="libgdb_6.html">Prev</A>] &#160; [<A>Up</A>] &#160; [<A HREF="libgdb_8.html">Next</A>] &#160; [<A HREF="libgdb_8.html">Forward</A>] &#160;<BR><HR><BR>
+
+
+<H1><A NAME="SEC7">How Builtin Variables are Defined</A></H1>
+<P>
+<A NAME="IDX33"></A>
+
+
+<P>
+Convenience variables provide a way for values maintained by libgdb to
+be referenced in expressions (e.g. <CODE>$bpnum</CODE>).  Libgdb includes a
+means by which the application can define new, integer valued
+convenience variables:
+<DL>
+<DT><U>Function:</U> void <B>gdb_define_int_var</B> <I>(<VAR>name</VAR>, <VAR>fn</VAR>, <VAR>fn_arg</VAR>)</I>
+<DD><A NAME="IDX34"></A>
+
+<PRE>
+char * <VAR>name</VAR>;
+int (*<VAR>fn</VAR>) (void *);
+void * <VAR>fn_arg</VAR>;
+</PRE>
+
+<P>
+This function defines (or undefines) a convenience variable called <VAR>name</VAR>.
+If <VAR>fn</VAR> is NULL, the variable becomes undefined.  Otherwise,
+<VAR>fn</VAR> is a function which, when passed <VAR>fn_arg</VAR> returns the value
+of the newly defined variable.
+
+
+<P>
+No libgdb functions should be called by <VAR>fn</VAR>.
+</DL>
+
+
+<P>
+One use for this function is to create breakpoint conditions computed in
+novel ways.  This is done by defining a convenience variable and
+referring to that variable in a breakpoint condition expression.
+
+
+<P></P><HR>
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_6.html">Back</A>] &#160; [<A HREF="libgdb_6.html">Prev</A>] &#160; [<A>Up</A>] &#160; [<A HREF="libgdb_8.html">Next</A>] &#160; [<A HREF="libgdb_8.html">Forward</A>] &#160;
+
+</BODY>
+</HTML>

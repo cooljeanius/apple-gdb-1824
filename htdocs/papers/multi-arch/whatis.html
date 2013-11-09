@@ -1,0 +1,116 @@
+<html>
+<head>
+<title>What is multi-arch?</title>
+</head>
+<body>
+
+<pre>
+To: gdb@cygnus.com
+Subject: What is multi-arch?
+From: Andrew Cagney &lt;ac131313@cygnus.com
+Date: Tue, 20 Apr 1999 01:24:01 +1000
+Organization: Cygnus Solutions
+</pre>
+
+<p>Hello,
+
+<p>In the below I'll try to describe, in broad terms, the concept of a
+multi-arch debugger and then outline the approach that GDB is taking
+in achieving that goal.
+
+
+<h3>What is an architecture?</h3>
+
+<p>For GDB, an architecture is a very loose concept.  It can be
+thought of as any property of the target that isn't directly dependent
+on the current instance of the program being debugged.  The term
+``target architecture'' is some times used.
+
+<p>The ``architecture'' would include:
+
+<ul>
+<li>The ISA (Instruction Set Architecture)<br>A specific combination
+of registers/instructions
+<li>Application Binary Interface<br>The use of the ISA to provide a
+specific binary interface (stack frame format + register allocation)
+</ul>
+
+<p>while preclude the actual value of a given register.
+
+
+<h3>What is multi-arch?</h3>
+
+<p>Such a phrase is fairly loose in its definition so I'll provide you
+with a spectrum of definitions:
+
+<ul>
+
+<li> single architecture debugger:
+
+<br> For the most part this is what GDB is today.  If you want to
+debug a MIPS/32 (O32 ABI) binary you build GDB for the MIPS/32.  If
+you want to to instead debug a SPARC (or even a MIPS/64 - N64 ABI)
+then you need to build a second (and third) debugger.
+
+<li> multiple architecture debugger:
+
+<br> The limitation of a single GDB being restricted to a single
+architecture is removed.  A single GDB binary being able to debug any
+of a number of architectures for which GDB was built.
+
+<br> You might build GDB with support for both MIPS and SPARC targets.
+More typically, however, you will be building a GDB with support for a
+plithera of ISA variants (as with the MIPS case).  A very simple
+example is support for both big and little byte ordered variants.
+
+<br> It should be noted that GDB, as it currently stands, does support
+ISA/ABI variants (to a very limited degree).  I'm sure that anyone
+that has hacked on that code will agree that, at present, it isn't
+pretty ...
+
+<br> Of the possibilities, this has the greatest benefit
+
+<li> simultaneous multi-architecture debugger:
+
+<br> This would have to be the holy grail of debugger technology :-)
+
+<br> (As Stan once mentioned) Increasingly, in the embedded space,
+people are developing systems that are built from several different
+architectures.  (To pluck an example out of a hat - the next
+generation PlayStation has been described as having a 128-bit main
+processor as well as a number of co-processors).  
+<a
+href="http://www.redhat.com/about/presscenter/cygnus_1999/sony1.html"
+>Cygnus Announces GNUPro Software Development Tools For Sony Computer
+Entertainment Inc's Next Generation Playstation</a>, 29 Mar 1999.
+
+<br> On the UNIX side, this is still a very applicable idea - instead
+of multiple processors, multiple processes, each running a different
+ABI variant.
+
+</ul>
+
+
+<h3>GDB?</h3>
+
+<p> The objective, at this stage, is to modify GDB so that it can be
+built `multi-arch'.
+
+<p> In simple terms, the change required is for all those macro's in
+gdb/config/*/tm-*.h to be replaced with corresponding functions.
+Those functions combined into a table (very large architecture object
+- gdbarch) - one object per architecture variant.  When establishing a
+debugging session, gdb would select/create/install the architecture
+variant that best matched what was being debugged.
+
+<p> Of course, it isn't that simple.  Much of GDB's internal code
+needs to be tweaked so that it makes run-time rather than compile time
+architecture dependent decisions.
+
+<p> In succeeding e-mails I'll be expanding on this,
+
+<p>enjoy,
+<p>Andrew
+
+</body>
+</html>

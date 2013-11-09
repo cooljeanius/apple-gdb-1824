@@ -1,0 +1,148 @@
+<HTML>
+<HEAD>
+<!-- Created by texi2html 1.57 from libgdb.texinfo on August, 23  1999 -->
+
+<TITLE>Libgdb - Top Level</TITLE>
+</HEAD>
+<BODY >
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_2.html">Back</A>] &#160; [<A HREF="libgdb_2.html">Prev</A>] &#160; [<A>Up</A>] &#160; [<A HREF="libgdb_4.html">Next</A>] &#160; [<A HREF="libgdb_4.html">Forward</A>] &#160;<BR><HR><BR>
+
+
+<H1><A NAME="SEC3">You Provide the Top Level for the Libgdb Command Interpreter</A></H1>
+<P>
+<A NAME="IDX5"></A>
+
+
+<P>
+When you use libgdb, your code is providing a <EM>top level</EM> for the
+command language interpreter.  The top level is significant because it
+provides commands for the the interpreter to execute.  In addition, the
+top level is responsible for handling some kinds of errors, and
+performing certain cleanup operations on behalf of the interpreter.
+
+
+
+<H2>Initialization</H2>
+
+<P>
+Before calling any other libgdb functions, call this:
+
+
+<P>
+<DL>
+<DT><U>Function:</U> void <B>gdb_init</B> <I>(void)</I>
+<DD><A NAME="IDX6"></A>
+Perform one-time initialization for libgdb.
+</DL>
+
+
+<P>
+An application may wish to evaluate specific gdb commands as part of its
+own initialization.  The details of how this can be accomplished are
+explained below.
+
+
+
+<H2>The Top-Level Loop</H2>
+
+<P>
+There is a strong presumption in libgdb that the application has
+the form of a loop.  Here is what such a loop might look like:
+
+
+
+<PRE>
+while (gdb_still_going ())
+  {
+    if (!GDB_TOP_LEVEL ())
+      {
+        char * command;
+        gdb_start_top_loop ();
+        command = process_events ();
+        gdb_execute_command (command);
+        gdb_finish_top_loop ();
+      }
+    }
+</PRE>
+
+<P>
+The function <CODE>gdb_still_going</CODE> returns 1 until the gdb command
+`quit' is run.
+
+
+<P>
+The macro <CODE>GDB_TOP_LEVEL</CODE> invokes setjmp to set the top level error
+handler.  When a command results in an error, the interpreter exits with
+a longjmp. There is nothing special libgdb requires of the top level
+error handler other than it be present and that it restart the top level
+loop.  Errors are explained in detail in a later chapter.
+
+
+<P>
+Each time through the top level loop two important things happen: a
+debugger command is constructed on the basis of user input, and the
+interpreter is invoked to execute that command.  In the sample code, the
+call to the imaginary function <CODE>process_events</CODE> represents the
+point at which a graphical interface should read input events until
+ready to execute a debugger command.  The call to
+<CODE>gdb_execute_command</CODE> invokes the command interpreter (what happens
+to the output from the command will be explained later).
+
+
+<P>
+Libgdb manages some resources using the top-level loop.  The primary
+reason for this is error-handling: even if a command terminates with an
+error, it may already have allocated resources which need to be freed.
+The freeing of such resources takes place at the top-level, regardless
+of how the the command exits.  The calls to <CODE>gdb_start_top_loop</CODE>
+and <CODE>gdb_finish_top_loop</CODE> let libgdb know when it is safe to
+perform operations associated with these resources.
+
+
+
+<H2>Breakpoint Commands</H2>
+
+<P>
+Breakpoint commands are scripts of GDB operations associated with 
+particular breakpoints.  When a breakpoint is reached, its associated
+commands are executed.
+
+
+<P>
+Breakpoint commands are invoked by the libgdb function
+<CODE>gdb_finish_top_loop</CODE>.  
+
+
+<P>
+Notice that if control returns to the top-level error handler, the
+execution of breakpoint commands is bypassed.  This can happen as a
+result of errors during either <CODE>gdb_execute_command</CODE> or
+<CODE>gdb_finish_top_loop</CODE>.
+
+
+
+<H2>Application Initialization</H2>
+
+<P>
+Sometimes it is inconvenient to execute commands via a command loop for
+example, the commands an application uses to initialize itself.  An
+alternative to <CODE>execute_command</CODE> is <CODE>execute_catching_errors</CODE>.
+When <CODE>execute_catching_errors</CODE> is used, no top level error handler
+need be in effect, and it is not necessary to call
+<CODE>gdb_start_top_loop</CODE> or <CODE>gdb_finish_top_loop</CODE>.
+
+
+
+<H2>Cleanup</H2>
+
+<P>
+The debugger command "quit" performs all necessary cleanup for libgdb.
+After it has done so, it changes the return value of
+<CODE>gdb_still_going</CODE> to 0 and returns to the top level error handler.
+
+
+<P></P><HR>
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_2.html">Back</A>] &#160; [<A HREF="libgdb_2.html">Prev</A>] &#160; [<A>Up</A>] &#160; [<A HREF="libgdb_4.html">Next</A>] &#160; [<A HREF="libgdb_4.html">Forward</A>] &#160;
+
+</BODY>
+</HTML>

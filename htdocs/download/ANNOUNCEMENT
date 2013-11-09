@@ -1,0 +1,128 @@
+
+            GDB 7.6.1 released!
+
+Release 7.6.1 of GDB, the GNU Debugger, is now available via anonymous
+FTP.  GDB is a source-level debugger for Ada, C, C++, Objective-C,
+Pascal and many other languages.  GDB can target (i.e., debug programs
+running on) more than a dozen different processor architectures, and GDB
+itself can run on most popular GNU/Linux, Unix and Microsoft Windows
+variants.
+
+You can download GDB from the GNU FTP server in the directory:
+
+        ftp://ftp.gnu.org/gnu/gdb
+
+The vital stats:
+
+  Size  md5sum                            Name
+  24MB  fbc4dab4181e6e9937075b43a4ce2732  gdb-7.6.1.tar.bz2
+  30MB  d42841167fd061d90fddf9a7212a1f9f  gdb-7.6.1.tar.gz
+
+There is a web page for GDB at:
+
+        http://www.gnu.org/software/gdb/
+
+That page includes information about GDB mailing lists (an announcement
+mailing list, developers discussion lists, etc.), details on how to
+access GDB's CVS repository, locations for development snapshots,
+preformatted documentation, and links to related information around
+the net.  We will put errata notes and host-specific tips for this release
+on-line as any problems come up.  All mailing lists archives are also
+browsable via the web.
+
+GDB 7.6.1 provides the following fixes and improvements to GDB 7.6:
+
+  * PR tdep/15420 (Cannot debug threaded programs on newer versions
+    of x86-solaris - Solaris 10, Update 10 or later)
+  * PR remote/15455 (QTro remote packet broken)
+  * PR build/15476 (Build failure due to incomplete enum type in utils.h)
+  * PR server/15594 (tls support in 64x32 x86 gdbserver doesn't extend
+    address to 64 bit)
+  * PR server/15075 (dprintf inteferes with "next")
+  * PR server/15434 (dprintf uses a synchronous 'continue' even in
+    non-stop mode)
+  * PR tui/14880 (in split register layouts, up results in assertion
+    failure in value.c)
+  * PR c++/15519 (GDB 7.6 is 94x slower than GDB 7.5.1 using a certain
+    core file)
+  * PR gdb/15837 (GDB prints entry values for local variables)
+  * PR gdb/15415 (gdb resolves symbolic links when passing argv[0])
+  * PR cli/15603 (CTRL-C can no longer interrupt inferior)
+  * PR gdb/15604 (gdbserver socket leak 7.5 regression)
+
+GDB 7.6 brings new targets, features and improvements, including:
+
+  * New native configurations:
+
+    ARM AArch64 GNU/Linux           aarch64*-*-linux-gnu
+    FreeBSD/powerpc                 powerpc*-*-freebsd
+    x86_64/Cygwin                   x86_64-*-cygwin*
+    Tilera TILE-Gx GNU/Linux        tilegx*-*-linux-gnu
+
+  * New target configurations:
+
+    ARM AArch64                     aarch64*-*-elf
+    ARM AArch64 GNU/Linux           aarch64*-*-linux
+    Lynx 178 PowerPC                powerpc-*-lynx*178
+    x86_64/Cygwin                   x86_64-*-cygwin*
+    Tilera TILE-Gx GNU/Linux        tilegx*-*-linux
+
+  * New configure options: -enable-libmcheck/--disable-libmcheck
+
+  * Support for the "mini debuginfo" section, .gnu_debugdata
+
+  * The C++ ABI now defaults to the GNU v3 ABI.  This has been the
+    default for GCC since November 2000.
+
+  * New command line option: -nh (disables auto-loading of ~/.gdbinit)
+
+  * Various GDB/MI changes
+
+  * Python scripting:
+
+    ** Vectors can be created with gdb.Type.vector.
+    ** Python's atexit.register now works in GDB.
+    ** Types can be pretty-printed via a Python API.
+    ** Python 3 is now supported (in addition to Python 2.4 or later)
+    ** New class gdb.Architecture exposes GDB's internal representation
+       of architecture in the Python API.
+    ** New method Frame.architecture returns the gdb.Architecture object
+       corresponding to the frame's architecture.
+    ** New Python-based convenience functions ($_memeq, $_streq,
+       $_strlen and $_regex)
+
+  * The 'cd' command now defaults to using '~' (the home directory) if
+    not given an argument.
+
+  * New commands:
+    ** catch signal
+    ** maint info bfds
+    ** python-interactive
+    ** enable/disable type-printer
+
+  * New remote packets (QTBuffer:size, Qbtrace:bts, Qbtrace:off and
+    qXfer:btrace:read)
+
+  * New options:
+    ** set/show print type methods (on|off)
+    ** set/show print type typedefs (on|off)
+    ** set/show filename-display basename|relative|absolute
+    ** set/show trace-buffer-size
+    ** set/show remote trace-buffer-size-packet auto|on|off
+    ** set/show debug aarch64
+    ** set/show debug coff-pe-read
+    ** set/show debug mach-o
+    ** set/show debug notification
+
+  * target record:
+
+    The "target record" command has been renamed to "target record-full",
+    and a new "target record-btrace" has been added.  This new target
+    uses hardward support to record the control-flow of a process.
+    Execution replay is not supported, but this targets allows investigating
+    the program's recorded execution.
+
+For a complete list and more details on each item, please see the
+gdb/NEWS file.
+
+

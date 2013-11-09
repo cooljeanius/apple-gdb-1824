@@ -1,0 +1,934 @@
+<HTML>
+<HEAD>
+<!-- Created by texi2html 1.57 from libgdb.texi on August, 24  1999 -->
+
+<TITLE>libGDB</TITLE>
+</HEAD>
+<BODY >
+<H1>libGDB</H1>
+<H2>A library architecture for GDB</H2>
+<ADDRESS>by Andrew Cagney, Cygnus Solutions</ADDRESS>
+<P>
+<P><HR><P>
+<H1>Table of Contents</H1>
+<UL>
+<LI><A NAME="TOC1" HREF="libgdb.html#SEC1">Overview</A>
+</LI><LI><A NAME="TOC2" HREF="libgdb.html#SEC2">Review of previous work</A>
+</LI><UL>
+<LI><A NAME="TOC3" HREF="libgdb.html#SEC3">DDD (and xgdb, xxgdb, mxgdb, ...)</A>
+</LI><LI><A NAME="TOC4" HREF="libgdb.html#SEC4">Insight (a.k.a. GDBtk)</A>
+</LI><LI><A NAME="TOC5" HREF="libgdb.html#SEC5">EMACS/annotate</A>
+</LI><LI><A NAME="TOC6" HREF="libgdb.html#SEC6">libgdb 1.0</A>
+</LI></UL>
+<LI><A NAME="TOC7" HREF="libgdb.html#SEC7">libGDB</A>
+</LI><UL>
+<LI><A NAME="TOC8" HREF="libgdb.html#SEC8">Overview</A>
+</LI><LI><A NAME="TOC9" HREF="libgdb.html#SEC9">Expected client interaction</A>
+</LI><LI><A NAME="TOC10" HREF="libgdb.html#SEC10">Interfaces</A>
+</LI><UL>
+<LI><A NAME="TOC11" HREF="libgdb.html#SEC11">Query/builder</A>
+</LI><LI><A NAME="TOC12" HREF="libgdb.html#SEC12">Event notify</A>
+</LI><LI><A NAME="TOC13" HREF="libgdb.html#SEC13">Operators (anyone got a better name)</A>
+</LI><UL>
+<LI><A NAME="TOC14" HREF="libgdb.html#SEC14">Synchronous operations</A>
+</LI><LI><A NAME="TOC15" HREF="libgdb.html#SEC15">Asynchronous control</A>
+</LI></UL>
+<LI><A NAME="TOC16" HREF="libgdb.html#SEC16">Output streams</A>
+</LI><LI><A NAME="TOC17" HREF="libgdb.html#SEC17">Event Loop</A>
+</LI><LI><A NAME="TOC18" HREF="libgdb.html#SEC18">Start Up</A>
+</LI></UL>
+<LI><A NAME="TOC19" HREF="libgdb.html#SEC19">Worked Examples</A>
+</LI><UL>
+<LI><A NAME="TOC20" HREF="libgdb.html#SEC20">Inferior Function Call</A>
+</LI><LI><A NAME="TOC21" HREF="libgdb.html#SEC21">Breakpoints</A>
+</LI><UL>
+<LI><A NAME="TOC22" HREF="libgdb.html#SEC22">Set a new breakpoint</A>
+</LI><LI><A NAME="TOC23" HREF="libgdb.html#SEC23">Restart program with new executable</A>
+</LI></UL>
+<LI><A NAME="TOC24" HREF="libgdb.html#SEC24">Global Variable</A>
+</LI></UL>
+</UL>
+<LI><A NAME="TOC25" HREF="libgdb.html#SEC25">Implementation</A>
+</LI><UL>
+<LI><A NAME="TOC26" HREF="libgdb.html#SEC26">Query</A>
+</LI><LI><A NAME="TOC27" HREF="libgdb.html#SEC27">Notify</A>
+</LI><LI><A NAME="TOC28" HREF="libgdb.html#SEC28">Operations</A>
+</LI><LI><A NAME="TOC29" HREF="libgdb.html#SEC29">ui-stream / gdb-file</A>
+</LI><LI><A NAME="TOC30" HREF="libgdb.html#SEC30">event-loop</A>
+</LI><LI><A NAME="TOC31" HREF="libgdb.html#SEC31">Start up</A>
+</LI></UL>
+</UL>
+<P><HR><P>
+
+<P>
+Copyright (C) 1999, Cygnus Solutions
+
+
+<P>
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+
+
+
+<H1><A NAME="SEC1">Overview</A></H1>
+<P>
+<A NAME="IDX1"></A>
+<A NAME="IDX2"></A>
+
+
+<P><STRONG>Function and Purpose</STRONG>
+
+
+<P>
+This document provides an architectural overview of a proposed library
+implementation of GDB.  The intended purpose of the library is to
+facilitate the development of scripted and GUI interfaces based on the
+GNU debugger GDB.
+
+
+
+<H2>Acknowledgments</H2>
+
+<P>
+Thanks goes to Jim Blandy, Jim Ingham, Fernando Nasser, Stan Shebs and
+Elena Zannonoi for their significant contributions.
+
+
+
+
+<H1><A NAME="SEC2">Review of previous work</A></H1>
+
+
+
+<H2><A NAME="SEC3">DDD (and xgdb, xxgdb, mxgdb, ...)</A></H2>
+
+<P>
+Each of these debug GUI interfaces are implemented using an identical
+technique.  GDB (or some other debugger) is started as a separate server
+process, debug commands are sent to that process and all output is then
+parsed.  Of these, DDD is probably the most successful.
+
+
+<P>
+Unfortunately this technique has several limitations:
+
+
+
+<UL>
+<LI>
+
+it is very sensitive to changes in GDB's output
+<LI>
+
+performance is restricted by the speed of communication of between the
+GUI and GDB
+<LI>
+
+it was difficult to keep the GUI consistent with the CLI
+</UL>
+
+
+
+<H2><A NAME="SEC4">Insight (a.k.a. GDBtk)</A></H2>
+
+<P>
+The initial GDBtk implementation was very like DDD except that it was
+embedded in the same process as the debugger.  Commands would be sent to
+GDB and the resultant output would then be parsed.  As GDBtk evolved,
+and bottle-necks were identified, more direct calls into GDB's internals
+have been implemented (ex the assembler window).
+
+
+<P>
+Limitations of GDBtk can be identified:
+
+
+
+<UL>
+<LI>
+
+the need to share an event loop with GDB
+<BR>
+With the introduction of an event loop and the asynchronous in GDB it
+will finally becoming possible to address this issue.
+<LI>
+
+As with DDD GDBtk was often affected by changes to GDB's output
+<BR>
+The recently introduced gdb-file object should provide significant help.
+</UL>
+
+
+
+<H2><A NAME="SEC5">EMACS/annotate</A></H2>
+
+<P>
+GDB can produce annotated text output through the <CODE>set annotate</CODE>
+command.  In addition to the normal text, GDB includes numeric markers
+that identify key output tokens (a line number, a file name).  EMACS
+parses the annotations and makes use of that information.
+
+
+<P>
+The one key failing of this annotate mode is that the output fields are
+identified numerically instead of symbolically as found things like XML.
+
+
+<P>
+While the annotate code is not being actively developed it does have a
+significant installed base and consequently needs to be maintained.
+
+
+
+
+<H2><A NAME="SEC6">libgdb 1.0</A></H2>
+
+<P>
+libgdb 1.0 was an interesting learning experience.  Much of that
+experience is being transfered to libGDB.  Issues that libgdb didn't
+address were:
+
+
+
+<UL>
+<LI>
+
+an event model and a notify mechanism
+<LI>
+
+the assumption that reasonable performance could be achieved while
+relying purely on a textual interface.
+</UL>
+
+
+
+<H1><A NAME="SEC7">libGDB</A></H1>
+
+<P>
+This section describes the enhancements being made to GDB so that it can
+facilitate the efficient integration of new interfaces such as scripting
+languages and GUIs.
+
+
+
+
+<H2><A NAME="SEC8">Overview</A></H2>
+
+<P>
+libGDB is not a single interface.  Rather it is a set of components that
+make it possible to integrate GDB into a larger system.
+
+
+<P>
+That system might be the existing GDB-CLI, a scripting language such as
+GUILE, or a true GUI.  Dependant on the functionality required, the
+system would make use of one or more of the components that libGDB
+provides.
+
+
+<P>
+For instance, one of the libGDB components is a target output stream.
+All remote-target output being channeled through this.  The existing
+GDB-CLI allows that output to flow through to the user's terminal while
+a GUI would implement a target-console window and channel the
+remote-target output through to that.
+
+
+<P>
+The components are:
+
+
+
+<UL>
+<LI>
+
+Query with builder
+<LI>
+
+Event notify
+<LI>
+
+Control
+<LI>
+
+Output streams
+<LI>
+
+Event loop
+<LI>
+
+Start up
+</UL>
+
+<P>
+In the following section each of these interfaces is described.
+
+
+<P>
+Fundamental to a GDB library is the mechanism that allow the UI to
+obtain symbolic information and also ensure that any information
+obtained is synchronized with the current value on the target.
+
+
+<P>
+This is provided by request and notify (callback) mechanisms.
+
+
+
+
+<H2><A NAME="SEC9">Expected client interaction</A></H2>
+
+<P>
+While GDB is good at combining binary data (obtained from the target)
+with debug information (obtained from the object file) producing output
+that represents the raw data in a symbolic form, GDB is useless when it
+comes to managing those symbolic values in a more object oriented way.
+
+
+<P>
+Consequently, it is expected that non-trivial clients would use GDB as
+part of a more sophisticated object framework.
+
+
+<P>
+Corresponding to each "object" that GDB can represent symbolically
+would be a client object.  That client object would query GDB for
+relevant symbolic information as needed.  Such a query might be
+triggered by a user-interface request or, possibly, by libGDB notifying
+the client that certain symbolic values are out-of-date.
+
+
+<P>
+For example, consider breakpoints.  A client might implement a
+breakpoint object.  There being a one-to-one correspondence between
+GDB's breakpoints and each instance of the breakpoint object.  When the
+user (via the client's user-interface) requests that a breakpoint be
+created the client would create its breakpoint object and then request
+that GDB did the same.  When GDB detected that the state of a breakpoint
+hand changed, it would notify the client of this.  The client could then
+refresh its local breakpoint state.
+
+
+<P>
+Over the longer term, a generic implementation of such objects would
+become available and that would be integrated into libGDB.
+
+
+
+
+<H2><A NAME="SEC10">Interfaces</A></H2>
+
+
+
+<H3><A NAME="SEC11">Query/builder</A></H3>
+
+<P>
+This is the most fundamental of the proposed changes to GDB.  Up until
+now, code that implementing a query operation returned raw text
+(possibly annotated).  As explained in the previous section this
+operation is both un-reliable and inefficient. [I'd better add an
+explanation].
+
+
+<P>
+In libGDB, all query operations are parameterized with a builder object
+(ref something to do with builder and something to do with XML).
+Internally, GDB describes the symbolic data using the more descriptive
+builder interface where as previously it would have converted that
+information into simple text.  The default builder (for the existing
+CLI) would implement methods that continued to display that symbolic
+data as straight text.
+
+
+<P>
+A given UI would construct a builder that meet its specific needs.  A
+GUILE builder could construct a tagged list structure that would be
+directly accessible from its interpreter.
+
+
+<P>
+For instance, details of a breakpoint are available using GDB's
+<CODE>info breakpoint</CODE> command vis:
+
+
+
+<PRE>
+(gdb) info breakpoint 1
+Num Type           Disp Enb Address    What
+1   breakpoint     keep y   0x0000003d in main at hello.c:3
+        breakpoint already hit 1 time
+</PRE>
+
+<P>
+Within libGDB the internal code that described the breakpoint would be
+accessible.  In the GUILE case, that internal code would be called with
+a GUILE builder and would construct an object like:
+
+
+
+<PRE>
+(breakpoint
+ ((number 1)
+  (type "breakpoint")
+  (disp "keep")
+  (enabled "y")
+  (addr "0x0000003d")
+  (func "main")
+  (file "hello.c" 3)))
+</PRE>
+
+
+
+<H3><A NAME="SEC12">Event notify</A></H3>
+
+<P>
+The next component is the notify mechanism.  When GDB determines that a
+significant event has occurred (memory changed, breakpoint changed,
+target started, target stopped) it advises the target using a notify
+call.
+
+
+<P>
+For each "object" that GDB can represent symbolically, there is notify
+mechanism that allows GDB to inform the UI that information has been
+invalidated.  The exact mechanism used depends on the type of data
+involved.
+
+
+<P>
+For instance, looking at the existing GDB CLI:
+
+
+
+<PRE>
+(gdb) disable 1
+(gdb) info breakpoint
+Num Type           Disp Enb Address    What
+1   breakpoint     keep n   0x0000003d in main at hello.c:3
+        breakpoint already hit 1 time
+</PRE>
+
+<P>
+After the command <CODE>disable 1</CODE> has been issued, GDB's internal state
+of breakpoint has been changed.  Consequently, as part of updating the
+breakpoint internal state, libGDB would notify the client that the
+breakpoints state has changed.  The client could then query libGDB for
+the new breakpoint state.
+
+
+<P>
+Note: <EM>libGDB is not re-entrant.  The client must ensure that it
+has only one query outstanding at any time.</EM>
+
+
+
+
+<H3><A NAME="SEC13">Operators (anyone got a better name)</A></H3>
+
+<P>
+An operator manipulates the state of GDB or the target.
+
+
+<P>
+An operation is either synchronous or asynchronous.  A synchronous
+operation completes synchronously with the client.  An asynchronous
+operation, which involves execution (free running) by the target, has no
+bounded completion time.
+
+
+<P>
+Note: <EM>A synchronous that operation communicates with the target
+bounds the length of time required for the communication though the use
+of timeouts.</EM>
+
+
+
+
+<H4><A NAME="SEC14">Synchronous operations</A></H4>
+
+<P>
+Such operations include changing the state of GDB and/or the target.
+For instance, modifying, adding or deleting a breakpoints; Modifying the
+value of a register on the target.
+
+
+<P>
+Such operations return a simple result indication. They do not return
+more complex data.  For instance, the operator for creating a breakpoint
+would return a success indication.  The event-notify mechanism would be
+used to advice the client of the existence of the new breakpoint
+identifier.
+
+
+
+
+<H4><A NAME="SEC15">Asynchronous control</A></H4>
+
+<P>
+As a consequence of the ASYNC work, most control operations - step,
+continue, run, stop - are asynchronous.  In addition, some of the less
+obvious operations such as expression evaluation (this can involve an
+inferior function call) are also considered asynchronous.
+
+
+<P>
+To correctly interact with libGDB, the client must implement:
+
+
+
+<UL>
+<LI>
+
+code requesting an asynchronous operation
+<LI>
+
+code accepting asynchronous event-notification
+</UL>
+
+<P>
+For instance, a client requests libGDB to continue the program running
+on the target.  The operation returns immediately. At some later stage
+libGDB notifies the client that the program has halted and the client
+can then query GDB for the stop status.
+
+
+<P>
+Note: <EM>The client is responsible for policy issues such as how to
+handle failed asynchronous requests.  For instance, a GUI, in response
+to the stop button being pressed may elect to leave the button depressed
+until the target-stop notify event (or internal timeout) occurs or pop
+the button immediately and then allow the user to re-attempt the stop
+operation.</EM>
+
+
+<P>
+Note: <EM>The mechanism for notifying the client of the final result
+from an inferior function call have not been determined.  Asynchronous
+inferior function calls are work-in-progress.  One possible mechanism
+would be for GDB to notify the client of a result-handle and then allow
+the client to query the value of that handle.</EM>
+
+
+
+
+<H3><A NAME="SEC16">Output streams</A></H3>
+
+<P>
+In addition to providing access to the target (via the query/notify
+mechanism), GDB also has a number of out-of-band text streams:
+
+
+
+<UL>
+<LI>
+
+output from the target (sim or remote)
+<LI>
+
+internal traces and logs
+<LI>
+
+CLI console output
+</UL>
+
+<P>
+Each of these text streams are implemented with corresponding stream
+object.  A client can control a given stream by providing its own stream
+implementation.
+
+
+
+
+<H3><A NAME="SEC17">Event Loop</A></H3>
+
+<P>
+GDB, internally is event driven (well it is getting there).  The UI must
+either:
+
+
+
+<UL>
+<LI>
+
+bind itself to GDB's internal event-loop.
+<BR>
+Typical for command-line UIs.
+<LI>
+
+implement a custom event loop that incorporates the functionality
+required by GDB.
+<BR>
+Typical for graphical UIs
+</UL>
+
+<P>
+The event loop interface is still being developed.
+
+
+
+
+<H3><A NAME="SEC18">Start Up</A></H3>
+
+<P>
+Since the objective is to facilitate the addition of new GUI and
+scripting interfaces integrated into GDB (rather than separate as with
+DDD) a more clearly defined startup mechanism is required.
+
+
+<P>
+That sequence is still being defined.
+
+
+
+
+<H2><A NAME="SEC19">Worked Examples</A></H2>
+
+<P>
+Below are several worked examples illustrating likely interactions
+between a libGDB and a client.
+
+
+
+
+<H3><A NAME="SEC20">Inferior Function Call</A></H3>
+
+<P>
+This example illustrates a possible sequence of interactions that could
+occur between GDB and the client when the user, via the clients user
+interface, requests the evaluation of an expression that contained a
+function call.
+
+
+
+<OL>
+<LI>
+
+The client receives control from the event-loop (a request to evaluate
+an expression by the user).
+<LI>
+
+The client requests that GDB evaluate an arbitrary expression using a
+<EM>synchronous</EM> expression evaluator.
+<LI>
+
+GDB rejects the request (as the expression includes an inferior function
+call) returning a fail status to the client.
+<LI>
+
+The client requests that GDB evalue an arbitrary expression using the
+asynchronous expression evaluator.
+<LI>
+
+GDB accepts the request.
+<LI>
+
+GDB determines that an inferior function call is required, starts the
+target and notifies the client that the target is running.
+<LI>
+
+GDB returns control to the client.
+<LI>
+
+The client returns control to the event loop.
+<LI>
+
+GDB receives control from the event-loop - the target stopped.
+<LI>
+
+GDB notifies the client that the target stopped
+<LI>
+
+GDB notifies the client of the result of the expression. Say via a
+handle.  The client requests that it be scheduled next.
+<LI>
+
+GDB returns control to the event-loop.
+<LI>
+
+The client receives control from the event-loop.
+<LI>
+
+The client queries GDB for the actual result of the expression.
+<LI>
+
+The client displays the result.
+<LI>
+
+The client returns control to the event-loop
+</OL>
+
+
+
+<H3><A NAME="SEC21">Breakpoints</A></H3>
+
+<P>
+In this example, it is assumed that the client is maintaining an
+internal breakpoint structure that is separate to GDB.  That
+client-structure is referred to when ever the client is annotating a
+source code window with markers for the currently active breakpoints.
+
+
+
+
+<H4><A NAME="SEC22">Set a new breakpoint</A></H4>
+
+
+<OL>
+<LI>
+
+The client receives the request for a breakpoint at function F.
+<LI>
+
+The client requests that GDB set a breakpoint at function F
+<LI>
+
+GDB performs the action; notifies client that a breakpoint has been
+created; and then returns control to client.
+<LI>
+
+The client requests details of the newly created breakpoint from GDB and
+updates local breakpoint table.
+</OL>
+
+
+
+<H4><A NAME="SEC23">Restart program with new executable</A></H4>
+
+
+<OL>
+<LI>
+
+The client receives the request to re-load the file.
+<LI>
+
+The client notifies GDB that the file should be re-loaded.
+<LI>
+
+GDB loads the updated executable and, in the process adjusts several
+breakpoints.
+<LI>
+
+GDB notifies the client of the breakpoints that changed.
+<LI>
+
+The client refreshes its breakpoint database by requesting up-to-date
+information from GDB.
+</OL>
+
+
+
+<H3><A NAME="SEC24">Global Variable</A></H3>
+
+<P>
+In this final example, the client is tracking the value of a global
+variable.  It is assumed that in addition to an object responsible for
+managing that variables value, the client also has a mechanism for
+mapping address ranges onto variables.  GDB notifies the client of a
+potential variable change by specifying the memory address and number of
+bytes that were modified.
+
+
+<P>
+Note: <EM>Here one possible implementation is presented. Different
+clients may elect to implement this differently.</EM>
+
+
+
+<OL>
+<LI>
+
+client receives a request to display a variable's value
+<LI>
+
+client requests details of specified variable from GDB
+<LI>
+
+GDB returns variable details (value, memory location, stack or heap
+based, ...)
+<LI>
+
+client creates an object to manage the value.  That object registers its
+presence with the change notification system indicating its
+address/size.
+</OL>
+
+<P>
+The user than modifies the variable indirectly:
+
+
+
+<OL>
+<LI>
+
+client requests GDB to perform an operation that modifies the variable
+mentioned above.
+<LI>
+
+GDB notifies client that a specific memory range has been changed.
+<LI>
+
+Client notifies variable object that it's value has been changed.
+<LI>
+
+Client's variable object requests GDB for an up-to-date value of that
+variable.
+</OL>
+
+
+
+<H1><A NAME="SEC25">Implementation</A></H1>
+
+<P>
+This strategy outline the recommended strategy for implementing each of
+the components.
+
+
+
+
+<H2><A NAME="SEC26">Query</A></H2>
+
+<P>
+The set of possible requests, and their behavour will initially be based
+on a subset of the existing CLI command set.  In particular the commands:
+
+
+
+<UL>
+<LI>
+
+<CODE>show ...</CODE>
+<LI>
+
+<CODE>info ...</CODE>
+</UL>
+
+<P>
+would be used as a starting point.
+
+
+<P>
+Rather than clone those commands, the query methods would be implemented
+by modifying the existing code base so that it "builds" each result.
+The existing CLI would call the code with a simple text builder
+(<TT>`cli-out.[hc]'</TT>?); GUILE would make the same call but with its own
+complicated builder (<TT>`guile-out.[hc]'</TT>?).
+
+
+<P>
+As an example of the change required, the function <CODE>breakpoint_1()</CODE>
+in <TT>`breakpoint.c'</TT> would be modified from:
+
+
+
+<PRE>
+annotate_breakpoint (bs-&#62;breakpoint_at-&#62;number);
+printf_filtered ("\nBreakpoint %d, ", bs-&#62;breakpoint_at-&#62;number);
+</PRE>
+
+<P>
+to:
+
+
+
+<PRE>
+annotate_breakpoint (bs-&#62;breakpoint_at-&#62;number);
+ui_out_text (uiout, "\nBreakpoint ");
+ui_out_field_int (uiout, "bkptno", bs-&#62;breakpoint_at-&#62;number);
+ui_out_text (uiout, ", ");
+</PRE>
+
+<P>
+A GUILE builder would construct the internal structure:
+
+
+
+<PRE>
+(..... (bkptno 1) ...)
+</PRE>
+
+
+
+<H2><A NAME="SEC27">Notify</A></H2>
+
+<P>
+The notify mechanism is based on the hook system already provided to
+GDBtk.  The mechanism would need to be formalized
+(<TT>`gdb-hooks.[hc]'</TT>) (say).
+
+
+<P>
+The set of notify hooks would be expected to evolve over time as the
+needs of the clients are better understood.
+
+
+
+
+<H2><A NAME="SEC28">Operations</A></H2>
+
+<P>
+The control interface shall be based on GDB's existing set of <CODE>run</CODE>
+/ <CODE>stop</CODE> et.al. commands.
+
+
+
+
+<H2><A NAME="SEC29">ui-stream / gdb-file</A></H2>
+
+<P>
+The mechanism for capturing output directed to various streams (such as
+output from the remote target) is the gdb_file.  Apart from a number of
+minor refinements, that mechanism is already in place.
+
+
+<P>
+In the near term, gdb-file should be broken out of <TT>`utils.c'</TT> and
+moved to a new file <TT>`ui-stream.[hc]'</TT> (say).
+
+
+
+
+<H2><A NAME="SEC30">event-loop</A></H2>
+
+<P>
+The event loop is beyond the scope of this document.
+
+
+
+
+<H2><A NAME="SEC31">Start up</A></H2>
+
+<P>
+Although the initialization mechanism used by optional client's is
+still undefined, the below outlines one possible sequence:
+
+
+
+<OL>
+<LI>
+
+The alternative client is linked in with GDB. The top-level code
+contained in <TT>`XXX-top.c'</TT>.  This file includes a standard
+<VAR>__initialize_XXX</VAR> function.
+<LI>
+
+When GDB is started <VAR>--ui=NAME</VAR> is passed as an argument.  GDB saves
+NAME in a global variable.
+<LI>
+
+Eventually control reaches <VAR>__initialize_XXX</VAR>.  That function checks
+to see if it matches <VAR>NAME</VAR> and if it does, registers its custom
+version of the main event loop.
+<LI>
+
+GDB continues initialization and then, eventually calls <VAR>XXX</VAR>'s
+custom event loop.
+</OL>
+
+<P><HR><P>
+This document was generated on August, 24  1999 using
+<A HREF="http://www.mathematik.uni-kl.de/~obachman/Texi2html">texi2html</A>&nbsp;1.57.
+
+</BODY>
+</HTML>

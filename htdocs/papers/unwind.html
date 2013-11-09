@@ -1,0 +1,68 @@
+<html>
+<head>
+<title>Unwinding the stack</title>
+</head>
+<body>
+
+<p>Various programs (including debuggers, exception handling for both
+Ada and C++, and perhaps others) need the ability to be able to unwind
+the call stack (that is, return to a calling function - sort of like
+setjmp/longjmp but without any "setjmp" step).  To do this, one needs
+to know, for example, whether each function has a frame pointer and if
+not how deep the stack is.
+
+<p>Here are the various approaches:
+
+<ul>
+
+<li>Parse the function prologues.  This is what GDB does (most of the
+time).  Very architecture-dependent, of course, and also limits the
+optimizations that the compiler can do and have things continue to
+work.
+
+<li>DWARF2 unwind information.  Don't know as much about this.
+
+<li>The <code>.eh_frame</code> section.  The problem with this is that
+the unwind information <a
+href="http://lists.kde.org/?l=kde-core-devel&m=94025784409400&w=2"
+>tends to be large</a> and <a
+href="http://gcc.gnu.org/ml/gcc/1998-06/msg00088.html" >cannot be
+readonly</a>.
+<!-- thread "why isn't the .eh_frame section marked READONLY?" -->
+
+<!-- Can be found at http://www.landfield.com/faqs/g++-FAQ/ but
+seems to be pretty far out of date
+
+<p>Also see the section on exceptions in the g++ FAQ
+-->
+
+<!-- http://www.aromatic.com/~cg/work.htm - link to DWARF -->
+
+<li>The IA64 defines its own format, as documented in the Itanium
+Processor-specific Application Binary Interface (ABI) on <a
+href="http://developer.intel.com/design/ia-64/under_lnx.htm" >Intel's
+site</a>.
+
+</ul>
+
+<p>Note one somewhat subtle issue: that parsing the prologue works
+even if the program counter is within the prologue (GDB simply stops
+parsing when it gets to the program counter).  Having the program
+counter within the prologue is a more or less normal state of affairs
+for optimized code.  Only the fancier (and more space consuming) debug
+formats have the ability to say "there is a frame pointer when PC is
+0x400 to 0x407, but not when PC is 0x304 to 0x400" and the like.
+
+<p>A couple other issues are: (1) whether compilers are more likely to
+emit buggy unwind info than buggy code, and (2) whether unwind info is
+in a bizarre (perhaps platform-specific) format, and/or is customarily
+manipulated via bizarre platform specific libraries (or even worse,
+bizarre libraries with licensing issues).  These don't necessarily
+apply to all implementations/formats of unwind info, it is just they
+have been problems in the past.
+
+<hr>
+<p>This page is part of the <a href="../index.html" >GDB</a> site.
+
+</body>
+</html>

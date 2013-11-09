@@ -1,0 +1,74 @@
+<HTML>
+<HEAD>
+<!-- Created by texi2html 1.57 from libgdb.texinfo on August, 23  1999 -->
+
+<TITLE>Libgdb - Asynchronous</TITLE>
+</HEAD>
+<BODY >
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_7.html">Back</A>] &#160; [<A HREF="libgdb_7.html">Prev</A>] &#160; [<A>Up</A>] &#160; [<A HREF="libgdb_9.html">Next</A>] &#160; [<A HREF="libgdb_9.html">Forward</A>] &#160;<BR><HR><BR>
+
+
+<H1><A NAME="SEC8">Scheduling Asynchronous Computations</A></H1>
+<P>
+<A NAME="IDX35"></A>
+
+
+<P>
+A running libgdb function can take a long time.  Libgdb includes a hook
+so that an application can run intermittently during long debugger
+operations.
+
+
+<P>
+<DL>
+<DT><U>Function:</U> void <B>gdb_set_poll_fn</B> <I>(<VAR>fn</VAR>, <VAR>fn_arg</VAR>)</I>
+<DD><A NAME="IDX36"></A>
+
+<PRE>
+void (*<VAR>fn</VAR>)(void * fn_arg, int (*gdb_poll)());
+void * <VAR>fn_arg</VAR>;
+</PRE>
+
+<P>
+Arrange to call <VAR>fn</VAR> periodically during lengthy debugger operations.
+If <VAR>fn</VAR> is NULL, polling is turned off.  <VAR>fn</VAR> should take two
+arguments: an opaque pointer passed as <VAR>fn_arg</VAR> to
+<CODE>gdb_set_poll_fn</CODE>, and a function pointer.  The function pointer
+passed to <VAR>fn</VAR> is provided by libgdb and points to a function that
+returns 0 when the poll function should return.  That is, when
+<CODE>(*gdb_poll)()</CODE> returns 0, libgdb is ready to continue <VAR>fn</VAR>
+should return quickly.
+
+
+<P>
+It is possible that <CODE>(*gdb_poll)()</CODE> will return 0 the first time it
+is called, so it is reasonable for an application to do minimal processing
+before checking whether to return.
+
+
+<P>
+No libgdb functions should be called from an application's poll function,
+with one exception: <CODE>gdb_request_quit</CODE>.
+</DL>
+
+
+<P>
+<DL>
+<DT><U>Function:</U> void <B>gdb_request_quit</B> <I>(void)</I>
+<DD><A NAME="IDX37"></A>
+This function, if called from a poll function, requests that the
+currently executing libgdb command be interrupted as soon as possible,
+and that control be returned to the top-level via an error.
+
+
+<P>
+The quit is not immediate.  It will not occur until at least after the
+application's poll function returns.
+</DL>
+
+
+<P></P><HR>
+ [<A HREF="libgdb_toc.html">Contents</A>] &#160; [<A HREF="libgdb_7.html">Back</A>] &#160; [<A HREF="libgdb_7.html">Prev</A>] &#160; [<A>Up</A>] &#160; [<A HREF="libgdb_9.html">Next</A>] &#160; [<A HREF="libgdb_9.html">Forward</A>] &#160;
+
+</BODY>
+</HTML>
