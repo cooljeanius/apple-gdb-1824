@@ -1,5 +1,15 @@
 2013-11-08  Eric Gallager  <egallager@comcast.net>
 
+	add gdb admin scripts and htdocs
+
+	`git cvsimport` did *not* seem to do anything for me, so instead I had
+	to import with `cvs` manually. See
+	http://www.gnu.org/software/gdb/current/ for commands used.
+
+	Change-Id: I1908b3b7571b4cc15c5715311ab53095b7c0fc83
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
 	Add FSF gdb as a git submodule
 
 	why am I doing this I hate git submodules arghhh
