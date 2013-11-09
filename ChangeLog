@@ -1,5 +1,26 @@
 2013-11-08  Eric Gallager  <egallager@comcast.net>
 
+	Add some more darwinbuild plists
+
+	Change-Id: Ibf5a8a978f3b8d29904f3216a127756aad0ca2a2
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+	some minor changes:
+
+	- now that src/gdb uses automake, it requires the same hack that other
+	subdirectories that use automake require
+	- split off a copy of the top-level ChangeLog that just includes a list
+	of my own changes
+
+	(also if you are viewing this commit message via the ChangeLog file,
+	you should really be doing it from GitHub instead, as it has the actual
+	diffs and stuff)
+
+	Change-Id: Id4502e00ba2f82746e5c7c9de87e7a49fb582198
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
 	actually update ChangeLog
 
 	this time via http://stackoverflow.com/a/16738477

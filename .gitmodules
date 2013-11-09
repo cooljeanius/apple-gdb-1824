@@ -1,3 +1,6 @@
 [submodule "macgdb"]
 	path = macgdb
 	url = https://github.com/cooljeanius/macgdb.git
+[submodule "binutils-gdb"]
+	path = binutils-gdb
+	url = git://sourceware.org/git/binutils-gdb.git
