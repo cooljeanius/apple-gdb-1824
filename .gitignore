@@ -23,3 +23,7 @@ stamp-h*
 *.sum
 obj/*
 tmpwrk*/*
+BuildRoot/*
+Logs/*
+Symbols/*
+Roots/*
