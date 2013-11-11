@@ -1,4 +1,4 @@
-To use with `darwinbuild`, from the top directory of this distribution, do a command like this:
+~~To use with `darwinbuild`, from the top directory of this distribution, do a command like this:~~
 ```
 sudo darwinbuild -init darwinbuild/gdb.plist -nodmg
 ```
