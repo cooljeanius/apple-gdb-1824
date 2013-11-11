@@ -45,7 +45,7 @@
 extern CORE_ADDR h8500_skip_prologue (CORE_ADDR);
 
 /* Immediately after a function call, return the saved pc.
-   Can't always go through the frames for this because on some machines
+   Cannot always go through the frames for this because on some machines
    the new frame is not set up until the new function executes
    some instructions.  */
 
@@ -286,3 +286,5 @@ extern void h8500_write_pc (CORE_ADDR, ptid_t);
 #define TARGET_WRITE_PC(x,pid) h8500_write_pc(x,pid)
 
 #define TARGET_READ_FP() h8500_read_fp()
+
+/* EOF */

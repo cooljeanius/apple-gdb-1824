@@ -4,4 +4,3 @@ TM_FILE= tm-z8k.h
 
 SIM_OBS = remote-sim.o
 SIM = ../sim/z8k/libsim.a
-

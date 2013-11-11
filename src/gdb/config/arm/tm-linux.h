@@ -26,22 +26,22 @@
 
 #include "config/tm-linux.h"
 
-/* We've multi-arched this.  */
+/* We have multi-arched this.  */
 #undef SKIP_TRAMPOLINE_CODE
 
 /* When we call a function in a shared library, and the PLT sends us
    into the dynamic linker to find the function's real address, we
-   need to skip over the dynamic linker call.  This function decides
-   when to skip, and where to skip to.  See the comments for
+   need to skip over the dynamic linker call. This function decides
+   when to skip, and where to skip to. See the comments for
    SKIP_SOLIB_RESOLVER at the top of infrun.c.  */
-#if 0   
+#if 0
 #undef IN_SOLIB_DYNSYM_RESOLVE_CODE
 extern CORE_ADDR arm_in_solib_dynsym_resolve_code (CORE_ADDR pc, char *name);
 #define IN_SOLIB_DYNSYM_RESOLVE_CODE  arm_in_solib_dynsym_resolve_code
-/* ScottB: Current definition is 
+/* ScottB: Current definition is
 extern CORE_ADDR in_svr4_dynsym_resolve_code (CORE_ADDR pc, char *name);
 #define IN_SOLIB_DYNSYM_RESOLVE_CODE  in_svr4_dynsym_resolve_code */
-#endif
+#endif /* 0 */
 
 /* When the ARM Linux kernel invokes a signal handler, the return
    address points at a special instruction which'll trap back into

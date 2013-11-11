@@ -1,6 +1,6 @@
 /* Parameters for execution on a TI TMS320C80 (MVP) processor.
    Copyright 1997
-   Free Software Foundation, Inc. 
+   Free Software Foundation, Inc.
 
    This file is part of GDB.
 
@@ -137,7 +137,7 @@ extern struct frame_info *tic80_pop_frame (struct frame_info *frame);
 #define FRAME_ARGS_ADDRESS(fi)   (fi)->frame
 #define FRAME_LOCALS_ADDRESS(fi) (fi)->frame
 
-/* Define other aspects of the stack frame. 
+/* Define other aspects of the stack frame.
    We keep the offsets of all saved registers, 'cause we need 'em a lot!
    We also keep the current size of the stack frame, and the offset of
    the frame pointer from the stack pointer (for frameless functions, and
@@ -190,7 +190,7 @@ extern CORE_ADDR tic80_frame_chain (struct frame_info *);
 extern CORE_ADDR tic80_frame_saved_pc (struct frame_info *);
 
 /* Store the address of the place in which to copy the structure the
-   subroutine will return.  This is called from call_function. 
+   subroutine will return.  This is called from call_function.
 
    We store structs through a pointer passed in R2 */
 
@@ -231,7 +231,7 @@ extern CORE_ADDR tic80_push_arguments (int nargs,
 extern CORE_ADDR tic80_push_return_address (CORE_ADDR, CORE_ADDR);
 #define PUSH_RETURN_ADDRESS(PC, SP)	tic80_push_return_address (PC, SP)
 
-/* override the standard get_saved_register function with 
+/* override the standard get_saved_register function with
    one that takes account of generic CALL_DUMMY frames */
 #define GET_SAVED_REGISTER(raw_buffer, optimized, addrp, frame, regnum, lval) \
       generic_get_saved_register (raw_buffer, optimized, addrp, frame, regnum, lval)
@@ -251,3 +251,5 @@ extern CORE_ADDR tic80_push_return_address (CORE_ADDR, CORE_ADDR);
 #define PC_IN_CALL_DUMMY(PC, SP, FP) generic_pc_in_call_dummy (PC, SP, FP)
 
 #endif /* TM_TIC80_H */
+
+/* EOF */

@@ -77,7 +77,7 @@ static void hexword2ascii ();
 #define LOG_FILE "monitor.log"
 #if defined (LOG_FILE)
 FILE *log_file;
-#endif
+#endif /* LOG_FILE */
 
 static int timeout = 30;
 /* Having this larger than 400 causes us to be incompatible with m68k-stub.c
@@ -87,7 +87,7 @@ static int timeout = 30;
    we round it up based on REGISTER_BYTES).  */
 #define PBUFSIZ 400
 
-/* 
+/*
  * Descriptor for I/O to remote machine.  Initialize it to NULL so that
  * array_open knows that we don't have a file open when the program starts.
  */
@@ -211,7 +211,7 @@ write_monitor (char data[], int len)
 
 /*
  * debuglogs -- deal with debugging info to multiple sources. This takes
- *      two real args, the first one is the level to be compared against 
+ *      two real args, the first one is the level to be compared against
  *      the sr_get_debug() value, the second arg is a printf buffer and args
  *      to be formatted and printed. A CR is added after each string is printed.
  */
@@ -291,7 +291,7 @@ debuglogs (int level, char *pattern,...)
       fputc ('\n', log_file);
       fflush (log_file);
     }
-#endif
+#endif /* LOG_FILE */
 }
 
 /* readchar -- read a character from the remote system, doing all the fancy
@@ -313,7 +313,7 @@ readchar (int timeout)
 #ifdef LOG_FILE
   if (isascii (c))
     putc (c & 0x7f, log_file);
-#endif
+#endif /* LOG_FILE */
 
   if (c >= 0)
     return c & 0x7f;
@@ -325,12 +325,12 @@ readchar (int timeout)
       error ("Timeout reading from remote system.");
 #ifdef LOG_FILE
       fputs ("ERROR: Timeout reading from remote system", log_file);
-#endif
+#endif /* LOG_FILE */
     }
   perror_with_name ("readchar");
 }
 
-/* 
+/*
  * expect --  scan input from the remote system, until STRING is found.
  *      If DISCARD is non-zero, then discard non-matching input, else print
  *      it out. Let the user break out immediately.
@@ -414,7 +414,7 @@ junk (char ch)
     }
 }
 
-/* 
+/*
  *  get_hex_digit -- Get a hex digit from the remote system & return its value.
  *              If ignore is nonzero, ignore spaces, newline & tabs.
  */
@@ -441,7 +441,7 @@ get_hex_digit (int ignore)
 	      fputc ('\n', log_file);
 	      fflush (log_file);
 	    }
-#endif
+#endif /* LOG_FILE */
 	}
 
       if (ch >= '0' && ch <= '9')
@@ -461,7 +461,7 @@ get_hex_digit (int ignore)
     }
 }
 
-/* get_hex_byte -- Get a byte from monitor and put it in *BYT. 
+/* get_hex_byte -- Get a byte from monitor and put it in *BYT.
  *    Accept any number leading spaces.
  */
 static void
@@ -479,7 +479,7 @@ get_hex_byte (char *byt)
   debuglogs (4, "get_hex_byte() -- Read a 0x%x", val);
 }
 
-/* 
+/*
  * get_hex_word --  Get N 32-bit words from remote, each preceded by a space,
  *      and put them in registers starting at REGNO.
  */
@@ -584,7 +584,7 @@ array_open (char *args, char *name, int from_tty)
   fprintf (log_file, "GDB %s (%s", version, host_name);
   fprintf (log_file, " --target %s)\n", array_ops.to_shortname);
   fprintf (log_file, "Remote target %s connected to %s\n\n", array_ops.to_shortname, dev_name);
-#endif
+#endif /* LOG_FILE */
 
   /* see if the target is alive. For a ROM monitor, we can just try to force the
      expect_prompt to print a few times. For the GDB remote protocol, the application
@@ -633,7 +633,7 @@ array_close (int quitting)
 #endif
 }
 
-/* 
+/*
  * array_detach -- terminate the open connection to the remote
  *      debugger. Use this when you want to detach and do something
  *      else with your gdb.
@@ -703,7 +703,7 @@ array_wait (ptid_t ptid, struct target_waitstatus *status)
   status->kind = TARGET_WAITKIND_EXITED;
   status->value.integer = 0;
 
-  timeout = 0;			/* Don't time out -- user program is running. */
+  timeout = 0;			/* Do NOT time out -- user program is running. */
 
 #if !defined(__GO32__) && !defined(__MSDOS__) && !defined(_WIN32)
   tty_desc = serial_fdopen (0);
@@ -739,17 +739,17 @@ array_wait (ptid_t ptid, struct target_waitstatus *status)
 	  /* do this so it looks like there's keyboard echo */
 	  if (c == 3)		/* exit on Control-C */
 	    break;
-#if 0
+# if 0
 	  fputc_unfiltered (c, gdb_stdout);
 	  gdb_flush (gdb_stdout);
-#endif
+# endif /* 0 */
 	}
     }
   serial_set_tty_state (tty_desc, ttystate);
 #else
   expect_prompt (1);
   debuglogs (4, "array_wait(), got the expect_prompt.");
-#endif
+#endif /* !__GO32__ && !__MSDOS__ && !_WIN32 */
 
   status->kind = TARGET_WAITKIND_STOPPED;
   status->value.sig = TARGET_SIGNAL_TRAP;
@@ -792,7 +792,7 @@ array_fetch_registers (int ignored)
     }
 }
 
-/* 
+/*
  * This is unused by targets like this one that use a
  * protocol based on GDB's remote protocol.
  */
@@ -840,7 +840,7 @@ array_store_registers (int ignored)
   registers_changed ();
 }
 
-/* 
+/*
  * This is unused by targets like this one that use a
  * protocol based on GDB's remote protocol.
  */
@@ -988,7 +988,7 @@ array_read_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len)
 }
 
 /* Transfer LEN bytes between GDB address MYADDR and target address
-   MEMADDR.  If WRITE is non-zero, transfer them to the target,
+   MEMADDR. If WRITE is non-zero, transfer them to the target,
    otherwise transfer them from the target.  TARGET is unused.
 
    Returns the number of bytes transferred. */
@@ -1091,7 +1091,7 @@ array_stop (void)
   expect_prompt (1);
 }
 
-/* 
+/*
  * array_command -- put a command string, in args, out to MONITOR.
  *      Output from MONITOR is placed on the users terminal until the
  *      expect_prompt is seen. FIXME
@@ -1122,7 +1122,7 @@ monitor_command (char *args, int fromtty)
  *       '$' or '#'.  If <data> starts with two characters followed by
  *       ':', then the existing stubs interpret this as a sequence number.
  *
- *       CSUM1 and CSUM2 are ascii hex representation of an 8-bit 
+ *       CSUM1 and CSUM2 are ascii hex representation of an 8-bit
  *       checksum of <data>, the most significant nibble is sent first.
  *       the hex digits 0-9,a-f are used.
  *
@@ -1198,10 +1198,10 @@ array_send_packet (char *packet)
 	  debuglogs (4, "array_send_packet(): Found a non-ascii digit \'%c\' in the packet.\n", packet[i]);
 	}
     }
-#endif
+#endif /* 0 */
 
   if (retries > 0)
-    error ("Can't send packet, found %d non-ascii characters", retries);
+    error ("Cannot send packet, found %d non-ascii characters", retries);
 
   /* ok, try to send the packet */
   retries = 0;
@@ -1455,3 +1455,5 @@ _initialize_array (void)
   init_array_ops ();
   add_target (&array_ops);
 }
+
+/* EOF */

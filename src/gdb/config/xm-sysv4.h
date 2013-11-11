@@ -27,3 +27,5 @@
 /* SVR4 is a derivative of System V Release 3 (USG) */
 
 #define USG
+
+/* EOF */

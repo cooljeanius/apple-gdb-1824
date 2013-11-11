@@ -2,7 +2,7 @@
    Copyright 1990, 1991, 1992, 1995, 1998, 1999, 2000
    Free Software Foundation, Inc.
    Contributed by:
-   Roger Moyers 
+   Roger Moyers
    XLNT Designs, Inc.
    15050 Avenue of Science, Suite 106
    San Diego, CA  92128
@@ -349,3 +349,5 @@ _initialize_remote_nrom (void)
 	   "Pass arguments as command to NetROM",
 	   &cmdlist);
 }
+
+/* EOF */

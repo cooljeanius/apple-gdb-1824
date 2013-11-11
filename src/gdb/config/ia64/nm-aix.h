@@ -24,8 +24,8 @@
 #include "config/nm-sysv4.h"
 
 #ifndef AIX5
-#define AIX5 1
-#endif
+# define AIX5 1
+#endif /* !AIX5 */
 
 /* Type of the operation code for sending control messages to the
    /proc/PID/ctl file */

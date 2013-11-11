@@ -2046,6 +2046,7 @@
 		2609DFCC0E82C412008125DE /* xmalloc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = xmalloc.c; sourceTree = "<group>"; };
 		2609DFCD0E82C412008125DE /* xmalloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xmalloc.h; sourceTree = "<group>"; };
 		2633ABCC101A22EC00337952 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = ../tot/gdb/Makefile; sourceTree = "<group>"; };
+		A53353F5182F0DDC004811EE /* mac-gdb.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; name = "mac-gdb.r"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/mac-gdb.r"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -2566,6 +2567,7 @@
 		2609D2AC0E82C409008125DE /* gdb */ = {
 			isa = PBXGroup;
 			children = (
+				A53353F5182F0DDC004811EE /* mac-gdb.r */,
 				2609D30D0E82C40A008125DE /* cli */,
 				2609D3280E82C40A008125DE /* config */,
 				2609D4C90E82C40B008125DE /* gdbserver */,

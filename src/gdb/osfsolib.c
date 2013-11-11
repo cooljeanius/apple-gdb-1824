@@ -643,7 +643,7 @@ solib_add (char *arg_string, int from_tty, struct target_ops *target, int readsy
 	  /* Add these section table entries to the target's table.  */
 
 	  old = target_resize_to_sections (target, count);
-	  
+
 	  while ((so = find_solib (so)) != NULL)
 	    {
 	      if (so->so_name[0])
@@ -936,3 +936,5 @@ inferior.  Otherwise, symbols must be loaded manually, using `sharedlibrary'.",
 		  &setlist),
      &showlist);
 }
+
+/* EOF */

@@ -1,5 +1,5 @@
 /* Parameters for execution on a Mitsubishi m32r processor.
-   Copyright 1996, 1997 Free Software Foundation, Inc. 
+   Copyright 1996, 1997 Free Software Foundation, Inc.
 
    This file is part of GDB.
 
@@ -93,9 +93,9 @@ struct frame_saved_regs;
 struct type;
 struct value;
 
-/* Define other aspects of the stack frame. 
+/* Define other aspects of the stack frame.
    We keep the offsets of all saved registers, 'cause we need 'em a lot!
-   We also keep the current size of the stack frame, and whether 
+   We also keep the current size of the stack frame, and whether
    the frame pointer is valid (for frameless functions, and when we're
    still in the prologue of a function with a frame) */
 
@@ -218,7 +218,7 @@ extern CORE_ADDR m32r_push_arguments (int nargs,
 
 #define PUSH_RETURN_ADDRESS(PC, SP)      m32r_push_return_address (PC, SP)
 
-/* override the standard get_saved_register function with 
+/* override the standard get_saved_register function with
    one that takes account of generic CALL_DUMMY frames */
 #define GET_SAVED_REGISTER(raw_buffer, optimized, addrp, frame, regnum, lval) \
      generic_get_saved_register (raw_buffer, optimized, addrp, frame, regnum, lval)
@@ -232,3 +232,5 @@ extern CORE_ADDR m32r_push_arguments (int nargs,
 #define FIX_CALL_DUMMY(DUMMY1, STARTADDR, FUNADDR, NARGS, ARGS, TYPE, GCCP)
 #define CALL_DUMMY_LOCATION          AT_ENTRY_POINT
 #define CALL_DUMMY_ADDRESS()         entry_point_address ()
+
+/* EOF */

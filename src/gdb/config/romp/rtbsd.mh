@@ -5,4 +5,4 @@
 NATDEPFILES corelow.o core-aout.o infptrace.o inftarg.o fork-child.o
 MH_CFLAGS=-DHOSTING_ONLY	# No debugging of RT executables 
 XM_FILE= xm-rtbsd.h
-CC=gcc -traditional		# hc/pcc just can't cut it.
+CC=gcc -traditional		# hc/pcc just cannot cut it.

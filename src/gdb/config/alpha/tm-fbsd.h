@@ -24,7 +24,7 @@
 #include "alpha/tm-alpha.h"
 
 /* Number of traps that happen between exec'ing the shell to run an
-   inferior, and when we finally get to the inferior code.  The
+   inferior, and when we finally get to the inferior code. The
    default is right for FreeBSD.  */
 
 #undef START_INFERIOR_TRAPS_EXPECTED

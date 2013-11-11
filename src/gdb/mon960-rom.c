@@ -219,7 +219,7 @@ mon960_open (char *args, int from_tty)
 
   /* Attempt to fetch the value of the first floating point register (fp0).
      If the monitor returns a string containing the word "Bad" we'll assume
-     this processor has no floating point registers, and nullify the 
+     this processor has no floating point registers, and nullify the
      regnames entries that refer to FP registers.  */
 
   monitor_printf (mon960_cmds.getreg.cmd, full_regnames[FP0_REGNUM]);	/* di fp0 */
@@ -246,7 +246,7 @@ _initialize_mon960 (void)
   mon960_ops.to_longname = "Intel 960 MON960 monitor";
 #ifdef USE_GENERIC_LOAD
   mon960_ops.to_load = mon960_load_gen;		/* FIXME - should go back and try "do" */
-#endif
+#endif /* USE_GENERIC_LOAD */
   /* use SW breaks; target only supports 2 HW breakpoints */
   mon960_ops.to_insert_breakpoint = memory_insert_breakpoint;
   mon960_ops.to_remove_breakpoint = memory_remove_breakpoint;
@@ -258,3 +258,5 @@ Specify the serial device it is connected to (e.g. /dev/ttya).";
   mon960_ops.to_open = mon960_open;
   add_target (&mon960_ops);
 }
+
+/* EOF */

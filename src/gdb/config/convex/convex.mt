@@ -1,3 +1,3 @@
-# OBSOLETE # Target: Convex Unix (4bsd)
-# OBSOLETE TDEPFILES= convex-tdep.o
-# OBSOLETE TM_FILE= tm-convex.h
+# Target: Convex Unix (4bsd)
+TDEPFILES= convex-tdep.o
+TM_FILE= tm-convex.h

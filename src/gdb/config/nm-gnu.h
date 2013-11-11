@@ -32,7 +32,7 @@ extern char *gnu_target_pid_to_str (int pid);
 /* Before storing, we need to read all the registers.  */
 #define CHILD_PREPARE_TO_STORE() read_register_bytes (0, NULL, REGISTER_BYTES)
 
-/* Don't do wait_for_inferior on attach.  */
+/* Do NOT do wait_for_inferior on attach.  */
 #define ATTACH_NO_WAIT
 
 /* Use SVR4 style shared library support */

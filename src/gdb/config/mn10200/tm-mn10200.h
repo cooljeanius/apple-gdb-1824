@@ -33,11 +33,11 @@
 #undef TARGET_INT_BIT
 #define TARGET_INT_BIT 16
 
-/* The mn10200 doesn't support long long types.  */
+/* The mn10200 does NOT support long long types.  */
 #undef TARGET_LONG_LONG_BIT
 #define TARGET_LONG_LONG_BIT 32
 
-/* The mn10200 doesn't support double or long double either.  */
+/* The mn10200 does NOT support double or long double either.  */
 #undef TARGET_DOUBLE_BIT
 #undef TARGET_LONG_DOUBLE_BIT
 #define TARGET_DOUBLE_BIT 32
@@ -49,7 +49,7 @@
 #define TARGET_PTR_BIT 32
 
 /* The mn10200 really has 24 bit registers but the simulator reads/writes
-   them as 32bit values, so we claim they're 32bits each.  This may have
+   them as 32bit values, so we claim they are 32bits each. This may have
    to be tweaked if the Matsushita emulator/board really deals with them
    as 24bits each.  */
 #define REGISTER_SIZE 4
@@ -217,3 +217,5 @@ extern use_struct_convention_fn mn10200_use_struct_convention;
 
 /* Define this for Wingdb */
 #define TARGET_MN10200
+
+/* EOF */

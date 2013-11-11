@@ -30,7 +30,7 @@
 #include <sys/user.h>
 #include <sys/reg.h>
 #include <sys/utsname.h>
-
+
 
 /* this table must line up with REGISTER_NAMES in tm-68k.h */
 /* symbols like 'A0' come from <sys/reg.h> */
@@ -81,3 +81,5 @@ _initialize_dpx2_nat (void)
   else
     kernel_u_addr = KERNEL_U_ADDR_300;
 }
+
+/* EOF */

@@ -10,5 +10,6 @@ config.cache
 *.status
 lib.exp
 ../dltest.marker
+dltest.marker
 *libs/*
 *.lo

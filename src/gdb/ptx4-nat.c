@@ -108,25 +108,25 @@ proc_iterate_over_mappings (int (*func) (int, CORE_ADDR))
   char buf1[NBPG], buf2[NBPG];
 
   /*
-   * The following is really vile.  We can get the name of the
+   * The following is really vile. We can get the name of the
    * shared library from the exec_bfd, and we can get a list of
    * each virtual memory segment, but there is no simple way to
    * find the mapped segment from the shared library (ala
-   * procfs's PIOCOPENMEM).  As a pretty nasty kludge, we
+   * procfs's PIOCOPENMEM). As a pretty nasty kludge, we
    * compare the virtual memory segment to the contents of the
-   * .interp file.  If they match, we assume that we've got the
+   * .interp file. If they match, we assume that we've got the
    * right one.
    */
 
   /*
    * TODO: for attach, use XPT_OPENT to get the executable, in
-   * case we're attached without knowning the executable's
+   * case we are/were attached without knowning the executable's
    * filename.
    */
 
 #ifdef VERBOSE_DEBUG
   printf ("proc_iter\n");
-#endif
+#endif /* VERBOSE_DEBUG */
   interp_sec = bfd_get_section_by_name (exec_bfd, ".interp");
   if (!interp_sec)
     {
@@ -143,7 +143,7 @@ proc_iterate_over_mappings (int (*func) (int, CORE_ADDR))
 
 #ifdef VERBOSE_DEBUG
   printf ("proc_iter: \"%s\"\n", interp_content);
-#endif
+#endif /* VERBOSE_DEBUG */
   interp_fd = open (interp_content, O_RDONLY, 0);
   if (-1 == interp_fd)
     {
@@ -156,7 +156,7 @@ proc_iterate_over_mappings (int (*func) (int, CORE_ADDR))
       rv = ptrace (PT_NEXT_VSEG, PIDGET (inferior_ptid), &pv, curseg);
 #ifdef VERBOSE_DEBUG
       printf ("PT_NEXT_VSEG: rv %d errno %d\n", rv, errno);
-#endif
+#endif /* VERBOSE_DEBUG */
       if (-1 == rv)
 	break;
       if (0 == rv)
@@ -164,7 +164,7 @@ proc_iterate_over_mappings (int (*func) (int, CORE_ADDR))
 #ifdef VERBOSE_DEBUG
       printf ("pv.pv_start 0x%x pv_size 0x%x pv_prot 0x%x\n",
 	      pv.pv_start, pv.pv_size, pv.pv_prot);
-#endif
+#endif /* VERBOSE_DEBUG */
       curseg = pv.pv_start + pv.pv_size;
 
       rv = lseek (interp_fd, 0, SEEK_SET);
@@ -179,7 +179,7 @@ proc_iterate_over_mappings (int (*func) (int, CORE_ADDR))
 	{
 #ifdef VERBOSE_DEBUG
 	  printf ("memptr 0x%x\n", memptr);
-#endif
+#endif /* VERBOSE_DEBUG */
 	  rv = read (interp_fd, buf1, NBPG);
 	  if (-1 == rv)
 	    {
@@ -209,3 +209,5 @@ proc_iterate_over_mappings (int (*func) (int, CORE_ADDR))
   close (interp_fd);
   return 0;
 }
+
+/* EOF */

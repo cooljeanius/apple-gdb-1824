@@ -30,3 +30,5 @@ extern int ia64_aix_in_sigtramp (CORE_ADDR pc, char *func_name);
 #define IN_SIGTRAMP(pc,func_name) ia64_aix_in_sigtramp (pc, func_name)
 
 #endif /* #ifndef TM_AIX_H */
+
+/* EOF */

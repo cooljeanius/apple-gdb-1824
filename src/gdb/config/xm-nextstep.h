@@ -22,10 +22,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #define _XM_NEXTSTEP_H_
 
 /* Always include mach.h first so that __MACH30__ gets defined otherwise
-   it doesn't always get defined and some files get compiled as if they
+   it does NOT always get defined and some files get compiled as if they
    were 2.5 based and all hell breaks loose.
    Including mach.h usually pulls in everything else (except cthreads),
-   but on 2.5 it doesn't get the other ones explicitly included here which
+   but on 2.5 it does NOT get the other ones explicitly included here which
    are needed by a few of the nextstep-nat-*.c files. */
 
 #include <mach/mach.h>
@@ -66,12 +66,12 @@ typedef mach_port_type_t port_type_t;
 #endif /* __MACH30__ */
 
 #if (!defined (_NSIG) && defined (NSIG))
-#define _NSIG NSIG
-#endif
+# define _NSIG NSIG
+#endif /* (!_NSIG && NSIG) */
 
 #if (NS_TARGET_MAJOR < 5)
-#undef HAVE_TERMIOS_H
-#endif
+# undef HAVE_TERMIOS_H
+#endif /* NS_TARGET_MAJOR < 5 */
 
 #include <limits.h>
 

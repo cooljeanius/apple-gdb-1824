@@ -20,3 +20,5 @@
 
 /* Get generic NetBSD host definitions. */
 #include "config/xm-nbsd.h"
+
+/* EOF */

@@ -191,3 +191,5 @@ ns32k_get_enter_addr (CORE_ADDR pc)
 
   return enter_addr;		/* pc is between enter and exit */
 }
+
+/* EOF */

@@ -119,7 +119,7 @@ struct symloc
 
     /* Length (in bytes) of the section of the symbol table devoted to
        this file's symbols (actually, the section bracketed may contain
-       more than just this file's symbols).  If ldsymlen is 0, the only
+       more than just this file's symbols). If ldsymlen is 0, the only
        reason for this thing's existence is the dependency list.
        Nothing else will happen when it is read in.  */
 
@@ -130,7 +130,7 @@ struct symloc
 #define LDSYMLEN(p) (((struct symloc *)((p)->read_symtab_private))->ldsymlen)
 #define SYMLOC(p) ((struct symloc *)((p)->read_symtab_private))
 
-/* FIXME: Shouldn't this stuff be in a .h file somewhere?  */
+/* FIXME: Should this stuff not be in a .h file somewhere?  */
 /* Complaints about the symbols we have encountered.  */
 extern struct complaint string_table_offset_complaint;
 extern struct complaint lbrac_unmatched_complaint;

@@ -8,5 +8,5 @@ TDEPFILES= avr-tdep.o
 # used during development of avr support for gdb.
 #
 # Simulator: AVR
-#SIM_OBS = remote-sim.o
-#SIM = ../sim/avr/libsim.a
+FUTURE_SIM_OBS = remote-sim.o
+FUTURE_SIM = ../sim/avr/libsim.a

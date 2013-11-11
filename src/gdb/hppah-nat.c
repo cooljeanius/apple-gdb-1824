@@ -47,7 +47,7 @@ fetch_inferior_registers (int regno)
     fetch_register (regno);
 }
 
-/* Our own version of the offsetof macro, since we can't assume ANSI C.  */
+/* Our own version of the offsetof macro, since we cannot assume ANSI C.  */
 #define HPPAH_OFFSETOF(type, member) ((int) (&((type *) 0)->member))
 
 /* Store our register values back into the inferior.
@@ -74,7 +74,7 @@ store_inferior_registers (int regno)
       len = REGISTER_RAW_SIZE (regno);
 
       /* Requests for register zero actually want the save_state's
-	 ss_flags member.  As RM says: "Oh, what a hack!"  */
+       * ss_flags member. As RM says: "Oh, what a hack!"  */
       if (regno == 0)
 	{
 	  save_state_t ss;
@@ -82,7 +82,7 @@ store_inferior_registers (int regno)
 	  len = sizeof (ss.ss_flags);
 
 	  /* Note that ss_flags is always an int, no matter what
-	     REGISTER_RAW_SIZE(0) says.  Assuming all HP-UX PA machines
+	     REGISTER_RAW_SIZE(0) says. Assuming all HP-UX PA machines
 	     are big-endian, put it at the least significant end of the
 	     value, and zap the rest of the buffer.  */
 	  offset = REGISTER_RAW_SIZE (0) - len;
@@ -90,20 +90,20 @@ store_inferior_registers (int regno)
 
       /* Floating-point registers come from the ss_fpblock area.  */
       else if (regno >= FP0_REGNUM)
-	addr = (HPPAH_OFFSETOF (save_state_t, ss_fpblock) 
+	addr = (HPPAH_OFFSETOF (save_state_t, ss_fpblock)
 		+ (REGISTER_BYTE (regno) - REGISTER_BYTE (FP0_REGNUM)));
 
       /* Wide registers come from the ss_wide area.
-	 I think it's more PC to test (ss_flags & SS_WIDEREGS) to select
-	 between ss_wide and ss_narrow than to use the raw register size.
-	 But checking ss_flags would require an extra ptrace call for
-	 every register reference.  Bleah.  */
+       * I think it is more PC to test (ss_flags & SS_WIDEREGS) to select
+       * between ss_wide and ss_narrow than to use the raw register size.
+       * But checking ss_flags would require an extra ptrace call for
+       * every register reference. Bleah.  */
       else if (len == 8)
-	addr = (HPPAH_OFFSETOF (save_state_t, ss_wide) 
+	addr = (HPPAH_OFFSETOF (save_state_t, ss_wide)
 		+ REGISTER_BYTE (regno));
 
-      /* Narrow registers come from the ss_narrow area.  Note that
-	 ss_narrow starts with gr1, not gr0.  */
+      /* Narrow registers come from the ss_narrow area. Note that
+       * ss_narrow starts with gr1, not gr0.  */
       else if (len == 4)
 	addr = (HPPAH_OFFSETOF (save_state_t, ss_narrow)
 		+ (REGISTER_BYTE (regno) - REGISTER_BYTE (1)));
@@ -112,11 +112,11 @@ store_inferior_registers (int regno)
 			"hppah-nat.c (write_register): unexpected register size");
 
 #ifdef GDB_TARGET_IS_HPPA_20W
-      /* Unbelieveable.  The PC head and tail must be written in 64bit hunks
-	 or we will get an error.  Worse yet, the oddball ptrace/ttrace
-	 layering will not allow us to perform a 64bit register store.
-
-	 What a crock.  */
+      /* Unbelieveable. The PC head and tail must be written in 64bit hunks
+       * or we will get an error. Worse yet, the oddball ptrace/ttrace
+       * layering will not allow us to perform a 64bit register store.
+       *
+       * What a crock.  */
       if (regno == PCOQ_HEAD_REGNUM || regno == PCOQ_TAIL_REGNUM && len == 8)
 	{
 	  CORE_ADDR temp;
@@ -142,12 +142,12 @@ store_inferior_registers (int regno)
 	  return;
 	}
 
-      /* Another crock.  HPUX complains if you write a nonzero value to
-	 the high part of IPSW.  What will it take for HP to catch a
-	 clue about building sensible interfaces?  */
+      /* Another crock. HPUX complains if you write a nonzero value to
+       * the high part of IPSW. What will it take for HP to catch a
+       * clue about building sensible interfaces?  */
      if (regno == IPSW_REGNUM && len == 8)
 	*(int *)&registers[REGISTER_BYTE (regno)] = 0;
-#endif
+#endif /* GDB_TARGET_IS_HPPA_20W */
 
       for (i = 0; i < len; i += sizeof (int))
 	{
@@ -158,7 +158,7 @@ store_inferior_registers (int regno)
 	  if (errno != 0)
 	    {
 	      /* Warning, not error, in case we are attached; sometimes
-		 the kernel doesn't let us at the registers. */
+	       * the kernel does NOT let us at the registers. */
 	      char *err = safe_strerror (errno);
 	      char *msg = alloca (strlen (err) + 128);
 	      sprintf (msg, "writing `%s' register: %s",
@@ -208,16 +208,16 @@ fetch_register (int regno)
 
   /* Floating-point registers come from the ss_fpblock area.  */
   else if (regno >= FP0_REGNUM)
-    addr = (HPPAH_OFFSETOF (save_state_t, ss_fpblock) 
+    addr = (HPPAH_OFFSETOF (save_state_t, ss_fpblock)
 	    + (REGISTER_BYTE (regno) - REGISTER_BYTE (FP0_REGNUM)));
 
   /* Wide registers come from the ss_wide area.
-     I think it's more PC to test (ss_flags & SS_WIDEREGS) to select
+     I think it is more PC to test (ss_flags & SS_WIDEREGS) to select
      between ss_wide and ss_narrow than to use the raw register size.
      But checking ss_flags would require an extra ptrace call for
      every register reference.  Bleah.  */
   else if (len == 8)
-    addr = (HPPAH_OFFSETOF (save_state_t, ss_wide) 
+    addr = (HPPAH_OFFSETOF (save_state_t, ss_wide)
 	    + REGISTER_BYTE (regno));
 
   /* Narrow registers come from the ss_narrow area.  Note that
@@ -241,7 +241,7 @@ fetch_register (int regno)
       if (errno != 0)
 	{
 	  /* Warning, not error, in case we are attached; sometimes
-	     the kernel doesn't let us at the registers. */
+	     the kernel does NOT let us at the registers. */
 	  char *err = safe_strerror (errno);
 	  char *msg = alloca (strlen (err) + 128);
 	  sprintf (msg, "reading `%s' register: %s",
@@ -251,7 +251,7 @@ fetch_register (int regno)
 	}
     }
 
-  /* If we're reading an address from the instruction address queue,
+  /* If we are reading an address from the instruction address queue,
      mask out the bottom two bits --- they contain the privilege
      level.  */
   if (regno == PCOQ_HEAD_REGNUM || regno == PCOQ_TAIL_REGNUM)
@@ -262,13 +262,13 @@ fetch_register (int regno)
 
 
 /* Copy LEN bytes to or from inferior's memory starting at MEMADDR
-   to debugger memory starting at MYADDR.   Copy to inferior if
+   to debugger memory starting at MYADDR. Copy to inferior if
    WRITE is nonzero.
 
    Returns the length copied, which is either the LEN argument or zero.
    This xfer function does not do partial moves, since child_ops
-   doesn't allow memory operations to cross below us in the target stack
-   anyway.  TARGET is ignored.  */
+   does NOT allow memory operations to cross below us in the target stack
+   anyway. TARGET is ignored.  */
 
 int
 child_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
@@ -333,8 +333,8 @@ child_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
 				   (PTRACE_ARG3_TYPE) addr,
 				   buffer[i]);
 
-	  /* Did we fail?  Might we've guessed wrong about which
-	     segment this address resides in?  Try the other request,
+	  /* Did we fail? Might we have guessed wrong about which
+	     segment this address resides in? Try the other request,
 	     and see if that works...  */
 	  if ((pt_status == -1) && errno)
 	    {
@@ -392,7 +392,7 @@ child_post_follow_inferior_by_clone (void)
 
      At this point, the clone has attached to the child.  Because of
      the SIGSTOP, we must now deliver a SIGCONT to the child, or it
-     won't behave properly. */
+     will NOT behave properly. */
   status = kill (PIDGET (inferior_ptid), SIGCONT);
 }
 
@@ -403,7 +403,7 @@ child_post_follow_vfork (int parent_pid, int followed_parent, int child_pid,
 {
   /* Are we a debugger that followed the parent of a vfork?  If so,
      then recall that the child's vfork event was delivered to us
-     first.  And, that the parent was suspended by the OS until the
+     first. And, that the parent was suspended by the OS until the
      child's exec or exit events were received.
 
      Upon receiving that child vfork, then, we were forced to remove
@@ -411,31 +411,31 @@ child_post_follow_vfork (int parent_pid, int followed_parent, int child_pid,
      reach the exec or exit point.
 
      But also recall that the parent and child of a vfork share the
-     same address space.  Thus, removing bp's in the child also
+     same address space. Thus, removing bp's in the child also
      removed them from the parent.
 
      Now that the child has safely exec'd or exited, we must restore
-     the parent's breakpoints before we continue it.  Else, we may
+     the parent's breakpoints before we continue it. Else, we may
      cause it run past expected stopping points. */
   if (followed_parent)
     {
       reattach_breakpoints (parent_pid);
     }
 
-  /* Are we a debugger that followed the child of a vfork?  If so,
-     then recall that we don't actually acquire control of the child
+  /* Are we a debugger that followed the child of a vfork? If so,
+     then recall that we do NOT actually acquire control of the child
      until after it has exec'd or exited.  */
   if (followed_child)
     {
-      /* If the child has exited, then there's nothing for us to do.
-         In the case of an exec event, we'll let that be handled by
+      /* If the child has exited, then there is nothing for us to do.
+         In the case of an exec event, we shall let that be handled by
          the normal mechanism that notices and handles exec events, in
          resume(). */
     }
 }
 
 /* Format a process id, given PID.  Be sure to terminate
-   this with a null--it's going to be printed via a "%s".  */
+   this with a null -- it is going to be printed via a "%s".  */
 char *
 child_pid_to_str (ptid_t ptid)
 {
@@ -450,7 +450,7 @@ child_pid_to_str (ptid_t ptid)
 }
 
 /* Format a thread id, given TID.  Be sure to terminate
-   this with a null--it's going to be printed via a "%s".
+   this with a null -- it is going to be printed via a "%s".
 
    Note: This is a core-gdb tid, not the actual system tid.
    See infttrace.c for details.  */
@@ -503,13 +503,13 @@ extern int parent_attach_all (int, PTRACE_ARG3_TYPE, int);
    Note that HP-UX ptrace is rather funky in how this is done.
    If the parent wants to get the initial exec event of a child,
    it must set the ptrace event mask of the child to include execs.
-   (The child cannot do this itself.)  This must be done after the
+   (The child cannot do this itself.) This must be done after the
    child is forked, but before it execs.
 
    To coordinate the parent and child, we implement a semaphore using
-   pipes.  After SETTRC'ing itself, the child tells the parent that
+   pipes. After SETTRC'ing itself, the child tells the parent that
    it is now traceable by the parent, and waits for the parent's
-   acknowledgement.  The parent can then set the child's event mask,
+   acknowledgement. The parent can then set the child's event mask,
    and notify the child that it can now exec.
 
    (The acknowledgement by parent happens as a result of a call to
@@ -527,9 +527,9 @@ parent_attach_all (int pid, PTRACE_ARG3_TYPE addr, int data)
   /* The remainder of this function is only useful for HPUX 10.0 and
      later, as it depends upon the ability to request notification
      of specific kinds of events by the kernel.  */
-#if defined(PT_SET_EVENT_MASK)
+# if defined(PT_SET_EVENT_MASK)
 
-  /* Notify the parent that we're potentially ready to exec(). */
+  /* Notify the parent that we are potentially ready to exec(). */
   write (startup_semaphore.child_channel[SEM_TALK],
 	 &tc_magic_child,
 	 sizeof (tc_magic_child));
@@ -546,11 +546,11 @@ parent_attach_all (int pid, PTRACE_ARG3_TYPE addr, int data)
   (void) close (startup_semaphore.parent_channel[SEM_TALK]);
   (void) close (startup_semaphore.child_channel[SEM_LISTEN]);
   (void) close (startup_semaphore.child_channel[SEM_TALK]);
-#endif
+# endif  /* PT_SET_EVENT_MASK */
 
   return 0;
 }
-#endif
+#endif /* PT_SETTRC */
 
 int
 hppa_require_attach (int pid)
@@ -563,7 +563,7 @@ hppa_require_attach (int pid)
   /* Are we already attached?  There appears to be no explicit way to
      answer this via ptrace, so we try something which should be
      innocuous if we are attached.  If that fails, then we assume
-     we're not attached, and so attempt to make it so. */
+     we are/were not attached, and so attempt to make it so. */
 
   errno = 0;
   regs_offset = U_REGS_OFFSET;
@@ -594,7 +594,7 @@ hppa_require_detach (int pid, int signal)
   return pid;
 }
 
-/* Since ptrace doesn't support memory page-protection events, which
+/* Since ptrace does NOT support memory page-protection events, which
    are used to implement "hardware" watchpoints on HP-UX, these are
    dummy versions, which perform no useful work.  */
 
@@ -678,26 +678,26 @@ require_notification_of_events (int pid)
   int signum;
 
   /* Instruct the kernel as to the set of events we wish to be
-     informed of.  (This support does not exist before HPUX 10.0.
-     We'll assume if PT_SET_EVENT_MASK has not been defined by
-     <sys/ptrace.h>, then we're being built on pre-10.0.)  */
+     informed of. (This support does not exist before HPUX 10.0.
+     We shall assume if PT_SET_EVENT_MASK has not been defined by
+     <sys/ptrace.h>, then we are being built on pre-10.0.)  */
   memset (&ptrace_events, 0, sizeof (ptrace_events));
 
-  /* Note: By default, all signals are visible to us.  If we wish
+  /* Note: By default, all signals are visible to us. If we wish
      the kernel to keep certain signals hidden from us, we do it
      by calling sigdelset (ptrace_events.pe_signals, signal) for
      each such signal here, before doing PT_SET_EVENT_MASK.  */
   /* RM: The above comment is no longer true. We start with ignoring
      all signals, and then add the ones we are interested in. We could
      do it the other way: start by looking at all signals and then
-     deleting the ones that we aren't interested in, except that
+     deleting the ones that we are NOT interested in, except that
      multiple gdb signals may be mapped to the same host signal
      (eg. TARGET_SIGNAL_IO and TARGET_SIGNAL_POLL both get mapped to
      signal 22 on HPUX 10.20) We want to be notified if we are
      interested in either signal.  */
   sigfillset (&ptrace_events.pe_signals);
 
-  /* RM: Let's not bother with signals we don't care about */
+  /* RM: Let us not bother with signals we do NOT care about */
   nsigs = (int) TARGET_SIGNAL_LAST;
   for (signum = nsigs; signum > 0; signum--)
     {
@@ -717,7 +717,7 @@ require_notification_of_events (int pid)
   ptrace_events.pe_set_event |= PTRACE_EXEC;
   ptrace_events.pe_set_event |= PTRACE_FORK;
   ptrace_events.pe_set_event |= PTRACE_VFORK;
-  /* ??rehrauer: Add this one when we're prepared to catch it...
+  /* ??rehrauer: Add this one when we are prepared to catch it...
      ptrace_events.pe_set_event |= PTRACE_EXIT;
    */
 
@@ -730,7 +730,7 @@ require_notification_of_events (int pid)
     perror_with_name ("ptrace");
   if (pt_status < 0)
     return;
-#endif
+#endif /* PT_SET_EVENT_MASK */
 }
 
 void
@@ -741,12 +741,12 @@ require_notification_of_exec_events (int pid)
   ptrace_event_t ptrace_events;
 
   /* Instruct the kernel as to the set of events we wish to be
-     informed of.  (This support does not exist before HPUX 10.0.
-     We'll assume if PT_SET_EVENT_MASK has not been defined by
+     informed of. (This support does not exist before HPUX 10.0.
+     We shall assume if PT_SET_EVENT_MASK has not been defined by
      <sys/ptrace.h>, then we're being built on pre-10.0.)  */
   memset (&ptrace_events, 0, sizeof (ptrace_events));
 
-  /* Note: By default, all signals are visible to us.  If we wish
+  /* Note: By default, all signals are visible to us. If we wish
      the kernel to keep certain signals hidden from us, we do it
      by calling sigdelset (ptrace_events.pe_signals, signal) for
      each such signal here, before doing PT_SET_EVENT_MASK.  */
@@ -755,7 +755,7 @@ require_notification_of_exec_events (int pid)
   ptrace_events.pe_set_event = 0;
 
   ptrace_events.pe_set_event |= PTRACE_EXEC;
-  /* ??rehrauer: Add this one when we're prepared to catch it...
+  /* ??rehrauer: Add this one when we are prepared to catch it...
      ptrace_events.pe_set_event |= PTRACE_EXIT;
    */
 
@@ -768,7 +768,7 @@ require_notification_of_exec_events (int pid)
     perror_with_name ("ptrace");
   if (pt_status < 0)
     return;
-#endif
+#endif /* PT_SET_EVENT_MASK */
 }
 
 /* This function is called by the parent process, with pid being the
@@ -793,20 +793,20 @@ child_acknowledge_created_inferior (int pid)
   /* Notify the child that it can exec.
 
      In the infttrace.c variant of this function, we set the child's
-     event mask after the fork but before the exec.  In the ptrace
-     world, it seems we can't set the event mask until after the exec.  */
+     event mask after the fork but before the exec. In the ptrace
+     world, it seems we cannot set the event mask until after the exec.  */
   write (startup_semaphore.parent_channel[SEM_TALK],
 	 &tc_magic_parent,
 	 sizeof (tc_magic_parent));
 
-  /* We'd better pause a bit before trying to set the event mask,
-     though, to ensure that the exec has happened.  We don't want to
-     wait() on the child, because that'll screw up the upper layers
+  /* We had better pause a bit before trying to set the event mask,
+     though, to ensure that the exec has happened. We do NOT want to
+     wait() on the child, because that will screw up the upper layers
      of gdb's execution control that expect to see the exec event.
 
-     After an exec, the child is no longer executing gdb code.  Hence,
-     we can't have yet another synchronization via the pipes.  We'll
-     just sleep for a second, and hope that's enough delay...  */
+     After an exec, the child is no longer executing gdb code. Hence,
+     we cannot have yet another synchronization via the pipes. We will
+     just sleep for a second, and hope that is/was enough delay...  */
   sleep (1);
 
   /* Instruct the kernel as to the set of events we wish to be
@@ -818,7 +818,7 @@ child_acknowledge_created_inferior (int pid)
   (void) close (startup_semaphore.parent_channel[SEM_TALK]);
   (void) close (startup_semaphore.child_channel[SEM_LISTEN]);
   (void) close (startup_semaphore.child_channel[SEM_TALK]);
-#endif
+#endif  /* PT_SET_EVENT_MASK */
 }
 
 void
@@ -841,10 +841,10 @@ child_insert_fork_catchpoint (int pid)
   error ("Unable to catch forks prior to HPUX 10.0");
 #else
   /* Enable reporting of fork events from the kernel. */
-  /* ??rehrauer: For the moment, we're always enabling these events,
-     and just ignoring them if there's no catchpoint to catch them.  */
+  /* ??rehrauer: For the moment, we are always enabling these events,
+     and just ignoring them if there is no catchpoint to catch them.  */
   return 0;
-#endif
+#endif /* !PT_SET_EVENT_MASK */
 }
 
 int
@@ -855,10 +855,10 @@ child_remove_fork_catchpoint (int pid)
   error ("Unable to catch forks prior to HPUX 10.0");
 #else
   /* Disable reporting of fork events from the kernel. */
-  /* ??rehrauer: For the moment, we're always enabling these events,
-     and just ignoring them if there's no catchpoint to catch them.  */
+  /* ??rehrauer: For the moment, we are always enabling these events,
+     and just ignoring them if there is no catchpoint to catch them.  */
   return 0;
-#endif
+#endif /* !PT_SET_EVENT_MASK */
 }
 
 int
@@ -869,10 +869,10 @@ child_insert_vfork_catchpoint (int pid)
   error ("Unable to catch vforks prior to HPUX 10.0");
 #else
   /* Enable reporting of vfork events from the kernel. */
-  /* ??rehrauer: For the moment, we're always enabling these events,
-     and just ignoring them if there's no catchpoint to catch them.  */
+  /* ??rehrauer: For the moment, we are always enabling these events,
+     and just ignoring them if there is no catchpoint to catch them.  */
   return 0;
-#endif
+#endif /* !PT_SET_EVENT_MASK */
 }
 
 int
@@ -883,10 +883,10 @@ child_remove_vfork_catchpoint (int pid)
   error ("Unable to catch vforks prior to HPUX 10.0");
 #else
   /* Disable reporting of vfork events from the kernel. */
-  /* ??rehrauer: For the moment, we're always enabling these events,
-     and just ignoring them if there's no catchpoint to catch them.  */
+  /* ??rehrauer: For the moment, we are always enabling these events,
+     and just ignoring them if there is no catchpoint to catch them.  */
   return 0;
-#endif
+#endif /* !PT_SET_EVENT_MASK */
 }
 
 int
@@ -917,7 +917,7 @@ child_has_forked (int pid, int *childpid)
     }
 
   return 0;
-#endif
+#endif /* !PT_GET_PROCESS_STATE */
 }
 
 int
@@ -949,13 +949,13 @@ child_has_vforked (int pid, int *childpid)
     }
 
   return 0;
-#endif
+#endif /* !PT_GET_PROCESS_STATE */
 }
 
 int
 child_can_follow_vfork_prior_to_exec (void)
 {
-  /* ptrace doesn't allow this. */
+  /* ptrace does NOT allow this. */
   return 0;
 }
 
@@ -968,10 +968,10 @@ child_insert_exec_catchpoint (int pid)
 
 #else
   /* Enable reporting of exec events from the kernel.  */
-  /* ??rehrauer: For the moment, we're always enabling these events,
-     and just ignoring them if there's no catchpoint to catch them.  */
+  /* ??rehrauer: For the moment, we are always enabling these events,
+     and just ignoring them if there is no catchpoint to catch them.  */
   return 0;
-#endif
+#endif /* !PT_SET_EVENT_MASK */
 }
 
 int
@@ -983,10 +983,10 @@ child_remove_exec_catchpoint (int pid)
 
 #else
   /* Disable reporting of exec events from the kernel. */
-  /* ??rehrauer: For the moment, we're always enabling these events,
-     and just ignoring them if there's no catchpoint to catch them.  */
+  /* ??rehrauer: For the moment, we are always enabling these events,
+     and just ignoring them if there is no catchpoint to catch them.  */
   return 0;
-#endif
+#endif /* !PT_SET_EVENT_MASK */
 }
 
 int
@@ -1019,7 +1019,7 @@ child_has_execd (int pid, char **execd_pathname)
     }
 
   return 0;
-#endif
+#endif /* !PT_GET_PROCESS_STATE */
 }
 
 int
@@ -1052,14 +1052,14 @@ child_pid_to_exec_file (int pid)
   boolean done;
 
 #ifdef PT_GET_PROCESS_PATHNAME
-  /* As of 10.x HP-UX, there's an explicit request to get the pathname. */
+  /* As of 10.x HP-UX, there is an explicit request to get the pathname. */
   pt_status = call_ptrace (PT_GET_PROCESS_PATHNAME,
 			   pid,
 			   (PTRACE_ARG3_TYPE) exec_file_buffer,
 			   sizeof (exec_file_buffer) - 1);
   if (pt_status == 0)
     return exec_file_buffer;
-#endif
+#endif /* PT_GET_PROCESS_PATHNAME */
 
   /* It appears that this request is broken prior to 10.30.
      If it fails, try a really, truly amazingly gross hack
@@ -1128,7 +1128,7 @@ pre_fork_inferior (void)
 
 /* Check to see if the given thread is alive.
 
-   This is a no-op, as ptrace doesn't support threads, so we just
+   This is a no-op, as ptrace does NOT support threads, so we just
    return "TRUE".  */
 
 int

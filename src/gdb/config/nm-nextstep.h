@@ -127,3 +127,5 @@ next_mach_remove_watchpoint (addr, len, type)
 #define NM_NEXTSTEP
 
 #endif /* _NM_NEXTSTEP_H_ */
+
+/* EOF */

@@ -139,3 +139,5 @@ store_inferior_registers (int regno)
   if (must_suspend_thread)
     setup_thread (current_thread, 0);
 }
+
+/* EOF */

@@ -19,8 +19,6 @@
    Boston, MA 02111-1307, USA.  */
 
 #ifndef NM_RS6000LYNX_H
-#define NM_RS6000LYNX_H
-
-#include "config/nm-lynx.h"
-
+# define NM_RS6000LYNX_H
+# include "config/nm-lynx.h"
 #endif /* NM_RS6000LYNX_H */

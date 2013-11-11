@@ -40,8 +40,8 @@
 #include <sys/socket.h>
 
 #ifdef _AIX			/* IBM claims "void *malloc()" not char * */
-#define malloc bogon_malloc
-#endif
+# define malloc bogon_malloc
+#endif /* _AIX */
 
 #include <rpc/rpc.h>
 #include <sys/time.h>		/* UTek's <rpc/rpc.h> doesn't #incl this */
@@ -93,7 +93,7 @@ vx_read_register (int regno)
   bcopy (&am29k_greg_packet[AM29K_R_RSP],
 	 &registers[REGISTER_BYTE (GR1_REGNUM)], 5 * AM29K_GREG_SIZE);
 
-  /* PAD For now, don't care about exop register */
+  /* PAD For now, do NOT care about exop register */
 
   memset (&registers[REGISTER_BYTE (EXO_REGNUM)], '\0', AM29K_GREG_SIZE);
 
@@ -138,7 +138,7 @@ vx_write_register (int regno)
   char am29k_greg_packet[AM29K_GREG_PLEN];
   char am29k_fpreg_packet[AM29K_FPREG_PLEN];
 
-  /* Store general purpose registers.  When copying values from
+  /* Store general purpose registers. When copying values from
      registers [], don't assume that a location in registers []
      is properly aligned for the target data type.  */
 
@@ -170,7 +170,7 @@ vx_write_register (int regno)
    obtain the frame pointer (lr1) contents, we must add 4 bytes.
    Note : may be we should modify init_frame_info() to get the frame pointer
    and store it into the frame_info struct rather than reading its
-   contents when FRAME_CHAIN_VALID is invoked.  THISFRAME is unused.  */
+   contents when FRAME_CHAIN_VALID is invoked. THISFRAME is unused.  */
 
 int
 vx29k_frame_chain_valid (CORE_ADDR chain, struct frame_info *thisframe)
@@ -180,3 +180,5 @@ vx29k_frame_chain_valid (CORE_ADDR chain, struct frame_info *thisframe)
   read_memory ((CORE_ADDR) (chain + 4), (char *) &fp_contents, 4);
   return (fp_contents != 0);
 }
+
+/* EOF */

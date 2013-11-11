@@ -1,3 +1,3 @@
-# OBSOLETE # Target: Gould Powernode
-# OBSOLETE TDEPFILES= gould-tdep.o
-# OBSOLETE TM_FILE= tm-pn.h
+# Target: Gould Powernode
+TDEPFILES= gould-tdep.o
+TM_FILE= tm-pn.h

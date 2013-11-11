@@ -128,7 +128,7 @@ extern char *pa64_solib_unloaded_library_pathname (int);
 extern int pa64_solib_in_dynamic_linker (int, CORE_ADDR);
 
 /* This function must be called when the inferior is killed, and the program
-   restarted.  This is not the same as CLEAR_SOLIB, in that it doesn't discard
+   restarted. This is not the same as CLEAR_SOLIB, in that it does NOT discard
    any symbol tables.
 
    Presently, this functionality is not implemented.  */
@@ -137,7 +137,7 @@ extern int pa64_solib_in_dynamic_linker (int, CORE_ADDR);
 
 extern void pa64_solib_restart (void);
 
-/* If we can't set a breakpoint, and it's in a shared library, just
+/* If we cannot set a breakpoint, and it is in a shared library, just
    disable it.  */
 
 #define DISABLE_UNSETTABLE_BREAK(addr)	(pa64_solib_address(addr) != NULL)
@@ -147,3 +147,5 @@ extern char *pa64_solib_address (CORE_ADDR);	/* somsolib.c */
 /* If ADDR lies in a shared library, return its name.  */
 
 #define PC_SOLIB(addr)	pa64_solib_address (addr)
+
+/* EOF */

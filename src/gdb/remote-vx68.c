@@ -1,5 +1,5 @@
 /* 68k-dependent portions of the RPC protocol
-   used with a VxWorks target 
+   used with a VxWorks target
 
    Contributed by Wind River Systems.
 
@@ -41,16 +41,16 @@
 #include <sys/socket.h>
 
 #ifdef _AIX			/* IBM claims "void *malloc()" not char * */
-#define malloc bogon_malloc
-#endif
+# define malloc bogon_malloc
+#endif /* _AIX */
 
 #include <rpc/rpc.h>
 
 #ifdef _AIX
-#undef malloc
-#endif
+# undef malloc
+#endif /* _AIX */
 
-#include <sys/time.h>		/* UTek's <rpc/rpc.h> doesn't #incl this */
+#include <sys/time.h>		/* UTek's <rpc/rpc.h> does NOT #incl this */
 #include <netdb.h>
 #include "vx-share/ptrace.h"
 #include "vx-share/xdr_ptrace.h"
@@ -121,7 +121,7 @@ vx_read_register (int regno)
 
 /* Store a register or registers into the VxWorks target.
    REGNO is the register to store, or -1 for all; currently,
-   it is ignored.  FIXME look at regno to improve efficiency.  */
+   it is ignored. FIXME look at regno to improve efficiency.  */
 
 void
 vx_write_register (int regno)
@@ -154,3 +154,5 @@ vx_write_register (int regno)
 			   PTRACE_SETFPREGS);
     }
 }
+
+/* EOF */

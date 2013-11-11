@@ -37,3 +37,5 @@ extern int h8300smode;
 /* Needed for remote-e7000.c */
 #define NUM_REALREGS (h8300smode?11:10)
 
+/* EOF */
+

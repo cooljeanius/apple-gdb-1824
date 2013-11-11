@@ -67,7 +67,7 @@ static void rombug_fetch_registers ();
 static void rombug_store_register ();
 #if 0
 static int sr_get_debug ();	/* flag set by "set remotedebug" */
-#endif
+#endif /* 0 */
 static int hashmark;		/* flag set by "set hash" */
 static int rombug_is_open = 0;
 
@@ -912,7 +912,7 @@ rombug_remove_breakpoint (CORE_ADDR addr, char *shadow)
   return 1;
 }
 
-/* Load a file. This is usually an srecord, which is ascii. No 
+/* Load a file. This is usually an srecord, which is ascii. No
    protocol, just sent line by line. */
 
 #define DOWNLOAD_LINE_SIZE 100
@@ -974,8 +974,8 @@ rombug_load (char *arg)
 #endif /* 0 */
 }
 
-/* Put a command string, in args, out to MONITOR.  
-   Output from MONITOR is placed on the users terminal until the prompt 
+/* Put a command string, in args, out to MONITOR.
+   Output from MONITOR is placed on the users terminal until the prompt
    is seen. */
 
 static void
@@ -1084,7 +1084,7 @@ connect_command (char *args, int fromtty)
 	}
     }
 }
-#endif
+#endif /* 0 */
 
 /*
  * Define the monitor command strings. Since these are passed directly
@@ -1226,5 +1226,7 @@ _initialize_remote_os9k (void)
 #if 0
   add_com ("connect", class_obscure, connect_command,
 	   "Connect the terminal directly up to a serial based command monitor.\nUse <CR>~. or <CR>~^D to break out.");
-#endif
+#endif /* 0 */
 }
+
+/* EOF */

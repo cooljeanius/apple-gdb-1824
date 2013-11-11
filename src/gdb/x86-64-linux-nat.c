@@ -40,25 +40,25 @@ x86_64_linux_dr_get (int regnum)
   int tid;
   unsigned long value;
 
-  /* FIXME: kettenis/2001-01-29: It's not clear what we should do with
-     multi-threaded processes here.  For now, pretend there is just
+  /* FIXME: kettenis/2001-01-29: It is not clear what we should do with
+     multi-threaded processes here. For now, pretend there is just
      one thread.  */
   tid = PIDGET (inferior_ptid);
 
   /* FIXME: kettenis/2001-03-27: Calling perror_with_name if the
-     ptrace call fails breaks debugging remote targets.  The correct
+     ptrace call fails breaks debugging remote targets. The correct
      way to fix this is to add the hardware breakpoint and watchpoint
-     stuff to the target vectore.  For now, just return zero if the
+     stuff to the target vectore. For now, just return zero if the
      ptrace call fails.  */
   errno = 0;
   value = ptrace (PT_READ_U, tid,
 		  offsetof (struct user, u_debugreg[regnum]), 0);
   if (errno != 0)
 #if 0
-    perror_with_name ("Couldn't read debug register");
+    perror_with_name ("Could NOT read debug register");
 #else
     return 0;
-#endif
+#endif /* 0 */
 
   return value;
 }
@@ -68,8 +68,8 @@ x86_64_linux_dr_set (int regnum, unsigned long value)
 {
   int tid;
 
-  /* FIXME: kettenis/2001-01-29: It's not clear what we should do with
-     multi-threaded processes here.  For now, pretend there is just
+  /* FIXME: kettenis/2001-01-29: It is not clear what we should do with
+     multi-threaded processes here. For now, pretend there is just
      one thread.  */
   tid = PIDGET (inferior_ptid);
 
@@ -321,11 +321,11 @@ static const unsigned char linux_syscall[] = { 0x0f, 0x05 };
    system calls.  */
 
 #ifndef SYS_sigreturn
-#define SYS_sigreturn		__NR_sigreturn
-#endif
+# define SYS_sigreturn		__NR_sigreturn
+#endif /* !SYS_sigreturn */
 #ifndef SYS_rt_sigreturn
-#define SYS_rt_sigreturn	__NR_rt_sigreturn
-#endif
+# define SYS_rt_sigreturn	__NR_rt_sigreturn
+#endif /* !SYS_rt_sigreturn */
 
 /* Offset to saved processor flags, from <asm/sigcontext.h>.  */
 #define LINUX_SIGCONTEXT_EFLAGS_OFFSET (152)
@@ -465,7 +465,7 @@ child_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
 	}
 #ifdef CLEAR_INSN_CACHE
       CLEAR_INSN_CACHE ();
-#endif
+#endif /* CLEAR_INSN_CACHE */
     }
   else
     {
@@ -530,9 +530,9 @@ fetch_core_registers (char *core_reg_sect, unsigned core_reg_size,
       break;
 
     default:
-      /* We've covered all the kinds of registers we know about here,
+      /* We have covered all the kinds of registers we know about here,
          so this must be something we wouldn't know what to do with
-         anyway.  Just ignore it.  */
+         anyway. Just ignore it.  */
       break;
     }
 }
@@ -548,9 +548,9 @@ static struct core_fns linux_elf_core_fns = {
 };
 
 
-#if !defined (offsetof)
-#define offsetof(TYPE, MEMBER) ((unsigned long) &((TYPE *)0)->MEMBER)
-#endif
+#if !defined(offsetof)
+# define offsetof(TYPE, MEMBER) ((unsigned long) &((TYPE *)0)->MEMBER)
+#endif /* !offsetof */
 
 /* Record the value of the debug control register.  */
 static long debug_control_mirror;
@@ -586,3 +586,5 @@ _initialize_x86_64_linux_nat (void)
 {
   add_core_fns (&linux_elf_core_fns);
 }
+
+/* EOF */

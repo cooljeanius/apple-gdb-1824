@@ -46,7 +46,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.11 gnu dejagnu])
+AM_INIT_AUTOMAKE([1.11 gnu dejagnu dist-bzip2 dist-xz dist-zip dist-tarZ])
 AM_SANITY_CHECK
 
 dnl# List of object files and targets accumulated by configure.
@@ -439,6 +439,8 @@ fi
 
 AC_MSG_CHECKING([programs])
 AC_MSG_RESULT([ ])
+AN_PROGRAM([ar],[AM_PROG_AR])
+AN_MAKEVAR([AR],[AM_PROG_AR])
 if test -x `which automake`; then
 	test -z "$AR"
 	AM_PROG_AR
@@ -451,6 +453,8 @@ if test -e ./config.cache; then
 	sed -i "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
 	sed -i "s|ac_cv_exeext|bad_exeext|g" ./config.cache
 fi
+AN_PROGRAM([as],[AM_PROG_AS])
+AN_MAKEVAR([AS],[AM_PROG_AS])
 AM_PROG_AS
 AC_PROG_CXX
 LT_INIT([disable-fast-install dlopen])
@@ -485,6 +489,28 @@ else
 	test ! -z "$RANLIB" && export RANLIB
 	AC_SUBST([RANLIB])
 fi
+AC_BAKEFILE_METROWERKS_EXTO
+AX_COMPILER_VENDOR
+
+AC_PATH_PROG([XCODEBUILD],[xcodebuild])
+
+# ResourceManager-related tools
+AC_PATH_PROG([REZ],[Rez],[],[],[$PATH:/Developer/Tools])
+AC_PATH_PROG([DEREZ],[DeRez],[],[],[$PATH:/Developer/Tools])
+AC_PATH_PROG([REZDET],[RezDet],[],[],[$PATH:/Developer/Tools])
+AC_PATH_PROG([REZWACK],[RezWack],[],[],[$PATH:/Developer/Tools])
+AC_PATH_PROG([RESMERGER],[ResMerger],[],[],[$PATH:/Developer/Tools])
+AC_SUBST([REZ])
+AC_SUBST([DEREZ])
+AC_SUBST([REZDET])
+AC_SUBST([REZWACK])
+AC_SUBST([RESMERGER])
+
+# Other Mac-specific tools
+AC_PATH_PROG([LD_CLASSIC],[ld_classic])
+AC_PATH_PROG([MERGE_PEF],[MergePef])
+
+# A few more compiler-y things
 AM_PROG_VALAC([],[],[])
 AC_PROG_YACC
 AX_PROG_BISON([
@@ -720,7 +746,7 @@ unset ac_cv_header_sys_param_h
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h libintl.h limits.h locale.h \
                   mach/mach.h malloc.h malloc/malloc.h netdb.h \
                   netinet/in.h nl_types.h paths.h sys/param.h \
-                  sys/socket.h sys/sysctl.h sys/time.h wchar.h ])
+                  sys/socket.h sys/sysctl.h sys/time.h wchar.h])
 
 # Other headers needed for things that I have ifdef-ed:
 unset ac_cv_header_dlfcn_h
@@ -732,7 +758,8 @@ AC_CHECK_HEADERS([CoreFoundation/CoreFoundation.h \
                   libgen.h libgettext.h linux/byteorder/big_endian.h \
                   linux/byteorder/little_endian.h mach/thread_info.h \
                   mach/thread_status.h mach-o/loader.h mach-o/nlist.h \
-                  memory.h pthread.h setjmp.h sys/uio.h])
+                  memory.h pthread.h rpc/rpc.h setjmp.h sys/uio.h \
+                  sys/utsname.h])
 
 # ------------------------- #
 # Checks for declarations.  #
@@ -820,6 +847,7 @@ AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
 AC_TYPE_UINTMAX_T
+AC_CHECK_TYPES([thread_t])
 AC_CHECK_TYPES([regex_t],[],[],[
 #ifdef HAVE_REGEX_H
 # include <regex.h>
@@ -870,6 +898,10 @@ AC_C_BIGENDIAN([
 AC_C_PROTOTYPES
 AC_C_RESTRICT
 
+#FIXME: This check will say that the compiler does not support the
+# -fpascal-strings flag, even when it does actually support it
+AX_CHECK_COMPILE_FLAG([-fpascal-strings])
+
 # ------------------------------ #
 # Checks for library functions.  #
 # ------------------------------ #
@@ -906,12 +938,14 @@ AC_CHECK_FUNCS([wborder])
 
 # Other functions (that autoscan complains about missing):
 unset ac_cv_func_strchr
-AC_CHECK_FUNCS([atexit bzero dup2 gethostbyaddr gethostbyname \
-                gethostname getpass gettimeofday inet_ntoa isascii \
-                memchr memcmp memcpy memmove mempcpy memset nl_langinfo \
-                pathconf pow re_comp regcomp select socket strcspn strdup \
-                strerror strncasecmp strndup strpbrk strchr strrchr \
-                strspn strstr strtok strtol strtoul uname wcwidth])
+AC_CHECK_FUNCS([alarm atexit bzero dup2 fflush fprintf fwrite \
+                gethostbyaddr gethostbyname gethostname getpass \
+                gettimeofday inet_ntoa isascii memchr memcmp memcpy \
+                memmove mempcpy memset nl_langinfo pathconf pow re_comp \
+                regcomp select socket strchr strcspn strdup strerror \
+                strlen strncasecmp strncat strncmp strncpy strndup \
+                strpbrk strrchr strspn strstr strtok strtol strtoul \
+                uname wcwidth])
 
 # ----- #
 # Other #

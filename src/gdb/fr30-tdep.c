@@ -562,7 +562,7 @@ fr30_frame_chain (struct frame_info *fi)
     return fi->frame + fi->framesize;
 }
 
-/* Function: frame_saved_pc 
+/* Function: frame_saved_pc
    Find the caller of this frame.  We do this by seeing if RP_REGNUM
    is saved in the stack anywhere, otherwise we get it from the
    registers.  If the inner frame is a dummy frame, return its PC
@@ -599,3 +599,5 @@ fr30_fix_call_dummy (char *dummy, CORE_ADDR sp, CORE_ADDR fun, int nargs,
   store_unsigned_integer ((unsigned int *) &dummy[0], 2, offset24 >> 16);
   return 0;
 }
+
+/* EOF */

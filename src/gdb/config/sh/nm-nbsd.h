@@ -20,9 +20,7 @@
    Boston, MA 02111-1307, USA.  */
 
 #ifndef NM_NBSD_H
-#define NM_NBSD_H
-
+# define NM_NBSD_H
 /* Get generic NetBSD native definitions.  */
-#include "config/nm-nbsd.h"
-
+# include "config/nm-nbsd.h"
 #endif /* NM_NBSD_H */

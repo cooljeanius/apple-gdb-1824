@@ -104,7 +104,7 @@ store_inferior_registers (int regno)
               (PTRACE_ARG3_TYPE) stack, stuff);
       inferior_registers.r_reg[EAX] = reg;
     }
-#endif
+#endif /* PTRACE_FP_BUG */
   ptrace (PTRACE_SETREGS, PIDGET (inferior_ptid),
 	  (PTRACE_ARG3_TYPE) & inferior_registers);
   ptrace (PTRACE_SETFPREGS, PIDGET (inferior_ptid),
@@ -112,11 +112,10 @@ store_inferior_registers (int regno)
 }
 
 
-
 /* Provide registers to GDB from a core file.
 
    CORE_REG_SECT points to an array of bytes, which were obtained from
-   a core file which BFD thinks might contain register contents. 
+   a core file which BFD thinks might contain register contents.
    CORE_REG_SIZE is its size.
 
    WHICH says which register set corelow suspects this is:
@@ -147,11 +146,10 @@ fetch_core_registers (char *core_reg_sect, unsigned core_reg_size,
 	      &corestr.c_fpu.f_fpstatus.f_ctrl,
 	      sizeof corestr.c_fpu.f_fpstatus -
 	      sizeof corestr.c_fpu.f_fpstatus.f_st);
-#endif
+#endif /* FPC_REGNUM */
       break;
     }
 }
-
 
 /* Register that we are able to handle i386mach core file formats.
    FIXME: is this really bfd_target_unknown_flavour? */
@@ -170,3 +168,5 @@ _initialize_core_i386mach (void)
 {
   add_core_fns (&i386mach_core_fns);
 }
+
+/* EOF */

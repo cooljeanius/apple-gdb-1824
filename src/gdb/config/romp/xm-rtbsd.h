@@ -1,4 +1,4 @@
-/* Definitions to host GDB on an IBM RT/PC running BSD Unix. 
+/* Definitions to host GDB on an IBM RT/PC running BSD Unix.
    Copyright 1986, 1987, 1989, 1991, 1992  Free Software Foundation, Inc.
    Contributed by David Wood @ New York University (wood@lab.ultra.nyu.edu).
 
@@ -28,13 +28,15 @@
 #ifdef HOSTING_ONLY
 /*
  * This next two defines are to get GDB up and running as a host to
- * do remote debugging.  I know there is a gdb for the RT, but there wasn't
- * an xconfig/rt* file.  
+ * do remote debugging. I know there is a gdb for the RT, but there was NOT
+ * an xconfig/rt* file.
  */
-#define KERNEL_U_ADDR_BSD	/* This may be correct, but hasn't been tested */
-#define REGISTER_U_ADDR(a,b,c)	   \
+# define KERNEL_U_ADDR_BSD	/* This may be correct, but has NOT been tested */
+# define REGISTER_U_ADDR(a,b,c)	   \
 	(printf("GDB can not debug IBM RT/PC BSD executables (yet)\n"),\
 	quit(),0)
 #else
-#include	"GDB for the RT is not included in the distribution"
-#endif
+# include	"GDB for the RT is not included in the distribution"
+#endif /* HOSTING_ONLY */
+
+/* EOF */

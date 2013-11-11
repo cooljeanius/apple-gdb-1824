@@ -60,17 +60,17 @@ child_pid_to_exec_file (int pid)
  * Service function for corefiles and info proc.
  */
 
-static int 
-read_mapping (FILE *mapfile, 
-	      long long *addr, 
-	      long long *endaddr, 
-	      char *permissions, 
-	      long long *offset, 
-	      char *device, 
-	      long long *inode, 
+static int
+read_mapping (FILE *mapfile,
+	      long long *addr,
+	      long long *endaddr,
+	      char *permissions,
+	      long long *offset,
+	      char *device,
+	      long long *inode,
 	      char *filename)
 {
-  int ret = fscanf (mapfile,  "%llx-%llx %s %llx %s %llx", 
+  int ret = fscanf (mapfile,  "%llx-%llx %s %llx %s %llx",
 		    addr, endaddr, permissions, offset, device, inode);
 
   if (ret > 0 && ret != EOF && *inode != 0)
@@ -92,10 +92,10 @@ read_mapping (FILE *mapfile,
  */
 
 static int
-linux_find_memory_regions (int (*func) (CORE_ADDR, 
+linux_find_memory_regions (int (*func) (CORE_ADDR,
 					unsigned long,
 					int, int, int,
-					void *), 
+					void *),
 			   void *obfd)
 {
   long long pid = PIDGET (inferior_ptid);
@@ -112,11 +112,11 @@ linux_find_memory_regions (int (*func) (CORE_ADDR,
     error ("Could not open %s\n", mapsfilename);
 
   if (info_verbose)
-    fprintf_filtered (gdb_stdout, 
+    fprintf_filtered (gdb_stdout,
 		      "Reading memory regions from %s\n", mapsfilename);
 
   /* Now iterate until end-of-file. */
-  while (read_mapping (mapsfile, &addr, &endaddr, &permissions[0], 
+  while (read_mapping (mapsfile, &addr, &endaddr, &permissions[0],
 		       &offset, &device[0], &inode, &filename[0]))
     {
       size = endaddr - addr;
@@ -128,14 +128,14 @@ linux_find_memory_regions (int (*func) (CORE_ADDR,
 
       if (info_verbose)
 	{
-	  fprintf_filtered (gdb_stdout, 
-			    "Save segment, %lld bytes at 0x%s (%c%c%c)", 
-			    size, paddr_nz (addr), 
-			    read  ? 'r' : ' ', 
+	  fprintf_filtered (gdb_stdout,
+			    "Save segment, %lld bytes at 0x%s (%c%c%c)",
+			    size, paddr_nz (addr),
+			    read  ? 'r' : ' ',
 			    write ? 'w' : ' ',
 			    exec  ? 'x' : ' ');
 	  if (filename && filename[0])
-	    fprintf_filtered (gdb_stdout, 
+	    fprintf_filtered (gdb_stdout,
 			      " for %s", filename);
 	  fprintf_filtered (gdb_stdout, "\n");
 	}
@@ -153,7 +153,7 @@ linux_find_memory_regions (int (*func) (CORE_ADDR,
  */
 
 static char *
-linux_do_thread_registers (bfd *obfd, ptid_t ptid, 
+linux_do_thread_registers (bfd *obfd, ptid_t ptid,
 			   char *note_data, int *note_size)
 {
   gdb_gregset_t gregs;
@@ -161,18 +161,18 @@ linux_do_thread_registers (bfd *obfd, ptid_t ptid,
   unsigned long merged_pid = ptid_get_tid (ptid) << 16 | ptid_get_pid (ptid);
 
   fill_gregset (&gregs, -1);
-  note_data = (char *) elfcore_write_prstatus (obfd, 
-					       note_data, 
-					       note_size, 
-					       merged_pid, 
-					       stop_signal, 
+  note_data = (char *) elfcore_write_prstatus (obfd,
+					       note_data,
+					       note_size,
+					       merged_pid,
+					       stop_signal,
 					       &gregs);
 
   fill_fpregset (&fpregs, -1);
-  note_data = (char *) elfcore_write_prfpreg (obfd, 
-					      note_data, 
-					      note_size, 
-					      &fpregs, 
+  note_data = (char *) elfcore_write_prfpreg (obfd,
+					      note_data,
+					      note_size,
+					      &fpregs,
 					      sizeof (fpregs));
   return note_data;
 }
@@ -184,7 +184,7 @@ struct linux_corefile_thread_data {
 };
 
 /* Function: linux_corefile_thread_callback
- * 
+ *
  * Called by gdbthread.c once per thread.
  * Records the thread's register state for the corefile note section.
  */
@@ -197,15 +197,15 @@ linux_corefile_thread_callback (struct thread_info *ti, void *data)
 
   inferior_ptid = ti->ptid;
   registers_changed ();
-  target_fetch_registers (-1);	/* FIXME should not be necessary; 
+  target_fetch_registers (-1);	/* FIXME should not be necessary;
 				   fill_gregset should do it automatically. */
-  args->note_data = linux_do_thread_registers (args->obfd, 
-					       ti->ptid, 
-					       args->note_data, 
+  args->note_data = linux_do_thread_registers (args->obfd,
+					       ti->ptid,
+					       args->note_data,
 					       args->note_size);
   inferior_ptid = saved_ptid;
   registers_changed ();
-  target_fetch_registers (-1);	/* FIXME should not be necessary; 
+  target_fetch_registers (-1);	/* FIXME should not be necessary;
 				   fill_gregset should do it automatically. */
   return 0;
 }
@@ -213,8 +213,8 @@ linux_corefile_thread_callback (struct thread_info *ti, void *data)
 /* Function: linux_make_note_section
  *
  * Fills the "to_make_corefile_note" target vector.
- * Builds the note section for a corefile, and returns it 
- * in a malloc buffer. 
+ * Builds the note section for a corefile, and returns it
+ * in a malloc buffer.
  */
 
 static char *
@@ -230,19 +230,19 @@ linux_make_note_section (bfd *obfd, int *note_size)
   if (get_exec_file (0))
     {
       strncpy (fname, strrchr (get_exec_file (0), '/') + 1, sizeof (fname));
-      strncpy (psargs, get_exec_file (0), 
+      strncpy (psargs, get_exec_file (0),
 	       sizeof (psargs));
       if (get_inferior_args ())
 	{
-	  strncat (psargs, " ", 
+	  strncat (psargs, " ",
 		   sizeof (psargs) - strlen (psargs));
-	  strncat (psargs, get_inferior_args (), 
+	  strncat (psargs, get_inferior_args (),
 		   sizeof (psargs) - strlen (psargs));
 	}
-      note_data = (char *) elfcore_write_prpsinfo (obfd, 
-						   note_data, 
-						   note_size, 
-						   fname, 
+      note_data = (char *) elfcore_write_prpsinfo (obfd,
+						   note_data,
+						   note_size,
+						   fname,
 						   psargs);
     }
 
@@ -255,7 +255,7 @@ linux_make_note_section (bfd *obfd, int *note_size)
     {
       /* iterate_over_threads didn't come up with any threads;
 	 just use inferior_ptid. */
-      note_data = linux_do_thread_registers (obfd, inferior_ptid, 
+      note_data = linux_do_thread_registers (obfd, inferior_ptid,
 					     note_data, note_size);
     }
   else
@@ -398,24 +398,24 @@ linux_info_proc_cmd (char *args, int from_tty)
 	    }
 
 	  printf_filtered ("Mapped address spaces:\n\n");
-	  printf_filtered (header_fmt_string, 
+	  printf_filtered (header_fmt_string,
 			   "Start Addr",
 			   "  End Addr",
 			   "      Size",
 			   "    Offset",
 			   "objfile");
-	  
-	  while (read_mapping (procfile, &addr, &endaddr, &permissions[0], 
+
+	  while (read_mapping (procfile, &addr, &endaddr, &permissions[0],
 			       &offset, &device[0], &inode, &filename[0]))
 	    {
 	      size = endaddr - addr;
-	      printf_filtered (data_fmt_string, 
+	      printf_filtered (data_fmt_string,
 			       (unsigned long) addr, /* FIXME: pr_addr */
-			       (unsigned long) endaddr, 
-			       (int) size, 
-			       (unsigned int) offset, 
+			       (unsigned long) endaddr,
+			       (int) size,
+			       (unsigned int) offset,
 			       filename[0] ? filename : "");
-	      
+
 	    }
 
 	  fclose (procfile);
@@ -432,7 +432,7 @@ linux_info_proc_cmd (char *args, int from_tty)
 	    printf_filtered (buffer);
 	  fclose (procfile);
 	}
-      else 
+      else
 	warning ("unable to open /proc file '%s'", fname1);
     }
   if (stat_f || all)
@@ -462,16 +462,16 @@ linux_info_proc_cmd (char *args, int from_tty)
 	  if (fscanf (procfile, "%u ", &itmp) > 0)
 	    printf_filtered ("Flags: 0x%x\n", itmp);
 	  if (fscanf (procfile, "%u ", &itmp) > 0)
-	    printf_filtered ("Minor faults (no memory page): %u\n", 
+	    printf_filtered ("Minor faults (no memory page): %u\n",
 			     (unsigned int) itmp);
 	  if (fscanf (procfile, "%u ", &itmp) > 0)
-	    printf_filtered ("Minor faults, children: %u\n", 
+	    printf_filtered ("Minor faults, children: %u\n",
 			     (unsigned int) itmp);
 	  if (fscanf (procfile, "%u ", &itmp) > 0)
-	    printf_filtered ("Major faults (memory page faults): %u\n", 
+	    printf_filtered ("Major faults (memory page faults): %u\n",
 			     (unsigned int) itmp);
 	  if (fscanf (procfile, "%u ", &itmp) > 0)
-	    printf_filtered ("Major faults, children: %u\n", 
+	    printf_filtered ("Major faults, children: %u\n",
 			     (unsigned int) itmp);
 	  if (fscanf (procfile, "%d ", &itmp) > 0)
 	    printf_filtered ("utime: %d\n", itmp);
@@ -482,27 +482,27 @@ linux_info_proc_cmd (char *args, int from_tty)
 	  if (fscanf (procfile, "%d ", &itmp) > 0)
 	    printf_filtered ("stime, children: %d\n", itmp);
 	  if (fscanf (procfile, "%d ", &itmp) > 0)
-	    printf_filtered ("jiffies remaining in current time slice: %d\n", 
+	    printf_filtered ("jiffies remaining in current time slice: %d\n",
 			     itmp);
 	  if (fscanf (procfile, "%d ", &itmp) > 0)
 	    printf_filtered ("'nice' value: %d\n", itmp);
 	  if (fscanf (procfile, "%u ", &itmp) > 0)
-	    printf_filtered ("jiffies until next timeout: %u\n", 
+	    printf_filtered ("jiffies until next timeout: %u\n",
 			     (unsigned int) itmp);
 	  if (fscanf (procfile, "%u ", &itmp) > 0)
-	    printf_filtered ("jiffies until next SIGALRM: %u\n", 
+	    printf_filtered ("jiffies until next SIGALRM: %u\n",
 			     (unsigned int) itmp);
 	  if (fscanf (procfile, "%d ", &itmp) > 0)
-	    printf_filtered ("start time (jiffies since system boot): %d\n", 
+	    printf_filtered ("start time (jiffies since system boot): %d\n",
 			     itmp);
 	  if (fscanf (procfile, "%u ", &itmp) > 0)
-	    printf_filtered ("Virtual memory size: %u\n", 
+	    printf_filtered ("Virtual memory size: %u\n",
 			     (unsigned int) itmp);
 	  if (fscanf (procfile, "%u ", &itmp) > 0)
-	    printf_filtered ("Resident set size: %u\n", 
+	    printf_filtered ("Resident set size: %u\n",
 			     (unsigned int) itmp);
 	  if (fscanf (procfile, "%u ", &itmp) > 0)
-	    printf_filtered ("rlim: %u\n", 
+	    printf_filtered ("rlim: %u\n",
 			     (unsigned int) itmp);
 	  if (fscanf (procfile, "%u ", &itmp) > 0)
 	    printf_filtered ("Start of text: 0x%x\n", itmp);
@@ -510,8 +510,8 @@ linux_info_proc_cmd (char *args, int from_tty)
 	    printf_filtered ("End of text: 0x%x\n", itmp);
 	  if (fscanf (procfile, "%u ", &itmp) > 0)
 	    printf_filtered ("Start of stack: 0x%x\n", itmp);
-#if 0	/* Don't know how architecture-dependent the rest is... 
-	   Anyway the signal bitmap info is available from "status".  */
+#if 0	/* Do NOT know how architecture-dependent the rest is...
+	     * Anyway the signal bitmap info is available from "status".  */
 	  if (fscanf (procfile, "%u ", &itmp) > 0)	/* FIXME arch? */
 	    printf_filtered ("Kernel stack pointer: 0x%x\n", itmp);
 	  if (fscanf (procfile, "%u ", &itmp) > 0)	/* FIXME arch? */
@@ -526,7 +526,7 @@ linux_info_proc_cmd (char *args, int from_tty)
 	    printf_filtered ("Catched signals bitmap: 0x%x\n", itmp);
 	  if (fscanf (procfile, "%u ", &itmp) > 0)	/* FIXME arch? */
 	    printf_filtered ("wchan (system call): 0x%x\n", itmp);
-#endif
+#endif /* 0 */
 	  fclose (procfile);
 	}
       else
@@ -543,7 +543,7 @@ _initialize_linux_proc (void)
   inftarg_set_find_memory_regions (linux_find_memory_regions);
   inftarg_set_make_corefile_notes (linux_make_note_section);
 
-  add_info ("proc", linux_info_proc_cmd, 
+  add_info ("proc", linux_info_proc_cmd,
 	    "Show /proc process information about any running process.\n\
 Specify any process id, or use the program being debugged by default.\n\
 Specify any of the following keywords for detailed info:\n\
@@ -552,3 +552,5 @@ Specify any of the following keywords for detailed info:\n\
   status   -- list a different bunch of random process info.\n\
   all      -- list all available /proc info.");
 }
+
+/* EOF */

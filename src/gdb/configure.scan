@@ -68,7 +68,7 @@ AC_FUNC_REALLOC
 AC_FUNC_STRNLEN
 AC_FUNC_STRTOD
 AC_FUNC_WAIT3
-AC_CHECK_FUNCS([atexit bzero dup2 getcwd gethostbyaddr gethostbyname gethostname getpagesize getpass gettimeofday inet_ntoa isascii memchr memmove mempcpy memset nl_langinfo pathconf pow putenv re_comp realpath regcomp select setlocale socket stpcpy strcasecmp strchr strcspn strdup strerror strncasecmp strndup strpbrk strrchr strspn strstr strtol strtoul uname wcwidth])
+AC_CHECK_FUNCS([alarm atexit bzero dup2 getcwd gethostbyaddr gethostbyname gethostname getpagesize getpass gettimeofday inet_ntoa isascii memchr memmove mempcpy memset nl_langinfo pathconf pow putenv re_comp realpath regcomp select setlocale socket stpcpy strcasecmp strchr strcspn strdup strerror strncasecmp strndup strpbrk strrchr strspn strstr strtol strtoul uname wcwidth])
 
 AC_CONFIG_FILES([Makefile
                  gnulib/Makefile

@@ -22,3 +22,5 @@
    source files that use the value of INNER_THAN in preprocessor lines. */
 
 #define INNER_THAN(lhs,rhs) ((lhs) < (rhs))
+
+/* EOF */

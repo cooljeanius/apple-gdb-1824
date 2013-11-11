@@ -46,7 +46,7 @@ extern CORE_ADDR w65_skip_prologue ();
 /* Immediately after a function call, return the saved pc.
    Can't always go through the frames for this because on some machines
    the new frame is not set up until the new function executes
-   some instructions. 
+   some instructions.
 
    The return address is the value saved in the PR register + 4  */
 
@@ -126,7 +126,7 @@ extern CORE_ADDR w65_skip_prologue ();
 #define P_REGNUM   23
 
 /* Store the address of the place in which to copy the structure the
-   subroutine will return.  This is called from call_function. 
+   subroutine will return.  This is called from call_function.
 
    We store structs through a pointer passed in R4 */
 
@@ -142,7 +142,7 @@ extern CORE_ADDR w65_skip_prologue ();
 
 
 /* Write into appropriate registers a function return value
-   of type TYPE, given in virtual format.  
+   of type TYPE, given in virtual format.
 
    Things always get returned in R4/R5 */
 
@@ -171,7 +171,7 @@ extern CORE_ADDR w65_skip_prologue ();
 /* Set VAL to the number of args passed to frame described by FI.
    Can set VAL to -1, meaning no way to tell.  */
 
-/* We can't tell how many args there are */
+/* We cannot tell how many args there are */
 
 #define FRAME_NUM_ARGS(fi) (-1)
 
@@ -210,3 +210,5 @@ extern CORE_ADDR w65_addr_bits_remove (CORE_ADDR);
 #define TARGET_INT_BIT  16
 #define TARGET_LONG_BIT 32
 #define TARGET_PTR_BIT  32
+
+/* EOF */

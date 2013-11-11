@@ -18,8 +18,8 @@
    should be in a file named COPYING.  Among other things, the copyright
    notice and this notice must be preserved on all copies.
 
-   In other words, go ahead and share GDB, but don't try to stop
-   anyone else from sharing it farther.  Help stamp out software hoarding!  */
+   In other words, go ahead and share GDB, but do NOT try to stop
+   anyone else from sharing it farther. Help stamp out software hoarding!  */
 
 /*
    Except for the data cache routines, this file bears little resemblence
@@ -35,7 +35,7 @@
  *
  * MODES OF OPERATION
  * ----- -- ---------
- *	
+ *
  * As far as NINDY is concerned, GDB is always in one of two modes: command
  * mode or passthrough mode.
  *
@@ -70,7 +70,7 @@
  *
  *		<info>#<checksum>
  *
- * where 
+ * where
  *	#	is a literal character
  *
  *	<info>	ASCII information;  all numeric information is in the
@@ -87,7 +87,7 @@
  *
  * In response to a command NINDY always sends back either data or
  * a result code of the form "Xnn", where "nn" are hex digits and "X00"
- * means no errors.  (Exceptions: the "s" and "c" commands don't respond.)
+ * means no errors.  (Exceptions: the "s" and "c" commands do NOT respond.)
  *
  * SEE THE HEADER OF THE FILE "gdb.c" IN THE NINDY MONITOR SOURCE CODE FOR A
  * FULL DESCRIPTION OF LEGAL COMMANDS.
@@ -167,7 +167,7 @@ nindy_close (int quitting)
   savename = 0;
 }
 
-/* Open a connection to a remote debugger.   
+/* Open a connection to a remote debugger.
    FIXME, there should be "set" commands for the options that are
    now specified with gdb command-line options (old_protocol,
    and initial_brk).  */
@@ -186,7 +186,7 @@ nindy_open (char *name,		/* "/dev/ttyXX", "ttyXX", or "XX": tty to be opened */
 
   have_regs = regs_changed = 0;
 
-  /* Allow user to interrupt the following -- we could hang if there's
+  /* Allow user to interrupt the following -- we could hang if there is
      no NINDY at the other end of the remote tty.  */
   immediate_quit++;
   /* If baud_rate is -1, then ninConnect will not recognize the baud rate
@@ -259,7 +259,7 @@ void
 nindy_resume (ptid_t ptid, int step, enum target_signal siggnal)
 {
   if (siggnal != TARGET_SIGNAL_0 && siggnal != stop_signal)
-    warning ("Can't send signals to remote NINDY targets.");
+    warning ("Cannot send signals to remote NINDY targets.");
 
   if (regs_changed)
     {
@@ -272,7 +272,7 @@ nindy_resume (ptid_t ptid, int step, enum target_signal siggnal)
 
 /* FIXME, we can probably use the normal terminal_inferior stuff here.
    We have to do terminal_inferior and then set up the passthrough
-   settings initially.  Thereafter, terminal_ours and terminal_inferior
+   settings initially. Thereafter, terminal_ours and terminal_inferior
    will automatically swap the settings around for us.  */
 
 struct clean_up_tty_args
@@ -306,7 +306,7 @@ clean_up_int (void)
   signal (SIGINT, old_ctrlc);
 #ifdef SIGTSTP
   signal (SIGTSTP, old_ctrlz);
-#endif
+#endif /* SIGTSTP */
   error ("\n\nYou may need to reset the 80960 and/or reload your program.\n");
 }
 
@@ -340,7 +340,7 @@ nindy_wait (ptid_t ptid, struct target_waitstatus *status)
   old_ctrlc = signal (SIGINT, clean_up_int);
 #ifdef SIGTSTP
   old_ctrlz = signal (SIGTSTP, clean_up_int);
-#endif
+#endif /* SIGTSTP */
 
   old_cleanups = make_cleanup (clean_up_tty, &tty_args);
 
@@ -449,7 +449,7 @@ nindy_fetch_registers (int regno)
 static void
 nindy_prepare_to_store (void)
 {
-  /* Fetch all regs if they aren't already here.  */
+  /* Fetch all regs if they are NOT already here.  */
   read_register_bytes (0, NULL, REGISTER_BYTES);
 }
 
@@ -472,8 +472,8 @@ nindy_store_registers (int regno)
 }
 
 /* Copy LEN bytes to or from inferior's memory starting at MEMADDR
-   to debugger memory starting at MYADDR.   Copy to inferior if
-   SHOULD_WRITE is nonzero.  Returns the length copied.  TARGET is
+   to debugger memory starting at MYADDR. Copy to inferior if
+   SHOULD_WRITE is nonzero. Returns the length copied. TARGET is
    unused.  */
 
 int
@@ -501,7 +501,7 @@ nindy_create_inferior (char *execfile, char *args, char **env)
   int pid;
 
   if (args && *args)
-    error ("Can't pass arguments to remote NINDY process");
+    error ("Cannot pass arguments to remote NINDY process");
 
   if (execfile == 0 || exec_bfd == 0)
     error ("No executable file specified");
@@ -511,13 +511,13 @@ nindy_create_inferior (char *execfile, char *args, char **env)
   pid = 42;
 
   /* The "process" (board) is already stopped awaiting our commands, and
-     the program is already downloaded.  We just set its PC and go.  */
+     the program is already downloaded. We just set its PC and go.  */
 
   inferior_ptid = pid_to_ptid (pid);	/* Needed for wait_for_inferior below */
 
   clear_proceed_status ();
 
-  /* Tell wait_for_inferior that we've started a new process.  */
+  /* Tell wait_for_inferior that we have started a new process.  */
   init_wait_for_inferior ();
 
   /* Set up the "saved terminal modes" of the inferior
@@ -555,7 +555,7 @@ nindy_kill (char *args, int from_tty)
 /* Clean up when a program exits.
 
    The program actually lives on in the remote processor's RAM, and may be
-   run again without a download.  Don't leave it full of breakpoint
+   run again without a download. Do NOT leave it full of breakpoint
    instructions.  */
 
 void
@@ -578,7 +578,7 @@ static void
 nindy_load (char *filename, int from_tty)
 {
   asection *s;
-  /* Can't do unix style forking on a VMS system, so we'll use bfd to do
+  /* Cannot do unix style forking on a VMS system, so we will use bfd to do
      all the work for us
    */
 
@@ -591,7 +591,7 @@ nindy_load (char *filename, int from_tty)
 
   if (!bfd_check_format (file, bfd_object))
     {
-      error ("can't prove it's an object file\n");
+      error ("cannot prove it's an object file\n");
       return;
     }
 
@@ -620,11 +620,11 @@ load_stub (char *arg)
 }
 
 /* This routine is run as a hook, just before the main command loop is
-   entered.  If gdb is configured for the i960, but has not had its
+   entered. If gdb is configured for the i960, but has not had its
    nindy target specified yet, this will loop prompting the user to do so.
 
    Unlike the loop provided by Intel, we actually let the user get out
-   of this with a RETURN.  This is useful when e.g. simply examining
+   of this with a RETURN. This is useful when e.g. simply examining
    an i960 object file on the host system.  */
 
 void
@@ -760,3 +760,5 @@ _initialize_nindy (void)
 Only useful if the target has been equipped with a circuit\n\
 to perform a hard reset when a break is detected.");
 }
+
+/* EOF */

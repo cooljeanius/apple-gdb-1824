@@ -92,3 +92,5 @@ aix_resizewindow (signo)			\
       chars_per_line = val;			\
   }						\
 }
+
+/* EOF */

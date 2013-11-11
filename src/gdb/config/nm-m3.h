@@ -25,7 +25,7 @@
 #include <mach.h>
 #include "regcache.h"
 
-/* Mach3 doesn't declare errno in <errno.h>.  */
+/* Mach3 does NOT declare errno in <errno.h>. (wat?)  */
 extern int errno;
 
 /* Task port of our debugged inferior. */
@@ -47,7 +47,7 @@ extern int must_suspend_thread;
 
  * If you can get this, you may debug anything on this host.
  *
- * If you can't, gdb gives it's own task port as the
+ * If you cannot, gdb gives its own task port as the
  * authentication port
  */
 #define  mach_privileged_host_port() task_by_pid(-1)
@@ -56,13 +56,13 @@ extern int must_suspend_thread;
  * This is the MIG ID number of the emulator/server bsd_execve() RPC call.
  *
  * It SHOULD never change, but if it does, gdb `run'
- * command won't work until you fix this define.
- * 
+ * command will NOT work until you fix this define.
+ *
  */
 #define MIG_EXEC_SYSCALL_ID		101000
 
 /* If our_message_port gets a msg with this ID,
- * GDB suspends it's inferior and enters command level.
+ * GDB suspends its inferior and enters command level.
  * (Useful at least if ^C does not work)
  */
 #define GDB_MESSAGE_ID_STOP			0x41151
@@ -111,16 +111,16 @@ struct emul_stack_top
 
 #define ATTACH_TO_THREAD attach_to_thread
 
-/* Don't do wait_for_inferior on attach.  */
+/* Do NOT do wait_for_inferior on attach.  */
 #define ATTACH_NO_WAIT
 
 /* Do Mach 3 dependent operations when ^C or a STOP is requested */
 #define DO_QUIT() mach3_quit ()
 
 #if 0
-/* This is bogus.  It is NOT OK to quit out of target_wait.  */
+/* This is bogus. It is NOT OK to quit out of target_wait.  */
 /* If in mach_msg() and ^C is typed set immediate_quit */
-#define REQUEST_QUIT() mach3_request_quit ()
-#endif
+# define REQUEST_QUIT() mach3_request_quit ()
+#endif /* 0 */
 
 #endif /* NM_M3_H */

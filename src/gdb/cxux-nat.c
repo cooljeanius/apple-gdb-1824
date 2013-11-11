@@ -37,8 +37,8 @@
 #include "regcache.h"
 
 #ifndef USER			/* added to support BCS ptrace_user */
-#define USER ptrace_user
-#endif
+# define USER ptrace_user
+#endif /* !USER */
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <sys/file.h>
@@ -331,7 +331,7 @@ fill_gregset (gregset_t *gregsetp, int regno)
 #endif /* USE_PROC_FS */
 
 /* This support adds the equivalent of adb's % command.  When
-   the `add-shared-symbol-files' command is given, this routine scans 
+   the `add-shared-symbol-files' command is given, this routine scans
    the dynamic linker's link map and reads the minimal symbols
    from each shared object file listed in the map. */
 

@@ -1689,6 +1689,9 @@ AC_DEFUN([AM_PROG_VALAC],
       m4_default([$2], [:])
     fi])
 
+m4_include([m4/ax_check_compile_flag.m4])
+m4_include([m4/ax_compiler_vendor.m4])
+m4_include([m4/bakefile-lang.m4])
 m4_include([m4/libtool.m4])
 m4_include([m4/ltoptions.m4])
 m4_include([m4/ltsugar.m4])

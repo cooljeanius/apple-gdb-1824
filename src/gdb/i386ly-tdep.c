@@ -43,3 +43,5 @@ i386lynx_saved_pc_after_call (struct frame_info *frame)
 
   return read_memory_unsigned_integer (read_register (SP_REGNUM), 4);
 }
+
+/* EOF */

@@ -26,23 +26,23 @@
 
    This module will then use the thread_db API to add thread-awareness
    to the functionality provided by the process_stratum target (or in
-   some cases, to add user-level thread awareness on top of the 
-   kernel-level thread awareness that is already provided by the 
+   some cases, to add user-level thread awareness on top of the
+   kernel-level thread awareness that is already provided by the
    process_stratum target).
 
    Solaris threads (for instance) are a multi-level thread implementation;
-   the kernel provides a Light Weight Process (LWP) which the procfs 
+   the kernel provides a Light Weight Process (LWP) which the procfs
    process_stratum module is aware of.  This module must then mediate
    the relationship between kernel LWP threads and user (eg. posix)
    threads.
 
-   Linux threads are likely to be different -- but the thread_db 
+   Linux threads are likely to be different -- but the thread_db
    library API should make the difference largely transparent to GDB.
 
    */
 
 /* The thread_db API provides a number of functions that give the caller
-   access to the inner workings of the child process's thread library. 
+   access to the inner workings of the child process's thread library.
    We will be using the following (others may be added):
 
    td_thr_validate		Confirm valid "live" thread
@@ -55,7 +55,7 @@
    td_ta_map_lwp2thr		Get thread handle from LWP id
    td_ta_thr_iter		Iterate over all threads (with callback)
 
-   In return, the debugger has to provide certain services to the 
+   In return, the debugger has to provide certain services to the
    thread_db library.  Some of these aren't actually required to do
    anything in practice.  For instance, the thread_db expects to be
    able to stop the child process and start it again: but in our
@@ -89,9 +89,9 @@
    ps_lsetregs			Set LWP's general registers
    ps_lsetfpregs		Set LWP's floating point registers
    ps_lgetLDT			Get LWP's Local Descriptor Table (x86)
-   
+
    Thus, if we ask the thread_db library to give us the general registers
-   for user thread X, thread_db may figure out that user thread X is 
+   for user thread X, thread_db may figure out that user thread X is
    actually mapped onto kernel thread Y.  Thread_db does not know how
    to obtain the registers for kernel thread Y, but GDB does, so thread_db
    turns the request right back to us via the ps_lgetregs callback.  */
@@ -175,7 +175,7 @@ typedef const void *gdb_ps_write_buf_t;
 typedef size_t gdb_ps_size_t;
 #endif
 
-/* 
+/*
  * proc_service callback functions, called by thread_db.
  */
 
@@ -240,8 +240,8 @@ ps_plog (const char *fmt, ...)
 
 /* Look up a symbol in GDB's global symbol table.
    Return the symbol's address.
-   FIXME: it would be more correct to look up the symbol in the context 
-   of the LD_OBJECT_NAME provided.  However we're probably fairly safe 
+   FIXME: it would be more correct to look up the symbol in the context
+   of the LD_OBJECT_NAME provided.  However we're probably fairly safe
    as long as there aren't name conflicts with other libraries.  */
 
 ps_err_e
@@ -263,10 +263,10 @@ ps_pglobal_lookup (gdb_ps_prochandle_t ph,
 }
 
 /* Worker function for all memory reads and writes: */
-static ps_err_e rw_common (const struct ps_prochandle *ph, 
+static ps_err_e rw_common (const struct ps_prochandle *ph,
 			   paddr_t addr,
-			   char *buf, 
-			   int size, 
+			   char *buf,
+			   int size,
 			   int write_p);
 
 /* target_xfer_memory direction consts */
@@ -314,8 +314,8 @@ static char *thr_state_string (td_thr_state_e);
 struct ps_prochandle main_prochandle;
 td_thragent_t *      main_threadagent;
 
-/* 
- * Common proc_service routine for reading and writing memory.  
+/*
+ * Common proc_service routine for reading and writing memory.
  */
 
 /* FIXME: once we've munged the inferior_ptid, why can't we
@@ -336,7 +336,7 @@ rw_common (const struct ps_prochandle *ph,
 
   while (to_do > 0)
     {
-      done = current_target.to_xfer_memory (addr, buf, size, write_p, 
+      done = current_target.to_xfer_memory (addr, buf, size, write_p,
 					    &current_target);
       if (done <= 0)
 	{
@@ -440,7 +440,7 @@ ps_lgetLDT (gdb_ps_prochandle_t ph, lwpid_t lwpid,
   extern struct ssd *procfs_find_LDT_entry (int);
   struct ssd *ret;
 
-  ret = procfs_find_LDT_entry (BUILD_LWP (lwpid, 
+  ret = procfs_find_LDT_entry (BUILD_LWP (lwpid,
 					  PIDGET (main_prochandle.pid)));
   if (ret)
     {
@@ -456,15 +456,15 @@ ps_lgetLDT (gdb_ps_prochandle_t ph, lwpid_t lwpid,
  * Pointers to thread_db functions:
  *
  * These are a dynamic library mechanism.
- * The dlfcn.h interface will be used to initialize these 
+ * The dlfcn.h interface will be used to initialize these
  * so that they point to the appropriate functions in the
- * thread_db dynamic library.  This is done dynamically 
- * so that GDB can still run on systems that lack thread_db.  
+ * thread_db dynamic library.  This is done dynamically
+ * so that GDB can still run on systems that lack thread_db.
  */
 
 static td_err_e (*p_td_init)              (void);
 
-static td_err_e (*p_td_ta_new)            (const struct ps_prochandle *ph_p, 
+static td_err_e (*p_td_ta_new)            (const struct ps_prochandle *ph_p,
 					   td_thragent_t **ta_pp);
 
 static td_err_e (*p_td_ta_delete)         (td_thragent_t *ta_p);
@@ -477,7 +477,7 @@ static td_err_e (*p_td_ta_thr_iter)       (const td_thragent_t *ta_p,
 					   td_thr_iter_f *cb,
 					   void *cbdata_p,
 					   td_thr_state_e state,
-					   int ti_pri, 
+					   int ti_pri,
 					   sigset_t *ti_sigmask_p,
 					   unsigned ti_user_flags);
 
@@ -530,10 +530,10 @@ static td_err_e (*p_td_ta_map_lwp2thr)    (const td_thragent_t *ta_p,
  *
  */
 
-/* 
+/*
  * Initializer for thread_db library interface.
- * This function does the dynamic library stuff (dlopen, dlsym), 
- * and then calls the thread_db library's one-time initializer 
+ * This function does the dynamic library stuff (dlopen, dlsym),
+ * and then calls the thread_db library's one-time initializer
  * function (td_init).  If everything succeeds, this function
  * returns true; otherwise it returns false, and this module
  * cannot be used.
@@ -595,7 +595,7 @@ init_thread_db_library (void)
   /* td_thr_setfpregs: set floating point registers for thread.  */
   if ((p_td_thr_setfpregs = dlsym (dlhandle, "td_thr_setfpregs")) == NULL)
     return 0;			/* fail */
-  
+
   ret = p_td_init ();
   if (ret != TD_OK)
     {
@@ -687,7 +687,7 @@ thr_err_string (td_err_e errcode)
 
    DESCRIPTION
 
-   Return the thread_db state string associated with statecode.  
+   Return the thread_db state string associated with statecode.
    If statecode is unknown, then return an <unknown> message.
 
  */
@@ -712,7 +712,7 @@ thr_state_string (td_thr_state_e statecode)
 
 /*
  * Local thread/event list.
- * This data structure will be used to hold a list of threads and 
+ * This data structure will be used to hold a list of threads and
  * pending/deliverable events.
  */
 
@@ -736,7 +736,7 @@ insert_thread (int tid, int lid, td_thr_state_e state, td_thr_type_e type)
   if (threadlist_top >= threadlist_max)
     {
       threadlist_max += THREADLIST_ALLOC;
-      threadlist      = xrealloc (threadlist, 
+      threadlist      = xrealloc (threadlist,
 				  threadlist_max * sizeof (threadinfo));
       if (threadlist == NULL)
 	return NULL;
@@ -782,15 +782,15 @@ threadlist_iter (int (*func) (), void *data, td_thr_state_e state,
 	break;
 
   return;
-}     
+}
 
 /*
  * Global state
- * 
+ *
  * Here we keep state information all collected in one place.
  */
 
-/* This flag is set when we activate, so that we don't do it twice. 
+/* This flag is set when we activate, so that we don't do it twice.
    Defined in linux-thread.c and used for inter-target syncronization.  */
 extern int using_thread_db;
 
@@ -914,7 +914,7 @@ disable_thread_event_reporting (td_thragent_t *ta)
 }
 
 /* check_for_thread_event
-   
+
    if it's a thread event we recognize (currently
    we only recognize creation and destruction
    events), return 1; else return 0.  */
@@ -923,7 +923,7 @@ disable_thread_event_reporting (td_thragent_t *ta)
 static int
 check_for_thread_event (struct target_waitstatus *tws, int event_pid)
 {
-  /* FIXME: to be more efficient, we should keep a static 
+  /* FIXME: to be more efficient, we should keep a static
      list of threads, and update it only here (with td_ta_thr_iter). */
   return 0;
 }
@@ -971,7 +971,7 @@ thread_db_unpush_target (void)
  * that we can debug using the thread_db API.
  */
 
-/* 
+/*
  * new_objfile function:
  *
  * connected to target_new_objfile_hook, this function gets called
@@ -984,16 +984,16 @@ thread_db_unpush_target (void)
  */
 
 static void (*target_new_objfile_chain)   (struct objfile *objfile);
-static int stop_or_attach_thread_callback (const td_thrhandle_t *th, 
+static int stop_or_attach_thread_callback (const td_thrhandle_t *th,
 					   void *data);
-static int wait_thread_callback           (const td_thrhandle_t *th, 
+static int wait_thread_callback           (const td_thrhandle_t *th,
 					   void *data);
 
 static void
 thread_db_new_objfile (struct objfile *objfile)
 {
   td_err_e   ret;
-  
+
   if (using_thread_db)			/* libthread already detected, and */
     goto quit;				/* thread target vector activated. */
 
@@ -1003,22 +1003,22 @@ thread_db_new_objfile (struct objfile *objfile)
   /* Initialize our "main prochandle" with the main inferior pid.  */
   main_prochandle.pid = PIDGET (inferior_ptid);
 
-  /* Now attempt to open a thread_db connection to the 
+  /* Now attempt to open a thread_db connection to the
      thread library running in the child process.  */
   ret = p_td_ta_new (&main_prochandle, &main_threadagent);
   switch (ret) {
   default:
-    warning ("Unexpected error initializing thread_db: %s", 
+    warning ("Unexpected error initializing thread_db: %s",
 	     thr_err_string (ret));
     break;
   case TD_NOLIBTHREAD:	/* expected: no libthread in child process (yet) */
-    break;	
+    break;
   case TD_OK:		/* libthread detected in child: we go live now! */
     thread_db_push_target ();
     event_pid = PIDGET (inferior_ptid);	/* for resume */
 
     /* Now stop everyone else, and attach any new threads you find.  */
-    p_td_ta_thr_iter (main_threadagent, 
+    p_td_ta_thr_iter (main_threadagent,
 		      stop_or_attach_thread_callback,
 		      (void *) 0,
 		      TD_THR_ANY_STATE,
@@ -1029,7 +1029,7 @@ thread_db_new_objfile (struct objfile *objfile)
     /* Now go call wait on all the threads you've stopped:
        This allows us to absorb the SIGKILL event, and to make sure
        that the thread knows that it is stopped (Linux peculiarity).  */
-    p_td_ta_thr_iter (main_threadagent, 
+    p_td_ta_thr_iter (main_threadagent,
 		      wait_thread_callback,
 		      (void *) 0,
 		      TD_THR_ANY_STATE,
@@ -1045,7 +1045,7 @@ quit:
 }
 
 
-/* 
+/*
 
    LOCAL FUNCTION
 
@@ -1093,7 +1093,7 @@ get_lwp_from_thread_handle (td_thrhandle_t *th)
   td_err_e     ret;
 
   if ((ret = p_td_thr_get_info (th, &ti)) != TD_OK)
-    error ("get_lwp_from_thread_handle: thr_get_info failed: %s", 
+    error ("get_lwp_from_thread_handle: thr_get_info failed: %s",
 	   thr_err_string (ret));
 
   return ti.ti_lid;
@@ -1110,15 +1110,15 @@ get_lwp_from_thread_id (int tid	/* thread_t? */)
   td_err_e       ret;
 
   if ((ret = p_td_ta_map_id2thr (main_threadagent, tid, &th)) != TD_OK)
-    error ("get_lwp_from_thread_id: map_id2thr failed: %s", 
+    error ("get_lwp_from_thread_id: map_id2thr failed: %s",
 	   thr_err_string (ret));
 
   return get_lwp_from_thread_handle (&th);
 }
 
-/* 
+/*
  * pid_to_str has to handle user-space threads.
- * If not a user-space thread, then pass the request on to the 
+ * If not a user-space thread, then pass the request on to the
  * underlying stratum if it can handle it: else call normal_pid_to_str.
  */
 
@@ -1132,7 +1132,7 @@ thread_db_pid_to_str (ptid_t ptid)
 
   if (is_thread (ptid))
     {
-      if ((ret = p_td_ta_map_id2thr (main_threadagent, 
+      if ((ret = p_td_ta_map_id2thr (main_threadagent,
 				     GET_THREAD (ptid),
 				     &th)) != TD_OK)
 	error ("thread_db: map_id2thr failed: %s", thr_err_string (ret));
@@ -1154,7 +1154,7 @@ thread_db_pid_to_str (ptid_t ptid)
   return buf;
 }
 
-/* 
+/*
  * thread_db target vector functions:
  */
 
@@ -1166,9 +1166,9 @@ thread_db_files_info (struct target_ops *tgt_vector)
   target_beneath->to_files_info (tgt_vector);
 }
 
-/* 
+/*
  * xfer_memory has to munge the inferior_ptid before passing the call
- * down to the target layer.  
+ * down to the target layer.
  */
 
 static int
@@ -1195,7 +1195,7 @@ thread_db_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int dowrite,
   return ret;
 }
 
-/* 
+/*
  * fetch_registers has to determine if inferior_ptid is a user-space thread.
  * If so, we use the thread_db API to get the registers.
  * And if not, we call the underlying process stratum.
@@ -1224,8 +1224,8 @@ thread_db_fetch_registers (int regno)
   if ((ret = p_td_ta_map_id2thr (main_threadagent, thread, &thandle)) != TD_OK)
     error ("fetch_registers: td_ta_map_id2thr: %s", thr_err_string (ret));
 
-  /* Get the integer regs: 
-     For the sparc, TD_PARTIALREG means that only i0->i7, l0->l7, 
+  /* Get the integer regs:
+     For the sparc, TD_PARTIALREG means that only i0->i7, l0->l7,
      pc and sp are saved (by a thread context switch).  */
   if ((ret = p_td_thr_getgregs (&thandle, gregset)) != TD_OK &&
       ret != TD_PARTIALREG)
@@ -1245,7 +1245,7 @@ thread_db_fetch_registers (int regno)
 
 }
 
-/* 
+/*
  * store_registers has to determine if inferior_ptid is a user-space thread.
  * If so, we use the thread_db API to get the registers.
  * And if not, we call the underlying process stratum.
@@ -1331,8 +1331,8 @@ test_for_new_thread (int tid, int lid, int verbose)
     handle_new_thread (tid, lid, verbose);
 }
 
-/* 
- * Callback function that gets called once per USER thread 
+/*
+ * Callback function that gets called once per USER thread
  * (i.e., not kernel) thread by td_ta_thr_iter.
  */
 
@@ -1348,7 +1348,7 @@ find_new_threads_callback (const td_thrhandle_t *th, void *ignored)
       return -1;		/* bail out, get_info failed. */
     }
 
-  /* FIXME: 
+  /* FIXME:
      As things now stand, this should never detect a new thread.
      But if it does, we could be in trouble because we aren't calling
      wait_thread_callback for it.  */
@@ -1356,7 +1356,7 @@ find_new_threads_callback (const td_thrhandle_t *th, void *ignored)
   return 0;
 }
 
-/* 
+/*
  * find_new_threads uses the thread_db iterator function to discover
  * user-space threads.  Then if the underlying process stratum has a
  * find_new_threads method, we call that too.
@@ -1370,12 +1370,12 @@ thread_db_find_new_threads (void)
       printf_filtered ("No process.\n");
       return;
     }
-  p_td_ta_thr_iter (main_threadagent, 
-		    find_new_threads_callback, 
-		    (void *) 0, 
-		    TD_THR_ANY_STATE, 
+  p_td_ta_thr_iter (main_threadagent,
+		    find_new_threads_callback,
+		    (void *) 0,
+		    TD_THR_ANY_STATE,
 		    TD_THR_LOWEST_PRIORITY,
-		    TD_SIGNO_MASK, 
+		    TD_SIGNO_MASK,
 		    TD_THR_ANY_USER_FLAGS);
   if (target_beneath->to_find_new_threads)
     target_beneath->to_find_new_threads ();
@@ -1412,7 +1412,7 @@ resume_thread_callback (const td_thrhandle_t *th, void *data)
       warning ("resume_thread_callback: %s", thr_err_string (ret));
       return -1;		/* bail out, get_info failed. */
     }
-  /* FIXME: 
+  /* FIXME:
      As things now stand, this should never detect a new thread.
      But if it does, we could be in trouble because we aren't calling
      wait_thread_callback for it.  */
@@ -1479,9 +1479,9 @@ thread_db_resume (ptid_t ptid, int step, enum target_signal signo)
 
 	 Note: order of 2 and 3 may need to be reversed.  */
 
-      threadlist_iter (new_resume_thread_callback, 
-			(void *) 0, 
-			TD_THR_ANY_STATE, 
+      threadlist_iter (new_resume_thread_callback,
+			(void *) 0,
+			TD_THR_ANY_STATE,
 			TD_THR_ANY_TYPE);
       /* now resume event thread, and if necessary also main thread. */
       if (event_pid)
@@ -1512,7 +1512,7 @@ stop_or_attach_thread_callback (const td_thrhandle_t *th, void *data)
       return -1;		/* bail out, get_info failed. */
     }
 
-  /* First add it to our internal list.  
+  /* First add it to our internal list.
      We build this list anew at every wait event.  */
   insert_thread (ti.ti_tid, ti.ti_lid, ti.ti_state, ti.ti_type);
   /* Now: if we've already seen it, stop it, else add it and attach it.  */
@@ -1533,7 +1533,7 @@ stop_or_attach_thread_callback (const td_thrhandle_t *th, void *data)
 
   return 0;
 }
-     
+
 /*
  * Wait for signal N from pid PID.
  * If wait returns any other signals, put them back before returning.
@@ -1548,7 +1548,7 @@ wait_for_stop (int pid)
 
   /* Array of wait/signal status */
   /* FIXME: wrong data structure, we need a queue.
-     Realtime signals may be delivered more than once.  
+     Realtime signals may be delivered more than once.
      And at that, we really can't handle them (see below).  */
 #if defined (NSIG)
   static int   wstatus [NSIG];
@@ -1587,7 +1587,7 @@ wait_for_stop (int pid)
 	  int signo;
 	  /* Oops, got an event other than SIGSTOP.
 	     Save it, and throw it back after we find the SIGSTOP event.  */
-	  
+
 	  /* FIXME (how?)  This method is going to fail for realtime
 	     signals, which cannot be put back simply by using kill.  */
 
@@ -1597,7 +1597,7 @@ wait_for_stop (int pid)
 	    signo = WSTOPSIG (status);
 	  else
 	    signo = WTERMSIG (status);
-	  
+
 	  /* If a thread other than the event thread has hit a GDB
 	     breakpoint (as opposed to some random trap signal), then
 	     just arrange for it to hit it again later.  Back up the
@@ -1612,18 +1612,18 @@ wait_for_stop (int pid)
 
 	  if (retpid != event_pid &&
 	      signo == SIGTRAP &&
-	      breakpoint_inserted_here_p (read_pc_pid (pid_to_ptid (retpid)) - 
+	      breakpoint_inserted_here_p (read_pc_pid (pid_to_ptid (retpid)) -
 					  DECR_PC_AFTER_BREAK))
 	    {
 	      /* Set the pc to before the trap and DO NOT re-send the signal */
 	      if (DECR_PC_AFTER_BREAK)
-		write_pc_pid (read_pc_pid (pid_to_ptid (retpid)) 
+		write_pc_pid (read_pc_pid (pid_to_ptid (retpid))
 		                - DECR_PC_AFTER_BREAK,
 			      pid_to_ptid (retpid));
 	    }
 
 	  /* Since SIGINT gets forwarded to the entire process group
-	     (in the case where ^C is typed at the tty / console), 
+	     (in the case where ^C is typed at the tty / console),
 	     just ignore all SIGINTs from other than the event thread.  */
 	  else if (retpid != event_pid && signo == SIGINT)
 	    { /* do nothing.  Signal will disappear into oblivion!  */
@@ -1673,7 +1673,7 @@ wait_thread_callback (const td_thrhandle_t *th, void *data)
 static int
 new_wait_thread_callback (threadinfo *thread, void *data)
 {
-  /* don't wait on the event thread -- it's already stopped and waited.  
+  /* don't wait on the event thread -- it's already stopped and waited.
      Ditto the main thread.  */
   if (thread->lid != event_pid &&
       thread->lid != main_prochandle.pid)
@@ -1683,11 +1683,11 @@ new_wait_thread_callback (threadinfo *thread, void *data)
   return 0;
 }
 
-/* 
+/*
  * Wait for any thread to stop, by calling the underlying wait method.
  * The PID returned by the underlying target may be a kernel thread,
  * in which case we will want to convert it to the corresponding
- * user-space thread.  
+ * user-space thread.
  */
 
 static ptid_t
@@ -1746,7 +1746,7 @@ thread_db_wait (ptid_t ptid, struct target_waitstatus *ourstatus)
 
       empty_threadlist ();
       /* Now stop everyone else, and attach any new threads you find.  */
-      p_td_ta_thr_iter (main_threadagent, 
+      p_td_ta_thr_iter (main_threadagent,
 			stop_or_attach_thread_callback,
 			(void *) 0,
 			TD_THR_ANY_STATE,
@@ -1758,9 +1758,9 @@ thread_db_wait (ptid_t ptid, struct target_waitstatus *ourstatus)
 	 This allows us to absorb the SIGKILL event, and to make sure
 	 that the thread knows that it is stopped (Linux peculiarity).  */
 
-      threadlist_iter (new_wait_thread_callback, 
+      threadlist_iter (new_wait_thread_callback,
 		       (void *) 0,
-		       TD_THR_ANY_STATE, 
+		       TD_THR_ANY_STATE,
 		       TD_THR_ANY_TYPE);
     }
 
@@ -1800,7 +1800,7 @@ thread_db_wait (ptid_t ptid, struct target_waitstatus *ourstatus)
   return retptid;
 }
 
-/* 
+/*
  * kill has to call the underlying kill.
  * FIXME: I'm not sure if it's necessary to check inferior_ptid any more,
  * but we might need to fix inferior_ptid up if it's a user thread.
@@ -1812,7 +1812,7 @@ kill_thread_callback (const td_thrhandle_t *th, void *data)
   td_thrinfo_t ti;
   td_err_e     ret;
 
-  /* Fixme: 
+  /* Fixme:
      For Linux, threads may need to be waited.  */
   if ((ret = p_td_thr_get_info (th, &ti)) != TD_OK)
     {
@@ -1833,14 +1833,14 @@ static void thread_db_kill (void)
   int rpid;
   int status;
 
-  /* Fixme: 
+  /* Fixme:
      For Linux, threads may need to be waited.  */
   if (! ptid_equal (inferior_ptid, null_ptid))
     {
       /* Go kill the children first.  Save the main thread for last. */
-      p_td_ta_thr_iter (main_threadagent, 
-			kill_thread_callback, 
-			(void *) 0, 
+      p_td_ta_thr_iter (main_threadagent,
+			kill_thread_callback,
+			(void *) 0,
 			TD_THR_ANY_STATE,
 			TD_THR_LOWEST_PRIORITY,
 			TD_SIGNO_MASK,
@@ -1848,14 +1848,14 @@ static void thread_db_kill (void)
 
       /* Turn off thread_db event-reporting API *before* killing the
 	 main thread, since this operation requires child memory access.
-	 Can't move this into thread_db_unpush target because then 
+	 Can't move this into thread_db_unpush target because then
 	 detach would not work.  */
       disable_thread_event_reporting (main_threadagent);
 
       inferior_ptid = pid_to_ptid (main_prochandle.pid);
 
-      /* 
-       * Since both procfs_kill and ptrace_kill call target_mourn, 
+      /*
+       * Since both procfs_kill and ptrace_kill call target_mourn,
        * it should be sufficient for me to call one of them.
        * That will result in my mourn being called, which will both
        * unpush me and call the underlying mourn.
@@ -1878,8 +1878,8 @@ static void thread_db_kill (void)
   while (rpid > 0 || errno == EINTR);
 }
 
-/* 
- * Mourn has to remove us from the target stack, 
+/*
+ * Mourn has to remove us from the target stack,
  * and then call the underlying mourn.
  */
 
@@ -1889,8 +1889,8 @@ static void thread_db_mourn_inferior (void)
   target_mourn_inferior ();	/* call the underlying mourn */
 }
 
-/* 
- * Detach has to remove us from the target stack, 
+/*
+ * Detach has to remove us from the target stack,
  * and then call the underlying detach.
  *
  * But first, it has to detach all the cloned threads!
@@ -1918,7 +1918,7 @@ detach_thread_callback (const td_thrhandle_t *th, void *data)
       struct cleanup *old_chain;
       int off = 0;
 
-      /* Time to detach this thread. 
+      /* Time to detach this thread.
 	 First disable thread_db event reporting for the thread.  */
       if (p_td_thr_event_enable &&
 	  (ret = p_td_thr_event_enable (th, off)) != TD_OK)
@@ -1943,9 +1943,9 @@ thread_db_detach (char *args, int from_tty)
 {
   td_err_e ret;
 
-  if ((ret = p_td_ta_thr_iter (main_threadagent, 
-			       detach_thread_callback, 
-			       (void *) 0, 
+  if ((ret = p_td_ta_thr_iter (main_threadagent,
+			       detach_thread_callback,
+			       (void *) 0,
 			       TD_THR_ANY_STATE,
 			       TD_THR_LOWEST_PRIORITY,
 			       TD_SIGNO_MASK,
@@ -1953,7 +1953,7 @@ thread_db_detach (char *args, int from_tty)
       != TD_OK)
     warning ("detach (thr_iter): %s", thr_err_string (ret));
 
-  /* Turn off thread_db event-reporting API 
+  /* Turn off thread_db event-reporting API
      (before detaching the main thread) */
   disable_thread_event_reporting (main_threadagent);
 
@@ -1965,7 +1965,7 @@ thread_db_detach (char *args, int from_tty)
 }
 
 
-/* 
+/*
  * We never want to actually create the inferior!
  *
  * If this is ever called, it means we were on the target stack
@@ -1986,7 +1986,7 @@ thread_db_create_inferior (char *exec_file, char *allargs, char **env)
   find_default_create_inferior (exec_file, allargs, env);
 }
 
-/* 
+/*
  * Thread_db target vector initializer.
  */
 
@@ -2017,8 +2017,8 @@ init_thread_db_ops (void)
 
 /*
  * Module constructor / initializer function.
- * If connection to thread_db dynamic library is successful, 
- * then initialize this module's target vectors and the 
+ * If connection to thread_db dynamic library is successful,
+ * then initialize this module's target vectors and the
  * new_objfile hook.
  */
 
@@ -2042,3 +2042,4 @@ _initialize_thread_db (void)
 #endif	/* HAVE_STDINT_H */
 }
 
+/* EOF */

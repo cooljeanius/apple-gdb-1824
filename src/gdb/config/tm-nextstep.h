@@ -1,7 +1,8 @@
 /* Target support for NextStep/Rhapsody for GDB, the GNU debugger.
-   Copyright (C) 1997 Free Software Foundation, Inc.
+ * Copyright (C) 1997 Free Software Foundation, Inc.
+ */
 
-This file is part of GDB.
+/* This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

@@ -1,5 +1,5 @@
 /* MIPS-dependent portions of the RPC protocol
-   used with a VxWorks target 
+   used with a VxWorks target
 
    Contributed by Wind River Systems.
 
@@ -75,7 +75,7 @@ vx_read_register (int regno)
 
   net_read_registers (mips_greg_packet, MIPS_GREG_PLEN, PTRACE_GETREGS);
 
-  /* this code copies the registers obtained by RPC 
+  /* this code copies the registers obtained by RPC
      stored in a structure(s) like this :
 
      Register(s)                Offset(s)
@@ -153,7 +153,7 @@ vx_read_register (int regno)
 
 /* Store a register or registers into the VxWorks target.
    REGNO is the register to store, or -1 for all; currently,
-   it is ignored.  FIXME look at regno to improve efficiency.  */
+   it is ignored. FIXME look at regno to improve efficiency.  */
 
 vx_write_register (int regno)
 {
@@ -197,3 +197,5 @@ vx_write_register (int regno)
 			   PTRACE_SETFPREGS);
     }
 }
+
+/* EOF */

@@ -31,3 +31,5 @@ m68knbsd_use_struct_convention (int gcc_p, struct type *type)
 	   || TYPE_LENGTH (type) == 4
 	   || TYPE_LENGTH (type) == 8);
 }
+
+/* EOF */

@@ -183,7 +183,6 @@
 #define IA64_PR62_REGNUM	(IA64_PR0_REGNUM+62)
 #define IA64_PR63_REGNUM	(IA64_PR0_REGNUM+63)
 
-
 /* Branch registers: 8 64-bit registers for holding branch targets */
 #define IA64_BR0_REGNUM		320
 #define IA64_BR1_REGNUM		(IA64_BR0_REGNUM+1)

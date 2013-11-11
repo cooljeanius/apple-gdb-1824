@@ -793,6 +793,14 @@ WINDRES
 YFLAGS
 YACC
 VALAC
+MERGE_PEF
+LD_CLASSIC
+RESMERGER
+REZWACK
+REZDET
+DEREZ
+REZ
+XCODEBUILD
 am__fastdepOBJCXX_FALSE
 am__fastdepOBJCXX_TRUE
 OBJCXXDEPMODE
@@ -7797,6 +7805,8 @@ fi
 $as_echo_n "checking programs... " >&6; }
 { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
 $as_echo " " >&6; }
+
+
 if test -x `which automake`; then
 	test -z "$AR"
 	if test -n "$ac_tool_prefix"; then
@@ -8070,6 +8080,8 @@ if test -e ./config.cache; then
 	sed -i "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
 	sed -i "s|ac_cv_exeext|bad_exeext|g" ./config.cache
 fi
+
+
 # By default we simply use the C compiler to build assembly code.
 
 test "${CCAS+set}" = set || CCAS=$CC
@@ -28657,6 +28669,447 @@ else
 	test ! -z "$RANLIB" && export RANLIB
 
 fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if the C compiler requires -ext o" >&5
+$as_echo_n "checking if the C compiler requires -ext o... " >&6; }
+if ${bakefile_cv_c_exto+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest.$ac_ext.o
+if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
+  (eval $ac_compile) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then :
+  for ac_file in `(ls conftest.* 2>/dev/null)`; do
+    case $ac_file in
+        conftest.$ac_ext.o)
+            bakefile_cv_c_exto="-ext o"
+            ;;
+        *)
+            ;;
+    esac
+done
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "cannot figure out if compiler needs -ext o: cannot compile
+See \`config.log' for more details" "$LINENO" 5; }
+
+fi
+rm -f conftest.$ac_ext.o conftest.$ac_objext conftest.$ac_ext
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $bakefile_cv_c_exto" >&5
+$as_echo "$bakefile_cv_c_exto" >&6; }
+if test "x$bakefile_cv_c_exto" '!=' "x"; then
+    if test "c" = "c"; then
+        CFLAGS="$bakefile_cv_c_exto $CFLAGS"
+    fi
+    if test "c" = "cxx"; then
+        CXXFLAGS="$bakefile_cv_c_exto $CXXFLAGS"
+    fi
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for C compiler vendor" >&5
+$as_echo_n "checking for C compiler vendor... " >&6; }
+if ${ax_cv_c_compiler_vendor+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  # note: don't check for gcc first since some other compilers define __GNUC__
+  vendors="intel:     __ICC,__ECC,__INTEL_COMPILER
+           ibm:       __xlc__,__xlC__,__IBMC__,__IBMCPP__
+           pathscale: __PATHCC__,__PATHSCALE__
+           clang:     __clang__
+           gnu:       __GNUC__
+           sun:       __SUNPRO_C,__SUNPRO_CC
+           hp:        __HP_cc,__HP_aCC
+           dec:       __DECC,__DECCXX,__DECC_VER,__DECCXX_VER
+           borland:   __BORLANDC__,__TURBOC__
+           comeau:    __COMO__
+           cray:      _CRAYC
+           kai:       __KCC
+           lcc:       __LCC__
+           sgi:       __sgi,sgi
+           microsoft: _MSC_VER
+           metrowerks: __MWERKS__
+           watcom:    __WATCOMC__
+           portland:  __PGI
+           unknown:   UNKNOWN"
+  for ventest in $vendors; do
+    case $ventest in
+      *:) vendor=$ventest; continue ;;
+      *)  vencpp="defined("`echo $ventest | sed 's/,/) || defined(/g'`")" ;;
+    esac
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+      #if !($vencpp)
+        thisisanerror;
+      #endif
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  break
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  done
+  ax_cv_c_compiler_vendor=`echo $vendor | cut -d: -f1`
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_c_compiler_vendor" >&5
+$as_echo "$ax_cv_c_compiler_vendor" >&6; }
+
+
+# Extract the first word of "xcodebuild", so it can be a program name with args.
+set dummy xcodebuild; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_XCODEBUILD+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $XCODEBUILD in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_XCODEBUILD="$XCODEBUILD" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_XCODEBUILD="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+XCODEBUILD=$ac_cv_path_XCODEBUILD
+if test -n "$XCODEBUILD"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $XCODEBUILD" >&5
+$as_echo "$XCODEBUILD" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+
+# ResourceManager-related tools
+# Extract the first word of "Rez", so it can be a program name with args.
+set dummy Rez; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_REZ+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $REZ in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_REZ="$REZ" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_REZ="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+REZ=$ac_cv_path_REZ
+if test -n "$REZ"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $REZ" >&5
+$as_echo "$REZ" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+# Extract the first word of "DeRez", so it can be a program name with args.
+set dummy DeRez; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_DEREZ+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $DEREZ in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_DEREZ="$DEREZ" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_DEREZ="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+DEREZ=$ac_cv_path_DEREZ
+if test -n "$DEREZ"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $DEREZ" >&5
+$as_echo "$DEREZ" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+# Extract the first word of "RezDet", so it can be a program name with args.
+set dummy RezDet; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_REZDET+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $REZDET in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_REZDET="$REZDET" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_REZDET="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+REZDET=$ac_cv_path_REZDET
+if test -n "$REZDET"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $REZDET" >&5
+$as_echo "$REZDET" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+# Extract the first word of "RezWack", so it can be a program name with args.
+set dummy RezWack; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_REZWACK+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $REZWACK in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_REZWACK="$REZWACK" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_REZWACK="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+REZWACK=$ac_cv_path_REZWACK
+if test -n "$REZWACK"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $REZWACK" >&5
+$as_echo "$REZWACK" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+# Extract the first word of "ResMerger", so it can be a program name with args.
+set dummy ResMerger; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_RESMERGER+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $RESMERGER in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_RESMERGER="$RESMERGER" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_RESMERGER="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+RESMERGER=$ac_cv_path_RESMERGER
+if test -n "$RESMERGER"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $RESMERGER" >&5
+$as_echo "$RESMERGER" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+
+
+
+
+
+
+# Other Mac-specific tools
+# Extract the first word of "ld_classic", so it can be a program name with args.
+set dummy ld_classic; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_LD_CLASSIC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $LD_CLASSIC in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_LD_CLASSIC="$LD_CLASSIC" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_LD_CLASSIC="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+LD_CLASSIC=$ac_cv_path_LD_CLASSIC
+if test -n "$LD_CLASSIC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $LD_CLASSIC" >&5
+$as_echo "$LD_CLASSIC" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+# Extract the first word of "MergePef", so it can be a program name with args.
+set dummy MergePef; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_MERGE_PEF+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $MERGE_PEF in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_MERGE_PEF="$MERGE_PEF" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_MERGE_PEF="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+MERGE_PEF=$ac_cv_path_MERGE_PEF
+if test -n "$MERGE_PEF"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $MERGE_PEF" >&5
+$as_echo "$MERGE_PEF" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+
+# A few more compiler-y things
 # Extract the first word of "valac", so it can be a program name with args.
 set dummy valac; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -30692,7 +31145,8 @@ for ac_header in CoreFoundation/CoreFoundation.h \
                   libgen.h libgettext.h linux/byteorder/big_endian.h \
                   linux/byteorder/little_endian.h mach/thread_info.h \
                   mach/thread_status.h mach-o/loader.h mach-o/nlist.h \
-                  memory.h pthread.h setjmp.h sys/uio.h
+                  memory.h pthread.h rpc/rpc.h setjmp.h sys/uio.h \
+                  sys/utsname.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -31275,6 +31729,16 @@ _ACEOF
 fi
 
 
+ac_fn_c_check_type "$LINENO" "thread_t" "ac_cv_type_thread_t" "$ac_includes_default"
+if test "x$ac_cv_type_thread_t" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_THREAD_T 1
+_ACEOF
+
+
+fi
+
 ac_fn_c_check_type "$LINENO" "regex_t" "ac_cv_type_regex_t" "
 #ifdef HAVE_REGEX_H
 # include <regex.h>
@@ -31724,6 +32188,44 @@ $as_echo "$ac_cv_c_restrict" >&6; }
 _ACEOF
  ;;
  esac
+
+
+#FIXME: This check will say that the compiler does not support the
+# -fpascal-strings flag, even when it does actually support it
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether C compiler accepts -fpascal-strings" >&5
+$as_echo_n "checking whether C compiler accepts -fpascal-strings... " >&6; }
+if ${ax_cv_check_cflags___fpascal_strings+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  ax_check_save_flags=$CFLAGS
+  CFLAGS="$CFLAGS  -fpascal-strings"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ax_cv_check_cflags___fpascal_strings=yes
+else
+  ax_cv_check_cflags___fpascal_strings=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  CFLAGS=$ax_check_save_flags
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_check_cflags___fpascal_strings" >&5
+$as_echo "$ax_cv_check_cflags___fpascal_strings" >&6; }
+if test x"$ax_cv_check_cflags___fpascal_strings" = xyes; then :
+  :
+else
+  :
+fi
 
 
 # ------------------------------ #
@@ -32737,12 +33239,14 @@ done
 
 # Other functions (that autoscan complains about missing):
 unset ac_cv_func_strchr
-for ac_func in atexit bzero dup2 gethostbyaddr gethostbyname \
-                gethostname getpass gettimeofday inet_ntoa isascii \
-                memchr memcmp memcpy memmove mempcpy memset nl_langinfo \
-                pathconf pow re_comp regcomp select socket strcspn strdup \
-                strerror strncasecmp strndup strpbrk strchr strrchr \
-                strspn strstr strtok strtol strtoul uname wcwidth
+for ac_func in alarm atexit bzero dup2 fflush fprintf fwrite \
+                gethostbyaddr gethostbyname gethostname getpass \
+                gettimeofday inet_ntoa isascii memchr memcmp memcpy \
+                memmove mempcpy memset nl_langinfo pathconf pow re_comp \
+                regcomp select socket strchr strcspn strdup strerror \
+                strlen strncasecmp strncat strncmp strncpy strndup \
+                strpbrk strrchr strspn strstr strtok strtol strtoul \
+                uname wcwidth
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"

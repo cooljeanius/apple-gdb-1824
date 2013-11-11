@@ -35,9 +35,9 @@
    Reply
    read registers:
    DR<cr>
-   - 0 -    - 1 -    - 2 -    - 3 -      - 4 -    - 5 -    -- 6 -   - 7 - 
+   - 0 -    - 1 -    - 2 -    - 3 -      - 4 -    - 5 -    -- 6 -   - 7 -
    D = XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX   XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX
-   A = XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX   XXXXXXXX XXXXXXXX XXXXXXXX 
+   A = XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX   XXXXXXXX XXXXXXXX XXXXXXXX
    PC = XXXXXX       SSP = XXXXXX    USP = XXXXXX     SR = XXXXXXXX
    >
    Each byte of register data is described by two hex digits.
@@ -221,7 +221,7 @@ static char *savename;		/* Name of i/o device used */
 static serial_ttystate es1800_saved_ttystate;
 static int es1800_fc_save;	/* Save fcntl state */
 
-/* indicates that the emulator uses 32-bit data-adress (68020-mode) 
+/* indicates that the emulator uses 32-bit data-adress (68020-mode)
    instead of 24-bit (68000 -mode) */
 
 static int m68020;
@@ -403,7 +403,7 @@ es1800_open (char *name, int from_tty)
 	      p[3], p[4]);
     }
 
-  /* if no init_break statement is present in .gdb file we have to check 
+  /* if no init_break statement is present in .gdb file we have to check
      whether to download a breakpoint routine or not */
 
 #if 0
@@ -953,11 +953,11 @@ tohex (int nib)
 
 /* Read or write LEN bytes from inferior memory at MEMADDR, transferring
    to or from debugger address MYADDR.  Write to inferior if WRITE is
-   nonzero.  Returns length of data written or read; 0 for error. 
+   nonzero.  Returns length of data written or read; 0 for error.
 
    memaddr - the target's address
    myaddr  - gdb's address
-   len     - number of bytes 
+   len     - number of bytes
    write   - write if != 0 otherwise read
    tops    - unused */
 
@@ -1082,7 +1082,7 @@ es1800_files_info (struct target_ops *tops)
 
    addr           - is the target location in the target machine.
    contents_cache - is a pointer to memory allocated for saving the target contents.
-   It is guaranteed by the caller to be long enough to save sizeof 
+   It is guaranteed by the caller to be long enough to save sizeof
    BREAKPOINT bytes.
 
    FIXME: This size is target_arch dependent and should be available in
@@ -1109,7 +1109,7 @@ es1800_insert_breakpoint (CORE_ADDR addr, char *contents_cache)
 
    addr           - is the target location in the target machine.
    contents_cache - is a pointer to memory allocated for saving the target contents.
-   It is guaranteed by the caller to be long enough to save sizeof 
+   It is guaranteed by the caller to be long enough to save sizeof
    BREAKPOINT bytes.    */
 
 static int
@@ -1215,7 +1215,7 @@ es1800_kill (void)
 }
 
 
-/* Load a file to the ES1800 emulator. 
+/* Load a file to the ES1800 emulator.
    Converts the file from a.out format into Extended Tekhex format
    before the file is loaded.
    Also loads the trap routine, and sets the ES1800 breakpoint on it
@@ -1291,7 +1291,7 @@ es1800_load (char *filename, int from_tty)
 
   download (instream, from_tty, es1800_load_format);
 
-  /* if breakpoint routine is not present anymore we have to check 
+  /* if breakpoint routine is not present anymore we have to check
      whether to download a new breakpoint routine or not */
 
   if ((verify_break (es1800_break_vec) != 0)
@@ -1373,7 +1373,7 @@ bfd_copy (bfd *from_bfd, bfd *to_bfd)
     }
 }
 
-#endif
+#endif /* 0 */
 
 /* Start an process on the es1800 and set inferior_ptid to the new
    process' pid.
@@ -1390,11 +1390,11 @@ es1800_create_inferior (char *execfile, char *args, char **env)
   struct expression *expr;
   register struct cleanup *old_chain = 0;
   register value val;
-#endif
+#endif /* 0 */
 
   if (args && *args)
     {
-      error ("Can't pass arguments to remote ES1800 process");
+      error ("Cannot pass arguments to remote ES1800 process");
     }
 
 #if 0
@@ -1410,7 +1410,7 @@ es1800_create_inferior (char *execfile, char *args, char **env)
       printf ("Enter the program's entry point (in hexadecimal): ");
       scanf ("%x", &entry_pt);
     }
-#endif
+#endif /* 0 */
 
   if (execfile == 0 || exec_bfd == 0)
     {
@@ -1467,8 +1467,8 @@ es1800_mourn_inferior (void)
 
 /* ES1800-protocol specific routines */
 
-/* Keep discarding input from the remote system, until STRING is found. 
-   Let the user break out immediately. 
+/* Keep discarding input from the remote system, until STRING is found.
+   Let the user break out immediately.
    string - the string to expect
    nowait - break out if string not the emulator's first respond otherwise
    read until string is found (== 0)   */
@@ -1533,9 +1533,9 @@ readchar (void)
   printf ("readchar, give one character\n");
   read (0, buf, 1);
 
-#if defined (LOG_FILE)
+# if defined (LOG_FILE)
   putc (buf[0] & 0x7f, log_file);
-#endif
+# endif /* LOG_FILE */
 
   return (buf[0] & 0x7f);
 }
@@ -1592,7 +1592,7 @@ send_with_reply (char *string, char *buf, int len)
 
 
 /* Send the command in STR to the emulator adding \r. check
-   the echo for consistency. 
+   the echo for consistency.
    string - the es1800 command  */
 
 static void
@@ -1622,7 +1622,7 @@ send (char *string)
 }
 
 
-/* Read a message from the emulator and store it in BUF. 
+/* Read a message from the emulator and store it in BUF.
    buf    - containing the emulator reply on return
    len    - size of buf  */
 
@@ -2125,3 +2125,5 @@ _initialize_es1800 (void)
   add_com ("init_break", class_support, es1800_init_break,
 	 "Download break routine and initialize break facility on ES 1800");
 }
+
+/* EOF */

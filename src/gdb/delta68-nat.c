@@ -26,9 +26,9 @@
 
 #include <nlist.h>
 
-#if !defined (offsetof)
-#define offsetof(TYPE, MEMBER) ((unsigned long) &((TYPE *)0)->MEMBER)
-#endif
+#if !defined(offsetof)
+# define offsetof(TYPE, MEMBER) ((unsigned long) &((TYPE *)0)->MEMBER)
+#endif /* !offsetof */
 
 /* Return the address in the core dump or inferior of register REGNO.
    BLOCKEND is the address of the end of the user structure.  */
@@ -81,10 +81,12 @@ clear_insn_cache (void)
 {
 #ifdef MCT_TEXT			/* in sys/signal.h on sysV68 R3V7.1 */
   memctl (0, 4096, MCT_TEXT);
-#endif
+#endif /* MCT_TEXT */
 }
 
 kernel_u_size (void)
 {
   return sizeof (struct user);
 }
+
+/* EOF */

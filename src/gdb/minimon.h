@@ -37,7 +37,7 @@ typedef unsigned short int UINT16;	/* 16 bit integer (unsigned) */
 /****************************************************************************/
 
 /*
- * Error codes 
+ * Error codes
  */
 
 /* General errors */
@@ -599,3 +599,5 @@ union msg_t
     struct channel0_ack_msg_t channel0_ack_msg;
     struct channel1_msg_t channel1_msg;
   };
+
+/* EOF */

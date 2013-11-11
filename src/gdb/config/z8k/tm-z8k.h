@@ -220,7 +220,7 @@ extern void z8k_frame_init_saved_regs (struct frame_info *);
 
    /..* The arguments are pushed at this point by GDB;
    no code is needed in the dummy for this.
-   The CALL_DUMMY_START_OFFSET gives the position of 
+   The CALL_DUMMY_START_OFFSET gives the position of
    the following jsr instruction.  *../
 
    jsr @#0x32323232                     0x4eb9 0x3232 0x3232
@@ -285,3 +285,5 @@ extern void z8k_set_pointer_size (int newsize);
   z8k_set_pointer_size(objfile->obfd->arch_info->bits_per_address);
 
 #define REGISTER_SIZE 4
+
+/* EOF */

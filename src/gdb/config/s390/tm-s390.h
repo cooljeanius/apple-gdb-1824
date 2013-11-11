@@ -4,7 +4,7 @@
    for IBM Deutschland Entwicklung GmbH, IBM Corporation.
 
    This file is part of GDB.
-   
+
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2 of the License, or
@@ -113,3 +113,5 @@ int s390_register_raw_size (int reg_nr);
 
 #endif /* GDBSERVER */
 #endif /* ifndef TM_S390_H */
+
+/* EOF */

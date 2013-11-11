@@ -273,3 +273,5 @@ xmodem_finish_xfer (struct serial *desc)
 
   error ("xmodem_finish_xfer:  Excessive retries.");
 }
+
+/* EOF */

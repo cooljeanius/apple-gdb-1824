@@ -28,12 +28,12 @@
 #include <sys/types.h>
 
 #if (!defined(__GO32__) && !defined(_WIN32)) || defined(__CYGWIN32__)
-#define HAVE_SOCKETS
-#include <sys/time.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#endif
+# define HAVE_SOCKETS
+# include <sys/time.h>
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <netdb.h>
+#endif /* (!__GO32__ && !_WIN32) || __CYGWIN32__ */
 
 static struct target_ops sparclite_ops;
 
@@ -42,7 +42,7 @@ static struct serial *remote_desc = NULL;
 static int serial_flag;
 #ifdef HAVE_SOCKETS
 static int udp_fd = -1;
-#endif
+#endif /* HAVE_SOCKETS */
 
 static struct serial *open_tty (char *name);
 static int send_resp (struct serial *desc, char c);
@@ -50,7 +50,7 @@ static void close_tty (void * ignore);
 #ifdef HAVE_SOCKETS
 static int recv_udp_buf (int fd, unsigned char *buf, int len, int timeout);
 static int send_udp_buf (int fd, unsigned char *buf, int len);
-#endif
+#endif /* HAVE_SOCKETS */
 static void sparclite_open (char *name, int from_tty);
 static void sparclite_close (int quitting);
 static void download (char *target_name, char *args, int from_tty,
@@ -69,7 +69,7 @@ static void sparclite_udp_start (bfd_vma entry);
 static void sparclite_udp_write (bfd * from_bfd, asection * from_sec,
 				 file_ptr from_addr, bfd_vma to_addr,
 				 int len);
-#endif
+#endif /* HAVE_SOCKETS */
 static void sparclite_download (char *filename, int from_tty);
 
 #define DDA2_SUP_ASI		0xb000000
@@ -838,8 +838,8 @@ sparclite_download (char *filename, int from_tty)
     download (remote_target_name, filename, from_tty, sparclite_udp_write,
 	      sparclite_udp_start);
 #else
-    internal_error (__FILE__, __LINE__, "failed internal consistency check");			/* sparclite_open should prevent this! */
-#endif
+    internal_error (__FILE__, __LINE__, "failed internal consistency check"); /* sparclite_open should prevent this! */
+#endif /* HAVE_SOCKETS */
   else
     download (remote_target_name, filename, from_tty, sparclite_serial_write,
 	      sparclite_serial_start);
@@ -867,3 +867,5 @@ _initialize_sparcl_tdep (void)
   init_sparclite_ops ();
   add_target (&sparclite_ops);
 }
+
+/* EOF */

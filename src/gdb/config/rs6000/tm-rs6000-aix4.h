@@ -19,9 +19,7 @@
    Boston, MA 02111-1307, USA.  */
 
 #ifndef TM_RS6000_AIX4_H
-#define TM_RS6000_AIX4_H
-
+# define TM_RS6000_AIX4_H
 /* Use generic RS6000 definitions. */
-#include "rs6000/tm-rs6000.h"
-
+# include "rs6000/tm-rs6000.h"
 #endif /* TM_RS6000_AIX4_H */

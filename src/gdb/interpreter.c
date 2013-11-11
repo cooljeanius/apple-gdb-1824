@@ -27,9 +27,9 @@
    into the event loop, but it doesn't explicitly contain hooks for readline.
    I did this because it seems to me many interpreters won't want to use
    the readline command interface, and it is probably simpler to just let
-   them take over the input in their resume proc.  
+   them take over the input in their resume proc.
 
-   2) The event loop insertion is probably wrong.  I just inserted a 
+   2) The event loop insertion is probably wrong.  I just inserted a
    do_one_event alongside gdb's do_one_event.  This probably will lead
    to one or the other event loop getting starved.  It would be better
    to provide conversion functions for the gdb file handlers, and when
@@ -48,7 +48,7 @@
 /* Functions local to this file. */
 static void initialize_interps (void);
 
-static void set_interpreter_cmd (char *args, int from_tty, 
+static void set_interpreter_cmd (char *args, int from_tty,
 				 struct cmd_list_element *c);
 static void list_interpreter_cmd (char *args, int from_tty);
 static void do_set_interpreter (int not_an_fd);
@@ -67,63 +67,63 @@ static int initialized = 0;
 /* gdb_new_interpreter - This allocates space for a new interpreter,
  * fills the fields from the inputs, and returns a pointer to the
  * interpreter.  I might be better to have a version that just takes
- * the name, data & uiout, and then a bunch of set routines for the 
+ * the name, data & uiout, and then a bunch of set routines for the
  * procs.  Otherwise the argument list for this might get out of hand.
  */
 
 struct gdb_interpreter *
-gdb_new_interpreter (char *name, 
-		     void *data, 
+gdb_new_interpreter (char *name,
+		     void *data,
 		     struct ui_out *uiout,
-		     interp_init_ftype init_proc, 
+		     interp_init_ftype init_proc,
 		     interp_resume_ftype  resume_proc,
 		     interp_do_one_event_ftype do_one_event_proc,
-		     interp_suspend_ftype suspend_proc, 
+		     interp_suspend_ftype suspend_proc,
 		     interp_delete_ftype delete_proc,
 		     interp_exec_ftype exec_proc,
 		     interp_prompt_ftype prompt_proc)
 {
   struct gdb_interpreter *new_interp;
-  
+
   new_interp = (struct gdb_interpreter *) xmalloc (sizeof (struct gdb_interpreter));
-  
-  new_interp->name = strsave(name); 
+
+  new_interp->name = strsave(name);
   new_interp->data = data;
   new_interp->interpreter_out = uiout;
   new_interp->quiet_p = 0;
-  new_interp->init_proc = init_proc; 
-  new_interp->resume_proc = resume_proc; 
+  new_interp->init_proc = init_proc;
+  new_interp->resume_proc = resume_proc;
   new_interp->do_one_event_proc = do_one_event_proc;
-  new_interp->suspend_proc = suspend_proc; 
+  new_interp->suspend_proc = suspend_proc;
   new_interp->delete_proc = delete_proc;
   new_interp->exec_proc   = exec_proc;
   new_interp->prompt_proc = prompt_proc;
   new_interp->inited = 0;
 
-  return new_interp;  
+  return new_interp;
 }
 
 /*
  * gdb_add_interpreter
- * 
+ *
  * Add interpreter INTERP to the gdb interpreter list.  If an
  * interpreter of the same name is already on the list, then
  * the new one is NOT added, and the function returns 0.  Otherwise
  * it returns 1.
  */
 
-int 
+int
 gdb_add_interpreter (struct gdb_interpreter *interp)
 {
   if (!initialized)
     initialize_interps ();
 
-  if (gdb_lookup_interpreter (interp->name) != NULL) 
+  if (gdb_lookup_interpreter (interp->name) != NULL)
       return 0;
 
   interp->next = interp_list;
   interp_list = interp;
-  
+
   return 1;
 }
 
@@ -136,12 +136,12 @@ gdb_add_interpreter (struct gdb_interpreter *interp)
  * function returns -1 and the interpreter is NOT removed from the list.  If the
  * interp is not found, 0 is returned.
  */
-  
+
 int
 gdb_delete_interpreter (struct gdb_interpreter *interp)
 {
   struct gdb_interpreter *cur_ptr, *prev_ptr;
-  
+
   if (!initialized)
     {
       ui_out_message (uiout, 0,
@@ -155,18 +155,18 @@ gdb_delete_interpreter (struct gdb_interpreter *interp)
       return -1;
     }
 
-  if (interp_list->next == NULL) 
+  if (interp_list->next == NULL)
     {
       ui_out_message (uiout, 0,
 		      "You can't delete gdb's only intepreter.");
       return -1;
     }
 
-  for (cur_ptr = interp_list, prev_ptr = NULL; 
-       cur_ptr != NULL; 
+  for (cur_ptr = interp_list, prev_ptr = NULL;
+       cur_ptr != NULL;
        prev_ptr = cur_ptr, cur_ptr = cur_ptr->next)
     {
-      if (cur_ptr == interp) 
+      if (cur_ptr == interp)
         {
 	  /* Can't currently delete the console interpreter... */
 	  if (strcmp (interp->name, "console") == 0)
@@ -185,20 +185,20 @@ gdb_delete_interpreter (struct gdb_interpreter *interp)
 	    }
 
           /* Don't delete the interpreter if its delete proc fails */
-          
+
           if ((interp->delete_proc != NULL)
-              && (!interp->delete_proc (interp->data))) 
+              && (!interp->delete_proc (interp->data)))
 	      return -1;
-            
+
 	  if (cur_ptr == interp_list)
             interp_list = cur_ptr->next;
           else
             prev_ptr->next = cur_ptr->next;
-            
+
           break;
         }
     }
-    
+
   if (cur_ptr == NULL)
     return 0;
   else
@@ -213,15 +213,15 @@ gdb_delete_interpreter (struct gdb_interpreter *interp)
  * init proc is successful, return 1, if it fails, set the old
  * interpreter back in place and return 0.  If we can't restore the
  * old interpreter, then raise an internal error, since we are in
- * pretty bad shape at this point.  
+ * pretty bad shape at this point.
 */
- 
-int 
+
+int
 gdb_set_interpreter (struct gdb_interpreter *interp)
 {
   struct gdb_interpreter *old_interp = current;
   int first_time = 0;
-  
+
 
   char buffer[64];
 
@@ -240,7 +240,7 @@ gdb_set_interpreter (struct gdb_interpreter *interp)
     {
     	first_time = 1;
     }
-    
+
   current = interp;
 
   /* We use interpreter_p for the "set interpreter" variable, so we need
@@ -255,14 +255,14 @@ gdb_set_interpreter (struct gdb_interpreter *interp)
   uiout = interp->interpreter_out;
 
   /* Run the init proc.  If it fails, try to restore the old interp. */
-  
+
   if (!interp->inited)
     {
       if (interp->init_proc != NULL)
 	{
           if (!interp->init_proc (interp->data))
 	    {
-	      if (!gdb_set_interpreter (old_interp)) 
+	      if (!gdb_set_interpreter (old_interp))
 		internal_error ("Failed to initialize new interp \"%s\" %s",
 				interp->name,
 				"and could not restore old interp!\n");
@@ -279,17 +279,17 @@ gdb_set_interpreter (struct gdb_interpreter *interp)
 	}
     }
 
-  if (interp->resume_proc != NULL 
+  if (interp->resume_proc != NULL
 	  && (!interp->resume_proc (interp->data)))
     {
-      if (!gdb_set_interpreter (old_interp)) 
+      if (!gdb_set_interpreter (old_interp))
 	internal_error ("Failed to initialize new interp \"%s\" %s",
 			interp->name,
 			"and could not restore old interp!\n");
       return 0;
     }
 
-  /* Finally, put up the new prompt to show that we are indeed here. 
+  /* Finally, put up the new prompt to show that we are indeed here.
      Also, display_gdb_prompt for the console does some readline magic
      which is needed for the console interpreter, at least... */
 
@@ -297,7 +297,7 @@ gdb_set_interpreter (struct gdb_interpreter *interp)
     {
       if (!gdb_interpreter_is_quiet (interp))
 	{
-	  sprintf (buffer, "Switching to interpreter \"%.24s\".\n", 
+	  sprintf (buffer, "Switching to interpreter \"%.24s\".\n",
 		   interp->name);
 	  ui_out_text (uiout, buffer);
 	}
@@ -310,7 +310,7 @@ gdb_set_interpreter (struct gdb_interpreter *interp)
 /*
  * gdb_lookup_interpreter - Looks up the interpreter for NAME.  If
  * no such interpreter exists, return NULL, otherwise return a pointer
- * to the interpreter. 
+ * to the interpreter.
  */
 
 struct gdb_interpreter *
@@ -326,9 +326,9 @@ gdb_lookup_interpreter(char *name)
       if (strcmp (interp->name, name) == 0)
       	return interp;
     }
-  
+
   return NULL;
-} 
+}
 
 /*
  * gdb_current_interpreter - Returns the current interpreter.
@@ -347,24 +347,24 @@ gdb_interpreter_ui_out (struct gdb_interpreter *interp)
 }
 
 /*
- * gdb_current_interpreter_is -- returns true if the current interp is 
+ * gdb_current_interpreter_is -- returns true if the current interp is
  *   the passed in name.
  */
-int 
+int
 gdb_current_interpreter_is_named(char *interp_name)
 {
     struct gdb_interpreter *current_interp = gdb_current_interpreter();
-    
+
     if (current_interp)
         return (strcmp(current_interp->name, interp_name) == 0);
-        
+
     return 0;
 }
 
 /*
  * gdb_interpreter_display_prompt - This is called in display_gdb_prompt.
- * If the current interpreter defines a prompt_proc, then that proc is 
- * run.  If the proc returns a non-zero value, display_gdb_prompt will
+ * If the current interpreter defines a prompt_proc, then that proc is
+ * run. If the proc returns a non-zero value, display_gdb_prompt will
  * return without itself displaying the prompt.
  */
 
@@ -394,7 +394,7 @@ gdb_interpreter_set_quiet (struct gdb_interpreter *interp, int quiet)
   return old_val;
 }
 
-/* gdb_interpreter_exec - This executes COMMAND_STR in the current 
+/* gdb_interpreter_exec - This executes COMMAND_STR in the current
    interpreter. */
 
 int
@@ -413,16 +413,16 @@ interpreter_do_one_event ()
 {
   if (current->do_one_event_proc == NULL)
     return 0;
-    
+
   return current->do_one_event_proc (current->data);
 }
 
 /* clear_interpreter_hooks - A convenience routine that nulls out all the
- * common command hooks.  Use it when removing your interpreter in its 
+ * common command hooks.  Use it when removing your interpreter in its
  * suspend proc.
  */
 
-void 
+void
 clear_interpreter_hooks ()
 {
   init_ui_hook = 0;
@@ -444,7 +444,7 @@ clear_interpreter_hooks ()
   call_command_hook = 0;
   error_hook = 0;
   error_begin_hook = 0;
-  command_loop_hook = 0;  
+  command_loop_hook = 0;
 }
 
 /*
@@ -458,12 +458,12 @@ static void
 initialize_interps (void)
 {
   initialized = 1;
-  /* Don't know if anything needs to be done here... */    
+  /* Don't know if anything needs to be done here... */
 }
 
 /* set_interpreter_cmd - This implements "set interpreter foo". */
 
-static void 
+static void
 set_interpreter_cmd (char *args, int from_tty, struct cmd_list_element * c)
 {
   struct gdb_interpreter *interp_ptr;
@@ -477,7 +477,7 @@ set_interpreter_cmd (char *args, int from_tty, struct cmd_list_element * c)
   if (interp_ptr != NULL)
     {
       if (!gdb_set_interpreter (interp_ptr))
-	error ("\nCould not switch to interpreter \"%s\", %s%s\".\n", 
+	error ("\nCould not switch to interpreter \"%s\", %s%s\".\n",
 	       interp_ptr->name, "reverting to interpreter \"",
 	       current->name);
     }
@@ -498,7 +498,7 @@ list_interpreter_cmd (char *args, int from_tty)
   struct gdb_interpreter *interp_ptr;
 
   ui_out_list_begin (uiout, "interpreters");
-  for (interp_ptr = interp_list; interp_ptr != NULL; 
+  for (interp_ptr = interp_list; interp_ptr != NULL;
        interp_ptr = interp_ptr->next)
     {
       ui_out_text (uiout, "  * ");
@@ -529,7 +529,7 @@ interpreter_exec_cmd (char *args, int from_tty)
       nrules++;
     }
   }
-  
+
   if (nrules < 2)
     error ("usage: interpreter-exec <interpreter> [ <command> ... ]");
 
@@ -538,12 +538,12 @@ interpreter_exec_cmd (char *args, int from_tty)
   interp_to_use = gdb_lookup_interpreter (prules[0]);
   if (interp_to_use == NULL)
     error ("Could not find interpreter \"%s\".", prules[0]);
-  
+
   old_quiet = gdb_interpreter_set_quiet (interp_to_use, 1);
-  
+
   if (! gdb_set_interpreter (interp_to_use))
     error ("Could not switch to interpreter \"%s\".", prules[0]);
-  
+
   for (i = 1; i < nrules; i++) {
     if (! safe_execute_command (prules[i], 0)) {
       gdb_set_interpreter (old_interp);
@@ -552,7 +552,7 @@ interpreter_exec_cmd (char *args, int from_tty)
       break;
     }
   }
-  
+
   gdb_set_interpreter (old_interp);
   gdb_interpreter_set_quiet (interp_to_use, old_quiet);
 }
@@ -585,3 +585,5 @@ _initialize_interpreter (void)
 	   "List the interpreters currently available in gdb.",
 	       &cmdlist);
 }
+
+/* EOF */

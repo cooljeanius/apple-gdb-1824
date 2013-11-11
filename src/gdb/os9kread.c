@@ -21,7 +21,7 @@
    Boston, MA 02111-1307, USA.  */
 
 /* This module provides three functions: os9k_symfile_init,
-   which initializes to read a symbol file; os9k_new_init, which 
+   which initializes to read a symbol file; os9k_new_init, which
    discards existing cached information when all symbols are being
    discarded; and os9k_symfile_read, which reads a symbol table
    from a file.
@@ -40,9 +40,9 @@
 #include <stdio.h>
 
 #if defined(USG) || defined(__CYGNUSCLIB__)
-#include <sys/types.h>
-#include <fcntl.h>
-#endif
+# include <sys/types.h>
+# include <fcntl.h>
+#endif /* USG || __CYGNUSCLIB__ */
 
 #include "obstack.h"
 #include "gdb_stat.h"
@@ -302,7 +302,7 @@ read_minimal_symbols (struct objfile *objfile)
 }
 
 /* Scan and build partial symbols for a symbol file.
-   We have been initialized by a call to os9k_symfile_init, which 
+   We have been initialized by a call to os9k_symfile_init, which
    put all the relevant info into a "struct os9k_symfile_info",
    hung off the objfile structure.
 
@@ -359,7 +359,7 @@ os9k_new_init (struct objfile *ignore)
 
    Since BFD doesn't know how to read debug symbols in a format-independent
    way (and may never do so...), we have to do it ourselves.  We will never
-   be called unless this is an a.out (or very similar) file. 
+   be called unless this is an a.out (or very similar) file.
    FIXME, there should be a cleaner peephole into the BFD environment here.  */
 
 static void
@@ -705,7 +705,7 @@ read_os9k_psymtab (struct objfile *objfile, CORE_ADDR text_addr, int text_size)
    for (i = 0; i < includes_used; i++)
    if (STREQ (str, psymtab_include_list[i]))
    {
-   i = -1; 
+   i = -1;
    break;
    }
    if (i == -1)
@@ -824,7 +824,7 @@ read_os9k_psymtab (struct objfile *objfile, CORE_ADDR text_addr, int text_size)
 		      char *q;
 
 		      /* Check for and handle cretinous dbx symbol name
-		         continuation! 
+		         continuation!
 		         if (*p == '\\')
 		         p = next_symbol_text (objfile);
 		       */
@@ -979,7 +979,7 @@ os9k_start_psymtab (struct objfile *objfile, char *filename, CORE_ADDR textlow,
   return result;
 }
 
-/* Close off the current usage of PST.  
+/* Close off the current usage of PST.
    Returns PST or NULL if the partial symtab was empty and thrown away.
    FIXME:  List variables and peculiarities of same.  */
 
@@ -1002,7 +1002,7 @@ os9k_end_psymtab (struct partial_symtab *pst, char **include_list,
      we have to do some tricks to fill in texthigh and textlow.
      The first trick is in partial-stab.h: if we see a static
      or global function, and the textlow for the current pst
-     is still 0, then we use that function's address for 
+     is still 0, then we use that function's address for
      the textlow of the pst.
 
      Now, to fill in texthigh, we remember the last function seen
@@ -1046,7 +1046,7 @@ os9k_end_psymtab (struct partial_symtab *pst, char **include_list,
 	     difficult to imagine how hard it would be to track down
 	     the elf symbol.  Luckily, most of the time no one will notice,
 	     since the next file will likely be compiled with -g, so
-	     the code below will copy the first fuction's start address 
+	     the code below will copy the first fuction's start address
 	     back to our texthigh variable.  (Also, if this file is the
 	     last one in a dynamically linked program, texthigh already
 	     has the right value.)  If the next file isn't compiled
@@ -1140,7 +1140,7 @@ os9k_end_psymtab (struct partial_symtab *pst, char **include_list,
 
   sort_pst_symbols (pst);
 
-  /* If there is already a psymtab or symtab for a file of this name, 
+  /* If there is already a psymtab or symtab for a file of this name,
      remove it.
      (If there is a symtab, more drastic things also happen.)
      This happens in VxWorks.  */
@@ -1619,3 +1619,5 @@ _initialize_os9kread (void)
 {
   add_symtab_fns (&os9k_sym_fns);
 }
+
+/* EOF */

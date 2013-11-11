@@ -3,7 +3,7 @@
 		THIS SOFTWARE IS NOT COPYRIGHTED
 
    HP offers the following for use in the public domain.  HP makes no
-   warranty with regard to the software or it's performance and the
+   warranty with regard to the software or its performance and the
    user accepts the software "AS IS" with all faults.
 
    HP DISCLAIMS ANY WARRANTIES, EXPRESS OR IMPLIED, WITH REGARD
@@ -30,7 +30,7 @@
  *  NOTES:           See Below $
  *
  *  Modified for SPARC by Stu Grossman, Cygnus Support.
- *  Based on sparc-stub.c, it's modified for SPARClite Debug Unit hardware
+ *  Based on sparc-stub.c, it is modified for SPARClite Debug Unit hardware
  *  breakpoint support to create sparclite-stub.c, by Kung Hsu, Cygnus Support.
  *
  *  This code has been extensively tested on the Fujitsu SPARClite demo board.
@@ -101,7 +101,7 @@ extern int getDebugChar (void);	/* read and return a single char */
 /* at least NUMREGBYTES*2 are needed for register packets */
 #define BUFMAX 2048
 
-static int initialized = 0;	/* !0 means we've been initialized */
+static int initialized = 0;	/* !0 means we have been initialized */
 
 extern void breakinst ();
 static void set_mem_fault_trap (int enable);
@@ -109,7 +109,7 @@ static void get_in_break_mode (void);
 
 static const char hexchars[]="0123456789abcdef";
 
-#define NUMREGS 80 
+#define NUMREGS 80
 
 /* Number of bytes of registers.  */
 #define NUMREGBYTES (NUMREGS * 4)
@@ -205,7 +205,7 @@ _trap_low:
 	nop
 
 ! At this point, we need to bring a 1 into the high order bit of the wim.
-! Since we don't want to make any assumptions about the number of register
+! Since we do NOT want to make any assumptions about the number of register
 ! windows, we figure it out dynamically so as to setup the wim correctly.
 
 	not	%g1			! Fill g1 with ones
@@ -217,7 +217,7 @@ _trap_low:
 	inc	%g1			! Now g1 has 1 just to left of wim
 	srl	%g1, 1, %g1		! Now put 1 at top of wim
 	mov	%g0, %wim		! Clear wim so that subsequent save
-	nop				!  won't trap
+	nop				!  will NOT trap
 	nop
 	nop
 
@@ -307,7 +307,7 @@ no_fpstore:
 	call	_handle_exception
 	add	%sp, 24 * 4, %o0	! Pass address of registers
 
-! Reload all of the registers that aren't on the stack
+! Reload all of the registers that are NOT on the stack
 
 	ld	[%sp + (24 + 1) * 4], %g1 ! registers[Gx]
 	ldd	[%sp + (24 + 2) * 4], %g2
@@ -643,7 +643,7 @@ computeSignal (int tt)
     if (ht->tt == tt)
       return ht->signo;
 
-  return SIGHUP;		/* default for things we don't know about */
+  return SIGHUP;		/* default for things we do NOT know about */
 }
 
 /*
@@ -829,15 +829,15 @@ handle_exception (unsigned long *registers)
 		memcpy (sp, &registers[L0], 16 * 4); /* Copy L & I regs to stack */
 	      }
 
-	    /* See if the stack pointer has moved.  If so, then copy the saved
-	       locals and ins to the new location.  This keeps the window
+	    /* See if the stack pointer has moved. If so, then copy the saved
+	       locals and ins to the new location. This keeps the window
 	       overflow and underflow routines happy.  */
 
 	    newsp = (unsigned long *)registers[SP];
 	    if (sp != newsp)
 	      sp = memcpy(newsp, sp, 16 * 4);
 
-	    /* Don't allow CWP to be modified. */
+	    /* Do NOT allow CWP to be modified. */
 
 	    if (psr != registers[PSR])
 	      registers[PSR] = (psr & 0x1f) | (registers[PSR] & ~0x1f);
@@ -916,7 +916,7 @@ handle_exception (unsigned long *registers)
 	case 't':		/* Test feature */
 	  asm (" std %f30,[%sp]");
 	  break;
-#endif
+#endif /* 0 */
 	case 'r':		/* Reset */
 	  asm ("call 0
 		nop ");
@@ -928,7 +928,7 @@ handle_exception (unsigned long *registers)
     }
 }
 
-/* This function will generate a breakpoint exception.  It is used at the
+/* This function will generate a breakpoint exception. It is used at the
    beginning of a program to sync up with a debugger and can be used
    otherwise as a quick means to stop program execution and "break" into
    the debugger. */
@@ -944,3 +944,5 @@ breakpoint (void)
 	_breakinst: ta 1
       ");
 }
+
+/* EOF */

@@ -50,7 +50,7 @@
 #undef malloc
 #undef free
 #undef realloc
-#include <sys/time.h>		/* UTek's <rpc/rpc.h> doesn't #incl this */
+#include <sys/time.h>		/* UTek's <rpc/rpc.h> does NOT #incl this */
 #include <netdb.h>
 #include "vx-share/ptrace.h"
 #include "vx-share/xdr_ptrace.h"
@@ -127,7 +127,7 @@ net_load (char *filename, CORE_ADDR *pTextAddr, CORE_ADDR *pDataAddr,
      net_clnt_call (), because we need to set a large timeout value.
      The load on the target side can take quite a while, easily
      more than 10 seconds.  The user can kill this call by typing
-     CTRL-C if there really is a problem with the load.  
+     CTRL-C if there really is a problem with the load.
 
      Do not change the tv_sec value without checking -- select() imposes
      a limit of 10**8 on it for no good reason that I can see...  */
@@ -785,7 +785,7 @@ net_ptrace_clnt_call (enum ptracereq request, Rptrace *pPtraceIn,
 
 /* Query the target for the name of the file from which VxWorks was
    booted.  pBootFile is the address of a pointer to the buffer to
-   receive the file name; if the pointer pointed to by pBootFile is 
+   receive the file name; if the pointer pointed to by pBootFile is
    NULL, memory for the buffer will be allocated by XDR.
    Returns -1 if rpc failed, 0 otherwise.  */
 
@@ -909,7 +909,7 @@ net_connect (char *host)
     }
 }
 
-/* Sleep for the specified number of milliseconds 
+/* Sleep for the specified number of milliseconds
  * (assumed to be less than 1000).
  * If select () is interrupted, returns immediately;
  * takes an error exit if select () fails for some other reason.
@@ -952,7 +952,7 @@ vx_wait (ptid_t ptid_to_wait_for, struct target_waitstatus *status)
 
       /* If a net_quit () or net_wait () call has failed,
          allow the user to break the connection with the target.
-         We can't simply error () out of this loop, since the 
+         We can't simply error () out of this loop, since the
          data structures representing the state of the inferior
          are in an inconsistent state.  */
 
@@ -1159,7 +1159,7 @@ vx_open (char *args, int from_tty)
       if (catch_errors (add_symbol_stub, (char *) pLoadFile, (char *) 0,
 			RETURN_MASK_ALL))
 	symbols_added = 1;
-#endif
+#endif /* WRS_ORIG */
     }
   printf_filtered ("Done.\n");
 
@@ -1408,3 +1408,5 @@ _initialize_vx (void)
 Set the number of seconds to wait for rpc calls to return.", &setlist),
      &showlist);
 }
+
+/* EOF */

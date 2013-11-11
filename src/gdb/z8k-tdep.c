@@ -390,7 +390,7 @@ z8k_set_pointer_size (int newsize)
 	  BIG = 0;
 	}
       /* FIXME: This code should be using the GDBARCH framework to
-         handle changed type sizes.  If this problem is ever fixed
+         handle changed type sizes. If this problem is ever fixed
          (the direct reference to _initialize_gdbtypes() below
          eliminated) then Makefile.in should be updated so that
          z8k-tdep.c is again compiled with -Werror. */
@@ -431,3 +431,5 @@ _initialize_z8ktdep (void)
 	   "Set unsegmented memory model.", &setmemorylist);
 
 }
+
+/* EOF */

@@ -1,5 +1,5 @@
 /* sparc-dependent portions of the RPC protocol
-   used with a VxWorks target 
+   used with a VxWorks target
 
    Contributed by Wind River Systems.
 
@@ -41,8 +41,8 @@
 #include <sys/socket.h>
 
 #ifdef _AIX			/* IBM claims "void *malloc()" not char * */
-#define malloc bogon_malloc
-#endif
+# define malloc bogon_malloc
+#endif /* _AIX */
 
 #include <rpc/rpc.h>
 #include <sys/time.h>		/* UTek's <rpc/rpc.h> doesn't #incl this */
@@ -81,7 +81,7 @@ vx_read_register (int regno)
   char sparc_fpreg_packet[SPARC_FPREG_PLEN];
   CORE_ADDR sp;
 
-  /* Get general-purpose registers.  When copying values into
+  /* Get general-purpose registers. When copying values into
      registers [], don't assume that a location in registers []
      is properly aligned for the target data type.  */
 
@@ -97,7 +97,7 @@ vx_read_register (int regno)
 	 &registers[REGISTER_BYTE (Y_REGNUM)], 6 * SPARC_GREG_SIZE);
 
   /* Now write the local and in registers to the register window
-     spill area in the frame.  VxWorks does not do this for the
+     spill area in the frame. VxWorks does not do this for the
      active frame automatically; it greatly simplifies debugging
      (FRAME_FIND_SAVED_REGS, in particular, depends on this).  */
 
@@ -144,7 +144,7 @@ vx_write_register (int regno)
   int in_fp_regs;
   CORE_ADDR sp;
 
-  /* Store general purpose registers.  When copying values from
+  /* Store general purpose registers. When copying values from
      registers [], don't assume that a location in registers []
      is properly aligned for the target data type.  */
 
@@ -167,7 +167,7 @@ vx_write_register (int regno)
 
       net_write_registers (sparc_greg_packet, SPARC_GREG_PLEN, PTRACE_SETREGS);
 
-      /* If this is a local or in register, or we're storing all
+      /* If this is a local or in register, or we are storing all
          registers, update the register window spill area.  */
 
       if (regno < 0 || (L0_REGNUM <= regno && regno <= I7_REGNUM))
@@ -192,3 +192,5 @@ vx_write_register (int regno)
 			   PTRACE_SETFPREGS);
     }
 }
+
+/* EOF */

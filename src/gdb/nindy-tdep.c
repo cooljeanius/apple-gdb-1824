@@ -76,3 +76,5 @@ nindy_frame_chain_valid (CORE_ADDR chain, struct frame_info *curframe)
 
   return (chain != read_memory_integer (a, 4));
 }
+
+/* EOF */

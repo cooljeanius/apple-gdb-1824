@@ -25,3 +25,5 @@
 /* AIX 4.x uses nonstandard "int *" as type of third argument to ptrace() */
 
 #define PTRACE_ARG3_TYPE int*
+
+/* EOF */

@@ -191,7 +191,7 @@ get_word (char **p)
   *p = s;
   return copy;
 }
-#endif
+#endif /* 0 */
 
 static struct gr_settings bug_settings =
 {
@@ -1025,3 +1025,5 @@ much slower, but generally more reliable.",
 		  &setlist),
      &showlist);
 }
+
+/* EOF */

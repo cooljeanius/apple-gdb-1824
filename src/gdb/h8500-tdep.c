@@ -631,3 +631,5 @@ _initialize_h8500_tdep (void)
     "Set compact memory model. (16 bit code, 32 bit data)", &setmemorylist);
 
 }
+
+/* EOF */

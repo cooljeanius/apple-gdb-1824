@@ -24,3 +24,5 @@
 
 #define HAVE_TERMIOS
 #define USG
+
+/* EOF */

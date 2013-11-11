@@ -133,3 +133,5 @@ x86_64_linux_frame_saved_pc (struct frame_info *frame)
     return x86_64_linux_sigtramp_saved_pc (frame);
   return cfi_get_ra (frame);
 }
+
+/* EOF */

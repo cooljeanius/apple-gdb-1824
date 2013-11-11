@@ -20,7 +20,7 @@
 
 #include "defs.h"
 #include "regcache.h"
-   
+
 #include <sys/procfs.h>
 
 /* Prototypes for supply_gregset etc.  */
@@ -97,3 +97,5 @@ fill_fpregset (elf_fpregset_t *fpregsetp, int regno)
   if (regno == -1 || regno == FPS_REGNUM)
     regcache_collect (FPS_REGNUM, &fpregsetp->pr_fsr);
 }
+
+/* EOF */

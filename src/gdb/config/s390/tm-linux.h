@@ -25,7 +25,7 @@
 #ifndef TM_LINUX_H
 #define TM_LINUX_H
 #ifdef GDBSERVER
-#define S390_GNULINUX_TARGET
+# define S390_GNULINUX_TARGET
 #endif /* GDBSERVER */
 #undef  TARGET_ELF64
 #define TARGET_ELF64 (gdbarch_tdep (current_gdbarch)->intreg_size==8)
@@ -38,7 +38,5 @@
 #undef SKIP_TRAMPOLINE_CODE
 
 #include "s390/tm-s390.h"
-
-
 
 #endif /* TM_LINUX_H */

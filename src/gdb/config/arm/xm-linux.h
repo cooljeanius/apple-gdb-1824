@@ -26,3 +26,5 @@
 #define KERNEL_U_ADDR 0x0
 
 #endif /* XM_ARMLINUX_H */
+
+/* EOF */

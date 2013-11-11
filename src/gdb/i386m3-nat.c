@@ -48,12 +48,12 @@
  */
 #include <sys/param.h>
 #if UPAGES == 16
-#define UAREA_SIZE ctob(UPAGES)
+# define UAREA_SIZE ctob(UPAGES)
 #elif UPAGES == 2
-#define UAREA_SIZE (NBPG*UPAGES)
+# define UAREA_SIZE (NBPG*UPAGES)
 #else
 FIXME ! !UPAGES is neither 2 nor 16
-#endif
+#endif /* UPAGES */
 
 /* @@@ Should move print_387_status() to i387-tdep.c */
 extern void print_387_control_word ();		/* i387-tdep.h */
@@ -186,7 +186,7 @@ store_inferior_registers (int regno)
   if (regno != -1)
     STORE_REGS (state, regno, 1);
   else
-#endif
+#endif /* 0 */
     {
       for (index = 0; index < NUM_REGS; index++)
 	STORE_REGS (state, index, 1);
@@ -216,7 +216,7 @@ store_inferior_registers (int regno)
  * Currently our UX server dumps the whole thread state to the
  * core file. If your UX does something else, adapt the routine
  * below to return the offset to the given register.
- * 
+ *
  * Called by core-aout.c(fetch_core_registers)
  */
 
@@ -346,7 +346,7 @@ typedef struct fpstate
   unsigned char state[FP_STATE_BYTES];	/* "hardware" state */
 #else
   struct env387 state;		/* Actually this */
-#endif
+#endif /* 1 */
   int status;			/* Duplicate status */
 }
  *fpstate_t;
@@ -412,7 +412,7 @@ i386_mach3_float_info (void)
 #if 0
   else if (WE HAVE CORE FILE)	/* @@@@ Core files not supported */
     valid = get_i387_core_state (buf);
-#endif
+#endif /* 0 */
 
   if (!valid)
     {
@@ -424,3 +424,5 @@ i386_mach3_float_info (void)
 
   print_387_status (fps->status, (struct env387 *) fps->state);
 }
+
+/* EOF */

@@ -32,3 +32,5 @@
 void wince_software_single_step (unsigned int, int);
 
 #endif /* TM_WINCE_H */
+
+/* EOF */

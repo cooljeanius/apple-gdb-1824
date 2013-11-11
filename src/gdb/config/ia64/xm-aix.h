@@ -26,3 +26,5 @@
 #include "config/xm-sysv4.h"
 
 #endif /* #ifndef XM_AIX_H */
+
+/* EOF */

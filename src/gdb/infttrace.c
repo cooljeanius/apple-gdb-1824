@@ -40,13 +40,13 @@
  * in both gdb and HPUX (bfd.h and /usr/include/machine/vmparam.h).
  */
 #ifdef  NO_FLAGS
-#define INFTTRACE_TEMP_HACK NO_FLAGS
-#undef  NO_FLAGS
-#endif
+# define INFTTRACE_TEMP_HACK NO_FLAGS
+# undef  NO_FLAGS
+#endif /* NO_FLAGS */
 
 #ifdef USG
-#include <sys/types.h>
-#endif
+# include <sys/types.h>
+#endif /* USG */
 
 #include <sys/param.h>
 #include <sys/dir.h>
@@ -57,15 +57,15 @@
 #include <sys/mman.h>
 
 #ifndef NO_PTRACE_H
-#ifdef PTRACE_IN_WRONG_PLACE
-#include <ptrace.h>
-#else
-#include <sys/ptrace.h>
-#endif
+# ifdef PTRACE_IN_WRONG_PLACE
+#  include <ptrace.h>
+# else
+#  include <sys/ptrace.h>
+# endif /* PTRACE_IN_WRONG_PLACE */
 #endif /* NO_PTRACE_H */
 
-/* Second half of the hackery above.  Non-ANSI C, so
- * we can't use "#error", alas.
+/* Second half of the hackery above. Non-ANSI C, so
+ * we cannot use "#error", alas.
  */
 #ifdef NO_FLAGS
 #if (NO_FLAGS != INFTTRACE_TEMP_HACK )
@@ -220,10 +220,10 @@ typedef int register_value_t;
       the PID for the pseudo thread to a TID.  A table will help:
 
       Rest of GDB sees these PIDs:     pid   tid1  tid2  tid3 ...
-                                        
+
       Our thread list stores:          pid   pid   pid   pid  ...
                                        tid0  tid1  tid2  tid3
-      
+
       Ttrace sees these TIDS:          tid0  tid1  tid2  tid3 ...
 
       Both pid and tid0 will map to tid0, as there are infttrace.c-internal
@@ -1278,7 +1278,7 @@ update_thread_list (void)
  ************************************************
  */
 
-/* This function simply calls ttrace with the given arguments.  
+/* This function simply calls ttrace with the given arguments.
  * It exists so that all calls to ttrace are isolated.  All
  * parameters should be as specified by "man 2 ttrace".
  *
@@ -1333,7 +1333,7 @@ call_real_ttrace (ttreq_t request, pid_t pid, lwpid_t tid, TTRACE_ARG_TYPE addr,
 }
 
 
-/* This function simply calls ttrace_wait with the given arguments.  
+/* This function simply calls ttrace_wait with the given arguments.
  * It exists so that all calls to ttrace_wait are isolated.
  *
  * No "raw" calls to ttrace_wait should exist elsewhere.
@@ -2005,7 +2005,7 @@ check_thread_consistency (pid_t real_pid)
  * that a actual wait is only done when all pending events
  * have been reported.
  *
- * Note that typically it is called with a pid of "0", i.e. 
+ * Note that typically it is called with a pid of "0", i.e.
  * the "don't care" value.
  *
  * Return value is the status of the pseudo wait.
@@ -2167,7 +2167,7 @@ call_ttrace_wait (int pid, ttwopt_t option, ttstate_t *tsp, size_t tsp_size)
       || process_state != STOPPED)
     {
       /* If there are no buffered events, and so we need
-       * real ones, or if we are FORKING, VFORKING, 
+       * real ones, or if we are FORKING, VFORKING,
        * FAKE_STEPPING or RUNNING, and thus have to do
        * a real wait, then do a real wait.
        */
@@ -4198,7 +4198,7 @@ threads_continue_all_with_signals (lwpid_t gdb_tid, int signal)
     }
 }				/* End threads_continue_all_with_signals */
 
-/* Step one thread only.  
+/* Step one thread only.
  */
 static void
 thread_fake_step (lwpid_t tid, enum target_signal signal)
@@ -4297,16 +4297,16 @@ threads_continue_one_with_signal (lwpid_t gdb_tid, int signal)
 
 /* Resume execution of the inferior process.
 
- * This routine is in charge of setting the "handled" bits. 
+ * This routine is in charge of setting the "handled" bits.
  *
  *   If STEP is zero,      continue it.
  *   If STEP is nonzero,   single-step it.
- *   
+ *
  *   If SIGNAL is nonzero, give it that signal.
  *
  *   If TID is -1,         apply to all threads.
  *   If TID is not -1,     apply to specified thread.
- *   
+ *
  *           STEP
  *      \      !0                        0
  *  TID  \________________________________________________
@@ -4317,7 +4317,7 @@ threads_continue_one_with_signal (lwpid_t gdb_tid, int signal)
  *       |                           "inferior_ptid")
  *       |
  *    N  |   Step _this_ thread      Continue _this_ thread
- *       |   and leave others        and leave others 
+ *       |   and leave others        and leave others
  *       |   stopped; internally     stopped; used only for
  *       |   used by gdb, never      hardware watchpoints
  *       |   a user command.         and attach, never a
@@ -4421,7 +4421,7 @@ child_resume (ptid_t ptid, int step, enum target_signal signal)
 
   /* Are we faking this "continue" or "step"?
 
-   * We used to do steps by continuing all the threads for 
+   * We used to do steps by continuing all the threads for
    * which the events had been handled already.  While
    * conceptually nicer (hides it all in a lower level), this
    * can lead to starvation and a hang (e.g. all but one thread
@@ -4652,7 +4652,7 @@ child_resume (ptid_t ptid, int step, enum target_signal signal)
  *
  * One worry is that we may not be attaching to "inferior_ptid"
  * and thus may not want to clear out our data.  FIXME?
- * 
+ *
  */
 static void
 update_thread_state_after_attach (int pid, attach_continue_t kind_of_go)
@@ -5692,7 +5692,7 @@ hppa_resume_execd_vforking_child_to_get_parent_vfork (void)
    be written in 32bit hunks such as hpux11 and the PC queue registers.
 
    This is horribly gross and disgusting.  */
- 
+
 int
 ttrace_write_reg_64 (int gdb_tid, CORE_ADDR dest_addr, CORE_ADDR src_addr)
 {
@@ -5704,20 +5704,20 @@ ttrace_write_reg_64 (int gdb_tid, CORE_ADDR dest_addr, CORE_ADDR src_addr)
   pid = get_pid_for (tid);
 
   errno = 0;
-  tt_status = ttrace (TT_LWP_WUREGS, 
-		      pid, 
-		      tid, 
-		      (TTRACE_ARG_TYPE) dest_addr, 
-		      8, 
+  tt_status = ttrace (TT_LWP_WUREGS,
+		      pid,
+		      tid,
+		      (TTRACE_ARG_TYPE) dest_addr,
+		      8,
 		      (TTRACE_ARG_TYPE) src_addr );
 
 #ifdef THREAD_DEBUG
   if (errno)
     {
-      /* Don't bother for a known benign error: if you ask for the
-         first thread state, but there is only one thread and it's
+      /* Do NOT bother for a known benign error: if you ask for the
+         first thread state, but there is only one thread and it has
          not stopped, ttrace complains.
-        
+
          We have this inside the #ifdef because our caller will do
          this check for real.  */
       if( request != TT_PROC_GET_FIRST_LWP_STATE
@@ -5729,7 +5729,7 @@ ttrace_write_reg_64 (int gdb_tid, CORE_ADDR dest_addr, CORE_ADDR src_addr)
                     pid, tid, tt_status );
         }
     }
-#endif
+#endif /* THREAD_DEBUG */
 
   return tt_status;
 }
@@ -5752,3 +5752,5 @@ _initialize_infttrace (void)
   if (errno || (memory_page_dictionary.page_size <= 0))
     perror_with_name ("sysconf");
 }
+
+/* EOF */

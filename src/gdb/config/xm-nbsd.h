@@ -24,3 +24,5 @@
 
 /* NetBSD has termios facilities. */
 #define HAVE_TERMIOS
+
+/* EOF */

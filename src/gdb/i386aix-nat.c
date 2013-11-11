@@ -27,8 +27,8 @@
 #include "regcache.h"
 
 #ifdef USG
-#include <sys/types.h>
-#endif
+# include <sys/types.h>
+#endif /* USG */
 
 #include <sys/param.h>
 #include <sys/dir.h>
@@ -47,8 +47,8 @@
 extern int errno;
 
 #ifdef HAVE_SYS_REG_H
-#include <sys/reg.h>
-#endif
+# include <sys/reg.h>
+#endif /* HAVE_SYS_REG_H */
 
 #include "floatformat.h"
 
@@ -88,7 +88,7 @@ i386_register_u_addr (int blockend, int regnum)
       return (fpstate + 0x1c + 10 * (regnum - FP0_REGNUM));
     }
   else
-#endif
+#endif /* 0 */
     return (blockend + 4 * regmap[regnum]);
 
 }
@@ -288,26 +288,26 @@ store_inferior_registers (int regno)
 }
 
 #ifndef CD_AX			/* defined in sys/i386/coredump.h */
-#define CD_AX	0
-#define CD_BX	1
-#define CD_CX	2
-#define CD_DX	3
-#define CD_SI	4
-#define CD_DI	5
-#define CD_BP	6
-#define CD_SP	7
-#define CD_FL	8
-#define CD_IP	9
-#define CD_CS	10
-#define CD_DS	11
-#define CD_ES	12
-#define CD_FS	13
-#define CD_GS	14
-#define CD_SS	15
-#endif
+# define CD_AX	0
+# define CD_BX	1
+# define CD_CX	2
+# define CD_DX	3
+# define CD_SI	4
+# define CD_DI	5
+# define CD_BP	6
+# define CD_SP	7
+# define CD_FL	8
+# define CD_IP	9
+# define CD_CS	10
+# define CD_DS	11
+# define CD_ES	12
+# define CD_FS	13
+# define CD_GS	14
+# define CD_SS	15
+#endif /* !CD_AX */
 
 /*
- * The order here in core_regmap[] has to be the same as in 
+ * The order here in core_regmap[] has to be the same as in
  * regmap[] above.
  */
 static int core_regmap[] =
@@ -321,14 +321,14 @@ static int core_regmap[] =
 /* Provide registers to GDB from a core file.
 
    CORE_REG_SECT points to an array of bytes, which were obtained from
-   a core file which BFD thinks might contain register contents. 
+   a core file which BFD thinks might contain register contents.
    CORE_REG_SIZE is its size.
 
    WHICH says which register set corelow suspects this is:
      0 --- the general-purpose register set
      2 --- the floating-point register set
 
-   REG_ADDR isn't used.  */
+   REG_ADDR is NOT used.  */
 
 static void
 fetch_core_registers (char *core_reg_sect, unsigned core_reg_size,
@@ -356,7 +356,7 @@ fetch_core_registers (char *core_reg_sect, unsigned core_reg_size,
 	fprintf_unfiltered (gdb_stderr, "Couldn't read float regs from core file\n");
     }
 }
-
+
 
 /* Register that we are able to handle i386aix core file formats.
    FIXME: is this really bfd_target_unknown_flavour? */
@@ -375,3 +375,5 @@ _initialize_core_i386aix (void)
 {
   add_core_fns (&i386aix_core_fns);
 }
+
+/* EOF */

@@ -19,10 +19,8 @@
    Boston, MA 02111-1307, USA.  */
 
 #ifndef XM_LINUX_H
-#define XM_LINUX_H
-
+# define XM_LINUX_H
 /* This is the amount to subtract from u.u_ar0
    to get the offset in the core file of the register values.  */
-#define KERNEL_U_ADDR 0x0
-
+# define KERNEL_U_ADDR 0x0
 #endif /* #ifndef XM_LINUX_H */

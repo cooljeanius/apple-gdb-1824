@@ -54,8 +54,8 @@
 #include <fcntl.h>
 
 #ifndef O_BINARY
-#define O_BINARY 0
-#endif
+# define O_BINARY 0
+#endif /* !O_BINARY */
 
 /* Defined in exec.c; used to prevent dangling pointer bug.  */
 extern struct target_ops exec_ops;
@@ -86,22 +86,22 @@ struct so_list
 static struct so_list *so_list_head;
 
 /* This is the cumulative size in bytes of the symbol tables of all
-   shared objects on the so_list_head list.  (When we say size, here
+   shared objects on the so_list_head list. (When we say size, here
    we mean of the information before it is brought into memory and
-   potentially expanded by GDB.)  When adding a new shlib, this value
+   potentially expanded by GDB.) When adding a new shlib, this value
    is compared against a threshold size, held by auto_solib_limit (in
-   megabytes).  If adding symbols for the new shlib would cause the
+   megabytes). If adding symbols for the new shlib would cause the
    total size to exceed the threshold, then the new shlib's symbols
    are not loaded. */
 static LONGEST pa64_solib_total_st_size;
 
 /* When the threshold is reached for any shlib, we refuse to add
    symbols for subsequent shlibs, even if those shlibs' symbols would
-   be small enough to fit under the threshold.  Although this may
+   be small enough to fit under the threshold. Although this may
    result in one, early large shlib preventing the loading of later,
    smaller shlibs' symbols, it allows us to issue one informational
-   message.  The alternative, to issue a message for each shlib whose
-   symbols aren't loaded, could be a big annoyance where the threshold
+   message. The alternative, to issue a message for each shlib whose
+   symbols are NOT loaded, could be a big annoyance where the threshold
    is exceeded due to a very large number of shlibs. */
 static int pa64_solib_st_size_threshold_exceeded;
 
@@ -342,23 +342,23 @@ pa64_solib_load_symbols (struct so_list *so, char *name, int from_tty,
 
   /* Now see if we need to map in the text and data for this shared
      library (for example debugging a core file which does not use
-     private shared libraries.). 
+     private shared libraries.).
 
      Carefully peek at the first text address in the library.  If the
      read succeeds, then the libraries were privately mapped and were
      included in the core dump file.
 
      If the peek failed, then the libraries were not privately mapped
-     and are not in the core file, we'll have to read them in ourselves.  */
+     and are not in the core file, we shall have to read them in ourselves.  */
   status = target_read_memory (text_addr, buf, 4);
   if (status != 0)
     {
       int new, old;
-      
+
       new = so->sections_end - so->sections;
 
       old = target_resize_to_sections (target, new);
-      
+
       /* Copy over the old data before it gets clobbered.  */
       memcpy ((char *) (target->to_sections + old),
 	      so->sections,
@@ -391,11 +391,11 @@ pa64_solib_add (char *arg_string, int from_tty, struct target_ops *target, int r
       error ("Invalid regexp: %s", re_err);
     }
 
-  /* If we're debugging a core file, or have attached to a running
+  /* If we are debugging a core file, or have attached to a running
      process, then pa64_solib_create_inferior_hook will not have been
      called.
 
-     We need to first determine if we're dealing with a dynamically
+     We need to first determine if we are dealing with a dynamically
      linked executable.  If not, then return without an error or warning.
 
      We also need to examine __dld_flags to determine if the shared library
@@ -470,7 +470,7 @@ pa64_solib_create_inferior_hook (void)
   struct objfile *objfile;
   CORE_ADDR anaddr;
 
-  /* First, remove all the solib event breakpoints.  Their addresses
+  /* First, remove all the solib event breakpoints. Their addresses
      may have changed since the last time we ran the program.  */
   remove_solib_event_breakpoints ();
 
@@ -482,7 +482,7 @@ pa64_solib_create_inferior_hook (void)
   if (!shlib_info)
     return;
 
-  /* It's got a .dynamic section, make sure it's not empty.  */
+  /* It has got a .dynamic section, make sure it is not empty.  */
   if (bfd_section_size (symfile_objfile->obfd, shlib_info) == 0)
     return;
 
@@ -513,20 +513,20 @@ pa64_solib_create_inferior_hook (void)
       CORE_ADDR sym_addr = 0;
 
       /* Read the contents of the .interp section into a local buffer;
-	 the contents specify the dynamic linker this program uses.  */
+       * the contents specify the dynamic linker this program uses.  */
       interp_sect_size = bfd_section_size (exec_bfd, interp_sect);
       buf = alloca (interp_sect_size);
       bfd_get_section_contents (exec_bfd, interp_sect,
 				buf, 0, interp_sect_size);
 
       /* Now we need to figure out where the dynamic linker was
-	 loaded so that we can load its symbols and place a breakpoint
-	 in the dynamic linker itself.
-
-	 This address is stored on the stack.  However, I've been unable
-	 to find any magic formula to find it for Solaris (appears to
-	 be trivial on GNU/Linux).  Therefore, we have to try an alternate
-	 mechanism to find the dynamic linker's base address.  */
+       * loaded so that we can load its symbols and place a breakpoint
+       * in the dynamic linker itself.
+       *
+       * This address is stored on the stack. However, I have been unable
+       * to find any magic formula to find it for Solaris (appears to
+       * be trivial on GNU/Linux). Therefore, we have to try an alternate
+       * mechanism to find the dynamic linker's base address.  */
       tmp_bfd = bfd_openr (buf, gnutarget);
       if (tmp_bfd == NULL)
 	goto get_out;
@@ -540,29 +540,29 @@ pa64_solib_create_inferior_hook (void)
 	}
 
       /* We find the dynamic linker's base address by examining the
-	 current pc (which point at the entry point for the dynamic
-	 linker) and subtracting the offset of the entry point. 
+       * current pc (which point at the entry point for the dynamic
+       * linker) and subtracting the offset of the entry point.
 
 	 Also note the breakpoint is the second instruction in the
 	 routine.  */
       load_addr = read_pc () - tmp_bfd->start_address;
       sym_addr = bfd_lookup_symbol (tmp_bfd, "__dld_break");
       sym_addr = load_addr + sym_addr + 4;
-      
+
       /* Create the shared library breakpoint.  */
       {
 	struct breakpoint *b
 	  = create_solib_event_breakpoint (sym_addr);
 
 	/* The breakpoint is actually hard-coded into the dynamic linker,
-	   so we don't need to actually insert a breakpoint instruction
-	   there.  In fact, the dynamic linker's code is immutable, even to
-	   ttrace, so we shouldn't even try to do that.  For cases like
+	   so we do NOT need to actually insert a breakpoint instruction
+	   there. In fact, the dynamic linker's code is immutable, even to
+	   ttrace, so we should not even try to do that.  For cases like
 	   this, we have "permanent" breakpoints.  */
 	make_breakpoint_permanent (b);
       }
 
-      /* We're done with the temporary bfd.  */
+      /* We are done with the temporary bfd.  */
       bfd_close (tmp_bfd);
     }
 
@@ -709,7 +709,7 @@ pa64_solib_in_dynamic_linker (int pid, CORE_ADDR pc)
 
 
 /* Return the GOT value for the shared library in which ADDR belongs.  If
-   ADDR isn't in any known shared library, return zero.  */
+   ADDR is not in any known shared library, return zero.  */
 
 CORE_ADDR
 pa64_solib_get_got_by_pc (CORE_ADDR addr)
@@ -733,7 +733,7 @@ pa64_solib_get_got_by_pc (CORE_ADDR addr)
 }
 
 /* Return the address of the handle of the shared library in which ADDR
-   belongs.  If ADDR isn't in any known shared library, return zero. 
+   belongs. If ADDR is not in any known shared library, return zero.
 
    This function is used in hppa_fix_call_dummy in hppa-tdep.c.  */
 
@@ -943,14 +943,14 @@ read_dld_descriptor (struct target_ops *target, int readsyms)
 
   /* If necessary call read_dynamic_info to extract the contents of the
      .dynamic section from the shared library.  */
-  if (!dld_cache.is_valid) 
+  if (!dld_cache.is_valid)
     {
       if (symfile_objfile == NULL)
 	error ("No object file symbols.");
 
-      dyninfo_sect = bfd_get_section_by_name (symfile_objfile->obfd, 
+      dyninfo_sect = bfd_get_section_by_name (symfile_objfile->obfd,
 					      ".dynamic");
-      if (!dyninfo_sect) 
+      if (!dyninfo_sect)
 	{
 	  return 0;
 	}
@@ -969,11 +969,11 @@ read_dld_descriptor (struct target_ops *target, int readsyms)
     }
 
   /* Read in the dld load module descriptor */
-  if (dlgetmodinfo (-1, 
+  if (dlgetmodinfo (-1,
 		    &dld_cache.dld_desc,
-		    sizeof(dld_cache.dld_desc), 
-		    pa64_target_read_memory, 
-		    0, 
+		    sizeof(dld_cache.dld_desc),
+		    pa64_target_read_memory,
+		    0,
 		    dld_cache.load_map)
       == 0)
     {
@@ -984,24 +984,24 @@ read_dld_descriptor (struct target_ops *target, int readsyms)
   dld_cache.have_read_dld_descriptor = 1;
 
   /* Add dld.sl to the list of known shared libraries so that we can
-     do unwind, etc. 
+     do unwind, etc.
 
      ?!? This may not be correct.  Consider of dld.sl contains symbols
      which are also referenced/defined by the user program or some user
      shared library.  We need to make absolutely sure that we do not
      pollute the namespace from GDB's point of view.  */
-  dll_path = dlgetname (&dld_cache.dld_desc, 
-			sizeof(dld_cache.dld_desc), 
-			pa64_target_read_memory, 
-			0, 
+  dll_path = dlgetname (&dld_cache.dld_desc,
+			sizeof(dld_cache.dld_desc),
+			pa64_target_read_memory,
+			0,
 			dld_cache.load_map);
   add_to_solist(0, dll_path, readsyms, &dld_cache.dld_desc, 0, target);
-  
+
   return 1;
 }
 
 /* Read the .dynamic section and extract the information of interest,
-   which is stored in dld_cache.  The routine elf_locate_base in solib.c 
+   which is stored in dld_cache.  The routine elf_locate_base in solib.c
    was used as a model for this.  */
 
 static boolean
@@ -1020,7 +1020,7 @@ read_dynamic_info (asection *dyninfo_sect, dld_cache_t *dld_cache_p)
   if (target_read_memory (dyninfo_addr, buf, dyninfo_sect_size))
     return 0;
 
-  /* Scan the .dynamic section and record the items of interest. 
+  /* Scan the .dynamic section and record the items of interest.
      In particular, DT_HP_DLD_FLAGS */
   for (bufend = buf + dyninfo_sect_size, entry_addr = dyninfo_addr;
        buf < bufend;
@@ -1032,7 +1032,7 @@ read_dynamic_info (asection *dyninfo_sect, dld_cache_t *dld_cache_p)
       char *pbuf;
 
       pbuf = alloca (TARGET_PTR_BIT / HOST_CHAR_BIT);
-      dyn_tag = bfd_h_get_64 (symfile_objfile->obfd, 
+      dyn_tag = bfd_h_get_64 (symfile_objfile->obfd,
 			      (bfd_byte*) &x_dynp->d_tag);
 
       /* We can't use a switch here because dyn_tag is 64 bits and HP's
@@ -1044,7 +1044,7 @@ read_dynamic_info (asection *dyninfo_sect, dld_cache_t *dld_cache_p)
 	  /* Set dld_flags_addr and dld_flags in *dld_cache_p */
 	  dld_cache_p->dld_flags_addr = entry_addr + offsetof(Elf64_Dyn, d_un);
 	  if (target_read_memory (dld_cache_p->dld_flags_addr,
-	  			  (char*) &dld_cache_p->dld_flags, 
+	  			  (char*) &dld_cache_p->dld_flags,
 				  sizeof(dld_cache_p->dld_flags))
 	      != 0)
 	    {
@@ -1055,7 +1055,7 @@ read_dynamic_info (asection *dyninfo_sect, dld_cache_t *dld_cache_p)
 	{
 	  /* Dld will place the address of the load map at load_map_addr
 	     after it starts running.  */
-	  if (target_read_memory (entry_addr + offsetof(Elf64_Dyn, 
+	  if (target_read_memory (entry_addr + offsetof(Elf64_Dyn,
 							d_un.d_ptr),
 				  (char*) &dld_cache_p->load_map_addr,
 				  sizeof(dld_cache_p->load_map_addr))
@@ -1064,7 +1064,7 @@ read_dynamic_info (asection *dyninfo_sect, dld_cache_t *dld_cache_p)
 	      error ("Error while reading in .dynamic section of the program.");
 	    }
 	}
-      else 
+      else
 	{
 	  /* tag is not of interest */
 	}
@@ -1076,9 +1076,9 @@ read_dynamic_info (asection *dyninfo_sect, dld_cache_t *dld_cache_p)
   /* Verify that we read in required info.  These fields are re-set to zero
      in pa64_solib_restart.  */
 
-  if (dld_cache_p->dld_flags_addr != 0 && dld_cache_p->load_map_addr != 0) 
+  if (dld_cache_p->dld_flags_addr != 0 && dld_cache_p->load_map_addr != 0)
     dld_cache_p->is_valid = 1;
-  else 
+  else
     return 0;
 
   return 1;
@@ -1096,7 +1096,7 @@ pa64_target_read_memory (void *buffer, CORE_ADDR ptr, size_t bufsiz, int ident)
 
 /* Called from handle_dynlink_load_event and pa64_solib_add to add
    a shared library to so_list_head list and possibly to read in the
-   debug information for the library.  
+   debug information for the library.
 
    If load_module_desc_p is NULL, then the load module descriptor must
    be read from the inferior process at the address load_module_desc_addr.  */
@@ -1146,7 +1146,7 @@ add_to_solist (boolean from_tty, char *dll_path, int readsyms,
     }
   else
     {
-      if (target_read_memory (load_module_desc_addr, 
+      if (target_read_memory (load_module_desc_addr,
 			      (char*) &new_so->pa64_solib_desc,
 			      sizeof(struct load_module_desc))
 	  != 0)
@@ -1154,34 +1154,34 @@ add_to_solist (boolean from_tty, char *dll_path, int readsyms,
 	error ("Error while reading in dynamic library %s", dll_path);
       }
     }
-  
+
   new_so->pa64_solib_desc_addr = load_module_desc_addr;
   new_so->loaded = 1;
   new_so->name = obsavestring (dll_path, strlen(dll_path),
 			       &symfile_objfile->symbol_obstack);
 
   /* If we are not going to load the library, tell the user if we
-     haven't already and return.  */
+     have NOT already and return.  */
 
   st_size = pa64_solib_sizeof_symbol_table (dll_path);
   pa64_solib_st_size_threshhold_exceeded =
-       !from_tty 
+       !from_tty
     && readsyms
-    && (  (st_size + pa64_solib_total_st_size) 
+    && (  (st_size + pa64_solib_total_st_size)
 	> (auto_solib_limit * (LONGEST) (1024 * 1024)));
   if (pa64_solib_st_size_threshhold_exceeded)
     {
       pa64_solib_add_solib_objfile (new_so, dll_path, from_tty, 1);
       return;
-    } 
+    }
 
   /* Now read in debug info. */
   pa64_solib_total_st_size += st_size;
 
   /* This fills in new_so->objfile, among others. */
-  pa64_solib_load_symbols (new_so, 
+  pa64_solib_load_symbols (new_so,
 			   dll_path,
-			   from_tty, 
+			   from_tty,
 			   0,
 			   target);
   return;
@@ -1242,3 +1242,4 @@ bfd_lookup_symbol (bfd *abfd, char *symname)
   return (symaddr);
 }
 
+/* EOF */

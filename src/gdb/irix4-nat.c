@@ -164,7 +164,7 @@ get_longjmp_target (CORE_ADDR *pc)
 /* Provide registers to GDB from a core file.
 
    CORE_REG_SECT points to an array of bytes, which were obtained from
-   a core file which BFD thinks might contain register contents. 
+   a core file which BFD thinks might contain register contents.
    CORE_REG_SIZE is its size.
 
    Normally, WHICH says which register set corelow suspects this is:
@@ -186,7 +186,7 @@ fetch_core_registers (char *core_reg_sect, unsigned core_reg_size,
 
   memcpy ((char *) registers, core_reg_sect, core_reg_size);
 }
-
+
 
 /* Register that we are able to handle irix4 core file formats.
    FIXME: is this really bfd_target_unknown_flavour? */
@@ -205,3 +205,5 @@ _initialize_core_irix4 (void)
 {
   add_core_fns (&irix4_core_fns);
 }
+
+/* EOF */

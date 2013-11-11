@@ -889,6 +889,12 @@ $(CONFIGURED_OFILES): stamp-picdir
 	else true; fi
 	$(COMPILE.c) $(srcdir)/random.c $(OUTPUT_OPTION)
 
+./regex.o: $(srcdir}/regex.c config.h $(INCDIR)/ansidecl.h
+	if [ x"$(PICFLAG)" != x ]; then \
+	  $(COMPILE.c) $(PICFLAG) $(srcdir)/regex.c -o pic/$@; \
+	else true; fi
+	$(COMPILE.c) $(srcdir)/regex.c $(OUTPUT_OPTION)
+
 ./rename.o: $(srcdir)/rename.c config.h $(INCDIR)/ansidecl.h
 	if [ x"$(PICFLAG)" != x ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/rename.c -o pic/$@; \

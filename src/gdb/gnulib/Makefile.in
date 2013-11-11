@@ -97,7 +97,9 @@ DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/../mkinstalldirs $(top_srcdir)/../depcomp \
 	$(noinst_HEADERS)
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_check_compile_flag.m4 \
+	$(top_srcdir)/m4/ax_compiler_vendor.m4 \
+	$(top_srcdir)/m4/bakefile-lang.m4 $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
 	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
 	$(top_srcdir)/acinclude.m4 $(top_srcdir)/../bfd/bfd.m4 \
@@ -226,6 +228,7 @@ DATADIRNAME = @DATADIRNAME@
 DEBUG_SYMBOLS_LIBS = @DEBUG_SYMBOLS_LIBS@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
+DEREZ = @DEREZ@
 DLLTOOL = @DLLTOOL@
 DSYMUTIL = @DSYMUTIL@
 DUMPBIN = @DUMPBIN@
@@ -283,6 +286,7 @@ ITK_LIB_SPEC = @ITK_LIB_SPEC@
 ITK_VERSION = @ITK_VERSION@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
+LD_CLASSIC = @LD_CLASSIC@
 LEX = @LEX@
 LEXLIB = @LEXLIB@
 LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
@@ -299,6 +303,7 @@ MACH_EXC_SERVER_PREFACE = @MACH_EXC_SERVER_PREFACE@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
+MERGE_PEF = @MERGE_PEF@
 MIG = @MIG@
 MIG_CHECKING = @MIG_CHECKING@
 MKDIR_P = @MKDIR_P@
@@ -335,6 +340,10 @@ PYTHON_PREFIX = @PYTHON_PREFIX@
 PYTHON_VERSION = @PYTHON_VERSION@
 RANLIB = @RANLIB@
 RC = @RC@
+RESMERGER = @RESMERGER@
+REZ = @REZ@
+REZDET = @REZDET@
+REZWACK = @REZWACK@
 SED = @SED@
 SER_HARDWIRE = @SER_HARDWIRE@
 SET_MAKE = @SET_MAKE@
@@ -380,6 +389,7 @@ WERROR_CFLAGS = @WERROR_CFLAGS@
 WIN32LDAPP = @WIN32LDAPP@
 WIN32LIBS = @WIN32LIBS@
 WINDRES = @WINDRES@
+XCODEBUILD = @XCODEBUILD@
 XGETTEXT = @XGETTEXT@
 XMKMF = @XMKMF@
 X_CFLAGS = @X_CFLAGS@

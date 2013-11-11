@@ -235,7 +235,7 @@ init_hidden_window (void)
   return 1;
 }
 
-/* 
+/*
    This function is installed as the message handler for the hidden window
    which QBox will use to communicate with gdb. It recognize and acts
    on the following messages:
@@ -364,7 +364,7 @@ v850ice_open (char *name, int from_tty)
   ice_open = 1;
 
   /* Without this, some commands which require an active target (such as kill)
-     won't work.  This variable serves (at least) double duty as both the pid
+     will NOT work. This variable serves (at least) double duty as both the pid
      of the target process (if it has such), and as a flag indicating that a
      target is active.  These functions should be split out into seperate
      variables, especially since GDB will someday have a notion of debugging
@@ -954,3 +954,5 @@ _initialize_v850ice (void)
   add_com ("ice", class_obscure, v850ice_command,
 	   "Send command to ICE");
 }
+
+/* EOF */

@@ -362,3 +362,5 @@ frame_num_args (struct frame_info *fi)
     }
   return (-1);
 }
+
+/* EOF */

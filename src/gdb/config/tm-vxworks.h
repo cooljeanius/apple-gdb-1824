@@ -21,3 +21,5 @@
 #define	GDBINIT_FILENAME	".vxgdbinit"
 
 #define	DEFAULT_PROMPT		"(vxgdb) "
+
+/* EOF */

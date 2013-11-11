@@ -1,3 +1,9 @@
+2013-11-09  Eric Gallager  <egallager@comcast.net>
+
+	copy over a copy of the GPL3
+
+	Change-Id: I1d178bd73333198a2f0e8ef3e8783ba5a5993f27
+
 2013-11-08  Eric Gallager  <egallager@comcast.net>
 
 	copy the gdb.plist file back to the top level now that I know where it *actually* goes

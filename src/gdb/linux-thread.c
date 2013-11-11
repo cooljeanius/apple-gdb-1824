@@ -62,22 +62,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #include "breakpoint.h"
 
 #ifndef PT_ATTACH
-#define PT_ATTACH	PTRACE_ATTACH
-#endif
+# define PT_ATTACH	PTRACE_ATTACH
+#endif /* !PT_ATTACH */
 #ifndef PT_KILL
-#define PT_KILL		PTRACE_KILL
-#endif
+# define PT_KILL		PTRACE_KILL
+#endif /* !PT_KILL */
 #ifndef PT_READ_U
-#define PT_READ_U	PTRACE_PEEKUSR
-#endif
+# define PT_READ_U	PTRACE_PEEKUSR
+#endif /* !PT_READ_U */
 
 #ifdef NSIG
-#define LINUXTHREAD_NSIG NSIG
+# define LINUXTHREAD_NSIG NSIG
 #else
-#ifdef _NSIG
-#define LINUXTHREAD_NSIG _NSIG
-#endif
-#endif
+# ifdef _NSIG
+#  define LINUXTHREAD_NSIG _NSIG
+# endif /* _NSIG */
+#endif /* NSIG */
 
 extern int child_suppress_run;		/* make inftarg.c non-runnable */
 struct target_ops linuxthreads_ops;	/* Forward declaration */
@@ -141,7 +141,7 @@ struct linuxthreads_signal {
 
   /* True if this variable must exist for us to debug properly.  */
   int required;
-  
+
   /* The variable's address in the inferior, or zero if the
      LinuxThreads library hasn't been loaded into this inferior yet.  */
   CORE_ADDR addr;
@@ -169,7 +169,7 @@ struct linuxthreads_signal linuxthreads_sig_debug = {
   "__pthread_sig_debug", 0, 0, 0, 0, 0
 };
 
-/* Set by thread_db module when it takes over the thread_stratum. 
+/* Set by thread_db module when it takes over the thread_stratum.
    In that case we must:
    a) refrain from turning on the debug signal, and
    b) refrain from calling add_thread.  */
@@ -208,7 +208,7 @@ static int
 linuxthreads_thread_alive (ptid_t ptid)
 {
   errno = 0;
-  return ptrace (PT_READ_U, PIDGET (ptid), (PTRACE_ARG3_TYPE)0, 0) >= 0 
+  return ptrace (PT_READ_U, PIDGET (ptid), (PTRACE_ARG3_TYPE)0, 0) >= 0
          || errno == 0;
 }
 
@@ -228,7 +228,7 @@ linuxthreads_thread_alive (ptid_t ptid)
 
    PID may have signals waiting to be delivered.  If they're caused by
    our efforts to debug it, accept them with wait, but don't pass them
-   through to PID.  Do pass all other signals through.  */   
+   through to PID.  Do pass all other signals through.  */
 static int
 linuxthreads_find_trap (int pid, int stop)
 {
@@ -304,7 +304,7 @@ linuxthreads_find_trap (int pid, int stop)
 	  kill (pid, SIGSTOP);
 	}
     }
-		      
+
   /* Catch all status until SIGTRAP and optionally SIGSTOP show up.  */
   for (;;)
     {
@@ -312,10 +312,10 @@ linuxthreads_find_trap (int pid, int stop)
       child_resume (pid_to_ptid (pid), 1, TARGET_SIGNAL_0);
 
       /* loop as long as errno == EINTR:
-	 waitpid syscall may be aborted due to GDB receiving a signal. 
+	 waitpid syscall may be aborted due to GDB receiving a signal.
 	 FIXME: EINTR handling should no longer be necessary here, since
 	 we now block SIGCHLD except in an explicit sigsuspend call.  */
-      
+
       for (;;)
 	{
 	  rpid = waitpid (pid, &status, __WCLONE);
@@ -464,7 +464,7 @@ check_signal_number (struct linuxthreads_signal *sig)
       complained_cannot_determine_thread_signal_number = 1;
       return;
     }
-  
+
   if (num == 0)
     /* It hasn't been initialized yet.  */
     return;
@@ -614,7 +614,7 @@ remove_breakpoint (int pid)
     if (linuxthreads_breakpoint_zombie[j].pid == pid)
       break;
 
-  if (in_thread_list (pid_to_ptid (pid)) 
+  if (in_thread_list (pid_to_ptid (pid))
       && linuxthreads_thread_alive (pid_to_ptid (pid)))
     {
       CORE_ADDR pc = read_pc_pid (pid_to_ptid (pid));
@@ -726,7 +726,7 @@ wait_thread (int pid)
   if (pid != PIDGET (inferior_ptid) && in_thread_list (pid_to_ptid (pid)))
     {
       /* loop as long as errno == EINTR:
-	 waitpid syscall may be aborted if GDB receives a signal. 
+	 waitpid syscall may be aborted if GDB receives a signal.
 	 FIXME: EINTR handling should no longer be necessary here, since
 	 we now block SIGCHLD except during an explicit sigsuspend call. */
       for (;;)
@@ -813,7 +813,7 @@ update_stop_threads (int test_pid)
   if (linuxthreads_manager_pid != 0)
     {
       if (old_chain == NULL && test_pid > 0 &&
-	  test_pid != PIDGET (inferior_ptid) 
+	  test_pid != PIDGET (inferior_ptid)
 	  && linuxthreads_thread_alive (pid_to_ptid (test_pid)))
 	{
 	  old_chain = save_inferior_ptid ();
@@ -862,7 +862,7 @@ update_stop_threads (int test_pid)
    show up until the library gets mapped and the symbol table is read
    in.  */
 
-/* This new_objfile event is now managed by a chained function pointer. 
+/* This new_objfile event is now managed by a chained function pointer.
  * It is the callee's responsability to call the next client on the chain.
  */
 
@@ -875,7 +875,7 @@ linuxthreads_new_objfile (struct objfile *objfile)
   struct minimal_symbol *ms;
 
   /* Call predecessor on chain, if any.
-     Calling the new module first allows it to dominate, 
+     Calling the new module first allows it to dominate,
      if it finds its compatible libraries.  */
 
   if (target_new_objfile_chain)
@@ -940,7 +940,7 @@ any thread other than the main thread.");
 			  "__pthread_offsetof_descr");
       goto quit;
     }
-	 
+
   if ((ms = lookup_minimal_symbol ("__pthread_offsetof_pid",
 				   NULL, objfile)) == NULL
       || target_read_memory (SYMBOL_VALUE_ADDRESS (ms),
@@ -1012,15 +1012,15 @@ any thread other than the main thread.");
     }
 
   /* Allocate gdb internal structures */
-  linuxthreads_wait_pid = 
+  linuxthreads_wait_pid =
     (int *) xmalloc (sizeof (int) * (linuxthreads_max + 1));
   linuxthreads_wait_status =
     (int *) xmalloc (sizeof (int) * (linuxthreads_max + 1));
   linuxthreads_breakpoint_zombie = (struct linuxthreads_breakpoint *)
     xmalloc (sizeof (struct linuxthreads_breakpoint) * (linuxthreads_max + 1));
 
-  if (PIDGET (inferior_ptid) != 0 && 
-      !linuxthreads_attach_pending && 
+  if (PIDGET (inferior_ptid) != 0 &&
+      !linuxthreads_attach_pending &&
       !using_thread_db)		/* suppressed by thread_db module */
     {
       int on = 1;
@@ -1133,14 +1133,14 @@ linuxthreads_detach (char *args, int from_tty)
 	      if (!linuxthreads_thread_alive (pid_to_ptid (pid)))
 		continue;
 
-	      if (linuxthreads_breakpoint_zombie[i].pc 
+	      if (linuxthreads_breakpoint_zombie[i].pc
 	           != read_pc_pid (pid_to_ptid (pid)))
 		continue;
 
 	      /* Continue in STEP mode until the thread pc has moved or
 		 until SIGTRAP is found on the same PC.  */
 	      if (linuxthreads_find_trap (pid, 0)
-		  && linuxthreads_breakpoint_zombie[i].pc 
+		  && linuxthreads_breakpoint_zombie[i].pc
 		       == read_pc_pid (pid_to_ptid (pid)))
 		write_pc_pid (linuxthreads_breakpoint_zombie[i].pc
 			      - DECR_PC_AFTER_BREAK, pid_to_ptid (pid));
@@ -1230,7 +1230,7 @@ linuxthreads_resume (ptid_t ptid, int step, enum target_signal signo)
 	  for (i = 0; i <= linuxthreads_breakpoint_last; i++)
 	    if (linuxthreads_breakpoint_zombie[i].pid == rpid)
 	      {
-		if (linuxthreads_breakpoint_zombie[i].pc 
+		if (linuxthreads_breakpoint_zombie[i].pc
 		      != read_pc_pid (pid_to_ptid (rpid)))
 		  {
 		    /* The current pc is out of zombie breakpoint.  */
@@ -1415,7 +1415,7 @@ linuxthreads_wait (ptid_t ptid, struct target_waitstatus *ourstatus)
 		    linuxthreads_breakpoint_zombie[i].pid = rpid;
 		    linuxthreads_breakpoint_last++;
 		  }
-		linuxthreads_breakpoint_zombie[i].pc 
+		linuxthreads_breakpoint_zombie[i].pc
 		  = read_pc_pid (pid_to_ptid (rpid));
 		linuxthreads_breakpoint_zombie[i].step = 1;
 	      }
@@ -1487,7 +1487,7 @@ linuxthreads_wait (ptid_t ptid, struct target_waitstatus *ourstatus)
 	    {
 	      /* There is a potential zombie breakpoint */
 	      if (WIFEXITED(status)
-		  || linuxthreads_breakpoint_zombie[i].pc 
+		  || linuxthreads_breakpoint_zombie[i].pc
 		       != read_pc_pid (pid_to_ptid (rpid)))
 	        {
 		  /* The current pc is out of zombie breakpoint.  */
@@ -1526,7 +1526,7 @@ linuxthreads_wait (ptid_t ptid, struct target_waitstatus *ourstatus)
 	  int on = 1;
 	  if (!using_thread_db)
 	    {
-	      target_write_memory (linuxthreads_debug, 
+	      target_write_memory (linuxthreads_debug,
 				   (char *) &on, sizeof (on));
 	      update_stop_threads (rpid);
 	    }
@@ -1561,7 +1561,7 @@ Use the \"file\" or \"exec-file\" command.");
   linuxthreads_breakpoint_last = -1;
   linuxthreads_wait_last = -1;
   WSETSTOP (linuxthreads_exit_status, 0);
-  
+
   if (linuxthreads_max)
     linuxthreads_attach_pending = 1;
 
@@ -1733,7 +1733,7 @@ _initialize_linuxthreads (void)
   child_suppress_run = 1;
 
   /* Hook onto the "new_objfile" event.
-   * If someone else is already hooked onto the event, 
+   * If someone else is already hooked onto the event,
    * then make sure he will be called after we are.
    */
   target_new_objfile_chain = target_new_objfile_hook;
@@ -1751,9 +1751,11 @@ _initialize_linuxthreads (void)
 
   /* Use SIG_BLOCK to block receipt of SIGCHLD.
      The block_mask will allow us to wait for this signal explicitly.  */
-  sigprocmask(SIG_BLOCK, 
-	      &linuxthreads_wait_mask, 
+  sigprocmask(SIG_BLOCK,
+	      &linuxthreads_wait_mask,
 	      &linuxthreads_block_mask);
   /* Make sure that linuxthreads_block_mask is not blocking SIGCHLD */
   sigdelset (&linuxthreads_block_mask, SIGCHLD);
 }
+
+/* EOF */

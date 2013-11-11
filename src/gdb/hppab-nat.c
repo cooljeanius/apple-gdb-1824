@@ -37,17 +37,17 @@
 
 #define ptrace call_ptrace
 
-#if !defined (offsetof)
-#define offsetof(TYPE, MEMBER) ((unsigned long) &((TYPE *)0)->MEMBER)
-#endif
+#if !defined(offsetof)
+# define offsetof(TYPE, MEMBER) ((unsigned long) &((TYPE *)0)->MEMBER)
+#endif /* !offsetof */
 
 /* U_REGS_OFFSET is the offset of the registers within the u area.  */
-#if !defined (U_REGS_OFFSET)
+#if !defined(U_REGS_OFFSET)
 #define U_REGS_OFFSET \
   ptrace (PT_READ_U, PIDGET (inferior_ptid), \
           (PTRACE_ARG3_TYPE) (offsetof (struct user, u_ar0)), 0) \
     - KERNEL_U_ADDR
-#endif
+#endif /* !U_REGS_OFFSET */
 
 /* Fetch one register.  */
 
@@ -155,11 +155,11 @@ store_inferior_registers (int regno)
       store_inferior_registers (regno);
 }
 
-/* PT_PROT is specific to the PA BSD kernel and isn't documented
-   anywhere (except here).  
+/* PT_PROT is specific to the PA BSD kernel and is NOT documented
+   anywhere (except here).
 
    PT_PROT allows one to enable/disable the data memory break bit
-   for pages of memory in an inferior process.  This bit is used
+   for pages of memory in an inferior process. This bit is used
    to cause "Data memory break traps" to occur when the appropriate
    page is written to.
 
@@ -167,16 +167,16 @@ store_inferior_registers (int regno)
 
    PT_PROT -- The ptrace action to perform.
 
-   INFERIOR_PID -- The pid of the process who's page table entries
+   INFERIOR_PID -- The pid of the process whose page table entries
    will be modified.
 
    PT_ARGS -- The *address* of a 3 word block of memory which has
    additional information:
 
-   word 0 -- The start address to watch.  This should be a page-aligned
+   word 0 -- The start address to watch. This should be a page-aligned
    address.
 
-   word 1 -- The ending address to watch.  Again, this should be a 
+   word 1 -- The ending address to watch. Again, this should be a
    page aligned address.
 
    word 2 -- Nonzero to enable the data memory break bit on the
@@ -212,3 +212,5 @@ hppa_set_watchpoint (int addr, int len, int flag)
   /* Do it.  */
   return ptrace (PT_PROT, PIDGET (inferior_ptid), (PTRACE_ARG3_TYPE) pt_args, 0);
 }
+
+/* EOF */

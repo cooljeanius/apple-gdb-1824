@@ -4,5 +4,3 @@ TM_FILE= tm-w65.h
 
 SIM_OBS = remote-sim.o
 SIM = ../sim/w65/libsim.a
-
-

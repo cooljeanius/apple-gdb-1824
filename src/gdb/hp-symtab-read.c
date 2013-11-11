@@ -31,8 +31,6 @@
 #include "hpread.h"
 #include "demangle.h"
 #include "complaints.h"
-
-
 
 
 static struct complaint hpread_unhandled_end_common_complaint =
@@ -153,7 +151,7 @@ static dnttpointer hpread_get_next_skip_over_anon_unions
   (int, dnttpointer, union dnttentry **, struct objfile *);
 
 /* Global to indicate presence of HP-compiled objects,
-   in particular, SOM executable file with SOM debug info 
+   in particular, SOM executable file with SOM debug info
    Defined in symtab.c, used in hppa-tdep.c. */
 extern int hp_som_som_object_present;
 
@@ -378,8 +376,8 @@ hpread_psymtab_to_symtab (struct partial_symtab *pst)
     }
 
   /* elz: setting the flag to indicate that the code of the target
-     was compiled using an HP compiler (aCC, cc) 
-     the processing_acc_compilation variable is declared in the 
+     was compiled using an HP compiler (aCC, cc)
+     the processing_acc_compilation variable is declared in the
      file buildsym.h, the HP_COMPILED_TARGET is defined to be equal
      to 3 in the file tm_hppa.h */
 
@@ -455,9 +453,9 @@ hpread_expand_symtab (struct objfile *objfile, int sym_offset, int sym_size,
   /* The psymtab builder (hp-psymtab-read.c) is the one that
    * determined the "sym_size" argument (i.e. how many DNTT symbols
    * are in this symtab), which we use to compute "max_symnum"
-   * (point in DNTT to which we read). 
+   * (point in DNTT to which we read).
    *
-   * Perhaps this should be changed so that 
+   * Perhaps this should be changed so that
    * process_one_debug_symbol() "knows" when
    * to stop reading (based on reading from the MODULE to the matching
    * END), and take out this reliance on a #-syms being passed in...
@@ -495,7 +493,7 @@ hpread_expand_symtab (struct objfile *objfile, int sym_offset, int sym_size,
        * correspond to MODULES.  If we ever do lazy-reading of globals
        * from the LNTT, then there will be a pst which ends when the
        * LNTT ends, and not at an END MODULE entry.  Then we'll have
-       * to re-visit this break.  
+       * to re-visit this break.
 
        if( at_end_of_module )
        break;
@@ -611,8 +609,8 @@ hpread_type_translate (dnttpointer typep)
     }
 }
 
-/* Given a position in the DNTT, return a pointer to the 
- * already-built "struct type" (if any), for the type defined 
+/* Given a position in the DNTT, return a pointer to the
+ * already-built "struct type" (if any), for the type defined
  * at that position.
  */
 
@@ -635,14 +633,14 @@ hpread_lookup_type (dnttpointer hp_type, struct objfile *objfile)
    * already processed this DNTT and if it is a type definition.
    * If so, then we can locate a pointer to the already-built
    * "struct type", and not build it again.
-   * 
+   *
    * The need for this arises because our DNTT-walking code wanders
    * around. In particular, it will encounter the same type multiple
-   * times (once for each object of that type). We don't want to 
+   * times (once for each object of that type). We don't want to
    * built multiple "struct type"'s for the same thing.
    *
    * Having said this, I should point out that this type-vector is
-   * an expensive way to keep track of this. If most DNTT entries are 
+   * an expensive way to keep track of this. If most DNTT entries are
    * 3 words, the type-vector will be 1/3 the size of the DNTT itself.
    * Alternative solutions:
    * - Keep a compressed or hashed table. Less memory, but more expensive
@@ -740,7 +738,7 @@ hpread_read_enum_type (dnttpointer hp_type, union dnttentry *dn_bufp,
 
   /* Allocate a GDB type. If we've already read in this enum type,
    * it'll return the already built GDB type, so stop here.
-   * (Note: I added this check, to conform with what's done for 
+   * (Note: I added this check, to conform with what's done for
    *  struct, union, class.
    *  I assume this is OK. - RT)
    */
@@ -757,7 +755,7 @@ hpread_read_enum_type (dnttpointer hp_type, union dnttentry *dn_bufp,
   osyms = *symlist;
   o_nsyms = osyms ? osyms->nsyms : 0;
 
-  /* Get a name for each member and add it to our list of members.  
+  /* Get a name for each member and add it to our list of members.
    * The list of "mem" SOM records we are walking should all be
    * SOM type DNTT_TYPE_MEMENUM (not checked).
    */
@@ -916,7 +914,7 @@ hpread_read_function_type (dnttpointer hp_type, union dnttentry *dn_bufp,
        * called on FPARAM symbols from the process_one_debug_symbol()
        * level... so parameters are getting added twice! (this shows
        * up in the symbol dump you get from "maint print symbols ...").
-       * Note 2 (RT) I took out the processing of FPARAM from the 
+       * Note 2 (RT) I took out the processing of FPARAM from the
        * process_one_debug_symbol() level, so at the moment parameters are only
        * being processed here. This seems to have no ill effect.
        */
@@ -927,11 +925,11 @@ hpread_read_function_type (dnttpointer hp_type, union dnttentry *dn_bufp,
       /* elz: I added this new list of symbols which is local to the function.
          this list is the one which is actually used to build the type for the
          function rather than the gloabal list pointed to by symlist.
-         Using a global list to keep track of the parameters is wrong, because 
+         Using a global list to keep track of the parameters is wrong, because
          this function is called recursively if one parameter happend to be
          a function itself with more parameters in it. Adding parameters to the
-         same global symbol list would not work!      
-         Actually it did work in case of cc compiled programs where you do 
+         same global symbol list would not work!
+         Actually it did work in case of cc compiled programs where you do
          not check the parameter lists of the arguments. */
       add_symbol_to_list (sym, &local_list);
 
@@ -948,7 +946,7 @@ hpread_read_function_type (dnttpointer hp_type, union dnttentry *dn_bufp,
     obstack_alloc (&objfile->type_obstack,
 		   sizeof (struct field) * nsyms);
 
-  /* Find the symbols for the parameters and 
+  /* Find the symbols for the parameters and
      use them to fill parameter-type information into the function-type.
      The parameter symbols can be found in the local_list that we just put them on. */
   /* Note that we preserve the order of the parameters, so
@@ -1088,7 +1086,7 @@ hpread_read_doc_function_type (dnttpointer hp_type, union dnttentry *dn_bufp,
        * called on FPARAM symbols from the process_one_debug_symbol()
        * level... so parameters are getting added twice! (this shows
        * up in the symbol dump you get from "maint print symbols ...").
-       * Note 2 (RT) I took out the processing of FPARAM from the 
+       * Note 2 (RT) I took out the processing of FPARAM from the
        * process_one_debug_symbol() level, so at the moment parameters are only
        * being processed here. This seems to have no ill effect.
        */
@@ -1100,10 +1098,10 @@ hpread_read_doc_function_type (dnttpointer hp_type, union dnttentry *dn_bufp,
       /* elz: I added this new list of symbols which is local to the function.
          this list is the one which is actually used to build the type for the
          function rather than the gloabal list pointed to by symlist.
-         Using a global list to keep track of the parameters is wrong, because 
+         Using a global list to keep track of the parameters is wrong, because
          this function is called recursively if one parameter happend to be
          a function itself with more parameters in it. Adding parameters to the
-         same global symbol list would not work!      
+         same global symbol list would not work!
          Actually it did work in case of cc compiled programs where you do not check the
          parameter lists of the arguments.  */
       add_symbol_to_list (sym, &local_list);
@@ -1120,7 +1118,7 @@ hpread_read_doc_function_type (dnttpointer hp_type, union dnttentry *dn_bufp,
     obstack_alloc (&objfile->type_obstack,
 		   sizeof (struct field) * nsyms);
 
-  /* Find the symbols for the parameters and 
+  /* Find the symbols for the parameters and
      use them to fill parameter-type information into the function-type.
      The parameter symbols can be found in the local_list that we just put them on. */
   /* Note that we preserve the order of the parameters, so
@@ -1179,12 +1177,12 @@ finish:
  * I need to ask the question "what template am I in the middle of?".
  * The alternative to stuffing a global would be to pass an argument
  * down the chain of calls just for this purpose.
- * 
+ *
  * There may be problems handling nested templates... tough.
  */
 static struct type *current_template = NULL;
 
-/* Read in and internalize a structure definition.  
+/* Read in and internalize a structure definition.
  * This same routine is called for struct, union, and class types.
  * Also called for templates, since they build a very similar
  * type entry as for class types.
@@ -1284,7 +1282,7 @@ hpread_read_struct_type (dnttpointer hp_type, union dnttentry *dn_bufp,
       allocate_cplus_struct_type (type);
 
       /* Fill in declared-type.
-       * (The C++ compiler will emit TYPE_CODE_CLASS 
+       * (The C++ compiler will emit TYPE_CODE_CLASS
        * for all 3 of "class", "struct"
        * "union", and we have to look at the "class_decl" field if we
        * want to know how it was really declared)
@@ -1436,7 +1434,7 @@ hpread_read_struct_type (dnttpointer hp_type, union dnttentry *dn_bufp,
       fieldp = hpread_get_lntt (field.dnttp.index, objfile);
 
       /* At this point "fieldp" may point to either a DNTT_TYPE_FIELD
-       * or a DNTT_TYPE_GENFIELD record. 
+       * or a DNTT_TYPE_GENFIELD record.
        */
       vtbl_offset = 0;
       static_member = 0;
@@ -1506,7 +1504,7 @@ hpread_read_struct_type (dnttpointer hp_type, union dnttentry *dn_bufp,
 		}
 
 	      /* HP aCC generates operator names without the "operator" keyword, and
-	         generates null strings as names for operators that are 
+	         generates null strings as names for operators that are
 	         user-defined type conversions to basic types (e.g. operator int ()).
 	         So try to reconstruct name as best as possible. */
 
@@ -1611,7 +1609,7 @@ hpread_read_struct_type (dnttpointer hp_type, union dnttentry *dn_bufp,
 	       * virtual table offset. (This is just copied over from the
 	       * SOM record; not sure if it is what GDB expects here...).
 	       * But if the function is a static method, set it to 1.
-	       * 
+	       *
 	       * Note that we have to add 1 because 1 indicates a static
 	       * method, and 0 indicates a non-static, non-virtual method */
 
@@ -1924,7 +1922,7 @@ hpread_read_struct_type (dnttpointer hp_type, union dnttentry *dn_bufp,
     }
 
   /* Copy the "function-field-list" (i.e., the list of member
-   * functions in the class) to GDB's symbol table 
+   * functions in the class) to GDB's symbol table
    */
   TYPE_NFN_FIELDS (type) = n_fn_fields;
   TYPE_NFN_FIELDS_TOTAL (type) = n_fn_fields_total;
@@ -2061,7 +2059,7 @@ fix_static_member_physnames (struct type *type, char *class_name,
 /* Fix-up the type structure for a CLASS so that the type entry
  * for a method (previously marked with a null type in hpread_read_struct_type()
  * is set correctly to METHOD.
- * OBJFILE is as for other such functions. 
+ * OBJFILE is as for other such functions.
  * Void return. */
 
 static void
@@ -2188,8 +2186,8 @@ hpread_read_array_type (dnttpointer hp_type, union dnttentry *dn_bufp,
 
   /* Allocate an array type symbol.
    * Why no check for already-read here, like in the other
-   * hpread_read_xxx_type routines?  Because it kept us 
-   * from properly determining the size of the array!  
+   * hpread_read_xxx_type routines?  Because it kept us
+   * from properly determining the size of the array!
    */
   type = hpread_alloc_type (hp_type, objfile);
 
@@ -2210,7 +2208,7 @@ hpread_read_array_type (dnttpointer hp_type, union dnttentry *dn_bufp,
     {
       /* The HP debug format represents char foo[]; as an array with
        * length 0x7fffffff.  Internally GDB wants to represent this
-       *  as an array of length zero.  
+       *  as an array of length zero.
        */
       TYPE_LENGTH (type) = 0;
     }
@@ -2282,12 +2280,12 @@ hpread_read_subrange_type (dnttpointer hp_type, union dnttentry *dn_bufp,
  *                 type in GDB's internal symbol table - see gdbtypes.h)
  *   Routine description:
  *     There are a variety of places when scanning the DNTT when we
- *     need to interpret a "type" field. The simplest and most basic 
+ *     need to interpret a "type" field. The simplest and most basic
  *     example is when we're processing the symbol table record
  *     for a data symbol (a SVAR or DVAR record). That has
  *     a "type" field specifying the type of the data symbol. That
  *     "type" field is either an "immediate" type specification (for the
- *     fundamental types) or a DNTT pointer (for more complicated types). 
+ *     fundamental types) or a DNTT pointer (for more complicated types).
  *     For the more complicated types, we may or may not have already
  *     processed the pointed-to type. (Multiple data symbols can of course
  *     share the same type).
@@ -2360,7 +2358,7 @@ hpread_type_lookup (dnttpointer hp_type, struct objfile *objfile)
       return lookup_fundamental_type (objfile, FT_VOID);
 
     case DNTT_TYPE_FUNCTION:
-      /* We wind up here when dealing with class member functions 
+      /* We wind up here when dealing with class member functions
        * (called from hpread_read_struct_type(), i.e. when processing
        * the class definition itself).
        */
@@ -2391,7 +2389,7 @@ hpread_type_lookup (dnttpointer hp_type, struct objfile *objfile)
 	 * typedef foo fum;
 	 *
 	 * What we desire to build is (these are pictures
-	 * of "struct type"'s): 
+	 * of "struct type"'s):
 	 *
 	 *  +---------+     +----------+     +------------+
 	 *  | typedef |     | typedef  |     | fund. type |
@@ -2408,7 +2406,7 @@ hpread_type_lookup (dnttpointer hp_type, struct objfile *objfile)
 	 *  |     type| ->  |      type| ->  |            |
 	 *  | "fum"   |     | "fum"    |     | "fum"      |
 	 *  +---------+     +----------+     +------------+
-	 * 
+	 *
 	 */
 
 	return structtype;
@@ -2417,7 +2415,7 @@ hpread_type_lookup (dnttpointer hp_type, struct objfile *objfile)
     case DNTT_TYPE_TAGDEF:
       {
 	/* Just a little different from above.  We have to tack on
-	 * an identifier of some kind (struct, union, enum, class, etc).  
+	 * an identifier of some kind (struct, union, enum, class, etc).
 	 */
 	struct type *structtype = hpread_type_lookup (dn_bufp->dtype.type,
 						      objfile);
@@ -2425,8 +2423,8 @@ hpread_type_lookup (dnttpointer hp_type, struct objfile *objfile)
 	suffix = VT (objfile) + dn_bufp->dtype.name;
 
 	/* Lookup the next type in the list.  It should be a structure,
-	 * union, class, enum, or template type.  
-	 * We will need to attach that to our name.  
+	 * union, class, enum, or template type.
+	 * We will need to attach that to our name.
 	 */
 	if (dn_bufp->dtype.type.dnttp.index < LNTT_SYMCOUNT (objfile))
 	  dn_bufp = hpread_get_lntt (dn_bufp->dtype.type.dnttp.index, objfile);
@@ -2519,14 +2517,14 @@ hpread_type_lookup (dnttpointer hp_type, struct objfile *objfile)
       return hpread_type_lookup (dn_bufp->dfield.type, objfile);
 
     case DNTT_TYPE_FUNCTYPE:
-      /* Here we want to read the function SOMs and return a 
+      /* Here we want to read the function SOMs and return a
        * type for it. We get here, for instance, when processing
        * pointer-to-function type.
        */
       return hpread_read_function_type (hp_type, dn_bufp, objfile, 0);
 
     case DNTT_TYPE_PTRMEM:
-      /* Declares a C++ pointer-to-data-member type. 
+      /* Declares a C++ pointer-to-data-member type.
        * The "pointsto" field defines the class,
        * while the "memtype" field defines the pointed-to-type.
        */
@@ -2545,7 +2543,7 @@ hpread_type_lookup (dnttpointer hp_type, struct objfile *objfile)
       break;
 
     case DNTT_TYPE_PTRMEMFUNC:
-      /* Defines a C++ pointer-to-function-member type. 
+      /* Defines a C++ pointer-to-function-member type.
        * The "pointsto" field defines the class,
        * while the "memtype" field defines the pointed-to-type.
        */
@@ -2595,7 +2593,7 @@ hpread_type_lookup (dnttpointer hp_type, struct objfile *objfile)
     case DNTT_TYPE_MODIFIER:
       /* Check the modifiers and then just make a recursive call on
        * the "type" pointed to by the modifier DNTT.
-       * 
+       *
        * pai:: FIXME -- do we ever want to handle "m_duplicate" and
        * "m_void" modifiers?  Is static_flag really needed here?
        * (m_static used for methods of classes, elsewhere).
@@ -2609,7 +2607,7 @@ hpread_type_lookup (dnttpointer hp_type, struct objfile *objfile)
 
     case DNTT_TYPE_MEMFUNC:
       /* Member function. Treat like a function.
-       * I think we get here in the course of processing a 
+       * I think we get here in the course of processing a
        * pointer-to-member-function type...
        */
       return hpread_read_function_type (hp_type, dn_bufp, objfile, 0);
@@ -2629,14 +2627,14 @@ hpread_type_lookup (dnttpointer hp_type, struct objfile *objfile)
 	char *name;
 	/* The TEMPLATE record points to an argument list of
 	 * TEMPLATE_ARG records, each of which describes one
-	 * of the type-arguments. 
+	 * of the type-arguments.
 	 */
 	name = VT (objfile) + dn_bufp->dtempl_arg.name;
 	return hpread_read_templ_arg_type (hp_type, dn_bufp, objfile, name);
       }
 
     case DNTT_TYPE_FUNC_TEMPLATE:
-      /* We wind up here when processing a TEMPLATE type, 
+      /* We wind up here when processing a TEMPLATE type,
        * if the template has member function(s).
        * Treat it like a FUNCTION.
        */
@@ -2737,16 +2735,16 @@ class_of (struct type *functype)
   return class_name;
 }
 
-/* Internalize one native debug symbol. 
- * Called in a loop from hpread_expand_symtab(). 
+/* Internalize one native debug symbol.
+ * Called in a loop from hpread_expand_symtab().
  * Arguments:
- *   dn_bufp: 
- *   name: 
+ *   dn_bufp:
+ *   name:
  *   section_offsets:
  *   objfile:
- *   text_offset: 
- *   text_size: 
- *   filename: 
+ *   text_offset:
+ *   text_size:
+ *   filename:
  *   index:             Index of this symbol
  *   at_module_boundary_p Pointer to boolean flag to control caller's loop.
  */
@@ -2811,8 +2809,8 @@ hpread_process_one_debug_symbol (union dnttentry *dn_bufp, char *name,
        *     foo.c again.
        *
        * If it indicates the start of a new module then we must
-       * finish the symbol table of the previous module 
-       * (if any) and start accumulating a new symbol table.  
+       * finish the symbol table of the previous module
+       * (if any) and start accumulating a new symbol table.
        */
 
       valu = text_offset;
@@ -2860,26 +2858,26 @@ hpread_process_one_debug_symbol (union dnttentry *dn_bufp, char *name,
 
     case DNTT_TYPE_MODULE:
       /*
-       * We no longer ignore DNTT_TYPE_MODULE symbols.  The module 
+       * We no longer ignore DNTT_TYPE_MODULE symbols.  The module
        * represents the meaningful semantic structure of a compilation
        * unit.  We expect to start the psymtab-to-symtab expansion
        * looking at a MODULE entry, and to end it at the corresponding
        * END MODULE entry.
        *
        *--Begin outdated comments
-       * 
+       *
        * This record signifies the start of a new source module
        * In C/C++ there is no explicit "module" construct in the language,
        * but each compilation unit is implicitly a module and they
        * do emit the DNTT_TYPE_MODULE records.
        * The end of the module is marked by a matching DNTT_TYPE_END record.
        *
-       * The reason GDB gets away with ignoring the DNTT_TYPE_MODULE record 
-       * is it notices the DNTT_TYPE_END record for the previous 
+       * The reason GDB gets away with ignoring the DNTT_TYPE_MODULE record
+       * is it notices the DNTT_TYPE_END record for the previous
        * module (see comments under DNTT_TYPE_END case), and then treats
        * the next DNTT_TYPE_SRCFILE record as if it were the module-start record.
        * (i.e., it makes a start_symtab() call).
-       * This scheme seems a little convoluted, but I'll leave it 
+       * This scheme seems a little convoluted, but I'll leave it
        * alone on the principle "if it ain't broke don't fix
        * it". (RT).
        *
@@ -2890,7 +2888,7 @@ hpread_process_one_debug_symbol (union dnttentry *dn_bufp, char *name,
       if (!last_source_file)
 	{
 	  /* Start of a new module. We know this because "last_source_file"
-	   * is NULL, which can only happen the first time or if we just 
+	   * is NULL, which can only happen the first time or if we just
 	   * made a call to end_symtab() to close out the previous module.
 	   */
 	  start_symtab (name, NULL, valu);
@@ -3010,9 +3008,9 @@ hpread_process_one_debug_symbol (union dnttentry *dn_bufp, char *name,
       new->name = sym;
 
       /* Search forward to the next BEGIN and also read
-       * in the line info up to that point. 
+       * in the line info up to that point.
        * Not sure why this is needed.
-       * In HP FORTRAN this code is harmful since there   
+       * In HP FORTRAN this code is harmful since there
        * may not be a BEGIN after the FUNCTION.
        * So I made it C/C++ specific. - RT
        */
@@ -3085,7 +3083,7 @@ hpread_process_one_debug_symbol (union dnttentry *dn_bufp, char *name,
 	   * Generally, we don't want params when we display
 	   * a demangled name, but when I took out the DMGL_PARAMS,
 	   * some things broke, so I'm leaving it in here, and
-	   * working around the issue in stack.c. - RT 
+	   * working around the issue in stack.c. - RT
 	   */
 	  SYMBOL_INIT_DEMANGLED_NAME (sym, &objfile->symbol_obstack);
 
@@ -3127,9 +3125,9 @@ hpread_process_one_debug_symbol (union dnttentry *dn_bufp, char *name,
       new->name = sym;
 
       /* Search forward to the next BEGIN and also read
-       * in the line info up to that point. 
+       * in the line info up to that point.
        * Not sure why this is needed.
-       * In HP FORTRAN this code is harmful since there   
+       * In HP FORTRAN this code is harmful since there
        * may not be a BEGIN after the FUNCTION.
        * So I made it C/C++ specific. - RT
        */
@@ -3155,14 +3153,14 @@ hpread_process_one_debug_symbol (union dnttentry *dn_bufp, char *name,
       /* Begin a new scope. */
       if (context_stack_depth == 1 /* this means we're at function level */  &&
 	  context_stack[0].name != NULL /* this means it's a function */  &&
-	  context_stack[0].depth == 0	/* this means it's the first BEGIN 
+	  context_stack[0].depth == 0	/* this means it's the first BEGIN
 					   we've seen after the FUNCTION */
 	)
 	{
 	  /* This is the first BEGIN after a FUNCTION.
 	   * We ignore this one, since HP compilers always insert
 	   * at least one BEGIN, i.e. it's:
-	   * 
+	   *
 	   *     FUNCTION
 	   *     argument symbols
 	   *     BEGIN
@@ -3221,9 +3219,9 @@ hpread_process_one_debug_symbol (union dnttentry *dn_bufp, char *name,
       switch (dn_bufp->dend.endkind)
 	{
 	case DNTT_TYPE_MODULE:
-	  /* Ending a module ends the symbol table for that module.  
+	  /* Ending a module ends the symbol table for that module.
 	   * Calling end_symtab() has the side effect of clearing the
-	   * last_source_file pointer, which in turn signals 
+	   * last_source_file pointer, which in turn signals
 	   * process_one_debug_symbol() to treat the next DNTT_TYPE_SRCFILE
 	   * record as a module-begin.
 	   */
@@ -3316,7 +3314,7 @@ hpread_process_one_debug_symbol (union dnttentry *dn_bufp, char *name,
 			new->start_addr, valu, objfile);
 	  local_symbols = new->locals;
 	  param_symbols = new->params;
-#endif
+#endif /* 0 */
 	  break;
 
 	default:
@@ -3367,17 +3365,17 @@ hpread_process_one_debug_symbol (union dnttentry *dn_bufp, char *name,
       if (dn_bufp->dfparam.copyparam)
 	{
 	  SYMBOL_VALUE (sym) = dn_bufp->dfparam.location;
-#ifdef HPREAD_ADJUST_STACK_ADDRESS
+# ifdef HPREAD_ADJUST_STACK_ADDRESS
 	  SYMBOL_VALUE (sym)
 	    += HPREAD_ADJUST_STACK_ADDRESS (CURRENT_FUNCTION_VALUE (objfile));
-#endif
+# endif /* HPREAD_ADJUST_STACK_ADDRESS */
 	}
       else
 	SYMBOL_VALUE (sym) = dn_bufp->dfparam.location;
       SYMBOL_TYPE (sym) = hpread_type_lookup (dn_bufp->dfparam.type, objfile);
       add_symbol_to_list (sym, &fparam_symbols);
       break;
-#endif
+#endif /* 0 */
 
     case DNTT_TYPE_SVAR:
       /* Static variables.  */
@@ -3502,7 +3500,7 @@ hpread_process_one_debug_symbol (union dnttentry *dn_bufp, char *name,
 	SYMBOL_NAMESPACE (sym) = STRUCT_NAMESPACE;
 
 	/* The tag contains in its "type" field a pointer to the
-	 * DNTT_TYPE_STRUCT, DNTT_TYPE_UNION, DNTT_TYPE_ENUM, 
+	 * DNTT_TYPE_STRUCT, DNTT_TYPE_UNION, DNTT_TYPE_ENUM,
 	 * DNTT_TYPE_CLASS or DNTT_TYPE_TEMPLATE
 	 * record that actually defines the type.
 	 */
@@ -3516,12 +3514,12 @@ hpread_process_one_debug_symbol (union dnttentry *dn_bufp, char *name,
 	else
 	  add_symbol_to_list (sym, &file_symbols);
 
-	/* If this is a C++ class, then we additionally 
+	/* If this is a C++ class, then we additionally
 	 * need to define a typedef for the
 	 * class type. E.g., so that the name "c" becomes visible as
 	 * a type name when the user says "class c { ... }".
 	 * In order to figure this out, we need to chase down the "type"
-	 * field to get to the DNTT_TYPE_CLASS record. 
+	 * field to get to the DNTT_TYPE_CLASS record.
 	 *
 	 * We also add the typename for ENUM. Though this isn't
 	 * strictly correct, it is necessary because of the debug info
@@ -3536,7 +3534,7 @@ hpread_process_one_debug_symbol (union dnttentry *dn_bufp, char *name,
 	 * "ptype e" will work in the above cases.
 	 *
 	 * We also add the typename for TEMPLATE, so as to allow "ptype t"
-	 * when "t" is a template name. 
+	 * when "t" is a template name.
 	 */
 	if (dn_bufp->dtype.type.dnttp.index < LNTT_SYMCOUNT (objfile))
 	  dn_bufp = hpread_get_lntt (dn_bufp->dtag.type.dnttp.index, objfile);
@@ -3574,14 +3572,14 @@ hpread_process_one_debug_symbol (union dnttentry *dn_bufp, char *name,
     case DNTT_TYPE_POINTER:
       /* Declares a pointer type. Should not be necessary to do anything
        * with the type at this level; these are processed
-       * at the hpread_type_lookup() level. 
+       * at the hpread_type_lookup() level.
        */
       break;
 
     case DNTT_TYPE_ENUM:
       /* Declares an enum type. Should not be necessary to do anything
        * with the type at this level; these are processed
-       * at the hpread_type_lookup() level. 
+       * at the hpread_type_lookup() level.
        */
       break;
 
@@ -3595,30 +3593,30 @@ hpread_process_one_debug_symbol (union dnttentry *dn_bufp, char *name,
     case DNTT_TYPE_SET:
       /* Declares a set type. Should not be necessary to do anything
        * with the type at this level; these are processed
-       * at the hpread_type_lookup() level. 
+       * at the hpread_type_lookup() level.
        */
       break;
 
     case DNTT_TYPE_SUBRANGE:
       /* Declares a subrange type. Should not be necessary to do anything
        * with the type at this level; these are processed
-       * at the hpread_type_lookup() level. 
+       * at the hpread_type_lookup() level.
        */
       break;
 
     case DNTT_TYPE_ARRAY:
       /* Declares an array type. Should not be necessary to do anything
        * with the type at this level; these are processed
-       * at the hpread_type_lookup() level. 
+       * at the hpread_type_lookup() level.
        */
       break;
 
     case DNTT_TYPE_STRUCT:
     case DNTT_TYPE_UNION:
-      /* Declares an struct/union type. 
+      /* Declares an struct/union type.
        * Should not be necessary to do anything
        * with the type at this level; these are processed
-       * at the hpread_type_lookup() level. 
+       * at the hpread_type_lookup() level.
        */
       break;
 
@@ -3639,11 +3637,11 @@ hpread_process_one_debug_symbol (union dnttentry *dn_bufp, char *name,
       break;
 
     case DNTT_TYPE_WITH:
-      /* This is emitted within methods to indicate "with <class>" 
+      /* This is emitted within methods to indicate "with <class>"
        * scoping rules (i.e., indicate that the class data members
        * are directly visible).
        * However, since GDB already infers this by looking at the
-       * "this" argument, interpreting the DNTT_TYPE_WITH 
+       * "this" argument, interpreting the DNTT_TYPE_WITH
        * symbol record is unnecessary.
        */
       break;
@@ -3659,7 +3657,7 @@ hpread_process_one_debug_symbol (union dnttentry *dn_bufp, char *name,
       /* DNTT_TYPE_MACRO is not handled by GDB */
 
     case DNTT_TYPE_BLOCKDATA:
-      /* Not sure what this is - part of FORTRAN support maybe? 
+      /* Not sure what this is - part of FORTRAN support maybe?
        * Anyway, not yet handled.
        */
       complain (&hpread_unhandled_blockdata_complaint);
@@ -3678,8 +3676,8 @@ hpread_process_one_debug_symbol (union dnttentry *dn_bufp, char *name,
        * The member function "c::f" will be bracketed by a CLASS_SCOPE/END.
        * This causes "break f" at the module level to pick the
        * the file-level function f(), not the member function
-       * (which needs to be referenced via "break c::f"). 
-       * 
+       * (which needs to be referenced via "break c::f").
+       *
        * Here we record the class name to generate the demangled names of
        * member functions later.
        *
@@ -3733,10 +3731,10 @@ hpread_process_one_debug_symbol (union dnttentry *dn_bufp, char *name,
       break;
 
     case DNTT_TYPE_CLASS:
-      /* Declares a class type. 
+      /* Declares a class type.
        * Should not be necessary to do anything
        * with the type at this level; these are processed
-       * at the hpread_type_lookup() level. 
+       * at the hpread_type_lookup() level.
        */
       break;
 
@@ -3850,11 +3848,11 @@ hpread_process_one_debug_symbol (union dnttentry *dn_bufp, char *name,
  * DN_BUFP points to a DNTT entry.
  * OBJFILE is the object file.
  * REPORT_NESTED is a flag; if 0, real nesting depth is
- * reported, if it is 1, the function simply returns a 
+ * reported, if it is 1, the function simply returns a
  * non-zero value if the nesting depth is anything > 0.
- * 
+ *
  * Return value is an integer.  0 => not a local type / name
- * positive return => type or name is local to some 
+ * positive return => type or name is local to some
  * block or function.
  */
 
@@ -3957,7 +3955,7 @@ hpread_get_next_skip_over_anon_unions (int skip_fields, dnttpointer field,
 
   for (i = 0; i < skip_fields; i++)
     {
-      /* Get type of item we're looking at now; recursively processes the types
+      /* Get type of item we are looking at now; recursively processes the types
          of these intermediate items we skip over, so they aren't lost. */
       anon_type = hpread_type_lookup ((*fieldp)->dfield.type, objfile);
       anon_type = CHECK_TYPEDEF (anon_type);
@@ -3977,3 +3975,5 @@ hpread_get_next_skip_over_anon_unions (int skip_fields, dnttpointer field,
     }
   return field;
 }
+
+/* EOF */

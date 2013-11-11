@@ -3,7 +3,7 @@
 		THIS SOFTWARE IS NOT COPYRIGHTED
 
    HP offers the following for use in the public domain.  HP makes no
-   warranty with regard to the software or it's performance and the
+   warranty with regard to the software or its performance and the
    user accepts the software "AS IS" with all faults.
 
    HP DISCLAIMS ANY WARRANTIES, EXPRESS OR IMPLIED, WITH REGARD
@@ -30,7 +30,7 @@
  *  NOTES:           See Below $
  *
  *  Modified for SPARC by Stu Grossman, Cygnus Support.
- *  Based on sparc-stub.c, it's modified for SPARClite Debug Unit hardware
+ *  Based on sparc-stub.c, it is modified for SPARClite Debug Unit hardware
  *  breakpoint support to create sparclite-stub.c, by Kung Hsu, Cygnus Support.
  *
  *  This code has been extensively tested on the Fujitsu SPARClite demo board.
@@ -131,12 +131,12 @@ enum regnames { G0, G1, G2, G3, G4, G5, G6, G7,
 		Y, PSR, WIM, TBR, PC, NPC, FPSR, CPSR,
 		CCSR, CCPR, CCCRCR, CCOR, CCOBR, CCIBR, CCIR, UNUSED1,
 
-		ASR1, ASR15, ASR17, ASR18, ASR19, ASR20, ASR21, ASR22, 
+		ASR1, ASR15, ASR17, ASR18, ASR19, ASR20, ASR21, ASR22,
 		/* the following not actually implemented */
-		AWR0,  AWR1,  AWR2,  AWR3,  AWR4,  AWR5,  AWR6,  AWR7,  
-		AWR8,  AWR9,  AWR10, AWR11, AWR12, AWR13, AWR14, AWR15,  
-		AWR16, AWR17, AWR18, AWR19, AWR20, AWR21, AWR22, AWR23,  
-		AWR24, AWR25, AWR26, AWR27, AWR28, AWR29, AWR30, AWR31,  
+		AWR0,  AWR1,  AWR2,  AWR3,  AWR4,  AWR5,  AWR6,  AWR7,
+		AWR8,  AWR9,  AWR10, AWR11, AWR12, AWR13, AWR14, AWR15,
+		AWR16, AWR17, AWR18, AWR19, AWR20, AWR21, AWR22, AWR23,
+		AWR24, AWR25, AWR26, AWR27, AWR28, AWR29, AWR30, AWR31,
 		APSR
 };
 
@@ -185,10 +185,10 @@ _trap_low:
 	nop
 
 ! At this point, we need to bring a 1 into the high order bit of the wim.
-! Since we don't want to make any assumptions about the number of register
+! Since we do NOT want to make any assumptions about the number of register
 ! windows, we figure it out dynamically so as to setup the wim correctly.
 
-	! The normal way doesn't work on the sparclet as register windows
+	! The normal way does NOT work on the sparclet as register windows
 	! 28 and 29 are special purpose windows.
 	!not	%g1			! Fill g1 with ones
 	!mov	%g1, %wim		! Fill the wim with ones
@@ -201,9 +201,9 @@ _trap_low:
 
 	mov	0x80, %g1		! Hack for sparclet
 
-	! This doesn't work on the sparclet.
+	! This does NOT work on the sparclet.
 	!mov	%g0, %wim		! Clear wim so that subsequent save
-					!  won't trap
+					!  will NOT trap
 	andn	%l3, 0xff, %l5		! Clear wim but not windows 28, 29
 	mov	%l5, %wim
 	nop
@@ -253,7 +253,7 @@ recursive_trap:
 	std	%i4, [%sp + (24 + 12) * 4]
 	std	%i6, [%sp + (24 + 14) * 4]
 
-	! FP regs (sparclet doesn't have fpu)
+	! FP regs (sparclet does NOT have fpu)
 
 	mov	%y, %l4
 	mov	%tbr, %l5
@@ -338,7 +338,7 @@ recursive_trap:
 	call	_handle_exception
 	add	%sp, 24 * 4, %o0	! Pass address of registers
 
-! Reload all of the registers that aren't on the stack
+! Reload all of the registers that are NOT on the stack
 
 	ld	[%sp + (24 + 1) * 4], %g1 ! registers[Gx]
 	ldd	[%sp + (24 + 2) * 4], %g2
@@ -350,7 +350,7 @@ recursive_trap:
 	ldd	[%sp + (24 + 12) * 4], %i4
 	ldd	[%sp + (24 + 14) * 4], %i6
 
-	! FP regs (sparclet doesn't have fpu)
+	! FP regs (sparclet does NOT have fpu)
 
 ! Update the coprocessor registers.
 ! See SK/demo/hdlc_demo/ldc_swap_context.S.
@@ -392,17 +392,17 @@ recursive_trap:
 
 	ld	[%sp + (24 + 80) * 4], %l4
 	wr	%l4, %asr1
-!	ld	[%sp + (24 + 81) * 4], %l4	! can't write asr15
+!	ld	[%sp + (24 + 81) * 4], %l4	! cannot write asr15
 !	wr	%l4, %asr15
 	ld	[%sp + (24 + 82) * 4], %l4
 	wr	%l4, %asr17
 	ld	[%sp + (24 + 83) * 4], %l4
 	wr	%l4, %asr18
-!	ld	[%sp + (24 + 84) * 4], %l4	! can't write asr19
+!	ld	[%sp + (24 + 84) * 4], %l4	! cannot write asr19
 !	wr	%l4, %asr19
-!	ld	[%sp + (24 + 85) * 4], %l4	! can't write asr20
+!	ld	[%sp + (24 + 85) * 4], %l4	! cannot write asr20
 !	wr	%l4, %asr20
-!	ld	[%sp + (24 + 86) * 4], %l4	! can't write asr21
+!	ld	[%sp + (24 + 86) * 4], %l4	! cannot write asr21
 !	wr	%l4, %asr21
 	ld	[%sp + (24 + 87) * 4], %l4
 	wr	%l4, %asr22
@@ -703,7 +703,7 @@ get_in_break_mode (void)
   asm("
         sethi   %hi(0xff10), %l4
         or      %l4, %lo(0xff10), %l4
-	sta 	%g0, [%l4]0x1	
+	sta 	%g0, [%l4]0x1
 	nop
 	nop
 	nop
@@ -723,7 +723,7 @@ computeSignal (int tt)
     if (ht->tt == tt)
       return ht->signo;
 
-  return SIGHUP;		/* default for things we don't know about */
+  return SIGHUP;		/* default for things we do NOT know about */
 }
 
 /*
@@ -897,11 +897,11 @@ handle_exception (unsigned long *registers)
 		    8 * 4,
 		    0); /* ASR1,ASR15,ASR17,ASR18,ASR19,ASR20,ASR21,ASR22 */
 #if 0 /* not implemented */
-	    ptr = mem2hex((char *) &registers[AWR0], 
-		    ptr, 
-		    32 * 4, 
+	    ptr = mem2hex((char *) &registers[AWR0],
+		    ptr,
+		    32 * 4,
 		    0); /* Alternate Window Registers */
-#endif
+#endif /* 0 */
 	  }
 	  break;
 
@@ -915,7 +915,7 @@ handle_exception (unsigned long *registers)
 	    if (ptr[-1] == 'P')	/* do a single register */
 	      {
 		int regno;
- 
+
                 if (hexToInt (&ptr, &regno)
                     && *ptr++ == '=')
                   if (regno >= L0 && regno <= I7)
@@ -941,7 +941,7 @@ handle_exception (unsigned long *registers)
 #if 0 /* not implemented */
 		hex2mem(ptr + 88 * 4 * 2, (char *)&registers[AWR0],
 			8 * 4, 0); /* Alternate Window Registers */
-#endif
+#endif /* 0 */
 	      }
 	    /* See if the stack pointer has moved.  If so, then copy the saved
 	       locals and ins to the new location.  This keeps the window
@@ -951,7 +951,7 @@ handle_exception (unsigned long *registers)
 	    if (sp != newsp)
 	      sp = memcpy(newsp, sp, 16 * 4);
 
-	    /* Don't allow CWP to be modified. */
+	    /* Do NOT allow CWP to be modified. */
 
 	    if (psr != registers[PSR])
 	      registers[PSR] = (psr & 0x1f) | (registers[PSR] & ~0x1f);
@@ -1017,7 +1017,7 @@ handle_exception (unsigned long *registers)
 	case 't':		/* Test feature */
 	  asm (" std %f30,[%sp]");
 	  break;
-#endif
+#endif /* 0 */
 	case 'r':		/* Reset */
 	  asm ("call 0
 		nop ");
@@ -1142,7 +1142,7 @@ splet_temp(void)
 	rd	%psr, %l2
 	st	%l2, [%sp + (24 + 120) * 4]	! APSR
 
-! Don't forget the alternate stack pointer
+! Do NOT forget the alternate stack pointer
 
 	rd	%y, %l3
 	st	%l3, [%sp + (24 + 102) * 4]	! AWR14 (SP)
@@ -1164,4 +1164,6 @@ splet_temp(void)
 ");
 }
 
-#endif
+#endif /* 0 */
+
+/* EOF */

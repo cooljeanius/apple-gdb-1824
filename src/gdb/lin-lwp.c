@@ -683,7 +683,7 @@ stop_wait_callback (struct lwp_info *lp, void *data)
 				 target_pid_to_str (lp->ptid));
 	    }
 	  if (debug_lin_lwp)
-	    fprintf_unfiltered (gdb_stdlog, 
+	    fprintf_unfiltered (gdb_stdlog,
 				"%s exited.\n", target_pid_to_str (lp->ptid));
 
 	  delete_lwp (lp->ptid);
@@ -720,7 +720,7 @@ stop_wait_callback (struct lwp_info *lp, void *data)
 	      ptrace (PTRACE_CONT, GET_LWP (lp->ptid), 0, 0);
 	      if (debug_lin_lwp)
 		{
-		  fprintf_unfiltered (gdb_stderr, 
+		  fprintf_unfiltered (gdb_stderr,
 				      "SWC: Candidate SIGTRAP event in %ld\n",
 				      GET_LWP (lp->ptid));
 		}
@@ -740,7 +740,7 @@ stop_wait_callback (struct lwp_info *lp, void *data)
 
 	      if (debug_lin_lwp)
 		{
-		  fprintf_unfiltered (gdb_stderr, 
+		  fprintf_unfiltered (gdb_stderr,
 				      "SWC: Pending event %d in %ld\n",
 				      WSTOPSIG (status), GET_LWP (lp->ptid));
 		}
@@ -858,7 +858,7 @@ cancel_breakpoints_callback (struct lwp_info *lp, void *data)
 
   if (lp->status != 0
       && WIFSTOPPED (lp->status) &&  WSTOPSIG (lp->status) == SIGTRAP
-      && breakpoint_inserted_here_p (read_pc_pid (lp->ptid) - 
+      && breakpoint_inserted_here_p (read_pc_pid (lp->ptid) -
 				     DECR_PC_AFTER_BREAK))
     {
       if (debug_lin_lwp)
@@ -911,8 +911,8 @@ select_event_lwp (struct lwp_info **orig_lp, int *status)
 	((num_events * (double) rand ()) / (RAND_MAX + 1.0));
 
       if (debug_lin_lwp && num_events > 1)
-	fprintf_unfiltered (gdb_stdlog, 
-			    "Found %d SIGTRAP events, selecting #%d\n", 
+	fprintf_unfiltered (gdb_stdlog,
+			    "Found %d SIGTRAP events, selecting #%d\n",
 			    num_events, random_selector);
 
       event_lp = iterate_over_lwps (select_event_lwp_callback,
@@ -1035,7 +1035,7 @@ lin_lwp_wait (ptid_t ptid, struct target_waitstatus *ourstatus)
   else if (is_lwp (ptid))
     {
       if (debug_lin_lwp)
-	fprintf_unfiltered (gdb_stdlog, 
+	fprintf_unfiltered (gdb_stdlog,
 			    "Waiting for specific LWP %ld.\n",
 			    GET_LWP (ptid));
 
@@ -1133,8 +1133,8 @@ lin_lwp_wait (ptid_t ptid, struct target_waitstatus *ourstatus)
 				     target_pid_to_str (lp->ptid));
 		}
 	      if (debug_lin_lwp)
-		fprintf_unfiltered (gdb_stdlog, 
-				    "%s exited.\n", 
+		fprintf_unfiltered (gdb_stdlog,
+				    "%s exited.\n",
 				    target_pid_to_str (lp->ptid));
 
 	      delete_lwp (lp->ptid);
@@ -1153,7 +1153,7 @@ lin_lwp_wait (ptid_t ptid, struct target_waitstatus *ourstatus)
 	      && WSTOPSIG (status) == SIGSTOP)
 	    {
 	      if (debug_lin_lwp)
-		fprintf_unfiltered (gdb_stdlog, 
+		fprintf_unfiltered (gdb_stdlog,
 				    "Delayed SIGSTOP caught for %s.\n",
 				    target_pid_to_str (lp->ptid));
 
@@ -1261,7 +1261,7 @@ lin_lwp_wait (ptid_t ptid, struct target_waitstatus *ourstatus)
     {
       trap_ptid = (threaded ? lp->ptid : pid_to_ptid (GET_LWP (lp->ptid)));
       if (debug_lin_lwp)
-	fprintf_unfiltered (gdb_stdlog, 
+	fprintf_unfiltered (gdb_stdlog,
 			    "LLW: trap_ptid is %ld\n",
 			    GET_LWP (trap_ptid));
     }
@@ -1330,7 +1330,7 @@ lin_lwp_create_inferior (char *exec_file, char *allargs, char **env)
   child_ops.to_create_inferior (exec_file, allargs, env);
 }
 
-static void  
+static void
 lin_lwp_mourn_inferior (void)
 {
   trap_ptid = null_ptid;
@@ -1468,14 +1468,14 @@ _initialize_lin_lwp (void)
   action.sa_flags = 0;
   sigaction (SIGCHLD, &action, NULL);
 
-  /* Make sure we don't block SIGCHLD during a sigsuspend.  */
+  /* Make sure we do NOT block SIGCHLD during a sigsuspend.  */
   sigprocmask (SIG_SETMASK, NULL, &suspend_mask);
   sigdelset (&suspend_mask, SIGCHLD);
 
   sigemptyset (&blocked_mask);
 
   add_show_from_set (add_set_cmd ("lin-lwp", no_class, var_zinteger,
-				  (char *) &debug_lin_lwp, 
+				  (char *) &debug_lin_lwp,
 				  "Set debugging of linux lwp module.\n\
 Enables printf debugging output.\n",
 				      &setdebuglist),
@@ -1545,3 +1545,5 @@ lin_thread_get_thread_signals (sigset_t *set)
   /* ... except during a sigsuspend.  */
   sigdelset (&suspend_mask, cancel);
 }
+
+/* EOF */

@@ -30,21 +30,21 @@
    define their own routines to manage the floating-point registers in
    GDB's register array.  Most (if not all) of these targets use the
    format used by the "fsave" instruction in their communication with
-   the OS.  They should all be converted to use the routines below.  */
+   the OS. They should all be converted to use the routines below.  */
 
-/* At fsave_offset[REGNUM] you'll find the offset to the location in
+/* At fsave_offset[REGNUM] you will find the offset to the location in
    the data structure used by the "fsave" instruction where GDB
    register REGNUM is stored.  */
 
 static int fsave_offset[] =
 {
   28 + 0 * FPU_REG_RAW_SIZE,	/* FP0_REGNUM through ...  */
-  28 + 1 * FPU_REG_RAW_SIZE,  
-  28 + 2 * FPU_REG_RAW_SIZE,  
-  28 + 3 * FPU_REG_RAW_SIZE,  
-  28 + 4 * FPU_REG_RAW_SIZE,  
-  28 + 5 * FPU_REG_RAW_SIZE,  
-  28 + 6 * FPU_REG_RAW_SIZE,  
+  28 + 1 * FPU_REG_RAW_SIZE,
+  28 + 2 * FPU_REG_RAW_SIZE,
+  28 + 3 * FPU_REG_RAW_SIZE,
+  28 + 4 * FPU_REG_RAW_SIZE,
+  28 + 5 * FPU_REG_RAW_SIZE,
+  28 + 6 * FPU_REG_RAW_SIZE,
   28 + 7 * FPU_REG_RAW_SIZE,	/* ... FP7_REGNUM.  */
   0,				/* FCTRL_REGNUM (16 bits).  */
   4,				/* FSTAT_REGNUM (16 bits).  */
@@ -344,3 +344,5 @@ i387_tag (unsigned char *raw)
 	}
     }
 }
+
+/* EOF */

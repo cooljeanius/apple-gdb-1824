@@ -22,3 +22,5 @@
 #define NO_SIGINTERRUPT
 
 #define HAVE_TERMIOS
+
+/* EOF */

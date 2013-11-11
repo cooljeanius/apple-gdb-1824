@@ -67,6 +67,11 @@ RANLIB = @RANLIB@
 DLLTOOL = @DLLTOOL@
 WINDRES = @WINDRES@
 MIG = @MIG@
+REZ = @REZ@
+DEREZ = @DEREZ@
+REZDET = @REZDET@
+REZWACK = @REZWACK
+RESMERGER = @RESMERGER@
 
 XGETTEXT = @XGETTEXT@
 GMSGFMT = @GMSGFMT@
@@ -3345,6 +3350,9 @@ stamp-framework:
 # 
 # Makefile.deps: $(patsubst %.o, %.d, $(filter %.o, $(OBS) $(TSOBS) $(ADD_DEPS) $(CDEPS) init.o))
 #	md -o Makefile.deps $^ || touch $@
+
+mac-xdep.o: $(srcdir)/mac-xdep.c $(srcdir)/config/xm-mpw.h
+	gcc-4.2 -c -ggdb -O -DWITH_CFM=1 -I./macosx -DUSE_PTHREADS=1 -D_DARWIN_UNLIMITED_STREAMS -I. -I./config -DHAVE_CONFIG_H -I./../include/opcode -I./../readline/.. -I../bfd -I./../bfd -I./../include  -I../intl -I./../intl -DMI_OUT=1 -D__MigTypeCheck=1 -I/Developer/Headers/FlatCarbon -I/Developer/usr/local/include -fpascal-strings mac-xdep.c
 
 # This rule codesigns gdb. To use it you have to make a Certificate called
 # "gdb_codesign" with codesigning authority, and set the codeSign Trust

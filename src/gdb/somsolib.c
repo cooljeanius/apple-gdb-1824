@@ -45,8 +45,8 @@
 #include <fcntl.h>
 
 #ifndef O_BINARY
-#define O_BINARY 0
-#endif
+# define O_BINARY 0
+#endif /* O_BINARY */
 
 /* Uncomment this to turn on some debugging output.
  */
@@ -61,7 +61,7 @@ extern struct target_ops exec_ops;
 /* This lives in hppa-tdep.c. */
 extern struct unwind_table_entry *find_unwind_entry (CORE_ADDR pc);
 
-/* These ought to be defined in some public interface, but aren't.  They
+/* These ought to be defined in some public interface, but are not. They
    define the meaning of the various bits in the distinguished __dld_flags
    variable that is declared in every debuggable a.out on HP-UX, and that
    is shared between the debugger and the dynamic linker.
@@ -73,13 +73,13 @@ extern struct unwind_table_entry *find_unwind_entry (CORE_ADDR pc);
 
 /* TODO:
 
-   * Most of this code should work for hp300 shared libraries.  Does
+   * Most of this code should work for hp300 shared libraries. Does
    anyone care enough to weed out any SOM-isms.
 
    * Support for hpux8 dynamic linker.  */
 
-/* The basic structure which describes a dynamically loaded object.  This
-   data structure is private to the dynamic linker and isn't found in
+/* The basic structure which describes a dynamically loaded object. This
+   data structure is private to the dynamic linker and is NOT found in
    any HPUX include file.  */
 
 struct som_solib_mapped_entry
@@ -114,18 +114,18 @@ struct som_solib_mapped_entry
     /* Next entry.  */
     struct som_solib_mapped_entry *next;
 
-    /* There are other fields, but I don't have information as to what is
+    /* There are other fields, but I do NOT have information as to what is
        contained in them.  */
 
     /* For versions from HPUX-10.30 and up */
 
     /* Address in target of offset from thread-local register of
-     * start of this thread's data.  I.e., the first thread-local
+     * start of this thread's data. I.e., the first thread-local
      * variable in this shared library starts at *(tsd_start_addr)
      * from that area pointed to by cr27 (mpsfu_hi).
      *
      * We do the indirection as soon as we read it, so from then
-     * on it's the offset itself.
+     * on it is the offset itself.
      */
     CORE_ADDR tsd_start_addr;
 
@@ -169,11 +169,11 @@ static LONGEST som_solib_total_st_size;
 
 /* When the threshold is reached for any shlib, we refuse to add
    symbols for subsequent shlibs, even if those shlibs' symbols would
-   be small enough to fit under the threshold.  (Although this may
+   be small enough to fit under the threshold. (Although this may
    result in one, early large shlib preventing the loading of later,
    smalller shlibs' symbols, it allows us to issue one informational
-   message.  The alternative, to issue a message for each shlib whose
-   symbols aren't loaded, could be a big annoyance where the threshold
+   message. The alternative, to issue a message for each shlib whose
+   symbols are NOT loaded, could be a big annoyance where the threshold
    is exceeded due to a very large number of shlibs.)
  */
 static int som_solib_st_size_threshold_exceeded;
@@ -232,7 +232,7 @@ som_solib_sizeof_symbol_table (char *filename)
     {
       close (desc);
       make_cleanup (xfree, filename);
-      error ("\"%s\": can't open to read symbols: %s.", filename,
+      error ("\"%s\": cannot open to read symbols: %s.", filename,
 	     bfd_errmsg (bfd_get_error ()));
     }
 
@@ -240,7 +240,7 @@ som_solib_sizeof_symbol_table (char *filename)
     {
       bfd_close (abfd);		/* This also closes desc */
       make_cleanup (xfree, filename);
-      error ("\"%s\": can't read symbols: %s.", filename,
+      error ("\"%s\": cannot read symbols: %s.", filename,
 	     bfd_errmsg (bfd_get_error ()));
     }
 
@@ -260,19 +260,19 @@ som_solib_sizeof_symbol_table (char *filename)
   xfree (filename);
 
   /* Unfortunately, just summing the sizes of various debug info
-     sections isn't a very accurate measurement of how much heap
-     space the debugger will need to hold them.  It also doesn't
+     sections is NOT a very accurate measurement of how much heap
+     space the debugger will need to hold them. It also does NOT
      account for space needed by linker (aka "minimal") symbols.
 
      Anecdotal evidence suggests that just summing the sizes of
      debug-info-related sections understates the heap space needed
      to represent it internally by about an order of magnitude.
 
-     Since it's not exactly brain surgery we're doing here, rather
+     Since it is not exactly brain surgery we are doing here, rather
      than attempt to more accurately measure the size of a shlib's
-     symbol table in GDB's heap, we'll just apply a 10x fudge-
-     factor to the debug info sections' size-sum.  No, this doesn't
-     account for minimal symbols in non-debuggable shlibs.  But it
+     symbol table in GDB's heap, we will just apply a 10x fudge-
+     factor to the debug info sections' size-sum. No, this does NOT
+     account for minimal symbols in non-debuggable shlibs. But it
      all roughly washes out in the end.
    */
   return st_size * (LONGEST) 10;
@@ -307,7 +307,7 @@ som_solib_add_solib_objfile (struct so_list *so, char *name, int from_tty,
       else
 	;
     }
-   
+
   /* Mark this as a shared library and save private data.
    */
   so->objfile->flags |= OBJF_SHARED;
@@ -344,7 +344,7 @@ som_solib_load_symbols (struct so_list *so, char *name, int from_tty,
 
 #ifdef SOLIB_DEBUG
   printf ("--Adding symbols for shared library \"%s\"\n", name);
-#endif
+#endif /* SOLIB_DEBUG */
 
   som_solib_add_solib_objfile (so, name, from_tty, text_addr);
 
@@ -376,23 +376,23 @@ som_solib_load_symbols (struct so_list *so, char *name, int from_tty,
 
   /* Now see if we need to map in the text and data for this shared
      library (for example debugging a core file which does not use
-     private shared libraries.). 
+     private shared libraries.).
 
      Carefully peek at the first text address in the library.  If the
      read succeeds, then the libraries were privately mapped and were
      included in the core dump file.
 
      If the peek failed, then the libraries were not privately mapped
-     and are not in the core file, we'll have to read them in ourselves.  */
+     and are not in the core file, we shall have to read them in ourselves.  */
   status = target_read_memory (text_addr, buf, 4);
   if (status != 0)
     {
       int old, new;
 
       new = so->sections_end - so->sections;
-      
+
       old = target_resize_to_sections (target, new);
-      
+
       /* Copy over the old data before it gets clobbered.  */
       memcpy ((char *) (target->to_sections + old),
 	      so->sections,
@@ -423,11 +423,11 @@ som_solib_add (char *arg_string, int from_tty, struct target_ops *target, int re
       error ("Invalid regexp: %s", re_err);
     }
 
-  /* If we're debugging a core file, or have attached to a running
+  /* If we are debugging a core file, or have attached to a running
      process, then som_solib_create_inferior_hook will not have been
      called.
 
-     We need to first determine if we're dealing with a dynamically
+     We need to first determine if we are dealing with a dynamically
      linked executable.  If not, then return without an error or warning.
 
      We also need to examine __dld_flags to determine if the shared library
@@ -479,7 +479,7 @@ som_solib_add (char *arg_string, int from_tty, struct target_ops *target, int re
   msymbol = lookup_minimal_symbol ("__dld_list", NULL, NULL);
   if (!msymbol)
     {
-      /* Older crt0.o files (hpux8) don't have __dld_list as a symbol,
+      /* Older crt0.o files (hpux8) do NOT have __dld_list as a symbol,
          but the data is still available if you know where to look.  */
       msymbol = lookup_minimal_symbol ("__dld_flags", NULL, NULL);
       if (!msymbol)
@@ -501,14 +501,14 @@ som_solib_add (char *arg_string, int from_tty, struct target_ops *target, int re
 
   addr = extract_unsigned_integer (buf, 4);
 
-  /* If addr is zero, then we're using an old dynamic loader which
-     doesn't maintain __dld_list.  We'll have to use a completely
+  /* If addr is zero, then we are using an old dynamic loader which
+     does NOT maintain __dld_list.  We will have to use a completely
      different approach to get shared library information.  */
   if (addr == 0)
     goto old_dld;
 
   /* Using the information in __dld_list is the preferred method
-     to get at shared library information.  It doesn't depend on
+     to get at shared library information. It does NOT depend on
      any functions in /opt/langtools/lib/end.o and has a chance of working
      with hpux10 when it is released.  */
   status = target_read_memory (addr, buf, 4);
@@ -532,7 +532,7 @@ som_solib_add (char *arg_string, int from_tty, struct target_ops *target, int re
 
 #ifdef SOLIB_DEBUG
   printf ("--About to read shared library list data\n");
-#endif
+#endif /* SOLIB_DEBUG */
 
   /* "addr" will always point to the base of the
    * current data entry describing the current
@@ -574,7 +574,7 @@ som_solib_add (char *arg_string, int from_tty, struct target_ops *target, int re
       if (status != 0)
 	goto err;
 
-      /* See if we've already loaded something with this name.  */
+      /* See if we have already loaded something with this name.  */
       while (so_list)
 	{
 	  if (!strcmp (so_list->som_solib.name, name))
@@ -582,12 +582,12 @@ som_solib_add (char *arg_string, int from_tty, struct target_ops *target, int re
 	  so_list = so_list->next;
 	}
 
-      /* See if the file exists.  If not, give a warning, but don't
+      /* See if the file exists. If not, give a warning, but do NOT
          die.  */
       status = stat (name, &statbuf);
       if (status == -1)
 	{
-	  warning ("Can't find file %s referenced in dld_list.", name);
+	  warning ("Cannot find file %s referenced in dld_list.", name);
 
 	  status = target_read_memory (addr + 36, buf, 4);
 	  if (status != 0)
@@ -597,7 +597,7 @@ som_solib_add (char *arg_string, int from_tty, struct target_ops *target, int re
 	  continue;
 	}
 
-      /* If we've already loaded this one or it's the main program, skip it.  */
+      /* If we have already loaded this one or it is the main program, skip it.  */
       is_main_program = (strcmp (name, symfile_objfile->name) == 0);
       if (so_list || is_main_program)
 	{
@@ -616,10 +616,10 @@ som_solib_add (char *arg_string, int from_tty, struct target_ops *target, int re
 	      som_solib_total_st_size += st_size;
 	    }
 
-	  /* Was this a shlib that we noted but didn't load the symbols for?
+	  /* Was this a shlib that we noted but did NOT load the symbols for?
 	     If so, were we invoked this time from the command-line, via
 	     a 'sharedlibrary' or 'add-symbol-file' command?  If yes to
-	     both, we'd better load the symbols this time.
+	     both, we had better load the symbols this time.
 	   */
 	  if (from_tty && so_list && !is_main_program && (so_list->objfile == NULL))
 	    som_solib_load_symbols (so_list,
@@ -717,8 +717,8 @@ som_solib_add (char *arg_string, int from_tty, struct target_ops *target, int re
       new_so->som_solib.next =
 	address_to_host_pointer (extract_unsigned_integer (buf, 4));
 
-      /* Note that we don't re-set "addr" to the next pointer
-       * until after we've read the trailing data.
+      /* Note that we do NOT re-set "addr" to the next pointer
+       * until after we have read the trailing data.
        */
 
       status = target_read_memory (addr + 40, buf, 4);
@@ -746,7 +746,7 @@ som_solib_add (char *arg_string, int from_tty, struct target_ops *target, int re
       printf ("  'got_value' is %x\n", new_so->som_solib.got_value);
       printf ("  'next' is 0x%x\n", new_so->som_solib.next);
       printf ("  'tsd_start_addr' is 0x%x\n", new_so->som_solib.tsd_start_addr);
-#endif
+#endif /* SOLIB_DEBUG */
 
       /* Go on to the next shared library descriptor.
        */
@@ -755,24 +755,24 @@ som_solib_add (char *arg_string, int from_tty, struct target_ops *target, int re
 
 
       /* At this point, we have essentially hooked the shlib into the
-         "info share" command.  However, we haven't yet loaded its
-         symbol table.  We must now decide whether we ought to, i.e.,
+         "info share" command.  However, we have NOT yet loaded its
+         symbol table. We must now decide whether we ought to, i.e.,
          whether doing so would exceed the symbol table size threshold.
 
-         If the threshold has just now been exceeded, then we'll issue
+         If the threshold has just now been exceeded, then we will issue
          a warning message (which explains how to load symbols manually,
          if the user so desires).
 
          If the threshold has just now or previously been exceeded,
-         we'll just add the shlib to the list of object files, but won't
-         actually load its symbols.  (This is more useful than it might
+         we will just add the shlib to the list of object files, but will NOT
+         actually load its symbols. (This is more useful than it might
          sound, for it allows us to e.g., still load and use the shlibs'
          unwind information for stack tracebacks.)
        */
 
-      /* Note that we DON'T want to preclude the user from using the
-         add-symbol-file command!  Thus, we only worry about the threshold
-         when we're invoked for other reasons.
+      /* Note that we DO NOT want to preclude the user from using the
+         add-symbol-file command! Thus, we only worry about the threshold
+         when we are invoked for other reasons.
        */
       st_size = som_solib_sizeof_symbol_table (name);
       som_solib_st_size_threshold_exceeded =
@@ -787,11 +787,11 @@ som_solib_add (char *arg_string, int from_tty, struct target_ops *target, int re
 	    warning ("Symbols for some libraries have not been loaded, because\ndoing so would exceed the size threshold specified by auto-solib-limit.\nTo manually load symbols, use the 'sharedlibrary' command.\nTo raise the threshold, set auto-solib-limit to a larger value and rerun\nthe program.\n");
 	  threshold_warning_given = 1;
 
-	  /* We'll still make note of this shlib, even if we don't
+	  /* We wll still make note of this shlib, even if we do NOT
 	     read its symbols.  This allows us to use its unwind
 	     information well enough to know how to e.g., correctly
 	     do a traceback from a PC within the shlib, even if we
-	     can't symbolize those PCs...
+	     cannot symbolize those PCs...
 	   */
 	  som_solib_add_solib_objfile (new_so, name, from_tty, text_addr);
 	  continue;
@@ -805,7 +805,7 @@ som_solib_add (char *arg_string, int from_tty, struct target_ops *target, int re
 
 #ifdef SOLIB_DEBUG
   printf ("--Done reading shared library data\n");
-#endif
+#endif /* SOLIB_DEBUG */
 
   /* Getting new symbols may change our opinion about what is
      frameless.  */
@@ -894,10 +894,10 @@ som_solib_create_inferior_hook (void)
      This will force the dynamic linker to call __d_trap when significant
      events occur.
 
-     Note that the above is the pre-HP-UX 9.0 behaviour.  At 9.0 and above,
+     Note that the above is the pre-HP-UX 9.0 behaviour. At 9.0 and above,
      the dld provides an export stub named "__d_trap" as well as the
-     function named "__d_trap" itself, but doesn't provide "_DLD_HOOK".
-     We'll look first for the old flavor and then the new.
+     function named "__d_trap" itself, but does NOT provide "_DLD_HOOK".
+     We will look first for the old flavor and then the new.
    */
   msymbol = lookup_minimal_symbol ("_DLD_HOOK", NULL, symfile_objfile);
   if (msymbol == NULL)
@@ -1000,7 +1000,7 @@ keep_going:
       error ("Unable to write __dld_flags\n");
     }
 
-  /* Now find the address of _start and set a breakpoint there. 
+  /* Now find the address of _start and set a breakpoint there.
      We still need this code for two reasons:
 
      * Not all sites have /opt/langtools/lib/end.o, so it's not always
@@ -1053,15 +1053,15 @@ som_solib_remove_inferior_hook (int pid)
   unsigned int dld_flags_value;
   struct cleanup *old_cleanups = save_inferior_ptid ();
 
-  /* Ensure that we're really operating on the specified process. */
+  /* Ensure that we are really operating on the specified process. */
   inferior_ptid = pid_to_ptid (pid);
 
-  /* We won't bother to remove the solib breakpoints from this process.
+  /* We will NOT bother to remove the solib breakpoints from this process.
 
      In fact, on PA64 the breakpoint is hard-coded into the dld callback,
-     and thus we're not supposed to remove it.
+     and thus we are not supposed to remove it.
 
-     Rather, we'll merely clear the dld_flags bit that enables callbacks.
+     Rather, we will merely clear the dld_flags bit that enables callbacks.
    */
   msymbol = lookup_minimal_symbol ("__dld_flags", NULL, NULL);
 
@@ -1191,7 +1191,7 @@ som_solib_desire_dynamic_linker_symbols (void)
   struct minimal_symbol *dld_msymbol;
 
   /* Do we already know the value of these symbols?  If so, then
-     we've no work to do.
+     we have no work to do.
 
      (If you add clauses to this test, be sure to likewise update the
      test within the loop.)
@@ -1230,11 +1230,11 @@ som_solib_desire_dynamic_linker_symbols (void)
 	dld_cache.unload.address = SYMBOL_VALUE (dld_msymbol);
 	dld_cache.unload.unwind = find_unwind_entry (dld_cache.unload.address);
 
-	/* ??rehrauer: I'm not sure exactly what this is, but it appears
-	   that on some HPUX 10.x versions, there's two unwind regions to
+	/* ??rehrauer: I am not sure exactly what this is, but it appears
+	   that on some HPUX 10.x versions, there are two unwind regions to
 	   cover the body of "shl_unload", the second being 4 bytes past
-	   the end of the first.  This is a large hack to handle that
-	   case, but since I don't seem to have any legitimate way to
+	   the end of the first. This is a large hack to handle that
+	   case, but since I do NOT seem to have any legitimate way to
 	   look for this thing via the symbol table...
 	 */
 	if (dld_cache.unload.unwind != NULL)
@@ -1278,7 +1278,7 @@ som_solib_desire_dynamic_linker_symbols (void)
   dld_cache.hook.unwind = find_unwind_entry (dld_cache.hook.address);
   dld_cache.hook_stub.unwind = find_unwind_entry (dld_cache.hook_stub.address);
 
-  /* We're prepared not to find some of these symbols, which is why
+  /* We are prepared not to find some of these symbols, which is why
      this function is a "desire" operation, and not a "require".
    */
 }
@@ -1290,11 +1290,11 @@ som_solib_in_dynamic_linker (int pid, CORE_ADDR pc)
 
   /* Are we in the dld itself?
 
-     ??rehrauer: Large hack -- We'll assume that any address in a
-     shared text region is the dld's text.  This would obviously
+     ??rehrauer: Large hack -- We shall assume that any address in a
+     shared text region is the dld's text. This would obviously
      fall down if the user attached to a process, whose shlibs
-     weren't mapped to a (writeable) private region.  However, in
-     that case the debugger probably isn't able to set the fundamental
+     were NOT mapped to a (writeable) private region. However, in
+     that case the debugger probably is NOT able to set the fundamental
      breakpoint in the dld callback anyways, so this hack should be
      safe.
    */
@@ -1322,13 +1322,13 @@ som_solib_in_dynamic_linker (int pid, CORE_ADDR pc)
       || (u_pc == dld_cache.unload_stub.unwind))
     return 1;
 
-  /* Apparently this address isn't part of the dld's text. */
+  /* Apparently this address is NOT part of the dld's text. */
   return 0;
 }
 
 
-/* Return the GOT value for the shared library in which ADDR belongs.  If
-   ADDR isn't in any known shared library, return zero.  */
+/* Return the GOT value for the shared library in which ADDR belongs. If
+   ADDR is NOT in any known shared library, return zero.  */
 
 CORE_ADDR
 som_solib_get_got_by_pc (CORE_ADDR addr)
@@ -1351,8 +1351,8 @@ som_solib_get_got_by_pc (CORE_ADDR addr)
 
 /*  elz:
    Return the address of the handle of the shared library
-   in which ADDR belongs.  If
-   ADDR isn't in any known shared library, return zero.  */
+   in which ADDR belongs. If
+   ADDR is NOT in any known shared library, return zero.  */
 /* this function is used in hppa_fix_call_dummy in hppa-tdep.c */
 
 CORE_ADDR
@@ -1493,7 +1493,7 @@ som_solib_address (CORE_ADDR addr)
       so = so->next;
     }
 
-  /* No, we couldn't prove that the address is within a shlib. */
+  /* No, we could NOT prove that the address is within a shlib. */
   return NULL;
 }
 
@@ -1590,7 +1590,7 @@ inferior.  Otherwise, symbols must be loaded manually, using `sharedlibrary'.",
 		  "Set threshold (in Mb) for autoloading shared library symbols.\n\
 When shared library autoloading is enabled, new libraries will be loaded\n\
 only until the total size of shared library symbols exceeds this\n\
-threshold in megabytes.  Is ignored when using `sharedlibrary'.",
+threshold in megabytes. Is ignored when using `sharedlibrary'.",
 		  &setlist),
      &showlist);
 
@@ -1601,7 +1601,7 @@ threshold in megabytes.  Is ignored when using `sharedlibrary'.",
      than the default for MAXDSIZ (that being 64Mb, I believe).
      However, [1] this threshold is only crudely approximated rather
      than actually measured, and [2] 50 Mbytes is too small for
-     debugging gdb itself.  Thus, the arbitrary 100 figure.  */
+     debugging gdb itself. Thus, the arbitrary 100 figure.  */
   auto_solib_limit = 100;	/* Megabytes */
 
   som_solib_restart ();
@@ -1614,3 +1614,5 @@ so_lib_thread_start_addr (struct so_list *so)
 {
   return so->som_solib.tsd_start_addr;
 }
+
+/* EOF */

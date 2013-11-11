@@ -25,3 +25,5 @@
 #include "config/nm-nbsd.h"
 
 #endif /* NM_NBSD_H */
+
+/* EOF */
