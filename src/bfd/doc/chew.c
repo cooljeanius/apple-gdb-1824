@@ -21,7 +21,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 /* Yet another way of extracting documentation from source.
-   No, I haven't finished it yet, but I hope you people like it better
+   No, I have NOT finished it yet, but I hope you people like it better
    than the old way
 
    sac
@@ -119,7 +119,7 @@ static void overwrite_string (string_type *, string_type *);
 static void catbuf (string_type *, char *, unsigned int);
 static void cattext (string_type *, char *);
 static void catstr (string_type *, string_type *);
-#endif
+#endif /* __STDC__ */
 
 static void
 init_string_with_size (buffer, size)
@@ -255,8 +255,8 @@ skip_white_and_stars (src, idx)
   while ((c = at (src, idx)),
 	 isspace ((unsigned char) c)
 	 || (c == '*'
-	     /* Don't skip past end-of-comment or star as first
-		character on its line.  */
+	     /* Do NOT skip past end-of-comment or star as first
+	      * character on its line.  */
 	     && at (src, idx +1) != '/'
 	     && at (src, idx -1) != '\n'))
     idx++;
@@ -1565,3 +1565,5 @@ main (ac, av)
     }
   return 0;
 }
+
+/* EOF */

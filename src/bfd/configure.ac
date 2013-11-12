@@ -263,11 +263,21 @@ GCC_HEADER_STDINT([bfd_stdint.h],[stdint.h])
 AC_HEADER_TIME
 AC_HEADER_DIRENT
 ACX_HEADER_STRING
+# This should have already been checked:
+unset ac_cv_header_malloc_h
+AC_CHECK_HEADERS([malloc.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
 AC_C_PROTOTYPES
 AC_TYPE_PID_T
+AC_CHECK_TYPES([ptrdiff_t])
+AC_DEFUN([AC_TYPE_VARIOUS_INT_TYPES],[
+  AC_REQUIRE([AC_TYPE_INT32_T])
+  AC_REQUIRE([AC_TYPE_UINT32_T])
+  AC_REQUIRE([AC_TYPE_UINT64_T])
+])
+AC_TYPE_VARIOUS_INT_TYPES
 
 # Checks for library functions.
 AM_WITH_DMALLOC
