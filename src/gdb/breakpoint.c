@@ -72,7 +72,9 @@
 #include "objc-lang.h"
 
 #ifdef __i386__
-# include "nm-i386.h"
+# if (defined(NM_NEXTSTEP) && defined(TM_NEXTSTEP) && defined(SRCDIR))
+#  include "nm-i386.h"
+# endif /* NM_NEXTSTEP && TM_NEXTSTEP */
 # include "config/i386/nm-i386.h"
 #else
 # define BREAKPOINT_C_NOT_ON_i386 1

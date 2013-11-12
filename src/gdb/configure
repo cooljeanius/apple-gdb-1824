@@ -31809,6 +31809,35 @@ _ACEOF
 
 fi
 
+for ac_header in mach/mach_vm.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "mach/mach_vm.h" "ac_cv_header_mach_mach_vm_h" "$ac_includes_default"
+if test "x$ac_cv_header_mach_mach_vm_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_MACH_MACH_VM_H 1
+_ACEOF
+
+fi
+
+done
+
+ac_fn_c_check_type "$LINENO" "mach_vm_address_t" "ac_cv_type_mach_vm_address_t" "
+#ifdef HAVE_MACH_MACH_VM_H
+# include <mach/mach_vm.h>
+#else
+# warning This conftest expects <mach/mach_vm.h> to be included.
+#endif /* HAVE_MACH_MACH_VM_H */
+
+"
+if test "x$ac_cv_type_mach_vm_address_t" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_MACH_VM_ADDRESS_T 1
+_ACEOF
+
+
+fi
+
 
 # ------------------------------------- #
 # Checks for compiler characteristics.  #

@@ -84,19 +84,24 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "osabi.h"
 
 #include <mach-o/loader.h>
-#include "macosx-nat-dyld.h" // for target_read_mach_header()
+#include "macosx-nat-dyld.h" /* for target_read_mach_header() */
 
 /* For the gdbarch_tdep structure so we can get the wordsize. */
 #if defined(TARGET_POWERPC)
-#include "ppc-tdep.h"
-#elif defined (TARGET_I386)
-#include "amd64-tdep.h"
-#include "i386-tdep.h"
-#elif defined (TARGET_ARM)
-#include "arm-tdep.h"
+# include "ppc-tdep.h"
+#elif defined(TARGET_I386)
+# include "amd64-tdep.h"
+# include "i386-tdep.h"
+# include "macosx/tm-i386-macosx.h"
+#elif defined(TARGET_ARM)
+# include "arm-tdep.h"
+# if defined(HOST_I386) || defined(__i386__)
+#  include "macosx/tm-i386-macosx.h"
+# endif /* HOST_I386 || __i386__ */
 #else
-#error "Unrecognized target architecture."
-#endif
+# error "Unrecognized target architecture."
+#endif /* TARGET_foo */
+
 #include "gdbarch.h"
 
 int disable_aslr_flag = 1;
@@ -125,7 +130,7 @@ static int kaslr_memory_search_enabled = 1;
 #define APPLE_DSYM_EXT_AND_SUBDIRECTORY ".dSYM/Contents/Resources/DWARF/"
 
 int
-actually_do_stack_frame_prologue (unsigned int count_limit, 
+actually_do_stack_frame_prologue (unsigned int count_limit,
 				unsigned int print_start,
 				unsigned int print_end,
 				unsigned int wordsize,
@@ -134,10 +139,10 @@ actually_do_stack_frame_prologue (unsigned int count_limit,
 				void (print_fun) (struct ui_out * uiout, int *frame_num,
 						  CORE_ADDR pc, CORE_ADDR fp));
 
-/* When we're doing native debugging, and we attach to a process,
+/* When we are doing native debugging, and we attach to a process,
    we start out by finding the in-memory dyld -- the osabi of that
    dyld is stashed away here for use when picking the right osabi of
-   a fat file.  In the case of cross-debugging, none of this happens
+   a fat file. In the case of cross-debugging, none of this happens
    and this global remains untouched.  */
 
 enum gdb_osabi osabi_seen_in_attached_dyld = GDB_OSABI_UNKNOWN;
@@ -151,7 +156,7 @@ struct deprecated_complaint unknown_macho_section_complaint =
 
 struct deprecated_complaint unsupported_indirect_symtype_complaint =
   { "unsupported Mach-O symbol type %s (indirect)", 0, 0 };
-#endif
+#endif /* 0 */
 
 #define BFD_GETB16(addr) ((addr[0] << 8) | addr[1])
 #define BFD_GETB32(addr) ((((((uint32_t) addr[0] << 8) | addr[1]) << 8) | addr[2]) << 8 | addr[3])
@@ -394,11 +399,11 @@ macosx_skip_trampoline_code (CORE_ADDR pc)
   if (newpc != 0)
     return newpc;
 
-#if defined (TARGET_I386)
+#if defined(TARGET_I386)
   newpc = x86_cxx_virtual_override_thunk_trampline (pc);
   if (newpc != 0)
     return newpc;
-#endif
+#endif /* TARGET_I386 */
 
   newpc = decode_fix_and_continue_trampoline (pc);
   if (newpc != 0)
@@ -410,11 +415,11 @@ macosx_skip_trampoline_code (CORE_ADDR pc)
 /* This function determings whether a symbol is in a SYMBOL_STUB section.
    ld64 puts symbols there for all the stubs, but if we read those in, they
    will confuse us when we lookup the symbol for the pc to see if we are
-   in a stub.  NOTE, this function assumes the symbols passed in are of type
+   in a stub. NOTE, this function assumes the symbols passed in are of type
    N_SECT.  */
 
 int
-macosx_record_symbols_from_sect_p (bfd *abfd, unsigned char macho_type, 
+macosx_record_symbols_from_sect_p (bfd *abfd, unsigned char macho_type,
 				   unsigned char macho_sect)
 {
   const bfd_mach_o_section *sect;
@@ -495,7 +500,7 @@ macosx_enable_exception_callback (enum exception_event_kind kind, int enable)
 }
 
 /* The MacOS X implemenatation of the find_exception_catchpoints
-   target vector entry.  Relies on the __cxa_throw and
+   target vector entry. Relies on the __cxa_throw and
    __cxa_begin_catch functions from libsupc++.  */
 
 struct symtabs_and_lines *
@@ -615,8 +620,8 @@ macosx_get_current_exception_event ()
 
       exception_event->throw_sal = find_pc_line (get_frame_pc (fi), 1);
 
-      /* FIXME: We don't know the catch location when we
-         have just intercepted the throw.  Can we walk the
+      /* FIXME: We do NOT know the catch location when we
+         have just intercepted the throw. Can we walk the
          stack and redo the runtimes exception matching
          to figure this out? */
       exception_event->catch_sal.pc = 0x0;
@@ -648,7 +653,7 @@ macosx_get_current_exception_event ()
     THROW_CATCH_FIND_TYPEINFO (curr_frame, exception_event->kind);
 #else
   typeinfo_str = NULL;
-#endif
+#endif /* THROW_CATCH_FIND_TYPEINFO */
 
   if (exception_event->exception_type != NULL)
     xfree (exception_event->exception_type);
@@ -681,8 +686,8 @@ stack_flush_command (char *args, int from_tty)
 }
 
 /* Opens the file pointed to in ARGS with the default editor
-   given by LaunchServices.  If ARGS is NULL, opens the current
-   source file & line.  You can also supply file:line and it will
+   given by LaunchServices. If ARGS is NULL, opens the current
+   source file & line. You can also supply file:line and it will
    open the that file & try to put the selection on that line.  */
 
 static void
@@ -724,8 +729,8 @@ open_command (char *args, int from_tty)
         error ("No currently selected source file available; "
                "please specify one.");
       /* The cursal is actually set to the list-size bracket around
-         the current line, so we have to add that back in to get the
-	 real source line.  */
+	   * the current line, so we have to add that back in to get the
+	   * real source line.  */
 
       line_no = cursal.line + get_lines_to_list () / 2;
     }
@@ -733,8 +738,8 @@ open_command (char *args, int from_tty)
   if (fullname == NULL)
     {
        /* lookup_symtab will give us the first match; should we use
-	  the Apple local variant, lookup_symtab_all?  And what
-	  would we do with the results; open all of them?  */
+        * the Apple local variant, lookup_symtab_all?  And what
+        * would we do with the results; open all of them?  */
        struct symtab *s = lookup_symtab (filename);
        if (s)
          fullname = symtab_to_fullname (s);
@@ -779,7 +784,7 @@ get_uuidref_for_bfd (struct bfd *abfd)
 }
 
 /* Helper function for gdb_DBGCopyMatchingUUIDsForURL.
-   Given a uuid_t (16-bytes of uint8_t's) return that uuid in an 
+   Given a uuid_t (16-bytes of uint8_t's) return that uuid in an
    allocated CFUUIDRef.
    It is the caller's responsibility to release the memory via CFRelease. */
 
@@ -795,7 +800,7 @@ get_uuidref_for_uuid_t (uint8_t *uuid)
            uuid[12], uuid[13], uuid[14], uuid[15]);
 }
 
-/* Given a CFUUIDRef return that uuid in a uuid_t. 
+/* Given a CFUUIDRef return that uuid in a uuid_t.
    UUID_OUT is a pointer to allocated memory uuid_t large.  */
 
 static void
@@ -811,11 +816,11 @@ get_uuid_t_for_uuidref (CFUUIDRef uuid_in, uuid_t *uuid_out)
 
 
 /* This is an implementation of the DebugSymbols framework's
-   DBGCopyMatchingUUIDsForURL function.  Given the path to a
+   DBGCopyMatchingUUIDsForURL function. Given the path to a
    dSYM file (not the bundle directory but the actual dSYM dwarf
-   file), it will return a CF array of UUIDs that this file has.  
+   file), it will return a CF array of UUIDs that this file has.
    Normally depending on DebugSymbols.framework isn't a problem but
-   we don't have this framework on all platforms and we want the
+   we do NOT have this framework on all platforms and we want the
    "add-dsym" command to continue to work without it. */
 
 static CFMutableArrayRef
@@ -833,7 +838,7 @@ gdb_DBGCopyMatchingUUIDsForURL (const char *path)
   {
     abfd = symfile_bfd_open (path, 0, GDB_OSABI_UNKNOWN);
   }
-  
+
   if (abfd == NULL || e.reason == RETURN_ERROR)
     return NULL;
   if (bfd_check_format (abfd, bfd_archive)
@@ -845,7 +850,7 @@ gdb_DBGCopyMatchingUUIDsForURL (const char *path)
           nbfd = bfd_openr_next_archived_file (abfd, nbfd);
           if (nbfd == NULL)
             break;
-          if (!bfd_check_format (nbfd, bfd_object) 
+          if (!bfd_check_format (nbfd, bfd_object)
               && !bfd_check_format (nbfd, bfd_archive))
             continue;
           CFUUIDRef nbfd_uuid = get_uuidref_for_bfd (nbfd);
@@ -886,15 +891,15 @@ create_dsym_uuids_for_path (char *dsym_bundle_path)
   DIR* dirp = NULL;
   char* dsym_path = NULL;
   CFMutableDictionaryRef paths_and_uuids;
-  
+
   /* Copy the base dSYM bundle directory path into our new path.  */
   strncpy (path, dsym_bundle_path, sizeof (path));
-  
+
   if (path[sizeof (path) - 1])
     return NULL;  /* Path is too large.  */
-  
+
   int path_len = strlen (path);
-  
+
   if (path_len > 0)
     {
       /* Add directory delimiter to end of bundle path if
@@ -908,36 +913,36 @@ create_dsym_uuids_for_path (char *dsym_bundle_path)
 	    return NULL; /* Path is too large.  */
 	}
     }
-  
+
   /* Append the bundle subdirectory path.  */
   if (dsym_bundle_subdir_len + 1 > sizeof (path) - path_len)
     return NULL; /* Path is too large.  */
-  
+
   strncat (path, dsym_bundle_subdir, sizeof (path) - path_len - 1);
-  
+
   if (path[sizeof (path) - 1])
     return NULL;  /* Path is too large.  */
-  
+
   dirp = opendir (path);
   if (dirp == NULL)
     return NULL;
-  
+
   path_len = strlen (path);
-  
-  /* Leave room for a NULL at the end in case strncpy 
-     doesn't NULL terminate.  */
-  paths_and_uuids = CFDictionaryCreateMutable (kCFAllocatorDefault, 0, 
-					       &kCFTypeDictionaryKeyCallBacks, 
+
+  /* Leave room for a NULL at the end in case strncpy
+     does not NULL terminate.  */
+  paths_and_uuids = CFDictionaryCreateMutable (kCFAllocatorDefault, 0,
+					       &kCFTypeDictionaryKeyCallBacks,
 					       &kCFTypeDictionaryValueCallBacks);
-  
+
   while (dsym_path == NULL && (dp = readdir (dirp)) != NULL)
     {
-      /* Don't search directories.  Note, some servers return DT_UNKNOWN
-         for everything, so you can't assume this test will keep you from
-	 trying to read directories...  */
+      /* Do NOT search directories. Note, some servers return DT_UNKNOWN
+	   * for everything, so you canot assume this test will keep you from
+	   * trying to read directories...  */
       if (dp->d_type == DT_DIR)
 	continue;
-      
+
       /* Full path length to each file in the dSYM's
 	 /Contents/Resources/DWARF/ directory.  */
       int full_path_len = path_len + dp->d_namlen + 1;
@@ -946,28 +951,28 @@ create_dsym_uuids_for_path (char *dsym_bundle_path)
 	  CFURLRef path_url = NULL;
 	  CFArrayRef uuid_array = NULL;
 	  CFStringRef path_cfstr = NULL;
-	  /* Re-use the path each time and only copy the 
-	     directory entry name just past the 
+	  /* Re-use the path each time and only copy the
+	     directory entry name just past the
 	     ".../Contents/Resources/DWARF/" part of PATH.  */
 	  strcpy(&path[path_len], dp->d_name);
-	  path_cfstr = CFStringCreateWithCString (NULL, path,  
+	  path_cfstr = CFStringCreateWithCString (NULL, path,
 						  kCFStringEncodingUTF8);
 	  path_url = CFURLCreateWithFileSystemPath (NULL, path_cfstr,
                                                     kCFURLPOSIXPathStyle, 0);
-	  
+
 	  CFRelease (path_cfstr), path_cfstr = NULL;
 	  if (path_url == NULL)
 	    continue;
-	  
+
 	  uuid_array = gdb_DBGCopyMatchingUUIDsForURL (path);
 	  if (uuid_array != NULL)
 	    CFDictionarySetValue (paths_and_uuids, path_url, uuid_array);
-	  
+
 	  /* We are done with PATH_URL.  */
 	  CFRelease (path_url);
 	  path_url = NULL;
-	  
-	  /* Skip to next while loop iteration if we didn't get any matches.  */
+
+	  /* Skip to next while loop iteration if we did NOT get any matches.  */
 	  /* Release the UUID array.  */
 	  if (uuid_array != NULL)
 	    CFRelease (uuid_array);
@@ -991,9 +996,9 @@ struct search_baton
   CFURLRef path_url;
 };
 
-void 
-paths_and_uuids_map_func (const void *in_url, 
-			  const void *in_array, 
+void
+paths_and_uuids_map_func (const void *in_url,
+			  const void *in_array,
 			  void *in_results)
 {
   const CFURLRef path_url = (CFURLRef) in_url;
@@ -1020,11 +1025,11 @@ paths_and_uuids_map_func (const void *in_url,
 
 /* Search a dSYM bundle for a specific UUID. UUID_REF is the UUID object
    to look for, and DSYM_BUNDLE_PATH is a path to the top level dSYM bundle
-   directory. We need to look through the bundle and find the correct dSYM 
+   directory. We need to look through the bundle and find the correct dSYM
    Mach-O file. This allows dSYM bundle directory names and the dsym Mach-O files
    within them to have names that are different from the name of the
-   executable which can be handy when debugging build styles (debug and 
-   profile). The returned string has been xmalloc()'ed and it is the 
+   executable which can be handy when debugging build styles (debug and
+   profile). The returned string has been xmalloc()'ed and it is the
    responsibility of the caller to xfree it. */
 static char *
 locate_dsym_mach_in_bundle (CFUUIDRef uuid_ref, char *dsym_bundle_path)
@@ -1049,7 +1054,7 @@ locate_dsym_mach_in_bundle (CFUUIDRef uuid_ref, char *dsym_bundle_path)
     {
       char path[PATH_MAX];
       path[PATH_MAX-1] = '\0';
-      if (CFURLGetFileSystemRepresentation (results.path_url, 1, 
+      if (CFURLGetFileSystemRepresentation (results.path_url, 1,
 						(UInt8 *)path, sizeof (path)))
 	return xstrdup (path);
       else
@@ -1068,8 +1073,8 @@ struct plist_filenames_search_baton {
   CFStringRef searching_for;
 };
 
-static void 
-plist_filenames_and_uuids_map_func (const void *in_key, const void *in_value, 
+static void
+plist_filenames_and_uuids_map_func (const void *in_key, const void *in_value,
                                     void *context)
 {
   struct plist_filenames_search_baton *baton = (struct plist_filenames_search_baton *) context;
@@ -1095,13 +1100,13 @@ find_source_path_mappings (CFUUIDRef uuid, CFURLRef dsym)
       struct plist_filenames_search_baton results;
       results.found_it = 0;
       results.searching_for = uuid_str;
-      CFDictionaryApplyFunction (plists, plist_filenames_and_uuids_map_func, 
+      CFDictionaryApplyFunction (plists, plist_filenames_and_uuids_map_func,
                                  &results);
       if (results.found_it)
         {
-          const char *build_src_path = macosx_get_plist_posix_value 
+          const char *build_src_path = macosx_get_plist_posix_value
                                           (results.plist, "DBGBuildSourcePath");
-          const char *src_path = macosx_get_plist_posix_value 
+          const char *src_path = macosx_get_plist_posix_value
                                                (results.plist, "DBGSourcePath");
           if (src_path)
             {
@@ -1122,9 +1127,9 @@ find_source_path_mappings (CFUUIDRef uuid, CFURLRef dsym)
 }
 
 /* Given an OBJFILE, we've found a matching dSYM bundle at pathname DSYM
-   (the string in DSYM ends in ".dSYM").  This function creates CF 
+   (the string in DSYM ends in ".dSYM").  This function creates CF
    representations of the UUID in the objfile and the dSYM pathname and
-   looks for a plist with pathname substitutions in it.  
+   looks for a plist with pathname substitutions in it.
    If the pathname given in DSYM contains additional path components (inside
    the dSYM bundle), those will be ignored.  */
 
@@ -1150,7 +1155,7 @@ find_source_path_mappings_posix (struct objfile *objfile, const char *dsym)
     return;
 
   /* If the DSYM pathname passed in has stuff after the ".dSYM" component,
-     get rid of it.  Find the last ".dSYM" in the string, copy the string to
+     get rid of it. Find the last ".dSYM" in the string, copy the string to
      a local buffer.  */
 
   const char *j, *i = strstr (dsym, ".dSYM");
@@ -1196,12 +1201,12 @@ find_source_path_mappings_posix (struct objfile *objfile, const char *dsym)
 }
 
 /* Locate a full path to the dSYM Mach-O file within the dSYM bundle using
-   OJBFILE's uuid and the DebugSymbols.framework. The DebugSymbols.framework 
-   will used using the current set of global DebugSymbols.framework defaults 
-   from com.apple.DebugSymbols.plist.  If a UUID is available and a path to
+   OJBFILE's uuid and the DebugSymbols.framework. The DebugSymbols.framework
+   will used using the current set of global DebugSymbols.framework defaults
+   from com.apple.DebugSymbols.plist. If a UUID is available and a path to
    a dSYM is returned from the framework, the dSYM bundle contents will be
    searched to find a matching UUID only if the URL returned by the framework
-   doesn't fully specify the dSYM Mach-O file. The returned string has been 
+   doesn't fully specify the dSYM Mach-O file. The returned string has been
    xmalloc()'ed and it is the responsibility of the caller to xfree it. */
 static char *
 locate_dsym_using_framework (struct objfile *objfile)
@@ -1240,7 +1245,7 @@ locate_dsym_using_framework (struct objfile *objfile)
             }
           else
             {
-              /* Don't mess with the path if it was fully specified. PATH
+              /* Do NOT mess with the path if it was fully specified. PATH
                  should be a full path to the dSYM Mach-O file within the
                  dSYM bundle directory.  */
               dsym_path = xstrdup (path);
@@ -1254,14 +1259,14 @@ locate_dsym_using_framework (struct objfile *objfile)
   uuid_ref = NULL;
   return dsym_path;
 }
-#endif
+#endif /* USE_DEBUG_SYMBOLS_FRAMEWORK */
 
 /* Locate a full path to the dSYM Mach-O file within the dSYM bundle given
    OJBFILE. This function will first search in the same directory as the
    executable for OBJFILE, then it will traverse the directory structure
    upwards looking for any dSYM bundles at the bundle level. If no dSYM
    file is found in the parent directories of the executable, then the
-   DebugSymbols.framework will used using the current set of global 
+   DebugSymbols.framework will used using the current set of global
    DebugSymbols.framework defaults from com.apple.DebugSymbols.plist.  */
 
 char *
@@ -1273,24 +1278,24 @@ macosx_locate_dsym (struct objfile *objfile)
   char *dsymfile;
   const char *executable_name;
 
-  /* Don't load a dSYM file unless we our load level is set to ALL.  If a
+  /* Do NOT load a dSYM file unless we our load level is set to ALL. If a
      load level gets raised, then the old objfile will get destroyed and
      it will get rebuilt, and this function will get called again and get
      its chance to locate the dSYM file.  */
   if (objfile->symflags != OBJF_SYM_ALL)
     return NULL;
 
-  /* When we're debugging a kext with dSYM, OBJFILE is the kext syms
-     output by kextload (com.apple.IOKitHello.syms), 
+  /* When we are debugging a kext with dSYM, OBJFILE is the kext syms
+     output by kextload (com.apple.IOKitHello.syms),
      objfile->not_loaded_kext_filename is the name of the kext bundle
-     (IOKitHello.kext) and we're going to be looking for IOKitHello.kext.dSYM
+     (IOKitHello.kext) and we are going to be looking for IOKitHello.kext.dSYM
      in this function.  */
   if (objfile->not_loaded_kext_filename != NULL)
     executable_name = objfile->not_loaded_kext_filename;
   else
     executable_name = objfile->name;
 
-  /* Make sure the object file name itself doesn't contain ".dSYM" in it or we
+  /* Make sure the object file name itself does NOT contain ".dSYM" in it or we
      will end up with an infinite loop where after we add a dSYM symbol file,
      it will then enter this function asking if there is a debug file for the
      dSYM file itself.  */
@@ -1302,27 +1307,27 @@ macosx_locate_dsym (struct objfile *objfile)
 			       + strlen (APPLE_DSYM_EXT_AND_SUBDIRECTORY)
 			       + strlen (basename_str)
 			       + 1);
-      
+
       /* First try for the dSYM in the same directory as the original file.  */
       strcpy (dsymfile, executable_name);
       strcat (dsymfile, APPLE_DSYM_EXT_AND_SUBDIRECTORY);
       strcat (dsymfile, basename_str);
-	  
+
       if (file_exists_p (dsymfile))
         {
 #if USE_DEBUG_SYMBOLS_FRAMEWORK
           find_source_path_mappings_posix (objfile, dsymfile);
-#endif
+#endif /* USE_DEBUG_SYMBOLS_FRAMEWORK */
           return xstrdup (dsymfile);
         }
-      
+
       /* Now search for any parent directory that has a '.' in it so we can find
-	 Mac OS X applications, bundles, plugins, and any other kinds of files.  
+	 Mac OS X applications, bundles, plugins, and any other kinds of files.
 	 Mac OS X application bundles wil have their program in
 	 "/some/path/MyApp.app/Contents/MacOS/MyApp" (or replace ".app" with
 	 ".bundle" or ".plugin" for other types of bundles).  So we look for any
-	 prior '.' character and try appending the apple dSYM extension and 
-	 subdirectory and see if we find an existing dSYM file (in the above 
+	 prior '.' character and try appending the apple dSYM extension and
+	 subdirectory and see if we find an existing dSYM file (in the above
          MyApp example the dSYM would be at either:
 	 "/some/path/MyApp.app.dSYM/Contents/Resources/DWARF/MyApp" or
 	 "/some/path/MyApp.dSYM/Contents/Resources/DWARF/MyApp".  */
@@ -1347,11 +1352,11 @@ macosx_locate_dsym (struct objfile *objfile)
                 {
 #if USE_DEBUG_SYMBOLS_FRAMEWORK
                   find_source_path_mappings_posix (objfile, dsymfile);
-#endif
+#endif /* USE_DEBUG_SYMBOLS_FRAMEWORK */
 		  return xstrdup (dsymfile);
                 }
 	    }
-	    
+
 	  /* NULL terminate the string at the '.' character and append
 	     the path down to the dSYM file.  */
 	  *dot_ptr = '\0';
@@ -1361,22 +1366,22 @@ macosx_locate_dsym (struct objfile *objfile)
             {
 #if USE_DEBUG_SYMBOLS_FRAMEWORK
               find_source_path_mappings_posix (objfile, dsymfile);
-#endif
+#endif /* USE_DEBUG_SYMBOLS_FRAMEWORK */
               return xstrdup (dsymfile);
             }
 
-	  /* NULL terminate the string at the '.' locatated by the strrchr() 
+	  /* NULL terminate the string at the '.' locatated by the strrchr()
              function again.  */
 	  *dot_ptr = '\0';
 
-	  /* We found a previous extension '.' character and did not find a 
-             dSYM file so now find previous directory delimiter so we don't 
-             try multiple times on a file name that may have a version number 
+	  /* We found a previous extension '.' character and did not find a
+             dSYM file so now find previous directory delimiter so we don't
+             try multiple times on a file name that may have a version number
              in it such as "/some/path/MyApp.6.0.4.app".  */
 	  slash_ptr = strrchr (dsymfile, '/');
 	  if (!slash_ptr)
 	    break;
-	  /* NULL terminate the string at the previous directory character 
+	  /* NULL terminate the string at the previous directory character
              and search again.  */
 	  *slash_ptr = '\0';
 	}
@@ -1385,7 +1390,7 @@ macosx_locate_dsym (struct objfile *objfile)
 	 try to use it to locate the dSYM files if it was detected.  */
       if (dsym_locate_enabled)
 	return locate_dsym_using_framework (objfile);
-#endif
+#endif /* USE_DEBUG_SYMBOLS_FRAMEWORK */
     }
   return NULL;
 }
@@ -1399,9 +1404,9 @@ dir_exists_p (const char *dir)
   return (stat (dir, &sb) == 0) && S_ISDIR (sb.st_mode);
 }
 
-/* Searches a string for a substring.  If the substring is found, the
+/* Searches a string for a substring. If the substring is found, the
    string is truncated at the end of the substring, and the string
-   is returned.  If the substring is not found, NULL is retuned. */
+   is returned. If the substring is not found, NULL is retuned. */
 char *
 strtrunc (char *str, const char *substr)
 {
@@ -1412,7 +1417,7 @@ strtrunc (char *str, const char *substr)
   if (!match)
     return NULL;
 
-  // Try to find the LAST occurrence of substr
+  /* Try to find the LAST occurrence of substr */
   char *best_match = match;
   while (match && *match != '\0' && *(match + 1) != '\0')
     {
@@ -1444,8 +1449,8 @@ strtrunc (char *str, const char *substr)
 </plist>
 
   gdb uses this when it has a UUID of something in memory and it needs to find a copy of that
-  binary on the local filesystem.  The normal DebugSymbols API can only track down dSYMs, not
-  locate binaries.  
+  binary on the local filesystem. The normal DebugSymbols API can only track down dSYMs, not
+  locate binaries.
 
   If a valid shell command was found, an xmalloc()'ed copy of that shell command is returned.
   The caller is responsible for freeing it.  On failure, NULL is returned.  */
@@ -1455,7 +1460,7 @@ get_dbg_shell_command ()
 {
   CFTypeRef shell_cmd = CFPreferencesCopyAppValue (CFSTR ("DBGShellCommands"), CFSTR ("com.apple.DebugSymbols"));
   if (shell_cmd == NULL || CFGetTypeID (shell_cmd) != CFStringGetTypeID())
-    { 
+    {
       if (shell_cmd)
         CFRelease (shell_cmd);
       return NULL;
@@ -1472,9 +1477,10 @@ get_dbg_shell_command ()
 }
 
 
-// Given a path to a kext binary, run it through tilde expansion,
-// realpath expansion, and return an xmalloc'ed string of the resolved name.
-// Caller must free the returned memory.
+/* Given a path to a kext binary, run it through tilde expansion,
+ * realpath expansion, and return an xmalloc'ed string of the resolved name.
+ * Caller must free the returned memory.
+ */
 
 char *
 expand_kext_cstr (const char *kext_path)
@@ -1501,16 +1507,16 @@ expand_kext_cstr (const char *kext_path)
 }
 
 
-/* If we've failed to find the binary in the location specified
-   by the dSYM's Info.plist, AND the DebugSymbols framework has a 
+/* If we have failed to find the binary in the location specified
+   by the dSYM's Info.plist, AND the DebugSymbols framework has a
    shell command set in its defaults (com.apple.DebugSymbols DBGShellCommands),
    see if we can call the shell command directly to get a
    path to the executable that might work.
-  
+
    DebugSymbols only traffics in finding dSYMs via UUIDs - reflecting what
-   we can get from Spotlight.  But the DBGShellCommands may be capable of
+   we can get from Spotlight. But the DBGShellCommands may be capable of
    returning additional informatin, such as the location to an unstripped
-   executable binary.  We try to use that ability in this function to find
+   executable binary. We try to use that ability in this function to find
    an executable given a UUID.
 
    NULL is returned if no binary is found.
@@ -1568,7 +1574,7 @@ macosx_locate_executable_by_dbg_shell_command (CFStringRef uuid)
       return NULL;
     }
 
-  // Get the dictionary value under the UUID key
+  /* Get the dictionary value under the UUID key */
   CFDictionaryRef per_arch_kv = CFDictionaryGetValue (plist, uuid);
   if (per_arch_kv == NULL || CFGetTypeID (per_arch_kv) != CFDictionaryGetTypeID())
     {
@@ -1637,8 +1643,9 @@ locate_kext_executable_by_dsym_plist (CFDictionaryRef dsym_info, CFUUIDRef uuid_
 
   kext_path = CFDictionaryGetValue (uuid_info, kSymbolRichExecutable);
 
-  // Try calling dsymForUUID to possibly get a more up-to-date location
-  // for the symbol rich executable if looking in the dSYM's Info.plist failed
+  /* Try calling dsymForUUID to possibly get a more up-to-date location
+   * for the symbol rich executable if looking in the dSYM's Info.plist failed
+   */
   if (!kext_path || CFGetTypeID (kext_path) != CFStringGetTypeID())
     {
       char *alt_exe_path = macosx_locate_executable_by_dbg_shell_command (uuid_string);
@@ -1687,7 +1694,7 @@ locate_kext_executable_by_dsym_plist (CFDictionaryRef dsym_info, CFUUIDRef uuid_
     }
 
 finish:
-  if (uuid_string) 
+  if (uuid_string)
     CFRelease (uuid_string);
 
   return path;
@@ -1748,29 +1755,30 @@ locate_kext_executable_by_dsym_url (CFURLRef dsym_url)
 
   result = xstrdup (path);
 finish:
-  if (bundle_path) 
+  if (bundle_path)
     xfree (bundle_path);
-  if (exec_name) 
+  if (exec_name)
     xfree ((char *) exec_name);
-  if (identifier_name) 
+  if (identifier_name)
     xfree ((char *) identifier_name);
 
   return result;
 }
 
-// We're given the path to a .dSYM bundle for a kext in DSYM_PATH, e.g.
-// /tmp/whatever.kext.dSYM
-// We look for a kext binary next to that dSYM.  Note that we're not looking
-// for a kext BUNDLE next to the dSYM - there are other bits of code that 
-// do that.  This is looking for a bare binary.  I'm pretty sure we'll only
-// get to this code path when we're doing "add-kext" with a .sym file (so we
-// get the UUID out of the .sym, use DebugSymbols framework to find the dSYM
-// and try to locate the kext binary next to the dSYM).
-
-// KEXT_UUID is used to verify that we've found the correct binary.
-
-// If we find a matching binary next to the dSYM, an xmalloc'ed string of 
-// the file path is returned.  If not, NULL is returned.
+/* We are given the path to a .dSYM bundle for a kext in DSYM_PATH, e.g.
+ * /tmp/whatever.kext.dSYM
+ * We look for a kext binary next to that dSYM. Note that we are not looking
+ * for a kext BUNDLE next to the dSYM - there are other bits of code that
+ * do that.  This is looking for a bare binary. I am pretty sure we will only
+ * get to this code path when we are doing "add-kext" with a .sym file (so we
+ * get the UUID out of the .sym, use DebugSymbols framework to find the dSYM
+ * and try to locate the kext binary next to the dSYM).
+ *
+ * KEXT_UUID is used to verify that we have found the correct binary.
+ *
+ * If we find a matching binary next to the dSYM, an xmalloc'ed string of
+ * the file path is returned. If not, NULL is returned.
+ */
 
 static char *
 look_for_kext_binary_next_to_dsym (const char *dsym_path, CFUUIDRef kext_uuid)
@@ -1778,16 +1786,17 @@ look_for_kext_binary_next_to_dsym (const char *dsym_path, CFUUIDRef kext_uuid)
   if (dsym_path == NULL || kext_uuid == NULL || dsym_path[0] == '\0')
     return NULL;
 
-  // does the dsym_path end in ".kext.dSYM" ?
-  if (strlen (dsym_path) < 11)
-    return NULL;
+  /* does the dsym_path end in ".kext.dSYM" ? */
+	if (strlen (dsym_path) < 11) {
+		return NULL;
+	}
 
   char kextpath[PATH_MAX];
   strlcpy (kextpath, dsym_path, sizeof (kextpath));
   if (strcmp (kextpath + strlen (kextpath) - 10, ".kext.dSYM") != 0)
     return NULL;
 
-  // chop off the ".kext.dSYM" part from the pathname
+  /* chop off the ".kext.dSYM" part from the pathname */
   kextpath[strlen (kextpath) - 10] = '\0';
   if (kextpath[0] == '\0' || !file_exists_p (kextpath))
     return NULL;
@@ -1814,14 +1823,14 @@ look_for_kext_binary_next_to_dsym (const char *dsym_path, CFUUIDRef kext_uuid)
 }
 
 
-/* Given a UUIDRef for a kext, returns the path to the kext's corresponding 
-   symbol-rich executable, or NULL on error. 
+/* Given a UUIDRef for a kext, returns the path to the kext's corresponding
+   symbol-rich executable, or NULL on error.
    KEXT_NAME is the bundle ID, reverse-dns style name, for the kext, used for
    error reporting.
    Caller is responsible for freeing the returned xmalloc'd filename. */
 
 static char *
-macosx_locate_kext_executable_by_symfile_helper (CFUUIDRef kext_uuid, 
+macosx_locate_kext_executable_by_symfile_helper (CFUUIDRef kext_uuid,
                                                  const char *kext_name)
 {
 #if USE_DEBUG_SYMBOLS_FRAMEWORK
@@ -1835,7 +1844,7 @@ macosx_locate_kext_executable_by_symfile_helper (CFUUIDRef kext_uuid,
   CFUUIDBytes kext_executable_uuid_bytes;
 
   uuid_t uuid;
-  get_uuid_t_for_uuidref (kext_uuid, &uuid); // Convert CFUUIDRef to uuid_t
+  get_uuid_t_for_uuidref (kext_uuid, &uuid); /* Convert CFUUIDRef to uuid_t */
 
   /* Find the dSYM using the DebugSymbols framework */
 
@@ -1846,34 +1855,35 @@ macosx_locate_kext_executable_by_symfile_helper (CFUUIDRef kext_uuid,
       const char *name = kext_name;
       if (basep && *basep != '\0' && *(basep + 1) != '\0')
         name = ++basep;
-      warning ("Can't find dSYM for %s (%s)", name, puuid (uuid));
+      warning ("Cannot find dSYM for %s (%s)", name, puuid (uuid));
       goto finish;
     }
 
   char dsym_path[PATH_MAX];
-  if (dsym_url == NULL 
+  if (dsym_url == NULL
       || CFGetTypeID (dsym_url) != CFURLGetTypeID()
       || !CFURLGetFileSystemRepresentation (dsym_url, 1, (UInt8 *) dsym_path, sizeof (dsym_path)))
     {
       dsym_path[0] = '\0';
     }
 
-  // Before we go searching for the kext binary too far, see if it's sitting next
-  // to the dSYM as a bare file (not a bundle).
+  /* Before we go searching for the kext binary too far, see if it is sitting next
+   * to the dSYM as a bare file (not a bundle).
+   */
   char *kext_next_to_dsym = look_for_kext_binary_next_to_dsym (dsym_path, kext_uuid);
   if (file_exists_p (kext_next_to_dsym))
     {
-      if (dsym_url) 
+      if (dsym_url)
         CFRelease (dsym_url);
       return kext_next_to_dsym;
     }
 
   /* We have two ways to find the kext bundle:
    *   1) A plist in the dSYM will give us a path
-   *   2) If that plist doesn't exist, look for a kext nearby
+   *   2) If that plist does NOT exist, look for a kext nearby
    */
 
-  // This returns the Info.plist in the .dSYM bundle parsed into a CFDictionary
+  /* This returns the Info.plist in the .dSYM bundle parsed into a CFDictionary */
   dsym_info = DBGCopyDSYMPropertyLists (dsym_url);
   if (dsym_info)
     {
@@ -1883,10 +1893,10 @@ macosx_locate_kext_executable_by_symfile_helper (CFUUIDRef kext_uuid,
     {
       kext_executable_name = locate_kext_executable_by_dsym_url (dsym_url);
     }
-  if (!kext_executable_name) 
+  if (!kext_executable_name)
     {
       char path[PATH_MAX];
-      // print a specific warning message if we have a dSYM pathname
+      /* print a specific warning message if we have a dSYM pathname */
       if (CFURLGetFileSystemRepresentation (dsym_url, 1, (UInt8 *) path, sizeof (path)))
         {
           path[sizeof (path) - 1] = '\0';
@@ -1906,15 +1916,15 @@ macosx_locate_kext_executable_by_symfile_helper (CFUUIDRef kext_uuid,
   /* Ensure the symfile's UUID matches the symbol-rich executable's */
 
   kext_executable_bfd = symfile_bfd_open (kext_executable_name, 0, GDB_OSABI_UNKNOWN);
-  if (!kext_executable_bfd) 
+  if (!kext_executable_bfd)
     {
-      warning ("Unable to open symbol-rich-executable for reading at '%s'.", 
+      warning ("Unable to open symbol-rich-executable for reading at '%s'.",
                kext_executable_name);
       goto finish;
     }
 
   kext_executable_uuid = get_uuidref_for_bfd (kext_executable_bfd);
-  if (!kext_executable_uuid) 
+  if (!kext_executable_uuid)
     goto finish;
 
   kext_uuid_bytes = CFUUIDGetUUIDBytes (kext_uuid);
@@ -1928,23 +1938,23 @@ macosx_locate_kext_executable_by_symfile_helper (CFUUIDRef kext_uuid,
   result = kext_executable_name;
   kext_executable_name = NULL;
 finish:
-  if (dsym_url) 
+  if (dsym_url)
     CFRelease (dsym_url);
-  if (dsym_info) 
+  if (dsym_info)
     CFRelease (dsym_info);
 
-  if (kext_executable_name) 
+  if (kext_executable_name)
     xfree (kext_executable_name);
-  if (kext_executable_bfd) 
+  if (kext_executable_bfd)
     bfd_close (kext_executable_bfd);
-  if (kext_executable_uuid) 
+  if (kext_executable_uuid)
     CFRelease (kext_executable_uuid);
 
   return result;
 #else
-  warning("DebugSymbols framework unavailable.  Can't locate kext bundle and dSYM.");
+  warning("DebugSymbols framework unavailable.  Cannot locate kext bundle and dSYM.");
   return NULL;
-#endif
+#endif /* USE_DEBUG_SYMBOLS_FRAMEWORK */
 }
 
 /* Given a kextutil- or kextcache-generated .sym file, returns the path to the
@@ -1957,11 +1967,11 @@ macosx_locate_kext_executable_by_symfile (bfd *abfd)
   if (abfd == NULL)
     return NULL;
   CFUUIDRef symfile_uuid = get_uuidref_for_bfd (abfd);
-  if (symfile_uuid == NULL) 
+  if (symfile_uuid == NULL)
     return NULL;
 
   char *ret;
-  ret = macosx_locate_kext_executable_by_symfile_helper (symfile_uuid, 
+  ret = macosx_locate_kext_executable_by_symfile_helper (symfile_uuid,
                                                          abfd->filename);
   CFRelease (symfile_uuid);
   return ret;
@@ -2021,7 +2031,7 @@ cleanup_and_return:
 
 /* Given a path to a kext bundle look in the Info.plist and retrieve
    the CFBundleExecutable (the name of the kext bundle executable) and
-   the CFBundleIdentifier (the thing that kextload -s/-a outputs).  
+   the CFBundleIdentifier (the thing that kextload -s/-a outputs).
    Returns the canonicalized path to the kext bundle top-level directory.
 
    For instance, given a FILENAME of
@@ -2035,7 +2045,7 @@ cleanup_and_return:
    to xfree them.  */
 
 char *
-macosx_kext_info (const char *filename, 
+macosx_kext_info (const char *filename,
                   const char **bundle_executable_name_from_plist,
                   const char **bundle_identifier_name_from_plist)
 {
@@ -2045,24 +2055,24 @@ macosx_kext_info (const char *filename,
   *bundle_identifier_name_from_plist = NULL;
   const void *plist = NULL;
 
-  info_plist_name = find_info_plist_filename_from_bundle_name 
+  info_plist_name = find_info_plist_filename_from_bundle_name
                                                       (filename, ".kext");
   if (info_plist_name == NULL)
     return NULL;
 
   plist = macosx_parse_plist (info_plist_name);
 
-  *bundle_executable_name_from_plist = macosx_get_plist_posix_value (plist, 
+  *bundle_executable_name_from_plist = macosx_get_plist_posix_value (plist,
 						      "CFBundleExecutable");
-  *bundle_identifier_name_from_plist = macosx_get_plist_string_value (plist, 
+  *bundle_identifier_name_from_plist = macosx_get_plist_string_value (plist,
 						      "CFBundleIdentifier");
   macosx_free_plist (&plist);
-  
+
   /* Was there a /Contents directory in the bundle?  */
   t = strstr (info_plist_name, "/Contents");
   if (t != NULL)
     t[0] = '\0';
-  
+
   /* Or is it a flat bundle with the Info.plist at the top level?  */
   t = strstr (info_plist_name, "/Info.plist");
   if (t != NULL)
@@ -2085,7 +2095,7 @@ macosx_kext_info (const char *filename,
    responsibility to free it.  */
 
 static char *
-find_info_plist_filename_from_bundle_name (const char *bundle, 
+find_info_plist_filename_from_bundle_name (const char *bundle,
                                            const char *bundle_suffix)
 {
   char *t;
@@ -2093,7 +2103,7 @@ find_info_plist_filename_from_bundle_name (const char *bundle,
   char tmp_path[PATH_MAX];
   char realpath_buf[PATH_MAX];
   char *retval = NULL;
-   
+
   /* Make a local copy of BUNDLE so it may be modified below.  */
   bundle_copy = tilde_expand (bundle);
   tmp_path[0] = '\0';
@@ -2101,7 +2111,7 @@ find_info_plist_filename_from_bundle_name (const char *bundle,
   /* Is BUNDLE in the form "/a/b/c/Foo.kext/Contents/MacOS/Foo"?  */
   t = strstr (bundle_copy, bundle_suffix);
 
-  // Find the last possible ".kext" or ".app" in the path
+  /* Find the last possible ".kext" or ".app" in the path */
   char *best_t = t;
   while (t)
     {
@@ -2125,7 +2135,7 @@ find_info_plist_filename_from_bundle_name (const char *bundle,
    /* Is BUNDLE in the form "/a/b/c/Foo.kext"?  */
    t = strstr (bundle_copy, bundle_suffix);
 
-  // Find the last possible ".kext" or ".app" in the path
+  /* Find the last possible ".kext" or ".app" in the path */
    best_t = t;
    while (t)
      {
@@ -2147,7 +2157,7 @@ find_info_plist_filename_from_bundle_name (const char *bundle,
        return NULL;
      }
 
-   /* Now let's find the Info.plist in the bundle.  */
+   /* Now let us find the Info.plist in the bundle.  */
 
    strcpy (realpath_buf, tmp_path);
    strcat (realpath_buf, "/Contents/Info.plist");
@@ -2183,31 +2193,31 @@ find_info_plist_filename_from_bundle_name (const char *bundle,
   return retval;
 }
 
-/* FIXME: We shouldn't be grabbing internal functions from bfd!  It's
- used in both the osabi sniffers.  */
+/* FIXME: We should NOT be grabbing internal functions from bfd! It is
+ * used in both the osabi sniffers.  */
 extern const bfd_arch_info_type *bfd_default_compatible
   (const bfd_arch_info_type *a, const bfd_arch_info_type *b);
 
-/* If we're attaching to a process, we start by finding the dyld that
-   is loaded and go from there.  So when we're selecting the OSABI,
-   prefer the osabi of the actually-loaded dyld when we can.  
+/* If we are attaching to a process, we start by finding the dyld that
+   is loaded and go from there. So when we are selecting the OSABI,
+   prefer the osabi of the actually-loaded dyld when we can.
 
-   That's what this function implements, but it does it in a somewhat
-   roundabout way.  What this really does is this:
+   That is what this function implements, but it does it in a somewhat
+   roundabout way. What this really does is this:
 
-   1) If we haven't seen a dyld loaded into a running program yet,
+   1) If we have NOT seen a dyld loaded into a running program yet,
    it returns GDB_OSABI_UNKNOWN.
    2) If you give it a bfd_object file it returns GDB_OSABI_UNKNOWN.
    3) If you give it a mach-o-fat file, it will return osabi_seen_in_attached_dyld
-   if that architecture exists in the fat file, otherwise it will return 
+   if that architecture exists in the fat file, otherwise it will return
    GDB_OSABI_UNKNOWN.
 
    The sniffer code gets asked two questions - generically what architecture
    do you think we are - where we usually get handed the fat file, and we see
    if it matches what either what DYLD told us or what we guessed from the
-   system & the executable file.  That's the job of this function.
+   system & the executable file. That is the job of this function.
    The sniffer also gets asked whether a bfd_object (usually one fork of the
-   fat file) is the one that we want.  This function doesn't do that, and
+   fat file) is the one that we want. This function does NOT do that, and
    instead the code in generic_mach_o_osabi_sniffer_use_dyld does that job.
    So this function really only looks at fat archives.
 
@@ -2231,7 +2241,7 @@ generic_mach_o_osabi_sniffer_use_dyld_hint (bfd *abfd,
       if (nbfd == NULL)
         break;
 
-      /* We don't deal with FAT archives here.  So just skip it if we were
+      /* We do NOT deal with FAT archives here. So just skip it if we were
          handed a fat archive.  */
       if (bfd_check_format (nbfd, bfd_archive))
         return GDB_OSABI_UNKNOWN;
@@ -2256,7 +2266,7 @@ generic_mach_o_osabi_sniffer_use_dyld_hint (bfd *abfd,
 }
 
 enum gdb_osabi
-generic_mach_o_osabi_sniffer (bfd *abfd, enum bfd_architecture arch, 
+generic_mach_o_osabi_sniffer (bfd *abfd, enum bfd_architecture arch,
 			      unsigned long mach_32,
 			      unsigned long mach_64,
 			      int (*query_64_bit_fn) ())
@@ -2271,12 +2281,12 @@ generic_mach_o_osabi_sniffer (bfd *abfd, enum bfd_architecture arch,
     {
       bfd *nbfd = NULL;
       /* For a fat archive, look up each component and see which
-	 architecture best matches the current architecture.  */
+       * architecture best matches the current architecture.  */
       if (strcmp (bfd_get_target (abfd), "mach-o-fat") == 0)
 	{
 	  enum gdb_osabi best = GDB_OSABI_UNKNOWN;
 	  enum gdb_osabi cur = GDB_OSABI_UNKNOWN;
-	  
+
 	  for (;;)
 	    {
 	      nbfd = bfd_openr_next_archived_file (abfd, nbfd);
@@ -2284,21 +2294,21 @@ generic_mach_o_osabi_sniffer (bfd *abfd, enum bfd_architecture arch,
 	      if (nbfd == NULL)
 		break;
 	      /* We can check the architecture of objects, and
-		 "ar" archives.  Do that here.  */
+           * "ar" archives. Do that here.  */
 
-	      if (!bfd_check_format (nbfd, bfd_object) 
+	      if (!bfd_check_format (nbfd, bfd_object)
 		  && !bfd_check_format (nbfd, bfd_archive))
 		continue;
-	      
+
 	      cur = generic_mach_o_osabi_sniffer (nbfd, arch,
-						  mach_32, mach_64, 
+						  mach_32, mach_64,
 						  query_64_bit_fn);
 	      if (cur == GDB_OSABI_DARWIN64 &&
 		  best != GDB_OSABI_DARWIN64 && query_64_bit_fn ())
 		best = cur;
-	      
+
 	      if (cur == GDB_OSABI_DARWIN
-		  && best != GDB_OSABI_DARWIN64 
+		  && best != GDB_OSABI_DARWIN64
 		  && best != GDB_OSABI_DARWIN)
 		best = cur;
 	    }
@@ -2307,11 +2317,11 @@ generic_mach_o_osabi_sniffer (bfd *abfd, enum bfd_architecture arch,
       else
 	{
 	  /* For an "ar" archive, look at the first object element
-	     (there's an initial element in the archive that's not a
-	     bfd_object, so we have to skip over that.)  And return
-	     the architecture from that.  N.B. We can't close the
+	     (there's an initial element in the archive that is not a
+	     bfd_object, so we have to skip over that.) And return
+	     the architecture from that. N.B. We cannot close the
 	     files we open here since the BFD archive code caches
-	     them, and there's no way to get them out of the cache
+	     them, and there is no way to get them out of the cache
 	     without closing the whole archive.  */
 	  for (;;)
 	    {
@@ -2320,12 +2330,12 @@ generic_mach_o_osabi_sniffer (bfd *abfd, enum bfd_architecture arch,
 		break;
 	      if (!bfd_check_format (nbfd, bfd_object))
 		continue;
-	      
+
 	      /* .a files have to be homogenous, so return the result
 	         for the first file.  */
 
-	      return generic_mach_o_osabi_sniffer (nbfd, arch, 
-						   mach_32, mach_64, 
+	      return generic_mach_o_osabi_sniffer (nbfd, arch,
+						   mach_32, mach_64,
 						   query_64_bit_fn);
 	    }
 	}
@@ -2353,17 +2363,17 @@ generic_mach_o_osabi_sniffer (bfd *abfd, enum bfd_architecture arch,
 
 }
 
-/* This is the common bit of the fast show stack trace.  Here we look
+/* This is the common bit of the fast show stack trace. Here we look
    up the sigtramp start & end, and use the regular backtracer to skip
-   over the first few frames, which is the hard bit anyway.  Fills
+   over the first few frames, which is the hard bit anyway. Fills
    COUNT with the number of frames consumed, sets OUT_FI to the last
-   frame we read.  Returns 1 if there's more to backtrace, and 0 if we
+   frame we read. Returns 1 if there is/was more to backtrace, and 0 if we
    are done, and -1 if there was an error.  Note, this is separate
    from COUNT, since you can reach main before you exceed
-   COUNT_LIMIT.*/
+   COUNT_LIMIT. */
 
 int
-fast_show_stack_trace_prologue (unsigned int count_limit, 
+fast_show_stack_trace_prologue (unsigned int count_limit,
 				unsigned int print_start,
 				unsigned int print_end,
 				unsigned int wordsize,
@@ -2387,15 +2397,15 @@ fast_show_stack_trace_prologue (unsigned int count_limit,
 
       /* Some environments use a "shim" libSystem that patches some functions.
          So we need to search all libraries calling themselves libSystem for the
-         sigtramp function.  I am still going to assume that only one of them
-         actually implements sigtramp, however.  If that ever changes, we'll have to
+         sigtramp function. I am still going to assume that only one of them
+         actually implements sigtramp, however. If that ever changes, we will have to
          revise this...  */
 
       ALL_OBJFILES_SAFE (ofile, temp)
         {
           struct objfile *libsystem_objfile = NULL;
 
-	  if (ofile->name == NULL 
+	  if (ofile->name == NULL
 	      || (strstr (ofile->name, "libSystem.B.dylib") == NULL
 		  && strstr (ofile->name, "/usr/lib/system") != ofile->name))
 	    continue;
@@ -2408,11 +2418,11 @@ fast_show_stack_trace_prologue (unsigned int count_limit,
           else
             libsystem_objfile = ofile;
 
-          /* If libSystem isn't loaded yet, NULL it out so we don't look up 
+          /* If libSystem is NOT loaded yet, NULL it out so we do NOT look up
              and cache incorrect un-slid or faux-slid address values.  */
           if (!target_check_is_objfile_loaded (libsystem_objfile))
             continue;
-      
+
           /* If we have libSystem and it was loaded we should lookup sigtramp.  */
           /* Raise the load level and lookup the sigtramp symbol.  */
           objfile_set_load_state (libsystem_objfile, OBJF_SYM_ALL, 1);
@@ -2436,7 +2446,7 @@ fast_show_stack_trace_prologue (unsigned int count_limit,
                            paddr_nz (*sigtramp_start_ptr), paddr_nz (pc));
                 }
 
-              if (find_pc_partial_function (pc, &name, sigtramp_start_ptr, 
+              if (find_pc_partial_function (pc, &name, sigtramp_start_ptr,
                                             sigtramp_end_ptr) == 0)
                 {
                   warning
@@ -2452,19 +2462,19 @@ fast_show_stack_trace_prologue (unsigned int count_limit,
     }
 
   /* I call flush_cached_frames here before we start doing the
-     backtrace.  You usually only call stack-list-frames-lite 
-     (the parent of this) right when you've stopped.  But you may
-     needed to raise the load level of the bottom-most frame to 
+     backtrace. You usually only call stack-list-frames-lite
+     (the parent of this) right when you've stopped. But you may
+     needed to raise the load level of the bottom-most frame to
      get the backtrace right, and if you've done something like
      called a function before doing the backtrace, the bottom-most
      frame could have inaccurate data.  For instance, I've seen
      a case where the func for the bottom frame was errantly
      given as _start because there were no external symbols
-     between the real function and _start...  This will set
+     between the real function and _start... This will set
      us back straight, and then we can do the backtrace accurately
      from here.  */
   /* Watch out, though.  flush_cached_frames unsets the currently
-     selected frame.  So we need to restore that.  */
+     selected frame. So we need to restore that.  */
   selected_frame_id = get_frame_id (get_selected_frame (NULL));
 
   flush_cached_frames ();
@@ -2477,17 +2487,17 @@ fast_show_stack_trace_prologue (unsigned int count_limit,
 
   /* I have to do this twice because I want to make sure that if
      any of the early backtraces causes the load level of a library
-     to be raised, I flush the current frame set & start over.  
-     But I can't figure out how to flush the accumulated ui_out
-     content and start afresh if this happens.  If we could
-     make this an mi-only command, I could, but there isn't a
-     way to do that generically.  You can redirect the output
-     in the cli case, but you can't stuff the stream that you've
+     to be raised, I flush the current frame set & start over.
+     But I cannot figure out how to flush the accumulated ui_out
+     content and start afresh if this happens. If we could
+     make this an mi-only command, I could, but there is NOT a
+     way to do that generically. You can redirect the output
+     in the cli case, but you can't stuff the stream that you have
      gathered the new output to down the current ui_out.  You can
-     do that with mi_out_put, but that's not a generic command.  
-     This looks stupid, but shouldn't be all that inefficient.  */
+     do that with mi_out_put, but that is not a generic command.
+     This looks stupid, but should NOT be all that inefficient.  */
 
-  actually_do_stack_frame_prologue (count_limit, 
+  actually_do_stack_frame_prologue (count_limit,
 				    print_start,
 				    print_end,
 				    wordsize,
@@ -2507,7 +2517,7 @@ fast_show_stack_trace_prologue (unsigned int count_limit,
 
 
 int
-actually_do_stack_frame_prologue (unsigned int count_limit, 
+actually_do_stack_frame_prologue (unsigned int count_limit,
 				unsigned int print_start,
 				unsigned int print_end,
 				unsigned int wordsize,
@@ -2521,10 +2531,10 @@ actually_do_stack_frame_prologue (unsigned int count_limit,
   struct frame_info *fi = NULL;
   int more_frames;
   int old_load_state;
-  
-  /* Get the first few frames.  If anything funky is going on, it will
-     be here.  The second frame helps us get above frameless functions
-     called from signal handlers.  Above these frames we have to deal
+
+  /* Get the first few frames. If anything funky is going on, it will
+     be here. The second frame helps us get above frameless functions
+     called from signal handlers. Above these frames we have to deal
      with sigtramps and alloca frames, that is about all. */
 
  start_again:
@@ -2542,7 +2552,7 @@ actually_do_stack_frame_prologue (unsigned int count_limit,
     }
 
   /* Sometimes we can backtrace more accurately when we read in
-     debug information.  So let's do that here for the first frame.  */
+     debug information. So let us do that here for the first frame.  */
 
   old_load_state = pc_set_load_state (get_frame_pc (fi), OBJF_SYM_ALL, 0);
   if (old_load_state >= 0 && old_load_state != OBJF_SYM_ALL && print_fun == NULL)
@@ -2553,7 +2563,7 @@ actually_do_stack_frame_prologue (unsigned int count_limit,
 
   int frames_printed = 0;
 
-  // Print the first frame (and any inlined frames that may be at this point)
+  /* Print the first frame (and any inlined frames that may be at this point) */
   if (print_fun && 0 >= print_start && 0 < print_end)
     print_fun (uiout, &frames_printed, get_frame_pc (fi), get_frame_base (fi));
 
@@ -2566,21 +2576,21 @@ actually_do_stack_frame_prologue (unsigned int count_limit,
   if (frames_printed > 1)
     {
       /* In this case, we must have found and printed out some inlined
-         frames already.  Therefore, we need to bring 'fi' up to our
+         frames already. Therefore, we need to bring 'fi' up to our
          currently printed frame location, then increment i and
          proceed into the loop (if we're not already done). */
       int j;
       for (j = 0; j < (frames_printed - 1) && fi != NULL; j++)
         fi = get_prev_frame (fi);
 
-      // At the top of the stack?  Then we're done here.
+      /* At the top of the stack?  Then we are done here. */
       if (fi == NULL)
         {
           more_frames = 0;
           goto count_finish;
         }
     }
-  
+
   do
     {
       if (frames_printed >= count_limit)
@@ -2600,7 +2610,7 @@ actually_do_stack_frame_prologue (unsigned int count_limit,
       fp = get_frame_base (fi);
 
   /* Sometimes we can backtrace more accurately when we read
-     in debug information.  So let's do that here.  */
+     in debug information. So let us do that here.  */
 
       old_load_state = pc_set_load_state (pc, OBJF_SYM_ALL, 0);
       if (old_load_state >= 0 && old_load_state != OBJF_SYM_ALL && print_fun == NULL)
@@ -2626,7 +2636,7 @@ actually_do_stack_frame_prologue (unsigned int count_limit,
           goto count_finish;
         }
 
-      if (!backtrace_past_main 
+      if (!backtrace_past_main
           && inside_main_func (fi)
 	  && get_frame_type (fi) != INLINED_FRAME)
 	{
@@ -2650,7 +2660,7 @@ struct loaded_kext_info {
 
 struct loaded_kexts_table {
   uint32_t  version;
-  uint32_t  entry_size;          // the size of the OSKextLoadedKextSummary struct
+  uint32_t  entry_size;   /* the size of the OSKextLoadedKextSummary struct */
   uint32_t  count;
   struct loaded_kext_info *kexts;
 };
@@ -2664,8 +2674,9 @@ get_list_of_loaded_kexts ()
   if (msym == NULL)
     return NULL;
 
-  // gLoadedKextSummaries points to a 
-  // OSKextLoadedKextSummaryHeader structure.
+  /* gLoadedKextSummaries points to a
+   * OSKextLoadedKextSummaryHeader structure.
+   */
   if (!safe_read_memory_unsigned_integer (SYMBOL_VALUE_ADDRESS (msym), TARGET_PTR_BIT / 8, &val))
     return NULL;
 
@@ -2676,10 +2687,10 @@ get_list_of_loaded_kexts ()
   if (kext_table == NULL)
     return NULL;
 
-  // p has the address of the OSKextLoadedKextSummaryHeader struct.
+  /* p has the address of the OSKextLoadedKextSummaryHeader struct. */
   CORE_ADDR p = val;
 
-  // Read the uint32_t version field
+  /* Read the uint32_t version field */
   if (!safe_read_memory_unsigned_integer (p, 4, &val))
     {
       xfree (kext_table);
@@ -2688,12 +2699,14 @@ get_list_of_loaded_kexts ()
   kext_table->version = (uint32_t) val;
   p += sizeof (uint32_t);
 
-  // version 1 does not include an entry_size field.
-  // versions 2 and later do.
+  /* version 1 does not include an entry_size field.
+   * versions 2 and later do.
+   */
   if (kext_table->version == 1)
     {
-      // The version 1 OSKextLoadedKextSummary struct was
-      // 64 + 16 + 8 + 8 + 8 + 4 + 4
+      /* The version 1 OSKextLoadedKextSummary struct was
+       * 64 + 16 + 8 + 8 + 8 + 4 + 4
+	   */
       kext_table->entry_size = 112;
     }
   else
@@ -2707,7 +2720,7 @@ get_list_of_loaded_kexts ()
       p += sizeof (uint32_t);
     }
 
-  // Read the uint32_t kext count field
+  /* Read the uint32_t kext count field */
   if (!safe_read_memory_unsigned_integer (p, 4, &val))
     {
       xfree (kext_table);
@@ -2716,18 +2729,19 @@ get_list_of_loaded_kexts ()
   kext_table->count = (uint32_t) val;
   p += sizeof (uint32_t);
 
-  
-  // Skip a 4-byte reserved field on v2-and-later tables.
+
+  /* Skip a 4-byte reserved field on v2-and-later tables. */
   if (kext_table->version > 1)
     p += sizeof (uint32_t);
 
-  // quick sanity check on the off chance we're looking at uninitialized
-  // memory - don't do anything crazy.
+  /* quick sanity check on the off chance we are looking at uninitialized
+   * memory - do NOT do anything crazy.
+   */
   if (kext_table->count == 0 || kext_table->count > 65535)
     return NULL;
 
   uint8_t *tmpbuf = (uint8_t*) xmalloc (kext_table->entry_size * kext_table->count);
-  kext_table->kexts = (struct loaded_kext_info *) xmalloc 
+  kext_table->kexts = (struct loaded_kext_info *) xmalloc
                 (sizeof (struct loaded_kext_info) * kext_table->count);
 
   if (kext_table->kexts == NULL || tmpbuf == NULL)
@@ -2737,8 +2751,8 @@ get_list_of_loaded_kexts ()
       error ("Unable to allocate space to load kext infos.");
     }
 
-  // Read the kext entries from kernel memory into TMPBUF.
-  if (target_read_memory (p, (uint8_t *) tmpbuf, 
+  /* Read the kext entries from kernel memory into TMPBUF. */
+  if (target_read_memory (p, (uint8_t *) tmpbuf,
                         kext_table->entry_size * kext_table->count))
     {
       xfree (tmpbuf);
@@ -2747,8 +2761,9 @@ get_list_of_loaded_kexts ()
       error ("Unable to read kext infos from kernel.");
     }
 
-  // Copy the fields we care about (swapping as we go) into our internal
-  // representation.
+  /* Copy the fields we care about (swapping as we go) into our internal
+   * representation.
+   */
 
   uint8_t *raw_kext_p = tmpbuf;
   int i;
@@ -2781,7 +2796,7 @@ free_list_of_loaded_kexts (struct loaded_kexts_table *lks)
 }
 
 /* Given the address of a Mach-O file header in memory, iterate over
-   all of the load commands and use their addresses to create a 
+   all of the load commands and use their addresses to create a
    section_addr_info structure.
 
    The caller is responsible for freeing the section_addr_info returned;
@@ -2798,9 +2813,9 @@ get_section_addresses_for_macho_in_memory (CORE_ADDR mh_addr)
   return addrs;
 }
 
-/* Open a Mach-O file on disk, find the section addresses, return a filled in 
-   section_addr_info.  It is the responsibility of the caller to free the 
-   returned section addr's via free_section_addr_info().  
+/* Open a Mach-O file on disk, find the section addresses, return a filled in
+   section_addr_info. It is the responsibility of the caller to free the
+   returned section addr's via free_section_addr_info().
    NULL is returned if thee was a problem.  */
 
 struct section_addr_info *
@@ -2867,16 +2882,16 @@ get_load_addr_of_macho_on_disk (const char *filename, enum gdb_osabi osabi)
 }
 
 /* Given the address of a Mach-O file in memory (or alternatively, an already-open bfd pointer),
-   find the UUID and/or OSABI of that image.  If a BFD is provided, the address is not needed.
+   find the UUID and/or OSABI of that image. If a BFD is provided, the address is not needed.
 
    The input file can be specified in one of three ways:
 
     FILENAME input - file on local system to be opened, inspected, closed (NULL == no filename)
-    MH_ADDR  input - address of memory we're interested in, if a BFD is not provided (INVALID_ADDRESS == no address)
+    MH_ADDR  input - address of memory we are interested in, if a BFD is not provided (INVALID_ADDRESS == no address)
     ABFD     input - already-opened BFD to use, if provided (NULL == no pre-existing bfd)
 
     REQUIRE_KERNEL input - if 1, the Mach-O must be for a kernel, 0 if any Mach-O is acceptable
-    FORCE_LIVE_MEMORY_READS input - if 1 (and no BFD is provided), don't read out of 
+    FORCE_LIVE_MEMORY_READS input - if 1 (and no BFD is provided), don't read out of
                                symbol files/already-open BFD's, force reading out of live memory/corefile
 
    The following pieces of information can be retrieved about the file:
@@ -2894,9 +2909,9 @@ get_load_addr_of_macho_on_disk (const char *filename, enum gdb_osabi osabi)
     returns 0 if there was a problem.  */
 
 int
-get_information_about_macho (const char *filename, CORE_ADDR mh_addr, bfd *abfd, 
+get_information_about_macho (const char *filename, CORE_ADDR mh_addr, bfd *abfd,
                              int require_kernel, int force_live_memory_reads,
-                             uuid_t *uuid, enum gdb_osabi *osabi, 
+                             uuid_t *uuid, enum gdb_osabi *osabi,
                              int *wordsize, CORE_ADDR *intended_load_address, CORE_ADDR *slide,
                              struct section_addr_info **addrs)
 {
@@ -2916,7 +2931,7 @@ get_information_about_macho (const char *filename, CORE_ADDR mh_addr, bfd *abfd,
       return 0;
     }
 
-  // If we're called with multiple mach-o file methods specified, eliminate one of the extras
+  /* If we are called with multiple mach-o file methods specified, eliminate one of the extras */
   if (file_exists && (mh_addr != INVALID_ADDRESS || abfd != NULL))
     {
       filename = NULL;
@@ -2926,7 +2941,7 @@ get_information_about_macho (const char *filename, CORE_ADDR mh_addr, bfd *abfd,
     {
       mh_addr = INVALID_ADDRESS;
     }
-      
+
 
   if (file_exists)
     {
@@ -2935,7 +2950,7 @@ get_information_about_macho (const char *filename, CORE_ADDR mh_addr, bfd *abfd,
         return 0;
       make_cleanup_bfd_close (abfd);
 
-      // we've got a bfd at this point, we're not going to refer to the file any longer
+      /* we have got a bfd at this point, we are not going to refer to the file any longer */
       filename = NULL;
       file_exists = 0;
     }
@@ -2947,7 +2962,7 @@ get_information_about_macho (const char *filename, CORE_ADDR mh_addr, bfd *abfd,
 
       if (force_live_memory_reads)
         {
-          // Force this to be read out of real memory
+          /* Force this to be read out of real memory */
           make_cleanup (set_trust_readonly_cleanup, (void *) set_trust_readonly (0));
           make_cleanup (set_only_read_from_live_memory_cleanup, (void *) set_only_read_from_live_memory (1));
         }
@@ -2956,7 +2971,7 @@ get_information_about_macho (const char *filename, CORE_ADDR mh_addr, bfd *abfd,
         return 0;
       if (h.magic != MH_MAGIC && h.magic != MH_MAGIC_64)
         return 0;
-      if (h.sizeofcmds > 15000)   // Sanity check to avoid reading non-macho data as mach-o
+      if (h.sizeofcmds > 15000)   /* Sanity check to avoid reading non-macho data as mach-o */
          return 0;
 
       int header_size = target_get_mach_header_size (&h);
@@ -3042,7 +3057,7 @@ get_information_about_macho (const char *filename, CORE_ADDR mh_addr, bfd *abfd,
 
 struct section_addr_info *
 macosx_get_kext_sect_addrs_from_kernel (const char *filename,
-                                        uint8_t **kext_uuids, 
+                                        uint8_t **kext_uuids,
                                         const char *kext_bundle_ident)
 {
   struct loaded_kexts_table *loaded_kexts = get_list_of_loaded_kexts ();
@@ -3066,14 +3081,16 @@ macosx_get_kext_sect_addrs_from_kernel (const char *filename,
           j++;
         }
     }
-  if (mh_addr == INVALID_ADDRESS)
-    return NULL;
+	if (mh_addr == INVALID_ADDRESS) {
+		return NULL;
+	}
 
   free_list_of_loaded_kexts (loaded_kexts);
 
-  // We found a matching UUID.
-  // Now look at the load commands in memory (create a temporary
-  // memory bfd) to get the load addresses of each text/data section.
+  /* We found a matching UUID.
+   * Now look at the load commands in memory (create a temporary
+   * memory bfd) to get the load addresses of each text/data section.
+   */
 
   return get_section_addresses_for_macho_in_memory (mh_addr);
 }
@@ -3081,9 +3098,9 @@ macosx_get_kext_sect_addrs_from_kernel (const char *filename,
 static void
 add_all_kexts_command (char *args, int from_tty)
 {
-#if !defined (USE_DEBUG_SYMBOLS_FRAMEWORK)
+#if !defined(USE_DEBUG_SYMBOLS_FRAMEWORK)
   error ("DebugSymbols framework not available, add-all-kexts command not unavailable.");
-#else
+#else /* USE_DEBUG_SYMBOLS_FRAMEWORK */
   struct loaded_kexts_table *lks = get_list_of_loaded_kexts ();
   if (lks == NULL)
     error ("Unable to read list of kexts from the kernel memroy.");
@@ -3091,7 +3108,7 @@ add_all_kexts_command (char *args, int from_tty)
   int i;
   for (i = 0; i < lks->count; i++)
     {
-      // If we've already added the kext, don't add it a second time
+      /* If we have already added the kext, do NOT add it a second time */
       if (find_objfile_by_uuid (lks->kexts[i].uuid))
         continue;
 
@@ -3117,9 +3134,10 @@ add_all_kexts_command (char *args, int from_tty)
           }
       CFRelease (kext_uuid_ref);
 
-      // At this point we may have the pathanme to the kext bundle executable
-      // file (the "symbol rich executable") and we may have the pathname to
-      // a dSYM ("dsym_path").
+      /* At this point we may have the pathanme to the kext bundle executable
+       * file (the "symbol rich executable") and we may have the pathname to
+       * a dSYM ("dsym_path").
+	   */
 
       struct section_addr_info *sect_addrs;
       sect_addrs = get_section_addresses_for_macho_in_memory (lks->kexts[i].address);
@@ -3138,17 +3156,18 @@ add_all_kexts_command (char *args, int from_tty)
         }
       else
         {
-// Reading the kext out of kernel memory has several problems.
-// The first of which is the fact that the in-kernel MachO load commands
-// look like an object file (i.e. with no __TEXT segment) so just doing
-// a bfd_memopenr() and adding that as an objfile will not work.
-// You'll need to make changes in macho_calculate_offsets_for_dsym(),
-// macho_calculate_dsym_offset(), macho_symfile_offsets() and maybe others
-// to even get close.
-// Also, this code path should probably not be executed for remote
-// targets -- reading these out of kernel memory over a USB cable would be
-// slow.
-#if 0
+/* Reading the kext out of kernel memory has several problems.
+ * The first of which is the fact that the in-kernel MachO load commands
+ * look like an object file (i.e. with no __TEXT segment) so just doing
+ * a bfd_memopenr() and adding that as an objfile will not work.
+ * You will need to make changes in macho_calculate_offsets_for_dsym(),
+ * macho_calculate_dsym_offset(), macho_symfile_offsets() and maybe others
+ * to even get close.
+ * Also, this code path should probably not be executed for remote
+ * targets -- reading these out of kernel memory over a USB cable would be
+ * slow.
+ */
+# if 0
           uint8_t *buf = (uint8_t*) xmalloc (lks->kexts[i].size);
           if (buf == NULL)
             {
@@ -3166,8 +3185,8 @@ add_all_kexts_command (char *args, int from_tty)
           if (gdbarch_byte_order (current_gdbarch) == BFD_ENDIAN_BIG)
             bfd_target_name = "mach-o-be";
 
-          // note that we never free the kext memory we just transferred....
-          bfd *abfd = bfd_memopenr (lks->kexts[i].name, bfd_target_name, 
+          /* note that we never free the kext memory we just transferred... */
+          bfd *abfd = bfd_memopenr (lks->kexts[i].name, bfd_target_name,
                                     buf, lks->kexts[i].size);
           if (abfd == NULL || !bfd_check_format (abfd, bfd_object))
             {
@@ -3177,10 +3196,10 @@ add_all_kexts_command (char *args, int from_tty)
             }
           symbol_file_add_bfd_safe (abfd, 0,
                                     0, NULL, 0,
-                                    OBJF_USERLOADED, 
+                                    OBJF_USERLOADED,
                                     OBJF_SYM_ALL,
                                     0, NULL, NULL);
-#endif
+# endif /* 0 */
         }
       free_section_addr_info (sect_addrs);
     }
@@ -3194,15 +3213,15 @@ add_all_kexts_command (char *args, int from_tty)
   reinit_frame_cache ();
 
   free_list_of_loaded_kexts (lks);
-#endif // USE_DEBUG_SYMBOLS_FRAMEWORK
+#endif /* USE_DEBUG_SYMBOLS_FRAMEWORK */
 }
 
 
-/* INPUT: ADDR is an address which may have a kernel; 
+/* INPUT: ADDR is an address which may have a kernel;
    INPUT: FILE_UUID an optional pointer to a uuid_t of the kernel we're
           looking for.  An exact match will be enforced.  May be NULL.
    OUTPUT: DISCOVERED_UUID an optional pointer to a uuid_t which will
-          be filled in with the UUID of the kernel image found.  
+          be filled in with the UUID of the kernel image found.
           May be NULL.
 
    Returns 1 if a kernel was found at ADDR.
@@ -3224,7 +3243,7 @@ mach_kernel_starts_here_p (CORE_ADDR addr, uuid_t *file_uuid, uuid_t *discovered
                    paddr_nz (addr), puuid (*file_uuid), puuid (mem_uuid));
         }
     }
-  if (discovered_osabi) 
+  if (discovered_osabi)
     *discovered_osabi = mem_osabi;
   if (discovered_uuid)
     memcpy (*discovered_uuid, mem_uuid, sizeof (uuid_t));
@@ -3238,9 +3257,9 @@ mach_kernel_starts_here_p (CORE_ADDR addr, uuid_t *file_uuid, uuid_t *discovered
    RETURN: 1 if a kernel is found in memory
            0 if no kernel is found
    The caller should allocate space for ADDR and UUID.  If this information is not
-   needed, they may be NULL.  
+   needed, they may be NULL.
    Not setting ABFD means that every Mach-O image found in memory will need to be inspected
-   to see if it is the kernel.  This will have a performance impact.  
+   to see if it is the kernel. This will have a performance impact.
 
    If we are given an OFILE, and the kernel is found at a slid address in memory, the OFILE
    will be relocated by this function.
@@ -3250,34 +3269,35 @@ int
 exhaustive_search_for_kernel_in_mem (struct objfile *ofile, CORE_ADDR *addr, uuid_t *uuid_output)
 {
 
-  // If this is a kernel, it may have been slid by the booter, try to find where it is in memory.
+  /* If this is a kernel, it may have been slid by the booter, try to find where it is in memory. */
   uuid_t kernel_uuid;
-  uuid_t *uuid = NULL; // NULL means we don't have an ABFD or could not find a UUID in ABFD
+  uuid_t *uuid = NULL; /* NULL means we do NOT have an ABFD or could not find a UUID in ABFD */
 
   uuid_t in_memory_uuid;
   enum gdb_osabi in_memory_osabi = GDB_OSABI_UNKNOWN;
 
   struct cleanup *override_trust_readonly;
 
-  // If we're handed a pointer to a struct object_file which doesn't have a BFD in it, 
-  // just ignore it altogether
+  /* If we are handed a pointer to a struct object_file which doesn't have a BFD in it,
+   * just ignore it altogether */
   if (ofile && !ofile->obfd)
     ofile = NULL;
 
-  // If we're given a symbol file and it ISN'T a kernel, this is not a kernel debug session.
-  // If we aren't given a symbol file we'll try to search around memory to find one ...
-  // FIXME this will be a problem if people use 'target remote' without a symbol file in
-  // non-kernel situations.
+  /* If we are given a symbol file and it IS NOT a kernel, this is not a kernel debug session.
+   * If we are NOT given a symbol file we shall try to search around memory to find one ...
+   * FIXME this will be a problem if people use 'target remote' without a symbol file in
+   * non-kernel situations.
+   */
   if (ofile && !bfd_mach_o_kernel_image (ofile->obfd))
     return 0;
 
   if (kaslr_memory_search_enabled == 0)
     return 0;
 
-  /* We need to read data directly out of memory, we can't "trust" the read-only sections
-     and read anything out of the symbol files (which may be at the wrong address at this 
+  /* We need to read data directly out of memory, we cannot "trust" the read-only sections
+     and read anything out of the symbol files (which may be at the wrong address at this
      point). */
-  override_trust_readonly = make_cleanup (set_trust_readonly_cleanup, 
+  override_trust_readonly = make_cleanup (set_trust_readonly_cleanup,
                                           (void *) set_trust_readonly (0));
   make_cleanup (set_only_read_from_live_memory_cleanup,
                 (void *) set_only_read_from_live_memory (1));
@@ -3286,7 +3306,7 @@ exhaustive_search_for_kernel_in_mem (struct objfile *ofile, CORE_ADDR *addr, uui
     {
       if (bfd_mach_o_get_uuid (ofile->obfd, kernel_uuid, sizeof (uuid_t)))
         {
-          // The provided kernel bfd has a uuid, set UUID to point to it
+          /* The provided kernel bfd has a uuid, set UUID to point to it */
           uuid = &kernel_uuid;
         }
     }
@@ -3327,8 +3347,8 @@ exhaustive_search_for_kernel_in_mem (struct objfile *ofile, CORE_ADDR *addr, uui
         }
     }
 
-  /* Second, when the appropriate boot-args are set, the load 
-     address of the kernel is written at a fixed address in 
+  /* Second, when the appropriate boot-args are set, the load
+     address of the kernel is written at a fixed address in
      the kernel's low globals page.  See what's there.  */
   ULONGEST val = 0;
   if (!found_kernel
@@ -3357,9 +3377,9 @@ exhaustive_search_for_kernel_in_mem (struct objfile *ofile, CORE_ADDR *addr, uui
   /* Third, on 32-bit iOS, 0xffff011c may have the address of the
      'version' string from the kernel's __TEXT,__const section.
      If so, we can search a much smaller section of memory.  */
-  
+
   val = 0;
-  // Read the uint32_t address of 'version' 
+  /* Read the uint32_t address of 'version' */
   if (!found_kernel
       && wordsize == 4
       && !safe_read_memory_unsigned_integer (0xffff011c, 4, &val)
@@ -3367,7 +3387,7 @@ exhaustive_search_for_kernel_in_mem (struct objfile *ofile, CORE_ADDR *addr, uui
       && val < stop_addr)
     {
       /* Start at 16MB before the version string */
-      /* & ~0xfffff == round down to the nearest 1MB boundary 
+      /* & ~0xfffff == round down to the nearest 1MB boundary
          0x1000000 == 16MB */
       CORE_ADDR try_this_addr = (val & ~0xfffff) - 0x1000000;
 
@@ -3397,12 +3417,12 @@ exhaustive_search_for_kernel_in_mem (struct objfile *ofile, CORE_ADDR *addr, uui
 
   /* Fourth, maybe the current pc value is kernel code that is running.
      If so, we can search a much smaller section of memory.  */
-  
+
   if (!found_kernel && stop_pc != 0 && stop_pc != INVALID_ADDRESS
       && stop_pc >= cur_addr && stop_pc < stop_addr)
     {
       /* Start at 32MB before the current pc value */
-      /* & ~0xfffff == round down to the nearest 1MB boundary 
+      /* & ~0xfffff == round down to the nearest 1MB boundary
          0x2000000 == 32MB */
       CORE_ADDR try_this_addr = (stop_pc & ~0xfffff) - 0x2000000;
 
@@ -3540,13 +3560,13 @@ slide_kernel_objfile (struct objfile *o, CORE_ADDR in_memory_addr, uuid_t in_mem
 }
 
 /* The address of the kernel in memory has been identified, and we have the UUID, but the
-   user did not give us a mach_kernel on the start up -- see if we can call out to the 
+   user did not give us a mach_kernel on the start up -- see if we can call out to the
    com.apple.DebugSymbols DBGShellCommands command to track down the mach_kernel binary
-   based on the UUID.  If so, load it at the correct address.  
+   based on the UUID.  If so, load it at the correct address.
    Returns 1 if we successfully loaded a kernel.
    Returns 0 if it did not load a kernel.  */
 
-int 
+int
 try_to_find_and_load_kernel_via_uuid (CORE_ADDR in_memory_addr, uuid_t in_memory_uuid, enum gdb_osabi osabi)
 {
 
@@ -3590,7 +3610,7 @@ try_to_find_and_load_kernel_via_uuid (CORE_ADDR in_memory_addr, uuid_t in_memory
         {
           kernel_slide = in_memory_addr - on_disk_load_addr;
 
-          struct objfile *o = symbol_file_add_name_with_addrs_or_offsets (kernel_path, 1, NULL, NULL, 0, 1, 
+          struct objfile *o = symbol_file_add_name_with_addrs_or_offsets (kernel_path, 1, NULL, NULL, 0, 1,
                                                       OBJF_USERLOADED, OBJF_SYM_ALL, 0, NULL, NULL);
           xfree (kernel_path);
 
@@ -3654,30 +3674,36 @@ maintenance_list_kexts (char *arg, int from_tty)
 {
   struct loaded_kexts_table *kexts = get_list_of_loaded_kexts ();
 
-  if (kexts == NULL)
-    return;
+	if (kexts == NULL) {
+		return;
+	}
 
   int padcount = 0;
-  if (kexts->count > 9)
-    padcount = 2;
-  if (kexts->count > 99)
-    padcount = 3;
+	if (kexts->count > 9) {
+		padcount = 2;
+	}
+	if (kexts->count > 99) {
+		padcount = 3;
+	}
 
   int i;
-  for (i = 0; i < kexts->count; i++)
-    printf_filtered ("%*d 0x%s %s %s\n",
+	for (i = 0; i < kexts->count; i++) {
+		printf_filtered ("%*d 0x%s %s %s\n",
                      padcount, i,
                      paddr_nz (kexts->kexts[i].address),
                      puuid (kexts->kexts[i].uuid),
                      kexts->kexts[i].name);
+	}
 
   free_list_of_loaded_kexts (kexts);
 }
 
 
-#ifdef NM_NEXTSTEP
-#include "macosx-nat-infthread.h"
-#endif
+#if defined(NM_NEXTSTEP) || defined(TM_NEXTSTEP)
+# include "macosx-nat-infthread.h" /* needed for get_application_thread_port below */
+#else
+# define MACOSX_TDEP_C_NOT_ON_NEXTSTEP 1
+#endif /* NM_NEXTSTEP || TM_NEXTSTEP */
 
 char *
 macosx_pid_or_tid_to_str (ptid_t ptid)
@@ -3687,12 +3713,12 @@ macosx_pid_or_tid_to_str (ptid_t ptid)
   xsnprintf (buf, sizeof buf, "process %d thread 0x%x", ptid_get_pid (ptid), get_application_thread_port ((thread_t) ptid_get_tid (ptid)));
 #else
   xsnprintf (buf, sizeof buf, "process %d thread 0x%x", ptid_get_pid (ptid), (unsigned int) ptid_get_tid (ptid));
-#endif
+#endif /* NM_NEXTSTEP */
   return buf;
 }
 
 
-/* On arm-native iOS systems the shared cache of libraries in memory doesn't
+/* On arm-native iOS systems the shared cache of libraries in memory does NOT
    have all of the nlist records -- and the nlist records it does have will
    have "<redacted>" as the only symbol name for every symbol to conserve
    address space.  The complete list of nlist records and the symbol names
@@ -3792,7 +3818,7 @@ get_dyld_shared_cache_local_syms ()
   if (arch_name == NULL)
     return;
   char dsc_path[PATH_MAX];
-  snprintf(dsc_path, sizeof(dsc_path), 
+  snprintf(dsc_path, sizeof(dsc_path),
          "/System/Library/Caches/com.apple.dyld/dyld_shared_cache_%s",
          arch_name);
   FILE *dsc = fopen (dsc_path, "r");
@@ -3805,8 +3831,9 @@ get_dyld_shared_cache_local_syms ()
       return;
     }
 
-  // We're dealing with an older dyld shared cache file that doesn't have 
-  // this info.
+  /* We are dealing with an older dyld shared cache file that does NOT have
+   * this info.
+   */
   if (dsc_header.mappingOffset < sizeof (struct gdb_copy_dyld_cache_header))
     {
       fclose (dsc);
@@ -3880,7 +3907,7 @@ Also takes file:line to hilight the file at the given line."));
 
   add_com ("update", class_obscure, update_command,
            "Re-read current state information from inferior.");
-  
+
   add_setshow_boolean_cmd ("locate-dsym", class_obscure,
 			    &dsym_locate_enabled, _("\
 Set locate dSYM files using the DebugSymbols framework."), _("\
@@ -3897,8 +3924,8 @@ If set, gdb may look through memory for a kernel when doing 'target remote'"),
 			    NULL, NULL,
 			    &setlist, &showlist);
 
-  add_cmd ("list-kexts", class_maintenance, 
-           maintenance_list_kexts, 
+  add_cmd ("list-kexts", class_maintenance,
+           maintenance_list_kexts,
            "List kexts loaded by the kernel (when kernel debugging).",
            &maintenancelist);
 
@@ -3919,3 +3946,5 @@ to find the list of kexts and what addresses they are loaded at.\n"),
   set_cmd_completer (c, filename_completer);
 
 }
+
+/* EOF */

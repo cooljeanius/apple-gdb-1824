@@ -338,6 +338,9 @@
 /* Define to 1 if you have the <mach/mach.h> header file. */
 #undef HAVE_MACH_MACH_H
 
+/* Define to 1 if you have the <mach/mach_vm.h> header file. */
+#undef HAVE_MACH_MACH_VM_H
+
 /* Define to 1 if you have the <mach-o/loader.h> header file. */
 #undef HAVE_MACH_O_LOADER_H
 
@@ -349,6 +352,9 @@
 
 /* Define to 1 if you have the <mach/thread_status.h> header file. */
 #undef HAVE_MACH_THREAD_STATUS_H
+
+/* Define to 1 if the system has the type `mach_vm_address_t'. */
+#undef HAVE_MACH_VM_ADDRESS_T
 
 /* Define to 1 if your system has a GNU libc compatible `malloc' function, and
    to 0 otherwise. */

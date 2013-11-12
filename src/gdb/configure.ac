@@ -878,6 +878,14 @@ AC_CHECK_TYPES([unw_accessors_t],[],[],[
 # warning This conftest expects <libunwind.h> to be included.
 #endif /* HAVE_LIBUNWIND_H */
 ])
+AC_CHECK_HEADERS([mach/mach_vm.h])
+AC_CHECK_TYPES([mach_vm_address_t],[],[],[
+#ifdef HAVE_MACH_MACH_VM_H
+# include <mach/mach_vm.h>
+#else
+# warning This conftest expects <mach/mach_vm.h> to be included.
+#endif /* HAVE_MACH_MACH_VM_H */
+])
 dnl# The "x86_debug_state32_t" type is checked for in an APPLE_LOCAL
 dnl# section below.
 

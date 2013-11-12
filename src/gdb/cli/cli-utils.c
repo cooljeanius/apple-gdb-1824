@@ -19,3 +19,13 @@
 #include "defs.h"
 #include "cli/cli-utils.h"
 
+#ifdef __sun
+/* This declaration ensures that this object will export at least 1 symbol.  */
+int cli_utils_c_dummy_symbol;
+#else
+/* This declaration is solely to ensure that after preprocessing
+ * this file is never empty.  */
+typedef int cli_utils_c_dummy_t;
+#endif /* __sun */
+
+/* EOF */
