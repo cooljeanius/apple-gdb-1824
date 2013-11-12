@@ -46,6 +46,9 @@ extern void end_inferior_call_checkpoints (void);
 
 #if defined(NM_NEXTSTEP) || defined(TM_NEXTSTEP)
 # include "macosx-nat-infthread.h"
+# include "macosx/macosx-nat-infthread.h"
+#else
+# define INFCALL_C_NOT_ON_NEXTSTEP 1
 #endif /* NM_NEXTSTEP || TM_NEXTSTEP */
 
 /* Whether to allow inferior function calls to be made or not.
@@ -522,7 +525,7 @@ hand_function_call (struct value *function, struct type *expect_type,
     make_cleanup_init_objc_exception_catcher ();
 
   /* APPLE LOCAL begin inferior function call */
-#if defined (NM_NEXTSTEP)
+#if defined(NM_NEXTSTEP)
   macosx_setup_registers_before_hand_call ();
 
 #endif

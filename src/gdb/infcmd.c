@@ -58,6 +58,11 @@
 #if defined(NM_NEXTSTEP) || defined(TM_NEXTSTEP)
 # include "nm-macosx.h"
 # include "macosx-nat-inferior.h"
+# include "config/nm-macosx.h"
+# include "macosx/nm-macosx.h"
+# include "macosx/macosx-nat-inferior.h"
+#else
+# define INFCMD_C_NOT_ON_NEXTSTEP 1
 #endif /* NM_NEXTSTEP || TM_NEXTSTEP */
 
 /* APPLE LOCAL checkpoints */

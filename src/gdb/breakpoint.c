@@ -72,7 +72,10 @@
 #include "objc-lang.h"
 
 #ifdef __i386__
+# include "nm-i386.h"
 # include "config/i386/nm-i386.h"
+#else
+# define BREAKPOINT_C_NOT_ON_i386 1
 #endif /* __i386__ */
 
 /* Prototypes for local functions. */

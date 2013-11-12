@@ -1417,6 +1417,8 @@ config.status: configure configure.tgt configure.host
 	$(SHELL) config.status --recheck
 	touch config.status
 
+configure: configure.ac
+
 force:
 
 # Documentation!
@@ -1901,7 +1903,7 @@ breakpoint.o: breakpoint.c $(defs_h) $(symtab_h) $(frame_h) $(breakpoint_h) \
 	$(objfiles_h) $(source_h) $(linespec_h) $(completer_h) $(gdb_h) \
 	$(ui_out_h) $(cli_script_h) $(gdb_assert_h) $(block_h) $(solib_h) \
 	$(solist_h) $(observer_h) $(exceptions_h) $(gdb_events_h) $(mi_common_h) \
-	$(inlining_h)
+	$(inlining_h) $(srcdir)/config/i386/nm-i386.h
 # APPLE LOCAL end subroutine inlining
 bsd-kvm.o: bsd-kvm.c $(defs_h) $(cli_cmds_h) $(command_h) $(frame_h) \
 	$(regcache_h) $(target_h) $(value_h) $(gdbcore_h) $(gdb_assert_h) \
@@ -2237,7 +2239,7 @@ ia64-tdep.o: ia64-tdep.c $(defs_h) $(inferior_h) $(gdbcore_h) \
 infcall.o: infcall.c $(defs_h) $(breakpoint_h) $(target_h) $(regcache_h) \
 	$(inferior_h) $(gdb_assert_h) $(block_h) $(gdbcore_h) $(language_h) \
 	$(objfiles_h) $(gdbcmd_h) $(command_h) $(gdb_string_h) $(infcall_h) \
-	$(dummy_frame_h)
+	$(dummy_frame_h) $(srcdir)/macosx/macosx-nat-infthread.h
 inf-child.o: inf-child.c $(defs_h) $(regcache_h) $(memattr_h) $(symtab_h) \
 	$(target_h) $(inferior_h) $(gdb_string_h)
 # APPLE LOCAL begin subroutine inlining
@@ -2855,7 +2857,9 @@ utils.o: utils.c $(defs_h) $(gdb_assert_h) $(gdb_string_h) $(event_top_h) \
 	$(exceptions_h) $(tui_h) $(gdbcmd_h) $(serial_h) $(bfd_h) \
 	$(target_h) $(demangle_h) $(expression_h) $(language_h) $(charset_h) \
 	$(annotate_h) $(filenames_h) $(symfile_h) $(inferior_h) \
-	$(gdb_curses_h) $(readline_h)
+	$(gdb_curses_h) $(readline_h) $(srcdir)/macosx/macosx-xdep.c \
+	$(srcdir)/macosx/xm-macosx.h $(srcdir)/config/xm-macosx.h \
+	macosx-xdep.o
 uw-thread.o: uw-thread.c $(defs_h) $(gdbthread_h) $(target_h) $(inferior_h) \
 	$(regcache_h) $(gregset_h)
 v850-tdep.o: v850-tdep.c $(defs_h) $(frame_h) $(frame_base_h) $(trad_frame_h) \
@@ -2869,7 +2873,7 @@ valops.o: valops.c $(defs_h) $(symtab_h) $(gdbtypes_h) $(value_h) $(frame_h) \
 	$(inferior_h) $(gdbcore_h) $(target_h) $(demangle_h) $(language_h) \
 	$(gdbcmd_h) $(regcache_h) $(cp_abi_h) $(block_h) $(infcall_h) \
 	$(dictionary_h) $(cp_support_h) $(gdb_string_h) $(gdb_assert_h) \
-	$(cp_support_h) $(observer_h)
+	$(cp_support_h) $(observer_h) $(srcdir)/macosx/macosx-nat-infthread.h
 valprint.o: valprint.c $(defs_h) $(gdb_string_h) $(symtab_h) $(gdbtypes_h) \
 	$(value_h) $(gdbcore_h) $(gdbcmd_h) $(target_h) $(language_h) \
 	$(annotate_h) $(valprint_h) $(floatformat_h) $(doublest_h)
@@ -2916,7 +2920,8 @@ fix-and-continue.o: fix-and-continue.c $(defs_h) $(value_h) $(gdbthread_h) \
 	macosx/ppc-macosx-frameinfo.h macosx/ppc-macosx-tdep.h \
 	macosx/macosx-nat-dyld-process.h
 # APPLE LOCAL checkpoints
-checkpoint.o: checkpoint.c checkpoint.h
+checkpoint.o: checkpoint.c checkpoint.h macosx-nat-inferior.o
+# END APPLE LOCAL target
 xstormy16-tdep.o: xstormy16-tdep.c $(defs_h) $(frame_h) $(frame_base_h) \
 	$(frame_unwind_h) $(dwarf2_frame_h) $(symtab_h) $(gdbtypes_h) \
 	$(gdbcmd_h) $(gdbcore_h) $(value_h) $(dis_asm_h) $(inferior_h) \
@@ -3144,7 +3149,8 @@ mi-cmds.o: $(srcdir)/mi/mi-cmds.c $(defs_h) $(top_h) $(mi_cmds_h) \
 # APPLE LOCAL begin subroutine inlining
 mi-cmd-stack.o: $(srcdir)/mi/mi-cmd-stack.c $(defs_h) $(target_h) $(frame_h) \
 	$(value_h) $(mi_cmds_h) $(ui_out_h) $(symtab_h) $(block_h) \
-	$(stack_h) $(dictionary_h) $(gdb_string_h) $(inlining_h)
+	$(stack_h) $(dictionary_h) $(gdb_string_h) $(inlining_h) \
+	$(srcdir)/config/i386/tm-i386-macosx.h
 	$(CC) -c $(INTERNAL_CFLAGS) $(srcdir)/mi/mi-cmd-stack.c
 # APPLE LOCAL end subroutine inlining
 mi-cmd-var.o: $(srcdir)/mi/mi-cmd-var.c $(defs_h) $(mi_cmds_h) $(ui_out_h) \
@@ -3361,3 +3367,5 @@ mac-xdep.o: $(srcdir)/mac-xdep.c $(srcdir)/config/xm-mpw.h
 
 codesign-gdb: gdb$(EXEEXT) $(CONFIG_ALL)
 	codesign --keychain ~/Library/Keychains/login.keychain -s gdb_codesign gdb$(EXEEXT)
+
+# DO NOT DELETE

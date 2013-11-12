@@ -47,7 +47,7 @@ extern void rollback_stop (void);
 void prune_checkpoint_list (void);
 void delete_checkpoint (struct checkpoint *);
 static void sigterm_handler (int signo);
-  
+
 extern struct checkpoint *rx_cp;
 
 /* True when we want to create a checkpoint at every stop.  */
@@ -107,7 +107,7 @@ memcache_put (struct checkpoint *cp)
    if (cp->pid != 0)
      fork_memcache_put (cp);
  }
-#endif
+#endif /* NM_NEXTSTEP */
 }
 
 /* The count of checkpoints that have been created so far.  */
@@ -128,7 +128,7 @@ struct checkpoint *current_checkpoint;
 
 struct checkpoint *original_latest_checkpoint;
 
-/* This is true if we're already in the midst of creating a
+/* This is true if we are already in the midst of creating a
    checkpoint, just in case something thinks it wants to make another
    one.  */
 
@@ -143,7 +143,7 @@ int rolled_back = 0;
 
 int auto_checkpointing = 0;
 
-/* This is true when we're running the inferior as part of function calls.  */
+/* This is true when we are running the inferior as part of function calls.  */
 
 int inferior_call_checkpoints;
 
@@ -289,7 +289,7 @@ collect_checkpoint ()
 	  }
       }
   }
-  
+
   if (forking_checkpoints)
     {
       /* (The following should be target-specific) */
@@ -298,7 +298,7 @@ collect_checkpoint ()
 	{
 	  val = call_function_by_hand_expecting_type (forkfn,
 						      builtin_type_int, 0, NULL, 1);
-  
+
 	  retval = value_as_long (val);
 
 	  /* Keep the pid around, only dig through fork when rolling back.  */
@@ -320,7 +320,7 @@ collect_checkpoint ()
     if (cp->pid == 0)
       direct_memcache_get (cp);
   }
-#endif
+#endif /* NM_NEXTSTEP */
 
   return cp;
 }
@@ -410,7 +410,7 @@ prune_checkpoint_list ()
       ++numtokeep;
     }
   /* Now collect the checkpoints we want to delete. Handle as a
-     temporarily-allocated array of checkpoints to delete so we don't
+     temporarily-allocated array of checkpoints to delete so we do NOT
      get confused by all the pointer churn.  */
   n = numcp - numtokeep;
   todel = (struct checkpoint **) xmalloc (n * sizeof (struct checkpoint *));
@@ -469,7 +469,7 @@ maybe_create_checkpoint ()
 	  current_checkpoint->immediate_prev = lastcp;
 	return;
       }
-#endif
+#endif /* 0 */
 
   finish_checkpoint (tmpcp);
 
@@ -567,7 +567,7 @@ rollback_to_checkpoint (struct checkpoint *cp)
 	  }
       }
   }
-  
+
   current_checkpoint = cp;
 
   flush_cached_frames ();
@@ -719,7 +719,7 @@ delete_checkpoint (struct checkpoint *cp)
 
   if (current_checkpoint == cp)
     current_checkpoint = NULL;
-  /* Note that we don't want to move this to any other checkpoint,
+  /* Note that we do NOT want to move this to any other checkpoint,
      because this is the only checkpoint that can restore to a
      pre-all-undo state.  */
   if (original_latest_checkpoint == cp)
@@ -881,7 +881,7 @@ reverse_stepi_command (char *args, int from_tty)
   else
     printf("no cp?\n");
 }
-#endif
+#endif /* 0 */
 
 /* Clear out all accumulated checkpoint stuff.  */
 
@@ -918,7 +918,7 @@ sigterm_handler (int signo)
 
   printf ("Handling sigterm, killing all checkpoint forks.");
 
-  /* Note that we don't need anything more than the kills, because GDB
+  /* Note that we do NOT need anything more than the kills, because GDB
      as a whole is about to go away.  */
   for (cp = checkpoint_list; cp != NULL; cp = cp->next)
     {
@@ -951,7 +951,7 @@ _initialize_checkpoint (void)
 	   "reverse-step by one instruction");
   add_com ("rx", class_obscure, re_execute_command,
 	   "execute up to a given place");
-#endif
+#endif /* 0 */
 
   add_cmd ("checkpoints", class_obscure, delete_checkpoint_command, _("\
 Delete specified checkpoints.\n\
@@ -986,3 +986,5 @@ Show forking to create checkpoints."), NULL,
 			   NULL,
 			   &setlist, &showlist);
 }
+
+/* EOF */

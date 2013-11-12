@@ -42,6 +42,9 @@
 
 #ifdef __i386__
 # include "tm-i386-macosx.h"
+# include "config/i386/tm-i386-macosx.h"
+#else
+# define MI_CMD_STACK_C_NOT_ON_i386 1
 #endif /* __i386__ */
 
 /* FIXME: There is no general mi header to put this kind of utility function.*/

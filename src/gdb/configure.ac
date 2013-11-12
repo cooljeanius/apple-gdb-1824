@@ -742,6 +742,8 @@ AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
 unset ac_cv_header_libintl_h
 unset ac_cv_header_limits_h
 unset ac_cv_header_locale_h
+unset ac_cv_header_malloc_h
+unset ac_cv_header_nl_types_h
 unset ac_cv_header_sys_param_h
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h libintl.h limits.h locale.h \
                   mach/mach.h malloc.h malloc/malloc.h netdb.h \
@@ -758,8 +760,8 @@ AC_CHECK_HEADERS([CoreFoundation/CoreFoundation.h \
                   libgen.h libgettext.h linux/byteorder/big_endian.h \
                   linux/byteorder/little_endian.h mach/thread_info.h \
                   mach/thread_status.h mach-o/loader.h mach-o/nlist.h \
-                  memory.h pthread.h rpc/rpc.h setjmp.h sys/uio.h \
-                  sys/utsname.h])
+                  memory.h pc.h pthread.h rpc/rpc.h setjmp.h \
+                  sys/uio.h sys/utsname.h])
 
 # ------------------------- #
 # Checks for declarations.  #

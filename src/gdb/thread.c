@@ -45,9 +45,12 @@
 /* APPLE LOCAL - subroutine inlining  */
 #include "inlining.h"
 
-#ifdef NM_NEXTSTEP
-#include "macosx-nat-infthread.h"
-#endif
+#if defined(NM_NEXTSTEP) || defined(TM_NEXTSTEP)
+# include "macosx-nat-infthread.h"
+# include "macosx/macosx-nat-infthread.h"
+#else
+# define THREAD_C_NOT_ON_NEXTSTEP 1
+#endif /* NM_NEXTSTEP || TM_NEXTSTEP */
 
 /*#include "lynxos-core.h" */
 
@@ -123,21 +126,21 @@ init_thread_list (void)
   thread_list = NULL;
 }
 
-/* add_thread now returns a pointer to the new thread_info, 
+/* add_thread now returns a pointer to the new thread_info,
    so that back_ends can initialize their private data.  */
 
 struct thread_info *
 add_thread (ptid_t ptid)
 {
-  struct thread_info *tp; 
- 
-  tp = (struct thread_info *) xmalloc (sizeof (*tp)); 
-  memset (tp, 0, sizeof (*tp)); 
-  tp->ptid = ptid; 
-  tp->num = ++highest_thread_num; 
-  tp->next = thread_list; 
-  thread_list = tp; 
-  return tp; 
+  struct thread_info *tp;
+
+  tp = (struct thread_info *) xmalloc (sizeof (*tp));
+  memset (tp, 0, sizeof (*tp));
+  tp->ptid = ptid;
+  tp->num = ++highest_thread_num;
+  tp->next = thread_list;
+  thread_list = tp;
+  return tp;
 }
 
 void
@@ -193,11 +196,11 @@ find_thread_pid (ptid_t ptid)
  * Calls a callback function once for each thread, so long as
  * the callback function returns false.  If the callback function
  * returns true, the iteration will end and the current thread
- * will be returned.  This can be useful for implementing a 
+ * will be returned.  This can be useful for implementing a
  * search for a thread with arbitrary attributes, or for applying
  * some operation to every thread.
  *
- * FIXME: some of the existing functionality, such as 
+ * FIXME: some of the existing functionality, such as
  * "Thread apply all", might be rewritten using this functionality.
  */
 
@@ -297,7 +300,7 @@ do_captured_list_thread_ids (struct ui_out *uiout, void *arg)
       ui_out_field_int (uiout, "thread-id", tp->num);
 #ifdef NM_NEXTSTEP
       macosx_print_thread_details (uiout, tp->ptid);
-#endif
+#endif /* NM_NEXTSTEP */
       do_cleanups (a_thread_cleanup);
     }
 
@@ -336,7 +339,7 @@ load_infrun_state (ptid_t ptid,
 {
   struct thread_info *tp;
 
-  /* If we can't find the thread, then we're debugging a single threaded
+  /* If we cannot find the thread, then we are debugging a single threaded
      process.  No need to do anything in that case.  */
   tp = find_thread_id (pid_to_thread_id (ptid));
   if (tp == NULL)
@@ -383,8 +386,8 @@ save_infrun_state (ptid_t ptid,
 {
   struct thread_info *tp;
 
-  /* If we can't find the thread, then we're debugging a single-threaded
-     process.  Nothing to do in that case.  */
+  /* If we cannot find the thread, then we are debugging a single-threaded
+     process. Nothing to do in that case.  */
   tp = find_thread_id (pid_to_thread_id (ptid));
   if (tp == NULL)
     return;
@@ -434,7 +437,7 @@ prune_threads (void)
     }
 }
 
-/* Print information about currently known threads 
+/* Print information about currently known threads
 
  * Note: this has the drawback that it _really_ switches
  *       threads, which frees the frame cache.  A no-side
@@ -484,7 +487,7 @@ info_threads_command (char *arg, int from_tty)
         ui_out_text (uiout, " ");
       if (threadcount > 10 && tp->num < 10)
         ui_out_text (uiout, " ");
-        
+
       ui_out_field_int (uiout, "threadno", tp->num);
       ui_out_text (uiout, " ");
 
@@ -500,7 +503,7 @@ info_threads_command (char *arg, int from_tty)
           strlcpy (buf1, "\"", sizeof (buf1));
           strlcat (buf1, s, sizeof (buf1));
           strlcat (buf1, "\"", sizeof (buf1));
-          snprintf (buf2, sizeof (buf2) - 1,"%-*s", 
+          snprintf (buf2, sizeof (buf2) - 1,"%-*s",
                     longest_threadname + 2, buf1);
           buf2[sizeof (buf2) - 1] = '\0';
           ui_out_field_string (uiout, "target_thread_name", buf2);
@@ -536,14 +539,14 @@ info_threads_command (char *arg, int from_tty)
   switch_to_thread (current_ptid);
 
   /* Restores the frame set by the user before the "info threads"
-     command.  We have finished the info-threads display by switching
+     command. We have finished the info-threads display by switching
      back to the current thread.  That switch has put us at the top of
      the stack (leaf frame).  */
   cur_frame = frame_find_by_id (saved_frame_id);
   if (cur_frame == NULL)
     {
-      /* Ooops, can't restore, tell user where we are.  */
-      warning (_("Couldn't restore frame in current thread, at frame 0"));
+      /* Ooops, cannot restore, tell user where we are.  */
+      warning (_("Could NOT restore frame in current thread, at frame 0"));
       print_stack_frame (get_selected_frame (NULL), 0, LOCATION);
       /* APPLE LOCAL begin subroutine inlining  */
       clear_inlined_subroutine_print_frames ();
@@ -563,9 +566,9 @@ info_threads_command (char *arg, int from_tty)
    for use by do_check_is_thread_unsafe.  gdb_thread_select has the
    unfortunate side-effect of using the parser, which is silly for a
    library function.  Ideally there would be an exported function that
-   doesn't use the parser, but does call all the appropriate hooks.
-   But that's beyond the scope of Turmeric, and in the case of
-   do_check_is_thread_unsafe it's not necessary since we are just going
+   does NOT use the parser, but does call all the appropriate hooks.
+   But that is beyond the scope of Turmeric, and in the case of
+   do_check_is_thread_unsafe it is not necessary since we are just going
    to restore the original thread state anyway. */
 
 void
@@ -595,7 +598,7 @@ switch_to_thread (ptid_t ptid)
 
   select_frame (get_current_frame ());
 
-  /* APPPLE LOCAL Finally, if the scheduler-locking is on, then we should 
+  /* APPPLE LOCAL Finally, if the scheduler-locking is on, then we should
      reset the thread we are trying to run. */
   if (scheduler_lock_on_p ())
     scheduler_run_this_ptid (inferior_ptid);
@@ -680,8 +683,8 @@ thread_apply_all_command (char *cmd, int from_tty)
 	printf_filtered (_("\nThread %d (%s):\n"),
 			 tp->num, target_tid_to_str (inferior_ptid));
 
-	/* APPLE LOCAL: Use safe_execute_command for this.  If the command 
-	   has an error for one thread, that's no reason not to run it for
+	/* APPLE LOCAL: Use safe_execute_command for this. If the command
+	   has an error for one thread, that is no reason not to run it for
 	   the next thread.  */
 
 	safe_execute_command (uiout, cmd, from_tty);
@@ -771,7 +774,7 @@ struct select_thread_args
   int print;
 };
 
-/* Switch to the specified thread.  Will dispatch off to thread_apply_command
+/* Switch to the specified thread. Will dispatch off to thread_apply_command
    if prefix of arg is `apply'.  */
 
 static void
@@ -779,7 +782,7 @@ thread_command (char *tidstr, int from_tty)
 {
   if (!tidstr)
     {
-      /* Don't generate an error, just say which thread is current. */
+      /* Do NOT generate an error, just say which thread is current. */
       if (target_has_stack)
 	printf_filtered (_("[Current thread is %d (%s)]\n"),
 			 pid_to_thread_id (inferior_ptid),
@@ -825,7 +828,7 @@ do_captured_thread_select (struct ui_out *uiout,
       ui_out_text (uiout, target_tid_to_str (inferior_ptid));
 #else
       ui_out_text (uiout, target_pid_to_str (inferior_ptid));
-#endif
+#endif /* HPUXHPPA */
       ui_out_text (uiout, ")");
       char *s = target_get_thread_name (inferior_ptid);
       if (s && s[0] != '\0')
@@ -837,10 +840,10 @@ do_captured_thread_select (struct ui_out *uiout,
       ui_out_text (uiout, "]\n");
 
       /* APPLE LOCAL begin subroutine inlining  */
-      /* If we're inside an inlined function, we may have gotten there
-	 via a 'step' from the call site, which automatically flushes
-	 the frames, so there may not be a current frame.  In that case
-	 this is not an error.  */
+      /* If we are inside an inlined function, we may have gotten there
+       * via a 'step' from the call site, which automatically flushes
+       * the frames, so there may not be a current frame. In that case
+       * this is not an error.  */
       if (deprecated_selected_frame == NULL)
 	{
 	  if (get_frame_type (get_current_frame ()) != INLINED_FRAME)
@@ -848,7 +851,7 @@ do_captured_thread_select (struct ui_out *uiout,
 	  else
 	    select_frame (get_current_frame ());
 	}
-      
+
       print_stack_frame (deprecated_selected_frame,
 			 frame_relative_level (deprecated_selected_frame), 1);
       clear_inlined_subroutine_print_frames ();
@@ -857,10 +860,10 @@ do_captured_thread_select (struct ui_out *uiout,
     }
   /* Remember to run the context hook here - since this changes
      thread context */
-  
+
   if (deprecated_context_hook)
     deprecated_context_hook (pid_to_thread_id (inferior_ptid));
-  
+
   return GDB_RC_OK;
 }
 
@@ -903,3 +906,5 @@ The new thread ID must be currently known."),
   if (!xdb_commands)
     add_com_alias ("t", "thread", class_run, 1);
 }
+
+/* EOF */

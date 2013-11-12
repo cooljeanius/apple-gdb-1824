@@ -45,6 +45,7 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include "objfiles.h"
 #include "gdbcmd.h"
 #include "regcache.h"
+#include "xm-macosx.h"
 
 #include <sys/ttycom.h>
 #include <sys/ioctl.h>
@@ -80,4 +81,6 @@ macosx_resize_window (int *lines_per_page, int *chars_per_line)
   set_screen_size ();
   set_width ();
 }
+
+/* EOF */
 

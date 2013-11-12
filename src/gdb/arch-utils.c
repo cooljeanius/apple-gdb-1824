@@ -22,6 +22,12 @@
 
 #include "defs.h"
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# warning arch-utils.c expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
+
 #include "arch-utils.h"
 #include "buildsym.h"
 #include "gdbcmd.h"
@@ -388,7 +394,7 @@ show_endian (struct ui_file *file, int from_tty, struct cmd_list_element *c,
   /* APPLE LOCAL begin endianness */
   /* Output the endianness (both what is set by the user, and the
      endianness currently effective) in MI format, if appropriate. */
-  if (!ui_out_is_mi_like_p (uiout)) 
+  if (!ui_out_is_mi_like_p (uiout))
     {
       if (target_byte_order_auto)
 	printf_unfiltered ("The target endianness is set automatically (currently %s endian)\n",
@@ -599,7 +605,7 @@ set_gdbarch_from_file (bfd *abfd)
       curr_bfd_arch_info = gdbarch_bfd_arch_info (current_gdbarch);
       if (abfd_bfd_arch_info != NULL && curr_bfd_arch_info != NULL)
 	{
-	  compatible_bfd_arch_info = bfd_default_compatible (abfd_bfd_arch_info, 
+	  compatible_bfd_arch_info = bfd_default_compatible (abfd_bfd_arch_info,
 							 curr_bfd_arch_info);
 	  if (compatible_bfd_arch_info == NULL)
 	    {
@@ -652,7 +658,7 @@ initialize_current_architecture (void)
   /* determine a default architecture and byte order. */
   struct gdbarch_info info;
   gdbarch_info_init (&info);
-  
+
   /* Find a default architecture. */
   if (info.bfd_arch_info == NULL
       && default_bfd_arch != NULL)
@@ -820,3 +826,5 @@ Show endianness of target."), NULL,
 			set_endian, show_endian,
 			&setlist, &showlist);
 }
+
+/* EOF */

@@ -63,6 +63,10 @@
 /* APPLE LOCAL get the prototype for macosx_skip_trampoline_code */
 #include "macosx-tdep.h"
 
+#ifndef __i386__
+# warning i386-tdep.c is an i386-specific file.
+#endif /* !__i386__ */
+
 /* Register names.  */
 
 static char *i386_register_names[] =
@@ -249,7 +253,7 @@ i386_svr4_reg_to_regnum (int reg)
   return NUM_REGS + NUM_PSEUDO_REGS;
 }
 
-/* Translate a .eh_frame register to DWARF register 
+/* Translate a .eh_frame register to DWARF register
    gcc uses its internal numbering scheme in the eh_frame register numbers
    or something like that... v. gcc/config/i386/darwin.h:DWARF2_FRAME_REG_OUT */
 
@@ -316,13 +320,13 @@ i386_breakpoint_from_pc (CORE_ADDR *pc, int *len)
 #define I386_NUM_SAVED_REGS	I386_NUM_GREGS
 
 /* APPLE LOCAL: Needed by Fix and Continue
-   Returns 1 if it found a pic base being set up, 0 if it did not. 
-   If PICBASE_ADDR is non-NULL, it will be set to the value of the 
-   picbase in this function.  If PICBASE_REG is non-NULL, it will 
+   Returns 1 if it found a pic base being set up, 0 if it did not.
+   If PICBASE_ADDR is non-NULL, it will be set to the value of the
+   picbase in this function.  If PICBASE_REG is non-NULL, it will
    be set to the register that contains the pic base. */
 
 int
-i386_find_picbase_setup (CORE_ADDR pc, CORE_ADDR *picbase_addr, 
+i386_find_picbase_setup (CORE_ADDR pc, CORE_ADDR *picbase_addr,
                          enum i386_regnum *picbase_reg)
 {
   int limit = 32;  /* number made up by me; 32 bytes is enough for a prologue */
@@ -336,7 +340,7 @@ i386_find_picbase_setup (CORE_ADDR pc, CORE_ADDR *picbase_addr,
   while (skip < limit)
     {
       int length = length_of_this_instruction (pc + skip);
-      /* Did we just find a CALL instruction?  It's probably our 
+      /* Did we just find a CALL instruction?  It's probably our
          picbase setup call.  */
       if (length == 5)
         {
@@ -424,7 +428,7 @@ i386_find_picbase_setup (CORE_ADDR pc, CORE_ADDR *picbase_addr,
     }
 
   /* Nope, it must have been a CALL to something else; give up. */
-  return 0;  
+  return 0;
 }
 
 /* Return PC of first real instruction.  */
@@ -592,7 +596,7 @@ static CORE_ADDR
 i386_frame_base_address (struct frame_info *next_frame, void **this_cache)
 {
   struct x86_frame_cache *cache = x86_frame_cache (next_frame, this_cache, 4);
-  x86_finalize_saved_reg_locations (next_frame, cache); 
+  x86_finalize_saved_reg_locations (next_frame, cache);
 
   return cache->frame_base - 4;
 }
@@ -715,7 +719,7 @@ i386_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
   sp -= 4;
   store_unsigned_integer (buf, 4, bp_addr);
   write_memory (sp, buf, 4);
-	
+
   /* Finally, update the stack pointer...  */
   store_unsigned_integer (buf, 4, sp);
   regcache_cooked_write (regcache, I386_ESP_REGNUM, buf);
@@ -889,16 +893,18 @@ static const char *struct_convention = default_struct_convention;
 
 /* Return non-zero if TYPE is a non-POD structure or union type.  */
 
-//static int
-//i386_non_pod_p (struct type *type)
-//{
-  ///* ??? A class with a base class certainly isn't POD, but does this
-     //catch all non-POD structure types?  */
-  //if (TYPE_CODE (type) == TYPE_CODE_STRUCT && TYPE_N_BASECLASSES (type) > 0)
-    //return 1;
-//
-  //return 0;
-//}
+#if 0
+static int
+i386_non_pod_p (struct type *type)
+{
+  /* ??? A class with a base class certainly is NOT POD, but does this
+     catch all non-POD structure types?  */
+	if (TYPE_CODE (type) == TYPE_CODE_STRUCT && TYPE_N_BASECLASSES (type) > 0) {
+		return 1;
+	}
+  return 0;
+}
+#endif /* 0 */
 
 /* Return non-zero if TYPE, which is assumed to be a structure or
    union type, should be returned in registers for architecture
@@ -1006,7 +1012,7 @@ i386_build_mmx_type (void)
 {
   /* The type we're building is this: */
 #if 0
-  union __gdb_builtin_type_vec64i 
+  union __gdb_builtin_type_vec64i
   {
     int64_t uint64;
     int32_t v2_int32[2];
@@ -1380,7 +1386,7 @@ i386_sigtramp_p (struct frame_info *next_frame)
 }
 
 
-/* We have two flavours of disassembly.  The machinery on this page
+/* We have two flavours of disassembly. The machinery on this page
    deals with switching between those.  */
 
 static int
@@ -1394,11 +1400,11 @@ i386_print_insn (bfd_vma pc, struct disassemble_info *info)
   info->disassembler_options = (char *) disassembly_flavor;
   info->mach = gdbarch_bfd_arch_info (current_gdbarch)->mach;
 
-  return print_insn_i386 (pc, info);
+  return print_insn_i386 (pc, info); /* where is this from? */
 }
-
 
-/* i386 register groups.  In addition to the normal groups, add "mmx"
+
+/* i386 register groups. In addition to the normal groups, add "mmx"
    and "sse".  */
 
 static struct reggroup *i386_sse_reggroup;
@@ -1453,7 +1459,7 @@ i386_register_reggroup_p (struct gdbarch *gdbarch, int regnum,
 /* Get the ARGIth function argument for the current function.  */
 
 static CORE_ADDR
-i386_fetch_pointer_argument (struct frame_info *frame, int argi, 
+i386_fetch_pointer_argument (struct frame_info *frame, int argi,
 			     struct type *type)
 {
   CORE_ADDR sp = get_frame_register_unsigned  (frame, I386_ESP_REGNUM);
@@ -1476,7 +1482,7 @@ i386_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   tdep = XMALLOC (struct gdbarch_tdep);
   gdbarch = gdbarch_alloc (&info, tdep);
 
-  /* APPLE LOCAL: This cpu family is only 32 bit, but we use wordsize to 
+  /* APPLE LOCAL: This cpu family is only 32 bit, but we use wordsize to
      distinguish between ppc32 and ppc64 -- so to allow for generic code,
      we have wordsize over here, too.  */
   tdep->wordsize = 4;
@@ -1492,22 +1498,22 @@ i386_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   tdep->sizeof_fpregset = I387_SIZEOF_FSAVE;
 
   /* The default settings include the FPU registers, the MMX registers
-     and the SSE registers.  This can be overridden for a specific ABI
+     and the SSE registers. This can be overridden for a specific ABI
      by adjusting the members `st0_regnum', `mm0_regnum' and
      `num_xmm_regs' of `struct gdbarch_tdep', otherwise the registers
-     will show up in the output of "info all-registers".  Ideally we
+     will show up in the output of "info all-registers". Ideally we
      should try to autodetect whether they are available, such that we
      can prevent "info all-registers" from displaying registers that
-     aren't available.
+     are NOT available.
 
-     NOTE: kevinb/2003-07-13: ... if it's a choice between printing
-     [the SSE registers] always (even when they don't exist) or never
+     NOTE: kevinb/2003-07-13: ... if it is a choice between printing
+     [the SSE registers] always (even when they do NOT exist) or never
      showing them to the user (even when they do exist), I prefer the
      former over the latter.  */
 
   tdep->st0_regnum = I386_ST0_REGNUM;
 
-  /* The MMX registers are implemented as pseudo-registers.  Put off
+  /* The MMX registers are implemented as pseudo-registers. Put off
      calculating the register number for %mm0 until we know the number
      of raw registers.  */
   tdep->mm0_regnum = 0;
@@ -1537,7 +1543,7 @@ i386_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   /* APPLE LOCAL: long double is 128 bits on Mac OS X. */
   set_gdbarch_long_double_bit (gdbarch, 128);
 
-  /* The default ABI includes general-purpose registers, 
+  /* The default ABI includes general-purpose registers,
      floating-point registers, and the SSE registers.  */
   set_gdbarch_num_regs (gdbarch, I386_SSE_NUM_REGS);
   set_gdbarch_register_name (gdbarch, i386_register_name);
@@ -1703,10 +1709,10 @@ maintenance_i386_prologue_parser (char *arg, int from_tty)
     cache = x86_alloc_frame_cache (4);
 
   parsed_to = x86_analyze_prologue (start_address, end_address + 1, cache);
-  
+
   func = lookup_minimal_symbol_by_pc_section (start_address, NULL);
-  printf_filtered ("Analyzing the prologue of '%s' 0x%s.\n", 
-                   SYMBOL_LINKAGE_NAME (func), 
+  printf_filtered ("Analyzing the prologue of '%s' 0x%s.\n",
+                   SYMBOL_LINKAGE_NAME (func),
                    paddr_nz (SYMBOL_VALUE_ADDRESS (func)));
   if (func != lookup_minimal_symbol_by_pc_section (parsed_to, NULL))
     {
@@ -1716,7 +1722,7 @@ maintenance_i386_prologue_parser (char *arg, int from_tty)
                        SYMBOL_LINKAGE_NAME (func), SYMBOL_LINKAGE_NAME (func));
       parse_failed = 1;
     }
-  else 
+  else
     {
       printf_filtered ("Prologue parser parsed to address 0x%s (%d bytes)",
                        paddr_nz (parsed_to), (int) (parsed_to - start_address));
@@ -1778,11 +1784,11 @@ The valid values are \"att\" and \"intel\", and the default value is \"att\"."),
 			&setlist, &showlist);
 
   /* APPLE LOCAL: maint i386-prologue-parser */
-  add_cmd ("i386-prologue-parser", class_maintenance, 
-           maintenance_i386_prologue_parser, 
+  add_cmd ("i386-prologue-parser", class_maintenance,
+           maintenance_i386_prologue_parser,
            "Run the i386 prologue analyzer on a function.\n"
            "arg1 is start address of function\n"
-           "arg2 is optional end-address, defaulting to startaddr + 32 bytes.", 
+           "arg2 is optional end-address, defaulting to startaddr + 32 bytes.",
            &maintenancelist);
 
   /* Add the variable that controls the convention for returning
@@ -1801,3 +1807,5 @@ is \"default\"."),
   /* Initialize the i386 specific register groups.  */
   i386_init_reggroups ();
 }
+
+/* EOF */

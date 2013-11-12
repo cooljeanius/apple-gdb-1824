@@ -34,17 +34,23 @@
 #include <regex.h>
 
 #ifdef TUI
-#include "tui/tui.h"		/* For tui_get_command_dimension.   */
-#endif
+# include "tui/tui.h"		/* For tui_get_command_dimension.   */
+#endif /* TUI */
 
 #ifdef __GO32__
-#include <pc.h>
-#endif
+# include <pc.h>
+#endif /* __GO32__ */
 
-/* SunOS's curses.h has a '#define reg register' in it.  Thank you Sun. */
+/* SunOS's curses.h has a '#define reg register' in it. Thank you Sun. */
 #ifdef reg
-#undef reg
-#endif
+# undef reg
+#endif /* reg */
+
+#if defined(NM_NEXTSTEP) || defined(TM_NEXTSTEP)
+# include "xm-macosx.h"
+#else
+# define UTILS_C_NOT_ON_NEXTSTEP 1
+#endif /* NM_NEXTSTEP || TM_NEXTSTEP */
 
 #include <signal.h>
 #include "gdbcmd.h"
@@ -71,20 +77,20 @@
 #include "readline/readline.h"
 
 #ifdef USE_MMALLOC
-#include "mmalloc.h"
-#endif
+# include "mmalloc.h"
+#endif /* USE_MMALLOC */
 
 #include "mach-o.h"
 
 #if !HAVE_DECL_MALLOC
 extern PTR malloc ();		/* OK: PTR */
-#endif
+#endif /* !HAVE_DECL_MALLOC */
 #if !HAVE_DECL_REALLOC
 extern PTR realloc ();		/* OK: PTR */
-#endif
+#endif /* !HAVE_DECL_REALLOC */
 #if !HAVE_DECL_FREE
 extern void free ();
-#endif
+#endif /* !HAVE_DECL_FREE */
 
 /* readline defines this.  */
 #undef savestring
@@ -328,17 +334,17 @@ make_cleanup_ui_file_delete (struct ui_file *arg)
   return make_my_cleanup (&cleanup_chain, do_ui_file_delete, arg);
 }
 
-static void 
-do_ui_out_delete (void *arg) 
-{ 
-  ui_out_delete (arg); 
-} 
- 
-struct cleanup * 
-make_cleanup_ui_out_delete (struct ui_out *arg) 
-{ 
-  return make_my_cleanup (&cleanup_chain, do_ui_out_delete, arg); 
-} 
+static void
+do_ui_out_delete (void *arg)
+{
+  ui_out_delete (arg);
+}
+
+struct cleanup *
+make_cleanup_ui_out_delete (struct ui_out *arg)
+{
+  return make_my_cleanup (&cleanup_chain, do_ui_out_delete, arg);
+}
 
 static void
 do_restore_uiout_cleanup (void *arg)
@@ -414,7 +420,7 @@ make_my_cleanup (struct cleanup **pmy_chain, make_cleanup_ftype *function,
   struct cleanup *old_chain = *pmy_chain;
 
   if (!function)
-    internal_error (__FILE__, __LINE__, 
+    internal_error (__FILE__, __LINE__,
 		    "Someone tried to put a null function on the cleanup chain!");
 
   new = (struct cleanup *) xmalloc (sizeof (struct cleanup));
@@ -874,7 +880,7 @@ internal_vproblem (struct internal_problem *problem,
     vfprintf (stderr, fmt, ap);
     fputs ("\n", stderr);
     abort ();
-  }    
+  }
 
   /* Try to get the message out and at the start of a new line.  */
   target_terminal_ours ();
@@ -1195,9 +1201,9 @@ init_mmalloc_default_pool (void *md)
 
 /* Called when a memory allocation fails, with the number of bytes of
    memory requested in SIZE. */
- 
-NORETURN void 
-nomem (long size) 
+
+NORETURN void
+nomem (long size)
 {
   if (size > 0)
     {
@@ -1525,7 +1531,7 @@ gdb_print_host_address (const void *addr, struct ui_file *stream)
 /* Ask user a y-or-n question and return 1 iff answer is yes.
    Takes three args which are given to printf to print the question.
    The first, a control string, should end in "? ".
-   It should not say how to answer, because we do that.  
+   It should not say how to answer, because we do that.
    APPLE LOCAL: return 2 if the query was auto-answered.  Do this
    because for internal_error, we want to print out the error message
    when run under the MI.  */
@@ -1705,7 +1711,7 @@ defaulted_query (const char *ctlstr, const char defchar, va_list args)
 	}
       /* Otherwise, for the default, the user may either specify
          the required input or have it default by entering nothing.  */
-      if (answer == def_answer || answer == '\n' || 
+      if (answer == def_answer || answer == '\n' ||
 	  answer == '\r' || answer == EOF)
 	{
 	  retval = def_value;
@@ -2041,12 +2047,12 @@ init_page_info (void)
              not useful (e.g. emacs shell window), so disable paging.  */
           lines_per_page = UINT_MAX;
         }
-      
+
       /* FIXME: Get rid of this junk.  */
 #if defined(SIGWINCH) && defined(SIGWINCH_HANDLER)
       SIGWINCH_HANDLER (SIGWINCH);
 #endif
-      
+
       /* If the output is not a terminal, don't paginate it.  */
       if (!ui_file_isatty (gdb_stdout))
         lines_per_page = UINT_MAX;
@@ -2131,7 +2137,7 @@ prompt_for_continue (void)
     strcat (cont_prompt, "\n\032\032prompt-for-continue\n");
 
   /* We must do this *before* we call gdb_readline, else it will eventually
-     call us -- thinking that we're trying to print beyond the end of the 
+     call us -- thinking that we're trying to print beyond the end of the
      screen.  */
   reinitialize_more_filter ();
 
@@ -2179,7 +2185,7 @@ reinitialize_more_filter (void)
 }
 
 /* Indicate that if the next sequence of characters overflows the line,
-   a newline should be inserted here rather than when it hits the end. 
+   a newline should be inserted here rather than when it hits the end.
    If INDENT is non-null, it is a string to be printed to indent the
    wrapped part on the next line.  INDENT must remain accessible until
    the next call to wrap_here() or until a newline is printed through
@@ -2234,11 +2240,11 @@ wrap_here (char *indent)
     }
 }
 
-/* Print input string to gdb_stdout, filtered, with wrap, 
+/* Print input string to gdb_stdout, filtered, with wrap,
    arranging strings in columns of n chars. String can be
-   right or left justified in the column.  Never prints 
+   right or left justified in the column.  Never prints
    trailing spaces.  String should never be longer than
-   width.  FIXME: this could be useful for the EXAMINE 
+   width.  FIXME: this could be useful for the EXAMINE
    command, which currently doesn't tabulate very well */
 
 void
@@ -2387,7 +2393,7 @@ fputs_maybe_filtered (const char *linebuffer, struct ui_file *stream,
 		  /* FIXME, this strlen is what prevents wrap_indent from
 		     containing tabs.  However, if we recurse to print it
 		     and count its chars, we risk trouble if wrap_indent is
-		     longer than (the user settable) chars_per_line. 
+		     longer than (the user settable) chars_per_line.
 		     Note also that this can set chars_printed > chars_per_line
 		     if we are printing a long string.  */
 		  chars_printed = strlen (wrap_indent)
@@ -3237,16 +3243,16 @@ hex_string_custom (LONGEST num, int width)
 
 /* Convert VAL to a numeral in the given radix.  For
  * radix 10, IS_SIGNED may be true, indicating a signed quantity;
- * otherwise VAL is interpreted as unsigned.  If WIDTH is supplied, 
+ * otherwise VAL is interpreted as unsigned.  If WIDTH is supplied,
  * it is the minimum width (0-padded if needed).  USE_C_FORMAT means
- * to use C format in all cases.  If it is false, then 'x' 
+ * to use C format in all cases.  If it is false, then 'x'
  * and 'o' formats do not include a prefix (0x or leading 0). */
 
 char *
-int_string (LONGEST val, int radix, int is_signed, int width, 
+int_string (LONGEST val, int radix, int is_signed, int width,
 	    int use_c_format)
 {
-  switch (radix) 
+  switch (radix)
     {
     case 16:
       {
@@ -3278,7 +3284,7 @@ int_string (LONGEST val, int radix, int is_signed, int width,
       internal_error (__FILE__, __LINE__,
 		      _("failed internal consistency check"));
     }
-}	
+}
 
 /* Convert a CORE_ADDR into a string.  */
 const char *
@@ -3416,7 +3422,7 @@ xfullpath (const char *filename)
   char *real_path;
   char *result;
 
-  /* Extract the basename of filename, and return immediately 
+  /* Extract the basename of filename, and return immediately
      a copy of filename if it does not contain any directory prefix. */
   if (base_name == filename)
     return xstrdup (filename);
@@ -3611,7 +3617,7 @@ breakup_args (char *scratch, int *argc, char **argv)
 
 /* We may have one bundle embedded inside another; we want the innermost
    bundle name we can find.  So we need a reverse strstr() function.  Here's
-   a simple way to do it; it could probably be done more efficiently. 
+   a simple way to do it; it could probably be done more efficiently.
 
    Search string S to find the last occurrence of substring R.
    Returns NULL if R is not present in S.  */
@@ -3636,7 +3642,7 @@ strrstr (const char *s, const char *r)
 }
 
 /* Search a string between BEG and END for character C, scanning backwards
-   from END to BEG.  
+   from END to BEG.
    Returns a pointer to the matched character, or NULL if not present in the
    string.  */
 
@@ -3655,11 +3661,11 @@ strrchr_bounded (const char *beg, const char *end, char c)
 }
 
 /* This version is like basename(3) but instead of returning a pointer to the
-   final component of the filename, it returns a pointer to the name of a 
+   final component of the filename, it returns a pointer to the name of a
    bundle in FILEPATH, if any.  There may be bundles nested inside frameworks
-   nested inside app bundles -- a pointer to the innermost (i.e. last) bundle 
+   nested inside app bundles -- a pointer to the innermost (i.e. last) bundle
    name will be returned.
-   
+
    Some example test paths:
 
    /System/Library/PreferencePanes/Localization.prefPane/Contents/Resources/IntlKeyboard.prefPane/Contents/Resources/sv.lproj/IntlKeyboard.nib
@@ -3680,9 +3686,9 @@ strrchr_bounded (const char *beg, const char *end, char c)
   An example path that this function does not handle correctly today:
   /tmp/SampleApplication/BundleLoadTester/Debug/BundleLoadTester.app/Contents/Frameworks/Contents.bundle/Contents/MacOS/Contents
 
-  NB: One bug with this function as it is currently written is that we 
+  NB: One bug with this function as it is currently written is that we
   look for a string like "Contents" to indicate a typical app bundle,
-  "Versions" to indicate a framework bundle, etc.  This works fine until 
+  "Versions" to indicate a framework bundle, etc.  This works fine until
   someone has Versions.app or Contents.framework with that name repeated
   down lower in the bundle.
 
@@ -3753,8 +3759,8 @@ bundle_basename (const char *filepath)
         }
     }
 
-  /* Look for: QTMPEG.component/Contents/Resources/Dutch.lproj/Localized.rsrc 
-     Should return Dutch.lproj here, or a shallow bundle on the 
+  /* Look for: QTMPEG.component/Contents/Resources/Dutch.lproj/Localized.rsrc
+     Should return Dutch.lproj here, or a shallow bundle on the
      iPhone platform  */
 
   if (have_bundle == 0
@@ -3805,8 +3811,8 @@ bundle_basename (const char *filepath)
     return NULL;
   if (dot + 1 == bundle_name_end)
     return NULL;
-  /* this should not happen -- we did something wrong if we didn't find
-     a dot in the bundle name -- but guard against it so we don't crash.  */
+  /* this should not happen -- we did something wrong if we did NOT find
+     a dot in the bundle name -- but guard against it so we do NOT crash.  */
   if (dot == NULL)
     return NULL;
 
@@ -3857,7 +3863,7 @@ get_binary_file_uuids (const char *filename)
           nbfd = bfd_openr_next_archived_file (abfd, nbfd);
           if (nbfd == NULL)
             break;
-          if (!bfd_check_format (nbfd, bfd_object) 
+          if (!bfd_check_format (nbfd, bfd_object)
               && !bfd_check_format (nbfd, bfd_archive))
             continue;
 
@@ -3913,7 +3919,7 @@ puuid (uint8_t *uuid)
 
 static int orig_file_rlimit;
 
-void 
+void
 restore_file_rlimit ()
 {
   struct rlimit limit;
@@ -3925,7 +3931,7 @@ restore_file_rlimit ()
   setrlimit (RLIMIT_NOFILE, &limit);
 }
 
-void 
+void
 unlimit_file_rlimit ()
 {
   struct rlimit limit;
@@ -3945,7 +3951,7 @@ unlimit_file_rlimit ()
     }
   /* rlim_max is set to RLIM_INFINITY on X, at least on Leopard &
      SnowLeopard.  so it's better to see what we really got and use
-     cur, not max below...  */ 
+     cur, not max below...  */
   getrlimit (RLIMIT_NOFILE, &limit);
 
   /* Reserve 10% of file descriptors for non-BFD uses, or 5, whichever
@@ -3971,7 +3977,7 @@ static int rebuf_needs_freeing = 0;
 static int regex_fmt = REG_BASIC;
 
 // newflags is a bitmask of
-// REG_EXTENDED, REG_BASIC, REG_NOSPEC, REG_ICASE, REG_NOSUB, REG_NEWLINE, 
+// REG_EXTENDED, REG_BASIC, REG_NOSPEC, REG_ICASE, REG_NOSUB, REG_NEWLINE,
 // REG_PEND used for subsequent re_comp's
 
 int
@@ -4026,7 +4032,7 @@ re_exec (const char *str)
    This is a one-shot re_search impl.  */
 
 int
-re_search_oneshot (regex_t *patbuf, const char *str, int size, int start, 
+re_search_oneshot (regex_t *patbuf, const char *str, int size, int start,
                    int range, void *regs)
 {
   regmatch_t matches[10];
@@ -4036,4 +4042,6 @@ re_search_oneshot (regex_t *patbuf, const char *str, int size, int start,
   if (matches[0].rm_so == matches[0].rm_eo)
     return -1;
   return matches[0].rm_so;
-}  
+}
+
+/* EOF */

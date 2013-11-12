@@ -29,7 +29,7 @@ struct regset;
 struct regcache;
 
 /* GDB's i386 target supports both the 32-bit Intel Architecture
-   (IA-32) and the 64-bit AMD x86-64 architecture.  Internally it uses
+   (IA-32) and the 64-bit AMD x86-64 architecture. Internally it uses
    a similar register layout for both.
 
    - General purpose registers
@@ -39,10 +39,10 @@ struct regcache;
    - SSE control register
 
    The general purpose registers for the x86-64 architecture are quite
-   different from IA-32.  Therefore, the FP0_REGNUM target macro
+   different from IA-32. Therefore, the FP0_REGNUM target macro
    determines the register number at which the FPU data registers
-   start.  The number of FPU data and control registers is the same
-   for both architectures.  The number of SSE registers however,
+   start. The number of FPU data and control registers is the same
+   for both architectures. The number of SSE registers however,
    differs and is determined by the num_xmm_regs member of `struct
    gdbarch_tdep'.  */
 
@@ -67,7 +67,7 @@ struct gdbarch_tdep
   struct regset *fpregset;
   size_t sizeof_fpregset;
 
-  /* APPLE LOCAL: We use the wordsize to be the size of the 
+  /* APPLE LOCAL: We use the wordsize to be the size of the
      GPR registers that are actually passed in the ABI.  This isn't
      an issue for Intel, where we always pass the full size of
      the register that the ABI allows, but this is here to
@@ -195,7 +195,7 @@ extern void i386_svr4_init_abi (struct gdbarch_info, struct gdbarch *);
 
 /* APPLE LOCAL */
 int i386_find_picbase_setup (CORE_ADDR, CORE_ADDR *, enum i386_regnum *);
-
+
 
 /* Functions and variables exported from i386bsd-tdep.c.  */
 

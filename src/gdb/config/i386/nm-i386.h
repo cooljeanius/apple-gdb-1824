@@ -1,4 +1,5 @@
-/* Native macro definitions for GDB on an Intel i[3456]86.
+/* nm-i386.h
+   Native macro definitions for GDB on an Intel i[3456]86.
    Copyright 2001, 2004 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -112,7 +113,7 @@ extern int i386_stopped_by_watchpoint (void);
   i386_remove_hw_breakpoint (addr, shadow)
 
 /* child_post_startup_inferior used to
-   reset all debug registers by calling i386_cleanup_dregs ().  */ 
+   reset all debug registers by calling i386_cleanup_dregs ().  */
 #define CHILD_POST_STARTUP_INFERIOR
 
 #endif /* I386_USE_GENERIC_WATCHPOINTS */

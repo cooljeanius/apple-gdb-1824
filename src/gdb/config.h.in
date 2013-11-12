@@ -426,6 +426,9 @@
 /* Define to 1 if you have the <paths.h> header file. */
 #undef HAVE_PATHS_H
 
+/* Define to 1 if you have the <pc.h> header file. */
+#undef HAVE_PC_H
+
 /* Define to 1 if you have the `poll' function. */
 #undef HAVE_POLL
 

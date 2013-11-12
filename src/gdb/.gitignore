@@ -1,6 +1,7 @@
 # src/gdb/.gitignore
 
 Makefile
+Makefile.bak
 .gdbinit
 config.h
 xm.h

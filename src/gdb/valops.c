@@ -50,6 +50,9 @@
 
 #if defined(NM_NEXTSTEP) || defined(TM_NEXTSTEP)
 # include "macosx-nat-infthread.h"
+# include "macosx/macosx-nat-infthread.h"
+#else
+# define VALOPS_C_NOT_ON_NEXTSTEP 1
 #endif /* NM_NEXTSTEP || TM_NEXTSTEP */
 
 extern int overload_debug;
