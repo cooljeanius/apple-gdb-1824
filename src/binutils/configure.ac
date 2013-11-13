@@ -13,6 +13,7 @@ AC_CONFIG_AUX_DIR([..])
 
 AC_CANONICAL_TARGET
 AC_SEARCH_LIBS([strerror],[cposix])
+AC_USE_SYSTEM_EXTENSIONS
 
 # Automake
 if test -f ${srcdir}/config.status; then
@@ -134,6 +135,8 @@ AC_DEFUN([AM_REQUIRE_EXTRA_AUTOMAKE_CHECKS],[
   AC_REQUIRE([AC_PROG_GREP])dnl
   AC_REQUIRE([AM_MAKE_INCLUDE])dnl
   AC_REQUIRE([AM_SANITY_CHECK])dnl
+  AC_REQUIRE([AC_PROG_AWK])dnl
+  AC_REQUIRE([AC_PROG_CPP])dnl
 ])
 AM_REQUIRE_EXTRA_AUTOMAKE_CHECKS
 
@@ -164,6 +167,8 @@ AC_DEFUN([AC_GETTEXT_SUBCHECKS],[
   ])
 ])
 AC_GETTEXT_SUBCHECKS
+dnl# I forget, why am I not just using AM\_GNU\_GETTEXT?
+dnl# Anyways... continuing with library checks:
 AC_CHECK_LIB([c],[printf])
 # FIXME: Replace `main' with a function in `-lcc_dynamic':
 AC_CHECK_LIB([cc_dynamic],[main])
@@ -181,23 +186,28 @@ AC_CHECK_LIB([iberty],[main])
 AC_CHECK_LIB([gnu],[main])
 
 # Checks for header files.
-AC_CHECK_HEADERS([assert.h errno.h fcntl.h gettext.h iconv.h libgettext.h \
-                  libintl.h locale.h malloc.h malloc/malloc.h stdarg.h \
-                  stddef.h stdio.h sys/file.h sys/time.h utime.h \
-                  varargs.h])
+AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
+AC_CHECK_HEADERS([assert.h errno.h fcntl.h gettext.h iconv.h langinfo.h \
+                  libgettext.h libintl.h limits.h locale.h mach/mach.h \
+                  malloc.h malloc/malloc.h stdarg.h stddef.h stdio.h \
+                  sys/file.h sys/param.h sys/time.h utime.h \
+                  varargs.h wchar.h wctype.h])
 AC_CHECK_HEADERS_ONCE([time.h])
 AC_HEADER_SYS_WAIT
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
 AC_C_PROTOTYPES
+AC_C_RESTRICT
 AC_CHECK_TYPES([FILE])
 AC_TYPE_INT8_T
 AC_TYPE_INT16_T
 AC_TYPE_INT32_T
+AC_TYPE_SSIZE_T
 AC_TYPE_UINT8_T
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
+AC_TYPE_UINT64_T
 AC_CHECK_TYPES([iconv_t])
 
 # Checks for library functions.
@@ -211,11 +221,13 @@ AC_FUNC_MALLOC
 AC_FUNC_OBSTACK
 AC_FUNC_REALLOC
 AC_FUNC_STRCOLL
+AC_FUNC_STRNLEN
 AC_CHECK_FUNCS([bindtextdomain ctime dcgettext dup2 fclose fopen \
-                fprintf fputs fread free getc_unlocked memchr memcmp \
-                memcpy memmove memset rmdir sbrk setlocale setmode \
-                strdup strerror strncasecmp strrchr strspn strstr \
-                strtol strtoul textdomain utime utimes])
+                fprintf fputs fread free getc_unlocked gettimeofday \
+                memchr memcmp memcpy memmove memset re_comp regcomp \
+                rmdir sbrk setlocale setmode strdup strerror strncasecmp \
+                strrchr strspn strstr strtol strtoul strverscmp \
+                textdomain utime utimes])
 AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu])
 AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu])
 
