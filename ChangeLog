@@ -1,5 +1,21 @@
 2013-11-13  Eric Gallager  <egallager@comcast.net>
 
+	more misc file additions
+
+	such as lazarus gdb support files
+
+	Change-Id: Ic6adbf3935ca25388eed0f904962a0daee9e5222
+
+2013-11-13  Eric Gallager  <egallager@comcast.net>
+
+	copy fpc bindings to gdb and bfd from Fink's fpcsrc package
+
+	and also BFD.pm from Fink's bfd-pm package
+
+	Change-Id: I517a6d0e7a4982a6d2b034e1b890f314f937b3c0
+
+2013-11-13  Eric Gallager  <egallager@comcast.net>
+
 	add src/elfcpp directory
 
 	Change-Id: I148b8a9f1cbca95cfa79cea86e5c580fe4aaed73
