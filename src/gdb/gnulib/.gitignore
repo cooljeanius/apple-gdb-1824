@@ -22,3 +22,7 @@ GSYMS
 GPATH
 tags
 Makefile
+Makefile.orig
+cscope*.out
+cscope.files
+config*.lineno

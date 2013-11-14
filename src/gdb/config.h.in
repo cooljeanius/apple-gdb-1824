@@ -247,6 +247,9 @@
 /* Define to 1 if you have the `isascii' function. */
 #undef HAVE_ISASCII
 
+/* Define to 1 if you have the <langinfo.h> header file. */
+#undef HAVE_LANGINFO_H
+
 /* Define if your locale.h file contains LC_MESSAGES. */
 #undef HAVE_LC_MESSAGES
 
@@ -847,6 +850,9 @@
 /* Define to 1 if you have the `unw_search_unwind_table_p' function. */
 #undef HAVE_UNW_SEARCH_UNWIND_TABLE_P
 
+/* Define to 1 if you have the <utmp.h> header file. */
+#undef HAVE_UTMP_H
+
 /* Define to 1 if you have the <values.h> header file. */
 #undef HAVE_VALUES_H
 
@@ -1111,6 +1117,9 @@
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
 
+/* Define to `int' if <sys/types.h> doesn't define. */
+#undef gid_t
+
 /* Define to `__inline__' or `__inline' if that's what the C compiler
    calls it, or to nothing if 'inline' is not supported under any name.  */
 #ifndef __cplusplus
@@ -1174,6 +1183,9 @@
 
 /* Define on a GNU/Linux system to work around problems in sys/procfs.h. */
 #undef sys_quotactl
+
+/* Define to `int' if <sys/types.h> doesn't define. */
+#undef uid_t
 
 /* Define to the type of an unsigned integer type of width exactly 16 bits if
    such a type exists and the standard includes do not define it. */

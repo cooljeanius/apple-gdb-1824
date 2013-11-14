@@ -119,12 +119,12 @@ default_gcore_mach (void)
 #if 1	/* See if this even matters...  */
   return 0;
 #else
-#ifdef TARGET_ARCHITECTURE
+# ifdef TARGET_ARCHITECTURE
   const struct bfd_arch_info *bfdarch = TARGET_ARCHITECTURE;
 
   if (bfdarch != NULL)
     return bfdarch->mach;
-#endif /* TARGET_ARCHITECTURE */
+# endif /* TARGET_ARCHITECTURE */
   if (exec_bfd == NULL)
     error (_("Can't find default bfd machine type (need execfile)."));
 
@@ -140,9 +140,9 @@ default_gcore_arch (void)
 
   if (bfdarch != NULL)
     return bfdarch->arch;
-#endif
+#endif /* TARGET_ARCHITECTURE */
   if (exec_bfd == NULL)
-    error (_("Can't find bfd architecture for corefile (need execfile)."));
+    error (_("Cannot find bfd architecture for corefile (need execfile)."));
 
   return bfd_get_arch (exec_bfd);
 }
@@ -498,3 +498,5 @@ Argument is optional filename.  Default filename is 'core.<process_id>'."));
   add_com_alias ("gcore", "generate-core-file", class_files, 1);
   exec_set_find_memory_regions (objfile_find_memory_regions);
 }
+
+/* EOF */

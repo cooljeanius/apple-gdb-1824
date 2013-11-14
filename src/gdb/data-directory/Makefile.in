@@ -111,7 +111,7 @@ FLAGS_TO_PASS = \
 .PHONY: all
 all: stamp-syscalls stamp-python stamp-system-gdbinit
 
-# For portability's sake, we need to handle systems that don't have
+# For portability's sake, we need to handle systems that do NOT have
 # symbolic links.
 stamp-syscalls: Makefile $(SYSCALLS_FILES)
 	rm -rf ./$(SYSCALLS_DIR)
@@ -236,7 +236,7 @@ uninstall-system-gdbinit:
 
 # Traditionally "install" depends on "all".  But it may be useful
 # not to; for example, if the user has made some trivial change to a
-# source file and doesn't care about rebuilding or just wants to save the
+# source file and does NOT care about rebuilding or just wants to save the
 # time it takes for make to check that all is up to date.
 # install-only is intended to address that need.
 .PHONY: install

@@ -697,6 +697,9 @@ enable_option_checking=no
 ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
+GDB_DATADIR
+GCORE_TRANSFORM_NAME
+GDB_TRANSFORM_NAME
 LIBICONV
 ac_config_links1
 nm_h
@@ -1067,8 +1070,10 @@ YFLAGS
 XMKMF
 build_gdbserver
 build_rdi_share
-build_nlm'
+build_nlm
+GDB_DATADIR'
 ac_subdirs_all='doc testsuite
+gnulib
 gdbtk
 multi-ice
 gdbserver
@@ -1804,6 +1809,7 @@ Some influential environment variables:
               subdirectory (unsupported, might not work)
   build_nlm   Try to override the decision to build in the nlm subdirectory
               (unsupported, might not work)
+  GDB_DATADIR where to put gdb's data files
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -7219,6 +7225,8 @@ fi
 
 
 subdirs="$subdirs doc testsuite"
+
+subdirs="$subdirs gnulib"
 
 
 # Make sure shell scripts work
@@ -31108,10 +31116,11 @@ unset ac_cv_header_locale_h
 unset ac_cv_header_malloc_h
 unset ac_cv_header_nl_types_h
 unset ac_cv_header_sys_param_h
-for ac_header in arpa/inet.h fcntl.h libintl.h limits.h locale.h \
-                  mach/mach.h malloc.h malloc/malloc.h netdb.h \
-                  netinet/in.h nl_types.h paths.h sys/param.h \
-                  sys/socket.h sys/sysctl.h sys/time.h wchar.h
+for ac_header in arpa/inet.h fcntl.h langinfo.h libintl.h limits.h \
+                  locale.h mach/mach.h malloc.h malloc/malloc.h \
+                  netdb.h netinet/in.h nl_types.h paths.h \
+                  sys/param.h sys/socket.h sys/sysctl.h sys/time.h \
+                  utmp.h wchar.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -31655,6 +31664,36 @@ else
 cat >>confdefs.h <<_ACEOF
 #define ssize_t int
 _ACEOF
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for uid_t in sys/types.h" >&5
+$as_echo_n "checking for uid_t in sys/types.h... " >&6; }
+if ${ac_cv_type_uid_t+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "uid_t" >/dev/null 2>&1; then :
+  ac_cv_type_uid_t=yes
+else
+  ac_cv_type_uid_t=no
+fi
+rm -f conftest*
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_type_uid_t" >&5
+$as_echo "$ac_cv_type_uid_t" >&6; }
+if test $ac_cv_type_uid_t = no; then
+
+$as_echo "#define uid_t int" >>confdefs.h
+
+
+$as_echo "#define gid_t int" >>confdefs.h
 
 fi
 
@@ -37211,7 +37250,24 @@ _ACEOF
 
 
 
-ac_config_files="$ac_config_files Makefile .gdbinit:gdbinit.in gnulib/Makefile"
+transform=`echo "${program_transform_name}" | sed -e 's/\\$\\$/\\$/g'`
+GDB_TRANSFORM_NAME=`echo gdb | sed -e "${transform}"`
+if test "x${GDB_TRANSFORM_NAME}" = x; then
+  export GDB_TRANSFORM_NAME=gdb
+fi
+
+GCORE_TRANSFORM_NAME=`echo gcore | sed -e "${transform}"`
+if test "x${GCORE_TRANSFORM_NAME}" = x; then
+  export GCORE_TRANSFORM_NAME=gcore
+fi
+
+
+if test -z "${GDB_DATADIR}"; then
+    export GDB_DATADIR=${datadir}/gdb
+fi
+
+
+ac_config_files="$ac_config_files Makefile data-directory/Makefile .gdbinit:gdbinit.in gnulib/Makefile gcore gdb-gdb.gdb"
 
 ac_config_commands="$ac_config_commands default"
 
@@ -38701,8 +38757,11 @@ do
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "$ac_config_links_1") CONFIG_LINKS="$CONFIG_LINKS $ac_config_links_1" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+    "data-directory/Makefile") CONFIG_FILES="$CONFIG_FILES data-directory/Makefile" ;;
     ".gdbinit") CONFIG_FILES="$CONFIG_FILES .gdbinit:gdbinit.in" ;;
     "gnulib/Makefile") CONFIG_FILES="$CONFIG_FILES gnulib/Makefile" ;;
+    "gcore") CONFIG_FILES="$CONFIG_FILES gcore" ;;
+    "gdb-gdb.gdb") CONFIG_FILES="$CONFIG_FILES gdb-gdb.gdb" ;;
     "default") CONFIG_COMMANDS="$CONFIG_COMMANDS default" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;

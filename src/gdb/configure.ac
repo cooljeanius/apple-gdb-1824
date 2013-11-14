@@ -261,6 +261,7 @@ if test -z "$DEBUGDIR" -a ! -z "$debugdir"; then
 fi
 
 AC_CONFIG_SUBDIRS([doc testsuite])
+AC_CONFIG_SUBDIRS([gnulib])
 
 # Make sure shell scripts work
 AC_SYS_INTERPRETER
@@ -745,10 +746,11 @@ unset ac_cv_header_locale_h
 unset ac_cv_header_malloc_h
 unset ac_cv_header_nl_types_h
 unset ac_cv_header_sys_param_h
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h libintl.h limits.h locale.h \
-                  mach/mach.h malloc.h malloc/malloc.h netdb.h \
-                  netinet/in.h nl_types.h paths.h sys/param.h \
-                  sys/socket.h sys/sysctl.h sys/time.h wchar.h])
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h langinfo.h libintl.h limits.h \
+                  locale.h mach/mach.h malloc.h malloc/malloc.h \
+                  netdb.h netinet/in.h nl_types.h paths.h \
+                  sys/param.h sys/socket.h sys/sysctl.h sys/time.h \
+                  utmp.h wchar.h])
 
 # Other headers needed for things that I have ifdef-ed:
 unset ac_cv_header_dlfcn_h
@@ -844,6 +846,7 @@ AC_TYPE_INTMAX_T
 AC_TYPE_MODE_T
 AC_TYPE_PID_T
 AC_TYPE_SSIZE_T
+AC_TYPE_UID_T
 AC_TYPE_UINT8_T
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
@@ -2144,7 +2147,29 @@ esac
 
 AM_ICONV
 
-AC_CONFIG_FILES([Makefile .gdbinit:gdbinit.in gnulib/Makefile])
+transform=`echo "${program_transform_name}" | sed -e 's/[\\$][\\$]/\\$/g'`
+GDB_TRANSFORM_NAME=`echo gdb | sed -e "${transform}"`
+if test "x${GDB_TRANSFORM_NAME}" = x; then
+  export GDB_TRANSFORM_NAME=gdb
+fi
+AC_SUBST([GDB_TRANSFORM_NAME])
+GCORE_TRANSFORM_NAME=`echo gcore | sed -e "${transform}"`
+if test "x${GCORE_TRANSFORM_NAME}" = x; then
+  export GCORE_TRANSFORM_NAME=gcore
+fi
+AC_SUBST([GCORE_TRANSFORM_NAME])
+AC_ARG_VAR([GDB_DATADIR],[where to put gdb's data files])
+if test -z "${GDB_DATADIR}"; then
+    export GDB_DATADIR=${datadir}/gdb
+fi
+AC_SUBST([GDB_DATADIR])
+
+AC_CONFIG_FILES([Makefile \
+                 data-directory/Makefile \
+                 .gdbinit:gdbinit.in \
+                 gnulib/Makefile \
+                 gcore \
+                 gdb-gdb.gdb])
 AC_CONFIG_COMMANDS([default],[
 dnl# Autoconf does NOT provide a mechanism for modifying definitions 
 dnl# provided by makefile fragments.

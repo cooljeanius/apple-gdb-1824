@@ -37,6 +37,11 @@ yacc.acts
 yacc.tmp
 y.tab.h
 *.dSYM
+data-directory/Makefile
+gnulib/Makefile
+gcore
+gdb-gdb.gdb
+conf*/*.awk
 
 # Some more Bison-generated parsers and flex-generated lexers I missed:
 ada-exp.c

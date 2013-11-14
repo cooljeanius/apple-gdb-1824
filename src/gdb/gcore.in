@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#   Copyright (C) 2003-2013 Free Software Foundation, Inc.
+# Copyright (C) 2003-2013 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -13,11 +13,11 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #
 # Script to generate a core file of a running program.
-# It starts up gdb, attaches to the given PID and invokes the gcore command.
+# It starts up gdb, attaches to the given PID & invokes the gcore command.
 #
 
 if [ "$#" -eq "0" ]
@@ -70,7 +70,7 @@ if test "x$binary_path" = x. ; then
   fi
 fi
 
-# Check if the GDB binary is in the expected path.  If not, just
+# Check if the GDB binary is in the expected path. If not, just
 # quit with a message.
 if [ ! -f "$binary_path"/@GDB_TRANSFORM_NAME@ ]; then
   echo "gcore: GDB binary (${binary_path}/@GDB_TRANSFORM_NAME@) not found"
