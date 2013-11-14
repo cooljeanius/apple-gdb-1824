@@ -133,7 +133,8 @@ AC_CHECK_LIB([iconv],[iconv])
 
 # Checks for header files.
 AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
-AC_CHECK_HEADERS([errno.h gettext.h libintl.h malloc.h setjmp.h stdio.h])
+AC_CHECK_HEADERS([errno.h gettext.h libintl.h malloc.h setjmp.h stddef.h \
+                  stdio.h stdio_ext.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN

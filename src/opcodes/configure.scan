@@ -17,7 +17,7 @@ AC_CHECK_LIB([intl], [main])
 
 # Checks for header files.
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([libintl.h stdint.h stdlib.h string.h strings.h])
+AC_CHECK_HEADERS([inttypes.h libintl.h stddef.h stdint.h stdlib.h string.h strings.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL

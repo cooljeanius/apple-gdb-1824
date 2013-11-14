@@ -15440,7 +15440,8 @@ if test $ac_cv_header_stdbool_h = yes; then
 $as_echo "#define HAVE_STDBOOL_H 1" >>confdefs.h
 
 fi
- for ac_header in errno.h gettext.h libintl.h malloc.h setjmp.h stdio.h
+ for ac_header in errno.h gettext.h libintl.h malloc.h setjmp.h stddef.h \
+                  stdio.h stdio_ext.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
