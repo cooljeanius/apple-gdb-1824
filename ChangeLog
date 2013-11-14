@@ -5,6 +5,13 @@
 	it still experiences a lot of failures though:
 		=== gdb Summary ===
 
+	# of expected passes		1942
+	# of unexpected failures	192
+	# of known failures		3
+	# of unresolved testcases	19
+	# of untested testcases		15
+	# of unsupported tests		74
+
 	Change-Id: Id5fb58841f82294b2864b53f6b94e6ced14185f1
 
 2013-11-14  Eric Gallager  <egallager@comcast.net>
