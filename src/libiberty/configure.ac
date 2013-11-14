@@ -11,7 +11,7 @@ AC_CONFIG_SRCDIR([xmalloc.c])
 # for this particular configuration, but some shells, instead of
 # keeping the changes in LD private, export them just because LD is
 # exported. We do NOT use libtool yet, but some day we might, so...
-ORIGINAL_LD_FOR_MULTILIBS=$LD
+ORIGINAL_LD_FOR_MULTILIBS=${LD}
 
 dnl# We use these options to decide which functions to include.
 AC_ARG_WITH([target-subdir],
@@ -118,11 +118,11 @@ else
 fi
 
 GCC_NO_EXECUTABLES
+AC_USE_SYSTEM_EXTENSIONS
 AM_PROG_AS
-AC_PROG_CC
 AC_PROG_CPP_WERROR
 
-if test x$GCC = xyes; then
+if test x${GCC} = xyes; then
   ac_libiberty_warn_cflags='-W -Wall -pedantic -Wwrite-strings -Wstrict-prototypes'
 fi
 AC_SUBST([ac_libiberty_warn_cflags])
@@ -150,6 +150,7 @@ AC_DISABLE_SHARED
 dnl# When we start using libtool:
 AC_DEFUN([AC_EXTRA_THINGS_LIBTOOL_WANTS],[
   AC_REQUIRE([AC_PROG_AWK])
+  AC_REQUIRE([AC_PROG_CC])
   AC_REQUIRE([AC_PROG_CPP])
   AC_REQUIRE([AC_PROG_CXX])
   AC_REQUIRE([AC_PROG_MAKE_SET])
@@ -322,9 +323,11 @@ fi
 # relies on it.
 AC_DEFINE([HAVE_UINTPTR_T],[1],[Define if you have the \`uintptr_t' type.])
 
+AC_TYPE_OFF_T
 AC_TYPE_PID_T
 AC_CHECK_TYPES([ptrdiff_t])
 AC_TYPE_SIZE_T
+AC_TYPE_SSIZE_T
 AC_TYPE_INT32_T
 AC_TYPE_UINT32_T
 AC_CHECK_TYPES([regex_t])
@@ -402,6 +405,7 @@ if test "x" = "y"; then
   AC_FUNC_OBSTACK
   AC_FUNC_REALLOC
   AC_FUNC_STRTOD
+  AC_FUNC_STRNLEN
   AC_CHECK_FUNCS([__fsetlocking abort asprintf atexit basename bcmp bcopy \
                   bsearch btowc bzero calloc canonicalize_file_name \
                   clock dup2 ffs getcwd getpagesize getrusage getsysinfo \

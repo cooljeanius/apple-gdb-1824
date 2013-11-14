@@ -70,6 +70,8 @@ info install-info clean-info dvi install etags tags installcheck:
 # The standard clean rules.
 mostlyclean:
 	rm -f test-demangle
+	rm -f test-pexecute
+	rm -rf *.dSYM
 clean: mostlyclean
 distclean: clean
 	rm -f Makefile
