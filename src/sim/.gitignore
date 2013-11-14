@@ -14,6 +14,7 @@ i960/*
 ppc/*
 # gitignore these untested directories until I have them working:
 avr/*
+bfin/*
 cr16/*
 cris/*
 frv/*
@@ -23,10 +24,14 @@ m32c/*
 m32r/*
 m68hc11/*
 mcore/*
+microblaze/*
 mips/*
 mn10200/*
 mn10300/*
 moxie/*
+msp430/*
+rl78/*
+rx/*
 sh/*
 sh64/*
 tic80/*

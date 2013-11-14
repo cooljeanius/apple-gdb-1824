@@ -14,15 +14,31 @@ AC_SUBST([my_CC])
 AC_CONFIG_AUX_DIR([../..])
 AC_CANONICAL_TARGET
 
+# Checks for programs.
+AC_PROG_AWK
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
 
+# Checks for header files.
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
   AC_REQUIRE([AC_HEADER_STDC])
 ])
 AC_REQUIRE_HEADER_STDC
-AC_CHECK_HEADERS([stdio.h])
+AC_CHECK_HEADERS([fcntl.h limits.h netinet/in.h stddef.h stdio.h \
+                  sys/socket.h sys/time.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_C_PROTOTYPES
+AC_TYPE_SIZE_T
+
+# Checks for library functions.
+AC_FUNC_LSTAT dnl# also checks whether it "_FOLLOWS_SLASHED_SYMLINK"
+AC_FUNC_MALLOC
+AC_FUNC_MMAP
+AC_FUNC_REALLOC
+AC_CHECK_FUNCS([ftruncate getcwd gettimeofday memset munmap pathconf \
+                socket strchr strerror strrchr uname])
 
 # Directories to use in all configurations.
 configdirs=""

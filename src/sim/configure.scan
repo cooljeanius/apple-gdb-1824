@@ -20,22 +20,35 @@ AC_PROG_RANLIB
 
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_SUBDIRS([arm
+                   avr
+                   bfin
                    common
+                   cr16
+                   cris
                    d10v
                    d30v
                    erc32
                    fr30
+                   frv
                    h8300
                    h8500
                    i960
                    igen
+                   iq2000
+                   lm32
+                   m32c
                    m32r
                    m68hc11
                    mcore
+                   microblaze
                    mips
                    mn10200
                    mn10300
+                   moxie
+                   msp430
                    ppc
+                   rl78
+                   rx
                    sh
                    sh64
                    testsuite

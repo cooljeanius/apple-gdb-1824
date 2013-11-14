@@ -1,3 +1,4 @@
 # gitignore other subdirectories that are so big that I will have
 # to commit them separately later:
-# (all done)
+bfin/*
+
