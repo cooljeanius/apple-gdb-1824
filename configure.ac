@@ -58,6 +58,8 @@ AM_PROG_LEX
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_MKDIR_P
+AC_PROG_OBJC
+AC_PROG_OBJCXX
 AC_PROG_RANLIB
 AC_PROG_SED
 AC_PROG_YACC
@@ -80,8 +82,8 @@ AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
 AC_CHECK_HEADERS([ApplicationServices/ApplicationServices.h argz.h \
                   fcntl.h float.h gettext.h langinfo.h libgettext.h \
                   libintl.h limits.h locale.h mach/mach.h \
-                  malloc.h malloc/malloc.h netinet/in.h sgtty.h \
-                  stddef.h stdio.h stdio_ext.h sys/file.h \
+                  malloc.h malloc/malloc.h netinet/in.h nl_types.h \
+                  sgtty.h stddef.h stdio.h stdio_ext.h sys/file.h \
                   sys/ioctl.h sys/param.h sys/socket.h sys/time.h \
                   termio.h termios.h wchar.h wctype.h])
 

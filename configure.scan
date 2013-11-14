@@ -37,9 +37,11 @@ AC_CHECK_FUNCS([bzero memmove memset setenv strchr strerror strrchr strstr strto
 AC_CONFIG_FILES([Makefile
                  bin/Makefile
                  bin/lib/tools/Makefile
+                 htdocs/papers/libgdb2/Makefile
                  libcheckpoint/Makefile
                  macsbug/Makefile
                  macsbug/gdb_plugin_support/Makefile])
-AC_CONFIG_SUBDIRS([macgdb
+AC_CONFIG_SUBDIRS([binutils-gdb
+                   macgdb
                    src])
 AC_OUTPUT
