@@ -114,7 +114,7 @@ Test scoping; here is a start
 19	    printf("In h...");
 20	}
 Set a breakpoint in h, and print i, print_line::i, and main::i.  Set a
-breakpoint in main (or don't run the program), and test that
+breakpoint in main (or do NOT run the program), and test that
 print_line::i is an error.  But if i were static, "p main::i" should
 work even if the program is not being run.
 
@@ -185,7 +185,7 @@ watchpoint.exp, signals.exp, etc.
 
 Test stepping into functions which are one line long and functions
 which are on line 1 of the source file. (there is a class of bugs in
-which gdb doesn't find the line number information, and thus doesn't
+which gdb does NOT find the line number information, and thus does NOT
 step into the function).
 
 Test that prologue recognition, backtrace, printing locals, etc.,
@@ -195,7 +195,7 @@ prologues will need to look different.  For sparc, the immediate field
 is 13 bits (signed), so I believe the threshold would be 4K bytes in a
 frame).
 
-
+
 (this is for editing this file with GNU emacs)
 Local Variables:
 mode: text

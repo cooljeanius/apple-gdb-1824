@@ -622,6 +622,7 @@ ac_includes_default="\
 
 ac_header_list=
 ac_subst_vars='LTLIBOBJS
+gdb_target_cpu
 LIBOBJS
 ALLOCA
 INSTALL_DATA
@@ -643,6 +644,7 @@ LDFLAGS
 CFLAGS
 CC
 subdirs
+target_noncanonical
 target_os
 target_vendor
 target_cpu
@@ -2498,6 +2500,24 @@ test -n "$target_alias" &&
   test "$program_prefix$program_suffix$program_transform_name" = \
     NONENONEs,x,x, &&
   program_prefix=${target_alias}-
+
+ case ${build_alias} in
+  "") build_noncanonical=${build} ;;
+  *) build_noncanonical=${build_alias} ;;
+esac
+
+ case ${host_alias} in
+  "") host_noncanonical=${build_noncanonical} ;;
+  *) host_noncanonical=${host_alias} ;;
+esac
+
+ case ${target_alias} in
+  "") target_noncanonical=${host_noncanonical} ;;
+  *) target_noncanonical=${target_alias} ;;
+esac
+
+
+
 
 # Add HP-specific tests when appropriate.
 case $target in
@@ -5606,6 +5626,31 @@ case "${target}" in
 
                  ;;
 esac
+
+if test -z "${host_alias}"; then
+  if test ! -z "${host_canonical}"; then
+    export host_alias="${host_canonical}"
+  elif test ! -z "${host}"; then
+    export host_alias="${host}"
+  fi
+fi
+
+
+if test -z "${target_alias}"; then
+  if test ! -z "${target_canonical}"; then
+    export target_alias="${target_canonical}"
+  elif test ! -z "${target}"; then
+    export target_alias="${target}"
+  fi
+fi
+
+
+if test -z "${gdb_target_cpu}"; then
+  if test ! -z "${target_cpu}"; then
+    export gdb_target_cpu="${target_cpu}"
+  fi
+fi
+
 
 subdirs="$subdirs gdb.cell"
 

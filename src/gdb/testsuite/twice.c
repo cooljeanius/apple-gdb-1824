@@ -1,3 +1,7 @@
+/*
+ * twice.c
+ */
+
 #include <stdio.h>
 int nothing ()
 
@@ -14,8 +18,10 @@ int main ()
 #ifdef usestubs
     set_debug_traps();
     breakpoint();
-#endif    
+#endif /* usestubs */
     y = nothing () ;
     printf ("hello\n") ;
     return 0;
 }
+
+/* EOF */

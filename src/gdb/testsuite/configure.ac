@@ -19,6 +19,8 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 
+sinclude(../../config/acx.m4)
+
 AC_PREREQ([2.69])
 AC_INIT([gdb-testsuite],[1824],[])
 AC_CONFIG_SRCDIR([gdb.base])
@@ -26,6 +28,8 @@ AC_CONFIG_SRCDIR([gdb.base])
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
+
+ACX_NONCANONICAL_TARGET
 
 # Add HP-specific tests when appropriate.
 case $target in
@@ -166,6 +170,31 @@ case "${target}" in
                  AC_CONFIG_SUBDIRS([gdb.objc])
                  ;;
 esac
+
+if test -z "${host_alias}"; then
+  if test ! -z "${host_canonical}"; then
+    export host_alias="${host_canonical}"
+  elif test ! -z "${host}"; then
+    export host_alias="${host}"
+  fi
+fi
+AC_SUBST([host_alias])
+
+if test -z "${target_alias}"; then
+  if test ! -z "${target_canonical}"; then
+    export target_alias="${target_canonical}"
+  elif test ! -z "${target}"; then
+    export target_alias="${target}"
+  fi
+fi
+AC_SUBST([target_alias])
+
+if test -z "${gdb_target_cpu}"; then
+  if test ! -z "${target_cpu}"; then
+    export gdb_target_cpu="${target_cpu}"
+  fi
+fi
+AC_SUBST([gdb_target_cpu])
 
 AC_CONFIG_SUBDIRS([gdb.cell])
 AC_CONFIG_FILES([Makefile \

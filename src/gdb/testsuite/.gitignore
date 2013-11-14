@@ -18,6 +18,7 @@ site.exp
 *.psum
 summary
 detail
+args
 
 # temporarily gitignore big subdirectories to commit separately:
 boards/*
