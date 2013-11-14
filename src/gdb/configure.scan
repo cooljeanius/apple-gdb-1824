@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.69])
 AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
-AC_CONFIG_SRCDIR([abug-rom.c])
+AC_CONFIG_SRCDIR([aarch64-linux-nat.c])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
@@ -34,7 +34,7 @@ AC_CHECK_LIB([sqlite3], [main])
 
 # Checks for header files.
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h langinfo.h libintl.h limits.h locale.h mach/mach.h malloc.h memory.h netdb.h netinet/in.h nl_types.h nlist.h paths.h sgtty.h stddef.h stdint.h stdlib.h string.h strings.h sys/file.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h termio.h termios.h unistd.h utmp.h])
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h inttypes.h langinfo.h libintl.h limits.h locale.h mach/mach.h malloc.h memory.h netdb.h netinet/in.h nl_types.h nlist.h paths.h sgtty.h stddef.h stdint.h stdlib.h string.h strings.h sys/file.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h termio.h termios.h unistd.h utmp.h wchar.h wctype.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -67,7 +67,7 @@ AC_FUNC_MMAP
 AC_FUNC_REALLOC
 AC_FUNC_STRTOD
 AC_FUNC_WAIT3
-AC_CHECK_FUNCS([alarm atexit bzero dup2 getcwd gethostbyaddr gethostbyname gethostname getpagesize getpass gettimeofday inet_ntoa isascii memchr memmove memset munmap nl_langinfo pathconf pow putenv re_comp realpath regcomp select setlocale socket strcasecmp strchr strcspn strerror strncasecmp strpbrk strrchr strspn strstr strtol strtoul uname])
+AC_CHECK_FUNCS([alarm atexit bzero dup2 getcwd gethostbyaddr gethostbyname gethostname getpagesize getpass gettimeofday inet_ntoa isascii memchr memmove memset mkdir munmap nl_langinfo pathconf pow putenv re_comp realpath regcomp select setlocale socket strcasecmp strchr strcspn strerror strncasecmp strpbrk strrchr strspn strstr strtol strtoul uname])
 
 AC_CONFIG_FILES([Makefile
                  data-directory/Makefile

@@ -463,6 +463,7 @@ LT_LANG([C])
 dnl# even though gdb is written only in C, it has tests written
 dnl# for debugging the following languages, so check them, too:
 LT_LANG([C++])
+LT_LANG([Go])
 LT_LANG([Java])
 LT_LANG([Fortran 77])
 LT_LANG([Fortran])
@@ -750,7 +751,7 @@ AC_CHECK_HEADERS([arpa/inet.h fcntl.h langinfo.h libintl.h limits.h \
                   locale.h mach/mach.h malloc.h malloc/malloc.h \
                   netdb.h netinet/in.h nl_types.h paths.h \
                   sys/param.h sys/socket.h sys/sysctl.h sys/time.h \
-                  utmp.h wchar.h])
+                  utmp.h wchar.h wctype.h])
 
 # Other headers needed for things that I have ifdef-ed:
 unset ac_cv_header_dlfcn_h
@@ -954,11 +955,11 @@ unset ac_cv_func_strchr
 AC_CHECK_FUNCS([alarm atexit bzero dup2 fflush fprintf fwrite \
                 gethostbyaddr gethostbyname gethostname getpass \
                 gettimeofday inet_ntoa isascii memchr memcmp memcpy \
-                memmove mempcpy memset nl_langinfo pathconf pow re_comp \
-                regcomp select socket strchr strcspn strdup strerror \
-                strlen strncasecmp strncat strncmp strncpy strndup \
-                strpbrk strrchr strspn strstr strtok strtol strtoul \
-                uname wcwidth])
+                memmove mempcpy memset mkdir nl_langinfo pathconf pow \
+                re_comp regcomp select socket strchr strcspn strdup \
+                strerror strlen strncasecmp strncat strncmp strncpy \
+                strndup strpbrk strrchr strspn strstr strtok strtol \
+                strtoul uname wcwidth])
 
 # ----- #
 # Other #
