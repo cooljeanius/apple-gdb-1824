@@ -1,1 +1,0 @@
-/Users/ericgallager/apple-gdb-1824/src/gdb/testsuite/./gdb.base/vforked-prog.c

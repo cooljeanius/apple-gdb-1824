@@ -19,6 +19,7 @@ site.exp
 summary
 detail
 args
+vforked-prog.c
 
 # temporarily gitignore big subdirectories to commit separately:
 gdb.arch/*
