@@ -41,3 +41,4 @@ bfdver.h
 *.framework
 libtool
 libtool.old
+*.swp

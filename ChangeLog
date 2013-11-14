@@ -1,3 +1,74 @@
+2013-11-13  Eric Gallager  <egallager@comcast.net>
+
+	add src/elfcpp directory
+
+	Change-Id: I148b8a9f1cbca95cfa79cea86e5c580fe4aaed73
+
+2013-11-13  Eric Gallager  <egallager@comcast.net>
+
+	add src/cpu
+
+	Change-Id: Iec62e2c963657eed8fb2007db4287b59f8b38e90
+
+2013-11-13  Eric Gallager  <egallager@comcast.net>
+
+	newer src/config files
+
+	Change-Id: I15b57edc4acf7a46071916e95aa21d02d39c2176
+
+2013-11-13  Eric Gallager  <egallager@comcast.net>
+
+	add files from newer versions of binutils
+
+	Change-Id: I6673cc9edd385335f608fa84ad2fd51a123cff6c
+
+2013-11-11  Eric Gallager  <egallager@comcast.net>
+
+	add files from new versions of bfd
+
+	Change-Id: I148157f518eb0308b126ff607a7b0cc95574ad8f
+
+2013-11-11  Eric Gallager  <egallager@comcast.net>
+
+	more trying to fix build errors
+
+	also add a list of missing symbols so I can move on to other stuff and
+	then come back to this build error later
+
+	Change-Id: Ibcf279241ecd58686c752b1c3b9cddbaa0277409
+
+2013-11-11  Eric Gallager  <egallager@comcast.net>
+
+	try to fix errors
+
+	- add more dependencies to makefile targets
+	- try includes in multiple ways, just in case
+
+	Change-Id: Ia1d6aa9bf04a63d0f0f63cda537bd77c969b043e
+
+2013-11-11  Eric Gallager  <egallager@comcast.net>
+
+	Update Readme.md
+
+	strikethrough incorrect directions regarding darwinbuild
+
+2013-11-11  Eric Gallager  <egallager@comcast.net>
+
+	dredge through old files
+
+	- top-level: make an OpenSourceLicenses directory and copy gdb.txt
+	there, to clarify what it is
+	- rename "darwinbuild" directory to "darwinbuild-OpenSourceVersions"
+	- un-obsolete and touch a bunch of old code files that had not been
+	modified in over a decade
+	- add some configure checks to try to help with compiling really old
+	Classic MacOS files (trying to compile those files still fails, so I
+	have kept them out of the Makefile)
+	- add a rule to compile regex.o in libiberty's Makefile
+	- re-break the test suite (oops)
+
+	Change-Id: I924bb4c4c2d48f71015e8a5adc08dc858f050a1c
+
 2013-11-09  Eric Gallager  <egallager@comcast.net>
 
 	copy over a copy of the GPL3
