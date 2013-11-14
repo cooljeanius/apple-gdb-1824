@@ -1264,11 +1264,18 @@ AC_C_BIGENDIAN
 AC_C_INLINE
 AC_C_PROTOTYPES
 AC_C_RESTRICT
+AC_TYPE_INT8_T
+AC_TYPE_INT16_T
 AC_TYPE_INT32_T
+AC_TYPE_INT64_T
+AC_TYPE_OFF_T
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
+AC_TYPE_UINT8_T
+AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
+AC_TYPE_UINT64_T
 
 # Checks for library functions.
 AC_FUNC_ALLOCA
@@ -1278,8 +1285,8 @@ AC_FUNC_OBSTACK
 AC_FUNC_REALLOC
 unset ac_cv_func_gethostbyname
 AC_CHECK_FUNCS([getcwd gethostbyaddr gethostbyname gettimeofday \
-                memmove memset printf putenv re_comp regcomp select \
-                socket strcasecmp strchr strerror strrchr strstr \
+                memchr memmove memset printf putenv re_comp regcomp \
+                select socket strcasecmp strchr strerror strrchr strstr \
                 strtol strtoul strverscmp system])
 
 # By default, C is the only stage 1 language.
