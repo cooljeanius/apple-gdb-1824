@@ -1,3 +1,77 @@
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	make testsuite actually run again
+
+	it still experiences a lot of failures though:
+		=== gdb Summary ===
+
+	Change-Id: Id5fb58841f82294b2864b53f6b94e6ced14185f1
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	add new files to src/gdb
+
+	no new directories this time though
+
+	Change-Id: Ifdb81f86400581ec1a6d3a0090afd07b15413211
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	add more new files
+
+	- new files in src/gdb/gdbserver
+	- new files in src/gdb/testsuite
+	- new files in src/gdb/config
+	- configure tweaks
+
+	Change-Id: Ieda2969f262fbefd5104e0f39f0eb2d56c1bf7b0
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	more src/gdb additions
+
+	- new files in src/gdb/gnulib
+	- new files in src/gdb/python
+	- new files in src/gdb/regformats
+	- new files in src/gdb/syscalls
+	- some new subdirs in src/gdb
+
+	Change-Id: Ie1a1d90a9163b6dd36c0bd620d174c0d47887267
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	add src/gdb/common, src/gdb/contrib, and src/gdb/features
+
+	Change-Id: I814de56692faeddbc3c3f105ac97b4ffba645ab6
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	oops, forgot to clean these up
+
+	Change-Id: I7af922399b377df663821f64cc6f82d05de11756
+
+2013-11-13  Eric Gallager  <egallager@comcast.net>
+
+	new files for src/opcodes
+
+	- also a few new files for src/readline
+	- also move aside src/include/mach-o to prevent the headers from
+	masking system headers
+
+	Change-Id: Ic5c99061e74febcfe740bcce5382471bf0eb26d4
+
+2013-11-13  Eric Gallager  <egallager@comcast.net>
+
+	add new files to libiberty
+
+	Change-Id: I0d838690b4adf501fbbf5598051958992c73d0e1
+
+2013-11-13  Eric Gallager  <egallager@comcast.net>
+
+	add some new includes
+
+	Change-Id: If8b7c8bafd9350e415f2f6c0db5f8dbc92337fd5
+
 2013-11-13  Eric Gallager  <egallager@comcast.net>
 
 	more misc file additions

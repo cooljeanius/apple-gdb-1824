@@ -21,7 +21,6 @@ detail
 args
 
 # temporarily gitignore big subdirectories to commit separately:
-boards/*
 gdb.ada/*
 gdb.arch/*
 gdb.base/*
