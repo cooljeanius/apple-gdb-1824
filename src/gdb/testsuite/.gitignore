@@ -22,6 +22,5 @@ args
 vforked-prog.c
 
 # temporarily gitignore big subdirectories to commit separately:
-gdb.reverse/*
 gdb.threads/*
 gdb.trace/*
