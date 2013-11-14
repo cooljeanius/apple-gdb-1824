@@ -1,7 +1,8 @@
-dnl need: prefix exec_prefix libdir includedir CC TERMCAP_LIB
-dnl require:
-dnl	AC_PROG_CC
-dnl	BASH_CHECK_LIB_TERMCAP
+dnl# need: prefix exec_prefix libdir includedir CC TERMCAP_LIB
+dnl# require:
+dnl#	AC_PROG_CC
+dnl#	BASH_CHECK_LIB_TERMCAP
+dnl#	AC_PROG_SED
 
 AC_DEFUN([RL_LIB_READLINE_VERSION],
 [
@@ -16,7 +17,7 @@ _save_CFLAGS="$CFLAGS"
 _save_LDFLAGS="$LDFLAGS"
 _save_LIBS="$LIBS"
 
-# Don't set ac_cv_rl_prefix if the caller has already assigned a value.  This
+# Do NOT set ac_cv_rl_prefix if caller has already assigned a value. This
 # allows the caller to do something like $_rl_prefix=$withval if the user
 # specifies --with-installed-readline=PREFIX as an argument to configure
 
@@ -31,8 +32,8 @@ LIBS="$LIBS -lreadline ${TERMCAP_LIB}"
 CFLAGS="$CFLAGS -I${ac_cv_rl_includedir}"
 LDFLAGS="$LDFLAGS -L${ac_cv_rl_libdir}"
 
-AC_CACHE_VAL(ac_cv_rl_version,
-[AC_TRY_RUN([
+AC_CACHE_VAL([ac_cv_rl_version],
+[AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdio.h>
 #include <readline/readline.h>
 
@@ -51,10 +52,10 @@ main()
 	fclose(fp);
 	exit(0);
 }
-],
-ac_cv_rl_version=`cat conftest.rlv`,
-ac_cv_rl_version='0.0',
-ac_cv_rl_version='4.2')])
+]])],
+[ac_cv_rl_version=`cat conftest.rlv`],
+[ac_cv_rl_version='0.0'],
+[ac_cv_rl_version='4.2'])])
 
 CFLAGS="$_save_CFLAGS"
 LDFLAGS="$_save_LDFLAGS"
@@ -62,6 +63,8 @@ LIBS="$_save_LIBS"
 
 RL_MAJOR=0
 RL_MINOR=0
+
+AC_REQUIRE([AC_PROG_SED])
 
 # (
 case "$ac_cv_rl_version" in
@@ -96,23 +99,23 @@ elif test $RL_MAJOR -gt 4 || { test $RL_MAJOR = 4 && test $RL_MINOR -gt 2 ; } ; 
 	RL_PREFIX=$ac_cv_rl_prefix
 	RL_LIBDIR=$ac_cv_rl_libdir
 	RL_INCLUDEDIR=$ac_cv_rl_includedir
-	AC_MSG_RESULT($ac_cv_rl_version)
+	AC_MSG_RESULT([$ac_cv_rl_version])
 else
 
-AC_DEFINE_UNQUOTED(RL_READLINE_VERSION, $RL_VERSION, [encoded version of the installed readline library])
-AC_DEFINE_UNQUOTED(RL_VERSION_MAJOR, $RL_MAJOR, [major version of installed readline library])
-AC_DEFINE_UNQUOTED(RL_VERSION_MINOR, $RL_MINOR, [minor version of installed readline library])
+AC_DEFINE_UNQUOTED([RL_READLINE_VERSION],[$RL_VERSION],[encoded version of the installed readline library])
+AC_DEFINE_UNQUOTED([RL_VERSION_MAJOR],[$RL_MAJOR],[major version of installed readline library])
+AC_DEFINE_UNQUOTED([RL_VERSION_MINOR],[$RL_MINOR],[minor version of installed readline library])
 
-AC_SUBST(RL_VERSION)
-AC_SUBST(RL_MAJOR)
-AC_SUBST(RL_MINOR)
+AC_SUBST([RL_VERSION])
+AC_SUBST([RL_MAJOR])
+AC_SUBST([RL_MINOR])
 
 # set these for use by the caller
-RL_PREFIX=$ac_cv_rl_prefix
-RL_LIBDIR=$ac_cv_rl_libdir
-RL_INCLUDEDIR=$ac_cv_rl_includedir
+RL_PREFIX=${ac_cv_rl_prefix}
+RL_LIBDIR=${ac_cv_rl_libdir}
+RL_INCLUDEDIR=${ac_cv_rl_includedir}
 
-AC_MSG_RESULT($ac_cv_rl_version)
+AC_MSG_RESULT([$ac_cv_rl_version])
 
 fi
 ])
