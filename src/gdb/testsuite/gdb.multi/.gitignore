@@ -1,0 +1,15 @@
+*~
+*.o
+*.ci
+*.dwo
+*.dwp
+core
+hello
+hangout
+goodbye
+bkpt-multi-exec
+crashme
+Makefile
+*.status
+*.log
+*.sum

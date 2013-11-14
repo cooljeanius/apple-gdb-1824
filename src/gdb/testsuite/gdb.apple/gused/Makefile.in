@@ -3,6 +3,8 @@ srcdir = @srcdir@
 
 SUBDIRS = @subdirs@
 
+EXECUTABLES = shantonu split-pi type-qualifications
+
 all:
 	@echo "Nothing to be done for all..."
 
@@ -16,6 +18,7 @@ check:
 
 clean mostlyclean:
 	-rm -f *~ core *.o
+	-rm -f $(EXECUTABLES)
 	if [ x"${SUBDIRS}" != x ] ; then \
 	    for dir in ${SUBDIRS}; \
 	    do \

@@ -18,3 +18,18 @@ site.exp
 *.psum
 summary
 detail
+
+# temporarily gitignore big subdirectories to commit separately:
+boards/*
+gdb.ada/*
+gdb.arch/*
+gdb.base/*
+gdb.cp/*
+gdb.dwarf2/*
+gdb.mi/*
+gdb.btrace/*
+gdb.fortran/*
+gdb.python/*
+gdb.reverse/*
+gdb.threads/*
+gdb.trace/*

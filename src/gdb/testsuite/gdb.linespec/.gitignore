@@ -1,0 +1,11 @@
+*~
+*.o
+*.ci
+*.dwo
+*.dwp
+core
+lspec
+Makefile
+*.status
+*.log
+*.sum

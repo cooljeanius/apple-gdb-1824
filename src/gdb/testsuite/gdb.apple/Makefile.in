@@ -3,6 +3,8 @@ srcdir = @srcdir@
 
 SUBDIRS = @subdirs@
 
+EXECUTABLES = bigenum blocks blocks-linetables blocks-linetables2 blocks-queues check-errno dylib-loader file\ \(my\ name\) file-statics function-statics global-blocks-lines global-blocks-lines2 inf-call-interrupt info-pid long-long-call malloc-history nick objc-prog objc-throw-in-inf-fn ostype pc-verify r3376901 r3376907 r3384998 recurse scoped-typedefs sections shared-cache-sym sigtramp slipnslide struct-ret-err varobj-sel-frame watch-location
+
 all:
 	@echo "Nothing to be done for all..."
 
@@ -15,7 +17,8 @@ installcheck:
 check:
 
 clean mostlyclean:
-	-rm -f *~ core *.o
+	-rm -f *~ core *.o *.dylib
+	-rm -f $(EXECUTABLES)
 	-rm -rf *.dSYM *_unstripped
 	if [ x"${SUBDIRS}" != x ] ; then \
 	    for dir in ${SUBDIRS}; \

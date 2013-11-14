@@ -3,6 +3,8 @@ srcdir = @srcdir@
 
 SUBDIRS = @subdirs@
 
+EXECUTABLES = callfuncs inf-call-interrupt-notsleep structs
+
 all:
 	@echo "Nothing to be done for all..."
 
@@ -15,7 +17,8 @@ installcheck:
 check:
 
 clean mostlyclean:
-	-rm -f *~ core *.o
+	-rm -f *~ core *.o *.dylib
+	-rm -f $(EXECUTABLES)
 	if [ x"${SUBDIRS}" != x ] ; then \
 	    for dir in ${SUBDIRS}; \
 	    do \

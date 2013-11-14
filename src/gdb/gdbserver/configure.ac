@@ -51,7 +51,7 @@ AC_CHECK_HEADERS([AvailabilityMacros.h arpa/inet.h fcntl.h limits.h \
                   mach/mach_types.h mach/mach_vm.h mach/port.h \
                   mach-o/nlist.h malloc.h malloc/malloc.h netdb.h \
                   netinet/in.h prctl.h proc_service.h sgtty.h signal.h \
-                  stdio.h sys/file.h sys/ioctl.h sys/param.h \
+                  stddef.h stdio.h sys/file.h sys/ioctl.h sys/param.h \
                   sys/ptrace.h sys/signal.h sys/socket.h sys/procfs.h \
                   sys/reg.h sys/time.h sys/wait.h termio.h termios.h \
                   thread_db.h])
@@ -65,15 +65,22 @@ AC_CHECK_DECLS([NULL])
 AC_C_BIGENDIAN
 AC_C_INLINE
 AC_C_PROTOTYPES
+AC_TYPE_INT8_T
+AC_TYPE_INT16_T
+AC_TYPE_INT32_T
+AC_TYPE_INT64_T
 AC_TYPE_INTMAX_T
 AC_TYPE_OFF_T
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
+AC_TYPE_UINT8_T
+AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
 AC_TYPE_UINTMAX_T
 AC_TYPE_UINTPTR_T
+AC_CHECK_TYPES([ptrdiff_t])
 AC_CHECK_TYPES([task_t],[],[],[
 #ifdef HAVE_MACH_MACH_H
 # include <mach/mach.h>
@@ -120,9 +127,11 @@ AC_FUNC_ALLOCA
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_FORK
 AC_FUNC_MALLOC
+AC_FUNC_MMAP
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([atexit child_get_pagesize inet_ntoa memset select setenv \
-                socket strchr strdup strerror strrchr strtol strtoul])
+AC_CHECK_FUNCS([atexit child_get_pagesize gettimeofday inet_ntoa memset \
+                select setenv socket strchr strdup strerror strrchr \
+                strtol strtoul strtoull])
 
 AC_MSG_NOTICE([sourcing ${srcdir}/configure.srv])
 . ${srcdir}/configure.srv

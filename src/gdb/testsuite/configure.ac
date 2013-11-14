@@ -124,12 +124,14 @@ AC_PROG_INSTALL
 
 # Checks for header files.
 AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
-AC_CHECK_HEADERS([fcntl.h limits.h stddef.h stdio.h sys/time.h])
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h stddef.h stdio.h \
+                  sys/socket.h sys/time.h wchar.h])
 AC_CHECK_HEADERS([pthread.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_INLINE
 AC_C_PROTOTYPES
+AC_C_RESTRICT
 AC_TYPE_INT8_T
 AC_TYPE_INT16_T
 AC_TYPE_INT32_T
@@ -147,7 +149,9 @@ AC_FUNC_ALLOCA
 AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_MMAP
-AC_CHECK_FUNCS([alarm memset select strerror])
+AC_FUNC_REALLOC
+AC_CHECK_FUNCS([atexit alarm clock_gettime memset munmap select socket \
+                strchr strerror strstr strtol])
 
 # Other
 AC_EXEEXT
@@ -169,16 +173,22 @@ AC_CONFIG_FILES([Makefile \
   gdb.arch/Makefile \
   gdb.asm/Makefile \
   gdb.base/Makefile \
+  gdb.btrace/Makefile \
   gdb.cp/Makefile \
   gdb.disasm/Makefile \
   gdb.dwarf2/Makefile \
   gdb.fortran/Makefile \
+  gdb.go/Makefile \
   gdb.server/Makefile \
   gdb.java/Makefile \
+  gdb.linespec/Makefile \
   gdb.mi/Makefile \
   gdb.modula2/Makefile \
+  gdb.multi/Makefile \
+  gdb.opencl/Makefile \
   gdb.opt/Makefile \
   gdb.pascal/Makefile \
+  gdb.perf/Makefile \
   gdb.reverse/Makefile \
   gdb.threads/Makefile \
   gdb.trace/Makefile \
