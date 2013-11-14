@@ -1,0 +1,17 @@
+*~
+*.o
+*.x
+*.ci
+*.sl
+a.out
+core
+*.dwo
+*.dwp
+enable
+function_call_history
+instruction_history
+Makefile
+*.status
+*.log
+site.*
+*.sum
