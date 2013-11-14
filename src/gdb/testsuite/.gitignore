@@ -22,7 +22,6 @@ args
 vforked-prog.c
 
 # temporarily gitignore big subdirectories to commit separately:
-gdb.arch/*
 gdb.base/*
 gdb.cp/*
 gdb.dwarf2/*
