@@ -27,7 +27,6 @@ gdb.cp/*
 gdb.dwarf2/*
 gdb.mi/*
 gdb.btrace/*
-gdb.fortran/*
 gdb.python/*
 gdb.reverse/*
 gdb.threads/*
