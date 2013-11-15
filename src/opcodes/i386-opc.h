@@ -121,7 +121,7 @@ typedef struct template
 				   some instructions.  */
 #define IsPrefix     0x8000000	/* opcode is a prefix */
 #define ImmExt	    0x10000000	/* instruction has extension in 8 bit imm */
-#define NoRex64	    0x20000000  /* instruction don't need Rex64 prefix.  */
+#define NoRex64	    0x20000000  /* instruction do NOT need Rex64 prefix.  */
 #define Rex64	    0x40000000  /* instruction require Rex64 prefix.  */
 #define Ugh	    0x80000000	/* deprecated fp insn, gets a warning */
 
@@ -191,7 +191,7 @@ typedef struct template
   /* The following aliases are defined because the opcode table
      carefully specifies the allowed memory types for each instruction.
      At the moment we can only tell a memory reference size by the
-     instruction suffix, so there's not much point in defining Mem8,
+     instruction suffix, so there is not much point in defining Mem8,
      Mem16, Mem32 and Mem64 opcode modifiers - We might as well just use
      the suffix directly to check memory operands.  */
 #define LLongMem AnyMem		/* 64 bits (or more) */
@@ -237,3 +237,5 @@ extern const seg_entry ss;
 extern const seg_entry es;
 extern const seg_entry fs;
 extern const seg_entry gs;
+
+/* EOF */

@@ -20,3 +20,4 @@ prototype
 tclsh
 tcltest
 *.dSYM
+dltest.marker

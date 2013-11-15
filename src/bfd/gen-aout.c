@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #include <stdio.h>
 
 #ifndef _
-#define _(X) X
-#endif
+# define _(X) X
+#endif /* !_ */
 
 int
 main (argc, argv)
@@ -55,7 +55,7 @@ main (argc, argv)
     printf("#define N_HEADER_IN_TEXT(x) 1\n");
   else
     printf("#define N_HEADER_IN_TEXT(x) 0\n");
-#endif
+#endif /* N_TXTOFF */
 
   printf("#define BYTES_IN_WORD %d\n", sizeof (int));
   if (my_exec.a_entry == 0) {
@@ -72,7 +72,7 @@ main (argc, argv)
 #ifdef PAGSIZ
   if (page_size == 0)
     page_size = PAGSIZ;
-#endif
+#endif /* PAGSIZ */
   if (page_size != 0)
     printf("#define TARGET_PAGE_SIZE %d\n", page_size);
   else
@@ -81,10 +81,10 @@ main (argc, argv)
 
 #ifdef vax
   arch = "vax";
-#endif
+#endif /* vax */
 #ifdef m68k
   arch = "m68k";
-#endif
+#endif /* m68k */
   if (arch[0] == '1')
     {
       fprintf (stderr, _("warning: preprocessor substituted architecture name inside string;"));
@@ -107,3 +107,5 @@ main (argc, argv)
 
   return 0;
 }
+
+/* EOF */

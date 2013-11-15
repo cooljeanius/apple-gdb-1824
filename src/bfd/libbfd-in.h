@@ -463,7 +463,7 @@ bfd_boolean _bfd_generic_find_line
 /* Find inliner info after calling bfd_find_nearest_line. */
 extern bfd_boolean _bfd_dwarf2_find_inliner_info
   (bfd *, const char **, const char **, unsigned int *, void **);
-  
+
 /* Create a new section entry.  */
 extern struct bfd_hash_entry *bfd_section_hash_newfunc
   (struct bfd_hash_entry *, struct bfd_hash_table *, const char *);
@@ -678,7 +678,7 @@ extern const bfd_target * const *bfd_associated_vector;
 
 #if defined(__STDC__) || defined(ALMOST_STDC)
 struct ecoff_find_line;
-#endif
+#endif /* __STDC__ || ALMOST_STDC */
 
 extern bfd_boolean _bfd_ecoff_locate_line
   (bfd *, asection *, bfd_vma, struct ecoff_debug_info * const,
@@ -704,7 +704,7 @@ extern bfd_boolean _bfd_sh_align_load_span
   (bfd *, asection *, bfd_byte *,
    bfd_boolean (*) (bfd *, asection *, void *, bfd_byte *, bfd_vma),
    void *, bfd_vma **, bfd_vma *, bfd_vma, bfd_vma, bfd_boolean *);
-#endif
+#endif /* !_bfd_sh_align_load_span */
 
 /* This is the shape of the elements inside the already_linked hash
    table. It maps a name onto a list of already_linked elements with
@@ -732,4 +732,6 @@ extern void bfd_section_already_linked_table_traverse
 
 extern bfd_vma read_unsigned_leb128 (bfd *, bfd_byte *, unsigned int *);
 extern bfd_signed_vma read_signed_leb128 (bfd *, bfd_byte *, unsigned int *);
+
+/* End of libbfd-in.h */
 

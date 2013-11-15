@@ -95,7 +95,7 @@ const template i386_optab[] =
 {"movsx",  2, 0x0fbf, X, Cpu386, w_Suf|Modrm,			{ Reg16|ShortMem, Reg32|Reg64, 0} },
 {"movsx",  2,   0x63, X, Cpu64,  l_Suf|Modrm|Rex64,		{ Reg32|WordMem, Reg64, 0} },
 
-/* Move with zero extend.  We can't remove "movzb" since existing
+/* Move with zero extend. We cannot remove "movzb" since existing
    assembly codes may use it.  */
 {"movzb",  2, 0x0fb6, X, Cpu386, wl_Suf|Modrm,			{ Reg8|ByteMem, WordReg, 0} },
 /* "movzbl" & "movzbw" should not be unified into "movzb" for
@@ -631,7 +631,7 @@ const template i386_optab[] =
 #if SYSV386_COMPAT
 /* alias for faddp */
 {"fadd",   0, 0xdec1, X, 0,	 FP|Ugh,		{ 0, 0, 0} },
-#endif
+#endif /* SYSV386_COMPAT */
 {"fadd",   1,	0xd8, 0, 0,	 sl_FP|Modrm,		{ LongMem|LLongMem, 0, 0} },
 {"fiadd",  1,	0xde, 0, 0,	 sl_FP|Modrm,		{ ShortMem|LongMem, 0, 0} },
 
@@ -649,7 +649,7 @@ const template i386_optab[] =
 {"fsub",   0, 0xdee1, X, 0,	 FP|Ugh,		{ 0, 0, 0} },
 #else
 {"fsub",   2, 0xd8e0, X, 0,	 FP|ShortForm|FloatD|FloatR, { FloatReg, FloatAcc, 0} },
-#endif
+#endif /* SYSV386_COMPAT */
 {"fsub",   1,	0xd8, 4, 0,	 sl_FP|Modrm,		{ LongMem|LLongMem, 0, 0} },
 {"fisub",  1,	0xde, 4, 0,	 sl_FP|Modrm,		{ ShortMem|LongMem, 0, 0} },
 
@@ -657,14 +657,14 @@ const template i386_optab[] =
 {"fsubp",  2, 0xdee0, X, 0,	 FP|ShortForm,		{ FloatAcc, FloatReg, 0} },
 {"fsubp",  1, 0xdee0, X, 0,	 FP|ShortForm,		{ FloatReg, 0, 0} },
 {"fsubp",  0, 0xdee1, X, 0,	 FP,			{ 0, 0, 0} },
-#if OLDGCC_COMPAT
+# if OLDGCC_COMPAT
 {"fsubp",  2, 0xdee0, X, 0,	 FP|ShortForm|Ugh,	{ FloatReg, FloatAcc, 0} },
-#endif
+# endif /* OLDGCC_COMPAT */
 #else
 {"fsubp",  2, 0xdee8, X, 0,	 FP|ShortForm,		{ FloatAcc, FloatReg, 0} },
 {"fsubp",  1, 0xdee8, X, 0,	 FP|ShortForm,		{ FloatReg, 0, 0} },
 {"fsubp",  0, 0xdee9, X, 0,	 FP,			{ 0, 0, 0} },
-#endif
+#endif /* SYSV386_COMPAT */
 
 /* subtract reverse */
 {"fsubr",  1, 0xd8e8, X, 0,	 FP|ShortForm,		{ FloatReg, 0, 0} },
@@ -674,7 +674,7 @@ const template i386_optab[] =
 {"fsubr",  0, 0xdee9, X, 0,	 FP|Ugh,		{ 0, 0, 0} },
 #else
 {"fsubr",  2, 0xd8e8, X, 0,	 FP|ShortForm|FloatD|FloatR, { FloatReg, FloatAcc, 0} },
-#endif
+#endif /* SYSV386_COMPAT */
 {"fsubr",  1,	0xd8, 5, 0,	 sl_FP|Modrm,		{ LongMem|LLongMem, 0, 0} },
 {"fisubr", 1,	0xde, 5, 0,	 sl_FP|Modrm,		{ ShortMem|LongMem, 0, 0} },
 
@@ -682,14 +682,14 @@ const template i386_optab[] =
 {"fsubrp", 2, 0xdee8, X, 0,	 FP|ShortForm,		{ FloatAcc, FloatReg, 0} },
 {"fsubrp", 1, 0xdee8, X, 0,	 FP|ShortForm,		{ FloatReg, 0, 0} },
 {"fsubrp", 0, 0xdee9, X, 0,	 FP,			{ 0, 0, 0} },
-#if OLDGCC_COMPAT
+# if OLDGCC_COMPAT
 {"fsubrp", 2, 0xdee8, X, 0,	 FP|ShortForm|Ugh,	{ FloatReg, FloatAcc, 0} },
-#endif
+# endif /* OLDGCC_COMPAT */
 #else
 {"fsubrp", 2, 0xdee0, X, 0,	 FP|ShortForm,		{ FloatAcc, FloatReg, 0} },
 {"fsubrp", 1, 0xdee0, X, 0,	 FP|ShortForm,		{ FloatReg, 0, 0} },
 {"fsubrp", 0, 0xdee1, X, 0,	 FP,			{ 0, 0, 0} },
-#endif
+#endif /* SYSV386_COMPAT */
 
 /* multiply */
 {"fmul",   2, 0xd8c8, X, 0,	 FP|ShortForm|FloatD,	{ FloatReg, FloatAcc, 0} },
@@ -697,7 +697,7 @@ const template i386_optab[] =
 #if SYSV386_COMPAT
 /* alias for fmulp */
 {"fmul",   0, 0xdec9, X, 0,	 FP|Ugh,		{ 0, 0, 0} },
-#endif
+#endif /* SYSV386_COMPAT */
 {"fmul",   1,	0xd8, 1, 0,	 sl_FP|Modrm,		{ LongMem|LLongMem, 0, 0} },
 {"fimul",  1,	0xde, 1, 0,	 sl_FP|Modrm,		{ ShortMem|LongMem, 0, 0} },
 
@@ -714,7 +714,7 @@ const template i386_optab[] =
 {"fdiv",   0, 0xdef1, X, 0,	 FP|Ugh,		{ 0, 0, 0} },
 #else
 {"fdiv",   2, 0xd8f0, X, 0,	 FP|ShortForm|FloatD|FloatR, { FloatReg, FloatAcc, 0} },
-#endif
+#endif /* SYSV386_COMPAT */
 {"fdiv",   1,	0xd8, 6, 0,	 sl_FP|Modrm,		{ LongMem|LLongMem, 0, 0} },
 {"fidiv",  1,	0xde, 6, 0,	 sl_FP|Modrm,		{ ShortMem|LongMem, 0, 0} },
 
@@ -722,14 +722,14 @@ const template i386_optab[] =
 {"fdivp",  2, 0xdef0, X, 0,	 FP|ShortForm,		{ FloatAcc, FloatReg, 0} },
 {"fdivp",  1, 0xdef0, X, 0,	 FP|ShortForm,		{ FloatReg, 0, 0} },
 {"fdivp",  0, 0xdef1, X, 0,	 FP,			{ 0, 0, 0} },
-#if OLDGCC_COMPAT
+# if OLDGCC_COMPAT
 {"fdivp",  2, 0xdef0, X, 0,	 FP|ShortForm|Ugh,	{ FloatReg, FloatAcc, 0} },
-#endif
+# endif /* OLDGCC_COMPAT */
 #else
 {"fdivp",  2, 0xdef8, X, 0,	 FP|ShortForm,		{ FloatAcc, FloatReg, 0} },
 {"fdivp",  1, 0xdef8, X, 0,	 FP|ShortForm,		{ FloatReg, 0, 0} },
 {"fdivp",  0, 0xdef9, X, 0,	 FP,			{ 0, 0, 0} },
-#endif
+#endif /* SYSV386_COMPAT */
 
 /* divide reverse */
 {"fdivr",  1, 0xd8f8, X, 0,	 FP|ShortForm,		{ FloatReg, 0, 0} },
@@ -739,7 +739,7 @@ const template i386_optab[] =
 {"fdivr",  0, 0xdef9, X, 0,	 FP|Ugh,		{ 0, 0, 0} },
 #else
 {"fdivr",  2, 0xd8f8, X, 0,	 FP|ShortForm|FloatD|FloatR, { FloatReg, FloatAcc, 0} },
-#endif
+#endif /* SYSV386_COMPAT */
 {"fdivr",  1,	0xd8, 7, 0,	 sl_FP|Modrm,		{ LongMem|LLongMem, 0, 0} },
 {"fidivr", 1,	0xde, 7, 0,	 sl_FP|Modrm,		{ ShortMem|LongMem, 0, 0} },
 
@@ -747,14 +747,14 @@ const template i386_optab[] =
 {"fdivrp", 2, 0xdef8, X, 0,	 FP|ShortForm,		{ FloatAcc, FloatReg, 0} },
 {"fdivrp", 1, 0xdef8, X, 0,	 FP|ShortForm,		{ FloatReg, 0, 0} },
 {"fdivrp", 0, 0xdef9, X, 0,	 FP,			{ 0, 0, 0} },
-#if OLDGCC_COMPAT
+# if OLDGCC_COMPAT
 {"fdivrp", 2, 0xdef8, X, 0,	 FP|ShortForm|Ugh,	{ FloatReg, FloatAcc, 0} },
-#endif
+# endif /* OLDGCC_COMPAT */
 #else
 {"fdivrp", 2, 0xdef0, X, 0,	 FP|ShortForm,		{ FloatAcc, FloatReg, 0} },
 {"fdivrp", 1, 0xdef0, X, 0,	 FP|ShortForm,		{ FloatReg, 0, 0} },
 {"fdivrp", 0, 0xdef1, X, 0,	 FP,			{ 0, 0, 0} },
-#endif
+#endif /* SYSV386_COMPAT */
 
 {"f2xm1",  0, 0xd9f0, X, 0,	 FP,			{ 0, 0, 0} },
 {"fyl2x",  0, 0xd9f1, X, 0,	 FP,			{ 0, 0, 0} },
@@ -961,7 +961,7 @@ const template i386_optab[] =
 /* MMX/SSE2 instructions.  */
 
 {"emms",     0, 0x0f77, X, CpuMMX, NoSuf,			{ 0, 0, 0 } },
-/* These really shouldn't allow for Reg64 (movq is the right mnemonic for
+/* These really should NOT allow for Reg64 (movq is the right mnemonic for
    copying between Reg64/Mem64 and RegXMM/RegMMX, as is mandated by Intel's
    spec). AMD's spec, having been in existence for much longer, failed to
    recognize that and specified movd for 32- and 64-bit operations.  */
@@ -1734,3 +1734,5 @@ const seg_entry ss = { "ss", 0x36 };
 const seg_entry es = { "es", 0x26 };
 const seg_entry fs = { "fs", 0x64 };
 const seg_entry gs = { "gs", 0x65 };
+
+/* EOF */

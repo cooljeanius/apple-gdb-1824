@@ -148,7 +148,8 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(bfdlibdir)"
 LTLIBRARIES = $(bfdlib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-am_libopcodes_la_OBJECTS = dis-buf.lo disassemble.lo dis-init.lo
+am_libopcodes_la_OBJECTS = dis-buf.lo disassemble.lo dis-init.lo \
+	i386-opc.lo
 libopcodes_la_OBJECTS = $(am_libopcodes_la_OBJECTS)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -298,6 +299,9 @@ BUILD_LIB_DEPS = @BUILD_LIB_DEPS@
 CATALOGS = @CATALOGS@
 CATOBJEXT = @CATOBJEXT@
 CC = @CC@
+CCAS = @CCAS@
+CCASDEPMODE = @CCASDEPMODE@
+CCASFLAGS = @CCASFLAGS@
 CCDEPMODE = @CCDEPMODE@
 CC_FOR_BUILD = @CC_FOR_BUILD@
 CFLAGS = @CFLAGS@
@@ -764,13 +768,13 @@ OFILES = @BFD_MACHINES@
 # that is where the version number in Makefile comes from.
 CONFIG_STATUS_DEPENDENCIES = $(BFDDIR)/configure.ac
 AM_CPPFLAGS = -D_GNU_SOURCE -I. -I$(srcdir) -I../bfd -I$(INCDIR) -I$(BFDDIR) @HDEFINES@ -I$(srcdir)/../intl -I../intl
-libopcodes_la_SOURCES = dis-buf.c disassemble.c dis-init.c
+libopcodes_la_SOURCES = dis-buf.c disassemble.c dis-init.c i386-opc.c
 # It is desirable to list ../bfd/libbfd.la in DEPENDENCIES and LIBADD.
 # Unfortunately this causes libtool to add -L$(libdir), referring to the
 # planned install directory of libbfd.  This can cause us to pick up an
 # old version of libbfd, or to pick up libbfd for the wrong architecture
 # if host != build.
-libopcodes_la_DEPENDENCIES = $(OFILES)
+libopcodes_la_DEPENDENCIES = $(OFILES) $(ALL_MACHINES)
 libopcodes_la_LIBADD = $(OFILES) @WIN32LIBADD@
 libopcodes_la_LDFLAGS = -release $(VERSION) @WIN32LDFLAGS@
 
@@ -911,6 +915,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dis-buf.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dis-init.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/disassemble.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i386-opc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopcodes.Po@am__quote@
 
 .c.o:

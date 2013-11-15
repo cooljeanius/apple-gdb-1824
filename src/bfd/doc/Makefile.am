@@ -73,7 +73,7 @@ protos: libbfd.h libcoff.h bfd.h
 $(srcdir)/bfd.info bfd.dvi: $(DOCFILES) bfdsumm.texi bfd.texinfo $(MKDOC)
 
 # We cannot replace these rules with an implicit rule, because
-# makes without VPATH support couldn't find the .h files in `..'.
+# makes without VPATH support could NOT find the .h files in `..'.
 
 # We do not depend on chew directly so that we can distribute the info
 # files, and permit people to rebuild them, without requiring the makeinfo
@@ -82,16 +82,19 @@ $(srcdir)/bfd.info bfd.dvi: $(DOCFILES) bfdsumm.texi bfd.texinfo $(MKDOC)
 
 aoutx.texi: chew.c $(srcdir)/../aoutx.h $(srcdir)/doc.str
 	$(MAKE) $(MKDOC)
+	$(MAKE) $(srcdir)/$(MKDOC)
 	$(srcdir)/$(MKDOC) -f $(srcdir)/doc.str <$(srcdir)/../aoutx.h >aoutx.tmp
 	$(SHELL) $(srcdir)/../../move-if-change aoutx.tmp aoutx.texi
 
 archive.texi: chew.c $(srcdir)/../archive.c $(srcdir)/doc.str
 	$(MAKE) $(MKDOC)
+	$(MAKE) $(srcdir)/$(MKDOC)
 	$(srcdir)/$(MKDOC) -f $(srcdir)/doc.str <$(srcdir)/../archive.c >archive.tmp
 	$(SHELL) $(srcdir)/../../move-if-change archive.tmp archive.texi
 
 archures.texi: chew.c $(srcdir)/../archures.c $(srcdir)/doc.str
 	$(MAKE) $(MKDOC)
+	$(MAKE) $(srcdir)/$(MKDOC)
 	$(srcdir)/$(MKDOC) -f $(srcdir)/doc.str < $(srcdir)/../archures.c >archures.tmp
 	$(SHELL) $(srcdir)/../../move-if-change archures.tmp archures.texi
 
@@ -99,96 +102,115 @@ archures.texi: chew.c $(srcdir)/../archures.c $(srcdir)/doc.str
 # bfd.texinfo on an 8.3 filesystem.
 bfdt.texi: chew.c $(srcdir)/../bfd.c $(srcdir)/doc.str
 	$(MAKE) $(MKDOC)
+	$(MAKE) $(srcdir)/$(MKDOC)
 	$(srcdir)/$(MKDOC) -f $(srcdir)/doc.str < $(srcdir)/../bfd.c >bfd.tmp
 	$(SHELL) $(srcdir)/../../move-if-change bfd.tmp bfdt.texi
 
 cache.texi: chew.c $(srcdir)/../cache.c $(srcdir)/doc.str
 	$(MAKE) $(MKDOC)
+	$(MAKE) $(srcdir)/$(MKDOC)
 	$(srcdir)/$(MKDOC) -f $(srcdir)/doc.str < $(srcdir)/../cache.c >cache.tmp
 	$(SHELL) $(srcdir)/../../move-if-change cache.tmp cache.texi
 
 coffcode.texi: chew.c $(srcdir)/../coffcode.h $(srcdir)/doc.str
 	$(MAKE) $(MKDOC)
+	$(MAKE) $(srcdir)/$(MKDOC)
 	$(srcdir)/$(MKDOC) -f $(srcdir)/doc.str <$(srcdir)/../coffcode.h >coffcode.tmp
 	$(SHELL) $(srcdir)/../../move-if-change coffcode.tmp coffcode.texi
 
 core.texi: chew.c $(srcdir)/../corefile.c $(srcdir)/doc.str
 	$(MAKE) $(MKDOC)
+	$(MAKE) $(srcdir)/$(MKDOC)
 	$(srcdir)/$(MKDOC) -f $(srcdir)/doc.str <$(srcdir)/../corefile.c >core.tmp
 	$(SHELL) $(srcdir)/../../move-if-change core.tmp core.texi
 
 elf.texi: chew.c $(srcdir)/../elf.c $(srcdir)/doc.str
 	$(MAKE) $(MKDOC)
+	$(MAKE) $(srcdir)/$(MKDOC)
 	$(srcdir)/$(MKDOC) -f $(srcdir)/doc.str <$(srcdir)/../elf.c >elf.tmp
 	$(SHELL) $(srcdir)/../../move-if-change elf.tmp elf.texi
 
 elfcode.texi: chew.c $(srcdir)/../elfcode.h $(srcdir)/doc.str
 	$(MAKE) $(MKDOC)
+	$(MAKE) $(srcdir)/$(MKDOC)
 	$(srcdir)/$(MKDOC) -f $(srcdir)/doc.str <$(srcdir)/../elfcode.h >elfcode.tmp
 	$(SHELL) $(srcdir)/../../move-if-change elfcode.tmp elfcode.texi
 
 mmo.texi: chew.c $(srcdir)/../mmo.c $(srcdir)/doc.str
 	$(MAKE) $(MKDOC)
+	$(MAKE) $(srcdir)/$(MKDOC)
 	$(srcdir)/$(MKDOC) -f $(srcdir)/doc.str <$(srcdir)/../mmo.c >mmo.tmp
 	$(SHELL) $(srcdir)/../../move-if-change mmo.tmp mmo.texi
 
 format.texi: chew.c $(srcdir)/../format.c $(srcdir)/doc.str
 	$(MAKE) $(MKDOC)
+	$(MAKE) $(srcdir)/$(MKDOC)
 	$(srcdir)/$(MKDOC) -f $(srcdir)/doc.str <$(srcdir)/../format.c >format.tmp
 	$(SHELL) $(srcdir)/../../move-if-change format.tmp format.texi
 
 libbfd.texi: chew.c $(srcdir)/../libbfd.c $(srcdir)/doc.str
 	$(MAKE) $(MKDOC)
+	$(MAKE) $(srcdir)/$(MKDOC)
 	$(srcdir)/$(MKDOC) -f $(srcdir)/doc.str < $(srcdir)/../libbfd.c >libbfd.tmp
 	$(SHELL) $(srcdir)/../../move-if-change libbfd.tmp libbfd.texi
 
 bfdio.texi: chew.c $(srcdir)/../bfdio.c $(srcdir)/doc.str
 	$(MAKE) $(MKDOC)
+	$(MAKE) $(srcdir)/$(MKDOC)
 	$(srcdir)/$(MKDOC) -f $(srcdir)/doc.str < $(srcdir)/../bfdio.c >bfdio.tmp
 	$(SHELL) $(srcdir)/../../move-if-change bfdio.tmp bfdio.texi
 
 bfdwin.texi: chew.c $(srcdir)/../bfdwin.c $(srcdir)/doc.str
 	$(MAKE) $(MKDOC)
+	$(MAKE) $(srcdir)/$(MKDOC)
 	$(srcdir)/$(MKDOC) -f $(srcdir)/doc.str < $(srcdir)/../bfdwin.c >bfdwin.tmp
 	$(SHELL) $(srcdir)/../../move-if-change bfdwin.tmp bfdwin.texi
 
 opncls.texi: chew.c $(srcdir)/../opncls.c $(srcdir)/doc.str
 	$(MAKE) $(MKDOC)
+	$(MAKE) $(srcdir)/$(MKDOC)
 	$(srcdir)/$(MKDOC) -f $(srcdir)/doc.str  <$(srcdir)/../opncls.c >opncls.tmp
 	$(SHELL) $(srcdir)/../../move-if-change opncls.tmp opncls.texi
 
 reloc.texi: chew.c $(srcdir)/../reloc.c $(srcdir)/doc.str
 	$(MAKE) $(MKDOC)
+	$(MAKE) $(srcdir)/$(MKDOC)
 	$(srcdir)/$(MKDOC) -f $(srcdir)/doc.str <$(srcdir)/../reloc.c >reloc.tmp
 	$(SHELL) $(srcdir)/../../move-if-change reloc.tmp reloc.texi
 
 section.texi: chew.c $(srcdir)/../section.c $(srcdir)/doc.str
 	$(MAKE) $(MKDOC)
+	$(MAKE) $(srcdir)/$(MKDOC)
 	$(srcdir)/$(MKDOC) -f $(srcdir)/doc.str <$(srcdir)/../section.c >section.tmp
 	$(SHELL) $(srcdir)/../../move-if-change section.tmp section.texi
 
 syms.texi: chew.c $(srcdir)/../syms.c $(srcdir)/doc.str
 	$(MAKE) $(MKDOC)
+	$(MAKE) $(srcdir)/$(MKDOC)
 	$(srcdir)/$(MKDOC) -f $(srcdir)/doc.str <$(srcdir)/../syms.c >syms.tmp
 	$(SHELL) $(srcdir)/../../move-if-change syms.tmp syms.texi
 
 targets.texi: chew.c $(srcdir)/../targets.c $(srcdir)/doc.str
 	$(MAKE) $(MKDOC)
+	$(MAKE) $(srcdir)/$(MKDOC)
 	$(srcdir)/$(MKDOC) -f $(srcdir)/doc.str <$(srcdir)/../targets.c >targets.tmp
 	$(SHELL) $(srcdir)/../../move-if-change targets.tmp targets.texi
 
 init.texi: chew.c $(srcdir)/../init.c $(srcdir)/doc.str
 	$(MAKE) $(MKDOC)
+	$(MAKE) $(srcdir)/$(MKDOC)
 	$(srcdir)/$(MKDOC) -f $(srcdir)/doc.str <$(srcdir)/../init.c >init.tmp
 	$(SHELL) $(srcdir)/../../move-if-change init.tmp init.texi
 
 hash.texi: chew.c $(srcdir)/../hash.c $(srcdir)/doc.str
 	$(MAKE) $(MKDOC)
+	$(MAKE) $(srcdir)/$(MKDOC)
 	$(srcdir)/$(MKDOC) -f $(srcdir)/doc.str <$(srcdir)/../hash.c >hash.tmp
 	$(SHELL) $(srcdir)/../../move-if-change hash.tmp hash.texi
 
 linker.texi: chew.c $(srcdir)/../linker.c $(srcdir)/doc.str
 	$(MAKE) $(MKDOC)
+	$(MAKE) $(srcdir)/$(MKDOC)
 	$(srcdir)/$(MKDOC) -f $(srcdir)/doc.str <$(srcdir)/../linker.c >linker.tmp
 	$(SHELL) $(srcdir)/../../move-if-change linker.tmp linker.texi
 

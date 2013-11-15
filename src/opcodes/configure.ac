@@ -23,19 +23,22 @@ AM_INIT_AUTOMAKE([1.10 gnu dejagnu])
 dnl# These must be called before AM_PROG_LIBTOOL, because it may want
 dnl# to call AC_CHECK_PROG.
 AM_PROG_AR
-if test "x$AR" = "x"; then
-	test -z "$AR"
+if test "x${AR}" = "x"; then
+	test -z "${AR}"
 	AC_CHECK_TOOL([AR],[ar])
 else
-	test ! -z "$AR"
+	test ! -z "${AR}" && export AR
+	AC_SUBST([AR])
 fi
 AC_CHECK_TOOL([RANLIB],[ranlib],[:])
-if test "x$RANLIB" = "x"; then
-	test -z "$RANLIB"
+if test "x${RANLIB}" = "x"; then
+	test -z "${RANLIB}"
 	AC_PROG_RANLIB
 else
-	test ! -z "$RANLIB"
+	test ! -z "${RANLIB}" && export RANLIB
+	AC_SUBST([RANLIB])
 fi
+AM_PROG_AS
 
 dnl# Default to a non shared library. This may be overridden by the
 dnl# configure option --enable-shared.
@@ -76,11 +79,11 @@ AC_EXEEXT
 
 # host-specific stuff:
 
-if test "x$CC" = "x"; then
-    test -z "$CC"
+if test "x${CC}" = "x"; then
+    test -z "${CC}"
     AC_PROG_CC
 else
-    test ! -z "$CC"
+    test ! -z "${CC}"
     AC_PROG_GCC_TRADITIONAL
 fi
 
@@ -92,11 +95,13 @@ case "$host" in
   ;;
 esac
 
-ALL_LINGUAS="fr sv tr es da de id pt_BR ro nl fi vi"
+# gettext
+AC_MSG_NOTICE([doing gettext checks])
+ALL_LINGUAS="fr sv tr es da de id it pt_BR ro nl fi uk vi"
 CY_GNU_GETTEXT
 ZW_GNU_GETTEXT_SISTER_DIR
-if test "x$GETTEXT_MACRO_VERSION" = "x"; then
-	test -z "$GETTEXT_MACRO_VERSION"
+if test "x${GETTEXT_MACRO_VERSION}" = "x"; then
+	test -z "${GETTEXT_MACRO_VERSION}"
 	AM_PO_SUBDIRS
 fi
 
@@ -112,7 +117,7 @@ AC_PROG_LN_S
 
 # Checks for libraries.
 if test -d /usr/lib/gcc/darwin/2.95.2; then
-	export LDFLAGS="$LDFLAGS -L/usr/lib/gcc/darwin/2.95.2"
+	export LDFLAGS="${LDFLAGS} -L/usr/lib/gcc/darwin/2.95.2"
 fi
 # FIXME: Replace `main' with a function in `-lcc_dynamic':
 AC_CHECK_LIB([cc_dynamic],[main],[SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lcc_dynamic"])
@@ -138,6 +143,7 @@ AC_CHECK_HEADERS([errno.h gettext.h libintl.h malloc.h setjmp.h stddef.h \
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
+AC_C_CONST
 AC_C_PROTOTYPES
 AC_TYPE_INT8_T
 AC_TYPE_INT16_T
@@ -153,7 +159,7 @@ AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([memmove memset regcomp strdup strerror strncasecmp strstr \
-                strtol strtoul])
+                strtol strtoul strtoull])
 AC_CHECK_DECLS([basename])
 AC_CHECK_DECLS([stpcpy])
 
@@ -243,7 +249,7 @@ do
     else
 	AC_MSG_NOTICE([sourcing ../bfd/config.bfd])
 	. $srcdir/../bfd/config.bfd
-	selarchs="$selarchs $targ_archs"
+	selarchs="${selarchs} ${targ_archs}"
     fi
 done	
 

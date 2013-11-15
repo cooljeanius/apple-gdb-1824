@@ -852,6 +852,7 @@ dep-am: DEP
 	$(SHELL) $(srcdir)/../move-if-change tmp-Makefile.am $(srcdir)/Makefile.am
 
 host-aout.lo: Makefile
+mach-o.lo: headers $(BFD_H) bfd.h bfd-in3.h mach-o-target.c
 
 # The following program can be used to generate a simple config file
 # which can be folded into an h-XXX file for a new host, with some editing.
@@ -860,9 +861,10 @@ aout-params.h: gen-aout config.status
 gen-aout: $(srcdir)/gen-aout.c Makefile
 	$(CC) -o gen-aout $(CFLAGS) $(LFLAGS) $(srcdir)/gen-aout.c
 
-$(BFD_H): stmp-bfd-h ; @true
+$(BFD_H): stmp-bfd-h $(srcdir)/bfd-in2.h $(srcdir)/libbfd.h $(srcdir)/libcoff.h
+	(cd $(srcdir) && $(MAKE) headers $(FLAGS_TO_PASS))
 
-stmp-bfd-h: bfd-in3.h
+stmp-bfd-h: bfd-in3.h headers
 	rm -f bfd-tmp.h
 	cp bfd-in3.h bfd-tmp.h
 	$(SHELL) $(srcdir)/../move-if-change bfd-tmp.h $(BFD_H)
@@ -888,7 +890,7 @@ FRAMEWORK_VERSION = A
 FRAMEWORK_OFILES = `echo $(libbfd_la_OBJECTS) | sed -e 's/\.lo/\.o/g'` `cat ofiles | sed -e 's/\.lo/\.o/g'`
 FRAMEWORK_LIB = -F../libiberty -framework liberty -F../mmalloc -framework mmalloc $(SYSTEM_FRAMEWORK) $(LDFLAGS)
 
-stamp-framework-headers: bfd.h
+stamp-framework-headers: bfd.h headers
 	$(RM) -f stamp-framework stamp-framework-headers
 	$(RM) -rf $(FRAMEWORK).framework
 	mkdir -p $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Headers
@@ -923,7 +925,7 @@ stamp-framework: $(libbfd_la_OBJECTS) $(libbfd_la_DEPENDENCIES)
 # APPLE LOCAL end framework building
 
 # Could really use a "copy-if-change"...
-headers:
+headers: $(docdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h
 	(cd $(docdir); $(MAKE) protos $(FLAGS_TO_PASS))
 	cp $(docdir)/bfd.h bfd-in2.h-new
 	$(SHELL) $(srcdir)/../move-if-change bfd-in2.h-new $(srcdir)/bfd-in2.h

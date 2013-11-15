@@ -23,14 +23,19 @@
 #else
 # warning mach-o.c expects "config.h" to be included.
 #endif /* HAVE_CONFIG_H */
+
 #include "mach-o.h"
 #include "bfd.h"
+#include "bfd_stdint.h"
+#include "bfd-in2.h"
+#include "bfd-in3.h"
 #include "sysdep.h"
 #include "libbfd.h"
 #include "libiberty.h"
 #include "aout/stab_gnu.h"
 #include "mach-o/reloc.h"
 #include "mach-o/external.h"
+
 #ifdef HAVE_CTYPE_H
 # include <ctype.h>
 #else
