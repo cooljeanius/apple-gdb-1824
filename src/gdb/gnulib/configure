@@ -14038,6 +14038,11 @@ $as_echo "$as_me: done with gnulib initialization checks" >&6;}
 
 # We do NOT use automake, but gnulib does. This line lets us generate
 # its Makefile.in.
+if test -f ${srcdir}/config.status; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: config.status is already present, removing it." >&5
+$as_echo "$as_me: config.status is already present, removing it." >&6;}
+  rm -f ${srcdir}/config.status
+fi
 am__api_version='1.14'
 
 # Find a good install program.  We prefer a C program (faster),
@@ -17498,5 +17503,13 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
 
+
+if test "${srcdir}" != "."; then
+  if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
+    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+  elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
+    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+  fi
+fi
 
 exit 0

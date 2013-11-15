@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>BuildMachineOSBuild</key>
+	<string>10M2516</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>GDBMIDebugging</string>
+	<key>CFBundleGetInfoString</key>
+	<string>Xcode GDB Debugging Plugin v5.0</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.apple.Xcode.GDBMIDebuggingPlugin</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Xcode GDB Debugging Plugin</string>
+	<key>CFBundlePackageType</key>
+	<string>BNDL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>5.3</string>
+	<key>CFBundleSignature</key>
+	<string>xcgd</string>
+	<key>CFBundleVersion</key>
+	<string>1761</string>
+	<key>DTCompiler</key>
+	<string>com.apple.compilers.llvm.clang.1_0</string>
+	<key>DTPlatformBuild</key>
+	<string></string>
+	<key>DTPlatformVersion</key>
+	<string>PG</string>
+	<key>DTSDKBuild</key>
+	<string>10M2516</string>
+	<key>DTSDKName</key>
+	<string></string>
+	<key>DTXcode</key>
+	<string>0400</string>
+	<key>DTXcodeBuild</key>
+	<string></string>
+	<key>NSPrincipalClass</key>
+	<string>PBXGDB_DebuggingPlugin</string>
+	<key>PBXDebuggableFileTypes</key>
+	<array>
+		<string>sourcecode.c</string>
+		<string>sourcecode.asm</string>
+		<string>sourcecode.ada</string>
+		<string>sourcecode.fortran</string>
+		<string>sourcecode.lex</string>
+		<string>sourcecode.yacc</string>
+		<string>sourcecode.pascal</string>
+	</array>
+	<key>XCGCReady</key>
+	<string>YES</string>
+	<key>XCPluginHasUI</key>
+	<string>YES</string>
+</dict>
+</plist>

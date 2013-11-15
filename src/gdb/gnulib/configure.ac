@@ -41,6 +41,10 @@ AC_MSG_NOTICE([done with gnulib initialization checks])
 
 # We do NOT use automake, but gnulib does. This line lets us generate
 # its Makefile.in.
+if test -f ${srcdir}/config.status; then
+  AC_MSG_NOTICE([config.status is already present, removing it.])
+  rm -f ${srcdir}/config.status
+fi
 AM_INIT_AUTOMAKE([1.5 gnu no-define])
 
 # --------------------- #
@@ -94,5 +98,13 @@ echo > stamp-h ;;
 esac
 ],[])
 AC_OUTPUT
+
+if test "${srcdir}" != "."; then
+  if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
+    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+  elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
+    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+  fi
+fi
 
 exit 0

@@ -1,0 +1,341 @@
+type,name,architecture,library
+Symbol (Local),stub helpers,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,_CoreFoundationTypeRefIsValid,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFAbsoluteTimeSummary,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFArraySummary,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFBagSummary,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFBinaryHeapSummary,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFBitVectorSummary,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFDataSummary,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFDictionarySummary,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFError,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFGregorianDateSummary,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFSetSummary,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFStringSummary,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFTimeZoneSummary,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFTypeRefSummary,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_dataFormattersMajorVersion,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_dataFormattersMinorVersion,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_dataFormattersSupportUnicharXcode_CF,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_wcharPointerSummary,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_wcharSummary,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,__Xcode_wcharPointerForCount,X86_64,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),___FUNCTION__.16616,X86_64,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),___FUNCTION__.16678,X86_64,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),___FUNCTION__.16704,X86_64,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),___FUNCTION__.16722,X86_64,PBGDBIntrospectionSupport.A.dylib
+Undefined,___stack_chk_fail,X86_64,PBGDBIntrospectionSupport.A.dylib
+Undefined,___stack_chk_guard,X86_64,PBGDBIntrospectionSupport.A.dylib
+Undefined,___stderrp,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),__mh_dylib_header,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),__pbxgdb_buffer_for_id,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_cf_introspect_string,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_cf_introspect_string_buffer,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_dump_class_list_buffer,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_free_buffers_for_ids,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_insert_plugin,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_msg,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_objc_class_name_max_length,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_objc_compute_super_class_list,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_objc_dynamic_type,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_objc_validate_class,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_set_trace,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_shlib_state_changed,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_unicharmsg,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_vmsg,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_vunicharmsg,X86_64,PBGDBIntrospectionSupport.A.dylib
+Data Section,_allocationHash,X86_64,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),_cfNotLoaded,X86_64,PBGDBIntrospectionSupport.A.dylib
+Undefined,_dlclose,X86_64,PBGDBIntrospectionSupport.A.dylib
+Undefined,_dlerror,X86_64,PBGDBIntrospectionSupport.A.dylib
+Undefined,_dlopen,X86_64,PBGDBIntrospectionSupport.A.dylib
+Undefined,_dlsym,X86_64,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),_entries,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFAbsoluteTimeGetCurrent,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFAbsoluteTimeGetGregorianDate,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFArrayGetCount,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFArrayGetTypeID,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFBagGetCount,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFBagGetTypeID,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFBinaryHeapGetCount,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFBinaryHeapGetTypeID,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFBitVectorGetBitAtIndex,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFBitVectorGetCount,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFBitVectorGetTypeID,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFDataGetLength,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFDataGetTypeID,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFDictionaryGetCount,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFDictionaryGetTypeID,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFGetTypeID,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFRelease,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFSetGetCount,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFSetGetTypeID,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFStringGetBytes,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFStringGetCharacters,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFStringGetLength,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFStringGetTypeID,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFTimeZoneCopyAbbreviation,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFTimeZoneCopyDefault,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFTimeZoneGetTypeID,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_NSExceptionRaiser,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_NSSetExceptionRaiser,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_class_getName,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_class_getSuperclass,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_gdb_class_getClass,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_objc_lookUpClass,X86_64,PBGDBIntrospectionSupport.A.dylib
+Undefined,_free,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_g_core_foundation_handle,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_g_foundation_handle,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_g_initialized,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_g_libobjc_A_dylib_handle,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_g_pbxgdb_trace,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_g_unichar_buffer,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),_load_cf_functions,X86_64,PBGDBIntrospectionSupport.A.dylib
+Undefined,_mach_task_self_,X86_64,PBGDBIntrospectionSupport.A.dylib
+Undefined,_mach_vm_region_recurse,X86_64,PBGDBIntrospectionSupport.A.dylib
+Undefined,_malloc,X86_64,PBGDBIntrospectionSupport.A.dylib
+Undefined,_memset,X86_64,PBGDBIntrospectionSupport.A.dylib
+Data Section (Local),_num_calls,X86_64,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),_oneEntry,X86_64,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),_oneValue,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),_pbxgdb_cf_introspect_dont_raise_exception,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),_pbxgdb_initialize,X86_64,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),_pbxgdb_trace,X86_64,PBGDBIntrospectionSupport.A.dylib
+Undefined,_printf,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_return_buffer.16727,X86_64,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_return_buffer_size.16728,X86_64,PBGDBIntrospectionSupport.A.dylib
+Undefined,_strcpy,X86_64,PBGDBIntrospectionSupport.A.dylib
+Undefined,_strlen,X86_64,PBGDBIntrospectionSupport.A.dylib
+Data Section (Local),_theFunctionList,X86_64,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),_values,X86_64,PBGDBIntrospectionSupport.A.dylib
+Undefined,_vfprintf,X86_64,PBGDBIntrospectionSupport.A.dylib
+Undefined,_vm_page_size,X86_64,PBGDBIntrospectionSupport.A.dylib
+Undefined,_vsnprintf,X86_64,PBGDBIntrospectionSupport.A.dylib
+Undefined,_wcstombs,X86_64,PBGDBIntrospectionSupport.A.dylib
+Undefined,dyld_stub_binder,X86_64,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),stub helpers,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,_CoreFoundationTypeRefIsValid,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFAbsoluteTimeSummary,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFArraySummary,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFBagSummary,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFBinaryHeapSummary,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFBitVectorSummary,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFDataSummary,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFDictionarySummary,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFError,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFGregorianDateSummary,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFSetSummary,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFStringSummary,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFTimeZoneSummary,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFTypeRefSummary,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_dataFormattersMajorVersion,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_dataFormattersMinorVersion,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_dataFormattersSupportUnicharXcode_CF,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_wcharPointerSummary,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_wcharSummary,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,__Xcode_wcharPointerForCount,I386,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),___FUNCTION__.16648,I386,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),___FUNCTION__.16720,I386,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),___FUNCTION__.16760,I386,PBGDBIntrospectionSupport.A.dylib
+Undefined,___stack_chk_fail,I386,PBGDBIntrospectionSupport.A.dylib
+Undefined,___stack_chk_guard,I386,PBGDBIntrospectionSupport.A.dylib
+Undefined,___stderrp,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),__mh_dylib_header,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),__pbxgdb_buffer_for_id,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_cf_introspect_string,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_cf_introspect_string_buffer,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_dump_class_list_buffer,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_free_buffers_for_ids,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_insert_plugin,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_msg,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_objc_class_name_max_length,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_objc_compute_super_class_list,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_objc_dynamic_type,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_objc_validate_class,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_set_trace,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_shlib_state_changed,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_unicharmsg,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_vmsg,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_vunicharmsg,I386,PBGDBIntrospectionSupport.A.dylib
+Data Section,_allocationHash,I386,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),_cfNotLoaded,I386,PBGDBIntrospectionSupport.A.dylib
+Undefined,_dlclose,I386,PBGDBIntrospectionSupport.A.dylib
+Undefined,_dlerror,I386,PBGDBIntrospectionSupport.A.dylib
+Undefined,_dlopen,I386,PBGDBIntrospectionSupport.A.dylib
+Undefined,_dlsym,I386,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),_entries,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFAbsoluteTimeGetCurrent,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFAbsoluteTimeGetGregorianDate,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFArrayGetCount,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFArrayGetTypeID,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFBagGetCount,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFBagGetTypeID,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFBinaryHeapGetCount,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFBinaryHeapGetTypeID,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFBitVectorGetBitAtIndex,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFBitVectorGetCount,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFBitVectorGetTypeID,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFDataGetLength,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFDataGetTypeID,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFDictionaryGetCount,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFDictionaryGetTypeID,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFGetTypeID,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFRelease,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFSetGetCount,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFSetGetTypeID,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFStringGetBytes,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFStringGetCharacters,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFStringGetLength,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFStringGetTypeID,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFTimeZoneCopyAbbreviation,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFTimeZoneCopyDefault,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFTimeZoneGetTypeID,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_NSExceptionRaiser,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_NSSetExceptionRaiser,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_objc_lookUpClass,I386,PBGDBIntrospectionSupport.A.dylib
+Undefined,_free,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_g_core_foundation_handle,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_g_foundation_handle,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_g_initialized,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_g_libobjc_A_dylib_handle,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_g_pbxgdb_trace,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_g_unichar_buffer,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),_load_cf_functions,I386,PBGDBIntrospectionSupport.A.dylib
+Undefined,_mach_task_self_,I386,PBGDBIntrospectionSupport.A.dylib
+Undefined,_malloc,I386,PBGDBIntrospectionSupport.A.dylib
+Undefined,_memset,I386,PBGDBIntrospectionSupport.A.dylib
+Data Section (Local),_num_calls,I386,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),_oneEntry,I386,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),_oneValue,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),_pbxgdb_cf_introspect_dont_raise_exception,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),_pbxgdb_initialize,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),_pbxgdb_trace,I386,PBGDBIntrospectionSupport.A.dylib
+Undefined,_printf,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_return_buffer.16765,I386,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_return_buffer_size.16766,I386,PBGDBIntrospectionSupport.A.dylib
+Undefined,_strcpy,I386,PBGDBIntrospectionSupport.A.dylib
+Undefined,_strlen,I386,PBGDBIntrospectionSupport.A.dylib
+Data Section (Local),_theFunctionList,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),_validate_contents_at_address,I386,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),_values,I386,PBGDBIntrospectionSupport.A.dylib
+Undefined,_vfprintf,I386,PBGDBIntrospectionSupport.A.dylib
+Undefined,_vm_deallocate,I386,PBGDBIntrospectionSupport.A.dylib
+Undefined,_vm_page_size,I386,PBGDBIntrospectionSupport.A.dylib
+Undefined,_vm_read,I386,PBGDBIntrospectionSupport.A.dylib
+Undefined,_vsnprintf,I386,PBGDBIntrospectionSupport.A.dylib
+Undefined,_wcstombs,I386,PBGDBIntrospectionSupport.A.dylib
+Undefined,dyld_stub_binder,I386,PBGDBIntrospectionSupport.A.dylib
+Text Section,_CoreFoundationTypeRefIsValid,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFAbsoluteTimeSummary,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFArraySummary,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFBagSummary,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFBinaryHeapSummary,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFBitVectorSummary,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFDataSummary,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFDictionarySummary,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFError,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFGregorianDateSummary,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFSetSummary,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFStringSummary,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFTimeZoneSummary,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_CFTypeRefSummary,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_dataFormattersMajorVersion,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_dataFormattersMinorVersion,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_dataFormattersSupportUnicharXcode_CF,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_wcharPointerSummary,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,_Xcode_wcharSummary,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,__Xcode_wcharPointerForCount,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),___FUNCTION__.16551,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),___FUNCTION__.16623,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),___FUNCTION__.16660,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Undefined,___stack_chk_fail,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Undefined,___stack_chk_guard,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Undefined,___stderrp,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),__dyld_func_lookup,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),__mh_dylib_header,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),__pbxgdb_buffer_for_id,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_cf_introspect_string,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_cf_introspect_string_buffer,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_dump_class_list_buffer,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_free_buffers_for_ids,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_insert_plugin,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_msg,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_objc_class_name_max_length,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_objc_compute_super_class_list,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_objc_dynamic_type,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_objc_validate_class,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_set_trace,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_shlib_state_changed,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_unicharmsg,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_vmsg,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section,__pbxgdb_vunicharmsg,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Data Section,_allocationHash,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),_cfNotLoaded,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Undefined,_dlclose,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Undefined,_dlerror,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Undefined,_dlopen,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Undefined,_dlsym,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),_entries,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFAbsoluteTimeGetCurrent,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFAbsoluteTimeGetGregorianDate,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFArrayGetCount,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFArrayGetTypeID,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFBagGetCount,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFBagGetTypeID,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFBinaryHeapGetCount,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFBinaryHeapGetTypeID,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFBitVectorGetBitAtIndex,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFBitVectorGetCount,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFBitVectorGetTypeID,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFDataGetLength,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFDataGetTypeID,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFDictionaryGetCount,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFDictionaryGetTypeID,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFGetTypeID,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFRelease,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFSetGetCount,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFSetGetTypeID,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFStringGetBytes,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFStringGetCharacters,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFStringGetLength,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFStringGetTypeID,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFTimeZoneCopyAbbreviation,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFTimeZoneCopyDefault,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_CFTimeZoneGetTypeID,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_NSExceptionRaiser,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_NSSetExceptionRaiser,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_f_objc_lookUpClass,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Undefined,_free,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_g_core_foundation_handle,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_g_foundation_handle,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_g_initialized,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_g_libobjc_A_dylib_handle,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_g_pbxgdb_trace,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_g_unichar_buffer,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),_load_cf_functions,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Undefined,_mach_task_self_,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Undefined,_malloc,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Undefined,_memset,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Data Section (Local),_num_calls,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),_oneEntry,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),_oneValue,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),_pbxgdb_cf_introspect_dont_raise_exception,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),_pbxgdb_initialize,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),_pbxgdb_trace,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Undefined,_printf$LDBL128,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_return_buffer.16665,PPC7400,PBGDBIntrospectionSupport.A.dylib
+BSS Section (Local),_return_buffer_size.16666,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Undefined,_strcpy,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Undefined,_strlen,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Data Section (Local),_theFunctionList,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),_validate_contents_at_address,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Symbol (Local),_values,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Undefined,_vfprintf$LDBL128,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Undefined,_vm_deallocate,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Undefined,_vm_page_size,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Undefined,_vm_read,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Undefined,_vsnprintf$LDBL128,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Undefined,_wcstombs,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),cfm_stub_binding_helper,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Data Section (Local),dyld__mach_header,PPC7400,PBGDBIntrospectionSupport.A.dylib
+Text Section (Local),dyld_stub_binding_helper,PPC7400,PBGDBIntrospectionSupport.A.dylib

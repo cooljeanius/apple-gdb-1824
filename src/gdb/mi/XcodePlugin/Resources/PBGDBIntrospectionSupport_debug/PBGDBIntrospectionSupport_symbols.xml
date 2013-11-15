@@ -1,0 +1,2043 @@
+<?xml version="1.0"?>
+<symbols>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>stub helpers</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_CoreFoundationTypeRefIsValid</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFAbsoluteTimeSummary</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFArraySummary</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFBagSummary</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFBinaryHeapSummary</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFBitVectorSummary</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFDataSummary</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFDictionarySummary</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFError</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFGregorianDateSummary</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFSetSummary</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFStringSummary</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFTimeZoneSummary</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFTypeRefSummary</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_dataFormattersMajorVersion</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_dataFormattersMinorVersion</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_dataFormattersSupportUnicharXcode_CF</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_wcharPointerSummary</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_wcharSummary</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__Xcode_wcharPointerForCount</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>___FUNCTION__.16616</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>___FUNCTION__.16678</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>___FUNCTION__.16704</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>___FUNCTION__.16722</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>___stack_chk_fail</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>___stack_chk_guard</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>___stderrp</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>__mh_dylib_header</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>__pbxgdb_buffer_for_id</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_cf_introspect_string</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_cf_introspect_string_buffer</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_dump_class_list_buffer</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_free_buffers_for_ids</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_insert_plugin</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_msg</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_objc_class_name_max_length</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_objc_compute_super_class_list</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_objc_dynamic_type</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_objc_validate_class</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_set_trace</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_shlib_state_changed</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_unicharmsg</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_vmsg</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_vunicharmsg</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Data Section</type>
+		<name>_allocationHash</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>_cfNotLoaded</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_dlclose</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_dlerror</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_dlopen</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_dlsym</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>_entries</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFAbsoluteTimeGetCurrent</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFAbsoluteTimeGetGregorianDate</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFArrayGetCount</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFArrayGetTypeID</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFBagGetCount</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFBagGetTypeID</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFBinaryHeapGetCount</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFBinaryHeapGetTypeID</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFBitVectorGetBitAtIndex</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFBitVectorGetCount</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFBitVectorGetTypeID</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFDataGetLength</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFDataGetTypeID</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFDictionaryGetCount</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFDictionaryGetTypeID</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFGetTypeID</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFRelease</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFSetGetCount</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFSetGetTypeID</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFStringGetBytes</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFStringGetCharacters</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFStringGetLength</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFStringGetTypeID</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFTimeZoneCopyAbbreviation</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFTimeZoneCopyDefault</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFTimeZoneGetTypeID</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_NSExceptionRaiser</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_NSSetExceptionRaiser</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_class_getName</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_class_getSuperclass</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_gdb_class_getClass</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_objc_lookUpClass</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_free</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_g_core_foundation_handle</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_g_foundation_handle</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_g_initialized</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_g_libobjc_A_dylib_handle</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_g_pbxgdb_trace</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_g_unichar_buffer</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>_load_cf_functions</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_mach_task_self_</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_mach_vm_region_recurse</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_malloc</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_memset</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Data Section (Local)</type>
+		<name>_num_calls</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>_oneEntry</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>_oneValue</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>_pbxgdb_cf_introspect_dont_raise_exception</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>_pbxgdb_initialize</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>_pbxgdb_trace</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_printf</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_return_buffer.16727</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_return_buffer_size.16728</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_strcpy</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_strlen</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Data Section (Local)</type>
+		<name>_theFunctionList</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>_values</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_vfprintf</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_vm_page_size</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_vsnprintf</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_wcstombs</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>dyld_stub_binder</name>
+		<architecture>X86_64</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>stub helpers</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_CoreFoundationTypeRefIsValid</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFAbsoluteTimeSummary</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFArraySummary</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFBagSummary</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFBinaryHeapSummary</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFBitVectorSummary</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFDataSummary</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFDictionarySummary</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFError</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFGregorianDateSummary</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFSetSummary</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFStringSummary</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFTimeZoneSummary</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFTypeRefSummary</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_dataFormattersMajorVersion</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_dataFormattersMinorVersion</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_dataFormattersSupportUnicharXcode_CF</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_wcharPointerSummary</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_wcharSummary</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__Xcode_wcharPointerForCount</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>___FUNCTION__.16648</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>___FUNCTION__.16720</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>___FUNCTION__.16760</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>___stack_chk_fail</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>___stack_chk_guard</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>___stderrp</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>__mh_dylib_header</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>__pbxgdb_buffer_for_id</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_cf_introspect_string</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_cf_introspect_string_buffer</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_dump_class_list_buffer</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_free_buffers_for_ids</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_insert_plugin</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_msg</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_objc_class_name_max_length</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_objc_compute_super_class_list</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_objc_dynamic_type</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_objc_validate_class</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_set_trace</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_shlib_state_changed</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_unicharmsg</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_vmsg</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_vunicharmsg</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Data Section</type>
+		<name>_allocationHash</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>_cfNotLoaded</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_dlclose</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_dlerror</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_dlopen</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_dlsym</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>_entries</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFAbsoluteTimeGetCurrent</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFAbsoluteTimeGetGregorianDate</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFArrayGetCount</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFArrayGetTypeID</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFBagGetCount</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFBagGetTypeID</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFBinaryHeapGetCount</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFBinaryHeapGetTypeID</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFBitVectorGetBitAtIndex</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFBitVectorGetCount</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFBitVectorGetTypeID</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFDataGetLength</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFDataGetTypeID</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFDictionaryGetCount</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFDictionaryGetTypeID</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFGetTypeID</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFRelease</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFSetGetCount</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFSetGetTypeID</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFStringGetBytes</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFStringGetCharacters</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFStringGetLength</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFStringGetTypeID</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFTimeZoneCopyAbbreviation</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFTimeZoneCopyDefault</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFTimeZoneGetTypeID</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_NSExceptionRaiser</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_NSSetExceptionRaiser</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_objc_lookUpClass</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_free</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_g_core_foundation_handle</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_g_foundation_handle</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_g_initialized</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_g_libobjc_A_dylib_handle</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_g_pbxgdb_trace</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_g_unichar_buffer</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>_load_cf_functions</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_mach_task_self_</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_malloc</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_memset</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Data Section (Local)</type>
+		<name>_num_calls</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>_oneEntry</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>_oneValue</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>_pbxgdb_cf_introspect_dont_raise_exception</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>_pbxgdb_initialize</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>_pbxgdb_trace</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_printf</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_return_buffer.16765</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_return_buffer_size.16766</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_strcpy</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_strlen</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Data Section (Local)</type>
+		<name>_theFunctionList</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>_validate_contents_at_address</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>_values</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_vfprintf</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_vm_deallocate</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_vm_page_size</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_vm_read</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_vsnprintf</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_wcstombs</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>dyld_stub_binder</name>
+		<architecture>I386</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_CoreFoundationTypeRefIsValid</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFAbsoluteTimeSummary</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFArraySummary</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFBagSummary</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFBinaryHeapSummary</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFBitVectorSummary</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFDataSummary</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFDictionarySummary</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFError</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFGregorianDateSummary</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFSetSummary</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFStringSummary</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFTimeZoneSummary</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_CFTypeRefSummary</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_dataFormattersMajorVersion</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_dataFormattersMinorVersion</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_dataFormattersSupportUnicharXcode_CF</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_wcharPointerSummary</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>_Xcode_wcharSummary</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__Xcode_wcharPointerForCount</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>___FUNCTION__.16551</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>___FUNCTION__.16623</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>___FUNCTION__.16660</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>___stack_chk_fail</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>___stack_chk_guard</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>___stderrp</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>__dyld_func_lookup</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>__mh_dylib_header</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>__pbxgdb_buffer_for_id</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_cf_introspect_string</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_cf_introspect_string_buffer</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_dump_class_list_buffer</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_free_buffers_for_ids</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_insert_plugin</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_msg</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_objc_class_name_max_length</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_objc_compute_super_class_list</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_objc_dynamic_type</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_objc_validate_class</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_set_trace</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_shlib_state_changed</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_unicharmsg</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_vmsg</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section</type>
+		<name>__pbxgdb_vunicharmsg</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Data Section</type>
+		<name>_allocationHash</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>_cfNotLoaded</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_dlclose</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_dlerror</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_dlopen</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_dlsym</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>_entries</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFAbsoluteTimeGetCurrent</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFAbsoluteTimeGetGregorianDate</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFArrayGetCount</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFArrayGetTypeID</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFBagGetCount</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFBagGetTypeID</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFBinaryHeapGetCount</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFBinaryHeapGetTypeID</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFBitVectorGetBitAtIndex</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFBitVectorGetCount</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFBitVectorGetTypeID</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFDataGetLength</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFDataGetTypeID</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFDictionaryGetCount</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFDictionaryGetTypeID</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFGetTypeID</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFRelease</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFSetGetCount</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFSetGetTypeID</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFStringGetBytes</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFStringGetCharacters</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFStringGetLength</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFStringGetTypeID</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFTimeZoneCopyAbbreviation</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFTimeZoneCopyDefault</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_CFTimeZoneGetTypeID</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_NSExceptionRaiser</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_NSSetExceptionRaiser</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_f_objc_lookUpClass</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_free</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_g_core_foundation_handle</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_g_foundation_handle</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_g_initialized</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_g_libobjc_A_dylib_handle</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_g_pbxgdb_trace</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_g_unichar_buffer</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>_load_cf_functions</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_mach_task_self_</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_malloc</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_memset</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Data Section (Local)</type>
+		<name>_num_calls</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>_oneEntry</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>_oneValue</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>_pbxgdb_cf_introspect_dont_raise_exception</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>_pbxgdb_initialize</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>_pbxgdb_trace</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_printf$LDBL128</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_return_buffer.16665</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>BSS Section (Local)</type>
+		<name>_return_buffer_size.16666</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_strcpy</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_strlen</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Data Section (Local)</type>
+		<name>_theFunctionList</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>_validate_contents_at_address</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Symbol (Local)</type>
+		<name>_values</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_vfprintf$LDBL128</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_vm_deallocate</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_vm_page_size</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_vm_read</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_vsnprintf$LDBL128</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Undefined</type>
+		<name>_wcstombs</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>cfm_stub_binding_helper</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Data Section (Local)</type>
+		<name>dyld__mach_header</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+	<symbol>
+		<type>Text Section (Local)</type>
+		<name>dyld_stub_binding_helper</name>
+		<architecture>PPC7400</architecture>
+		<library>PBGDBIntrospectionSupport.A.dylib</library>
+	</symbol>
+</symbols>

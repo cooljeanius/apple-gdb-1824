@@ -1,0 +1,11 @@
+/**
+    GDBMIDebugger
+
+*/
+(
+    {
+        Identifier = gdb;
+        Name = "gdb";
+		Type = "Generic";
+    }
+)
