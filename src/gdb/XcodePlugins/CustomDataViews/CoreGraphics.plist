@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+   CoreGraphics.plist
+   pbxdataformatters
+
+   Created by Christopher Friesen on 1/28/08.
+   Copyright 2008-2009 Apple Inc. All rights reserved.
+-->
+<plist version="1.0">
+    <dict>
+    	<key>File Version</key>
+        <string>1</string>
+        <key>CGSize</key>
+        <dict>
+            <key>SummaryString</key>
+            <string>(width=%width%, height=%height%)</string>
+            </dict>
+        <key>CGPoint</key>
+        <dict>
+            <key>SummaryString</key>
+            <string>(x=%x%, y=%y%)</string>
+            </dict>
+        <key>CGRect</key>
+        <dict>
+            <key>SummaryString</key>
+            <string>origin=%origin%:s size=%size%:s</string>
+            </dict>
+        
+    </dict>
+</plist>

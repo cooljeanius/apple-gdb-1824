@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSArray *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(int)[$VAR count]} objects</string>
+	</dict>
+	<key>NSAttributedString *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(NSString *)[$VAR string]}:s</string>
+	</dict>
+	<key>NSBundle *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(NSString *)[$VAR bundlePath]}:s</string>
+	</dict>
+	<key>NSCalendarDate *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(NSString *)[$VAR description]}:s</string>
+	</dict>
+	<key>NSCountedSet *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(int)[$VAR count]} objects</string>
+	</dict>
+	<key>NSData *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(int)[$VAR length]} bytes</string>
+	</dict>
+	<key>NSDate *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(NSString *)[$VAR description]}:s</string>
+	</dict>
+	<key>NSDecimalNumber *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(NSString *)[$VAR description]}:s</string>
+	</dict>
+	<key>NSException *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(NSString *)[$VAR description]}:s</string>
+	</dict>
+	<key>NSFileHandle *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>file descriptor: {(int)[$VAR fileDescriptor]}</string>
+	</dict>
+	<key>NSHost *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(NSString *)[$VAR name]}:s</string>
+	</dict>
+	<key>NSMachPort *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>mach port: {(int)[$VAR port]}</string>
+	</dict>
+	<key>NSMutableArray *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(int)[$VAR count]} objects</string>
+	</dict>
+	<key>NSMutableAttributedString *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(NSString *)[$VAR string]}:s</string>
+	</dict>
+	<key>NSMutableData *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(int)[$VAR length]} bytes</string>
+	</dict>
+	<key>NSMutableSet *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(int)[$VAR count]} objects</string>
+	</dict>
+	<key>NSNotification *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(NSString *)[$VAR name]}:s</string>
+	</dict>
+	<key>NSNumber *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(NSString *)[$VAR description]}:s</string>
+	</dict>
+	<key>NSSet *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(int)[$VAR count]} objects</string>
+	</dict>
+	<key>NSTask *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(NSString *)[$VAR launchPath]}:s</string>
+	</dict>
+	<key>NSTimeZone *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(NSString *)[$VAR description]}:s</string>
+	</dict>
+	<key>NSURL *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(NSString *)[$VAR description]}:s</string>
+	</dict>
+	<key>NSDictionary *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(int)[$VAR count]} key/value pairs</string>
+	</dict>
+	<key>NSMutableDictionary *</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(int)[$VAR count]} key/value pairs</string>
+	</dict>
+	<key>NSPoint</key>
+	<dict>
+		<key>ValueString</key>
+		<string>x=%x%, y=%y%</string>
+	</dict>
+	<key>NSPointArray</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>(x=%x%, y=%y%), ...</string>
+	</dict>
+	<key>NSPointPointer</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>x=%x%, y=%y%</string>
+	</dict>
+	<key>NSRange</key>
+	<dict>
+		<key>ValueString</key>
+		<string>location=%location%, length=%length%</string>
+	</dict>
+	<key>NSRangePointer</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>location=%location%, length=%length%</string>
+	</dict>
+	<key>NSRect</key>
+	<dict>
+		<key>ValueString</key>
+		<string>%origin%, %size%</string>
+	</dict>
+	<key>NSRectArray</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>(%origin%, %size%), ...</string>
+	</dict>
+	<key>NSRectPointer</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>%origin%, %size%</string>
+	</dict>
+	<key>NSSize</key>
+	<dict>
+		<key>ValueString</key>
+		<string>width=%width%, height=%height%</string>
+	</dict>
+	<key>NSSizeArray</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>(width=%width%, height=%height%), ...</string>
+	</dict>
+	<key>NSSizePointer</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>width=%width%, height=%height%</string>
+	</dict>
+</dict>
+</plist>

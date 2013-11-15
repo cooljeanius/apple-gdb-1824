@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>builtin_type_vec128</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>%uint128%</string>
+	</dict>
+	<key>float [4]</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>(%0%, %1%, %2%, %3%)</string>
+	</dict>
+	<key>int32_t [4]</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>(%0%, %1%, %2%, %3%)</string>
+	</dict>
+	<key>int16_t [8]</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>(%0%, %1%, %2%, %3%, %4%, %5%, %6%, %7%)</string>
+	</dict>
+        	<key>__vector float</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>(%0%, %1%, %2%, %3%)</string>
+	</dict>
+	<key>__vector signed char</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>(%0%, %1%, %2%, %3%, %4%, %5%, %6%, %7%, %8%, %9%, %10%, %11%, %12%, %13%, %14%, %15%)</string>
+	</dict>
+	<key>__vector signed int</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>(%0%, %1%, %2%, %3%)</string>
+	</dict>
+	<key>__vector signed long</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>(%0%, %1%, %2%, %3%)</string>
+	</dict>
+	<key>__vector signed short</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>(%0%, %1%, %2%, %3%, %4%, %5%, %6%, %7%)</string>
+	</dict>
+	<key>__vector unsigned char</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>(%0%, %1%, %2%, %3%, %4%, %5%, %6%, %7%, %8%, %9%, %10%, %11%, %12%, %13%, %14%, %15%)</string>
+	</dict>
+	<key>__vector unsigned int</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>(%0%, %1%, %2%, %3%)</string>
+	</dict>
+	<key>__vector unsigned long</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>(%0%, %1%, %2%, %3%)</string>
+	</dict>
+	<key>__vector unsigned short</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>(%0%, %1%, %2%, %3%, %4%, %5%, %6%, %7%)</string>
+	</dict>
+</dict>
+</plist>

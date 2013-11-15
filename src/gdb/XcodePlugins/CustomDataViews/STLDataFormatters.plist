@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>File Version</key>
+	<string>1</string>
+    <key>string</key>
+    <dict>
+        <key>SummaryString</key>
+        <string>"%_M_dataplus._M_p%:s"</string>
+    </dict>
+    <key>string *</key>
+    <dict>
+        <key>SummaryString</key>
+        <string>"%_M_dataplus._M_p%:s"</string>
+    </dict>
+    <key>std::vector&lt;int,std::allocator&lt;int&gt; &gt;</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>size={$VAR._M_impl._M_finish - $VAR._M_impl._M_start}</string>
+	</dict>
+	<key>std::vector&lt;std::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt;,std::allocator&lt;std::basic_string&lt;char, std::char_traits&lt;char&gt;, std::allocator&lt;char&gt; &gt; &gt; &gt;</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>size={$VAR._M_impl._M_finish - $VAR._M_impl._M_start}</string>
+	</dict>
+</dict>
+</plist>

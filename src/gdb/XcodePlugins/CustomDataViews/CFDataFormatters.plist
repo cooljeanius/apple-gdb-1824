@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>File Version</key>
+	<string>1</string>
+	<key>CFGregorianUnits</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>%years% years, %months% months, %days% days, %hours% hours, %minutes% minutes %seconds% seconds</string>
+	</dict>
+	<key>CFAbsoluteTime</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(unichar *)Xcode_CFAbsoluteTimeSummary($VAR, $ID)}:s</string>
+	</dict>
+	<key>CFGregorianDate</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(unichar *)Xcode_CFGregorianDateSummary($VAR, $ID)}:s</string>
+	</dict>
+	<key>CFTimeZoneRef</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(unichar *)Xcode_CFTimeZoneSummary($VAR, $ID)}:s</string>
+	</dict>
+	<key>CFSetRef</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(unichar *)Xcode_CFSetSummary($VAR, $ID)}:s</string>
+	</dict>
+	<key>CFMutableSetRef</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(unichar *)Xcode_CFSetSummary($VAR, $ID)}:s</string>
+	</dict>
+	<key>CFDictionaryRef</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(unichar *)Xcode_CFDictionarySummary($VAR, $ID)}:s</string>
+	</dict>
+	<key>CFMutableDictionaryRef</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(unichar *)Xcode_CFDictionarySummary($VAR, $ID)}:s</string>
+	</dict>
+	<key>CFBitVectorRef</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(unichar *)Xcode_CFBitVectorSummary($VAR, $ID)}:s</string>
+	</dict>
+	<key>CFMutableBitVectorRef</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(unichar *)Xcode_CFBitVectorSummary($VAR, $ID)}:s</string>
+	</dict>
+	<key>CFBinaryHeapRef</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(unichar *)Xcode_CFBinaryHeapSummary($VAR, $ID)}:s</string>
+	</dict>
+	<key>CFBagRef</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(unichar *)Xcode_CFBagSummary($VAR, $ID)}:s</string>
+	</dict>
+	<key>CFMutableBagRef</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(unichar *)Xcode_CFBagSummary($VAR, $ID)}:s</string>
+	</dict>
+	<key>CFArrayRef</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(unichar *)Xcode_CFArraySummary($VAR, $ID)}:s</string>
+	</dict>
+	<key>CFMutableArrayRef</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(unichar *)Xcode_CFArraySummary($VAR, $ID)}:s</string>
+	</dict>
+	<key>CFDataRef</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(unichar *)Xcode_CFDataSummary($VAR, $ID)}:s</string>
+	</dict>
+	<key>CFMutableDataRef</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(unichar *)Xcode_CFDataSummary($VAR, $ID)}:s</string>
+	</dict>
+	<key>CFStringRef</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(unichar *)Xcode_CFStringSummary($VAR, $ID)}:s</string>
+	</dict>
+	<key>CFMutableStringRef</key>
+	<dict>
+		<key>SummaryString</key>
+		<string>{(unichar *)Xcode_CFStringSummary($VAR, $ID)}:s</string>
+	</dict>
+    <key>CFRange</key>
+    <dict>
+        <key>SummaryString</key>
+        <string>location=%location% length=%length%</string>
+    </dict>
+    <key>CFRange *</key>
+    <dict>
+        <key>SummaryString</key>
+        <string>location=%location% length=%length%</string>
+    </dict>
+</dict>
+</plist>
