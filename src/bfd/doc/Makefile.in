@@ -342,7 +342,7 @@ build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
-docdir = @docdir@
+docdir = .
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@
@@ -387,12 +387,12 @@ top_srcdir = @top_srcdir@
 wordsize = @wordsize@
 AUTOMAKE_OPTIONS = 1.9
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
-DOCFILES = aoutx.texi  archive.texi archures.texi \
-	bfdt.texi  cache.texi coffcode.texi \
+DOCFILES = aoutx.texi archive.texi archures.texi \
+	bfdt.texi cache.texi coffcode.texi \
 	core.texi elf.texi elfcode.texi  format.texi \
 	libbfd.texi bfdwin.texi bfdio.texi \
-	opncls.texi  reloc.texi  section.texi  \
-	syms.texi  targets.texi init.texi hash.texi linker.texi \
+	opncls.texi reloc.texi section.texi  \
+	syms.texi targets.texi init.texi hash.texi linker.texi \
 	mmo.texi
 
 PROTOS = archive.p archures.p bfd.p \
@@ -400,22 +400,22 @@ PROTOS = archive.p archures.p bfd.p \
 	bfdio.p bfdwin.p \
 	libbfd.p opncls.p reloc.p \
 	section.p syms.p targets.p  \
-	format.p  core.p init.p
+	format.p core.p init.p
 
 IPROTOS = cache.ip libbfd.ip reloc.ip init.ip archures.ip coffcode.ip
 
 # SRCDOC, SRCPROT, SRCIPROT only used to sidestep Sun Make bug in
-# interaction  between VPATH and suffix rules. If you use GNU Make, perhaps
+# interaction between VPATH and suffix rules. If you use GNU Make, perhaps
 # other Makes, you do NOT need these three:
-SRCDOC = $(srcdir)/../aoutx.h  $(srcdir)/../archive.c \
+SRCDOC = $(srcdir)/../aoutx.h $(srcdir)/../archive.c \
 	$(srcdir)/../archures.c $(srcdir)/../bfd.c \
 	$(srcdir)/../bfdio.c $(srcdir)/../bfdwin.c \
 	$(srcdir)/../cache.c $(srcdir)/../coffcode.h \
 	$(srcdir)/../corefile.c $(srcdir)/../elf.c \
-	$(srcdir)/../elfcode.h  $(srcdir)/../format.c \
+	$(srcdir)/../elfcode.h $(srcdir)/../format.c \
 	$(srcdir)/../libbfd.c $(srcdir)/../opncls.c \
-	$(srcdir)/../reloc.c  $(srcdir)/../section.c \
-	$(srcdir)/../syms.c  $(srcdir)/../targets.c \
+	$(srcdir)/../reloc.c $(srcdir)/../section.c \
+	$(srcdir)/../syms.c $(srcdir)/../targets.c \
 	$(srcdir)/../hash.c $(srcdir)/../linker.c \
 	$(srcdir)/../mmo.c
 

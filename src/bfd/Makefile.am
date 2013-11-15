@@ -11,13 +11,15 @@ NSLIBTOOL = cc -dynamiclib
 # Uncomment the following line when doing a release.
 # RELEASE=y
 
+srcdir = @srcdir@
+
 INCDIR = $(srcdir)/../include
 CSEARCH = -I. -I$(srcdir) -I$(INCDIR)
 MKDEP = gcc -MM
 
 SUBDIRS = doc po
 
-docdir = doc
+docdir = $(srcdir)/doc
 bfdlibdir = @bfdlibdir@
 bfdincludedir = @bfdincludedir@
 libbfddir = @bfdlibdir@
@@ -946,6 +948,7 @@ headers: $(docdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h
 $(srcdir)/bfd-in2.h: @MAINT@ stmp-bin2-h ; @true
 stmp-bin2-h: $(BFD_H_FILES) $(BFD64_H_FILES)
 	(cd $(docdir); $(MAKE) $(FLAGS_TO_PASS) bfd.h)
+	(cd $(docdir); $(MAKE) $(FLAGS_TO_PASS) $(srcdir)/bfd.h)
 	cp $(docdir)/bfd.h bfd-in2.h-new
 	$(SHELL) $(srcdir)/../move-if-change bfd-in2.h-new $(srcdir)/bfd-in2.h
 	touch stmp-bin2-h
@@ -953,6 +956,7 @@ stmp-bin2-h: $(BFD_H_FILES) $(BFD64_H_FILES)
 $(srcdir)/libbfd.h: @MAINT@ stmp-lbfd-h ; @true
 stmp-lbfd-h: $(LIBBFD_H_FILES)
 	(cd $(docdir); $(MAKE) $(FLAGS_TO_PASS) libbfd.h)
+	(cd $(docdir); $(MAKE) $(FLAGS_TO_PASS) $(srcdir)/libbfd.h)
 	cp $(docdir)/libbfd.h libbfd.h-new
 	$(SHELL) $(srcdir)/../move-if-change libbfd.h-new $(srcdir)/libbfd.h
 	touch stmp-lbfd-h
@@ -960,6 +964,7 @@ stmp-lbfd-h: $(LIBBFD_H_FILES)
 $(srcdir)/libcoff.h: @MAINT@ stmp-lcoff-h ; @true
 stmp-lcoff-h: $(LIBCOFF_H_FILES)
 	(cd $(docdir); $(MAKE) $(FLAGS_TO_PASS) libcoff.h)
+	(cd $(docdir); $(MAKE) $(FLAGS_TO_PASS) $(srcdir)/libcoff.h)
 	cp $(docdir)/libcoff.h libcoff.h-new
 	$(SHELL) $(srcdir)/../move-if-change libcoff.h-new $(srcdir)/libcoff.h
 	touch stmp-lcoff-h
