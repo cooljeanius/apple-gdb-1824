@@ -43,9 +43,6 @@ gcore
 gdb-gdb.gdb
 conf*/*.awk
 
-# Temporarily gitignore because it is too big:
-XcodePlugins.noindex/*
-
 # Some more Bison-generated parsers and flex-generated lexers I missed:
 ada-exp.c
 ada-lex.c
