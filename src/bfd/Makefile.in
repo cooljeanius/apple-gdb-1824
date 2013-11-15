@@ -2043,6 +2043,9 @@ stamp-framework: $(libbfd_la_OBJECTS) $(libbfd_la_DEPENDENCIES)
 # Could really use a "copy-if-change"...
 headers: $(docdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h
 	(cd $(docdir); $(MAKE) protos $(FLAGS_TO_PASS))
+	(cd $(docdir); $(MAKE) libbfd.h $(FLAGS_TO_PASS))
+	(cd $(docdir); $(MAKE) libcoff.h $(FLAGS_TO_PASS))
+	(cd $(docdir); $(MAKE) bfd.h $(FLAGS_TO_PASS))
 	cp $(docdir)/bfd.h bfd-in2.h-new
 	$(SHELL) $(srcdir)/../move-if-change bfd-in2.h-new $(srcdir)/bfd-in2.h
 	cp $(docdir)/libbfd.h libbfd.h-new
