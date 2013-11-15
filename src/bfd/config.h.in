@@ -123,6 +123,9 @@
 /* Define to 1 if you have the `fork' function. */
 #undef HAVE_FORK
 
+/* Define to 1 if you have the `fprintf' function. */
+#undef HAVE_FPRINTF
+
 /* Define to 1 if you have the `fseeko' function. */
 #undef HAVE_FSEEKO
 

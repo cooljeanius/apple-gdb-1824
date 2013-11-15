@@ -16950,7 +16950,7 @@ $as_echo "no" >&6; }
 fi
 
 
-for ac_func in fcntl fdopen getgid getuid memchr memmove memset \
+for ac_func in fcntl fdopen fprintf getgid getuid memchr memmove memset \
                 rpl_malloc rpl_realloc setitimer strdup strncasecmp \
                 strrchr strspn strstr strtol strtoul strtoull sysconf \
                 system uname

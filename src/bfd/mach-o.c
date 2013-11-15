@@ -28,11 +28,28 @@
 #include "sysdep.h"
 #include "libbfd.h"
 #include "libiberty.h"
+#include "aout/stab_gnu.h"
+#include "mach-o/reloc.h"
+#include "mach-o/external.h"
 #ifdef HAVE_CTYPE_H
 # include <ctype.h>
 #else
 # warning mach-o.c expects <ctype.h> to be included.
 #endif /* HAVE_CTYPE_H */
+#if defined(HAVE_STDLIB_H) || defined(STDC_HEADERS)
+# include <stdlib.h>
+#else
+# warning mach-o.c expects <stdlib.h> to be included.
+#endif /* HAVE_STDLIB_H || STDC_HEADERS */
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# ifdef HAVE_STRINGS_H
+#  include <strings.h>
+# else
+#  warning mach-o.c expects a string-related header to be included.
+# endif /* HAVE_STRINGS_H */
+#endif /* HAVE_STRING_H */
 #ifdef HAVE_MACH_O_LOADER_H
 # include <mach-o/loader.h>
 #else
@@ -120,6 +137,11 @@
 #define N_SECT 0xe
 #define N_INDR 0xa
 
+#ifndef FILE_ALIGN
+# define FILE_ALIGN(off, algn) \
+(((off) + ((file_ptr) 1 << (algn)) - 1) & ((file_ptr) -1 << (algn)))
+#endif /* !FILE_ALIGN */
+
 unsigned int
 bfd_mach_o_version (abfd)
      bfd *abfd;
@@ -151,24 +173,27 @@ bfd_mach_o_in_shared_cached_memory (bfd *abfd)
 bfd_boolean
 bfd_mach_o_valid (bfd *abfd)
 {
-  if (abfd == NULL || abfd->xvec == NULL)
-    return 0;
+	if (abfd == NULL || abfd->xvec == NULL) {
+		return 0; /* FSF version returns FALSE instead... */
+	}
 
   if (! ((abfd->xvec == &mach_o_be_vec)
 	 || (abfd->xvec == &mach_o_le_vec)
-	 || (abfd->xvec == &mach_o_fat_vec)))
-    return 0;
+	 || (abfd->xvec == &mach_o_fat_vec))) {
+    return 0; /* FSF version returns FALSE instead... */
+  }
 
-  if (abfd->tdata.mach_o_data == NULL)
-    return 0;
-  return 1;
+	if (abfd->tdata.mach_o_data == NULL) {
+		return 0; /* FSF version returns FALSE instead... */
+	}
+  return 1; /* FSF version returns TRUE instead... */
 }
 
 /* If ABFD is a mach kernel file (e.g. mach_kernel), return 1.
    Any other type of file, return 0.
    We detect a kernel by looking for a segment called __KLD.
    This seems to be the only unique attribute that kernel images
-   have.  (from a Mach-O load command/header point of view)  */
+   have. (from a Mach-O load command/header point of view)  */
 
 bfd_boolean
 bfd_mach_o_kernel_image (bfd *abfd)
@@ -813,7 +838,7 @@ bfd_mach_o_scan_write_symtab_symbols (bfd *abfd, bfd_mach_o_load_command *comman
 	ntype |= N_ABS;
       else
 	ntype |= N_SECT;
-#endif
+#endif /* 0 */
 
       /* Instead just set from the stored values.  */
       ntype = (s->udata.i >> 24) & 0xff;
@@ -908,7 +933,7 @@ bfd_mach_o_write_contents (bfd *abfd)
 	  }
       }
   }
-#endif
+#endif /* 0 */
 
   /* Now write header information.  */
   if (bfd_mach_o_write_header (abfd, &mdata->header) != 0)
@@ -2506,7 +2531,7 @@ bfd_mach_o_scan (bfd *abfd,
 	       bfd_errmsg (bfd_get_error ()));
       abfd->tdata.mach_o_data = NULL;
       return -1;
-#endif
+#endif /* EOF */
     }
 
   mdata->scanning_load_cmds = 0;
@@ -2798,14 +2823,14 @@ bfd_mach_o_openr_next_archived_file (bfd *archive, bfd *prev)
 #ifdef BFD_TRACK_OPEN_CLOSE
   printf ("Opening 0x%lx from FAT archive 0x%lx: \"%s\"\n", (unsigned long) entry->abfd,
 	  (unsigned long) archive, entry->abfd->filename);
-#endif
+#endif /* BFD_TRACK_OPEN_CLOSE */
     }
 #ifdef BFD_TRACK_OPEN_CLOSE
   else
     printf ("Opening 0x%lx from FAT archive cache 0x%lx: \"%s\"\n",
 	    (unsigned long) entry->abfd,
 	    (unsigned long) archive, entry->abfd->filename);
-#endif
+#endif /* BFD_TRACK_OPEN_CLOSE */
 
   return entry->abfd;
 }

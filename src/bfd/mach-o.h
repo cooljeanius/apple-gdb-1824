@@ -22,6 +22,11 @@
 #define _BFD_MACH_O_H_
 
 #include "bfd.h"
+#ifdef HAVE_MACH_O_LOADER_H
+# include <mach-o/loader.h>
+#else
+# warning mach-o.h expects <mach-o/loader.h> to be included.
+#endif /* HAVE_MACH_O_LOADER_H */
 
 #define BFD_MACH_O_N_STAB  0xe0	/* If any of these bits set, a symbolic debugging entry.  */
 #define BFD_MACH_O_N_PEXT  0x10	/* Private external symbol bit.  */
@@ -101,14 +106,14 @@ typedef enum bfd_mach_o_load_command_type
        missing (weak).  */
   BFD_MACH_O_LC_LOAD_WEAK_DYLIB = 0x18 | BFD_MACH_O_LC_REQ_DYLD,
   /* APPLE LOCAL 64-bit */
-  BFD_MACH_O_LC_SEGMENT_64 = 0x19,	/* 64-bit segment of this file to be 
+  BFD_MACH_O_LC_SEGMENT_64 = 0x19,	/* 64-bit segment of this file to be
                                            mapped.  */
-  BFD_MACH_O_LC_ROUTINES_64 = 0x1a,      /* Address of the dyld init routine 
+  BFD_MACH_O_LC_ROUTINES_64 = 0x1a,      /* Address of the dyld init routine
                                             in a dylib.  */
   BFD_MACH_O_LC_UUID = 0x1b,             /* 128-bit UUID of the executable.  */
-  BFD_MACH_O_LC_RPATH = 0x1c | BFD_MACH_O_LC_REQ_DYLD,  
-  BFD_MACH_O_LC_CODE_SIGNATURE = 0x1d,   
-  BFD_MACH_O_LC_SEGMENT_SPLIT_INFO = 0x1e, 
+  BFD_MACH_O_LC_RPATH = 0x1c | BFD_MACH_O_LC_REQ_DYLD,
+  BFD_MACH_O_LC_CODE_SIGNATURE = 0x1d,
+  BFD_MACH_O_LC_SEGMENT_SPLIT_INFO = 0x1e,
   BFD_MACH_O_LC_REEXPORT_DYLIB = 0x1f | BFD_MACH_O_LC_REQ_DYLD,
   BFD_MACH_O_LC_LAZY_LOAD_DYLIB = 0x20,  /* delay load of dylib until first use */
   BFD_MACH_O_LC_ENCRYPTION_INFO = 0x21,  /* encrypted segment information */
@@ -181,21 +186,21 @@ bfd_mach_o_filetype;
 typedef enum bfd_mach_o_header_flags
 {
   BFD_MACH_O_MH_NOUNDEFS	= 0x1,
-  BFD_MACH_O_MH_INCRLINK	= 0x2,	
-  BFD_MACH_O_MH_DYLDLINK	= 0x4,	
-  BFD_MACH_O_MH_BINDATLOAD	= 0x8,	
-  BFD_MACH_O_MH_PREBOUND	= 0x10,		
-  BFD_MACH_O_MH_SPLIT_SEGS	= 0x20,	
-  BFD_MACH_O_MH_LAZY_INIT	= 0x40,	
-  BFD_MACH_O_MH_TWOLEVEL	= 0x80,	
-  BFD_MACH_O_MH_FORCE_FLAT	= 0x100,		
-  BFD_MACH_O_MH_NOMULTIDEFS	= 0x200,	
-  BFD_MACH_O_MH_NOFIXPREBINDING = 0x400,	
-  BFD_MACH_O_MH_PREBINDABLE     = 0x800,       
-  BFD_MACH_O_MH_ALLMODSBOUND    = 0x1000,	
+  BFD_MACH_O_MH_INCRLINK	= 0x2,
+  BFD_MACH_O_MH_DYLDLINK	= 0x4,
+  BFD_MACH_O_MH_BINDATLOAD	= 0x8,
+  BFD_MACH_O_MH_PREBOUND	= 0x10,
+  BFD_MACH_O_MH_SPLIT_SEGS	= 0x20,
+  BFD_MACH_O_MH_LAZY_INIT	= 0x40,
+  BFD_MACH_O_MH_TWOLEVEL	= 0x80,
+  BFD_MACH_O_MH_FORCE_FLAT	= 0x100,
+  BFD_MACH_O_MH_NOMULTIDEFS	= 0x200,
+  BFD_MACH_O_MH_NOFIXPREBINDING = 0x400,
+  BFD_MACH_O_MH_PREBINDABLE     = 0x800,
+  BFD_MACH_O_MH_ALLMODSBOUND    = 0x1000,
   BFD_MACH_O_MH_SUBSECTIONS_VIA_SYMBOLS = 0x2000,
   BFD_MACH_O_MH_CANONICAL    = 0x4000,
-  BFD_MACH_O_MH_WEAK_DEFINES	= 0x8000,	
+  BFD_MACH_O_MH_WEAK_DEFINES	= 0x8000,
   BFD_MACH_O_MH_BINDS_TO_WEAK = 0x10000,
   BFD_MACH_O_MH_ALLOW_STACK_EXECUTION = 0x20000,
   BFD_MACH_O_MH_ROOT_SAFE = 0x40000,
@@ -262,7 +267,7 @@ typedef enum bfd_mach_o_section_type
   /* zero fill on demand section (that can be larger than 4 gigabytes) */
   BFD_MACH_O_S_GB_ZEROFILL = 0xd,
   /* a debug section. */
-  BFD_MACH_O_S_ATTR_DEBUG = 0x02000000, 
+  BFD_MACH_O_S_ATTR_DEBUG = 0x02000000,
   /* APPLE LOCAL end Mach-O */
 }
 bfd_mach_o_section_type;
@@ -438,9 +443,9 @@ typedef struct bfd_mach_o_dysymtab_command
 
   /* To support relocating an individual module in a library file quickly the
      external relocation entries for each module in the library need to be
-     accessed efficiently.  Since the relocation entries can't be accessed
+     accessed efficiently. Since the relocation entries canot be accessed
      through the section headers for a library file they are separated into
-     groups of local and external entries further grouped by module.  In this
+     groups of local and external entries further grouped by module. In this
      case the presents of this load command whose extreloff, nextrel,
      locreloff and nlocrel fields are non-zero indicates that the relocation
      entries of non-merged sections are not referenced through the section
@@ -613,3 +618,5 @@ extern const bfd_target mach_o_le_vec;
 extern const bfd_target mach_o_fat_vec;
 
 #endif /* _BFD_MACH_O_H_ */
+
+/* EOF */

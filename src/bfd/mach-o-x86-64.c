@@ -19,6 +19,11 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
    MA 02110-1301, USA.  */
 
+/*
+ * This file was added by the FSF in newer versions of gdb than what Apple
+ * left off with, and as such, it might not play well with Apple's sources...
+ */
+
 #include "sysdep.h"
 #include "mach-o.h"
 #include "bfd.h"
@@ -61,7 +66,7 @@ bfd_mach_o_x86_64_mkobject (bfd *abfd)
   return TRUE;
 }
 
-/* In case we're on a 32-bit machine, construct a 64-bit "-1" value.  */
+/* In case we are on a 32-bit machine, construct a 64-bit "-1" value.  */
 #define MINUS_ONE (~ (bfd_vma) 0)
 
 static reloc_howto_type x86_64_howto_table[]=
@@ -359,3 +364,5 @@ const mach_o_segment_name_xlat mach_o_x86_64_segsec_names_xlat[] =
 #define TARGET_ARCHIVE 		0
 #define TARGET_PRIORITY		0
 #include "mach-o-target.c"
+
+/* EOF */

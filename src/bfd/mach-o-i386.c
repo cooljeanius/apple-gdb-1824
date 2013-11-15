@@ -19,6 +19,11 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
    MA 02110-1301, USA.  */
 
+/*
+ * This file was added by the FSF in newer versions of gdb than what Apple
+ * left off with, and as such, it might not play well with Apple's sources...
+ */
+
 #include "sysdep.h"
 #include "mach-o.h"
 #include "bfd.h"
@@ -401,3 +406,5 @@ const mach_o_segment_name_xlat mach_o_i386_segsec_names_xlat[] =
 #define TARGET_ARCHIVE 		0
 #define TARGET_PRIORITY		0
 #include "mach-o-target.c"
+
+/* EOF */

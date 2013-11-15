@@ -48,7 +48,7 @@ const bfd_target TARGET_NAME =
 #else
   BFD_ENDIAN_LITTLE,		/* Target byte order.  */
   BFD_ENDIAN_LITTLE,		/* Target headers byte order.  */
-#endif
+#endif /* TARGET_BIG_ENDIAN */
   (HAS_RELOC | EXEC_P |		/* Object flags.  */
    HAS_LINENO | HAS_DEBUG |
    HAS_SYMS | HAS_LOCALS | DYNAMIC | WP_TEXT | D_PAGED),
@@ -85,7 +85,7 @@ const bfd_target TARGET_NAME =
     bfd_mach_o_object_p,
     bfd_generic_archive_p,
     bfd_mach_o_core_p
-#endif
+#endif /* TARGET_ARCHIVE */
   },
   {				/* bfd_set_format.  */
     bfd_false,
@@ -107,7 +107,7 @@ const bfd_target TARGET_NAME =
   BFD_JUMP_TABLE_ARCHIVE (bfd_mach_o),
 #else
   BFD_JUMP_TABLE_ARCHIVE (_bfd_archive_bsd),
-#endif
+#endif /* TARGET_ARCHIVE */
   BFD_JUMP_TABLE_SYMBOLS (bfd_mach_o),
   BFD_JUMP_TABLE_RELOCS (bfd_mach_o),
   BFD_JUMP_TABLE_WRITE (bfd_mach_o),
@@ -119,3 +119,4 @@ const bfd_target TARGET_NAME =
   NULL
 };
 
+/* EOF */

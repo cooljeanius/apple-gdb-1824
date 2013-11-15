@@ -281,7 +281,7 @@ AC_TYPE_VARIOUS_INT_TYPES
 
 # Checks for library functions.
 AM_WITH_DMALLOC
-AC_CHECK_FUNCS([fcntl fdopen getgid getuid memchr memmove memset \
+AC_CHECK_FUNCS([fcntl fdopen fprintf getgid getuid memchr memmove memset \
                 rpl_malloc rpl_realloc setitimer strdup strncasecmp \
                 strrchr strspn strstr strtol strtoul strtoull sysconf \
                 system uname])
