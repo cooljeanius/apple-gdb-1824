@@ -1,6 +1,13 @@
 *.status
 Makefile
 doc/Makefile
+doc/dejagnu.dvi
+doc/dejagnu.pdf
+doc/dejagnu.ps
+doc/dejagnu.html
+doc/dejagnu.t2d
+doc/dejagnu.t2p
+doc/.dirstamp
 testsuite/Makefile
 example/Makefile
 testsuite/libdejagnu/Makefile
@@ -9,6 +16,7 @@ unix/tcltest
 lex.yy.c
 *.log
 *.sum
+*.o
 site.bak
 site.exp
 setval.tmp

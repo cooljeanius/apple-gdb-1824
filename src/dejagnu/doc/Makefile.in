@@ -164,6 +164,7 @@ CHANGELOG_CMD = @CHANGELOG_CMD@
 CONFIG = @CONFIG@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CVS_RSH = @CVS_RSH@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
@@ -180,6 +181,7 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+EXPECT_LOCAL = @EXPECT_LOCAL@
 GREP = @GREP@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
@@ -212,6 +214,7 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 TCLSH = @TCLSH@
+TELNET_PROG = @TELNET_PROG@
 VERSION = @VERSION@
 XORG_MALLOC_DEBUG_ENV = @XORG_MALLOC_DEBUG_ENV@
 YACC = @YACC@
@@ -597,8 +600,9 @@ docs: $(TARGETS)
 
 html rtf overview.pdf overview.ps overview.dvi overview.rtf overview.html: overview.sgml ref.sgml user.sgml
 
-clean-local realclean distclean-local:
+clean-local realclean distclean-local: Makefile
 	rm -fr $(TARGETS) DBHTOHTML* overview.junk overview overview.{aux,dvi,log,ps,pdf,tex}
+.PHONY: clean-local realclean distclean-local
 
 install-doc: $(TARGETS)
 	$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/html $(DESTDIR)$(pkgdatadir)/html/stylesheet-images

@@ -193,6 +193,7 @@ CHANGELOG_CMD = @CHANGELOG_CMD@
 CONFIG = @CONFIG@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CVS_RSH = @CVS_RSH@
 CXX = @CXX@
 CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
@@ -206,6 +207,7 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+EXPECT_LOCAL = @EXPECT_LOCAL@
 GREP = @GREP@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
@@ -238,6 +240,7 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 TCLSH = @TCLSH@
+TELNET_PROG = @TELNET_PROG@
 VERSION = @VERSION@
 XORG_MALLOC_DEBUG_ENV = @XORG_MALLOC_DEBUG_ENV@
 YACC = @YACC@
@@ -299,7 +302,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = dejagnu
-SUBDIRS = calc
+SUBDIRS = calc .
 all: all-recursive
 
 .SUFFIXES:
@@ -570,7 +573,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-recursive
 
-clean-am: clean-generic mostlyclean-am
+clean-am: clean-generic clean-local mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -f Makefile
@@ -638,22 +641,25 @@ uninstall-am:
 .MAKE: $(am__recursive_targets) check-am install-am install-strip
 
 .PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am check \
-	check-DEJAGNU check-am clean clean-generic cscopelist-am ctags \
-	ctags-am distclean distclean-DEJAGNU distclean-generic \
-	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	installdirs-am maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am tags \
-	tags-am uninstall uninstall-am
+	check-DEJAGNU check-am clean clean-generic clean-local \
+	cscopelist-am ctags ctags-am distclean distclean-DEJAGNU \
+	distclean-generic distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs installdirs-am maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
+	pdf-am ps ps-am tags tags-am uninstall uninstall-am
 
 
 check-recursive-local:
 	@echo "No check target in examples"
 .PHONY: check-recursive-local
+
+clean-local: Makefile
+.PHONY: clean-local
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -1327,4 +1327,4 @@ mostlyclean-local: mostlyclean-generic
 	done; \
 	:
 
-.PHONY: all all-am all-local all-recursive
+.PHONY: all all-am all-local all-recursive am--refresh

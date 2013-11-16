@@ -2405,7 +2405,7 @@ mostlyclean-local: mostlyclean-generic
 	done; \
 	:
 
-.PHONY: all all-am all-local all-recursive
+.PHONY: all all-am all-local all-recursive am--refresh
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

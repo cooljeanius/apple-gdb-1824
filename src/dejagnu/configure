@@ -630,6 +630,7 @@ LIBOBJS
 subdirs
 CONFIG
 BOARDS
+EXPECT_LOCAL
 TCLSH
 DOCBOOK
 ENABLE_INTEGRATION_TESTS_FALSE
@@ -641,6 +642,8 @@ HAVE_LD_WRAP_TRUE
 RAWCPPFLAGS
 RAWCPP
 CPP
+TELNET_PROG
+CVS_RSH
 LEXLIB
 LEX_OUTPUT_ROOT
 LEX
@@ -663,7 +666,6 @@ CCAS
 am__fastdepCC_FALSE
 am__fastdepCC_TRUE
 CCDEPMODE
-DEPDIR
 OBJEXT
 EXEEXT
 ac_ct_CC
@@ -676,6 +678,7 @@ am__nodep
 AMDEPBACKSLASH
 AMDEP_FALSE
 AMDEP_TRUE
+DEPDIR
 am__quote
 am__include
 MAINT
@@ -2551,6 +2554,16 @@ test -n "$target_alias" &&
   program_prefix=${target_alias}-
 
 
+test "$program_prefix" != NONE &&
+  program_transform_name="s&^&$program_prefix&;$program_transform_name"
+# Use a double $ so make ignores it.
+test "$program_suffix" != NONE &&
+  program_transform_name="s&\$&$program_suffix&;$program_transform_name"
+# Double any \ or $.
+# By default was `s,x,x', remove it if useless.
+ac_script='s/[\\$]/&&/g;s/;s,x,x,$//'
+program_transform_name=`$as_echo "$program_transform_name" | sed "$ac_script"`
+
 am__api_version='1.14'
 
 # Find a good install program.  We prefer a C program (faster),
@@ -2712,16 +2725,6 @@ if grep 'slept: no' conftest.file >/dev/null 2>&1; then
 fi
 
 rm -f conftest.file
-
-test "$program_prefix" != NONE &&
-  program_transform_name="s&^&$program_prefix&;$program_transform_name"
-# Use a double $ so make ignores it.
-test "$program_suffix" != NONE &&
-  program_transform_name="s&\$&$program_suffix&;$program_transform_name"
-# Double any \ or $.
-# By default was `s,x,x', remove it if useless.
-ac_script='s/[\\$]/&&/g;s/;s,x,x,$//'
-program_transform_name=`$as_echo "$program_transform_name" | sed "$ac_script"`
 
 # expand $ac_aux_dir to an absolute path
 am_aux_dir=`cd $ac_aux_dir && pwd`
@@ -3191,6 +3194,8 @@ fi
 $as_echo "$_am_result" >&6; }
 rm -f confinc confmf
 
+DEPDIR="${am__leading_dot}deps"
+
 # Check whether --enable-dependency-tracking was given.
 if test "${enable_dependency_tracking+set}" = set; then :
   enableval=$enable_dependency_tracking;
@@ -3289,8 +3294,6 @@ fi
 
 # Checks for programs.
 rm -rf *.dSYM
-DEPDIR="${am__leading_dot}deps"
-
 ac_config_commands="$ac_config_commands depfiles"
 
 
@@ -4404,8 +4407,8 @@ fi
 
 
 rm -rf *.dSYM
-if test "x$CC" = "x"; then
-	test -z "$CC"
+if test "x${CC}" = "x"; then
+	test -z "${CC}"
 	ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -5133,7 +5136,7 @@ fi
 
 
 else
-	test ! -z "$CC"
+	test ! -z "${CC}"
 fi
 rm -rf *.dSYM
 ac_ext=cpp
@@ -6173,6 +6176,57 @@ if test "$LEX" = :; then
   LEX=${am_missing_run}flex
 fi
 
+if test -z "${CVS_RSH}"; then
+  if test -x /bin/ssh; then
+    export CVS_RSH=/bin/ssh
+  elif test -x /usr/bin/ssh; then
+    export CVS_RSH=/usr/bin/ssh
+  elif test ! -z "`which ssh`"; then
+    export CVS_RSH="`which ssh`"
+  fi
+fi
+
+# Extract the first word of "telnet", so it can be a program name with args.
+set dummy telnet; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_TELNET_PROG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $TELNET_PROG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_TELNET_PROG="$TELNET_PROG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_TELNET_PROG="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+TELNET_PROG=$ac_cv_path_TELNET_PROG
+if test -n "$TELNET_PROG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $TELNET_PROG" >&5
+$as_echo "$TELNET_PROG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+
 # xorg-util-macros checks
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
@@ -6619,6 +6673,45 @@ _ACEOF
 
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lio" >&5
+$as_echo_n "checking for main in -lio... " >&6; }
+if ${ac_cv_lib_io_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lio  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_io_main=yes
+else
+  ac_cv_lib_io_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_io_main" >&5
+$as_echo "$ac_cv_lib_io_main" >&6; }
+if test "x$ac_cv_lib_io_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBIO 1
+_ACEOF
+
+  LIBS="-lio $LIBS"
+
+fi
+
 
 # Checks for header files.
 
@@ -6895,12 +6988,13 @@ cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_WAIT $ac_have_decl
 _ACEOF
 
-for ac_header in regex.h
+for ac_header in regex.h stdio.h
 do :
-  ac_fn_c_check_header_mongrel "$LINENO" "regex.h" "ac_cv_header_regex_h" "$ac_includes_default"
-if test "x$ac_cv_header_regex_h" = xyes; then :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
   cat >>confdefs.h <<_ACEOF
-#define HAVE_REGEX_H 1
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
 _ACEOF
 
 fi
@@ -7211,7 +7305,7 @@ fi
 
 
 # Checks for library functions.
-for ac_func in atexit regcomp strncmp
+for ac_func in abort atexit exit regcomp strncmp
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -7315,7 +7409,7 @@ if test x"${with_docbook}" != x ; then
   if test -f ${with_docbook}/db2html ; then
     ac_cv_c_docbook=`(cd ${with_docbook}; pwd)`
   else
-    as_fn_error $? "${with_docbook} directory doesn't contain SGML tools" "$LINENO" 5
+    as_fn_error $? "${with_docbook} directory does NOT contain SGML tools" "$LINENO" 5
   fi
 fi
 
@@ -7438,6 +7532,56 @@ fi
 TCLSH="${ac_cv_path_tclsh}"
 
 
+
+# Extract the first word of "expect", so it can be a program name with args.
+set dummy expect; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_EXPECT_LOCAL+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $EXPECT_LOCAL in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_EXPECT_LOCAL="$EXPECT_LOCAL" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_EXPECT_LOCAL="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+EXPECT_LOCAL=$ac_cv_path_EXPECT_LOCAL
+if test -n "$EXPECT_LOCAL"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $EXPECT_LOCAL" >&5
+$as_echo "$EXPECT_LOCAL" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+if test -z "${ac_cv_path_EXPECT_LOCAL}"; then
+   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: unable to locate expect" >&5
+$as_echo "$as_me: WARNING: unable to locate expect" >&2;}
+else
+      { $as_echo "$as_me:${as_lineno-$LINENO}: checking Tcl version 8.3 or greater" >&5
+$as_echo_n "checking Tcl version 8.3 or greater... " >&6; }
+   { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
+   fi
 
 BOARDS='$(boards)'
 

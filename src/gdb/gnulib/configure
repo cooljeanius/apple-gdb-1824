@@ -15098,6 +15098,13 @@ _ACEOF
 fi
 
 
+if test $ac_cv_header_stdbool_h = yes; then
+
+$as_echo "#define HAVE_STDBOOL_H 1" >>confdefs.h
+
+fi
+
+
 for ac_header in OS.h fcntl.h float.h langinfo.h limits.h \
                   locale.h malloc.h malloc/malloc.h netdb.h stddef.h \
                   stdio.h sys/param.h wchar.h wctype.h

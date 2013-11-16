@@ -10,11 +10,13 @@ AC_CANONICAL_TARGET
 AC_EXEEXT
 
 dnl# These are required by automake
-AM_INIT_AUTOMAKE([1.4 dejagnu -Wno-portability])
+AC_ARG_PROGRAM
+AM_INIT_AUTOMAKE([1.4 dejagnu -Wno-portability subdir-objects])
 dnl# Yes, that is a "1.4" and not a "1.14" there.
 dnl# (the aclocal.m4 I found in here was really old)
 AM_MAINTAINER_MODE
 AM_MAKE_INCLUDE
+AM_SET_DEPDIR
 AM_DEP_TRACK
 
 AC_PROG_SED
@@ -29,11 +31,11 @@ fi
 rm -rf *.dSYM
 AM_PROG_AS
 rm -rf *.dSYM
-if test "x$CC" = "x"; then
-	test -z "$CC"
+if test "x${CC}" = "x"; then
+	test -z "${CC}"
 	AC_PROG_CC
 else
-	test ! -z "$CC"
+	test ! -z "${CC}"
 fi
 rm -rf *.dSYM
 AC_PROG_CXX
@@ -48,6 +50,18 @@ AC_EXEEXT
 AC_PROG_YACC
 AM_PROG_LEX
 
+if test -z "${CVS_RSH}"; then
+  if test -x /bin/ssh; then
+    export CVS_RSH=/bin/ssh
+  elif test -x /usr/bin/ssh; then
+    export CVS_RSH=/usr/bin/ssh
+  elif test ! -z "`which ssh`"; then
+    export CVS_RSH="`which ssh`"
+  fi
+fi
+AC_SUBST([CVS_RSH])
+AC_PATH_PROG([TELNET_PROG],[telnet])
+
 # xorg-util-macros checks
 XORG_PROG_RAWCPP
 XORG_LD_WRAP
@@ -57,12 +71,13 @@ XORG_ENABLE_INTEGRATION_TESTS
 # Checks for libraries.
 AC_LANG([C])
 AC_CHECK_LIB([c],[printf])
+AC_CHECK_LIB([io],[main])
 
 # Checks for header files.
 AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
 AC_HEADER_SYS_WAIT
 AC_CHECK_DECLS([wait])
-AC_CHECK_HEADERS([regex.h])
+AC_CHECK_HEADERS([regex.h stdio.h])
 AC_CHECK_HEADERS([dejagnu.h],[],[],[
 #ifdef HAVE_DECL_WAIT
 # undef HAVE_STDLIB_H
@@ -76,7 +91,7 @@ AC_C_INLINE
 AC_C_PROTOTYPES
 
 # Checks for library functions.
-AC_CHECK_FUNCS([atexit regcomp strncmp])
+AC_CHECK_FUNCS([abort atexit exit regcomp strncmp])
 AC_CHECK_DECLS([strncmp])
 
 dnl# check STL version
@@ -88,6 +103,17 @@ DJ_AC_PATH_DOCBOOK
 
 dnl# we need the path to the tcl shell to build a release
 DJ_AC_PATH_TCLSH
+
+dnl# Search for expect.
+AC_PATH_PROG([EXPECT_LOCAL],[expect])
+if test -z "${ac_cv_path_EXPECT_LOCAL}"; then
+   AC_MSG_WARN([unable to locate expect])
+else
+   dnl# Check the Tcl version is >= 8.3.
+   AC_MSG_CHECKING([Tcl version 8.3 or greater])
+   AC_MSG_RESULT([ ])
+   dnl# TODO: actually check
+fi
 
 dnl# Level of indirection for automake macro (baseboards:boards_DATA)
 BOARDS='$(boards)'

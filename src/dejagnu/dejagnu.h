@@ -1,4 +1,4 @@
-/* 
+/*
  *   Copyright (C) 2000, 2001 Free Software Foundation, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -69,12 +69,12 @@ totals (void) {
 #include <fstream>
 #include <string>
 #if 0
-#if HAVE_STL3
-#include <sstream>
-#else
-#include <strstream>
-#endif
-#endif
+# if HAVE_STL3
+#  include <sstream>
+# else
+#  include <strstream>
+# endif /* HAVE_STL3 */
+#endif /* 0 */
 
 const char *outstate_list[] = {
     "FAILED: ",
@@ -110,13 +110,12 @@ class OMANIP {
 ostream&
 freakout(ostream& os, int x) {
     return os << "FREAKOUT" ;
-//    return x << "TESTOUT " << x ;
 }
 
 OMANIP<int> testout(int i) {
     return OMANIP<int>(&freakout,i);
 }
-#endif
+#endif /* 0 */
 
 enum teststate {FAILED, PASSED,UNTESTED,UNRESOLVED} laststate;
 
@@ -208,7 +207,7 @@ class TestState {
     }
 };
 
-#endif		// __cplusplus
-#endif          // _DEJAGNU_H_
+#endif		/* __cplusplus */
+#endif          /* _DEJAGNU_H_ */
 
-
+/* EOF */

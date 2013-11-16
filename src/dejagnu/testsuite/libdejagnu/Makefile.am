@@ -10,3 +10,8 @@ noinst_PROGRAMS = unit
 
 unit_SOURCES = unit.cc
 
+clean-local: Makefile
+.PHONY: clean-local
+
+distclean-local: $(top_srcdir)/config.status
+.PHONY: distclean-local

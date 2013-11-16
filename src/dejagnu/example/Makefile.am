@@ -2,8 +2,11 @@
 
 AUTOMAKE_OPTIONS = dejagnu
 
-SUBDIRS = calc
+SUBDIRS = calc .
 
 check-recursive-local:
 	@echo "No check target in examples"
 .PHONY: check-recursive-local
+
+clean-local: Makefile
+.PHONY: clean-local

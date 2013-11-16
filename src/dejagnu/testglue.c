@@ -6,6 +6,12 @@
 #include <string.h>
 #ifndef NO_UNISTD_H
 # include <sys/unistd.h>
+#else
+# ifdef HAVE_UNISTD_H
+#  include <unistd.h>
+# else
+#  warning testglue.c expects a unistd-related header to be included.
+# endif /* HAVE_UNISTD_H */
 #endif /* !NO_UNISTD_H */
 
 /* A simple glue file for embedded targets so we can get the real exit
@@ -16,44 +22,44 @@
    because currently GNU ld does NOT deal well with a.out targets and
    the -wrap option. When GNU ld is fixed, this should definitely be
    removed. Note that we actually wrap __exit, not _exit on a target
-   that has UNDERSCORES defined.  On non-UNDERSCORE targets, we
+   that has UNDERSCORES defined. On non-UNDERSCORE targets, we
    wrap _exit separately; it is actually a different function.  */
 
 #ifdef WRAP_M68K_AOUT
-#define REAL_EXIT(code) asm ( "trap %0" : : "i" (0) );
-#define REAL_ABORT() REAL_EXIT(6)
-#define ORIG_EXIT _exit
-#define ORIG_ABORT abort
+# define REAL_EXIT(code) asm ( "trap %0" : : "i" (0) );
+# define REAL_ABORT() REAL_EXIT(6)
+# define ORIG_EXIT _exit
+# define ORIG_ABORT abort
 #else
-#ifdef UNDERSCORES
-#define REAL_EXIT _real___exit
-#define REAL_MAIN _real__main
-#define REAL_ABORT _real__abort
-#define ORIG_EXIT _wrap___exit
-#define ORIG_ABORT _wrap__abort
-#define ORIG_MAIN _wrap__main
-#else
-#define REAL_EXIT __real_exit
-#ifndef VXWORKS
-#define REAL__EXIT __real__exit
-#endif
-#define REAL_MAIN __real_main
-#define REAL_ABORT __real_abort
-#define ORIG_EXIT __wrap_exit
-#define ORIG__EXIT __wrap__exit
-#define ORIG_ABORT __wrap_abort
-#define ORIG_MAIN __wrap_main
-#endif
-#endif
+# ifdef UNDERSCORES
+#  define REAL_EXIT _real___exit
+#  define REAL_MAIN _real__main
+#  define REAL_ABORT _real__abort
+#  define ORIG_EXIT _wrap___exit
+#  define ORIG_ABORT _wrap__abort
+#  define ORIG_MAIN _wrap__main
+# else
+#  define REAL_EXIT __real_exit
+#  ifndef VXWORKS
+#   define REAL__EXIT __real__exit
+#  endif /* !VXWORKS */
+#  define REAL_MAIN __real_main
+#  define REAL_ABORT __real_abort
+#  define ORIG_EXIT __wrap_exit
+#  define ORIG__EXIT __wrap__exit
+#  define ORIG_ABORT __wrap_abort
+#  define ORIG_MAIN __wrap_main
+# endif /* UNDERSCORES */
+#endif /* WRAP_M68K_AOUT */
 
 #ifdef REAL_MAIN
 extern void REAL_EXIT ();
 extern void REAL_ABORT ();
 extern int REAL_MAIN (int argc, char **argv, char **envp);
-#endif
+#endif /* REAL_MAIN */
 #ifdef REAL__EXIT
 extern void REAL__EXIT ();
-#endif
+#endif /* REAL__EXIT */
 
 static int done_exit_message = 0;
 
@@ -61,7 +67,7 @@ int ___constval = 1;
 
 #ifdef VXWORKS
 static void __runexit();
-#endif
+#endif /* VXWORKS */
 
 static char *
 write_int(val, ptr)
@@ -90,7 +96,7 @@ ORIG_EXIT (code)
 
 #ifdef VXWORKS
   __runexit ();
-#endif
+#endif /* VXWORKS */
   strcpy (buf, "\n*** EXIT code ");
   ptr = write_int (code, buf + strlen(buf));
   *(ptr++) = '\n';
@@ -120,7 +126,7 @@ ORIG__EXIT (code)
   REAL__EXIT (code);
   while (___constval);
 }
-#endif
+#endif /* ORIG__EXIT */
 
 void
 ORIG_ABORT ()
@@ -138,17 +144,17 @@ ORIG_MAIN (argc, argv, envp)
      char **argv;
      char **envp;
 {
-#ifdef WRAP_FILE_ARGS
+# ifdef WRAP_FILE_ARGS
   extern int __argc;
   extern char *__args[];
 
   exit (REAL_MAIN (__argc,__args,envp));
-#else
+# else
   exit (REAL_MAIN (argc, argv, envp));
-#endif
+# endif /* WRAP_FILE_ARGS */
   while (___constval);
 }
-#endif
+#endif /* REAL_MAIN */
 
 #ifdef VXWORKS
 void
@@ -181,4 +187,6 @@ __runexit ()
     __list[i]();
   __running = 0;
 }
-#endif
+#endif /* VXWORKS */
+
+/* EOF */

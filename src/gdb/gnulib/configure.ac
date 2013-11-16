@@ -63,7 +63,9 @@ AC_CHECK_TOOL([AR],[ar])
 AC_CHECK_LIB([c],[printf])
 
 # Checks for header files.
-AC_CHECK_HEADER_STDBOOL
+AC_HEADER_STDBOOL dnl# also calls the "_CHECK" version of it
+gl_STDINT_H
+AC_SUBST([STDINT_H])
 AC_CHECK_HEADERS([OS.h fcntl.h float.h langinfo.h limits.h \
                   locale.h malloc.h malloc/malloc.h netdb.h stddef.h \
                   stdio.h sys/param.h wchar.h wctype.h])

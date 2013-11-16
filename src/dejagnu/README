@@ -1,5 +1,5 @@
   DejaGnu is a framework for testing other programs. Its purpose is to
-provide a single front end for all tests.  Beyond this, DejaGnu offers
+provide a single front end for all tests. Beyond this, DejaGnu offers
 several advantages for testing:
 
         - The flexibility and consistency of the DejaGnu framework
@@ -27,7 +27,7 @@ several advantages for testing:
 
         ./configure MYHOSTTYPE
 
-followed by running ``make''.  (MYHOSTTYPE is a name for your host computer,
+followed by running ``make''. (MYHOSTTYPE is a name for your host computer,
 for instance "sun4".  You can use the script ``config.sub'' to test whether
 a name is recognized; if it is, config.sub translates it to a triplet 
 specifying CPU, vendor, and OS.) This is used when you plan to

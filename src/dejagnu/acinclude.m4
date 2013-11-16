@@ -158,7 +158,7 @@ if test x"${with_docbook}" != x ; then
   if test -f ${with_docbook}/db2html ; then
     ac_cv_c_docbook=`(cd ${with_docbook}; pwd)`
   else
-    AC_MSG_ERROR([${with_docbook} directory doesn't contain SGML tools])
+    AC_MSG_ERROR([${with_docbook} directory does NOT contain SGML tools])
   fi
 fi
 ])

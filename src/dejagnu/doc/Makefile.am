@@ -53,8 +53,9 @@ docs: $(TARGETS)
 
 html rtf overview.pdf overview.ps overview.dvi overview.rtf overview.html: overview.sgml ref.sgml user.sgml
 
-clean-local realclean distclean-local:
+clean-local realclean distclean-local: Makefile
 	rm -fr $(TARGETS) DBHTOHTML* overview.junk overview overview.{aux,dvi,log,ps,pdf,tex}
+.PHONY: clean-local realclean distclean-local
 
 install-doc: $(TARGETS)
 	$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/html $(DESTDIR)$(pkgdatadir)/html/stylesheet-images

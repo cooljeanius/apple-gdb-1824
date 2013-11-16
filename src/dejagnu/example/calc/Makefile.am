@@ -17,6 +17,8 @@
 
 AUTOMAKE_OPTIONS = 1.4 dejagnu foreign
 
+SUBDIRS = .
+
 noinst_PROGRAMS = calc
 calc_SOURCES = calc.c
 

@@ -1,3 +1,7 @@
+/*
+ * i960glue.c
+ */
+
 #include "../newlib/libc/ctype/ctype_.c"
 #include "../newlib/libc/stdlib/strtol.c"
 #include "../newlib/libc/stdlib/atoi.c"
@@ -17,3 +21,5 @@ __real_abort (void)
 {
   abort ();
 }
+
+/* EOF */
