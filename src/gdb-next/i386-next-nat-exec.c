@@ -1,3 +1,7 @@
+/*
+ * i386-next-nat-exec.c
+ */
+
 #include "defs.h"
 #include "frame.h"
 #include "inferior.h"
@@ -103,3 +107,5 @@ void store_inferior_registers (int regno)
     MACH_CHECK_ERROR (ret);
   }
 }
+
+/* EOF */

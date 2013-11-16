@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1990--1997 Apple Computer, Inc.  All rights reserved.
- * 
+ *
  * debug_udp.c - UDP layer of remote debug protocol.
  *
  * HISTORY
@@ -11,7 +11,7 @@
  *	Converted to NRW wire protocol.
  * 25-04-91	Blaine Garst
  *  	eliminated private functions
- * 07-Jan-90	Doug Mitchell at NeXT	
+ * 07-Jan-90	Doug Mitchell at NeXT
  *	Created.
  */
 
@@ -45,12 +45,12 @@ kdp_return_t kdp_transmit_fd
   int ret = -1;
 
   CHECK_FATAL (kdp_is_bound (c));
-  
+
   kret = kdp_marshal (c, packet, buf, KDP_MAX_PACKET_SIZE, &plen);
   if (kret != RR_SUCCESS) {
     c->logger (KDP_LOG_ERROR, "send_debug_packet: error marshalling packet: %s\n",
 	       kdp_return_string (kret));
-    return kret; 
+    return kret;
   }
 
   c->logger (KDP_LOG_DEBUG, "kdp_transmit_fd: transmitting packet\n");
@@ -73,11 +73,11 @@ kdp_return_t kdp_transmit_fd
 	       "(only %lu of %lu bytes were transmitted)", ret, plen);
     return RR_BYTE_COUNT;
   }
-  
+
   return RR_SUCCESS;
 }
 
-/* Get a packet from port specified by host_port. 
+/* Get a packet from port specified by host_port.
    packet is assumed to contain at most KDP_MAX_PACKET_SIZE bytes.
    recv_timeout is in milliseconds; 0 means no timeout (wait forever). */
 
@@ -88,14 +88,14 @@ kdp_return_t kdp_receive_fd
   int ret = -1, rlen = -1;
   kdp_return_t kret;
   char buf[KDP_MAX_PACKET_SIZE];
-	
+
   CHECK_FATAL (kdp_is_bound (c));
 
   if (timeout) {
 
     fd_set readfds;
     struct timeval timeoutv;
-		
+
     FD_ZERO (&readfds);
     FD_SET (fd, &readfds);
     timeoutv.tv_sec = timeout / 1000;
@@ -112,7 +112,7 @@ kdp_return_t kdp_receive_fd
       return RR_IP_ERROR;
     }
   }
-	
+
   rlen = recvfrom (fd, buf, KDP_MAX_PACKET_SIZE, 0,
 		  (struct sockaddr *) &c->target_sin, &fromlen);
   if (rlen < 0) {
@@ -124,12 +124,12 @@ kdp_return_t kdp_receive_fd
       return RR_IP_ERROR;
     }
   }
-  
+
   kret = kdp_unmarshal (c, packet, buf, rlen);
-  if (kret != RR_SUCCESS) { 
+  if (kret != RR_SUCCESS) {
     c->logger (KDP_LOG_ERROR, "kdp_receive_fd: error unmarshalling packet: %s\n",
 	       kdp_return_string (kret));
-    return kret; 
+    return kret;
   }
 
   c->logger (KDP_LOG_DEBUG, "kdp_receive_fd: received packet\n");
@@ -228,7 +228,7 @@ static kdp_return_t kdp_bind_socket
 	       strerror (errno));
     return RR_RESOURCE;
   }
-  
+
   *fd = retfd;
   *pret = ntohs (local_sin.sin_port);
   return RR_SUCCESS;
@@ -245,9 +245,9 @@ static kdp_return_t kdp_bind_remote
   CHECK_FATAL (! kdp_is_bound (c));
 
   c->logger (KDP_LOG_DEBUG, "kdp_bind_remote: binding to host \"%s\"\n", target);
-	
+
   /* Set up two local UDP sockets. */
-  
+
   ret = kdp_bind_socket (c, INADDR_ANY, &c->reqport, &c->reqfd);
   if (ret != RR_SUCCESS) { return ret; }
 
@@ -270,12 +270,12 @@ static kdp_return_t kdp_bind_remote
       c->target_sin.sin_family = host->h_addrtype;
       c->target_sin.sin_port = htons (port);
       memcpy (&c->target_sin.sin_addr, host->h_addr, host->h_length);
-      
+
       c->port = port;
       c->bound = 1;
       return RR_SUCCESS;
     }
-  if (ret == 1) 
+  if (ret == 1)
     {
       c->target_sin.sin_family = AF_INET;
       c->target_sin.sin_port = htons (port);
@@ -283,7 +283,7 @@ static kdp_return_t kdp_bind_remote
       c->port = port;
       c->bound = 1;
       return RR_SUCCESS;
-    }    
+    }
 
   c->logger (KDP_LOG_ERROR, "kdp_bind_remote: unable to resolve host \"%s\"\n", target);
   return RR_LOOKUP;
@@ -351,13 +351,13 @@ kdp_return_t kdp_create
 
   c->response = (kdp_pkt_t *) xmalloc (KDP_MAX_PACKET_SIZE);
   if (c->response == NULL) { return RR_RESOURCE; }
-  
+
   c->request = (kdp_pkt_t *) xmalloc (KDP_MAX_PACKET_SIZE);
   if (c->request == NULL) { return RR_RESOURCE; }
 
   c->saved_exception = (kdp_pkt_t *) xmalloc (KDP_MAX_PACKET_SIZE);
   if (c->saved_exception == NULL) { return RR_RESOURCE; }
-  
+
   memset (c->request, 0, KDP_MAX_PACKET_SIZE);
   memset (c->response, 0, KDP_MAX_PACKET_SIZE);
   memset (c->saved_exception, 0, KDP_MAX_PACKET_SIZE);
@@ -396,9 +396,9 @@ kdp_return_t kdp_destroy (kdp_connection *c)
 
 int kdp_is_bound (kdp_connection *c)
 {
-  if (c->bound) { 
+  if (c->bound) {
     CHECK_FATAL (c->logger != NULL);
-  }    
+  }
   return c->bound;
 }
 
@@ -410,7 +410,7 @@ int kdp_is_connected (kdp_connection *c)
   return c->connected;
 }
 
-kdp_return_t kdp_transmit_debug (kdp_connection *c, kdp_pkt_t *packet) 
+kdp_return_t kdp_transmit_debug (kdp_connection *c, kdp_pkt_t *packet)
 {
   CHECK_FATAL (kdp_is_bound (c));
   return kdp_transmit_fd (c, packet, c->reqfd);
@@ -433,3 +433,5 @@ kdp_return_t kdp_receive_exception (kdp_connection *c, kdp_pkt_t *packet, int ti
   CHECK_FATAL (kdp_is_bound (c));
   return kdp_receive_fd (c, packet, c->excfd, timeout);
 }
+
+/* EOF */

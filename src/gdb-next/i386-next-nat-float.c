@@ -31,9 +31,9 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
 #ifdef GDB414
 
-/* This is broken for cross debugging.  Possible solutions are:
+/* This is broken for cross debugging. Possible solutions are:
 
-1.  Don't worry about whether the thing compiles for cross-debugging.
+1.  Do NOT worry about whether the thing compiles for cross-debugging.
 Go ahead and call them from i386-tdep.c.
 1a.  Same thing but use some macros in xm-i386.h so that gdb will
 compile for cross-debugging but just give an error (or some such behavior)
@@ -43,11 +43,11 @@ when you attempt to convert floats.
 always be for i387 floating-point formats) extended<->double converter
 (which just deals with the values as arrays of char).
 
-3.  Assume the host machine has *some* IEEE chip.  However, IEEE does
+3.  Assume the host machine has *some* IEEE chip. However, IEEE does
 not standardize formats for extended floats (387 is 10 bytes, 68881 is
-12 bytes), so this won't work.  */
+12 bytes), so this will NOT work.  */
 
-void 
+void
 i387_to_double (from, to)
      char *from;
      char *to;
@@ -56,7 +56,7 @@ i387_to_double (from, to)
   /* push extended mode on 387 stack, then pop in double mode
    *
    * first, set exception masks so no error is generated -
-   * number will be rounded to inf or 0, if necessary 
+   * number will be rounded to inf or 0, if necessary
    */
   asm ("pushl %eax"); 		/* grab a stack slot */
   asm ("fstcw (%esp)");		/* get 387 control word */
@@ -64,21 +64,21 @@ i387_to_double (from, to)
   asm ("orl $0x3f,%eax");		/* mask all exceptions */
   asm ("pushl %eax");
   asm ("fldcw (%esp)");		/* load new value into 387 */
-  
+
   asm ("movl 8(%ebp),%eax");
   asm ("fldt (%eax)");		/* push extended number on 387 stack */
   asm ("fwait");
   asm ("movl 12(%ebp),%eax");
   asm ("fstpl (%eax)");		/* pop double */
   asm ("fwait");
-  
+
   asm ("popl %eax");		/* flush modified control word */
   asm ("fnclex");			/* clear exceptions */
   asm ("fldcw (%esp)");		/* restore original control word */
   asm ("popl %eax");		/* flush saved copy */
 }
 
-void 
+void
 double_to_i387 (from, to)
      char *from;
      char *to;
@@ -97,7 +97,7 @@ double_to_i387 (from, to)
 
 #endif /* GDB414 */
 
-static void 
+static void
 print_387_control_word (control)
     fp_control_t *control;
 {
@@ -129,7 +129,7 @@ print_387_control_word (control)
   printf ("\n");
 }
 
-static void 
+static void
 print_387_status_word (status)
      fp_status_t *status;
 {
@@ -148,11 +148,11 @@ print_387_status_word (status)
 
   printf ("flags: %d%d%d%d; ",
 	  status->c0, status->c1, status->c2, status->c3);
-  
+
   printf ("top %d\n", status->tos);
 }
 
-static void 
+static void
 print_387_status (fp)
      i386_thread_fpstate_t *fp;
 {
@@ -173,7 +173,7 @@ print_387_status (fp)
 
   top = fp->environ.status.tos;
   tag = *((unsigned short *)   &fp->environ.tag);
-  
+
   printf ("regno  tag  msb              lsb  value\n");
   for (fpreg = 7; fpreg >= 0; fpreg--) {
     double val;
@@ -195,7 +195,7 @@ print_387_status (fp)
   }
 }
 
-void 
+void
 i386_float_info ()
 {
   i386_thread_fpstate_t fpstate;
@@ -210,3 +210,5 @@ i386_float_info ()
   }
   return;
 }
+
+/* EOF */

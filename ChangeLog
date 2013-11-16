@@ -1,3 +1,165 @@
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+	convert pdf images to pngs
+
+	Change-Id: I80daa1718ca0685a596fe6021379126ff0d78fbb
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+	add some CustomDataViews plists
+
+	Change-Id: I2d89c3b9177a3a65b81b36775f79d9ad33580fb9
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+	oops, forgot to rename the XcodePlugins folder in the previous commit...
+
+	Change-Id: I73b5979403d523602b77d2e0cbe90450be0cedff
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+	add stuff scavenged from various other gdb-related Xcode plugins
+
+	Change-Id: I9ecea92826490ccdfb153b6ad02b845fa2b97915
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+	add stuff scavenged from gdbmi Xcode plugin
+
+	also use config.status hack for src/gdb/gnulib's configure script
+
+	Change-Id: I7a5eaaa586bb1fa5b1c830f522869369de05f16b
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+	actually fix build in src/bfd this time
+
+	Change-Id: I242696788bbd43b0fd3d77843e1468b94d34d258
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+	try some more to fix src/bfd's build
+
+	Change-Id: I62e4887d55a4573a1841010f5132c6f1a512c834
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+	try again to fix src/bfd
+
+	Change-Id: I61bed789da3c03aae51f67ceb7c59948aa17850f
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+	fix build in src/opcodes
+
+	also semi-fix/semi-break build in src/bfd
+
+	Change-Id: Id7079158a952ebbb73d9d71c3e5e5647f480c158
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	try fix building of src/bfd
+
+	Change-Id: I58a01ccabe92d5efb8840e29acdef5897495b79e
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	add new subdirectory src/sim/testsuite/sim/bfin
+
+	Change-Id: I90533728c01e8e1fafd88cb4f11e49ded9e871d1
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	update src/sim
+
+	many new simulators to ignore...
+
+	Change-Id: I0310439f41c9c18fe4976f2b0fe9b5759b8e2d15
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	add new files to src/gdb/testsuite/gdb.trace
+
+	Change-Id: Ibefc6ae7ebaec132492ff47e5c8ebdde1bbacf9e
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	add new files to src/gdb/testsuite/gdb.threads
+
+	Change-Id: I4f3508df6e6b3d4346b60cdfb280beca67cf8cd6
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	add new files to src/gdb/testsuite/gdb.reverse
+
+	Change-Id: Ic0785b8b8151d9861927670e4348e3d8d2b41931
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	add new subdirectory src/gdb/testsuite/gdb.btrace
+
+	Change-Id: I15ffeb2d0d69796db0673a614e3d31ddd1264193
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	add new files to src/gdb/testsuite/gdb.mi
+
+	Change-Id: Ib3bdba847cc42b6219802a0f455dc6cc4c3e9fa2
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	add new files to src/gdb/testsuite/gdb.dwarf2
+
+	Change-Id: I6812f93e114a9fb87ea7b17bae8e65eccae14e17
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	add new files to src/gdb/testsuite/gdb.cp
+
+	Change-Id: Ida8832d8394b8fc087564a52148e594c7de01d97
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	add new files to src/gdb/testsuite/gdb.base
+
+	Change-Id: I6bafe6dee4c7bff16ca82c8d27dac9e5f10dcb28
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	add new files to src/gdb/testsuite/gdb.arch
+
+	Change-Id: I51f865b924c44b81607ed646ab280be0defb496c
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	add new files to src/gdb/testsuite/gdb.python
+
+	Change-Id: Ib5f751c9ddd20a875961c1ad76286ba4ba76872c
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	oops vforked-prog.c slipped through somehow
+
+	Change-Id: I1da5131dc6519edde0571532deeec9ab8b79db6c
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	add new files to src/gdb/testsuite/gdb.fortran
+
+	Change-Id: Ia1a9538830aec5677a12769dcf9595b30567afcc
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	add new files to src/gdb/testsuite/gdb.ada
+
+	Change-Id: I49c9d2f73119df37a830711ad47f735d7efc037b
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+	add new subdirectory src/gdb/testsuite/boards
+
+	Change-Id: I92517791142c52da2226a3db73f3eff54bc227ca
+
 2013-11-14  Eric Gallager  <egallager@comcast.net>
 
 	make testsuite actually run again

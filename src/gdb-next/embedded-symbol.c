@@ -1,3 +1,7 @@
+/*
+ * embedded-symbol.c
+ */
+
 #include "defs.h"
 #include "inferior.h"
 #include "target.h"
@@ -47,13 +51,13 @@ static struct embedded_symbol *analyze_traceback_table (CORE_ADDR pc)
   symbol.language = language_unknown;
 
   status = target_read_memory (pc, (char *) &table, sizeof (table));
-  if (status != 0) { 
+  if (status != 0) {
     return NULL;
   }
-  
+
   offset = sizeof (struct traceback_table);
 
-  if ((table.lang != TB_C) && (table.lang != TB_CPLUSPLUS)) { 
+  if ((table.lang != TB_C) && (table.lang != TB_CPLUSPLUS)) {
     return NULL;
   }
 
@@ -73,7 +77,7 @@ static struct embedded_symbol *analyze_traceback_table (CORE_ADDR pc)
 
     offset += 4;
 
-    if ((anchors.ctl_info < 0) || (anchors.ctl_info > 1024)) { 
+    if ((anchors.ctl_info < 0) || (anchors.ctl_info > 1024)) {
       return NULL;
     }
 
@@ -94,13 +98,13 @@ static struct embedded_symbol *analyze_traceback_table (CORE_ADDR pc)
     if (rlen >= sizeof (namebuf)) {
       rlen = sizeof (namebuf) - 1;
     }
-    
+
     status = target_read_memory (pc + offset + 2, namebuf, rlen);
     if (status != 0) {
       return NULL;
     }
     namebuf[rlen] = '\0';
-    
+
     if ((table.lang > 0) && (table.lang <= TB_ASM)) {
       symbol.language = traceback_table_languages[table.lang];
     } else {
@@ -129,10 +133,10 @@ static struct embedded_symbol
   int index;
 
   status = target_read_memory (pc, (char *) buffer, sizeof (buffer));
-  if (status != 0) { 
+  if (status != 0) {
     return NULL;
   }
-        
+
   for (index = 0; index < 1024; index ++) {
     if (buffer[index] == 0) {
       return analyze_traceback_table (pc + (4 * index) + 4);
@@ -142,7 +146,7 @@ static struct embedded_symbol
   return NULL;
 }
 
-struct embedded_symbol 
+struct embedded_symbol
 *search_for_embedded_symbol (CORE_ADDR pc)
 {
   /* so far we only support AIX and PowerMac-style traceback tables */
@@ -169,7 +173,7 @@ static void info_embedded_symbol_command (char *exp, int from_tty)
 
   sym = search_for_embedded_symbol (address);
   if (sym != NULL)
-    fprintf_unfiltered 
+    fprintf_unfiltered
       (gdb_stderr, "Symbol at 0x%lx is \"%s\".\n", (unsigned long) address, sym->name);
   else
     fprintf_unfiltered
@@ -182,3 +186,5 @@ _initialize_embedded_symbol ()
   add_info ("embedded-symbol", info_embedded_symbol_command,
 	    "Show embedded symbol information for a specified address");
 }
+
+/* EOF */

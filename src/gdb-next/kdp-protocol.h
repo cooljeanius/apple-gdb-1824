@@ -28,13 +28,13 @@ typedef enum kdp_req_t {
 
  /* obtaining client info */
  KDP_HOSTINFO, KDP_VERSION, KDP_MAXBYTES,
- 
+
  /* memory access */
  KDP_READMEM, KDP_WRITEMEM,
- 
+
  /* register access */
  KDP_READREGS, KDP_WRITEREGS,
- 
+
  /* executable image info */
  KDP_LOAD, KDP_IMAGEPATH,
 
@@ -269,7 +269,7 @@ typedef struct {
   unsigned long address;
 #if 0
   unsigned long ccache;
-#endif
+#endif /* 0 */
 } kdp_breakpoint_req_t;
 
 typedef struct {
@@ -379,7 +379,7 @@ typedef enum {
   RR_BYTE_COUNT,		/* unexpected byte count */
   RR_BAD_SEQ,			/* unexpected sequence number */
   RR_RESOURCE,			/* resource shortage */
-  RR_LOOKUP,			/* can't find target */ 
+  RR_LOOKUP,			/* cannot find target */
   RR_INTERNAL,			/* internal error */
   RR_CONNECT,			/* connection failure */
   RR_INVALID_ADDRESS,		/* bad memory address */
@@ -408,3 +408,5 @@ kdp_return_t kdp_unmarshal
   (struct kdp_connection *c, kdp_pkt_t *p, const unsigned char *s, size_t rlen);
 
 #endif /* _KDB_DEBUG_PROTOCOL_H_ */
+
+/* EOF */

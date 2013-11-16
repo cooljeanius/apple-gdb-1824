@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1990--1997 Apple Computer, Inc.  All rights reserved.
- * 
+ *
  * debug_udp.c - UDP layer of remote debug protocol.
  *
  * HISTORY
@@ -11,7 +11,7 @@
  *	Converted to NRW wire protocol.
  * 25-04-91	Blaine Garst
  *  	eliminated private functions
- * 07-Jan-90	Doug Mitchell at NeXT	
+ * 07-Jan-90	Doug Mitchell at NeXT
  *	Created.
  */
 
@@ -59,12 +59,12 @@ kdp_return_t kdp_exception_wait
   }
 
   for (;;) {
-    
+
     kdp_return_t kdpret;
 
     kdpret = kdp_receive_exception (c, response, timeout);
     if (kdpret != RR_SUCCESS) { return kdpret; }
-    
+
     kdpret = kdp_exception_reply (c, response);
     if (kdpret != RR_SUCCESS) { return kdpret; }
 
@@ -86,7 +86,7 @@ kdp_return_t kdp_exception_wait
 		 c->exc_seqno, response->hdr.seq);
       continue;
     }
-  }    
+  }
 
   return RR_SUCCESS;
 }
@@ -95,25 +95,25 @@ kdp_return_t kdp_reply_wait
 (kdp_connection *c, kdp_pkt_t *response, int timeout)
 {
   for (;;) {
-    
+
     kdp_return_t kdpret;
 
     kdpret = kdp_receive (c, response, timeout);
     if (kdpret != RR_SUCCESS) {
       c->logger (KDP_LOG_ERROR, "kdp_reply_wait: error from kdp_receive: %s\n",
 		 kdp_return_string (kdpret));
-      return kdpret; 
+      return kdpret;
     }
-    
+
     if (response->hdr.request == KDP_EXCEPTION) {
 
       kdpret = kdp_exception_reply (c, response);
-      if (kdpret != RR_SUCCESS) { 
+      if (kdpret != RR_SUCCESS) {
 	c->logger (KDP_LOG_ERROR, "kdp_reply_wait: error from kdp_exception_reply: %s\n",
 		   kdp_return_string (kdpret));
 	return kdpret;
       }
-	
+
       if (response->hdr.seq == c->exc_seqno) {
 	c->exc_seqno = (c->exc_seqno + 1) % 256;
 	/* save for future processing */
@@ -193,7 +193,7 @@ kdp_return_t kdp_transaction
     rtn = kdp_transmit_debug (c, request);
     if (rtn != RR_SUCCESS) { break; }
 
-    if (c->timed_out) { 
+    if (c->timed_out) {
       rtn = kdp_reply_wait (c, response, 1);
       if (rtn == RR_RECV_TIMEOUT) { return rtn; }
       c->logger (KDP_LOG_INFO, "kdp_transaction (%s): "
@@ -223,20 +223,20 @@ kdp_return_t kdp_transaction
 
   /* Check for correct session key (except for CONNECT requests). */
   if ((request->hdr.request != KDP_CONNECT) && (response->hdr.key != c->session_key)) {
-    c->logger (KDP_LOG_ERROR, "kdp_transaction (%s): invalid session key %d (expected %d)\n", 
+    c->logger (KDP_LOG_ERROR, "kdp_transaction (%s): invalid session key %d (expected %d)\n",
 	       name, response->hdr.key, c->session_key);
     return RR_BAD_ACK;
   }
-  
+
   if (! response->hdr.is_reply) {
     c->logger (KDP_LOG_ERROR, "kdp_transaction (%s): "
 	       "response was not tagged as a reply packet\n", name);
     return RR_BAD_ACK;
   }
-  
+
   if (response->hdr.request != request->hdr.request) {
     c->logger (KDP_LOG_ERROR, "kdp_transaction (%s):"
-	       "packet type of request (%d) does not match packet type of reply (%d)\n", 
+	       "packet type of request (%d) does not match packet type of reply (%d)\n",
 	       name, request->hdr.request, response->hdr.request);
     return RR_BAD_ACK;
   }
@@ -246,12 +246,12 @@ kdp_return_t kdp_transaction
 
 /* Perform connect sequence. Assumes a disconnected state.
 
-   If a connect ack is lost, the target wedges. That's because all we
+   If a connect ack is lost, the target wedges. That is because all we
    can do is retransmit the connect request, with a (most likely) wrong
-   session key and a zero sequence number. The target thinks it's
+   session key and a zero sequence number. The target thinks it is/has
    connected, so it rejects these requests. */
 
-kdp_return_t kdp_connect 
+kdp_return_t kdp_connect
 (kdp_connection *c)
 {
   kdp_return_t ret;
@@ -284,7 +284,7 @@ kdp_return_t kdp_connect
 
 kdp_return_t kdp_disconnect (kdp_connection *c)
 {
-  kdp_return_t ret; 
+  kdp_return_t ret;
 
   CHECK_FATAL (kdp_is_connected (c));
 
@@ -296,3 +296,5 @@ kdp_return_t kdp_disconnect (kdp_connection *c)
 
   return RR_SUCCESS;
 }
+
+/* EOF */

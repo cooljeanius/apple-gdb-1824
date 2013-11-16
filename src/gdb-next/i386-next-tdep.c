@@ -130,7 +130,7 @@ i386_next_skip_trampoline_code (pc)
       mread (pc+6, 1, 0) == 0x50   &&		/* pushl %eax */
       mread (pc+7, 1, 0) == 0xe9)		/* jmpl dyld */
     pc = new_pc = (CORE_ADDR) get_symbol_stub_real_address (pc, NULL);
-#endif
+#endif /* 0 */
 
   return new_pc;
 }
@@ -152,3 +152,5 @@ sigtramp_saved_pc (frame)
 {
   return 0;
 }
+
+/* EOF */

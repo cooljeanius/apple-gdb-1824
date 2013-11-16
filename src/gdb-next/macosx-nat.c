@@ -301,3 +301,5 @@ void next_create_inferior_for_task
 
   inferior->last_thread = next_primary_thread_of_task (inferior->task);
 }
+
+/* EOF */

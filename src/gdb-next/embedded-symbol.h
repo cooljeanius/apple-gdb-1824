@@ -1,3 +1,7 @@
+/*
+ * embedded-symbol.h
+ */
+
 #ifndef __EMBEDDED_SYMBOL_H__
 #define __EMBEDDED_SYMBOL_H__
 
@@ -12,3 +16,5 @@ typedef struct embedded_symbol embedded_symbol;
 embedded_symbol *search_for_embedded_symbol PARAMS ((CORE_ADDR pc));
 
 #endif /* __EMBEDDED_SYMBOL_H__ */
+
+/* EOF */
