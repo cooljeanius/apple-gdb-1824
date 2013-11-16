@@ -52,12 +52,12 @@ static void
 macho_symfile_init (objfile)
      struct objfile *objfile;
 {
-  objfile->sym_stab_info = 
+  objfile->sym_stab_info =
     xmmalloc (objfile->md, sizeof (struct dbx_symfile_info));
 
   memset ((PTR) objfile->sym_stab_info, 0, sizeof (struct dbx_symfile_info));
 
-  objfile->sym_private = 
+  objfile->sym_private =
     xmmalloc (objfile->md,sizeof (struct macho_symfile_info));
 
   memset (objfile->sym_private, 0, sizeof (struct macho_symfile_info));
@@ -87,7 +87,7 @@ macho_symfile_read (objfile, mainline)
 
   init_minimal_symbol_collection ();
   make_cleanup_discard_minimal_symbols ();
-    
+
   stabsect_build_psymtabs (objfile, mainline,
 			   "LC_SYMTAB.stabs", "LC_SYMTAB.stabstr",
 			   "LC_SEGMENT.__TEXT.__text",
@@ -138,7 +138,7 @@ macho_symfile_read (objfile, mainline)
       CHECK_FATAL (lsection != NULL);
       section = lsection;
     }
-    
+
     CHECK_FATAL (DBX_STRINGTAB (objfile) != NULL);
     if (symtab->strtab == NULL) {
       symtab->strtab = DBX_STRINGTAB (objfile);
@@ -146,8 +146,8 @@ macho_symfile_read (objfile, mainline)
 
     if (symtab->strtab == NULL) {
       ret = bfd_mach_o_scan_read_symtab_strtab (abfd, symtab);
-      if (ret != 0) { 
-	warning ("Unable to read symbol table for \"%s\": %s", 
+      if (ret != 0) {
+	warning ("Unable to read symbol table for \"%s\": %s",
 		 abfd->filename, bfd_errmsg (bfd_get_error ()));
 	install_minimal_symbols (objfile);
 	return;
@@ -159,9 +159,9 @@ macho_symfile_read (objfile, mainline)
       asymbol sym;
 
       nsyms = section->size / section->reserved2;
-    
+
       for (i = 0; i < nsyms; i++) {
-      
+
 	unsigned long cursym = section->reserved1 + i;
 	CORE_ADDR stubaddr = section->addr + (i * section->reserved2);
 	char *sname = NULL;
@@ -172,7 +172,7 @@ macho_symfile_read (objfile, mainline)
 		   abfd->filename, cursym, (unsigned long) dysymtab->nindirectsyms);
 	  install_minimal_symbols (objfile);
 	  return;
-	} 
+	}
 	ret = bfd_mach_o_scan_read_dysymtab_symbol (abfd, dysymtab, symtab, &sym, cursym);
 	if (ret != 0) {
 	  install_minimal_symbols (objfile);
@@ -250,9 +250,11 @@ _initialize_machoread ()
 
   add_symtab_fns (&macho_sym_fns);
 
-  cmd = add_set_cmd ("mach-o-process-exports", class_obscure, var_boolean, 
+  cmd = add_set_cmd ("mach-o-process-exports", class_obscure, var_boolean,
 		     (char *) &mach_o_process_exports_flag,
 		     "Set if GDB should process indirect function stub symbols from object files.",
 		     &setlist);
-  add_show_from_set (cmd, &showlist);		
+  add_show_from_set (cmd, &showlist);
 }
+
+/* EOF */

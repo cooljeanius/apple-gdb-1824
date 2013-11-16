@@ -50,12 +50,12 @@ static void
 pef_symfile_init (objfile)
      struct objfile *objfile;
 {
-  objfile->sym_stab_info = 
+  objfile->sym_stab_info =
     xmmalloc (objfile->md, sizeof (struct dbx_symfile_info));
 
   memset ((PTR) objfile->sym_stab_info, 0, sizeof (struct dbx_symfile_info));
 
-  objfile->sym_private = 
+  objfile->sym_private =
     xmmalloc (objfile->md,sizeof (struct pef_symfile_info));
 
   memset (objfile->sym_private, 0, sizeof (struct pef_symfile_info));
@@ -88,7 +88,7 @@ pef_symfile_read (objfile, mainline)
 
   init_minimal_symbol_collection ();
   make_cleanup_discard_minimal_symbols ();
-    
+
   storage_needed = bfd_get_symtab_upper_bound (abfd);
 
   firstaddr = (CORE_ADDR) -1;
@@ -106,7 +106,7 @@ pef_symfile_read (objfile, mainline)
 	  symaddr += ANOFFSET (objfile->section_offsets, SECT_OFF_TEXT (objfile));
 
 	  /* For non-absolute symbols, use the type of the section
-	     they are relative to, to intuit text/data.  BFD provides
+	     they are relative to, to intuit text/data. BFD provides
 	     no way of figuring this out for absolute symbols. */
 
 	  if (sym->section->flags & SEC_CODE)
@@ -115,7 +115,7 @@ pef_symfile_read (objfile, mainline)
 	    ms_type = mst_data;
 	  else
 	    ms_type = mst_unknown;
-	  
+
 	  if (sym->name[0] == '\0') {
 	    /* warning ("ignoring symbol with empty name"); */
 	    continue;
@@ -230,3 +230,5 @@ _initialize_pefread ()
   add_symtab_fns (&pef_sym_fns);
   add_symtab_fns (&pef_xlib_sym_fns);
 }
+
+/* EOF */
