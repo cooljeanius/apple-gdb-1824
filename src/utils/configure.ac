@@ -5,10 +5,16 @@ AC_PREREQ([2.69])
 
 AC_INIT([gdb-utils],[???],[/dev/null])
 AC_CONFIG_SRCDIR([Makefile.in])
+AC_CONFIG_AUX_DIR([..])
+AM_SANITY_CHECK
 
 AC_PROG_INSTALL
 AC_CANONICAL_TARGET
 AC_PROG_CC
+
+# Autogen
+sinclude(../config/autoopts.m4)
+AG_PATH_AUTOOPTS([5.17.4])
 
 if test -d ${srcdir}/spu ; then
   configdirs="spu"
@@ -17,12 +23,12 @@ fi
 case "${target}" in
   sparclite-*-*)
     if test -d ${srcdir}/sparclite ; then
-      configdirs="$configdirs sparclite"
+      configdirs="${configdirs} sparclite"
     fi
     ;;
   *mips*-*-pe* | *sh*-*-pe* | *arm*-*-wince | *arm*-wince-pe* )
     if test -d ${srcdir}/wince ; then
-      configdirs="$configdirs wince"
+      configdirs="${configdirs} wince"
     fi
     ;;
 esac
@@ -34,13 +40,13 @@ clean_subdirs=""
 distclean_subdirs=""
 maintainer_clean_subdirs=""
 
-for dir in $configdirs ; do
-    all_subdirs="${all_subdirs} all-$dir"
-    install_subdirs="${install_subdirs} install-$dir"
-    mostlyclean_subdirs="${mostlyclean_subdirs} mostlyclean-$dir"
-    clean_subdirs="${clean_subdirs} clean-$dir"
-    distclean_subdirs="${distclean_subdirs} distclean-$dir"
-    maintainer_clean_subdirs="${maintainer_clean_subdirs} maintainer-clean-$dir"
+for dir in ${configdirs} ; do
+    all_subdirs="${all_subdirs} all-${dir}"
+    install_subdirs="${install_subdirs} install-${dir}"
+    mostlyclean_subdirs="${mostlyclean_subdirs} mostlyclean-${dir}"
+    clean_subdirs="${clean_subdirs} clean-${dir}"
+    distclean_subdirs="${distclean_subdirs} distclean-${dir}"
+    maintainer_clean_subdirs="${maintainer_clean_subdirs} maintainer-clean-${dir}"
 done
 
 AC_SUBST([all_subdirs])
@@ -69,7 +75,7 @@ case "${cache_file}" in
     ;;
 esac
 subconfigure_args=${ac_configure_args}
-subconfigure_args="${subconfigure_args} --cache-file=${abs_cache_file} --srcdir=${abs_srcdir}"
+subconfigure_args="${subconfigure_args} --disable-option-checking --cache-file=${abs_cache_file} --srcdir=${abs_srcdir}"
 AC_SUBST([subconfigure_args])
 
 AC_CONFIG_FILES([Makefile])
