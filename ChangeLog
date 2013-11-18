@@ -1,3 +1,87 @@
+2013-11-18  Eric Gallager  <egallager@comcast.net>
+
+	fix building zlib from src, silence warning in gnulib
+
+	Change-Id: Ib7df27c98ac269ddd2c90ba81f96aabbb9c08ec1
+
+2013-11-18  Eric Gallager  <egallager@comcast.net>
+
+	autotools-ify src/zlib
+
+	Change-Id: I5cf7f8af2dca78d4268014c6f29411c5380f4800
+
+2013-11-18  Eric Gallager  <egallager@comcast.net>
+
+	vendor in a copy of zlib-1.2.8 in src
+
+	Change-Id: I3735489aaba057cbc322b2900940838622f145da
+
+2013-11-18  Eric Gallager  <egallager@comcast.net>
+
+	add a few more things to src's configure script
+
+	Change-Id: I6c426e3450ccdbc8ccdc6da34221d08f9253a8ad
+
+2013-11-18  Eric Gallager  <egallager@comcast.net>
+
+	check gnulib stdint stuff in src/gdb's configure script, too
+
+	Change-Id: Ib0366d1b086bffc917bb867684796531211f75c4
+
+2013-11-18  Eric Gallager  <egallager@comcast.net>
+
+	These should have been included in the previous commit
+
+	Change-Id: Icf7d0efd489fb15f751027ade4a87d0d7676f766
+
+2013-11-18  Eric Gallager  <egallager@comcast.net>
+
+	probably should have split this up into smaller commits...
+
+	- found Apple's binutils sources, which looks like they were a
+	precursor to their gdb sources, so include some old files from them
+	(mpw stuff, mostly)
+	- also found Apple's separate set of sources for expect, so include
+	some files from that, too
+	- update configure script for bfd
+	- touch old files in src/expect
+	- fix some implicit declaration warnings for src/expect by including
+	some more headers
+	- regenerate src/expect/Dbgconfigure (this is more complicated than
+	regenerating your normal autoconf script, because it involves renaming
+	stuff)
+	- apostrophe-phobia and formatting
+	- Make some expect scripts executable
+	- Make src/intl's configure script actually generate po2tbl.sed
+	- let libiberty link against mmalloc, if desired
+	- add src/electric-fence directory
+
+	Change-Id: I7dd962d80868251c47ee53f0e335e97d5e8e69a2
+
+2013-11-16  Eric Gallager  <egallager@comcast.net>
+
+	touch old dejagnu files, and also fix src/gdb/gnulib
+
+	Change-Id: Id601a21c6a7c27be88585c72f34aed5c06a027f5
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+	check for autogen in src/utils because it uses that to create its makefile
+
+	Change-Id: Ic45575f42a9b6d56ec5a053d92e1356aba2beca7
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+	I thought these would have gone in the previous commit...
+
+	Change-Id: I457f04412b1343aea3c1fbfad91a3260d98b3cb6
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+	touch old files in src/gdb-next
+
+	Change-Id: I35fb15acb22f05cd557094b533680dc5e743345a
+
 2013-11-15  Eric Gallager  <egallager@comcast.net>
 
 	convert pdf images to pngs

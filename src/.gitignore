@@ -64,7 +64,3 @@ mt-frag
 serdep.tmp
 update.out
 update.sourceware
-
-# Too big to add at once; commit separately later:
-include/mpw/CIncludes/*
-
