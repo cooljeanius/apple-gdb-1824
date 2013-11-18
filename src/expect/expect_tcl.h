@@ -4,7 +4,7 @@ with Tcl (and optionally Tk)
 Written by: Don Libes, libes@cme.nist.gov, NIST, 12/3/90
 
 Design and implementation of this program was paid for by U.S. tax
-dollars.  Therefore it is public domain.  However, the author and NIST
+dollars. Therefore it is public domain. However, the author and NIST
 would appreciate credit if this program or parts of it are used.
 
 */
@@ -45,3 +45,5 @@ EXTERN void	exp_exit_handlers _ANSI_ARGS_((ClientData));
 EXTERN void	exp_error _ANSI_ARGS_(TCL_VARARGS(Tcl_Interp *,interp));
 
 #endif /* _EXPECT_TCL_H */
+
+/* EOF */

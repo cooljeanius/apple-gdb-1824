@@ -23,3 +23,5 @@ int n;
 	return dest;
 }
 #endif /* HAVE_MEMMOVE */
+
+/* EOF */

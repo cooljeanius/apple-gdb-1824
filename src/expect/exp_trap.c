@@ -3,7 +3,7 @@
 Written by: Don Libes, NIST, 9/1/93
 
 Design and implementation of this program was paid for by U.S. tax
-dollars.  Therefore it is public domain.  However, the author and NIST
+dollars. Therefore it is public domain. However, the author and NIST
 would appreciate credit if this program or parts of it are used.
 
 */
@@ -15,19 +15,49 @@ would appreciate credit if this program or parts of it are used.
 #include <sys/types.h>
 
 #ifdef HAVE_SYS_WAIT_H
-#include <sys/wait.h>
-#endif
+# include <sys/wait.h>
+#else
+# warning exp_trap.c expects <sys/wait.h> to be included.
+#endif /* HAVE_SYS_WAIT_H */
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# ifdef HAVE_STRINGS_H
+#  include <strings.h>
+# else
+#  warning exp_trap.c expects a string-related header to be included.
+# endif /* HAVE_STRINGS_H */
+#endif /* HAVE_STRING_H */
+
+#ifdef NO_STDLIB_H
+# include "../compat/stdlib.h"
+#else
+# ifdef HAVE_STDLIB_H
+#  include <stdlib.h>
+# else
+#  ifdef HAVE_MALLOC_H
+#   include <malloc.h>
+#  else
+#   ifdef HAVE_MALLOC_MALLOC_H
+#    include <malloc/malloc.h>
+#   else
+#    warning exp_trap.c expects a header that provides malloc() to be included.
+#   endif /* HAVE_MALLOC_MALLOC_H */
+#  endif /* HAVE_MALLOC_H */
+# endif /* HAVE_STDLIB_H */
+#endif /*NO_STDLIB_H*/
 
 /* Use _NSIG if NSIG not present */
 #ifndef NSIG
-#ifdef _NSIG
-#define NSIG _NSIG
-#endif
-#endif
+# ifdef _NSIG
+#  define NSIG _NSIG
+# endif /* _NSIG */
+#endif /* !NSIG */
 
 #if defined(SIGCLD) && !defined(SIGCHLD)
-#define SIGCHLD SIGCLD
-#endif
+# define SIGCHLD SIGCLD
+#endif /* SIGCLD && !SIGCHLD */
 
 #include "tcl.h"
 
@@ -37,8 +67,8 @@ would appreciate credit if this program or parts of it are used.
 #include "exp_log.h"
 
 #ifdef TCL_DEBUGGER
-#include "Dbg.h"
-#endif
+# include "Dbg.h"
+#endif /* TCL_DEBUGGER */
 
 #define NO_SIG 0
 
@@ -104,14 +134,14 @@ int code;
 	}
 
 	/* start to work on this sig.  got_sig can now be overwritten */
-	/* and it won't cause a problem */
+	/* and it will NOT cause a problem */
 	current_sig = got_sig;
 	trap = &traps[current_sig];
 
 	trap->mark = FALSE;
 
 	/* decrement below looks dangerous */
-	/* Don't we need to temporarily block bottomhalf? */
+	/* Do NOT we need to temporarily block bottomhalf? */
 	if (current_sig == SIGCHLD) {
 		sigchld_count--;
 		exp_debuglog("sigchld_count-- == %d\n",sigchld_count);
@@ -165,11 +195,11 @@ int code;
 
 #ifdef REARM_SIG
 int sigchld_sleep;
-static int rearm_sigchld = FALSE;	/* TRUE if sigchld needs to be */
-					/* rearmed (i.e., because it has
-					/* just gone off) */
+static int rearm_sigchld = FALSE; /* TRUE if sigchld needs to be */
+								  /* rearmed (i.e., because it has
+					              /* just gone off) */
 static int rearming_sigchld = FALSE;
-#endif
+#endif /* REARM_SIG */
 
 /* called upon receipt of a user-declared signal */
 static void
@@ -179,7 +209,7 @@ int sig;
 #ifdef REARM_SIG
 	/*
 	 * tiny window of death if same signal should arrive here
-	 * before we've reinstalled it
+	 * before we have reinstalled it
 	 */
 
 	/* In SV, sigchld must be rearmed after wait to avoid recursion */
@@ -190,7 +220,7 @@ int sig;
 		rearm_sigchld = TRUE;
 		if (rearming_sigchld) sigchld_sleep = TRUE;
 	}
-#endif
+#endif /* REARM_SIG */
 
 	traps[sig].mark = TRUE;
 	got_sig = sig;		/* just a hint - can be wiped out by another */
@@ -210,7 +240,7 @@ int sig;
 #if 0
 	/* if we are doing an i_read, restart it */
 	if (env_valid && (sig != 0)) longjmp(env,2);
-#endif
+#endif /* 0 */
 }
 
 /*ARGSUSED*/
@@ -228,13 +258,13 @@ Tcl_Interp *interp;
 	rearming_sigchld = FALSE;
 
 	/* if the rearming immediately caused another SIGCHLD, slow down */
-	/* It's probably one of Tcl's intermediary pipeline processes that */
-	/* Tcl hasn't caught up with yet. */
+	/* It is probably one of Tcl's intermediary pipeline processes that */
+	/* Tcl has NOT caught up with yet. */
 	if (sigchld_sleep) {
 		exp_dsleep(interp,0.2);
 		sigchld_sleep = FALSE;
 	}
-#endif
+#endif /* REARM_SIG */
 }
 
 
@@ -256,16 +286,16 @@ exp_init_trap()
 #if defined(SIGCLD)
 	/* Tcl names it SIGCLD, not good for portable scripts */
 	traps[SIGCLD].name = "SIGCHLD";
-#endif
+#endif /* SIGCLD */
 #if defined(SIGALRM)
 	traps[SIGALRM].reserved = TRUE;
-#endif
+#endif /* SIGALRM */
 #if defined(SIGKILL)
 	traps[SIGKILL].reserved = TRUE;
-#endif
+#endif /* SIGKILL */
 #if defined(SIGSTOP)
 	traps[SIGSTOP].reserved = TRUE;
-#endif
+#endif /* SIGSTOP */
 
 	async_handler = Tcl_AsyncCreate(tophalf,(ClientData)0);
 
@@ -293,7 +323,7 @@ char *s;
 	}
 
 	exp_error(interp,"invalid signal %s",s);
-	
+
 	return -1;
 }
 
@@ -322,10 +352,10 @@ char **argv;
 
 	while (*argv) {
 		if (streq(*argv,"-code")) {
-			argc--; argv++; 
+			argc--; argv++;
 			new_code = TRUE;
 		} else if (streq(*argv,"-interp")) {
-			argc--; argv++; 
+			argc--; argv++;
 			new_interp = 0;
 		} else if (streq(*argv,"-name")) {
 			argc--; argv++;
@@ -395,20 +425,20 @@ char **argv;
 		}
 
 #if 0
-#ifdef TCL_DEBUGGER
+# ifdef TCL_DEBUGGER
 		if (sig == SIGINT && exp_tcl_debugger_available) {
 			exp_debuglog("trap: cannot trap SIGINT while using debugger\r\n");
 			continue;
 		}
-#endif /* TCL_DEBUGGER */
-#endif
+# endif /* TCL_DEBUGGER */
+#endif /* 0 */
 
 		exp_debuglog("trap: setting up signal %d (\"%s\")\r\n",sig,list[i]);
 
 		if (traps[sig].action) ckfree(traps[sig].action);
 
 		if (streq(action,"SIG_DFL")) {
-			/* should've been free'd by now if nec. */
+			/* should have been free'd by now if nec. */
 			traps[sig].action = 0;
 			signal(sig,SIG_DFL);
 #ifdef REARM_SIG
@@ -456,7 +486,7 @@ int oldcode;
 	code_flag = trap->code;
 
 	if (!code_flag) {
-		/* 
+		/*
 		 * save return values
 		 */
 		eip = Tcl_GetVar(interp,"errorInfo",TCL_GLOBAL_ONLY);
@@ -489,10 +519,10 @@ int oldcode;
 
 			/*
 			 * Check errorinfo and see if it contains -nostack.
-			 * This shouldn't be necessary, but John changed the
+			 * This should NOT be necessary, but John changed the
 			 * top level interp so that it distorts arbitrary
 			 * return values into TCL_ERROR, so by the time we
-			 * get back, we'll have lost the value of errorInfo
+			 * get back, we will have lost the value of errorInfo
 			 */
 
 			eip = Tcl_GetVar(interp,"errorInfo",TCL_GLOBAL_ONLY);
@@ -520,8 +550,8 @@ int oldcode;
 			Tcl_UnsetVar(interp,"errorInfo",0);
 		}
 
-		/* restore errorCode.  Note that Tcl_AddErrorInfo (above) */
-		/* resets it to NONE.  If the previous value is NONE, it's */
+		/* restore errorCode. Note that Tcl_AddErrorInfo (above) */
+		/* resets it to NONE. If the previous value is NONE, it is */
 		/* important to avoid calling Tcl_SetErrorCode since this */
 		/* with cause Tcl to set its internal ERROR_CODE_SET flag. */
 		if (ecp) {
@@ -556,3 +586,4 @@ Tcl_Interp *interp;
 	exp_create_commands(interp,cmd_data);
 }
 
+/* EOF */

@@ -56,6 +56,9 @@
 /* Define to 1 if you have the `canonicalize_file_name' function. */
 #undef HAVE_CANONICALIZE_FILE_NAME
 
+/* Define to 1 if your system has a working `chown' function. */
+#undef HAVE_CHOWN
+
 /* Define to 1 if you have the `clock' function. */
 #undef HAVE_CLOCK
 
@@ -180,6 +183,9 @@
 /* Define to 1 if you have the <locale/elem-hash.h> header file. */
 #undef HAVE_LOCALE_ELEM_HASH_H
 
+/* Define to 1 if you have the <locale.h> header file. */
+#undef HAVE_LOCALE_H
+
 /* Define to 1 if you have the <locale/localeinfo.h> header file. */
 #undef HAVE_LOCALE_LOCALEINFO_H
 
@@ -196,6 +202,9 @@
 /* Define to 1 if you have the <machine/hal_sysinfo.h> header file. */
 #undef HAVE_MACHINE_HAL_SYSINFO_H
 
+/* Define to 1 if you have the <mach/mach.h> header file. */
+#undef HAVE_MACH_MACH_H
+
 /* Define to 1 if your system has a GNU libc compatible `malloc' function, and
    to 0 otherwise. */
 #undef HAVE_MALLOC
@@ -205,6 +214,9 @@
 
 /* Define to 1 if you have the <malloc/malloc.h> header file. */
 #undef HAVE_MALLOC_MALLOC_H
+
+/* Define to 1 if you have the <math.h> header file. */
+#undef HAVE_MATH_H
 
 /* Define to 1 if mbrtowc and mbstate_t are properly declared. */
 #undef HAVE_MBRTOWC
@@ -229,6 +241,9 @@
 
 /* Define to 1 if you have the `memset' function. */
 #undef HAVE_MEMSET
+
+/* Define to 1 if you have the `mkdir' function. */
+#undef HAVE_MKDIR
 
 /* Define to 1 if you have the `mkstemps' function. */
 #undef HAVE_MKSTEMPS
@@ -285,6 +300,9 @@
 /* Define to 1 if you have the `rindex' function. */
 #undef HAVE_RINDEX
 
+/* Define to 1 if you have the `rmdir' function. */
+#undef HAVE_RMDIR
+
 /* Define to 1 if you have the `sbrk' function. */
 #undef HAVE_SBRK
 
@@ -296,6 +314,13 @@
 
 /* Define to 1 if you have the `snprintf' function. */
 #undef HAVE_SNPRINTF
+
+/* Define to 1 if `stat' has the bug that it succeeds when given the
+   zero-length file name argument. */
+#undef HAVE_STAT_EMPTY_STRING_BUG
+
+/* Define to 1 if you have the <stdarg.h> header file. */
+#undef HAVE_STDARG_H
 
 /* Define to 1 if stdbool.h conforms to C99. */
 #undef HAVE_STDBOOL_H
@@ -459,6 +484,9 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
+/* Define to 1 if you have the `utime' function. */
+#undef HAVE_UTIME
+
 /* Define to 1 if you have the `vasprintf' function. */
 #undef HAVE_VASPRINTF
 
@@ -560,6 +588,9 @@
    STACK_DIRECTION = 0 => direction of growth unknown */
 #undef STACK_DIRECTION
 
+/* Define to 1 if the `S_IS*' macros in <sys/stat.h> do not work properly. */
+#undef STAT_MACROS_BROKEN
+
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
@@ -568,6 +599,9 @@
 
 /* Define to an unsigned 64-bit type available in the compiler. */
 #undef UNSIGNED_64BIT_TYPE
+
+/* Define to 1 to use mmalloc */
+#undef USE_MMALLOC
 
 /* Enable extensions on AIX 3, Interix.  */
 #ifndef _ALL_SOURCE
@@ -618,11 +652,19 @@
    #define below would cause a syntax error. */
 #undef _UINT32_T
 
+/* Define for Solaris 2.5.1 so the uint8_t typedef from <sys/synch.h>,
+   <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
+   #define below would cause a syntax error. */
+#undef _UINT8_T
+
 /* Define like PROTOTYPES; this can be used by system headers. */
 #undef __PROTOTYPES
 
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
+
+/* Define to `int' if <sys/types.h> doesn't define. */
+#undef gid_t
 
 /* Define to `__inline__' or `__inline' if that's what the C compiler
    calls it, or to nothing if 'inline' is not supported under any name.  */
@@ -652,11 +694,23 @@
 /* Define to `int' if <sys/types.h> does not define. */
 #undef ssize_t
 
+/* Define to `int' if <sys/types.h> doesn't define. */
+#undef uid_t
+
+/* Define to the type of an unsigned integer type of width exactly 16 bits if
+   such a type exists and the standard includes do not define it. */
+#undef uint16_t
+
 /* Define to the type of an unsigned integer type of width exactly 32 bits if
    such a type exists and the standard includes do not define it. */
 #undef uint32_t
 
-/* Define to `unsigned long' if <sys/types.h> does not define. */
+/* Define to the type of an unsigned integer type of width exactly 8 bits if
+   such a type exists and the standard includes do not define it. */
+#undef uint8_t
+
+/* Define to the type of an unsigned integer type wide enough to hold a
+   pointer, if such a type exists, and if the system does not define it. */
 #undef uintptr_t
 
 /* Define as `fork' if `vfork' does not work. */

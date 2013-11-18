@@ -12,28 +12,28 @@ would appreciate credit if this program or parts of it are used.
 
 #include "Dbg_cf.h"
 #if 0
-/* tclInt.h drags in stdlib.  By claiming no-stdlib, force it to drag in */
-/* Tcl's compat version.  This avoids having to test for its presence */
-/* which is too tricky - configure can't generate two cf files, so when */
-/* Expect (or any app) uses the debugger, there's no way to get the info */
+/* tclInt.h drags in stdlib. By claiming no-stdlib, force it to drag in */
+/* Tcl's compat version. This avoids having to test for its presence */
+/* which is too tricky - configure cannot generate two cf files, so when */
+/* Expect (or any app) uses the debugger, there is no way to get the info */
 /* about whether stdlib exists or not, except pointing the debugger at */
-/* an app-dependent .h file and I don't want to do that. */
-#define NO_STDLIB_H
-#endif
+/* an app-dependent .h file and I do NOT want to do that. */
+# define NO_STDLIB_H
+#endif /* 0 */
 
 
 #include "tclInt.h"
 #include "tcl_regexp.h"
-/*#include <varargs.h>		tclInt.h drags in varargs.h.  Since Pyramid */
-/*				objects to including varargs.h twice, just */
-/*				omit this one. */
-/*#include "string.h"		tclInt.h drags this in, too! */
+/*#include <varargs.h>*/	/* tclInt.h drags in varargs.h. Since Pyramid */
+/*				      */    /* objects to including varargs.h twice, just */
+/*				      */    /* omit this one. */
+/*#include "string.h" */    /* tclInt.h drags this in, too! */
 #include "Dbg.h"
 
 #ifndef TRUE
-#define TRUE 1
-#define FALSE 0
-#endif
+# define TRUE 1
+# define FALSE 0
+#endif /* !TRUE */
 
 static int simple_interactor();
 static int zero();
@@ -245,7 +245,7 @@ TclGetFrame2(interp, origFramePtr, string, framePtrPtr, dir)
 	    return TCL_ERROR;
 	}
 	framePtr = origFramePtr; /* start search here */
-	
+
     } else if (isdigit(*string)) {
 	if (Tcl_GetInt(interp, string, &level) != TCL_OK) {
 	    return TCL_ERROR;
@@ -366,15 +366,15 @@ char *argv[];
 	bufp = buf + len;
 	argc--; argv++;
 	arg_index = 1;
-	
+
 	while (argc && (space > 0)) {
 		char *elementPtr;
 		char *nextPtr;
 		int wrap;
 
 		/* braces/quotes have been stripped off arguments */
-		/* so put them back.  We wrap everything except lists */
-		/* with one argument.  One exception is to always wrap */
+		/* so put them back. We wrap everything except lists */
+		/* with one argument. One exception is to always wrap */
 		/* proc's 2nd arg (the arg list), since people are */
 		/* used to always seeing it this way. */
 
@@ -383,7 +383,7 @@ char *argv[];
 			(void) TclFindElement(interp,*argv,
 #if TCL_MAJOR_VERSION >= 8
                                               -1,
-#endif
+#endif /* Tcl >= 8 */
                        &elementPtr,&nextPtr,(int *)0,(int *)0);
 			if (*elementPtr == '\0') wrap = TRUE;
 			else if (*nextPtr == '\0') wrap = FALSE;
@@ -410,7 +410,7 @@ char *argv[];
 	}
 
 	/* usually but not always right, but assume truncation if buffer is */
-	/* full.  this avoids tiny but odd-looking problem of appending "}" */
+	/* full. This avoids tiny but odd-looking problem of appending "}" */
 	/* to truncated lists during {}-wrapping earlier */
 	if (strlen(buf) == buf_width) {
 		buf[buf_width-1] = buf[buf_width-2] = buf[buf_width-3] = '.';
@@ -437,7 +437,7 @@ Tcl_Obj *objv[];
     argv[argc] = NULL;
     print_argv(interp,argc,argv);
 }
-#endif
+#endif /* Tcl >= 8 */
 
 static
 void
@@ -461,7 +461,7 @@ CallFrame *viewf;	/* view FramePtr */
 			print_objv(interp,curf->objc,curf->objv));
 #else
 			print_argv(interp,curf->argc,curf->argv));
-#endif
+#endif /* Tcl >= 8 */
 	}
 }
 
@@ -476,7 +476,7 @@ char *argv[];
 char *level;
 {
 	PrintStackBelow(interp,curf,viewf);
-	
+
 	print(interp," %s: %s\n",level,print_argv(interp,argc,argv));
 }
 
@@ -485,9 +485,9 @@ char *level;
 /* else return 1 */
 /* This catches things like a proc called from a Tcl_Eval which in */
 /* turn was not called from a proc but some builtin such as source */
-/* or Tcl_Eval.  These builtin calls to Tcl_Eval lose any knowledge */
+/* or Tcl_Eval. These builtin calls to Tcl_Eval lose any knowledge */
 /* the FramePtr from the proc, so we have to search the entire */
-/* stack frame to see if it's still there. */
+/* stack frame to see if it is still there. */
 static int
 GoalFrame(goal,iptr)
 CallFrame *goal;
@@ -591,7 +591,7 @@ char *argv[];
 		/* check if we are back at the same level where the next */
 		/* command was issued.  Also test */
 		/* against all FramePtrs and if no match, assume that */
-		/* we've missed a return, and so we should break  */
+		/* we have missed a return, and so we should break  */
 /*		if (goalFramePtr != iPtr->varFramePtr) goto finish;*/
 		if (GoalFrame(goalFramePtr,iPtr)) goto finish;
 		step_count--;
@@ -616,7 +616,7 @@ start_interact:
 				level_text,print_argv(interp,1,&command));
 		print_command_first_time = FALSE;
 	}
-	/* since user is typing a command, don't interrupt it immediately */
+	/* since user is typing a command, do NOT interrupt it immediately */
 	debug_cmd = cont;
 	debug_suspended = TRUE;
 
@@ -643,7 +643,7 @@ end_interact:
 #if 0
 	/* allow trapping */
 	debug_suspended = FALSE;
-#endif
+#endif /* 0 */
 
 	switch (debug_cmd) {
 	case cont:
@@ -734,7 +734,7 @@ struct breakpoint *b;
 {
 	if (b->file) ckfree(b->file);
 	if (b->pat) ckfree(b->pat);
-	if (b->re) ckfree((char *)b->re);			
+	if (b->re) ckfree((char *)b->re);
 	if (b->cmd) ckfree(b->cmd);
 
 	/* unlink from chain */
@@ -1141,7 +1141,7 @@ Tcl_Interp *interp;
 			print(interp,"dbg%d.%d> ",iPtr->numLevels,iPtr->curEventNum+1);
 #else
 			/* unncessarily tricky coding - if nextid
-			   isn't defined, maintain our own static
+			   is NOT defined, maintain our own static
 			   version */
 
 			static int nextid = 0;
@@ -1150,7 +1150,7 @@ Tcl_Interp *interp;
 				sscanf(nextidstr,"%d",&nextid);
 			}
 			print(interp,"dbg%d.%d> ",iPtr->numLevels,nextid++);
-#endif
+#endif /* Tcl < 8 */
 		} else {
 			print(interp,"dbg+> ");
 		}
@@ -1194,7 +1194,7 @@ Tcl_Interp *interp;
 #else
 		rc = Tcl_RecordAndEval(interp,ccmd,TCL_NO_EVAL);
 		rc = Tcl_Eval(interp,ccmd);
-#endif
+#endif /* Tcl < 7.4 */
 		Tcl_DStringFree(&dstring);
 
 		switch (rc) {
@@ -1246,7 +1246,7 @@ Tcl_Interp *interp;
 	Tcl_SetVar2(interp,Dbg_VarName,"active","1",0);
 #ifdef DBG_SCRIPTDIR
 	Tcl_SetVar(interp,"dbg_library",DBG_SCRIPTDIR,0);
-#endif
+#endif /* DBG_SCRIPTDIR */
 	Tcl_Eval(interp,init_auto_path);
 
 }
@@ -1290,3 +1290,5 @@ Tcl_Interp *interp;
 	debugger_active = FALSE;
 	Tcl_UnsetVar(interp,Dbg_VarName,TCL_GLOBAL_ONLY);
 }
+
+/* EOF */

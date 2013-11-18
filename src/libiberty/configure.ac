@@ -256,11 +256,13 @@ AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
   AC_REQUIRE([AC_HEADER_STDC])
 ])
 AC_REQUIRE_HEADER_STDC
+AC_HEADER_STAT
 AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
 AC_CHECK_HEADERS([alloca.h assert.h ctype.h fcntl.h float.h langinfo.h \
-                  libintl.h limits.h locale/coll-lookup.h locale/elem-hash.h \
-                  locale/localeinfo.h locale/weight.h locale/weightwc.h \
-                  machine/hal_sysinfo.h malloc.h malloc/malloc.h stddef.h \
+                  libintl.h limits.h locale.h locale/coll-lookup.h \
+                  locale/elem-hash.h locale/localeinfo.h locale/weight.h \
+                  locale/weightwc.h mach/mach.h machine/hal_sysinfo.h \
+                  math.h malloc.h malloc/malloc.h stdarg.h stddef.h \
                   stdio.h stdio_ext.h sys/file.h sys/mman.h sys/param.h \
                   sys/pstat.h sys/resource.h sys/sysctl.h sys/sysinfo.h \
                   sys/sysmp.h sys/systemcfg.h sys/table.h sys/time.h \
@@ -274,7 +276,11 @@ libiberty_AC_DECLARE_ERRNO
 AC_CHECK_SIZEOF([int])
 AC_CHECK_ALIGNOF([int])
 
-AC_CHECK_TYPE([uintptr_t],[unsigned long]) dnl# do this instead of AC_TYPE_UINTPTR_T
+m4_ifdef([AC_TYPE_UINTPTR_T],[
+AC_TYPE_UINTPTR_T
+],[
+AC_CHECK_TYPE([uintptr_t],[unsigned long])
+])
 
 # Look for a 64-bit type.
 AC_MSG_CHECKING([for a 64-bit type])
@@ -329,6 +335,9 @@ AC_CHECK_TYPES([ptrdiff_t])
 AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
 AC_TYPE_INT32_T
+AC_TYPE_UID_T
+AC_TYPE_UINT8_T
+AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_CHECK_TYPES([regex_t])
 AC_CHECK_TYPES([regmatch_t])
@@ -398,27 +407,29 @@ checkfuncs="$checkfuncs getsysinfo table sysctl wait3 wait4 __fsetlocking"
 # autoheader happy without adding a bunch of text to acconfig.h.
 if test "x" = "y"; then
   AC_FUNC_ALLOCA
+  AC_FUNC_CHOWN
   AC_FUNC_ERROR_AT_LINE
   AC_FUNC_LSTAT dnl# Calls AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
   AC_FUNC_MALLOC
   AC_FUNC_MBRTOWC
   AC_FUNC_OBSTACK
   AC_FUNC_REALLOC
+  AC_FUNC_STAT
   AC_FUNC_STRTOD
   AC_FUNC_STRNLEN
   AC_CHECK_FUNCS([__fsetlocking abort asprintf atexit basename bcmp bcopy \
                   bsearch btowc bzero calloc canonicalize_file_name \
                   clock dup2 ffs getcwd getpagesize getrusage getsysinfo \
-                  gettext gettimeofday getwd index insque memchr memcmp memcpy \
-                  memmove mempcpy memset mkstemps on_exit pathconf \
-                  psignal pstat_getdynamic pstat_getstatic putenv \
-                  random realpath re_comp regcomp rename rindex sbrk \
-                  setenv sigsetmask snprintf stpcpy stpncpy strcasecmp \
-                  strchr strcspn strdup strerror strlen strncasecmp strndup \
-                  strpbrk strrchr strsignal strspn strstr strtod strtol \
-                  strtoul strverscmp sysconf sysctl sysmp system table \
-                  times tmpnam vasprintf vfprintf vprintf vsnprintf \
-                  vsprintf wait3 wait4 waitpid])
+                  gettext gettimeofday getwd index insque memchr memcmp \
+                  memcpy memmove mempcpy memset mkdir mkstemps on_exit \
+                  pathconf psignal pstat_getdynamic pstat_getstatic \
+                  putenv random realpath re_comp regcomp rename rindex \
+                  rmdir sbrk setenv sigsetmask snprintf stpcpy stpncpy \
+                  strcasecmp strchr strcspn strdup strerror strlen \
+                  strncasecmp strndup strpbrk strrchr strsignal strspn \
+                  strstr strtod strtol strtoul strverscmp sysconf sysctl \
+                  sysmp system table times tmpnam utime vasprintf \
+                  vfprintf vprintf vsnprintf vsprintf wait3 wait4 waitpid])
   AC_CHECK_DECLS([basename, ffs, asprintf, vasprintf, snprintf, vsnprintf])
   AC_CHECK_DECLS([sys_siglist])
   AC_DEFINE([HAVE_SYS_ERRLIST],[1],[Define if you have the sys_errlist variable.])
@@ -563,7 +574,7 @@ if test -z "${setobjs}"; then
       # provides from our shell variables, so that they appear to be
       # missing.
 
-      # DJ - only if we are *building* cygwin, not just building *with* cygwin
+      #DJ: only if we are *building* cygwin, not just building *with* it
   
       if test -n "${with_target_subdir}"
       then
@@ -691,6 +702,25 @@ LIBOBJS="$L"
 
 AC_ARG_VAR([PICFLAG],[If you know what flags to set for compiling with PIC, you can try setting them with this variable (unsupported)])
 AC_SUBST([PICFLAG])
+
+MMALLOC_CFLAGS=
+MMALLOC=
+AC_SUBST([MMALLOC_CFLAGS])
+AC_SUBST([MMALLOC])
+
+AC_ARG_WITH([mmalloc],
+[AS_HELP_STRING([--with-mmalloc],[Use memory mapped malloc package])],
+[case "${withval}" in
+  yes)  want_mmalloc=true ;;
+  no)   want_mmalloc=false;;
+  *)    AC_MSG_ERROR([bad value ${withval} for libiberty with-mmalloc option]) ;;
+esac],[want_mmalloc=false])dnl
+
+if test "x${want_mmalloc}" = "xtrue"; then
+   AC_DEFINE([USE_MMALLOC],[1],[Define to 1 to use mmalloc])
+   MMALLOC_CFLAGS="-I${srcdir}/../mmalloc"
+   MMALLOC='../mmalloc/libmmalloc.a'
+fi
 
 # We need multilib support, but only if configuring for the target.
 AC_CONFIG_FILES([Makefile testsuite/Makefile])

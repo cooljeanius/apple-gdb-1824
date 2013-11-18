@@ -4,8 +4,8 @@
  *
  * Public-domain implementation of ANSI C library routine.
  *
- * It's written in old-style C for maximal portability.
- * However, since I'm used to prototypes, I've included them too.
+ * It is written in old-style C for maximal portability.
+ * However, since I am used to prototypes, I have included them too.
  *
  * If you want stuff in the System V ascftime routine, add the SYSV_EXT define.
  * For extensions from SunOS, add SUNOS_EXT.
@@ -16,7 +16,7 @@
  * The code for %c, %x, and %X now follows the 1003.2 specification for
  * the POSIX locale.
  * This version ignores LOCALE information.
- * It also doesn't worry about multi-byte characters.
+ * It also does NOT worry about multi-byte characters.
  * So there.
  *
  * This file is also shipped with GAWK (GNU Awk), gawk specific bits of
@@ -70,33 +70,30 @@
 #  include <sys/time.h>
 # else
 #  include <time.h>
-# endif
-#endif
-
-
+# endif /* HAVE_SYS_TIME_H */
+#endif /* TIME_WITH_SYS_TIME */
 
 #include <sys/types.h>
 
 #define SYSV_EXT	1	/* stuff in System V ascftime routine */
 #define POSIX2_DATE	1	/* stuff in Posix 1003.2 date command */
 
-#if defined(POSIX2_DATE) && ! defined(SYSV_EXT)
-#define SYSV_EXT	1
-#endif
+#if defined(POSIX2_DATE) && !defined(SYSV_EXT)
+# define SYSV_EXT	1
+#endif /* POSIX2_DATE && !SYSV_EXT */
 
 #if defined(POSIX2_DATE)
-#define adddecl(stuff)	stuff
+# define adddecl(stuff)	stuff
 #else
-#define adddecl(stuff)
-#endif
+# define adddecl(stuff)
+#endif /* POSIX2_DATE */
 
 #ifndef __STDC__
-#define const
-
+# define const
 extern char *getenv();
 static int weeknumber();
 adddecl(static int iso8601wknum();)
-#else
+#else /* !__STDC__ */
 
 #ifndef strchr
 extern char *strchr(const char *str, int ch);
@@ -104,7 +101,7 @@ extern char *strchr(const char *str, int ch);
 extern char *getenv(const char *v);
 static int weeknumber(const struct tm *timeptr, int firstweekday);
 adddecl(static int iso8601wknum(const struct tm *timeptr);)
-#endif
+#endif /* !strchr */
 
 /* attempt to use strftime to compute timezone, else fallback to */
 /* less portable ways */
@@ -154,14 +151,14 @@ Tcl_DString *dstring;
 #else
 /*exp_strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr)*/
 exp_strftime(char *format, const struct tm *timeptr,Tcl_DString *dstring)
-#endif
+#endif /* !__STDC__ */
 {
 	int copied;	/* used to suppress copying when called recursively */
 
 #if 0
 	char *endp = s + maxsize;
 	char *start = s;
-#endif
+#endif /* 0 */
 	char *percentptr;
 
 	char tbuf[100];
@@ -204,14 +201,14 @@ exp_strftime(char *format, const struct tm *timeptr,Tcl_DString *dstring)
 			*s++ = *format;
 			continue;
 		}
-#endif
+#endif /* 0 */
 	again:
 		switch (*++format) {
 		case '\0':
 			Tcl_DStringAppend(dstring,"%",1);
 #if 0
 			*s++ = '%';
-#endif
+#endif /* 0 */
 			goto out;
 
 		case '%':
@@ -221,7 +218,7 @@ exp_strftime(char *format, const struct tm *timeptr,Tcl_DString *dstring)
 #if 0
 			*s++ = '%';
 			continue;
-#endif
+#endif /* 0 */
 
 		case 'a':	/* abbreviated weekday name */
 			if (timeptr->tm_wday < 0 || timeptr->tm_wday > 6)
@@ -239,7 +236,7 @@ exp_strftime(char *format, const struct tm *timeptr,Tcl_DString *dstring)
 
 #ifdef SYSV_EXT
 		case 'h':	/* abbreviated month name */
-#endif
+#endif /* SYSV_EXT */
 		case 'b':	/* abbreviated month name */
 			if (timeptr->tm_mon < 0 || timeptr->tm_mon > 11)
 				strcpy(tbuf, "?");
@@ -405,7 +402,7 @@ exp_strftime(char *format, const struct tm *timeptr,Tcl_DString *dstring)
 			copied = 1;
 /*			exp_strftime(tbuf, sizeof tbuf, "%H:%M:%S", timeptr);*/
 			break;
-#endif
+#endif /* SYSV_EXT */
 
 #ifdef POSIX2_DATE
 		case 'C':
@@ -426,7 +423,7 @@ exp_strftime(char *format, const struct tm *timeptr,Tcl_DString *dstring)
 			sprintf(tbuf, "%d", timeptr->tm_wday == 0 ? 7 :
 					timeptr->tm_wday);
 			break;
-#endif	/* POSIX2_DATE */
+#endif /* POSIX2_DATE */
 		default:
 			tbuf[0] = '%';
 			tbuf[1] = *format;
@@ -443,7 +440,7 @@ exp_strftime(char *format, const struct tm *timeptr,Tcl_DString *dstring)
 				s += i;
 			} else
 				return 0;
-#endif
+#endif /* 0 */
 	}
 out:;
 #if 0
@@ -452,7 +449,7 @@ out:;
 		return (s - start);
 	} else
 		return 0;
-#endif
+#endif /* 0 */
 }
 
 /* isleap --- is a year a leap year? */
@@ -464,22 +461,21 @@ int year;
 #else
 static int
 isleap(int year)
-#endif
+#endif /* !__STDC__ */
 {
 	return ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0);
 }
 
 #ifdef POSIX2_DATE
 /* iso8601wknum --- compute week number according to ISO 8601 */
-
-#ifndef __STDC__
+# ifndef __STDC__
 static int
 iso8601wknum(timeptr)
 const struct tm *timeptr;
-#else
+# else
 static int
 iso8601wknum(const struct tm *timeptr)
-#endif
+# endif /* !__STDC__ */
 {
 	/*
 	 * From 1003.2:
@@ -490,7 +486,7 @@ iso8601wknum(const struct tm *timeptr)
 	 *
 	 * ADR: This means if Jan 1 was Monday through Thursday,
 	 *	it was week 1, otherwise week 53.
-	 * 
+	 *
 	 * XPG4 erroneously included POSIX.2 rationale text in the
 	 * main body of the standard. Thus it requires week 53.
 	 */
@@ -519,7 +515,7 @@ iso8601wknum(const struct tm *timeptr)
 
 	/*
 	 * If Jan 1 was a Monday through Thursday, it was in
-	 * week 1.  Otherwise it was last year's highest week, which is
+	 * week 1. Otherwise it was last year's highest week, which is
 	 * this year's week 0.
 	 *
 	 * What does that mean?
@@ -542,10 +538,10 @@ iso8601wknum(const struct tm *timeptr)
 	case 6:		/* Saturday */
 	case 0:		/* Sunday */
 		if (weeknum == 0) {
-#ifdef USE_BROKEN_XPG4
+# ifdef USE_BROKEN_XPG4
 			/* XPG4 (as of March 1994) says 53 unconditionally */
 			weeknum = 53;
-#else
+# else
 			/* get week number of last week of last year */
 			struct tm dec31ly;	/* 12/31 last year */
 			dec31ly = *timeptr;
@@ -555,7 +551,7 @@ iso8601wknum(const struct tm *timeptr)
 			dec31ly.tm_wday = (jan1day == 0) ? 6 : jan1day - 1;
 			dec31ly.tm_yday = 364 + isleap(dec31ly.tm_year + 1900);
 			weeknum = iso8601wknum(& dec31ly);
-#endif
+# endif /* USE_BROKEN_XPG4 */
 		}
 		break;
 	}
@@ -584,7 +580,7 @@ iso8601wknum(const struct tm *timeptr)
 
 	return weeknum;
 }
-#endif
+#endif /* POSIX2_DATE */
 
 /* weeknumber --- figure how many weeks into the year */
 
@@ -598,7 +594,7 @@ int firstweekday;
 #else
 static int
 weeknumber(const struct tm *timeptr, int firstweekday)
-#endif
+#endif /* !__STDC__ */
 {
 	int wday = timeptr->tm_wday;
 	int ret;
@@ -614,3 +610,5 @@ weeknumber(const struct tm *timeptr, int firstweekday)
 		ret = 0;
 	return ret;
 }
+
+/* EOF */

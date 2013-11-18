@@ -10,14 +10,36 @@ would appreciate credit if this program or parts of it are used.
 
 #include "expect_cf.h"
 #include "tcl.h"
-#ifdef NO_STDLIB_H
-#include "../compat/stdlib.h"
+#include <stdio.h>
+#ifdef HAVE_STRING_H
+# include <string.h>
 #else
-#include <stdlib.h>		/* for malloc */
-#endif
+# ifdef HAVE_STRINGS_H
+#  include <strings.h>
+# else
+#  warning exp_printify.c expects a string-related header to be included.
+# endif /* HAVE_STRINGS_H */
+#endif /* HAVE_STRING_H */
+#ifdef NO_STDLIB_H
+# include "../compat/stdlib.h"
+#else
+# ifdef HAVE_STDLIB_H
+#  include <stdlib.h>		/* for malloc */
+# else
+#  ifdef HAVE_MALLOC_H
+#   include <malloc.h>
+#  else
+#   ifdef HAVE_MALLOC_MALLOC_H
+#    include <malloc/malloc.h>
+#   else
+#    warning exp_printify.c expects a header that provides malloc() to be included.
+#   endif /* HAVE_MALLOC_MALLOC_H */
+#  endif /* HAVE_MALLOC_H */
+# endif /* HAVE_STDLIB_H */
+#endif /*NO_STDLIB_H*/
 #include <ctype.h>
 
-/* generate printable versions of random ASCII strings.  Primarily used */
+/* generate printable versions of random ASCII strings. Primarily used */
 /* by cmdExpect when -d forces it to print strings it is examining. */
 char *
 exp_printify(s)
@@ -54,3 +76,5 @@ char *s;
 	*d = '\0';
 	return(dest);
 }
+
+/* EOF */

@@ -20471,7 +20471,7 @@ elif test -e libgettext.h -a ! -e ${srcdir}/libintl.h; then
   ln -sv libgettext.h ${srcdir}/libintl.h
 fi
 
-ac_config_files="$ac_config_files Makefile Makefile.orig po/Makefile.in po/Makevars"
+ac_config_files="$ac_config_files Makefile Makefile.orig po/Makefile.in po/Makevars po2tbl.sed"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -21612,6 +21612,7 @@ do
     "Makefile.orig") CONFIG_FILES="$CONFIG_FILES Makefile.orig" ;;
     "po/Makefile.in") CONFIG_FILES="$CONFIG_FILES po/Makefile.in" ;;
     "po/Makevars") CONFIG_FILES="$CONFIG_FILES po/Makevars" ;;
+    "po2tbl.sed") CONFIG_FILES="$CONFIG_FILES po2tbl.sed" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

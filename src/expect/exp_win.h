@@ -2,7 +2,7 @@
 
 Written by: Don Libes, NIST, 10/25/93
 
-This file is in the public domain.  However, the author and NIST
+This file is in the public domain. However, the author and NIST
 would appreciate credit if you use this file or parts of it.
 */
 
@@ -18,3 +18,5 @@ void exp_win2_rows_set();
 void exp_win2_rows_get();
 void exp_win2_columns_set();
 void exp_win2_columns_get();
+
+/* EOF */

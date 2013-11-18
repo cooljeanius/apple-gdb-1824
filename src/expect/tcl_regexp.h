@@ -1,4 +1,4 @@
-/*
+/* tcl_regexp.h
  * Definitions etc. for regexp(3) routines.
  *
  * Caveat:  this is V8 regexp(3) [actually, a reimplementation thereof],
@@ -35,3 +35,4 @@ EXTERN char *Expect_TclGetRegError _ANSI_ARGS_((void));
 
 #endif /* TCL_REGEXP */
 
+/* EOF */

@@ -6,29 +6,35 @@
 #include "string.h"
 
 #ifdef HAVE_SYS_FCNTL_H
-#  include <sys/fcntl.h>
+# include <sys/fcntl.h>
 #else
-#  include <fcntl.h>
-#endif
+# include <fcntl.h>
+#endif /* HAVE_SYS_FCNTL_H */
 
 #include <sys/stat.h>
 
 #ifdef HAVE_INTTYPES_H
-#  include <inttypes.h>
-#endif
+# include <inttypes.h>
+#else
+# warning exp_tty.c expects <inttypes.h> to be included.
+#endif /* HAVE_INTTYPES_H */
 #include <sys/types.h>
 
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
-#endif
+#else
+# warning exp_tty.c expects <unistd.h> to be included.
+#endif /* HAVE_UNISTD_H */
 
 #ifdef HAVE_SYS_WAIT_H
-#include <sys/wait.h>
-#endif
+# include <sys/wait.h>
+#else
+# warning exp_tty.c expects <sys/wait.h> to be included.
+#endif /* HAVE_SYS_WAIT_H */
 
 #if defined(SIGCLD) && !defined(SIGCHLD)
-#define SIGCHLD SIGCLD
-#endif
+# define SIGCHLD SIGCLD
+#endif /* SIGCLD && !SIGCHLD */
 
 #include "tcl.h"
 #include "exp_prog.h"
@@ -83,16 +89,16 @@ int set;
 		tty_current.c_cc[VMIN] = tty_cooked.c_cc[VMIN];
 		tty_current.c_cc[VTIME] = tty_cooked.c_cc[VTIME];
 #else
-#  if defined(HAVE_SGTTYB)
+# if defined(HAVE_SGTTYB)
 		tty_current.sg_flags |= RAW;
 	} else {
 		tty_current.sg_flags = tty_cooked.sg_flags;
-#  endif
-#endif
+# endif /* HAVE_SGTTYB */
+#endif /* HAVE_TERMIOS || HAVE_TERMIO */
 		is_raw = FALSE;
 	}
 }
-	
+
 void
 exp_tty_echo(set)
 int set;
@@ -107,7 +113,7 @@ int set;
 		tty_current.sg_flags |= ECHO;
 	} else {
 		tty_current.sg_flags &= ~ECHO;
-#endif
+#endif /* HAVE_TERMIOS || HAVE_TERMIO */
 		is_noecho = TRUE;
 	}
 }
@@ -120,7 +126,7 @@ exp_tty *tty;
 	return(tcsetattr(exp_dev_tty, TCSADRAIN,tty));
 #else
 	return(ioctl    (exp_dev_tty, TCSETSW  ,tty));
-#endif
+#endif /* HAVE_TCSETATTR */
 }
 
 int
@@ -131,7 +137,7 @@ exp_tty *tty;
 	return(tcgetattr(exp_dev_tty,         tty));
 #else
 	return(ioctl    (exp_dev_tty, TCGETS, tty));
-#endif
+#endif /* HAVE_TCSETATTR */
 }
 
 /* returns 0 if nothing changed */
@@ -208,7 +214,7 @@ int echo;
 	tty_current = *tty;
 	debuglog("tty_set: raw = %d, echo = %d\r\n",is_raw,!is_noecho);
 	exp_ioctled_devtty = TRUE;
-}	
+}
 
 #if 0
 /* avoids scoping problems */
@@ -226,7 +232,7 @@ int
 exp_update_current_from_real_tty() {
 	return(exp_tty_get_simple(&tty_current));
 }
-#endif
+#endif /* 0 */
 
 void
 exp_init_stdio()
@@ -252,11 +258,11 @@ int fd;
 	ioctl(fd,TIOCCBRK,0);
 # else
 	/* dunno how to do this - ignore */
-# endif
-#endif
+# endif /* TIOCSBRK */
+#endif /* POSIX */
 }
 
-/* take strings with newlines and insert carriage-returns.  This allows user */
+/* take strings with newlines and insert carriage-returns. This allows user */
 /* to write send_user strings without always putting in \r. */
 /* If len == 0, use strlen to compute it */
 /* NB: if terminal is not in raw mode, nothing is done. */
@@ -323,34 +329,34 @@ int devtty;		/* if true, redirect to /dev/tty */
 		">/dev/tty";
 #else
 		"</dev/tty";
-#endif
+#endif /* STTY_READS_STDOUT */
 
 	new_argv[i+1] = (char *)0;
 
 	Tcl_ResetResult(interp);
 
-	/* normally, I wouldn't set one of Tcl's own variables, but in this */
+	/* normally, I would NOT set one of Tcl's own variables, but in this */
 	/* case, I only only want to see if Tcl resets it to non-NONE, */
-	/* and I don't know any other way of doing it */
+	/* and I do NOT know any other way of doing it */
 	Tcl_SetVar(interp,"errorCode","NONE",0);
 
 #if (TCL_MAJOR_VERSION == 8) && (TCL_MINOR_VERSION < 3)
 	rc = Tcl_ExecCmd((ClientData)0,interp,argc+1+devtty,new_argv);
 #else
 	rc = Tcl_ExecObjCmd((ClientData)0,interp,argc+1+devtty,Tcl_NewStringObj(new_argv,-1));
-#endif
+#endif /* Tcl < 8.3 */
 	ckfree((char *)new_argv);
 
 	/* if stty-reads-stdout, stty will fail since Exec */
 	/* will detect the stderr.  Only by examining errorCode */
-	/* can we tell if a real error occurred. */	
+	/* can we tell if a real error occurred. */
 
 #ifdef STTY_READS_STDOUT
 	if (rc == TCL_ERROR) {
 		char *ec = Tcl_GetVar(interp,"errorCode",TCL_GLOBAL_ONLY);
 		if (ec && !streq(ec,"NONE")) return TCL_ERROR;
 	}
-#endif
+#endif /* STTY_READS_STDOUT */
 	return TCL_OK;
 }
 
@@ -395,7 +401,7 @@ char **argv;
 			} else {
 				master = exp_trap_off(infile);
 				if (-1 == (fd = open(infile,2))) {
-					errorlog("couldn't open %s: %s",
+					errorlog("could not open %s: %s",
 					 infile,Tcl_PosixError(interp));
 					return TCL_ERROR;
 				}
@@ -471,7 +477,7 @@ char **argv;
 			    if (exp_disconnected || (exp_dev_tty == -1) || !isatty(exp_dev_tty)) {
 				errorlog("stty: impossible in this context\n");
 				errorlog("are you disconnected or in a batch, at, or cron script?");
-				/* user could've conceivably closed /dev/tty as well */
+				/* user could have conceivably closed /dev/tty as well */
 			    }
 			    exp_error(interp,"stty: ioctl(user): %s\r\n",Tcl_PosixError(interp));
 			    rc = TCL_ERROR;
@@ -530,12 +536,12 @@ char **argv;
 			char original_redirect_char = (*redirect)[0];
 			(*redirect)[0] = '>';
 			/* stderr unredirected so we can get it directly! */
-#endif
+#endif /* STTY_READS_STDOUT */
 			rc = exec_stty(interp,argc,argv0,0);
 #ifdef STTY_READS_STDOUT
-			/* restore redirect - don't know if necessary */
+			/* restore redirect - do NOT know if necessary */
 			(*redirect)[0] = original_redirect_char;
-#endif
+#endif /* STTY_READS_STDOUT */
 		}
 	}
  done:
@@ -604,11 +610,11 @@ char **argv;
  			if (tcsetattr(exp_dev_tty,TCSADRAIN, &tty_current) == -1) {
 #else
 		        if (ioctl(exp_dev_tty, TCSETSW, &tty_current) == -1) {
-#endif
+#endif /* HAVE_TCSETATTR */
 			    if (exp_disconnected || (exp_dev_tty == -1) || !isatty(exp_dev_tty)) {
 				errorlog("system stty: impossible in this context\n");
 				errorlog("are you disconnected or in a batch, at, or cron script?");
-				/* user could've conceivably closed /dev/tty as well */
+				/* user could have conceivably closed /dev/tty as well */
 			    }
 			    exp_error(interp,"system stty: ioctl(user): %s\r\n",Tcl_PosixError(interp));
 			    return(TCL_ERROR);
@@ -654,7 +660,7 @@ char **argv;
 		if (tcgetattr(exp_dev_tty, &tty_current) == -1) {
 #else
 	        if (ioctl(exp_dev_tty, TCGETS, &tty_current) == -1) {
-#endif
+#endif /* HAVE_TCSETATTR */
 			errorlog("ioctl(get): %s\r\n",Tcl_PosixError(interp));
 			exp_exit(interp,1);
 		}
@@ -671,49 +677,42 @@ char **argv;
 	}
 
 /* following macros stolen from Tcl's tclUnix.h file */
-/* we can't include the whole thing because it depends on other macros */
+/* we cannot include the whole thing because it depends on other macros */
 /* that come out of Tcl's Makefile, sigh */
 
 #if 0
-
-#undef WIFEXITED
-#ifndef WIFEXITED
-#   define WIFEXITED(stat)  (((*((int *) &(stat))) & 0xff) == 0)
-#endif
-
-#undef WEXITSTATUS
-#ifndef WEXITSTATUS
-#   define WEXITSTATUS(stat) (((*((int *) &(stat))) >> 8) & 0xff)
-#endif
-
-#undef WIFSIGNALED
-#ifndef WIFSIGNALED
-#   define WIFSIGNALED(stat) (((*((int *) &(stat)))) && ((*((int *) &(stat))) == ((*((int *) &(stat))) & 0x00ff)))
-#endif
-
-#undef WTERMSIG
-#ifndef WTERMSIG
-#   define WTERMSIG(stat)    ((*((int *) &(stat))) & 0x7f)
-#endif
-
-#undef WIFSTOPPED
-#ifndef WIFSTOPPED
-#   define WIFSTOPPED(stat)  (((*((int *) &(stat))) & 0xff) == 0177)
-#endif
-
-#undef WSTOPSIG
-#ifndef WSTOPSIG
-#   define WSTOPSIG(stat)    (((*((int *) &(stat))) >> 8) & 0xff)
-#endif
-
+# undef WIFEXITED
+# ifndef WIFEXITED
+#  define WIFEXITED(stat)  (((*((int *) &(stat))) & 0xff) == 0)
+# endif /* WIFEXITED */
+# undef WEXITSTATUS
+# ifndef WEXITSTATUS
+#  define WEXITSTATUS(stat) (((*((int *) &(stat))) >> 8) & 0xff)
+# endif /* WEXITSTATUS */
+# undef WIFSIGNALED
+# ifndef WIFSIGNALED
+#  define WIFSIGNALED(stat) (((*((int *) &(stat)))) && ((*((int *) &(stat))) == ((*((int *) &(stat))) & 0x00ff)))
+# endif /* WIFSIGNALED */
+# undef WTERMSIG
+# ifndef WTERMSIG
+#  define WTERMSIG(stat)    ((*((int *) &(stat))) & 0x7f)
+# endif /* !WTERMSIG */
+# undef WIFSTOPPED
+# ifndef WIFSTOPPED
+#  define WIFSTOPPED(stat)  (((*((int *) &(stat))) & 0xff) == 0177)
+# endif /* WIFSTOPPED */
+# undef WSTOPSIG
+# ifndef WSTOPSIG
+#  define WSTOPSIG(stat)    (((*((int *) &(stat))) >> 8) & 0xff)
+# endif /* WSTOPSIG */
 #endif /* 0 */
 
 /* stolen from Tcl.    Again, this is embedded in another routine */
-/* (CleanupChildren in tclUnixAZ.c) that we can't use directly. */
+/* (CleanupChildren in tclUnixAZ.c) that we cannot use directly. */
 
 	if (!WIFEXITED(waitStatus) || (WEXITSTATUS(waitStatus) != 0)) {
 	    char msg1[20], msg2[20];
-	    int pid = 0;	/* fake a pid, since system() won't tell us */ 
+	    int pid = 0;	/* fake a pid, since system() will NOT tell us */
 
 	    result = TCL_ERROR;
 	    sprintf(msg1, "%d", pid);
@@ -724,7 +723,7 @@ char **argv;
 		abnormalExit = TRUE;
 	    } else if (WIFSIGNALED(waitStatus)) {
 		char *p;
-	
+
 		p = Tcl_SignalMsg((int) (WTERMSIG(waitStatus)));
 		Tcl_SetErrorCode(interp, "CHILDKILLED", msg1,
 			Tcl_SignalId((int) (WTERMSIG(waitStatus))), p,
@@ -741,7 +740,7 @@ char **argv;
 			(char *) NULL);
 	    } else {
 		Tcl_AppendResult(interp,
-			"child wait status didn't make sense\n",
+			"child wait status did not make sense\n",
 			(char *) NULL);
 	    }
 	}
@@ -766,3 +765,5 @@ struct Tcl_Interp *interp;
 {
 	exp_create_commands(interp,cmd_data);
 }
+
+/* EOF */

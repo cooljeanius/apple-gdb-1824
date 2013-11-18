@@ -52,6 +52,7 @@ AC_CONFIG_FILES([Makefile])
 AC_CONFIG_SUBDIRS([bfd
                    binutils
                    dejagnu
+                   electric-fence
                    etc
                    expect
                    gdb

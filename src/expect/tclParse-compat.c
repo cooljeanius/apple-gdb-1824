@@ -2,7 +2,7 @@
 /* Expect depends on these Tcl functions, which have been removed
    in the latest version of Tcl/Tk 8.3. */
 
-/* 
+/*
  * tclParse.c --
  *
  *      This file contains a collection of procedures that are used
@@ -36,8 +36,8 @@ static char *ScriptEnd(char *p, char *lastChar, int nested);
  *	word of the command.
  *
  * Results:
- *	The return value is a pointer to the last character that's part
- *	of the word pointed to by "start".  If the word doesn't end
+ *	The return value is a pointer to the last character that is/was part
+ *	of the word pointed to by "start". If the word does NOT end
  *	properly within the string then the return value is the address
  *	of the null character at the end of the string.
  *
@@ -52,11 +52,11 @@ TclWordEnd(start, lastChar, nested, semiPtr)
     char *start;		/* Beginning of a word of a Tcl command. */
     char *lastChar;		/* Terminating character in string. */
     int nested;			/* Zero means this is a top-level command.
-				 * One means this is a nested command (close
-				 * bracket is a word terminator). */
+				         * One means this is a nested command (close
+				         * bracket is a word terminator). */
     int *semiPtr;		/* Set to 1 if word ends with a command-
-				 * terminating semi-colon, zero otherwise.
-				 * If NULL then ignored. */
+				         * terminating semi-colon, zero otherwise.
+				         * If NULL then ignored. */
 {
     register char *p;
     int count;
@@ -114,10 +114,10 @@ TclWordEnd(start, lastChar, nested, semiPtr)
     }
 
     /*
-     * Handle words that don't start with a brace or double-quote.
+     * Handle words that do NOT start with a brace or double-quote.
      * This code is also invoked if the word starts with a brace or
      * double-quote and there is garbage after the closing brace or
-     * quote.  This is an error as far as Tcl_Eval is concerned, but
+     * quote. This is an error as far as Tcl_Eval is concerned, but
      * for here the garbage is treated as part of the word.
      */
 
@@ -131,7 +131,7 @@ TclWordEnd(start, lastChar, nested, semiPtr)
 	} else if (*p == '\\') {
 	    if (p[1] == '\n') {
 		/*
-		 * Backslash-newline:  it maps to a space character
+		 * Backslash-newline: it maps to a space character
 		 * that is a word separator, so the word ends just before
 		 * the backslash.
 		 */
@@ -162,7 +162,7 @@ TclWordEnd(start, lastChar, nested, semiPtr)
 	} else if (p == lastChar) {
 	    if (nested) {
 		/*
-		 * Nested commands can't end because of the end of the
+		 * Nested commands cannot end because of the end of the
 		 * string.
 		 */
 		return p;
@@ -186,8 +186,8 @@ TclWordEnd(start, lastChar, nested, semiPtr)
  *
  * Results:
  *	The return value is a pointer to the last character that is
- *	part of the quoted string (i.e the character that's equal to
- *	term).  If the quoted string doesn't terminate properly then
+ *	part of the quoted string (i.e the character that is equal to
+ *	term). If the quoted string doesn't terminate properly then
  *	the return value is a pointer to the null character at the
  *	end of the string.
  *
@@ -200,10 +200,10 @@ TclWordEnd(start, lastChar, nested, semiPtr)
 static char *
 QuoteEnd(string, lastChar, term)
     char *string;		/* Pointer to character just after opening
-				 * "quote". */
+						 * "quote". */
     char *lastChar;		/* Terminating character in string. */
     int term;			/* This character will terminate the
-				 * quoted string (e.g. '"' or ')'). */
+				         * quoted string (e.g. '"' or ')'). */
 {
     register char *p = string;
     int count;
@@ -287,8 +287,8 @@ VarNameEnd(string, lastChar)
  *	the script.
  *
  * Results:
- *	The return value is a pointer to the last character that's part
- *	of the script pointed to by "p".  If the command doesn't end
+ *	The return value is a pointer to the last character that is/was part
+ *	of the script pointed to by "p". If the command does NOT end
  *	properly within the string then the return value is the address
  *	of the null character at the end of the string.
  *
@@ -303,9 +303,9 @@ ScriptEnd(p, lastChar, nested)
     char *p;			/* Script to check. */
     char *lastChar;		/* Terminating character in string. */
     int nested;			/* Zero means this is a top-level command.
-				 * One means this is a nested command (the
-				 * last character of the script must be
-				 * an unquoted ]). */
+				         * One means this is a nested command (the
+				         * last character of the script must be
+				         * an unquoted ]). */
 {
     int commentOK = 1;
     int length;
@@ -322,7 +322,7 @@ ScriptEnd(p, lastChar, nested)
 		if (*p == '\\') {
 		    /*
 		     * If the script ends with backslash-newline, then
-		     * this command isn't complete.
+		     * this command is NOT complete.
 		     */
 
 		    if ((p[1] == '\n') && (p+2 == lastChar)) {
@@ -354,3 +354,5 @@ ScriptEnd(p, lastChar, nested)
 }
 
 #endif /* Tcl8.3 and above. */
+
+/* EOF */

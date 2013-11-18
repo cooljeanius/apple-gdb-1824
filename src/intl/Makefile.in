@@ -99,12 +99,12 @@ DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog \
 	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) acconfig.h \
 	$(srcdir)/config.h.in $(top_srcdir)/../mkinstalldirs \
-	$(srcdir)/Makefile.orig.in ABOUT-NLS $(include_HEADERS) \
-	COPYING config.rpath $(top_srcdir)/../ar-lib \
-	$(top_srcdir)/../compile $(top_srcdir)/../config.guess \
-	$(top_srcdir)/../config.rpath $(top_srcdir)/../config.sub \
-	$(top_srcdir)/../install-sh $(top_srcdir)/../ltmain.sh \
-	$(top_srcdir)/../missing
+	$(srcdir)/Makefile.orig.in $(srcdir)/po2tbl.sed.in ABOUT-NLS \
+	$(include_HEADERS) COPYING config.rpath \
+	$(top_srcdir)/../ar-lib $(top_srcdir)/../compile \
+	$(top_srcdir)/../config.guess $(top_srcdir)/../config.rpath \
+	$(top_srcdir)/../config.sub $(top_srcdir)/../install-sh \
+	$(top_srcdir)/../ltmain.sh $(top_srcdir)/../missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/gettext.m4 \
 	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/intlmacosx.m4 \
@@ -121,7 +121,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(SHELL) $(top_srcdir)/../mkinstalldirs
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = Makefile.orig
+CONFIG_CLEAN_FILES = Makefile.orig po2tbl.sed
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -507,6 +507,8 @@ $(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps) $(top_srcdir
 distclean-hdr:
 	-rm -f config.h stamp-h1
 Makefile.orig: $(top_builddir)/config.status $(srcdir)/Makefile.orig.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+po2tbl.sed: $(top_builddir)/config.status $(srcdir)/po2tbl.sed.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 mostlyclean-libtool:

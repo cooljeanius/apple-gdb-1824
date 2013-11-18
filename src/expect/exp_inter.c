@@ -3,7 +3,7 @@
 Written by: Don Libes, NIST, 2/6/90
 
 Design and implementation of this program was paid for by U.S. tax
-dollars.  Therefore it is public domain.  However, the author and NIST
+dollars. Therefore it is public domain. However, the author and NIST
 would appreciate credit if this program or parts of it are used.
 
 */
@@ -11,12 +11,16 @@ would appreciate credit if this program or parts of it are used.
 #include "expect_cf.h"
 #include <stdio.h>
 #ifdef HAVE_INTTYPES_H
-#  include <inttypes.h>
-#endif
+# include <inttypes.h>
+#else
+# warning exp_inter.c expects <inttypes.h> to be included.
+#endif /* HAVE_INTTYPES_H */
 #include <sys/types.h>
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
-#endif
+#else
+# warning exp_inter.c expects <unistd.h> to be included.
+#endif /* HAVE_UNISTD_H */
 
 #ifdef TIME_WITH_SYS_TIME
 # include <sys/time.h>
@@ -26,12 +30,14 @@ would appreciate credit if this program or parts of it are used.
 #  include <sys/time.h>
 # else
 #  include <time.h>
-# endif
-#endif
-  
+# endif /* HAVE_SYS_TIME_H */
+#endif /* TIME_WITH_SYS_TIME */
+
 #ifdef HAVE_SYS_WAIT_H
-#include <sys/wait.h>
-#endif
+# include <sys/wait.h>
+#else
+# warning exp_inter.c expects <sys/wait.h> to be included.
+#endif /* HAVE_SYS_WAIT_H */
 
 #include <ctype.h>
 
@@ -59,16 +65,16 @@ extern void Expect_TclRegError();
  * these tests are currently only used to control what gets written to the
  * logfile.  Note that removal of the test of "..._is_tty" means that stdin
  * or stdout could be redirected and yet stdout would still be logged.
- * However, it's not clear why anyone would use log_file when these are
+ * However, it is not clear why anyone would use log_file when these are
  * redirected in the first place.  On the other hand, it is reasonable to
  * run expect as a daemon in which case, stdin/out do not appear to be
  * ttys, yet it makes sense for them to be logged with log_file as if they
  * were.
  */
 #if 0
-#define real_tty_output(x) (exp_stdout_is_tty && (((x)==1) || ((x)==exp_dev_tty)))
-#define real_tty_input(x) (exp_stdin_is_tty && (((x)==0) || ((x)==exp_dev_tty)))
-#endif
+# define real_tty_output(x) (exp_stdout_is_tty && (((x)==1) || ((x)==exp_dev_tty)))
+# define real_tty_input(x) (exp_stdin_is_tty && (((x)==0) || ((x)==exp_dev_tty)))
+#endif /* 0 */
 
 #define real_tty_output(x) (((x)==1) || ((x)==exp_dev_tty))
 #define real_tty_input(x) (exp_stdin_is_tty && (((x)==0) || ((x)==exp_dev_tty)))
@@ -121,8 +127,8 @@ static struct action *new_action();
 static int inter_eval();
 
 /* in_keymap() accepts user keystrokes and returns one of MATCH,
-CANMATCH, or CANTMATCH.  These describe whether the keystrokes match a
-key sequence, and could or can't if more characters arrive.  The
+CANMATCH, or CANTMATCH. These describe whether the keystrokes match a
+key sequence, and could or cannot if more characters arrive. The
 function assigns a matching keymap if there is a match or can-match.
 A matching keymap is assigned on can-match so we know whether to echo
 or not.
@@ -130,21 +136,21 @@ or not.
 in_keymap is optimized (if you can call it that) towards a small
 number of key mappings, but still works well for large maps, since no
 function calls are made, and we stop as soon as there is a single-char
-mismatch, and go on to the next one.  A hash table or compiled DFA
+mismatch, and go on to the next one. A hash table or compiled DFA
 probably would not buy very much here for most maps.
 
 The basic idea of how this works is it does a smart sequential search.
 At each position of the input string, we attempt to match each of the
-keymaps.  If at least one matches, the first match is returned.
+keymaps. If at least one matches, the first match is returned.
 
 If there is a CANMATCH and there are more keymaps to try, we continue
-trying.  If there are no more keymaps to try, we stop trying and
+trying. If there are no more keymaps to try, we stop trying and
 return with an indication of the first keymap that can match.
 
-Note that I've hacked up the regexp pattern matcher in two ways.  One
-is to force the pattern to always be anchored at the front.  That way,
-it doesn't waste time attempting to match later in the string (before
-we're ready).  The other is to return can-match.
+Note that I have hacked up the regexp pattern matcher in two ways. One
+is to force the pattern to always be anchored at the front. That way,
+it does NOT waste time attempting to match later in the string (before
+we are ready). The other is to return can-match.
 
 */
 
@@ -181,8 +187,8 @@ int rm_nulls;			/* skip nulls if true */
 /* skip over nulls - Pascal Meheut, pascal@cnam.cnam.fr 18-May-1993 */
 /*    for (start_search = string;*start_search;start_search++) {*/
     for (start_search = string;start_search<string_end;start_search++) {
-	if (*km_match) break; /* if we've already found a CANMATCH */
-			/* don't bother starting search from positions */
+	if (*km_match) break; /* if we have already found a CANMATCH */
+			/* do NOT bother starting search from positions */
 			/* further along the string */
 
 	for (km=keymap;km;km=km->next) {
@@ -198,7 +204,7 @@ int rm_nulls;			/* skip nulls if true */
 	    } else if (!km->re) {
 		/* fixed string */
 		for (s = start_search,ks = km->keys ;;s++,ks++) {
-			/* if we hit the end of this map, must've matched! */
+			/* if we hit the end of this map, must have matched! */
 			if (*ks == 0) {
 				*skip = start_search-string;
 				*match_length = s-start_search;
@@ -207,7 +213,7 @@ int rm_nulls;			/* skip nulls if true */
 			}
 
 			/* if we ran out of user-supplied characters, and */
-			/* still haven't matched, it might match if the user */
+			/* still have NOT matched, it might match if the user */
 			/* supplies more characters next time */
 
 			if (s == string_end) {
@@ -231,12 +237,12 @@ int rm_nulls;			/* skip nulls if true */
 		int r;	/* regtry status */
 		Expect_regexp *prog = km->re;
 
-		/* if anchored, but we're not at beginning, skip pattern */
+		/* if anchored, but we are not at beginning, skip pattern */
 		if (prog->reganch) {
 			if (string != start_search) continue;
 		}
 
-		/* known starting char - quick test 'fore lotta work */
+		/* known starting char - quick test before lotta work */
 		if (prog->regstart) {
 			/* if this is a problem for you, use exp_parity command */
 /*			/* if ((*start_search & 0x7f) != prog->regstart) continue; */
@@ -280,7 +286,7 @@ int rm_nulls;			/* skip nulls if true */
 		}
 		*match_length = (p - start_search) + 1;
 		/*printf(" match_length = %d\n",*match_length);*/
-#endif
+#endif /* 0 */
 		return(EXP_CANMATCH);
 	}
 
@@ -293,9 +299,9 @@ int rm_nulls;			/* skip nulls if true */
 /*
 
 The way that the "simple" interact works is that the original Expect
-process reads from the tty and writes to the spawned process.  A child
+process reads from the tty and writes to the spawned process. A child
 process is forked to read from the spawned process and write to the
-tty.  It looks like this:
+tty. It looks like this following ASCII-art diagram:
 
                         user
                     --> tty >--
@@ -314,8 +320,8 @@ tty.  It looks like this:
 
 
 #ifndef WEXITSTATUS
-#define WEXITSTATUS(stat) (((*((int *) &(stat))) >> 8) & 0xff)
-#endif
+# define WEXITSTATUS(stat) (((*((int *) &(stat))) >> 8) & 0xff)
+#endif /* !WEXITSTATUS */
 
 #include <setjmp.h>
 
@@ -429,7 +435,7 @@ int *real_tty_caller;
 		/* revalidate all input descriptors */
 		for (fdp = inp->i_list->fd_list;fdp;fdp=fdp->next) {
 			count++;
-			/* have to "adjust" just in case spawn id hasn't had */
+			/* have to "adjust" just in case spawn id has NOT had */
 			/* a buffer sized yet */
 			if (!exp_fd2f(interp,fdp->fd,1,1,"interact"))
 				return(TCL_ERROR);
@@ -494,7 +500,7 @@ int flags;		/* Information about what happened. */
 	exp_configure_count++;
 	return 0;
 }
-			
+
 #define finish(x)	{ status = x; goto done; }
 
 static char return_cmd[] = "return";
@@ -524,11 +530,11 @@ char **argv;
 	int need_to_close_master = FALSE;	/* if an eof is received */
 				/* we use this to defer close until later */
 
-	int next_tty_reset = FALSE;	/* if we've seen a single -reset */
-	int next_iread = FALSE;/* if we've seen a single -iread */
-	int next_iwrite = FALSE;/* if we've seen a single -iread */
-	int next_re = FALSE;	/* if we've seen a single -re */
-	int next_null = FALSE;	/* if we've seen the null keyword */
+	int next_tty_reset = FALSE;	/* if we have seen a single -reset */
+	int next_iread = FALSE;/* if we have seen a single -iread */
+	int next_iwrite = FALSE;/* if we have seen a single -iread */
+	int next_re = FALSE;	/* if we have seen a single -re */
+	int next_null = FALSE;	/* if we have seen the null keyword */
 	int next_writethru = FALSE;/*if macros should also go to proc output */
 	int next_indices = FALSE;/* if we should write indices */
 	int next_echo = FALSE;	/* if macros should be echoed */
@@ -666,7 +672,7 @@ char **argv;
 			next_timestamp = FALSE;
 			continue;
 		} else if (exp_flageq("null",arg,4)) {
-			next_null = TRUE;			
+			next_null = TRUE;
 		} else if (arg[0] == '-') {
 			arg++;
 			if (exp_flageq1('-',arg)		/* "--" */
@@ -840,14 +846,14 @@ char **argv;
 				/* to all descriptors, else just the current one */
 				if (dash_input_count > 0) {
 					timeout_simple = FALSE;
-					action = inp->action_timeout = 
+					action = inp->action_timeout =
 						new_action(&action_base);
 					inp->timeout_nominal = t;
 				} else {
 					action = &action_timeout;
 					default_timeout = t;
 				}
-#endif
+#endif /* 0 */
 				timeout_simple = FALSE;
 				action = inp->action_timeout = new_action(&action_base);
 				inp->timeout_nominal = t;
@@ -952,7 +958,7 @@ char **argv;
 			}
 		}
 		o->i_list = exp_new_i_simple(master,EXP_TEMPORARY);
-#endif
+#endif /* 0 */
 		o->next = 0;	/* no one else */
 		o->action_eof = &action_eof;
 		input_user->output = o;
@@ -1011,12 +1017,12 @@ char **argv;
 			}
 		}
 		input_default->i_list->fd_list->fd = master;
-#endif
+#endif /* 0 */
 	}
 
 	/*
 	 * check for user attempting to interact with self
-	 * they're almost certainly just fooling around
+	 * they are almost certainly just fooling around
 	 */
 
 	/* user could have replaced it with an indirect, so force update */
@@ -1142,7 +1148,7 @@ char **argv;
 		}
 
 		/* at this point, we have some kind of event which can be */
-		/* immediately processed - i.e. something that doesn't block */
+		/* immediately processed - i.e. something that does NOT block */
 
 		/* figure out who we are */
 		inp = fd_to_input[m];
@@ -1215,7 +1221,7 @@ char **argv;
 			/* So for now, indicate no chars to skip. */
 			skip = 0;
 			exp_close(interp,m);
-#endif
+#endif /* EOF_SO */
 			break;
 		case EXP_DATA_OLD:
 			cc = 0;
@@ -1280,7 +1286,7 @@ char **argv;
 		 * dispose of chars that should be skipped
 		 * i.e., chars that cannot possibly be part of a match.
 		 */
-		
+
 		/* "skip" is count of chars not involved in match */
 		/* "print" is count with chars involved in match */
 
@@ -1374,8 +1380,8 @@ char **argv;
 		}
 
 		/* u->printed is now accurate with respect to the buffer */
-		/* However, we're about to shift the old data out of the */
-		/* buffer.  Thus, u->size, printed, and echoed must be */
+		/* However, we are about to shift the old data out of the */
+		/* buffer. Thus, u->size, printed, and echoed must be */
 		/* updated */
 
 		/* first update size based on skip information */
@@ -1408,7 +1414,7 @@ char **argv;
 #else
 		u->buffer[u->size] = '\0';
 		u->lower [u->size] = '\0';
-#endif
+#endif /* EOF_SO */
 
 		/* now update printed based on total amount skipped */
 
@@ -1537,7 +1543,7 @@ got_action:
 		}
 
 		/* at this point, we have some kind of event which can be */
-		/* immediately processed - i.e. something that doesn't block */
+		/* immediately processed - i.e. something that does NOT block */
 
 		/* figure out who we are */
 		inp = fd_to_input[m];
@@ -1641,7 +1647,7 @@ got_action:
 		}
 
 		/* dispose of chars that should be skipped */
-		
+
 		/* skip is chars not involved in match */
 		/* print is with chars involved in match */
 
@@ -1728,8 +1734,8 @@ got_action:
 		}
 
 		/* u->printed is now accurate with respect to the buffer */
-		/* However, we're about to shift the old data out of the */
-		/* buffer.  Thus, u->size, printed, and echoed must be */
+		/* However, we are about to shift the old data out of the */
+		/* buffer. Thus, u->size, printed, and echoed must be */
 		/* updated */
 
 		/* first update size based on skip information */
@@ -1798,8 +1804,8 @@ got_action:
 #include <signal.h>
 
 #if defined(SIGCLD) && !defined(SIGCHLD)
-#define SIGCHLD SIGCLD
-#endif
+# define SIGCHLD SIGCLD
+#endif /* SIGCLD && !SIGCHLD */
 		debuglog("fork = %d\r\n",pid);
 		signal(SIGCHLD,sigchld_handler);
 /*	restart:*/
@@ -1851,7 +1857,7 @@ got_action:
 		}
 
 		/* at this point, we have some kind of event which can be */
-		/* immediately processed - i.e. something that doesn't block */
+		/* immediately processed - i.e. something that does NOT block */
 
 		/* figure out who we are */
 		inp = fd_to_input[m];
@@ -1960,7 +1966,7 @@ got_action:
 		}
 
 		/* dispose of chars that should be skipped */
-		
+
 		/* skip is chars not involved in match */
 		/* print is with chars involved in match */
 
@@ -2052,8 +2058,8 @@ got_action:
 		}
 
 		/* u->printed is now accurate with respect to the buffer */
-		/* However, we're about to shift the old data out of the */
-		/* buffer.  Thus, u->size, printed, and echoed must be */
+		/* However, we are about to shift the old data out of the */
+		/* buffer. Thus, u->size, printed, and echoed must be */
 		/* updated */
 
 		/* first update size based on skip information */
@@ -2149,7 +2155,7 @@ got_action:
 	return(status);
 }
 
-/* version of Tcl_Eval for interact */ 
+/* version of Tcl_Eval for interact */
 static int
 inter_eval(interp,action,spawn_id)
 Tcl_Interp *interp;
@@ -2254,3 +2260,5 @@ Tcl_Interp *interp;
 {
 	exp_create_commands(interp,cmd_data);
 }
+
+/* EOF */

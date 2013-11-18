@@ -255,6 +255,7 @@ AC_CHECK_LIB([iberty],[main])
 AC_CHECK_LIB([gnu],[main])
 
 # Checks for header files.
+AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_CHECK_HEADERS([ctype.h errno.h fcntl.h gettext.h iconv.h libgettext.h \
                   libintl.h limits.h mach/mach.h mach-o/loader.h \
                   malloca.h malloc/malloc.h realloc.h stdarg.h stddef.h \

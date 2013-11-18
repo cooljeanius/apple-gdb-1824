@@ -4,17 +4,17 @@
 #include <stdio.h>
 #include <errno.h>
 #ifdef HAVE_INTTYPES_H
-#  include <inttypes.h>
-#endif
+# include <inttypes.h>
+#endif /* HAVE_INTTYPES_H */
 #include <sys/types.h>
 
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
-#endif
+#endif /* HAVE_UNISTD_H */
 
 #ifdef HAVE_SYS_WAIT_H
-#include <sys/wait.h>
-#endif
+# include <sys/wait.h>
+#endif /* HAVE_SYS_WAIT_H */
 
 #include "tcl.h"
 #include "tclInt.h"
@@ -25,22 +25,22 @@
 #include "exp_log.h"
 #include "exp_event.h"
 #ifdef TCL_DEBUGGER
-#include "Dbg.h"
-#endif
+# include "Dbg.h"
+#endif /* TCL_DEBUGGER */
 
 #ifdef __CENTERLINE__
-#undef	EXP_VERSION
-#define	EXP_VERSION		"5.0.3"		/* I give up! */
-					/* It is not necessary that number */
-					/* be accurate.  It is just here to */
-					/* pacify Centerline which doesn't */
-					/* seem to be able to get it from */
-					/* the Makefile. */
-#undef	SCRIPTDIR
-#define SCRIPTDIR	"example/"
-#undef	EXECSCRIPTDIR
-#define EXECSCRIPTDIR	"example/"
-#endif
+# undef 	EXP_VERSION
+# define	EXP_VERSION		"5.0.3"	/* I give up! */
+									/* It is not necessary that number */
+					                /* be accurate. It is just here to */
+					                /* pacify Centerline which does NOT */
+					                /* seem to be able to get it from */
+					                /* the Makefile. */
+# undef 	SCRIPTDIR
+# define    SCRIPTDIR	"example/"
+# undef 	EXECSCRIPTDIR
+# define    EXECSCRIPTDIR	"example/"
+#endif /* __CENTERLINE__ */
 char exp_version[] = EXP_VERSION;
 #define NEED_TCL_MAJOR		7
 #define NEED_TCL_MINOR		5
@@ -55,8 +55,8 @@ int exp_interactive =  FALSE;
 int exp_buffer_command_input = FALSE;/* read in entire cmdfile at once */
 int exp_fgets();
 
-Tcl_Interp *exp_interp;	/* for use by signal handlers who can't figure out */
-			/* the interpreter directly */
+Tcl_Interp *exp_interp;	/* for use by signal handlers who cannot figure out */
+			            /* the interpreter directly */
 int exp_tcl_debugger_available = FALSE;
 
 int exp_getpid;
@@ -78,7 +78,7 @@ int status;
 	Tcl_Exit(status);
 }
 
-/* this clumsiness because pty routines don't know Tcl definitions */
+/* this clumsiness because pty routines do NOT know Tcl definitions */
 static
 void
 exp_pty_exit_for_tcl(clientData)
@@ -94,7 +94,7 @@ exp_init_pty_exit()
 	Tcl_CreateExitHandler(exp_pty_exit_for_tcl,(ClientData)0);
 }
 
-/* This can be called twice or even recursively - it's safe. */
+/* This can be called twice or even recursively - it is safe. */
 void
 exp_exit_handlers(clientData)
 ClientData clientData;
@@ -110,10 +110,10 @@ ClientData clientData;
 	static int did_app_exit = FALSE;
 	static int did_expect_exit = FALSE;
 
-	/* don't think this code is relevant any longer, but not positive! */
+	/* I do NOT think this code is still relevant, but I am not positive! */
 	if (!interp) {
 		/* if no interp handy (i.e., called from interrupt handler) */
-		/* use last one created - it's a hack but we're exiting */
+		/* use last one created - it is a hack but we are exiting */
 		/* ungracefully to begin with */
 		interp = exp_interp;
 	}
@@ -145,12 +145,12 @@ ClientData clientData;
 	    && exp_ioctled_devtty) {
 		exp_tty_set(interp,&exp_tty_original,exp_dev_tty,0);
 	}
-	/* all other files either don't need to be flushed or will be
-	   implicitly closed at exit.  Spawned processes are free to continue
-	   running, however most will shutdown after seeing EOF on stdin.
-	   Some systems also deliver SIGHUP and other sigs to idle processes
-	   which will blow them away if not prepared.
-	*/
+	/* all other files either do NOT need to be flushed or will be
+	 * implicitly closed at exit. Spawned processes are free to continue
+	 * running, however most will shutdown after seeing EOF on stdin.
+	 * Some systems also deliver SIGHUP and other sigs to idle processes
+	 * which will blow them away if not prepared.
+	 */
 
 	exp_close_all(interp);
 }
@@ -164,8 +164,8 @@ Tcl_Interp *interp;
 #if TCL_MAJOR_VERSION < 8
 	return iPtr->curEventNum+1;
 #else
-	/* unncessarily tricky coding - if nextid isn't defined,
-	   maintain our own static version */
+	/* unncessarily tricky coding - if nextid is NOT defined,
+	 * maintain our own static version */
 
 	static int nextid = 0;
 	char *nextidstr = Tcl_GetVar2(interp,"tcl::history","nextid",0);
@@ -174,7 +174,7 @@ Tcl_Interp *interp;
 		(void) sscanf(nextidstr,"%d",&nextid);
 	}
 	return ++nextid;
-#endif
+#endif /* TCL_MAJOR_VERSION < 8 */
 }
 
 /* this stupidity because Tcl needs commands in writable space */
@@ -238,7 +238,7 @@ int check_for_nostack;
 	char *msg;
 
 	/* if errorInfo has something, print it */
-	/* else use what's in interp->result */
+	/* else use what is in interp->result */
 
 	msg = Tcl_GetVar(interp,"errorInfo",TCL_GLOBAL_ONLY);
 	if (!msg) msg = interp->result;
@@ -248,7 +248,7 @@ int check_for_nostack;
 		if (0 == strncmp("-nostack",msg,8)) return;
 
 		/*
-		 * This shouldn't be necessary, but previous test fails
+		 * This should NOT be necessary, but previous test fails
 		 * because of recent change John made - see eval_trap_action()
 		 * in exp_trap.c for more info
 		 */
@@ -291,7 +291,7 @@ Tcl_Interp *interp;
 	int dummy;
 	Tcl_Channel outChannel;
 	int fd = fileno(stdin);
-	
+
 	expect_key++;
 
 	Tcl_DStringInit(&dstring);
@@ -331,7 +331,7 @@ Tcl_Interp *interp;
 				}
 				continue;
 			}
-#endif
+#endif /* SIMPLE_EVENT */
 			if (rc <= 0) {
 				if (!newcmd) line[0] = 0;
 				else rc = EXP_EOF;
@@ -456,7 +456,7 @@ Tcl_Interp *interp;
 		char *dot = strchr(TCL_VERSION,'.');
 		int tcl_minor = atoi(dot+1);
 
-		if (tcl_major < NEED_TCL_MAJOR || 
+		if (tcl_major < NEED_TCL_MAJOR ||
 		    (tcl_major == NEED_TCL_MAJOR && tcl_minor < NEED_TCL_MINOR)) {
 			sprintf(interp->result,
 			   "%s compiled with Tcl %d.%d but needs at least Tcl %d.%d\n",
@@ -510,7 +510,7 @@ Tcl_Interp *interp;
 
 #ifdef TCL_DEBUGGER
 	Dbg_IgnoreFuncs(interp,ignore_procs);
-#endif
+#endif /* TCL_DEBUGGER */
 
 	return TCL_OK;
 }
@@ -541,7 +541,7 @@ char **argv;
 
 #ifdef TCL_DEBUGGER
 	Dbg_ArgcArgv(argc,argv,1);
-#endif
+#endif /* TCL_DEBUGGER */
 
 	/* initially, we must assume we are not interactive */
 	/* this prevents interactive weirdness courtesy of unknown via -c */
@@ -585,7 +585,7 @@ char **argv;
 			Tcl_Eval(interp,debug_init);
 			if (rc == 1) Dbg_On(interp,0);
 			break;
-#endif
+#endif /* TCL_DEBUGGER */
 		case 'f': /* name of cmd file */
 			exp_cmdfilename = optarg;
 			break;
@@ -596,10 +596,10 @@ char **argv;
 		case 'i': /* interactive */
 			exp_interactive = TRUE;
 			break;
-		case 'n': /* don't read personal rc file */
+		case 'n': /* do NOT read personal rc file */
 			my_rc = FALSE;
 			break;
-		case 'N': /* don't read system-wide rc file */
+		case 'N': /* do NOT read system-wide rc file */
 			sys_rc = FALSE;
 			break;
 		case 'v':
@@ -617,10 +617,10 @@ char **argv;
 	}
 	debuglog("\r\n");
 
-	/* if user hasn't explicitly requested we be interactive */
+	/* if user has NOT explicitly requested we be interactive */
 	/* look for a file or some other source of commands */
 	if (!exp_interactive) {
-		/* get cmd file name, if we haven't got it already */
+		/* get cmd file name, if we have NOT got it already */
 		if (!exp_cmdfilename && (optind < argc)) {
 			exp_cmdfilename = argv[optind];
 			optind++;
@@ -745,7 +745,7 @@ char *filename;
 
 	Tcl_ResetResult(interp);
 	if (TCL_OK != (rc = Tcl_EvalFile(interp,filename))) {
-		/* EvalFile doesn't bother to copy error to errorInfo */
+		/* EvalFile does NOT bother to copy error to errorInfo */
 		/* so force it */
 		Tcl_AddErrorInfo(interp, "");
 		handle_eval_error(interp,0);
@@ -890,3 +890,5 @@ Tcl_Interp *interp;
 {
 	exp_create_commands(interp,cmd_data);
 }
+
+/* EOF */

@@ -633,6 +633,8 @@ ac_includes_default="\
 #endif"
 
 ac_subst_vars='LTLIBOBJS
+MMALLOC
+MMALLOC_CFLAGS
 PICFLAG
 INSTALL_DEST
 pexecute
@@ -777,6 +779,7 @@ with_gnu_ld
 with_sysroot
 enable_libtool_lock
 enable_install_libiberty
+with_mmalloc
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1440,6 +1443,7 @@ Optional Packages:
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-sysroot=DIR Search for dependent libraries within DIR
                         (or the compiler's sysroot if not specified).
+  --with-mmalloc          Use memory mapped malloc package
 
 Some influential environment variables:
   CC          C compiler command
@@ -16440,6 +16444,48 @@ host_makefile_frag=${frag}
 
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether stat file-mode macros are broken" >&5
+$as_echo_n "checking whether stat file-mode macros are broken... " >&6; }
+if ${ac_cv_header_stat_broken+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#if defined S_ISBLK && defined S_IFDIR
+extern char c1[S_ISBLK (S_IFDIR) ? -1 : 1];
+#endif
+
+#if defined S_ISBLK && defined S_IFCHR
+extern char c2[S_ISBLK (S_IFCHR) ? -1 : 1];
+#endif
+
+#if defined S_ISLNK && defined S_IFREG
+extern char c3[S_ISLNK (S_IFREG) ? -1 : 1];
+#endif
+
+#if defined S_ISSOCK && defined S_IFREG
+extern char c4[S_ISSOCK (S_IFREG) ? -1 : 1];
+#endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_header_stat_broken=no
+else
+  ac_cv_header_stat_broken=yes
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_header_stat_broken" >&5
+$as_echo "$ac_cv_header_stat_broken" >&6; }
+if test $ac_cv_header_stat_broken = yes; then
+
+$as_echo "#define STAT_MACROS_BROKEN 1" >>confdefs.h
+
+fi
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for stdbool.h that conforms to C99" >&5
 $as_echo_n "checking for stdbool.h that conforms to C99... " >&6; }
 if ${ac_cv_header_stdbool_h+:} false; then :
@@ -16533,9 +16579,10 @@ $as_echo "#define HAVE_STDBOOL_H 1" >>confdefs.h
 
 fi
  for ac_header in alloca.h assert.h ctype.h fcntl.h float.h langinfo.h \
-                  libintl.h limits.h locale/coll-lookup.h locale/elem-hash.h \
-                  locale/localeinfo.h locale/weight.h locale/weightwc.h \
-                  machine/hal_sysinfo.h malloc.h malloc/malloc.h stddef.h \
+                  libintl.h limits.h locale.h locale/coll-lookup.h \
+                  locale/elem-hash.h locale/localeinfo.h locale/weight.h \
+                  locale/weightwc.h mach/mach.h machine/hal_sysinfo.h \
+                  math.h malloc.h malloc/malloc.h stdarg.h stddef.h \
                   stdio.h stdio_ext.h sys/file.h sys/mman.h sys/param.h \
                   sys/pstat.h sys/resource.h sys/sysctl.h sys/sysinfo.h \
                   sys/sysmp.h sys/systemcfg.h sys/table.h sys/time.h \
@@ -16725,16 +16772,45 @@ _ACEOF
 
 
 
-ac_fn_c_check_type "$LINENO" "uintptr_t" "ac_cv_type_uintptr_t" "$ac_includes_default"
+
+
+  ac_fn_c_check_type "$LINENO" "uintptr_t" "ac_cv_type_uintptr_t" "$ac_includes_default"
 if test "x$ac_cv_type_uintptr_t" = xyes; then :
 
+$as_echo "#define HAVE_UINTPTR_T 1" >>confdefs.h
+
 else
+  for ac_type in 'unsigned int' 'unsigned long int' \
+	'unsigned long long int'; do
+       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+static int test_array [1 - 2 * !(sizeof (void *) <= sizeof ($ac_type))];
+test_array [0] = 0;
+return test_array [0];
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
 
 cat >>confdefs.h <<_ACEOF
-#define uintptr_t unsigned long
+#define uintptr_t $ac_type
 _ACEOF
 
+	  ac_type=
 fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+       test -z "$ac_type" && break
+     done
+fi
+
+
+
 
 # Look for a 64-bit type.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for a 64-bit type" >&5
@@ -16885,6 +16961,62 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 ;;
 esac
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for uid_t in sys/types.h" >&5
+$as_echo_n "checking for uid_t in sys/types.h... " >&6; }
+if ${ac_cv_type_uid_t+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "uid_t" >/dev/null 2>&1; then :
+  ac_cv_type_uid_t=yes
+else
+  ac_cv_type_uid_t=no
+fi
+rm -f conftest*
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_type_uid_t" >&5
+$as_echo "$ac_cv_type_uid_t" >&6; }
+if test $ac_cv_type_uid_t = no; then
+
+$as_echo "#define uid_t int" >>confdefs.h
+
+
+$as_echo "#define gid_t int" >>confdefs.h
+
+fi
+
+ac_fn_c_find_uintX_t "$LINENO" "8" "ac_cv_c_uint8_t"
+case $ac_cv_c_uint8_t in #(
+  no|yes) ;; #(
+  *)
+
+$as_echo "#define _UINT8_T 1" >>confdefs.h
+
+
+cat >>confdefs.h <<_ACEOF
+#define uint8_t $ac_cv_c_uint8_t
+_ACEOF
+;;
+  esac
+
+ac_fn_c_find_uintX_t "$LINENO" "16" "ac_cv_c_uint16_t"
+case $ac_cv_c_uint16_t in #(
+  no|yes) ;; #(
+  *)
+
+
+cat >>confdefs.h <<_ACEOF
+#define uint16_t $ac_cv_c_uint16_t
+_ACEOF
+;;
+  esac
 
 ac_fn_c_find_uintX_t "$LINENO" "32" "ac_cv_c_uint32_t"
 case $ac_cv_c_uint32_t in #(
@@ -17174,6 +17306,70 @@ cat >>confdefs.h <<_ACEOF
 #define STACK_DIRECTION $ac_cv_c_stack_direction
 _ACEOF
 
+
+fi
+
+  for ac_header in unistd.h
+do :
+  ac_fn_c_check_header_preproc "$LINENO" "unistd.h" "ac_cv_header_unistd_h"
+if test "x$ac_cv_header_unistd_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_UNISTD_H 1
+_ACEOF
+
+fi
+done
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for working chown" >&5
+$as_echo_n "checking for working chown... " >&6; }
+if ${ac_cv_func_chown_works+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  ac_cv_func_chown_works=no
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+#include <fcntl.h>
+
+int
+main ()
+{
+  char *f = "conftest.chown";
+  struct stat before, after;
+
+  if (creat (f, 0600) < 0)
+    return 1;
+  if (stat (f, &before) < 0)
+    return 1;
+  if (chown (f, (uid_t) -1, (gid_t) -1) == -1)
+    return 1;
+  if (stat (f, &after) < 0)
+    return 1;
+  return ! (before.st_uid == after.st_uid && before.st_gid == after.st_gid);
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_chown_works=yes
+else
+  ac_cv_func_chown_works=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+rm -f conftest.chown
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_chown_works" >&5
+$as_echo "$ac_cv_func_chown_works" >&6; }
+if test $ac_cv_func_chown_works = yes; then
+
+$as_echo "#define HAVE_CHOWN 1" >>confdefs.h
 
 fi
 
@@ -17541,6 +17737,52 @@ $as_echo "#define realloc rpl_realloc" >>confdefs.h
 fi
 
 
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether stat accepts an empty string" >&5
+$as_echo_n "checking whether stat accepts an empty string... " >&6; }
+if ${ac_cv_func_stat_empty_string_bug+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  ac_cv_func_stat_empty_string_bug=yes
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+struct stat sbuf;
+  return stat ("", &sbuf) == 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_stat_empty_string_bug=no
+else
+  ac_cv_func_stat_empty_string_bug=yes
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_stat_empty_string_bug" >&5
+$as_echo "$ac_cv_func_stat_empty_string_bug" >&6; }
+if test $ac_cv_func_stat_empty_string_bug = yes; then
+  case " $LIBOBJS " in
+  *" stat.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS stat.$ac_objext"
+ ;;
+esac
+
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_STAT_EMPTY_STRING_BUG 1
+_ACEOF
+
+fi
+
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for working strtod" >&5
 $as_echo_n "checking for working strtod... " >&6; }
 if ${ac_cv_func_strtod+:} false; then :
@@ -17717,16 +17959,16 @@ esac
   for ac_func in __fsetlocking abort asprintf atexit basename bcmp bcopy \
                   bsearch btowc bzero calloc canonicalize_file_name \
                   clock dup2 ffs getcwd getpagesize getrusage getsysinfo \
-                  gettext gettimeofday getwd index insque memchr memcmp memcpy \
-                  memmove mempcpy memset mkstemps on_exit pathconf \
-                  psignal pstat_getdynamic pstat_getstatic putenv \
-                  random realpath re_comp regcomp rename rindex sbrk \
-                  setenv sigsetmask snprintf stpcpy stpncpy strcasecmp \
-                  strchr strcspn strdup strerror strlen strncasecmp strndup \
-                  strpbrk strrchr strsignal strspn strstr strtod strtol \
-                  strtoul strverscmp sysconf sysctl sysmp system table \
-                  times tmpnam vasprintf vfprintf vprintf vsnprintf \
-                  vsprintf wait3 wait4 waitpid
+                  gettext gettimeofday getwd index insque memchr memcmp \
+                  memcpy memmove mempcpy memset mkdir mkstemps on_exit \
+                  pathconf psignal pstat_getdynamic pstat_getstatic \
+                  putenv random realpath re_comp regcomp rename rindex \
+                  rmdir sbrk setenv sigsetmask snprintf stpcpy stpncpy \
+                  strcasecmp strchr strcspn strdup strerror strlen \
+                  strncasecmp strndup strpbrk strrchr strsignal strspn \
+                  strstr strtod strtol strtoul strverscmp sysconf sysctl \
+                  sysmp system table times tmpnam utime vasprintf \
+                  vfprintf vprintf vsnprintf vsprintf wait3 wait4 waitpid
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -18056,7 +18298,7 @@ if test -z "${setobjs}"; then
       # provides from our shell variables, so that they appear to be
       # missing.
 
-      # DJ - only if we are *building* cygwin, not just building *with* cygwin
+      #DJ: only if we are *building* cygwin, not just building *with* it
 
       if test -n "${with_target_subdir}"
       then
@@ -18915,6 +19157,31 @@ LIBOBJS="$L"
 
 
 
+
+MMALLOC_CFLAGS=
+MMALLOC=
+
+
+
+
+# Check whether --with-mmalloc was given.
+if test "${with_mmalloc+set}" = set; then :
+  withval=$with_mmalloc; case "${withval}" in
+  yes)  want_mmalloc=true ;;
+  no)   want_mmalloc=false;;
+  *)    as_fn_error $? "bad value ${withval} for libiberty with-mmalloc option" "$LINENO" 5 ;;
+esac
+else
+  want_mmalloc=false
+fi
+
+if test "x${want_mmalloc}" = "xtrue"; then
+
+$as_echo "#define USE_MMALLOC 1" >>confdefs.h
+
+   MMALLOC_CFLAGS="-I${srcdir}/../mmalloc"
+   MMALLOC='../mmalloc/libmmalloc.a'
+fi
 
 # We need multilib support, but only if configuring for the target.
 ac_config_files="$ac_config_files Makefile testsuite/Makefile"

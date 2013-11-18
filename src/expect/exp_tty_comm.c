@@ -11,9 +11,9 @@
 #include "exp_log.h"
 
 #ifndef TRUE
-#define FALSE 0
-#define TRUE 1
-#endif
+# define FALSE 0
+# define TRUE 1
+#endif /* !TRUE */
 
 int exp_disconnected = FALSE;		/* not disc. from controlling tty */
 
@@ -34,3 +34,4 @@ exp_init_tty()
 	tty_current = exp_tty_original;
 }
 
+/* EOF */

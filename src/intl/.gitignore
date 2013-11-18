@@ -21,5 +21,6 @@ po/core*
 po/libintl.*po
 po/remove-potcdate.sed
 po/stamp*
+po2tbl.sed
 site.bak
 site.exp

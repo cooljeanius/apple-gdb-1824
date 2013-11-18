@@ -2,7 +2,7 @@
 
 Written by: Don Libes, NIST, 10/25/93
 
-This file is in the public domain.  However, the author and NIST
+This file is in the public domain. However, the author and NIST
 would appreciate credit if you use this file or parts of it.
 
 */
@@ -11,10 +11,22 @@ would appreciate credit if you use this file or parts of it.
 #include "tcl.h"
 
 #ifdef NO_STDLIB_H
-#include "../compat/stdlib.h"
+# include "../compat/stdlib.h"
 #else
-#include <stdlib.h>
-#endif
+# ifdef HAVE_STDLIB_H
+#  include <stdlib.h>		/* for malloc */
+# else
+#  ifdef HAVE_MALLOC_H
+#   include <malloc.h>
+#  else
+#   ifdef HAVE_MALLOC_MALLOC_H
+#    include <malloc/malloc.h>
+#   else
+#    warning exp_win.c expects a header that provides malloc() to be included.
+#   endif /* HAVE_MALLOC_MALLOC_H */
+#  endif /* HAVE_MALLOC_H */
+# endif /* HAVE_STDLIB_H */
+#endif /*NO_STDLIB_H*/
 
 /* _IBCS2 required on some Intel platforms to allow the include files */
 /* to produce a definition for winsize. */
@@ -24,31 +36,31 @@ would appreciate credit if you use this file or parts of it.
  * get everyone's window size definitions
  *
 note that this is tricky because (of course) everyone puts them in
-different places.  Worse, on some systems, some .h files conflict
-and cannot both be included even though both exist.  This is the
+different places. Worse, on some systems, some .h files conflict
+and cannot both be included even though both exist. This is the
 case, for example, on SunOS 4.1.3 using gcc where termios.h
 conflicts with sys/ioctl.h
  */
 
 #ifdef HAVE_TERMIOS
-#  include <termios.h>
+# include <termios.h>
 #else
-#  include <sys/ioctl.h>
-#endif
+# include <sys/ioctl.h>
+#endif /* HAVE_TERMIOS */
 
-/* Sigh.  On AIX 2.3, termios.h exists but does not define TIOCGWINSZ */
-/* Instead, it has to come from ioctl.h.  However, As I said above, this */
-/* can't be cavalierly included on all machines, even when it exists. */
+/* Sigh. On AIX 2.3, termios.h exists but does not define TIOCGWINSZ */
+/* Instead, it has to come from ioctl.h. However, As I said above, this */
+/* cannot be cavalierly included on all machines, even when it exists. */
 #if defined(HAVE_TERMIOS) && !defined(HAVE_TIOCGWINSZ_IN_TERMIOS_H)
-#  include <sys/ioctl.h>
-#endif
+# include <sys/ioctl.h>
+#endif /* HAVE_TERMIOS && !HAVE_TIOCGWINSZ_IN_TERMIOS_H */
 
 /* SCO defines window size structure in PTEM and TIOCGWINSZ in termio.h */
 /* Sigh... */
 #if defined(HAVE_SYS_PTEM_H)
-#   include <sys/types.h>   /* for stream.h's caddr_t */
-#   include <sys/stream.h>  /* for ptem.h's mblk_t */
-#   include <sys/ptem.h>
+# include <sys/types.h>   /* for stream.h's caddr_t */
+# include <sys/stream.h>  /* for ptem.h's mblk_t */
+# include <sys/ptem.h>
 #endif /* HAVE_SYS_PTEM_H */
 
 #include "exp_tty.h"
@@ -56,24 +68,24 @@ conflicts with sys/ioctl.h
 
 #ifdef TIOCGWINSZ
 typedef struct winsize exp_winsize;
-#define columns ws_col
-#define rows ws_row
-#define EXP_WIN
-#endif
+# define columns ws_col
+# define rows ws_row
+# define EXP_WIN
+#endif /* TIOCGWINSZ */
 
 #if !defined(EXP_WIN) && defined(TIOCGSIZE)
 typedef struct ttysize exp_winsize;
-#define columns ts_cols
-#define rows ts_lines
-#define EXP_WIN
-#endif
+# define columns ts_cols
+# define rows ts_lines
+# define EXP_WIN
+#endif /* !EXP_WIN && TIOCGSIZE */
 
 #if !defined(EXP_WIN)
 typedef struct {
 	int columns;
 	int rows;
 } exp_winsize;
-#endif
+#endif /* !EXP_WIN */
 
 static exp_winsize winsize = {0, 0};
 static exp_winsize win2size = {0, 0};
@@ -83,10 +95,10 @@ int fd;
 {
 #ifdef TIOCSWINSZ
 	ioctl(fd,TIOCSWINSZ,&winsize);
-#endif
+#endif /* TIOCSWINSZ */
 #if defined(TIOCSSIZE) && !defined(TIOCSWINSZ)
 	ioctl(fd,TIOCSSIZE,&winsize);
-#endif
+#endif /* TIOCSSIZE && !TIOCSWINSZ */
 }
 
 int exp_window_size_get(fd)
@@ -94,14 +106,14 @@ int fd;
 {
 #ifdef TIOCGWINSZ
 	ioctl(fd,TIOCGWINSZ,&winsize);
-#endif
+#endif /* TIOCGWINSZ */
 #if defined(TIOCGSIZE) && !defined(TIOCGWINSZ)
 	ioctl(fd,TIOCGSIZE,&winsize);
-#endif
+#endif /* TIOCGSIZE && !TIOCGWINSZ */
 #if !defined(EXP_WIN)
 	winsize.rows = 0;
 	winsize.columns = 0;
-#endif
+#endif /* !EXP_WIN */
 }
 
 void
@@ -145,10 +157,10 @@ int fd;
 {
 #ifdef TIOCSWINSZ
 			ioctl(fd,TIOCSWINSZ,&win2size);
-#endif
+#endif /* TIOCSWINSZ */
 #if defined(TIOCSSIZE) && !defined(TIOCSWINSZ)
 			ioctl(fd,TIOCSSIZE,&win2size);
-#endif
+#endif /* TIOCSSIZE && !TIOCSWINSZ */
 }
 
 int exp_win2_size_get(fd)
@@ -156,10 +168,10 @@ int fd;
 {
 #ifdef TIOCGWINSZ
 	ioctl(fd,TIOCGWINSZ,&win2size);
-#endif
+#endif /* TIOCGWINSZ */
 #if defined(TIOCGSIZE) && !defined(TIOCGWINSZ)
 	ioctl(fd,TIOCGSIZE,&win2size);
-#endif
+#endif /* TIOCGSIZE && !TIOCGWINSZ */
 }
 
 void
@@ -182,7 +194,7 @@ char *rows;
 #if !defined(EXP_WIN)
 	win2size.rows = 0;
 	win2size.columns = 0;
-#endif
+#endif /* !EXP_WIN */
 }
 
 void
@@ -203,3 +215,5 @@ char *columns;
 	exp_win2_size_get(fd);
 	sprintf(columns,"%d",win2size.columns);
 }
+
+/* EOF */

@@ -3,7 +3,7 @@
 Written by: Don Libes, libes@cme.nist.gov, NIST, 12/3/90
 
 Design and implementation of this program was paid for by U.S. tax
-dollars.  Therefore it is public domain.  However, the author and NIST
+dollars. Therefore it is public domain. However, the author and NIST
 would appreciate credit if this program or parts of it are used.
 */
 
@@ -17,3 +17,5 @@ would appreciate credit if this program or parts of it are used.
 #define streq(x,y)	(0 == strcmp((x),(y)))
 
 #endif /* _EXPECT_PROG_H */
+
+/* EOF */

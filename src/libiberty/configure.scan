@@ -36,6 +36,7 @@ AC_TYPE_UINT32_T
 AC_CHECK_TYPES([ptrdiff_t])
 
 # Checks for library functions.
+AC_FUNC_CHOWN
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_FORK
 AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
@@ -44,7 +45,7 @@ AC_FUNC_MBRTOWC
 AC_FUNC_REALLOC
 AC_FUNC_STRNLEN
 AC_FUNC_STRTOD
-AC_CHECK_FUNCS([atexit btowc bzero dup2 getcwd getpagesize gettimeofday memchr memmove mempcpy memset pathconf pstat_getdynamic putenv re_comp realpath regcomp setenv stpcpy strcasecmp strchr strcspn strdup strerror strncasecmp strndup strpbrk strrchr strspn strstr strtol strtoul strverscmp])
+AC_CHECK_FUNCS([atexit btowc bzero dup2 getcwd getpagesize gettimeofday memchr memmove mempcpy memset mkdir pathconf pstat_getdynamic putenv re_comp realpath regcomp rmdir setenv stpcpy strcasecmp strchr strcspn strdup strerror strncasecmp strndup strpbrk strrchr strspn strstr strtol strtoul strverscmp utime])
 
 AC_CONFIG_FILES([Makefile
                  testsuite/Makefile])

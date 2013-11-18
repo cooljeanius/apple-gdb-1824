@@ -2,9 +2,11 @@
 *.dSYM
 *.log
 *.status
+conf*/*.awk
 Makefile
 pkgIndex
 Dbg_cf.h
+DbgMkfl
 expect_cf.h
 *~
 *.o

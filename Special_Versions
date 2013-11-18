@@ -30,3 +30,15 @@ their VCS to us...)
 http://www.opensource.apple.com/tarballs/gdb/
 and
 http://www.opensource.apple.com/source/gdb/
+
+Apple also has a separate directory for binutils, which I think was the
+precursor to their gdb sources (the files in them are very similar).
+Anyways, that is:
+http://www.opensource.apple.com/tarballs/binutils/
+and
+http://www.opensource.apple.com/source/binutils/
+
+These directories have their own special versions:
+
+	- binutils-36: last version with actual files in src/electric-fence
+

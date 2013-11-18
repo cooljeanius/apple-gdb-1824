@@ -5,8 +5,8 @@ Introduction
 --------------------
 
 This is the README file for Expect, a program that performs programmed
-dialogue with other interactive programs.  It is briefly described by
-its man page, expect(1).  This directory contains the source and man
+dialogue with other interactive programs. It is briefly described by
+its man page, expect(1). This directory contains the source and man
 page for Expect.
 
 This is Expect 5 for Tcl 7.5, 7.6, and 8.0.  Tk 4.1, 4.2, 8.0 and the
@@ -25,8 +25,8 @@ Expect: A Tcl-Based Toolkit for Automating Interactive Applications",
 ISBN 1-56592-090-2.
 
 The book is filled with detailed examples and explanations, and is a
-comprehensive tutorial to Expect.  The book also includes a tutorial
-on Tcl written specifically for Expect users (so you don't have to
+comprehensive tutorial to Expect. The book also includes a tutorial
+on Tcl written specifically for Expect users (so you do NOT have to
 read the Expect papers, the debugger paper, Ousterhout's book, or the
 man pages).  Exploring Expect is 602 pages.
 
@@ -46,15 +46,15 @@ concepts in the papers actually only make up a small fraction of the
 book.
 
 The 1990 USENIX paper (see "Readings" below) is probably the best one
-for understanding Expect conceptually.  The 1991 Computing Systems and
-the LISA IV papers provide a nice mix of examples.  The only downside
-is, the examples in these papers don't actually work anymore - some
+for understanding Expect conceptually. The 1991 Computing Systems and
+the LISA IV papers provide a nice mix of examples. The only downside
+is, the examples in these papers do NOT actually work anymore - some
 aspects (e.g., syntax) of both Expect and Tcl have changed.  The
 papers still make interesting reading - just don't study the examples
-too closely!  Fortunately, most of the examples from the papers also
+too closely! Fortunately, most of the examples from the papers also
 accompany this distribution - and all of these are up to date.
 
-For all the details, read the man page.  It is long but you can get
+For all the details, read the man page. It is long but you can get
 started just by skimming the sections on the following commands:
 
 	spawn		(starts a process)
@@ -189,12 +189,12 @@ this file.
 The book "Obfuscated C and Other Mysteries" is not on-line but is
 available in bookstores or directly from the publisher (Wiley).
 
-Overhead transparencies I've used at conferences are also available in
-the same way as the papers themselves.  The transparencies are sketchy
+Overhead transparencies I have used at conferences are also available in
+the same way as the papers themselves. The transparencies are sketchy
 and not meant for personal education - however if you are familiar
 with Expect and just want to give a short talk on it to your
-colleagues, you may find the transparencies useful.  They vary in
-length from 15 to 20 minutes in length.  These are:
+colleagues, you may find the transparencies useful. They vary in
+length from 15 to 20 minutes in length. These are:
 
   doc/seminal-talk.ps.Z    (USENIX '90 - Intro and Implementation)
   doc/sysadm-talk.ps.Z       (LISA '90 - System Administration)
@@ -237,11 +237,11 @@ Expect can also be used from a C or C++ program without Tcl.  This is
 described in libexpect(3).  While I consider this library to be easy
 to use, the standalone Expect program is much, much easier to use than
 working with the C compiler and its usual edit, compile, debug cycle.
-Unlike typical programming, most of the debugging isn't getting the C
+Unlike typical programming, most of the debugging is NOT getting the C
 compiler to accept your programs - rather, it is getting the dialogue
-correct.  Also, translating scripts from Expect to C is usually not
-necessary.  For example, the speed of interactive dialogues is
-virtually never an issue.  So please try 'expect' first.  It is a more
+correct. Also, translating scripts from Expect to C is usually not
+necessary. For example, the speed of interactive dialogues is
+virtually never an issue. So please try 'expect' first. It is a more
 appropriate tool than the library for most people.
 
 --------------------
@@ -276,10 +276,10 @@ For more information, read the INSTALL file.
 Support from Don Libes or NIST
 --------------------
 
-Although I can't promise anything in the way of support, I'd be
-interested to hear about your experiences using it (good or bad).  I'm
+Although I cannot promise anything in the way of support, I would be
+interested to hear about your experiences using it (good or bad). I am
 also interested in hearing bug reports and suggestions for improvement
-even though I can't promise to implement them.
+even though I cannot promise to implement them.
 
 If you send me a bug, fix, or question, include the version of Expect
 (as reported by expect -d), version of Tcl, and name and version of

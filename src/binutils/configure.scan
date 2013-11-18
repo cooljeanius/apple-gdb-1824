@@ -55,6 +55,5 @@ AC_FUNC_STRNLEN
 AC_CHECK_FUNCS([dup2 gettimeofday memchr memmove memset re_comp regcomp rmdir setlocale stpcpy strcasecmp strchr strdup strerror strncasecmp strrchr strspn strstr strtol strtoul strverscmp utime])
 
 AC_CONFIG_FILES([Makefile
-                 doc/Makefile
-                 po/Makefile])
+                 doc/Makefile])
 AC_OUTPUT

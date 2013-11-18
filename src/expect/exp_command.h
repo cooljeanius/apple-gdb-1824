@@ -3,7 +3,7 @@
 Written by: Don Libes, NIST, 2/6/90
 
 Design and implementation of this program was paid for by U.S. tax
-dollars.  Therefore it is public domain.  However, the author and NIST
+dollars. Therefore it is public domain. However, the author and NIST
 would appreciate credit if this program or parts of it are used.
 */
 
@@ -31,53 +31,53 @@ EXTERN int exp_flageq_code _ANSI_ARGS_((char *,char *,int));
 
 /*
  * The type of the status returned by wait varies from UNIX system
- * to UNIX system.  The macro below defines it:
+ * to UNIX system. The macro below defines it:
  * (stolen from tclUnix.h)
  */
 
 #define WAIT_STATUS_TYPE int
 #if 0
-#ifdef AIX
-#   define WAIT_STATUS_TYPE pid_t
-#else
-#ifndef NO_UNION_WAIT
+# ifdef AIX
+#  define WAIT_STATUS_TYPE pid_t
+# else
+#  ifndef NO_UNION_WAIT
 #   define WAIT_STATUS_TYPE union wait
-#else
+#  else
 #   define WAIT_STATUS_TYPE int
-#endif
-#endif /* AIX */
+#  endif /* NO_UNION_WAIT */
+# endif /* AIX */
 
 /* These macros are taken from tclUnix.h */
 
-#undef WIFEXITED
-#ifndef WIFEXITED
-#   define WIFEXITED(stat)  (((*((int *) &(stat))) & 0xff) == 0)
-#endif
+# undef WIFEXITED
+# ifndef WIFEXITED
+#  define WIFEXITED(stat)  (((*((int *) &(stat))) & 0xff) == 0)
+# endif /* !WIFEXITED */
 
-#undef WEXITSTATUS
-#ifndef WEXITSTATUS
-#   define WEXITSTATUS(stat) (((*((int *) &(stat))) >> 8) & 0xff)
-#endif
+# undef WEXITSTATUS
+# ifndef WEXITSTATUS
+#  define WEXITSTATUS(stat) (((*((int *) &(stat))) >> 8) & 0xff)
+# endif /* !WEXITSTATUS */
 
-#undef WIFSIGNALED
-#ifndef WIFSIGNALED
-#   define WIFSIGNALED(stat) (((*((int *) &(stat)))) && ((*((int *) &(stat))) == ((*((int *) &(stat))) & 0x00ff)))
-#endif
+# undef WIFSIGNALED
+# ifndef WIFSIGNALED
+#  define WIFSIGNALED(stat) (((*((int *) &(stat)))) && ((*((int *) &(stat))) == ((*((int *) &(stat))) & 0x00ff)))
+# endif /* !WIFSIGNALED */
 
-#undef WTERMSIG
-#ifndef WTERMSIG
-#   define WTERMSIG(stat)    ((*((int *) &(stat))) & 0x7f)
-#endif
+# undef WTERMSIG
+# ifndef WTERMSIG
+#  define WTERMSIG(stat)    ((*((int *) &(stat))) & 0x7f)
+# endif /* !WTERMSIG */
 
-#undef WIFSTOPPED
-#ifndef WIFSTOPPED
-#   define WIFSTOPPED(stat)  (((*((int *) &(stat))) & 0xff) == 0177)
-#endif
+# undef WIFSTOPPED
+# ifndef WIFSTOPPED
+#  define WIFSTOPPED(stat)  (((*((int *) &(stat))) & 0xff) == 0177)
+# endif /* !WIFSTOPPED */
 
-#undef WSTOPSIG
-#ifndef WSTOPSIG
-#   define WSTOPSIG(stat)    (((*((int *) &(stat))) >> 8) & 0xff)
-#endif
+# undef WSTOPSIG
+# ifndef WSTOPSIG
+#  define WSTOPSIG(stat)    (((*((int *) &(stat))) >> 8) & 0xff)
+# endif /* !WSTOPSIG */
 
 #endif /* 0 */
 
@@ -85,33 +85,33 @@ EXTERN int exp_flageq_code _ANSI_ARGS_((char *,char *,int));
 
 #undef WIFEXITED
 #ifndef WIFEXITED
-#   define WIFEXITED(stat)  (((stat) & 0xff) == 0)
-#endif
+# define WIFEXITED(stat)  (((stat) & 0xff) == 0)
+#endif /* !WIFEXITED */
 
 #undef WEXITSTATUS
 #ifndef WEXITSTATUS
-#   define WEXITSTATUS(stat) (((stat) >> 8) & 0xff)
-#endif
+# define WEXITSTATUS(stat) (((stat) >> 8) & 0xff)
+#endif /* !WEXITSTATUS */
 
 #undef WIFSIGNALED
 #ifndef WIFSIGNALED
-#   define WIFSIGNALED(stat) ((stat) && ((stat) == ((stat) & 0x00ff)))
-#endif
+# define WIFSIGNALED(stat) ((stat) && ((stat) == ((stat) & 0x00ff)))
+#endif /* !WIFSIGNALED */
 
 #undef WTERMSIG
 #ifndef WTERMSIG
-#   define WTERMSIG(stat)    ((stat) & 0x7f)
-#endif
+# define WTERMSIG(stat)    ((stat) & 0x7f)
+#endif /* !WTERMSIG */
 
 #undef WIFSTOPPED
 #ifndef WIFSTOPPED
-#   define WIFSTOPPED(stat)  (((stat) & 0xff) == 0177)
-#endif
+# define WIFSTOPPED(stat)  (((stat) & 0xff) == 0177)
+#endif /* !WIFSTOPPED */
 
 #undef WSTOPSIG
 #ifndef WSTOPSIG
-#   define WSTOPSIG(stat)    (((stat) >> 8) & 0xff)
-#endif
+# define WSTOPSIG(stat)    (((stat) >> 8) & 0xff)
+#endif /* !WSTOPSIG */
 
 
 
@@ -127,7 +127,7 @@ EXTERN int exp_flageq_code _ANSI_ARGS_((char *,char *,int));
 #define exp_is_devttyfd(x)	((x) == exp_dev_tty)
 
 #define EXP_NOPID	0	/* Used when there is no associated pid to */
-				/* wait for.  For example: */
+				/* wait for. For example: */
 				/* 1) When fd opened by someone else, e.g., */
 				/* Tcl's open */
 				/* 2) When entry not in use */
@@ -143,8 +143,8 @@ EXTERN int exp_flageq_code _ANSI_ARGS_((char *,char *,int));
 #define EXP_CMD_BG	2
 #define EXP_CMD_FG	3
 
-/* each process is associated with a 'struct exp_f'.  An array of these */
-/* ('exp_fs') keeps track of all processes.  They are indexed by the true fd */
+/* each process is associated with a 'struct exp_f'. An array of these */
+/* ('exp_fs') keeps track of all processes. They are indexed by the true fd */
 /* to the master side of the pty */
 struct exp_f {
 	int *fd_ptr;
@@ -152,7 +152,7 @@ struct exp_f {
 	struct exp_f **ptr;	/* our own address to this exp_f */
 			/* since address can change, provide this indirect */
 			/* pointer for people (Tk) who require a fixed ptr */
-#endif
+#endif /* 0 */
 	int pid;	/* pid or EXP_NOPID if no pid */
 	char *buffer;	/* input buffer */
 	char *lower;	/* input buffer in lowercase */
@@ -187,10 +187,10 @@ struct exp_f {
 	Tcl_File MasterOutput;	/* corresponds to tcl_output */
 	/*
 	 *  Following comment only applies to Tcl 7.6:
-	 *  Explicit fds aren't necessary now, but since the code is already
-	 *  here from before Tcl required Tcl_File, we'll continue using
-	 *  the old fds.  If we ever port this code to a non-UNIX system,
-	 *  we'll dump the fds totally.
+	 *  Explicit fds are NOT necessary now, but since the code is already
+	 *  here from before Tcl required Tcl_File, we shall continue using
+	 *  the old fds. If we ever port this code to a non-UNIX system,
+	 *  we will dump the fds totally.
 	 */
 #endif /* TCL_MAJOR_VERSION < 8 */
 
@@ -235,7 +235,7 @@ EXTERN void		exp_adjust _ANSI_ARGS_((struct exp_f *));
 EXTERN void		exp_buffer_shuffle _ANSI_ARGS_((Tcl_Interp *,struct exp_f *,int,char *,char *));
 EXTERN int		exp_close _ANSI_ARGS_((Tcl_Interp *,int));
 EXTERN void		exp_close_all _ANSI_ARGS_((Tcl_Interp *));
-EXTERN void		exp_ecmd_remove_fd_direct_and_indirect 
+EXTERN void		exp_ecmd_remove_fd_direct_and_indirect
 				_ANSI_ARGS_((Tcl_Interp *,int));
 EXTERN void		exp_trap_on _ANSI_ARGS_((int));
 EXTERN int		exp_trap_off _ANSI_ARGS_((char *));
@@ -293,7 +293,7 @@ struct exp_i {
 			/* lose relevance as the fd_list is manipulated */
 			/* over time.  If type == direct, this is  the */
 			/* cached value of variable use this to tell if it */
-			/* has changed or not, and ergo whether it's */
+			/* has changed or not, and ergo whether it is */
 			/* necessary to reparse. */
 
 	int ecount;	/* # of ecases this is used by */
@@ -317,22 +317,22 @@ EXTERN void		exp_i_update _ANSI_ARGS_((Tcl_Interp *,
  * definitions for creating commands
  */
 
-#define EXP_NOPREFIX	1	/* don't define with "exp_" prefix */
+#define EXP_NOPREFIX	1	/* do NOT define with "exp_" prefix */
 #define EXP_REDEFINE	2	/* stomp on old commands with same name */
 
 /* a hack for easily supporting both Tcl 7 and 8 CreateCommand/Obj split */
 /* Can be discarded with Tcl 7 is. */
 #if TCL_MAJOR_VERSION < 8
-#define exp_proc(cmdproc) cmdproc
+# define exp_proc(cmdproc) cmdproc
 #else
-#define exp_proc(cmdproc) 0, cmdproc
-#endif
+# define exp_proc(cmdproc) 0, cmdproc
+#endif /* Tcl < 8 */
 
 struct exp_cmd_data {
 	char		*name;
 #if TCL_MAJOR_VERSION >= 8
 	Tcl_ObjCmdProc	*objproc;
-#endif
+#endif /* Tcl >= 8 */
 	Tcl_CmdProc	*proc;
 	ClientData	data;
 	int 		flags;
@@ -347,3 +347,4 @@ EXTERN void		exp_init_trap_cmds _ANSI_ARGS_((Tcl_Interp *));
 EXTERN void		exp_init_interact_cmds _ANSI_ARGS_((Tcl_Interp *));
 EXTERN void		exp_init_tty_cmds();
 
+/* EOF */

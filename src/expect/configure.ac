@@ -118,17 +118,17 @@ dnl# AC_PROG_CC insists on sticking crap -g and -O in CFLAGS
 dnl# but I want to control it. Cannot just throw it out at the
 dnl# end alas, because the user might have defined CFLAGS.
 dnl# CYGNUS LOCAL: just use AC_PROG_CC; we do NOT care.
-OLD_CFLAGS=$CFLAGS
-if test "x$CC" = "x"; then
-	test -z "$CC"
+OLD_CFLAGS=${CFLAGS}
+if test "x${CC}" = "x"; then
+	test -z "${CC}"
 	AC_PROG_CC
 else
-	test ! -z "$CC"
+	test ! -z "${CC}"
 	AC_PROG_GCC_TRADITIONAL
 	AC_PROG_CPP
 	CY_AC_C_WORKS
 fi
-CFLAGS=$OLD_CFLAGS
+CFLAGS=${OLD_CFLAGS}
 dnl# END CYGNUS LOCAL
 
 # this will use a BSD compatible install or our included install-sh
@@ -136,9 +136,16 @@ AC_PROG_INSTALL
 
 # Tcl sets TCL_RANLIB appropriately for shared library if --enable-shared
 AC_PROG_RANLIB
-UNSHARED_RANLIB=$RANLIB
+UNSHARED_RANLIB=${RANLIB}
 
 # Other programs
+if test "x${CPP}" = "x"; then
+	test -z "${CPP}"
+	AC_PROG_CPP
+else
+	test ! -z "${CPP}" && export CPP
+	AC_SUBST([CPP])
+fi
 AC_PROG_CXX
 AC_PROG_LN_S
 
@@ -169,7 +176,7 @@ dnl# End what used to be AC\_TYPE\_SIGNAL
 AC_HEADER_TIME
 AC_HEADER_SYS_WAIT
 
-EXP_CFLAGS="$EXP_CFLAGS $EXP_CYGWIN_ALTTCL"
+EXP_CFLAGS="${EXP_CFLAGS} ${EXP_CYGWIN_ALTTCL}"
 
 AC_MSG_CHECKING([if running Mach])
 mach=0
@@ -188,7 +195,7 @@ fi
 
 AC_MSG_CHECKING([if running MachTen])
 # yet another Mach clone (for Classic MacOS)
-if test -r /MachTen -a "$cross_compiling" != "yes" ; then
+if test -r /MachTen -a "${cross_compiling}" != "yes" ; then
   AC_MSG_RESULT([yes])
   mach=1
 else
@@ -196,7 +203,7 @@ else
 fi
 
 AC_MSG_CHECKING([if on Pyramid])
-if test -r /bin/pyr -a "$cross_compiling" != "yes" ; then
+if test -r /bin/pyr -a "${cross_compiling}" != "yes" ; then
   AC_MSG_RESULT([yes])
   pyr=1
 else
@@ -205,7 +212,7 @@ else
 fi
 
 AC_MSG_CHECKING([if on Apollo])
-if test -r /usr/apollo/bin -a "$cross_compiling" != "yes" ; then
+if test -r /usr/apollo/bin -a "${cross_compiling}" != "yes" ; then
   AC_MSG_RESULT([yes])
   apollo=1
 else
@@ -225,7 +232,7 @@ fi
 AC_MSG_CHECKING([if stty reads stdout])
 
 # On some systems stty cannot be run in the background (svr4) or get it
-# wrong because they fail to complain (next, mach), so don't attempt
+# wrong because they fail to complain (NeXT, mach), so do NOT attempt
 # the test on some systems.
 
 stty_reads_stdout=""
@@ -247,13 +254,13 @@ case "${host}" in
   *-*-cygwin*)		stty_reads_stdout=0 ;;
 esac
 
-if test $mach -eq 1 ; then
+if test ${mach} -eq 1 ; then
   stty_reads_stdout=1
 fi
-if test $apollo -eq 1 ; then
+if test ${apollo} -eq 1 ; then
   stty_reads_stdout=1
 fi
-if test $pyr -eq 1 ; then
+if test ${pyr} -eq 1 ; then
   stty_reads_stdout=1
 fi
 
@@ -347,9 +354,11 @@ fi
 #
 # Incidentally, the debugger cannot depend on Expect's cf file, because
 # the debugger is designed to be independent of Expect.
-# 
+#
 
-test -n "$verbose" && echo "configuring Tcl debugger"
+export verbose=1
+
+test -n "${verbose}" && echo "configuring Tcl debugger"
 tmpdir=./Dbg$$
 mkdir ${tmpdir}
 
@@ -362,33 +371,37 @@ fi
 # This is required because the debugger src is at a different level in
 # the filesystem than Expect src (where we are presently), thereby
 # making the relative pathnames incorrect.
-if test "x$with_tclconfig" != "x" ; then
-  dbg_config_flags="$dbg_config_flags --with-tclconfig=`(cd ${with_tclconfig}; pwd)`"
+if test "x${with_tclconfig}" != "x" ; then
+  dbg_config_flags="${dbg_config_flags} --with-tclconfig=`(cd ${with_tclconfig}; pwd)`"
 fi
-if test "x$with_tcllibdir" != "x" ; then
-  dbg_config_flags="$dbg_config_flags --with-tcllibdir=`(cd ${with_tcllibdir}; pwd)`"
+if test "x${with_tcllibdir}" != "x" ; then
+  dbg_config_flags="${dbg_config_flags} --with-tcllibdir=`(cd ${with_tcllibdir}; pwd)`"
 fi
-if test "x$with_tcllib" != "x" ; then
-  dbg_config_flags="$dbg_config_flags --with-tcllib=`(cd ${with_tcllib}; pwd)`"
+if test "x${with_tcllib}" != "x" ; then
+  dbg_config_flags="${dbg_config_flags} --with-tcllib=`(cd ${with_tcllib}; pwd)`"
 fi
-if test "x$with_tclinclude" != "x" ; then
-  dbg_config_flags="$dbg_config_flags --with-tclinclude=`(cd ${with_tclinclude}; pwd)`"
+if test "x${with_tclinclude}" != "x" ; then
+  dbg_config_flags="${dbg_config_flags} --with-tclinclude=`(cd ${with_tclinclude}; pwd)`"
 fi
 case "$cache_file" in
  /*)
-    dbg_config_flags="$dbg_config_flags --cache-file=$cache_file"
+    dbg_config_flags="${dbg_config_flags} --cache-file=${cache_file}"
     ;;
  *)
-    dbg_config_flags="$dbg_config_flags --cache-file=../$cache_file"
+    dbg_config_flags="${dbg_config_flags} --cache-file=../${cache_file}"
     ;;
 esac
 
-cp ${srcdir}/Dbgconfigure ${srcdir}/Dbg.h ${srcdir}/Dbg_cf.h.in ${srcdir}/install-sh ${tmpdir}
-cp $srcdir/DbgMkfl.in ${tmpdir}/Makefile.in
-  (cd $tmpdir; ${CONFIG_SHELL-/bin/sh} Dbgconfigure --with-tclinclude=`echo ${TCLHDIR} | sed -e 's/-I//'` $dbg_config_flags)
+cp ${srcdir}/Dbgconfigure ${srcdir}/Dbgconfigure.sh ${srcdir}/Dbg.h ${srcdir}/Dbg_cf.h.in ${srcdir}/install-sh ${tmpdir}
+cp ${srcdir}/DbgMkfl.in ${tmpdir}/Makefile.in
+cp ${srcdir}/DbgMkfl.in ${tmpdir}
+cp ${srcdir}/DbgpkgInd.in ${tmpdir}
+  (cd ${tmpdir}; ${CONFIG_SHELL-/bin/sh} Dbgconfigure --with-tclinclude=`echo ${TCLHDIR} | sed -e 's/-I//'` ${dbg_config_flags})
+cp ${tmpdir}/config.status ./Dbgconfig.status
 cp ${tmpdir}/Dbg_cf.h .
-rm -rf $tmpdir
-test -n "$verbose" && echo "configured Tcl debugger"
+cp ${tmpdir}/DbgMkfl .
+rm -rf ${tmpdir}
+test -n "${verbose}" && echo "configured Tcl debugger"
 
 # some people would complain if this explanation had not been provided...
 
@@ -400,26 +413,26 @@ echo "2nd set is for building with Tcl. 3rd is for building with Tk."
 # required by Sequent ptx2
 unset ac_cv_func_gethostname
 AC_CHECK_FUNC([gethostname],[gethostname=1],[gethostname=0])
-if test $gethostname -eq 0 ; then
+if test ${gethostname} -eq 0 ; then
   unset ac_cv_lib_inet_gethostname
   AC_CHECK_LIB([inet],[gethostname],[LIBS="$LIBS -linet"],[
     AC_CHECK_LIB([inet],[main])
   ])
 fi
 # save results and retry for Tcl
-EXP_LIBS=$LIBS
-LIBS=$EXP_AND_TCL_LIBS
+EXP_LIBS=${LIBS}
+LIBS=${EXP_AND_TCL_LIBS}
 unset ac_cv_func_gethostname
 AC_CHECK_FUNC([gethostname],[gethostname=1],[gethostname=0])
-if test $gethostname -eq 0 ; then
+if test ${gethostname} -eq 0 ; then
   unset ac_cv_lib_inet_gethostname
   AC_CHECK_LIB([inet],[gethostname],[LIBS="$LIBS -linet"],[
     AC_CHECK_LIB([inet],[main])
   ])
 fi
 # save Tcl results and retry for Tk
-EXP_AND_TCL_LIBS=$LIBS
-LIBS=$EXP_AND_TK_LIBS
+EXP_AND_TCL_LIBS=${LIBS}
+LIBS=${EXP_AND_TK_LIBS}
 unset ac_cv_func_gethostname
 AC_CHECK_FUNC([gethostname],[gethostname=1],[gethostname=0])
 if test $gethostname -eq 0 ; then
@@ -429,14 +442,14 @@ if test $gethostname -eq 0 ; then
   ])
 fi
 # save Tk results and reset for Expect
-EXP_AND_TK_LIBS=$LIBS
-LIBS=$EXP_LIBS
+EXP_AND_TK_LIBS=${LIBS}
+LIBS=${EXP_LIBS}
 
 ######################################################################
 # required by Fischman's ISC 4.0
 unset ac_cv_func_socket
 AC_CHECK_FUNC([socket],[socket=1],[socket=0])
-if test $socket -eq 0 ; then
+if test ${socket} -eq 0 ; then
   unset ac_cv_lib_inet_socket
   AC_CHECK_LIB([inet],[socket],[LIBS="$LIBS -linet"],[
     AC_CHECK_LIB([socket],[socket],[LIBS="$LIBS -lsocket"],[
@@ -446,11 +459,11 @@ if test $socket -eq 0 ; then
   ])
 fi
 # save results and retry for Tcl
-EXP_LIBS=$LIBS
-LIBS=$EXP_AND_TCL_LIBS
+EXP_LIBS=${LIBS}
+LIBS=${EXP_AND_TCL_LIBS}
 unset ac_cv_func_socket
 AC_CHECK_FUNC([socket],[socket=1],[socket=0])
-if test $socket -eq 0 ; then
+if test ${socket} -eq 0 ; then
   unset ac_cv_lib_inet_socket
   AC_CHECK_LIB([inet],[socket],[LIBS="$LIBS -linet"],[
     AC_CHECK_LIB([socket],[socket],[LIBS="$LIBS -lsocket"],[
@@ -460,11 +473,11 @@ if test $socket -eq 0 ; then
   ])
 fi
 # save Tcl results and retry for Tk
-EXP_AND_TCL_LIBS=$LIBS
-LIBS=$EXP_AND_TK_LIBS
+EXP_AND_TCL_LIBS=${LIBS}
+LIBS=${EXP_AND_TK_LIBS}
 unset ac_cv_func_socket
 AC_CHECK_FUNC([socket],[socket=1],[socket=0])
-if test $socket -eq 0 ; then
+if test ${socket} -eq 0 ; then
   unset ac_cv_lib_inet_socket
   AC_CHECK_LIB([inet],[socket],[LIBS="$LIBS -linet"],[
     AC_CHECK_LIB([socket],[socket],[LIBS="$LIBS -lsocket"],[
@@ -474,48 +487,48 @@ if test $socket -eq 0 ; then
   ])
 fi
 # save Tk results and reset for Expect
-EXP_AND_TK_LIBS=$LIBS
-LIBS=$EXP_LIBS
+EXP_AND_TK_LIBS=${LIBS}
+LIBS=${EXP_LIBS}
 
 ######################################################################
 unset ac_cv_func_select
 AC_CHECK_FUNC([select],[select=1],[select=0])
-if test $select -eq 0 ; then
+if test ${select} -eq 0 ; then
   unset ac_cv_lib_inet_select
   AC_CHECK_LIB([inet],[select],[LIBS="$LIBS -linet"],[
     AC_CHECK_LIB([inet],[main])
   ])
 fi
 # save results and retry for Tcl
-EXP_LIBS=$LIBS
-LIBS=$EXP_AND_TCL_LIBS
+EXP_LIBS=${LIBS}
+LIBS=${EXP_AND_TCL_LIBS}
 unset ac_cv_func_select
 AC_CHECK_FUNC([select],[select=1],[select=0])
-if test $select -eq 0 ; then
+if test ${select} -eq 0 ; then
   unset ac_cv_lib_inet_select
   AC_CHECK_LIB([inet],[select],[LIBS="$LIBS -linet"],[
     AC_CHECK_LIB([inet],[main])
   ])
 fi
 # save Tcl results and retry for Tk
-EXP_AND_TCL_LIBS=$LIBS
-LIBS=$EXP_AND_TK_LIBS
+EXP_AND_TCL_LIBS=${LIBS}
+LIBS=${EXP_AND_TK_LIBS}
 unset ac_cv_func_select
 AC_CHECK_FUNC([select],[select=1],[select=0])
-if test $select -eq 0 ; then
+if test ${select} -eq 0 ; then
   unset ac_cv_lib_inet_select
   AC_CHECK_LIB([inet],[select],[LIBS="$LIBS -linet"],[
     AC_CHECK_LIB([inet],[main])
   ])
 fi
 # save Tk results and reset for Expect
-EXP_AND_TK_LIBS=$LIBS
-LIBS=$EXP_LIBS
+EXP_AND_TK_LIBS=${LIBS}
+LIBS=${EXP_LIBS}
 
 ######################################################################
 unset ac_cv_func_getpseudotty
 AC_CHECK_FUNC([getpseudotty],[getpseudotty=1],[getpseudotty=0])
-if test $getpseudotty -eq 0 ; then
+if test ${getpseudotty} -eq 0 ; then
   unset ac_cv_lib_seq_getpseudotty
   AC_CHECK_LIB([seq],[getpseudotty],[],[
     unset ac_cv_lib_seq_main
@@ -523,11 +536,11 @@ if test $getpseudotty -eq 0 ; then
   ])
 fi
 # save results and retry for Tcl
-EXP_LIBS=$LIBS
-LIBS=$EXP_AND_TCL_LIBS
+EXP_LIBS=${LIBS}
+LIBS=${EXP_AND_TCL_LIBS}
 unset ac_cv_func_getpseudotty
 AC_CHECK_FUNC([getpseudotty],[getpseudotty=1],[getpseudotty=0])
-if test $getpseudotty -eq 0 ; then
+if test ${getpseudotty} -eq 0 ; then
   unset ac_cv_lib_seq_getpseudotty
   AC_CHECK_LIB([seq],[getpseudotty],[],[
     unset ac_cv_lib_seq_main
@@ -535,11 +548,11 @@ if test $getpseudotty -eq 0 ; then
   ])
 fi
 # save Tcl results and retry for Tk
-EXP_AND_TCL_LIBS=$LIBS
-LIBS=$EXP_AND_TK_LIBS
+EXP_AND_TCL_LIBS=${LIBS}
+LIBS=${EXP_AND_TK_LIBS}
 unset ac_cv_func_getpseudotty
 AC_CHECK_FUNC([getpseudotty],[getpseudotty=1],[getpseudotty=0])
-if test $getpseudotty -eq 0 ; then
+if test ${getpseudotty} -eq 0 ; then
   unset ac_cv_lib_seq_getpseudotty
   AC_CHECK_LIB([seq],[getpseudotty],[],[
     unset ac_cv_lib_seq_main
@@ -547,8 +560,8 @@ if test $getpseudotty -eq 0 ; then
   ])
 fi
 # save Tk results and reset for Expect
-EXP_AND_TK_LIBS=$LIBS
-LIBS=$EXP_LIBS
+EXP_AND_TK_LIBS=${LIBS}
+LIBS=${EXP_LIBS}
 
 ######################################################################
 # Check for FreeBSD/NetBSD openpty()
@@ -574,8 +587,8 @@ case "${host}" in
     ])
   fi
   # save results and retry for Tcl
-  EXP_LIBS=$LIBS
-  LIBS=$EXP_AND_TCL_LIBS
+  EXP_LIBS=${LIBS}
+  LIBS=${EXP_AND_TCL_LIBS}
   unset ac_cv_func_openpty
   AC_CHECK_FUNC([openpty],[openpty=1],[openpty=0])
   if test $openpty -eq 0 ; then
@@ -588,8 +601,8 @@ case "${host}" in
     ])
   fi
   # save Tcl results and retry for Tk
-  EXP_AND_TCL_LIBS=$LIBS
-  LIBS=$EXP_AND_TK_LIBS
+  EXP_AND_TCL_LIBS=${LIBS}
+  LIBS=${EXP_AND_TK_LIBS}
   unset ac_cv_func_openpty
   AC_CHECK_FUNC([openpty],[openpty=1],[openpty=0])
   if test $openpty -eq 0 ; then
@@ -602,8 +615,8 @@ case "${host}" in
     ])
   fi
   # save Tk results and reset for Expect
-  EXP_AND_TK_LIBS=$LIBS
-  LIBS=$EXP_LIBS
+  EXP_AND_TK_LIBS=${LIBS}
+  LIBS=${EXP_LIBS}
 ;;
 esac
 
@@ -626,10 +639,10 @@ AC_CHECK_HEADERS([stdlib.h],[],[
   AC_DEFINE([NO_STDLIB_H],[1],[Define to 1 if there is no stdlib.h header file.])
 ])
 
-AC_CHECK_HEADERS([errno.h fcntl.h malloc.h malloc/malloc.h mem/memory.h \
-                  setjmp.h sgtty.h signal.h stdarg.h stdio.h sys/file.h \
-                  sys/ioctl.h sys/time.h termio.h termios.h time.h \
-                  utmp.h varargs/varargs.h])
+AC_CHECK_HEADERS([ctype.h errno.h fcntl.h malloc.h malloc/malloc.h math.h \
+                  mem/memory.h poll.h setjmp.h sgtty.h signal.h stdarg.h \
+                  stdio.h sys/file.h sys/ioctl.h sys/poll.h sys/time.h \
+                  termio.h termios.h time.h utmp.h varargs/varargs.h])
 
 #
 # Look for inttypes.h. Sometimes there are data type conflicts
@@ -656,6 +669,8 @@ fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
+AC_CHECK_TYPES([caddr_t])
+AC_CHECK_TYPES([mblk_t])
 AC_CHECK_MEMBERS([struct stat.st_rdev])
 
 #
@@ -667,10 +682,10 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 unset ac_cv_func_gethostname
 unset ac_cv_func_select
-AC_CHECK_FUNCS([dup2 exit gethostname gettimeofday ioctl isascii memmove \
-                memset pow re_comp regcomp regexec select strchr \
-                strcpy strcspn strftime strlen strrchr strstr sysconf \
-                system timezone])
+AC_CHECK_FUNCS([dup2 exit gethostname gettimeofday ioctl isascii isspace \
+                log memmove memset pow re_comp regcomp regexec select \
+                strchr strcpy strcspn strftime strlen strrchr strstr \
+                sysconf system time timezone])
 
 dnl# check for memcpy by hand
 # because Unixware 2.0 handles it specially and refuses to compile
@@ -813,7 +828,7 @@ case "${host}" in
   c[[12]]-*-*)		convex=1;;
 esac
 
-if test $convex -eq 1 ; then
+if test ${convex} -eq 1 ; then
   AC_MSG_RESULT([yes])
   AC_DEFINE([CONVEX],[1],[Define to 1 if we are on Convex])
 else
@@ -823,10 +838,10 @@ fi
 EXP_LDFLAGS=
 
 AC_MSG_CHECKING([if on NeXT])
-if test -r /NextApps -a "$cross_compiling" != "yes" ; then
+if test -r /NextApps -a "${cross_compiling}" != "yes" ; then
   AC_MSG_RESULT([yes])
   # "-m" flag suppresses complaints about multiple strtod
-  EXP_LDFLAGS="$EXP_LDFLAGS -m"
+  EXP_LDFLAGS="${EXP_LDFLAGS} -m"
 else
   AC_MSG_RESULT([no])
 fi
@@ -844,15 +859,15 @@ fi
 AC_MSG_CHECKING([sane default stty arguments])
 DEFAULT_STTY_ARGS="sane"
 
-if test $mach -eq 1 ; then
+if test ${mach} -eq 1 ; then
 	DEFAULT_STTY_ARGS="cooked"
 fi
 
-if test $hp -eq 1 ; then
+if test ${hp} -eq 1 ; then
 	DEFAULT_STTY_ARGS="sane kill "
 fi
 
-AC_MSG_RESULT([$DEFAULT_STTY_ARG])
+AC_MSG_RESULT([${DEFAULT_STTY_ARG}])
 
 # Look for various features to determine what kind of pty
 # we have. For some weird reason, ac_compile_check would not
@@ -875,7 +890,7 @@ AC_EGREP_HEADER([struct.*request_info],[sys/ptyio.h],[AC_MSG_RESULT([yes])
 ])
 
 AC_MSG_CHECKING([for AIX new-style pty allocation])
-if test -r /dev/ptc -a -r /dev/pts -a "$cross_compiling" != "yes" ; then
+if test -r /dev/ptc -a -r /dev/pts -a "${cross_compiling}" != "yes" ; then
     AC_MSG_RESULT([yes])
     AC_DEFINE([HAVE_PTC_PTS],[1],[Define to 1 for AIX new-style pty allocation])
 else
@@ -883,7 +898,7 @@ else
 fi
 
 AC_MSG_CHECKING([for SGI old-style pty allocation])
-if test -r /dev/ptc -a ! -r /dev/pts -a "$cross_compiling" != "yes" ; then
+if test -r /dev/ptc -a ! -r /dev/pts -a "${cross_compiling}" != "yes" ; then
     AC_MSG_RESULT(yes)
     AC_DEFINE([HAVE_PTC],[1],[Define to 1 for SGI old-style pty allocation])
 else
@@ -984,9 +999,11 @@ main()
 	 esac
 ])
 
+AC_SYS_POSIX_TERMIOS
+
 # mach systems have include files for unimplemented features
 # so avoid doing following test on those systems
-if test $mach -eq 0 ; then
+if test ${mach} -eq 0 ; then
 
   # next check for the older style ttys
   # note that if we detect termio.h (only), we still set PTY_TYPE=termios
@@ -1055,6 +1072,8 @@ main() {
 	 esac
 ])
 
+AC_HEADER_TIOCGWINSZ
+
 AC_MSG_CHECKING([if TIOCGWINSZ is in termios.h])
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 /* including termios.h on Solaris 5.6 fails unless inttypes.h included */
@@ -1087,7 +1106,7 @@ main(){
 	return 0;
 #else
 	return 1;
-#endif
+#endif /* CRAY */
 }
 ]])],[PTY_TYPE=unicos
 	SETUID="chmod u+s"
@@ -1109,11 +1128,11 @@ unset ac_cv_func_select
 AC_CHECK_FUNC([select],[select=1])
 AC_CHECK_FUNC([poll],[poll=1])
 AC_MSG_CHECKING([event handling])
-if test $select -eq 1 ; then
+if test ${select} -eq 1 ; then
   EVENT_TYPE=select
   EVENT_ABLE=event
   AC_MSG_RESULT([via select])
-elif test $poll -eq 1 ; then
+elif test ${poll} -eq 1 ; then
   EVENT_TYPE=poll
   EVENT_ABLE=event
   AC_MSG_RESULT([via poll])
@@ -1150,12 +1169,13 @@ main()
 
 # only look for Tk stuff if we have X11 and user does NOT say not to
 AC_ARG_WITH([x],[AS_HELP_STRING([--with-x],[whether or not to use X (default yes)])],[],[with_x=yes])
-if test "$with_x" = "no"; then
+if test "${with_x}" = "no"; then
    no_tk=true
 else
    CY_AC_PATH_TKH
+   _AC_PATH_X_XMKMF
 fi
-if test x"$no_tk" != x"true" ; then
+if test x"${no_tk}" != x"true" ; then
 # libexpectk no longer exists
   X_PROGS=expectk
 # should really generate following symbol, but I am hitting configure's
@@ -1201,8 +1221,8 @@ fi
 # (are there really systems which support shared libs and restrict
 # filename lengths!?)
 AC_SYS_LONG_FILE_NAMES
-if test $ac_cv_sys_long_file_names = no; then
-    EXP_LIB_VERSION=$EXP_VERSION_NODOTS
+if test ${ac_cv_sys_long_file_names} = no; then
+    EXP_LIB_VERSION=${EXP_VERSION_NODOTS}
 fi
 
 EXP_BUILD_LIB_SPEC="-L`pwd` -lexpect${EXP_LIB_VERSION}"
@@ -1318,5 +1338,7 @@ AC_SUBST([EVENT_ABLE])
 AC_SUBST([SETUID])
 AC_SUBST([UNSHARED_RANLIB])
 AC_SUBST([DEFAULT_STTY_ARGS])
-AC_CONFIG_FILES([Makefile pkgIndex])
+AC_CONFIG_FILES([Makefile \
+	pkgIndex])
+AC_CONFIG_COMMANDS([default],[chmod +x ${srcdir}/install-sh ${srcdir}/mkinstalldirs],[])
 AC_OUTPUT

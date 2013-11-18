@@ -159,10 +159,10 @@ static char *errMsg = NULL;
  * Utility definitions.
  */
 #ifndef CHARBITS
-#define	UCHARAT(p)	((int)*(unsigned char *)(p))
+# define	UCHARAT(p)	((int)*(unsigned char *)(p))
 #else
-#define	UCHARAT(p)	((int)*(p)&CHARBITS)
-#endif
+# define	UCHARAT(p)	((int)*(p)&CHARBITS)
+#endif /* !CHARBITS */
 
 #define	FAIL(m)	{ Expect_TclRegError(m); return(NULL); }
 #define	ISMULT(c)	((c) == '*' || (c) == '+' || (c) == '?')
@@ -182,7 +182,7 @@ static char *errMsg = NULL;
 struct regcomp_state  {
     char *regparse;		/* Input-scan pointer. */
     int regnpar;		/* () count. */
-    char *regcode;		/* Code-emit pointer; &regdummy = don't. */
+    char *regcode;		/* Code-emit pointer; &regdummy = do NOT. */
     long regsize;		/* Code size. */
 };
 
@@ -219,18 +219,18 @@ static void 		regtail _ANSI_ARGS_((char *p, char *val));
 
 #ifdef STRCSPN
 static int strcspn _ANSI_ARGS_((char *s1, char *s2));
-#endif
+#endif /* STRCSPN */
 
 /*
  - TclRegComp - compile a regular expression into internal code
  *
- * We can't allocate space until we know how big the compiled form will be,
- * but we can't compile it (and thus know how big it is) until we've got a
- * place to put the code.  So we cheat:  we compile it twice, once with code
+ * We cannot allocate space until we know how big the compiled form will be,
+ * but we cannot compile it (and thus know how big it is) until we have got a
+ * place to put the code. So we cheat:  we compile it twice, once with code
  * generation turned off and size counting turned on, and once "for real".
- * This also means that we don't allocate space until we are sure that the
+ * This also means that we do NOT allocate space until we are sure that the
  * thing really will compile successfully, and we never have to move the
- * code and thus invalidate pointers into it.  (Note that it has to be in
+ * code and thus invalidate pointers into it. (Note that it has to be in
  * one piece because free() must be able to free it all.)
  *
  * Beware that the optimization-preparation code in here knows about some
@@ -293,9 +293,9 @@ char *exp;
 			r->reganch++;
 
 		/*
-		 * If there's something expensive in the r.e., find the
+		 * If there is/was something expensive in the r.e., find the
 		 * longest literal string that must appear and make it the
-		 * regmust.  Resolve ties in favor of later strings, since
+		 * regmust. Resolve ties in favor of later strings, since
 		 * the regstart check works with the beginning of the r.e.
 		 * and avoiding duplication strengthens checking.  Not a
 		 * strong reason, but sufficient in the absence of others.
@@ -372,7 +372,7 @@ struct regcomp_state *rcstate;
 	}
 
 	/* Make a closing node, and hook it on the end. */
-	ender = regnode((paren) ? CLOSE+parno : END,rcstate);	
+	ender = regnode((paren) ? CLOSE+parno : END,rcstate);
 	regtail(ret, ender);
 
 	/* Hook the tails of the branches to the closing node. */
@@ -386,7 +386,7 @@ struct regcomp_state *rcstate;
 		if (*rcstate->regparse == ')') {
 			FAIL("unmatched ()");
 		} else
-			FAIL("junk on end");	/* "Can't happen". */
+			FAIL("junk on end");	/* "Cannot happen". */
 		/* NOTREACHED */
 	}
 
@@ -499,10 +499,10 @@ struct regcomp_state *rcstate;
 /*
  - regatom - the lowest level
  *
- * Optimization:  gobbles an entire sequence of ordinary characters so that
+ * Optimization: gobbles an entire sequence of ordinary characters so that
  * it can turn them into a single node, which is smaller to store and
- * faster to run.  Backslashed characters are exceptions, each becoming a
- * separate node; the code is simpler that way and it's not worth fixing.
+ * faster to run. Backslashed characters are exceptions, each becoming a
+ * separate node; the code is simpler that way and it is not worth fixing.
  */
 static char *
 regatom(flagp, rcstate)
@@ -767,7 +767,7 @@ static int 		regrepeat _ANSI_ARGS_((char *p,
 int regnarrate = 0;
 void regdump _ANSI_ARGS_((Expect_regexp *r));
 static char *regprop _ANSI_ARGS_((char *op));
-#endif
+#endif /* DEBUG */
 
 /*
  - TclRegExec - match a regexp against a string
@@ -824,7 +824,7 @@ char *start;
 			s++;
 		}
 	else
-		/* We don't -- general case. */
+		/* We do NOT -- general case. */
 		do {
 			if (regtry(prog, s, restate))
 				return(1);
@@ -868,10 +868,10 @@ struct regexec_state *restate;
 /*
  - regmatch - main matching routine
  *
- * Conceptually the strategy is simple:  check to see whether the current
+ * Conceptually the strategy is simple: check to see whether the current
  * node matches, call self recursively to see whether the rest matches,
- * and then act accordingly.  In practice we make some effort to avoid
- * recursion, in particular by going through "ordinary" nodes (that don't
+ * and then act accordingly. In practice we make some effort to avoid
+ * recursion, in particular by going through "ordinary" nodes (that do NOT
  * need to know whether the rest of the match failed) by a loop instead of
  * by recursion.
  */
@@ -887,12 +887,12 @@ struct regexec_state *restate;
 #ifdef DEBUG
     if (scan != NULL && regnarrate)
 	fprintf(stderr, "%s(\n", regprop(scan));
-#endif
+#endif /* DEBUG */
     while (scan != NULL) {
 #ifdef DEBUG
 	if (regnarrate)
 	    fprintf(stderr, "%s...\n", regprop(scan));
-#endif
+#endif /* DEBUG */
 	next = regnext(scan);
 
 	switch (OP(scan)) {
@@ -965,7 +965,7 @@ struct regexec_state *restate;
 
 		if (regmatch(next,restate)) {
 		    /*
-		     * Don't set startp if some later invocation of the
+		     * Do NOT set startp if some later invocation of the
 		     * same parentheses already has.
 		     */
 		    if (restate->regstartp[no] == NULL) {
@@ -994,7 +994,7 @@ struct regexec_state *restate;
 
 		if (regmatch(next,restate)) {
 				/*
-				 * Don't set endp if some later
+				 * Do NOT set endp if some later
 				 * invocation of the same parentheses
 				 * already has.
 				 */
@@ -1056,7 +1056,7 @@ struct regexec_state *restate;
 			    no = 0;
 		    }
 
-		    /* Couldn't or didn't -- back up. */
+		    /* Could NOT or did NOT -- back up. */
 		    no--;
 		    restate->reginput = save + no;
 		}
@@ -1078,7 +1078,7 @@ struct regexec_state *restate;
     }
 
     /*
-     * We get here only if there's trouble -- normally "case END" is
+     * We get here only if there is/was trouble -- normally "case END" is
      * the terminating point.
      */
     Expect_TclRegError("corrupted pointers");
@@ -1122,7 +1122,7 @@ struct regexec_state *restate;
 			scan++;
 		}
 		break;
-	default:		/* Oh dear.  Called inappropriately. */
+	default:		/* Oh dear. Called inappropriately. */
 		Expect_TclRegError("internal foulup");
 		count = 0;	/* Best compromise. */
 		break;
@@ -1171,13 +1171,13 @@ Expect_regexp *r;
 
 
 	s = r->program + 1;
-	while (op != END) {	/* While that wasn't END last time... */
+	while (op != END) {	/* While that was not END last time... */
 		op = OP(s);
 		printf("%2d%s", s-r->program, regprop(s));	/* Where, what. */
 		next = regnext(s);
 		if (next == NULL)		/* Next ptr. */
 			printf("(0)");
-		else 
+		else
 			printf("(%d)", (s-r->program)+(next-s));
 		s += 3;
 		if (op == ANYOF || op == ANYBUT || op == EXACTLY) {
@@ -1291,7 +1291,7 @@ char *op;
 		(void) strcat(buf, p);
 	return(buf);
 }
-#endif
+#endif /* DEBUG */
 
 /*
  * The following is provided for those people who do not have strcspn() in
@@ -1323,8 +1323,8 @@ char *s2;
 	}
 	return(count);
 }
-#endif
-
+#endif /* STRCSPN */
+
 /*
  *----------------------------------------------------------------------
  *
@@ -1356,4 +1356,6 @@ TclGetRegError()
 {
     return errMsg;
 }
-#endif 
+#endif /* Tcl > 8.2 */
+
+/* EOF */

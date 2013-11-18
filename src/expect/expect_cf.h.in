@@ -3,11 +3,20 @@
 /* Define to 1 if we are on Convex */
 #undef CONVEX
 
+/* Define to 1 if `TIOCGWINSZ' requires <sys/ioctl.h>. */
+#undef GWINSZ_IN_SYS_IOCTL
+
 /* Define to 1 if you have the `alarm' function. */
 #undef HAVE_ALARM
 
+/* Define to 1 if the system has the type `caddr_t'. */
+#undef HAVE_CADDR_T
+
 /* Define to 1 if your system has a working `chown' function. */
 #undef HAVE_CHOWN
+
+/* Define to 1 if you have the <ctype.h> header file. */
+#undef HAVE_CTYPE_H
 
 /* Define to 1 if you have the declaration of `I_PUSH', and to 0 if you don't.
    */
@@ -46,6 +55,9 @@
 /* Define to 1 if you have the `isascii' function. */
 #undef HAVE_ISASCII
 
+/* Define to 1 if you have the `isspace' function. */
+#undef HAVE_ISSPACE
+
 /* Define to 1 if you have the `inet' library (-linet). */
 #undef HAVE_LIBINET
 
@@ -61,6 +73,9 @@
 /* Define to 1 if you have the `util' library (-lutil). */
 #undef HAVE_LIBUTIL
 
+/* Define to 1 if you have the `log' function. */
+#undef HAVE_LOG
+
 /* Define to 1 if you support file names longer than 14 characters. */
 #undef HAVE_LONG_FILE_NAMES
 
@@ -73,6 +88,12 @@
 
 /* Define to 1 if you have the <malloc/malloc.h> header file. */
 #undef HAVE_MALLOC_MALLOC_H
+
+/* Define to 1 if you have the <math.h> header file. */
+#undef HAVE_MATH_H
+
+/* Define to 1 if the system has the type `mblk_t'. */
+#undef HAVE_MBLK_T
 
 /* Define to 1 if we have memcpy */
 #undef HAVE_MEMCPY
@@ -91,6 +112,9 @@
 
 /* Define to 1 if you have the openpty function. */
 #undef HAVE_OPENPTY
+
+/* Define to 1 if you have the <poll.h> header file. */
+#undef HAVE_POLL_H
 
 /* Define to 1 if you have the `pow' function. */
 #undef HAVE_POW
@@ -210,6 +234,9 @@
 /* Define to 1 if you have the <sys/ioctl.h> header file. */
 #undef HAVE_SYS_IOCTL_H
 
+/* Define to 1 if you have the <sys/poll.h> header file. */
+#undef HAVE_SYS_POLL_H
+
 /* Define to 1 if you have the <sys/ptem.h> header file. */
 #undef HAVE_SYS_PTEM_H
 
@@ -269,6 +296,9 @@
 
 /* Define to 1 if you have the <termio.h> header file. */
 #undef HAVE_TERMIO_H
+
+/* Define to 1 if you have the `time' function. */
+#undef HAVE_TIME
 
 /* Define to 1 if you have the `timezone' function. */
 #undef HAVE_TIMEZONE

@@ -2,12 +2,12 @@ Expect FAQ (Frequently Asked Questions)
 
 An HTML version of this FAQ can be found in http://elib.cme.nist.gov/pub/expect/FAQ.html
 
-This FAQ lists common questions, usually about subjects that didn't
-fit well in the book for one reason or another (or weren't
-indexed sufficiently well so that people can't find the answers easily
-enough).  In some cases, I've left the original questions.  I suppose
-I could've stripped off the headers, but it seems more realistic to
-see actual people who've asked the questions.  Thanks to everyone who
+This FAQ lists common questions, usually about subjects that did NOT
+fit well in the book for one reason or another (or were NOT
+indexed sufficiently well so that people cannot find the answers easily
+enough). In some cases, I have left the original questions. I suppose
+I could have stripped off the headers, but it seems more realistic to
+see actual people who have asked the questions. Thanks to everyone who
 asked.
 
 The man page and the papers listed in the README file should
@@ -18,9 +18,9 @@ Don
 
 ======================================================================
 
-		Here is the list of questions.  You can search for the corresponding
-		answer by searching for the question number.  For example searching
-		for "#3." will get you that answer.
+		Here is the list of questions. You can search for the
+		corresponding answer by searching for the question number.
+		For example searching for "#3." will get you that answer.
 
 
 **** General **** 
@@ -111,7 +111,7 @@ O'Reilly.
 
 You can ftp Expect from ftp.cme.nist.gov as pub/expect/expect.tar.Z or ...gz
 
-Expect requires Tcl.  If you don't already have Tcl, you can get it
+Expect requires Tcl. If you do NOT already have Tcl, you can get it
 in the same directory (above) as pub/expect/tcl.tar.Z or ...gz.
 
 Expect is free and in the public domain.
@@ -130,16 +130,16 @@ Date: Tue, 29 May 90 21:26:10 PDT
 
 Those of us in the family pronounce it "OH-stir-howt", where the
 first syllable rhymes with "low", the second with "purr", and the
-third with "doubt".  Unfortunately this isn't the correct Dutch
+third with "doubt".  Unfortunately this is NOT the correct Dutch
 pronounciation for a name spelled this way (someplace along
 the line it got misspelled:  it was originally "Oosterhout"), nor
-is it what you'd guess if you use common sense.  So, we've gotten
+is it what you would guess if you use common sense. So, we have gotten
 used to responding to almost anything.
 
 					-John-
 
-I suppose I should say something in kind.  "Libes" is pronounced
-"Lee-bis" with stress on the first syllable.  Like John though, I've
+I suppose I should say something in kind. "Libes" is pronounced
+"Lee-bis" with stress on the first syllable. Like John though, I have
 gotten used to responding to anything close.
 
 By the way, notice the date on this message.  I had only written
@@ -160,13 +160,13 @@ To: Aamod Sane <sane@cs.uiuc.edu>
 Subject: Re: Expect, Tcl, programmed dialogue etc.
 Date: Mon, 2 Sep 91 15:47:14 EDT
 
->	>>A friend told me about "Expect". But then, I have to know the
->	>>idiocies of "tcl". I would like to know if there is an alternative
->	>>to Expect that is also useful in other places, so that I do not
->	>>have to spend time getting used to tcl for just this one tool.
+> >>A friend told me about "Expect". But then, I have to know the
+> >>idiocies of "tcl". I would like to know if there is an alternative
+> >>to Expect that is also useful in other places, so that I do not
+> >>have to spend time getting used to tcl for just this one tool.
 >
->	Your reasoning is shortsighted.  Tcl is a language that can be used in
->	other applications.  It won't be a waste of your time to learn it.
+> Your reasoning is shortsighted. Tcl is a language that can be used in
+> other applications. It will NOT be a waste of your time to learn it.
 >
 >I have nothing against tcl as such.
 >The reluctance to learn it comes mainly from the feeling that half my
@@ -178,7 +178,7 @@ Date: Mon, 2 Sep 91 15:47:14 EDT
 Ironically, Tcl was written specifically to halt this very problem.
 
 The author recognized that every utility seems to have its own
-idiosyncratic .rc file or programming language.  Tcl was designed as a
+idiosyncratic .rc file or programming language. Tcl was designed as a
 general-purpose language that could be included with any utility, to
 avoid having everyone hack up their own new language.
 
@@ -197,34 +197,34 @@ Date: Sun, 22 Jan 95 20:17:39 EST
 
 Joe McGuckin writes:
 >
->Yeah, I've scanned through your book a couple of times in the last
+>Yeah, I have scanned through your book a couple of times in the last
 >week, trying to make up my mind if I should buy it.
 
-I spent three years writing it - so I'm glad to hear you're spending a
+I spent three years writing it - so I am glad to hear you are spending a
 little time considering its merit!
 
 >Pro:
 >   Looks like implementing some sort of telnet daemon would be trivial.
 
-Once you see it as an Expect script, you'll realize how trivial
+Once you see it as an Expect script, you will realize how trivial
 these things can really be.
 
 >Con:
 >   Yet another language to learn. I know perl reasonably well & would
 >   like to stick with it.
 
-Good point.  While I'm not a Perl guru, I've used it quite a bit
-and it's nice for many things.  But I wouldn't have bothered writing
-Expect in the first place if I thought Perl was ideal.  And many Perl
+Good point. While I am not a Perl guru, I have used it quite a bit
+and it is nice for many things. But I would NOT have bothered writing
+Expect in the first place if I thought Perl was ideal. And many Perl
 experts agree - I know a lot of them who call out to Expect scripts
-rather than do this stuff in Perl - it's that much easier with Expect.
-Expect is also much more mature.  It's portable, stable, robust, and
-it's fully documented - with lots of examples and a complete tutorial,
+rather than do this stuff in Perl - it is that much easier with Expect.
+Expect is also much more mature. It is portable, stable, robust, and
+it is fully documented - with lots of examples and a complete tutorial,
 too.
 
 In response to someone complaining about how difficult it was to do
 something in Perl, Larry Wall once remarked: "The key to using
-Perl is to focus on its strengths and avoid its weaknesses."  That
+Perl is to focus on its strengths and avoid its weaknesses." That
 definitely applies here.
 
 Even if you do proceed with Perl, you will find the book
@@ -260,13 +260,13 @@ Mohammad Reza Jahanbin writes:
 >I have not been able to find any copyright (or indeed copyleft) notices
 >in the usual Expect distribution. Would you be able to clarify our position.
 
-Sorry to delay in responding.  I sent your request to my management
-and they had to discuss it (if they didn't, there would be no reason
-to pay them).  While they continue to discuss it, I can tell you
+Sorry to delay in responding. I sent your request to my management
+and they had to discuss it (if they did NOT, there would be no reason
+to pay them). While they continue to discuss it, I can tell you
 informally the gist of what they will eventually say:
 
-You are allowed to do just about anything with Expect.  You can even
-sell it.  You need not ask our permission.  You need not pay for it.
+You are allowed to do just about anything with Expect. You can even
+sell it. You need not ask our permission. You need not pay for it.
 (It is my understanding that your tax dollars, in effect, already have
 paid for it.)
 
@@ -274,16 +274,16 @@ You should not claim that you wrote it (since this would be a lie), nor
 should you attempt to copyright it (this would be fruitless as it is a
 work of the US government and therefore not subject to copyright).
 
-NIST would appreciate any credit you can give for this work.  One line
-may suffice (as far as I'm concerned) although there should be
+NIST would appreciate any credit you can give for this work. One line
+may suffice (as far as I am concerned) although there should be
 something to the effect that this software was produced for research
-purposes.  No warantee, guarantee, or liability is implied.
+purposes. No warantee, guarantee, or liability is implied.
 
-My management is always interested in feedback on our work.  If you
+My management is always interested in feedback on our work. If you
 would like to send letters of praise describing how Expect has helped
-your business, we would be delighted.  Letters (on letterhead please)
+your business, we would be delighted. Letters (on letterhead please)
 are strong evidence used by policy makers when deciding where every
-dollar goes.  If you want to send these letters to NIST directly, you
+dollar goes. If you want to send these letters to NIST directly, you
 may send them to the following individuals:
 
 Arati Prabahkar, Director
@@ -306,11 +306,11 @@ NIST
 Bldg 220, Rm A-127
 Gaithersburg, MD 20899
 
-In case you're wondering about the uninformative titles, Arati Prabahkar is the
+In case you are wondering re: uninformative titles, Arati Prabahkar is the
 director of all of NIST (about 3000 people) and Steve Ray (way down there
 at the bottom) is my immediate supervisor (and of 10 other very lucky people).
 
-I hope this has answered your questions.  Let me know if you have
+I hope this has answered your questions. Let me know if you have
 further questions.
 
 Don
@@ -320,19 +320,19 @@ Don
 #6. Since Expect is free, can we give you a gift?
 
 This is not an actual letter but represents the gist of several
-that I've received.
+that I have received.
 
->>>Expect has saved us many thousands of dollars.  We'd like to send
+>>>Expect has saved us many thousands of dollars. We would like to send
 >>>you a free copy of our product.
 >>
->>Thanks, but please don't.  As a federal employee, I'm not
+>>Thanks, but please do NOT. As a federal employee, I am not
 >>allowed to accept gifts of any significant value.
 >
 >But, what if it is for personal use (like at home)? I assume
 >that would be okay.
 
-It doesn't matter (much).  What the rules address is whether a gift
-might cause me to make an official decision differently.  This is
+It does NOT matter (much). What the rules address is whether a gift
+might cause me to make an official decision differently. This is
 especially a concern because I may very well have to decide whether or
 not to buy products from your company in the future.
 
@@ -341,11 +341,11 @@ regardless of value ... but you should be careful to avoid accepting
 gifts which may create an appearance of impropriety, even if permitted
 as an exception to the gift rules."
 
-I'm still permitted to accept small token gifts, such as a t-shirt
+I am still permitted to accept small token gifts, such as a t-shirt
 or reasonably-priced dinner (under $20 per gift to a maximum of $50
 per year from any person or company) - so things are not totally
-ridiculous.  Although the precise values in the gift rules seem rather
-arbitrary, I actually like the gift rules.  They stop a lot of the
+ridiculous. Although the precise values in the gift rules seem rather
+arbitrary, I actually like the gift rules. They stop a lot of the
 nonsense that used to go on involving gifts.
 
 Don
@@ -360,42 +360,42 @@ Date: Fri, 27 Jan 1995 23:30:56 -0600
 
 >>>Dear Don:
 >>>
->>>	I've been a fan of Expect ever since I first learned of UNIX back
->>>in late '93. I'm young and don't have my CS degree just yet, but I worked
->>>a while back at Texas Instruments in their Telecom Customer Support dept.
->>>I started in late '93 (and hence, that's where I first started exploring
->>>the UNIX environment) and immediately forsaw the need of automating a lot
->>>of my redundant and mindless duties, but I didn't know how since we were
+>>>	I have been a fan of Expect ever since I first learned of UNIX back
+>>>in late '93. I am young and do NOT have my CS degree yet, but I worked
+>>>a while back at T.I. in their Telecom Customer Support dept.
+>>>I started in late 93 (and hence, that is where I first started exploring
+>>>the UNIX environment) and immediately forsaw the need of automating
+>>>my redundant and mindless duties, but I did NOT know how since we were
 >>>working over a heterogeneous LAN with multiple OSs.
->>>	Then I found out about Expect. I automated everything! My boss didn't
+>>> Then I found out about Expect. I automated everything! My boss did NOT
 >>>like hearing that I was working on something else in order to get out of
 >>>work, and I got tired of explaining it to him.
->>>	Although I accomplished all the aspects of my duties, I was infamous
->>>for being the laziest person at work, and it showed (I made my job SO easy).
+>>> Although I accomplished all the aspects of my duties, I was infamous
+>>>for being the laziest person @ work, which showed (made my job SO easy).
 >>>I got a new boss after a while, and he hated me from the start and fired
->>>me soon after. Oh well, I guess my mentality didn't click with theirs. 
+>>>me soon after. Oh well, I guess my mentality did NOT click with theirs. 
 >>>	There are a lot of people like that: they believe life is putting
 >>>in a hard day's work to get by. I hate that.
 >>>	So the point is, thank you for the wonderful 'Expect'. I bought
->>>your book and now I have the most recent version of it on my Linux system
->>>at home. Needless to say I'm looking for another job, though.
+>>>your book & now I have the most recent version of it on my Linux system
+>>>at home. Needless to say I am looking for another job, though.
 >>>
 >>>							Charlton
 >>> 
->> Thanks very much for your nice letter.  Sorry to hear about your
->> automating yourself out of a job.  Actually, I think most computer
->> scientists have to face this dilemma.  In some ways, it's a
+>> Thanks very much for your nice letter. Sorry to hear about your
+>> automating yourself out of a job. Actually, I think most computer
+>> scientists have to face this dilemma. In some ways, it is a
 >> self-defeating occupation.
 >>
 >> Don
 >
 >Yeah, I'd be interested in hearing if you have a personal philosophy on
->how to handle this kind of thing. I plan on pursuing a career in Artificial
->Intelligence for similar reason of making life easier for everyone (me
+>how to handle this kind of thing. I plan on pursuing a career in A.I.
+>for similar reason of making life easier for everyone (me
 >in particular!)  What the future holds in this category is a great
 >mystery.
 
-I'm glad you asked.  My personal philosophy on this kind of thing is:
+I am glad you asked.  My personal philosophy on this kind of thing is:
 Find someone really rich and marry them.
 
 Don
@@ -424,7 +424,7 @@ by the original docs, the docs themselves should be fixed rather than
 new ones created.
 
 In contrast, I believe that an FAQ should literally be a list of
-frequently asked questions and little else.  An FAQ should not be a
+frequently asked questions and little else. An FAQ should not be a
 replacement for good documentation.
 
 In that sense, I have tried to use this FAQ as a second place to
@@ -433,16 +433,16 @@ first is Exploring Expect.  At over 600 pages, the book is very
 comprehensive, well-organized, and includes three indices and two
 tables-of-contents to make it very easy to find what you want to know.
 
-The book was not a rush job.  During the three years I spent
+The book was not a rush job. During the three years I spent
 writing it, virtually every question I was asked became incorporated
-as subject material for the book.  I wanted to make sure that the book
-wouldn't need much of an FAQ!
+as subject material for the book. I wanted to make sure that the book
+would NOT need much of an FAQ!
 
 It would not make sense to try and distill the entire book into an
 FAQ (that is actually comprehensive rather that truly frequently asked
-questions).  There's simply too much material there.
+questions). There is simply too much material there.
 
-So this FAQ is short.  It really tries to stick just to *truly*
+So this FAQ is short. It really tries to stick just to *truly*
 frequently asked questions.
 
 Don
@@ -458,9 +458,9 @@ Date: Wed, 10 Apr 96 10:24:52 EDT
 Allen Bonneau writes:
 >... the white and gray background makes the FAQ difficult to read.
 
-It's not white and gray.  It's several very close shades of gray.
-It's supposed to be very subtle.  Sounds like you have your browser in
-a mode where it is mishandling colors.  Try turning on dithering.
+It is not white and gray. It is several very close shades of gray.
+It is supposed to be very subtle. Sounds like you have your browser in
+a mode where it is mishandling colors. Try turning on dithering.
 
 Don
 
@@ -476,14 +476,14 @@ Date: Mon, 23 Sep 91 18:21:28 EDT
 >Would be nice if their were an Expect mailing list.  I would use it more
 >often, and be made aware of other users.
 
-Perhaps I'm too myopic, but I don't see the need for it.  Most of
+Perhaps I am too myopic, but I do NOT see the need for it. Most of
 the questions about Expect posted to Usenet every day can be found in
-the various FAQs or in the book, so it's pretty easy getting
+the various FAQs or in the book, so it is pretty easy getting
 answers to them.
 
 For one reason or another (occasionally a bug fix, but often, just
 adding a neat example), I update Expect every couple of weeks.
-Personally, I'd hate being on the other end of something like this.
+Personally, I would hate being on the other end of something like this.
 Who needs patches every two weeks for problems that are likely not
 even relevant to you?  (Most patches these days are either extremely
 esoteric or are related to porting Expect to some unusual machine.)
@@ -491,14 +491,14 @@ esoteric or are related to porting Expect to some unusual machine.)
 >It would be helpful, too, if this served as an area for swapping programs.
 >Many of the things that I want to do are done by others already.
 
-Send me things that you'd like to distribute.  I can include it
+Send me things that you would like to distribute. I can include it
 with Expect or put it in a publicly accessible directory so other
-people can get it.  I'm also willing to list links in Expect's home
+people can get it. I am also willing to list links in Expect's home
 page to other web pages about projects that use Expect.
 
 There is a Tcl newsgroup, comp.lang.tcl, which many Expect users
-read.  It's pretty good for asking questions about Tcl, and many of
-the readers use Expect so Expect questions are encouraged.  The
+read. It is pretty good for asking questions about Tcl, and many of
+the readers use Expect so Expect questions are encouraged. The
 newsgroup is gatewayed to a mailing list (tcl@sprite.berkeley.edu)
 which is further described in the Tcl documentation.
 
@@ -513,17 +513,17 @@ To: spaf@cs.purdue.edu
 Subject: Your book
 
 Gene Spafford writes:
->I'm curious as to why the "overlay" command is not mentioned anywhere
->in the book.  Is that a recent addition?  A deprecated feature?  I
+>I am curious as to why the "overlay" command is not mentioned anywhere
+>in the book. Is that a recent addition? A deprecated feature? I
 >ended up using it in one of my scripts....
 
-The overlay command has been in Expect for a long time.  In all that
+The overlay command has been in Expect for a long time. In all that
 time no one has ever asked me about it and I have never used it.
-Well, I used it once but I really didn't like the result, and so I
-rewrote the script to not use it.  I left the overlay command in
+Well, I used it once but I really did NOT like the result, and so I
+rewrote the script to not use it. I left the overlay command in
 Expect because it seemed like an interesting idea, but I never really
 finished it - in the sense that I believe it needs some more options
-and controls.  In comparison, the interact command is very flexible
+and controls. In comparison, the interact command is very flexible
 and makes the need for overlay pretty moot.
 
 Don
@@ -540,10 +540,10 @@ kinzelman paul writes:
 >The book finally came in. I tried to buy 4 copies but they had only 2
 >left and they came in last Saturday. Move over Stephen King! :-)
 
-4 copies!?  Wow.  That's more than my mother bought!
+4 copies!? Wow. That is more than my mother bought!
 
 >I was discussing your book with somebody who stopped in and we began
->to speculate about the monkey on the cover. I don't suppose it's a
+>to speculate about the monkey on the cover. I do not suppose it is a
 >self portrait? :-)
 
 There is some real humor here.  There seems to be considerable
@@ -560,7 +560,7 @@ I remarked to Edie (the cover designer at O'Reilly) that even though
 the cover was nice looking, everyone was going to stare at it and say,
 "Gee, but it looks like a monkey."  She replied "The purpose of the
 cover is just to get people to pick the book up. This cover will do
-that. Don't worry. If you get any rude comments from anyone, at least
+that. Do NOT worry. If you get any rude comments from anyone, at least
 you know they are paying attention."
 
 [After being inundated by people pointing out that the animal
@@ -581,12 +581,12 @@ Subject: How are your daughter's kidneys?
 B. Olav Anderson writes:
 >Don,
 >
->I bought your book regarding expect and it's great and so is Expect.
+>I bought your book regarding expect and it is great and so is Expect.
 >
->P.S. How's your daughters kidneys? I hope the're well hydrated :-)
+>P.S. How are your daughters kidneys? I hope they are well hydrated :-)
 
 In retrospect, I probably should have said that her "diapers" were
-what was well-hydrated.  Glad to see that you found something in the
+what was well-hydrated. Glad to see that you found something in the
 book worth reading!
 
 Don
@@ -602,19 +602,19 @@ Subject: Expect
 Josef Sachs writes:
 >Do you have any book-signing sessions planned?
 
-That's very ego-boosting to contemplate but I doubt that my name
+That is very ego-boosting to contemplate but I doubt that my name
 is enough to draw the kind of crowd that would make it worthwhile.
-I'll leave that kind of thing to Howard Stern.  Anyway, I have a
-full-time job working for the government.  I doubt they would take too
-kindly to me taking time off for self-aggrandizing.  (They weren't
+I will leave that kind of thing to Howard Stern. Anyway, I have a
+full-time job working for the government. I doubt they would take too
+kindly to me taking time off for self-aggrandizing. (They were NOT
 particularly encouraging to have me write a book in the first place -
-as you'll read in the Preface.)
+as you will read in the Preface.)
 
-I've written a couple of other books and people have mailed me those
-for signatures.  (One guy sent me an entire box of books for
-signatures - he was giving them to friends as Christmas gifts.)  If
-you're similarly inclined, my address is in Expect's README file.  Or
-if you're ever in my neck of the woods, feel free to stop by for a
+I have written a couple of other books and people have mailed me those
+for signatures. (One guy sent me an entire box of books for
+signatures - he was giving them to friends as Christmas gifts.) If
+you are similarly inclined, my address is in Expect's README file. Or
+if you are ever in my neck of the woods, feel free to stop by for a
 chat (and bring your copy).
 
 Don
@@ -630,19 +630,19 @@ In-Reply-To: <199601092106.VAA19276@bugsy.aa.ans.net>
 References: <199601092106.VAA19276@bugsy.aa.ans.net>
 --text follows this line--
 Thomas Ragland writes:
->  btw approximately how many books were sold?  I just bought
->  it and it is quite helpful.  Once again, thanks.
+>  btw approximately how many books were sold? I just bought
+>  it and it is quite helpful. Once again, thanks.
 >
 >Thomas
 
-Glad you liked the book.  Sorry to disappoint you but I have no
-idea about how many have been sold.  (I made my mother buy a couple,
-so I know it's a positive number.)  Believe it or not, I try *not*
-to pay attention to that type of thing.  I did with my first book
-and was very disappointed.  (It sold well but it didn't earn that
-first million that I was dreaming about...)  I've learned that I don't
-write to sell books or make money.  If I did, I'd be better off
-writing "Yet Another Book on HTML" or a romance novel.  No, the
+Glad you liked the book. Sorry to disappoint you but I have no
+idea about how many have been sold. (I made my mother buy a couple,
+so I know it is a positive number.) Believe it or not, I try *not*
+to pay attention to that type of thing. I did with my first book
+and was very disappointed. (It sold well but it did NOT earn that
+first million that I was dreaming about...) I have learned that I do NOT
+write to sell books or make money. If I did, I would be better off
+writing "Yet Another Book on HTML" or a romance novel. No, the
 real reason that I write is - I enjoy it.
 
 Don
@@ -660,14 +660,14 @@ Joe Pasko writes:
 >
 >I just took your advice and it was the tty settings. Thanks a bunch !
 >
->As a side note: Great book !! It's the best howto for tcl-type stuff
->that I've seen around.
+>As a side note: Great book !! It is the best howto for tcl-type stuff
+>that I have seen around.
 
-Thanks for the kind words.  But don't tell me (gee, I already like my
+Thanks for the kind words. But do NOT tell me (gee, I already like my
 book!) - post your opinion to a newsgroup and send a review to a
-magazine.  I regret that many Tcl users don't pick up the book simply
-because they think it isn't of any use to the general Tcl user - which
-of course isn't true.
+magazine. I regret that many Tcl users do NOT pick up the book simply
+because they think it is NOT of any use to the general Tcl user - which
+of course is NOT true.
 
 Don
 
@@ -680,17 +680,17 @@ To: Will Smith (AC) <william@ritchie.acomp.usf.edu>
 Subject: Expect
 
 Will Smith (AC) writes:
->I just entered some scripts from a USENIX paper that my boss had.  I get
->errors about my quotes in the script.  Also, it doesn't seem to know
->about expect_match.  Thanks in advance for any insight you could offer.
+>I just entered some scripts from a USENIX paper that my boss had. I get
+>errors about my quotes in the script. Also, it does NOT seem to know
+>about expect_match. Thanks in advance for any insight you could offer.
 
-The USENIX papers are old and out-of-date as far as quoting goes.  A
+The USENIX papers are old and out-of-date as far as quoting goes. A
 couple years ago, I cleaned up and simplified this aspect of Expect.
 Similarly, expect_out is now where the results of expect's pattern
 matching are saved.
 
 The man page is always the best reference on what Expect currently
-supports.  Alternatively, you can read the CHANGES files.  These files
+supports. Alternatively, you can read the CHANGES files. These files
 document the changes from one major version to another.
 
 Don
@@ -708,18 +708,18 @@ Peifong Ren writes:
 >Hi,
 >
 >I bought your book "Exploring Expect" from O'Reilly.
->I wonder can you put the eamples in your book into an anonymous ftp
+>I wonder can you put the examples in your book into an anonymous ftp
 >site?
 
 All of the substantive examples come with recent versions of Expect.
 Just look in the example directory.  
 
 The remaining 50 or so examples are short enough that typing them
-in only takes a minute or two.  If I put them online, you'd spend more
+in only takes a minute or two. If I put them online, you would spend more
 time looking for them (reading my online catalog, figuring out what
 the online descriptions meant, mapping them back to the file, etc.)
-then it would take to type them in.  And since you're likely to want
-to change the examples anyway, there's nothing to be gained for short
+then it would take to type them in. And since you are likely to want
+to change the examples anyway, there is nothing to be gained for short
 ones.
 
 Don
@@ -736,21 +736,21 @@ Date: Thu, 21 Dec 95 13:31:01 EST
 
 Danny R. Faught writes:
 >I just arranged to write an article on automating interactive
->processes for an issue early next year.  You have so many good pieces
->on expect out there, it's going to be hard to add anything original.
+>processes for an issue early next year. You have so many good pieces
+>on expect out there, it is going to be hard to add anything original.
 
-One thing I've never written is a good mini-tutorial.  Magazine
-editors love these types of pieces and there's certainly a need for
-it.  So I'd encourage that type of article.
+One thing I have never written is a good mini-tutorial. Magazine
+editors love these types of pieces and there is certainly a need for
+it. So I would encourage that type of article.
 
 Another possibility is an article on how you or your colleagues
 personally applied Expect to solve your particular problem. Application-
 oriented papers are the kind that necessarily have to be written by
 people in the field who are applying the technology.  People love this
-kind of practical paper.  For example, a good paper might be "Writing
-a pager".  This is a nice topic because you can start with a simple
+kind of practical paper. For example, a good paper might be "Writing
+a pager". This is a nice topic because you can start with a simple
 5-line script that solves the problem and then show progressive
-refinements that handle different twists on the same problem.  (And
+refinements that handle different twists on the same problem. (And
 "how to write a pager" is a very frequently asked question on Usenet.)
 
 Don
@@ -774,13 +774,13 @@ Date: Fri, 12 Oct 90 17:16:47 EDT
 >
 >(Red Ryder and other Macintosh telecommunications packages offer this
 >sort of thing.  You log onto Compuserve once in "watch me" mode, and
->RR keeps track of the keystrokes/prompts.  When you're done you have a
+>RR keeps track of the keystrokes/prompts. When you are done you have a
 >script that can be used to log onto Compuserve automatically.)   
 >
 >Before I look into adding a "watch me" feature, I thought I should
 >ask: has this been done already?
 >
->I'll say again that I like the tool a lot--nice work!  There are other
+>I will say again that I like the tool a lot--nice work! There are other
 >people here using it for things like the testing of ksh, which
 >responds differently to signals when not used interactively.
 >
@@ -807,14 +807,14 @@ directory that comes with Expect.
 
 An alternative approach to screen-handling was demonstrated by Mark
 Weissman (weissman@gte.com) and Christopher Matheus who modified a
-version of Expect to include a built-in Curses emulator.  It can be
-ftp'd from the Tcl archive as expecTerm1.0beta.tar.Z.  (Note that
+version of Expect to include a built-in Curses emulator. It can be
+ftp'd from the Tcl archive as expecTerm1.0beta.tar.Z. (Note that
 Expecterm does not run with the current version of Expect.)
 
 I like the idea of keeping the curses emulator outside of Expect
-itself.  It leaves the interface entirely defineable by the user.  And
+itself. It leaves the interface entirely defineable by the user. And
 you can do things such as define your own terminal types if you want.
-For these reasons and several others, I'm not likely to return to
+For these reasons and several others, I am not likely to return to
 Expecterm.
 
 Don
@@ -841,9 +841,9 @@ to dealing with cron and you can get other good tips and advice from
 reading the Background chapter in the book.
 
  One last tip: If a script runs fine by hand but not from CGI, just
-log in as "nobody" to the host on which your CGI script runs.  Then
-try running it by hand.  This generally makes it very obvious what's
-going on.  (If you can't log in to the server or can't log in as
+log in as "nobody" to the host on which your CGI script runs. Then
+try running it by hand. This generally makes it very obvious what is
+going on. (If you cannot log in to the server or cannot log in as
 "nobody", use the kibitz trick described in the Background chapter.)
 
 Don
@@ -853,22 +853,22 @@ Don
 #23. Can Expect be run from cron?
 
 Expect itself works fine from cron - however, you can cause
-problems if you do things that don't make sense in cron - such as
-assume that there is a terminal type predefined.  There are a number
-of other pitfalls to watch out for.  The list and explanations aren't
-short - which is why there's a whole chapter ("Background") on the
+problems if you do things that do NOT make sense in cron - such as
+assume that there is a terminal type predefined. There are a number
+of other pitfalls to watch out for. The list and explanations are NOT
+short - which is why there is a whole chapter ("Background") on the
 subject in the book.
 
-Here's one that someone tried to stump me with recently: They told
+Here is one that someone tried to stump me with recently: They told
 me that their program started up and then Expect immediately exited.
 We spent a lot of time tracking this down (Was the spawned program
 really starting up but then hanging - which would indicate a bug in
 the program; or was the program NOT starting up - which would indicate
-a bug in the environment; etc.)  Turned out that Expect wasn't even
+a bug in the environment; etc.)  Turned out that Expect was NOT even
 running their program.  They had assumed cron honored the #! line
 (which it doesn't) and so the first line in their script (exec date)
 was being interpreted by the shell and of course, the script did
-nothing after that - because that's what the shell's exec is supposed
+nothing after that - because that is what the shell's exec is supposed
 to do!)
 
 Don
@@ -880,13 +880,13 @@ Don
 
 #24. Why can't I compile Expect with Tcl 7.5?
 
-You can - you just need a newer version of Expect.  Note that the
+You can - you just need a newer version of Expect. Note that the
 production release of Tcl 7.5 was just released and a compatible
-Expect is still in beta.  So you shouldn't do this without
+Expect is still in beta. So you should NOT do this without
 caution.
 
-Expect 5.19 works fine with Tcl 7.4.  If you stay with Tcl 7.4, I
-encourage you to upgrade to Expect 5.19 if you haven't already.
+Expect 5.19 works fine with Tcl 7.4. If you stay with Tcl 7.4, I
+encourage you to upgrade to Expect 5.19 if you have NOT already.
 
 Don
 
@@ -900,35 +900,35 @@ Subject: setuid in Expect
 Date: Thu, 24 Oct 91 16:15:20 EDT
 
 >     I have been running Expect now under UNICOS 6.1 and CSOS 1.0 (Cray
->Computer Corporation's OS).  The two machines that I am running Expect
+>Computer Corporation's OS). The two machines that I am running Expect
 >on have stringent security features, one of which is to limit setuid
->privileges to specific individuals.  I was wondering if you would be
+>privileges to specific individuals. I was wondering if you would be
 >kind enough to explain the purpose of the setuid that is needed by Expect
 >and whether it could be compiled to run without having to have setuid
->privilege?  I know it has to do with spawning and communicating with
->the various spawned tasks, but don't know enough of the details to be
+>privilege? I know it has to do with spawning and communicating with
+>the various spawned tasks, but do NOT know enough of the details to be
 >able to explain why Expect specifically needs setuid and whether or not
 >it could cause a security problem (could someone use it to enter into
->the system and wreak havoc, for example?).  Right now, I've limited
+>the system and wreak havoc, for example?). Right now, I have limited
 >the access of Expect to my group, but need to know what the security
->implications are if I open it to all users.  I'd appreciate any light
+>implications are if I open it to all users. I would appreciate any light
 >you can shed on this subject...
 
-Root-access is needed to open a pty under Unicos.  Thus, all programs
-accessing ptys must be setuid root.  If you do an "ls -l" of programs
-like "script", "xterm", etc, you'll see this.
+Root-access is needed to open a pty under Unicos. Thus, all programs
+accessing ptys must be setuid root. If you do an "ls -l" of programs
+like "script", "xterm", etc, you will see this.
 
-I have no idea why this is.  The requirement was probably for security
+I have no idea why this is. The requirement was probably for security
 reasons to begin with, but it has the ironic effect of making more
 programs require setuid and therefore greater possibility of errant
 setuid programs.
 
 In fact, there is one known Unicos bug relating to the way uids are
-switched at exec time which requires further special coding.  If you
+switched at exec time which requires further special coding. If you
 search for "Cray" in the Expect source you will see significant chunks
 of code to get around the problem.
 
-I don't know if this reassures you any.  All I can tell you is that a
+I do NOT know if this reassures you any. All I can tell you is that a
 number of Cray experts have looked into the situation and are happy
 with the current implementation of Expect.
 
@@ -944,21 +944,21 @@ Subject: VMS question.
 
 Cameron Laird writes:
 >Do you know of anyone working with Expect and VMS?
->I'd like not to re-invent wheels, but, if I'm to be
+>I would like not to re-invent wheels, but, if I am to be
 >the first one, I want others to benefit.
 
-No, I'm not aware of anyone doing it.  Since VMS claims POSIX
-conformance, it shouldn't be that hard - Expect uses the POSIX calls
-if it can.  Probably the hardest part will just be modifying the Makefile
+No, I am not aware of anyone doing it. Since VMS claims POSIX
+conformance, it should NOT be that hard - Expect uses the POSIX calls
+if it can. Probably the hardest part will just be modifying the Makefile
 and the configure script!
 
-However, that there might be a simpler solution.  The neat thing
-about Expect is that you can control other computers easily.  Run
+However, that there might be a simpler solution. The neat thing
+about Expect is that you can control other computers easily. Run
 Expect on your UNIX box and have it log in to the VMS box and do its
-thing.  (You can bypass the login garbage by using an inet daemon.)
-We've done exactly this to a number of weird pieces of hardware we
+thing. (You can bypass the login garbage by using an inet daemon.)
+We have done exactly this to a number of weird pieces of hardware we
 have around the lab (robots, Lisp machines, embedded controllers, and,
-of course, a VAX running VMS).  It saves time porting!
+of course, a VAX running VMS). It saves time porting!
 
 Don
 
@@ -1006,7 +1006,7 @@ Frank Winkler writes:
 >Is it possible to build an Expectk-binary, which uses 
 >the features of BLT, TkSteal and Expect ?
 
-I've never done it, but I know it must be possible because the tgdb
+I have never done it, but I know it must be possible because the tgdb
 package in the Tcl archive uses all of those extensions with Expect.
 
 Expect is a "well-behaved extension" in the sense that it requires no
@@ -1016,9 +1016,9 @@ the other _Init calls to Expect's main.
 
 >If yes, which of them should be build first, second ... ?
 
-Order doesn't matter.
+Order does NOT matter.
 
-I've done this kind of thing by hand.  It's pretty simple.  But people
+I've done this kind of thing by hand. It is pretty simple. But people
 tell me the make-a-wish package in the Tcl archive automates the
 creation of multi-extension Tcl applications.
 
@@ -1037,16 +1037,16 @@ Subject: Re: Sorry to bother you, but...
 Dan Morton writes:
 >Don,
 >
->I've posted an inquiry to comp.lang.tcl about my configure problems with
+>I have posted an inquiry to comp.lang.tcl about my configure problems with
 >expect, but I've not yet gotten a reply.  Perhaps you can nudge me in the
 >right direction?
 >
->I'm running HP-UX 9.0 on a 735, and I've snagged the latest versions of Tcl
->and expect from NIST (7.4 and 5.18 respectively).  My gcc is v2.6.  Tcl
->configured and built out of the box, but I can't get expect to configure
->properly.  No matter what I do, it thinks it wants to cross-compile.  I
->think it's failing that little snippet of eval code.  It gets further if I
->specify --host=HP, but still complains about cross compiling.  Here's the
+>I am running HP-UX 9.0 on a 735, and I got the latest versions of Tcl
+>and expect from NIST (7.4 and 5.18 respectively). My gcc is v2.6. Tcl
+>configured and built out of the box, but I cannot get expect to configure
+>properly. No matter what I do, it thinks it wants to cross-compile. I
+>think it is failing that little snippet of eval code. It gets further if I
+>specify --host=HP, but still complains about cross compiling. Here is the
 >result without options:
 >
 >{hendrix:~/expect-5.18:8} ./configure
@@ -1064,15 +1064,15 @@ I guess the error message has to be clearer.  The message:
 	"or the native compiler is broken"
 
 means that configure tried to compile a simple program and it failed.
-Here's the program it tries to compile:
+Here is the program it tries to compile:
 
 	main() {
 		return(0);
 	}
 
 The configure output that you showed me says that it found gcc.
-Perhaps it was misinstalled or is just a placeholder and doesn't
-actually do anything?  Try compiling a tiny C program yourself from
+Perhaps it was misinstalled or is just a placeholder and does NOT
+actually do anything? Try compiling a tiny C program yourself from
 the command line.
 
 Don
@@ -1090,39 +1090,39 @@ Xiaorong Qu writes:
 >The following is the output of make, you can find 
 >that the process repeated three times.
 
-I bet what's going on is that your system clock is set to some
-ridiculous time such as last year.  "Make" is sensitive to your clock.
-Please fix your clock.  Then check that all the files are "older"
-than the current time.  (If not, "touch" them all.)
+I bet what is going on is that your system clock is set to some
+ridiculous time such as last year. "Make" is sensitive to your clock.
+Please fix your clock. Then check that all the files are "older"
+than the current time. (If not, "touch" them all.)
 
 Don
 
 ======================================================================
 
-#31. Compile fails with: Don't know how to make pty_.c
+#31. Compile fails with: Do NOT know how to make pty_.c
 
 From: libes (Don Libes)
 To: wren@io.nosc.mil
-Subject: Compile fails with: Don't know how to make pty_.c
+Subject: Compile fails with: Do NOT know how to make pty_.c
 
->   I'm trying to compile Expect on hpux 9.01, 
+>   I am trying to compile Expect on hpux 9.01, 
 >   downloaded from ftp.cme.nist.gov expect.tar
 
 >   after running config
->   the make fails with  "Don't know how to make pty_.c. (compile fails)
+>   the make fails with "Do NOT know how to make pty_.c. (compile fails)
 >   I see three versions pty_sgttyb.c, pty_termios.c and pty_unicos.c in
 >   the load, but the configure picked none of them.
->   I tried forcing to pty_termios.c but that failed with other compile errors.
+>   I tried forcing to pty_termios.c but that failed w/other compile errs.
 
-I've seen this happen because gcc was partially installed.  configure
-finds the gcc stub and uses gcc for all the tests.  But because the
-compiler doesn't work, every test fails so configure doesn't select
+I have seen this happen because gcc was partially installed. ./configure
+finds the gcc stub and uses gcc for all the tests. But because the
+compiler does NOT work, every test fails so configure does NOT select
 any of the choices.
 
 So either finish installing gcc or delete the stub.
 
-(And if it's not that, then something similar is wrong with whatever
-compiler you've got.  Look closely at the output from configure, it
+(And if it is not that, then something similar is wrong with whatever
+compiler you have. Look closely at the output from configure, it
 will tell you what compiler it is trying to use.)
 
 By the way, Expect compiles fine on my HP (A.09.05 E 9000/735).
@@ -1138,39 +1138,39 @@ To: Gerry_Jones@qmgateib.mitre.org
 Subject: Does Expect run on ...
 Date: Wed, 11 Oct 95 19:57:42 EDT
 
->I am in a group looking into developing script language-based applications for
->Mac and PC-Windows environments.  Our intent is to write scripts to work with
->interactive applications (e.g. telnet).  After asking around, I started
->looking into Tcl/Tk, which now have 'official' (?) (alpha) Mac and PC-Windows
->ports.  One of the people in our group has been working (in UNIX) with Tcl and
->Tk for quite some time, and said if there isn't an Expect port or similar tool
->for Mac and PC-Windows, then we shouldn't use Tcl/Tk; i.e. they would be too
->limited and/or require too much work to do what we need.  I've been cruising
->the Web for information, reading the Newsgroups, read the FAQs, etc., and have
+>I am in a group looking @ developing script language-based apps for
+>Mac and Windows environments. Our intent is to write scripts to work with
+>interactive applications (e.g. telnet). After asking around, I started
+>looking into Tcl/Tk, which now have 'official' (?) (alpha) Mac and Windows
+>ports. One person in our group has been working (in UNIX) with Tcl &
+>Tk for some time, & said if there is NOT an Expect port or similar tool
+>for Mac and Windows, then we should NOT use Tcl/Tk; i.e. they would be too
+>limited and require too much work to do what we need. I have been cruising
+>the Web for info, reading the Newsgroups, read the FAQs, etc, & have
 >the following questions:
 >
 >1) Is there a current or planned port of Expect to Mac or PC-Windows
 >environments?
 
-No, Expect isn't currently portable to Windows or Mac.  Let me know
-if you're seriously interested in a lot of work.  I'm not saying it's
-not possible.  It's definitely possible and the porting work at Sun
-has made it easier than before.  But it's still not a weekend hack.
+No, Expect is NOT currently portable to Windows or Classic Mac OS. Let me
+know if you are very interested in a lot of work. I am not saying it is
+not possible. It is definitely possible and the porting work at Sun
+has made it easier than before. But it is still not a weekend hack.
 Far from it.
 
 I actually requested some time to work on it this year and
 management said ("sure Don, go ahead") but I see now that they
 approved approximately 65 weeks worth of projects for me for the
-second half of the fiscal year.  (Yes, I'm serious, they really did.)
-So I wouldn't hold my breath on this.  I'm really hoping someone
-skilled with UNIX and NT volunteers some time.  Funding contributions
+second half of the fiscal year. (Yes, I am serious, they really did.)
+So I would NOT hold my breath on this. I am really hoping someone
+skilled with UNIX and NT volunteers some time. Funding contributions
 would also help.
 
 If you are a student and would like a fun but demanding job for the
-summer, let me know.  I'd be willing to let someone come up to speed
-even if you don't already have all the skills.  And we offer
-continuing internships if you'd like to come back for a semester or
-two.  Pay is competitive.  Note: you must be a US citizen and you must
+summer, let me know. I would be willing to let someone come up to speed
+even if you do NOT already have all the skills. And we offer
+continuing internships if you would like to come back for a semester or
+two. Pay is competitive. Note: you must be a US citizen and you must
 have good grades just to get through our personnel department.
 
 Don
@@ -1245,17 +1245,17 @@ Hello World
 Hello World
 
 In the example above, I typed "cat" at the shell prompt and pressed
-return.  Then I entered "Hello World" and pressed return.  Looking at
+return. Then I entered "Hello World" and pressed return. Looking at
 the output I *see* "Hello World" twice even though I only entered it
 once.
 
-You can account for this behavior in your patterns.  Alternatively,
-just turn off the echo.  In your particular case though, it's doing
+You can account for this behavior in your patterns. Alternatively,
+just turn off the echo. In your particular case though, it is doing
 the right thing, showing you the result of an interactive cat just as
 if you had typed it yourself.
 
-In practice, this kind of problem doesn't arise - because programs
-like cat aren't spawned (except in very special situations).  I assume
+In practice, this kind of problem does NOT arise - because programs
+like cat are NOT spawned (except in very special situations). I assume
 that cat was just something you chose to experiment with.
 
 Don
@@ -1276,12 +1276,12 @@ Subject: Re: [Q] Expect, ftp and '@'
 >   set password "bt@hplb.hpl.hp.com"
 
 > the ftp servers seem not to receive neither my login name nor the
->at-sign. Some of them do not care, some others say "ok, but don't do
+>at-sign. Some of them do not care, some others say "ok, but do NOT do
 >that again", and the last ones throw me off.
 
-The short answer is to upgrade to Expect 5.20 or later.  (Warning:
-5.20 is still in beta.)  If you don't feel like doing this,
-here's the explanation for older versions of Expect:
+The short answer is to upgrade to Expect 5.20 or later. (Warning:
+5.20 is still in beta.)  If you do NOT feel like doing this,
+here is the explanation for older versions of Expect:
 
 spawn initializes the terminal by using your current parameters and
 then forces them to be "sane".  Unfortunately, on your system, "sane"
@@ -1291,7 +1291,7 @@ The most sensible thing to do is change "sane" in your Makefile to
 something that makes sense.  (Since you work at HP, you might also
 suggest that they modernize stty!)
 
-Here's an example of a replacement line for the Makefile:
+Here is an example of a replacement line for the Makefile:
 
 	STTY = -DDFLT_STTY=\""sane kill ^U"\"
 
@@ -1309,9 +1309,9 @@ Subject: Re: hide the text of expect's send command?
 Date: 29 Mar 1996 15:41:02 GMT
 
 In article <khughesDoy1yH.5zo@netcom.com>, Kirby Hughes <khughes@netcom.com> wrote:
-> I don't want to see (on the screen) the text sent by a "send" command.  Is
-> there a way to hide it?  "log_user 0" works for text coming back to me, but
-> doesn't (seem to) work for sending...
+> I do NOT want to see (on-screen) the text sent by a "send" command. Is
+> there a way to hide it? "log_user 0" works for text coming to me, but
+> does NOT (seem to) work for sending...
 > 
 > #!/usr/local/bin/expect --
 > log_user 0
@@ -1323,19 +1323,19 @@ In article <khughesDoy1yH.5zo@netcom.com>, Kirby Hughes <khughes@netcom.com> wro
 
 This answer courtesy of Timothy Prime, Mortice Kern Systems (tim@mks.com):
 
-The output you are seeing wasn't printed by the send command.
-(I.e., the log_user command is working just fine.)  The output you see
-is from the interact command.  The interact command found program
+The output you are seeing was NOT printed by the send command.
+(I.e., the log_user command is working just fine.) The output you see
+is from the interact command. The interact command found program
 output and thus wrote it to the terminal so that you could see it.
-That's what the interact command is supposed to do!
+That is what the interact command is supposed to do!
 
 Although the expanation might take a little thought, the solution is
-easy.  Simply put an expect command in before the command "log_user 1".
+easy. Simply put an expect command in before the command "log_user 1".
 Match against the last characters that you wish to suppress.
 ======================================================================
 
 #37. Why does "talk" fail with "Who are you?  You have no entry utmp" or
-	"You don't exist.  Go away".
+	"You do NOT exist. Go away".
 
 From: libes (Don Libes)
 To: Will Smith (AC) <william@ritchie.acomp.usf.edu>
@@ -1355,7 +1355,7 @@ Will Smith (AC) writes:
 >set timeout 200
 >expect {*established*}
 >set send_human {.1 .3 1 .05 2}
->send -h "This is only a test.. I swear \ Please don't bust me with expect \n  >expect "{*\r*}"
+>send -h "This is only a test.. I swear \ Please do NOT bust me with expect \n  >expect "{*\r*}"
 >expect "{*\r*}"
 >exec sleep 5
 >send -h "Ok, well see ya tomorrow you idiot \n"
@@ -1369,23 +1369,23 @@ On most systems, Expect does not automatically make a utmp entry.  (A
 utmp entry normally indicates login information which seems kind of
 pointless for Expect scripts.)  This allows Expect to run non-setuid.
 
-Normally, this lack of utmp entries doesn't mean much.  However, a few
-programs actually refuse to run without a utmp entry.  Fortunately,
+Normally, this lack of utmp entries does NOT mean much. However, a few
+programs actually refuse to run without a utmp entry. Fortunately,
 there are workarounds:
 
 Program-dependent solutions:
 
-"talk" is the only program I'm aware of that falls into this category.
-One solution is to get ytalk.  ytalk doesn't have this problem plus it
+"talk" is the only program I am aware of that falls into this category.
+One solution is to get ytalk. ytalk does NOT have this problem plus it
 fixes many other bugs in talk, such as being able to communicate with
 both old and new talk.
 
 Program-independent solutions:
 
-Use a program specifically intended to create utmp entries.  Such
-programs are easy to write or get if you don't have them already.  For
-instance, sessreg is one which comes with the xdm distribution.  And
-Solaris uses utmp_update.  I like this approach because it isolates
+Use a program specifically intended to create utmp entries. Such
+programs are easy to write or get if you do NOT have them already. For
+instance, sessreg is one which comes with the xdm distribution. And
+Solaris uses utmp_update. I like this approach because it isolates
 the setuid code in a small single system utility rather than in every
 program on the system that needs this ability.
 
@@ -1406,18 +1406,18 @@ Ivan Prochazka writes:
 >characters except newline(\n). 
 >This is not the case in Expect 5.2.
 
-Yes, there are some packages that follow this convention, but I don't
-think it is appropriate for Expect.  Unlike emacs, most Expect
-patterns don't look for full lines - more often they look for prompts
-which *don't* end with newlines.
+Yes, there are some packages that follow this convention, but I do NOT
+think it is appropriate for Expect. Unlike emacs, most Expect
+patterns do NOT look for full lines - more often they look for prompts
+which do *NOT* end with newlines.
 
-I find that I actually write the [^\n] pattern very rarely.  And
+I find that I actually write the [^\n] pattern very rarely. And
 if I write it frequently in a script, then the expect itself probably
 ought to be in a subroutine.
 
 In fact, the more common line-terminating sequence in Expect is \r\n,
-so that might make a more likely argument.  In any case, Expect
-defines . the way POSIX does.  So I feel pretty good about the
+so that might make a more likely argument. In any case, Expect
+defines . the way POSIX does. So I feel pretty good about the
 definition of . being what it is.
 
 Don
@@ -1432,22 +1432,22 @@ Subject: Re: need help running telnet Expect script from cron on sunos 4.1.3
 
 karl.sierka@labyrinth.com writes:
 >       The only problem I am still having with the script I wrote is that
->    the telnet does not seem to die on it's own, unless I turn on debugging.
+>    the telnet does not seem to die on its own, unless I turn on debugging
 
-Actually, Expect doesn't explicitly kill processes at all.  Generally,
-processes kill themselves after reading EOF on input.  So it just seems
+Actually, Expect does NOT explicitly kill processes at all. Generally,
+processes kill themselves after reading EOF on input. So it just seems
 like Expect kills all of its children.
 
->    I was forced to save the pid of the spawned telnet, and kill it with an
->    'exec kill $pid' in a proc that is hopefully called before the script
->    exits. This seems to work fine, but it makes me nervous since omnet
->    charges for connect time, and leaving a hung telnet lying around could
->    get expensive. I warned the rest of the staff so that they will also be
->    on the lookout for any possible hung telnets to omnet.
+>   I was forced to save the pid of the spawned telnet, and kill it with an
+>   'exec kill $pid' in a proc that is hopefully called before the script
+>   exits. This seems to work fine, but it makes me nervous since omnet
+>   charges for connect time, and leaving a hung telnet lying around could
+>   get expensive. I warned the rest of the staff so that they will also be
+>   on the lookout for any possible hung telnets to omnet.
 
-The problem is that telnet is not recognizing EOF.  (This is quite
-understandable since real users can't actually generate one from the
-telnet user interface.)  The solution is to either 1) explicitly drive
+The problem is that telnet is not recognizing EOF. (This is quite
+understandable since real users cannot actually generate one from the
+telnet user interface.) The solution is to either 1) explicitly drive
 telnet to kill itself (i.e., a graceful logout) followed by "expect
 eof" or 2) "exec kill" as you are doing.
 
@@ -1480,7 +1480,7 @@ fixincludes script - and the messages will go away.
 Michael Grant
 ======================================================================
 
-#41. How come there's no interact function in the Expect library?
+#41. How come there is no interact function in the Expect library?
 
 From: libes (Don Libes)
 To: Djamal SIMOHAND <djamal@lyohp5.in2p3.fr>
@@ -1492,18 +1492,18 @@ Djamal SIMOHAND writes:
 >telnet on my machine.  Now I made a graphic interface in C and I need
 >the expect in C in order to have a coherent executable.
 >
->I've already written most of the C already, but the connection is
->closed just after my program is finished.  Then I have no opportunity
->to work on my machine.  It seems I need of the equivalent of
->"interact" in C.  Is there such a function in the C library?
+>I have already written most of the C already, but the connection is
+>closed just after my program is finished. Then I have no opportunity
+>to work on my machine. It seems I need of the equivalent of
+>"interact" in C. Is there such a function in the C library?
 >
 >Thanks for your help,
 >                                                      Djamal
 
-No, there is no interact-like function in the C library.  The reason
+No, there is no interact-like function in the C library. The reason
 is three-fold:
 
-1) It is simple enough to write your own.  It's just a loop after
+1) It is simple enough to write your own. It is just a loop after
 all:
 
 	while 1 {
@@ -1512,24 +1512,24 @@ all:
 		write()
 	}
 
-2) There's no way I could possibly provide all the options you might
-need.  In Expect, it's not a problem because the environment is very
-controlled, but in C, it's impossible to control what you might want
-to do.  For example, you mention that you're embedding your code in a
-graphics application.  Graphics packages typically have their own
-event manager, so you wouldn't want a monolithic interact function.
+2) There is no way I could possibly provide all the options you might
+need. In Expect, it is not a problem because the environment is very
+controlled, but in C, it is impossible to control what you might want
+to do. For example, you mention that you are embedding your code in a
+graphics application. Graphics packages typically have their own
+event manager, so you would NOT want a monolithic interact function.
 
 3) The library is intended for embedding in other applications, where
 it rarely makes sense to give the user direct control of a spawned
-process.  That kind of thing makes so much more sense to handle with
-an Expect script than a C program.  The C library was not intended as
-a replacement for Expect.  Expect is really the tool of choice for
+process. That kind of thing makes so much more sense to handle with
+an Expect script than a C program. The C library was not intended as
+a replacement for Expect. Expect is really the tool of choice for
 interaction problems, not C.  
 
-In summary, there's very little payoff for the library to supply an
-interact function.  A simple one would only satisfy people who should
-be using Expect anyway - and it's impossible to create one that would
-do everything that everyone wants.  It's easier just to let people
+In summary, there is very little payoff for the library to supply an
+interact function. A simple one would only satisfy people who should
+be using Expect anyway - and it is impossible to create one that would
+do everything that everyone wants. It is easier just to let people
 roll their own.  
 
 Don

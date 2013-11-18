@@ -3,16 +3,34 @@
 Written by: Don Libes, NIST, 2/6/90
 
 Design and implementation of this program was paid for by U.S. tax
-dollars.  Therefore it is public domain.  However, the author and NIST
+dollars. Therefore it is public domain. However, the author and NIST
 would appreciate credit if this program or parts of it are used.
 */
 
 #include "expect_cf.h"
 #include <stdio.h>
+#include <unistd.h>
+#ifdef NO_STDLIB_H
+# include "../compat/stdlib.h"
+#else
+# ifdef HAVE_STDLIB_H
+#  include <stdlib.h>
+# else
+#  ifdef HAVE_MALLOC_H
+#   include <malloc.h>
+#  else
+#   ifdef HAVE_MALLOC_MALLOC_H
+#    include <malloc/malloc.h>
+#   else
+#    warning exp_main_exp.c expects a header that provides malloc() to be included.
+#   endif /* HAVE_MALLOC_MALLOC_H */
+#  endif /* HAVE_MALLOC_H */
+# endif /* HAVE_STDLIB_H */
+#endif /*NO_STDLIB_H*/
 #include "tcl.h"
 #ifdef USE_ITCL
-#include "itcl.h"
-#endif
+# include "itcl.h"
+#endif /* USE_ITCL */
 #include "expect_tcl.h"
 
 int
@@ -40,7 +58,7 @@ char *argv[];
                fprintf(stderr,"Itcl_Init failed: %s\n",interp->result);
                exit(1);
        }
-#endif
+#endif /* USE_ITCL */
 	exp_parse_argv(interp,argc,argv);
 
 	/* become interactive if requested or "nothing to do" */
@@ -57,4 +75,6 @@ char *argv[];
 	/*NOTREACHED*/
 	return 0;		/* Needed only to prevent compiler warning. */
 }
+
+/* EOF */
 

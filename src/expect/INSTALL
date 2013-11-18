@@ -1,12 +1,12 @@
-This file is INSTALL.  It contains installation instructions for Expect.
+This file is INSTALL. It contains installation instructions for Expect.
 
 If you do not have Tcl, get it (Expect's README explains how) and
-install it.  The rest of these instructions assume that you have Tcl
+install it. The rest of these instructions assume that you have Tcl
 installed.
 
 If you are installing Expect on a single architecture, or are just
 trying it out to see whether it is worth installing, follow the
-"Simple Installation" below.  If you are installing Expect on multiple
+"Simple Installation" below. If you are installing Expect on multiple
 architectures or the "Simple Installation" instructions are not
 sufficient, see "Sophisticated Installations" below.
 
@@ -14,18 +14,18 @@ sufficient, see "Sophisticated Installations" below.
 Permissions
 --------------------
 
-On a Cray, you must be root to compile Expect.  See the FAQ for why
+On a Cray, you must be root to compile Expect. See the FAQ for why
 this is.
 
 If you want shared libs on Linux, you must be root in order to run
-ldconfig.  See the ldconfig man page for more info.
+ldconfig. See the ldconfig man page for more info.
 
 --------------------
 Simple Installation
 --------------------
 
 By default, the Tcl source directory is assumed to be in the same
-directory as the Expect source directory.  For example, in this
+directory as the Expect source directory. For example, in this
 listing, Expect and Tcl are both stored in /usr/local/src:
 
 	/usr/local/src/tcl8.0		(actual version may be different)
@@ -39,39 +39,39 @@ Expect directory, type:
 
 The same applies for Tk, if you have it.  (Tk is optional.)
 
-Run "./configure".  This will generate a Makefile (from a prototype
-called "Makefile.in") appropriate to your system.  (This step must be
+Run "./configure". This will generate a Makefile (from a prototype
+called "Makefile.in") appropriate to your system. (This step must be
 done in the foreground because configure performs various tests on
-your controlling tty.  If you want to do this step in the background
+your controlling tty. If you want to do this step in the background
 in the future, automate it using Expect!)
 
 Most people will not need to make any changes to the generated
-Makefile and can go on to the next step.  If you want though, you can
+Makefile and can go on to the next step. If you want though, you can
 edit the Makefile and change any definitions as appropriate for your
-site.  All the definitions you are likely to want to change are
+site. All the definitions you are likely to want to change are
 clearly identified and described at the beginning of the file.
 
-To build only the stand-alone Expect program, run "make expect".  This
-is appropriate even if you still haven't decided whether to install
+To build only the stand-alone Expect program, run "make expect". This
+is appropriate even if you still have NOT decided whether to install
 Expect, are still curious about it, and want to do the minimum
 possible in order to experiment with it.
 
-To build everything, run "make".  If "configure" found Tk and X on
+To build everything, run "make". If "configure" found Tk and X on
 your system, this will build "expectk" (Expect with Tk).
 
 Once expect is built, you can cd to the example directory and try out
 some of the examples (see the README file in the example directory).
 
-"make install" will install Expect.  If you built Expectk, that will
-be installed as well.  So will the documentation and some of the most
+"make install" will install Expect. If you built Expectk, that will
+be installed as well. So will the documentation and some of the most
 useful examples.
 
 If you want shared libs on Linux, you must now su to root and run
-ldconfig on the shared library.  See the ldconfig man page for more
+ldconfig on the shared library. See the ldconfig man page for more
 info.
 
 A handful of people running "pure" 4.2BSD systems have noted that
-expect fails to link due to lack of getopt and vprintf.  You can get
+expect fails to link due to lack of getopt and vprintf. You can get
 these from uunet or any good archive site.
 
 --------------------
@@ -159,7 +159,7 @@ By default, configure uses the latest Tcl it can find.  You can
 override this by creating a symbolic link of "tcl" which points to the
 release you want.
 
-If you can't or don't want to create symbolic links, you can instead
+If you cannot or do NOT want to create symbolic links, you can instead
 indicate where Tcl and Tk are by using the following environment variables:
  
 with_tclconfig		Directory containing Tcl configure file (tclConfig.h)
@@ -211,21 +211,21 @@ Test Suite
 --------------------
 
 Patterned after the Tcl test suite, I have begun building a test suite
-in the subdirectory "test".  It is still incomplete however you may
-use by typing "make test" in this directory.  You should then see a
-printout of the test files processed.  If any errors occur, you'll see
-a much more substantial printout for each error.  See the README file
+in the subdirectory "test". It is still incomplete however you may
+use by typing "make test" in this directory. You should then see a
+printout of the test files processed. If any errors occur, you will see
+a much more substantial printout for each error. See the README file
 in the "tests" directory for more information on the test suite.
 
 Note that the test suite assumes the existence of certain programs to
-use as interactive programs.  If you are missing these or they behave
-differently, errors may be reported.  Similarly, the test suite
+use as interactive programs. If you are missing these or they behave
+differently, errors may be reported. Similarly, the test suite
 assumes certain other things about your system, such as the sane stty
 parameters.
 
 You may also try some of the programs distribute in the example
-directory (see the README file in the example directory).  They are a
-strong indication of whether Expect works or not.  If you have any
+directory (see the README file in the example directory). They are a
+strong indication of whether Expect works or not. If you have any
 problems with them, let me know.
 
 --------------------

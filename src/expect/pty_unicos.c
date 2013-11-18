@@ -17,30 +17,30 @@ would appreciate credit if this program or parts of it are used.
 #include <signal.h>
 
 #if defined(SIGCLD) && !defined(SIGCHLD)
-#define SIGCHLD SIGCLD
-#endif
+# define SIGCHLD SIGCLD
+#endif /* SIGCLD && !SIGCHLD */
 
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
+# include <unistd.h>
 #else
 extern int fork(), execl(), wait();
-#endif
+#endif /* HAVE_UNISTD_H */
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
 #include <sys/file.h>
 #ifdef HAVE_SYS_FCNTL_H
-#  include <sys/fcntl.h>
+# include <sys/fcntl.h>
 #else
-#  include <fcntl.h>
-#endif
+# include <fcntl.h>
+#endif /* HAVE_SYS_FCNTL_H */
 /*#if CRAY>=60*/
 #if defined(HAVE_TERMIOS)
 # include <sys/termios.h>
 #else
 # include <sys/termio.h>
-/*#endif /* 60 */*/
+/*#endif*/ /* 60 */
 #endif /* defined(HAVE_TERMIOS) */
 #if CRAY>=70 && defined(_CRAY2)
 #include <sys/session.h>
@@ -53,18 +53,18 @@ extern int fork(), execl(), wait();
 #include "exp_rename.h"
 
 #ifdef HAVE_SYSCONF_H
-#include <sys/sysconfig.h>
-#endif
+# include <sys/sysconfig.h>
+#endif /* HAVE_SYSCONF_H */
 
 void debuglog();
 
 #ifndef TRUE
-#define TRUE 1
-#define FALSE 0
-#endif
+# define TRUE 1
+# define FALSE 0
+#endif /* !TRUE */
 
 #ifndef MAXHOSTNAMELEN
-#define MAXHOSTNAMELEN 64
+# define MAXHOSTNAMELEN 64
 #endif /* MAXHOSTNAMELEN */
 
 static char	linep[] = "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
@@ -92,7 +92,7 @@ char *name;		/* name of pty */
 	sprintf(buf,"/bin/stty %s > %s",s,name);
 #else
 	sprintf(buf,"/bin/stty %s < %s",s,name);
-#endif
+#endif /* STTY_READS_STDOUT */
 	old = signal(SIGCHLD, SIG_DFL);
 	system(buf);
 	signal(SIGCHLD, old);	/* restore signal handler */
@@ -103,10 +103,10 @@ static int knew_dev_tty;/* true if we had our hands on /dev/tty at any time */
 
 #ifdef TIOCGWINSZ
 static struct winsize winsize = {0, 0};
-#endif
+#endif /* TIOCGWINSZ */
 #if defined(TIOCGSIZE) && !defined(TIOCGWINSZ)
 static struct ttysize winsize = {0, 0};
-#endif
+#endif /* TIOCGSIZE && !TIOCGWINSZ */
 
 /*struct	termio exp_tty_original;*/
 exp_tty exp_tty_original;
@@ -129,19 +129,19 @@ char *s;	/* stty args, used only if request == SET_TTYTYPE */
 		}
 #ifdef TIOCGWINSZ
 		ioctl(fd,TIOCGWINSZ,&winsize);
-#endif
+#endif /* TIOCGWINSZ */
 #if defined(TIOCGSIZE) && !defined(TIOCGWINSZ)
 		ioctl(fd,TIOCGSIZE,&winsize);
-#endif
+#endif /* TIOCGSIZE && !TIOCGWINSZ */
 	} else {	/* type == SET_TTYTYPE */
 		if (ttycopy && knew_dev_tty) {
 			(void) ioctl(fd, TCSETA, (char *)&exp_tty_current);
 #ifdef TIOCSWINSZ
 			ioctl(fd,TIOCSWINSZ,&winsize);
-#endif
+#endif /* TIOCSWINSZ */
 #if defined(TIOCSSIZE) && !defined(TIOCSWINSZ)
 			ioctl(fd,TIOCGSIZE,&winsize);
-#endif
+#endif /* TIOCSSIZE && !TIOCSWINSZ */
 		}
 
 		if (ttyinit) {
@@ -191,10 +191,10 @@ exp_init_pty()
 	(void) gethostname(hostname,sizeof(hostname));
 
 	/*
-	 * Set the real and effective userids to root using 'setuid'.  Then
+	 * Set the real and effective userids to root using 'setuid'. Then
 	 * set the real and effective userids to the actual user using
-	 * 'setreuid'.  This allows using 'seteuid' to go back and forth from
-	 * root and the actual userid.  Don't ask me why it works.
+	 * 'setreuid'. This allows using 'seteuid' to go back and forth from
+	 * root and the actual userid. Do NOT ask me why it works.
 	 */
 	setuid(0);
 	setreuid(realuid,realuid);
@@ -417,3 +417,5 @@ resetptyutmp()
         (void) endutent();
         return(0);
 }
+
+/* EOF */

@@ -12,8 +12,8 @@ would appreciate credit if this program or parts of it are used.
 #include <signal.h>
 
 #if defined(SIGCLD) && !defined(SIGCHLD)
-#define SIGCHLD SIGCLD
-#endif
+# define SIGCHLD SIGCLD
+#endif /* SIGCLD && !SIGCHLD */
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -29,9 +29,9 @@ would appreciate credit if this program or parts of it are used.
 void debuglog();
 
 #ifndef TRUE
-#define TRUE 1
-#define FALSE 0
-#endif
+# define TRUE 1
+# define FALSE 0
+#endif /* !TRUE */
 
 static char	master_name[] = "/dev/ptyXX";	/* master */
 static char	 slave_name[] = "/dev/ttyXX";	/* slave */
@@ -57,7 +57,7 @@ char *name;		/* name of pty */
 	sprintf(buf,"/bin/stty %s > %s",s,name);
 #else
 	sprintf(buf,"/bin/stty %s < %s",s,name);
-#endif
+#endif /* STTY_READS_STDOUT */
 	old = signal(SIGCHLD, SIG_DFL);
 	system(buf);
 	signal(SIGCHLD, old);	/* restore signal handler */
@@ -68,10 +68,10 @@ static int knew_dev_tty;/* true if we had our hands on /dev/tty at any time */
 
 #ifdef TIOCGWINSZ
 static struct winsize winsize = {0, 0};
-#endif
+#endif /* TIOCGWINSZ */
 #if defined(TIOCGSIZE) && !defined(TIOCGWINSZ)
 static struct ttysize winsize = {0, 0};
-#endif
+#endif /* TIOCGSIZE && !TIOCGWINSZ */
 
 exp_tty exp_tty_original;
 
@@ -104,10 +104,10 @@ char *s;	/* stty args */
 		}
 #ifdef TIOCGWINSZ
 		ioctl(fd,TIOCGWINSZ,&winsize);
-#endif
+#endif /* TIOCGWINSZ */
 #if defined(TIOCGSIZE) && !defined(TIOCGWINSZ)
 		ioctl(fd,TIOCGSIZE,&winsize);
-#endif
+#endif /* TIOCGSIZE && !TIOCGWINSZ */
 	} else {	/* type == SET_TTYTYPE */
 		if (ttycopy && knew_dev_tty) {
 			(void) ioctl(fd, TIOCSETP, (char *)&exp_tty_current);
@@ -118,24 +118,24 @@ char *s;	/* stty args */
 			(void) ioctl(fd, TIOCSWINSZ, (char *)&win);
 #ifdef TIOCSWINSZ
 			ioctl(fd,TIOCSWINSZ,&winsize);
-#endif
+#endif /* TIOCSWINSZ */
 #if defined(TIOCSSIZE) && !defined(TIOCSWINSZ)
 			ioctl(fd,TIOCGSIZE,&winsize);
-#endif
+#endif /* TIOCSSIZE && !TIOCSWINSZ */
 		}
 
 #ifdef __CENTERLINE__
-#undef DFLT_STTY
-#define DFLT_STTY "sane"
-#endif
+# undef DFLT_STTY
+# define DFLT_STTY "sane"
+#endif /* __CENTERLINE__ */
 
-/* Apollo Domain doesn't need this */
+/* Apollo Domain does NOT need this */
 #ifdef DFLT_STTY
 		if (ttyinit) {
 			/* overlay parms originally supplied by Makefile */
 			pty_stty(DFLT_STTY,slave_name);
 		}
-#endif
+#endif /* DFLT_STTY */
 
 		/* lastly, give user chance to override any terminal parms */
 		if (s) {
@@ -155,7 +155,7 @@ exp_init_pty()
 
 #if experimental
 	/* code to allocate force expect to get a controlling tty */
-	/* even if it doesn't start with one (i.e., under cron). */
+	/* even if it does NOT start with one (i.e., under cron). */
 	/* This code is not necessary, but helpful for testing odd things. */
 	if (exp_dev_tty == -1) {
 		/* give ourselves a controlling tty */
@@ -168,7 +168,7 @@ exp_init_pty()
 		close(2);
 		fcntl(0,F_DUPFD,2);		/* dup 0 onto 2 */
 	}
-#endif
+#endif /* experimental */
 
 	knew_dev_tty = (exp_dev_tty != -1);
 	if (knew_dev_tty) ttytype(GET_TTYTYPE,exp_dev_tty,0,0,(char *)0);
@@ -246,3 +246,5 @@ exp_pty_exit()
 {
 	/* a stub so we can do weird things on the cray */
 }
+
+/* EOF */

@@ -3,7 +3,7 @@
 Written by: Don Libes, NIST, 2/6/90
 
 Design and implementation of this program was paid for by U.S. tax
-dollars.  Therefore it is public domain.  However, the author and NIST
+dollars. Therefore it is public domain. However, the author and NIST
 would appreciate credit if this program or parts of it are used.
 
 */
@@ -15,18 +15,26 @@ would appreciate credit if this program or parts of it are used.
 #include <ctype.h>	/* for isspace */
 #include <time.h>	/* for time(3) */
 #if 0
-#include <setjmp.h>
-#endif
+# ifdef HAVE_SETJMP_H
+#  include <setjmp.h>
+# else
+#  warning expect.c expects <setjmp.h> to be included.
+# endif /* HAVE_SETJMP_H */
+#endif /* 0 */
 
 #include "expect_cf.h"
 
 #ifdef HAVE_SYS_WAIT_H
-#include <sys/wait.h>
-#endif
+# include <sys/wait.h>
+#else
+# warning expect.c expects <sys/wait.h> to be included.
+#endif /* HAVE_SYS_WAIT_H */
 
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
-#endif
+#else
+# warning expect.c expects <unistd.h> to be included.
+#endif /* HAVE_UNISTD_H */
 
 #include "tcl.h"
 
@@ -40,10 +48,10 @@ would appreciate credit if this program or parts of it are used.
 #include "exp_event.h"
 #include "exp_tty.h"
 #include "exp_tstamp.h"	/* this should disappear when interact */
-			/* loses ref's to it */
+			            /* loses ref's to it */
 #ifdef TCL_DEBUGGER
-#include "Dbg.h"
-#endif
+# include "Dbg.h"
+#endif /* TCL_DEBUGGER */
 
 /* initial length of strings that we can guarantee patterns can match */
 int exp_default_match_max =	2000;
@@ -56,8 +64,8 @@ int exp_default_rm_nulls =	TRUE;
 #define EXPECT_TIMEOUT		"timeout"
 #define EXPECT_OUT		"expect_out"
 
-/* 1 ecase struct is reserved for each case in the expect command.  Note that
-eof/timeout don't use any of theirs, but the algorithm is simpler this way. */
+/* 1 ecase struct is reserved for each case in the expect command. Note that
+ * eof/timeout do NOT use any of theirs, but the algorithm is simpler this way. */
 
 struct ecase {	/* case for expect command */
 	struct exp_i	*i_list;
@@ -123,18 +131,18 @@ int cmdtype;
 	cmd->i_list = 0;
 }
 
-static int i_read_errno;/* place to save errno, if i_read() == -1, so it
-			   doesn't get overwritten before we get to read it */
+static int i_read_errno; /* place to save errno, if i_read() == -1, so it
+			              * does NOT get overwritten before we get to read it */
 #if 0
 static jmp_buf env;	/* for interruptable read() */
 			/* longjmp(env,1) times out the read */
 			/* longjmp(env,2) restarts the read */
 static int env_valid = FALSE;	/* whether we can longjmp or not */
-#endif
+#endif /* 0 */
 
 #ifdef SIMPLE_EVENT
 static int alarm_fired;	/* if alarm occurs */
-#endif
+#endif /* SIMPLE_EVENT */
 
 void exp_background_filehandlers_run_all();
 
@@ -151,11 +159,11 @@ sigalarm_handler(n)
 int n;		       	/* unused, for compatibility with STDC */
 {
 	alarm_fired = TRUE;
-#if 0
+# if 0
 	/* check env_valid first to protect us from the alarm occurring */
 	/* in the window between i_read and alarm(0) */
 	if (env_valid) longjmp(env,1);
-#endif /*0*/
+# endif /*0*/
 }
 #endif /*SIMPLE_EVENT*/
 
@@ -165,9 +173,9 @@ static RETSIGTYPE
 sigalarm_handler(n)
 int n;		       	/* unused, for compatibility with STDC */
 {
-#ifdef REARM_SIG
+# ifdef REARM_SIG
 	signal(SIGALRM,sigalarm_handler);
-#endif
+# endif /* REARM_SIG */
 
 	/* check env_valid first to protect us from the alarm occurring */
 	/* in the window between i_read and alarm(0) */
@@ -183,13 +191,13 @@ static RETSIGTYPE
 sigint_handler(n)
 int n;			/* unused, for compatibility with STDC */
 {
-#ifdef REARM_SIG
-	signal(SIGINT,sigint_handler);/* not nec. for BSD, but doesn't hurt */
-#endif
+# ifdef REARM_SIG
+	signal(SIGINT,sigint_handler);/* not nec. for BSD, but does NOT hurt */
+# endif /* REARM_SIG */
 
-#ifdef TCL_DEBUGGER
+# ifdef TCL_DEBUGGER
 	if (exp_tcl_debugger_available) {
-		/* if the debugger is active and we're reading something, */
+		/* if the debugger is active and we are/were reading something, */
 		/* force the debugger to go interactive now and when done, */
 		/* restart the read.  */
 
@@ -202,14 +210,14 @@ int n;			/* unused, for compatibility with STDC */
 		/* the next command. */
 		return;
 	}
-#endif
+# endif /* TCL_DEBUGGER */
 
-#if 0
+# if 0
 /* the ability to timeout a read via ^C is hereby removed 8-Mar-1993 - DEL */
 
 	/* longjmp if we are executing a read inside of expect command */
 	if (env_valid) longjmp(env,1);
-#endif
+# endif /* 0 */
 
 	/* if anywhere else in code, prepare to exit */
 	exp_exit(exp_interp,0);
@@ -285,7 +293,7 @@ int free_ilist;		/* if true, free ilists */
 
 
 #if 0
-/* no standard defn for this, and some systems don't even have it, so avoid */
+/* no standard defn for this, and some systems do NOT even have it, so avoid */
 /* the whole quagmire by calling it something else */
 static char *exp_strdup(s)
 char *s;
@@ -294,7 +302,7 @@ char *s;
 	strcpy(news,s);
 	return(news);
 }
-#endif
+#endif /* 0 */
 
 /* In many places, there is no need to malloc a copy of a string, since it */
 /* will be freed before we return to Tcl */
@@ -314,10 +322,10 @@ int nosave;
 
 /* return TRUE if string appears to be a set of arguments
    The intent of this test is to support the ability of commands to have
-   all their args braced as one.  This conflicts with the possibility of
+   all their args braced as one. This conflicts with the possibility of
    actually intending to have a single argument.
    The bad case is in expect which can have a single argument with embedded
-   \n's although it's rare.  Examples that this code should handle:
+   \n's although it is rare. Examples that this code should handle:
    \n		FALSE (pattern)
    \n\n		FALSE
    \n  \n \n	FALSE
@@ -328,7 +336,7 @@ int nosave;
 
    Current test is very cheap and almost always right :-)
 */
-int 
+int
 exp_one_arg_braced(p)
 char *p;
 {
@@ -384,7 +392,7 @@ char **argv;
 		a = TclWordEnd(a,0,(int *)0)+1;
 #else
 		a = TclWordEnd(a,&a[strlen(a)],0,(int *)0)+1;
-#endif
+#endif /* TCL_MAJOR_VERSION < 8 */
 	}
 
 	rc = Tcl_Eval(interp,buf);
@@ -421,9 +429,9 @@ ecase_new()
 
 /*
 
-parse_expect_args parses the arguments to expect or its variants. 
+parse_expect_args parses the arguments to expect or its variants.
 It normally returns TCL_OK, and returns TCL_ERROR for failure.
-(It can't return i_list directly because there is no way to differentiate
+(It cannot return i_list directly because there is no way to differentiate
 between clearing, say, expect_before and signalling an error.)
 
 eg (expect_global) is initialized to reflect the arguments parsed
@@ -432,10 +440,10 @@ eg->ecd.count is the # of ecases
 eg->i_list is a linked list of exp_i's which represent the -i info
 
 Each exp_i is chained to the next so that they can be easily free'd if
-necessary.  Each exp_i has a reference count.  If the -i is not used
+necessary.  Each exp_i has a reference count. If the -i is not used
 (e.g., has no following patterns), the ref count will be 0.
 
-Each ecase points to an exp_i.  Several ecases may point to the same exp_i.
+Each ecase points to an exp_i. Several ecases may point to the same exp_i.
 Variables named by indirect exp_i's are read for the direct values.
 
 If called from a foreground expect and no patterns or -i are given, a
@@ -464,9 +472,9 @@ char **argv;
 
 	ecase_clear(&ec);
 
-	/* Allocate an array to store the ecases.  Force array even if 0 */
-	/* cases.  This will often be too large (i.e., if there are flags) */
-	/* but won't affect anything. */
+	/* Allocate an array to store the ecases. Force array even if 0 */
+	/* cases. This will often be too large (i.e., if there are flags) */
+	/* but will NOT affect anything. */
 
 	eg->ecd.cases = (struct ecase **)ckalloc(
 		sizeof(struct ecase *) * (1+(argc/2)));
@@ -475,7 +483,7 @@ char **argv;
 
 	for (i = 0;i<argc;i++) {
 		arg = argv[i];
-	
+
 		if (exp_flageq("timeout",arg,7)) {
 			ec.use = PAT_TIMEOUT;
 		} else if (exp_flageq("eof",arg,3)) {
@@ -571,7 +579,7 @@ char **argv;
 				if (default_spawn_id != EXP_SPAWN_ID_BAD) {
 					eg->i_list = exp_new_i_simple(default_spawn_id,eg->duration);
 				} else {
-					/* it'll be checked later, if used */
+					/* it will be checked later, if used */
 					(void) exp_update_master(interp,&default_spawn_id,0,0);
 					eg->i_list = exp_new_i_simple(default_spawn_id,eg->duration);
 				}
@@ -585,7 +593,7 @@ char **argv;
 		/* useful for debugging but not otherwise used */
 		save_str(&ec.pat,argv[i],eg->duration == EXP_TEMPORARY);
 		save_str(&ec.body,argv[i+1],eg->duration == EXP_TEMPORARY);
-			
+
 		i++;
 
 		*(eg->ecd.cases[eg->ecd.count] = ecase_new()) = ec;
@@ -603,7 +611,7 @@ char **argv;
 		if (default_spawn_id != EXP_SPAWN_ID_BAD) {
 			eg->i_list = exp_new_i_simple(default_spawn_id,eg->duration);
 		} else {
-			/* it'll be checked later, if used */
+			/* it will be checked later, if used */
 			(void) exp_update_master(interp,&default_spawn_id,0,0);
 			eg->i_list = exp_new_i_simple(default_spawn_id,eg->duration);
 		}
@@ -612,14 +620,14 @@ char **argv;
 	return(TCL_OK);
 
  error:
-	/* very hard to free case_master_list here if it hasn't already */
+	/* very hard to free case_master_list here if it has NOT already */
 	/* been attached to a case, ugh */
 
 	/* note that i_list must be avail to free ecases! */
 	free_ecases(interp,eg,0);
 
 	/* undo temporary ecase */
-	/* free_ecase doesn't quite handle this right, so do it by hand */
+	/* free_ecase does NOT quite handle this right, so do it by hand */
 	if (ec.re) ckfree((char *)ec.re);
 	if (eg->duration == EXP_PERMANENT) {
 		if (ec.pat) ckfree(ec.pat);
@@ -795,8 +803,8 @@ char *suffix;
 		return(status);
 	}
 
-	/* the top loops are split from the bottom loop only because I can't */
-	/* split'em further. */
+	/* the top loops are split from the bottom loop only because I cannot */
+	/* split them further. */
 
 	/* The bufferful condition does not prevent a pattern match from */
 	/* occurring and vice versa, so it is scanned with patterns */
@@ -850,7 +858,7 @@ struct exp_i *exp_i;
 			if (i+1 != ecmd->ecd.count) {
 				memcpy(&ecmd->ecd.cases[i],
 				       &ecmd->ecd.cases[i+1],
-					((ecmd->ecd.count - i) - 1) * 
+					((ecmd->ecd.count - i) - 1) *
 					sizeof(struct exp_cmd_descriptor *));
 			}
 			ecmd->ecd.count--;
@@ -871,7 +879,7 @@ Tcl_Interp *interp;
 struct exp_i **ei;	/* list to remove from */
 struct exp_i *exp_i;	/* element to remove */
 {
-	/* since it's in middle of list, free exp_i by hand */
+	/* since it is in the middle of list, free exp_i by hand */
 	for (;*ei; ei = &(*ei)->next) {
 		if (*ei == exp_i) {
 			*ei = exp_i->next;
@@ -1116,7 +1124,7 @@ char **argv;
 
 	return TCL_OK;
 }
-#endif
+#endif /* 0 */
 
 /* return current setting of the permanent expect_before/after/bg */
 int
@@ -1218,7 +1226,7 @@ char **argv;
 	if (argc > 1 && (argv[1][0] == '-')) {
 		if (exp_flageq("info",&argv[1][1],4)) {
 			return(expect_info(interp,ecmd,argc-2,argv+2));
-		} 
+		}
 	}
 
 	exp_cmd_init(&eg,ecmd->cmdtype,EXP_PERMANENT);
@@ -1253,9 +1261,9 @@ char **argv;
 			ecmd_remove_fd(interp,ecmd,m,EXP_DIRECT);
 		}
 	}
-	
+
 	/*
-	 * For each indirect variable, release its old ecases and 
+	 * For each indirect variable, release its old ecases and
 	 * clean up the matching spawn ids.
 	 * Same logic as in "expect_X delete" command.
 	 */
@@ -1362,7 +1370,7 @@ char **argv;
  cleanup:
 	if (result == TCL_ERROR) {
 		/* in event of error, free any unreferenced ecases */
-		/* but first, split up i_list so that exp_i's aren't */
+		/* but first, split up i_list so that exp_i's are NOT */
 		/* freed twice */
 
 		for (exp_i=eg.i_list;exp_i;) {
@@ -1389,12 +1397,12 @@ struct exp_f *f;
 {
 	int new_msize;
 
-	/* get the latest buffer size.  Double the user input for */
-	/* two reasons.  1) Need twice the space in case the match */
+	/* get the latest buffer size. Double the user input for */
+	/* two reasons. 1) Need twice the space in case the match */
 	/* straddles two bufferfuls, 2) easier to hack the division */
-	/* by two when shifting the buffers later on.  The extra  */
+	/* by two when shifting the buffers later on. The extra  */
 	/* byte in the malloc's is just space for a null we can slam on the */
-	/* end.  It makes the logic easier later.  The -1 here is so that */
+	/* end. It makes the logic easier later. The -1 here is so that */
 	/* requests actually come out to even/word boundaries (if user */
 	/* gives "reasonable" requests) */
 	new_msize = f->umsize*2 - 1;
@@ -1430,11 +1438,11 @@ struct exp_f *f;
 /*
 
  expect_read() does the logical equivalent of a read() for the
-expect command.  This includes figuring out which descriptor should
+expect command. This includes figuring out which descriptor should
 be read from.
 
 The result of the read() is left in a spawn_id's buffer rather than
-explicitly passing it back.  Note that if someone else has modified a
+explicitly passing it back. Note that if someone else has modified a
 buffer either before or while this expect is running (i.e., if we or
 some event has called Tcl_Eval which did another expect/interact),
 expect_read will also call this a successful read (for the purposes if
@@ -1543,7 +1551,7 @@ int key;
 		if (logfile_all || (loguser && logfile)) {
 			fwrite(f->buffer + f->printed,1,write_count,logfile);
 		}
-		/* don't write to user if they're seeing it already, */
+		/* do NOT write to user if they are seeing it already, */
 		/* that is, typing it! */
 		if (loguser && !exp_is_stdinfd(*m) && !exp_is_devttyfd(*m))
 			fwrite(f->buffer + f->printed,
@@ -1565,7 +1573,7 @@ int key;
 			      f->buffer+f->printed,
 					1 + f->size - f->printed);
 
-		f->printed = f->size; /* count'm even if not logging */
+		f->printed = f->size; /* count them even if not logging */
 	}
 	return(cc);
 }
@@ -1663,7 +1671,7 @@ int save_flags;
 	int cc = EXP_TIMEOUT;
 
 	f = exp_fs + m;
-	if (f->size == f->msize) 
+	if (f->size == f->msize)
 		exp_buffer_shuffle(interp,f,save_flags,EXPECT_OUT,"expect");
 
 #ifdef SIMPLE_EVENT
@@ -1675,7 +1683,7 @@ int save_flags;
 		signal(SIGALRM,sigalarm_handler);
 		alarm((timeout > 0)?timeout:1);
 	}
-#endif
+#endif /* SIMPLE_EVENT */
 
 	cc = read(m,f->buffer+f->size, f->msize-f->size);
 	i_read_errno = errno;
@@ -1701,15 +1709,15 @@ int save_flags;
 			}
 		}
 	}
-#endif
+#endif /* SIMPLE_EVENT */
 	return(cc);
 }
 
 /* variables predefined by expect are retrieved using this routine
-which looks in the global space if they are not in the local space.
-This allows the user to localize them if desired, and also to
-avoid having to put "global" in procedure definitions.
-*/
+ * which looks in the global space if they are not in the local space.
+ * This allows the user to localize them if desired, and also to
+ * avoid having to put "global" in procedure definitions.
+ */
 char *
 exp_get_var(interp,var)
 Tcl_Interp *interp;
@@ -1781,7 +1789,7 @@ int cmdtype;
 	}
 #ifdef LINT
 	return("unknown expect command");
-#endif
+#endif /* LINT */
 }
 
 /* exp_indirect_update2 is called back via Tcl's trace handler whenever */
@@ -1826,7 +1834,7 @@ struct exp_i *exp_i;
 			if (m == EXP_SPAWN_ID_ANY) continue;
 
 			/* silently skip closed or preposterous fds */
-			/* since we're just disabling them anyway */
+			/* since we are just disabling them anyway */
 			/* preposterous fds will have been reported */
 			/* by code in next section already */
 			if (!exp_fd2f(interp,fdl->fd,1,0,"")) continue;
@@ -1898,15 +1906,15 @@ int mask;
 	int m;
 
 	Tcl_Interp *interp;
-	int cc;			/* number of chars returned in a single read */
+	int cc;		/* number of chars returned in a single read */
 				/* or negative EXP_whatever */
 	struct exp_f *f;		/* file associated with master */
 
 	int i;			/* trusty temporary */
 
 	struct eval_out eo;	/* final case of interest */
-	struct exp_f *last_f;	/* for differentiating when multiple f's */
-				/* to print out better debugging messages */
+	struct exp_f *last_f; /* for differentiating when multiple f's */
+				          /* to print out better debugging messages */
 	int last_case;		/* as above but for case */
 
 	/* restore our environment */
@@ -1917,8 +1925,8 @@ int mask;
 	/* temporarily prevent this handler from being invoked again */
 	exp_block_background_filehandler(m);
 
-	/* if mask == 0, then we've been called because the patterns changed */
-	/* not because the waiting data has changed, so don't actually do */
+	/* if mask == 0, then we have been called because the patterns changed */
+	/* not because the waiting data has changed, so do NOT actually do */
 	/* any I/O */
 
 	if (mask == 0) {
@@ -2015,13 +2023,13 @@ do_more_data:
 				/* deprecated */
 				exp_timestamp(interp,&current_time,EXPECT_OUT);
 			}
-#endif
+#endif /* 0 */
 		} else if (cc == EXP_EOF) {
 			/* read an eof but no user-supplied case */
 			f = eo.f;
 			match = eo.match;
 			buffer = eo.buffer;
-		}			
+		}
 
 		if (match >= 0) {
 			char name[20], value[20];
@@ -2176,9 +2184,9 @@ Tcl_Interp *interp;
 int argc;
 char **argv;
 {
-	int cc;			/* number of chars returned in a single read */
+	int cc;		/* number of chars returned in a single read */
 				/* or negative EXP_whatever */
-	int m;			/* before doing an actual read, attempt */
+	int m;		/* before doing an actual read, attempt */
 				/* to match upon any spawn_id */
 	struct exp_f *f;		/* file associated with master */
 
@@ -2200,8 +2208,8 @@ char **argv;
 	time_t elapsed_time_total;/* time from now to match/fail/timeout */
 	time_t elapsed_time;	/* time from restart to (ditto) */
 
-	struct exp_f *last_f;	/* for differentiating when multiple f's */
-				/* to print out better debugging messages */
+	struct exp_f *last_f; /* for differentiating when multiple f's */
+				          /* to print out better debugging messages */
 	int last_case;		/* as above but for case */
 	int first_time = 1;	/* if not "restarted" */
 
@@ -2407,7 +2415,7 @@ error:
 			f = eo.f;
 			match = eo.match;
 			buffer = eo.buffer;
-		}			
+		}
 
 		if (match >= 0) {
 			char name[20], value[20];
@@ -2663,7 +2671,7 @@ char **argv;
 	} else {
 		sprintf(interp->result,"%ld",seconds);
 	}
-	
+
 	return TCL_OK;
  usage_error:
 	exp_error(interp,"args: [-seconds #] [-format format]");
@@ -2740,7 +2748,7 @@ char **argv;
 		return(TCL_OK);
 	}
 
-	/* all that's left is to set the size */
+	/* all that is left is to set the size */
 	size = atoi(argv[0]);
 	if (size <= 0) {
 		exp_error(interp,"must be positive");
@@ -2809,7 +2817,7 @@ char **argv;
 		return(TCL_OK);
 	}
 
-	/* all that's left is to set the value */
+	/* all that is left is to set the value */
 	value = atoi(argv[0]);
 	if (value != 0 && value != 1) {
 		exp_error(interp,"must be 0 or 1");
@@ -2878,7 +2886,7 @@ char **argv;
 		return(TCL_OK);
 	}
 
-	/* all that's left is to set the parity */
+	/* all that is left is to set the parity */
 	parity = atoi(argv[0]);
 
 	if (Default) exp_default_parity = parity;
@@ -3015,7 +3023,7 @@ Tcl_Interp *interp;
 #if 0
 	Tcl_CreateCommand(interp,"x",
 		cmdX,(ClientData)0,exp_deleteProc);
-#endif
+#endif /* 0 */
 }
 
 void
@@ -3023,5 +3031,7 @@ exp_init_sig() {
 #if 0
 	signal(SIGALRM,sigalarm_handler);
 	signal(SIGINT,sigint_handler);
-#endif
+#endif /* 0 */
 }
+
+/* EOF */

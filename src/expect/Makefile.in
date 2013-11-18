@@ -166,7 +166,8 @@ STTY = -DDFLT_STTY="\"@DEFAULT_STTY_ARGS@\""
 ######################################################################
 # End of things you may want to change
 #
-# Do not change anything after this
+# Avoid changing anything after this, unless you are a maintainer of
+# this Expect package
 ######################################################################
 
 bindir = @bindir@
@@ -239,7 +240,7 @@ PTY = pty_$(PTY_TYPE)
 CFILES = exp_command.c expect.c $(PTY).c \
 	exp_inter.c exp_regexp.c exp_tty.c \
 	exp_log.c exp_main_sub.c exp_pty.c \
-	exp_printify.c exp_trap.c exp_strf.c \
+	exp_printify.c exp_trap.c exp_strf.c exp_chan.c \
 	exp_console.c exp_glob.c exp_win.c Dbg.c exp_clib.c \
 	exp_closetcl.c exp_memmove.c exp_tty_comm.c \
 	exp_$(EVENT_TYPE).c exp_$(EVENT_ABLE).c \

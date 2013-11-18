@@ -6,7 +6,7 @@ return information about the possibility of future matches
 Modifications by: Don Libes, NIST, 2/6/90
 
 Design and implementation of this program was paid for by U.S. tax
-dollars.  Therefore it is public domain.  However, the author and NIST
+dollars. Therefore it is public domain. However, the author and NIST
 would appreciate credit if this program or parts of it are used.
 
 */
@@ -14,11 +14,21 @@ would appreciate credit if this program or parts of it are used.
 #include "expect_cf.h"
 #include "tcl.h"
 #include "exp_int.h"
+#include <stdio.h>
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# ifdef HAVE_STRINGS_H
+#  include <strings.h>
+# else
+#  warning exp_glob.c expects a string-related header to be included.
+# endif /* HAVE_STRINGS_H */
+#endif /* HAVE_STRING_H */
 
 #if 0
 /* The following functions implement expect's glob-style string matching */
 /* Exp_StringMatch allow's implements the unanchored front (or conversely */
-/* the '^') feature.  Exp_StringMatch2 does the rest of the work. */
+/* the '^') feature. Exp_StringMatch2 does the rest of the work. */
 int	/* returns # of chars that matched */
 Exp_StringMatch(string, pattern,offset)
 char *string;
@@ -52,11 +62,11 @@ int *offset;	/* offset from beginning of string where pattern matches */
 	}
 	return(-1);
 }
-#endif
+#endif /* 0 */
 
 /* The following functions implement expect's glob-style string matching */
 /* Exp_StringMatch allow's implements the unanchored front (or conversely */
-/* the '^') feature.  Exp_StringMatch2 does the rest of the work. */
+/* the '^') feature. Exp_StringMatch2 does the rest of the work. */
 int	/* returns # of chars that matched */
 Exp_StringMatch(string, pattern,offset)
 char *string;
@@ -130,20 +140,20 @@ int Exp_StringMatch2(string,pattern)
 	 */
 	if ((*pattern == '$') && (pattern[1] == 0)) {
 		if (*string == 0) return(match);
-		else return(-1);		
+		else return(-1);
 	}
 
-	/* Check for a "*" as the next pattern character.  It matches
-	 * any substring.  We handle this by calling ourselves
+	/* Check for a "*" as the next pattern character. It matches
+	 * any substring. We handle this by calling ourselves
 	 * recursively for each postfix of string, until either we
 	 * match or we reach the end of the string.
 	 */
-	
+
 	if (*pattern == '*') {
 #if 1
 	    int head_len;
 	    char *tail;
-#endif
+#endif /* 1 */
 	    pattern += 1;
 	    if (*pattern == 0) {
 		return(strlen(string)+match); /* DEL */
@@ -161,7 +171,7 @@ int Exp_StringMatch2(string,pattern)
 		tail--;
 		head_len--;
 	    }
-#else
+#else /* 0 */
 	    /* find shortest match */
 	    while (*string != 0) {
 		int rc;					/* DEL */
@@ -173,10 +183,10 @@ int Exp_StringMatch2(string,pattern)
 		match++;				/* DEL */
 	    }
 	    if (*pattern == '$') return 0;	/* handle *$ */
-#endif
+#endif /* 1 */
 	    return -1;					/* DEL */
 	}
-    
+
 	/*
 	 * after this point, all patterns must match at least one
 	 * character, so check this
@@ -184,7 +194,7 @@ int Exp_StringMatch2(string,pattern)
 
 	if (*string == 0) return -1;
 
-	/* Check for a "?" as the next pattern character.  It matches
+	/* Check for a "?" as the next pattern character. It matches
 	 * any single character.
 	 */
 
@@ -192,11 +202,11 @@ int Exp_StringMatch2(string,pattern)
 	    goto thisCharOK;
 	}
 
-	/* Check for a "[" as the next pattern character.  It is followed
+	/* Check for a "[" as the next pattern character. It is followed
 	 * by a list of characters that are acceptable, or by a range
 	 * (two characters separated by "-").
 	 */
-	
+
 	if (*pattern == '[') {
 	    pattern += 1;
 	    while (1) {
@@ -223,7 +233,7 @@ int Exp_StringMatch2(string,pattern)
 	    }
 
 /* OOPS! Found a bug in vanilla Tcl - have sent back to Ousterhout */
-/* but he hasn't integrated it yet. - DEL */
+/* but he has NOT integrated it yet. - DEL */
 
 #if 0
 	    while ((*pattern != ']') && (*pattern != 0)) {
@@ -233,16 +243,16 @@ int Exp_StringMatch2(string,pattern)
 		    pattern--;
 		    break;
 	        }
-#endif
+#endif /* 0 */
 		pattern += 1;
 	    }
 	    goto thisCharOK;
 	}
-    
+
 	/* If the next pattern character is backslash, strip it off
 	 * so we do exact matching on the character that follows.
 	 */
-	
+
 	if (*pattern == '\\') {
 	    pattern += 1;
 	    if (*pattern == 0) {
@@ -250,10 +260,10 @@ int Exp_StringMatch2(string,pattern)
 	    }
 	}
 
-	/* There's no special character.  Just make sure that the next
+	/* There is no special character. Just make sure that the next
 	 * characters of each string match.
 	 */
-	
+
 	if (*pattern != *string) {
 	    return -1;
 	}
@@ -264,3 +274,4 @@ int Exp_StringMatch2(string,pattern)
     }
 }
 
+/* EOF */

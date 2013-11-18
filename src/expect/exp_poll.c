@@ -14,17 +14,19 @@
 
 #include "tclInt.h"
 #include "tclPort.h"
-#include <signal.h> 
+#include <signal.h>
 
 #include <poll.h>
 #include <sys/types.h>
 
 #ifdef HAVE_UNISTD_H
-#  include <unistd.h>
-#endif
+# include <unistd.h>
+#else
+# warning exp_poll.c expects <unistd.h> to be included.
+#endif /* HAVE_UNISTD_H */
 
 /* Some systems require that the poll array be non-empty so provide a
- * 1-elt array for starters.  It will be ignored as soon as it grows
+ * 1-elt array for starters. It will be ignored as soon as it grows
  * larger.
  */
 
@@ -52,19 +54,19 @@ static int fdsMaxSpace = 1;	/* space that has actually been allocated */
  */
 
 /*
- * This structure is used to keep track of the notifier info for a 
+ * This structure is used to keep track of the notifier info for a
  * a registered file.
  */
 
 typedef struct FileHandler {
     int fd;
-    int mask;			/* Mask of desired events: TCL_READABLE,
+    int mask;	/* Mask of desired events: TCL_READABLE,
 				 * etc. */
-    int readyMask;		/* Mask of events that have been seen since the
-				 * last time file handlers were invoked for
-				 * this file. */
-    Tcl_FileProc *proc;		/* Procedure to call, in the style of
-				 * Tcl_CreateFileHandler. */
+    int readyMask; /* Mask of events that have been seen since the
+				    * last time file handlers were invoked for
+				    * this file. */
+    Tcl_FileProc *proc; /* Procedure to call, in the style of
+				         * Tcl_CreateFileHandler. */
     ClientData clientData;	/* Argument to pass to proc. */
     int pollArrayIndex;		/* index into poll array */
     struct FileHandler *nextPtr;/* Next in list of all files we care about. */
@@ -76,13 +78,13 @@ typedef struct FileHandler {
  */
 
 typedef struct FileHandlerEvent {
-    Tcl_Event header;		/* Information that is standard for
-				 * all events. */
-    int fd;			/* File descriptor that is ready.  Used
-				 * to find the FileHandler structure for
-				 * the file (can't point directly to the
-				 * FileHandler structure because it could
-				 * go away while the event is queued). */
+    Tcl_Event header; /* Information that is standard for
+					   * all events. */
+    int fd;	/* File descriptor that is ready. Used
+			 * to find the FileHandler structure for
+			 * the file (cannot point directly to the
+			 * FileHandler structure because it could
+			 * go away while the event is queued). */
 } FileHandlerEvent;
 
 /*
@@ -194,7 +196,7 @@ Tcl_SetTimer(timePtr)
     Tcl_Time *timePtr;		/* Timeout value, may be NULL. */
 {
     /*
-     * The interval timer doesn't do anything in this implementation,
+     * The interval timer does NOT do anything in this implementation,
      * because the only event loop is via Tcl_DoOneEvent, which passes
      * timeout values to Tcl_WaitForEvent.
      */
@@ -220,18 +222,18 @@ Tcl_SetTimer(timePtr)
 void
 Tcl_CreateFileHandler(fd, mask, proc, clientData)
     int fd;			/* Handle of stream to watch. */
-    int mask;			/* OR'ed combination of TCL_READABLE,
+    int mask;	/* OR'ed combination of TCL_READABLE,
 				 * TCL_WRITABLE, and TCL_EXCEPTION:
 				 * indicates conditions under which
 				 * proc should be called. */
-    Tcl_FileProc *proc;		/* Procedure to call for each
-				 * selected event. */
+    Tcl_FileProc *proc;	/* Procedure to call for each
+				         * selected event. */
     ClientData clientData;	/* Arbitrary data to pass to proc. */
 {
     FileHandler *filePtr;
     int index, bit;
     int cur_fd_index;
-    
+
     if (!initialized) {
 	InitNotifier();
     }
@@ -266,7 +268,7 @@ Tcl_CreateFileHandler(fd, mask, proc, clientData)
 	notifier.checkMasks[index] |= bit;
     } else {
 	notifier.checkMasks[index] &= ~bit;
-    } 
+    }
     if (mask & TCL_WRITABLE) {
 	(notifier.checkMasks+MASK_SIZE)[index] |= bit;
     } else {
@@ -340,7 +342,7 @@ Tcl_DeleteFileHandler(fd)
 
     /*
      * Find the entry for the given file (and return if there
-     * isn't one).
+     * is NOT one).
      */
 
     for (prevPtr = NULL, filePtr = notifier.firstFileHandlerPtr; ;
@@ -419,7 +421,7 @@ Tcl_DeleteFileHandler(fd)
 
 	/* update index to reflect new location in array */
 	/* first find link corresponding to last element in array */
-	    
+
 	for (lastPtr = notifier.firstFileHandlerPtr; filePtr; lastPtr = lastPtr->nextPtr) {
 	    if (lastPtr->fd == lastfd_in_array) {
 		lastPtr->pollArrayIndex = cur_fd_index;
@@ -439,15 +441,15 @@ Tcl_DeleteFileHandler(fd)
  * FileHandlerEventProc --
  *
  *	This procedure is called by Tcl_ServiceEvent when a file event
- *	reaches the front of the event queue.  This procedure is
+ *	reaches the front of the event queue. This procedure is
  *	responsible for actually handling the event by invoking the
  *	callback for the file handler.
  *
  * Results:
  *	Returns 1 if the event was handled, meaning it should be removed
  *	from the queue.  Returns 0 if the event was not handled, meaning
- *	it should stay on the queue.  The only time the event isn't
- *	handled is if the TCL_FILE_EVENTS flag bit isn't set.
+ *	it should stay on the queue. The only time the event is NOT
+ *	handled is if the TCL_FILE_EVENTS flag bit is NOT set.
  *
  * Side effects:
  *	Whatever the file handler's callback procedure does.
@@ -458,7 +460,7 @@ Tcl_DeleteFileHandler(fd)
 static int
 FileHandlerEventProc(evPtr, flags)
     Tcl_Event *evPtr;		/* Event to service. */
-    int flags;			/* Flags that indicate what events to
+    int flags;	/* Flags that indicate what events to
 				 * handle, such as TCL_FILE_EVENTS. */
 {
     FileHandler *filePtr;
@@ -531,7 +533,7 @@ Tcl_WaitForEvent(timePtr)
     FileHandlerEvent *fileEvPtr;
 #if 0
     struct timeval timeout, *timeoutPtr;
-#endif
+#endif /* 0 */
     int timeout;
     struct timeval *timeoutPtr;
 
@@ -542,7 +544,7 @@ Tcl_WaitForEvent(timePtr)
     }
 
     /*
-     * Set up the timeout structure.  Note that if there are no events to
+     * Set up the timeout structure. Note that if there are no events to
      * check for, we return with a negative result rather than blocking
      * forever.
      */
@@ -552,7 +554,7 @@ Tcl_WaitForEvent(timePtr)
 	timeout.tv_sec = timePtr->sec;
 	timeout.tv_usec = timePtr->usec;
 	timeoutPtr = &timeout;
-#endif
+#endif /* 0 */
         timeout = timePtr->sec*1000 + timePtr->usec/1000;
 
     } else if (notifier.numFdBits == 0) {
@@ -571,14 +573,14 @@ Tcl_WaitForEvent(timePtr)
 	    (SELECT_MASK *) &notifier.readyMasks[2*MASK_SIZE], timeoutPtr);
 
     /*
-     * Some systems don't clear the masks after an error, so
+     * Some systems do NOT clear the masks after an error, so
      * we have to do it here.
      */
 
     if (numFound == -1) {
 	memset((VOID *) notifier.readyMasks, 0, 3*MASK_SIZE*sizeof(fd_mask));
     }
-#endif
+#endif /* 0 */
 
     /*
      * Queue all detected file events before returning.
@@ -615,7 +617,7 @@ Tcl_WaitForEvent(timePtr)
 	if ((notifier.readyMasks+2*(MASK_SIZE))[index] & bit) {
 	    mask |= TCL_EXCEPTION;
 	}
-#endif
+#endif /* 0 */
 
 	if (!mask) {
 	    continue;
@@ -624,7 +626,7 @@ Tcl_WaitForEvent(timePtr)
 	}
 
 	/*
-	 * Don't bother to queue an event if the mask was previously
+	 * Do NOT bother to queue an event if the mask was previously
 	 * non-zero since an event must still be on the queue.
 	 */
 
@@ -656,13 +658,13 @@ Tcl_WaitForEvent(timePtr)
  *	None.
  *
  * Side effects:
- *	
+ *
  *	The notifier will generate a file event when the I/O channel
  *	given by fd next becomes ready in the way indicated by mask.
  *	If fd is already registered then the old mask will be replaced
- *	with the new one.  Once the event is sent, the notifier will
+ *	with the new one. Once the event is sent, the notifier will
  *	not send any more events about the fd until the next call to
- *	Tcl_NotifyFile. 
+ *	Tcl_NotifyFile.
  *
  * Assumption for poll implementation: Tcl_WatchFile is presumed NOT
  * to be called on the same file descriptior without intervening calls
@@ -674,7 +676,7 @@ Tcl_WaitForEvent(timePtr)
 void
 Tcl_WatchFile(file, mask)
     Tcl_File file;	/* Generic file handle for a stream. */
-    int mask;			/* OR'ed combination of TCL_READABLE,
+    int mask;	/* OR'ed combination of TCL_READABLE,
 				 * TCL_WRITABLE, and TCL_EXCEPTION:
 				 * indicates conditions to wait for
 				 * in select. */
@@ -738,7 +740,7 @@ Tcl_WatchFile(file, mask)
 int
 Tcl_FileReady(file, mask)
     Tcl_File file;	/* Generic file handle for a stream. */
-    int mask;			/* OR'ed combination of TCL_READABLE,
+    int mask;	/* OR'ed combination of TCL_READABLE,
 				 * TCL_WRITABLE, and TCL_EXCEPTION:
 				 * indicates conditions caller cares about. */
 {
@@ -840,7 +842,7 @@ Tcl_Sleep(ms)
     /*
      * The only trick here is that select appears to return early
      * under some conditions, so we have to check to make sure that
-     * the right amount of time really has elapsed.  If it's too
+     * the right amount of time really has elapsed. If it is too
      * early, go back to sleep again.
      */
 
@@ -878,3 +880,4 @@ Tcl_Sleep(ms)
 
 #endif /* TCL_MAJOR_VERSION < 8 */
 
+/* EOF */

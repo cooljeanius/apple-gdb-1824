@@ -1,16 +1,16 @@
-/* exp_console.c - grab console.  This stuff is in a separate file to
+/* exp_console.c - grab console. This stuff is in a separate file to
 avoid unpleasantness of AIX (3.2.4) .h files which provide no way to
 reference TIOCCONS and include both sys/ioctl.h and sys/sys/stropts.h
-without getting some sort of warning from the compiler.  The problem
+without getting some sort of warning from the compiler. The problem
 is that both define _IO but only ioctl.h checks to see if it is
-defined first.  This would suggest that it is sufficient to include
-ioctl.h after stropts.h.  Unfortunately, ioctl.h, having seen that _IO
+defined first. This would suggest that it is sufficient to include
+ioctl.h after stropts.h. Unfortunately, ioctl.h, having seen that _IO
 is defined, then fails to define other important things (like _IOW).
 
 Written by: Don Libes, NIST, 2/6/90
 
 Design and implementation of this program was paid for by U.S. tax
-dollars.  Therefore it is public domain.  However, the author and NIST
+dollars. Therefore it is public domain. However, the author and NIST
 would appreciate credit if this program or parts of it are used.
 */
 
@@ -20,15 +20,15 @@ would appreciate credit if this program or parts of it are used.
 #include <sys/ioctl.h>
 
 #ifdef HAVE_STRREDIR_H
-#include <sys/strredir.h>
+# include <sys/strredir.h>
 # ifdef SRIOCSREDIR
 #  undef TIOCCONS
-# endif
-#endif
+# endif /* SRIOCSREDIR */
+#endif /* HAVE_STRREDIR_H */
 
 #ifdef HAVE_SYS_FCNTL_H
-#include <sys/fcntl.h>
-#endif
+# include <sys/fcntl.h>
+#endif /* HAVE_SYS_FCNTL_H */
 
 #include "tcl.h"
 #include "exp_rename.h"
@@ -56,7 +56,7 @@ exp_console_set()
 		exp_console_manipulation_failed("redirect");
 	}
 	close(fd);
-#endif
+#endif /* SRIOCSREDIR */
 
 #ifdef TIOCCONS
 	int on = 1;
@@ -66,3 +66,5 @@ exp_console_set()
 	}
 #endif /*TIOCCONS*/
 }
+
+/* EOF */

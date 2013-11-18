@@ -18,33 +18,43 @@ void exp_unused() {}
 #include <sys/types.h>
 
 #ifdef HAVE_SYS_WAIT_H
-#include <sys/wait.h>
-#endif
+# include <sys/wait.h>
+#else
+# warning exp_select.c expects <sys/wait.h> to be included.
+#endif /* HAVE_SYS_WAIT_H */
 
 #ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-#endif
+# include <sys/time.h>
+#else
+# warning exp_select.c expects <sys/time.h> to be included.
+#endif /* HAVE_SYS_TIME_H */
 
 #ifdef HAVE_SYSSELECT_H
-#  include <sys/select.h>	/* Intel needs this for timeval */
+# include <sys/select.h>	/* Intel needs this for timeval */
+#else
+# if (defined(__i386__) || defined (__x86_64__) || defined(__INTEL__)) && !defined(timeval)
+#  warning exp_select.c needs <sys/select.h> to be included for timeval on Intel.
+# endif /* (__i386__ || __x86_64__ || __INTEL__) && !timeval */
 #endif
 
 #ifdef HAVE_PTYTRAP
-#  include <sys/ptyio.h>
-#endif
+# include <sys/ptyio.h>
+#endif /* HAVE_PTYTRAP */
 
 #ifdef HAVE_UNISTD_H
-#  include <unistd.h>
-#endif
+# include <unistd.h>
+#else
+# warning exp_select.c expects <unistd.h> to be included.
+#endif /* HAVE_UNISTD_H */
 
 #ifdef _AIX
 /* AIX has some unusual definition of FD_SET */
-#include <sys/select.h>
-#endif
+# include <sys/select.h>
+#endif /* _AIX */
 
 #if !defined( FD_SET )  &&  defined( HAVE_SYS_BSDTYPES_H )
-    /* like AIX, ISC has it's own definition of FD_SET */
-#   include <sys/bsdtypes.h>
+    /* like AIX, ISC has its own definition of FD_SET */
+# include <sys/bsdtypes.h>
 #endif /*  ! FD_SET  &&  HAVE_SYS_BSDTYPES_H */
 
 #include "tcl.h"
@@ -53,22 +63,22 @@ void exp_unused() {}
 #include "exp_event.h"
 
 #ifdef HAVE_SYSCONF_H
-#include <sys/sysconfig.h>
-#endif
+# include <sys/sysconfig.h>
+#endif /* HAVE_SYSCONF_H */
 
 #ifndef FD_SET
-#define FD_SET(fd,fdset)	(fdset)->fds_bits[0] |= (1<<(fd))
-#define FD_CLR(fd,fdset)	(fdset)->fds_bits[0] &= ~(1<<(fd))
-#define FD_ZERO(fdset)		(fdset)->fds_bits[0] = 0
-#define FD_ISSET(fd,fdset)	(((fdset)->fds_bits[0]) & (1<<(fd)))
-#ifndef AUX2
+# define FD_SET(fd,fdset)	(fdset)->fds_bits[0] |= (1<<(fd))
+# define FD_CLR(fd,fdset)	(fdset)->fds_bits[0] &= ~(1<<(fd))
+# define FD_ZERO(fdset)		(fdset)->fds_bits[0] = 0
+# define FD_ISSET(fd,fdset)	(((fdset)->fds_bits[0]) & (1<<(fd)))
+# ifndef AUX2
 typedef struct fd_set {
 	long fds_bits[1];
 	/* any implementation so pathetic as to not define FD_SET will just */
 	/* have to suffer with only 32 bits worth of fds */
 } fd_set;
-#endif /* AUX2 */
-#endif
+# endif /* !AUX2 */
+#endif /* !FD_SET */
 
 static struct timeval zerotime = {0, 0};
 static struct timeval anytime = {0, 0};	/* can be changed by user */
@@ -94,10 +104,10 @@ int key;
  *        way hosed and to ignore all exceptions.
  */
 #ifdef __Lynx__
-#define EXCEP 0
+# define EXCEP 0
 #else
-#define EXCEP &excep
-#endif
+# define EXCEP &excep
+#endif /* __Lynx__ */
 
 	for (i=0;i<n;i++) {
 		struct exp_f *f;
@@ -178,8 +188,8 @@ int key;
 
 	for (i=0;i<n;i++) {
 		rr++;
-		if (rr >= n) rr = 0;	/* ">" catches previous readys that */
-				/* used more fds then we're using now */
+		if (rr >= n) rr = 0; /* ">" catches previous readys that */
+				             /* used more fds than we are using now */
 
 		if (FD_ISSET(masters[rr],&rdrs)) {
 			*master_out = masters[rr];
@@ -278,13 +288,15 @@ void
 exp_init_event()
 {
 #if 0
-#ifdef _SC_OPEN_MAX
+# ifdef _SC_OPEN_MAX
 	maxfds = sysconf(_SC_OPEN_MAX);
-#else
+# else
 	maxfds = getdtablesize();
-#endif
-#endif
+# endif /* _SC_OPEN_MAX */
+#endif /* 0 */
 
 	exp_event_exit = 0;
 }
-#endif /* WHOLE FILE !!!! */
+#endif /* WHOLE FILE !!!! (0) */
+
+/* EOF */

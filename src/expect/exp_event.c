@@ -29,12 +29,12 @@ expensive.
 #include <sys/time.h>
 
 #ifdef HAVE_SYS_WAIT_H
-#include <sys/wait.h>
-#endif
+# include <sys/wait.h>
+#endif /* HAVE_SYS_WAIT_H */
 
 #ifdef HAVE_PTYTRAP
-#  include <sys/ptyio.h>
-#endif
+# include <sys/ptyio.h>
+#endif /* HAVE_PTYTRAP */
 
 #include "tcl.h"
 #include "exp_prog.h"
@@ -59,7 +59,7 @@ int fd;
 	Tcl_DeleteFileHandler(exp_fs[fd].Master);
 #else
 	Tcl_DeleteFileHandler(fd);
-#endif
+#endif /* Tcl < 8 */
 
 	/* remember that filehandler has been disabled so that */
 	/* it can be turned on for fg expect's as well as bg */
@@ -79,7 +79,7 @@ Tcl_FileProc *filehandler;
 	Tcl_CreateFileHandler(exp_fs[fd].Master,0,filehandler,(ClientData)0);
 #else
 	Tcl_CreateFileHandler(fd,0,filehandler,(ClientData)0);
-#endif
+#endif /* Tcl < 8 */
 
 	/* remember that filehandler has been disabled so that */
 	/* it can be turned on for fg expect's as well as bg */
@@ -94,7 +94,7 @@ int m;
 	Tcl_CreateFileHandler(exp_fs[m].Master,
 #else
 	Tcl_CreateFileHandler(m,
-#endif
+#endif /* Tcl < 8 */
 		TCL_READABLE|TCL_EXCEPTION,
 		exp_background_filehandler,
 		(ClientData)(exp_fs[m].fd_ptr));
@@ -195,7 +195,7 @@ static void
 exp_timehandler(clientData)
 ClientData clientData;
 {
-	*(int *)clientData = TRUE;	
+	*(int *)clientData = TRUE;
 }
 
 static void exp_filehandler(clientData,mask)
@@ -210,8 +210,8 @@ int mask;
 
 #if 0
 	if (ready_fd == *(int *)clientData) {
-		/* if input appears from an fd which we've already heard */
-		/* forcibly tell it to shut up.  We could also shut up */
+		/* if input appears from an fd which we have already heard */
+		/* forcibly tell it to shut up. We could also shut up */
 		/* every instance, but it is more efficient to leave the */
 		/* fd enabled with the belief that we may rearm soon enough */
 		/* anyway. */
@@ -221,7 +221,7 @@ int mask;
 		ready_fd = *(int *)clientData;
 		ready_mask = mask;
 	}
-#endif
+#endif /* 0 */
 }
 
 /* returns status, one of EOF, TIMEOUT, ERROR or DATA */
@@ -239,7 +239,7 @@ int key;
 	int i;	/* index into in-array */
 #ifdef HAVE_PTYTRAP
 	struct request_info ioctl_info;
-#endif
+#endif /* HAVE_PTYTRAP */
 
 	int old_configure_count = exp_configure_count;
 
@@ -294,7 +294,7 @@ int key;
 					     exp_fs[k].Master,
 #else
 					     k,
-#endif
+#endif /* Tcl < 8 */
 					     default_mask,
 					     exp_filehandler,
 					     (ClientData)exp_fs[k].fd_ptr);
@@ -339,7 +339,7 @@ int key;
 #ifndef HAVE_PTYTRAP
 			if (timer_created) Tcl_DeleteTimerHandler(timetoken);
 			return(EXP_EOF);
-#else
+#else /* HAVE_PTYTRAP */
 			if (ioctl(*master_out,TIOCREQCHECK,&ioctl_info) < 0) {
 				if (timer_created)
 					Tcl_DeleteTimerHandler(timetoken);
@@ -372,7 +372,7 @@ int ready_mask;
 {
 #ifdef HAVE_PTYTRAP
 	struct request_info ioctl_info;
-#endif
+#endif /* HAVE_PTYTRAP */
 
 	if (ready_mask & TCL_READABLE) return EXP_DATA_NEW;
 
@@ -380,7 +380,7 @@ int ready_mask;
 
 #ifndef HAVE_PTYTRAP
 	return(EXP_EOF);
-#else
+#else /* HAVE_PTYTRAP */
 	if (ioctl(fd,TIOCREQCHECK,&ioctl_info) < 0) {
 		exp_debuglog("ioctl error on TIOCREQCHECK: %s",
 				Tcl_PosixError(interp));
@@ -396,7 +396,7 @@ int ready_mask;
 	/* call it an error for lack of anything more descriptive */
 	/* it will be thrown away by caller anyway */
 	return EXP_TCLERROR;
-#endif
+#endif /* !HAVE_PTYTRAP */
 }
 
 /*ARGSUSED*/
@@ -441,7 +441,7 @@ long usec;
 		ready_fd = EXP_SPAWN_ID_BAD;
 	}
 }
-#endif
+#endif /* 0 */
 
 static char destroy_cmd[] = "destroy .";
 
@@ -458,3 +458,5 @@ exp_init_event()
 {
 	exp_event_exit = exp_event_exit_real;
 }
+
+/* EOF */

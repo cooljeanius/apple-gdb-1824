@@ -13,24 +13,24 @@
 #include "expect_cf.h"
 
 #ifdef __MACHTEN__
-#include "sys/types.h"
-#endif
+# include "sys/types.h"
+#endif /* __MACHTEN__ */
 
 /*
  * Set up some macros to isolate tty differences
  */
 
 /* On some hosts, termio is incomplete (broken) and sgtty is a better
-choice.  At the same time, termio has some definitions for modern
-stuff like window sizes that sgtty lacks - that's why termio.h
+choice. At the same time, termio has some definitions for modern
+stuff like window sizes that sgtty lacks - that is why termio.h
 is included even when we claim the basic style is sgtty
 */
 
 /* test for pyramid may be unnecessary, but only Pyramid people have */
 /* complained - notably pclink@qus102.qld.npb.telecom.com.au (Rick) */
 #if defined(pyr) && defined(HAVE_TERMIO) && defined(HAVE_SGTTYB)
-#undef HAVE_SGTTYB
-#endif
+# undef HAVE_SGTTYB
+#endif /* pyr && HAVE_TERMIO && HAVE_SGTTYB */
 
 /* on ISC SVR3.2, termios is skeletal and termio is a better choice.  */
 /* sgttyb must also be avoided because it redefines same things that */
@@ -40,53 +40,52 @@ is included even when we claim the basic style is sgtty
 #if defined(HAVE_TERMIO) && defined(HAVE_TERMIOS) && !defined(HAVE_TCGETS_OR_TCGETA_IN_TERMIOS_H) && !defined(HAVE_TCSETATTR)
 # undef HAVE_TERMIOS
 # undef HAVE_SGTTYB
-#endif
+#endif /* HAVE_TERMIO && HAVE_TERMIOS && !HAVE_TCGETS_OR_TCGETA_IN_TERMIOS_H && !HAVE_TCSETATTR */
 
 #if defined(HAVE_TERMIO) && !defined(HAVE_TERMIOS)
-#  include <termio.h>
-#  undef POSIX
-#  define TERMINAL termio
-#  ifndef TCGETS
-#    define TCGETS	TCGETA
-#    define TCSETS	TCSETA
-#    define TCSETSW	TCSETAW
-#    define TCSETSF	TCSETAF
-#  endif
-#endif
+# include <termio.h>
+# undef POSIX
+# define TERMINAL termio
+# ifndef TCGETS
+#  define TCGETS	TCGETA
+#  define TCSETS	TCSETA
+#  define TCSETSW	TCSETAW
+#  define TCSETSF	TCSETAF
+# endif /* !TCGETS */
+#endif /* HAVE_TERMIO && !HAVE_TERMIOS */
 
 #if defined(HAVE_SGTTYB) && !defined(HAVE_TERMIOS)
-#  undef HAVE_TERMIO
-#  undef POSIX
-#ifndef TCGETS
+# undef HAVE_TERMIO
+# undef POSIX
+# ifndef TCGETS
 #  define TCGETS	TIOCGETP
 #  define TCSETS	TIOCSETP
-#endif
-#ifndef TCSETSW
+# endif /* !TCGETS */
+# ifndef TCSETSW
 #  define TCSETSW	TIOCSETN
-#endif
-#  define TERMINAL sgttyb
-#  ifdef HAVE_SYS_FCNTL_H
-#    include <sys/fcntl.h>
-#  else
-#    include <fcntl.h>
-#  endif
-#  include <sgtty.h>
-#  include <sys/ioctl.h>
-#endif
-
+# endif /* !TCSETSW */
+# define TERMINAL sgttyb
+# ifdef HAVE_SYS_FCNTL_H
+#  include <sys/fcntl.h>
+# else
+#  include <fcntl.h>
+# endif /* HAVE_SYS_FCNTL_H */
+# include <sgtty.h>
+# include <sys/ioctl.h>
+#endif /* HAVE_SGTTYB && !HAVE_TERMIOS */
 
 #if defined(HAVE_TERMIOS)
-#  undef HAVE_TERMIO
-#  undef HAVE_SGTTYB
-#  include <termios.h>
-#  define TERMINAL termios
-#  if !defined(TCGETS) || !defined(TCSETS)
-#    define TCGETS	TCGETA
-#    define TCSETS	TCSETA
-#    define TCSETSW	TCSETAW
-#    define TCSETSF	TCSETAF
-#  endif
-#endif
+# undef HAVE_TERMIO
+# undef HAVE_SGTTYB
+# include <termios.h>
+# define TERMINAL termios
+# if !defined(TCGETS) || !defined(TCSETS)
+#  define TCGETS	TCGETA
+#  define TCSETS	TCSETA
+#  define TCSETSW	TCSETAW
+#  define TCSETSF	TCSETAF
+# endif /* !TCGETS || !TCSETS */
+#endif /* HAVE_TERMIOS */
 
 /* This section was written by: Don Libes, NIST, 2/6/90 */
 
@@ -98,3 +97,5 @@ extern exp_tty exp_tty_cooked;
 #include "exp_tty.h"
 
 #endif	/* __EXP_TTY_IN_H__ */
+
+/* EOF */

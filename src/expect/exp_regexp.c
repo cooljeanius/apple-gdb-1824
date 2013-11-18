@@ -2,7 +2,7 @@
  * regcomp and regexec -- regsub and regerror are elsewhere
  *
  *	Copyright (c) 1986 by University of Toronto.
- *	Written by Henry Spencer.  Not derived from licensed software.
+ *	Written by Henry Spencer. Not derived from licensed software.
  *
  *	Permission is granted to anyone to use this software for any
  *	purpose on any computer system, and to redistribute it freely,
@@ -24,7 +24,7 @@
  *
  * *** NOTE: this code has been altered slightly for use in Tcl. ***
  * *** The only change is to use ckalloc and ckfree instead of   ***
- * *** malloc and free.						 ***
+ * *** malloc and free.						                     ***
 
  * *** and again for Expect!!! - DEL
 
@@ -139,10 +139,10 @@
  * Utility definitions.
  */
 #ifndef CHARBITS
-#define	UCHARAT(p)	((int)*(unsigned char *)(p))
+# define	UCHARAT(p)	((int)*(unsigned char *)(p))
 #else
-#define	UCHARAT(p)	((int)*(p)&CHARBITS)
-#endif
+# define	UCHARAT(p)	((int)*(p)&CHARBITS)
+#endif /* !CHARBITS */
 
 #define	FAIL(m)	{ regerror(m); return(NULL); }
 #define	ISMULT(c)	((c) == '*' || (c) == '+' || (c) == '?')
@@ -162,7 +162,7 @@
 static char *regparse;		/* Input-scan pointer. */
 static int regnpar;		/* () count. */
 static char regdummy;
-static char *regcode;		/* Code-emit pointer; &regdummy = don't. */
+static char *regcode;		/* Code-emit pointer; &regdummy = do NOT. */
 static long regsize;		/* Code size. */
 
 /*
@@ -176,8 +176,8 @@ static long regsize;		/* Code size. */
  * Forward declarations for regcomp()'s friends.
  */
 #ifndef STATIC
-#define	STATIC	static
-#endif
+# define	STATIC	static
+#endif /* !STATIC */
 STATIC char *reg();
 STATIC char *regbranch();
 STATIC char *regpiece();
@@ -190,7 +190,7 @@ STATIC void regtail();
 STATIC void regoptail();
 #ifdef STRCSPN
 STATIC int strcspn();
-#endif
+#endif /* STRCSPN */
 
 /* regcomp originally appeared here - DEL */
 
@@ -249,7 +249,7 @@ int *flagp;
 	}
 
 	/* Make a closing node, and hook it on the end. */
-	ender = regnode((paren) ? CLOSE+parno : END);	
+	ender = regnode((paren) ? CLOSE+parno : END);
 	regtail(ret, ender);
 
 	/* Hook the tails of the branches to the closing node. */
@@ -263,7 +263,7 @@ int *flagp;
 		if (*regparse == ')') {
 			FAIL("unmatched ()");
 		} else
-			FAIL("junk on end");	/* "Can't happen". */
+			FAIL("junk on end");	/* "Cannot happen". */
 		/* NOTREACHED */
 	}
 
@@ -373,10 +373,10 @@ int *flagp;
 /*
  - regatom - the lowest level
  *
- * Optimization:  gobbles an entire sequence of ordinary characters so that
+ * Optimization: gobbles an entire sequence of ordinary characters so that
  * it can turn them into a single node, which is smaller to store and
- * faster to run.  Backslashed characters are exceptions, each becoming a
- * separate node; the code is simpler that way and it's not worth fixing.
+ * faster to run. Backslashed characters are exceptions, each becoming a
+ * separate node; the code is simpler that way and it is not worth fixing.
  */
 static char *
 regatom(flagp)
@@ -625,7 +625,7 @@ STATIC int regrepeat();
 int regnarrate = 0;
 void regdump();
 STATIC char *regprop();
-#endif
+#endif /* DEBUG */
 
 #if 0
 /*
@@ -654,7 +654,7 @@ int *matchlength;	/* number of chars matched (or to be skipped) */
 		return(EXP_KM_ERROR);
 	}
 
-#if THIS_RUINS_EXP
+# if THIS_RUINS_EXP
 /* no need for this shortcut anyway */
 	/* If there is a "must appear" string, look for it. */
 	if (prog->regmust != NULL) {
@@ -667,7 +667,7 @@ int *matchlength;	/* number of chars matched (or to be skipped) */
 		if (s == NULL)	/* Not present. */
 			return(0);
 	}
-#endif
+# endif /* THIS_RUINS_EXP */
 
 	/* Mark beginning of line for ^ . */
 	regbol = string;
@@ -703,18 +703,18 @@ int *matchlength;	/* number of chars matched (or to be skipped) */
 			return CANT_MATCH;
 		}
 	} else {
-		/* We don't -- general case. */
+		/* We do NOT -- general case. */
 		register char *s2 = s;
 		int r = regtry(prog,s,matchlength);
 		if (r == EXP_MATCH) return(r);
 		else if (r == EXP_CANMATCH) return(r);
 		/* at this point, we know some characters at front */
-		/* of string don't match */
+		/* of string do NOT match */
 		for (s2++;*s2;s2++) {
 			r = regtry(prog,s2,matchlength);
 			if (r == CANT_MATCH) continue;
 			/* if we match or can_match, say cant_match and */
-			/* record the number of chars at front that don't match */
+			/* record the number of chars at front that do NOT match */
 			*matchlength = s2-s;
 			return(CANT_MATCH);
 		}
@@ -723,7 +723,7 @@ int *matchlength;	/* number of chars matched (or to be skipped) */
 		return(CANT_MATCH);
 	}
 }
-#endif
+#endif /* 0 */
 
 /*
  - regtry - try match at specific point
@@ -763,10 +763,10 @@ int *matchlength;	/* only set for MATCH */
 /*
  - regmatch - main matching routine
  *
- * Conceptually the strategy is simple:  check to see whether the current
+ * Conceptually the strategy is simple: check to see whether the current
  * node matches, call self recursively to see whether the rest matches,
- * and then act accordingly.  In practice we make some effort to avoid
- * recursion, in particular by going through "ordinary" nodes (that don't
+ * and then act accordingly. In practice we make some effort to avoid
+ * recursion, in particular by going through "ordinary" nodes (that do NOT
  * need to know whether the rest of the match failed) by a loop instead of
  * by recursion.
  */
@@ -779,18 +779,18 @@ char *prog;
 	char *next;		/* Next node. */
 #ifndef strchr	/* May be #defined to something else */
 	extern char *strchr();
-#endif
+#endif /* !strchr */
 
 	scan = prog;
 #ifdef DEBUG
 	if (scan != NULL && regnarrate)
 		fprintf(stderr, "%s(\n", regprop(scan));
-#endif
+#endif /* DEBUG */
 	while (scan != NULL) {
 #ifdef DEBUG
 		if (regnarrate)
 			fprintf(stderr, "%s...\n", regprop(scan));
-#endif
+#endif /* DEBUG */
 		next = regnext(scan);
 
 		switch (OP(scan)) {
@@ -876,7 +876,7 @@ char *prog;
 				r = regmatch(next);
 				if (r == EXP_MATCH) {
 					/*
-					 * Don't set startp if some later
+					 * Do NOT set startp if some later
 					 * invocation of the same parentheses
 					 * already has.
 					 */
@@ -907,7 +907,7 @@ char *prog;
 				r = regmatch(next);
 				if (r == EXP_MATCH) {
 					/*
-					 * Don't set endp if some later
+					 * Do NOT set endp if some later
 					 * invocation of the same parentheses
 					 * already has.
 					 */
@@ -974,7 +974,7 @@ char *prog;
 						if (r == EXP_CANMATCH)
 							match_status = r;
 					}
-					/* Couldn't or didn't -- back up. */
+					/* Could NOT or did NOT -- back up. */
 					no--;
 					reginput = save + no;
 				}
@@ -1002,7 +1002,7 @@ char *prog;
 	}
 
 	/*
-	 * We get here only if there's trouble -- normally "case END" is
+	 * We get here only if there is/was trouble -- normally "case END" is
 	 * the terminating point.
 	 */
 	regerror("corrupted pointers");
@@ -1021,7 +1021,7 @@ char *p;
 	register char *opnd;
 #ifndef strchr	/* May be #defined to something else */
 /*DEL*/	extern char *strchr();
-#endif
+#endif /* !strchr */
 
 	scan = reginput;
 	opnd = OPERAND(p);
@@ -1048,7 +1048,7 @@ char *p;
 			scan++;
 		}
 		break;
-	default:		/* Oh dear.  Called inappropriately. */
+	default:		/* Oh dear. Called inappropriately. */
 		regerror("internal foulup");
 		count = 0;	/* Best compromise. */
 		break;
@@ -1098,13 +1098,13 @@ Expect_regexp *r;
 
 
 	s = r->program + 1;
-	while (op != END) {	/* While that wasn't END last time... */
+	while (op != END) {	/* While that was not END last time... */
 		op = OP(s);
 		printf("%2d%s", s-r->program, regprop(s));	/* Where, what. */
 		next = regnext(s);
 		if (next == NULL)		/* Next ptr. */
 			printf("(0)");
-		else 
+		else
 			printf("(%d)", (s-r->program)+(next-s));
 		s += 3;
 		if (op == ANYOF || op == ANYBUT || op == EXACTLY) {
@@ -1218,11 +1218,11 @@ char *op;
 		(void) strcat(buf, p);
 	return(buf);
 }
-#endif
+#endif /* DEBUG */
 
 /*
  * The following is provided for those people who do not have strcspn() in
- * their C libraries.  They should get off their butts and do something
+ * their C libraries. They should get off their butts and do something
  * about it; at least one public-domain implementation of those (highly
  * useful) string routines has been published on Usenet.
  */
@@ -1250,4 +1250,6 @@ char *s2;
 	}
 	return(count);
 }
-#endif
+#endif /* STRCSPN */
+
+/* EOF */

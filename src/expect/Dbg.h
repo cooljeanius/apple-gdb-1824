@@ -3,7 +3,7 @@
 Written by: Don Libes, NIST, 3/23/93
 
 Design and implementation of this program was paid for by U.S. tax
-dollars.  Therefore it is public domain.  However, the author and NIST
+dollars. Therefore it is public domain. However, the author and NIST
 would appreciate credit if this program or parts of it are used.
 
 */
@@ -58,3 +58,5 @@ EXTERN Dbg_OutputStruct Dbg_Output _ANSI_ARGS_((
 					ClientData data));
 
 #endif /* _NIST_DBG */
+
+/* EOF */

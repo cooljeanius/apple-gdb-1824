@@ -165,7 +165,8 @@ fi
 AC_CONFIG_FILES([Makefile \
                  Makefile.orig \
                  po/Makefile.in \
-                 po/Makevars])
+                 po/Makevars \
+                 po2tbl.sed])
 AC_OUTPUT
 
 if test "${srcdir}" != "."; then

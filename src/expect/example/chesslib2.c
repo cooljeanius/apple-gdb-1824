@@ -82,3 +82,5 @@ main(){
 		read_move(fp1);
 	}
 }
+
+/* EOF */

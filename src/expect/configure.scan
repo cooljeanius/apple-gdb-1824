@@ -9,6 +9,7 @@ AC_CONFIG_HEADERS([config.h])
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
+AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_RANLIB
@@ -18,7 +19,7 @@ AC_PROG_RANLIB
 AC_CHECK_LIB([m], [main])
 
 # Checks for header files.
-AC_CHECK_HEADERS([fcntl.h inttypes.h sgtty.h stdlib.h sys/file.h sys/ioctl.h sys/time.h termio.h termios.h unistd.h utmp.h])
+AC_CHECK_HEADERS([fcntl.h inttypes.h malloc.h sgtty.h stdlib.h sys/file.h sys/ioctl.h sys/time.h termio.h termios.h unistd.h utmp.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T

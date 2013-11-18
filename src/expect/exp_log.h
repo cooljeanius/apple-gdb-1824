@@ -11,7 +11,7 @@
 
 #define dprintify(x)	((is_debugging || debugfile)?exp_printify(x):0)
 /* in circumstances where "debuglog(printify(...))" is written, call */
-/* dprintify instead.  This will avoid doing any formatting that would */
+/* dprintify instead. This will avoid doing any formatting that would */
 /* occur before debuglog got control and decided not to do anything */
 /* because (is_debugging || debugfile) was false. */
 
@@ -26,3 +26,5 @@ extern FILE *logfile;
 extern int logfile_all;
 
 extern int is_debugging;	/* useful to know for avoid debug calls */
+
+/* EOF */

@@ -3,9 +3,9 @@
    This file consists of three pieces:
    1) AppInit for Expectk.  This has been suitably modified to invoke
       a modified version of Tk_Init.
-   2) Tk_Init for Expectk.  What's wrong with the normal Tk_Init is that
+   2) Tk_Init for Expectk. What is wrong with the normal Tk_Init is that
       removes the -- in the cmd-line arg list, so Expect cannot know
-      whether args are flags to Expectk or data for the script.  Sigh.
+      whether args are flags to Expectk or data for the script. Sigh.
    3) Additions and supporting utilities to Tk's Argv parse table to
       support Expectk's flags.
 
@@ -15,7 +15,7 @@
 
 /* Expectk's AppInit */
 
-/* 
+/*
  * tkAppInit.c --
  *
  *	Provides a default version of the Tcl_AppInit procedure for
@@ -129,7 +129,7 @@ Tcl_AppInit(interp)
 
     /*
      * Call Tcl_CreateCommand for application-specific commands, if
-     * they weren't already created by the init procedures called above.
+     * they were NOT already created by the init procedures called above.
      */
 
     /*
@@ -171,7 +171,7 @@ int sys_rc = 1;
 int optcmd_eval();
 #ifdef TCL_DEBUGGER
 int optcmd_debug();
-#endif
+#endif /* TCL_DEBUGGER */
 int print_version = 0;
 
 static Tk_ArgvInfo argTable[] = {
@@ -195,15 +195,15 @@ static Tk_ArgvInfo argTable[] = {
     {"-diag", TK_ARGV_CONSTANT, (char *) 1, (char *) &exp_is_debugging,
 	"Enable diagnostics"},
     {"-norc", TK_ARGV_CONSTANT, (char *) 0, (char *) &my_rc,
-	"Don't read ~/.expect.rc"},
+	"Do not read ~/.expect.rc"},
     {"-NORC", TK_ARGV_CONSTANT, (char *) 0, (char *) &sys_rc,
-	"Don't read system-wide expect.rc"},
+	"Do not read system-wide expect.rc"},
     {"-version", TK_ARGV_CONSTANT, (char *) 1, (char *) &print_version,
 	"Print version and exit"},
 #if TCL_DEBUGGER
-    {"-Debug", TK_ARGV_GENFUNC, (char *) optcmd_debug, (char *)0, 
+    {"-Debug", TK_ARGV_GENFUNC, (char *) optcmd_debug, (char *)0,
 	"Enable debugger"},
-#endif
+#endif /* TCL_DEBUGGER */
     {(char *) NULL, TK_ARGV_END, (char *) NULL, (char *) NULL,
 	(char *) NULL}
 };
@@ -249,7 +249,7 @@ Tk_Init2(interp)
      */
 
     synchronize = 0;
-    name = display = geometry = colormap = visual = NULL; 
+    name = display = geometry = colormap = visual = NULL;
     p = Tcl_GetVar2(interp, "argv", (char *) NULL, TCL_GLOBAL_ONLY);
     argv = NULL;
     if (p != NULL) {
@@ -376,7 +376,7 @@ Tk_Init2(interp)
     code = TkPlatformInit(interp);
 #else
     code = TkpInit(interp, 0);
-#endif
+#endif /* Tcl < 8 */
 
     done:
     if (argv != NULL) {
@@ -443,3 +443,5 @@ char **argv;
 	return argc;
 }
 #endif /*TCL_DEBUGGER*/
+
+/* EOF */

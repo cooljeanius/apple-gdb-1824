@@ -1,7 +1,7 @@
 /* exp_tty.h - tty support definitions
 
 Design and implementation of this program was paid for by U.S. tax
-dollars.  Therefore it is public domain.  However, the author and NIST
+dollars. Therefore it is public domain. However, the author and NIST
 would appreciate credit if this program or parts of it are used.
 */
 
@@ -27,3 +27,5 @@ int exp_tty_set_simple();
 int exp_tty_get_simple();
 
 #endif	/* __EXP_TTY_H__ */
+
+/* EOF */

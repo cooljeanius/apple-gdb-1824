@@ -1,13 +1,13 @@
 /* exp_log.c - logging routines and other things common to both Expect
-   program and library.  Note that this file must NOT have any
+   program and library. Note that this file must NOT have any
    references to Tcl except for including tclInt.h
 */
 
 #include "expect_cf.h"
 #include <stdio.h>
-/*#include <varargs.h>		tclInt.h drags in varargs.h.  Since Pyramid */
-/*				objects to including varargs.h twice, just */
-/*				omit this one. */
+/*#include <varargs.h> */		/* tclInt.h drags in varargs.h. Since Pyramid */
+/*				       */		/* objects to including varargs.h twice, just */
+/*				       */		/* omit this one. */
 #include "tclInt.h"
 #include "expect_comm.h"
 #include "exp_int.h"
@@ -73,7 +73,7 @@ int force_stdout;	/* override value of loguser */
 		int newlength = exp_copy_out(length);
 		fwrite(exp_out_buffer,1,newlength,logfile);
 	}
-#endif
+#endif /* 0 */
 }
 #undef LOGUSER
 
@@ -258,4 +258,6 @@ exp_copy_out(char *s)
 	}
 	return count;
 }
-#endif
+#endif /* 0 */
+
+/* EOF */

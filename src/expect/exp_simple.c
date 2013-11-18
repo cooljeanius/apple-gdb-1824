@@ -1,4 +1,4 @@
-/* 
+/*
  * tclUnixNotify.c --
  *
  *	This file contains Unix-specific procedures for the notifier,
@@ -15,7 +15,7 @@ static char sccsid[] = "@(#) tclUnixNotify.c 1.27 96/01/19 10:30:23";
 
 #include "tclInt.h"
 #include "tclPort.h"
-#include <signal.h> 
+#include <signal.h>
 
 /*
  * The information below is used to provide read, write, and
@@ -49,13 +49,13 @@ static int numFdBits;		/* Number of valid bits in checkMasks
  *	None.
  *
  * Side effects:
- *	
+ *
  *	The notifier will generate a file event when the I/O channel
  *	given by fd next becomes ready in the way indicated by mask.
  *	If fd is already registered then the old mask will be replaced
  *	with the new one.  Once the event is sent, the notifier will
  *	not send any more events about the fd until the next call to
- *	Tcl_NotifyFile. 
+ *	Tcl_NotifyFile.
  *
  *----------------------------------------------------------------------
  */
@@ -64,9 +64,9 @@ void
 Tcl_WatchFile(file, mask)
     Tcl_File file;	/* Generic file handle for a stream. */
     int mask;			/* OR'ed combination of TCL_READABLE,
-				 * TCL_WRITABLE, and TCL_EXCEPTION:
-				 * indicates conditions to wait for
-				 * in select. */
+				         * TCL_WRITABLE, and TCL_EXCEPTION:
+				         * indicates conditions to wait for
+				         * in select. */
 {
     int fd, type, index;
     fd_mask bit;
@@ -78,7 +78,7 @@ Tcl_WatchFile(file, mask)
     }
 
     if (fd >= FD_SETSIZE) {
-	panic("Tcl_WatchFile can't handle file id %d", fd);
+	panic("Tcl_WatchFile cannot handle file id %d", fd);
     }
 
     index = fd/(NBBY*sizeof(fd_mask));
@@ -109,7 +109,7 @@ Tcl_WatchFile(file, mask)
  *
  * Results:
  *	The return value is 0 if none of the conditions specified by mask
- *	was true for fd the last time the system checked.  If any of the
+ *	was true for fd the last time the system checked. If any of the
  *	conditions were true, then the return value is a mask of those
  *	that were true.
  *
@@ -123,8 +123,8 @@ int
 Tcl_FileReady(file, mask)
     Tcl_File file;	/* Generic file handle for a stream. */
     int mask;			/* OR'ed combination of TCL_READABLE,
-				 * TCL_WRITABLE, and TCL_EXCEPTION:
-				 * indicates conditions caller cares about. */
+				         * TCL_WRITABLE, and TCL_EXCEPTION:
+				         * indicates conditions caller cares about. */
 {
     int index, result, type, fd;
     fd_mask bit;
@@ -195,7 +195,7 @@ Tcl_WaitForEvent(timePtr)
 	    (SELECT_MASK *) &readyMasks[2*MASK_SIZE], timeoutPtr);
 
     /*
-     * Some systems don't clear the masks after an error, so
+     * Some systems do NOT clear the masks after an error, so
      * we have to do it here.
      */
 
@@ -238,7 +238,7 @@ Tcl_Sleep(ms)
     /*
      * The only trick here is that select appears to return early
      * under some conditions, so we have to check to make sure that
-     * the right amount of time really has elapsed.  If it's too
+     * the right amount of time really has elapsed. If it is too
      * early, go back to sleep again.
      */
 
@@ -273,34 +273,26 @@ Tcl_Sleep(ms)
     }
 }
 
-
-
-
-
-
-
 #if 0 /* WHOLE FILE */
-
-
 
 /* interact (with only one process) - give user keyboard control
 
 Written by: Don Libes, NIST, 2/6/90
 
 Design and implementation of this program was paid for by U.S. tax
-dollars.  Therefore it is public domain.  However, the author and NIST
+dollars. Therefore it is public domain. However, the author and NIST
 would appreciate credit if this program or parts of it are used.
 */
 
 /* This file exists for deficient versions of UNIX that lack select,
-poll, or some other multiplexing hook.  Instead, this code uses two
-processes per spawned process.  One sends characters from the spawnee
+poll, or some other multiplexing hook. Instead, this code uses two
+processes per spawned process. One sends characters from the spawnee
 to the spawner; a second send chars the other way.
 
-This will work on any UNIX system.  The only sacrifice is that it
-doesn't support multiple processes.  Eventually, it should catch
-SIGCHLD on dead processes and do the right thing.  But it is pretty
-gruesome to imagine so many processes to do all this.  If you change
+This will work on any UNIX system. The only sacrifice is that it
+does NOT support multiple processes. Eventually, it should catch
+SIGCHLD on dead processes and do the right thing. But it is pretty
+gruesome to imagine so many processes to do all this. If you change
 it successfully, please mail back the changes to me.  - Don
 */
 
@@ -310,8 +302,10 @@ it successfully, please mail back the changes to me.  - Don
 #include <sys/time.h>
 
 #ifdef HAVE_SYS_WAIT_H
-#include <sys/wait.h>
-#endif
+# include <sys/wait.h>
+#else
+# warning exp_simple.c expects <sys/wait.h> to be included.
+#endif /* HAVE_SYS_WAIT_H */
 
 #include "tcl.h"
 #include "exp_prog.h"
@@ -405,8 +399,8 @@ int ready_mask;
 
 /* There is no portable way to do sub-second sleeps on such a system, so */
 /* do the next best thing (without a busy loop) and fake it: sleep the right */
-/* amount of time over the long run.  Note that while "subtotal" isn't */
-/* reinitialized, it really doesn't matter for such a gross hack as random */
+/* amount of time over the long run. Note that while "subtotal" is NOT */
+/* reinitialized, it really does NOT matter for such a gross hack as random */
 /* scheduling pauses will easily introduce occasional one second delays. */
 int	/* returns TCL_XXX */
 exp_dsleep(interp,sec)
@@ -429,11 +423,11 @@ double sec;
 	return TCL_OK;
 }
 
-#if 0
+# if 0
 /* There is no portable way to do sub-second sleeps on such a system, so */
 /* do the next best thing (without a busy loop) and fake it: sleep the right */
-/* amount of time over the long run.  Note that while "subtotal" isn't */
-/* reinitialized, it really doesn't matter for such a gross hack as random */
+/* amount of time over the long run. Note that while "subtotal" is NOT */
+/* reinitialized, it really does NOT matter for such a gross hack as random */
 /* scheduling pauses will easily introduce occasional one second delays. */
 int	/* returns TCL_XXX */
 exp_usleep(interp,usec)
@@ -455,7 +449,7 @@ long usec;		/* microseconds */
 	sleep(seconds);
 	return TCL_OK;
 }
-#endif /*0*/
+# endif /*0*/
 
 /* set things up for later calls to event handler */
 void
@@ -465,3 +459,5 @@ exp_init_event()
 }
 
 #endif /* WHOLE FILE! */
+
+/* EOF */

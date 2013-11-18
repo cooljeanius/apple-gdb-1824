@@ -10,13 +10,13 @@
 
 	From Mo DeJong  <supermo@bayarea.net>
 	* aclocal.m4 (CY_AC_PATH_TCLCONFIG): Check for a
-	tclConfig.sh file in tcl/cygwin if one can't
+	tclConfig.sh file in tcl/cygwin if one cannot
 	be found in tcl/unix. Update Itcl header check.
 	* configure: Regenerated.
 
 2002-04-11  Christopher Faylor  <cgf@redhat.com>
 
-	* configure.in: Don't use libutil.a on cygwin.
+	* configure.in: Do NOT use libutil.a on cygwin.
 	* configure: Regenerate.
 
 2002-03-06  Alexandre Oliva  <aoliva@redhat.com>
@@ -103,13 +103,13 @@ Tue Sep 11 15:24:00 2001  Christopher Faylor <cgf@cygnus.com>
 
 	* configure.in: If we detect a cygwin-specific version of tcl,
 	use it.
-	* exp_event.c: don't need the extra functions any more.
+	* exp_event.c: do NOT need the extra functions any more.
 
 Wed Oct  6 04:12:08 1999  Brendan Kehoe  <brendan@cygnus.com>
 
-	* configure.in (EXP_LD_SEARCH_FLAGS): If $GCC is "yes", don't do
+	* configure.in (EXP_LD_SEARCH_FLAGS): If $GCC is "yes", do NOT do
 	the substitution translating -Wl,-rpath,foo into just -rpath,
-	since we're not using just the linker.
+	since we are not using just the linker.
 	* configure: Regenerated.
 
 1999-09-17  DJ Delorie  <dj@cygnus.com>
@@ -145,7 +145,7 @@ Mon Nov  2 15:05:33 1998  Geoffrey Noer  <noer@cygnus.com>
 
 Fri Oct 16 22:26:59 1998    <dj@cygnus.com>
 
-	* exp_event.c (pipe_thread): don't select or WFSO forever,
+	* exp_event.c (pipe_thread): do NOT select or WFSO forever,
 	else you hang when pipe_close is called.
 
 Thu Oct 08 16:08:57 1998    <dj@cygnus.com>
@@ -183,9 +183,9 @@ Thu Sep 17 18:08:42 1998  Christopher Faylor <cgf@cygnus.com>
 
 1998-08-28  Rob Savoye  <rob@chinadoll.cygnus.com>
 
-	* aclocal.m4(CY_AC_LOAD_TCLCONFIG): Don't look for
-	Tcl_CreateCommand(), cause libtcl hasn't been built yet. All this
-	did was try to make sure you haven't removed your Tcl build
+	* aclocal.m4(CY_AC_LOAD_TCLCONFIG): Do NOT look for
+	Tcl_CreateCommand(), cause libtcl has NOT been built yet. All this
+	did was try to make sure you have NOT removed your Tcl build
 	directory.
 	* configure: Regenerated.
 
@@ -194,8 +194,8 @@ Thu Sep 17 18:08:42 1998  Christopher Faylor <cgf@cygnus.com>
 	* Most files: Merge in expect 5.26 to get better tcl8.x
 	support. See HISTORY for more details.
 
-	* aclocal.m4 (CY_AC_INTTYPES_H): Find inttypes.h, but if it's
-	definitions conflict with sys/types.h, then don't include
+	* aclocal.m4 (CY_AC_INTTYPES_H): Find inttypes.h, but if its
+	definitions conflict with sys/types.h, then do NOT include
 	it.
 
 Wed Jul 15 11:06:50 1998  Bob Manson  <manson@charmed.cygnus.com>
@@ -236,27 +236,27 @@ Sun Feb 22 17:39:35 1998  Ian Lance Taylor  <ian@cygnus.com>
 	fileproc, and procdata fields.
 	* exp_command.c (fd_new): If __CYGWIN32__, initialize channel and
 	fileproc fields.
-	(Exp_SpawnCmd): If __CYGWIN32__, don't accept -open or -leaveopen
-	argumnents.
+	(Exp_SpawnCmd): If __CYGWIN32__, do NOT accept -open or -leaveopen
+	arguments.
 	(Exp_LogFileCmd): Likewise.
 	(Tcl_CloseCmd): Use Tcl_Alloc instead of ckalloc.  Use
 	Tcl_NewStringObj instead of TclNewObj and TclInitStringRep.  Use
 	Tcl_Free instead of ckfree.
 	* expect.c (exp_i_read): If __CYGWIN32__, call
 	exp_reading_from_descriptor.
-	* pty_termios.c: If __CYGWIN32__, don't include <sys/stropts.h>.
+	* pty_termios.c: If __CYGWIN32__, do NOT include <sys/stropts.h>.
 	(pty_stty): If __CYGWIN32__, just exec stty, not /bin/stty.
-	(getptyslave): If __CYGWIN32__, don't I_PUSH anything.
+	(getptyslave): If __CYGWIN32__, do NOT I_PUSH anything.
 	* configure.in: Add many checks for cross_compiling to avoid doing
-	the wrong thing when building with a cross compiler.  Add several
+	the wrong thing when building with a cross compiler. Add several
 	cases to specifically handle a cygwin32 host when building with a
 	cross compiler.  On cygwin32, link against -luser32.
 	* configure: Rebuild.
 
 Fri Jan 30 16:48:35 1998  Ian Lance Taylor  <ian@cygnus.com>
 
-	* configure.in: Don't check for openpty on Linux.  It exists on
-	Alpha Linux Red Hat 4.2, but it doesn't work correctly.
+	* configure.in: Do NOT check for openpty on Linux. It exists on
+	Alpha Linux Red Hat 4.2, but it does NOT work correctly.
 
 Thu Jan 22 17:29:27 1998  Fred Fish  <fnf@cygnus.com>
 
@@ -294,7 +294,7 @@ Thu Aug 28 16:42:58 1997  Bob Manson  <manson@charmed.cygnus.com>
 	* exp_command.c (Tcl_CloseCmd): Function to call Tcl_CloseObjCmd
  	with appropriate arguments, mostly stolen from tclBasic.c.
 
-	* Dbg.c (simple_interactor): There doesn't appear to be any
+	* Dbg.c (simple_interactor): There does NOT appear to be any
  	equivalent for curEventNum, so replace with -1 for now. (It only
  	appears in the prompt anyway).
 	* exp_main_sub.c (Exp_Prompt1Cmd): Ditto.
@@ -312,13 +312,13 @@ Mon Aug 11 20:56:56 1997  Bob Manson  <manson@charmed.cygnus.com>
 
 	* expect.c: Include tclInt.h to get a definition of TclWordEnd.
 	(exp_eval_with_one_arg): Under Tcl8 TclWordEnd takes an additional
- 	parameter. Don't go past the end of the string.
+ 	parameter. Do NOT go past the end of the string.
 
 	* exp_main_exp.c: If USE_ITCL is defined, include a call to
 	Itcl_Init.
 
 	* exp_command.c: Tcl8 uses an OS-specific type for "file handles".
-	This code will NOT work under anything that doesn't use an int;
+	This code will NOT work under anything that does NOT use an int;
 	it requires cleanup to make it reasonably portable.
 	* exp_command.h: Ditto.
 
@@ -334,12 +334,12 @@ Mon Aug 11 20:56:56 1997  Bob Manson  <manson@charmed.cygnus.com>
 
 Tue Apr  1 13:55:15 1997  Bob Manson  <manson@charmed.cygnus.com>
 
-	* exp_event.c(exp_get_next_event): Don't delete the
+	* exp_event.c(exp_get_next_event): Do NOT delete the
 	timeout timer until we actually return.
 
 Thu Mar 20 14:27:45 1997  Geoffrey Noer  <noer@cygnus.com>
 
-        * configure.in: don't check if stty reads stdout for
+        * configure.in: Do NOT check if stty reads stdout for
         i[[3456]]86-*-sysv4.2MP during config; hard code instead
 	* configure: regenerated
 
@@ -424,7 +424,7 @@ Mon Sep  9 10:29:32 1996  Tom Tromey  <tromey@creche.cygnus.com>
 	* configure.in: Added code to actually handle --with-x.
 
 	* configure: Regenerated.
-	* configure.in: Don't bother looking for Tk if --with-x=no
+	* configure.in: Do NOT bother looking for Tk if --with-x=no
 	specified.
 
 Thu Sep  5 11:01:09 1996  Tom Tromey  <tromey@creche.cygnus.com>
@@ -458,8 +458,8 @@ Fri Aug 16 12:54:39 1996  Tom Tromey  <tromey@creche.cygnus.com>
 Wed Aug 14 12:02:26 1996  Tom Tromey  <tromey@rtl.cygnus.com>
 
 	* Makefile.in (X11_PROGS_INSTALLED): Now the same as X11_PROGS.
-	(install): Don't depend on expect_installed.
-	(clean): Don't remove expect_installed or expectk_installed.
+	(install): Do NOT depend on expect_installed.
+	(clean): Do NOT remove expect_installed or expectk_installed.
 	(mostlyclean): Ditto.
 
 Mon Aug  5 12:55:06 1996  Tom Tromey  <tromey@creche.cygnus.com>
@@ -472,9 +472,9 @@ Mon Aug  5 12:55:06 1996  Tom Tromey  <tromey@creche.cygnus.com>
 
 Tue Jul 23 14:00:56 1996  Tom Tromey  <tromey@creche.cygnus.com>
 
-	* expect_comm.h: Don't include expect_cf.h.
+	* expect_comm.h: Do NOT include expect_cf.h.
 
-	* Makefile.in (install): Don't install expect_cf.h.
+	* Makefile.in (install): Do NOT install expect_cf.h.
 
 Thu Jul 18 17:27:12 1996  Tom Tromey  <tromey@creche.cygnus.com>
 
@@ -482,13 +482,13 @@ Thu Jul 18 17:27:12 1996  Tom Tromey  <tromey@creche.cygnus.com>
 
 Mon Jul 15 13:50:52 1996  Tom Tromey  <tromey@creche.cygnus.com>
 
-	* Makefile.in (configure): Don't automatically rebuild.
-	(Dbgconfigure): Don't automatically rebuild.
+	* Makefile.in (configure): Do NOT automatically rebuild.
+	(Dbgconfigure): Do NOT automatically rebuild.
 
 Mon Jun 24 17:47:52 1996  Jason Molenda  (crash@godzilla.cygnus.co.jp)
 
-	* Makefile.in (bindir, libdir, datadir, mandir, infodir, includedir,
-	execdatadir): Uset autoconf set values.
+	* Makefile.in (bindir, libdir, datadir, mandir, infodir,
+	includedir, execdatadir): Uset autoconf set values.
 	(docdir, oldincludedir): Removed.
 	* configure.in (AC_PREREQ): autoconf 2.5 or higher.
 	* configure: Rebuilt.
@@ -511,8 +511,8 @@ Tue May 28 13:09:26 1996  Tom Tromey  <tromey@creche.cygnus.com>
 	* Dbgconfig.in: Use CY_AC_C_WORKS.
 
 	* configure: Regenerated.
-	* aclocal.m4 (CY_AC_PATH_TCLH): Don't use AC_TRY_RUN.
-	(CY_AC_PATH_TKH): Don't use AC_TRY_RUN.
+	* aclocal.m4 (CY_AC_PATH_TCLH): Do NOT use AC_TRY_RUN.
+	(CY_AC_PATH_TKH): Do NOT use AC_TRY_RUN.
 
 Tue May 21 10:14:24 1996  Tom Tromey  <tromey@creche.cygnus.com>
 
@@ -540,7 +540,7 @@ Tue Apr 30 10:17:41 1996  Tom Tromey  <tromey@snuffle.cygnus.com>
 	(have_nsl): Only check for -lnsl once.
 	Run AC_CANONICAL_SYSTEM.
 
-	* Makefile.in (install): Don't install scripts.
+	* Makefile.in (install): Do NOT install scripts.
 	(install-scripts): New target.
 
 	* exp_main_tk.c (print_version): New global.
@@ -573,8 +573,8 @@ Tue Feb  6 11:48:05 1996  Tom Tromey  <tromey@creche.cygnus.com>
 
 Tue Jan 30 12:21:37 1996  Fred Fish  <fnf@kalessin.cygnus.com>
 
-	* exp_regexp.c (regmatch, regrepeat): Only declare strchr if it is not
- 	a macro.
+	* exp_regexp.c (regmatch, regrepeat): Only declare strchr if it is
+	not a macro.
 
 Mon Jan 22 11:17:06 1996  Tom Tromey  <tromey@creche.cygnus.com>
 
@@ -609,7 +609,7 @@ Thu Jan 11 09:43:14 1996  Tom Tromey  <tromey@creche.cygnus.com>
 	(exp_close_tcl_files): Updated for Tcl 7.5.
 
 	Prototype and varargs changes:
-	* expect.c: Don't include <varargs.h>.
+	* expect.c: Do NOT include <varargs.h>.
 	* Dbg.c: Copied in many defines from expect_comm.h.
 	(print): Use new varargs defines.
 	* exp_clib.c (exp_fexpectl): Use EXP_VARARGS_START.
@@ -652,7 +652,7 @@ Wed Nov 22 08:49:01 1995  Rob Savoye  <rob@chinadollchinadoll.cygnus.com>
 
 Fri Nov 17 17:31:55 1995  Rob Savoye  <rob@chinadoll.cygnus.com>
 
-	* configure.in: Add support for SCO OpenServer. It doesn't like
+	* configure.in: Add support for SCO OpenServer. It does NOT like
 	the trap either.
 
 Thu Nov 16 09:28:53 1995  Rob Savoye  <rob@chinadoll.cygnus.com>
@@ -666,7 +666,7 @@ Thu Nov 16 09:28:53 1995  Rob Savoye  <rob@chinadoll.cygnus.com>
 
 Mon Oct 30 18:16:48 1995  Jason Molenda  (crash@phydeaux.cygnus.com)
 
-	* configure.in (no_tk): zero out X_PROGS if we can't find tk
+	* configure.in (no_tk): zero out X_PROGS if we cannot find tk
 	libraries.
 
 Tue Oct 24 18:25:09 1995  Jason Molenda  (crash@phydeaux.cygnus.com)
@@ -713,12 +713,13 @@ Thu Jul 27 16:31:23 1995  J.T. Conklin  <jtc@cygnus.com>
 
 Tue Jul 18 23:15:03 1995  Fred Fish  <fnf@fishbowl>
 
-	* expect.c (Exp_ExpectGlobalCmd):  Cast ckrealloc first arg to char*.
+	* expect.c (Exp_ExpectGlobalCmd): Cast ckrealloc 1st arg to char*.
 
 Sun Jun 18 13:02:41 1995  Fred Fish  <fnf@amigalib.com>
 
-	* configure, configure.in (XLIBS):  When adding -lX11, also preserve
-	the previous libraries that we went to the trouble of finding.
+	* configure, configure.in (XLIBS):  When adding -lX11, also
+	preserve the previous libraries that we went to the trouble of
+	finding.
 
 Sun Jun 18 12:15:44 1995  Fred Fish  <fnf@amigalib.com>
 
@@ -733,7 +734,7 @@ Fri Apr 28 18:56:02 1995  Rob Savoye  <rob@darkstar.cygnus.com>
 	* aclocal.m4: Create a clone of AC_C_CROSS called CY_C_CROSS that
 	has better error handling in case the native compiler is hosed. 
 	* aclocal.m4: Look for tcl and tk directories as just tcl (and tk)
-	or tcl[0-9] (and tk[0-9)] so it doesn't match the tclX
+	or tcl[0-9] (and tk[0-9)] so it does NOT match the tclX
 	release. Print an error and exit if any of the --with-{tcl,tk}*
 	options are used and point to bogus paths. Based Tcl header search
 	on tclInt./h rather than tcl.h.
@@ -786,7 +787,7 @@ Thu Mar 16 16:56:08 1995  Rob Savoye  <rob@darkstar.cygnus.com>
 	* install-sh, mkinstalldirs: New files borrowed from the autoconf
 	distribution.
 	* aclocal.m4: New autoconf macros.
-	* Makefile.in: Tweaked so it's recursive.
+	* Makefile.in: Tweaked so it is recursive.
 	* configure.in: Use new macros in aclocal.m4 rather than hunting
 	for the Tcl and Tk stuff ourseleves.
 	* debugger/Makefile.in: Build debugger standalone.
@@ -871,12 +872,12 @@ Tue May 25 14:45:12 1993  Rob Savoye  (rob@darkstar.cygnus.com)
 Sun May 23 22:32:09 1993  Rob Savoye  (rob at darkstar.cygnus.com)
 
 	* exp_command.c: Fix so send_log still works when master is out of
-	bounds. (ok since it doesn't get used).
+	bounds. (ok since it does NOT get used).
 
 Mon May 17 19:51:52 1993  Rob Savoye  (rob@cygnus.com)
 
 	* configure.in: Change test for ranlib so it kicks out "true"
-	rather than "@:" if it can't be found.
+	rather than "@:" if it cannot be found.
  
 Thu Apr 15 14:11:50 1993  Rob Savoye  (rob@cygnus.com)
 
@@ -885,10 +886,10 @@ Thu Apr 15 14:11:50 1993  Rob Savoye  (rob@cygnus.com)
 
 Thu Apr  8 17:13:39 1993  david d `zoo' zuhn  (zoo at cirdan.cygnus.com)
 
-	* Makefile.in: all doesn't depend on $(SCRIPTS).  When building
+	* Makefile.in: all does NOT depend on $(SCRIPTS). When building
 	$(SCRIPTS) using fixline & sources in $(srcdir), not the current
-	directory.  When installing manpages, install from $(srcdir).
-	Don't install like "install foo $(bindir)" but rather "install foo
+	directory. When installing manpages, install from $(srcdir).
+	Do NOT install like "install foo $(bindir)" but rather "install foo
 	$(bindir)/foo".  
 
 Mon Mar 22 23:56:29 1993  david d `zoo' zuhn  (zoo at cirdan.cygnus.com)
@@ -926,7 +927,7 @@ Sun Feb 21 17:42:28 1993  Rob Savoye  (rob at darkstar.cygnus.com)
 Wed Feb 17 18:56:36 1993  Rob Savoye  (rob at darkstar.cygnus.com)
 
 	* expect.c, Makefile.in: Changed SIG_FN_RETURN to RETSIGTYPE
-	since that's what autoconf kicks out.
+	since that is what autoconf kicks out.
 
 Thu Dec 24 15:07:32 1992  david d `zoo' zuhn  (zoo at cirdan.cygnus.com)
 

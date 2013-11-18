@@ -3,7 +3,7 @@
 Written by: Don Libes, NIST, 2/6/90
 
 Design and implementation of this program was paid for by U.S. tax
-dollars.  Therefore it is public domain.  However, the author and NIST
+dollars. Therefore it is public domain. However, the author and NIST
 would appreciate credit if this program or parts of it are used.
 
 */
@@ -13,52 +13,60 @@ would appreciate credit if this program or parts of it are used.
 #include <stdio.h>
 #include <sys/types.h>
 /*#include <sys/time.h> seems to not be present on SVR3 systems */
-/* and it's not used anyway as far as I can tell */
+/* and its not used anyway as far as I can tell */
 
 /* AIX insists that stropts.h be included before ioctl.h, because both */
-/* define _IO but only ioctl.h checks first.  Oddly, they seem to be */
+/* define _IO but only ioctl.h checks first. Oddly, they seem to be */
 /* defined differently! */
 #ifdef HAVE_STROPTS_H
-#  include <sys/stropts.h>
-#endif
+# include <sys/stropts.h>
+#else
+# ifdef _AIX
+#  warning exp_command.c expects <sys/stropts.h> to be included.
+# endif /* _AIX */
+#endif /* HAVE_STROPTS_H */
 #include <sys/ioctl.h>
 
 #ifdef HAVE_SYS_FCNTL_H
-#  include <sys/fcntl.h>
+# include <sys/fcntl.h>
 #else
+# ifdef HAVE_FCNTL_H
 #  include <fcntl.h>
-#endif
+# else
+#  warning exp_command.c expects either <sys/fcntl.h> or <fcntl.h> to be included.
+# endif /* HAVE_FCNTL_H */
+#endif /* HAVE_SYS_FCNTL_H */
 #include <sys/file.h>
 #include "exp_tty.h"
 
 #ifdef HAVE_SYS_WAIT_H
-  /* ISC doesn't def WNOHANG unless _POSIX_SOURCE is def'ed */
+  /* ISC does NOT def WNOHANG unless _POSIX_SOURCE is def'ed */
 # ifdef WNOHANG_REQUIRES_POSIX_SOURCE
 #  define _POSIX_SOURCE
-# endif
+# endif /* WNOHANG_REQUIRES_POSIX_SOURCE */
 # include <sys/wait.h>
 # ifdef WNOHANG_REQUIRES_POSIX_SOURCE
 #  undef _POSIX_SOURCE
-# endif
-#endif
+# endif /* WNOHANG_REQUIRES_POSIX_SOURCE */
+#endif /* HAVE_SYS_WAIT_H */
 
 #include <errno.h>
 #include <signal.h>
 
 #if defined(SIGCLD) && !defined(SIGCHLD)
-#define SIGCHLD SIGCLD
-#endif
+# define SIGCHLD SIGCLD
+#endif /* SIGCLD && !SIGCHLD */
 
 /* Use _NSIG if NSIG not present */
 #ifndef NSIG
-#ifdef _NSIG
-#define NSIG _NSIG
-#endif
-#endif
+# ifdef _NSIG
+#  define NSIG _NSIG
+# endif /* _NSIG */
+#endif /* !NSIG */
 
 #ifdef HAVE_PTYTRAP
-#include <sys/ptyio.h>
-#endif
+# include <sys/ptyio.h>
+#endif /* HAVE_PTYTRAP */
 
 #ifdef CRAY
 # ifndef TCSETCTTY
@@ -66,21 +74,23 @@ would appreciate credit if this program or parts of it are used.
 #   include <termios.h>
 #  else
 #   include <termio.h>
-#  endif
-# endif
-#endif
+#  endif /* HAVE_TERMIOS */
+# endif /* !TCSETCTTY */
+#endif /* CRAY */
 
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
-#endif
+#else
+# warning exp_command.c expects <unistd.h> to be included.
+#endif /* HAVE_UNISTD_H */
 
-#include <math.h>		/* for log/pow computation in send -h */
-#include <ctype.h>		/* all this for ispunct! */
+#include <math.h>		 /* for log/pow computation in send -h */
+#include <ctype.h>		 /* all this for ispunct! */
 
-#include "tclInt.h"		/* need OpenFile */
-/*#include <varargs.h>		tclInt.h drags in varargs.h.  Since Pyramid */
-/*				objects to including varargs.h twice, just */
-/*				omit this one. */
+#include "tclInt.h"		 /* need OpenFile */
+/*#include <varargs.h> *//* tclInt.h drags in varargs.h. Since Pyramid */
+/*				       *//* objects to including varargs.h twice, just */
+/*				       *//* omit this one. */
 
 #include "tcl.h"
 #include "string.h"
@@ -92,8 +102,8 @@ would appreciate credit if this program or parts of it are used.
 #include "exp_event.h"
 #include "exp_pty.h"
 #ifdef TCL_DEBUGGER
-#include "Dbg.h"
-#endif
+# include "Dbg.h"
+#endif /* TCL_DEBUGGER */
 
 #define SPAWN_ID_VARNAME "spawn_id"
 
@@ -104,7 +114,7 @@ int exp_forked = FALSE;		/* whether we are child process */
 
 /* the following are just reserved addresses, to be used as ClientData */
 /* args to be used to tell commands how they were called. */
-/* The actual values won't be used, only the addresses, but I give them */
+/* The actual values will NOT be used, only the addresses, but I give them */
 /* values out of my irrational fear the compiler might collapse them all. */
 static int sendCD_error = 2;	/* called as send_error */
 static int sendCD_user = 3;	/* called as send_user */
@@ -132,8 +142,8 @@ int expect_key = 0;
 int exp_configure_count = 0;
 
 /* this message is required because fopen sometimes fails to set errno */
-/* Apparently, it "does the user a favor" and doesn't even call open */
-/* if the file name is bizarre enough.  This means we can't handle fopen */
+/* Apparently, it "does the user a favor" and does NOT even call open */
+/* if the file name is bizarre enough. This means we cannot handle fopen */
 /* with the obvious trivial logic. */
 static char *open_failed = "could not open - odd file name?";
 
@@ -154,7 +164,7 @@ RETSIGTYPE (*traps[])();
 		traps[i] = SIG_ERR;
 	}
 }
-#endif
+#endif /* FULLTRAPS */
 
 /* Do not terminate format strings with \n!!! */
 /*VARARGS*/
@@ -213,7 +223,7 @@ int pid;
 	}
 	return 0;
 }
-#endif
+#endif /* 0 */
 
 /* Tcl needs commands in writable space */
 static char close_cmd[] = "close";
@@ -305,7 +315,7 @@ char *name;
 	return master;
 #else
 	return name[0];	/* pacify lint, use arg and return something */
-#endif
+#endif /* HAVE_PTYTRAP */
 }
 
 /*ARGSUSED*/
@@ -314,9 +324,9 @@ sys_close(fd,f)
 int fd;
 struct exp_f *f;
 {
-	/* Ignore close errors.  Some systems are really odd and */
-	/* return errors for no evident reason.  Anyway, receiving */
-	/* an error upon pty-close doesn't mean anything anyway as */
+	/* Ignore close errors. Some systems are really odd and */
+	/* return errors for no evident reason. Anyway, receiving */
+	/* an error upon pty-close does NOT mean anything anyway as */
 	/* far as I know. */
 	close(fd);
 	f->sys_closed = TRUE;
@@ -331,7 +341,7 @@ struct exp_f *f;
 		ckfree(f->slave_name);
 		f->slave_name = 0;
 	}
-#endif
+#endif /* HAVE_PTYTRAP */
 }
 
 /* given a Tcl file identifier, close it */
@@ -356,14 +366,14 @@ char *file_id;
 		info.clientData = 0;
 	}
 	(void) Tcl_CloseCmd(info.clientData,interp,2,argv);
-#endif
-}			
+#endif /* 0 */
+}
 
 
 /* close all connections
 The kernel would actually do this by default, however Tcl is going to
-come along later and try to reap its exec'd processes.  If we have
-inherited any via spawn -open, Tcl can hang if we don't close the
+come along later and try to reap its exec'd processes. If we have
+inherited any via spawn -open, Tcl can hang if we do NOT close the
 connections first.
 */
 
@@ -396,7 +406,7 @@ int fd;
 		ckfree(f->tcl_handle);
 		if ((f - exp_fs) != f->tcl_output) close(f->tcl_output);
 	}
-#endif
+#endif /* 0 */
 	sys_close(fd,f);
 
 	if (f->tcl_handle) {
@@ -405,7 +415,7 @@ int fd;
 		if (!f->leaveopen) {
 			/*
 			 * Ignore errors from close; they report things like
-			 * broken pipeline, etc, which don't affect our
+			 * broken pipeline, etc, which do NOT affect our
 			 * subsequent handling.
 			 */
 
@@ -434,7 +444,7 @@ int fd;
 int pid;
 {
 	int i, low;
-	struct exp_f *newfs;	/* temporary, so we don't lose old exp_fs */
+	struct exp_f *newfs;	/* temporary, so we do NOT lose old exp_fs */
 
 	/* resize table if nec */
 	if (fd > exp_fd_max) {
@@ -460,7 +470,7 @@ int pid;
 		for (i = 0; i <= exp_fd_max; i++) { /* update all indirect ptrs */
 			*exp_fs[i].ptr = exp_fs + i;
 		}
-#endif
+#endif /* 0 */
 	}
 
 	/* this could happen if user does "spawn -open stdin" I suppose */
@@ -517,7 +527,7 @@ int location;
 	eg->duration = duration;
 	eg->location = location;
 }
-#endif
+#endif /* 0 */
 
 void
 exp_init_spawn_id_vars(interp)
@@ -541,9 +551,9 @@ void
 exp_init_spawn_ids()
 {
 	/* note whether 0,1,2 are connected to a terminal so that if we */
-	/* disconnect, we can shut these down.  We would really like to */
-	/* test if 0,1,2 are our controlling tty, but I don't know any */
-	/* way to do that portably.  Anyway, the likelihood of anyone */
+	/* disconnect, we can shut these down. We would really like to */
+	/* test if 0,1,2 are our controlling tty, but I do NOT know any */
+	/* way to do that portably. Anyway, the likelihood of anyone */
 	/* disconnecting after redirecting to a non-controlling tty is */
 	/* virtually zero. */
 
@@ -594,7 +604,7 @@ int fd;
 	if (-1 == ioctl(fd,TIOCSPGRP,&pgrp)) perror("TIOCSPGRP");
 	if (-1 == tcsetpgrp(fd,pgrp)) perror("tcsetpgrp");
 }
-#endif
+#endif /* 0 */
 
 /*ARGSUSED*/
 static void
@@ -630,7 +640,7 @@ char **argv;
 	/* tell Saber to ignore non-use of ttyfd */
 	/*SUPPRESS 591*/
 	int errorfd;	/* place to stash fileno(stderr) in child */
-			/* while we're setting up new stderr */
+			        /* while we are setting up new stderr */
 	int ttyfd;
 	int master;
 	int write_master;	/* write fd of Tcl-opened files */
@@ -646,9 +656,9 @@ char **argv;
 				/* whether sig should be DFL or IGN */
 				/* ERR is used to indicate no initialization */
 	RETSIGTYPE (*traps[NSIG])();
-#endif
+#endif /* FULLTRAPS */
 	int ignore[NSIG];	/* if true, signal in child is ignored */
-				/* if false, signal gets default behavior */
+				        /* if false, signal gets default behavior */
 	int i;			/* trusty overused temporary */
 
 	char *argv0 = argv[0];
@@ -673,14 +683,14 @@ char **argv;
 	char sync_byte;
 
 	char buf[4];		/* enough space for a string literal */
-				/* representing a file descriptor */
+				        /* representing a file descriptor */
 	Tcl_DString dstring;
 	Tcl_DStringInit(&dstring);
 
 #ifdef FULLTRAPS
 	init_traps(&traps);
-#endif
-	/* don't ignore any signals in child by default */
+#endif /* FULLTRAPS */
+	/* do NOT ignore any signals in child by default */
 	for (i=1;i<NSIG;i++) {
 		ignore[i] = FALSE;
 	}
@@ -790,11 +800,11 @@ char **argv;
 	}
 
 /* any extraneous ioctl's that occur in slave must be accounted for
-when trapping, see below in child half of fork */
+ * when trapping, see below in child half of fork */
 #if defined(TIOCSCTTY) && !defined(CIBAUD) && !defined(sun) && !defined(hp9000s300)
 	slave_write_ioctls++;
 	slave_opens++;
-#endif
+#endif /* TIOCSCTTY && !CIBAUD && !sun && !hp9000s300 */
 
 	exp_pty_slave_name = 0;
 
@@ -828,7 +838,7 @@ when trapping, see below in child half of fork */
 				count += exp_fs[i].valid;
 			}
 			if (count > 10) {
-				exp_error(interp,"The system only has a finite number of ptys and you have many of them in use.  The usual reason for this is that you forgot (or didn't know) to call \"wait\" after closing each of them.");
+				exp_error(interp,"The system only has a finite number of ptys and you have many of them in use.  The usual reason for this is that you forgot (or did not know) to call \"wait\" after closing each of them.");
 				return TCL_ERROR;
 			}
 
@@ -836,9 +846,9 @@ when trapping, see below in child half of fork */
 			close(testfd);
 
 			if (testfd != -1) {
-				exp_error(interp,"The system has no more ptys.  Ask your system administrator to create more.");
+				exp_error(interp,"The system has no more ptys. Ask your system administrator to create more.");
 			} else {
-				exp_error(interp,"- You have too many files are open.  Close some files or increase your per-process descriptor limit.");
+				exp_error(interp,"- You have too many files are open. Close some files or increase your per-process descriptor limit.");
 			}
 			return(TCL_ERROR);
 		}
@@ -868,7 +878,7 @@ when trapping, see below in child half of fork */
 
 		/* fail only if both descriptors are bad */
 		if (rc == TCL_ERROR && wc == TCL_ERROR) {
-			return TCL_ERROR;		
+			return TCL_ERROR;
 		}
 
 		master = fileno((rc == TCL_OK)?readfilePtr:writefilePtr);
@@ -888,7 +898,7 @@ when trapping, see below in child half of fork */
 			exp_close_on_exec(write_master);
 		}
 
-#endif
+#endif /* TCL7_4 */
 		if (!(chan = Tcl_GetChannel(interp,openarg,&mode))) {
 			return TCL_ERROR;
 		}
@@ -968,7 +978,7 @@ when trapping, see below in child half of fork */
 				/* an error */
 				f->tcl_output = master;
 			}
-#endif
+#endif /* 0 */
 
 			f->leaveopen = leaveopen;
 		}
@@ -993,17 +1003,17 @@ when trapping, see below in child half of fork */
 			 */
 
 			/* Start by working around a bug in Tcl's exec.
-			   It closes all the file descriptors from 3 to it's
-			   own fd_max which inappropriately closes our slave
-			   fd.  To avoid this, open several dummy fds.  Then
-			   exec's fds will fall below ours.
-			   Note that if you do something like pre-allocating
-			   a bunch before using them or generating a pipeline,
-			   then this code won't help.
-			   Instead you'll need to add the right number of
-			   explicit Tcl open's of /dev/null.
-			   The right solution is fix Tcl's exec so it is not
-			   so cavalier.
+			 * It closes all the file descriptors from 3 to its
+			 * own fd_max which inappropriately closes our slave
+			 * fd. To avoid this, open several dummy fds. Then
+			 * exec's fds will fall below ours.
+			 * Note that if you do something like pre-allocating
+			 * a bunch before using them or generating a pipeline,
+			 * then this code won't help.
+			 * Instead you will need to add the right number of
+			 * explicit Tcl open's of /dev/null.
+			 * The right solution is fix Tcl's exec so it is not
+			 * so cavalier.
 			 */
 
 			dummyfd1 = open("/dev/null",0);
@@ -1070,18 +1080,18 @@ when trapping, see below in child half of fork */
 
 #ifdef CRAY
 		setptypid(pid);
-#endif
+#endif /* CRAY */
 
 
 #if PTYTRAP_DIES
-#ifdef HAVE_PTYTRAP
+# ifdef HAVE_PTYTRAP
 
 		while (slave_opens) {
 			int cc;
 			cc = exp_wait_for_slave_open(master);
-#if defined(TIOCSCTTY) && !defined(CIBAUD) && !defined(sun) && !defined(hp9000s300)
+#  if defined(TIOCSCTTY) && !defined(CIBAUD) && !defined(sun) && !defined(hp9000s300)
 			if (cc == TIOCSCTTY) slave_opens = 0;
-#endif
+#  endif /* TIOCSCTTY && !CIBAUD && !sun && !hp9000s300 */
 			if (cc == TIOCOPEN) slave_opens--;
 			if (cc == -1) {
 				exp_error(interp,"failed to trap slave pty");
@@ -1089,9 +1099,9 @@ when trapping, see below in child half of fork */
 			}
 		}
 
-#if 0
+#  if 0
 		/* trap initial ioctls in a feeble attempt to not block */
-		/* the initially.  If the process itself ioctls */
+		/* the initially. If the process itself ioctls */
 		/* /dev/tty, such blocks will be trapped later */
 		/* during normal event processing */
 
@@ -1100,24 +1110,24 @@ when trapping, see below in child half of fork */
 			int cc;
 
 			cc = exp_wait_for_slave_open(master);
-#if defined(TIOCSCTTY) && !defined(CIBAUD) && !defined(sun) && !defined(hp9000s300)
+#   if defined(TIOCSCTTY) && !defined(CIBAUD) && !defined(sun) && !defined(hp9000s300)
 			if (cc == TIOCSCTTY) slave_write_ioctls = 0;
-#endif
+#   endif /* TIOCSCTTY && !CIBAUD && !sun && !hp9000s300 */
 			if (cc & IOC_IN) slave_write_ioctls--;
 			else if (cc == -1) {
 				exp_error(interp,"failed to trap slave pty");
 				goto parent_error;
 			}
 		}
-#endif /*0*/
+#  endif /*0*/
 
-#endif /* HAVE_PTYTRAP */
+# endif /* HAVE_PTYTRAP */
 #endif /* PTYTRAP_DIES */
 
 		/*
 		 * wait for slave to initialize pty before allowing
 		 * user to send to it
-		 */ 
+		 */
 
 		debuglog("parent: waiting for sync byte\r\n");
 		while (((rc = read(sync_fds[0],&sync_byte,1)) < 0) && (errno == EINTR)) {
@@ -1151,7 +1161,7 @@ when trapping, see below in child half of fork */
 		switch (read(status_pipe[0],&child_errno,sizeof child_errno)) {
 		case -1:
 			if (errno == EINTR) goto retry;
-			/* well it's not really the child's errno */
+			/* well it is not really the child's errno... */
 			/* but it can be treated that way */
 			child_errno = errno;
 			break;
@@ -1165,7 +1175,7 @@ when trapping, see below in child half of fork */
 			/* in order to get Tcl to set errorcode, we must */
 			/* hand set errno */
 			errno = child_errno;
-			exp_error(interp, "couldn't execute \"%s\": %s",
+			exp_error(interp, "could not execute \"%s\": %s",
 				argv[0],Tcl_PosixError(interp));
 			goto parent_error;
 		}
@@ -1200,49 +1210,49 @@ parent_error:
 
 #ifdef CRAY
 	(void) close(master);
-#endif
+#endif /* CRAY */
 
 /* ultrix (at least 4.1-2) fails to obtain controlling tty if setsid */
-/* is called.  setpgrp works though.  */
+/* is called. setpgrp works though.  */
 #if defined(POSIX) && !defined(ultrix)
-#define DO_SETSID
-#endif
+# define DO_SETSID
+#endif /* POSIX && !ultrix */
 #ifdef __convex__
-#define DO_SETSID
-#endif
+# define DO_SETSID
+#endif /* __convex__ */
 
 #ifdef DO_SETSID
 	setsid();
 #else
-#ifdef SYSV3
-#ifndef CRAY
+# ifdef SYSV3
+#  ifndef CRAY
 	setpgrp();
-#endif /* CRAY */
-#else /* !SYSV3 */
-#ifdef MIPS_BSD
+#  endif /* CRAY */
+# else /* !SYSV3 */
+#  ifdef MIPS_BSD
 	/* required on BSD side of MIPS OS <jmsellen@watdragon.waterloo.edu> */
 #	include <sysv/sys.s>
 	syscall(SYS_setpgrp);
-#endif
+#  endif /* MIPS_BSD */
 	setpgrp(0,0);
 /*	setpgrp(0,getpid());*/	/* make a new pgrp leader */
 
 /* Pyramid lacks this defn */
-#ifdef TIOCNOTTY
+#  ifdef TIOCNOTTY
 	ttyfd = open("/dev/tty", O_RDWR);
 	if (ttyfd >= 0) {
 		(void) ioctl(ttyfd, TIOCNOTTY, (char *)0);
 		(void) close(ttyfd);
 	}
-#endif /* TIOCNOTTY */
+#  endif /* TIOCNOTTY */
 
-#endif /* SYSV3 */
+# endif /* SYSV3 */
 #endif /* DO_SETSID */
 
 	/* save stderr elsewhere to avoid BSD4.4 bogosity that warns */
 	/* if stty finds dev(stderr) != dev(stdout) */
 
-	/* save error fd while we're setting up new one */
+	/* save error fd while we are setting up new one */
 	errorfd = fcntl(2,F_DUPFD,3);
 	/* and here is the macro to restore it */
 #define restore_error_fd {close(2);fcntl(errorfd,F_DUPFD,2);}
@@ -1277,17 +1287,17 @@ parent_error:
 	/* 4.3+BSD way to acquire controlling terminal */
 	/* according to Stevens - Adv. Prog..., p 642 */
 	/* Oops, it appears that the CIBAUD is on Linux also */
-	/* so let's try without... */
-#ifdef __QNX__
+	/* so let us try without... */
+# ifdef __QNX__
 	if (tcsetct(0, getpid()) == -1) {
-#else
+# else
 	if (ioctl(0,TIOCSCTTY,(char *)0) < 0) {
-#endif
+# endif /* __QNX__ */
 		restore_error_fd
 		errorlog("failed to get controlling terminal using TIOCSCTTY");
 		exit(-1);
 	}
-#endif
+#endif /* TIOCSCTTY && !sun && !hpux */
 
 #ifdef CRAY
  	(void) setsid();
@@ -1305,11 +1315,11 @@ parent_error:
 	setptyutmp();	/* create a utmp entry */
 
 	/* _CRAY2 code from Hal Peterson <hrp@cray.com>, Cray Research, Inc. */
-#ifdef _CRAY2
+# ifdef _CRAY2
 	/*
 	 * Interpose a process between expect and the spawned child to
 	 * keep the slave side of the pty open to allow time for expect
-	 * to read the last output.  This is a workaround for an apparent
+	 * to read the last output. This is a workaround for an apparent
 	 * bug in the Unicos pty driver on Cray-2's under Unicos 6.0 (at
 	 * least).
 	 */
@@ -1347,7 +1357,7 @@ parent_error:
 		/* The kill may not have worked, but this will. */
  		exit(WEXITSTATUS(status));
 	}
-#endif /* _CRAY2 */
+# endif /* _CRAY2 */
 #endif /* CRAY */
 
 	if (console) exp_console_set();
@@ -1371,7 +1381,7 @@ parent_error:
 		(void) close(fileno(exp_cmdfile));
 	if (logfile) (void) fclose(logfile);
 	if (debugfile) (void) fclose(debugfile);
-#endif
+#endif /* 0 */
 	/* (possibly multiple) masters are closed automatically due to */
 	/* earlier fcntl(,,CLOSE_ON_EXEC); */
 
@@ -1405,20 +1415,20 @@ parent_error:
 
 	/* debuglog("child: now unsynchronized from parent\r\n"); */
 
-	/* So much for close-on-exec.  Tcl doesn't mark its files that way */
+	/* So much for close-on-exec. Tcl does NOT mark its files that way */
 	/* everything has to be closed explicitly. */
 	if (exp_close_in_child) (*exp_close_in_child)();
 
         (void) execvp(argv[0],argv);
 #if 0
-	/* Unfortunately, by now we've closed fd's to stderr, logfile and
+	/* Unfortunately, by now we have closed fd's to stderr, logfile and
 		debugfile.
 	   The only reasonable thing to do is to send back the error as
-	   part of the program output.  This will be picked up in an
+	   part of the program output. This will be picked up in an
 	   expect or interact command.
 	*/
 	errorlog("%s: %s\r\n",argv[0],Tcl_ErrnoMsg(errno));
-#endif
+#endif /* 0 */
 	/* if exec failed, communicate the reason back to the parent */
 	write(status_pipe[1], &errno, sizeof errno);
 	exit(-1);
@@ -1518,8 +1528,8 @@ int rembytes;
 	while (rembytes) {
 		if (-1 == (cc = write(fd,buffer,rembytes))) return(-1);
 		if (0 == cc) {
-			/* This shouldn't happen but I'm told that it does */
-			/* nonetheless (at least on SunOS 4.1.3).  Since */
+			/* This should NOT happen but I am told that it does */
+			/* nonetheless (at least on SunOS 4.1.3). Since */
 			/* this is not a documented return value, the most */
 			/* reasonable thing is to complain here and retry */
 			/* in the hopes that is some transient condition. */
@@ -1650,7 +1660,7 @@ static float
 unit_random()
 {
 	/* current implementation is pathetic but works */
-	/* 99991 is largest prime in my CRC - can't hurt, eh? */
+	/* 99991 is largest prime in my CRC - cannot hurt, eh? */
 	return((float)(1+(rand()%99991))/99991.0);
 }
 
@@ -1661,7 +1671,7 @@ exp_init_unit_random()
 }
 
 /* This function is my implementation of the Weibull distribution. */
-/* I've added a max time and an "alpha_eow" that captures the slight */
+/* I have added a max time and an "alpha_eow" that captures the slight */
 /* but noticable change in human typists when hitting end-of-word */
 /* transitions. */
 /* returns 0 for success, -1 for failure, pos. for Tcl return value */
@@ -1729,7 +1739,7 @@ exp_new_i()
 		i->next = 0;
 	}
 
-	/* now that we've made some, unlink one and give to user */
+	/* now that we have made some, unlink one and give to user */
 
 	i = exp_i_pool;
 	exp_i_pool = exp_i_pool->next;
@@ -1758,7 +1768,7 @@ int val;
 		fd->next = 0;
 	}
 
-	/* now that we've made some, unlink one and give to user */
+	/* now that we have made some, unlink one and give to user */
 
 	fd = exp_fd_list_pool;
 	exp_fd_list_pool = exp_fd_list_pool->next;
@@ -1811,7 +1821,7 @@ Tcl_VarTraceProc *updateproc;	/* proc to invoke if indirect is written */
 			updateproc,(ClientData)i);
 	}
 
-	/* here's the long form
+	/* here us the long form
 	   if duration & direct	free(var)  free(val)
 		PERM	  DIR	    		1
 		PERM	  INDIR	    1		1
@@ -1843,7 +1853,7 @@ exp_new_i_complex(interp,arg,duration,updateproc)
 Tcl_Interp *interp;
 char *arg;		/* spawn id list or a variable containing a list */
 int duration;		/* if we have to copy the args */
-			/* should only need do this in expect_before/after */
+			        /* should only need do this in expect_before/after */
 Tcl_VarTraceProc *updateproc;	/* proc to invoke if indirect is written */
 {
 	struct exp_i *i;
@@ -1925,7 +1935,7 @@ struct exp_i *i;
 		exp_i_add_fd(i,m);
 	}
 }
-	
+
 /* updates a single exp_i struct */
 void
 exp_i_update(interp,i)
@@ -2014,8 +2024,8 @@ char **argv;
 }
 
 
-/* I've rewritten this to be unbuffered.  I did this so you could shove */
-/* large files through "send".  If you are concerned about efficiency */
+/* I have rewritten this to be unbuffered. I did this so you could shove */
+/* large files through "send". If you are concerned about efficiency */
 /* you should quote all your send args to make them one single argument. */
 /*ARGSUSED*/
 static int
@@ -2139,7 +2149,7 @@ char **argv;
 	if (send_to_proc) {
 		want_cooked = FALSE;
 		debuglog("send: sending \"%s\" to {",dprintify(string));
-		/* if closing brace doesn't appear, that's because an error */
+		/* if closing brace does NOT appear, that is/was because an error */
 		/* was encountered before we could send it */
 	} else {
 		if (debugfile)
@@ -2283,7 +2293,7 @@ char **argv;
 	} else if (argc > 1) {
 		/* too many arguments */
 		usage_error
-	} 
+	}
 
 	if (openarg && filename) {
 		usage_error
@@ -2304,7 +2314,7 @@ char **argv;
 		if (filename == NULL) {
 			goto error;
 		} else {
-			/* Tcl_TildeSubst doesn't store into dstring */
+			/* Tcl_TildeSubst does NOT store into dstring */
 			/* if no ~, so force string into dstring */
 			/* this is only needed so that next time around */
 			/* we can get dstring for -info if necessary */
@@ -2344,7 +2354,7 @@ char **argv;
 			exp_error(interp,"dup: %s",Tcl_PosixError(interp));
 			goto error;
 		}
-#endif
+#endif /* TCL7_4 */
 		if (!(chan = Tcl_GetChannel(interp,openarg,&mode))) {
 			return TCL_ERROR;
 		}
@@ -2490,7 +2500,7 @@ char **argv;
 	exp_error(interp,"usage: [[-now] 1|0]");
 	return TCL_ERROR;
 }
-#endif
+#endif /* TCL_DEBUGGER */
 
 /*ARGSUSED*/
 static int
@@ -2528,7 +2538,7 @@ char **argv;
 		argv[0] = Tcl_TildeSubst(interp, argv[0],&dstring);
 		if (argv[0] == NULL) goto error;
 		else {
-			/* Tcl_TildeSubst doesn't store into dstring */
+			/* Tcl_TildeSubst does NOT store into dstring */
 			/* if no ~, so force string into dstring */
 			/* this is only needed so that next time around */
 			/* we can get dstring for -info if necessary */
@@ -2631,7 +2641,7 @@ int argc;
 char **argv;
 #else
 Tcl_Obj *CONST argv[];	/* Argument objects. */
-#endif
+#endif /* TCL_MAJOR_VERSION < 8 */
 {
 	int onexec_flag = FALSE;	/* true if -onexec seen */
 	int close_onexec;
@@ -2643,19 +2653,19 @@ Tcl_Obj *CONST argv[];	/* Argument objects. */
 	char **argv_orig = argv;
 #else
 	Tcl_Obj *CONST *argv_orig = argv;
-#endif
+#endif /* TCL_MAJOR_VERSION < 8 */
 
 	argc--; argv++;
 
 #if TCL_MAJOR_VERSION < 8
-#  define STARARGV *argv
+# define STARARGV *argv
 #else
-#  if TCL_MINOR_VERSION < 3
-#    define STARARGV Tcl_GetStringFromObj(*argv,(int *)0)
-#  else
-#    define STARARGV Tcl_GetString(*argv)
-#  endif
-#endif 
+# if TCL_MINOR_VERSION < 3
+#  define STARARGV Tcl_GetStringFromObj(*argv,(int *)0)
+# else
+#  define STARARGV Tcl_GetString(*argv)
+# endif /* TCL_MINOR_VERSION < 3 */
+#endif /* TCL_MAJOR_VERSION < 8 */
 
 	for (;argc>0;argc--,argv++) {
 		if (streq("-i",STARARGV)) {
@@ -2679,9 +2689,9 @@ Tcl_Obj *CONST argv[];	/* Argument objects. */
 	}
 
 	if (argc) {
-		/* doesn't look like our format, it must be a Tcl-style file */
-		/* handle.  Lucky that formats are easily distinguishable. */
-		/* Historical note: we used "close"  long before there was a */
+		/* does NOT look like our format, it must be a Tcl-style file */
+		/* handle. Lucky that formats are easily distinguishable. */
+		/* Historical note: we used "close" long before there was a */
 		/* Tcl builtin by the same name. */
 
 		Tcl_CmdInfo info;
@@ -2693,7 +2703,7 @@ Tcl_Obj *CONST argv[];	/* Argument objects. */
 		return(Tcl_CloseCmd(info.clientData,interp,argc_orig,argv_orig));
 #else
 		return(Tcl_CloseObjCmd(info.clientData,interp,argc_orig,argv_orig));
-#endif
+#endif /* TCL_MAJOR_VERSION < 8 */
 	}
 
 	if (m == -1) {
@@ -2718,7 +2728,7 @@ Tcl_Obj *CONST argv[];	/* Argument objects. */
 	}
 
 	if (onexec_flag) {
-		/* heck, don't even bother to check if fd is open or a real */
+		/* heck, do NOT even bother to check if fd is open or a real */
 		/* spawn id, nothing else depends on it */
 		fcntl(m,F_SETFD,close_onexec);
 		return TCL_OK;
@@ -2786,11 +2796,11 @@ char **argv;
  */
 
 #if 0
-#ifndef NO_UNION_WAIT
-#   define WAIT_STATUS_TYPE union wait
-#else
-#   define WAIT_STATUS_TYPE int
-#endif
+# ifndef NO_UNION_WAIT
+#  define WAIT_STATUS_TYPE union wait
+# else
+#  define WAIT_STATUS_TYPE int
+# endif /* !NO_UNION_WAIT */
 #endif /* 0 */
 
 /*
@@ -2802,29 +2812,24 @@ char **argv;
  */
 
 #if 0
-#ifndef WIFEXITED
-#   define WIFEXITED(stat)  (((*((int *) &(stat))) & 0xff) == 0)
-#endif
-
-#ifndef WEXITSTATUS
-#   define WEXITSTATUS(stat) (((*((int *) &(stat))) >> 8) & 0xff)
-#endif
-
-#ifndef WIFSIGNALED
-#   define WIFSIGNALED(stat) (((*((int *) &(stat)))) && ((*((int *) &(stat))) == ((*((int *) &(stat))) & 0x00ff)))
-#endif
-
-#ifndef WTERMSIG
-#   define WTERMSIG(stat)    ((*((int *) &(stat))) & 0x7f)
-#endif
-
-#ifndef WIFSTOPPED
-#   define WIFSTOPPED(stat)  (((*((int *) &(stat))) & 0xff) == 0177)
-#endif
-
-#ifndef WSTOPSIG
-#   define WSTOPSIG(stat)    (((*((int *) &(stat))) >> 8) & 0xff)
-#endif
+# ifndef WIFEXITED
+#  define WIFEXITED(stat)  (((*((int *) &(stat))) & 0xff) == 0)
+# endif /* !WIFEXITED */
+# ifndef WEXITSTATUS
+#  define WEXITSTATUS(stat) (((*((int *) &(stat))) >> 8) & 0xff)
+# endif /* !WEXITSTATUS */
+# ifndef WIFSIGNALED
+#  define WIFSIGNALED(stat) (((*((int *) &(stat)))) && ((*((int *) &(stat))) == ((*((int *) &(stat))) & 0x00ff)))
+# endif /* !WIFSIGNALED */
+# ifndef WTERMSIG
+#  define WTERMSIG(stat)    ((*((int *) &(stat))) & 0x7f)
+# endif /* !WTERMSIG */
+# ifndef WIFSTOPPED
+#  define WIFSTOPPED(stat)  (((*((int *) &(stat))) & 0xff) == 0177)
+# endif /* !WIFSTOPPED */
+# ifndef WSTOPSIG
+#  define WSTOPSIG(stat)    (((*((int *) &(stat))) >> 8) & 0xff)
+# endif /* !WSTOPSIG */
 #endif /* 0 */
 
 /* end of stolen definitions */
@@ -2832,8 +2837,8 @@ char **argv;
 /* Describe the processes created with Expect's fork.
 This allows us to wait on them later.
 
-This is maintained as a linked list.  As additional procs are forked,
-new links are added.  As procs disappear, links are marked so that we
+This is maintained as a linked list. As additional procs are forked,
+new links are added. As procs disappear, links are marked so that we
 can reuse them later.
 */
 
@@ -2885,8 +2890,8 @@ int pid;
 
 /* Provide a last-chance guess for this if not defined already */
 #ifndef WNOHANG
-#define WNOHANG WNOHANG_BACKUP_VALUE
-#endif
+# define WNOHANG WNOHANG_BACKUP_VALUE
+#endif /* WNOHANG */
 
 /* wait returns are a hodgepodge of things
  If wait fails, something seriously has gone wrong, for example:
@@ -2960,7 +2965,7 @@ char **argv;
 				Tcl_DetachPids(1,&f->pid);
 #else
 				Tcl_DetachPids(1,(Tcl_Pid *)&f->pid);
-#endif
+#endif /* TCL_MAJOR_VERSION < 8 */
 				exp_wait_zero(&f->wait);
 			} else {
 				while (1) {
@@ -2980,7 +2985,7 @@ char **argv;
 		}
 
 		/*
-		 * Now have Tcl reap anything we just detached. 
+		 * Now have Tcl reap anything we just detached.
 		 * This also allows procs user has created with "exec &"
 		 * and and associated with an "exec &" process to be reaped.
 		 */
@@ -2990,7 +2995,7 @@ char **argv;
 	} else {
 		/* wait for any of our own spawned processes */
 		/* we call waitpid rather than wait to avoid running into */
-		/* someone else's processes.  Yes, according to Ousterhout */
+		/* someone else's processes. Yes, according to Ousterhout */
 		/* this is the best way to do it. */
 
 		for (m=0;m<=exp_fd_max;m++) {
@@ -3009,7 +3014,7 @@ char **argv;
 			}
 		}
 
-		/* if it's not a spawned process, maybe its a forked process */
+		/* if it is not a spawned process, maybe it is a forked process */
 		for (fp=forked_proc_base;fp;fp=fp->next) {
 			if (fp->link_status == not_in_use) continue;
 		restart2:
@@ -3032,7 +3037,7 @@ char **argv;
 		exp_rearm_sigchld(interp);
 	}
 
-	/*  sigh, wedge forked_proc into an exp_f structure so we don't
+	/*  sigh, wedge forked_proc into an exp_f structure so we do NOT
 	 *  have to rewrite remaining code (too much)
 	 */
 	if (fp) {
@@ -3063,10 +3068,10 @@ char **argv;
 			Tcl_AppendElement(interp,Tcl_SignalMsg((int) (WSTOPSIG(f->wait))));
 		}
 	}
-			
+
 	if (fp) {
 		fp->link_status = not_in_use;
-		return ((result == -1)?TCL_ERROR:TCL_OK);		
+		return ((result == -1)?TCL_ERROR:TCL_OK);
 	}
 
 	f->sys_waited = TRUE;
@@ -3172,40 +3177,39 @@ char **argv;
 #ifdef DO_SETSID
 	setsid();
 #else
-#ifdef SYSV3
+# ifdef SYSV3
 	/* put process in our own pgrp, and lose controlling terminal */
-#ifdef sysV88
+#  ifdef sysV88
 	/* With setpgrp first, child ends up with closed stdio */
 	/* according to Dave Schmitt <daves@techmpc.csg.gss.mot.com> */
 	if (fork()) exit(0);
 	setpgrp();
-#else
+#  else
 	setpgrp();
 	/*signal(SIGHUP,SIG_IGN); moved out to above */
 	if (fork()) exit(0);	/* first child exits (as per Stevens, */
 	/* UNIX Network Programming, p. 79-80) */
 	/* second child process continues as daemon */
-#endif
-#else /* !SYSV3 */
-#ifdef MIPS_BSD
+#  endif /* sysV88 */
+# else /* !SYSV3 */
+#  ifdef MIPS_BSD
 	/* required on BSD side of MIPS OS <jmsellen@watdragon.waterloo.edu> */
 #	include <sysv/sys.s>
 	syscall(SYS_setpgrp);
-#endif
+#  endif /* MIPS_BSD */
 	setpgrp(0,0);
 /*	setpgrp(0,getpid());*/	/* put process in our own pgrp */
 
 /* Pyramid lacks this defn */
-#ifdef TIOCNOTTY
+#  ifdef TIOCNOTTY
 	ttyfd = open("/dev/tty", O_RDWR);
 	if (ttyfd >= 0) {
 		/* zap controlling terminal if we had one */
 		(void) ioctl(ttyfd, TIOCNOTTY, (char *)0);
 		(void) close(ttyfd);
 	}
-#endif /* TIOCNOTTY */
-
-#endif /* SYSV3 */
+#  endif /* TIOCNOTTY */
+# endif /* SYSV3 */
 #endif /* DO_SETSID */
 	return(TCL_OK);
 }
@@ -3304,7 +3308,7 @@ char **argv;
 	Tcl_Return(interp,buf,TCL_VOLATILE);
 	return(TCL_OK);
 }
-#endif
+#endif /* 0 */
 
 /*ARGSUSED*/
 int
@@ -3324,7 +3328,7 @@ char **argv;
 	/* to return TCL_OK, type "return" */
 }
 
-/* this command supercede's Tcl's builtin CONTINUE command */
+/* this command supersede's Tcl's builtin CONTINUE command */
 /*ARGSUSED*/
 int
 Exp_ExpContinueDeprecatedCmd(clientData, interp, argc, argv)
@@ -3344,7 +3348,7 @@ char **argv;
        return(TCL_ERROR);
 }
 
-/* this command supercede's Tcl's builtin CONTINUE command */
+/* this command supersede's Tcl's builtin CONTINUE command */
 /*ARGSUSED*/
 int
 Exp_ExpContinueCmd(clientData, interp, argc, argv)
@@ -3396,17 +3400,17 @@ Tcl_Obj *CONST objv[];
     /* if successful (i.e., TCL_RETURN is returned) */
     /* modify the result, so that we will handle it specially */
 
-#if TCL_MAJOR_VERSION < 8
+# if TCL_MAJOR_VERSION < 8
     int result = Tcl_ReturnCmd(clientData,interp,objc,objv);
-#else
+# else
        int result = Tcl_ReturnObjCmd(clientData,interp,objc,objv);
-#endif
+# endif /* TCL_MAJOR_VERSION < 8 */
 
     if (result == TCL_RETURN)
         result = EXP_TCL_RETURN;
     return result;
 }
-#endif
+#endif /* TCL_MAJOR_VERSION < 8 */
 
 /*ARGSUSED*/
 int
@@ -3457,7 +3461,7 @@ char **argv;
 			Tcl_DetachPids(1,&f->pid);
 #else
 			Tcl_DetachPids(1,(Tcl_Pid *)&f->pid);
-#endif
+#endif /* TCL_MAJOR_VERSION < 8 */
 			f->pid = EXP_NOPID;
 			f->sys_waited = f->user_waited = TRUE;
 		}
@@ -3467,7 +3471,7 @@ char **argv;
 	chan = Tcl_MakeFileChannel(
 #if TCL_MAJOR_VERSION < 8
 			    (ClientData)m2,
-#endif
+#endif /* TCL_MAJOR_VERSION < 8 */
 			    (ClientData)m2,
 			    TCL_READABLE|TCL_WRITABLE);
 	Tcl_RegisterChannel(interp, chan);
@@ -3501,7 +3505,7 @@ struct exp_cmd_data *c;
 #else
 	Namespace *globalNsPtr = (Namespace *) Tcl_GetGlobalNamespace(interp);
 	Namespace *currNsPtr   = (Namespace *) Tcl_GetCurrentNamespace(interp);
-#endif
+#endif /* Tcl < 8 */
 	char cmdnamebuf[80];
 
 	for (;c->name;c++) {
@@ -3517,7 +3521,7 @@ struct exp_cmd_data *c;
 						  c->data,exp_deleteProc);
 			}
 #else
-		/* if already defined, don't redefine */
+		/* if already defined, do NOT redefine */
 		if ((c->flags & EXP_REDEFINE) ||
 		    !(Tcl_FindHashEntry(&globalNsPtr->cmdTable,c->name) ||
 		      Tcl_FindHashEntry(&currNsPtr->cmdTable,c->name))) {
@@ -3528,7 +3532,7 @@ struct exp_cmd_data *c;
 			Tcl_CreateCommand(interp,c->name,c->proc,
 					  c->data,exp_deleteProc);
 		}
-#endif
+#endif /* Tcl < 8 */
 		if (!(c->name[0] == 'e' &&
 		      c->name[1] == 'x' &&
 		      c->name[2] == 'p')
@@ -3544,7 +3548,7 @@ struct exp_cmd_data *c;
 			else
 			Tcl_CreateCommand(interp,cmdnamebuf,c->proc,
 					     c->data,exp_deleteProc);
-#endif
+#endif /* Tcl < 8 */
 		}
 	}
 }
@@ -3554,10 +3558,10 @@ static struct exp_cmd_data cmd_data[]  = {
 {"close",	Exp_CloseCmd,	0,	EXP_REDEFINE},
 #else
 {"close",	Exp_CloseObjCmd,	0,	0,	EXP_REDEFINE},
-#endif
+#endif /* Tcl < 8 */
 #ifdef TCL_DEBUGGER
 {"debug",	exp_proc(Exp_DebugCmd),	0,	0},
-#endif
+#endif /* TCL_DEBUGGER */
 {"exp_internal",exp_proc(Exp_ExpInternalCmd),	0,	0},
 {"disconnect",	exp_proc(Exp_DisconnectCmd),	0,	0},
 {"exit",	exp_proc(Exp_ExitCmd),	0,	EXP_REDEFINE},
@@ -3574,7 +3578,7 @@ static struct exp_cmd_data cmd_data[]  = {
 {"inter_return",Exp_InterReturnCmd,	0,	0},
 #else
 {"inter_return",Exp_InterReturnObjCmd,	0,	0,	0},
-#endif
+#endif /* Tcl < 8 */
 {"send",	exp_proc(Exp_SendCmd),	(ClientData)&sendCD_proc,	0},
 {"send_error",	exp_proc(Exp_SendCmd),	(ClientData)&sendCD_error,	0},
 {"send_log",	exp_proc(Exp_SendLogCmd),	0,	0},
@@ -3637,7 +3641,7 @@ Tcl_CloseCmd(stuff, interp, argc, argv)
     result = Tcl_CloseObjCmd(stuff, interp, argc, objv);
 
     /*
-     * Move the interpreter's object result to the string result, 
+     * Move the interpreter's object result to the string result,
      * then reset the object result.
      * FAILS IF OBJECT RESULT'S STRING REPRESENTATION CONTAINS NULL BYTES.
      */
@@ -3646,7 +3650,7 @@ Tcl_CloseCmd(stuff, interp, argc, argv)
     Tcl_SetResult(interp, TclGetStringFromObj(Tcl_GetObjResult(interp), (int *) NULL), TCL_VOLATILE);
 #else
     Tcl_SetResult(interp, TclGetString(Tcl_GetObjResult(interp)), TCL_VOLATILE);
-#endif
+#endif /* Tcl < 8.3 */
     /*
      * Decrement the ref counts for the argument objects created above,
      * then free the objv array if malloc'ed storage was used.
@@ -3662,3 +3666,5 @@ Tcl_CloseCmd(stuff, interp, argc, argv)
     return result;
 #undef NUM_ARGS
 }
+
+/* EOF */
