@@ -1,5 +1,5 @@
 /*
- * untgz.c -- Display contents and extract files from a gzip'd TAR file
+ * untgz.c -- Display contents and extract files from a gzipped TAR file
  *
  * written by Pedro A. Aranda Gutierrez <paag@tid.es>
  * adaptation to Unix by Jean-loup Gailly <jloup@gzip.org>
@@ -14,27 +14,27 @@
 
 #include "zlib.h"
 
-#ifdef unix
-#  include <unistd.h>
+#if defined(unix) || defined(POSIX) || defined(__STDC__)
+# include <unistd.h>
 #else
-#  include <direct.h>
-#  include <io.h>
-#endif
+# include <direct.h>
+# include <io.h>
+#endif /* unix || POSIX || __STDC__ */
 
 #ifdef WIN32
-#include <windows.h>
-#  ifndef F_OK
-#    define F_OK  0
-#  endif
-#  define mkdir(dirname,mode)   _mkdir(dirname)
-#  ifdef _MSC_VER
-#    define access(path,mode)   _access(path,mode)
-#    define chmod(path,mode)    _chmod(path,mode)
-#    define strdup(str)         _strdup(str)
-#  endif
+# include <windows.h>
+# ifndef F_OK
+#  define F_OK  0
+# endif /* !F_OK */
+# define mkdir(dirname,mode)   _mkdir(dirname)
+# ifdef _MSC_VER
+#  define access(path,mode)   _access(path,mode)
+#  define chmod(path,mode)    _chmod(path,mode)
+#  define strdup(str)         _strdup(str)
+# endif /* _MSC_VER */
 #else
-#  include <utime.h>
-#endif
+# include <utime.h>
+#endif /* WIN32 */
 
 
 /* values used in typeflag field */
@@ -153,7 +153,7 @@ void TGZnotfound (const char *arcname)
 {
   int i;
 
-  fprintf(stderr,"%s: Couldn't find ",prog);
+  fprintf(stderr,"%s: Could not find ",prog);
   for (i=0;TGZsuffix[i];i++)
     fprintf(stderr,(TGZsuffix[i+1]) ? "%s%s, " : "or %s%s\n",
             arcname,
@@ -244,7 +244,7 @@ int setfiletime (char *fname,time_t ftime)
 
   settime.actime = settime.modtime = ftime;
   return utime(fname,&settime);
-#endif
+#endif /* WIN32 */
 }
 
 
@@ -355,7 +355,7 @@ int makedir (char *newdir)
       *p = 0;
       if ((mkdir(buffer, 0755) == -1) && (errno == ENOENT))
         {
-          fprintf(stderr,"%s: Couldn't create directory %s\n",prog,buffer);
+          fprintf(stderr,"%s: Could not create directory %s\n",prog,buffer);
           free(buffer);
           return 0;
         }
@@ -493,7 +493,7 @@ int tar (gzFile in,int action,int arg,int argc,char **argv)
                       if (outfile != NULL)
                         printf("Extracting %s\n",fname);
                       else
-                        fprintf(stderr, "%s: Couldn't create %s",prog,fname);
+                        fprintf(stderr, "%s: Could not create %s",prog,fname);
                     }
                   else
                     outfile = NULL;
@@ -601,7 +601,7 @@ void error(const char *msg)
 
 #if defined(WIN32) && defined(__GNUC__)
 int _CRT_glob = 0;      /* disable argument globbing in MinGW */
-#endif
+#endif /* WIN32 && __GNUC__ */
 
 int main(int argc,char **argv)
 {
@@ -659,7 +659,7 @@ int main(int argc,char **argv)
         f = gzopen(TGZfile,"rb");
         if (f == NULL)
           {
-            fprintf(stderr,"%s: Couldn't gzopen %s\n",prog,TGZfile);
+            fprintf(stderr,"%s: Could not gzopen %s\n",prog,TGZfile);
             return 1;
           }
         exit(tar(f, action, arg, argc, argv));
@@ -672,3 +672,5 @@ int main(int argc,char **argv)
 
     return 0;
 }
+
+/* EOF */

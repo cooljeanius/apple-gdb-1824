@@ -1,0 +1,6 @@
+bin/*
+test-results/*
+*.pidb
+*.dll
+*.mdb
+*.test-cache

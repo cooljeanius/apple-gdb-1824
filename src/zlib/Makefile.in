@@ -16,36 +16,43 @@
 # To install in $HOME instead of /usr/local, use:
 #    make install prefix=$HOME
 
-CC=cc
+ACLOCAL_AMFLAGS="-I m4 --install"
+CC=@CC@
+CC_HARDCODED=cc
 
 CFLAGS=-O
-#CFLAGS=-O -DMAX_WBITS=14 -DMAX_MEM_LEVEL=7
-#CFLAGS=-g -DDEBUG
-#CFLAGS=-O3 -Wall -Wwrite-strings -Wpointer-arith -Wconversion \
-#           -Wstrict-prototypes -Wmissing-prototypes
+CFLAGS_WITH_DEFINES="-O -DMAX_WBITS=14 -DMAX_MEM_LEVEL=7"
+DEBUG_CFLAGS="-ggdb -DDEBUG"
+OPT_CFLAGS="-O3 -Wall -Wwrite-strings -Wpointer-arith -Wconversion -Wstrict-prototypes -Wmissing-prototypes"
 
-SFLAGS=-O
-LDFLAGS=
+SFLAGS="-O"
+LDFLAGS=""
 TEST_LDFLAGS=-L. libz.a
 LDSHARED=$(CC)
-CPP=$(CC) -E
+CPP="$(CC) -E"
 
 STATICLIB=libz.a
 SHAREDLIB=libz.so
+DARWIN_SHAREDLIB=libz.dylib
 SHAREDLIBV=libz.so.1.2.8
 SHAREDLIBM=libz.so.1
-LIBS=$(STATICLIB) $(SHAREDLIBV)
+LIBS="$(STATICLIB) $(SHAREDLIBV)"
 
-AR=ar
+AR=@AR@
+AR_HARDCODED=ar
 ARFLAGS=rc
-RANLIB=ranlib
+RANLIB=@RANLIB@
+RANLIB_HARDCODED=ranlib
 LDCONFIG=ldconfig
 LDSHAREDLIBC=-lc
 TAR=tar
 SHELL=/bin/sh
 EXE=
 
-prefix = /usr/local
+SUBDIRS = . contrib/minizip
+
+prefix = @prefix@
+prefix_hardcoded = /usr/local
 exec_prefix = ${prefix}
 libdir = ${exec_prefix}/lib
 sharedlibdir = ${libdir}

@@ -108,19 +108,22 @@ dnl#AM_INIT_AUTOMAKE([gnu dejagnu -Wno-obsolete])
 
 dnl# These must be called before LT_INIT, because it may want
 dnl# to call AC_CHECK_PROG.
-AC_CHECK_TOOL([AR],[ar])
-AC_CHECK_TOOL([RANLIB],[ranlib],[:])
-if test "x$RANLIB" = "x"; then
-	test -z "$RANLIB"
-	AC_PROG_RANLIB
-else
-	test ! -z "$RANLIB"
-fi
-
 GCC_NO_EXECUTABLES
 AC_USE_SYSTEM_EXTENSIONS
+m4_ifdef([AM_PROG_AR],[
+AM_PROG_AR
+],[
+AC_CHECK_TOOL([AR],[ar])
+])
+m4_ifdef([AC_PROG_RANLIB],[
+AC_PROG_RANLIB
+],[
+AC_CHECK_TOOL([RANLIB],[ranlib],[:])
+])
+
 AM_PROG_AS
 AC_PROG_CPP_WERROR
+AC_PROG_MKDIR_P
 
 if test x${GCC} = xyes; then
   ac_libiberty_warn_cflags='-W -Wall -pedantic -Wwrite-strings -Wstrict-prototypes'

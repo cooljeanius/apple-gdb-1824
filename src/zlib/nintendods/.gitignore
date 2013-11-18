@@ -1,0 +1,5 @@
+build/*
+lib/*
+include/config.h
+libz.a
+*lib*.a

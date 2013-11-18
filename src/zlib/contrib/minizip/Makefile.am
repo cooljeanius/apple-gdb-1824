@@ -7,6 +7,7 @@ endif
 zlib_top_srcdir = $(top_srcdir)/../..
 zlib_top_builddir = $(top_builddir)/../..
 
+ACLOCAL_AMFLAGS = -I../../m4 --install
 AM_CPPFLAGS = -I$(zlib_top_srcdir)
 AM_LDFLAGS = -L$(zlib_top_builddir)
 
