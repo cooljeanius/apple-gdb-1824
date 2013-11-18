@@ -18,3 +18,4 @@ detail
 *.sum
 blockit
 contents
+conf*/*.awk

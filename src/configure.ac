@@ -41,6 +41,7 @@ AC_CONFIG_HEADERS([config.h])
 
 # System-detecting stuff
 AC_CANONICAL_TARGET
+ACX_NONCANONICAL_TARGET
 AC_ARG_PROGRAM
 AC_OBJEXT
 AC_EXEEXT
@@ -166,7 +167,7 @@ build_tools="build-texinfo build-byacc build-flex build-bison build-m4 build-fix
 # these libraries are used by various programs built for the host
 # environment
 #
-host_libs="intl mmalloc libiberty opcodes bfd readline tcl tk itcl libgui zlib libcpp"
+host_libs="intl electric-fence mmalloc libiberty opcodes bfd readline tcl tk itcl libgui zlib libcpp"
 
 # These tools are built for the host environment
 # Note, the powerpc-eabi build depends on sim occurring before gdb in order
@@ -1139,11 +1140,11 @@ else
   BUILD_PREFIX=
   BUILD_PREFIX_1=loser-
 
-  if test "x$CC" = "x"; then
-    test -z "$CC"
+  if test "x${CC}" = "x"; then
+    test -z "${CC}"
     AC_PROG_CC
   else
-    test ! -z "$CC"
+    test ! -z "${CC}"
     AC_PROG_GCC_TRADITIONAL
   fi
   AC_PROG_CPP
@@ -1268,14 +1269,19 @@ AC_TYPE_INT8_T
 AC_TYPE_INT16_T
 AC_TYPE_INT32_T
 AC_TYPE_INT64_T
+AC_TYPE_MODE_T
 AC_TYPE_OFF_T
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
+AC_TYPE_UID_T
 AC_TYPE_UINT8_T
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
+AC_CHECK_MEMBERS([struct stat.st_blksize])
+AC_STRUCT_ST_BLOCKS
+AC_CHECK_MEMBERS([struct stat.st_rdev])
 
 # Checks for library functions.
 AC_FUNC_ALLOCA
@@ -1287,7 +1293,7 @@ unset ac_cv_func_gethostbyname
 AC_CHECK_FUNCS([getcwd gethostbyaddr gethostbyname gettimeofday \
                 memchr memmove memset printf putenv re_comp regcomp \
                 select socket strcasecmp strchr strerror strrchr strstr \
-                strtol strtoul strverscmp system])
+                strtol strtoul strverscmp system utime])
 
 # By default, C is the only stage 1 language.
 stage1_languages=c
@@ -2423,7 +2429,7 @@ esac
 AC_SUBST([stage1_cflags])
 
 # It makes debugging easier if we create as symlinks the stage directories
-# gcc for stageN-gcc and stagePREV-gcc for stage(N-1).  In case this is not
+# gcc for stageN-gcc and stagePREV-gcc for stage(N-1). In case this is not
 # possible, however, we can resort to mv.
 AC_CACHE_CHECK([if symbolic links between directories work],
 [gcc_cv_prog_ln_s_dir],

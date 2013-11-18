@@ -9,8 +9,10 @@ Makefile.orig
 confdefs.h
 config.h
 conftest*
+conf*/*.awk
 core*
 libtool
+libtoolT
 po/*.insert-header
 po/*.new.po
 po/Makefile

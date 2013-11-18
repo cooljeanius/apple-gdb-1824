@@ -1,4 +1,4 @@
-#! /usr/bin/autogen
+#!/usr/bin/autogen
 AutoGen definitions Makefile.tpl;
 
 // Makefile.in is generated from Makefile.tpl by 'autogen Makefile.def'.
@@ -13,7 +13,7 @@ AutoGen definitions Makefile.tpl;
 // 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 // 
 // You should have received a copy of the GNU General Public License
@@ -21,7 +21,7 @@ AutoGen definitions Makefile.tpl;
 // Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 
-// "missing" indicates that that module doesn't supply
+// "missing" indicates that that module does NOT supply
 // that recursive target in its Makefile.
 
 build_modules= { module= libiberty; };

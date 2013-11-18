@@ -1094,7 +1094,7 @@ maybe-[+make_target+]-[+module+]: [+make_target+]-[+module+]
 # ---------------------------------------
 [+ FOR target_modules +]
 
-# There's only one multilib.out.  Cleverer subdirs shouldn't need it copied.
+# There is only one multilib.out. Cleverer subdirs should NOT need it copied.
 @if target-[+module+]
 $(TARGET_SUBDIR)/[+module+]/multilib.out: multilib.out
 	$(SHELL) $(srcdir)/mkinstalldirs $(TARGET_SUBDIR)/[+module+] ; \
@@ -1175,7 +1175,7 @@ maybe-[+make_target+]-target-[+module+]:
 @if target-[+module+]
 maybe-[+make_target+]-target-[+module+]: [+make_target+]-target-[+module+]
 [+ IF (match-value? = "missing" (get "make_target") ) +]
-# [+module+] doesn't support [+make_target+].
+# [+module+] does NOT support [+make_target+].
 [+make_target+]-target-[+module+]:
 [+ ELSE +]
 [+make_target+]-target-[+module+]: [+
@@ -1347,19 +1347,19 @@ stage:
 # reliable.
 
 # At the end of the bootstrap, a symlink to 'stage3-gcc' named 'gcc' must
-# be kept, so that libraries can find it.  Ick!
+# be kept, so that libraries can find it. Ick!
 
 # It would be best to preinstall gcc into a staging area (and in the
 # future, gather there all prebootstrap packages).  This would allow
 # assemblers and linkers can be bootstrapped as well as the compiler
-# (both in a combined tree, or separately).  This however requires some
+# (both in a combined tree, or separately). This however requires some
 # change to the gcc driver, again in order to avoid comparison failures.
 
 # Bugs: This is crippled when doing parallel make, the `make all-host'
 # and `make all-target' phases can be parallelized.
 
 
-# 'touch' doesn't work right on some platforms.
+# 'touch' does NOT work right on some platforms.
 STAMP = echo timestamp > 
 
 # Only build the C compiler for stage1, because that is the only one that
@@ -1384,7 +1384,7 @@ POSTSTAGE1_FLAGS_TO_PASS = \
 # For stage 1:
 # * We force-disable intermodule optimizations, even if
 #   --enable-intermodule was passed, since the installed compiler probably
-#   can't handle them.  Luckily, autoconf always respects
+#   cannot handle them. Luckily, autoconf always respects
 #   the last argument when conflicting --enable arguments are passed.
 # * Likewise, we force-disable coverage flags, since the installed compiler
 #   probably has never heard of them.
@@ -1539,11 +1539,11 @@ configure-target-[+module+]: maybe-all-target-newlib maybe-all-target-libgloss
 [+ ENDIF cxx +][+ ENDFOR lang_env_dependencies +]
 
 # There are two types of dependencies here: 'hard' dependencies, where one
-# module simply won't build without the other; and 'soft' dependencies, where
+# module simply will NOT build without the other; and 'soft' dependencies, where
 # if the depended-on module is missing, the depending module will do without
-# or find a substitute somewhere (perhaps installed).  Soft dependencies
-# are made here to depend on a 'maybe-' target.  If you're not sure,
-# it's safer to use a soft dependency.
+# or find a substitute somewhere (perhaps installed). Soft dependencies
+# are made here to depend on a 'maybe-' target. If you are not sure,
+# it is safer to use a soft dependency.
 
 [+ ;; These Scheme functions build the bulk of the dependencies.
    ;; dep-target builds a string like "maybe-all-MODULE_KIND-gcc",
@@ -1648,8 +1648,8 @@ ENDFOR host_modules +]
 GDB_TK = @GDB_TK@
 all-gdb: $(gdbnlmrequirements) $(GDB_TK)
 
-# Serialization dependencies.  Host configures don't work well in parallel to
-# each other, due to contention over config.cache.  Target configures and 
+# Serialization dependencies. Host configures do NOT work well in parallel to
+# each other, due to contention over config.cache. Target configures and 
 # build configures are similar.
 @serialization_dependencies@
 
@@ -1658,7 +1658,7 @@ all-gdb: $(gdbnlmrequirements) $(GDB_TK)
 # --------------------------------
 
 # Multilib.out tells target dirs what multilibs they should build.
-# There is really only one copy.  We use the 'timestamp' method to
+# There is really only one copy. We use the 'timestamp' method to
 # work around various timestamp bugs on some systems.
 # We use move-if-change so that it is only considered updated when it
 # actually changes, because it has to depend on a phony target.

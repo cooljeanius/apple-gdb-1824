@@ -6484,10 +6484,13 @@ cp ${srcdir}/Dbgconfigure ${srcdir}/Dbgconfigure.sh ${srcdir}/Dbg.h ${srcdir}/Db
 cp ${srcdir}/DbgMkfl.in ${tmpdir}/Makefile.in
 cp ${srcdir}/DbgMkfl.in ${tmpdir}
 cp ${srcdir}/DbgpkgInd.in ${tmpdir}
+OLD_CPP="${CPP}"
+unset CPP
   (cd ${tmpdir}; ${CONFIG_SHELL-/bin/sh} Dbgconfigure --with-tclinclude=`echo ${TCLHDIR} | sed -e 's/-I//'` ${dbg_config_flags})
-cp ${tmpdir}/config.status ./Dbgconfig.status
-cp ${tmpdir}/Dbg_cf.h .
-cp ${tmpdir}/DbgMkfl .
+CPP="${OLD_CPP}"
+test -e ${tmpdir}/config.status && cp -v ${tmpdir}/config.status ./Dbgconfig.status
+test -e ${tmpdir}/Dbg_cf.h && cp -v ${tmpdir}/Dbg_cf.h .
+test -e ${tmpdir}/DbgMkfl && cp -v ${tmpdir}/DbgMkfl .
 rm -rf ${tmpdir}
 test -n "${verbose}" && echo "configured Tcl debugger"
 
