@@ -47,7 +47,7 @@ includedir = @includedir@
 # This can be referenced by `INTLDEPS' as computed by CY_GNU_GETTEXT.
 top_builddir = .
 
-ACLOCAL_AMFLAGS = -I./m4 --install
+ACLOCAL_AMFLAGS = -I./m4 -I./gnulib/m4 -I./gnulib/import/m4 --install
 
 SHELL = @SHELL@
 EXEEXT = @EXEEXT@

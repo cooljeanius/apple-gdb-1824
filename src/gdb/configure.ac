@@ -765,6 +765,9 @@ AC_CHECK_HEADERS([CoreFoundation/CoreFoundation.h \
                   mach/thread_status.h mach-o/loader.h mach-o/nlist.h \
                   memory.h pc.h pthread.h rpc/rpc.h setjmp.h \
                   sys/uio.h sys/utsname.h])
+# The gnulib subdirectory needs this:
+gl_STDINT_H
+AC_SUBST([STDINT_H])
 
 # ------------------------- #
 # Checks for declarations.  #

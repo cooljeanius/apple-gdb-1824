@@ -24,7 +24,7 @@
 # Reproduce by: gnulib-tool --import --dir=. --lib=libgnu --source-base=import --m4-base=import/m4 --doc-base=doc --tests-base=tests --aux-dir=import/extra --no-conditional-dependencies --no-libtool --macro-prefix=gl --no-vc-files fnmatch-gnu frexpl inttypes memmem pathmax unistd update-copyright
 
 ACLOCAL_AMFLAGS = -I./m4 --install
-AUTOMAKE_OPTIONS = 1.5 gnits
+AUTOMAKE_OPTIONS = 1.5 gnits -Wall -Wno-obsolete
 
 SUBDIRS =
 noinst_HEADERS =

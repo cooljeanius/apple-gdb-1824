@@ -45,7 +45,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.5 gnu no-define])
+AM_INIT_AUTOMAKE([1.5 gnu no-define -Wall -Wno-obsolete])
 
 # --------------------- #
 # Checks for programs.  #
@@ -55,7 +55,11 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_RANLIB
 
+m4_ifdef([AM_PROG_AR],[
+AM_PROG_AR
+],[
 AC_CHECK_TOOL([AR],[ar])
+])
 
 # ---------------------- #
 # Checks for libraries.  #

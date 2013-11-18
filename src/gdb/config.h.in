@@ -1,5 +1,20 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Define to the number of bits in type 'ptrdiff_t'. */
+#undef BITSIZEOF_PTRDIFF_T
+
+/* Define to the number of bits in type 'sig_atomic_t'. */
+#undef BITSIZEOF_SIG_ATOMIC_T
+
+/* Define to the number of bits in type 'size_t'. */
+#undef BITSIZEOF_SIZE_T
+
+/* Define to the number of bits in type 'wchar_t'. */
+#undef BITSIZEOF_WCHAR_T
+
+/* Define to the number of bits in type 'wint_t'. */
+#undef BITSIZEOF_WINT_T
+
 /* Define to 1 if the compiler supports long long. */
 #undef CC_HAS_LONG_LONG
 
@@ -235,6 +250,9 @@
 /* Define if you have the iconv() function. */
 #undef HAVE_ICONV
 
+/* Define if your compiler supports the #include_next directive. */
+#undef HAVE_INCLUDE_NEXT
+
 /* Define to 1 if you have the `inet_ntoa' function. */
 #undef HAVE_INET_NTOA
 
@@ -329,7 +347,7 @@
 /* Define to 1 if you support file names longer than 14 characters. */
 #undef HAVE_LONG_FILE_NAMES
 
-/* Define to 1 if the system has the type `long long int'. */
+/* Define to 1 if the system has the type 'long long int'. */
 #undef HAVE_LONG_LONG_INT
 
 /* Define if <sys/procfs.h> has lwpid_t. */
@@ -568,6 +586,15 @@
 /* Define to 1 if you have the `sigaction' function. */
 #undef HAVE_SIGACTION
 
+/* Define to 1 if 'sig_atomic_t' is a signed integer type. */
+#undef HAVE_SIGNED_SIG_ATOMIC_T
+
+/* Define to 1 if 'wchar_t' is a signed integer type. */
+#undef HAVE_SIGNED_WCHAR_T
+
+/* Define to 1 if 'wint_t' is a signed integer type. */
+#undef HAVE_SIGNED_WINT_T
+
 /* Define to 1 if you have the `sigprocmask' function. */
 #undef HAVE_SIGPROCMASK
 
@@ -713,6 +740,9 @@
 /* Define to 1 if you have the `syscall' function. */
 #undef HAVE_SYSCALL
 
+/* Define to 1 if you have the <sys/bitypes.h> header file. */
+#undef HAVE_SYS_BITYPES_H
+
 /* Define to 1 if you have the <sys/debugreg.h> header file. */
 #undef HAVE_SYS_DEBUGREG_H
 
@@ -728,6 +758,9 @@
 
 /* Define to 1 if you have the <sys/filio.h> header file. */
 #undef HAVE_SYS_FILIO_H
+
+/* Define to 1 if you have the <sys/inttypes.h> header file. */
+#undef HAVE_SYS_INTTYPES_H
 
 /* Define to 1 if you have the <sys/ioctl.h> header file. */
 #undef HAVE_SYS_IOCTL_H
@@ -971,6 +1004,10 @@
 /* Define as the return type of ptrace. */
 #undef PTRACE_TYPE_RET
 
+/* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
+   'ptrdiff_t'. */
+#undef PTRDIFF_T_SUFFIX
+
 /* Define as the return type of signal handlers (`int' or `void'). */
 #undef RETSIGTYPE
 
@@ -979,6 +1016,14 @@
 
 /* Define to 1 if setgrp takes no argument (i.e. void) */
 #undef SETPGRP_VOID
+
+/* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
+   'sig_atomic_t'. */
+#undef SIG_ATOMIC_T_SUFFIX
+
+/* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
+   'size_t'. */
+#undef SIZE_T_SUFFIX
 
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be
@@ -1044,6 +1089,14 @@
 
 /* Version number of package */
 #undef VERSION
+
+/* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
+   'wchar_t'. */
+#undef WCHAR_T_SUFFIX
+
+/* Define to l, ll, u, ul, ull, etc., as suitable for constants of type
+   'wint_t'. */
+#undef WINT_T_SUFFIX
 
 /* Define if using the dmalloc debugging malloc package */
 #undef WITH_DMALLOC
