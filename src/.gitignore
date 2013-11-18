@@ -66,6 +66,5 @@ update.out
 update.sourceware
 
 # Too big to add at once; commit separately later:
-zlib/*
 include/mpw/CIncludes/*
 
