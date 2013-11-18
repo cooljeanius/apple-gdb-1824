@@ -15,16 +15,16 @@
 
 #ifndef _LIBC
 # include <config.h>
-#endif
+#endif /* !_LIBC */
 
 /* Enable GNU extensions in fnmatch.h.  */
 #ifndef _GNU_SOURCE
-# define _GNU_SOURCE    1
-#endif
+# define _GNU_SOURCE 1
+#endif /* !_GNU_SOURCE */
 
 #if ! defined __builtin_expect && __GNUC__ < 3
 # define __builtin_expect(expr, expected) (expr)
-#endif
+#endif /* !__builtin_expect && __GNUC__ < 3 */
 
 #include <fnmatch.h>
 
@@ -46,7 +46,7 @@
 #if defined _LIBC || WIDE_CHAR_SUPPORT
 # include <wctype.h>
 # include <wchar.h>
-#endif
+#endif /* _LIBC || WIDE_CHAR_SUPPORT */
 
 /* We need some of the locale data (the collation sequence information)
    but there is no interface to get this information in general.  Therefore
@@ -61,61 +61,61 @@
 # define mbsrtowcs __mbsrtowcs
 # define fnmatch __fnmatch
 extern int fnmatch (const char *pattern, const char *string, int flags);
-#endif
+#endif /* _LIBC */
 
 #ifndef SIZE_MAX
 # define SIZE_MAX ((size_t) -1)
-#endif
+#endif /* !SIZE_MAX */
 
 /* We often have to test for FNM_FILE_NAME and FNM_PERIOD being both set.  */
 #define NO_LEADING_PERIOD(flags) \
   ((flags & (FNM_FILE_NAME | FNM_PERIOD)) == (FNM_FILE_NAME | FNM_PERIOD))
 
-/* Comment out all this code if we are using the GNU C Library, and are not
-   actually compiling the library itself, and have not detected a bug
-   in the library.  This code is part of the GNU C
-   Library, but also included in many other GNU distributions.  Compiling
-   and linking in this code is a waste when using the GNU C library
-   (especially if it is a shared library).  Rather than having every GNU
-   program understand 'configure --with-gnu-libc' and omit the object files,
-   it is simpler to just do this in the source for each such file.  */
+/* ifdef out all this code if we are using the GNU C Library, and are not
+ * actually compiling the library itself, and have not detected a bug
+ * in the library. This code is part of the GNU C
+ * Library, but also included in many other GNU distributions. Compiling
+ * and linking in this code is a waste when using the GNU C library
+ * (especially if it is a shared library). Rather than having every GNU
+ * program understand 'configure --with-gnu-libc' and omit the object files,
+ * it is simpler to just do this in the source for each such file.  */
 
 #if defined _LIBC || !defined __GNU_LIBRARY__ || !HAVE_FNMATCH_GNU
 
 
 # if ! (defined isblank || (HAVE_ISBLANK && HAVE_DECL_ISBLANK))
 #  define isblank(c) ((c) == ' ' || (c) == '\t')
-# endif
+# endif /* !(isblank || (HAVE_ISBLANK && HAVE_DECL_ISBLANK)) */
 
 # define STREQ(s1, s2) (strcmp (s1, s2) == 0)
 
 # if defined _LIBC || WIDE_CHAR_SUPPORT
 /* The GNU C library provides support for user-defined character classes
-   and the functions from ISO C amendment 1.  */
+ * and the functions from ISO C amendment 1.  */
 #  ifdef CHARCLASS_NAME_MAX
 #   define CHAR_CLASS_MAX_LENGTH CHARCLASS_NAME_MAX
 #  else
-/* This shouldn't happen but some implementation might still have this
-   problem.  Use a reasonable default value.  */
+/* This should NOT happen but some implementation might still have this
+ * problem. Use a reasonable default value.  */
 #   define CHAR_CLASS_MAX_LENGTH 256
-#  endif
+#  endif /* CHARCLASS_NAME_MAX */
 
 #  ifdef _LIBC
 #   define IS_CHAR_CLASS(string) __wctype (string)
 #  else
 #   define IS_CHAR_CLASS(string) wctype (string)
-#  endif
+#  endif /* _LIBC */
 
 #  ifdef _LIBC
 #   define ISWCTYPE(WC, WT)     __iswctype (WC, WT)
 #  else
 #   define ISWCTYPE(WC, WT)     iswctype (WC, WT)
-#  endif
+#  endif /* _LIBC */
 
 #  if (HAVE_MBSTATE_T && HAVE_MBSRTOWCS) || _LIBC
 /* In this case we are implementing the multibyte character handling.  */
 #   define HANDLE_MULTIBYTE     1
-#  endif
+#  endif /* (HAVE_MBSTATE_T && HAVE_MBSRTOWCS) || _LIBC */
 
 # else
 #  define CHAR_CLASS_MAX_LENGTH  6 /* Namely, 'xdigit'.  */
@@ -127,19 +127,19 @@ extern int fnmatch (const char *pattern, const char *string, int flags);
     || STREQ (string, "space") || STREQ (string, "print")                     \
     || STREQ (string, "punct") || STREQ (string, "graph")                     \
     || STREQ (string, "cntrl") || STREQ (string, "blank"))
-# endif
+# endif /* _LIBC || WIDE_CHAR_SUPPORT */
 
 /* Avoid depending on library functions or files
-   whose names are inconsistent.  */
+ * whose names are inconsistent.  */
 
 /* Global variable.  */
 static int posixly_correct;
 
 # ifndef internal_function
-/* Inside GNU libc we mark some function in a special way.  In other
-   environments simply ignore the marking.  */
+/* Inside GNU libc we mark some function in a special way. In other
+ * environments simply ignore the marking.  */
 #  define internal_function
-# endif
+# endif /* !internal_function */
 
 /* Note that this evaluates C many times.  */
 # define FOLD(c) ((flags & FNM_CASEFOLD) ? tolower (c) : (c))
@@ -154,18 +154,23 @@ static int posixly_correct;
 #  define BTOWC(C)      __btowc (C)
 # else
 #  define BTOWC(C)      btowc (C)
-# endif
+# endif /* _LIBC */
 # define STRLEN(S) strlen (S)
 # define STRCAT(D, S) strcat (D, S)
 # ifdef _LIBC
 #  define MEMPCPY(D, S, N) __mempcpy (D, S, N)
 # else
 #  if HAVE_MEMPCPY
+#   ifndef mempcpy
+void *mempcpy(void *dst, const void *src, size_t len) {
+	return (void*)(((char*)memcpy(dst, src, len)) + len);
+}
+#   endif /* !mempcpy */
 #   define MEMPCPY(D, S, N) mempcpy (D, S, N)
 #  else
 #   define MEMPCPY(D, S, N) ((void *) ((char *) memcpy (D, S, N) + (N)))
-#  endif
-# endif
+#  endif /* HAVE_MEMPCPY */
+# endif /* _LIBC */
 # define MEMCHR(S, C, N) memchr (S, C, N)
 # include "fnmatch_loop.c"
 
@@ -191,18 +196,18 @@ static int posixly_correct;
 #    define MEMPCPY(D, S, N) wmempcpy (D, S, N)
 #   else
 #    define MEMPCPY(D, S, N) (wmemcpy (D, S, N) + (N))
-#   endif
-#  endif
+#   endif /* HAVE_WMEMPCPY */
+#  endif /* _LIBC */
 #  define MEMCHR(S, C, N) wmemchr (S, C, N)
 #  define WIDE_CHAR_VERSION 1
 
 #  undef IS_CHAR_CLASS
-/* We have to convert the wide character string in a multibyte string.  But
-   we know that the character class names consist of alphanumeric characters
-   from the portable character set, and since the wide character encoding
-   for a member of the portable character set is the same code point as
-   its single-byte encoding, we can use a simplified method to convert the
-   string to a multibyte character string.  */
+/* We have to convert the wide character string in a multibyte string. But
+ * we know that the character class names consist of alphanumeric characters
+ * from the portable character set, and since the wide character encoding
+ * for a member of the portable character set is the same code point as
+ * its single-byte encoding, we can use a simplified method to convert the
+ * string to a multibyte character string.  */
 static wctype_t
 is_char_class (const wchar_t *wcs)
 {
@@ -243,7 +248,7 @@ is_char_class (const wchar_t *wcs)
         default:
           return (wctype_t) 0;
         }
-#  endif
+#  endif /* _LIBC */
 
       /* Avoid overrunning the buffer.  */
       if (cp == s + CHAR_CLASS_MAX_LENGTH)
@@ -259,12 +264,12 @@ is_char_class (const wchar_t *wcs)
   return __wctype (s);
 #  else
   return wctype (s);
-#  endif
+#  endif /* _LIBC */
 }
 #  define IS_CHAR_CLASS(string) is_char_class (string)
 
 #  include "fnmatch_loop.c"
-# endif
+# endif /* HANDLE_MULTIBYTE */
 
 
 int
@@ -283,7 +288,7 @@ fnmatch (const char *pattern, const char *string, int flags)
       int res;
 
       /* Calculate the size needed to convert the strings to
-         wide characters.  */
+       * wide characters.  */
       memset (&ps, '\0', sizeof (ps));
       patsize = mbsrtowcs (NULL, &pattern, 0, &ps) + 1;
       if (__builtin_expect (patsize != 0, 1))
@@ -343,8 +348,10 @@ versioned_symbol (libc, __fnmatch, fnmatch, GLIBC_2_2_3);
 #  if SHLIB_COMPAT(libc, GLIBC_2_0, GLIBC_2_2_3)
 strong_alias (__fnmatch, __fnmatch_old)
 compat_symbol (libc, __fnmatch_old, fnmatch, GLIBC_2_0);
-#  endif
+#  endif /* SHLIB_COMPAT */
 libc_hidden_ver (__fnmatch, fnmatch)
-# endif
+# endif /* _LIBC */
 
 #endif  /* _LIBC or not __GNU_LIBRARY__.  */
+
+/* EOF */

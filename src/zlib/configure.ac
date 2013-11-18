@@ -11,6 +11,7 @@ AC_EXEEXT
 AC_SYS_LARGEFILE
 
 # Checks for programs.
+unset ARFLAGS
 AM_PROG_AR
 AM_PROG_AS
 AC_PROG_AWK

@@ -220,10 +220,12 @@ if test "$gcc" -eq 1 && ($cc -c $test.c) >> configure.log 2>&1; then
              LDSHARED=${LDSHARED-"$cc -dynamiclib -install_name $libdir/$SHAREDLIBM -compatibility_version $VER1 -current_version $VER3"}
              if libtool -V 2>&1 | grep Apple > /dev/null; then
                  AR="libtool"
+                 ARFLAGS="-o"
              else
                  AR="/usr/bin/libtool"
+                 ARFLAGS="-o"
              fi
-             ARFLAGS="-o" ;;
+             ;;
   *)             LDSHARED=${LDSHARED-"$cc -shared"} ;;
   esac
 else
