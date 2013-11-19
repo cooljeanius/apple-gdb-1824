@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-watchpoint.c
+ */
+
 #include "nextstep-nat-dyld.h"
 #include "nextstep-nat-inferior.h"
 #include "nextstep-nat-mutils.h"
@@ -18,22 +22,22 @@
 extern next_inferior_status *next_status;
 
 /* Our implementation of hardware watchpoints involves making memory
-   pages write-protected.  We must remember a page's original permissions,
-   and we must also know when it is appropriate to restore a page's
-   permissions to its original state.
-
-   We use a "dictionary" of hardware-watched pages to do this.  Each
-   hardware-watched page is recorded in the dictionary.  Each page's
-   dictionary entry contains the original permissions and a reference
-   count.  Pages are hashed into the dictionary by their start address.
-
-   When hardware watchpoint is set on page X for the first time, page X
-   is added to the dictionary with a reference count of 1.  If other
-   hardware watchpoints are subsequently set on page X, its reference
-   count is incremented.  When hardware watchpoints are removed from
-   page X, its reference count is decremented.  If a page's reference
-   count drops to 0, it's permissions are restored and the page's entry
-   is thrown out of the dictionary.
+ * pages write-protected. We must remember a page's original permissions,
+ * and we must also know when it is appropriate to restore a page's
+ * permissions to its original state.
+ *
+ * We use a "dictionary" of hardware-watched pages to do this. Each
+ * hardware-watched page is recorded in the dictionary. Each page's
+ * dictionary entry contains the original permissions and a reference
+ * count. Pages are hashed into the dictionary by their start address.
+ *
+ * When hardware watchpoint is set on page X for the first time, page X
+ * is added to the dictionary with a reference count of 1. If other
+ * hardware watchpoints are subsequently set on page X, its reference
+ * count is incremented. When hardware watchpoints are removed from
+ * page X, its reference count is decremented. If a page's reference
+ * count drops to 0, its permissions are restored and the page's entry
+ * is thrown out of the dictionary.
  */
 typedef struct memory_page
 {
@@ -68,7 +72,7 @@ require_memory_page_dictionary (void)
 {
   int i;
 
-  /* Is the memory page dictionary ready for use?  If so, we're done. */
+  /* Is the memory page dictionary ready for use? If so, we are done. */
   if (memory_page_dictionary.page_count >= (LONGEST) 0)
     return;
 
@@ -238,47 +242,48 @@ hppa_insert_hw_watchpoint (int pid, CORE_ADDR start, LONGEST len, int type)
     }
 
   /* Our implementation depends on seeing calls to kernel code, for the
-     following reason.  Here we ask to be notified of syscalls.
-
-     When a protected page is accessed by user code, HP-UX raises a SIGBUS.
-     Fine.
-
-     But when kernel code accesses the page, it doesn't give a SIGBUS.
-     Rather, the system call that touched the page fails, with errno=EFAULT.
-     Not good for us.
-
-     We could accomodate this "feature" by asking to be notified of syscall
-     entries & exits; upon getting an entry event, disabling page-protections;
-     upon getting an exit event, reenabling page-protections and then checking
-     if any watchpoints triggered.
-
-     However, this turns out to be a real performance loser.  syscalls are
-     usually a frequent occurrence.  Having to unprotect-reprotect all watched
-     pages, and also to then read all watched memory locations and compare for
-     triggers, can be quite expensive.
-
-     Instead, we'll only ask to be notified of syscall exits.  When we get
-     one, we'll check whether errno is set.  If not, or if it's not EFAULT,
-     we can just continue the inferior.
-
-     If errno is set upon syscall exit to EFAULT, we must perform some fairly
-     hackish stuff to determine whether the failure really was due to a
-     page-protect trap on a watched location.
+   * following reason. Here we ask to be notified of syscalls.
+   *
+   * When a protected page is accessed by user code, HP-UX raises a SIGBUS.
+   * Fine.
+   *
+   * But when kernel code accesses the page, it does NOT give a SIGBUS.
+   * Rather, the system call that touched the page fails, with errno=EFAULT.
+   * Not good for us.
+   *
+   * We could accomodate this "feature" by asking to be notified of syscall
+   * entries & exits; upon getting an entry event, disabling page-protections;
+   * upon getting an exit event, reenabling page-protections and then checking
+   * if any watchpoints triggered.
+   *
+   * However, this turns out to be a real performance loser. syscalls are
+   * usually a frequent occurrence. Having to unprotect-reprotect all watched
+   * pages, and also to then read all watched memory locations and compare for
+   * triggers, can be quite expensive.
+   *
+   * Instead, we shall only ask to be notified of syscall exits. When we get
+   * one, we shall check whether errno is set. If not, or if it is not EFAULT,
+   * we can just continue the inferior.
+   *
+   * If errno is set upon syscall exit to EFAULT, we must perform some fairly
+   * hackish stuff to determine whether the failure really was due to a
+   * page-protect trap on a watched location.
    */
 #if 0
-  if (dictionary_was_empty)
-    hppa_enable_syscall_events (pid);
-#endif
+	if (dictionary_was_empty) {
+		hppa_enable_syscall_events (pid);
+	}
+#endif /* 0 */
 
   return 1;
 }
 
 
 /* The address range beginning with START and ending with START+LEN-1
-   (inclusive) was being watched via page-protection by a watchpoint
-   which has been removed.  Remove protection for all pages that
-   overlap that range, which are not also being watched by other
-   watchpoints.
+ * (inclusive) was being watched via page-protection by a watchpoint
+ * which has been removed. Remove protection for all pages that
+ * overlap that range, which are not also being watched by other
+ * watchpoints.
  */
 int
 hppa_remove_hw_watchpoint (int pid, CORE_ADDR start, LONGEST len,
@@ -307,9 +312,9 @@ hppa_remove_hw_watchpoint (int pid, CORE_ADDR start, LONGEST len,
       page = get_dictionary_entry_of_page (pid, page_start);
       page->reference_count--;
 
-      /* Was this the last reference of this page?  If so, then we
-         must scrub the entry from the dictionary, and also restore
-         the page's original permissions.
+      /* Was this the last reference of this page? If so, then we
+       * must scrub the entry from the dictionary, and also restore
+       * the page's original permissions.
        */
       if (page->reference_count == 0)
 	remove_dictionary_entry_of_page (pid, page);
@@ -318,17 +323,18 @@ hppa_remove_hw_watchpoint (int pid, CORE_ADDR start, LONGEST len,
   dictionary_is_empty = (memory_page_dictionary.page_count == (LONGEST) 0);
 
   /* If write protections are currently disallowed, then that implies that
-     wait_for_inferior believes that the inferior is within a system call.
-     Since we want to see both syscall entry and return, it's clearly not
-     good to disable syscall events in this state!
-
-     ??rehrauer: Yeah, it'd be better if we had a specific flag that said,
-     "inferior is between syscall events now".  Oh well.
+   * wait_for_inferior believes that the inferior is within a system call.
+   * Since we want to see both syscall entry and return, it is clearly not
+   * good to disable syscall events in this state!
+   *
+   * ??rehrauer: Yeah, it would be better if we had a specific flag that said,
+   * "inferior is between syscall events now". Oh well.
    */
 #if 0
-  if (dictionary_is_empty && memory_page_dictionary.page_protections_allowed)
-    hppa_disable_syscall_events (pid);
-#endif
+	if (dictionary_is_empty && memory_page_dictionary.page_protections_allowed) {
+		hppa_disable_syscall_events (pid);
+	}
+#endif /* 0 */
 
   return 1;
 }
@@ -367,16 +373,16 @@ next_mach_range_profitable_for_hw_watchpoint (int pid, CORE_ADDR start, LONGEST 
   LONGEST range_size_in_pages;
 
   /* ??rehrauer: For now, say that all addresses are potentially
-     profitable.  Possibly later we'll want to test the address
-     for "stackness"?
+   * profitable. Possibly later we will want to test the address
+   * for "stackness"?
    */
   range_is_stack_based = 0;
 
   /* If any page in the range is inaccessible, then we cannot
-     really use hardware watchpointing, even though our client
-     thinks we can.  In that case, it's actually an error to
-     attempt to use hw watchpoints, so we'll tell our client
-     that the range is "unprofitable", and hope that they listen...
+   * really use hardware watchpointing, even though our client
+   * thinks we can. In that case, it is actually an error to
+   * attempt to use hw watchpoints, so we shall tell our client
+   * that the range is "unprofitable", and hope that they listen...
    */
   range_is_accessible = 1;	/* Until proven otherwise. */
 
@@ -384,9 +390,9 @@ next_mach_range_profitable_for_hw_watchpoint (int pid, CORE_ADDR start, LONGEST 
   errno = 0;
   page_size = sysconf (_SC_PAGE_SIZE);
 
-  /* If we can't determine page size, we're hosed.  Tell our
-     client it's unprofitable to use hw watchpoints for this
-     range.
+  /* If we cannot determine page size, we are hosed. Tell our
+   * client it is unprofitable to use hw watchpoints for this
+   * range.
    */
   if (errno || (page_size <= 0))
     {
@@ -420,13 +426,13 @@ next_mach_range_profitable_for_hw_watchpoint (int pid, CORE_ADDR start, LONGEST 
     }
 
   return (!range_is_stack_based && range_is_accessible);
-#endif
+#endif /* 0 */
 
   return 1;
 }
 
 /* Given the starting address of a memory page, hash it to a bucket in
-   the memory page dictionary.
+ * the memory page dictionary.
  */
 static int
 get_dictionary_bucket_of_page (CORE_ADDR page_start)
@@ -440,9 +446,9 @@ get_dictionary_bucket_of_page (CORE_ADDR page_start)
 }
 
 /* Given a memory page's starting address, get (i.e., find an existing
-   or create a new) dictionary entry for the page.  The page will be
-   write-protected when this function returns, but may have a reference
-   count of 0 (if the page was newly-added to the dictionary).
+ * or create a new) dictionary entry for the page. The page will be
+ * write-protected when this function returns, but may have a reference
+ * count of 0 (if the page was newly-added to the dictionary).
  */
 static memory_page_t *
 get_dictionary_entry_of_page (int pid, CORE_ADDR page_start)
@@ -451,11 +457,11 @@ get_dictionary_entry_of_page (int pid, CORE_ADDR page_start)
   memory_page_t *page = NULL;
   memory_page_t *previous_page = NULL;
 
-  /* We're going to be using the dictionary now, than-kew. */
+  /* We are going to be using the dictionary now, than-kew. */
   require_memory_page_dictionary ();
 
-  /* Try to find an existing dictionary entry for this page.  Hash
-     on the page's starting address.
+  /* Try to find an existing dictionary entry for this page. Hash
+   * on the page's starting address.
    */
   bucket = get_dictionary_bucket_of_page (page_start);
   page = &memory_page_dictionary.buckets[bucket];
@@ -467,8 +473,8 @@ get_dictionary_entry_of_page (int pid, CORE_ADDR page_start)
       page = page->next;
     }
 
-  /* Did we find a dictionary entry for this page?  If not, then
-     add it to the dictionary now.
+  /* Did we find a dictionary entry for this page? If not, then
+   * add it to the dictionary now.
    */
   if (page == NULL)
     {
@@ -479,7 +485,7 @@ get_dictionary_entry_of_page (int pid, CORE_ADDR page_start)
       page->next = NULL;
       page->previous = NULL;
 
-      /* We'll write-protect the page now, if that's allowed. */
+      /* We shall write-protect the page now, if that is allowed. */
       page->original_permissions = write_protect_page (pid, page_start);
 
       /* Add the new entry to the dictionary. */
@@ -504,7 +510,7 @@ remove_dictionary_entry_of_page (int pid, memory_page_t *page)
   if (page->next != NULL)
     page->next->previous = page->previous;
 
-  /* Just in case someone retains a handle to this after it's freed. */
+  /* Just in case someone retains a handle to this after it is freed. */
   page->page_start = (CORE_ADDR) 0;
 
   memory_page_dictionary.page_count--;
@@ -525,7 +531,7 @@ int next_mach_remove_watchpoint (CORE_ADDR addr, size_t len, int type)
 int next_mach_stopped_by_watchpoint
 (struct target_waitstatus *w, int stop_signal, int stepped_after_stopped_by_watchpoint)
 {
-  return 
+  return
     ((w->kind == TARGET_WAITKIND_STOPPED)
      && (stop_signal == TARGET_EXC_BAD_ACCESS)
      && (! stepped_after_stopped_by_watchpoint)
@@ -538,3 +544,5 @@ _initialize_nextstep_nat_watchpoint (void)
   memory_page_dictionary.page_count = (LONGEST) - 1;
   memory_page_dictionary.page_protections_allowed = 1;
 }
+
+/* EOF */

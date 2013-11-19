@@ -1,4 +1,5 @@
-/* Target-vector operations for controlling win32 child processes, for GDB.
+/* winpdo-nat.c:
+   Target-vector operations for controlling win32 child processes, for GDB.
    Copyright 1995, 1996
    Free Software Foundation, Inc.
 
@@ -21,6 +22,16 @@
 
 /* by Steve Chamberlain, sac@cygnus.com */
 
+/* The term "winpdo" is very obscure, and the only things that seemed relevant
+ * that I could find while Googling for it were people in mailing lists
+ * referring to this file.
+ * Some URLs that might be of interest:
+ * http://cygwin.com/ml/gdb-patches/2007-11/msg00449.html
+ * http://cygwin.com/ml/gdb-patches/2007-11/msg00451.html
+ * http://permalink.gmane.org/gmane.comp.emulators.wine.devel/44457
+ * http://www.mail-archive.com/wine-devel@winehq.org/msg29696.html
+ */
+
 #include "defs.h"
 #include "frame.h"		/* required by inferior.h */
 #include "inferior.h"
@@ -40,16 +51,16 @@
 #include "gdbcmd.h"
 
 #if !defined NeXT_PDO
-#include <sys/param.h>
-#endif
+# include <sys/param.h>
+#endif /* !NeXT_PDO */
 
 #ifndef MAXPATHLEN
-#define MAXPATHLEN 1024
-#endif
+# define MAXPATHLEN 1024
+#endif /* !MAXPATHLEN */
 
 enum dirty_bits { READ_FROM_CHILD = 0, WRITE_TO_CHILD = -1};
 
-#define CONTEXT_DEBUGGER /* Hey, we're a debugger - we want it all! */ \
+#define CONTEXT_DEBUGGER /* Hey, we are a debugger - we want it all! */ \
        (CONTEXT_CONTROL | CONTEXT_INTEGER | CONTEXT_SEGMENTS | \
 		CONTEXT_FLOATING_POINT | CONTEXT_DEBUG_REGISTERS)
 
@@ -120,17 +131,17 @@ static SavedThreadInfo call_dummy_saved_thread = {{0},0, 0, 0, 0};
 
 
 /* This vector maps GDB's idea of a register's number into an address
-   in the win32 exception context vector. 
-
-   It also contains the bit mask needed to load the register in question.  
-
-   One day we could read a reg, we could inspect the context we
-   already have loaded, if it doesn't have the bit set that we need,
-   we read that set of registers in using GetThreadContext.  If the
-   context already contains what we need, we just unpack it. Then to
-   write a register, first we have to ensure that the context contains
-   the other regs of the group, and then we copy the info in and set
-   out bit. */
+ * in the win32 exception context vector.
+ *
+ * It also contains the bit mask needed to load the register in question.
+ *
+ * One day we could read a reg, we could inspect the context we
+ * already have loaded, if it does NOT have the bit set that we need,
+ * we read that set of registers in using GetThreadContext. If the
+ * context already contains what we need, we just unpack it. Then to
+ * write a register, first we have to ensure that the context contains
+ * the other regs of the group, and then we copy the info in and set
+ * out bit. */
 
 #if 0	/* replaced below: MVS */
 
@@ -143,7 +154,7 @@ struct regmappings
 
 static const struct regmappings  mappings[] =
 {
-#ifdef __PPC__
+# ifdef __PPC__
   {(char *) &context.Gpr0, CONTEXT_INTEGER},
   {(char *) &context.Gpr1, CONTEXT_INTEGER},
   {(char *) &context.Gpr2, CONTEXT_INTEGER},
@@ -224,8 +235,8 @@ static const struct regmappings  mappings[] =
   {(char *) &context.Ctr, CONTEXT_CONTROL},
 
   {(char *) &context.Xer, CONTEXT_INTEGER},
-  {0,0}, /* MQ, but there isn't one */
-#else
+  {0,0}, /* MQ, but there is NOT one */
+# else
   {(char *) &context.Eax, CONTEXT_INTEGER},
   {(char *) &context.Ecx, CONTEXT_INTEGER},
   {(char *) &context.Edx, CONTEXT_INTEGER},
@@ -250,127 +261,127 @@ static const struct regmappings  mappings[] =
   {&context.FloatSave.RegisterArea[5 * 10], CONTEXT_FLOATING_POINT},
   {&context.FloatSave.RegisterArea[6 * 10], CONTEXT_FLOATING_POINT},
   {&context.FloatSave.RegisterArea[7 * 10], CONTEXT_FLOATING_POINT},
-#endif
+# endif /* __PPC__ */
 };
 
 #else	/* new version: MVS */
 
 static const int mappings[] =
 {
-#ifdef __PPC__
-  (int) &((CONTEXT *) 0)->Gpr0, 
-  (int) &((CONTEXT *) 0)->Gpr1, 
-  (int) &((CONTEXT *) 0)->Gpr2, 
-  (int) &((CONTEXT *) 0)->Gpr3, 
-  (int) &((CONTEXT *) 0)->Gpr4, 
-  (int) &((CONTEXT *) 0)->Gpr5, 
-  (int) &((CONTEXT *) 0)->Gpr6, 
-  (int) &((CONTEXT *) 0)->Gpr7, 
+# ifdef __PPC__
+  (int) &((CONTEXT *) 0)->Gpr0,
+  (int) &((CONTEXT *) 0)->Gpr1,
+  (int) &((CONTEXT *) 0)->Gpr2,
+  (int) &((CONTEXT *) 0)->Gpr3,
+  (int) &((CONTEXT *) 0)->Gpr4,
+  (int) &((CONTEXT *) 0)->Gpr5,
+  (int) &((CONTEXT *) 0)->Gpr6,
+  (int) &((CONTEXT *) 0)->Gpr7,
 
-  (int) &((CONTEXT *) 0)->Gpr8, 
-  (int) &((CONTEXT *) 0)->Gpr9, 
-  (int) &((CONTEXT *) 0)->Gpr10, 
-  (int) &((CONTEXT *) 0)->Gpr11, 
-  (int) &((CONTEXT *) 0)->Gpr12, 
-  (int) &((CONTEXT *) 0)->Gpr13, 
-  (int) &((CONTEXT *) 0)->Gpr14, 
-  (int) &((CONTEXT *) 0)->Gpr15, 
+  (int) &((CONTEXT *) 0)->Gpr8,
+  (int) &((CONTEXT *) 0)->Gpr9,
+  (int) &((CONTEXT *) 0)->Gpr10,
+  (int) &((CONTEXT *) 0)->Gpr11,
+  (int) &((CONTEXT *) 0)->Gpr12,
+  (int) &((CONTEXT *) 0)->Gpr13,
+  (int) &((CONTEXT *) 0)->Gpr14,
+  (int) &((CONTEXT *) 0)->Gpr15,
 
-  (int) &((CONTEXT *) 0)->Gpr16, 
-  (int) &((CONTEXT *) 0)->Gpr17, 
-  (int) &((CONTEXT *) 0)->Gpr18, 
-  (int) &((CONTEXT *) 0)->Gpr19, 
-  (int) &((CONTEXT *) 0)->Gpr20, 
-  (int) &((CONTEXT *) 0)->Gpr21, 
-  (int) &((CONTEXT *) 0)->Gpr22, 
-  (int) &((CONTEXT *) 0)->Gpr23, 
+  (int) &((CONTEXT *) 0)->Gpr16,
+  (int) &((CONTEXT *) 0)->Gpr17,
+  (int) &((CONTEXT *) 0)->Gpr18,
+  (int) &((CONTEXT *) 0)->Gpr19,
+  (int) &((CONTEXT *) 0)->Gpr20,
+  (int) &((CONTEXT *) 0)->Gpr21,
+  (int) &((CONTEXT *) 0)->Gpr22,
+  (int) &((CONTEXT *) 0)->Gpr23,
 
-  (int) &((CONTEXT *) 0)->Gpr24, 
-  (int) &((CONTEXT *) 0)->Gpr25, 
-  (int) &((CONTEXT *) 0)->Gpr26, 
-  (int) &((CONTEXT *) 0)->Gpr27, 
-  (int) &((CONTEXT *) 0)->Gpr28, 
-  (int) &((CONTEXT *) 0)->Gpr29, 
-  (int) &((CONTEXT *) 0)->Gpr30, 
-  (int) &((CONTEXT *) 0)->Gpr31, 
+  (int) &((CONTEXT *) 0)->Gpr24,
+  (int) &((CONTEXT *) 0)->Gpr25,
+  (int) &((CONTEXT *) 0)->Gpr26,
+  (int) &((CONTEXT *) 0)->Gpr27,
+  (int) &((CONTEXT *) 0)->Gpr28,
+  (int) &((CONTEXT *) 0)->Gpr29,
+  (int) &((CONTEXT *) 0)->Gpr30,
+  (int) &((CONTEXT *) 0)->Gpr31,
 
-  (int) &((CONTEXT *) 0)->Fpr0, 
-  (int) &((CONTEXT *) 0)->Fpr1, 
-  (int) &((CONTEXT *) 0)->Fpr2, 
-  (int) &((CONTEXT *) 0)->Fpr3, 
-  (int) &((CONTEXT *) 0)->Fpr4, 
-  (int) &((CONTEXT *) 0)->Fpr5, 
-  (int) &((CONTEXT *) 0)->Fpr6, 
-  (int) &((CONTEXT *) 0)->Fpr7, 
+  (int) &((CONTEXT *) 0)->Fpr0,
+  (int) &((CONTEXT *) 0)->Fpr1,
+  (int) &((CONTEXT *) 0)->Fpr2,
+  (int) &((CONTEXT *) 0)->Fpr3,
+  (int) &((CONTEXT *) 0)->Fpr4,
+  (int) &((CONTEXT *) 0)->Fpr5,
+  (int) &((CONTEXT *) 0)->Fpr6,
+  (int) &((CONTEXT *) 0)->Fpr7,
 
-  (int) &((CONTEXT *) 0)->Fpr8, 
-  (int) &((CONTEXT *) 0)->Fpr9, 
-  (int) &((CONTEXT *) 0)->Fpr10, 
-  (int) &((CONTEXT *) 0)->Fpr11, 
-  (int) &((CONTEXT *) 0)->Fpr12, 
-  (int) &((CONTEXT *) 0)->Fpr13, 
-  (int) &((CONTEXT *) 0)->Fpr14, 
-  (int) &((CONTEXT *) 0)->Fpr15, 
+  (int) &((CONTEXT *) 0)->Fpr8,
+  (int) &((CONTEXT *) 0)->Fpr9,
+  (int) &((CONTEXT *) 0)->Fpr10,
+  (int) &((CONTEXT *) 0)->Fpr11,
+  (int) &((CONTEXT *) 0)->Fpr12,
+  (int) &((CONTEXT *) 0)->Fpr13,
+  (int) &((CONTEXT *) 0)->Fpr14,
+  (int) &((CONTEXT *) 0)->Fpr15,
 
-  (int) &((CONTEXT *) 0)->Fpr16, 
-  (int) &((CONTEXT *) 0)->Fpr17, 
-  (int) &((CONTEXT *) 0)->Fpr18, 
-  (int) &((CONTEXT *) 0)->Fpr19, 
-  (int) &((CONTEXT *) 0)->Fpr20, 
-  (int) &((CONTEXT *) 0)->Fpr21, 
-  (int) &((CONTEXT *) 0)->Fpr22, 
-  (int) &((CONTEXT *) 0)->Fpr23, 
+  (int) &((CONTEXT *) 0)->Fpr16,
+  (int) &((CONTEXT *) 0)->Fpr17,
+  (int) &((CONTEXT *) 0)->Fpr18,
+  (int) &((CONTEXT *) 0)->Fpr19,
+  (int) &((CONTEXT *) 0)->Fpr20,
+  (int) &((CONTEXT *) 0)->Fpr21,
+  (int) &((CONTEXT *) 0)->Fpr22,
+  (int) &((CONTEXT *) 0)->Fpr23,
 
-  (int) &((CONTEXT *) 0)->Fpr24, 
-  (int) &((CONTEXT *) 0)->Fpr25, 
-  (int) &((CONTEXT *) 0)->Fpr26, 
-  (int) &((CONTEXT *) 0)->Fpr27, 
-  (int) &((CONTEXT *) 0)->Fpr28, 
-  (int) &((CONTEXT *) 0)->Fpr29, 
-  (int) &((CONTEXT *) 0)->Fpr30, 
-  (int) &((CONTEXT *) 0)->Fpr31, 
+  (int) &((CONTEXT *) 0)->Fpr24,
+  (int) &((CONTEXT *) 0)->Fpr25,
+  (int) &((CONTEXT *) 0)->Fpr26,
+  (int) &((CONTEXT *) 0)->Fpr27,
+  (int) &((CONTEXT *) 0)->Fpr28,
+  (int) &((CONTEXT *) 0)->Fpr29,
+  (int) &((CONTEXT *) 0)->Fpr30,
+  (int) &((CONTEXT *) 0)->Fpr31,
 
 
-  (int) &((CONTEXT *) 0)->Iar, 
-  (int) &((CONTEXT *) 0)->Msr, 
-  (int) &((CONTEXT *) 0)->Cr, 
-  (int) &((CONTEXT *) 0)->Lr, 
-  (int) &((CONTEXT *) 0)->Ctr, 
+  (int) &((CONTEXT *) 0)->Iar,
+  (int) &((CONTEXT *) 0)->Msr,
+  (int) &((CONTEXT *) 0)->Cr,
+  (int) &((CONTEXT *) 0)->Lr,
+  (int) &((CONTEXT *) 0)->Ctr,
 
-  (int) &((CONTEXT *) 0)->Xer, 
-  0,0}, /* MQ, but there isn't one */
-#else
-  (int) &((CONTEXT *) 0)->Eax, 
-  (int) &((CONTEXT *) 0)->Ecx, 
-  (int) &((CONTEXT *) 0)->Edx, 
-  (int) &((CONTEXT *) 0)->Ebx, 
-  (int) &((CONTEXT *) 0)->Esp, 
-  (int) &((CONTEXT *) 0)->Ebp, 
-  (int) &((CONTEXT *) 0)->Esi, 
-  (int) &((CONTEXT *) 0)->Edi, 
-  (int) &((CONTEXT *) 0)->Eip, 
-  (int) &((CONTEXT *) 0)->EFlags, 
-  (int) &((CONTEXT *) 0)->SegCs, 
-  (int) &((CONTEXT *) 0)->SegSs, 
-  (int) &((CONTEXT *) 0)->SegDs, 
-  (int) &((CONTEXT *) 0)->SegEs, 
-  (int) &((CONTEXT *) 0)->SegFs, 
-  (int) &((CONTEXT *) 0)->SegGs, 
-  (int) &((CONTEXT *) 0)->FloatSave.RegisterArea[0 * 10], 
-  (int) &((CONTEXT *) 0)->FloatSave.RegisterArea[1 * 10], 
-  (int) &((CONTEXT *) 0)->FloatSave.RegisterArea[2 * 10], 
-  (int) &((CONTEXT *) 0)->FloatSave.RegisterArea[3 * 10], 
-  (int) &((CONTEXT *) 0)->FloatSave.RegisterArea[4 * 10], 
-  (int) &((CONTEXT *) 0)->FloatSave.RegisterArea[5 * 10], 
-  (int) &((CONTEXT *) 0)->FloatSave.RegisterArea[6 * 10], 
-  (int) &((CONTEXT *) 0)->FloatSave.RegisterArea[7 * 10], 
-#endif
+  (int) &((CONTEXT *) 0)->Xer,
+  0,0}, /* MQ, but there is NOT one */
+# else
+  (int) &((CONTEXT *) 0)->Eax,
+  (int) &((CONTEXT *) 0)->Ecx,
+  (int) &((CONTEXT *) 0)->Edx,
+  (int) &((CONTEXT *) 0)->Ebx,
+  (int) &((CONTEXT *) 0)->Esp,
+  (int) &((CONTEXT *) 0)->Ebp,
+  (int) &((CONTEXT *) 0)->Esi,
+  (int) &((CONTEXT *) 0)->Edi,
+  (int) &((CONTEXT *) 0)->Eip,
+  (int) &((CONTEXT *) 0)->EFlags,
+  (int) &((CONTEXT *) 0)->SegCs,
+  (int) &((CONTEXT *) 0)->SegSs,
+  (int) &((CONTEXT *) 0)->SegDs,
+  (int) &((CONTEXT *) 0)->SegEs,
+  (int) &((CONTEXT *) 0)->SegFs,
+  (int) &((CONTEXT *) 0)->SegGs,
+  (int) &((CONTEXT *) 0)->FloatSave.RegisterArea[0 * 10],
+  (int) &((CONTEXT *) 0)->FloatSave.RegisterArea[1 * 10],
+  (int) &((CONTEXT *) 0)->FloatSave.RegisterArea[2 * 10],
+  (int) &((CONTEXT *) 0)->FloatSave.RegisterArea[3 * 10],
+  (int) &((CONTEXT *) 0)->FloatSave.RegisterArea[4 * 10],
+  (int) &((CONTEXT *) 0)->FloatSave.RegisterArea[5 * 10],
+  (int) &((CONTEXT *) 0)->FloatSave.RegisterArea[6 * 10],
+  (int) &((CONTEXT *) 0)->FloatSave.RegisterArea[7 * 10],
+# endif /* __PPC__ */
 };
 
 #endif /* 0 */
 
 /* This vector maps the target's idea of an exception (extracted
-   from the DEBUG_EVENT structure) to GDB's idea. */
+ * from the DEBUG_EVENT structure) to GDB's idea. */
 
 struct xlate_exception
   {
@@ -394,7 +405,7 @@ static const struct xlate_exception
  * Error checking and reporting routines:
  */
 
-static void 
+static void
 PrintErrorFormatted (err)
      int err;
 {
@@ -403,9 +414,9 @@ PrintErrorFormatted (err)
   FormatMessage (FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
 		 NULL,
 		 err,
-		 MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), 
-		 (LPTSTR) &lpMessageBuffer, 
-		 0, 
+		 MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		 (LPTSTR) &lpMessageBuffer,
+		 0,
 		 NULL);
   fprintf (stderr, lpMessageBuffer);
   if (lpMessageBuffer[strlen (lpMessageBuffer) - 1] != '\n')
@@ -434,7 +445,7 @@ int isWin95()
         OSVERSIONINFO osvi;
         osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
         if (!CHECK(GetVersionEx(&osvi))) {
-            fprintf(stderr, "Can't determine operating system version.\n");
+            fprintf(stderr, "Cannot determine operating system version.\n");
             }
         else
             is95 = (osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS);
@@ -469,7 +480,7 @@ child_fetch_inferior_registers (int r)
   if (current_thread->context.ContextFlags == READ_FROM_CHILD)
     { /* need to read registers for this thread from the child */
       current_thread->context.ContextFlags = CONTEXT_DEBUGGER;
-      CHECK (GetThreadContext (current_thread->handle, 
+      CHECK (GetThreadContext (current_thread->handle,
 			       &current_thread->context));
     }
 
@@ -493,7 +504,7 @@ child_store_inferior_registers (int r)
   if (current_thread->context.ContextFlags == READ_FROM_CHILD)
     { /* need to read registers for this thread from the child */
       current_thread->context.ContextFlags = CONTEXT_DEBUGGER;
-      CHECK (GetThreadContext (current_thread->handle, 
+      CHECK (GetThreadContext (current_thread->handle,
 			       &current_thread->context));
     }
 
@@ -523,8 +534,8 @@ handle_load_dll (char *eventp)
 		     (char *) &dll_name_ptr,
 		     sizeof (dll_name_ptr), &done);
 
-  /* See if we could read the address of a string, and that the 
-     address isn't null. */
+  /* See if we could read the address of a string, and that the
+   * address is NOT null. */
 
   if (done == sizeof (dll_name_ptr) && dll_name_ptr)
     {
@@ -572,8 +583,8 @@ handle_load_dll (char *eventp)
 
       dos_path_to_unix_path (dll_name, unix_dll_name);
 
-      /* FIXME!! It would be nice to define one symbol which pointed to the 
-         front of the dll if we can't find any symbols. */
+      /* FIXME!! It would be nice to define one symbol which pointed to the
+       * front of the dll if we cannot find any symbols. */
 
       if (!(dll_basename = strrchr (dll_name, '\\')))
 	dll_basename = strrchr (dll_name, '/');
@@ -584,38 +595,38 @@ handle_load_dll (char *eventp)
 	  if (!(objfile_basename = strrchr (objfile->name, '\\')))
 	    objfile_basename = strrchr (objfile->name, '/');
 
-	  if (dll_basename && objfile_basename && 
+	  if (dll_basename && objfile_basename &&
 	      strcmp (dll_basename + 1, objfile_basename + 1) == 0)
 	    {
-	      printf_filtered ("%s (symbols previously loaded)\n", 
+	      printf_filtered ("%s (symbols previously loaded)\n",
 			       dll_basename + 1);
 	      return 1;
 	    }
 	}
 
       /* The symbols in a dll are offset by 0x1000, which is the
-	 the offset from 0 of the first byte in an image - because
-	 of the file header and the section alignment. 
-	 
-	 FIXME: Is this the real reason that we need the 0x1000 ? */
+	   * the offset from 0 of the first byte in an image - because
+	   * of the file header and the section alignment.
+       *
+	   * FIXME: Is this the real reason that we need the 0x1000 ? */
 
-      objfile = symbol_file_add (unix_dll_name, 0, 
+      objfile = symbol_file_add (unix_dll_name, 0,
 				 (int) event->u.LoadDll.lpBaseOfDll + 0x1000, 0,
 				 0, 0, 0, 0, 0);
 
       if (objfile->minimal_symbol_count == 0)
 	{
 	  prim_record_minimal_symbol
-	    (obsavestring (dll_basename + 1, strlen (dll_basename), 
+	    (obsavestring (dll_basename + 1, strlen (dll_basename),
 			  &objfile->symbol_obstack),
-	     (int) event->u.LoadDll.lpBaseOfDll + 0x1000, 
+	     (int) event->u.LoadDll.lpBaseOfDll + 0x1000,
 	     mst_text, objfile);
 	  install_minimal_symbols (objfile);
 	}
 
       registers_changed ();
       current_thread->context.ContextFlags = READ_FROM_CHILD;
-      printf_filtered ("%x:%s\n", event->u.LoadDll.lpBaseOfDll, 
+      printf_filtered ("%x:%s\n", event->u.LoadDll.lpBaseOfDll,
 		       unix_dll_name);
     }
   return 1;
@@ -623,7 +634,7 @@ handle_load_dll (char *eventp)
 
 /* Function: handle_exception
  *
- * Returns: True if debugger should ignore exception (ie. continue), 
+ * Returns: True if debugger should ignore exception (ie. continue),
  *          False if debugger should stop for exception.
  */
 
@@ -634,55 +645,55 @@ typedef struct _ex_names {
 } ex_names;
 
 ex_names win32_exceptions[] = {
-  {EXCEPTION_ACCESS_VIOLATION,          "ACCESS_VIOLATION", 
-     TARGET_SIGNAL_SEGV}, 
-  {EXCEPTION_ARRAY_BOUNDS_EXCEEDED,     "ARRAY_BOUNDS_EXCEEDED", 
-     TARGET_SIGNAL_SEGV}, 
-  {EXCEPTION_BREAKPOINT,                "BREAKPOINT ", 
-     TARGET_SIGNAL_TRAP}, 
-  {EXCEPTION_DATATYPE_MISALIGNMENT,     "DATATYPE_MISALIGNMENT", 
-     TARGET_SIGNAL_SEGV}, 
-  {EXCEPTION_FLT_DENORMAL_OPERAND,      "FLT_DENORMAL_OPERAND", 
-     TARGET_SIGNAL_FPE}, 
-  {EXCEPTION_FLT_DIVIDE_BY_ZERO,        "FLT_DIVIDE_BY_ZERO", 
-     TARGET_SIGNAL_FPE}, 
-  {EXCEPTION_FLT_INEXACT_RESULT,        "FLT_INEXACT", 
-     TARGET_SIGNAL_FPE}, 
-  {EXCEPTION_FLT_INVALID_OPERATION,     "FLT_INVALID_OPERATION", 
-     TARGET_SIGNAL_FPE}, 
-  {EXCEPTION_FLT_OVERFLOW,              "FLT_OVERFLOW", 
-     TARGET_SIGNAL_FPE}, 
-  {EXCEPTION_FLT_STACK_CHECK,           "FLT_STACK_CHECK", 
-     TARGET_SIGNAL_FPE}, 
-  {EXCEPTION_FLT_UNDERFLOW,             "FLT_UNDERFLOW", 
-     TARGET_SIGNAL_FPE}, 
-  {EXCEPTION_GUARD_PAGE,                "GUARD_PAGE", 
-     TARGET_SIGNAL_SEGV}, 
-  {EXCEPTION_ILLEGAL_INSTRUCTION,       "ILLEGAL_INSTRUCTION", 
-     TARGET_SIGNAL_ILL}, 
-  {EXCEPTION_IN_PAGE_ERROR,             "IN_PAGE_ERROR", 
-     TARGET_SIGNAL_SEGV}, 
-  {EXCEPTION_INT_DIVIDE_BY_ZERO,        "INT_DIVIDE_BY_ZERO", 
-     TARGET_SIGNAL_FPE}, 
-  {EXCEPTION_INT_OVERFLOW,              "INT_OVERFLOW", 
-     TARGET_SIGNAL_FPE}, 
-  {EXCEPTION_INVALID_DISPOSITION,       "INVALID_DISPOSITION", 
-     TARGET_SIGNAL_UNKNOWN}, 
-  {EXCEPTION_NONCONTINUABLE_EXCEPTION , "NONCONTINUABLE_EXCEPTION", 
-     TARGET_SIGNAL_UNKNOWN}, 
-  {EXCEPTION_PRIV_INSTRUCTION,          "PRIV_INSTRUCTION", 
-     TARGET_SIGNAL_ILL}, 
-  {EXCEPTION_SINGLE_STEP,               "SINGLE_STEP", 
-     TARGET_SIGNAL_TRAP}, 
-  {EXCEPTION_STACK_OVERFLOW,            "STACK_OVERFLOW", 
-     TARGET_SIGNAL_SEGV}, 
-  {0x0000DEAD,                          "Mach", 
-     TARGET_SIGNAL_EMT}, 
-  {DBG_CONTROL_C,                       "CONTROL_C", 
-     TARGET_SIGNAL_INT}, 
-  {DBG_CONTROL_BREAK,                   "CONTROL_BREAK", 
-     TARGET_SIGNAL_INT}, 
-  {0, 					"Unknown", 
+  {EXCEPTION_ACCESS_VIOLATION,          "ACCESS_VIOLATION",
+     TARGET_SIGNAL_SEGV},
+  {EXCEPTION_ARRAY_BOUNDS_EXCEEDED,     "ARRAY_BOUNDS_EXCEEDED",
+     TARGET_SIGNAL_SEGV},
+  {EXCEPTION_BREAKPOINT,                "BREAKPOINT ",
+     TARGET_SIGNAL_TRAP},
+  {EXCEPTION_DATATYPE_MISALIGNMENT,     "DATATYPE_MISALIGNMENT",
+     TARGET_SIGNAL_SEGV},
+  {EXCEPTION_FLT_DENORMAL_OPERAND,      "FLT_DENORMAL_OPERAND",
+     TARGET_SIGNAL_FPE},
+  {EXCEPTION_FLT_DIVIDE_BY_ZERO,        "FLT_DIVIDE_BY_ZERO",
+     TARGET_SIGNAL_FPE},
+  {EXCEPTION_FLT_INEXACT_RESULT,        "FLT_INEXACT",
+     TARGET_SIGNAL_FPE},
+  {EXCEPTION_FLT_INVALID_OPERATION,     "FLT_INVALID_OPERATION",
+     TARGET_SIGNAL_FPE},
+  {EXCEPTION_FLT_OVERFLOW,              "FLT_OVERFLOW",
+     TARGET_SIGNAL_FPE},
+  {EXCEPTION_FLT_STACK_CHECK,           "FLT_STACK_CHECK",
+     TARGET_SIGNAL_FPE},
+  {EXCEPTION_FLT_UNDERFLOW,             "FLT_UNDERFLOW",
+     TARGET_SIGNAL_FPE},
+  {EXCEPTION_GUARD_PAGE,                "GUARD_PAGE",
+     TARGET_SIGNAL_SEGV},
+  {EXCEPTION_ILLEGAL_INSTRUCTION,       "ILLEGAL_INSTRUCTION",
+     TARGET_SIGNAL_ILL},
+  {EXCEPTION_IN_PAGE_ERROR,             "IN_PAGE_ERROR",
+     TARGET_SIGNAL_SEGV},
+  {EXCEPTION_INT_DIVIDE_BY_ZERO,        "INT_DIVIDE_BY_ZERO",
+     TARGET_SIGNAL_FPE},
+  {EXCEPTION_INT_OVERFLOW,              "INT_OVERFLOW",
+     TARGET_SIGNAL_FPE},
+  {EXCEPTION_INVALID_DISPOSITION,       "INVALID_DISPOSITION",
+     TARGET_SIGNAL_UNKNOWN},
+  {EXCEPTION_NONCONTINUABLE_EXCEPTION , "NONCONTINUABLE_EXCEPTION",
+     TARGET_SIGNAL_UNKNOWN},
+  {EXCEPTION_PRIV_INSTRUCTION,          "PRIV_INSTRUCTION",
+     TARGET_SIGNAL_ILL},
+  {EXCEPTION_SINGLE_STEP,               "SINGLE_STEP",
+     TARGET_SIGNAL_TRAP},
+  {EXCEPTION_STACK_OVERFLOW,            "STACK_OVERFLOW",
+     TARGET_SIGNAL_SEGV},
+  {0x0000DEAD,                          "Mach",
+     TARGET_SIGNAL_EMT},
+  {DBG_CONTROL_C,                       "CONTROL_C",
+     TARGET_SIGNAL_INT},
+  {DBG_CONTROL_BREAK,                   "CONTROL_BREAK",
+     TARGET_SIGNAL_INT},
+  {0, 					"Unknown",
      TARGET_SIGNAL_UNKNOWN}
 };
 
@@ -716,7 +727,7 @@ handle_exception (ex, ourstatus)
     {
       if (!pass_ctrlc)
 	current_process.continue_code = DBG_CONTINUE;
-      return 1;				/* don't signal */
+      return 1;				/* do NOT signal */
     }
 
   /* OK: decide whether to report the exception */
@@ -724,13 +735,13 @@ handle_exception (ex, ourstatus)
       !ex->dwFirstChance)		/* always report if not first chance */
     {					/* (see comment below) */
       target_terminal_ours ();
-      printf_filtered ("Program received %s Win32 Exception ", 
+      printf_filtered ("Program received %s Win32 Exception ",
 		       win32_exceptions[i].ename);
       if (win32_exceptions[i].eno == 0)	/* unknown (to us) exception */
 	printf_filtered ("(0x%08x) ",  ex->ExceptionRecord.ExceptionCode);
       printf_filtered ("at 0x%08x.\n", ex->ExceptionRecord.ExceptionAddress);
       if (ex->ExceptionRecord.ExceptionCode == EXCEPTION_ACCESS_VIOLATION)
-	printf_filtered ("\t(attempting to %s memory at 0x%08x)\n", 
+	printf_filtered ("\t(attempting to %s memory at 0x%08x)\n",
 			 ex->ExceptionRecord.ExceptionInformation[0] ?
 			 "write" : "read ",
 			 ex->ExceptionRecord.ExceptionInformation[1]);
@@ -738,10 +749,10 @@ handle_exception (ex, ourstatus)
 	{
 	  /* not first chance --
 	   * This means that all potential exception handlers (including
-	   * the debugger) have already had a chance at this exception, 
-	   * and no one has handled it.  The debugger is being given a
-	   * last chance to handle it.  Otherwise this will become a 
-	   * fatal exception to the child.  That's why we want to report
+	   * the debugger) have already had a chance at this exception,
+	   * and no one has handled it. The debugger is being given a
+	   * last chance to handle it. Otherwise this will become a
+	   * fatal exception to the child. That is why we want to report
 	   * it unconditionally.
 	   */
 	  printf_filtered ("\tWarning! Exception not handled by child.  ");
@@ -756,8 +767,8 @@ handle_exception (ex, ourstatus)
       !ex->dwFirstChance)
     {
       /*
-       * See comment above about first chance.  If we don't take this
-       * as a signal now, the child will unconditionally die.  Gdb's
+       * See comment above about first chance. If we do NOT take this
+       * as a signal now, the child will unconditionally die. Gdb's
        * built-in signal handling facilities may still choose to ignore it.
        */
       ourstatus->value.sig = sig;
@@ -788,7 +799,7 @@ AddThread (process, tHandle, tId, startAddr, priority)
   new->next      = process->threads;
   new->context.ContextFlags = READ_FROM_CHILD;
   process->threads = new;
-  
+
   add_thread (tId);	/* inform gdb core of this new thread */
 }
 
@@ -803,7 +814,7 @@ RemoveThread (process, threadId)
 
   /* Never remove the call dummy thread */
   if (threadId == call_dummy_saved_thread.dummythread.id) return;
-  
+
   if (threadId == process->threads->id)	/* special case -- first thread */
     {
       freeme = process->threads;
@@ -811,7 +822,7 @@ RemoveThread (process, threadId)
       process->threads = process->threads->next;
       free (freeme);
     }
-  else for (dontfreeme = process->threads; 
+  else for (dontfreeme = process->threads;
 	    dontfreeme != NULL;
 	    dontfreeme = dontfreeme->next)
     if (dontfreeme->next && dontfreeme->next->id == threadId)
@@ -893,17 +904,17 @@ CtrlC_Handler (DWORD opcode)
     }
 }
 
-/* Wait for child to do something.  Return pid of child, or -1 in case
-   of error; store status through argument pointer OURSTATUS.  */
+/* Wait for child to do something. Return pid of child, or -1 in case
+ * of error; store status through argument pointer OURSTATUS.  */
 
 static int
 child_wait (int pid, struct target_waitstatus *ourstatus)
 {
   /* We loop when we get a non-standard exception rather than return
-     with a SPURIOUS because resume can try and step or modify things,
-     which needs a current_thread->handle.  But some of these exceptions mark
-     the birth or death of threads, which mean that the current thread
-     isn't necessarily what you think it is. */
+   * with a SPURIOUS because resume can try and step or modify things,
+   * which needs a current_thread->handle. But some of these exceptions mark
+   * the birth or death of threads, which mean that the current thread
+   * is NOT necessarily what you think it is. */
 
   DEBUG_EVENT event;
   int db_ev;
@@ -928,14 +939,14 @@ child_wait (int pid, struct target_waitstatus *ourstatus)
 	  switch (event.dwDebugEventCode)
 	    {
 	    case CREATE_THREAD_DEBUG_EVENT:
-	      DEBUG_EVENTS (("gdb: kernel event for pid=%d tid=%d code=%s)\n", 
+	      DEBUG_EVENTS (("gdb: kernel event for pid=%d tid=%d code=%s)\n",
 			     event.dwProcessId, event.dwThreadId,
 			     "CREATE_THREAD_DEBUG_EVENT"));
               if (event.dwThreadId != call_dummy_saved_thread.dummythread.id)
-                AddThread (&current_process, 
-			event.u.CreateThread.hThread, 
-			event.dwThreadId, 
-			event.u.CreateThread.lpStartAddress, 
+                AddThread (&current_process,
+			event.u.CreateThread.hThread,
+			event.dwThreadId,
+			event.u.CreateThread.lpStartAddress,
 			0 /* Priority? */ );
 	      break;
 	    case EXIT_THREAD_DEBUG_EVENT:
@@ -951,9 +962,9 @@ child_wait (int pid, struct target_waitstatus *ourstatus)
 	      current_process.handle   = event.u.CreateProcessInfo.hProcess;
 	      current_process.id       = event.dwProcessId;
 	      current_process.priority = 0; /* ? */
-	      AddThread (&current_process, 
-			 event.u.CreateProcessInfo.hThread, 
-			 event.dwThreadId, 
+	      AddThread (&current_process,
+			 event.u.CreateProcessInfo.hThread,
+			 event.dwThreadId,
 			 event.u.CreateProcessInfo.lpStartAddress,
 			 0 /* priority? */);
 	      current_thread = current_process.threads;
@@ -972,7 +983,7 @@ child_wait (int pid, struct target_waitstatus *ourstatus)
 	          CHECK (CloseHandle (call_dummy_saved_thread.dummythread.handle));
                   memset(&call_dummy_saved_thread, 0, sizeof (call_dummy_saved_thread));
                   }
-                  
+
 	      CHECK (CloseHandle (current_process.handle));
 
 	      CHECK (ContinueDebugEvent (current_process.id,
@@ -990,7 +1001,7 @@ child_wait (int pid, struct target_waitstatus *ourstatus)
 			     "LOAD_DLL_DEBUG_EVENT"));
 	      catch_errors (handle_load_dll,
 			    (char*) &event,
-			   "\n[failed reading symbols from DLL]\n", 
+			   "\n[failed reading symbols from DLL]\n",
 			   RETURN_MASK_ALL);
 	      CHECK (CloseHandle (event.u.LoadDll.hFile));
 	      break;
@@ -1018,12 +1029,12 @@ child_wait (int pid, struct target_waitstatus *ourstatus)
 		  break;
 		}
 	      else
-#endif
+#endif /* 0 */
 		{
 		  if (!handle_exception (&event.u.Exception, ourstatus))
 		    {
 		      ourstatus->kind = TARGET_WAITKIND_STOPPED;
-		      if (current_thread->id != event.dwThreadId) 
+		      if (current_thread->id != event.dwThreadId)
 			switch_context (event.dwThreadId);
 		      goto child_wait_return;
 		    }
@@ -1036,7 +1047,7 @@ child_wait (int pid, struct target_waitstatus *ourstatus)
 		DEBUG_EVENTS (("gdb: output debug event for pid=%d tid=%d)\n",
 			       event.dwProcessId, event.dwThreadId));
 		if (target_read_string
-		    ((CORE_ADDR) event.u.DebugString.lpDebugStringData, 
+		    ((CORE_ADDR) event.u.DebugString.lpDebugStringData,
 		     &p, 1024, 0) && p && *p)
 		  {
 		    char *last = &p[strlen (p)];
@@ -1045,7 +1056,7 @@ child_wait (int pid, struct target_waitstatus *ourstatus)
 		      *last = '\0';	/* warning() provides newline */
 		    warning (p);
 		    free (p);
-		  }		   
+		  }
 		break;
 	      }
 	    default:
@@ -1056,11 +1067,11 @@ child_wait (int pid, struct target_waitstatus *ourstatus)
 	      break;
 	    }
 	  DEBUG_EVENTS (("ContinueDebugEvent (pid=%d, tid=%d, code=%d);\n",
-			 current_process.id, 
+			 current_process.id,
 			 current_process.eventThreadId,
 			 current_process.continue_code));
 	  CHECK (ContinueDebugEvent (current_process.id,
-				     current_process.eventThreadId, 
+				     current_process.eventThreadId,
 				     current_process.continue_code));
 	  current_process.haltedByDebugEvent = FALSE;
 	}
@@ -1102,7 +1113,7 @@ child_attach (args, from_tty)
   CHECK (ok = DebugActiveProcess (pid));
 
   if (!ok)
-    error ("Can't attach to process.");
+    error ("Cannot attach to process.");
 
   current_process.id = pid;
   exception_count = 0;
@@ -1156,14 +1167,14 @@ child_detach (args, from_tty)
 }
 
 
-/* Print status information about what we're accessing.  */
+/* Print status information about what we are accessing.  */
 
 static void
 child_files_info (ignore)
      struct target_ops *ignore;
 {
   printf_filtered ("\tUsing the running image of %s %s.\n",
-		   attach_flag ? "attached" : "child", 
+		   attach_flag ? "attached" : "child",
 		   target_pid_to_str (inferior_pid));
 }
 
@@ -1177,7 +1188,7 @@ child_open (arg, from_tty)
 }
 
 /* Convert a unix-style set-of-paths (a colon-separated list of directory
-   paths with forward slashes) into the dos style (semicolon-separated 
+   paths with forward slashes) into the dos style (semicolon-separated
    list with backward slashes), simultaneously undoing any translations
    performed by the mount table. */
 
@@ -1198,7 +1209,7 @@ unix_paths_to_dos_paths (char *newenv)
     return 0;
 
   /* Remove any PID supplied by us, so the child initializes
-     nicely. */
+   * nicely. */
   if (strncmp (newenv, "PID=", 4) == 0)
     {
       strcpy (buf, "PID=");
@@ -1222,7 +1233,7 @@ unix_paths_to_dos_paths (char *newenv)
 	  char *tok = strchr (src, ':');
 	  int doff = dir - buf;
 
-	  if (doff + MAX_PATH > blen) 
+	  if (doff + MAX_PATH > blen)
 	    {
 	      blen *= 2;
 	      buf = (char *) realloc ((void *) buf, blen);
@@ -1251,9 +1262,9 @@ unix_paths_to_dos_paths (char *newenv)
 }
 
 /* Convert a dos-style set-of-paths (a semicolon-separated list with
-   backward slashes) into the dos style (colon-separated list of
-   directory paths with forward slashes), simultaneously undoing any
-   translations performed by the mount table. */
+ * backward slashes) into the dos style (colon-separated list of
+ * directory paths with forward slashes), simultaneously undoing any
+ * translations performed by the mount table. */
 
 static char *
 dos_paths_to_unix_paths (char *newenv)
@@ -1285,8 +1296,8 @@ dos_paths_to_unix_paths (char *newenv)
 	{
 	  char *tok = strchr (src, ';');
 	  int doff = dir - buf;
-	  
-	  if (doff + MAX_PATH > blen) 
+
+	  if (doff + MAX_PATH > blen)
 	    {
 	      blen *= 2;
 	      buf = (char *) realloc ((void *) buf, blen);
@@ -1316,9 +1327,9 @@ dos_paths_to_unix_paths (char *newenv)
 
 
 /* Start an inferior win32 child process and sets inferior_pid to its pid.
-   EXEC_FILE is the file to run.
-   ALLARGS is a string containing the arguments to the program.
-   ENV is the environment vector to pass.  Errors reported with error().  */
+ * EXEC_FILE is the file to run.
+ * ALLARGS is a string containing the arguments to the program.
+ * ENV is the environment vector to pass. Errors reported with error().  */
 
 
 static void
@@ -1377,7 +1388,7 @@ child_create_inferior (exec_file, allargs, env)
   winenv = alloca (2 * envlen + 1);	/* allocate new buffer */
 
   /* copy env strings into new buffer */
-  for (temp = winenv, i = 0; env[i] && *env[i];     i++) 
+  for (temp = winenv, i = 0; env[i] && *env[i];     i++)
     {
       char *p = unix_paths_to_dos_paths (env[i]);
       strcpy (temp, p ? p : env[i]);
@@ -1439,7 +1450,7 @@ child_mourn_inferior ()
 void
 child_stop ()
 {
-  DEBUG_EVENTS (("gdb: GenerateConsoleCtrlEvent (CTRLC_EVENT, %d)\n", 
+  DEBUG_EVENTS (("gdb: GenerateConsoleCtrlEvent (CTRLC_EVENT, %d)\n",
 		 current_process.id));
   SuspendThreads (&current_process);
   registers_changed ();		/* refresh register state */
@@ -1457,7 +1468,7 @@ child_xfer_memory (CORE_ADDR memaddr, char *our, int len,
     {
       DEBUG_MEM (("gdb: write target memory, %d bytes at 0x%08x\n",
 		  len, memaddr));
-      if (!WriteProcessMemory (current_process.handle, 
+      if (!WriteProcessMemory (current_process.handle,
 			       (void *) memaddr, our, len, &done))
 	return -1;
       FlushInstructionCache (current_process.handle, (void *) memaddr, len);
@@ -1466,7 +1477,7 @@ child_xfer_memory (CORE_ADDR memaddr, char *our, int len,
     {
       DEBUG_MEM (("gdb: read target memory, %d bytes at 0x%08x\n",
 		  len, memaddr));
-      if (!ReadProcessMemory (current_process.handle, 
+      if (!ReadProcessMemory (current_process.handle,
 			      (void *) memaddr, our, len, &done))
 	return -1;
     }
@@ -1480,16 +1491,16 @@ child_kill_inferior (void)
   struct target_waitstatus dummy;
 
 #if 0
-  /* This loop doesn't work in all cases and seems not to be needed. The call to
-     TerminateThread() can hang both gdb and the inferior. Happens when gdb is
-     interrupted by PB and then a "kill" is issued. Also happens from the commandline
-     though not very frequently.
+  /* This loop does NOT work in all cases and seems not to be needed. The call to
+   * TerminateThread() can hang both gdb and the inferior. Happens when gdb is
+   * interrupted by PB and then a "kill" is issued. Also happens from the commandline
+   * though not very frequently.
    */
   for (thread = current_process.threads; thread; thread = thread->next)
     {
       CHECK (TerminateThread (thread->handle, 0));
     }
-#endif
+#endif /* 0 */
   CHECK (TerminateProcess (current_process.handle, 0));
   child_resume (current_process.id, 0, 0); /* wake up and die */
   child_wait (current_thread->id, &dummy);
@@ -1497,28 +1508,28 @@ child_kill_inferior (void)
 }
 
 #ifndef FLAG_TRACE_BIT
-#define FLAG_TRACE_BIT 0x100
-#endif
+# define FLAG_TRACE_BIT 0x100
+#endif /* !FLAG_TRACE_BIT */
 
 void
 child_resume (int pid, int step, enum target_signal signal)
 {
   DbgThread *thread;
 
-  DEBUG_EXEC (("gdb: child_resume (pid=%d, step=%d, signal=%d);\n", 
+  DEBUG_EXEC (("gdb: child_resume (pid=%d, step=%d, signal=%d);\n",
 	       pid, step, signal));
 
   if (step)
     {
 #ifdef __PPC__
       warning ("Single stepping not done.\n");
-#endif
+#endif /* __PPC__ */
 #ifdef i386
       /* Single step by setting t bit */
       child_fetch_inferior_registers (PS_REGNUM);
       current_thread->context.EFlags |= FLAG_TRACE_BIT;
       current_thread->context.ContextFlags = WRITE_TO_CHILD; /* will flush */
-#endif
+#endif /* i386 */
     }
 
 
@@ -1536,7 +1547,7 @@ child_resume (int pid, int step, enum target_signal signal)
 
   if (signal)
     {
-      fprintf_filtered (gdb_stderr, "Can't send signals to the child.\n");
+      fprintf_filtered (gdb_stderr, "Cannot send signals to the child.\n");
     }
 
   if (current_process.haltedByCtrlC)
@@ -1546,17 +1557,17 @@ child_resume (int pid, int step, enum target_signal signal)
     {
       if (call_dummy_saved_thread.oldthread &&
           call_dummy_saved_thread.dummythread.suspended) {
-        /* If we're using a call dummy, make sure it  gets started. */
+        /* If we are using a call dummy, make sure it  gets started. */
         CHECK(ResumeThread(call_dummy_saved_thread.dummythread.handle)==1);
         call_dummy_saved_thread.dummythread.suspended = 0;
         }
       DEBUG_EVENTS (("gdb: ContinueDebugEvent (pid=%d, tid=%d, code=%d);\n",
-		     current_process.id, 
+		     current_process.id,
 		     current_process.eventThreadId,
 		     signal ? current_process.continue_code : DBG_CONTINUE));
       CHECK (ContinueDebugEvent (current_process.id,
 				 current_process.eventThreadId,
-				 signal ? current_process.continue_code 
+				 signal ? current_process.continue_code
 					: DBG_CONTINUE));
       current_process.haltedByDebugEvent = FALSE;
       current_process.continue_code = DBG_CONTINUE;
@@ -1641,7 +1652,7 @@ set_pathstyle_dos (args, from_tty, c)
   if (info_verbose)
     printf_filtered ("Change dos_path_style to %s\n", dos ? "true":"false");
 
-  while (vector && *vector) 
+  while (vector && *vector)
     {
       if (dos)
 	thisvar = unix_paths_to_dos_paths (*vector);
@@ -1667,7 +1678,7 @@ char *enumlist[] = {
 
 #ifdef NeXT_PDO
 int RobinHoodHack = 1;
-#endif
+#endif /* NeXT_PDO */
 
 void
 _initialize_inftarg ()
@@ -1679,16 +1690,16 @@ _initialize_inftarg ()
   SetDebugErrorLevel (0);
 
   add_show_from_set
-    (add_set_cmd ("report-exception", class_support, var_zinteger, 
-		  (char *) &exception_report_severity, 
-		  "Set severity of WIN32 exceptions that will be reported:\n\t(0=all, 1=error|warn|info, 2=error|warn, 3=error, 4=none)\n", 
+    (add_set_cmd ("report-exception", class_support, var_zinteger,
+		  (char *) &exception_report_severity,
+		  "Set severity of WIN32 exceptions that will be reported:\n\t(0=all, 1=error|warn|info, 2=error|warn, 3=error, 4=none)\n",
 		       &setlist),
      &showlist);
 
   add_show_from_set
-    (add_set_cmd ("signal-exception", class_support, var_zinteger, 
-		       (char *) &exception_signal_severity, 
-		       "Set severity of WIN32 exceptions that will cause a signal:\n\t(0=all, 1=error|warn|info, 2=error|warn, 3=error, 4=none)\n", 
+    (add_set_cmd ("signal-exception", class_support, var_zinteger,
+		       (char *) &exception_signal_severity,
+		       "Set severity of WIN32 exceptions that will cause a signal:\n\t(0=all, 1=error|warn|info, 2=error|warn, 3=error, 4=none)\n",
 		       &setlist),
      &showlist);
 
@@ -1754,7 +1765,7 @@ _initialize_inftarg ()
   add_show_from_set
     (add_set_cmd ("robinhood", class_support, var_boolean,
 		  (char *)&RobinHoodHack,
-		  "*Special symbol loading for Microsoft Linker", 
+		  "*Special symbol loading for Microsoft Linker",
                   &setlist),
      &showlist);
   RobinHoodHack = 1;
@@ -1783,40 +1794,40 @@ global_gdbinit_dir ()
   return ret;
 }
 
-/* Code for creating a new thread within the inferior.  We create a new
+/* Code for creating a new thread within the inferior. We create a new
  * thread for the call dummy so that it can run without
  * interfering with the current thread if it is sitting in a system
  * call (such as WaitForMultipleObjects) which it is 90% of the time.
  */
 void create_call_dummy_thread()
 {
-  if (isWin95()) return;		// no CreateRemoteThread() in win95
+  if (isWin95()) return;		/* no CreateRemoteThread() in win95 */
 
-  /* Create the new thread if needed.  We have one extra thread that 
+  /* Create the new thread if needed. We have one extra thread that
    * we create and we reuse it for all call dummy invocations.
    */
   if (!call_dummy_saved_thread.dummythread.handle) {
     call_dummy_saved_thread.dummythread.handle = CreateRemoteThread(
                                 current_process.handle,
-                                (LPSECURITY_ATTRIBUTES)NULL, 	// default security
-                                4096,				// small stack
-                                0,				// start pc (ignored)
-                                0,				// start param (ignored)
-                                CREATE_SUSPENDED,		// don't run just yet
+                                (LPSECURITY_ATTRIBUTES)NULL, /* default security */
+                                4096,				/* small stack */
+                                0,				/* start pc (ignored) */
+                                0,				/* start param (ignored) */
+                                CREATE_SUSPENDED,	/* do NOT run just yet */
                                 &call_dummy_saved_thread.dummythread.id);
     CHECK(call_dummy_saved_thread.dummythread.handle);
-    call_dummy_saved_thread.dummythread.suspended = 1;  // so we'll start it up
+    call_dummy_saved_thread.dummythread.suspended = 1; /* so we will start it up */
     }
 
   /* Use this to make sure registers in thread struct are up to date */
   child_fetch_inferior_registers(0);
-  
+
   /* Save the old info */
   call_dummy_saved_thread.oldthread = current_thread;
   call_dummy_saved_thread.handle = current_thread->handle;
   call_dummy_saved_thread.id = current_thread->id;
   call_dummy_saved_thread.haltedByCtrlC = current_process.haltedByCtrlC;
-      
+
   /* replace the current thread with the call dummy thread */
   current_thread->id = call_dummy_saved_thread.dummythread.id;
   current_thread->handle = call_dummy_saved_thread.dummythread.handle;
@@ -1827,7 +1838,7 @@ void create_call_dummy_thread()
   current_thread->context.ContextFlags = WRITE_TO_CHILD;
   inferior_pid = current_thread->id;
 
-  /* Bump the old thread's suspend count so it doesn't run when we continue */
+  /* Bump the old thread's suspend count so it does NOT run when we continue */
   CHECK(SuspendThread(call_dummy_saved_thread.handle) != 0xffffffff);
 }
 
@@ -1857,27 +1868,29 @@ void destroy_call_dummy_thread()
   /* Put the call dummy thread to sleep */
   CHECK(SuspendThread(call_dummy_saved_thread.dummythread.handle) != 0xffffffff);
   call_dummy_saved_thread.dummythread.suspended = 1;
-  
+
   /* Resume the old thread */
   CHECK(ResumeThread(call_dummy_saved_thread.handle) != 0xffffffff);
   if (call_dummy_saved_thread.haltedByCtrlC)
     CHECK(ResumeThread(call_dummy_saved_thread.handle) != 0xffffffff);
-  
+
   call_dummy_saved_thread.oldthread = 0;
 }
 
 /* Check for a reasonable stopping point for the backtraces.
  * The symbol for the entry point for has been cached away in
- * the DbgThread structure.  Check to see if it
+ * the DbgThread structure. Check to see if it
  * is the same as the symbol for the frame's pc.
  */
 int frame_chain_valid(CORE_ADDR chain, struct frame_info *thisframe)
 {
   if ((!chain) || (!current_thread)) return 0;
-  
-  /* If we're in the same function as the entry point, quit. */
+
+  /* If we are in the same function as the entry point, quit. */
   if ((current_thread->startSym) &&
       (current_thread->startSym == lookup_minimal_symbol_by_pc(thisframe->pc)))
       return 0;
   return 1;
 }
+
+/* EOF */

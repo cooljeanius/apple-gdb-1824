@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-excthread.h
+ */
+
 #ifndef _GDB_NEXTSTEP_NAT_EXCTHREAD_H_
 #define _GDB_NEXTSTEP_NAT_EXCTHREAD_H_
 
@@ -48,3 +52,5 @@ void next_exception_thread_create (next_exception_thread_status *s, task_t task)
 void next_exception_thread_destroy (next_exception_thread_status *s);
 
 #endif /* _GDB_NEXTSTEP_NAT_SIGTHREAD_H_*/
+
+/* EOF */

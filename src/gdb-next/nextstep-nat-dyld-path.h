@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-dyld-path.h
+ */
+
 #ifndef _NEXTSTEP_NAT_DYLD_PATH_H_
 #define _NEXTSTEP_NAT_DYLD_PATH_H_
 
@@ -22,3 +26,5 @@ char *dyld_resolve_image
 void dyld_init_paths (dyld_path_info *d);
 
 #endif /* _NEXTSTEP_NAT_DYLD_PATH_H_ */
+
+/* EOF */

@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-dyld.c
+ */
+
 #include <unistd.h>
 #include <ctype.h>
 #include <mach/mach_types.h>
@@ -26,15 +30,15 @@
 #include "nextstep-nat-dyld-process.h"
 
 #if WITH_CFM
-#include "nextstep-nat-cfm.h"
+# include "nextstep-nat-cfm.h"
 #endif /* WITH_CFM */
 
 FILE *dyld_stderr = NULL;
 int dyld_debug_flag = 0;
 
-/* These two record where we actually found dyld.  We need to do this 
-   detection before we build all the data structures for shared libraries,
-   so we need to keep it around on the side. */
+/* These two record where we actually found dyld. We need to do this
+ * detection before we build all the data structures for shared libraries,
+ * so we need to keep it around on the side. */
 
 CORE_ADDR dyld_addr = 0;
 CORE_ADDR dyld_slide = 0;
@@ -84,7 +88,7 @@ const char
   case DYLD_INVALID_ARGUMENTS: return "DYLD_INVALID_ARGUMENTS";
   case DYLD_FAILURE: return "DYLD_FAILURE";
   default: return "[UNKNOWN]";
-  }  
+  }
 }
 
 const char
@@ -175,10 +179,10 @@ unsigned int lookup_dyld_value (const char *s)
 void
 next_init_addresses ()
 {
-  
+
   next_status->dyld_status.object_images = lookup_dyld_address ("object_images");
   next_status->dyld_status.library_images = lookup_dyld_address ("library_images");
-  next_status->dyld_status.state_changed_hook 
+  next_status->dyld_status.state_changed_hook
     = lookup_dyld_address ("gdb_dyld_state_changed");
 
   next_status->dyld_status.dyld_version = lookup_dyld_value ("gdb_dyld_version");
@@ -212,20 +216,20 @@ dyld_starts_here_p (vm_address_t addr)
   }
 
   /* If it is not readable, it is not dyld. */
-  
+
   if ((info.protection & VM_PROT_READ) == 0) {
-    return 0; 
+    return 0;
   }
 
   ret = vm_read (next_status->task, address, size, &data, &data_count);
 
   if (ret != KERN_SUCCESS) {
     ret = vm_deallocate (mach_task_self (), data, data_count);
-    return 0; 
+    return 0;
   }
 
-  /* If the vm region is too small to contain a mach_header, it also can't be
-     where dyld is loaded */
+  /* If the vm region is too small to contain a mach_header, it also cannot be
+   * where dyld is loaded */
 
   if (data_count < sizeof (struct mach_header)){
     ret = vm_deallocate (mach_task_self (), data, data_count);
@@ -256,7 +260,7 @@ dyld_starts_here_p (vm_address_t addr)
 /*
  * next_locate_dyld - This is set to the SOLIB_ADD
  *   macro in nm-nextstep.h, and called when have created the
- *   inferior and are about to run it.  It locates the dylinker 
+ *   inferior and are about to run it.  It locates the dylinker
  *   in the executable, and updates the dyld part of our data
  *   structures.
  */
@@ -274,37 +278,37 @@ next_locate_dyld (bfd *exec_bfd)
 
   CHECK_FATAL (next_status != NULL);
 
-  /* Find where dyld is located in this binary.  We proceed in three steps.  
-
-     First we read the load commands of the executable to find the objfile 
-     for the dylinker.  If we can't find the exec_bfd (for instance if you
-     do attach without pointing gdb at the executable), we default to
-     /usr/lib/dyld.
-
-     Then we find the default load address from the dylinker.
-
-     Finally we see if the dylinker is in fact loaded there, and
-     if not, look through the mapped regions until we find it. 
-  */
+  /* Find where dyld is located in this binary. We proceed in three steps.
+   *
+   * First we read the load commands of the executable to find the objfile
+   * for the dylinker. If we cannot find the exec_bfd (for instance if you
+   * do attach without pointing gdb at the executable), we default to
+   * /usr/lib/dyld.
+   *
+   * Then we find the default load address from the dylinker.
+   *
+   * Finally we see if the dylinker is in fact loaded there, and
+   * if not, look through the mapped regions until we find it.
+   */
 
   if (exec_bfd != NULL)
     {
       mdata = exec_bfd->tdata.mach_o_data;
       if (mdata == NULL)
 	error ("next_set_start_breakpoint: target data for exec bfd == NULL\n");
-      
-      for (i = 0; i < mdata->header.ncmds; i++) 
+
+      for (i = 0; i < mdata->header.ncmds; i++)
 	{
 	  struct bfd_mach_o_load_command *cmd = &mdata->commands[i];
-	  
+
 	  if (cmd->type == BFD_MACH_O_LC_LOAD_DYLINKER)
 	    {
 	      bfd_mach_o_dylinker_command *dcmd = &cmd->command.dylinker;
-	      
+
 	      dyld_name = xmalloc (dcmd->name_len + 1);
-	      
+
 	      bfd_seek (exec_bfd, dcmd->name_offset, SEEK_SET);
-	      if (bfd_bread (dyld_name, dcmd->name_len, exec_bfd) != dcmd->name_len) 
+	      if (bfd_bread (dyld_name, dcmd->name_len, exec_bfd) != dcmd->name_len)
 		{
 		  warning ("Unable to find library name for LC_LOAD_DYLINKER or LD_ID_DYLINKER command; ignoring");
 		  xfree (dyld_name);
@@ -318,36 +322,36 @@ next_locate_dyld (bfd *exec_bfd)
 	    }
 	}
     }
-  
-  /* If for some reason we can't find  the name, look for it with the
-     default name. */
-  
+
+  /* If for some reason we cannot find  the name, look for it with the
+   * default name. */
+
   if (dyld_name == NULL)
     dyld_name = "/usr/lib/dyld";
-  
-  /* Okay, we have found the name of the dylinker, now let's find the objfile 
-     associated with it... */
-  
+
+  /* Okay, we have found the name of the dylinker, now let us find the objfile
+   * associated with it... */
+
   got_default_address = 0;
-  
+
   ALL_OBJFILES (objfile)
     {
-      if (strcmp (dyld_name, objfile->name) == 0) 
+      if (strcmp (dyld_name, objfile->name) == 0)
 	{
-	  asection *text_section 
+	  asection *text_section
 	    = bfd_get_section_by_name (objfile->obfd, "LC_SEGMENT.__TEXT");
 	  dyld_default_addr = bfd_section_vma (objfile->obfd, text_section);
 	  got_default_address = 1;
 	  break;
 	}
     }
-  
+
   if (!got_default_address)
-    error ("next_set_start_breakpoint: Couldn't find address of dylinker: %s.",
+    error ("next_set_start_breakpoint: Could not find address of dylinker: %s.",
 	   dyld_name);
-  
-  /* Now let's see if dyld is at its default address: */
-  
+
+  /* Now let us see if dyld is at its default address: */
+
   if (dyld_starts_here_p (dyld_default_addr))
     {
       dyld_addr = dyld_default_addr;
@@ -362,31 +366,31 @@ next_locate_dyld (bfd *exec_bfd)
       vm_size_t size;
       mach_port_t object_name;
       task_t target_task = next_status->task;
-      
-      do 
+
+      do
 	{
-	  ret_val = vm_region (target_task, &test_addr, 
+	  ret_val = vm_region (target_task, &test_addr,
 			       &size, VM_REGION_BASIC_INFO,
-			       (vm_region_info_t) &info, &info_cnt, 
+			       (vm_region_info_t) &info, &info_cnt,
 			       &object_name);
-	  
+
 	  if (ret_val != KERN_SUCCESS) {
 	    /* Implies end of vm_region, usually. */
 	    break;
 	  }
-	  
+
 	  if (dyld_starts_here_p (test_addr))
 	    {
 	      dyld_addr = test_addr;
 	      dyld_slide = test_addr - dyld_default_addr;
 	      break;
 	    }
-	  
+
 	  test_addr += size;
-	  
+
 	} while (size != 0);
     }
-  
+
   if (old_cleanups)
     do_cleanups (old_cleanups);
 
@@ -400,7 +404,7 @@ next_set_start_breakpoint (bfd *exec_bfd)
   char *ns = NULL;
 
   asprintf (&ns, "%s%s", dyld_symbols_prefix, "gdb_dyld_state_changed");
- 
+
   next_locate_dyld (exec_bfd);
   next_init_addresses ();
 
@@ -441,7 +445,7 @@ void
 next_mach_add_shared_symbol_files ()
 {
   struct dyld_objfile_info *result = NULL;
- 
+
   CHECK_FATAL (next_status != NULL);
   result = &next_status->dyld_status.current_info;
 
@@ -498,7 +502,7 @@ next_init_dyld (struct next_dyld_thread_status *s, struct objfile *o)
 
   dyld_update_shlibs (s, &s->path_info, &previous_info, &s->current_info, &new_info);
   dyld_objfile_info_free (&previous_info);
- 
+
   dyld_objfile_info_copy (&s->current_info, &new_info);
   dyld_objfile_info_free (&new_info);
 
@@ -653,7 +657,7 @@ void dyld_info_read_raw
 
     nimages = extract_unsigned_integer (buf + size, 4);
     library_images_addr = extract_unsigned_integer (buf + size + 4, 4);
-   
+
     if (nimages > status->nlibrary_images) {
       error ("image specifies an invalid number of libraries (%d)", nimages);
     }
@@ -678,7 +682,7 @@ void dyld_info_read_raw
 
     nimages = extract_unsigned_integer (buf + size, 4);
     object_images_addr = extract_unsigned_integer (buf + size + 4, 4);
-   
+
     if (nimages > status->nobject_images) {
       error ("image specifies an invalid number of objects (%d)", nimages);
     }
@@ -741,7 +745,7 @@ extern int dyld_resolve_shlib_num
 
 static void
 map_shlib_numbers
-(char *args, void (*function) (struct dyld_path_info *, struct dyld_objfile_entry *, struct objfile *, const char *param), 
+(char *args, void (*function) (struct dyld_path_info *, struct dyld_objfile_entry *, struct objfile *, const char *param),
  struct dyld_path_info *d, struct dyld_objfile_info *info)
 {
   char *p, *p1, *val;
@@ -784,7 +788,7 @@ map_shlib_numbers
 	warning ("no shlib %d", num);
 
       (* function) (d, e, o, val);
-      
+
       p = p1;
     }
 }
@@ -812,7 +816,7 @@ void dyld_add_symbol_file_command (char *args, int from_tty)
 
   dyld_update_shlibs (&next_status->dyld_status, &next_status->dyld_status.path_info,
                       &original_info, &modified_info, &new_info);
-  
+
   dyld_objfile_info_copy (&next_status->dyld_status.current_info, &new_info);
 
   dyld_objfile_info_free (&original_info);
@@ -843,14 +847,14 @@ void dyld_remove_symbol_file_command (char *args, int from_tty)
 
   dyld_update_shlibs (&next_status->dyld_status, &next_status->dyld_status.path_info,
                       &original_info, &modified_info, &new_info);
-  
+
   dyld_objfile_info_copy (&next_status->dyld_status.current_info, &new_info);
 
   dyld_objfile_info_free (&original_info);
   dyld_objfile_info_free (&modified_info);
   dyld_objfile_info_free (&new_info);
 }
-        
+
 static void
 set_load_state_helper (struct dyld_path_info *d, struct dyld_objfile_entry *e, struct objfile *o, const char *arg)
 {
@@ -877,14 +881,14 @@ dyld_set_load_state_command (char *args, int from_tty)
 
   dyld_update_shlibs (&next_status->dyld_status, &next_status->dyld_status.path_info,
                       &original_info, &modified_info, &new_info);
-  
+
   dyld_objfile_info_copy (&next_status->dyld_status.current_info, &new_info);
 
   dyld_objfile_info_free (&original_info);
   dyld_objfile_info_free (&modified_info);
   dyld_objfile_info_free (&new_info);
 }
-        
+
 static void
 section_info_helper (struct dyld_path_info *d, struct dyld_objfile_entry *e, struct objfile *o, const char *arg)
 {
@@ -905,7 +909,7 @@ section_info_helper (struct dyld_path_info *d, struct dyld_objfile_entry *e, str
       NCFragContainerInfo container;
       struct cfm_parser *parser;
       unsigned long section_index;
-      
+
       parser = &next_status->cfm_status.parser;
 
       ret = cfm_fetch_connection_info (parser, e->cfm_connection, &connection);
@@ -940,13 +944,13 @@ section_info_helper (struct dyld_path_info *d, struct dyld_objfile_entry *e, str
             }
           ui_out_text (uiout, " is ");
           ui_out_field_string (uiout, "name", "unknown");
-#if 0
+# if 0
           if (p->objfile->obfd != abfd)
             {
               ui_out_text (uiout, " in ");
               ui_out_field_string (uiout, "filename", bfd_get_filename (p->bfd));
             }
-#endif
+# endif /* 0 */
           ui_out_text (uiout, "\n");
 
           ui_out_list_end (uiout); /* "section" */
@@ -963,7 +967,7 @@ dyld_section_info_command (char *args, int from_tty)
 {
   map_shlib_numbers (args, section_info_helper, &next_status->dyld_status.path_info, &next_status->dyld_status.current_info);
 }
-        
+
 
 static void
 info_cfm_command (char *args, int from_tty)
@@ -998,7 +1002,7 @@ show_shlib (char *args, int from_tty)
 {
   cmd_show_list (showshliblist, from_tty, "");
 }
-#endif
+#endif /* 0 */
 
 struct cmd_list_element *dyldlist = NULL;
 struct cmd_list_element *setshliblist = NULL;
@@ -1044,7 +1048,7 @@ _initialize_nextstep_nat_dyld ()
 
   add_cmd ("cfm", no_class, info_cfm_command, "Show current CFM state.", &infoshliblist);
   add_cmd ("raw-cfm", no_class, info_raw_cfm_command, "Show current CFM state.", &infoshliblist);
-  add_cmd ("dyld", no_class, info_dyld_command, "Show current DYLD state.", &infoshliblist);  
+  add_cmd ("dyld", no_class, info_dyld_command, "Show current DYLD state.", &infoshliblist);
 
   add_prefix_cmd ("sharedlibrary", no_class, not_just_help_class_command,
                   "Generic command for setting shlib settings.",
@@ -1058,42 +1062,42 @@ _initialize_nextstep_nat_dyld ()
                      (char *) &dyld_filter_events_flag,
                      "Set if GDB should filter shared library events to a minimal set.",
                      &setshliblist);
-  add_show_from_set (cmd, &showshliblist);                
+  add_show_from_set (cmd, &showshliblist);
 
-  cmd = add_set_cmd ("preload-libraries", class_obscure, var_boolean, 
+  cmd = add_set_cmd ("preload-libraries", class_obscure, var_boolean,
                      (char *) &dyld_preload_libraries_flag,
                      "Set if GDB should pre-load symbols for DYLD libraries.",
                      &setshliblist);
-  add_show_from_set (cmd, &showshliblist);                
+  add_show_from_set (cmd, &showshliblist);
 
-  cmd = add_set_cmd ("load-dyld-symbols", class_obscure, var_boolean, 
+  cmd = add_set_cmd ("load-dyld-symbols", class_obscure, var_boolean,
                      (char *) &dyld_load_dyld_symbols_flag,
                      "Set if GDB should load symbol information for the dynamic linker.",
                      &setshliblist);
   add_show_from_set (cmd, &showshliblist);
 
-  cmd = add_set_cmd ("load-dyld-shlib-symbols", class_obscure, var_boolean, 
+  cmd = add_set_cmd ("load-dyld-shlib-symbols", class_obscure, var_boolean,
                      (char *) &dyld_load_dyld_shlib_symbols_flag,
                      "Set if GDB should load symbol information for DYLD-based shared libraries.",
                      &setshliblist);
   deprecate_cmd (cmd, "set sharedlibrary load-rules");
   add_show_from_set (cmd, &showshliblist);
 
-  cmd = add_set_cmd ("load-cfm-shlib-symbols", class_obscure, var_boolean, 
+  cmd = add_set_cmd ("load-cfm-shlib-symbols", class_obscure, var_boolean,
                      (char *) &dyld_load_cfm_shlib_symbols_flag,
                      "Set if GDB should load symbol information for CFM-based shared libraries.",
                      &setshliblist);
   deprecate_cmd (cmd, "set sharedlibrary load-rules");
   add_show_from_set (cmd, &showshliblist);
 
-  cmd = add_set_cmd ("dyld-symbols-prefix", class_obscure, var_string, 
+  cmd = add_set_cmd ("dyld-symbols-prefix", class_obscure, var_string,
                      (char *) &dyld_symbols_prefix,
                      "Set the prefix that GDB should prepend to all symbols for the dynamic linker.",
                      &setshliblist);
   add_show_from_set (cmd, &showshliblist);
   dyld_symbols_prefix = xstrdup (dyld_symbols_prefix);
 
-  cmd = add_set_cmd ("always-read-from-memory", class_obscure, var_boolean, 
+  cmd = add_set_cmd ("always-read-from-memory", class_obscure, var_boolean,
                      (char *) &dyld_always_read_from_memory_flag,
                      "Set if GDB should always read loaded images from the inferior's memory.",
                      &setshliblist);
@@ -1124,12 +1128,12 @@ Example: To load only external symbols from all dyld-based system libraries, use
   cmd = add_set_cmd ("minimal-load-rules", class_support, var_string,
                      (char *) &dyld_minimal_load_rules,
                      "Set the minimal DYLD load rules.  These prime the main list.\n\
-gdb relies on some of these for proper functioning, so don't remove elements from it\n\
+gdb relies on some of these for proper functioning, so do not remove elements from it\n\
 unless you know what you are doing.",
                      &setshliblist);
   add_show_from_set (cmd, &showshliblist);
 
-  cmd = add_set_cmd ("debug-dyld", class_obscure, var_zinteger, 
+  cmd = add_set_cmd ("debug-dyld", class_obscure, var_zinteger,
                      (char *) &dyld_debug_flag,
                      "Set if printing dyld communication debugging statements.",
                      &setlist);

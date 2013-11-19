@@ -40,34 +40,34 @@ extern next_inferior_status *next_status;
 
 #if defined (TARGET_I386)
 
-#define THREAD_STATE i386_THREAD_STATE
-#define THREAD_STRUCT i386_thread_state_t
-#define THREAD_COUNT i386_THREAD_STATE_COUNT
+# define THREAD_STATE i386_THREAD_STATE
+# define THREAD_STRUCT i386_thread_state_t
+# define THREAD_COUNT i386_THREAD_STATE_COUNT
 
-#define TRACE_BIT_SET(s) ((s).eflags & 0x100UL)
-#define SET_TRACE_BIT(s) ((s).eflags |= 0x100UL)
-#define CLEAR_TRACE_BIT(s) ((s).eflags &= ~0x100UL)
+# define TRACE_BIT_SET(s) ((s).eflags & 0x100UL)
+# define SET_TRACE_BIT(s) ((s).eflags |= 0x100UL)
+# define CLEAR_TRACE_BIT(s) ((s).eflags &= ~0x100UL)
 
 #elif defined (TARGET_POWERPC)
 
-#define THREAD_STATE PPC_THREAD_STATE
-#define THREAD_STRUCT struct ppc_thread_state
-#define THREAD_COUNT PPC_THREAD_STATE_COUNT
+# define THREAD_STATE PPC_THREAD_STATE
+# define THREAD_STRUCT struct ppc_thread_state
+# define THREAD_COUNT PPC_THREAD_STATE_COUNT
 
-#define TRACE_BIT_SET(s) ((s).srr1 & 0x400UL)
-#define SET_TRACE_BIT(s) ((s).srr1 |= 0x400UL)
-#define CLEAR_TRACE_BIT(s) ((s).srr1 &= ~0x400UL)
+# define TRACE_BIT_SET(s) ((s).srr1 & 0x400UL)
+# define SET_TRACE_BIT(s) ((s).srr1 |= 0x400UL)
+# define CLEAR_TRACE_BIT(s) ((s).srr1 &= ~0x400UL)
 
 #else
-#error unknown architecture
-#endif
+# error unknown architecture
+#endif /* TARGET_foo */
 
 kern_return_t set_trace_bit (thread_t thread)
 {
   THREAD_STRUCT state;
   unsigned int state_count = THREAD_COUNT;
   kern_return_t	kret;
-    
+
   kret = thread_get_state (thread, THREAD_STATE, (thread_state_t) &state, &state_count);
   MACH_PROPAGATE_ERROR (kret);
 
@@ -104,7 +104,7 @@ void prepare_threads_after_stop (struct next_inferior_status *inferior)
   unsigned int nthreads = 0;
   kern_return_t kret;
   unsigned int i;
-  
+
   if (inferior->exception_status.saved_exceptions_stepping) {
     next_restore_exception_ports (inferior->task, &inferior->exception_status.saved_exceptions_step);
     inferior->exception_status.saved_exceptions_stepping = 0;
@@ -114,7 +114,7 @@ void prepare_threads_after_stop (struct next_inferior_status *inferior)
 
   kret = task_threads (inferior->task, &thread_list, &nthreads);
   MACH_CHECK_ERROR (kret);
-  
+
   for (i = 0; i < nthreads; i++) {
 
     ptid_t ptid;
@@ -130,7 +130,7 @@ void prepare_threads_after_stop (struct next_inferior_status *inferior)
     kret = clear_trace_bit (thread_list[i]);
     MACH_WARN_ERROR (kret);
   }
-  
+
   kret = vm_deallocate (task_self(), (vm_address_t) thread_list, (nthreads * sizeof (int)));
   MACH_WARN_ERROR (kret);
 }
@@ -142,7 +142,7 @@ void prepare_threads_before_run
   unsigned int nthreads = 0;
   kern_return_t kret;
   unsigned int i;
-  
+
   next_mach_check_new_threads ();
   prepare_threads_after_stop (inferior);
 
@@ -154,7 +154,7 @@ void prepare_threads_before_run
     struct thread_basic_info info;
     unsigned int info_count = THREAD_BASIC_INFO_COUNT;
     kern_return_t kret;
-    
+
     kret = thread_info (current, THREAD_BASIC_INFO, (thread_info_t) &info, &info_count);
     MACH_CHECK_ERROR (kret);
 
@@ -165,7 +165,7 @@ void prepare_threads_before_run
 
   kret = task_threads (inferior->task, &thread_list, &nthreads);
   MACH_CHECK_ERROR (kret);
-  
+
   for (i = 0; i < nthreads; i++)  {
 
     kret = clear_trace_bit (thread_list[i]);
@@ -174,7 +174,7 @@ void prepare_threads_before_run
 
       ptid_t ptid;
       struct thread_info *tp = NULL;
-      
+
       ptid = ptid_build (inferior->pid, 0, thread_list[i]);
       tp = find_thread_pid (ptid);
       CHECK_FATAL (tp != NULL);
@@ -186,7 +186,7 @@ void prepare_threads_before_run
 
   kret = vm_deallocate (task_self(), (vm_address_t) thread_list, (nthreads * sizeof (int)));
   MACH_CHECK_ERROR (kret);
-  
+
   if (step && stop_others) {
     set_trace_bit (current);
   }
@@ -239,7 +239,7 @@ void info_task_command (char *args, int from_tty)
 
   kern_return_t kret;
   unsigned int i;
-  
+
   kret = task_info (next_status->task, TASK_BASIC_INFO, (task_info_t) &info, &info_count);
   MACH_CHECK_ERROR (kret);
 
@@ -247,12 +247,12 @@ void info_task_command (char *args, int from_tty)
 
   kret = task_threads (next_status->task, &thread_list, &nthreads);
   MACH_CHECK_ERROR (kret);
-  
+
   printf_filtered ("The task has %lu threads:\n", (unsigned long) nthreads);
   for (i = 0; i < nthreads; i++) {
     print_thread_info (thread_list[i]);
   }
-  
+
   kret = vm_deallocate (task_self(), (vm_address_t) thread_list, (nthreads * sizeof (int)));
   MACH_CHECK_ERROR (kret);
 }
@@ -261,11 +261,11 @@ static thread_t parse_thread (char *tidstr)
 {
   int num;
   ptid_t ptid;
-  
+
   if (ptid_equal (inferior_ptid, null_ptid)) {
     error ("The program being debugged is not being run.");
   }
- 
+
  if (tidstr != NULL) {
 
     num = atoi (tidstr);
@@ -310,7 +310,7 @@ static void thread_resume_command (char *tidstr, int from_tty)
 
   thread = parse_thread (tidstr);
   kret = thread_resume (thread);
-  
+
   MACH_CHECK_ERROR (kret);
 }
 
@@ -329,3 +329,5 @@ _initialize_threads ()
   add_info ("task", info_task_command,
 	    "Get information on task.");
 }
+
+/* EOF */

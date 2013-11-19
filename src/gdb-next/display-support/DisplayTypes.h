@@ -1,3 +1,7 @@
+/*
+ * DisplayTypes.h
+ */
+
 #ifndef _GDB_DISPLAY_TYPES_H_
 #define _GDB_DISPLAY_TYPES_H_
 
@@ -11,9 +15,9 @@ typedef enum {
   DBG_STATE_INFERIOR_LOADED = 2,  /* inferior loaded */
   DBG_STATE_INFERIOR_EXITED = 3,  /* exited either normally or due to crash */
   /* For GUI issues; when logically running, user has issued an
-     explict run or continue command whereas the inferior will be
-     running for a next or step command, it won't be logically
-     running.  */
+   * explict run or continue command whereas the inferior will be
+   * running for a next or step command, it will NOT be logically
+   * running.  */
   DBG_STATE_INFERIOR_LOGICALLY_RUNNING = 4,
   DBG_STATE_INFERIOR_RUNNING = 5, /* running under control of the debugger */
   DBG_STATE_INFERIOR_STOPPED = 6  /* stopped at a breakpoint or due to attach */
@@ -42,3 +46,5 @@ typedef enum {
 } GdbOutputType;
 
 #endif /* _GDB_DISPLAY_TYPES_H_ */
+
+/* EOF */

@@ -1,0 +1,10 @@
+This folder contains outdated files from when the NeXTSTEP files were
+kept separate from the rest of the gdb files. As they are outdated, they
+most likely will fail to build. If you really want to try, though, you can
+try to configure with the gdb directory's configure script with:
+`./../gdb/configure`
+(with the same flags that you would pass if you were running it in the
+../gdb directory)
+It should generate a Makefile which will mostly make files in ../gdb, but
+occasionally it will try to make a file in this directory instead, if the
+names conflict. If that happens, be prepared for errors.

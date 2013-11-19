@@ -1,3 +1,7 @@
+/*
+ * ppc-next-nat-exec.c
+ */
+
 #include "ppc-reg.h"
 
 #include "defs.h"
@@ -31,8 +35,8 @@ static void validate_inferior_registers (int regno)
 }
 
 /* Read register values from the inferior process.
-   If REGNO is -1, do this for all registers.
-   Otherwise, REGNO specifies which register (so we can save time).  */
+ * If REGNO is -1, do this for all registers.
+ * Otherwise, REGNO specifies which register (so we can save time).  */
 
 void fetch_inferior_registers (int regno)
 {
@@ -93,8 +97,8 @@ void fetch_inferior_registers (int regno)
 }
 
 /* Store our register values back into the inferior.
-   If REGNO is -1, do this for all registers.
-   Otherwise, REGNO specifies which register (so we can save time).  */
+ * If REGNO is -1, do this for all registers.
+ * Otherwise, REGNO specifies which register (so we can save time).  */
 
 void store_inferior_registers (int regno)
 {
@@ -115,7 +119,7 @@ void store_inferior_registers (int regno)
 			    (thread_state_t) &gp_regs, GDB_PPC_THREAD_STATE_COUNT);
     MACH_CHECK_ERROR (ret);
   }
-  
+
   if ((regno == -1) || IS_FP_REGNUM (regno) || IS_FSP_REGNUM (regno)) {
     gdb_ppc_thread_fpstate_t fp_regs;
     kern_return_t ret;
@@ -134,3 +138,5 @@ void store_inferior_registers (int regno)
     MACH_CHECK_ERROR (ret);
   }
 }
+
+/* EOF */

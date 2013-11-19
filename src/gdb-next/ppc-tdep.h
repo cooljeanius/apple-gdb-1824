@@ -1,10 +1,14 @@
+/*
+ * ppc-tdep.h
+ */
+
 #ifndef __PPC_TDEP_H__
 #define __PPC_TDEP_H__
 
 #include "defs.h"
 
 /* Used in frameinfo, and passed to ppc_parse_instructions it means
-   keep looking as long as necessary... */
+ * keep looking as long as necessary... */
 #define INVALID_ADDRESS 0xffffffff
 
 struct type;
@@ -59,7 +63,7 @@ int ppc_use_struct_convention PARAMS ((int gccp, struct type *valtype));
 CORE_ADDR ppc_extract_struct_value_address PARAMS
   ((char regbuf[]));
 
-void ppc_extract_return_value PARAMS 
+void ppc_extract_return_value PARAMS
   ((struct type *valtype, char regbuf[], char *valbuf));
 
 CORE_ADDR ppc_skip_prologue PARAMS ((CORE_ADDR pc));
@@ -69,3 +73,5 @@ int ppc_frameless_function_invocation PARAMS ((struct frame_info *frame));
 int ppc_invalid_float PARAMS ((char *f, size_t len));
 
 #endif /* __PPC_TDEP_H__ */
+
+/* EOF */

@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-cfm-io.c
+ */
+
 #include "nextstep-nat-inferior.h"
 #include "nextstep-nat-mutils.h"
 
@@ -30,7 +34,7 @@ pef_load_library (const struct dyld_path_info *d, struct dyld_objfile_entry *e)
 	     bfd_get_filename (pbfd), bfd_get_target (pbfd));
     return pbfd;
   }
-  
+
   csection = bfd_get_section_by_name (pbfd, "code");
   if (csection == NULL) {
     warning ("Unable to find 'code' section in pef container \"%s\" at address 0x%lx for 0x%lx",
@@ -48,11 +52,11 @@ pef_load_library (const struct dyld_path_info *d, struct dyld_objfile_entry *e)
   symname = xmalloc (strlen (name) + strlen (".xSYM") + 1);
   sprintf (symname, "%s%s", name, ".xSYM");
   sbfd = bfd_openr (symname, "sym");
-#if 0
+# if 0
   if (sbfd == NULL) {
     warning ("unable to open \"%s\": %s", symname, bfd_errmsg (bfd_get_error ()));
   }
-#endif
+# endif /* 0 */
 
   for (i = 0; i < MAX_SECTIONS; i++) {
     addrs.other[i].name = NULL;
@@ -76,7 +80,7 @@ pef_load_library (const struct dyld_path_info *d, struct dyld_objfile_entry *e)
   addrs.other[1].name = "packed-data";
   addrs.other[1].addr = address + dsection->vma;
   addrs.other[1].sectindex = 1;
-  
+
   for (i = 2; i < MAX_SECTIONS; i++) {
     addrs.other[i].name = NULL;
     addrs.other[i].addr = address + csection->vma;
@@ -95,4 +99,6 @@ pef_load_library (const struct dyld_path_info *d, struct dyld_objfile_entry *e)
 
   return pbfd;
 }
-#endif
+#endif /* 0 (whole file, pretty much) */
+
+/* EOF */

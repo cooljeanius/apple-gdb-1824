@@ -1,3 +1,7 @@
+/*
+ * ppc-thread-status.h
+ */
+
 #ifndef _GDB_MACH_PPC_THREAD_STATUS_H_
 #define _GDB_MACH_PPC_THREAD_STATUS_H_
 
@@ -53,3 +57,5 @@ typedef struct gdb_ppc_vector_state gdb_ppc_thread_vpstate_t;
   (sizeof (gdb_ppc_thread_vpstate_t) / sizeof (unsigned int))
 
 #endif /* _GDB_MACH_PPC_THREAD_STATUS_H_ */
+
+/* EOF */

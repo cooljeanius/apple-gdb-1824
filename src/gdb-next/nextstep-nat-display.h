@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-display.h
+ */
+
 #ifndef _NEXTSTEP_NAT_DISPLAY_H_
 #define _NEXTSTEP_NAT_DISPLAY_H_
 
@@ -17,3 +21,5 @@ void print_sel_frame PARAMS ((int just_source));
 void print_selected_frame PARAMS (());
 
 #endif /* _NEXTSTEP_NAT_DISPLAY_H_ */
+
+/* EOF */

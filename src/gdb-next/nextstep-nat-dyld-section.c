@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-dyld-section.c
+ */
+
 #include "nextstep-nat-dyld-process.h"
 
 #include "nextstep-nat-dyld-info.h"
@@ -30,3 +34,5 @@ void dyld_update_section_tables (struct dyld_objfile_info *result, struct target
 void dyld_merge_section_tables (struct dyld_objfile_info *result)
 {
 }
+
+/* EOF */

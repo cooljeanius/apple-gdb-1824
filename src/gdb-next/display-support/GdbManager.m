@@ -1,3 +1,7 @@
+/*
+ * GdbManager.m
+ */
+
 #import <Foundation/Foundation.h>
 #import "GdbManager.h"
 
@@ -55,8 +59,8 @@
 }
 
 
-/* called from Gdb thread; returns nil if client doesn't support
-   the requested protocol. */
+/* called from Gdb thread; returns nil if client does NOT support
+ * the requested protocol. */
 
 - displayProviderForProtocol: (Protocol *) p
 {
@@ -94,3 +98,5 @@
 }
 
 @end
+
+/* EOF */

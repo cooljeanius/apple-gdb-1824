@@ -1,3 +1,7 @@
+/*
+ * GuiGdbManager.m
+ */
+
 #import "GuiGdbManager.h"
 #import "DisplayHooks.h"
 #import "GuiDisplayProvider_Protocol.h"
@@ -10,7 +14,7 @@
 
 #ifdef DEBUG
 FILE	*debug_stream;
-#endif
+#endif /* DEBUG */
 
 
 @implementation GdbCmd
@@ -73,20 +77,20 @@ useAnnotation:(BOOL)anno
 }
 @end
 
-//
-// To get started, the main thread sticks info into GuiGdbManager
-// which is then read by the Debugger Controller thead. GuiGdbManager,
-// in the main thread, waits until it is given a display provider
-// before it proceeds;
-// then it goes into command processing.
-//
+/*
+ * To get started, the main thread sticks info into GuiGdbManager
+ * which is then read by the Debugger Controller thead. GuiGdbManager,
+ * in the main thread, waits until it is given a display provider
+ * before it proceeds;
+ * then it goes into command processing.
+ */
 
-@implementation GuiGdbManager 
+@implementation GuiGdbManager
 
 - init
 {
     [super init];
-    
+
     controller = nil;
 
     cmdQLock = [[NSConditionLock alloc] init];
@@ -98,13 +102,13 @@ useAnnotation:(BOOL)anno
     DEBUG_INIT;
 #ifdef DEBUG
     debug_stream = stderr;
-#endif
+#endif /* DEBUG */
     startedCommandLoop = 0;
     executingCommand = nil;
     cmdOutput = [[NSMutableString stringWithString:@""] retain];
 
     synchLock = [[NSConditionLock alloc] init];
-    
+
     return self;
 }
 
@@ -119,7 +123,7 @@ useAnnotation:(BOOL)anno
 #define PROVIDER_NOT_AVAILABLE 0
 #define PROVIDER_AVAILABLE 1
 
-// called from controller thread; tells gdb thread a provider is available
+/* called from controller thread; tells gdb thread a provider is available */
 
 - (void) setDisplayProvider:(id)dP
 {
@@ -129,37 +133,39 @@ useAnnotation:(BOOL)anno
     DEBUG_PRINT("gdbManager: just set the provider  and unlocked\n");
 }
 
-//
-// called from gdb thread.
-//
-    
+/*
+ * called from gdb thread.
+ */
+
 - (int) establishConnection
 {
     NSDistantObject		*c;
     int				i;
-    
+
     fork_and_start_debugger_controller(self);
 
-    
+
     DEBUG_PRINT("gdbManager: waiting for the PROVIDER to become available\n");
-    
+
     [displayProviderLock lockWhenCondition: PROVIDER_AVAILABLE];
     [displayProviderLock unlock];
 
 #if 0
-    // Dec 1995: this workaround no longer needed
-    // workaround: the DO info for the display provider is valid
-    // for the other (controller) thread; we have to make correct
-    // for our thread.
+    /*
+	 * Dec 1995: this workaround no longer needed
+     * workaround: the DO info for the display provider is valid
+     * for the other (controller) thread; we have to make correct
+     * for our thread.
+	 */
     displayProvider = [(NSDistantObject *)displayProvider
         		  proxyWithProperConnection];
-#endif
-	
+#endif /* 0 */
+
     /* Now, we, the gdb thread, and the debugger controller will only
-       communicate via DO or the command queue. Most of our data
-       is now Read-Only so we don't use locks to access it.
+     * communicate via DO or the command queue. Most of our data
+     * is now Read-Only so we do NOT use locks to access it.
      */
-	
+
     for (i = 0; i < 10; i++) {
         c = [NSConnection
              rootProxyForConnectionWithRegisteredName: controllerConnectionName
@@ -175,10 +181,10 @@ useAnnotation:(BOOL)anno
     [c setProtocolForProxy:@protocol(DebuggerControllerInternal)];
     controller = (id<DebuggerControllerInternal>) c;
     [controller retain];
-    
+
 #if 1
     displayProvider = [[controller displayProvider] retain];
-#endif
+#endif /* 1 */
 
     DEBUG_PRINT("gdbManager: waitForClient: got client & controller DO connection\n");
     return 1;
@@ -201,10 +207,10 @@ useAnnotation:(BOOL)anno
 
 - (void) engageQueryHookFunction
 {
-    query_hook = tell_displayer_do_query;    
+    query_hook = tell_displayer_do_query;
     command_line_input_hook = tell_displayer_get_input;
 }
-    
+
 - (void) disengageHookFunctions
 {
     print_frame_info_listing_hook = NULL;
@@ -223,9 +229,9 @@ useAnnotation:(BOOL)anno
 }
 
 
-//
-// Implementation of the GdbManagerExecLock protocol
-//  
+/*
+ * Implementation of the GdbManagerExecLock protocol
+ */
 - (void) lockExecLock
 {
     [execLock lock];
@@ -252,8 +258,9 @@ useAnnotation:(BOOL)anno
         cmdQHead = newCmd;
     }
     else {
-        // we expect the cmd queue will be short;
-        // so just find the end each time
+        /* we expect the cmd queue will be short;
+         * so just find the end each time
+		 */
         while (cmd->next != nil) {
             cmd = cmd->next;
         }
@@ -281,30 +288,30 @@ useAnnotation:(BOOL)anno
 #define SYNC_AVAILABLE 0
 #define SYNC_COMPLETED 1
 
-// called by DebuggerController to setup for sync
+/* called by DebuggerController to setup for sync */
 - (void) setupForSynch
 {
    [synchLock lock];
 }
 
-// called by DebuggerController to wait until sync command is processed
+/* called by DebuggerController to wait until sync command is processed */
 - (void) waitForSynch
 {
     [synchLock lockWhenCondition:SYNC_COMPLETED];
     [synchLock unlockWithCondition:SYNC_AVAILABLE];
 }
 
-// called by us (self) when the sync command is processed- (void) synch
+/* called by us (self) when the sync command is processed- (void) synch */
 - (void) synch
 {
     [synchLock unlockWithCondition:SYNC_COMPLETED];
 }
 
-// execute a gdb command; assumes we have the exec lock
+/* execute a gdb command; assumes we have the exec lock */
 
 static int useTty = 0;
 
-// used to tell output hook if the data is annotated. 
+/* used to tell output hook if the data is annotated. */
 static int annotatedOutput = 0;
 
 static int
@@ -333,21 +340,21 @@ execute_command_for_PB (char *command)
     useTty = (int)[command useTty];
     old_verbose = info_verbose;
     info_verbose = 0;
-    
+
     wasError = catch_errors(execute_command_for_PB, (char *)cmd,
                             NULL, RETURN_MASK_ALL);
-    //execute_command_for_PB((char *)cmd);
-    
+    /*execute_command_for_PB((char *)cmd);*/
+
     info_verbose = old_verbose;
-    
+
     if ([command useAnnotation]) {
         annotation_level = 0;
         printf_unfiltered("\n\032\032annotation-end\n");
         annotatedOutput =  0;
     }
-    
+
     if (wasError) {
-       // fprintf(stderr, "Error occured processing DO command.\n");
+       /*fprintf(stderr, "Error occured processing DO command.\n");*/
     }
     fflush(stdout);
     fflush(stderr);
@@ -402,7 +409,7 @@ execute_command_for_PB (char *command)
 
     if ([str isEqual:@""])
         return;
-    
+
     NS_DURING {
         dp = [self
                 displayProviderForProtocol:@protocol(GuiDisplayProvider2)];
@@ -413,7 +420,7 @@ execute_command_for_PB (char *command)
         }
     }
     NS_HANDLER {
-        //EXCEPTION_MSG(@"outputFromGDB");
+        /*EXCEPTION_MSG(@"outputFromGDB");*/
         shut_down_display_system();
     }
     NS_ENDHANDLER;
@@ -433,18 +440,18 @@ execute_command_for_PB (char *command)
         }
     }
     else if (annotated) {
-        // treat errors just like normal output
+        /* treat errors just like normal output */
         [cmdOutput appendString:outputStr];
     }
     else {
-        // flush pending output
+        /* flush pending output */
         [self sendOutputToDisplayProvider:cmdOutput
                                      type:GDB_OUTPUT_STDOUT];
         [cmdOutput setString:@""];
 
-        // send errors
+        /* send errors */
         [self sendOutputToDisplayProvider:outputStr
-                                     type:GDB_OUTPUT_STDERR];          
+                                     type:GDB_OUTPUT_STDERR];
     }
 }
 
@@ -469,15 +476,15 @@ execute_command_for_PB (char *command)
 }
 
 /*
-  Called when gdb sends output and wants input which is not
-  part of the normal comamnd-prompt loop.
+ * Called when gdb sends output and wants input which is not
+ * part of the normal comamnd-prompt loop.
  */
 
 - (const char  *) waitForLineOfInput
 {
     GdbCmd	*command;
     const char	*cmdString;
-    
+
     /* send any buffered output to UI display */
     [self sendOutputToDisplayProvider:cmdOutput
                                  type:GDB_OUTPUT_STDOUT];
@@ -493,7 +500,7 @@ execute_command_for_PB (char *command)
 
     /* release command object */
     [command release];
-    
+
     return cmdString;
 }
 
@@ -504,23 +511,23 @@ execute_command_for_PB (char *command)
     int do_prompt = 0;
 
     prompt = get_prompt ();
-	
+
     DEBUG_PRINT ("in Command Loop\n");
 
     if (!startedCommandLoop) {
 	startedCommandLoop = 1;
 	[self engageQueryHookFunction];
     }
-    
 
-    // send out prompt
+
+    /* send out prompt */
     fputs_unfiltered (prompt, gdb_stdout);
     gdb_flush (gdb_stdout);
     do_prompt = 0;
 
     [self cleanupCommandState];
-    
-    // process cmds from server; will block waiting for cmds
+
+    /* process cmds from server; will block waiting for cmds */
     while (cmd = [self dequeueCmd]) {
 
         if ((++pool_num_times) >= POOL_RELEASE_MAX_TIMES) {
@@ -539,26 +546,25 @@ execute_command_for_PB (char *command)
               [self cleanupCommandState];
               [self endCommandWithTag:[cmd tag]];
               break;
-              
+
           case GDB_CMD_SYNC:
               [self synch];
               break;
           default:
-            //FIXME: report an error here
+            /* FIXME: report an error here */
             break;
-        } // end switch
-        
+        } /* end switch */
+
         if (do_prompt) {
-            // should endup calling our fputs_unfiltered_hook and
-            // get sent to PB
+            /* should endup calling our fputs_unfiltered_hook and
+             * get sent to PB
+			 */
             fputs_unfiltered (prompt, gdb_stdout);
             gdb_flush (gdb_stdout);
             do_prompt = 0;
             [self cleanupCommandState];
         }
-        
-
-    } // end while
+    } /* end while */
 }
 
 @end
@@ -568,6 +574,7 @@ static GuiGdbManager	*guiGdbManager;
 
 GdbManager * make_gui_gdb_manager()
 {
-     return (guiGdbManager = [[GuiGdbManager alloc] init]);       
+     return (guiGdbManager = [[GuiGdbManager alloc] init]);
 }
 
+/* EOF */

@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-dyld.h
+ */
+
 #ifndef _NEXTSTEP_NAT_DYLD_H_
 #define _NEXTSTEP_NAT_DYLD_H_
 
@@ -18,7 +22,7 @@ struct dyld_objfile_entry;
 #include "nextstep-nat-dyld-path.h"
 
 enum next_dyld_thread_state
-{ 
+{
   dyld_clear,
   dyld_initialized,
   dyld_started
@@ -65,3 +69,5 @@ void next_init_dyld_symfile (struct objfile *o);
 int next_dyld_update (int dyldonly);
 
 #endif /* _NEXTSTEP_NAT_DYLD_H_ */
+
+/* EOF */

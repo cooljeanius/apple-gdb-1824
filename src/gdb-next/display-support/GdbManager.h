@@ -1,17 +1,22 @@
+/*
+ * GdbManager.h
+ * (This is an Objective-C header; i.e. NOT just-plain-C)
+ */
+
 #include <Foundation/Foundation.h>
 
 #include "DisplayTypes.h"
 
 /* The GdbManager object holds info which allows gdb to
-   communicate with a DisplayProvider object. Subclasses
-   do most of the work. */
+ * communicate with a DisplayProvider object. Subclasses
+ * do most of the work. */
 
 @interface GdbManager : NSObject
 {
   /* When some state changes in the inferior, like the
-     current line number of frame, then Gdb needs to inform
-     a display provider of the change.  It implements the  
-     <ViewDisplayProvider> or <GuiDisplayProvider> protocol. */
+   * current line number of frame, then Gdb needs to inform
+   * a display provider of the change. It implements the
+   * <ViewDisplayProvider> or <GuiDisplayProvider> protocol. */
 
   id displayProvider;
   NSString *displayProviderConnectionName;
@@ -50,3 +55,5 @@
 - (int) establishConnection;
 
 @end
+
+/* EOF */

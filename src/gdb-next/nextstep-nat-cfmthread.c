@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-cfmthread.c
+ */
+
 #include "nextstep-nat-cfmthread.h"
 
 #include "defs.h"
@@ -49,3 +53,5 @@ void
 _initialize_nextstep_nat_cfmthread ()
 {
 }
+
+/* EOF */

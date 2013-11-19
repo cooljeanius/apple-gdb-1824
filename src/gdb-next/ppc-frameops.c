@@ -1,3 +1,7 @@
+/*
+ * ppc-frameops.c
+ */
+
 #include "ppc-reg.h"
 #include "ppc-frameops.h"
 
@@ -28,7 +32,7 @@ static void ppc_pop_dummy_frame PARAMS (());
 static void ppc_fill_region PARAMS
   ((CORE_ADDR addr, CORE_ADDR nwords, unsigned long value));
 
-static void ppc_frame_dummy_saved_regs PARAMS 
+static void ppc_frame_dummy_saved_regs PARAMS
   ((struct frame_info *frame, CORE_ADDR *saved_regs));
 
 extern int ppc_debug (const char *fmt, ...);
@@ -62,13 +66,13 @@ ppc_fill_region (addr, nwords, value)
 {
   CORE_ADDR i;
   unsigned char *buf;
-  
+
   unsigned int pagesize = 8192; /* child_get_pagesize (); */
   unsigned int pagewords = pagesize / 4;
 
   unsigned int bufwords = nwords;
   if (bufwords > pagewords) { bufwords = pagewords; }
-  
+
   CHECK_FATAL ((pagesize % 4) == 0);
   CHECK_FATAL ((addr % 4) == 0);
 
@@ -78,7 +82,7 @@ ppc_fill_region (addr, nwords, value)
   for (i = 0; (i < bufwords); i++) {
     store_unsigned_integer (buf + (i * 4), 4, value);
   }
-  
+
   i = 0;
   while (i < nwords) {
     unsigned int curwords = (nwords - i);
@@ -102,7 +106,7 @@ ppc_push_dummy_frame ()
   CORE_ADDR pc;
   char buf[4];
   /* to save registers[] while we muck about in the inferior */
-  unsigned char rdata [REGISTER_BYTES];	
+  unsigned char rdata [REGISTER_BYTES];
 
   /* save a copy of the inferior register data */
   target_fetch_registers (-1);
@@ -110,7 +114,7 @@ ppc_push_dummy_frame ()
 
   sp = read_sp ();
   ppc_debug ("ppc_push_dummy_frame: initial sp is 0x%lx\n", (unsigned long) sp);
-  ppc_debug ("ppc_push_dummy_frame: initial *sp is 0x%lx\n", 
+  ppc_debug ("ppc_push_dummy_frame: initial *sp is 0x%lx\n",
 	     (unsigned long) read_memory_unsigned_integer (sp, 4));
   if ((sp % MINIMUM_RECOMMENDED_STACK_ALIGNMENT) != 0) {
     warning ("stack pointer (0x%lx) is not aligned to a %d-byte boundary.",
@@ -128,12 +132,12 @@ ppc_push_dummy_frame ()
 	   "program counter (0x%lx) is not aligned to a %d-byte boundary.",
 	   (unsigned long) pc, MINIMUM_INSTRUCTION_ALIGNMENT);
   }
-  
+
   /* update %sp register first --- see Note 1 at top of file */
 
-  /* FIXME: We don't check if the stack really has this much space.
-     This is a problem on the ppc simulator (which only grants one page
-     (4096 bytes) by default.  */
+  /* FIXME: We do NOT check if the stack really has this much space.
+   * This is a problem on the ppc simulator (which only grants one page
+   * (4096 bytes) by default.  */
 
   newsp = sp - MINIMUM_FRAME_SIZE;
   CHECK_FATAL ((newsp % MINIMUM_STACK_ALIGNMENT) == 0);
@@ -149,18 +153,18 @@ ppc_push_dummy_frame ()
   /* write stack chain */
   store_address (buf, 4, sp);
   write_memory (newsp, buf, 4);
-  
+
   /* store register state */
   ppc_debug ("ppc_push_dummy_frame: allocating stack space for storing registers\n");
   ppc_stack_alloc (&newsp, &start, 0, REGISTER_BYTES);
 
   /* we assume this location in ppc_pop_dummy_frame () */
   CHECK_FATAL (start == (sp - DUMMY_REG_OFFSET));
-  ppc_debug ("ppc_push_dummy_frame: saving registers into range from 0x%lx to 0x%lx\n", 
+  ppc_debug ("ppc_push_dummy_frame: saving registers into range from 0x%lx to 0x%lx\n",
 	     (unsigned long) start, (unsigned long) (start + REGISTER_BYTES));
   write_memory (start, rdata, REGISTER_BYTES);
 
-  ppc_debug ("ppc_push_dummy_frame: stack pointer for dummy frame is 0x%lx\n", 
+  ppc_debug ("ppc_push_dummy_frame: stack pointer for dummy frame is 0x%lx\n",
 	     (unsigned long) newsp);
 
   /* need to update current_frame or do_registers_info() et. al. will break */
@@ -168,7 +172,7 @@ ppc_push_dummy_frame ()
 }
 
 /* pop a dummy frame */
-   
+
 static void ppc_pop_dummy_frame ()
 {
   struct frame_info *frame;
@@ -181,7 +185,7 @@ static void ppc_pop_dummy_frame ()
   CHECK_FATAL (prev != NULL);
 
   /* read register data */
-  ppc_debug ("pop_dummy_frame: restoring registers from range from 0x%lx to 0x%lx\n", 
+  ppc_debug ("pop_dummy_frame: restoring registers from range from 0x%lx to 0x%lx\n",
 	     (unsigned long) (prev->frame - DUMMY_REG_OFFSET), (unsigned long) prev->frame);
   read_memory (prev->frame - DUMMY_REG_OFFSET, registers, REGISTER_BYTES);
 
@@ -208,7 +212,7 @@ ppc_pop_frame ()
     ppc_pop_dummy_frame ();
     return;
   }
-  
+
   /* ensure that all registers are valid.  */
   target_fetch_registers (-1);
 
@@ -264,17 +268,17 @@ ppc_fix_call_dummy (char *dummy, CORE_ADDR pc, CORE_ADDR addr, int nargs, struct
 }
 
 /* Pass the arguments in either registers, or in the stack. In RS6000,
-   the first eight words of the argument list (that might be less than
-   eight parameters if some parameters occupy more than one word) are
-   passed in r3..r11 registers.  float and double parameters are
-   passed in fpr's, in addition to that. Rest of the parameters if any
-   are passed in user stack. There might be cases in which half of the
-   parameter is copied into registers, the other half is pushed into
-   stack.
-
-   If the function is returning a structure, then the return address is passed
-   in r3, then the first 7 words of the parametes can be passed in registers,
-   starting from r4. */
+ * the first eight words of the argument list (that might be less than
+ * eight parameters if some parameters occupy more than one word) are
+ * passed in r3..r11 registers. float and double parameters are
+ * passed in fpr's, in addition to that. Rest of the parameters if any
+ * are passed in user stack. There might be cases in which half of the
+ * parameter is copied into registers, the other half is pushed into
+ * stack.
+ *
+ * If the function is returning a structure, then the return address is passed
+ * in r3, then the first 7 words of the parametes can be passed in registers,
+ * starting from r4. */
 
 CORE_ADDR
 ppc_push_arguments (nargs, args, sp, struct_return, struct_addr)
@@ -308,7 +312,7 @@ ppc_push_arguments (nargs, args, sp, struct_return, struct_addr)
     memcpy (fargs, args, nargs * sizeof (struct value *));
     nfargs = nargs;
   }
-    
+
   /* float arguments are stored as doubles even if the function is
      prototyped to take a float */
 
@@ -318,11 +322,11 @@ ppc_push_arguments (nargs, args, sp, struct_return, struct_addr)
 
     if (TYPE_CODE (type) == TYPE_CODE_FLT) {
       if (TYPE_LENGTH (type) < TYPE_LENGTH (builtin_type_double)) {
-	fargs[argno] = value_cast (builtin_type_double, arg); 
+	fargs[argno] = value_cast (builtin_type_double, arg);
       }
     }
   }
-    
+
   arg_bytes_required = 0;
   for (argno = 0; argno < nfargs; argno++) {
     struct value *arg = fargs[argno];
@@ -340,7 +344,7 @@ ppc_push_arguments (nargs, args, sp, struct_return, struct_addr)
     }
   }
 
-  if (arg_bytes_required > 32) { 
+  if (arg_bytes_required > 32) {
     error ("function arguments too large (must be less than 32 bytes)");
   }
 
@@ -373,8 +377,8 @@ ppc_push_arguments (nargs, args, sp, struct_return, struct_addr)
       while (argbytes < len) {
 	*((int*) &registers[REGISTER_BYTE (GP0_REGNUM + cur_gpr)]) = 0;
 	CHECK_FATAL (cur_gpr <= 10);
-	memcpy (&registers[REGISTER_BYTE (GP0_REGNUM + cur_gpr)], 
-		((char *) VALUE_CONTENTS (arg)) + argbytes, 
+	memcpy (&registers[REGISTER_BYTE (GP0_REGNUM + cur_gpr)],
+		((char *) VALUE_CONTENTS (arg)) + argbytes,
 		(len - argbytes) > 4 ? 4 : len - argbytes);
 	cur_gpr++;
 	argbytes += 4;
@@ -409,19 +413,19 @@ ppc_stack_alloc (sp, start, argsize, len)
 	   (unsigned long) *sp, MINIMUM_STACK_ALIGNMENT);
   }
 
-  /* save link and argument area */ 
+  /* save link and argument area */
   linkbuf = alloca (LINK_AREA_SIZE + argsize);
-  if (linkbuf == NULL) { 
+  if (linkbuf == NULL) {
     fprintf (stderr, "ppc_stack_alloc: unable to alloc space to store link area\n");
     abort ();
   }
   read_memory (*sp, linkbuf, LINK_AREA_SIZE + argsize);
-  
+
   /* first expand stack frame --- see note 1 */
-  *sp = *sp - space;		
+  *sp = *sp - space;
   CHECK_FATAL ((*sp % MINIMUM_STACK_ALIGNMENT) == 0);
   write_register (SP_REGNUM, *sp);
-  
+
   /* zero new stack region */
   ppc_fill_region (*sp, space / 4, 0xfeebfeeb);
 
@@ -434,7 +438,7 @@ ppc_stack_alloc (sp, start, argsize, len)
   ppc_debug ("ppc_stack_alloc: allocated 0x%lx bytes from 0x%lx to 0x%lx\n",
 	     (unsigned long) space, (unsigned long) *start, (unsigned long) (*start + space));
   ppc_debug ("ppc_stack_alloc: new stack pointer is 0x%lx\n", (unsigned long) *sp) ;
-  
+
   return;
 }
 
@@ -447,7 +451,7 @@ ppc_frame_cache_saved_regs (frame)
   }
 
   frame_saved_regs_zalloc (frame);
-    
+
   ppc_frame_saved_regs (frame, frame->saved_regs);
 }
 
@@ -489,13 +493,13 @@ ppc_frame_saved_regs (frame, saved_regs)
     return;
   }
 
-  if (ppc_frame_cache_properties (frame, NULL)) { 
-    ppc_debug ("frame_initial_stack_address: unable to find properties of " 
+  if (ppc_frame_cache_properties (frame, NULL)) {
+    ppc_debug ("frame_initial_stack_address: unable to find properties of "
 	       "function containing 0x%lx\n", (unsigned long) frame->pc);
     return;
-  }    
+  }
   props = frame->extra_info->props;
-  CHECK_FATAL (props != NULL);  
+  CHECK_FATAL (props != NULL);
 
   /* record stored stack pointer */
   if (! props->frameless) {
@@ -521,17 +525,19 @@ ppc_frame_saved_regs (frame, saved_regs)
 
   /* fixme 32x64 'long int offset' */
 
-  if (props->saved_fpr >= 0) {						
-    for (i = props->saved_fpr; i < 32; i++) {				
+  if (props->saved_fpr >= 0) {
+    for (i = props->saved_fpr; i < 32; i++) {
       long int offset = props->fpr_offset + ((i - props->saved_fpr) * sizeof (FP_REGISTER_TYPE));
       saved_regs[FP0_REGNUM + i] = prev_sp + offset;
-    }									
-  }									
-									
-  if (props->saved_gpr >= 0) {						
-    for (i = props->saved_gpr; i < 32; i++) {				
+    }
+  }
+
+  if (props->saved_gpr >= 0) {
+    for (i = props->saved_gpr; i < 32; i++) {
       long int offset = props->gpr_offset + ((i - props->saved_gpr) * sizeof (REGISTER_TYPE));
       saved_regs[GP0_REGNUM + i] = prev_sp + offset;
-    }									
-  }									
+    }
+  }
 }
+
+/* EOF */

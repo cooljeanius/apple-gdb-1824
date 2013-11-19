@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-threads.h
+ */
+
 #ifndef __NEXTSTEP_NAT_THREADS_H__
 #define __NEXTSTEP_NAT_THREADS_H__
 
@@ -59,3 +63,4 @@ typedef struct condition gdb_cond_t;
 
 #endif /* __NEXTSTEP_NAT_THREADS_H__ */
 
+/* EOF */

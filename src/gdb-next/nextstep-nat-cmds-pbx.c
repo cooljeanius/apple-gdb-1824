@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-cmds-pbx.c
+ */
+
 #include "defs.h"
 #include "symtab.h"
 #include "symfile.h"
@@ -34,8 +38,8 @@ void pbx_switch_to_frame_number (int frame_number)
     }
 }
 
-/* 
-  state to save when restoring context or handling an error
+/*
+ * state to save when restoring context or handling an error
  */
 
 typedef struct {
@@ -93,7 +97,7 @@ void pbx_command_with_context_command (char *arg, int from_tty)
         thread_number = strtol(arg, &cp, 10);
         arg = cp;
     }
-    
+
     /* find stack frame number */
     while((*arg != '\000') && isblank(*arg))
         arg++;
@@ -102,7 +106,7 @@ void pbx_command_with_context_command (char *arg, int from_tty)
         frame_number = strtol(arg, &cp, 10);
         arg = cp;
     }
-    
+
     /* find start of command */
     while((*arg != '\000') && isblank(*arg))
         arg++;
@@ -142,11 +146,11 @@ void pbx_command_with_context_command (char *arg, int from_tty)
         pbx_switch_to_frame_number(frame_number);
     }
     if (cmd) {
-        printf_filtered ("\nContext: Thread %d : Frame %d :\n", 
+        printf_filtered ("\nContext: Thread %d : Frame %d :\n",
                          thread_number, frame_number);
         execute_command (cmd, from_tty);
     }
-    
+
     pbx_restore_context_state(&saved_state);
 }
 
@@ -166,7 +170,7 @@ pbx_stack_size_command(char *unused, int from_tty)
 }
 
 /* prints a simple backtrace of just function names; given
-   the start frame and the number of frames to print
+ * the start frame and the number of frames to print
  */
 
 void
@@ -175,7 +179,7 @@ pbx_backtrace_command(char *args, int from_tty)
     int			start_level;
     int			count_frames, level;
     struct frame_info	*fi, *start_fi;
-    
+
     if (!target_has_stack)
       error ("No stack.");
 
@@ -204,7 +208,7 @@ print_sel_frame (just_source)
 }
 
 /* Print info on the selected frame, including level number
-   but not source.  */
+ * but not source.  */
 
 void
 print_selected_frame ()
@@ -226,4 +230,6 @@ _XXXinitXXXialize_cmds_pbx ()
 
 }
 
-#endif
+#endif /* NOT_YET */
+
+/* EOF */

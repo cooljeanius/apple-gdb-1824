@@ -119,8 +119,8 @@ metrowerks_step_command (char *args, int from_tty)
   if (event_loop_p && async_exec && !target_can_async_p ())
     error ("Asynchronous execution not supported on this target.");
 
-  /* If we don't get a request of running in the bg, then we need
-     to simulate synchronous (fg) execution. */
+  /* If we do NOT get a request of running in the bg, then we need
+   * to simulate synchronous (fg) execution. */
   if (event_loop_p && !async_exec && target_can_async_p ())
     {
       async_disable_stdin ();

@@ -113,12 +113,12 @@ struct traceback_table {
 /* traceback_table (optional) extensions */
 
 /* Optional portions exist independently in the order presented below,
-   not as a structure or a union. Whether or not portions exist is
-   determinable from bit-fields within the fixed portion above. */
+ * not as a structure or a union. Whether or not portions exist is
+ * determinable from bit-fields within the fixed portion above. */
 
 /* The following is present only if fixedparams or floatparams are non
-   zero and it immediately follows the fixed portion of the traceback
-   table... */
+ * zero and it immediately follows the fixed portion of the traceback
+ * table... */
 
 /* Order and type encoding of parameters: */
 struct traceback_table_fixedparams {
@@ -132,7 +132,7 @@ struct traceback_table_fixedparams {
 
 #define PARAM_ENCODING(x, bit) /* yields xxx_PARAM as a function of "bit" */\
  ((((x)&(1UL<<(31UL-(bit++))))==0UL) /* values 0:31 (left-to-right). "bit" is */\
- ? FIXED_PARAM /* an L-value that's left incremented to */\
+ ? FIXED_PARAM /* an L-value that is left incremented to */\
  : ((((x)&(1UL<<(31UL-(bit++))))==0)/* the next bit position for the next */\
  ? SPFP_PARAM /* parameter. This will be 1 or 2 bit */\
  : DPFP_PARAM)) /* positions later. */
@@ -160,7 +160,7 @@ struct traceback_table_anchors {
 };				/* anchor is located (array STARTS here) */
 
 /* The following are present only if name_present (in flags2) in fixed
-   part is present... */
+ * part is present... */
 
 /* Routine name: */
 struct traceback_table_routine {
@@ -169,7 +169,7 @@ struct traceback_table_routine {
 };
 
 /* The following are present only if uses_alloca (in flags2) in fixed
-   part is present...*/
+ * part is present...*/
 
 /* Register auto storage when alloca() is used*/
 struct traceback_table_alloca {
@@ -177,7 +177,7 @@ struct traceback_table_alloca {
 };
 
 /* The following are present only if has_vec_info (in flags4) in fixed
-   part is present... */
+ * part is present... */
 
 /* Vector info: */
 struct traceback_table_vector {
@@ -199,3 +199,5 @@ struct traceback_table_vector {
 };
 
 #endif /* !__TRACEBACK__ */
+
+/* EOF */

@@ -1,3 +1,7 @@
+/*
+ * ppc-next-threads.h
+ */
+
 #ifndef _PPC_NEXT_THREADS_H_
 #define _PPC_NEXT_THREADS_H_
 
@@ -23,3 +27,5 @@
 #define CLEAR_TRACE_BIT (s) ((s).srr1 &= 0x400UL)
 
 #endif /* _PPC_NEXT_THREADS_H_ */
+
+/* EOF */

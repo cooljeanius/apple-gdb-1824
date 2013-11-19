@@ -1,3 +1,7 @@
+/*
+ * ppc-reg.h
+ */
+
 #define REGISTER_TYPE unsigned int
 #define FP_REGISTER_TYPE double
 #define VP_REGISTER_TYPE float
@@ -63,3 +67,4 @@
 
 #define REGISTER_BYTES (SIZE_GP_REGS + SIZE_FP_REGS + SIZE_VP_REGS + SIZE_SP_REGS)
 
+/* EOF */

@@ -1,3 +1,7 @@
+/*
+ * ppc-frameinfo.h
+ */
+
 #ifndef __PPC_FRAME_H__
 #define __PPC_FRAME_H__
 
@@ -30,13 +34,13 @@ typedef struct ppc_function_boundaries {
 
 typedef struct ppc_function_properties {
 
-  int offset;			/* This is the stack offset.  The
-				   tricky bit is that on the PPC you
-				   can EITHER move the SP first, and
-				   then save the registers OR save the
-				   registers and then move the SP.
-				   This offset is used to get the
-				   gpr_offset right in either case. */
+  int offset;	/* This is the stack offset. The
+				 * tricky bit is that on the PPC you
+				 * can EITHER move the SP first, and
+				 * then save the registers OR save the
+				 * registers and then move the SP.
+				 * This offset is used to get the
+				 * gpr_offset right in either case. */
 
   int saved_gpr;		/* smallest # of saved gpr */
   int saved_fpr;		/* smallest # of saved fpr */
@@ -47,19 +51,19 @@ typedef struct ppc_function_properties {
 
   char frameptr_used;		/* true if frame uses a frame pointer */
   int frameptr_reg;		/* frame pointer register number */
-  CORE_ADDR lr_saved;		/* 0 if the lr is not saved, otherwise 
-				   the pc at which it is saved. */
+  CORE_ADDR lr_saved; /* 0 if the lr is not saved, otherwise
+				       * the pc at which it is saved. */
   int lr_offset;		/* offset of saved lr */
-  CORE_ADDR lr_invalid;         /* if 0, then the prev. frame pc is
-				   either saved, or in the link
-				   register .  Otherwise, the insn
-				   which moves something else to the
-				   lr. */
-  CORE_ADDR lr_valid_again;     /* If lr_invalid != 0, then this is where
-				   the prev. frame pc gets moved BACK to the
-				   lr. */
-  int lr_reg;                   /* If lr_invalid is true, then this is the
-				   reg # where the lr is stored. */
+  CORE_ADDR lr_invalid; /* if 0, then the prev. frame pc is
+				         * either saved, or in the link
+				         * register. Otherwise, the insn
+				         * which moves something else to the
+						 * lr. */
+  CORE_ADDR lr_valid_again; /* If lr_invalid != 0, then this is where
+				             * the prev. frame pc gets moved BACK to the
+				             * lr. */
+  int lr_reg;    /* If lr_invalid is true, then this is the
+				  * reg # where the lr is stored. */
 
   char cr_saved;		/* true if condition register is saved */
   int cr_offset;		/* offset of saved cr */
@@ -80,7 +84,7 @@ void ppc_clear_function_boundaries PARAMS ((ppc_function_boundaries *boundaries)
 void ppc_clear_function_properties PARAMS ((ppc_function_properties *properties));
 
 int ppc_find_function_boundaries PARAMS
-  ((ppc_function_boundaries_request *request, 
+  ((ppc_function_boundaries_request *request,
     ppc_function_boundaries *reply));
 
 int ppc_frame_cache_boundaries PARAMS ((struct frame_info *frame, ppc_function_boundaries *bounds));
@@ -89,3 +93,5 @@ int ppc_frame_cache_properties PARAMS ((struct frame_info *frame, ppc_function_p
 
 int safe_read_memory_unsigned_integer (CORE_ADDR addr, int len, unsigned long *val);
 #endif /* __PPC_FRAME_H__ */
+
+/* EOF */

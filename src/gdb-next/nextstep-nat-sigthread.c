@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-sigthread.c
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -59,7 +63,7 @@ void next_signal_thread_create (next_signal_thread_status *s, int pid)
 {
   int fd[2];
   int ret;
- 
+
   ret = pipe (fd);
   CHECK_FATAL (ret == 0);
 
@@ -82,7 +86,7 @@ void next_signal_thread_destroy (next_signal_thread_status *s)
       delete_file_handler (s->receive_fd);
       close (s->receive_fd);
     }
-  if (s->transmit_fd > 0) 
+  if (s->transmit_fd > 0)
     close (s->transmit_fd);
 
   next_signal_thread_init (s);
@@ -170,9 +174,11 @@ _initialize_nextstep_nat_sigthread ()
   sigthread_stderr = fdopen (fileno (stderr), "w+");
   sigthread_stderr_re = fdopen (fileno (stderr), "w+");
 
-  cmd = add_set_cmd ("debug-signals", class_obscure, var_boolean, 
+  cmd = add_set_cmd ("debug-signals", class_obscure, var_boolean,
 		     (char *) &sigthread_debugflag,
 		     "Set if printing signal thread debugging statements.",
 		     &setlist);
-  add_show_from_set (cmd, &showlist);		
+  add_show_from_set (cmd, &showlist);
 }
+
+/* EOF */

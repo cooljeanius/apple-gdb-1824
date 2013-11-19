@@ -1,3 +1,7 @@
+/*
+ * DisplayMisc.h
+ */
+
 #include <Foundation/Foundation.h>
 
 /* pool used by Foundation objects */
@@ -16,3 +20,4 @@ extern GdbManager *make_view_gdb_manager ();
 
 void fork_and_start_debugger_controller (GdbManager *);
 
+/* EOF */

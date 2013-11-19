@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-cfmthread.h
+ */
+
 #ifndef _GDB_NEXTSTEP_NAT_CFMTHREAD_H_
 #define _GDB_NEXTSTEP_NAT_CFMTHREAD_H_
 
@@ -22,3 +26,5 @@ void next_cfm_thread_create (next_cfm_thread_status *s, task_t task);
 void next_cfm_thread_destroy (next_cfm_thread_status *s);
 
 #endif /* _GDB_NEXTSTEP_NAT_SIGTHREAD_H_*/
+
+/* EOF */

@@ -1,11 +1,15 @@
+/*
+ * GuiGdbCmd.h
+ * (This is an Objective-C header; i.e. NOT just-plain-C)
+ */
 
-//
-// GdbCmd objects get created for the DebuggerController object
-// in the Controllers's thread.
-// The GuiGdbManger mantains a queue of commands. A command can
-// be a string for gdb to evaluate and execute or it can be a special
-// command telling gdb to go and read stdin and process what it finds there.
-//
+/*
+ * GdbCmd objects get created for the DebuggerController object
+ * in the Controllers's thread.
+ * The GuiGdbManger mantains a queue of commands. A command can
+ * be a string for gdb to evaluate and execute or it can be a special
+ * command telling gdb to go and read stdin and process what it finds there.
+ */
 
 typedef enum {
    GDB_CMD_EXEC,
@@ -39,7 +43,7 @@ useAnnotation:(BOOL)anno;
 
 - (Gdb_cmd_type)getType;
 
-// note: the returned string is retained by the Cmd object
+/* note: the returned string is retained by the Cmd object */
 - (NSString *)getCmd;
 
 - (BOOL) useTty;
@@ -47,3 +51,4 @@ useAnnotation:(BOOL)anno;
 - (int) tag;
 @end
 
+/* EOF */

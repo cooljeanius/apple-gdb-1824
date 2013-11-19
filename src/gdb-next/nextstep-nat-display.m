@@ -1,3 +1,9 @@
+/*
+ * nextstep-nat-display.m
+ * (Does this file really need to be Objective-C? Looks like it could
+ * pass as just-plain C to me...)
+ */
+
 #include "nextstep-nat-display.h"
 #include "nextstep-nat-mutils.h"
 #include "nextstep-nat-inferior.h"
@@ -23,7 +29,7 @@ static char *view_protocol = NULL;
 static int have_connection = 0;
 
 /* This must not use error() or warning(), as it may be called before
-   the rest of GDB has initialized. */
+ * the rest of GDB has initialized. */
 
 void connect_to (char *arg)
 {
@@ -43,7 +49,7 @@ void connect_to (char *arg)
       break;
     }
   }
-    
+
   if (setup_display_system (display_system_pb, host, name) != 0) {
     fprintf (stderr, "Unable to connect to \"%s\" on host \"%s\".\n",
 	     arg, view_host);
@@ -60,17 +66,17 @@ static void view_command (char *arg, int from_tty)
   if (have_connection) {
     error ("Viewing disabled when gdb is started by ProjectBuilder.\n");
   }
-    
+
   {
     char name[80];
     snprintf (name, 80, "%s:%s", view_program, view_protocol);
-    
+
     if (setup_display_system (display_system_view, view_host, name) != 0) {
       error ("Unable to connect to \"%s\" on host \"%s\" via \"%s\".\n",
 	     view_program, view_host, view_protocol);
     }
   }
-  
+
   have_connection = 1;
 
   if (target_has_stack) {
@@ -97,7 +103,7 @@ _initialize_display ()
 	   "Displays the current line in an editor program;\n"
 	   "(default editor is ProjectBuilder).");
   add_com_alias ("v", "view", class_files, 1);
-  
+
   add_com ("unview", class_files, unview_command,
 	   "Stops viewing of source files.");
 
@@ -123,15 +129,17 @@ _initialize_display ()
 		     &setlist);
   add_show_from_set (cmd, &showlist);
 
-  cmd = add_set_cmd ("view-program", class_files, var_string_noescape, 
+  cmd = add_set_cmd ("view-program", class_files, var_string_noescape,
 		     (char *) &view_program,
 		     "Set name of program to connect to when viewing.",
 		     &setlist);
   add_show_from_set (cmd, &showlist);
-	
+
   cmd = add_set_cmd ("view-protocol", class_files, var_string_noescape,
 		     (char *) &view_protocol,
 		     "Set protocol to use when connecting to viewer program.",
 		     &setlist);
   add_show_from_set (cmd, &showlist);
 }
+
+/* EOF */

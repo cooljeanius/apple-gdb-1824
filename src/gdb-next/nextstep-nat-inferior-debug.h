@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-inferior-debug.h
+ */
+
 #ifndef _NEXTSTEP_NAT_INFERIOR_DEBUG_H_
 #define _NEXTSTEP_NAT_INFERIOR_DEBUG_H_
 
@@ -24,3 +28,5 @@ const char *unparse_protection PARAMS ((vm_prot_t p));
 const char *unparse_inheritance PARAMS ((vm_inherit_t i));
 
 #endif /* _NEXTSTEP_NAT_INFERIOR_DEBUG_H_ */
+
+/* EOF */

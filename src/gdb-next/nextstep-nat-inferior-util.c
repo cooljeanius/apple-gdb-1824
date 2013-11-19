@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-inferior-util.c
+ */
+
 #include "nextstep-nat-inferior-util.h"
 #include "nextstep-nat-dyld-process.h"
 #include "nextstep-nat-inferior-debug.h"
@@ -79,7 +83,7 @@ void next_inferior_destroy (next_inferior_status *s)
 #if WITH_CFM
   next_cfm_thread_destroy (&s->cfm_status);
 #endif /* WITH_CFM */
-  
+
   s->task = TASK_NULL;
   s->pid = 0;
 
@@ -110,13 +114,13 @@ void next_inferior_check_stopped (next_inferior_status *s)
   CHECK (s->task != TASK_NULL);
   CHECK (s->pid != 0);
 
-  if (s->stopped_in_ptrace) { 
+  if (s->stopped_in_ptrace) {
     CHECK (s->attached_in_ptrace);
   }
 
   CHECK ((s->stopped_in_ptrace == 1) || (s->suspend_count > 0));
   CHECK ((s->suspend_count == 0) || (s->suspend_count == 1));
-}  
+}
 
 kern_return_t next_inferior_suspend_mach (next_inferior_status *s)
 {
@@ -141,7 +145,7 @@ kern_return_t next_inferior_suspend_mach (next_inferior_status *s)
 kern_return_t next_inferior_resume_mach (next_inferior_status *s, int count)
 {
   kern_return_t kret;
-  
+
   CHECK (s != NULL);
   CHECK (next_task_valid (s->task));
 
@@ -178,7 +182,7 @@ void next_inferior_suspend_ptrace (next_inferior_status *s)
   next_inferior_suspend_mach (s);
   kill (s->pid, SIGSTOP);
   next_inferior_resume_mach (s, -1);
-  
+
   next_wait (s, &status, NULL);
   CHECK (status.kind == TARGET_WAITKIND_STOPPED);
   CHECK (status.value.sig == TARGET_SIGNAL_STOP);
@@ -195,7 +199,7 @@ void next_inferior_resume_ptrace (next_inferior_status *s, int nsignal, int val)
   CHECK (s->stopped_in_ptrace);
 
   next_inferior_suspend_mach (s);
- 
+
   if (call_ptrace (val, s->pid, 1, nsignal) != 0) {
     error ("Error calling ptrace (%d, %d, %d, %d): %s\n",
 	   val, s->pid, 1, nsignal, strerror (errno));
@@ -213,7 +217,7 @@ void next_save_exception_ports
   kern_return_t kret;
 
   info->count = (sizeof (info->ports) / sizeof (info->ports[0]));
-  kret = task_get_exception_ports 
+  kret = task_get_exception_ports
     (task,
      EXC_MASK_ALL,
      info->masks, &info->count, info->ports, info->behaviors, info->flavors);
@@ -232,3 +236,5 @@ void next_restore_exception_ports
     MACH_CHECK_ERROR (kret);
   }
 }
+
+/* EOF */

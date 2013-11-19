@@ -174,8 +174,8 @@ kern_return_t catch_exception_raise
     case EXC_BREAKPOINT:
 #if 0
       /* Many internal GDB routines expect breakpoints to be reported
-         as TARGET_SIGNAL_TRAP, and will report TARGET_EXC_BREAKPOINT
-         as a spurious signal. */
+       * as TARGET_SIGNAL_TRAP, and will report TARGET_EXC_BREAKPOINT
+       * as a spurious signal. */
       exception_status->value.sig = TARGET_EXC_BREAKPOINT;
 #endif /* 0 */
       exception_status->value.sig = TARGET_SIGNAL_TRAP;

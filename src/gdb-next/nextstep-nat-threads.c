@@ -76,7 +76,7 @@ pthread_t gdb_pthread_fork (pthread_fn_t function, void *arg)
   if (result != 0) {
     error ("Unable to initialize thread attributes: %s (%d)", strerror (errno), errno);
   }
-    
+
   result = pthread_attr_setdetachstate (&attr, PTHREAD_CREATE_JOINABLE);
   if (result != 0) {
     error ("Unable to initialize thread attributes: %s (%d)", strerror (errno), errno);
@@ -86,7 +86,7 @@ pthread_t gdb_pthread_fork (pthread_fn_t function, void *arg)
   if (result != 0)  {
     error ("Unable to create thread: %s (%d)", strerror (errno), errno);
   }
-  
+
   result = pthread_attr_destroy (&attr);
   if (result != 0) {
     warning ("Unable to deallocate thread attributes: %s (%d)", strerror (errno), errno);
@@ -99,21 +99,21 @@ pthread_t gdb_pthread_fork (pthread_fn_t function, void *arg)
 
 #if defined (TARGET_I386)
 
-#define THREAD_STRUCT i386_thread_state_t
-#define THREAD_STATE i386_THREAD_STATE
-#define THREAD_STRUCT i386_thread_state_t
-#define THREAD_COUNT i386_THREAD_STATE_COUNT
+# define THREAD_STRUCT i386_thread_state_t
+# define THREAD_STATE i386_THREAD_STATE
+# define THREAD_STRUCT i386_thread_state_t
+# define THREAD_COUNT i386_THREAD_STATE_COUNT
 
 #elif defined (TARGET_POWERPC)
 
-#define THREAD_STRUCT struct ppc_thread_state
-#define THREAD_STATE PPC_THREAD_STATE
-#define THREAD_STRUCT struct ppc_thread_state
-#define THREAD_COUNT PPC_THREAD_STATE_COUNT
+# define THREAD_STRUCT struct ppc_thread_state
+# define THREAD_STATE PPC_THREAD_STATE
+# define THREAD_STRUCT struct ppc_thread_state
+# define THREAD_COUNT PPC_THREAD_STATE_COUNT
 
 #else
-#error unknown architecture
-#endif
+# error unknown architecture
+#endif /* TARGET_foo */
 
 void gdb_cthread_kill (cthread_t cthread)
 {
@@ -136,24 +136,26 @@ void gdb_cthread_kill (cthread_t cthread)
   MACH_CHECK_ERROR (ret);
 
 #if defined (TARGET_I386)
-#warning gdb_cthread_kill unable to set exit value on ia86 architecture
+# warning gdb_cthread_kill unable to set exit value on ia86 architecture
   state.eip = (unsigned int) &cthread_exit;
 #elif defined (TARGET_POWERPC)
   state.srr0 = (unsigned int) &cthread_exit;
   state.r3 = 0;
 #else
-#error unknown architecture
-#endif
+# error unknown architecture
+#endif /* TARGET_foo */
 
-  ret = thread_set_state 
+  ret = thread_set_state
     (mthread, THREAD_STATE, (thread_state_t) &state, THREAD_COUNT);
   MACH_CHECK_ERROR (ret);
 
   ret = thread_resume (mthread);
   MACH_CHECK_ERROR (ret);
- 
+
   cthread_join (cthread);
 }
 
 #endif /* USE_PTHREADS */
+
+/* EOF */
 

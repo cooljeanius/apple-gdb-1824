@@ -1,3 +1,7 @@
+/*
+ * DisplaySetup.m
+ */
+
 #import <Foundation/Foundation.h>
 #import <stdio.h>
 
@@ -14,15 +18,15 @@ extern char *get_view_host();
 extern void turn_off_viewing();
 
 /* gdbManager is the object which manages GDB and the thread it runs in.
-   This object communicates with the client (in another process)
-   and the DebuggerServer object in our process but in
-   another thread. */
+ * This object communicates with the client (in another process)
+ * and the DebuggerServer object in our process but in
+ * another thread. */
 
 GdbManager *gdbManager = nil;
 
 /* The autorelease pool is needed because the DO facilities use it.
-   Since the gdb thread isn't in a Run Loop, we have to manage
-   the pool ourself and when it gets released. */
+ * Since the gdb thread is NOT in a Run Loop, we have to manage
+ * the pool ourself and when it gets released. */
 
 NSAutoreleasePool *pool;
 int pool_num_times = 0;
@@ -38,7 +42,7 @@ int setup_display_system
     gdbManager = make_gui_gdb_manager ();
     disp_is_view = 0;
     break;
-    
+
   case display_system_view:
     gdbManager = make_view_gdb_manager ();
     disp_is_view = 1;
@@ -47,7 +51,7 @@ int setup_display_system
   default:
     abort ();
   }
-   
+
   [gdbManager setDisplayProviderConnectionName: port
 	      host: host];
 
@@ -80,4 +84,6 @@ shut_down_display_system ()
   if (disp_is_view) {
     printf ("Connection has gone away.  Viewing is now off.\n");
   }
-}    
+}
+
+/* EOF */

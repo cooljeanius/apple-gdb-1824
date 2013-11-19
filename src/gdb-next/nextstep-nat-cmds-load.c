@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-cmds-load.c
+ */
+
 #include "defs.h"
 #include "top.h"
 #include "command.h"
@@ -32,7 +36,7 @@ void load_plugin (char *arg, int from_tty)
     error ("Usage: load-plugin <plugin>");
     return;
   }
-  
+
   strcpy ( path, p = tilde_expand (arg));
   xfree (p);
 
@@ -50,7 +54,7 @@ void load_plugin (char *arg, int from_tty)
     if (nsret != NSObjectFileImageSuccess) {
       error ("NSCreateObjectFileImageFromFile failed for \"%s\" (error %d).", path, nsret);
     }
-    
+
     if (debug_plugins_flag) {
       printf_unfiltered ("Linking GDB module from \"%s\"\n", path);
     }
@@ -75,12 +79,12 @@ void load_plugin (char *arg, int from_tty)
   if (debug_plugins_flag) {
     printf_unfiltered ("Calling '%s' in \"%s\"\n", init_func_name, path);
   }
-  
+
   CHECK_FATAL (fptr != NULL);
 
   /* Make sure the names and data arrays are updated BEFORE calling init_func_name()
-     so that the plugin can use _plugin_private_data()  */ 
-  
+   * so that the plugin can use _plugin_private_data()  */
+
   pstate.plugin_data = xrealloc (pstate.plugin_data, (pstate.num + 1) * sizeof (void *));
   pstate.plugin_data[pstate.num] = NULL;
 
@@ -114,7 +118,7 @@ _initialize_load_plugin ()
                  &cmdlist);
   cmd->completer = filename_completer;
   cmd->completer_word_break_characters = gdb_completer_filename_word_break_characters;
-  
+
   cmd = add_set_cmd ("debug-plugins", class_obscure,
                      var_boolean, (char *) &debug_plugins_flag,
                      "Set if tracing of plugin loading is enabled",
@@ -124,19 +128,19 @@ _initialize_load_plugin ()
   add_info ("plugins", info_plugins_command, "Show current plug-ins state.");
 }
 
-/* Search for a loaded plugin by name and return a pointer to it's private data
-   slot allocated for plugin use.  Return NULL if plugin is not loaded.  
-   If NULL is passed for a plugin name then a pointer to a global data pointer
-   is returned.  */
-void 
+/* Search for a loaded plugin by name and return a pointer to its private data
+ * slot allocated for plugin use. Return NULL if plugin is not loaded.
+ * If NULL is passed for a plugin name then a pointer to a global data pointer
+ * is returned.  */
+void
 **_plugin_private_data (char *plugin_name)
 {
   size_t i;
   char   *p;
-  
+
   if (plugin_name == NULL)
       return &_plugin_global_data;
-      
+
   for (i = 0; i < pstate.num; i++) {
     p = strrchr (pstate.names[i], '/');
     if (p) {
@@ -146,6 +150,8 @@ void
         continue;
     return &pstate.plugin_data[i];
   }
-  
+
   return NULL;
 }
+
+/* EOF */

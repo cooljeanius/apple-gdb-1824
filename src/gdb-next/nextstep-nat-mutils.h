@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-mutils.h
+ */
+
 #ifndef _NEXTSTEP_NAT_MUTILS_H_
 #define _NEXTSTEP_NAT_MUTILS_H_
 
@@ -6,10 +10,10 @@
 struct target_ops;
 
 #if (!defined __GNUC__ || __GNUC__ < 2 || __GNUC_MINOR__ < (defined __cplusplus ? 6 : 4))
-#define __MACH_CHECK_FUNCTION ((__const char *) 0)
+# define __MACH_CHECK_FUNCTION ((__const char *) 0)
 #else
-#define __MACH_CHECK_FUNCTION __PRETTY_FUNCTION__
-#endif
+# define __MACH_CHECK_FUNCTION __PRETTY_FUNCTION__
+#endif /* Something about __GNUC__? */
 
 #define MACH_PROPAGATE_ERROR(ret) \
 { MACH_WARN_ERROR(ret); if ((ret) != KERN_SUCCESS) { return ret; } }
@@ -29,9 +33,9 @@ void gdb_check_fatal (const char *str, const char *file, unsigned int line, cons
 unsigned int child_get_pagesize PARAMS (());
 
 int
-mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, 
-		  int len, int write, 
-		  struct mem_attrib *attrib, 
+mach_xfer_memory (CORE_ADDR memaddr, char *myaddr,
+		  int len, int write,
+		  struct mem_attrib *attrib,
 		  struct target_ops *target);
 
 void mach_check_error (kern_return_t ret, const char *file, unsigned int line, const char *func);
@@ -49,3 +53,5 @@ kern_return_t next_mach_msg_receive PARAMS ((msg_header_t *msgin, size_t msgsize
 int call_ptrace PARAMS ((int request, int pid, int arg3, int arg4));
 
 #endif /* _NEXTSTEP_NAT_MUTILS_H_ */
+
+/* EOF */

@@ -1,11 +1,15 @@
+/*
+ * DebuggerController.m
+ */
+
 #import "DebuggerController_Private.h"
 
 #import <Foundation/Foundation.h>
 
-#if ! defined (NeXT_PDO)
-#import <sys/types.h>
-#import <sys/signal.h>
-#endif
+#if !defined(NeXT_PDO)
+# import <sys/types.h>
+# import <sys/signal.h>
+#endif /* !NeXT_PDO */
 
 #include "nextstep-nat-mutils.h"
 #include "nextstep-nat-inferior.h"
@@ -21,9 +25,9 @@ extern next_inferior_status *next_status;
 void fork_and_start_debugger_controller (GdbManager *gm)
 {
   /* workaround: force RunLoop to go thru +initialize
-     and setup support for multithreading */
+   * and setup support for multithreading */
   (void) [NSRunLoop class];
-			    
+
   debuggerController = [[DebuggerController alloc] init];
 
   [NSThread detachNewThreadSelector: @selector(startController:)
@@ -40,37 +44,37 @@ void fork_and_start_debugger_controller (GdbManager *gm)
   return self;
 }
 
-- (id) displayProvider 
+- (id) displayProvider
 {
   return displayProvider;
 }
 
 /* This is the first method called in the new thread.
-   Advertise ourself using the given name for the connection.
-   A Gui system, like ProjectBuilder, will be looking for
-   us at that name.
-   
-   Also, create a connection for our local (i.e. same process)
-   connection to the GuiGdbManager.
-   
-   Then go into the runloop and wait for the Gui system to
-   give us the DisplayProvider object. */
+ * Advertise ourself using the given name for the connection.
+ * A Gui system, like ProjectBuilder, will be looking for
+ * us at that name.
+ *
+ * Also, create a connection for our local (i.e. same process)
+ * connection to the GuiGdbManager.
+ *
+ * Then go into the runloop and wait for the Gui system to
+ * give us the DisplayProvider object. */
 
 - (void) startController: gm
 {
     NSString			*localName;
     NSAutoreleasePool	*pool = [[NSAutoreleasePool alloc] init];
     NSDistantObject		*dP;
- 
+
     gdbManager = (GdbManager <GuiGdbManagerInternal,
                   	      GuiGdbManagerExecLock> *)gm;
 
 #if 0
-    NSLog(@"Debugger Controller: looking for connection named %@ on host %@", 
+    NSLog(@"Debugger Controller: looking for connection named %@ on host %@",
     	  [gdbManager displayProviderConnectionName],
     	  [gdbManager displayProviderHostName]);
-#endif
-	
+#endif /* 0 */
+
     dP = [NSConnection
            rootProxyForConnectionWithRegisteredName:[gdbManager displayProviderConnectionName]
                                                host:[gdbManager displayProviderHostName]];
@@ -84,14 +88,14 @@ void fork_and_start_debugger_controller (GdbManager *gm)
     displayProviderConnection = [dP connectionForProxy];
     displayProvider = (id <GuiDisplayProvider>) [dP retain];
     [displayProvider setDebuggerController: self];
-    
+
     localName = [[NSProcessInfo processInfo] globallyUniqueString];
     [gdbManager setDebuggerControllerConnectionName: localName];
 
-    gdbConnection = [[NSConnection alloc] init]; 
+    gdbConnection = [[NSConnection alloc] init];
     [gdbConnection setRootObject: self];
     [gdbConnection registerName: localName];
-    
+
     DEBUG_PRINT ("Dbg Controller: start: exported connections\n");
 
     [[NSNotificationCenter defaultCenter]
@@ -108,7 +112,7 @@ void fork_and_start_debugger_controller (GdbManager *gm)
 
     /* This has the side-effect of unblocking the gdbManager. */
     [gdbManager setDisplayProvider: dP];
-    
+
     [pool release];
 
     [[NSRunLoop currentRunLoop] run];
@@ -116,9 +120,9 @@ void fork_and_start_debugger_controller (GdbManager *gm)
 
 
 
-// Called from (remote) client of us, e.g. ProjectBuilder
+/* Called from (remote) client of us, e.g. ProjectBuilder */
 
-// execute cmd in gdb
+/* execute cmd in gdb */
 - (oneway void) executeCmd:(NSString *)c
                    withTag:(int)tag
                    withTty:(BOOL)t
@@ -126,8 +130,8 @@ void fork_and_start_debugger_controller (GdbManager *gm)
 {
     GdbCmd	*cmd;
 
-    // send cmd to Gdb 
-    /* copy of command c should not be needed; 
+    /* send cmd to Gdb */
+    /* copy of command c should not be needed;
        work around for DO problems */
     cmd = [[GdbCmd alloc] initWithCmd:[c copy]
                                ofType:GDB_CMD_EXEC
@@ -142,7 +146,7 @@ void fork_and_start_debugger_controller (GdbManager *gm)
     GdbCmd	*cmd;
 
     [gdbManager setupForSynch];
-    
+
     cmd = [[GdbCmd alloc] initWithCmd:nil
                                ofType:GDB_CMD_SYNC];
     [gdbManager enqueueCmd:cmd];
@@ -150,26 +154,26 @@ void fork_and_start_debugger_controller (GdbManager *gm)
     [gdbManager waitForSynch];
 }
 
-/* 
-   Interrupt; right now, this only interrupts the inferior.
-   Might want to extend this to interrupt gdb thread someday.
+/*
+ * Interrupt; right now, this only interrupts the inferior.
+ * Might want to extend this to interrupt gdb thread someday.
  */
 
 - (oneway void) interrupt
 {
 #if defined (NeXT_PDO)
   extern int ctrlc_received_by_debugger;
-  // just jam a 1 into this guy, even though we are in a different thread.
-  // sooner or later gdb will get it.
+  /* just jam a 1 into this guy, even though we are in a different thread. */
+  /* sooner or later gdb will get it. */
   ctrlc_received_by_debugger = 1;
-#elif defined (TARGET_NATIVE)
+#elif defined(TARGET_NATIVE)
   if (inferior_pid > 0) {
     int pid;
     thread_t thread;
     next_thread_list_lookup_by_id (next_status, inferior_pid, &pid, &thread);
-    kill (pid, SIGINT);	
+    kill (pid, SIGINT);
   }
-#endif
+#endif /* NeXT_PDO || TARGET_NATIVE */
 }
 
 - (void) handleConnectionDeath: (NSNotification *) notification
@@ -183,3 +187,5 @@ void fork_and_start_debugger_controller (GdbManager *gm)
   exit (22);
 }
 @end
+
+/* EOF */

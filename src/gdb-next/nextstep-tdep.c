@@ -1,5 +1,9 @@
-/* This file is part of GDB.
+/*
+ * nextstep-tdep.c
+ * This file is part of GDB.
+ */
 
+ /*
 GDB is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 1, or (at your option)
@@ -53,7 +57,7 @@ static unsigned char next_symbol_type_base (macho_type)
 {
   unsigned char mtype = macho_type;
   unsigned char ntype = 0;
-  
+
   if (macho_type & BFD_MACH_O_N_STAB) {
     return macho_type;
   }
@@ -115,7 +119,7 @@ static unsigned char next_symbol_type (macho_type, macho_other)
   unsigned char ntype = next_symbol_types[macho_type];
 
   if ((macho_type & BFD_MACH_O_N_TYPE) == BFD_MACH_O_N_SECT) {
-    
+
     if (macho_other == 1) {
       ntype |= N_TEXT;
     } else {
@@ -123,7 +127,7 @@ static unsigned char next_symbol_type (macho_type, macho_other)
       ntype |= N_DATA;
     }
   }
-  
+
   return ntype;
 }
 
@@ -219,12 +223,12 @@ static void info_trampoline_command (char *exp, int from_tty)
 #elif defined (TARGET_I386)
   trampoline = i386_next_skip_trampoline_code (address);
 #else
-#error unknown architecture
-#endif
+# error unknown architecture
+#endif /* TARGET_foo */
 
   find_objc_msgcall (trampoline, &objc);
 
-  fprintf_filtered 
+  fprintf_filtered
     (gdb_stderr, "Function at 0x%lx becomes 0x%lx becomes 0x%lx\n",
      (unsigned long) address, (unsigned long) trampoline, (unsigned long) objc);
 }
@@ -237,3 +241,5 @@ _initialize_nextstep_tdep ()
   add_info ("trampoline", info_trampoline_command,
 	    "Resolve function for DYLD trampoline stub and/or Objective-C call");
 }
+
+/* EOF */

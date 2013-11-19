@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-inferior-debug.c
+ */
+
 #include "nextstep-nat-inferior-debug.h"
 #include "nextstep-nat-dyld.h"
 #include "nextstep-nat-inferior.h"
@@ -128,7 +132,7 @@ void next_debug_region (task_t task, vm_address_t address)
   boolean_t shared;
   port_t object_name;
   vm_offset_t offset;
-  
+
   kret = vm_region (task, &address, &size,
 		    &protection, &max_protection, &inheritance, &shared,
 		    &object_name, &offset);
@@ -348,7 +352,7 @@ void next_debug_inferior_status (next_inferior_status *s)
     fprintf (inferior_stderr, "  thread: 0x%lx\n", (long) thread_list[i]);
   }
 
-  ret = vm_deallocate (task_self(), (vm_address_t) thread_list, 
+  ret = vm_deallocate (task_self(), (vm_address_t) thread_list,
 		       (vm_size_t) (thread_count * sizeof (thread_t)));
   MACH_CHECK_ERROR (ret);
 
@@ -360,7 +364,7 @@ void next_debug_inferior_status (next_inferior_status *s)
     fprintf (inferior_stderr, "  thread: 0x%lx\n", (long) thread_list[i]);
   }
 
-  ret = vm_deallocate (task_self(), (vm_address_t) thread_list, 
+  ret = vm_deallocate (task_self(), (vm_address_t) thread_list,
 		       (vm_size_t) (thread_count * sizeof (thread_t)));
   MACH_CHECK_ERROR (ret);
 
@@ -373,7 +377,7 @@ void next_debug_exception (struct next_exception_data *e)
   char *s;
   inferior_debug (2, "exception for thread 0x%lx of task 0x%lx: "
 		  "exception = 0x%lx, code = 0x%lx, subcode = 0x%lx\n",
-		  (unsigned long) e->thread, 
+		  (unsigned long) e->thread,
 		  (unsigned long) e->task,
 		  (unsigned long) e->exception,
 		  (unsigned long) e->code,
@@ -384,7 +388,7 @@ void next_debug_exception (struct next_exception_data *e)
 		  (unsigned long) e->task,
 		  s);
 }
-#endif
+#endif /* !__MACH30__ */
 
 void next_debug_message (msg_header_t *msg)
 {
@@ -410,14 +414,14 @@ void next_debug_notification_message (struct next_inferior_status *inferior, msg
     if (msg->msgh_id == MACH_NOTIFY_PORT_DELETED) {
       mach_port_deleted_notification_t *dmsg = (mach_port_deleted_notification_t *) msg;
       if (dmsg->not_port == inferior->task) {
-	inferior_debug (2, "next_mach_process_message: deletion message for task port 0x%lx\n", 
+	inferior_debug (2, "next_mach_process_message: deletion message for task port 0x%lx\n",
 			(unsigned long) dmsg->not_port);
       } else {
-	inferior_debug (2, "next_mach_process_message: deletion message for unknown port 0x%lx; ignoring\n", 
+	inferior_debug (2, "next_mach_process_message: deletion message for unknown port 0x%lx; ignoring\n",
 			(unsigned long) dmsg->not_port);
       }
     } else {
-      warning ("next_mach_process_message: unknown notification type 0x%lx; ignoring", 
+      warning ("next_mach_process_message: unknown notification type 0x%lx; ignoring",
 	       (unsigned long) msg->msgh_id);
     }
 #else /* ! __MACH30__ */
@@ -425,30 +429,32 @@ void next_debug_notification_message (struct next_inferior_status *inferior, msg
       notification_t *dmsg = (notification_t *) msg;
       if (dmsg->notify_port == inferior->task) {
       } else {
-	inferior_debug (2, "next_mach_process_message: deletion message for unknown port 0x%lx; ignoring\n", 
+	inferior_debug (2, "next_mach_process_message: deletion message for unknown port 0x%lx; ignoring\n",
 			(unsigned long) dmsg->notify_port);
       }
     } else {
-      warning ("next_mach_process_message: unknown notification type 0x%lx; ignoring", 
+      warning ("next_mach_process_message: unknown notification type 0x%lx; ignoring",
 	       (unsigned long) msg->msg_id);
     }
 #endif /* __MACH30__ */
 }
 
-void 
+void
 _initialize_next_inferior_debug ()
 {
   struct cmd_list_element *cmd;
 
-  cmd = add_set_cmd ("debug-timestamps", class_obscure, var_boolean, 
+  cmd = add_set_cmd ("debug-timestamps", class_obscure, var_boolean,
 		     (char *) &timestamps_debug_flag,
 		     "Set if GDB print timestamps before any terminal output.",
 		     &setlist);
-  add_show_from_set (cmd, &showlist);	
+  add_show_from_set (cmd, &showlist);
 
-  cmd = add_set_cmd ("debug-inferior", class_obscure, var_zinteger, 
+  cmd = add_set_cmd ("debug-inferior", class_obscure, var_zinteger,
 		     (char *) &inferior_debug_flag,
 		     "Set if printing inferior communication debugging statements.",
 		     &setlist);
-  add_show_from_set (cmd, &showlist);		
-}  
+  add_show_from_set (cmd, &showlist);
+}
+
+/* EOF */

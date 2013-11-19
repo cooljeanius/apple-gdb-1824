@@ -1,12 +1,15 @@
-/* termios for WIN32.
+/* winpdo-sup.h
+ * termios for WIN32.
+ */
 
+ /*
    Derived from sources with the following header comments:
    Written by Doug Evans and Steve Chamberlain of Cygnus Support
 
    THIS SOFTWARE IS NOT COPYRIGHTED
 
-   Cygnus offers the following for use in the public domain.  Cygnus
-   makes no warranty with regard to the software or it's performance
+   Cygnus offers the following for use in the public domain. Cygnus
+   makes no warranty with regard to the software or its performance
    and the user accepts the software "AS IS" with all faults.
 
    CYGNUS DISCLAIMS ANY WARRANTIES, EXPRESS OR IMPLIED, WITH REGARD TO
@@ -156,3 +159,5 @@ struct winsize
 #define TIOCSWINSZ (('T' << 8) | 2)
 
 #endif	/* _SYS_TERMIOS_H */
+
+/* EOF */

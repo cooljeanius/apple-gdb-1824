@@ -1,17 +1,18 @@
-/* termios and other support for WIN32.
-
-   Derived from sources with the following header comments:
-   Written by Doug Evans and Steve Chamberlain of Cygnus Support
-
-   THIS SOFTWARE IS NOT COPYRIGHTED
-
-   Cygnus offers the following for use in the public domain.  Cygnus
-   makes no warranty with regard to the software or it's performance
-   and the user accepts the software "AS IS" with all faults.
-
-   CYGNUS DISCLAIMS ANY WARRANTIES, EXPRESS OR IMPLIED, WITH REGARD TO
-   THIS SOFTWARE INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-   MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+/* winpdo-sup.c
+ * termios and other support for WIN32.
+ *
+ * Derived from sources with the following header comments:
+ * Written by Doug Evans and Steve Chamberlain of Cygnus Support
+ *
+ * THIS SOFTWARE IS NOT COPYRIGHTED
+ *
+ * Cygnus offers the following for use in the public domain. Cygnus
+ * makes no warranty with regard to the software or its performance
+ * and the user accepts the software "AS IS" with all faults.
+ *
+ * CYGNUS DISCLAIMS ANY WARRANTIES, EXPRESS OR IMPLIED, WITH REGARD TO
+ * THIS SOFTWARE INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
 #include "winpdo-sup.h"
@@ -26,8 +27,8 @@
 #include <sys/stat.h>
 
 #ifndef W_OK
-#define W_OK 2
-#endif
+# define W_OK 2
+#endif /* !W_OK */
 
 #define NOT_OUR_FD(fd) (fd < 0 || fd > 2)
 
@@ -97,7 +98,7 @@ ScreenCols ()
   return (p.srWindow.Right - p.srWindow.Left + 1);
 }
 
-void 
+void
 ScreenGetCursor (int *row, int *col)
 {
   CONSOLE_SCREEN_BUFFER_INFO p;
@@ -106,7 +107,7 @@ ScreenGetCursor (int *row, int *col)
   *col = p.dwCursorPosition.X;
 }
 
-void 
+void
 ScreenSetCursor (int row, int col)
 {
   COORD p;
@@ -154,7 +155,7 @@ int kbhit ()
   printf ("peek %d\n", PeekConsoleInput (GetStdHandle (STD_INPUT_HANDLE, &i, 1, &n));
 #else
   PeekConsoleInput (GetStdHandle(STD_INPUT_HANDLE), &i, 1, &n);
-#endif
+#endif /* 0 */
 
   return n;
 }
@@ -220,7 +221,7 @@ kill (int pid, int sig)
   return  raise (sig);
 }
 
-int 
+int
 getuid()
 {
   return getpid();	/* really just a stub! */
@@ -270,7 +271,7 @@ void unix_path_to_dos_path(in, out)
   strcpy(out, in);
 }
 
-static HANDLE 
+static HANDLE
 get_std_handle (int fd)
 {
   DWORD chan[] = {STD_INPUT_HANDLE, STD_OUTPUT_HANDLE, STD_ERROR_HANDLE};
@@ -415,7 +416,7 @@ tcsetattr (int fd, int actions, const struct termios *t)
     }
 
   fdHandle = get_std_handle(fd);
-  
+
   GetCommState (fdHandle, &state);
   ds("First in tcsetattr", &state);
   state.BaudRate = newrate;
@@ -432,7 +433,7 @@ tcsetattr (int fd, int actions, const struct termios *t)
     state.Parity = NOPARITY;
   }
 
-  ds("Before SetCommState", &state);  
+  ds("Before SetCommState", &state);
   SetCommState (fdHandle, &state);
 #if 0
   h->r_binary = (t->c_iflag & IGNCR) ? 0 : 1;
@@ -440,12 +441,12 @@ tcsetattr (int fd, int actions, const struct termios *t)
 
   h->vtime = t->c_cc[VTIME];
   h->vmin = t->c_cc[VMIN];
-#endif
+#endif /* 0 */
   memset (&to, 0, sizeof (to));
 
 #if 0
   to.ReadTotalTimeoutConstant = h->vtime * 100;
-#endif
+#endif /* 0 */
 
   SetCommTimeouts (fdHandle, &to);
   tdump (fd);
@@ -456,7 +457,7 @@ int
 tcgetattr (int fd, struct termios *t)
 {
   int res = 0;
-  
+
   if (NOT_OUR_FD (fd))
     {
       errno = EBADF;
@@ -535,7 +536,7 @@ tcgetattr (int fd, struct termios *t)
 
       t->c_cc[VTIME] = h->vtime ;
       t->c_cc[VMIN] = h->vmin;
-#endif
+#endif /* 0 */
     }
   tdump (fd);
   return res;
@@ -552,3 +553,5 @@ void tcsetpgrp ()
 void setpgid ()
 {
 }
+
+/* EOF */

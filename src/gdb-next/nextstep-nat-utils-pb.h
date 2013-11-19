@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-utils-pb.h
+ */
+
 extern char *	pb_gdb_util_prompt();
 extern struct ui_file *	pb_gdb_util_stdout();
 extern struct ui_file *	pb_gdb_util_stderr();
@@ -16,3 +20,5 @@ extern void	pb_gdb_util_add_set_cmd_string(const char *name,
                                                const char *desc);
 
 extern void	pb_gdb_util_add_cmd(const char *name, void *func_ptr, const char *desc);
+
+/* EOF */

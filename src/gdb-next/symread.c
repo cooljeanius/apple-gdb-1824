@@ -574,7 +574,7 @@ static void sym_read_contained_variables
 	  SYMBOL_CLASS (lsym) = LOC_STATIC;
 	  SYMBOL_VALUE_ADDRESS (lsym) = cventry.entry.address.scstruct.sca_offset;
 	  SYMBOL_VALUE_ADDRESS (lsym) += ANOFFSET (objfile->section_offsets, SECT_OFF_DATA (obfjile));
-#endif
+#endif /* 0 */
 
 	  break;
 

@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-cfm.c
+ */
+
 #include "defs.h"
 #include "breakpoint.h"
 #include "gdbcmd.h"
@@ -16,7 +20,7 @@
 #define CFM_MAX_SECTION_LENGTH 1024
 #define CFM_MAX_INSTANCE_LENGTH 1024
 
-enum cfm_errtype { 
+enum cfm_errtype {
   noErr = 0,
   paramErr = -1,
   cfragCFMInternalErr = -2,
@@ -75,11 +79,11 @@ cfm_update (task_t task, struct dyld_objfile_info *info)
       ret = cfm_fetch_connection_info (cfm_parser, connection_ids[connection_index], &connection_info);
       if (ret != noErr)
 	continue;
-      
+
       ret = cfm_fetch_container_info (cfm_parser, connection_info.container, &container_info);
       if (ret != noErr)
 	continue;
-      
+
       if (container_info.sectionCount > 0) {
 	ret = cfm_fetch_connection_section_info (cfm_parser, connection_ids[connection_index], 0, &section_info, &instance_info);
 	if (ret != noErr)
@@ -238,7 +242,7 @@ cfm_fetch_container_info
   name_addr = bfd_getb32 (buf + parser->container_fragment_name_offset + 4);
 
   info->name[0] = name_length;
-  
+
   ret = target_read_memory_partial (name_addr, &info->name[1], name_length, &err);
   if (ret < 0)
     return cfragFragmentCorruptErr;
@@ -318,28 +322,28 @@ cfm_fetch_connection_section_info
   ret = cfm_fetch_container_info (parser, connection.container, &container);
   if (ret < 0)
     return cfragCFMInternalErr;
-  
+
   if (sectionIndex >= container.sectionCount)
     return cfragNoSectionErr;
 
   offset = (connection.container + parser->container_length - (2 * parser->section_length) + (sectionIndex * parser->section_length));
-  
+
   ret = target_read_memory_partial (offset, section_buf, parser->section_length, &err);
   if (ret < 0)
     return cfragCFMInternalErr;
-  
+
   offset = (addr + parser->connection_length - (2 * sizeof (unsigned long)) + (sectionIndex * sizeof (unsigned long)));
-  
+
   ret = target_read_memory_partial (offset, (unsigned char *) &instance_ptr, sizeof (unsigned long), &err);
   if (ret < 0)
 	return cfragCFMInternalErr;
   if (instance_ptr == 0)
     return cfragNoSectionErr;
-  
+
   ret = target_read_memory_partial (instance_ptr, instance_buf, parser->instance_length, &err);
   if (ret < 0)
     return cfragCFMInternalErr;
-  
+
   ret = cfm_parse_section_info (parser, section_buf, parser->section_length, section);
   if (ret < 0)
     return ret;
@@ -350,3 +354,5 @@ cfm_fetch_connection_section_info
 
   return noErr;
 }
+
+/* EOF */

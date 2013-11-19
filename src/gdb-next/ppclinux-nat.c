@@ -1,4 +1,4 @@
-/* PPC linux native support.
+/* ppclinux-nat.c: PPC linux native support.
    Copyright (C) 1988, 1989, 1991, 1992, 1994, 1996 Free Software Foundation, Inc.
 
 This file is part of GDB.
@@ -50,7 +50,7 @@ kernel_u_size ()
   return (sizeof (struct user));
 }
 
-static int regmap[] = 
+static int regmap[] =
  {PT_R0,     PT_R1,     PT_R2,     PT_R3,     PT_R4,     PT_R5,     PT_R6,     PT_R7,
   PT_R8,     PT_R9,     PT_R10,    PT_R11,    PT_R12,    PT_R13,    PT_R14,    PT_R15,
   PT_R16,    PT_R17,    PT_R18,    PT_R19,    PT_R20,    PT_R21,    PT_R22,    PT_R23,
@@ -66,7 +66,7 @@ int ppc_register_u_addr(int blockend, int regnum)
 {
     int ustart = blockend;
     if (regnum == MQ_REGNUM) {
-	printf_filtered("Don't know how to get PPC mq reg!\n");
+	printf_filtered("Do not know how to get PPC mq reg!\n");
 	return -1;
     }
     else {
@@ -96,3 +96,5 @@ supply_fpregset(fpregset_t *fpregsetp)
 	supply_register(FP0_REGNUM+regi, (char *) (*fpregsetp + regi));
     }
 }
+
+/* EOF */

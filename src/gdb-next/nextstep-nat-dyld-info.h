@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-dyld-info.h
+ */
+
 #ifndef _NEXTSTEP_NAT_DYLD_INFO_H_
 #define _NEXTSTEP_NAT_DYLD_INFO_H_
 
@@ -5,9 +9,9 @@
 
 struct _bfd;
 
-typedef enum dyld_objfile_reason { 
+typedef enum dyld_objfile_reason {
 
-  dyld_reason_deallocated = 0x1, 
+  dyld_reason_deallocated = 0x1,
 
   dyld_reason_user = 0x02,
   dyld_reason_cached = 0x04,
@@ -16,7 +20,7 @@ typedef enum dyld_objfile_reason {
   dyld_reason_executable = 0x10,
 
   dyld_reason_dyld = 0x20,
-  dyld_reason_cfm = 0x40, 
+  dyld_reason_cfm = 0x40,
 
   dyld_reason_image = 0x18,
   dyld_reason_shlib = 0xfc,
@@ -119,3 +123,5 @@ void dyld_print_shlib_info
 PARAMS ((struct dyld_objfile_info *s, unsigned int reason_mask));
 
 #endif /* _NEXTSTEP_NAT_DYLD_INFO_H_ */
+
+/* EOF */

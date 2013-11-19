@@ -1,3 +1,7 @@
+/*
+ * ppc-frameinfo.c
+ */
+
 #include "ppc-reg.h"
 
 #include "ppc-frameinfo.h"
@@ -34,7 +38,7 @@ inline int SIGNED_SHORT (long x)
   }
 }
 
-inline int GET_SRC_REG (long x) 
+inline int GET_SRC_REG (long x)
 {
   return (x >> 21) & 0x1f;
 }
@@ -46,19 +50,19 @@ ppc_print_boundaries (bounds)
      ppc_function_boundaries *bounds;
 {
   if (bounds->prologue_start != INVALID_ADDRESS) {
-    printf_filtered 
+    printf_filtered
       (" The function prologue begins at 0x%lx.\n", bounds->prologue_start);
   }
   if (bounds->body_start != INVALID_ADDRESS) {
-    printf_filtered 
+    printf_filtered
       (" The function body begins at 0x%lx.\n", bounds->body_start);
   }
   if (bounds->epilogue_start != INVALID_ADDRESS) {
-    printf_filtered 
+    printf_filtered
       (" The function epilogue begins at 0x%lx.\n", bounds->epilogue_start);
   }
   if (bounds->function_end != INVALID_ADDRESS) {
-    printf_filtered 
+    printf_filtered
       (" The function ends at 0x%lx.\n", bounds->function_end);
   }
 }
@@ -73,7 +77,7 @@ ppc_print_properties (props)
     printf_filtered (" A stack frame has been allocated.\n");
   }
   if (props->frameptr_reg >= 0) {
-    printf_filtered 
+    printf_filtered
       (" The stack pointer has been saved by alloca() in r%d.\n",
        props->frameptr_reg);
   }
@@ -81,29 +85,29 @@ ppc_print_properties (props)
     printf_filtered (" No registers have been saved.\n");
   } else {
     if (props->offset >= 0) {
-      printf_filtered 
+      printf_filtered
 	(" %d bytes of integer and floating-point registers have been saved:\n",
 	 props->offset);
     }
     if (props->saved_gpr >= 0) {
       printf_filtered
-	(" General-purpose registers r%d--r%d have been saved at offset 0x%x.\n", 
+	(" General-purpose registers r%d--r%d have been saved at offset 0x%x.\n",
 	 props->saved_gpr, 31, props->gpr_offset);
     } else {
       printf_filtered (" No general-purpose registers have been saved.\n");
-    } 
+    }
     if (props->saved_fpr >= 0) {
       printf_filtered
 	(" Floating-point registers r%d--r%d have been saved at offset 0x%x.\n",
 	 props->saved_fpr, 31, props->fpr_offset);
     } else {
       printf_filtered (" No floating-point registers have been saved.\n");
-    } 
+    }
   }
-  if (props->lr_saved) 
+  if (props->lr_saved)
     {
-      printf_filtered 
-        (" The link register has been saved at offset 0x%x.\n", 
+      printf_filtered
+        (" The link register has been saved at offset 0x%x.\n",
 	 props->lr_offset);
     }
   else
@@ -115,15 +119,15 @@ ppc_print_properties (props)
       else
 	printf_filtered (" I have no idea where the link register is stored.\n");
     }
-  
+
   if (props->cr_saved) {
-    printf_filtered 
+    printf_filtered
       (" The condition register has been saved at offset 0x%x.\n",
        props->cr_offset);
   }
 }
 
-struct read_memory_unsigned_int_args 
+struct read_memory_unsigned_int_args
 {
   CORE_ADDR addr;
   int len;
@@ -132,9 +136,9 @@ struct read_memory_unsigned_int_args
 
 int wrap_read_memory_unsigned_integer (void *in_args)
 {
-  struct read_memory_unsigned_int_args *args 
+  struct read_memory_unsigned_int_args *args
           = (struct read_memory_unsigned_int_args *) in_args;
-          
+
   args->ret_val = read_memory_unsigned_integer (args->addr, args->len);
   return 1;
 }
@@ -143,17 +147,17 @@ int
 safe_read_memory_unsigned_integer (CORE_ADDR addr, int len, unsigned long *val)
 {
     struct read_memory_unsigned_int_args args;
-    
+
     args.addr = addr;
     args.len = len;
-    
+
     if (!catch_errors ((catch_errors_ftype *) wrap_read_memory_unsigned_integer,
       &args,"", RETURN_MASK_ERROR))
       {
           return 0;
       }
     *val = args.ret_val;
-    return 1;  
+    return 1;
 }
 
 /* return pc value after skipping a function prologue and also return
@@ -166,13 +170,13 @@ ppc_parse_instructions (start, end, props)
      ppc_function_properties *props;
 {
   CORE_ADDR pc;
-  int insn_count = 1; /* Some patterns occur in a particular order, so I 
+  int insn_count = 1; /* Some patterns occur in a particular order, so I
                          keep the instruction count so I can match them
                          with more certainty. */
   int saw_pic_base_setup = 0;
   int lr_reg = -1;  /* temporary cookies that we use to tell us that
-		       we have seen the lr moved into a gpr. 
-		       * Set to -1 at start.  
+		       we have seen the lr moved into a gpr.
+		       * Set to -1 at start.
 		       * Set to the stw instruction for the register we
 		       see in the mflr.
 		       * Set to 0 when we see the lr get stored on the
@@ -186,24 +190,24 @@ ppc_parse_instructions (start, end, props)
 
   CHECK_FATAL (start != INVALID_ADDRESS);
   /* instructions must be word-aligned */
-  CHECK_FATAL ((start % 4) == 0);   
+  CHECK_FATAL ((start % 4) == 0);
   /* instructions must be word-aligned */
-  CHECK_FATAL ((end == INVALID_ADDRESS) || (end % 4) == 0);	
+  CHECK_FATAL ((end == INVALID_ADDRESS) || (end % 4) == 0);
   CHECK_FATAL ((end >= start) || (end == INVALID_ADDRESS));
 
-  for (pc = start; (end == INVALID_ADDRESS) || (pc < end); 
+  for (pc = start; (end == INVALID_ADDRESS) || (pc < end);
        pc += 4, insn_count++) {
     unsigned long op;
     if (!safe_read_memory_unsigned_integer (pc, 4, &op))
       {
         ppc_debug ("ppc_parse_instructions: Got an error reading at 0x%lx",
                    pc);
-        /* We got an error reading the PC, so let's get out of here... */
+        /* We got an error reading the PC, so let us get out of here... */
         return pc;
       }
-      
+
     /* This bcl is part of the sequence:
-       
+
        mflr r0 (optional - only if leaf function)
        bcl .+4
        mflr r31
@@ -220,7 +224,7 @@ ppc_parse_instructions (start, end, props)
        X Special purpose routines that are used in function prologues.
        These are:
 
-       * saveWorld: used to be used in user code to set up info for C++ 
+       * saveWorld: used to be used in user code to set up info for C++
          exceptions, though now it is only used in throw itself.
        * saveFP: saves the FP registers AND the lr
        * saveVec: saves the AltiVec registers.
@@ -234,11 +238,11 @@ ppc_parse_instructions (start, end, props)
 	   sure it is save_world.  The instruction in the bl
 	   is bits 6-31, with the last two bits zeroed, sign extended and
 	   added to the pc. */
-	
+
 	struct minimal_symbol *msymbol;
 	LONGEST branch_target;
 	int recognized_fn_in_prolog = 0;
-	
+
         props->lr_invalid = pc;
 	branch_target = (op & 0x03fffffc);
 
@@ -257,7 +261,7 @@ ppc_parse_instructions (start, end, props)
 	  }
 
 	branch_target += pc + 4;
-	
+
 	msymbol = lookup_minimal_symbol_by_pc (branch_target);
 	if (msymbol)
 	  {
@@ -266,24 +270,24 @@ ppc_parse_instructions (start, end, props)
 		    /* save_world currently saves all the volatile registers,
 		       and saves $lr & $cr on the stack in the usual place.
 		       if gcc changes, this needs to be updated as well. */
-		    
+
 		    props->frameless = 0;
 		    props->frameptr_used = 0;
-		    
+
 		    props->lr_saved = pc;
 		    props->lr_offset = 8;
 		    lr_reg = 0;
-		    
+
 		    props->cr_saved = 1;
 		    props->cr_offset = 4;
 		    cr_reg = 0;
-		    
+
 		    props->saved_gpr = 13;
 		    props->gpr_offset = -220;
-		    
+
 		    props->saved_fpr = 14;
 		    props->fpr_offset = -144;
-		    
+
 		    recognized_fn_in_prolog = 1;
 		  }
 		else if (strcmp (SYMBOL_SOURCE_NAME (msymbol), "saveFP") == 0)
@@ -292,42 +296,42 @@ ppc_parse_instructions (start, end, props)
 		    int reg;
 
 		    /* Decode the actual branch target to find the
-		       lowest register that is stored: */
-		if (!safe_read_memory_unsigned_integer (branch_target, 4, 
+		     * lowest register that is stored: */
+		if (!safe_read_memory_unsigned_integer (branch_target, 4,
                                                             &store_insn))
                        {
                          ppc_debug ("ppc_parse_instructions: Got an error reading at 0x%lx",
                                     pc);
-                         /* We got an error reading the PC, 
-                            so let's get out of here... */
+                         /* We got an error reading the PC,
+                          * so let us get out of here... */
                          return pc;
                        }
-                       
+
 		    reg = GET_SRC_REG (store_insn);
-		    if ((props->saved_fpr == -1) 
+		    if ((props->saved_fpr == -1)
 			|| (props->saved_fpr > reg)) {
 		      props->saved_fpr = reg;
-		      props->fpr_offset = SIGNED_SHORT (store_insn) 
+		      props->fpr_offset = SIGNED_SHORT (store_insn)
 			+ offset2;
 		    }
 		    /* The LR also gets saved in saveFP... */
 		    props->lr_saved = pc;
 		    props->lr_offset = 8;
 		    lr_reg = 0;
-		    
+
 		    recognized_fn_in_prolog = 1;
 		  }
 		else if (strcmp (SYMBOL_SOURCE_NAME (msymbol), "saveVec") == 0)
 		  {
-		    /* FIXME: We can't currently get the AltiVec
-		       registers, but we need to save them away for
-		       when we can. */
+		    /* FIXME: We cannot currently get the AltiVec
+		     * registers, but we need to save them away for
+		     * when we can. */
 
 		    recognized_fn_in_prolog = 1;
 		  }
 	      }
-	/* If we didn't recognize this function, we are probably not
-	   in the prologue, so let's get out of here... */
+	/* If we did NOT recognize this function, we are probably not
+	   in the prologue, so let us get out of here... */
 	if (!recognized_fn_in_prolog)
 	  break;
 	else
@@ -356,16 +360,16 @@ ppc_parse_instructions (start, end, props)
 	  }
 
 	continue;
-      } 
+      }
     else if ((op & 0xfc1fffff) == 0x7c0803a6) /* mtlr Rx */
       {
         /* We see this case when we have moved the lr aside to
-           set up the pic base, but have not saved it on the 
+           set up the pic base, but have not saved it on the
            stack because we are a leaf function.  We are now
            moving it back to the lr, so the lr is again valid */
 
         int target_reg = (op & 0x03e00000) >> 21;
-        if (!props->lr_saved 
+        if (!props->lr_saved
             && (props->lr_reg > -1))
           {
             props->lr_valid_again = pc;
@@ -377,14 +381,14 @@ ppc_parse_instructions (start, end, props)
 	/* Ditto for the cr move, we always use r0 for temp store
 	   in the prologue.
 	*/
-	
+
 	int target_reg = (op & 0x03e000000) >> 21;
 	if (target_reg == 0)
 	  {
 	    cr_reg = (op & 0x03e00000) | 0x90010000;
 	  }
 	continue;
-      } 
+      }
     else if ((op & 0xfc1f0000) == 0xd8010000)  /* stfd Rx,NUM(r1) */
       {
 	int reg = GET_SRC_REG (op);
@@ -393,12 +397,12 @@ ppc_parse_instructions (start, end, props)
 	  props->fpr_offset = SIGNED_SHORT (op) + offset2;
 	}
 	continue;
-      } 
+      }
     else if (((op & 0xfc1f0000) == 0xbc010000)
 	       /* stm Rx, NUM(r1) */
-	       || ((op & 0xfc1f0000) == 0x90010000 
+	       || ((op & 0xfc1f0000) == 0x90010000
 		   /* st rx,NUM(r1), rx >= r13 */
-		   && (op & 0x03e00000) >= 0x01a00000)) 
+		   && (op & 0x03e00000) >= 0x01a00000))
       {
 	int reg = GET_SRC_REG (op);
 	if ((props->saved_gpr == -1) || (props->saved_gpr > reg)) {
@@ -408,56 +412,56 @@ ppc_parse_instructions (start, end, props)
 	continue;
       }
 
-    /* If we saw a mflr, then we set lr_reg to the stw insn that would 
-       match the register mflr moved the lr to.  Otherwise it is 0 or
-       -1 so it won't match this... */
-    else if ((op & 0xffff0000) == lr_reg) 
-      { 
+    /* If we saw a mflr, then we set lr_reg to the stw insn that would
+     * match the register mflr moved the lr to. Otherwise it is 0 or
+     * -1 so it will NOT match this... */
+    else if ((op & 0xffff0000) == lr_reg)
+      {
 	/* st Rx,NUM(r1) where Rx == lr */
 	props->lr_saved = pc;
 	props->lr_offset = SIGNED_SHORT (op) + offset2;
 	lr_reg = 0;
 	continue;
-	
+
       }
-    else if ((op & 0xffff0000) == cr_reg) 
-      { 
+    else if ((op & 0xffff0000) == cr_reg)
+      {
 	/* st Rx,NUM(r1) where Rx == cr */
 	props->cr_saved = 1;
 	props->cr_offset = SIGNED_SHORT (op) + offset2;
 	cr_reg = 0;
 	continue;
-	
-      } 
+
+      }
     /* This is moving the stack pointer to the top of the new stack
        when the frame is < 32K */
-    else if ((op & 0xffff0000) == 0x94210000) 
+    else if ((op & 0xffff0000) == 0x94210000)
       { /* stu r1,NUM(r1) */
 	props->frameless = 0;
 	props->offset = SIGNED_SHORT (op);
 	offset2 = props->offset;
 	continue;
-	
-      } 
+
+      }
     /* The next three instructions are used to set up the stack when
        the frame is >= 32K */
-    else if ((op & 0xffff0000) == 0x3c000000) 
-      { 
+    else if ((op & 0xffff0000) == 0x3c000000)
+      {
 	/* addis 0,0,NUM, (i.e. lis r0, NUM) used for >= 32k frames */
 	props->offset = (op & 0x0000ffff) << 16;
 	props->frameless = 0;
 	continue;
-	
-      } 
-    else if ((op & 0xffff0000) == 0x60000000) 
-      { 
+
+      }
+    else if ((op & 0xffff0000) == 0x60000000)
+      {
 	/* ori 0,0,NUM, 2nd half of >= 32k frames */
 	props->offset |= (op & 0x0000ffff);
 	props->frameless = 0;
 	continue;
-	
-      } 
-    else if (op == 0x7c21016e) 
+
+      }
+    else if (op == 0x7c21016e)
       { /* stwux 1,1,0 */
 	props->frameless = 0;
 	offset2 = props->offset;
@@ -469,8 +473,8 @@ ppc_parse_instructions (start, end, props)
 	props->frameptr_used = 1;
 	props->frameptr_reg = 30;
 	continue;
-	
-      } 
+
+      }
     /* store parameters in stack via frame pointer - Using r31 */
     else if ((props->frameptr_used && props->frameptr_reg == 30) &&
 	       ((op & 0xfc1f0000) == 0x901e0000 || /* st rx,NUM(r1) */
@@ -479,35 +483,35 @@ ppc_parse_instructions (start, end, props)
 	{
 	  continue;
 
-	} 
+	}
     /* These ones are not used in Apple's gcc for function prologues
-       so far as I can tell.  I am keeping them around since we support
-       other compilers, but this way we can tell which bits we need
-       to change as we change the ABI that our gcc uses... */
+     * so far as I can tell. I am keeping them around since we support
+     * other compilers, but this way we can tell which bits we need
+     * to change as we change the ABI that our gcc uses... */
 
     else if (op == 0x48000005) /* bl .+4 used in -mrelocatable */
-      { 
+      {
 	continue;
-      } 
+      }
     else if (op == 0x48000004) /* b .+4 (xlc) */
       {
 	break;
-      } 
+      }
     /* load up minimal toc pointer */
     else if ((op >> 22) == 0x20f
 	       && ! props->minimal_toc_loaded) /* l r31,... or l r30,... */
-      { 
+      {
 	props->minimal_toc_loaded = 1;
 	continue;
-	
-      } 
+
+      }
     /* store parameters in stack */
     else if ((op & 0xfc1f0000) == 0x90010000 || /* st rx,NUM(r1) */
 	       (op & 0xfc1f0000) == 0xd8010000 || /* stfd Rx,NUM(r1) */
 	       (op & 0xfc1f0000) == 0xfc010000) /* frsp, fp?,NUM(r1) */
-      { 
+      {
 	continue;
-	
+
       }
     /* store parameters in stack via frame pointer - Using r31 */
     else if ((props->frameptr_used && props->frameptr_reg == 31) &&
@@ -517,23 +521,23 @@ ppc_parse_instructions (start, end, props)
 	{
 	  continue;
 
-	} 
+	}
     /* update stack pointer */
     else if (((op & 0xffff0000) == 0x801e0000
 		/* lwz 0,NUM(r30), used in V.4 -mrelocatable */
 		|| op == 0x7fc0f214)
 	       /* add r30,r0,r30, used in V.4 -mrelocatable */
-	       && lr_reg == 0x901e0000) 
+	       && lr_reg == 0x901e0000)
       {
 	continue;
-      } 
-    else if ((op & 0xffff0000) == 0x3fc00000 
+      }
+    else if ((op & 0xffff0000) == 0x3fc00000
 	       /* addis 30,0,foo@ha, used in V.4 -mminimal-toc */
 	       || (op & 0xffff0000) == 0x3bde0000)  /* addi 30,30,foo@l */
       {
 	continue;
-	
-      } 
+
+      }
     /* Set up frame pointer */
     else if (op == 0x603f0000	/* oril r31, r1, 0x0 */
 	       || op == 0x7c3f0b78)  /* mr r31, r1 */
@@ -541,8 +545,8 @@ ppc_parse_instructions (start, end, props)
 	props->frameptr_used = 1;
 	props->frameptr_reg = 31;
 	continue;
-	
-      } 
+
+      }
     /* Set up frame pointer (this time check for r30)
        Note - I moved the "mr r30, r1" check up to the Apple uses
        these section, just to keep this thing more managable...  */
@@ -551,25 +555,25 @@ ppc_parse_instructions (start, end, props)
 	props->frameptr_used = 1;
 	props->frameptr_reg = 30;
 	continue;
-	
-      } 
+
+      }
     /* Another way to set up the frame pointer.  */
     else if ((op & 0xfc1fffff) == 0x38010000) /* addi rX, r1, 0x0 */
       {
 	props->frameptr_used = 1;
 	props->frameptr_reg = (op & ~0x38010000) >> 21;
 	continue;
-	
-      } 
+
+      }
     /* unknown instruction */
-    else 
+    else
       {
 	break;
       }
   }
 
   if (props->offset != -1) { props->offset = -props->offset; }
-  
+
   return pc;
 }
 
@@ -648,7 +652,7 @@ ppc_find_function_boundaries (request, reply)
   CHECK_FATAL (reply->prologue_start != INVALID_ADDRESS);
 
   if ((reply->prologue_start % 4) != 0) { return -1; }
-  reply->body_start = ppc_parse_instructions (reply->prologue_start, 
+  reply->body_start = ppc_parse_instructions (reply->prologue_start,
 					      INVALID_ADDRESS, &props);
   return 0;
 }
@@ -665,7 +669,7 @@ ppc_frame_cache_boundaries (frame, retbounds)
       frame->extra_info->bounds = (struct ppc_function_boundaries *)
 	obstack_alloc (&frame_cache_obstack, sizeof (ppc_function_boundaries));
       CHECK_FATAL (frame->extra_info->bounds != NULL);
-      
+
       frame->extra_info->bounds->prologue_start = INVALID_ADDRESS;
       frame->extra_info->bounds->body_start = INVALID_ADDRESS;
       frame->extra_info->bounds->epilogue_start = INVALID_ADDRESS;
@@ -676,14 +680,14 @@ ppc_frame_cache_boundaries (frame, retbounds)
       ppc_function_boundaries_request request;
       ppc_function_boundaries lbounds;
       int ret;
-  
+
       ppc_clear_function_boundaries (&lbounds);
       ppc_clear_function_boundaries_request (&request);
 
       request.contains_pc = frame->pc;
       ret = ppc_find_function_boundaries (&request, &lbounds);
       if (ret != 0) { return ret; }
-    
+
       frame->extra_info->bounds = (struct ppc_function_boundaries *)
 	obstack_alloc (&frame_cache_obstack, sizeof (ppc_function_boundaries));
       CHECK_FATAL (frame->extra_info->bounds != NULL);
@@ -691,19 +695,19 @@ ppc_frame_cache_boundaries (frame, retbounds)
     }
   }
 
-  if (retbounds != NULL) { 
+  if (retbounds != NULL) {
     memcpy (retbounds, frame->extra_info->bounds, sizeof (ppc_function_boundaries));
   }
 
   return 0;
 }
 
-/* ppc_frame_cache_properties - 
+/* ppc_frame_cache_properties -
  * This function creates the ppc_function_properties
  * bit of the extra_info structure of FRAME, if it is not already
  * present.  If RETPROPS is not NULL, it copies the properties
  * to retprops (provided by caller).
- * 
+ *
  * Returns: 0 on success */
 
 int
@@ -723,20 +727,20 @@ ppc_frame_cache_properties (frame, retprops)
       return 1;
     }
 
-  if (! frame->extra_info->props) 
+  if (! frame->extra_info->props)
     {
-      
-      if (ppc_is_dummy_frame (frame)) 
+
+      if (ppc_is_dummy_frame (frame))
 	{
-	  
+
 	  ppc_function_properties *props;
-	  
+
 	  frame->extra_info->props = (struct ppc_function_properties *)
 	    obstack_alloc (&frame_cache_obstack, sizeof (ppc_function_properties));
 	  CHECK_FATAL (frame->extra_info->props != NULL);
 	  ppc_clear_function_properties (frame->extra_info->props);
 	  props = frame->extra_info->props;
-	  
+
 	  props->offset = 0;
 	  props->saved_gpr = -1;
 	  props->saved_fpr = -1;
@@ -750,31 +754,31 @@ ppc_frame_cache_properties (frame, retprops)
 	  props->cr_saved = 0;
 	  props->cr_offset = -1;
 	  props->minimal_toc_loaded = 0;
-	  
-	} 
-      else 
+
+	}
+      else
 	{
-	  
+
 	  int ret;
 	  ppc_function_properties lprops;
-	  
+
 	  ppc_clear_function_properties (&lprops);
-	  
+
 	  ret = ppc_frame_cache_boundaries (frame, NULL);
 	  if (ret != 0) { return ret; }
-	  
+
 	  if ((frame->extra_info->bounds->prologue_start % 4) != 0) { return -1; }
 	  if ((frame->pc % 4) != 0) { return -1; }
-	  ppc_parse_instructions (frame->extra_info->bounds->prologue_start, 
+	  ppc_parse_instructions (frame->extra_info->bounds->prologue_start,
 				  frame->extra_info->bounds->function_end, &lprops);
 	  frame->extra_info->props = (struct ppc_function_properties *)
 	    obstack_alloc (&frame_cache_obstack, sizeof (ppc_function_properties));
 	  CHECK_FATAL (frame->extra_info->props != NULL);
-	  
+
 	  /* ppc_parse_instructions sometimes gets the stored pc location
 	     wrong.  However, we KNOW that for all frames but frame 0
 	     the pc is on the stack.  So force that here. */
-	  
+
 	  if (frame->next != NULL && !lprops.lr_saved)
 	    {
 	      lprops.lr_offset = 8;
@@ -784,34 +788,36 @@ ppc_frame_cache_properties (frame, retprops)
 	      lprops.lr_reg = LR_REGNUM;
 	      lprops.lr_invalid = 0;
 	      ppc_debug ("ppc_frame_cache_properties: %s\n",
-			 "thought a non-leaf frame didn't save the lr, correcting...");
+			 "thought a non-leaf frame did not save the lr, correcting...");
 	    }
-	  
+
 	  memcpy (frame->extra_info->props, &lprops,
 		  sizeof (ppc_function_properties));
 	}
-    } 
+    }
   else if (frame->next != NULL && !frame->extra_info->props->lr_saved)
     {
       /* We tried to correct this error from ppc_parse_instructions above,
-	 but the frame hadn't been fully set yet.  So we will do it again
-	 here... */
+	   * but the frame had NOT been fully set yet. So we will do it again
+	   * here... */
       ppc_function_properties *props = frame->extra_info->props;
-      
+
       props->lr_offset = 8;
       /* This is bogus, just needs to be BEFORE where we are
-	 to get the rest of the code right. */
+	   * to get the rest of the code right. */
       props->lr_saved = frame->pc - 8;
       props->lr_reg = LR_REGNUM;
       props->lr_invalid = 0;
       ppc_debug ("ppc_frame_cache_properties: %s\n",
-		 "thought a non-leaf frame didn't save the lr, correcting...");
-      
+		 "thought a non-leaf frame did not save the lr, correcting...");
+
     }
 
   if (retprops != NULL) {
     memcpy (retprops, frame->extra_info->props, sizeof (ppc_function_properties));
   }
-  
-  return 0;    
+
+  return 0;
 }
+
+/* EOF */

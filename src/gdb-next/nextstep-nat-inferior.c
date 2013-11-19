@@ -44,7 +44,7 @@
 
 #if WITH_CFM
 # include "nextstep-nat-cfm.h"
-#endif
+#endif /* WITH_CFM */
 
 #define _dyld_debug_make_runnable(a, b) DYLD_FAILURE
 #define _dyld_debug_restore_runnable(a, b) DYLD_FAILURE
@@ -288,13 +288,13 @@ next_handle_exception (next_exception_thread_message *msg,
       break;
     case EXC_BREAKPOINT:
       /* Many internal GDB routines expect breakpoints to be reported
-	 as TARGET_SIGNAL_TRAP, and will report TARGET_EXC_BREAKPOINT
-	 as a spurious signal. */
+	   * as TARGET_SIGNAL_TRAP, and will report TARGET_EXC_BREAKPOINT
+	   * as a spurious signal. */
 #if 0
       status->value.sig = TARGET_EXC_BREAKPOINT;
 #else
       status->value.sig = TARGET_SIGNAL_TRAP;
-#endif
+#endif /* 0 */
       break;
     default:
       status->value.sig = TARGET_SIGNAL_UNKNOWN;
@@ -322,12 +322,12 @@ next_add_to_port_set (struct next_inferior_status *inferior,
 }
 
 /* TIMEOUT is either -1, 0, or greater than 0.
-   For 0, check if there is anything to read, but don't block.
+   For 0, check if there is anything to read, but do NOT block.
    For -1, block until there is something to read.
    For >0, block at least the specified number of microseconds, or until there
    is something to read.
-   The kernel doesn't give better than ~1HZ (0.01 sec) resolution, so
-   don't use this as a high accuracy timer. */
+   The kernel does NOT give better than ~1HZ (0.01 sec) resolution, so
+   do NOT use this as a high accuracy timer. */
 
 static enum next_source_type
 next_fetch_event (struct next_inferior_status *inferior,
@@ -550,12 +550,12 @@ next_process_events (struct next_inferior_status *inferior,
       }
 
     /* FIXME: we want to poll in next_fetch_event because otherwise we
-       arbitrarily wait however long the wait quanta for select is
-       (seemingly ~.01 sec).  However, if we do this we aren't giving
-       the mach exception thread a chance to run, and see if there are
-       any more exceptions available.  Normally this is okay, because
-       there really IS only one message, but to be correct we need to
-       use some thread synchronization. */
+     * arbitrarily wait however long the wait quanta for select is
+     * (seemingly ~.01 sec). However, if we do this we are NOT giving
+     * the mach exception thread a chance to run, and see if there are
+     * any more exceptions available. Normally this is okay, because
+     * there really IS only one message, but to be correct we need to
+     * use some thread synchronization. */
     for (;;)
       {
 	source = next_fetch_event (inferior, buf, sizeof (buf),
@@ -569,7 +569,7 @@ next_process_events (struct next_inferior_status *inferior,
 	    event_count++;
 
 	    /* Stuff the remaining events onto the pending_events queue.
-	       These will be dispatched when we run again. */
+	     * These will be dispatched when we run again. */
 	    /* PENDING_EVENTS */
 	    next_add_to_pending_events (source, buf);
 	  }
@@ -603,11 +603,11 @@ void next_mach_check_new_threads ()
   MACH_CHECK_ERROR (kret);
 }
 
-/* This differs from child_stop in that we don't send "-inferior_process_group" to
+/* This differs from child_stop in that we do NOT send "-inferior_process_group" to
    kill when we are attached to the process, we just send inferior_process_group.
-   Even this is kind of a lie, since inferior_process_group really isn't, it is just the
+   Even this is kind of a lie, since inferior_process_group really is NOT, it is just the
    pid of the child process, look at "terminal_init_inferior" in inflow.c, which
-   sets inferior_process_group.  This just passes in the pid of the child process!
+   sets inferior_process_group. This just passes in the pid of the child process!
    I think all the job control stuff in inflow.c looks bogus to me, we ought to use
    MacOS X specific versions everywhere we can, and avoid that mess...
 */
@@ -646,10 +646,10 @@ next_child_resume (ptid_t ptid, int step, enum target_signal signal)
     return;
   }
 
-  /* Check for pending events.  If we find any, then we won't really resume,
-     but rather we will extract the first event from the pending events
-     queue, and post it to the gdb event queue, and then "pretend" that we
-     have in fact resumed. */
+  /* Check for pending events. If we find any, then we will NOT really resume,
+   * but rather we will extract the first event from the pending events
+   * queue, and post it to the gdb event queue, and then "pretend" that we
+   * have in fact resumed. */
   inferior_debug (2, "next_child_resume: checking for pending events\n");
   status.kind = TARGET_WAITKIND_SPURIOUS;
   next_process_events (next_status, &status, 0, 0);
@@ -813,7 +813,7 @@ static void next_mourn_inferior ()
     {
       next_init_dyld_symfile (NULL);
     }
-#endif
+#endif /* 0 */
 
   next_clear_pending_events();
 }
@@ -1030,18 +1030,18 @@ next_set_auto_start_dyld (char *args, int from_tty,
 			  struct cmd_list_element *c)
 {
 
-  /* Don't want to bother with stopping the target to set this... */
+  /* Do NOT want to bother with stopping the target to set this... */
   if (target_executing)
     return;
 
-  /* If we are so early on that the next_status hasn't gotten allocated
-     yet, this will fail, but we also won't have needed to do anything,
-     so we can safely just exit. */
+  /* If we are so early on that the next_status has NOT gotten allocated
+   * yet, this will fail, but we also will NOT have needed to do anything,
+   * so we can safely just exit. */
   if (next_status == NULL)
     return;
 
   /* If we are turning off watching dyld, we need to remove
-     the breakpoint... */
+   * the breakpoint... */
 
   if (!inferior_auto_start_dyld_flag)
     {
@@ -1050,7 +1050,7 @@ next_set_auto_start_dyld (char *args, int from_tty,
     }
 
   /* If the inferior is not running, then all we have to do
-     is set the flag, which is done in generic code. */
+   * is set the flag, which is done in generic code. */
 
   if (ptid_equal (inferior_ptid, null_ptid))
     return;
@@ -1647,3 +1647,5 @@ _initialize_next_inferior ()
   add_com ("update", class_obscure, update_command,
 	   "Re-read current state information from inferior.");
 }
+
+/* EOF */

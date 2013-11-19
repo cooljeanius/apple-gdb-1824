@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-mutils.c
+ */
+
 #include "defs.h"
 #include "inferior.h"
 #include "symtab.h"
@@ -50,14 +54,15 @@ unsigned int child_get_pagesize ()
 }
 
 /* Copy LEN bytes to or from inferior's memory starting at MEMADDR
-   to debugger memory starting at MYADDR.   Copy to inferior if
-   WRITE is nonzero.
-
-   Returns the length copied. */
+ * to debugger memory starting at MYADDR. Copy to inferior if
+ * WRITE is nonzero.
+ *
+ * Returns the length copied.
+ */
 
 static int
-mach_xfer_memory_remainder (CORE_ADDR memaddr, char *myaddr, 
-			    int len, int write, 
+mach_xfer_memory_remainder (CORE_ADDR memaddr, char *myaddr,
+			    int len, int write,
 			    struct mem_attrib *attrib,
 			    struct target_ops *target)
 {
@@ -70,14 +75,14 @@ mach_xfer_memory_remainder (CORE_ADDR memaddr, char *myaddr,
 
   kern_return_t kret;
 
-  CHECK_FATAL (((memaddr + len - 1) - ((memaddr + len - 1) % pagesize)) 
+  CHECK_FATAL (((memaddr + len - 1) - ((memaddr + len - 1) % pagesize))
 	       == pageaddr);
 
-  kret = vm_read (next_status->task, pageaddr, pagesize, 
+  kret = vm_read (next_status->task, pageaddr, pagesize,
 		  &mempointer, &memcopied);
   if (kret != KERN_SUCCESS) {
-    mutils_debug ("Unable to read page for region at 0x%lx with length %lu from inferior: %s (0x%lx)\n", 
-		  (unsigned long) pageaddr, (unsigned long) len, 
+    mutils_debug ("Unable to read page for region at 0x%lx with length %lu from inferior: %s (0x%lx)\n",
+		  (unsigned long) pageaddr, (unsigned long) len,
 		  MACH_ERROR_STRING (kret), kret);
     return 0;
   }
@@ -88,30 +93,30 @@ mach_xfer_memory_remainder (CORE_ADDR memaddr, char *myaddr,
 	       MACH_ERROR_STRING (kret), (unsigned long) kret);
     }
     mutils_debug ("Unable to read region at 0x%lx with length %lu from inferior: "
-		  "vm_read returned %lu bytes instead of %lu\n", 
+		  "vm_read returned %lu bytes instead of %lu\n",
 		  (unsigned long) pageaddr, (unsigned long) pagesize,
 		  (unsigned long) memcopied, (unsigned long) pagesize);
     return 0;
   }
 
   if (! write) {
-    memcpy (myaddr, ((unsigned char *) 0) + mempointer 
+    memcpy (myaddr, ((unsigned char *) 0) + mempointer
 	    + (memaddr - pageaddr), len);
   } else {
     vm_machine_attribute_val_t flush = MATTR_VAL_CACHE_FLUSH;
-    memcpy (((unsigned char *) 0) + mempointer 
+    memcpy (((unsigned char *) 0) + mempointer
 	    + (memaddr - pageaddr), myaddr, len);
-    kret = vm_machine_attribute (task_self(), mempointer, 
+    kret = vm_machine_attribute (task_self(), mempointer,
 				 pagesize, MATTR_CACHE, &flush);
     if (kret != KERN_SUCCESS) {
       mutils_debug ("Unable to flush GDB's address space after memcpy prior to vm_write: %s (0x%lx)\n",
 		    MACH_ERROR_STRING (kret), kret);
     }
-    kret = vm_write (next_status->task, pageaddr, (pointer_t) mempointer, 
+    kret = vm_write (next_status->task, pageaddr, (pointer_t) mempointer,
 		     pagesize);
     if (kret != KERN_SUCCESS) {
       mutils_debug ("Unable to write region at 0x%lx with length %lu to inferior: %s (0x%lx)\n",
-		    (unsigned long) memaddr, (unsigned long) len, 
+		    (unsigned long) memaddr, (unsigned long) len,
 		    MACH_ERROR_STRING (kret), kret);
       return 0;
     }
@@ -128,8 +133,8 @@ mach_xfer_memory_remainder (CORE_ADDR memaddr, char *myaddr,
 }
 
 static int
-mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr, 
-			int len, int write, 
+mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr,
+			int len, int write,
 			struct mem_attrib *attrib,
 			struct target_ops *target)
 {
@@ -146,7 +151,7 @@ mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr,
   if (! write) {
     kret = vm_read (next_status->task, memaddr, len, &mempointer, &memcopied);
     if (kret != KERN_SUCCESS) {
-      mutils_debug ("Unable to read region at 0x%lx with length %lu from inferior: %s (0x%lx)\n", 
+      mutils_debug ("Unable to read region at 0x%lx with length %lu from inferior: %s (0x%lx)\n",
 		    (unsigned long) memaddr, (unsigned long) len,
 		    MACH_ERROR_STRING (kret), kret);
       return 0;
@@ -158,7 +163,7 @@ mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr,
 		 MACH_ERROR_STRING (kret), kret);
       }
       mutils_debug ("Unable to read region at 0x%lx with length %lu from inferior: "
-		    "vm_read returned %lu bytes instead of %lu\n", 
+		    "vm_read returned %lu bytes instead of %lu\n",
 		    (unsigned long) memaddr, (unsigned long) len,
 		    (unsigned long) memcopied, (unsigned long) len);
       return 0;
@@ -173,7 +178,7 @@ mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr,
   } else {
     kret = vm_write (next_status->task, memaddr, (pointer_t) myaddr, len);
     if (kret != KERN_SUCCESS) {
-      mutils_debug ("Unable to write region at 0x%lx with length %lu from inferior: %s (0x%lx)\n", 
+      mutils_debug ("Unable to write region at 0x%lx with length %lu from inferior: %s (0x%lx)\n",
 		    (unsigned long) memaddr, (unsigned long) len,
 		    MACH_ERROR_STRING (kret), kret);
       return 0;
@@ -184,9 +189,9 @@ mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr,
 }
 
 int
-mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, 
-		  int len, int write, 
-		  struct mem_attrib *attrib, 
+mach_xfer_memory (CORE_ADDR memaddr, char *myaddr,
+		  int len, int write,
+		  struct mem_attrib *attrib,
 		  struct target_ops *target)
 {
   vm_address_t r_start;
@@ -200,7 +205,7 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr,
   CORE_ADDR cur_memaddr;
   unsigned char *cur_myaddr;
   int cur_len;
-  
+
   unsigned int pagesize = child_get_pagesize ();
   vm_machine_attribute_val_t flush = MATTR_VAL_CACHE_FLUSH;
   kern_return_t kret;
@@ -231,18 +236,18 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr,
       return 0;
     }
     if (r_start > memaddr) {
-      mutils_debug ("First available address near 0x%lx is at 0x%lx; returning\n", 
+      mutils_debug ("First available address near 0x%lx is at 0x%lx; returning\n",
 		    (unsigned long) memaddr, (unsigned long) r_start);
       return - (r_start - memaddr);
     }
   }
-  
+
   cur_memaddr = memaddr;
   cur_myaddr = myaddr;
   cur_len = len;
 
   while (cur_len > 0) {
-    
+
     r_start = cur_memaddr;
 
     r_info_size = VM_REGION_BASIC_INFO_COUNT;
@@ -250,7 +255,7 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr,
                       VM_REGION_BASIC_INFO, (vm_region_info_t) &r_data,
                       &r_info_size, &r_object_name);
     if (kret != KERN_SUCCESS) {
-      mutils_debug ("Unable to read region information for memory at 0x%lx: %s (0x%lx)\n", 
+      mutils_debug ("Unable to read region information for memory at 0x%lx: %s (0x%lx)\n",
 		    (unsigned long) cur_memaddr, MACH_ERROR_STRING (kret), kret);
       break;
     }
@@ -259,17 +264,17 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr,
       mutils_debug ("Next available region for address at 0x%lx is 0x%lx\n",
 		    (unsigned long) cur_memaddr, r_start);
       break;
-    }      
+    }
 
     if (write) {
-      kret = vm_protect (next_status->task, r_start, r_size, 0, 
+      kret = vm_protect (next_status->task, r_start, r_size, 0,
 			 VM_PROT_READ | VM_PROT_WRITE);
       if (kret != KERN_SUCCESS) {
-	kret = vm_protect (next_status->task, r_start, r_size, 0, 
+	kret = vm_protect (next_status->task, r_start, r_size, 0,
 			   0x10 | VM_PROT_READ | VM_PROT_WRITE);
       }
       if (kret != KERN_SUCCESS) {
-	mutils_debug ("Unable to add write access to region at 0x%lx: %s (0x%lx)", 
+	mutils_debug ("Unable to add write access to region at 0x%lx: %s (0x%lx)",
 		      (unsigned long) r_start, MACH_ERROR_STRING (kret), kret);
 	break;
       }
@@ -289,7 +294,7 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr,
       if (op_len > max_len) {
 	op_len = max_len;
       }
-      ret = mach_xfer_memory_remainder (cur_memaddr, cur_myaddr, op_len, 
+      ret = mach_xfer_memory_remainder (cur_memaddr, cur_myaddr, op_len,
 					write, attrib, target);
     } else if (cur_len >= pagesize) {
       int max_len = r_end - cur_memaddr;
@@ -298,10 +303,10 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr,
 	op_len = max_len;
       }
       op_len -= (op_len % pagesize);
-      ret = mach_xfer_memory_block (cur_memaddr, cur_myaddr, op_len, 
+      ret = mach_xfer_memory_block (cur_memaddr, cur_myaddr, op_len,
 				    write, attrib, target);
     } else {
-      ret = mach_xfer_memory_remainder (cur_memaddr, cur_myaddr, cur_len, 
+      ret = mach_xfer_memory_remainder (cur_memaddr, cur_myaddr, cur_len,
 					write, attrib, target);
     }
 
@@ -310,7 +315,7 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr,
     cur_len -= ret;
 
     if (write) {
-      kret = vm_machine_attribute (next_status->task, r_start, r_size, 
+      kret = vm_machine_attribute (next_status->task, r_start, r_size,
 				   MATTR_CACHE, &flush);
       if (kret != KERN_SUCCESS) {
 	static int nwarn = 0;
@@ -325,10 +330,10 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr,
 	}
 	break;
       }
-      kret = vm_protect (next_status->task, r_start, r_size, 0, 
+      kret = vm_protect (next_status->task, r_start, r_size, 0,
 			 r_data.protection);
       if (kret != KERN_SUCCESS) {
-	warning ("Unable to restore original permissions for region at 0x%lx", 
+	warning ("Unable to restore original permissions for region at 0x%lx",
 		 (unsigned long) r_start);
 	break;
       }
@@ -337,7 +342,7 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr,
     if (ret == 0) {
       break;
     }
-  }   
+  }
 
   return len - cur_len;
 }
@@ -374,25 +379,25 @@ int next_thread_valid (task_t task, thread_t thread)
 
   kret = task_threads (task, &thread_list, &thread_count);
   /* Rhapsody can incorrectly return *_INVALID_PORT */
-  if ((kret == KERN_INVALID_ARGUMENT) 
-      || (kret == SEND_INVALID_PORT) 
-      || (kret == RCV_INVALID_PORT)) { 
+  if ((kret == KERN_INVALID_ARGUMENT)
+      || (kret == SEND_INVALID_PORT)
+      || (kret == RCV_INVALID_PORT)) {
     return 0;
   }
   MACH_CHECK_ERROR (kret);
-  
+
   for (i = 0; i < thread_count; i++) {
-    if (thread_list[i] == thread) { 
-      found = 1; 
+    if (thread_list[i] == thread) {
+      found = 1;
     }
   }
 
-  kret = vm_deallocate (task_self (), (vm_address_t) thread_list, 
+  kret = vm_deallocate (task_self (), (vm_address_t) thread_list,
 			(vm_size_t) (thread_count * sizeof (thread_t)));
   MACH_CHECK_ERROR (kret);
 
   if (! found) {
-    mutils_debug ("thread 0x%lx no longer valid for task 0x%lx\n", 
+    mutils_debug ("thread 0x%lx no longer valid for task 0x%lx\n",
 		  (unsigned long) thread, (unsigned long) task);
   }
   return found;
@@ -402,13 +407,13 @@ int next_pid_valid (int pid)
 {
   int ret;
   ret = kill (pid, 0);
-  mutils_debug ("kill (%d, 0) : ret = %d, errno = %d (%s)\n", pid, 
+  mutils_debug ("kill (%d, 0) : ret = %d, errno = %d (%s)\n", pid,
 		ret, errno, strerror (errno));
   return ((ret == 0) || ((errno != ESRCH) && (errno != ECHILD)));
 }
 
-void 
-mach_check_error (kern_return_t ret, const char *file, 
+void
+mach_check_error (kern_return_t ret, const char *file,
 		  unsigned int line, const char *func)
 {
   if (ret == KERN_SUCCESS) { return; }
@@ -420,8 +425,8 @@ mach_check_error (kern_return_t ret, const char *file,
 	 line, file, func, MACH_ERROR_STRING (ret), ret);
 }
 
-void 
-mach_warn_error (kern_return_t ret, const char *file, 
+void
+mach_warn_error (kern_return_t ret, const char *file,
 		 unsigned int line, const char *func)
 {
   if (ret == KERN_SUCCESS) { return; }
@@ -433,7 +438,7 @@ mach_warn_error (kern_return_t ret, const char *file,
 	   line, file, func, MACH_ERROR_STRING (ret), ret);
 }
 
-thread_t 
+thread_t
 next_primary_thread_of_task (task_t task)
 {
   thread_array_t thread_list;
@@ -448,15 +453,15 @@ next_primary_thread_of_task (task_t task)
 
   tret = thread_list[0];
 
-  ret = vm_deallocate (task_self (), (vm_address_t) thread_list, 
+  ret = vm_deallocate (task_self (), (vm_address_t) thread_list,
 		       (vm_size_t) (thread_count * sizeof (thread_t)));
   MACH_CHECK_ERROR (ret);
 
   return tret;
 }
 
-kern_return_t 
-next_mach_msg_receive (msg_header_t *msgin, size_t msg_size, 
+kern_return_t
+next_mach_msg_receive (msg_header_t *msgin, size_t msg_size,
 		       unsigned long timeout, port_t port)
 {
     kern_return_t kret;
@@ -468,7 +473,7 @@ next_mach_msg_receive (msg_header_t *msgin, size_t msg_size,
     if (timeout > 0) {
       options |= MACH_RCV_TIMEOUT;
     }
-    kret = mach_msg (msgin, options, 0, msg_size, port, 
+    kret = mach_msg (msgin, options, 0, msg_size, port,
 		     timeout, MACH_PORT_NULL);
 
     if (mutils_debugflag) {
@@ -483,16 +488,18 @@ next_mach_msg_receive (msg_header_t *msgin, size_t msg_size,
     return kret;
 }
 
-void 
+void
 _initialize_next_mutils ()
 {
   struct cmd_list_element *cmd;
 
   mutils_stderr = fdopen (fileno (stderr), "w+");
 
-  cmd = add_set_cmd ("debug-mutils", class_obscure, var_boolean, 
+  cmd = add_set_cmd ("debug-mutils", class_obscure, var_boolean,
 		     (char *) &mutils_debugflag,
 		     "Set if printing inferior memory debugging statements.",
 		     &setlist),
-  add_show_from_set (cmd, &showlist);		
+  add_show_from_set (cmd, &showlist);
 }
+
+/* EOF */

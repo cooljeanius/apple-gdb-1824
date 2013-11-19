@@ -21,3 +21,5 @@ kdp_return_t kdp_connect (kdp_connection *c);
 kdp_return_t kdp_disconnect (kdp_connection *c);
 
 #endif /* _KDB_DEBUG_TRANSACTIONS_H_ */
+
+/* EOF */

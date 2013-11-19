@@ -1,3 +1,7 @@
+/*
+ * nextstep-core.c
+ */
+
 #include "nextstep-nat-mutils.h"
 #include "nextstep-nat-inferior.h"
 #include "nextstep-threads.h"
@@ -106,7 +110,7 @@ core_xfer_memory (memaddr, myaddr, len, write)
      int write;
 {
   if (write) {
-    error ("Can't write to core files.");
+    error ("Cannot write to core files.");
   }
   return [regionManager getDataAt: (void *)memaddr nbytes: len into: myaddr];
 }
@@ -128,7 +132,7 @@ core_thread_list ()
   if (numThreads == 0)
     return;		/* MVS: nothing more to do (no threads to list).  */
   tInfos = [coreManager threadInfos];	/* Note: tInfos must be freed below */
-  printf_filtered("Thread PC         Name            Function\n");         
+  printf_filtered("Thread PC         Name            Function\n");
   for (i = 0; i < numThreads; i++) {
     name = getThreadNameFromState(THREADINFO_NAME_STATE(tInfos[i]), i);
     pc = getThreadPCAndNameFromState(THREADINFO_PC_STATE(tInfos[i]), &fName);
@@ -207,3 +211,5 @@ _initialize_next_core ()
 {
   add_target (&core_ops);
 }
+
+/* EOF */

@@ -1,3 +1,7 @@
+/*
+ * DisplayHooks.m
+ */
+
 #include "defs.h"
 #include "frame.h"
 #include "symtab.h"
@@ -15,9 +19,9 @@
 #include "DisplayMisc.h"
 
 #ifndef ROOTED_P
-#define SLASH_P(X) ((X)=='\\' || (X) == '/')
-#define ROOTED_P(X) ((SLASH_P((X)[0]))|| ((X)[1] ==':'))
-#endif
+# define SLASH_P(X) ((X)=='\\' || (X) == '/')
+# define ROOTED_P(X) ((SLASH_P((X)[0]))|| ((X)[1] ==':'))
+#endif /* !ROOTED_P */
 
 /* 'localException' is defined by NS_HANDLER */
 
@@ -44,7 +48,7 @@ tell_displayer_display_lines
       last_line = first_line;
       first_line = t;
     }
-    if (last_line > first_line) { 
+    if (last_line > first_line) {
       last_line -= 1;	/* I think last_line means up to but not including */
     }
     if (first_line != last_line) {
@@ -60,7 +64,7 @@ tell_displayer_display_lines
 
 	/* rooted path */
 	NSString *fileString = [NSString stringWithCString: symtab->fullname];
-	
+
 	[displayProvider lineChangedForThread: -1
 			 inFile: fileString
 			 atStartLine: first_line
@@ -80,13 +84,13 @@ void displayer_command_loop ()
   [gdbManager doCommandLoop];
 }
 
-int 
+int
 tell_displayer_do_query (char *query, va_list args)
 {
   id <GuiDisplayProvider2> displayProvider = nil;
   char *buf;
   int result = -1;
-    
+
   if (gdbManager == nil) { return; }
 
   vasprintf (&buf, query, args);
@@ -118,7 +122,7 @@ tell_displayer_fputs_output (const char *linebuffer, FILE *stream)
 {
     GdbOutputType   oType = GDB_OUTPUT_OTHER;
     NSString *outputString = [NSString stringWithCString: linebuffer];
-    
+
     if (gdbManager == nil) { return; }
 
     if (stream == gdb_stdout) {
@@ -219,14 +223,14 @@ tell_displayer_breakpoint_changed (struct breakpoint *bp, BreakpointState newSta
 
   /*
    * I do not know whether the filename pointer of the breakpoint struct
-   * is normally a full path or not.  If it is not a full path, I do not
+   * is normally a full path or not. If it is not a full path, I do not
    * know what effect it might have, if we replaced it with a full path.
-   * Since I don't know, for the time being I'm not going to do it.
+   * Since I do not know, for the time being I am not going to do it.
    *
    * This means that we may be recomputing the full path over and over.
-   * That needs to be addressed (FIXME).  Moreover, I don't think that
+   * That needs to be addressed (FIXME). Moreover, I do not think that
    * the way get_full_path_name works (ie. by calling open) is very
-   * efficient.  MVS -- it is not but it works, and is correct (i.e. uses
+   * efficient. MVS -- it is not but it works, and is correct (i.e. uses
    * the current directory path) -- rhagy.
    */
 
@@ -298,7 +302,7 @@ void tell_displayer_stack_changed ()
   id <GuiDisplayProvider> displayProvider = NULL;
   int numFrames = -1;
   struct frame_info *f = NULL;
-    
+
   if (gdbManager == nil) { return; }
 
   numFrames = 0;
@@ -307,7 +311,7 @@ void tell_displayer_stack_changed ()
     numFrames++;
     f = get_prev_frame (f);
   }
-    
+
   NS_DURING {
     displayProvider = [gdbManager displayProviderForProtocol:@protocol(GuiDisplayProvider)];
     if (displayProvider != nil) {
@@ -334,3 +338,5 @@ tell_displayer_get_input (char *prompt, int repeat, char *anno)
 
   return [gdbManager waitForLineOfInput];
 }
+
+/* EOF */

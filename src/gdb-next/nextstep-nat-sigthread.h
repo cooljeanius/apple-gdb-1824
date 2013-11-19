@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-sigthread.h
+ */
+
 #ifndef _GDB_NEXTSTEP_NAT_SIGTHREAD_H_
 #define _GDB_NEXTSTEP_NAT_SIGTHREAD_H_
 
@@ -37,3 +41,5 @@ void next_signal_thread_create (next_signal_thread_status *s, int pid);
 void next_signal_thread_destroy (next_signal_thread_status *s);
 
 #endif /* _GDB_NEXTSTEP_NAT_SIGTHREAD_H_*/
+
+/* EOF */

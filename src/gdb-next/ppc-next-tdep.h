@@ -1,3 +1,7 @@
+/*
+ * ppc-next-tdep.h
+ */
+
 #include "tm-ppc.h"
 
 #define IS_GP_REGNUM(regno) ((regno >= FIRST_GP_REGNUM) && (regno <= LAST_GP_REGNUM))
@@ -19,3 +23,5 @@ void ppc_next_store_fp_registers PARAMS ((unsigned char *rdata, gdb_ppc_thread_f
 CORE_ADDR ppc_next_skip_trampoline_code PARAMS ((CORE_ADDR pc));
 int ppc_next_in_solib_return_trampoline PARAMS ((CORE_ADDR pc, char *name));
 int ppc_next_in_solib_call_trampoline PARAMS ((CORE_ADDR pc, char *name));
+
+/* EOF */

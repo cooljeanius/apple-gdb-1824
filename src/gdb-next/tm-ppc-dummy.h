@@ -1,3 +1,7 @@
+/*
+ * tm-ppc-dummy.h
+ */
+
 #define CALL_DUMMY { \
   \
   0xfeedfeed, 0xfeedfeed, 0xfeedfeed, 0xfeedfeed, \
@@ -49,3 +53,5 @@
 #define	TARGET_ADDR_OFFSET           (CALL_DUMMY_START_OFFSET + (2 * INSTRUCTION_SIZE))
 #define CALL_DUMMY_BREAKPOINT_OFFSET (CALL_DUMMY_START_OFFSET + (6 * INSTRUCTION_SIZE))
 #define CALL_DUMMY_LENGTH            ((32 + 16 + 32) * INSTRUCTION_SIZE)
+
+/* EOF */

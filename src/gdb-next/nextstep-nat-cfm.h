@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-cfm.h
+ */
+
 #ifndef _NEXTSTEP_NAT_CFM_H_
 #define _NEXTSTEP_NAT_CFM_H_
 
@@ -96,3 +100,5 @@ cfm_fetch_connection_section_info
  NCFragSectionInfo *section, NCFragInstanceInfo *instance);
 
 #endif /* _NEXTSTEP_NAT_CFM_H_ */
+
+/* EOF */

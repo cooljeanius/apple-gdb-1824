@@ -1,3 +1,8 @@
+/*
+ * GuiDisplayProvider.h
+ * (This is an Objective-C header; i.e. NOT just-plain-C)
+ */
+
 #include <stdio.h>
 
 #include <Foundation/Foundation.h>
@@ -12,7 +17,7 @@
 }
 @end
 
-@interface TestGuiDisplayProvider : 
+@interface TestGuiDisplayProvider :
   TestViewDisplayProvider <GuiDisplayProvider>
 {
   NSPosixFileDescriptor *stdinPFD;
@@ -20,3 +25,5 @@
 }
 
 @end
+
+/* EOF */

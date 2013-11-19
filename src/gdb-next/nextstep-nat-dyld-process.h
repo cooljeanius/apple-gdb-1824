@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-dyld-process.h
+ */
+
 #ifndef _NEXTSTEP_NAT_DYLD_PROCESS_H_
 #define _NEXTSTEP_NAT_DYLD_PROCESS_H_
 
@@ -53,3 +57,5 @@ PARAMS ((const struct next_dyld_thread_status *s,
 	 struct dyld_objfile_info *result));
 
 #endif /* _NEXTSTEP_NAT_DYLD_PROCESS_H_ */
+
+/* EOF */

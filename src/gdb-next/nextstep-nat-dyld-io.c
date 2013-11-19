@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-dyld-io.c
+ */
+
 #include "nextstep-nat-inferior.h"
 #include "nextstep-nat-mutils.h"
 
@@ -30,7 +34,7 @@ inferior_read
   int ret;
 
   CHECK_FATAL (iptr != NULL);
-  
+
   if (strcmp (current_target.to_shortname, "macos-child") != 0) {
     bfd_set_error (bfd_error_no_contents);
     return 0;
@@ -59,7 +63,7 @@ mach_o_inferior_read
   int ret;
 
   CHECK_FATAL (iptr != NULL);
-  
+
   if (strcmp (current_target.to_shortname, "macos-child") != 0) {
     bfd_set_error (bfd_error_no_contents);
     return 0;
@@ -71,7 +75,7 @@ mach_o_inferior_read
     bfd_set_error (bfd_error_invalid_target);
     return 0;
   }
-  
+
   {
     struct mach_o_data_struct *mdata = NULL;
     CHECK_FATAL (bfd_mach_o_valid (abfd));
@@ -95,7 +99,7 @@ mach_o_inferior_read
     }
   }
 
-  
+
   bfd_set_error (bfd_error_no_contents);
   return 0;
 }
@@ -164,11 +168,11 @@ inferior_bfd_generic
   }
 
   ret = bfd_funopenr (filename, NULL, &fdata);
-  if (ret == NULL) { 
+  if (ret == NULL) {
     warning ("Unable to open memory image for \"%s\"; skipping", name);
     return NULL;
   }
-  
+
   if (bfd_check_format (ret, bfd_archive))
     {
       bfd *abfd = NULL;
@@ -178,22 +182,22 @@ inferior_bfd_generic
       const bfd_arch_info_type *thisarch = bfd_lookup_arch (bfd_arch_i386, 0);
 #else
       const bfd_arch_info_type *thisarch = bfd_lookup_arch (bfd_arch_powerpc, 0);
-#endif
+#endif /* __ppc__ || __i386__ */
       for (;;) {
 	abfd = bfd_openr_next_archived_file (ret, abfd);
 	if (abfd == NULL) { break; }
 	if (! bfd_check_format (abfd, bfd_object)) { abfd = NULL; break; }
 	if (thisarch == NULL) { abfd = NULL; break; }
 
-	if (bfd_default_compatible (bfd_get_arch_info (abfd), thisarch)) { break; } 
+	if (bfd_default_compatible (bfd_get_arch_info (abfd), thisarch)) { break; }
       }
-      if (abfd != NULL) { 
+      if (abfd != NULL) {
 	ret = abfd;
       }
     }
 
   /* FIXME: should check for errors from bfd_close (for one thing, on
-     error it does not free all the storage associated with the bfd).  */
+   * error it does not free all the storage associated with the bfd).  */
 
   if (! bfd_check_format (ret, bfd_object)) {
     warning ("Unable to read symbols from %s: %s.", bfd_get_filename (ret), bfd_errmsg (bfd_get_error ()));
@@ -214,7 +218,7 @@ inferior_bfd
 
   if ((strcmp (bfd_get_target (ret), "mach-o-be") == 0)
       || (strcmp (bfd_get_target (ret), "mach-o-le") == 0)
-      || (strcmp (bfd_get_target (ret), "mach-o") == 0)) 
+      || (strcmp (bfd_get_target (ret), "mach-o") == 0))
     {
       struct bfd_io_functions *fun = (struct bfd_io_functions *) ret->iostream;
       CHECK_FATAL (fun != NULL);
@@ -230,6 +234,8 @@ inferior_bfd
 
       /* no changes necessary */
     }
-  
+
   return ret;
 }
+
+/* EOF */

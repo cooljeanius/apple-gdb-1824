@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-utils-pb.c
+ */
+
 #include "defs.h"
 #include "symtab.h"
 #include "symfile.h"
@@ -35,8 +39,8 @@ struct ui_file *pb_gdb_util_stderr ()
 
 
 /*
- Crawling up the stack, may cause gdb to access an invalid memory location.
- So, do the counting inside a catch_errors() scope.
+ * Crawling up the stack, may cause gdb to access an invalid memory location.
+ * So, do the counting inside a catch_errors() scope.
  */
 
 static int
@@ -177,17 +181,19 @@ int pb_gdb_util_inferior_pid()
   return PIDGET (inferior_ptid);
 }
 
-#else
+#else /* HOST != TARGET */
 
 int pb_gdb_util_inferior_pid()
 {
   return -1;
 }
 
-#endif
+#endif /* HOST == TARGET */
 
 void
 pb_gdb_util_add_cmd(const char *name, void *func_ptr, const char *desc)
 {
     add_com (name, class_obscure, func_ptr, desc);
 }
+
+/* EOF */

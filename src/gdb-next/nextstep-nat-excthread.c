@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-excthread.c
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -77,7 +81,7 @@ kern_return_t catch_exception_raise_state_identity
 }
 
 kern_return_t catch_exception_raise
-(mach_port_t port, mach_port_t thread_port, mach_port_t task_port, 
+(mach_port_t port, mach_port_t thread_port, mach_port_t task_port,
  exception_type_t exception_type, exception_data_t exception_data,
  mach_msg_type_number_t data_count)
 {
@@ -86,7 +90,7 @@ kern_return_t catch_exception_raise
   MACH_CHECK_ERROR (kret);
   kret = mach_port_deallocate (mach_task_self(), thread_port);
   MACH_CHECK_ERROR (kret);
-#endif
+#endif /* 0 */
 
   static_message->task_port = task_port;
   static_message->thread_port = thread_port;
@@ -116,7 +120,7 @@ void next_exception_thread_create (next_exception_thread_status *s, task_t task)
   int fd[2];
   int ret;
   kern_return_t kret;
- 
+
   ret = pipe (fd);
   CHECK_FATAL (ret == 0);
 
@@ -154,7 +158,7 @@ void next_exception_thread_destroy (next_exception_thread_status *s)
       delete_file_handler (s->receive_fd);
       close (s->receive_fd);
     }
-  if (s->transmit_fd > 0) 
+  if (s->transmit_fd > 0)
     close (s->transmit_fd);
 
   next_exception_thread_init (s);
@@ -184,12 +188,12 @@ static void next_exception_thread (void *arg)
 
     pthread_testcancel ();
 
-    excthread_debug_re ("next_exception_thread: waiting for exceptions\n"); 
+    excthread_debug_re ("next_exception_thread: waiting for exceptions\n");
     kret = mach_msg (msgin_hdr, (MACH_RCV_MSG | MACH_RCV_INTERRUPT),
 		     0, sizeof (msgin_data), s->inferior_exception_port, 0, MACH_PORT_NULL);
     if (kret == MACH_RCV_INTERRUPTED) { continue; }
     if (kret != KERN_SUCCESS) {
-      fprintf (excthread_stderr_re, "next_exception_thread: error receiving exception message: %s (0x%lx)\n", 
+      fprintf (excthread_stderr_re, "next_exception_thread: error receiving exception message: %s (0x%lx)\n",
 	       MACH_ERROR_STRING (kret), (unsigned long) kret);
       abort ();
     }
@@ -198,10 +202,10 @@ static void next_exception_thread (void *arg)
     excthread_debug_re ("next_exception_thread: handling exception\n");
     kret = exc_server (msgin_hdr, msgout_hdr);
     static_message = NULL;
-    
+
     kret = thread_suspend (msgsend.thread_port);
     if (kret != KERN_SUCCESS) {
-      fprintf (excthread_stderr_re, "next_exception_thread: unable to suspend thread generating exception: %s (0x%lx)\n", 
+      fprintf (excthread_stderr_re, "next_exception_thread: unable to suspend thread generating exception: %s (0x%lx)\n",
 	       MACH_ERROR_STRING (kret), (unsigned long) kret);
       abort ();
     }
@@ -212,7 +216,7 @@ static void next_exception_thread (void *arg)
 		     MACH_PORT_NULL, MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);
     if (kret == MACH_SEND_INTERRUPTED) { continue; }
     if (kret != KERN_SUCCESS) {
-      fprintf (excthread_stderr_re, "next_exception_thread: error sending exception reply: %s (0x%lx)\n", 
+      fprintf (excthread_stderr_re, "next_exception_thread: error sending exception reply: %s (0x%lx)\n",
 	       MACH_ERROR_STRING (kret), (unsigned long) kret);
       abort ();
     }
@@ -229,9 +233,11 @@ _initialize_nextstep_nat_excthread ()
   excthread_stderr = fdopen (fileno (stderr), "w+");
   excthread_stderr_re = fdopen (fileno (stderr), "w+");
 
-  cmd = add_set_cmd ("debug-exceptions", class_obscure, var_boolean, 
+  cmd = add_set_cmd ("debug-exceptions", class_obscure, var_boolean,
 		     (char *) &excthread_debugflag,
 		     "Set if printing exception thread debugging statements.",
 		     &setlist);
-  add_show_from_set (cmd, &showlist);		
+  add_show_from_set (cmd, &showlist);
 }
+
+/* EOF */

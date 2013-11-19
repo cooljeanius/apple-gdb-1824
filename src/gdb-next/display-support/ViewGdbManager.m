@@ -29,7 +29,7 @@ GdbManager* make_view_gdb_manager()
 - (int) establishConnection
 {
   NSDistantObject *dP;
-    
+
   dP = [NSConnection
 	 rootProxyForConnectionWithRegisteredName: displayProviderConnectionName
 	 host: displayProviderHostName];
@@ -37,12 +37,12 @@ GdbManager* make_view_gdb_manager()
   if (dP == nil) {
     return 0;
   }
-	
+
   [dP setProtocolForProxy: @protocol(ViewDisplayProvider)];
   [super setDisplayProvider: dP];
 
-  /* I don't think notification on connection death works because, for viewing,
-     we aren't in a RunLoop. */
+  /* I do NOT think notification on connection death works because, for viewing,
+   * we are NOT in a RunLoop. */
 
   return 1;
 }
@@ -60,3 +60,5 @@ GdbManager* make_view_gdb_manager()
 }
 
 @end
+
+/* EOF */

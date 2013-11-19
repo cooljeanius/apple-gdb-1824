@@ -8,11 +8,11 @@ extern FILE	*debug_stream;
 
 #ifdef DEBUG
 
-#ifdef DEBUG_MAIN
+# ifdef DEBUG_MAIN
 NSLock	*printLock;
-#else
+# else
 extern NSLock	*printLock;
-#endif
+# endif /* DEBUG_MAIN */
 
 # define DEBUG_INIT		\
 	printLock = [[NSLock alloc] init];
@@ -28,6 +28,6 @@ extern NSLock	*printLock;
 # define DEBUG_ALLOC
 # define DEBUG_INIT
 # define DEBUG_PRINT(s)
-#endif
+#endif /* DEBUG */
 
-
+/* EOF */

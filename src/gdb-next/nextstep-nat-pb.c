@@ -1,3 +1,7 @@
+/*
+ * nextstep-nat-pb.c
+ */
+
 #include "defs.h"
 #include "symtab.h"
 #include "symfile.h"
@@ -72,3 +76,5 @@ _initialize_pb ()
   add_com ("pb_breakpoint_move", class_support, pb_breakpoint_move_command,
 	   "<bp_num> <line_number> : moves breakpoint bp_num to line line_number in same file.");
 }
+
+/* EOF */

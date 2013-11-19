@@ -1,3 +1,7 @@
+/*
+ * ppc-next-tdep.c
+ */
+
 #include "ppc-reg.h"
 
 #include "defs.h"
@@ -38,8 +42,8 @@ void ppc_next_fetch_gp_registers (unsigned char *rdata, gdb_ppc_thread_state_t *
 {
   int i;
   for (i = 0; i < NUM_GP_REGS; i++) {
-    store_unsigned_integer (rdata + (REGISTER_BYTE (FIRST_GP_REGNUM + i)), 
-			    sizeof (REGISTER_TYPE), 
+    store_unsigned_integer (rdata + (REGISTER_BYTE (FIRST_GP_REGNUM + i)),
+			    sizeof (REGISTER_TYPE),
 			    gp_regs->gpregs[i]);
   }
 }
@@ -63,13 +67,13 @@ void ppc_next_fetch_fp_registers (unsigned char *rdata, gdb_ppc_thread_fpstate_t
   }
   store_unsigned_integer (rdata + (REGISTER_BYTE (FPSCR_REGNUM)), sizeof (REGISTER_TYPE), fp_regs->fpscr);
 }
-  
+
 void ppc_next_store_fp_registers (unsigned char *rdata, gdb_ppc_thread_fpstate_t *fp_regs)
 {
   int i;
   FP_REGISTER_TYPE *fpr = fp_regs->fpregs;
   for (i = 0; i < NUM_FP_REGS; i++) {
-    fpr[i] = extract_floating (rdata + (REGISTER_BYTE (FIRST_FP_REGNUM + i)), 
+    fpr[i] = extract_floating (rdata + (REGISTER_BYTE (FIRST_FP_REGNUM + i)),
 			       sizeof (FP_REGISTER_TYPE));
   }
   fp_regs->fpscr_pad = 0;
@@ -86,7 +90,7 @@ void ppc_next_fetch_vp_registers (unsigned char *rdata, gdb_ppc_thread_vpstate_t
   }
   store_unsigned_integer (rdata + (REGISTER_BYTE (VRSAVE_REGNUM)), sizeof (REGISTER_TYPE), vp_regs->save_vrvalid);
 }
-  
+
 void ppc_next_store_vp_registers (unsigned char *rdata, gdb_ppc_thread_vpstate_t *vp_regs)
 {
   int i, j;
@@ -150,3 +154,5 @@ int ppc_next_in_solib_call_trampoline (CORE_ADDR pc, char *name)
   if (ppc_next_skip_trampoline_code (pc) != 0) { return 1; }
   return 0;
 }
+
+/* EOF */
