@@ -2,9 +2,9 @@ This directory is added to provide a test suite for verifying the function
 and profiling the performance of the built zlib dylib.
 
 To build i386/x86_64 zlib compress/decompress command line tools, run the
-Build.intel.sh script:
+Build.intel.ksh script:
 
-$ Build.intel.sh
+$ ksh ./Build.intel.ksh
 
 This will generate zlib compress/decompress tools that use the same
 source code used to build zlib.dylib.
