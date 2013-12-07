@@ -60,6 +60,7 @@ AC_CHECK_FUNCS([atexit floor getcwd gethostbyaddr gethostbyname gettimeofday isa
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_SUBDIRS([bfd
                    binutils
+                   cgen
                    dejagnu
                    electric-fence
                    etc

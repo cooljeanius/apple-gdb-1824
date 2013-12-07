@@ -1,3 +1,57 @@
+2013-12-07  Eric Gallager  <egallager@comcast.net>
+
+	darn it, I broke stuff again
+
+	- un-gitignore bfd texi files, as they are actually needed as
+	dependencies for make targets
+	- bfd: make sure bfd.h is present
+	- bfd/doc: make sure chew dSYMs get cleaned up
+	- bfd/m4/ax_patch_libtool_changing_cmd_ifs.m4: make sure libtool exists
+	before trying to move it
+	- accidentally deleted some bfd source files... (they might be
+	regenerate-able, idk...)
+	- work on tcl.m4
+	- configure script updates
+	- gdb/gnulib got broken somehow wrt <string.h>-related `sed`
+	substitutions, try to fix it
+	- touch old MPW headers
+	- opcodes: I broke something wrt i386-opc.lo, try to fix
+	- utils: recurse into "misc" subdir
+	- utils/misc/doschk: try to make it safe to include <stdlib.h> (for the
+	exit() function) by dealing with mismatched malloc() prototype
+	- zlib: sometimes the ${AR} gets mismatched with the wrong ${ARFLAGS},
+	try to compensate
+	- zlib: fix some warnings about implicit function declarations
+	- etc: add root-gdb-backtrace.sh script from CERN's ROOT package (with
+	some modifications to silence `shellcheck` warnings)
+	- add some more texinfo stuff
+	- add decomment.tproj and relpath.tproj from bootstrap_cmds to utils
+	(with some modifications)
+	- zlib: add some files from Apple's zlib fork, such as an
+	Apple-specific test suite, and an Xcode project
+
+	Change-Id: I4c97f86c672b91120bd22f020c214b9a259860d5
+
+2013-11-18  Eric Gallager  <egallager@comcast.net>
+
+	Convert MacClassic line endings in src/include/mpw/CIncludes to unix line endings
+
+	Necessary for proper diffing
+
+	Change-Id: I66fac9010c1b0dd7c74021de8eb17a3fb02eaba0
+
+2013-11-18  Eric Gallager  <egallager@comcast.net>
+
+	touch more old files in src/gdb-next
+
+	Change-Id: Id8c3b4545f62903dfeb0216f5b5364523102c9ae
+
+2013-11-18  Eric Gallager  <egallager@comcast.net>
+
+	add MPW 3.3 CIncludes
+
+	Change-Id: I4b2b4082a0ba4e97a214c78a6bae2047dd41c3d3
+
 2013-11-18  Eric Gallager  <egallager@comcast.net>
 
 	fix building zlib from src, silence warning in gnulib
