@@ -15,9 +15,8 @@ Created: Sunday, January 6, 1991 at 10:01 PM
 #define __SERIAL__
 
 #ifndef __TYPES__
-#include <Types.h>
-#endif
-
+# include <Types.h>
+#endif /* !__TYPES__ */
 
 enum {
 
@@ -82,19 +81,20 @@ struct SerStaRec {
 
 typedef struct SerStaRec SerStaRec;
 
-
 #ifdef __cplusplus
 extern "C" {
-#endif
-pascal OSErr SerReset(short refNum,short serConfig); 
-pascal OSErr SerSetBuf(short refNum,Ptr serBPtr,short serBLen); 
-pascal OSErr SerHShake(short refNum,const SerShk *flags); 
-pascal OSErr SerSetBrk(short refNum); 
-pascal OSErr SerClrBrk(short refNum); 
-pascal OSErr SerGetBuf(short refNum,long *count); 
-pascal OSErr SerStatus(short refNum,SerStaRec *serSta); 
+#endif /* __cplusplus */
+pascal OSErr SerReset(short refNum,short serConfig);
+pascal OSErr SerSetBuf(short refNum,Ptr serBPtr,short serBLen);
+pascal OSErr SerHShake(short refNum,const SerShk *flags);
+pascal OSErr SerSetBrk(short refNum);
+pascal OSErr SerClrBrk(short refNum);
+pascal OSErr SerGetBuf(short refNum,long *count);
+pascal OSErr SerStatus(short refNum,SerStaRec *serSta);
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !__SERIAL__ */
+
+/* EOF */

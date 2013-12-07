@@ -14,45 +14,49 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 int unmangle(char *dst, char *src, int limit);
-	/*
-	This function unmangles C++ mangled symbols (i.e. a symbol with a type signature).  The
-  mangled C string is passed in ÒsrcÓ and the unmangled C string is returned in ÒdstÓ.  Up
-  to ÒlimitÓ characters (not including terminating null) may be retured in ÒdstÓ.
- 
-  The function returns,
- 
-		 -1 ==> error, probably because symbol was not mangled, but looked like it was
-			0 ==> symbol wasn't mangled; not copied either
-			1 ==> symbol was mangled; unmangled result fit in buffer
-			2 ==> symbol was mangled; unmangled result truncated to fit in buffer (null written)
- 
- 	Caution: the src and dst string must not overlap!
-	*/
-
+/*
+ * This function unmangles C++ mangled symbols.
+ * (i.e. a symbol with a type signature)
+ * The mangled C string is passed in "src" and the unmangled C string is
+ * returned in "dst". Up to "limit" characters (not including terminating
+ * null) may be retured in "dst".
+ *
+ * The function returns,
+ *
+ * -1 => error, probably because symbol was not mangled, but looked like it
+ *	0 => symbol was NOT mangled; not copied either
+ *	1 => symbol was mangled; unmangled result fit in buffer
+ *	2 => symbol was mangled; unmangd result truncd to fit in buffer (\0 written)
+ *
+ * Caution: the src and dst string must not overlap!
+ */
 
 pascal int Unmangle(char *dst, char *src, int limit);
-	/*
-	This function unmangles C++ mangled symbols (i.e. a symbol with a type signature).  The
-	mangled Pascal string is passed in ÒsrcÓ and the unmangled Pascal string is returned in
-	ÒdstÓ.  Up to ÒlimitÓ characters may be retured in ÒdstÓ.
-	
-	The function returns,
-	
-		 -1 ==> error, probably because symbol was not mangled, but looked like it was
-			0 ==> symbol wasn't mangled; not copied either
-			1 ==> symbol was mangled; unmangled result fit in buffer
-			2 ==> symbol was mangled; unmangled result truncated to fit in buffer (null written)
-			
-	This function is identical to unmangle() above except that all the strings are Pascal
-	instead of C strings.
- 
-  Caution: the src and dst string must not overlap!
-	*/
+/*
+ * This function unmangles C++ mangled symbols.
+ * (i.e. a symbol with a type signature)
+ * The mangled Pascal string is passed in "src" and the unmangled Pascal
+ * string is returned in "dst". Up to "limit" chars may be retured in "dst".
+ *
+ * The function returns,
+ *
+ * -1 => error, probably because symbol was not mangled, but looked like it
+ *	0 => symbol was NOT mangled; not copied either
+ *	1 => symbol was mangled; unmangled result fit in buffer
+ *	2 => symbol was mangled; unmangd result truncd to fit in buffer (\0 written)
+ *
+ * This function is identical to unmangle() above except all strings are Pascal
+ * instead of C strings.
+ *
+ * Caution: the src and dst string must not overlap!
+ */
 
 #ifdef __cplusplus
 }
-#endif
-#endif
+#endif /* __cplusplus */
+#endif /* !__UNMANGLER__ */
+
+/* EOF */

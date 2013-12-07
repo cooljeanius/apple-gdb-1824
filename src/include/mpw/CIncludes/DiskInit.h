@@ -15,9 +15,8 @@ Created: Sunday, January 6, 1991 at 9:08 PM
 #define __DISKINIT__
 
 #ifndef __TYPES__
-#include <Types.h>
-#endif
-
+# include <Types.h>
+#endif /* !__TYPES__ */
 
 struct HFSDefaults {
     char sigWord[2];    /* signature word*/
@@ -32,20 +31,21 @@ struct HFSDefaults {
 
 typedef struct HFSDefaults HFSDefaults;
 
-
 #ifdef __cplusplus
 extern "C" {
-#endif
-pascal void DILoad(void); 
-pascal void DIUnload(void); 
-pascal short DIBadMount(Point where,long evtMessage); 
-OSErr dibadmount(Point *where,long evtMessage); 
-pascal OSErr DIFormat(short drvNum); 
-pascal OSErr DIVerify(short drvNum); 
-pascal OSErr DIZero(short drvNum,ConstStr255Param volName); 
-OSErr dizero(short drvnum,char *volName); 
+#endif /* __cplusplus */
+pascal void DILoad(void);
+pascal void DIUnload(void);
+pascal short DIBadMount(Point where,long evtMessage);
+OSErr dibadmount(Point *where,long evtMessage);
+pascal OSErr DIFormat(short drvNum);
+pascal OSErr DIVerify(short drvNum);
+pascal OSErr DIZero(short drvNum,ConstStr255Param volName);
+OSErr dizero(short drvnum,char *volName);
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !__DISKINIT__ */
+
+/* EOF */

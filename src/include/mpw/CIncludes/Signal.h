@@ -1,17 +1,15 @@
 /*
-	Signal.h -- Signal handling
-	
-	Copyright Apple Computer,Inc.	1988, 1990
-	All rights reserved.
-
-*/
+ *	Signal.h -- Signal handling
+ *
+ *	Copyright Apple Computer,Inc.	1988, 1990
+ *	All rights reserved.
+ *
+ */
 
 #ifndef __SIGNAL__
 #define __SIGNAL__
 
-
 typedef int sig_atomic_t;
-
 
 /*
  *	Special signal handlers, compatible with the second argument to signal()
@@ -29,17 +27,16 @@ typedef int sig_atomic_t;
  *	Signal numbers for specific conditions.
  */
 
-#define SIGABRT		(1<<0)	/* Abnormal termination e.g. by the abort() function */
-#define SIGFPE		(1<<2)	/* Arithmetic exception -- not currently implemented */
-#define SIGILL		(1<<3)	/* Illegal instruction -- not currently implemented */
-#define SIGINT		(1<<1)	/* Interactive attention signal -- User interrupt via CMD-. */
-#define SIGSEGV		(1<<4)	/* Segmentation violation -- not currently implemented */
-#define SIGTERM		(1<<5)	/* Termination request -- not currently implemented */
-
+#define SIGABRT	(1<<0) /* Abnormal termination e.g. by the abort() function */
+#define SIGFPE	(1<<2) /* Arithmetic exception - not currently implemented */
+#define SIGILL	(1<<3) /* Illegal instruction - not currently implemented */
+#define SIGINT	(1<<1) /* Interactive attention signal - User interrupt via CMD-. */
+#define SIGSEGV	(1<<4) /* Segmentation violation - not currently implemented */
+#define SIGTERM	(1<<5) /* Termination request - not currently implemented */
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 /*
  *	Specify a signal handling function.
@@ -56,6 +53,8 @@ int raise (int sig);
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !__SIGNAL__ */
+
+/* EOF */

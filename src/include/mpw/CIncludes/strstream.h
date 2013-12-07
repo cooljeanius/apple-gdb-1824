@@ -1,12 +1,13 @@
 /*ident	"@(#)C++env:incl-master/const-headers/strstream.h	1.3" */
 /**************************************************************************
                         Copyright (c) 1984 AT&T
-                          All Rights Reserved   
+                          All Rights Reserved
 
         THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF AT&T
-      
-        The copyright notice above does not evidence any        
+
+        The copyright notice above does not evidence any
         actual or intended publication of such source code.
+		(Really? This header was shipped with MPW...)
 
 *****************************************************************************/
 #ifndef __STRSTREAM__
@@ -15,7 +16,7 @@
 #include <iostream.h>
 class strstreambuf : public streambuf
 {
-public: 
+public:
 			strstreambuf() ;
 			strstreambuf(int) ;
 			strstreambuf(void* (*a)(long), void (*f)(void*)) ;
@@ -54,12 +55,12 @@ public:
 class strstreambase : public virtual ios {
 public:
 	strstreambuf*	rdbuf() ;
-protected:	
+protected:
 			strstreambase(char*, int, char*) ;
 			strstreambase() ;
 			~strstreambase() ;
 private:
-	strstreambuf	buf ; 
+	strstreambuf	buf ;
 	} ;
 
 class istrstream : public strstreambase, public istream {
@@ -87,4 +88,6 @@ public:
 	char*		str() ;
 	} ;
 
-#endif
+#endif /* !__STRSTREAM__ */
+
+/* EOF */

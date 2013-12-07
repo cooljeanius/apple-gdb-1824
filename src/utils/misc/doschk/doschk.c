@@ -69,8 +69,24 @@
 #else
 # warning doschk.c expects <string.h> to be included.
 #endif /* HAVE_STRING_H */
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#else
+# warning doschk.c expects <unistd.h> to be included.
+#endif /* HAVE_UNISTD_H */
 
+#ifndef exit
+# ifdef HAVE_STDLIB_H
+#  include <stdlib.h>
+# else
+#  ifdef malloc
+#   undef malloc
+#  endif /* malloc */
 extern char *malloc ();
+# endif /* HAVE_STDLIB_H */
+#else
+extern char *malloc ();
+#endif /* !exit */
 
 typedef struct ENT
 {
@@ -216,7 +232,7 @@ fill_ent (ent, path)
 	    }
 	  if (dots_seen == 1)
 	    {
-              /* If trailing dot, it will be ignored by MSDOG, so don't */
+              /* If trailing dot, it will be ignored by MSDOG, so do NOT */
               /* actually complain. */
               if (*(cp + 1) != NULL)
                 {
@@ -308,10 +324,11 @@ mpath (ent)
      ENT *ent;
 {
   static char buf[1024];  /* fixed sizes for buffers are bad! */
-  if (ent->path && ent->path[0])
-    sprintf (buf, "%s/%s", ent->path, ent->full_name);
-  else
-    return ent->full_name;
+	if (ent->path && ent->path[0]) {
+		sprintf (buf, "%s/%s", ent->path, ent->full_name);
+	} else {
+		return ent->full_name;
+	}
   return buf;
 }
 

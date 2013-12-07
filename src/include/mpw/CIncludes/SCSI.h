@@ -15,9 +15,8 @@ Created: Sunday, January 6, 1991 at 10:00 PM
 #define __SCSI__
 
 #ifndef __TYPES__
-#include <Types.h>
-#endif
-
+# include <Types.h>
+#endif /* !__TYPES__ */
 
 enum {
 
@@ -29,15 +28,15 @@ enum {
     scNop = 6,
     scStop = 7,
     scComp = 8,
-    scCommErr = 2,                  /*communications error, operation timeout*/
-    scArbNBErr = 3,                 /*arbitration timeout waiting for not BSY*/
-    scBadParmsErr = 4,              /*bad parameter or TIB opcode*/
-    scPhaseErr = 5,                 /*SCSI bus not in correct phase for attempted operation*/
-    scCompareErr = 6,               /*data compare error*/
-    scMgrBusyErr = 7,               /*SCSI Manager busy */
-    scSequenceErr = 8,              /*attempted operation is out of sequence*/
-    scBusTOErr = 9,                 /*CPU bus timeout*/
-    scComplPhaseErr = 10,           /*SCSI bus wasn't in Status phase*/
+    scCommErr = 2,        /*communications error, operation timeout*/
+    scArbNBErr = 3,       /*arbitration timeout waiting for not BSY*/
+    scBadParmsErr = 4,    /*bad parameter or TIB opcode*/
+    scPhaseErr = 5,   /*SCSI bus not in correct phase for attempted operation*/
+    scCompareErr = 6,     /*data compare error*/
+    scMgrBusyErr = 7,     /*SCSI Manager busy */
+    scSequenceErr = 8,    /*attempted operation is out of sequence*/
+    scBusTOErr = 9,       /*CPU bus timeout*/
+    scComplPhaseErr = 10, /*SCSI bus wasn't in Status phase*/
     sbSIGWord = 0x4552,
     pMapSIG = 0x504D
 };
@@ -93,35 +92,37 @@ typedef struct SCSIInstr SCSIInstr;
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 pascal OSErr SCSIReset(void)
-    = {0x4267,0xA815}; 
+    = {0x4267,0xA815};
 pascal OSErr SCSIGet(void)
-    = {0x3F3C,0x0001,0xA815}; 
+    = {0x3F3C,0x0001,0xA815};
 pascal OSErr SCSISelect(short targetID)
-    = {0x3F3C,0x0002,0xA815}; 
+    = {0x3F3C,0x0002,0xA815};
 pascal OSErr SCSICmd(Ptr buffer,short count)
-    = {0x3F3C,0x0003,0xA815}; 
+    = {0x3F3C,0x0003,0xA815};
 pascal OSErr SCSIRead(Ptr tibPtr)
-    = {0x3F3C,0x0005,0xA815}; 
+    = {0x3F3C,0x0005,0xA815};
 pascal OSErr SCSIRBlind(Ptr tibPtr)
-    = {0x3F3C,0x0008,0xA815}; 
+    = {0x3F3C,0x0008,0xA815};
 pascal OSErr SCSIWrite(Ptr tibPtr)
-    = {0x3F3C,0x0006,0xA815}; 
+    = {0x3F3C,0x0006,0xA815};
 pascal OSErr SCSIWBlind(Ptr tibPtr)
-    = {0x3F3C,0x0009,0xA815}; 
+    = {0x3F3C,0x0009,0xA815};
 pascal OSErr SCSIComplete(short *stat,short *message,unsigned long wait)
-    = {0x3F3C,0x0004,0xA815}; 
+    = {0x3F3C,0x0004,0xA815};
 pascal short SCSIStat(void)
-    = {0x3F3C,0x000A,0xA815}; 
+    = {0x3F3C,0x000A,0xA815};
 pascal OSErr SCSISelAtn(short targetID)
-    = {0x3F3C,0x000B,0xA815}; 
+    = {0x3F3C,0x000B,0xA815};
 pascal OSErr SCSIMsgIn(short *message)
-    = {0x3F3C,0x000C,0xA815}; 
+    = {0x3F3C,0x000C,0xA815};
 pascal OSErr SCSIMsgOut(short message)
-    = {0x3F3C,0x000D,0xA815}; 
+    = {0x3F3C,0x000D,0xA815};
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !__SCSI__ */
+
+/* EOF */

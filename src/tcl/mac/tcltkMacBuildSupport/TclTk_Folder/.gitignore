@@ -16,3 +16,9 @@ tcl8.4
 tk8.4
 Widget\ Demos
 Wish
+*.[Ss]hlb
+*.dll
+*.DLL
+*/Icon?
+*/*/Icon?
+*/*/*/Icon?

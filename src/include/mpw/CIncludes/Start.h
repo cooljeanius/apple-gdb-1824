@@ -15,8 +15,8 @@ Created: Sunday, January 6, 1991 at 10:07 PM
 #define __START__
 
 #ifndef __TYPES__
-#include <Types.h>
-#endif
+# include <Types.h>
+#endif /* !__TYPES__ */
 
 
 struct SlotDev {
@@ -63,29 +63,31 @@ typedef DefOSRec *DefOSPtr;
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 #pragma parameter GetDefaultStartup(__A0)
 pascal void GetDefaultStartup(DefStartPtr paramBlock)
-    = 0xA07D; 
+    = 0xA07D;
 #pragma parameter SetDefaultStartup(__A0)
 pascal void SetDefaultStartup(DefStartPtr paramBlock)
-    = 0xA07E; 
+    = 0xA07E;
 #pragma parameter GetVideoDefault(__A0)
 pascal void GetVideoDefault(DefVideoPtr paramBlock)
-    = 0xA080; 
+    = 0xA080;
 #pragma parameter SetVideoDefault(__A0)
 pascal void SetVideoDefault(DefVideoPtr paramBlock)
-    = 0xA081; 
+    = 0xA081;
 #pragma parameter GetOSDefault(__A0)
 pascal void GetOSDefault(DefOSPtr paramBlock)
-    = 0xA084; 
+    = 0xA084;
 #pragma parameter SetOSDefault(__A0)
 pascal void SetOSDefault(DefOSPtr paramBlock)
-    = 0xA083; 
-pascal void SetTimeout(short count); 
-pascal void GetTimeout(short *count); 
+    = 0xA083;
+pascal void SetTimeout(short count);
+pascal void GetTimeout(short *count);
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !__START__ */
+
+/* EOF */

@@ -59,8 +59,8 @@ mostlyclean: @mostlyclean_subdirs@
 clean: @clean_subdirs@
 
 # These should always clean all sudirectories...
-distclean: distclean-spu distclean-sparclite distclean-wince 
-maintainer-clean: maintainer-clean-spu maintainer-clean-sparclite maintainer-clean-wince 
+distclean: distclean-misc distclean-spu distclean-sparclite distclean-wince 
+maintainer-clean: maintainer-clean-misc maintainer-clean-spu maintainer-clean-sparclite maintainer-clean-wince 
 clean mostlyclean:
 	-rm -f *~ core *.o a.out 
 maintainer-clean distclean:
@@ -104,6 +104,10 @@ FLAGS_TO_PASS = \
 
 # Glue for all.
 
+all-misc: configure-misc
+	cd misc && $(MAKE) $(FLAGS_TO_PASS) all
+.PHONY: all-misc
+
 all-spu: configure-spu
 	cd spu && $(MAKE) $(FLAGS_TO_PASS) all
 .PHONY: all-spu
@@ -117,6 +121,10 @@ all-wince: configure-wince
 .PHONY: all-wince
 
 # Glue for install.
+
+install-misc: configure-misc
+	cd misc && $(MAKE)  install
+.PHONY: install-misc
 
 install-spu: configure-spu
 	cd spu && $(MAKE)  install
@@ -132,6 +140,10 @@ install-wince: configure-wince
 
 # Glue for mostlyclean.
 
+mostlyclean-misc: configure-misc
+	cd misc && $(MAKE)  mostlyclean
+.PHONY: mostlyclean-misc
+
 mostlyclean-spu: configure-spu
 	cd spu && $(MAKE)  mostlyclean
 .PHONY: mostlyclean-spu
@@ -145,6 +157,10 @@ mostlyclean-wince: configure-wince
 .PHONY: mostlyclean-wince
 
 # Glue for clean.
+
+clean-misc: configure-misc
+	cd misc && $(MAKE)  clean
+.PHONY: clean-misc
 
 clean-spu: configure-spu
 	cd spu && $(MAKE)  clean
@@ -160,6 +176,10 @@ clean-wince: configure-wince
 
 # Glue for distclean.
 
+distclean-misc: configure-misc
+	-cd misc && $(MAKE)  distclean
+.PHONY: distclean-misc
+
 distclean-spu: configure-spu
 	-cd spu && $(MAKE)  distclean
 .PHONY: distclean-spu
@@ -174,6 +194,10 @@ distclean-wince: configure-wince
 
 # Glue for maintainer-clean.
 
+maintainer-clean-misc: configure-misc
+	-cd misc && $(MAKE)  maintainer-clean
+.PHONY: maintainer-clean-misc
+
 maintainer-clean-spu: configure-spu
 	-cd spu && $(MAKE)  maintainer-clean
 .PHONY: maintainer-clean-spu
@@ -187,6 +211,12 @@ maintainer-clean-wince: configure-wince
 .PHONY: maintainer-clean-wince
 
 # Glue for configure.
+
+configure-misc: misc/Makefile
+misc/Makefile: config.status
+	test -d misc || mkdir misc ; \
+	cd misc && $(abs_srcdir)/misc/configure $(subconfigure_args)/misc
+.PHONY: configure-misc
 
 configure-spu: spu/Makefile
 spu/Makefile: config.status

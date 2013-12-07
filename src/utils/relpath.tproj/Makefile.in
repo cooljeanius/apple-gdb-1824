@@ -1,0 +1,27 @@
+PROJECT = relpath
+PRODUCT_TYPE = tool
+
+CC = @CC@
+
+CFILES = relpath.c
+OFILES = relpath.o
+CLEANFILES = *.o *~ relpath
+
+AM_CFLAGS = -Wall -mdynamic-no-pic
+AM_LDFLAGS = -dead_strip
+
+bin_PROGRAMS = relpath
+
+all: relpath
+
+relpath.o: relpath.c
+	$(CC) $(AM_CFLAGS) -o relpath.o -c relpath.c
+
+relpath: relpath.o
+	$(CC) $(AM_LDFLAGS) relpath.o -o relpath
+
+clean:
+	rm -f $(CLEANFILES)
+
+check: relpath
+	./relpath . ~

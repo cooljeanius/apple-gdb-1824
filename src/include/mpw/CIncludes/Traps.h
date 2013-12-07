@@ -15,13 +15,15 @@ Created: Saturday, December 7, 1991 at 12:42 PM
 #ifndef __TRAPS__
 #define __TRAPS__
 
+/*
+ *
+ *; QuickDraw
+ *
+ */
 
-/* 
- 
- ; QuickDraw
- 
-*/
-
+/* Oh my gosh this is a horrible header why are so many of these things
+ * hard-coded to arbitrary hex values arghhh
+ */
 #define _CopyMask 0xA817
 #define _MeasureText 0xA837
 #define _GetMaskTable 0xA836
@@ -205,11 +207,11 @@ Created: Saturday, December 7, 1991 at 12:42 PM
 #define _MapRgn 0xA8FB
 #define _MapPoly 0xA8FC
 
-/* 
- 
- ; Toolbox
- 
-*/
+/*
+ *
+ *; Toolbox
+ *
+ */
 
 #define _Count1Resources 0xA80D
 #define _Get1IxResource 0xA80E
@@ -494,44 +496,44 @@ Created: Saturday, December 7, 1991 at 12:42 PM
 #define _IconDispatch 0xABC9
 #define _DebugStr 0xABFF
 
-/* 
- 
- ; Resource Manager
- 
-*/
+/*
+ *
+ *; Resource Manager
+ *
+ */
 
 #define _ResourceDispatch 0xA822
 
-/* 
- 
- ; PPCToolbox
-
-
-*/
+/*
+ *
+ *; PPCToolbox
+ *
+ *
+ */
 
 #define _PPC 0xA0DD
 
-/* 
- 
- ; Alias Manager
- 
-*/
+/*
+ *
+ *; Alias Manager
+ *
+ */
 
 #define _AliasDispatch 0xA823
 
-/* 
- 
- ; Component Manager
- 
-*/
+/*
+ *
+ *; Component Manager
+ *
+ */
 
 #define _ComponentDispatch 0xA82A
 
-/* 
- 
- ; Device Manager (some shared by the File Manager)
- 
-*/
+/*
+ *
+ *; Device Manager (some shared by the File Manager)
+ *
+ */
 
 #define _Open 0xA000
 #define _Close 0xA001
@@ -541,11 +543,11 @@ Created: Saturday, December 7, 1991 at 12:42 PM
 #define _Status 0xA005
 #define _KillIO 0xA006
 
-/* 
- 
- ; File Manager
- 
-*/
+/*
+ *
+ *; File Manager
+ *
+ */
 
 #define _GetVolInfo 0xA007
 #define _Create 0xA008
@@ -587,28 +589,28 @@ Created: Saturday, December 7, 1991 at 12:42 PM
 #define _HSetFLock 0xA241
 #define _HRstFLock 0xA242
 
-/* 
- 
- ; dispatch trap for remaining File Manager (and Desktop Manager) calls
- 
-*/
+/*
+ *
+ *; dispatch trap for remaining File Manager (and Desktop Manager) calls
+ *
+ */
 
 #define _FSDispatch 0xA060
 #define _HFSDispatch 0xA260
 
-/* 
- 
- ; High level FSSpec calls
- 
-*/
+/*
+ *
+ *; High level FSSpec calls
+ *
+ */
 
 #define _HighLevelFSDispatch 0xAA52
 
-/* 
- 
- ; Memory Manager
- 
-*/
+/*
+ *
+ *; Memory Manager
+ *
+ */
 
 #define _InitZone 0xA019
 #define _GetZone 0xA11A
@@ -643,11 +645,11 @@ Created: Saturday, December 7, 1991 at 12:42 PM
 #define _DeferUserFn 0xA08F
 #define _DebugUtil 0xA08D
 
-/* 
- 
- ; Event Manager
- 
-*/
+/*
+ *
+ *; Event Manager
+ *
+ */
 
 #define _PostEvent 0xA02F
 #define _PPostEvent 0xA12F
@@ -688,21 +690,21 @@ Created: Saturday, December 7, 1991 at 12:42 PM
 #define _SetApplBase 0xA057
 #define _HWPriv 0xA198
 
-/* 
- 
- ; New names for (mostly) new flavors of old LwrString trap (redone <13>)
-*/
+/*
+ *
+ *; New names for (mostly) new flavors of old LwrString trap (redone <13>)
+ */
 
 #define _LowerText 0xA056
 #define _StripText 0xA256
 #define _UpperText 0xA456
 #define _StripUpperText 0xA656
 
-/* 
- 
- ; Temporary Memory routines
- 
-*/
+/*
+ *
+ *; Temporary Memory routines
+ *
+ */
 
 #define _OSDispatch 0xA88F
 #define _RelString 0xA050
@@ -754,11 +756,11 @@ Created: Saturday, December 7, 1991 at 12:42 PM
 #define _IOPMsgRequest 0xA087
 #define _IOPMoveData 0xA088
 
-/* 
- 
- ; Power Manager
- 
-*/
+/*
+ *
+ *; Power Manager
+ *
+ */
 
 #define _PMgrOp 0xA085
 #define _IdleUpdate 0xA285
@@ -770,20 +772,20 @@ Created: Saturday, December 7, 1991 at 12:42 PM
 #define _SleepQRemove 0xA48A
 #define _SlpQRemove 0xA48A
 
-/* 
- 
- ; Comm. Toolbox
- 
-*/
+/*
+ *
+ *; Comm. Toolbox
+ *
+ */
 
 #define _CommToolboxDispatch 0xA08B
 #define _SysEnvirons 0xA090
 
-/* 
- 
- ; Egret Manager
- 
-*/
+/*
+ *
+ *; Egret Manager
+ *
+ */
 
 #define _EgretDispatch 0xA092
 #define _Gestalt 0xA1AD
@@ -796,11 +798,11 @@ Created: Saturday, December 7, 1991 at 12:42 PM
 #define _PopUpMenuSelect 0xA80B
 #define _KeyTrans 0xA9C3
 
-/* 
- 
- ; TextEdit
- 
-*/
+/*
+ *
+ *; TextEdit
+ * (I thought TextEdit originally came from the NeXT side of things?)
+ */
 
 #define _TEGetText 0xA9CB
 #define _TEInit 0xA9CC
@@ -827,11 +829,12 @@ Created: Saturday, December 7, 1991 at 12:42 PM
 #define _TEDispatch 0xA83D
 #define _TEStyleNew 0xA83E
 
-/* 
- 
- ; Color Quickdraw
- 
-*/
+/*
+ *
+ *; Color Quickdraw
+ * (you can tell that this is an old header by the fact that they have to keep
+ * Color Quickdraw separate from the non-Color version of it)
+ */
 
 #define _OpenCPort 0xAA00
 #define _OpenCport 0xAA00
@@ -884,11 +887,11 @@ Created: Saturday, December 7, 1991 at 12:42 PM
 #define _CalcCMask 0xAA4F
 #define _CopyDeepMask 0xAA51
 
-/* 
- 
- ; Routines for video devices
- 
-*/
+/*
+ *
+ *; Routines for video devices
+ *
+ */
 
 #define _GetMaxDevice 0xAA27
 #define _GetCTSeed 0xAA28
@@ -905,11 +908,11 @@ Created: Saturday, December 7, 1991 at 12:42 PM
 #define _GetGDevice 0xAA32
 #define _DeviceLoop 0xABCA
 
-/* 
- 
- ; Color Manager
- 
-*/
+/*
+ *
+ *; Color Manager
+ *
+ */
 
 #define _Color2Index 0xAA33
 #define _Index2Color 0xAA34
@@ -918,11 +921,11 @@ Created: Saturday, December 7, 1991 at 12:42 PM
 #define _GetSubTable 0xAA37
 #define _UpdatePixMap 0xAA38
 
-/* 
- 
- ; Dialog Manager
- 
-*/
+/*
+ *
+ *; Dialog Manager
+ *
+ */
 
 #define _NewCDialog 0xAA4B
 #define _MakeITable 0xAA39
@@ -940,11 +943,11 @@ Created: Saturday, December 7, 1991 at 12:42 PM
 #define _SetStdCProcs 0xAA4E
 #define _StdOpcodeProc 0xABF8
 
-/* 
- 
- ; added to Toolbox for color
- 
-*/
+/*
+ *
+ *; added to Toolbox for color
+ *
+ */
 
 #define _SetWinColor 0xAA41
 #define _GetAuxWin 0xAA42
@@ -957,11 +960,11 @@ Created: Saturday, December 7, 1991 at 12:42 PM
 #define _GetCVariant 0xA809
 #define _GetWVariant 0xA80A
 
-/* 
- 
- ; added to Menu Manager for color
- 
-*/
+/*
+ *
+ *; added to Menu Manager for color
+ *
+ */
 
 #define _DelMCEntries 0xAA60
 #define _GetMCInfo 0xAA61
@@ -970,37 +973,37 @@ Created: Saturday, December 7, 1991 at 12:42 PM
 #define _GetMCEntry 0xAA64
 #define _SetMCEntries 0xAA65
 
-/* 
- 
- ; Menu Manager
- 
-*/
+/*
+ *
+ *; Menu Manager
+ *
+ */
 
 #define _MenuChoice 0xAA66
 
-/* 
- 
- ; Dialog Manager?
- 
-*/
+/*
+ *
+ *; Dialog Manager?
+ *
+ */
 
 #define _ModalDialogMenuSetup 0xAA67
 #define _DialogDispatch 0xAA68
 
-/* 
- 
- ; Font Manager
- 
-*/
+/*
+ *
+ *; Font Manager
+ *
+ */
 
 #define _SetFractEnable 0xA814
 #define _FontDispatch 0xA854
 
-/* 
- 
- ; Palette Manager
- 
-*/
+/*
+ *
+ *; Palette Manager
+ *
+ */
 
 #define _InitPalettes 0xAA90
 #define _NewPalette 0xAA91
@@ -1023,11 +1026,11 @@ Created: Saturday, December 7, 1991 at 12:42 PM
 #define _CopyPalette 0xAAA1
 #define _PaletteDispatch 0xAAA2
 
-/* 
- 
- ; Sound Manager
- 
-*/
+/*
+ *
+ *; Sound Manager
+ *
+ */
 
 #define _SoundDispatch 0xA800
 #define _SndDisposeChannel 0xA801
@@ -1057,27 +1060,25 @@ Created: Saturday, December 7, 1991 at 12:42 PM
 #define _NMInstall 0xA05E
 #define _NMRemove 0xA05F
 
-/* 
- 
- ; All QDOffscreen Routines go through one trap with a selector
- 
-*/
+/*
+ *
+ *; All QDOffscreen Routines go through one trap with a selector
+ *
+ */
 
 #define _QDExtensions 0xAB1D
 
-/* 
- 
- ; UserDelay
- 
-*/
+/*
+ *
+ *; UserDelay
+ *
+ */
 
 #define _UserDelay 0xA84C
-#define _InitDogCow 0xA89F
+#define _InitDogCow 0xA89F /* Clarus! */
 #define _EnableDogCow 0xA89F
 #define _DisableDogCow 0xA89F
 #define _Moof 0xA89F
 #define _HFSPinaforeDispatch 0xAA52
 
-
-
-#endif
+#endif /* !__TRAPS__ */

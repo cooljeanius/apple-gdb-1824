@@ -406,6 +406,7 @@ miniunzip_SOURCES = miniunz.c
 miniunzip_LDADD = libminizip.la
 minizip_SOURCES = minizip.c
 minizip_LDADD = libminizip.la -lz
+CLEANFILES = *~ autoscan.log
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -897,6 +898,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)

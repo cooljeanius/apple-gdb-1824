@@ -768,6 +768,7 @@ AC_CHECK_HEADERS([CoreFoundation/CoreFoundation.h \
 # The gnulib subdirectory needs this:
 gl_STDINT_H
 AC_SUBST([STDINT_H])
+gl_HEADER_STRING_H
 
 # ------------------------- #
 # Checks for declarations.  #

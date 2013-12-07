@@ -9,6 +9,9 @@
 /* Define to 1 if you have the `fgets' function. */
 #undef HAVE_FGETS
 
+/* Define to 1 if you have the `fprintf' function. */
+#undef HAVE_FPRINTF
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
@@ -19,6 +22,12 @@
    to 0 otherwise. */
 #undef HAVE_MALLOC
 
+/* Define to 1 if you have the <malloc.h> header file. */
+#undef HAVE_MALLOC_H
+
+/* Define to 1 if you have the <malloc/malloc.h> header file. */
+#undef HAVE_MALLOC_MALLOC_H
+
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
@@ -28,6 +37,12 @@
 /* Define to 1 if you have the `printf' function. */
 #undef HAVE_PRINTF
 
+/* Define to 1 if you have the `putchar' function. */
+#undef HAVE_PUTCHAR
+
+/* Define to 1 if you have the `qsort' function. */
+#undef HAVE_QSORT
+
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
 
@@ -36,6 +51,9 @@
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the `strcmp' function. */
+#undef HAVE_STRCMP
 
 /* Define to 1 if you have the `strcpy' function. */
 #undef HAVE_STRCPY

@@ -6,6 +6,9 @@
 /* Define to 1 if you have the `access' function. */
 #undef HAVE_ACCESS
 
+/* Define to 1 if you have the `atexit' function. */
+#undef HAVE_ATEXIT
+
 /* Define to 1 if you have the `chmod' function. */
 #undef HAVE_CHMOD
 
@@ -34,6 +37,9 @@
 /* Define to 1 if you have the `getpagesize' function. */
 #undef HAVE_GETPAGESIZE
 
+/* Define to 1 if you have the `gettimeofday' function. */
+#undef HAVE_GETTIMEOFDAY
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
@@ -48,6 +54,9 @@
 
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
+
+/* Define to 1 if you have the <mach/mach.h> header file. */
+#undef HAVE_MACH_MACH_H
 
 /* Define to 1 if your system has a GNU libc compatible `malloc' function, and
    to 0 otherwise. */
@@ -137,6 +146,9 @@
 
 /* Define to 1 if you have the `strtol' function. */
 #undef HAVE_STRTOL
+
+/* Define to 1 if you have the `system' function. */
+#undef HAVE_SYSTEM
 
 /* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
    */
@@ -229,6 +241,16 @@
 /* Define for large files, on AIX-style hosts. */
 #undef _LARGE_FILES
 
+/* Define for Solaris 2.5.1 so the uint32_t typedef from <sys/synch.h>,
+   <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
+   #define below would cause a syntax error. */
+#undef _UINT32_T
+
+/* Define for Solaris 2.5.1 so the uint64_t typedef from <sys/synch.h>,
+   <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
+   #define below would cause a syntax error. */
+#undef _UINT64_T
+
 /* Define like PROTOTYPES; this can be used by system headers. */
 #undef __PROTOTYPES
 
@@ -240,6 +262,10 @@
 #ifndef __cplusplus
 #undef inline
 #endif
+
+/* Define to the type of a signed integer type of width exactly 32 bits if
+   such a type exists and the standard includes do not define it. */
+#undef int32_t
 
 /* Define to rpl_malloc if the replacement function should be used. */
 #undef malloc
@@ -258,3 +284,11 @@
 
 /* Define to `int' if <sys/types.h> doesn't define. */
 #undef uid_t
+
+/* Define to the type of an unsigned integer type of width exactly 32 bits if
+   such a type exists and the standard includes do not define it. */
+#undef uint32_t
+
+/* Define to the type of an unsigned integer type of width exactly 64 bits if
+   such a type exists and the standard includes do not define it. */
+#undef uint64_t

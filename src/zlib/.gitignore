@@ -31,3 +31,7 @@ zconf.h.in
 zconf.h
 Makefile
 *.log
+*.pbxuser
+*.perspectivev3
+build/*
+*.build

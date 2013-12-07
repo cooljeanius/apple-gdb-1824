@@ -15,12 +15,12 @@ Created: Sunday, January 6, 1991 at 10:13 PM
 #define __TIMER__
 
 #ifndef __TYPES__
-#include <Types.h>
-#endif
+# include <Types.h>
+#endif /* !__TYPES__ */
 
 #ifndef __OSUTILS__
-#include <OSUtils.h>
-#endif
+# include <OSUtils.h>
+#endif /* !__OSUTILS__ */
 
 
 typedef pascal void (*TimerProcPtr)(void);
@@ -40,21 +40,23 @@ typedef TMTask *TMTaskPtr;
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 #pragma parameter InsTime(__A0)
 pascal void InsTime(QElemPtr tmTaskPtr)
-    = 0xA058; 
+    = 0xA058;
 #pragma parameter InsXTime(__A0)
 pascal void InsXTime(QElemPtr tmTaskPtr)
-    = 0xA458; 
+    = 0xA458;
 #pragma parameter PrimeTime(__A0,__D0)
 pascal void PrimeTime(QElemPtr tmTaskPtr,long count)
-    = 0xA05A; 
+    = 0xA05A;
 #pragma parameter RmvTime(__A0)
 pascal void RmvTime(QElemPtr tmTaskPtr)
-    = 0xA059; 
+    = 0xA059;
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !__TIMER__ */
+
+/* EOF */

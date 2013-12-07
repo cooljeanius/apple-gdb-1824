@@ -2,8 +2,8 @@
 
 	Time.h
 	Date and time
-	
-	Copyright © Apple Computer,Inc.  1987-1991.
+
+	Copyright (c) Apple Computer,Inc.  1987-1991.
 	All Rights Reserved.
 
 ************************************************************/
@@ -12,14 +12,14 @@
 #ifndef __TIME_H__ /* __TIME__ is a reserved preprocessor symbol */
 #define __TIME_H__
 
-#ifndef NULL
-#define NULL 0
-#endif
+#ifndef NULL /* also defined in <Types.h> in this directory */
+# define NULL 0
+#endif /* !NULL */
 
 #ifndef __size_t__
-#define __size_t__
+# define __size_t__
 typedef unsigned int size_t;
-#endif
+#endif /* !__size_t__ */
 
 /*
  *	Declarations
@@ -42,7 +42,7 @@ struct tm {
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 /*
  *	Time manipulation functions
@@ -51,7 +51,7 @@ extern "C" {
 clock_t clock(void);						/* function */
 #define clock() __tickcount()				/* macro - TickCount() */
 pascal unsigned long __tickcount(void)
-    = 0xA975; 
+    = 0xA975;
 
 double  difftime(time_t time1, time_t time0);        		/* function */
 #define difftime(time1,time0) ((long double)time1 - time0)	/* macro */
@@ -73,6 +73,8 @@ size_t strftime(char *s, size_t maxsize,
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !__TIME_H__ */
+
+/* EOF */

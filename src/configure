@@ -623,6 +623,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
+ac_func_list=
 ac_subst_vars='LTLIBOBJS
 stage2_werror_flag
 UNDO_LINK_TO_DIR
@@ -710,6 +711,7 @@ CONFIGURED_YACC
 CONFIGURED_BISON
 SYSROOT_CFLAGS_FOR_TARGET
 stage1_languages
+POW_LIB
 ALLOCA
 LIBOBJS
 gmpinc
@@ -724,7 +726,6 @@ ac_ct_CXX
 CXXFLAGS
 CXX
 EGREP
-GREP
 want64
 X_EXTRA_LIBS
 X_LIBS
@@ -740,6 +741,7 @@ SET_MAKE
 TEMPLATEdir
 INSTALLdir
 TOPLEVEL_CONFIGURE_ARGUMENTS
+GREP
 SED
 LN_S
 LN
@@ -2618,6 +2620,12 @@ fi
 
 as_fn_append ac_header_list " gmp.h"
 as_fn_append ac_header_list " mpfr.h"
+as_fn_append ac_header_list " sys/time.h"
+as_fn_append ac_header_list " unistd.h"
+as_fn_append ac_func_list " alarm"
+as_fn_append ac_header_list " netdb.h"
+as_fn_append ac_header_list " pwd.h"
+as_fn_append ac_header_list " grp.h"
 # Check that the precious variables saved in the cache have kept the same
 # value.
 ac_cache_corrupted=false
@@ -4411,6 +4419,70 @@ $as_echo "$ac_cv_path_SED" >&6; }
  SED="$ac_cv_path_SED"
   rm -f conftest.sed
 
+# ...and for grep
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for grep that handles long lines and -e" >&5
+$as_echo_n "checking for grep that handles long lines and -e... " >&6; }
+if ${ac_cv_path_GREP+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -z "$GREP"; then
+  ac_path_GREP_found=false
+  # Loop through the user's path and test for each of PROGNAME-LIST
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH$PATH_SEPARATOR/usr/xpg4/bin
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_prog in grep ggrep; do
+    for ac_exec_ext in '' $ac_executable_extensions; do
+      ac_path_GREP="$as_dir/$ac_prog$ac_exec_ext"
+      as_fn_executable_p "$ac_path_GREP" || continue
+# Check for GNU ac_path_GREP and select it if it is found.
+  # Check for GNU $ac_path_GREP
+case `"$ac_path_GREP" --version 2>&1` in
+*GNU*)
+  ac_cv_path_GREP="$ac_path_GREP" ac_path_GREP_found=:;;
+*)
+  ac_count=0
+  $as_echo_n 0123456789 >"conftest.in"
+  while :
+  do
+    cat "conftest.in" "conftest.in" >"conftest.tmp"
+    mv "conftest.tmp" "conftest.in"
+    cp "conftest.in" "conftest.nl"
+    $as_echo 'GREP' >> "conftest.nl"
+    "$ac_path_GREP" -e 'GREP$' -e '-(cannot match)-' < "conftest.nl" >"conftest.out" 2>/dev/null || break
+    diff "conftest.out" "conftest.nl" >/dev/null 2>&1 || break
+    as_fn_arith $ac_count + 1 && ac_count=$as_val
+    if test $ac_count -gt ${ac_path_GREP_max-0}; then
+      # Best one so far, save it but keep looking for a better one
+      ac_cv_path_GREP="$ac_path_GREP"
+      ac_path_GREP_max=$ac_count
+    fi
+    # 10*(2^10) chars as input seems more than enough
+    test $ac_count -gt 10 && break
+  done
+  rm -f conftest.in conftest.tmp conftest.nl conftest.out;;
+esac
+
+      $ac_path_GREP_found && break 3
+    done
+  done
+  done
+IFS=$as_save_IFS
+  if test -z "$ac_cv_path_GREP"; then
+    as_fn_error $? "no acceptable grep could be found in $PATH$PATH_SEPARATOR/usr/xpg4/bin" "$LINENO" 5
+  fi
+else
+  ac_cv_path_GREP=$GREP
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_GREP" >&5
+$as_echo "$ac_cv_path_GREP" >&6; }
+ GREP="$ac_cv_path_GREP"
+
+
 
 # Export original configure arguments for use by sub-configures. These
 # will be expanded by make, so quote '$'.
@@ -4475,7 +4547,7 @@ if test "${pwd}" = "${srcpwd}" ; then
   srcdir=.
 fi
 
-topsrcdir=$srcpwd
+topsrcdir=${srcpwd}
 
 extra_host_args=
 
@@ -4647,14 +4719,14 @@ use_gnu_ld=
 # Make sure we do NOT let GNU ld be added if we did NOT want it.
 if test x$with_gnu_ld = xno ; then
   use_gnu_ld=no
-  noconfigdirs="$noconfigdirs ld"
+  noconfigdirs="${noconfigdirs} ld"
 fi
 
 use_gnu_as=
 # Make sure we do NOT let GNU as be added if we did NOT want it.
 if test x$with_gnu_as = xno ; then
   use_gnu_as=no
-  noconfigdirs="$noconfigdirs gas"
+  noconfigdirs="${noconfigdirs} gas"
 fi
 
 # some tools are so dependent upon X11 that if we are not building with X,
@@ -5524,7 +5596,7 @@ esac
 
 case "${host}" in
   *-cygwin*)
-    configdirs="$configdirs libtermcap" ;;
+    configdirs="${configdirs} libtermcap" ;;
 esac
 
 # A target can indicate whether a language is not supported for some
@@ -5538,32 +5610,32 @@ unsupported_languages=
 
 case "${host}" in
   hppa*64*-*-*)
-    noconfigdirs="$noconfigdirs byacc"
+    noconfigdirs="${noconfigdirs} byacc"
     ;;
   i[3456789]86-*-vsta)
-    noconfigdirs="$noconfigdirs tcl expect dejagnu make texinfo bison patch flex byacc send-pr gprof uudecode dejagnu diff guile perl itcl gnuserv gettext"
+    noconfigdirs="${noconfigdirs} tcl expect dejagnu make texinfo bison patch flex byacc send-pr gprof uudecode dejagnu diff guile perl itcl gnuserv gettext"
     ;;
   i[3456789]86-*-go32* | i[3456789]86-*-msdosdjgpp*)
-    noconfigdirs="$noconfigdirs tcl tk expect dejagnu send-pr uudecode guile itcl gnuserv libffi"
+    noconfigdirs="${noconfigdirs} tcl tk expect dejagnu send-pr uudecode guile itcl gnuserv libffi"
     ;;
   i[3456789]86-*-mingw32*)
     # noconfigdirs="tcl tk expect dejagnu make texinfo bison patch flex byacc send-pr uudecode dejagnu diff guile perl itcl gnuserv"
-    noconfigdirs="$noconfigdirs expect dejagnu autoconf automake send-pr rcs guile perl texinfo libtool"
+    noconfigdirs="${noconfigdirs} expect dejagnu autoconf automake send-pr rcs guile perl texinfo libtool"
     ;;
   i[3456789]86-*-beos*)
-    noconfigdirs="$noconfigdirs tk itcl libgui gdb"
+    noconfigdirs="${noconfigdirs} tk itcl libgui gdb"
     ;;
   *-*-cygwin*)
-    noconfigdirs="$noconfigdirs autoconf automake send-pr rcs guile perl"
+    noconfigdirs="${noconfigdirs} autoconf automake send-pr rcs guile perl"
     ;;
   *-*-netbsd*)
-    noconfigdirs="$noconfigdirs rcs"
+    noconfigdirs="${noconfigdirs} rcs"
     ;;
   ppc*-*-pe)
-    noconfigdirs="$noconfigdirs patch diff make tk tcl expect dejagnu autoconf automake texinfo bison send-pr gprof rcs guile perl itcl gnuserv"
+    noconfigdirs="${noconfigdirs} patch diff make tk tcl expect dejagnu autoconf automake texinfo bison send-pr gprof rcs guile perl itcl gnuserv"
     ;;
   powerpc-*-beos*)
-    noconfigdirs="$noconfigdirs tk itcl libgui gdb dejagnu readline"
+    noconfigdirs="${noconfigdirs} tk itcl libgui gdb dejagnu readline"
     ;;
 esac
 
@@ -5575,8 +5647,8 @@ else
 fi
 
 if test "${ENABLE_LIBADA}" != "yes" ; then
-  noconfigdirs="$noconfigdirs target-libada"
-  noconfigdirs="$noconfigdirs gnattools"
+  noconfigdirs="${noconfigdirs} target-libada"
+  noconfigdirs="${noconfigdirs} gnattools"
 fi
 
 # Check whether --enable-libssp was given.
@@ -5587,7 +5659,7 @@ else
 fi
 
 if test "${ENABLE_LIBSSP}" != "yes" ; then
-  noconfigdirs="$noconfigdirs target-libssp"
+  noconfigdirs="${noconfigdirs} target-libssp"
 fi
 
 # Save it here so that, even in case of --enable-libgcj, if the Java
@@ -5602,7 +5674,7 @@ yes)
   ;;
 no)
   # Make sure we get it printed in the list of not supported target libs.
-  noconfigdirs="$noconfigdirs ${libgcj}"
+  noconfigdirs="${noconfigdirs} ${libgcj}"
   ;;
 esac
 
@@ -5612,7 +5684,7 @@ case $enable_libmudflap in
 yes)
     ;;
 no)
-    noconfigdirs="$noconfigdirs target-libmudflap"
+    noconfigdirs="${noconfigdirs} target-libmudflap"
     ;;
 "")
     case "${target}" in
@@ -5624,7 +5696,7 @@ no)
 	;;
     *)
         # Disable it by default everywhere else.
-	noconfigdirs="$noconfigdirs target-libmudflap"
+	noconfigdirs="${noconfigdirs} target-libmudflap"
 	;;
     esac
 esac
@@ -5647,7 +5719,7 @@ fi
 
 case "${target}" in
   *-*-chorusos)
-    noconfigdirs="$noconfigdirs target-newlib target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-newlib target-libgloss ${libgcj}"
     ;;
 # APPLE LOCAL: Customize our platform configuration a bit.
   *-*-darwin*)
@@ -5712,11 +5784,11 @@ fi
     ;;
 # END APPLE LOCAL
   *-*-freebsd[12] | *-*-freebsd[12].* | *-*-freebsd*aout*)
-    noconfigdirs="$noconfigdirs target-newlib target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-newlib target-libgloss ${libgcj}"
     ;;
   *-*-freebsd*)
-    noconfigdirs="$noconfigdirs target-newlib target-libgloss"
-    if test "x$with_gmp" = x && test "x$with_gmp_dir" = x \
+    noconfigdirs="${noconfigdirs} target-newlib target-libgloss"
+    if test "x${with_gmp}" = x && test "x${with_gmp_dir}" = x \
 	&& test -f /usr/local/include/gmp.h; then
       with_gmp=/usr/local
     fi
@@ -5726,161 +5798,161 @@ fi
       i*86-*-*) ;;
       alpha*-*-*) ;;
       *)
-	noconfigdirs="$noconfigdirs ${libgcj}"
+	noconfigdirs="${noconfigdirs} ${libgcj}"
 	;;
     esac
     ;;
   *-*-kaos*)
     # Remove unsupported stuff on all kaOS configurations.
     skipdirs="target-libiberty ${libgcj} target-libstdc++-v3 target-librx"
-    skipdirs="$skipdirs target-libobjc target-examples target-groff target-gperf"
-    skipdirs="$skipdirs zlib fastjar target-libjava target-boehm-gc target-zlib"
-    noconfigdirs="$noconfigdirs target-libgloss"
+    skipdirs="${skipdirs} target-libobjc target-examples target-groff target-gperf"
+    skipdirs="${skipdirs} zlib fastjar target-libjava target-boehm-gc target-zlib"
+    noconfigdirs="${noconfigdirs} target-libgloss"
     ;;
   *-*-netbsd*)
     # Skip some stuff on all NetBSD configurations.
-    noconfigdirs="$noconfigdirs target-newlib target-libiberty target-libgloss"
+    noconfigdirs="${noconfigdirs} target-newlib target-libiberty target-libgloss"
 
     # Skip some stuff that is unsupported on some NetBSD configurations.
     case "${target}" in
       i*86-*-netbsdelf*) ;;
       arm*-*-netbsdelf*) ;;
       *)
-	noconfigdirs="$noconfigdirs ${libgcj}"
+	noconfigdirs="${noconfigdirs} ${libgcj}"
 	;;
     esac
     ;;
   *-*-netware*)
-    noconfigdirs="$noconfigdirs target-newlib target-libiberty target-libgloss ${libgcj} target-libmudflap"
+    noconfigdirs="${noconfigdirs} target-newlib target-libiberty target-libgloss ${libgcj} target-libmudflap"
     ;;
   *-*-rtems*)
-    noconfigdirs="$noconfigdirs target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-libgloss ${libgcj}"
     ;;
     # The tpf target does NOT support gdb yet.
   *-*-tpf*)
-    noconfigdirs="$noconfigdirs target-newlib target-libgloss target-libiberty ${libgcj} target-libmudflap gdb tcl tk libgui itcl"
+    noconfigdirs="${noconfigdirs} target-newlib target-libgloss target-libiberty ${libgcj} target-libmudflap gdb tcl tk libgui itcl"
     ;;
   *-*-uclinux*)
-    noconfigdirs="$noconfigdirs target-newlib target-libgloss target-rda ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-newlib target-libgloss target-rda ${libgcj}"
     ;;
   *-*-vxworks*)
-    noconfigdirs="$noconfigdirs target-newlib target-libgloss target-libiberty ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-newlib target-libgloss target-libiberty ${libgcj}"
     ;;
   m32c-*-*)
-    noconfigdirs="$noconfigdirs target-libstdc++-v3"
+    noconfigdirs="${noconfigdirs} target-libstdc++-v3"
     ;;
   alpha*-dec-osf*)
     # ld works, but does not support shared libraries.
     # newlib is not 64 bit ready. I am not sure about fileutils.
     # gas does NOT generate exception information.
-    noconfigdirs="$noconfigdirs gas ld fileutils target-newlib target-libgloss"
+    noconfigdirs="${noconfigdirs} gas ld fileutils target-newlib target-libgloss"
     ;;
   alpha*-*-*vms*)
-    noconfigdirs="$noconfigdirs gdb ld target-newlib target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} gdb ld target-newlib target-libgloss ${libgcj}"
     ;;
   alpha*-*-linux*)
     # newlib is not 64 bit ready
-    noconfigdirs="$noconfigdirs target-newlib target-libgloss"
+    noconfigdirs="${noconfigdirs} target-newlib target-libgloss"
     ;;
   alpha*-*-*)
     # newlib is not 64 bit ready
-    noconfigdirs="$noconfigdirs target-newlib target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-newlib target-libgloss ${libgcj}"
     ;;
   am33_2.0-*-linux*)
-    noconfigdirs="$noconfigdirs ${libgcj} target-newlib target-libgloss"
+    noconfigdirs="${noconfigdirs} ${libgcj} target-newlib target-libgloss"
     ;;
   sh-*-linux*)
-    noconfigdirs="$noconfigdirs ${libgcj} target-newlib target-libgloss"
+    noconfigdirs="${noconfigdirs} ${libgcj} target-newlib target-libgloss"
     ;;
   sh*-*-pe|mips*-*-pe|*arm-wince-pe)
-    noconfigdirs="$noconfigdirs ${libgcj}"
-    noconfigdirs="$noconfigdirs target-examples"
-    noconfigdirs="$noconfigdirs target-libiberty texinfo send-pr"
-    noconfigdirs="$noconfigdirs tcl tk itcl libgui sim"
-    noconfigdirs="$noconfigdirs expect dejagnu"
+    noconfigdirs="${noconfigdirs} ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-examples"
+    noconfigdirs="${noconfigdirs} target-libiberty texinfo send-pr"
+    noconfigdirs="${noconfigdirs} tcl tk itcl libgui sim"
+    noconfigdirs="${noconfigdirs} expect dejagnu"
     # the C++ libraries do NOT build on top of CE's C libraries
-    noconfigdirs="$noconfigdirs target-libstdc++-v3"
-    noconfigdirs="$noconfigdirs target-newlib"
+    noconfigdirs="${noconfigdirs} target-libstdc++-v3"
+    noconfigdirs="${noconfigdirs} target-newlib"
     case "${host}" in
       *-*-cygwin*) ;; # keep gdb and readline
-      *) noconfigdirs="$noconfigdirs gdb readline"
+      *) noconfigdirs="${noconfigdirs} gdb readline"
 	 ;;
     esac
     ;;
   arc-*-*)
-    noconfigdirs="$noconfigdirs target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-libgloss ${libgcj}"
     ;;
   arm-semi-aof )
     ;;
   arm-*-coff | strongarm-*-coff | xscale-*-coff)
-    noconfigdirs="$noconfigdirs ${libgcj}"
+    noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
   arm-*-elf* | strongarm-*-elf* | xscale-*-elf* | arm*-*-eabi* )
-    noconfigdirs="$noconfigdirs target-libffi target-qthreads"
+    noconfigdirs="${noconfigdirs} target-libffi target-qthreads"
     ;;
   arm*-*-symbianelf*)
-    noconfigdirs="$noconfigdirs ${libgcj} target-libiberty"
+    noconfigdirs="${noconfigdirs} ${libgcj} target-libiberty"
     ;;
   arm-*-pe*)
-    noconfigdirs="$noconfigdirs target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-libgloss ${libgcj}"
     ;;
   thumb-*-coff)
-    noconfigdirs="$noconfigdirs target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-libgloss ${libgcj}"
     ;;
   thumb-*-elf)
-    noconfigdirs="$noconfigdirs target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-libgloss ${libgcj}"
     ;;
   thumb-*-pe)
-    noconfigdirs="$noconfigdirs target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-libgloss ${libgcj}"
     ;;
   arm-*-riscix*)
-    noconfigdirs="$noconfigdirs ld target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} ld target-libgloss ${libgcj}"
     ;;
   avr-*-*)
-    noconfigdirs="$noconfigdirs target-libiberty target-libstdc++-v3 ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-libiberty target-libstdc++-v3 ${libgcj}"
     ;;
   c4x-*-* | tic4x-*-*)
-    noconfigdirs="$noconfigdirs target-libstdc++-v3 target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-libstdc++-v3 target-libgloss ${libgcj}"
     ;;
   c54x*-*-* | tic54x-*-*)
-    noconfigdirs="$noconfigdirs target-libstdc++-v3 target-libgloss ${libgcj} gcc gdb newlib"
+    noconfigdirs="${noconfigdirs} target-libstdc++-v3 target-libgloss ${libgcj} gcc gdb newlib"
     ;;
   cris-*-* | crisv32-*-*)
     unsupported_languages="$unsupported_languages java"
     case "${target}" in
       *-*-aout)
 	unsupported_languages="$unsupported_languages f95"
-	noconfigdirs="$noconfigdirs target-libffi target-boehm-gc";;
+	noconfigdirs="${noconfigdirs} target-libffi target-boehm-gc";;
       *-*-elf)
 	unsupported_languages="$unsupported_languages f95"
-	noconfigdirs="$noconfigdirs target-boehm-gc";;
+	noconfigdirs="${noconfigdirs} target-boehm-gc";;
       *-*-linux*)
-	noconfigdirs="$noconfigdirs target-newlib target-libgloss";;
+	noconfigdirs="${noconfigdirs} target-newlib target-libgloss";;
       *)
 	unsupported_languages="$unsupported_languages f95"
-	noconfigdirs="$noconfigdirs ${libgcj} target-newlib target-libgloss";;
+	noconfigdirs="${noconfigdirs} ${libgcj} target-newlib target-libgloss";;
     esac
     ;;
   crx-*-*)
-    noconfigdirs="$noconfigdirs target-libstdc++-v3 target-mudflap ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-libstdc++-v3 target-mudflap ${libgcj}"
     ;;
   d10v-*-*)
-    noconfigdirs="$noconfigdirs target-libstdc++-v3 target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-libstdc++-v3 target-libgloss ${libgcj}"
     ;;
   d30v-*-*)
-    noconfigdirs="$noconfigdirs ${libgcj} gdb"
+    noconfigdirs="${noconfigdirs} ${libgcj} gdb"
     ;;
   fr30-*-elf*)
-    noconfigdirs="$noconfigdirs ${libgcj} gdb"
+    noconfigdirs="${noconfigdirs} ${libgcj} gdb"
     ;;
   frv-*-*)
-    noconfigdirs="$noconfigdirs ${libgcj}"
+    noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
   h8300*-*-*)
-    noconfigdirs="$noconfigdirs target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-libgloss ${libgcj}"
     ;;
   h8500-*-*)
-    noconfigdirs="$noconfigdirs target-libstdc++-v3 target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-libstdc++-v3 target-libgloss ${libgcj}"
     ;;
   hppa1.1-*-osf* | hppa1.1-*-bsd* )
     ;;
@@ -5888,7 +5960,7 @@ fi
     # In this case, it is because the hppa64-linux target is for
     # the kernel only at this point and has no libc, and thus no
     # headers, crt*.o, etc., all of which are needed by these.
-    noconfigdirs="$noconfigdirs target-zlib"
+    noconfigdirs="${noconfigdirs} target-zlib"
     ;;
   parisc*-*-linux* | hppa*-*-linux*)
     ;;
@@ -5896,73 +5968,73 @@ fi
   hppa*-*-lites* | \
   hppa*-*-openbsd* | \
   hppa*64*-*-*)
-    noconfigdirs="$noconfigdirs ${libgcj}"
+    noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
   hppa*-*-*)
     # According to Alexandre Oliva <aoliva@redhat.com>, libjava will NOT
     # build on HP-UX 10.20.
-    noconfigdirs="$noconfigdirs ld shellutils ${libgcj}"
+    noconfigdirs="${noconfigdirs} ld shellutils ${libgcj}"
     ;;
   i960-*-*)
-    noconfigdirs="$noconfigdirs ${libgcj} gdb"
+    noconfigdirs="${noconfigdirs} ${libgcj} gdb"
     ;;
   ia64*-*-elf*)
     # No gdb support yet.
-    noconfigdirs="$noconfigdirs readline mmalloc libgui itcl gdb"
+    noconfigdirs="${noconfigdirs} readline mmalloc libgui itcl gdb"
     ;;
   ia64*-**-hpux*)
     # No gdb or ld support yet.
-    noconfigdirs="$noconfigdirs ${libgcj} readline mmalloc libgui itcl gdb ld"
+    noconfigdirs="${noconfigdirs} ${libgcj} readline mmalloc libgui itcl gdb ld"
     ;;
   i370-*-opened*)
     ;;
   i[3456789]86-*-coff | i[3456789]86-*-elf)
-    noconfigdirs="$noconfigdirs ${libgcj}"
+    noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
   i[3456789]86-*-linux*)
     # The GCC port for glibc1 has no MD_FALLBACK_FRAME_STATE_FOR, so let us
     # not build java stuff by default.
     case "${target}" in
       *-*-*libc1*)
-	noconfigdirs="$noconfigdirs ${libgcj}";;
+	noconfigdirs="${noconfigdirs} ${libgcj}";;
     esac
 
     # This section makes it possible to build newlib natively on linux.
     # If we are using a cross compiler then do NOT configure newlib.
     if test x${is_cross_compiler} != xno ; then
-      noconfigdirs="$noconfigdirs target-newlib"
+      noconfigdirs="${noconfigdirs} target-newlib"
     fi
-    noconfigdirs="$noconfigdirs target-libgloss"
+    noconfigdirs="${noconfigdirs} target-libgloss"
     # If we are not using a cross compiler, do configure newlib.
     # Note however, that newlib will only be configured in this situation
     # if the --with-newlib option has been given, because otherwise
     # 'target-newlib' will appear in skipdirs.
     ;;
   i[3456789]86-*-mingw32*)
-    target_configdirs="$target_configdirs target-mingw"
-    noconfigdirs="$noconfigdirs expect target-libgloss ${libgcj}"
+    target_configdirs="${target_configdirs} target-mingw"
+    noconfigdirs="${noconfigdirs} expect target-libgloss ${libgcj}"
 
     # Cannot build gdb for mingw32 if not native.
     case "${host}" in
       i[3456789]86-*-mingw32) ;; # keep gdb tcl tk expect etc.
-      *) noconfigdirs="$noconfigdirs gdb tcl tk expect itcl gnuserv"
+      *) noconfigdirs="${noconfigdirs} gdb tcl tk expect itcl gnuserv"
          ;;
     esac
     ;;
   *-*-cygwin*)
-    target_configdirs="$target_configdirs target-libtermcap target-winsup"
-    noconfigdirs="$noconfigdirs target-gperf target-libgloss ${libgcj}"
+    target_configdirs="${target_configdirs} target-libtermcap target-winsup"
+    noconfigdirs="${noconfigdirs} target-gperf target-libgloss ${libgcj}"
     # always build newlib if winsup directory is present.
-    if test -d "$srcdir/winsup"; then
+    if test -d "${srcdir}/winsup"; then
       skipdirs=`echo " ${skipdirs} " | sed -e 's/ target-newlib / /'`
-    elif test -d "$srcdir/newlib"; then
+    elif test -d "${srcdir}/newlib"; then
       echo "Warning: winsup is missing so newlib cannot be built."
     fi
 
     # Cannot build gdb for Cygwin if not native.
     case "${host}" in
       *-*-cygwin*) ;; # keep gdb tcl tk expect etc.
-      *) noconfigdirs="$noconfigdirs gdb tcl tk expect itcl libgui gnuserv"
+      *) noconfigdirs="${noconfigdirs} gdb tcl tk expect itcl libgui gnuserv"
          ;;
     esac
     ;;
@@ -5970,119 +6042,119 @@ fi
   i[3456789]86-*-uwin* | i[3456789]86-*-interix* )
     ;;
   i[3456789]86-*-pe)
-    noconfigdirs="$noconfigdirs target-libstdc++-v3 target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-libstdc++-v3 target-libgloss ${libgcj}"
     ;;
   i[3456789]86-*-sco3.2v5*)
     # The linker does not yet know about weak symbols in COFF,
     # and is not configured to handle mixed ELF and COFF.
-    noconfigdirs="$noconfigdirs ld target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} ld target-libgloss ${libgcj}"
     ;;
   i[3456789]86-*-sco*)
-    noconfigdirs="$noconfigdirs gprof target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} gprof target-libgloss ${libgcj}"
     ;;
   i[3456789]86-*-solaris2*)
-    noconfigdirs="$noconfigdirs target-libgloss"
+    noconfigdirs="${noconfigdirs} target-libgloss"
     ;;
   i[3456789]86-*-sysv4*)
-    noconfigdirs="$noconfigdirs target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-libgloss ${libgcj}"
     ;;
   i[3456789]86-*-beos*)
-    noconfigdirs="$noconfigdirs gdb target-newlib target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} gdb target-newlib target-libgloss ${libgcj}"
     ;;
   m32r-*-*)
-    noconfigdirs="$noconfigdirs ${libgcj}"
+    noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
   m68hc11-*-*|m6811-*-*|m68hc12-*-*|m6812-*-*)
-    noconfigdirs="$noconfigdirs target-libiberty target-libstdc++-v3 ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-libiberty target-libstdc++-v3 ${libgcj}"
     ;;
   m68k-*-elf*)
-    noconfigdirs="$noconfigdirs ${libgcj}"
+    noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
   m68k-*-coff*)
-    noconfigdirs="$noconfigdirs ${libgcj}"
+    noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
   mcore-*-pe*)
   # The EPOC C++ environment does not support exceptions or rtti,
   # and so building libstdc++-v3 tends not to always work.
-    noconfigdirs="$noconfigdirs target-libstdc++-v3"
+    noconfigdirs="${noconfigdirs} target-libstdc++-v3"
     ;;
   mmix-*-*)
-    noconfigdirs="$noconfigdirs target-libffi target-boehm-gc gdb libgloss"
+    noconfigdirs="${noconfigdirs} target-libffi target-boehm-gc gdb libgloss"
     unsupported_languages="$unsupported_languages f95 java"
     ;;
   mn10200-*-*)
-    noconfigdirs="$noconfigdirs ${libgcj}"
+    noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
   mn10300-*-*)
-    noconfigdirs="$noconfigdirs ${libgcj}"
+    noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
   ms1-*-*)
-    noconfigdirs="$noconfigdirs sim"
+    noconfigdirs="${noconfigdirs} sim"
     ;;
   powerpc-*-aix*)
     # copied from rs6000-*-* entry
-    noconfigdirs="$noconfigdirs gprof target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} gprof target-libgloss ${libgcj}"
     ;;
   powerpc*-*-winnt* | powerpc*-*-pe* | ppc*-*-pe)
-    target_configdirs="$target_configdirs target-winsup"
-    noconfigdirs="$noconfigdirs gdb tcl tk make expect target-libgloss itcl gnuserv ${libgcj}"
+    target_configdirs="${target_configdirs} target-winsup"
+    noconfigdirs="${noconfigdirs} gdb tcl tk make expect target-libgloss itcl gnuserv ${libgcj}"
     # always build newlib.
     skipdirs=`echo " ${skipdirs} " | sed -e 's/ target-newlib / /'`
     ;;
     # This is temporary until we can link against shared libraries
   powerpcle-*-solaris*)
-    noconfigdirs="$noconfigdirs gdb sim make tcl tk expect itcl gnuserv ${libgcj}"
+    noconfigdirs="${noconfigdirs} gdb sim make tcl tk expect itcl gnuserv ${libgcj}"
     ;;
   powerpc-*-beos*)
-    noconfigdirs="$noconfigdirs gdb target-newlib target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} gdb target-newlib target-libgloss ${libgcj}"
     ;;
   powerpc-*-eabi)
-    noconfigdirs="$noconfigdirs ${libgcj}"
+    noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
   powerpc-*-eabi* | powerpcle-*-eabi* | powerpc-*-rtems* )
     ;;
   rs6000-*-lynxos*)
-    noconfigdirs="$noconfigdirs target-newlib gprof ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-newlib gprof ${libgcj}"
     ;;
   rs6000-*-aix*)
-    noconfigdirs="$noconfigdirs gprof target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} gprof target-libgloss ${libgcj}"
     ;;
   rs6000-*-*)
-    noconfigdirs="$noconfigdirs gprof ${libgcj}"
+    noconfigdirs="${noconfigdirs} gprof ${libgcj}"
     ;;
   m68k-apollo-*)
-    noconfigdirs="$noconfigdirs ld binutils gprof target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} ld binutils gprof target-libgloss ${libgcj}"
     ;;
   mips*-*-irix5*)
-    noconfigdirs="$noconfigdirs gprof target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} gprof target-libgloss ${libgcj}"
     ;;
   mips*-*-irix6*)
     # Linking libjava exceeds command-line length limits on at least
     # IRIX 6.2, but not on IRIX 6.5.
     # Also, boehm-gc will NOT build on IRIX 6.5, according to Jeffrey Oldham
     # <oldham@codesourcery.com>
-    noconfigdirs="$noconfigdirs gprof target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} gprof target-libgloss ${libgcj}"
     ;;
   mips*-dec-bsd*)
-    noconfigdirs="$noconfigdirs gprof target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} gprof target-libgloss ${libgcj}"
     ;;
   mips*-*-bsd*)
-    noconfigdirs="$noconfigdirs gprof target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} gprof target-libgloss ${libgcj}"
     ;;
   mipstx39-*-*)
-    noconfigdirs="$noconfigdirs gprof ${libgcj}" # same as generic mips
+    noconfigdirs="${noconfigdirs} gprof ${libgcj}" # same as generic mips
     ;;
   mips64*-*-linux*)
-    noconfigdirs="$noconfigdirs target-newlib ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-newlib ${libgcj}"
     ;;
   mips*-*-linux*)
-    noconfigdirs="$noconfigdirs target-newlib target-libgloss"
+    noconfigdirs="${noconfigdirs} target-newlib target-libgloss"
     ;;
   mips*-*-*)
-    noconfigdirs="$noconfigdirs gprof ${libgcj}"
+    noconfigdirs="${noconfigdirs} gprof ${libgcj}"
     ;;
   romp-*-*)
-    noconfigdirs="$noconfigdirs bfd binutils ld gas opcodes target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} bfd binutils ld gas opcodes target-libgloss ${libgcj}"
     ;;
   sh-*-* | sh64-*-*)
     case "${host}" in
@@ -6091,74 +6163,74 @@ fi
       i[3456789]86-*-msdosdjgpp*) ;; # do NOT add gprof back in
       *) skipdirs=`echo " ${skipdirs} " | sed -e 's/ gprof / /'` ;;
     esac
-    noconfigdirs="$noconfigdirs target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-libgloss ${libgcj}"
     ;;
   sparc-*-elf*)
-    noconfigdirs="$noconfigdirs ${libgcj}"
+    noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
   sparc64-*-elf*)
-    noconfigdirs="$noconfigdirs ${libgcj}"
+    noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
   sparclite-*-*)
-    noconfigdirs="$noconfigdirs ${libgcj}"
+    noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
   sparc-*-sunos4*)
-    noconfigdirs="$noconfigdirs ${libgcj}"
+    noconfigdirs="${noconfigdirs} ${libgcj}"
     if test x${is_cross_compiler} != xno ; then
-           noconfigdirs="$noconfigdirs gdb target-newlib target-libgloss"
+           noconfigdirs="${noconfigdirs} gdb target-newlib target-libgloss"
     else
            use_gnu_ld=no
     fi
     ;;
   sparc-*-solaris2.[0-6] | sparc-*-solaris2.[0-6].*)
-    noconfigdirs="$noconfigdirs ${libgcj}"
+    noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
   sparc-*-solaris* | sparc64-*-solaris* | sparcv9-*-solaris*)
     ;;
   v810-*-*)
-    noconfigdirs="$noconfigdirs bfd binutils gas gcc gdb ld target-libstdc++-v3 opcodes target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} bfd binutils gas gcc gdb ld target-libstdc++-v3 opcodes target-libgloss ${libgcj}"
     ;;
   v850-*-*)
-    noconfigdirs="$noconfigdirs target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-libgloss ${libgcj}"
     ;;
   v850e-*-*)
-    noconfigdirs="$noconfigdirs target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-libgloss ${libgcj}"
     ;;
   v850ea-*-*)
-    noconfigdirs="$noconfigdirs target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-libgloss ${libgcj}"
     ;;
   vax-*-vms)
-    noconfigdirs="$noconfigdirs bfd binutils gdb ld target-newlib opcodes target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} bfd binutils gdb ld target-newlib opcodes target-libgloss ${libgcj}"
     ;;
   vax-*-*)
-    noconfigdirs="$noconfigdirs target-newlib target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-newlib target-libgloss ${libgcj}"
     ;;
   xtensa-*-*)
-    noconfigdirs="$noconfigdirs ${libgcj}"
+    noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
   ip2k-*-*)
-    noconfigdirs="$noconfigdirs target-libiberty target-libstdc++-v3 ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-libiberty target-libstdc++-v3 ${libgcj}"
     ;;
   *-*-linux* | *-*-gnu* | *-*-k*bsd*-gnu)
-    noconfigdirs="$noconfigdirs target-newlib target-libgloss"
+    noconfigdirs="${noconfigdirs} target-newlib target-libgloss"
     ;;
   *-*-lynxos*)
-    noconfigdirs="$noconfigdirs target-newlib target-libgloss ${libgcj}"
+    noconfigdirs="${noconfigdirs} target-newlib target-libgloss ${libgcj}"
     ;;
   *-*-*)
-    noconfigdirs="$noconfigdirs ${libgcj}"
+    noconfigdirs="${noconfigdirs} ${libgcj}"
     ;;
 esac
 
 if test "${build}" != "${host}" ; then
-    noconfigdirs="$noconfigdirs expect"
+    noconfigdirs="${noconfigdirs} expect"
 fi
 
 # If we are NOT building newlib, then do NOT build libgloss, since libgloss
 # depends upon some newlib header files.
 case "${noconfigdirs}" in
   *target-libgloss*) ;;
-  *target-newlib*) noconfigdirs="$noconfigdirs target-libgloss" ;;
+  *target-newlib*) noconfigdirs="${noconfigdirs} target-libgloss" ;;
 esac
 
 # Work in distributions that contain no compiler tools, like Autoconf.
@@ -6990,70 +7062,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
   else
     test ! -z "${CC}"
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for grep that handles long lines and -e" >&5
-$as_echo_n "checking for grep that handles long lines and -e... " >&6; }
-if ${ac_cv_path_GREP+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -z "$GREP"; then
-  ac_path_GREP_found=false
-  # Loop through the user's path and test for each of PROGNAME-LIST
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH$PATH_SEPARATOR/usr/xpg4/bin
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_prog in grep ggrep; do
-    for ac_exec_ext in '' $ac_executable_extensions; do
-      ac_path_GREP="$as_dir/$ac_prog$ac_exec_ext"
-      as_fn_executable_p "$ac_path_GREP" || continue
-# Check for GNU ac_path_GREP and select it if it is found.
-  # Check for GNU $ac_path_GREP
-case `"$ac_path_GREP" --version 2>&1` in
-*GNU*)
-  ac_cv_path_GREP="$ac_path_GREP" ac_path_GREP_found=:;;
-*)
-  ac_count=0
-  $as_echo_n 0123456789 >"conftest.in"
-  while :
-  do
-    cat "conftest.in" "conftest.in" >"conftest.tmp"
-    mv "conftest.tmp" "conftest.in"
-    cp "conftest.in" "conftest.nl"
-    $as_echo 'GREP' >> "conftest.nl"
-    "$ac_path_GREP" -e 'GREP$' -e '-(cannot match)-' < "conftest.nl" >"conftest.out" 2>/dev/null || break
-    diff "conftest.out" "conftest.nl" >/dev/null 2>&1 || break
-    as_fn_arith $ac_count + 1 && ac_count=$as_val
-    if test $ac_count -gt ${ac_path_GREP_max-0}; then
-      # Best one so far, save it but keep looking for a better one
-      ac_cv_path_GREP="$ac_path_GREP"
-      ac_path_GREP_max=$ac_count
-    fi
-    # 10*(2^10) chars as input seems more than enough
-    test $ac_count -gt 10 && break
-  done
-  rm -f conftest.in conftest.tmp conftest.nl conftest.out;;
-esac
-
-      $ac_path_GREP_found && break 3
-    done
-  done
-  done
-IFS=$as_save_IFS
-  if test -z "$ac_cv_path_GREP"; then
-    as_fn_error $? "no acceptable grep could be found in $PATH$PATH_SEPARATOR/usr/xpg4/bin" "$LINENO" 5
-  fi
-else
-  ac_cv_path_GREP=$GREP
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_GREP" >&5
-$as_echo "$ac_cv_path_GREP" >&6; }
- GREP="$ac_cv_path_GREP"
-
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for egrep" >&5
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for egrep" >&5
 $as_echo_n "checking for egrep... " >&6; }
 if ${ac_cv_path_EGREP+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -8140,9 +8149,9 @@ if test "${with_mpfr_dir+set}" = set; then :
 fi
 
 
-if test "x$with_mpfr_dir" != x; then
-  gmpinc="-I$with_mpfr_dir"
-  gmplibs="$with_mpfr_dir/libmpfr.a"
+if test "x${with_mpfr_dir}" != x; then
+  gmpinc="-I${with_mpfr_dir}"
+  gmplibs="${with_mpfr_dir}/libmpfr.a"
 else
   gmplibs="-lmpfr"
 fi
@@ -8154,9 +8163,9 @@ if test "${with_mpfr+set}" = set; then :
 fi
 
 
-if test "x$with_mpfr" != x; then
-  gmplibs="-L$with_mpfr/lib $gmplibs"
-  gmpinc="-I$with_mpfr/include"
+if test "x${with_mpfr}" != x; then
+  gmplibs="-L${with_mpfr}/lib ${gmplibs}"
+  gmpinc="-I${with_mpfr}/include"
 fi
 
 # Specify a location for gmp
@@ -8167,16 +8176,16 @@ if test "${with_gmp_dir+set}" = set; then :
 fi
 
 
-if test "x$with_gmp_dir" != x; then
-  gmpinc="$gmpinc -I$with_gmp_dir"
-  if test -f "$with_gmp_dir/.libs/libgmp.a"; then
-    gmplibs="$gmplibs $with_gmp_dir/.libs/libgmp.a"
-  elif test -f "$with_gmp_dir/_libs/libgmp.a"; then
-    gmplibs="$gmplibs $with_gmp_dir/_libs/libgmp.a"
+if test "x${with_gmp_dir}" != x; then
+  gmpinc="${gmpinc} -I${with_gmp_dir}"
+  if test -f "${with_gmp_dir}/.libs/libgmp.a"; then
+    gmplibs="${gmplibs} ${with_gmp_dir}/.libs/libgmp.a"
+  elif test -f "${with_gmp_dir}/_libs/libgmp.a"; then
+    gmplibs="${gmplibs} ${with_gmp_dir}/_libs/libgmp.a"
   fi
   # One of the later tests will catch the error if neither library is present.
 else
-  gmplibs="$gmplibs -lgmp"
+  gmplibs="${gmplibs} -lgmp"
 fi
 
 
@@ -8186,13 +8195,13 @@ if test "${with_gmp+set}" = set; then :
 fi
 
 
-if test "x$with_gmp" != x; then
-  gmplibs="-L$with_gmp/lib $gmplibs"
-  gmpinc="-I$with_gmp/include $gmpinc"
+if test "x${with_gmp}" != x; then
+  gmplibs="-L${with_gmp}/lib ${gmplibs}"
+  gmpinc="-I${with_gmp}/include ${gmpinc}"
 fi
 
-saved_CFLAGS="$CFLAGS"
-CFLAGS="$CFLAGS $gmpinc"
+saved_CFLAGS="${CFLAGS}"
+CFLAGS="${CFLAGS} ${gmpinc}"
 # Check GMP actually works
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ANSI C header files" >&5
 $as_echo_n "checking for ANSI C header files... " >&6; }
@@ -8377,7 +8386,7 @@ if test x"$have_gmp" = xyes; then
 $as_echo_n "checking for MPFR... " >&6; }
 
   saved_LIBS="$LIBS"
-  LIBS="$LIBS $gmplibs"
+  LIBS="$LIBS ${gmplibs}"
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #include <gmp.h>
@@ -9029,6 +9038,16 @@ _ACEOF
 ;;
   esac
 
+ac_fn_c_check_type "$LINENO" "ptrdiff_t" "ac_cv_type_ptrdiff_t" "$ac_includes_default"
+if test "x$ac_cv_type_ptrdiff_t" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_PTRDIFF_T 1
+_ACEOF
+
+
+fi
+
 ac_fn_c_check_member "$LINENO" "struct stat" "st_blksize" "ac_cv_member_struct_stat_st_blksize" "$ac_includes_default"
 if test "x$ac_cv_member_struct_stat_st_blksize" = xyes; then :
 
@@ -9359,6 +9378,287 @@ $as_echo "#define malloc rpl_malloc" >>confdefs.h
 fi
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether time.h and sys/time.h may both be included" >&5
+$as_echo_n "checking whether time.h and sys/time.h may both be included... " >&6; }
+if ${ac_cv_header_time+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+#include <sys/time.h>
+#include <time.h>
+
+int
+main ()
+{
+if ((struct tm *) 0)
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_header_time=yes
+else
+  ac_cv_header_time=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_header_time" >&5
+$as_echo "$ac_cv_header_time" >&6; }
+if test $ac_cv_header_time = yes; then
+
+$as_echo "#define TIME_WITH_SYS_TIME 1" >>confdefs.h
+
+fi
+
+
+
+
+
+
+
+
+  for ac_func in $ac_func_list
+do :
+  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
+ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
+if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+done
+
+
+
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for working mktime" >&5
+$as_echo_n "checking for working mktime... " >&6; }
+if ${ac_cv_func_working_mktime+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  ac_cv_func_working_mktime=no
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+/* Test program from Paul Eggert and Tony Leneis.  */
+#ifdef TIME_WITH_SYS_TIME
+# include <sys/time.h>
+# include <time.h>
+#else
+# ifdef HAVE_SYS_TIME_H
+#  include <sys/time.h>
+# else
+#  include <time.h>
+# endif
+#endif
+
+#include <limits.h>
+#include <stdlib.h>
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#ifndef HAVE_ALARM
+# define alarm(X) /* empty */
+#endif
+
+/* Work around redefinition to rpl_putenv by other config tests.  */
+#undef putenv
+
+static time_t time_t_max;
+static time_t time_t_min;
+
+/* Values we'll use to set the TZ environment variable.  */
+static const char *tz_strings[] = {
+  (const char *) 0, "TZ=GMT0", "TZ=JST-9",
+  "TZ=EST+3EDT+2,M10.1.0/00:00:00,M2.3.0/00:00:00"
+};
+#define N_STRINGS (sizeof (tz_strings) / sizeof (tz_strings[0]))
+
+/* Return 0 if mktime fails to convert a date in the spring-forward gap.
+   Based on a problem report from Andreas Jaeger.  */
+static int
+spring_forward_gap ()
+{
+  /* glibc (up to about 1998-10-07) failed this test. */
+  struct tm tm;
+
+  /* Use the portable POSIX.1 specification "TZ=PST8PDT,M4.1.0,M10.5.0"
+     instead of "TZ=America/Vancouver" in order to detect the bug even
+     on systems that don't support the Olson extension, or don't have the
+     full zoneinfo tables installed.  */
+  putenv ((char*) "TZ=PST8PDT,M4.1.0,M10.5.0");
+
+  tm.tm_year = 98;
+  tm.tm_mon = 3;
+  tm.tm_mday = 5;
+  tm.tm_hour = 2;
+  tm.tm_min = 0;
+  tm.tm_sec = 0;
+  tm.tm_isdst = -1;
+  return mktime (&tm) != (time_t) -1;
+}
+
+static int
+mktime_test1 (time_t now)
+{
+  struct tm *lt;
+  return ! (lt = localtime (&now)) || mktime (lt) == now;
+}
+
+static int
+mktime_test (time_t now)
+{
+  return (mktime_test1 (now)
+	  && mktime_test1 ((time_t) (time_t_max - now))
+	  && mktime_test1 ((time_t) (time_t_min + now)));
+}
+
+static int
+irix_6_4_bug ()
+{
+  /* Based on code from Ariel Faigon.  */
+  struct tm tm;
+  tm.tm_year = 96;
+  tm.tm_mon = 3;
+  tm.tm_mday = 0;
+  tm.tm_hour = 0;
+  tm.tm_min = 0;
+  tm.tm_sec = 0;
+  tm.tm_isdst = -1;
+  mktime (&tm);
+  return tm.tm_mon == 2 && tm.tm_mday == 31;
+}
+
+static int
+bigtime_test (int j)
+{
+  struct tm tm;
+  time_t now;
+  tm.tm_year = tm.tm_mon = tm.tm_mday = tm.tm_hour = tm.tm_min = tm.tm_sec = j;
+  now = mktime (&tm);
+  if (now != (time_t) -1)
+    {
+      struct tm *lt = localtime (&now);
+      if (! (lt
+	     && lt->tm_year == tm.tm_year
+	     && lt->tm_mon == tm.tm_mon
+	     && lt->tm_mday == tm.tm_mday
+	     && lt->tm_hour == tm.tm_hour
+	     && lt->tm_min == tm.tm_min
+	     && lt->tm_sec == tm.tm_sec
+	     && lt->tm_yday == tm.tm_yday
+	     && lt->tm_wday == tm.tm_wday
+	     && ((lt->tm_isdst < 0 ? -1 : 0 < lt->tm_isdst)
+		  == (tm.tm_isdst < 0 ? -1 : 0 < tm.tm_isdst))))
+	return 0;
+    }
+  return 1;
+}
+
+static int
+year_2050_test ()
+{
+  /* The correct answer for 2050-02-01 00:00:00 in Pacific time,
+     ignoring leap seconds.  */
+  unsigned long int answer = 2527315200UL;
+
+  struct tm tm;
+  time_t t;
+  tm.tm_year = 2050 - 1900;
+  tm.tm_mon = 2 - 1;
+  tm.tm_mday = 1;
+  tm.tm_hour = tm.tm_min = tm.tm_sec = 0;
+  tm.tm_isdst = -1;
+
+  /* Use the portable POSIX.1 specification "TZ=PST8PDT,M4.1.0,M10.5.0"
+     instead of "TZ=America/Vancouver" in order to detect the bug even
+     on systems that don't support the Olson extension, or don't have the
+     full zoneinfo tables installed.  */
+  putenv ((char*) "TZ=PST8PDT,M4.1.0,M10.5.0");
+
+  t = mktime (&tm);
+
+  /* Check that the result is either a failure, or close enough
+     to the correct answer that we can assume the discrepancy is
+     due to leap seconds.  */
+  return (t == (time_t) -1
+	  || (0 < t && answer - 120 <= t && t <= answer + 120));
+}
+
+int
+main ()
+{
+  time_t t, delta;
+  int i, j;
+
+  /* This test makes some buggy mktime implementations loop.
+     Give up after 60 seconds; a mktime slower than that
+     isn't worth using anyway.  */
+  alarm (60);
+
+  for (;;)
+    {
+      t = (time_t_max << 1) + 1;
+      if (t <= time_t_max)
+	break;
+      time_t_max = t;
+    }
+  time_t_min = - ((time_t) ~ (time_t) 0 == (time_t) -1) - time_t_max;
+
+  delta = time_t_max / 997; /* a suitable prime number */
+  for (i = 0; i < N_STRINGS; i++)
+    {
+      if (tz_strings[i])
+	putenv ((char*) tz_strings[i]);
+
+      for (t = 0; t <= time_t_max - delta; t += delta)
+	if (! mktime_test (t))
+	  return 1;
+      if (! (mktime_test ((time_t) 1)
+	     && mktime_test ((time_t) (60 * 60))
+	     && mktime_test ((time_t) (60 * 60 * 24))))
+	return 1;
+
+      for (j = 1; ; j <<= 1)
+	if (! bigtime_test (j))
+	  return 1;
+	else if (INT_MAX / 2 < j)
+	  break;
+      if (! bigtime_test (INT_MAX))
+	return 1;
+    }
+  return ! (irix_6_4_bug () && spring_forward_gap () && year_2050_test ());
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_working_mktime=yes
+else
+  ac_cv_func_working_mktime=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_working_mktime" >&5
+$as_echo "$ac_cv_func_working_mktime" >&6; }
+if test $ac_cv_func_working_mktime = no; then
+  case " $LIBOBJS " in
+  *" mktime.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS mktime.$ac_objext"
+ ;;
+esac
+
+fi
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for obstacks" >&5
 $as_echo_n "checking for obstacks... " >&6; }
 if ${ac_cv_func_obstack+:} false; then :
@@ -9470,11 +9770,165 @@ $as_echo "#define realloc rpl_realloc" >>confdefs.h
 fi
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for working strcoll" >&5
+$as_echo_n "checking for working strcoll... " >&6; }
+if ${ac_cv_func_strcoll_works+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  ac_cv_func_strcoll_works=no
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+return (strcoll ("abc", "def") >= 0 ||
+	 strcoll ("ABC", "DEF") >= 0 ||
+	 strcoll ("123", "456") >= 0)
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_strcoll_works=yes
+else
+  ac_cv_func_strcoll_works=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_strcoll_works" >&5
+$as_echo "$ac_cv_func_strcoll_works" >&6; }
+if test $ac_cv_func_strcoll_works = yes; then
+
+$as_echo "#define HAVE_STRCOLL 1" >>confdefs.h
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for working strtod" >&5
+$as_echo_n "checking for working strtod... " >&6; }
+if ${ac_cv_func_strtod+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  ac_cv_func_strtod=no
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+$ac_includes_default
+#ifndef strtod
+double strtod ();
+#endif
+int
+main()
+{
+  {
+    /* Some versions of Linux strtod mis-parse strings with leading '+'.  */
+    char *string = " +69";
+    char *term;
+    double value;
+    value = strtod (string, &term);
+    if (value != 69 || term != (string + 4))
+      return 1;
+  }
+
+  {
+    /* Under Solaris 2.4, strtod returns the wrong value for the
+       terminating character under some conditions.  */
+    char *string = "NaN";
+    char *term;
+    strtod (string, &term);
+    if (term != string && *(term - 1) == 0)
+      return 1;
+  }
+  return 0;
+}
+
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_strtod=yes
+else
+  ac_cv_func_strtod=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_strtod" >&5
+$as_echo "$ac_cv_func_strtod" >&6; }
+if test $ac_cv_func_strtod = no; then
+  case " $LIBOBJS " in
+  *" strtod.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS strtod.$ac_objext"
+ ;;
+esac
+
+ac_fn_c_check_func "$LINENO" "pow" "ac_cv_func_pow"
+if test "x$ac_cv_func_pow" = xyes; then :
+
+fi
+
+if test $ac_cv_func_pow = no; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for pow in -lm" >&5
+$as_echo_n "checking for pow in -lm... " >&6; }
+if ${ac_cv_lib_m_pow+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lm  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char pow ();
+int
+main ()
+{
+return pow ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_m_pow=yes
+else
+  ac_cv_lib_m_pow=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_m_pow" >&5
+$as_echo "$ac_cv_lib_m_pow" >&6; }
+if test "x$ac_cv_lib_m_pow" = xyes; then :
+  POW_LIB=-lm
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: cannot find library containing definition of pow" >&5
+$as_echo "$as_me: WARNING: cannot find library containing definition of pow" >&2;}
+fi
+
+fi
+
+fi
+
 unset ac_cv_func_gethostbyname
-for ac_func in getcwd gethostbyaddr gethostbyname gettimeofday \
-                memchr memmove memset printf putenv re_comp regcomp \
-                select socket strcasecmp strchr strerror strrchr strstr \
-                strtol strtoul strverscmp system utime
+for ac_func in atexit floor getcwd gethostbyaddr gethostbyname \
+                gettimeofday isascii localeconv mblen memchr memmove \
+                memset modf pow printf putenv re_comp regcomp rint \
+                select setlocale socket sqrt strcasecmp strchr strcspn \
+                strerror strpbrk strrchr strspn strstr strtol strtoul \
+                strverscmp system utime
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -9485,6 +9939,554 @@ _ACEOF
 
 fi
 done
+
+# Checks for tcl-related functions
+
+
+
+
+
+
+    ac_fn_c_check_func "$LINENO" "gethostbyaddr_r" "ac_cv_func_gethostbyaddr_r"
+if test "x$ac_cv_func_gethostbyaddr_r" = xyes; then :
+
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gethostbyaddr_r with 7 args" >&5
+$as_echo_n "checking for gethostbyaddr_r with 7 args... " >&6; }
+if ${tcl_cv_api_gethostbyaddr_r_7+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+	#include <netdb.h>
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  tcl_cv_api_gethostbyaddr_r_7=yes
+else
+  tcl_cv_api_gethostbyaddr_r_7=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $tcl_cv_api_gethostbyaddr_r_7" >&5
+$as_echo "$tcl_cv_api_gethostbyaddr_r_7" >&6; }
+    tcl_ok=${tcl_cv_api_gethostbyaddr_r_7}
+    if test "${tcl_ok}" = yes; then
+
+$as_echo "#define HAVE_GETHOSTBYADDR_R_7 7" >>confdefs.h
+
+    else
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for gethostbyaddr_r with 8 args" >&5
+$as_echo_n "checking for gethostbyaddr_r with 8 args... " >&6; }
+if ${tcl_cv_api_gethostbyaddr_r_8+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+	    #include <netdb.h>
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  tcl_cv_api_gethostbyaddr_r_8=yes
+else
+  tcl_cv_api_gethostbyaddr_r_8=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $tcl_cv_api_gethostbyaddr_r_8" >&5
+$as_echo "$tcl_cv_api_gethostbyaddr_r_8" >&6; }
+	tcl_ok=${tcl_cv_api_gethostbyaddr_r_8}
+	if test "${tcl_ok}" = yes; then
+
+$as_echo "#define HAVE_GETHOSTBYADDR_R_8 8" >>confdefs.h
+
+	fi
+    fi
+    if test "${tcl_ok}" = yes; then
+
+$as_echo "#define HAVE_GETHOSTBYADDR_R 1" >>confdefs.h
+
+    fi
+
+fi
+
+
+
+
+
+    ac_fn_c_check_func "$LINENO" "gethostbyname_r" "ac_cv_func_gethostbyname_r"
+if test "x$ac_cv_func_gethostbyname_r" = xyes; then :
+
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gethostbyname_r with 6 args" >&5
+$as_echo_n "checking for gethostbyname_r with 6 args... " >&6; }
+if ${tcl_cv_api_gethostbyname_r_6+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+	#include <netdb.h>
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  tcl_cv_api_gethostbyname_r_6=yes
+else
+  tcl_cv_api_gethostbyname_r_6=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $tcl_cv_api_gethostbyname_r_6" >&5
+$as_echo "$tcl_cv_api_gethostbyname_r_6" >&6; }
+    tcl_ok=${tcl_cv_api_gethostbyname_r_6}
+    if test "${tcl_ok}" = yes; then
+
+$as_echo "#define HAVE_GETHOSTBYNAME_R_6 6" >>confdefs.h
+
+    else
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for gethostbyname_r with 5 args" >&5
+$as_echo_n "checking for gethostbyname_r with 5 args... " >&6; }
+if ${tcl_cv_api_gethostbyname_r_5+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+	    #include <netdb.h>
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  tcl_cv_api_gethostbyname_r_5=yes
+else
+  tcl_cv_api_gethostbyname_r_5=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $tcl_cv_api_gethostbyname_r_5" >&5
+$as_echo "$tcl_cv_api_gethostbyname_r_5" >&6; }
+	tcl_ok=${tcl_cv_api_gethostbyname_r_5}
+	if test "${tcl_ok}" = yes; then
+
+$as_echo "#define HAVE_GETHOSTBYNAME_R_5 5" >>confdefs.h
+
+	else
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gethostbyname_r with 3 args" >&5
+$as_echo_n "checking for gethostbyname_r with 3 args... " >&6; }
+if ${tcl_cv_api_gethostbyname_r_3+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+		#include <netdb.h>
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  tcl_cv_api_gethostbyname_r_3=yes
+else
+  tcl_cv_api_gethostbyname_r_3=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $tcl_cv_api_gethostbyname_r_3" >&5
+$as_echo "$tcl_cv_api_gethostbyname_r_3" >&6; }
+	    tcl_ok=${tcl_cv_api_gethostbyname_r_3}
+	    if test "${tcl_ok}" = yes; then
+
+$as_echo "#define HAVE_GETHOSTBYNAME_R_3 3" >>confdefs.h
+
+	    fi
+	fi
+    fi
+    if test "${tcl_ok}" = yes; then
+
+$as_echo "#define HAVE_GETHOSTBYNAME_R 1" >>confdefs.h
+
+    fi
+
+fi
+
+
+
+
+
+
+
+
+    ac_fn_c_check_func "$LINENO" "getpwuid_r" "ac_cv_func_getpwuid_r"
+if test "x$ac_cv_func_getpwuid_r" = xyes; then :
+
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for getpwuid_r with 5 args" >&5
+$as_echo_n "checking for getpwuid_r with 5 args... " >&6; }
+if ${tcl_cv_api_getpwuid_r_5+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+	#include <sys/types.h>
+	#include <pwd.h>
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  tcl_cv_api_getpwuid_r_5=yes
+else
+  tcl_cv_api_getpwuid_r_5=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $tcl_cv_api_getpwuid_r_5" >&5
+$as_echo "$tcl_cv_api_getpwuid_r_5" >&6; }
+    tcl_ok=${tcl_cv_api_getpwuid_r_5}
+    if test "${tcl_ok}" = yes; then
+
+$as_echo "#define HAVE_GETPWUID_R_5 5" >>confdefs.h
+
+    else
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for getpwuid_r with 4 args" >&5
+$as_echo_n "checking for getpwuid_r with 4 args... " >&6; }
+if ${tcl_cv_api_getpwuid_r_4+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+	    #include <sys/types.h>
+	    #include <pwd.h>
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  tcl_cv_api_getpwuid_r_4=yes
+else
+  tcl_cv_api_getpwuid_r_4=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $tcl_cv_api_getpwuid_r_4" >&5
+$as_echo "$tcl_cv_api_getpwuid_r_4" >&6; }
+	tcl_ok=${tcl_cv_api_getpwuid_r_4}
+	if test "${tcl_ok}" = yes; then
+
+$as_echo "#define HAVE_GETPWUID_R_4 4" >>confdefs.h
+
+	fi
+    fi
+    if test "${tcl_ok}" = yes; then
+
+$as_echo "#define HAVE_GETPWUID_R 1" >>confdefs.h
+
+    fi
+
+fi
+
+
+
+
+
+    ac_fn_c_check_func "$LINENO" "getpwnam_r" "ac_cv_func_getpwnam_r"
+if test "x$ac_cv_func_getpwnam_r" = xyes; then :
+
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for getpwnam_r with 5 args" >&5
+$as_echo_n "checking for getpwnam_r with 5 args... " >&6; }
+if ${tcl_cv_api_getpwnam_r_5+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+	#include <sys/types.h>
+	#include <pwd.h>
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  tcl_cv_api_getpwnam_r_5=yes
+else
+  tcl_cv_api_getpwnam_r_5=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $tcl_cv_api_getpwnam_r_5" >&5
+$as_echo "$tcl_cv_api_getpwnam_r_5" >&6; }
+    tcl_ok=${tcl_cv_api_getpwnam_r_5}
+    if test "${tcl_ok}" = yes; then
+
+$as_echo "#define HAVE_GETPWNAM_R_5 5" >>confdefs.h
+
+    else
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for getpwnam_r with 4 args" >&5
+$as_echo_n "checking for getpwnam_r with 4 args... " >&6; }
+if ${tcl_cv_api_getpwnam_r_4+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+	    #include <sys/types.h>
+	    #include <pwd.h>
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  tcl_cv_api_getpwnam_r_4=yes
+else
+  tcl_cv_api_getpwnam_r_4=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $tcl_cv_api_getpwnam_r_4" >&5
+$as_echo "$tcl_cv_api_getpwnam_r_4" >&6; }
+	tcl_ok=${tcl_cv_api_getpwnam_r_4}
+	if test "${tcl_ok}" = yes; then
+
+$as_echo "#define HAVE_GETPWNAM_R_4 4" >>confdefs.h
+
+	fi
+    fi
+    if test "${tcl_ok}" = yes; then
+
+$as_echo "#define HAVE_GETPWNAM_R 1" >>confdefs.h
+
+    fi
+
+fi
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking type of array argument to getgroups" >&5
+$as_echo_n "checking type of array argument to getgroups... " >&6; }
+if ${ac_cv_type_getgroups+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  ac_cv_type_getgroups=cross
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+/* Thanks to Mike Rendell for this test.  */
+$ac_includes_default
+#define NGID 256
+#undef MAX
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
+
+int
+main ()
+{
+  gid_t gidset[NGID];
+  int i, n;
+  union { gid_t gval; long int lval; }  val;
+
+  val.lval = -1;
+  for (i = 0; i < NGID; i++)
+    gidset[i] = val.gval;
+  n = getgroups (sizeof (gidset) / MAX (sizeof (int), sizeof (gid_t)) - 1,
+		 gidset);
+  /* Exit non-zero if getgroups seems to require an array of ints.  This
+     happens when gid_t is short int but getgroups modifies an array
+     of ints.  */
+  return n > 0 && gidset[n] != val.gval;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_type_getgroups=gid_t
+else
+  ac_cv_type_getgroups=int
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+if test $ac_cv_type_getgroups = cross; then
+        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <unistd.h>
+
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "getgroups.*int.*gid_t" >/dev/null 2>&1; then :
+  ac_cv_type_getgroups=gid_t
+else
+  ac_cv_type_getgroups=int
+fi
+rm -f conftest*
+
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_type_getgroups" >&5
+$as_echo "$ac_cv_type_getgroups" >&6; }
+
+cat >>confdefs.h <<_ACEOF
+#define GETGROUPS_T $ac_cv_type_getgroups
+_ACEOF
+
+
+
+
+
+
+
+
+
+    ac_fn_c_check_func "$LINENO" "getgrgid_r" "ac_cv_func_getgrgid_r"
+if test "x$ac_cv_func_getgrgid_r" = xyes; then :
+
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for getgrgid_r with 5 args" >&5
+$as_echo_n "checking for getgrgid_r with 5 args... " >&6; }
+if ${tcl_cv_api_getgrgid_r_5+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+	#include <sys/types.h>
+	#include <grp.h>
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  tcl_cv_api_getgrgid_r_5=yes
+else
+  tcl_cv_api_getgrgid_r_5=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $tcl_cv_api_getgrgid_r_5" >&5
+$as_echo "$tcl_cv_api_getgrgid_r_5" >&6; }
+    tcl_ok=${tcl_cv_api_getgrgid_r_5}
+    if test "${tcl_ok}" = yes; then
+
+$as_echo "#define HAVE_GETGRGID_R_5 5" >>confdefs.h
+
+    else
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for getgrgid_r with 4 args" >&5
+$as_echo_n "checking for getgrgid_r with 4 args... " >&6; }
+if ${tcl_cv_api_getgrgid_r_4+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+	    #include <sys/types.h>
+	    #include <grp.h>
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  tcl_cv_api_getgrgid_r_4=yes
+else
+  tcl_cv_api_getgrgid_r_4=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $tcl_cv_api_getgrgid_r_4" >&5
+$as_echo "$tcl_cv_api_getgrgid_r_4" >&6; }
+	tcl_ok=${tcl_cv_api_getgrgid_r_4}
+	if test "${tcl_ok}" = yes; then
+
+$as_echo "#define HAVE_GETGRGID_R_4 4" >>confdefs.h
+
+	fi
+    fi
+    if test "${tcl_ok}" = yes; then
+
+$as_echo "#define HAVE_GETGRGID_R 1" >>confdefs.h
+
+    fi
+
+fi
+
+
+
+
+
+    ac_fn_c_check_func "$LINENO" "getgrnam_r" "ac_cv_func_getgrnam_r"
+if test "x$ac_cv_func_getgrnam_r" = xyes; then :
+
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for getgrnam_r with 5 args" >&5
+$as_echo_n "checking for getgrnam_r with 5 args... " >&6; }
+if ${tcl_cv_api_getgrnam_r_5+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+	#include <sys/types.h>
+	#include <grp.h>
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  tcl_cv_api_getgrnam_r_5=yes
+else
+  tcl_cv_api_getgrnam_r_5=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $tcl_cv_api_getgrnam_r_5" >&5
+$as_echo "$tcl_cv_api_getgrnam_r_5" >&6; }
+    tcl_ok=${tcl_cv_api_getgrnam_r_5}
+    if test "${tcl_ok}" = yes; then
+
+$as_echo "#define HAVE_GETGRNAM_R_5 1" >>confdefs.h
+
+    else
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for getgrnam_r with 4 args" >&5
+$as_echo_n "checking for getgrnam_r with 4 args... " >&6; }
+if ${tcl_cv_api_getgrnam_r_4+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+	    #include <sys/types.h>
+	    #include <grp.h>
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  tcl_cv_api_getgrnam_r_4=yes
+else
+  tcl_cv_api_getgrnam_r_4=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $tcl_cv_api_getgrnam_r_4" >&5
+$as_echo "$tcl_cv_api_getgrnam_r_4" >&6; }
+	tcl_ok=${tcl_cv_api_getgrnam_r_4}
+	if test "${tcl_ok}" = yes; then
+
+$as_echo "#define HAVE_GETGRNAM_R_4 1" >>confdefs.h
+
+	fi
+    fi
+    if test "${tcl_ok}" = yes; then
+
+$as_echo "#define HAVE_GETGRNAM_R 1" >>confdefs.h
+
+    fi
+
+fi
+
+
+
+
+
+
+
+
+
 
 
 # By default, C is the only stage 1 language.
@@ -9614,7 +10616,7 @@ if test -d ${srcdir}/gcc; then
 	case $add_this_lang in
 	  no)
             # Remove language-dependent dirs.
-            eval noconfigdirs='"$noconfigdirs "'\"$target_libs $lang_dirs\"
+            eval noconfigdirs='"${noconfigdirs} "'\"$target_libs $lang_dirs\"
 	    ;;
           *)
 	    new_enable_languages="$new_enable_languages,$language"
@@ -9645,40 +10647,40 @@ Recognised languages are: ${potential_languages}" "$LINENO" 5
   ac_configure_args=`echo " $ac_configure_args" | sed -e 's/ --enable-languages=[^ ]*//' -e 's/$/ --enable-languages='"$enable_languages"/ `
 fi
 
-# Remove the entries in $skipdirs and $noconfigdirs from $configdirs,
-# $build_configdirs and $target_configdirs.
-# If we have the source for $noconfigdirs entries, add them to $notsupp.
+# Remove the entries in ${skipdirs} and ${noconfigdirs} from ${configdirs},
+# $build_configdirs and ${target_configdirs}.
+# If we have source for ${noconfigdirs} entries, add them to ${notsupp}.
 
 notsupp=""
-for dir in . $skipdirs $noconfigdirs ; do
-  dirname=`echo $dir | sed -e s/target-//g -e s/build-//g`
-  if test $dir != .  && echo " ${configdirs} " | grep " ${dir} " >/dev/null 2>&1; then
+for dir in . ${skipdirs} ${noconfigdirs} ; do
+  my_dirname=`echo ${dir} | sed -e s/target-//g -e s/build-//g`
+  if test ${dir} != .  && echo " ${configdirs} " | grep " ${dir} " >/dev/null 2>&1; then
     configdirs=`echo " ${configdirs} " | sed -e "s/ ${dir} / /"`
-    if test -r $srcdir/$dirname/configure ; then
+    if test -r ${srcdir}/${my_dirname}/configure ; then
       if echo " ${skipdirs} " | grep " ${dir} " >/dev/null 2>&1; then
 	true
       else
-	notsupp="$notsupp $dir"
+	notsupp="${notsupp} ${dir}"
       fi
     fi
   fi
   if test $dir != .  && echo " ${build_configdirs} " | grep " ${dir} " >/dev/null 2>&1; then
     build_configdirs=`echo " ${build_configdirs} " | sed -e "s/ ${dir} / /"`
-    if test -r $srcdir/$dirname/configure ; then
+    if test -r ${srcdir}/${my_dirname}/configure ; then
       if echo " ${skipdirs} " | grep " ${dir} " >/dev/null 2>&1; then
 	true
       else
-	notsupp="$notsupp $dir"
+	notsupp="${notsupp} ${dir}"
       fi
     fi
   fi
   if test $dir != . && echo " ${target_configdirs} " | grep " ${dir} " >/dev/null 2>&1; then
     target_configdirs=`echo " ${target_configdirs} " | sed -e "s/ ${dir} / /"`
-    if test -r $srcdir/$dirname/configure ; then
+    if test -r ${srcdir}/${my_dirname}/configure ; then
       if echo " ${skipdirs} " | grep " ${dir} " >/dev/null 2>&1; then
 	true
       else
-	notsupp="$notsupp $dir"
+	notsupp="${notsupp} ${dir}"
       fi
     fi
   fi
@@ -9689,8 +10691,8 @@ done
 if test -n "${target_configdirs}" ; then
   others=
   for i in `echo ${target_configdirs} | sed -e s/target-//g` ; do
-    if test "$i" != "libiberty" ; then
-      if test -r $srcdir/$i/configure ; then
+    if test "${i}" != "libiberty" ; then
+      if test -r ${srcdir}/${i}/configure ; then
 	others=yes;
 	break;
       fi
@@ -9707,21 +10709,21 @@ fi
 build_configdirs_all="$build_configdirs"
 build_configdirs=
 for i in ${build_configdirs_all} ; do
-  j=`echo $i | sed -e s/build-//g`
+  j=`echo ${i} | sed -e s/build-//g`
   if test -f ${srcdir}/$j/configure ; then
-    build_configdirs="${build_configdirs} $i"
+    build_configdirs="${build_configdirs} ${i}"
   fi
 done
 
-configdirs_all="$configdirs"
+configdirs_all="${configdirs}"
 configdirs=
 for i in ${configdirs_all} ; do
-  if test -f ${srcdir}/$i/configure ; then
-    configdirs="${configdirs} $i"
+  if test -f ${srcdir}/${i}/configure ; then
+    configdirs="${configdirs} ${i}"
   fi
 done
 
-target_configdirs_all="$target_configdirs"
+target_configdirs_all="${target_configdirs}"
 target_configdirs=
 for i in ${target_configdirs_all} ; do
   j=`echo $i | sed -e s/target-//g`
@@ -10582,7 +11584,7 @@ fi
 
 
 # Issue errors and warnings for invalid/strange bootstrap combinations.
-case "$configdirs" in
+case "${configdirs}" in
   *gcc*) have_compiler=yes ;;
   *) have_compiler=no ;;
 esac
@@ -10842,18 +11844,18 @@ old_target_configargs="--cache-file=./config.cache --host=${target} --build=${bu
 target_configargs="--cache-file=./config.cache --build=${build_alias} --host=${target_alias} --target=${target_alias} ${target_configargs}"
 
 FLAGS_FOR_TARGET=
-case " $target_configdirs " in
+case " ${target_configdirs} " in
  *" newlib "*)
-  case " $target_configargs " in
+  case " ${target_configargs} " in
   *" --with-newlib "*)
    case "$target" in
    *-cygwin*)
-     FLAGS_FOR_TARGET=$FLAGS_FOR_TARGET' -L$$r/$(TARGET_SUBDIR)/winsup -L$$r/$(TARGET_SUBDIR)/winsup/cygwin -L$$r/$(TARGET_SUBDIR)/winsup/w32api/lib -isystem $$s/winsup/include -isystem $$s/winsup/cygwin/include -isystem $$s/winsup/w32api/include' ;;
+     FLAGS_FOR_TARGET=${FLAGS_FOR_TARGET}' -L$$r/$(TARGET_SUBDIR)/winsup -L$$r/$(TARGET_SUBDIR)/winsup/cygwin -L$$r/$(TARGET_SUBDIR)/winsup/w32api/lib -isystem $$s/winsup/include -isystem $$s/winsup/cygwin/include -isystem $$s/winsup/w32api/include' ;;
    esac
 
    # If we are not building GCC, do NOT discard standard headers.
    if test -d ${srcdir}/gcc; then
-     FLAGS_FOR_TARGET=$FLAGS_FOR_TARGET' -nostdinc'
+     FLAGS_FOR_TARGET=${FLAGS_FOR_TARGET}' -nostdinc'
 
      if test "${build}" != "${host}"; then
        # On Canadian crosses, CC_FOR_TARGET will have already been set
@@ -10861,7 +11863,7 @@ case " $target_configdirs " in
        # to it. This is right: we do NOT want to search that directory
        # for binaries, but we want the header files in there, so add
        # them explicitly.
-       FLAGS_FOR_TARGET=$FLAGS_FOR_TARGET' -isystem $$r/$(HOST_SUBDIR)/gcc/include'
+       FLAGS_FOR_TARGET=${FLAGS_FOR_TARGET}' -isystem $$r/$(HOST_SUBDIR)/gcc/include'
 
        # Someone might think of using the pre-installed headers on
        # Canadian crosses, in case the installed compiler is not fully
@@ -10878,13 +11880,13 @@ case " $target_configdirs " in
    i[3456789]86-*-linux*-no)
       # Here host == target, so we do NOT need to build gcc,
       # so we do NOT want to discard standard headers.
-      FLAGS_FOR_TARGET=`echo " $FLAGS_FOR_TARGET " | sed -e 's/ -nostdinc / /'`
+      FLAGS_FOR_TARGET=`echo " ${FLAGS_FOR_TARGET} " | sed -e 's/ -nostdinc / /'`
       ;;
    *)
       # If we are building newlib, use its generic headers last, but search
       # for any libc-related directories first (so make it the last -B
       # switch).
-      FLAGS_FOR_TARGET=$FLAGS_FOR_TARGET' -B$$r/$(TARGET_SUBDIR)/newlib/ -isystem $$r/$(TARGET_SUBDIR)/newlib/targ-include -isystem $$s/newlib/libc/include'
+      FLAGS_FOR_TARGET=${FLAGS_FOR_TARGET}' -B$$r/$(TARGET_SUBDIR)/newlib/ -isystem $$r/$(TARGET_SUBDIR)/newlib/targ-include -isystem $$s/newlib/libc/include'
       ;;
    esac
    ;;
@@ -10902,13 +11904,13 @@ CFLAGS_FOR_BUILD=${CFLAGS_FOR_BUILD-${CFLAGS}}
 # being built; programs in there will not even run.
 if test "${build}" = "${host}" && test -d ${srcdir}/gcc; then
   # Search for pre-installed headers if nothing else fits.
-  FLAGS_FOR_TARGET=$FLAGS_FOR_TARGET' -B$(build_tooldir)/bin/ -B$(build_tooldir)/lib/ -isystem $(build_tooldir)/include -isystem $(build_tooldir)/sys-include'
+  FLAGS_FOR_TARGET=${FLAGS_FOR_TARGET}' -B$(build_tooldir)/bin/ -B$(build_tooldir)/lib/ -isystem $(build_tooldir)/include -isystem $(build_tooldir)/sys-include'
 fi
 
 if test "x${use_gnu_ld}" = x &&
    echo " ${configdirs} " | grep " ld " > /dev/null ; then
   # Arrange for us to find uninstalled linker scripts.
-  FLAGS_FOR_TARGET=$FLAGS_FOR_TARGET' -L$$r/$(HOST_SUBDIR)/ld'
+  FLAGS_FOR_TARGET=${FLAGS_FOR_TARGET}' -L$$r/$(HOST_SUBDIR)/ld'
 fi
 
 # Makefile fragments.

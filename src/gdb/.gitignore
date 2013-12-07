@@ -42,6 +42,7 @@ gnulib/Makefile
 gcore
 gdb-gdb.gdb
 conf*/*.awk
+*libs/*
 
 # Some more Bison-generated parsers and flex-generated lexers I missed:
 ada-exp.c

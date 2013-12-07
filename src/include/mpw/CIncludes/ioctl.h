@@ -1,9 +1,9 @@
 /*
-	IOCtl.h -- Device-handler-specific requests
-
-	Copyright, Apple Computer Inc. 1985-1988,1989,1990
-	All rights reserved.
-*/
+ *	IOCtl.h -- Device-handler-specific requests
+ *
+ *	Copyright, Apple Computer Inc. 1985-1988,1989,1990
+ *	All rights reserved.
+ */
 
 # ifndef __IOCTL__
 # define __IOCTL__
@@ -14,23 +14,23 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 int ioctl(int fildes, unsigned int cmd, long *arg);
 
 #ifdef __cplusplus
 }
-#endif
- 
+#endif /* __cplusplus */
+
 /*
  *   IO Control commands.
  *
  *   IOCTLs which begin with "FIO" are controls which are general
- * 		 (device driver) control requests.  They may be executed by 
- *		 the top-level ioctl() procedure, or previewed by it before 
+ * 		 (device driver) control requests. They may be executed by
+ *		 the top-level ioctl() procedure, or previewed by it before
  *		 passing it on to the driver xxIoctl()s.
  */
- 
+
 # define FIOLSEEK 		(('f'<<8)|0x00)	 /* Apple internal use only */
 # define FIODUPFD 		(('f'<<8)|0x01)	 /* Apple internal use only */
 
@@ -41,12 +41,14 @@ int ioctl(int fildes, unsigned int cmd, long *arg);
 # define FIOSETEOF		(('f'<<8)|0x06)	 /* Set file length */
 
 /*
- *   IOCTLs which begin with "TIO" are for TTY (i.e., console or 
+ *   IOCTLs which begin with "TIO" are for TTY (i.e., console or
  *		 terminal-related) device control requests.
  */
 
-# define TIOFLUSH   (('t'<<8)|0x00)		/* discard unread input.  arg is ignored */
-# define TIOSPORT   (('t'<<8)|0x01)		/* Obsolete -- do not use */
-# define TIOGPORT   (('t'<<8)|0x02)		/* Obsolete -- do not use */
+# define TIOFLUSH   (('t'<<8)|0x00)	/* discard unread input. arg is ignored */
+# define TIOSPORT   (('t'<<8)|0x01)	/* Obsolete -- do not use */
+# define TIOGPORT   (('t'<<8)|0x02)	/* Obsolete -- do not use */
 
-# endif __IOCTL__
+# endif /* !__IOCTL__ */
+
+/* EOF */

@@ -30,18 +30,18 @@ typedef struct template
   unsigned int operands;
 
   /* base_opcode is the fundamental opcode byte without optional
-     prefix(es).  */
+   * prefix(es).  */
   unsigned int base_opcode;
 #define Opcode_D	0x2 /* Direction bit:
-			       set if Reg --> Regmem;
-			       unset if Regmem --> Reg. */
+						 * set if Reg --> Regmem;
+			             * unset if Regmem --> Reg. */
 #define Opcode_FloatR	0x8 /* Bit to swap src/dest for float insns. */
 #define Opcode_FloatD 0x400 /* Direction bit for float insns. */
 
   /* extension_opcode is the 3 bit extension for group <n> insns.
-     This field is also used to store the 8-bit opcode suffix for the
-     AMD 3DNow! instructions.
-     If this template has no extension opcode (the usual case) use None */
+   * This field is also used to store the 8-bit opcode suffix for the
+   * AMD 3DNow! instructions.
+   * If this template has no extension opcode (the usual case) use None */
   unsigned int extension_opcode;
 #define None 0xffff		/* If no extension_opcode is possible.  */
 
@@ -86,14 +86,14 @@ typedef struct template
 	|CpuSSE4_2|CpuABM|CpuSSE4a)
 
   /* the bits in opcode_modifier are used to generate the final opcode from
-     the base_opcode.  These bits also are used to detect alternate forms of
-     the same instruction */
+   * the base_opcode. These bits also are used to detect alternate forms of
+   * the same instruction */
   unsigned int opcode_modifier;
 
   /* opcode_modifier bits: */
 #define D		   0x1	/* has direction bit. */
 #define W		   0x2	/* set if operands can be words or dwords
-				   encoded the canonical way */
+						 * encoded the canonical way */
 #define Modrm		   0x4	/* insn has a modrm byte. */
 #define ShortForm	  0x10	/* register is in low 3 bits of opcode */
 #define Jump		  0x40	/* special case for jump insns.  */
@@ -117,18 +117,18 @@ typedef struct template
 #define FWait	     0x1000000	/* instruction needs FWAIT */
 #define IsString     0x2000000	/* quick test for string instructions */
 #define regKludge    0x4000000	/* fake an extra reg operand for clr, imul
-				   and special register processing for
-				   some instructions.  */
+				                 * and special register processing for
+								 * some instructions.  */
 #define IsPrefix     0x8000000	/* opcode is a prefix */
 #define ImmExt	    0x10000000	/* instruction has extension in 8 bit imm */
 #define NoRex64	    0x20000000  /* instruction do NOT need Rex64 prefix.  */
 #define Rex64	    0x40000000  /* instruction require Rex64 prefix.  */
 #define Ugh	    0x80000000	/* deprecated fp insn, gets a warning */
 
-  /* operand_types[i] describes the type of operand i.  This is made
-     by OR'ing together all of the possible type masks.  (e.g.
-     'operand_types[i] = Reg|Imm' specifies that operand i can be
-     either a register or an immediate operand.  */
+  /* operand_types[i] describes the type of operand i. This is made
+   * by OR'ing together all of the possible type masks. (e.g.
+   * 'operand_types[i] = Reg|Imm' specifies that operand i can be
+   * either a register or an immediate operand.  */
   unsigned int operand_types[MAX_OPERANDS];
 
   /* operand_types[i] bits */
@@ -148,11 +148,11 @@ typedef struct template
   /* memory */
 #define BaseIndex	 0x800
   /* Disp8,16,32 are used in different ways, depending on the
-     instruction.  For jumps, they specify the size of the PC relative
-     displacement, for baseindex type instructions, they specify the
-     size of the offset relative to the base register, and for memory
-     offset instructions such as `mov 1234,%al' they specify the size of
-     the offset relative to the segment base.  */
+   * instruction. For jumps, they specify the size of the PC relative
+   * displacement, for baseindex type instructions, they specify the
+   * size of the offset relative to the base register, and for memory
+   * offset instructions such as `mov 1234,%al' they specify the size of
+   * the offset relative to the segment base.  */
 #define Disp8		0x1000	/* 8 bit displacement */
 #define Disp16		0x2000	/* 16 bit displacement */
 #define Disp32		0x4000	/* 32 bit displacement */
@@ -175,25 +175,25 @@ typedef struct template
 #define EsSeg	    0x40000000	/* String insn operand with fixed es segment */
 
   /* RegMem is for instructions with a modrm byte where the register
-     destination operand should be encoded in the mod and regmem fields.
-     Normally, it will be encoded in the reg field. We add a RegMem
-     flag to the destination register operand to indicate that it should
-     be encoded in the regmem field.  */
+   * destination operand should be encoded in the mod and regmem fields.
+   * Normally, it will be encoded in the reg field. We add a RegMem
+   * flag to the destination register operand to indicate that it should
+   * be encoded in the regmem field.  */
 #define RegMem	    0x80000000
 
-#define Reg	(Reg8|Reg16|Reg32|Reg64) /* gen'l register */
+#define Reg	(Reg8|Reg16|Reg32|Reg64) /* general register */
 #define WordReg (Reg16|Reg32|Reg64)
 #define ImplicitRegister (InOutPortReg|ShiftCount|Acc|FloatAcc)
-#define Imm	(Imm8|Imm8S|Imm16|Imm32S|Imm32|Imm64) /* gen'l immediate */
-#define EncImm	(Imm8|Imm16|Imm32|Imm32S) /* Encodable gen'l immediate */
+#define Imm	(Imm8|Imm8S|Imm16|Imm32S|Imm32|Imm64) /* general immediate */
+#define EncImm	(Imm8|Imm16|Imm32|Imm32S) /* Encodable general immediate */
 #define Disp	(Disp8|Disp16|Disp32|Disp32S|Disp64) /* General displacement */
 #define AnyMem	(Disp8|Disp16|Disp32|Disp32S|BaseIndex)	/* General memory */
   /* The following aliases are defined because the opcode table
-     carefully specifies the allowed memory types for each instruction.
-     At the moment we can only tell a memory reference size by the
-     instruction suffix, so there is not much point in defining Mem8,
-     Mem16, Mem32 and Mem64 opcode modifiers - We might as well just use
-     the suffix directly to check memory operands.  */
+   * carefully specifies the allowed memory types for each instruction.
+   * At the moment we can only tell a memory reference size by the
+   * instruction suffix, so there is not much point in defining Mem8,
+   * Mem16, Mem32 and Mem64 opcode modifiers - We might as well just use
+   * the suffix directly to check memory operands.  */
 #define LLongMem AnyMem		/* 64 bits (or more) */
 #define LongMem AnyMem		/* 32 bit memory ref */
 #define ShortMem AnyMem		/* 16 bit memory ref */

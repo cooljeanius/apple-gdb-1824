@@ -1,10 +1,10 @@
 /*
-	Limits.h -- Sizes of integral types 
-	
-	Copyright Apple Computer,Inc.	1987, 1990
-	All rights reserved.
-
-*/
+ *	Limits.h -- Sizes of integral types
+ *
+ *	Copyright Apple Computer,Inc.	1987, 1990
+ *	All rights reserved.
+ *
+ */
 
 #ifndef __LIMITS__
 #define __LIMITS__
@@ -26,5 +26,6 @@
 #define ULONG_MAX	4294967295U
 #define USHRT_MAX	65535
 
+#endif /* !__LIMITS__ */
 
-#endif
+/* EOF */

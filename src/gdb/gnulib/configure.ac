@@ -70,6 +70,7 @@ AC_CHECK_LIB([c],[printf])
 AC_HEADER_STDBOOL dnl# also calls the "_CHECK" version of it
 gl_STDINT_H
 AC_SUBST([STDINT_H])
+gl_HEADER_STRING_H
 AC_CHECK_HEADERS([OS.h fcntl.h float.h langinfo.h limits.h \
                   locale.h malloc.h malloc/malloc.h netdb.h stddef.h \
                   stdio.h sys/param.h wchar.h wctype.h])
@@ -95,6 +96,11 @@ AC_FUNC_STRNLEN
 AC_CHECK_FUNCS([getpagesize memchr mempcpy memset nl_langinfo setlocale \
                 stpcpy strchr strcspn strdup strerror strndup strpbrk \
                 strrchr strspn strstr wcwidth])
+
+if test "x${NEXT_STRING_H}" = "x"; then
+  test -z "${NEXT_STRING_H}" && export NEXT_STRING_H="<string.h>"
+  AC_SUBST([NEXT_STRING_H])
+fi
 
 AC_CONFIG_FILES([Makefile Makefile.orig import/Makefile])
 AC_CONFIG_COMMANDS([default],[

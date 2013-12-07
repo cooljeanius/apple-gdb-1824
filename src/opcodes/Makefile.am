@@ -35,6 +35,7 @@ HFILES = \
 	fr30-desc.h fr30-opc.h \
 	frv-desc.h frv-opc.h \
 	h8500-opc.h \
+	i386-opc.h \
 	ia64-asmtab.h \
 	ia64-opc.h \
 	ip2k-desc.h ip2k-opc.h \
@@ -349,7 +350,10 @@ stamp-lib: libopcodes.la config.status
 	else true; fi
 	touch stamp-lib
 
-libopcodes.a: stamp-lib ; @true
+libopcodes.a: stamp-lib
+
+nonlibtool_libopcodes.a: stamp-lib ; @true
+.PHONY: nonlibtool_libopcodes.a
 
 # APPLE LOCAL begin framework building
 SYSTEM_FRAMEWORK = -framework System @SYSTEM_FRAMEWORK_LIBS@
@@ -561,6 +565,17 @@ stamp-xstormy16: $(CGENDEPS) $(CPUDIR)/xstormy16.cpu $(CPUDIR)/xstormy16.opc
 	$(MAKE) run-cgen arch=xstormy16 prefix=xstormy16 options= \
 		archfile=$(CPUDIR)/xstormy16.cpu opcfile=$(CPUDIR)/xstormy16.opc extrafiles=
 
+i386-gen: i386-gen.o
+	$(LINK) i386-gen.o $(LIBIBERTY)
+
+i386-gen.o: i386-gen.c i386-opc.c i386-opc.h
+
+i386-asmtab.c: @MAINT@ i386-gen i386-opc.tbl i386-reg.tbl
+	./i386-gen --srcdir $(srcdir) > $(srcdir)/i386-asmtab.c
+
+i386-opc.o: i386-opc.c i386-opc.h sysdep.h config.h 
+i386-opc.lo: i386-opc.c i386-opc.h sysdep.h config.h 
+  
 ia64-gen: ia64-gen.o
 	$(LINK) ia64-gen.o $(LIBIBERTY)
 

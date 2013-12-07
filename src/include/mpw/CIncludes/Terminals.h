@@ -16,20 +16,18 @@ Created: Thursday, September 12, 1991 at 10:32 AM
 #define __TERMINALS__
 
 #ifndef __DIALOGS__
-#include <Dialogs.h>
-#endif
+# include <Dialogs.h>
+#endif /* !__DIALOGS__ */
 
 #ifndef __CTBUTILITIES__
-#include <CTBUtilities.h>
-#endif
+# include <CTBUtilities.h>
+#endif /* !__CTBUTILITIES__ */
 
 #ifndef __CONNECTIONS__
-#include <Connections.h>
-#endif
-
+# include <Connections.h>
+#endif /* !__CONNECTIONS__ */
 
 enum {
-
 
 /* current Terminal Manager version */
  curTMVersion = 2,
@@ -141,92 +139,94 @@ typedef pascal void (*TerminalChooseIdleProcPtr) (void);
 
 #ifdef __cplusplus
 extern "C" {
-#endif
-pascal TMErr InitTM(void); 
-pascal Handle TMGetVersion(TermHandle hTerm); 
-pascal short TMGetTMVersion(void); 
+#endif /* __cplusplus */
+pascal TMErr InitTM(void);
+pascal Handle TMGetVersion(TermHandle hTerm);
+pascal short TMGetTMVersion(void);
 
 pascal TermHandle TMNew(const Rect *termRect,const Rect *viewRect,TMFlags flags,
  short procID,WindowPtr owner,TerminalSendProcPtr sendProc,TerminalCacheProcPtr cacheProc,
  TerminalBreakProcPtr breakProc,TerminalClikLoopProcPtr clikLoop,TerminalEnvironsProcPtr environsProc,
- long refCon,long userData); 
+ long refCon,long userData);
 
-pascal void TMDispose(TermHandle hTerm); 
+pascal void TMDispose(TermHandle hTerm);
 
-pascal void TMKey(TermHandle hTerm,const EventRecord *theEvent); 
-pascal void TMUpdate(TermHandle hTerm,RgnHandle visRgn); 
-pascal void TMPaint(TermHandle hTerm,const TermDataBlock *theTermData,const Rect *theRect); 
-pascal void TMActivate(TermHandle hTerm,Boolean activate); 
-pascal void TMResume(TermHandle hTerm,Boolean resume); 
-pascal void TMClick(TermHandle hTerm,const EventRecord *theEvent); 
-pascal void TMIdle(TermHandle hTerm); 
+pascal void TMKey(TermHandle hTerm,const EventRecord *theEvent);
+pascal void TMUpdate(TermHandle hTerm,RgnHandle visRgn);
+pascal void TMPaint(TermHandle hTerm,const TermDataBlock *theTermData,const Rect *theRect);
+pascal void TMActivate(TermHandle hTerm,Boolean activate);
+pascal void TMResume(TermHandle hTerm,Boolean resume);
+pascal void TMClick(TermHandle hTerm,const EventRecord *theEvent);
+pascal void TMIdle(TermHandle hTerm);
 
-pascal long TMStream(TermHandle hTerm,void *theBuffer,long theLength,CMFlags flags); 
-pascal Boolean TMMenu(TermHandle hTerm,short menuID,short item); 
+pascal long TMStream(TermHandle hTerm,void *theBuffer,long theLength,CMFlags flags);
+pascal Boolean TMMenu(TermHandle hTerm,short menuID,short item);
 
-pascal void TMReset(TermHandle hTerm); 
-pascal void TMClear(TermHandle hTerm); 
+pascal void TMReset(TermHandle hTerm);
+pascal void TMClear(TermHandle hTerm);
 
-pascal void TMResize(TermHandle hTerm,const Rect *newViewRect); 
+pascal void TMResize(TermHandle hTerm,const Rect *newViewRect);
 
-pascal long TMGetSelect(TermHandle hTerm,Handle theData,ResType *theType); 
-pascal void TMGetLine(TermHandle hTerm,short lineNo,TermDataBlock *theTermData); 
+pascal long TMGetSelect(TermHandle hTerm,Handle theData,ResType *theType);
+pascal void TMGetLine(TermHandle hTerm,short lineNo,TermDataBlock *theTermData);
 pascal void TMSetSelection(TermHandle hTerm,const TMSelection *theSelection,
- TMSelTypes selType); 
+ TMSelTypes selType);
 
-pascal void TMScroll(TermHandle hTerm,short dh,short dv); 
+pascal void TMScroll(TermHandle hTerm,short dh,short dv);
 
-pascal Boolean TMValidate(TermHandle hTerm); 
-pascal void TMDefault(Ptr *theConfig,short procID,Boolean allocate); 
+pascal Boolean TMValidate(TermHandle hTerm);
+pascal void TMDefault(Ptr *theConfig,short procID,Boolean allocate);
 
-pascal Handle TMSetupPreflight(short procID,long *magicCookie); 
+pascal Handle TMSetupPreflight(short procID,long *magicCookie);
 pascal void TMSetupSetup(short procID,const void *theConfig,short count,
- DialogPtr theDialog,long *magicCookie); 
+ DialogPtr theDialog,long *magicCookie);
 pascal Boolean TMSetupFilter(short procID,const void *theConfig,short count,
- DialogPtr theDialog,EventRecord *theEvent,short *theItem,long *magicCookie); 
+ DialogPtr theDialog,EventRecord *theEvent,short *theItem,long *magicCookie);
 pascal void TMSetupItem(short procID,const void *theConfig,short count,
- DialogPtr theDialog,short *theItem,long *magicCookie); 
+ DialogPtr theDialog,short *theItem,long *magicCookie);
 pascal void TMSetupXCleanup(short procID,const void *theConfig,short count,
- DialogPtr theDialog,Boolean OKed,long *magicCookie); 
-pascal void TMSetupPostflight(short procID); 
+ DialogPtr theDialog,Boolean OKed,long *magicCookie);
+pascal void TMSetupPostflight(short procID);
 
-pascal Ptr TMGetConfig(TermHandle hTerm); 
-pascal short TMSetConfig(TermHandle hTerm,const void *thePtr); 
+pascal Ptr TMGetConfig(TermHandle hTerm);
+pascal short TMSetConfig(TermHandle hTerm,const void *thePtr);
 
 pascal OSErr TMIntlToEnglish(TermHandle hTerm,const void *inputPtr,Ptr *outputPtr,
- short language); 
+ short language);
 pascal OSErr TMEnglishToIntl(TermHandle hTerm,const void *inputPtr,Ptr *outputPtr,
- short language); 
+ short language);
 
-pascal void TMGetToolName(short id,Str255 name); 
-pascal short TMGetProcID(ConstStr255Param name); 
+pascal void TMGetToolName(short id,Str255 name);
+pascal short TMGetProcID(ConstStr255Param name);
 
-pascal void TMSetRefCon(TermHandle hTerm,long refCon); 
-pascal long TMGetRefCon(TermHandle hTerm); 
+pascal void TMSetRefCon(TermHandle hTerm,long refCon);
+pascal long TMGetRefCon(TermHandle hTerm);
 
-pascal void TMSetUserData(TermHandle hTerm,long userData); 
-pascal long TMGetUserData(TermHandle hTerm); 
+pascal void TMSetUserData(TermHandle hTerm,long userData);
+pascal long TMGetUserData(TermHandle hTerm);
 
 pascal short TMAddSearch(TermHandle hTerm,ConstStr255Param theString,const Rect *where,
- TMSearchTypes searchType,TerminalSearchCallBackProcPtr callBack); 
-pascal void TMRemoveSearch(TermHandle hTerm,short refnum); 
-pascal void TMClearSearch(TermHandle hTerm); 
+ TMSearchTypes searchType,TerminalSearchCallBackProcPtr callBack);
+pascal void TMRemoveSearch(TermHandle hTerm,short refnum);
+pascal void TMClearSearch(TermHandle hTerm);
 
-pascal Point TMGetCursor(TermHandle hTerm,TMCursorTypes cursType); 
+pascal Point TMGetCursor(TermHandle hTerm,TMCursorTypes cursType);
 
-pascal TMErr TMGetTermEnvirons(TermHandle hTerm,TermEnvironRec *theEnvirons); 
+pascal TMErr TMGetTermEnvirons(TermHandle hTerm,TermEnvironRec *theEnvirons);
 
-pascal short TMChoose(TermHandle *hTerm,Point where,TerminalChooseIdleProcPtr idleProc); 
+pascal short TMChoose(TermHandle *hTerm,Point where,TerminalChooseIdleProcPtr idleProc);
 
-pascal void TMEvent(TermHandle hTerm,const EventRecord *theEvent); 
+pascal void TMEvent(TermHandle hTerm,const EventRecord *theEvent);
 
-pascal Boolean TMDoTermKey(TermHandle hTerm,ConstStr255Param theKey); 
-pascal short TMCountTermKeys(TermHandle hTerm); 
-pascal void TMGetIndTermKey(TermHandle hTerm,short id,Str255 theKey); 
+pascal Boolean TMDoTermKey(TermHandle hTerm,ConstStr255Param theKey);
+pascal short TMCountTermKeys(TermHandle hTerm);
+pascal void TMGetIndTermKey(TermHandle hTerm,short id,Str255 theKey);
 
-pascal void TMGetErrorString(TermHandle hTerm,short id,Str255 errMsg); 
+pascal void TMGetErrorString(TermHandle hTerm,short id,Str255 errMsg);
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !__TERMINALS__ */
+
+/* EOF */

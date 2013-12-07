@@ -1,12 +1,13 @@
 /*ident	"@(#)C++env:incl-master/const-headers/stdiostream.h	1.2" */
 /**************************************************************************
                         Copyright (c) 1984 AT&T
-                          All Rights Reserved   
+                          All Rights Reserved
 
         THIS IS UNPUBLISHED PROPRIETARY SOURCE CODE OF AT&T
-      
-        The copyright notice above does not evidence any        
+
+        The copyright notice above does not evidence any
         actual or intended publication of such source code.
+		(Really? This header was shipped with MPW...)
 
 *****************************************************************************/
 #ifndef __STDSTREAM__
@@ -17,7 +18,7 @@
 
 class stdiobuf : public streambuf {
 	/*** stdiobuf is obsolete, should be avoided ***/
-public: // Virtuals
+public: /* Virtuals */
 	virtual int	overflow(int=EOF);
 	virtual int	underflow();
 	virtual int	sync() ;
@@ -33,7 +34,7 @@ public:
 	FILE*		stdiofile() { return fp ; }
 	virtual		~stdiobuf() ;
 private:
-	FILE*		fp ;			
+	FILE*		fp ;
 	int		last_op ;
 	char		buf[2];
 };
@@ -47,5 +48,6 @@ private:
 	stdiobuf	buf ;
 };
 
-#endif
+#endif /* !__STDSTREAM__ */
 
+/* EOF */

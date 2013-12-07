@@ -117,7 +117,7 @@ EXTRA_DIST += stdint.in.h
 BUILT_SOURCES += string.h
 
 # We need the following in order to create <string.h> when the system
-# doesn't have one that works with the given compiler.
+# does NOT have one that works with the given compiler.
 string.h: string.in.h
 	rm -f $@-t $@
 	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */' && \

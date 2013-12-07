@@ -2,7 +2,7 @@
 
 	ErrNo.h
 	Error return codes
-	
+
 	Copyright American Telephone & Telegraph
 	Used with permission, Apple Computer Inc. 1985-1990
 	All rights reserved
@@ -12,7 +12,6 @@
 
 #ifndef __ERRNO__
 #define __ERRNO__
-
 
 extern int errno;
 
@@ -51,4 +50,6 @@ extern int errno;
 #define EDOM		33 /* Math arg out of domain of func */
 #define ERANGE		34 /* Math result not representable */
 
-#endif
+#endif /* !__ERRNO__ */
+
+/* EOF */

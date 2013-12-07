@@ -20,7 +20,6 @@ TAGS
 TEMP
 \#*
 bfd/bfd-in3.h
-bfd/doc/*.texi
 bfd/doc/chew
 bfd/po/*POTFILES
 blockit

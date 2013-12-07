@@ -2,7 +2,7 @@
 
 	String.h
 	String handling
-	
+
 	Copyright Apple Computer,Inc.  1987-1990
 	All rights reserved
 
@@ -13,13 +13,13 @@
 #define __STRING__
 
 #ifndef __size_t__
-#define __size_t__
+# define __size_t__
 typedef unsigned int size_t;
-#endif
+#endif /* !__size_t__ */
 
-#ifndef NULL
-#define NULL 0
-#endif
+#ifndef NULL /* Why did Apple define this in so many different headers? */
+# define NULL 0
+#endif /* !NULL */
 
 /*
  *	Copying functions
@@ -27,7 +27,7 @@ typedef unsigned int size_t;
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 void *memcpy (void *s1, const void *s2, size_t n);
 void *memmove (void *s1, const void *s2, size_t n);
@@ -36,7 +36,7 @@ char *strncpy (char *s1, const char *s2, size_t n);
 
 #ifndef __STDC__
 void *memccpy(void *s1, const void *s2, int c, size_t n);
-#endif
+#endif /* !__STDC__ */
 
 /*
  *	Concatenation functions
@@ -80,6 +80,8 @@ size_t strlen (const char *s);
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !__STRING__ */
+
+/* EOF */

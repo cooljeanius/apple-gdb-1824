@@ -14,23 +14,23 @@ AC_SYS_LONG_FILE_NAMES
 my_CC=${CC-cc}
 AC_SUBST([my_CC])
 
-if test "x$CC" = "x"; then
-	test -z "$CC"
+if test "x${CC}" = "x"; then
+	test -z "${CC}"
 	AC_PROG_CC
 else
-	test ! -z "$CC" && export CC
+	test ! -z "${CC}" && export CC
 fi
 AC_PROG_LN_S
 AC_PROG_INSTALL
 AM_PROG_INSTALL_SH
 
 # Checks for header files.
-AC_CHECK_HEADERS([ctype.h stdio.h])
+AC_CHECK_HEADERS([ctype.h malloc.h malloc/malloc.h stdio.h])
 
 # Checks for library functions.
 AC_FUNC_MALLOC
-AC_CHECK_FUNCS([exit fgets memset printf strcpy strlen strncmp \
-                strncpy strrchr xmalloc])
+AC_CHECK_FUNCS([exit fgets fprintf memset printf putchar qsort \
+                strcmp strcpy strlen strncmp strncpy strrchr xmalloc])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

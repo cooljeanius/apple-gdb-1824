@@ -306,7 +306,7 @@ noinst_TEXINFOS = bfdint.texi
 
 MOSTLYCLEANFILES = $(MKDOC) *.o
 
-CLEANFILES = *.p *.ip
+CLEANFILES = *.p *.ip *.dSYM
 
 DISTCLEANFILES = bfd.?? bfd.??? bfd.h libbfd.h libcoff.h texput.log
 

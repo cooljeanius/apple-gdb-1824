@@ -15,8 +15,8 @@ Created: Sunday, January 6, 1991 at 10:14 PM
 #define __VIDEO__
 
 #ifndef __QUICKDRAW__
-#include <Quickdraw.h>
-#endif
+# include <Quickdraw.h>
+#endif /* !__QUICKDRAW__ */
 
 
 enum {
@@ -182,6 +182,6 @@ struct VDSettings {
 typedef struct VDSettings VDSettings;
 typedef VDSettings *VDSettingsPtr;
 
+#endif /* !__VIDEO__ */
 
-
-#endif
+/* EOF */

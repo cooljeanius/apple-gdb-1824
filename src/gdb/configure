@@ -790,6 +790,58 @@ DEBUG_SYMBOLS_LIBS
 CARBON_LIBS
 POW_LIB
 LIBOBJS
+NEXT_STRING_H
+REPLACE_STRSTR
+REPLACE_STRCASESTR
+REPLACE_MEMMEM
+REPLACE_STRSIGNAL
+REPLACE_STRERROR
+HAVE_DECL_STRSIGNAL
+HAVE_DECL_STRERROR
+HAVE_DECL_STRTOK_R
+HAVE_STRCASESTR
+HAVE_STRSEP
+HAVE_STRPBRK
+HAVE_DECL_STRNLEN
+HAVE_DECL_STRNDUP
+HAVE_STRNDUP
+HAVE_DECL_STRDUP
+HAVE_STRCHRNUL
+HAVE_STPNCPY
+HAVE_STPCPY
+HAVE_DECL_MEMRCHR
+HAVE_MEMPCPY
+HAVE_DECL_MEMMEM
+GNULIB_STRSIGNAL
+GNULIB_STRERROR
+GNULIB_MBSTOK_R
+GNULIB_MBSSEP
+GNULIB_MBSSPN
+GNULIB_MBSPBRK
+GNULIB_MBSCSPN
+GNULIB_MBSCASESTR
+GNULIB_MBSPCASECMP
+GNULIB_MBSNCASECMP
+GNULIB_MBSCASECMP
+GNULIB_MBSSTR
+GNULIB_MBSRCHR
+GNULIB_MBSCHR
+GNULIB_MBSNLEN
+GNULIB_MBSLEN
+GNULIB_STRTOK_R
+GNULIB_STRCASESTR
+GNULIB_STRSTR
+GNULIB_STRSEP
+GNULIB_STRPBRK
+GNULIB_STRNLEN
+GNULIB_STRNDUP
+GNULIB_STRDUP
+GNULIB_STRCHRNUL
+GNULIB_STPNCPY
+GNULIB_STPCPY
+GNULIB_MEMRCHR
+GNULIB_MEMPCPY
+GNULIB_MEMMEM
 STDINT_H
 WINT_T_SUFFIX
 WCHAR_T_SUFFIX
@@ -34095,6 +34147,151 @@ _ACEOF
 
     STDINT_H=stdint.h
   fi
+
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for C/C++ restrict keyword" >&5
+$as_echo_n "checking for C/C++ restrict keyword... " >&6; }
+if ${ac_cv_c_restrict+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_cv_c_restrict=no
+   # The order here caters to the fact that C++ does not require restrict.
+   for ac_kw in __restrict __restrict__ _Restrict restrict; do
+     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+typedef int * int_ptr;
+	int foo (int_ptr $ac_kw ip) {
+	return ip[0];
+       }
+int
+main ()
+{
+int s[1];
+	int * $ac_kw t = s;
+	t[0] = 0;
+	return foo(t)
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_c_restrict=$ac_kw
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+     test "$ac_cv_c_restrict" != no && break
+   done
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_restrict" >&5
+$as_echo "$ac_cv_c_restrict" >&6; }
+
+ case $ac_cv_c_restrict in
+   restrict) ;;
+   no) $as_echo "#define restrict /**/" >>confdefs.h
+ ;;
+   *)  cat >>confdefs.h <<_ACEOF
+#define restrict $ac_cv_c_restrict
+_ACEOF
+ ;;
+ esac
+
+
+  GNULIB_MEMMEM=0;
+  GNULIB_MEMPCPY=0;
+  GNULIB_MEMRCHR=0;
+  GNULIB_STPCPY=0;
+  GNULIB_STPNCPY=0;
+  GNULIB_STRCHRNUL=0;
+  GNULIB_STRDUP=0;
+  GNULIB_STRNDUP=0;
+  GNULIB_STRNLEN=0;
+  GNULIB_STRPBRK=0;
+  GNULIB_STRSEP=0;
+  GNULIB_STRSTR=0;
+  GNULIB_STRCASESTR=0;
+  GNULIB_STRTOK_R=0;
+  GNULIB_MBSLEN=0;
+  GNULIB_MBSNLEN=0;
+  GNULIB_MBSCHR=0;
+  GNULIB_MBSRCHR=0;
+  GNULIB_MBSSTR=0;
+  GNULIB_MBSCASECMP=0;
+  GNULIB_MBSNCASECMP=0;
+  GNULIB_MBSPCASECMP=0;
+  GNULIB_MBSCASESTR=0;
+  GNULIB_MBSCSPN=0;
+  GNULIB_MBSPBRK=0;
+  GNULIB_MBSSPN=0;
+  GNULIB_MBSSEP=0;
+  GNULIB_MBSTOK_R=0;
+  GNULIB_STRERROR=0;
+  GNULIB_STRSIGNAL=0;
+    HAVE_DECL_MEMMEM=1;
+  HAVE_MEMPCPY=1;
+  HAVE_DECL_MEMRCHR=1;
+  HAVE_STPCPY=1;
+  HAVE_STPNCPY=1;
+  HAVE_STRCHRNUL=1;
+  HAVE_DECL_STRDUP=1;
+  HAVE_STRNDUP=1;
+  HAVE_DECL_STRNDUP=1;
+  HAVE_DECL_STRNLEN=1;
+  HAVE_STRPBRK=1;
+  HAVE_STRSEP=1;
+  HAVE_STRCASESTR=1;
+  HAVE_DECL_STRTOK_R=1;
+  HAVE_DECL_STRERROR=1;
+  HAVE_DECL_STRSIGNAL=1;
+  REPLACE_STRERROR=0;
+  REPLACE_STRSIGNAL=0;
+  REPLACE_MEMMEM=0;
+  REPLACE_STRCASESTR=0;
+  REPLACE_STRSTR=0;
+
+
+
+
+
+
+
+
+
+     if test $gl_cv_have_include_next = yes; then
+       gl_cv_next_string_h='<'string.h'>'
+     else
+       { $as_echo "$as_me:${as_lineno-$LINENO}: checking absolute name of <string.h>" >&5
+$as_echo_n "checking absolute name of <string.h>... " >&6; }
+if ${gl_cv_next_string_h+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+	  if test $ac_cv_header_string_h = yes; then
+	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <string.h>
+
+_ACEOF
+	    	    	    	    gl_cv_next_string_h='"'`(eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+	       sed -n '\#/string.h#{
+		 s#.*"\(.*/string.h\)".*#\1#
+		 s#^/[^/]#//&#
+		 p
+		 q
+	       }'`'"'
+	  else
+	    gl_cv_next_string_h='<'string.h'>'
+	  fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $gl_cv_next_string_h" >&5
+$as_echo "$gl_cv_next_string_h" >&6; }
+     fi
+     NEXT_STRING_H=$gl_cv_next_string_h
+
+
+
+
 
 
 

@@ -44,3 +44,5 @@ miniunzip_LDADD = libminizip.la
 
 minizip_SOURCES = minizip.c
 minizip_LDADD = libminizip.la -lz
+
+CLEANFILES = *~ autoscan.log

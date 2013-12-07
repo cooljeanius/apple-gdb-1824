@@ -8,9 +8,19 @@ AC_CONFIG_SRCDIR([Makefile.in])
 AC_CONFIG_AUX_DIR([..])
 AM_SANITY_CHECK
 
+# Checks for programs.
 AC_PROG_INSTALL
 AC_CANONICAL_TARGET
 AC_PROG_CC
+
+# Checks for header files.
+AC_CHECK_HEADERS([libc.h sys/param.h])
+
+# Checks for library functions.
+AC_FUNC_LSTAT dnl# also checks whether it "_FOLLOWS_SLASHED_SYMLINK"
+AC_CHECK_FUNCS([exit fopen fprintf getc getc_unlocked getwd getcwd \
+                perror printf putchar putchar_unlocked strcat strcpy \
+                unsetenv])
 
 # Autogen
 sinclude(../config/autoopts.m4)
@@ -18,6 +28,9 @@ AG_PATH_AUTOOPTS([5.17.4])
 
 if test -d ${srcdir}/spu ; then
   configdirs="spu"
+fi
+if test -d ${srcdir}/misc ; then
+  configdirs="${configdirs} misc"
 fi
 
 case "${target}" in
@@ -78,6 +91,8 @@ subconfigure_args=${ac_configure_args}
 subconfigure_args="${subconfigure_args} --disable-option-checking --cache-file=${abs_cache_file} --srcdir=${abs_srcdir}"
 AC_SUBST([subconfigure_args])
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile \
+                 decomment.tproj/Makefile \
+                 relpath.tproj/Makefile])
 AC_OUTPUT
 

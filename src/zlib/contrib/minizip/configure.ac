@@ -65,4 +65,7 @@ AC_CHECK_FUNCS([memset mkdir utime])
 
 # Output
 AC_CONFIG_FILES([Makefile minizip.pc])
+AC_CONFIG_COMMANDS([top_original],[
+(test -e ../../configure.sh && pushd ../.. && sh ./configure.sh && popd)
+],[])
 AC_OUTPUT

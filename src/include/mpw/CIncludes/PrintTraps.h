@@ -8,10 +8,12 @@ Created: Monday, September 9, 1991 at 1:04 PM
 
 ************************************************************/
 
-/* This file is provided to support existing references to it. The up to date interface is
-   defined in Printing.h
-*/
+/* This file is provided to support existing references to it. The "up-to-date"
+ * interface is defined in Printing.h
+ */
 
 #ifndef __PRINTING__
-#include <Printing.h>
-#endif
+# include <Printing.h>
+#endif /* !__PRINTING__ */
+
+/* EOF */

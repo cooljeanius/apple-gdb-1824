@@ -16,25 +16,24 @@ Created: Thursday, September 5, 1991 at 4:15 PM
 #define __SOUNDINPUT__
 
 #ifndef __TYPES__
-#include <Types.h>
-#endif
+# include <Types.h>
+#endif /* !__TYPES__ */
 
 #ifndef __DIALOGS__
-#include <Dialogs.h>
-#endif
+# include <Dialogs.h>
+#endif /* !__DIALOGS__ */
 
 #ifndef __FILES__
-#include <Files.h>
-#endif
-
+# include <Files.h>
+#endif /* !__FILES__ */
 
 enum {
 
- siDeviceIsConnected = 1,				/* input device is connected and ready for input */
- siDeviceNotConnected = 0,				/* input device is not connected */
- siDontKnowIfConnected = -1,			/* can't tell if input device is connected */
- siReadPermission = 0,					/* permission passed to SPBOpenDevice */
- siWritePermission = 1					/* permission passed to SPBOpenDevice */
+ siDeviceIsConnected = 1,	 /* input device is connected and ready for input */
+ siDeviceNotConnected = 0,	 /* input device is not connected */
+ siDontKnowIfConnected = -1, /* cannot tell if input device is connected */
+ siReadPermission = 0,		 /* permission passed to SPBOpenDevice */
+ siWritePermission = 1		 /* permission passed to SPBOpenDevice */
 
 /* Info Selectors for Sound Input Drivers */
 
@@ -78,16 +77,16 @@ enum {
 
 /* Sound Input Parameter Block */
 struct SPB {
- long inRefNum;							/* reference number of sound input device */
- unsigned long count;					/* number of bytes to record */
- unsigned long milliseconds;			/* number of milliseconds to record */
- unsigned long bufferLength;			/* length of buffer in bytes */
- Ptr bufferPtr;							/* buffer to store sound data in */
- ProcPtr completionRoutine;				/* completion routine */
- ProcPtr interruptRoutine;				/* interrupt routine */
- long userLong;							/* user-defined field */
- OSErr error;							/* error */
- long unused1;							/* reserved - must be zero */
+ long inRefNum;					/* reference number of sound input device */
+ unsigned long count;			/* number of bytes to record */
+ unsigned long milliseconds;	/* number of milliseconds to record */
+ unsigned long bufferLength;	/* length of buffer in bytes */
+ Ptr bufferPtr;					/* buffer to store sound data in */
+ ProcPtr completionRoutine;		/* completion routine */
+ ProcPtr interruptRoutine;		/* interrupt routine */
+ long userLong;					/* user-defined field */
+ OSErr error;					/* error */
+ long unused1;					/* reserved - must be zero */
 };
 
 typedef struct SPB SPB;
@@ -96,57 +95,59 @@ typedef SPB *SPBPtr;
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 pascal NumVersion SPBVersion(void)
- = {0x203C,0x0000,0x0014,0xA800}; 
+ = {0x203C,0x0000,0x0014,0xA800};
 pascal OSErr SndRecord(ModalFilterProcPtr filterProc,Point corner,OSType quality,
  Handle *sndHandle)
- = {0x203C,0x0804,0x0014,0xA800}; 
+ = {0x203C,0x0804,0x0014,0xA800};
 pascal OSErr SndRecordToFile(ModalFilterProcPtr filterProc,Point corner,
  OSType quality,short fRefNum)
- = {0x203C,0x0708,0x0014,0xA800}; 
+ = {0x203C,0x0708,0x0014,0xA800};
 pascal OSErr SPBSignInDevice(short deviceRefNum,ConstStr255Param deviceName)
- = {0x203C,0x030C,0x0014,0xA800}; 
+ = {0x203C,0x030C,0x0014,0xA800};
 pascal OSErr SPBSignOutDevice(short deviceRefNum)
- = {0x203C,0x0110,0x0014,0xA800}; 
+ = {0x203C,0x0110,0x0014,0xA800};
 pascal OSErr SPBGetIndexedDevice(short count,Str255 deviceName,Handle *deviceIconHandle)
- = {0x203C,0x0514,0x0014,0xA800}; 
+ = {0x203C,0x0514,0x0014,0xA800};
 pascal OSErr SPBOpenDevice(ConstStr255Param deviceName,short permission,
  long *inRefNum)
- = {0x203C,0x0518,0x0014,0xA800}; 
+ = {0x203C,0x0518,0x0014,0xA800};
 pascal OSErr SPBCloseDevice(long inRefNum)
- = {0x203C,0x021C,0x0014,0xA800}; 
+ = {0x203C,0x021C,0x0014,0xA800};
 pascal OSErr SPBRecord(SPBPtr inParamPtr,Boolean asynchFlag)
- = {0x203C,0x0320,0x0014,0xA800}; 
+ = {0x203C,0x0320,0x0014,0xA800};
 pascal OSErr SPBRecordToFile(short fRefNum,SPBPtr inParamPtr,Boolean asynchFlag)
- = {0x203C,0x0424,0x0014,0xA800}; 
+ = {0x203C,0x0424,0x0014,0xA800};
 pascal OSErr SPBPauseRecording(long inRefNum)
- = {0x203C,0x0228,0x0014,0xA800}; 
+ = {0x203C,0x0228,0x0014,0xA800};
 pascal OSErr SPBResumeRecording(long inRefNum)
- = {0x203C,0x022C,0x0014,0xA800}; 
+ = {0x203C,0x022C,0x0014,0xA800};
 pascal OSErr SPBStopRecording(long inRefNum)
- = {0x203C,0x0230,0x0014,0xA800}; 
+ = {0x203C,0x0230,0x0014,0xA800};
 pascal OSErr SPBGetRecordingStatus(long inRefNum,short *recordingStatus,
  short *meterLevel,unsigned long *totalSamplesToRecord,unsigned long *numberOfSamplesRecorded,
  unsigned long *totalMsecsToRecord,unsigned long *numberOfMsecsRecorded)
- = {0x203C,0x0E34,0x0014,0xA800}; 
+ = {0x203C,0x0E34,0x0014,0xA800};
 pascal OSErr SPBGetDeviceInfo(long inRefNum,OSType infoType,char *infoData)
- = {0x203C,0x0638,0x0014,0xA800}; 
+ = {0x203C,0x0638,0x0014,0xA800};
 pascal OSErr SPBSetDeviceInfo(long inRefNum,OSType infoType,char *infoData)
- = {0x203C,0x063C,0x0014,0xA800}; 
+ = {0x203C,0x063C,0x0014,0xA800};
 pascal OSErr SPBMillisecondsToBytes(long inRefNum,long *milliseconds)
- = {0x203C,0x0440,0x0014,0xA800}; 
+ = {0x203C,0x0440,0x0014,0xA800};
 pascal OSErr SPBBytesToMilliseconds(long inRefNum,long *byteCount)
- = {0x203C,0x0444,0x0014,0xA800}; 
+ = {0x203C,0x0444,0x0014,0xA800};
 pascal OSErr SetupSndHeader(Handle sndHandle,short numChannels,Fixed sampleRate,
  short sampleSize,OSType compressionType,short baseNote,unsigned long numBytes,
  short *headerLen)
- = {0x203C,0x0D48,0x0014,0xA800}; 
+ = {0x203C,0x0D48,0x0014,0xA800};
 pascal OSErr SetupAIFFHeader(short fRefNum,short numChannels,Fixed sampleRate,
  short sampleSize,OSType compressionType,unsigned long numBytes,unsigned long numFrames)
- = {0x203C,0x0B4C,0x0014,0xA800}; 
+ = {0x203C,0x0B4C,0x0014,0xA800};
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !__SOUNDINPUT__ */
+
+/* EOF */

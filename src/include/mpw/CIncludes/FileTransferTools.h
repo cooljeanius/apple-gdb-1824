@@ -16,16 +16,14 @@ Created: Thursday, September 12, 1991 at 9:51 AM
 #define __FILETRANSFERTOOLS__
 
 #ifndef __DIALOGS__
-#include <Dialogs.h>
-#endif
+# include <Dialogs.h>
+#endif /* !__DIALOGS__ */
 
 #ifndef __FILETRANSFERS__
-#include <FileTransfers.h>
-#endif
-
+# include <FileTransfers.h>
+#endif /* !__FILETRANSFERS__ */
 
 enum {
-
 
 /* Control */
  ftInitMsg = 0,
@@ -88,6 +86,6 @@ struct FTSetupStruct {
 typedef struct FTSetupStruct FTSetupStruct;
 typedef FTSetupStruct *FTSetupPtr;
 
+#endif /* !__FILETRANSFERTOOLS__ */
 
-
-#endif
+/* EOF */

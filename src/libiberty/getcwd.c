@@ -1,5 +1,6 @@
-/* Emulate getcwd using getwd.
-   This function is in the public domain. */
+/* getcwd.c
+ * Emulate getcwd using getwd.
+ * This function is in the public domain. */
 
 /*
 
@@ -17,26 +18,36 @@ directory's path doesn't fit in @var{len} characters, the result is
 
 */
 
+/* includes */
 #include "config.h"
 
 #ifdef HAVE_SYS_PARAM_H
-#include <sys/param.h>
-#endif
+# include <sys/param.h>
+#else
+# warning getcwd.c expects <sys/param.h> to be included.
+#endif /* HAVE_SYS_PARAM_H */
 #include <errno.h>
 #ifdef HAVE_STRING_H
-#include <string.h>
-#endif
+# include <string.h>
+#else
+# warning getcwd.c expects <string.h> to be included.
+#endif /* HAVE_STRING_H */
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#else
+# warning getcwd.c expects <stdlib.h> to be included.
+#endif /* HAVE_STDLIB_H */
 
+/* prototypes */
 extern char *getwd ();
 extern int errno;
 
+/* defines */
 #ifndef MAXPATHLEN
-#define MAXPATHLEN 1024
-#endif
+# define MAXPATHLEN 1024
+#endif /* !MAXPATHLEN */
 
+/* actual function */
 char *
 getcwd (char *buf, size_t len)
 {
@@ -60,3 +71,5 @@ getcwd (char *buf, size_t len)
   }
   return buf;
 }
+
+/* EOF */

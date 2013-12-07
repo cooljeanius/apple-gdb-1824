@@ -143,7 +143,8 @@ show()
   echo $* >> configure.log
 }
 
-# check for gcc vs. cc and set compile and link flags based on the system identified by uname
+# check for gcc vs. cc and set compile and link flags based on the system
+# identified by uname
 cat > $test.c <<EOF
 extern int getchar();
 int hello() {return getchar();}
@@ -153,19 +154,19 @@ test -z "$CC" && echo Checking for ${CROSS_PREFIX}gcc... | tee -a configure.log
 cc=${CC-${CROSS_PREFIX}gcc}
 cflags=${CFLAGS-"-O3"}
 # to force the asm version use: CFLAGS="-O3 -DASMV" ./configure
-case "$cc" in
+case "${cc}" in
   *gcc*) gcc=1 ;;
   *clang*) gcc=1 ;;
 esac
-case `$cc -v 2>&1` in
+case `${cc} -v 2>&1` in
   *gcc*) gcc=1 ;;
   *clang*) gcc=1 ;;
 esac
 
-show $cc -c $test.c
-if test "$gcc" -eq 1 && ($cc -c $test.c) >> configure.log 2>&1; then
+show ${cc} -c $test.c
+if test "${gcc}" -eq 1 && (${cc} -c $test.c) >> configure.log 2>&1; then
   echo ... using gcc >> configure.log
-  CC="$cc"
+  CC="${cc}"
   CFLAGS="${CFLAGS--O3} ${ARCHS}"
   SFLAGS="${CFLAGS--O3} -fPIC"
   LDFLAGS="${LDFLAGS} ${ARCHS}"
@@ -212,12 +213,12 @@ if test "$gcc" -eq 1 && ($cc -c $test.c) >> configure.log 2>&1; then
                  shared_ext='.sl'
                  SHAREDLIB='libz.sl' ;;
          esac ;;
-  Darwin* | darwin*)
+  Darwin* | darwin* | *darwin* | *Darwin*)
              shared_ext='.dylib'
-             SHAREDLIB=libz$shared_ext
-             SHAREDLIBV=libz.$VER$shared_ext
-             SHAREDLIBM=libz.$VER1$shared_ext
-             LDSHARED=${LDSHARED-"$cc -dynamiclib -install_name $libdir/$SHAREDLIBM -compatibility_version $VER1 -current_version $VER3"}
+             SHAREDLIB=libz${shared_ext}
+             SHAREDLIBV=libz.${VER}${shared_ext}
+             SHAREDLIBM=libz.${VER1}${shared_ext}
+             LDSHARED=${LDSHARED-"$cc -dynamiclib -install_name ${libdir}/${SHAREDLIBM} -compatibility_version ${VER1} -current_version ${VER3}"}
              if libtool -V 2>&1 | grep Apple > /dev/null; then
                  AR="libtool"
                  ARFLAGS="-o"
@@ -239,7 +240,7 @@ else
   case "$uname" in
   HP-UX*)    SFLAGS=${CFLAGS-"-O +z"}
              CFLAGS=${CFLAGS-"-O"}
-#            LDSHARED=${LDSHARED-"ld -b +vnocompatwarnings"}
+             LDSHARED_COMMENTED_OUT=${LDSHARED-"ld -b +vnocompatwarnings"}
              LDSHARED=${LDSHARED-"ld -b"}
          case `(uname -m || echo unknown) 2>/dev/null` in
          ia64)
@@ -318,6 +319,17 @@ else
              CFLAGS=${CFLAGS-"-O"}
              LDSHARED=${LDSHARED-"cc -shared"} ;;
   esac
+fi
+
+if test "${ARFLAGS}" = "-o"; then
+  if libtool -V 2>&1 | grep Apple > /dev/null; then
+    AR="libtool"
+  elif test -x /usr/bin/libtool; then
+    AR="/usr/bin/libtool"
+  fi
+fi
+if test "${AR}" = "ar"; then
+  ARFLAGS=${ARFLAGS-"rc"}
 fi
 
 # destination names for shared library if not defined above
@@ -513,7 +525,8 @@ if test $zprefix -eq 1; then
   echo "Using z_ prefix on all symbols." | tee -a configure.log
 fi
 
-# if --solo compilation was requested, save that in zconf.h and remove gz stuff from object lists
+# if --solo compilation was requested, save that in zconf.h and remove gz stuff
+# from object lists
 if test $solo -eq 1; then
   sed '/#define ZCONF_H/a\
 #define Z_SOLO
@@ -524,20 +537,24 @@ OBJC='$(OBJZ)'
 PIC_OBJC='$(PIC_OBJZ)'
 fi
 
-# if code coverage testing was requested, use older gcc if defined, e.g. "gcc-4.2" on Mac OS X
-if test $cover -eq 1; then
+# if code coverage testing was requested, use older gcc if defined, e.g.
+# "gcc-4.2" on Mac OS X
+if test ${cover} -eq 1; then
   CFLAGS="${CFLAGS} -fprofile-arcs -ftest-coverage"
   if test -n "$GCC_CLASSIC"; then
-    CC=$GCC_CLASSIC
+    CC=${GCC_CLASSIC}
   fi
 fi
 
 echo >> configure.log
 
-# conduct a series of tests to resolve eight possible cases of using "vs" or "s" printf functions
-# (using stdarg or not), with or without "n" (proving size of buffer), and with or without a
-# return value.  The most secure result is vsnprintf() with a return value.  snprintf() with a
-# return value is secure as well, but then gzprintf() will be limited to 20 arguments.
+# conduct a series of tests to resolve eight possible cases of
+# using "vs" or "s" printf functions
+# (using stdarg or not), with or without "n" (proving size of buffer), and
+# with or without a
+# return value. The most secure result is vsnprintf() with a return value.
+# snprintf() with a return value is secure as well, but then gzprintf() will
+# be limited to 20 arguments.
 cat > $test.c <<EOF
 #include <stdio.h>
 #include <stdarg.h>

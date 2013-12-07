@@ -7,6 +7,7 @@
 
         The copyright notice above does not evidence any
         actual or intended publication of such source code.
+		(really?)
 
 **************************************************************************/
 
@@ -14,11 +15,13 @@
 #define __NEW__
 
 #ifndef __STDDEF__
-#include <stddef.h>
-#endif
+# include <stddef.h>
+#endif /* !__STDDEF__ */
 
 extern void (*set_new_handler (void(*)()))();
 
 void *operator new(size_t, void*);
 
-#endif
+#endif /* !__NEW__ */
+
+/* EOF */

@@ -15187,6 +15187,9 @@ $as_echo "#define HAVE_STDBOOL_H 1" >>confdefs.h
 fi
 
 
+
+
+
 for ac_header in OS.h fcntl.h float.h langinfo.h limits.h \
                   locale.h malloc.h malloc/malloc.h netdb.h stddef.h \
                   stdio.h sys/param.h wchar.h wctype.h
@@ -16057,6 +16060,11 @@ _ACEOF
 fi
 done
 
+
+if test "x${NEXT_STRING_H}" = "x"; then
+  test -z "${NEXT_STRING_H}" && export NEXT_STRING_H="<string.h>"
+
+fi
 
 ac_config_files="$ac_config_files Makefile Makefile.orig import/Makefile"
 

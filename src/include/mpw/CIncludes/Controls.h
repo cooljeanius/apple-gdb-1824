@@ -15,9 +15,8 @@ Created: Sunday, January 6, 1991 at 9:03 PM
 #define __CONTROLS__
 
 #ifndef __QUICKDRAW__
-#include <Quickdraw.h>
-#endif
-
+# include <Quickdraw.h>
+#endif /* !__QUICKDRAW__ */
 
 enum {
 
@@ -34,7 +33,7 @@ enum {
     inPageDown = 23,
     inThumb = 129,
 
-    popupMenuProc = 1008,   /* 63 * 16 */
+    popupMenuProc = 1008,   /* 63 * 16 (why?) */
     inLabel = 1,
     inMenu = 2,
     inTriangle = 4
@@ -54,14 +53,12 @@ enum {
     popupTitleCenterJust = 0x00000001,
     popupTitleRightJust = 0x000000FF,
 
-/*
-axis constraints for DragGrayRgn call*/
+/* axis constraints for DragGrayRgn call*/
     noConstraint = 0,
     hAxisOnly = 1,
     vAxisOnly = 2,
 
-/*
-control messages*/
+/* control messages*/
     drawCntl = 0,
     testCntl = 1,
     calcCRgns = 2,
@@ -126,85 +123,87 @@ typedef AuxCtlRec *AuxCtlPtr, **AuxCtlHandle;
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 pascal ControlHandle NewControl(WindowPtr theWindow,const Rect *boundsRect,
     ConstStr255Param title,Boolean visible,short value,short min,short max,
     short procID,long refCon)
-    = 0xA954; 
+    = 0xA954;
 pascal void SetCTitle(ControlHandle theControl,ConstStr255Param title)
-    = 0xA95F; 
+    = 0xA95F;
 pascal void GetCTitle(ControlHandle theControl,Str255 title)
-    = 0xA95E; 
+    = 0xA95E;
 pascal ControlHandle GetNewControl(short controlID,WindowPtr owner)
-    = 0xA9BE; 
+    = 0xA9BE;
 pascal void DisposeControl(ControlHandle theControl)
-    = 0xA955; 
+    = 0xA955;
 pascal void KillControls(WindowPtr theWindow)
-    = 0xA956; 
+    = 0xA956;
 pascal void HideControl(ControlHandle theControl)
-    = 0xA958; 
+    = 0xA958;
 pascal void ShowControl(ControlHandle theControl)
-    = 0xA957; 
+    = 0xA957;
 pascal void DrawControls(WindowPtr theWindow)
-    = 0xA969; 
+    = 0xA969;
 pascal void Draw1Control(ControlHandle theControl)
-    = 0xA96D; 
+    = 0xA96D;
 pascal void HiliteControl(ControlHandle theControl,short hiliteState)
-    = 0xA95D; 
+    = 0xA95D;
 pascal void UpdtControl(WindowPtr theWindow,RgnHandle updateRgn)
-    = 0xA953; 
+    = 0xA953;
 pascal void UpdateControls(WindowPtr theWindow,RgnHandle updateRgn)
-    = 0xA953; 
+    = 0xA953;
 pascal void MoveControl(ControlHandle theControl,short h,short v)
-    = 0xA959; 
+    = 0xA959;
 pascal void SizeControl(ControlHandle theControl,short w,short h)
-    = 0xA95C; 
+    = 0xA95C;
 pascal void SetCtlValue(ControlHandle theControl,short theValue)
-    = 0xA963; 
+    = 0xA963;
 pascal short GetCtlValue(ControlHandle theControl)
-    = 0xA960; 
+    = 0xA960;
 pascal void SetCtlMin(ControlHandle theControl,short minValue)
-    = 0xA964; 
+    = 0xA964;
 pascal short GetCtlMin(ControlHandle theControl)
-    = 0xA961; 
+    = 0xA961;
 pascal void SetCtlMax(ControlHandle theControl,short maxValue)
-    = 0xA965; 
+    = 0xA965;
 pascal short GetCtlMax(ControlHandle theControl)
-    = 0xA962; 
+    = 0xA962;
 pascal void SetCRefCon(ControlHandle theControl,long data)
-    = 0xA95B; 
+    = 0xA95B;
 pascal long GetCRefCon(ControlHandle theControl)
-    = 0xA95A; 
+    = 0xA95A;
 pascal void SetCtlAction(ControlHandle theControl,ProcPtr actionProc)
-    = 0xA96B; 
+    = 0xA96B;
 pascal ProcPtr GetCtlAction(ControlHandle theControl)
-    = 0xA96A; 
+    = 0xA96A;
 pascal void DragControl(ControlHandle theControl,Point startPt,const Rect *limitRect,
     const Rect *slopRect,short axis)
-    = 0xA967; 
+    = 0xA967;
 pascal short TestControl(ControlHandle theControl,Point thePt)
-    = 0xA966; 
+    = 0xA966;
 pascal short TrackControl(ControlHandle theControl,Point thePoint,ProcPtr actionProc)
-    = 0xA968; 
+    = 0xA968;
 pascal short FindControl(Point thePoint,WindowPtr theWindow,ControlHandle *theControl)
-    = 0xA96C; 
+    = 0xA96C;
 pascal void SetCtlColor(ControlHandle theControl,CCTabHandle newColorTable)
-    = 0xAA43; 
+    = 0xAA43;
 pascal Boolean GetAuxCtl(ControlHandle theControl,AuxCtlHandle *acHndl)
-    = 0xAA44; 
+    = 0xAA44;
 pascal short GetCVariant(ControlHandle theControl)
-    = 0xA809; 
+    = 0xA809;
 void dragcontrol(ControlHandle theControl,Point *startPt,const Rect *limitRect,
-    const Rect *slopRect,short axis); 
+    const Rect *slopRect,short axis);
 ControlHandle newcontrol(WindowPtr theWindow,const Rect *boundsRect,char *title,
-    Boolean visible,short value,short min,short max,short procID,long refCon); 
-short findcontrol(Point *thePoint,WindowPtr theWindow,ControlHandle *theControl); 
-void getctitle(ControlHandle theControl,char *title); 
-void setctitle(ControlHandle theControl,char *title); 
-short trackcontrol(ControlHandle theControl,Point *thePoint,ProcPtr actionProc); 
-short testcontrol(ControlHandle theControl,Point *thePt); 
+    Boolean visible,short value,short min,short max,short procID,long refCon);
+short findcontrol(Point *thePoint,WindowPtr theWindow,ControlHandle *theControl);
+void getctitle(ControlHandle theControl,char *title);
+void setctitle(ControlHandle theControl,char *title);
+short trackcontrol(ControlHandle theControl,Point *thePoint,ProcPtr actionProc);
+short testcontrol(ControlHandle theControl,Point *thePt);
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !__CONTROLS__ */
+
+/* EOF */

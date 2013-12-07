@@ -15,20 +15,18 @@ Created: Sunday, January 6, 1991 at 10:06 PM
 #define __STANDARDFILE__
 
 #ifndef __TYPES__
-#include <Types.h>
-#endif
+# include <Types.h>
+#endif /* !__TYPES__ */
 
 #ifndef __DIALOGS__
-#include <Dialogs.h>
-#endif
+# include <Dialogs.h>
+#endif /* !__DIALOGS__ */
 
 #ifndef __FILES__
-#include <Files.h>
-#endif
-
+# include <Files.h>
+#endif /* !__FILES__ */
 
 enum {
-
 
 /* resource IDs and item offsets of pre-7.0 dialogs */
     putDlgID = -3999,
@@ -88,7 +86,7 @@ enum {
     sfHookLastCall = -2
 
 /* the refcon field of the dialog record during a
- modalfilter or dialoghook contains one of the following */
+ * modalfilter or dialoghook contains one of the following */
 
 #define sfMainDialogRefCon 'stdf'
 #define sfNewFolderDialogRefCon 'nfdr'
@@ -138,13 +136,13 @@ typedef OSType SFTypeList[4];
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 pascal void SFPutFile(Point where,
                       ConstStr255Param prompt,
                       ConstStr255Param origName,
                       DlgHookProcPtr dlgHook,
                       SFReply *reply)
-    = {0x3F3C,0x0001,0xA9EA}; 
+    = {0x3F3C,0x0001,0xA9EA};
 
 pascal void SFGetFile(Point where,
                       ConstStr255Param prompt,
@@ -153,7 +151,7 @@ pascal void SFGetFile(Point where,
                       SFTypeList typeList,
                       DlgHookProcPtr dlgHook,
                       SFReply *reply)
-    = {0x3F3C,0x0002,0xA9EA}; 
+    = {0x3F3C,0x0002,0xA9EA};
 
 pascal void SFPPutFile(Point where,
                        ConstStr255Param prompt,
@@ -162,7 +160,7 @@ pascal void SFPPutFile(Point where,
                        SFReply *reply,
                        short dlgID,
                        ModalFilterProcPtr filterProc)
-    = {0x3F3C,0x0003,0xA9EA}; 
+    = {0x3F3C,0x0003,0xA9EA};
 
 pascal void SFPGetFile(Point where,
                        ConstStr255Param prompt,
@@ -173,18 +171,18 @@ pascal void SFPGetFile(Point where,
                        SFReply *reply,
                        short dlgID,
                        ModalFilterProcPtr filterProc)
-    = {0x3F3C,0x0004,0xA9EA}; 
+    = {0x3F3C,0x0004,0xA9EA};
 
 pascal void StandardPutFile(ConstStr255Param prompt,
                             ConstStr255Param defaultName,
                             StandardFileReply *reply)
-    = {0x3F3C,0x0005,0xA9EA}; 
+    = {0x3F3C,0x0005,0xA9EA};
 
 pascal void StandardGetFile(FileFilterProcPtr fileFilter,
                             short numTypes,
                             SFTypeList typeList,
                             StandardFileReply *reply)
-    = {0x3F3C,0x0006,0xA9EA}; 
+    = {0x3F3C,0x0006,0xA9EA};
 
 pascal void CustomPutFile(ConstStr255Param prompt,
                           ConstStr255Param defaultName,
@@ -196,7 +194,7 @@ pascal void CustomPutFile(ConstStr255Param prompt,
                           short *activeList,
                           ActivateYDProcPtr activateProc,
                           void *yourDataPtr)
-    = {0x3F3C,0x0007,0xA9EA}; 
+    = {0x3F3C,0x0007,0xA9EA};
 
 pascal void CustomGetFile(FileFilterYDProcPtr fileFilter,
                           short numTypes,
@@ -209,51 +207,52 @@ pascal void CustomGetFile(FileFilterYDProcPtr fileFilter,
                           short *activeList,
                           ActivateYDProcPtr activateProc,
                           void *yourDataPtr)
-    = {0x3F3C,0x0008,0xA9EA}; 
+    = {0x3F3C,0x0008,0xA9EA};
 
 void sfpputfile(Point *where,char *prompt,char *origName,DlgHookProcPtr dlgHook,
-    SFReply *reply,short dlgID,ModalFilterProcPtr filterProc); 
+    SFReply *reply,short dlgID,ModalFilterProcPtr filterProc);
 void sfgetfile(Point *where,char *prompt,FileFilterProcPtr fileFilter,short numTypes,
-    SFTypeList typeList,DlgHookProcPtr dlgHook,SFReply *reply); 
+    SFTypeList typeList,DlgHookProcPtr dlgHook,SFReply *reply);
 void sfpgetfile(Point *where,char *prompt,FileFilterProcPtr fileFilter,
     short numTypes,SFTypeList typeList,DlgHookProcPtr dlgHook,SFReply *reply,
-    short dlgID,ModalFilterProcPtr filterProc); 
+    short dlgID,ModalFilterProcPtr filterProc);
 void sfputfile(Point *where,char *prompt,char *origName,DlgHookProcPtr dlgHook,
-    SFReply *reply); 
+    SFReply *reply);
 
-/* 
-    
-        New StandardFile routine comments:
-    
-        activeList is pointer to array of integer (16-bits).
-        first integer is length of list.
-        following integers are possible activatable DITL items, in
-        the order that the tab key will cycle through.  The first
-        in the list is the item made active when dialog is first shown.
-    
-        activateProc is a pointer to a procedure like:
-    
-            PROCEDURE MyActivateProc(theDialog:     DialogPtr;
-                                     itemNo:        INTEGER;
-                                     activating:    BOOLEAN;
-                                     yourDataPtr:    Ptr);
-    
-        The activateProc is called with activating=FALSE on the itemNo
-        about to deactivate then with activating=TRUE on the itemNo
-        about to become the active item. (like activate event)
-    
-        yourDataPtr is a nice little extra that makes life easier without
-        globals.  CustomGetFile & CustomPPutFile when calling any of their
-        call back procedures, pushes the extra parameter of yourDataPtr on
-        the stack.
-    
-        In addition the filterProc in CustomGetFile & CustomPPutFile is called
-        before before SF does any mapping, instead of after.
-*/
-
+/*
+ *
+ *      New StandardFile routine comments:
+ *
+ *      activeList is pointer to array of integer (16-bits).
+ *      first integer is length of list.
+ *      following integers are possible activatable DITL items, in
+ *      the order that the tab key will cycle through. The first
+ *      in the list is the item made active when dialog is first shown.
+ *
+ *      activateProc is a pointer to a procedure like:
+ *
+ *          PROCEDURE MyActivateProc(theDialog:     DialogPtr;
+ *                                   itemNo:        INTEGER;
+ *                                   activating:    BOOLEAN;
+ *                                   yourDataPtr:    Ptr);
+ *
+ *      The activateProc is called with activating=FALSE on the itemNo
+ *      about to deactivate then with activating=TRUE on the itemNo
+ *      about to become the active item. (like activate event)
+ *
+ *      yourDataPtr is a nice little extra that makes life easier without
+ *      globals. CustomGetFile & CustomPPutFile when calling any of their
+ *      call back procedures, pushes the extra parameter of yourDataPtr on
+ *      the stack.
+ *
+ *      In addition the filterProc in CustomGetFile & CustomPPutFile is called
+ *      before before SF does any mapping, instead of after.
+ */
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !__STANDARDFILE__ */
+
+/* EOF */

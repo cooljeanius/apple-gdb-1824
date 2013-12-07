@@ -16,8 +16,8 @@ Created: Monday, November 21, 1988 at 10:37 AM
 #define __VALUES__
 
 #ifndef __SANE__
-#include <SANE.h>
-#endif
+# include <SANE.h>
+#endif /* !__SANE__ */
 
 #define BITSPERBYTE 8
 #define BITS(type) (BITSPERBYTE * (int)sizeof(type))
@@ -57,4 +57,6 @@ Created: Monday, November 21, 1988 at 10:37 AM
 #define LN_MINDOUBLE log(MINDOUBLE)
 #define MAXCOMP (scalb(63,1.0)-1.0)
 
-#endif
+#endif /* !__VALUES__ */
+
+/* EOF */

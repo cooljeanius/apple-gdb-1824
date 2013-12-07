@@ -46,12 +46,16 @@ AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
 AC_TYPE_UINT8_T
+AC_CHECK_TYPES([ptrdiff_t])
 
 # Checks for library functions.
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_MALLOC
+AC_FUNC_MKTIME
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([getcwd gethostbyaddr gethostbyname gettimeofday memchr memmove memset putenv re_comp regcomp select socket strcasecmp strchr strerror strrchr strstr strtol strtoul strverscmp utime])
+AC_FUNC_STRCOLL
+AC_FUNC_STRTOD
+AC_CHECK_FUNCS([atexit floor getcwd gethostbyaddr gethostbyname gettimeofday isascii localeconv mblen memchr memmove memset modf pow putenv re_comp regcomp rint select setlocale socket sqrt strcasecmp strchr strcspn strerror strpbrk strrchr strspn strstr strtol strtoul strverscmp utime])
 
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_SUBDIRS([bfd

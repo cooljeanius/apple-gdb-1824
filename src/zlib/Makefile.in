@@ -255,6 +255,7 @@ clean:
 	   libz.* foo.gz so_locations \
 	   _match.s maketree contrib/infback9/*.o
 	rm -rf objs
+	rm -rf *.dSYM
 	rm -f *.gcda *.gcno *.gcov
 	rm -f contrib/infback9/*.gcda contrib/infback9/*.gcno contrib/infback9/*.gcov
 

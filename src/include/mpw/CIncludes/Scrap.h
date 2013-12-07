@@ -15,9 +15,8 @@ Created: Sunday, January 6, 1991 at 9:52 PM
 #define __SCRAP__
 
 #ifndef __TYPES__
-#include <Types.h>
-#endif
-
+# include <Types.h>
+#endif /* !__TYPES__ */
 
 struct ScrapStuff {
     long scrapSize;
@@ -33,21 +32,23 @@ typedef ScrapStuff *PScrapStuff;
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 pascal PScrapStuff InfoScrap(void)
-    = 0xA9F9; 
+    = 0xA9F9;
 pascal long UnloadScrap(void)
-    = 0xA9FA; 
+    = 0xA9FA;
 pascal long LoadScrap(void)
-    = 0xA9FB; 
+    = 0xA9FB;
 pascal long GetScrap(Handle hDest,ResType theType,long *offset)
-    = 0xA9FD; 
+    = 0xA9FD;
 pascal long ZeroScrap(void)
-    = 0xA9FC; 
+    = 0xA9FC;
 pascal long PutScrap(long length,ResType theType,Ptr source)
-    = 0xA9FE; 
+    = 0xA9FE;
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !__SCRAP__ */
+
+/* EOF */
