@@ -1,27 +1,28 @@
-# Process this file with "automake --cygnus Makefile" to generate Makefile.in
+# Process this file with automake to generate Makefile.in
 
-AUTOMAKE_OPTIONS = 1.9 cygnus
+AUTOMAKE_OPTIONS = 1.9
+AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 SUBDIRS = doc
 
 GUILE = "`if test -f ../guile/libguile/guile ; then echo ../guile/libguile/guile; else echo guile ; fi`" -l $(srcdir)/guile.scm -s
 CGENFLAGS = -v
-ARCH = @arch@
-ARCHFILE = $(srcroot)/cpu/$(ARCH).cpu
+CPU_ARCH = @cpu_arch@
+ARCHFILE = $(srcroot)/cpu/$(CPU_ARCH).cpu
 
 # for various utility rules
 MACHS = all
 ISAS = all
 
 # for the html rule
-INSN_FILE_NAME = $(ARCH)-insn.html
+INSN_FILE_NAME = $(CPU_ARCH)-insn.html
 
 srcroot = $(srcdir)/..
 
 # Applications depend on stamp-cgen to tell them when .scm files have
 # been changed (so files need to be regenerated).
 # ??? Application specific files are kept with cgen for now, but may
-# eventually go with the app.  stamp-cgen might still be useful to track
+# eventually go with the app. stamp-cgen might still be useful to track
 # app-independent files.
 
 all-local: stamp-cgen
@@ -56,9 +57,9 @@ desc: desc.scm
 		-H tmp-desc.h -C tmp-desc.c
 
 # Build the machine generated cpu documentation.
-# Usage: make html [ARCH=<arch>] [ARCHFILE=<arch-file>]
-.PHONY: html
-html: desc.scm html.scm cgen-doc.scm
+# Usage: make html-local [CPU_ARCH=<cpu_arch>] [ARCHFILE=<arch-file>]
+.PHONY: html-local
+html-local: desc.scm html.scm cgen-doc.scm
 	rm -f tmp-doc.html
 	$(GUILE) $(srcdir)/cgen-doc.scm \
 		-s $(srcdir) \
@@ -70,8 +71,8 @@ html: desc.scm html.scm cgen-doc.scm
 		-N $(INSN_FILE_NAME) \
 		-H tmp.html \
 		-I tmp-insn.html
-	$(SHELL) $(srcroot)/move-if-change tmp.html $(ARCH).html
-	$(SHELL) $(srcroot)/move-if-change tmp-insn.html $(ARCH)-insn.html
+	$(SHELL) $(srcroot)/move-if-change tmp.html $(CPU_ARCH).html
+	$(SHELL) $(srcroot)/move-if-change tmp-insn.html $(CPU_ARCH)-insn.html
 
 # Build the opcodes files.
 # We just stuff them in tmp-* files.
@@ -163,3 +164,4 @@ sim-test: sim-test.scm cgen-stest.scm
 		-E sim-allinsn.exp
 
 CLEANFILES = tmp-*
+DISTCLEANFILES = stamp-cgen

@@ -5,6 +5,7 @@ sinclude([../aclocal.m4])
 AC_PREREQ([2.69])
 AC_INIT([expect-testsuite],[5.26],[])
 AC_CONFIG_SRCDIR([exp_test.c])
+AC_CANONICAL_TARGET
 
 AC_PROG_SED
 
@@ -26,14 +27,14 @@ unset CFLAGS
 unset CXXFLAGS
 unset CPPFLAGS
 # CC might already have been checked
-if test "x$CC" = "x"; then
-	test -z "$CC"
+if test "x${CC}" = "x"; then
+	test -z "${CC}"
 	AC_PROG_CC
 else
-	test ! -z "$CC"
+	test ! -z "${CC}"
 	# The conditional is to try to avoid breakage
 	if test "x${ac_cv_c_compiler_gnu}" != "x:"; then
-		test ! -z "$GCC"
+		test ! -z "${GCC}"
 		AC_PROG_GCC_TRADITIONAL
 	fi
 	# Check preprocessor

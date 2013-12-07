@@ -125,7 +125,7 @@ BUILD_EXPORTS = \
 	WINDRES="$(WINDRES_FOR_BUILD)"; export WINDRES;
 
 # This is the list of directories to built for the host system.
-SUBDIRS =  intl electric-fence mmalloc libiberty opcodes bfd readline tcl zlib binutils sim gdb etc expect dejagnu utils
+SUBDIRS =  intl electric-fence mmalloc libiberty opcodes bfd readline tcl zlib binutils sim gdb etc expect dejagnu utils cgen
 # This is set by the configure script to the arguments to use when configuring
 # directories built for the host system.
 HOST_CONFIGARGS =     --disable-shared --enable-64-bit-bfd --disable-softfloat --disable-werror  --enable-carbon-framework --enable-debug-symbols-framework --cache-file=./config.cache --build=x86_64-apple-darwin10.8.0 --host=x86_64-apple-darwin10.8.0 --target=x86_64-apple-darwin10.8.0   --program-transform-name='s,y,y,'

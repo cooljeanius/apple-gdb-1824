@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/sh
 # Utility script to generate html docs for all ports.
 
 # Run this script in the src/cgen directory.

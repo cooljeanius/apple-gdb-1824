@@ -7,17 +7,18 @@ What is it?
 -----------
 
 In a nutshell, CGEN is a project to provide a uniform framework for doing
-binutils and simulator ports without explicitly closing any doors on anything
-else one might want to do with the cpu description (i.e. application
-independence).  The "cpu description" as defined here includes anything useful.
-To this end CGEN is a very open-ended and ambitious project.
+binutils and simulator ports without explicitly closing any doors on
+anything else one might want to do with the cpu description (i.e.
+application independence). The "cpu description" as defined here includes
+anything useful. To this end CGEN is a very open-ended and ambitious
+project.
 
 The core of CGEN is a cpu description file and code to slurp it in and
-build a database describing the cpu.  From this the Binutils opcodes table
+build a database describing the cpu. From this the Binutils opcodes table
 can be generated for example, as well as an ISA simulator decoder/executor.
 
-CGEN is not a new idea.  Other GNU ports have done this (e.g. `sh' in its
-early days).  However, the idea never really "caught on".  CGEN was started
+CGEN is not a new idea. Other GNU ports have done this (e.g. `sh' in its
+early days). However, the idea never really "caught on". CGEN was started
 because I think it should be.
 
 CGEN is short for "Cpu tools GENerator".
@@ -28,18 +29,18 @@ Copyright
 CGEN is Copyright 2000, 2009 Red Hat, Inc.
 
 The full text of the copyright for CGEN is contained in the file
-COPYING.CGEN.  The copyright of CGEN uses the Autoconf copyright
-as a guide.  The intent is to have CGEN under a GNU-style copyright but
+COPYING.CGEN. The copyright of CGEN uses the Autoconf copyright
+as a guide. The intent is to have CGEN under a GNU-style copyright but
 place no restrictions on the output of CGEN.
 
 Installation
 ------------
 
 CGEN has been in use since 2000 with all releases of GNU Binutils and GDB.
-GNU Binutils/GDB users will never "use" CGEN though.  The generated sources
+GNU Binutils/GDB users will never "use" CGEN though. The generated sources
 are shipped with GNU Binutils/GDB releases.
-Binutils/GDB developers wishing to use CGEN must configure Binutils/GDB with
---enable-cgen-maint.  This will add the necessary dependencies to
+Binutils/GDB developers wishing to use CGEN must configure Binutils/GDB
+with --enable-cgen-maint. This will add the necessary dependencies to
 opcodes/Makefile and sim/<arch>/Makefile for the supported processors.
 
 CGEN uses Guile so Guile must be installed.
@@ -92,11 +93,10 @@ doc/cgenint.texi - top level .texi file for cgen internals
 Code to read .cpu files
 -----------------------
 
-These files provide the basic support for reading in .cpu files.  They contain
-no application specific code (and ideally as little C generating code as
-possible too), they are intended to be application independent.  Applications
-(e.g. the opcode table generator and the simulator support generator) are
-built on top of these files.
+These files provide the basic support for reading in .cpu files. They
+contain no application specific code (and ideally as little C generating
+code as possible too), they are intended to be application independent.  Applications (e.g. the opcode table generator and the simulator support
+generator) are built on top of these files.
 
 attr.scm - attribute support
 enum.scm - enum support

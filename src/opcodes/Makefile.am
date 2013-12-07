@@ -434,6 +434,7 @@ CLEANFILES = \
 	stamp-openrisc stamp-iq2000 stamp-ms1 stamp-xstormy16 \
 	libopcodes.a stamp-lib dep.sed DEP DEPA DEP1 DEP2
 
+DISTCLEANFILES = stamp-lib
 
 CGENDIR = @cgendir@
 CPUDIR = $(CGENDIR)/cpu

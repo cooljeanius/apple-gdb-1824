@@ -1,0 +1,22 @@
+cgen.dvi
+cgen.pdf
+cgen.ps
+cgen.html
+cgenint.dvi
+cgenint.pdf
+cgenint.ps
+cgenint.html
+cgen.t2d
+cgen.t2p
+cgenint.t2d
+cgenint.t2p
+vti.tmp
+site.exp
+site.bak
+*.sum
+*.log
+Makefile
+
+# `make distclean` might miss these due to an automake hack:
+cgen.info
+cgenint.info
