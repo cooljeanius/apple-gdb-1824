@@ -1,5 +1,30 @@
 2013-12-07  Eric Gallager  <egallager@comcast.net>
 
+	Update ReadMe.txt
+
+	src/zlib/test/Apple_test/ReadMe.txt that is
+	(get shell correct)
+
+2013-12-07  Eric Gallager  <egallager@comcast.net>
+
+	update cgen to my personal standards
+
+	also:
+	- check canonical target and friends in expect/testsuite
+	- a few minor tweaks for opcodes
+
+	Change-Id: I176e5994ea369de6689003003d7682322c9ba6aa
+
+2013-12-07  Eric Gallager  <egallager@comcast.net>
+
+	add cgen
+
+	from sourceware
+
+	Change-Id: Iaa99e1f63234570cef1368256125b4db898d1dec
+
+2013-12-07  Eric Gallager  <egallager@comcast.net>
+
 	darn it, I broke stuff again
 
 	- un-gitignore bfd texi files, as they are actually needed as

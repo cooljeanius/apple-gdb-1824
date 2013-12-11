@@ -44,6 +44,9 @@ gdb-gdb.gdb
 conf*/*.awk
 *libs/*
 
+# For some reason the perl directory has to be forced to show:
+!perl
+
 # Some more Bison-generated parsers and flex-generated lexers I missed:
 ada-exp.c
 ada-lex.c

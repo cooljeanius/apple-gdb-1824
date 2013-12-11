@@ -357,19 +357,134 @@ AC_DEFUN([SC_LOAD_TCLCONFIG],[
 #------------------------------------------------------------------------
 
 AC_DEFUN([SC_LOAD_TKCONFIG],[
-    AC_MSG_CHECKING([for existence of $TK_BIN_DIR/tkConfig.sh])
+    AC_MSG_CHECKING([for existence of ${TK_BIN_DIR}/tkConfig.sh])
 
-    if test -f "$TK_BIN_DIR/tkConfig.sh" ; then
-        AC_MSG_RESULT([loading $TK_BIN_DIR/tkConfig.sh])
-	. $TK_BIN_DIR/tkConfig.sh
+    if test -f "${TK_BIN_DIR}/tkConfig.sh" ; then
+        AC_MSG_RESULT([loading ${TK_BIN_DIR}/tkConfig.sh])
+	. ${TK_BIN_DIR}/tkConfig.sh
     else
-        AC_MSG_RESULT([could not find $TK_BIN_DIR/tkConfig.sh])
+        AC_MSG_RESULT([could not find ${TK_BIN_DIR}/tkConfig.sh])
     fi
+
+    # eval is required to do the TK_DBGX substitution
+    eval "TK_LIB_FILE=\"${TK_LIB_FILE}\""
+    eval "TK_STUB_LIB_FILE=\"${TK_STUB_LIB_FILE}\""
+
+    # If the TK_BIN_DIR is the build directory (not the install directory),
+    # set the common variable name to the value of the build variables.
+    # For example, the variable TK_LIB_SPEC will be set to the value
+    # of TK_BUILD_LIB_SPEC. An extension should make use of TK_LIB_SPEC
+    # instead of TK_BUILD_LIB_SPEC since it will work with both an
+    # installed and uninstalled version of Tcl.
+    if test -f "${TK_BIN_DIR}/Makefile" ; then
+        TK_LIB_SPEC=${TK_BUILD_LIB_SPEC}
+        TK_STUB_LIB_SPEC=${TK_BUILD_STUB_LIB_SPEC}
+        TK_STUB_LIB_PATH=${TK_BUILD_STUB_LIB_PATH}
+    elif test "`uname -s`" = "Darwin"; then
+	# If Tk was built as a framework, attempt to use the libraries
+	# from the framework at the given location so that linking works
+	# against Tk.framework installed in an arbitrary location.
+	case ${TK_DEFS} in
+	    *TK_FRAMEWORK*)
+		if test -f "${TK_BIN_DIR}/${TK_LIB_FILE}"; then
+		    for i in "`cd ${TK_BIN_DIR}; pwd`" \
+			     "`cd ${TK_BIN_DIR}/../..; pwd`"; do
+			if test "`basename "$i"`" = "${TK_LIB_FILE}.framework"; then
+			    TK_LIB_SPEC="-F`dirname "$i"` -framework ${TK_LIB_FILE}"
+			    break
+			fi
+		    done
+		fi
+		if test -f "${TK_BIN_DIR}/${TK_STUB_LIB_FILE}"; then
+		    TK_STUB_LIB_SPEC="-L${TK_BIN_DIR} ${TK_STUB_LIB_FLAG}"
+		    TK_STUB_LIB_PATH="${TK_BIN_DIR}/${TK_STUB_LIB_FILE}"
+		fi
+		;;
+	esac
+    fi
+
+    # eval is required to do the TK_DBGX substitution
+    eval "TK_LIB_FLAG=\"${TK_LIB_FLAG}\""
+    eval "TK_LIB_SPEC=\"${TK_LIB_SPEC}\""
+    eval "TK_STUB_LIB_FLAG=\"${TK_STUB_LIB_FLAG}\""
+    eval "TK_STUB_LIB_SPEC=\"${TK_STUB_LIB_SPEC}\""
 
     AC_SUBST([TK_VERSION])
     AC_SUBST([TK_BIN_DIR])
     AC_SUBST([TK_SRC_DIR])
     AC_SUBST([TK_LIB_FILE])
+])
+
+#------------------------------------------------------------------------
+# SC_PROG_TCLSH
+#	Locate a tclsh shell installed on the system path. This macro
+#	will only find a Tcl shell that already exists on the system.
+#	It will not find a Tcl shell in the Tcl build directory or
+#	a Tcl shell that has been installed from the Tcl build directory.
+#	If a Tcl shell can't be located on the PATH, then TCLSH_PROG will
+#	be set to "". Extensions should take care not to create Makefile
+#	rules that are run by default and depend on TCLSH_PROG. An
+#	extension can't assume that an executable Tcl shell exists at
+#	build time.
+#
+# Arguments
+#	none
+#
+# Results
+#	Subst's the following values:
+#		TCLSH_PROG
+#------------------------------------------------------------------------
+
+AC_DEFUN([SC_PROG_TCLSH],[
+    AC_MSG_CHECKING([for tclsh])
+    AC_CACHE_VAL([ac_cv_path_tclsh],[
+	search_path=`echo ${PATH} | sed -e 's/:/ /g'`
+	for dir in $search_path ; do
+	    for j in `ls -r $dir/tclsh[[8-9]]* 2> /dev/null` \
+		    `ls -r $dir/tclsh* 2> /dev/null` ; do
+		if test x"$ac_cv_path_tclsh" = x ; then
+		    if test -f "$j" ; then
+			ac_cv_path_tclsh=$j
+			break
+		    fi
+		fi
+	    done
+	done
+    ])
+
+    if test -f "${ac_cv_path_tclsh}" ; then
+	TCLSH_PROG="${ac_cv_path_tclsh}"
+	AC_MSG_RESULT([${TCLSH_PROG}])
+    else
+	# It is NOT an error if an installed tclsh cannot be located.
+	TCLSH_PROG=""
+	AC_MSG_RESULT([No tclsh found on PATH])
+    fi
+    AC_SUBST([TCLSH_PROG])
+])
+
+#------------------------------------------------------------------------
+# SC_BUILD_TCLSH
+#	Determine the fully qualified path name of the tclsh executable
+#	in the Tcl build directory. This macro will correctly determine
+#	the name of the tclsh executable even if tclsh has not yet
+#	been built in the build directory. The build tclsh must be used
+#	when running tests from an extension build directory. It is not
+#	correct to use the TCLSH_PROG in cases like this.
+#
+# Arguments
+#	none
+#
+# Results
+#	Subst's the following values:
+#		BUILD_TCLSH
+#------------------------------------------------------------------------
+
+AC_DEFUN([SC_BUILD_TCLSH],[
+    AC_MSG_CHECKING([for tclsh in Tcl build directory])
+    BUILD_TCLSH=${TCL_BIN_DIR}/tclsh
+    AC_MSG_RESULT([${BUILD_TCLSH}])
+    AC_SUBST([BUILD_TCLSH])
 ])
 
 #------------------------------------------------------------------------
@@ -676,23 +791,87 @@ AC_DEFUN([SC_ENABLE_LANGINFO],[
 #--------------------------------------------------------------------
 AC_DEFUN([SC_CONFIG_MANPAGES],[
 
-	AC_MSG_CHECKING([whether to use symlinks for manpages])
-	AC_ARG_ENABLE([man-symlinks],
-		[AS_HELP_STRING([--enable-man-symlinks],[use symlinks for the manpages])],
-		test "$enableval" != "no" && MKLINKS_FLAGS="$MKLINKS_FLAGS --symlinks",
-		enableval="no")
-	AC_MSG_RESULT([$enableval])
+    AC_MSG_CHECKING([whether to use symlinks for manpages])
+    AC_ARG_ENABLE([man-symlinks],
+        [AS_HELP_STRING([--enable-man-symlinks],[use symlinks for the manpages])],[test "${enableval}" != "no" && MKLINKS_FLAGS="${MKLINKS_FLAGS} --symlinks"],[enableval="no"])
+    AC_MSG_RESULT([${enableval}])
 
-	AC_MSG_CHECKING([compression for manpages])
-	AC_ARG_ENABLE([man-compression],
-		[AS_HELP_STRING([--enable-man-compression=PROG],
-                          [compress the manpages with PROG])],
-		test "$enableval" = "yes" && echo && AC_MSG_ERROR([missing argument to --enable-man-compression])
-		test "$enableval" != "no" && MKLINKS_FLAGS="$MKLINKS_FLAGS --compress $enableval",
-		enableval="no")
-	AC_MSG_RESULT([$enableval])
+    AC_MSG_CHECKING([compression for manpages])
+    AC_ARG_ENABLE([man-compression],
+        [AS_HELP_STRING([--enable-man-compression=PROG],
+                        [compress the manpages with PROG])],[
+        test "${enableval}" = "yes" && echo && AC_MSG_ERROR([missing argument to --enable-man-compression])
+        test "${enableval}" != "no" && MKLINKS_FLAGS="$MKLINKS_FLAGS --compress ${enableval}"],[enableval="no"])
+    AC_MSG_RESULT([${enableval}])
+    if test "${enableval}" != "no" -a "${enableval}" != "yes"; then
+        AC_MSG_CHECKING([for compressed file suffix])
+        touch TeST
+        ${enableval} TeST
+        Z=`ls TeST* | sed 's/^....//'`
+        rm -f TeST*
+        MAN_FLAGS="${MAN_FLAGS} --extension ${Z}"
+        AC_MSG_RESULT([${Z}])
+    fi
 
-	AC_SUBST([MKLINKS_FLAGS])
+    AC_MSG_CHECKING([whether to add a package name suffix for the manpages])
+    AC_ARG_ENABLE([man-suffix],
+	    [AS_HELP_STRING([--enable-man-suffix=STRING],[
+		      use STRING as a suffix to manpage file names
+		      (default: ${1})])],
+	[case ${enableval} in
+	    yes) enableval="${1}" MAN_FLAGS="${MAN_FLAGS} --suffix ${enableval}";;
+	    no)  ;;
+	    *)   MAN_FLAGS="${MAN_FLAGS} --suffix ${enableval}";;
+	esac],
+	[enableval="no"])
+    AC_MSG_RESULT([${enableval}])
+
+    MKLINKS_FLAGS="${MKLINKS_FLAGS} ${MAN_FLAGS}"
+    AC_SUBST([MKLINKS_FLAGS])
+    AC_SUBST([MAN_FLAGS])
+])
+
+#--------------------------------------------------------------------
+# SC_CONFIG_SYSTEM
+#
+#	Determine what the system is (some things cannot be easily checked
+#	on a feature-driven basis, alas). This can usually be done via the
+#	"uname" command, but there are a few systems, like Next, where
+#	this doesn't work.
+#
+# Arguments:
+#	none
+#
+# Results:
+#	Defines the following var:
+#
+#	system -	System/platform/version identification code.
+#
+#--------------------------------------------------------------------
+
+AC_DEFUN([SC_CONFIG_SYSTEM],[
+    AC_CACHE_CHECK([system version],[tcl_cv_sys_version],[
+	if test -f /usr/lib/NextStep/software_version; then
+	    tcl_cv_sys_version=NEXTSTEP-`awk '/3/,/3/' /usr/lib/NextStep/software_version`
+	else
+	    tcl_cv_sys_version=`uname -s`-`uname -r`
+	    if test "$?" -ne 0 ; then
+		AC_MSG_WARN([cannot find uname command])
+		tcl_cv_sys_version=unknown
+	    else
+		# Spec. check for weird MP-RAS system (uname returns weird
+		# results, and the version is kept in special file).
+
+		if test -r /etc/.relid -a "X`uname -n`" = "X`uname -s`" ; then
+		    tcl_cv_sys_version=MP-RAS-`awk '{print $[3]}' /etc/.relid`
+		fi
+		if test "`uname -s`" = "AIX" ; then
+		    tcl_cv_sys_version=AIX-`uname -v`.`uname -r`
+		fi
+	    fi
+	fi
+    ])
+    system=${tcl_cv_sys_version}
 ])
 
 #--------------------------------------------------------------------
@@ -708,86 +887,81 @@ AC_DEFUN([SC_CONFIG_MANPAGES],[
 #
 #	Defines and substitutes the following vars:
 #
-#       DL_OBJS -       Name of the object file that implements dynamic
-#                       loading for Tcl on this system.
-#       DL_LIBS -       Library file(s) to include in tclsh and other base
-#                       applications in order for the "load" command to work.
-#       LDFLAGS -      Flags to pass to the compiler when linking object
-#                       files into an executable application binary such
-#                       as tclsh.
-#       LD_SEARCH_FLAGS-Flags to pass to ld, such as "-R /usr/local/tcl/lib",
-#                       that tell the run-time dynamic linker where to look
-#                       for shared libraries such as libtcl.so.  Depends on
-#                       the variable LIB_RUNTIME_DIR in the Makefile. Could
-#                       be the same as CC_SEARCH_FLAGS if ${CC} is used to link.
-#       CC_SEARCH_FLAGS-Flags to pass to ${CC}, such as "-Wl,-rpath,/usr/local/tcl/lib",
-#                       that tell the run-time dynamic linker where to look
-#                       for shared libraries such as libtcl.so.  Depends on
-#                       the variable LIB_RUNTIME_DIR in the Makefile.
-#       MAKE_LIB -      Command to execute to build the a library;
-#                       differs when building shared or static.
-#       MAKE_STUB_LIB -
-#                       Command to execute to build a stub library.
-#       INSTALL_LIB -   Command to execute to install a library;
-#                       differs when building shared or static.
-#       INSTALL_STUB_LIB -
-#                       Command to execute to install a stub library.
-#       STLIB_LD -      Base command to use for combining object files
-#                       into a static library.
-#       SHLIB_CFLAGS -  Flags to pass to cc when compiling the components
-#                       of a shared library (may request position-independent
-#                       code, among other things).
-#       SHLIB_LD -      Base command to use for combining object files
-#                       into a shared library.
-#       SHLIB_LD_FLAGS -Flags to pass when building a shared library. This
-#                       differes from the SHLIB_CFLAGS as it is not used
-#                       when building object files or executables.
-#       SHLIB_LD_LIBS - Dependent libraries for the linker to scan when
-#                       creating shared libraries.  This symbol typically
-#                       goes at the end of the "ld" commands that build
-#                       shared libraries. The value of the symbol is
-#                       "${LIBS}" if all of the dependent libraries should
-#                       be specified when creating a shared library.  If
-#                       dependent libraries should not be specified (as on
-#                       SunOS 4.x, where they cause the link to fail, or in
-#                       general if Tcl and Tk aren't themselves shared
-#                       libraries), then this symbol has an empty string
-#                       as its value.
-#       SHLIB_SUFFIX -  Suffix to use for the names of dynamically loadable
-#                       extensions.  An empty string means we don't know how
-#                       to use shared libraries on this platform.
-# TCL_SHLIB_LD_EXTRAS - Additional element which are added to SHLIB_LD_LIBS
-#  TK_SHLIB_LD_EXTRAS   for the build of Tcl and Tk, but not recorded in the
-#                       tclConfig.sh, since they are only used for the build
+# DL_OBJS -         Name of the object file that implements dynamic
+#                   loading for Tcl on this system.
+# DL_LIBS -         Library file(s) to include in tclsh and other base
+#                   applications in order for the "load" command to work.
+# LDFLAGS -         Flags to pass to the compiler when linking object
+#                   files into an executable application binary such
+#                   as tclsh.
+# LD_SEARCH_FLAGS - Flags to pass to ld, such as "-R /usr/local/tcl/lib",
+#                   that tell the run-time dynamic linker where to look
+#                   for shared libraries such as libtcl.so.  Depends on
+#                   the variable LIB_RUNTIME_DIR in the Makefile. Could
+#                   be the same as CC_SEARCH_FLAGS if ${CC} is used to link
+# CC_SEARCH_FLAGS - Flags to pass to ${CC}, such as
+#                   "-Wl,-rpath,/usr/local/tcl/lib", that tell the
+#                   run-time dynamic linker where to look for shared
+#                   libraries such as libtcl.so. Depends on the variable
+#                   LIB_RUNTIME_DIR in the Makefile.
+# MAKE_LIB -        Command to execute to build the a library;
+#                   differs when building shared or static.
+# MAKE_STUB_LIB -   Command to execute to build a stub library.
+# INSTALL_LIB -     Command to execute to install a library;
+#                   differs when building shared or static.
+# INSTALL_STUB_LIB- Command to execute to install a stub library.
+# STLIB_LD -        Base command to use for combining object files
+#                   into a static library.
+# SHLIB_CFLAGS -    Flags to pass to cc when compiling the components
+#                   of a shared library (may request position-independent
+#                   code, among other things).
+# SHLIB_LD -        Base command to use for combining object files
+#                   into a shared library.
+# SHLIB_LD_FLAGS -  Flags to pass when building a shared library. This
+#                   differes from the SHLIB_CFLAGS as it is not used
+#                   when building object files or executables.
+# SHLIB_LD_LIBS -   Dependent libraries for the linker to scan when
+#                   creating shared libraries. This symbol typically
+#                   goes at the end of the "ld" commands that build
+#                   shared libraries. The value of the symbol is
+#                   "${LIBS}" if all of the dependent libraries should
+#                   be specified when creating a shared library. If
+#                   dependent libraries should not be specified (as on
+#                   SunOS 4.x, where they cause the link to fail, or in
+#                   general if Tcl and Tk are NOT themselves shared
+#                   libraries), then this symbol has an empty string
+#                   as its value.
+# SHLIB_SUFFIX -    Suffix to use for the names of dynamically loadable
+#                   extensions. An empty string means we do NOT know how
+#                   to use shared libraries on this platform.
+# TCL_SHLIB_LD_EXTRAS - Additional elements added to SHLIB_LD_LIBS
+# TK_SHLIB_LD_EXTRAS    for build of Tcl and Tk, but not recorded in the
+#                       tclConfig.sh, since they are only used for build
 #                       of Tcl and Tk. 
 #                       Examples: MacOS X records the library version and
-#                       compatibility version in the shared library.  But
-#                       of course the Tcl version of this is only used for Tcl.
-#       LIB_SUFFIX -    Specifies everything that comes after the "libfoo"
-#                       in a static or shared library name, using the $VERSION variable
-#                       to put the version in the right place.  This is used
-#                       by platforms that need non-standard library names.
-#                       Examples:  ${VERSION}.so.1.1 on NetBSD, since it needs
-#                       to have a version after the .so, and ${VERSION}.a
-#                       on AIX, since a shared library needs to have
-#                       a .a extension whereas shared objects for loadable
-#                       extensions have a .so extension.  Defaults to
-#                       ${VERSION}${SHLIB_SUFFIX}.
-#       TCL_NEEDS_EXP_FILE -
-#                       1 means that an export file is needed to link to a
-#                       shared library.
-#       TCL_EXP_FILE -  The name of the installed export / import file which
+#                       compatibility version in the shared library. But
+#                       the Tcl version of this is only used for Tcl.
+# LIB_SUFFIX -      Specifies everything that comes after the "libfoo"
+#                   in a static/shared libname, using the $VERSION variable
+#                   to put the version in the right place. This is used
+#                   by platforms that need non-standard library names.
+#                   Examples: ${VERSION}.so.1.1 on NetBSD, since it needs
+#                   to have a version after the .so, and ${VERSION}.a
+#                   on AIX, since a shared library needs to have
+#                   a .a extension whereas shared objects for loadable
+#                   extensions have a .so extension.  Defaults to
+#                   ${VERSION}${SHLIB_SUFFIX}.
+# TCL_NEEDS_EXP_FILE - 1 means that an export file is needed to link to a
+#                      shared library.
+# TCL_EXP_FILE -    The name of the installed export / import file which
+#                   should be used to link to the Tcl shared library.
+#                   Empty if Tcl is unshared.
+# TCL_BUILD_EXP_FILE -  The name of the built export / import file which
 #                       should be used to link to the Tcl shared library.
 #                       Empty if Tcl is unshared.
-#       TCL_BUILD_EXP_FILE -
-#                       The name of the built export / import file which
-#                       should be used to link to the Tcl shared library.
-#                       Empty if Tcl is unshared.
-#	CFLAGS_DEBUG -
-#			Flags used when running the compiler in debug mode
-#	CFLAGS_OPTIMIZE -
-#			Flags used when running the compiler in optimize mode
-#	EXTRA_CFLAGS
+# CFLAGS_DEBUG -    Flags used when running the compiler in debug mode
+# CFLAGS_OPTIMIZE - Flags used when running the compiler in optimize mode
+# EXTRA_CFLAGS
 #
 #--------------------------------------------------------------------
 
@@ -881,7 +1055,7 @@ dnl# is fixed.
     STLIB_LD='${AR} cr'
     LD_LIBRARY_PATH_VAR="LD_LIBRARY_PATH"
     PLAT_OBJS=""
-    case $system in
+    case ${system} in
 	AIX-5.*)
 	    if test "${TCL_THREADS}" = "1" -a "$GCC" != "yes" ; then
 		# AIX requires the _r compiler when gcc isn't being used
@@ -896,7 +1070,7 @@ dnl# is fixed.
 	    SHLIB_LD_LIBS='${LIBS}'
 	    SHLIB_SUFFIX=".so"
 	    if test "`uname -m`" = "ia64" ; then
-		# AIX-5 uses ELF style dynamic libraries on IA-64, but not PPC
+		# AIX-5 uses ELF-style dynamic libraries on IA-64 but not PPC
 		SHLIB_LD="/usr/ccs/bin/ld -G -z text"
 		# AIX-5 has dl* in libc.so
 		DL_LIBS=""
@@ -967,8 +1141,8 @@ dnl# is fixed.
 
 	    # On AIX <=v4 systems, libbsd.a has to be linked in to support
 	    # non-blocking file IO.  This library has to be linked in after
-	    # the MATH_LIBS or it breaks the pow() function.  The way to
-	    # insure proper sequencing, is to add it to the tail of MATH_LIBS.
+	    # the MATH_LIBS or it breaks the pow() function. The way to
+	    # insure proper sequencing, is to add to the tail of MATH_LIBS.
 	    # This library also supplies gettimeofday.
 	    #
 	    # AIX does not have a timezone field in struct tm. When the AIX
@@ -984,8 +1158,8 @@ dnl# is fixed.
 	    fi
 
 	    # Check to enable 64-bit flags for compiler/linker
-	    if test "$do64bit" = "yes" ; then
-		if test "$GCC" = "yes" ; then
+	    if test "${do64bit}" = "yes" ; then
+		if test "${GCC}" = "yes" ; then
 		    AC_MSG_WARN(["64bit mode not supported with GCC on $system"])
 		else 
 		    do64bit_ok=yes
@@ -996,6 +1170,21 @@ dnl# is fixed.
 		    SHLIB_LD_FLAGS="-b64"
 		fi
 	    fi
+	    ;;
+	BeOS*)
+	    SHLIB_CFLAGS="-fPIC"
+	    SHLIB_LD="${CC} -nostart"
+	    SHLIB_LD_LIBS='${LIBS}'
+	    SHLIB_SUFFIX=".so"
+	    DL_OBJS="tclLoadDl.o"
+	    DL_LIBS="-ldl"
+
+	    #-----------------------------------------------------------
+	    # Check for inet_ntoa in -lbind, for BeOS (which also needs
+	    # -lsocket, even if the network functions are in -lnet which
+	    # is always linked to, for compatibility.
+	    #-----------------------------------------------------------
+	    AC_CHECK_LIB([bind],[inet_ntoa],[LIBS="$LIBS -lbind -lsocket"])
 	    ;;
 	BSD/OS-2.1*|BSD/OS-3*)
 	    SHLIB_CFLAGS=""
@@ -1046,6 +1235,11 @@ dnl# is fixed.
 		CC_SEARCH_FLAGS='-Wl,+s,+b,${LIB_RUNTIME_DIR}:.'
 		LD_SEARCH_FLAGS='+s +b ${LIB_RUNTIME_DIR}:.'
 		LD_LIBRARY_PATH_VAR="SHLIB_PATH"
+	    fi
+	    if test "${GCC}" = "yes" ; then
+		SHLIB_LD="gcc -shared"
+		SHLIB_LD_LIBS='${LIBS}'
+		LD_SEARCH_FLAGS=${CC_SEARCH_FLAGS}
 	    fi
 
 	    # Users may want PA-RISC 1.1/2.0 portable code - needs HP cc
@@ -1169,7 +1363,7 @@ dnl# is fixed.
 	    SHLIB_SUFFIX=".so"
 
 	    # egcs-2.91.66 on Redhat Linux 6.0 generates lots of warnings 
-	    # when you inline the string and math operations.  Turn this off to
+	    # when inlining the string & math operations. Turn this off to
 	    # get rid of the warnings.
 
 	    CFLAGS_OPTIMIZE="${CFLAGS_OPTIMIZE} -D__NO_STRING_INLINES -D__NO_MATH_INLINES"
@@ -1192,6 +1386,17 @@ dnl# is fixed.
 	    fi
 	    if test "`uname -m`" = "alpha" ; then
 		EXTRA_CFLAGS="-mieee"
+	    fi
+	    if test ${do64bit} = yes; then
+		AC_CACHE_CHECK([if compiler accepts -m64 flag],[tcl_cv_cc_m64],[
+		    hold_cflags=${CFLAGS}
+		    CFLAGS="${CFLAGS} -m64"
+		    AC_LINK_IFELSE([AC_LANG_SOURCE([[]],[[]])],[tcl_cv_cc_m64=yes],[tcl_cv_cc_m64=no])
+		    CFLAGS=${hold_cflags}])
+		if test ${tcl_cv_cc_m64} = yes; then
+		    CFLAGS="${CFLAGS} -m64"
+		    do64bit_ok=yes
+		fi
 	    fi
 
 	    # The combo of gcc + glibc has a bug related
@@ -1234,6 +1439,18 @@ dnl# is fixed.
 		EXTRA_CFLAGS="-mieee"
 	    fi
 	    ;;
+	Lynx*)
+	    SHLIB_CFLAGS="-fPIC"
+	    SHLIB_LD_LIBS='${LIBS}'
+	    SHLIB_SUFFIX=".so"
+	    CFLAGS_OPTIMIZE=-02
+	    SHLIB_LD="${CC} -shared "
+	    DL_OBJS="tclLoadDl.o"
+	    DL_LIBS="-mshared -ldl"
+	    LD_FLAGS="-Wl,--export-dynamic"
+	    CC_SEARCH_FLAGS='-Wl,-rpath,${LIB_RUNTIME_DIR}'
+	    LD_SEARCH_FLAGS='-Wl,-rpath,${LIB_RUNTIME_DIR}'
+	    ;;
 	MP-RAS-02*)
 	    SHLIB_CFLAGS="-K PIC"
 	    SHLIB_LD="cc -G"
@@ -1270,9 +1487,9 @@ dnl# is fixed.
 		CC_SEARCH_FLAGS='-Wl,-rpath,${LIB_RUNTIME_DIR}'
 		LD_SEARCH_FLAGS='-rpath ${LIB_RUNTIME_DIR}'
 		AC_MSG_CHECKING([for ELF])
-		AC_EGREP_CPP([yes],[
+		AC_EGREP_CPP([elf_yes],[
 #ifdef __ELF__
-	yes
+	elf_yes
 #endif /* __ELF__ */
 		],[
 		    AC_MSG_RESULT([yes])
@@ -1295,6 +1512,54 @@ dnl# is fixed.
 
 	    # FreeBSD does NOT handle version numbers with dots.
 
+	    UNSHARED_LIB_SUFFIX='${TCL_TRIM_DOTS}\$\{DBGX\}.a'
+	    TCL_LIB_VERSIONS_OK=nodots
+	    ;;
+	OpenBSD-*)
+	    case `arch -s` in
+	    m88k|vax)
+		SHLIB_CFLAGS=""
+		SHLIB_LD="echo tclLdAout ${CC} \{$SHLIB_CFLAGS\} | `pwd`/tclsh -r"
+		SHLIB_LD_LIBS='${LIBS}'
+		SHLIB_SUFFIX=".a"
+		DL_OBJS="tclLoadAout.o"
+		DL_LIBS=""
+		LDFLAGS=""
+		CC_SEARCH_FLAGS='-L${LIB_RUNTIME_DIR}'
+		LD_SEARCH_FLAGS=${CC_SEARCH_FLAGS}
+		SHARED_LIB_SUFFIX='${TCL_TRIM_DOTS}\$\{DBGX\}.a'
+		;;
+	    *)
+		# OpenBSD/SPARC[64] needs -fPIC, -fpic will not do.
+		case `machine` in
+		sparc|sparc64)
+		    SHLIB_CFLAGS="-fPIC";;
+	        *)
+		    SHLIB_CFLAGS="-fpic";;
+	        esac
+		SHLIB_LD="${CC} -shared ${SHLIB_CFLAGS}"
+		SHLIB_LD_LIBS='${LIBS}'
+		SHLIB_SUFFIX=".so"
+		DL_OBJS="tclLoadDl.o"
+		DL_LIBS=""
+		CC_SEARCH_FLAGS='-Wl,-rpath,${LIB_RUNTIME_DIR}'
+		LD_SEARCH_FLAGS=${CC_SEARCH_FLAGS}
+		SHARED_LIB_SUFFIX='${TCL_TRIM_DOTS}\$\{DBGX\}.so.1.0'
+		AC_CACHE_CHECK([for ELF], tcl_cv_ld_elf, [
+		    AC_EGREP_CPP([elf_yes],[
+#ifdef __ELF__
+	elf_yes
+#endif /* __ELF__ */
+		    ],[tcl_cv_ld_elf=yes],[tcl_cv_ld_elf=no])])
+		if test ${tcl_cv_ld_elf} = yes; then
+		    LDFLAGS=-Wl,-export-dynamic
+		else
+		    LDFLAGS=""
+	        fi
+		;;
+	    esac
+
+	    # OpenBSD does NOT do version numbers with dots.
 	    UNSHARED_LIB_SUFFIX='${TCL_TRIM_DOTS}\$\{DBGX\}.a'
 	    TCL_LIB_VERSIONS_OK=nodots
 	    ;;
@@ -1326,8 +1591,62 @@ dnl# is fixed.
 	    esac
 	    ;;
 	Rhapsody-*|Darwin-*)
+	    CFLAGS_OPTIMIZE="-Os"
 	    SHLIB_CFLAGS="-fno-common"
-	    SHLIB_LD="cc -dynamiclib \${LDFLAGS}"
+	    # To avoid discrepancies between headers configure sees during
+	    # preprocing tests and compiling tests, move any -isysroot and
+	    # -mmacosx-version-min flags from CFLAGS to CPPFLAGS:
+	    CPPFLAGS="${CPPFLAGS} `echo " ${CFLAGS}" | \
+		awk 'BEGIN {FS=" +-";ORS=" "}; {for (i=2;i<=NF;i++) \
+		if ([$]i~/^(isysroot|mmacosx-version-min)/) print "-"[$]i}'`"
+	    CFLAGS="`echo " ${CFLAGS}" | \
+		awk 'BEGIN {FS=" +-";ORS=" "}; {for (i=2;i<=NF;i++) \
+		if (!([$]i~/^(isysroot|mmacosx-version-min)/)) print "-"[$]i}'`"
+	    if test ${do64bit = yes}; then
+		case `arch` in
+		    ppc)
+			AC_CACHE_CHECK([if compiler accepts -arch ppc64 flag],
+				[tcl_cv_cc_arch_ppc64],[
+			    hold_cflags=${CFLAGS}
+			    CFLAGS="${CFLAGS} -arch ppc64 -mpowerpc64 -mcpu=G5"
+			    AC_LINK_IFELSE([AC_LANG_SOURCE([[]],[[]])],[tcl_cv_cc_arch_ppc64=yes],
+				    [tcl_cv_cc_arch_ppc64=no])
+			    CFLAGS=${hold_cflags}])
+			if test ${tcl_cv_cc_arch_ppc64} = yes; then
+			    CFLAGS="${CFLAGS} -arch ppc64 -mpowerpc64 -mcpu=G5"
+			    do64bit_ok=yes
+			fi;;
+		    i386)
+			AC_CACHE_CHECK([if compiler accepts -arch x86_64 flag],
+				[tcl_cv_cc_arch_x86_64],[
+			    hold_cflags=${CFLAGS}
+			    CFLAGS="${CFLAGS} -arch x86_64"
+			    AC_LINK_IFELSE([AC_LANG_SOURCE([[]],[[]])], [tcl_cv_cc_arch_x86_64=yes],
+				    [tcl_cv_cc_arch_x86_64=no])
+			    CFLAGS=${hold_cflags}])
+			if test ${tcl_cv_cc_arch_x86_64} = yes; then
+			    CFLAGS="${CFLAGS} -arch x86_64"
+			    do64bit_ok=yes
+			fi;;
+		    *)
+			AC_MSG_WARN([Do NOT know how enable 64-bit on architecture `arch`]);;
+		esac
+	    else
+		# Check for combined 32-bit and 64-bit fat build
+		echo "${CFLAGS} " | grep -E -q -- '-arch (ppc64|x86_64) ' && \
+		    echo "${CFLAGS} " | grep -E -q -- '-arch (ppc|i386) ' && \
+		    fat_32_64=yes
+	    fi
+	    SHLIB_LD='${CC} -dynamiclib ${CFLAGS} ${LDFLAGS}'
+	    OLD_SHLIB_LD="cc -dynamiclib \${LDFLAGS}"
+	    AC_CACHE_CHECK([if ld accepts -single_module flag],[tcl_cv_ld_single_module],[
+		hold_ldflags=${LDFLAGS}
+		LDFLAGS="${LDFLAGS} -dynamiclib -Wl,-single_module"
+		AC_LINK_IFLESE([AC_LANG_SOURCE([[]],[[int i;]])],[tcl_cv_ld_single_module=yes],[tcl_cv_ld_single_module=no])
+		LDFLAGS=${hold_ldflags}])
+	    if test ${tcl_cv_ld_single_module} = yes; then
+		SHLIB_LD="${SHLIB_LD} -Wl,-single_module"
+	    fi
 	    TCL_SHLIB_LD_EXTRAS="-compatibility_version ${TCL_VERSION} -current_version \${VERSION} -install_name \${DYLIB_INSTALL_DIR}/\${TCL_LIB_FILE} -prebind -seg1addr 0xa000000"
 	    TK_SHLIB_LD_EXTRAS="-compatibility_version ${TK_VERSION} -current_version \${VERSION} -install_name \${DYLIB_INSTALL_DIR}/\${TK_LIB_FILE} -prebind -seg1addr 0xb000000"
 	    SHLIB_LD_LIBS='${LIBS}'
@@ -1338,7 +1657,7 @@ dnl# is fixed.
 	    LDFLAGS="-prebind"
 	    CC_SEARCH_FLAGS=""
 	    LD_SEARCH_FLAGS=""
-	    CFLAGS_OPTIMIZE="-Os"
+	    test -z "${CFLAGS_OPTIMIZE}" && export CFLAGS_OPTIMIZE="-Os"
 	    LD_LIBRARY_PATH_VAR="DYLD_LIBRARY_PATH"
 	    # for compatibility with autoconf vers 2.13 :
 	    HACK=""

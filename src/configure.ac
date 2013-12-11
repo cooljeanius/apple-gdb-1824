@@ -1304,6 +1304,8 @@ AC_CHECK_FUNCS([atexit floor getcwd gethostbyaddr gethostbyname \
                 strverscmp system utime])
 # Checks for tcl-related functions
 AC_DEFUN([SC_TCL_NEW_MACROS],[
+  AC_REQUIRE([SC_PROG_TCLSH])
+  AC_REQUIRE([SC_BUILD_TCLSH])
   AC_REQUIRE([SC_TCL_GETHOSTBYADDR_R])
   AC_REQUIRE([SC_TCL_GETHOSTBYNAME_R])
   AC_REQUIRE([SC_TCL_GETPWUID_R])
