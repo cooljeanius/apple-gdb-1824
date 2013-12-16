@@ -1,4 +1,5 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* cached-symfile.c
+   Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -66,8 +67,8 @@ extern struct cmd_list_element *infoshliblist;
 extern struct cmd_list_element *shliblist;
 
 #ifndef TARGET_KEEP_SECTION
-#define TARGET_KEEP_SECTION(ASECT)	0
-#endif
+# define TARGET_KEEP_SECTION(ASECT)	0
+#endif /* !TARGET_KEEP_SECTION */
 
 int
 build_objfile_section_table (struct objfile *objfile)
@@ -77,8 +78,9 @@ build_objfile_section_table (struct objfile *objfile)
   bfd *abfd = objfile->obfd;
 
   i = 0;
-  for (asect = abfd->sections; asect != NULL; asect = asect->next)
-    i++;
+	for (asect = abfd->sections; asect != NULL; asect = asect->next) {
+		i++;
+	}
 
   objfile->sections = xmalloc (sizeof (struct obj_section) * i);
   objfile->sections_end = objfile->sections;
@@ -91,11 +93,13 @@ build_objfile_section_table (struct objfile *objfile)
 
       aflag = bfd_get_section_flags (abfd, asect);
 
-      if (!(aflag & SEC_ALLOC) && !(TARGET_KEEP_SECTION (asect)))
-	continue;
+		if (!(aflag & SEC_ALLOC) && !(TARGET_KEEP_SECTION (asect))) {
+			continue;
+		}
 
-      if (0 == bfd_section_size (abfd, asect))
-	continue;
+		if (0 == bfd_section_size (abfd, asect)) {
+			continue;
+		}
 
       section.offset = 0;
       section.objfile = objfile;
@@ -107,7 +111,7 @@ build_objfile_section_table (struct objfile *objfile)
       objfile->sections[i++] = section;
       objfile->sections_end = objfile->sections + i;
     }
-  
+
   return 0;
 }
 
@@ -117,39 +121,44 @@ allocate_objfile (bfd *abfd, int flags, int symflags, CORE_ADDR mapaddr)
   struct objfile *objfile = NULL;
   struct objfile *last_one = NULL;
 
-  if (mapped_symbol_files)
-    flags |= OBJF_MAPPED;
+	if (mapped_symbol_files) {
+		flags |= OBJF_MAPPED;
+	}
 
 #if MAPPED_SYMFILES
 
-  if (use_mapped_symbol_files)
-    objfile = open_mapped_objfile (abfd, mapaddr);
+	if (use_mapped_symbol_files) {
+		objfile = open_mapped_objfile (abfd, mapaddr);
+	}
 
-  if ((objfile == NULL) && (flags & OBJF_MAPPED))
-    objfile = create_mapped_objfile (abfd, mapaddr);
+	if ((objfile == NULL) && (flags & OBJF_MAPPED)) {
+		objfile = create_mapped_objfile (abfd, mapaddr);
+	}
 
-#endif
+#endif /* MAPPED_SYMFILES */
 
-  if (objfile == NULL)
-    objfile = create_objfile (abfd);
+	if (objfile == NULL) {
+		objfile = create_objfile (abfd);
+	}
 
   objfile->symflags = symflags;
   objfile->flags |= flags;
 
   /* Update the per-objfile information that comes from the bfd, ensuring
-     that any data that is reference is saved in the per-objfile data
-     region. */
+   * that any data that is reference is saved in the per-objfile data
+   * region. */
 
   objfile->obfd = abfd;
   objfile->name = strsave (bfd_get_filename (abfd));
   objfile->mtime = bfd_get_mtime (abfd);
 
-  if (build_objfile_section_table (objfile))
-    error ("Can't find the file sections in `%s': %s",
-	   objfile->name, bfd_errmsg (bfd_get_error ()));
+	if (build_objfile_section_table (objfile)) {
+		error ("Cannot find the file sections in `%s': %s",
+			   objfile->name, bfd_errmsg (bfd_get_error ()));
+	}
 
   /* Initialize the section indexes for this objfile, so that we can
-     later detect if they are used w/o being properly assigned to. */
+   * later detect if they are used w/o being properly assigned to. */
 
   objfile->sect_index_text = -1;
   objfile->sect_index_data = -1;
@@ -159,10 +168,9 @@ allocate_objfile (bfd *abfd, int flags, int symflags, CORE_ADDR mapaddr)
   /* Add this file onto the tail of the linked list of other such files. */
 
   objfile->next = NULL;
-  if (object_files == NULL)
-    object_files = objfile;
-  else
-    {
+	if (object_files == NULL) {
+		object_files = objfile;
+	} else {
       for (last_one = object_files;
 	   last_one->next;
 	   last_one = last_one->next);
@@ -252,8 +260,8 @@ open_objfile_from_mmalloc_pool (char *filename, bfd *abfd, PTR md, int fd)
   objfile->type_obstack.chunkfun = xmmalloc;
   objfile->type_obstack.freefun = xmfree;
   objfile->type_obstack.extra_arg = objfile->md;
-#endif
-  
+#endif /* 0 */
+
   return objfile;
 }
 
@@ -338,7 +346,7 @@ create_objfile_from_mmalloc_pool (bfd *abfd, PTR md, int fd, CORE_ADDR mapaddr)
     time_t mtime = bfd_get_mtime (abfd);
     fprintf (stderr, "setting timestamp for %s to %s", bfd_get_filename (abfd), ctime (&mtime));
   }
-#endif
+#endif /* 0 */
 
   objfile->psymbol_cache = bcache_xmalloc (objfile->md);
   objfile->macro_cache = bcache_xmalloc (objfile->md);
@@ -422,3 +430,5 @@ _initialize_cached_symfile ()
 
   cached_symfile_path = xstrdup ("/usr/libexec/gdb/symfiles");
 }
+
+/* EOF */

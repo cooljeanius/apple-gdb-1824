@@ -1,4 +1,5 @@
-/* Native definitions for alpha running OSF/1-3.x and higher, using procfs.
+/* nm-osf3.h
+   Native definitions for alpha running OSF/1-3.x and higher, using procfs.
    Copyright 1995 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -19,9 +20,11 @@
    Boston, MA 02111-1307, USA.  */
 
 /* OSF/1-3.x fixes some OSF/1-2.x procfs peculiarities and adds
-   a new one.  */
+ * a new one.  */
 #include "alpha/nm-osf2.h"
 
 #undef PROCFS_NEED_PIOCSSIG_FOR_KILL
 #undef PROCFS_DONT_PIOCSSIG_CURSIG
 #define PROCFS_NEED_CLEAR_CURSIG_FOR_KILL
+
+/* EOF */

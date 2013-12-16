@@ -1,3 +1,7 @@
+/*
+ * cached-symfiles.h
+ */
+
 #ifndef __GDB_MACOSX_CACHED_SYMFILE_H__
 #define __GDB_MACOSX_CACHED_SYMFILE_H__
 
@@ -20,3 +24,5 @@ struct objfile *create_mapped_objfile (bfd *abfd, CORE_ADDR mapaddr);
 struct objfile *create_objfile (bfd *abfd);
 
 #endif /* __GDB_MACOSX_CACHED_SYMFILE_H__ */
+
+/* EOF */

@@ -1,4 +1,5 @@
-/* Target definitions for GNU/Linux on ARM, for GDB.
+/* tm-linux.h
+   Target definitions for GNU/Linux on ARM, for GDB.
    Copyright 1999, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -44,7 +45,7 @@ extern CORE_ADDR in_svr4_dynsym_resolve_code (CORE_ADDR pc, char *name);
 #endif /* 0 */
 
 /* When the ARM Linux kernel invokes a signal handler, the return
-   address points at a special instruction which'll trap back into
+   address points at a special instruction which will trap back into
    the kernel.  These definitions are used to identify this bit of
    code as a signal trampoline in order to support backtracing
    through calls to signal handlers. */

@@ -1,5 +1,7 @@
-/* This file defines the interface between the sh simulator and gdb.
-   Copyright (C) 2000, 2002, 2004 Free Software Foundation, Inc.
+/* sim-sh.h
+ * This file defines the interface between the sh simulator and gdb.
+ */
+/* Copyright (C) 2000, 2002, 2004 Free Software Foundation, Inc.
 
 This file is part of GDB.
 
@@ -22,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 #ifdef __cplusplus
 extern "C" { // }
-#endif
+#endif /* __cplusplus */
 
 /* The simulator makes use of the following register information. */
 
@@ -165,6 +167,8 @@ enum
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif
+#endif /* !SIM_SH_H */
+
+/* EOF */

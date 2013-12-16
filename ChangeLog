@@ -1,3 +1,11 @@
+2013-12-11  Eric Gallager  <egallager@comcast.net>
+
+	add some relevant perl modules
+
+	also update the tcl macros some more, and the ChangeLog
+
+	Change-Id: I3eee5d1b4d7c914b8b157a9fcb3b8c176f31e76e
+
 2013-12-07  Eric Gallager  <egallager@comcast.net>
 
 	Update ReadMe.txt

@@ -1,4 +1,5 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* macosx-metrowerks.c
+   Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -92,23 +93,23 @@ metrowerks_step (CORE_ADDR range_start, CORE_ADDR range_stop, int step_into)
     error ("invalid step range ($pc is 0x%lx, equal to the stop address of 0x%lx)",
 	   (unsigned long) pc, (unsigned long) range_stop);
   if (pc > range_stop)
-    error ("invalid step range ($pc is 0x%lx, greater than the stop address of 0x%lx)", 
+    error ("invalid step range ($pc is 0x%lx, greater than the stop address of 0x%lx)",
 	   (unsigned long) pc, (unsigned long) range_stop);
 
   clear_proceed_status ();
-  
+
   frame = get_current_frame ();
   if (frame == NULL)
     error ("No current frame");
   step_frame_address = FRAME_FP (frame);
   step_sp = read_sp ();
-  
+
   step_range_start = range_start;
   step_range_end = range_stop;
   step_over_calls = step_into ? STEP_OVER_NONE : STEP_OVER_ALL;
-  
+
   step_multi = 0;
-  
+
   metrowerks_stepping = 1;
   proceed ((CORE_ADDR) -1, TARGET_SIGNAL_DEFAULT, 1);
   make_exec_cleanup (metrowerks_stepping_cleanup, NULL);
@@ -132,19 +133,19 @@ metrowerks_step_command (char *args, int from_tty)
   if (event_loop_p && async_exec && !target_can_async_p ())
     error ("Asynchronous execution not supported on this target.");
 
-  /* If we don't get a request of running in the bg, then we need
-     to simulate synchronous (fg) execution. */
+  /* If we do NOT get a request of running in the bg, then we need
+   * to simulate synchronous (fg) execution. */
   if (event_loop_p && !async_exec && target_can_async_p ())
     {
       async_disable_stdin ();
     }
 
   argv = buildargv (args);
-  
+
   if (argv == NULL)
     {
       num_args = 0;
-    } 
+    }
   else
     {
       num_args = 0;
@@ -182,13 +183,13 @@ bfd *FindContainingBFD (CORE_ADDR address)
   bfd *result = NULL;
 
   for (aTarget = target_stack; (result == NULL) && (aTarget != NULL); aTarget = aTarget->next) {
-    
+
     struct section_table* sectionTable;
 
     if ((NULL == aTarget->target_ops) || (NULL == aTarget->target_ops->to_sections)) {
       continue;
     }
-        
+
     for (sectionTable = &aTarget->target_ops->to_sections[0];
 	 (result == NULL) && (sectionTable < aTarget->target_ops->to_sections_end);
 	 sectionTable++)
@@ -198,7 +199,7 @@ bfd *FindContainingBFD (CORE_ADDR address)
 	}
       }
   }
-  
+
   return result;
 }
 
@@ -232,3 +233,5 @@ _initialize_metrowerks(void)
     add_com ("metrowerks-address-to-name", class_obscure, metrowerks_address_to_name_command,
 	     "GDB as MetroNub command");
 }
+
+/* EOF */

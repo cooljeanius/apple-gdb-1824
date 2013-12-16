@@ -12,16 +12,16 @@ Contents:
 ----------------
 
 This directory contains a set of validation tests for the Tcl commands
-and C Library procedures for Tcl.  Each of the files whose name ends
+and C Library procedures for Tcl. Each of the files whose name ends
 in ".test" is intended to fully exercise the functions in the C source
-file that corresponds to the file prefix.  The C functions and/or Tcl
+file that corresponds to the file prefix. The C functions and/or Tcl
 commands tested by a given file are listed in the first line of the
 file.
 
 You can run the tests in three ways:
 
     (a) type "make test" in ../unix; this will create the tcltest
-	executable and run all of the tests.  At least "make tcltest"
+	executable and run all of the tests. At least "make tcltest"
 	must be run to create the tcltest executable for the other
 	options.
 
@@ -31,10 +31,10 @@ You can run the tests in three ways:
 	of the tcltest package.
  
     (c) start up tcltest in this directory, then "source" the test
-        file (for example, type "source parse.test").  To run all
-	of the tests, type "source all.tcl".  To use the options in
+        file (for example, type "source parse.test"). To run all
+	of the tests, type "source all.tcl". To use the options in
 	interactive mode, you can set them with the tcltest::configure
-	command.  Set constraints with the tcltest::testConstraints
+	command. Set constraints with the tcltest::testConstraints
 	command.
 
 Please see the tcltest man page for more information regarding how to
@@ -45,7 +45,7 @@ the filename matches the tests/*.test pattern (as it should).  The
 names of test files that contain regression (or glass-box) tests
 should correspond to the Tcl or C code file that they are testing.
 For example, the test file for the C file "tclCmdAH.c" is
-"cmdAH.test".  Test files that contain black-box tests may not
+"cmdAH.test". Test files that contain black-box tests may not
 correspond to any Tcl or C code file so they should match the pattern
 "*_bb.test". 
 
@@ -56,7 +56,7 @@ Use [tcltest::makeFile], [tcltest::removeFile], and [tcltest::cleanupTests]
 properly to be sure of this.
 
 Be sure your tests can run cross-platform in both a build environment
-as well as an installation environment.  If your test file contains
+as well as an installation environment. If your test file contains
 tests that should not be run in one or more of those cases, please use
 the constraints mechanism to skip those tests.
 
@@ -69,12 +69,12 @@ the constraints mechanism to skip those tests.
    [configure -match], and [testConstraint] commands of tcltest 2.1,
    respectively.
 
-2) VERBOSE values were longer numeric.  [configure -verbose] values
+2) VERBOSE values were longer numeric. [configure -verbose] values
    are lists of keywords.
 
 3) When you run "make test", the working dir for the test suite is now
    the one from which you called "make test", rather than the "tests"
-   directory.  This change allows for both unix and windows test
+   directory. This change allows for both unix and windows test
    suites to be run simultaneously without interference with each
    other or with existing files.  All tests must now run independently
    of their working directory.
@@ -88,3 +88,5 @@ the constraints mechanism to skip those tests.
    command line flag.  If you are running interactively, you can run
    [tcltest::testConstraint nonPortable 1] (after loading the tcltest
    package).
+
+------------------------------------------------

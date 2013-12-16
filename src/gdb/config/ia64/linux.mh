@@ -1,3 +1,4 @@
+# linux.mh
 # Host: Intel IA-64 running GNU/Linux
 
 NAT_FILE= nm-linux.h

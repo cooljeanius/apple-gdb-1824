@@ -2,3 +2,6 @@
 *.dll
 *.shlb
 *.lib
+
+# Too big to add at once, commit separately later:
+MoreFiles\ 1.4.9/*

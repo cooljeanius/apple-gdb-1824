@@ -1,4 +1,5 @@
-/* Definitions to target GDB for Windows CE target
+/* tm-wince.h
+   Definitions to target GDB for Windows CE target
    Copyright 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.

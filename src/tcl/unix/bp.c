@@ -1,4 +1,4 @@
-/* 
+/*
  * bp.c --
  *
  *	This file contains the "bp" ("binary patch") program.  It is used
@@ -26,7 +26,7 @@ extern int errno;
 
 /*
  * The array below saves the last few bytes read from the file, so that
- * they can be compared against a particular string that we're looking
+ * they can be compared against a particular string that we are looking
  * for.
  */
 
@@ -51,7 +51,7 @@ main(argc, argv)
     f = fopen(argv[1], "r+");
     if (f == NULL) {
 	fprintf(stderr,
-		"Couldn't open \"%s\" for writing: %s\n",
+		"Could not open \"%s\" for writing: %s\n",
 		argv[1], strerror(errno));
 	exit(1);
     }
@@ -75,14 +75,14 @@ main(argc, argv)
 	    if (ferror(f)) {
 		goto ioError;
 	    }
-	    fprintf(stderr, "Couldn't find string \"%s\"\n", argv[2]);
+	    fprintf(stderr, "Could not find string \"%s\"\n", argv[2]);
 	    exit(1);
 	}
 	buffer[cur] = fileChar;
 	if (fileChar == matchChar) {
 	    /*
 	     * Last character of the string matches the current character
-	     * from the file.  Search backwards through the buffer to
+	     * from the file. Search backwards through the buffer to
 	     * see if the preceding characters from the file match the
 	     * characters from the string.
 	     */
@@ -97,7 +97,7 @@ main(argc, argv)
 	    }
 
 	    /*
-	     * Matched!  Backup to the start of the string, then
+	     * Matched! Backup to the start of the string, then
 	     * overwrite it with the replacement value.
 	     */
 
@@ -111,7 +111,7 @@ main(argc, argv)
 	}
 
 	/*
-	 * No match;  go on to next character of file.
+	 * No match; go on to next character of file.
 	 */
 
 	noMatch:
@@ -125,3 +125,5 @@ main(argc, argv)
     fprintf(stderr, "I/O error: %s\n", strerror(errno));
     exit(1);
 }
+
+/* EOF */

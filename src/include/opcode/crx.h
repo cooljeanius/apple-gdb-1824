@@ -24,8 +24,8 @@
 #define _CRX_H_
 
 /* CRX core/debug Registers :
-   The enums are used as indices to CRX registers table (crx_regtab).
-   Therefore, order MUST be preserved.  */
+ * The enums are used as indices to CRX registers table (crx_regtab).
+ * Therefore, order MUST be preserved.  */
 
 typedef enum
   {
@@ -58,8 +58,8 @@ typedef enum
 reg;
 
 /* CRX Coprocessor registers and special registers :
-   The enums are used as indices to CRX coprocessor registers table
-   (crx_copregtab). Therefore, order MUST be preserved.  */
+ * The enums are used as indices to CRX coprocessor registers table
+ * (crx_copregtab). Therefore, order MUST be preserved.  */
 
 typedef enum
   {
@@ -124,7 +124,7 @@ typedef enum
     /* N-bit signed displacement.  */
     disps9, disps17, disps25, disps32,
     /* N-bit unsigned displacement.  */
-    dispu5, 
+    dispu5,
     /* N-bit escaped displacement.  */
     dispe9,
     /* N-bit absolute address.  */
@@ -135,11 +135,11 @@ typedef enum
     /* Register index.  */
     rindex_disps6, rindex_disps22,
     /* 4-bit genaral-purpose register specifier.  */
-    regr, 
+    regr,
     /* 8-bit register address space.  */
     regr8,
     /* coprocessor register.  */
-    copregr, 
+    copregr,
     /* coprocessor special register.  */
     copsregr,
     /* Not an operand.  */
@@ -186,7 +186,7 @@ operand_type;
 #define DISPUD4	       (1 << 8)
 #define DISPU4MAP      (DISPUB4 | DISPUW4 | DISPUD4)
 
-/* Printing formats, where the instruction prefix isn't consecutive.  */
+/* Printing formats, where the instruction prefix is NOT consecutive.  */
 #define FMT_1	       (1 << 9)   /* 0xF0F00000 */
 #define FMT_2	       (1 << 10)   /* 0xFFF0FF00 */
 #define FMT_3	       (1 << 11)   /* 0xFFF00F00 */
@@ -197,17 +197,17 @@ operand_type;
 /* Indicates whether this instruction can be relaxed.  */
 #define RELAXABLE      (1 << 14)
 
-/* Indicates that instruction uses user registers (and not 
+/* Indicates that instruction uses user registers (and not
    general-purpose registers) as operands.  */
 #define USER_REG       (1 << 15)
 
 /* Indicates that instruction can perfom a cst4 mapping.  */
 #define CST4MAP	       (1 << 16)
 
-/* Instruction shouldn't allow 'sp' usage.  */
+/* Instruction should NOT allow 'sp' usage.  */
 #define NO_SP	       (1 << 17)
 
-/* Instruction shouldn't allow to push a register which is used as a rptr.  */
+/* Instruction should NOT allow to push a register which is used as a rptr. */
 #define NO_RPTR	       (1 << 18)
 
 /* Maximum operands per instruction.  */
@@ -293,7 +293,7 @@ typedef struct
 argument;
 
 /* Internal structure to hold the various entities
-   corresponding to the current assembling instruction.  */
+ * corresponding to the current assembling instruction.  */
 
 typedef struct
   {
@@ -389,13 +389,13 @@ extern const int cst4_maps;
 /* Table of instructions with no operands.  */
 extern const char* no_op_insn[];
 
-/* Current instruction we're assembling.  */
+/* Current instruction we are assembling.  */
 extern const inst *instruction;
 
 /* A macro for representing the instruction "constant" opcode, that is,
-   the FIXED part of the instruction. The "constant" opcode is represented
-   as a 32-bit unsigned long, where OPC is expanded (by a left SHIFT)
-   over that range.  */
+ * the FIXED part of the instruction. The "constant" opcode is represented
+ * as a 32-bit unsigned long, where OPC is expanded (by a left SHIFT)
+ * over that range.  */
 #define BIN(OPC,SHIFT)	(OPC << SHIFT)
 
 /* Is the current instruction type is TYPE ?  */
@@ -416,3 +416,5 @@ typedef long long int LONGLONG;
 typedef unsigned long long ULONGLONG;
 
 #endif /* _CRX_H_ */
+
+/* EOF */

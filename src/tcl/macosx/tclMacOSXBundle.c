@@ -124,3 +124,5 @@ Tcl_MacOSXOpenBundleResources(
 
     return TCL_OK;
 }
+
+/* EOF */

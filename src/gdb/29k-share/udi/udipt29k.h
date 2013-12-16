@@ -1,4 +1,5 @@
-/* This file is to be used to reconfigure the UDI Procedural interface
+/* udipt29k.h
+   This file is to be used to reconfigure the UDI Procedural interface
    for a given target.
 
    Copyright 1993 Free Software Foundation, Inc.
@@ -14,16 +15,16 @@
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 /* This file should be placed so that it will be
-   included from udiproc.h. Everything in here will probably need to
-   be changed when you change the target processor. Nothing in here
-   should need to change when you change hosts or compilers.
-*/
+ * included from udiproc.h. Everything in here will probably need to
+ * be changed when you change the target processor. Nothing in here
+ * should need to change when you change hosts or compilers.
+ */
 
 /* Select a target CPU Family */
 #define TargetCPUFamily 	Am29K
@@ -85,3 +86,5 @@ typedef	UDIUInt32		UDISize;
 typedef UDIInt			CPUSpace;
 typedef UDIUInt32		CPUOffset;
 typedef	UDIUInt32		CPUSizeT;
+
+/* EOF */

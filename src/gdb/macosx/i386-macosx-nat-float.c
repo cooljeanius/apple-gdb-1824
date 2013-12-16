@@ -1,4 +1,5 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* i386-macosx-nat-float.c
+   Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -31,7 +32,7 @@
 #include "objfiles.h"
 #include "gdbcmd.h"
 
-static void 
+static void
 print_387_control_word (control)
     fp_control_t *control;
 {
@@ -63,7 +64,7 @@ print_387_control_word (control)
   printf ("\n");
 }
 
-static void 
+static void
 print_387_status_word (status)
      fp_status_t *status;
 {
@@ -82,11 +83,11 @@ print_387_status_word (status)
 
   printf ("flags: %d%d%d%d; ",
 	  status->c0, status->c1, status->c2, status->c3);
-  
+
   printf ("top %d\n", status->tos);
 }
 
-static void 
+static void
 print_387_status (fp)
      i386_thread_fpstate_t *fp;
 {
@@ -107,7 +108,7 @@ print_387_status (fp)
 
   top = fp->environ.status.tos;
   tag = *((unsigned short *)   &fp->environ.tag);
-  
+
   printf ("regno  tag  msb              lsb  value\n");
   for (fpreg = 7; fpreg >= 0; fpreg--) {
     double val;
@@ -129,7 +130,7 @@ print_387_status (fp)
   }
 }
 
-void 
+void
 i386_float_info ()
 {
   i386_thread_fpstate_t fpstate;
@@ -144,3 +145,5 @@ i386_float_info ()
   }
   return;
 }
+
+/* EOF */

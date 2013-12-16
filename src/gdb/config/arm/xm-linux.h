@@ -1,4 +1,5 @@
-/* Host definitions for ARM GNU/Linux, for GDB, the GNU debugger.
+/* xm-linux.h
+   Host definitions for ARM GNU/Linux, for GDB, the GNU debugger.
    Copyright 1999, 2001 Free Software Foundation, Inc.
 
    This file is part of GDB.

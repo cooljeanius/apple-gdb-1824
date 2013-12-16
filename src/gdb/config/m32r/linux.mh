@@ -6,3 +6,4 @@ NATDEPFILES= infptrace.o inftarg.o fork-child.o corelow.o	\
 	linux-nat.o
 
 LOADLIBES= -ldl -rdynamic
+

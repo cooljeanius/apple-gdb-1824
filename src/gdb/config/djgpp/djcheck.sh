@@ -1,5 +1,6 @@
 #!/bin/sh
 
+# djcheck.sh
 # A shell script to run the test suite on the DJGPP version of GDB.
 
 ORIGDIR=`pwd`

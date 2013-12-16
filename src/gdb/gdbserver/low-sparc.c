@@ -1,4 +1,5 @@
-/* Low level interface to ptrace, for the remote server for GDB.
+/* low-sparc.c
+   Low level interface to ptrace, for the remote server for GDB.
    Copyright 1986, 1987, 1993, 1994, 1995, 1997, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -135,8 +136,9 @@ mywait (char *status)
 }
 
 /* Resume execution of the inferior process.
-   If STEP is nonzero, single-step it.
-   If SIGNAL is nonzero, give it that signal.  */
+ * If STEP is nonzero, single-step it.
+ * If SIGNAL is nonzero, give it that signal.
+ */
 
 void
 myresume (int step, int signal)
@@ -147,9 +149,10 @@ myresume (int step, int signal)
     perror_with_name ("ptrace");
 }
 
-/* Fetch one or more registers from the inferior.  REGNO == -1 to get
-   them all.  We actually fetch more than requested, when convenient,
-   marking them as valid so we won't fetch them again.  */
+/* Fetch one or more registers from the inferior. REGNO == -1 to get
+ * them all. We actually fetch more than requested, when convenient,
+ * marking them as valid so we will NOT fetch them again.
+ */
 
 void
 fetch_inferior_registers (int ignored)
@@ -159,10 +162,11 @@ fetch_inferior_registers (int ignored)
   int i;
 
   /* Global and Out regs are fetched directly, as well as the control
-     registers.  If we're getting one of the in or local regs,
-     and the stack pointer has not yet been fetched,
-     we have to do that first, since they're found in memory relative
-     to the stack pointer.  */
+   * registers. If we are/were getting one of the in or local regs,
+   * and the stack pointer has not yet been fetched,
+   * we have to do that first, since they are found in memory relative
+   * to the stack pointer.
+   */
 
   if (ptrace (PTRACE_GETREGS, inferior_pid,
 	      (PTRACE_ARG3_TYPE) & inferior_registers, 0))
@@ -233,12 +237,13 @@ store_inferior_registers (int ignored)
 
 /* NOTE! I tried using PTRACE_READDATA, etc., to read and write memory
    in the NEW_SUN_PTRACE case.
-   It ought to be straightforward.  But it appears that writing did
-   not write the data that I specified.  I cannot understand where
+   It ought to be straightforward. But it appears that writing did
+   not write the data that I specified. I cannot understand where
    it got the data that it actually did write.  */
 
 /* Copy LEN bytes from inferior's memory starting at MEMADDR
-   to debugger memory starting at MYADDR.  */
+ * to debugger memory starting at MYADDR.
+ */
 
 void
 read_inferior_memory (CORE_ADDR memaddr, char *myaddr, int len)
@@ -312,3 +317,5 @@ void
 initialize_low (void)
 {
 }
+
+/* EOF */

@@ -1,4 +1,5 @@
-/* Native support for GNU/Linux on S390.
+/* nm-linux.h
+   Native support for GNU/Linux on S390.
 
    Copyright 2001, 2002, 2003 Free Software Foundation, Inc.
 
@@ -26,7 +27,6 @@
 #define NM_LINUX_H
 
 #include "config/nm-linux.h"
-
 
 /* ptrace access.  */
 
@@ -60,3 +60,5 @@ extern int s390_remove_watchpoint (CORE_ADDR addr, int len);
 
 
 #endif /* nm_linux.h */
+
+/* EOF */

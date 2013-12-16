@@ -1,4 +1,4 @@
-/* Resources for GNU binutils. */
+/* Rez resources for GNU binutils. */
 
 #include "SysTypes.r"
 

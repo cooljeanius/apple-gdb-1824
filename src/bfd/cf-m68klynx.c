@@ -1,5 +1,7 @@
-/* BFD back-end for Motorola M68K COFF LynxOS files.
-   Copyright 1993, 1994, 1995, 1996, 1997 Free Software Foundation, Inc.
+/* cf-m68klynx.c
+ * BFD back-end for Motorola M68K COFF LynxOS files.
+ */
+/* Copyright 1993, 1994, 1995, 1996, 1997 Free Software Foundation, Inc.
    Written by Cygnus Support.
 
 This file is part of BFD, the Binary File Descriptor library.
@@ -26,3 +28,5 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #define COFF_COMMON_ADDEND
 
 #include "coff-m68k.c"
+
+/* EOF */

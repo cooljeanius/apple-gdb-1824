@@ -111,14 +111,14 @@ the two pieces of Make-common.in into the target's Makefile.in at
 COMMON_{PRE,POST}_CONFIG_FRAG.
 
 Note that SIM_EXTRA_{INSTALL,CLEAN} could be removed and "::" targets
-could be used instead.  However, it's not clear yet whether "::" targets
+could be used instead.  However, it is not clear yet whether "::" targets
 are portable enough.
 
 TAGS support
 ============
 
 Many files generate program symbols at compile time.
-Such symbols can't be found with grep nor do they normally appear in
+Such symbols cannot be found with grep nor do they normally appear in
 the TAGS file.  To get around this, source files can add the comment
 
 /* TAGS: foo1 foo2 */
@@ -176,7 +176,7 @@ The programmer may assume that the simulator is being built using an
 ANSI C compiler that supports a 64 bit data type.  Consequently:
 
 	o	prototypes can be used (although using
-		PARAMS() and K&R declarations wouldn't
+		PARAMS() and K&R declarations would not
 		go astray).
 
 	o	If sim-types.h is included, the two
@@ -188,10 +188,10 @@ ANSI C compiler that supports a 64 bit data type.  Consequently:
 However, the user should be aware of the following:
 
 	o	GCC's `<number>LL' is NOT acceptable.
-		Microsoft-C doesn't reconize it.
+		Microsoft-C does NOT reconize it.
 
 	o	MSC's `<number>i64' is NOT acceptable.
-		GCC doesn't reconize it.
+		GCC does NOT reconize it.
 
 	o	GCC's `long long' MSC's `_int64' can
 		NOT be used to define 64 bit integer data
@@ -219,14 +219,14 @@ FIXME: This can obviously be made more elaborate.  As needed it will be.
 Rebuilding nltvals.def
 ======================
 
-Checkout a copy of the SIM and LIBGLOSS modules (Unless you've already
+Checkout a copy of the SIM and LIBGLOSS modules (Unless you have already
 got one to hand):
 
 	$  mkdir /tmp/$$
 	$  cd /tmp/$$
 	$  cvs checkout sim-no-testsuite libgloss-no-testsuite newlib-no-testsuite
 
-Configure things for an arbitrary simulator target (I've d10v for
+Configure things for an arbitrary simulator target (I have d10v for
 convenience):
 
 	$  mkdir /tmp/$$/build
@@ -242,7 +242,7 @@ To add a new target:
 
 	devo/sim/common/gennltvals.sh
 
-		Add your new processor target (you'll need to grub
+		Add your new processor target (you will need to grub
 		around to find where your syscall.h lives).
 
 	devo/sim/<processor>/Makefile.in

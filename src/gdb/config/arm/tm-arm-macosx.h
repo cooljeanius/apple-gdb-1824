@@ -1,4 +1,5 @@
-/* Target support for Mac OS X on ARM for GDB, the GNU debugger.
+/* tm-arm-macosx.h
+   Target support for Mac OS X on ARM for GDB, the GNU debugger.
    Copyright (C) 1997-2002,
    Free Software Foundation, Inc.
 
@@ -46,3 +47,5 @@ char *arm_throw_catch_find_typeinfo (struct frame_info *curr_frame,
   (arm_throw_catch_find_typeinfo (curr_frame, exception_type))
 
 #endif /* _TM_ARM_MACOSX_H_ */
+
+/* EOF */

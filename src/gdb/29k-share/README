@@ -1,6 +1,6 @@
 The files in this directory are shared with other debuggers and
 debug interfaces that use Advanced Micro Devices' UDI (universal debug
-interface) protocol.  The protocol provides a common interface among
+interface) protocol. The protocol provides a common interface among
 debuggers, logic analyzers, emulators, and embedded systems that use
 AMD 29000 family processors.
 

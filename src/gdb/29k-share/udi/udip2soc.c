@@ -1,26 +1,27 @@
-/* Copyright 1993 Free Software Foundation, Inc.
-   
+/* udip2soc.c
+   Copyright 1993 Free Software Foundation, Inc.
+
    This file is part of GDB.
-   
+
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2 of the License, or
    (at your option) any later version.
-   
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 static 	char udip2soc_c[]="@(#)udip2soc.c	2.11  Daniel Mann";
 static  char udip2soc_c_AMD[]="@(#)udip2soc.c	2.8, AMD";
-/* 
+/*
 *       This module converts UDI Procedural calls into
-*	UDI socket messages for UNIX. 
+*	UDI socket messages for UNIX.
 *	It is used by DFE client processes
 ********************************************************************** HISTORY
 */
@@ -36,8 +37,8 @@ static  char udip2soc_c_AMD[]="@(#)udip2soc.c	2.8, AMD";
 #include <sys/file.h>
 
 /* This used to say sys/fcntl.h, but the only systems I know of that
-   require that are old (pre-4.3, at least) BSD systems, which we
-   probably don't need to worry about.  */
+ * require that are old (pre-4.3, at least) BSD systems, which we
+ * probably do NOT need to worry about.  */
 #include <fcntl.h>
 
 #include <sys/wait.h>
@@ -95,8 +96,8 @@ char	dfe_errmsg[ERRMSG_SIZE];/* error string */
 
 /* local dec/defs. which are not in a .h   file *************** LOCAL DEC/DEFS
 */
-LOCAL connection_t	soc_con[MAX_SESSIONS];	
-LOCAL session_t	session[MAX_SESSIONS];	
+LOCAL connection_t	soc_con[MAX_SESSIONS];
+LOCAL session_t	session[MAX_SESSIONS];
 LOCAL UDR	udr;
 LOCAL UDR*	udrs = &udr;		/* UDR for current session */
 LOCAL int	current;		/* int-id for current session */
@@ -129,7 +130,7 @@ UDIConnect(Config, Session)
     FILE	*fd;
 #if 0
     FILE	*f_p;
-#endif
+#endif /* 0 */
     UDIUInt32	TIPIPCId;
     UDIUInt32	DFEIPCId;
 
@@ -141,7 +142,7 @@ UDIConnect(Config, Session)
 	sbuf[cnt-2]=0;
     }
     pclose(f_p);
-#endif
+#endif /* 0 */
 
     for (rcnt=0;
 	 rcnt < MAX_SESSIONS && session[rcnt].in_use;
@@ -191,7 +192,7 @@ UDIConnect(Config, Session)
 
 	if (!fd)
 	  {
-	    sprintf(dfe_errmsg, "UDIConnect, can't open udi_soc file:\n%s ",
+	    sprintf(dfe_errmsg, "UDIConnect, cannot open udi_soc file:\n%s ",
 		    strerror(errno));
 	    dfe_errno = UDIErrorCantOpenConfigFile;
 	    goto tip_failure;
@@ -220,7 +221,7 @@ UDIConnect(Config, Session)
 	if (!soc_con[cnt].in_use)
 	  {
 	    sprintf(dfe_errmsg,
-		    "UDIConnect, can't find `%s' entry in udi_soc file",
+		    "UDIConnect, cannot find `%s' entry in udi_soc file",
 		    Config);
 	    dfe_errno = UDIErrorNoSuchConfiguration;
 	    goto tip_failure;
@@ -240,10 +241,10 @@ UDIConnect(Config, Session)
 
 /*---------------------------------------------------- MULTIPLEXED SOCKET ? */
 /* If the requested session requires communication with
-   a TIP which already has a socket connection established,
-   then we do not create a new socket but multiplex the
-   existing one. A TIP is said to use the same socket if
-   socket-name/host-name and the domain are the same.
+ * a TIP which already has a socket connection established,
+ * then we do not create a new socket but multiplex the
+ * existing one. A TIP is said to use the same socket if
+ * socket-name/host-name and the domain are the same.
  */
     for (rcnt=0; rcnt < MAX_SESSIONS; rcnt++)
       {
@@ -255,8 +256,8 @@ UDIConnect(Config, Session)
 		      soc_con[rcnt].tip_string) == 0)
 	  {
 	    session[*Session].soc_con_p = &soc_con[rcnt];
-	    soc_con[cnt].in_use = FALSE;	/* don't need new connect */
-	    goto tip_connect; 
+	    soc_con[cnt].in_use = FALSE;	/* do NOT need new connect */
+	    goto tip_connect;
 	}
       }
 /*------------------------------------------------------------------ SOCKET */
@@ -291,7 +292,7 @@ UDIConnect(Config, Session)
 	    if (pos >= 20)
 	      {
 		sprintf(dfe_errmsg,
-			"DFE-ipc ERROR, can't create random socket name");
+			"DFE-ipc ERROR, cannot create random socket name");
 		dfe_errno = UDIErrorCantConnect;
 		goto tip_failure;
 	      }
@@ -316,7 +317,7 @@ UDIConnect(Config, Session)
 	      arg0++;
 	    else
 	      arg0 = soc_con[cnt].tip_exe;
-    
+
 	    pid = vfork();
 
 	    if (pid == 0)	/* Child */
@@ -331,7 +332,7 @@ UDIConnect(Config, Session)
 
             if (waitpid(pid, &statusp, WNOHANG))
 	      {
-	        sprintf(dfe_errmsg, "DFE-ipc ERROR: can't exec the TIP");
+	        sprintf(dfe_errmsg, "DFE-ipc ERROR: cannot exec the TIP");
 	        dfe_errno = UDIErrorCantStartTIP;
 		goto tip_failure;
 	      }
@@ -339,7 +340,7 @@ UDIConnect(Config, Session)
 	    pos = 3;
     	    for (pos = 3; pos > 0; pos--)
 	      {
-		if (!connect(soc_con[cnt].dfe_sd, 
+		if (!connect(soc_con[cnt].dfe_sd,
 			     &soc_con[cnt].tip_sockaddr,
 			     sizeof(soc_con[cnt].tip_sockaddr)))
 		  break;
@@ -1031,7 +1032,7 @@ UDIBreakId	break_id;	/* in -- assigned break id */
 
 /************************************************************** UDI_GET_STDOUT
 * UDIGetStdout()  is  called   when   a   call   to
-* UDIWait() indicates there is STD output data ready. 
+* UDIWait() indicates there is STD output data ready.
 */
 UDIError UDIGetStdout(buf, bufsize, count_done)
 UDIHostMemPtr	buf;		/* out -- buffer to be filled */
@@ -1248,3 +1249,5 @@ UDIUInt32 UDIGetDFEIPCId()
     return ((company_c << 16) + (product_c << 12) + version_c);
 }
 #endif /* __GO32__ */
+
+/* EOF */

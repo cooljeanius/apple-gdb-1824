@@ -1,4 +1,5 @@
-/* Native-dependent definitions for VAXen under 4.2 BSD and ULTRIX.
+/* nm-vax.h
+   Native-dependent definitions for VAXen under 4.2 BSD and ULTRIX.
 
    Copyright 1986, 1987, 1989, 1992, 2004 Free Software Foundation, Inc.
 

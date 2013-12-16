@@ -1,4 +1,5 @@
-/* Native definitions for alpha running OSF/1.
+/* nm-osf.h
+   Native definitions for alpha running OSF/1.
 
    Copyright 1993, 1994, 1995, 1998, 2000, 2004 Free Software
    Foundation, Inc.

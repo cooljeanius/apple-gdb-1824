@@ -1,5 +1,7 @@
-/* BFD back-end for a.out files encapsulated with COFF headers.
-   Copyright 1990, 1991, 1994, 1995, 2000, 2001, 2002, 2003
+/* aout-encap.c
+ * BFD back-end for a.out files encapsulated with COFF headers.
+ */
+/* Copyright 1990, 1991, 1994, 1995, 2000, 2001, 2002, 2003
    Free Software Foundation, Inc.
 
 This file is part of BFD, the Binary File Descriptor library.
@@ -18,13 +20,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
-/* THIS MODULE IS NOT FINISHED.  IT PROBABLY DOESN'T EVEN COMPILE.  */
+/* THIS MODULE IS NOT FINISHED.  IT PROBABLY DOES NOT EVEN COMPILE.  */
 
 #if 0
-#define	TARGET_PAGE_SIZE	4096
-#define	SEGMENT_SIZE	TARGET_PAGE_SIZE
-#define TEXT_START_ADDR 0
-#endif
+# define	TARGET_PAGE_SIZE	4096
+# define	SEGMENT_SIZE		TARGET_PAGE_SIZE
+# define	TEXT_START_ADDR 	0
+#endif /* 0 */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -88,8 +90,8 @@ encap_real_callback (abfd)
   MY(callback) (abfd, execp);
 
   /* If we have a coff header, it can give us better values for
-     text_start and exec_data_start.  This is particularly useful
-     for remote debugging of embedded systems.  */
+   * text_start and exec_data_start. This is particularly useful
+   * for remote debugging of embedded systems.  */
   if (N_FLAGS(exec_aouthdr) & N_FLAGS_COFF_ENCAPSULATE)
     {
       struct coffheader ch;
@@ -119,8 +121,8 @@ encap_real_callback (abfd)
 }
 
 /* Write an object file in Encapsulated COFF format.
-   Section contents have already been written.  We write the
-   file header, symbols, and relocation.  */
+ * Section contents have already been written.  We write the
+ * file header, symbols, and relocation.  */
 
 bfd_boolean
 encap_write_object_contents (abfd)
@@ -130,19 +132,19 @@ encap_write_object_contents (abfd)
   struct external_exec exec_bytes;
   struct internal_exec *execp = exec_hdr (abfd);
 
-  /* FIXME:  Fragments from the old GNU LD program for dealing with
-     encap coff.  */
+  /* FIXME: Fragments from the old GNU LD program for dealing with
+   * encap coff.  */
   struct coffheader coffheader;
   int need_coff_header;
 
   /* Determine whether to count the header as part of
-     the text size, and initialize the text size accordingly.
-     This depends on the kind of system and on the output format selected.  */
+   * the text size, and initialize the text size accordingly.
+   * This depends on the kind of system and on the output format selected.  */
 
   N_SET_MAGIC (outheader, magic);
 #ifdef INITIALIZE_HEADER
   INITIALIZE_HEADER;
-#endif
+#endif /* INITIALIZE_HEADER */
 
   text_size = sizeof (struct exec);
 #ifdef COFF_ENCAPSULATE
@@ -153,7 +155,7 @@ encap_write_object_contents (abfd)
       N_SET_FLAGS (outheader, aout_backend_info (abfd)->exec_hdr_flags);
       text_size += sizeof (struct coffheader);
     }
-#endif
+#endif /* COFF_ENCAPSULATE */
 
 #ifdef COFF_ENCAPSULATE
   if (need_coff_header)
@@ -216,16 +218,17 @@ encap_write_object_contents (abfd)
       coffheader.text_start = tp->s_vaddr;
       coffheader.data_start = dp->s_vaddr;
     }
-#endif
+#endif /* COFF_ENCAPSULATE */
 
 #ifdef COFF_ENCAPSULATE
-  if (need_coff_header)
-    mywrite (&coffheader, sizeof coffheader, 1, outdesc);
-#endif
+	if (need_coff_header) {
+		mywrite (&coffheader, sizeof coffheader, 1, outdesc);
+	}
+#endif /* COFF_ENCAPSULATE */
 
 #ifndef COFF_ENCAPSULATE
   padfile (N_TXTOFF (outheader) - sizeof outheader, outdesc);
-#endif
+#endif /* COFF_ENCAPSULATE */
 
   text_size -= N_TXTOFF (outheader);
   WRITE_HEADERS(abfd, execp);
@@ -237,3 +240,5 @@ encap_write_object_contents (abfd)
 #define MY_exec_hdr_flags N_FLAGS_COFF_ENCAPSULATE
 
 #include "aout-target.h"
+
+/* EOF */

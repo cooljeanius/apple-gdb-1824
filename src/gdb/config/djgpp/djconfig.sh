@@ -49,7 +49,7 @@ else
   shift
 fi
 
-# Make sure they don't have some file names mangled by untarring.
+# Make sure they do NOT have some file names mangled by untarring.
 echo -n "Checking the unpacked distribution..."
 if ( ! test -f ${srcdir}/bfd/ChangeLog.0203      || \
      ! test -f ${srcdir}/gdb/ChangeLog.002       || \
@@ -151,16 +151,16 @@ export DEFAULT_LEX=flex
 # the check might fail
 export am_cv_exeext=.exe
 # ltconfig wants to compute the maximum command-line length, but
-# Bash 2.04 doesn't like that (it doesn't have any limit ;-), and
-# reboots the system.  We know our limit in advance, so we don't
-# need all that crap.  Assuming that the environment size is less
+# Bash 2.04 does NOT like that (it does NOT have any limit), and
+# reboots the system. We know our limit in advance, so we do NOT
+# need all that crap. Assuming that the environment size is less
 # than 4KB, we can afford 12KB of command-line arguments.
 export lt_cv_sys_max_cmd_len=12288
 
 # The configure script needs to see the `install-sh' script, otherwise
-# it decides the source installation is broken.  But "make install" will
+# it decides the source installation is broken. But "make install" will
 # fail on 8+3 filesystems if it finds a file `install-', since there
-# are numerous "install-foo" targets in Makefile's.  So we rename the
+# are numerous "install-foo" targets in Makefile's. So we rename the
 # offending file after the configure step is done.
 if test ! -f ${srcdir}/install-sh ; then
   if test -f ${srcdir}/install-.sh ; then

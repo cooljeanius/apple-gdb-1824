@@ -1,3 +1,7 @@
+/*
+ * alloca-conf.h
+ */
+
 #include "config.h"
 
 #if defined(__GNUC__) && !defined(C_ALLOCA)
@@ -22,3 +26,5 @@ extern PTR alloca ();
 #  endif
 # endif /* ! defined (_AIX) */
 #endif /* ! defined (__GNUC__) */
+
+/* EOF */

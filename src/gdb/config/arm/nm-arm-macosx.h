@@ -1,4 +1,5 @@
-/* Native support for Mac OS X on ARM for GDB, the GNU debugger.
+/* nm-arm-macosx.h
+   Native support for Mac OS X on ARM for GDB, the GNU debugger.
    Copyright (C) 1997-2002,
    Free Software Foundation, Inc.
 
@@ -24,3 +25,5 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #include "nm-macosx.h"
 
 #endif /* _NM_ARM_MACOSX_H_ */
+
+/* EOF */

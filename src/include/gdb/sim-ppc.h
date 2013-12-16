@@ -26,11 +26,11 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 /* The register access functions, sim_fetch_register and
-   sim_store_register, use the following numbering for PowerPC
-   registers.  */
+ * sim_store_register, use the following numbering for PowerPC
+ * registers.  */
 
 enum sim_ppc_regnum
   {
@@ -136,10 +136,10 @@ enum sim_ppc_regnum
     sim_ppc_vr30_regnum,
     sim_ppc_vr31_regnum,
 
-    /* SPE APU GPR upper halves.  These are the upper 32 bits of the
-       gprs; there is one upper-half register for each gpr, so it is
-       appropriate to use sim_ppc_num_gprs for iterating through
-       these.  */
+    /* SPE APU GPR upper halves. These are the upper 32 bits of the
+     * gprs; there is one upper-half register for each gpr, so it is
+     * appropriate to use sim_ppc_num_gprs for iterating through
+     * these.  */
     sim_ppc_rh0_regnum,
     sim_ppc_rh1_regnum,
     sim_ppc_rh2_regnum,
@@ -173,11 +173,11 @@ enum sim_ppc_regnum
     sim_ppc_rh30_regnum,
     sim_ppc_rh31_regnum,
 
-    /* SPE APU GPR full registers.  Each of these registers is the
-       64-bit concatenation of a 32-bit GPR (providing the lower bits)
-       and a 32-bit upper-half register (providing the higher bits).
-       As for the upper-half registers, it is appropriate to use
-       sim_ppc_num_gprs with these.  */
+    /* SPE APU GPR full registers. Each of these registers is the
+     * 64-bit concatenation of a 32-bit GPR (providing the lower bits)
+     * and a 32-bit upper-half register (providing the higher bits).
+     * As for the upper-half registers, it is appropriate to use
+     * sim_ppc_num_gprs with these.  */
     sim_ppc_ev0_regnum,
     sim_ppc_ev1_regnum,
     sim_ppc_ev2_regnum,
@@ -766,6 +766,6 @@ enum
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
 #endif /* SIM_PPC_H */

@@ -1,4 +1,5 @@
-/* This file just picks the correct udiphxxx.h depending on the host.
+/* udiphcfg.h
+   This file just picks the correct udiphxxx.h depending on the host.
    The two hosts that are now defined are UNIX and MSDOS.
 
    Copyright 1993 Free Software Foundation, Inc.
@@ -14,7 +15,7 @@
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
@@ -25,20 +26,18 @@
  */
 
 #if 0
+/* We do NOT seem to have a copy of udiphdos.h. Furthermore, all the
+ * things in udiphunix.h are pretty much generic 32-bit machine defines
+ * which do NOT have anything to do with IPC.  */
+# ifdef DOS_IPC
+#  include "udiphdos.h"
+# else
+/*#ifdef BSD_IPC*/
+#  include "udiphunix.h"
+/*#endif*/
+# endif /* DOS_IPC */
+#else /* !0 */
+# include "udiphunix.h"
+#endif /* 0 */
 
-/* We don't seem to have a copy of udiphdos.h.  Furthermore, all the
-   things in udiphunix.h are pretty much generic 32-bit machine defines
-   which don't have anything to do with IPC.  */
-
-#ifdef DOS_IPC
-#include "udiphdos.h"
-#else
-/*#ifdef BSD_IPC */
-#include "udiphunix.h"
-#endif
-
-#else
-
-#include "udiphunix.h"
-
-#endif
+/* EOF */

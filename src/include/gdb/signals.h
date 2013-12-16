@@ -1,5 +1,7 @@
-/* Target signal numbers for GDB and the GDB remote protocol.
-   Copyright 1986, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996,
+/* signals.h
+ * Target signal numbers for GDB and the GDB remote protocol.
+ */
+/* Copyright 1986, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996,
    1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -30,7 +32,7 @@
    translate appropriately.
 
    Since these numbers have actually made it out into other software
-   (stubs, etc.), you mustn't disturb the assigned numbering.  If you
+   (stubs, etc.), you must NOT disturb the assigned numbering. If you
    need to add new signals here, add them to the end of the explicitly
    numbered signals, at the comment marker.  Add them unconditionally,
    not within any #if or #ifdef.
@@ -134,13 +136,13 @@ enum target_signal
     TARGET_SIGNAL_REALTIME_62 = 74,
     TARGET_SIGNAL_REALTIME_63 = 75,
 
-    /* Used internally by Solaris threads.  See signal(5) on Solaris.  */
+    /* Used internally by Solaris threads. See signal(5) on Solaris.  */
     TARGET_SIGNAL_CANCEL = 76,
 
-    /* Yes, this pains me, too.  But LynxOS didn't have SIG32, and now
-       GNU/Linux does, and we can't disturb the numbering, since it's
-       part of the remote protocol.  Note that in some GDB's
-       TARGET_SIGNAL_REALTIME_32 is number 76.  */
+    /* Yes, this pains me, too. But LynxOS did NOT have SIG32, and now
+     * GNU/Linux does, and we cannot disturb the numbering, since it is/was
+     * part of the remote protocol. Note that in some GDB's
+     * TARGET_SIGNAL_REALTIME_32 is number 76.  */
     TARGET_SIGNAL_REALTIME_32,
     /* Yet another pain, IRIX 6 has SIG64. */
     TARGET_SIGNAL_REALTIME_64,
@@ -211,16 +213,16 @@ enum target_signal
 
     TARGET_SIGNAL_INFO,
 
-    /* Some signal we don't know about.  */
+    /* Some signal we do NOT know about.  */
     TARGET_SIGNAL_UNKNOWN,
 
     /* Use whatever signal we use when one is not specifically specified
-       (for passing to proceed and so on).  */
+     * (for passing to proceed and so on).  */
     TARGET_SIGNAL_DEFAULT,
 
-    /* Mach exceptions.  In versions of GDB before 5.2, these were just before
-       TARGET_SIGNAL_INFO if you were compiling on a Mach host (and missing
-       otherwise).  */
+    /* Mach exceptions. In versions of GDB before 5.2, these were just before
+     * TARGET_SIGNAL_INFO if you were compiling on a Mach host (and missing
+     * otherwise).  */
     TARGET_EXC_BAD_ACCESS,
     TARGET_EXC_BAD_INSTRUCTION,
     TARGET_EXC_ARITHMETIC,
@@ -235,3 +237,5 @@ enum target_signal
   };
 
 #endif /* #ifndef GDB_SIGNALS_H */
+
+/* EOF */

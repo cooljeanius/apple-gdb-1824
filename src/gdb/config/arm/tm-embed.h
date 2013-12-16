@@ -1,4 +1,5 @@
-/* Definitions to target GDB to ARM embedded systems.
+/* tm-embed.h
+   Definitions to target GDB to ARM embedded systems.
    Copyright 1986, 1987, 1988, 1989, 1991, 1993, 1994, 1995, 1996, 1997,
    1998, 1999, 2000 Free Software Foundation, Inc.
 
@@ -36,9 +37,9 @@
 /* Override defaults.  */
 
 #undef THUMB_LE_BREAKPOINT
-#define THUMB_LE_BREAKPOINT {0xbe,0xbe}       
+#define THUMB_LE_BREAKPOINT {0xbe,0xbe}
 #undef THUMB_BE_BREAKPOINT
-#define THUMB_BE_BREAKPOINT {0xbe,0xbe}       
+#define THUMB_BE_BREAKPOINT {0xbe,0xbe}
 
 /* Functions for dealing with Thumb call thunks.  */
 #define SKIP_TRAMPOLINE_CODE(pc)		arm_skip_stub (pc)
@@ -46,3 +47,5 @@ extern int arm_in_call_stub (CORE_ADDR pc, char *name);
 extern CORE_ADDR arm_skip_stub (CORE_ADDR pc);
 
 #endif /* TM_ARMEMBED_H */
+
+/* EOF */

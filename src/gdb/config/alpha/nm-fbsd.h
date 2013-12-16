@@ -25,7 +25,7 @@
 
 /* The Alpha does not step over a breakpoint.  */
 #define CANNOT_STEP_BREAKPOINT 1
-
+
 
 /* Shared library support.  */
 
