@@ -23,7 +23,8 @@
 
 srcdir = .
 
-prefix = /usr/local
+prefix = @prefix@
+default_prefix = /usr/local
 
 exec_prefix = $(prefix)
 bindir = $(exec_prefix)/bin
@@ -35,6 +36,8 @@ SHELL = /bin/sh
 INSTALL = `cd $(srcdir); pwd`/../../install-sh -c
 INSTALL_PROGRAM = $(INSTALL)
 INSTALL_DATA = $(INSTALL)
+
+AM_WARNFLAGS = -Wall
 
 AR_FLAGS = qv
 MAKEINFO = makeinfo
@@ -103,8 +106,4 @@ force:
 
 Makefile: Makefile.in configure.in $(host_makefile_frag) $(target_makefile_frag)
 	$(SHELL) config.status
-
-
-
-
 

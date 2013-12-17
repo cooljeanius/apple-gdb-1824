@@ -1,0 +1,16 @@
+# Stub Makefile for amd-udi
+
+all:
+	@echo "TODO: find out what is supposed to be going on here."
+
+CLEANFILES = *.o *~
+
+clean:
+	rm -f $(CLEANFILES)
+
+DISTCLEANFILES = Makefile config.status stamp-h1 config.h *.log
+
+distclean:
+	rm -f $(DISTCLEANFILES)
+
+SUBDIRS = mondfe montip udi

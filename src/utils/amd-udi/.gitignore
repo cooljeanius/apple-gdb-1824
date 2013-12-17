@@ -1,2 +1,9 @@
 confdefs.h
+config.h
+*.o
+*~
 *.log
+Makefile
+*.status
+*.cache
+stamp-*
