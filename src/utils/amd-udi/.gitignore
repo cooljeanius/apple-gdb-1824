@@ -7,3 +7,16 @@ Makefile
 *.status
 *.cache
 stamp-*
+TAGS
+ID
+GTAGS
+GRTAGS
+GSYMS
+GPATH
+tags
+cscope*.out
+cscope.files
+config*.lineno
+site.exp
+site.bak
+*.sum
