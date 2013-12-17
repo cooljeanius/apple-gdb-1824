@@ -14,7 +14,18 @@ AC_SYS_LARGEFILE
 if test "${ARFLAGS}" = "-o"; then
     if test "${AR}" = "ar"; then
         unset ARFLAGS
+    elif test "${ac_cv_prog_AR}" = "ar"; then
+        unset ac_cv_prog_AR
+        unset ARFLAGS
+    elif test "${am_cv_ar_interface}" = "ar"; then
+        unset am_cv_ar_interface
+        unset ARFLAGS
     fi
+fi
+AC_PROG_SED
+if test -e ./config.cache; then
+    sed -i "s|ac_cv_prog_AR|bad_AR|g" ./config.cache
+    sed -i "s|am_cv_ar_interface|bad_ar_interface|g" ./config.cache
 fi
 AM_PROG_AR
 AM_PROG_AS
@@ -34,7 +45,6 @@ AC_PROG_MAKE_SET
 AC_PROG_MKDIR_P
 AC_PROG_RANLIB
 AC_PROG_OBJC
-AC_PROG_SED
 CMAKE_FIND_BINARY
 AC_SYS_INTERPRETER
 
