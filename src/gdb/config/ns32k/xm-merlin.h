@@ -1,4 +1,5 @@
-/* Definitions to make GDB run on a merlin under utek 2.1
+/* xm-merlin.h
+   Definitions to make GDB run on a merlin under utek 2.1
    Copyright 1986, 1987, 1989, 1991, 1992 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -20,12 +21,12 @@
 
 #include <machine/reg.h>
 
-/* This machine doesn't have the siginterrupt call.  */
+/* This machine does NOT have the siginterrupt call.  */
 #define NO_SIGINTERRUPT
 
 /* Under Utek, a ptrace'd process can be the only active process for
-   an executable.  Therefore instead of /bin/sh use gdb-sh (which should
-   just be a copy of /bin/sh which is world readable and writeable).  */
+ * an executable. Therefore instead of /bin/sh use gdb-sh (which should
+ * just be a copy of /bin/sh which is world readable and writeable). */
 /* FIXME: name should be passed in from Makefile so it can use prefix.  */
 #define SHELL_FILE "/usr/local/lib/gdb-sh"
 
@@ -64,3 +65,5 @@
 	abort ();							\
   }									\
 }
+
+/* EOF */

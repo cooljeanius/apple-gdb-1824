@@ -1,3 +1,4 @@
+# pdo1020.mh
 # Host: Hewlett-Packard PA-RISC machine, running HPUX 10.20 with Apple PDO
 
 MH_CFLAGS = \

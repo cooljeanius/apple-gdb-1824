@@ -1,4 +1,5 @@
-/* Definitions to make GDB run on an encore under umax 4.2
+/* tm-ns32k.h
+   Definitions to make GDB run on an encore under umax 4.2
    Copyright 1987, 1989, 1991, 1993, 1994, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -31,8 +32,8 @@
 /* Address of end of stack space.  */
 
 #ifndef STACK_END_ADDR
-#define STACK_END_ADDR (0xfffff000)
-#endif
+# define STACK_END_ADDR (0xfffff000)
+#endif /* !STACK_END_ADDR */
 
 #define NUM_GENERAL_REGS	8
 

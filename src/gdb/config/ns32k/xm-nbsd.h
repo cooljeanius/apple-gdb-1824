@@ -1,4 +1,5 @@
-/* Parameters for execution on a ns32k running NetBSD, for GDB.
+/* xm-nbsd.h
+   Parameters for execution on a ns32k running NetBSD, for GDB.
    Copyright 1994 Free Software Foundation, Inc.
 
    This file is part of GDB.

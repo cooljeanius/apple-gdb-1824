@@ -1,4 +1,5 @@
-/* Native-dependent definitions for ns32k running NetBSD, for GDB.
+/* nm-nbsdaout.h
+   Native-dependent definitions for ns32k running NetBSD, for GDB.
    Copyright 1986, 1987, 1989, 1992, 1994, 2000, 2002
    Free Software Foundation, Inc.
 

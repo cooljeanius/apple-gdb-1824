@@ -1,3 +1,4 @@
+# nextstep.mt
 # Target: HPPA running NeXTStep 4.0
 
 TDEPFILES =

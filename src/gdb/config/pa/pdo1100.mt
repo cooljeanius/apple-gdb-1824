@@ -1,3 +1,4 @@
+# pdo110.mt
 # Target: HP PA-RISC running HPUX 11.00 with Apple PDO
 
 TDEPFILES = hppa-tdep.o corelow.o
