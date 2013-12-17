@@ -24,12 +24,19 @@ AC_CHECK_LIB([c],[printf])
 
 # Checks for header files.
 AC_HEADER_DIRENT
-AC_CHECK_HEADERS([stdio.h])
+AC_CHECK_HEADERS([ctype.h stdarg.h stdio.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_C_BIGENDIAN
+AC_C_INLINE
+AC_C_PROTOTYPES
+AC_CHECK_SIZEOF([int])
+AC_CHECK_ALIGNOF([int])
 
 # Checks for library functions.
 AC_FUNC_MALLOC
-AC_CHECK_FUNCS([exit fclose fopen fprintf fputs strcasecmp strchr \
-                strncasecmp strstr])
+AC_CHECK_FUNCS([exit fclose fopen fprintf fputs isupper memcmp memset \
+                memcpy strcasecmp strchr strncasecmp strstr tolower])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

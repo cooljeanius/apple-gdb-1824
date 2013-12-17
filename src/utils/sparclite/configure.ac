@@ -45,12 +45,12 @@ changequote([,])dnl
 AC_SUBST([PROGS])
 
 # check for networking libraries.
-NETLIBS=
-AC_CHECK_LIB([nsl],[t_accept],[NETLIBS="$NETLIBS -lnsl"])
+NETLIBS=""
+AC_CHECK_LIB([nsl],[t_accept],[NETLIBS="${NETLIBS} -lnsl"])
 
 # -lsocket is required on some systems, but is broken on IRIX.
 if test "`(uname) 2> /dev/null`" != IRIX; then
-	AC_CHECK_LIB([socket],[socket],[NETLIBS="$NETLIBS -lsocket"])
+	AC_CHECK_LIB([socket],[socket],[NETLIBS="${NETLIBS} -lsocket"])
 fi
 AC_SUBST([NETLIBS])
 
@@ -63,8 +63,8 @@ AC_CHECK_ALIGNOF([int])
 
 # Checks for library functions.
 AC_FUNC_ERROR_AT_LINE
-AC_CHECK_FUNCS([exit fprintf fputc gethostbyname memcpy recv select \
-                send socket strerror vfprintf])
+AC_CHECK_FUNCS([connect exit fprintf fputc gethostbyname isupper memcpy \
+                recv select send socket strerror tolower vfprintf])
 
 # Output
 AC_CONFIG_FILES([Makefile])

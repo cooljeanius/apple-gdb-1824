@@ -4129,7 +4129,8 @@ fi
 
 
 # Checks for header files.
-for ac_header in errno.h fcntl.h netdb.h netinet/in.h stdarg.h stdio.h sys/socket.h sys/time.h varargs.h
+for ac_header in errno.h fcntl.h netdb.h netinet/in.h stdarg.h stdio.h \
+                  sys/socket.h sys/time.h varargs.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -4196,7 +4197,7 @@ esac
 
 
 # check for networking libraries.
-NETLIBS=
+NETLIBS=""
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for t_accept in -lnsl" >&5
 $as_echo_n "checking for t_accept in -lnsl... " >&6; }
 if ${ac_cv_lib_nsl_t_accept+:} false; then :
@@ -4234,7 +4235,7 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_nsl_t_accept" >&5
 $as_echo "$ac_cv_lib_nsl_t_accept" >&6; }
 if test "x$ac_cv_lib_nsl_t_accept" = xyes; then :
-  NETLIBS="$NETLIBS -lnsl"
+  NETLIBS="${NETLIBS} -lnsl"
 fi
 
 
@@ -4277,7 +4278,7 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_socket_socket" >&5
 $as_echo "$ac_cv_lib_socket_socket" >&6; }
 if test "x$ac_cv_lib_socket_socket" = xyes; then :
-  NETLIBS="$NETLIBS -lsocket"
+  NETLIBS="${NETLIBS} -lsocket"
 fi
 
 fi
@@ -4710,8 +4711,8 @@ esac
 
 fi
 
-for ac_func in exit fprintf fputc gethostbyname memcpy recv select \
-                send socket strerror vfprintf
+for ac_func in connect exit fprintf fputc gethostbyname isupper memcpy \
+                recv select send socket strerror tolower vfprintf
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"

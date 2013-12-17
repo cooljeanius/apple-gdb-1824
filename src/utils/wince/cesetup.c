@@ -24,11 +24,21 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #endif /* HAVE_CONFIG_H */
 
 #include "libiberty.h"
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#else
+# warning cesetup.c expects <ctype.h> to be included.
+#endif /* HAVE_CTYPE_H */
 #ifdef HAVE_STDIO_H
 # include <stdio.h>
 #else
 # warning cesetup.c expects <stdio.h> to be included.
 #endif /* HAVE_STDIO_H */
+#ifdef HAVE_STDLIB_H
+# include <stdlib.h>
+#else
+# warning cesetup.c expects <stdlib.h> to be included.
+#endif /* HAVE_STDLIB_H */
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
@@ -51,7 +61,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #ifdef HAVE_DIRENT_H
 # include <dirent.h>
 #else
-# warning cesetup.c expects <stdio.h> to be included.
+# warning cesetup.c expects <dirent.h> to be included.
 #endif /* HAVE_DIRENT_H */
 
 static char *
@@ -121,7 +131,8 @@ copy_include (char *srcn, char *destn)
 	    continue;
 	}
 
-      if (q = strstr (line, "[];"))
+	/* -Wparentheses said to add extra parentheses around the following: */
+      if ((q = strstr (line, "[];")))
 	{
 	  *q = 0;
 	  fprintf(dest, "%s[0%s", line, q+1);
@@ -310,10 +321,12 @@ main (int argc, char **argv)
 
 	  sprintf (line, "%s/lib/%s/%s", psdk_dir, platform, ide->d_name);
 
-	  if (strcasecmp (ide->d_name + strlen (ide->d_name) - 4, ".lib") == 0)
-	    strcpy (ide->d_name + strlen (ide->d_name) - 4, ".a");
-	  if (strcasecmp (ide->d_name, "corelibc.a") == 0)
-	    strcpy (ide->d_name, "c.a");
+		if (strcasecmp (ide->d_name + strlen (ide->d_name) - 4, ".lib") == 0) {
+			strcpy (ide->d_name + strlen (ide->d_name) - 4, ".a");
+		}
+		if (strcasecmp (ide->d_name, "corelibc.a") == 0) {
+			strcpy (ide->d_name, "c.a");
+		}
 
 	  sprintf (line2, "%s/%s/lib/lib%s", gnu_dir, de->d_name, strlwr (ide->d_name));
 

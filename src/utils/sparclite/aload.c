@@ -35,6 +35,22 @@ ie: aload hello /dev/ttya
 # warning aload.c expects <stdio.h> to be included.
 #endif /* HAVE_STDIO_H */
 
+#ifdef HAVE_STDLIB_H
+# include <stdlib.h>
+#else
+# warning aload.c expects <stdlib.h> to be included.
+#endif /* HAVE_STDLIB_H */
+
+#ifdef HAVE_STRING_H
+# include <string.h>
+#else
+# ifdef HAVE_STRINGS_H
+#  include <strings.h>
+# else
+#  warning aload.c expects a string-related header to be included.
+# endif /* HAVE_STRINGS_H */
+#endif /* HAVE_STRING_H */
+
 #include "ansidecl.h"
 
 #if (defined(ANSI_PROTOTYPES) || defined(__PROTOTYPES)) && defined(HAVE_STDARG_H)
@@ -65,7 +81,7 @@ ie: aload hello /dev/ttya
 #endif /* HAVE_FCNTL_H */
 
 #ifndef HAVE_TERMIOS
-# error you lose
+# error you lose for not having termios
 #endif /* !HAVE_TERMIOS */
 
 #if defined(HAVE_TERMIOS)
