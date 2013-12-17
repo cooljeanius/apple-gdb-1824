@@ -270,6 +270,7 @@ AC_DEFUN([SC_PATH_TKCONFIG],[
 #------------------------------------------------------------------------
 
 AC_DEFUN([SC_LOAD_TCLCONFIG],[
+    AC_REQUIRE([SC_PATH_TCLCONFIG])
     AC_MSG_CHECKING([for existence of ${TCL_BIN_DIR}/tclConfig.sh])
 
     if test -f "${TCL_BIN_DIR}/tclConfig.sh" ; then
@@ -481,7 +482,11 @@ AC_DEFUN([SC_PROG_TCLSH],[
 #------------------------------------------------------------------------
 
 AC_DEFUN([SC_BUILD_TCLSH],[
+    AC_REQUIRE([SC_PATH_TCLCONFIG])
     AC_MSG_CHECKING([for tclsh in Tcl build directory])
+    if test -z "${TCL_BIN_DIR}"; then
+        AC_MSG_WARN([TCL_BIN_DIR not set])
+    fi
     BUILD_TCLSH=${TCL_BIN_DIR}/tclsh
     AC_MSG_RESULT([${BUILD_TCLSH}])
     AC_SUBST([BUILD_TCLSH])
