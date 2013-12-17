@@ -1,4 +1,5 @@
-/* Native-dependent definitions for Sparc running NetBSD ELF, for GDB.
+/* nm-nbsdelf.h
+   Native-dependent definitions for Sparc running NetBSD ELF, for GDB.
    Copyright 1999 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -24,4 +25,4 @@
 #define SVR4_SHARED_LIBS
 #include "sparc/nm-nbsd.h"
 
-#endif
+#endif /* !NM_NBSDELF_H */

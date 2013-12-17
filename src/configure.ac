@@ -1306,6 +1306,7 @@ AC_CHECK_FUNCS([atexit floor getcwd gethostbyaddr gethostbyname \
 # Checks for tcl-related functions
 AC_DEFUN([SC_TCL_NEW_MACROS],[
   AC_REQUIRE([SC_PROG_TCLSH])
+  dnl# SC\_BUILD\_TCLSH never seems to return the right results...
   AC_REQUIRE([SC_TCL_GETHOSTBYADDR_R])
   AC_REQUIRE([SC_TCL_GETHOSTBYNAME_R])
   AC_REQUIRE([SC_TCL_GETPWUID_R])

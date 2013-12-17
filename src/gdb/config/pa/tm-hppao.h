@@ -1,4 +1,5 @@
-/* Parameters for execution on an HP PA-RISC machine running OSF1, for GDB.
+/* tm-hppao.h
+   Parameters for execution on an HP PA-RISC machine running OSF1, for GDB.
    Contributed by the Center for Software Science at the
    University of Utah (pa-gdb-bugs@cs.utah.edu).  */
 
@@ -26,16 +27,16 @@
 #define TRACE_CLEAR(x,state) \
   	((((struct hp800_thread_state *)state)->cr22 &= ~PSW_SS), 1)
 
-/* For OSF1 (Should be close if not identical to BSD, but I haven't
+/* For OSF1 (Should be close if not identical to BSD, but I have NOT
    tested it yet):
 
    The signal context structure pointer is always saved at the base
    of the frame + 0x4.
 
    We get the PC & SP directly from the sigcontext structure itself.
-   For other registers we have to dive in a little deeper: 
+   For other registers we have to dive in a little deeper:
 
-   The hardware save state pointer is at offset 0x10 within the 
+   The hardware save state pointer is at offset 0x10 within the
    signal context structure.
 
    Within the hardware save state, registers are found in the same order
@@ -75,8 +76,8 @@
    stepping.  While this greatly simplifies the kernel support
    necessary for single stepping, it unfortunately does the wrong
    thing in the presense of a nullified instruction (gives control
-   back two insns after the nullifed insn).  This is an artifact
-   of the HP architecture (recovery counter doesn't tick for
+   back two insns after the nullifed insn). This is an artifact
+   of the HP architecture (recovery counter does NOT tick for
    nullified insns).
 
    Do our best to avoid losing in such situations.  */
@@ -93,6 +94,8 @@
       } \
    }), 0)
 
-/* It's mostly just the common stuff.  */
+/* It is mostly just the common stuff.  */
 
 #include "pa/tm-hppa.h"
+
+/* EOF */

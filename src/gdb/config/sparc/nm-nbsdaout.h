@@ -1,4 +1,5 @@
-/* Native-dependent definitions for Sparc running NetBSD a.out, for GDB.
+/* nm-nbsdaout.h
+   Native-dependent definitions for Sparc running NetBSD a.out, for GDB.
    Copyright 1999 Free Software Foundation, Inc.
 
    This file is part of GDB.

@@ -2,7 +2,7 @@
 
 # FIXME: cagney/2002-04-07: gdb/366: The -Dvfork=fork hack below is
 # stop GDB hanging on HP/UX.  For some reason vfork() hangs yet fork()
-# doesn't ....
+# does NOT do so...
 
 MH_CFLAGS = -D__HP_CURSES -Dvfork=fork
 

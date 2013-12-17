@@ -1,4 +1,5 @@
-/* Host definitions for a Sun 4, for GDB, the GNU debugger.
+/* xm-sparc.h
+   Host definitions for a Sun 4, for GDB, the GNU debugger.
    Copyright 1986, 1987, 1989, 1991, 1992, 1996
    Free Software Foundation, Inc.
    Contributed by Michael Tiemann (tiemann@mcc.com).

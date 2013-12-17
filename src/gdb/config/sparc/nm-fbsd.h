@@ -1,4 +1,5 @@
-/* Native-dependent definitions for FreeBSD/sparc64.
+/* nm-fbsd.h
+   Native-dependent definitions for FreeBSD/sparc64.
    Copyright 2002
    Free Software Foundation, Inc.
    Contributed by David E. O'Brien <obrien@FreeBSD.org>.
@@ -30,7 +31,6 @@
 
 /* We can attach and detach.  */
 #define ATTACH_DETACH
-
 
 /* Shared library support.  */
 
@@ -65,3 +65,5 @@
 #define Fpu_fsr		fr_fsr
 
 #endif /* NM_FBSD_H */
+
+/* EOF */

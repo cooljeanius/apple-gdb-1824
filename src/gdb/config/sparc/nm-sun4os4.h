@@ -1,4 +1,5 @@
-/* Macro definitions for running gdb on a Sun 4 running sunos 4.
+/* nm-sun4os4.h
+   Macro definitions for running gdb on a Sun 4 running sunos 4.
    Copyright 1989, 1992, 1996, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -40,3 +41,5 @@ extern int kernel_u_size (void);
 /* SunOS 4.x uses nonstandard "char *" as type of third argument to ptrace() */
 
 #define PTRACE_ARG3_TYPE char*
+
+/* EOF */

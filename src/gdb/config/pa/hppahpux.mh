@@ -1,3 +1,4 @@
+# hppahpux.mh
 # Host: Hewlett-Packard PA-RISC machine, running HPUX
 
 XM_FILE= xm-hppah.h

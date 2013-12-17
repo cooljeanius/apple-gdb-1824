@@ -1,5 +1,6 @@
-/* Native support for HPPA-RISC machine running HPUX 11.x, for GDB.
-   Copyright 1998 Free Software Foundation, Inc. 
+/* nm-hppah11.h
+   Native support for HPPA-RISC machine running HPUX 11.x, for GDB.
+   Copyright 1998 Free Software Foundation, Inc.
 
    This file is part of GDB.
 

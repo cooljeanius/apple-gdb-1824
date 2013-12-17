@@ -1,4 +1,5 @@
-/* Parameters for execution on an HP PA-RISC machine, running HPUX, for GDB.
+/* tm-hppah.h
+   Parameters for execution on an HP PA-RISC machine, running HPUX, for GDB.
    Copyright 1991, 1992, 1995, 1998, 2002, 2003, 2004
    Free Software Foundation, Inc.
 
@@ -31,9 +32,9 @@ struct frame_info;
 #define CHILD_ENABLE_EXCEPTION_CALLBACK
 #define CHILD_GET_CURRENT_EXCEPTION_EVENT
 
-/* Here's how to step off a permanent breakpoint.  */
+/* Here is how to step off a permanent breakpoint.  */
 #define SKIP_PERMANENT_BREAKPOINT (hppa_skip_permanent_breakpoint)
 extern void hppa_skip_permanent_breakpoint (void);
 
-/* Mostly it's common to all HPPA's.  */
+/* Mostly it is common to all HPPA's.  */
 #include "pa/tm-hppa.h"

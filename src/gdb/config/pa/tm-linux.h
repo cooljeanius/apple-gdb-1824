@@ -1,4 +1,5 @@
-/* Definitions to target GDB to GNU/Linux on hppa-linux.
+/* tm-linux.h
+   Definitions to target GDB to GNU/Linux on hppa-linux.
    Copyright 2004 Free Software Foundation, Inc.
 
    This file is part of GDB.

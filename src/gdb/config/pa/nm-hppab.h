@@ -1,4 +1,5 @@
-/* HPPA PA-RISC machine native support for BSD, for GDB.
+/* nm-hppab.h
+   HPPA PA-RISC machine native support for BSD, for GDB.
    Copyright 1991, 1992, 1993, 1994, 1995 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -55,11 +56,11 @@
 /* fetch_inferior_registers is in hppab-nat.c.  */
 #define FETCH_INFERIOR_REGISTERS
 
-/* attach/detach works to some extent under BSD and HPUX.  So long
-   as the process you're attaching to isn't blocked waiting on io,
-   blocked waiting on a signal, or in a system call things work 
-   fine.  (The problems in those cases are related to the fact that
-   the kernel can't provide complete register information for the
+/* attach/detach works to some extent under BSD and HPUX. So long
+   as the process you are attaching to is NOT blocked waiting on io,
+   blocked waiting on a signal, or in a system call things work
+   fine. (The problems in those cases are related to the fact that
+   the kernel cannot provide complete register information for the
    target process...  Which really pisses off GDB.)  */
 
 #define ATTACH_DETACH
@@ -75,7 +76,7 @@
    to overload watchpoints on the page protection bits.  This makes
    it possible for the kernel to easily decide if a trap was caused
    by a watchpoint or by the user writing to protected memory and can
-   signal the user program differently in each case.  
+   signal the user program differently in each case.
 
    Second, the PA has a bit in the processor status word which causes
    data memory breakpoints (aka watchpoints) to be disabled for a single
@@ -90,7 +91,7 @@
    trap.
 
    GDB will take control and catch the signal for the inferior.  GDB then
-   examines the PSW-X bit to determine if the SIGTRAP was caused by a 
+   examines the PSW-X bit to determine if the SIGTRAP was caused by a
    watchpoint firing.  If so GDB single steps the inferior over the
    instruction which caused the watchpoint to trigger (note because the
    kernel disabled the data memory break bit for one instruction no trap
@@ -101,7 +102,7 @@
 
 #define TARGET_HAS_HARDWARE_WATCHPOINTS		/* Enable the code in procfs.c */
 
-/* The PA can watch any number of locations, there's no need for it to reject
+/* The PA can watch any number of locations, there is no need for it to reject
    anything (generic routines already check that all intermediates are
    in memory).  */
 #define TARGET_CAN_USE_HARDWARE_WATCHPOINT(type, cnt, ot) \
@@ -113,7 +114,7 @@
 
    On a PA running BSD, it is trivial to identify when it will be
    necessary to step over a hardware watchpoint as we can examine
-   the PSW-X bit.  If the bit is on, then we trapped because of a 
+   the PSW-X bit.  If the bit is on, then we trapped because of a
    watchpoint, else we trapped for some other reason.  */
 #define STOPPED_BY_WATCHPOINT(W) \
   ((W).kind == TARGET_WAITKIND_STOPPED \
@@ -135,3 +136,5 @@
 /* type can be 0: write watch, 1: read watch, 2: access watch (read/write) */
 #define target_insert_watchpoint(addr, len, type) hppa_set_watchpoint (addr, len, 1)
 #define target_remove_watchpoint(addr, len, type) hppa_set_watchpoint (addr, len, 0)
+
+/* EOF */

@@ -1,4 +1,5 @@
-/* Parameters for hosting on an HPPA-RISC machine running HPUX, for GDB.
+/* xm-hppah.h
+   Parameters for hosting on an HPPA-RISC machine running HPUX, for GDB.
    Copyright 1991, 1992, 1993, 1995, 1996, 2000
    Free Software Foundation, Inc.
 

@@ -1,3 +1,4 @@
+# nextstep.mh
 # Host: Sparc running NeXTStep 4.0
 
 MH_CFLAGS = \
