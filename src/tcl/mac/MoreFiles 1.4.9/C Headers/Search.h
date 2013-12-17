@@ -14,9 +14,9 @@
 **	restriction, though the sample code has been provided "AS IS" and the
 **	responsibility for its operation is 100% yours.  However, what you are
 **	not permitted to do is to redistribute the source as "DSC Sample Code"
-**	after having made changes. If you're going to re-distribute the source,
+**	after having made changes. If you are going to re-distribute the source,
 **	we require that you make it clear in the source that the code was
-**	descended from Apple Sample Code, but that you've made changes.
+**	descended from Apple Sample Code, but that you have made changes.
 */
 
 #ifndef __SEARCH__
@@ -29,7 +29,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 /*****************************************************************************/
 
@@ -40,7 +40,7 @@ pascal	OSErr	IndexedSearch(CSParamPtr pb,
 	specified directory using the same parameters (in pb) as is passed to
 	PBCatSearch. See Inside Macintosh: Files for a description of the
 	parameter block.
-	
+
 	pb			input:	A CSParamPtr record specifying the volume to search
 						and the search criteria.
 				output:	Fields in the parameter block are returned indicating
@@ -50,13 +50,13 @@ pascal	OSErr	IndexedSearch(CSParamPtr pb,
 						off.
 	dirID		input:	The directory to search. If fsRtDirID is passed,
 						the entire volume is searched.
-	
+
 	Note:	If you use a high-level debugger and use ioSearchTime to limit
-			the length of time to run the search, you'll want to step over
+			the length of time to run the search, you will want to step over
 			calls to IndexedSearch because it installs a Time Manager task.
-			Most high-level debuggers don't deal gracefully with interrupt
+			Most high-level debuggers do NOT deal gracefully with interrupt
 			driven code.
-	
+
 	Result Codes
 		noErr				0		No error
 		nsvErr				-35		Volume not found
@@ -70,9 +70,9 @@ pascal	OSErr	IndexedSearch(CSParamPtr pb,
 		memFullErr			-108	Memory could not be allocated in heap
 		catChangedErr		-1304	Catalog has changed and catalog position
 									record may be invalid
-	
+
 	__________
-	
+
 	See also:	PBCatSearch, PBCatSearchSyncCompat
 */
 
@@ -84,7 +84,7 @@ pascal	OSErr	PBCatSearchSyncCompat(CSParamPtr paramBlock);
 	IndexedSearch (if PBCatSearch is not available) to search a volume
 	using a set of search criteria that you specify. It builds a list of all
 	files or directories that meet your specifications.
-	
+
 	pb			input:	A CSParamPtr record specifying the volume to search
 						and the search criteria.
 				output:	Fields in the parameter block are returned indicating
@@ -92,13 +92,13 @@ pascal	OSErr	PBCatSearchSyncCompat(CSParamPtr paramBlock);
 						search ended with noErr, the CatPosition record that
 						lets you resume a search where the last search left
 						off.
-	
+
 	Note:	If you use a high-level debugger and use ioSearchTime to limit
-			the length of time to run the search, you'll want to step over
+			the length of time to run the search, you will want to step over
 			calls to PBCatSearchSyncCompat because it calls IndexedSearch
 			which installs a Time Manager task. Most high-level debuggers
-			don't deal gracefully with interrupt driven code.
-	
+			do NOT deal gracefully with interrupt driven code.
+
 	Result Codes
 		noErr				0		No error
 		nsvErr				-35		Volume not found
@@ -114,9 +114,9 @@ pascal	OSErr	PBCatSearchSyncCompat(CSParamPtr paramBlock);
 									record may be invalid
 		afpCatalogChanged	-5037	Catalog has changed and search cannot
 									be resumed
-	
+
 	__________
-	
+
 	See also:	PBCatSearch, IndexedSearch
 */
 
@@ -155,7 +155,7 @@ pascal	OSErr	NameFileSearch(ConstStr255Param volName,
 							that exactly match fileName will be found.  If the
 							partial parameter is true, then all file names that
 							contain fileName will be found.
-	
+
 	Result Codes
 		noErr				0		No error
 		nsvErr				-35		Volume not found
@@ -171,9 +171,9 @@ pascal	OSErr	NameFileSearch(ConstStr255Param volName,
 									record may be invalid
 		afpCatalogChanged	-5037	Catalog has changed and search cannot
 									be resumed
-	
+
 	__________
-	
+
 	Also see:	CreatorTypeFileSearch
 */
 
@@ -213,7 +213,7 @@ pascal	OSErr	CreatorTypeFileSearch(ConstStr255Param volName,
 							vRefNum is the same as the last call to
 							CreatorTypeFileSearch, then start searching at the
 							position where the last search left off.
-	
+
 	Result Codes
 		noErr				0		No error
 		nsvErr				-35		Volume not found
@@ -229,9 +229,9 @@ pascal	OSErr	CreatorTypeFileSearch(ConstStr255Param volName,
 									record may be invalid
 		afpCatalogChanged	-5037	Catalog has changed and search cannot
 									be resumed
-	
+
 	__________
-	
+
 	Also see:	NameFileSearch
 */
 
@@ -239,7 +239,7 @@ pascal	OSErr	CreatorTypeFileSearch(ConstStr255Param volName,
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
 #include "OptimizationEnd.h"
 

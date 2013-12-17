@@ -7,16 +7,16 @@
 **
 **	File:		DirectoryCopy.c
 **
-**	Copyright © 1992-1998 Apple Computer, Inc.
+**	Copyright (c) 1992-1998 Apple Computer, Inc.
 **	All rights reserved.
 **
 **	You may incorporate this sample code into your applications without
 **	restriction, though the sample code has been provided "AS IS" and the
-**	responsibility for its operation is 100% yours.  However, what you are
+**	responsibility for its operation is 100% yours. However, what you are
 **	not permitted to do is to redistribute the source as "DSC Sample Code"
-**	after having made changes. If you're going to re-distribute the source,
+**	after having made changes. If you are going to re-distribute the source,
 **	we require that you make it clear in the source that the code was
-**	descended from Apple Sample Code, but that you've made changes.
+**	descended from Apple Sample Code, but that you have made changes.
 */
 
 #include <Types.h>
@@ -53,8 +53,8 @@ enum
 ** global information that might be needed at any time. */
 
 #if PRAGMA_ALIGN_SUPPORTED
-#pragma options align=mac68k
-#endif
+# pragma options align=mac68k
+#endif /* PRAGMA_ALIGN_SUPPORTED */
 struct EnumerateGlobals
 {
 	Ptr			copyBuffer;			/* pointer to buffer used for file copy operations */
@@ -68,8 +68,8 @@ struct EnumerateGlobals
 	CInfoPBRec	myCPB;				/* the parameter block used for PBGetCatInfo calls */
 };
 #if PRAGMA_ALIGN_SUPPORTED
-#pragma options align=reset
-#endif
+# pragma options align=reset
+#endif /* PRAGMA_ALIGN_SUPPORTED */
 
 typedef struct EnumerateGlobals EnumerateGlobals;
 typedef EnumerateGlobals *EnumerateGlobalsPtr;
@@ -80,8 +80,8 @@ typedef EnumerateGlobals *EnumerateGlobalsPtr;
 ** global information that might be needed at any time. */
 
 #if PRAGMA_ALIGN_SUPPORTED
-#pragma options align=mac68k
-#endif
+# pragma options align=mac68k
+#endif /* PRAGMA_ALIGN_SUPPORTED */
 struct PreflightGlobals
 {
 	OSErr			result;				/* temporary holder of results - saves 2 bytes of stack each level */
@@ -89,15 +89,15 @@ struct PreflightGlobals
 	CInfoPBRec		myCPB;				/* the parameter block used for PBGetCatInfo calls */
 
 	unsigned long	dstBlksPerAllocBlk;	/* the number of 512 byte blocks per allocation block on destination */
-										
+
 	unsigned long	allocBlksNeeded;	/* the total number of allocation blocks needed  */
 
 	unsigned long	tempBlocks;			/* temporary storage for calculations (save some stack space)  */
 	CopyFilterProcPtr copyFilterProc;	/* pointer to filter function */
 };
 #if PRAGMA_ALIGN_SUPPORTED
-#pragma options align=reset
-#endif
+# pragma options align=reset
+#endif /* PRAGMA_ALIGN_SUPPORTED */
 
 typedef struct PreflightGlobals PreflightGlobals;
 typedef PreflightGlobals *PreflightGlobalsPtr;
@@ -118,14 +118,14 @@ static	OSErr	PreflightDirectoryCopySpace(short srcVRefNum,
 static	void	CopyLevel(long sourceDirID,
 						  long dstDirID,
 						  EnumerateGlobals *theGlobals);
-						  
+
 /*****************************************************************************/
 
 static	void	GetLevelSize(long currentDirID,
 							 PreflightGlobals *theGlobals)
 {
 	short	index = 1;
-	
+
 	do
 	{
 		theGlobals->myCPB.dirInfo.ioFDirIndex = index;
@@ -138,11 +138,11 @@ static	void	GetLevelSize(long currentDirID,
 			if ( (theGlobals->copyFilterProc == NULL) ||
 				 CallCopyFilterProc(theGlobals->copyFilterProc, &theGlobals->myCPB) ) /* filter if filter proc was supplied */
 			{
-				/* Either there's no filter proc OR the filter proc says to use this item */
+				/* Either there is no filter proc OR the filter proc says to use this item */
 				if ( (theGlobals->myCPB.dirInfo.ioFlAttrib & ioDirMask) != 0 )
 				{
 					/* we have a directory */
-					
+
 					GetLevelSize(theGlobals->myCPB.dirInfo.ioDrDirID, theGlobals); /* recurse */
 					theGlobals->result = noErr; /* clear error return on way back */
 				}
@@ -151,7 +151,7 @@ static	void	GetLevelSize(long currentDirID,
 					/* We have a file - add its allocation blocks to allocBlksNeeded. */
 					/* Since space on Mac OS disks is always allocated in allocation blocks, */
 					/* this takes into account rounding up to the end of an allocation block. */
-					
+
 					/* get number of 512-byte blocks needed for data fork */
 					if ( ((unsigned long)theGlobals->myCPB.hFileInfo.ioFlLgLen & 0x000001ff) != 0 )
 					{
@@ -170,7 +170,7 @@ static	void	GetLevelSize(long currentDirID,
 					{
 						theGlobals->allocBlksNeeded += theGlobals->tempBlocks / theGlobals->dstBlksPerAllocBlk;
 					}
-					
+
 					/* get number of 512-byte blocks needed for resource fork */
 					if ( ((unsigned long)theGlobals->myCPB.hFileInfo.ioFlRLgLen & 0x000001ff) != 0 )
 					{
@@ -208,26 +208,26 @@ static	OSErr	PreflightDirectoryCopySpace(short srcVRefNum,
 	OSErr error;
 	unsigned long dstFreeBlocks;
 	PreflightGlobals theGlobals;
-	
+
 	error = XGetVolumeInfoNoName(NULL, dstVRefNum, &pb);
 	if ( error == noErr )
 	{
 		/* Convert freeBytes to free disk blocks (512-byte blocks) */
 		dstFreeBlocks = (pb.ioVFreeBytes.hi << 23) + (pb.ioVFreeBytes.lo >> 9);
-		
+
 		/* get allocation block size (always multiple of 512) and divide by 512
 		  to get number of 512-byte blocks per allocation block */
 		theGlobals.dstBlksPerAllocBlk = ((unsigned long)pb.ioVAlBlkSiz >> 9);
-		
+
 		theGlobals.allocBlksNeeded = 0;
 
 		theGlobals.myCPB.dirInfo.ioNamePtr = theGlobals.itemName;
 		theGlobals.myCPB.dirInfo.ioVRefNum = srcVRefNum;
-		
+
 		theGlobals.copyFilterProc = copyFilterProc;
-		
+
 		GetLevelSize(srcDirID, &theGlobals);
-		
+
 		/* Is there enough room on the destination volume for the source file?					*/
 		/* Note:	This will work because the largest number of disk blocks supported			*/
 		/*			on a 2TB volume is 0xffffffff and (allocBlksNeeded * dstBlksPerAllocBlk)	*/
@@ -247,27 +247,27 @@ static	void	CopyLevel(long sourceDirID,
 	long currentSrcDirID;
 	long newDirID;
 	short index = 1;
-	
+
 	do
-	{	
+	{
 		/* Get next source item at the current directory level */
-		
+
 		theGlobals->myCPB.dirInfo.ioFDirIndex = index;
 		theGlobals->myCPB.dirInfo.ioDrDirID = sourceDirID;
-		theGlobals->error = PBGetCatInfoSync(&theGlobals->myCPB);		
+		theGlobals->error = PBGetCatInfoSync(&theGlobals->myCPB);
 
 		if ( theGlobals->error == noErr )
 		{
 			if ( (theGlobals->copyFilterProc == NULL) ||
 				 CallCopyFilterProc(theGlobals->copyFilterProc, &theGlobals->myCPB) ) /* filter if filter proc was supplied */
 			{
-				/* Either there's no filter proc OR the filter proc says to use this item */
+				/* Either there is no filter proc OR the filter proc says to use this item */
 
 				/* We have an item.  Is it a file or directory? */
 				if ( (theGlobals->myCPB.hFileInfo.ioFlAttrib & ioDirMask) != 0 )
 				{
 					/* We have a directory */
-					
+
 					/* Create a new directory at the destination. No errors allowed! */
 					theGlobals->error = DirCreate(theGlobals->destinationVRefNum, dstDirID, theGlobals->itemName, &newDirID);
 					if ( theGlobals->error == noErr )
@@ -275,20 +275,20 @@ static	void	CopyLevel(long sourceDirID,
 						/* Save the current source directory ID where we can get it when we come back
 						** from recursion land. */
 						currentSrcDirID = theGlobals->myCPB.dirInfo.ioDrDirID;
-						
+
 						/* Dive again (copy the directory level we just found below this one) */
 						CopyLevel(theGlobals->myCPB.dirInfo.ioDrDirID, newDirID, theGlobals);
-						
+
 						if ( !theGlobals->bailout )
 						{
 							/* Copy comment from old to new directory. */
-							/* Ignore the result because we really don't care if it worked or not. */
+							/* Ignore the result because we really do NOT care if it worked or not. */
 							(void) DTCopyComment(theGlobals->myCPB.dirInfo.ioVRefNum, currentSrcDirID, NULL, theGlobals->destinationVRefNum, newDirID, NULL);
-							
+
 							/* Copy directory attributes (dates, etc.) to newDirID. */
 							/* No errors allowed */
 							theGlobals->error = CopyFileMgrAttributes(theGlobals->myCPB.dirInfo.ioVRefNum, currentSrcDirID, NULL, theGlobals->destinationVRefNum, newDirID, NULL, true);
-							
+
 							/* handle any errors from CopyFileMgrAttributes */
 							if ( theGlobals->error != noErr )
 							{
@@ -300,7 +300,7 @@ static	void	CopyLevel(long sourceDirID,
 								}
 								else
 								{
-									/* If you don't handle the errors with an error handler, */
+									/* If you do NOT handle the errors with an error handler, */
 									/* then the copy stops here. */
 									theGlobals->bailout = true;
 								}
@@ -317,22 +317,22 @@ static	void	CopyLevel(long sourceDirID,
 						}
 						else
 						{
-							/* If you don't handle the errors with an error handler, */
+							/* If you do NOT handle the errors with an error handler, */
 							/* then the copy stops here. */
 							theGlobals->bailout = true;
 						}
 					}
-					
+
 					if ( !theGlobals->bailout )
 					{
-						/* clear error return on way back if we aren't bailing out */
+						/* clear error return on way back if we are NOT bailing out */
 						theGlobals->error = noErr;
 					}
 				}
 				else
 				{
 					/* We have a file, so copy it */
-					
+
 					theGlobals->error = FileCopy(theGlobals->myCPB.hFileInfo.ioVRefNum,
 												 theGlobals->myCPB.hFileInfo.ioFlParID,
 												 theGlobals->itemName,
@@ -343,7 +343,7 @@ static	void	CopyLevel(long sourceDirID,
 												 theGlobals->copyBuffer,
 												 theGlobals->bufferSize,
 												 false);
-							
+
 					/* handle any errors from FileCopy */
 					if ( theGlobals->error != noErr )
 					{
@@ -360,7 +360,7 @@ static	void	CopyLevel(long sourceDirID,
 						}
 						else
 						{
-							/* If you don't handle the errors with an error handler, */
+							/* If you do NOT handle the errors with an error handler, */
 							/* then the copy stops here. */
 							theGlobals->bailout = true;
 						}
@@ -370,11 +370,11 @@ static	void	CopyLevel(long sourceDirID,
 		}
 		else
 		{	/* error handling for PBGetCatInfo */
-			/* it's normal to get a fnfErr when indexing; that only means you've hit the end of the directory */
+			/* it is normal to get a fnfErr when indexing; that only means you have hit the end of the directory */
 			if ( theGlobals->error != fnfErr )
 			{
 				if ( theGlobals->errorHandler != NULL )
-				{ 
+				{
 					theGlobals->bailout = CallCopyErrProc(theGlobals->errorHandler, theGlobals->error, getNextItemOp,
 											theGlobals->myCPB.dirInfo.ioVRefNum, sourceDirID, NULL, 0, 0, NULL);
 					if ( !theGlobals->bailout )
@@ -385,7 +385,7 @@ static	void	CopyLevel(long sourceDirID,
 				}
 				else
 				{
-					/* If you don't handle the errors with an error handler, */
+					/* If you do NOT handle the errors with an error handler, */
 					/* then the copy stops here. */
 					theGlobals->bailout = true;
 				}
@@ -414,14 +414,14 @@ pascal	OSErr	FilteredDirectoryCopy(short srcVRefNum,
 	OSErr	error;
 	Boolean ourCopyBuffer = false;
 	Str63	srcDirName, oldDiskName;
-	Boolean spaceOK;			
-	
+	Boolean spaceOK;
+
 	/* Make sure a copy buffer is allocated. */
 	if ( copyBufferPtr == NULL )
 	{
-		/* The caller didn't supply a copy buffer so grab one from the application heap.
-		** Try to get a big copy buffer, if we can't, try for a 512-byte buffer.
-		** If 512 bytes aren't available, we're in trouble. */
+		/* The caller did NOT supply a copy buffer so grab one from the application heap.
+		** Try to get a big copy buffer, if we cannot, try for a 512-byte buffer.
+		** If 512 bytes are NOT available, we are in trouble. */
 		copyBufferSize = dirCopyBigCopyBuffSize;
 		copyBufferPtr = NewPtr(copyBufferSize);
 		if ( copyBufferPtr == NULL )
@@ -435,8 +435,8 @@ pascal	OSErr	FilteredDirectoryCopy(short srcVRefNum,
 		}
 		ourCopyBuffer = true;
 	}
-	
-	/* Get the real dirID where we're copying from and make sure it is a directory. */
+
+	/* Get the real dirID where we are copying from and make sure it is a directory. */
 	error = GetDirectoryID(srcVRefNum, srcDirID, srcName, &srcDirID, &isDirectory);
 	if ( error != noErr )
 	{
@@ -447,9 +447,9 @@ pascal	OSErr	FilteredDirectoryCopy(short srcVRefNum,
 		error = dirNFErr;
 		goto ErrorExit;
 	}
-	
+
 	/* Special case destination if it is the root parent directory. */
-	/* Since you can't create the root directory, this is needed if */
+	/* Since you cannot create the root directory, this is needed if */
 	/* you want to copy a directory's content to a disk's root directory. */
 	if ( (dstDirID == fsRtParID) && (dstName == NULL) )
 	{
@@ -459,7 +459,7 @@ pascal	OSErr	FilteredDirectoryCopy(short srcVRefNum,
 	}
 	else
 	{
-		/*  Get the real dirID where we're going to put the copy and make sure it is a directory. */
+		/* Get the real dirID where we are going to put the copy and make sure it is a directory. */
 		error = GetDirectoryID(dstVRefNum, dstDirID, dstName, &dstDirID, &isDirectory);
 		if ( error != noErr )
 		{
@@ -471,7 +471,7 @@ pascal	OSErr	FilteredDirectoryCopy(short srcVRefNum,
 			goto ErrorExit;
 		}
 	}
-	
+
 	/* Get the real vRefNum of both the source and destination */
 	error = DetermineVRefNum(srcName, srcVRefNum, &srcVRefNum);
 	if ( error != noErr )
@@ -483,7 +483,7 @@ pascal	OSErr	FilteredDirectoryCopy(short srcVRefNum,
 	{
 		goto ErrorExit;
 	}
-	
+
 	if ( preflight )
 	{
 		error = PreflightDirectoryCopySpace(srcVRefNum, srcDirID, dstVRefNum, copyFilterProc, &spaceOK);
@@ -505,19 +505,19 @@ pascal	OSErr	FilteredDirectoryCopy(short srcVRefNum,
 	{
 		goto ErrorExit;
 	}
-	
+
 	/* Again, special case destination if the destination is the */
-	/* root parent directory. This time, we'll rename the disk to */
+	/* root parent directory. This time, we shall rename the disk to */
 	/* the source directory name. */
 	if ( dstDirID == fsRtParID )
 	{
 		/* Get the current name of the destination disk */
 		error = GetDirName(dstVRefNum, fsRtDirID, oldDiskName);
-		if ( error == noErr )	
+		if ( error == noErr )
 		{
-			/* Shorten the name if it's too long to be the volume name */
+			/* Shorten the name if it is/was too long to be the volume name */
 			TruncPString(srcDirName, srcDirName, 27);
-			
+
 			/* Rename the disk */
 			error = HRename(dstVRefNum, fsRtParID, oldDiskName, srcDirName);
 			/* and copy to the root directory */
@@ -548,14 +548,14 @@ pascal	OSErr	FilteredDirectoryCopy(short srcVRefNum,
 		}
 		else
 		{
-			/* If you don't handle the errors with an error handler, */
+			/* If you do NOT handle the errors with an error handler, */
 			/* then the copy stops here. */
 			goto ErrorExit;
 		}
 	}
-	
+
 	/* dstDirID is now the newly created directory! */
-		
+
 	/* Set up the globals we need to access from the recursive routine. */
 	theGlobals.copyBuffer = (Ptr)copyBufferPtr;
 	theGlobals.bufferSize = copyBufferSize;
@@ -565,21 +565,21 @@ pascal	OSErr	FilteredDirectoryCopy(short srcVRefNum,
 	theGlobals.errorHandler = copyErrHandler;
 	theGlobals.bailout = false;
 	theGlobals.copyFilterProc =  copyFilterProc;
-		
+
 	/* Here we go into recursion land... */
 	CopyLevel(srcDirID, dstDirID, &theGlobals);
 	error = theGlobals.error;	/* get the result */
-	
+
 	if ( !theGlobals.bailout )
 	{
 		/* Copy comment from source to destination directory. */
-		/* Ignore the result because we really don't care if it worked or not. */
+		/* Ignore the result because we really do NOT care if it worked or not. */
 		(void) DTCopyComment(srcVRefNum, srcDirID, NULL, dstVRefNum, dstDirID, NULL);
-		
+
 		/* Copy the File Manager attributes */
 		error = CopyFileMgrAttributes(srcVRefNum, srcDirID, NULL,
 					dstVRefNum, dstDirID, NULL, true);
-		
+
 		/* handle any errors from CopyFileMgrAttributes */
 		if ( (error != noErr) && (copyErrHandler != NULL) )
 		{
@@ -651,3 +651,4 @@ pascal	OSErr	FSpDirectoryCopy(const FSSpec *srcSpec,
 
 /*****************************************************************************/
 
+/* EOF */

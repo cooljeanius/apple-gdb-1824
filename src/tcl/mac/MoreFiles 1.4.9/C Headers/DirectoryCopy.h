@@ -14,9 +14,9 @@
 **	restriction, though the sample code has been provided "AS IS" and the
 **	responsibility for its operation is 100% yours.  However, what you are
 **	not permitted to do is to redistribute the source as "DSC Sample Code"
-**	after having made changes. If you're going to re-distribute the source,
+**	after having made changes. If you are going to re-distribute the source,
 **	we require that you make it clear in the source that the code was
-**	descended from Apple Sample Code, but that you've made changes.
+**	descended from Apple Sample Code, but that you have made changes.
 */
 
 #ifndef __DIRECTORYCOPY__
@@ -29,18 +29,18 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 /*****************************************************************************/
 
 enum
 {
-	getNextItemOp			= 1,	/* couldn't access items in this directory - no access privileges */
-	copyDirCommentOp		= 2,	/* couldn't copy directory's Finder comment */
-	copyDirAccessPrivsOp	= 3,	/* couldn't copy directory's AFP access privileges */
-	copyDirFMAttributesOp	= 4,	/* couldn't copy directory's File Manager attributes */
-	dirCreateOp				= 5,	/* couldn't create destination directory */
-	fileCopyOp				= 6		/* couldn't copy file */
+	getNextItemOp			= 1, /* could NOT access items in this dir - no access privileges */
+	copyDirCommentOp		= 2, /* could NOT copy directory's Finder comment */
+	copyDirAccessPrivsOp	= 3, /* could NOT copy directory's AFP access privileges */
+	copyDirFMAttributesOp	= 4, /* could NOT copy directory's File Manager attributes */
+	dirCreateOp				= 5, /* could NOT create destination directory */
+	fileCopyOp				= 6	 /* could NOT copy file */
 };
 
 /*****************************************************************************/
@@ -55,9 +55,9 @@ typedef	pascal	Boolean	(*CopyErrProcPtr) (OSErr error,
 										   ConstStr255Param dstName);
 /*	¦ Prototype for the CopyErrProc function DirectoryCopy calls.
 	This is the prototype for the CopyErrProc function DirectoryCopy
-	calls if an error condition is detected sometime during the copy.  If
+	calls if an error condition is detected sometime during the copy. If
 	CopyErrProc returns false, then DirectoryCopy attempts to continue with
-	the directory copy operation.  If CopyErrProc returns true, then
+	the directory copy operation. If CopyErrProc returns true, then
 	DirectoryCopy stops the directory copy operation.
 
 	error			input:	The error result code that caused CopyErrProc to
@@ -74,8 +74,8 @@ typedef	pascal	Boolean	(*CopyErrProcPtr) (OSErr error,
 							dstDirID specifies the directory.
 
 	__________
-	
-	Also see:	FilteredDirectoryCopy, FSpFilteredDirectoryCopy, DirectoryCopy, FSpDirectoryCopy
+
+	Also see: FilteredDirectoryCopy, FSpFilteredDirectoryCopy, DirectoryCopy, FSpDirectoryCopy
 */
 
 #define CallCopyErrProc(userRoutine, error, failedOperation, srcVRefNum, srcDirID, srcName, dstVRefNum, dstDirID, dstName) \
@@ -89,11 +89,11 @@ typedef	pascal	Boolean	(*CopyFilterProcPtr) (const CInfoPBRec * const cpbPtr);
 	This is the prototype for the CopyFilterProc function called by
 	FilteredDirectoryCopy and GetLevelSize. If true is returned,
 	the file/folder is included in the copy, otherwise it is excluded.
-	
+
 	pb	input:	Points to the CInfoPBRec for the item under consideration.
 
 	__________
-	
+
 	Also see:	FilteredDirectoryCopy, FSpFilteredDirectoryCopy
 */
 
@@ -112,7 +112,7 @@ pascal	OSErr	FilteredDirectoryCopy(short srcVRefNum,
 									  Boolean preflight,
 									  CopyErrProcPtr copyErrHandler,
 									  CopyFilterProcPtr copyFilterProc);
-/*	¦ Make a copy of a directory structure in a new location with item filtering.
+/*	¦ Make a copy of a directory structure in a new location with item filtering
 	The FilteredDirectoryCopy function makes a copy of a directory
 	structure in a new location. If copyBufferPtr <> NIL, it points to
 	a buffer of copyBufferSize that is used to copy files data. The
@@ -120,10 +120,10 @@ pascal	OSErr	FilteredDirectoryCopy(short srcVRefNum,
 	copyBufferPtr = NIL, then this routine allocates a buffer in the
 	application heap. If you pass a copy buffer to this routine, make
 	its size a multiple of 512 ($200) bytes for optimum performance.
-	
+
 	The optional copyFilterProc parameter lets a routine you define
 	decide what files or directories are copied to the destination.
-	
+
 	FilteredDirectoryCopy normally creates a new directory *in* the
 	specified destination directory and copies the source directory's
 	content into the new directory. However, if root parent directory
@@ -135,7 +135,7 @@ pascal	OSErr	FilteredDirectoryCopy(short srcVRefNum,
 	This special case is supported by FilteredDirectoryCopy, but
 	not by FSpFilteredDirectoryCopy since with FSpFilteredDirectoryCopy,
 	the dstName parameter can not be NULL.
-	
+
 	srcVRefNum		input:	Source volume specification.
 	srcDirID		input:	Source directory ID.
 	srcName			input:	Source directory name, or nil if
@@ -156,15 +156,15 @@ pascal	OSErr	FilteredDirectoryCopy(short srcVRefNum,
 							starting the copy.
 	copyErrHandler	input:	A pointer to the routine you want called if an
 							error condition is detected during the copy, or
-							nil if you don't want to handle error conditions.
-							If you don't handle error conditions, the first
+							nil if you do NOT want to handle error conditions.
+							If you do NOT handle error conditions, the first
 							error will cause the copy to quit and
 							DirectoryCopy will return the error.
 							Error handling is recommended...
 	copyFilterProc	input:	A pointer to the filter routine you want called
 							for each item in the source directory, or NULL
-							if you don't want to filter.
-	
+							if you do NOT want to filter.
+
 	Result Codes
 		noErr				0		No error
 		readErr				Ð19		Driver does not respond to read requests
@@ -202,9 +202,9 @@ pascal	OSErr	FilteredDirectoryCopy(short srcVRefNum,
 									modes
 		afpObjectTypeErr	-5025	Source is a directory, directory not found
 									or incomplete pathname
-	
+
 	__________
-	
+
 	Also see:	CopyErrProcPtr, CopyFilterProcPtr, FSpFilteredDirectoryCopy,
 				DirectoryCopy, FSpDirectoryCopy, FileCopy, FSpFileCopy
 */
@@ -226,10 +226,10 @@ pascal	OSErr	FSpFilteredDirectoryCopy(const FSSpec *srcSpec,
 	copyBufferPtr = NIL, then this routine allocates a buffer in the
 	application heap. If you pass a copy buffer to this routine, make
 	its size a multiple of 512 ($200) bytes for optimum performance.
-	
+
 	The optional copyFilterProc parameter lets a routine you define
 	decide what files or directories are copied to the destination.
-	
+
 	srcSpec			input:	An FSSpec record specifying the directory to copy.
 	dstSpec			input:	An FSSpec record specifying destination directory
 							of the copy.
@@ -245,15 +245,15 @@ pascal	OSErr	FSpFilteredDirectoryCopy(const FSSpec *srcSpec,
 							starting the copy.
 	copyErrHandler	input:	A pointer to the routine you want called if an
 							error condition is detected during the copy, or
-							nil if you don't want to handle error conditions.
-							If you don't handle error conditions, the first
+							nil if you do NOT want to handle error conditions.
+							If you do NOT handle error conditions, the first
 							error will cause the copy to quit and
 							DirectoryCopy will return the error.
 							Error handling is recommended...
 	copyFilterProc	input:	A pointer to the filter routine you want called
 							for each item in the source directory, or NULL
-							if you don't want to filter.
-	
+							if you do NOT want to filter.
+
 	Result Codes
 		noErr				0		No error
 		readErr				Ð19		Driver does not respond to read requests
@@ -291,9 +291,9 @@ pascal	OSErr	FSpFilteredDirectoryCopy(const FSSpec *srcSpec,
 									modes
 		afpObjectTypeErr	-5025	Source is a directory, directory not found
 									or incomplete pathname
-	
+
 	__________
-	
+
 	Also see:	CopyErrProcPtr, CopyFilterProcPtr, FilteredDirectoryCopy,
 				DirectoryCopy, FSpDirectoryCopy, FileCopy, FSpFileCopy
 */
@@ -318,7 +318,7 @@ pascal	OSErr	DirectoryCopy(short srcVRefNum,
 	routine allocates a buffer in the application heap. If you pass a
 	copy buffer to this routine, make its size a multiple of 512
 	($200) bytes for optimum performance.
-	
+
 	DirectoryCopy normally creates a new directory *in* the specified
 	destination directory and copies the source directory's content into
 	the new directory. However, if root parent directory (fsRtParID)
@@ -329,7 +329,7 @@ pascal	OSErr	DirectoryCopy(short srcVRefNum,
 	destination volume's root directory. This special case is supported
 	by DirectoryCopy, but not by FSpDirectoryCopy since with
 	FSpDirectoryCopy, the dstName parameter can not be NULL.
-	
+
 	srcVRefNum		input:	Source volume specification.
 	srcDirID		input:	Source directory ID.
 	srcName			input:	Source directory name, or nil if
@@ -350,12 +350,12 @@ pascal	OSErr	DirectoryCopy(short srcVRefNum,
 							starting the copy.
 	copyErrHandler	input:	A pointer to the routine you want called if an
 							error condition is detected during the copy, or
-							nil if you don't want to handle error conditions.
-							If you don't handle error conditions, the first
+							nil if you do NOT want to handle error conditions.
+							If you do NOT handle error conditions, the first
 							error will cause the copy to quit and
 							DirectoryCopy will return the error.
 							Error handling is recommended...
-	
+
 	Result Codes
 		noErr				0		No error
 		readErr				Ð19		Driver does not respond to read requests
@@ -393,9 +393,9 @@ pascal	OSErr	DirectoryCopy(short srcVRefNum,
 									modes
 		afpObjectTypeErr	-5025	Source is a directory, directory not found
 									or incomplete pathname
-	
+
 	__________
-	
+
 	Also see:	CopyErrProcPtr, FSpDirectoryCopy, FilteredDirectoryCopy,
 				FSpFilteredDirectoryCopy, FileCopy, FSpFileCopy
 */
@@ -416,7 +416,7 @@ pascal	OSErr	FSpDirectoryCopy(const FSSpec *srcSpec,
 	routine allocates a buffer in the application heap. If you pass a
 	copy buffer to this routine, make its size a multiple of 512
 	($200) bytes for optimum performance.
-	
+
 	srcSpec			input:	An FSSpec record specifying the directory to copy.
 	dstSpec			input:	An FSSpec record specifying destination directory
 							of the copy.
@@ -432,12 +432,12 @@ pascal	OSErr	FSpDirectoryCopy(const FSSpec *srcSpec,
 							starting the copy.
 	copyErrHandler	input:	A pointer to the routine you want called if an
 							error condition is detected during the copy, or
-							nil if you don't want to handle error conditions.
-							If you don't handle error conditions, the first
+							nil if you do NOT want to handle error conditions.
+							If you do NOT handle error conditions, the first
 							error will cause the copy to quit and
 							DirectoryCopy will return the error.
 							Error handling is recommended...
-	
+
 	Result Codes
 		noErr				0		No error
 		readErr				Ð19		Driver does not respond to read requests
@@ -475,9 +475,9 @@ pascal	OSErr	FSpDirectoryCopy(const FSSpec *srcSpec,
 									modes
 		afpObjectTypeErr	-5025	Source is a directory, directory not found
 									or incomplete pathname
-	
+
 	__________
-	
+
 	Also see:	CopyErrProcPtr, DirectoryCopy, FilteredDirectoryCopy,
 				FSpFilteredDirectoryCopy, FileCopy, FSpFileCopy
 */
@@ -486,7 +486,7 @@ pascal	OSErr	FSpDirectoryCopy(const FSSpec *srcSpec,
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
 #include "OptimizationEnd.h"
 

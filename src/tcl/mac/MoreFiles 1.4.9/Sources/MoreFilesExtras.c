@@ -7,16 +7,16 @@
 **
 **	File:		MoreFilesExtras.c
 **
-**	Copyright © 1992-1998 Apple Computer, Inc.
+**	Copyright (c) 1992-1998 Apple Computer, Inc.
 **	All rights reserved.
 **
 **	You may incorporate this sample code into your applications without
 **	restriction, though the sample code has been provided "AS IS" and the
 **	responsibility for its operation is 100% yours.  However, what you are
 **	not permitted to do is to redistribute the source as "DSC Sample Code"
-**	after having made changes. If you're going to re-distribute the source,
+**	after having made changes. If you are going to re-distribute the source,
 **	we require that you make it clear in the source that the code was
-**	descended from Apple Sample Code, but that you've made changes.
+**	descended from Apple Sample Code, but that you have made changes.
 */
 
 #include <Types.h>
@@ -51,17 +51,17 @@
 ** global information that might be needed at any time. */
 
 #if PRAGMA_ALIGN_SUPPORTED
-#pragma options align=mac68k
-#endif
+# pragma options align=mac68k
+#endif /* PRAGMA_ALIGN_SUPPORTED */
 struct DeleteEnumGlobals
 {
-	OSErr			error;				/* temporary holder of results - saves 2 bytes of stack each level */
-	Str63			itemName;			/* the name of the current item */
-	UniversalFMPB	myPB;				/* the parameter block used for PBGetCatInfo calls */
+	OSErr			error; /* temporary holder of results - saves 2 bytes of stack each level */
+	Str63			itemName; /* the name of the current item */
+	UniversalFMPB	myPB; /* the parameter block used for PBGetCatInfo calls */
 };
 #if PRAGMA_ALIGN_SUPPORTED
-#pragma options align=reset
-#endif
+# pragma options align=reset
+#endif /* PRAGMA_ALIGN_SUPPORTED */
 
 typedef struct DeleteEnumGlobals DeleteEnumGlobals;
 typedef DeleteEnumGlobals *DeleteEnumGlobalsPtr;
@@ -73,18 +73,18 @@ pascal	void	TruncPString(StringPtr destination,
 							 short maxLength)
 {
 	short	charType;
-	
-	if ( source != NULL && destination != NULL )	/* don't do anything stupid */
+
+	if ( source != NULL && destination != NULL ) /* do NOT do anything stupid */
 	{
 		if ( source[0] > maxLength )
 		{
-			/* Make sure the string isn't truncated in the middle of */
+			/* Make sure the string is NOT truncated in the middle of */
 			/* a multi-byte character. */
 			while (maxLength != 0)
 			{
 				charType = CharByte((Ptr)&source[1], maxLength);
 				if ( (charType == smSingleByte) || (charType == smLastByte) )
-					break;	/* source[maxLength] is now a valid last character */ 
+					break;	/* source[maxLength] is now a valid last character */
 				--maxLength;
 			}
 		}
@@ -116,19 +116,19 @@ pascal	Ptr	GetTempBuffer(long buffReqSize,
 		kSlopMemory = 0x00008000	/* 32K - Amount of free memory to leave when allocating buffers */
 	};
 	Ptr	tempPtr;
-	
+
 	/* Make request a multiple of 1024 bytes */
 	buffReqSize = buffReqSize & 0xfffffc00;
-	
+
 	if ( buffReqSize < 0x00000400 )
 	{
 		/* Request was smaller than 1024 bytes - make it 1024 */
 		buffReqSize = 0x00000400;
 	}
-	
+
 	/* Attempt to allocate the memory */
 	tempPtr = NewPtr(buffReqSize);
-	
+
 	/* If request failed, go to backup plan */
 	if ( (tempPtr == NULL) && (buffReqSize > 0x00000400) )
 	{
@@ -137,22 +137,22 @@ pascal	Ptr	GetTempBuffer(long buffReqSize,
 		**	leaving some slop for the toolbox if possible
 		*/
 		long freeMemory = (FreeMem() - kSlopMemory) & 0xfffffc00;
-		
+
 		buffReqSize = MaxBlock() & 0xfffffc00;
-		
+
 		if ( buffReqSize > freeMemory )
 		{
 			buffReqSize = freeMemory;
 		}
-		
+
 		if ( buffReqSize == 0 )
 		{
 			buffReqSize = 0x00000400;
 		}
-		
+
 		tempPtr = NewPtr(buffReqSize);
 	}
-	
+
 	/* Return bytes allocated */
 	if ( tempPtr != NULL )
 	{
@@ -162,7 +162,7 @@ pascal	Ptr	GetTempBuffer(long buffReqSize,
 	{
 		*buffActSize = 0;
 	}
-	
+
 	return ( tempPtr );
 }
 
@@ -185,8 +185,8 @@ pascal	OSErr	GetVolumeInfoNoName(ConstStr255Param pathname,
 {
 	Str255 tempPathname;
 	OSErr error;
-	
-	/* Make sure pb parameter is not NULL */ 
+
+	/* Make sure pb parameter is not NULL */
 	if ( pb != NULL )
 	{
 		pb->volumeParam.ioVRefNum = vRefNum;
@@ -198,11 +198,11 @@ pascal	OSErr	GetVolumeInfoNoName(ConstStr255Param pathname,
 		else
 		{
 			BlockMoveData(pathname, tempPathname, pathname[0] + 1);	/* make a copy of the string and */
-			pb->volumeParam.ioNamePtr = (StringPtr)tempPathname;	/* use the copy so original isn't trashed */
-			pb->volumeParam.ioVolIndex = -1;	/* use ioNamePtr/ioVRefNum combination */
+			pb->volumeParam.ioNamePtr = (StringPtr)tempPathname; /* use the copy so original is NOT trashed */
+			pb->volumeParam.ioVolIndex = -1; /* use ioNamePtr/ioVRefNum combination */
 		}
 		error = PBHGetVInfoSync(pb);
-		pb->volumeParam.ioNamePtr = NULL;	/* ioNamePtr may point to local	tempPathname, so don't return it */
+		pb->volumeParam.ioNamePtr = NULL; /* ioNamePtr may point to local tempPathname, so do NOT return it */
 	}
 	else
 	{
@@ -228,8 +228,8 @@ pascal	OSErr	XGetVolumeInfoNoName(ConstStr255Param pathname,
 	Str255 tempPathname;
 	long response;
 	OSErr error;
-	
-	/* Make sure pb parameter is not NULL */ 
+
+	/* Make sure pb parameter is not NULL */
 	if ( pb != NULL )
 	{
 		pb->ioVRefNum = vRefNum;
@@ -242,7 +242,7 @@ pascal	OSErr	XGetVolumeInfoNoName(ConstStr255Param pathname,
 		else
 		{
 			BlockMoveData(pathname, tempPathname, pathname[0] + 1);	/* make a copy of the string and */
-			pb->ioNamePtr = (StringPtr)tempPathname;	/* use the copy so original isn't trashed */
+			pb->ioNamePtr = (StringPtr)tempPathname; /* use the copy so original is NOT trashed */
 			pb->ioVolIndex = -1;	/* use ioNamePtr/ioVRefNum combination */
 		}
 #if	!__MACOSSEVENFIVEONEORLATER
@@ -255,18 +255,18 @@ pascal	OSErr	XGetVolumeInfoNoName(ConstStr255Param pathname,
 			{
 				/* calculate the ioVTotalBytes and ioVFreeBytes fields */
 				pb->ioVTotalBytes.hi = 0;
-				pb->ioVTotalBytes.lo = pb->ioVNmAlBlks * pb->ioVAlBlkSiz;	/* calculated total number of bytes on volume */
+				pb->ioVTotalBytes.lo = pb->ioVNmAlBlks * pb->ioVAlBlkSiz; /* calculated total number of bytes on volume */
 				pb->ioVFreeBytes.hi = 0;
-				pb->ioVFreeBytes.lo = pb->ioVFrBlk * pb->ioVAlBlkSiz;	/* calculated number of free bytes on volume */
+				pb->ioVFreeBytes.lo = pb->ioVFrBlk * pb->ioVAlBlkSiz; /* calculated number of free bytes on volume */
 			}
 		}
 		else
-#endif	// !__MACOSSEVENFIVEONEORLATER
+#endif	/* !__MACOSSEVENFIVEONEORLATER */
 		{
 			/* Yes, so use it */
 			error = PBXGetVolInfoSync(pb);
 		}
-		pb->ioNamePtr = NULL;		/* ioNamePtr may point to local	tempPathname, so don't return it */
+		pb->ioNamePtr = NULL; /* ioNamePtr may point to local tempPathname, so do NOT return it */
 	}
 	else
 	{
@@ -284,7 +284,7 @@ pascal	OSErr GetCatInfoNoName(short vRefNum,
 {
 	Str31 tempName;
 	OSErr error;
-	
+
 	/* Protection against File Sharing problem */
 	if ( (name == NULL) || (name[0] == 0) )
 	{
@@ -336,20 +336,20 @@ pascal	OSErr	HGetVInfo(short volReference,
 	VCB				*theVCB;
 	Boolean			vcbFound;
 	OSErr			result;
-	
+
 	/* Use the File Manager to get the real vRefNum */
 	pb.volumeParam.ioVRefNum = volReference;
 	pb.volumeParam.ioNamePtr = volName;
 	pb.volumeParam.ioVolIndex = 0;	/* use ioVRefNum only, return volume name */
 	result = PBHGetVInfoSync(&pb);
-	
+
 	if ( result == noErr )
 	{
 		/* The volume name was returned in volName (if not NULL) and */
 		/* we have the volume's vRefNum and allocation block size */
 		*vRefNum = pb.volumeParam.ioVRefNum;
 		allocationBlockSize = (unsigned long)pb.volumeParam.ioVAlBlkSiz;
-		
+
 		/* System 7.5 (and beyond) pins the number of allocation blocks and */
 		/* the number of free allocation blocks returned by PBHGetVInfo to */
 		/* a value so that when multiplied by the allocation block size, */
@@ -357,15 +357,15 @@ pascal	OSErr	HGetVInfo(short volReference,
 		/* was done so older applications that use signed math or that use */
 		/* the GetVInfo function (which uses signed math) will continue to work. */
 		/* However, the unpinned numbers (which we want) are always available */
-		/* in the volume's VCB so we'll get those values from the VCB if possible. */
-		
+		/* in the volume's VCB so we will get those values from the VCB if possible. */
+
 		/* Find the volume's VCB */
 		vcbFound = false;
 		theVCB = (VCB *)(GetVCBQHdr()->qHead);
 		while ( (theVCB != NULL) && !vcbFound )
 		{
-			/* Check VCB signature before using VCB. Don't have to check for */
-			/* MFS (0xd2d7) because they can't get big enough to be pinned */
+			/* Check VCB signature before using VCB. Do NOT have to check for */
+			/* MFS (0xd2d7) because they cannot get big enough to be pinned */
 			if ( theVCB->vcbSigWord == 0x4244 )
 			{
 				if ( theVCB->vcbVRefNum == *vRefNum )
@@ -373,13 +373,13 @@ pascal	OSErr	HGetVInfo(short volReference,
 					vcbFound = true;
 				}
 			}
-			
+
 			if ( !vcbFound )
 			{
 				theVCB = (VCB *)(theVCB->qLink);
 			}
 		}
-		
+
 		if ( theVCB != NULL )
 		{
 			/* Found a VCB we can use. Get the un-pinned number of allocation blocks */
@@ -389,17 +389,17 @@ pascal	OSErr	HGetVInfo(short volReference,
 		}
 		else
 		{
-			/* Didn't find a VCB we can use. Return the number of allocation blocks */
+			/* Did NOT find a VCB we can use. Return the number of allocation blocks */
 			/* and the number of free blocks returned by PBHGetVInfoSync. */
 			numAllocationBlocks = (unsigned short)pb.volumeParam.ioVNmAlBlks;
 			numFreeBlocks = (unsigned short)pb.volumeParam.ioVFrBlk;
 		}
-		
+
 		/* Now, calculate freeBytes and totalBytes using unsigned values */
 		*freeBytes = numFreeBlocks * allocationBlockSize;
 		*totalBytes = numAllocationBlocks * allocationBlockSize;
 	}
-	
+
 	return ( result );
 }
 
@@ -409,17 +409,17 @@ pascal	OSErr	HGetVInfo(short volReference,
 **	PBXGetVolInfoSync is the glue code needed to make PBXGetVolInfoSync
 **	File Manager requests from CFM-based programs. At some point, Apple
 **	will get around to adding this to the standard libraries you link with
-**	and you'll get a duplicate symbol link error. At that time, just delete
+**	and you will get a duplicate symbol link error. At that time, just delete
 **	this code (or comment it out).
 **
-**	Non-CFM 68K programs don't needs this glue (and won't get it) because
+**	Non-CFM 68K programs do NOT needs this glue (and will NOT get it) because
 **	they instead use the inline assembly glue found in the Files.h interface
 **	file.
 */
 
 #if	__WANTPASCALELIMINATION
-#undef	pascal
-#endif
+# undef	pascal
+#endif /* __WANTPASCALELIMINATION */
 
 #if GENERATINGCFM
 pascal OSErr PBXGetVolInfoSync(XVolumeParamPtr paramBlock)
@@ -427,7 +427,7 @@ pascal OSErr PBXGetVolInfoSync(XVolumeParamPtr paramBlock)
 	enum
 	{
 		kXGetVolInfoSelector = 0x0012,	/* Selector for XGetVolInfo */
-		
+
 		uppFSDispatchProcInfo = kRegisterBased
 			 | REGISTER_RESULT_LOCATION(kRegisterD0)
 			 | RESULT_SIZE(SIZE_CODE(sizeof(OSErr)))
@@ -435,18 +435,18 @@ pascal OSErr PBXGetVolInfoSync(XVolumeParamPtr paramBlock)
 			 | REGISTER_ROUTINE_PARAMETER(2, kRegisterD1, SIZE_CODE(sizeof(long)))	/* trap word */
 			 | REGISTER_ROUTINE_PARAMETER(3, kRegisterA0, SIZE_CODE(sizeof(XVolumeParamPtr)))
 	};
-	
+
 	return ( CallOSTrapUniversalProc(NGetTrapAddress(_FSDispatch, OSTrap),
 										uppFSDispatchProcInfo,
 										kXGetVolInfoSelector,
 										_FSDispatch,
 										paramBlock) );
 }
-#endif
+#endif /* GENERATINGCFM */
 
 #if	__WANTPASCALELIMINATION
-#define	pascal	
-#endif
+# define	pascal
+#endif /* __WANTPASCALELIMINATION */
 
 /*****************************************************************************/
 
@@ -459,7 +459,7 @@ pascal	OSErr	XGetVInfo(short volReference,
 	OSErr			result;
 	long			response;
 	XVolumeParam	pb;
-	
+
 	/* See if large volume support is available */
 	if ( ( Gestalt(gestaltFSAttr, &response) == noErr ) && ((response & (1L << gestaltFSSupports2TBVols)) != 0) )
 	{
@@ -474,7 +474,7 @@ pascal	OSErr	XGetVInfo(short volReference,
 			/* The volume name was returned in volName (if not NULL) and */
 			/* we have the volume's vRefNum and allocation block size */
 			*vRefNum = pb.ioVRefNum;
-			
+
 			/* return the freeBytes and totalBytes */
 			*totalBytes = pb.ioVTotalBytes;
 			*freeBytes = pb.ioVFreeBytes;
@@ -483,7 +483,7 @@ pascal	OSErr	XGetVInfo(short volReference,
 	else
 	{
 		/* No large volume support */
-		
+
 		/* Use HGetVInfo to get the results */
 		result = HGetVInfo(volReference, volName, vRefNum, &freeBytes->lo, &totalBytes->lo);
 		if ( result == noErr )
@@ -516,7 +516,7 @@ pascal	OSErr	CheckVolLock(ConstStr255Param pathname,
 			error = vLckdErr;	/* volume locked by software */
 		}
 	}
-	
+
 	return ( error );
 }
 
@@ -528,7 +528,7 @@ pascal	OSErr GetDriverName(short driverRefNum,
 	OSErr result;
 	DCtlHandle theDctl;
 	DRVRHeaderPtr dHeaderPtr;
-	
+
 	theDctl = GetDCtlEntry(driverRefNum);
 	if ( theDctl != NULL )
 	{
@@ -550,7 +550,7 @@ pascal	OSErr GetDriverName(short driverRefNum,
 		driverName[0] = 0;
 		result = badUnitErr;	/* bad reference number */
 	}
-	
+
 	return ( result );
 }
 
@@ -563,9 +563,9 @@ pascal	OSErr	FindDrive(ConstStr255Param pathname,
 	OSErr			result;
 	HParamBlockRec	hPB;
 	short			driveNumber;
-	
+
 	*driveQElementPtr = NULL;
-	
+
 	/* First, use GetVolumeInfoNoName to determine the volume */
 	result = GetVolumeInfoNoName(pathname, vRefNum, &hPB);
 	if ( result == noErr )
@@ -585,38 +585,38 @@ pascal	OSErr	FindDrive(ConstStr255Param pathname,
 		}
 		else
 		{
-			/* The volume's is either offline or ejected */
+			/* The volume is either offline or ejected */
 			/* in either case, the volume is NOT online */
 
 			/* Is it ejected or just offline? */
 			if ( hPB.volumeParam.ioVDRefNum > 0 )
 			{
-				/* It's ejected, the drive number is ioVDRefNum */
+				/* It is/was ejected, the drive number is ioVDRefNum */
 				driveNumber = hPB.volumeParam.ioVDRefNum;
 			}
 			else
 			{
-				/* It's offline, the drive number is the negative of ioVDRefNum */
+				/* It is/was offline, the drive number is the negative of ioVDRefNum */
 				driveNumber = (short)-hPB.volumeParam.ioVDRefNum;
 			}
 		}
-		
+
 		/* Get pointer to first element in drive queue */
 		*driveQElementPtr = (DrvQElPtr)(GetDrvQHdr()->qHead);
-		
+
 		/* Search for a matching drive number */
 		while ( (*driveQElementPtr != NULL) && ((*driveQElementPtr)->dQDrive != driveNumber) )
 		{
 			*driveQElementPtr = (DrvQElPtr)(*driveQElementPtr)->qLink;
 		}
-		
+
 		if ( *driveQElementPtr == NULL )
 		{
 			/* This should never happen since every volume must have a drive, but... */
 			result = nsDrvErr;
 		}
 	}
-	
+
 	return ( result );
 }
 
@@ -631,24 +631,24 @@ pascal	OSErr	GetDiskBlocks(ConstStr255Param pathname,
 	{
 		/* return format list status code */
 		kFmtLstCode = 6,
-		
+
 		/* reference number of .SONY driver */
 		kSonyRefNum = 0xfffb,
-		
+
 		/* values returned by DriveStatus in DrvSts.twoSideFmt */
 		kSingleSided = 0,
 		kDoubleSided = -1,
 		kSingleSidedSize = 800,		/* 400K */
 		kDoubleSidedSize = 1600,	/* 800K */
-		
+
 		/* values in DrvQEl.qType */
 		kWordDrvSiz = 0,
 		kLongDrvSiz = 1,
-		
+
 		/* more than enough formatListRecords */
 		kMaxFormatListRecs = 16
 	};
-	
+
 	DrvQElPtr		driveQElementPtr;
 	unsigned long	blocks;
 	ParamBlockRec	pb;
@@ -658,15 +658,15 @@ pascal	OSErr	GetDiskBlocks(ConstStr255Param pathname,
 	OSErr			result;
 
 	blocks = 0;
-	
+
 	/* Find the drive queue element for this volume */
 	result = FindDrive(pathname, vRefNum, &driveQElementPtr);
-	
-	/* 
+
+	/*
 	**	Make sure this is a real driver (dQRefNum < 0).
 	**	AOCE's Mail Enclosures volume uses 0 for dQRefNum which will cause
 	**	problems if you try to use it as a driver refNum.
-	*/ 
+	*/
 	if ( (result == noErr) && (driveQElementPtr->dQRefNum >= 0) )
 	{
 		result = paramErr;
@@ -675,19 +675,19 @@ pascal	OSErr	GetDiskBlocks(ConstStr255Param pathname,
 	{
 		/* Attempt to get the drive's format list. */
 		/* (see the Technical Note "What Your Sony Drives For You") */
-		
+
 		pb.cntrlParam.ioVRefNum = driveQElementPtr->dQDrive;
 		pb.cntrlParam.ioCRefNum = driveQElementPtr->dQRefNum;
 		pb.cntrlParam.csCode = kFmtLstCode;
 		pb.cntrlParam.csParam[0] = kMaxFormatListRecs;
 		*(long *)&pb.cntrlParam.csParam[1] = (long)&formatListRecords[0];
-		
+
 		result = PBStatusSync(&pb);
-		
+
 		if ( result == noErr )
 		{
 			/* The drive supports ReturnFormatList status call. */
-			
+
 			/* Get the current disk's size. */
 			for( formatListRecIndex = 0;
 				 formatListRecIndex < pb.cntrlParam.csParam[0];
@@ -708,7 +708,7 @@ pascal	OSErr	GetDiskBlocks(ConstStr255Param pathname,
 		else if ( driveQElementPtr->dQRefNum == (short)kSonyRefNum )
 		{
 			/* The drive is a non-SuperDrive floppy which only supports 400K and 800K disks */
-			
+
 			result = DriveStatus(driveQElementPtr->dQDrive, &status);
 			if ( result == noErr )
 			{
@@ -729,9 +729,9 @@ pascal	OSErr	GetDiskBlocks(ConstStr255Param pathname,
 		}
 		else
 		{
-			/* The drive is not a floppy and it doesn't support ReturnFormatList */
+			/* The drive is not a floppy and it does NOT support ReturnFormatList */
 			/* so use the dQDrvSz field(s) */
-			
+
 			result = noErr;	/* reset result */
 			switch ( driveQElementPtr->qType )
 			{
@@ -749,12 +749,12 @@ pascal	OSErr	GetDiskBlocks(ConstStr255Param pathname,
 			}
 		}
 	}
-	
+
 	if ( result == noErr )
 	{
 		*numBlocks = blocks;
 	}
-	
+
 	return ( result );
 }
 
@@ -772,7 +772,7 @@ pascal	OSErr	GetVolFileSystemID(ConstStr255Param pathname,
 	{
 		*fileSystemID = pb.volumeParam.ioVFSID;
 	}
-	
+
 	return ( error );
 }
 
@@ -797,19 +797,19 @@ pascal	OSErr	GetVolState(ConstStr255Param pathname,
 			/* the volume is online and not ejected */
 			*volumeOnline = true;
 			*volumeEjected = false;
-			
+
 			/* Get the drive number */
 			driveNumber = pb.volumeParam.ioVDrvInfo;
 		}
 		else
 		{
-			/* the volume's is either offline or ejected */
+			/* the volume is either offline or ejected */
 			/* in either case, the volume is NOT online */
 			*volumeOnline = false;
 
 			/* Is it ejected? */
 			*volumeEjected = pb.volumeParam.ioVDRefNum > 0;
-			
+
 			if ( *volumeEjected )
 			{
 				/* If ejected, the drive number is ioVDRefNum */
@@ -821,17 +821,17 @@ pascal	OSErr	GetVolState(ConstStr255Param pathname,
 				driveNumber = (short)-pb.volumeParam.ioVDRefNum;
 			}
 		}
-		
+
 		{
 			DrvQElPtr drvQElem;
-			
+
 			/* Find the drive queue element by searching the drive queue */
 			drvQElem = (DrvQElPtr)(GetDrvQHdr()->qHead);
 			while ( (drvQElem != NULL) && (drvQElem->dQDrive != driveNumber) )
 			{
 				drvQElem = (DrvQElPtr)drvQElem->qLink;
 			}
-			
+
 			if ( drvQElem != NULL )
 			{
 				/*
@@ -842,37 +842,37 @@ pascal	OSErr	GetVolState(ConstStr255Param pathname,
 				*/
 				{
 					Ptr		flagBytePtr;
-					
+
 					/* point to byte 1 of the flag bytes */
 					flagBytePtr = (Ptr)drvQElem;
 					flagBytePtr -= 3;
-					
+
 					/*
 					**	The drive is ejectable if flag byte 1 does not contain
 					**	0x08 (nonejectable) or 0x48 (nonejectable, but wants eject call).
 					*/
-					
+
 					*driveEjectable = (*flagBytePtr != 0x08) && (*flagBytePtr != 0x48);
-					
+
 					/*
 					**	The driver wants an eject call if flag byte 1 does not contain
 					**	0x08 (nonejectable). This may seem like a minor point, but some
 					**	disk drivers use the Eject request to flush their caches to disk
-					**	and you wouldn't want to skip that step after unmounting a volume.
+					**	and you would NOT want to skip that step after unmounting a volume.
 					*/
-					
+
 					*driverWantsEject = (*flagBytePtr != 0x08);
 				}
 			}
 			else
 			{
-				/* Didn't find the drive (this should never happen) */
+				/* Did NOT find the drive (this should never happen) */
 				*driveEjectable = false;
 				*driverWantsEject = false;
 			}
 		}
 	}
-	
+
 	return ( error );
 }
 
@@ -894,17 +894,17 @@ pascal	OSErr	UnmountAndEject(ConstStr255Param pathname,
 		{
 			/* the volume is online and not ejected */
 			ejected = false;
-			
+
 			/* Get the drive number */
 			driveNum = pb.volumeParam.ioVDrvInfo;
 		}
 		else
 		{
 			/* the volume is ejected or offline */
-			
+
 			/* Is it ejected? */
 			ejected = pb.volumeParam.ioVDRefNum > 0;
-			
+
 			if ( ejected )
 			{
 				/* If ejected, the drive number is ioVDRefNum */
@@ -916,14 +916,14 @@ pascal	OSErr	UnmountAndEject(ConstStr255Param pathname,
 				driveNum = (short)-pb.volumeParam.ioVDRefNum;
 			}
 		}
-		
+
 		/* find the drive queue element */
 		drvQElem = (DrvQElPtr)(GetDrvQHdr()->qHead);
 		while ( (drvQElem != NULL) && (drvQElem->dQDrive != driveNum) )
 		{
 			drvQElem = (DrvQElPtr)drvQElem->qLink;
 		}
-		
+
 		if ( drvQElem != NULL )
 		{
 			/* does the drive want an eject call */
@@ -931,10 +931,10 @@ pascal	OSErr	UnmountAndEject(ConstStr255Param pathname,
 		}
 		else
 		{
-			/* didn't find the drive!! */
+			/* did NOT find the drive!! */
 			wantsEject = false;
 		}
-		
+
 		/* unmount the volume */
 		pb.volumeParam.ioNamePtr = NULL;
 		/* ioVRefNum is already filled in from PBHGetVInfo */
@@ -949,7 +949,7 @@ pascal	OSErr	UnmountAndEject(ConstStr255Param pathname,
 			}
 		}
 	}
-	
+
 	return ( error );
 }
 
@@ -974,7 +974,7 @@ pascal	OSErr	OnLine(FSSpecPtr volumes,
 			error = PBHGetVInfoSync(&pb);
 			if ( error == noErr )
 			{
-				volumes->parID = fsRtParID;		/* the root directory's parent is 1 */
+				volumes->parID = fsRtParID; /* the root directory's parent is 1 */
 				volumes->vRefNum = pb.volumeParam.ioVRefNum;
 				++*volIndex;
 				++*actVolCount;
@@ -985,7 +985,7 @@ pascal	OSErr	OnLine(FSSpecPtr volumes,
 	{
 		error = paramErr;
 	}
-	
+
 	return ( error );
 }
 
@@ -997,7 +997,7 @@ pascal	OSErr SetDefault(short newVRefNum,
 						 long *oldDirID)
 {
 	OSErr	error;
-	
+
 	/* Get the current default volume/directory. */
 	error = HGetVol(NULL, oldVRefNum, oldDirID);
 	if ( error == noErr )
@@ -1005,7 +1005,7 @@ pascal	OSErr SetDefault(short newVRefNum,
 		/* Set the new default volume/directory */
 		error = HSetVol(NULL, newVRefNum, newDirID);
 	}
-	
+
 	return ( error );
 }
 
@@ -1018,7 +1018,7 @@ pascal	OSErr RestoreDefault(short oldVRefNum,
 	short	defaultVRefNum;
 	long	defaultDirID;
 	long	defaultProcID;
-	
+
 	/* Determine if the default volume was a wdRefNum. */
 	error = GetWDInfo(oldVRefNum, &defaultVRefNum, &defaultDirID, &defaultProcID);
 	if ( error == noErr )
@@ -1035,7 +1035,7 @@ pascal	OSErr RestoreDefault(short oldVRefNum,
 			error = HSetVol(NULL, oldVRefNum, oldDirID);
 		}
 	}
-	
+
 	return ( error );
 }
 
@@ -1048,13 +1048,13 @@ pascal	OSErr GetDInfo(short vRefNum,
 {
 	CInfoPBRec pb;
 	OSErr error;
-	
+
 	error = GetCatInfoNoName(vRefNum, dirID, name, &pb);
 	if ( error == noErr )
 	{
 		if ( (pb.dirInfo.ioFlAttrib & ioDirMask) != 0 )
 		{
-			/* it's a directory, return the DInfo */
+			/* it is/was a directory, return the DInfo */
 			*fndrInfo = pb.dirInfo.ioDrUsrWds;
 		}
 		else
@@ -1063,7 +1063,7 @@ pascal	OSErr GetDInfo(short vRefNum,
 			error = dirNFErr;
 		}
 	}
-	
+
 	return ( error );
 }
 
@@ -1105,7 +1105,7 @@ pascal	OSErr SetDInfo(short vRefNum,
 	{
 		if ( (pb.dirInfo.ioFlAttrib & ioDirMask) != 0 )
 		{
-			/* it's a directory, set the DInfo */
+			/* it is/was a directory, set the DInfo */
 			if ( pb.dirInfo.ioNamePtr == tempName )
 			{
 				pb.dirInfo.ioDrDirID = pb.dirInfo.ioDrParID;
@@ -1123,7 +1123,7 @@ pascal	OSErr SetDInfo(short vRefNum,
 			error = dirNFErr;
 		}
 	}
-	
+
 	return ( error );
 }
 
@@ -1159,7 +1159,7 @@ pascal	OSErr	GetDirectoryID(short vRefNum,
 			*theDirID = pb.hFileInfo.ioFlParID;
 		}
 	}
-	
+
 	return ( error );
 }
 
@@ -1194,7 +1194,7 @@ pascal	OSErr	GetDirName(short vRefNum,
 	{
 		error = paramErr;
 	}
-	
+
 	return ( error );
 }
 
@@ -1207,11 +1207,11 @@ pascal	OSErr	GetIOACUser(short vRefNum,
 {
 	CInfoPBRec pb;
 	OSErr error;
-	
+
 	/* Clear ioACUser before calling PBGetCatInfo since some file systems
-	** don't bother to set or clear this field. If ioACUser isn't set by the
-	** file system, then you'll get the zero value back (full access) which
-	** is the access you have on volumes that don't support ioACUser.
+	** do NOT bother to set or clear this field. If ioACUser is NOT set by the
+	** file system, then you will get the zero value back (full access) which
+	** is the access you have on volumes that do NOT support ioACUser.
 	*/
 	pb.dirInfo.ioACUser = 0;	/* ioACUser used to be filler2 */
 	error = GetCatInfoNoName(vRefNum, dirID, name, &pb);
@@ -1227,7 +1227,7 @@ pascal	OSErr	GetIOACUser(short vRefNum,
 			*ioACUser = pb.dirInfo.ioACUser;
 		}
 	}
-	
+
 	return ( error );
 }
 
@@ -1250,7 +1250,7 @@ pascal	OSErr	GetParentID(short vRefNum,
 	Str31 tempName;
 	OSErr error;
 	short realVRefNum;
-	
+
 	/* Protection against File Sharing problem */
 	if ( (name == NULL) || (name[0] == 0) )
 	{
@@ -1269,7 +1269,7 @@ pascal	OSErr	GetParentID(short vRefNum,
 	if ( error == noErr )
 	{
 		/*
-		**	There's a bug in HFS where the wrong parent dir ID can be
+		**	There is/was a bug in HFS where the wrong parent dir ID can be
 		**	returned if multiple separators are used at the end of a
 		**	pathname. For example, if the pathname:
 		**		'volumeName:System Folder:Extensions::'
@@ -1283,9 +1283,9 @@ pascal	OSErr	GetParentID(short vRefNum,
 		if ( (pb.hFileInfo.ioFlAttrib & ioDirMask) != 0 )
 		{
 			/* Its a directory */
-			
+
 			/* is there a pathname? */
-			if ( pb.hFileInfo.ioNamePtr == name )	
+			if ( pb.hFileInfo.ioNamePtr == name )
 			{
 				/* could it contain multiple separators? */
 				if ( name[0] >= 2 )
@@ -1294,12 +1294,12 @@ pascal	OSErr	GetParentID(short vRefNum,
 					if ( (name[name[0]] == ':') && (name[name[0] - 1] == ':') )
 					{
 						/* OK, then do the extra stuff to get the correct parID */
-						
+
 						/* Get the real vRefNum (this should not fail) */
 						error = DetermineVRefNum(name, vRefNum, &realVRefNum);
 						if ( error == noErr )
 						{
-							/* we don't need the parent's name, but add protect against File Sharing problem */
+							/* we do NOT need the parent's name, but add protect against File Sharing problem */
 							tempName[0] = 0;
 							pb.dirInfo.ioNamePtr = tempName;
 							pb.dirInfo.ioVRefNum = realVRefNum;
@@ -1313,7 +1313,7 @@ pascal	OSErr	GetParentID(short vRefNum,
 				}
 			}
 		}
-		
+
 		if ( error == noErr )
 		{
 			/* if no errors, then pb.hFileInfo.ioFlParID (pb.dirInfo.ioDrParID) */
@@ -1321,7 +1321,7 @@ pascal	OSErr	GetParentID(short vRefNum,
 			*parID = pb.hFileInfo.ioFlParID;
 		}
 	}
-	
+
 	return ( error );
 }
 
@@ -1342,7 +1342,7 @@ pascal	OSErr	GetFilenameFromPathname(ConstStr255Param pathname,
 	{
 		/* get string length */
 		index = pathname[0];
-		
+
 		/* check for empty string */
 		if ( index != 0 )
 		{
@@ -1364,7 +1364,7 @@ pascal	OSErr	GetFilenameFromPathname(ConstStr255Param pathname,
 				{
 					--index;
 				}
-				
+
 				/* if we parsed to the beginning of the pathname and the pathname ended */
 				/* with a colon, then pathname is a full pathname to a volume, not a file */
 				if ( (index != 0) || (pathname[pathname[0]] != ':') )
@@ -1388,16 +1388,16 @@ pascal	OSErr	GetFilenameFromPathname(ConstStr255Param pathname,
 		}
 		else
 		{
-			/* empty string isn't a file */
+			/* empty string is NOT a file */
 			error = notAFileErr;
 		}
 	}
 	else
 	{
-		/* NULL pathname isn't a file */
+		/* NULL pathname is NOT a file */
 		error = notAFileErr;
 	}
-	
+
 	return ( error );
 }
 
@@ -1414,12 +1414,12 @@ pascal	OSErr	GetObjectLocation(short vRefNum,
 	OSErr error;
 	CInfoPBRec pb;
 	Str255 tempPathname;
-	
+
 	/* clear results */
 	*realVRefNum = 0;
 	*realParID = 0;
 	realName[0] = 0;
-	
+
 	/*
 	**	Get the real vRefNum
 	*/
@@ -1428,9 +1428,9 @@ pascal	OSErr	GetObjectLocation(short vRefNum,
 	{
 		/*
 		**	Determine if the object already exists and if so,
-		**	get the real parent directory ID if it's a file
+		**	get the real parent directory ID if it is/was a file
 		*/
-		
+
 		/* Protection against File Sharing problem */
 		if ( (pathname == NULL) || (pathname[0] == 0) )
 		{
@@ -1451,21 +1451,21 @@ pascal	OSErr	GetObjectLocation(short vRefNum,
 			/*
 			**	The file system object is present and we have the file's real parID
 			*/
-			
+
 			/*	Is it a directory or a file? */
 			*isDirectory = (pb.hFileInfo.ioFlAttrib & ioDirMask) != 0;
 			if ( *isDirectory )
 			{
 				/*
-				**	It's a directory, get its name and parent dirID, and then we're done
+				** It is/was a directory, get its name and parent dirID, and then we are done
 				*/
-				
+
 				pb.dirInfo.ioNamePtr = realName;
 				pb.dirInfo.ioVRefNum = *realVRefNum;
 				/* pb.dirInfo.ioDrDirID already contains the dirID of the directory object */
 				pb.dirInfo.ioFDirIndex = -1;	/* get information about ioDirID */
 				error = PBGetCatInfoSync(&pb);
-				
+
 				/* get the parent ID here, because the file system can return the */
 				/* wrong parent ID from the last call. */
 				*realParID = pb.dirInfo.ioDrParID;
@@ -1473,10 +1473,10 @@ pascal	OSErr	GetObjectLocation(short vRefNum,
 			else
 			{
 				/*
-				**	It's a file - use the parent directory ID from the last call
-				**	to GetCatInfoparse, get the file name, and then we're done
+				** It is/was a file - use the parent directory ID from the last call
+				** to GetCatInfoparse, get the file name, and then we are done
 				*/
-				*realParID = pb.hFileInfo.ioFlParID;	
+				*realParID = pb.hFileInfo.ioFlParID;
 				error = GetFilenameFromPathname(pathname, realName);
 			}
 		}
@@ -1485,13 +1485,13 @@ pascal	OSErr	GetObjectLocation(short vRefNum,
 			/*
 			**	The file system object is not present - see if its parent is present
 			*/
-			
+
 			/*
 			**	Parse to get the object name from end of pathname
 			*/
 			error = GetFilenameFromPathname(pathname, realName);
-			
-			/* if we can't get the object name from the end, we can't continue */
+
+			/* if we cannot get the object name from the end, we cannot continue */
 			if ( error == noErr )
 			{
 				/*
@@ -1504,10 +1504,10 @@ pascal	OSErr	GetObjectLocation(short vRefNum,
 				**	if pathname is ':file' tempPathname becomes ':'
 				**	if pathname is 'file or file:' tempPathname becomes ''
 				*/
-				
+
 				/* get a copy of the pathname */
 				BlockMoveData(pathname, tempPathname, pathname[0] + 1);
-				
+
 				/* remove the object name */
 				tempPathname[0] -= realName[0];
 				/* and the trailing colon (if any) */
@@ -1515,9 +1515,9 @@ pascal	OSErr	GetObjectLocation(short vRefNum,
 				{
 					--tempPathname[0];
 				}
-				
+
 				/* OK, now get the parent's directory ID */
-				
+
 				/* Protection against File Sharing problem */
 				pb.hFileInfo.ioNamePtr = (StringPtr)tempPathname;
 				if ( tempPathname[0] != 0 )
@@ -1533,12 +1533,12 @@ pascal	OSErr	GetObjectLocation(short vRefNum,
 				error = PBGetCatInfoSync(&pb);
 				*realParID = pb.dirInfo.ioDrDirID;
 
-				*isDirectory = false;	/* we don't know what the object is really going to be */
+				*isDirectory = false; /* we do NOT know what the object is really going to be */
 			}
-			
+
 			if ( error != noErr )
 			{
-				error = dirNFErr;	/* couldn't find parent directory */
+				error = dirNFErr; /* could NOT find parent directory */
 			}
 			else
 			{
@@ -1546,7 +1546,7 @@ pascal	OSErr	GetObjectLocation(short vRefNum,
 			}
 		}
 	}
-	
+
 	return ( error );
 }
 
@@ -1560,24 +1560,24 @@ pascal	OSErr	GetDirItems(short vRefNum,
 							FSSpecPtr items,
 							short reqItemCount,
 							short *actItemCount,
-							short *itemIndex) /* start with 1, then use what's returned */
+							short *itemIndex) /* start with 1, then use what is/was/has returned */
 {
 	CInfoPBRec pb;
 	OSErr error;
 	long theDirID;
 	Boolean isDirectory;
 	FSSpec *endItemsArray;
-	
+
 	if ( *itemIndex > 0 )
 	{
 		/* NOTE: If I could be sure that the caller passed a real vRefNum and real directory */
 		/* to this routine, I could rip out calls to DetermineVRefNum and GetDirectoryID and this */
 		/* routine would be much faster because of the overhead of DetermineVRefNum and */
 		/* GetDirectoryID and because GetDirectoryID blows away the directory index hint the Macintosh */
-		/* file system keeps for indexed calls. I can't be sure, so for maximum throughput, */
+		/* file system keeps for indexed calls. I cannot be sure, so for maximum throughput, */
 		/* pass a big array of FSSpecs so you can get the directory's contents with few calls */
 		/* to this routine. */
-		
+
 		/* get the real volume reference number */
 		error = DetermineVRefNum(name, vRefNum, &pb.hFileInfo.ioVRefNum);
 		if ( error == noErr )
@@ -1598,10 +1598,10 @@ pascal	OSErr	GetDirItems(short vRefNum,
 						error = PBGetCatInfoSync(&pb);
 						if ( error == noErr )
 						{
-							items->parID = pb.hFileInfo.ioFlParID;	/* return item's parID */
-							items->vRefNum = pb.hFileInfo.ioVRefNum;	/* return item's vRefNum */
-							++*itemIndex;	/* prepare to get next item in directory */
-							
+							items->parID = pb.hFileInfo.ioFlParID; /* return item's parID */
+							items->vRefNum = pb.hFileInfo.ioVRefNum; /* return item's vRefNum */
+							++*itemIndex; /* prepare to get next item in directory */
+
 							if ( (pb.hFileInfo.ioFlAttrib & ioDirMask) != 0 )
 							{
 								if ( getDirectories )
@@ -1623,7 +1623,7 @@ pascal	OSErr	GetDirItems(short vRefNum,
 				}
 				else
 				{
-					/* it wasn't a directory */
+					/* it was NOT a directory */
 					error = dirNFErr;
 				}
 			}
@@ -1634,7 +1634,7 @@ pascal	OSErr	GetDirItems(short vRefNum,
 		/* bad itemIndex */
 		error = paramErr;
 	}
-	
+
 	return ( error );
 }
 
@@ -1644,7 +1644,7 @@ static	void	DeleteLevel(long dirToDelete,
 							DeleteEnumGlobalsPtr theGlobals)
 {
 	long savedDir;
-	
+
 	do
 	{
 		/* prepare to delete directory */
@@ -1658,25 +1658,25 @@ static	void	DeleteLevel(long dirToDelete,
 			/* We have an item.  Is it a file or directory? */
 			if ( (theGlobals->myPB.ciPB.dirInfo.ioFlAttrib & ioDirMask) != 0 )
 			{
-				/* it's a directory */
+				/* it is/was a directory */
 				savedDir = theGlobals->myPB.ciPB.dirInfo.ioDrDirID;	/* save dirID of directory instead */
-				DeleteLevel(theGlobals->myPB.ciPB.dirInfo.ioDrDirID, theGlobals);	/* Delete its contents */
+				DeleteLevel(theGlobals->myPB.ciPB.dirInfo.ioDrDirID, theGlobals); /* Delete its contents */
 				theGlobals->myPB.ciPB.dirInfo.ioNamePtr = NULL;	/* prepare to delete directory */
 			}
 			if ( theGlobals->error == noErr )
 			{
 				theGlobals->myPB.ciPB.dirInfo.ioDrDirID = savedDir;	/* restore dirID */
-				theGlobals->myPB.hPB.fileParam.ioFVersNum = 0;	/* just in case it's used on an MFS volume... */
+				theGlobals->myPB.hPB.fileParam.ioFVersNum = 0; /* just in case it is used on an MFS volume... */
 				theGlobals->error = PBHDeleteSync(&(theGlobals->myPB.hPB));	/* delete this item */
 				if ( theGlobals->error == fLckdErr )
 				{
-					(void) PBHRstFLockSync(&(theGlobals->myPB.hPB));	/* unlock it */
+					(void) PBHRstFLockSync(&(theGlobals->myPB.hPB)); /* unlock it */
 					theGlobals->error = PBHDeleteSync(&(theGlobals->myPB.hPB));	/* and try again */
 				}
 			}
 		}
 	} while ( theGlobals->error == noErr );
-	
+
 	if ( theGlobals->error == fnfErr )
 	{
 		theGlobals->error = noErr;
@@ -1705,7 +1705,7 @@ pascal	OSErr	DeleteDirectoryContents(short vRefNum,
 			{
 				/* Set up the globals we need to access from the recursive routine. */
 				theGlobals.myPB.ciPB.dirInfo.ioVRefNum = vRefNum;
-					
+
 				/* Here we go into recursion land... */
 				DeleteLevel(dirID, &theGlobals);
 				error = theGlobals.error;
@@ -1716,7 +1716,7 @@ pascal	OSErr	DeleteDirectoryContents(short vRefNum,
 			error = dirNFErr;
 		}
 	}
-	
+
 	return ( error );
 }
 
@@ -1727,7 +1727,7 @@ pascal	OSErr	DeleteDirectory(short vRefNum,
 								ConstStr255Param name)
 {
 	OSErr error;
-	
+
 	/* Make sure a directory was specified and then delete its contents */
 	error = DeleteDirectoryContents(vRefNum, dirID, name);
 	if ( error == noErr )
@@ -1739,7 +1739,7 @@ pascal	OSErr	DeleteDirectory(short vRefNum,
 			error = HDelete(vRefNum, dirID, name);	/* and try again */
 		}
 	}
-	
+
 	return ( error );
 }
 
@@ -1751,7 +1751,7 @@ pascal	OSErr	CheckObjectLock(short vRefNum,
 {
 	CInfoPBRec pb;
 	OSErr error;
-	
+
 	error = GetCatInfoNoName(vRefNum, dirID, name, &pb);
 	if ( error == noErr )
 	{
@@ -1761,7 +1761,7 @@ pascal	OSErr	CheckObjectLock(short vRefNum,
 			error = fLckdErr;
 		}
 	}
-	
+
 	return ( error );
 }
 
@@ -1782,7 +1782,7 @@ pascal	OSErr	GetFileSize(short vRefNum,
 {
 	HParamBlockRec pb;
 	OSErr error;
-	
+
 	pb.fileParam.ioNamePtr = (StringPtr)fileName;
 	pb.fileParam.ioVRefNum = vRefNum;
 	pb.fileParam.ioFVersNum = 0;
@@ -1794,7 +1794,7 @@ pascal	OSErr	GetFileSize(short vRefNum,
 		*dataSize = pb.fileParam.ioFlLgLen;
 		*rsrcSize = pb.fileParam.ioFlRLgLen;
 	}
-	
+
 	return ( error );
 }
 
@@ -1850,7 +1850,7 @@ pascal	OSErr	BumpDate(short vRefNum,
 		}
 		error = PBSetCatInfoSync(&pb);
 	}
-	
+
 	return ( error );
 }
 
@@ -1890,17 +1890,17 @@ pascal	OSErr	ChangeCreatorType(short vRefNum,
 			{
 				pb.hFileInfo.ioFlFndrInfo.fdCreator = creator;
 			}
-			
+
 			/* If fileType not 0x00000000, change fileType */
 			if ( fileType != (OSType)0x00000000 )
 			{
 				pb.hFileInfo.ioFlFndrInfo.fdType = fileType;
 			}
-				
+
 			pb.hFileInfo.ioDirID = dirID;
 			error = PBSetCatInfoSync(&pb);	/* now, save the new information back to disk */
 
-			if ( (error == noErr) && (parID != fsRtParID) ) /* can't bump fsRtParID */
+			if ( (error == noErr) && (parID != fsRtParID) ) /* cannot bump fsRtParID */
 			{
 				/* get the real vRefNum in case a full pathname was passed */
 				error = DetermineVRefNum(name, vRefNum, &realVRefNum);
@@ -1918,7 +1918,7 @@ pascal	OSErr	ChangeCreatorType(short vRefNum,
 			error = notAFileErr;
 		}
 	}
-	
+
 	return ( error );
 }
 
@@ -1963,7 +1963,7 @@ pascal	OSErr	ChangeFDFlags(short vRefNum,
 	if ( error == noErr )
 	{
 		parID = pb.hFileInfo.ioFlParID;	/* save parent dirID for BumpDate call */
-		
+
 		/* set or clear the appropriate bits in the Finder flags */
 		if ( setBits )
 		{
@@ -1975,7 +1975,7 @@ pascal	OSErr	ChangeFDFlags(short vRefNum,
 			/* AND out the bits */
 			pb.hFileInfo.ioFlFndrInfo.fdFlags &= ~flagBits;
 		}
-			
+
 		if ( pb.dirInfo.ioNamePtr == tempName )
 		{
 			pb.hFileInfo.ioDirID = pb.hFileInfo.ioFlParID;
@@ -1984,10 +1984,10 @@ pascal	OSErr	ChangeFDFlags(short vRefNum,
 		{
 			pb.hFileInfo.ioDirID = dirID;
 		}
-		
+
 		error = PBSetCatInfoSync(&pb);	/* now, save the new information back to disk */
 
-		if ( (error == noErr) && (parID != fsRtParID) ) /* can't bump fsRtParID */
+		if ( (error == noErr) && (parID != fsRtParID) ) /* cannot bump fsRtParID */
 		{
 			/* get the real vRefNum in case a full pathname was passed */
 			error = DetermineVRefNum(name, vRefNum, &realVRefNum);
@@ -1999,7 +1999,7 @@ pascal	OSErr	ChangeFDFlags(short vRefNum,
 			}
 		}
 	}
-	
+
 	return ( error );
 }
 
@@ -2218,7 +2218,7 @@ pascal	OSErr	CopyFileMgrAttributes(short srcVRefNum,
 		{
 			pb.ciPB.hFileInfo.ioNamePtr = (StringPtr)dstName;
 		}
-		/* don't copy the hasBeenInited bit */
+		/* do NOT copy the hasBeenInited bit */
 		pb.ciPB.hFileInfo.ioFlFndrInfo.fdFlags = ( pb.ciPB.hFileInfo.ioFlFndrInfo.fdFlags & 0xfeff );
 		error = PBSetCatInfoSync(&pb.ciPB);
 		if ( (error == noErr) && (copyLockBit) && ((pb.ciPB.hFileInfo.ioFlAttrib & 0x01) != 0) )
@@ -2265,7 +2265,7 @@ pascal	OSErr	HOpenAware(short vRefNum,
 	pb.fileParam.ioDirID = dirID;
 
 	/* get volume attributes */
-	/* this preflighting is needed because Foreign File Access based file systems don't */
+	/* this preflighting is needed because Foreign File Access based file systems do NOT */
 	/* return the correct error result to the OpenDeny call */
 	error = HGetVolParms(fileName, vRefNum, &volParmsInfo, &infoSize);
 	if ( (error == noErr) && hasOpenDeny(volParmsInfo) )
@@ -2275,15 +2275,15 @@ pascal	OSErr	HOpenAware(short vRefNum,
 			error = PBHOpenDenySync(&pb);
 			*refNum = pb.ioParam.ioRefNum;
 	}
-	else if ( (error == noErr) || (error == paramErr) )	/* paramErr is OK, it just means this volume doesn't support GetVolParms */
+	else if ( (error == noErr) || (error == paramErr) )	/* paramErr is OK, it just means this volume does NOT support GetVolParms */
 	{
-		/* OpenDeny isn't supported, so try File Manager Open functions */
-		
+		/* OpenDeny is NOT supported, so try File Manager Open functions */
+
 		/* If request includes write permission, then see if the volume is */
-		/* locked by hardware or software. The HFS file system doesn't check */
+		/* locked by hardware or software. The HFS file system does NOT check */
 		/* for this when a file is opened - you only find out later when you */
 		/* try to write and the write fails with a wPrErr or a vLckdErr. */
-		
+
 		if ( (denyModes & dmWr) != 0 )
 		{
 			error = CheckVolLock(fileName, vRefNum);
@@ -2292,7 +2292,7 @@ pascal	OSErr	HOpenAware(short vRefNum,
 		{
 			error = noErr;
 		}
-		
+
 		if ( error == noErr )
 		{
 			/* Set File Manager permissions to closest thing possible */
@@ -2313,7 +2313,7 @@ pascal	OSErr	HOpenAware(short vRefNum,
 			*refNum = pb.ioParam.ioRefNum;
 		}
 	}
-	
+
 	return ( error );
 }
 
@@ -2346,7 +2346,7 @@ pascal	OSErr	HOpenRFAware(short vRefNum,
 	pb.fileParam.ioDirID = dirID;
 
 	/* get volume attributes */
-	/* this preflighting is needed because Foreign File Access based file systems don't */
+	/* this preflighting is needed because Foreign File Access based file systems do NOT */
 	/* return the correct error result to the OpenRFDeny call */
 	error = HGetVolParms(fileName, vRefNum, &volParmsInfo, &infoSize);
 	if ( (error == noErr) && hasOpenDeny(volParmsInfo) )
@@ -2359,15 +2359,15 @@ pascal	OSErr	HOpenRFAware(short vRefNum,
 			*refNum = pb.ioParam.ioRefNum;
 		}
 	}
-	else if ( (error == noErr) || (error == paramErr) )	/* paramErr is OK, it just means this volume doesn't support GetVolParms */
+	else if ( (error == noErr) || (error == paramErr) )	/* paramErr is OK, it just means this volume does NOT support GetVolParms */
 	{
-		/* OpenRFDeny isn't supported, so try File Manager OpenRF function */
-		
+		/* OpenRFDeny is NOT supported, so try File Manager OpenRF function */
+
 		/* If request includes write permission, then see if the volume is */
-		/* locked by hardware or software. The HFS file system doesn't check */
+		/* locked by hardware or software. The HFS file system does NOT check */
 		/* for this when a file is opened - you only find out later when you */
 		/* try to write and the write fails with a wPrErr or a vLckdErr. */
-		
+
 		if ( (denyModes & dmWr) != 0 )
 		{
 			error = CheckVolLock(fileName, vRefNum);
@@ -2376,7 +2376,7 @@ pascal	OSErr	HOpenRFAware(short vRefNum,
 		{
 			error = noErr;
 		}
-		
+
 		if ( error == noErr )
 		{
 			/* Set File Manager permissions to closest thing possible */
@@ -2466,7 +2466,7 @@ static	Boolean EqualMemory(const void *buffer1, const void *buffer2, unsigned lo
 			--numBytes;
 		}
 	}
-	
+
 	return ( true );
 }
 
@@ -2476,13 +2476,13 @@ static	Boolean EqualMemory(const void *buffer1, const void *buffer2, unsigned lo
 **	Read any number of bytes from an open file using read-verify mode.
 **	The FSReadVerify function reads any number of bytes from an open file
 **	and verifies them against the data in the buffer pointed to by buffPtr.
-**	
+**
 **	Because of a bug in the HFS file system, only non-block aligned parts of
 **	the read are verified against the buffer data and the rest is *copied*
-**	into the buffer.  Thus, you shouldn't verify against your original data;
+**	into the buffer. Thus, you should NOT verify against your original data;
 **	instead, you should verify against a copy of the original data and then
 **	compare the read-verified copy against the original data after calling
-**	FSReadVerify. That's why this function isn't exported - it needs the
+**	FSReadVerify. That is/was why this function is NOT exported - it needs the
 **	wrapper provided by FSWriteVerify.
 */
 static	OSErr	FSReadVerify(short refNum,
@@ -2515,7 +2515,7 @@ pascal	OSErr	FSWriteVerify(short refNum,
 	long	bytesVerified;
 	Ptr		startVerify;
 	OSErr	result;
-	
+
 	/*
 	**	Allocate the verify buffer
 	**	Try to get get a large enough buffer to verify in one pass.
@@ -2528,7 +2528,7 @@ pascal	OSErr	FSWriteVerify(short refNum,
 		verifyBuffer = GetTempBuffer(bufferSize, &bufferSize);
 	}
 	if ( verifyBuffer != NULL )
-	{		
+	{
 		/* Save the current position */
 		result = GetFPos(refNum, &position);
 		if ( result == noErr )
@@ -2573,7 +2573,7 @@ pascal	OSErr	FSWriteVerify(short refNum,
 						**	after the read-verify request completes.
 						*/
 						BlockMoveData(startVerify, verifyBuffer, byteCount);
-						
+
 						/* Read-verify the data back into the verify buffer */
 						result = FSReadVerify(refNum, &byteCount, verifyBuffer);
 						if ( result == noErr )
@@ -2613,7 +2613,7 @@ pascal	OSErr	CopyFork(short srcRefNum,
 
 	if ( (copyBufferPtr == NULL) || (copyBufferSize == 0) )
 		return ( paramErr );
-	
+
 	srcPB.ioParam.ioRefNum = srcRefNum;
 	dstPB.ioParam.ioRefNum = dstRefNum;
 
@@ -2641,7 +2641,7 @@ pascal	OSErr	CopyFork(short srcRefNum,
 	if ( dstError != noErr )
 		return ( dstError );
 
-	/* set up fields that won't change in the loop */
+	/* set up fields that will NOT change in the loop */
 	srcPB.ioParam.ioBuffer = (Ptr)copyBufferPtr;
 	srcPB.ioParam.ioPosMode = fsAtMark + 0x0020;/* fsAtMark + noCacheBit */
 	/* If copyBufferSize is greater than 512 bytes, make it a multiple of 512 bytes */
@@ -2714,7 +2714,7 @@ pascal	OSErr	CopyDirectoryAccess(short srcVRefNum,
 									short dstVRefNum,
 									long dstDirID,
 									ConstStr255Param dstName)
-{	
+{
 	OSErr error;
 	GetVolParmsInfoBuffer infoBuffer;	/* Where PBGetVolParms dumps its info */
 	long	dstServerAdr;				/* AppleTalk server address of destination (if any) */
@@ -2729,7 +2729,7 @@ pascal	OSErr	CopyDirectoryAccess(short srcVRefNum,
 		if ( hasAccessCntl(infoBuffer) )
 		{
 			dstServerAdr = infoBuffer.vMServerAdr;
-			
+
 			/* See if source supports directory access control and is on same server */
 			tempLong = sizeof(infoBuffer);
 			error = HGetVolParms(srcName, srcVRefNum, &infoBuffer, &tempLong);
@@ -2747,19 +2747,19 @@ pascal	OSErr	CopyDirectoryAccess(short srcVRefNum,
 				}
 				else
 				{
-					/* destination doesn't support directory access control or */
-					/* they volumes aren't on the same server */
+					/* destination does NOT support directory access control or */
+					/* the volumes are NOT on the same server */
 					error = paramErr;
 				}
 			}
 		}
 		else
 		{
-			/* destination doesn't support directory access control */
+			/* destination does NOT support directory access control */
 			error = paramErr;
 		}
 	}
-	
+
 	return ( error );
 }
 
@@ -2792,7 +2792,7 @@ pascal	OSErr	HMoveRenameCompat(short vRefNum,
 	long					uniqueTempDirID;
 	Str31					uniqueTempDirName;
 	unsigned short			uniqueNameoverflow;
-	
+
 	/* Get volume attributes */
 	infoSize = sizeof(GetVolParmsInfoBuffer);
 	error = HGetVolParms((StringPtr)srcName, vRefNum, &volParmsInfo, &infoSize);
@@ -2801,11 +2801,11 @@ pascal	OSErr	HMoveRenameCompat(short vRefNum,
 		/* If volume supports move and rename, so use it and return */
 		error = HMoveRename(vRefNum, srcDirID, srcName, dstDirID, dstpathName, copyName);
 	}
-	else if ( (error == noErr) || (error == paramErr) ) /* paramErr is OK, it just means this volume doesn't support GetVolParms */
+	else if ( (error == noErr) || (error == paramErr) ) /* paramErr is OK, it just means this volume does NOT support GetVolParms */
 	{
-		/* MoveRename isn't supported by this volume, so do it by hand */
-		
-		/* If copyName isn't supplied, we can simply CatMove and return */
+		/* MoveRename is NOT supported by this volume, so do it by hand */
+
+		/* If copyName is NOT supplied, we can simply CatMove and return */
 		if ( copyName == NULL )
 		{
 			error = CatMove(vRefNum, srcDirID, srcName, dstDirID, dstpathName);
@@ -2813,7 +2813,7 @@ pascal	OSErr	HMoveRenameCompat(short vRefNum,
 		else
 		{
 			/* Renaming is required, so we have some work to do... */
-			
+
 			/* Get the object's real name, real parent ID and real vRefNum */
 			error = GetObjectLocation(vRefNum, srcDirID, (StringPtr)srcName,
 										&realVRefNum, &realParID, realName, &isDirectory);
@@ -2827,8 +2827,8 @@ pascal	OSErr	HMoveRenameCompat(short vRefNum,
 					/* Create a new uniquely named folder in the temporary items folder. */
 					/* This is done to avoid the case where 'realName' or 'copyName' already */
 					/* exists in the temporary items folder. */
-					
-					/* Start with current tick count as uniqueTempDirName */					
+
+					/* Start with current tick count as uniqueTempDirName */
 					NumToString(TickCount(), uniqueTempDirName);
 					uniqueNameoverflow = 0;
 					do
@@ -2838,12 +2838,12 @@ pascal	OSErr	HMoveRenameCompat(short vRefNum,
 						{
 							/* Duplicate name - change the first character to the next ASCII character */
 							++uniqueTempDirName[1];
-							/* Make sure it isn't a colon! */
+							/* Make sure it is NOT a colon! */
 							if ( uniqueTempDirName[1] == ':' )
 							{
 								++uniqueTempDirName[1];
 							}
-							/* Don't go too far... */
+							/* Do NOT go too far... */
 							++uniqueNameoverflow;
 						}
 					} while ( (error == dupFNErr) && (uniqueNameoverflow <= 64) ); /* 64 new files per 1/60th second - not likely! */
@@ -2853,7 +2853,7 @@ pascal	OSErr	HMoveRenameCompat(short vRefNum,
 						error = CatMove(realVRefNum, realParID, realName, uniqueTempDirID, NULL);
 						if ( error == noErr )
 						{
-							/* Rename the object */	
+							/* Rename the object */
 							error = HRename(realVRefNum, uniqueTempDirID, realName, copyName);
 							if ( error == noErr )
 							{
@@ -2878,7 +2878,7 @@ pascal	OSErr	HMoveRenameCompat(short vRefNum,
 			}
 		}
 	}
-	
+
 	return ( error );
 }
 
@@ -2911,7 +2911,7 @@ pascal	OSErr	BuildAFPVolMountInfo(short flags,
 {
 	MyAFPVolMountInfoPtr	infoPtr;
 	OSErr					error;
-	
+
 	/* Allocate the AFPXVolMountInfo record */
 	infoPtr = (MyAFPVolMountInfoPtr)NewPtrClear(sizeof(MyAFPVolMountInfo));
 	if ( infoPtr != NULL )
@@ -2923,21 +2923,21 @@ pascal	OSErr	BuildAFPVolMountInfo(short flags,
 		infoPtr->nbpInterval = nbpInterval;
 		infoPtr->nbpCount = nbpCount;
 		infoPtr->uamType = uamType;
-		
+
 		infoPtr->zoneNameOffset = offsetof(MyAFPVolMountInfo, zoneName);
 		infoPtr->serverNameOffset = offsetof(MyAFPVolMountInfo, serverName);
 		infoPtr->volNameOffset = offsetof(MyAFPVolMountInfo, volName);
 		infoPtr->userNameOffset = offsetof(MyAFPVolMountInfo, userName);
 		infoPtr->userPasswordOffset = offsetof(MyAFPVolMountInfo, userPassword);
 		infoPtr->volPasswordOffset = offsetof(MyAFPVolMountInfo, volPassword);
-		
+
 		BlockMoveData(zoneName, infoPtr->zoneName, sizeof(Str32));
 		BlockMoveData(serverName, infoPtr->serverName, sizeof(Str32));
 		BlockMoveData(volName, infoPtr->volName, sizeof(Str27));
 		BlockMoveData(userName, infoPtr->userName, sizeof(Str31));
 		BlockMoveData(userPassword, infoPtr->userPassword, sizeof(Str8));
 		BlockMoveData(volPassword, infoPtr->volPassword, sizeof(Str8));
-		
+
 		*afpInfoPtr = (AFPVolMountInfoPtr)infoPtr;
 		error = noErr;
 	}
@@ -2945,7 +2945,7 @@ pascal	OSErr	BuildAFPVolMountInfo(short flags,
 	{
 		error = memFullErr;
 	}
-	
+
 	return ( error );
 }
 
@@ -2961,44 +2961,44 @@ pascal	OSErr	RetrieveAFPVolMountInfo(AFPVolMountInfoPtr afpInfoPtr,
 {
 	StringPtr	tempPtr;
 	OSErr		error;
-		
+
 	/* Retrieve the AFP mounting information from an AFPVolMountInfo record. */
 	if ( afpInfoPtr->media == AppleShareMediaType )
 	{
 		*flags = afpInfoPtr->flags;
 		*uamType = afpInfoPtr->uamType;
-		
+
 		if ( afpInfoPtr->zoneNameOffset != 0)
 		{
 			tempPtr = (StringPtr)((long)afpInfoPtr + afpInfoPtr->zoneNameOffset);
 			BlockMoveData(tempPtr, zoneName, tempPtr[0] + 1);
 		}
-		
+
 		if ( afpInfoPtr->serverNameOffset != 0)
 		{
 			tempPtr = (StringPtr)((long)afpInfoPtr + afpInfoPtr->serverNameOffset);
 			BlockMoveData(tempPtr, serverName, tempPtr[0] + 1);
 		}
-		
+
 		if ( afpInfoPtr->volNameOffset != 0)
 		{
 			tempPtr = (StringPtr)((long)afpInfoPtr + afpInfoPtr->volNameOffset);
 			BlockMoveData(tempPtr, volName, tempPtr[0] + 1);
 		}
-		
+
 		if ( afpInfoPtr->userNameOffset != 0)
 		{
 			tempPtr = (StringPtr)((long)afpInfoPtr + afpInfoPtr->userNameOffset);
 			BlockMoveData(tempPtr, userName, tempPtr[0] + 1);
 		}
-		
+
 		error = noErr;
 	}
 	else
 	{
 		error = paramErr;
 	}
-	
+
 	return ( error );
 }
 
@@ -3022,10 +3022,10 @@ pascal	OSErr	BuildAFPXVolMountInfo(short flags,
 	Size					infoSize;
 	MyAFPXVolMountInfoPtr	infoPtr;
 	OSErr					error;
-	
+
 	/* Calculate the size of the AFPXVolMountInfo record */
 	infoSize = sizeof(MyAFPXVolMountInfo) + alternateAddressLength - 1;
-	
+
 	/* Allocate the AFPXVolMountInfo record */
 	infoPtr = (MyAFPXVolMountInfoPtr)NewPtrClear(infoSize);
 	if ( infoPtr != NULL )
@@ -3036,14 +3036,14 @@ pascal	OSErr	BuildAFPXVolMountInfo(short flags,
 		infoPtr->flags = flags;
 		if ( alternateAddressLength != 0 )
 		{
-			/* make sure the volMountExtendedFlagsBit is set if there's extended address info */
+			/* make sure the volMountExtendedFlagsBit is set if there is/was extended address info */
 			infoPtr->flags |= volMountExtendedFlagsMask;
 			/* and set the only extendedFlags bit we know about */
 			infoPtr->extendedFlags = kAFPExtendedFlagsAlternateAddressMask;
 		}
 		else
 		{
-			/* make sure the volMountExtendedFlagsBit is clear if there's no extended address info */
+			/* make sure the volMountExtendedFlagsBit is clear if there is/was no extended address info */
 			infoPtr->flags &= ~volMountExtendedFlagsMask;
 			/* and clear the extendedFlags */
 			infoPtr->extendedFlags = 0;
@@ -3051,8 +3051,8 @@ pascal	OSErr	BuildAFPXVolMountInfo(short flags,
 		infoPtr->nbpInterval = nbpInterval;
 		infoPtr->nbpCount = nbpCount;
 		infoPtr->uamType = uamType;
-		
-		infoPtr->zoneNameOffset = offsetof(MyAFPXVolMountInfo, zoneName);		
+
+		infoPtr->zoneNameOffset = offsetof(MyAFPXVolMountInfo, zoneName);
 		infoPtr->serverNameOffset = offsetof(MyAFPXVolMountInfo, serverName);
 		infoPtr->volNameOffset = offsetof(MyAFPXVolMountInfo, volName);
 		infoPtr->userNameOffset = offsetof(MyAFPXVolMountInfo, userName);
@@ -3060,7 +3060,7 @@ pascal	OSErr	BuildAFPXVolMountInfo(short flags,
 		infoPtr->volPasswordOffset = offsetof(MyAFPXVolMountInfo, volPassword);
 		infoPtr->uamNameOffset = offsetof(MyAFPXVolMountInfo, uamName);
 		infoPtr->alternateAddressOffset = offsetof(MyAFPXVolMountInfo, alternateAddress);
-		
+
 		BlockMoveData(zoneName, infoPtr->zoneName, sizeof(Str32));
 		BlockMoveData(serverName, infoPtr->serverName, sizeof(Str32));
 		BlockMoveData(volName, infoPtr->volName, sizeof(Str27));
@@ -3069,7 +3069,7 @@ pascal	OSErr	BuildAFPXVolMountInfo(short flags,
 		BlockMoveData(volPassword, infoPtr->volPassword, sizeof(Str8));
 		BlockMoveData(uamName, infoPtr->uamName, sizeof(Str32));
 		BlockMoveData(alternateAddress, infoPtr->alternateAddress, alternateAddressLength);
-		
+
 		*afpXInfoPtr = (AFPXVolMountInfoPtr)infoPtr;
 		error = noErr;
 	}
@@ -3077,7 +3077,7 @@ pascal	OSErr	BuildAFPXVolMountInfo(short flags,
 	{
 		error = memFullErr;
 	}
-	
+
 	return ( error );
 }
 
@@ -3100,20 +3100,20 @@ pascal	OSErr	RetrieveAFPXVolMountInfo(AFPXVolMountInfoPtr afpXInfoPtr,
 	Size		alternateAddressDataSize;
 	OSErr		error;
 	UInt8		addressCount;
-		
+
 	/* Retrieve the AFP mounting information from an AFPVolMountInfo record. */
 	if ( afpXInfoPtr->media == AppleShareMediaType )
 	{
 		/* default to noErr */
 		error = noErr;
-		
+
 		/* Is this an extended record? */
 		if ( (afpXInfoPtr->flags & volMountExtendedFlagsMask) != 0 )
 		{
 			if ( ((afpXInfoPtr->extendedFlags & kAFPExtendedFlagsAlternateAddressMask) != 0) &&
 				 (afpXInfoPtr->alternateAddressOffset != 0) )
 			{
-				
+
 				alternateAddressStart = (Ptr)((long)afpXInfoPtr + afpXInfoPtr->alternateAddressOffset);
 				alternateAddressEnd = alternateAddressStart + 1;	/* skip over alternate address version byte */
 				addressCount = *(UInt8*)alternateAddressEnd;		/* get the address count */
@@ -3141,7 +3141,7 @@ pascal	OSErr	RetrieveAFPXVolMountInfo(AFPXVolMountInfoPtr afpXInfoPtr,
 					error = memFullErr;
 				}
 			}
-			
+
 			if ( error == noErr )	/* fill in more output parameters if everything is OK */
 			{
 				if ( afpXInfoPtr->uamNameOffset != 0 )
@@ -3151,30 +3151,30 @@ pascal	OSErr	RetrieveAFPXVolMountInfo(AFPXVolMountInfoPtr afpXInfoPtr,
 				}
 			}
 		}
-		
+
 		if ( error == noErr )	/* fill in more output parameters if everything is OK */
 		{
 			*flags = afpXInfoPtr->flags;
 			*uamType = afpXInfoPtr->uamType;
-			
+
 			if ( afpXInfoPtr->zoneNameOffset != 0 )
 			{
 				tempPtr = (StringPtr)((long)afpXInfoPtr + afpXInfoPtr->zoneNameOffset);
 				BlockMoveData(tempPtr, zoneName, tempPtr[0] + 1);
 			}
-			
+
 			if ( afpXInfoPtr->serverNameOffset != 0 )
 			{
 				tempPtr = (StringPtr)((long)afpXInfoPtr + afpXInfoPtr->serverNameOffset);
 				BlockMoveData(tempPtr, serverName, tempPtr[0] + 1);
 			}
-			
+
 			if ( afpXInfoPtr->volNameOffset != 0 )
 			{
 				tempPtr = (StringPtr)((long)afpXInfoPtr + afpXInfoPtr->volNameOffset);
 				BlockMoveData(tempPtr, volName, tempPtr[0] + 1);
 			}
-			
+
 			if ( afpXInfoPtr->userNameOffset != 0 )
 			{
 				tempPtr = (StringPtr)((long)afpXInfoPtr + afpXInfoPtr->userNameOffset);
@@ -3186,7 +3186,7 @@ pascal	OSErr	RetrieveAFPXVolMountInfo(AFPXVolMountInfoPtr afpXInfoPtr,
 	{
 		error = paramErr;
 	}
-	
+
 	return ( error );
 }
 
@@ -3211,7 +3211,7 @@ pascal	OSErr	GetUGEntries(short objType,
 		/* Files.h in the universal interfaces, PBGetUGEntrySync takes a CMovePBPtr */
 		/* as the parameter. Inside Macintosh and the original glue used HParmBlkPtr. */
 		/* A CMovePBPtr works OK, but this will be changed in the future  back to */
-		/* HParmBlkPtr, so I'm just casting it here. */
+		/* HParmBlkPtr, so I am just casting it here. */
 		error = PBGetUGEntrySync(&pb);
 		if ( error == noErr )
 		{
@@ -3220,9 +3220,10 @@ pascal	OSErr	GetUGEntries(short objType,
 			++*actEntryCount;
 		}
 	}
-	
+
 	return ( error );
 }
 
 /*****************************************************************************/
 
+/* EOF */

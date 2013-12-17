@@ -7,16 +7,16 @@
 **
 **	File:		Optimization.h
 **
-**	Copyright © 1992-1998 Apple Computer, Inc.
+**	Copyright (c) 1992-1998 Apple Computer, Inc.
 **	All rights reserved.
 **
 **	You may incorporate this sample code into your applications without
 **	restriction, though the sample code has been provided "AS IS" and the
 **	responsibility for its operation is 100% yours.  However, what you are
 **	not permitted to do is to redistribute the source as "DSC Sample Code"
-**	after having made changes. If you're going to re-distribute the source,
+**	after having made changes. If you are going to re-distribute the source,
 **	we require that you make it clear in the source that the code was
-**	descended from Apple Sample Code, but that you've made changes.
+**	descended from Apple Sample Code, but that you have made changes.
 **
 **	The Optimization changes to MoreFiles source and header files, along with
 **	this file and OptimizationEnd.h, let you optimize the code produced
@@ -38,12 +38,12 @@
 **	except for system callbacks that require Pascal calling conventions.
 **	This will make C programs both smaller and faster.
 **	Just define __WANTPASCALELIMINATION to be 1 to turn this optimization on
-**	when building MoreFiles for use from C programs (you'll need to keep
+**	when building MoreFiles for use from C programs (you will need to keep
 **	Pascal calling conventions when linking MoreFiles routines with Pascal
 **	programs).
 **
 **	3 -- If Metrowerks compiler is used, "#pragma internal on" may help produce
-**	better code. However, this option can also cause problems if you're
+**	better code. However, this option can also cause problems if you are
 **	trying to build MoreFiles as a shared library, so it is by default not used.
 **	Just define __USEPRAGMAINTERNAL to be 1 to turn this optimization on.
 **
@@ -55,37 +55,38 @@
 
 #ifndef __MACOSSEVENFIVEONEORLATER
 	#define __MACOSSEVENFIVEONEORLATER 0
-#endif
+#endif /* !__MACOSSEVENFIVEONEORLATER */
 
 #ifndef __MACOSSEVENFIVEORLATER
 	#define __MACOSSEVENFIVEORLATER __MACOSSEVENFIVEONEORLATER
-#endif
+#endif /* !__MACOSSEVENFIVEORLATER */
 
 #ifndef __MACOSSEVENORLATER
 	#if GENERATINGCFM
 		#define __MACOSSEVENORLATER 1
 	#else
 		#define __MACOSSEVENORLATER __MACOSSEVENFIVEORLATER
-	#endif
-#endif
+	#endif /* GENERATINGCFM */
+#endif /* !__MACOSSEVENORLATER */
 
 
 #ifndef	__WANTPASCALELIMINATION
 	#define	__WANTPASCALELIMINATION	0
-#endif
+#endif /* !__WANTPASCALELIMINATION */
 
 #if	__WANTPASCALELIMINATION
-	#define pascal	
-#endif
+	#define pascal
+#endif /* __WANTPASCALELIMINATION */
 
 
 #ifndef __USEPRAGMAINTERNAL
 	#define	__USEPRAGMAINTERNAL	0
-#endif
+#endif /* !__USEPRAGMAINTERNAL */
 
 #if	__USEPRAGMAINTERNAL
 	#if defined(__MWERKS__)
 		#pragma internal on
-	#endif
-#endif
+	#endif /* __MWERKS__ */
+#endif /* __USEPRAGMAINTERNAL */
 
+/* EOF */

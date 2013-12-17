@@ -14,9 +14,9 @@
 **	restriction, though the sample code has been provided "AS IS" and the
 **	responsibility for its operation is 100% yours.  However, what you are
 **	not permitted to do is to redistribute the source as "DSC Sample Code"
-**	after having made changes. If you're going to re-distribute the source,
+**	after having made changes. If you are going to re-distribute the source,
 **	we require that you make it clear in the source that the code was
-**	descended from Apple Sample Code, but that you've made changes.
+**	descended from Apple Sample Code, but that you have made changes.
 */
 
 #ifndef __FILECOPY__
@@ -29,7 +29,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 /*****************************************************************************/
 
@@ -59,7 +59,7 @@ pascal	OSErr	FileCopy(short srcVRefNum,
 	allocates a buffer in the application heap. If you pass a
 	copy buffer to this routine, make its size a multiple of 512
 	($200) bytes for optimum performance.
-	
+
 	srcVRefNum		input:	Source volume specification.
 	srcDirID		input:	Source directory ID.
 	srcName			input:	Source file name.
@@ -68,7 +68,7 @@ pascal	OSErr	FileCopy(short srcVRefNum,
 	dstPathname		input:	Pointer to destination directory name, or
 							nil when dstDirID specifies a directory.
 	copyName		input:	Points to the new file name if the file is
-							to be renamed or nil if the file isn't to
+							to be renamed or nil if the file is NOT to
 							be renamed.
 	copyBufferPtr	input:	Points to a buffer of copyBufferSize that
 							is used the i/o buffer for the copy or
@@ -80,7 +80,7 @@ pascal	OSErr	FileCopy(short srcVRefNum,
 							allocation blocks on the destination volume to
 							hold both the data and resource forks before
 							starting the copy.
-	
+
 	Result Codes
 		noErr				0		No error
 		readErr				Ð19		Driver does not respond to read requests
@@ -118,9 +118,9 @@ pascal	OSErr	FileCopy(short srcVRefNum,
 									modes
 		afpObjectTypeErr	-5025	Source is a directory, directory not found
 									or incomplete pathname
-	
+
 	__________
-	
+
 	Also see:	FSpFileCopy, DirectoryCopy, FSpDirectoryCopy
 */
 
@@ -148,12 +148,12 @@ pascal	OSErr	FSpFileCopy(const FSSpec *srcSpec,
 	allocates a buffer in the application heap. If you pass a
 	copy buffer to this routine, make its size a multiple of 512
 	($200) bytes for optimum performance.
-	
+
 	srcSpec			input:	An FSSpec record specifying the source file.
 	dstSpec			input:	An FSSpec record specifying the destination
 							directory.
 	copyName		input:	Points to the new file name if the file is
-							to be renamed or nil if the file isn't to
+							to be renamed or nil if the file is NOT to
 							be renamed.
 	copyBufferPtr	input:	Points to a buffer of copyBufferSize that
 							is used the i/o buffer for the copy or
@@ -165,7 +165,7 @@ pascal	OSErr	FSpFileCopy(const FSSpec *srcSpec,
 							enough allocation blocks on the destination
 							volume to hold both the data and resource forks
 							before starting the copy.
-	
+
 	Result Codes
 		noErr				0		No error
 		readErr				Ð19		Driver does not respond to read requests
@@ -203,9 +203,9 @@ pascal	OSErr	FSpFileCopy(const FSSpec *srcSpec,
 									modes
 		afpObjectTypeErr	-5025	Source is a directory, directory not found
 									or incomplete pathname
-	
+
 	__________
-	
+
 	Also see:	FileCopy, DirectoryCopy, FSpDirectoryCopy
 */
 
@@ -213,7 +213,7 @@ pascal	OSErr	FSpFileCopy(const FSSpec *srcSpec,
 
 #ifdef __cplusplus
 }
-#endif
+#endif  /* __cplusplus */
 
 #include "OptimizationEnd.h"
 

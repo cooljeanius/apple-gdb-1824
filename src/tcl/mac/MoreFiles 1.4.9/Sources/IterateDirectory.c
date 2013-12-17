@@ -5,7 +5,7 @@
 **
 **	File:		IterateDirectory.c
 **
-**	Copyright © 1995-1998 Jim Luther and Apple Computer, Inc.
+**	Copyright (c) 1995-1998 Jim Luther and Apple Computer, Inc.
 **	All rights reserved.
 **
 **	You may incorporate this sample code into your applications without
@@ -34,8 +34,8 @@
 ** and to hold global information that might be needed at any time.
 */
 #if PRAGMA_ALIGN_SUPPORTED
-#pragma options align=mac68k
-#endif
+# pragma options align=mac68k
+#endif /* PRAGMA_ALIGN_SUPPORTED */
 struct IterateGlobals
 {
 	IterateFilterProcPtr	iterateFilter;	/* pointer to IterateFilterProc */
@@ -48,8 +48,8 @@ struct IterateGlobals
 	void					*yourDataPtr;	/* A pointer to caller data the filter may need to access */
 };
 #if PRAGMA_ALIGN_SUPPORTED
-#pragma options align=reset
-#endif
+# pragma options align=reset
+#endif /* PRAGMA_ALIGN_SUPPORTED */
 
 typedef struct IterateGlobals IterateGlobals;
 typedef IterateGlobals *IterateGlobalsPtr;
@@ -70,48 +70,48 @@ static	void	IterateDirectoryLevel(long dirID,
 static	void	IterateDirectoryLevel(long dirID,
 									  IterateGlobals *theGlobals)
 {
-	if ( (theGlobals->maxLevels == 0) ||						/* if maxLevels is zero, we aren't checking levels */
+	if ( (theGlobals->maxLevels == 0) ||						/* if maxLevels is zero, we are NOT checking levels */
 		 (theGlobals->currentLevel < theGlobals->maxLevels) )	/* if currentLevel < maxLevels, look at this level */
 	{
 		short index = 1;
-		
+
 		++theGlobals->currentLevel;	/* go to next level */
-		
+
 		do
-		{	/* Isn't C great... What I'd give for a "WITH theGlobals DO" about now... */
-		
+		{	/* Is C not great... What I would give for a "WITH theGlobals DO" about now... */
+
 			/* Get next source item at the current directory level */
-			
+
 			theGlobals->cPB.dirInfo.ioFDirIndex = index;
 			theGlobals->cPB.dirInfo.ioDrDirID = dirID;
-			theGlobals->result = PBGetCatInfoSync((CInfoPBPtr)&theGlobals->cPB);		
-	
+			theGlobals->result = PBGetCatInfoSync((CInfoPBPtr)&theGlobals->cPB);
+
 			if ( theGlobals->result == noErr )
 			{
 				/* Call the IterateFilterProc */
 				CallIterateFilterProc(theGlobals->iterateFilter, &theGlobals->cPB, &theGlobals->quitFlag, theGlobals->yourDataPtr);
-				
+
 				/* Is it a directory? */
 				if ( (theGlobals->cPB.hFileInfo.ioFlAttrib & ioDirMask) != 0 )
 				{
 					/* We have a directory */
 					if ( !theGlobals->quitFlag )
 					{
-						/* Dive again if the IterateFilterProc didn't say "quit" */
+						/* Dive again if the IterateFilterProc did NOT say "quit" */
 						IterateDirectoryLevel(theGlobals->cPB.dirInfo.ioDrDirID, theGlobals);
 					}
 				}
 			}
-			
+
 			++index; /* prepare to get next item */
 		} while ( (theGlobals->result == noErr) && (!theGlobals->quitFlag) ); /* time to fall back a level? */
-		
+
 		if ( (theGlobals->result == fnfErr) ||	/* fnfErr is OK - it only means we hit the end of this level */
 			 (theGlobals->result == afpAccessDenied) ) /* afpAccessDenied is OK, too - it only means we cannot see inside a directory */
 		{
 			theGlobals->result = noErr;
 		}
-			
+
 		--theGlobals->currentLevel;	/* return to previous level as we leave */
 	}
 }
@@ -130,7 +130,7 @@ pascal	OSErr	IterateDirectory(short vRefNum,
 	long			theDirID;
 	short			theVRefNum;
 	Boolean			isDirectory;
-	
+
 	/* Make sure there is a IterateFilter */
 	if ( iterateFilter != NULL )
 	{
@@ -154,16 +154,16 @@ pascal	OSErr	IterateDirectory(short vRefNum,
 					theGlobals.maxLevels = maxLevels;
 					theGlobals.currentLevel = 0;	/* start at level 0 */
 					theGlobals.yourDataPtr = yourDataPtr;
-				
+
 					/* Here we go into recursion land... */
 					IterateDirectoryLevel(theDirID, &theGlobals);
-					
+
 					result = theGlobals.result;	/* set the result */
 				}
 			}
 			else
 			{
-				result = dirNFErr;	/* a file was passed instead of a directory */
+				result = dirNFErr; /* a file was passed instead of a directory */
 			}
 		}
 	}
@@ -171,7 +171,7 @@ pascal	OSErr	IterateDirectory(short vRefNum,
 	{
 		result = paramErr;	/* iterateFilter was NULL */
 	}
-	
+
 	return ( result );
 }
 
@@ -187,3 +187,5 @@ pascal	OSErr	FSpIterateDirectory(const FSSpec *spec,
 }
 
 /*****************************************************************************/
+
+/* EOF */

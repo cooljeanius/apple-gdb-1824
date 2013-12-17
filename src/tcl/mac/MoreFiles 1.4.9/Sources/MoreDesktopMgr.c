@@ -2,7 +2,7 @@
 **	Apple Macintosh Developer Technical Support
 **
 **	A collection of useful high-level Desktop Manager routines.
-**	If the Desktop Manager isn't available, use the Desktop file
+**	If the Desktop Manager is NOT available, use the Desktop file
 **	for 'read' operations.
 **
 **	We do more because we can...
@@ -18,9 +18,9 @@
 **	restriction, though the sample code has been provided "AS IS" and the
 **	responsibility for its operation is 100% yours.  However, what you are
 **	not permitted to do is to redistribute the source as "DSC Sample Code"
-**	after having made changes. If you're going to re-distribute the source,
+**	after having made changes. If you are going to re-distribute the source,
 **	we require that you make it clear in the source that the code was
-**	descended from Apple Sample Code, but that you've made changes.
+**	descended from Apple Sample Code, but that you have made changes.
 */
 
 #include <Types.h>
@@ -44,22 +44,22 @@
 **	¥	The Desktop file is owned by the Finder and is normally open by the
 **		Finder. That means that we only have read-only access to the Desktop
 **		file.
-**	¥	Since the Resource Manager doesn't support shared access to resource
-**		files and we're using read-only access, we don't ever leave the
-**		Desktop file open.  We open a path to it, get the data we want out
+**	¥	Since the Resource Manager does NOT support shared access to resource
+**		files and we are using read-only access, we do NOT ever leave the
+**		Desktop file open. We open a path to it, get the data we want out
 **		of it, and then close the open path. This is the only safe way to
 **		open a resource file with read-only access since some other program
 **		could have it open with write access.
 **	¥	The bundle related resources in the Desktop file are normally
-**		purgable, so when we're looking through them, we don't bother to
-**		release resources we're done looking at - closing the resource file
+**		purgable, so when we are looking through them, we do NOT bother to
+**		release resources we are done looking at - closing the resource file
 **		(which we always do) will release them.
-**	¥	Since we can't assume the Desktop file is named "Desktop"
+**	¥	Since we cannot assume the Desktop file is named "Desktop"
 **		(it probably is everywhere but France), we get the Desktop
 **		file's name by searching the volume's root directory for a file
 **		with fileType == 'FNDR' and creator == 'ERIK'. The only problem with
 **		this scheme is that someone could create another file with that type
-**		and creator in the root directory and we'd find the wrong file.
+**		and creator in the root directory and we would find the wrong file.
 **		The chances of this are very slim.
 */
 
@@ -81,8 +81,8 @@ enum
 /* local data structures */
 
 #if PRAGMA_ALIGN_SUPPORTED
-#pragma options align=mac68k
-#endif
+# pragma options align=mac68k
+#endif  /* PRAGMA_ALIGN_SUPPORTED */
 
 struct IDRec
 {
@@ -94,8 +94,8 @@ typedef	IDRec *IDRecPtr;
 
 struct BundleType
 {
-	OSType		type;			/* 'ICN#' or 'FREF' */
-	short		count;			/* number of IDRecs - 1 */
+	OSType		type;	/* 'ICN#' or 'FREF' */
+	short		count;	/* number of IDRecs - 1 */
 	IDRec		idArray[1];
 };
 typedef struct BundleType BundleType;
@@ -103,9 +103,9 @@ typedef BundleType *BundleTypePtr;
 
 struct BNDLRec
 {
-	OSType		signature;		/* creator type signature */
-	short		versionID;		/* version - should always be 0 */
-	short		numTypes;		/* number of elements in typeArray - 1 */
+	OSType		signature;	/* creator type signature */
+	short		versionID;	/* version - should always be 0 */
+	short		numTypes;	/* number of elements in typeArray - 1 */
 	BundleType	typeArray[1];
 };
 typedef struct BNDLRec BNDLRec;
@@ -113,25 +113,25 @@ typedef BNDLRec **BNDLRecHandle;
 
 struct FREFRec
 {
-	OSType		fileType;		/* file type */
-	short		iconID;			/* icon local ID */
-	Str255		fileName;		/* file name */
+	OSType		fileType;	/* file type */
+	short		iconID;		/* icon local ID */
+	Str255		fileName;	/* file name */
 };
 typedef struct FREFRec FREFRec;
 typedef FREFRec **FREFRecHandle;
 
 struct APPLRec
 {
-	OSType		creator;		/* creator type signature */
-	long		parID;			/* parent directory ID */
-	Str255		applName;		/* application name */
+	OSType		creator;	/* creator type signature */
+	long		parID;		/* parent directory ID */
+	Str255		applName;	/* application name */
 };
 typedef struct APPLRec APPLRec;
 typedef APPLRec *APPLRecPtr;
 
 #if PRAGMA_ALIGN_SUPPORTED
-#pragma options align=reset
-#endif
+# pragma options align=reset
+#endif /* PRAGMA_ALIGN_SUPPORTED */
 
 /*****************************************************************************/
 
@@ -149,11 +149,11 @@ static	OSErr	GetAPPLFromDesktopFile(ConstStr255Param volName,
 
 static	OSErr	FindBundleGivenCreator(OSType creator,
 									   BNDLRecHandle *returnBndl);
-									   
+
 static	OSErr	FindTypeInBundle(OSType typeToFind,
 								 BNDLRecHandle theBndl,
 								 BundleTypePtr *returnBundleType);
-										 
+
 static	OSErr	GetLocalIDFromFREF(BundleTypePtr theBundleType,
 								   OSType fileType,
 								   short *iconLocalID);
@@ -195,7 +195,7 @@ static	OSErr	GetDesktopFileName(short vRefNum,
 	HParamBlockRec	pb;
 	short			index;
 	Boolean			found;
-	
+
 	pb.fileParam.ioNamePtr = desktopName;
 	pb.fileParam.ioVRefNum = vRefNum;
 	pb.fileParam.ioFVersNum = 0;
@@ -216,7 +216,7 @@ static	OSErr	GetDesktopFileName(short vRefNum,
 		}
 		++index;
 	} while ( (error == noErr) && !found );
-	
+
 	return ( error );
 }
 
@@ -231,7 +231,7 @@ pascal	OSErr	DTOpen(ConstStr255Param volName,
 	GetVolParmsInfoBuffer volParmsInfo;
 	long infoSize;
 	DTPBRec pb;
-	
+
 	/* Check for volume Desktop Manager support before calling */
 	infoSize = sizeof(GetVolParmsInfoBuffer);
 	error = HGetVolParms(volName, vRefNum, &volParmsInfo, &infoSize);
@@ -248,7 +248,7 @@ pascal	OSErr	DTOpen(ConstStr255Param volName,
 			if ( error == paramErr )
 			{
 				error = PBDTGetPath(&pb);
-				/* PBDTGetPath doesn't tell us if the database is new */
+				/* PBDTGetPath does NOT tell us if the database is new */
 				/* so assume it is not new */
 				*newDTDatabase = false;
 			}
@@ -286,7 +286,7 @@ static	OSErr	GetAPPLFromDesktopFile(ConstStr255Param volName,
 	Boolean foundCreator;
 	Ptr applPtr;
 	long applSize;
-	
+
 	error = DetermineVRefNum(volName, vRefNum, &realVRefNum);
 	if ( error == noErr )
 	{
@@ -302,7 +302,7 @@ static	OSErr	GetAPPLFromDesktopFile(ConstStr255Param volName,
 			SetResLoad(false);
 			dfRefNum = HOpenResFile(realVRefNum, fsRtDirID, desktopName, fsRdPerm);
 			SetResLoad(true);
-			
+
 			if ( dfRefNum != -1)
 			{
 				/* Get 'APPL' resource ID 0 */
@@ -310,12 +310,12 @@ static	OSErr	GetAPPLFromDesktopFile(ConstStr255Param volName,
 				if ( applResHandle != NULL )
 				{
 					applSize = InlineGetHandleSize((Handle)applResHandle);
-					if ( applSize != 0 )	/* make sure the APPL resource isn't empty */
+					if ( applSize != 0 ) /* make sure the APPL resource is NOT empty */
 					{
 						foundCreator = false;
 						applPtr = *applResHandle;
-						
-						/* APPL's don't have a count so I have to use the size as the bounds */
+
+						/* APPL's do NOT have a count so I have to use the size as the bounds */
 						while ( (foundCreator == false) &&
 								(applPtr < (*applResHandle + applSize)) )
 						{
@@ -347,19 +347,19 @@ static	OSErr	GetAPPLFromDesktopFile(ConstStr255Param volName,
 						}
 						else
 						{
-							error = afpItemNotFound;	/* didn't find a creator match */
+							error = afpItemNotFound; /* did NOT find a creator match */
 						}
 					}
 					else
 					{
-						error = afpItemNotFound;	/* no APPL mapping available */
+						error = afpItemNotFound; /* no APPL mapping available */
 					}
 				}
 				else
 				{
-					error = afpItemNotFound;	/* no APPL mapping available */
+					error = afpItemNotFound; /* no APPL mapping available */
 				}
-				
+
 				/* restore the resource chain and close the Desktop file */
 				UseResFile(savedResFile);
 				CloseResFile(dfRefNum);
@@ -370,7 +370,7 @@ static	OSErr	GetAPPLFromDesktopFile(ConstStr255Param volName,
 			}
 		}
 	}
-	
+
 	return ( error );
 }
 
@@ -393,7 +393,7 @@ pascal	OSErr	DTXGetAPPL(ConstStr255Param volName,
 	Boolean applFound;
 	FSSpec spec;
 	long actMatchCount;
-	
+
 	/* get the real vRefNum */
 	error = DetermineVRefNum(volName, vRefNum, &realVRefNum);
 	if ( error == noErr )
@@ -415,15 +415,15 @@ pascal	OSErr	DTXGetAPPL(ConstStr255Param volName,
 					if ( error == noErr )
 					{
 						/* got a match - see if it is valid */
-						
+
 						*applVRefNum = realVRefNum; /* get the vRefNum now */
 						*applParID = pb.dtPB.ioAPPLParID; /* get the parent ID now */
-	
+
 						/* pb.hPB.fileParam.ioNamePtr is already set */
 						pb.hPB.fileParam.ioVRefNum = realVRefNum;
 						pb.hPB.fileParam.ioFVersNum = 0;
 						pb.hPB.fileParam.ioDirID = *applParID;
-						pb.hPB.fileParam.ioFDirIndex = 0;	/* use ioNamePtr and ioDirID */
+						pb.hPB.fileParam.ioFDirIndex = 0; /* use ioNamePtr and ioDirID */
 						if ( PBHGetFInfoSync(&pb.hPB) == noErr )
 						{
 							if ( (pb.hPB.fileParam.ioFlFndrInfo.fdCreator == creator) &&
@@ -449,20 +449,20 @@ pascal	OSErr	DTXGetAPPL(ConstStr255Param volName,
 		/* acceptable errors from Desktop Manager to continue are paramErr or afpItemNotFound */
 		if ( error == paramErr )
 		{
-			/* if paramErr, the volume didn't support the Desktop Manager */
+			/* if paramErr, the volume did NOT support the Desktop Manager */
 			/* try the Desktop file */
-			
+
 			error = GetAPPLFromDesktopFile(volName, vRefNum, creator,
 											applVRefNum, applParID, applName);
 			if ( error == noErr )
 			{
 				/* got a match - see if it is valid */
-				
+
 				pb.hPB.fileParam.ioNamePtr = applName;
 				pb.hPB.fileParam.ioVRefNum = *applVRefNum;
 				pb.hPB.fileParam.ioFVersNum = 0;
 				pb.hPB.fileParam.ioDirID = *applParID;
-				pb.hPB.fileParam.ioFDirIndex = 0;	/* use ioNamePtr and ioDirID */
+				pb.hPB.fileParam.ioFDirIndex = 0; /* use ioNamePtr and ioDirID */
 				if ( PBHGetFInfoSync(&pb.hPB) == noErr )
 				{
 					if ( (pb.hPB.fileParam.ioFlFndrInfo.fdCreator != creator) ||
@@ -480,9 +480,9 @@ pascal	OSErr	DTXGetAPPL(ConstStr255Param volName,
 		/* acceptable error from DesktopFile code to continue is afpItemNotFound */
 		if ( (error == afpItemNotFound) && searchCatalog)
 		{
-			/* Couldn't be found in the Desktop file either, */
+			/* Could NOT be found in the Desktop file either, */
 			/* try searching with CatSearch if requested */
-			
+
 			error = CreatorTypeFileSearch(NULL, realVRefNum, creator, kAPPLResType, &spec, 1,
 											&actMatchCount, true);
 			if ( (error == noErr) || (error == eofErr) )
@@ -500,7 +500,7 @@ pascal	OSErr	DTXGetAPPL(ConstStr255Param volName,
 			}
 		}
 	}
-	
+
 	return ( error );
 }
 
@@ -525,7 +525,7 @@ pascal	OSErr	DTGetAPPL(ConstStr255Param volName,
 						  long *applParID,
 						  Str255 applName)
 {
-	/* Call DTXGetAPPL with the "searchCatalog" parameter true */ 
+	/* Call DTXGetAPPL with the "searchCatalog" parameter true */
 	return ( DTXGetAPPL(volName, vRefNum, creator, true,
 						applVRefNum, applParID, applName) );
 }
@@ -537,7 +537,7 @@ pascal	OSErr	FSpDTGetAPPL(ConstStr255Param volName,
 							 OSType creator,
 							 FSSpec *spec)
 {
-	/* Call DTXGetAPPL with the "searchCatalog" parameter true */ 
+	/* Call DTXGetAPPL with the "searchCatalog" parameter true */
 	return ( DTXGetAPPL(volName, vRefNum, creator, true,
 						&(spec->vRefNum), &(spec->parID), spec->name) );
 }
@@ -557,19 +557,19 @@ static	OSErr	FindBundleGivenCreator(OSType creator,
 	short			numOfBundles;
 	short			index;
 	BNDLRecHandle	theBndl;
-	
+
 	error = afpItemNotFound;	/* default to not found */
-	
+
 	/* Search each BNDL resource until we find the one with a matching creator. */
-	
+
 	numOfBundles = Count1Resources(kBNDLResType);
 	index = 1;
 	*returnBndl = NULL;
-	
+
 	while ( (index <= numOfBundles) && (*returnBndl == NULL) )
 	{
 		theBndl = (BNDLRecHandle)Get1IndResource(kBNDLResType, index);
-		
+
 		if ( theBndl != NULL )
 		{
 			if ( (*theBndl)->signature == creator )
@@ -583,11 +583,11 @@ static	OSErr	FindBundleGivenCreator(OSType creator,
 					error = noErr;
 				}
 			}
-		}	
-		
+		}
+
 		index ++;
 	}
-	
+
 	return ( error );
 }
 
@@ -606,10 +606,10 @@ static	OSErr	FindTypeInBundle(OSType typeToFind,
 {
 	OSErr			error;
 	short			index;
-	Ptr				ptrIterator;	/* use a Ptr so we can do ugly pointer math */
-	
-	error = afpItemNotFound;	/* default to not found */
-	
+	Ptr				ptrIterator; /* use a Ptr so we can do ugly pointer math */
+
+	error = afpItemNotFound; /* default to not found */
+
 	ptrIterator = (Ptr)((*theBndl)->typeArray);
 	index = 0;
 	*returnBundleType = NULL;
@@ -631,7 +631,7 @@ static	OSErr	FindTypeInBundle(OSType typeToFind,
 			++index;
 		}
 	}
-		
+
 	return ( error );
 }
 
@@ -653,14 +653,14 @@ static	OSErr	GetLocalIDFromFREF(BundleTypePtr theBundleType,
 	short			index;
 	IDRecPtr		idIterator;
 	FREFRecHandle	theFref;
-	
+
 	error = afpItemNotFound;	/* default to not found */
-	
+
 	/* For each localID in this type, get the FREF resource looking for fileType */
 	index = 0;
 	idIterator = &theBundleType->idArray[0];
 	*iconLocalID = 0;
-	
+
 	while ( (index <= theBundleType->count) && (*iconLocalID == 0) )
 	{
 		theFref = (FREFRecHandle)Get1Resource(kFREFResType, idIterator->rsrcID);
@@ -672,11 +672,11 @@ static	OSErr	GetLocalIDFromFREF(BundleTypePtr theBundleType,
 				error = noErr;
 			}
 		}
-		
+
 		++idIterator;
 		++index;
 	}
-	
+
 	return ( error );
 }
 
@@ -697,14 +697,14 @@ static	OSErr	GetIconRsrcIDFromLocalID(BundleTypePtr theBundleType,
 	OSErr		error;
 	short		index;
 	IDRecPtr	idIterator;
-	
+
 	error = afpItemNotFound;	/* default to not found */
-	
+
 	/* Find the rsrcID of the icon family type, given the localID */
 	index = 0;
 	idIterator = &theBundleType->idArray[0];
 	*iconRsrcID = 0;
-	
+
 	while ( (index <= theBundleType->count) && (*iconRsrcID == 0) )
 	{
 		if ( idIterator->localID == iconLocalID )
@@ -712,11 +712,11 @@ static	OSErr	GetIconRsrcIDFromLocalID(BundleTypePtr theBundleType,
 			*iconRsrcID = idIterator->rsrcID;
 			error = noErr;
 		}
-		
+
 		idIterator ++;
 		index ++;
 	}
-	
+
 	return ( error );
 }
 
@@ -731,7 +731,7 @@ static	OSErr	GetIconRsrcIDFromLocalID(BundleTypePtr theBundleType,
 static	OSType	DTIconToResIcon(short iconType)
 {
 	OSType	resType;
-	
+
 	switch ( iconType )
 	{
 		case kLargeIcon:
@@ -756,7 +756,7 @@ static	OSType	DTIconToResIcon(short iconType)
 			resType = (OSType)0;
 			break;
 	}
-	
+
 	return ( resType );
 }
 
@@ -765,7 +765,7 @@ static	OSType	DTIconToResIcon(short iconType)
 /*
 **	GetIconFromDesktopFile
 **
-**	INPUT a pointer to a non-existent Handle, because we'll allocate one
+**	INPUT a pointer to a non-existent Handle, because we will allocate one
 **
 **	search each BNDL resource for the right fileCreator and once we get it
 **		find the 'FREF' type in BNDL
@@ -794,11 +794,11 @@ static	OSErr	GetIconFromDesktopFile(ConstStr255Param volName,
 	short			iconLocalID;
 	short			iconRsrcID;
 	OSType			iconRsrcType;
-	Handle			returnIconHandle;	
+	Handle			returnIconHandle;
 	char			bndlState;
-	
+
 	*iconHandle = NULL;
-	
+
 	error = DetermineVRefNum(volName, vRefNum, &realVRefNum);
 	if ( error == noErr )
 	{
@@ -806,7 +806,7 @@ static	OSErr	GetIconFromDesktopFile(ConstStr255Param volName,
 		if ( error == noErr )
 		{
 			savedResFile = CurResFile();
-		
+
 			/*
 			**	Open the 'Desktop' file in the root directory. (because
 			**	opening the resource file could preload unwanted resources,
@@ -815,19 +815,19 @@ static	OSErr	GetIconFromDesktopFile(ConstStr255Param volName,
 			SetResLoad(false);
 			dfRefNum = HOpenResFile(realVRefNum, fsRtDirID, desktopName, fsRdPerm);
 			SetResLoad(true);
-		
+
 			if ( dfRefNum != -1 )
 			{
 				/*
-				**	Find the BNDL resource with the specified creator.
+				** Find the BNDL resource with the specified creator.
 				*/
 				error = FindBundleGivenCreator(fileCreator, &theBndl);
 				if ( error == noErr )
 				{
-					/* Lock the BNDL resource so it won't be purged when other resources are loaded */
+					/* Lock the BNDL resource so it will NOT be purged when other resources are loaded */
 					bndlState = HGetState((Handle)theBndl);
 					HLock((Handle)theBndl);
-					
+
 					/* Find the 'FREF' BundleType record in the BNDL resource. */
 					error = FindTypeInBundle(kFREFResType, theBndl, &theBundleType);
 					if ( error == noErr )
@@ -846,7 +846,7 @@ static	OSErr	GetIconFromDesktopFile(ConstStr255Param volName,
 								{
 									/* Map Desktop Manager icon type to resource type */
 									iconRsrcType = DTIconToResIcon(iconType);
-									
+
 									if ( iconRsrcType != (OSType)0 )
 									{
 										/* Load the icon */
@@ -873,7 +873,7 @@ static	OSErr	GetIconFromDesktopFile(ConstStr255Param volName,
 							}
 						}
 					}
-					/* Restore the state of the BNDL resource */ 
+					/* Restore the state of the BNDL resource */
 					HSetState((Handle)theBndl, bndlState);
 				}
 				/* Restore the resource chain and close the Desktop file */
@@ -890,7 +890,7 @@ static	OSErr	GetIconFromDesktopFile(ConstStr255Param volName,
 			error = afpItemNotFound;	/* force an error we should return */
 		}
 	}
-	
+
 	return ( error );
 }
 
@@ -908,14 +908,14 @@ pascal	OSErr	DTGetIcon(ConstStr255Param volName,
 	short dtRefNum;
 	Boolean newDTDatabase;
 	Size bufferSize;
-	
+
 	*iconHandle = NULL;
 	error = DTOpen(volName, vRefNum, &dtRefNum, &newDTDatabase);
 	if ( error == noErr )
 	{
-		/* there was a desktop database and it's now open */
-		
-		if ( !newDTDatabase )	/* don't bother to look in a new (empty) database */
+		/* there was a desktop database and it is now open */
+
+		if ( !newDTDatabase ) /* do NOT bother to look in a new (empty) database */
 		{
 			/* get the buffer size for the requested icon type */
 			switch ( iconType )
@@ -949,7 +949,7 @@ pascal	OSErr	DTGetIcon(ConstStr255Param volName,
 				if ( *iconHandle != NULL )
 				{
 					HLock(*iconHandle);
-		
+
 					pb.ioDTRefNum = dtRefNum;
 					pb.ioTagInfo = 0;
 					pb.ioDTBuffer = **iconHandle;
@@ -958,9 +958,9 @@ pascal	OSErr	DTGetIcon(ConstStr255Param volName,
 					pb.ioFileCreator = fileCreator;
 					pb.ioFileType = fileType;
 					error = PBDTGetIconSync(&pb);
-	
+
 					HUnlock(*iconHandle);
-					
+
 					if ( error != noErr )
 					{
 						DisposeHandle(*iconHandle);	/* dispose of the allocated memory */
@@ -974,22 +974,22 @@ pascal	OSErr	DTGetIcon(ConstStr255Param volName,
 			}
 			else
 			{
-				error = paramErr;	/* unknown icon type requested */
+				error = paramErr; /* unknown icon type requested */
 			}
 		}
 		else
 		{
-			error = afpItemNotFound;	/* the desktop database was empty - nothing to return */
+			error = afpItemNotFound; /* the desktop database was empty - nothing to return */
 		}
 	}
 	else
 	{
 		/* There is no desktop database - try the Desktop file */
-		
+
 		error = GetIconFromDesktopFile(volName, vRefNum, iconType,
 										fileCreator, fileType, iconHandle);
 	}
-	
+
 	return ( error );
 }
 
@@ -1013,7 +1013,7 @@ pascal	OSErr	DTSetComment(short vRefNum,
 		pb.ioDirID = dirID;
 		pb.ioDTBuffer = (Ptr)&comment[1];
 		/* Truncate the comment to 200 characters just in case */
-		/* some file system doesn't range check */
+		/* some file system does NOT range check */
 		if ( comment[0] <= 200 )
 		{
 			pb.ioDTReqCount = comment[0];
@@ -1076,12 +1076,12 @@ static	OSErr	GetCommentFromDesktopFile(short vRefNum,
 	short savedResFile;
 	short dfRefNum;
 	StringHandle commentHandle;
-	
+
 	/* Get the comment ID number */
 	error = GetCommentID(vRefNum, dirID, name, &commentID);
 	if ( error == noErr )
 	{
-		if ( commentID != 0 )	/* commentID == 0 means there's no comment */
+		if ( commentID != 0 ) /* commentID == 0 means there is no comment */
 		{
 			error = DetermineVRefNum(name, vRefNum, &realVRefNum);
 			if ( error == noErr )
@@ -1091,14 +1091,14 @@ static	OSErr	GetCommentFromDesktopFile(short vRefNum,
 				{
 					savedResFile = CurResFile();
 					/*
-					**	Open the 'Desktop' file in the root directory. (because
-					**	opening the resource file could preload unwanted resources,
-					**	bracket the call with SetResLoad(s))
+					** Open the 'Desktop' file in the root directory. (because
+					** opening the resource file could preload unwanted resources,
+					** bracket the call with SetResLoad(s))
 					*/
 					SetResLoad(false);
 					dfRefNum = HOpenResFile(realVRefNum, fsRtDirID, desktopName, fsRdPerm);
 					SetResLoad(true);
-					
+
 					if ( dfRefNum != -1)
 					{
 						/* Get the comment resource */
@@ -1111,14 +1111,14 @@ static	OSErr	GetCommentFromDesktopFile(short vRefNum,
 							}
 							else
 							{
-								error = afpItemNotFound;	/* no comment available */
+								error = afpItemNotFound; /* no comment available */
 							}
 						}
 						else
 						{
-							error = afpItemNotFound;	/* no comment available */
+							error = afpItemNotFound; /* no comment available */
 						}
-						
+
 						/* restore the resource chain and close the Desktop file */
 						UseResFile(savedResFile);
 						CloseResFile(dfRefNum);
@@ -1139,7 +1139,7 @@ static	OSErr	GetCommentFromDesktopFile(short vRefNum,
 			error = afpItemNotFound;	/* no comment available */
 		}
 	}
-	
+
 	return ( error );
 }
 
@@ -1158,13 +1158,13 @@ pascal	OSErr	DTGetComment(short vRefNum,
 	if (comment != NULL)
 	{
 		comment[0] = 0;	/* return nothing by default */
-		
+
 		/* attempt to open the desktop database */
 		error = DTOpen(name, vRefNum, &dtRefNum, &newDTDatabase);
 		if ( error == noErr )
 		{
-			/* There was a desktop database and it's now open */
-			
+			/* There was a desktop database and it is now open */
+
 			if ( !newDTDatabase )
 			{
 				pb.ioDTRefNum = dtRefNum;
@@ -1177,10 +1177,10 @@ pascal	OSErr	DTGetComment(short vRefNum,
 				**	the HFS file system's Desktop Manager, other file
 				**	systems (such as Apple Photo Access) return up to
 				**	255 characters. Make sure the comment buffer is a Str255
-				**	or you'll regret it.
+				**	or you will regret it.
 				**
-				**	IMPORTANT NOTE #2: Although Inside Macintosh doesn't
-				**	mention it, ioDTReqCount is a input field to
+				**	IMPORTANT NOTE #2: Although Inside Macintosh does NOT
+				**	mention it, ioDTReqCount is an input field to
 				**	PBDTGetCommentSync. Some file systems (like HFS) ignore
 				**	ioDTReqCount and always return the full comment --
 				**	others (like AppleShare) respect ioDTReqCount and only
@@ -1200,7 +1200,7 @@ pascal	OSErr	DTGetComment(short vRefNum,
 			error = GetCommentFromDesktopFile(vRefNum, dirID, name, comment);
 			if ( error != noErr )
 			{
-				error = afpItemNotFound;	/* return an expected error */
+				error = afpItemNotFound; /* return an expected error */
 			}
 		}
 	}
@@ -1208,7 +1208,7 @@ pascal	OSErr	DTGetComment(short vRefNum,
 	{
 		error = paramErr;
 	}
-	
+
 	return (error);
 }
 
@@ -1252,3 +1252,5 @@ pascal	OSErr	FSpDTCopyComment(const FSSpec *srcSpec,
 }
 
 /*****************************************************************************/
+
+/* EOF */

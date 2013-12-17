@@ -7,16 +7,16 @@
 **
 **	File:		MoreFiles.c
 **
-**	Copyright © 1992-1998 Apple Computer, Inc.
+**	Copyright (c) 1992-1998 Apple Computer, Inc.
 **	All rights reserved.
 **
 **	You may incorporate this sample code into your applications without
 **	restriction, though the sample code has been provided "AS IS" and the
 **	responsibility for its operation is 100% yours.  However, what you are
 **	not permitted to do is to redistribute the source as "DSC Sample Code"
-**	after having made changes. If you're going to re-distribute the source,
+**	after having made changes. If you are going to re-distribute the source,
 **	we require that you make it clear in the source that the code was
-**	descended from Apple Sample Code, but that you've made changes.
+**	descended from Apple Sample Code, but that you have made changes.
 */
 
 #include <Types.h>
@@ -101,7 +101,7 @@ pascal	OSErr	ResolveFileIDRef(ConstStr255Param volName,
 	HParamBlockRec pb;
 	OSErr error;
 	Str255 tempStr;
-	
+
 	tempStr[0] = 0;
 	if ( volName != NULL )
 	{
@@ -130,7 +130,7 @@ pascal	OSErr	FSpResolveFileIDRef(ConstStr255Param volName,
 									FSSpec *spec)
 {
 	OSErr	error;
-	
+
 	error = DetermineVRefNum(volName, vRefNum, &(spec->vRefNum));
 	if ( error == noErr )
 	{
@@ -239,7 +239,7 @@ pascal	OSErr	GetForeignPrivs(short vRefNum,
 
 	pb.foreignPrivParam.ioNamePtr = (StringPtr)name;
 	pb.foreignPrivParam.ioVRefNum = vRefNum;
-	pb.foreignPrivParam.ioForeignPrivDirID = dirID;	
+	pb.foreignPrivParam.ioForeignPrivDirID = dirID;
 	pb.foreignPrivParam.ioForeignPrivBuffer = (Ptr)foreignPrivBuffer;
 	pb.foreignPrivParam.ioForeignPrivReqCount = *foreignPrivSize;
 	error = PBGetForeignPrivsSync(&pb);
@@ -284,7 +284,7 @@ pascal	OSErr	SetForeignPrivs(short vRefNum,
 
 	pb.foreignPrivParam.ioNamePtr = (StringPtr)name;
 	pb.foreignPrivParam.ioVRefNum = vRefNum;
-	pb.foreignPrivParam.ioForeignPrivDirID = dirID;	
+	pb.foreignPrivParam.ioForeignPrivDirID = dirID;
 	pb.foreignPrivParam.ioForeignPrivBuffer = (Ptr)foreignPrivBuffer;
 	pb.foreignPrivParam.ioForeignPrivReqCount = *foreignPrivSize;
 	pb.foreignPrivParam.ioForeignPrivInfo1 = foreignPrivInfo1;
@@ -504,7 +504,7 @@ pascal	OSErr	FSpMoveRename(const FSSpec *srcSpec,
 							  ConstStr255Param copyName)
 {
 	OSErr	error;
-	
+
 	/* make sure the FSSpecs refer to the same volume */
 	if ( srcSpec->vRefNum != dstSpec->vRefNum )
 	{
@@ -512,7 +512,7 @@ pascal	OSErr	FSpMoveRename(const FSSpec *srcSpec,
 	}
 	else
 	{
-		error = HMoveRename(srcSpec->vRefNum, srcSpec->parID, srcSpec->name, 
+		error = HMoveRename(srcSpec->vRefNum, srcSpec->parID, srcSpec->name,
 							dstSpec->parID, dstSpec->name, copyName);
 	}
 	return ( error );
@@ -626,3 +626,5 @@ pascal	OSErr	GetUGEntry(short objType,
 }
 
 /*****************************************************************************/
+
+/* EOF */
