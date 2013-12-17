@@ -1,4 +1,5 @@
-/* Target-specific definitions for GNU/Linux running on a Renesas
+/* tm-linux.h
+   Target-specific definitions for GNU/Linux running on a Renesas
    Super-H.
 
    Copyright 2000, 2002 Free Software Foundation, Inc.

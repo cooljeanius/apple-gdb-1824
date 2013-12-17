@@ -1,3 +1,4 @@
+# cxux.mh
 # Host: Motorola 88k running CX/UX
 
 XM_FILE= xm-cxux.h

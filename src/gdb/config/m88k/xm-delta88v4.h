@@ -1,4 +1,5 @@
-/* Host machine description for Motorola Delta 88 box, for GDB.
+/* xm-delta88v4.h
+   Host machine description for Motorola Delta 88 box, for GDB.
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1993
    Free Software Foundation, Inc.
 
@@ -20,3 +21,5 @@
    Boston, MA 02111-1307, USA.  */
 
 #include "config/xm-sysv4.h"
+
+/* EOF */

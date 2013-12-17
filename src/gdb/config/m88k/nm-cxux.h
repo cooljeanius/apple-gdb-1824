@@ -1,4 +1,5 @@
-/* Native definitions for Motorola 88K running Harris CX/UX
+/* nm-cxux.h
+   Native definitions for Motorola 88K running Harris CX/UX
    Copyright 1993, 1994 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -29,3 +30,5 @@
 
 #define PTRACE_ATTACH 128
 #define PTRACE_DETACH 129
+
+/* EOF */
