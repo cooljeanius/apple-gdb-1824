@@ -1,4 +1,5 @@
-/* Macro definitions for GDB for a Fujitsu SPARClite.
+/* tm-sparclite.h
+   Macro definitions for GDB for a Fujitsu SPARClite.
    Copyright 1993, 1994, 1995, 1998, 1999, 2000
    Free Software Foundation, Inc.
 
@@ -101,7 +102,7 @@ enum {
 #define TARGET_HW_BREAK_LIMIT 2
 #define TARGET_HW_WATCH_LIMIT 2
 
-/* Enable watchpoint macro's */
+/* Enable watchpoint macros */
 
 #define TARGET_HAS_HARDWARE_WATCHPOINTS
 
@@ -109,7 +110,7 @@ enum {
 	sparclite_check_watch_resources (type, cnt, ot)
 
 /* When a hardware watchpoint fires off the PC will be left at the
-   instruction which caused the watchpoint.  It will be necessary for
+   instruction which caused the watchpoint. It will be necessary for
    GDB to step over the watchpoint. ***
 
    #define STOPPED_BY_WATCHPOINT(W) \
@@ -124,3 +125,5 @@ enum {
 #define target_insert_hw_breakpoint(addr, len) sparclite_insert_hw_breakpoint (addr, len)
 #define target_remove_hw_breakpoint(addr, len) sparclite_remove_hw_breakpoint (addr, len)
 #define target_stopped_data_address() sparclite_stopped_data_address()
+
+/* EOF */

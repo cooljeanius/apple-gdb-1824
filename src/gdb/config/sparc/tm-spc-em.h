@@ -1,4 +1,5 @@
-/* Target machine definitions for GDB for an embedded SPARC.
+/* tm-spc-em.h
+   Target machine definitions for GDB for an embedded SPARC.
    Copyright 1989, 1992, 1993, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -20,7 +21,7 @@
 
 #include "sparc/tm-sparc.h"
 
-/* Offsets into jmp_buf.  Not defined by Sun, but at least documented in a
+/* Offsets into jmp_buf. Not defined by Sun, but at least documented in a
    comment in <machine/setjmp.h>! */
 
 #define JB_ELEMENT_SIZE 4	/* Size of each element in jmp_buf */
@@ -35,12 +36,14 @@
 #define JB_O0 7
 #define JB_WBCNT 8
 
-/* Figure out where the longjmp will land.  We expect that we have just entered
-   longjmp and haven't yet setup the stack frame, so the args are still in the
-   output regs.  %o0 (O0_REGNUM) points at the jmp_buf structure from which we
-   extract the pc (JB_PC) that we will land at.  The pc is copied into ADDR.
+/* Figure out where the longjmp will land. We expect that we have just entered
+   longjmp and have NOT yet setup the stack frame, so the args are still in the
+   output regs. %o0 (O0_REGNUM) points at the jmp_buf structure from which we
+   extract the pc (JB_PC) that we will land at. The pc is copied into ADDR.
    This routine returns true on success */
 
 extern int get_longjmp_target (CORE_ADDR *);
 
 #define GET_LONGJMP_TARGET(ADDR) get_longjmp_target(ADDR)
+
+/* EOF */

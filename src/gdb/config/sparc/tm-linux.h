@@ -1,4 +1,5 @@
-/* Macro definitions for GDB for a Sparc running GNU/Linux.
+/* tm-linux.h
+   Macro definitions for GDB for a Sparc running GNU/Linux.
 
    Copyright 1989, 1992, 1994, 1995, 1998, 1999, 2002 Free Software
    Foundation, Inc.

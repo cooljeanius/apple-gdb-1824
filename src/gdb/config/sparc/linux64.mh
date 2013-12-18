@@ -1,4 +1,5 @@
 # Host: GNU/Linux UltraSPARC
+
 NAT_FILE= nm-linux.h
 NATDEPFILES= sparc-nat.o sparc64-nat.o sparc-sol2-nat.o sparc64-linux-nat.o \
 	corelow.o core-regset.o \

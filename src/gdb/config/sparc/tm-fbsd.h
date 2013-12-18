@@ -1,4 +1,5 @@
-/* Target-dependent definitions for FreeBSD/sparc64.
+/* tm-fbsd.h
+   Target-dependent definitions for FreeBSD/sparc64.
    Copyright 2002 Free Software Foundation, Inc.
    Contributed by David E. O'Brien <obrien@FreeBSD.org>.
 
@@ -25,10 +26,10 @@
 #include "solib.h"			/* Support for shared libraries. */
 #include "sparc/tm-sp64.h"
 
-/* Number of traps that happen between exec'ing the shell to run an
-   inferior, and when we finally get to the inferior code.  The
-   default is right for FreeBSD.  */
-
+/* Number of traps that happen between executing the shell to run an
+ * inferior, and when we finally get to the inferior code. The
+ * default is right for FreeBSD.
+ */
 #undef START_INFERIOR_TRAPS_EXPECTED
 
 #endif /* TM_FBSD_H */

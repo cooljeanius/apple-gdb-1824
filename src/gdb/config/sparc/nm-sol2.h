@@ -1,4 +1,5 @@
-/* Native-dependent definitions for Solaris SPARC.
+/* nm-sol2.h
+   Native-dependent definitions for Solaris SPARC.
 
    Copyright 2003 Free Software Foundation, Inc.
 
@@ -37,8 +38,8 @@
 
 /* The man page for proc(4) on Solaris 2.6 and up says that the system
    can support "thousands" of hardware watchpoints, but gives no
-   method for finding out how many; It doesn't say anything about the
-   allowed size for the watched area either.  So we just tell GDB
+   method for finding out how many; It does NOT say anything about the
+   allowed size for the watched area either. So we just tell GDB
    'yes'.  */
 #define TARGET_REGION_SIZE_OK_FOR_HW_WATCHPOINT(SIZE) 1
 
@@ -63,3 +64,5 @@ extern int procfs_set_watchpoint (ptid_t, CORE_ADDR, int, int, int);
 #endif /* NEW_PROC_API */
 
 #endif /* nm-sol2.h */
+
+/* EOF */

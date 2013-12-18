@@ -1,4 +1,5 @@
-/* Target machine definitions for GDB for an embedded SPARC.
+/* tm-sparclet.h
+   Target machine definitions for GDB for an embedded SPARC.
    Copyright 1996, 1997, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -30,17 +31,17 @@
 
 /* Sparclet regs, for debugging purposes.  */
 
-enum { 
+enum {
   CCSR_REGNUM   = 72,
-  CCPR_REGNUM   = 73, 
+  CCPR_REGNUM   = 73,
   CCCRCR_REGNUM = 74,
-  CCOR_REGNUM   = 75, 
+  CCOR_REGNUM   = 75,
   CCOBR_REGNUM  = 76,
   CCIBR_REGNUM  = 77,
   CCIR_REGNUM   = 78
 };
 
-/* Select the sparclet disassembler.  Slightly different instruction set from
+/* Select the sparclet disassembler. Slightly different instruction set from
    the V8 sparc.  */
 
 #undef TM_PRINT_INSN_MACH
@@ -70,7 +71,7 @@ enum {
 /* Initializer for an array of names of registers.
    There should be NUM_REGS strings in this initializer.  */
 /* Sparclet has no fp! */
-/* Compiler maps types for floats by number, so can't 
+/* Compiler maps types for floats by number, so we cannot
    change the numbers here. */
 
 #undef REGISTER_NAMES
@@ -89,7 +90,7 @@ enum {
 							\
   "ccsr", "ccpr", "cccrcr", "ccor", "ccobr", "ccibr", "ccir", "", \
 								  \
-  /*       ASR15                 ASR19 (don't display them) */    \
+  /*       ASR15                 ASR19 (do NOT display them) */    \
   "asr1",  "", "asr17", "asr18", "", "asr20", "asr21", "asr22",   \
 /*									  \
   "awr0",  "awr1",  "awr2",  "awr3",  "awr4",  "awr5",  "awr6",  "awr7",  \
@@ -130,7 +131,7 @@ enum {
 #undef PRINT_REGISTER_HOOK
 #define PRINT_REGISTER_HOOK(regno)
 
-/* Offsets into jmp_buf.  Not defined by Sun, but at least documented in a
+/* Offsets into jmp_buf. Not defined by Sun, but at least documented in a
    comment in <machine/setjmp.h>! */
 
 #define JB_ELEMENT_SIZE 4	/* Size of each element in jmp_buf */
@@ -145,12 +146,14 @@ enum {
 #define JB_O0 7
 #define JB_WBCNT 8
 
-/* Figure out where the longjmp will land.  We expect that we have just entered
-   longjmp and haven't yet setup the stack frame, so the args are still in the
-   output regs.  %o0 (O0_REGNUM) points at the jmp_buf structure from which we
-   extract the pc (JB_PC) that we will land at.  The pc is copied into ADDR.
+/* Figure out where the longjmp will land. We expect that we have just entered
+   longjmp and have NOT yet setup the stack frame, so the args are still in the
+   output regs. %o0 (O0_REGNUM) points at the jmp_buf structure from which we
+   extract the pc (JB_PC) that we will land at. The pc is copied into ADDR.
    This routine returns true on success */
 
 extern int get_longjmp_target (CORE_ADDR *);
 
 #define GET_LONGJMP_TARGET(ADDR) get_longjmp_target(ADDR)
+
+/* EOF */

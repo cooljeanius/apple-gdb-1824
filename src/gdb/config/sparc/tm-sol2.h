@@ -1,4 +1,5 @@
-/* Target-dependent definitions for Solaris SPARC.
+/* tm-sol2.h
+   Target-dependent definitions for Solaris SPARC.
 
    Copyright 2003, 2004 Free Software Foundation, Inc.
 

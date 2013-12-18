@@ -1,4 +1,5 @@
-/* Macro definitions for GDB for a UltraSparc running GNU/Linux.
+/* tm-sp64linux.h
+   Macro definitions for GDB for a UltraSparc running GNU/Linux.
 
    Copyright 2001, 2002 Free Software Foundation, Inc.
 

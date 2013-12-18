@@ -1,4 +1,5 @@
-/* Target machine sub-parameters for SPARC64, for GDB, the GNU debugger.
+/* tm-sp64.h
+   Target machine sub-parameters for SPARC64, for GDB, the GNU debugger.
    This is included by other tm-*.h files to define SPARC64 cpu-related info.
    Copyright 1994, 1995, 1996, 1998, 1999, 2000
    Free Software Foundation, Inc.
@@ -26,8 +27,8 @@
 #define GDB_MULTI_ARCH GDB_MULTI_ARCH_PARTIAL
 
 #ifndef GDB_TARGET_IS_SPARC64
-#define GDB_TARGET_IS_SPARC64 1
-#endif
+# define GDB_TARGET_IS_SPARC64 1
+#endif /* !GDB_TARGET_IS_SPARC64 */
 
 #include "sparc/tm-sparc.h"
 
@@ -98,7 +99,7 @@
 #define CALL_DUMMY_BREAKPOINT_OFFSET 0
 #undef  CALL_DUMMY_BREAKPOINT_OFFSET_P
 #define CALL_DUMMY_BREAKPOINT_OFFSET_P 1
-#undef  CALL_DUMMY_LOCATION 
+#undef  CALL_DUMMY_LOCATION
 #define CALL_DUMMY_LOCATION AT_ENTRY_POINT
 #undef  CALL_DUMMY_STACK_ADJUST
 #define CALL_DUMMY_STACK_ADJUST 128
@@ -107,20 +108,20 @@
 #undef  CALL_DUMMY_ADDRESS
 #define CALL_DUMMY_ADDRESS() entry_point_address()
 #undef  FIX_CALL_DUMMY
-#define FIX_CALL_DUMMY(DUMMYNAME, PC, FUN, NARGS, ARGS, TYPE, GCC_P) 
+#define FIX_CALL_DUMMY(DUMMYNAME, PC, FUN, NARGS, ARGS, TYPE, GCC_P)
 #undef  PUSH_RETURN_ADDRESS
 #define PUSH_RETURN_ADDRESS(PC, SP) sparc_at_entry_push_return_address (PC, SP)
-extern CORE_ADDR 
+extern CORE_ADDR
 sparc_at_entry_push_return_address (CORE_ADDR pc, CORE_ADDR sp);
 
 #undef  STORE_STRUCT_RETURN
 #define STORE_STRUCT_RETURN(ADDR, SP) \
      sparc_at_entry_store_struct_return (ADDR, SP)
-extern void 
+extern void
 sparc_at_entry_store_struct_return (CORE_ADDR addr, CORE_ADDR sp);
 
 
-#else
+#else /* DO_CALL_DUMMY_ON_STACK */
 /*
  * Old call dummy method, with CALL_DUMMY on the stack.
  */
@@ -161,7 +162,7 @@ sparc_at_entry_store_struct_return (CORE_ADDR addr, CORE_ADDR sp);
 #undef  CALL_DUMMY_BREAKPOINT_OFFSET
 #define CALL_DUMMY_BREAKPOINT_OFFSET (CALL_DUMMY_START_OFFSET + (8 * 4))
 
-/* Let's GDB know that it can make a call_dummy breakpoint.  */
+/* This lets GDB know that it can make a call_dummy breakpoint.  */
 #undef  CALL_DUMMY_BREAKPOINT_OFFSET_P
 #define CALL_DUMMY_BREAKPOINT_OFFSET_P 1
 
@@ -183,7 +184,7 @@ void sparc_fix_call_dummy (char *dummy, CORE_ADDR pc, CORE_ADDR fun,
 #undef  CALL_DUMMY_ADDRESS
 #undef  STORE_STRUCT_RETURN
 
-#endif
+#endif /* !DO_CALL_DUMMY_ON_STACK */
 
 /* Does the specified function use the "struct returning" convention
    or the "value returning" convention?  The "value returning" convention
@@ -194,10 +195,10 @@ void sparc_fix_call_dummy (char *dummy, CORE_ADDR pc, CORE_ADDR fun,
 
    Since this sometimes depends on whether it was compiled with GCC,
    this is also an argument.  This is used in call_function to build a
-   stack, and in value_being_returned to print return values. 
+   stack, and in value_being_returned to print return values.
 
-   On Sparc64, we only pass pointers to structs if they're larger than
-   32 bytes. Otherwise they're stored in %o0-%o3 (floating-point
+   On Sparc64, we only pass pointers to structs if they are larger than
+   32 bytes. Otherwise they are stored in %o0-%o3 (floating-point
    values go into %fp0-%fp3).  */
 
 #undef  USE_STRUCT_CONVENTION
@@ -229,11 +230,11 @@ CORE_ADDR sparc64_push_arguments (int,
    They are here for kernel debuggers, etc.  */
 /* FIXME: icc and xcc are currently considered separate registers.
    This may have to change and consider them as just one (ccr).
-   Let's postpone this as long as we can.  It's nice to be able to set
+   Let us postpone this as long as we can. It is/was nice to be able to set
    them individually.  */
 /* FIXME: fcc0-3 are currently separate, even though they are also part of
-   fsr.  May have to remove them but let's postpone this as long as
-   possible.  It's nice to be able to set them individually.  */
+   fsr. May have to remove them but let us postpone this as long as
+   possible. It is/was nice to be able to set them individually.  */
 /* FIXME: Whether to include f33, f35, etc. here is not clear.
    There are advantages and disadvantages.  */
 
@@ -285,23 +286,23 @@ extern void sp64_extract_return_value (struct type *, char[], char *, int);
    to be actual register numbers as far as the user is concerned
    but do serve to get the desired values when passed to read_register.  */
 
-#if 0				/* defined in tm-sparc.h, replicated
-				   for doc purposes */
-#define	G0_REGNUM 0		/* %g0 */
-#define	G1_REGNUM 1		/* %g1 */
-#define O0_REGNUM 8		/* %o0 */
-#define	SP_REGNUM 14		/* Contains address of top of stack, \
-				   which is also the bottom of the frame.  */
-#define	RP_REGNUM 15		/* Contains return address value, *before* \
-				   any windows get switched.  */
-#define	O7_REGNUM 15		/* Last local reg not saved on stack frame */
-#define	L0_REGNUM 16		/* First local reg that's saved on stack frame
-				   rather than in machine registers */
-#define	I0_REGNUM 24		/* %i0 */
-#define	FP_REGNUM 30		/* Contains address of executing stack frame */
-#define	I7_REGNUM 31		/* Last local reg saved on stack frame */
-#define	FP0_REGNUM 32		/* Floating point register 0 */
-#endif
+#if 0	/* defined in tm-sparc.h, replicated
+		 * for doc purposes */
+# define	G0_REGNUM 0	/* %g0 */
+# define	G1_REGNUM 1	/* %g1 */
+# define	O0_REGNUM 8	/* %o0 */
+# define	SP_REGNUM 14 /* Contains address of top of stack, \
+				          * which is also the bottom of the frame.  */
+# define	RP_REGNUM 15 /* Contains return address value, *before* \
+				          * any windows get switched.  */
+# define	O7_REGNUM 15 /* Last local reg not saved on stack frame */
+# define	L0_REGNUM 16 /* First local reg that is saved on stack frame
+				          * rather than in machine registers */
+# define	I0_REGNUM 24 /* %i0 */
+# define	FP_REGNUM 30 /* Contains address of executing stack frame */
+# define	I7_REGNUM 31 /* Last local reg saved on stack frame */
+# define	FP0_REGNUM 32 /* Floating point register 0 */
+#endif /* 0 */
 
 /*#define FP_MAX_REGNUM 80*/	/* 1 + last fp reg number */
 
@@ -359,7 +360,7 @@ extern void sp64_extract_return_value (struct type *, char[], char *, int);
 
 /* Total amount of space needed to store our copies of the machine's
    register state, the array `registers'.
-   Some of the registers aren't 64 bits, but it's a lot simpler just to assume
+   Some of the registers are NOT 64 bits, but it is a lot simpler just to assume
    they all are (since most of them are).  */
 #undef  REGISTER_BYTES
 #define REGISTER_BYTES (32*8+32*8+45*8)
@@ -417,7 +418,7 @@ extern void sp64_extract_return_value (struct type *, char[], char *, int);
   : builtin_type_long_long)
 
 /* We use to support both 32 bit and 64 bit pointers.
-   We can't anymore because TARGET_PTR_BIT must now be a constant.  */
+   We cannot do so anymore because TARGET_PTR_BIT must now be a constant.  */
 #undef  TARGET_PTR_BIT
 #define TARGET_PTR_BIT 64
 
@@ -434,7 +435,7 @@ extern void sp64_extract_return_value (struct type *, char[], char *, int);
 #define FRAME_ARGS_SKIP 136
 
 #endif /* GDB_MULTI_ARCH */
-
+
 /* Offsets into jmp_buf.
    FIXME: This was borrowed from the v8 stuff and will probably have to change
    for v9.  */
@@ -451,11 +452,11 @@ extern void sp64_extract_return_value (struct type *, char[], char *, int);
 #define JB_O0 7
 #define JB_WBCNT 8
 
-/* Figure out where the longjmp will land.  We expect that we have
-   just entered longjmp and haven't yet setup the stack frame, so the
-   args are still in the output regs.  %o0 (O0_REGNUM) points at the
+/* Figure out where the longjmp will land. We expect that we have
+   just entered longjmp and have NOT yet setup the stack frame, so the
+   args are still in the output regs. %o0 (O0_REGNUM) points at the
    jmp_buf structure from which we extract the pc (JB_PC) that we will
-   land at.  The pc is copied into ADDR.  This routine returns true on
+   land at. The pc is copied into ADDR. This routine returns true on
    success */
 
 extern int get_longjmp_target (CORE_ADDR *);
@@ -465,3 +466,4 @@ extern int get_longjmp_target (CORE_ADDR *);
 #undef TM_PRINT_INSN_MACH
 #define TM_PRINT_INSN_MACH bfd_mach_sparc_v9a
 
+/* EOF */

@@ -1,4 +1,5 @@
-/* Macro definitions for running gdb on a Sparc running GNU/Linux.
+/* xm-linux.h
+   Macro definitions for running gdb on a Sparc running GNU/Linux.
 
    Copyright 1989, 1993, 1994, 1995, 1996, 1998, 2001, 2002 Free
    Software Foundation, Inc.
@@ -31,8 +32,8 @@
 
 /* If you expect to use the mmalloc package to obtain mapped symbol files,
    for now you have to specify some parameters that determine how gdb places
-   the mappings in it's address space.  See the comments in map_to_address()
-   for details.  This is expected to only be a short term solution.  Yes it
+   the mappings in its address space. See the comments in map_to_address()
+   for details. This is expected to only be a short term solution. Yes it
    is a kludge.
    FIXME:  Make this more automatic. */
 
