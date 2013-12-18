@@ -1,4 +1,5 @@
-/* Parameters for execution on a PowerPC running NetBSD, for GDB.
+/* xm-nbsd.h
+   Parameters for execution on a PowerPC running NetBSD, for GDB.
    Copyright 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.

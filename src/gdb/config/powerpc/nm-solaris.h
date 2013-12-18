@@ -1,4 +1,5 @@
-/* Native-dependent definitions for PowerPC running Solaris.
+/* nm-solaris.h
+   Native-dependent definitions for PowerPC running Solaris.
    Copyright 1996 Free Software Foundation, Inc.
 
    This file is part of GDB.

@@ -1,3 +1,4 @@
+# macosx.mh
 # Host: PowerPC running Mac OS X
 
 SER_HARDWIRE = ser-base.o ser-unix.o ser-tcp.o

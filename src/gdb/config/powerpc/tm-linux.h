@@ -1,4 +1,5 @@
-/* Definitions to target GDB to GNU/Linux on PowerPC.
+/* tm-linux.h
+   Definitions to target GDB to GNU/Linux on PowerPC.
 
    Copyright 1992, 1993, 2000, 2002 Free Software Foundation, Inc.
 
@@ -26,24 +27,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #undef SKIP_TRAMPOLINE_CODE
 #include "config/tm-linux.h"
 
-/* We've multi-arched these.  (Note that this completely undoes the
+/* We have multi-arched these. (Note that this completely undoes the
    effect of config/tm-linux.h #including config/tm-sysv4.h.)  */
 #undef SKIP_TRAMPOLINE_CODE
 
 /* Make sure nexti gets the help it needs for debugging assembly code
-   without symbols */
+ * without symbols */
 
 extern int ppc_linux_in_sigtramp (CORE_ADDR pc, char *func_name);
 #undef DEPRECATED_IN_SIGTRAMP
 #define DEPRECATED_IN_SIGTRAMP(pc,func_name) ppc_linux_in_sigtramp (pc,func_name)
 
 #if 0
-#define CANNOT_FETCH_REGISTER(regno) ((regno) >= MQ_REGNUM)
-#define CANNOT_STORE_REGISTER(regno) ((regno) >= MQ_REGNUM)
-#endif
+# define CANNOT_FETCH_REGISTER(regno) ((regno) >= MQ_REGNUM)
+# define CANNOT_STORE_REGISTER(regno) ((regno) >= MQ_REGNUM)
+#endif /* 0 */
 
 /* N_FUN symbols in shared libaries have 0 for their values and need
-   to be relocated. */
+ * to be relocated. */
 #define SOFUN_ADDRESS_MAYBE_MISSING
 
 #endif  /* #ifndef TM_LINUX_H */

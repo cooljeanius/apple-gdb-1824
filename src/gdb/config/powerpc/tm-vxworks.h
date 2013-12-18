@@ -1,4 +1,5 @@
-/* Target machine description for VxWorks on the PowerPC, 
+/* tm-vxworks.h
+   Target machine description for VxWorks on the PowerPC,
    for GDB, the GNU debugger.
    Copyright 1999 Free Software Foundation, Inc.
 

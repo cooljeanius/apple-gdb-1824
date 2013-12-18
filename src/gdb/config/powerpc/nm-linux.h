@@ -1,4 +1,5 @@
-/* IBM PowerPC native-dependent macros for GDB, the GNU debugger.
+/* nm-linux.h
+   IBM PowerPC native-dependent macros for GDB, the GNU debugger.
    Copyright 1995, 2000 Free Software Foundation, Inc.
 
 This file is part of GDB.
@@ -29,7 +30,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 extern int kernel_u_size (void);
 
 /* This is the amount to subtract from u.u_ar0
-   to get the offset in the core file of the register values.  */
+ * to get the offset in the core file of the register values.
+ */
 #define KERNEL_U_ADDR 0x0
 
 #define FETCH_INFERIOR_REGISTERS

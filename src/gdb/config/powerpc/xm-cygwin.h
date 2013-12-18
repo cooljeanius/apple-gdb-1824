@@ -1,4 +1,5 @@
-/* Definitions for hosting on WIN32, for GDB.
+/* xm-cygwin.h
+   Definitions for hosting on WIN32, for GDB.
    Copyright 1995, 1996, 1998 Free Software Foundation, Inc.
 
    This file is part of GDB.

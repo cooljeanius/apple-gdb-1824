@@ -1,4 +1,5 @@
-/* Macro definitions for Power PC running MacOS.
+/* tm-macos.h
+   Macro definitions for Power PC running MacOS.
    Copyright 1995, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -22,3 +23,5 @@
 #include "rs6000/tm-rs6000.h"
 
 #define GDB_TARGET_POWERPC
+
+/* EOF */

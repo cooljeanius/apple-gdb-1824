@@ -1,4 +1,5 @@
-/* Parameters for hosting on an PowerPC, for GDB, the GNU debugger.
+/* xm-aix.h
+   Parameters for hosting on an PowerPC, for GDB, the GNU debugger.
    Copyright 1995, 1996, 2000 Free Software Foundation, Inc.
    Contributed by Cygnus Corporation.
 
@@ -21,11 +22,13 @@
 
 #include "config/xm-aix4.h"
 
-/* This doesn't seem to be declared in any header file I can find.  */
+/* This does NOT seem to be declared in any header file that I can find.  */
 char *termdef (int, int);
 
 /* UINT_MAX is defined in <sys/limits.h> as a decimal constant (4294967295)
    which is too large to fit in a signed int when it is parsed by the
-   compiler, so it issues a diagnostic.  Just undef it here so that we
+   compiler, so it issues a diagnostic. Just undef it here so that we
    use gdb's version in defs.h */
 #undef UINT_MAX
+
+/* EOF */

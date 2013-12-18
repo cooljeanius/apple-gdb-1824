@@ -1,4 +1,5 @@
-/* Target support for NextStep/Rhapsody on PowerPC for GDB, the GNU debugger.
+/* tm-ppc-next.h
+   Target support for NextStep/Rhapsody on PowerPC for GDB, the GNU debugger.
    Copyright (C) 1997
    Free Software Foundation, Inc.
 

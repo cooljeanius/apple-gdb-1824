@@ -1,4 +1,5 @@
-# Host: PowerMac (PowerPC running MacOS)
+# macos.mh
+# Host: PowerMac (PowerPC running MacOS Classic)
 
 NATDEPFILES= mac-nat.o
 NAT_FILE= nm-macos.h

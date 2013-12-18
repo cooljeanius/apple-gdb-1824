@@ -1,3 +1,4 @@
+# rhapsody.mt
 # Target: PowerPC running NeXTStep/Rhapsody
 
 MT_CFLAGS = \

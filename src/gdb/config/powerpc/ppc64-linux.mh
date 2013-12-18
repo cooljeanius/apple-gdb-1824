@@ -1,3 +1,4 @@
+# ppc64-linux.mh
 # Host: PowerPC64, running Linux
 
 XM_CLIBS=
@@ -8,7 +9,7 @@ NATDEPFILES= infptrace.o inftarg.o fork-child.o \
 	gcore.o linux-nat.o
 
 # The PowerPC has severe limitations on TOC size, and uses them even
-# for non-PIC code.  GDB overflows those tables when compiling with
+# for non-PIC code. GDB overflows those tables when compiling with
 # -mfull-toc (the default), so we need to ask GCC to use as few TOC
 # entries as possible.
 MH_CFLAGS= -mminimal-toc
