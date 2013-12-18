@@ -1,4 +1,5 @@
-/* This program is free software; you can redistribute it and/or modify
+/* nm-riscos.h
+   This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2 of the License, or
    (at your option) any later version.
@@ -22,7 +23,7 @@
 #define NBPG BSD43_NBPG
 #define UPAGES BSD43_UPAGES
 
-/* Where is this used?  I don't see any uses in mips-nat.c, and I don't think
+/* Where is this used? I do NOT see any uses in mips-nat.c, and I do NOT think
    the uses in infptrace.c are used if FETCH_INFERIOR_REGISTERS is defined.
    Does the compiler react badly to "extern CORE_ADDR kernel_u_addr" (even
    if never referenced)?  */
@@ -58,3 +59,5 @@
 
 /* Override copies of {fetch,store}_inferior_registers in infptrace.c.  */
 #define FETCH_INFERIOR_REGISTERS
+
+/* EOF */

@@ -1,4 +1,5 @@
-/* Copyright 1993, 1997, 1998, 1999, 2000 Free Software Foundation, Inc.
+/* tm-embed.h
+   Copyright 1993, 1997, 1998, 1999, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.
 
@@ -44,3 +45,5 @@ int remote_mips_stopped_by_watchpoint (void);
 #define TARGET_CAN_USE_HARDWARE_WATCHPOINT(type, cnt, ot) \
   remote_mips_can_use_hardware_watchpoint(cnt)
 int remote_mips_can_use_hardware_watchpoint (int cnt);
+
+/* EOF */

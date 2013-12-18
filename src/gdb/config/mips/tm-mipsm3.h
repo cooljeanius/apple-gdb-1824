@@ -1,4 +1,5 @@
-/* Definitions to make GDB run on a mips box under Mach 3.0
+/* tm-mipsm3.h
+   Definitions to make GDB run on a mips box under Mach 3.0
    Copyright 1992, 1993, 1998 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -44,7 +45,7 @@
 #define MACHINE_CPROC_FP_OFFSET SAVED_FP
 
 /* Thread flavors used in setting the Trace state.
-
+ *
  * In <mach/machine/thread_status.h>
  */
 #define TRACE_FLAVOR		MIPS_EXC_STATE
@@ -65,3 +66,5 @@
 
 /* Output registers in tabular format */
 #define TABULAR_REGISTER_OUTPUT
+
+/* EOF */

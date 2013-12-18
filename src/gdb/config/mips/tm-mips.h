@@ -1,4 +1,5 @@
-/* Definitions to make GDB run on a mips box under 4.3bsd.
+/* tm-mips.h
+   Definitions to make GDB run on a mips box under 4.3bsd.
 
    Copyright 1986, 1987, 1989, 1991, 1992, 1993, 1994, 1995, 1996,
    1997, 1998, 1999, 2000, 2002 Free Software Foundation, Inc.
@@ -41,11 +42,11 @@ struct value;
 
 /* PC should be masked to remove possible MIPS16 flag */
 #if !defined (GDB_TARGET_MASK_DISAS_PC)
-#define GDB_TARGET_MASK_DISAS_PC(addr) UNMAKE_MIPS16_ADDR(addr)
-#endif
+# define GDB_TARGET_MASK_DISAS_PC(addr) UNMAKE_MIPS16_ADDR(addr)
+#endif /* !GDB_TARGET_MASK_DISAS_PC */
 #if !defined (GDB_TARGET_UNMASK_DISAS_PC)
-#define GDB_TARGET_UNMASK_DISAS_PC(addr) MAKE_MIPS16_ADDR(addr)
-#endif
+# define GDB_TARGET_UNMASK_DISAS_PC(addr) MAKE_MIPS16_ADDR(addr)
+#endif /* !GDB_TARGET_MASK_DISAS_PC */
 
 /* Return non-zero if PC points to an instruction which will cause a step
    to execute both the instruction at PC and an instruction at PC+4.  */
@@ -53,31 +54,31 @@ extern int mips_step_skips_delay (CORE_ADDR);
 #define STEP_SKIPS_DELAY_P (1)
 #define STEP_SKIPS_DELAY(pc) (mips_step_skips_delay (pc))
 
-/* Say how long (ordinary) registers are.  This is a piece of bogosity
+/* Say how long (ordinary) registers are. This is a piece of bogosity
    used in push_word and a few other places; REGISTER_RAW_SIZE is the
    real way to know how big a register is.  */
 
 #define REGISTER_SIZE 4
 
-/* The size of a register.  This is predefined in tm-mips64.h.  We
-   can't use REGISTER_SIZE because that is used for various other
+/* The size of a register. This is predefined in tm-mips64.h. We
+   cannot use REGISTER_SIZE because that is used for various other
    things.  */
 
 #ifndef MIPS_REGSIZE
-#define MIPS_REGSIZE 4
-#endif
+# define MIPS_REGSIZE 4
+#endif /* !MIPS_REGSIZE */
 
 /* Number of machine registers */
 
 #ifndef NUM_REGS
-#define NUM_REGS 90
-#endif
+# define NUM_REGS 90
+#endif /* !NUM_REGS */
 
 /* Initializer for an array of names of registers.
    There should be NUM_REGS strings in this initializer.  */
 
 #ifndef MIPS_REGISTER_NAMES
-#define MIPS_REGISTER_NAMES 	\
+# define MIPS_REGISTER_NAMES 	\
     {	"zero",	"at",	"v0",	"v1",	"a0",	"a1",	"a2",	"a3", \
 	"t0",	"t1",	"t2",	"t3",	"t4",	"t5",	"t6",	"t7", \
 	"s0",	"s1",	"s2",	"s3",	"s4",	"s5",	"s6",	"s7", \
@@ -91,7 +92,7 @@ extern int mips_step_skips_delay (CORE_ADDR);
 	"",	"",	"",	"",	"",	"",	"",	"", \
 	"",	"",	"",	"",	"",	"",	"",	"", \
     }
-#endif
+#endif /* !MIPS_REGISTER_NAMES */
 
 /* Register numbers of various important registers.
    Note that some of these values are "real" register numbers,
@@ -135,22 +136,22 @@ extern int mips_step_skips_delay (CORE_ADDR);
    register N.  */
 
 #ifndef REGISTER_VIRTUAL_TYPE
-#define REGISTER_VIRTUAL_TYPE(N) \
+# define REGISTER_VIRTUAL_TYPE(N) \
 	(((N) >= FP0_REGNUM && (N) < FP0_REGNUM+32) ? builtin_type_float \
 	 : ((N) == 32 /*SR*/) ? builtin_type_uint32 \
 	 : ((N) >= 70 && (N) <= 89) ? builtin_type_uint32 \
 	 : builtin_type_int)
-#endif
+#endif /* !REGISTER_VIRTUAL_TYPE */
 
 /* All mips targets store doubles in a register pair with the least
    significant register in the lower numbered register.
    If the target is big endian, double register values need conversion
    between memory and register formats.  */
 
-extern void mips_register_convert_to_type (int regnum, 
+extern void mips_register_convert_to_type (int regnum,
 					   struct type *type,
 					   char *buffer);
-extern void mips_register_convert_from_type (int regnum, 
+extern void mips_register_convert_from_type (int regnum,
 					     struct type *type,
 					     char *buffer);
 
@@ -161,14 +162,14 @@ extern void mips_register_convert_from_type (int regnum,
   mips_register_convert_from_type ((n), (type), (buffer))
 
 
-/* Special symbol found in blocks associated with routines.  We can hang
+/* Special symbol found in blocks associated with routines. We can hang
    mips_extra_func_info_t's off of this.  */
 
 #define MIPS_EFI_SYMBOL_NAME "__GDB_EFI_INFO__"
 extern void ecoff_relocate_efi (struct symbol *, CORE_ADDR);
 
 /* Specific information about a procedure.
-   This overlays the MIPS's PDR records, 
+   This overlays the MIPS's PDR records,
    mipsread.c (ab)uses this to save memory */
 
 typedef struct mips_extra_func_info
@@ -186,15 +187,15 @@ extern void mips_print_extra_frame_info (struct frame_info *frame);
 
 /* It takes two values to specify a frame on the MIPS.
 
-   In fact, the *PC* is the primary value that sets up a frame.  The
-   PC is looked up to see what function it's in; symbol information
+   In fact, the *PC* is the primary value that sets up a frame. The
+   PC is looked up to see what function it is in; symbol information
    from that function tells us which register is the frame pointer
    base, and what offset from there is the "virtual frame pointer".
-   (This is usually an offset from SP.)  On most non-MIPS machines,
+   (This is usually an offset from SP.) On most non-MIPS machines,
    the primary value is the SP, and the PC, if needed, disambiguates
-   multiple functions with the same SP.  But on the MIPS we can't do
+   multiple functions with the same SP. But on the MIPS we cannot do
    that since the PC is not stored in the same part of the frame every
-   time.  This does not seem to be a very clever way to set up frames,
+   time. This does not seem to be a very clever way to set up frames,
    but there is nothing we can do about that.  */
 
 #define SETUP_ARBITRARY_FRAME(argc, argv) setup_arbitrary_frame (argc, argv)
@@ -216,8 +217,8 @@ extern char *mips_read_processor_type (void);
 extern int mips_ignore_helper (CORE_ADDR pc);
 
 #ifndef TARGET_MIPS
-#define TARGET_MIPS
-#endif
+# define TARGET_MIPS
+#endif /* !TARGET_MIPS */
 
 /* Definitions and declarations used by mips-tdep.c and remote-mips.c  */
 #define MIPS_INSTLEN 4		/* Length of an instruction */
@@ -238,3 +239,5 @@ extern void mips_set_processor_type_command (char *, int);
 
 /* Single step based on where the current instruction will take us.  */
 extern void mips_software_single_step (enum target_signal, int);
+
+/* EOF */

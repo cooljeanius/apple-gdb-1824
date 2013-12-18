@@ -1,4 +1,5 @@
 # Host: SGI Iris running irix 4.x
+
 XM_FILE= xm-irix4.h
 NAT_FILE= nm-irix4.h
 NATDEPFILES= fork-child.o irix4-nat.o corelow.o procfs.o \
@@ -6,5 +7,6 @@ NATDEPFILES= fork-child.o irix4-nat.o corelow.o procfs.o \
 
 
 XM_CLIBS=-lbsd -lsun
-# use cc in K&R mode, bump up some static compiler tables.
+
+# use cc in K&R mode (really?), bump up some static compiler tables.
 CC = cc -cckr -Wf,-XNg1500 -Wf,-XNk1000 -Wf,-XNh1100

@@ -1,4 +1,5 @@
-/* Definitions to make GDB run on a mips box under 4.3bsd.
+/* xm-news-mips.h
+   Definitions to make GDB run on a mips box under 4.3bsd.
    Copyright (C) 1986, 1987, 1989 Free Software Foundation, Inc.
    Contributed by Per Bothner(bothner@cs.wisc.edu) at U.Wisconsin
    and by Alessandro Forin(af@cs.cmu.edu) at CMU
@@ -21,5 +22,7 @@
    Boston, MA 02111-1307, USA.  */
 
 #if !defined (HOST_BYTE_ORDER)
-#define HOST_BYTE_ORDER BIG_ENDIAN
-#endif
+# define HOST_BYTE_ORDER BIG_ENDIAN
+#endif /* !HOST_BYTE_ORDER */
+
+/* EOF */

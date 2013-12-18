@@ -1,4 +1,5 @@
-/* Target machine parameters for MIPS r4000
+/* tm-mips64.h
+   Target machine parameters for MIPS r4000
    Copyright 1994, 1996, 1997, 1998, 2000 Free Software Foundation, Inc.
    Contributed by Ian Lance Taylor (ian@cygnus.com)
 
@@ -35,3 +36,5 @@
 
 /* Get the basic MIPS definitions.  */
 #include "mips/tm-mips.h"
+
+/* EOF */

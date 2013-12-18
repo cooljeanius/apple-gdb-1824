@@ -1,4 +1,5 @@
-/* Target machine description for SGI Iris under Irix 5, for GDB.
+/* tm-irix5.h
+   Target machine description for SGI Iris under Irix 5, for GDB.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1998, 2000
    Free Software Foundation, Inc.
 
@@ -50,7 +51,6 @@
 
 #endif /* N32 */
 
-
 /* The signal handler trampoline is called _sigtramp.  */
 #undef IN_SIGTRAMP
 #define IN_SIGTRAMP(pc, name) ((name) && STREQ ("_sigtramp", name))
@@ -68,3 +68,5 @@
 #undef SIGFRAME_FPREGSAVE_OFF
 #define SIGFRAME_FPREGSAVE_OFF	(SIGFRAME_BASE + 2 * 4 + 8 + 32 * 8 + 4)
 #define SIGFRAME_REG_SIZE	8
+
+/* EOF */

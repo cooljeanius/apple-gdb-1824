@@ -1,4 +1,5 @@
-/* Definitions for SGI irix3 native support.
+/* nm-irix3.h
+   Definitions for SGI irix3 native support.
    Copyright 1991, 1992, 1993, 1996, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -18,21 +19,24 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-/* Don't need special routines for Irix v3 -- we can use infptrace.c */
+/* We do NOT need special routines for Irix v3 -- we can use infptrace.c */
 #undef FETCH_INFERIOR_REGISTERS
 
 #define U_REGS_OFFSET 0
 
-/* Figure out where the longjmp will land.  We expect that we have just entered
-   longjmp and haven't yet setup the stack frame, so the args are still in the
-   argument regs.  a0 (CALL_ARG0) points at the jmp_buf structure from which we
-   extract the pc (JB_PC) that we will land at.  The pc is copied into ADDR.
+/* Figure out where the longjmp will land. We expect that we have just entered
+   longjmp and have NOT yet setup the stack frame, so the args are still in the
+   argument regs. a0 (CALL_ARG0) points at the jmp_buf structure from which we
+   extract the pc (JB_PC) that we will land at. The pc is copied into ADDR.
    This routine returns true on success */
 
 #define GET_LONGJMP_TARGET(ADDR) get_longjmp_target(ADDR)
 extern int get_longjmp_target (CORE_ADDR *);
 
 /* Is this really true or is this just a leftover from a DECstation
-   config file?  */
+ * config file?
+ */
 
 #define	ONE_PROCESS_WRITETEXT
+
+/* EOF */

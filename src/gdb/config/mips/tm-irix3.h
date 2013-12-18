@@ -1,4 +1,5 @@
-/* Target machine description for SGI Iris under Irix, for GDB.
+/* tm-irix3.h
+   Target machine description for SGI Iris under Irix, for GDB.
    Copyright 1990, 1991, 1992, 1993, 1995, 1999
    Free Software Foundation, Inc.
 
@@ -58,7 +59,7 @@
    and correspond to the general registers of the machine,
    and some are "phony" register numbers which are too large
    to be actual register numbers as far as the user is concerned
-   but do serve to get the desired values when passed to read_register.  */
+   but do serve to get the desired values when passed to read_register. */
 
 #define FP0_REGNUM 32		/* Floating point register 0 (single float) */
 #define PC_REGNUM 64		/* Contains program counter */
@@ -75,3 +76,5 @@
 #define SIGFRAME_PC_OFF		(SIGFRAME_BASE + 2 * 4)
 #define SIGFRAME_REGSAVE_OFF	(SIGFRAME_BASE + 3 * 4)
 #define SIGFRAME_FPREGSAVE_OFF	(SIGFRAME_BASE + 3 * 4 + 32 * 4 + 4)
+
+/* EOF */

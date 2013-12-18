@@ -1,4 +1,5 @@
-/* Definitions for native support of irix4.
+/* nm-irix4.h
+   Definitions for native support of irix4.
 
    Copyright 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1999, 2000
    Free Software Foundation, Inc.
@@ -21,7 +22,7 @@
    Boston, MA 02111-1307, USA.  */
 
 /*
- * Let's use /debug instead of all this dangerous mucking about
+ * This lets us use /debug instead of all this dangerous mucking about
  * with ptrace(), which seems *extremely* fragile, anyway.
  */
 #define USE_PROC_FS
@@ -30,14 +31,14 @@
 #define MAP_PROC_NAME_FMT "/debug/%d"
 #define STATUS_PROC_NAME_FMT "/debug/%d"
 
-/* Don't need special routines for the SGI -- we can use infptrace.c */
+/* Do NOT need special routines for the SGI -- we can use infptrace.c */
 #undef FETCH_INFERIOR_REGISTERS
 
 #define U_REGS_OFFSET 0
 
 /* Is this really true or is this just a leftover from a DECstation
-   config file?  */
-
+ * config file?
+ */
 #define	ONE_PROCESS_WRITETEXT
 
 #define TARGET_HAS_HARDWARE_WATCHPOINTS
@@ -47,7 +48,7 @@
 	((type) == bp_hardware_watchpoint)
 
 /* When a hardware watchpoint fires off the PC will be left at the
-   instruction which caused the watchpoint.  It will be necessary for
+   instruction which caused the watchpoint. It will be necessary for
    GDB to step over the watchpoint. */
 
 #define STOPPED_BY_WATCHPOINT(W) \
@@ -65,3 +66,5 @@ extern int procfs_stopped_by_watchpoint (ptid_t);
 extern int procfs_set_watchpoint (ptid_t, CORE_ADDR, int, int, int);
 
 #define TARGET_REGION_SIZE_OK_FOR_HW_WATCHPOINT(SIZE) 1
+
+/* EOF */

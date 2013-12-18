@@ -1,4 +1,5 @@
-/* Copyright 1990, 1994, 2000 Free Software Foundation, Inc.
+/* tm-bigmips.h
+   Copyright 1990, 1994, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.
 
@@ -18,3 +19,5 @@
    Boston, MA 02111-1307, USA.  */
 
 #include "mips/tm-mips.h"
+
+/* EOF */

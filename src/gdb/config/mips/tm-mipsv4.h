@@ -1,4 +1,5 @@
-/* Target machine description for MIPS running SVR4, for GDB.
+/* tm-mipsv4.h
+   Target machine description for MIPS running SVR4, for GDB.
    Copyright 1994, 1995, 1998, 1999, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -35,3 +36,5 @@
 
 /* Convert a DWARF register number to a gdb REGNUM.  */
 #define DWARF_REG_TO_REGNUM(num) ((num) < 32 ? (num) : (num)+FP0_REGNUM-32)
+
+/* EOF */
