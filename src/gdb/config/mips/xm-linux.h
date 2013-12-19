@@ -1,4 +1,5 @@
-/* Host definitions for GNU/Linux on MIPS.
+/* xm-linux.h
+   Host definitions for GNU/Linux on MIPS.
 
    Copyright 2001, 2002 Free Software Foundation, Inc.
 
@@ -20,6 +21,8 @@
    Boston, MA 02111-1307, USA.  */
 
 #ifndef XM_MIPSLINUX_H
-#define XM_MIPSLINUX_H
-
+# define XM_MIPSLINUX_H
+/* no actual header content yet */
 #endif /* XM_MIPSLINUX_H */
+
+/* EOF */

@@ -1,4 +1,5 @@
-/* Definitions to make GDB run on a mips box under 4.3bsd.
+/* xm-mipsm3.h
+   Definitions to make GDB run on a mips box under 4.3bsd.
    Copyright 1986, 1987, 1989, 1993 Free Software Foundation, Inc.
    Contributed by Per Bothner(bothner@cs.wisc.edu) at U.Wisconsin
    and by Alessandro Forin(af@cs.cmu.edu) at CMU
@@ -20,10 +21,12 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-#define KERNEL_U_ADDR 0		/* Not needed. */
+#define KERNEL_U_ADDR 0 /* Not needed. */
 
 /* Only used for core files on DECstations. */
 
 #define REGISTER_U_ADDR(addr, blockend, regno) 		\
 	if (regno < 38) addr = (NBPG*UPAGES) + (regno - 38)*sizeof(int);\
-	else addr = 0;		/* ..somewhere in the pcb */
+	else addr = 0;		/* ...somewhere in the pcb */
+
+/* EOF */

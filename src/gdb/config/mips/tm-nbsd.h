@@ -1,4 +1,5 @@
-/* Target-dependent definitions for NetBSD/mips.
+/* tm-nbsd.h
+   Target-dependent definitions for NetBSD/mips.
    Copyright 2002 Free Software Foundation, Inc.
    Contributed by Wasabi Systems, Inc.
 
@@ -28,3 +29,5 @@
 #undef DEPRECATED_IGNORE_HELPER_CALL
 
 #endif /* TM_NBSD_H */
+
+/* EOF */
