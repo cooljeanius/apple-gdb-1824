@@ -1,4 +1,5 @@
-/* Parameters for a Sony/NEWS series 1000 with News-OS version 3,
+/* xm-news1000.h
+   Parameters for a Sony/NEWS series 1000 with News-OS version 3,
    for GDB, the GNU debugger.
    Copyright (C) 1990 Free Software Foundation, Inc.
 
@@ -25,3 +26,5 @@
 #undef mc68030
 #define mc68030
 #include "m68k/xm-news.h"
+
+/* EOF */

@@ -1,4 +1,5 @@
-/* Definitions to target GDB on an ISI Optimum V (3.05) under 4.3bsd.
+/* tm-isi.h
+   Definitions to target GDB on an ISI Optimum V (3.05) under 4.3bsd.
    Copyright (C) 1987, 1989, 1991, 1993 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -66,9 +67,9 @@ extern int isi_frame_num_args (struct frame_info *fi);
   else   								\
     { pc = get_pc_function_start ((frame_info)->pc); 			\
       /* Verify we have a link a6 instruction next,			\
-	 or a branch followed by a link a6 instruction;			\
-	 if not we lose.  If we win, find the address above the saved   \
-	 regs using the amount of storage from the link instruction.  */\
+	   * or a branch followed by a link a6 instruction;			\
+	   * if not we lose.  If we win, find the address above the saved   \
+	   * regs using the amount of storage from the link instruction.  */\
 retry:									\
       insn = read_memory_integer (pc, 2);				\
       if (insn == 044016)						\
@@ -119,10 +120,12 @@ retry:									\
   (frame_saved_regs).regs[PC_REGNUM] = (frame_info)->frame + 4;		\
 }
 
-/* The only reason this is here is the tm-isi.h reference below.  It
+/* The only reason this is here is the tm-isi.h reference below. It
    was moved back here from tm-m68k.h.  FIXME? */
 
 extern CORE_ADDR isi_skip_prologue (CORE_ADDR);
 #define SKIP_PROLOGUE(pc) (isi_skip_prologue (pc))
 
 #include "m68k/tm-m68k.h"
+
+/* EOF */
