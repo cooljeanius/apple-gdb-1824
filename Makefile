@@ -132,9 +132,9 @@ INTL_HEADERS = $(BINUTILS_BUILD_ROOT)/usr/include
 export SDKROOT_FOR_BUILD = $(shell xcodebuild -version -sdk macosx Path | head -1)
 
 export AR       = $(shell xcrun -find ar)
-export CC       = $(shell xcrun -find clang)
+export CC       = $(shell (xcrun -find clang 2>/dev/null || xcrun -find gcc))
 export CPP      = $(shell xcrun -find cpp) -I$(SDKROOT_FOR_BUILD)/usr/include
-export CXX      = $(shell xcrun -find clang++)
+export CXX      = $(shell (xcrun -find clang++ 2>/dev/null || xcrun -find g++))
 export LD       = $(shell xcrun -find ld)
 export LIBTOOL  = $(shell xcrun -find libtool)
 export MAKE     = $(shell xcrun -find make)
@@ -147,7 +147,7 @@ export CCFLAGS_FOR_BUILD = -I$(SDKROOT_FOR_BUILD)/usr/include
 export LDFLAGS_FOR_BUILD = -isysroot $(SDKROOT_FOR_BUILD)
 
 ifndef CDEBUGFLAGS
-CDEBUGFLAGS = -g -Os -funwind-tables -fasynchronous-unwind-tables -D_DARWIN_UNLIMITED_STREAMS -Wno-format-security -Wno-format-nonliteral 
+CDEBUGFLAGS = -ggdb -Os -funwind-tables -fasynchronous-unwind-tables -D_DARWIN_UNLIMITED_STREAMS -Wno-format-security -Wno-format-nonliteral 
 endif
 
 CFLAGS = $(CDEBUGFLAGS) $(RC_CFLAGS)
