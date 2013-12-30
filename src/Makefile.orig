@@ -61,7 +61,7 @@ man7dir = $(mandir)/man7
 man8dir = $(mandir)/man8
 man9dir = $(mandir)/man9
 
-INSTALL = /opt/local/bin/ginstall -c
+INSTALL = /sw/bin/ginstall -c
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_DATA = ${INSTALL} -m 644
@@ -73,7 +73,7 @@ LN_S = ln -s
 # -------------------------------------------------
 
 # The gcc driver likes to know the arguments it was configured with.
-TOPLEVEL_CONFIGURE_ARGUMENTS=./configure 39 0 14
+TOPLEVEL_CONFIGURE_ARGUMENTS=./configure dummy autoopts-config
 
 tooldir = ${exec_prefix}/x86_64-apple-darwin10.8.0
 build_tooldir = ${exec_prefix}/x86_64-apple-darwin10.8.0
@@ -128,7 +128,7 @@ BUILD_EXPORTS = \
 SUBDIRS =  intl electric-fence mmalloc libiberty opcodes bfd readline tcl zlib binutils sim gdb etc expect dejagnu utils cgen
 # This is set by the configure script to the arguments to use when configuring
 # directories built for the host system.
-HOST_CONFIGARGS =     --disable-shared --enable-64-bit-bfd --disable-softfloat --disable-werror  --enable-carbon-framework --enable-debug-symbols-framework --cache-file=./config.cache --build=x86_64-apple-darwin10.8.0 --host=x86_64-apple-darwin10.8.0 --target=x86_64-apple-darwin10.8.0   --program-transform-name='s,y,y,'
+HOST_CONFIGARGS =   --disable-shared --enable-64-bit-bfd --disable-softfloat --disable-werror  --cache-file=./config.cache --build=x86_64-apple-darwin10.8.0 --host=x86_64-apple-darwin10.8.0 --target=x86_64-apple-darwin10.8.0   --program-transform-name='s,y,y,'
 # Host programs are put under this directory, which is . except if building
 # with srcdir=..
 HOST_SUBDIR = .
@@ -306,11 +306,11 @@ AS = as
 AR = ar
 AR_FLAGS = rc
 
-CC = gcc
+CC = gcc-4.2
 CFLAGS = -g -O2
 LIBCFLAGS = $(CFLAGS)
 
-CXX = g++
+CXX = g++-4.2
 CXXFLAGS = -g -O2
 LIBCXXFLAGS = $(CXXFLAGS) -fno-implicit-templates
 
@@ -318,7 +318,7 @@ DLLTOOL = dlltool
 
 NM = nm
 
-LD = /opt/local/bin/ld
+LD = /usr/libexec/gcc/i686-apple-darwin10/4.2.1/ld
 LDFLAGS = 
 
 RANLIB = ranlib
