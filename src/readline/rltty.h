@@ -34,13 +34,13 @@
 #  include <termio.h>
 #  if !defined (TCOON)
 #    define TCOON 1
-#  endif
+#  endif /* !TCOON */
 #endif /* TERMIO_TTY_DRIVER */
 
 /* Other (BSD) machines use sgtty. */
 #if defined (NEW_TTY_DRIVER)
 #  include <sgtty.h>
-#endif
+#endif /* NEW_TTY_DRIVER */
 
 #include "rlwinsize.h"
 

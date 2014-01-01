@@ -32,18 +32,20 @@ Boston, MA 02111-1307, USA.  */
 #include <sys/stat.h>
 #include <string.h>
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>	/* Prototypes for lseek */
-#endif
+# include <unistd.h>	/* Prototypes for lseek */
+#else
+# warning attach.c needs <unistd.h> for lseek().
+#endif /* HAVE_UNISTD_H */
 
 #include <sys/mman.h>
 
 #ifndef SEEK_SET
-#define SEEK_SET 0
-#endif
+# define SEEK_SET 0
+#endif /* !SEEK_SET */
 
 #if !defined (MAP_ANONYMOUS) && defined (MAP_ANON)
-#define MAP_ANONYMOUS MAP_ANON
-#endif
+# define MAP_ANONYMOUS MAP_ANON
+#endif /* !MAP_ANONYMOUS && MAP_ANON */
 
 #if defined(HAVE_MMAP)
 
@@ -59,12 +61,12 @@ static struct mdesc *reuse PARAMS ((int, PTR, int));
 
    If the open file corresponding to FD is from a previous use of
    mmalloc and passes some basic sanity checks to ensure that it is
-   compatible with the current mmalloc package, then it's data is
-   mapped in and is immediately accessible at the same addresses in
+   compatible with the current mmalloc package, then the data belonging to it
+   is mapped in and is immediately accessible at the same addresses in
    the current process as the process that created the file.
 
    If BASEADDR is not NULL, the mapping is established starting at the
-   specified address in the process address space.  If BASEADDR is NULL,
+   specified address in the process address space. If BASEADDR is NULL,
    the mmalloc package chooses a suitable address at which to start the
    mapped region, which will be the value of the previous mapping if
    opening an existing file which was previously built by mmalloc, or
@@ -75,9 +77,9 @@ static struct mdesc *reuse PARAMS ((int, PTR, int));
    regions or future mapped regions.
 
    On success, returns a "malloc descriptor" which is used in subsequent
-   calls to other mmalloc package functions.  It is explicitly "void *"
-   ("char *" for systems that don't fully support void) so that users
-   of the package don't have to worry about the actual implementation
+   calls to other mmalloc package functions. It is explicitly "void *"
+   ("char *" for systems that do NOT fully support void) so that users
+   of the package do NOT have to worry about the actual implementation
    details.
 
    On failure returns NULL. */
@@ -94,9 +96,9 @@ mmalloc_attach (fd, baseaddr, flags)
   struct stat sbuf;
 
   /* First check to see if FD is a valid file descriptor, and if so, see
-     if the file has any current contents (size > 0).  If it does, then
-     attempt to reuse the file.  If we can't reuse the file, either
-     because it isn't a valid mmalloc produced file, was produced by an
+     if the file has any current contents (size > 0). If it does, then
+     attempt to reuse the file. If we cannot reuse the file, either
+     because it is NOT a valid mmalloc produced file, was produced by an
      obsolete version, or any other reason, then we fail to attach to
      this file. */
 
@@ -119,7 +121,7 @@ mmalloc_attach (fd, baseaddr, flags)
 
   /* We start off with the malloc descriptor allocated on the stack, until
      we build it up enough to call _mmalloc_mmap_morecore() to allocate the
-     first page of the region and copy it there.  Ensure that it is zero'd and
+     first page of the region and copy it there. Ensure that it is zero'd and
      then initialize the fields that we know values for. */
 
   mdp = &mtemp;
@@ -148,7 +150,7 @@ mmalloc_attach (fd, baseaddr, flags)
 	  mdp -> flags |= MMALLOC_DEVZERO;
 	  mdp -> flags |= MMALLOC_SHARED;
 	}
-#endif
+#endif /* MAP_ANONYMOUS */
     }
 
   if (flags & MMALLOC_SHARED)
@@ -185,10 +187,10 @@ mmalloc_attach (fd, baseaddr, flags)
    Note that we have to update the file descriptor number in the malloc-
    descriptor read from the file to match the current valid one, before
    trying to map the file in, and again after a successful mapping and
-   after we've switched over to using the mapped in malloc descriptor 
+   after we have switched over to using the mapped in malloc descriptor 
    rather than the temporary one on the stack.
 
-   Once we've switched over to using the mapped in malloc descriptor, we
+   Once we have switched over to using the mapped in malloc descriptor, we
    have to update the pointer to the morecore function, since it almost
    certainly will be at a different address if the process reusing the
    mapped region is from a different executable.
@@ -211,24 +213,32 @@ reuse (fd, baseaddr, flags)
   struct mdesc *mdp = NULL;
   caddr_t base;
   unsigned int i;
+  i = 0;
 
-  if (lseek (fd, 0L, SEEK_SET) != 0)
-    return NULL;
-  if (read (fd, (char *) &mtemp, sizeof (mtemp)) != sizeof (mtemp))
-    return NULL;
-  if (mtemp.headersize != sizeof (mtemp))
-    return NULL;
-  if (strcmp (mtemp.magic, MMALLOC_MAGIC) != 0)
-    return NULL;
-  if (mtemp.version > MMALLOC_VERSION)
-    return NULL;
+	if (lseek (fd, 0L, SEEK_SET) != 0) {
+		return NULL;
+	}
+	if (read (fd, (char *) &mtemp, sizeof (mtemp)) != sizeof (mtemp)) {
+		return NULL;
+	}
+	if (mtemp.headersize != sizeof (mtemp)) {
+		return NULL;
+	}
+	if (strcmp (mtemp.magic, MMALLOC_MAGIC) != 0) {
+		return NULL;
+	}
+	if (mtemp.version > MMALLOC_VERSION) {
+		return NULL;
+	}
 
   mtemp.fd = fd;
-  if (flags & MMALLOC_SHARED)
-    mtemp.flags |= MMALLOC_SHARED;
+	if (flags & MMALLOC_SHARED) {
+		mtemp.flags |= MMALLOC_SHARED;
+	}
 
-  if (baseaddr == NULL)
-    baseaddr = mmalloc_findbase (mtemp.top - mtemp.base, mtemp.base);
+	if (baseaddr == NULL) {
+		baseaddr = mmalloc_findbase (mtemp.top - mtemp.base, mtemp.base);
+	}
 
   base = mmap (baseaddr, mtemp.top - mtemp.base,
 	       PROT_READ | PROT_WRITE, MAP_PRIVATE_OR_SHARED (&mtemp) | MAP_FIXED,
@@ -270,3 +280,5 @@ mmalloc_attach (fd, baseaddr, flags)
 }
 
 #endif	/* defined (HAVE_MMAP) */
+
+/* EOF */

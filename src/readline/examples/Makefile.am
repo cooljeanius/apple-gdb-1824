@@ -38,7 +38,7 @@ CPPFLAGS = @CPPFLAGS@
 AM_CPPFLAGS = -I$(srcdir) -I$(top_srcdir) -I..
 
 CCFLAGS  = $(DEFS) $(LOCAL_CFLAGS) $(CPPFLAGS) $(INCLUDES) $(AM_CPPFLAGS) $(CFLAGS)
-AM_LDFLAGS = -ggdb -L.. @LDFLAGS@
+AM_LDFLAGS = -ggdb -L.. -L../.. -L../../libiberty @LDFLAGS@
 LIBS = @LIBS@
 
 READLINE_LIB = ../libreadline.a
@@ -56,17 +56,17 @@ OBJECTS = fileman.o rltest.o rl.o rlcat.o rlversion.o histexamp.o
 all: $(EXECUTABLES)
 everything: all rlfe
 
-rl: rl.o $(READLINE_LIB)
-	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rl.o -lreadline $(TERMCAP_LIB)
+rl: rl.o $(READLINE_LIB) $(HISTORY_LIB)
+	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rl.o -lreadline -lhistory $(READLINE_LIB) $(TERMCAP_LIB)
 
 rlcat: rlcat.o $(READLINE_LIB)
-	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlcat.o -lreadline $(TERMCAP_LIB)
+	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlcat.o -lreadline $(READLINE_LIB) $(TERMCAP_LIB)
 
 fileman: fileman.o $(READLINE_LIB)
 	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ fileman.o $(LIBS) $(TERMCAP_LIB)
 
-rltest: rltest.o $(READLINE_LIB)
-	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rltest.o -lreadline $(TERMCAP_LIB)
+rltest: rltest.o $(READLINE_LIB) $(HISTORY_LIB)
+	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rltest.o -lreadline -lhistory $(TERMCAP_LIB)
 
 rlversion: rlversion.o $(READLINE_LIB)
 	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlversion.o -lreadline $(TERMCAP_LIB)

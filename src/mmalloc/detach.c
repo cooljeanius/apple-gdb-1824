@@ -23,22 +23,26 @@ Boston, MA 02111-1307, USA.  */
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/mman.h>
 
 #include "mmprivate.h"
 
 /* Terminate access to a mmalloc managed region by unmapping all memory pages
-   associated with the region, and closing the file descriptor if it is one
-   that we opened.
-
-   Returns NULL on success.
-
-   Returns the malloc descriptor on failure, which can subsequently be used
-   for further action, such as obtaining more information about the nature of
-   the failure by examining the preserved errno value.
-
-   Note that the malloc descriptor that we are using is currently located in
-   region we are about to unmap, so we first make a local copy of it on the
-   stack and use the copy. */
+ * associated with the region, and closing the file descriptor if it is one
+ * that we opened.
+ *
+ * Returns NULL on success.
+ *
+ * Returns the malloc descriptor on failure, which can subsequently be used
+ * for further action, such as obtaining more information about the nature of
+ * the failure by examining the preserved errno value.
+ *
+ * Note that the malloc descriptor that we are using is currently located in
+ * region we are about to unmap, so we first make a local copy of it on the
+ * stack and use the copy.
+ */
 
 PTR
 mmalloc_detach (md)
@@ -47,25 +51,28 @@ mmalloc_detach (md)
   struct mdesc *mdp;
   int fd;
 
-  if (md == NULL)
-    return md;
+	if (md == NULL) {
+		return md;
+	}
 
   mdp = MD_TO_MDP (md);
   fd = mdp -> fd;
 
-  if (mdp->child != NULL)
-    return mmalloc_detach (mdp->child);
+	if (mdp->child != NULL) {
+		return mmalloc_detach (mdp->child);
+	}
 
   /* Now unmap all the pages associated with this region by asking for a
-     negative increment equal to the current size of the region. */
+   * negative increment equal to the current size of the region.
+   */
   
 #ifdef HAVE_MSYNC
-#ifdef MS_SYNC
+# ifdef MS_SYNC
   msync (mdp -> base, mdp -> top - mdp -> base, MS_SYNC | MS_INVALIDATE);
-#else
+# else
   msync (mdp -> base, mdp -> top - mdp -> base);
-#endif
-#endif
+# endif /* MS_SYNC */
+#endif /* HAVE_MSYNC */
   munmap (mdp -> base, mdp -> top - mdp -> base);
 
   if (fd > 0)
@@ -76,3 +83,5 @@ mmalloc_detach (md)
   
   return md;
 }
+
+/* EOF */

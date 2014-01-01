@@ -25,7 +25,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 /* Old-style */
 
@@ -83,6 +83,6 @@ typedef void rl_vcppfunc_t PARAMS((char **));
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
 #endif /* _RL_TYPEDEFS_H_ */

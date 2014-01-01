@@ -318,6 +318,7 @@ STATIC_INSTALL_TARGET = @STATIC_INSTALL_TARGET@
 STATIC_TARGET = @STATIC_TARGET@
 STRIP = @STRIP@
 TERMCAP_LIB = @TERMCAP_LIB@
+TEX_BINARY = @TEX_BINARY@
 VERSION = @VERSION@
 WCWIDTH_OBJ = @WCWIDTH_OBJ@
 XMALLOC_ZERO_CFLAGS = @XMALLOC_ZERO_CFLAGS@
@@ -392,7 +393,7 @@ RM = rm -f
 DESTDIR = 
 AM_CPPFLAGS = -I$(srcdir) -I$(top_srcdir) -I..
 CCFLAGS = $(DEFS) $(LOCAL_CFLAGS) $(CPPFLAGS) $(INCLUDES) $(AM_CPPFLAGS) $(CFLAGS)
-AM_LDFLAGS = -ggdb -L.. @LDFLAGS@
+AM_LDFLAGS = -ggdb -L.. -L../.. -L../../libiberty @LDFLAGS@
 READLINE_LIB = ../libreadline.a
 HISTORY_LIB = ../libhistory.a
 EXECUTABLES = fileman rltest rl rlcat rlversion histexamp 
@@ -410,9 +411,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu examples/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnits examples/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu examples/Makefile
+	  $(AUTOMAKE) --gnits examples/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -644,17 +645,17 @@ uninstall-am:
 all: $(EXECUTABLES)
 everything: all rlfe
 
-rl: rl.o $(READLINE_LIB)
-	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rl.o -lreadline $(TERMCAP_LIB)
+rl: rl.o $(READLINE_LIB) $(HISTORY_LIB)
+	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rl.o -lreadline -lhistory $(READLINE_LIB) $(TERMCAP_LIB)
 
 rlcat: rlcat.o $(READLINE_LIB)
-	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlcat.o -lreadline $(TERMCAP_LIB)
+	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlcat.o -lreadline $(READLINE_LIB) $(TERMCAP_LIB)
 
 fileman: fileman.o $(READLINE_LIB)
 	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ fileman.o $(LIBS) $(TERMCAP_LIB)
 
-rltest: rltest.o $(READLINE_LIB)
-	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rltest.o -lreadline $(TERMCAP_LIB)
+rltest: rltest.o $(READLINE_LIB) $(HISTORY_LIB)
+	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rltest.o -lreadline -lhistory $(TERMCAP_LIB)
 
 rlversion: rlversion.o $(READLINE_LIB)
 	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlversion.o -lreadline $(TERMCAP_LIB)

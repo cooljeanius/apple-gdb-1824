@@ -36,11 +36,11 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_CHECK_TOOL([AR],[ar])
 AC_CHECK_TOOL([RANLIB],[ranlib],[:])
-if test "x$RANLIB" = "x"; then
-	test -z "$RANLIB"
+if test "x${RANLIB}" = "x"; then
+	test -z "${RANLIB}"
 	AC_PROG_RANLIB
 else
-	test ! -z "$RANLIB" && export RANLIB
+	test ! -z "${RANLIB}" && export RANLIB
 	AC_SUBST([RANLIB])
 fi
 
@@ -102,7 +102,7 @@ AC_TYPE_INT32_T
 AC_TYPE_UINT32_T
 
 # APPLE LOCAL: mmap() always works right on Darwin. Take our word for it.
-case "$host" in
+case "${host}" in
   *-apple-darwin* | *-apple-macos*)
     ac_cv_func_mmap_fixed_mapped=yes
   ;;
@@ -119,7 +119,7 @@ BFD_NEED_DECLARATION([sbrk])
 BFD_NEED_DECLARATION([getpagesize])
 
 AC_MSG_CHECKING([for page-protection malloc support])
-case "$host" in
+case "${host}" in
 *-apple-darwin*)
 	PAGECHECK_SRC=pagecheck-sup.c
 	PAGECHECK_OBJ=pagecheck-sup.o
@@ -131,7 +131,7 @@ case "$host" in
 esac
 AC_SUBST([PAGECHECK_SRC])
 AC_SUBST([PAGECHECK_OBJ])
-AC_MSG_RESULT([$PAGECHECK_SRC])
+AC_MSG_RESULT([${PAGECHECK_SRC}])
 
 AC_CONFIG_HEADERS([config.h:config.in])
 AC_CONFIG_FILES([Makefile])

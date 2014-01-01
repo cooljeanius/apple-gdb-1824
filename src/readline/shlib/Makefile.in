@@ -361,6 +361,7 @@ STATIC_INSTALL_TARGET = @STATIC_INSTALL_TARGET@
 STATIC_TARGET = @STATIC_TARGET@
 STRIP = @STRIP@
 TERMCAP_LIB = @TERMCAP_LIB@
+TEX_BINARY = @TEX_BINARY@
 VERSION = @VERSION@
 WCWIDTH_OBJ = @WCWIDTH_OBJ@
 XMALLOC_ZERO_CFLAGS = @XMALLOC_ZERO_CFLAGS@
@@ -490,9 +491,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu shlib/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnits shlib/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu shlib/Makefile
+	  $(AUTOMAKE) --gnits shlib/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

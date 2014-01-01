@@ -49,8 +49,12 @@
 
 #include "posixstat.h"
 
+#ifndef READLINE_LIBRARY
+# define READLINE_LIBRARY 1
+#endif /* !READLINE_LIBRARY */
+
 #if defined(READLINE_LIBRARY)
-# include "readline.h"
+# include "readline.h" /* needed for rl_num_chars_to_read */
 # include "history.h"
 #else
 # include <readline/readline.h>
@@ -97,10 +101,11 @@ main (argc, argv)
   FILE *ifp;
 
   progname = strrchr(argv[0], '/');
-  if (progname == 0)
-    progname = argv[0];
-  else
-    progname++;
+	if (progname == 0) {
+		progname = argv[0];
+	} else {
+		progname++;
+	}
 
   /* defaults */
   prompt = "readline$ ";
@@ -150,18 +155,23 @@ main (argc, argv)
       rl_instream = ifp;
     }
 
-  if (deftext && *deftext)
-    rl_startup_hook = set_deftext;
+	if (deftext && *deftext) {
+		rl_startup_hook = set_deftext;
+	}
 
-  if (nch > 0)
-    rl_num_chars_to_read = nch;
+	if (nch > 0) {
+		rl_num_chars_to_read = nch;
+	}
 
   temp = readline (prompt);
 
   /* Test for EOF. */
-  if (temp == 0)
-    exit (1);
+	if (temp == 0) {
+		exit (1);
+	}
 
   printf ("%s\n", temp);
   exit (0);
 }
+
+/* EOF */

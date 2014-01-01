@@ -3694,8 +3694,8 @@ else
   RANLIB="$ac_cv_prog_RANLIB"
 fi
 
-if test "x$RANLIB" = "x"; then
-	test -z "$RANLIB"
+if test "x${RANLIB}" = "x"; then
+	test -z "${RANLIB}"
 	if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ranlib; ac_word=$2
@@ -3789,7 +3789,7 @@ else
 fi
 
 else
-	test ! -z "$RANLIB" && export RANLIB
+	test ! -z "${RANLIB}" && export RANLIB
 
 fi
 
@@ -4567,7 +4567,7 @@ _ACEOF
 
 
 # APPLE LOCAL: mmap() always works right on Darwin. Take our word for it.
-case "$host" in
+case "${host}" in
   *-apple-darwin* | *-apple-macos*)
     ac_cv_func_mmap_fixed_mapped=yes
   ;;
@@ -5010,7 +5010,7 @@ fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for page-protection malloc support" >&5
 $as_echo_n "checking for page-protection malloc support... " >&6; }
-case "$host" in
+case "${host}" in
 *-apple-darwin*)
 	PAGECHECK_SRC=pagecheck-sup.c
 	PAGECHECK_OBJ=pagecheck-sup.o
@@ -5022,8 +5022,8 @@ case "$host" in
 esac
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $PAGECHECK_SRC" >&5
-$as_echo "$PAGECHECK_SRC" >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${PAGECHECK_SRC}" >&5
+$as_echo "${PAGECHECK_SRC}" >&6; }
 
 ac_config_headers="$ac_config_headers config.h:config.in"
 

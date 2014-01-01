@@ -33,10 +33,14 @@
 #include <fcntl.h>
 #if defined (HAVE_SYS_FILE_H)
 # include <sys/file.h>
+#else
+# warning readline.c expects <sys/file.h> to be included.
 #endif /* HAVE_SYS_FILE_H */
 
 #if defined (HAVE_UNISTD_H)
 # include <unistd.h>
+#else
+# warning readline.c expects <unistd.h> to be included.
 #endif /* HAVE_UNISTD_H */
 
 #if defined (HAVE_STDLIB_H)
@@ -47,6 +51,8 @@
 
 #if defined(HAVE_LOCALE_H)
 # include <locale.h>
+#else
+# warning readline.c expects locale.h to be included.
 #endif /* HAVE_LOCALE_H */
 
 #include <stdio.h>
@@ -111,7 +117,7 @@ int rl_editing_mode = emacs_mode;
 /* The current insert mode:  input (the default) or overwrite */
 int rl_insert_mode = RL_IM_DEFAULT;
 
-/* Non-zero if we called this function from _rl_dispatch().  It's present
+/* Non-zero if we called this function from _rl_dispatch(). It is present
    so functions can find out whether they were called from a key binding
    or directly from an application. */
 int rl_dispatching;
@@ -134,7 +140,7 @@ static int rl_initialized;
 #if 0
 /* If non-zero, this program is running in an EMACS buffer. */
 static int running_in_emacs;
-#endif
+#endif /* 0 */
 
 /* Flags word encapsulating the current readline state. */
 int rl_readline_state = RL_STATE_NONE;
@@ -296,14 +302,14 @@ readline (prompt)
 
 #if defined (HANDLE_SIGNALS)
   rl_set_signals ();
-#endif
-
+#endif /* HANDLE_SIGNALS */
+ 
   value = readline_internal ();
   (*rl_deprep_term_function) ();
 
 #if defined (HANDLE_SIGNALS)
   rl_clear_signals ();
-#endif
+#endif /* HANDLE_SIGNALS */
 
   return (value);
 }
@@ -312,7 +318,7 @@ readline (prompt)
 #  define STATIC_CALLBACK
 #else
 #  define STATIC_CALLBACK static
-#endif
+#endif /* READLINE_CALLBACKS */
 
 STATIC_CALLBACK void
 readline_internal_setup ()
@@ -325,7 +331,7 @@ readline_internal_setup ()
   if (rl_startup_hook)
     (*rl_startup_hook) ();
 
-  /* If we're not echoing, we still want to at least print a prompt, because
+  /* If we are not echoing, we still want to at least print a prompt, because
      rl_redisplay will not do it for us.  If the calling application has a
      custom redisplay function, though, let that function handle it. */
   if (readline_echoing_p == 0 && rl_redisplay_function == rl_redisplay)
@@ -394,7 +400,7 @@ STATIC_CALLBACK int
 readline_internal_char ()
 #else
 readline_internal_charloop ()
-#endif
+#endif /* READLINE_CALLBACKS */
 {
   static int lastc, eof_found;
   int c, code, lk;
@@ -405,7 +411,7 @@ readline_internal_charloop ()
 #if !defined (READLINE_CALLBACKS)
   while (rl_done == 0)
     {
-#endif
+#endif /* !READLINE_CALLBACKS */
       lk = _rl_last_command_was_kill;
 
       code = setjmp (readline_top_level);
@@ -438,7 +444,7 @@ readline_internal_charloop ()
 #else
 	  eof_found = 1;
 	  break;
-#endif
+#endif /* READLINE_CALLBACKS */
 	}
 
       lastc = c;
@@ -478,7 +484,7 @@ readline_internal_charloop ()
     }
 
   return (eof_found);
-#endif
+#endif /* READLINE_CALLBACKS */
 }
 
 #if defined (READLINE_CALLBACKS)
@@ -575,7 +581,7 @@ _rl_dispatch_subseq (key, map, got_subseq)
 
 #if 0
 	  _rl_suppress_redisplay = (map[key].function == rl_insert) && _rl_input_available ();
-#endif
+#endif /* 0 */
 
 	  rl_dispatching = 1;
 	  RL_SETSTATE(RL_STATE_DISPATCHING);
@@ -584,14 +590,14 @@ _rl_dispatch_subseq (key, map, got_subseq)
 	  rl_dispatching = 0;
 
 	  /* If we have input pending, then the last command was a prefix
-	     command.  Don't change the state of rl_last_func.  Otherwise,
+	     command. Do NOT change the state of rl_last_func. Otherwise,
 	     remember the last command executed in this variable. */
 	  if (rl_pending_input == 0 && map[key].function != rl_digit_argument)
 	    rl_last_func = map[key].function;
 	}
       else if (map[ANYOTHERKEY].function)
 	{
-	  /* OK, there's no function bound in this map, but there is a
+	  /* OK, there is no function bound in this map, but there is a
 	     shadow function that was overridden when the current keymap
 	     was created.  Return -2 to note  that. */
 	  _rl_unget_char  (key);
@@ -599,7 +605,7 @@ _rl_dispatch_subseq (key, map, got_subseq)
 	}
       else if (got_subseq)
 	{
-	  /* Return -1 to note that we're in a subsequence, but  we don't
+	  /* Return -1 to note that we are in a subsequence, but  we do NOT
 	     have a matching key, nor was one overridden.  This means
 	     we need to back up the recursion chain and find the last
 	     subsequence that is bound to a function. */
@@ -619,14 +625,14 @@ _rl_dispatch_subseq (key, map, got_subseq)
 #if defined (VI_MODE)
 	  /* The only way this test will be true is if a subsequence has been
 	     bound starting with ESC, generally the arrow keys.  What we do is
-	     check whether there's input in the queue, which there generally
-	     will be if an arrow key has been pressed, and, if there's not,
+	     check whether there is input in the queue, which there generally
+	     will be if an arrow key has been pressed, and, if there is not,
 	     just dispatch to (what we assume is) rl_vi_movement_mode right
 	     away.  This is essentially an input test with a zero timeout. */
 	  if (rl_editing_mode == vi_mode && key == ESC && map == vi_insertion_keymap
 	      && _rl_input_queued (0) == 0)
 	    return (_rl_dispatch (ANYOTHERKEY, FUNCTION_TO_KEYMAP (map, key)));
-#endif
+#endif /* VI_MODE */
 
 	  rl_key_sequence_length++;
 
@@ -647,7 +653,7 @@ _rl_dispatch_subseq (key, map, got_subseq)
 	  r = _rl_dispatch_subseq (newkey, FUNCTION_TO_KEYMAP (map, key), got_subseq || map[ANYOTHERKEY].function);
 
 	  if (r == -2)
-	    /* We didn't match anything, and the keymap we're indexed into
+	    /* We did NOT match anything, and the keymap we are indexed into
 	       shadowed a function previously bound to that prefix.  Call
 	       the function.  The recursive call to _rl_dispatch_subseq has
 	       already taken care of pushing any necessary input back onto
@@ -655,9 +661,9 @@ _rl_dispatch_subseq (key, map, got_subseq)
 	    r = _rl_dispatch (ANYOTHERKEY, FUNCTION_TO_KEYMAP (map, key));
 	  else if (r && map[ANYOTHERKEY].function)
 	    {
-	      /* We didn't match (r is probably -1), so return something to
-		 tell the caller that it should try ANYOTHERKEY for an
-		 overridden function. */
+	      /* We did NOT match (r is probably -1), so return something to
+		   * tell the caller that it should try ANYOTHERKEY for an
+		   * overridden function. */
 	      _rl_unget_char (key);
 	      return -2;
 	    }
@@ -689,7 +695,7 @@ _rl_dispatch_subseq (key, map, got_subseq)
       key != ANYOTHERKEY &&
       _rl_vi_textmod_command (key))
     _rl_vi_set_last (key, rl_numeric_arg, rl_arg_sign);
-#endif
+#endif /* VI_MODE */
   return (r);
 }
 
@@ -717,7 +723,7 @@ rl_initialize ()
   /* Initalize the current line information. */
   _rl_init_line_state ();
 
-  /* We aren't done yet.  We haven't even gotten started yet! */
+  /* We are NOT done yet.  We have NOT even gotten started yet! */
   rl_done = 0;
   RL_UNSETSTATE(RL_STATE_DONE);
 
@@ -736,7 +742,7 @@ rl_initialize ()
 #if defined (VI_MODE)
   if (rl_editing_mode == vi_mode)
     _rl_vi_initialize_line ();
-#endif
+#endif /* VI_MODE */
 
   /* Each line starts in insert mode (the default). */
   _rl_set_insert_mode (RL_IM_DEFAULT, 1);
@@ -745,7 +751,7 @@ rl_initialize ()
 }
 
 #if 0
-#if defined (__EMX__)
+# if defined (__EMX__)
 static void
 _emx_build_environ ()
 {
@@ -767,24 +773,25 @@ _emx_build_environ ()
     }
   *tp = 0;
 }
-#endif /* __EMX__ */
-#endif
+# endif /* __EMX__ */
+#endif /* 0 */
 
 /* Initialize the entire state of the world. */
 static void
 readline_initialize_everything ()
 {
 #if 0
-#if defined (__EMX__)
-  if (environ == 0)
-    _emx_build_environ ();
-#endif
-#endif
+# if defined (__EMX__)
+	if (environ == 0) {
+		_emx_build_environ ();
+	}
+# endif /* __EMX__ */
+#endif /* 0 */
 
 #if 0
   /* Find out if we are running in Emacs -- UNUSED. */
   running_in_emacs = sh_get_env_value ("EMACS") != (char *)0;
-#endif
+#endif /* 0 */
 
   /* Set up input and output if they are not already set up. */
   if (!rl_instream)
@@ -838,7 +845,7 @@ readline_initialize_everything ()
   if (_rl_enable_meta)
     _rl_enable_meta_key ();
 
-  /* If the completion parser's default word break characters haven't
+  /* If the completion parser's default word break characters have NOT
      been set yet, then do so now. */
   if (rl_completer_word_break_characters == (char *)NULL)
     rl_completer_word_break_characters = rl_basic_word_break_characters;
@@ -868,7 +875,7 @@ bind_arrow_keys_internal (map)
    _rl_bind_if_unbound ("\033[0B", rl_backward_char);
    _rl_bind_if_unbound ("\033[0C", rl_forward_char);
    _rl_bind_if_unbound ("\033[0D", rl_get_next_history);
-#endif
+#endif /* __MSDOS__ */
 
 #ifdef __MINGW32__
    /* Under Windows, when an extend key (like an arrow key) is
@@ -884,7 +891,7 @@ bind_arrow_keys_internal (map)
    rl_macro_bind ("\340M", "\033[C", map);
    /* Down arrow.  */
    rl_macro_bind ("\340P", "\033[B", map);
-#endif
+#endif /* __MINGW32__ */
 
   _rl_bind_if_unbound ("\033[A", rl_get_previous_history);
   _rl_bind_if_unbound ("\033[B", rl_get_next_history);
@@ -914,7 +921,7 @@ bind_arrow_keys ()
 #if defined (VI_MODE)
   bind_arrow_keys_internal (vi_movement_keymap);
   bind_arrow_keys_internal (vi_insertion_keymap);
-#endif
+#endif /* VI_MODE */
 }
 
 /* **************************************************************** */
@@ -927,8 +934,9 @@ int
 rl_save_state (sp)
      struct readline_state *sp;
 {
-  if (sp == 0)
-    return -1;
+	if (sp == 0) {
+		return -1;
+	}
 
   sp->point = rl_point;
   sp->end = rl_end;
@@ -954,7 +962,7 @@ rl_save_state (sp)
   sp->catchsigs = rl_catch_signals;
 #if defined (SIGWINCH)
   sp->catchsigwinch = rl_catch_sigwinch;
-#endif
+#endif /* SIGWINCH */
 
   return (0);
 }
@@ -990,7 +998,9 @@ rl_restore_state (sp)
   rl_catch_signals = sp->catchsigs;
 #if defined (SIGWINCH)
   rl_catch_sigwinch = sp->catchsigwinch;
-#endif
+#endif /* SIGWINCH */
 
   return (0);
 }
+
+/* EOF */

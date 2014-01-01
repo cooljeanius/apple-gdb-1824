@@ -33,13 +33,13 @@
 #    define PARAMS(protos) protos
 #  else
 #    define PARAMS(protos) ()
-#  endif
-#endif
+#  endif /* __STDC__ || __GNUC__ || __cplusplus */
+#endif /* !PARAMS */
 
 #ifndef __attribute__
 #  if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 8) || __STRICT_ANSI__
 #    define __attribute__(x)
-#  endif
-#endif
+#  endif /* old __GNUC__ || __STRICT_ANSI__ */
+#endif /* !__attribute__ */
 
 #endif /* !_RL_STDC_H_ */
