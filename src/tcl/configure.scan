@@ -9,12 +9,11 @@ AC_CONFIG_HEADERS([config.h])
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_INSTALL
-AC_PROG_LN_S
 
 # Checks for libraries.
 
 # Checks for header files.
-AC_CHECK_HEADERS([fcntl.h float.h limits.h locale.h stdlib.h string.h sys/file.h sys/param.h sys/timeb.h unistd.h utime.h values.h])
+AC_CHECK_HEADERS([fcntl.h float.h limits.h locale.h stddef.h stdlib.h string.h sys/file.h sys/param.h sys/timeb.h unistd.h utime.h values.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -39,7 +38,7 @@ AC_FUNC_WAIT3
 AC_CHECK_FUNCS([dup2 ftime ftruncate getcwd gettimeofday memchr memmove memset putenv re_comp regcomp setlocale sqrt strcasecmp strchr strcspn strdup strerror strncasecmp strpbrk strrchr strspn strstr strtol strtoul strtoull tzset utime])
 
 AC_CONFIG_FILES([Makefile
-                 macosx/Makefile])
+                 mac/MoreFiles 1.4.9/Makefile])
 AC_CONFIG_SUBDIRS([cygwin
                    tools
                    unix

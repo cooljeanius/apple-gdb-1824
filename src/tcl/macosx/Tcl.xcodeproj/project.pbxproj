@@ -47,20 +47,20 @@
 		F5C88656017D604601DC9062 /* genStubs.tcl */ = {isa = PBXFileReference; lastKnownFileType = text; name = genStubs.tcl; path = ../tools/genStubs.tcl; sourceTree = SOURCE_ROOT; };
 		F5C88657017D60C901DC9062 /* tcl.decls */ = {isa = PBXFileReference; lastKnownFileType = text; name = tcl.decls; path = ../generic/tcl.decls; sourceTree = SOURCE_ROOT; };
 		F5C88658017D60C901DC9062 /* tclInt.decls */ = {isa = PBXFileReference; lastKnownFileType = text; name = tclInt.decls; path = ../generic/tclInt.decls; sourceTree = SOURCE_ROOT; };
-		F5F24F6B016ECAA401DC9062 /* regcustom.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = regcustom.h; path = ../generic/regcustom.h; sourceTree = SOURCE_ROOT; };
-		F5F24F6C016ECAA401DC9062 /* regerrs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = regerrs.h; path = ../generic/regerrs.h; sourceTree = SOURCE_ROOT; };
-		F5F24F6D016ECAA401DC9062 /* regguts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = regguts.h; path = ../generic/regguts.h; sourceTree = SOURCE_ROOT; };
-		F5F24F6E016ECAA401DC9062 /* tcl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tcl.h; path = ../generic/tcl.h; sourceTree = SOURCE_ROOT; };
-		F5F24F6F016ECAA401DC9062 /* tclCompile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclCompile.h; path = ../generic/tclCompile.h; sourceTree = SOURCE_ROOT; };
-		F5F24F70016ECAA401DC9062 /* tclDecls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclDecls.h; path = ../generic/tclDecls.h; sourceTree = SOURCE_ROOT; };
-		F5F24F71016ECAA401DC9062 /* tclInitScript.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclInitScript.h; path = ../generic/tclInitScript.h; sourceTree = SOURCE_ROOT; };
-		F5F24F72016ECAA401DC9062 /* tclInt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclInt.h; path = ../generic/tclInt.h; sourceTree = SOURCE_ROOT; };
-		F5F24F73016ECAA401DC9062 /* tclIntDecls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclIntDecls.h; path = ../generic/tclIntDecls.h; sourceTree = SOURCE_ROOT; };
-		F5F24F74016ECAA401DC9062 /* tclIntPlatDecls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclIntPlatDecls.h; path = ../generic/tclIntPlatDecls.h; sourceTree = SOURCE_ROOT; };
-		F5F24F75016ECAA401DC9062 /* tclIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclIO.h; path = ../generic/tclIO.h; sourceTree = SOURCE_ROOT; };
-		F5F24F76016ECAA401DC9062 /* tclMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclMath.h; path = ../generic/tclMath.h; sourceTree = SOURCE_ROOT; };
-		F5F24F77016ECAA401DC9062 /* tclPlatDecls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclPlatDecls.h; path = ../generic/tclPlatDecls.h; sourceTree = SOURCE_ROOT; };
-		F5F24F78016ECAA401DC9062 /* tclRegexp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclRegexp.h; path = ../generic/tclRegexp.h; sourceTree = SOURCE_ROOT; };
+		F5F24F6B016ECAA401DC9062 /* regcustom.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = regcustom.h; path = ../generic/regcustom.h; sourceTree = SOURCE_ROOT; };
+		F5F24F6C016ECAA401DC9062 /* regerrs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = regerrs.h; path = ../generic/regerrs.h; sourceTree = SOURCE_ROOT; };
+		F5F24F6D016ECAA401DC9062 /* regguts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = regguts.h; path = ../generic/regguts.h; sourceTree = SOURCE_ROOT; };
+		F5F24F6E016ECAA401DC9062 /* tcl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tcl.h; path = ../generic/tcl.h; sourceTree = SOURCE_ROOT; };
+		F5F24F6F016ECAA401DC9062 /* tclCompile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclCompile.h; path = ../generic/tclCompile.h; sourceTree = SOURCE_ROOT; };
+		F5F24F70016ECAA401DC9062 /* tclDecls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclDecls.h; path = ../generic/tclDecls.h; sourceTree = SOURCE_ROOT; };
+		F5F24F71016ECAA401DC9062 /* tclInitScript.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclInitScript.h; path = ../generic/tclInitScript.h; sourceTree = SOURCE_ROOT; };
+		F5F24F72016ECAA401DC9062 /* tclInt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclInt.h; path = ../generic/tclInt.h; sourceTree = SOURCE_ROOT; };
+		F5F24F73016ECAA401DC9062 /* tclIntDecls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclIntDecls.h; path = ../generic/tclIntDecls.h; sourceTree = SOURCE_ROOT; };
+		F5F24F74016ECAA401DC9062 /* tclIntPlatDecls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclIntPlatDecls.h; path = ../generic/tclIntPlatDecls.h; sourceTree = SOURCE_ROOT; };
+		F5F24F75016ECAA401DC9062 /* tclIO.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclIO.h; path = ../generic/tclIO.h; sourceTree = SOURCE_ROOT; };
+		F5F24F76016ECAA401DC9062 /* tclMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclMath.h; path = ../generic/tclMath.h; sourceTree = SOURCE_ROOT; };
+		F5F24F77016ECAA401DC9062 /* tclPlatDecls.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclPlatDecls.h; path = ../generic/tclPlatDecls.h; sourceTree = SOURCE_ROOT; };
+		F5F24F78016ECAA401DC9062 /* tclRegexp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclRegexp.h; path = ../generic/tclRegexp.h; sourceTree = SOURCE_ROOT; };
 		F5F24F87016ECAFC01DC9062 /* regc_color.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = regc_color.c; path = ../generic/regc_color.c; sourceTree = SOURCE_ROOT; };
 		F5F24F88016ECAFC01DC9062 /* regc_cvec.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = regc_cvec.c; path = ../generic/regc_cvec.c; sourceTree = SOURCE_ROOT; };
 		F5F24F89016ECAFC01DC9062 /* regc_lex.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = regc_lex.c; path = ../generic/regc_lex.c; sourceTree = SOURCE_ROOT; };
@@ -135,11 +135,11 @@
 		F5F24FCE016ECAFC01DC9062 /* tclUtf.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclUtf.c; path = ../generic/tclUtf.c; sourceTree = SOURCE_ROOT; };
 		F5F24FCF016ECAFC01DC9062 /* tclUtil.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclUtil.c; path = ../generic/tclUtil.c; sourceTree = SOURCE_ROOT; };
 		F5F24FD0016ECAFC01DC9062 /* tclVar.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclVar.c; path = ../generic/tclVar.c; sourceTree = SOURCE_ROOT; };
-		F5F24FD1016ECB1E01DC9062 /* regex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = regex.h; path = ../generic/regex.h; sourceTree = SOURCE_ROOT; };
-		F5F24FD2016ECB1E01DC9062 /* tclPort.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclPort.h; path = ../generic/tclPort.h; sourceTree = SOURCE_ROOT; };
+		F5F24FD1016ECB1E01DC9062 /* regex.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = regex.h; path = ../generic/regex.h; sourceTree = SOURCE_ROOT; };
+		F5F24FD2016ECB1E01DC9062 /* tclPort.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclPort.h; path = ../generic/tclPort.h; sourceTree = SOURCE_ROOT; };
 		F5F24FD3016ECB4901DC9062 /* tclPkg.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclPkg.c; path = ../generic/tclPkg.c; sourceTree = SOURCE_ROOT; };
-		F5F24FD6016ECC0F01DC9062 /* tclUnixPort.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclUnixPort.h; path = ../unix/tclUnixPort.h; sourceTree = SOURCE_ROOT; };
-		F5F24FD7016ECC0F01DC9062 /* tclUnixThrd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.objj.h; name = tclUnixThrd.h; path = ../unix/tclUnixThrd.h; sourceTree = SOURCE_ROOT; };
+		F5F24FD6016ECC0F01DC9062 /* tclUnixPort.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclUnixPort.h; path = ../unix/tclUnixPort.h; sourceTree = SOURCE_ROOT; };
+		F5F24FD7016ECC0F01DC9062 /* tclUnixThrd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = tclUnixThrd.h; path = ../unix/tclUnixThrd.h; sourceTree = SOURCE_ROOT; };
 		F5F24FD8016ECC0F01DC9062 /* tclAppInit.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclAppInit.c; path = ../unix/tclAppInit.c; sourceTree = SOURCE_ROOT; };
 		F5F24FD9016ECC0F01DC9062 /* tclLoadDyld.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclLoadDyld.c; path = ../unix/tclLoadDyld.c; sourceTree = SOURCE_ROOT; };
 		F5F24FDB016ECC0F01DC9062 /* tclUnixChan.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = tclUnixChan.c; path = ../unix/tclUnixChan.c; sourceTree = SOURCE_ROOT; };
@@ -569,16 +569,16 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			isa = PBXNativeTarget;
 			buildConfigurationList = A50F555D1808CA1C008BA312 /* Build configuration list for PBXNativeTarget "Tcl (Upgraded)" */;
 			buildPhases = (
-				A50F55531808CA1C008BA312 /* ShellScript */,
+				A50F55531808CA1C008BA312 /* Run Script 1 */,
 				A50F55541808CA1C008BA312 /* Sources */,
 				A50F55551808CA1C008BA312 /* Frameworks */,
 				A50F55561808CA1C008BA312 /* Resources */,
 				A50F55571808CA1C008BA312 /* Headers */,
-				A50F55581808CA1C008BA312 /* ShellScript */,
-				A50F55591808CA1C008BA312 /* ShellScript */,
-				A50F555A1808CA1C008BA312 /* ShellScript */,
-				A50F555B1808CA1C008BA312 /* ShellScript */,
-				A50F555C1808CA1C008BA312 /* ShellScript */,
+				A50F55581808CA1C008BA312 /* Run Script 2 */,
+				A50F55591808CA1C008BA312 /* Run Script 3 */,
+				A50F555A1808CA1C008BA312 /* Run Script 4 */,
+				A50F555B1808CA1C008BA312 /* Run Script 5 */,
+				A50F555C1808CA1C008BA312 /* Run Script 6 */,
 			);
 			buildRules = (
 			);
@@ -657,59 +657,65 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			shellPath = /bin/sh;
 			shellScript = "# fixup Framework structure\ncd \"${INSTALL_ROOT}${LIBDIR}\"\nln -fs Versions/Current/Headers ../..\nmv -f tclConfig.sh Resources\nif [ \"${BUILD_STYLE}\" = \"Development\" ]; then\n\t# keep copy of debug library around, so that\n\t# Deployment build can be installed on top\n\t# of Development build without overwriting\n\t# the debuglibrary\n\tcp -fp \"${PRODUCT_NAME}\" \"${PRODUCT_NAME}_debug\"\nfi";
 		};
-		A50F55531808CA1C008BA312 /* ShellScript */ = {
+		A50F55531808CA1C008BA312 /* Run Script 1 */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 8;
 			files = (
 			);
+			name = "Run Script 1";
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "# ensure we can overwrite a previous install\nif [ -d \"${INSTALL_ROOT}${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}\" ]; then\n    chmod -RH u+w \"${INSTALL_ROOT}${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}\"\nfi";
+			shellScript = "#!/bin/sh\necho \"This is the first custom shell script\"\n# ensure we can overwrite a previous install\nset -ex\nif [ -d \"${INSTALL_ROOT}${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}\" ]; then\n    chmod -RH u+w \"${INSTALL_ROOT}${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}\"\nfi\n";
 		};
-		A50F55581808CA1C008BA312 /* ShellScript */ = {
+		A50F55581808CA1C008BA312 /* Run Script 2 */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
+			name = "Run Script 2";
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# symolic link hackery to trick\n# 'make install INSTALL_ROOT=${TEMP_DIR}'\n# into building Tcl.framework and tclsh in ${SYMROOT}\ncd \"${TEMP_DIR}\"\nmkdir -p Library\nmkdir -p usr\nrm -f Library/Frameworks; ln -fs \"${SYMROOT}\" Library/Frameworks\nrm -f usr/bin; ln -fs \"${SYMROOT}\" usr/bin\nln -fs \"${TEMP_DIR}/../tcltest\" \"${SYMROOT}\"";
+			shellScript = "#!/bin/sh\necho \"This is the second custom shell script\"\n# symolic link hackery to trick\n# 'make install INSTALL_ROOT=${TEMP_DIR}'\n# into building Tcl.framework and tclsh in ${SYMROOT}\nset -ex\nif test -d \"${TEMP_DIR}\"; then\n cd \"${TEMP_DIR}\"\n mkdir -p Library\n mkdir -p usr\n rm -f Library/Frameworks; ln -fs \"${SYMROOT}\" Library/Frameworks\n rm -f usr/bin; ln -fs \"${SYMROOT}\" usr/bin\n ln -fs \"${TEMP_DIR}/../tcltest\" \"${SYMROOT}\"\nelse\n echo \"TEMP_DIR does not exist\"\nfi\n\n";
 		};
-		A50F55591808CA1C008BA312 /* ShellScript */ = {
+		A50F55591808CA1C008BA312 /* Run Script 3 */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 12;
 			files = (
 			);
+			name = "Run Script 3";
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# install to ${INSTALL_ROOT} with optional stripping\ncd ${TEMP_DIR}/..\nif test \"${INSTALL_STRIP}\" = \"YES\"; then\nexport INSTALL_PROGRAM='${INSTALL} ${INSTALL_STRIP_PROGRAM}'\nexport INSTALL_LIBRARY='${INSTALL} ${INSTALL_STRIP_LIBRARY}'\nelse\nexport INSTALL_PROGRAM='${INSTALL}'\nexport INSTALL_LIBRARY='${INSTALL}'\nfi\ngnumake install-binaries install-libraries TCL_LIBRARY=\"@TCL_IN_FRAMEWORK@\" INSTALL_ROOT=\"${INSTALL_ROOT}\" SCRIPT_INSTALL_DIR=\"${INSTALL_ROOT}${LIBDIR}/Resources/Scripts\" INSTALL_PROGRAM=\"${INSTALL_PROGRAM}\" INSTALL_LIBRARY=\"${INSTALL_LIBRARY}\"";
+			shellScript = "#!/bin/sh\necho \"This is the third custom shell script\"\n# install to ${INSTALL_ROOT} with optional stripping\nset -ex\ntest -d \"${TEMP_DIR}\" && cd \"${TEMP_DIR}/..\"\nif test \"${INSTALL_STRIP}\" = \"YES\"; then\n export INSTALL_PROGRAM='${INSTALL} ${INSTALL_STRIP_PROGRAM}'\n export INSTALL_LIBRARY='${INSTALL} ${INSTALL_STRIP_LIBRARY}'\nelse\n export INSTALL_PROGRAM='${INSTALL}'\n export INSTALL_LIBRARY='${INSTALL}'\nfi\npwd && test -e Makefile && gnumake install-binaries install-libraries TCL_LIBRARY=\"@TCL_IN_FRAMEWORK@\" INSTALL_ROOT=\"${INSTALL_ROOT}\" SCRIPT_INSTALL_DIR=\"${INSTALL_ROOT}${LIBDIR}/Resources/Scripts\" INSTALL_PROGRAM=\"${INSTALL_PROGRAM}\" INSTALL_LIBRARY=\"${INSTALL_LIBRARY}\"\n";
 		};
-		A50F555A1808CA1C008BA312 /* ShellScript */ = {
+		A50F555A1808CA1C008BA312 /* Run Script 4 */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 12;
 			files = (
 			);
+			name = "Run Script 4";
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# fixup Framework structure\ncd \"${INSTALL_ROOT}${LIBDIR}\"\nln -fs Versions/Current/Headers ../..\nmv -f tclConfig.sh Resources\nif [ \"${BUILD_STYLE}\" = \"Development\" ]; then\n\t# keep copy of debug library around, so that\n\t# Deployment build can be installed on top\n\t# of Development build without overwriting\n\t# the debuglibrary\n\tcp -fp \"${PRODUCT_NAME}\" \"${PRODUCT_NAME}_debug\"\nfi";
+			shellScript = "#!/bin/sh\necho \"This is the fourth custom shell script\"\n# fixup Framework structure\nset -ex\nif [ ! -d \"${INSTALL_ROOT}${LIBDIR}\" ]; then\n    mkdir -p \"${INSTALL_ROOT}${LIBDIR}\"\nfi\ncd \"${INSTALL_ROOT}${LIBDIR}\" && pwd\nln -fs Versions/Current/Headers ../..\nif [ ! -d Resources ]; then\n    mkdir -p Resources\nfi\ntest -e tclConfig.sh\nmv -f tclConfig.sh Resources\nif [ \"${BUILD_STYLE}\" = \"Development\" ]; then\n\t# keep copy of debug library around, so that\n\t# Deployment build can be installed on top\n\t# of Development build without overwriting\n\t# the debuglibrary\n\tcp -fp \"${PRODUCT_NAME}\" \"${PRODUCT_NAME}_debug\"\nfi\n";
 		};
-		A50F555B1808CA1C008BA312 /* ShellScript */ = {
+		A50F555B1808CA1C008BA312 /* Run Script 5 */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 8;
 			files = (
 			);
+			name = "Run Script 5";
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "if [ `echo \"${DYLIB_INSTALL_PATH:-}\" | grep -c \"@executable_path\"` -gt 0 ]; then\n# if we are embedding frameworks, don't install tclsh\nrm -f \"${INSTALL_ROOT}/usr/bin/tclsh${FRAMEWORK_VERSION}\"\nrmdir -p \"${INSTALL_ROOT}/usr/bin\"\necho \"tclsh removed\"\nelse\n# redo prebinding\ncd \"${INSTALL_ROOT}\"\nif [ ! -d usr/lib ]; then mkdir -p usr; ln -fs /usr/lib usr/; RM_USRLIB=1; fi\nif [ ! -d System ]; then ln -fs /System .; RM_SYSTEM=1; fi\nredo_prebinding -r . \"./usr/bin/tclsh${FRAMEWORK_VERSION}\"\nif [ -n \"${RM_USRLIB:-}\" ]; then rm -f usr/lib; rmdir -p usr; fi\nif [ -n \"${RM_SYSTEM:-}\" ]; then rm -f System; fi\nfi";
+			shellScript = "#!/bin/sh\necho \"This is the fifth custom shell script\"\nset -ex\nif [ `echo \"${DYLIB_INSTALL_PATH:-}\" | grep -c \"@executable_path\"` -gt 0 ]; then\n# if we are embedding frameworks, do NOT install tclsh\n test -d \"${INSTALL_ROOT}\"\n rm -f \"${INSTALL_ROOT}/usr/bin/tclsh${FRAMEWORK_VERSION}\"\n rmdir -p \"${INSTALL_ROOT}/usr/bin\"\n echo \"tclsh removed\"\nelse\n# redo prebinding\n test -d \"${INSTALL_ROOT}\"\n cd \"${INSTALL_ROOT}\"\n if [ ! -d usr/lib ]; then mkdir -p usr; ln -fs /usr/lib usr/; RM_USRLIB=1; fi\n if [ ! -d System ]; then ln -fs /System .; RM_SYSTEM=1; fi\n test -x `which redo_prebinding`\n redo_prebinding -r . \"./usr/bin/tclsh${FRAMEWORK_VERSION}\"\n if [ -n \"${RM_USRLIB:-}\" ]; then rm -f usr/lib; rmdir -p usr; fi\n if [ -n \"${RM_SYSTEM:-}\" ]; then rm -f System; fi\nfi\n";
 		};
-		A50F555C1808CA1C008BA312 /* ShellScript */ = {
+		A50F555C1808CA1C008BA312 /* Run Script 6 */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 8;
 			files = (
 			);
+			name = "Run Script 6";
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "# build html documentation\nif [ \"${BUILD_STYLE}\" = \"Deployment\" ]; then\n    cd \"${TEMP_DIR}/..\"\n    gnumake html DISTDIR=\"${INSTALL_ROOT}${LIBDIR}/Resources/English.lproj/Documentation/Reference\"\n    cd \"${INSTALL_ROOT}${LIBDIR}/Resources/English.lproj/Documentation/Reference\"\n    ln -fs contents.htm html/index.html\n    rm -f \"${PRODUCT_NAME}\"; ln -fs html \"${PRODUCT_NAME}\"\nfi";
+			shellScript = "#!/bin/sh\necho \"This is the sixth custom shell script\"\nset -ex\n# build html documentation\nif [ \"${BUILD_STYLE}\" = \"Deployment\" ]; then\n    test -d \"${TEMP_DIR}/..\"\n    cd \"${TEMP_DIR}/..\"\n    gnumake html DISTDIR=\"${INSTALL_ROOT}${LIBDIR}/Resources/English.lproj/Documentation/Reference\"\n    cd \"${INSTALL_ROOT}${LIBDIR}/Resources/English.lproj/Documentation/Reference\"\n    ln -fs contents.htm html/index.html\n    rm -f \"${PRODUCT_NAME}\"; ln -fs html \"${PRODUCT_NAME}\"\nfi\n";
 		};
 		F5877FB6031F97AF016F146B /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;

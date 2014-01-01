@@ -17,6 +17,7 @@ all:
 	@cd $(CONFIGDIR) && $(MAKE) $@
 	@test x"$(CONFIGDIR2)" = x"" || (cd "$(CONFIGDIR2)" && $(MAKE) $@)
 
+# FIXME: install-binaries
 install test install-binaries install-libraries install-minimal:
 	@cd $(CONFIGDIR) && $(MAKE) $@
 

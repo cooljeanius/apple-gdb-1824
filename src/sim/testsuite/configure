@@ -711,7 +711,7 @@ CXX
 CXXFLAGS
 CCC
 CPP'
-ac_subdirs_all='$configdirs'
+ac_subdirs_all='${configdirs}'
 
 # Initialize some variables set by options.
 ac_init_help=
@@ -4448,7 +4448,7 @@ configdirs=""
 # add test sub-directory for appropriate targets
 testdir=`echo ${target} | sed -e 's/-.*-/-/'`
 if test -r ${srcdir}/${testdir}/configure ; then
-  configdirs="${configdirs} $testdir"
+  configdirs="${configdirs} ${testdir}"
 fi
 
 # add any extra subdirectories
@@ -4467,7 +4467,7 @@ esac
 # configure the subdirectories too
 
 
-subdirs="$subdirs $configdirs"
+subdirs="$subdirs ${configdirs}"
 
 
 ac_config_files="$ac_config_files Makefile"

@@ -3897,8 +3897,8 @@ fi
 
 
 # Checks for programs.
-if test "x$CC" = "x"; then
-	test -z "$CC"
+if test "x${CC}" = "x"; then
+	test -z "${CC}"
 	ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -4439,7 +4439,7 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 else
-	test ! -z "$CC" && export CC
+	test ! -z "${CC}" && export CC
 
 fi
 # Find a good install program.  We prefer a C program (faster),
@@ -4623,6 +4623,10 @@ test -n "$YACC" || YACC="yacc"
 
 # Checks for header files.
 
+
+
+
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for stdbool.h that conforms to C99" >&5
 $as_echo_n "checking for stdbool.h that conforms to C99... " >&6; }
 if ${ac_cv_header_stdbool_h+:} false; then :
@@ -4715,8 +4719,9 @@ if test $ac_cv_header_stdbool_h = yes; then
 $as_echo "#define HAVE_STDBOOL_H 1" >>confdefs.h
 
 fi
- for ac_header in fcntl.h float.h limits.h locale.h math.h stdio.h \
-                  sys/file.h sys/param.h sys/timeb.h utime.h values.h
+ for ac_header in fcntl.h float.h limits.h locale.h math.h \
+                  stddef.h stdio.h sys/file.h sys/param.h \
+                  sys/timeb.h utime.h values.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"

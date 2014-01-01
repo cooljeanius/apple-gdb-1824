@@ -11,6 +11,11 @@ xgdb
 *.dif
 *.*out
 Makefile
+site.exp
+site.bak
+
+# Needed by the configure script to verify srcdir:
+!common/bits-tst.c
 
 # gitignore subdirectories with their own configure scripts
 # (until that I can verify that each of them works)

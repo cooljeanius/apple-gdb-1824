@@ -46,7 +46,7 @@ configdirs=""
 # add test sub-directory for appropriate targets
 testdir=`echo ${target} | sed -e 's/-.*-/-/'`
 if test -r ${srcdir}/${testdir}/configure ; then
-  configdirs="${configdirs} $testdir"
+  configdirs="${configdirs} ${testdir}"
 fi
 
 # add any extra subdirectories
@@ -63,7 +63,7 @@ esac
 AC_SUBST([arch])
 
 # configure the subdirectories too
-AC_CONFIG_SUBDIRS([$configdirs])
+AC_CONFIG_SUBDIRS([${configdirs}])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

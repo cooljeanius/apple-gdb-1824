@@ -41,11 +41,11 @@ AC_OBJEXT
 AC_EXEEXT
 
 # Checks for programs.
-if test "x$CC" = "x"; then
-	test -z "$CC"
+if test "x${CC}" = "x"; then
+	test -z "${CC}"
 	AC_PROG_CC
 else
-	test ! -z "$CC" && export CC
+	test ! -z "${CC}" && export CC
 	AC_SUBST([CC])
 fi
 AC_PROG_INSTALL
@@ -58,9 +58,11 @@ AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
   AC_REQUIRE([AC_PROG_CPP])
   AC_REQUIRE([AC_HEADER_STDC])
 ])
+AC_REQUIRE_HEADER_STDC
 AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
-AC_CHECK_HEADERS([fcntl.h float.h limits.h locale.h math.h stdio.h \
-                  sys/file.h sys/param.h sys/timeb.h utime.h values.h])
+AC_CHECK_HEADERS([fcntl.h float.h limits.h locale.h math.h \
+                  stddef.h stdio.h sys/file.h sys/param.h \
+                  sys/timeb.h utime.h values.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN

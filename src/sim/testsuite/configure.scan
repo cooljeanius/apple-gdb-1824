@@ -15,24 +15,14 @@ AC_PROG_INSTALL
 # Checks for libraries.
 
 # Checks for header files.
-AC_CHECK_HEADERS([fcntl.h limits.h netinet/in.h stddef.h stdlib.h string.h sys/socket.h sys/time.h unistd.h])
+AC_CHECK_HEADERS([string.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
-AC_TYPE_SIZE_T
 
 # Checks for library functions.
-AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
-AC_FUNC_MALLOC
-AC_FUNC_MMAP
-AC_FUNC_REALLOC
-AC_CHECK_FUNCS([ftruncate getcwd gettimeofday memset munmap pathconf socket strchr strerror strrchr uname])
+AC_CHECK_FUNCS([memset])
 
 AC_CONFIG_FILES([Makefile
                  common/Makefile])
-AC_CONFIG_SUBDIRS([d10v-elf
-                   d30v-elf
-                   fr30-elf
-                   frv-elf
-                   m32r-elf
-                   mips64el-elf])
+AC_CONFIG_SUBDIRS([mips64el-elf])
 AC_OUTPUT

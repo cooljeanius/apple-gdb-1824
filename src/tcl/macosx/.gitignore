@@ -1,3 +1,5 @@
 build/*
+*.build
 *.pbxuser
 *.perspectivev3
+!build/Development.build/Tcl.build
