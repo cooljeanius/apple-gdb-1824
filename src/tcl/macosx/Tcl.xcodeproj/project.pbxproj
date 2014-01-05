@@ -533,24 +533,24 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			passBuildSettingsInEnvironment = 1;
 			productName = Make;
 		};
-		A50F55631808CA1C008BA312 /* Configure (Copied) */ = {
+		A50F55631808CA1C008BA312 /* Configure_Copied */ = {
 			isa = PBXLegacyTarget;
 			buildArgumentsString = "-c \"if [ \\\"${ACTION}\\\" != \\\"clean\\\" ]; then if [ -z \\\"`find . -name Makefile -newer \\\"${SRCROOT}/../unix/configure\\\"`\\\" ]; then \\\"${SRCROOT}/../unix/configure\\\" --prefix=/usr --mandir=/usr/share/man --libdir=\\\"${LIBDIR}\\\" --includedir=\\\"${LIBDIR}/Headers\\\" --enable-threads --enable-framework ${EXTRA_CONFIGURE_FLAGS}; mkdir -p Tcl.framework; ln -fs ../Tcl Tcl.framework/Tcl; fi; else rm -f Makefile; fi\"";
-			buildConfigurationList = A50F55641808CA1C008BA312 /* Build configuration list for PBXLegacyTarget "Configure (Copied)" */;
+			buildConfigurationList = A50F55641808CA1C008BA312 /* Build configuration list for PBXLegacyTarget "Configure_Copied" */;
 			buildPhases = (
 			);
 			buildToolPath = /bin/sh;
 			buildWorkingDirectory = "${TEMP_DIR}/..";
 			dependencies = (
 			);
-			name = "Configure (Copied)";
+			name = Configure_Copied;
 			passBuildSettingsInEnvironment = 1;
 			productName = Configure;
 		};
-		A50F55681808CA1C008BA312 /* Make (Copied) */ = {
+		A50F55681808CA1C008BA312 /* Make_Copied */ = {
 			isa = PBXLegacyTarget;
 			buildArgumentsString = "-c \"if [ \\\"${ACTION}\\\" != \\\"clean\\\" ]; then gnumake tclsh tcltest TCL_LIBRARY=\\\"@TCL_IN_FRAMEWORK@\\\" TCL_PACKAGE_PATH=\\\"~/Library/Tcl /Library/Tcl /Network/Library/Tcl /System/Library/Tcl\\\" DYLIB_INSTALL_DIR=\\\"${DYLIB_INSTALL_DIR}\\\" ${EXTRA_MAKE_FLAGS}; else gnumake clean; fi\"";
-			buildConfigurationList = A50F556B1808CA1C008BA312 /* Build configuration list for PBXLegacyTarget "Make (Copied)" */;
+			buildConfigurationList = A50F556B1808CA1C008BA312 /* Build configuration list for PBXLegacyTarget "Make_Copied" */;
 			buildPhases = (
 			);
 			buildToolPath = /bin/sh;
@@ -558,16 +558,16 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			dependencies = (
 				A50F55721808CA1C008BA312 /* PBXTargetDependency */,
 			);
-			name = "Make (Copied)";
+			name = Make_Copied;
 			passBuildSettingsInEnvironment = 1;
 			productName = Make;
 		};
 /* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
-		A50F55501808CA1C008BA312 /* Tcl (Upgraded) */ = {
+		A50F55501808CA1C008BA312 /* Tcl_Upgraded */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = A50F555D1808CA1C008BA312 /* Build configuration list for PBXNativeTarget "Tcl (Upgraded)" */;
+			buildConfigurationList = A50F555D1808CA1C008BA312 /* Build configuration list for PBXNativeTarget "Tcl_Upgraded" */;
 			buildPhases = (
 				A50F55531808CA1C008BA312 /* Run Script 1 */,
 				A50F55541808CA1C008BA312 /* Sources */,
@@ -585,7 +585,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			dependencies = (
 				A50F55701808CA1C008BA312 /* PBXTargetDependency */,
 			);
-			name = "Tcl (Upgraded)";
+			name = Tcl_Upgraded;
 			productInstallPath = /Library/Frameworks;
 			productName = TclLibrary;
 			productReference = A50F55621808CA1C008BA312 /* Tcl.framework */;
@@ -611,9 +611,9 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A50F55501808CA1C008BA312 /* Tcl (Upgraded) */,
-				A50F55631808CA1C008BA312 /* Configure (Copied) */,
-				A50F55681808CA1C008BA312 /* Make (Copied) */,
+				A50F55501808CA1C008BA312 /* Tcl_Upgraded */,
+				A50F55631808CA1C008BA312 /* Configure_Copied */,
+				A50F55681808CA1C008BA312 /* Make_Copied */,
 				00E2F84E016E92110ACA28DC /* Tcl */,
 				00E2F84B016E8A830ACA28DC /* Configure */,
 				00E2F84C016E8B780ACA28DC /* Make */,
@@ -665,7 +665,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			name = "Run Script 1";
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "#!/bin/sh\necho \"This is the first custom shell script\"\n# ensure we can overwrite a previous install\nset -ex\nif [ -d \"${INSTALL_ROOT}${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}\" ]; then\n    chmod -RH u+w \"${INSTALL_ROOT}${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}\"\nfi\n";
+			shellScript = "#!/bin/sh\necho \"This is the first custom shell script\"\n# ensure we can overwrite a previous install\necho \"INSTALL_ROOT is ${INSTALL_ROOT}\"\necho \"INSTALL_PATH is ${INSTALL_PATH}\"\necho \"PRODUCT_NAME is ${PRODUCT_NAME}\"\necho \"WRAPPER_EXTENSION is ${WRAPPER_EXTENSION}\"\nset -ex\nif [ -d \"${INSTALL_ROOT}${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}\" ]; then\n    chmod -RH u+w \"${INSTALL_ROOT}${INSTALL_PATH}/${PRODUCT_NAME}.${WRAPPER_EXTENSION}\"\nfi\n";
 		};
 		A50F55581808CA1C008BA312 /* Run Script 2 */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -675,7 +675,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			name = "Run Script 2";
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#!/bin/sh\necho \"This is the second custom shell script\"\n# symolic link hackery to trick\n# 'make install INSTALL_ROOT=${TEMP_DIR}'\n# into building Tcl.framework and tclsh in ${SYMROOT}\nset -ex\nif test -d \"${TEMP_DIR}\"; then\n cd \"${TEMP_DIR}\"\n mkdir -p Library\n mkdir -p usr\n rm -f Library/Frameworks; ln -fs \"${SYMROOT}\" Library/Frameworks\n rm -f usr/bin; ln -fs \"${SYMROOT}\" usr/bin\n ln -fs \"${TEMP_DIR}/../tcltest\" \"${SYMROOT}\"\nelse\n echo \"TEMP_DIR does not exist\"\nfi\n\n";
+			shellScript = "#!/bin/sh\necho \"This is the second custom shell script\"\n# symolic link hackery to trick\n# 'make install INSTALL_ROOT=${TEMP_DIR}'\n# into building Tcl.framework and tclsh in ${SYMROOT}\necho \"SYMROOT is ${SYMROOT}\"\necho \"BUILD_STYLE is ${BUILD_STYLE}\"\nset -ex\nif test -d \"${TEMP_DIR}\"; then\n cd \"${TEMP_DIR}\" && pwd\n mkdir -pv Library\n mkdir -pv usr\n if test -d \"${SYMROOT}/${BUILD_STYLE}\"; then\n  rm -fv Library/Frameworks; ln -fsv \"${SYMROOT}/${BUILD_STYLE}\" Library/Frameworks\n  rm -fv usr/bin; ln -fsv \"${SYMROOT}/${BUILD_STYLE}\" usr/bin\n  ln -fsv \"${TEMP_DIR}/../tcltest\" \"${SYMROOT}/${BUILD_STYLE}\"\n else\n  rm -fv Library/Frameworks; ln -fsv \"${SYMROOT}\" Library/Frameworks\n  rm -fv usr/bin; ln -fsv \"${SYMROOT}\" usr/bin\n  ln -fsv \"${TEMP_DIR}/../tcltest\" \"${SYMROOT}\"\n fi\nelse\n echo \"TEMP_DIR does not exist\"\nfi\n\n";
 		};
 		A50F55591808CA1C008BA312 /* Run Script 3 */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -695,7 +695,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			name = "Run Script 4";
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#!/bin/sh\necho \"This is the fourth custom shell script\"\n# fixup Framework structure\nset -ex\nif [ ! -d \"${INSTALL_ROOT}${LIBDIR}\" ]; then\n    mkdir -p \"${INSTALL_ROOT}${LIBDIR}\"\nfi\ncd \"${INSTALL_ROOT}${LIBDIR}\" && pwd\nln -fs Versions/Current/Headers ../..\nif [ ! -d Resources ]; then\n    mkdir -p Resources\nfi\ntest -e tclConfig.sh\nmv -f tclConfig.sh Resources\nif [ \"${BUILD_STYLE}\" = \"Development\" ]; then\n\t# keep copy of debug library around, so that\n\t# Deployment build can be installed on top\n\t# of Development build without overwriting\n\t# the debuglibrary\n\tcp -fp \"${PRODUCT_NAME}\" \"${PRODUCT_NAME}_debug\"\nfi\n";
+			shellScript = "#!/bin/sh\necho \"This is the fourth custom shell script\"\n# fixup Framework structure\necho \"INSTALL_ROOT is ${INSTALL_ROOT}\"\necho \"LIBDIR is ${LIBDIR}\"\necho \"BUILD_STYLE is ${BUILD_STYLE}\"\necho \"SYMROOT is ${SYMROOT}\"\nset -ex\nif [ ! -d \"${INSTALL_ROOT}${LIBDIR}\" ]; then\n    mkdir -pv \"${INSTALL_ROOT}${LIBDIR}\"\nfi\ncd \"${INSTALL_ROOT}${LIBDIR}\" && pwd && ls -l\ntest -e Versions/Current || test -e ../..\nln -fsv Versions/Current/Headers ../..\nif [ ! -d Resources ]; then\n    mkdir -p Resources\nfi\ntest -e tclConfig.sh\nmv -fv tclConfig.sh Resources\nif [ \"${BUILD_STYLE}\" = \"Development\" ]; then\n\t# keep copy of debug library around, so that\n\t# Deployment build can be installed on top\n\t# of Development build without overwriting\n\t# the debuglibrary\n\ttest -e \"${PRODUCT_NAME}\"\n\tcp -fpv \"${PRODUCT_NAME}\" \"${PRODUCT_NAME}_debug\"\nfi\n";
 		};
 		A50F555B1808CA1C008BA312 /* Run Script 5 */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -705,7 +705,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			name = "Run Script 5";
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "#!/bin/sh\necho \"This is the fifth custom shell script\"\nset -ex\nif [ `echo \"${DYLIB_INSTALL_PATH:-}\" | grep -c \"@executable_path\"` -gt 0 ]; then\n# if we are embedding frameworks, do NOT install tclsh\n test -d \"${INSTALL_ROOT}\"\n rm -f \"${INSTALL_ROOT}/usr/bin/tclsh${FRAMEWORK_VERSION}\"\n rmdir -p \"${INSTALL_ROOT}/usr/bin\"\n echo \"tclsh removed\"\nelse\n# redo prebinding\n test -d \"${INSTALL_ROOT}\"\n cd \"${INSTALL_ROOT}\"\n if [ ! -d usr/lib ]; then mkdir -p usr; ln -fs /usr/lib usr/; RM_USRLIB=1; fi\n if [ ! -d System ]; then ln -fs /System .; RM_SYSTEM=1; fi\n test -x `which redo_prebinding`\n redo_prebinding -r . \"./usr/bin/tclsh${FRAMEWORK_VERSION}\"\n if [ -n \"${RM_USRLIB:-}\" ]; then rm -f usr/lib; rmdir -p usr; fi\n if [ -n \"${RM_SYSTEM:-}\" ]; then rm -f System; fi\nfi\n";
+			shellScript = "#!/bin/sh\necho \"This is the fifth custom shell script\"\nset -ex\nif [ `echo \"${DYLIB_INSTALL_PATH:-}\" | grep -c \"@executable_path\"` -gt 0 ]; then\n# if we are embedding frameworks, do NOT install tclsh\n test -d \"${INSTALL_ROOT}\"\n rm -fv \"${INSTALL_ROOT}/usr/bin/tclsh${FRAMEWORK_VERSION}\"\n rmdir -p \"${INSTALL_ROOT}/usr/bin\"\n echo \"tclsh removed\"\nelse\n# redo prebinding\n test -d \"${INSTALL_ROOT}\"\n cd \"${INSTALL_ROOT}\"\n if [ ! -d usr/lib ]; then mkdir -pv usr; ln -fsv /usr/lib usr/; RM_USRLIB=1; fi\n if [ ! -d System ]; then ln -fsv /System .; RM_SYSTEM=1; fi\n test -x `which redo_prebinding`\n redo_prebinding -r . \"./usr/bin/tclsh${FRAMEWORK_VERSION}\"\n if [ -n \"${RM_USRLIB:-}\" ]; then rm -fv usr/lib; rmdir -p usr; fi\n if [ -n \"${RM_SYSTEM:-}\" ]; then rm -fv System; fi\nfi\n";
 		};
 		A50F555C1808CA1C008BA312 /* Run Script 6 */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -715,7 +715,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			name = "Run Script 6";
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "#!/bin/sh\necho \"This is the sixth custom shell script\"\nset -ex\n# build html documentation\nif [ \"${BUILD_STYLE}\" = \"Deployment\" ]; then\n    test -d \"${TEMP_DIR}/..\"\n    cd \"${TEMP_DIR}/..\"\n    gnumake html DISTDIR=\"${INSTALL_ROOT}${LIBDIR}/Resources/English.lproj/Documentation/Reference\"\n    cd \"${INSTALL_ROOT}${LIBDIR}/Resources/English.lproj/Documentation/Reference\"\n    ln -fs contents.htm html/index.html\n    rm -f \"${PRODUCT_NAME}\"; ln -fs html \"${PRODUCT_NAME}\"\nfi\n";
+			shellScript = "#!/bin/sh\necho \"This is the sixth custom shell script\"\nset -ex\n# build html documentation\nif [ \"${BUILD_STYLE}\" = \"Deployment\" ]; then\n    test -d \"${TEMP_DIR}/..\"\n    cd \"${TEMP_DIR}/..\"\n    gnumake html DISTDIR=\"${INSTALL_ROOT}${LIBDIR}/Resources/English.lproj/Documentation/Reference\"\n    cd \"${INSTALL_ROOT}${LIBDIR}/Resources/English.lproj/Documentation/Reference\"\n    ln -fsv contents.htm html/index.html\n    rm -fv \"${PRODUCT_NAME}\"; ln -fsv html \"${PRODUCT_NAME}\"\nfi\n";
 		};
 		F5877FB6031F97AF016F146B /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -775,12 +775,12 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 /* Begin PBXTargetDependency section */
 		A50F55701808CA1C008BA312 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A50F55681808CA1C008BA312 /* Make (Copied) */;
+			target = A50F55681808CA1C008BA312 /* Make_Copied */;
 			targetProxy = A50F556F1808CA1C008BA312 /* PBXContainerItemProxy */;
 		};
 		A50F55721808CA1C008BA312 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A50F55631808CA1C008BA312 /* Configure (Copied) */;
+			target = A50F55631808CA1C008BA312 /* Configure_Copied */;
 			targetProxy = A50F55711808CA1C008BA312 /* PBXContainerItemProxy */;
 		};
 		F5877EB5031F7997016F146B /* PBXTargetDependency */ = {
@@ -1159,7 +1159,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Default;
 		};
-		A50F555D1808CA1C008BA312 /* Build configuration list for PBXNativeTarget "Tcl (Upgraded)" */ = {
+		A50F555D1808CA1C008BA312 /* Build configuration list for PBXNativeTarget "Tcl_Upgraded" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A50F555E1808CA1C008BA312 /* Development */,
@@ -1169,7 +1169,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Default;
 		};
-		A50F55641808CA1C008BA312 /* Build configuration list for PBXLegacyTarget "Configure (Copied)" */ = {
+		A50F55641808CA1C008BA312 /* Build configuration list for PBXLegacyTarget "Configure_Copied" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A50F55651808CA1C008BA312 /* Development */,
@@ -1179,7 +1179,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Default;
 		};
-		A50F556B1808CA1C008BA312 /* Build configuration list for PBXLegacyTarget "Make (Copied)" */ = {
+		A50F556B1808CA1C008BA312 /* Build configuration list for PBXLegacyTarget "Make_Copied" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				A50F556C1808CA1C008BA312 /* Development */,

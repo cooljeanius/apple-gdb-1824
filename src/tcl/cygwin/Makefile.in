@@ -84,7 +84,8 @@ DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
 	$(srcdir)/config.h.in $(top_srcdir)/../../mkinstalldirs \
 	$(srcdir)/tclConfig.sh.in $(top_srcdir)/../../depcomp \
-	$(top_srcdir)/../../compile $(top_srcdir)/../../config.guess \
+	$(top_srcdir)/../../ar-lib $(top_srcdir)/../../compile \
+	$(top_srcdir)/../../config.guess \
 	$(top_srcdir)/../../config.sub $(top_srcdir)/../../install-sh \
 	$(top_srcdir)/../../missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -273,6 +274,7 @@ abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
+ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@

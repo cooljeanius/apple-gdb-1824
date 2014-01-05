@@ -3722,8 +3722,8 @@ fi
 
 
 if test "${GCC}" = "yes" ; then
-    if test "x$AR" = "x"; then
-        test -z "$AR"
+    if test "x${AR}" = "x"; then
+        test -z "${AR}"
         # Extract the first word of "ar", so it can be a program name with args.
 set dummy ar; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -3762,8 +3762,8 @@ fi
 
 
     fi
-    if test "x$RANLIB" = "x"; then
-        test -z "$RANLIB"
+    if test "x${RANLIB}" = "x"; then
+        test -z "${RANLIB}"
         # Extract the first word of "ranlib", so it can be a program name with args.
 set dummy ranlib; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -3802,8 +3802,8 @@ fi
 
 
     fi
-    if test "x$RC" = "x"; then
-        test -z "$RC"
+    if test "x${RC}" = "x"; then
+        test -z "${RC}"
         # Extract the first word of "windres", so it can be a program name with args.
 set dummy windres; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -3843,8 +3843,8 @@ fi
 
     fi
 else
-    if test "x$AR" = "x"; then
-        test -z "$AR"
+    if test "x${AR}" = "x"; then
+        test -z "${AR}"
         # expand $ac_aux_dir to an absolute path
 am_aux_dir=`cd $ac_aux_dir && pwd`
 
@@ -4021,8 +4021,8 @@ unknown)
 esac
 
     fi
-    if test "x$RANLIB" = "x"; then
-        test -z "$RANLIB"
+    if test "x${RANLIB}" = "x"; then
+        test -z "${RANLIB}"
         if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ranlib; ac_word=$2
@@ -4297,12 +4297,16 @@ test -n "$target_alias" &&
   test "$program_prefix$program_suffix$program_transform_name" = \
     NONENONEs,x,x, &&
   program_prefix=${target_alias}-
-case $host_os in
-  *cygwin* ) CYGWIN=yes;;
-	 * ) CYGWIN=no;;
+case ${host_os} in
+  *cygwin* ) CYGWIN=yes
+             ac_cv_cygwin=yes
+             ;;
+	 * ) CYGWIN=no
+             ac_cv_cygwin=no
+             ;;
 esac
 
-if test "$ac_cv_cygwin" = "yes" ; then
+if test "${ac_cv_cygwin}" = "yes" ; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Compiling with the Cygwin version of gcc is not supported.
     Use the Mingw version of gcc from www.mingw.org instead." >&5
 $as_echo "$as_me: WARNING: Compiling with the Cygwin version of gcc is not supported.
@@ -4706,8 +4710,8 @@ fi
 done
 
 
-for ac_header in winbase.h windows.h winioctl.h winnt.h winsock.h winsock2.h \
-                  wstcpip.h
+for ac_header in winbase.h windows.h winioctl.h winnt.h winsock.h \
+                  winsock2.h wstcpip.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -5403,8 +5407,7 @@ if test $ac_cv_header_stdbool_h = yes; then
 $as_echo "#define HAVE_STDBOOL_H 1" >>confdefs.h
 
 fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether time.h and sys/time.h may both be included" >&5
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether time.h and sys/time.h may both be included" >&5
 $as_echo_n "checking whether time.h and sys/time.h may both be included... " >&6; }
 if ${ac_cv_header_time+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -5441,8 +5444,9 @@ fi
 
 for ac_header in ddeml.h fcntl.h float.h io.h lmaccess.h locale.h \
                   malloc.h malloc/malloc.h math.h process.h select.h \
-                  shlobj.h signal.h stdio.h sys/io.h sys/param.h sys/select.h \
-                  sys/timeb.h sys/utime.h tclPort.h time.h toolhelp.h utime.h
+                  shlobj.h signal.h stdio.h sys/io.h sys/param.h \
+                  sys/select.h sys/timeb.h sys/utime.h tclPort.h \
+                  time.h toolhelp.h utime.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"

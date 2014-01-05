@@ -29,11 +29,11 @@ if test "${prefix}" = "NONE"; then
     prefix=/usr/local
 fi
 if test "${exec_prefix}" = "NONE"; then
-    exec_prefix=$prefix
+    exec_prefix=${prefix}
 fi
 # libdir must be a fully qualified path and (not ${exec_prefix}/lib)
-eval libdir="$libdir"
-TCL_SRC_DIR=`cd $srcdir/..; pwd`
+eval libdir="${libdir}"
+TCL_SRC_DIR=`cd ${srcdir}/..; pwd`
 
 #------------------------------------------------------------------------
 # Compress and/or soft link the manpages?
@@ -52,14 +52,18 @@ fi
 
 AC_PROG_CC
 AC_PROG_CXX
-AC_CHECK_HEADERS([unistd.h limits.h])
+AC_CHECK_HEADERS_ONCE([float.h limits.h unistd.h])
 
 # Some more programs
 AC_PROG_AWK
 AC_PROG_INSTALL
+AM_PROG_INSTALL_STRIP
+AM_PROG_INSTALL_SH
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_YACC
+AC_PATH_PROG([GDB_BIN],[gdb])
+AC_PATH_PROG([DDD_BIN],[ddd])
 
 #------------------------------------------------------------------------
 # Threads support
@@ -122,14 +126,14 @@ AC_FUNC_CHOWN
 AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([alarm atexit dup2 endgrent endpwent gethostbyaddr \
-                gethostname inet_ntoa memset mkdir mkfifo nl_langinfo \
-                rmdir select setlocale socket strcasecmp strchr strrchr \
-                strstr strtol strtoull tzset utime])
+                gethostname inet_ntoa isxdigit memset mkdir mkfifo \
+                nl_langinfo rmdir select setlocale socket strcasecmp \
+                strchr strrchr strstr strtol strtoull tzset utime])
 
 AC_CHECK_FUNCS([execl execle execlp])
 
 #--------------------------------------------------------------------
-#	Supply substitutes for missing POSIX header files.  Special
+#	Supply substitutes for missing POSIX header files. Special
 #	notes:
 #	    - stdlib.h does NOT define strtol, strtoul, or
 #	      strtod insome versions of SunOS
@@ -140,9 +144,10 @@ AC_CHECK_FUNCS([execl execle execlp])
 SC_MISSING_POSIX_HEADERS
 
 # More headers
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h locale.h netdb.h netinet/in.h \
-                  sgtty.h sys/file.h sys/socket.h sys/statfs.h termio.h \
-                  termios.h utime.h])
+AC_CHECK_HEADERS([CoreFoundation/CoreFoundation.h arpa/inet.h \
+                  fcntl.h locale.h netdb.h netinet/in.h sgtty.h stdarg.h \
+                  sys/file.h sys/socket.h sys/statfs.h termio.h termios.h \
+                  utime.h])
 
 #--------------------------------------------------------------------------
 #	Determine which interface to use to talk to the serial port.
@@ -154,30 +159,30 @@ SC_SERIAL_PORT
 
 #--------------------------------------------------------------------
 #	Include sys/select.h if it exists and if it supplies things
-#	that appear to be useful and aren't already in sys/types.h.
-#	This appears to be true only on the RS/6000 under AIX.  Some
-#	systems like OSF/1 have a sys/select.h that's of no use, and
-#	other systems like SCO UNIX have a sys/select.h that's
-#	pernicious.  If "fd_set" isn't defined anywhere then set a
+#	that appear to be useful and are NOT already in sys/types.h.
+#	This appears to be true only on the RS/6000 under AIX. Some
+#	systems like OSF/1 have a sys/select.h that is of no use, and
+#	other systems like SCO UNIX have a sys/select.h that is
+#	pernicious. If "fd_set" is NOT defined anywhere, then set a
 #	special flag.
 #--------------------------------------------------------------------
 
 AC_MSG_CHECKING([for fd_set in sys/types])
 AC_CACHE_VAL([tcl_cv_type_fd_set],
     [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>]], [[fd_set readMask, writeMask;]])],[tcl_cv_type_fd_set=yes],[tcl_cv_type_fd_set=no])])
-AC_MSG_RESULT([$tcl_cv_type_fd_set])
-tk_ok=$tcl_cv_type_fd_set
-if test $tcl_cv_type_fd_set = no; then
+AC_MSG_RESULT([${tcl_cv_type_fd_set}])
+tk_ok=${tcl_cv_type_fd_set}
+if test ${tcl_cv_type_fd_set} = no; then
     AC_MSG_CHECKING([for fd_mask in sys/select])
     AC_CACHE_VAL([tcl_cv_grep_fd_mask],
 	AC_EGREP_HEADER([fd_mask],[sys/select.h],[tcl_cv_grep_fd_mask=present],[tcl_cv_grep_fd_mask=missing]))
-    AC_MSG_RESULT([$tcl_cv_grep_fd_mask])
-    if test $tcl_cv_grep_fd_mask = present; then
+    AC_MSG_RESULT([${tcl_cv_grep_fd_mask}])
+    if test ${tcl_cv_grep_fd_mask} = present; then
 	AC_DEFINE([HAVE_SYS_SELECT_H],[1],[Define to 1 if we have a working sys/select.h])
 	tk_ok=yes
     fi
 fi
-if test $tk_ok = no; then
+if test ${tk_ok} = no; then
     AC_DEFINE([NO_FD_SET],[1],[Define to 1 if there is no fd_set])
 fi
 
@@ -186,6 +191,12 @@ fi
 #--------------------------------------------------------------------------
 
 SC_TIME_HANDLER
+AC_DEFUN([AC_REQUIRE_TIME_CHECKS],[
+  AC_REQUIRE([AC_HEADER_TIME])
+  AC_REQUIRE([AC_STRUCT_TM])
+  AC_REQUIRE([AC_STRUCT_TIMEZONE])
+])
+AC_REQUIRE_TIME_CHECKS
 
 #--------------------------------------------------------------------
 #	Some systems (e.g., IRIX 4.0.5) lack the st_blksize field
@@ -234,11 +245,11 @@ if test $tcl_ok = yes; then
     AC_MSG_RESULT([yes])
 else
     AC_MSG_RESULT([broken, using substitute])
-    LIBOBJS="$LIBOBJS strstr.o"
+    LIBOBJS="${LIBOBJS} strstr.o"
 fi
 
 #--------------------------------------------------------------------
-#	Check for strtoul function.  This is tricky because under some
+#	Check for strtoul function. This is tricky because under some
 #	versions of AIX strtoul returns an incorrect terminator
 #	pointer for the string "0".
 #--------------------------------------------------------------------
@@ -257,13 +268,13 @@ int main()
     }
     exit(0);
 }]])],[],[tcl_ok=0],[tcl_ok=0])
-if test "$tcl_ok" = 0; then
-    test -n "$verbose" && echo "	Adding strtoul.o."
-    LIBOBJS="$LIBOBJS strtoul.o"
+if test "${tcl_ok}" = 0; then
+    test -n "${verbose}" && echo "	Adding strtoul.o."
+    LIBOBJS="${LIBOBJS} strtoul.o"
 fi
 
 #---------------------------------------------------------------------
-#	Check for the strtod function.  This is tricky because in some
+#	Check for the strtod function. This is tricky because in some
 #	versions of Linux strtod mis-parses strings starting with "+".
 #---------------------------------------------------------------------
 
@@ -281,9 +292,9 @@ int main()
     }
     exit(0);
 }]])],[],[tcl_ok=0],[tcl_ok=0])
-if test "$tcl_ok" = 0; then
-    test -n "$verbose" && echo "	Adding strtod.o."
-    LIBOBJS="$LIBOBJS strtod.o"
+if test "${tcl_ok}" = 0; then
+    test -n "${verbose}" && echo "	Adding strtod.o."
+    LIBOBJS="${LIBOBJS} strtod.o"
 fi
 
 #--------------------------------------------------------------------
@@ -321,8 +332,8 @@ changequote([,]),[
     # warning this conftest expects you to have STDC_HEADERS
     #endif /* STDC_HEADERS */
     ],[ac_cv_type_socklen_t=yes],[ac_cv_type_socklen_t=no])])
-AC_MSG_RESULT([$ac_cv_type_socklen_t])
-if test $ac_cv_type_socklen_t = no; then
+AC_MSG_RESULT([${ac_cv_type_socklen_t}])
+if test ${ac_cv_type_socklen_t} = no; then
     AC_DEFINE([socklen_t],[unsigned],[Define to unsigned if it needs to be])
 fi
 
@@ -339,7 +350,7 @@ AC_CHECK_TYPES([regoff_t])
 #--------------------------------------------------------------------
 #	If a system does NOT have an opendir function (man, is that old!)
 #	then we have to supply a different version of dirent.h which
-#	is compatible with the substitute version of opendir that's
+#	is compatible with the substitute version of opendir that is
 #	provided. This version only works with V7-style directories.
 #--------------------------------------------------------------------
 
@@ -364,8 +375,8 @@ union wait x;
 WIFEXITED(x);		/* Generates compiler error if WIFEXITED
 			 * uses an int. */
     ]])],[tcl_cv_union_wait=yes],[tcl_cv_union_wait=no]))
-AC_MSG_RESULT([$tcl_cv_union_wait])
-if test $tcl_cv_union_wait = no; then
+AC_MSG_RESULT([${tcl_cv_union_wait}])
+if test ${tcl_cv_union_wait} = no; then
     AC_DEFINE([NO_UNION_WAIT],[1],[Define to 1 if there is no union wait])
 fi
 
@@ -376,14 +387,14 @@ fi
 #---------------------------------------------------------------------
 
 AC_CHECK_FUNCS([strncasecmp],[tcl_ok=1],[tcl_ok=0])
-if test "$tcl_ok" = 0; then
+if test "${tcl_ok}" = 0; then
     AC_CHECK_LIB([socket],[strncasecmp],[tcl_ok=1],[tcl_ok=0])
 fi
-if test "$tcl_ok" = 0; then
+if test "${tcl_ok}" = 0; then
     AC_CHECK_LIB([inet],[strncasecmp],[tcl_ok=1],[tcl_ok=0])
 fi
-if test "$tcl_ok" = 0; then
-    LIBOBJS="$LIBOBJS strncasecmp.o"
+if test "${tcl_ok}" = 0; then
+    LIBOBJS="${LIBOBJS} strncasecmp.o"
 fi
 
 #--------------------------------------------------------------------
@@ -406,8 +417,8 @@ AC_MSG_CHECKING([for gettimeofday declaration])
 AC_CACHE_VAL([tcl_cv_grep_gettimeofday],
     [AC_EGREP_HEADER([gettimeofday],[sys/time.h],
 	[tcl_cv_grep_gettimeofday=present], [tcl_cv_grep_gettimeofday=missing])])
-AC_MSG_RESULT([$tcl_cv_grep_gettimeofday])
-if test $tcl_cv_grep_gettimeofday = missing ; then
+AC_MSG_RESULT([${tcl_cv_grep_gettimeofday}])
+if test ${tcl_cv_grep_gettimeofday} = missing ; then
     AC_DEFINE([GETTOD_NOT_DECLARED],[1],[Define to 1 if gettimeofday is not declared])
 fi
 
@@ -424,8 +435,8 @@ AC_CACHE_VAL([tcl_cv_char_signed],
 	signed char *p;
 	p = 0;
 	]])],[tcl_cv_char_signed=yes],[tcl_cv_char_signed=no]))
-AC_MSG_RESULT([$tcl_cv_char_signed])
-if test $tcl_cv_char_signed = yes; then
+AC_MSG_RESULT([${tcl_cv_char_signed}])
+if test ${tcl_cv_char_signed} = yes; then
     AC_DEFINE([HAVE_SIGNED_CHAR],[1],[Define to 1 if we have a signed char declaration])
 fi
 
@@ -455,8 +466,8 @@ AC_CACHE_VAL([tcl_cv_putenv_copy],
 	}
     ]])],[tcl_cv_putenv_copy=no],[tcl_cv_putenv_copy=yes],[tcl_cv_putenv_copy=no])
 ])
-AC_MSG_RESULT([$tcl_cv_putenv_copy])
-if test $tcl_cv_putenv_copy = yes; then
+AC_MSG_RESULT([${tcl_cv_putenv_copy}])
+if test ${tcl_cv_putenv_copy} = yes; then
     AC_DEFINE([HAVE_PUTENV_THAT_COPIES],[1],[Define to 1 if we have a putenv that copies])
 fi
 
@@ -492,7 +503,7 @@ TCL_DBGX="${DBGX}"
 
 #--------------------------------------------------------------------
 #	The statements below check for systems where POSIX-style
-#	non-blocking I/O (O_NONBLOCK) doesn't work or is unimplemented. 
+#	non-blocking I/O (O_NONBLOCK) does not work or is unimplemented. 
 #	On these systems (mostly older ones), use the old BSD-style
 #	FIONBIO approach instead.
 #--------------------------------------------------------------------
@@ -522,11 +533,11 @@ eval "TCL_LIB_FILE=${TCL_LIB_FILE}"
 # AIX remembers this path and will attempt to use it at run-time to look
 # up the Tcl library.
 
-if test "$FRAMEWORK_BUILD" = "1" ; then
+if test "${FRAMEWORK_BUILD}" = "1" ; then
     TCL_BUILD_LIB_SPEC="-F`pwd` -framework Tcl"
     TCL_LIB_SPEC="-framework Tcl"
     TCL_LIB_FILE="Tcl"
-elif test "$SHARED_BUILD" = "0" || test "$TCL_NEEDS_EXP_FILE" = "0"; then
+elif test "${SHARED_BUILD}" = "0" || test "${TCL_NEEDS_EXP_FILE}" = "0"; then
     if test "${TCL_LIB_VERSIONS_OK}" = "ok"; then
         TCL_LIB_FLAG="-ltcl${TCL_VERSION}\${TCL_DBGX}"
     else
@@ -541,7 +552,7 @@ else
     # Replace DBGX with TCL_DBGX
     eval "TCL_EXP_FILE=\"${TCL_EXP_FILE}\""
     
-    if test "$GCC" = "yes" ; then
+    if test "${GCC}" = "yes" ; then
 	TCL_BUILD_LIB_SPEC="-Wl,-bI:`pwd`/${TCL_BUILD_EXP_FILE} -L`pwd`"
 	TCL_LIB_SPEC="-Wl,-bI:${libdir}/${TCL_EXP_FILE} -L`pwd`"
     else
@@ -562,9 +573,9 @@ VERSION=${TCL_VERSION}
 #	another for platform-independent scripts.
 #--------------------------------------------------------------------
 
-if test "$FRAMEWORK_BUILD" = "1" ; then
+if test "${FRAMEWORK_BUILD}" = "1" ; then
     TCL_PACKAGE_PATH="${libdir}/Resources/Scripts"
-elif test "$prefix" != "$exec_prefix"; then
+elif test "${prefix}" != "${exec_prefix}"; then
     TCL_PACKAGE_PATH="${libdir} ${prefix}/lib"
 else
     TCL_PACKAGE_PATH="${prefix}/lib"

@@ -3,3 +3,8 @@ build/*
 *.pbxuser
 *.perspectivev3
 !build/Development.build/Tcl.build
+!build/Development.build/Tcl.build/Tcl_Upgraded.build
+!build/Development.build/Tcl.build/Make.build
+!build/Development.build/Tcl.build/Make_Upgraded.build
+!build/Development.build/Tcl.build/Configure.build
+!build/Development.build/Tcl.build/Configure_Upgraded.build

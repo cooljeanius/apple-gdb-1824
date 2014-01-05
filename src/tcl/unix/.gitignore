@@ -21,3 +21,4 @@ tclsh
 tcltest
 *.dSYM
 dltest.marker
+Makefile.bak

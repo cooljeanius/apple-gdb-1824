@@ -67,25 +67,25 @@ AC_CHECK_TOOL([RANLIB],[ranlib],[:])
 AC_CHECK_TOOL([RC],[windres],[:])
 
 if test "${GCC}" = "yes" ; then
-    if test "x$AR" = "x"; then
-        test -z "$AR"
+    if test "x${AR}" = "x"; then
+        test -z "${AR}"
         AC_CHECK_PROG([AR],[ar],[ar])
     fi
-    if test "x$RANLIB" = "x"; then
-        test -z "$RANLIB"
+    if test "x${RANLIB}" = "x"; then
+        test -z "${RANLIB}"
         AC_CHECK_PROG([RANLIB],[ranlib],[ranlib])
     fi
-    if test "x$RC" = "x"; then
-        test -z "$RC"
+    if test "x${RC}" = "x"; then
+        test -z "${RC}"
         AC_CHECK_PROG([RC],[windres],[windres])
     fi
 else
-    if test "x$AR" = "x"; then
-        test -z "$AR"
+    if test "x${AR}" = "x"; then
+        test -z "${AR}"
         AM_PROG_AR
     fi
-    if test "x$RANLIB" = "x"; then
-        test -z "$RANLIB"
+    if test "x${RANLIB}" = "x"; then
+        test -z "${RANLIB}"
         AC_PROG_RANLIB
     fi
 fi
@@ -100,21 +100,23 @@ AC_PROG_MAKE_SET
 # Perform additinal compiler tests.
 #--------------------------------------------------------------------
 
-AC_DIAGNOSE([obsolete],[AC_CYGWIN is obsolete: use AC_CANONICAL_TARGET and
-check if $host_os matches *cygwin*])dnl
 AC_CANONICAL_TARGET
-case $host_os in
-  *cygwin* ) CYGWIN=yes;;
-	 * ) CYGWIN=no;;
+case ${host_os} in
+  *cygwin* ) CYGWIN=yes
+             ac_cv_cygwin=yes
+             ;;
+	 * ) CYGWIN=no
+             ac_cv_cygwin=no
+             ;;
 esac
 
-if test "$ac_cv_cygwin" = "yes" ; then
+if test "${ac_cv_cygwin}" = "yes" ; then
     AC_MSG_WARN([Compiling with the Cygwin version of gcc is not supported.
     Use the Mingw version of gcc from www.mingw.org instead.])
 fi
 
-AC_CHECK_HEADERS([winbase.h windows.h winioctl.h winnt.h winsock.h winsock2.h \
-                  wstcpip.h])
+AC_CHECK_HEADERS([winbase.h windows.h winioctl.h winnt.h winsock.h \
+                  winsock2.h wstcpip.h])
 
 AC_CACHE_CHECK([for SEH support in compiler],
    [tcl_cv_seh],
@@ -214,12 +216,13 @@ AC_SUBST([MAN2TCLFLAGS])
 TCL_SHARED_BUILD="${SHARED_BUILD}"
 
 # Checks for header files.
-AC_HEADER_STDBOOL
+AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_HEADER_TIME
 AC_CHECK_HEADERS([ddeml.h fcntl.h float.h io.h lmaccess.h locale.h \
                   malloc.h malloc/malloc.h math.h process.h select.h \
-                  shlobj.h signal.h stdio.h sys/io.h sys/param.h sys/select.h \
-                  sys/timeb.h sys/utime.h tclPort.h time.h toolhelp.h utime.h])
+                  shlobj.h signal.h stdio.h sys/io.h sys/param.h \
+                  sys/select.h sys/timeb.h sys/utime.h tclPort.h \
+                  time.h toolhelp.h utime.h])
 
 # Checks for declarations.
 AC_CHECK_DECLS([LC_TIME])

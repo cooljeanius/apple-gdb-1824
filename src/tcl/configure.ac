@@ -48,9 +48,12 @@ else
 	test ! -z "${CC}" && export CC
 	AC_SUBST([CC])
 fi
+AC_PROG_AWK
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
+AC_PROG_MKDIR_P
+AC_PROG_RANLIB
 AC_PROG_YACC
 
 # Checks for header files.
