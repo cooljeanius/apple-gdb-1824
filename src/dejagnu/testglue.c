@@ -3,6 +3,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #ifndef NO_UNISTD_H
 # include <sys/unistd.h>
@@ -15,15 +16,17 @@
 #endif /* !NO_UNISTD_H */
 
 /* A simple glue file for embedded targets so we can get the real exit
-   status from the program. This assumes we are using GNU ld and can use
-   the -wrap option, and that write(1, ...) does something useful. */
+ * status from the program. This assumes we are using GNU ld and can use
+ * the -wrap option, and that write(1, ...) does something useful.
+ */
 
 /* There is a bunch of weird cruft with #ifdef UNDERSCORES. This is needed
-   because currently GNU ld does NOT deal well with a.out targets and
-   the -wrap option. When GNU ld is fixed, this should definitely be
-   removed. Note that we actually wrap __exit, not _exit on a target
-   that has UNDERSCORES defined. On non-UNDERSCORE targets, we
-   wrap _exit separately; it is actually a different function.  */
+ * because currently GNU ld does NOT deal well with a.out targets and
+ * the -wrap option. When GNU ld is fixed, this should definitely be
+ * removed. Note that we actually wrap __exit, not _exit on a target
+ * that has UNDERSCORES defined. On non-UNDERSCORE targets, we
+ * wrap _exit separately; it is actually a different function.
+ */
 
 #ifdef WRAP_M68K_AOUT
 # define REAL_EXIT(code) asm ( "trap %0" : : "i" (0) );

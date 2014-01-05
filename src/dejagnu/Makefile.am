@@ -186,7 +186,8 @@ RUNTESTLOCAL = ` \
     echo ${srcdir}/runtest$(EXEEXT); \
   else echo "ERROR: runtest not found" ; exit 1; fi`
 
-AM_CXXFLAGS = -I$(top_srcdir) -ggdb
+AM_CXXFLAGS = -I$(top_srcdir) -ggdb -Wall
+AM_CFLAGS = -Wall -DHAVE_CONFIG_H
 
 OFILES = testglue.o stub-loader.o
 
@@ -214,13 +215,13 @@ check-DEJAGNU-local:
 .PHONY: check-DEJAGNU-local
 
 testglue.o: testglue.c
-	$(CC) $(CFLAGS) -o testglue.o -c testglue.c
+	$(CC) $(CFLAGS) $(AM_CFLAGS) -o testglue.o -c testglue.c
 
 stub-loader.o: stub-loader.c
-	$(CC) $(CFLAGS) -o stub-loader.o -c stub-loader.c
+	$(CC) $(CFLAGS) $(AM_CFLAGS) -o stub-loader.o -c stub-loader.c
 
 i960glue.o: i960glue.c
-	$(CC) $(CFLAGS) -o i960glue.o -c i960glue.c
+	$(CC) $(CFLAGS) $(AM_CFLAGS) -o i960glue.o -c i960glue.c
 
 all: $(OFILES)
 .PHONY: all

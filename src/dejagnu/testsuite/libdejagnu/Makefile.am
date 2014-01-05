@@ -2,9 +2,9 @@
 
 AUTOMAKE_OPTIONS = dejagnu
 
-AM_CFLAGS = -I$(top_srcdir) -ggdb
+AM_CFLAGS = -I$(top_srcdir) -ggdb -Wall
 AM_CPPFLAGS = -I$(top_srcdir)
-AM_CXXFLAGS = -I$(top_srcdir) -ggdb
+AM_CXXFLAGS = -I$(top_srcdir) -ggdb -Wall
 
 noinst_PROGRAMS = unit
 
