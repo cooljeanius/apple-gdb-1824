@@ -39,29 +39,58 @@
 		4CE5F208107AB6D200DCB1EB /* adler32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = adler32.c; sourceTree = "<group>"; };
 		4CE5F209107AB6D200DCB1EB /* compress.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = compress.c; sourceTree = "<group>"; };
 		4CE5F20A107AB6D200DCB1EB /* crc32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = crc32.c; sourceTree = "<group>"; };
-		4CE5F20B107AB6D200DCB1EB /* crc32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = crc32.h; sourceTree = "<group>"; };
+		4CE5F20B107AB6D200DCB1EB /* crc32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crc32.h; sourceTree = "<group>"; };
 		4CE5F20C107AB6D200DCB1EB /* deflate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = deflate.c; sourceTree = "<group>"; };
-		4CE5F20D107AB6D200DCB1EB /* deflate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = deflate.h; sourceTree = "<group>"; };
+		4CE5F20D107AB6D200DCB1EB /* deflate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = deflate.h; sourceTree = "<group>"; };
 		4CE5F20E107AB6D200DCB1EB /* infback.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = infback.c; sourceTree = "<group>"; };
 		4CE5F20F107AB6D200DCB1EB /* inffast.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = inffast.c; sourceTree = "<group>"; };
-		4CE5F210107AB6D200DCB1EB /* inffast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = inffast.h; sourceTree = "<group>"; };
+		4CE5F210107AB6D200DCB1EB /* inffast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = inffast.h; sourceTree = "<group>"; };
 		4CE5F211107AB6D200DCB1EB /* inflate.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = inflate.c; sourceTree = "<group>"; };
-		4CE5F212107AB6D200DCB1EB /* inflate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = inflate.h; sourceTree = "<group>"; };
+		4CE5F212107AB6D200DCB1EB /* inflate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = inflate.h; sourceTree = "<group>"; };
 		4CE5F213107AB6D200DCB1EB /* inftrees.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = inftrees.c; sourceTree = "<group>"; };
-		4CE5F214107AB6D200DCB1EB /* inftrees.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = inftrees.h; sourceTree = "<group>"; };
+		4CE5F214107AB6D200DCB1EB /* inftrees.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = inftrees.h; sourceTree = "<group>"; };
 		4CE5F216107AB6D200DCB1EB /* trees.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = trees.c; sourceTree = "<group>"; };
-		4CE5F217107AB6D200DCB1EB /* trees.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = trees.h; sourceTree = "<group>"; };
+		4CE5F217107AB6D200DCB1EB /* trees.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = trees.h; sourceTree = "<group>"; };
 		4CE5F218107AB6D200DCB1EB /* uncompr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = uncompr.c; sourceTree = "<group>"; };
-		4CE5F219107AB6D200DCB1EB /* zconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = zconf.h; sourceTree = "<group>"; };
-		4CE5F21A107AB6D200DCB1EB /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = zlib.h; sourceTree = "<group>"; };
+		4CE5F219107AB6D200DCB1EB /* zconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zconf.h; sourceTree = "<group>"; };
+		4CE5F21A107AB6D200DCB1EB /* zlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zlib.h; sourceTree = "<group>"; };
 		4CE5F21B107AB6D200DCB1EB /* zutil.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zutil.c; sourceTree = "<group>"; };
-		4CE5F21C107AB6D200DCB1EB /* zutil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = zutil.h; sourceTree = "<group>"; };
+		4CE5F21C107AB6D200DCB1EB /* zutil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zutil.h; sourceTree = "<group>"; };
+		7B1C25DB187A0979002FA6F7 /* adler32vec.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = adler32vec.s; sourceTree = "<group>"; };
+		7B1C25DC187A0979002FA6F7 /* inffast.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = inffast.s; sourceTree = "<group>"; };
+		7B1C25E6187A09AB002FA6F7 /* algorithm.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = algorithm.txt; sourceTree = "<group>"; };
+		7B1C25E7187A09AB002FA6F7 /* rfc1950.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = rfc1950.txt; sourceTree = "<group>"; };
+		7B1C25E8187A09AB002FA6F7 /* rfc1951.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = rfc1951.txt; sourceTree = "<group>"; };
+		7B1C25E9187A09AB002FA6F7 /* rfc1952.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = rfc1952.txt; sourceTree = "<group>"; };
+		7B1C25EA187A09AB002FA6F7 /* txtvsbin.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = txtvsbin.txt; sourceTree = "<group>"; };
+		7B1C25EC187A09D1002FA6F7 /* adler32vec.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = adler32vec.s; sourceTree = "<group>"; };
+		7B1C25ED187A09D1002FA6F7 /* inffast.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; path = inffast.s; sourceTree = "<group>"; };
+		7B1C25F6187A09F3002FA6F7 /* compress.c.diff */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = compress.c.diff; sourceTree = "<group>"; };
+		7B1C25F7187A09F3002FA6F7 /* configure.diff */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = configure.diff; sourceTree = "<group>"; };
+		7B1C25F8187A09F3002FA6F7 /* Makefile.in.diff */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.in.diff; sourceTree = "<group>"; };
+		7B1C25F9187A09F3002FA6F7 /* Makefile.msc.diff */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.msc.diff; sourceTree = "<group>"; };
+		7B1C25FA187A09F3002FA6F7 /* strlcpy.diff */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = strlcpy.diff; sourceTree = "<group>"; };
+		7B1C25FB187A09F3002FA6F7 /* win32_zlib1.rc.diff */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = win32_zlib1.rc.diff; sourceTree = "<group>"; };
+		7B1C25FC187A09F3002FA6F7 /* zconf.in.h.diff */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = zconf.in.h.diff; sourceTree = "<group>"; };
+		7B1C25FD187A09F3002FA6F7 /* zlib.h.diff */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = zlib.h.diff; sourceTree = "<group>"; };
+		7B1C2601187A0A14002FA6F7 /* Build.arm.ksh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Build.arm.ksh; sourceTree = "<group>"; };
+		7B1C2602187A0A14002FA6F7 /* Build.intel.ksh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Build.intel.ksh; sourceTree = "<group>"; };
+		7B1C2603187A0A14002FA6F7 /* ClockServices.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ClockServices.c; sourceTree = "<group>"; };
+		7B1C2604187A0A14002FA6F7 /* ClockServices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ClockServices.h; sourceTree = "<group>"; };
+		7B1C2605187A0A14002FA6F7 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
+		7B1C2606187A0A14002FA6F7 /* compress.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = compress.c; sourceTree = "<group>"; };
+		7B1C2607187A0A14002FA6F7 /* decompress.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = decompress.c; sourceTree = "<group>"; };
+		7B1C2608187A0A14002FA6F7 /* ReadMe.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ReadMe.txt; sourceTree = "<group>"; };
+		7B1C2609187A0A14002FA6F7 /* Test.intel.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = Test.intel.sh; sourceTree = "<group>"; };
+		7B1C260A187A0A14002FA6F7 /* example.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = example.c; sourceTree = "<group>"; };
+		7B1C260B187A0A14002FA6F7 /* infcover.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = infcover.c; sourceTree = "<group>"; };
+		7B1C260C187A0A14002FA6F7 /* minigzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = minigzip.c; sourceTree = "<group>"; };
 		B1EA68CD1318904800CB9362 /* gzclose.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gzclose.c; sourceTree = "<group>"; };
-		B1EA68CE1318904800CB9362 /* gzguts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = gzguts.h; sourceTree = "<group>"; };
+		B1EA68CE1318904800CB9362 /* gzguts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gzguts.h; sourceTree = "<group>"; };
 		B1EA68CF1318904800CB9362 /* gzlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gzlib.c; sourceTree = "<group>"; };
 		B1EA68D01318904800CB9362 /* gzread.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gzread.c; sourceTree = "<group>"; };
 		B1EA68D11318904800CB9362 /* gzwrite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gzwrite.c; sourceTree = "<group>"; };
-		B1EA68D21318904800CB9362 /* inffixed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.objj.h; path = inffixed.h; sourceTree = "<group>"; };
+		B1EA68D21318904800CB9362 /* inffixed.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = inffixed.h; sourceTree = "<group>"; };
 		D2AAC0630554660B00DB518D /* libz.1.2.8.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libz.1.2.8.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -79,6 +108,8 @@
 		08FB7794FE84155DC02AAC07 /* zlib */ = {
 			isa = PBXGroup;
 			children = (
+				7B1C25F4187A09F3002FA6F7 /* patches */,
+				7B1C25E5187A09AB002FA6F7 /* doc */,
 				08FB7795FE84155DC02AAC07 /* zlib */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
 			);
@@ -88,6 +119,9 @@
 		08FB7795FE84155DC02AAC07 /* zlib */ = {
 			isa = PBXGroup;
 			children = (
+				7B1C25FE187A0A14002FA6F7 /* test */,
+				7B1C25EB187A09D1002FA6F7 /* intel */,
+				7B1C25DA187A0979002FA6F7 /* arm */,
 				B1EA68CD1318904800CB9362 /* gzclose.c */,
 				B1EA68CE1318904800CB9362 /* gzguts.h */,
 				B1EA68CF1318904800CB9362 /* gzlib.c */,
@@ -124,6 +158,86 @@
 				D2AAC0630554660B00DB518D /* libz.1.2.8.dylib */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		7B1C25DA187A0979002FA6F7 /* arm */ = {
+			isa = PBXGroup;
+			children = (
+				7B1C25DB187A0979002FA6F7 /* adler32vec.s */,
+				7B1C25DC187A0979002FA6F7 /* inffast.s */,
+			);
+			path = arm;
+			sourceTree = "<group>";
+		};
+		7B1C25E5187A09AB002FA6F7 /* doc */ = {
+			isa = PBXGroup;
+			children = (
+				7B1C25E6187A09AB002FA6F7 /* algorithm.txt */,
+				7B1C25E7187A09AB002FA6F7 /* rfc1950.txt */,
+				7B1C25E8187A09AB002FA6F7 /* rfc1951.txt */,
+				7B1C25E9187A09AB002FA6F7 /* rfc1952.txt */,
+				7B1C25EA187A09AB002FA6F7 /* txtvsbin.txt */,
+			);
+			path = doc;
+			sourceTree = "<group>";
+		};
+		7B1C25EB187A09D1002FA6F7 /* intel */ = {
+			isa = PBXGroup;
+			children = (
+				7B1C25EC187A09D1002FA6F7 /* adler32vec.s */,
+				7B1C25ED187A09D1002FA6F7 /* inffast.s */,
+			);
+			path = intel;
+			sourceTree = "<group>";
+		};
+		7B1C25F4187A09F3002FA6F7 /* patches */ = {
+			isa = PBXGroup;
+			children = (
+				7B1C25F5187A09F3002FA6F7 /* Apple-zlib22 */,
+			);
+			path = patches;
+			sourceTree = "<group>";
+		};
+		7B1C25F5187A09F3002FA6F7 /* Apple-zlib22 */ = {
+			isa = PBXGroup;
+			children = (
+				7B1C25F6187A09F3002FA6F7 /* compress.c.diff */,
+				7B1C25F7187A09F3002FA6F7 /* configure.diff */,
+				7B1C25F8187A09F3002FA6F7 /* Makefile.in.diff */,
+				7B1C25F9187A09F3002FA6F7 /* Makefile.msc.diff */,
+				7B1C25FA187A09F3002FA6F7 /* strlcpy.diff */,
+				7B1C25FB187A09F3002FA6F7 /* win32_zlib1.rc.diff */,
+				7B1C25FC187A09F3002FA6F7 /* zconf.in.h.diff */,
+				7B1C25FD187A09F3002FA6F7 /* zlib.h.diff */,
+			);
+			path = "Apple-zlib22";
+			sourceTree = "<group>";
+		};
+		7B1C25FE187A0A14002FA6F7 /* test */ = {
+			isa = PBXGroup;
+			children = (
+				7B1C25FF187A0A14002FA6F7 /* Apple_test */,
+				7B1C260A187A0A14002FA6F7 /* example.c */,
+				7B1C260B187A0A14002FA6F7 /* infcover.c */,
+				7B1C260C187A0A14002FA6F7 /* minigzip.c */,
+			);
+			path = test;
+			sourceTree = "<group>";
+		};
+		7B1C25FF187A0A14002FA6F7 /* Apple_test */ = {
+			isa = PBXGroup;
+			children = (
+				7B1C2601187A0A14002FA6F7 /* Build.arm.ksh */,
+				7B1C2602187A0A14002FA6F7 /* Build.intel.ksh */,
+				7B1C2603187A0A14002FA6F7 /* ClockServices.c */,
+				7B1C2604187A0A14002FA6F7 /* ClockServices.h */,
+				7B1C2605187A0A14002FA6F7 /* common.h */,
+				7B1C2606187A0A14002FA6F7 /* compress.c */,
+				7B1C2607187A0A14002FA6F7 /* decompress.c */,
+				7B1C2608187A0A14002FA6F7 /* ReadMe.txt */,
+				7B1C2609187A0A14002FA6F7 /* Test.intel.sh */,
+			);
+			path = Apple_test;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -201,7 +315,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
-			shellScript = "set -x\nif [ \"${RC_ProjectName%_Sim}\" != \"${RC_ProjectName}\" ] ; then\n    DSTROOT=\"$DSTROOT$SDKROOT\"\ninstall_name_tool -id /usr/lib/libz.1.dylib ${DSTROOT}/usr/lib/libz.${DYLIB_CURRENT_VERSION}.dylib\nfi\nmkdir -p \"$DSTROOT\"/usr/share/man/man3 \"$DSTROOT\"/usr/local/{OpenSourceLicenses,OpenSourceVersions} \"$DSTROOT\"/usr/include\ninstall -g \"$INSTALL_GROUP\" -o \"$INSTALL_OWNER\" -m \"$INSTALL_MODE_FLAG\" zlib/zlib.3 \"$DSTROOT\"/usr/share/man/man3\ngzip \"$DSTROOT\"/usr/share/man/man3/*\n\ninstall -g \"$INSTALL_GROUP\" -o \"$INSTALL_OWNER\" -m \"$INSTALL_MODE_FLAG\" zlib.plist \"$DSTROOT\"/usr/local/OpenSourceVersions\ngrep -A 1073741824 Copyright zlib/README >\"$DSTROOT\"/usr/local/OpenSourceLicenses/zlib.txt\nchmod -R -w \"$DSTROOT\"/usr/local/Open*/zlib.*\n\nfor l in libz.1.1.3.dylib libz.1.dylib libz.dylib; do\n\techo l: $l\nln -s libz.${DYLIB_CURRENT_VERSION}.dylib \"$DSTROOT\"/usr/lib/$l\ndone\n";
+			shellScript = "#!/bin/sh\necho \"This is the first (and only, so far) custom shell script\"\nset -ex\nif [ \"${RC_ProjectName%_Sim}\" != \"${RC_ProjectName}\" ] ; then\n    DSTROOT=\"${DSTROOT}${SDKROOT}\"\n    test -x `which install_name_tool`\n    install_name_tool -id /usr/lib/libz.1.dylib ${DSTROOT}/usr/lib/libz.${DYLIB_CURRENT_VERSION}.dylib\nfi\nmkdir -pv \"${DSTROOT}\"/usr/share/man/man3 \"${DSTROOT}\"/usr/local/{OpenSourceLicenses,OpenSourceVersions} \"${DSTROOT}\"/usr/include\ninstall -g \"${INSTALL_GROUP}\" -o \"${INSTALL_OWNER}\" -m \"${INSTALL_MODE_FLAG}\" zlib/zlib.3 \"${DSTROOT}\"/usr/share/man/man3\ngzip \"${DSTROOT}\"/usr/share/man/man3/*\n\ninstall -g \"${INSTALL_GROUP}\" -o \"${INSTALL_OWNER}\" -m \"${INSTALL_MODE_FLAG}\" zlib.plist \"${DSTROOT}\"/usr/local/OpenSourceVersions\ngrep -A 1073741824 Copyright zlib/README >\"${DSTROOT}\"/usr/local/OpenSourceLicenses/zlib.txt\nchmod -R -w \"${DSTROOT}\"/usr/local/Open*/zlib.*\n\nfor l in libz.1.1.3.dylib libz.1.dylib libz.dylib; do\n\techo \"l: ${l}\"\n\tln -sv libz.${DYLIB_CURRENT_VERSION}.dylib \"${DSTROOT}\"/usr/lib/${l}\ndone\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -237,7 +351,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1.0.0;
 				DYLIB_CURRENT_VERSION = 1.2.8;
 				EXECUTABLE_PREFIX = lib;
-				EXPORTED_SYMBOLS_FILE = libz.exp;
 				GCC_ENABLE_PASCAL_STRINGS = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = USE_MMAP;
 				INSTALL_PATH = /usr/lib;
@@ -261,6 +374,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				EXPORTED_SYMBOLS_FILE = exported_symbols/libz.exp;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;

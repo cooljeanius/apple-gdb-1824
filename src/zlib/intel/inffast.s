@@ -810,7 +810,7 @@ L_do_while_loop_check:
 	cmpq	end, out							// out vs end
 	jb		L_do_while_loop						// back to do_while_loop if out < end
 
-	/* return unused bytes (on entry, bits < 8, so in won't go too far back) */
+	/* return unused bytes (on entry, bits < 8, so "in" (it?) will not go too far back) */
 
 L_return_unused_byte:
 	movl	out_d, %esi

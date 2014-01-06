@@ -6251,9 +6251,47 @@ if test $ac_cv_header_stdbool_h = yes; then
 $as_echo "#define HAVE_STDBOOL_H 1" >>confdefs.h
 
 fi
- for ac_header in direct.h fcntl.h io.h limits.h mach/mach.h \
-                  malloc.h malloc/malloc.h stdarg.h stddef.h stdio.h \
-                  sys/time.h utime.h windows.h
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether time.h and sys/time.h may both be included" >&5
+$as_echo_n "checking whether time.h and sys/time.h may both be included... " >&6; }
+if ${ac_cv_header_time+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+#include <sys/time.h>
+#include <time.h>
+
+int
+main ()
+{
+if ((struct tm *) 0)
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_header_time=yes
+else
+  ac_cv_header_time=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_header_time" >&5
+$as_echo "$ac_cv_header_time" >&6; }
+if test $ac_cv_header_time = yes; then
+
+$as_echo "#define TIME_WITH_SYS_TIME 1" >>confdefs.h
+
+fi
+
+for ac_header in Carbon/Carbon.h CHUD/CHUD.h direct.h fcntl.h io.h \
+                  limits.h mach/host_info.h mach/mach.h mach/mach_error.h \
+                  mach/mach_syscalls.h mach/mach_time.h mach/mach_types.h \
+                  mach/message.h malloc.h malloc/malloc.h math.h \
+                  stdarg.h stddef.h stdio.h sys/sysctl.h sys/time.h \
+                  utime.h windows.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -6266,6 +6304,79 @@ fi
 
 done
 
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking cpu-specific header for ${host}" >&5
+$as_echo_n "checking cpu-specific header for ${host}... " >&6; }
+case ${host} in
+  *86*-apple-darwin*)
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
+    for ac_header in System/i386/cpu_capabilities.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "System/i386/cpu_capabilities.h" "ac_cv_header_System_i386_cpu_capabilities_h" "$ac_includes_default"
+if test "x$ac_cv_header_System_i386_cpu_capabilities_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_SYSTEM_I386_CPU_CAPABILITIES_H 1
+_ACEOF
+
+fi
+
+done
+
+    ;;
+  *pc*-apple-darwin*)
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
+    for ac_header in System/ppc/cpu_capabilities.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "System/ppc/cpu_capabilities.h" "ac_cv_header_System_ppc_cpu_capabilities_h" "$ac_includes_default"
+if test "x$ac_cv_header_System_ppc_cpu_capabilities_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_SYSTEM_PPC_CPU_CAPABILITIES_H 1
+_ACEOF
+
+fi
+
+done
+
+    ;;
+  *arm*-apple-darwin*)
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
+    for ac_header in arm/arch.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "arm/arch.h" "ac_cv_header_arm_arch_h" "$ac_includes_default"
+if test "x$ac_cv_header_arm_arch_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_ARM_ARCH_H 1
+_ACEOF
+
+fi
+
+done
+
+    ;;
+  *darwin*)
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
+    for ac_header in cpu_capabilities.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "cpu_capabilities.h" "ac_cv_header_cpu_capabilities_h" "$ac_includes_default"
+if test "x$ac_cv_header_cpu_capabilities_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_CPU_CAPABILITIES_H 1
+_ACEOF
+
+fi
+
+done
+
+    ;;
+  *)
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: not applicable" >&5
+$as_echo "not applicable" >&6; }
+    ;;
+esac
 
 # Checks for typedefs, structures, and compiler characteristics.
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether byte ordering is bigendian" >&5
@@ -6550,6 +6661,40 @@ else
 $as_echo "no" >&6; }
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for working volatile" >&5
+$as_echo_n "checking for working volatile... " >&6; }
+if ${ac_cv_c_volatile+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+volatile int x;
+int * volatile y = (int *) 0;
+return !x && !y;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_c_volatile=yes
+else
+  ac_cv_c_volatile=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_volatile" >&5
+$as_echo "$ac_cv_c_volatile" >&6; }
+if test $ac_cv_c_volatile = no; then
+
+$as_echo "#define volatile /**/" >>confdefs.h
+
+fi
+
 ac_fn_c_find_intX_t "$LINENO" "32" "ac_cv_c_int32_t"
 case $ac_cv_c_int32_t in #(
   no|yes) ;; #(
@@ -6569,6 +6714,16 @@ else
 cat >>confdefs.h <<_ACEOF
 #define off_t long int
 _ACEOF
+
+fi
+
+ac_fn_c_check_type "$LINENO" "kern_return_t" "ac_cv_type_kern_return_t" "$ac_includes_default"
+if test "x$ac_cv_type_kern_return_t" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_KERN_RETURN_T 1
+_ACEOF
+
 
 fi
 
@@ -7177,10 +7332,10 @@ $as_echo "#define realloc rpl_realloc" >>confdefs.h
 fi
 
 
-for ac_func in access atexit chmod fprintf fseeko ftruncate gettimeofday \
-                memchr memmove memset mkdir munmap snprintf sprintf \
-                strchr strdup strerror strrchr strtol system utime \
-                vsnprintf vsprintf
+for ac_func in access atexit chmod exit fprintf fseeko ftruncate \
+                gettimeofday memchr memmove memset mkdir munmap \
+                snprintf sprintf strchr strdup strerror strrchr strtol \
+                system utime vsnprintf vsprintf
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"

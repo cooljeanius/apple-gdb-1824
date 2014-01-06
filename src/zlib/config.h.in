@@ -6,8 +6,14 @@
 /* Define to 1 if you have the `access' function. */
 #undef HAVE_ACCESS
 
+/* Define to 1 if you have the <arm/arch.h> header file. */
+#undef HAVE_ARM_ARCH_H
+
 /* Define to 1 if you have the `atexit' function. */
 #undef HAVE_ATEXIT
+
+/* Define to 1 if you have the <Carbon/Carbon.h> header file. */
+#undef HAVE_CARBON_CARBON_H
 
 /* Define to 1 if you have the `chmod' function. */
 #undef HAVE_CHMOD
@@ -15,12 +21,21 @@
 /* Define to 1 if your system has a working `chown' function. */
 #undef HAVE_CHOWN
 
+/* Define to 1 if you have the <CHUD/CHUD.h> header file. */
+#undef HAVE_CHUD_CHUD_H
+
+/* Define to 1 if you have the <cpu_capabilities.h> header file. */
+#undef HAVE_CPU_CAPABILITIES_H
+
 /* Define to 1 if you have the <direct.h> header file. */
 #undef HAVE_DIRECT_H
 
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
    */
 #undef HAVE_DIRENT_H
+
+/* Define to 1 if you have the `exit' function. */
+#undef HAVE_EXIT
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
@@ -46,6 +61,9 @@
 /* Define to 1 if you have the <io.h> header file. */
 #undef HAVE_IO_H
 
+/* Define to 1 if the system has the type `kern_return_t'. */
+#undef HAVE_KERN_RETURN_T
+
 /* Define to 1 if you have the `c' library (-lc). */
 #undef HAVE_LIBC
 
@@ -55,8 +73,26 @@
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
 
+/* Define to 1 if you have the <mach/host_info.h> header file. */
+#undef HAVE_MACH_HOST_INFO_H
+
+/* Define to 1 if you have the <mach/mach_error.h> header file. */
+#undef HAVE_MACH_MACH_ERROR_H
+
 /* Define to 1 if you have the <mach/mach.h> header file. */
 #undef HAVE_MACH_MACH_H
+
+/* Define to 1 if you have the <mach/mach_syscalls.h> header file. */
+#undef HAVE_MACH_MACH_SYSCALLS_H
+
+/* Define to 1 if you have the <mach/mach_time.h> header file. */
+#undef HAVE_MACH_MACH_TIME_H
+
+/* Define to 1 if you have the <mach/mach_types.h> header file. */
+#undef HAVE_MACH_MACH_TYPES_H
+
+/* Define to 1 if you have the <mach/message.h> header file. */
+#undef HAVE_MACH_MESSAGE_H
 
 /* Define to 1 if your system has a GNU libc compatible `malloc' function, and
    to 0 otherwise. */
@@ -67,6 +103,9 @@
 
 /* Define to 1 if you have the <malloc/malloc.h> header file. */
 #undef HAVE_MALLOC_MALLOC_H
+
+/* Define to 1 if you have the <math.h> header file. */
+#undef HAVE_MATH_H
 
 /* Define to 1 if you have the `memchr' function. */
 #undef HAVE_MEMCHR
@@ -150,6 +189,13 @@
 /* Define to 1 if you have the `system' function. */
 #undef HAVE_SYSTEM
 
+/* Define to 1 if you have the <System/i386/cpu_capabilities.h> header file.
+   */
+#undef HAVE_SYSTEM_I386_CPU_CAPABILITIES_H
+
+/* Define to 1 if you have the <System/ppc/cpu_capabilities.h> header file. */
+#undef HAVE_SYSTEM_PPC_CPU_CAPABILITIES_H
+
 /* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
    */
 #undef HAVE_SYS_DIR_H
@@ -163,6 +209,9 @@
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/sysctl.h> header file. */
+#undef HAVE_SYS_SYSCTL_H
 
 /* Define to 1 if you have the <sys/time.h> header file. */
 #undef HAVE_SYS_TIME_H
@@ -214,6 +263,9 @@
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
+
+/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
+#undef TIME_WITH_SYS_TIME
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
@@ -292,3 +344,7 @@
 /* Define to the type of an unsigned integer type of width exactly 64 bits if
    such a type exists and the standard includes do not define it. */
 #undef uint64_t
+
+/* Define to empty if the keyword `volatile' does not work. Warning: valid
+   code using `volatile' can become incorrect without. Disable with care. */
+#undef volatile

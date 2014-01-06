@@ -1,3 +1,7 @@
+/*
+ * decompress.c
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -5,21 +9,18 @@
 #include "common.h"
 
 #if LZSS
-
-#include "lzsscompress.h"
-
-#define	InputBufferLength BUFSIZE_COMPRESSED
-#define OutputBufferLength BUFSIZE_UNCOMPRESSED
-
+# include "lzsscompress.h"
+# define InputBufferLength BUFSIZE_COMPRESSED
+# define OutputBufferLength BUFSIZE_UNCOMPRESSED
 #else
-#include <zlib.h>
+# include <zlib.h>
 
 enum {
 	UncompressedBufferLength = 65536,
 	CompressedBufferLength = (UncompressedBufferLength * 1001 + 1) / 1000 + 12,
 	InputBufferLength = CompressedBufferLength,
 	OutputBufferLength = UncompressedBufferLength + 1,
-		// xxx Reconsider whether +1 goes here or in malloc.
+		/* xxx Reconsider whether +1 goes here or in malloc. */
 };
 
 
@@ -87,7 +88,7 @@ static void TestFwriteResult(size_t result, size_t expected,
 
 	exit(EXIT_FAILURE);
 }
-#endif	// LZSS
+#endif	/* LZSS */
 
 
 typedef struct
@@ -102,7 +103,7 @@ typedef struct
 	u_int32_t	*outlength;
 #else
 	size_t length;
-#endif
+#endif /* LZSS */
 } Parameters;
 
 
@@ -111,14 +112,14 @@ void DecompressBlock(const Parameters *parameters)
 #if LZSS
 	*(parameters->outlength) = decompress_lzss(parameters->OutputBuffer, 0, parameters->InputBuffer, parameters->length);
 
-#else	// LZSS
+#else	/* LZSS */
 	z_stream *stream = parameters->stream;
 
 #if defined UseReset
 	int zresult = inflateReset(stream);
 	TestZlibResult(zresult, "inflateReset", __FILE__, __func__, __LINE__);
-			// xxx Omit testing result when measuring speed.  Others too?
-#endif	// defined UseReset
+			/* xxx Omit testing result when measuring speed. Others too? */
+#endif	/* defined UseReset */
 
 	stream->next_in   = parameters->InputBuffer;
 	stream->avail_in  = parameters->length;
@@ -139,12 +140,12 @@ void DecompressBlock(const Parameters *parameters)
 		else
 			TestZlibResult(zresult, "inflate",
 				__FILE__, __func__, __LINE__);
-#else	// defined UseReset
+#else	/* defined UseReset */
 /*debug*/fprintf(stderr, "%d.\n", __LINE__);
 	int zresult = inflate(stream, Z_SYNC_FLUSH);
 	TestZlibResult(zresult, "inflate", __FILE__, __func__, __LINE__);
-#endif	// defined UseReset
-#endif	// LZSS
+#endif	/* defined UseReset */
+#endif	/* LZSS */
 }
 
 
@@ -159,12 +160,12 @@ void Driver(unsigned int iterations, void *parameters)
 int main(int argc, char *argv[])
 {
 	/*	ShowPerformance is true iff performance information should be written
-		to stdout.
-
-		We set it to true iff stdout is available for such information, and
-		stdout is available when another stream is being used to output the
-		uncompressed data.
-	*/
+	 *	to stdout.
+	 *
+	 *	We set it to true iff stdout is available for such information, and
+	 *	stdout is available when another stream is being used to output the
+	 *	uncompressed data.
+	 */
 	#define	ShowPerformance	1|(OutStream != stdout)
 
 	FILE *fi = stdin;
@@ -205,7 +206,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Error, unable to allocate memory.\n");
 		return EXIT_FAILURE;
 	}
-#endif
+#endif /* LZSS */
 
 	double TotalTime = 0;
 	size_t TotalCompressedBytes = 0;
@@ -224,17 +225,20 @@ int main(int argc, char *argv[])
 	zresult = inflateInit(&stream);
 	TestZlibResult(zresult, "inflateInit", __FILE__, __func__, __LINE__);
 
-#endif
+#endif /* !LZSS */
 
-	// xxx Change fread and fwrite to read and write, see how times are affected.
-	// xxx Measure with I/O and without compression, consider difference?
+	/* xxx Change fread and fwrite to read and write, see how times are affected.
+	 * xxx Measure with I/O and without compression, consider difference?
+	 */
 
 	while (1)
 	{
 		u_int32_t length, decompressed_length;
 
 		fresult = fread(&length, sizeof length, 1, fi);
-			// xxx Could read sizeof length items of length 1, check for less than full length result to detect format error in input file.
+		/* xxx Could read sizeof length items of length 1.
+		 * Check for less than full length result to detect format error in input file.
+		 */
 
 		if (fresult == 0)
 		{
@@ -251,9 +255,9 @@ int main(int argc, char *argv[])
 		fresult = fread(InputBuffer, 1, length, fi);
 #if !LZSS
 		TestFreadResult(fresult, length, __FILE__, __func__, __LINE__);
-			// xxx Not necessarily a read error, could be a format error.
+			/* xxx Not necessarily a read error, could be a format error. */
 
-		// Check for tag used to mark uncompressed blocks.
+		/* Check for tag used to mark uncompressed blocks. */
 		if (InputBuffer[0] == (unsigned char) '\xff')
 		{
 /*debug*/fprintf(stderr, "%d.\n", __LINE__);
@@ -269,13 +273,13 @@ int main(int argc, char *argv[])
 			TotalUncompressedBytes += length;
 		}
 		else
-#endif
+#endif /*  !LZSS */
 		{
 			Parameters parameters =
 			{
 #if !LZSS
 				.stream = &stream,
-#endif
+#endif /* !LZSS */
 				.InputBuffer = InputBuffer,
 				.OutputBuffer = OutputBuffer,
 #if LZSS
@@ -283,7 +287,7 @@ int main(int argc, char *argv[])
 				.outlength = &decompressed_length,
 #else
 				.length = length,
-#endif
+#endif /* LZSS */
 			};
 
 			if (ShowPerformance)
@@ -300,7 +304,7 @@ int main(int argc, char *argv[])
 				TotalUncompressedBytes += decompressed_length;
 #else
 				TotalUncompressedBytes += stream.total_out;
-#endif
+#endif /* LZSS */
 			}
 			else
 				DecompressBlock(&parameters);
@@ -311,16 +315,16 @@ int main(int argc, char *argv[])
 			fresult = fwrite(OutputBuffer, 1, stream.total_out, OutStream);
 			TestFwriteResult(fresult, stream.total_out,
 				__FILE__, __func__, __LINE__);
-#endif
+#endif /* LZSS */
 		}
 	}
 
 #if !LZSS
 	zresult = inflateEnd(&stream);
 	TestZlibResult(zresult, "deflateEnd", __FILE__, __func__, __LINE__);
-#endif
+#endif /* !LZSS */
 
-	// If we opened a stream for the uncompressed data, close it.
+	/* If we opened a stream for the uncompressed data, close it. */
 	if (OutStream != stdout)
 		if (fclose(OutStream))
 		{
@@ -333,7 +337,7 @@ int main(int argc, char *argv[])
 #if !LZSS
     free(InputBuffer);
 	free(OutputBuffer);
-#endif
+#endif /* !LZSS */
 
 
 	if (ShowPerformance)
@@ -354,3 +358,5 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
+
+/* EOF */

@@ -1,12 +1,16 @@
+/*
+ * compress.c
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "common.h"
 
 #if LZSS
-#include "lzsscompress.h"
+# include "lzsscompress.h"
 #else
-#include <zlib.h>
+# include <zlib.h>
 
 static void *zalloc(void *opaque, unsigned int items, unsigned int size)
 	{ return malloc(items * (size_t) size); }
@@ -58,8 +62,7 @@ static void TestFwriteResult(size_t result, size_t expected,
 
 	exit(EXIT_FAILURE);
 }
-#endif	// LZSS
-
+#endif	/* LZSS */
 
 
 #if LZSS
@@ -109,7 +112,7 @@ int main(int argc, char **argv)
 	return 0;
 
 }
-#else		// LZSS
+#else		/* LZSS */
 
 int main(int argc, char **argv)
 {
@@ -152,7 +155,7 @@ int main(int argc, char **argv)
 	zresult = deflateInit(&stream, Z_BEST_COMPRESSION);
 #else
 	zresult = deflateInit2(&stream, Z_BEST_COMPRESSION, Z_DEFLATED, 15, 9, Z_DEFAULT_STRATEGY);
-#endif
+#endif /* 0 */
 	TestZlibResult(zresult, "deflateInit", __FILE__, __func__, __LINE__);
 
 	while (1)
@@ -160,7 +163,7 @@ int main(int argc, char **argv)
 #if defined UseReset
 		zresult = deflateReset(&stream);
 		TestZlibResult(zresult, "deflateReset", __FILE__, __func__, __LINE__);
-#endif	// defined UseReset
+#endif	/* defined UseReset */
 
 		int length = fread(InputBuffer, 1, InputBufferLength, fi);
 
@@ -176,12 +179,12 @@ int main(int argc, char **argv)
 			break;
 		}
 
-		//#define LengthAllottedToCompressionOutput	length
+		/*#define LengthAllottedToCompressionOutput	length*/
 		#define LengthAllottedToCompressionOutput	OutputBufferLength
 			/*	Set avail_out to OutputBufferLength to use deflate for all
-				blocks instead of using original data for those that do not
-				compress well.
-			*/
+			 *	blocks instead of using original data for those that do not
+			 *	compress well.
+			 */
 		stream.next_in   = InputBuffer;
 		stream.avail_in  = length;
 		stream.next_out  = OutputBuffer;
@@ -206,7 +209,7 @@ int main(int argc, char **argv)
 		else
 		{
 			if (zresult != Z_STREAM_END)
-	#if 0	// Would prefer to design so this never happens, and we would have:
+	#if 0 /* Would prefer to design so this never happens, and we would have: */
 				if (zresult == Z_OK)
 				{
 					fprintf(stderr,
@@ -215,7 +218,7 @@ int main(int argc, char **argv)
 					exit(EXIT_FAILURE);
 				}
 				else
-	#endif
+	#endif /* 0 */
 					TestZlibResult(zresult, "deflate",
 						__FILE__, __func__, __LINE__);
 
@@ -229,7 +232,7 @@ int main(int argc, char **argv)
 			TestFwriteResult(fresult, ChunkLength,
 				__FILE__, __func__, __LINE__);
 		}
-#else	// defined UseReset
+#else	/* defined UseReset */
 		#undef LengthAllottedToCompressionOutput
 		#define LengthAllottedToCompressionOutput	OutputBufferLength
 		stream.avail_out = LengthAllottedToCompressionOutput;
@@ -264,7 +267,7 @@ int main(int argc, char **argv)
 			TestFwriteResult(fresult, ChunkLength,
 				__FILE__, __func__, __LINE__);
 		}
-#endif	// defined UseReset
+#endif	/* defined UseReset */
 
 		#undef LengthAllottedToCompressionOutput
 	}
@@ -312,4 +315,6 @@ int main(int argc, char **argv)
 
 	return 0;
 }
-#endif		// LZSS
+#endif		/* LZSS */
+
+/* EOF */

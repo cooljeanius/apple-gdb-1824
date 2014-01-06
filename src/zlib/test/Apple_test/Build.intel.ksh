@@ -3,6 +3,8 @@
 export CFLAGS='-Os -pipe -fPIC -DUSE_MMAP -dead_strip -DVEC_OPTIMIZE'
 export ZLIB_SRCDIR=../..
 
+rm -f ./*.o
+
 set -ex
 
 gcc-4.2 -arch i386 -arch x86_64 ${CFLAGS} -c -o adler32.o ${ZLIB_SRCDIR}/adler32.c

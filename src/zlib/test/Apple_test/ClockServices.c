@@ -1,9 +1,9 @@
-/*	This module contains routines to measure execution time of a routine.  See
-	additional information in Clock Services.h.
-
-	Written by Eric Postpischil, Apple, Inc.
-*/
-
+/* ClockServices.c	
+ *  This module contains routines to measure execution time of a routine.  See
+ *	additional information in Clock Services.h.
+ *
+ *	Written by Eric Postpischil, Apple, Inc.
+ */
 
 #include <errno.h>
 #include <stdbool.h>
@@ -15,65 +15,64 @@
 
 #define	IntelProcessor	(defined __i386__ || defined __x86_64__)
 
+/* Select the timing method to be used. */
 
-// Select the timing method to be used.
+	/* Define constants to name the methods. */
+	#define	TM_TB	0	/* PowerPC's time-base registers. */
+	#define	TM_TSC	1	/* IA-32's time-stamp counter. */
+	#define	TM_PMC	2	/* Performance monitor counters.  Works only on G5. */
+	#define	TM_UT	3	/* Carbon's UpTime. */
+	#define TM_TOD	4	/* Open Unix's gettimeofday. */
+	#define	TM_MACH	5	/* mach_absolute_time. */
 
-	// Define constants to name the methods.
-	#define	TM_TB	0	// PowerPC's time-base registers.
-	#define	TM_TSC	1	// IA-32's time-stamp counter.
-	#define	TM_PMC	2	// Performance monitor counters.  Works only on G5.
-	#define	TM_UT	3	// Carbon's UpTime.
-	#define TM_TOD	4	// Open Unix's gettimeofday.
-	#define	TM_MACH	5	// mach_absolute_time.
-
-	// Set the method in TimingMethod.
+	/* Set the method in TimingMethod. */
 	#if defined __ppc__ || defined __ppc64__
-		#define	TimingMethod	TM_MACH	// Method to use on PowerPC.
+		#define	TimingMethod	TM_MACH	/* Method to use on PowerPC. */
 	#elif defined __i386__
-		#define	TimingMethod	TM_MACH	// Method to use on IA-32.
+		#define	TimingMethod	TM_MACH	/* Method to use on IA-32. */
 	#elif defined __x86_64__
-		#define	TimingMethod	TM_MACH	// Method to use on 64-bit Intel.
+		#define	TimingMethod	TM_MACH	/* Method to use on 64-bit Intel. */
 	#else
-		#define	TimingMethod	TM_MACH	// Method to use elsewhere.
-	#endif
+		#define	TimingMethod	TM_MACH	/* Method to use elsewhere. */
+	#endif /* architecture */
 
 	/*	Using the PMCs on earlier processors than the G5's requires changing
-		the event number in the first chudSetPMCEvent and using only one PMC to
-		count CPU cycles, because there is no event for overflow into another
-		PMC.
-	*/
+	 *	the event number in the first chudSetPMCEvent and using only one PMC to
+	 *	count CPU cycles, because there is no event for overflow into another
+	 *	PMC.
+	 */
 
-	// Set a flag based on the timing method in use.
+	/* Set a flag based on the timing method in use. */
 	#if TimingMethod == TM_PMC
-		// To use the performance monitor counters, we need CHUD facilities.
+		/* To use the performance monitor counters, we need CHUD facilities. */
 		#define	NeedCHUD
-	#endif
+	#endif /* TimingMethod == TM_PMC */
 
 
 #if TimingMethod == TM_UT
 
-	#include <Carbon/Carbon.h>	// For Uptime.
+	#include <Carbon/Carbon.h>	/* For Uptime. */
 
 #elif TimingMethod == TM_TOD
 
-	#include <sys/time.h>		// For gettimeofday.
+	#include <sys/time.h>		/* For gettimeofday. */
 
 #elif TimingMethod == TM_MACH
 
-	#include <mach/mach_time.h>		// For mach_absolute_time.
+	#include <mach/mach_time.h>		/* For mach_absolute_time. */
 
-#endif
+#endif /* TimingMethod */
 
 
 /*	Define ClockValue type.  Four things are defined:
-
-   		ClockValue is a type name.
-
-		ClockMax is a value that can be used when initializing a ClockValue
-		that acts as the maximum value a ClockValue can have.
-
-		upper and lower are member names used to access parts of a ClockValue.
-*/
+ *
+ *  	ClockValue is a type name.
+ *
+ *		ClockMax is a value that can be used when initializing a ClockValue
+ *		that acts as the maximum value a ClockValue can have.
+ *
+ *		upper and lower are member names used to access parts of a ClockValue.
+ */
 #if TimingMethod == TM_UT
 
 	typedef AbsoluteTime ClockValue;
@@ -85,7 +84,7 @@
 
 	typedef struct timeval ClockValue;
 	#define ClockMax	{ LONG_MAX, INT_MAX };
-		// (Relies on knowledge of timeval definition, unfortunately.)
+		/* (Relies on knowledge of timeval definition, unfortunately.) */
 	#define upper		tv_sec
 	#define	lower		tv_usec
 
@@ -99,20 +98,20 @@
 	typedef struct { uint32_t upper, lower; } ClockValue;
 	#define ClockMax	{ UINT32_MAX, UINT32_MAX }
 
-#endif	// TimingMethod.
+#endif	/* TimingMethod. */
 
 
-// Return the current value of the clock.
+/* Return the current value of the clock. */
 static inline ClockValue ReadClock(void)
 {
 	#if TimingMethod == TM_UT
 
-		// Use Carbon's UpTime.
+		/* Use Carbon's UpTime. */
 		return UpTime();
 
 	#elif TimingMethod == TM_TSC
 
-		// Read two values simultaneously from time stamp counter.
+		/* Read two values simultaneously from time stamp counter. */
 		volatile ClockValue result;
 		__asm__ volatile("rdtsc" : "=d" (result.upper), "=a" (result.lower));
 		return result;
@@ -164,35 +163,35 @@ static inline ClockValue ReadClock(void)
 
 		#elif TimingMethod == TM_TB
 
-			// Read values from time-base registers.
+			/* Read values from time-base registers. */
 			__asm__ volatile("\
 					mfspr	%[upper0], 269	\n\
 					mfspr	%[lower] , 268	\n\
 					mfspr	%[upper1], 269	"
-				:	[lower]  "=r" (result.lower),	// result.lower is output.
-					[upper0] "=r" (upper0),			// upper0 is output.
-					[upper1] "=r" (upper1)			// upper1 is output.
+				:	[lower]  "=r" (result.lower), /* result.lower is output. */
+					[upper0] "=r" (upper0),		  /* upper0 is output. */
+					[upper1] "=r" (upper1)		  /* upper1 is output. */
 			);
 
-		#else	// TimingMethod.
+		#else	/* TimingMethod. */
 
 			#error "Code is not defined for selected timing method."
 
-		#endif	// TimingMethod.
+		#endif	/* TimingMethod. */
 
 		/*	Choose which upper value to use.  We could do this with a
-			conditional expression:
+		 *	conditional expression:
+         *
+		 *		result.upper = result.lower < 2147483648u
+		 *			? upper1
+		 *			: upper0;
+         *
+		 *	However, the execution time might change depending on whether the
+		 *	branch were correctly predicted or not. Instead, we will use a
+		 *	calculation with no branches.
+		 */
 
-				result.upper = result.lower < 2147483648u
-					? upper1
-					: upper0;
-
-			However, the execution time might change depending on whether the
-			branch were correctly predicted or not.  Instead, we will use a
-			calculation with no branches.
-		*/
-
-		// Use a signed shift to copy lower's high bit to all 32 bits.
+		/* Use a signed shift to copy lower's high bit to all 32 bits. */
 		uint32_t mask = (int32_t) result.lower >> 31;
 
 		result.upper = upper1 ^ ((upper0 ^ upper1) & mask);
@@ -213,66 +212,67 @@ static inline ClockValue ReadClock(void)
 
 		return result;
 
-	#endif	// TimingMethod.
+	#endif	/* TimingMethod. */
 }
 
 
 /* Subtract two clock values, t1 and t0, and return t1-t0.
-
-   Since some ClockValue implementations are unsigned, t1 should be not less
-   than t0.
-*/
+ *
+ * Since some ClockValue implementations are unsigned, t1 should be not less
+ * than t0.
+ */
 static ClockValue SubtractClock(const ClockValue t1, const ClockValue t0)
 {
 #if TimingMethod == TM_MACH
 
 	return t1 - t0;
 
-#else // TimingMethod
+#else /* TimingMethod */
 
 	ClockValue result;
    
 	result.upper = t1.upper - t0.upper;
 	result.lower = t1.lower - t0.lower;
 
-	// If necessary, "borrow" from upper word.
-	if (t1.lower < t0.lower)
+	/* If necessary, "borrow" from upper word. */
+	if (t1.lower < t0.lower) {
 		--result.upper;
+	}
 
 	return result;
 
-#endif // TimingMethod
+#endif /* TimingMethod */
 }
 
-
 /*	Compare two clock values.  Return true iff t0 < t1.
-
-	This should only be used to compare relative times, such as durations of
-	code execution, which are known to be small relative to the number of bits
-	in a ClockValue.  If absolute times are compared, there is no guarantee
-	about the value of the upper word.  It might be very high at one time and
-	overflow to a very small value at a later time.
-*/
+ *
+ *	This should only be used to compare relative times, such as durations of
+ *	code execution, which are known to be small relative to the number of bits
+ *	in a ClockValue.  If absolute times are compared, there is no guarantee
+ *	about the value of the upper word. It might be very high at one time and
+ *	overflow to a very small value at a later time.
+ */
 static bool ClockLessThan(const ClockValue t0, const ClockValue t1)
 {
 #if TimingMethod == TM_MACH
 
 	return t0 < t1;
 
-#else // TimingMethod
+#else /* TimingMethod */
 
-	if (t0.upper == t1.upper)
+	if (t0.upper == t1.upper) {
 		return t0.lower < t1.lower;
-	else
+	} else {
 		return t0.upper < t1.upper;
+	}
 
-#endif // TimingMethod
+#endif /* TimingMethod */
 }
 
 
-/*	Convert clock value to double, without changing units.  That is, both the
-	input and the return value are the same number of clock ticks.
-*/
+/*	Convert clock value to double, without changing units. That is, both the
+ *	input and the return value are the same number of clock ticks.
+ */
 static double ClockToDouble(const ClockValue t)
 {
 #if TimingMethod == TM_TOD
@@ -281,19 +281,16 @@ static double ClockToDouble(const ClockValue t)
 	return t;
 #else
 	return t.upper * 4294967296. + t.lower;
-#endif
+#endif /* TimingMethod */
 }
 
-
 #include <math.h>
-#include <sys/sysctl.h>	// Declare things needed for sysctlbyname.
-#include <mach/mach.h>	// Define constants for CPU types.
+#include <sys/sysctl.h>	/* Declare things needed for sysctlbyname. */
+#include <mach/mach.h>	/* Define constants for CPU types. */
 
+#if IntelProcessor	/* Conditionalize on architecture. */
 
-#if IntelProcessor	// Conditionalize on architecture.
-
-
-	// Describe the layout of the flags register (EFLAGS or RFLAGS).
+	/* Describe the layout of the flags register (EFLAGS or RFLAGS). */
 	typedef struct
 	{
 		unsigned int
@@ -321,18 +318,18 @@ static double ClockToDouble(const ClockValue t)
 					: 10;
 		#if defined __x86_64__
 			unsigned int dummy : 32;
-		#endif
+		#endif /* __x86_64__ */
 	} Flags;
 
 
-	// Define structure to hold register contents.
+	/* Define structure to hold register contents. */
 	typedef struct 
 	{
 		uint32_t eax, ebx, ecx, edx;
 	} Registers;
 
 
-	// Get the EFLAGS register.
+	/* Get the EFLAGS register. */
 	static Flags GetFlags(void)
 	{
 		Flags flags;
@@ -372,8 +369,8 @@ static double ClockToDouble(const ClockValue t)
 
 
 	/*	Execute cpuid instruction with Ieax input and return results in
-		structure.
-	*/
+	 *	structure.
+	 */
 	static Registers cpuid(uint32_t Ieax)
 	{
 		Registers result;
@@ -394,7 +391,7 @@ static double ClockToDouble(const ClockValue t)
 					pop		%%ecx				\n\
 					pop		%%ebx				\n\
 					pop		%%eax"
-				#else	// defined __i386__
+				#else	/* defined __i386__ */
 					"\
 					push	%%rax				\n\
 					push	%%rbx				\n\
@@ -410,7 +407,7 @@ static double ClockToDouble(const ClockValue t)
 					pop		%%rcx				\n\
 					pop		%%rbx				\n\
 					pop		%%rax"
-				#endif	// defined __i386__
+				#endif	/* defined __i386__ */
 			:
 				[eax] "=m" (result.eax),
 				[ebx] "=m" (result.ebx),
@@ -424,28 +421,30 @@ static double ClockToDouble(const ClockValue t)
 
 
 	/*	Compose the family and model identification from cpuid information,
-		returning them in the supplied objects.  Return 0 for success and
-		non-zero for failure.
-	*/
+	 *	returning them in the supplied objects.  Return 0 for success and
+	 *	non-zero for failure.
+	 */
 	static int GetCPUFamilyAndModel(unsigned int *family,
 		unsigned int *model)
 	{
-		// Fail if cpuid instruction is not supported.
-		if (!cpuidIsSupported())
+		/* Fail if cpuid instruction is not supported. */
+		if (!cpuidIsSupported()) {
 			return 1;
+		}
 
-		// Get maximum input to cpuid instruction.
+		/* Get maximum input to cpuid instruction. */
 		Registers registers = cpuid(0);
 		uint32_t maximum = registers.eax;
 
-		// Fail if input 1 to cpuid instruction is not supported.
-		if (maximum < 1)
+		/* Fail if input 1 to cpuid instruction is not supported. */
+		if (maximum < 1) {
 			return 1;
+		}
 
-		// Get results containing family and model information.
+		/* Get results containing family and model information. */
 		registers = cpuid(1);
 
-		// Declare type to access family and model information.
+		/* Declare type to access family and model information. */
 		union
 		{
 			uint32_t u;
@@ -476,17 +475,16 @@ static double ClockToDouble(const ClockValue t)
 		return 0;
 	}
 
-
-#endif	// IntelProcessor	// Conditionalize on architecture.
+#endif	/* IntelProcessor */ /* Conditionalize on architecture. */
 
 
 /*	Return the number of CPU cycles per iteration that the following
-	routine, ConsumeCPUCycles, consumes.  Zero is returned if the
-	information is not known.
-*/
+ *	routine, ConsumeCPUCycles, consumes. Zero is returned if the
+ *	information is not known.
+ */
 static unsigned int GetCPUCyclesCycles(void)
 {
-	#if IntelProcessor	// Conditionalize on architecture.
+	#if IntelProcessor	/* Conditionalize on architecture. */
 		unsigned int family, model;
 		if (GetCPUFamilyAndModel(&family, &model))
 		{
@@ -537,25 +535,25 @@ static unsigned int GetCPUCyclesCycles(void)
 					case 4:
 						return 22;		// Core 2 in 64-bit mode.
 					/*	If hw.cpusubtype does not provide sufficient
-						distinction, use hw.cpufamily.
-					*/
-				#elif defined __arm__		// Conditionalize on architecture.
+					 *	distinction, use hw.cpufamily.
+					 */
+				#elif defined __arm__	/* Conditionalize on architecture. */
 					#if defined __thumb__
 						case 6:
-							return 17;		// 1176.
+							return 17;		/* 1176. */
 						case 9:
-							return 16;		// Cortex-A8.
+							return 16;		/* Cortex-A8. */
 						case 10:
-							return 16;		// Cortex-A9.
-					#else // defined __thumb__
+							return 16;		/* Cortex-A9. */
+					#else /* defined __thumb__ */
 						case 6:
-							return 17;		// 1176.
+							return 17;		/* 1176. */
 						case 9:
-							return 18;		// Cortex-A8.
+							return 18;		/* Cortex-A8. */
 						case 10:
-							return 17;		// Cortex-A9.
-					#endif // defined __thumb__
-				#endif						// Conditionalize on architecture.
+							return 17;		/* Cortex-A9. */
+					#endif /* defined __thumb__ */
+				#endif /* __arm__ */	/* Conditionalize on architecture. */
 					default:
 						fprintf(stderr,
 							"Warning, unknown CPU, subtype %d.\n",
@@ -569,7 +567,7 @@ static unsigned int GetCPUCyclesCycles(void)
 				errno);
 			return 0;
 		}
-	#endif	// IntelProcessor	// Conditionalize on architecture.
+	#endif	/* IntelProcessor */	/* Conditionalize on architecture. */
 	return 0;
 }
 
@@ -801,10 +799,10 @@ static void ConsumeCPUCycles(unsigned int iterations, void *UnusedPointer)
 				"	nop											\n"
 				"	bne		0b									\n"
 				:	[iterations] "+r" (iterations)
-						// iterations is altered input.
+						/* iterations is altered input. */
 			);
-		#endif // defined __thumb__
-	#endif										// Architecture.
+		#endif /* defined __thumb__ */
+	#endif									/* Architecture. */
 
 	return;
 }
@@ -814,11 +812,10 @@ static void ConsumeCPUCycles(unsigned int iterations, void *UnusedPointer)
 
 	#include <CHUD/CHUD.h>
 
-
 	/*	CheckCHUDStatus.
-
-		If CHUD status is not success, print an error.
-	*/
+     *
+	 *	If CHUD status is not success, print an error.
+	 */
 	static void CheckCHUDStatus(int status, const char *routine)
 	{
 		if (status != chudSuccess)
@@ -829,9 +826,9 @@ static void ConsumeCPUCycles(unsigned int iterations, void *UnusedPointer)
 
 
 	/*	RequireCHUDStatus.
-
-		If CHUD status is not success, print an error and exit.
-	*/
+     *
+	 * 	If CHUD status is not success, print an error and exit.
+	 */
 	static void RequireCHUDStatus(int status, const char *routine)
 	{
 		CheckCHUDStatus(status, routine);
@@ -852,7 +849,7 @@ static void ConsumeCPUCycles(unsigned int iterations, void *UnusedPointer)
 		result = chudReleaseSamplingFacility(0);
 		CheckCHUDStatus(result, "chudReleaseSamplingFacility");
 
-		// Make all processors available again.
+		/* Make all processors available again. */
 		result = chudSetNumPhysicalProcessors(chudPhysicalProcessorCount());
 		CheckCHUDStatus(result, "chudSetNumPhysicalProcessors");
 		result = chudSetNumLogicalProcessors(chudLogicalProcessorCount());
@@ -861,11 +858,9 @@ static void ConsumeCPUCycles(unsigned int iterations, void *UnusedPointer)
 		chudCleanup();
 	}
 
+#endif	/* defined NeedCHUD */
 
-#endif	// defined NeedCHUD
-
-
-// Include things needed by set_time_constraint_policy routine below.
+/* Include things needed by set_time_constraint_policy routine below. */
 #include <mach/mach.h>
 #include <mach/host_info.h>
 #include <mach/mach_error.h>
@@ -875,9 +870,9 @@ static void ConsumeCPUCycles(unsigned int iterations, void *UnusedPointer)
 
 
 /*	Set this thread to "time constraint" policy, that is, real-time priority.
-	The hope is this will improve timing by preventing time-sharing threads
-	from interrupting.
-*/
+ *	The hope is this will improve timing by preventing time-sharing threads
+ *	from interrupting.
+ */
 static kern_return_t set_time_constraint_policy()
 {
 	thread_time_constraint_policy_data_t info;
@@ -952,7 +947,7 @@ static void StartClockServices(void)
 		result = chudStartPMCs();
 		RequireCHUDStatus(result, "chudStartPMCs");
 
-		// Set exit handler to release resources.
+		/* Set exit handler to release resources. */
 		result = atexit(StopClockServices);
 		if (result != 0)
 		{
@@ -961,53 +956,50 @@ static void StartClockServices(void)
 			exit(EXIT_FAILURE);
 		}
 
-#endif	// defined NeedCHUD
+#endif	/* defined NeedCHUD */
 }
 
-
 /*	Define IgnoreInterrupts to ignore whether interrupts occur.  Omit it to
-	test for interrupts and rerun a timing if an interrupt occurred during it.
-*/
+ *	test for interrupts and rerun a timing if an interrupt occurred during it.
+ */
 #define	IgnoreInterrupts
-
 
 #if !defined IgnoreInterrupts
 	/*	We are using lwarx and stwcx. instructions below, and they maintain a
-		reservation address with a resolution of 128-byte blocks of memory on a
-		PowerPC 970, and no larger on other processors we are currently
-		interested in.  It is recommended that block be used only for locks and
-		protected data.  We might not need to do that for our purposes
-		(detecting context switches), but it is safest to keep the block from
-		being used for anything else.
-
-		An easy way to get a word in its own block of 128 bytes is to allocate
-		almost twice as much and use the word in the middle.  Non-standard
-		compiler features might do this with less wasted space, but this is
-		just a timing program, so space is not critical.
-	*/
+	 *	reservation address with a resolution of 128-byte blocks of memory on a
+	 *	PowerPC 970, and no larger on other processors we are currently
+	 *	interested in. It is recommended that block be used only for locks and
+	 *	protected data. We might not need to do that for our purposes
+	 *	(detecting context switches), but it is safest to keep the block from
+	 *	being used for anything else.
+     *
+	 *	An easy way to get a word in its own block of 128 bytes is to allocate
+	 *	almost twice as much and use the word in the middle. Non-standard
+	 *	compiler features might do this with less wasted space, but this is
+	 *	just a timing program, so space is not critical.
+	 */
 	static unsigned int ReserveBlock[2*128 / sizeof(unsigned int) - 1];
 	static unsigned int * const ReservedWord =
 		&ReserveBlock[128 / sizeof *ReserveBlock - 1];
-#endif
+#endif /* !IgnoreInterrupts */
 
-
-// Execute a lwarx instruction on ReservedWord.
+/* Execute a lwarx instruction on ReservedWord. */
 static inline void LoadAndReserve(void)
 {
 	#if !defined IgnoreInterrupts
 		__asm__ volatile(
 			"	lwarx	r0, 0, %[ReservedWord]		"
-			:										// No output.
-			:	[ReservedWord] "r" (ReservedWord)	// ReservedWord is input.
-			:	"r0"								// r0 is modified.
+			:										/* No output. */
+			:	[ReservedWord] "r" (ReservedWord)	/* ReservedWord is input. */
+			:	"r0"								/* r0 is modified. */
 		);
-	#endif
+	#endif /* !IgnoreInterrupts */
 }
 
 
 /*	Execute a stwcx. instruction on ReservedWord and return the bit it sets in
-	the condition register.
-*/
+ *	the condition register.
+ */
 static inline unsigned int StoreConditional(void)
 {
 	#if !defined IgnoreInterrupts
@@ -1016,38 +1008,38 @@ static inline unsigned int StoreConditional(void)
 		__asm__ volatile(
 			"	stwcx.	r0, 0, %[ReservedWord]		\n\
 				mfcr	%[result]					"
-			: 	[result] "=r" (result)				// result is output.
-			:	[ReservedWord] "r" (ReservedWord)	// ReservedWord is input.
+			: 	[result] "=r" (result)				/* result is output. */
+			:	[ReservedWord] "r" (ReservedWord)	/* ReservedWord is input. */
 		);
 
 		return result & 0x20000000;
-	#else	// !defined IgnoreInterrupts
+	#else	/* !defined IgnoreInterrupts */
 		return 1;
-	#endif	// !defined IgnoreInterrupts
+	#endif	/* !defined IgnoreInterrupts */
 }
 
 
 /*	This routine measures the gross amount of time it takes to execute an
-	arbitrary routine, including whatever overhead there is, such as reading
-	the clock value and loading the routine into cache.  The number of clock
-	ticks execution takes is returned.
-
-	Input:
-
-		RoutineToBeTimedType routine.
-			Address of a routine to measure.  (See typedef of this type.)
-
-		unsigned int iterations.
-			Number of iterations to tell the routine to perform.
-
-		void *data.
-			Pointer to be passed to the routine.
-
-	Output:
-
-		Return value.
-			The number of clock ticks execution takes.
-*/
+ *	arbitrary routine, including whatever overhead there is, such as reading
+ *	the clock value and loading the routine into cache. The number of clock
+ *	ticks execution takes is returned.
+ *
+ *	Input:
+ *
+ *		RoutineToBeTimedType routine. 
+ *			Address of a routine to measure. (See typedef of this type.)
+ *
+ *		unsigned int iterations.
+ *			Number of iterations to tell the routine to perform.
+ *
+ *		void *data.
+ *			Pointer to be passed to the routine.
+ *
+ *	Output:
+ *
+ *		Return value.
+ *			The number of clock ticks execution takes.
+ */
 static ClockValue MeasureGrossTime(
 		RoutineToBeTimedType routine,
 		unsigned int iterations,
@@ -1091,7 +1083,7 @@ static ClockValue MeasureGrossTime(
 		samples.
 			Number of samples to take.  Some statistical analysis might be
 			performed to try to divine the true execution time, filtering out
-			noise from interrupts and other sources.  For now, we'll just take
+			noise from interrupts and other sources. For now, we shall just take
 			the minimum of all the samples.
 
 	Output:
@@ -1214,17 +1206,17 @@ static double CPUCyclesPerTickViaHardware(void)
 
 
 /*	Return the number of CPU cycles in one clock tick determined by asking
-	the operating system.
-*/
+ *	the operating system.
+ */
 static double CPUCyclesPerTickViaSystem(void)
 {
 	#if TimingMethod == TM_TB || TimingMethod == TM_UT
 
 		/*	The time-base registers (which UpTime uses) should tick at
-			hw.tbfrequency, and the CPU should tick at hw.cpufrequency, so the
-			CPU cycles per time-base tick should be hw.cpufrequency /
-			hw.tbfrequency.
-		*/
+		 *	hw.tbfrequency, and the CPU should tick at hw.cpufrequency, so the
+		 *	CPU cycles per time-base tick should be hw.cpufrequency /
+		 *	hw.tbfrequency.
+		 */
 		uint64_t CPUFrequency, TBFrequency;
 		size_t SizeOf = sizeof CPUFrequency;
 		if (0 != sysctlbyname("hw.cpufrequency",
@@ -1246,15 +1238,15 @@ static double CPUCyclesPerTickViaSystem(void)
 	#elif TimingMethod == TM_PMC
 
 		/*	The PowerPC performance monitor counter event we use should be one
-			CPU cycle per tick.
-		*/
+		 *	CPU cycle per tick.
+		 */
 		return 1;
 
 	#elif TimingMethod == TM_TOD
 
 		/*	The CPU should tick at hw.cpufrequency, so the CPU cycles per
-			microsecond tick should be hw.cpufrequency / 1e6.
-		*/
+		 *	microsecond tick should be hw.cpufrequency / 1e6.
+		 */
 		uint64_t CPUFrequency;
 		size_t SizeOf = sizeof CPUFrequency;
 		if (0 != sysctlbyname("hw.cpufrequency",
@@ -1270,8 +1262,8 @@ static double CPUCyclesPerTickViaSystem(void)
 	#elif TimingMethod == TM_MACH
 
 		/*	Get ratio of mach_absolute_time ticks to nanoseconds.
-			(One nanosecond is numer/denom times one tick.)
-		*/
+		 *	(One nanosecond is numer/denom times one tick.)
+		 */
 		mach_timebase_info_data_t data;
 		mach_timebase_info(&data);
 
@@ -1287,73 +1279,72 @@ static double CPUCyclesPerTickViaSystem(void)
 		}
 		
 		/*	Calculate expected value as number of CPU cycles in a second
-			(CPUFrequency) divided by number of mach_absolute_time ticks
-			in a billion nanoseconds.
-		*/
+		 *	(CPUFrequency) divided by number of mach_absolute_time ticks
+		 *	in a billion nanoseconds.
+		 */
 		return CPUFrequency / (1e9 * data.denom / data.numer);
 
 	#else	// TimingMethod.
 
 		#error "Code is not defined for selected timing method."
 
-		/*	TM_TSC is not supported.  If we want to check the processor
-			model, we could return 1 for:
+		/*	TM_TSC is not supported. If we want to check the processor
+		 *	model, we could return 1 for:
+		 *
+		 *		family 6, models  9 and 13;
+		 *		family 15, models 0, 1, and 2;
+		 *		P6 family processors.
+		 *
+		 *	For other models, we have no way to convert the time stamp counter
+		 *	to cycles, because, according to Intel's specification, the
+		 *	increment rate "may be set" by the maximum core-clock to bus-clock
+		 *	ratio of the processor or by the frequency at which the processor
+		 *	is booted. Additional examination of the documentation for each
+		 *	processor model would be needed, and it would be impossible to
+		 *	support unexamined processors.
+		 *
+		 *	We could return 0 and let the hardware CPUCyclesPerTickViaHardware
+		 *	routine control the value used, but it also cannot support
+		 *	unexamined processors.
+		 */
 
-				family 6, models  9 and 13;
-				family 15, models 0, 1, and 2;
-				P6 family processors.
-
-			For other models, we have no way to convert the time stamp counter
-			to cycles, because, according to Intel's specification, the
-			increment rate "may be set" by the maximum core-clock to bus-clock
-			ratio of the processor or by the frequency at which the processor
-			is booted.  Additional examination of the documentation for each
-			processor model would be needed, and it would be impossible to
-			support unexamined processors.
-
-			We could return 0 and let the hardware CPUCyclesPerTickViaHardware
-			routine control the value used, but it also cannot support
-			unexamined processors.
-		*/
-
-	#endif	// TimingMethod.
+	#endif	/* TimingMethod. */
 }
 
-
-// Return the number of CPU cycles in one clock tick.
+/* Return the number of CPU cycles in one clock tick. */
 static double CPUCyclesPerTick(void)
 {
 	/*	Cache the number in a static object and return it if we have
-		computed it previously.
-	*/
+	 *	computed it previously.
+	 */
 	static double CachedCPUCyclesPerTick = 0;
 
-	if (CachedCPUCyclesPerTick != 0)
+	if (CachedCPUCyclesPerTick != 0) {
 		return CachedCPUCyclesPerTick;
+	}
 
 	double CyclesPerTickViaHardware = CPUCyclesPerTickViaHardware();
 	double CyclesPerTickViaSystem   = CPUCyclesPerTickViaSystem  ();
 
 	if (CyclesPerTickViaHardware == 0)
 	{
-		// This must be a CPU model we are unfamiliar with.
+		/* This must be a CPU model we are unfamiliar with. */
 
 		if (CyclesPerTickViaSystem == 0)
 		{
 			fprintf(stderr, "Error, no value is available for the number of CPU cycles per clock tick.\n");
 			exit(EXIT_FAILURE);
-		}
-		else
+		} else {
 			CachedCPUCyclesPerTick = CyclesPerTickViaSystem;
-	}
-	else
-		if (CyclesPerTickViaSystem == 0)
+		}
+	} else { /* This entire "else" used to not have brackets so I am not sure if
+			  * I closed it in the right place... */
+		if (CyclesPerTickViaSystem == 0) {
 			CachedCPUCyclesPerTick = CyclesPerTickViaHardware;
-		else
-		{
-			const double Tolerance = .004;	// Maximum relative error allowed.
+		} else {
+			const double Tolerance = .004; /* Maximum relative error allowed. */
 
-			// Compare observed and expected ratios.
+			/* Compare observed and expected ratios. */
 			if (Tolerance <
 					fabs(CyclesPerTickViaSystem / CyclesPerTickViaHardware - 1))
 				fprintf(stderr,
@@ -1367,25 +1358,24 @@ static double CPUCyclesPerTick(void)
 
 			CachedCPUCyclesPerTick = CyclesPerTickViaSystem;
 		}
+	}
 
 	return CachedCPUCyclesPerTick;
 }
 
 
 /*	ClockToCPUCycles.
-
-	Convert time (in a ClockValue object) to number of CPU cycles in that time.
-*/
+ *
+ *	Convert time (in a ClockValue object) to number of CPU cycles in that time.
+ */
 double ClockToCPUCycles(ClockValue t)
 {
 	return ClockToDouble(t) * CPUCyclesPerTick();
 }
 
-
 #include <time.h>
 
-
-// See header file for description of this routine.
+/* See header file for description of this routine. */
 double MeasureNetTimeInCPUCycles(
 		RoutineToBeTimedType routine,
 		unsigned int iterations,
@@ -1396,3 +1386,5 @@ double MeasureNetTimeInCPUCycles(
 	return ClockToCPUCycles(MeasureNetTime(routine, iterations, data, samples))
 		/ iterations;
 }
+
+/* EOF */

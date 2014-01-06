@@ -1,5 +1,9 @@
 #!/bin/sh
 
+rm -f tmpfile*
+
+set -e
+
 test -e Build.intel.ksh && ksh ./Build.intel.ksh
 
 mkfile 10k tmpfile

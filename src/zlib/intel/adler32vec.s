@@ -337,7 +337,7 @@ len_is_zero:
 	movaps	80(%esp), %xmm5		// restore xmm5
 	movaps	96(%esp), %xmm6		// restore xmm6
 	movaps	112(%esp), %xmm7	// restore xmm7, if this is for SSSE3 or above
-	addl	$140, %esp			// we've already restored %xmm0-%xmm7 from stack
+	addl	$140, %esp			// we have already restored %xmm0-%xmm7 from stack
 #endif
 
     popl   %esi
@@ -630,7 +630,7 @@ sum2_coefficients:	// used for vectorizing adler32 computation
 	movaps	-96(%rbp), %xmm4
 	movaps	-112(%rbp), %xmm5
 	movaps	-128(%rbp), %xmm6
-	addq	$200, %rsp	// we've already restored %xmm0-%xmm11 from stack
+	addq	$200, %rsp	// we have already restored %xmm0-%xmm11 from stack
 #endif
 
 	popq   %rbx
@@ -970,7 +970,7 @@ len_is_zero:
 	movaps	-176(%rbp), %xmm9
 	movaps	-192(%rbp), %xmm10
 	movaps	-208(%rbp), %xmm11
-	addq	$200, %rsp	// we've already restored %xmm0-%xmm11 from stack
+	addq	$200, %rsp	// we have already restored %xmm0-%xmm11 from stack
 #endif
 
 	popq   %rbx

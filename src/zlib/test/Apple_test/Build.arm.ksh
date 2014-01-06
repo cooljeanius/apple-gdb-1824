@@ -10,6 +10,8 @@ else
   export IPHONEOS_INTERNAL_SDK_PATH="$(xcodebuild -version -sdk iphoneos6.0 Path)"
 fi
 
+rm -f ./*.o
+
 set -ex 
 
 xcrun -sdk iphoneos6.0 -run gcc -isysroot "${IPHONEOS_INTERNAL_SDK_PATH}" -arch armv7 ${CFLAGS}  -o decompress decompress.c ${ZLIB_SRCDIR}/adler32.c ${ZLIB_SRCDIR}/crc32.c ${ZLIB_SRCDIR}/gzclose.c ${ZLIB_SRCDIR}/gzlib.c ${ZLIB_SRCDIR}/gzread.c ${ZLIB_SRCDIR}/gzwrite.c ${ZLIB_SRCDIR}/deflate.c ${ZLIB_SRCDIR}/compress.c ${ZLIB_SRCDIR}/infback.c ${ZLIB_SRCDIR}/inflate.c ${ZLIB_SRCDIR}/inftrees.c ${ZLIB_SRCDIR}/trees.c ${ZLIB_SRCDIR}/uncompr.c ${ZLIB_SRCDIR}/zutil.c ${ZLIB_SRCDIR}/arm/inffast.s ${ZLIB_SRCDIR}/arm/adler32vec.s ClockServices.c

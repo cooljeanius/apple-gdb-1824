@@ -13,7 +13,7 @@ minigzipsh
 example64
 minigzip64
 infcover
-libz.*
+libz.a
 *.dylib
 foo.gz
 so_locations
@@ -35,3 +35,4 @@ Makefile
 *.perspectivev3
 build/*
 *.build
+conf*/*.awk
