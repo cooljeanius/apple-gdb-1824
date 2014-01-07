@@ -38,7 +38,6 @@ AC_FUNC_REALLOC
 AC_CHECK_FUNCS([getpagesize memchr memmove memset munmap stpcpy strcasecmp strchr strdup strncasecmp strrchr strspn strstr strtol strtoul strtoull])
 
 AC_CONFIG_FILES([Makefile
-                 bfd-fpc/Makefile
                  doc/Makefile
                  po/Makefile])
 AC_OUTPUT

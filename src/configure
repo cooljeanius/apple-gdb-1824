@@ -4804,9 +4804,9 @@ $as_echo "$ac_cv_sys_interpreter" >&6; }
 interpval=$ac_cv_sys_interpreter
 
 
-progname=$0
+progname=${0}
 # if PWD already has a value, it is probably wrong.
-if test -n "$PWD" ; then PWD=`${PWDCMD-pwd}`; fi
+if test -n "${PWD}" ; then PWD=`${PWDCMD-pwd}`; fi
 
 # Test for sed
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
@@ -5122,7 +5122,7 @@ target_tools="target-examples target-groff target-gperf target-rda"
 ###########################################################################
 
 ## All tools belong in one of the four categories, and are assigned above
-## We assign ${configdirs} this way to remove all embedded newlines.  This
+## We assign ${configdirs} this way to remove all embedded newlines. This
 ## is important because configure will choke if they ever get through.
 ## ${configdirs} is directories we build using the host tools.
 ## ${target_configdirs} is directories we build using the target tools.
@@ -5170,20 +5170,20 @@ target_subdir=${target_noncanonical}
 
 
 # Skipdirs are removed silently.
-skipdirs=
+skipdirs=""
 # Noconfigdirs are removed loudly.
 noconfigdirs=""
 
-use_gnu_ld=
+use_gnu_ld=""
 # Make sure we do NOT let GNU ld be added if we did NOT want it.
-if test x$with_gnu_ld = xno ; then
+if test x${with_gnu_ld} = xno ; then
   use_gnu_ld=no
   noconfigdirs="${noconfigdirs} ld"
 fi
 
-use_gnu_as=
+use_gnu_as=""
 # Make sure we do NOT let GNU as be added if we did NOT want it.
-if test x$with_gnu_as = xno ; then
+if test x${with_gnu_as} = xno ; then
   use_gnu_as=no
   noconfigdirs="${noconfigdirs} gas"
 fi
@@ -5885,6 +5885,10 @@ fi
   *)  echo "*** bad value \"${with_x}\" for -with-x flag; ignored" 1>&2 ;;
 esac
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking subdirectories to skip" >&5
+$as_echo_n "checking subdirectories to skip... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: (will announce results later)" >&5
+$as_echo "(will announce results later)" >&6; }
 # Some tools are only suitable for building in a "native" situation.
 # Remove these if host!=target.
 native_only="autoconf automake libtool fileutils find gawk gettext gzip hello indent m4 rcs recode sed shellutils tar textutils uudecode wdiff gprof target-groff guile perl time ash bash bzip2 prms gnuserv target-gperf"
@@ -5893,7 +5897,7 @@ native_only="autoconf automake libtool fileutils find gawk gettext gzip hello in
 # Remove these if host=target.
 cross_only="target-libgloss target-newlib target-opcodes"
 
-case $is_cross_compiler in
+case ${is_cross_compiler} in
   no) skipdirs="${skipdirs} ${cross_only}" ;;
   yes) skipdirs="${skipdirs} ${native_only}" ;;
 esac
@@ -5962,7 +5966,7 @@ esac
 
 # Check whether --enable-libada was given.
 if test "${enable_libada+set}" = set; then :
-  enableval=$enable_libada; ENABLE_LIBADA=$enableval
+  enableval=$enable_libada; ENABLE_LIBADA=${enableval}
 else
   ENABLE_LIBADA=yes
 fi
@@ -6001,7 +6005,7 @@ esac
 
 
 # Allow --disable-libmudflap to exclude target-libmudflap
-case $enable_libmudflap in
+case ${enable_libmudflap} in
 yes)
     ;;
 no)
@@ -6044,6 +6048,9 @@ case "${target}" in
     ;;
 # APPLE LOCAL: Customize our platform configuration a bit.
   *-*-darwin*)
+# The Apple linker and assembler packages are part of the cctools and ld64
+# packages respectively (see opensource.apple.com for more info)
+# Thus we avoid building the GNU ones here:
     noconfigdirs="${noconfigdirs} ld gas gprof"
     noconfigdirs="${noconfigdirs} target-rda"
     noconfigdirs="${noconfigdirs} ${libgcj}"
@@ -6058,47 +6065,51 @@ case "${target}" in
 $as_echo "$as_me: WARNING: You appear to be at Apple, in that case disabling subdirectories that Apple says to disable (unset the APPLE_INTERNAL_DIR environment variable to avoid this)" >&2;}
       noconfigdirs="${applespecifiednoconfigdirs}"
     fi
+# building zlib from this level can mess it up; build it manually instead
+    if test -z "${AR}" -o -z "${ARFLAGS}" -o "${AR}" = "libtool" -o "${AR}" = "ar" -o "${ARFLAGS}" = "-o"; then
+      noconfigdirs="${noconfigdirs} zlib"
+    fi
 # I also do not know about a lot of the rest of these:
     enable_shared=no
     enable_64_bit_bfd=yes
     enable_softfloat=no
-    host_configargs=" $host_configargs --disable-shared --enable-64-bit-bfd --disable-softfloat --disable-werror "
+    host_configargs=" ${host_configargs} --disable-shared --enable-64-bit-bfd --disable-softfloat --disable-werror "
 
     # Check whether --enable-carbon-framework was given.
 if test "${enable_carbon_framework+set}" = set; then :
-  enableval=$enable_carbon_framework; case $enableval in
+  enableval=$enable_carbon_framework; case ${enableval} in
       yes)
-        host_configargs=" $host_configargs --enable-carbon-framework" ;;
+        host_configargs=" ${host_configargs} --enable-carbon-framework" ;;
       no)
-        host_configargs=" $host_configargs --disable-carbon-framework" ;;
+        host_configargs=" ${host_configargs} --disable-carbon-framework" ;;
       *)
-        as_fn_error $? "bad value '$enableval' for --enable-carbon-framework" "$LINENO" 5 ;;
+        as_fn_error $? "bad value '${enableval}' for --enable-carbon-framework" "$LINENO" 5 ;;
     esac
 fi
 
 
     # Check whether --enable-debug-symbols-framework was given.
 if test "${enable_debug_symbols_framework+set}" = set; then :
-  enableval=$enable_debug_symbols_framework; case $enableval in
+  enableval=$enable_debug_symbols_framework; case ${enableval} in
       yes)
-        host_configargs=" $host_configargs --enable-debug-symbols-framework" ;;
+        host_configargs=" ${host_configargs} --enable-debug-symbols-framework" ;;
       no)
-        host_configargs=" $host_configargs --disable-debug-symbols-framework" ;;
+        host_configargs=" ${host_configargs} --disable-debug-symbols-framework" ;;
       *)
-        as_fn_error $? "bad value '$enableval' for --enable-debug-symbols-framework" "$LINENO" 5 ;;
+        as_fn_error $? "bad value '${enableval}' for --enable-debug-symbols-framework" "$LINENO" 5 ;;
     esac
 fi
 
 
     # Check whether --enable-arch-for-exec was given.
 if test "${enable_arch_for_exec+set}" = set; then :
-  enableval=$enable_arch_for_exec; case $enableval in
+  enableval=$enable_arch_for_exec; case ${enableval} in
         yes)
-          host_configargs=" $host_configargs --enable-arch-for-exec" ;;
+          host_configargs=" ${host_configargs} --enable-arch-for-exec" ;;
         no)
-          host_configargs=" $host_configargs --disable-arch-for-exec" ;;
+          host_configargs=" ${host_configargs} --disable-arch-for-exec" ;;
         *)
-          as_fn_error $? "bad value '$enableval' for --enable-arch-for-exec" "$LINENO" 5 ;;
+          as_fn_error $? "bad value '${enableval}' for --enable-arch-for-exec" "$LINENO" 5 ;;
       esac
 fi
 
@@ -8208,20 +8219,20 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
   # We must set the default linker to the linker used by gcc for the
   # correct operation of libtool. If LD is not defined and we are using
   # gcc, try to set the LD default to the ld used by gcc.
-  if test -z "$LD"; then
-    if test "$GCC" = yes; then
-      case $build in
+  if test -z "${LD}"; then
+    if test "${GCC}" = yes; then
+      case ${build} in
         *-*-mingw*)
-	      gcc_prog_ld=`$CC -print-prog-name=ld 2>&1 | tr -d '\015'`
+	      gcc_prog_ld=`${CC} -print-prog-name=ld 2>&1 | tr -d '\015'`
 	      ;;
         *)
-	      gcc_prog_ld=`$CC -print-prog-name=ld 2>&1`
+	      gcc_prog_ld=`${CC} -print-prog-name=ld 2>&1`
 	      ;;
       esac
-      case $gcc_prog_ld in
+      case ${gcc_prog_ld} in
         # Accept absolute paths.
         [\\/]* | [A-Za-z]:[\\/]*)
-          LD="$gcc_prog_ld"
+          LD="${gcc_prog_ld}"
           ;;
       esac
     fi # GCC

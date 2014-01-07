@@ -64,7 +64,7 @@
 #include "macosx-tdep.h"
 
 #ifndef __i386__
-# warning i386-tdep.c is an i386-specific file.
+# warning i386-tdep.c is an i386-specific file, but __i386__ is not defined.
 #endif /* !__i386__ */
 
 /* Register names.  */

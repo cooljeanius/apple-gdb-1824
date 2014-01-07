@@ -125,7 +125,7 @@ AC_CHECK_LIB([cc_dynamic],[main],[SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS
 AC_CHECK_LIB([gcc],[main],[SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lgcc"])
 # FIXME: Replace `main' with a function in `-lSystem':
 AC_CHECK_LIB([System],[main],[SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lSystem"])
-if test -z "$SYSTEM_FRAMEWORK_LIBS"; then
+if test -z "${SYSTEM_FRAMEWORK_LIBS}"; then
 	AC_MSG_ERROR([Missing some required system libraries.])
 fi
 AC_SUBST([SYSTEM_FRAMEWORK_LIBS])
@@ -138,8 +138,24 @@ AC_CHECK_LIB([iconv],[iconv])
 
 # Checks for header files.
 AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
-AC_CHECK_HEADERS([errno.h gettext.h libintl.h malloc.h setjmp.h stddef.h \
-                  stdio.h stdio_ext.h])
+if test -d ../intl; then
+  if test -z "${CPPFLAGS}"; then
+    export CPPFLAGS="-I../intl"
+  else
+    export CPPFLAGS="${CPPFLAGS} -I../intl"
+  fi
+elif test -d ../libintl; then
+  if test -z "${CPPFLAGS}"; then
+    export CPPFLAGS="-I../libintl"
+  else
+    export CPPFLAGS="${CPPFLAGS} -I../libintl"
+  fi
+fi
+unset ac_cv_header_libintl_h
+unset ac_cv_header_malloc_h
+unset ac_cv_header_stdlib_h
+AC_CHECK_HEADERS([errno.h gettext.h libintl.h malloc.h malloc/malloc.h \
+                  setjmp.h stddef.h stdio.h stdio_ext.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN

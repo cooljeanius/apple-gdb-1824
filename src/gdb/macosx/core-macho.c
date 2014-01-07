@@ -23,17 +23,17 @@
    Boston, MA 02111-1307, USA.  */
 
 #if defined (TARGET_POWERPC)
-#include "ppc-macosx-thread-status.h"
-#include "ppc-macosx-regs.h"
+# include "ppc-macosx-thread-status.h"
+# include "ppc-macosx-regs.h"
 #elif defined (TARGET_I386)
-#include "i386-macosx-thread-status.h"
-#include "i386-macosx-tdep.h"
+# include "i386-macosx-thread-status.h"
+# include "i386-macosx-tdep.h"
 #elif defined (TARGET_ARM)
-#include "arm-macosx-thread-status.h"
-#include "arm-macosx-tdep.h"
+# include "arm-macosx-thread-status.h"
+# include "arm-macosx-tdep.h"
 #else
-#error "unsupported architecture"
-#endif
+# error "unsupported architecture"
+#endif /* TARGET_foo */
 
 #include "defs.h"
 #include "gdb_string.h"
@@ -54,11 +54,12 @@
 #include "gdb_assert.h"
 #include "macosx-nat-inferior.h"
 #ifdef MACOSX_DYLD
-#include "macosx-nat-dyld.h"
-#endif
+# include "macosx-nat-dyld.h"
+#endif /* MACOSX_DYLD */
 #include <errno.h>
 #include <signal.h>
 #include <fcntl.h>
+#include <libintl.h>
 #include "osabi.h"
 #include "gdbarch.h"
 #include "objfiles.h"
@@ -108,8 +109,8 @@ check_thread (bfd *abfd, asection *asect, unsigned int num)
       "LC_THREAD.ARM_THREAD_STATE."
     };
 #else
-#error "unsupported architecture"
-#endif
+# error "unsupported architecture"
+#endif /* TARGET_foo */
   const int num_names = sizeof (names)/sizeof (const char*);
 
   /* Check all possible thread state names for a possible match.  */
@@ -123,8 +124,9 @@ check_thread (bfd *abfd, asection *asect, unsigned int num)
     }
 
   /* Make sure we found a matching thread state name.  */
-  if (expected == NULL)
-    return; /* We didn't find a match.  */
+	if (expected == NULL) {
+		return; /* We did NOT find a match.  */
+	}
 
   /* Extract the thread index.  */
   i = strtol (sname + strlen (expected), NULL, 0);
@@ -158,7 +160,7 @@ core_close_1 (void *arg)
 
 #ifdef CLEAR_SOLIB
   CLEAR_SOLIB ();
-#endif
+#endif /* CLEAR_SOLIB */
 
   if (macho_core_ops.to_sections)
     {
@@ -224,9 +226,9 @@ core_open (char *filename, int from_tty)
              filename, bfd_errmsg (bfd_get_error ()));
     }
 
-  /* Looks semi-reasonable.  Toss the old core file and work on the new.  */
+  /* Looks semi-reasonable. Toss the old core file and work on the new.  */
 
-  discard_cleanups (old_chain); /* Don't free filename any more */
+  discard_cleanups (old_chain); /* Do NOT free filename any more */
   unpush_target (&macho_core_ops);
   core_bfd = temp_bfd;
   old_chain = make_cleanup (core_close_1, core_bfd);
@@ -236,7 +238,7 @@ core_open (char *filename, int from_tty)
   /* Find the data section */
   if (build_section_table (core_bfd, &macho_core_ops.to_sections,
                            &macho_core_ops.to_sections_end))
-    error ("\"%s\": Can't find sections: %s",
+    error ("\"%s\": Cannot find sections: %s",
            bfd_get_filename (core_bfd), bfd_errmsg (bfd_get_error ()));
 
   ontop = !push_target (&macho_core_ops);
@@ -316,9 +318,9 @@ core_open (char *filename, int from_tty)
                 }
             }
 
-          /* OK we found a Mach-O kernel in the core file memory.  If the user specified a kernel file
-             on startup, slide it to the correct address.  If no kernel was specified, see if we can't
-             find one via DBGShellCommand.  In any case, print a message about the load address and
+          /* OK we found a Mach-O kernel in the core file memory. If the user specified a kernel file
+             on startup, slide it to the correct address. If no kernel was specified, see if we cannot
+             find one via DBGShellCommand. In any case, print a message about the load address and
              UUID of the kernel we found in memory.  */
           if (got_info)
             {
@@ -335,7 +337,7 @@ core_open (char *filename, int from_tty)
             }
         }
 
-      /* Retry with the K32 address location if we haven't found a kernel yet.  */
+      /* Retry with the K32 address location if we have NOT found a kernel yet. */
       if (found_kernel == 0)
         {
           possible_kernel_address = INVALID_ADDRESS;
@@ -356,9 +358,9 @@ core_open (char *filename, int from_tty)
                 {
                   in_memory_addr = possible_kernel_address;
     
-              /* OK we found a Mach-O kernel in the core file memory.  If the user specified a kernel file
-                 on startup, slide it to the correct address.  If no kernel was specified, see if we can't
-                 find one via DBGShellCommand.  In any case, print a message about the load address and
+              /* OK we found a Mach-O kernel in the core file memory. If the user specified a kernel file
+                 on startup, slide it to the correct address. If no kernel was specified, see if we cannot
+                 find one via DBGShellCommand. In any case, print a message about the load address and
                  UUID of the kernel we found in memory.  */
     
                   CORE_ADDR file_load_addr = INVALID_ADDRESS;
@@ -381,14 +383,14 @@ core_open (char *filename, int from_tty)
 #ifdef MACOSX_DYLD
       /* Load all mach images by checking the frozen state of DYLD so
          we know where all shared libraries are.  */
-      /* Don't do this if the exec_bfd doesn't have the DYLDLINK flag set -
+      /* Do NOT do this if the exec_bfd does NOT have the DYLDLINK flag set:
          that means this is either a kernel core file or a core file of a
-         program that didn't use dyld.  */
+         program that did NOT use dyld.  */
       if (!exec_bfd || bfd_mach_o_uses_dylinker(exec_bfd))
 	{
 	  macosx_init_dyld_from_core ();
 	}
-#endif
+#endif /* MACOSX_DYLD */
       /* Fetch all registers from core file.  */
       target_fetch_registers (-1);
 
@@ -403,7 +405,7 @@ core_open (char *filename, int from_tty)
   else
     {
       warning
-        ("you won't be able to access this core file until you terminate\n"
+        ("you will NOT be able to access this core file until you terminate\n"
          "your %s; do ``info files''", target_longname);
     }
 }
@@ -425,7 +427,7 @@ core_detach (char *args, int from_tty)
    core file is opened,  the register contents found in the mach-o
    load commands for each thread will be cached in the 
    "thrd_info->private->core_thread_state" member of the
-   thread_info structure. Any register sets that don't have values
+   thread_info structure. Any register sets that do NOT have values
    stored in the mach-o load commands will be NULL. This allows 
    read/write access to core file registers for all threads and 
    modified thread register values will survive thread context 
@@ -465,8 +467,8 @@ struct core_cached_registers_raw
 };
 
 #else
-#error "unsupported architecture"
-#endif
+# error "unsupported architecture"
+#endif /* TARGET_foo */
 
 typedef struct core_cached_registers_raw core_cached_registers_raw_t;
 
@@ -530,10 +532,8 @@ core_fetch_cached_thread_registers ()
     arm_macosx_fetch_vfpv3_regs_raw (cached_regs_raw->arm_vfpv3_regs);
 
 #else
-
-#error "unsupported architecture"
-
-#endif
+# error "unsupported architecture"
+#endif /* TARGET_foo */
 
   return 1;
 }
@@ -688,14 +688,13 @@ core_cache_section_registers (asection *sec, int flavour,
       break;
     }
 #else
-#error "unsupported architecture"
-#endif
+# error "unsupported architecture"
+#endif /* TARGET_foo */
   /* If the flavor was recognized and are now owned by CACHED_REGS_RAW, 
-     then REGS should have been set to NULL so we don't free them here.  */
+     then REGS should have been set to NULL so we do NOT free them here.  */
   if (regs != NULL)
     xfree (regs);
 }
-
 
 
 /* Utility function to allocate and intitialize our private
@@ -743,7 +742,7 @@ delete_private_thread_info (struct thread_info *thrd_info)
 
 
 /* Create a private thread info structure if one is not already
-   created, and cache a threads' registers so we can have write
+   created, and cache a thread's registers so we can have write
    access to them.  */
 int
 create_core_thread_state_cache (struct thread_info *thrd_info)
@@ -820,8 +819,8 @@ delete_core_thread_state_cache (struct thread_info *thrd_info)
 	xfree (cached_regs_raw->arm_vfpv3_regs);
 	
 #else
-#error "unsupported architecture"
-#endif
+# error "unsupported architecture"
+#endif /* TARGET_foo */
       xfree (thrd_info->private->core_thread_state);
       thrd_info->private->core_thread_state = NULL;
     }
@@ -871,7 +870,7 @@ core_fetch_registers (int regno)
 	      char *dot = strchr (flavour_str, '.');
 	      if (dot)
 		{
-		  /* Set the thread index string it it hasn't arlready been set 
+		  /* Set the thread index string it it has NOT arlready been set 
 		     to match the thread index of the inferior_ptid. If the
 		     thread index string has been set, make sure it matches that
 		     of the current thread so we can get all registers for this
@@ -894,8 +893,8 @@ core_fetch_registers (int regno)
 		  flavour = bfd_mach_o_flavour_from_string (BFD_MACH_O_CPU_TYPE_ARM, 
 							    flavour_str);
 #else
-#error "unsupported architecture"
-#endif
+# error "unsupported architecture"
+#endif /* TARGET_foo */
 		  /* If we recognized the flavour, get the registers for it.  */
 		  if (flavour != 0)
 		    {
@@ -996,8 +995,8 @@ core_store_registers (int regno)
     arm_macosx_store_vfpv3_regs_raw (cached_regs_raw->arm_vfpv3_regs);
     
 #else
-#error "unsupported architecture"
-#endif
+# error "unsupported architecture"
+#endif /* TARGET_foo */
      
 }
 
@@ -1035,3 +1034,5 @@ _initialize_core_macho ()
   init_macho_core_ops ();
   add_target (&macho_core_ops);
 }
+
+/* EOF */

@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <libintl.h>
 
 #include <sys/time.h>
 #include <sys/select.h>
@@ -162,7 +163,7 @@ macosx_signal_thread (void *arg)
 
 #ifdef HAVE_PTHREAD_SETNAME_NP
   pthread_setname_np ("signal thread");
-#endif
+#endif /* HAVE_PTHREAD_SETNAME_NP */
 
   for (;;)
     {
@@ -248,3 +249,5 @@ Show if printing signal thread debugging statements."), NULL,
 			   NULL, NULL,
 			   &setdebuglist, &showdebuglist);
 }
+
+/* EOF */

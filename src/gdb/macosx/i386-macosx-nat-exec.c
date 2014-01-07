@@ -41,6 +41,8 @@
 #include "macosx-nat-mutils.h"
 #include "macosx-nat-inferior.h"
 
+#include <libintl.h>
+
 extern macosx_inferior_status *macosx_status;
 
 static void
@@ -61,8 +63,8 @@ validate_inferior_registers (int regno)
     }
 }
 
-/* NOTE: the following code was just lifted from i386-tdep.c.  Ultra-cheesy,
-   but it's time to get this thing building for submission...
+/* NOTE: the following code was just lifted from i386-tdep.c. Ultra-cheesy,
+   but it is time to get this thing building for submission...
    jmolenda/2004-05-17  */
 
 static int
@@ -73,8 +75,9 @@ i386_sse_regnum_p (struct gdbarch *gdbarch, int regnum)
 #define I387_ST0_REGNUM tdep->st0_regnum
 #define I387_NUM_XMM_REGS tdep->num_xmm_regs
 
-  if (I387_NUM_XMM_REGS == 0)
-    return 0;
+	if (I387_NUM_XMM_REGS == 0) {
+		return 0;
+	}
 
   return (I387_XMM0_REGNUM <= regnum && regnum < I387_MXCSR_REGNUM);
 
@@ -83,7 +86,7 @@ i386_sse_regnum_p (struct gdbarch *gdbarch, int regnum)
 }
 
 /* NOTE: the following code was just lifted from i386-tdep.c.  Ultra-cheesy,
-   but it's time to get this thing building for submission...
+   but it is time to get this thing building for submission...
    jmolenda/2004-05-17  */
 
 static int
@@ -118,13 +121,14 @@ fetch_inferior_registers (int regno)
   current_pid = ptid_get_pid (inferior_ptid);
   current_thread = ptid_get_tid (inferior_ptid);
   
-/* ifdef the following code so that gdb doesn't send the new
-   GDB_x86_THREAD_STATE constant when built on an older x86 MacOS X 10.4
-   system that won't recognize it.  In Leopard this is unnecessary.  */
+/* ifdef the following code so that gdb does NOT send the new
+ * GDB_x86_THREAD_STATE constant when built on an older x86 MacOS X 10.4
+ * system that will NOT recognize it.
+ * In Leopard (and later(?)) this is unnecessary. */
    
   if (TARGET_OSABI == GDB_OSABI_UNKNOWN)
     {
-      /* Attaching to a process.  Let's figure out what kind it is. */
+      /* Attaching to a process. Let us figure out what kind it is. */
       gdb_x86_thread_state_t gp_regs;
       struct gdbarch_info info;
       unsigned int gp_count = GDB_x86_THREAD_STATE_COUNT;
@@ -321,20 +325,20 @@ store_inferior_registers (int regno)
 /* Support for debug registers, boosted mostly from i386-linux-nat.c.  */
 
 #ifndef DR_FIRSTADDR
-#define DR_FIRSTADDR 0
-#endif
+# define DR_FIRSTADDR 0
+#endif /* !DR_FIRSTADDR */
 
 #ifndef DR_LASTADDR
-#define DR_LASTADDR 3
-#endif
+# define DR_LASTADDR 3
+#endif /* !DR_LASTADDR */
 
 #ifndef DR_STATUS
-#define DR_STATUS 6
-#endif
+# define DR_STATUS 6
+#endif /* !DR_STATUS */
 
 #ifndef DR_CONTROL
-#define DR_CONTROL 7
-#endif
+# define DR_CONTROL 7
+#endif /* !DR_CONTROL */
 
 
 /* This function handles the case of an i386 or an x86_64 inferior.
@@ -476,8 +480,8 @@ i386_macosx_dr_set (int regnum, uint64_t value)
         }
 #if HAVE_TASK_SET_STATE          
       /* Now call task_set_state with the values of the last thread we
-         set -- gdb doesn't support putting watchpoints on individual threads
-         so it doesn't matter which one we use.  The task_set_state call here
+         set - gdb does NOT support putting watchpoints on individual threads
+         so it does NOT matter which one we use. The task_set_state call here
          will make the kernel set the watchpoints on any newly-created 
          threads.  */
 
@@ -490,7 +494,7 @@ i386_macosx_dr_set (int regnum, uint64_t value)
                              (int) macosx_status->task);
           MACH_CHECK_ERROR (ret);
         }
-#endif
+#endif /* HAVE_TASK_SET_STATE */
     }
   ret = vm_deallocate (mach_task_self (), (vm_address_t) thread_list, 
 			(nthreads * sizeof (int)));
@@ -647,3 +651,4 @@ macosx_complete_child_target (struct target_ops *target)
   target->to_post_startup_inferior = i386_macosx_child_post_startup_inferior;
 }
 
+/* EOF */

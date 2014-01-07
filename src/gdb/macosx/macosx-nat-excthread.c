@@ -42,15 +42,16 @@
 
 #include <mach/mach_error.h>
 #include <pthread.h>
+#include <libintl.h>
 
 /* We use this write_mutex to make sure the exception thread has
    finished writing all the exceptions it has gathered before the main
-   thread reads them.  It's actually a little more complex than this,
+   thread reads them. It is actually a little more complex than this,
    because the main thread is going to enter select first time round
-   to wait till the exception thread wakes up.  Then it's going to
-   call select with a 0 timeout to poll for other events.  We put the
+   to wait till the exception thread wakes up. Then it is going to
+   call select with a 0 timeout to poll for other events. We put the
    block between the first wake-up, and the subsequent reads.  
-   Don't access it directly, but use the macosx_exception_get_write_lock
+   Do NOT access it directly, but use the macosx_exception_get_write_lock
    and macosx_exception_release_write_lock functions.  */
 
 static pthread_mutex_t write_mutex;
@@ -60,9 +61,9 @@ static int excthread_debugflag = 0;
 static int dont_handle_bad_access = 0;
 
 #ifndef HAVE_64_BIT_MACH_EXCEPTIONS
-#define mach_exc_server exc_server
-#define MACH_EXCEPTION_CODES 0
-#endif
+# define mach_exc_server exc_server
+# define MACH_EXCEPTION_CODES 0
+#endif /* !HAVE_64_BIT_MACH_EXCEPTIONS */
 
 extern boolean_t mach_exc_server (mach_msg_header_t * in, mach_msg_header_t * out);
 
@@ -88,10 +89,10 @@ struct mach_msg_data
 #define MACOSX_EXCEPTION_ARRAY_SIZE 10
 
 /* This is the storage for the mach messages the exception thread
-   fetches from the target.  They are allocated in the macosx_exception_thread_create
-   and deallocated in macosx_exception_thread_destroy.  If we were ever to 
+   fetches from the target. They are allocated in the macosx_exception_thread_create
+   and deallocated in macosx_exception_thread_destroy. If we were ever to 
    have more than one exception thread, these should be thread-specific data,
-   but I don't imagine we will ever really need to do that.  */
+   but I do NOT imagine we will ever really need to do that.  */
 
 static struct mach_msg_data *msg_data = NULL;
 static int msg_data_size = MACOSX_EXCEPTION_ARRAY_SIZE;
@@ -183,7 +184,7 @@ static void excthread_debug_message (int level, macosx_exception_thread_message 
 #else
       fprintf (excthread_stderr_re, ", subtype: EXC_SOFT_SIGNAL, signal: %s (%d)",
 	       signame, msg->exception_data[1]);
-#endif
+#endif /* HAVE_64_BIT_MACH_EXCEPTIONS */
     }
   else
     {
@@ -199,7 +200,7 @@ static void excthread_debug_message (int level, macosx_exception_thread_message 
 }
 
 /* These two routines manage the exception lock we use to make sure
-   the main thread doesn't start reading exception data before the
+   the main thread does NOT start reading exception data before the
    exception thread is all the way done writing it.  */
 
 #define EXCEPTION_WRITE_LOCK_LEVEL  6
@@ -241,7 +242,7 @@ kern_return_t
   catch_mach_exception_raise_state
 #else
   catch_exception_raise_state
-#endif
+#endif /* HAVE_64_BIT_MACH_EXCEPTIONS */
   (mach_port_t port,
    exception_type_t exception_type, mach_exception_data_t exception_data,
    mach_msg_type_number_t data_count, thread_state_flavor_t * state_flavor,
@@ -256,7 +257,7 @@ kern_return_t
   catch_mach_exception_raise_state_identity
 #else
   catch_exception_raise_state_identity
-#endif
+#endif /* HAVE_64_BIT_MACH_EXCEPTIONS */
   (mach_port_t port, mach_port_t thread_port, mach_port_t task_port,
    exception_type_t exception_type, mach_exception_data_t exception_data,
    mach_msg_type_number_t data_count, thread_state_flavor_t * state_flavor,
@@ -278,7 +279,7 @@ kern_return_t
   catch_mach_exception_raise
 #else
   catch_exception_raise
-#endif
+#endif /* HAVE_64_BIT_MACH_EXCEPTIONS */
   (mach_port_t port, mach_port_t thread_port, mach_port_t task_port,
    exception_type_t exception_type, mach_exception_data_t exception_data,
    mach_msg_type_number_t data_count)
@@ -288,7 +289,7 @@ kern_return_t
   MACH_CHECK_ERROR (kret);
   kret = mach_port_deallocate (mach_task_self (), thread_port);
   MACH_CHECK_ERROR (kret);
-#endif
+#endif /* 0 */
 
   static_message->task_port = task_port;
   static_message->thread_port = thread_port;
@@ -409,16 +410,16 @@ macosx_exception_thread_destroy (macosx_exception_thread_status *s)
   if (s->exception_thread != THREAD_NULL)
     {
 
-      /* Let's destroy the exception port here, so that we
-	 will force the exception thread out of any mach_msg we
-	 may be sitting in.  */
+      /* Let us destroy the exception port here, so that we
+	   * will force the exception thread out of any mach_msg we
+	   * may be sitting in.  */
 
       s->shutting_down = 1;
       mach_port_deallocate (mach_task_self (), s->inferior_exception_port);
       mach_port_deallocate (mach_task_self (), s->task);
       /* The exception thread may have hit an error, in which
-	 case it's sitting in read wondering what to do.  Tell
-	 it to exit here.  */
+	   * case it is sitting in read wondering what to do. Tell
+	   * it to exit here.  */
       if (s->transmit_to_fd >= 0)
 	{
 	  unsigned char charbuf[1] = { 1 };
@@ -465,7 +466,7 @@ macosx_exception_thread (void *arg)
 
 #ifdef HAVE_PTHREAD_SETNAME_NP
   pthread_setname_np ("exception thread");
-#endif
+#endif /* HAVE_PTHREAD_SETNAME_NP */
 
   for (;;)
     {
@@ -479,27 +480,27 @@ macosx_exception_thread (void *arg)
       next_msg_ctr = 0;
       
       /* This is the main loop where we wait for events, and send them to 
-	 the main thread.  We do this in several stages:
-
-            a) Wait with no timeout for some event from the target.
-            b) Suspend the task
-	    c) Parse the event we got & store it in MSG_DATA
-	    d) Poll for any other events that are available, and
-	       parse & add them to MSG_DATA.
-	    e) Send all the events to the main thread
-	    f) Wait till the main thread wakes us up.
-	    g) Send all msg replies back to the target.
-	    h) restart the target.
-
-	  We need to do it this way because for multi-threaded programs there
-	  are often multiple breakpoint events queued up when we stop, and if
-	  we don't clear them all, then when we next start the target, we
-	  will hit the other queued ones.  This will get in the way of 
-	  performing tasks like single stepping over the breakpoint trap.
-
-	  There is equivalent code on the macosx-nat-inferior.c side of this
-	  (in macosx_process_events) that decides what to do with multiple 
-	  events.  */
+	   * the main thread.  We do this in several stages:
+       *
+       * a) Wait with no timeout for some event from the target.
+       * b) Suspend the task
+	   * c) Parse the event we got & store it in MSG_DATA
+	   * d) Poll for any other events that are available, and
+	   *    parse & add them to MSG_DATA.
+	   * e) Send all the events to the main thread
+	   * f) Wait till the main thread wakes us up.
+	   * g) Send all msg replies back to the target.
+	   * h) restart the target.
+       *
+	   * We need to do it this way because for multi-threaded programs there
+	   * are often multiple breakpoint events queued up when we stop, and if
+	   * we do NOT clear them all, then when we next start the target, we
+	   * will hit the other queued ones. This will get in the way of 
+	   * performing tasks like single stepping over the breakpoint trap.
+       *
+	   * There is equivalent code on the macosx-nat-inferior.c side of this
+	   * (in macosx_process_events) that decides what to do with multiple 
+	   * events. */
       while (1)
 	{
 	  pthread_testcancel ();
@@ -581,11 +582,11 @@ macosx_exception_thread (void *arg)
 	  excthread_debug_re_endline (2);
 	  
 	  /* The msgsend exception data field is a pointer to the data
-	     we got from the Mach message.  We are passing this
-	     pointer to the main thread.  We should really make a copy
+	     we got from the Mach message. We are passing this
+	     pointer to the main thread. We should really make a copy
 	     of the data, and pass a pointer to the copy, since we
-	     don't know that fetching a second event might not free
-	     this data.  And indeed sometimes it does!  */
+	     do NOT know that fetching a second event might not free
+	     this data. And indeed sometimes it does!  */
 	  {
 	    mach_exception_data_t copy = (mach_exception_data_t) xmalloc (msg_data[next_msg_ctr].msgsend.data_count 
 								* sizeof (mach_exception_data_type_t));
@@ -692,3 +693,5 @@ Show if we allow the EXC_BAD_ACCESS to be handled by the system."), NULL,
 			    NULL, NULL,
 			    &setlist, &showlist);
 }
+
+/* EOF */

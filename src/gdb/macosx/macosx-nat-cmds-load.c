@@ -36,6 +36,7 @@
 #include <sys/stat.h>
 #include <grp.h>
 #include <dlfcn.h>
+#include <libintl.h>
 
 #include <mach-o/dyld.h>
 
@@ -90,8 +91,8 @@ load_plugin (char *arg, int from_tty)
         }
     }
 
-  /* dyld won't let a setgid program like gdb load a plugin by relative
-     path.  */
+  /* dyld will NOT let a setgid program like gdb load a plugin by relative
+   * path.  */
   if (!IS_ABSOLUTE_PATH (path))
     error ("Usage: load-plugin FULL-PATHNAME\n"
            "Relative pathnames ('%s') are not permitted.", path);
@@ -177,8 +178,8 @@ Show if tracing of plugin loading is enabled"), NULL,
   add_info ("plugins", info_plugins_command, "Show current plug-ins state.");
 }
 
-/* Search for a loaded plugin by name and return a pointer to it's private data
-   slot allocated for plugin use.  Return NULL if plugin is not loaded.
+/* Search for a loaded plugin by name and return a pointer to its private data
+   slot allocated for plugin use. Return NULL if plugin is not loaded.
    If NULL is passed for a plugin name then a pointer to a global data pointer
    is returned.  */
 void **
@@ -205,3 +206,5 @@ _plugin_private_data (char *plugin_name)
 
   return NULL;
 }
+
+/* EOF */

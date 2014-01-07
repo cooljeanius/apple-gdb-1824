@@ -45,6 +45,7 @@ man8dir =	$(mandir)/man8
 man9dir =	$(mandir)/man9
 infodir =	@infodir@
 includedir =	@includedir@
+datarootdir =   @datarootdir@
 
 SHELL =		@SHELL@
 
@@ -61,15 +62,16 @@ RM =		rm
 
 NSLIBTOOL =	cc -dynamiclib
 
-# where to find makeinfo
+# where to find makeinfo (duplicate of above?)
 MAKEINFO=makeinfo
 
 SET_TEXINPUTS = TEXINPUTS=${TEXIDIR}:.:$(srcdir):$(READLINE_DIR):$$TEXINPUTS
 
-# Files which should be generated via 'info' and installed by 'install-info'
+# Files which should be generated via 'info' and installed by
+# 'install-info'
 INFO_DEPS = mmalloc.info
 
-# The TeX formatter
+# The TeX formatter (TODO: subst via configure check?)
 TEX = tex
 
 PAGECHECK_SRC =	@PAGECHECK_SRC@
@@ -77,15 +79,17 @@ PAGECHECK_OBJ =	@PAGECHECK_OBJ@
 
 TARGETLIB =	libmmalloc.a
 
-CFILES =	mcalloc.c mfree.c mmalloc.c mmcheck.c mmemalign.c mmstats.c \
-		mmtrace.c mrealloc.c mvalloc.c attach.c detach.c keys.c \
-		mmap-sup.c malloc-sup.c $(PAGECHECK_SRC) check-sup.c sbrk-sup.c
+CFILES =	mcalloc.c mfree.c mmalloc.c mmcheck.c mmemalign.c \
+		mmstats.c mmtrace.c mrealloc.c mvalloc.c attach.c \
+		detach.c keys.c mmap-sup.c malloc-sup.c $(PAGECHECK_SRC) \
+		check-sup.c sbrk-sup.c
 
 HFILES =	mmalloc.h
 
-OFILES =	mcalloc.o mfree.o mmalloc.o mmcheck.o mmemalign.o mmstats.o \
-		mmtrace.o mrealloc.o mvalloc.o attach.o detach.o keys.o \
-		mmap-sup.o malloc-sup.o $(PAGECHECK_OBJ) check-sup.o sbrk-sup.o
+OFILES =	mcalloc.o mfree.o mmalloc.o mmcheck.o mmemalign.o \
+		mmstats.o mmtrace.o mrealloc.o mvalloc.o attach.o \
+		detach.o keys.o mmap-sup.o malloc-sup.o $(PAGECHECK_OBJ) \
+		check-sup.o sbrk-sup.o
 
 DEFS =		@DEFS@
 

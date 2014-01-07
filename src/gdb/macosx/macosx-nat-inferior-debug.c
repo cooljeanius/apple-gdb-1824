@@ -41,6 +41,7 @@
 
 #include <string.h>
 #include <ctype.h>
+#include <libintl.h>
 
 #include "macosx-nat-inferior-debug.h"
 #include "macosx-nat-dyld.h"
@@ -108,7 +109,7 @@ unparse_exception_type (unsigned int i)
 #ifdef EXC_CRASH
     case EXC_CRASH:
       return "EXC_CRASH";
-#endif
+#endif /* EXC_CRASH */
     default:
       snprintf (unknown_exception_buf, 32, "??? (%d)", i);
       return unknown_exception_buf;
@@ -477,3 +478,5 @@ Show if printing inferior communication debugging statements."), NULL,
 			    NULL, NULL,
 			    &setdebuglist, &showdebuglist);
 }
+
+/* EOF */

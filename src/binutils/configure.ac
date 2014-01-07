@@ -64,10 +64,10 @@ AH_TOP([
 ])
 
 # Checks for systems.
-if test -z "$target" ; then
+if test -z "${target}" ; then
     AC_MSG_ERROR([Unrecognized target system type; please check config.sub.])
 fi
-if test -z "$host" ; then
+if test -z "${host}" ; then
     AC_MSG_ERROR([Unrecognized host system type; please check config.sub.])
 fi
 AC_SYS_INTERPRETER
@@ -75,11 +75,11 @@ AC_SYS_LARGEFILE
 
 # Checks for programs.
 AM_PROG_AS
-if test "x$CC" = "x"; then
-    test -z "$CC"
+if test "x${CC}" = "x"; then
+    test -z "${CC}"
     AC_PROG_CC
 else
-    test ! -z "$CC"
+    test ! -z "${CC}"
     AC_PROG_GCC_TRADITIONAL
 fi
 
@@ -94,7 +94,7 @@ CY_GNU_GETTEXT
 AM_MAINTAINER_MODE
 AC_OBJEXT
 AC_EXEEXT
-if test -n "$EXEEXT"; then
+if test -n "${EXEEXT}"; then
   AC_DEFINE([HAVE_EXECUTABLE_SUFFIX],[1],
 	    [Does the platform use an executable suffix?])
 fi
@@ -113,11 +113,11 @@ AC_SUBST([HDEFINES])
 # More programs:
 AR=${AR-ar}
 AC_SUBST([AR])
-if test "x$RANLIB" = "x"; then
-	test -z "$RANLIB"
+if test "x${RANLIB}" = "x"; then
+	test -z "${RANLIB}"
 	AC_PROG_RANLIB
 else
-	test ! -z "$RANLIB"
+	test ! -z "${RANLIB}"
 fi
 AC_PROG_INSTALL
 AM_PROG_INSTALL_STRIP
@@ -187,6 +187,26 @@ AC_CHECK_LIB([gnu],[main])
 
 # Checks for header files.
 AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
+if test -d ../intl; then
+  if test -z "${CPPFLAGS}"; then
+    export CPPFLAGS="-I../intl"
+  else
+    export CPPFLAGS="${CPPFLAGS} -I../intl"
+  fi
+elif test -d ../libintl; then
+  if test -z "${CPPFLAGS}"; then
+    export CPPFLAGS="-I../libintl"
+  else
+    export CPPFLAGS="${CPPFLAGS} -I../libintl"
+  fi
+fi
+unset ac_cv_header_libintl_h
+unset ac_cv_header_limits_h
+unset ac_cv_header_locale_h
+unset ac_cv_header_malloc_h
+unset ac_cv_header_stdlib_h
+unset ac_cv_header_sys_param_h
+unset ac_cv_header_unistd_h
 AC_CHECK_HEADERS([assert.h errno.h fcntl.h gettext.h iconv.h langinfo.h \
                   libgettext.h libintl.h limits.h locale.h mach/mach.h \
                   malloc.h malloc/malloc.h stdarg.h stddef.h stdio.h \
@@ -222,6 +242,7 @@ AC_FUNC_OBSTACK
 AC_FUNC_REALLOC
 AC_FUNC_STRCOLL
 AC_FUNC_STRNLEN
+unset ac_cv_func_setlocale
 AC_CHECK_FUNCS([bindtextdomain ctime dcgettext dup2 fclose fopen \
                 fprintf fputs fread free getc_unlocked gettimeofday \
                 memchr memcmp memcpy memmove memset re_comp regcomp \
@@ -240,9 +261,9 @@ AC_CACHE_VAL([bu_cv_have_fopen64],
  AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>]],[[FILE *f = fopen64 ("/tmp/foo","r");]])],
 [bu_cv_have_fopen64="need -D_LARGEFILE64_SOURCE"],
 [bu_cv_have_fopen64=no])
- CPPFLAGS=$saved_CPPFLAGS])])
-AC_MSG_RESULT([$bu_cv_have_fopen64])
-if test "$bu_cv_have_fopen64" != no; then
+ CPPFLAGS=${saved_CPPFLAGS}])])
+AC_MSG_RESULT([${bu_cv_have_fopen64}])
+if test "${bu_cv_have_fopen64}" != no; then
   AC_DEFINE([HAVE_FOPEN64],[1],
 	    [Is fopen64 available?])
 fi
@@ -254,16 +275,16 @@ AC_CACHE_VAL([bu_cv_have_stat64],
 [bu_cv_have_stat64="need -D_LARGEFILE64_SOURCE"],
 [bu_cv_have_stat64=no])
  CPPFLAGS=$saved_CPPFLAGS])])
-AC_MSG_RESULT([$bu_cv_have_stat64])
-if test "$bu_cv_have_stat64" != no; then
+AC_MSG_RESULT([${bu_cv_have_stat64}])
+if test "${bu_cv_have_stat64}" != no; then
   AC_DEFINE([HAVE_STAT64],[1],
 	    [Is stat64 available?])
 fi
-if test "$bu_cv_have_fopen64" = "need -D_LARGEFILE64_SOURCE" \
-   || test "$bu_cv_have_stat64" = "need -D_LARGEFILE64_SOURCE"; then
+if test "${bu_cv_have_fopen64}" = "need -D_LARGEFILE64_SOURCE" \
+   || test "${bu_cv_have_stat64}" = "need -D_LARGEFILE64_SOURCE"; then
   AC_DEFINE([_LARGEFILE64_SOURCE],[1],
 	    [Enable LFS])
-  CPPFLAGS="$CPPFLAGS -D_LARGEFILE64_SOURCE"
+  CPPFLAGS="${CPPFLAGS} -D_LARGEFILE64_SOURCE"
 fi
 
 # Some systems have frexp only in -lm, not in -lc.
@@ -273,8 +294,8 @@ LT_LIB_M
 AC_MSG_CHECKING([for time_t in time.h])
 AC_CACHE_VAL([bu_cv_decl_time_t_time_h],
 [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <time.h>]],[[time_t i;]])],[bu_cv_decl_time_t_time_h=yes],[bu_cv_decl_time_t_time_h=no])])
-AC_MSG_RESULT([$bu_cv_decl_time_t_time_h])
-if test $bu_cv_decl_time_t_time_h = yes; then
+AC_MSG_RESULT([${bu_cv_decl_time_t_time_h}])
+if test ${bu_cv_decl_time_t_time_h} = yes; then
   AC_DEFINE([HAVE_TIME_T_IN_TIME_H],[1],
 	    [Is the type time_t defined in <time.h>?])
 fi
@@ -282,8 +303,8 @@ fi
 AC_MSG_CHECKING([for time_t in sys/types.h])
 AC_CACHE_VAL([bu_cv_decl_time_t_types_h],
 [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>]],[[time_t i;]])],[bu_cv_decl_time_t_types_h=yes],[bu_cv_decl_time_t_types_h=no])])
-AC_MSG_RESULT([$bu_cv_decl_time_t_types_h])
-if test $bu_cv_decl_time_t_types_h = yes; then
+AC_MSG_RESULT([${bu_cv_decl_time_t_types_h}])
+if test ${bu_cv_decl_time_t_types_h} = yes; then
   AC_DEFINE([HAVE_TIME_T_IN_TYPES_H],[1],
 	    [Is the type time_t defined in <sys/types.h>?])
 fi
@@ -291,8 +312,8 @@ fi
 AC_MSG_CHECKING([for a known getopt prototype in unistd.h])
 AC_CACHE_VAL([bu_cv_decl_getopt_unistd_h],
 [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <unistd.h>]],[[extern int getopt (int, char *const*, const char *);]])],[bu_cv_decl_getopt_unistd_h=yes],[bu_cv_decl_getopt_unistd_h=no])])
-AC_MSG_RESULT([$bu_cv_decl_getopt_unistd_h])
-if test $bu_cv_decl_getopt_unistd_h = yes; then
+AC_MSG_RESULT([${bu_cv_decl_getopt_unistd_h}])
+if test ${bu_cv_decl_getopt_unistd_h} = yes; then
   AC_DEFINE([HAVE_DECL_GETOPT],[1],
 	    [Is the prototype for getopt in <unistd.h> in the expected format?])
 fi
@@ -303,11 +324,13 @@ AC_MSG_CHECKING([for a good utime.h])
 AC_CACHE_VAL([bu_cv_header_utime_h],
 [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
 #ifdef HAVE_TIME_H
-#include <time.h>
-#endif
+# include <time.h>
+#else
+# warning this conftest expects <time.h> to be included.
+#endif /* HAVE_TIME_H */
 #include <utime.h>]],[[struct utimbuf s;]])],[bu_cv_header_utime_h=yes],[bu_cv_header_utime_h=no])])
-AC_MSG_RESULT([$bu_cv_header_utime_h])
-if test $bu_cv_header_utime_h = yes; then
+AC_MSG_RESULT([${bu_cv_header_utime_h}])
+if test ${bu_cv_header_utime_h} = yes; then
   AC_DEFINE([HAVE_GOOD_UTIME_H],[1],[Does <utime.h> define struct utimbuf?])
 fi
 
@@ -318,15 +341,15 @@ BFD_BINARY_FOPEN
 # target-specific stuff:
 
 # Canonicalize the secondary target names.
-if test -n "$enable_targets"; then
-    for targ in `echo $enable_targets | sed 's/,/ /g'`
+if test -n "${enable_targets}"; then
+    for targ in `echo ${enable_targets} | sed 's/,/ /g'`
     do
-	result=`$ac_config_sub $targ 2>/dev/null`
-	if test -n "$result"; then
-	    canon_targets="$canon_targets $result"
+	result=`${ac_config_sub} ${targ} 2>/dev/null`
+	if test -n "${result}"; then
+	    canon_targets="${canon_targets} ${result}"
 	else
-	    # Allow targets that config.sub doesn't recognize, like "all".
-	    canon_targets="$canon_targets $targ"
+	    # Allow targets that config.sub does NOT recognize, like "all".
+	    canon_targets="${canon_targets} ${targ}"
 	fi
     done
 fi
@@ -342,9 +365,9 @@ BUILD_DLLWRAP=
 BUILD_MISC=
 OBJDUMP_DEFS=
 
-for targ in $target $canon_targets
+for targ in ${target} ${canon_targets}
 do
-    if test "x$targ" = "xall"; then
+    if test "x${targ}" = "xall"; then
         all_targets=true
 	BUILD_NLMCONV='$(NLMCONV_PROG)$(EXEEXT)'
 	BUILD_SRCONV='$(SRCONV_PROG)'
@@ -457,35 +480,35 @@ AC_SUBST([OBJDUMP_DEFS])
 
 AC_DEFINE_UNQUOTED([TARGET],["${target}"],[Configured target name.])
 
-targ=$target
+targ=${target}
 AC_MSG_NOTICE([sourcing ../bfd/config.bfd])
-. $srcdir/../bfd/config.bfd
-if test "x$targ_underscore" = "xyes"; then
+. ${srcdir}/../bfd/config.bfd
+if test "x${targ_underscore}" = "xyes"; then
     UNDERSCORE=1
 else
     UNDERSCORE=0
 fi
-AC_DEFINE_UNQUOTED([TARGET_PREPENDS_UNDERSCORE],[$UNDERSCORE],
+AC_DEFINE_UNQUOTED([TARGET_PREPENDS_UNDERSCORE],[${UNDERSCORE}],
  [Define to 1 if user symbol names have a leading underscore, 0 if not.])
 
 # Emulation 
-for targ_alias in `echo $target $enable_targets | sed 's/,/ /g'`
+for targ_alias in `echo ${target} ${enable_targets} | sed 's/,/ /g'`
 do
   # Canonicalize the secondary target names.
-  result=`$ac_config_sub $targ_alias 2>/dev/null`
-  if test -n "$result"; then
-    targ=$result
+  result=`${ac_config_sub} ${targ_alias} 2>/dev/null`
+  if test -n "${result}"; then
+    targ=${result}
   else
-    targ=$targ_alias
+    targ=${targ_alias}
   fi
 
-  AC_MSG_NOTICE([sourcing ./configure.tgt for $targ])
+  AC_MSG_NOTICE([sourcing ./configure.tgt for ${targ}])
   . ${srcdir}/configure.tgt
 
-  export EMULATION=$targ_emul
-  export EMULATION_VECTOR=$targ_emul_vector
-  AC_MSG_NOTICE([EMULATION is $EMULATION])
-  AC_MSG_NOTICE([EMULATION_VECTOR is $EMULATION_VECTOR])	
+  export EMULATION=${targ_emul}
+  export EMULATION_VECTOR=${targ_emul_vector}
+  AC_MSG_NOTICE([EMULATION is ${EMULATION}])
+  AC_MSG_NOTICE([EMULATION_VECTOR is ${EMULATION_VECTOR}])	
 done
 
 AC_SUBST([EMULATION])
@@ -499,7 +522,7 @@ AC_CONFIG_FILES([Makefile \
                  po/Makefile.in:po/Make-in])
 
 AC_CONFIG_COMMANDS([default],[
-case "x$CONFIG_FILES" in
+case "x${CONFIG_FILES}" in
 *) sed -e '/POTFILES =/r po/POTFILES' po/Makefile.in > po/Makefile ;;
 esac
 ],[])

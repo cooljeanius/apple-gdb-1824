@@ -1,3 +1,7 @@
+/*
+ * macosx-nat-inferior-debug.h
+ */
+
 #ifndef __GDB_MACOSX_NAT_INFERIOR_DEBUG_H__
 #define __GDB_MACOSX_NAT_INFERIOR_DEBUG_H__
 
@@ -26,3 +30,5 @@ const char *unparse_protection (vm_prot_t p);
 const char *unparse_inheritance (vm_inherit_t i);
 
 #endif /* __GDB_MACOSX_NAT_INFERIOR_DEBUG_H__ */
+
+/* EOF */

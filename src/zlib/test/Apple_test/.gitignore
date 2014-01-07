@@ -2,3 +2,5 @@
 compress
 decompress
 tmpfile
+tmpfile_new
+*.gz

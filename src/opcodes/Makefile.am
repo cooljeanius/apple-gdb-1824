@@ -29,6 +29,8 @@ BFD_H = ../bfd/bfd.h
 # This is where libiberty lives.
 LIBIBERTY = ../libiberty/libiberty.a
 
+AM_LDFLAGS = -L../libiberty -L../bfd -L../intl -L../mmalloc
+
 # Header files.
 HFILES = \
 	cgen-ops.h cgen-types.h \

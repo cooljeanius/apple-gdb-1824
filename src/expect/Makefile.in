@@ -183,6 +183,7 @@ man1dir = $(mandir)/man1
 man3dir = $(mandir)/man3
 infodir = @infodir@
 includedir = @includedir@
+datarootdir = @datarootdir@
 
 # Expect's utility script directories - arch-independent and arch-non-
 # independent. These correspond to the variables "exp_library" and

@@ -542,22 +542,23 @@ ACLOCAL_AMFLAGS = -I m4 --install
 # APPLE LOCAL just skip the doc directory altogether - it is building
 # info files in the srcdir and hosing B&I builds.
 SUBDIRS = po
+NON_APPLE_SUBDIRS = doc
 tooldir = $(exec_prefix)/$(target_alias)
 AM_YFLAGS = -d
 AM_CFLAGS = $(WARN_CFLAGS)
-AM_LDFLAGS = -framework CoreFoundation -L../readline -L../intl
+AM_LDFLAGS = -framework CoreFoundation -L../readline -L../intl -L../libiberty -L../bfd -L../opcodes
 
-# these two are almost the same program
+# these two are almost the same program (really?)
 AR_PROG = ar
 RANLIB_PROG = ranlib
 
-# objcopy and strip should be the same program
+# objcopy and strip should be the same program (really?)
 OBJCOPY_PROG = objcopy
 STRIP_PROG = strip-new
 STRINGS_PROG = strings
 READELF_PROG = readelf
 
-# These should all be the same program too.
+# These should all be the same program too. (really?)
 SIZE_PROG = size
 NM_PROG = nm-new
 OBJDUMP_PROG = objdump

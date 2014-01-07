@@ -3,7 +3,7 @@ dnl# Process this file with autoconf to produce a configure script.
 dnl# libintl/configure.ac
 
 AC_PREREQ([2.69])
-AC_INIT([libintl],[apple-gdb-1824],[jmolenda@apple.com])
+AC_INIT([libintl],[0.12.1],[jmolenda@apple.com])
 dnl# bug report address is email address of last person to touch this
 dnl# directory, according to the Changelog-Apple in this directory
 AC_CONFIG_SRCDIR([dgettext.c])
@@ -18,7 +18,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.7 gnu dejagnu])
+AM_INIT_AUTOMAKE([1.7 gnits dejagnu])
 ifdef([AM_MAINTAINER_MODE],[
   test -e "."
   if test -e "Makefile"; then
@@ -53,11 +53,11 @@ AM_PROG_INSTALL_STRIP
 AC_PROG_INSTALL
 AC_SUBST([INSTALLdir])
 AC_PROG_LN_S
-if test "x$RANLIB" = "x"; then
-	test -z "$RANLIB"
+if test "x${RANLIB}" = "x"; then
+	test -z "${RANLIB}"
 	AC_PROG_RANLIB
 else
-	test ! -z "$RANLIB"
+	test ! -z "${RANLIB}"
 fi
 AC_DEFUN([AC_REQUIRE_PROG_SED],[
   AC_REQUIRE([AC_PROG_SED])
@@ -83,6 +83,7 @@ AC_CHECK_HEADERS([argz.h bits/libc-lock.h byteswap.h ctype.h errno.h \
                   fcntl.h iconv.h langinfo.h libintl.h limits.h locale.h \
                   malloc.h malloc/malloc.h nl_types.h \
                   stddef.h stdio.h sys/mman.h sys/param.h])
+AC_CHECK_HEADERS_ONCE([sys/types.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
@@ -120,11 +121,13 @@ AC_FUNC_MALLOC
 AC_FUNC_MMAP
 AC_FUNC_REALLOC
 AC_FUNC_STRNLEN
+AC_CHECK_FUNCS_ONCE([gettext _gettext])
 AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify \
                 dcgettext__ dgettext__ errno free fgets getcwd \
-                getenv getwd memcpy mempcpy munmap nl_langinfo putenv \
-                setenv setlocale stpcpy strcasecmp strchr strdup \
-                strlen strstr strtoul tolower])
+                getenv getwd memcpy mempcpy munmap \
+                nl_langinfo putenv setenv setlocale stpcpy \
+                strcasecmp strchr strdup strlen strstr strtoul \
+                system tolower])
 AC_CHECK_DECLS([dcgettext__])
 AC_CHECK_DECLS([dgettext__])
 AC_CHECK_DECLS([free])
@@ -140,14 +143,14 @@ AC_DIAGNOSE([obsolete],[It is technically impossible to `autoupdate'
 cleanly from AC_LINK_FILES to AC_CONFIG_LINKS. `autoupdate' provides a
 functional but inelegant update, you should probably tune the result
 yourself.])dnl
-ac_sources="$nls_cv_header_libgt"
-ac_dests="$nls_cv_header_intl"
+ac_sources="${nls_cv_header_libgt}"
+ac_dests="${nls_cv_header_intl}"
 while test -n "$ac_sources"; do
   set $ac_dests; ac_dest=$1; shift; ac_dests=$*
   set $ac_sources; ac_source=$1; shift; ac_sources=$*
-  ac_config_links_1="$ac_config_links_1 $ac_dest:$ac_source"
+  ac_config_links_1="${ac_config_links_1} $ac_dest:$ac_source"
 done
-AC_CONFIG_LINKS([$ac_config_links_1])
+AC_CONFIG_LINKS([${ac_config_links_1}])
 AH_TOP([
 #define _INCLUDING_CONFIG_H
 ])

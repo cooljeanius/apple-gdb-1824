@@ -6065,7 +6065,7 @@ else
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
   fi
-  rm -f conftest*
+  rm -rf conftest*
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_nm_interface" >&5
 $as_echo "$lt_cv_nm_interface" >&6; }
@@ -7425,7 +7425,7 @@ for ac_symprfx in "" "_"; do
   # Check to see that the pipe works correctly.
   pipe_works=no
 
-  rm -f conftest*
+  rm -rf conftest*
   cat > conftest.$ac_ext <<_LT_EOF
 #ifdef __cplusplus
 extern "C" {
@@ -7941,7 +7941,7 @@ else
   if $GREP 'Manifest Tool' conftest.out > /dev/null; then
     lt_cv_path_mainfest_tool=yes
   fi
-  rm -f conftest*
+  rm -rf conftest*
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_path_mainfest_tool" >&5
 $as_echo "$lt_cv_path_mainfest_tool" >&6; }
@@ -9354,7 +9354,7 @@ ac_outfile=conftest.$ac_objext
 echo "$lt_simple_compile_test_code" >conftest.$ac_ext
 eval "$ac_compile" 2>&1 >/dev/null | $SED '/^$/d; /^ *+/d' >conftest.err
 _lt_compiler_boilerplate=`cat conftest.err`
-$RM conftest*
+$RM -r conftest*
 
 ac_outfile=conftest.$ac_objext
 echo "$lt_simple_link_test_code" >conftest.$ac_ext
@@ -9411,7 +9411,7 @@ else
        lt_cv_prog_compiler_rtti_exceptions=yes
      fi
    fi
-   $RM conftest*
+   $RM -r conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_rtti_exceptions" >&5
@@ -9788,7 +9788,7 @@ else
        lt_cv_prog_compiler_pic_works=yes
      fi
    fi
-   $RM conftest*
+   $RM -r conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_pic_works" >&5
@@ -9900,14 +9900,14 @@ else
      fi
    fi
    chmod u+w . 2>&5
-   $RM conftest*
+   $RM -r conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM conftest*
+   $RM -r conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_c_o" >&5
@@ -9955,14 +9955,14 @@ else
      fi
    fi
    chmod u+w . 2>&5
-   $RM conftest*
+   $RM -r conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM conftest*
+   $RM -r conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_c_o" >&5
@@ -9977,7 +9977,7 @@ if test "$lt_cv_prog_compiler_c_o" = no && test "$need_locks" != no; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking if we can lock with hard links" >&5
 $as_echo_n "checking if we can lock with hard links... " >&6; }
   hard_links=yes
-  $RM conftest*
+  $RM -r conftest*
   ln conftest.a conftest.b 2>/dev/null && hard_links=no
   touch conftest.a
   ln conftest.a conftest.b 2>&5 || hard_links=no
@@ -11193,7 +11193,7 @@ $as_echo_n "checking whether -lc should be explicitly linked in... " >&6; }
 if ${lt_cv_archive_cmds_need_lc+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  $RM conftest*
+  $RM -r conftest*
 	echo "$lt_simple_compile_test_code" > conftest.$ac_ext
 
 	if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
@@ -11228,7 +11228,7 @@ else
 	else
 	  cat conftest.err 1>&5
 	fi
-	$RM conftest*
+	$RM -r conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_archive_cmds_need_lc" >&5
@@ -13094,7 +13094,7 @@ compiler=$CC
 echo "$lt_simple_compile_test_code" >conftest.$ac_ext
 eval "$ac_compile" 2>&1 >/dev/null | $SED '/^$/d; /^ *+/d' >conftest.err
 _lt_compiler_boilerplate=`cat conftest.err`
-$RM conftest*
+$RM -r conftest*
 
   ac_outfile=conftest.$ac_objext
 echo "$lt_simple_link_test_code" >conftest.$ac_ext
@@ -14916,7 +14916,7 @@ else
        lt_cv_prog_compiler_pic_works_CXX=yes
      fi
    fi
-   $RM conftest*
+   $RM -r conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_pic_works_CXX" >&5
@@ -15019,14 +15019,14 @@ else
      fi
    fi
    chmod u+w . 2>&5
-   $RM conftest*
+   $RM -r conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM conftest*
+   $RM -r conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_c_o_CXX" >&5
@@ -15071,14 +15071,14 @@ else
      fi
    fi
    chmod u+w . 2>&5
-   $RM conftest*
+   $RM -r conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM conftest*
+   $RM -r conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_c_o_CXX" >&5
@@ -15093,7 +15093,7 @@ if test "$lt_cv_prog_compiler_c_o_CXX" = no && test "$need_locks" != no; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking if we can lock with hard links" >&5
 $as_echo_n "checking if we can lock with hard links... " >&6; }
   hard_links=yes
-  $RM conftest*
+  $RM -r conftest*
   ln conftest.a conftest.b 2>/dev/null && hard_links=no
   touch conftest.a
   ln conftest.a conftest.b 2>&5 || hard_links=no
@@ -15180,7 +15180,7 @@ $as_echo_n "checking whether -lc should be explicitly linked in... " >&6; }
 if ${lt_cv_archive_cmds_need_lc_CXX+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  $RM conftest*
+  $RM -r conftest*
 	echo "$lt_simple_compile_test_code" > conftest.$ac_ext
 
 	if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
@@ -15215,7 +15215,7 @@ else
 	else
 	  cat conftest.err 1>&5
 	fi
-	$RM conftest*
+	$RM -r conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_archive_cmds_need_lc_CXX" >&5
@@ -16226,7 +16226,7 @@ ac_outfile=conftest.$ac_objext
 echo "$lt_simple_compile_test_code" >conftest.$ac_ext
 eval "$ac_compile" 2>&1 >/dev/null | $SED '/^$/d; /^ *+/d' >conftest.err
 _lt_compiler_boilerplate=`cat conftest.err`
-$RM conftest*
+$RM -r conftest*
 
 ac_outfile=conftest.$ac_objext
 echo "$lt_simple_link_test_code" >conftest.$ac_ext
@@ -16344,10 +16344,10 @@ ac_config_headers="$ac_config_headers config.h"
 
 
 # Checks for systems.
-if test -z "$target" ; then
+if test -z "${target}" ; then
     as_fn_error $? "Unrecognized target system type; please check config.sub." "$LINENO" 5
 fi
-if test -z "$host" ; then
+if test -z "${host}" ; then
     as_fn_error $? "Unrecognized host system type; please check config.sub." "$LINENO" 5
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether #! works in shell scripts" >&5
@@ -16706,8 +16706,8 @@ else
 fi
 
 
-if test "x$CC" = "x"; then
-    test -z "$CC"
+if test "x${CC}" = "x"; then
+    test -z "${CC}"
     ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -17307,7 +17307,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 else
-    test ! -z "$CC"
+    test ! -z "${CC}"
     if test $ac_cv_c_compiler_gnu = yes; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CC needs -traditional" >&5
 $as_echo_n "checking whether $CC needs -traditional... " >&6; }
@@ -18845,7 +18845,7 @@ fi
 
 
 
-if test -n "$EXEEXT"; then
+if test -n "${EXEEXT}"; then
 
 $as_echo "#define HAVE_EXECUTABLE_SUFFIX 1" >>confdefs.h
 
@@ -18869,8 +18869,8 @@ $as_echo "$as_me: sourcing ../bfd/configure.host" >&6;}
 # More programs:
 AR=${AR-ar}
 
-if test "x$RANLIB" = "x"; then
-	test -z "$RANLIB"
+if test "x${RANLIB}" = "x"; then
+	test -z "${RANLIB}"
 	if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ranlib; ac_word=$2
@@ -18964,7 +18964,7 @@ else
 fi
 
 else
-	test ! -z "$RANLIB"
+	test ! -z "${RANLIB}"
 fi
 
 # Installed binaries are usually stripped using 'strip' when the user
@@ -21153,7 +21153,27 @@ if test $ac_cv_header_stdbool_h = yes; then
 $as_echo "#define HAVE_STDBOOL_H 1" >>confdefs.h
 
 fi
- for ac_header in assert.h errno.h fcntl.h gettext.h iconv.h langinfo.h \
+ if test -d ../intl; then
+  if test -z "${CPPFLAGS}"; then
+    export CPPFLAGS="-I../intl"
+  else
+    export CPPFLAGS="${CPPFLAGS} -I../intl"
+  fi
+elif test -d ../libintl; then
+  if test -z "${CPPFLAGS}"; then
+    export CPPFLAGS="-I../libintl"
+  else
+    export CPPFLAGS="${CPPFLAGS} -I../libintl"
+  fi
+fi
+unset ac_cv_header_libintl_h
+unset ac_cv_header_limits_h
+unset ac_cv_header_locale_h
+unset ac_cv_header_malloc_h
+unset ac_cv_header_stdlib_h
+unset ac_cv_header_sys_param_h
+unset ac_cv_header_unistd_h
+for ac_header in assert.h errno.h fcntl.h gettext.h iconv.h langinfo.h \
                   libgettext.h libintl.h limits.h locale.h mach/mach.h \
                   malloc.h malloc/malloc.h stdarg.h stddef.h stdio.h \
                   sys/file.h sys/param.h sys/time.h utime.h \
@@ -22566,6 +22586,7 @@ test $ac_cv_func_strnlen_working = no && case " $LIBOBJS " in
 esac
 
 
+unset ac_cv_func_setlocale
 for ac_func in bindtextdomain ctime dcgettext dup2 fclose fopen \
                 fprintf fputs fread free getc_unlocked gettimeofday \
                 memchr memcmp memcpy memmove memset re_comp regcomp \
@@ -22737,15 +22758,15 @@ else
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
- CPPFLAGS=$saved_CPPFLAGS
+ CPPFLAGS=${saved_CPPFLAGS}
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $bu_cv_have_fopen64" >&5
-$as_echo "$bu_cv_have_fopen64" >&6; }
-if test "$bu_cv_have_fopen64" != no; then
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${bu_cv_have_fopen64}" >&5
+$as_echo "${bu_cv_have_fopen64}" >&6; }
+if test "${bu_cv_have_fopen64}" != no; then
 
 $as_echo "#define HAVE_FOPEN64 1" >>confdefs.h
 
@@ -22795,19 +22816,19 @@ rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $bu_cv_have_stat64" >&5
-$as_echo "$bu_cv_have_stat64" >&6; }
-if test "$bu_cv_have_stat64" != no; then
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${bu_cv_have_stat64}" >&5
+$as_echo "${bu_cv_have_stat64}" >&6; }
+if test "${bu_cv_have_stat64}" != no; then
 
 $as_echo "#define HAVE_STAT64 1" >>confdefs.h
 
 fi
-if test "$bu_cv_have_fopen64" = "need -D_LARGEFILE64_SOURCE" \
-   || test "$bu_cv_have_stat64" = "need -D_LARGEFILE64_SOURCE"; then
+if test "${bu_cv_have_fopen64}" = "need -D_LARGEFILE64_SOURCE" \
+   || test "${bu_cv_have_stat64}" = "need -D_LARGEFILE64_SOURCE"; then
 
 $as_echo "#define _LARGEFILE64_SOURCE 1" >>confdefs.h
 
-  CPPFLAGS="$CPPFLAGS -D_LARGEFILE64_SOURCE"
+  CPPFLAGS="${CPPFLAGS} -D_LARGEFILE64_SOURCE"
 fi
 
 # Some systems have frexp only in -lm, not in -lc.
@@ -23024,9 +23045,9 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $bu_cv_decl_time_t_time_h" >&5
-$as_echo "$bu_cv_decl_time_t_time_h" >&6; }
-if test $bu_cv_decl_time_t_time_h = yes; then
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${bu_cv_decl_time_t_time_h}" >&5
+$as_echo "${bu_cv_decl_time_t_time_h}" >&6; }
+if test ${bu_cv_decl_time_t_time_h} = yes; then
 
 $as_echo "#define HAVE_TIME_T_IN_TIME_H 1" >>confdefs.h
 
@@ -23056,9 +23077,9 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $bu_cv_decl_time_t_types_h" >&5
-$as_echo "$bu_cv_decl_time_t_types_h" >&6; }
-if test $bu_cv_decl_time_t_types_h = yes; then
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${bu_cv_decl_time_t_types_h}" >&5
+$as_echo "${bu_cv_decl_time_t_types_h}" >&6; }
+if test ${bu_cv_decl_time_t_types_h} = yes; then
 
 $as_echo "#define HAVE_TIME_T_IN_TYPES_H 1" >>confdefs.h
 
@@ -23088,9 +23109,9 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $bu_cv_decl_getopt_unistd_h" >&5
-$as_echo "$bu_cv_decl_getopt_unistd_h" >&6; }
-if test $bu_cv_decl_getopt_unistd_h = yes; then
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${bu_cv_decl_getopt_unistd_h}" >&5
+$as_echo "${bu_cv_decl_getopt_unistd_h}" >&6; }
+if test ${bu_cv_decl_getopt_unistd_h} = yes; then
 
 $as_echo "#define HAVE_DECL_GETOPT 1" >>confdefs.h
 
@@ -23107,8 +23128,10 @@ else
 /* end confdefs.h.  */
 #include <sys/types.h>
 #ifdef HAVE_TIME_H
-#include <time.h>
-#endif
+# include <time.h>
+#else
+# warning this conftest expects <time.h> to be included.
+#endif /* HAVE_TIME_H */
 #include <utime.h>
 int
 main ()
@@ -23126,9 +23149,9 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $bu_cv_header_utime_h" >&5
-$as_echo "$bu_cv_header_utime_h" >&6; }
-if test $bu_cv_header_utime_h = yes; then
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${bu_cv_header_utime_h}" >&5
+$as_echo "${bu_cv_header_utime_h}" >&6; }
+if test ${bu_cv_header_utime_h} = yes; then
 
 $as_echo "#define HAVE_GOOD_UTIME_H 1" >>confdefs.h
 
@@ -23207,15 +23230,15 @@ esac
 # target-specific stuff:
 
 # Canonicalize the secondary target names.
-if test -n "$enable_targets"; then
-    for targ in `echo $enable_targets | sed 's/,/ /g'`
+if test -n "${enable_targets}"; then
+    for targ in `echo ${enable_targets} | sed 's/,/ /g'`
     do
-	result=`$ac_config_sub $targ 2>/dev/null`
-	if test -n "$result"; then
-	    canon_targets="$canon_targets $result"
+	result=`${ac_config_sub} ${targ} 2>/dev/null`
+	if test -n "${result}"; then
+	    canon_targets="${canon_targets} ${result}"
 	else
-	    # Allow targets that config.sub doesn't recognize, like "all".
-	    canon_targets="$canon_targets $targ"
+	    # Allow targets that config.sub does NOT recognize, like "all".
+	    canon_targets="${canon_targets} ${targ}"
 	fi
     done
 fi
@@ -23231,9 +23254,9 @@ BUILD_DLLWRAP=
 BUILD_MISC=
 OBJDUMP_DEFS=
 
-for targ in $target $canon_targets
+for targ in ${target} ${canon_targets}
 do
-    if test "x$targ" = "xall"; then
+    if test "x${targ}" = "xall"; then
         all_targets=true
 	BUILD_NLMCONV='$(NLMCONV_PROG)$(EXEEXT)'
 	BUILD_SRCONV='$(SRCONV_PROG)'
@@ -23342,42 +23365,42 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
-targ=$target
+targ=${target}
 { $as_echo "$as_me:${as_lineno-$LINENO}: sourcing ../bfd/config.bfd" >&5
 $as_echo "$as_me: sourcing ../bfd/config.bfd" >&6;}
-. $srcdir/../bfd/config.bfd
-if test "x$targ_underscore" = "xyes"; then
+. ${srcdir}/../bfd/config.bfd
+if test "x${targ_underscore}" = "xyes"; then
     UNDERSCORE=1
 else
     UNDERSCORE=0
 fi
 
 cat >>confdefs.h <<_ACEOF
-#define TARGET_PREPENDS_UNDERSCORE $UNDERSCORE
+#define TARGET_PREPENDS_UNDERSCORE ${UNDERSCORE}
 _ACEOF
 
 
 # Emulation
-for targ_alias in `echo $target $enable_targets | sed 's/,/ /g'`
+for targ_alias in `echo ${target} ${enable_targets} | sed 's/,/ /g'`
 do
   # Canonicalize the secondary target names.
-  result=`$ac_config_sub $targ_alias 2>/dev/null`
-  if test -n "$result"; then
-    targ=$result
+  result=`${ac_config_sub} ${targ_alias} 2>/dev/null`
+  if test -n "${result}"; then
+    targ=${result}
   else
-    targ=$targ_alias
+    targ=${targ_alias}
   fi
 
-  { $as_echo "$as_me:${as_lineno-$LINENO}: sourcing ./configure.tgt for $targ" >&5
-$as_echo "$as_me: sourcing ./configure.tgt for $targ" >&6;}
+  { $as_echo "$as_me:${as_lineno-$LINENO}: sourcing ./configure.tgt for ${targ}" >&5
+$as_echo "$as_me: sourcing ./configure.tgt for ${targ}" >&6;}
   . ${srcdir}/configure.tgt
 
-  export EMULATION=$targ_emul
-  export EMULATION_VECTOR=$targ_emul_vector
-  { $as_echo "$as_me:${as_lineno-$LINENO}: EMULATION is $EMULATION" >&5
-$as_echo "$as_me: EMULATION is $EMULATION" >&6;}
-  { $as_echo "$as_me:${as_lineno-$LINENO}: EMULATION_VECTOR is $EMULATION_VECTOR" >&5
-$as_echo "$as_me: EMULATION_VECTOR is $EMULATION_VECTOR" >&6;}
+  export EMULATION=${targ_emul}
+  export EMULATION_VECTOR=${targ_emul_vector}
+  { $as_echo "$as_me:${as_lineno-$LINENO}: EMULATION is ${EMULATION}" >&5
+$as_echo "$as_me: EMULATION is ${EMULATION}" >&6;}
+  { $as_echo "$as_me:${as_lineno-$LINENO}: EMULATION_VECTOR is ${EMULATION_VECTOR}" >&5
+$as_echo "$as_me: EMULATION_VECTOR is ${EMULATION_VECTOR}" >&6;}
 done
 
 
@@ -26250,7 +26273,7 @@ _LT_EOF
 
  ;;
     "default":C)
-case "x$CONFIG_FILES" in
+case "x${CONFIG_FILES}" in
 *) sed -e '/POTFILES =/r po/POTFILES' po/Makefile.in > po/Makefile ;;
 esac
  ;;

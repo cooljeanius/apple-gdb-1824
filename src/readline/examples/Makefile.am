@@ -43,6 +43,7 @@ LIBS = @LIBS@
 
 READLINE_LIB = ../libreadline.a
 HISTORY_LIB = ../libhistory.a
+LIBIBERTY_LIB = ../../libiberty/libiberty.a
 
 TERMCAP_LIB = @TERMCAP_LIB@
 
@@ -63,7 +64,7 @@ rlcat: rlcat.o $(READLINE_LIB)
 	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlcat.o -lreadline $(READLINE_LIB) $(TERMCAP_LIB)
 
 fileman: fileman.o $(READLINE_LIB)
-	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ fileman.o $(LIBS) $(TERMCAP_LIB)
+	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ fileman.o $(LIBS) $(READLINE_LIB) $(TERMCAP_LIB)
 
 rltest: rltest.o $(READLINE_LIB) $(HISTORY_LIB)
 	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rltest.o -lreadline -lhistory $(TERMCAP_LIB)

@@ -37,5 +37,6 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([memmove memset regcomp strcasecmp strchr strdup strerror strncasecmp strstr strtol strtoul])
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile
+                 po/Makefile])
 AC_OUTPUT

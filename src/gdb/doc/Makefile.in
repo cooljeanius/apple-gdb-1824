@@ -23,6 +23,7 @@ VPATH = @srcdir@
 
 prefix = @prefix@
 
+datarootdir = @datarootdir@
 infodir = @infodir@
 htmldir = $(prefix)/html
 

@@ -1,3 +1,7 @@
+/*
+ * macosx-nat-dyld.h
+ */
+
 #ifndef __GDB_MACOSX_NAT_DYLD_H__
 #define __GDB_MACOSX_NAT_DYLD_H__
 
@@ -140,7 +144,5 @@ int target_read_uuid (CORE_ADDR addr, unsigned char *uuid);
 /* From macosx-nat-dyld.c.  */
 extern struct cmd_list_element *setshliblist;
 extern struct cmd_list_element *showshliblist;
-
-
 
 #endif /* __GDB_MACOSX_NAT_DYLD_H__ */

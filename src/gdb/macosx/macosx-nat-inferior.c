@@ -67,6 +67,7 @@
 #include <dlfcn.h>
 #include <libproc.h>
 #include <sys/proc_info.h>
+#include <libintl.h>
 
 #include "macosx-nat-dyld.h"
 #include "macosx-nat-inferior.h"
@@ -83,31 +84,31 @@
 #include "macosx-nat-dyld-process.h"
 
 #if WITH_CFM
-#include "macosx-nat-cfm.h"
-#endif
+# include "macosx-nat-cfm.h"
+#endif /* WITH_CFM */
 
 #include <mach/mach_vm.h>
 
 #ifndef EXC_SOFT_SIGNAL
-#define EXC_SOFT_SIGNAL 0
-#endif
+# define EXC_SOFT_SIGNAL 0
+#endif /* !EXC_SOFT_SIGNAL */
 
 /* The code values for single step vrs. breakpoint
-   trap aren't defined in ppc header files.  There is a 
-   def'n in the i386 exception.h, but it is a i386 specific
+   trap are not defined in ppc header files. There is a 
+   definition in the i386 exception.h, but it is a i386 specific
    define.  */
 
 #if defined (TARGET_I386)
-#define SINGLE_STEP EXC_I386_SGL
+# define SINGLE_STEP EXC_I386_SGL
 #elif defined (TARGET_POWERPC)
-#define SINGLE_STEP 5
+# define SINGLE_STEP 5
 #elif defined (TARGET_ARM)
-#define SINGLE_STEP 1
-#define SINGLE_STEP_2 0
-#include "arm-macosx-tdep.h"
+# define SINGLE_STEP 1
+# define SINGLE_STEP_2 0
+# include "arm-macosx-tdep.h"
 #else
-#error "unknown architecture"
-#endif
+# error "unknown architecture"
+#endif /* TARGET_(arch) */
 
 #define _dyld_debug_make_runnable(a, b) DYLD_FAILURE
 #define _dyld_debug_restore_runnable(a, b) DYLD_FAILURE
@@ -361,10 +362,10 @@ macosx_handle_exception (macosx_exception_thread_message *msg,
       status->code = msg->exception_data[0];
       /* When gcc casts a signed int to an unsigned long long, it first
          casts it to a long long (sign extending it in the process) then
-         it uselessly casts it to unsigned.  So we first have to cast it
-         to an unsigned of its size.  I can't figure out a way to do that
-         automatically, but i know the exception_data is either going to
-         be an int, or a long long, so I'll just handle those cases.  */
+         it uselessly casts it to unsigned. So we first have to cast it
+         to an unsigned of its size. I cannot figure out a way to do that
+         automatically, but I know the exception_data is either going to
+         be an int, or a long long, so I will just handle those cases.  */
 
       if (sizeof (msg->exception_data[1]) < sizeof (CORE_ADDR))
         status->address = (CORE_ADDR) ((unsigned int) msg->exception_data[1]);
@@ -433,12 +434,12 @@ macosx_add_to_port_set (struct macosx_inferior_status *inferior,
 }
 
 /* TIMEOUT is either -1, 0, or greater than 0.
-   For 0, check if there is anything to read, but don't block.
+   For 0, check if there is anything to read, but do NOT block.
    For -1, block until there is something to read.
    For >0, block at least the specified number of microseconds, or until there
    is something to read.
-   The kernel doesn't give better than ~1HZ (0.01 sec) resolution, so
-   don't use this as a high accuracy timer. */
+   The kernel does NOT give better than ~1HZ (0.01 sec) resolution, so
+   do NOT use this as a high accuracy timer. */
 
 static enum macosx_source_type
 macosx_fetch_event (struct macosx_inferior_status *inferior,
@@ -737,10 +738,10 @@ get_event_type (struct macosx_pending_event *event)
 /* This function services the first of the non-breakpoint type events.  
    It pushes all the other "other" type events back on the pending events chain. 
    It deletes all the others.  
-   FIXME: This is a bit of a hack, but I don't know how to REALLY push the
+   FIXME: This is a bit of a hack, but I do NOT know how to REALLY push the
    signal events back onto the target.  So I have to fake it by leaving them
    around on the pending event queue, and that will mean the next time you
-   try to run, you'll hit the next event without actually running...  
+   try to run, you will hit the next event without actually running...  
    Fortunately, it looks like this is academic, because the system
    seems to serialize all the other events for the debugger.  */
 
@@ -868,11 +869,11 @@ macosx_backup_before_break (int ignore)
    All the other events are pushed back if we know how to do this.
 
    Caveats:
-   1) At present, I don't know how to "push back" a signal.  So if there
-   is more than one SOFTEXC event we just send them all.  Not sure what
-   gdb will do with this.  I haven't been able get the system to send
+   1) At present, I do NOT know how to "push back" a signal. So if there
+   is more than one SOFTEXC event we just send them all. Not sure what
+   gdb will do with this. I have NOT been able get the system to send
    more than one at a time.
-   2) Ditto for other traps.  Dunno what I would do with two EXC_BAD_ACCESS
+   2) Ditto for other traps. Dunno what I would do with two EXC_BAD_ACCESS
    messages, for instance.
 
    Returns: The number of events found. */
@@ -913,11 +914,11 @@ macosx_process_events (struct macosx_inferior_status *inferior,
       source = macosx_fetch_event (inferior, buf, sizeof (buf),
                                    NEXT_SOURCE_ALL, timeout);
       /* After we wake up from select, get the write lock.  This
-         insures that we don't start reading the exception data when
+         insures that we do NOT start reading the exception data when
          the exception thread is only part way through writing it.  Be
          sure to release this before exiting the function.  Since each
-         event is written in a single shot, we don't have to worry
-         about getting a partial first event, it's only the subsequent
+         event is written in a single shot, we do NOT have to worry
+         about getting a partial first event, it is only the subsequent
          events we need to sync with.  */
       if (first_time_through)
         {
@@ -933,8 +934,8 @@ macosx_process_events (struct macosx_inferior_status *inferior,
       event_count++;
       if (source == NEXT_SOURCE_ERROR)
 	{
-	  /* We couldn't read from the inferior exception port.  Dunno why,
-	     but we aren't going to get much further.  So tell ourselves that 
+	  /* We could NOT read from the inferior exception port. Dunno why,
+	     but we are NOT going to get much further. So tell ourselves that 
 	     the target exited, cons up some bogus status, and get out
 	     of here.  */
 	  inferior_debug (2, "Got NEXT_SOURCE_ERROR from macosx_fetch_event\n");
@@ -964,19 +965,19 @@ macosx_process_events (struct macosx_inferior_status *inferior,
 	      struct thread_info *tp = NULL;
 	      CORE_ADDR new_pc = read_pc_pid (this_ptid) - DECR_PC_AFTER_BREAK;
 	      
-	      /* Sometimes the kernel isn't ready to tell us about a
-		 pending exception when we stop.  But when we resume
-		 the task, it will tell us about it.  For the most
-		 part this is okay, but if we've suspended a thread,
-		 and run the task, and THEN the kernel comes back &
-		 tells us that the thread we've suspended just got a
-		 chance to run & hit a breakpoint, that confuses us.
-		 This is particularly bad when we're single-stepping
-		 over the real instruction under one of our
-		 breakpoints, since then it will say we've just hit a
-		 trap that we've already removed.  
-		 So just pretend this event didn't happen, and arrange 
-		 for it to be rewound.  */
+	      /* Sometimes the kernel is NOT ready to tell us about a
+		   * pending exception when we stop. But when we resume
+		   * the task, it will tell us about it. For the most
+		   * part this is okay, but if we have suspended a thread,
+		   * and run the task, and THEN the kernel comes back &
+		   * tells us that the thread we have suspended just got a
+		   * chance to run & hit a breakpoint, that confuses us.
+		   * This is particularly bad when we are single-stepping
+		   * over the real instruction under one of our
+		   * breakpoints, since then it will say we have just hit a
+		   * trap that we have already removed.  
+		   * So just pretend this event did NOT happen, and arrange 
+		   * for it to be rewound.  */
 
 	      tp = find_thread_pid (this_ptid);
 	      if (tp != NULL && tp->private->gdb_suspend_count != 0)
@@ -989,19 +990,19 @@ macosx_process_events (struct macosx_inferior_status *inferior,
 		  goto loop_cleanup;
 		}
 	      /* APPLE LOCAL - Sometimes a breakpoint trap gets hit by
-		 two or more threads simultaneously, but the kernel
-		 hands us the exceptions one at a time, rather than
-		 all together.  By the time we are handling it on the
-		 second or third thread, the trap has already been
-		 removed and we have no record of the breakpoint.  In
-		 which case we need to check the PC against addresses
-		 containing recently removed breakpoint traps; if it's
-		 in the list, backup the PC on the thread in question
-		 and remove the event.  */
+		   * two or more threads simultaneously, but the kernel
+		   * hands us the exceptions one at a time, rather than
+		   * all together. By the time we are handling it on the
+		   * second or third thread, the trap has already been
+		   * removed and we have no record of the breakpoint. In
+		   * which case we need to check the PC against addresses
+		   * containing recently removed breakpoint traps; if it is
+		   * in the list, backup the PC on the thread in question
+		   * and remove the event.  */
 	      else if (!breakpoint_here_p (new_pc)
 		       && address_contained_breakpoint_trap (new_pc))
 		{
-		  inferior_debug (2, "Backing up and ignoring event for thread 0x%x since there's no trap for the breakpont.\n",
+		  inferior_debug (2, "Backing up and ignoring event for thread 0x%x since there is no trap for the breakpont.\n",
 				  ((macosx_exception_thread_message *) buf)->thread_port);
 		  macosx_backup_this_event (event);
 		  macosx_remove_pending_event (event, 1);
@@ -1058,8 +1059,8 @@ macosx_process_events (struct macosx_inferior_status *inferior,
           "macosx_process_events: returning with (status->kind == %d)\n",
                   status->kind);
 
-  /* Okay, now that we've gotten the events what should we do?  
-     If we only got one, let's service it and exit. */
+  /* Okay, now that we have gotten the events what should we do?  
+     If we only got one, let us service it and exit. */
   if (event_count == 1)
     {
       int retval;
@@ -1076,29 +1077,29 @@ macosx_process_events (struct macosx_inferior_status *inferior,
   else
     {
       /* If we have more than one, look through them to figure 
-	 out what to do.  */
+	   * out what to do.  */
       
       /* We have more than one exception event, but the upper layers of gdb can 
-	 only deal with one at a time.  We currently use the following
-         Heuristics pick which one we are going to report:
-	 
-	 * First priority is single-step events.  This is so we can finish
-	   stepping over a breakpoint without interruption.
-	 * Next, if there is a signal event, we handle it.  That's because
-	   I don't know how to push back a signal event.
-	 * Next is if we are calling a function by hand and that stops, we
-           should handle that immediately.
-	 * If there is any other non-breakpoint exception in the set, we
-	   handle that next.
-	 * Next if we hit a breakpoint on the thread we were trying to run
-	   the scheduler on, we prefer that.  This is an issue because we
-           might have pushed back many breakpoint hits, then tried to 
-	   run something on one of the threads.  We don't want to service
-	   the left-over events from the other threads till we are done with
-	   what we are doing on this thread.
-	 * Finally, we randomly pick one of the breakpoint events, and
-	   handle that.
-      */
+	   * only deal with one at a time. We currently use the following
+       * heuristics pick which one we are going to report:
+	   *
+	   * * First priority is single-step events. This is so we can finish
+	   *   stepping over a breakpoint without interruption.
+	   * * Next, if there is a signal event, we handle it. That is because
+	   *   I do NOT know how to push back a signal event.
+	   * * Next is if we are calling a function by hand and that stops, we
+       *   should handle that immediately.
+	   * * If there is any other non-breakpoint exception in the set, we
+	   *   handle that next.
+	   * * Next if we hit a breakpoint on the thread we were trying to run
+	   *   the scheduler on, we prefer that. This is an issue because we
+       *   might have pushed back many breakpoint hits, then tried to 
+	   *   run something on one of the threads. We do NOT want to service
+	   *   the left-over events from the other threads till we are done with
+	   *   what we are doing on this thread.
+	   * * Finally, we randomly pick one of the breakpoint events, and
+	   *   handle that.
+       */
 
       if (single_step != NULL)
 	{
@@ -1142,9 +1143,9 @@ macosx_process_events (struct macosx_inferior_status *inferior,
 	  int random_selector;
 	  if (scheduler_bp != -1)
 	    {
-	      /* If we are trying to run a single thread, let's favor
-		 that thread over another that might have just gotten
-		 created and hit a breakpoint.  */
+	      /* If we are trying to run a single thread, let us favor
+		   * that thread over another that might have just gotten
+		   * created and hit a breakpoint.  */
 	      inferior_debug (6, "macosx_process_events: Choosing scheduler "
 			      "breakpoint thread index: %d\n", scheduler_bp);
 	      random_selector = scheduler_bp;
@@ -1152,7 +1153,7 @@ macosx_process_events (struct macosx_inferior_status *inferior,
 	  else
 	    {
 	      /* Otherwise pick one of the threads randomly, and report
-		 the breakpoint hit for that one.  */
+		   * the breakpoint hit for that one.  */
 	      random_selector = (int)
 		((breakpoint_count * (double) rand ()) / (RAND_MAX + 1.0));
 	      inferior_debug (6, "macosx_process_events: Choosing random "
@@ -1199,8 +1200,8 @@ macosx_check_new_threads (thread_array_t thread_list, unsigned int nthreads)
 	{
 	  /* This seems a little odd, but it turns out when we stop
 	     early on in the program startup, the mach_thread_names
-	     call doesn't return any threads, even though task_threads
-	     does.  So we keep trying and eventually it will work.  */
+	     call does NOT return any threads, even though task_threads
+	     does. So we keep trying and eventually it will work.  */
 	  tp->private->app_thread_port =
 	    get_application_thread_port (thread_list[i]);
 	}
@@ -1215,10 +1216,10 @@ macosx_check_new_threads (thread_array_t thread_list, unsigned int nthreads)
     }
 }
 
-/* This differs from child_stop in that we don't send
+/* This differs from child_stop in that we do NOT send
    "-inferior_process_group" to kill when we are attached to the
    process, we just send inferior_process_group.  Even this is kind
-   of a lie, since inferior_process_group really isn't, it is just
+   of a lie, since inferior_process_group really is not, it is just
    the pid of the child process, look at "terminal_init_inferior"
    in inflow.c, which sets inferior_process_group.  This just passes
    in the pid of the child process!  I think all the job control
@@ -1261,7 +1262,7 @@ macosx_child_resume (ptid_t ptid, int step, enum target_signal signal)
   if (!macosx_inferior_valid (macosx_status))
     return;
 
-  /* Check for pending events.  If we find any, then we won't really resume,
+  /* Check for pending events.  If we find any, then we will NOT really resume,
      but rather we will extract the first event from the pending events
      queue, and post it to the gdb event queue, and then "pretend" that we
      have in fact resumed. */
@@ -1397,7 +1398,7 @@ macosx_mourn_inferior ()
   remove_thread_event_breakpoints ();
 #if HAVE_64_BIT_STACK_LOGGING
   macosx_clear_logging_path ();
-#endif
+#endif /* HAVE_64_BIT_STACK_LOGGING */
 }
 
 void
@@ -1441,7 +1442,7 @@ macosx_process_completer_quoted (char *text, char *word, int quote,
 
   for (i = 0; i < count; i++)
     {
-      /* gdb can't attach to itself */
+      /* gdb cannot attach to the same instance of itself */
       if (proc[i].kp_proc.p_pid == gdb_pid)
         continue;
       /* classic-inferior-support */
@@ -1727,8 +1728,8 @@ macosx_lookup_task (char *args, task_t *ptask, int *ppid)
           || strcmp ("--waitfor", argv[0]) == 0)
         {
            /* If the user-provided process name string is long than the
-              proc name string provided by the kernel we'll need to truncate
-              the user's string if we're going to find a match.  */
+              proc name string provided by the kernel we will need to truncate
+              the user's string if we are going to find a match.  */
            pid_str = argv[1];
            if (strlen (pid_str) > MAXCOMLEN)
              pid_str[MAXCOMLEN] = '\0';
@@ -1805,8 +1806,8 @@ macosx_child_attach (char *args, int from_tty)
     }
 
   /* classic-inferior-support
-     A bit of a hack:  Despite being in the middle of macosx_child_attach(), 
-     if we're about to attach to a classic process we're going to use an
+     A bit of a hack: Despite being in the middle of macosx_child_attach(), 
+     if we are about to attach to a classic process we are going to use an
      entirely different attach procedure and skip out of here.  */
 
   if (attaching_to_classic_process_p (pid))
@@ -1816,7 +1817,7 @@ macosx_child_attach (char *args, int from_tty)
     }
   
   /* A native (i386) gdb trying to attach to a translated (ppc) app will
-     result in a gdb crash.  Let's flag it as an error instead.  */
+     result in a gdb crash.  Let us flag it as an error instead.  */
   if (is_pid_classic (getpid ()) == 0 && is_pid_classic (pid) == 1)
     warning ("Attempting to attach to a PPC process with an i386 "
              "native gdb - attach will not succeed.");
@@ -1878,34 +1879,34 @@ macosx_child_attach (char *args, int from_tty)
       enum macosx_source_type source;
       unsigned char buf[1024];
 
-      /* read attach notification.  This is a little gross, as it
-         turns out.  We call ptrace with PT_ATTACHEXC and we get the
-         EXC_SOFT_SIGNAL for the SIGSTOP, but for some reason I don't
-         quite understand, we ALSO get a SIGSTOP from the waitpid in
-         the signal thread.  This happens even though we haven't
-         replied to the exception yet, or restarted the target.
-
-         HOWEVER, when we attach to a program that's been stopped
-         under CrashReporter, we don't get the waitpid SIGSTOP.  So we
-         can't do a blocking wait for it or we will never return in
-         the CrashReporter case.  Instead, we just poll the event
-         threads and see if anything has come in.  If it's the
-         SIGSTOP, we silently discard it.  
-
-	 Finally...  We have to make sure the signal thread has a
-         chance to run through the first waitpid call or we will pick
-         up the SIGSTOP next time we look for events (when we go to
-         continue.)  To do that we call macosx_fetch_event for the 
-	 signal thread with a fairly long (.1 sec) timeout.
-      */
+      /* read attach notification. This is a little gross, as it
+       * turns out. We call ptrace with PT_ATTACHEXC and we get the
+       * EXC_SOFT_SIGNAL for the SIGSTOP, but for some reason I do NOT
+       * quite understand, we ALSO get a SIGSTOP from the waitpid in
+       * the signal thread. This happens even though we have NOT
+       * replied to the exception yet, or restarted the target.
+       *
+       * HOWEVER, when we attach to a program that has been stopped
+       * under CrashReporter, we do NOT get the waitpid SIGSTOP. So we
+       * cannot do a blocking wait for it or we will never return in
+       * the CrashReporter case. Instead, we just poll the event
+       * threads and see if anything has come in. If it is/was the
+       * SIGSTOP, we silently discard it.  
+       *
+	   * Finally... We have to make sure the signal thread has a
+       * chance to run through the first waitpid call or we will pick
+       * up the SIGSTOP next time we look for events (when we go to
+       * continue.) To do that we call macosx_fetch_event for the 
+	   * signal thread with a fairly long (.1 sec) timeout.
+       */
 
       /* So this wait - which has only the exception thread running,
-	 will get us the EXC_SOFT_SIGNAL,SIGSTOP.  */
+	   * will get us the EXC_SOFT_SIGNAL,SIGSTOP.  */
       stop_soon = STOP_QUIETLY;
       wait_for_inferior ();
 
       /* Now we need to start up the signal thread, wait to give it a chance to 
-	 start up, then we will snag the signal and discard it.  */
+	   * start up, then we will snag the signal and discard it.  */
 
       macosx_signal_thread_create (&macosx_status->signal_status,
                                    macosx_status->pid);
@@ -1923,8 +1924,8 @@ macosx_child_attach (char *args, int from_tty)
 	  if (signo != SIGSTOP)
 	    {
 	      /* If we are attaching to a crashed program - this
-		 happens when Xcode catches the crash, for instance -
-		 we'll pick up the crash signal rather than a SIGSTOP.  */
+		   * happens when Xcode catches the crash, for instance -
+		   * we will pick up the crash signal rather than a SIGSTOP.  */
 	      inferior_debug (2,"Attach returned signal: %d\n", signo);
 	    }
 	  else 
@@ -1941,19 +1942,19 @@ macosx_child_attach (char *args, int from_tty)
       macosx_solib_add (NULL, 0, NULL, 0);
     }
 
-  /* I don't have any good way to know whether the malloc library
-     has been initialized yet.  But I'm going to guess that we are
+  /* I do NOT have any good way to know whether the malloc library
+     has been initialized yet. But I am going to guess that we are
      unlikely to be able to attach BEFORE then...  */
   /* BUT sometimes we get a process that has been stopped at the
      first instruction when launched so we can attach to it.  In
-     that case, we know that malloc hasn't been inited.  We had
+     that case, we know that malloc has NOT been inited. We had
      better not set malloc inited in that case, or somebody will
      try to call a function that does malloc, and we will corrupt
      the target.
 
-     Note, we don't know what the "first instruction is" we are just
-     relying on the fact that it's currently _dyld_start.  Yecch...
-     But I can't think of anything better to do.  */
+     Note, we do NOT know what the "first instruction is", we are just
+     relying on the fact that it is currently _dyld_start. Yecch...
+     But I cannot think of anything better to do.  */
   {
     extern char *dyld_symbols_prefix;
     int result;
@@ -1967,9 +1968,9 @@ macosx_child_attach (char *args, int from_tty)
 	decorated_dyld_start = xmalloc ( strlen ("_dyld_start") 
 				   + strlen (dyld_symbols_prefix) + 1);
 	sprintf (decorated_dyld_start, "%s_dyld_start", dyld_symbols_prefix);
-	/* I also check to make sure we're not too far away from
+	/* I also check to make sure we are not too far away from
 	   _dyld_start, in case dyld gets stripped and there are a
-	   bunch of functions after dyld_start that don't have
+	   bunch of functions after dyld_start that do NOT have
 	   symbols.  */
 	if (strcmp (name, decorated_dyld_start) != 0
 	    || stop_pc - addr > 30 )
@@ -2248,9 +2249,9 @@ post_to_semaphore (void *input)
   while (1)
     {
       sem = sem_open (sem_name, 0);
-      /* If the semaphore hasn't been created on the
-	 child side of the fork yet, sleep a teeny bit
-	 and then try again.  */
+      /* If the semaphore has NOT been created on the
+	   * child side of the fork yet, sleep a teeny bit
+	   * and then try again.  */
 
       if (sem == (sem_t *) SEM_FAILED)
 	{
@@ -2279,8 +2280,8 @@ macosx_ptrace_him (int pid)
   CHECK_FATAL (macosx_status->suspend_count == 0);
 
   /* I have to make sure that the exception thread is up & waiting
-     before I let the child exec.  I do this with this little
-     semaphore.  I do it in a cleanup so I won't leave the fork
+     before I let the child exec. I do this with this little
+     semaphore. I do it in a cleanup so I will NOT leave the fork
      side hanging if I run into an error here.  */
 
   sem_cleanup = make_cleanup (post_to_semaphore, (void *) pid);
@@ -2320,16 +2321,16 @@ macosx_ptrace_him (int pid)
   macosx_status->suspend_count = 0;
 
   /* This set how many traps we expect before we get to the
-     PT_TRACEME trap we really care about.  When using just
-     "exec" in the shell, we'll get one for the shell exec'ing,
-     and one for the exec command.  For "arch" there's one more
+     PT_TRACEME trap we really care about. When using just
+     "exec" in the shell, we will get one for the shell exec'ing,
+     and one for the exec command.  For "arch" there is one more
      for the "arch" command running.  */
 
 #ifdef USE_ARCH_FOR_EXEC
   traps_expected = (start_with_shell_flag ? 3 : 1);
 #else
   traps_expected = (start_with_shell_flag ? 2 : 1);
-#endif
+#endif /* USE_ARCH_FOR_EXEC */
 
   /* Okay, the exception & signal listeners are set up,
      now signal the child side that it can proceed.  */
@@ -2377,7 +2378,7 @@ macosx_get_task_for_pid_rights (void)
 }
 
 /* This version of macosx_child_create_inferior is needed to work
-   around the fact that the task port doesn't persist across a
+   around the fact that the task port does NOT persist across a
    fork/exec.  It would be nice if we could just switch to the new
    task after the exec, but that is currently buggy, and the
    PT_THUPDATE stops working.  So instead, this code just lets
@@ -2453,10 +2454,10 @@ macosx_child_create_inferior (char *exec_file, char *allargs, char **env,
     }
 #elif defined (TARGET_ARM)
 
-#if 0
-  /* Don't set the CPU type for ARM as we currently can't reliably set
+# if 0
+  /* Do NOT set the CPU type for ARM as we currently cannot reliably set
      the CPU type with posix_spawnattr_setbinpref_np as it will pick the 
-     first CPU type that matches CPU_TYPE_ARM which isn't necessarily the
+     first CPU type that matches CPU_TYPE_ARM which is not necessarily the
      one that we want to run. If we ever want to use 
      posix_spawnattr_setbinpref_np for ARM, we will also need a way to set
      the CPU subtype.  */
@@ -2472,37 +2473,39 @@ macosx_child_create_inferior (char *exec_file, char *allargs, char **env,
     {
       cpu = CPU_TYPE_ARM;
     }
-#endif
-#endif
+# endif /* 0 */
+#endif /* TARGET_(architecture) */
 
   retval = posix_spawnattr_init (&attr);
   if (retval != 0)
-    error ("Couldn't initialize attributes for posix_spawn, error: %d", retval);
+    error ("Could NOT initialize attributes for posix_spawn, error: %d", retval);
 
   int ps_flags = 0;
 
 #ifndef _POSIX_SPAWN_DISABLE_ASLR
-#define _POSIX_SPAWN_DISABLE_ASLR 0x0100
-#endif
+# define _POSIX_SPAWN_DISABLE_ASLR 0x0100
+#endif /* !_POSIX_SPAWN_DISABLE_ASLR */
 
   ps_flags = POSIX_SPAWN_START_SUSPENDED;
-  if (disable_aslr_flag)
-    ps_flags |= _POSIX_SPAWN_DISABLE_ASLR;
+	if (disable_aslr_flag) {
+		ps_flags |= _POSIX_SPAWN_DISABLE_ASLR;
+	}
 
   retval = posix_spawnattr_setflags (&attr, ps_flags);
-  if (retval != 0)
-    error ("Couldn't add _POSIX_SPAWN_DISABLE_ASLR and POSIX_SPAWN_START_SUSPENDED to posix_spawn flags, got return value %d", retval);
+	if (retval != 0) {
+		error ("Could not add _POSIX_SPAWN_DISABLE_ASLR and POSIX_SPAWN_START_SUSPENDED to posix_spawn flags, got return value %d", retval);
+	}
 
   if (cpu != 0)
     {
       size_t copied = 0;	
       retval = posix_spawnattr_setbinpref_np(&attr, 1, &cpu, &copied);
       if (retval != 0 || copied != 1)
-	  error ("Couldn't set the binary preferences, error: %d", retval);
+	  error ("Could NOT set the binary preferences, error: %d", retval);
     }
   retval = posix_spawnattr_setpgroup (&attr, debug_setpgrp);
   if (retval != 0)
-    error ("Couldn't set the process group, error: %d", retval);
+    error ("Could NOT set the process group, error: %d", retval);
 
   retval = posix_spawnp (&new_pid, fileptr, NULL,  &attr, argv, env);
 
@@ -2515,7 +2518,7 @@ macosx_child_create_inferior (char *exec_file, char *allargs, char **env,
     }
   announce_attach = 1;
   /* Clear the attach flag that was set by calling macosx_child_attach() so
-     if/when gdb is quit it won't keep the child process around and 
+     if/when gdb is quit it will NOT keep the child process around and 
      running.  */
   attach_flag = 0;
 
@@ -2554,12 +2557,12 @@ macosx_get_task_for_pid_rights (void)
     return 0;
 
   /* If you have a window server connection, then this call will put
-     up a dialog box if it can.  However, if the current user doesn't
+     up a dialog box if it can.  However, if the current user does NOT
      have a connection to the window server (for instance if they are
      in an ssh session) then this call will return
      errAuthorizationInteractionNotAllowed.  
-     I want to do this way first, however, since I'd prefer the dialog
-     box - for instance if I'm running under Xcode - to trying to prompt.  */
+     I want to do this way first, however, since I would prefer the dialog
+     box - for instance if I am running under Xcode - to trying to prompt.  */
 
   stat = AuthorizationCopyRights (author, &rights, kAuthorizationEmptyEnvironment,
 				  auth_flags,
@@ -2571,11 +2574,11 @@ macosx_get_task_for_pid_rights (void)
     }
   else if (stat == errAuthorizationInteractionNotAllowed)
     {
-      /* Okay, so the straight call couldn't query, so we're going to
+      /* Okay, so the straight call could NOT query, so we are going to
          have to get the username & password and send them by hand to
          AuthorizationCopyRights.  */
-      /* However, if we're running under the mi, I can't do hidden password 
-	 input, so I return failure instead.  */
+      /* However, if we are running under the mi, I cannot do hidden password 
+	   * input, so I return failure instead.  */
 
       if (ui_out_is_mi_like_p (uiout))
 	{
@@ -2621,7 +2624,7 @@ macosx_get_task_for_pid_rights (void)
       auth_items[1].value = pass;
 
       /* If we got rights in the AuthorizationCopyRights call above,
-	 free it before we reuse the pointer. */
+	   * free it before we reuse the pointer. */
       if (out_rights != NULL)
 	AuthorizationFreeItemSet (out_rights);
 	
@@ -2652,11 +2655,11 @@ macosx_child_create_inferior (char *exec_file, char *allargs, char **env,
        || exec_bfd->xvec->flavour == bfd_target_pef_xlib_flavour))
     {
       error
-        ("Can't run a PEF binary - use LaunchCFMApp as the executable file.");
+        ("Cannot run a PEF binary - use LaunchCFMApp as the executable file.");
     }
 
-  /* It's not safe to call functions in the target until we've initialized
-     the libsystem malloc package.  So for now, mark it unsafe.  */
+  /* It is not safe to call functions in the target until we have initialized
+     the libsystem malloc package. So for now, mark it unsafe.  */
   macosx_set_malloc_inited (0);
 
   fork_inferior (exec_file, allargs, env, macosx_ptrace_me, macosx_ptrace_him,
@@ -2674,7 +2677,7 @@ macosx_child_create_inferior (char *exec_file, char *allargs, char **env,
   clear_proceed_status ();
   proceed ((CORE_ADDR) - 1, TARGET_SIGNAL_0, 0);
 }
-#endif
+#endif /* TARGET_ARM (way up, before the previous one) */
 
 static void
 macosx_child_files_info (struct target_ops *ops)
@@ -3197,7 +3200,7 @@ _initialize_macosx_inferior ()
 
   macosx_complete_child_target (&macosx_exec_ops);
 
-  /* We don't currently ever use the "macos-exec" target ops.
+  /* We do NOT currently ever use the "macos-exec" target ops.
      Instead, just make them be the default exec_ops.  */
 
   /* FIXME: The original intent was that we have a macosx_exec_ops
@@ -3245,7 +3248,7 @@ _initialize_macosx_inferior ()
   macosx_child_ops.to_save_thread_inferior_status = arm_macosx_save_thread_inferior_status;
   macosx_child_ops.to_restore_thread_inferior_status = arm_macosx_restore_thread_inferior_status;
   macosx_child_ops.to_free_thread_inferior_status = arm_macosx_free_thread_inferior_status;
-#endif
+#endif /* TARGET_ARM */
   macosx_child_ops.to_has_thread_control = tc_schedlock | tc_switch;
 
   macosx_child_ops.to_find_exception_catchpoints

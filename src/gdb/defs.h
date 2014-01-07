@@ -164,6 +164,9 @@
 #  endif /* HAVE_LIBGETTEXT_H */
 # endif /* HAVE_LIBINTL_H */
 #else
+# ifdef HAVE_LIBINTL_H
+#  warning enable nls to include <libintl.h>
+# endif /* HAVE_LIBINTL_H */
 # ifndef gettext
 #  define gettext(Msgid) (Msgid)
 # endif /* !gettext */
@@ -179,6 +182,9 @@
 # ifndef bindtextdomain
 #  define bindtextdomain(Domainname, Dirname) while (0) /* nothing */
 # endif /* !bindtextdomain */
+# ifndef _gettext
+#  define _gettext(Msgid) (Msgid)
+# endif /* !_gettext */
 #endif /* ENABLE_NLS */
 
 /* A byte from the program being debugged.  */

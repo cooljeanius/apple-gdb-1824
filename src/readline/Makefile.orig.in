@@ -47,6 +47,7 @@ mandir = @mandir@
 includedir = @includedir@
 
 infodir = @infodir@
+datarootdir = @datarootdir@
 
 man3dir = $(mandir)/man3
 

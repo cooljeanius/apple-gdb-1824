@@ -36,18 +36,18 @@ dnl# These must be called before LT_INIT, because it may want
 dnl# to call AC_CHECK_PROG.
 AM_PROG_AS
 AM_PROG_AR
-if test "x$AR" = "x"; then
-	test -z "$AR"
+if test "x${AR}" = "x"; then
+	test -z "${AR}"
 	AC_CHECK_TOOL([AR],[ar])
 else
-	test ! -z "$AR"
+	test ! -z "${AR}"
 fi
 AC_CHECK_TOOL([RANLIB],[ranlib],[:])
-if test "x$RANLIB" = "x"; then
-	test -z "$RANLIB"
+if test "x${RANLIB}" = "x"; then
+	test -z "${RANLIB}"
 	AC_PROG_RANLIB
 else
-	test ! -z "$RANLIB"
+	test ! -z "${RANLIB}"
 fi
 
 dnl# Default to a non shared library. This may be overridden by the
@@ -259,6 +259,23 @@ AC_CHECK_LIB([gnu],[main])
 
 # Checks for header files.
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
+if test -d ../intl; then
+  if test -z "${CPPFLAGS}"; then
+    export CPPFLAGS="-I../intl"
+  else
+    export CPPFLAGS="${CPPFLAGS} -I../intl"
+  fi
+elif test -d ../libintl; then
+  if test -z "${CPPFLAGS}"; then
+    export CPPFLAGS="-I../libintl"
+  else
+    export CPPFLAGS="${CPPFLAGS} -I../libintl"
+  fi
+fi
+unset ac_cv_header_libintl_h
+unset ac_cv_header_limits_h
+unset ac_cv_header_stdlib_h
+unset ac_cv_header_sys_param_h
 AC_CHECK_HEADERS([ctype.h errno.h fcntl.h gettext.h iconv.h libgettext.h \
                   libintl.h limits.h mach/mach.h mach-o/loader.h \
                   malloca.h malloc/malloc.h realloc.h stdarg.h stddef.h \

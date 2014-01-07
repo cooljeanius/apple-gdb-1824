@@ -96,9 +96,9 @@ config_shell=${CONFIG_SHELL-/bin/sh}
 # Another shell check:
 AC_SYS_INTERPRETER
 
-progname=$0
+progname=${0}
 # if PWD already has a value, it is probably wrong.
-if test -n "$PWD" ; then PWD=`${PWDCMD-pwd}`; fi
+if test -n "${PWD}" ; then PWD=`${PWDCMD-pwd}`; fi
 
 # Test for sed
 AC_PROG_SED
@@ -213,7 +213,7 @@ target_tools="target-examples target-groff target-gperf target-rda"
 ###########################################################################
 
 ## All tools belong in one of the four categories, and are assigned above
-## We assign ${configdirs} this way to remove all embedded newlines.  This
+## We assign ${configdirs} this way to remove all embedded newlines. This
 ## is important because configure will choke if they ever get through.
 ## ${configdirs} is directories we build using the host tools.
 ## ${target_configdirs} is directories we build using the target tools.
@@ -250,20 +250,20 @@ fi
 GCC_TOPLEV_SUBDIRS
 
 # Skipdirs are removed silently.
-skipdirs=
+skipdirs=""
 # Noconfigdirs are removed loudly.
 noconfigdirs=""
 
-use_gnu_ld=
+use_gnu_ld=""
 # Make sure we do NOT let GNU ld be added if we did NOT want it.
-if test x$with_gnu_ld = xno ; then
+if test x${with_gnu_ld} = xno ; then
   use_gnu_ld=no
   noconfigdirs="${noconfigdirs} ld"
 fi
 
-use_gnu_as=
+use_gnu_as=""
 # Make sure we do NOT let GNU as be added if we did NOT want it.
-if test x$with_gnu_as = xno ; then
+if test x${with_gnu_as} = xno ; then
   use_gnu_as=no
   noconfigdirs="${noconfigdirs} gas"
 fi
@@ -284,6 +284,8 @@ case ${with_x} in
   *)  echo "*** bad value \"${with_x}\" for -with-x flag; ignored" 1>&2 ;;
 esac
 
+AC_MSG_CHECKING([subdirectories to skip])
+AC_MSG_RESULT([(will announce results later)])
 # Some tools are only suitable for building in a "native" situation.
 # Remove these if host!=target.  
 native_only="autoconf automake libtool fileutils find gawk gettext gzip hello indent m4 rcs recode sed shellutils tar textutils uudecode wdiff gprof target-groff guile perl time ash bash bzip2 prms gnuserv target-gperf"
@@ -292,7 +294,7 @@ native_only="autoconf automake libtool fileutils find gawk gettext gzip hello in
 # Remove these if host=target.
 cross_only="target-libgloss target-newlib target-opcodes"
 
-case $is_cross_compiler in
+case ${is_cross_compiler} in
   no) skipdirs="${skipdirs} ${cross_only}" ;;
   yes) skipdirs="${skipdirs} ${native_only}" ;;
 esac
@@ -361,7 +363,7 @@ esac
 
 AC_ARG_ENABLE([libada],
 [AS_HELP_STRING([--enable-libada],[Builds libada directory])],
-[ENABLE_LIBADA=$enableval],
+[ENABLE_LIBADA=${enableval}],
 [ENABLE_LIBADA=yes])
 if test "${ENABLE_LIBADA}" != "yes" ; then
   noconfigdirs="${noconfigdirs} target-libada"
@@ -394,7 +396,7 @@ esac
 
 
 # Allow --disable-libmudflap to exclude target-libmudflap
-case $enable_libmudflap in
+case ${enable_libmudflap} in
 yes)
     ;;
 no)
@@ -434,6 +436,9 @@ case "${target}" in
     ;;
 # APPLE LOCAL: Customize our platform configuration a bit.
   *-*-darwin*)
+# The Apple linker and assembler packages are part of the cctools and ld64
+# packages respectively (see opensource.apple.com for more info)
+# Thus we avoid building the GNU ones here:
     noconfigdirs="${noconfigdirs} ld gas gprof"
     noconfigdirs="${noconfigdirs} target-rda"
     noconfigdirs="${noconfigdirs} ${libgcj}"
@@ -447,43 +452,47 @@ case "${target}" in
       AC_MSG_WARN([You appear to be at Apple, in that case disabling subdirectories that Apple says to disable (unset the APPLE_INTERNAL_DIR environment variable to avoid this)])
       noconfigdirs="${applespecifiednoconfigdirs}"
     fi
+# building zlib from this level can mess it up; build it manually instead
+    if test -z "${AR}" -o -z "${ARFLAGS}" -o "${AR}" = "libtool" -o "${AR}" = "ar" -o "${ARFLAGS}" = "-o"; then
+      noconfigdirs="${noconfigdirs} zlib"
+    fi
 # I also do not know about a lot of the rest of these:
     enable_shared=no
     enable_64_bit_bfd=yes
     enable_softfloat=no
-    host_configargs=" $host_configargs --disable-shared --enable-64-bit-bfd --disable-softfloat --disable-werror "
+    host_configargs=" ${host_configargs} --disable-shared --enable-64-bit-bfd --disable-softfloat --disable-werror "
 
     AC_ARG_ENABLE([carbon-framework],
     [AS_HELP_STRING([--disable-carbon-framework],[disable Carbon framework use even when available])],
-    [case $enableval in
+    [case ${enableval} in
       yes)
-        host_configargs=" $host_configargs --enable-carbon-framework" ;;
+        host_configargs=" ${host_configargs} --enable-carbon-framework" ;;
       no) 
-        host_configargs=" $host_configargs --disable-carbon-framework" ;;
+        host_configargs=" ${host_configargs} --disable-carbon-framework" ;;
       *)
-        AC_MSG_ERROR([bad value '$enableval' for --enable-carbon-framework]) ;;
+        AC_MSG_ERROR([bad value '${enableval}' for --enable-carbon-framework]) ;;
     esac],[])
 
     AC_ARG_ENABLE([debug-symbols-framework],
     [AS_HELP_STRING([--disable-debug-symbols-framework],[disable DebugSymbols framework use even when available])],
-    [case $enableval in
+    [case ${enableval} in
       yes)
-        host_configargs=" $host_configargs --enable-debug-symbols-framework" ;;
+        host_configargs=" ${host_configargs} --enable-debug-symbols-framework" ;;
       no) 
-        host_configargs=" $host_configargs --disable-debug-symbols-framework" ;;
+        host_configargs=" ${host_configargs} --disable-debug-symbols-framework" ;;
       *)
-        AC_MSG_ERROR([bad value '$enableval' for --enable-debug-symbols-framework]) ;;
+        AC_MSG_ERROR([bad value '${enableval}' for --enable-debug-symbols-framework]) ;;
     esac],[])
 
     AC_ARG_ENABLE([arch-for-exec],
       [AS_HELP_STRING([--disable-arch-for-exec],[disable use of arch for exec])],
-      [case $enableval in
+      [case ${enableval} in
         yes) 
-          host_configargs=" $host_configargs --enable-arch-for-exec" ;;
+          host_configargs=" ${host_configargs} --enable-arch-for-exec" ;;
         no) 
-          host_configargs=" $host_configargs --disable-arch-for-exec" ;;
+          host_configargs=" ${host_configargs} --disable-arch-for-exec" ;;
         *)
-          AC_MSG_ERROR([bad value '$enableval' for --enable-arch-for-exec]) ;;
+          AC_MSG_ERROR([bad value '${enableval}' for --enable-arch-for-exec]) ;;
       esac],[])
     ;;
 # END APPLE LOCAL
@@ -1158,20 +1167,20 @@ else
   # We must set the default linker to the linker used by gcc for the
   # correct operation of libtool. If LD is not defined and we are using
   # gcc, try to set the LD default to the ld used by gcc.
-  if test -z "$LD"; then
-    if test "$GCC" = yes; then
-      case $build in
+  if test -z "${LD}"; then
+    if test "${GCC}" = yes; then
+      case ${build} in
         *-*-mingw*)
-	      gcc_prog_ld=`$CC -print-prog-name=ld 2>&1 | tr -d '\015'`
+	      gcc_prog_ld=`${CC} -print-prog-name=ld 2>&1 | tr -d '\015'`
 	      ;;
         *)
-	      gcc_prog_ld=`$CC -print-prog-name=ld 2>&1`
+	      gcc_prog_ld=`${CC} -print-prog-name=ld 2>&1`
 	      ;;
       esac
-      case $gcc_prog_ld in
+      case ${gcc_prog_ld} in
         # Accept absolute paths.
         [[\\/]* | [A-Za-z]:[\\/]*)]
-          LD="$gcc_prog_ld"
+          LD="${gcc_prog_ld}"
           ;;
       esac
     fi # GCC

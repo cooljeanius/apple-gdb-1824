@@ -28,15 +28,15 @@
 #include <fcntl.h>
 
 #if TARGET_POWERPC
-#include "ppc-macosx-thread-status.h"
-#include "ppc-macosx-regs.h"
-#include "ppc-macosx-regnums.h"
-#endif
+# include "ppc-macosx-thread-status.h"
+# include "ppc-macosx-regs.h"
+# include "ppc-macosx-regnums.h"
+#endif /* TARGET_POWERPC */
 
 #if TARGET_I386
-#include "i386-macosx-thread-status.h"
-#include "i386-macosx-tdep.h"
-#endif
+# include "i386-macosx-thread-status.h"
+# include "i386-macosx-tdep.h"
+#endif /* TARGET_I386 */
 
 #include "defs.h"
 #include "inferior.h"
@@ -48,18 +48,19 @@
 #include "infcall.h"  /* For inferior_function_calls_disabled_p.  */
 
 #ifndef CPU_TYPE_I386
-#define CPU_TYPE_I386 (7)
-#endif
+# define CPU_TYPE_I386 (7)
+#endif /* !CPU_TYPE_I386 */
 
 #ifndef CPU_TYPE_POWERPC
-#define CPU_TYPE_POWERPC (18)
-#endif
+# define CPU_TYPE_POWERPC (18)
+#endif /* !CPU_TYPE_POWERPC */
 
 #define DARWIN_KERNEL_ID 0
 
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
+#include <libintl.h>
 
 extern int standard_is_async_p (void);
 extern int standard_can_async_p (void);
@@ -119,11 +120,13 @@ darwin_kernel_attach (char *args, int from_tty)
 	if ((darwin_kernel_fd = open("/dev/kmem", O_RDONLY)) < 0)
 	{
 		char errstr[128];
-		if (errno == ENOENT)
-			strcpy(errstr, "The /dev/kmem device doesn't exist; perhaps this kernel wasn't started with the kmem=1 kernel boot-arg.\n");
+		if (errno == ENOENT) {
+			strcpy(errstr, "The /dev/kmem device does NOT exist; perhaps this kernel was NOT started with the kmem=1 kernel boot-arg, or was compiled without support for it.\n");
+		}
 		else
-			if (errno == EACCES)
+			if (errno == EACCES) {
 				strcpy(errstr, "The /dev/kmem device is inaccessible; GDB must run as the superuser to access the kernel address space.\n");
+			}
 		darwin_kernel_logger(DARWIN_KERNEL_LOG_ERROR, "open", errstr);
 		return;
 	}
@@ -337,3 +340,5 @@ No additional help."),
 	    NULL,
 	    &setlist, &showlist);
 }
+
+/* EOF */

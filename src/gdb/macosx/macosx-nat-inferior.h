@@ -84,8 +84,8 @@ void delete_private_thread_info (struct thread_info *thrd_info);
 int create_core_thread_state_cache (struct thread_info *thrd_info);
 void delete_core_thread_state_cache (struct thread_info *thrd_info);
 
-/* This should probably go in a separate machoread.h, but since it's
-   only one function, I'll wait on that:  */
+/* This should probably go in a separate machoread.h, but since it is
+   only one function, I will wait on that:  */
 void
 macho_calculate_offsets_for_dsym (struct objfile *main_objfile,
 				  bfd *sym_bfd,
@@ -101,3 +101,5 @@ macho_calculate_offsets_for_dsym (struct objfile *main_objfile,
 void macosx_complete_child_target (struct target_ops *target);
 int macosx_get_task_for_pid_rights (void);
 #endif /* __GDB_MACOSX_NAT_INFERIOR_H__ */
+
+/* EOF */

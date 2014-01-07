@@ -50,6 +50,7 @@
 #include <signal.h>
 #include <string.h>
 #include <ctype.h>
+#include <libintl.h>
 
 #include <CoreFoundation/CFURLAccess.h>
 #include <CoreFoundation/CFPropertyList.h>
@@ -229,7 +230,7 @@ make_info_plist_path (const char *bundle, const char *bundle_suffix,
    property list can be text XML, or a binary plist. The opaque plist pointer
    that is returned should be freed using a call to macosx_free_plist () when 
    no more values are required from the property list. A valid pointer to a 
-   property list will be returned, or NULL if the file doesn't exist or if 
+   property list will be returned, or NULL if the file does NOT exist or if 
    there are any problems parsing the property list file. Valid property 
    list pointers should be released using a call to macosx_free_plist () 
    when the property list is no longer needed.  */
@@ -270,7 +271,7 @@ macosx_parse_plist (const char *path)
 	  if (plist != NULL)
 	    {
 	      /* Make sure the property list was a CFDictionary, free it and
-		 NULL the pointer if it isn't.  */
+		   * NULL the pointer if it was not as such.  */
 	      if (CFGetTypeID (plist) != CFDictionaryGetTypeID ())
 		{
 		  CFRelease (plist);
@@ -287,8 +288,8 @@ macosx_parse_plist (const char *path)
 
 
 /* Return the string value suitable for use with posix file system calls for 
-   KEY found in PLIST. NULL will be returned if KEY doesn't have a valid value
-   in the the property list, if the value isn't a string, or if there were 
+   KEY found in PLIST. NULL will be returned if KEY does not have a valid value
+   in the the property list, if the value is not a string, or if there were 
    errors extracting the value for KEY.  */
 const char *
 macosx_get_plist_posix_value (const void *plist, const char* key)
@@ -320,16 +321,17 @@ macosx_get_plist_posix_value (const void *plist, const char* key)
 	    }
 	}
     }
-  if (cf_key)
-    CFRelease (cf_key);
+	if (cf_key) {
+		CFRelease (cf_key);
+	}
   return value;
 }
 
 
 
 /* Return the string value for KEY found in PLIST. NULL will be returned if
-   KEY doesn't have a valid value in the the property list, if the value 
-   isn't a string, or if there were errors extracting the value for KEY.  */
+   KEY does not have a valid value in the the property list, if the value 
+   is not a string, or if there were errors extracting the value for KEY.  */
 const char *
 macosx_get_plist_string_value (const void *plist, const char* key)
 {
@@ -398,7 +400,7 @@ macosx_print_extra_stop_info (int code, CORE_ADDR address)
     case 0x102:
       ui_out_field_string (uiout, "access-reason", "EXC_ARM_DA_DEBUG");
       break;
-#endif
+#endif /* TARGET_ARM */
     default:
       ui_out_field_int (uiout, "access-reason", code);
     }
@@ -444,9 +446,9 @@ mach_warn_error (kern_return_t ret, const char *file,
 }
 
 
-/* This flag tells us whether we've determined that malloc
+/* This flag tells us whether we have determined that malloc
    is unsafe since the last time we stopped (excepting hand_call_functions.)
-   -1 means we haven't checked yet.
+   -1 means we have not checked yet.
    0 means it is safe
    1 means it is unsafe.
    If you set this, be sure to add a hand_call_cleanup to restore it.  */
@@ -460,8 +462,8 @@ do_reset_malloc_unsafe_flag (void *unused)
 }
 
 /* macosx_check_malloc_is_unsafe calls into LibC to see if the malloc lock is taken
-   by any thread.  It returns 1 if malloc is locked, 0 if malloc is unlocked, and
-   -1 if LibC doesn't support the malloc lock check function. */
+   by any thread. It returns 1 if malloc is locked, 0 if malloc is unlocked, and
+   -1 if LibC does not support the malloc lock check function. */
 
 static int
 macosx_check_malloc_is_unsafe ()
@@ -579,7 +581,7 @@ macosx_check_safe_call (int which, enum check_which_threads thread_mode)
 	      regerror (err_code, &(macosx_unsafe_patterns[i]),
 			err_str, 512);
 	      internal_error (__FILE__, __LINE__,
-			      "Couldn't compile unsafe call pattern %s, error %s", 
+			      "Could NOT compile unsafe call pattern %s, error %s", 
 			      macosx_unsafe_regexes[i], err_str);
 	    }
 	}
@@ -601,9 +603,9 @@ macosx_check_safe_call (int which, enum check_which_threads thread_mode)
 	  return 0;
 	}
 
-      /* macosx_check_malloc_is_unsafe doesn't tell us about the current thread.
-	 So if the caller has asked explicitly about the current thread only, or
-	 the scheduler mode is set to off, just try the patterns.  */
+      /* macosx_check_malloc_is_unsafe does NOT tell us about the current thread.
+	   * So if the caller has asked explicitly about the current thread only, or
+	   * the scheduler mode is set to off, just try the patterns.  */
 
       if (thread_mode == CHECK_CURRENT_THREAD 
 	  || (thread_mode == CHECK_SCHEDULER_VALUE && !scheduler_lock_on_p ()))
@@ -633,10 +635,10 @@ macosx_check_safe_call (int which, enum check_which_threads thread_mode)
       struct cleanup *runtime_cleanup;
       enum objc_debugger_mode_result objc_retval = objc_debugger_mode_unknown;
       
-      /* Again, the debugger mode requires you only run the current thread.  If the
-	 caller requested information about the current thread, that means she will
-	 be running the all threads - just with code on the current thread.  So we
-	 shouldn't use the debugger mode.  */
+      /* Again, the debugger mode requires you only run the current thread. If the
+	   * caller requested information about the current thread, that means she will
+	   * be running the all threads - just with code on the current thread. So we
+	   * should NOT use the debugger mode.  */
 
       if (thread_mode == CHECK_ALL_THREADS
           || (thread_mode == CHECK_SCHEDULER_VALUE && scheduler_lock_on_p ()))
@@ -646,7 +648,7 @@ macosx_check_safe_call (int which, enum check_which_threads thread_mode)
 	  if (objc_retval == objc_debugger_mode_success)
 	    {
               /* This is cheating, but setting up the debugger mode checks all the
-                 other states first, so if we get this, we're done.  */
+                 other states first, so if we get this, we are done.  */
 	      return 1;
 	    }
 	}
@@ -658,7 +660,7 @@ macosx_check_safe_call (int which, enum check_which_threads thread_mode)
 
           /* If we have the new objc runtime, I am going to be a little more
              paranoid, and if any frames in the first 5 stack frames are in 
-             libobjc, then I'll bail.  According to Greg, pretty much any routine
+             libobjc, then I will bail. According to Greg, pretty much any routine
              in libobjc in the new runtime is likely to hold an objc lock.  */
 
           if (new_objc_runtime_internals ())
@@ -672,7 +674,7 @@ macosx_check_safe_call (int which, enum check_which_threads thread_mode)
                   fi = get_current_frame ();
                   if (!fi)
                     {
-                      warning ("Cancelling operation - can't find base frame of "
+                      warning ("Cancelling operation - cannot find base frame of "
                                "the current thread to determine whether it is safe.");
                       return 0;
                     }
@@ -712,7 +714,7 @@ macosx_check_safe_call (int which, enum check_which_threads thread_mode)
 
   if (which & LOADER_SUBSYSTEM)
     {
-      /* FIXME - There's a better way to do this in SL. */
+      /* FIXME - There is a better way to do this in SL (and later(?)). */
       struct minimal_symbol *dyld_lock_p;
       int got_it_easy = 0;
       dyld_lock_p = lookup_minimal_symbol ("_dyld_global_lock_held", 0, 0);
@@ -760,24 +762,24 @@ macosx_check_safe_call (int which, enum check_which_threads thread_mode)
 
 #ifndef RTLD_LAZY
 
-#define RTLD_LAZY	0x1
-#define RTLD_NOW	0x2
-#define RTLD_LOCAL	0x4
-#define RTLD_GLOBAL	0x8
+# define RTLD_LAZY  	0x1
+# define RTLD_NOW   	0x2
+# define RTLD_LOCAL 	0x4
+# define RTLD_GLOBAL	0x8
 
-#if !defined(_POSIX_C_SOURCE) || defined(_DARWIN_C_SOURCE)
-#define RTLD_NOLOAD	0x10
-#define RTLD_NODELETE	0x80
-#define RTLD_FIRST	0x100	/* Mac OS X 10.5 and later */
-#endif
-#endif
+# if !defined(_POSIX_C_SOURCE) || defined(_DARWIN_C_SOURCE)
+#  define RTLD_NOLOAD	0x10
+#  define RTLD_NODELETE	0x80
+#  define RTLD_FIRST	0x100	/* Mac OS X 10.5 and later */
+# endif /* !_POSIX_C_SOURCE || !_DARWIN_C_SOURCE */
+#endif /* !RTLD_LAZY */
 
 static struct cached_value *dlerror_function;
 
 struct value *
 macosx_load_dylib (char *name, char *flags)
 {
-  /* We're basically just going to call dlopen, and return the
+  /* We are basically just going to call dlopen, and return the
      cookie that it returns.  BUT, we also have to make sure that
      we can get the unlimited mode of the ObjC debugger mode, since
      if the runtime is present, it is very likely that the new library
@@ -803,8 +805,9 @@ macosx_load_dylib (char *name, char *flags)
 	}
     }
 
-  if (dlopen_function == NULL)
-    error ("Can't find dlopen function, so it is not possible to load shared libraries.");
+	if (dlopen_function == NULL) {
+		error ("Cannot find dlopen function, so it is not possible to load shared libraries.");
+	}
 
   if (dlerror_function == NULL)
     {
@@ -819,7 +822,7 @@ macosx_load_dylib (char *name, char *flags)
   int_flags = 0;
   if (flags != NULL)
     {
-      /* The list of flags should be in the form A|B|C, but I'm actually going to
+      /* The list of flags should be in the form A|B|C, but I am actually going to
          do an even cheesier job of parsing, and just look for the elements I want.  */
       if (strstr (flags, "RTLD_LAZY") != NULL)
 	int_flags |= RTLD_LAZY;
@@ -837,9 +840,10 @@ macosx_load_dylib (char *name, char *flags)
 	int_flags |= RTLD_FIRST;
     }
 
-  /* If the user didn't pass in anything, set some sensible defaults.  */
-  if (int_flags == 0)
-    int_flags = RTLD_GLOBAL|RTLD_NOW;
+  /* If the user did NOT pass in anything, set some sensible defaults.  */
+	if (int_flags == 0) {
+		int_flags = RTLD_GLOBAL|RTLD_NOW;
+	}
 
   arg_val[1] = value_from_longest (builtin_type_int, int_flags);
 
@@ -868,7 +872,7 @@ macosx_load_dylib (char *name, char *flags)
   do_cleanups (debugger_mode_cleanup);
   do_cleanups (sched_cleanup);
 
-  /* Again we have to clear this out, since we don't want to preserve
+  /* Again we have to clear this out, since we do NOT want to preserve
      this version of the debugger mode.  */
 
   do_hand_call_cleanups (ALL_CLEANUPS);
@@ -889,8 +893,9 @@ macosx_load_dylib (char *name, char *flags)
 
 	  struct cleanup *scheduler_cleanup;
 
-	  if (dlerror_function == NULL)
-	    error ("dlopen got an error, but dlerror isn't available to report the error.");
+		if (dlerror_function == NULL) {
+			error ("dlopen got an error, but dlerror is NOT available to report the error.");
+		}
 
 	  scheduler_cleanup =
 	    make_cleanup_set_restore_scheduler_locking_mode (scheduler_locking_on);
@@ -924,4 +929,4 @@ macosx_load_dylib (char *name, char *flags)
   return ret_val;
 }
 
-
+/* EOF */

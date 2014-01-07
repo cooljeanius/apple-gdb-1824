@@ -26,7 +26,9 @@ gcc-4.2 -arch i386 -arch x86_64 ${CFLAGS} -c -o uncompr.o ${ZLIB_SRCDIR}/uncompr
 gcc-4.2 -arch i386 -arch x86_64 ${CFLAGS} -c -o zutil.o ${ZLIB_SRCDIR}/zutil.c
 
 gcc-4.2 -arch i386 -arch x86_64 ${CFLAGS} -c -o adler32vec.o ${ZLIB_SRCDIR}/intel/adler32vec.s
-gcc-4.2 -arch i386 -arch x86_64 ${CFLAGS} -c -o inffast.o ${ZLIB_SRCDIR}/intel/inffast.s
+gcc-4.2 -arch i386 -arch x86_64 ${CFLAGS} -c -o inffast.o ${ZLIB_SRCDIR}/intel/inffast.s || \
+gcc-4.2 -arch i386 -arch x86_64 ${CFLAGS} -c -o inffast.o ${ZLIB_SRCDIR}/contrib/inffast.S || \
+gcc-4.2 -arch i386 -arch x86_64 ${CFLAGS} -c -o inffas86.o ${ZLIB_SRCDIR}/contrib/inffas86.c
 
 gcc-4.2 -Wmost -pedantic -MMD  -O3 -g -std=c99   -arch x86_64 -msse3  -c -o ClockServices.64.o ClockServices.c
 gcc-4.2 -Wmost -pedantic -MMD  -O3 -g -std=c99   -arch i386 -msse3  -c -o ClockServices.32.o ClockServices.c

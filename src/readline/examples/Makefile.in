@@ -396,6 +396,7 @@ CCFLAGS = $(DEFS) $(LOCAL_CFLAGS) $(CPPFLAGS) $(INCLUDES) $(AM_CPPFLAGS) $(CFLAG
 AM_LDFLAGS = -ggdb -L.. -L../.. -L../../libiberty @LDFLAGS@
 READLINE_LIB = ../libreadline.a
 HISTORY_LIB = ../libhistory.a
+LIBIBERTY_LIB = ../../libiberty/libiberty.a
 EXECUTABLES = fileman rltest rl rlcat rlversion histexamp 
 OBJECTS = fileman.o rltest.o rl.o rlcat.o rlversion.o histexamp.o
 all: all-am
@@ -652,7 +653,7 @@ rlcat: rlcat.o $(READLINE_LIB)
 	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlcat.o -lreadline $(READLINE_LIB) $(TERMCAP_LIB)
 
 fileman: fileman.o $(READLINE_LIB)
-	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ fileman.o $(LIBS) $(TERMCAP_LIB)
+	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ fileman.o $(LIBS) $(READLINE_LIB) $(TERMCAP_LIB)
 
 rltest: rltest.o $(READLINE_LIB) $(HISTORY_LIB)
 	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rltest.o -lreadline -lhistory $(TERMCAP_LIB)

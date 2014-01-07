@@ -166,7 +166,7 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 return *(signal (0, 0)) (0) == 1;
 ]])],[ac_cv_type_signal=int],[ac_cv_type_signal=void])
 ])
-AC_DEFINE_UNQUOTED([RETSIGTYPE],[$ac_cv_type_signal],[Define as the return type of signal handlers (`int' or `void').])
+AC_DEFINE_UNQUOTED([RETSIGTYPE],[${ac_cv_type_signal}],[Define as the return type of signal handlers (`int' or `void').])
 dnl# End what used to be AC\_TYPE\_SIGNAL
 AC_TYPE_UID_T
 AC_TYPE_PID_T
@@ -197,7 +197,8 @@ AC_DEFUN([gl__ALLOC_CHECKS],[
   AC_REQUIRE([gl_FUNC_REALLOC_POSIX])
   AC_REQUIRE([gl_MALLOCA])
   AC_REQUIRE([gl_XALLOC])
-])dnl
+])dnl# end gl__ALLOC_CHECKS
+dnl# now actually call it:
 gl__ALLOC_CHECKS
 XORG_CHECK_MALLOC_ZERO
 XORG_MEMORY_CHECK_FLAGS

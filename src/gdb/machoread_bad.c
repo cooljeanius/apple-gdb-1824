@@ -54,6 +54,7 @@
 #include "vec.h"
 
 #include <string.h>
+#include <libintl.h>
 
 /* If non-zero displays debugging message.  */
 static int mach_o_debug_level = 0;

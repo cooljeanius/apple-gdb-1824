@@ -75,6 +75,8 @@
 
 #include <mach/mach_vm.h>
 
+#include <libintl.h>
+
 /* For the gdbarch_tdep structure so we can get the wordsize. */
 #if defined(TARGET_POWERPC)
 # include "ppc-tdep.h"
@@ -160,11 +162,11 @@ struct dyld_raw_infos
   /* Array of images (struct dyld_raw_info here in gdb) that are loaded
      in the inferior process.
      Note that this address may change over the lifetime of a process;
-     as the array grows, dyld may need to realloc () the array.  So don't
+     as the array grows, dyld may need to realloc () the array. So do NOT
      cache the value of info_array except while the inferior is stopped.
      This is either 4 or 8 bytes in the inferior, depending on wordsize.
      This value can be 0 (NULL) if dyld is in the middle of updating the
-     array.  Currently, we'll just fail in that (unlikely) circumstance.  */
+     array. Currently, we will just fail in that (unlikely) circumstance. */
 
   CORE_ADDR info_array;
 
@@ -291,8 +293,8 @@ macosx_clear_start_breakpoint (void)
   remove_solib_event_breakpoints ();
     }
 
-/* Check if we're debugging via gdb remote protocol (Rosetta debugging,
-   gdbserver debugging, remote nub debugging) - in which case we can't
+/* Check if we are debugging via gdb remote protocol (Rosetta debugging,
+   gdbserver debugging, remote nub debugging) - in which case we cannot
    do simple mach vm mapping calls on the inferior process.  */
 
 int
@@ -344,7 +346,7 @@ lookup_dyld_address (macosx_dyld_thread_status *status, const char *s)
 
   /* The minsyms normally have the correct, relocated address of the symbol.
      dyld is special because we may have loaded the objfile without yet knowing
-     its actual slide value.  We'll unload & reload it in a bit but until then
+     its actual slide value.  We will unload & reload it in a bit but until then
      we need to adjust any minsyms manually by dyld_slide.
      This comes up in debugging translated apps when the ppc dyld is always
      slid from its declared load addr.  */
@@ -421,8 +423,8 @@ macosx_init_addresses (macosx_dyld_thread_status *s)
    As of SL, there is a mach_header struct which is the header for 32
    bit programs, and a mach_header_64 which is used by 64 bit
    programs.  The 32 bit & 64 bit headers are laid out the same way as
-   far as the 32 bit one extends, and we don't care about the extra
-   field in the 64 bit version.  So for now, we'll just read in a
+   far as the 32 bit one extends, and we do NOT care about the extra
+   field in the 64 bit version. So for now, we shall just read in a
    mach_header in both cases.
 
    But then when you want to compute the header size, you need to use
@@ -735,8 +737,8 @@ macosx_lookup_dyld_name (bfd *abfd, const char **rname)
     }
 
   /* The DYLINKER is often set to a soft-link when the developer
-     is the person working on dyld -- they don't want to splat a debug
-     version of dyld into /usr/lib/dyld and hose their system.  So we'll
+     is the person working on dyld -- they do NOT want to splat a debug
+     version of dyld into /usr/lib/dyld and hose their system. So we will
      need to realpath to get to the actual name of the dyld binary for
      consistency.  */
 
@@ -883,8 +885,8 @@ macosx_locate_dyld_via_taskinfo (macosx_dyld_thread_status *s)
 }
 
 /* Searches the target address space for dyld itself, returning it in
-   VALUE.  Returns 1 if it found dyld, 0 if it didn't, -1 if there
-   was an error.  If HINT is not INVALID_ADDRESS, check there first
+   VALUE. Returns 1 if it found dyld, 0 if it did not find it, and -1 if there
+   was an error. If HINT is not INVALID_ADDRESS, check there first
    as a hint for where to find dyld. */
 
 static int
@@ -1081,28 +1083,28 @@ macosx_dyld_init (macosx_dyld_thread_status *s, bfd *exec_bfd)
   int ret = 0;
 
   /* Once dyld_slide is set, we have already done everything that
-     needs to be done.  At least for the moment, it's not possible for dyld to
+     needs to be done. At least for the moment, it is not possible for dyld to
      be moved once the program is executing.  */
 
   if (s->dyld_slide != INVALID_ADDRESS)
     return 0;
 
-  /* Now find dyld's name.  Get it from the exec_bfd if we have
-     it, if we don't find it here, then we will look again in
+  /* Now find dyld's name. Get it from the exec_bfd if we have
+     it, if we do NOT find it here, then we will look again in
      memory once we have found dyld. */
 
   if (s->dyld_name == NULL)
     macosx_lookup_dyld_name (exec_bfd, &s->dyld_name);
 
-  /* Find the location of the dyld, if it hasn't been found already.*/
-  /* Store the old value, so we'll know if it was changed. */
+  /* Find the location of the dyld, if it has not been found already.*/
+  /* Store the old value, so we will know if it was changed. */
 
   prev_dyld_address = s->dyld_addr;
 
   /* Ask the kernel, if possible. */
   ret = macosx_locate_dyld_via_taskinfo (s);
   /* If dyld loaded someplace other than where it normally would, slide
-     the minsyms in the objfile right away - we won't get any dyld notification
+     the minsyms in the objfile right away: we will NOT get any dyld notification
      about it sliding as we do with other images.  */
   if (ret == 1
       && s->dyld_addr != 0
@@ -1138,7 +1140,7 @@ macosx_dyld_init (macosx_dyld_thread_status *s, bfd *exec_bfd)
   if (ret != 1 && target_is_remote ())
     {
       /* On an iPhone we can find dyld at 0x2fe00000.
-         On a PPC app running under Rosetta, we'll find dyld at 0x8fc00000.
+         On a PPC app running under Rosetta, we will find dyld at 0x8fc00000.
          We need to add a remote protocol packet which will iterate over
          allocated memory regions and look for a dyld on the remote side
          instead of hardcoding these.  */
@@ -1168,11 +1170,11 @@ macosx_dyld_init (macosx_dyld_thread_status *s, bfd *exec_bfd)
 	    }
 	  else
 	    {
-	      /* DYLD didn't seem to start at the standard location, do an
-	         exhaustive search through each of the core segments. Nick
-		 said that dyld will start at the beginning of one of the
-		 segments and it should be good enough to scan the first
-		 address in each segment of the core.  */
+	      /* DYLD did not seem to start at the standard location, do an
+	       * exhaustive search through each of the core segments. Nick
+		   * said that dyld will start at the beginning of one of the
+		   * segments and it should be good enough to scan the first
+		   * address in each segment of the core.  */
 	      int i = 0;
 	      struct bfd_section *core_segment;
 	      for (i=0, core_segment = core_bfd->sections;
@@ -1196,7 +1198,7 @@ macosx_dyld_init (macosx_dyld_thread_status *s, bfd *exec_bfd)
     return 0;
   CHECK_FATAL (dyld_address != INVALID_ADDRESS);
 
-  /* Now grub for dyld's name in memory if we haven't found it already. */
+  /* Now grub for dyld's name in memory if we have NOT found it already. */
   if (dyld_address != INVALID_ADDRESS)
     {
       target_read_mach_header (dyld_address, &s->dyld_mem_header);
@@ -1336,10 +1338,10 @@ macosx_set_start_breakpoint (macosx_dyld_thread_status *s, bfd *exec_bfd)
 	    }
 	  else
 	    {
-	      /* If I don't find the malloc symbol I'd better turn on
-		 malloc inited now, since there won't be another good
-		 chance to do so.  This could happen with a totally static
-		 binary, or if somebody set the dyld load state to container.  */
+	      /* If I do not find the malloc symbol I had better turn on
+		   * malloc inited now, since there won't be another good
+		   * chance to do so. This could happen with a totally static
+		   * binary, or if somebody set the dyld load state to container. */
 	      warning ("Could not find malloc init callback function.  "
 		       "\nMake sure malloc is initialized before calling functions.");
 	      macosx_set_malloc_inited (1);
@@ -1443,7 +1445,7 @@ macosx_dyld_remove_libraries (struct macosx_dyld_thread_status *dyld_status,
 
    We may already have dyld_objfile_entry records for some of the ENTRIES,
    e.g. because we looked at the program's load commands before starting it
-   and now we're getting dylib-loaded notifications from dyld.  So we want
+   and now we're getting dylib-loaded notifications from dyld. So we want
    to replace the old entries with these newer, shinier ones.  */
 
 void
@@ -1512,7 +1514,7 @@ macosx_dyld_add_libraries (struct macosx_dyld_thread_status *dyld_status,
 	       before the objfile gets loaded into memory we might get
 	       it wrong - mostly because we try to move past the
 	       prologue, but the memory for the breakpoint's not
-	       mapped yet, so we can't read the instructions.  When
+	       mapped yet, so we cannot read the instructions.  When
 	       that happens - for now just in breakpoint_re_set - we
 	       mark the breakpoint as unset.  So we need to try it
 	       again here.  */
@@ -1560,7 +1562,7 @@ macosx_solib_add (const char *filename, int from_tty,
      will result in this function being called from solib_add_stub ()
      without an inferior process yet initialized -- in which case, none of
      the below checks are going to accomplish anything. So we will just close
-     our eyes for the nonce and wait to be called again when there's an
+     our eyes for the nonce and wait to be called again when there is an
      inferior to inspect.  */
 
   if (dyld_status->dyld_addr == INVALID_ADDRESS)
@@ -1589,7 +1591,7 @@ macosx_solib_add (const char *filename, int from_tty,
     }
   else if (read_pc () == 0)
     {
-      /* initial update -- $pc == 0x0 means we're not executing */
+      /* initial update -- $pc == 0x0 means we are not executing */
       libraries_changed = macosx_dyld_update (0);
       notify = libraries_changed && dyld_stop_on_shlibs_updated;
     }
@@ -1673,10 +1675,10 @@ macosx_solib_add (const char *filename, int from_tty,
 	timer_cleanup = start_timer (&breakpoint_timer, "shlib-bkpt-reset", "");
 
       /* Since we want to re-check breakpoints in libraries that get
-	 loaded (to catch cases where we originally didn't insert
-	 a breakpoint because it wasn't loaded and we couldn't read
-	 the memory for the breakpoint) we need to update all the
-	 breakpoints here after we've added all the libraries.  */
+	   * loaded (to catch cases where we originally did not insert
+	   * a breakpoint because it was not loaded and we could not read
+	   * the memory for the breakpoint) we need to update all the
+	   * breakpoints here after we have added all the libraries.  */
 
       breakpoint_update ();
       objc_clear_caches ();
@@ -1687,11 +1689,11 @@ macosx_solib_add (const char *filename, int from_tty,
     }
   else if (objc_handle_update (read_pc ()) == 1)
     {
-      /* Don't need to do anything special here, just need to call this.  */
+      /* Do not need to do anything special here, just need to call this.  */
     }
   else if (dyld_status->dyld_breakpoint != NULL || core_bfd)
     {
-      /* looks like an attach -- we're not at the dyld_breakpoint, but
+      /* looks like an attach -- we are not at the dyld_breakpoint, but
          the dyld_breakpoint has already been set.  */
       libraries_changed = macosx_dyld_update (0);
       notify = libraries_changed && dyld_stop_on_shlibs_updated;
@@ -1793,7 +1795,7 @@ macosx_init_dyld_from_core (void)
      this cache.
      TODO: We really need a better way to track when a bfd_close is
      going to happen and call "remove_target_sections (bfd *abfd)". We
-     aren't going to make this change just before we ship, but this is
+     are not going to make this change just before we ship, but this is
      something we need to keep an eye one. Perhaps a target_bfd_close
      would be a good way to control these things.  */
   if (target->to_sections != NULL)
@@ -2052,7 +2054,7 @@ dyld_info_process_raw (struct macosx_dyld_thread_status *s,
   int old_trust_readonly;
 
   /* Even if the library is loading in the same place as a directly linked
-     shared library that we've read in already, we still want to read the raw
+     shared library that we have read in already, we still want to read the raw
      information from memory.  */
   old_trust_readonly = set_trust_readonly (0);
   override_trust_readonly = make_cleanup (set_trust_readonly_cleanup,
@@ -2166,11 +2168,11 @@ dyld_info_process_raw (struct macosx_dyld_thread_status *s,
   if (dyld_objfile_entry_in_shared_cache (entry))
     {
 
-      /* If we are in the shared cache, then the version in memory WON'T be
-	 slid, it will be rebound to it's correct address.  So we need to
-	 figure out the slide by looking at the disk version, figuring out
-	 where that was supposed to load and then computing the difference
-	 between that and where it really ended up.  */
+      /* If we are in the shared cache, then the version in memory WILL NOT be
+	   * slid, it will be rebound to its correct address. So we need to
+	   * figure out the slide by looking at the disk version, figuring out
+	   * where that was supposed to load and then computing the difference
+	   * between that and where it really ended up.  */
 
       if (entry->dyld_name != NULL)
 	{
@@ -2179,13 +2181,13 @@ dyld_info_process_raw (struct macosx_dyld_thread_status *s,
 
 	  /* We need to look at the load commands for the on-disk
 	     file, so we might as well open the bfd here, and put it in the
-	     dyld_objfile_entry.  That way it will get reused most of the
+	     dyld_objfile_entry. That way it will get reused most of the
 	     time.  If we make a bfd for a directly linked file, that will
 	     get thrown away in dyld_objfile_merge_load_data, but all the
 	     indirectly linked ones will actually get reused.  I use
 	     dyld_load_library_from_file since that is the code path that
 	     dyld_load_library would use for directly linked files, and what
-	     would happen if I didn't open it here.  */
+	     would happen if I did not open it here.  */
 
 #ifdef ALWAYS_READ_FROM_MEMORY
           int old_always_read = dyld_always_read_from_memory_flag;
@@ -2240,7 +2242,7 @@ dyld_info_process_raw (struct macosx_dyld_thread_status *s,
   		   this_sect = this_sect->next)
   		{
   		  /* The offsets map to the sections that get added to the
-  		     bfd, so don't add bfd sections that aren't going to get
+  		     bfd, so do NOT add bfd sections that are not going to get
   		     added to the objfile later on.  */
 
   		  if (!objfile_keeps_section (this_bfd, this_sect))
@@ -2265,56 +2267,56 @@ dyld_info_process_raw (struct macosx_dyld_thread_status *s,
 	      if (text_sect != NULL)
 		intended_loadaddr = bfd_section_vma (this_bfd, text_sect);
 	      else
-		warning ("Couldn't find __TEXT segment in disk version of "
+		warning ("Could not find __TEXT segment in disk version of "
 			 " library \"%s\" for library in shared cache at %s",
                          entry->dyld_name, paddr_nz (header_addr));
 
 	    }
 	  else
 	    {
-	      error ("Couldn't find the on disk version of library \"%s\" "
+	      error ("Could not find the on disk version of library \"%s\" "
 		       "for library in shared cache at %s", entry->dyld_name,
 		       paddr_nz (header_addr));
 	    }
 	}
       else
 	{
-	  warning ("Can't read symbols for shared cache image at address %s",
+	  warning ("Cannot read symbols for shared cache image at address %s",
 		   paddr_nz (header_addr));
 	}
     }
   else
     {
       /* This is the case where the library is NOT in the shared cache.
-	 Find what address the image intended to load at, and compute the
-	 slide (the difference between the intended load addr and the actual
-	 load addr.) We use the bfd for the on disk image.  If there ends up
-	 being a problem locating the on-disk image, we can copy the code
-	 above that uses the in memory bfd.  */
+	   * Find what address the image intended to load at, and compute the
+	   * slide (the difference between the intended load addr and the actual
+	   * load addr.) We use the bfd for the on disk image. If there ends up
+	   * being a problem locating the on-disk image, we can copy the code
+	   * above that uses the in memory bfd.  */
       struct bfd_section *this_sect;
       struct section_offsets *sect_offsets;
       int cur_section;
 
       /* See the comments above about reusing the bfd.  */
-      /* We don't know what the slide is until we read the load commands for
-	 the binary.  Don't pretend we do or it will fool layers below us.  */
+      /* We do NOT know what the slide is until we read the load commands for
+	   * the binary. Do NOT pretend we do or it will fool layers below us.  */
       entry->dyld_slide = INVALID_ADDRESS;
       dyld_load_library (&(s->path_info), entry);
 
 
       /* A bundle that only exists in memory (e.g. was loaded with
-         mmap + NSCreateObjectFileImageFromMemory + NSLinkModule)
-         may not have an on-disk file that we can find.  We should
-	 map the entire image from the inferior into our address
-	 space and do bfd_memopenr () on it, similar to what is
-	 done above.  But at the very least, don't try to dereference
-	 the bfd struct if we failed to open the file.  */
+       * mmap + NSCreateObjectFileImageFromMemory + NSLinkModule)
+       * may not have an on-disk file that we can find.  We should
+	   * map the entire image from the inferior into our address
+	   * space and do bfd_memopenr () on it, similar to what is
+	   * done above.  But at the very least, do NOT try to dereference
+	   * the bfd struct if we failed to open the file.  */
 
-      /* It's a little tricky trying to calculate the slide of each
-	 segment independently.  Since at present all libraries that are
-	 NOT in the shared cache just get slid rigidly, we will figure out
-	 the rigid slide using the slide of the text segment, then apply
-	 that to all the sections.  */
+      /* It is a little tricky trying to calculate the slide of each
+	   * segment independently.  Since at present all libraries that are
+	   * NOT in the shared cache just get slid rigidly, we will figure out
+	   * the rigid slide using the slide of the text segment, then apply
+	   * that to all the sections.  */
 
       if (!entry->loaded_error && entry->abfd)
         {
@@ -2440,7 +2442,7 @@ struct dyld_all_image_infos_offsets
    copy it from the inferior's memory into INFO.
 
    NB: the value for info->info_array may change as dyld grows the array
-   of image files that are loaded (it'll realloc() the array), so we can't
+   of image files that are loaded (it will realloc() the array), so we cannot
    assume this value is constant across inferior running.
 */
 
@@ -2536,15 +2538,16 @@ dyld_read_raw_infos (CORE_ADDR addr, struct dyld_raw_infos *info)
          the dyld_notify address in the all_image_infos structure and the
          all_image_infos address itself.  If the address of the structure
          (passed in to this function) and the address of the structure itself
-         don't agree, we need to apply the slide ourselves.  */
+         do NOT agree, we need to apply the slide ourselves.  */
       if (dyld_image_infos_addr != addr)
         {
           adjustment = addr - dyld_image_infos_addr;
         }
     }
 
-  // We are very early in program startup, the addresses in the
-  // dyld_all_image_infos struct need to be updated by hand.
+  /* We are very early in program startup, the addresses in the
+   * dyld_all_image_infos struct need to be updated by hand.
+   */
 
   if (adjustment != INVALID_ADDRESS
       && dyld_starts_here_p (info->dyld_actual_load_address + adjustment))
@@ -2619,7 +2622,7 @@ dyld_info_read_raw (struct macosx_dyld_thread_status *status,
   dyld_read_raw_infos (status->dyld_image_infos, &info);
   /* For version 2 of the all_image_infos structure we should check
      to see if libsystem is initialized...  In truth, we only need to
-     do this if it is not already initialized, but this doesn't hurt.  */
+     do this if it is not already initialized, but this does NOT hurt.  */
   if (info.version >= 2)
     {
       status->libsystem_initialized = info.libsystem_initialized;
@@ -2650,10 +2653,10 @@ dyld_info_read (struct macosx_dyld_thread_status *status,
     }
 
   /* FIXME: The following code only makes sense for "dyldonly" mode, i.e.
-     the very first time we're initializing the dyld structures.  Why is
+     the very first time we are initializing the dyld structures. Why is
      it being run every time we macosx_dyld_update?  Is dyld_addr set to
-     INVALID_ADDRESS after we've finished initializing dyld somehow?
-     Why aren't we leaking dyld_objfile_entry records?  We probably compact
+     INVALID_ADDRESS after we have finished initializing dyld somehow?
+     Why are we not leaking dyld_objfile_entry records? We probably compact
      them with the merge/update_shlib calls up in macosx_dyld_update.
      jmolenda/2005-05-11 */
 
@@ -2814,7 +2817,7 @@ macosx_dyld_update (int dyldonly)
      dyld_symfile_loaded hook. I am not convinced by the comment above that
      this needs to be done here, and if you do NOT do it in the symfile hook
      a change in the library will NOT get noticed on run (for instance if you
-     use DYLD_LIBRARY_PATH AFTER you've read in the executable.) But it will NOT
+     use DYLD_LIBRARY_PATH AFTER you have read in the executable.) But it will NOT
      hurt to do it here.  */
 
   objc_init_trampoline_observer ();
@@ -2846,8 +2849,8 @@ macosx_dyld_mourn_inferior (void)
       e->cfm_container = 0;
 #endif /* WITH_CFM */
       /* This is NOT really right - the executable is actually
-	 dyld_reason_executable - but I don't think it'll actually cause
-	 any problems.  */
+	   * dyld_reason_executable - but I do NOT think it will actually cause
+	   * any problems.  */
       if (e->reason == dyld_reason_dyld)
 	e->reason = dyld_reason_init;
 
@@ -3114,7 +3117,7 @@ dyld_apply_load_rules_command (char *args, int from_tty)
                      &macosx_dyld_status.path_info,
                      &macosx_dyld_status.current_info);
 
- /* Since we've change the load state of some libraries, we should
+ /* Since we have change the load state of some libraries, we should
      see if any of our pending breakpoints will now take.  */
   re_enable_breakpoints_in_shlibs (0);
 
@@ -3150,7 +3153,7 @@ set_load_state_1 (struct dyld_objfile_entry *e,
   if (state_change == DYLD_NO_CHANGE)
     return;
 
-  /* This is a bit of a hack, but I don't want to have to throw away and
+  /* This is a bit of a hack, but I do NOT want to have to throw away and
      reconstitute the bfd.  So I am hiding it from dyld_remove_objfile
      in TMP_BFD.  I may give up on this!  */
   tmp_bfd = e->objfile->obfd;
@@ -3194,7 +3197,7 @@ set_load_state_1 (struct dyld_objfile_entry *e,
      loaded_addrisoffset will get set to 1 here, which is wrong.)
 
      I suspect that the pre run sliding is not getting done in quite
-     the correct place 'cause we shouldn't need to do this.  But for
+     the correct place because we should NOT need to do this. But for
      now...  */
 
   if (e->reason == dyld_reason_init)
@@ -3266,7 +3269,7 @@ dyld_set_load_state_command (char *args, int from_tty)
   map_shlib_numbers (args, set_load_state_helper,
                      &macosx_dyld_status.path_info,
                      &macosx_dyld_status.current_info);
-  /* Since we've change the load state of some libraries, we should
+  /* Since we have change the load state of some libraries, we should
      see if any of our pending breakpoints will now take.  */
   re_enable_breakpoints_in_shlibs (0);
 
@@ -3497,13 +3500,13 @@ dyld_lookup_and_bind_function (char *name)
 
   /* APPLE LOCAL: dyld USED to lazily bind modules within a shared
      library, so just because a library had been loaded and initialized,
-     that didn't mean you could actually call any given function.  You
+     that did NOT mean you could actually call any given function. You
      had to make sure that function was already bound.  Since Tiger,
-     that isn't done any more, all the functions get bound up when
-     the library loads, and NSLookupAndBindSymbol doesn't actually
-     do anything anymore.  So we just return 1 here.
+     that is NOT done any more, all the functions get bound up when
+     the library loads, and NSLookupAndBindSymbol does not actually
+     do anything anymore. So we just return 1 here.
      FIXME: Really should just rip out the whole bind_function target
-     vector stuff I had to add for this, but I don't have time to
+     vector stuff I had to add for this, but I do not have time to
      do that right now.  */
 
   return 1;
@@ -3633,7 +3636,7 @@ dyld_fix_path (const char *path)
   /* Check if we have any dyld path substitutions to perform.  */
   if (shlib_path_substitutions)
     {
-      /* First check to make sure we're not double-substituting a path */
+      /* First check to make sure we are not double-substituting a path */
       for (i = 0; shlib_path_substitutions[i] != NULL; i += 2)
         {
           const char *prefix = shlib_path_substitutions[i];
@@ -3678,7 +3681,7 @@ dyld_fix_path (const char *path)
    initialized.  Turns out on Leopard we get the first dyld notification
    before this has happened, and calling malloc at this point will
    cause the target to fall over.
-   We'll use this value in macosx_check_safe_call to override any of
+   We will use this value in macosx_check_safe_call to override any of
    the other checks we might do.  */
 
 static int malloc_inited_p;
@@ -3692,14 +3695,15 @@ macosx_set_malloc_inited (int new_val)
 int
 macosx_get_malloc_inited (void)
 {
-  /* If it's uninitialized, use this as an opportunity to double-check...
+  /* If it is uninitialized, use this as an opportunity to double-check...
      Otherwise we only re-examine this boolean from dyld when we have a
      shlib load notification -- if we have a trivial program that only directly
      links to dylibs, we may only get the initial libsystem et al load
      notification at which point libsystem has not yet been initialized.
      e.g. in the testsuite's "ivars.exp" test case.  */
-  if (malloc_inited_p == 0)
-    macosx_init_addresses (&macosx_dyld_status);
+	if (malloc_inited_p == 0) {
+		macosx_init_addresses (&macosx_dyld_status);
+	}
 
   return malloc_inited_p;
 }
@@ -3733,7 +3737,7 @@ macosx_set_auto_start_dyld (char *args, int from_tty,
                             struct cmd_list_element *c)
 {
 
-  /* Don't want to bother with stopping the target to set this... */
+  /* Do NOT want to bother with stopping the target to set this... */
   if (target_executing)
     return;
 
@@ -3767,7 +3771,7 @@ macosx_set_auto_start_dyld (char *args, int from_tty,
 /* Set the pairs of pathname substitutions to use when loading
    shared libraries. This is used for remote targets where you
    may have the dependant shared libraries installed at a path
-   that doesn't match the currently shared libraries on your
+   that does NOT match the currently shared libraries on your
    host machine. Mach executables contain paths to shared
    libraries in LC_LOAD_DYLINKER and LC_LOAD_DYLIB load commands.
    Also when hitting the dyld breakpoint, the paths reported by
@@ -3990,7 +3994,7 @@ Example: To load only external symbols from all dyld-based system libraries, use
   add_setshow_string_cmd ("minimal-load-rules", class_support,
 			  &dyld_minimal_load_rules, _("\
 Set the minimal DYLD load rules.  These prime the main list.\n\
-gdb relies on some of these for proper functioning, so don't remove elements from it\n\
+gdb relies on some of these for proper functioning, so do NOT remove elements from it\n\
 unless you know what you are doing."),
 			  "xyz",
 			  NULL,

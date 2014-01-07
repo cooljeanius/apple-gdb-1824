@@ -129,17 +129,17 @@ void DecompressBlock(const Parameters *parameters)
 #if defined UseReset
 	zresult = inflate(stream, Z_FINISH);
 
-	if (zresult != Z_STREAM_END)
-		if (zresult == Z_OK)
-		{
+	if (zresult != Z_STREAM_END) { /* Where to close this brace was ambiguous */
+		if (zresult == Z_OK) {
 			fprintf(stderr,
 "Error, unexpected Z_OK from inflate in file %s, function %s, line %d.\n",
 				__FILE__, __func__, __LINE__);
 			exit(EXIT_FAILURE);
-		}
-		else
+		} else {
 			TestZlibResult(zresult, "inflate",
 				__FILE__, __func__, __LINE__);
+		}
+	} /* (?) */
 #else	/* defined UseReset */
 /*debug*/fprintf(stderr, "%d.\n", __LINE__);
 	int zresult = inflate(stream, Z_SYNC_FLUSH);
@@ -233,7 +233,7 @@ int main(int argc, char *argv[])
 
 	while (1)
 	{
-		u_int32_t length, decompressed_length;
+		u_int32_t length, decompressed_length; /* decompressed_length is unused? */
 
 		fresult = fread(&length, sizeof length, 1, fi);
 		/* xxx Could read sizeof length items of length 1.

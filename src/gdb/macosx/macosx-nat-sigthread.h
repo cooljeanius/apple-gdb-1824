@@ -1,3 +1,7 @@
+/*
+ * macosx-nat-sigthread.h
+ */
+
 #ifndef __GDB_MACOSX_NAT_SIGTHREAD_H__
 #define __GDB_MACOSX_NAT_SIGTHREAD_H__
 
@@ -38,3 +42,5 @@ void macosx_signal_thread_create (macosx_signal_thread_status *s, int pid);
 void macosx_signal_thread_destroy (macosx_signal_thread_status *s);
 
 #endif /* __GDB_MACOSX_NAT_SIGTHREAD_H__ */
+
+/* EOF */

@@ -22,22 +22,22 @@
    Boston, MA 02111-1307, USA.  */
 
 #if defined (TARGET_I386)
-#define KDP_TARGET_I386 1
+# define KDP_TARGET_I386 1
 #else
-#undef KDP_TARGET_I386
-#endif
+# undef KDP_TARGET_I386
+#endif /* TARGET_I386 */
 
 #if defined (TARGET_POWERPC)
-#define KDP_TARGET_POWERPC 1
+# define KDP_TARGET_POWERPC 1
 #else
-#undef KDP_TARGET_POWERPC
-#endif
+# undef KDP_TARGET_POWERPC
+#endif /* TARGET_POWERPC */
 
 #if defined (TARGET_ARM)
-#define KDP_TARGET_ARM 1
+# define KDP_TARGET_ARM 1
 #else
-#undef KDP_TARGET_ARM
-#endif
+# undef KDP_TARGET_ARM
+#endif /* TARGET_ARM */
 
 #include "defs.h"
 #include "value.h"
@@ -50,21 +50,21 @@
 #include "objfiles.h"
 
 #if KDP_TARGET_POWERPC
-#include "ppc-macosx-thread-status.h"
-#include "ppc-macosx-regs.h"
-#include "ppc-macosx-regnums.h"
-#endif
+# include "ppc-macosx-thread-status.h"
+# include "ppc-macosx-regs.h"
+# include "ppc-macosx-regnums.h"
+#endif /* KDP_TARGET_POWERPC */
 
 #if KDP_TARGET_I386
-#include "i386-macosx-thread-status.h"
-#include "i386-macosx-tdep.h"
-#endif
+# include "i386-macosx-thread-status.h"
+# include "i386-macosx-tdep.h"
+#endif /* KDP_TARGET_I386 */
 
 #ifdef KDP_TARGET_ARM
-#include "arm-macosx-thread-status.h"
-#include "arm-macosx-tdep.h"
-#include "arm-tdep.h"
-#endif
+# include "arm-macosx-thread-status.h"
+# include "arm-macosx-tdep.h"
+# include "arm-tdep.h"
+#endif /* KDP_TARGET_ARM */
 
 #include "inferior.h"
 #include "gdbcmd.h"
@@ -82,24 +82,24 @@
 #include <CoreFoundation/CFPropertyList.h>
 
 #ifndef CPU_TYPE_I386
-#define CPU_TYPE_I386 (7)
-#endif
+# define CPU_TYPE_I386 (7)
+#endif /* !CPU_TYPE_I386 */
 
 #ifndef CPU_TYPE_X86_64
-#define CPU_TYPE_X86_64 (16777223)
-#endif
+# define CPU_TYPE_X86_64 (16777223)
+#endif /* !CPU_TYPE_X86_64 */
 
 #ifndef CPU_TYPE_POWERPC
-#define CPU_TYPE_POWERPC (18)
-#endif
+# define CPU_TYPE_POWERPC (18)
+#endif /* !CPU_TYPE_POWERPC */
 
 #ifndef CPU_TYPE_ARM
-#define CPU_TYPE_ARM (12)
-#endif
+# define CPU_TYPE_ARM (12)
+#endif /* !CPU_TYPE_ARM */
 
 #ifndef KDP_REMOTE_ID
-#define KDP_REMOTE_ID 3
-#endif
+# define KDP_REMOTE_ID 3
+#endif /* !KDP_REMOTE_ID */
 
 
 #define KDP_MAX_BREAKPOINTS 100
@@ -118,6 +118,7 @@
 #include <ctype.h>
 #include <mach/mach.h>
 #include <uuid/uuid.h>
+#include <libintl.h>
 
 extern int standard_is_async_p (void);
 extern int standard_can_async_p (void);
@@ -130,7 +131,7 @@ static int kdp_default_cpu_type = CPU_TYPE_POWERPC;
 
 static kdp_connection c;
 static int kdp_host_type = -1;
-static int kdp_cpu_type = -1; // CPU_TYPE_FOO
+static int kdp_cpu_type = -1; /* CPU_TYPE_FOO */
 
 static int kdp_stopped = 0;
 static int kdp_timeout = 5000;
@@ -157,7 +158,7 @@ parse_host_type (const char *host)
       return CPU_TYPE_POWERPC;
 #else
       return -2;
-#endif
+#endif /* KDP_TARGET_POWERPC */
     }
   else if ((strcasecmp (host, "ia32") == 0)
            || (strcasecmp (host, "i386") == 0)
@@ -169,7 +170,7 @@ parse_host_type (const char *host)
       return CPU_TYPE_I386;
 #else
       return -2;
-#endif
+#endif /* KDP_TARGET_I386 */
     }
   else if (strcasecmp (host, "arm") == 0)
     {
@@ -177,7 +178,7 @@ parse_host_type (const char *host)
       return CPU_TYPE_ARM;
 #else
       return -2;
-#endif
+#endif /* KDP_TARGET_ARM */
     }
   else
     {
@@ -204,12 +205,12 @@ static void
 kdp_open (char *name, int from_tty)
 {
   push_target (&kdp_ops);
-  /* KDP can't do inferior function calls.  */
+  /* KDP cannot do inferior function calls.  */
   inferior_function_calls_disabled_p = 1;
 #if KDP_TARGET_ARM
   extern int set_arm_single_step_mode (struct gdbarch *, int);
   set_arm_single_step_mode (current_gdbarch, arm_single_step_mode_software);
-#endif
+#endif /* KDP_TARGET_ARM */
 }
 
 static void
@@ -230,7 +231,7 @@ convert_host_type (unsigned int mach_type)
 #if defined(CPU_TYPE_ARM)
     case CPU_TYPE_ARM:
       return bfd_arch_arm;
-#endif
+#endif /* CPU_TYPE_ARM */
     default:
       return -1;
     }
@@ -270,7 +271,7 @@ kdp_insert_breakpoint (CORE_ADDR addr, gdb_byte *contents_cache)
 
   if (kdpret != RR_SUCCESS)
     {
-      /* We've reached the maximum number of breakpoints the kernel can support
+      /* We have reached the maximum number of breakpoints the kernel can support
          so revert to the old model of directly writing to memory */
       if (kdpret == KDP_MAX_BREAKPOINTS)
         {
@@ -432,8 +433,8 @@ kdp_hostinfo ()
 }
 
 /* Look at the KDP_VERSIONINFO string to see if the kernel's
-   Mach-O UUID and load address are provided.  
-*/
+ * Mach-O UUID and load address are provided.  
+ */
 
 static void
 kdp_uuid_and_load_addr ()
@@ -470,9 +471,9 @@ kdp_uuid_and_load_addr ()
     }
 
   /* The version string may look something like
-     "Darwin Kernel Version 11.0.0: Thu Nov 17 06:13:06 PST 2011; <blah blah>; UUID=A4B1973D-6A6A-3320-AEB9-585A4579C31A; stext=0xffffff8000400000"
-     The "UUID=" and "stext=" fields may not be present.
-  */
+   * "Darwin Kernel Version 11.0.0: Thu Nov 17 06:13:06 PST 2011; <blah blah>; UUID=A4B1973D-6A6A-3320-AEB9-585A4579C31A; stext=0xffffff8000400000"
+   * The "UUID=" and "stext=" fields may not be present.
+   */
 
   int uuids_matched = 0;
   int got_remote_uuid = 0;
@@ -511,9 +512,9 @@ kdp_uuid_and_load_addr ()
         }
     }
 
-  /* Slide the objfile even if the UUIDs don't match.
-     Maybe the user has given us a "pretty close" binary.  Sliding
-     it to the correct address can't make anything worse than it
+  /* Slide the objfile even if the UUIDs do NOT match.
+     Maybe the user has given us a "pretty close" binary. Sliding
+     it to the correct address cannot make anything worse than it
      would be.. */
 
   CORE_ADDR slide = 0;
@@ -548,7 +549,7 @@ kdp_uuid_and_load_addr ()
       return;
     }
 
-  /* If we have a UUID and load address, see if there's a debug symbols shell command defined
+  /* If we have a UUID and load address, see if there is a debug symbols shell command defined
      and if it might be a way to fetch the correct kernel binary based on that UUID.  */
   if (got_remote_uuid)
     {
@@ -630,8 +631,8 @@ kdp_attach (char *args, int from_tty)
 #elif KDP_TARGET_ARM
   kdp_set_big_endian (&c);
 #else
-#error "unsupported architecture"
-#endif
+# error "unsupported architecture"
+#endif /* KDP_TARGET_foo */
 
   c.seqno = old_seqno;
   c.exc_seqno = old_exc_seqno;
@@ -777,8 +778,8 @@ kdp_reattach_command (char *args, int from_tty)
 #elif KDP_TARGET_ARM
   kdp_set_big_endian (&c);
 #else
-#error "unsupported architecture"
-#endif
+# error "unsupported architecture"
+#endif /* KDP_TARGET_foo */
 
   kdpret = kdp_reattach (&c);
 
@@ -923,7 +924,7 @@ kdp_set_trace_bit (int step)
         write_register (PS_REGNUM, srr1);
 #else
         error ("kdp_set_trace_bit: not configured to support powerpc");
-#endif
+#endif /* KDP_TARGET_POWERPC */
       }
       break;
 
@@ -942,7 +943,7 @@ kdp_set_trace_bit (int step)
         write_register (PS_REGNUM, eflags);
 #else
         error ("kdp_set_trace_bit: not configured to support i386");
-#endif
+#endif /* KDP_TARGET_I386 */
       }
       break;
     case CPU_TYPE_X86_64:
@@ -960,12 +961,12 @@ kdp_set_trace_bit (int step)
         write_register (PS_REGNUM, rflags);
 #else
         error ("kdp_set_trace_bit: not configured to support x86_64");
-#endif
+#endif /* KDP_TARGET_I386 */
       }
       break;
     case CPU_TYPE_ARM:
       /* We just ignore requests to set the trace bit on ARM.
-	 For now, we are always using software single stepping.  */
+	   * For now, we are always using software single stepping.  */
       break;
     default:
       error ("kdp_set_trace_bit: unknown host type 0x%lx",
@@ -1106,7 +1107,7 @@ kdp_fetch_registers_ppc (int regno)
       ppc_macosx_fetch_gp_registers (&gp_regs);
     }
 
-#if 0
+# if 0
   if ((regno == -1) || PPC_MACOSX_IS_FP_REGNUM (regno)
       || PPC_MACOSX_IS_FSP_REGNUM (regno))
     {
@@ -1139,11 +1140,11 @@ kdp_fetch_registers_ppc (int regno)
               (GDB_PPC_THREAD_FPSTATE_COUNT * 4));
       ppc_macosx_fetch_fp_registers (&fp_regs);
     }
-#else
+# else
   if ((regno == -1) || PPC_MACOSX_IS_FP_REGNUM (regno)
       || PPC_MACOSX_IS_FSP_REGNUM (regno))
     {
-      /* Accesses to the fp registers aren't currently supported in
+      /* Accesses to the fp registers are NOT currently supported in
          the kernel. */
       for (i = PPC_MACOSX_FIRST_FP_REGNUM; i <= PPC_MACOSX_LAST_FP_REGNUM;
            i++)
@@ -1152,12 +1153,12 @@ kdp_fetch_registers_ppc (int regno)
            i++)
 	set_register_cached (i, 1);
     }
-#endif
+# endif /* 0 */
 
   if ((regno == -1) || (regno >= PPC_MACOSX_FIRST_VP_REGNUM)
       || PPC_MACOSX_IS_VSP_REGNUM (regno))
     {
-      /* Accesses to the vector, fpscr and vrsave registers aren't currently
+      /* Accesses to the vector, fpscr and vrsave registers are NOT currently
          supported in the kernel. */
       for (i = PPC_MACOSX_FIRST_VP_REGNUM; i <= PPC_MACOSX_LAST_VP_REGNUM;
            i++)
@@ -1282,8 +1283,8 @@ kdp_fetch_registers_i386 (int regno)
       gdb_i386_thread_fpstate_t fp_regs = { };
 
       /* FIXME: For now we hang the kdp stub asking for FP registers,
-         so till the kernel can handle the request, don't send it.  */
-#if 0
+         so till the kernel can handle the request, do NOT send it.  */
+# if 0
       kdp_return_t kdpret;
       c.request->readregs_req.hdr.request = KDP_READREGS;
       c.request->readregs_req.cpu = 0;
@@ -1309,7 +1310,7 @@ kdp_fetch_registers_i386 (int regno)
 
       memcpy (&fp_regs.hw_fu_state, c.response->readregs_reply.data,
               (GDB_i386_THREAD_FPSTATE_COUNT * 4));
-#endif
+# endif /* 0 */
       i386_macosx_fetch_fp_registers (&fp_regs);
     }
 }
@@ -1362,8 +1363,8 @@ kdp_fetch_registers_x86_64 (int regno)
       gdb_x86_float_state64_t fp_regs = { };
 
       /* FIXME: For now we hang the kdp stub asking for FP registers,
-         so till the kernel can handle the request, don't send it.  */
-#if 1
+         so till the kernel can handle the request, do NOT send it.  */
+# if 1
       c.request->readregs_req.hdr.request = KDP_READREGS;
       c.request->readregs_req.cpu = 0;
       c.request->readregs_req.flavor = GDB_x86_FLOAT_STATE64;
@@ -1388,7 +1389,7 @@ kdp_fetch_registers_x86_64 (int regno)
 
       memcpy (&fp_regs, c.response->readregs_reply.data,
               (GDB_x86_FLOAT_STATE64_COUNT * 4));
-#endif
+# endif /* 1 */
       x86_64_macosx_fetch_fp_registers (&fp_regs);
     }
 }
@@ -1581,7 +1582,7 @@ kdp_fetch_registers_arm (int regno)
 #else
   if ((regno == -1) || ARM_MACOSX_IS_VFP_RELATED_REGNUM (regno))
     {
-      /* Accesses to the fp registers aren't currently supported in
+      /* Accesses to the fp registers are NOT currently supported in
          the kernel. */
       if (gdbarch_tdep (current_gdbarch)->fp_model == ARM_FLOAT_VFP)
 	{
@@ -1590,7 +1591,7 @@ kdp_fetch_registers_arm (int regno)
 	  set_register_cached (ARM_VFP_REGNUM_FPSCR, 1);
 	}
     }
-#endif
+#endif /* KDP_TARGET_SUPPORTS_FP */
   /* All other modes always include the F0-F7 and its FPS. */
   if ((regno == -1) || ARM_MACOSX_IS_FP_RELATED_REGNUM (regno))
     {
@@ -1636,7 +1637,7 @@ kdp_store_registers_arm (int regno)
              kdp_return_string (kdpret));
         }
     }
-#if KDP_TARGET_SUPPORTS_FP
+# if KDP_TARGET_SUPPORTS_FP
   if ((regno == -1) || ARM_MACOSX_IS_VFP_RELATED_REGNUM (regno))
     {
       kdp_return_t kdpret;
@@ -1697,7 +1698,7 @@ kdp_store_registers_arm (int regno)
         }
     }
     }
-#endif
+# endif /* KDP_TARGET_SUPPORTS_FP */
 }
 #endif /* KDP_TARGET_ARM */
 
@@ -1756,7 +1757,7 @@ kdp_store_registers (int regno)
       kdp_store_registers_ppc (regno);
 #else
       error ("kdp_store_registers: not configured to support powerpc");
-#endif
+#endif /* KDP_TARGET_POWERPC */
       break;
 
     case CPU_TYPE_X86_64:
@@ -1764,7 +1765,7 @@ kdp_store_registers (int regno)
       kdp_store_registers_x86_64 (regno);
 #else
       error ("kdp_store_registers: not configured to support x86_64");
-#endif
+#endif /* KDP_TARGET_I386 */
       break;
 
     case CPU_TYPE_I386:
@@ -1772,7 +1773,7 @@ kdp_store_registers (int regno)
       kdp_store_registers_i386 (regno);
 #else
       error ("kdp_store_registers: not configured to support i386");
-#endif
+#endif /* KDP_TARGET_I386 */
       break;
 
     case CPU_TYPE_ARM:
@@ -1780,7 +1781,7 @@ kdp_store_registers (int regno)
       kdp_store_registers_arm (regno);
 #else
       error ("kdp_store_registers: not configured to support arm");
-#endif
+#endif /* KDP_TARGET_ARM */
       break;
 
     default:
@@ -1805,7 +1806,7 @@ kdp_fetch_registers (int regno)
       kdp_fetch_registers_ppc (regno);
 #else
       error ("kdp_fetch_registers: not configured to support powerpc");
-#endif
+#endif /* KDP_TARGET_POWERPC */
       break;
 
     case CPU_TYPE_I386:
@@ -1813,7 +1814,7 @@ kdp_fetch_registers (int regno)
       kdp_fetch_registers_i386 (regno);
 #else
       error ("kdp_fetch_registers: not configured to support i386");
-#endif
+#endif /* KDP_TARGET_I386 */
       break;
 
     case CPU_TYPE_ARM:
@@ -1821,7 +1822,7 @@ kdp_fetch_registers (int regno)
       kdp_fetch_registers_arm (regno);
 #else
       error ("kdp_fetch_registers: not configured to support arm");
-#endif
+#endif /* KDP_TARGET_ARM */
       break;
 
     case CPU_TYPE_X86_64:
@@ -1829,7 +1830,7 @@ kdp_fetch_registers (int regno)
       kdp_fetch_registers_x86_64 (regno);
 #else
       error ("kdp_fetch_registers: not configured to support i386");
-#endif
+#endif /* KDP_TARGET_I386 */
       break;
 
     default:
@@ -2197,7 +2198,7 @@ kdp_async (void (*callback) (enum inferior_event_type event_type,
 }
 
 /* This set of hardware watchpoint stubs currently do nothing, but we
-   have to be sure to set them, so we don't pick up the ones from the
+   have to be sure to set them, so we do NOT pick up the ones from the
    macosx "exec" target.  */
 
 int
@@ -2245,7 +2246,7 @@ kdp_remove_hw_breakpoint (CORE_ADDR unused1, gdb_byte *unused2)
 static CORE_ADDR
 kdp_allocate_memory (int size)
 {
-  error ("KDP can't allocate memory in the kernel being debugged.");
+  error ("KDP cannot allocate memory in the kernel being debugged.");
 }
 
 static void

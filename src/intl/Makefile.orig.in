@@ -31,6 +31,7 @@ transform = @program_transform_name@
 libdir = $(exec_prefix)/lib
 includedir = $(prefix)/include
 datadir = $(prefix)/@DATADIRNAME@
+datarootdir = @datarootdir@
 localedir = $(datadir)/locale
 gnulocaledir = $(datadir)/locale
 gettextsrcdir = @datadir@/gettext/intl
@@ -62,9 +63,9 @@ SOURCES = $(COMSRCS) intl-compat.c cat-compat.c
 COMSRCS = bindtextdom.c dcgettext.c dgettext.c gettext.c \
 finddomain.c loadmsgcat.c localealias.c textdomain.c l10nflist.c \
 explodename.c
-OBJECTS = @INTLOBJS@ bindtextdom.$lo dcgettext.$lo dgettext.$lo gettext.$lo \
-finddomain.$lo loadmsgcat.$lo localealias.$lo textdomain.$lo l10nflist.$lo \
-explodename.$lo
+OBJECTS = @INTLOBJS@ bindtextdom.$lo dcgettext.$lo dgettext.$lo \
+gettext.$lo finddomain.$lo loadmsgcat.$lo localealias.$lo textdomain.$lo \
+l10nflist.$lo explodename.$lo
 CATOBJS = cat-compat.$lo ../po/cat-id-tbl.$lo
 GETTOBJS = intl-compat.$lo
 DISTFILES.common = ChangeLog Makefile.in linux-msg.sed po2tbl.sed.in \

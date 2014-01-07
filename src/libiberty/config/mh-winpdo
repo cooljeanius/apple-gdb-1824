@@ -1,3 +1,6 @@
+# Makefile fragment for Portable Distributed Objects for Windows
+# hosting environment
+
 HDEFINES = -DNO_SYS_PARAM_H -DNO_SYS_FILE_H -DNEED_sys_siglist -DNEED_basename -DNEED_strsignal
 
 EXTRA_OFILES = vasprintf.o random.o

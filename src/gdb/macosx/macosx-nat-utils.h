@@ -1,13 +1,17 @@
+/*
+ * macosx-nat-utils.h
+ */
+
 #ifndef __GDB_MACOSX_NAT_UTILS_H__
 #define __GDB_MACOSX_NAT_UTILS_H__
 
 #include <mach/mach.h>
 
 #if (defined __GNUC__)
-#define __MACH_CHECK_FUNCTION __PRETTY_FUNCTION__
+# define __MACH_CHECK_FUNCTION __PRETTY_FUNCTION__
 #else
-#define __MACH_CHECK_FUNCTION ((__const char *) 0)
-#endif
+# define __MACH_CHECK_FUNCTION ((__const char *) 0)
+#endif /* __GNUC__ */
 
 #define MACH_PROPAGATE_ERROR(ret) \
 { MACH_WARN_ERROR(ret); if ((ret) != KERN_SUCCESS) { return ret; } }

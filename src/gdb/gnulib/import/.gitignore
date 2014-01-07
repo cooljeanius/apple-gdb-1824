@@ -16,11 +16,11 @@ inttypes.h
 inttypes.h-t
 math.h
 math.h-t
-arg-nonnull.h
+./arg-nonnull.h
 arg-nonnull.h-t
-c++defs.h
+./c++defs.h
 c++defs.h-t
-warn-on-use.h
+./warn-on-use.h
 warn-on-use.h-t
 stdbool.h
 stdbool.h-t

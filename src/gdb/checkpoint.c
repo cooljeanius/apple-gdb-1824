@@ -36,6 +36,7 @@ extern void re_execute_command (char *args, int from_tty);
 extern void rollback_stop (void);
 
 #include <dlfcn.h>
+#include <libintl.h>
 
 #include "checkpoint.h"
 

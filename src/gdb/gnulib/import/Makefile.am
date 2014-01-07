@@ -1284,7 +1284,7 @@ BUILT_SOURCES += wctype.h
 libgnu_a_SOURCES += wctype-h.c
 
 # We need the following in order to create <wctype.h> when the system
-# doesn't have one that works with the given compiler.
+# does NOT have one that works with the given compiler.
 wctype.h: wctype.in.h $(top_builddir)/config.status $(CXXDEFS_H) $(WARN_ON_USE_H)
 	$(AM_V_GEN)rm -f $@-t $@ && \
 	{ echo '/* DO NOT EDIT! GENERATED AUTOMATICALLY! */'; \

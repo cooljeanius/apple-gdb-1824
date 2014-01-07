@@ -6262,7 +6262,7 @@ fi
 $as_echo "$ac_cv_type_signal" >&6; }
 
 cat >>confdefs.h <<_ACEOF
-#define RETSIGTYPE $ac_cv_type_signal
+#define RETSIGTYPE ${ac_cv_type_signal}
 _ACEOF
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for uid_t in sys/types.h" >&5

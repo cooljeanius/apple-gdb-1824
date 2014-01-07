@@ -20,3 +20,4 @@ summary
 detail
 args
 vforked-prog.c
+conf*/*.awk

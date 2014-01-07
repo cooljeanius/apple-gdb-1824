@@ -132,7 +132,7 @@
 /* Define to 1 if you have the `getpagesize' function. */
 #undef HAVE_GETPAGESIZE
 
-/* Define if the GNU gettext() function is already present or preinstalled. */
+/* Define to 1 if you have the `gettext' function. */
 #undef HAVE_GETTEXT
 
 /* Define to 1 if you have the `getwd' function. */
@@ -263,6 +263,9 @@
 /* Define to 1 if you have the `strtoul' function. */
 #undef HAVE_STRTOUL
 
+/* Define to 1 if you have the `system' function. */
+#undef HAVE_SYSTEM
+
 /* Define to 1 if you have the <sys/mman.h> header file. */
 #undef HAVE_SYS_MMAN_H
 
@@ -289,6 +292,9 @@
 
 /* Define to 1 if the system has the type `_Bool'. */
 #undef HAVE__BOOL
+
+/* Define to 1 if you have the `_gettext' function. */
+#undef HAVE__GETTEXT
 
 /* Define to 1 if you have the `__argz_count' function. */
 #undef HAVE___ARGZ_COUNT

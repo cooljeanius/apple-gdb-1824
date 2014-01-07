@@ -34,7 +34,7 @@ target=x86_64-apple-darwin10.8.0
 
 program_transform_name = s,x,x,
 
-prefix = /usr/local
+prefix = /tmp
 exec_prefix = ${prefix}
 
 srcdir = .
@@ -42,15 +42,15 @@ srcdir = .
 bindir = ${exec_prefix}/bin
 sbindir = ${exec_prefix}/sbin
 libexecdir = ${exec_prefix}/libexec
-datadir = ${prefix}/share
+datadir = ${datarootdir}
 sysconfdir = ${prefix}/etc
 sharedstatedir = ${prefix}/com
 localstatedir = ${prefix}/var
 libdir = ${exec_prefix}/lib
 includedir = ${prefix}/include
 oldincludedir = /usr/include
-infodir = ${prefix}/share/info
-mandir = ${prefix}/share/man
+infodir = ${datarootdir}/info
+mandir = ${datarootdir}/man
 man1dir = $(mandir)/man1
 man2dir = $(mandir)/man2
 man3dir = $(mandir)/man3
@@ -60,6 +60,7 @@ man6dir = $(mandir)/man6
 man7dir = $(mandir)/man7
 man8dir = $(mandir)/man8
 man9dir = $(mandir)/man9
+datarootdir = ${prefix}/share
 
 INSTALL = /sw/bin/ginstall -c
 INSTALL_PROGRAM = ${INSTALL}
@@ -125,7 +126,7 @@ BUILD_EXPORTS = \
 	WINDRES="$(WINDRES_FOR_BUILD)"; export WINDRES;
 
 # This is the list of directories to built for the host system.
-SUBDIRS =  intl electric-fence mmalloc libiberty opcodes bfd readline tcl zlib binutils sim gdb etc expect dejagnu utils cgen
+SUBDIRS =  intl electric-fence mmalloc libiberty opcodes bfd readline tcl binutils sim gdb etc expect dejagnu utils cgen
 # This is set by the configure script to the arguments to use when configuring
 # directories built for the host system.
 HOST_CONFIGARGS =     --disable-shared --enable-64-bit-bfd --disable-softfloat --disable-werror  --enable-carbon-framework --enable-debug-symbols-framework --cache-file=./config.cache --build=x86_64-apple-darwin10.8.0 --host=x86_64-apple-darwin10.8.0 --target=x86_64-apple-darwin10.8.0   --program-transform-name='s,y,y,'
@@ -8687,26 +8688,6 @@ maybe-maintainer-clean-zip:
 
 .PHONY: configure-zlib maybe-configure-zlib
 maybe-configure-zlib:
-maybe-configure-zlib: configure-zlib
-configure-zlib: 
-	@test -f stage_last && exit 0; \
-	test ! -f $(HOST_SUBDIR)/zlib/Makefile || exit 0; \
-	$(SHELL) $(srcdir)/mkinstalldirs $(HOST_SUBDIR)/zlib ; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	echo Configuring in $(HOST_SUBDIR)/zlib; \
-	cd "$(HOST_SUBDIR)/zlib" || exit 1; \
-	case $(srcdir) in \
-	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
-	  *) topdir=`echo $(HOST_SUBDIR)/zlib/ | \
-		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
-	esac; \
-	srcdiroption="--srcdir=$${topdir}/zlib"; \
-	libsrcdir="$$s/zlib"; \
-	$(SHELL) $${libsrcdir}/configure \
-	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
 
 
 
@@ -8734,15 +8715,6 @@ maybe-configure-stagefeedback-zlib:
 
 .PHONY: all-zlib maybe-all-zlib
 maybe-all-zlib:
-TARGET-zlib=all
-maybe-all-zlib: all-zlib
-all-zlib: configure-zlib
-	@test -f stage_last && exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	(cd $(HOST_SUBDIR)/zlib && \
-	  $(MAKE) $(FLAGS_TO_PASS)  $(TARGET-zlib))
 
 
 
@@ -8787,246 +8759,41 @@ maybe-clean-stagefeedback-zlib:
 
 .PHONY: check-zlib maybe-check-zlib
 maybe-check-zlib:
-maybe-check-zlib: check-zlib
-
-check-zlib:
-
 
 .PHONY: install-zlib maybe-install-zlib
 maybe-install-zlib:
-maybe-install-zlib: install-zlib
-
-install-zlib:
-
 
 # Other targets (info, dvi, etc.)
 
 .PHONY: maybe-info-zlib info-zlib
 maybe-info-zlib:
-maybe-info-zlib: info-zlib
-
-info-zlib: \
-    configure-zlib 
-	@[ -f ./zlib/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) ; do \
-	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing info in zlib" ; \
-	(cd $(HOST_SUBDIR)/zlib && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          info) \
-	  || exit 1
-
 
 .PHONY: maybe-dvi-zlib dvi-zlib
 maybe-dvi-zlib:
-maybe-dvi-zlib: dvi-zlib
-
-dvi-zlib: \
-    configure-zlib 
-	@[ -f ./zlib/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) ; do \
-	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing dvi in zlib" ; \
-	(cd $(HOST_SUBDIR)/zlib && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          dvi) \
-	  || exit 1
-
 
 .PHONY: maybe-html-zlib html-zlib
 maybe-html-zlib:
-maybe-html-zlib: html-zlib
-
-html-zlib: \
-    configure-zlib 
-	@[ -f ./zlib/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) ; do \
-	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing html in zlib" ; \
-	(cd $(HOST_SUBDIR)/zlib && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          html) \
-	  || exit 1
-
 
 .PHONY: maybe-TAGS-zlib TAGS-zlib
 maybe-TAGS-zlib:
-maybe-TAGS-zlib: TAGS-zlib
-
-TAGS-zlib: \
-    configure-zlib 
-	@[ -f ./zlib/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) ; do \
-	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing TAGS in zlib" ; \
-	(cd $(HOST_SUBDIR)/zlib && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          TAGS) \
-	  || exit 1
-
 
 .PHONY: maybe-install-info-zlib install-info-zlib
 maybe-install-info-zlib:
-maybe-install-info-zlib: install-info-zlib
-
-install-info-zlib: \
-    configure-zlib \
-    info-zlib 
-	@[ -f ./zlib/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) ; do \
-	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing install-info in zlib" ; \
-	(cd $(HOST_SUBDIR)/zlib && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          install-info) \
-	  || exit 1
-
 
 .PHONY: maybe-installcheck-zlib installcheck-zlib
 maybe-installcheck-zlib:
-maybe-installcheck-zlib: installcheck-zlib
-
-installcheck-zlib: \
-    configure-zlib 
-	@[ -f ./zlib/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) ; do \
-	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing installcheck in zlib" ; \
-	(cd $(HOST_SUBDIR)/zlib && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          installcheck) \
-	  || exit 1
-
 
 .PHONY: maybe-mostlyclean-zlib mostlyclean-zlib
 maybe-mostlyclean-zlib:
-maybe-mostlyclean-zlib: mostlyclean-zlib
-
-mostlyclean-zlib: 
-	@[ -f ./zlib/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) ; do \
-	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing mostlyclean in zlib" ; \
-	(cd $(HOST_SUBDIR)/zlib && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          mostlyclean) \
-	  || exit 1
-
 
 .PHONY: maybe-clean-zlib clean-zlib
 maybe-clean-zlib:
-maybe-clean-zlib: clean-zlib
-
-clean-zlib: 
-	@[ -f ./zlib/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) ; do \
-	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing clean in zlib" ; \
-	(cd $(HOST_SUBDIR)/zlib && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          clean) \
-	  || exit 1
-
 
 .PHONY: maybe-distclean-zlib distclean-zlib
 maybe-distclean-zlib:
-maybe-distclean-zlib: distclean-zlib
-
-distclean-zlib: 
-	@[ -f ./zlib/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) ; do \
-	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing distclean in zlib" ; \
-	(cd $(HOST_SUBDIR)/zlib && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          distclean) \
-	  || exit 1
-
 
 .PHONY: maybe-maintainer-clean-zlib maintainer-clean-zlib
 maybe-maintainer-clean-zlib:
-maybe-maintainer-clean-zlib: maintainer-clean-zlib
-
-maintainer-clean-zlib: 
-	@[ -f ./zlib/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) ; do \
-	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing maintainer-clean in zlib" ; \
-	(cd $(HOST_SUBDIR)/zlib && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          maintainer-clean) \
-	  || exit 1
-
 
 
 
@@ -11372,10 +11139,6 @@ stage1-start::
 	  mkdir stage1-libiberty; \
 	set stage1-libiberty libiberty ; \
 	ln -s $$1 $$2 
-	@cd $(HOST_SUBDIR); [ -d stage1-zlib ] || \
-	  mkdir stage1-zlib; \
-	set stage1-zlib zlib ; \
-	ln -s $$1 $$2 
 
 stage1-end::
 	@rm -f stage_current
@@ -11388,8 +11151,6 @@ stage1-end::
 	@cd $(HOST_SUBDIR); set intl stage1-intl ; \
 	rm -f $$1 
 	@cd $(HOST_SUBDIR); set libiberty stage1-libiberty ; \
-	rm -f $$1 
-	@cd $(HOST_SUBDIR); set zlib stage1-zlib ; \
 	rm -f $$1 
 
 # Bubble a bugfix through all the stages up to stage 1.  They
@@ -11447,12 +11208,6 @@ stage2-start::
 	ln -s $$1 $$2  ; \
 	set stage1-libiberty prev-libiberty ; \
 	ln -s $$1 $$2 
-	@cd $(HOST_SUBDIR); [ -d stage2-zlib ] || \
-	  mkdir stage2-zlib; \
-	set stage2-zlib zlib ; \
-	ln -s $$1 $$2  ; \
-	set stage1-zlib prev-zlib ; \
-	ln -s $$1 $$2 
 
 stage2-end::
 	@rm -f stage_current
@@ -11475,10 +11230,6 @@ stage2-end::
 	@cd $(HOST_SUBDIR); set libiberty stage2-libiberty ; \
 	rm -f $$1  ; \
 	set prev-libiberty stage1-libiberty ; \
-	rm -f $$1 
-	@cd $(HOST_SUBDIR); set zlib stage2-zlib ; \
-	rm -f $$1  ; \
-	set prev-zlib stage1-zlib ; \
 	rm -f $$1 
 
 # Bubble a bugfix through all the stages up to stage 2.  They
@@ -11536,12 +11287,6 @@ stage3-start::
 	ln -s $$1 $$2  ; \
 	set stage2-libiberty prev-libiberty ; \
 	ln -s $$1 $$2 
-	@cd $(HOST_SUBDIR); [ -d stage3-zlib ] || \
-	  mkdir stage3-zlib; \
-	set stage3-zlib zlib ; \
-	ln -s $$1 $$2  ; \
-	set stage2-zlib prev-zlib ; \
-	ln -s $$1 $$2 
 
 stage3-end::
 	@rm -f stage_current
@@ -11564,10 +11309,6 @@ stage3-end::
 	@cd $(HOST_SUBDIR); set libiberty stage3-libiberty ; \
 	rm -f $$1  ; \
 	set prev-libiberty stage2-libiberty ; \
-	rm -f $$1 
-	@cd $(HOST_SUBDIR); set zlib stage3-zlib ; \
-	rm -f $$1  ; \
-	set prev-zlib stage2-zlib ; \
 	rm -f $$1 
 
 # Bubble a bugfix through all the stages up to stage 3.  They
@@ -11626,12 +11367,6 @@ stage4-start::
 	ln -s $$1 $$2  ; \
 	set stage3-libiberty prev-libiberty ; \
 	ln -s $$1 $$2 
-	@cd $(HOST_SUBDIR); [ -d stage4-zlib ] || \
-	  mkdir stage4-zlib; \
-	set stage4-zlib zlib ; \
-	ln -s $$1 $$2  ; \
-	set stage3-zlib prev-zlib ; \
-	ln -s $$1 $$2 
 
 stage4-end::
 	@rm -f stage_current
@@ -11654,10 +11389,6 @@ stage4-end::
 	@cd $(HOST_SUBDIR); set libiberty stage4-libiberty ; \
 	rm -f $$1  ; \
 	set prev-libiberty stage3-libiberty ; \
-	rm -f $$1 
-	@cd $(HOST_SUBDIR); set zlib stage4-zlib ; \
-	rm -f $$1  ; \
-	set prev-zlib stage3-zlib ; \
 	rm -f $$1 
 
 # Bubble a bugfix through all the stages up to stage 4.  They
@@ -11716,12 +11447,6 @@ stageprofile-start::
 	ln -s $$1 $$2  ; \
 	set stage1-libiberty prev-libiberty ; \
 	ln -s $$1 $$2 
-	@cd $(HOST_SUBDIR); [ -d stageprofile-zlib ] || \
-	  mkdir stageprofile-zlib; \
-	set stageprofile-zlib zlib ; \
-	ln -s $$1 $$2  ; \
-	set stage1-zlib prev-zlib ; \
-	ln -s $$1 $$2 
 
 stageprofile-end::
 	@rm -f stage_current
@@ -11744,10 +11469,6 @@ stageprofile-end::
 	@cd $(HOST_SUBDIR); set libiberty stageprofile-libiberty ; \
 	rm -f $$1  ; \
 	set prev-libiberty stage1-libiberty ; \
-	rm -f $$1 
-	@cd $(HOST_SUBDIR); set zlib stageprofile-zlib ; \
-	rm -f $$1  ; \
-	set prev-zlib stage1-zlib ; \
 	rm -f $$1 
 
 # Bubble a bugfix through all the stages up to stage profile.  They
@@ -11805,12 +11526,6 @@ stagefeedback-start::
 	ln -s $$1 $$2  ; \
 	set stageprofile-libiberty prev-libiberty ; \
 	ln -s $$1 $$2 
-	@cd $(HOST_SUBDIR); [ -d stagefeedback-zlib ] || \
-	  mkdir stagefeedback-zlib; \
-	set stagefeedback-zlib zlib ; \
-	ln -s $$1 $$2  ; \
-	set stageprofile-zlib prev-zlib ; \
-	ln -s $$1 $$2 
 
 stagefeedback-end::
 	@rm -f stage_current
@@ -11833,10 +11548,6 @@ stagefeedback-end::
 	@cd $(HOST_SUBDIR); set libiberty stagefeedback-libiberty ; \
 	rm -f $$1  ; \
 	set prev-libiberty stageprofile-libiberty ; \
-	rm -f $$1 
-	@cd $(HOST_SUBDIR); set zlib stagefeedback-zlib ; \
-	rm -f $$1  ; \
-	set prev-zlib stageprofile-zlib ; \
 	rm -f $$1 
 
 # Bubble a bugfix through all the stages up to stage feedback.  They

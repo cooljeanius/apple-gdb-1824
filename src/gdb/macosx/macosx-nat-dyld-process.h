@@ -1,3 +1,7 @@
+/*
+ * macosx-nat-dyld-process.h
+ */
+
 #ifndef __GDB_MACOSX_NAT_DYLD_PROCESS_H__
 #define __GDB_MACOSX_NAT_DYLD_PROCESS_H__
 
@@ -111,3 +115,5 @@ void free_pre_run_memory_map (struct pre_run_memory_map *map);
 
 
 #endif /* __GDB_MACOSX_NAT_DYLD_PROCESS_H__ */
+
+/* EOF */

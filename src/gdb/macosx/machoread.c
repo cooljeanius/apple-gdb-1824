@@ -56,6 +56,7 @@
 #include "macosx-nat-inferior.h"
 
 #include <string.h>
+#include <libintl.h>
 
 #if HAVE_MMAP
 static int mmap_strtabflag = 1;

@@ -43,6 +43,7 @@ man9dir = $(mandir)/man9
 infodir = @infodir@
 htmldir = $(prefix)/html
 includedir = @includedir@
+datarootdir = @datarootdir@
 
 # This can be referenced by `INTLDEPS' as computed by CY_GNU_GETTEXT.
 top_builddir = .

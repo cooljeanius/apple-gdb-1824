@@ -61,11 +61,12 @@ CONFIG_CLEAN=
 CONFIG_INSTALL=
 CONFIG_UNINSTALL=
 
+AC_MSG_NOTICE([doing some preliminary APPLE_LOCAL checks])
 dnl# APPLE LOCAL begin mmap() always works right on Darwin. Take our word
 dnl# for it.
 dnl# CY_GNU_GETTEXT will call AC_FUNC_MMAP for us, so needs to be up here,
 dnl# rather than further down.
-case "$host" in
+case "${host}" in
   *-apple-darwin* | *-apple-macos*)
    ac_cv_func_mmap_fixed_mapped=yes
   ;;
@@ -74,9 +75,9 @@ dnl# APPLE LOCAL end mmap() always works right on Darwin. Take our word
 dnl# for it.
 
 dnl# APPLE LOCAL if we have mach_exc.def, use the 64 bit exceptions.
-case "$host" in
+case "${host}" in
   arm-apple-*)
-    # No 64 bit exceptions for Apple ARM
+    # No 64 bit exceptions for Apple ARM (yet?)
     AC_MSG_CHECKING([whether we can use 64 bit mach exceptions])
     MACH_EXC_SERVER_PREFACE=
     AC_MSG_RESULT([(disabled!) no])
@@ -84,7 +85,7 @@ case "$host" in
     ;;
   *-apple-darwin* | *-apple-maocsx*)
     AC_MSG_CHECKING([whether we can use 64 bit mach exceptions])
-    if test -r "$SDKROOT/usr/include/mach/mach_exc.defs"; then
+    if test -r "${SDKROOT}/usr/include/mach/mach_exc.defs"; then
       AC_DEFINE([HAVE_64_BIT_MACH_EXCEPTIONS],[1],[Define to 1 if you have 64 bit mach exceptions.])
       MACH_EXC_SERVER_PREFACE='mach_'
       AC_MSG_RESULT([yes])
@@ -100,51 +101,53 @@ dnl# APPLE LOCAL check for posix_spawn and the "arch" program. Note that we
 dnl# do NOT trust the "arch" program if the posix_spawn headers are NOT
 dnl# present, since Tiger has an "arch" program, but it only echoes the
 dnl# current system architecture.
-case "$host" in
+case "${host}" in
   *-apple-darwin* | *-apple-macosx*)
+    AC_CHECK_HEADERS_ONCE([spawn.h])
+    # not sure why a bunch of other headers are checked between these 2...
     AC_MSG_CHECKING([whether posix_spawn supports SETEXEC])
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
 [[#include <spawn.h>;]],
 [[int foo = POSIX_SPAWN_SETEXEC;]])],
-      gdb_cv_posix_spawn=yes,
-      gdb_cv_posix_spawn=no)
-    AC_MSG_RESULT([$gdb_cv_posix_spawn])
+      [gdb_cv_posix_spawn=yes],
+      [gdb_cv_posix_spawn=no])
+    AC_MSG_RESULT([${gdb_cv_posix_spawn}])
 
-    if test $gdb_cv_posix_spawn = yes; then
+    if test ${gdb_cv_posix_spawn} = yes; then
       AC_DEFINE([USE_POSIX_SPAWN],[1],[Define to 1 to use posix_spawn instead of execvp.])
 
       AC_ARG_ENABLE([arch-for-exec],
       	[AS_HELP_STRING([--disable-arch-for-exec],[disable use of arch for exec])],
-      	[case $enableval in
+      	[case ${enableval} in
           yes | no) 
-            enable_arch_exec="$enableval" ;;
+            enable_arch_exec="${enableval}" ;;
           *)
-            AC_MSG_ERROR([bad value '$enableval' for --disable-arch-for-exec]) ;;
+            AC_MSG_ERROR([bad value '${enableval}' for --disable-arch-for-exec]) ;;
       	esac],
       	[enable_arch_exec=yes])
   
       AC_MSG_CHECKING([whether we should use arch for exec])
-      if test x"$enable_arch_exec" = xyes; then
+      if test x"${enable_arch_exec}" = xyes; then
         if test -r "/usr/bin/arch"; then
           AC_DEFINE([USE_ARCH_FOR_EXEC],[1],[Define to 1 to use the arch program instead of exec.])
           AC_MSG_RESULT([yes])
         else
           AC_MSG_RESULT([no])
-        fi
+        fi # done with check for arch
       else
         AC_MSG_RESULT([(disabled) no])
-      fi
-    fi
-;;
+      fi # done with check for enabling arch for exec
+    fi # done with things to do with posix_spawn
+    ;;
 esac
 
 dnl# APPLE LOCAL check for the 64 bit stack logging function named
 dnl# __mach_stack_logging_enumerate_records and define 
-dnl# HAVE_64_BIT_STACK_LOGGING if it is found. If it isn't found, 
+dnl# HAVE_64_BIT_STACK_LOGGING if it is found. If it is NOT found, 
 dnl# check for the 32 bit stack logging function named 
 dnl# stack_logging_enumerate_records and define 
 dnl# HAVE_32_BIT_STACK_LOGGING if it is available.
-case "$host" in
+case "${host}" in
   *-apple-darwin* | *-apple-macosx*)
     AC_MSG_CHECKING([whether 64 bit stack logging is supported])
     AC_LINK_IFELSE([AC_LANG_PROGRAM(
@@ -152,29 +155,30 @@ case "$host" in
 [[__mach_stack_logging_enumerate_records();]])],
       [gdb_cv_stack_logging_64=yes],
       [gdb_cv_stack_logging_64=no])
-    if test $gdb_cv_stack_logging_64 = yes; then
+    if test ${gdb_cv_stack_logging_64} = yes; then
       AC_DEFINE([HAVE_64_BIT_STACK_LOGGING],[1],[Define to 1 to use 64 bit stack logging functions.])
     fi
-    AC_MSG_RESULT([$gdb_cv_stack_logging_64])
+    AC_MSG_RESULT([${gdb_cv_stack_logging_64}])
 
-    if test $gdb_cv_stack_logging_64 = no; then
+    if test ${gdb_cv_stack_logging_64} = no; then
     	AC_MSG_CHECKING([whether 32 bit stack logging is supported])
     	AC_LINK_IFELSE([AC_LANG_PROGRAM(
 [[extern int stack_logging_enumerate_records();]],
 [[stack_logging_enumerate_records();]])],
       	[gdb_cv_stack_logging_32=yes],
       	[gdb_cv_stack_logging_32=no])
-    	if test $gdb_cv_stack_logging_32 = yes; then
+    	if test ${gdb_cv_stack_logging_32} = yes; then
       	  AC_DEFINE([HAVE_32_BIT_STACK_LOGGING],[1],[Define to 1 to use 64 bit stack logging functions.])
     	fi
-    	AC_MSG_RESULT([$gdb_cv_stack_logging_32])
-	fi
-;;
+    	AC_MSG_RESULT([${gdb_cv_stack_logging_32}])
+    fi
+    ;;
 esac
 
 dnl# APPLE LOCAL check for task_get_state.
-case "$host" in
+case "${host}" in
   *-apple-darwin* | *-apple-macosx*)
+    AC_CHECK_HEADERS_ONCE([mach/task.h])
     AC_MSG_CHECKING([whether task_set_state is available])
     AC_LINK_IFELSE([AC_LANG_PROGRAM(
 [[#include <mach/mach.h>]
@@ -186,22 +190,45 @@ case "$host" in
  [task_set_state (task, flavor, new_state, new_stateCnt);]])],
       [gdb_cv_task_set_state=yes],
       [gdb_cv_task_set_state=no])
-    if test $gdb_cv_task_set_state = yes; then
+    if test ${gdb_cv_task_set_state} = yes; then
       AC_DEFINE([HAVE_TASK_SET_STATE],[1],[Define to 1 to use task_set_state.])
     fi
-    AC_MSG_RESULT([$gdb_cv_task_set_state])
-
-;;
+    AC_MSG_RESULT([${gdb_cv_task_set_state}])
+    AC_CHECK_TYPES([task_t],[],[],[
+#ifdef HAVE_MACH_TASK_H
+# include <mach/task.h>
+#else
+# warning This conftest expects <mach/task.h> to be included.
+#endif /* HAVE_MACH_TASK_H */
+    ])
+    ;;
 esac
 
-dnl# Set up for gettext. PACKAGE is used when we call bindtextdomain.
+AC_MSG_NOTICE([done with first batch of APPLE_LOCAL checks])
 
+dnl# Set up for gettext. PACKAGE is used when we call bindtextdomain.
+AC_MSG_CHECKING([gettext-related things (Cygnus-style)])
+AC_MSG_RESULT([ ])
+if test -d ../intl; then
+  if test -z "${LDFLAGS}"; then
+    export LDFLAGS="-L../intl"
+  else
+    export LDFLAGS="${LDFLAGS} -L../intl"
+  fi
+elif test -d ../libintl; then
+  if test -z "${LDFLAGS}"; then
+    export LDFLAGS="-L../libintl"
+  else
+    export LDFLAGS="${LDFLAGS} -L../libintl"
+  fi
+fi
 CY_GNU_GETTEXT
+AC_CHECK_FUNCS([gettext _gettext])
 
 localedir='${datadir}/locale'
 AC_SUBST([localedir])
 
-if test "x$POSUB" != x; then
+if test "x${POSUB}" != x; then
 
   dnl# Lifted from GCC's config/gettext.m4.
   AC_MSG_CHECKING(for catalogs to be installed)
@@ -209,43 +236,45 @@ if test "x$POSUB" != x; then
   CATALOGS=  AC_SUBST([CATALOGS])
   XLINGUAS=
   for cat in $srcdir/po/*.gmo $srcdir/po/*.po; do
-    # If there aren't any .gmo files the shell will give us the
+    # If there are NOT any .gmo files the shell will give us the
     # literal string "../path/to/srcdir/po/*.gmo" which has to be
     # weeded out.
-    case "$cat" in *\**)
+    case "${cat}" in *\**)
       continue;;
     esac
     # The quadruple backslash is collapsed to a double backslash
     # by the backticks, then collapsed again by the double quotes,
     # leaving us with one backslash in the sed expression (right
-    # before the dot that mustn't act as a wildcard).
-    cat=`echo $cat | sed -e "s!$srcdir/!!" -e "s!\\\\.po!.gmo!"`
-    lang=`echo $cat | sed -e 's!po/!!' -e "s!\\\\.gmo!!"`
+    # before the dot that must NOT act as a wildcard).
+    cat=`echo ${cat} | sed -e "s!${srcdir}/!!" -e "s!\\\\.po!.gmo!"`
+    lang=`echo ${cat} | sed -e 's!po/!!' -e "s!\\\\.gmo!!"`
     # The user is allowed to set LINGUAS to a list of languages to
-    # install catalogs for.  If it's empty that means "all of them."
-    if test "x$LINGUAS" = x; then
-      CATALOGS="$CATALOGS $cat"
-      XLINGUAS="$XLINGUAS $lang"
+    # install catalogs for. If it is empty, that means "all of them."
+    if test "x${LINGUAS}" = x; then
+      CATALOGS="${CATALOGS} ${cat}"
+      XLINGUAS="${XLINGUAS} ${lang}"
     else
-      case "$LINGUAS" in *$lang*)
-        CATALOGS="$CATALOGS $cat"
-        XLINGUAS="$XLINGUAS $lang"
+      case "${LINGUAS}" in *${lang}*)
+        CATALOGS="${CATALOGS} ${cat}"
+        XLINGUAS="${XLINGUAS} ${lang}"
         ;;
       esac
     fi
   done
-  LINGUAS="$XLINGUAS"
+  LINGUAS="${XLINGUAS}"
   AC_MSG_RESULT([$LINGUAS])
 
-   CONFIG_ALL="$CONFIG_ALL all-po"
-   CONFIG_CLEAN="$CONFIG_CLEAN clean-po"		   
-   CONFIG_INSTALL="$CONFIG_INSTALL install-po"
-   CONFIG_UNINSTALL="$CONFIG_UNINSTALL uninstall-po"
+   CONFIG_ALL="${CONFIG_ALL} all-po"
+   CONFIG_CLEAN="${CONFIG_CLEAN} clean-po"		   
+   CONFIG_INSTALL="${CONFIG_INSTALL} install-po"
+   CONFIG_UNINSTALL="${CONFIG_UNINSTALL} uninstall-po"
 fi
 
 PACKAGE=gdb
-AC_DEFINE_UNQUOTED([PACKAGE],["$PACKAGE"],[Name of this package. ])
+AC_DEFINE_UNQUOTED([PACKAGE],["${PACKAGE}"],[Name of this package. ])
 AC_SUBST([PACKAGE])
+
+AC_MSG_NOTICE([done with Cygnus gettext checks])
 
 debugdir=${libdir}/debug
 	 
@@ -255,9 +284,9 @@ AC_ARG_WITH([separate-debug-dir],
 	
 AC_DEFINE_DIR([DEBUGDIR],[debugdir],
               [Global directory for separate debug files. ])
-if test -z "$DEBUGDIR" -a ! -z "$debugdir"; then
-	test -d "$debugdir"
-	AC_DEFINE_UNQUOTED([DEBUGDIR],["$debugdir"],[Global directory for separate debug files. ])
+if test -z "${DEBUGDIR}" -a ! -z "${debugdir}"; then
+	test -d "${debugdir}"
+	AC_DEFINE_UNQUOTED([DEBUGDIR],["${debugdir}"],[Global directory for separate debug files. ])
 fi
 
 AC_CONFIG_SUBDIRS([doc testsuite])
@@ -267,26 +296,26 @@ AC_CONFIG_SUBDIRS([gnulib])
 AC_SYS_INTERPRETER
 
 # Now we can source some shell scripts
-AC_MSG_NOTICE([sourcing $srcdir/configure.host ])
-. $srcdir/configure.host
+AC_MSG_NOTICE([sourcing ${srcdir}/configure.host ])
+. ${srcdir}/configure.host
 
-AC_MSG_NOTICE([sourcing $srcdir/configure.tgt ])
-. $srcdir/configure.tgt
+AC_MSG_NOTICE([sourcing ${srcdir}/configure.tgt ])
+. ${srcdir}/configure.tgt
 
 # Fetch the default architecture and default target vector from BFD.
-AC_MSG_NOTICE([sourcing $srcdir/../bfd/config.bfd for $target ])
-targ=$target; . $srcdir/../bfd/config.bfd
+AC_MSG_NOTICE([sourcing $srcdir/../bfd/config.bfd for ${target} ])
+targ=${target}; . ${srcdir}/../bfd/config.bfd
 
 # We only want the first architecture, so strip off the others if
 # there is more than one.
-targ_archs=`echo $targ_archs | sed 's/ .*//'`
+targ_archs=`echo ${targ_archs} | sed 's/ .*//'`
 
-if test "x$targ_archs" != x; then
-  AC_DEFINE_UNQUOTED([DEFAULT_BFD_ARCH],[$targ_archs],
+if test "x${targ_archs}" != x; then
+  AC_DEFINE_UNQUOTED([DEFAULT_BFD_ARCH],[${targ_archs}],
     [Define to BFD's default architecture. ])
 fi
-if test "x$targ_defvec" != x; then
-  AC_DEFINE_UNQUOTED([DEFAULT_BFD_VEC],[$targ_defvec],
+if test "x${targ_defvec}" != x; then
+  AC_DEFINE_UNQUOTED([DEFAULT_BFD_VEC],[${targ_defvec}],
     [Define to BFD's default target vector. ])
 fi
 
@@ -381,29 +410,29 @@ AC_ARG_WITH([libunwind],
 esac],[
   AC_CHECK_HEADERS([libunwind.h])
   AC_CHECK_HEADERS([libunwind-ia64.h])
-  if test x"$ac_cv_header_libunwind_h" = xyes -a x"$ac_cv_header_libunwind_ia64_h" = xyes; then
+  if test x"${ac_cv_header_libunwind_h}" = xyes -a x"${ac_cv_header_libunwind_ia64_h}" = xyes; then
     enable_libunwind=yes;
   fi
 ])
    
-if test x"$enable_libunwind" = xyes; then
+if test x"${enable_libunwind}" = xyes; then
   AC_CHECK_HEADERS([libunwind.h])
   AC_CHECK_HEADERS([libunwind-ia64.h])
   AC_CHECK_FUNCS([unw_create_addr_space_p unw_get_saveloc_p unw_search_unwind_table_p])
   AC_DEFINE([HAVE_LIBUNWIND],[1],[Define if libunwind library is being used.])
-  CONFIG_OBS="$CONFIG_OBS libunwind-frame.o"
-  CONFIG_DEPS="$CONFIG_DEPS libunwind-frame.o"
-  CONFIG_SRCS="$CONFIG_SRCS libunwind-frame.c"
+  CONFIG_OBS="${CONFIG_OBS} libunwind-frame.o"
+  CONFIG_DEPS="${CONFIG_DEPS} libunwind-frame.o"
+  CONFIG_SRCS="${CONFIG_SRCS} libunwind-frame.c"
 fi
 
 # Profiling support.
 AC_ARG_ENABLE([profiling],
 [AS_HELP_STRING([--enable-profiling],[enable profiling of GDB])],
-  [case $enableval in
+  [case ${enableval} in
     yes | no)
       ;;
     *)
-      AC_MSG_ERROR([bad value $enableval for --enable-profile]) ;;
+      AC_MSG_ERROR([bad value ${enableval} for --enable-profile]) ;;
   esac],
  [enable_profiling=no])
 
@@ -468,11 +497,11 @@ LT_LANG([Java])
 LT_LANG([Fortran 77])
 LT_LANG([Fortran])
 LT_LANG([Windows Resource])
-if test "x$AWK" = "x"; then
-	test -z "$AWK"
+if test "x${AWK}" = "x"; then
+	test -z "${AWK}"
 	AC_PROG_AWK
 else
-	test ! -z "$AWK" && export AWK
+	test ! -z "${AWK}" && export AWK
 	AC_SUBST([AWK])
 fi
 AC_PROG_INSTALL
@@ -484,11 +513,11 @@ AC_PROG_MKDIR_P
 AM_PATH_PYTHON
 AC_PROG_OBJC
 AC_PROG_OBJCXX
-if test "x$RANLIB" = "x"; then
-	test -z "$RANLIB"
+if test "x${RANLIB}" = "x"; then
+	test -z "${RANLIB}"
 	AC_PROG_RANLIB
 else
-	test ! -z "$RANLIB" && export RANLIB
+	test ! -z "${RANLIB}" && export RANLIB
 	AC_SUBST([RANLIB])
 fi
 AC_BAKEFILE_METROWERKS_EXTO
@@ -612,8 +641,8 @@ AC_SEARCH_LIBS([socketpair],[socket])
 # FIXME: kettenis/20040905: We prefer ncurses over the vendor-supplied
 # curses library because the latter might not provide all the
 # functionality we need.  However, this leads to problems on systems
-# where the linker searches /usr/local/lib, but the compiler doesn't
-# search /usr/local/include, if ncurses is installed in /usr/local.  A
+# where the linker searches /usr/local/lib, but the compiler does NOT
+# search /usr/local/include, if ncurses is installed in /usr/local. A
 # default installation of ncurses on alpha*-dec-osf* will lead to such
 # a situation.
 AC_SEARCH_LIBS([waddstr],[ncurses cursesX curses])
@@ -622,10 +651,10 @@ AC_SEARCH_LIBS([waddstr],[ncurses cursesX curses])
 # cases this will be provided by the curses library, but some systems
 # have a seperate termcap library, or no curses library at all.
 
-case $host_os in
+case ${host_os} in
   cygwin*)
-    if test -d $srcdir/libtermcap; then
-      LIBS="../libtermcap/libtermcap.a $LIBS"
+    if test -d ${srcdir}/libtermcap; then
+      LIBS="../libtermcap/libtermcap.a ${LIBS}"
       ac_cv_search_tgetent="../libtermcap/libtermcap.a"
     fi ;;
   go32* | *djgpp*)
@@ -633,14 +662,14 @@ case $host_os in
     ;;
   *mingw32*)	 
     ac_cv_search_tgetent="none required"
-    CONFIG_OBS="$CONFIG_OBS win32-termcap.o"
+    CONFIG_OBS="${CONFIG_OBS} win32-termcap.o"
     ;;
 esac
 
 # These are the libraries checked by Readline.
 AC_SEARCH_LIBS([tgetent],[termcap tinfo curses ncurses])
 
-if test "$ac_cv_search_tgetent" = no; then
+if test "${ac_cv_search_tgetent}" = no; then
   AC_MSG_ERROR([no termcap library found])
 fi
 
@@ -650,7 +679,10 @@ AC_CHECK_LIB([bfd],[main])
 # FIXME: Replace `main' with a function in `-lgnu':
 AC_CHECK_LIB([gnu],[main])
 AC_CHECK_LIB([iberty],[xmalloc])
-AC_CHECK_LIB([intl],[gettext])
+AC_SEARCH_LIBS([gettext],[intl c gettext])
+AC_CHECK_LIB([intl],[gettext],[],[
+  AC_CHECK_LIB([intl],[main],[],[])
+])
 # FIXME: Replace `main' with a function in `-lopcodes':
 AC_CHECK_LIB([opcodes],[main])
 AC_CHECK_LIB([readline],[rl_initialize])
@@ -715,8 +747,8 @@ AC_CHECK_HEADERS([termios.h termio.h sgtty.h])
 
 # On Solaris 2.[789], we need to define _MSE_INT_H to avoid a clash
 # between <widec.h> and <wchar.h> that would cause AC_CHECK_HEADERS to
-# think that we don't have <curses.h> if we're using GCC.
-case $host_os in
+# think that we do NOT have <curses.h> if we are using GCC.
+case ${host_os} in
   solaris2.[[789]])
     if test "$GCC" = yes; then
       AC_DEFINE([_MSE_INT_H],[1],
@@ -741,6 +773,19 @@ AC_CHECK_HEADERS([ctype.h time.h])
 
 # Other headers that autoscan complains about:
 AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
+if test -d ../intl; then
+  if test -z "${CPPFLAGS}"; then
+    export CPPFLAGS="-I../intl"
+  else
+    export CPPFLAGS="${CPPFLAGS} -I../intl"
+  fi
+elif test -d ../libintl; then
+  if test -z "${CPPFLAGS}"; then
+    export CPPFLAGS="-I../libintl"
+  else
+    export CPPFLAGS="${CPPFLAGS} -I../libintl"
+  fi
+fi
 unset ac_cv_header_libintl_h
 unset ac_cv_header_limits_h
 unset ac_cv_header_locale_h
@@ -972,7 +1017,7 @@ AC_CHECK_FUNCS([alarm atexit bzero dup2 fflush fprintf fwrite \
 AC_MSG_CHECKING([miscellaneous things that require custom checks])
 AC_MSG_RESULT([ ])
 
-# Check the return and argument types of ptrace.  No canned test for
+# Check the return and argument types of ptrace. No canned test for
 # this, so roll our own.
 gdb_ptrace_headers='
 #if HAVE_SYS_TYPES_H
@@ -1201,11 +1246,11 @@ case "$host" in
   *-apple-darwin* | *-apple-macos*)
     AC_ARG_ENABLE(carbon-framework,
     [AS_HELP_STRING([--disable-carbon-framework],[disable Carbon framework use even when available])],
-    [case $enableval in
+    [case ${enableval} in
       yes | no) 
-        enable_carbon_framework="$enableval" ;;
+        enable_carbon_framework="${enableval}" ;;
       *)
-        AC_MSG_ERROR([bad value '$enableval' for --disable-carbon-framework]) ;;
+        AC_MSG_ERROR([bad value '${enableval}' for --disable-carbon-framework]) ;;
     esac],
     [enable_carbon_framework=no])
 
@@ -1235,16 +1280,16 @@ case "$host" in
   *-apple-darwin* | *-apple-macos*)
     AC_ARG_ENABLE([debug-symbols-framework],
     [AS_HELP_STRING([--disable-debug-symbols-framework],[disable DebugSymbols framework use even when available])],
-    [case $enableval in
+    [case ${enableval} in
       yes | no) 
-        enable_debug_symbols_framework="$enableval" ;;
+        enable_debug_symbols_framework="${enableval}" ;;
       *)
-        AC_MSG_ERROR([bad value '$enableval' for --disable-debug-symbols-framework]) ;;
+        AC_MSG_ERROR([bad value '${enableval}' for --disable-debug-symbols-framework]) ;;
     esac],
     [enable_debug_symbols_framework=yes])
 
     AC_MSG_CHECKING([for DebugSymbols framework])
-    if test x"$enable_debug_symbols_framework" = xyes; then
+    if test x"${enable_debug_symbols_framework}" = xyes; then
       if test -d "/System/Library/PrivateFrameworks/DebugSymbols.framework"
       then
         AC_DEFINE([USE_DEBUG_SYMBOLS_FRAMEWORK],[1],[Define if DebugSymbols framework is available and we should use it.])
@@ -1532,7 +1577,7 @@ if test ${build} = ${host} -a ${host} = ${target} ; then
    solaris*)
       # See if thread_db library is around for Solaris thread debugging.
       # Note that we must explicitly test for version 1 of the library
-      # because version 0 (present on Solaris 2.4 or earlier) doesn't have
+      # because version 0 (present on Solaris 2.4 or earlier) does NOT have
       # the same API.
       AC_MSG_CHECKING([for Solaris thread debugging library])
       if test -f /usr/lib/libthread_db.so.1 ; then
@@ -1808,7 +1853,7 @@ if test "${enable_gdbtk}" = "yes"; then
 
 	TCL_DEPS="${tcldir}${TCL_LIB_FILE}"
 
-	# If $no_tk is nonempty, then we can't do Tk, and there is no
+	# If ${no_tk} is nonempty, then we cannot do Tk, and there is no
 	# point to doing Tcl.
 	if test -z "${no_tk}"; then
 	   CY_AC_LOAD_TKCONFIG
@@ -1850,7 +1895,7 @@ if test "${enable_gdbtk}" = "yes"; then
 	   # TK_LIBS is the list of libraries that need to be linked
 	   # after Tcl/Tk. Note that this is NOT put into LIBS. If it
 	   # were in LIBS then any link tests after this point would
-	   # try to include things like `$(LIBGUI)', which wouldn't work.
+	   # try to include things like `$(LIBGUI)', which would NOT work.
 	   GDBTKLIBS="${TCL_LIBS} ${TK_LIBS}"
 
            CONFIG_OBS="${CONFIG_OBS} \$(SUBDIR_GDBTK_OBS)"
@@ -1910,7 +1955,7 @@ fi
 # Unlike the sim directory, whether a simulator is linked is controlled by 
 # presence of a SIM= and a SIM_OBS= definition in the target '.mt' file.  
 # This code just checks for a few cases where we would like to ignore those
-# definitions, even when they're present in the '.mt' file.  These cases
+# definitions, even when they are present in the '.mt' file. These cases
 # are when --disable-sim is specified, or if the simulator directory is
 # not part of the source tree.
 #
@@ -2139,9 +2184,9 @@ dnl#  At the moment, we just assume it is ISO-8859-1 (which is a
 dnl#  superset of ASCII containing the characters needed for French,
 dnl#  German, Spanish, Italian, and possibly others), but if were
 dnl#  *were* to support any host character sets other than ISO-8859-1,
-dnl#  here is where we'd detect it.
+dnl#  here is where we would detect it.
 
-case "$host" in
+case "${host}" in
   *-apple-darwin* | *-apple-macos*)
   ;;
   *)
