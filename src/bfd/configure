@@ -3811,7 +3811,6 @@ if test "$ac_res" != no; then :
 
 fi
 
-
 # host stuff:
 if test "x${CC}" = "x"; then
     test -z "${CC}"
@@ -19617,7 +19616,7 @@ case "${host}" in
     ;;
   *)
     x=`sed -n -e 's/^[ 	]*PICFLAG[ 	]*=[ 	]*//p' < ../libiberty/Makefile | sed -n '$p'`
-    if test -n "$x"; then
+    if test -n "${x}"; then
       WIN32LIBADD="-L../libiberty/pic -liberty"
     fi
   ;;
@@ -19630,15 +19629,15 @@ esac
 # target stuff:
 
 # Canonicalize the secondary target names.
-if test -n "$enable_targets" ; then
-    for targ in `echo $enable_targets | sed 's/,/ /g'`
+if test -n "${enable_targets}" ; then
+    for targ in `echo ${enable_targets} | sed 's/,/ /g'`
     do
-	result=`$ac_config_sub $targ 2>/dev/null`
-	if test -n "$result" ; then
-	    canon_targets="$canon_targets $result"
+	result=`${ac_config_sub} ${targ} 2>/dev/null`
+	if test -n "${result}" ; then
+	    canon_targets="${canon_targets} ${result}"
 	else
-	    # Allow targets that config.sub doesn't recognize, like "all".
-	    canon_targets="$canon_targets $targ"
+	    # Allow targets that config.sub does NOT recognize, like "all".
+	    canon_targets="${canon_targets} ${targ}"
 	fi
     done
 fi
@@ -20018,7 +20017,7 @@ do
     cisco_core_little_vec)	tb="${tb} cisco-core.lo" ;;
 
     "")			;;
-    *) as_fn_error $? "*** unknown target vector $vec" "$LINENO" 5 ;;
+    *) as_fn_error $? "*** unknown target vector ${vec}" "$LINENO" 5 ;;
     esac
 
     if test ${target_size} = 64; then

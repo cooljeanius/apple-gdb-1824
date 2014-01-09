@@ -40,9 +40,21 @@ extern "C" {
 #endif /* READLINE_LIBRARY */
 
 /* Hex-encoded Readline version number. */
-#define RL_READLINE_VERSION	0x0403		/* Readline 4.3 */
-#define RL_VERSION_MAJOR	4
-#define RL_VERSION_MINOR	3
+#ifndef RL_READLINE_VERSION
+# define RL_READLINE_VERSION	0x0403		/* Readline 4.3 */
+#else
+# define RL_READLINE_VERSION_PREDEFINED RL_READLINE_VERSION
+#endif /* !RL_READLINE_VERSION */
+#ifndef RL_VERSION_MAJOR
+# define RL_VERSION_MAJOR	4
+#else
+# define RL_VERSION_MAJOR_PREDEFINED RL_VERSION_MAJOR
+#endif /* !RL_READLINE_MAJOR */
+#ifndef RL_VERSION_MINOR
+# define RL_VERSION_MINOR	3
+#else
+# define RL_VERSION_MINOR_PREDEFINED RL_VERSION_MINOR
+#endif /* !RL_READLINE_MINOR */
 
 /* Readline data structures. */
 

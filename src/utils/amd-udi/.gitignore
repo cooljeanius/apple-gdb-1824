@@ -20,3 +20,4 @@ config*.lineno
 site.exp
 site.bak
 *.sum
+cygwinports.com/*

@@ -14,8 +14,26 @@
 
 @SET_MAKE@
 
-# Stub Makefile for amd-udi
-VPATH = @srcdir@
+#
+# Makefile for utils/amd-udi/mondfe and montip tools
+#   Copyright (C) 1993 Free Software Foundation
+#
+# This file is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. 
+#
+# Written by Jeffrey Wheat (cassidy@cygnus.com)
+#
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
   case $${target_option-} in \
@@ -81,21 +99,24 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 subdir = .
-DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
+DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog THANKS \
+	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
 	$(srcdir)/config.h.in $(top_srcdir)/../../mkinstalldirs \
-	$(top_srcdir)/../../compile $(top_srcdir)/../../config.guess \
+	$(srcdir)/Makefile.orig.in COPYING $(top_srcdir)/../../compile \
+	$(top_srcdir)/../../config.guess \
 	$(top_srcdir)/../../config.sub $(top_srcdir)/../../install-sh \
 	$(top_srcdir)/../../missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(SHELL) $(top_srcdir)/../../mkinstalldirs
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = Makefile.orig
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -200,7 +221,9 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
+VPATH = @srcdir@
 ACLOCAL = @ACLOCAL@
+ALLOCA = @ALLOCA@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
 AUTOCONF = @AUTOCONF@
@@ -208,6 +231,9 @@ AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 CC = @CC@
+CCAS = @CCAS@
+CCASDEPMODE = @CCASDEPMODE@
+CCASFLAGS = @CCASFLAGS@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
@@ -236,6 +262,7 @@ LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
+MY_CC = @MY_CC@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -295,6 +322,8 @@ program_transform_name = @program_transform_name@
 psdir = @psdir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
+
+#### Start of system configuration section. ####
 srcdir = @srcdir@
 sysconfdir = @sysconfdir@
 target = @target@
@@ -307,26 +336,79 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 CLEANFILES = *.o *~
 DISTCLEANFILES = Makefile config.status stamp-h1 config.h *.log
-SUBDIRS = mondfe montip udi
+SUBDIRS = udi mondfe montip
+AUTOMAKE_OPTIONS = gnits dejagnu
+INSTALL_PROG = @INSTALL@
+MY_INSTALL_OLD_DATA_OF_MINE = @INSTALL_DATA@
+MY_INSTALL_PROGRAM = @INSTALL_PROGRAM@
+AR = ar
+AR_FLAGS = rv
+AM_CFLAGS = -ggdb
+LD = ld
+# Darwin linker (ld64) fails to recognize this flag, so conditionalize:
+@LINKER_IS_COMPILER_TRUE@AM_LDFLAGS = -g
+MV = mv
+RM = rm
+my_exec_prefix = $(prefix)
+my_bindir = $(exec_prefix)/bin
+my_libdir = $(exec_prefix)/lib
+my_mandir = $(prefix)/man
+man1dir = $(mandir)/man1
+man2dir = $(mandir)/man2
+man3dir = $(mandir)/man3
+man4dir = $(mandir)/man4
+man5dir = $(mandir)/man5
+man6dir = $(mandir)/man6
+man7dir = $(mandir)/man7
+man8dir = $(mandir)/man8
+MY_SHELL = /bin/sh
+INSTALL_HARDCODED = install -c
+INSTALL_DATA_HARDCODED = $(INSTALL)
+INSTALL_PROGRAM_HARDCODED = $(INSTALL)
+
+#### End of system configuration section. ####
+SHELL_HARDCODED = /bin/sh
+MY_MAKEINFO = makeinfo
+TEXI2DVI = texi2dvi
+MY_SUBDIRS = udi mondfe montip
+
+# These are roughly topologically sorted in order to make porting more
+# streamlined.
+FLAGS_TO_PASS = \
+	"CC=$(CC)" \
+	"CFLAGS=$(CFLAGS)" \
+	"AR=$(AR)" \
+	"RANLIB=$(RANLIB)" \
+	"AR_FLAGS=$(AR_FLAGS)" \
+	"LD=$(LD)" \
+	"LDFLAGS=$(LDFLAGS)" \
+	"AS=$(AS)" \
+	"MV=$(MV)" \
+	"RM=$(RM)" \
+	"CROSS_CFLAGS=$(CROSS_CFLAGS)" \
+	"TARGET_CFLAGS=$(TARGET_CFLAGS)" \
+	"INCLUDES=$(INCLUDES)"
+
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
 .SUFFIXES:
+.SUFFIXES: .c .o
 am--refresh: Makefile
 	@:
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
-	      echo ' cd $(srcdir) && $(AUTOMAKE) --foreign'; \
-	      $(am__cd) $(srcdir) && $(AUTOMAKE) --foreign \
+	      echo ' cd $(srcdir) && $(AUTOMAKE) --gnits'; \
+	      $(am__cd) $(srcdir) && $(AUTOMAKE) --gnits \
 		&& exit 0; \
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnits Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign Makefile
+	  $(AUTOMAKE) --gnits Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -361,6 +443,8 @@ $(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
+Makefile.orig: $(top_builddir)/config.status $(srcdir)/Makefile.orig.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run 'make' without going through this Makefile.
@@ -513,6 +597,12 @@ distclean-DEJAGNU:
 	done
 
 distdir: $(DISTFILES)
+	@case `sed 15q $(srcdir)/NEWS` in \
+	*"$(VERSION)"*) : ;; \
+	*) \
+	  echo "NEWS not updated; not releasing" 1>&2; \
+	  exit 1;; \
+	esac
 	$(am__remove_distdir)
 	test -d "$(distdir)" || mkdir "$(distdir)"
 	@srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
@@ -773,7 +863,7 @@ install-html-am:
 
 install-info: install-info-recursive
 
-install-info-am:
+install-info-am: install-info-local
 
 install-man:
 
@@ -785,7 +875,7 @@ install-ps: install-ps-recursive
 
 install-ps-am:
 
-installcheck-am:
+installcheck-am: installcheck-local
 
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
@@ -819,15 +909,75 @@ uninstall-am:
 	info-am install install-am install-data install-data-am \
 	install-dvi install-dvi-am install-exec install-exec-am \
 	install-html install-html-am install-info install-info-am \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs installdirs-am maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
-	pdf-am ps ps-am tags tags-am uninstall uninstall-am
+	install-info-local install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installcheck-local installdirs installdirs-am \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
+	uninstall-am
 
 
 all-local:
 	@echo "TODO: find out what is supposed to be going on here."
+
+all_old:
+	@for dir in ${SUBDIRS}; do \
+	if [ -d $$dir ]; then \
+	    (rootme=`pwd`/ ; export rootme ; \
+	    rootsrc=`cd $(srcdir); pwd`/ ; export rootsrc ; \
+	    cd $$dir; $(MAKE) $(FLAGS_TO_PASS)); \
+	    fi; \
+	done
+.PHONY: all_old
+
+install_amd-udi:
+	@for dir in ${SUBDIRS}; do \
+	    echo "$$dir:"; \
+	    if [ -d $$dir ]; then \
+		(cd $$dir; $(MAKE) install); \
+		fi; \
+	    done
+.PHONY: install_amd-udi
+
+clean-local mostlyclean-local:
+	-rm -f *~ core *.o a.out 
+	@for dir in ${SUBDIRS}; do \
+	    echo "$$dir:"; \
+	    if [ -d $$dir ]; then \
+		(cd $$dir; $(MAKE) $@); \
+		fi; \
+	    done
+.PHONY: clean-local mostlyclean-local
+
+distclean-local maintainer-clean-local realclean-local: clean-local
+	@for dir in ${SUBDIRS}; do \
+	    echo "$$dir:"; \
+	    (cd $$dir; $(MAKE) $@); \
+	done
+	-rm -f *~ core
+	-rm -f Makefile config.status 
+.PHONY: distclean-local maintainer-clean-local realclean-local
+
+.c.o:
+	$(CC) -c $(CFLAGS) $(INCLUDE) $(CPPFLAGS) $(DEFS) $<
+
+install-info-local: info
+
+installcheck-local:
+
+check: 
+
+rebuild_Makefile: Makefile.in configure.ac
+	$(SHELL) ./config.status
+.PHONY: rebuild_Makefile
+
+rebuild_configure: configure.ac
+	autoconf
+.PHONY: rebuild_configure
+
+TAGS_e: $(SRCS)
+	etags $(SRCS)
+.PHONY: TAGS_e
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -301,7 +301,7 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AUTOMAKE_OPTIONS = dejagnu subdir-objects
+AUTOMAKE_OPTIONS = dejagnu subdir-objects gnits
 
 # renamed because the old variable overrode the default Automake one:
 RUNTESTLOCAL = ` \
@@ -324,9 +324,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu testsuite/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnits testsuite/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu testsuite/Makefile
+	  $(AUTOMAKE) --gnits testsuite/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

@@ -13,6 +13,9 @@ their VCS to us...)
 	- 250: last version with src/gdb/29k-share and some other things in
 	src/gdb...
 
+	- 282: first version with src/utils (unfortunately Apple decided to
+	add it after amd-udi had already been deprecated upstream...)
+
 	- 309: last version with src/contrib, src/etc, src/expect, src/sim,
 	src/tcl, src/texinfo, src/utils, and maybe a few other things...
 

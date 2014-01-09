@@ -5,7 +5,7 @@ AC_PREREQ([2.59])
 AC_INIT([cgen],[1.1],[dje@sebabeach.org])
 AC_CONFIG_SRCDIR([read.scm])
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE([1.9.6 gnu dejagnu])
+AM_INIT_AUTOMAKE([1.9.6 gnits dejagnu])
 
 AC_PROG_INSTALL
 AC_EXEEXT

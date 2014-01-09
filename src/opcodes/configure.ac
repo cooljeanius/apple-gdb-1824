@@ -18,7 +18,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.10 gnu dejagnu])
+AM_INIT_AUTOMAKE([1.10 gnits dejagnu])
 
 dnl# These must be called before AM_PROG_LIBTOOL, because it may want
 dnl# to call AC_CHECK_PROG.
@@ -97,6 +97,19 @@ esac
 
 # gettext
 AC_MSG_NOTICE([doing gettext checks])
+if test -d ../intl; then
+  if test -z "${LDFLAGS}"; then
+    export LDFLAGS="-L../intl"
+  else
+    export LDFLAGS="${LDFLAGS} -L../intl"
+  fi
+elif test -d ../libintl; then
+  if test -z "${LDFLAGS}"; then
+    export LDFLAGS="-L../libintl"
+  else
+    export LDFLAGS="${LDFLAGS} -L../libintl"
+  fi
+fi
 ALL_LINGUAS="fr sv tr es da de id it pt_BR ro nl fi uk vi"
 CY_GNU_GETTEXT
 ZW_GNU_GETTEXT_SISTER_DIR

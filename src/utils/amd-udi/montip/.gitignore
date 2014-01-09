@@ -1,0 +1,9 @@
+*.o
+montip
+site.exp
+site.bak
+*.sum
+*.log
+Makefile
+Makefile.orig
+*.status

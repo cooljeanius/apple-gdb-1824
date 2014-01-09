@@ -4939,8 +4939,8 @@ fi
 
 # We want these before the (rest of the) checks, so that the (rest of the)
 # checks can modify their values.
-test -z "$CFLAGS" && CFLAGS="-g"
-test -z "$auto_cflags" && auto_cflags="1"
+test -z "${CFLAGS}" && CFLAGS="-ggdb"
+test -z "${auto_cflags}" && auto_cflags="1"
 
 
 if test "x${cross_compiling}" = "xyes"; then
@@ -4987,6 +4987,10 @@ fi
 test -n "${GCC}" && test -n "${auto_cflags}" && CFLAGS="${CFLAGS} -O"
 
 # Checks for programs.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking programs" >&5
+$as_echo_n "checking programs... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 for ac_prog in gawk mawk nawk awk
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
@@ -5638,6 +5642,10 @@ fi
 
 
 # Checks for libraries.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking libraries" >&5
+$as_echo_n "checking libraries... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for printf in -lc" >&5
 $as_echo_n "checking for printf in -lc... " >&6; }
 if ${ac_cv_lib_c_printf+:} false; then :
@@ -5848,6 +5856,10 @@ MAKE_SHELL=/bin/sh
 
 
 # Checks for typedefs, structures, and compiler characteristics.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking typedefs, structures, and compiler characteristics" >&5
+$as_echo_n "checking typedefs, structures, and compiler characteristics... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether byte ordering is bigendian" >&5
 $as_echo_n "checking whether byte ordering is bigendian... " >&6; }
 if ${ac_cv_c_bigendian+:} false; then :
@@ -6340,6 +6352,10 @@ fi
 
 
 # Checks for library functions.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking functions" >&5
+$as_echo_n "checking functions... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking if malloc debugging is wanted" >&5
 $as_echo_n "checking if malloc debugging is wanted... " >&6; }
 
@@ -8739,6 +8755,10 @@ fi
 
 
 # Checks for header files.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking headers" >&5
+$as_echo_n "checking headers... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 ac_header_dirent=no
 for ac_hdr in dirent.h sys/ndir.h sys/dir.h ndir.h; do
   as_ac_Header=`$as_echo "ac_cv_header_dirent_$ac_hdr" | $as_tr_sh`
@@ -9113,6 +9133,8 @@ done
 
 
 # Checks using macros from Bash's configure script
+{ $as_echo "$as_me:${as_lineno-$LINENO}: running checks stolen from Bash's configure script" >&5
+$as_echo "$as_me: running checks stolen from Bash's configure script" >&6;}
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking return type of signal handlers" >&5
 $as_echo_n "checking return type of signal handlers... " >&6; }
 if ${ac_cv_type_signal+:} false; then :
@@ -10547,6 +10569,10 @@ isc*)	LOCAL_CFLAGS=-Disc386 ;;
 esac
 
 # Automake
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking automake-related things" >&5
+$as_echo_n "checking automake-related things... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 if test -f ${srcdir}/config.status; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: config.status is already present, removing it." >&5
 $as_echo "$as_me: config.status is already present, removing it." >&6;}
@@ -11176,6 +11202,10 @@ if test "${opt_shared_libs}" = "yes"; then
 fi
 
 # Libtool
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking libtool-related things" >&5
+$as_echo_n "checking libtool-related things... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 case `pwd` in
   *\ * | *\	*)
     { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Libtool does not cope well with whitespace in \`pwd\`" >&5
@@ -21478,6 +21508,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 # Some final things
+{ $as_echo "$as_me:${as_lineno-$LINENO}: finishing up..." >&5
+$as_echo "$as_me: finishing up..." >&6;}
 
 CHANGELOG_CMD="(GIT_DIR=\$(top_srcdir)/.git git log > \$(top_srcdir)/.changelog.tmp && \
 mv \$(top_srcdir)/.changelog.tmp \$(top_srcdir)/ChangeLog) \

@@ -60,8 +60,8 @@ XORG_LD_WRAP
 
 # We want these before the (rest of the) checks, so that the (rest of the)
 # checks can modify their values.
-test -z "$CFLAGS" && CFLAGS="-g"
-test -z "$auto_cflags" && auto_cflags="1"
+test -z "${CFLAGS}" && CFLAGS="-ggdb"
+test -z "${auto_cflags}" && auto_cflags="1"
 
 dnl# BEGIN changes for CYGNUS cross-building for Cygwin
  
@@ -112,6 +112,8 @@ dnl# END changes for CYGNUS cross-building for Cygwin
 test -n "${GCC}" && test -n "${auto_cflags}" && CFLAGS="${CFLAGS} -O"
 
 # Checks for programs.
+AC_MSG_CHECKING([programs])
+AC_MSG_RESULT([ ])
 AC_PROG_AWK
 AC_PROG_GCC_TRADITIONAL
 AC_PROG_INSTALL
@@ -138,6 +140,8 @@ fi
 AC_PATH_PROG([TEX_BINARY],[tex])
 
 # Checks for libraries.
+AC_MSG_CHECKING([libraries])
+AC_MSG_RESULT([ ])
 AC_CHECK_LIB([c],[printf])
 # FIXME: Replace `main' with a function in `-lcurses':
 AC_CHECK_LIB([curses],[main])
@@ -152,6 +156,8 @@ MAKE_SHELL=/bin/sh
 AC_SUBST([MAKE_SHELL])
 
 # Checks for typedefs, structures, and compiler characteristics.
+AC_MSG_CHECKING([typedefs, structures, and compiler characteristics])
+AC_MSG_RESULT([ ])
 AC_C_BIGENDIAN
 AC_C_CONST
 AC_C_PROTOTYPES
@@ -175,6 +181,8 @@ AC_TYPE_SIZE_T
 AC_CHECK_TYPE([ssize_t],[int])
 
 # Checks for library functions.
+AC_MSG_CHECKING([functions])
+AC_MSG_RESULT([ ])
 AM_WITH_DMALLOC
 AC_FUNC_ALLOCA
 AC_FUNC_CHOWN
@@ -223,6 +231,8 @@ AC_CHECK_DECL([strlen])
 AC_CHECK_DECL([strncpy])
 
 # Checks for header files.
+AC_MSG_CHECKING([headers])
+AC_MSG_RESULT([ ])
 AC_HEADER_DIRENT
 AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
 AC_HEADER_STAT
@@ -237,6 +247,7 @@ AC_CHECK_HEADERS([arpa/inet.h errno.h fcntl.h features.h limits.h \
                   termio.h termios.h varargs.h wchar.h wctype.h])
 
 # Checks using macros from Bash's configure script
+AC_MSG_NOTICE([running checks stolen from Bash's configure script])
 BASH_SYS_SIGNAL_VINTAGE
 BASH_SYS_REINSTALL_SIGHANDLERS
 
@@ -281,6 +292,8 @@ isc*)	LOCAL_CFLAGS=-Disc386 ;;
 esac
 
 # Automake
+AC_MSG_CHECKING([automake-related things])
+AC_MSG_RESULT([ ])
 if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
@@ -334,10 +347,13 @@ if test "${opt_shared_libs}" = "yes"; then
 fi
 
 # Libtool
+AC_MSG_CHECKING([libtool-related things])
+AC_MSG_RESULT([ ])
 LT_INIT([static disable-shared])
 LT_LANG([C])
 
 # Some final things
+AC_MSG_NOTICE([finishing up...])
 XORG_CHANGELOG
 
 AC_SUBST([STATIC_TARGET])

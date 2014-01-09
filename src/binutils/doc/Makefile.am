@@ -1,5 +1,6 @@
 ## Process this file with automake to generate Makefile.in
 
+AUTOMAKE_OPTIONS = 1.9.6 gnits
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 # What version of the manual you want; "all" includes everything

@@ -81,7 +81,7 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 subdir = .
-DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog \
+DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog THANKS \
 	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
 	$(srcdir)/config.h.in $(top_srcdir)/../mkinstalldirs \
@@ -484,7 +484,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 wordsize = @wordsize@
-AUTOMAKE_OPTIONS = 1.9.6 gnu dejagnu
+AUTOMAKE_OPTIONS = 1.9.6 gnits dejagnu
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 ACLOCAL_AMFLAGS = -I m4 --install
 
@@ -1125,7 +1125,7 @@ BLD_POTFILES = $(BUILD_CFILES) $(BUILD_HFILES)
 # COREFILE	Core file routines for a native configuration
 OFILES = $(BFD_BACKENDS) $(BFD_MACHINES) @COREFILE@
 libbfd_la_SOURCES = $(BFD32_LIBS_CFILES) $(BFD64_LIBS_CFILES)
-libbfd_la_DEPENDENCIES = $(OFILES) ofiles
+libbfd_la_DEPENDENCIES = $(OFILES) stamp-ofiles ofiles $(srcdir)/ofiles
 libbfd_la_LIBADD = `cat ofiles` @WIN32LIBADD@
 libbfd_la_LDFLAGS = -release $(VERSION) @WIN32LDFLAGS@
 
@@ -1135,7 +1135,7 @@ libbfd_la_LDFLAGS = -release $(VERSION) @WIN32LDFLAGS@
 # everything else starts using libtool. FIXME.
 noinst_LIBRARIES = libbfd.a
 libbfd_a_SOURCES = 
-libbfd_a_DEPENDENCIES = $(OFILES) ofiles
+libbfd_a_DEPENDENCIES = $(OFILES) stamp-ofiles ofiles $(srcdir)/ofiles
 EXTRA_libbfd_a_DEPENDENCIES = 
 libbfd_a_LIBADD = `cat ofiles` @WIN32LIBADD@
 BFD_H_DEPS = $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h
@@ -1176,15 +1176,15 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
-	      echo ' cd $(srcdir) && $(AUTOMAKE) --gnu'; \
-	      $(am__cd) $(srcdir) && $(AUTOMAKE) --gnu \
+	      echo ' cd $(srcdir) && $(AUTOMAKE) --gnits'; \
+	      $(am__cd) $(srcdir) && $(AUTOMAKE) --gnits \
 		&& exit 0; \
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnits Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu Makefile
+	  $(AUTOMAKE) --gnits Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -1486,6 +1486,12 @@ distclean-DEJAGNU:
 	done
 
 distdir: $(DISTFILES)
+	@case `sed 15q $(srcdir)/NEWS` in \
+	*"$(VERSION)"*) : ;; \
+	*) \
+	  echo "NEWS not updated; not releasing" 1>&2; \
+	  exit 1;; \
+	esac
 	$(am__remove_distdir)
 	test -d "$(distdir)" || mkdir "$(distdir)"
 	@srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \

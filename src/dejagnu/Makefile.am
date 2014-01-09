@@ -2,7 +2,7 @@
 
 ACLOCAL_AMFLAGS = -I./m4 --install
 
-AUTOMAKE_OPTIONS = 1.4 dejagnu -Wno-portability subdir-objects
+AUTOMAKE_OPTIONS = 1.4 gnits dejagnu -Wno-portability subdir-objects
 
 # Install all the associated data files
 EXTRA_DIST = MAINTAINERS runtest site.tmpl

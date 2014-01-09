@@ -13587,6 +13587,19 @@ esac
 # gettext
 { $as_echo "$as_me:${as_lineno-$LINENO}: doing gettext checks" >&5
 $as_echo "$as_me: doing gettext checks" >&6;}
+if test -d ../intl; then
+  if test -z "${LDFLAGS}"; then
+    export LDFLAGS="-L../intl"
+  else
+    export LDFLAGS="${LDFLAGS} -L../intl"
+  fi
+elif test -d ../libintl; then
+  if test -z "${LDFLAGS}"; then
+    export LDFLAGS="-L../libintl"
+  else
+    export LDFLAGS="${LDFLAGS} -L../libintl"
+  fi
+fi
 ALL_LINGUAS="fr sv tr es da de id it pt_BR ro nl fi uk vi"
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for an ANSI C-conforming const" >&5
 $as_echo_n "checking for an ANSI C-conforming const... " >&6; }

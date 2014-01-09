@@ -10,7 +10,7 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
 
 AC_CANONICAL_TARGET
-AC_SEARCH_LIBS([strerror],[cposix])
+AC_SEARCH_LIBS([strerror],[cposix]) dnl# used to be AC\_ISC\_POSIX
 
 # host stuff:
 if test "x${CC}" = "x"; then
@@ -27,7 +27,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.9.6 gnu dejagnu])
+AM_INIT_AUTOMAKE([1.9.6 gnits dejagnu])
 AM_MAINTAINER_MODE
 AM_PROG_INSTALL_STRIP
 AM_SANITY_CHECK
@@ -670,7 +670,7 @@ case "${host}" in
 changequote(,)dnl
     x=`sed -n -e 's/^[ 	]*PICFLAG[ 	]*=[ 	]*//p' < ../libiberty/Makefile | sed -n '$p'`
 changequote([,])dnl
-    if test -n "$x"; then
+    if test -n "${x}"; then
       WIN32LIBADD="-L../libiberty/pic -liberty"
     fi
   ;;
@@ -683,15 +683,15 @@ AC_SUBST([WIN32LIBADD])
 # target stuff:
 
 # Canonicalize the secondary target names.
-if test -n "$enable_targets" ; then
-    for targ in `echo $enable_targets | sed 's/,/ /g'`
+if test -n "${enable_targets}" ; then
+    for targ in `echo ${enable_targets} | sed 's/,/ /g'`
     do
-	result=`$ac_config_sub $targ 2>/dev/null`
-	if test -n "$result" ; then
-	    canon_targets="$canon_targets $result"
+	result=`${ac_config_sub} ${targ} 2>/dev/null`
+	if test -n "${result}" ; then
+	    canon_targets="${canon_targets} ${result}"
 	else
-	    # Allow targets that config.sub doesn't recognize, like "all".
-	    canon_targets="$canon_targets $targ"
+	    # Allow targets that config.sub does NOT recognize, like "all".
+	    canon_targets="${canon_targets} ${targ}"
 	fi
     done
 fi
@@ -1031,7 +1031,7 @@ do
     cisco_core_little_vec)	tb="${tb} cisco-core.lo" ;;
 
     "")			;;
-    *) AC_MSG_ERROR([*** unknown target vector $vec]) ;;
+    *) AC_MSG_ERROR([*** unknown target vector ${vec}]) ;;
     esac
 
     if test ${target_size} = 64; then

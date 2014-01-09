@@ -1,6 +1,6 @@
 ## Process this file with automake to generate Makefile.in
 
-AUTOMAKE_OPTIONS = dejagnu subdir-objects
+AUTOMAKE_OPTIONS = dejagnu subdir-objects gnits
 
 all all-am all-am-local all-local all-redirect-local all-redirect: force
 	@echo "Nothing to be done for all"

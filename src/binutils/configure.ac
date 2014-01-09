@@ -12,7 +12,7 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([..])
 
 AC_CANONICAL_TARGET
-AC_SEARCH_LIBS([strerror],[cposix])
+AC_SEARCH_LIBS([strerror],[cposix]) dnl# used to be AC\_ISC\_POSIX
 AC_USE_SYSTEM_EXTENSIONS
 
 # Automake
@@ -20,7 +20,7 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.9.6 gnu dejagnu])
+AM_INIT_AUTOMAKE([1.9.6 gnits dejagnu])
 AM_SANITY_CHECK
 
 AC_PROG_SED

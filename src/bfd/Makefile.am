@@ -1,6 +1,6 @@
 ## Process this file with automake to generate Makefile.in
 
-AUTOMAKE_OPTIONS = 1.9.6 gnu dejagnu
+AUTOMAKE_OPTIONS = 1.9.6 gnits dejagnu
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 ACLOCAL_AMFLAGS = -I m4 --install
@@ -689,7 +689,7 @@ stamp-ofiles: Makefile
 ofiles: stamp-ofiles ; @true
 
 libbfd_la_SOURCES = $(BFD32_LIBS_CFILES) $(BFD64_LIBS_CFILES)
-libbfd_la_DEPENDENCIES = $(OFILES) ofiles
+libbfd_la_DEPENDENCIES = $(OFILES) stamp-ofiles ofiles $(srcdir)/ofiles
 libbfd_la_LIBADD = `cat ofiles` @WIN32LIBADD@
 libbfd_la_LDFLAGS = -release $(VERSION) @WIN32LDFLAGS@
 
@@ -700,7 +700,7 @@ libbfd_la_LDFLAGS = -release $(VERSION) @WIN32LDFLAGS@
 
 noinst_LIBRARIES = libbfd.a
 libbfd_a_SOURCES =
-libbfd_a_DEPENDENCIES = $(OFILES) ofiles
+libbfd_a_DEPENDENCIES = $(OFILES) stamp-ofiles ofiles $(srcdir)/ofiles
 EXTRA_libbfd_a_DEPENDENCIES = 
 libbfd_a_LIBADD = `cat ofiles` @WIN32LIBADD@
 

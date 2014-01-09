@@ -17,6 +17,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 ACLOCAL_AMFLAGS = -I m4 --install
 
+AUTOMAKE_OPTIONS = dejagnu gnits
+
 SUBDIRS = . doc shlib examples
 
 RL_LIBRARY_VERSION = @LIBVERSION@
@@ -156,7 +158,7 @@ everything: config.status all examples
 
 static: $(STATIC_LIBS)
 
-libreadline.a: $(OBJECTS) $(XMALLOCOBJ)
+libreadline.a: $(OBJECTS) $(HISTOBJ) $(TILDEOBJ) $(XMALLOCOBJ) $(srcdir)/compat.o $(srcdir)/malloc.o $(srcdir)/realloc.o
 	$(RM) $@
 	$(AR) $(ARFLAGS) $@ $(OBJECTS)
 	-test -n "$(RANLIB)" && $(RANLIB) $@

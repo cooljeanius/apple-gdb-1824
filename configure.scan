@@ -16,6 +16,8 @@ AC_PROG_LEX
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
+AC_PROG_OBJC
+AC_PROG_OBJCXX
 AC_PROG_RANLIB
 
 # Checks for libraries.
@@ -41,7 +43,5 @@ AC_CONFIG_FILES([Makefile
                  libcheckpoint/Makefile
                  macsbug/Makefile
                  macsbug/gdb_plugin_support/Makefile])
-AC_CONFIG_SUBDIRS([binutils-gdb
-                   macgdb
-                   src])
+AC_CONFIG_SUBDIRS([src])
 AC_OUTPUT

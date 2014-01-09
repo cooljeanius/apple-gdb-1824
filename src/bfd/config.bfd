@@ -48,7 +48,7 @@ case $targ in
     fi;;
 esac
 
-case $targ in
+case ${targ} in
  m68*-*-lynxos* | \
  sparc-*-lynxos* | \
  vax-*-vms* | \
@@ -62,7 +62,7 @@ case $targ in
  powerpcle-*-rtems* | \
  sparc*-*-rtemsaout* | \
  null)
-    echo "*** Configuration $targ is obsolete." >&2
+    echo "*** Configuration ${targ} is obsolete." >&2
     echo "*** Support has been REMOVED." >&2
     exit 1
     ;;
@@ -1221,9 +1221,9 @@ case "${targ}" in
     targ_defvec=bfd_elf32_sh_vec
     targ_selvecs="bfd_elf32_shl_vec"
     # FIXME None of the following are actually used on this target, but
-    # they're necessary for coff-sh.c (which is unconditionally used) to be
-    # compiled correctly.
-    targ_selvecs="$targ_selvecs shcoff_vec shlcoff_vec shcoff_small_vec shlcoff_small_vec"
+    # they are necessary for coff-sh.c (which is unconditionally used) to
+    # be compiled correctly.
+    targ_selvecs="${targ_selvecs} shcoff_vec shlcoff_vec shcoff_small_vec shlcoff_small_vec"
     ;;
   sh-*-*)
     targ_defvec=shcoff_vec

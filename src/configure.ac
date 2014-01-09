@@ -73,16 +73,16 @@ case "${OSTYPE}" in
 	export CONFIG_SHELL
       else
 	for prog in sh sh.exe bash bash.exe; do
-	  IFS="${IFS=	}"; save_ifs="$IFS"; IFS="${IFS}:"
-	  for dir in $PATH; do
-	    test -z "$dir" && dir=.
-	    if test -f $dir/$prog; then
-	      CONFIG_SHELL=$dir/$prog
+	  IFS="${IFS=	}"; save_ifs="${IFS}"; IFS="${IFS}:"
+	  for dir in ${PATH}; do
+	    test -z "${dir}" && dir=.
+	    if test -f ${dir}/${prog}; then
+	      CONFIG_SHELL=${dir}/${prog}
 	      export CONFIG_SHELL
 	      break
 	    fi
 	  done
-	  IFS="$save_ifs"
+	  IFS="${save_ifs}"
 	  test -n "${CONFIG_SHELL}" && break
 	done
       fi
@@ -341,7 +341,7 @@ case "${host}" in
     noconfigdirs="${noconfigdirs} tcl tk expect dejagnu send-pr uudecode guile itcl gnuserv libffi"
     ;;
   i[[3456789]]86-*-mingw32*)
-    # noconfigdirs="tcl tk expect dejagnu make texinfo bison patch flex byacc send-pr uudecode dejagnu diff guile perl itcl gnuserv"
+    noconfigdirs_commented_out="tcl tk expect dejagnu make texinfo bison patch flex byacc send-pr uudecode dejagnu diff guile perl itcl gnuserv"
     noconfigdirs="${noconfigdirs} expect dejagnu autoconf automake send-pr rcs guile perl texinfo libtool"
     ;;
   i[[3456789]]86-*-beos*)
@@ -1112,18 +1112,18 @@ fi
 # of CC from the fragment.
 # Actually, use the 'pre-extracted' version above.
 if test -z "${CC}" && test "${build}" = "${host}" ; then
-  IFS="${IFS= 	}"; save_ifs="$IFS"; IFS="${IFS}:"
+  IFS="${IFS= 	}"; save_ifs="${IFS}"; IFS="${IFS}:"
   found=
-  for dir in $PATH; do
-    test -z "$dir" && dir=.
-    if test -f $dir/gcc; then
+  for dir in ${PATH}; do
+    test -z "${dir}" && dir=.
+    if test -f ${dir}/gcc; then
       found=yes
       break
     fi
   done
-  IFS="$save_ifs"
+  IFS="${save_ifs}"
   if test -z "${found}" && test -n "${tentative_cc}" ; then
-    CC=$tentative_cc
+    CC=${tentative_cc}
   fi
 fi
 
@@ -1603,7 +1603,7 @@ if test -n "${notsupp}" && test -z "${norecursion}" ; then
   echo "    (Any other directories should still work fine.)" 1>&2
 fi
 
-case "$host" in
+case "${host}" in
   *msdosdjgpp*)
     enable_gdbtk=no ;;
 esac

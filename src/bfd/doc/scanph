@@ -1,0 +1,36 @@
+#!/bin/sh
+# Script to coordinate parsing of S. Chamberlain source-embedded 
+# header-file markup language. 
+
+# '-i' option means use *proto-internal* segments, else just *proto*
+SFX=p
+if [ "x${1}" = "x-i" ]; then
+	SFX=ip
+	shift
+fi
+
+if [ -z ${1} ]; then
+  echo "Error: missing an argument (1)"
+  exit 1
+fi
+base=`echo ${1} | cut -d '.' -f 1`
+echo "base is ${base}"
+if [ -z ${2} ]; then
+  echo "Error: missing an argument (2)"
+  exit 2
+fi
+out=`echo ${2} | cut -d '.' -f 1`
+echo "out is ${out}"
+
+#  passes:
+#	1) awk discards lines not intended for header, and marks blocks of
+#	   text with comments identifying source file;
+#	2) first sed pass interprets Chamberlain markup;
+#	3) further sed passes clean up---merging adjacent comments etc.
+
+awk -f awkscan-${SFX}.awk ${1} |\
+sed -f sedscript-p.sed |\
+sed -f mergecom-p.sed |\
+sed -f startcom-p.sed  |\
+sed -f blins-p.sed |\
+sed -f movecom-p.sed  >${out}.${SFX}

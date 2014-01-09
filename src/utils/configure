@@ -4064,6 +4064,16 @@ case "${target}" in
       configdirs="${configdirs} wince"
     fi
     ;;
+  *-*-msdosdjgpp* | *-moss-msdos)
+    if test -d ${srcdir}/msdos ; then
+      configdirs="${configdirs} msdos"
+    fi
+    ;;
+  a29k-amd-udi | udi29k | a29k-*-vxworks | a29k-none-*)
+    if test -d ${srcdir}/amd-udi ; then
+      configdirs="${configdirs} amd-udi"
+    fi
+    ;;
 esac
 
 all_subdirs=""

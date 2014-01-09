@@ -1,6 +1,6 @@
 ## Process this file with automake to generate Makefile.in
 
-AUTOMAKE_OPTIONS = dejagnu
+AUTOMAKE_OPTIONS = dejagnu gnits
 
 AM_CFLAGS = -I$(top_srcdir) -ggdb -Wall
 AM_CPPFLAGS = -I$(top_srcdir)

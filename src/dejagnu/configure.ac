@@ -11,7 +11,7 @@ AC_EXEEXT
 
 dnl# These are required by automake
 AC_ARG_PROGRAM
-AM_INIT_AUTOMAKE([1.4 dejagnu -Wno-portability subdir-objects])
+AM_INIT_AUTOMAKE([1.4 gnits dejagnu -Wno-portability subdir-objects])
 dnl# Yes, that is a "1.4" and not a "1.14" there.
 dnl# (the aclocal.m4 I found in here was really old)
 AM_MAINTAINER_MODE

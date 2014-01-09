@@ -6,7 +6,7 @@ dnl#
 
 AC_DEFUN([BASH_C_LONG_LONG],
 [AC_CACHE_CHECK([for long long],[ac_cv_c_long_long],
-[if test "$GCC" = yes; then
+[if test "${GCC}" = yes; then
   ac_cv_c_long_long=yes
 else
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
@@ -18,7 +18,7 @@ exit(sizeof(long long) < sizeof(long));
 }
 ]])],[ac_cv_c_long_long=yes],[ac_cv_c_long_long=no],[])
 fi])
-if test $ac_cv_c_long_long = yes; then
+if test ${ac_cv_c_long_long} = yes; then
   AC_DEFINE([HAVE_LONG_LONG],[1],[Define if the `long long' type works.])
 fi
 ])
@@ -29,7 +29,7 @@ dnl# (< changed to <=) added.
 dnl#
 AC_DEFUN([BASH_C_LONG_DOUBLE],
 [AC_CACHE_CHECK([for long double],[ac_cv_c_long_double],
-[if test "$GCC" = yes; then
+[if test "${GCC}" = yes; then
   ac_cv_c_long_double=yes
 else
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
@@ -942,7 +942,7 @@ AC_CHECK_MEMBER([struct termios.c_line],[AC_DEFINE([TERMIOS_LDISC],[1],[Define t
 
 AC_DEFUN([BASH_STRUCT_TERMIO_LDISC],
 [
-AC_CHECK_MEMBER([struct termio.c_line],[AC_DEFINE([TERMIO_LDISC][1],[Define to 1 if the termio struct has the c_line member])],[],[
+AC_CHECK_MEMBER([struct termio.c_line],[AC_DEFINE([TERMIO_LDISC],[1],[Define to 1 if the termio struct has the c_line member])],[],[
 #include <sys/types.h>
 #include <termio.h>
 ])

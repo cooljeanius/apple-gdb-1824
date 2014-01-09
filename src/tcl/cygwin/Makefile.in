@@ -83,8 +83,8 @@ subdir = .
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
 	$(srcdir)/config.h.in $(top_srcdir)/../../mkinstalldirs \
-	$(srcdir)/tclConfig.sh.in $(top_srcdir)/../../depcomp \
-	$(top_srcdir)/../../ar-lib $(top_srcdir)/../../compile \
+	$(srcdir)/tclConfig.sh.in $(top_srcdir)/../../depcomp COPYING \
+	INSTALL $(top_srcdir)/../../ar-lib $(top_srcdir)/../../compile \
 	$(top_srcdir)/../../config.guess \
 	$(top_srcdir)/../../config.sub $(top_srcdir)/../../install-sh \
 	$(top_srcdir)/../../missing

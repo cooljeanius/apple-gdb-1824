@@ -36,7 +36,9 @@ targets = { target = "distclean";
 targets = { target = "maintainer-clean"; 
             makeline_flag = "-"; };
 
+subdirs = { subdir = "amd-udi"; };
 subdirs = { subdir = "misc"; };
+subdirs = { subdir = "msdos"; };
 subdirs = { subdir = "spu"; };
 subdirs = { subdir = "sparclite"; };
 subdirs = { subdir = "wince"; };

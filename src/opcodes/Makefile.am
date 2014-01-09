@@ -1,7 +1,7 @@
 ## Process this file with automake to generate Makefile.in
 
 # APPLE MERGE ??
-AUTOMAKE_OPTIONS = 1.10
+AUTOMAKE_OPTIONS = 1.10 gnits
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 ACLOCAL_AMFLAGS = -I m4 --install

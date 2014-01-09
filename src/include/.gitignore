@@ -1,0 +1,4 @@
+# I rename obselete headers as such:
+*_old.h
+*_old.def
+sys_old/*

@@ -282,7 +282,7 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AUTOMAKE_OPTIONS = dejagnu
+AUTOMAKE_OPTIONS = dejagnu gnits
 AM_CFLAGS = -I$(top_srcdir) -ggdb -Wall
 AM_CPPFLAGS = -I$(top_srcdir)
 AM_CXXFLAGS = -I$(top_srcdir) -ggdb -Wall
@@ -300,9 +300,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu testsuite/libdejagnu/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnits testsuite/libdejagnu/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu testsuite/libdejagnu/Makefile
+	  $(AUTOMAKE) --gnits testsuite/libdejagnu/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

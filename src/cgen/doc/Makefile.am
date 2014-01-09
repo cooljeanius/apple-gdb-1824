@@ -1,5 +1,6 @@
 ## Process this file with automake to generate Makefile.in
 
+AUTOMAKE_OPTIONS = 1.9 gnits
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 # List of files that go into cgen.info.
