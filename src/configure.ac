@@ -50,7 +50,7 @@ AC_USE_SYSTEM_EXTENSIONS
 # Autobuild
 AB_INIT
 
-# Autogen
+# Check for an already-installed autogen
 AG_PATH_AUTOOPTS([5.17.4])
 
 # Get 'install' or 'install-sh' and its variants.
@@ -165,19 +165,19 @@ AC_PROG_AWK
 build_libs="build-libiberty"
 
 # these tools are built for the build environment
-build_tools="build-texinfo build-byacc build-flex build-bison build-m4 build-fixincludes"
+build_tools="build-autogen build-texinfo build-byacc build-flex build-bison build-m4 build-fixincludes"
 
 # these libraries are used by various programs built for the host
 # environment
 #
-host_libs="intl electric-fence mmalloc libiberty opcodes bfd readline tcl tk itcl libgui zlib libcpp"
+host_libs="intl electric-fence mmalloc libiberty libdecnumber opcodes bfd readline tcl tk itcl libgui zlib libcpp"
 
 # These tools are built for the host environment
 # Note, the powerpc-eabi build depends on sim occurring before gdb in order
 # to know that we are building the simulator.
 # binutils, gas and ld appear in that order because it makes sense to run
 # "make check" in that particular order.
-host_tools="texinfo byacc flex bison binutils gas ld fixincludes gcc sid sim gdb make patch prms send-pr gprof etc expect dejagnu ash bash bzip2 m4 autoconf automake libtool diff rcs fileutils shellutils time textutils wdiff find uudecode hello tar gzip indent recode release sed utils guile perl gawk findutils gettext zip fastjar gnattools cgen"
+host_tools="texinfo byacc flex bison binutils gas ld fixincludes gcc sid sim gdb make patch prms send-pr gprof etc expect dejagnu ash bash bzip2 m4 autoconf autogen automake libtool diff rcs fileutils shellutils time textutils wdiff find uudecode hello tar gzip indent recode release sed utils guile perl gawk findutils gettext zip fastjar gnattools cgen"
 
 # libgcj represents the runtime libraries only used by gcj.
 libgcj="target-libffi \
@@ -288,7 +288,7 @@ AC_MSG_CHECKING([subdirectories to skip])
 AC_MSG_RESULT([(will announce results later)])
 # Some tools are only suitable for building in a "native" situation.
 # Remove these if host!=target.  
-native_only="autoconf automake libtool fileutils find gawk gettext gzip hello indent m4 rcs recode sed shellutils tar textutils uudecode wdiff gprof target-groff guile perl time ash bash bzip2 prms gnuserv target-gperf"
+native_only="autoconf autogen automake libtool fileutils find gawk gettext gzip hello indent m4 rcs recode sed shellutils tar textutils texinfo uudecode wdiff gprof target-groff guile perl time ash bash bzip2 prms gnuserv target-gperf"
 
 # Similarly, some are only suitable for cross toolchains.
 # Remove these if host=target.
@@ -335,26 +335,26 @@ case "${host}" in
     noconfigdirs="${noconfigdirs} byacc"
     ;;
   i[[3456789]]86-*-vsta)
-    noconfigdirs="${noconfigdirs} tcl expect dejagnu make texinfo bison patch flex byacc send-pr gprof uudecode dejagnu diff guile perl itcl gnuserv gettext"
+    noconfigdirs="${noconfigdirs} tcl expect dejagnu make texinfo bison patch flex byacc send-pr gprof uudecode dejagnu diff guile autogen perl itcl gnuserv gettext"
     ;;
   i[[3456789]]86-*-go32* | i[[3456789]]86-*-msdosdjgpp*)
-    noconfigdirs="${noconfigdirs} tcl tk expect dejagnu send-pr uudecode guile itcl gnuserv libffi"
+    noconfigdirs="${noconfigdirs} tcl tk expect dejagnu send-pr uudecode guile autogen itcl gnuserv libffi"
     ;;
   i[[3456789]]86-*-mingw32*)
-    noconfigdirs_commented_out="tcl tk expect dejagnu make texinfo bison patch flex byacc send-pr uudecode dejagnu diff guile perl itcl gnuserv"
-    noconfigdirs="${noconfigdirs} expect dejagnu autoconf automake send-pr rcs guile perl texinfo libtool"
+    noconfigdirs_commented_out="tcl tk expect dejagnu make texinfo bison patch flex byacc send-pr uudecode dejagnu diff guile autogen perl itcl gnuserv"
+    noconfigdirs="${noconfigdirs} expect dejagnu autoconf autogen automake send-pr rcs guile perl texinfo libtool"
     ;;
   i[[3456789]]86-*-beos*)
     noconfigdirs="${noconfigdirs} tk itcl libgui gdb"
     ;;
   *-*-cygwin*)
-    noconfigdirs="${noconfigdirs} autoconf automake send-pr rcs guile perl"
+    noconfigdirs="${noconfigdirs} autoconf autogen automake send-pr rcs guile perl"
     ;;
   *-*-netbsd*)
     noconfigdirs="${noconfigdirs} rcs"
     ;;
   ppc*-*-pe)
-    noconfigdirs="${noconfigdirs} patch diff make tk tcl expect dejagnu autoconf automake texinfo bison send-pr gprof rcs guile perl itcl gnuserv"
+    noconfigdirs="${noconfigdirs} patch diff make tk tcl expect dejagnu autoconf autogen automake texinfo bison send-pr gprof rcs guile perl itcl gnuserv"
     ;;
   powerpc-*-beos*)
     noconfigdirs="${noconfigdirs} tk itcl libgui gdb dejagnu readline"
@@ -380,8 +380,8 @@ fi
 
 # Save it here so that, even in case of --enable-libgcj, if the Java
 # front-end is NOT enabled, we still get libgcj disabled.
-libgcj_saved=$libgcj
-case $enable_libgcj in
+libgcj_saved=${libgcj}
+case ${enable_libgcj} in
 yes)
   # If we reset it here, it will NOT get added to noconfigdirs in the
   # target-specific build rules, so it will be forcibly enabled
@@ -442,8 +442,12 @@ case "${target}" in
     noconfigdirs="${noconfigdirs} ld gas gprof"
     noconfigdirs="${noconfigdirs} target-rda"
     noconfigdirs="${noconfigdirs} ${libgcj}"
-# so far dejagnu works fine when configured on its own, but NOT as a
-# subdirectory for the top-level Makefile...
+# The "texinfo" subdir here does NOT actually contain the texinfo sources:
+    if test ! -e texinfo/Makefile.am; then
+      noconfigdirs="${noconfigdirs} build-texinfo texinfo"
+    fi
+# so far dejagnu works fine when configured on its own, but sometimes it
+# fails as a subdirectory for the top-level Makefile...
     mynoconfigdirs="${noconfigdirs} dejagnu"
 # I do not know why Apple had these put under noconfigdirs:
     applespecifiednoconfigdirs="${noconfigdirs} mmalloc sim"
@@ -455,6 +459,11 @@ case "${target}" in
 # building zlib from this level can mess it up; build it manually instead
     if test -z "${AR}" -o -z "${ARFLAGS}" -o "${AR}" = "libtool" -o "${AR}" = "ar" -o "${ARFLAGS}" = "-o"; then
       noconfigdirs="${noconfigdirs} zlib"
+    fi
+# autogen support in this tree is still tentative, so disable if guile is
+# not also present in this tree
+    if test ! -d guile; then
+      noconfigdirs="${noconfigdirs} build-autogen autogen"
     fi
 # I also do not know about a lot of the rest of these:
     enable_shared=no
@@ -1542,11 +1551,11 @@ fi
 # Quietly strip out all directories which are NOT configurable in this
 # tree. This relies on all configurable subdirectories being
 # autoconfiscated, which is now the case.
-build_configdirs_all="$build_configdirs"
+build_configdirs_all="${build_configdirs}"
 build_configdirs=
 for i in ${build_configdirs_all} ; do
   j=`echo ${i} | sed -e s/build-//g` 
-  if test -f ${srcdir}/$j/configure ; then
+  if test -f ${srcdir}/${j}/configure ; then
     build_configdirs="${build_configdirs} ${i}"
   fi
 done
@@ -2343,18 +2352,18 @@ NCN_STRICT_CHECK_TARGET_TOOLS([NM_FOR_TARGET],[nm])
 NCN_STRICT_CHECK_TARGET_TOOLS([RANLIB_FOR_TARGET],[ranlib],[:])
 NCN_STRICT_CHECK_TARGET_TOOLS([WINDRES_FOR_TARGET],[windres])
 
-CONFIGURED_AR_FOR_TARGET="$AR_FOR_TARGET"
-CONFIGURED_AS_FOR_TARGET="$AS_FOR_TARGET" # might need to be commented out for confusing autoconf
-CONFIGURED_CC_FOR_TARGET="$CC_FOR_TARGET"
-CONFIGURED_CXX_FOR_TARGET="$CXX_FOR_TARGET"
-CONFIGURED_DLLTOOL_FOR_TARGET="$DLLTOOL_FOR_TARGET"
-CONFIGURED_GCC_FOR_TARGET="$GCC_FOR_TARGET"
-CONFIGURED_GCJ_FOR_TARGET="$GCJ_FOR_TARGET"
-CONFIGURED_GFORTRAN_FOR_TARGET="$GFORTRAN_FOR_TARGET"
-CONFIGURED_LD_FOR_TARGET="$LD_FOR_TARGET"
-CONFIGURED_NM_FOR_TARGET="$NM_FOR_TARGET"
-CONFIGURED_RANLIB_FOR_TARGET="$RANLIB_FOR_TARGET"
-CONFIGURED_WINDRES_FOR_TARGET="$WINDRES_FOR_TARGET"
+CONFIGURED_AR_FOR_TARGET="${AR_FOR_TARGET}"
+CONFIGURED_AS_FOR_TARGET="${AS_FOR_TARGET}" # might need to be commented out for confusing autoconf
+CONFIGURED_CC_FOR_TARGET="${CC_FOR_TARGET}"
+CONFIGURED_CXX_FOR_TARGET="${CXX_FOR_TARGET}"
+CONFIGURED_DLLTOOL_FOR_TARGET="${DLLTOOL_FOR_TARGET}"
+CONFIGURED_GCC_FOR_TARGET="${GCC_FOR_TARGET}"
+CONFIGURED_GCJ_FOR_TARGET="${GCJ_FOR_TARGET}"
+CONFIGURED_GFORTRAN_FOR_TARGET="${GFORTRAN_FOR_TARGET}"
+CONFIGURED_LD_FOR_TARGET="${LD_FOR_TARGET}"
+CONFIGURED_NM_FOR_TARGET="${NM_FOR_TARGET}"
+CONFIGURED_RANLIB_FOR_TARGET="${RANLIB_FOR_TARGET}"
+CONFIGURED_WINDRES_FOR_TARGET="${WINDRES_FOR_TARGET}"
 
 AC_SUBST([CONFIGURED_AR_FOR_TARGET])dnl
 AC_SUBST([CONFIGURED_AS_FOR_TARGET])dnl

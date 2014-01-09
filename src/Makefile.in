@@ -725,6 +725,7 @@ GCC_FLAGS_TO_PASS = $(BASE_FLAGS_TO_PASS) $(EXTRA_HOST_FLAGS) $(EXTRA_GCC_FLAGS)
 configure-host:  \
     maybe-configure-ash \
     maybe-configure-autoconf \
+    maybe-configure-autogen \
     maybe-configure-automake \
     maybe-configure-bash \
     maybe-configure-bfd \
@@ -733,9 +734,11 @@ configure-host:  \
     maybe-configure-bison \
     maybe-configure-byacc \
     maybe-configure-bzip2 \
+    maybe-configure-cgen \
     maybe-configure-dejagnu \
     maybe-configure-diff \
     maybe-configure-dosutils \
+    maybe-configure-electric-fence \
     maybe-configure-etc \
     maybe-configure-fastjar \
     maybe-configure-fileutils \
@@ -757,6 +760,7 @@ configure-host:  \
     maybe-configure-itcl \
     maybe-configure-ld \
     maybe-configure-libcpp \
+    maybe-configure-libdecnumber \
     maybe-configure-libgui \
     maybe-configure-libiberty \
     maybe-configure-libtool \
@@ -829,6 +833,7 @@ all-build:  \
 all-host:  \
     maybe-all-ash \
     maybe-all-autoconf \
+    maybe-all-autogen \
     maybe-all-automake \
     maybe-all-bash \
     maybe-all-bfd \
@@ -837,9 +842,11 @@ all-host:  \
     maybe-all-bison \
     maybe-all-byacc \
     maybe-all-bzip2 \
+    maybe-all-cgen \
     maybe-all-dejagnu \
     maybe-all-diff \
     maybe-all-dosutils \
+    maybe-all-electric-fence \
     maybe-all-etc \
     maybe-all-fastjar \
     maybe-all-fileutils \
@@ -861,6 +868,7 @@ all-host:  \
     maybe-all-itcl \
     maybe-all-ld \
     maybe-all-libcpp \
+    maybe-all-libdecnumber \
     maybe-all-libgui \
     maybe-all-libiberty \
     maybe-all-libtool \
@@ -928,6 +936,7 @@ do-info: unstage info-host info-target stage
 info-host:  \
     maybe-info-ash \
     maybe-info-autoconf \
+    maybe-info-autogen \
     maybe-info-automake \
     maybe-info-bash \
     maybe-info-bfd \
@@ -936,9 +945,11 @@ info-host:  \
     maybe-info-bison \
     maybe-info-byacc \
     maybe-info-bzip2 \
+    maybe-info-cgen \
     maybe-info-dejagnu \
     maybe-info-diff \
     maybe-info-dosutils \
+    maybe-info-electric-fence \
     maybe-info-etc \
     maybe-info-fastjar \
     maybe-info-fileutils \
@@ -960,6 +971,7 @@ info-host:  \
     maybe-info-itcl \
     maybe-info-ld \
     maybe-info-libcpp \
+    maybe-info-libdecnumber \
     maybe-info-libgui \
     maybe-info-libiberty \
     maybe-info-libtool \
@@ -1023,6 +1035,7 @@ do-dvi: unstage dvi-host dvi-target stage
 dvi-host:  \
     maybe-dvi-ash \
     maybe-dvi-autoconf \
+    maybe-dvi-autogen \
     maybe-dvi-automake \
     maybe-dvi-bash \
     maybe-dvi-bfd \
@@ -1031,9 +1044,11 @@ dvi-host:  \
     maybe-dvi-bison \
     maybe-dvi-byacc \
     maybe-dvi-bzip2 \
+    maybe-dvi-cgen \
     maybe-dvi-dejagnu \
     maybe-dvi-diff \
     maybe-dvi-dosutils \
+    maybe-dvi-electric-fence \
     maybe-dvi-etc \
     maybe-dvi-fastjar \
     maybe-dvi-fileutils \
@@ -1055,6 +1070,7 @@ dvi-host:  \
     maybe-dvi-itcl \
     maybe-dvi-ld \
     maybe-dvi-libcpp \
+    maybe-dvi-libdecnumber \
     maybe-dvi-libgui \
     maybe-dvi-libiberty \
     maybe-dvi-libtool \
@@ -1118,6 +1134,7 @@ do-html: unstage html-host html-target stage
 html-host:  \
     maybe-html-ash \
     maybe-html-autoconf \
+    maybe-html-autogen \
     maybe-html-automake \
     maybe-html-bash \
     maybe-html-bfd \
@@ -1126,9 +1143,11 @@ html-host:  \
     maybe-html-bison \
     maybe-html-byacc \
     maybe-html-bzip2 \
+    maybe-html-cgen \
     maybe-html-dejagnu \
     maybe-html-diff \
     maybe-html-dosutils \
+    maybe-html-electric-fence \
     maybe-html-etc \
     maybe-html-fastjar \
     maybe-html-fileutils \
@@ -1150,6 +1169,7 @@ html-host:  \
     maybe-html-itcl \
     maybe-html-ld \
     maybe-html-libcpp \
+    maybe-html-libdecnumber \
     maybe-html-libgui \
     maybe-html-libiberty \
     maybe-html-libtool \
@@ -1213,6 +1233,7 @@ do-TAGS: unstage TAGS-host TAGS-target stage
 TAGS-host:  \
     maybe-TAGS-ash \
     maybe-TAGS-autoconf \
+    maybe-TAGS-autogen \
     maybe-TAGS-automake \
     maybe-TAGS-bash \
     maybe-TAGS-bfd \
@@ -1221,9 +1242,11 @@ TAGS-host:  \
     maybe-TAGS-bison \
     maybe-TAGS-byacc \
     maybe-TAGS-bzip2 \
+    maybe-TAGS-cgen \
     maybe-TAGS-dejagnu \
     maybe-TAGS-diff \
     maybe-TAGS-dosutils \
+    maybe-TAGS-electric-fence \
     maybe-TAGS-etc \
     maybe-TAGS-fastjar \
     maybe-TAGS-fileutils \
@@ -1245,6 +1268,7 @@ TAGS-host:  \
     maybe-TAGS-itcl \
     maybe-TAGS-ld \
     maybe-TAGS-libcpp \
+    maybe-TAGS-libdecnumber \
     maybe-TAGS-libgui \
     maybe-TAGS-libiberty \
     maybe-TAGS-libtool \
@@ -1308,6 +1332,7 @@ do-install-info: unstage install-info-host install-info-target stage
 install-info-host:  \
     maybe-install-info-ash \
     maybe-install-info-autoconf \
+    maybe-install-info-autogen \
     maybe-install-info-automake \
     maybe-install-info-bash \
     maybe-install-info-bfd \
@@ -1316,9 +1341,11 @@ install-info-host:  \
     maybe-install-info-bison \
     maybe-install-info-byacc \
     maybe-install-info-bzip2 \
+    maybe-install-info-cgen \
     maybe-install-info-dejagnu \
     maybe-install-info-diff \
     maybe-install-info-dosutils \
+    maybe-install-info-electric-fence \
     maybe-install-info-etc \
     maybe-install-info-fastjar \
     maybe-install-info-fileutils \
@@ -1340,6 +1367,7 @@ install-info-host:  \
     maybe-install-info-itcl \
     maybe-install-info-ld \
     maybe-install-info-libcpp \
+    maybe-install-info-libdecnumber \
     maybe-install-info-libgui \
     maybe-install-info-libiberty \
     maybe-install-info-libtool \
@@ -1403,6 +1431,7 @@ do-installcheck: unstage installcheck-host installcheck-target stage
 installcheck-host:  \
     maybe-installcheck-ash \
     maybe-installcheck-autoconf \
+    maybe-installcheck-autogen \
     maybe-installcheck-automake \
     maybe-installcheck-bash \
     maybe-installcheck-bfd \
@@ -1411,9 +1440,11 @@ installcheck-host:  \
     maybe-installcheck-bison \
     maybe-installcheck-byacc \
     maybe-installcheck-bzip2 \
+    maybe-installcheck-cgen \
     maybe-installcheck-dejagnu \
     maybe-installcheck-diff \
     maybe-installcheck-dosutils \
+    maybe-installcheck-electric-fence \
     maybe-installcheck-etc \
     maybe-installcheck-fastjar \
     maybe-installcheck-fileutils \
@@ -1435,6 +1466,7 @@ installcheck-host:  \
     maybe-installcheck-itcl \
     maybe-installcheck-ld \
     maybe-installcheck-libcpp \
+    maybe-installcheck-libdecnumber \
     maybe-installcheck-libgui \
     maybe-installcheck-libiberty \
     maybe-installcheck-libtool \
@@ -1498,6 +1530,7 @@ do-mostlyclean: unstage mostlyclean-host mostlyclean-target stage
 mostlyclean-host:  \
     maybe-mostlyclean-ash \
     maybe-mostlyclean-autoconf \
+    maybe-mostlyclean-autogen \
     maybe-mostlyclean-automake \
     maybe-mostlyclean-bash \
     maybe-mostlyclean-bfd \
@@ -1506,9 +1539,11 @@ mostlyclean-host:  \
     maybe-mostlyclean-bison \
     maybe-mostlyclean-byacc \
     maybe-mostlyclean-bzip2 \
+    maybe-mostlyclean-cgen \
     maybe-mostlyclean-dejagnu \
     maybe-mostlyclean-diff \
     maybe-mostlyclean-dosutils \
+    maybe-mostlyclean-electric-fence \
     maybe-mostlyclean-etc \
     maybe-mostlyclean-fastjar \
     maybe-mostlyclean-fileutils \
@@ -1530,6 +1565,7 @@ mostlyclean-host:  \
     maybe-mostlyclean-itcl \
     maybe-mostlyclean-ld \
     maybe-mostlyclean-libcpp \
+    maybe-mostlyclean-libdecnumber \
     maybe-mostlyclean-libgui \
     maybe-mostlyclean-libiberty \
     maybe-mostlyclean-libtool \
@@ -1593,6 +1629,7 @@ do-clean: unstage clean-host clean-target stage
 clean-host:  \
     maybe-clean-ash \
     maybe-clean-autoconf \
+    maybe-clean-autogen \
     maybe-clean-automake \
     maybe-clean-bash \
     maybe-clean-bfd \
@@ -1601,9 +1638,11 @@ clean-host:  \
     maybe-clean-bison \
     maybe-clean-byacc \
     maybe-clean-bzip2 \
+    maybe-clean-cgen \
     maybe-clean-dejagnu \
     maybe-clean-diff \
     maybe-clean-dosutils \
+    maybe-clean-electric-fence \
     maybe-clean-etc \
     maybe-clean-fastjar \
     maybe-clean-fileutils \
@@ -1625,6 +1664,7 @@ clean-host:  \
     maybe-clean-itcl \
     maybe-clean-ld \
     maybe-clean-libcpp \
+    maybe-clean-libdecnumber \
     maybe-clean-libgui \
     maybe-clean-libiberty \
     maybe-clean-libtool \
@@ -1688,6 +1728,7 @@ do-distclean: unstage distclean-host distclean-target stage
 distclean-host:  \
     maybe-distclean-ash \
     maybe-distclean-autoconf \
+    maybe-distclean-autogen \
     maybe-distclean-automake \
     maybe-distclean-bash \
     maybe-distclean-bfd \
@@ -1696,9 +1737,11 @@ distclean-host:  \
     maybe-distclean-bison \
     maybe-distclean-byacc \
     maybe-distclean-bzip2 \
+    maybe-distclean-cgen \
     maybe-distclean-dejagnu \
     maybe-distclean-diff \
     maybe-distclean-dosutils \
+    maybe-distclean-electric-fence \
     maybe-distclean-etc \
     maybe-distclean-fastjar \
     maybe-distclean-fileutils \
@@ -1720,6 +1763,7 @@ distclean-host:  \
     maybe-distclean-itcl \
     maybe-distclean-ld \
     maybe-distclean-libcpp \
+    maybe-distclean-libdecnumber \
     maybe-distclean-libgui \
     maybe-distclean-libiberty \
     maybe-distclean-libtool \
@@ -1783,6 +1827,7 @@ do-maintainer-clean: unstage maintainer-clean-host maintainer-clean-target stage
 maintainer-clean-host:  \
     maybe-maintainer-clean-ash \
     maybe-maintainer-clean-autoconf \
+    maybe-maintainer-clean-autogen \
     maybe-maintainer-clean-automake \
     maybe-maintainer-clean-bash \
     maybe-maintainer-clean-bfd \
@@ -1791,9 +1836,11 @@ maintainer-clean-host:  \
     maybe-maintainer-clean-bison \
     maybe-maintainer-clean-byacc \
     maybe-maintainer-clean-bzip2 \
+    maybe-maintainer-clean-cgen \
     maybe-maintainer-clean-dejagnu \
     maybe-maintainer-clean-diff \
     maybe-maintainer-clean-dosutils \
+    maybe-maintainer-clean-electric-fence \
     maybe-maintainer-clean-etc \
     maybe-maintainer-clean-fastjar \
     maybe-maintainer-clean-fileutils \
@@ -1815,6 +1862,7 @@ maintainer-clean-host:  \
     maybe-maintainer-clean-itcl \
     maybe-maintainer-clean-ld \
     maybe-maintainer-clean-libcpp \
+    maybe-maintainer-clean-libdecnumber \
     maybe-maintainer-clean-libgui \
     maybe-maintainer-clean-libiberty \
     maybe-maintainer-clean-libtool \
@@ -1940,6 +1988,7 @@ check: do-check
 do-check: unstage  \
     maybe-check-ash \
     maybe-check-autoconf \
+    maybe-check-autogen \
     maybe-check-automake \
     maybe-check-bash \
     maybe-check-bfd \
@@ -1948,9 +1997,11 @@ do-check: unstage  \
     maybe-check-bison \
     maybe-check-byacc \
     maybe-check-bzip2 \
+    maybe-check-cgen \
     maybe-check-dejagnu \
     maybe-check-diff \
     maybe-check-dosutils \
+    maybe-check-electric-fence \
     maybe-check-etc \
     maybe-check-fastjar \
     maybe-check-fileutils \
@@ -1972,6 +2023,7 @@ do-check: unstage  \
     maybe-check-itcl \
     maybe-check-ld \
     maybe-check-libcpp \
+    maybe-check-libdecnumber \
     maybe-check-libgui \
     maybe-check-libiberty \
     maybe-check-libtool \
@@ -2055,6 +2107,7 @@ install: installdirs install-host install-target
 install-host-nogcc:  \
     maybe-install-ash \
     maybe-install-autoconf \
+    maybe-install-autogen \
     maybe-install-automake \
     maybe-install-bash \
     maybe-install-bfd \
@@ -2063,9 +2116,11 @@ install-host-nogcc:  \
     maybe-install-bison \
     maybe-install-byacc \
     maybe-install-bzip2 \
+    maybe-install-cgen \
     maybe-install-dejagnu \
     maybe-install-diff \
     maybe-install-dosutils \
+    maybe-install-electric-fence \
     maybe-install-etc \
     maybe-install-fastjar \
     maybe-install-fileutils \
@@ -2086,6 +2141,7 @@ install-host-nogcc:  \
     maybe-install-itcl \
     maybe-install-ld \
     maybe-install-libcpp \
+    maybe-install-libdecnumber \
     maybe-install-libgui \
     maybe-install-libiberty \
     maybe-install-libtool \
@@ -2124,6 +2180,7 @@ install-host-nogcc:  \
 install-host:  \
     maybe-install-ash \
     maybe-install-autoconf \
+    maybe-install-autogen \
     maybe-install-automake \
     maybe-install-bash \
     maybe-install-bfd \
@@ -2132,9 +2189,11 @@ install-host:  \
     maybe-install-bison \
     maybe-install-byacc \
     maybe-install-bzip2 \
+    maybe-install-cgen \
     maybe-install-dejagnu \
     maybe-install-diff \
     maybe-install-dosutils \
+    maybe-install-electric-fence \
     maybe-install-etc \
     maybe-install-fastjar \
     maybe-install-fileutils \
@@ -2156,6 +2215,7 @@ install-host:  \
     maybe-install-itcl \
     maybe-install-ld \
     maybe-install-libcpp \
+    maybe-install-libdecnumber \
     maybe-install-libgui \
     maybe-install-libiberty \
     maybe-install-libtool \
@@ -3246,6 +3306,656 @@ maintainer-clean-autoconf:
 	  || exit 1
 
 @endif autoconf
+
+
+
+.PHONY: configure-autogen maybe-configure-autogen
+maybe-configure-autogen:
+@if autogen
+maybe-configure-autogen: configure-autogen
+configure-autogen: 
+	@test -f stage_last && exit 0; \
+	test ! -f $(HOST_SUBDIR)/autogen/Makefile || exit 0; \
+	$(SHELL) $(srcdir)/mkinstalldirs $(HOST_SUBDIR)/autogen ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	echo Configuring in $(HOST_SUBDIR)/autogen; \
+	cd "$(HOST_SUBDIR)/autogen" || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/autogen/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/autogen"; \
+	libsrcdir="$$s/autogen"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption}  \
+	  || exit 1
+@endif autogen
+
+
+
+.PHONY: configure-stage1-autogen maybe-configure-stage1-autogen
+maybe-configure-stage1-autogen:
+@if autogen-bootstrap
+maybe-configure-stage1-autogen: configure-stage1-autogen
+configure-stage1-autogen: 
+	@$(MAKE) stage1-start
+	@[ -f $(HOST_SUBDIR)/autogen/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	echo Configuring stage 1 in $(HOST_SUBDIR)/autogen ; \
+	cd $(HOST_SUBDIR)/autogen || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/autogen/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/autogen"; \
+	libsrcdir="$$s/autogen"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  --disable-intermodule 	  --disable-coverage --enable-languages="$(STAGE1_LANGUAGES)" 
+@endif autogen-bootstrap
+
+.PHONY: configure-stage2-autogen maybe-configure-stage2-autogen
+maybe-configure-stage2-autogen:
+@if autogen-bootstrap
+maybe-configure-stage2-autogen: configure-stage2-autogen
+configure-stage2-autogen: 
+	@$(MAKE) stage2-start
+	@[ -f $(HOST_SUBDIR)/autogen/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage 2 in $(HOST_SUBDIR)/autogen ; \
+	cd $(HOST_SUBDIR)/autogen || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/autogen/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/autogen"; \
+	libsrcdir="$$s/autogen"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif autogen-bootstrap
+
+.PHONY: configure-stage3-autogen maybe-configure-stage3-autogen
+maybe-configure-stage3-autogen:
+@if autogen-bootstrap
+maybe-configure-stage3-autogen: configure-stage3-autogen
+configure-stage3-autogen: 
+	@$(MAKE) stage3-start
+	@[ -f $(HOST_SUBDIR)/autogen/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage 3 in $(HOST_SUBDIR)/autogen ; \
+	cd $(HOST_SUBDIR)/autogen || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/autogen/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/autogen"; \
+	libsrcdir="$$s/autogen"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif autogen-bootstrap
+
+.PHONY: configure-stage4-autogen maybe-configure-stage4-autogen
+maybe-configure-stage4-autogen:
+@if autogen-bootstrap
+maybe-configure-stage4-autogen: configure-stage4-autogen
+configure-stage4-autogen: 
+	@$(MAKE) stage4-start
+	@[ -f $(HOST_SUBDIR)/autogen/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage 4 in $(HOST_SUBDIR)/autogen ; \
+	cd $(HOST_SUBDIR)/autogen || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/autogen/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/autogen"; \
+	libsrcdir="$$s/autogen"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif autogen-bootstrap
+
+.PHONY: configure-stageprofile-autogen maybe-configure-stageprofile-autogen
+maybe-configure-stageprofile-autogen:
+@if autogen-bootstrap
+maybe-configure-stageprofile-autogen: configure-stageprofile-autogen
+configure-stageprofile-autogen: 
+	@$(MAKE) stageprofile-start
+	@[ -f $(HOST_SUBDIR)/autogen/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage profile in $(HOST_SUBDIR)/autogen ; \
+	cd $(HOST_SUBDIR)/autogen || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/autogen/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/autogen"; \
+	libsrcdir="$$s/autogen"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif autogen-bootstrap
+
+.PHONY: configure-stagefeedback-autogen maybe-configure-stagefeedback-autogen
+maybe-configure-stagefeedback-autogen:
+@if autogen-bootstrap
+maybe-configure-stagefeedback-autogen: configure-stagefeedback-autogen
+configure-stagefeedback-autogen: 
+	@$(MAKE) stagefeedback-start
+	@[ -f $(HOST_SUBDIR)/autogen/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage feedback in $(HOST_SUBDIR)/autogen ; \
+	cd $(HOST_SUBDIR)/autogen || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/autogen/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/autogen"; \
+	libsrcdir="$$s/autogen"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif autogen-bootstrap
+
+
+
+
+
+.PHONY: all-autogen maybe-all-autogen
+maybe-all-autogen:
+@if autogen
+TARGET-autogen=all
+maybe-all-autogen: all-autogen
+all-autogen: configure-autogen
+	@test -f stage_last && exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/autogen && \
+	  $(MAKE) $(FLAGS_TO_PASS)  $(TARGET-autogen))
+@endif autogen
+
+
+
+.PHONY: all-stage1-autogen maybe-all-stage1-autogen
+.PHONY: clean-stage1-autogen maybe-clean-stage1-autogen
+maybe-all-stage1-autogen:
+maybe-clean-stage1-autogen:
+@if autogen-bootstrap
+maybe-all-stage1-autogen: all-stage1-autogen
+all-stage1: all-stage1-autogen
+all-stage1-autogen: configure-stage1-autogen
+	@$(MAKE) stage1-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/autogen && \
+	$(MAKE) $(FLAGS_TO_PASS)  CFLAGS="$(STAGE1_CFLAGS)" 
+
+maybe-clean-stage1-autogen: clean-stage1-autogen
+clean-stage1: clean-stage1-autogen
+clean-stage1-autogen:
+	@[ -f $(HOST_SUBDIR)/autogen/Makefile ] || [ -f $(HOST_SUBDIR)/stage1-autogen/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/autogen/Makefile ] || $(MAKE) stage1-start ; \
+	cd $(HOST_SUBDIR)/autogen && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		CFLAGS="$(STAGE1_CFLAGS)"  clean
+@endif autogen-bootstrap
+
+
+.PHONY: all-stage2-autogen maybe-all-stage2-autogen
+.PHONY: clean-stage2-autogen maybe-clean-stage2-autogen
+maybe-all-stage2-autogen:
+maybe-clean-stage2-autogen:
+@if autogen-bootstrap
+maybe-all-stage2-autogen: all-stage2-autogen
+all-stage2: all-stage2-autogen
+all-stage2-autogen: configure-stage2-autogen
+	@$(MAKE) stage2-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/autogen && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS)  
+
+maybe-clean-stage2-autogen: clean-stage2-autogen
+clean-stage2: clean-stage2-autogen
+clean-stage2-autogen:
+	@[ -f $(HOST_SUBDIR)/autogen/Makefile ] || [ -f $(HOST_SUBDIR)/stage2-autogen/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/autogen/Makefile ] || $(MAKE) stage2-start ; \
+	cd $(HOST_SUBDIR)/autogen && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		  clean
+@endif autogen-bootstrap
+
+
+.PHONY: all-stage3-autogen maybe-all-stage3-autogen
+.PHONY: clean-stage3-autogen maybe-clean-stage3-autogen
+maybe-all-stage3-autogen:
+maybe-clean-stage3-autogen:
+@if autogen-bootstrap
+maybe-all-stage3-autogen: all-stage3-autogen
+all-stage3: all-stage3-autogen
+all-stage3-autogen: configure-stage3-autogen
+	@$(MAKE) stage3-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/autogen && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS)  
+
+maybe-clean-stage3-autogen: clean-stage3-autogen
+clean-stage3: clean-stage3-autogen
+clean-stage3-autogen:
+	@[ -f $(HOST_SUBDIR)/autogen/Makefile ] || [ -f $(HOST_SUBDIR)/stage3-autogen/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/autogen/Makefile ] || $(MAKE) stage3-start ; \
+	cd $(HOST_SUBDIR)/autogen && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		  clean
+@endif autogen-bootstrap
+
+
+.PHONY: all-stage4-autogen maybe-all-stage4-autogen
+.PHONY: clean-stage4-autogen maybe-clean-stage4-autogen
+maybe-all-stage4-autogen:
+maybe-clean-stage4-autogen:
+@if autogen-bootstrap
+maybe-all-stage4-autogen: all-stage4-autogen
+all-stage4: all-stage4-autogen
+all-stage4-autogen: configure-stage4-autogen
+	@$(MAKE) stage4-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/autogen && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS)  
+
+maybe-clean-stage4-autogen: clean-stage4-autogen
+clean-stage4: clean-stage4-autogen
+clean-stage4-autogen:
+	@[ -f $(HOST_SUBDIR)/autogen/Makefile ] || [ -f $(HOST_SUBDIR)/stage4-autogen/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/autogen/Makefile ] || $(MAKE) stage4-start ; \
+	cd $(HOST_SUBDIR)/autogen && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		  clean
+@endif autogen-bootstrap
+
+
+.PHONY: all-stageprofile-autogen maybe-all-stageprofile-autogen
+.PHONY: clean-stageprofile-autogen maybe-clean-stageprofile-autogen
+maybe-all-stageprofile-autogen:
+maybe-clean-stageprofile-autogen:
+@if autogen-bootstrap
+maybe-all-stageprofile-autogen: all-stageprofile-autogen
+all-stageprofile: all-stageprofile-autogen
+all-stageprofile-autogen: configure-stageprofile-autogen
+	@$(MAKE) stageprofile-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/autogen && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS) CFLAGS="$(BOOT_CFLAGS) -fprofile-generate" 
+
+maybe-clean-stageprofile-autogen: clean-stageprofile-autogen
+clean-stageprofile: clean-stageprofile-autogen
+clean-stageprofile-autogen:
+	@[ -f $(HOST_SUBDIR)/autogen/Makefile ] || [ -f $(HOST_SUBDIR)/stageprofile-autogen/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/autogen/Makefile ] || $(MAKE) stageprofile-start ; \
+	cd $(HOST_SUBDIR)/autogen && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		CFLAGS="$(BOOT_CFLAGS) -fprofile-generate"  clean
+@endif autogen-bootstrap
+
+
+.PHONY: all-stagefeedback-autogen maybe-all-stagefeedback-autogen
+.PHONY: clean-stagefeedback-autogen maybe-clean-stagefeedback-autogen
+maybe-all-stagefeedback-autogen:
+maybe-clean-stagefeedback-autogen:
+@if autogen-bootstrap
+maybe-all-stagefeedback-autogen: all-stagefeedback-autogen
+all-stagefeedback: all-stagefeedback-autogen
+all-stagefeedback-autogen: configure-stagefeedback-autogen
+	@$(MAKE) stagefeedback-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/autogen && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS) CFLAGS="$(BOOT_CFLAGS) -fprofile-use" 
+
+maybe-clean-stagefeedback-autogen: clean-stagefeedback-autogen
+clean-stagefeedback: clean-stagefeedback-autogen
+clean-stagefeedback-autogen:
+	@[ -f $(HOST_SUBDIR)/autogen/Makefile ] || [ -f $(HOST_SUBDIR)/stagefeedback-autogen/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/autogen/Makefile ] || $(MAKE) stagefeedback-start ; \
+	cd $(HOST_SUBDIR)/autogen && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		CFLAGS="$(BOOT_CFLAGS) -fprofile-use"  clean
+@endif autogen-bootstrap
+
+
+
+
+
+.PHONY: check-autogen maybe-check-autogen
+maybe-check-autogen:
+@if autogen
+maybe-check-autogen: check-autogen
+
+check-autogen:
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/autogen && \
+	  $(MAKE) $(FLAGS_TO_PASS)  check)
+
+@endif autogen
+
+.PHONY: install-autogen maybe-install-autogen
+maybe-install-autogen:
+@if autogen
+maybe-install-autogen: install-autogen
+
+install-autogen: installdirs
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/autogen && \
+	  $(MAKE) $(FLAGS_TO_PASS)  install)
+
+@endif autogen
+
+# Other targets (info, dvi, etc.)
+
+.PHONY: maybe-info-autogen info-autogen
+maybe-info-autogen:
+@if autogen
+maybe-info-autogen: info-autogen
+
+info-autogen: \
+    configure-autogen 
+	@[ -f ./autogen/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing info in autogen" ; \
+	(cd $(HOST_SUBDIR)/autogen && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          info) \
+	  || exit 1
+
+@endif autogen
+
+.PHONY: maybe-dvi-autogen dvi-autogen
+maybe-dvi-autogen:
+@if autogen
+maybe-dvi-autogen: dvi-autogen
+
+dvi-autogen: \
+    configure-autogen 
+	@[ -f ./autogen/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing dvi in autogen" ; \
+	(cd $(HOST_SUBDIR)/autogen && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          dvi) \
+	  || exit 1
+
+@endif autogen
+
+.PHONY: maybe-html-autogen html-autogen
+maybe-html-autogen:
+@if autogen
+maybe-html-autogen: html-autogen
+
+html-autogen: \
+    configure-autogen 
+	@[ -f ./autogen/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing html in autogen" ; \
+	(cd $(HOST_SUBDIR)/autogen && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          html) \
+	  || exit 1
+
+@endif autogen
+
+.PHONY: maybe-TAGS-autogen TAGS-autogen
+maybe-TAGS-autogen:
+@if autogen
+maybe-TAGS-autogen: TAGS-autogen
+
+TAGS-autogen: \
+    configure-autogen 
+	@[ -f ./autogen/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing TAGS in autogen" ; \
+	(cd $(HOST_SUBDIR)/autogen && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          TAGS) \
+	  || exit 1
+
+@endif autogen
+
+.PHONY: maybe-install-info-autogen install-info-autogen
+maybe-install-info-autogen:
+@if autogen
+maybe-install-info-autogen: install-info-autogen
+
+install-info-autogen: \
+    configure-autogen \
+    info-autogen 
+	@[ -f ./autogen/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing install-info in autogen" ; \
+	(cd $(HOST_SUBDIR)/autogen && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          install-info) \
+	  || exit 1
+
+@endif autogen
+
+.PHONY: maybe-installcheck-autogen installcheck-autogen
+maybe-installcheck-autogen:
+@if autogen
+maybe-installcheck-autogen: installcheck-autogen
+
+installcheck-autogen: \
+    configure-autogen 
+	@[ -f ./autogen/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing installcheck in autogen" ; \
+	(cd $(HOST_SUBDIR)/autogen && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          installcheck) \
+	  || exit 1
+
+@endif autogen
+
+.PHONY: maybe-mostlyclean-autogen mostlyclean-autogen
+maybe-mostlyclean-autogen:
+@if autogen
+maybe-mostlyclean-autogen: mostlyclean-autogen
+
+mostlyclean-autogen: 
+	@[ -f ./autogen/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing mostlyclean in autogen" ; \
+	(cd $(HOST_SUBDIR)/autogen && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          mostlyclean) \
+	  || exit 1
+
+@endif autogen
+
+.PHONY: maybe-clean-autogen clean-autogen
+maybe-clean-autogen:
+@if autogen
+maybe-clean-autogen: clean-autogen
+
+clean-autogen: 
+	@[ -f ./autogen/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing clean in autogen" ; \
+	(cd $(HOST_SUBDIR)/autogen && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          clean) \
+	  || exit 1
+
+@endif autogen
+
+.PHONY: maybe-distclean-autogen distclean-autogen
+maybe-distclean-autogen:
+@if autogen
+maybe-distclean-autogen: distclean-autogen
+
+distclean-autogen: 
+	@[ -f ./autogen/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing distclean in autogen" ; \
+	(cd $(HOST_SUBDIR)/autogen && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          distclean) \
+	  || exit 1
+
+@endif autogen
+
+.PHONY: maybe-maintainer-clean-autogen maintainer-clean-autogen
+maybe-maintainer-clean-autogen:
+@if autogen
+maybe-maintainer-clean-autogen: maintainer-clean-autogen
+
+maintainer-clean-autogen: 
+	@[ -f ./autogen/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing maintainer-clean in autogen" ; \
+	(cd $(HOST_SUBDIR)/autogen && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          maintainer-clean) \
+	  || exit 1
+
+@endif autogen
 
 
 
@@ -6820,6 +7530,324 @@ maintainer-clean-bzip2:
 
 
 
+.PHONY: configure-cgen maybe-configure-cgen
+maybe-configure-cgen:
+@if cgen
+maybe-configure-cgen: configure-cgen
+configure-cgen: 
+	@test ! -f $(HOST_SUBDIR)/cgen/Makefile || exit 0; \
+	$(SHELL) $(srcdir)/mkinstalldirs $(HOST_SUBDIR)/cgen ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	echo Configuring in $(HOST_SUBDIR)/cgen; \
+	cd "$(HOST_SUBDIR)/cgen" || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/cgen/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/cgen"; \
+	libsrcdir="$$s/cgen"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption}  \
+	  || exit 1
+@endif cgen
+
+
+
+
+
+.PHONY: all-cgen maybe-all-cgen
+maybe-all-cgen:
+@if cgen
+TARGET-cgen=all
+maybe-all-cgen: all-cgen
+all-cgen: configure-cgen
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/cgen && \
+	  $(MAKE) $(FLAGS_TO_PASS)  $(TARGET-cgen))
+@endif cgen
+
+
+
+
+.PHONY: check-cgen maybe-check-cgen
+maybe-check-cgen:
+@if cgen
+maybe-check-cgen: check-cgen
+
+check-cgen:
+
+@endif cgen
+
+.PHONY: install-cgen maybe-install-cgen
+maybe-install-cgen:
+@if cgen
+maybe-install-cgen: install-cgen
+
+install-cgen: installdirs
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/cgen && \
+	  $(MAKE) $(FLAGS_TO_PASS)  install)
+
+@endif cgen
+
+# Other targets (info, dvi, etc.)
+
+.PHONY: maybe-info-cgen info-cgen
+maybe-info-cgen:
+@if cgen
+maybe-info-cgen: info-cgen
+
+info-cgen: \
+    configure-cgen 
+	@[ -f ./cgen/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing info in cgen" ; \
+	(cd $(HOST_SUBDIR)/cgen && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          info) \
+	  || exit 1
+
+@endif cgen
+
+.PHONY: maybe-dvi-cgen dvi-cgen
+maybe-dvi-cgen:
+@if cgen
+maybe-dvi-cgen: dvi-cgen
+
+dvi-cgen: \
+    configure-cgen 
+	@[ -f ./cgen/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing dvi in cgen" ; \
+	(cd $(HOST_SUBDIR)/cgen && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          dvi) \
+	  || exit 1
+
+@endif cgen
+
+.PHONY: maybe-html-cgen html-cgen
+maybe-html-cgen:
+@if cgen
+maybe-html-cgen: html-cgen
+
+html-cgen: \
+    configure-cgen 
+	@[ -f ./cgen/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing html in cgen" ; \
+	(cd $(HOST_SUBDIR)/cgen && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          html) \
+	  || exit 1
+
+@endif cgen
+
+.PHONY: maybe-TAGS-cgen TAGS-cgen
+maybe-TAGS-cgen:
+@if cgen
+maybe-TAGS-cgen: TAGS-cgen
+
+TAGS-cgen: \
+    configure-cgen 
+	@[ -f ./cgen/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing TAGS in cgen" ; \
+	(cd $(HOST_SUBDIR)/cgen && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          TAGS) \
+	  || exit 1
+
+@endif cgen
+
+.PHONY: maybe-install-info-cgen install-info-cgen
+maybe-install-info-cgen:
+@if cgen
+maybe-install-info-cgen: install-info-cgen
+
+install-info-cgen: \
+    configure-cgen \
+    info-cgen 
+	@[ -f ./cgen/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing install-info in cgen" ; \
+	(cd $(HOST_SUBDIR)/cgen && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          install-info) \
+	  || exit 1
+
+@endif cgen
+
+.PHONY: maybe-installcheck-cgen installcheck-cgen
+maybe-installcheck-cgen:
+@if cgen
+maybe-installcheck-cgen: installcheck-cgen
+
+installcheck-cgen: \
+    configure-cgen 
+	@[ -f ./cgen/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing installcheck in cgen" ; \
+	(cd $(HOST_SUBDIR)/cgen && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          installcheck) \
+	  || exit 1
+
+@endif cgen
+
+.PHONY: maybe-mostlyclean-cgen mostlyclean-cgen
+maybe-mostlyclean-cgen:
+@if cgen
+maybe-mostlyclean-cgen: mostlyclean-cgen
+
+mostlyclean-cgen: 
+	@[ -f ./cgen/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing mostlyclean in cgen" ; \
+	(cd $(HOST_SUBDIR)/cgen && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          mostlyclean) \
+	  || exit 1
+
+@endif cgen
+
+.PHONY: maybe-clean-cgen clean-cgen
+maybe-clean-cgen:
+@if cgen
+maybe-clean-cgen: clean-cgen
+
+clean-cgen: 
+	@[ -f ./cgen/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing clean in cgen" ; \
+	(cd $(HOST_SUBDIR)/cgen && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          clean) \
+	  || exit 1
+
+@endif cgen
+
+.PHONY: maybe-distclean-cgen distclean-cgen
+maybe-distclean-cgen:
+@if cgen
+maybe-distclean-cgen: distclean-cgen
+
+distclean-cgen: 
+	@[ -f ./cgen/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing distclean in cgen" ; \
+	(cd $(HOST_SUBDIR)/cgen && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          distclean) \
+	  || exit 1
+
+@endif cgen
+
+.PHONY: maybe-maintainer-clean-cgen maintainer-clean-cgen
+maybe-maintainer-clean-cgen:
+@if cgen
+maybe-maintainer-clean-cgen: maintainer-clean-cgen
+
+maintainer-clean-cgen: 
+	@[ -f ./cgen/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing maintainer-clean in cgen" ; \
+	(cd $(HOST_SUBDIR)/cgen && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          maintainer-clean) \
+	  || exit 1
+
+@endif cgen
+
+
+
 .PHONY: configure-dejagnu maybe-configure-dejagnu
 maybe-configure-dejagnu:
 @if dejagnu
@@ -7781,6 +8809,324 @@ maintainer-clean-dosutils:
 	  || exit 1
 
 @endif dosutils
+
+
+
+.PHONY: configure-electric-fence maybe-configure-electric-fence
+maybe-configure-electric-fence:
+@if electric-fence
+maybe-configure-electric-fence: configure-electric-fence
+configure-electric-fence: 
+	@test ! -f $(HOST_SUBDIR)/electric-fence/Makefile || exit 0; \
+	$(SHELL) $(srcdir)/mkinstalldirs $(HOST_SUBDIR)/electric-fence ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	echo Configuring in $(HOST_SUBDIR)/electric-fence; \
+	cd "$(HOST_SUBDIR)/electric-fence" || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/electric-fence/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/electric-fence"; \
+	libsrcdir="$$s/electric-fence"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption}  \
+	  || exit 1
+@endif electric-fence
+
+
+
+
+
+.PHONY: all-electric-fence maybe-all-electric-fence
+maybe-all-electric-fence:
+@if electric-fence
+TARGET-electric-fence=all
+maybe-all-electric-fence: all-electric-fence
+all-electric-fence: configure-electric-fence
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/electric-fence && \
+	  $(MAKE) $(FLAGS_TO_PASS)  $(TARGET-electric-fence))
+@endif electric-fence
+
+
+
+
+.PHONY: check-electric-fence maybe-check-electric-fence
+maybe-check-electric-fence:
+@if electric-fence
+maybe-check-electric-fence: check-electric-fence
+
+check-electric-fence:
+
+@endif electric-fence
+
+.PHONY: install-electric-fence maybe-install-electric-fence
+maybe-install-electric-fence:
+@if electric-fence
+maybe-install-electric-fence: install-electric-fence
+
+install-electric-fence: installdirs
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/electric-fence && \
+	  $(MAKE) $(FLAGS_TO_PASS)  install)
+
+@endif electric-fence
+
+# Other targets (info, dvi, etc.)
+
+.PHONY: maybe-info-electric-fence info-electric-fence
+maybe-info-electric-fence:
+@if electric-fence
+maybe-info-electric-fence: info-electric-fence
+
+info-electric-fence: \
+    configure-electric-fence 
+	@[ -f ./electric-fence/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing info in electric-fence" ; \
+	(cd $(HOST_SUBDIR)/electric-fence && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          info) \
+	  || exit 1
+
+@endif electric-fence
+
+.PHONY: maybe-dvi-electric-fence dvi-electric-fence
+maybe-dvi-electric-fence:
+@if electric-fence
+maybe-dvi-electric-fence: dvi-electric-fence
+
+dvi-electric-fence: \
+    configure-electric-fence 
+	@[ -f ./electric-fence/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing dvi in electric-fence" ; \
+	(cd $(HOST_SUBDIR)/electric-fence && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          dvi) \
+	  || exit 1
+
+@endif electric-fence
+
+.PHONY: maybe-html-electric-fence html-electric-fence
+maybe-html-electric-fence:
+@if electric-fence
+maybe-html-electric-fence: html-electric-fence
+
+html-electric-fence: \
+    configure-electric-fence 
+	@[ -f ./electric-fence/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing html in electric-fence" ; \
+	(cd $(HOST_SUBDIR)/electric-fence && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          html) \
+	  || exit 1
+
+@endif electric-fence
+
+.PHONY: maybe-TAGS-electric-fence TAGS-electric-fence
+maybe-TAGS-electric-fence:
+@if electric-fence
+maybe-TAGS-electric-fence: TAGS-electric-fence
+
+TAGS-electric-fence: \
+    configure-electric-fence 
+	@[ -f ./electric-fence/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing TAGS in electric-fence" ; \
+	(cd $(HOST_SUBDIR)/electric-fence && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          TAGS) \
+	  || exit 1
+
+@endif electric-fence
+
+.PHONY: maybe-install-info-electric-fence install-info-electric-fence
+maybe-install-info-electric-fence:
+@if electric-fence
+maybe-install-info-electric-fence: install-info-electric-fence
+
+install-info-electric-fence: \
+    configure-electric-fence \
+    info-electric-fence 
+	@[ -f ./electric-fence/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing install-info in electric-fence" ; \
+	(cd $(HOST_SUBDIR)/electric-fence && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          install-info) \
+	  || exit 1
+
+@endif electric-fence
+
+.PHONY: maybe-installcheck-electric-fence installcheck-electric-fence
+maybe-installcheck-electric-fence:
+@if electric-fence
+maybe-installcheck-electric-fence: installcheck-electric-fence
+
+installcheck-electric-fence: \
+    configure-electric-fence 
+	@[ -f ./electric-fence/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing installcheck in electric-fence" ; \
+	(cd $(HOST_SUBDIR)/electric-fence && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          installcheck) \
+	  || exit 1
+
+@endif electric-fence
+
+.PHONY: maybe-mostlyclean-electric-fence mostlyclean-electric-fence
+maybe-mostlyclean-electric-fence:
+@if electric-fence
+maybe-mostlyclean-electric-fence: mostlyclean-electric-fence
+
+mostlyclean-electric-fence: 
+	@[ -f ./electric-fence/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing mostlyclean in electric-fence" ; \
+	(cd $(HOST_SUBDIR)/electric-fence && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          mostlyclean) \
+	  || exit 1
+
+@endif electric-fence
+
+.PHONY: maybe-clean-electric-fence clean-electric-fence
+maybe-clean-electric-fence:
+@if electric-fence
+maybe-clean-electric-fence: clean-electric-fence
+
+clean-electric-fence: 
+	@[ -f ./electric-fence/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing clean in electric-fence" ; \
+	(cd $(HOST_SUBDIR)/electric-fence && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          clean) \
+	  || exit 1
+
+@endif electric-fence
+
+.PHONY: maybe-distclean-electric-fence distclean-electric-fence
+maybe-distclean-electric-fence:
+@if electric-fence
+maybe-distclean-electric-fence: distclean-electric-fence
+
+distclean-electric-fence: 
+	@[ -f ./electric-fence/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing distclean in electric-fence" ; \
+	(cd $(HOST_SUBDIR)/electric-fence && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          distclean) \
+	  || exit 1
+
+@endif electric-fence
+
+.PHONY: maybe-maintainer-clean-electric-fence maintainer-clean-electric-fence
+maybe-maintainer-clean-electric-fence:
+@if electric-fence
+maybe-maintainer-clean-electric-fence: maintainer-clean-electric-fence
+
+maintainer-clean-electric-fence: 
+	@[ -f ./electric-fence/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing maintainer-clean in electric-fence" ; \
+	(cd $(HOST_SUBDIR)/electric-fence && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          maintainer-clean) \
+	  || exit 1
+
+@endif electric-fence
 
 
 
@@ -16115,6 +17461,656 @@ maintainer-clean-libcpp:
 	  || exit 1
 
 @endif libcpp
+
+
+
+.PHONY: configure-libdecnumber maybe-configure-libdecnumber
+maybe-configure-libdecnumber:
+@if libdecnumber
+maybe-configure-libdecnumber: configure-libdecnumber
+configure-libdecnumber: 
+	@test -f stage_last && exit 0; \
+	test ! -f $(HOST_SUBDIR)/libdecnumber/Makefile || exit 0; \
+	$(SHELL) $(srcdir)/mkinstalldirs $(HOST_SUBDIR)/libdecnumber ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	echo Configuring in $(HOST_SUBDIR)/libdecnumber; \
+	cd "$(HOST_SUBDIR)/libdecnumber" || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/libdecnumber/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libdecnumber"; \
+	libsrcdir="$$s/libdecnumber"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption}  \
+	  || exit 1
+@endif libdecnumber
+
+
+
+.PHONY: configure-stage1-libdecnumber maybe-configure-stage1-libdecnumber
+maybe-configure-stage1-libdecnumber:
+@if libdecnumber-bootstrap
+maybe-configure-stage1-libdecnumber: configure-stage1-libdecnumber
+configure-stage1-libdecnumber: 
+	@$(MAKE) stage1-start
+	@[ -f $(HOST_SUBDIR)/libdecnumber/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	echo Configuring stage 1 in $(HOST_SUBDIR)/libdecnumber ; \
+	cd $(HOST_SUBDIR)/libdecnumber || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/libdecnumber/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libdecnumber"; \
+	libsrcdir="$$s/libdecnumber"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  --disable-intermodule 	  --disable-coverage --enable-languages="$(STAGE1_LANGUAGES)" 
+@endif libdecnumber-bootstrap
+
+.PHONY: configure-stage2-libdecnumber maybe-configure-stage2-libdecnumber
+maybe-configure-stage2-libdecnumber:
+@if libdecnumber-bootstrap
+maybe-configure-stage2-libdecnumber: configure-stage2-libdecnumber
+configure-stage2-libdecnumber: 
+	@$(MAKE) stage2-start
+	@[ -f $(HOST_SUBDIR)/libdecnumber/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage 2 in $(HOST_SUBDIR)/libdecnumber ; \
+	cd $(HOST_SUBDIR)/libdecnumber || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/libdecnumber/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libdecnumber"; \
+	libsrcdir="$$s/libdecnumber"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libdecnumber-bootstrap
+
+.PHONY: configure-stage3-libdecnumber maybe-configure-stage3-libdecnumber
+maybe-configure-stage3-libdecnumber:
+@if libdecnumber-bootstrap
+maybe-configure-stage3-libdecnumber: configure-stage3-libdecnumber
+configure-stage3-libdecnumber: 
+	@$(MAKE) stage3-start
+	@[ -f $(HOST_SUBDIR)/libdecnumber/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage 3 in $(HOST_SUBDIR)/libdecnumber ; \
+	cd $(HOST_SUBDIR)/libdecnumber || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/libdecnumber/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libdecnumber"; \
+	libsrcdir="$$s/libdecnumber"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libdecnumber-bootstrap
+
+.PHONY: configure-stage4-libdecnumber maybe-configure-stage4-libdecnumber
+maybe-configure-stage4-libdecnumber:
+@if libdecnumber-bootstrap
+maybe-configure-stage4-libdecnumber: configure-stage4-libdecnumber
+configure-stage4-libdecnumber: 
+	@$(MAKE) stage4-start
+	@[ -f $(HOST_SUBDIR)/libdecnumber/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage 4 in $(HOST_SUBDIR)/libdecnumber ; \
+	cd $(HOST_SUBDIR)/libdecnumber || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/libdecnumber/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libdecnumber"; \
+	libsrcdir="$$s/libdecnumber"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libdecnumber-bootstrap
+
+.PHONY: configure-stageprofile-libdecnumber maybe-configure-stageprofile-libdecnumber
+maybe-configure-stageprofile-libdecnumber:
+@if libdecnumber-bootstrap
+maybe-configure-stageprofile-libdecnumber: configure-stageprofile-libdecnumber
+configure-stageprofile-libdecnumber: 
+	@$(MAKE) stageprofile-start
+	@[ -f $(HOST_SUBDIR)/libdecnumber/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage profile in $(HOST_SUBDIR)/libdecnumber ; \
+	cd $(HOST_SUBDIR)/libdecnumber || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/libdecnumber/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libdecnumber"; \
+	libsrcdir="$$s/libdecnumber"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libdecnumber-bootstrap
+
+.PHONY: configure-stagefeedback-libdecnumber maybe-configure-stagefeedback-libdecnumber
+maybe-configure-stagefeedback-libdecnumber:
+@if libdecnumber-bootstrap
+maybe-configure-stagefeedback-libdecnumber: configure-stagefeedback-libdecnumber
+configure-stagefeedback-libdecnumber: 
+	@$(MAKE) stagefeedback-start
+	@[ -f $(HOST_SUBDIR)/libdecnumber/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage feedback in $(HOST_SUBDIR)/libdecnumber ; \
+	cd $(HOST_SUBDIR)/libdecnumber || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/libdecnumber/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libdecnumber"; \
+	libsrcdir="$$s/libdecnumber"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libdecnumber-bootstrap
+
+
+
+
+
+.PHONY: all-libdecnumber maybe-all-libdecnumber
+maybe-all-libdecnumber:
+@if libdecnumber
+TARGET-libdecnumber=all
+maybe-all-libdecnumber: all-libdecnumber
+all-libdecnumber: configure-libdecnumber
+	@test -f stage_last && exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/libdecnumber && \
+	  $(MAKE) $(FLAGS_TO_PASS)  $(TARGET-libdecnumber))
+@endif libdecnumber
+
+
+
+.PHONY: all-stage1-libdecnumber maybe-all-stage1-libdecnumber
+.PHONY: clean-stage1-libdecnumber maybe-clean-stage1-libdecnumber
+maybe-all-stage1-libdecnumber:
+maybe-clean-stage1-libdecnumber:
+@if libdecnumber-bootstrap
+maybe-all-stage1-libdecnumber: all-stage1-libdecnumber
+all-stage1: all-stage1-libdecnumber
+all-stage1-libdecnumber: configure-stage1-libdecnumber
+	@$(MAKE) stage1-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/libdecnumber && \
+	$(MAKE) $(FLAGS_TO_PASS)  CFLAGS="$(STAGE1_CFLAGS)" 
+
+maybe-clean-stage1-libdecnumber: clean-stage1-libdecnumber
+clean-stage1: clean-stage1-libdecnumber
+clean-stage1-libdecnumber:
+	@[ -f $(HOST_SUBDIR)/libdecnumber/Makefile ] || [ -f $(HOST_SUBDIR)/stage1-libdecnumber/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/libdecnumber/Makefile ] || $(MAKE) stage1-start ; \
+	cd $(HOST_SUBDIR)/libdecnumber && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		CFLAGS="$(STAGE1_CFLAGS)"  clean
+@endif libdecnumber-bootstrap
+
+
+.PHONY: all-stage2-libdecnumber maybe-all-stage2-libdecnumber
+.PHONY: clean-stage2-libdecnumber maybe-clean-stage2-libdecnumber
+maybe-all-stage2-libdecnumber:
+maybe-clean-stage2-libdecnumber:
+@if libdecnumber-bootstrap
+maybe-all-stage2-libdecnumber: all-stage2-libdecnumber
+all-stage2: all-stage2-libdecnumber
+all-stage2-libdecnumber: configure-stage2-libdecnumber
+	@$(MAKE) stage2-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/libdecnumber && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS)  
+
+maybe-clean-stage2-libdecnumber: clean-stage2-libdecnumber
+clean-stage2: clean-stage2-libdecnumber
+clean-stage2-libdecnumber:
+	@[ -f $(HOST_SUBDIR)/libdecnumber/Makefile ] || [ -f $(HOST_SUBDIR)/stage2-libdecnumber/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/libdecnumber/Makefile ] || $(MAKE) stage2-start ; \
+	cd $(HOST_SUBDIR)/libdecnumber && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		  clean
+@endif libdecnumber-bootstrap
+
+
+.PHONY: all-stage3-libdecnumber maybe-all-stage3-libdecnumber
+.PHONY: clean-stage3-libdecnumber maybe-clean-stage3-libdecnumber
+maybe-all-stage3-libdecnumber:
+maybe-clean-stage3-libdecnumber:
+@if libdecnumber-bootstrap
+maybe-all-stage3-libdecnumber: all-stage3-libdecnumber
+all-stage3: all-stage3-libdecnumber
+all-stage3-libdecnumber: configure-stage3-libdecnumber
+	@$(MAKE) stage3-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/libdecnumber && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS)  
+
+maybe-clean-stage3-libdecnumber: clean-stage3-libdecnumber
+clean-stage3: clean-stage3-libdecnumber
+clean-stage3-libdecnumber:
+	@[ -f $(HOST_SUBDIR)/libdecnumber/Makefile ] || [ -f $(HOST_SUBDIR)/stage3-libdecnumber/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/libdecnumber/Makefile ] || $(MAKE) stage3-start ; \
+	cd $(HOST_SUBDIR)/libdecnumber && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		  clean
+@endif libdecnumber-bootstrap
+
+
+.PHONY: all-stage4-libdecnumber maybe-all-stage4-libdecnumber
+.PHONY: clean-stage4-libdecnumber maybe-clean-stage4-libdecnumber
+maybe-all-stage4-libdecnumber:
+maybe-clean-stage4-libdecnumber:
+@if libdecnumber-bootstrap
+maybe-all-stage4-libdecnumber: all-stage4-libdecnumber
+all-stage4: all-stage4-libdecnumber
+all-stage4-libdecnumber: configure-stage4-libdecnumber
+	@$(MAKE) stage4-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/libdecnumber && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS)  
+
+maybe-clean-stage4-libdecnumber: clean-stage4-libdecnumber
+clean-stage4: clean-stage4-libdecnumber
+clean-stage4-libdecnumber:
+	@[ -f $(HOST_SUBDIR)/libdecnumber/Makefile ] || [ -f $(HOST_SUBDIR)/stage4-libdecnumber/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/libdecnumber/Makefile ] || $(MAKE) stage4-start ; \
+	cd $(HOST_SUBDIR)/libdecnumber && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		  clean
+@endif libdecnumber-bootstrap
+
+
+.PHONY: all-stageprofile-libdecnumber maybe-all-stageprofile-libdecnumber
+.PHONY: clean-stageprofile-libdecnumber maybe-clean-stageprofile-libdecnumber
+maybe-all-stageprofile-libdecnumber:
+maybe-clean-stageprofile-libdecnumber:
+@if libdecnumber-bootstrap
+maybe-all-stageprofile-libdecnumber: all-stageprofile-libdecnumber
+all-stageprofile: all-stageprofile-libdecnumber
+all-stageprofile-libdecnumber: configure-stageprofile-libdecnumber
+	@$(MAKE) stageprofile-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/libdecnumber && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS) CFLAGS="$(BOOT_CFLAGS) -fprofile-generate" 
+
+maybe-clean-stageprofile-libdecnumber: clean-stageprofile-libdecnumber
+clean-stageprofile: clean-stageprofile-libdecnumber
+clean-stageprofile-libdecnumber:
+	@[ -f $(HOST_SUBDIR)/libdecnumber/Makefile ] || [ -f $(HOST_SUBDIR)/stageprofile-libdecnumber/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/libdecnumber/Makefile ] || $(MAKE) stageprofile-start ; \
+	cd $(HOST_SUBDIR)/libdecnumber && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		CFLAGS="$(BOOT_CFLAGS) -fprofile-generate"  clean
+@endif libdecnumber-bootstrap
+
+
+.PHONY: all-stagefeedback-libdecnumber maybe-all-stagefeedback-libdecnumber
+.PHONY: clean-stagefeedback-libdecnumber maybe-clean-stagefeedback-libdecnumber
+maybe-all-stagefeedback-libdecnumber:
+maybe-clean-stagefeedback-libdecnumber:
+@if libdecnumber-bootstrap
+maybe-all-stagefeedback-libdecnumber: all-stagefeedback-libdecnumber
+all-stagefeedback: all-stagefeedback-libdecnumber
+all-stagefeedback-libdecnumber: configure-stagefeedback-libdecnumber
+	@$(MAKE) stagefeedback-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/libdecnumber && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS) CFLAGS="$(BOOT_CFLAGS) -fprofile-use" 
+
+maybe-clean-stagefeedback-libdecnumber: clean-stagefeedback-libdecnumber
+clean-stagefeedback: clean-stagefeedback-libdecnumber
+clean-stagefeedback-libdecnumber:
+	@[ -f $(HOST_SUBDIR)/libdecnumber/Makefile ] || [ -f $(HOST_SUBDIR)/stagefeedback-libdecnumber/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/libdecnumber/Makefile ] || $(MAKE) stagefeedback-start ; \
+	cd $(HOST_SUBDIR)/libdecnumber && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		CFLAGS="$(BOOT_CFLAGS) -fprofile-use"  clean
+@endif libdecnumber-bootstrap
+
+
+
+
+
+.PHONY: check-libdecnumber maybe-check-libdecnumber
+maybe-check-libdecnumber:
+@if libdecnumber
+maybe-check-libdecnumber: check-libdecnumber
+
+check-libdecnumber:
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/libdecnumber && \
+	  $(MAKE) $(FLAGS_TO_PASS)  check)
+
+@endif libdecnumber
+
+.PHONY: install-libdecnumber maybe-install-libdecnumber
+maybe-install-libdecnumber:
+@if libdecnumber
+maybe-install-libdecnumber: install-libdecnumber
+
+install-libdecnumber: installdirs
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/libdecnumber && \
+	  $(MAKE) $(FLAGS_TO_PASS)  install)
+
+@endif libdecnumber
+
+# Other targets (info, dvi, etc.)
+
+.PHONY: maybe-info-libdecnumber info-libdecnumber
+maybe-info-libdecnumber:
+@if libdecnumber
+maybe-info-libdecnumber: info-libdecnumber
+
+info-libdecnumber: \
+    configure-libdecnumber 
+	@[ -f ./libdecnumber/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing info in libdecnumber" ; \
+	(cd $(HOST_SUBDIR)/libdecnumber && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          info) \
+	  || exit 1
+
+@endif libdecnumber
+
+.PHONY: maybe-dvi-libdecnumber dvi-libdecnumber
+maybe-dvi-libdecnumber:
+@if libdecnumber
+maybe-dvi-libdecnumber: dvi-libdecnumber
+
+dvi-libdecnumber: \
+    configure-libdecnumber 
+	@[ -f ./libdecnumber/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing dvi in libdecnumber" ; \
+	(cd $(HOST_SUBDIR)/libdecnumber && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          dvi) \
+	  || exit 1
+
+@endif libdecnumber
+
+.PHONY: maybe-html-libdecnumber html-libdecnumber
+maybe-html-libdecnumber:
+@if libdecnumber
+maybe-html-libdecnumber: html-libdecnumber
+
+html-libdecnumber: \
+    configure-libdecnumber 
+	@[ -f ./libdecnumber/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing html in libdecnumber" ; \
+	(cd $(HOST_SUBDIR)/libdecnumber && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          html) \
+	  || exit 1
+
+@endif libdecnumber
+
+.PHONY: maybe-TAGS-libdecnumber TAGS-libdecnumber
+maybe-TAGS-libdecnumber:
+@if libdecnumber
+maybe-TAGS-libdecnumber: TAGS-libdecnumber
+
+TAGS-libdecnumber: \
+    configure-libdecnumber 
+	@[ -f ./libdecnumber/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing TAGS in libdecnumber" ; \
+	(cd $(HOST_SUBDIR)/libdecnumber && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          TAGS) \
+	  || exit 1
+
+@endif libdecnumber
+
+.PHONY: maybe-install-info-libdecnumber install-info-libdecnumber
+maybe-install-info-libdecnumber:
+@if libdecnumber
+maybe-install-info-libdecnumber: install-info-libdecnumber
+
+install-info-libdecnumber: \
+    configure-libdecnumber \
+    info-libdecnumber 
+	@[ -f ./libdecnumber/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing install-info in libdecnumber" ; \
+	(cd $(HOST_SUBDIR)/libdecnumber && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          install-info) \
+	  || exit 1
+
+@endif libdecnumber
+
+.PHONY: maybe-installcheck-libdecnumber installcheck-libdecnumber
+maybe-installcheck-libdecnumber:
+@if libdecnumber
+maybe-installcheck-libdecnumber: installcheck-libdecnumber
+
+installcheck-libdecnumber: \
+    configure-libdecnumber 
+	@[ -f ./libdecnumber/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing installcheck in libdecnumber" ; \
+	(cd $(HOST_SUBDIR)/libdecnumber && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          installcheck) \
+	  || exit 1
+
+@endif libdecnumber
+
+.PHONY: maybe-mostlyclean-libdecnumber mostlyclean-libdecnumber
+maybe-mostlyclean-libdecnumber:
+@if libdecnumber
+maybe-mostlyclean-libdecnumber: mostlyclean-libdecnumber
+
+mostlyclean-libdecnumber: 
+	@[ -f ./libdecnumber/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing mostlyclean in libdecnumber" ; \
+	(cd $(HOST_SUBDIR)/libdecnumber && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          mostlyclean) \
+	  || exit 1
+
+@endif libdecnumber
+
+.PHONY: maybe-clean-libdecnumber clean-libdecnumber
+maybe-clean-libdecnumber:
+@if libdecnumber
+maybe-clean-libdecnumber: clean-libdecnumber
+
+clean-libdecnumber: 
+	@[ -f ./libdecnumber/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing clean in libdecnumber" ; \
+	(cd $(HOST_SUBDIR)/libdecnumber && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          clean) \
+	  || exit 1
+
+@endif libdecnumber
+
+.PHONY: maybe-distclean-libdecnumber distclean-libdecnumber
+maybe-distclean-libdecnumber:
+@if libdecnumber
+maybe-distclean-libdecnumber: distclean-libdecnumber
+
+distclean-libdecnumber: 
+	@[ -f ./libdecnumber/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing distclean in libdecnumber" ; \
+	(cd $(HOST_SUBDIR)/libdecnumber && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          distclean) \
+	  || exit 1
+
+@endif libdecnumber
+
+.PHONY: maybe-maintainer-clean-libdecnumber maintainer-clean-libdecnumber
+maybe-maintainer-clean-libdecnumber:
+@if libdecnumber
+maybe-maintainer-clean-libdecnumber: maintainer-clean-libdecnumber
+
+maintainer-clean-libdecnumber: 
+	@[ -f ./libdecnumber/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing maintainer-clean in libdecnumber" ; \
+	(cd $(HOST_SUBDIR)/libdecnumber && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          maintainer-clean) \
+	  || exit 1
+
+@endif libdecnumber
 
 
 
@@ -33828,6 +35824,12 @@ stage1-start::
 	echo stage1 > stage_current ; \
 	echo stage1 > stage_last; \
 	$(SHELL) $(srcdir)/mkinstalldirs $(HOST_SUBDIR) $(TARGET_SUBDIR)
+@if autogen
+	@cd $(HOST_SUBDIR); [ -d stage1-autogen ] || \
+	  mkdir stage1-autogen; \
+	set stage1-autogen autogen ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif autogen
 @if bfd
 	@cd $(HOST_SUBDIR); [ -d stage1-bfd ] || \
 	  mkdir stage1-bfd; \
@@ -33876,6 +35878,12 @@ stage1-start::
 	set stage1-libcpp libcpp ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif libcpp
+@if libdecnumber
+	@cd $(HOST_SUBDIR); [ -d stage1-libdecnumber ] || \
+	  mkdir stage1-libdecnumber; \
+	set stage1-libdecnumber libdecnumber ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif libdecnumber
 @if libiberty
 	@cd $(HOST_SUBDIR); [ -d stage1-libiberty ] || \
 	  mkdir stage1-libiberty; \
@@ -33891,6 +35899,10 @@ stage1-start::
 
 stage1-end::
 	@rm -f stage_current
+@if autogen
+	@cd $(HOST_SUBDIR); set autogen stage1-autogen ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif autogen
 @if bfd
 	@cd $(HOST_SUBDIR); set bfd stage1-bfd ; \
 	@UNDO_LINK_TO_DIR@ 
@@ -33923,6 +35935,10 @@ stage1-end::
 	@cd $(HOST_SUBDIR); set libcpp stage1-libcpp ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif libcpp
+@if libdecnumber
+	@cd $(HOST_SUBDIR); set libdecnumber stage1-libdecnumber ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libdecnumber
 @if libiberty
 	@cd $(HOST_SUBDIR); set libiberty stage1-libiberty ; \
 	@UNDO_LINK_TO_DIR@ 
@@ -33971,6 +35987,14 @@ stage2-start::
 	echo stage2 > stage_current ; \
 	echo stage2 > stage_last; \
 	$(SHELL) $(srcdir)/mkinstalldirs $(HOST_SUBDIR) $(TARGET_SUBDIR)
+@if autogen
+	@cd $(HOST_SUBDIR); [ -d stage2-autogen ] || \
+	  mkdir stage2-autogen; \
+	set stage2-autogen autogen ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage1-autogen prev-autogen ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif autogen
 @if bfd
 	@cd $(HOST_SUBDIR); [ -d stage2-bfd ] || \
 	  mkdir stage2-bfd; \
@@ -34035,6 +36059,14 @@ stage2-start::
 	set stage1-libcpp prev-libcpp ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif libcpp
+@if libdecnumber
+	@cd $(HOST_SUBDIR); [ -d stage2-libdecnumber ] || \
+	  mkdir stage2-libdecnumber; \
+	set stage2-libdecnumber libdecnumber ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage1-libdecnumber prev-libdecnumber ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif libdecnumber
 @if libiberty
 	@cd $(HOST_SUBDIR); [ -d stage2-libiberty ] || \
 	  mkdir stage2-libiberty; \
@@ -34054,6 +36086,12 @@ stage2-start::
 
 stage2-end::
 	@rm -f stage_current
+@if autogen
+	@cd $(HOST_SUBDIR); set autogen stage2-autogen ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-autogen stage1-autogen ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif autogen
 @if bfd
 	@cd $(HOST_SUBDIR); set bfd stage2-bfd ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -34102,6 +36140,12 @@ stage2-end::
 	set prev-libcpp stage1-libcpp ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif libcpp
+@if libdecnumber
+	@cd $(HOST_SUBDIR); set libdecnumber stage2-libdecnumber ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libdecnumber stage1-libdecnumber ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libdecnumber
 @if libiberty
 	@cd $(HOST_SUBDIR); set libiberty stage2-libiberty ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -34157,6 +36201,14 @@ stage3-start::
 	echo stage3 > stage_current ; \
 	echo stage3 > stage_last; \
 	$(SHELL) $(srcdir)/mkinstalldirs $(HOST_SUBDIR) $(TARGET_SUBDIR)
+@if autogen
+	@cd $(HOST_SUBDIR); [ -d stage3-autogen ] || \
+	  mkdir stage3-autogen; \
+	set stage3-autogen autogen ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage2-autogen prev-autogen ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif autogen
 @if bfd
 	@cd $(HOST_SUBDIR); [ -d stage3-bfd ] || \
 	  mkdir stage3-bfd; \
@@ -34221,6 +36273,14 @@ stage3-start::
 	set stage2-libcpp prev-libcpp ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif libcpp
+@if libdecnumber
+	@cd $(HOST_SUBDIR); [ -d stage3-libdecnumber ] || \
+	  mkdir stage3-libdecnumber; \
+	set stage3-libdecnumber libdecnumber ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage2-libdecnumber prev-libdecnumber ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif libdecnumber
 @if libiberty
 	@cd $(HOST_SUBDIR); [ -d stage3-libiberty ] || \
 	  mkdir stage3-libiberty; \
@@ -34240,6 +36300,12 @@ stage3-start::
 
 stage3-end::
 	@rm -f stage_current
+@if autogen
+	@cd $(HOST_SUBDIR); set autogen stage3-autogen ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-autogen stage2-autogen ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif autogen
 @if bfd
 	@cd $(HOST_SUBDIR); set bfd stage3-bfd ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -34288,6 +36354,12 @@ stage3-end::
 	set prev-libcpp stage2-libcpp ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif libcpp
+@if libdecnumber
+	@cd $(HOST_SUBDIR); set libdecnumber stage3-libdecnumber ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libdecnumber stage2-libdecnumber ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libdecnumber
 @if libiberty
 	@cd $(HOST_SUBDIR); set libiberty stage3-libiberty ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -34374,6 +36446,14 @@ stage4-start::
 	echo stage4 > stage_current ; \
 	echo stage4 > stage_last; \
 	$(SHELL) $(srcdir)/mkinstalldirs $(HOST_SUBDIR) $(TARGET_SUBDIR)
+@if autogen
+	@cd $(HOST_SUBDIR); [ -d stage4-autogen ] || \
+	  mkdir stage4-autogen; \
+	set stage4-autogen autogen ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage3-autogen prev-autogen ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif autogen
 @if bfd
 	@cd $(HOST_SUBDIR); [ -d stage4-bfd ] || \
 	  mkdir stage4-bfd; \
@@ -34438,6 +36518,14 @@ stage4-start::
 	set stage3-libcpp prev-libcpp ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif libcpp
+@if libdecnumber
+	@cd $(HOST_SUBDIR); [ -d stage4-libdecnumber ] || \
+	  mkdir stage4-libdecnumber; \
+	set stage4-libdecnumber libdecnumber ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage3-libdecnumber prev-libdecnumber ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif libdecnumber
 @if libiberty
 	@cd $(HOST_SUBDIR); [ -d stage4-libiberty ] || \
 	  mkdir stage4-libiberty; \
@@ -34457,6 +36545,12 @@ stage4-start::
 
 stage4-end::
 	@rm -f stage_current
+@if autogen
+	@cd $(HOST_SUBDIR); set autogen stage4-autogen ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-autogen stage3-autogen ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif autogen
 @if bfd
 	@cd $(HOST_SUBDIR); set bfd stage4-bfd ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -34505,6 +36599,12 @@ stage4-end::
 	set prev-libcpp stage3-libcpp ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif libcpp
+@if libdecnumber
+	@cd $(HOST_SUBDIR); set libdecnumber stage4-libdecnumber ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libdecnumber stage3-libdecnumber ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libdecnumber
 @if libiberty
 	@cd $(HOST_SUBDIR); set libiberty stage4-libiberty ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -34588,6 +36688,14 @@ stageprofile-start::
 	echo stageprofile > stage_current ; \
 	echo stageprofile > stage_last; \
 	$(SHELL) $(srcdir)/mkinstalldirs $(HOST_SUBDIR) $(TARGET_SUBDIR)
+@if autogen
+	@cd $(HOST_SUBDIR); [ -d stageprofile-autogen ] || \
+	  mkdir stageprofile-autogen; \
+	set stageprofile-autogen autogen ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage1-autogen prev-autogen ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif autogen
 @if bfd
 	@cd $(HOST_SUBDIR); [ -d stageprofile-bfd ] || \
 	  mkdir stageprofile-bfd; \
@@ -34652,6 +36760,14 @@ stageprofile-start::
 	set stage1-libcpp prev-libcpp ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif libcpp
+@if libdecnumber
+	@cd $(HOST_SUBDIR); [ -d stageprofile-libdecnumber ] || \
+	  mkdir stageprofile-libdecnumber; \
+	set stageprofile-libdecnumber libdecnumber ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage1-libdecnumber prev-libdecnumber ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif libdecnumber
 @if libiberty
 	@cd $(HOST_SUBDIR); [ -d stageprofile-libiberty ] || \
 	  mkdir stageprofile-libiberty; \
@@ -34671,6 +36787,12 @@ stageprofile-start::
 
 stageprofile-end::
 	@rm -f stage_current
+@if autogen
+	@cd $(HOST_SUBDIR); set autogen stageprofile-autogen ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-autogen stage1-autogen ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif autogen
 @if bfd
 	@cd $(HOST_SUBDIR); set bfd stageprofile-bfd ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -34719,6 +36841,12 @@ stageprofile-end::
 	set prev-libcpp stage1-libcpp ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif libcpp
+@if libdecnumber
+	@cd $(HOST_SUBDIR); set libdecnumber stageprofile-libdecnumber ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libdecnumber stage1-libdecnumber ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libdecnumber
 @if libiberty
 	@cd $(HOST_SUBDIR); set libiberty stageprofile-libiberty ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -34771,6 +36899,14 @@ stagefeedback-start::
 	echo stagefeedback > stage_current ; \
 	echo stagefeedback > stage_last; \
 	$(SHELL) $(srcdir)/mkinstalldirs $(HOST_SUBDIR) $(TARGET_SUBDIR)
+@if autogen
+	@cd $(HOST_SUBDIR); [ -d stagefeedback-autogen ] || \
+	  mkdir stagefeedback-autogen; \
+	set stagefeedback-autogen autogen ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stageprofile-autogen prev-autogen ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif autogen
 @if bfd
 	@cd $(HOST_SUBDIR); [ -d stagefeedback-bfd ] || \
 	  mkdir stagefeedback-bfd; \
@@ -34835,6 +36971,14 @@ stagefeedback-start::
 	set stageprofile-libcpp prev-libcpp ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif libcpp
+@if libdecnumber
+	@cd $(HOST_SUBDIR); [ -d stagefeedback-libdecnumber ] || \
+	  mkdir stagefeedback-libdecnumber; \
+	set stagefeedback-libdecnumber libdecnumber ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stageprofile-libdecnumber prev-libdecnumber ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif libdecnumber
 @if libiberty
 	@cd $(HOST_SUBDIR); [ -d stagefeedback-libiberty ] || \
 	  mkdir stagefeedback-libiberty; \
@@ -34854,6 +36998,12 @@ stagefeedback-start::
 
 stagefeedback-end::
 	@rm -f stage_current
+@if autogen
+	@cd $(HOST_SUBDIR); set autogen stagefeedback-autogen ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-autogen stageprofile-autogen ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif autogen
 @if bfd
 	@cd $(HOST_SUBDIR); set bfd stagefeedback-bfd ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -34902,6 +37052,12 @@ stagefeedback-end::
 	set prev-libcpp stageprofile-libcpp ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif libcpp
+@if libdecnumber
+	@cd $(HOST_SUBDIR); set libdecnumber stagefeedback-libdecnumber ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libdecnumber stageprofile-libdecnumber ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libdecnumber
 @if libiberty
 	@cd $(HOST_SUBDIR); set libiberty stagefeedback-libiberty ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -35064,6 +37220,7 @@ configure-target-qthreads: maybe-all-target-newlib maybe-all-target-libgloss
 # to check for bootstrap/prebootstrap dependencies.  To resolve
 # prebootstrap dependencies, prebootstrap modules are gathered in
 # a hash table.
+all-build-autogen: maybe-all-build-guile
 all-build-bison: maybe-all-build-texinfo
 all-build-byacc: maybe-all-build-texinfo
 all-build-flex: maybe-all-build-texinfo
@@ -35482,6 +37639,7 @@ all-fastjar: maybe-all-build-texinfo
 all-fastjar: maybe-all-libiberty
 all-autoconf: maybe-all-m4
 all-autoconf: maybe-all-build-texinfo
+all-autogen: maybe-all-guile
 all-automake: maybe-all-m4
 all-automake: maybe-all-build-texinfo
 all-automake: maybe-all-autoconf
@@ -35537,6 +37695,7 @@ all-target-winsup: maybe-all-target-libtermcap
 # before gcc.  Another wart that will go away, hopefully soon.
 @if gcc-no-bootstrap
 
+all-prebootstrap: maybe-all-autogen
 all-prebootstrap: maybe-all-bfd
 all-prebootstrap: maybe-all-opcodes
 all-prebootstrap: maybe-all-binutils
@@ -35544,6 +37703,7 @@ all-prebootstrap: maybe-all-gas
 all-prebootstrap: maybe-all-intl
 all-prebootstrap: maybe-all-ld
 all-prebootstrap: maybe-all-libcpp
+all-prebootstrap: maybe-all-libdecnumber
 all-prebootstrap: maybe-all-libiberty
 all-prebootstrap: maybe-all-zlib
 @endif gcc-no-bootstrap
@@ -35572,7 +37732,7 @@ multilib.out: maybe-all-gcc
 	$(SHELL) $(srcdir)/move-if-change multilib.tmp multilib.out ; \
 
 # Rebuilding Makefile.in, using autogen.
-AUTOGEN = autogen
+AUTOGEN = `which autogen`
 $(srcdir)/Makefile.in: @MAINT@ $(srcdir)/Makefile.tpl $(srcdir)/Makefile.def
 	cd $(srcdir) && $(AUTOGEN) Makefile.def
 .PHONY: $(srcdir)/Makefile.in

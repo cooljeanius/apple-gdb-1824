@@ -35033,7 +35033,7 @@ multilib.out: maybe-all-gcc
 	echo "";
 
 # Rebuilding Makefile.in, using autogen.
-AUTOGEN = autogen
+AUTOGEN = `which autogen`
 $(srcdir)/Makefile.in: @MAINT@ $(srcdir)/Makefile.tpl $(srcdir)/Makefile.def
 	cd $(srcdir) && $(AUTOGEN) Makefile.def
 .PHONY: $(srcdir)/Makefile.in

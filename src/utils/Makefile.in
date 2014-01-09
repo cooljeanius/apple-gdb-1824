@@ -60,8 +60,8 @@ mostlyclean: @mostlyclean_subdirs@
 clean: @clean_subdirs@
 
 # These should always clean all sudirectories...
-distclean: distclean-misc distclean-spu distclean-sparclite distclean-wince 
-maintainer-clean: maintainer-clean-misc maintainer-clean-spu maintainer-clean-sparclite maintainer-clean-wince 
+distclean: distclean-amd-udi distclean-misc distclean-msdos distclean-spu distclean-sparclite distclean-wince 
+maintainer-clean: maintainer-clean-amd-udi maintainer-clean-misc maintainer-clean-msdos maintainer-clean-spu maintainer-clean-sparclite maintainer-clean-wince 
 clean mostlyclean:
 	-rm -f *~ core *.o a.out 
 maintainer-clean distclean:
@@ -105,9 +105,17 @@ FLAGS_TO_PASS = \
 
 # Glue for all.
 
+all-amd-udi: configure-amd-udi
+	cd amd-udi && $(MAKE) $(FLAGS_TO_PASS) all
+.PHONY: all-amd-udi
+
 all-misc: configure-misc
 	cd misc && $(MAKE) $(FLAGS_TO_PASS) all
 .PHONY: all-misc
+
+all-msdos: configure-msdos
+	cd msdos && $(MAKE) $(FLAGS_TO_PASS) all
+.PHONY: all-msdos
 
 all-spu: configure-spu
 	cd spu && $(MAKE) $(FLAGS_TO_PASS) all
@@ -123,9 +131,17 @@ all-wince: configure-wince
 
 # Glue for install.
 
+install-amd-udi: configure-amd-udi
+	cd amd-udi && $(MAKE)  install
+.PHONY: install-amd-udi
+
 install-misc: configure-misc
 	cd misc && $(MAKE)  install
 .PHONY: install-misc
+
+install-msdos: configure-msdos
+	cd msdos && $(MAKE)  install
+.PHONY: install-msdos
 
 install-spu: configure-spu
 	cd spu && $(MAKE)  install
@@ -141,9 +157,17 @@ install-wince: configure-wince
 
 # Glue for mostlyclean.
 
+mostlyclean-amd-udi: configure-amd-udi
+	cd amd-udi && $(MAKE)  mostlyclean
+.PHONY: mostlyclean-amd-udi
+
 mostlyclean-misc: configure-misc
 	cd misc && $(MAKE)  mostlyclean
 .PHONY: mostlyclean-misc
+
+mostlyclean-msdos: configure-msdos
+	cd msdos && $(MAKE)  mostlyclean
+.PHONY: mostlyclean-msdos
 
 mostlyclean-spu: configure-spu
 	cd spu && $(MAKE)  mostlyclean
@@ -159,9 +183,17 @@ mostlyclean-wince: configure-wince
 
 # Glue for clean.
 
+clean-amd-udi: configure-amd-udi
+	cd amd-udi && $(MAKE)  clean
+.PHONY: clean-amd-udi
+
 clean-misc: configure-misc
 	cd misc && $(MAKE)  clean
 .PHONY: clean-misc
+
+clean-msdos: configure-msdos
+	cd msdos && $(MAKE)  clean
+.PHONY: clean-msdos
 
 clean-spu: configure-spu
 	cd spu && $(MAKE)  clean
@@ -177,9 +209,17 @@ clean-wince: configure-wince
 
 # Glue for distclean.
 
+distclean-amd-udi: configure-amd-udi
+	-cd amd-udi && $(MAKE)  distclean
+.PHONY: distclean-amd-udi
+
 distclean-misc: configure-misc
 	-cd misc && $(MAKE)  distclean
 .PHONY: distclean-misc
+
+distclean-msdos: configure-msdos
+	-cd msdos && $(MAKE)  distclean
+.PHONY: distclean-msdos
 
 distclean-spu: configure-spu
 	-cd spu && $(MAKE)  distclean
@@ -195,9 +235,17 @@ distclean-wince: configure-wince
 
 # Glue for maintainer-clean.
 
+maintainer-clean-amd-udi: configure-amd-udi
+	-cd amd-udi && $(MAKE)  maintainer-clean
+.PHONY: maintainer-clean-amd-udi
+
 maintainer-clean-misc: configure-misc
 	-cd misc && $(MAKE)  maintainer-clean
 .PHONY: maintainer-clean-misc
+
+maintainer-clean-msdos: configure-msdos
+	-cd msdos && $(MAKE)  maintainer-clean
+.PHONY: maintainer-clean-msdos
 
 maintainer-clean-spu: configure-spu
 	-cd spu && $(MAKE)  maintainer-clean
@@ -213,11 +261,23 @@ maintainer-clean-wince: configure-wince
 
 # Glue for configure.
 
+configure-amd-udi: amd-udi/Makefile
+amd-udi/Makefile: config.status
+	test -d amd-udi || mkdir amd-udi ; \
+	cd amd-udi && $(abs_srcdir)/amd-udi/configure $(subconfigure_args)/amd-udi
+.PHONY: configure-amd-udi
+
 configure-misc: misc/Makefile
 misc/Makefile: config.status
 	test -d misc || mkdir misc ; \
 	cd misc && $(abs_srcdir)/misc/configure $(subconfigure_args)/misc
 .PHONY: configure-misc
+
+configure-msdos: msdos/Makefile
+msdos/Makefile: config.status
+	test -d msdos || mkdir msdos ; \
+	cd msdos && $(abs_srcdir)/msdos/configure $(subconfigure_args)/msdos
+.PHONY: configure-msdos
 
 configure-spu: spu/Makefile
 spu/Makefile: config.status

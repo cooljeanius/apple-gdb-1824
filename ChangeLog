@@ -1,3 +1,189 @@
+2014-01-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	should have been part of previous commit
+
+	and gitignored, anyways...(?)
+
+2014-01-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	found some stuff
+
+	- switch more automake-using subdirs to gnits strictness
+	- found sources for amd-udi and msdos in utils
+	- found some old doc-generating scripts for bfd
+	- other misc tweaks
+
+2014-01-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	misc. build fixes
+
+	- Make Makefile.in files respect datarootdir
+	- Make configure scripts look in our specific intl subdir
+	- skip building zlib from src directory
+	- various .c files need to include <libintl.h> directly, apparently
+	- move to gnits strictness in intl
+	- gnulib was missing some files due to .gitignore files messing stuff up
+
+2014-01-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	renaming
+
+2014-01-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	latest texinfo.tex macro file
+
+2014-01-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	add some misc texinfo things
+
+2014-01-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	zlib tweaks
+
+2014-01-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	dejagnu tweaks
+
+2014-01-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	fix building tcl with xcode project
+
+2014-01-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	work on sim and Tcl
+
+2014-01-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	do some clang static analysis
+
+	also fix readline
+
+2013-12-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	I thought I had already made this change previously...
+
+2013-12-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	deinit submodules (to save space temporarily)
+
+2013-12-19  Eric Gallager  <egallager@comcast.net>
+
+	touch/un-obsolete old m68k config files
+
+	Change-Id: Iaf1c2456aef5a91ccc8983133f8b4b22fe2cbcbe
+
+2013-12-19  Eric Gallager  <egallager@comcast.net>
+
+	touch more old mips config files
+
+	Change-Id: Iff991ce2549e61749c945c1c25fad91b7674b939
+
+2013-12-18  Eric Gallager  <egallager@comcast.net>
+
+	touch old mips config files
+
+	Change-Id: If238e03939f14bdd0603a2728c59b3a4c9bcdf95
+
+2013-12-18  Eric Gallager  <egallager@comcast.net>
+
+	touch/unobsolete old PPC config files
+
+	Change-Id: If8cdc5a81d87f5d41eb2d1f8d6f597f3df0ef421
+
+2013-12-18  Eric Gallager  <egallager@comcast.net>
+
+	touch old sparc config files
+
+	Change-Id: I01b3911377e6ee95c07dada8ac19b876d0965267
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+	fix some warnings in utils/sparclite and utils/wince
+
+	Change-Id: I072a258a9b1b3ff5862ccee7653aa2c34f1e5db0
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+	convert amd-udi to automake
+
+	Change-Id: I0ae2332f009099105dd271a4d12bfb196e11f873
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+	Try to figure out what is going on in utils/amd-udi
+
+	Change-Id: I7c2dda10ec5229a5b9c4c7951fcb41ead748a404
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+	more fighting with autoconf's cache mechanism
+
+	Change-Id: I0450706d8e4f2e3d296192635de9776b73c454b4
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+	touch more old files
+
+	Change-Id: Idd585fa0166e05dd8af174c0db2e22e96e1c1087
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+	use AC_USE_SYSTEM_EXTENSIONS macro in src/configure.ac
+
+	Change-Id: I91a767ccfb82218dc32605e6d9246ded0c3cc517
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+	touch more old files
+
+	Change-Id: I76b365ef5c79a8903c2264d34f55e032e2824638
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+	more touching/un-obsoleting old files
+
+	Change-Id: Ia569a5b14f94df33a3560e5ce1ccbf5267cc0c1d
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+	convert tcl/mac/MoreFiles\ 1.4.9/MoreFilesLib.make into a Unix Makefile
+
+	Change-Id: I7dcefaefec8f31ea546701b4997aedf426b5cb6d
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+	tcl.m4 comparisons
+
+	Change-Id: Ib1e6fdceb6745ce2544cfb4adbfb9091bb0399ef
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+	touch old files in MoreFiles
+
+	Change-Id: Ibeb6a345fe7961c54044bd9b2139f73473ac971f
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+	convert MoreFiles line endings using `mac2ux`
+
+	for proper diffing
+
+	Change-Id: I9ef0b3200619fce2170c506f2f1b6e9004eae830
+
+2013-12-16  Eric Gallager  <egallager@comcast.net>
+
+	Tcl's Mac versions says it depends on MoreFiles 1.4.9
+
+	so vendor in a local copy of that
+
+	Change-Id: I1d03b3e2bad5f4aec009a09a2a380e74d6ef9cbd
+
+2013-12-16  Eric Gallager  <egallager@comcast.net>
+
+	touch/un-obsolete more old files
+
+	Change-Id: I90b034b298479ada59b49f8916c10e6875f58f6a
+
 2013-12-11  Eric Gallager  <egallager@comcast.net>
 
 	add some relevant perl modules

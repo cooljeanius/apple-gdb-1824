@@ -80,3 +80,6 @@ mh-frag
 mt-frag
 update.out
 update.sourceware
+
+# gitignore to commit separately:
+autogen/*

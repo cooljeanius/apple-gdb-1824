@@ -29,12 +29,14 @@ build_modules= { module= bison; };
 build_modules= { module= byacc; };
 build_modules= { module= flex; };
 build_modules= { module= m4; };
-build_modules= { module= texinfo; };
+build_modules= { module= texinfo; no_check= true; };
 build_modules= { module= fixincludes;
 		 extra_configure_args='--target=$(target)'; };
 
 host_modules= { module= ash; };
 host_modules= { module= autoconf; };
+// note the quotes around the following:
+host_modules= { module= "autogen"; bootstrap=true; }; 
 host_modules= { module= automake; };
 host_modules= { module= bash; };
 host_modules= { module= bfd; lib_path=.; bootstrap=true; };
@@ -43,9 +45,11 @@ host_modules= { module= binutils; bootstrap=true; };
 host_modules= { module= bison; no_check_cross= true; };
 host_modules= { module= byacc; no_check_cross= true; };
 host_modules= { module= bzip2; };
+host_modules= { module= cgen; no_check= true; };
 host_modules= { module= dejagnu; };
 host_modules= { module= diff; };
 host_modules= { module= dosutils; no_check= true; };
+host_modules= { module= electric-fence; no_check= true; };
 host_modules= { module= etc; };
 host_modules= { module= fastjar; no_check_cross= true; };
 host_modules= { module= fileutils; };
@@ -75,6 +79,7 @@ host_modules= { module= tcl;
 host_modules= { module= itcl; };
 host_modules= { module= ld; bootstrap=true; };
 host_modules= { module= libcpp; bootstrap=true; };
+host_modules= { module= libdecnumber; bootstrap=true; };
 host_modules= { module= libgui; };
 host_modules= { module= libiberty; bootstrap=true; };
 host_modules= { module= libtool; };
@@ -138,7 +143,7 @@ target_modules = { module= rda; };
 target_modules = { module= libada; };
 
 // These are (some of) the make targets to be done in each subdirectory.
-// Not all; these are the ones which don't have special options.
+// Not all; these are the ones which do NOT have special options.
 // "depend" indicates that a target depends on another target uniformly
 // for each subdirectory.  There can be several such lines per target.
 recursive_targets = { make_target= info; 
@@ -233,6 +238,7 @@ flags_to_pass = { flag= WINDRES_FOR_TARGET ; };
 // Inter-module dependencies
 
 // Build modules
+dependencies = { module=all-build-autogen; on=all-build-guile; };
 dependencies = { module=all-build-bison; on=all-build-texinfo; };
 dependencies = { module=all-build-byacc; on=all-build-texinfo; };
 dependencies = { module=all-build-flex; on=all-build-texinfo; };
@@ -376,6 +382,7 @@ dependencies = { module=all-fastjar; on=all-libiberty; };
 // Warning, these are not well tested.
 dependencies = { module=all-autoconf; on=all-m4; };
 dependencies = { module=all-autoconf; on=all-build-texinfo; };
+dependencies = { module=all-autogen; on=all-guile; };
 dependencies = { module=all-automake; on=all-m4; };
 dependencies = { module=all-automake; on=all-build-texinfo; };
 dependencies = { module=all-automake; on=all-autoconf; };
