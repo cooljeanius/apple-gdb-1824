@@ -1,0 +1,96 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# suffix.test --- test the select suffix option
+#
+# Time-stamp:        "2010-06-26 16:04:01 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+echo creating ${testname}.tpl
+cat > ${testname}.tpl <<'_EOF_'
+[= AutoGen5 Template test =]
+[=
+
+CASE (suffix) =][=
+
+== test       =]BOGUS[=
+== "* NONE *" =]No Suffix[=
+== Example    =]Example[=
+*             =]Bogon ``[=(suffix)=]''[=
+
+ESAC =]
+_EOF_
+
+# # # # # # # # # # EXPECTED OUTPUT FILE # # # # # # #
+
+echo "Example"   > ${testname}.Example.test
+echo "No Suffix" > ${testname}.stdout.test
+
+# # # # # # # # # # RUN TESTS # # # # # # #
+nodefopt="--no-def -T${testname}.tpl"
+run_ag ex ${nodefopt} -oExample -b${testname} || \
+   failure autogen ${nodefopt} -oExample -b${testname}
+
+cmp ${testname}.Example* || \
+   failure COMPARE cmp ${testname}.Example*
+
+run_ag no ${nodefopt} -o -b${testname} > ${testname}.stdout || \
+   failure autogen ${nodefopt} -o -b${testname}
+
+cmp ${testname}.stdout* || \
+   failure COMPARE cmp ${testname}.stdout*
+
+# # # # # # # # # # STDOUT TEMPLATE # # # # # # # # #
+
+echo creating ${testname}.tpl
+cat > ${testname}.tpl <<'_EOF_'
+[= AutoGen5 Template =]
+[=
+text =]
+_EOF_
+
+cat > ${testname}.samp <<- EOF
+	This is some text.
+	This should appear in the output.
+EOF
+
+cat > ${testname}.def <<\EOF
+AutoGen Definitions suffix;
+text = `cat suffix.samp`;
+EOF
+
+run_ag sfx ${testname}.def | ${EGREP} -v '^in state ' > ${testname}.out
+cmp ${testname}.out ${testname}.samp || \
+  failure "`diff  ${testname}.out ${testname}.samp`"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of suffix.test

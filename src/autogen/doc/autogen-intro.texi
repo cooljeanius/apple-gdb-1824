@@ -1,0 +1,788 @@
+
+@menu
+* Introduction::         AutoGen's Purpose
+* Definitions File::     AutoGen Definitions File
+* Template File::        AutoGen Template
+* Augmenting AutoGen::   Augmenting AutoGen Features
+* autogen Invocation::   Invoking AutoGen
+* Installation::         Configuring and Installing
+* AutoOpts::             Automated Option Processing
+* Add-Ons::              Add-on packages for AutoGen
+* Future::               Some ideas for the future.
+* Copying This Manual::  Copying This Manual
+* Concept Index::        General index
+* Function Index::       Function index
+@end menu
+
+@end ifinfo
+
+@ignore
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+@end ignore
+@page
+@node Introduction
+@chapter Introduction
+@cindex Introduction
+
+AutoGen is a tool designed for generating program files that contain
+repetitive text with varied substitutions.  Its goal is to simplify the
+maintenance of programs that contain large amounts of repetitious text.
+This is especially valuable if there are several blocks of such text
+that must be kept synchronized in parallel tables.
+
+An obvious example is the problem of maintaining the code required for
+processing program options and configuration settings.  Processing options
+requires a minimum of four different constructs be kept in proper order in
+different places in your program.  You need at least:
+
+@enumerate
+@item
+The flag character in the flag string,
+@item
+code to process the flag when it is encountered,
+@item
+a global state variable or two, and
+@item
+a line in the usage text.
+@end enumerate
+
+@noindent
+You will need more things besides this if you choose to implement long option
+names, configuration (rc/ini) file processing, environment variable settings
+and keep all the documentation for these up to date.  This can be done
+mechanically; with the proper templates and this program.  In fact, it has
+already been done and AutoGen itself uses it@: @xref{AutoOpts}.  For a simple
+example of Automated Option processing, @xref{Quick Start}.  For a full list
+of the Automated Option features, @xref{Features}.  Be forewarned, though, the
+feature list is ridiculously extensive.
+
+@menu
+* Generalities::         The Purpose of AutoGen
+* Example Usage::        A Simple Example
+* csh/zsh caveat::       csh/zsh caveat
+* Testimonial::          A User's Perspective
+@end menu
+
+@c === SECTION MARKER
+
+@node Generalities
+@section The Purpose of AutoGen
+
+The idea of this program is to have a text file, a template if
+you will, that contains the general text of the desired output file.
+That file includes substitution expressions and sections of text that are
+replicated under the control of separate definition files.
+
+@cindex design goals
+
+AutoGen was designed with the following features:
+
+@enumerate
+@item
+The definitions are completely separate from the template.  By completely
+isolating the definitions from the template it greatly increases the
+flexibility of the template implementation.  A secondary goal is that a
+template user only needs to specify those data that are necessary to describe
+his application of a template.
+
+@item
+Each datum in the definitions is named.  Thus, the definitions can be
+rearranged, augmented and become obsolete without it being necessary to
+go back and clean up older definition files.  Reduce incompatibilities!
+
+@item
+Every definition name defines an array of values, even when there is
+only one entry.  These arrays of values are used to control the
+replication of sections of the template.
+
+@item
+There are named collections of definitions.  They form a nested hierarchy.
+Associated values are collected and associated with a group name.
+These associated data are used collectively in sets of substitutions.
+
+@item
+The template has special markers to indicate where substitutions are
+required, much like the @code{$@{VAR@}} construct in a shell @code{here doc}.
+These markers are not fixed strings.  They are specified at the start of
+each template.  Template designers know best what fits into their
+syntax and can avoid marker conflicts.
+
+We did this because it is burdensome and difficult to avoid conflicts
+using either M4 tokenization or C preprocessor substitution rules.  It
+also makes it easier to specify expressions that transform the value.
+Of course, our expressions are less cryptic than the shell methods.
+
+@item
+These same markers are used, in conjunction with enclosed keywords, to
+indicate sections of text that are to be skipped and for sections of
+text that are to be repeated.  This is a major improvement over using C
+preprocessing macros.  With the C preprocessor, you have no way of
+selecting output text because it is an @i{un}varying, mechanical
+substitution process.
+
+@item
+Finally, we supply methods for carefully controlling the output.
+Sometimes, it is just simply easier and clearer to compute some text or
+a value in one context when its application needs to be later.  So,
+functions are available for saving text or values for later use.
+@end enumerate
+
+@c === SECTION MARKER
+
+@node Example Usage
+@section A Simple Example
+@cindex example, simple AutoGen
+
+This is just one simple example that shows a few basic features.
+If you are interested, you also may run "make check" with the
+@code{VERBOSE} environment variable set and see a number of other
+examples in the @file{agen5/test/testdir} directory.
+
+Assume you have an enumeration of names and you wish to associate some
+string with each name.  Assume also, for the sake of this example,
+that it is either too complex or too large to maintain easily by hand.
+We will start by writing an abbreviated version of what the result
+is supposed to be.  We will use that to construct our output templates.
+
+@noindent
+In a header file, @file{list.h}, you define the enumeration
+and the global array containing the associated strings:
+
+@example
+typedef enum @{
+        IDX_ALPHA,
+        IDX_BETA,
+        IDX_OMEGA @}  list_enum;
+
+extern char const* az_name_list[ 3 ];
+@end example
+
+@noindent
+Then you also have @file{list.c} that defines the actual strings:
+
+@example
+#include "list.h"
+char const* az_name_list[] = @{
+        "some alpha stuff",
+        "more beta stuff",
+        "final omega stuff" @};
+@end example
+
+@noindent
+First, we will define the information that is unique for each enumeration
+name/string pair.  This would be placed in a file named, @file{list.def},
+for example.
+
+@example
+autogen definitions list;
+list = @{ list_element = alpha;
+         list_info    = "some alpha stuff"; @};
+list = @{ list_info    = "more beta stuff";
+         list_element = beta; @};
+list = @{ list_element = omega;
+         list_info    = "final omega stuff"; @};
+@end example
+
+The @code{autogen definitions list;} entry defines the file as an AutoGen
+definition file that uses a template named @code{list}.  That is followed by
+three @code{list} entries that define the associations between the
+enumeration names and the strings.  The order of the differently named
+elements inside of list is unimportant.  They are reversed inside of the
+@code{beta} entry and the output is unaffected.
+
+Now, to actually create the output, we need a template or two that can be
+expanded into the files you want.  In this program, we use a single template
+that is capable of multiple output files.  The definitions above refer to a
+@file{list} template, so it would normally be named, @file{list.tpl}.
+
+It looks something like this.
+(For a full description, @xref{Template File}.)
+
+@example
+[+ AutoGen5 template h c +]
+[+ CASE (suffix) +][+
+   ==  h  +]
+typedef enum @{[+
+   FOR list "," +]
+        IDX_[+ (string-upcase! (get "list_element")) +][+
+   ENDFOR list +] @}  list_enum;
+
+extern char const* az_name_list[ [+ (count "list") +] ];
+[+
+
+   ==  c  +]
+#include "list.h"
+char const* az_name_list[] = @{[+
+  FOR list "," +]
+        "[+list_info+]"[+
+  ENDFOR list +] @};[+
+
+ESAC +]
+@end example
+
+The @code{[+ AutoGen5 template h c +]} text tells AutoGen that this is
+an AutoGen version 5 template file; that it is to be processed twice;
+that the start macro marker is @code{[+}; and the end marker is
+@code{+]}.  The template will be processed first with a suffix value of
+@code{h} and then with @code{c}.  Normally, the suffix values are
+appended to the @file{base-name} to create the output file name.
+
+The @code{[+ == h +]} and @code{[+ == c +]} @code{CASE} selection clauses
+select different text for the two different passes.  In this example,
+the output is nearly disjoint and could have been put in two separate
+templates.  However, sometimes there are common sections and this is
+just an example.
+
+The @code{[+FOR list "," +]} and @code{[+ ENDFOR list +]} clauses delimit
+a block of text that will be repeated for every definition of @code{list}.
+Inside of that block, the definition name-value pairs that
+are members of each @code{list} are available for substitutions.
+
+The remainder of the macros are expressions.  Some of these contain
+special expression functions that are dependent on AutoGen named values;
+others are simply Scheme expressions, the result of which will be
+inserted into the output text.  Other expressions are names of AutoGen
+values.  These values will be inserted into the output text.  For example,
+@code{[+list_info+]} will result in the value associated with
+the name @code{list_info} being inserted between the double quotes and
+@code{(string-upcase! (get "list_element"))} will first "get" the value
+associated with the name @code{list_element}, then change the case of
+all the letters to upper case.  The result will be inserted into the
+output document.
+
+If you have compiled AutoGen, you can copy out the template and definitions
+as described above and run @code{autogen list.def}.  This will produce
+exactly the hypothesized desired output.
+
+One more point, too.  Lets say you decided it was too much trouble to figure
+out how to use AutoGen, so you created this enumeration and string list with
+thousands of entries.  Now, requirements have changed and it has become
+necessary to map a string containing the enumeration name into the enumeration
+number.  With AutoGen, you just alter the template to emit the table of names.
+It will be guaranteed to be in the correct order, missing none of the entries.
+If you want to do that by hand, well, good luck.
+
+@c === SECTION MARKER
+
+@node csh/zsh caveat
+@section csh/zsh caveat
+
+AutoGen tries to use your normal shell so that you can supply shell code
+in a manner you are accustomed to using.  If, however, you use csh or
+zsh, you cannot do this.  Csh is sufficiently difficult to program that
+it is unsupported.  Zsh, though largely programmable, also has some
+anomalies that make it incompatible with AutoGen usage.  Therefore, when
+invoking AutoGen from these environments, you must be certain to set the
+SHELL environment variable to a Bourne-derived shell, e.g., sh, ksh or
+bash.
+
+Any shell you choose for your own scripts need to follow these basic
+requirements:
+
+@enumerate
+@item
+It handles @code{trap ":" $sig} without output to standard out.  This is done
+when the server shell is first started.  If your shell does not handle this,
+then it may be able to by loading functions from its start up files.
+@item
+At the beginning of each scriptlet, the command @code{\\cd $PWD}
+is inserted.  This ensures that @code{cd} is not aliased to something
+peculiar and each scriptlet starts life in the execution directory.
+@item
+At the end of each scriptlet, the command @code{echo mumble} is
+appended.  The program you use as a shell must emit the single
+argument @code{mumble} on a line by itself.
+@end enumerate
+
+@c === SECTION MARKER
+
+@node Testimonial
+@section A User's Perspective
+
+@format
+Alexandre wrote:
+>
+> I'd appreciate opinions from others about advantages/disadvantages of
+> each of these macro packages.
+@end format
+
+I am using AutoGen in my pet project, and find one of its best points to
+be that it separates the operational data from the implementation.
+
+Indulge me for a few paragraphs, and all will be revealed:
+In the manual, Bruce cites the example of maintaining command line flags
+inside the source code; traditionally spreading usage information, flag
+names, letters and processing across several functions (if not files).
+Investing the time in writing a sort of boiler plate (a template in
+AutoGen terminology) pays by moving all of the option details (usage,
+flags names etc.) into a well structured table (a definition file if you
+will),  so that adding a new command line option becomes a simple matter
+of adding a set of details to the table.
+
+So far so good!  Of course, now that there is a template, writing all of
+that tedious optargs processing and usage functions is no longer an
+issue.  Creating a table of the options needed for the new project and
+running AutoGen generates all of the option processing code in C
+automatically from just the tabular data.  AutoGen in fact already ships
+with such a template... AutoOpts.
+
+One final consequence of the good separation in the design of AutoGen is
+that it is retargetable to a greater extent.  The
+egcs/gcc/fixinc/inclhack.def can equally be used (with different
+templates) to create a shell script (inclhack.sh) or a c program
+(fixincl.c).
+
+This is just the tip of the iceberg.  AutoGen is far more powerful than
+these examples might indicate, and has many other varied uses.  I am
+certain Bruce or I could supply you with many and varied examples, and I
+would heartily recommend that you try it for your project and see for
+yourself how it compares to m4.
+@cindex m4
+
+As an aside, I would be interested to see whether someone might be
+persuaded to rationalise autoconf with AutoGen in place of m4...  Ben,
+are you listening?  autoconf-3.0! `kay?  =)O|
+
+@format
+Sincerely,
+        Gary V. Vaughan
+@end format
+
+@ignore
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+@end ignore
+@page
+@node Definitions File
+@chapter Definitions File
+@cindex definitions file
+@cindex .def file
+
+This chapter describes the syntax and semantics of the AutoGen
+definition file.  In order to instantiate a template, you normally must
+provide a definitions file that identifies itself and contains some
+value definitions.  Consequently, we keep it very simple.  For
+"advanced" users, there are preprocessing directives, sparse
+arrays, named indexes and comments that may be used as well.
+
+The definitions file is used to associate values with names.  Every
+value is implicitly an array of values, even if there is only one value.
+Values may be either simple strings or compound collections of
+name-value pairs.  An array may not contain both simple and compound
+members.  Fundamentally, it is as simple as:
+
+@example
+prog-name = "autogen";
+flag = @{
+    name      = templ_dirs;
+    value     = L;
+    descrip   = "Template search directory list";
+@};
+@end example
+
+For purposes of commenting and controlling the processing of the
+definitions, C-style comments and most C preprocessing directives are
+honored.  The major exception is that the @code{#if} directive is
+ignored, along with all following text through the matching
+@code{#endif} directive.  The C preprocessor is not actually invoked, so
+C macro substitution is @strong{not} performed.
+
+@menu
+* Identification::        The Identification Definition
+* Definitions::           Named Definitions
+* Index Assignments::     Assigning an Index to a Definition
+* Dynamic Text::          Dynamic Text
+* Directives::            Controlling What Gets Processed
+* Predefines::            Pre-defined Names
+* Comments::              Commenting Your Definitions
+* Example::               What it all looks like.
+* Full Syntax::           Finite State Machine Grammar
+* Alternate Definition::  Alternate Definition Forms
+@end menu
+
+@c === SECTION MARKER
+
+@node Identification
+@section The Identification Definition
+@cindex identification
+
+The first definition in this file is used to identify it as a
+AutoGen file.  It consists of the two keywords,
+@samp{autogen} and @samp{definitions} followed by the default
+template name and a terminating semi-colon (@code{;}).  That is:
+
+@example
+        AutoGen Definitions @var{template-name};
+@end example
+
+@noindent
+Note that, other than the name @var{template-name}, the words
+@samp{AutoGen} and @samp{Definitions} are searched for without case
+sensitivity.  Most lookups in this program are case insensitive.
+
+@noindent
+Also, if the input contains more identification definitions,
+they will be ignored.  This is done so that you may include
+(@pxref{Directives}) other definition files without an identification
+conflict.
+
+@cindex template file
+
+@noindent
+AutoGen uses the name of the template to find the corresponding template
+file.  It searches for the file in the following way, stopping when
+it finds the file:
+
+@enumerate
+@item
+It tries to open @file{./@var{template-name}}.  If it fails,
+@item
+it tries @file{./@var{template-name}.tpl}.
+@item
+It searches for either of these files in the directories listed in the
+templ-dirs command line option.
+@end enumerate
+
+If AutoGen fails to find the template file in one of these places,
+it prints an error message and exits.
+
+@c === SECTION MARKER
+
+@node Definitions
+@section Named Definitions
+@cindex definitions
+
+A name is a sequence of characters beginning with an alphabetic character
+(@code{a} through @code{z}) followed by zero or more alpha-numeric
+characters and/or separator characters: hyphen (@code{-}), underscore
+(@code{_}) or carat (@code{^}).  Names are case insensitive.
+
+Any name may have multiple values associated with it.  Every name may be
+considered a sparse array of one or more elements.  If there is more than
+one value, the values my be accessed by indexing the value with
+@code{[index]} or by iterating over them using the FOR (@pxref{FOR}) AutoGen
+macro on it, as described in the next chapter.  Sparse arrays are specified
+by specifying an index when defining an entry
+(@pxref{Index Assignments,, Assigning an Index to a Definition}).
+
+There are two kinds of definitions, @samp{simple} and @samp{compound}.
+They are defined thus (@pxref{Full Syntax}):
+
+@example
+compound_name '=' '@{' definition-list '@}' ';'
+
+simple-name[2] '=' string ';'
+
+no^text^name ';'
+@end example
+
+@noindent
+@code{simple-name} has the third index (index number 2) defined here.
+@code{No^text^name} is a simple definition with a shorthand empty string
+value.  The string values for definitions may be specified in any of
+several formation rules.
+
+@menu
+* def-list::                 Definition List
+* double-quote-string::      Double Quote String
+* single-quote-string::      Single Quote String
+* simple-string::            An Unquoted String
+* shell-generated::          Shell Output String
+* scheme-generated::         Scheme Result String
+* here-string::              A Here String
+* concat-string::            Concatenated Strings
+@end menu
+
+@cindex simple definitions
+@cindex compound definitions
+
+@node def-list
+@subsection Definition List
+
+@code{definition-list} is a list of definitions that may or may not
+contain nested compound definitions.  Any such definitions may
+@strong{only} be expanded within a @code{FOR} block iterating over the
+containing compound definition.  @xref{FOR}.
+
+Here is, again, the example definitions from the previous chapter,
+with three additional name value pairs.  Two with an empty value
+assigned (@var{first} and @var{last}), and a "global" @var{group_name}.
+
+@example
+autogen definitions list;
+group_name = example;
+list = @{ list_element = alpha;  first;
+         list_info    = "some alpha stuff"; @};
+list = @{ list_info    = "more beta stuff";
+         list_element = beta; @};
+list = @{ list_element = omega;  last;
+         list_info    = "final omega stuff"; @};
+@end example
+
+@node double-quote-string
+@subsection Double Quote String
+
+@cindex string, double quote
+The string follows the C-style escaping, using the backslash to quote
+(escape) the following character(s).  Certain letters are translated to
+various control codes (e.g. @code{\n}, @code{\f}, @code{\t}, etc.).
+@code{x} introduces a two character hex code.  @code{0} (the digit zero)
+introduces a one to three character octal code (note: an octal byte followed
+by a digit must be represented with three octal digits, thus: @code{"\0001"}
+yielding a NUL byte followed by the ASCII digit 1).  Any other character
+following the backslash escape is simply inserted, without error, into the
+string being formed.
+
+Like ANSI "C", a series of these strings, possibly intermixed with
+single quote strings, will be concatenated together.
+
+@node single-quote-string
+@subsection Single Quote String
+
+@cindex string, single quote
+This is similar to the shell single-quote string.  However, escapes
+@code{\} are honored before another escape, single quotes @code{'}
+and hash characters @code{#}.  This latter is done specifically
+to disambiguate lines starting with a hash character inside
+of a quoted string.  In other words,
+
+@example
+fumble = '
+#endif
+';
+@end example
+
+could be misinterpreted by the definitions scanner, whereas
+this would not:
+
+@example
+fumble = '
+\#endif
+';
+@end example
+
+@*
+As with the double quote string, a series of these, even intermixed
+with double quote strings, will be concatenated together.
+
+@node simple-string
+@subsection An Unquoted String
+
+A simple string that does not contain white space @i{may} be left
+unquoted.  The string must not contain any of the characters special to
+the definition text (i.e., @code{"}, @code{#}, @code{'}, @code{(},
+@code{)}, @code{,}, @code{;}, @code{<}, @code{=}, @code{>}, @code{[},
+@code{]}, @code{`}, @code{@{}, or @code{@}}).  This list is subject to
+change, but it will never contain underscore (@code{_}), period
+(@code{.}), slash (@code{/}), colon (@code{:}), hyphen (@code{-}) or
+backslash (@code{\\}).  Basically, if the string looks like it is a
+normal DOS or UNIX file or variable name, and it is not one of two
+keywords (@samp{autogen} or @samp{definitions}) then it is OK to not
+quote it, otherwise you should.
+
+@node shell-generated
+@subsection Shell Output String
+@cindex shell-generated string
+
+@cindex string, shell output
+This is assembled according to the same rules as the double quote string,
+except that there is no concatenation of strings and the resulting string is
+written to a shell server process.  The definition takes on the value of
+the output string.
+
+NB@: The text is interpreted by a server shell.  There may be left over
+state from previous server shell processing.  This scriptlet may also leave
+state for subsequent processing.  However, a @code{cd} to the original
+directory is always issued before the new command is issued.
+
+@node scheme-generated
+@subsection Scheme Result String
+
+A scheme result string must begin with an open parenthesis @code{(}.
+The scheme expression will be evaluated by Guile and the
+value will be the result.  The AutoGen expression functions
+are @strong{dis}abled at this stage, so do not use them.
+
+@node here-string
+@subsection A Here String
+@cindex here-string
+
+A @samp{here string} is formed in much the same way as a shell here doc.
+It is denoted with two less than characters(@code{<<}) and, optionally, a
+hyphen.  This is followed by optional horizontal white space and an
+ending marker-identifier.  This marker must follow the syntax rules
+for identifiers.  Unlike the shell version, however, you must not quote
+this marker.
+
+The resulting string will start with the first character on the next line
+and continue up to but not including the newline that precedes the line that
+begins with the marker token.  If a hyphen follows the less than characters,
+then leading tabs will be stripped and the terminating marker will be
+recognized even if preceded by tabs.  No backslash or any other kind of
+processing is done on this string.  The characters are copied directly into
+the result string.
+
+Here are two examples:
+@example
+str1 = <<-  STR_END
+        $quotes = " ' `
+        STR_END;
+
+str2 = <<   STR_END
+        $quotes = " ' `
+        STR_END;
+STR_END;
+@end example
+The first string contains no new line characters.
+The first character is the dollar sign, the last the back quote.
+
+The second string contains one new line character.  The first character
+is the tab character preceding the dollar sign.  The last character is
+the semicolon after the @code{STR_END}.  That @code{STR_END} does not
+end the string because it is not at the beginning of the line.  In the
+preceding case, the leading tab was stripped.
+
+@node concat-string
+@subsection Concatenated Strings
+@cindex concat-string
+
+If single or double quote characters are used,
+then you also have the option, a la ANSI-C syntax,
+of implicitly concatenating a series of them together,
+with intervening white space ignored.
+
+NB@:  You @strong{cannot} use directives to alter the string
+content.  That is,
+
+@example
+str = "fumble"
+#ifdef LATER
+      "stumble"
+#endif
+      ;
+@end example
+
+@noindent
+will result in a syntax error.  The preprocessing directives are not
+carried out by the C preprocessor.  However,
+
+@example
+str = '"fumble\n"
+#ifdef LATER
+"     stumble\n"
+#endif
+';
+@end example
+
+@noindent
+@strong{Will} work.  It will enclose the @samp{#ifdef LATER}
+and @samp{#endif} in the string.  But it may also wreak
+havoc with the definition processing directives.  The hash
+characters in the first column should be disambiguated with
+an escape @code{\} or join them with previous lines:
+@code{"fumble\n#ifdef LATER...}.
+
+@c === SECTION MARKER
+
+@node Index Assignments
+@section Assigning an Index to a Definition
+@cindex Definition Index
+
+In AutoGen, every name is implicitly an array of values.
+When assigning values, they are usually implicitly
+assigned to the next highest slot.  They can also be
+specified explicitly:
+
+@example
+mumble[9] = stumble;
+mumble[0] = grumble;
+@end example
+
+@noindent
+If, subsequently, you assign a value to @code{mumble} without an
+index, its index will be @code{10}, not @code{1}.
+If indexes are specified, they must not cause conflicts.
+
+@code{#define}-d names may also be used for index values.
+This is equivalent to the above:
+
+@example
+#define FIRST 0
+#define LAST  9
+mumble[LAST]  = stumble;
+mumble[FIRST] = grumble;
+@end example
+
+All values in a range do @strong{not} have to be filled in.
+If you leave gaps, then you will have a sparse array.  This
+is fine (@pxref{FOR}).  You have your choice of iterating
+over all the defined values, or iterating over a range
+of slots.  This:
+
+@example
+[+ FOR mumble +][+ ENDFOR +]
+@end example
+
+@noindent
+iterates over all and only the defined entries, whereas this:
+
+@example
+[+ FOR mumble (for-by 1) +][+ ENDFOR +]
+@end example
+
+@noindent
+will iterate over all 10 "slots".  Your template will
+likely have to contain something like this:
+
+@example
+[+ IF (exist? (sprintf "mumble[%d]" (for-index))) +]
+@end example
+
+@noindent
+or else "mumble" will have to be a compound value that,
+say, always contains a "grumble" value:
+
+@example
+[+ IF (exist? "grumble") +]
+@end example
+
+@c === SECTION MARKER
+
+@node Dynamic Text
+@section Dynamic Text
+@cindex Dynamic Definition Text
+
+There are several methods for including dynamic content inside a definitions
+file.  Three of them are mentioned above (@ref{shell-generated} and
+@pxref{scheme-generated}) in the discussion of string formation rules.
+Another method uses the @code{#shell} processing directive.
+It will be discussed in the next section (@pxref{Directives}).
+Guile/Scheme may also be used to yield to create definitions.
+
+When the Scheme expression is preceded by a backslash and single
+quote, then the expression is expected to be an alist of
+names and values that will be used to create AutoGen definitions.
+
+@noindent
+This method can be be used as follows:
+
+@example
+\'( (name  (value-expression))
+    (name2 (another-expr))  )
+@end example
+
+@noindent
+This is entirely equivalent to:
+
+@example
+name  = (value-expression);
+name2 = (another-expr);
+@end example
+
+@noindent
+Under the covers, the expression gets handed off to a Guile function
+named @code{alist->autogen-def} in an expression that looks like this:
+
+@example
+(alist->autogen-def
+    ( (name (value-expression))  (name2 (another-expr)) ) )
+@end example

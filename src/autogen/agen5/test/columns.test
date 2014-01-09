@@ -1,0 +1,56 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# case.test --- test CASE functionality
+#
+# Time-stamp:        "2010-12-13 14:24:49 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+#
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+. ./defs
+
+# # # # # # # # # # # # # TEST 1 # # # # # # # # # # # #
+
+${CLexe:-columns} --first '#define TABLE' --spread=1 --line=' \' \
+  -I4 -c 3 -f '_Tbl_(%s)'> ${testname}.res <<_EOF_
+one
+two
+three
+four
+five
+six
+_EOF_
+
+cat > ${testname}.base <<\_EOF_
+#define TABLE \
+    _Tbl_(one)   _Tbl_(two)   _Tbl_(three) \
+    _Tbl_(four)  _Tbl_(five)  _Tbl_(six)
+_EOF_
+
+cmp ${testname}.base ${testname}.res || \
+  failure "malformed result:${nl}`diff ${testname}.base ${testname}.res`"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of columns.test

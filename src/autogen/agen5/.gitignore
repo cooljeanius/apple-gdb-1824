@@ -1,0 +1,16 @@
+autogen
+*libs/*
+*.o
+*.lo
+*.tab.c
+stamp-*
+ag.c
+TAGS
+ID
+GTAGS
+GRTAGS
+GSYMS
+GPATH
+tags
+*deps/*.*o
+Makefile

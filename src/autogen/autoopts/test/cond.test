@@ -1,0 +1,194 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# ----------------------------------------------------------------------
+# cond.test     ---  test conditionally compiled option
+#
+# Time-stamp:        "2012-01-14 11:24:40 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+##  This file is part of AutoOpts, a companion to AutoGen.
+##  AutoOpts is free software.
+##  AutoOpts is Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoOpts is available under any one of two licenses.  The license
+##  in use must be one of these two and the choice is under the control
+##  of the user of the license.
+##
+##   The GNU Lesser General Public License, version 3 or later
+##      See the files "COPYING.lgplv3" and "COPYING.gplv3"
+##
+##   The Modified Berkeley Software Distribution License
+##      See the file "COPYING.mbsd"
+##
+##  These files have the following md5sums:
+##
+##  43b91e8ca915626ed3818ffb1b71248b pkg/libopts/COPYING.gplv3
+##  06a1a2e4760c90ea5e1dad8dfaac4d39 pkg/libopts/COPYING.lgplv3
+##  66a5cedaf62c4b2637025f049f9b826f pkg/libopts/COPYING.mbsd
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+echo "creating ${testname}.def in `pwd`"
+testname="${testname}" test_main="${test_main}" \
+argument="${argument}" long_opts="${long_opts}" \
+${SHELLX} ${stdopts} option:'opt init' second=020 || \
+    failure "Could not run stdopts.def"
+cat >> ${testname}.def <<EOF
+flag = {
+  name  = condition;
+  value = c;
+  ifdef = COND;
+  descrip = "cond test";
+  arg-type = number;
+  doc = mumble;
+};
+
+flag = {
+  name  = interfere;
+  value = I;
+  descrip = "cond interference test";
+  arg-type = number;
+  doc = stumble;
+};
+EOF
+echo ${AG_L} ${testname}.def
+${AG_L} ${testname}.def || \
+  failure AutoGen could not process
+
+# # # # # # # # # # FIRST TEST # # # # # # # # #
+
+compile "-?"
+mv ${testname} ${testname}-1
+echo creating ${testname}-1.help
+clean_help > ${testname}-1.help <<'_EOF_'
+test_cond - Test AutoOpts for cond
+USAGE:  cond [ -<flag> [<val>] ]...
+  Flg Arg Option-Name    Description
+   -o Str option         The option option descrip
+   -s Num second         The second option descrip
+   -I Num interfere      cond interference test
+   -? no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+
+_EOF_
+
+cmp -s ${testname}-1.help ${testname}.help || \
+  failure "TEST 1 FAILED${nl}`diff ${testname}-1.help ${testname}.help`"
+
+./${testname}-1 -c 123 && \
+    failure "*DID* process -c option"
+
+# # # # # # # # # # SECOND TEST # # # # # # # # #
+
+INC="${INC} -DCOND=1"
+compile "-?"
+mv ${testname} ${testname}-2
+clean_help > ${testname}-2.help <<'_EOF_'
+test_cond - Test AutoOpts for cond
+USAGE:  cond [ -<flag> [<val>] ]...
+  Flg Arg Option-Name    Description
+   -o Str option         The option option descrip
+   -s Num second         The second option descrip
+   -c Num condition      cond test
+   -I Num interfere      cond interference test
+   -? no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+
+_EOF_
+
+cmp -s ${testname}-2.help ${testname}.help || \
+  failure "TEST 2 FAILED${nl}`diff ${testname}-2.help ${testname}.help`"
+
+# # # # # # # # # # THIRD TEST # # # # # # # # #
+
+echo guard-option-names\; >> ${testname}.def
+echo ${AG_L} ${testname}.def
+${AG_L} ${testname}.def || failure AutoGen could not process
+
+( cc_cmd=`echo ${cc_cmd} | \
+  ${SED} 's/-Werror//;s/-DTEST_TEST/-DSECOND -DTEST_TEST/' `
+  eval "$cc_cmd" 2>&1 ) \
+  | ${SED} -n '/undefining SECOND due to option name conflict/p' \
+    > ${testname}-cc.log
+
+test -s ${testname}-cc.log || \
+    failure "warning diffs:  'undefining SECOND' not found"
+
+# # # # # # # # # # FOURTH TEST # # # # # # # # #
+
+${SED} '/value = c/s/$/ deprecated;/' ${testname}.def > ${testname}.def4
+
+echo ${AG_L} ${testname}.def4
+${AG_L} ${testname}.def4 || \
+  failure AutoGen could not process ${testname}.def4
+
+compile "-?"
+mv ${testname} ${testname}-4
+cmp -s ${testname}-1.help ${testname}.help || \
+  failure "TEST 4 FAILED${nl}`diff ${testname}-1.help ${testname}.help`"
+
+./${testname}-4 -c 123 || \
+    failure "could not process -c option"
+
+# # # # # # # # # # FIFTH TEST # # # # # # # # #
+
+${SED} '/deprecated/s/deprecated.*/arg-range = "0->1000";/' \
+    ${testname}.def4 > ${testname}.def5
+
+echo ${AG_L} ${testname}.def5
+${AG_L} ${testname}.def5 || \
+  failure AutoGen could not process ${testname}.def5
+
+compile "-?"
+mv ${testname} ${testname}-5
+clean_help > ${testname}-5.help <<'_EOF_'
+test_cond - Test AutoOpts for cond
+USAGE:  cond [ -<flag> [<val>] ]...
+  Flg Arg Option-Name    Description
+   -o Str option         The option option descrip
+   -s Num second         The second option descrip
+   -c Num condition      cond test
+				- It must be in the range:
+				  0 to 1000
+   -I Num interfere      cond interference test
+   -? no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+
+_EOF_
+
+cmp -s ${testname}-5.help ${testname}.help || \
+  failure "TEST 5 FAILED${nl}`diff -u ${testname}-5.help ${testname}.help`"
+
+# # # # # # # # # # SIXTH TEST # # # # # # # # #
+
+INC=`echo ${INC} | sed 's/ -DCOND=1//'`
+compile "-?"
+mv ${testname} ${testname}-6
+clean_help > ${testname}-6.help <<'_EOF_'
+test_cond - Test AutoOpts for cond
+USAGE:  cond [ -<flag> [<val>] ]...
+  Flg Arg Option-Name    Description
+   -o Str option         The option option descrip
+   -s Num second         The second option descrip
+   -I Num interfere      cond interference test
+   -? no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+
+_EOF_
+
+cmp -s ${testname}-6.help ${testname}.help || \
+  failure "TEST 6 FAILED${nl}`diff -u ${testname}-6.help ${testname}.help`"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## End:
+
+# end of cond.test

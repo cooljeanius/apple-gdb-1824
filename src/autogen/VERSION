@@ -1,0 +1,76 @@
+#! /bin/echo AutoGen_Version_5.6,_but_this_should_be_sourced
+# -*- Mode: sh -*-
+# VERSION --- Set version info for GNU-ish tool use
+#
+# Time-stamp:        "2012-02-25 12:54:32 bkorb"
+
+         MAINTAINER='Bruce Korb <bkorb@gnu.org>'
+##
+##  This file is part of AutoGen.
+##  AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+AG_MAJOR_VERSION=5
+AG_MINOR_VERSION=15
+AG_REVISION=$AG_MAJOR_VERSION.$AG_MINOR_VERSION
+AG_PATCHLEVEL=""
+AG_VERSION=$AG_REVISION$AG_PATCHLEVEL
+
+# Making releases:
+#   AG_PATCHLEVEL=""
+#   AG_MINOR_VERSION += 1 (OR AG_MINOR_VERSION = 0 && AG_MAJOR_VERSION += 1)
+#
+# AutoOpts versioning:
+#
+# AO_CURRENT  represents the number of visible changes to the interface
+# AO_REVISION represents the number of times the library has been
+#             modified with an unchanged interface.
+# AO_AGE      represents the number of older revisions the current library
+#             is capable of handling.
+#
+AO_LIBRARY=libopts.la
+AO_CURRENT=36
+AO_REVISION=3
+AO_AGE=11
+
+# For automake
+#
+VERSION=${AG_VERSION}
+PACKAGE='GNU AutoGen'
+EADDR=autogen-users@lists.sourceforge.net
+
+# Display version numbers banner for my sanity!
+#
+AO_SOVERS=${AO_CURRENT}:${AO_REVISION}:${AO_AGE}
+AO_SONAME=${AO_LIBRARY}-${AO_SOVERS}
+w=`expr \( ${COLUMNS:-80} - 1 \) / 2`
+h=`expr $w \* 2`
+h=`printf "*%${h}s" ''`
+h=`echo "$h"|sed 's/  /-*/g'`
+ag=`echo AUTOGEN | sed 's/\(.\)/\1    /g;s/ *$//'`
+ag_off=`printf "$ag"|wc -c`
+ag_off=`expr $w - \( $ag_off / 2 \)`
+ag=`printf "%${ag_off}s${ag}" ""`
+
+cat <<EOF
+$h
+
+${ag}
+
+`printf "%-${w}s %${w}s\n" "$PACKAGE-$VERSION" "${AO_SONAME}" || :`
+$h
+EOF
+
+# VERSION ends here

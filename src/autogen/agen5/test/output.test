@@ -1,0 +1,120 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# include.test --- test include functionality
+#
+# Time-stamp:        "2010-06-26 16:04:42 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+echo creating $testname.tpl
+cat > $testname.tpl <<'EOF'
+<= AutoGen5 template test =>
+<=(out-push-new)
+
+=>This is sample output
+<= `echo echoed text.`  =><=
+(out-suspend "here")
+(out-push-new)
+=>This text is from another diversion.
+<=
+(out-suspend "there")
+=>This is the first output text.
+<=(out-resume "here")
+=>
+Final text<=
+
+(define text (out-pop #t)) =><=
+
+DEFINE wrapper
+
+=>BEGIN
+<=(out-resume "there") (out-pop #t)
+=><=
+(. text)=>
+END<=
+
+ENDDEF wrapper =><=
+
+wrapper  =>
+Done.
+EOF
+
+# # # # # # # SAMPLE OUTPUT FILE # # # # # #
+
+echo creating $testname.out in `pwd`
+# this is the output we should expect to see
+cat > $testname.samp <<'EOF'
+This is the first output text.
+BEGIN
+This text is from another diversion.
+This is sample output
+echoed text.
+Final text
+END
+Done.
+EOF
+
+# # # # # # # RUN AUTOGEN # # # # # #
+
+run_ag nodef -b $testname -T $testname.tpl --no-def || \
+  failure autogen failed
+
+# # # # # # # TEST RESULTS # # # # # #
+
+cmp -s $testname.samp $testname.test || \
+  failure "`diff $testname.samp $testname.test`"
+
+# # # # # # # EMPTY DEFINITIONS FILE # # # # # #
+
+cat > $testname.def <<EOF
+AutoGen Definitions $testname.tpl;
+EOF
+
+# # # # # # # RUN AUTOGEN # # # # # #
+
+mv -f $testname.test $testname.tst1 || \
+  failure moving output-1 failed
+
+run_ag def $testname.def || \
+  failure autogen failed
+
+mv -f $testname.test $testname.tst2 || \
+  failure moving output-2 failed
+
+# # # # # # # TEST RESULTS # # # # # #
+
+cmp -s $testname.tst1 $testname.tst2 || \
+  failure "`diff $testname.tst1 $testname.tst2`"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of output.test

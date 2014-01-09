@@ -1,0 +1,320 @@
+#! @SHELL@
+
+# Time-stamp:        "2012-01-29 15:15:47 bkorb"
+#
+##  This file is part of AutoGen.
+##
+##  AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoGen is free software: you can redistribute it and/or modify it
+##  under the terms of the GNU General Public License as published by the
+##  Free Software Foundation, either version 3 of the License, or
+##  (at your option) any later version.
+##
+##  AutoGen is distributed in the hope that it will be useful, but
+##  WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+##  See the GNU General Public License for more details.
+##
+##  You should have received a copy of the GNU General Public License along
+##  with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+d=`dirname $0`
+d=`cd $d ; pwd`
+prog=${d}/`basename $0`
+parent_pid=$$
+
+die()
+{
+  exec 2>&8 1>&2 8>&-
+  echo "mk-agen-texi FAILED: $*"
+  echo
+  cat ${LOG_FILE}
+  trap : EXIT
+  echo leaving ${tmp_dir} in place
+  kill -TERM ${parent_pid}
+  exit 1
+}
+
+set_config_values()
+{
+  tmp_dir=`pwd`/ag-texi-$$.d
+  rm -rf ag-texi-*.d
+  mkdir ${tmp_dir} || die "cannot make ${tmp_dir} directory"
+  TMPDIR=${tmp_dir}
+  export TMPDIR
+
+  case "$-" in
+  *x* ) trap "echo 'saved tmp dir:  ${tmp_dir}';chmod 777 ${tmp_dir}" EXIT
+        VERBOSE=true ;;
+  *   ) trap "rm -rf ${tmp_dir}" EXIT
+        VERBOSE=false ;;
+  esac
+  LOG_FILE=${tmp_dir}/texi.log
+  exec 8>&2 2> ${LOG_FILE}
+
+  test -z "${CC}"     && CC="@CC@"
+  test -z "${CC}"     && `which cc`
+  test -z "${CFLAGS}" && CFLAGS="@CFLAGS@"
+  test -z "${LIBS}"   && LIBS="@LIBS@"
+  test -z "${MAKE}"   && MAKE=`which make`
+
+  top_srcdir=`cd @top_srcdir@/. > /dev/null && pwd`
+  top_builddir=`cd @top_builddir@/. > /dev/null && pwd`
+  export top_srcdir top_builddir
+
+  INCLUDES="@DEFS@ "`
+
+    for d in ${top_srcdir} ${top_builddir} \
+             @top_builddir@/autoopts @top_srcdir@/autoopts
+    do
+      (\cd ${d} && pwd) 2>/dev/null
+    done | \
+      sort -u | \
+      sed s/^/-I/ `
+
+  CFLAGS="${INCLUDES} ${CFLAGS}"
+  LIBS=-L`
+    test -d ${top_builddir}/autoopts/.libs \
+      && echo ${top_builddir}/autoopts/.libs \
+      || echo ${top_builddir}/autoopts
+    `" $LIBS"
+  # Give preference to configured SHELL
+  #
+  for SHELL in @CONFIG_SHELL@ @SHELL@ `which bash` \
+    /usr/xpg4/bin/sh `which sh` /bin/sh
+  do test -x ${SHELL} && break ; done
+  export CC CFLAGS LIBS MAKE SHELL LOG_FILE tmp_dir
+}
+
+setup_exports()
+{
+  # Now auto-export variables:
+  #
+  set -a
+
+  top_builddir=`cd @top_builddir@ ; pwd`
+  top_srcdir=`cd @top_srcdir@ ; pwd`
+  srcdir=`cd @srcdir@ ; pwd`
+  PATH=${top_builddir}/columns:${PATH}
+  timer=`expr @AG_TIMEOUT@ '*' 5`
+  d=`find ${top_builddir}/autoopts -type f -name libopts.a -print`
+  test -f "$d" || die "Cannot locate libopts.a"
+  LIBS="$d ${LIBS}"
+
+  eval `egrep '^AG_[A-Z_]*' ${top_srcdir}/VERSION`
+
+  AGsrc=${top_srcdir}/agen5
+  AGexe=@AGexe@
+  GDexe=@GDexe@
+  CLexe=@CLexe@
+
+  OPTIONS_DEF=${AGsrc}/opts.def
+  GETDEF_SRC=`grep -F -l '/*=' ${AGsrc}/*.[ch] ${AGsrc}/*.scm`
+
+  AGEN_TEXI=${top_builddir}/agen5/invoke-autogen.texi
+  DOC_TEXT=${top_srcdir}/doc/autogen-texi.txt
+
+  ADDON_MENU="
+    ${top_builddir}/columns/invoke-columns.menu
+    ${top_builddir}/getdefs/invoke-getdefs.menu
+    ${top_builddir}/xml2ag/invoke-xml2ag.menu
+    ${top_srcdir}/doc/snprintfv.menu"
+
+  ADDON_TEXI="
+    ${top_builddir}/columns/invoke-columns.texi
+    ${top_builddir}/getdefs/invoke-getdefs.texi
+    ${top_builddir}/xml2ag/invoke-xml2ag.texi
+    ${top_srcdir}/doc/snprintfv.texi"
+
+  DOC_INCLUDES="
+    ${AGsrc}/defParse-fsm.c
+    ${AGsrc}/opts.h
+    ${top_builddir}/agen5/invoke-autogen.menu
+    ${top_builddir}/autoopts/libopts.texi
+    ${top_srcdir}/doc/autogen-intro.texi
+    ${AGEN_TEXI}"
+
+  DOC_TEMPLATE=${top_builddir}/doc/auto_gen.tpl
+
+  DOC_DEPENDS=`
+    echo ${DOC_TEMPLATE} ${OPTIONS_DEF} ${ADDON_MENU} ${ADDON_TEXI} \
+         ${DOC_INCLUDES} ${GETDEF_SRC}  ${DOC_TEXT}`
+
+  set +a
+}
+
+# We have our executables and texi's.  Collect the definitions:
+#
+run_getdefs()
+{
+  gd_cfg=${tmp_dir}/getdefs.cfg
+  exec 3> ${gd_cfg}
+  cat >&3 <<-  EOCat
+	output      ${tmp_dir}/${GEN_BASE}.def
+	copy        ${OPTIONS_DEF}
+	srcfile
+	linenum
+	template    auto_gen.tpl
+	assign      ag-texi = invoke-autogen.texi
+	subblock    exparg  = arg_name,arg_desc,arg_optional,arg_list
+	EOCat
+
+  tf=invoke-autogen.texi
+  test -f ${tf} || ln -s ${AGEN_TEXI} ${tf}
+
+  for f in ${ADDON_TEXI}
+  do
+    tf=`basename ${f}`
+    case "$tf" in
+    invoke-* ) : ;;
+    * ) tf=invoke-$tf ;;
+    esac
+    test -f ${tf} || ln -s ${f} ${tf}
+    echo "assign      addon-texi = ${tf}"
+  done >&3
+
+  for f in ${GETDEF_SRC}
+  do
+    echo "input      " ${f}
+  done >&3
+  exec 3>&-
+  echo + ${GDexe} load-opt=${gd_cfg} >&8
+  ${GDexe} load-opt=${gd_cfg} || die cannot run ${GDexe}
+}
+
+sanity_check()
+{
+  # Make sure the executables are there
+  #
+  test -x ${AGexe} || (cd `dirname ${AGexe}` ; ${MAKE}) || exit 0
+  test -x ${GDexe} || (cd `dirname ${GDexe}` ; ${MAKE}) || exit 0
+  test -x ${CLexe} || (cd `dirname ${CLexe}` ; ${MAKE}) || exit 0
+
+  # See to it that the .texi files have been generated, too.
+  #
+  for f in ${ADDON_TEXI} ${AGEN_TEXI} \
+           ${top_builddir}/autoopts/libopts.texi
+  do
+    test -f ${f} || (
+      cd `dirname ${f}`
+      ${MAKE} `basename ${f}` >&2
+      test $? -ne 0 && die MAKE of ${f} failed.
+    )
+  done
+
+  # Make sure we have all our sources and generate the doc
+  #
+  for f in ${DOC_DEPENDS}
+  do test -f ${f} || die cannot find doc file: ${f}
+     test -f `basename $f` || ln -s $f .
+  done
+
+  cmd=${AGexe}
+  ${VERBOSE} && cmd=${cmd}" --trace=every --trace-out=>>${tmp_dir}/ag.log"
+}
+
+build_agdoc() {
+  #  Validate everything:
+  #
+  set_config_values
+  setup_exports
+  sanity_check
+  run_getdefs
+
+  VERBOSE=true
+
+  env >&2
+  {
+    cat <<- _EOF_
+	timeout     ${timer}
+	templ-dirs  ${srcdir}
+	templ-dirs  ${top_srcdir}/autoopts/tpl
+	base-name   ${GEN_BASE}
+	trace       every
+	trace-out   >>${tmp_dir}/ag.log
+	_EOF_
+    ${VERBOSE} && false && {
+      echo 'trace       every'
+      echo "trace-out   >>${tmp_dir}/ag.log"
+    }
+  } > ${tmp_dir}/ag.ini
+
+  opts="--load-opts=${tmp_dir}/ag.ini -MF${GEN_BASE}.d"
+  cmd=`echo "${cmd}" ${opts} ${tmp_dir}/${GEN_BASE}.def`
+  echo "${PS4:-+} " ${cmd} >&8
+
+  ${cmd} || {
+    cat ${tmp_dir}/ag.log
+    die could not regenerate doc
+  } >&2
+
+  test -f ${GEN_BASE}.texi || die "MISSING: ${GEN_BASE}.texi"
+
+  exec 2>&8 8>&-
+}
+
+build_gnudocs()
+{
+  local sedcmd='/^@author @email/ {
+    s/.*{//
+    s/}.*//
+    s/@@*/@/g
+    p
+    q
+  }'
+
+  case "X$-" in
+    *x* ) local dashx=-x ;;
+    *   ) local dashx=   ;;
+  esac
+
+  title=`sed -n 's/^@title  *//p' agdoc.texi`
+  email=--email' '`sed -n "$sedcmd" agdoc.texi`
+  opts="--texi2html ${email}"
+  PS4='>${FUNCNAME:-gd}> ' ${SHELL} ${dashx} \
+    ${srcdir}/gendocs.sh $opts autogen "$title"
+}
+
+mk_autogen_texi() {
+  tfile=autogen.texi
+  page_style=\
+'\internalpagesizes{46\baselineskip}{6in}{-.25in}{-.25in}{\bindingoffset}{36pt}%'
+
+  cat > ${tfile}$$ <<- _EOF_
+	\\input texinfo
+	@ignore
+	${page_style}
+	@end ignore
+	@c %**start of header
+	@setfilename ${tfile%.texi}.info
+	@include ${GEN_BASE}.texi
+	_EOF_
+
+  if test -f ${tfile} && cmp -s ${tfile} ${tfile}$$
+  then rm -f ${tfile}$$
+  else mv -f ${tfile}$$ ${tfile}
+  fi
+}
+
+GEN_BASE=agdoc
+test "X$1" = X--force && {
+  rm -f agdoc.texi
+  shift
+}
+test -f agdoc.texi || build_agdoc
+mk_autogen_texi
+
+case "$1" in
+gnudocs | gnudoc ) build_gnudocs ;;
+* )
+esac
+
+exit 0
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:

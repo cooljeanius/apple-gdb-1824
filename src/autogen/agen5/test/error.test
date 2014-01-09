@@ -1,0 +1,250 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+#
+# error.test --- test error functionality
+#
+# Author:            Bruce Korb <bkorb@gnu.org>
+# Time-stamp:        "2011-12-30 16:40:11 bkorb"
+#
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+. ./defs
+
+verb_ok=true
+
+ag_err()
+{
+  (
+    set +x
+    if ${VERBOSE} && ${verb_ok}
+    then
+      AUTOGEN_TRACE=everything
+      AUTOGEN_TRACE_OUT=${testname}-task${seq}-aglog.txt
+      VERBOSE=false
+      export AUTOGEN_TRACE AUTOGEN_TRACE_OUT
+    else
+      unset AUTOGEN_TRACE AUTOGEN_TRACE_OUT
+    fi
+
+    seq=${1} ; shift
+    exec 2> ${testname}.err${seq}
+    touch ${testname}-task${seq}-running
+    run_ag x${seq} "$@"
+    res=$?
+    rm -f ${testname}-task${seq}-running
+    exit $res
+  ) && touch ${testname}-task${seq}-OK
+}
+
+# # # # # # # # # # # # # TEST 1 # # # # # # # # # # # #
+
+echo creating ${testname}.tpl
+${SED} 's/[ 0-9]*=//' > ${testname}.tpl <<'_EOF_'
+  1 =<= AutoGen5 template fnord null =>
+  2 =THIS TEXT SHOULD BE DELETED!!
+  3 =<=
+  4 =CASE (suffix) =><=
+  5 =
+  6 =  ==  fnord  =><=
+  7 =
+  8 =    ;; (out-push-new)
+  9 =    ;; (error (string-append "0 this is really okay" (out-pop #t))
+ 10 =    (error "0 this is really okay")
+ 11 =
+ 12 =    =>this is never seen<=
+ 13 =
+ 14 =  * =><=
+ 15 =
+ 16 =    (error "This is a multi-line
+ 17 =	error to show how to exit
+ 18 =	your template") =><=
+ 19 =
+ 20 =ESAC =>
+ 21 =this is never seen
+_EOF_
+
+echo creating ${testname}.def
+cat > ${testname}.def <<'_EOF_'
+autogen definitions alist;
+#error The definitions file has a `#error' directive
+_EOF_
+
+echo creating ${testname}.base1
+# this is the output we should expect to see
+cat > ${testname}.base1 <<'_EOF_'
+#error directive -- in error.def on line 3
+	The definitions file has a `#error' directive
+_EOF_
+
+ag_err 1 ${testname}.def
+test -f  ${testname}-task1-OK \
+  && failure unexpected success for test-1
+
+${SED} '/Giving up in/d;/Failing Guile command:/,$d' ${testname}.err1 \
+  > ${testname}.err
+cmp -s ${testname}.err ${testname}.base1 || \
+  failure "expected->actual${nl}`diff -c ${testname}.base1 ${testname}.err`"
+
+# # # # # # # # # # # # # TEST 2 # # # # # # # # # # # #
+
+echo creating ${testname}.base2
+# this is the output we should expect to see
+cat > ${testname}.base2 <<'_EOF_'
+DEFINITIONS Warning in error.tpl line 8 for error2.fnord:
+	0 this is really okay
+Error in template error.tpl, line 16
+	DEFINITIONS ERROR in error.tpl line 16 for /dev/null:
+	This is a multi-line
+	error to show how to exit
+	your template
+Failing Guile command:  = = = = =
+
+(error "This is a multi-line
+	error to show how to exit
+	your template")
+
+=================================
+_EOF_
+
+agopts="--no-def --base=${testname}"
+
+verb_ok=false
+ag_err 2 -T${testname}.tpl ${agopts}2
+test -f ${testname}-task2-OK \
+  && failure unexpected success for test-2
+verb_ok=true
+
+if test ${GUILE_VERSION} -gt 107000
+then
+  ${EGREP} -v 'Giving up in | is deprecated\.' ${testname}.err2
+else
+  ${EGREP} -v 'Giving up in ' ${testname}.err2
+fi > ${testname}.res2
+
+cmp -s ${testname}.base2 ${testname}.res2 || \
+  failure "expected->actual${nl}`diff -c ${testname}.base2 ${testname}.res2`"
+
+# # # # # # # # # # # # # TEST 3 # # # # # # # # # # # #
+
+# REMOVED:  This test always worked, but the exact results
+#           vary all over the place.  Too hard to test.
+
+# # # # # # # # # # # # # TEST 4 # # # # # # # # # # # #
+
+${SED} 's,^#error.*,this is broken;,' ${testname}.def > ${testname}2.def
+
+echo creating ${testname}.base4
+# this is the output we should expect to see
+cat > ${testname}.base4 <<'_EOF_'
+FSM Error:  in state 5 (have_name), event 3 (var_name) is invalid
+invalid transition:  in error2.def on line 2
+	token in error:  var_name:  ''is broken;
+''
+
+	[[...<error-text>]]  broken;
+
+
+Likely causes:  a mismatched quote, a value that needs quoting,
+		or a missing semi-colon
+_EOF_
+
+ag_err 4 ${testname}2.def
+test -f ${testname}-task4-OK \
+  && failure unexpected success for test-4
+
+${GREP} -v 'Giving up in' ${testname}.err4 > ${testname}.res4
+cmp -s  ${testname}.res4 ${testname}.base4 \
+  || failure "expected->actual${nl}`diff -c ${testname}.base4 ${testname}.res4`"
+
+# # # # # # # # # # # # # TEST 5 # # # # # # # # # # # #
+
+echo creating ${testname}.tpl5
+cat > ${testname}.tpl5 <<'_EOF_'
+<= AutoGen5 template fnord null =>
+THIS TEXT SHOULD BE DELETED!!
+<= ENDIF =>
+_EOF_
+
+ag_err 5 -T ${testname}.tpl5 ${agopts}5 > /dev/null
+test -f ${testname}-task5-OK \
+  && failure unexpected success for test-5
+
+${EGREP} -v 'Giving up in .*functions\.c' ${testname}.err5 > ${testname}.res5
+cat > ${testname}.base5 <<'EOF'
+Error in template error.tpl5, line 3
+	Unknown macro or invalid context in error.tpl5 line 3:
+	ENDIF
+EOF
+
+cmp -s  ${testname}.base5  ${testname}.res5 || \
+  failure "expected->actual${nl}`diff -c ${testname}.base5 ${testname}.res5`"
+
+# # # # # # # # # # # # # TEST 6 # # # # # # # # # # # #
+
+echo creating ${testname}.tpl6
+cat > ${testname}.tpl6 <<'_EOF_'
+<= AutoGen5 template fnord null =>
+This is a broken template, "nothing" is not defined.
+<= (
+if (exist? "nothing")
+   (error "it is broken
+   'cuz it's okay")
+   (stumble-over-unbound-variable)
+) =>
+End Of File
+_EOF_
+
+ag_err 6 -T ${testname}.tpl6 ${agopts}6 > /dev/null
+test -f ${testname}-task6-OK \
+  && failure unexpected success for test-6
+
+cat > ${testname}.base6 <<EOF
+Scheme evaluation error.  AutoGen ABEND-ing in template
+	error.tpl6 on line 3
+Failing Guile command:  = = = = =
+
+(
+if (exist? "nothing")
+   (error "it is broken
+   'cuz it's okay")
+   (stumble-over-unbound-variable)
+)
+
+=================================
+EOF
+
+# Guile keeps changing its mind about what it ought to print in the
+# face of an unbound variable.  So, the heck with it.  We've tried to
+# print file and line, but it was made just too hard.  Strip out all
+# the Guile library error messages.  :(
+#
+${SED} -n '/^Scheme evaluation error./,$p' ${testname}.err6 | \
+  ${SED} "/^${testname}\.tpl6:7:4:/d" > ${testname}.res6
+
+cmp -s  ${testname}.base6  ${testname}.res6 || \
+  failure "expected->actual${nl}`diff -c ${testname}.base6 ${testname}.res6`"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of error.test

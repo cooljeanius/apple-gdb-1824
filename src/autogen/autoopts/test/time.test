@@ -1,0 +1,101 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# ----------------------------------------------------------------------
+# time.test ---  test time duration argument
+#
+# Time-stamp:        "2011-08-07 17:34:14 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+##  This file is part of AutoOpts, a companion to AutoGen.
+##  AutoOpts is free software.
+##  AutoOpts is Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoOpts is available under any one of two licenses.  The license
+##  in use must be one of these two and the choice is under the control
+##  of the user of the license.
+##
+##   The GNU Lesser General Public License, version 3 or later
+##      See the files "COPYING.lgplv3" and "COPYING.gplv3"
+##
+##   The Modified Berkeley Software Distribution License
+##      See the file "COPYING.mbsd"
+##
+##  These files have the following md5sums:
+##
+##  43b91e8ca915626ed3818ffb1b71248b pkg/libopts/COPYING.gplv3
+##  06a1a2e4760c90ea5e1dad8dfaac4d39 pkg/libopts/COPYING.lgplv3
+##  66a5cedaf62c4b2637025f049f9b826f pkg/libopts/COPYING.mbsd
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+echo "creating ${testname}.def in `pwd`"
+unset test_main
+export testname argument long_opts
+
+${SHELLX} ${stdopts} ${testname}@time='1d 2 h 15:10'
+here='<<'
+cat >> ${testname}.def <<- _EOF_
+	main = {
+	  main-type = main;
+	  main-text = ${here}- CodeEnd
+		printf("arg %s represents %d seconds", argv[-1],
+		       OPT_VALUE_TIME);
+		return 0;
+		CodeEnd;
+	};
+	_EOF_
+
+echo ${AG_L} ${testname}.def
+${AG_L} ${testname}.def || \
+  failure AutoGen could not process
+
+compile "-?"
+
+# # # # # # # # # # HELP OUTPUT FILE # # # # # # # # #
+
+basehlp=${testname}.hlp
+echo creating ${basehlp}
+clean_help > ${basehlp} <<'_EOF_'
+test_time - Test AutoOpts for time
+USAGE:  time [ -<flag> [<val>] ]...
+  Flg Arg Option-Name    Description
+   -t Tim time           The time option descrip
+   -? no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+
+_EOF_
+
+cmp -s ${testname}.h*lp || \
+  failure "`diff ${basehlp} ${testname}.help`"
+
+time_val=213791
+
+ck() {
+    tim=`./${testname} -t "$*" | \
+        ${SED} -n 's/.* represents \([0-9]*\) seconds/\1/p'`
+    test -z "${tim}" && failure ${testname} could not parse "$*"
+    test ${tim} -eq ${time_val} || \
+        failure ${testname} misevaluated "$*"
+}
+
+ck 2 d 11h 23:11
+ck 2 d 11h 23m 11s
+
+tim=`./${testname} -t '2 d 10h 83:11'` && \
+  failure ${testname} handled bad options
+
+# # # # # # # # # # T E S T   E N D # # # # # # # # # #
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## End:
+
+# end of argument.test

@@ -1,0 +1,11 @@
+autogen.dvi
+autogen.pdf
+autogen.ps
+autogen.html
+*libs/*
+autogen.t2d
+autogen.t2p
+*.lo
+mk-agen-texi.sh
+auto_gen.tpl
+Makefile

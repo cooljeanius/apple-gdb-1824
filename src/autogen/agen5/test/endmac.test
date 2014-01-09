@@ -1,0 +1,73 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# endmac.test --- test variations on the end macro marker
+#
+# Time-stamp:        "2011-02-24 10:53:51 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+set -x
+cat > ${testname}1.tpl <<EOF
+<=AutoGen5 template test=>><<=
+`echo ENDMAC 1`
+=>> <=`pwd`=>>
+<=# comment this test fails because the '=' is bound to 'test' >>
+This is a test
+EOF
+
+run_ag x1 -T${testname}1 --no-def 2> /dev/null && \
+  failure $testname failure test was successful.  Oops.
+echo $testname failure test failed correctly
+
+cat > ${testname}2.tpl <<EOF
+<=AutoGen5 template test =>>
+ENDMAC 2 <=`echo print this message` =>>
+<=# comment This test succeeds because the '=' is not part of 'test' =>>
+This is a test
+EOF
+
+run_ag x2 -T${testname}2 --no-def || \
+   failure $testname success test was a failure
+echo first successful $testname test succeeded
+
+cat > ${testname}3.tpl <<EOF
+<+AutoGen5 template test+>>
+ENDMAC 3 <+(define foo "print this message")  foo +>>
+<+# comment The '+' is not joined because it is neither '=' nor
+            a legal file name character +>>
+This is a test
+EOF
+
+run_ag x3 -T${testname}3 --no-def || \
+   failure second $testname success test was a failure
+echo second successful $testname test succeeded
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of endmac.test

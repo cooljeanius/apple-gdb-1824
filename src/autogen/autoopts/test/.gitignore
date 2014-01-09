@@ -1,0 +1,8 @@
+*libs/*
+*.log
+*.trs
+*.lo
+defs
+./testdir/*
+FAILURES/*
+Makefile

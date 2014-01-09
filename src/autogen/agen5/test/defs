@@ -1,0 +1,381 @@
+#! /bin/echo this_file_should_be_sourced,_not_executed
+#  -*- Mode: Shell-script -*-
+#
+# defs --- define the environment for autogen tests.
+#
+# Time-stamp:     "2012-02-12 09:18:48 bkorb"
+# Author:         Bruce Korb <bkorb@gnu.org>
+##
+##  This file is part of AutoOpts, a companion to AutoGen.
+##  AutoOpts is free software.
+##  AutoOpts is Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoOpts is available under any one of two licenses.  The license
+##  in use must be one of these two and the choice is under the control
+##  of the user of the license.
+##
+##   The GNU Lesser General Public License, version 3 or later
+##      See the files "COPYING.lgplv3" and "COPYING.gplv3"
+##
+##   The Modified Berkeley Software Distribution License
+##      See the file "COPYING.mbsd"
+##
+##  These files have the following md5sums:
+##
+##  43b91e8ca915626ed3818ffb1b71248b pkg/libopts/COPYING.gplv3
+##  06a1a2e4760c90ea5e1dad8dfaac4d39 pkg/libopts/COPYING.lgplv3
+##  66a5cedaf62c4b2637025f049f9b826f pkg/libopts/COPYING.mbsd
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+#  C O N F I G U R E D   V A L U E S
+#
+# Make sure srcdir is an absolute path.  Supply the variable
+# if it does not exist.  We want to be able to run the tests
+# stand-alone!!
+#
+cfg_vals()
+{
+  case `uname -s` in
+  SunOS )
+    if test "X$BASH_VERSION" = X
+    then
+      # On Solaris, make certain we do not use /bin/sh
+      sh=`which bash`
+      test "X$sh" = X && sh=/usr/xpg4/bin/sh
+      BASH_VERSION=not-good-enough
+      export BASH_VERSION
+      exec $sh "$0" "$@"
+    fi
+    ;;
+  esac
+
+  set -a
+  SED="/sw/bin/sed"
+  AG_TIMEOUT=97
+
+  progname=`echo "$1" | ${SED} 's,^.*/,,'`
+  testname=`echo "$progname" | ${SED} 's,\..*$,,'`
+  test_name=`echo ${testname} | ${SED} 's/-/_/g'`
+  PS4=">${testname}-\${FUNCNAME}> "
+  tabch='	'
+  test -z "$srcdir"       && exit 1
+  srcdir=`cd $srcdir >/dev/null && pwd`
+  test -z "$top_srcdir"   && exit 1
+  top_srcdir=`cd $top_srcdir >/dev/null && pwd`
+  test -z "$top_builddir" && exit 1
+  top_builddir=`cd $top_builddir >/dev/null && pwd`
+  GUILE_VERSION="108008"
+  LIBGUILE_PATH="/sw/lib"
+  AG_VERSION="5.15"
+  GREP="/sw/bin/grep"
+  EGREP="/sw/bin/grep -E"
+  FGREP="/sw/bin/grep -F"
+  SHELL="/sw/bin/bash"
+  AGexe="/Users/localadmin/apple-gdb-1824/src/autogen/agen5/autogen"
+  CLexe="/Users/localadmin/apple-gdb-1824/src/autogen/columns/columns"
+  GDexe="/Users/localadmin/apple-gdb-1824/src/autogen/getdefs/getdefs"
+  INC="-I/sw/include -I/sw/include -D_THREAD_SAFE "
+  LIB='-R -L/sw/lib -I/sw/include -D_THREAD_SAFE  -L/sw/lib -lguile -lltdl -L/sw/lib -lgmp -lm -lltdl'
+  DEBUG_ENABLED=''
+  ( exec 2>/dev/null; ulimit -c unlimited ) && \
+    ulimit -c unlimited
+
+  test -z "${CFLAGS}"     && CFLAGS='-DHAVE_CONFIG_H -arch i386 -m32'
+  test -z "${CPPFLAGS}"   && CPPFLAGS='-I/sw/include'
+  test -z "${testsubdir}" && testsubdir='@testsubdir@'
+  test -z "${CC}"         && CC='gcc -std=gnu99'
+  test -z "${CC}"         && echo "No CC configured" && exit 1
+  test -z "${PAGER}"      && PAGER=more
+  nl='
+' ht='	'
+
+  stdopts=${top_srcdir}/autoopts/test/stdopts.def
+  test_main=yes
+  use_flags=true
+  sed_omit_license="/-\*- buffer-read-only:/,/^ \*\//d"
+  TERM=''
+  set +a
+
+  (
+    test_local() {
+      local local_works=yes
+    }
+    test_local
+  ) || eval 'local() { : ; }'
+ 
+  vars=`set | ${SED} -n '/^\(LANG\|LC_[A-Z_]*\)=/s/=.*//p'` 2>/dev/null
+  test "X$vars" = X || unset $vars
+}
+
+#  If only the "rm(1)" command could be relied upon....
+#
+purge()
+{
+  rm -rf ${*} 2>/dev/null
+  bad=''
+  for f
+  do test -f ${f} -o -d ${f} && bad="${bad} ${f}"
+  done
+  test -z "$bad" && return 0
+
+  set -- $bad
+  test "x${RANDOM}" = "x${RANDOM}" && RANDOM=`expr 0${RANDOM} + 1 2>/dev/null`
+
+  f=ZZPURGE-${1}-${RANDOM}-$$
+  if test $# -gt 1
+  then mkdir ${f}
+       mv $* ${f}/.
+  else mv $1 ${f}
+  fi
+}
+
+set_exe() {
+  eval f=\${${1}}
+  d=`dirname $f`
+  d=`cd $d >/dev/null && pwd`
+  PATH=${d}:${PATH}
+  f=`basename $f`
+  eval export ${1}=${d}/${f}
+}
+
+init_tests()
+{
+  logfile=`pwd`/testdir/${testname}.log
+  exec 8>&2 1>${logfile} 2>&1
+
+  TMPDIR=`pwd`/testdir/${testname}-tmpd
+  export TMPDIR
+  mkdir ${TMPDIR}
+
+  f=`\cd ${LIBGUILE_PATH}/../bin && pwd`
+  PATH=${f}:${PATH}
+
+  set_exe AGexe
+  AGexe=${AGexe:-`command -v autogen`}
+  set_exe GDexe
+  set_exe CLexe
+
+  builddir=`pwd`
+  testsubdir=testdir
+  INCS="-I${top_builddir} -I${top_builddir}/autoopts"
+  CFLAGS="${INCS} "`echo ${CFLAGS} | ${SED} 's/-Werror//'`
+
+  export PATH
+  echo PATH is ${PATH} >&2
+  command -v columns >&2
+  command -v autogen >&2
+
+  lo_dir=${top_builddir}/autoopts
+  test -d ${lo_dir}/.libs && lo_dir=${lo_dir}/.libs
+  test "X${LD_LIBRARY_PATH}" = X || LD_LIBRARY_PATH=:${LD_LIBRARY_PATH}
+  LD_LIBRARY_PATH=${lo_dir}:${LIBGUILE_PATH}${LD_LIBRARY_PATH}
+  LIB=`echo ${lo_dir}/libopts.a`
+  export LD_LIBRARY_PATH
+
+  if test ${GUILE_VERSION} -gt 107000
+  then
+    case ${AG_VERSION} in
+    *pre* ) GUILE_WARN_DEPRECATED=detailed ;;
+    *     ) GUILE_WARN_DEPRECATED=no ;;
+    esac
+    export GUILE_WARN_DEPRECATED
+  fi
+
+  test -f /usr/lib/libgen.so && {
+    case "${LIB}" in
+    *-lgen* ) : ;;
+    * ) LIB="${LIB} -lgen" ;;
+    esac
+  }
+
+  AG_L=run_ag\ ao
+  agl_opts="-L${top_srcdir}/autoopts/tpl -L${top_builddir}/autoopts/tpl"
+
+  export CC GUILE_VERSION LIBGUILE_PATH AG_VERSION AGexe AG_L GDexe CLexe \
+    agl_opts AG_L
+}
+
+be_silent()
+{
+  setx=:
+  VERBOSE=false
+  purge testdir
+
+  # Sometimes, MSDos FS cannot even rename the directory!!
+  #
+  if test -d testdir
+  then purge testdir/* testdir/.??*
+  else msg=echo
+       mkdir testdir || exit 1
+  fi
+
+  run_ag()
+  {
+    local opts=''
+    shift
+
+    case " $* " in
+    *' -L'* ) : ;;
+    * ) opts="${agl_opts}" ;;
+    esac
+
+    ${AGexe} ${opts} "$@"
+  }
+
+  init_tests
+}
+
+be_verbose()
+{
+  set -x
+  setx='set -x'
+  msg=:
+  VERBOSE=true
+  test -d testdir || mkdir testdir || exit 1
+
+  run_ag()
+  {
+    local tfile=${testname}-aglog-${1}-$$.log
+    shift
+    local opts=''
+    local tr="--trace=every --trace-out=>>${tfile}"
+
+    case " $* " in
+    *' -L'* ) : ;;
+    * ) opts="${agl_opts}" ;;
+    esac
+
+    MALLOC_CHECK_=2 \
+      ${AGexe} ${opts} ${tr} "$@"
+  }
+
+  init_tests
+}
+
+cfg_inc()
+{
+  cd testdir || {
+    echo "Cannot make or change into testdir" >&8
+    exit 1
+  }
+  testsubdir=`pwd`
+
+  dirs=`
+  for f in ${top_builddir} ${top_srcdir}
+  do
+    for d in . autoopts agen5
+    do
+      (cd $f/$d && pwd)
+    done
+  done | sort -u | ${SED} 's/^/-I/'`
+
+  INC=`echo ${dirs} ${CPPFLAGS} ${INC}`
+
+  : "=== Running $progname for ${testname} using ${SHELL} ==="
+  chmod +w * > /dev/null 2>&1 || :
+  ${VERBOSE} && SHELLX="${SHELL} -x" || SHELLX="${SHELL}"
+}
+
+clean_help() {
+  test "X${sedcmd}" = X && s= || s=${nl}${sedcmd}
+  s="/^Packaged by/d${nl}/^Report .* bugs to/d${s}"
+  s="/[Pp]lease send bug reports/d${nl}${s}"
+  ${SED} "${s}" | egrep -v '^[ 	]*$'
+}
+
+compile()
+{
+  ${setx}
+  test "X${Csrc}"  = "X" && Csrc="${testname}"
+  test "X${Cexe}"  = "X" && Cexe="${Csrc}"
+  test "X${Dnam}"  = "X" && Dnam="${testname}"
+
+  d=`echo TEST_TEST_${Dnam}_OPTS | /usr/bin/tr '[a-z]-' '[A-Z]_'`
+  cc_cmd="${CC} ${CFLAGS} -D$d ${INC} -o ${Cexe} ${Csrc}.c ${LIB}"
+  eval ${cc_cmd} || \
+    failure cannot compile ${Csrc}.c
+  if test $# -gt 0
+  then
+    ./${Cexe} ${*} ${dosed} || \
+      failure cannot obtain help output for ${Csrc}
+  fi | clean_help > ${Csrc}.help    
+  Csrc='' Cexe='' Dnam=''
+}
+
+cleanup()
+{
+  trap '' 15
+  ${setx}
+  ${VERBOSE} || {
+    cd ${builddir}
+    purge testdir
+    test -d testdir && mv testdir ZZJUNK-$$
+  }
+  ${msg} ${testname} done
+}
+
+# A standard failure function
+#
+failure()
+{
+  trap '' 15
+  ${setx}
+  cd ${testsubdir}
+  if test -d ../FAILURES
+  then ( \cd ../FAILURES ; purge -rf ${testname}* .*${testname}* )
+  else mkdir ../FAILURES ; fi
+
+  exec > /dev/tty 2>&8
+  cat ${logfile} >&2
+
+  ( mv -f ${testname}* .*${testname}* ../FAILURES || : ) 2>/dev/null
+  for f in core*
+  do test -f ${f} && mv -f ${f} ../FAILURES/${testname}-${f} ; done
+
+  echo FAILURE: "$*" >&8
+  exit 1
+}
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+cfg_vals $0
+
+case "${VERBOSE}" in
+'' | [Nn]* | 0 | [Ff]* )
+    be_silent ;;
+
+[Yy]* | [0-9] | [Tt]* )
+    be_verbose ;;
+
+* )
+    case "$-" in
+    *x* ) be_verbose ;;
+     *  ) be_silent ;;
+    esac
+esac
+
+cfg_inc
+
+trap "failure 'test ${testname} killed on timeout'" 15
+( ( exec > /dev/null 2>&1 </dev/null
+    test -z "${kill_delay}" && kill_delay=3
+    kill_delay=`expr $kill_delay '*' $AG_TIMEOUT`
+    sleep ${kill_delay}
+    ps -p $$ || exit
+    kill -15 $$
+    sleep 1
+    ps -p $$ || exit
+    mv -f `dirname $logfile` ${builddir}/FAILED-${testname}
+    kill -9 $$
+) &
+)
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# defs.in ends here

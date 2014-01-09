@@ -1,0 +1,162 @@
+/* -*- Mode: conf -*- */
+
+autogen definitions options;
+
+// Time-stamp:        "2011-03-24 23:19:16 bkorb"
+
+/*
+ *  This file is part of AutoGen.
+ *  AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+ *
+ *  AutoGen is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AutoGen is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+export = <<-  EOExport
+	#include <sys/types.h>
+	#include <sys/stat.h>
+
+	#ifndef __USE_POSIX
+	#  define __USE_POSIX /* for glib's pedantic needs */
+	#endif
+	#ifndef __USE_XOPEN_EXTENDED
+	#  define __USE_XOPEN_EXTENDED  /* ditto */
+	#endif
+	#include <stdio.h>
+	#include <ctype.h>
+	#include <errno.h>
+	#include <fcntl.h>
+	#include <limits.h>
+	#include <stdlib.h>
+	#include <string.h>
+	#include <unistd.h>
+
+	#include <libxml/parser.h>
+	#include <libxml/tree.h>
+
+	extern FILE* outFp;
+	#ifndef NUL
+	#  define NUL '\0'
+	#endif
+	extern void forkAutogen( char const* pzInput );
+	EOExport;
+
+flag = {
+    name        = output;
+    value       = O;
+    arg-type    = string;
+    arg-name    = file;
+    descrip     = "Output file in lieu of AutoGen processing";
+    doc =
+    "By default, the output is handed to an AutoGen for processing.\n"
+    "However, you may save the definitions to a file instead.";
+
+    flag_code = <<- FLAG_CODE_END
+	    if (strcmp(pOptDesc->optArg.argString, "-") == 0)
+	        return;
+
+	    if (freopen(pOptDesc->optArg.argString, "w", stdout) == NULL) {
+	        fprintf(stderr, "Error %d (%s) opening `%s' for output",
+	                errno, strerror(errno), pOptDesc->optArg.argString);
+	        exit(EXIT_FAILURE);
+	    }
+	FLAG_CODE_END ;
+};
+
+#define XML2AG
+#option templ-dir  $top_srcdir/agen5
+#option templ-dir  $top_srcdir/autoopts
+#include opts.def
+
+explain = <<-  END_EXPLAIN
+	This program will convert any arbitrary XML file into equivalent
+	AutoGen definitions, and invoke AutoGen.
+	END_EXPLAIN ;
+
+detail = <<-  END_DETAIL
+	The template will be derived from either:
+	*  the ``--override-tpl'' command line option
+	*  a top level XML attribute named, "template"
+
+	The ``base-name'' for the output will similarly be either:
+	*  the ``--base-name'' command line option
+	*  the base name of the .xml file
+	END_DETAIL ;
+
+prog-man-descrip = <<-  END_DETAIL
+	The template will be derived from either:
+	.br
+	*  the \fB--override-tpl\fP command line option
+	.br
+	*  a top level XML attribute named, "template"
+	.br
+	One or the other \fBmust\fP be provided, or the program will
+	exit with a failure message.
+	.sp 1
+	The ``base-name'' for the output will similarly be either:
+	.br
+	*  the \fB--base-name\fP command line option
+	.br
+	*  the base name of the .xml file
+	END_DETAIL ;
+
+prog-info-descrip = <<-  END_DETAIL
+	The template used will be derived from either:
+	@itemize @bullet
+	@item
+	The @strong{--override-tpl} command line option
+	@item
+	A top level XML attribute named, "@code{template}"
+	@end itemize
+	@noindent
+	One or the other @strong{must} be provided, or the program will
+	exit with a failure message.
+
+	The @emph{base-name} for the output will similarly be either:
+	@itemize @bullet
+	@item
+	The @strong{--base-name} command line option.
+	@item
+	The base name of the @file{.xml} file.
+	@end itemize
+
+	The definitions derived from XML generally have an extra layer
+	of definition.  Specifically, this XML input:
+	@example
+	<mumble attr="foo">
+	  mumble-1
+	  <grumble>
+	  grumble, grumble, grumble.
+	</grumble>mumble, mumble
+	</mumble>
+	@end example
+	Will get converted into this:
+	@example
+	mumble = @{
+	  grumble = @{
+	    text = 'grumble, grumble, grumble';
+	  @};
+	  text = 'mumble-1';
+	  text = 'mumble, mumble';
+	@};
+	@end example
+	Please notice that some information is lost.  AutoGen cannot tell that
+	"grumble" used to lie between the mumble texts.  Also please note that
+	you cannot assign:
+	@example
+	grumble = 'grumble, grumble, grumble.';
+	@end example
+	because if another "grumble" has an attribute or multiple texts,
+	it becomes impossible to have the definitions be the same type
+	(compound or text values).
+	END_DETAIL ;
+/* end of opts.def */

@@ -1,0 +1,330 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# ----------------------------------------------------------------------
+# rc.test ---  test loading and saving of rc files
+#
+# Time-stamp:        "2011-08-07 17:39:44 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+##  This file is part of AutoOpts, a companion to AutoGen.
+##  AutoOpts is free software.
+##  AutoOpts is Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoOpts is available under any one of two licenses.  The license
+##  in use must be one of these two and the choice is under the control
+##  of the user of the license.
+##
+##   The GNU Lesser General Public License, version 3 or later
+##      See the files "COPYING.lgplv3" and "COPYING.gplv3"
+##
+##   The Modified Berkeley Software Distribution License
+##      See the file "COPYING.mbsd"
+##
+##  These files have the following md5sums:
+##
+##  43b91e8ca915626ed3818ffb1b71248b pkg/libopts/COPYING.gplv3
+##  06a1a2e4760c90ea5e1dad8dfaac4d39 pkg/libopts/COPYING.lgplv3
+##  66a5cedaf62c4b2637025f049f9b826f pkg/libopts/COPYING.mbsd
+#
+# ----------------------------------------------------------------------
+. ./defs
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+test_name=`echo ${testname} | ${SED} 's/-/_/g'`
+cfg_file=`basename ${TMPDIR}`/${testname}.cfg
+
+exec 5> ${testname}.def
+cat >&5 <<- _EOF_
+
+	AutoGen definitions options;
+
+	config-header = 'config.h';
+	prog-name  = "test_${testname}";
+	prog-title = "Test AutoOpts for ${testname}";
+	homerc     = ${cfg_file};
+	resettable;
+	argument   = '[ <output-config-file> ]';
+
+	flag = {
+	    name = struct;
+	    value = s;
+	    max = NOLIMIT;
+	    descrip = 'structured argument val';
+	    arg-type = nested;
+	};
+
+	flag = {
+	    name = members;
+	    value = m;
+	    descrip = 'membership set';
+	    keyword = one, two, three, four, five, six, seven, eight, nine, ten;
+	    arg-default = five;
+	    arg-type = set;
+	};
+
+	flag = {
+	    name = enumerate;
+	    value = e;
+	    descrip = 'a test enumeration';
+	    keyword = uno, dos, tres, quatro, cinco, seis, siete, ocho;
+	    arg-default = cinco;
+	    arg-type = keyword;
+	};
+
+	flag = {
+	    name = stacking;
+	    value = k;
+	    descrip = 'stack up a list';
+	    arg-default = initialized;
+	    arg-type = string;
+	    stack-arg; max = NOLIMIT;
+	};
+
+	flag = {
+	    name = number;
+	    value = n;
+	    descrip = 'a range constrained int';
+	    arg-default = 32;
+	    arg-type = number;
+	    arg-range = '->-1', '1->31', '33', '64->';
+	};
+
+	flag = {
+	    name = boolean;
+	    value = b;
+	    descrip = 'a boolean value';
+	    arg-default = true;
+	    arg-type = boolean;
+	};
+
+	flag = {
+	    name = in-file;
+	    value = I;
+	    descrip = 'an input file';
+	    arg-type = file;
+	    open-file = descriptor;
+	    file-mode = O_RDONLY;
+	    file-exists = yes;
+	};
+
+	flag = {
+	    name = out-file;
+	    value = O;
+	    descrip = 'an output file';
+	    arg-type = file;
+	    open-file = fopen;
+	    file-mode = w;
+	    file-exists = no;
+	};
+
+	flag = {
+	    name = test-file;
+	    value = T;
+	    descrip = 'a test file';
+	    arg-type = file;
+	};
+
+	main = {
+	    main-type = main;
+	_EOF_
+
+asl='<''<'
+cat >&5 <<- _EOF_
+	    main-text = ${asl}- _EOCode_
+	    {
+	        tOptions * const pOpts = &test_${test_name}Options;
+	        int svix = pOpts->specOptIdx.save_opts;
+	        char const * pzFile = "${cfg_file}-default";
+
+	        if (argc > 0)
+	            pzFile = *argv;
+	        if (svix == 0) exit(1);
+	        SET_OPT_SAVE_OPTS(pzFile);
+	        optionSaveFile(pOpts);
+	    }
+	_EOF_
+
+echo "_EOCode_; };" >&5
+
+exec 5>&-
+
+# # # # # # # # # # CREATE PROGRAM # # # # # # # # #
+
+echo ${AG_L} ${testname}.def
+${AG_L} ${testname}.def || \
+  failure AutoGen could not process
+
+compile "-?"
+
+# # # # # # # # # # HELP OUTPUT FILE # # # # # # # # #
+
+basehelp=${testname}-base.help
+echo creating ${basehelp}
+clean_help > ${basehelp} <<_EOF_
+test_${testname} - Test AutoOpts for ${testname}
+USAGE:  ${testname} [ -<flag> [<val>] ]... [ <output-config-file> ]
+  Flg Arg Option-Name    Description
+   -s Cpx struct         structured argument val
+				- may appear multiple times
+   -m Mbr members        membership set
+				- is a set membership option
+   -e KWd enumerate      a test enumeration
+   -k Str stacking       stack up a list
+				- may appear multiple times
+   -n Num number         a range constrained int
+				- It must lie in one of the ranges:
+				  less than or equal to -1, or
+				  1 to 31, or
+				  33 exactly, or
+				  greater than or equal to 64
+   -b T/F boolean        a boolean value
+   -I Fil in-file        an input file
+				- file must pre-exist
+   -O Fil out-file       an output file
+				- file must not pre-exist
+   -T Fil test-file      a test file
+   -R Str reset-option   Reset an option's state
+   -? no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+   -> opt save-opts      Save the option state to a config file
+   -< Str load-opts      Load options from a config file
+				- disabled as --no-load-opts
+				- may appear multiple times
+
+
+The following option preset mechanisms are supported:
+ - reading file ${testname}.cfg
+
+The valid "members" option keywords are:
+  one two three four five six seven eight nine ten
+  or an integer mask with any of the lower 10 bits set
+or you may use a numeric representation.  Preceding these with a '!' will
+clear the bits, specifying 'none' will clear all bits, and 'all' will set them
+all.  Multiple entries may be passed as an option argument list.
+The valid "enumerate" option keywords are:
+  uno dos tres quatro cinco seis siete ocho
+  or an integer from 0 through 7
+_EOF_
+
+${SED} "/ - reading file/s/ file .*/ file ${testname}.cfg/" \
+    ${testname}.help > X$$
+mv -f X$$ ${testname}.help
+cmp -s ${basehelp} ${testname}.help || \
+  failure "`diff ${basehelp} ${testname}.help`"
+
+./${testname} -m 'one + three + seven' '->'
+members=`${SED} -n 's/^members *//p' ${cfg_file}`
+case "${members}" in
+'none + one + three + five + seven' ) : ;;
+* ) failure "members not set to one, three, five and seven" ;;
+esac
+
+./${testname} -R '*' '->'
+members=`${SED} -n 's/^members *//p' ${cfg_file}` 2>/dev/null
+case "${members}" in
+'' ) : ;;
+* ) failure "members entry not removed"
+esac
+
+arg1="stumble, <foo>foo${tabch}lish</foo>, <bar type=integer>1234</bar>, able"
+arg2='foo, <bar type=integer>4321</bar> <gr type=nested>one, two=2, three</gr>'
+dir=`echo ${TMPDIR} | ${SED} "s@^\`pwd\`//*@@"`
+out_file=${dir}/${testname}-out-file
+rm -f ${out_file}
+./${testname} -m 'one + three' -b true -m 'seven' \
+    -s "${arg1}" -n -200 -s "${arg2}" -e ocho \
+    -I ${srcdir}/${testname}.test \
+    -O ${out_file} \
+    -T ${dir}/${testname}-test-file \
+   '->'
+${SED} '/^#/d' ${cfg_file} > ${testname}-X
+mv -f ${testname}-X ${cfg_file}
+cat > ${testname}.sample-cfg <<- \_EOF_
+	<struct type=nested>
+	  <able/>
+	  <bar type=integer>0x4D2</bar>
+	  <foo>foo&#x09;lish</foo>
+	  <stumble/>
+	</struct>
+	<struct type=nested>
+	  <bar type=integer>0x10E1</bar>
+	  <foo/>
+	  <gr type=nested>
+	    <one/>
+	    <three/>
+	    <two>2</two>
+	  </gr>
+	</struct>
+	members             none + one + three + five + seven
+	enumerate           ocho
+	number              -200
+	boolean             true
+	_EOF_
+
+cat >> ${testname}.sample-cfg <<- _EOF_
+	in-file             ${srcdir}/${testname}.test
+	out-file            ${out_file}
+	test-file           ${dir}/${testname}-test-file
+	_EOF_
+pair=${testname}.sample-cfg\ ${cfg_file}
+cmp ${pair} || \
+    failure "improperly saved state:${nl}`diff ${pair}`"
+
+rm -f ${out_file}
+./${testname} ${cfg_file}-2
+${SED} '/^#/d' ${cfg_file}-2 > ${testname}-X
+mv -f ${testname}-X ${cfg_file}-2
+cmp ${cfg_file} ${cfg_file}-2 || \
+    failure "mismatched: re-saved config${nl}`diff ${cfg_file} ${cfg_file}-2`"
+
+rm -f ${cfg_file}-2
+rm -f ${out_file}
+./${testname} -R struct ${cfg_file}-2
+test "X`egrep -v '^#' ${cfg_file}-2`" = "X`egrep '^[a-z]' ${cfg_file}`" || \
+    failure "structure not erased${nl}`cat ${cfg_file}-2`"
+
+opt_ct=7
+mv -f ${cfg_file}-2 ${cfg_file}
+ct=`egrep '^[a-z]' ${cfg_file} | wc -l`
+test ${ct} -eq ${opt_ct} || failure "wrong line count${nl}`cat ${cfg_file}`"
+
+rm -f ${out_file}
+
+remove_opt() {
+    opt_ct=`expr $opt_ct - 1`
+    ./${testname} -R ${1} '->'
+    ct=`egrep '^[a-z]' ${cfg_file} | wc -l`
+    test ${ct} -eq ${opt_ct} || \
+        failure "${1} is still there${nl}`cat ${cfg_file}`"
+}
+
+for f in out-file in-file test-file boolean members enumerate number
+do
+    remove_opt $f
+done
+
+./${testname} -k alpha -k beta -k omega ${cfg_file}-XX
+${SED} '/^#/d' ${cfg_file}-XX > ${cfg_file}-2
+cat > ${cfg_file}-3 <<- _EOF_
+	stacking            alpha
+	stacking            beta
+	stacking            omega
+	_EOF_
+cmp ${cfg_file}-[23] || \
+    failure "missing stacking args:${nl}`diff -c ${cfg_file}-[23]`"
+./${testname} -R k ${cfg_file}-2
+ct=`egrep '^[a-z]' ${cfg_file}-2 | wc -l`
+test ${ct} -eq 0 || failure "arg values still stacked"
+
+# # # # # # # # # # TEST OPERATION # # # # # # # # # #
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## End:
+
+# end of cfg-edit.test

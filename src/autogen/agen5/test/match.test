@@ -1,0 +1,72 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# match.test --- test the "match-value?" scheme
+#
+# Time-stamp:        "2010-06-26 16:04:51 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+echo creating ${testname}.tpl
+cat > ${testname}.tpl <<'_EOF_'
+[= AutoGen5 Template test =]
+ ==*  "sec"  [= IF (match-value? ==* "foo.valu" "sec" )
+             =]YES[=ELSE=]FAIL[=ENDIF=]
+ ==*  "SEC"  [= IF (match-value? ==* "foo.valu" "SEC" )
+             =]FAIL[=ELSE=]YES[=ENDIF=]
+ *=*  "rST"  [= IF (match-value? *=* "foo.valu" "rST" )
+             =]YES[=ELSE=]FAIL[=ENDIF=]
+ *==* "rST"  [= IF (match-value? *==* "foo.valu" "rST" )
+             =]FAIL[=ELSE=]YES[=ENDIF=]
+_EOF_
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+echo creating ${testname}.def
+cat > ${testname}.def <<_EOF_
+autogen definitions ${testname}.tpl;
+
+foo = {  valu = first.0; valu = primary.0; };
+foo = {  valu = first.1; valu = secondary.1; };
+foo = {  valu = first.2; };
+foo = {  valu = first.3; valu = tertiery.3; };
+_EOF_
+
+# # # # # # # # # # EXPECTED OUTPUT FILE # # # # # # #
+
+run_ag x ${testname}.def || \
+   failure could not generate output
+${EGREP} FAIL ${testname}.test && \
+   failure some ${testname} tests failed
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of match.test

@@ -1,0 +1,55 @@
+
+/*
+ *  Time-stamp:        "2010-06-30 20:53:21 bkorb"
+ *
+ *  This file is part of AutoGen.
+ *  AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+ *
+ * AutoGen is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * AutoGen is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+autogen definitions fsm;
+
+/*
+ *  This FSM is used to process input CGI data into AutoGen definitions
+ *  output.  There are three basic states:  initial, name processing
+ *  and processing a value.
+ */
+
+method = case;
+type   = loop;
+cookie = "char const* pzSrc";
+cookie = "int inlen";
+cookie = "char* pzOut";
+cookie = "int outlen";
+
+state  = name, value;
+event  = alpha, name_char, equal, space, escape, other, separator, end;
+
+equal       = "=";
+space       = "+";
+escape      = "%";
+separator   = "&";
+
+transition  =
+ { tst = init;  tev = alpha; next = name;     ttype = stash; },
+ { tst = name;  tev = alpha, name_char;       ttype = stash; },
+ { tst = name;  tev = equal; next = value; },
+ { tst = value; tev = '*';                    ttype = stash; },
+ { tst = value; tev = space;                  ttype = stash; },
+ { tst = value; tev = escape; },
+ { tst = value; tev = end;       next = done; ttype = separate; },
+ { tst = value; tev = separator; next = init; ttype = separate; };
+
+/* end of agen5/cgi.def */

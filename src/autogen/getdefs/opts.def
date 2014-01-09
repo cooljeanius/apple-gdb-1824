@@ -1,0 +1,447 @@
+/* -*- Mode: conf -*- */
+
+autogen definitions options;
+
+/*
+ *  This file is part of AutoGen.
+ *  AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+ *
+ *  AutoGen is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AutoGen is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+copyright = {
+    date   = "1999-2012";
+    type   = gpl;
+    owner  = "Bruce Korb";
+    eaddr  = 'autogen-users@lists.sourceforge.net';
+};
+
+prog-name     = "getdefs";
+prog-title    = "AutoGen Definition Extraction Tool";
+package       = 'GNU AutoGen';
+version       = "1.5";
+homerc        = /dev/null;
+explain       = <<- EndExplanation
+	If no @code{input} argument is provided or is set to simply "-", and if
+	@code{stdin} is not a @code{tty}, then the list of input files will be
+	read from @code{stdin}.
+	EndExplanation;
+guard-option-names;
+
+flag = {
+    name      = "defs_to_get";
+    arg-type  = string;
+    arg-name  = reg-ex;
+    descrip   = 'Regexp to look for after the "/*="';
+    doc = <<-  _EOF_
+	If you want definitions only from a particular category, or even
+	with names matching particular patterns, then specify this regular
+	expression for the text that must follow the @code{/*=}.
+	_EOF_;
+};
+
+flag = {
+    name        = ordering;
+    arg-type    = string;
+    arg-optional;
+    arg-name    = file-name;
+    disable     = no;
+    enabled;
+    descrip     = "Alphabetize or use named file";
+    doc = <<-  _EOF_
+	By default, ordering is alphabetical by the entry name.  Use,
+	@code{no-ordering} if order is unimportant.  Use @code{ordering}
+	with no argument to order without case sensitivity.  Use
+	@code{ordering=<file-name>} if chronological order is important.
+	getdefs will maintain the text content of @code{file-name}.
+	@code{file-name} need not exist.
+	_EOF_;
+};
+
+flag = {
+    name        = first_index;
+    arg_type    = number;
+    arg-default = 0;
+    arg-name    = first-index;
+    descrip     = "The first index to apply to groups";
+    doc = <<-  _EOF_
+	By default, the first occurrence of a named definition will have an
+	index of zero.  Sometimes, that needs to be a reserved value.  Provide
+	this option to specify a different starting point.
+	_EOF_;
+};
+
+flag = {
+    name      = input;
+    arg-type  = string;
+    arg-name  = src-file;
+    max       = NOLIMIT;
+    settable;
+    stack_arg;
+    default;
+    descrip   = "Input file to search for defs";
+
+    doc = <<-  _EOF_
+	All files that are to be searched for definitions must be named on
+	the command line or read from @code{stdin}.  If there is only one
+	@code{input} option and it is the string, "-", then the input file
+	list is read from @code{stdin}.  If a command line argument is not
+	an option name and does not contain an assignment operator
+	(@code{=}), then it defaults to being an input file name.
+	At least one input file must be specified.
+	_EOF_;
+};
+
+flag = {
+    name      = subblock;
+    arg-type  = string;
+    arg-name  = sub-def;
+    max       = NOLIMIT;
+    stack_arg;
+    descrip   = "subblock definition names";
+    doc = <<- _EOF_
+	This option is used to create shorthand entries for nested definitions.
+	For example, with:
+	@table @r
+	@item using subblock thus
+	@code{--subblock=arg=argname,type,null}
+	@item and defining an @code{arg} thus
+	@code{arg: this, char *}
+	@item will then expand to:
+	@code{arg = @{ argname = this; type = "char *"; @};}
+	@end table
+	The "this, char *" string is separated at the commas, with the
+	white space removed.  You may use characters other than commas by
+	starting the value string with a punctuation character other than
+	a single or double quote character.  You may also omit intermediate
+	values by placing the commas next to each other with no intervening
+	white space.  For example, "+mumble++yes+" will expand to:
+	@*
+	@code{arg = @{ argname = mumble; null = "yes"; @};}.
+	_EOF_;
+};
+
+flag = {
+    name      = listattr;
+    arg-type  = string;
+    arg-name  = def;
+    max       = NOLIMIT;
+    stack_arg;
+    descrip   = "attribute with list of values";
+    doc = <<- _EOF_
+	This option is used to create shorthand entries for definitions
+	that generally appear several times.  That is, they tend to be
+	a list of values.  For example, with:
+	@*
+	@code{listattr=foo} defined, the text:
+	@*
+	@code{foo: this, is, a, multi-list} will then expand to:
+	@*
+	@code{foo = 'this', 'is', 'a', 'multi-list';}
+	@*
+	The texts are separated by the commas, with the
+	white space removed.  You may use characters other than commas by
+	starting the value string with a punctuation character other than
+	a single or double quote character.
+	_EOF_;
+};
+
+flag = {
+    name        = filelist;
+    arg-type    = string;
+    arg-optional;
+    arg-name    = file;
+    descrip     = "Insert source file names into defs";
+    doc = <<-  _EOF_
+	Inserts the name of each input file into the output definitions.
+	If no argument is supplied, the format will be:
+	@example
+	infile = '%s';
+	@end example
+	If an argument is supplied, that string will be used for the entry
+	name instead of @var{infile}.
+	_EOF_;
+};
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *  Definition Insertion Options:
+ */
+flag = {
+    name        = doc_insert;
+    descrip     = "Definition insertion options";
+    documentation;
+};
+
+flag = {
+    name        = assign;
+    arg-type    = string;
+    arg-name    = ag-def;
+    max         = NOLIMIT;
+    stack_arg;
+    descrip     = "Global assignments";
+    doc = <<- _EOF_
+	The argument to each copy of this option will be inserted into
+	the output definitions, with only a semicolon attached.
+	_EOF_;
+
+};
+
+flag = {
+    name        = common_assign;
+    arg-type    = string;
+    arg-name    = ag-def;
+    max         = NOLIMIT;
+    stack_arg;
+    descrip     = "Assignments common to all blocks";
+    doc = <<- _EOF_
+	The argument to each copy of this option will be inserted into
+	each output definition, with only a semicolon attached.
+	_EOF_;
+
+};
+
+flag = {
+    name        = copy;
+    arg-type    = string;
+    arg-name    = file;
+    max         = NOLIMIT;
+    stack_arg;
+    descrip     = "File(s) to copy into definitions";
+    doc = <<- _EOF_
+	The content of each file named by these options will be inserted into
+	the output definitions.
+	_EOF_;
+
+};
+
+flag = {
+    name        = srcfile;
+    arg-type    = string;
+    arg-optional;
+    arg-name    = file;
+    descrip     = "Insert source file name into each def";
+    doc = <<- _EOF_
+	Inserts the name of the input file where a definition was found
+	into the output definition.
+	If no argument is supplied, the format will be:
+	@example
+	srcfile = '%s';
+	@end example
+	If an argument is supplied, that string will be used for the entry
+	name instead of @var{srcfile}.
+	_EOF_;
+
+};
+
+flag = {
+    name        = linenum;
+    arg-type    = string;
+    arg-optional;
+    arg-name    = def-name;
+    descrip     = "Insert source line number into each def";
+    doc = <<- _EOF_
+	Inserts the line number in the input file where a definition
+	was found into the output definition.
+	If no argument is supplied, the format will be:
+	@example
+	linenum = '%s';
+	@end example
+	If an argument is supplied, that string will be used for the entry
+	name instead of @var{linenum}.
+	_EOF_;
+
+};
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *  Definition Output Disposition Options:
+ */
+flag = {
+    name        = doc_output;
+    descrip     = "Definition output disposition options:";
+    documentation;
+};
+
+flag = {
+    name        = output;
+    equivalence = "autogen";
+    arg-type    = string;
+    arg-name    = file;
+    descrip     = "Output file to open";
+    doc = <<- _EOF_
+	If you are not sending the output to an AutoGen process,
+	you may name an output file instead.
+	_EOF_;
+
+};
+
+flag = {
+    name        = "autogen";
+    equivalence = "autogen";
+    arg-type    = string;
+    arg-optional;
+    arg-name    = ag-cmd;
+    disable     = "no";
+    enabled;
+    descrip     = "Invoke AutoGen with defs";
+    doc = <<- _EOF_
+	This is the default output mode.  Specifying @code{no-autogen} is
+	equivalent to @code{output=-}.  If you supply an argument to this
+	option, that program will be started as if it were AutoGen and
+	its standard in will be set to the output definitions of this program.
+	_EOF_;
+
+};
+
+flag = {
+    name        = template;
+    arg-type    = string;
+    arg-name    = file;
+    settable;
+    descrip     = "Template Name";
+    doc =
+    "Specifies the template name to be used for generating the final output.";
+};
+
+flag = {
+    name        = agarg;
+    arg-type    = string;
+    arg-name    = ag-opt;
+    max         = NOLIMIT;
+    stack_arg;
+    descrip     = "AutoGen Argument";
+    flags_cant  = output;
+    doc = <<- _EOF_
+	This is a pass-through argument.  It allows you to specify any
+	arbitrary argument to be passed to AutoGen.
+	_EOF_;
+
+};
+
+flag = {
+    name        = base_name;
+    arg-type    = string;
+    arg-name    = name;
+    descrip     = "Base name for output file(s)";
+    flags_cant  = output;
+    doc = <<- _EOF_
+	When output is going to AutoGen, a base name must either be supplied
+	or derived.  If this option is not supplied, then it is taken from
+	the @code{template} option.  If that is not provided either, then
+	it is set to the base name of the current directory.
+	_EOF_;
+
+};
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ *  Program Documentation
+ */
+
+/* * * * * MAN PAGE DESCRIPTION * * * * * * * * * * * * * * * * * * * */
+
+doc-section = {
+    ds-type     = "SEE ALSO";
+    ds-format   = texi;
+    ds-text     = <<- _EndOfMan_
+	This program is documented more fully in the Getdefs section
+	of the Add-On chapter in the @code{AutoGen} Info system documentation.
+	_EndOfMan_;
+};
+
+/* * * * * DOC DESCRIPTION * * * * * * * * * * * * * * * * * * * */
+
+option-doc-format = texi;
+
+detail = <<- _EOF_
+	This program extracts AutoGen definitions from a list of source files.
+	Definitions are delimited by @code{/*=<entry-type> <entry-name>\n} and
+	@code{=*/\n}.
+	_EOF_;
+
+prog_descrip = <<_EOF_
+This program extracts AutoGen definitions from a list of source files.
+Definitions are delimited by @code{/*=<entry-type> <entry-name>\n} and
+@code{=*/\n}.  From that, this program creates a definition of the following
+form:
+
+@example
+    #line nnn "source-file-name"
+    entry_type = @{
+        name = entry_name;
+        ...
+    @};
+@end example
+
+@enumerate
+@item
+The ellipsis @code{...} is filled in by text found between the two
+delimiters.  Each line of text is stripped of anything before the first
+asterisk, then leading asterisks, then any leading or trailing white space.
+
+@item
+If what is left starts with what looks like a name followed by a colon, then
+it is interpreted as a name followed by a value.
+
+@item
+If the first character of the value is either a single or double quote, then
+you are responsible for quoting the text as it gets inserted into the output
+definitions.  So, if you want whitespace at the beginnings of the lines of
+text, you must do something like this:
+
+@example
+ * mumble:
+ * "  this is some\n"
+ * "  indented text."
+@end example
+
+@item
+If the @code{<entry-name>} is followed by a comma, the word @code{ifdef} (or
+@code{ifndef}) and a name @code{if_name}, then the above entry will be under
+@code{ifdef} control.
+
+@example
+/*=group entry_name, ifdef FOO
+ * attr: attribute value
+=*/
+@end example
+
+Will produce the following:
+
+@example
+#ifdef FOO
+#line nnn "source-file-name"
+group = @{
+    name = entry_name;
+    attr = 'attribute value';
+@};
+#endif
+@end example
+
+@item
+If you use of the @code{subblock} option, you can specify a nested
+value, @xref{getdefs subblock}.  That is, this text:
+
+@example
+ * arg:  int, this, what-it-is
+@end example
+
+with the @code{--subblock=arg=type,name,doc} option would yield:
+
+@example
+arg = @{ type = int; name = this; doc = what-it-is; @};
+@end example
+@end enumerate
+_EOF_;

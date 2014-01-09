@@ -1,0 +1,82 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# dynref.test --- test dynamic scoping of definition values
+#
+# Time-stamp:        "2010-06-26 16:06:18 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+echo creating $testname.tpl
+cat > $testname.tpl <<'_EOF_'
+[= AutoGen5 Template test =]
+[=
+
+DEFINE nest         =][=
+
+  FOR nesting        =][=
+    IF (first-for?)
+=]The un-nested value is:  [=val_u=].[=
+    ENDIF           =][=
+  ENDFOR            =][=
+
+ENDDEF              =][=
+
+nest Val-u = "hidden value"
+
+=]
+_EOF_
+
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+echo creating $testname.def
+cat > $testname.def <<_EOF_
+autogen definitions $testname;
+
+nesting = { name = one;   };
+nesting = { name = two;   };
+nesting = { name = three; };
+nesting = { name = four;  };
+_EOF_
+
+# this is the output we should expect to see
+cat > $testname.out <<_EOF_
+The un-nested value is:  hidden value.
+_EOF_
+
+run_ag x $testname.def || failure autogen failed
+cmp -s $testname.test $testname.out || \
+  failure "`diff $testname.test $testname.out`"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of dynref.test

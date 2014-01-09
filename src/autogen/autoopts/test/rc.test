@@ -1,0 +1,248 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+
+# rc.test ---  test loading and saving of rc files
+#
+# Time-stamp:        "2011-08-07 17:33:45 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+##  This file is part of AutoOpts, a companion to AutoGen.
+##  AutoOpts is free software.
+##  AutoOpts is Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoOpts is available under any one of two licenses.  The license
+##  in use must be one of these two and the choice is under the control
+##  of the user of the license.
+##
+##   The GNU Lesser General Public License, version 3 or later
+##      See the files "COPYING.lgplv3" and "COPYING.gplv3"
+##
+##   The Modified Berkeley Software Distribution License
+##      See the file "COPYING.mbsd"
+##
+##  These files have the following md5sums:
+##
+##  43b91e8ca915626ed3818ffb1b71248b pkg/libopts/COPYING.gplv3
+##  06a1a2e4760c90ea5e1dad8dfaac4d39 pkg/libopts/COPYING.lgplv3
+##  66a5cedaf62c4b2637025f049f9b826f pkg/libopts/COPYING.mbsd
+
+. ./defs
+
+AUTOOPTS_TRACE=every
+AUTOOPTS_TRACE_OUT=">>`pwd`/${testname}-ag-trace.txt"
+export AUTOOPTS_TRACE AUTOOPTS_TRACE_OUT
+set -x
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+: "creating ${testname}.def in `pwd`"
+
+TESTNAME=RC
+export TESTNAME
+
+test_main="yes" \
+argument="mumble" long_opts="yes" \
+${SHELLX} ${stdopts} option second:init third: || \
+    failure "Could not run stdopts.def"
+
+cat >> ${testname}.def <<_EOF_
+homerc = "\$\$/${testname}.rc";
+rcfile = ${testname}.file;
+environrc;
+_EOF_
+
+${AG_L} ${testname}.def || \
+  failure AutoGen could not process A
+
+# # # # # # # # # # VALIDATE HELP # # # # # # # # #
+
+clean_help > ${testname}-base1.help <<_EOF_
+test_rc - Test AutoOpts for rc
+USAGE:  rc [ -<flag> [<val>] | --<name>[{=| }<val>] ]... mumble
+  Flg Arg Option-Name    Description
+   -o no  option         The option option descrip
+   -s Str second         The second option descrip
+   -t Str third          The third option descrip
+   -? no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+   -> opt save-opts      Save the option state to a config file
+   -< Str load-opts      Load options from a config file
+				- disabled as --no-load-opts
+				- may appear multiple times
+
+Options are specified by doubled hyphens and their name or by a single
+hyphen and the flag character.
+
+The following option preset mechanisms are supported:
+ - reading file ..../${testname}.rc/rc.file
+ - examining environment variables named TEST_RC_*
+_EOF_
+
+mkdir ${testname}.rc ${testname}.run
+compile "--help"
+${SED} 's@\( - reading file \).*\(/'${testname}.rc/rc.file'\)@\1....\2@' \
+    ${testname}.help > ${testname}-res1.help
+cmp ${testname}-*1.help || \
+  failure "`diff ${testname}-*.help`"
+
+# # # # # # # # # # DO THE REAL TEST # # # # # # # # #
+
+#  Install an initialization for the "second" option.
+#  That goes into the ${testname}.rc directory.
+#  We change into the ${testname}.run directory and run the program.
+#  It should pick up the value saved into the ${testname}.rc dir.
+#
+
+echo from `pwd`:
+echo "./${testname} --second=third '->'${testname}.rc/${testname}.file"
+./${testname} --second=third '->'${testname}.rc/${testname}.file
+
+ls -l ${testname}.rc/${testname}.file
+
+cd ${testname}.run
+echo from `pwd`:
+echo '../${testname} -t xxx MUMBLE > ${testname}.cmds'
+../${testname} -t xxx MUMBLE > ${testname}.cmds
+
+#  This is what the output should be:
+#
+cat > ${testname}.test <<'_EOF_'
+OPTION_CT=2
+export OPTION_CT
+TEST_RC_SECOND='third'
+export TEST_RC_SECOND
+TEST_RC_THIRD='xxx'
+export TEST_RC_THIRD
+_EOF_
+
+
+cmp  ${testname}.cmds ${testname}.test || {
+  df="`diff -c ${testname}.test ${testname}.cmds`"
+  cd ..
+  failure "${df}"
+}
+
+# # # # #
+
+TEST_RC=--no-load ../${testname} -t xxx MUMBLE > ${testname}-2.cmds
+
+#  This is what the output should be:
+#
+cat > ${testname}-2.test <<'_EOF_'
+OPTION_CT=2
+export OPTION_CT
+TEST_RC_THIRD='xxx'
+export TEST_RC_THIRD
+_EOF_
+
+cmp ${testname}-2.cmds ${testname}-2.test || {
+  df="`diff -c ${testname}-2.test ${testname}-2.cmds`"
+  cd ..
+  failure "${df}"
+}
+
+# # # # # # # # # # SECOND TEST OUTPUT FILE # # # # # # # # #
+
+cat >> ../${testname}.rc/${testname}.file  <<_EOF_
+[TEST_MUMBLE]
+second    fourth
+<!--  This is a comment
+      and it should have no effect -->
+[TEST_${TESTNAME}]
+second  = fifth
+
+# this is another comment
+#
+[TEST_STUMBLE]
+second  : sixth
+_EOF_
+
+../${testname} -t yyy MUMBLE > ${testname}.cmds
+
+#  This is what the output should be:
+#
+cat > ${testname}.test <<'_EOF_'
+OPTION_CT=2
+export OPTION_CT
+TEST_RC_SECOND='fifth'
+export TEST_RC_SECOND
+TEST_RC_THIRD='yyy'
+export TEST_RC_THIRD
+_EOF_
+
+cmp  ${testname}.cmds ${testname}.test || {
+  df="`diff -c ${testname}.test ${testname}.cmds`"
+  cd ..
+  failure "${df}"
+}
+
+mv ../${testname}.rc/${testname}.file ../${testname}.rc/${testname}.save
+( ${SED} '/^[TEST_MUMBLE]/,$d' ../${testname}.rc/${testname}.save
+  cat <<- _EOF_
+	<?program test-mumble>
+	second    fourth
+	<!--  This is a comment
+	      and it should have no effect -->
+	<?program test-${testname}>
+	<second cooked>
+	   fifth
+	</second>
+	# this is another comment
+	#
+	<?program test-stumble>
+	second  : sixth
+	_EOF_
+) > ../${testname}.rc/${testname}.file
+
+../${testname} -t yyy MUMBLE > ${testname}.cmds
+
+cmp  ${testname}.cmds ${testname}.test || {
+  df="USING <?program>:  `diff -c ${testname}.test ${testname}.cmds`"
+  cd ..
+  failure "${df}"
+}
+
+# # # # # # # # # # THIRD TEST OUTPUT FILE # # # # # # # # #
+
+cd ${testsubdir}
+
+echo 'disable-save;' >> ${testname}.def
+
+${AG_L} ${testname}.def || \
+  failure AutoGen could not process B
+
+compile "--help"
+${SED} 's@\( - reading file \).*\(/'${testname}.rc/rc.file'\)@\1....\2@' \
+    ${testname}.help > ${testname}-res2.help
+egrep -v ' save-opts  +Save ' ${testname}-base1.help > ${testname}-base2.help
+
+cmp ${testname}-*2.help || \
+  failure "`diff ${testname}-*2.help`"
+
+echo 'disable-load;' >> ${testname}.def
+
+${AG_L} ${testname}.def || \
+  failure AutoGen could not process B
+
+compile "--help"
+${SED} 's@\( - reading file \).*\(/'${testname}.rc/rc.file'\)@\1....\2@' \
+    ${testname}.help > ${testname}-res3.help
+
+${SED} -e '/ load-opts   *Load /,/multiple times$/d' \
+    -e '/ save-opts   *Save /d' \
+    ${testname}-base1.help > ${testname}-base3.help
+
+cmp ${testname}-*3.help || \
+  failure "`diff ${testname}-*3.help`"
+
+# # # # # # # # # # HELP OUTPUT FILE # # # # # # # # #
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## End:
+
+# end of rc.test

@@ -1,0 +1,15 @@
+AutoGen would not be what it is without the invaluable help of
+many people:
+
+Everybody who was kind enough to spend time testing it,
+using it with the GCC fixincludes and reporting bugs.
+
+The following people made especially gracious contributions of their
+time and energy in helping to track down bugs, port to new systems,
+and generally assist in the maintainership process:
+
+Gary V. Vaughan <gary@gnu.org>
+Robert Lipe <robertlipe@usa.net>
+Alexandre Oliva <oliva@dcc.unicamp.br>
+James R. Van Zandt <jrv@vanzandt.mv.com>
+Thomas Steudten <Steudten@users.sourceforge.net>

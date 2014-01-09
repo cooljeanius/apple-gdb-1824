@@ -1,0 +1,95 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# gperf.test --- test functionality of `gperf'
+#
+# Time-stamp:        "2010-12-06 13:08:36 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+# ----------------------------------------------------------------------
+
+if gperf --version > /dev/null 2>&1
+then :
+else
+  echo gperf functionality does not work without gperf >&2
+  exit 0
+fi
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+echo creating ${testname}.tpl
+cat > ${testname}.tpl <<_EOF_
+<= AutoGen5 template test =>
+<=
+
+(if (not (make-gperf "${testname}" (stack "foo.bar")))
+    (error "cannot make gperf")) =><=
+
+FOR foo "\n" =><=
+
+  FOR bar  =>
+<=bar=>	yields: <=(gperf "${testname}" (get "bar"))=><=
+  ENDFOR   =><=
+
+ENDFOR =><=
+\`tar cf - .${testname}.* > ${testname}-prog.tar || \
+  die 'cannot save gperf files'\`=><=
+(out-push-new "${testname}-code.c")
+(emit (gperf-code "${testname}")) (emit "\n")
+(out-pop)
+=>
+_EOF_
+
+
+# Create the files we need in the test environment
+cat > ${testname}.def <<_EOF_
+AutoGen Definitions ${testname};
+foo = { bar = first; bar = second; };
+foo = { bar = third; bar = fourth; };
+_EOF_
+
+# this is the output we should expect to see
+cat > ${testname}.base <<_EOF_
+
+first	yields: 0x01
+second	yields: 0x02
+
+third	yields: 0x03
+fourth	yields: 0x04
+_EOF_
+
+if ${VERBOSE:-false}
+then opts="x --trace=server-shell ${testname}.def"
+else opts="x ${testname}.def"
+fi
+
+run_ag ${opts} || failure AutoGen failed
+cmp -s ${testname}.base ${testname}.test || \
+  failure "`diff ${testname}.base ${testname}.test`"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of gperf.test

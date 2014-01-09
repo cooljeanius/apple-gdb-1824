@@ -1,0 +1,48 @@
+New in 5.15 - February 2012
+
+* aliasing options was only partially implemented.  Finished now.
+
+* Generated texi documentation missed the new doc-section stanzas.
+
+* compile issue on non-mmap platforms was fixed
+
+* but in usage error display was fixed
+
+New in 5.14 January 2011
+
+* getopt support has been improved.  Developers using generated code
+  that called that function had to arrange for the autoopts/option.h
+  header to be available.  That text is now inserted into the code.
+
+* dependency tracking improvements.  renaming an output file confused
+  the code and licensing files were not listed.
+
+* libopts did not provide the full executable path name in pzProgPath
+  if it was not supplied in argv[0].  "pathfind(3GEN)" is now used
+  in that case.
+
+* makefile-script function will now honor the "then", "else" and "in"
+  keywords appearing at the end of a line.  "makefile-script" splices
+  lines together with a semi-colon and a backslash, add a leading tab
+  to each line and double dollar sign characters, basically turning
+  semi-ordinary shell scripts into scripts suitable for use with make.
+  In the case of these keywords and certain operators, the semi-colon
+  is now omitted.
+
+  Additionally, it produces text that can be post-processed at
+  configure time in that it will leave alone any lines starting with
+  "@ifdef", "@ifndef", "@else" and "@endif".  See the second argument
+  to the AC_CONFIG_FILES() autoconf macro for details.
+
+New in 5.13 December 2011
+
+* AutoOpts now uses string tables instead of individual static char const's.
+
+* AutoOpts now supports vendor-opt attribute to auto-implement the "-W"
+  option for POSIX specified utilities
+
+New in 5.11.6 February 2011
+
+* packaging information
+  The PKGDATADIR and --with-packager... information are now
+  compiled into the option structure.

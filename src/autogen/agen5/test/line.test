@@ -1,0 +1,68 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# line.test --- test (tpl-file-line) functionality
+#
+# Time-stamp:        "2011-02-02 12:09:53 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+echo creating ${testname}.tpl
+${SED} 's/^ *[0-9]*: //' > ${testname}.tpl <<  _EOTPL_
+ 1: [= AutoGen5 Template txt =]
+ 2: ${testname} Test
+ 3: [= (define ix 0) (define ct 63) =]
+ 4: [=WHILE (< ix ct) \=]
+ 5: [= (set! ix (+ ix 1))
+ 6:    (sprintf "test %2d of %2d:  %s\n" ix ct (tpl-file-line "%2\$d"))
+ 7: \=]
+ 8: [=ENDWHILE \=]
+ 9: End ${testname} Test
+_EOTPL_
+
+# # # # # # # # # # EXPECTED OUTPUT FILE # # # # # # #
+set -x
+echo creating ${testname}.out
+# this is the output we should expect to see
+cat > ${testname}.out <<- \_EOF_
+	line Test
+
+	End line Test
+	_EOF_
+
+run_ag x --base=${testname} --no-def --override=${testname}.tpl || \
+   failure autogen failed
+${EGREP} -v ' of 63:  5$' ${testname}.txt > ${testname}.test
+
+cmp -s ${testname}.test ${testname}.out || failure unexpected output
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of line.test

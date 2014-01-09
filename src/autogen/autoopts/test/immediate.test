@@ -1,0 +1,121 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# ----------------------------------------------------------------------
+# immediate.test      ---  test immediate option handling
+#
+# Time-stamp:        "2012-01-29 13:33:03 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+##  This file is part of AutoOpts, a companion to AutoGen.
+##  AutoOpts is free software.
+##  AutoOpts is Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoOpts is available under any one of two licenses.  The license
+##  in use must be one of these two and the choice is under the control
+##  of the user of the license.
+##
+##   The GNU Lesser General Public License, version 3 or later
+##      See the files "COPYING.lgplv3" and "COPYING.gplv3"
+##
+##   The Modified Berkeley Software Distribution License
+##      See the file "COPYING.mbsd"
+##
+##  These files have the following md5sums:
+##
+##  43b91e8ca915626ed3818ffb1b71248b pkg/libopts/COPYING.gplv3
+##  06a1a2e4760c90ea5e1dad8dfaac4d39 pkg/libopts/COPYING.lgplv3
+##  66a5cedaf62c4b2637025f049f9b826f pkg/libopts/COPYING.mbsd
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+echo "creating ${testname}.def in `pwd`"
+
+cat > ${testname}.def << _EOF_
+AutoGen definitions options;
+
+prog-name  = "test_${testname}";
+prog-title = "Test AutoOpts for ${testname}";
+include    = "#include <stdio.h>\nint invocation_ct = 0;";
+config-header = 'config.h';
+version    = '1.0';
+copyright = {
+    date  = "1992-2012";
+    owner = "Bruce Korb";
+    eaddr = "autogen-users@lists.sourceforge.net";
+    type  = gpl;
+};
+
+flag = {
+    name      = "second";
+    descrip   = "The second option descrip";
+    immediate     = also;
+    immed-disable = also;
+    disable   = not;
+    arg-type  = string;
+    flag-code = "    invocation_ct++;";
+};
+
+main = {
+    main-type = main;
+    main-text = '    printf( "invocation_ct = %d\\n", invocation_ct );';
+};
+
+_EOF_
+
+INC=`echo ${INC} | ${SED} 's/-lguile//;s/-lqthreads//'`
+CFLAGS="-g`echo ' '${CFLAGS}' ' | \
+  ${SED} 's, -O2 , ,;s/ -g[^ ]* / /'`"
+
+echo ${AG_L} ${testname}.def
+${AG_L} ${testname}.def || \
+  failure AutoGen could not process
+
+sedcmd="/All arguments are named options./q"
+compile "help"
+
+# # # # # # # # # # HELP OUTPUT FILE # # # # # # # # #
+
+echo creating ${testname}.hlp
+clean_help > ${testname}.hlp << '_EOF_'
+test_immediate - Test AutoOpts for immediate - Ver. 1.0
+USAGE:  immediate [ <option-name>[{=| }<val>] ]...
+   Arg Option-Name    Description
+   Str second         The second option descrip
+				- disabled as --not-second
+   opt version        Output version information and exit
+   no  help           Display extended usage information and exit
+   no  more-help      Extended usage information passed thru pager
+
+All arguments are named options.
+_EOF_
+
+cmp -s ${testname}.help ${testname}.hlp || { set +x ; \
+  failure "`diff -c ${testname}.hlp ${testname}.help`" ; }
+
+f=`./${testname} second=hand`
+test "$f" = "invocation_ct = 2" || \
+  failure "enabled option not processed twice"
+
+f=`./${testname} not-second`
+test "$f" = "invocation_ct = 2" || \
+  failure "DIS-abled option not processed twice"
+
+f=`./${testname} help version=c | ${FGREP} 'USAGE:'`
+test -z "${f}" && failure "no USAGE: in help text"
+
+f=`./${testname} version=c help | ${FGREP} -i 'copyright (c)'`
+test -z "${f}" && failure "no 'copyright (c)' in version text"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## End:
+
+# end of immediate.test

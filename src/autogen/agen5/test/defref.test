@@ -1,0 +1,124 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# defref.test --- definition reference testing
+#
+# Time-stamp:        "2011-02-02 12:09:02 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+${SED} 's/^ *[0-9]*://;s/^ //' > ${testname}.tpl <<_EOF_
+ 1: <= AutoGen5 template test =>
+ 2: The last of each list:<=
+ 3: FOR list =>
+ 4:   list[<= (for-index) =>] -> <= val[$] =><=
+ 5: ENDFOR =>
+ 6:
+ 7: The first of each list:<=
+ 8: FOR list =>
+ 9:   list[<=(for-index)=>] -> <=val[]=><=
+10: ENDFOR =>
+11:
+12: The full list:<=
+13: FOR list =>
+14:   list[<=(for-index)=>] -> <=
+15:   FOR val ", " => val[<=(for-index)=>]=<=val=><=
+16:   ENDFOR =><=
+17: ENDFOR =>
+18:
+19: The local global list:<=
+20: FOR list =>
+21:   list[<=(for-index)=>] == "<=
+22:   (join ", " (stack ".param.name")) =>"
+21:           .. "<=
+22:   (join ", " (stack "param.name")) =>"<=
+23: ENDFOR =>
+24:
+25: The first value is:  <= ?% list[].val[]   "val = %s (first)" "Undefined??"=>
+26: The last value is:   <= ?% list[$].val[$] "val = %s (last)" "Undefined??"=>
+_EOF_
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+# Create the files we need in the test environment
+cat > ${testname}.def <<_EOF_
+AutoGen definitions "${testname}." "tpl";
+param   = { name = "global"; };
+list    = { val = L0.first, L0.second, L0.last;
+            param = { name = "first-1", "first-2"; }; },
+          { val[2] = L1.second-and-last; Val[0] = L1.first;
+            param = { name = "second-1", "second-2"; }; };
+List[3] = { val = L3.third.all; },
+          { val[3] = L4.last; VAL[2] = L4.middle;  VAL[1] = L4.first; };
+_EOF_
+
+# # # # # # # # # # ANTICIPATED RESULT # # # # # # # # #
+
+cat > ${testname}.out <<_EOF_
+The last of each list:
+  list[0] -> L0.last
+  list[1] -> L1.second-and-last
+  list[3] -> L3.third.all
+  list[4] -> L4.last
+
+The first of each list:
+  list[0] -> L0.first
+  list[1] -> L1.first
+  list[3] -> L3.third.all
+  list[4] -> L4.first
+
+The full list:
+  list[0] ->  val[0]=L0.first,  val[1]=L0.second,  val[2]=L0.last
+  list[1] ->  val[0]=L1.first,  val[2]=L1.second-and-last
+  list[3] ->  val[0]=L3.third.all
+  list[4] ->  val[1]=L4.first,  val[2]=L4.middle,  val[3]=L4.last
+
+The local global list:
+  list[0] == "first-1, first-2"
+          .. "first-1, first-2"
+  list[1] == "second-1, second-2"
+          .. "second-1, second-2"
+  list[3] == ""
+          .. "global"
+  list[4] == ""
+          .. "global"
+
+The first value is:  val = L0.first (first)
+The last value is:   val = L4.last (last)
+_EOF_
+
+run_ag x ${testname}.def || failure AutoGen failed
+cmp -s ${testname}.test ${testname}.out || \
+  failure "`diff ${testname}.test ${testname}.out`"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of defref.test

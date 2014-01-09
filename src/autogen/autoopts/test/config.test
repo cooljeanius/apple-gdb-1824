@@ -1,0 +1,201 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# ----------------------------------------------------------------------
+# rc.test ---  test loading and saving of rc files
+#
+# Time-stamp:        "2011-02-02 12:10:27 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+##  This file is part of AutoOpts, a companion to AutoGen.
+##  AutoOpts is free software.
+##  AutoOpts is Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoOpts is available under any one of two licenses.  The license
+##  in use must be one of these two and the choice is under the control
+##  of the user of the license.
+##
+##   The GNU Lesser General Public License, version 3 or later
+##      See the files "COPYING.lgplv3" and "COPYING.gplv3"
+##
+##   The Modified Berkeley Software Distribution License
+##      See the file "COPYING.mbsd"
+##
+##  These files have the following md5sums:
+##
+##  43b91e8ca915626ed3818ffb1b71248b pkg/libopts/COPYING.gplv3
+##  06a1a2e4760c90ea5e1dad8dfaac4d39 pkg/libopts/COPYING.lgplv3
+##  66a5cedaf62c4b2637025f049f9b826f pkg/libopts/COPYING.mbsd
+#
+# ----------------------------------------------------------------------
+. ./defs
+
+# # # # # # # # # # PROGRAM FILE # # # # # # # # #
+
+cat > ${testname}.c <<-  _EOTest_
+	#include <stdio.h>
+	#include "config.h"
+	#include <autoopts/options.h>
+
+	int print_entry( const tOptionValue* pGV );
+	int print_entry( const tOptionValue* pGV ) {
+	  if (pGV == NULL) {
+	    fprintf( stderr, "ENTRY NOT FOUND\n" );
+	    return 1;
+	  }
+	  printf( "%-8s -- ", pGV->pzName );
+	  switch (pGV->valType) {
+	    case OPARG_TYPE_NONE:
+	      fputs( "no value\n", stdout ); break;
+
+	    case OPARG_TYPE_STRING:
+	      printf( "string:   %s\n",      pGV->v.strVal ); break;
+
+	    case OPARG_TYPE_ENUMERATION:
+	      printf( "enum:     %d\n",      pGV->v.enumVal ); break;
+
+	    case OPARG_TYPE_BOOLEAN:
+	      printf( "bool:     %s\n",
+	              pGV->v.boolVal ? "TRUE" : "false" ); break;
+
+	    case OPARG_TYPE_MEMBERSHIP:
+	      printf( "members:  0x%08lX\n",  (unsigned long)pGV->v.setVal ); break;
+
+	    case OPARG_TYPE_NUMERIC:
+	      printf( "integer:   %ld\n",      pGV->v.longVal ); break;
+
+	    case OPARG_TYPE_HIERARCHY:
+	      printf( "nested:   0x%08lX\n",  (unsigned long)pGV->v.nestVal ); break;
+
+	    default:
+	      printf( "bad type: %d\n",      pGV->valType );
+	      return 1;
+	  }
+	  return 0;
+	}
+
+	int main( int argc, char** argv ) {
+	  int res = 0;
+	  const tOptionValue* pOV;
+	  if ((argc < 3) || (argv[1][0] == '-')) {
+	    fputs( "help\n", stdout );
+	    return 0;
+	  }
+	  pOV = configFileLoad( *++argv );
+	  if (pOV == NULL) {
+	    fprintf( stderr, "Could not load:  %s\n", *argv );
+	    return 1;
+	  }
+	  argc -= 2;
+	  while (argc-- > 0) {
+	    const tOptionValue* pGV = optionGetValue( pOV, *++argv );
+	    res |= print_entry( pGV );
+	  }
+
+	  {
+	    const tOptionValue* pGV = optionGetValue( pOV, "n4_ty" );
+	    pGV = optionGetValue( pGV, "b4r" );
+	    if (pGV->valType != OPARG_TYPE_BOOLEAN) {
+	      res = 1;
+	    } else if (pGV->v.boolVal) {
+	      fputs( "YES!!\n", stdout );
+	    } else {
+	      fputs( "oops!!\n", stdout );
+	      res = 1;
+	    }
+	  }
+
+	  {
+	    const tOptionValue* pGV = optionGetValue( pOV, NULL );
+	    while (pGV != NULL) {
+	      res |= print_entry( pGV );
+	      pGV = optionNextValue( pOV, pGV );
+	    }
+	  }
+
+	  print_entry( pOV );
+	  optionUnloadNested( pOV );
+	  return res;
+	}
+	_EOTest_
+
+compile --help
+
+# # # # # # # # # # RUN TESTS # # # # # # # # #
+
+echo Constructing test ${testname} files
+cat > ${testname}.cfg <<-  \_EOConfig_
+	mumble  = grumble
+	grumble : rumble
+
+	stumble   "The\tquick\
+	brown fox\tjumped\n\
+	over everything."
+
+	stumble2   The\
+	quick\
+	brown\
+	\
+	fix.
+
+	<n4_ty type=nested>
+	   foo : foolish
+	   <b4r type=bool> YES!! </b4r>
+	</n4_ty>
+	alpha, beta ', gamma'
+	<beta cooked>    "Carol\tTine\n"
+	</beta>
+	<zzyzx type=integer> 42 </zzyzx>
+	_EOConfig_
+
+cat > ${testname}.res <<-  \_EOResult_
+	mumble   -- string:   grumble
+	grumble  -- string:   rumble
+	stumble  -- string:   The	quickbrown fox	jumped
+	over everything.
+	alpha    -- no value
+	beta     -- string:   , gamma
+	zzyzx    -- integer:   42
+	YES!!
+	alpha    -- no value
+	beta     -- string:   , gamma
+	beta     -- string:   Carol	Tine
+
+	grumble  -- string:   rumble
+	mumble   -- string:   grumble
+	n4_ty    -- nested:   0xXXXXXXXX
+	stumble  -- string:   The	quickbrown fox	jumped
+	over everything.
+	stumble2 -- string:   The
+	quick
+	brown
+
+	fix.
+	zzyzx    -- integer:   42
+	./config.cfg -- nested:   0xXXXXXXXX
+	_EOResult_
+
+./${testname} ./${testname}.cfg mumble grumble stumble alpha beta zzyzx \
+  > ${testname}.tmp-out || {
+  failure "Cannot run ${testname}"
+}
+
+${SED} '/ -- nested:/s/0x.*/0xXXXXXXXX/' \
+    ${testname}.tmp-out > ${testname}.out
+cmp ${testname}.out ${testname}.res || {
+  failure "`diff -c ${testname}.out ${testname}.res`"
+}
+
+./${testname} ${testname}.cfg gamma >/dev/null && \
+  failure "found non-existent value"
+
+# # # # # # # # # # CLEANUP # # # # # # # # #
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## End:
+
+# end of config.test

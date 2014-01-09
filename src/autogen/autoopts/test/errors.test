@@ -1,0 +1,232 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# ----------------------------------------------------------------------
+# errors.test ---  test argument program attribute
+#                    make sure that when it is not specified
+#                    then option processing consumes all args.
+#
+# Time-stamp:        "2011-08-07 17:37:02 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+##  This file is part of AutoOpts, a companion to AutoGen.
+##  AutoOpts is free software.
+##  AutoOpts is Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoOpts is available under any one of two licenses.  The license
+##  in use must be one of these two and the choice is under the control
+##  of the user of the license.
+##
+##   The GNU Lesser General Public License, version 3 or later
+##      See the files "COPYING.lgplv3" and "COPYING.gplv3"
+##
+##   The Modified Berkeley Software Distribution License
+##      See the file "COPYING.mbsd"
+##
+##  These files have the following md5sums:
+##
+##  43b91e8ca915626ed3818ffb1b71248b pkg/libopts/COPYING.gplv3
+##  06a1a2e4760c90ea5e1dad8dfaac4d39 pkg/libopts/COPYING.lgplv3
+##  66a5cedaf62c4b2637025f049f9b826f pkg/libopts/COPYING.mbsd
+
+. ./defs
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+echo "creating ${testname}.def in `pwd`"
+
+testname="${testname}" \
+test_main="${test_main}" \
+argument="arg ..." \
+long_opts="yes" \
+${SHELLX} ${stdopts} option second:fumble ignored || \
+    failure "Could not run stdopts.def"
+
+echo 'reorder-args;' >> ${testname}.def
+${SED} -e '/"second"/a\
+    must-set;' \
+    -e '/"ignored"/a\
+    omitted-usage = "we have dumped this"; ifdef = IGNORE_THIS;' \
+    ${testname}.def > ${testname}.tmp
+mv -f ${testname}.tmp ${testname}.def
+echo "homerc = ${testname}RC;" >> ${testname}.def
+
+echo ${AG_L} ${testname}.def
+${AG_L} ${testname}.def || \
+  failure AutoGen could not process
+
+mkdir ${testname}RC
+compile "--help"
+
+# # # # # # # # # # HELP OUTPUT FILE # # # # # # # # #
+
+echo creating ${testname}.res-help
+clean_help > ${testname}.res-help <<'_EOF_'
+test_errors - Test AutoOpts for errors
+USAGE:  errors [ -<flag> [<val>] | --<name>[{=| }<val>] ]... arg ...
+  Flg Arg Option-Name    Description
+   -o no  option         The option option descrip
+   -s Str second         The second option descrip
+   -i --- ignored        we have dumped this
+   -? no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+   -> opt save-opts      Save the option state to a config file
+   -< Str load-opts      Load options from a config file
+				- disabled as --no-load-opts
+				- may appear multiple times
+
+Options are specified by doubled hyphens and their name or by a single
+hyphen and the flag character.
+Operands and options may be intermixed.  They will be reordered.
+
+The following option preset mechanisms are supported:
+ - reading file errorsRC/.test_errorsrc
+_EOF_
+
+clean_help > ${testname}.ignored-expected <<\_EOF_
+errors: The ``ignored'' option has been disabled -- we have dumped this
+test_errors - Test AutoOpts for errors
+USAGE:  errors [ -<flag> [<val>] | --<name>[{=| }<val>] ]... arg ...
+  Flg Arg Option-Name    Description
+   -o no  option         The option option descrip
+   -s Str second         The second option descrip
+   -? no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+   -> opt save-opts      Save the option state to a config file
+   -< Str load-opts      Load options from a config file
+
+Options are specified by doubled hyphens and their name or by a single
+hyphen and the flag character.
+Operands and options may be intermixed.  They will be reordered.
+_EOF_
+
+dir=`pwd -P` || dir=`pwd`
+${SED} "s#${dir}/##" ${testname}.help > ${testname}.bas-help
+cmp -s ${testname}.*-help || \
+  failure "help output: `diff ${testname}.*-help`"
+
+./${testname} -s foo -o -s bar 2> /dev/null && \
+  failure ${testname} should not accept multiple options
+
+./${testname} -o -s foo > /dev/null 2>&1 && \
+  failure ${testname} must have arguments
+
+./${testname} -o -s foo mumble > /dev/null || \
+  failure ${testname} stumbled somehow
+
+./${testname} -o > /dev/null 2>&1 && \
+  failure ${testname} "'option'" must have argument
+
+./${testname} -o mumble > /dev/null 2>&1 && \
+  failure ${testname} must have second argument
+
+echo "second bumble" > ${testname}RC/.test_errorsrc
+./${testname} -o mumble > /dev/null || \
+  failure ${testname} did not see errorsRC/.test_errorsrc
+
+./${testname} --ignored > ${testname}.ignored 2>&1 && \
+  failure "${testname} accepted --ignored"
+
+clean_help < ${testname}.ignored > ${testname}.ignored-result
+cmp -s ${testname}.ignored-* || \
+  failure "${testname}.ignored error:  `diff ${testname}.ignored-*`"
+
+mv ${testname}RC/.test_errorsrc ${testname}RC/test_errors.rc
+./${testname} --load=${testname}RC/test_errors.rc -o mumble > /dev/null || \
+  failure ${testname} did not see errorsRC/test_errors.rc
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+echo "allow_errors;" >> ${testname}.def
+
+echo ${AG_L} ${testname}.def
+${AG_L} ${testname}.def || \
+  failure AutoGen could not process allow-errors
+
+compile "--help"
+
+${SED} "s#${dir}/##" ${testname}.help > ${testname}.bas-help
+cmp -s ${testname}.*-help || \
+  failure "help output: `diff ${testname}.*-help`"
+
+#  This time, having a duplicate should be ignored...
+#
+./${testname} -s foo -o -s bar mumble 2> /dev/null 1>&2 || \
+  failure ${testname} should not object to multiple options
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+${SED} '/second option/a\
+    max = "10";' ${testname}.def > XX
+mv -f XX ${testname}.def
+cat >> ${testname}.def << '_EOF_'
+flag = {
+    name = "another";
+    max  = '5';
+    descrip = "Another option descrip";
+    value = 'X';
+};
+
+_EOF_
+
+echo ${AG_L} ${testname}.def
+${AG_L} ${testname}.def || \
+  failure AutoGen could not process gnu-usage
+
+compile "--help"
+
+# # # # # # # # # # SORTED ARGS OUTPUT FILE # # # # # # # # #
+test -n "${POSIXLY_CORRECT}" && {
+  POSIXLY_CORRECT=''
+  unset POSIXLY_CORRECT
+}
+
+echo creating ${testname}-sh.samp
+cat > ${testname}-sh.samp <<'_EOF_'
+OPTION_CT=4
+export OPTION_CT
+TEST_ERRORS_OPTION=1 # 0x1
+export TEST_ERRORS_OPTION
+TEST_ERRORS_SECOND='foo'
+export TEST_ERRORS_SECOND
+TEST_ERRORS_ANOTHER=1 # 0x1
+export TEST_ERRORS_ANOTHER
+set -- 'mum'\''ble' '-X' 'stumble'
+OPTION_CT=0
+_EOF_
+
+./${testname} "mum'ble" -os foo -X -- -X stumble > ${testname}-sh.out
+
+cmp -s ${testname}-sh.out ${testname}-sh.samp || \
+  failure "`diff ${testname}-sh.samp ${testname}-sh.out`"
+
+cat >> ${testname}.def << '_EOF_'
+flag = {
+    name = "still-another";
+    ifdef = true ; ifndef = false;
+    descrip = "Another option descrip";
+    value = 'Y';
+};
+_EOF_
+
+case "${BASH_VERSION}" in
+not-good-enough )
+  echo "You are running Solaris without bash available."
+  echo "duplicate option flags cannot be tested."
+  ;;
+
+* )
+  ${SED} '/ value /s/Y/X/;s/ ifndef =.*//' ${testname}.def > ${testname}-2.def
+  ${AG_L} ${testname}-2.def && \
+    failure AutoGen processed conflicting flag values
+  ;;
+esac
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## End:
+
+# end of errors.test

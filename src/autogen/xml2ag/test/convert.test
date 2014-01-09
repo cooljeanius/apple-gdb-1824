@@ -1,0 +1,100 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# ----------------------------------------------------------------------
+# convert.test --- test XML -> AutoGen conversion
+#
+## Time-stamp:      "2010-07-16 15:29:12 bkorb"
+## Author:          Bruce Korb <bkorb@gnu.org>
+##
+##  This file is part of AutoGen.
+##  AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoGen is free software: you can redistribute it and/or modify it
+##  under the terms of the GNU General Public License as published by the
+##  Free Software Foundation, either version 3 of the License, or
+##  (at your option) any later version.
+##
+##  AutoGen is distributed in the hope that it will be useful, but
+##  WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+##  See the GNU General Public License for more details.
+##
+##  You should have received a copy of the GNU General Public License along
+##  with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+case "X${VERBOSE}" in
+X | X[nNfF]* ) VERBOSE=false ;;
+* ) set -x ;   VERBOSE=true ;;
+esac
+
+# A standard failure function
+failure()
+{
+  cd ${testsubdir}
+  test -d ../FAILURES || mkdir ../FAILURES
+  l=`echo *`
+  ( \cd ../FAILURES ; rm -f $l )
+  mv -f * ../FAILURES
+  echo "$*"
+  exit 1
+}
+
+srcdir=`pwd`
+testname=convert
+[ -d testdir ] || mkdir testdir
+cd testdir
+testsubdir=`pwd`
+
+${X2Aexe} -O ${testname}.out <<'_EndOfXML_'
+<?xml version="1.0"?>
+<ag_example template="sample.tpl">
+  <mumble attr="foo">
+    <grumble>
+      &lt;stumble around the 'XML'.&gt;
+    </grumble>
+    mumble-1
+    <!-- This is just a
+         /* multi-line comment */ -->
+    mumble-2
+    <grumble>
+      grumble &amp; "grumble" &amp; grumble.
+    </grumble>
+    mumble, mumble
+  </mumble>
+  <stumble upon="rough going"/>
+</ag_example>
+_EndOfXML_
+
+cat > ${testname}.samp <<'_EndOfSample_'
+/* Parsed from stdin */
+AutoGen Definitions sample.tpl;
+XML-version = '1.0';
+XML-standalone = true;
+template = 'sample.tpl';
+mumble = {
+  content = '';
+  attr = 'foo';
+  grumble = {
+    content = '';
+    text = '<stumble around the \'XML\'.>';
+  };
+  text = 'mumble-1';
+  /* This is just a
+         /* multi-line comment * / */
+  text = 'mumble-2';
+  grumble = {
+    content = '';
+    text = 'grumble & "grumble" & grumble.';
+  };
+  text = 'mumble, mumble';
+};
+stumble = {
+  content = '';
+  upon = 'rough going';
+};
+_EndOfSample_
+
+cmp -s ${testname}.samp ${testname}.out || \
+	failure "`diff ${testname}.samp ${testname}.out`"
+
+${VERBOSE} || { cd ${srcdir} ; rm -rf ${testsubdir} ; }

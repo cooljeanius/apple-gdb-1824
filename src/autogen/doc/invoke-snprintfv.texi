@@ -1,0 +1,74 @@
+@node snprintfv
+@section Replacement for Stdio Formatting Library
+
+   Using the `printf' formatting routines in a portable fashion has
+always been a pain, and this package has been way more pain than anyone
+ever imagined.  Hopefully, with this release of snprintfv, the pain is
+now over for all time.
+
+   The issues with portable usage are these:
+
+@enumerate
+@item
+Argument number specifiers are often either not implemented or are
+buggy.  Even GNU libc, version 1 got it wrong.
+
+@item
+ANSI/ISO "forgot" to provide a mechanism for computing argument
+lists for vararg procedures.
+
+@item
+The argument array version of printf (`printfv()') is not
+generally available, does not work with the native printf, and
+does not have a working argument number specifier in the format
+specification.  (Last I knew, anyway.)
+
+@item
+You cannot fake varargs by calling `vprintf()' with an array of
+arguments, because ANSI does not require such an implementation
+and some vendors play funny tricks because they are allowed to.
+@end enumerate
+
+   These four issues made it impossible for AutoGen to ship without its
+own implementation of the `printf' formatting routines.  Since we were
+forced to do this, we decided to make the formatting routines both
+better and more complete :-).  We addressed these issues and added the
+following features to the common printf API:
+
+@enumerate 5
+@item
+The formatted output can be written to
+
+@itemize @bullet
+@item
+a string allocated by the formatting function (`asprintf()').
+@item
+a file descriptor instead of a file stream (`dprintf()').
+@item
+a user specified stream (`stream_printf()').
+@end itemize
+
+@item
+The formatting functions can be augmented with your own functions.
+These functions are allowed to consume more than one character
+from the format, but must commence with a unique character.  For
+example,
+
+@example
+"%@{struct stat@}\n"
+@end example
+
+might be used with '@{' registered to a procedure that would look
+up "struct stat" in a symbol table and do appropriate things,
+consuming the format string through the '@}' character.
+@end enumerate
+
+   Gary V. Vaughan was generous enough to supply this implementation.
+Many thanks!!
+
+   For further details, the reader is referred to the snprintfv
+documentation.  These functions are also available in the template
+processing as@:  `sprintf' (@pxref{SCM sprintf}), `printf'
+(@pxref{SCM printf}), `fprintf' (@pxref{SCM fprintf}), and `shellf'
+(@pxref{SCM shellf}).
+

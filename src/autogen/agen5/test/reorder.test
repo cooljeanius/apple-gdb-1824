@@ -1,0 +1,107 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# reorder.test --- test reorder functionality
+#
+# Time-stamp:        "2010-06-26 16:04:32 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+echo creating $testname.tpl
+cat > $testname.tpl <<'_EOF_'
+<= AutoGen5 template test =>
+From zero:<=
+
+FOR a (for-from 0) (for-by 1) (for-sep ",")=>
+<=(sprintf "%5d: " (for-index))=><=
+  ?% elt %s absent =><=
+  IF (first-for?) =>  first loop<= ENDIF =><=
+  IF (last-for? ) =>   last loop<= ENDIF =><=
+ENDFOR =>
+
+From start by two:<=
+
+FOR a (for-by 2) (for-sep ",")=>
+<=(sprintf "%5d: " (for-index)) =><=
+  ?% elt %s absent =><=
+  IF (first-for?) =>  first loop<= ENDIF =><=
+  IF (last-for? ) =>   last loop<= ENDIF =><=
+ENDFOR =>
+_EOF_
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+echo creating $testname.def
+cat > $testname.def <<_EOF_
+autogen definitions $testname;
+a[ 3] = { elt = three; };
+a[ 5] = { elt = five; };
+a[12] = { elt = twelve; };
+a[ 8] = { elt = eight; };
+a[ 1] = { elt = one; };
+a[ 2] = { elt = two; };
+_EOF_
+
+# # # # # # # # # # EXPECTED OUTPUT FILE # # # # # # #
+
+echo creating $testname.out
+# this is the output we should expect to see
+cat > $testname.out <<_EOF_
+From zero:
+    0: absent  first loop,
+    1: one,
+    2: two,
+    3: three,
+    4: absent,
+    5: five,
+    6: absent,
+    7: absent,
+    8: eight,
+    9: absent,
+   10: absent,
+   11: absent,
+   12: twelve   last loop
+
+From start by two:
+    1: one  first loop,
+    3: three,
+    5: five,
+    7: absent,
+    9: absent,
+   11: absent   last loop
+_EOF_
+
+run_ag x $testname.def || failure autogen failed
+cmp -s $testname.test $testname.out || failure unexpected output
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of reorder.test

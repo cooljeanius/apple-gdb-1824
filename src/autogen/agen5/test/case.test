@@ -1,0 +1,136 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# case.test --- test CASE functionality
+#
+# Time-stamp:        "2010-12-13 14:16:57 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+#
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+. ./defs
+
+# # # # # # # TEMPLATE FILE # # # # # #
+
+echo creating ${testname}.tpl
+cat > ${testname}.tpl <<'EOF'
+<= AutoGen5 template test =>
+<=
+FOR grp "\n" =><=
+  CASE (get "nam") =><=
+
+  == first  =>first:  <=(sprintf "%-6s" (get "val"))=> matches: <=
+      CASE (get "val") =><=
+        ~~ ^[a-z]*$ =>~~ ^[a-z]*$  OK<=
+        ~~ ^[A-Z]*$ =>~~ ^[A-Z]*$  *** BOGUS ***<=
+        ~~ .*       =>~~ .*        *** BOGUS ***<=
+      ESAC => and <=
+      CASE (get "val") =><=
+        ~ ^[a-z]*$ =>~ ^[a-z]*$  OK<=
+        *          =>~ .*        *** BOGUS ***<=
+      ESAC =><=
+
+  == second =>second: <=(sprintf "%-6s" (get "val"))=> matches: <=
+      CASE (get "val") =><=
+        ~~ ^[a-z]*$ =>~~ ^[a-z]*$  *** BOGUS ***<=
+        ~~ ^[A-Z]*$ =>~~ ^[A-Z]*$  *** BOGUS ***<=
+        ~* .        =>~* .         OK<=
+      ESAC => and <=
+      CASE (get "val") =><=
+        ~ ^[a-z]*$ =>~ ^[a-z]*$  OK<=
+        *          =>~ .*        *** BOGUS ***<=
+      ESAC =><=
+
+  == third  =>third:  <=(sprintf "%-6s" (get "val"))=> matches: <=
+      CASE (get "val") =><=
+        ~~ ^[a-z]*$ =>~~ ^[a-z]*$  *** BOGUS ***<=
+        ~~ ^[A-Z]*$ =>~~ ^[A-Z]*$  OK<=
+        ~~ .*       =>~~ .*        *** BOGUS ***<=
+      ESAC => and <=
+      CASE (get "val") =><=
+        ~ ^[a-z]*$ =>~ ^[a-z]*$  OK<=
+        *          =>~ .*        *** BOGUS ***<=
+      ESAC =><=
+
+  ESAC =><=
+
+ENDFOR grp=>
+empty:  <= CASE empty-val =><=
+   ~* .  =>WRONG<=
+   !E    =>BOGUS<=
+   +E    =>valid<=
+   *     =>REAL-BOGUS<=
+   ESAC  =>
+bogus:  <= CASE bogus-val =><=
+   ~* .  =>WRONG<=
+   +E    =>BOGUS<=
+   !E    =>valid<=
+   *     =>REAL-BOGUS<=
+   ESAC  =>
+EOF
+
+# # # # # # # SAMPLE OUTPUT FILE # # # # # #
+
+echo creating ${testname}.out in `pwd`
+# this is the output we should expect to see
+cat > ${testname}.out <<'EOF'
+first:  string matches: ~~ ^[a-z]*$  OK and ~ ^[a-z]*$  OK
+second: String matches: ~* .         OK and ~ ^[a-z]*$  OK
+third:  STRING matches: ~~ ^[A-Z]*$  OK and ~ ^[a-z]*$  OK
+empty:  valid
+bogus:  valid
+EOF
+
+# # # # # # # DEFINITIONS FILE # # # # # #
+
+cat > ${testname}.def <<EOF
+autogen definitions ${testname};
+
+grp = {
+   nam = first;
+   val = string;
+};
+
+grp = {
+   nam = second;
+   val = String;
+};
+
+grp = {
+   nam = third;
+   val = STRING;
+};
+empty-val;
+EOF
+
+# # # # # # # RUN AUTOGEN # # # # # #
+
+run_ag x ${testname}.def ||  failure autogen failed
+
+# # # # # # # TEST RESULTS # # # # # #
+
+cmp -s ${testname}.test ${testname}.out || failure unexpected output
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of case.test

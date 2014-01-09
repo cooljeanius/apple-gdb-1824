@@ -1,0 +1,165 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# shell.test --- test functionality of switching shells
+#
+# Time-stamp:        "2011-12-15 13:26:27 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+#  The test will verify that a real shell processes the declarations
+#  and our weirdo shell handles the template.
+#
+# ----------------------------------------------------------------------
+
+exec 9>&2
+
+. ./defs
+
+grep -F '#define SHELL_ENABLED ' ${top_builddir}/config.h > /dev/null 2>&1
+test $? -eq 0 || exit 0
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+cat > ${testname}.c <<- \_EOF_
+	#include <stdio.h>
+	#include <string.h>
+	#include <ctype.h>
+	#define NUL '\0'
+	char buf[ 4096 ];
+	int
+	main( int argc, char** argv )
+	{
+	  char *pz;
+	  for (;;) {
+	    pz = fgets(buf, sizeof(buf),stdin);
+	    if (pz == NULL)
+	      return 1; /* must get something every time */
+	    while (isspace(*pz)) pz++;
+	    if (*pz != NUL) break; /* ignore initial blank lines */
+	  }
+
+	  for (;;) {
+	    if (*pz == '#') goto next_line;
+	    if (strncmp( pz, "cd ", 3 ) == 0) goto next_line;
+	    if ((strncmp( pz, "echo", 4 ) == 0) && isspace( pz[4] )) {
+	      pz += 5;
+	      while (isspace(*pz)) pz++;  /* suppress the 'echo' */
+	    }
+	    if (*pz == '\0') pz--;  /* always force a newline */
+	    fputs( pz, stdout );
+	    fflush( stdout );
+
+	  next_line:
+	    pz = fgets(buf, sizeof(buf),stdin);
+	    if (pz == NULL)
+	      break;
+	    while (isspace(*pz)) pz++;
+	  }
+	  return 0;
+	}
+	_EOF_
+
+compile
+
+#  The backslashes are stripped by the here-doc processing
+#
+echo creating ${testname}.tpl
+cat > ${testname}.tpl <<-  _EOF_
+	<= AutoGen5 template test
+	   (setenv "SHELL" "./${testname}") =>
+	<=\` echo SHELL=\$SHELL \`=>
+	Some <=dummy=> text
+	<= FOR foo =>
+	foo[<=(for-index)=>]       = <=foo=>
+	raw-shell-str: <=(raw-shell-str (get "foo"))=>
+	shell-str:     <=(shell-str (get "foo"))=>
+	sub-shell-str: <=(sub-shell-str (get "foo"))=>
+	<= ENDFOR =>
+	<=\`   : This is a final test  \`=>
+	_EOF_
+
+echo creating ${testname}.def
+cat >${testname}.def <<- \_EOF_
+	AutoGen Definitions shell.tpl;
+
+	foo = "''foo'' 'foo' \"foo\" `foo` $foo";
+	foo = '\\\'bar\\\' \\"bar\\" \`bar\` \$bar';
+	foo = '\\\\\'BAZ\\\\\' \\\\"BAZ\\\\" \\\`BAZ\\\` \\\$BAZ';
+	dummy = `echo "mumble"`; /* processed with regular shell */
+	_EOF_
+
+# this is the output we should expect to see
+cat > ${testname}.sample <<-  \_EOF_
+	SHELL=$SHELL
+	Some "mumble" text
+
+	foo[0]       = ''foo'' 'foo' "foo" `foo` $foo
+	raw-shell-str: \'\''foo'\'\'' '\''foo'\'' "foo" `foo` $foo'
+	shell-str:     "''foo'' 'foo' \"foo\" `foo` $foo"
+	sub-shell-str: `''foo'' 'foo' "foo" \`foo\` $foo`
+
+	foo[1]       = \'bar\' \"bar\" \`bar\` \$bar
+	raw-shell-str: '\'\''bar\'\'' \"bar\" \`bar\` \$bar'
+	shell-str:     "\\'bar\\' \\\"bar\\\" \`bar\` \$bar"
+	sub-shell-str: `\\'bar\\' \"bar\" \\\`bar\\\` \$bar`
+
+	foo[2]       = \\'BAZ\\' \\"BAZ\\" \\`BAZ\\` \\$BAZ
+	raw-shell-str: '\\'\''BAZ\\'\'' \\"BAZ\\" \\`BAZ\\` \\$BAZ'
+	shell-str:     "\\\\'BAZ\\\\' \\\\\"BAZ\\\\\" \\\`BAZ\\\` \\\$BAZ"
+	sub-shell-str: `\\\\'BAZ\\\\' \\\"BAZ\\\" \\\\\`BAZ\\\\\` \\\$BAZ`
+
+	: This is a final test
+	_EOF_
+
+run_ag x --shell=$PWD/shell ${testname}.def || \
+    failure "autogen ${testname}.def"
+
+grep -v '^AGexe=' ${testname}.test > ${testname}.XX
+mv -f ${testname}.XX ${testname}.test
+if cmp -s ${testname}.test ${testname}.sample
+then cleanup
+     exit 0
+fi
+
+if ${FGREP} 'SHELL=' ${testname}.test > /dev/null 2>&1
+then
+  if ${FGREP} 'SHELL=$SHELL' ${testname}.test > /dev/null 2>&1
+  then : ; else
+    cat >&9 <<- _EOF_
+	The ${testname}.test output file does not start with "SHELL=\$SHELL"
+	This is because you have a Guile library that cannot modify
+	the environment.  This is a known breakage on some platforms
+	(viz., BSD derivatives).  Sorry.
+	_EOF_
+    ${FGREP} 'SHELL=' ${testname}.test >&9
+    cleanup
+    exit 0
+  fi
+fi
+
+failure "`set +x;diff -c ${testname}.sample ${testname}.test`"
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of shell.test

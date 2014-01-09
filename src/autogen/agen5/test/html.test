@@ -1,0 +1,130 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# ----------------------------------------------------------------------
+# html.test --- test html generation
+#
+# Time-stamp:      "2011-12-30 12:17:28 bkorb"
+# Author:          Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILES # # # # # # # # #
+
+echo creating cgi.tpl
+cat > cgi.tpl <<'_EOF_'
+<? AutoGen5 Template ?>
+<? DEFINE form-error
+?>HTTP/1.0 500 AutoGen Forms Error
+Content-Type: text/plain
+
+The submitted form does not contain a valid template<?
+  IF (exist? "template") ?> (<?template?>) <?ENDIF?>.<?
+ENDDEF                                             ?><?
+  (define foo "")
+  (if (exist? "break") (set! foo bogus))           ?><?
+IF (not (exist? "template"))                       ?><?
+  form-error                                       ?><?
+
+ELIF (access? (get "template") R_OK)               ?><?
+  INCLUDE (get "template")                         ?><?
+
+ELIF (access? (string-append
+              (get "template") ".tpl") R_OK)       ?><?
+  INCLUDE (string-append (get "template") ".tpl")  ?><?
+
+ELSE                                               ?><?
+  form-error                                       ?><?
+ENDIF                                              ?>
+_EOF_
+
+echo creating ${testname}.tpl
+cat > ${testname}.tpl <<'_EOF_'
+<? AutoGen5 Template ?>
+<head>Mumble:  <? mumble ?></head>
+<body>Foolish: <? foo ?></body>
+_EOF_
+
+# # # # # # # SAMPLE OUTPUT FILE # # # # # #
+
+echo creating ${testname}.out in `pwd`
+# this is the output we should expect to see
+cat > ${testname}.samp <<'_EOF_'
+content-type: text/html
+
+<head>Mumble:  fumble bumble</head>
+<body>Foolish: bar</body>
+_EOF_
+
+# # # # # # # RUN AUTOGEN # # # # # #
+
+REQUEST_METHOD=GET
+QUERY_STRING="mumble=fumble+bumble&foo=bar&template=${testname}"
+CONTENT_LENGTH=`expr "${QUERY_STRING}" : ".*"`
+
+export CONTENT_LENGTH REQUEST_METHOD QUERY_STRING
+
+run_ag x1 | ${EGREP} -v '^in state' > ${testname}.test
+
+cmp -s ${testname}.samp ${testname}.test || \
+  failure "`diff ${testname}.samp ${testname}.test`"
+
+# # # # # # # SECOND RUN # # # # # #
+
+QUERY_STRING="${QUERY_STRING}&break=true"
+CONTENT_LENGTH=`expr "${QUERY_STRING}" : ".*"`
+
+run_ag x2 > ${testname}-2.test
+fgrep 'AutoGen form processing error' ${testname}-2.test || \
+  failure autogen unexpectedly succeeded
+
+cat > ${testname}-2.samp <<'_EOF_'
+Content-type: text/plain
+
+AutoGen form processing error:
+cgi.tpl:9:22: In expression (define foo bogus):
+cgi.tpl:9:22: Unbound variable: bogus
+Scheme evaluation error.  AutoGen ABEND-ing in template
+	cgi.tpl on line 9
+Failing Guile command:  = = = = =
+
+(define foo "")
+  (if (exist? "break") (set! foo bogus))
+
+=================================
+_EOF_
+${EGREP} -v '^in state' ${testname}-2.test > ${testname}-2.res
+cmp -s ${testname}-2.samp ${testname}-2.res || {
+  exec >&2
+  echo Your Guile library does not handle error traps correctly and causes
+  echo garbage to be emitted instead.  Do not use this autogen as a CGI service.
+}
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of html.test

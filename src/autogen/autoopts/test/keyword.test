@@ -1,0 +1,431 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# ----------------------------------------------------------------------
+# keyword.test ---  keyword option processing
+#
+# Time-stamp:        "2011-08-07 17:33:08 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+##  This file is part of AutoOpts, a companion to AutoGen.
+##  AutoOpts is free software.
+##  AutoOpts is Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoOpts is available under any one of two licenses.  The license
+##  in use must be one of these two and the choice is under the control
+##  of the user of the license.
+##
+##   The GNU Lesser General Public License, version 3 or later
+##      See the files "COPYING.lgplv3" and "COPYING.gplv3"
+##
+##   The Modified Berkeley Software Distribution License
+##      See the file "COPYING.mbsd"
+##
+##  These files have the following md5sums:
+##
+##  43b91e8ca915626ed3818ffb1b71248b pkg/libopts/COPYING.gplv3
+##  06a1a2e4760c90ea5e1dad8dfaac4d39 pkg/libopts/COPYING.lgplv3
+##  66a5cedaf62c4b2637025f049f9b826f pkg/libopts/COPYING.mbsd
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+echo "creating ${testname}.def in `pwd`"
+testname="${testname}" test_main="" \
+argument="${argument}" long_opts="yes" \
+${SHELLX} ${stdopts} option:'opt init' || failure "Could not run stdopts.def"
+cat >> ${testname}.def <<- _EndOfDef_
+	help_value = X;
+	homerc     = '.';
+	rcfile     = ${testname}.cfg;
+
+	flag = {
+	    name        = trace;
+	    arg-type    = keyword;
+	    arg-default = nothing;
+	    arg-name    = level;
+	    descrip     = "tracing level of detail";
+	    keyword     = nothing, templates, block-macros, expressions,
+                      explanations;
+	};
+
+	flag = {
+	    name        = sets;
+	    arg-type    = set-members;
+	    arg-default = second, fourth;
+	    arg-name    = member-list;
+	    descrip     = "set membership testing";
+	    keyword     = first, second, third, fourth, fifth,
+	                  sixth, seventh, eighth, ninth, tenth,
+	                  eleventh, twelfth, thirteenth, fourteenth, fifteenth,
+	                  sixteenth, seventeenth, eighteenth;
+	};
+	main = { main-type = shell-process; };
+	_EndOfDef_
+
+echo ${AG_L} ${testname}.def
+${AG_L} ${testname}.def || \
+  failure AutoGen could not process
+
+compile "-X"
+
+# # # # # # # # # # HELP OUTPUT FILE # # # # # # # # #
+
+echo creating ${testname}.res-help
+clean_help > ${testname}.res-help <<\_EOF_
+test_keyword - Test AutoOpts for keyword
+USAGE:  keyword [ -<flag> [<val>] | --<name>[{=| }<val>] ]...
+  Flg Arg Option-Name    Description
+   -o Str option         The option option descrip
+      KWd trace          tracing level of detail
+      Mbr sets           set membership testing
+				- is a set membership option
+   -X no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+   -> opt save-opts      Save the option state to a config file
+   -< Str load-opts      Load options from a config file
+				- disabled as --no-load-opts
+				- may appear multiple times
+
+Options are specified by doubled hyphens and their name or by a single
+hyphen and the flag character.
+
+The following option preset mechanisms are supported:
+ - reading file ./keyword.cfg
+
+The valid "trace" option keywords are:
+  nothing templates block-macros expressions explanations
+  or an integer from 0 through 4
+The valid "sets" option keywords are:
+  first       second      third       fourth      fifth       sixth
+  seventh     eighth      ninth       tenth       eleventh    twelfth
+  thirteenth  fourteenth  fifteenth   sixteenth   seventeenth eighteenth
+  or an integer mask with any of the lower 18 bits set
+or you may use a numeric representation.  Preceding these with a '!' will
+clear the bits, specifying 'none' will clear all bits, and 'all' will set them
+all.  Multiple entries may be passed as an option argument list.
+_EOF_
+
+dir=`pwd -P` || dir=`pwd`
+${SED} "s#${dir}/##" ${testname}.help > ${testname}.bas-help
+cmp -s ${testname}.*-help || \
+  failure "help output: `diff ${testname}.*-help`"
+
+./${testname} --trace=exp > /dev/null 2>&1 && \
+  failure ${testname} accepted ambiguous keyword
+
+./${testname} --trace=expr --set=thirteen,ninth,third > ${testname}.t1-s || \
+  failure ${testname} did not handle its options
+
+./${testname} --trace=expr --set=thirteen,ninth,third --save=${testname}.cfg || \
+  failure ${testname} could not save its options
+
+${EGREP} -v '^#' ${testname}.cfg > ${testname}res.cfg || \
+  failure ${testname} could not create ${testname}.cfg
+
+cat > ${testname}base.cfg <<- \_EndIni_
+	trace               expressions
+	sets                none + second + third + fourth + ninth + thirteenth
+	_EndIni_
+
+cmp -s ${testname}base.cfg ${testname}res.cfg || \
+  failure "`diff ${testname}base.cfg ${testname}res.cfg`"
+
+cat > ${testname}.t1-b <<- \_EndTst_
+	OPTION_CT=2
+	export OPTION_CT
+	TEST_KEYWORD_TRACE='expressions'
+	export TEST_KEYWORD_TRACE
+	TEST_KEYWORD_SETS=4366 # 0x110E
+	export TEST_KEYWORD_SETS
+	typeset -x -i SETS_FIRST=1 # 0x1
+	typeset -x -i SETS_SECOND=2 # 0x2
+	typeset -x -i SETS_THIRD=4 # 0x4
+	typeset -x -i SETS_FOURTH=8 # 0x8
+	typeset -x -i SETS_FIFTH=16 # 0x10
+	typeset -x -i SETS_SIXTH=32 # 0x20
+	typeset -x -i SETS_SEVENTH=64 # 0x40
+	typeset -x -i SETS_EIGHTH=128 # 0x80
+	typeset -x -i SETS_NINTH=256 # 0x100
+	typeset -x -i SETS_TENTH=512 # 0x200
+	typeset -x -i SETS_ELEVENTH=1024 # 0x400
+	typeset -x -i SETS_TWELFTH=2048 # 0x800
+	typeset -x -i SETS_THIRTEENTH=4096 # 0x1000
+	typeset -x -i SETS_FOURTEENTH=8192 # 0x2000
+	typeset -x -i SETS_FIFTEENTH=16384 # 0x4000
+	typeset -x -i SETS_SIXTEENTH=32768 # 0x8000
+	typeset -x -i SETS_SEVENTEENTH=65536 # 0x10000
+	typeset -x -i SETS_EIGHTEENTH=131072 # 0x20000
+	_EndTst_
+
+cmp -s ${testname}.t1-* || \
+  failure "`diff ${testname}.t1-*`"
+
+${AG_L} -T agman-cmd.tpl ${testname}.def
+test -f test_${testname}.1 || \
+    failure "'test_${testname}.1' was not produced"
+mv test_${testname}.1 ${testname}.1
+
+cat > ${testname}-base.1 <<\_EOMan_
+test_keyword \- Test AutoOpts for keyword
+.SH SYNOPSIS
+.B test_keyword
+.\" Mixture of short (flag) options and long options
+.RB [ \-\fIflag\fP " [\fIvalue\fP]]... [" \-\-\fIopt\-name\fP " [[=| ]\fIvalue\fP]]..."
+.PP
+All arguments must be options.
+.SH "DESCRIPTION"
+There is no description for this command.
+.SH "OPTIONS"
+.TP
+.BR \-o " \fIstring\fP, " \-\-option "=" \fIstring\fP
+The option option descrip.
+The default \fIstring\fP for this option is:
+.ti +4
+ opt init
+.sp
+This option has not been fully documented.
+.TP
+.BR \-\-trace "=\fIlevel\fP"
+tracing level of detail.
+This option takes a keyword as its argument.  The argument sets an enumeration value that can
+be tested by comparing them against the option value macro.
+The available keywords are:
+.in +4
+.nf
+.na
+nothing      templates    block-macros
+expressions  explanations
+.fi
+or their numeric equivalent.
+.in -4
+.sp
+The default \fIlevel\fP for this option is:
+.ti +4
+ nothing
+.sp
+This option has not been fully documented.
+.TP
+.BR \-\-sets "=\fImember\-list\fP"
+set membership testing.
+This option takes a keyword as its argument list.  Each entry turns on or off
+membership bits.  The bits are set by name or numeric value and cleared
+by preceding the name or number with an exclamation character ('!').
+They can all be cleared with the magic name \fInone\fR and they can all be set
+with
+.IR all .
+A single option will process a list of these values.
+The available keywords are:
+.in +4
+.nf
+.na
+first       second      third       fourth
+fifth       sixth       seventh     eighth
+ninth       tenth       eleventh    twelfth
+thirteenth  fourteenth  fifteenth   sixteenth
+seventeenth eighteenth
+.fi
+or their numeric equivalent.
+.in -4
+.sp
+The default \fImember\-list\fP for this option is:
+.ti +4
+ second + fourth
+.sp
+This option has not been fully documented.
+.TP
+.BR \-X , " \-\-help"
+Display usage information and exit.
+.TP
+.BR \-! , " \-\-more-help"
+Pass the extended usage information through a pager.
+.TP
+.BR \-> " [\fIrcfile\fP]," " \-\-save-opts" "[=\fIrcfile\fP]"
+Save the option state to \fIrcfile\fP.  The default is the \fIlast\fP
+configuration file listed in the \fBOPTION PRESETS\fP section, below.
+.TP
+.BR \-< " \fIrcfile\fP," " \-\-load-opts" "=\fIrcfile\fP," " \-\-no-load-opts"
+Load options from \fIrcfile\fP.
+The \fIno-load-opts\fP form will disable the loading
+of earlier RC/INI files.  \fI\-\-no-load-opts\fP is handled early,
+out of order.
+.SH "OPTION PRESETS"
+Any option that is not marked as \fInot presettable\fP may be preset
+by loading values from configuration ("RC" or ".INI") file(s).
+The file "\fI./keyword.cfg\fP" will be used, if present.
+.SH "FILES"
+See \fBOPTION PRESETS\fP for configuration files.
+.SH "EXIT STATUS"
+One of the following exit values will be returned:
+.TP
+.BR 0
+Successful program execution.
+.TP
+.BR 1
+The operation failed or the command syntax was not valid.
+.SH "NOTES"
+This manual page was \fIAutoGen\fP-erated from the \fBtest_keyword\fP
+option definitions.
+_EOMan_
+
+${SED} '1,/^\.SH NAME/d' ${testname}.1 > ${testname}-res.1
+cmp -s ${testname}-base.1 ${testname}-res.1 || \
+  failure "`diff ${testname}-base.1 ${testname}-res.1`"
+
+# # # # # # # # # # CHECK OUT MDOC # # # # # # # # # # #
+
+${AG_L} -T agmdoc-cmd.tpl ${testname}.def
+test -f test_${testname}.1 || \
+    failure "'test_${testname}.1' was not produced"
+mv test_${testname}.1 ${testname}.mdoc
+
+cat > ${testname}-base.mdoc <<\_EOMan_
+.Dt TEST_KEYWORD 1 User Commands
+.Sh NAME
+.Nm test_keyword
+.Nd Test AutoOpts for keyword
+.Sh SYNOPSIS
+.Nm
+.\" Mixture of short (flag) options and long options
+.Op Fl flags
+.Op Fl flag Ar value
+.Op Fl \-option-name Ar value
+.Pp
+All arguments must be options.
+.Pp
+.Sh "DESCRIPTION"
+There is no description for this command.
+.Sh "OPTIONS"
+.Bl -tag
+.It  \-o " \fIstring\fP, " \-\-option "=" \fIstring\fP
+The option option descrip.
+The default \fIstring\fP for this option is:
+.ti +4
+ opt init
+.sp
+This option has not been fully documented.
+.It  \-\-trace "=\fIlevel\fP"
+tracing level of detail.
+This option takes a keyword as its argument.  The argument sets an enumeration value that can
+be tested by comparing them against the option value macro.
+The available keywords are:
+.in +4
+.nf
+.na
+nothing      templates    block-macros
+expressions  explanations
+.fi
+or their numeric equivalent.
+.in -4
+.sp
+The default \fIlevel\fP for this option is:
+.ti +4
+ nothing
+.sp
+This option has not been fully documented.
+.It  \-\-sets "=\fImember\-list\fP"
+set membership testing.
+This option takes a keyword as its argument list.  Each entry turns on or off
+membership bits.  The bits are set by name or numeric value and cleared
+by preceding the name or number with an exclamation character ('!').
+They can all be cleared with the magic name \fInone\fR and they can all be set
+with
+.IR all .
+A single option will process a list of these values.
+The available keywords are:
+.in +4
+.nf
+.na
+first       second      third       fourth
+fifth       sixth       seventh     eighth
+ninth       tenth       eleventh    twelfth
+thirteenth  fourteenth  fifteenth   sixteenth
+seventeenth eighteenth
+.fi
+or their numeric equivalent.
+.in -4
+.sp
+The default \fImember\-list\fP for this option is:
+.ti +4
+ second + fourth
+.sp
+This option has not been fully documented.
+.It \-X , " \-\-help"
+Display usage information and exit.
+.It \-! , " \-\-more-help"
+Pass the extended usage information through a pager.
+.It \-> " [\fIrcfile\fP]," " \-\-save-opts" "[=\fIrcfile\fP]"
+Save the option state to \fIrcfile\fP.  The default is the \fIlast\fP
+configuration file listed in the \fBOPTION PRESETS\fP section, below.
+.It \-< " \fIrcfile\fP," " \-\-load-opts" "=\fIrcfile\fP," " \-\-no-load-opts"
+Load options from \fIrcfile\fP.
+The \fIno-load-opts\fP form will disable the loading
+of earlier RC/INI files.  \fI\-\-no-load-opts\fP is handled early,
+out of order.
+.El
+.Sh "OPTION PRESETS"
+Any option that is not marked as \fInot presettable\fP may be preset
+by loading values from configuration ("RC" or ".INI") file(s).
+The file "\fI./keyword.cfg\fP" will be used, if present.
+.Sh "FILES"
+See \fBOPTION PRESETS\fP for configuration files.
+.Sh "EXIT STATUS"
+One of the following exit values will be returned:
+.Bl -tag
+.It 0
+Successful program execution.
+.It 1
+The operation failed or the command syntax was not valid.
+.El
+.Sh "NOTES"
+This manual page was \fIAutoGen\fP-erated from the \fBtest_keyword\fP
+option definitions.
+_EOMan_
+
+${SED} '/DO NOT EDIT/,/and the template file/d;/^\.Os /d;/^\.Dd /d' \
+    ${testname}.mdoc > ${testname}-res.mdoc
+cmp -s ${testname}-base.mdoc ${testname}-res.mdoc || \
+  failure "`diff ${testname}-base.mdoc ${testname}-res.mdoc`"
+
+# # # # # # # # # # CHECK OUT VAL2STR # # # # # # # # # # #
+
+exec 3> ${testname}_2.def
+${SED} '/^prog-name/s/";/_2";/;/^main *=/,$d' ${testname}.def >&3
+cat >&3 <<- \_EOF_
+	include = '#include <stdio.h>';
+	main = {
+	    main-type = main;
+	    main-text =
+	        '    printf( "%s\n", OPT_TRACE_VAL2STR( OPT_VALUE_TRACE ));';
+	};
+	_EOF_
+exec 3>&-
+
+echo ${AG_L} ${testname}_2.def
+${AG_L} ${testname}_2.def || \
+  failure AutoGen could not process
+
+Csrc=${testname}_2
+Dnam=${Csrc}
+compile "-X" || failure "cannot compile ${testname}_2"
+
+val=`./${testname}_2 --trace=expr 2>&1` || \
+    failure "cannot run ${testname}_2"
+
+case "${val}" in
+expressions) : ;;
+* ) failure "${testname}_2 returned '${val}', not 'expressions':
+	${testname}_2 --trace=expr" ;;
+esac
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## End:
+
+# end of keyword.test

@@ -1,0 +1,267 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# snarf.test --- test the extraction of scm-type definitions
+#
+# Time-stamp:        "2011-12-15 14:39:04 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # SOURCE FILE # # # # # # # # #
+
+echo creating ${testname}.c
+cat > ${testname}.c <<_EOF_
+#include "${testname}.h"
+#include "${testname}.ini"
+/*=gfunc test_to_example_x
+ *
+ * exparg: in, test input arg desc, optional, list
+ *
+=*/
+SCM
+test_scm_test_to_example_x(SCM in)
+{
+    return in;
+}
+
+/*=symbol mumble_check
+ *
+ * init_val:  SCM_BOOL_T
+=*/
+/*=symbol bumble_it
+ *
+ *  const_val:  100L
+ *  global:
+=*/
+/*=syntax guile_syntax_ele
+ *
+ *  type:  scm_makacro
+ *  cfn:   scm_m_undefine
+=*/
+_EOF_
+
+# # # # # # # # # # PROCESS SOURCE FILE # # # # # # # # #
+
+f=`echo ${AGexe} | ${SED} 's/ .*//'`
+
+agsrc=`cd $top_srcdir/agen5 && pwd`
+tplsrc=`cd $top_srcdir/autoopts/tpl && pwd`
+
+cat > ${testname}.cfg <<- _EOF_
+	subblock       exparg=arg_name,arg_desc,arg_optional,arg_list
+	template       snarf.tpl
+	srcfile
+	assign         group = ${testname}_grp
+	assign         init  = Chosen_init
+	base-name      ${testname}
+	agarg          -L$agsrc
+	agarg          -L$tplsrc
+	input          ${testname}.c
+	autogen        ${f}
+	_EOF_
+unset DEBUG_ENABLED
+
+echo "getdefs load=${testname}.cfg ${testname}.c"
+${VERBOSE} && {
+  AUTOGEN_TRACE=everything
+  AUTOGEN_TRACE_OUT=">>${testname}-ag-log.txt"
+  export AUTOGEN_TRACE AUTOGEN_TRACE_OUT
+}
+${GDexe} load=${testname}.cfg || \
+    failure getdefs load=${testname}.cfg
+
+${SED} -e "${sed_omit_license}" -e '/^#undef  *NEW_PROC *$/,$d' \
+    ${testname}.ini > ${testname}.ini.tst1
+
+${SED} "${sed_omit_license}" ${testname}.h > ${testname}.h.tst1
+
+# # # # # # # # # # EXPECTED INI FILE # # # # # # # # #
+
+echo creating ${testname}.ini.OK1
+cat > ${testname}.ini.OK1 <<'_EOF_'
+#include "snarf.h"
+typedef SCM (*scm_callback_t)(void);
+void Chosen_init(void);
+
+extern SCM snarf_grp_scm_sym_bumble_it          = SCM_BOOL_F;
+static SCM snarf_grp_scm_sym_mumble_check       = SCM_BOOL_F;
+#if GUILE_VERSION >= 108000
+#define NEW_PROC(_As, _Ar, _Ao, _Ax, _An)   \
+  scm_c_define_gsubr((char*)(_As),          \
+                   _Ar, _Ao, _Ax, (scm_callback_t)(void*)ag_scm_ ## _An)
+#else
+#define NEW_PROC(_As, _Ar, _Ao, _Ax, _An)                                   \
+  gh_new_procedure((char*)(_As), (scm_callback_t)(void*)ag_scm_ ## _An,     \
+                   _Ar, _Ao, _Ax)
+#endif
+
+/*
+ * snarf_grp Initialization procedure.
+ */
+void
+Chosen_init(void)
+{
+static char const g_nm[55] =
+/*     0 */ "test->example!\0"
+/*    15 */ "guile-syntax-ele\0"
+/*    32 */ "bumble-it\0"
+/*    42 */ "mumble-check";
+
+    NEW_PROC(g_nm +   0, 0, 0, 1, test_to_example_x);
+    scm_make_synt(g_nm+15, scm_makacro, scm_m_undefine);
+    snarf_grp_scm_sym_bumble_it = scm_permanent_object(SCM_CAR (scm_intern0 (g_nm+32)));
+    snarf_grp_scm_sym_mumble_check = scm_permanent_object(SCM_CAR (scm_intern0 (g_nm+42)));
+}
+_EOF_
+
+cmp ${testname}.ini.tst1 ${testname}.ini.OK1 || \
+    failure "`diff ${testname}.ini.tst1 ${testname}.ini.OK1`"
+
+# # # # # # # # # # EXPECTED HEADER FILE # # # # # # #
+
+echo creating ${testname}.h.OK
+cat > ${testname}.h.OK <<_EOF_
+#ifndef GUILE_PROCS_SNARF_H_GUARD
+#define GUILE_PROCS_SNARF_H_GUARD 1
+#if GUILE_VERSION >= 108000
+# include <libguile.h>
+#else
+# include <guile/gh.h>
+#endif
+
+typedef enum {
+    GH_TYPE_UNDEFINED = 0,
+    GH_TYPE_BOOLEAN,
+    GH_TYPE_SYMBOL,
+    GH_TYPE_CHAR,
+    GH_TYPE_VECTOR,
+    GH_TYPE_PAIR,
+    GH_TYPE_NUMBER,
+    GH_TYPE_STRING,
+    GH_TYPE_PROCEDURE,
+    GH_TYPE_LIST,
+    GH_TYPE_INEXACT,
+    GH_TYPE_EXACT
+} teGuileType;
+
+extern SCM snarf_grp_scm_test_to_example_x(SCM);
+extern SCM snarf_grp_scm_sym_bumble_it;
+
+#endif /* GUILE_PROCS_SNARF_H_GUARD */
+_EOF_
+
+cmp ${testname}.h.* || \
+    failure "`diff ${testname}.h.*`"
+
+# # # # # # # # # # PROCESS SOURCE FILE AGAIN # # # # # # # # #
+
+cp ${testname}.cfg  ${testname}.cfg1
+
+echo 'assign debug-enabled = true' >> ${testname}.cfg
+DEBUG_ENABLED=true
+export DEBUG_ENABLED
+
+${GDexe} load=${testname}.cfg || \
+    failure getdefs load=${testname}.cfg
+
+${SED} -e "${sed_omit_license}" \
+    -e '/^#undef  *NEW_PROC$/,$d' \
+    ${testname}.ini > ${testname}.ini.tst2
+
+${SED} "${sed_omit_license}" ${testname}.h > ${testname}.h.tst2
+
+# # # # # # # # # # EXPECTED INI FILE # # # # # # # # #
+
+echo creating ${testname}.ini.OK2
+cat > ${testname}.ini.OK2 <<'_EOF_'
+#include "snarf.h"
+typedef SCM (*scm_callback_t)(void);
+void Chosen_init(void);
+
+extern SCM snarf_grp_scm_sym_bumble_it          = SCM_BOOL_F;
+static SCM snarf_grp_scm_sym_mumble_check       = SCM_BOOL_F;
+#ifdef DEBUG_ENABLED
+static SCM
+agrelay_scm_test_to_example_x(SCM scm0)
+{
+    if (OPT_VALUE_TRACE >= TRACE_EVERYTHING) {
+        static char const proc_z[] =
+            "Called ag_scm_test_to_example_x()\n";
+        fwrite(proc_z, sizeof(proc_z) - 1, 1, pfTrace);
+    }
+    return ag_scm_test_to_example_x(scm0);
+}
+
+#if GUILE_VERSION >= 108000
+#define NEW_PROC(_As, _Ar, _Ao, _Ax, _An)   \
+  scm_c_define_gsubr((char*)(_As),          \
+                   _Ar, _Ao, _Ax, (scm_callback_t)(void*)agrelay_scm_ ## _An)
+#else
+#define NEW_PROC(_As, _Ar, _Ao, _Ax, _An)                                    \
+  gh_new_procedure((char*)(_As), (scm_callback_t)(void*)agrelay_scm_ ## _An, \
+                   _Ar, _Ao, _Ax)
+#endif
+
+#else /* DEBUG_ENABLED *not* */
+#if GUILE_VERSION >= 108000
+#define NEW_PROC(_As, _Ar, _Ao, _Ax, _An)   \
+  scm_c_define_gsubr((char*)(_As),          \
+                   _Ar, _Ao, _Ax, (scm_callback_t)(void*)ag_scm_ ## _An)
+#else
+#define NEW_PROC(_As, _Ar, _Ao, _Ax, _An)                                   \
+  gh_new_procedure((char*)(_As), (scm_callback_t)(void*)ag_scm_ ## _An,     \
+                   _Ar, _Ao, _Ax)
+#endif
+#endif /* DEBUG_ENABLED */
+
+/*
+ * snarf_grp Initialization procedure.
+ */
+void
+Chosen_init(void)
+{
+static char const g_nm[55] =
+/*     0 */ "test->example!\0"
+/*    15 */ "guile-syntax-ele\0"
+/*    32 */ "bumble-it\0"
+/*    42 */ "mumble-check";
+
+    NEW_PROC(g_nm +   0, 0, 0, 1, test_to_example_x);
+    scm_make_synt(g_nm+15, scm_makacro, scm_m_undefine);
+    snarf_grp_scm_sym_bumble_it = scm_permanent_object(SCM_CAR (scm_intern0 (g_nm+32)));
+    snarf_grp_scm_sym_mumble_check = scm_permanent_object(SCM_CAR (scm_intern0 (g_nm+42)));
+}
+_EOF_
+
+cmp ${testname}.ini.tst2 ${testname}.ini.OK2 || \
+    failure "`diff ${testname}.ini.tst2 ${testname}.ini.OK2`"
+
+cleanup
+
+## 
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of snarf.test

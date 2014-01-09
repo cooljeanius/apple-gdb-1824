@@ -1,0 +1,79 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# alist.test --- test evalstack functionality
+#
+# Time-stamp:        "2010-06-26 16:06:53 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+echo creating $testname.tpl
+cat > $testname.tpl <<'_EOF_'
+[= AutoGen5 Template test =]
+[=
+
+FOR value "\n"
+
+=]  [= (for-index) =] name is [=name=][=
+ENDFOR =]
+_EOF_
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+echo creating $testname.def
+cat > $testname.def <<'_EOF_'
+autogen definitions alist;
+
+\'(
+  (value ((name "first"))  )
+  (value ((name "second") (name "third"))  )
+  )
+
+value = { name = last; };
+_EOF_
+
+# # # # # # # # # # EXPECTED OUTPUT FILE # # # # # # #
+
+echo creating $testname.out
+# this is the output we should expect to see
+cat > $testname.out <<_EOF_
+  0 name is first
+  1 name is second
+  2 name is last
+_EOF_
+
+AGCMD="-L ${srcdir}/.."
+run_ag x ${AGCMD} $testname.def || failure ${AGCMD} failed
+cmp -s $testname.test $testname.out || failure unexpected output
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of alist.test

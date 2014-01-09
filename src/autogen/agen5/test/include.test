@@ -1,0 +1,81 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# include.test --- test include functionality
+#
+# Time-stamp:        "2010-06-26 16:05:21 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+echo creating ${testname}.in
+cat > ${testname}.in <<_EOF_
+<= AutoGen5 Template
+# this is just a test
+test =>
+<= v-name =>:  <= \`echo This is an ${testname} test\` =>
+_EOF_
+
+echo creating ${testname}.tpl
+cat > ${testname}.tpl <<_EOF_
+[= AutoGen5 Template
+# this is just a test
+
+test =]
+[= Include "${testname}.in" =]
+_EOF_
+
+mkdir ${testname}.d ${testname}.d/bad ${testname}.d/bad/good ${testname}.d/good
+cat > ${testname}.d/${testname}.def <<- _EOF_
+	AutoGen Definitions ${testname}.tpl;
+	#include good/${testname}-aux.def
+	_EOF_
+
+echo "v-name = BOGUS;"  > ${testname}.d/bad/good/${testname}-aux.def
+echo "v-name = Verify;" > ${testname}.d/good/${testname}-aux.def
+
+# # # # # # # # # # EXPECTED OUTPUT FILE # # # # # # #
+
+echo creating ${testname}.ok
+# this is the output we should expect to see
+cat > ${testname}.ok <<_EOF_
+Verify:  This is an ${testname} test
+_EOF_
+
+AGCMD="-L ${testname}.d/bad -L ${testname}.d/bad/good"
+
+run_ag x ${AGCMD} ${testname}.d/${testname}.def || \
+    failure ${AGCMD} failed
+cmp -s ${testname}.test ${testname}.ok || \
+    failure "`echo unexpected output
+            diff -u ${testname}.test ${testname}.ok `"
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of include.test

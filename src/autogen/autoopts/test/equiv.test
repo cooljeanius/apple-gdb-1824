@@ -1,0 +1,274 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+#
+# equiv.test ---  test option equivivalence classes
+#
+# Time-stamp:        "2012-02-12 09:28:59 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+##  This file is part of AutoOpts, a companion to AutoGen.
+##  AutoOpts is free software.
+##  AutoOpts is Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoOpts is available under any one of two licenses.  The license
+##  in use must be one of these two and the choice is under the control
+##  of the user of the license.
+##
+##   The GNU Lesser General Public License, version 3 or later
+##      See the files "COPYING.lgplv3" and "COPYING.gplv3"
+##
+##   The Modified Berkeley Software Distribution License
+##      See the file "COPYING.mbsd"
+##
+##  These files have the following md5sums:
+##
+##  43b91e8ca915626ed3818ffb1b71248b pkg/libopts/COPYING.gplv3
+##  06a1a2e4760c90ea5e1dad8dfaac4d39 pkg/libopts/COPYING.lgplv3
+##  66a5cedaf62c4b2637025f049f9b826f pkg/libopts/COPYING.mbsd
+
+. ./defs
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+echo "creating ${testname}.def in `pwd`"
+CFLAGS="-g -static" \
+testname="${testname}" test_main="${test_main}" \
+argument="${argument}" long_opts="${long_opts}" \
+${SHELLX} ${stdopts} option:'opt init' second=020 || \
+    failure "Could not run stdopts.def"
+cat >> ${testname}.def <<'_EOF_'
+long-opts;
+
+flag = {
+  name = alpha;
+  descrip = "alpha opt";
+  equivalence = alpha;
+  doc = 'alpha mumbling';
+  arg-type = str;
+  arg-optional;
+};
+
+flag = {
+  name = beta;
+  descrip = "beta opt";
+  equivalence = alpha;
+  doc = 'beta mumbling';
+  arg-type = num;
+};
+
+flag = {
+  name = gamma;
+  descrip = "gamma opt";
+  equivalence = alpha;
+  doc = 'gamma mumbling';
+  arg-type = bool;
+};
+
+flag = {
+  name = omega;
+  descrip = "omega opt";
+  equivalence = alpha;
+  doc = 'omega mumbling';
+  arg-type = key;
+  keyword = uno, dos, tres, mucho;
+  arg-optional;
+  arg-default = mucho;
+};
+_EOF_
+echo ${AG_L} ${testname}.def
+${AG_L} ${testname}.def || \
+  failure "AutoGen could not process - exited $?"
+
+compile "-?"
+
+# # # # # # # # # # HELP OUTPUT FILE # # # # # # # # #
+
+echo creating ${testname}-base.help
+clean_help > ${testname}-base.help <<_EOF_
+test_${testname} - Test AutoOpts for ${testname}
+USAGE:  equiv [ -<flag> [<val>] | --<name>[{=| }<val>] ]...
+  Flg Arg Option-Name    Description
+   -o Str option         The option option descrip
+   -s Num second         The second option descrip
+      opt alpha          alpha opt
+      Num beta           beta opt
+				- an alternate for alpha
+      T/F gamma          gamma opt
+				- an alternate for alpha
+      opt omega          omega opt
+				- an alternate for alpha
+   -? no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+
+Options are specified by doubled hyphens and their name or by a single
+hyphen and the flag character.
+
+The valid "omega" option keywords are:
+  uno dos tres mucho
+  or an integer from 0 through 3
+_EOF_
+
+cmp -s ${testname}*.help || \
+  failure "`diff ${testname}-base.help ${testname}.help`"
+
+cat > ${testname}-base.out <<_EOF_
+OPTION_CT=3
+export OPTION_CT
+TEST_EQUIV_SECOND=2 # 0x2
+export TEST_EQUIV_SECOND
+TEST_EQUIV_ALPHA=1 # 0x1
+export TEST_EQUIV_ALPHA
+=== --beta 5 -o opt ===
+OPTION_CT=4
+export OPTION_CT
+TEST_EQUIV_OPTION='opt'
+export TEST_EQUIV_OPTION
+TEST_EQUIV_ALPHA_MODE='BETA'
+export TEST_EQUIV_ALPHA_MODE
+TEST_EQUIV_BETA=5 # 0x5
+export TEST_EQUIV_BETA
+=== --gamma Yes! ===
+OPTION_CT=2
+export OPTION_CT
+TEST_EQUIV_ALPHA_MODE='GAMMA'
+export TEST_EQUIV_ALPHA_MODE
+TEST_EQUIV_GAMMA='true'
+export TEST_EQUIV_GAMMA
+=== --gamma false ===
+OPTION_CT=2
+export OPTION_CT
+TEST_EQUIV_ALPHA_MODE='GAMMA'
+export TEST_EQUIV_ALPHA_MODE
+TEST_EQUIV_GAMMA='false'
+export TEST_EQUIV_GAMMA
+=== --omega tres ===
+OPTION_CT=2
+export OPTION_CT
+TEST_EQUIV_ALPHA_MODE='OMEGA'
+export TEST_EQUIV_ALPHA_MODE
+TEST_EQUIV_OMEGA='tres'
+export TEST_EQUIV_OMEGA
+_EOF_
+
+( set -e +x
+  ./${testname} --alpha -s 2
+  echo === --beta 5 -o opt ===
+  ./${testname} --beta 5 -o opt
+  echo === --gamma Yes! ===
+  ./${testname} --gamma Yes!
+  echo === --gamma false ===
+  ./${testname} --gamma false
+  echo === --omega tres ===
+  ./${testname} --omega tres ) > ${testname}.out
+
+cmp -s ${testname}-base.out ${testname}.out || \
+  failure "`
+    diff -c ${testname}-base.out ${testname}.out`"
+
+# # # # # # # # # # HELP OUTPUT FILE # # # # # # # # #
+
+echo creating ${testname}-base2.help
+clean_help > ${testname}-base2.help <<_EOF_
+test_${testname} - Test AutoOpts for ${testname}
+USAGE:  equiv [ -<flag> [<val>] | --<name>[{=| }<val>] ]...
+  Flg Arg Option-Name    Description
+   -o Str option         The option option descrip
+   -s Num second         The second option descrip
+      opt alpha          alpha opt
+      Num beta           beta opt
+				- an alternate for alpha
+      T/F gamma          gamma opt
+				- an alternate for alpha
+      opt omega          omega opt
+				- an alternate for alpha
+   -? no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+   -> opt save-opts      Save the option state to a config file
+   -< Str load-opts      Load options from a config file
+				- disabled as --no-load-opts
+				- may appear multiple times
+
+Options are specified by doubled hyphens and their name or by a single
+hyphen and the flag character.
+
+The following option preset mechanisms are supported:
+ - reading file ..../testdir/.test_equivrc
+
+The valid "omega" option keywords are:
+  uno dos tres mucho
+  or an integer from 0 through 3
+_EOF_
+
+echo 'homerc = "$$";' >> ${testname}.def
+
+echo ${AG_L} ${testname}.def
+${AG_L} ${testname}.def || \
+  failure AutoGen could not process
+
+compile "-?"
+${SED} '/^ - reading file/s, file .*/testdir/, file ..../testdir/,' \
+    ${testname}.help > ${testname}-test2.help
+cmp -s ${testname}-base2.help ${testname}-test2.help || \
+  failure "`diff ${testname}-base2.help ${testname}-test2.help`"
+
+echo 'gamma Yes' > .test_equivrc
+
+cat > ${testname}-base.out2 <<_EOF_
+=== -o opt ===
+OPTION_CT=2
+export OPTION_CT
+TEST_EQUIV_OPTION='opt'
+export TEST_EQUIV_OPTION
+TEST_EQUIV_ALPHA_MODE='GAMMA'
+export TEST_EQUIV_ALPHA_MODE
+TEST_EQUIV_GAMMA='true'
+export TEST_EQUIV_GAMMA
+=== --gamma Yes! ===
+OPTION_CT=2
+export OPTION_CT
+TEST_EQUIV_ALPHA_MODE='GAMMA'
+export TEST_EQUIV_ALPHA_MODE
+TEST_EQUIV_GAMMA='true'
+export TEST_EQUIV_GAMMA
+=== --gamma false ===
+OPTION_CT=2
+export OPTION_CT
+TEST_EQUIV_ALPHA_MODE='GAMMA'
+export TEST_EQUIV_ALPHA_MODE
+TEST_EQUIV_GAMMA='false'
+export TEST_EQUIV_GAMMA
+=== --omega tres ===
+OPTION_CT=2
+export OPTION_CT
+TEST_EQUIV_ALPHA_MODE='OMEGA'
+export TEST_EQUIV_ALPHA_MODE
+TEST_EQUIV_OMEGA='tres'
+export TEST_EQUIV_OMEGA
+_EOF_
+
+( set -e
+  echo === -o opt ===
+  ./${testname} -o opt
+  echo === --gamma Yes! ===
+  ./${testname} --gamma Yes!
+  echo === --gamma false ===
+  ./${testname} --gamma false
+  echo === --omega tres ===
+  ./${testname} --omega tres ) > ${testname}.out2
+
+cmp -s ${testname}-base.out2 ${testname}.out2 || \
+  failure "`
+    diff -c ${testname}-base.out2 ${testname}.out2`"
+
+./${testname} --omega tres --beta 12 2>/dev/null && \
+  failure "${testname}-2 ERROR: conflicting options accepted"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## End:
+
+# end of equiv.test

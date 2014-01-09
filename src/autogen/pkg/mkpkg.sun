@@ -1,0 +1,152 @@
+#! /bin/sh
+
+# Time-stamp:        "2010-02-24 08:37:12 bkorb"
+##
+##  This file is part of AutoGen.
+##  AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoGen is free software: you can redistribute it and/or modify it
+##  under the terms of the GNU General Public License as published by the
+##  Free Software Foundation, either version 3 of the License, or
+##  (at your option) any later version.
+##
+##  AutoGen is distributed in the hope that it will be useful, but
+##  WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+##  See the GNU General Public License for more details.
+##
+##  You should have received a copy of the GNU General Public License along
+##  with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+case "${VERBOSE}" in
+"" | f* | F* | n* | N* )
+   VERBOSE=false ;;
+*) VERBOSE=true  ; set -x ;;
+esac
+export VERBOSE
+
+set -e
+pkgsrc=`pwd`
+agdir=`cd ../agen5 > /dev/null 2>&1 ; pwd`
+
+[ ! -d ${DESTDIR} ] || rm -rf ${DESTDIR} || exit 1
+mkdir ${DESTDIR} || exit 1
+DESTDIR=`cd ${DESTDIR} > /dev/null && pwd` || exit 1
+
+cd ${top_builddir}
+${MAKE} install DESTDIR=${DESTDIR}
+
+cd ${DESTDIR}
+
+if [ ! -d reloc ]
+then
+  mkdir reloc
+  case "${prefix}" in
+  /* ) : ;;
+  *  ) prefix="/${prefix}" ;;
+  esac
+  mv .${prefix}/* reloc/. || exit 1
+  p=${prefix}
+  while [ -n "$p" ]
+  do rmdir .${p}
+     p=`echo "$p" | sed 's,/[^/]*$,,'`
+  done
+fi
+
+cp -f ${top_srcdir}/COPYING ./copyright
+
+pkgdst=`pwd`
+[ -f prototype ] && rm -f prototype
+exec 4> prototype
+cat >&4 <<-  EOF
+	#  Prototype file for AutoGen
+	#
+	#  derived by scanning the `pwd` directory
+
+	i copyright
+	i pkginfo
+	i prototype
+	i checkinstall
+	! default 0755 root sys
+
+	# pt tp ????  obj-name
+	EOF
+
+cd reloc
+
+find * -type d | \
+while read d
+do
+  case "$d" in
+  *autogen* ) mod="0775 root sys" ;;
+  *         ) mod="? ? ?" ;;
+  esac
+
+  echo "  1  d  none ${d} ${mod}"
+done >&4
+
+echo "! default 0644 root sys" >&4
+
+find * -type f | \
+while read f
+do
+  if [ -x "$f" ]
+  then mod=0755
+  else mod=0644 ; fi
+  echo "  1  f  none ${f} $mod root sys"
+done >&4
+
+find * -type l | \
+while read l
+do
+  f=`ls -l $l | sed 's,.* -> ,,'`
+  echo "  1  s  none ${l}=${f}"
+done >&4
+
+exec 4>&-
+cd ${pkgdst}
+
+cat > checkinstall <<- EOF
+	PATH=${PATH}:${prefix}/bin
+	guile-config compile > /dev/null 2>&1 && exit 0
+	guile -c '(quit "bye")' && exit 0
+	echo "The guile library does not seem to be present."
+	echo "I have searched the PATH ${PATH}"
+	echo "If it is, please ensure it is in the search path and retry."
+	exit 1
+	EOF
+
+[ -f pkginfo.tpl ] && rm -f pkginfo.tpl
+cat > pkginfo.tpl <<- EOF
+	[= AutoGen5 Template info=pkginfo =]
+	PKG="GNUagen"
+	NAME="AutoGen - [=prog-title=]"
+	VERSION="[= version =]"
+	BASEDIR="${prefix}"
+	DESC="AutoGen - [=prog-title=]"
+	VENDOR="[= copyright.owner =] http://autogen.sf.net"
+	ARCH="sparc"
+	CATEGORY="Development"
+	EMAIL="[= copyright.eaddr =]"
+	CONTACT="[= copyright.owner =]"
+	CLASSES=none
+	PSTAMP="[= version =] `date '+%Y-%m-%d %H:%M:%S'`"
+	EOF
+
+cd ${agdir}
+${AGexe} --writable -L${pkgdst} -Tpkginfo.tpl ${top_srcdir}/agen5/opts.def
+mv -f pkginfo ${pkgdst}/.
+cd ${pkgdst}
+rm -f pkginfo.tpl
+cd ..
+rm -rf GNUagen*
+pkgmk -d. -r ${pkgdst}/reloc,${pkgdst} -f ${pkgdst}/prototype
+pkgtrans -s . GNUagen.pkg GNUagen
+gzip --best GNUagen.pkg
+rm -rf ${pkgdst}
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## End:
+## end of mkpkg.sun

@@ -1,0 +1,207 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# ----------------------------------------------------------------------
+# argument.test ---  test argument program attribute
+#                    make sure that when it is not specified
+#                    then option processing consumes all args.
+#
+# Time-stamp:        "2012-02-25 12:54:32 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+##  This file is part of AutoOpts, a companion to AutoGen.
+##  AutoOpts is free software.
+##  AutoOpts is Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoOpts is available under any one of two licenses.  The license
+##  in use must be one of these two and the choice is under the control
+##  of the user of the license.
+##
+##   The GNU Lesser General Public License, version 3 or later
+##      See the files "COPYING.lgplv3" and "COPYING.gplv3"
+##
+##   The Modified Berkeley Software Distribution License
+##      See the file "COPYING.mbsd"
+##
+##  These files have the following md5sums:
+##
+##  43b91e8ca915626ed3818ffb1b71248b pkg/libopts/COPYING.gplv3
+##  06a1a2e4760c90ea5e1dad8dfaac4d39 pkg/libopts/COPYING.lgplv3
+##  66a5cedaf62c4b2637025f049f9b826f pkg/libopts/COPYING.mbsd
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+echo "creating ${testname}.def in `pwd`"
+export testname test_main argument long_opts
+${SHELLX} ${stdopts} option:'opt init' second=020 || \
+    failure "Could not run stdopts.def"
+
+${AG_L} ${testname}.def || \
+  failure AutoGen could not process
+
+compile "-?"
+
+# # # # # # # # # # HELP OUTPUT FILE # # # # # # # # #
+
+basehlp=${testname}.hlp
+echo creating ${basehlp}
+clean_help > ${basehlp} <<'_EOF_'
+test_argument - Test AutoOpts for argument
+USAGE:  argument [ -<flag> [<val>] ]...
+  Flg Arg Option-Name    Description
+   -o Str option         The option option descrip
+   -s Num second         The second option descrip
+   -? no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+
+_EOF_
+
+cmp -s ${testname}.h*lp || \
+  failure "`diff ${basehlp} ${testname}.help`"
+
+./${testname} mumble 2> /dev/null && \
+  failure ${testname} should not accept non-options
+
+./${testname} -s mumble 2> /dev/null && \
+  failure ${testname} should not accept bad options
+
+./${testname} -o string -s 99 > /dev/null || \
+  failure ${testname} did not handle its options
+
+# # # # # # # # # # T E S T   2 # # # # # # # # # # #
+
+exec 3> ${testname}2.def
+${SED} '/arg-type = number/q' ${testname}.def >&3
+cat >&3 <<- _EOF_
+	    arg-range = "-1";
+	    arg-range = "3->021";
+	    arg-range = "040->0x1FFF";
+	    scaled;
+	};
+	include = '#include <stdlib.h>';
+	_EOF_
+exec 3>&-
+
+${AG_L} ${testname}2.def || \
+  failure AutoGen could not process
+{
+  ${SED} '/^#if.*TEST MAIN PROCEDURE:/,/#endif.*defined TEST_/d
+         /^#/s/_ARGUMENT_/_ARGUMENT2_/' \
+    ${testname}2.c
+  cat <<EOF
+int main( int argc, char** argv ) {
+  optionProcess( &test_argumentOptions, argc, argv );
+  return 0; }
+EOF
+} > XX
+mv ${testname}2.c ${testname}2.c.save
+mv -f XX ${testname}2.c
+
+Csrc=${testname}2
+compile "-?"
+
+clean_help > ${testname}2.hlp <<'_EOF_'
+test_argument - Test AutoOpts for argument
+USAGE:  argument2 [ -<flag> [<val>] ]...
+  Flg Arg Option-Name    Description
+   -o Str option         The option option descrip
+   -s Num second         The second option descrip
+				- is scalable with a suffix: k/K/m/M/g/G/t/T
+				- It must lie in one of the ranges:
+				  -1 exactly, or
+				  3 to 17, or
+				  32 to 8191
+   -? no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+
+_EOF_
+
+cmp -s ${testname}2.hlp ${testname}2.help || \
+  failure "`diff ${testname}2.hlp ${testname}2.help`"
+
+./${testname}2 -o string -s 037 > /dev/null && \
+  failure ${testname} handled wrong sized option
+
+./${testname}2 -o string -s 0x37 > /dev/null || \
+  failure ${testname} did not handle its options
+
+./${testname}2 -o string -s 8k > /dev/null || \
+  failure ${testname} could not handle 8k
+
+./${testname}2 -o string -s 8K > ${testname}2-bad.out 2>&1 && \
+  failure ${testname} did handle 8K
+
+grep 'error:.* value .* is out of range\.$' ${testname}2-bad.out || \
+  failure "missing 'is out of range' message"
+
+# # # # # # # # # # T E S T   3 # # # # # # # # # # #
+
+exec 3> ${testname}3.def
+${SED} '/value = .s.;/q' ${testname}.def >&3
+cat >&3 <<- _EOF_
+	    arg-type    = file;
+	    file-exists = yes;
+	    open-file   = fopen;
+	    file-mode   = "r";
+	};
+	_EOF_
+exec 3>&-
+
+${AG_L} ${testname}3.def || \
+  failure AutoGen could not process
+{
+  ${SED} '/^#if.*TEST MAIN PROCEDURE:/,/#endif.*defined TEST_/d
+          /^#/s/_ARGUMENT_/_ARGUMENT3_/' \
+    ${testname}3.c
+  cat <<EOF
+int main( int argc, char** argv ) {
+  optionProcess( &test_argumentOptions, argc, argv );
+  for (;;) { int ch = getc(OPT_VALUE_SECOND);
+    if (ch == EOF) break;
+    putc(ch, stdout); }
+  return fclose(OPT_VALUE_SECOND); }
+EOF
+} > XX
+mv ${testname}3.c ${testname}3.c.save
+mv -f XX ${testname}3.c
+
+Csrc=${testname}3
+compile "-?"
+
+clean_help > ${testname}3.hlp <<'_EOF_'
+test_argument - Test AutoOpts for argument
+USAGE:  argument3 [ -<flag> [<val>] ]...
+  Flg Arg Option-Name    Description
+   -o Str option         The option option descrip
+   -s Fil second         The second option descrip
+				- file must pre-exist
+   -? no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+
+_EOF_
+
+cmp -s ${testname}3.hlp ${testname}3.help || \
+  failure "`diff ${testname}3.hlp ${testname}3.help`"
+
+./${testname}3 -o string -s `pwd`/bogusfilename.c > /dev/null && \
+  failure ${testname} handled non-existent file
+
+./${testname}3 -o string -s `pwd`/${testname}3.hlp > ${testname}3-a.hlp || \
+  failure ${testname} could not handle existing file
+
+cmp -s ${testname}3.hlp ${testname}3-a.hlp || \
+  failure "`diff ${testname}3.hlp ${testname}3-a.hlp`"
+# # # # # # # # # # T E S T   E N D # # # # # # # # # #
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## End:
+
+# end of argument.test

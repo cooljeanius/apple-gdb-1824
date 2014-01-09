@@ -1,0 +1,64 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# ----------------------------------------------------------------------
+# time.test --- test modification time settings
+#
+## Time-stamp:      "2010-02-24 08:41:34 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+echo creating ${testname}.tpl
+cat > ${testname}.tpl <<_EOF_
+[= AutoGen5 template test =]
+Plain text template.
+_EOF_
+
+touch -t 200109110846.00 ${testname}.tpl
+
+run_ag time --source-time -b ${testname} -T ${testname}.tpl --no-definitions || \
+    failure autogen failed
+
+touch -t 200109110846.02 ${testname}.taaa
+
+set -- `ls -t ${testname}.t*`
+
+while :
+do
+    test "${3}" = ${testname}.tpl  || break
+    test "${2}" = ${testname}.test || break
+    test "${1}" = ${testname}.taaa || break
+    cleanup
+    exit 0
+done
+
+failure "wrong file time ordering:  $*"
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of time.test

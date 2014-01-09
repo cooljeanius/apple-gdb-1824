@@ -1,0 +1,151 @@
+autogen definitions strsignal;
+
+/*
+ *  Dynamic definitions for creating the strsignal.h header file
+ *
+ *  This file is part of AutoGen.
+ *
+ *  AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+ *
+ *  AutoGen is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AutoGen is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#shell
+
+RE_sigfind='[A-Z12]+[ 	]+[1-9][0-9]*'
+RE_sigdef='^#[ 	]*define[ 	][ 	]*_*SIG'
+RE_inc='^#[ 	]*include[ 	][ 	]*<'
+
+threshold=5             # minimum number of signals to accept
+num=0                   # number of signals defined in this file
+seen=""                 # include files already searched
+files="sys/signal.h"    # initial files to search
+
+cd /usr/include
+while test -n "$files"
+do
+    for file in $files; do
+        # look for $threshold or more matches in one of the search files
+        test -f $file || continue
+        sigs=`egrep "$RE_sigdef$RE_sigfind" $file|sed "s,$RE_sigdef,,"`
+        test -z "$sigs" || num=`echo "$sigs" | wc -l`
+        test $num -lt $threshold || break
+        seen="$file $seen"
+    done
+    test $num -lt $threshold || break
+
+    # IF no file has $threshold or better SIG matches;
+    # generate a new search list from all files #included from the old list
+    newfiles=""
+    for file in $files; do
+        test -f $file || continue
+        new=`egrep "$RE_inc" $file|sed "s,$RE_inc,,"';s,>.*$,,'`
+        newfiles=" $new $newfiles"
+    done
+
+    # remove any files that have been searched previously
+    for file in $seen; do
+        newfiles=`echo "$newfiles"|sed "s, $file , ,g"`
+    done
+
+    # set the search list for the next iteration
+    files="$newfiles"
+    num=0
+done
+
+if test $num -lt $threshold
+then
+  echo "WARNING: cannot find signal definitions in $seen" >&2
+  echo "using POSIX + ANSI signal definitions" >&2
+  cat <<- _EOF_
+	signal[  1 ] = { signame = SIGHUP;
+	                 sigtext = "Hangup (POSIX)."; };
+	signal[  2 ] = { signame = SIGINT;
+	                 sigtext = "Interrupt (ANSI)."; };
+	signal[  3 ] = { signame = SIGQUIT;
+	                 sigtext = "Quit (POSIX)."; };
+	signal[  4 ] = { signame = SIGILL;
+	                 sigtext = "Illegal instruction (ANSI)."; };
+	signal[  5 ] = { signame = SIGTRAP;
+	                 sigtext = "Trace trap (POSIX)."; };
+	signal[  6 ] = { signame = SIGABRT;
+	                 sigtext = "Abort (ANSI)."; };
+	signal[  8 ] = { signame = SIGFPE;
+	                 sigtext = "Floating-point exception (ANSI)."; };
+	signal[  9 ] = { signame = SIGKILL;
+	                 sigtext = "Kill, unblockable (POSIX)."; };
+	signal[ 10 ] = { signame = SIGUSR1;
+	                 sigtext = "User-defined signal 1 (POSIX)."; };
+	signal[ 11 ] = { signame = SIGSEGV;
+	                 sigtext = "Segmentation violation (ANSI)."; };
+	signal[ 12 ] = { signame = SIGUSR2;
+	                 sigtext = "User-defined signal 2 (POSIX)."; };
+	signal[ 13 ] = { signame = SIGPIPE;
+	                 sigtext = "Broken pipe (POSIX)."; };
+	signal[ 14 ] = { signame = SIGALRM;
+	                 sigtext = "Alarm clock (POSIX)."; };
+	signal[ 15 ] = { signame = SIGTERM;
+	                 sigtext = "Termination (ANSI)."; };
+	signal[ 17 ] = { signame = SIGCHLD;
+	                 sigtext = "Child status has changed (POSIX)."; };
+	signal[ 18 ] = { signame = SIGCONT;
+	                 sigtext = "Continue (POSIX)."; };
+	signal[ 19 ] = { signame = SIGSTOP;
+	                 sigtext = "Stop, unblockable (POSIX)."; };
+	signal[ 20 ] = { signame = SIGTSTP;
+	                 sigtext = "Keyboard stop (POSIX)."; };
+	signal[ 21 ] = { signame = SIGTTIN;
+	                 sigtext = "Background read from tty (POSIX)."; };
+	signal[ 22 ] = { signame = SIGTTOU;
+	                 sigtext = "Background write to tty (POSIX)."; };
+_EOF_
+
+else
+  echo "$sigs" |
+  while read SIG NUM f
+  do
+    #  IF the "signal number" is octal or hex or non-numeric,
+    #  THEN we know it is a value we are not interested in
+    #
+    case ${NUM} in
+    *[A-Za-z_]* )
+       continue ;;
+    esac
+
+    #  Sometimes, there are aliases.  Accept only the first.
+    #
+    if eval test ! -z \"\$HAVE_${NUM}\"
+    then continue ; fi
+
+    #  We also know we are not interested in super large numbers
+    #  (e.g. SIGSTKSZ 8192)
+    #
+    if test ${NUM} -gt 127
+    then continue ; fi
+
+    eval HAVE_${NUM}=1
+    f=`echo "$f" | sed -e 's;/\*[ 	]*;;' -e 's;[ 	]*\*/;;'`
+    if test -z "$f"
+    then f="Undescribed:  SIG${SIG} (${NUM})" ; fi
+
+    cat  <<-    _EOF_
+	signal[ ${NUM} ] = {
+	    signame = ${SIG};
+	    sigtext = "$f";
+	};
+
+	_EOF_
+  done
+fi
+#endshell

@@ -1,0 +1,233 @@
+#! /bin/echo This_file_must_be_sourced,_not_executed
+#
+# config/bootstrap.local --- maintainer's bootstrap script
+#
+# Author:            Bruce Korb <bkorb@gnu.org>
+# Time-stamp:        "2011-06-25 09:29:54 bkorb"
+##
+##  This file is part of AutoGen.
+##  AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoGen is free software: you can redistribute it and/or modify it
+##  under the terms of the GNU General Public License as published by the
+##  Free Software Foundation, either version 3 of the License, or
+##  (at your option) any later version.
+##
+##  AutoGen is distributed in the hope that it will be useful, but
+##  WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+##  See the GNU General Public License for more details.
+##
+##  You should have received a copy of the GNU General Public License along
+##  with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+locate_exe()
+{
+    if [ -x "$1" ]
+    then
+        echo "$1"
+        return 0
+    fi
+
+    case "${1}" in
+    */* )
+        echo "Cannot find ${1}" >&2
+        return 1
+        ;;
+    "" )
+        echo "USAGE:  locate_exe <exe-name>" >&2
+        exit 1
+        ;;
+    * )
+        name="${1}"
+        ;;
+    esac
+
+    SV="${IFS}"
+    IFS=" :"
+    set -- ${PATH}
+    for f
+    do
+        if [ -x ${f}/${name} ]
+        then
+            echo ${f}/${name}
+            return 0
+        fi
+    done
+    return 1
+}
+
+config_configurables()
+{
+    exec 4> configure.files
+    local tops=$(ls -d [a-rt-z]* snprintfv/Makefile.am Makefile.am)
+    local inf=$(find ${tops} -type f -name '*.in')
+    local in_list
+    for f in $inf
+    do
+        case "$f" in
+        *-tpl.in )  g=${f%-tpl.in}.tpl ;;
+        *-tlib.in ) g=${f%-tlib.in}.tlib ;;
+        *.in )      in_list=${in_list}${f%.in}$'\n' ; continue ;;
+        esac
+        printf 'AC_CONFIG_FILES([%s:%s])\n' $g $f
+    done >&4
+    {
+        echo "$in_list"
+        find ${tops} -name 'Makefile.am' | sed 's/\.am$//'
+    } | columns --first='AC_CONFIG_FILES([' --end='])' -I4 >&4
+    exec 4>&-
+
+    sed="-e 's/^AC_INIT(.*/AC_INIT([${PACKAGE}],[${AG_VERSION}],[${EADDR}])/'"
+    sed="${sed} -e '/dnl Local Variables:/,\$d'"
+    case "${AG_PATCHLEVEL}" in
+    ( *[0-9]pre[1-9]* ) : ;;
+    ( * ) sed="${sed} -e '/^case .*GCC.* in/,/^esac/d'" ;;
+    esac
+    sed="${sed} -e '/==ADD_CONFIG_FILES==/{${nl}s/.*//${nl}"
+    sed="${sed}r configure.files${nl}}'"
+
+    : "sed ${sed} ${config_file} > configure.tmp"
+    eval sed "${sed}" ${config_file} > configure.tmp
+
+    mv -f configure.tmp ${config_file}
+    rm -f configure.files
+}
+
+config_versions()
+{
+    set -a
+    eval "$(egrep '^[A-Z][A-Z0-9_]+=' VERSION)"
+    set +a
+    unset LANG || LANG=''
+
+    grep '==ADD_CONFIG_FILES==' ${config_file} >/dev/null 2>&1
+    test $? -eq 0 && config_configurables
+
+    for f in $(egrep -l 'eaddr +=' */*opts.def)
+    do sed "/eaddr  *=/s/= .*/= '${EADDR}';/" $f > X ; mv -f X $f
+    done
+
+    if grep '__CURRENT_VERSION__' NEWS > /dev/null
+    then
+      sed "1s/__CURRENT_VERSION__.*/${AG_VERSION} - $(date '+%B %Y')/" NEWS > X
+      mv -f X NEWS
+    fi
+
+    cd ${srcdir}/config
+    ${AGexe} -L. libopts.def || exit 1
+    ${AGexe} -L. misc.def    || exit 1
+    cd ..
+    cp snprintfv/snprintfv.m4 config/.
+
+    marker='=== Component Todo:'
+    rm -f TODO
+    exec 3> TODO
+    sed "/${marker}/,\$d" TODO-top >&3
+    for f in */TODO
+    do
+      test -f $f || continue
+      echo ; echo ${marker} ${f} '==='
+      cat ${f}
+    done >&3
+    exec 3>&-
+
+    cd ${srcdir}
+
+    GNULIBDIR=${GNULIBDIR:-~gnu/proj/gnulib}
+    cp ${GNULIBDIR}/lib/parse-duration.[ch] autoopts/.
+    cp  ${GNULIBDIR}/build-aux/gendocs.sh \
+        ${GNULIBDIR}/doc/gendocs_template doc/.
+
+    fmemdir=~bkorb/tools/mine/lib/fmemopen
+    if test -f ${fmemdir}/fmemopen.c
+    then
+        test -f agen5/fmemopen.c && rm -f agen5/fmemopen.c
+        {
+            echo '#if defined(ENABLE_FMEMOPEN)'
+            echo '#include <sys/ioctl.h>'
+            echo
+            sed -n '/^typedef enum/,/_IOWR(/p' ${fmemdir}/libfmem.h
+            sed -e '/^#if defined(HAVE_FOPENCOOKIE)/p' \
+                -e '/=--subblock/,/^#if defined(HAVE_FOPENCOOKIE)/d' \
+                -e "s% @file .*% @file $(realpath ${fmemdir}/fmemopen.c)%" \
+                ${fmemdir}/fmemopen.c
+            echo '#endif /* ENABLE_FMEMOPEN */'
+        } > agen5/fmemopen.c
+        
+    fi
+}
+
+check_tools()
+{
+    local t e
+    for t in AG GD CL
+    do
+        eval e=\${${t}exe}
+        test -x "$e" || die "Not executable: \$${t}exe == '$e'"
+        $e --version || die "$e does not work"
+    done
+}
+
+tweak_Makefile_am()
+{
+    #  IF the source dir is not known,
+    #  THEN it is the directory above the directory of this file.
+    #
+    test -z "${srcdir}" && \
+        srcdir=$(\cd $(dirname $0) ; \cd .. ; pwd)
+    cd ${srcdir}
+
+    {
+        sed '/^EXTRA_DIST /{
+            s/.*/misc_extra     = \\/
+            q
+        }' Makefile.am
+        find VERSION NOTES config/bootstrap* config/*.m4 \
+               autoopts/parse-duration.[ch] doc/gendocs* \
+            -type f | \
+            columns --spread=1 -I4 --line=' \'
+
+        sed -n '/^EXTRA_DIST /,$p' Makefile.am
+    } > XXX$$
+    mv -f XXX$$ Makefile.am
+
+    cd pkg
+    {
+        sed '/^LIBOPTS_FILES  *=/{
+            s/=.*/= \\/
+            q
+        }' Makefile.am
+
+        find libopts -type f -name '[a-zA-Z]*' | \
+            columns --spread=1 -I4 --line=' \'
+        echo
+
+        sed '1,/LIBOPTS_FILES *=/d' Makefile.am
+    } > XXX$$
+    mv -f XXX$$ Makefile.am
+    cd ${srcdir}
+}
+
+case "${BOOTSTRAP}" in
+( pre )
+    dummy_texi=${srcdir}/doc/autogen.texi
+    echo '@setfilename autogen.info' > ${dummy_texi}
+    test -f ${srcdir}/configure && rm -f ${srcdir}/configure
+    check_tools >/dev/null
+    config_versions
+    tweak_Makefile_am
+    ;;
+
+( post )
+    test ${#dummy_texi} -gt 0 && rm -f ${dummy_texi}
+    ;;
+esac
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:
+
+# config/bootstrap.local ends here

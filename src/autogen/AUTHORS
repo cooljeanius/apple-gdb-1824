@@ -1,0 +1,39 @@
+Original authors are also attributed in each source file...
+
+Bruce Korb:
+
+agen5/*, getdefs/*, autoopts/*, columns/*, rehacked compat/pathfind.c
+to be SVR4 compatible.  reworked compat/strsignal to use a shell script
+to extract the local information and generate a static version.  (It
+uses autogen, so a generated version must be distributed also. :)
+
+Bruce Korb and Gary V. Vaughan:
+In the directory config, regcomp.m4 and bootstrap.
+
+Gary V. Vaughan:
+changes throughout to aid portability of C code.
+wrote the autoconf files, Makefile.am and configure.in.
+in the directory config; ctime.m4, make.m4 and release.
+in the directory compat; basename.c, dirname.c, compat.h,
+    pathfind.c, libgen.h
+in the directory tests; almost *.test
+snprintfv/*
+
+Greg Harvey:
+agen5/schemedef.scm, enabling Scheme syntax definitions
+
+Brian Fox, Chet Ramey:
+sections of files borrowed from bash-2.0 incorporated into
+compat/compat.h; (posixstat.h, posixjmp.h)
+
+Fred Fish, Gary V. Vaughan and Bruce Korb:
+in the directory compat; strsignal.c
+
+Doug Gwyn, Richard Stallman:
+in the directory compat; ndir.h
+
+James R. Van Zandt:
+The Debianization of AutoGen
+
+Daniel Schregenberger <npfdd@gmx.net>
+More GNU-ish usage text for AutoOpts.

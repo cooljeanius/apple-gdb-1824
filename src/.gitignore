@@ -32,6 +32,7 @@
 .gdbinit
 .gdb_history
 Makefile
+Makefile.orig
 TAGS
 TAGS.sub
 TEMP
@@ -80,6 +81,3 @@ mh-frag
 mt-frag
 update.out
 update.sourceware
-
-# gitignore to commit separately:
-autogen/*

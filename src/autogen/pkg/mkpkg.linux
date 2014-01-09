@@ -1,0 +1,93 @@
+#! /bin/sh
+
+# Time-stamp:        "2011-10-07 16:22:48 bkorb"
+##
+##  This file is part of AutoGen.
+##  AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoGen is free software: you can redistribute it and/or modify it
+##  under the terms of the GNU General Public License as published by the
+##  Free Software Foundation, either version 3 of the License, or
+##  (at your option) any later version.
+##
+##  AutoGen is distributed in the hope that it will be useful, but
+##  WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+##  See the GNU General Public License for more details.
+##
+##  You should have received a copy of the GNU General Public License along
+##  with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+case "${VERBOSE}" in
+"" | f* | F* | n* | N* )
+   VERBOSE=false ;;
+*) VERBOSE=true  ; set -x ;;
+esac
+export VERBOSE
+
+eval "`egrep '^AG_' ${top_srcdir}/VERSION`" > /dev/null
+
+## Set directories in case they are relative paths
+##
+builddir=`pwd`
+top_srcdir=`cd ${top_srcdir} > /dev/null ; pwd`
+srcdir=`cd ${srcdir} > /dev/null ; pwd`
+
+cd ${top_builddir}
+top_builddir=`pwd`
+
+rm -rf ./AGPKG
+mkdir AGPKG
+cd AGPKG
+HOME=`pwd`
+
+mkdir -p BUILD SOURCES SPECS RPMS SRPMS
+
+[ -f ../autogen-${AG_VERSION}.tar.gz ] || (
+  cd ..
+  ${MAKE} dist || exit 1
+) || exit 1
+
+ln ../autogen-${AG_VERSION}.tar.gz SOURCES/.
+printf "\n\nPACKAGING RPM FOR LINUX\n\n"
+
+cd ${builddir}
+AG_VERSION=`echo ${AG_VERSION} | sed 's,\.,-,g'`
+specfile=autogen-${AG_VERSION}.spec
+agargs="-L ${srcdir} -L ${top_srcdir}/autoopts"
+agargs="${agargs} -T spec.tpl -b autogen-${AG_VERSION} --writable"
+${AGexe} ${agargs} ${top_srcdir}/agen5/opts.def || exit 1
+
+cd ${HOME}
+
+echo "%_tmppath ${top_builddir}/AGPKG/BUILD
+%_topdir $PWD" > .rpmmacros
+
+cat > .rpmrc <<- _EOF_
+
+	optflags: i386 -O3 -march=i486 -mcpu=i686
+	optflags: i486 -O3 -march=i486
+	optflags: i586 -O3 -march=i586 -mcpu=i686 -fmessage-length=0
+	optflags: i686 -O3 -march=i686 -mcpu=i686
+	optflags: athlon -O3 -march=athlon
+	optflags: ia64 -O3
+	optflags: x86_64 -O3
+	optflags: amd64 -O3
+	optflags: ia32e -O3
+
+	_EOF_
+
+RPM_OPT_FLAGS=-O3 rpmbuild -ba ${builddir}/${specfile} || exit 1
+ln `find . -type f -name '*.rpm'` ${builddir}/.
+cd ${builddir}
+rm -rf ${HOME}
+${VERBOSE} || ls -l *.rpm
+:
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+## end of mkpkg.linux

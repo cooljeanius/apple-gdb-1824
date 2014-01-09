@@ -1,0 +1,91 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# ----------------------------------------------------------------------
+# opts.test --- Verify the handling of options
+#
+# Time-stamp:       "2011-12-04 05:12:42 bkorb"
+# Author:	    Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+. ./defs
+
+#  Fetch the options files
+#
+unstamp()
+{
+  # The "zDetail" and zCopyrightNotice text gets formatted with "fmt -w 75".
+  # The different "fmt" implementations behave differently.
+  #
+  ${SED} -e "${sed_omit_license}" \
+      -e '/ extracted from.* line [1-9]/d' \
+      -e '/static char const zDetail/,/";$/d' \
+      -e '/static char const zCopyright/,/";$/d' \
+      -e '/static char const zLicenseDescrip/,/";$/d' \
+      -e '/ "autogen is free software: /,/www\.gnu\.org\/licenses/d' \
+      $1 > $2 ||
+    failure Cannot remove stamps from $1
+}
+
+workdir=`pwd`
+rm -f ../VERSION ./opts.* || :
+
+cd ${top_srcdir}/agen5
+unstamp opts.c ${workdir}/opts.c.base
+unstamp opts.h ${workdir}/opts.h.base
+cp opts.def ${workdir}/.
+cp -f ${top_srcdir}/VERSION ${workdir}/..
+
+cd ${workdir}
+set -x
+ls -l * ../VERSION > $testname.log
+
+echo Checking for "'define DEBUG'" options
+if ${GREP} 'define DEBUG' ${srcdir}/../opts.h
+then
+  AGCMD="-DDEBUG=1"
+else
+  AGCMD=""
+fi
+
+run_ag x ${AGCMD} opts.def || {
+  rm -f ../VERSION
+  failure ${AGCMD} opts.def
+}
+
+rm -f ../VERSION
+
+unstamp opts.c opts.c.res
+echo diff opts.c.base opts.c.res
+diff opts.c.base opts.c.res || \
+  failure "`diff -c opts.c.base opts.c.res`"
+
+unstamp opts.h opts.h.res
+echo diff opts.h.base opts.h.res
+diff opts.h.base opts.h.res || \
+  failure "`diff -c opts.h.base opts.h.res`"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of opts.test

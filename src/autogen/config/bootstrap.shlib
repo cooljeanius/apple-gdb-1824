@@ -1,0 +1,239 @@
+#! /bin/echo This_file_must_be_sourced,_not_executed
+# config/bootstrap.local --- maintainer's bootstrap script
+#
+# Author:            Bruce Korb <bkorb@gnu.org>
+# Time-stamp:        "2010-11-08 09:18:53 bkorb"
+##
+##  This file is part of AutoGen.
+##  AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoGen is free software: you can redistribute it and/or modify it
+##  under the terms of the GNU General Public License as published by the
+##  Free Software Foundation, either version 3 of the License, or
+##  (at your option) any later version.
+##
+##  AutoGen is distributed in the hope that it will be useful, but
+##  WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+##  See the GNU General Public License for more details.
+##
+##  You should have received a copy of the GNU General Public License along
+##  with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# This file contains various utility functions for the "bootstrap" scripts
+# that are scattered about.
+
+mainpid=$$
+
+die() {
+    echo "bootstrap failure:  $*" >&2
+    kill -9 ${mainpid}
+    exit 1
+}
+
+doit ()
+{
+    if test "x$1" != x:
+    then
+        echo "RUN:  $*"
+        eval "$@" || exit 1
+    fi
+}
+
+case `set -o` in
+*posix*) set -o posix  ;;
+*) exec bash $0 ${1+"$@"} ;;
+esac
+
+case "${SHELL}" in
+*[akz]sh) : ;;
+*)
+  while : ; do
+    SHELL=`which bash 2>/dev/null`
+    test -x "${SHELL}" && break
+
+    SHELL=`which ksh 2>/dev/null`
+    test -x "${SHELL}" && break
+
+    SHELL=/usr/xpg4/bin/sh
+    test -x "${SHELL}" && break
+
+    SHELL=`which sh 2>/dev/null`
+    test -x "${SHELL}" && break
+
+    die "unable to determine which shell to use"
+  done
+  ;;
+esac
+
+case "${VERBOSE}" in
+[tTyY1]* ) VERBOSE=true ;;
+[fFnN0]* ) VERBOSE=false ;;
+* )
+    case "$-" in
+    *x* )  VERBOSE=true ;;
+    *   )  VERBOSE=false ;;
+    esac
+esac
+
+if ${VERBOSE}
+then setx=set\ -x dashx=-x ; set -x
+else setx=:       dashx=   ; set +x
+fi
+
+test -n "${BASH_VERSION}" || {
+    local() {
+        "$@"
+    }
+}
+
+test -z "${BASH_VERSION}" && local() { : ; }
+# Setup run_ag
+tpl_dir='-L'$(\cd ${top_srcdir}/autoopts/tpl && pwd)' -L'$(
+    \cd ${top_builddir}/autoopts/tpl && pwd)
+typeset -r tpl_dir
+
+if ${VERBOSE}
+then
+    # vgopts='--suppressions=/old-home/bkorb/ag/valgrind.conf --leak-check=yes'
+    # valgrind ${vgopts} --log-file=${vgfile} \
+
+    run_ag()
+    {
+        local tag=${1} ; shift
+        # local vgfile=/tmp/vglog/${tag}-%p.txt
+        local tfile='>>'ag-${tag}-$$.log
+        tag="-MFstamp-${tag} --trace=every --trace-out=${tfile}"
+
+        MALLOC_CHECK_=2 \
+            ${AGexe} ${tpl_dir} ${tag} "$@" || die "FAILED: ${AGexe} $*"
+    }
+else
+    run_ag()
+    {
+        # local vgfile=/tmp/vglog/${1}-%p.txt
+        local tag="-MFstamp-${1}" ; shift
+
+        echo ${AGexe} ${tpl_dir} ${tag} "$@"
+        ${AGexe} ${tpl_dir} ${tag} "$@" || die "FAILED: ${AGexe} $*"
+    }
+fi
+
+trap 'die "trapped exit signal"' 0
+
+test "X${CDPATH}" = X || {
+    ( unset CDPATH ) > /dev/null 2>&1 && unset CDPATH || CDPATH=''
+}
+
+nl=$'\n'
+
+export setx dashx VERBOSE nl
+
+# # # # # # # # # # # # # # # # # # #
+#
+# Make the option processing files:
+#
+make_opts()
+{
+    # Make the option processing files:
+    #
+    if [ -z "${AGexe}" ]
+    then
+      test "X${BOOTSTRAP}" = X \
+        && echo "Cannot locate ${AG}.  Giving up"
+      if [ -f opts.h ] && [ -f opts.c ]
+      then exit 0 ; else exit 1 ; fi
+    fi
+    run_ag opts ${DEBUG_OPTS} *opts.def
+}
+
+# # # # # # # # # # # # # # # # # # #
+#
+#  Make the proto.h header & make sure the static proc declarations
+#  are all current at the top of each module.
+#
+make_proto()
+{
+    rm -f proto.h
+    exec 5> proto.h
+
+    local files=`ls -1 *.c | grep -v 'fsm\.c$'`
+    local dirname=
+    local base_dir=`basename \`pwd\``
+    local marker=`echo ${base_dir} | tr a-z A-Z`_PROTO_H_GUARD
+    local ct=0
+
+    cat >&5 <<- _EOF_
+	/* -*- buffer-read-only: t -*- vi: set ro:
+	 *
+	 * Prototypes for ${base_dir}
+	 * Generated `date`
+	 */
+	#ifndef ${marker}
+	#define ${marker} 1
+
+	#ifndef LOCAL
+	#  define LOCAL extern
+	#  define REDEF_LOCAL 1
+	#else
+	#  undef  REDEF_LOCAL
+	#endif
+	_EOF_
+
+    for f in ${files}
+    do
+        test ! -f ${f} && echo "not a file:  $f" >&2 && continue
+        ct=`echo \`egrep '(START|END)-STATIC-FORWARD' $f | wc -l\` `
+
+        case ${ct} in
+        ( 2 )
+            rm -f $f.[XY]
+
+            exec 4> $f.X
+            sed '/START-STATIC-FORWARD/q' $f >&4
+            sed -n '/END-STATIC-FORWARD/,$p' $f > $f.Y
+            sed -n '/^static /,/^{/p' $f.Y | \
+                sed 's/^{.*//;s/)$/);/;$d' >&4
+            cat $f.Y >&4
+            exec 4>&-
+
+            if cmp $f.X $f > /dev/null 2>&1
+            then :
+            else echo WARNING: ${f} has been updated >&2
+                mv -f $f.X $f ; fi
+
+            rm -f $f.[XY]
+            ;;
+
+        ( 0 ) : ;;
+        ( * )
+            echo "bad marker line count:" $ct in $f >&2
+            continue
+        esac
+
+        ct=`echo \`egrep '^LOCAL ' $f | wc -l\` `
+        test $ct -eq 0 && continue
+
+        echo $'/*\n *  Extracted from '$f$'\n */' >&5
+        sed -n '/^LOCAL /,/^{/p' $f | \
+            sed 's/)$/);/;s/^{.*//' >&5
+    done
+
+    cat >&5 <<- _EOF_
+	#ifdef REDEF_LOCAL
+	#  undef LOCAL
+	#  define LOCAL
+	#endif
+	#endif /* ${marker} */
+	_EOF_
+    exec 5>&-
+}
+
+# Local Variables:
+# mode:shell-script
+# sh-indentation:4
+# sh-basic-offset:4
+# indent-tabs-mode: nil
+# End:
+
+# bootstrap.shlib ends here

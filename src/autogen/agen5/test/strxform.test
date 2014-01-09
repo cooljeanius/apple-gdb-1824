@@ -1,0 +1,87 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# strxform.test --- test string transformation functionality
+#
+# Time-stamp:        "2011-02-02 12:02:13 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+## This file is part of AutoGen.
+## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # TEMPLATE FILE # # # # # # # # #
+
+echo creating ${testname}.tpl
+${SED} 's/^ *[0-9]*: //' > ${testname}.tpl <<-  _EOTPL_
+ 1: [= AutoGen5 Template test =]
+ 2: string input:       [= in-str =]
+ 3: 
+ 4: string->c-name!     [= (string->c-name!    (get "in-str")) =]
+ 5: string-upcase!      [= (string-upcase!     (get "in-str")) =]
+ 6: string-capitalize!  [= (string-capitalize! (get "in-str")) =]
+ 7: string-capitalize   [= (string-capitalize  (get "in-str")) =]
+ 8: string-downcase!    [= (string-downcase!   (get "in-str")) =]
+ 9: string-downcase     [= (string-downcase    (get "in-str")) =]
+10: string->camelcase   [= (string->camelcase  (get "in-str")) =]
+_EOTPL_
+
+cat > ${testname}.def <<- _EOF_
+	AutoGen Definitions ${testname}.tpl;
+	in-str = "The 10quick\tfoxes-jumped/very=\n=high9indeed!";
+	_EOF_
+
+# # # # # # # # # # # EXPECTED OUTPUT FILE # # # # # # #
+set -x
+echo creating ${testname}.out
+# this is the output we should expect to see
+cat > ${testname}.out <<- \_EOF_
+	string input:       The 10quick	foxes-jumped/very=
+	=high9indeed!
+
+	string->c-name!     The 10quick	foxes_jumped_very_
+	_high9indeed_
+	string-upcase!      THE 10QUICK	FOXES-JUMPED/VERY=
+	=HIGH9INDEED!
+	string-capitalize!  The 10quick	Foxes-Jumped/Very=
+	=High9indeed!
+	string-capitalize   The 10quick	Foxes-Jumped/Very=
+	=High9indeed!
+	string-downcase!    the 10quick	foxes-jumped/very=
+	=high9indeed!
+	string-downcase     the 10quick	foxes-jumped/very=
+	=high9indeed!
+	string->camelcase   The10QuickFoxesJumpedVeryHigh9Indeed
+	_EOF_
+
+run_ag x ${testname}.def || failure autogen failed
+
+cmp -s ${testname}.test ${testname}.out || \
+    failure "unexpected output:${nl}`diff ${testname}.out ${testname}.test`"
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## sh-basic-offset: 2
+## End:
+
+# end of strxform.test

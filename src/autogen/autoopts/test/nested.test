@@ -1,0 +1,266 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*-
+# ----------------------------------------------------------------------
+# nested.test ---  test nested option values
+#
+# Time-stamp:        "2011-08-07 17:33:25 bkorb"
+# Author:            Bruce Korb <bkorb@gnu.org>
+##
+##  This file is part of AutoOpts, a companion to AutoGen.
+##  AutoOpts is free software.
+##  AutoOpts is Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##
+##  AutoOpts is available under any one of two licenses.  The license
+##  in use must be one of these two and the choice is under the control
+##  of the user of the license.
+##
+##   The GNU Lesser General Public License, version 3 or later
+##      See the files "COPYING.lgplv3" and "COPYING.gplv3"
+##
+##   The Modified Berkeley Software Distribution License
+##      See the file "COPYING.mbsd"
+##
+##  These files have the following md5sums:
+##
+##  43b91e8ca915626ed3818ffb1b71248b pkg/libopts/COPYING.gplv3
+##  06a1a2e4760c90ea5e1dad8dfaac4d39 pkg/libopts/COPYING.lgplv3
+##  66a5cedaf62c4b2637025f049f9b826f pkg/libopts/COPYING.mbsd
+#
+# ----------------------------------------------------------------------
+
+. ./defs
+
+# # # # # # # # # # DEFINITIONS FILE # # # # # # # # #
+
+exec 5> ${testname}.def
+cat >&5 <<- _EOF_
+
+	AutoGen definitions options;
+
+	config-header = 'config.h';
+	prog-name  = "test_${testname}";
+	prog-title = "Test AutoOpts for ${testname}";
+	homerc     = ${testname}.d/${testname}.cfg;
+
+	flag = {
+	    name = struct;
+	    value = s;
+	    max = NOLIMIT;
+	    descrip = 'structured argument val';
+	    arg-type = nested;
+	};
+	main = {
+	    main-type = main;
+	_EOF_
+
+test -d ${testname}.d || mkdir -p ${testname}.d
+
+echo '    main-text = <''<- _EOCode_' >&5
+cat >&5 <<- _EOF_
+	    {
+	        int ix = 0;
+	        const tOptionValue* pOV =
+	            optionFindValue(&DESC(STRUCT), NULL, NULL);
+	        do {
+	            printf("\nstruct opt #%d:\n", ++ix);
+	            res |= print_entry( pOV );
+	            pOV = optionFindNextValue(&DESC(STRUCT), pOV, NULL, NULL);
+	        } while (pOV != NULL);
+	    }
+	_EOF_
+
+echo "_EOCode_; };" >&5
+
+echo 'include = <''<- _EOSubr_' >&5
+cat >&5 <<- _EOF_
+	#include <stdio.h>
+
+	int print_nested( const tOptionValue* pGV );
+	int print_entry( const tOptionValue* pGV );
+	int print_entry( const tOptionValue* pGV ) {
+	  if (pGV == NULL) {
+	    fprintf( stderr, "ENTRY NOT FOUND\n" );
+	    return 1;
+	  }
+	  printf( "%-8s -- ", pGV->pzName );
+	  switch (pGV->valType) {
+	    case OPARG_TYPE_NONE:
+	      fputs( "no value\n", stdout ); break;
+
+	    case OPARG_TYPE_STRING:
+	      printf( "string:   %s\n",      pGV->v.strVal ); break;
+
+	    case OPARG_TYPE_ENUMERATION:
+	      printf( "enum:     %d\n",      pGV->v.enumVal ); break;
+
+	    case OPARG_TYPE_BOOLEAN:
+	      printf( "bool:     %s\n",
+	              pGV->v.boolVal ? "TRUE" : "false" ); break;
+
+	    case OPARG_TYPE_MEMBERSHIP:
+	      printf("members:  0x%08lX\n",  (unsigned long)pGV->v.setVal); break;
+
+	    case OPARG_TYPE_NUMERIC:
+	      printf( "integer:   %ld\n",     pGV->v.longVal ); break;
+
+	    case OPARG_TYPE_HIERARCHY:
+	      printf( "nested:   0x%08lX\n",  (unsigned long)pGV->v.nestVal );
+	      return print_nested( pGV );
+	      break;
+
+	    default:
+	      printf( "bad type: %d\n",      pGV->valType );
+	      return 1;
+	  }
+	  return 0;
+	}
+
+	int print_nested( const tOptionValue* pGV ) {
+	  int res = 0;
+	  const tOptionValue* pOV = optionGetValue( pGV, NULL );
+	  while (pOV != NULL) {
+	    res |= print_entry( pOV );
+	    pOV = optionNextValue( pGV, pOV );
+	  }
+	  return res;
+	}
+	_EOF_
+echo "_EOSubr_;" >&5
+
+exec 5>&-
+
+# # # # # # # # # # CREATE PROGRAM # # # # # # # # #
+
+echo ${AG_L} ${testname}.def
+${AG_L} ${testname}.def || \
+  failure AutoGen could not process
+
+compile "-?"
+
+# # # # # # # # # # HELP OUTPUT FILE # # # # # # # # #
+
+basehelp=${testname}-base.help
+echo creating ${basehelp}
+clean_help > ${basehelp} <<_EOF_
+test_${testname} - Test AutoOpts for ${testname}
+USAGE:  ${testname} [ -<flag> [<val>] ]...
+  Flg Arg Option-Name    Description
+   -s Cpx struct         structured argument val
+				- may appear multiple times
+   -? no  help           Display extended usage information and exit
+   -! no  more-help      Extended usage information passed thru pager
+   -> opt save-opts      Save the option state to a config file
+   -< Str load-opts      Load options from a config file
+				- disabled as --no-load-opts
+				- may appear multiple times
+
+
+The following option preset mechanisms are supported:
+ - reading file ${testname}.cfg
+_EOF_
+
+${SED} "/ - reading file/s/ file .*/ file ${testname}.cfg/" \
+    ${testname}.help > X$$
+mv -f X$$ ${testname}.help
+
+cmp -s ${basehelp} ${testname}.help || \
+  failure "`diff ${basehelp} ${testname}.help`"
+
+# # # # # # # # # # SINGLE ARG TEST # # # # # # # # #
+
+cat > ${testname}-res1.base <<- _EOF_
+
+	struct opt #1:
+	struct   -- nested:   0xXXXXXXXX
+	able     -- no value
+	bar      -- integer:   1234
+	foo      -- no value
+	stumble  -- no value
+	_EOF_
+
+./${testname} -s 'stumble, foo, <bar type=integer>1234</bar> able' | \
+${SED} '/ nested:/s/ 0x.*/ 0xXXXXXXXX/' > ${testname}-res1.out || \
+  failure "FAILED: \
+./${testname} -s 'stumble, foo, <bar type=integer>1234</bar> baz'"
+
+cmp -s ${testname}-res1.* || \
+  failure "`diff ${testname}-res1.*`"
+
+# # # # # # # # # # DOUBLE ARG TEST # # # # # # # # #
+
+arg1="stumble, <foo>foo${tabch}lish</foo>, <bar type=integer>1234</bar>, able"
+arg2='foo, <bar type=integer>4321</bar> <gr type=nested>one, two=2, three</gr>'
+(./${testname} -s "${arg1}" -s "${arg2}" \
+    | ${SED} '/ nested:/s/ 0x.*/ 0xXXXXXXXX/' ) > ${testname}-res2.out || \
+  failure "FAILED:  ./${testname} ${arg1} ${arg2}"
+
+cat > ${testname}-res2.base <<- _EOF_
+
+	struct opt #1:
+	struct   -- nested:   0xXXXXXXXX
+	able     -- no value
+	bar      -- integer:   1234
+	foo      -- string:   foo	lish
+	stumble  -- no value
+
+	struct opt #2:
+	struct   -- nested:   0xXXXXXXXX
+	bar      -- integer:   4321
+	foo      -- no value
+	gr       -- nested:   0xXXXXXXXX
+	one      -- no value
+	three    -- no value
+	two      -- string:   2
+	_EOF_
+
+cmp -s ${testname}-res2.* || \
+  failure "`diff ${testname}-res2.*`"
+
+./${testname} -s "${arg1}" -s "${arg2}" '->'
+${SED} -e '3s/.*/#  ***DATE***/' ${testname}.d/${testname}.cfg > ${testname}.XX
+mv -f ${testname}.XX ${testname}.d/${testname}.cfg
+cat > ${testname}-res3.base <<- _EOF_
+	#  test_nested - Test AutoOpts for nested
+	#  preset/initialization file
+	#  ***DATE***
+	#
+	<struct type=nested>
+	  <able/>
+	  <bar type=integer>0x4D2</bar>
+	  <foo>foo&#x09;lish</foo>
+	  <stumble/>
+	</struct>
+	<struct type=nested>
+	  <bar type=integer>0x10E1</bar>
+	  <foo/>
+	  <gr type=nested>
+	    <one/>
+	    <three/>
+	    <two>2</two>
+	  </gr>
+	</struct>
+	_EOF_
+files=${testname}-res3.base\ ${testname}.d/${testname}.cfg
+cmp -s ${files} || \
+    failure "saved config${nl}`diff ${files}`"
+
+# Copy the config file and verify that the contents are the same.
+#
+./${testname} "->${testname}.d/${testname}.cfg2"
+${SED} -e '3s/.*/#  ***DATE***/' ${testname}.d/${testname}.cfg2 > ${testname}.XX
+mv -f ${testname}.XX ${testname}.d/${testname}.cfg2
+files=${testname}.d/${testname}.cfg\ ${testname}.d/${testname}.cfg2
+cmp -s ${files} || \
+    failure "re-saved config${nl}`diff ${files}`"
+
+# # # # # # # # # # TEST OPERATION # # # # # # # # # #
+
+cleanup
+
+## Local Variables:
+## mode: shell-script
+## indent-tabs-mode: nil
+## sh-indentation: 2
+## End:
+
+# end of nested.test
