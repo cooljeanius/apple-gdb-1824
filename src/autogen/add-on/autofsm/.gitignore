@@ -1,0 +1,15 @@
+*-fsm.[cho]
+[cn]*-*.def
+*~
+*-stamp
+*.samp
+*.out
+.fsm.*
+test*
+autofsm-[0-9]*
+*.html
+example-fsm.[ch]
+fsm-macro.tlib
+fsm-trans.tlib
+sample.shar
+*.o

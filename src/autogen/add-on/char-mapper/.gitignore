@@ -5,3 +5,12 @@
 /test-*
 /map-text.[ch]
 /char-mapper.txz
+test-cmap*
+*~
+*.stamp
+core*
+char-mapper
+map-text.h
+cm-opt.h
+cm-opt.c
+map-text.c

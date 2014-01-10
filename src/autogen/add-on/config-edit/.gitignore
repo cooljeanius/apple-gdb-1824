@@ -3,3 +3,4 @@
 /daemon-opts.[ch]
 /*.o
 /edit-daemon-conf.[ch]
+*~
