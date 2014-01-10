@@ -1,5 +1,5 @@
 This is autogen.info, produced by makeinfo version 4.13 from
-/old-home/bkorb/ag/ag/doc//agdoc.texi.
+/Users/localadmin/apple-gdb-1824/src/autogen/doc//agdoc.texi.
 
 This manual is for GNU AutoGen version 5.15, updated February 2012.
 
@@ -4453,10 +4453,10 @@ File: autogen.info,  Node: Option Define Names,  Prev: All Attribute Names,  Up:
                                                               (line   6)
 * deprecated:                            Common Attributes.   (line  29)
 * descrip:                               Required Attributes. (line  36)
-* detail <1>:                            documentation attributes.
-                                                              (line 164)
-* detail:                                information attributes.
+* detail <1>:                            information attributes.
                                                               (line  44)
+* detail:                                documentation attributes.
+                                                              (line 164)
 * disable:                               Common Attributes.   (line  34)
 * disable-load:                          config attributes.   (line  13)
 * disable-save:                          config attributes.   (line  13)
@@ -4464,9 +4464,9 @@ File: autogen.info,  Node: Option Define Names,  Prev: All Attribute Names,  Up:
                                                               (line  18)
 * doc-section:                           documentation attributes.
                                                               (line  37)
-* documentation <1>:                     opt-attr documentation.
+* documentation <1>:                     lib and program.     (line  17)
+* documentation:                         opt-attr documentation.
                                                               (line  11)
-* documentation:                         lib and program.     (line  17)
 * eaddr:                                 information attributes.
                                                               (line  32)
 * enable:                                Common Attributes.   (line  47)
@@ -6548,8 +6548,8 @@ Concept Index
 * AutoInfo:                              AutoInfo.            (line   6)
 * AutoMan pages:                         AutoMan pages.       (line   6)
 * automatic options:                     automatic options.   (line   6)
-* autoopts <1>:                          Caveats.             (line  26)
-* autoopts:                              AutoOpts.            (line   6)
+* autoopts <1>:                          AutoOpts.            (line   6)
+* autoopts:                              Caveats.             (line  26)
 * AutoOpts API:                          AutoOpts API.        (line   6)
 * autoopts directives:                   config directives.   (line   6)
 * AutoXDR:                               AutoXDR.             (line   6)
@@ -6578,15 +6578,16 @@ Concept Index
 * Common Option Attributes:              Common Attributes.   (line   6)
 * compound definitions:                  Definitions.         (line  44)
 * concat-string:                         concat-string.       (line   6)
-* conditional emit <1>:                  WHILE.               (line   6)
-* conditional emit:                      IF.                  (line   6)
-* configuration file:                    shell options.       (line   6)
+* conditional emit <1>:                  IF.                  (line   6)
+* conditional emit:                      WHILE.               (line   6)
+* configuration file <1>:                automatic options.   (line  73)
+* configuration file <2>:                shell options.       (line   6)
+* configuration file:                    Option Processing Data.
+                                                              (line  42)
 * Configuration File <1>:                Config File Format.  (line   6)
 * Configuration File:                    config example.      (line   6)
-* configuration file <1>:                Option Processing Data.
-                                                              (line  42)
-* configuration file <2>:                automatic options.   (line  57)
-* configuration file:                    opt-attr no-preset.  (line   6)
+* configuration file <1>:                opt-attr no-preset.  (line   6)
+* configuration file:                    automatic options.   (line  57)
 * Configuration File example:            config example.      (line   6)
 * configuring:                           configuring.         (line   6)
 * define directive:                      Directives.          (line  45)
@@ -6697,16 +6698,16 @@ Concept Index
                                                               (line  12)
 * predefines:                            Predefines.          (line   6)
 * program attributes:                    program attributes.  (line   6)
-* pseudo macro <1>:                      pseudo macro.        (line   6)
-* pseudo macro:                          Template File.       (line  10)
+* pseudo macro <1>:                      Template File.       (line  10)
+* pseudo macro:                          pseudo macro.        (line   6)
 * pzLastArg:                             Option Processing Data.
                                                               (line  83)
 * pzProgName:                            Option Processing Data.
                                                               (line  90)
 * pzProgPath:                            Option Processing Data.
                                                               (line  94)
-* rcfile <1>:                            config example.      (line   6)
-* rcfile:                                loading rcfile.      (line   6)
+* rcfile <1>:                            loading rcfile.      (line   6)
+* rcfile:                                config example.      (line   6)
 * Redirecting Output:                    output controls.     (line   6)
 * remote procedure call:                 AutoXDR.             (line   6)
 * Required Attributes:                   Required Attributes. (line   6)
@@ -6714,8 +6715,8 @@ Concept Index
 * rpcgen:                                AutoXDR.             (line   6)
 * sample rcfile:                         sample rcfile.       (line   6)
 * shell directive:                       Directives.          (line 126)
-* shell options <1>:                     shell options.       (line   6)
-* shell options:                         Presetting Options.  (line   6)
+* shell options <1>:                     Presetting Options.  (line   6)
+* shell options:                         shell options.       (line   6)
 * shell-generated string:                shell-generated.     (line   6)
 * Signal Names:                          signal names.        (line   6)
 * simple definitions:                    Definitions.         (line  44)

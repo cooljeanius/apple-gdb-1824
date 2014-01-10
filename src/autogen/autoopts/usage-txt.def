@@ -1,0 +1,621 @@
+
+AutoGen Definitions usage-txt.tpl; /* -*- Mode: C -*- */
+
+/*
+ *  This file is part of AutoOpts, a companion to AutoGen.
+ *  AutoOpts is free software.
+ *  AutoOpts is Copyright (C) 1992-2013 by Bruce Korb - all rights reserved
+ *
+ *  AutoOpts is available under any one of two licenses.  The license
+ *  in use must be one of these two and the choice is under the control
+ *  of the user of the license.
+ *
+ *   The GNU Lesser General Public License, version 3 or later
+ *      See the files "COPYING.lgplv3" and "COPYING.gplv3"
+ *
+ *   The Modified Berkeley Software Distribution License
+ *      See the file "COPYING.mbsd"
+ *
+ *  These files have the following sha256 sums:
+ *
+ *  8584710e9b04216a394078dc156b781d0b47e1729104d666658aecef8ee32e95  COPYING.gplv3
+ *  4379e7444a0e2ce2b12dd6f5a52a27a4d02d39d247901d3285c88cf0d37f477b  COPYING.lgplv3
+ *  13aa749a5b0a454917a944ed8fffc530b784f5ead522b1aacaf4ec8aa55a6239  COPYING.mbsd
+ */
+
+/* Keep this file sorted:
+
+   blocksort pat=^utxt input=usage-txt.def out=usage-txt.sort \
+   key='ut-name *= *([a-zA-Z0-9_]+);' spacing=1 trail='End of usage-txt'
+
+   IF okay:  mv -f usage-txt.sort usage-txt.def
+
+ */
+
+/*
+ *  This file contains all the user visible AutoOpts text.
+ *  For each "utxt" entry, there is a name, i18n state, mutability and
+ *  the actual string itself.
+ *
+ *  These get inserted into *five* constructs:
+ *
+ *  1.  a pointer field in a data structure pointing to all strings
+ *  2.  a #define abbreviation of the full structure name
+ *  3.  an initialized character array of the English string
+ *  4.  the initializer for the data structure defined in #1
+ *  5.  translation code compiled into the client program
+ */
+#ifdef TEMPLATE
+utxt = { ut-i18n = msg;
+         ut-mutable;
+         ut-name = 0;
+         ut-text = "";
+};
+#endif
+
+utxt = { ut-i18n = msg;
+         ut-name = alloc_fail;
+         ut-text = "allocation of %d bytes failed\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = no_opt_arg;
+         ut-text = "AutoOpts function called without option descriptor\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = too_new;
+         ut-text = "\tThis exceeds the compiled library version:  ";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = wrong_ver;
+         ut-text =
+            "Automated Options Processing Error!\n"
+            "\t%s called AutoOpts function with structure version %d:%d:%d.\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = realloc_fail;
+         ut-text = "realloc of %d bytes at 0x%p failed\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = too_old;
+         ut-text = "\tThis is less than the minimum library version:  ";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = ao_ver_fmt;
+         ut-text = "Automated Options version %s\n"
+    "\tCopyright (C) 1999-2013 by Bruce Korb - all rights reserved\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = ao_bug_msg;
+         ut-text = "(AutoOpts bug):  %s.\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = no_reset;
+         ut-text = "optionResetOpt() called, but reset-option not configured";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = missing_help_msg;
+         ut-text = "could not locate the 'help' option";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = bad_data_msg;
+         ut-text = "optionProcess() was called with invalid data";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = bad_arg_type_msg;
+         ut-text = "invalid argument type specified";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = bad_default_msg;
+         ut-text = "defaulted to option with optional arg";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = bad_alias_id;
+         ut-text = "aliasing option is out of range.";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = ambiguous_key;
+         ut-text = "%s error:  the keyword '%s' is ambiguous for %s\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = ambig_list_msg;
+         ut-text = "  The following options match:\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = ambig_opt_fmt;
+         ut-text = "%s: ambiguous option name: %s (matches %d options)\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = args_must;
+         ut-text = "%s: Command line arguments required\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = at_most;
+         ut-text = "%d %s%s options allowed\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = fserr_fmt;
+         ut-text = "%s error %d (%s) calling %s for '%s'\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = inter_proc_pipe;
+         ut-text = "interprocess pipe";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = BadVerArg;
+         ut-text =
+	"error: version option argument '%c' invalid.  Use:\n"
+	"\t'v' - version only\n"
+	"\t'c' - version and copyright\n"
+	"\t'n' - version and full copyright notice\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = conflict_fmt;
+         ut-text = "%s error:  the '%s' and '%s' options conflict\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = DisabledErr;
+   ut-text = "%s: The '%s' option has been disabled.";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = equiv;
+         ut-text = "-equivalence";
+};
+
+utxt = { ut-i18n = no; ut-mutable;
+         ut-name = GnuBoolArg;
+         ut-text = "=T/F";
+};
+
+utxt = { ut-i18n = no; ut-mutable;
+         ut-name = GnuKeyArg;
+         ut-text = "=KWd";
+};
+
+utxt = { ut-i18n = no; ut-mutable;
+         ut-name = GnuNumArg;
+         ut-text = "=num";
+};
+
+utxt = { ut-i18n = no; ut-mutable;
+         ut-name = GnuStrArg;
+         ut-text = "=str";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = IllOptChr;
+         ut-text = "%s: illegal option -- %c\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = IllOptStr;
+         ut-text = "%s: illegal option -- %s\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = IllVendOptStr;
+         ut-text = "%s: unknown vendor extension option -- %s\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = IntRange;
+         ut-text = "  or an integer from %d through %d\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = bad_od;
+         ut-text = "%s error:  invalid option descriptor for %s\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = InvalOptName;
+         ut-text = "%s: invalid option name: %s\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = MisArg;
+         ut-text = "%s: The '%s' option requires an argument.\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = multiway_bug;
+         ut-text = "(AutoOpts bug):  Equivalenced option '%s' was "
+                   "equivalenced to both\n\t'%s' and '%s'.";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = need_one;
+         ut-text = "%s error:  The %s option is required\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = NoArg;
+         ut-text = "%s: The '%s' option cannot have an argument.\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = NoArgs;
+         ut-text = "%s: Command line arguments are not allowed.\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = NoCreat;
+         ut-text = "error %d (%s) creating %s\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = NoKey;
+         ut-text = "%s error:  '%s' does not match any %s keywords.\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = reset_arg;
+         ut-text = "%s error: The '%s' option requires an argument.\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = NoStat;
+         ut-text = "error %d (%s) stat-ing %s\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = NoState;
+         ut-text = "%s error: no saved option state\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = NotCmdOpt;
+         ut-text = "'%s' is not a command line option.\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = NotDate;
+         ut-text = "%s error:  '%s' is not a recognizable date/time.\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = NotDef;
+         ut-text = "'%s' not defined\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = NotDuration;
+         ut-text = "%s error:  '%s' is not a recognizable time duration.\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = need_more;
+         ut-text = "%s error:  The %s option must appear %d times.\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = NotNumber;
+         ut-text = "%s error:  '%s' is not a recognizable number.\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = num_too_large;
+         ut-text = "%s error:  %s exceeds %s keyword count\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = offer_usage_fmt;
+         ut-text = "Try '%s %s' for more information.\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = only_one;
+         ut-text = "one %s%s option allowed\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = stdout_name;
+         ut-text = 'standard output';
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = stderr_name;
+         ut-text = 'standard error';
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = writing;
+         ut-text = 'write';
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = RangeErr;
+         ut-text = "%s error:  %s option value %ld is out of range.\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = need_fmt;
+         ut-text = "%s error:  %s option requires the %s option\n";
+};
+
+utxt = { ut-i18n = msg;
+         ut-name = save_warn;
+         ut-text = "%s warning:  cannot save options - %s not regular file\n";
+};
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ * USAGE TEXT STRINGS
+ */
+utxt = { ut-i18n = use;
+         ut-name = alt_opt;
+         ut-text = "\t\t\t\t- an alternate for '%s'\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = Auto;
+         ut-text = "Version, usage and configuration options:";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = DefaultOpt;
+         ut-text = "\t\t\t\t- default option for unnamed options\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = Dis;
+         ut-text = "\t\t\t\t- disabled as '--%s'\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = DisabledOpt;
+         ut-text = " --- %-14s %s\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = DisabledWhy;
+         ut-text = "This option has been disabled";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = Enab;
+         ut-text = "\t\t\t\t- enabled by default\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = too_often_fmt;
+         ut-text = "%s error:  only ";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = ExamineFmt;
+         ut-text = " - examining environment variables named %s_*\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = FileCannotExist;
+         ut-text = "\t\t\t\t- file must not pre-exist\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = FileMustExist;
+         ut-text = "\t\t\t\t- file must pre-exist\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = FlagOkay;
+         ut-text =
+"Options are specified by doubled hyphens and their name or by a single\n\
+hyphen and the flag character.\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = Genshell;
+         ut-text =
+            "\n= = = = = = = =\n\n"
+            "This incarnation of genshell will produce\n"
+             "a shell script to parse the options for %s:\n\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = LowerBits;
+         ut-text = "  or an integer mask with any of the lower %d bits set\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = Members;
+         ut-text = "\t\t\t\t- is a set membership option\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = Must;
+         ut-text = "\t\t\t\t- must appear between %d and %d times\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = NoFlags;
+         ut-text =
+"Options are specified by single or double hyphens and their name.\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = NoLim;
+         ut-text = "\t\t\t\t- may appear multiple times\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = NoPreset;
+         ut-text = "\t\t\t\t- may not be preset\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = NoRq_NoShrtTtl;
+         ut-text = "   Arg Option-Name    Description\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = NoRq_ShrtTtl;
+         ut-text = "  Flg Arg Option-Name    Description\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = NrmOptFmt;
+         ut-text = " %3s %s";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = NumberOpt;
+         ut-text = "The '-#<number>' option may omit the hash char\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = OptsOnly;
+         ut-text = "All arguments are named options.\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = PathFmt;
+         ut-text = " - reading file %s";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = PlsSendBugs;
+         ut-text = "\nPlease send bug reports to:  <%s>\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = Preset;
+         ut-text = "\t\t\t\t- may NOT appear - preset only\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = PresetIntro;
+         ut-text = "\nThe following option preset mechanisms are supported:\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = Prohib;
+         ut-text = "prohibits these options:\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = ProhibOne;
+         ut-text = "prohibits the option '%s'\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = Range;
+         ut-text = "%s%ld to %ld";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = RangeAbove;
+         ut-text = "%sgreater than or equal to %ld";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = RangeExact;
+         ut-text = "%s%ld exactly";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = RangeLie;
+         ut-text = "%sit must lie in one of the ranges:\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = RangeOnly;
+         ut-text = "%sit must be in the range:\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = RangeOr;
+         ut-text = ", or\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = RangeScaled;
+         ut-text = "%sis scalable with a suffix: k/K/m/M/g/G/t/T\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = RangeUpto;
+         ut-text = "%sless than or equal to %ld";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = Reorder;
+         ut-text = "Operands and options may be intermixed.  "
+            "They will be reordered.\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = ReqOne;
+         ut-text = "requires the option '%s'\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = ReqThese;
+         ut-text = "requires these options:\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = Req_NoShrtTtl;
+         ut-text = "   Arg Option-Name   Req?  Description\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = Req_ShrtTtl;
+         ut-text = "  Flg Arg Option-Name   Req?  Description\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = SetMemberSettings;
+         ut-text = <<- E_O_F
+	or you may use a numeric representation.  Preceding these with a '!'
+	will clear the bits, specifying 'none' will clear all bits, and 'all'
+	will set them all.  Multiple entries may be passed as an option
+	argument list.
+
+	E_O_F ;
+};
+
+utxt = { ut-i18n = use;
+         ut-name = UpTo;
+         ut-text = "\t\t\t\t- may appear up to %d times\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = ValidKeys;
+         ut-text = "The valid \"%s\" option keywords are:\n";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = VendIntro;
+         ut-text = "The next option supports vendor supported extra options:";
+};
+
+utxt = { ut-i18n = use;
+         ut-name = VendOptsAre;
+         ut-text = "These additional options are:";
+};
+
+/* End of usage-txt.def */

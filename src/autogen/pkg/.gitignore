@@ -3,3 +3,7 @@
 pkg-env
 autogen.lsm
 Makefile
+site.exp
+site.bak
+*.sum
+*.log

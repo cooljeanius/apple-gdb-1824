@@ -17,3 +17,7 @@ GPATH
 tags
 *deps/*.*o
 Makefile
+site.exp
+site.bak
+*.sum
+*.log

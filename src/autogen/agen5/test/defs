@@ -52,7 +52,7 @@ cfg_vals()
 
   set -a
   SED="/sw/bin/sed"
-  AG_TIMEOUT=97
+  AG_TIMEOUT=35
 
   progname=`echo "$1" | ${SED} 's,^.*/,,'`
   testname=`echo "$progname" | ${SED} 's,\..*$,,'`

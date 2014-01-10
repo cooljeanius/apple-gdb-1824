@@ -9,3 +9,7 @@ autogen.t2p
 mk-agen-texi.sh
 auto_gen.tpl
 Makefile
+site.exp
+site.bak
+*.sum
+*.log

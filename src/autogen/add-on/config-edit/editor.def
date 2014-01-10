@@ -1,0 +1,59 @@
+/*
+ *  config-edit Copyright (C) 2008-2013 by Bruce Korb - all rights reserved
+ *
+ *  config-edit is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  config-edit is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+resettable;
+long-opts;
+
+flag = {
+    name      = pid;
+    arg-type  = number;
+    arg-name  = pid;
+    descrip   = "pid of daemon process";
+    equivalence = pid-file;
+    no-preset;
+};
+
+flag = {
+    name      = pid-file;
+    arg-type  = file;
+    arg-name  = file;
+    open-file = 'FILE*';
+    file-mode = 'r';
+    file-exists = true;
+    equivalence = pid-file;
+    no-preset;
+
+    descrip   = "file containing daemon pid";
+};
+
+flag = {
+    name      = no-sighup;
+    descrip   = "do not send SIGHUP to daemon";
+    equivalence = pid-file;
+    no-preset;
+};
+
+main = {
+    main-type = include;
+    tpl       = "editor.tpl";
+};
+
+exit-name[63] = operands;
+exit-desc[63] = 'too many operands on command line';
+
+exit-name[62] = cannot_hup;
+exit-desc[62] = 'could not send SIGHUP signal';

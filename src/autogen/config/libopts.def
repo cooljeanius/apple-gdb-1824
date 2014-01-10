@@ -1,0 +1,374 @@
+// -*- Mode: C -*-
+
+autogen definitions conftest.tpl;
+
+author =           "Bruce Korb <bkorb@gnu.org>";
+/*
+ *  This file is part of AutoGen.
+ *
+ *  AutoGen Copyright (C) 1992-2013 by Bruce Korb - all rights reserved
+ *
+ *  AutoGen is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  AutoGen is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+group       = libopts;
+version     = "$Revision: 4.24 $";
+output-file = libopts.m4;
+
+test   = {
+  name     = regex_header;
+  type     = with;
+  check    = "a reg expr header is specified";
+
+  action   = { yes; act-type = script; asis;
+        act-text = 'AC_DEFINE_UNQUOTED([REGEX_HEADER],'
+                   '[<${libopts_cv_with_regex_header}>])';
+  };
+
+  action   = { no; act-type = script; asis;
+        act-text = 'AC_DEFINE([REGEX_HEADER],[<regex.h>],'
+                              '[name of regex header file])'; };
+
+  doc = "When using alternative libraries, sometimes you must use\n"
+        "alternative header file names, too.";
+};
+
+test   = {
+  name     = regex;
+  type     = withlib;
+  check    = "a working libregex can be found";
+  libname  = "";
+  code     = <<- _END_OF_CODE_
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <sys/types.h>
+	#include REGEX_HEADER
+	static regex_t re;
+	void comp_re( char const* pzPat ) {
+	  int res = regcomp( &re, pzPat, REG_EXTENDED|REG_ICASE|REG_NEWLINE );
+	  if (res == 0) return;
+	  exit( res ); }
+	int main() {
+	  regmatch_t m[2];
+	  comp_re( "^.*\$"   );
+	  comp_re( "()|no.*" );
+	  comp_re( "."       );
+	  if (regexec( &re, "X", 2, m, 0 ) != 0)  return 1;
+	  if ((m[0].rm_so != 0) || (m[0].rm_eo != 1)) {
+	    fputs( "error: regex -->.<-- did not match\n", stderr );
+	    return 1;
+	  }
+	  return 0; }
+	_END_OF_CODE_;
+  run-mode   =  "run";
+  code-mode  =  "all";
+  action = { act-type = define; };
+  action = { no; act-type = script; asis;
+        act-text = <<- _EOText_
+		libopts_cv_with_libregex_root=no
+		libopts_cv_with_libregex_cflags=no
+		libopts_cv_with_libregex_libs=no
+		libopts_cv_with_libregex=no
+		_EOText_;
+  };
+  doc =
+  "AutoGen a POSIX compliant regular expression library is useful.";
+};
+
+test = {
+    name   = pathfind;
+    type   = run;
+    check  = "pathfind(3) works";
+    action = { act-type = define; };
+
+    code   = <<-  _EOF_
+	#include <string.h>
+	#include <stdlib.h>
+	int main (int argc, char** argv) {
+	   char* pz = pathfind( getenv( "PATH" ), "sh", "x" );
+	   return (pz == 0) ? 1 : 0;
+	}
+	_EOF_;
+
+    doc =
+    "Not all systems have pathfind(3).  See if we need to substitute.\n"
+    "To make this work, you have to do horrible things.  See the doc\n"
+    "for AG_CHECK_STRCSPN.";
+};
+
+test = {
+    name   = dev_zero;
+    type   = test;
+    check  = "/dev/zero is readable device";
+    action = { act-type = define; };
+
+    code   = <<-  _EOF_
+	dzero=`ls -lL /dev/zero | egrep ^c......r`
+	test -z "${dzero}" && exit 1
+	echo ${dzero}
+	_EOF_;
+
+    doc =
+    "Not all systems have pathfind(3).  See if we need to substitute.\n"
+    "To make this work, you have to do horrible things.  See the doc\n"
+    "for AG_CHECK_STRCSPN.";
+};
+
+test = {
+    name   = realpath;
+    type   = run;
+    check  = "we have a functional realpath(3C)";
+    action = { act-type = define; };
+
+    code   = <<-  _EOF_
+	#include <limits.h>
+	#include <stdlib.h>
+	int main (int argc, char** argv) {
+	#ifndef PATH_MAX
+	choke me!!
+	#else
+	   char zPath[PATH_MAX+1];
+	#endif
+	   char *pz = realpath(argv[0], zPath);
+	   return (pz == zPath) ? 0 : 1;
+	}
+	_EOF_;
+
+
+    doc = <<- _EODoc_
+	realpath only really works if PATH_MAX is defined.  If it is not defined,
+	the value may be obtained from pathconf(3C), but that value might be
+	unallocatable.  So, without a sane PATH_MAX, we won't be able to use
+	realpath(3C).
+	_EODoc_; //'
+};
+
+test = {
+    name  = strftime;
+    type  = run;
+    check = "strftime() works";
+    action = { act-type = define; };
+    code  = <<-  _EOF_
+	#include <time.h>
+	#include <string.h>
+	char t_buf[ 64 ];
+	int main() {
+	  static char const z[] = "Thursday Aug 28 240";
+	  struct tm tm;
+	  tm.tm_sec   = 36;  /* seconds after the minute [0, 61]  */
+	  tm.tm_min   = 44;  /* minutes after the hour [0, 59] */
+	  tm.tm_hour  = 12;  /* hour since midnight [0, 23] */
+	  tm.tm_mday  = 28;  /* day of the month [1, 31] */
+	  tm.tm_mon   =  7;  /* months since January [0, 11] */
+	  tm.tm_year  = 86;  /* years since 1900 */
+	  tm.tm_wday  =  4;  /* days since Sunday [0, 6] */
+	  tm.tm_yday  = 239; /* days since January 1 [0, 365] */
+	  tm.tm_isdst =  1;  /* flag for daylight savings time */
+	  strftime( t_buf, sizeof( t_buf ), "%A %b %d %j", &tm );
+	  return (strcmp( t_buf, z ) != 0); }
+	_EOF_;
+
+    doc =
+    "Check for existence and functioning of strftime routine.";
+};
+
+test = {
+    name   = fopen_binary;
+    type   = run;
+    check  = 'fopen accepts "b" mode';
+    action = { act-type = script; asis;
+      act-text = "AC_DEFINE([FOPEN_BINARY_FLAG],\"b\",\n\t"
+                 "[fopen(3) accepts a 'b' in the mode flag])"; };
+    action = { act-type = script; asis; no;
+      act-text = "AC_DEFINE([FOPEN_BINARY_FLAG],\"\",\n\t"
+                 "[fopen(3) accepts a 'b' in the mode flag])"; };
+    code   = <<- _EOF_
+	#include <stdio.h>
+	int main (int argc, char** argv) {
+	FILE* fp = fopen("conftest.$ac_ext", "rb");
+	return (fp == NULL) ? 1 : fclose(fp); }
+	_EOF_;
+    doc = <<- _END_OF_DOC_
+	Test whether fopen accepts a "b" in the mode string for binary file
+	opening.  This makes no difference on most unices, but some OSes
+	convert every newline written to a file to two bytes (CR LF), and
+	every CR LF read from a file is silently converted to a newline.
+	_END_OF_DOC_;
+};
+
+test = {
+    name   = fopen_text;
+    type   = run;
+    check  = 'fopen accepts "t" mode';
+    action = { act-type = script; asis;
+      act-text = "AC_DEFINE([FOPEN_TEXT_FLAG],\"t\",\n\t"
+                 "[fopen(3) accepts a 't' in the mode flag])"; };
+    action = { act-type = script; asis; no;
+      act-text = "AC_DEFINE([FOPEN_TEXT_FLAG],\"\",\n\t"
+                 "[fopen(3) accepts a 't' in the mode flag])"; };
+    code   = <<- _EOF_
+	#include <stdio.h>
+	int main (int argc, char** argv) {
+	FILE* fp = fopen("conftest.$ac_ext", "rt");
+	return (fp == NULL) ? 1 : fclose(fp); }
+	_EOF_;
+    doc = <<- _END_OF_DOC_
+	Test whether fopen accepts a "t" in the mode string for text file
+	opening.  This makes no difference on most unices, but some OSes
+	convert every newline written to a file to two bytes (CR LF), and
+	every CR LF read from a file is silently converted to a newline.
+	_END_OF_DOC_;
+};
+
+test = {
+    name   = optional_args;
+    type   = disable;
+    check  = 'not wanting optional option args';
+
+    /*
+     *  What to do for non-default
+     */
+    action = { no; act-type = script; asis;
+      act-text = <<- _EOF_
+	AC_DEFINE([NO_OPTIONAL_OPT_ARGS], [1],
+	          [Define this if optional arguments are disallowed])
+	_EOF_; };
+
+    doc = <<-  _EOF_
+	This option will cause optional option arguments to be required.
+	_EOF_;
+};
+
+do-first = <<-_EOF_
+	AC_REQUIRE([AC_HEADER_STDC])
+	AC_HEADER_DIRENT
+
+	# =================
+	# AC_CHECK_HEADERS
+	# =================
+	AC_CHECK_HEADERS([ \
+	    sys/mman.h    sys/param.h   sys/poll.h    sys/procset.h \
+	    sys/select.h  sys/socket.h  sys/stropts.h sys/time.h \
+	    sys/un.h      sys/wait.h    dlfcn.h       errno.h \
+	    fcntl.h       libgen.h      libintl.h     memory.h \
+	    netinet/in.h  setjmp.h      stdbool.h     sysexits.h \
+	    unistd.h      utime.h])
+
+	AC_CHECK_HEADERS([stdarg.h     varargs.h],
+	    [lo_have_arg_hdr=true;break],
+	    [lo_have_arg_hdr=false])
+
+	AC_CHECK_HEADERS([string.h     strings.h],
+	    [lo_have_str_hdr=true;break],
+	    [lo_have_str_hdr=false])
+
+	AC_CHECK_HEADERS([limits.h     sys/limits.h  values.h],
+	    [lo_have_lim_hdr=true;break],
+	    [lo_have_lim_hdr=false])
+
+	AC_CHECK_HEADERS([inttypes.h   stdint.h],
+	    [lo_have_typ_hdr=true;break],
+	    [lo_have_typ_hdr=false])
+
+	# ----------------------------------------------------------------------
+	# check for various programs used during the build.
+	# On OS/X, "wchar.h" needs "runetype.h" to work properly.
+	# ----------------------------------------------------------------------
+	AC_CHECK_HEADERS([runetype.h wchar.h], [], [],[
+	AC_INCLUDES_DEFAULT
+	#if HAVE_RUNETYPE_H
+	# include <runetype.h>
+	#endif
+	])
+
+	AC_ARG_ENABLE([nls],
+		AS_HELP_STRING([--disable-nls],[disable nls support in libopts]))
+	AS_IF([test "x$enable_nls" != "xno" && \
+		test "X${ac_cv_header_libintl_h}" = Xyes], [
+		AC_DEFINE([ENABLE_NLS],[1],[nls support in libopts])])
+
+	# --------------------------------------------
+	# Verify certain entries from AC_CHECK_HEADERS
+	# --------------------------------------------
+	[${lo_have_arg_hdr} || \
+	  ]AC_MSG_ERROR([you must have stdarg.h or varargs.h on your system])[
+
+	${lo_have_str_hdr} || \
+	  ]AC_MSG_ERROR([you must have string.h or strings.h on your system])[
+
+	${lo_have_lim_hdr} || \
+	  ]AC_MSG_ERROR(
+	    [you must have one of limits.h, sys/limits.h or values.h])[
+
+	${lo_have_typ_hdr} || \
+	  ]AC_MSG_ERROR([you must have inttypes.h or stdint.h on your system])[
+
+	for f in sys_types sys_param sys_stat string errno stdlib memory setjmp
+	do eval as_ac_var=\${ac_cv_header_${f}_h}
+	   test "X${as_ac_var}" = Xyes || {
+	     ]AC_MSG_ERROR([you must have ${f}.h on your system])[
+	   }
+	done
+	test "X${ac_cv_header_inttypes_h-no}" = Xyes || \
+	  echo '#include <stdint.h>' > inttypes.h]
+
+	# ----------------------------------------------------------------------
+	# Checks for typedefs
+	# ----------------------------------------------------------------------
+	AC_CHECK_TYPES(wchar_t)
+	AC_CHECK_TYPES(wint_t, [], [], [
+	  AC_INCLUDES_DEFAULT
+	  #if HAVE_RUNETYPE_H
+	  # include <runetype.h>
+	  #endif
+	  #if HAVE_WCHAR_H
+	  # include <wchar.h>
+	  #endif
+	])
+	AC_CHECK_TYPES([int8_t, uint8_t, int16_t, uint16_t, int32_t, uint32_t,
+			intptr_t, uintptr_t, uint_t, pid_t, size_t, ptrdiff_t])
+	AC_CHECK_SIZEOF(char*, 8)
+	AC_CHECK_SIZEOF(int,   4)
+	AC_CHECK_SIZEOF(long,  8)
+	AC_CHECK_SIZEOF(short, 2)
+
+	# ------------
+	# AC_CHECK_LIB
+	# ------------
+	AC_CHECK_LIB(gen, pathfind)
+	AC_CHECK_LIB(intl,gettext)
+	AC_FUNC_VPRINTF
+	AC_FUNC_FORK
+	AC_CHECK_FUNCS([mmap canonicalize_file_name snprintf strdup strchr \
+	               strrchr strsignal fchmod fstat chmod])
+	AC_PROG_SED
+	[while :
+	do
+	    POSIX_SHELL=`which bash`
+	    test -x "$POSIX_SHELL" && break
+	    POSIX_SHELL=`which dash`
+	    test -x "$POSIX_SHELL" && break
+	    POSIX_SHELL=/usr/xpg4/bin/sh
+	    test -x "$POSIX_SHELL" && break
+	    POSIX_SHELL=`/bin/sh -c '
+	        exec 2>/dev/null
+	        if ! true ; then exit 1 ; fi
+	        echo /bin/sh'`
+	    test -x "$POSIX_SHELL" && break
+	    ]AC_MSG_ERROR([cannot locate a working POSIX shell])[
+	done]
+	AC_DEFINE_UNQUOTED([POSIX_SHELL], ["${POSIX_SHELL}"],
+	         [define to a working POSIX compliant shell])
+	AC_SUBST([POSIX_SHELL])
+	_EOF_;

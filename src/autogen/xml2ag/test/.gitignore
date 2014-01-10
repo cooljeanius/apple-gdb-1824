@@ -5,3 +5,6 @@
 testdir/*
 FAILURES/*
 Makefile
+site.exp
+site.bak
+*.sum

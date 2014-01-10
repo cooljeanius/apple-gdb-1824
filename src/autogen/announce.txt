@@ -1,0 +1,86 @@
+#!/bin/ksh
+# -*- Mode: shell-script -*-
+#
+##  This file is part of AutoGen.
+##  AutoGen Copyright (C) 1992-2013 by Bruce Korb - all rights reserved
+##
+## AutoGen is free software: you can redistribute it and/or modify it
+## under the terms of the GNU General Public License as published by the
+## Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## AutoGen is distributed in the hope that it will be useful, but
+## WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## See the GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License along
+## with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+test -z "${sender}" && sender=bkorb
+domain=gnu.org
+lname=${sender}@${domain}
+fullname='Bruce Korb'
+project=autogen
+
+tfile=$(mktemp ./agaXXXXXX.txt) 2>/dev/null
+test -z "${tfile}" && tfile=aga$$.txt
+
+eval $(egrep '^A[GO]_[A-Z0-9_]*=' VERSION)
+AO_VERSION=AutoOpts\ Version\ ${AO_CURRENT}.${AO_REVISION}
+
+recip=$(echo ${lname} autogen-announce@lists.sourceforge.net)
+
+to_line='To: GNU Announcements <info-gnu@gnu.org>'
+cc_line="Cc: autogen-announce@lists.sourceforge.net"
+recip=$(echo ${recip} info-gnu@gnu.org)
+ftpurl=ftp://ftp.gnu.org/gnu/${project}/rel${AG_VERSION}
+forum=forum_name=autogen-users
+
+cat > ${tfile} <<- _EOF_
+	From: ${fullname} <${sender}@${domain}>
+	Sender: ${sender}@${domain}
+	${to_line}
+	Subject: GNU AutoGen Version ${AG_VERSION}/${AO_VERSION}
+	Reply-To: autogen-users@lists.sourceforge.net
+	${cc_line}
+
+	GNU AutoGen/AutoOpts is a two-part project that serves two separate
+	purposes.  The two parts are combined because they are inextricably
+	intertwined:
+
+	AutoGen is a tool designed to simplify the creation and maintenance of
+	programs that contain large amounts of repetitious text.  It is
+	especially valuable in programs that have several blocks of text that
+	must be kept synchronized.
+
+	AutoOpts is both an example of that and a project in its own right.
+	It is a very powerful configuration file, environment variable and
+	command line option documentation and management tool consisting of a
+	set of AutoGen templates and a run time library that nearly eliminates
+	the hassle of managing, parsing and documenting program options.
+
+	The self-referential example:
+	http://www.gnu.org/software/${project}/man1-autogen.html
+
+	There are several other examples embedded in AutoGen:
+	A finite state machine generator, string name to enumeration value
+	conversions, and bit map and bit mask management, to name a few.
+
+	New in ${AG_VERSION} - $(date '+%B, %Y')
+	NEWS entries since the last release:
+
+	$(sed "/^New in ${AG_VERSION} -/d ; /^New in /,\$d" NEWS)
+
+	AutoGen home:    http://www.gnu.org/software/${project}/
+	primary ftp:     ${ftpurl}/
+	.tar.gz:         ${ftpurl}/${project}-${AG_VERSION}.tar.gz
+	.tar.xz:         ${ftpurl}/${project}-${AG_VERSION}.tar.xz
+	bug reports:     autogen-users at the lists dot SourceForge net domain
+	bug archive:     http://sourceforge.net/mailarchive/forum.php?$forum
+	maintainer:      Bruce Korb - bkorb at the usual GNU domain
+	_EOF_
+
+recip=bruce.korb@gmail.com
+
+echo "sendmail ${recip} < ${tfile}"$'\nrm -f '${tfile}

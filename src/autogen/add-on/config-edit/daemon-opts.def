@@ -1,0 +1,41 @@
+
+Autogen Definitions options;
+
+/*
+ *  config-edit Copyright (C) 2008-2013 by Bruce Korb - all rights reserved
+ *
+ *  config-edit is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU General Public License as published by the
+ *  Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  config-edit is distributed in the hope that it will be useful, but
+ *  WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *  See the GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License along
+ *  with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+copyright = {
+    date   = `date +2008-%Y`;
+    type   = gpl;
+    owner  = "Bruce Korb";
+    eaddr  = "autogen-users@lists.sourceforge.net";
+};
+
+prog-name      = "daemon";
+prog-title     = "example dynamic config daemon";
+homerc         = `echo \`pwd\`/daemon.cfg`;
+long-opts;
+
+version = "1.2";
+
+flag = {
+    name        = text;
+    value       = t;
+    arg-type    = string;
+    arg-default = "default daemon text";
+    descrip     = "string to emit on each iteration";
+};

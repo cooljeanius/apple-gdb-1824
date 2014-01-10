@@ -68,6 +68,7 @@ SNV_LIB         = $(top_builddir)/snprintfv/libsnprintfv.la
 
 nodist_autogen_SOURCES = ag.c
 autogen_SOURCES = $(GEN_CSRC)
+EXTRA_autogen_DEPENDENCIES = opts.h expr.h directive.h
 autogen_LDADD   = $(LO_LIB) $(SNV_LIB) $(LIBGUILE_LIBS)
 autogen_LDFLAGS = $(DYNAMIC_AG)
 autogen_CFLAGS  = $(LIBGUILE_CFLAGS)

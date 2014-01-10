@@ -21,3 +21,7 @@ tags
 *deps/*.*o
 Makefile
 *.tar.gz
+site.exp
+site.bak
+*.sum
+*.log

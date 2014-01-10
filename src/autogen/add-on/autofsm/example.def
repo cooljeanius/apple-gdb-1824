@@ -1,0 +1,56 @@
+
+AutoGen Definitions fsm;
+
+#if 0
+Here is a simple example. It decides whether or not the input properly
+represents a list of value ranges. The input syntax is approximately:
+
+   [[ '!' ] <lo-num>] ['-' [<hi-num>]] \
+      [',' [[ '!' ] <lo-num>] ['-' [<hi-num>]] ... ]
+#endif
+
+event  = comma, num,  dash, bang, eol;
+state  = lonum, dash, hinum;
+type   = looping;
+method = case;
+prefix = ex;
+cookie = "void* cookie";
+
+dash   = "-";
+bang   = "!";
+eol    = "End-Of-Line";
+comma  = ",";
+
+/*
+ *  Define a transition for every valid transition.
+ *  Specify the Transition_STate, the TransitionEVent and
+ *  what the NEXT state will be.  A unique transition
+ *  enumeration will be produced for each defined transition.
+ */
+transition = { tst = init; tev = num;  next = lonum; };
+transition = { tst = init; tev = bang; next = init;  };
+transition = { tst = dash; tev = num;  next = hinum; };
+
+/*
+ *  Dash transition.  Always go to 'dash' state, except when we are in
+ *  the 'hinum' or 'dash' state.  Then, do the 'invalid' transition.
+ */
+transition = { tst = "*";   tev = dash; next = dash; },
+  { tst = hinum, dash; tev = dash; ttype = invalid; next = invalid; };
+
+/*
+ *  Comma transition, other than in 'init'.  You cannot have two
+ *  commas together and you cannot start with one.  Transitions out of
+ *  "hinum" state require no processing.
+ */
+transition = { tst = "*";  tev = comma; next = init; },
+  { tst = hinum; tev = comma; ttype = noop;    next = init; },
+  { tst = init;  tev = comma; ttype = invalid; next = invalid; };
+
+/*
+ *  End of line transition, other than in 'init'.
+ *  You cannot end with a comma or without any ranges specified.
+ */
+transition = { tst = "*";  tev = eol; next = done; },
+  { tst = hinum; tev = eol; ttype = noop;    next = done; },
+  { tst = init;  tev = eol; ttype = invalid; next = invalid; };

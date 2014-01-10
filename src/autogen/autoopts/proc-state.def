@@ -1,0 +1,117 @@
+AutoGen Definitions str2mask.tpl; /* -*- Mode: C -*-
+ *
+ *  This file is part of AutoOpts, a companion to AutoGen.
+ *  AutoOpts is free software.
+ *  AutoOpts is Copyright (C) 1992-2013 by Bruce Korb - all rights reserved
+ *
+ *  AutoOpts is available under any one of two licenses.  The license
+ *  in use must be one of these two and the choice is under the control
+ *  of the user of the license.
+ *
+ *   The GNU Lesser General Public License, version 3 or later
+ *      See the files "COPYING.lgplv3" and "COPYING.gplv3"
+ *
+ *   The Modified Berkeley Software Distribution License
+ *      See the file "COPYING.mbsd"
+ *
+ *  These files have the following sha256 sums:
+ *
+ *  8584710e9b04216a394078dc156b781d0b47e1729104d666658aecef8ee32e95  COPYING.gplv3
+ *  4379e7444a0e2ce2b12dd6f5a52a27a4d02d39d247901d3285c88cf0d37f477b  COPYING.lgplv3
+ *  13aa749a5b0a454917a944ed8fffc530b784f5ead522b1aacaf4ec8aa55a6239  COPYING.mbsd
+ */
+
+type      = '';
+prefix    = optproc;
+zero-name = none;
+mask-type = uint32_t;
+no-code;
+omit-test-n-set;
+
+/*
+ *  If any of these bit assignments change, the minimum version number of
+ *  the autoopts interface will also have to be changed.  The result is
+ *  incompatible.
+ */
+cmd[  0] = longopt;
+what[ 0] = 'Process long style options';
+
+cmd[  1] = shortopt;
+what[ 1] = 'Process short style "flags"';
+
+cmd[  2] = errstop;
+what[ 2] = 'Stop on argument errors';
+
+cmd[  3] = disabledopt;
+what[ 3] = 'Current option is disabled';
+
+/* === */
+
+cmd[  4] = no-req-opt;
+what[ 4] = 'no options are required';
+
+cmd[  5] = num-opt;
+what[ 5] = 'there is a number option';
+
+cmd[  6] = initdone;
+what[ 6] = 'have inits been done?';
+
+cmd[  7] = negations;
+what[ 7] = 'any negation options?';
+
+/* === === */
+
+cmd[  8] = environ;
+what[ 8] = 'check environment?';
+
+cmd[  9] = no-args;
+what[ 9] = 'Disallow remaining arguments';
+
+cmd[ 10] = args-req;
+what[10] = 'Require args after options';
+
+cmd[ 11] = reorder;
+what[11] = 'reorder operands after opts';
+
+/* === */
+
+cmd[ 12] = gnuusage;
+what[12] = 'emit usage in GNU style';
+
+cmd[ 13] = translate;
+what[13] = 'Translate strings in tOptions';
+
+cmd[ 14] = misuse;
+what[14] = 'no usage on usage error';
+
+cmd[ 15] = immediate;
+what[15] = 'immediate options active';
+
+/* === === */
+
+cmd[ 16] = nxlat-opt-cfg;
+what[16] = 'suppress for config only';
+
+cmd[ 17] = nxlat-opt;
+what[17] = 'suppress xlation always';
+
+cmd[ 18] = vendor-opt;
+what[18] = 'vendor options active';
+
+cmd[ 19] = presetting;
+what[19] = 'opt processing in preset state';
+
+/* === */
+
+cmd[ 20] = compute;
+what[20] = 'Ignore pzFullUsage, compute usage text';
+
+cmd[ 21] = shell-output;
+what[21] = "Program outputs digested option state for shell scripts.\n"
+           'Usage text always written to stderr';
+
+
+mask = {
+  m-name = no-xlat;
+  m-bit  = nxlat-opt-cfg, nxlat-opt;
+};

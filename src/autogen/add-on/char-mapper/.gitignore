@@ -1,0 +1,7 @@
+/cm-opt.[cho]
+/cm-opt.stamp
+/*.o
+/char-mapper
+/test-*
+/map-text.[ch]
+/char-mapper.txz

@@ -21,3 +21,14 @@ config*.lineno
 Makefile
 build/*
 *~
+site.exp
+site.bak
+*.sum
+*.diff
+.*.swp
+\#*
+.#*
+*-ori
+/*.cpx
+/patches
+
