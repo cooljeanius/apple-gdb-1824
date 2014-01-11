@@ -96,6 +96,12 @@
 /* Define if <sys/procfs.h> has lwpid_t. */
 #undef HAVE_LWPID_T
 
+/* Define to 1 if you have the <mach/arm/thread_act.h> header file. */
+#undef HAVE_MACH_ARM_THREAD_ACT_H
+
+/* Define to 1 if you have the <mach/machine/thread_status.h> header file. */
+#undef HAVE_MACH_MACHINE_THREAD_STATUS_H
+
 /* Define to 1 if you have the <mach/mach_error.h> header file. */
 #undef HAVE_MACH_MACH_ERROR_H
 
@@ -156,6 +162,9 @@
 
 /* Define if <sys/procfs.h> has psaddr_t. */
 #undef HAVE_PSADDR_T
+
+/* Define to 1 if you have the <pthread.h> header file. */
+#undef HAVE_PTHREAD_H
 
 /* Define if the target supports PTRACE_GETFPXREGS for extended register
    access. */

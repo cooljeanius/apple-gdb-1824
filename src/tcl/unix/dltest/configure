@@ -2292,7 +2292,7 @@ fi
 
 MY_TCL_CC=${TCL_CC}
 
-if test -z "$CC"; then
+if test -z "${CC}"; then
 	ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -3145,7 +3145,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 else
-	test ! -z "$CC"
+	test ! -z "${CC}"
 
 fi
 SHLIB_CFLAGS=${TCL_SHLIB_CFLAGS}
@@ -3180,7 +3180,7 @@ fi
 
 # Tcl8.1 requires writable strings for gcc
 
-if test "$GCC" = "yes"; then
+if test "${GCC}" = "yes"; then
    TCL_EXTRA_CFLAGS="-fwritable-strings"
 else
    TCL_EXTRA_CFLAGS=""

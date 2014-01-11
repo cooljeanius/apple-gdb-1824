@@ -1,0 +1,5 @@
+toolib.a
+*.o
+core
+Makefile.old
+ver960.c

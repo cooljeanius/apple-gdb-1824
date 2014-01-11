@@ -157,11 +157,11 @@ unsupported:
 
 $(SHARED_READLINE): $(SHARED_OBJ)
 	$(RM) $@
-	$(SHOBJ_LD) ${SHOBJ_LDFLAGS} ${SHLIB_XLDFLAGS} -o $@ $(SHARED_OBJ) $(SHLIB_LIBS)
+	$(SHOBJ_LD) ${SHOBJ_CFLAGS} ${SHOBJ_LDFLAGS} ${SHLIB_XLDFLAGS} -o $@ $(SHARED_OBJ) $(SHLIB_LIBS)
 
 $(SHARED_HISTORY): $(SHARED_HISTOBJ) xmalloc.so
 	$(RM) $@
-	$(SHOBJ_LD) ${SHOBJ_LDFLAGS} ${SHLIB_XLDFLAGS} -o $@ $(SHARED_HISTOBJ) xmalloc.so $(SHLIB_LIBS)
+	$(SHOBJ_LD) ${SHOBJ_CFLAGS} ${SHOBJ_LDFLAGS} ${SHLIB_XLDFLAGS} -o $@ $(SHARED_HISTOBJ) xmalloc.so $(SHLIB_LIBS)
 
 wcwidth.o: $(srcdir)/support/wcwidth.c
 	$(RM) $@
@@ -191,6 +191,8 @@ uninstall-local:
 
 clean-local mostlyclean-local:	force
 	$(RM) $(SHARED_OBJ) $(SHARED_LIBS)
+
+CLEANFILES = $(SHARED_OBJ) $(SHARED_LIBS)
 
 distclean-local maintainer-clean-local: clean-local
 	$(RM) Makefile

@@ -7,9 +7,15 @@
 
 #if defined (TARGET_POWERPC)
 # include "ppc-macosx-tdep.h"
-#elif defined (TARGET_I386)
+#elif defined (TARGET_I386) || defined (TARGET_X86_64)
 # include "i386-macosx-tdep.h"
 #elif defined (TARGET_ARM)
+# include "arm-macosx-tdep.h"
+#elif defined (__ppc__) || defined (HOST_POWERPC)
+# include "ppc-macosx-tdep.h"
+#elif defined (__i386__) || defined (HOST_I386) || defined (__x86_64__) || defined (HOST_X86_64)
+# include "i386-macosx-tdep.h"
+#elif defined (__arm__) || defined (HOST_ARM)
 # include "arm-macosx-tdep.h"
 #else
 # error "Unrecognized target architecture"

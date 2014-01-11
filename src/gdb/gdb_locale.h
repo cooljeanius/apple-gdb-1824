@@ -47,6 +47,7 @@
 # endif /* gettext_noop */
 #else
 # define gettext(Msgid) (Msgid)
+# define _gettext(Msgid) (Msgid)
 # define dgettext(Domainname, Msgid) (Msgid)
 # define dcgettext(Domainname, Msgid, Category) (Msgid)
 # define textdomain(Domainname) while (0) /* nothing */

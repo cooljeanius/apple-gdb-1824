@@ -5,6 +5,8 @@
 
 ACLOCAL_AMFLAGS =	-I../m4 --install
 
+AUTOMAKE_OPTIONS =      1.14 foreign dejagnu
+
 TCL_DBGX =		@TCL_DBGX@
 CC = 			@CC@
 LIBS =			@TCL_BUILD_STUB_LIB_SPEC@ @DL_LIBS@ @LIBS@ @MATH_LIBS@

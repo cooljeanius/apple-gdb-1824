@@ -450,6 +450,9 @@
 /* Define to 1 if we are missing wait3 */
 #undef NO_WAIT3
 
+/* Name of package */
+#undef PACKAGE
+
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
 
@@ -551,6 +554,9 @@
 
 /* Define to 1 to try the special thread-based allocator */
 #undef USE_THREAD_ALLOC
+
+/* Version number of package */
+#undef VERSION
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */

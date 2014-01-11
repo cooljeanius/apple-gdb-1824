@@ -1,3 +1,4 @@
+/* Onindy.c */
 /* This file is part of GDB.
 
    This program is free software; you can redistribute it and/or modify
@@ -36,14 +37,14 @@
 
 #include <stdio.h>
 #if 0
-#include <sys/ioctl.h>
-#include <sys/types.h>	/* Needed by file.h on Sys V */
-#include <sys/file.h>
-#include <signal.h>
-#include <sys/stat.h>
-#include <fcntl.h>	/* Needed on Sys V */
-#include "ttycntl.h"
-#endif
+# include <sys/ioctl.h>
+# include <sys/types.h>	/* Needed by file.h on Sys V */
+# include <sys/file.h>
+# include <signal.h>
+# include <sys/stat.h>
+# include <fcntl.h>	/* Needed on Sys V */
+# include "ttycntl.h"
+#endif /* 0 */
 #include "defs.h"
 #include "serial.h"
 
@@ -60,7 +61,7 @@ extern int quiet;	/* 1 => stifle unnecessary messages */
 /* tty connected to 960/NINDY board.  */
 extern struct serial *nindy_serial;
 
-static OninStrGet();
+static int OninStrGet();
 
 		/****************************
 		 *                          *
@@ -78,9 +79,9 @@ int
 fromhex( h )
     int h;
 {
-	if (h >= '0' && h <= '9'){
+	if (h >= '0' && h <= '9') {
 		h -= '0';
-	} else if (h >= 'a' && h <= 'f'){
+	} else if (h >= 'a' && h <= 'f') {
 		h -= 'a' - 10;
 	} else {
 		h = 0;
@@ -92,25 +93,28 @@ fromhex( h )
 /******************************************************************************
  * hexbin:
  *	Convert a string of ASCII hex digits to a string of binary bytes.
+ * Returns 0 by default.
  ******************************************************************************/
-static
+static int
 hexbin( n, hexp, binp )
     int n;		/* Number of bytes to convert (twice this many digits)*/
     char *hexp;		/* Get hex from here		*/
     char *binp;		/* Put binary here		*/
 {
-	while ( n-- ){
+	while ( n-- ) {
 		*binp++ = (fromhex(*hexp) << 4) | fromhex(*(hexp+1));
 		hexp += 2;
 	}
+	return 0;
 }
 
 
 /******************************************************************************
  * binhex:
  *	Convert a string of binary bytes to a string of ASCII hex digits
+ * Returns 0 by default.
  ******************************************************************************/
-static
+static int
 binhex( n, binp, hexp )
     int n;              /* Number of bytes to convert   */
     char *binp;         /* Get binary from here         */
@@ -118,11 +122,12 @@ binhex( n, binp, hexp )
 {
 	static char tohex[] = "0123456789abcdef";
 
-        while ( n-- ){
+        while ( n-- ) {
                 *hexp++ = tohex[ (*binp >> 4) & 0xf ];
                 *hexp++ = tohex[ *binp & 0xf ];
                 binp++;
         }
+	return 0;
 }
 
 /******************************************************************************
@@ -146,7 +151,7 @@ byte_order( n )
 		 * Big-endian host, swap the bytes.
 		 */
 		rev = 0;
-		for ( i = 0; i < sizeof(n); i++ ){
+		for ( i = 0; i < sizeof(n); i++ ) {
 			rev <<= 8;
 			rev |= n & 0xff;
 			n >>= 8;
@@ -161,16 +166,18 @@ byte_order( n )
  *	This is a printf that takes at most two arguments (in addition to the
  *	format string) and that outputs nothing if verbose output has been
  *	suppressed.
+ * Returns 0 by default.
  ******************************************************************************/
-static
+static int
 say( fmt, arg1, arg2 )
     char *fmt;
     int arg1, arg2;
 {
-	if ( !quiet ){
+	if ( !quiet ) {
 		printf( fmt, arg1, arg2 );
 		fflush( stdout );
 	}
+	return 0;
 }
 
 		/*****************************
@@ -192,8 +199,9 @@ readchar()
  * getpkt:
  *	Read a packet from a remote NINDY, with error checking, and return
  *	it in the indicated buffer.
+ * Returns 0 by default.
  ******************************************************************************/
-static
+static int
 getpkt (buf)
      char *buf;
 {
@@ -215,7 +223,7 @@ getpkt (buf)
 		/* FIXME: check for error from readchar ().  */
 		recv = fromhex(readchar()) << 4;
 		recv |= fromhex(readchar());
-		if ( csum == recv ){
+		if ( csum == recv ) {
 			break;
 		}
 	
@@ -226,6 +234,7 @@ getpkt (buf)
 	}
 
 	serial_write (nindy_serial, "+", 1);
+	return 0;
 }
 
 
@@ -234,12 +243,13 @@ getpkt (buf)
  *	Checksum and send a gdb command to a remote NINDY, and wait for
  *	positive acknowledgement.
  *
+ * Returns 0 by default.
  ******************************************************************************/
-static
+static int
 putpkt( cmd )
-    char *cmd;	/* Command to be sent, without lead ^P (\020)
-		 * or trailing checksum
-		 */
+    char *cmd; /* Command to be sent, without lead ^P (\020)
+		        * or trailing checksum
+		        */
 {
 	char ack;	/* Response received from NINDY		*/
 	char checksum[4];
@@ -247,7 +257,7 @@ putpkt( cmd )
 	unsigned int s;
 	char resend;
 
-	for ( s='\020', p=cmd; *p; p++ ){
+	for ( s='\020', p=cmd; *p; p++ ) {
 		s += *p;
 	}
 	sprintf( checksum, "#%02x",  s & 0xff );
@@ -275,6 +285,7 @@ putpkt( cmd )
 			resend = 0;
 		}
 	} while ( ack != '+' );
+	return 0;
 }
 
 
@@ -282,20 +293,21 @@ putpkt( cmd )
 /******************************************************************************
  * send:
  *	Send a message to a remote NINDY and return the reply in the same
- *	buffer (clobbers the input message).  Check for error responses
+ *	buffer (clobbers the input message). Check for error responses
  *	as indicated by the second argument.
  *
+ * Returns 0 by default.
  ******************************************************************************/
-static
+static int
 send( buf, ack_required )
-    char *buf;		/* Message to be sent to NINDY; replaced by
-			 *	NINDY's response.
-			 */
-    int ack_required;	/* 1 means NINDY's response MUST be either "X00" (no
-			 *	error) or an error code "Xnn".
-			 * 0 means the it's OK as long as it doesn't
-			 *	begin with "Xnn".
-			 */
+    char *buf; /* Message to be sent to NINDY; replaced by
+			    * NINDY's response.
+			    */
+    int ack_required; /* 1 means NINDY's response MUST be either "X00" (no
+			           * error) or an error code "Xnn".
+			           * 0 means that it is OK as long as it does NOT
+			           * begin with "Xnn".
+			           */
 {
 	int errnum;
 	static char *errmsg[] = {
@@ -308,7 +320,7 @@ send( buf, ack_required )
 		"Unknown register name",			/* X06 */
 		"No such memory segment",			/* X07 */
 		"No breakpoint available",			/* X08 */
-		"Can't set requested baud rate",		/* X09 */
+		"Cannot set requested baud rate",		/* X09 */
 	};
 #	define NUMERRS	( sizeof(errmsg) / sizeof(errmsg[0]) )
 
@@ -334,6 +346,7 @@ send( buf, ack_required )
 		}
 		abort();
 	}
+	return 0;
 }
 
 		/**********************************
@@ -347,10 +360,10 @@ send( buf, ack_required )
 /******************************************************************************
  * ninBptDel:
  *	Ask NINDY to delete the specified type of *hardware* breakpoint at
- *	the specified address.  If the 'addr' is -1, all breakpoints of
+ *	the specified address. If the 'addr' is -1, all breakpoints of
  *	the specified type are deleted.
  ******************************************************************************/
-OninBptDel( addr, data )
+int OninBptDel( addr, data )
     long addr;	/* Address in 960 memory	*/
     int data;	/* '1' => data bkpt, '0' => instruction breakpoint */
 {
@@ -370,7 +383,7 @@ OninBptDel( addr, data )
  *	Ask NINDY to set the specified type of *hardware* breakpoint at
  *	the specified address.
  ******************************************************************************/
-OninBptSet( addr, data )
+int OninBptSet( addr, data )
     long addr;	/* Address in 960 memory	*/
     int data;	/* '1' => data bkpt, '0' => instruction breakpoint */
 {
@@ -383,30 +396,35 @@ OninBptSet( addr, data )
 /******************************************************************************
  * ninGdbExit:
  *	Ask NINDY to leave GDB mode and print a NINDY prompt.
- *	Since it'll no longer be in GDB mode, don't wait for a response.
+ *	Since it will no longer be in GDB mode, do NOT wait for a response.
+ * Returns 0 by default.
  ******************************************************************************/
-OninGdbExit()
+int OninGdbExit()
 {
-        putpkt( "E" );
+	putpkt( "E" );
+	return 0;
 }
 
 /******************************************************************************
  * ninGo:
  *	Ask NINDY to start or continue execution of an application program
- *	in it's memory at the current ip.
+ *	in it is memory at the current ip.
+ * Returns 0 by default.
  ******************************************************************************/
-OninGo( step_flag )
+int OninGo( step_flag )
     int step_flag;	/* 1 => run in single-step mode */
 {
 	putpkt( step_flag ? "s" : "c" );
+	return 0;
 }
 
 
 /******************************************************************************
  * ninMemGet:
  *	Read a string of bytes from NINDY's address space (960 memory).
+ * Returns 0 by default.
  ******************************************************************************/
-OninMemGet(ninaddr, hostaddr, len)
+int OninMemGet(ninaddr, hostaddr, len)
      long ninaddr;	/* Source address, in the 960 memory space	*/
      char *hostaddr;	/* Destination address, in our memory space	*/
      int len;		/* Number of bytes to read			*/
@@ -428,14 +446,16 @@ OninMemGet(ninaddr, hostaddr, len)
 		ninaddr += cnt;
 		hostaddr += cnt;
 	}
+	return 0;
 }
 
 
 /******************************************************************************
  * ninMemPut:
  *	Write a string of bytes into NINDY's address space (960 memory).
+ * Returns 0 by default.
  ******************************************************************************/
-OninMemPut( destaddr, srcaddr, len )
+int OninMemPut( destaddr, srcaddr, len )
      long destaddr;	/* Destination address, in NINDY memory space	*/
      char *srcaddr;	/* Source address, in our memory space		*/
      int len;		/* Number of bytes to write			*/
@@ -456,6 +476,7 @@ OninMemPut( destaddr, srcaddr, len )
 		srcaddr += cnt;
 		destaddr += cnt;
 	}
+	return 0;
 }
 
 /******************************************************************************
@@ -469,9 +490,9 @@ OninMemPut( destaddr, srcaddr, len )
  ******************************************************************************/
 long
 OninRegGet( regname )
-    char *regname;	/* Register name recognized by NINDY, subject to the
-			 * above limitations.
-			 */
+    char *regname; /* Register name recognized by NINDY, subject to the
+			        * above limitations.
+					*/
 {
 	char buf[200];
 	long val;
@@ -489,17 +510,19 @@ OninRegGet( regname )
  *	THIS ROUTINE CAN ONLY BE USED TO SET THE LOCAL, GLOBAL, AND
  *	ip/ac/pc/tc REGISTERS.
  *
+ * Returns 0 by default.
  ******************************************************************************/
-OninRegPut( regname, val )
-    char *regname;	/* Register name recognized by NINDY, subject to the
-			 * above limitations.
-			 */
+int OninRegPut( regname, val )
+    char *regname; /* Register name recognized by NINDY, subject to the
+			        * above limitations.
+			        */
     long val;		/* New contents of register, in host byte-order	*/
 {
 	char buf[200];
 
 	sprintf( buf, "U%s,%08x", regname, byte_order(val) );
 	send( buf, 1 );
+	return 0;
 }
 
 /******************************************************************************
@@ -519,8 +542,9 @@ OninRegPut( regname, val )
  * WARNING:
  *	Each register value is in 960 (little-endian) byte order.
  *
+ * Returns 0 by default.
  ******************************************************************************/
-OninRegsGet( regp )
+int OninRegsGet( regp )
     char *regp;		/* Where to place the register dump */
 {
 	char buf[(2*OLD_NINDY_REGISTER_BYTES)+10];   /* Registers in ASCII hex */
@@ -528,6 +552,7 @@ OninRegsGet( regp )
 	strcpy( buf, "r" );
 	send( buf, 0 );
 	hexbin( OLD_NINDY_REGISTER_BYTES, buf, regp );
+	return 0;
 }
 
 /******************************************************************************
@@ -539,8 +564,9 @@ OninRegsGet( regp )
  * WARNING:
  *	Each register value should be in 960 (little-endian) byte order.
  *
+ * Returns 0 by default.
  ******************************************************************************/
-OninRegsPut( regp )
+int OninRegsPut( regp )
     char *regp;		/* Pointer to desired values of registers */
 {
 	char buf[(2*OLD_NINDY_REGISTER_BYTES)+10];   /* Registers in ASCII hex */
@@ -550,21 +576,24 @@ OninRegsPut( regp )
 	buf[ (2*OLD_NINDY_REGISTER_BYTES)+1 ] = '\0';
 
 	send( buf, 1 );
+	return 0;
 }
 
 
 /******************************************************************************
  * ninReset:
  *      Ask NINDY to perform a soft reset; wait for the reset to complete.
+ * Returns 0 by default.
  ******************************************************************************/
-OninReset()
+int OninReset()
 {
 
 	putpkt( "X" );
 	/* FIXME: check for error from readchar ().  */
-	while ( readchar() != '+' ){
+	while ( readchar() != '+' ) {
 		;
 	}
+	return 0;
 }
 
 
@@ -575,8 +604,9 @@ OninReset()
  *	srq arguments, perform the requested service, and send an "srq
  *	complete" message so NINDY will return control to the application.
  *
+ * Returns 0 by default.
  ******************************************************************************/
-OninSrq()
+int OninSrq()
 {
   /* FIXME: Imposes arbitrary limits on lengths of pathnames and such.  */
 	char buf[BUFSIZE];
@@ -656,6 +686,7 @@ OninSrq()
 	 */
 	sprintf( buf, "e%x", retcode );
 	send( buf, 1 );
+	return 0;
 }
 
 
@@ -697,13 +728,14 @@ OninStopWhy( whyp, ipp, fpp, spp )
  * ninStrGet:
  *	Read a '\0'-terminated string of data out of the 960 memory space.
  *
+ * Returns 0 by default.
  ******************************************************************************/
-static
+static int
 OninStrGet( ninaddr, hostaddr )
      unsigned long ninaddr;	/* Address of string in NINDY memory space */
-     char *hostaddr;		/* Address of the buffer to which string should
-				 *	be copied.
-				 */
+     char *hostaddr; /* Address of the buffer to which string should
+				      * be copied.
+				      */
 {
   /* FIXME: seems to be an arbitrary limit on the length of the string.  */
 	char buf[BUFSIZE];	/* String as 2 ASCII hex digits per byte */
@@ -714,6 +746,7 @@ OninStrGet( ninaddr, hostaddr )
 	numchars = strlen(buf)/2;
 	hexbin( numchars, buf, hostaddr );
 	hostaddr[numchars] = '\0';
+	return 0;
 }
 
 #if 0
@@ -740,4 +773,6 @@ OninVersion( p )
 	strcpy( p, buf );
 	return strlen( buf );
 }
-#endif
+#endif /* 0 */
+
+/* EOF */

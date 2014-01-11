@@ -1,3 +1,10 @@
+/* ppc.c */
+
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# warning you should be able to include "config.h"
+#endif /* HAVE_CONFIG_H */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -242,3 +249,5 @@ do_status (char *ptr, struct StackFrame *frame)
 
   *ptr = '\000';
 }
+
+/* EOF */

@@ -1156,7 +1156,7 @@ libcoff.h: $(LIBCOFF_H_DEP)
 	  esac; \
 	done
 
-bfd.h: $(BFD_H_DEP)
+bfd.h $(srcdir)/bfd.h: $(BFD_H_DEP)
 	echo "$(BFD_H_DEP)" | sed -f $(srcdir)/header.sed > $@
 	for file in $(BFD_H_DEP); do \
 	  case $$file in \
@@ -1171,6 +1171,9 @@ bfd.h: $(BFD_H_DEP)
 	echo "}" >> $@
 	echo "#endif" >> $@
 	echo "#endif" >> $@
+
+apple-clean:
+	rm -rfv *.dSYM || rmdir *.dSYM
 
 # We want install to imply install-info as per GNU standards, despite the
 # (deprecated) cygnus option.

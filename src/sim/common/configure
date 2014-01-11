@@ -5485,7 +5485,7 @@ $as_echo "$as_me: Running checks common to all simulators" >&6;}
 
 
 
-if test "x$cross_compiling" = "xno"; then
+if test "x${cross_compiling}" = "xno"; then
   CC_FOR_BUILD='$(CC)'
 else
   CC_FOR_BUILD=gcc

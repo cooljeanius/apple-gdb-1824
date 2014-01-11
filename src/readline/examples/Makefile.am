@@ -61,22 +61,22 @@ all: $(EXECUTABLES)
 everything: all rlfe
 
 rl: rl.o $(READLINE_LIB) $(HISTORY_LIB)
-	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rl.o -lreadline -lhistory $(READLINE_LIB) $(TERMCAP_LIB)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rl.o -lreadline -lhistory $(READLINE_LIB) $(TERMCAP_LIB)
 
 rlcat: rlcat.o $(READLINE_LIB)
-	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlcat.o -lreadline $(READLINE_LIB) $(TERMCAP_LIB)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlcat.o -lreadline $(READLINE_LIB) $(TERMCAP_LIB)
 
 fileman: fileman.o $(READLINE_LIB)
-	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ fileman.o $(LIBS) $(READLINE_LIB) $(TERMCAP_LIB)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ fileman.o $(LIBS) $(READLINE_LIB) $(TERMCAP_LIB)
 
 rltest: rltest.o $(READLINE_LIB) $(HISTORY_LIB)
-	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rltest.o -lreadline -lhistory $(TERMCAP_LIB)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rltest.o -lreadline -lhistory $(TERMCAP_LIB)
 
 rlversion: rlversion.o $(READLINE_LIB)
-	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlversion.o -lreadline $(TERMCAP_LIB)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlversion.o -lreadline $(TERMCAP_LIB)
 
 histexamp: histexamp.o $(HISTORY_LIB)
-	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -o $@ histexamp.o -lhistory $(TERMCAP_LIB)
+	$(CC) $(CFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ histexamp.o -lhistory $(TERMCAP_LIB)
 
 clean-local mostlyclean-local:
 	$(RM) $(OBJECTS)
@@ -101,7 +101,7 @@ histexamp.o: $(top_srcdir)/history.h
 # Stuff for Per Bothner's `rlfe' program
  
 rlfe: rlfe.o $(READLINE_LIB) $(HISTORY_LIB)
-	$(CC) $(LDFLAGS) -o $@ rlfe.o -lreadline -lhistory ${TERMCAP_LIB}
+	$(CC) $(CFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $@ rlfe.o -lreadline -lhistory ${TERMCAP_LIB}
 
 rlfe.o: rlfe.c
 

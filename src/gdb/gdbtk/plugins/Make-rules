@@ -21,6 +21,7 @@ exec_prefix = @exec_prefix@
 
 srcdir = @srcdir@
 datadir = @datadir@
+datarootdir = @datarootdir@
 libdir = @libdir@
 mandir = @mandir@
 plugin_srcdir = @top_srcdir@

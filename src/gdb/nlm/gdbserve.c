@@ -66,6 +66,11 @@
  *
  ****************************************************************************/
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# warning you should be able to include "config.h"
+#endif /* HAVE_CONFIG_H */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -74,18 +79,18 @@
 #include <time.h>
 
 #ifdef __i386__
-#include <dfs.h>
-#include <conio.h>
-#include <advanced.h>
-#include <debugapi.h>
-#include <process.h>
+# include <dfs.h>
+# include <conio.h>
+# include <advanced.h>
+# include <debugapi.h>
+# include <process.h>
 #else
-#include <nwtypes.h>
-#include <nwdfs.h>
-#include <nwconio.h>
-#include <nwadv.h>
-#include <nwdbgapi.h>
-#include <nwthread.h>
+# include <nwtypes.h>
+# include <nwdfs.h>
+# include <nwconio.h>
+# include <nwadv.h>
+# include <nwdbgapi.h>
+# include <nwthread.h>
 #endif
 
 #include <aio.h>
@@ -163,7 +168,7 @@ extern void clear_step_traps (struct StackFrame *);
 static int __main() {};
 
 /* Read a character from the serial port.  This must busy wait, but
-   that's OK because we will be the only thread running anyhow.  */
+   that is OK because we will be the only thread running anyhow.  */
 
 static int
 getDebugChar (void)
@@ -1001,9 +1006,10 @@ main (int argc, char **argv)
 
   mainthread = GetThreadID ();
 
-  if (remote_debug > 0)
+	if (remote_debug > 0) {
     ConsolePrintf ("About to call LoadModule with \"%s\" %08x\r\n",
 		   cmdlin, __GetScreenID (GetCurrentScreen()));
+	}
 
   /* Start up the module to be debugged.  */
   err = LoadModule ((struct ScreenStruct *) __GetScreenID (GetCurrentScreen()),
@@ -1017,17 +1023,22 @@ main (int argc, char **argv)
     }
 
   /* Wait for the debugger to wake us up.  */
-  if (remote_debug > 0)
-    ConsolePrintf ("Suspending main thread (%08x)\r\n", mainthread);
+	if (remote_debug > 0) {
+		ConsolePrintf ("Suspending main thread (%08x)\r\n", mainthread);
+	}
   SuspendThread (mainthread);
-  if (remote_debug > 0)
-    ConsolePrintf ("Resuming main thread (%08x)\r\n", mainthread);
+	if (remote_debug > 0) {
+		ConsolePrintf ("Resuming main thread (%08x)\r\n", mainthread);
+	}
 
   /* If we are woken up, print an optional error message, deregister
      ourselves and exit.  */
-  if (error_message != NULL)
-    fprintf (stderr, "%s\n", error_message);
+	if (error_message != NULL) {
+		fprintf (stderr, "%s\n", error_message);
+	}
   UnRegisterDebugger (&s);
   AIOReleasePort (AIOhandle);
   exit (0);
 }
+
+/* EOF */

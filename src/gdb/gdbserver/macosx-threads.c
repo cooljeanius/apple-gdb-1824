@@ -32,7 +32,17 @@
 
 #include <mach/machine/thread_status.h>
 /* This is for thread_suspend.  */
-#include <mach/arm/thread_act.h>
+#if defined (TARGET_ARM) || defined (HOST_ARM) || defined (__arm__)
+# include <mach/arm/thread_act.h>
+#elif defined (TARGET_I386) || defined (HOST_I386) || defined (__i386__)
+# include <mach/i386/thread_act.h>
+#elif defined (TARGET_X86_64) || defined (HOST_X86_64) || defined (__x86_64__)
+# include <mach/x86_64/thread_act.h>
+#elif defined (TARGET_POWERPC) || defined (HOST_POWERPC) || defined (__ppc__)
+# include <mach/ppc/thread_act.h>
+#else
+# warning unknown architecture, check the ifdefs...
+#endif /* architecture checks */
 
 #include "macosx-threads.h"
 #include "macosx-low.h"

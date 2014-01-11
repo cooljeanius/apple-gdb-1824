@@ -449,6 +449,10 @@ case "${target}" in
 # so far dejagnu works fine when configured on its own, but sometimes it
 # fails as a subdirectory for the top-level Makefile...
     mynoconfigdirs="${noconfigdirs} dejagnu"
+# likewise with expect
+    if test ! -z "${build_alias}" -o ! -z "${host_alias}" -o ! -z "${target_alias}"; then
+      noconfigdirs="${noconfigdirs} expect"
+    fi
 # I do not know why Apple had these put under noconfigdirs:
     applespecifiednoconfigdirs="${noconfigdirs} mmalloc sim"
     if test "${APPLE_INTERNAL_DIR}" = "/AppleInternal"; then

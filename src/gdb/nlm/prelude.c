@@ -13,12 +13,17 @@
 ==============================================================================
 */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# warning you should be able to include "config.h"
+#endif /* HAVE_CONFIG_H */
 #include <stddef.h>
 #if defined(__netware__) && defined(__i386__)
-#define TERMINATE_BY_UNLOAD	5
+# define TERMINATE_BY_UNLOAD	5
 #else
-#include <nwpre.h>
-#endif
+# include <nwpre.h>
+#endif /* __netware__ && __i386__ */
 /*#include "libhooks.h"*/
 
 extern int main (int, char **);
@@ -65,3 +70,5 @@ int _Prelude
 
 	return rc;
 }
+
+/* EOF */

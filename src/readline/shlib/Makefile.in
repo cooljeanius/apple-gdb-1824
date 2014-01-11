@@ -479,6 +479,7 @@ SHARED_OBJ = readline.so vi_mode.so funmap.so keymaps.so parens.so \
 	  callback.so terminal.so text.so nls.so misc.so xmalloc.so \
 	  $(SHARED_HISTOBJ) $(SHARED_TILDEOBJ) compat.so $(WCWIDTH_OBJ)
 
+CLEANFILES = $(SHARED_OBJ) $(SHARED_LIBS)
 all: all-am
 
 .SUFFIXES:
@@ -653,6 +654,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -768,11 +770,11 @@ unsupported:
 
 $(SHARED_READLINE): $(SHARED_OBJ)
 	$(RM) $@
-	$(SHOBJ_LD) ${SHOBJ_LDFLAGS} ${SHLIB_XLDFLAGS} -o $@ $(SHARED_OBJ) $(SHLIB_LIBS)
+	$(SHOBJ_LD) ${SHOBJ_CFLAGS} ${SHOBJ_LDFLAGS} ${SHLIB_XLDFLAGS} -o $@ $(SHARED_OBJ) $(SHLIB_LIBS)
 
 $(SHARED_HISTORY): $(SHARED_HISTOBJ) xmalloc.so
 	$(RM) $@
-	$(SHOBJ_LD) ${SHOBJ_LDFLAGS} ${SHLIB_XLDFLAGS} -o $@ $(SHARED_HISTOBJ) xmalloc.so $(SHLIB_LIBS)
+	$(SHOBJ_LD) ${SHOBJ_CFLAGS} ${SHOBJ_LDFLAGS} ${SHLIB_XLDFLAGS} -o $@ $(SHARED_HISTOBJ) xmalloc.so $(SHLIB_LIBS)
 
 wcwidth.o: $(srcdir)/support/wcwidth.c
 	$(RM) $@

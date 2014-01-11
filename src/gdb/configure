@@ -5902,7 +5902,9 @@ END
     as_fn_error $? "Your 'rm' program is bad, sorry." "$LINENO" 5
   fi
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether build environment is sane" >&5
+if test -x ${srcdir}/missing; then
+  test -e missing
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether build environment is sane" >&5
 $as_echo_n "checking whether build environment is sane... " >&6; }
 # Reject unsafe characters in $srcdir or the absolute working directory
 # name.  Accept space and tab only in the latter.
@@ -5969,6 +5971,7 @@ fi
 
 rm -f conftest.file
 
+fi
 
 
 CONFIG_OBS=
@@ -33667,7 +33670,7 @@ done
 unset ac_cv_header_dlfcn_h
 unset ac_cv_header_memory_h
 unset ac_cv_header_sys_types_h
-for ac_header in dlfcn.h errno.h regex.h stdarg.h sys/types.h varargs.h
+for ac_header in a.out.h dlfcn.h errno.h regex.h sys/types.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -33680,6 +33683,21 @@ fi
 
 done
 
+# check these two together:
+for ac_header in stdarg.h varargs.h
+do :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+
+done
+
+# even more header checks:
 for ac_header in CoreFoundation/CoreFoundation.h \
                   architecture/byte_order.h bits/endian.h gettext.h \
                   libgen.h libgettext.h linux/byteorder/big_endian.h \
@@ -34496,6 +34514,40 @@ $as_echo_n "checking declarations... " >&6; }
 { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
 $as_echo " " >&6; }
 
+ac_fn_c_check_decl "$LINENO" "sys_siglist" "ac_cv_have_decl_sys_siglist" "$ac_includes_default"
+if test "x$ac_cv_have_decl_sys_siglist" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_SYS_SIGLIST $ac_have_decl
+_ACEOF
+
+# just a plain check for sys_syglist might be wrong, so redo it
+if test "x${ac_cv_have_decl_sys_siglist}" = "xno"; then
+  unset ac_cv_have_decl_sys_siglist
+  ac_fn_c_check_decl "$LINENO" "sys_siglist" "ac_cv_have_decl_sys_siglist" "#include <signal.h>
+/* NetBSD declares sys_siglist in unistd.h.  */
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#else
+# warning this conftest for sys_siglist expects <unistd.h> to be included.
+#endif /* HAVE_UNISTD_H */
+
+"
+if test "x$ac_cv_have_decl_sys_siglist" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_SYS_SIGLIST $ac_have_decl
+_ACEOF
+
+fi
 ac_fn_c_check_decl "$LINENO" "free" "ac_cv_have_decl_free" "$ac_includes_default"
 if test "x$ac_cv_have_decl_free" = xyes; then :
   ac_have_decl=1
@@ -37147,8 +37199,8 @@ fi
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Carbon framework" >&5
 $as_echo_n "checking for Carbon framework... " >&6; }
-    if test x"$enable_carbon_framework" = xyes; then
-      if test -d "$SDKROOT/System/Library/Frameworks/Carbon.framework"
+    if test x"${enable_carbon_framework}" = xyes; then
+      if test -d "${SDKROOT}/System/Library/Frameworks/Carbon.framework"
       then
 
 $as_echo "#define USE_CARBON_FRAMEWORK 1" >>confdefs.h
@@ -37257,7 +37309,7 @@ fi
 done
 
 
-if test "$ac_cv_header_sys_procfs_h" = yes; then
+if test "${ac_cv_header_sys_procfs_h}" = yes; then
 
 
 
@@ -38214,7 +38266,7 @@ _ACEOF
 
 fi
 
-         if test "$GCC" = "yes" ; then
+         if test "${GCC}" = "yes" ; then
             # The GNU linker requires the -export-dynamic option to make
             # all symbols visible in the dynamic symbol table.
             hold_ldflags=$LDFLAGS
@@ -38411,14 +38463,14 @@ if test "${with_sysroot+set}" = set; then :
 
  TARGET_SYSTEM_ROOT_DEFINE='-DTARGET_SYSTEM_ROOT=\"$(TARGET_SYSTEM_ROOT)\"'
 
- if test "x$exec_prefix" = xNONE; then
-  if test "x$prefix" = xNONE; then
+ if test "x${exec_prefix}" = xNONE; then
+  if test "x${prefix}" = xNONE; then
    test_prefix=/usr/local
   else
-   test_prefix=$prefix
+   test_prefix=${prefix}
   fi
  else
-  test_prefix=$exec_prefix
+  test_prefix=${exec_prefix}
  fi
  case ${TARGET_SYSTEM_ROOT} in
  "${test_prefix}"|"${test_prefix}/"*|\
@@ -40180,16 +40232,16 @@ fi
 # Enable multi-ice-gdb-server.
 # Check whether --enable-multi-ice was given.
 if test "${enable_multi_ice+set}" = set; then :
-  enableval=$enable_multi_ice; case $enableval in
+  enableval=$enable_multi_ice; case ${enableval} in
     yes | no)
       ;;
-    *) as_fn_error $? "bad value $enableval for --enable-multi-ice" "$LINENO" 5 ;;
+    *) as_fn_error $? "bad value ${enableval} for --enable-multi-ice" "$LINENO" 5 ;;
   esac
 
 fi
 
 
-if test "x$enable_multi_ice" = "xyes"; then
+if test "x${enable_multi_ice}" = "xyes"; then
    if test -d multi-ice; then
      subdirs="$subdirs multi-ice"
 
@@ -40200,11 +40252,11 @@ $as_echo "$as_me: WARNING: multi-ice is requested, but the subdir for it is not 
 fi
 
 # We only build gdbserver automatically if host and target are the same.
-if test "x$target" = "x$host"; then
+if test "x${target}" = "x${host}"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether gdbserver is supported on this host" >&5
 $as_echo_n "checking whether gdbserver is supported on this host... " >&6; }
 
-  if test "x$build_gdbserver" = xyes; then
+  if test "x${build_gdbserver}" = xyes; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
     subdirs="$subdirs gdbserver"
@@ -40216,7 +40268,7 @@ $as_echo "no" >&6; }
 fi
 
 # We build rdi-share on ARM-based targets, as instructed by configure.tgt.
-if test "x$build_rdi_share" = "xyes"; then
+if test "x${build_rdi_share}" = "xyes"; then
 
    subdirs="$subdirs rdi-share"
 
@@ -40224,7 +40276,7 @@ fi
 
 # We configure the nlm subdirectory on netware targets, as instructed
 # by configure.tgt.
-if test "x$build_nlm" = "xyes"; then
+if test "x${build_nlm}" = "xyes"; then
 
    subdirs="$subdirs nlm"
 
@@ -40234,8 +40286,8 @@ fi
 # nativefile (NAT_FILE) is not set in config/*/*.m[ht] files, we link
 # to an empty version.
 
-files=
-links=
+files=""
+links=""
 
 rm -f xm.h
 xm_h=""
@@ -40311,14 +40363,14 @@ else
 $as_echo "$as_me: links should be \"${links}\"" >&6;}
 fi
 
-ac_sources="$files"
-ac_dests="$links"
+ac_sources="${files}"
+ac_dests="${links}"
 while test -n "${ac_sources}"; do
   set ${ac_dests}; ac_dest=${1}; shift; ac_dests=$*
   set ${ac_sources}; ac_source=${1}; shift; ac_sources=$*
   export ac_config_links_1="${ac_config_links_1} ${ac_dest}:${ac_source}"
 done
-ac_config_links="$ac_config_links $ac_config_links_1"
+ac_config_links="$ac_config_links ${ac_config_links_1}"
 
 
 echo "symlinks to be made should be \"${ac_config_links1}\""
@@ -42024,9 +42076,9 @@ fi
 
 
 
-gdb_host_cpu=$gdb_host_cpu
-gdb_target_cpu=$gdb_target_cpu
-nativefile=$nativefile
+gdb_host_cpu=${gdb_host_cpu}
+gdb_target_cpu=${gdb_target_cpu}
+nativefile=${nativefile}
 
 
 _ACEOF
@@ -42040,7 +42092,7 @@ do
     "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
-    "$ac_config_links_1") CONFIG_LINKS="$CONFIG_LINKS $ac_config_links_1" ;;
+    "${ac_config_links_1}") CONFIG_LINKS="$CONFIG_LINKS ${ac_config_links_1}" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "data-directory/Makefile") CONFIG_FILES="$CONFIG_FILES data-directory/Makefile" ;;
     ".gdbinit") CONFIG_FILES="$CONFIG_FILES .gdbinit:gdbinit.in" ;;
@@ -44377,7 +44429,7 @@ sed -e '/^DEPRECATED_TM_FILE[ 	]*=/s,^DEPRECATED_TM_FILE[ 	]*=[ 	]*,&config/'"${
 mv -f Makefile.tmp Makefile
 
 
-case x$CONFIG_HEADERS in
+case x${CONFIG_HEADERS} in
 xconfig.h:config.in)
 echo > stamp-h ;;
 esac

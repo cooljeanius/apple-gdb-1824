@@ -1,0 +1,36 @@
+#    Makefile for the remote server for GDB, the GNU debugger.
+#    Copyright (C) 1986, 1989 Free Software Foundation, Inc.
+# 
+# This file is part of GDB.
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+CPPFLAGS = -I.. -I../config -I../../include -I../../bfd -I../../intl
+DEFS = -DHAVE_CONFIG_H
+CFLAGS = -ggdb ${CPPFLAGS} ${DEFS}
+CC = cc
+
+SERVER = remote_server.o\
+		 remote_inflow.o\
+		 remote_utils.o\
+		 remote_gutils.o 
+
+prog : $(SERVER)
+	$(CC) -ggdb -o serve $(SERVER) 
+
+clean:
+	rm -f $(SERVER) serve prog
+
+distclean: clean

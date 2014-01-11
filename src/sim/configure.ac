@@ -205,7 +205,7 @@ esac
 if test x"${sim_target}" != xnone ; then
 	configdirs="${extra_subdirs} ${sim_target}"
 	AC_MSG_NOTICE([config subdirs are "${configdirs}"])
-	AC_CONFIG_SUBDIRS([$configdirs])
+	AC_CONFIG_SUBDIRS([${configdirs}])
 else
 	AC_MSG_NOTICE([config subdirs are just "${extra_subdirs}"])
 	AC_CONFIG_SUBDIRS([${extra_subdirs}])

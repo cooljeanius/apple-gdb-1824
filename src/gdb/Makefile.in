@@ -1409,6 +1409,10 @@ Makefile: Makefile.in config.status @frags@
 	$(SHELL) config.status
 	touch Makefile stamp-h
 
+am--refresh:
+	@true
+.PHONY: am--refresh
+
 config.h: stamp-h ; @true
 stamp-h: config.in config.status
 	$(SHELL) config.status

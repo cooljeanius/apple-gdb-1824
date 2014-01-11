@@ -13,6 +13,8 @@ my_CC=${CC-cc}
 AC_SUBST([my_CC])
 AC_CONFIG_AUX_DIR([../..])
 AC_CANONICAL_TARGET
+AM_MAINTAINER_MODE
+AC_SUBST([MAINT])
 
 # Checks for programs.
 AC_PROG_AWK

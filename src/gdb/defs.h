@@ -36,12 +36,12 @@
 # warning defs.h expects <sys/types.h> to be included.
 #endif /* HAVE_SYS_TYPES_H || STDC_HEADERS || __STDC__ || __GNUC__ || __APPLE__ */
 
-#ifdef HAVE_STDIO_H
+#if defined(HAVE_STDIO_H) || defined(STDC_HEADERS) || defined(__STDC__) || defined(__GNUC__) || defined(__APPLE__)
 # include <stdio.h>
 #else
 # warning defs.h expects <stdio.h> to be included.
 #endif /* HAVE_STDIO_H */
-#ifdef HAVE_ERRNO_H
+#if defined(HAVE_ERRNO_H) || defined(STDC_HEADERS) || defined(__STDC__) || defined(__GNUC__) || defined(__APPLE__)
 # include <errno.h>		/* System call error return status.  */
 #else
 # warning defs.h expects <errno.h> to be included.
@@ -60,7 +60,7 @@
 #  warning defs.h expects either <string.h> or <strings.h> to be included.
 # endif /* HAVE_STRINGS_H */
 #endif /* HAVE_STRING_H */
-#ifdef HAVE_REGEX_H
+#if defined(HAVE_REGEX_H) || defined(__GNUC__)
 # include <regex.h>
 #else
 # warning defs.h expects <regex.h> to be included.
@@ -82,7 +82,7 @@
  * #ifdef HAVE_SARCASM
  * # warning We use radical new-wave C language features like "uint32_t"!
  * #endif
- * (Note: The above is NOT actually a preprocessor macro that can be
+ * (Note: The above is NOT actually a preprocessor macro that can actually be
  * uncommented; rather, it is a weak attempt at humor) */
 #ifdef HAVE_STDINT_H
 # include <stdint.h>
@@ -109,7 +109,7 @@
 # define SEEK_CUR 1
 #endif /* !SEEK_CUR */
 
-#ifdef HAVE_STDARG_H
+#if defined(HAVE_STDARG_H) || defined(STDC_HEADERS) || defined(__STDC__) || defined(__GNUC__) || defined(__APPLE__)
 # include <stdarg.h>		/* For va_list.  */
 #else
 # ifdef HAVE_VARARGS_H

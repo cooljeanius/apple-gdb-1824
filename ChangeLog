@@ -1,5 +1,32 @@
 2014-01-09  Eric Gallager  <egall@gwmail.gwu.edu>
 
+	minor gitignore update
+
+	in src/autogen/add-on
+
+2014-01-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	autogen: add stuff from its sourceforge git
+
+	also in autogen, switch to gnits strictness, and stub in dejagnu tests
+
+2014-01-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	actually vendor in autogen now
+
+	autogen is needed to regenerate src/Makefile.in and
+	src/utils/Makefile.in (apparently they are too complicated to just use
+	automake), and I failed to get it (autogen) installed separately...
+
+2014-01-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	regenerate things with autogen (the guile-based one)
+
+	this is in preparation for vendoring in a copy of autogen for this
+	purpose
+
+2014-01-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
 	should have been part of previous commit
 
 	and gitignored, anyways...(?)

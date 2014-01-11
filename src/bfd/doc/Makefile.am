@@ -286,7 +286,7 @@ BFD_H_DEP = \
 	$(srcdir)/../version.h		\
 	$(MKDOC)
 
-bfd.h: $(BFD_H_DEP)
+bfd.h $(srcdir)/bfd.h: $(BFD_H_DEP)
 	echo "$(BFD_H_DEP)" | sed -f $(srcdir)/header.sed > $@
 	for file in $(BFD_H_DEP); do \
 	  case $$file in \
@@ -307,6 +307,9 @@ noinst_TEXINFOS = bfdint.texi
 MOSTLYCLEANFILES = $(MKDOC) *.o
 
 CLEANFILES = *.p *.ip *.dSYM
+
+apple-clean:
+	rm -rfv *.dSYM || rmdir *.dSYM
 
 DISTCLEANFILES = bfd.?? bfd.??? bfd.h libbfd.h libcoff.h texput.log
 

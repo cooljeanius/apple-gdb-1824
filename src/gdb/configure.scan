@@ -53,6 +53,7 @@ AC_TYPE_SSIZE_T
 AC_CHECK_MEMBERS([struct stat.st_blksize])
 AC_STRUCT_ST_BLOCKS
 AC_CHECK_MEMBERS([struct stat.st_rdev])
+AC_CHECK_DECLS([sys_siglist])
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
@@ -71,10 +72,7 @@ AC_CHECK_FUNCS([alarm atexit bzero dup2 getcwd gethostbyaddr gethostbyname getho
 
 AC_CONFIG_FILES([Makefile
                  data-directory/Makefile
-                 features/Makefile
-                 gdbint-fpc/Makefile
-                 nindy-share/Makefile
-                 tot/gdb/Makefile])
+                 nindy-share/Makefile])
 AC_CONFIG_SUBDIRS([doc
                    gdbserver
                    gdbtk

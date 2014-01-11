@@ -47,14 +47,14 @@ AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
 AC_REQUIRE_HEADER_STDC
 
 AC_CHECK_HEADERS([AvailabilityMacros.h arpa/inet.h fcntl.h limits.h \
-                  linux/elf.h mach/mach.h mach/mach_error.h \
-                  mach/mach_types.h mach/mach_vm.h mach/port.h \
-                  mach-o/nlist.h malloc.h malloc/malloc.h netdb.h \
-                  netinet/in.h prctl.h proc_service.h sgtty.h signal.h \
-                  stddef.h stdio.h sys/file.h sys/ioctl.h sys/param.h \
-                  sys/ptrace.h sys/signal.h sys/socket.h sys/procfs.h \
-                  sys/reg.h sys/time.h sys/wait.h termio.h termios.h \
-                  thread_db.h])
+                  linux/elf.h mach/arm/thread_act.h mach/mach.h \
+                  mach/mach_error.h mach/mach_types.h mach/mach_vm.h \
+                  mach/machine/thread_status.h mach/port.h mach-o/nlist.h \
+                  malloc.h malloc/malloc.h netdb.h netinet/in.h prctl.h \
+                  proc_service.h pthread.h sgtty.h signal.h stddef.h \
+                  stdio.h sys/file.h sys/ioctl.h sys/param.h sys/ptrace.h \
+                  sys/signal.h sys/socket.h sys/procfs.h sys/reg.h \
+                  sys/time.h sys/wait.h termio.h termios.h thread_db.h])
 
 # Checks for declarations
 AC_CHECK_DECLS([child_get_pagesize])
@@ -167,7 +167,7 @@ if test "${srv_linux_regsets}" = "yes"; then
   fi
 fi
 
-if test "$ac_cv_header_sys_procfs_h" = yes; then
+if test "${ac_cv_header_sys_procfs_h}" = yes; then
   BFD_HAVE_SYS_PROCFS_TYPE([lwpid_t])
   BFD_HAVE_SYS_PROCFS_TYPE([psaddr_t])
   BFD_HAVE_SYS_PROCFS_TYPE([prgregset_t])
@@ -180,7 +180,7 @@ if test "$ac_cv_header_sys_procfs_h" = yes; then
   dnl# instead of the struct itself). We detect this here, and work
   dnl# around it in gdb_proc_service.h.
 
-  if test $bfd_cv_have_sys_procfs_type_prfpregset_t = yes; then
+  if test "x${bfd_cv_have_sys_procfs_type_prfpregset_t}" = "xyes"; then
     AC_MSG_CHECKING([whether prfpregset_t type is broken])
     AC_CACHE_VAL([gdb_cv_prfpregset_t_broken],
       [AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <sys/procfs.h>
@@ -204,39 +204,39 @@ srv_thread_depfiles=
 srv_libs=
 USE_THREAD_DB=
 
-if test "$srv_linux_thread_db" = "yes"; then
+if test "${srv_linux_thread_db}" = "yes"; then
   SRV_CHECK_THREAD_DB
-  if test "$srv_cv_thread_db" = no; then
+  if test "${srv_cv_thread_db}" = no; then
     AC_MSG_WARN([Could not find libthread_db.])
     AC_MSG_WARN([Disabling thread support in gdbserver.])
     srv_linux_thread_db=no
   else
-    srv_libs="$srv_cv_thread_db"
+    srv_libs="${srv_cv_thread_db}"
   fi
-  old_LDFLAGS="$LDFLAGS"
-  LDFLAGS="$LDFLAGS -rdynamic"
+  old_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} -rdynamic"
   AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[]])],[RDYNAMIC=-rdynamic],[RDYNAMIC=])
   AC_SUBST([RDYNAMIC])
-  LDFLAGS="$old_LDFLAGS"
+  LDFLAGS="${old_LDFLAGS}"
 fi
 
-if test "$srv_linux_thread_db" = "yes"; then
+if test "${srv_linux_thread_db}" = "yes"; then
   srv_thread_depfiles="thread-db.o proc-service.o"
   USE_THREAD_DB="-DUSE_THREAD_DB"
 fi
 
 # APPLE LOCAL - This is to get me to macosx...
-if test "x$srv_platform_include" = "x"; then
-  GDBSERVER_PLATFORM_INCLUDE=
+if test "x${srv_platform_include}" = "x"; then
+  GDBSERVER_PLATFORM_INCLUDE=""
 else
-  GDBSERVER_PLATFORM_INCLUDE="$srv_platform_include"
+  GDBSERVER_PLATFORM_INCLUDE="${srv_platform_include}"
 fi
-AC_MSG_NOTICE([includes is "$srv_platform_include" PLATFORM is: "$GDBSERVER_PLATFORM_INCLUDE"])
+AC_MSG_NOTICE([includes is "${srv_platform_include}" PLATFORM is: "${GDBSERVER_PLATFORM_INCLUDE}"])
 AC_SUBST([GDBSERVER_PLATFORM_INCLUDE])
 # END APPLE LOCAL
 
-GDBSERVER_DEPFILES="$srv_regobj $srv_tgtobj $srv_thread_depfiles"
-GDBSERVER_LIBS="$srv_libs"
+GDBSERVER_DEPFILES="${srv_regobj} ${srv_tgtobj} ${srv_thread_depfiles}"
+GDBSERVER_LIBS="${srv_libs}"
 
 AC_SUBST([GDBSERVER_DEPFILES])
 AC_SUBST([GDBSERVER_LIBS])
@@ -244,9 +244,9 @@ AC_SUBST([USE_THREAD_DB])
 AC_SUBST([CPPFLAGS])
 
 AC_CONFIG_FILES([Makefile])
-AC_CONFIG_COMMANDS([default],[case x$CONFIG_HEADERS in
+AC_CONFIG_COMMANDS([default],[case x${CONFIG_HEADERS} in
 xconfig.h:config.in)
- export CPPFLAGS="$CPPFLAGS -DHAVE_CONFIG_H"
+ export CPPFLAGS="${CPPFLAGS} -DHAVE_CONFIG_H"
  echo "" > stamp-h ;;
 esac
 ],[])

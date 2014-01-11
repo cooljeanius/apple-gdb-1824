@@ -712,7 +712,7 @@ CXX
 CXXFLAGS
 CCC
 CPP'
-ac_subdirs_all='$configdirs
+ac_subdirs_all='${configdirs}
 ${extra_subdirs}'
 
 # Initialize some variables set by options.
@@ -4646,7 +4646,7 @@ if test x"${sim_target}" != xnone ; then
 $as_echo "$as_me: config subdirs are \"${configdirs}\"" >&6;}
 
 
-subdirs="$subdirs $configdirs"
+subdirs="$subdirs ${configdirs}"
 
 else
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: config subdirs are just \"${extra_subdirs}\"" >&5

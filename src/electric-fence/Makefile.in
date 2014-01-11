@@ -34,6 +34,7 @@ bindir =	@bindir@
 libdir =	@libdir@
 
 datadir =	@datadir@
+datarootdir =   @datarootdir@
 mandir =	@mandir@
 man1dir =	$(mandir)/man1
 man2dir =	$(mandir)/man2

@@ -14,7 +14,7 @@ AC_PROG_YACC
 SIM_AC_OPTION_WARNINGS
 
 # Put a plausible default for CC_FOR_BUILD in Makefile.
-if test "x$cross_compiling" = "xno" -a "x$host" != "xi386-windows"; then
+if test "x${cross_compiling}" = "xno" -a "x${host}" != "xi386-windows"; then
   AR_FOR_BUILD='$(AR)'
   AR_FLAGS_FOR_BUILD='$(AR_FLAGS)'
   CC_FOR_BUILD='$(CC)'
@@ -74,5 +74,5 @@ AC_SUBST([CFLAGS])
 AC_PROG_RANLIB
 
 AC_CONFIG_FILES([Makefile])
-AC_CONFIG_COMMANDS([default],[case x$CONFIG_HEADERS in xconfig.h:config.in) echo > stamp-h ;; esac],[])
+AC_CONFIG_COMMANDS([default],[case x${CONFIG_HEADERS} in xconfig.h:config.in) echo > stamp-h ;; esac],[])
 AC_OUTPUT

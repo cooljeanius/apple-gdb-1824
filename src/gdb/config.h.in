@@ -93,6 +93,9 @@
 /* Define to 1 if you have the `atexit' function. */
 #undef HAVE_ATEXIT
 
+/* Define to 1 if you have the <a.out.h> header file. */
+#undef HAVE_A_OUT_H
+
 /* Define to 1 if you have the <bits/endian.h> header file. */
 #undef HAVE_BITS_ENDIAN_H
 
@@ -149,6 +152,10 @@
 /* Define to 1 if you have the declaration of `strstr', and to 0 if you don't.
    */
 #undef HAVE_DECL_STRSTR
+
+/* Define to 1 if you have the declaration of `sys_siglist', and to 0 if you
+   don't. */
+#undef HAVE_DECL_SYS_SIGLIST
 
 /* Define to 1 if you have the declaration of `UNW_SLT_MEMORY', and to 0 if
    you don't. */

@@ -4079,14 +4079,14 @@ done
 
 
 for ac_header in AvailabilityMacros.h arpa/inet.h fcntl.h limits.h \
-                  linux/elf.h mach/mach.h mach/mach_error.h \
-                  mach/mach_types.h mach/mach_vm.h mach/port.h \
-                  mach-o/nlist.h malloc.h malloc/malloc.h netdb.h \
-                  netinet/in.h prctl.h proc_service.h sgtty.h signal.h \
-                  stddef.h stdio.h sys/file.h sys/ioctl.h sys/param.h \
-                  sys/ptrace.h sys/signal.h sys/socket.h sys/procfs.h \
-                  sys/reg.h sys/time.h sys/wait.h termio.h termios.h \
-                  thread_db.h
+                  linux/elf.h mach/arm/thread_act.h mach/mach.h \
+                  mach/mach_error.h mach/mach_types.h mach/mach_vm.h \
+                  mach/machine/thread_status.h mach/port.h mach-o/nlist.h \
+                  malloc.h malloc/malloc.h netdb.h netinet/in.h prctl.h \
+                  proc_service.h pthread.h sgtty.h signal.h stddef.h \
+                  stdio.h sys/file.h sys/ioctl.h sys/param.h sys/ptrace.h \
+                  sys/signal.h sys/socket.h sys/procfs.h sys/reg.h \
+                  sys/time.h sys/wait.h termio.h termios.h thread_db.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -5821,7 +5821,7 @@ $as_echo "#define HAVE_PTRACE_GETFPXREGS 1" >>confdefs.h
   fi
 fi
 
-if test "$ac_cv_header_sys_procfs_h" = yes; then
+if test "${ac_cv_header_sys_procfs_h}" = yes; then
 
 
 
@@ -5943,7 +5943,7 @@ $as_echo "$bfd_cv_have_sys_procfs_type_prfpregset_t" >&6; }
 
 
 
-  if test $bfd_cv_have_sys_procfs_type_prfpregset_t = yes; then
+  if test "x${bfd_cv_have_sys_procfs_type_prfpregset_t}" = "xyes"; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether prfpregset_t type is broken" >&5
 $as_echo_n "checking whether prfpregset_t type is broken... " >&6; }
     if ${gdb_cv_prfpregset_t_broken+:} false; then :
@@ -6017,7 +6017,7 @@ srv_thread_depfiles=
 srv_libs=
 USE_THREAD_DB=
 
-if test "$srv_linux_thread_db" = "yes"; then
+if test "${srv_linux_thread_db}" = "yes"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libthread_db" >&5
 $as_echo_n "checking for libthread_db... " >&6; }
 if ${srv_cv_thread_db+:} false; then :
@@ -6078,17 +6078,17 @@ $as_echo "$srv_cv_thread_db" >&6; }
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
-  if test "$srv_cv_thread_db" = no; then
+  if test "${srv_cv_thread_db}" = no; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Could not find libthread_db." >&5
 $as_echo "$as_me: WARNING: Could not find libthread_db." >&2;}
     { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Disabling thread support in gdbserver." >&5
 $as_echo "$as_me: WARNING: Disabling thread support in gdbserver." >&2;}
     srv_linux_thread_db=no
   else
-    srv_libs="$srv_cv_thread_db"
+    srv_libs="${srv_cv_thread_db}"
   fi
-  old_LDFLAGS="$LDFLAGS"
-  LDFLAGS="$LDFLAGS -rdynamic"
+  old_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} -rdynamic"
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -6108,27 +6108,27 @@ fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 
-  LDFLAGS="$old_LDFLAGS"
+  LDFLAGS="${old_LDFLAGS}"
 fi
 
-if test "$srv_linux_thread_db" = "yes"; then
+if test "${srv_linux_thread_db}" = "yes"; then
   srv_thread_depfiles="thread-db.o proc-service.o"
   USE_THREAD_DB="-DUSE_THREAD_DB"
 fi
 
 # APPLE LOCAL - This is to get me to macosx...
-if test "x$srv_platform_include" = "x"; then
-  GDBSERVER_PLATFORM_INCLUDE=
+if test "x${srv_platform_include}" = "x"; then
+  GDBSERVER_PLATFORM_INCLUDE=""
 else
-  GDBSERVER_PLATFORM_INCLUDE="$srv_platform_include"
+  GDBSERVER_PLATFORM_INCLUDE="${srv_platform_include}"
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: includes is \"$srv_platform_include\" PLATFORM is: \"$GDBSERVER_PLATFORM_INCLUDE\"" >&5
-$as_echo "$as_me: includes is \"$srv_platform_include\" PLATFORM is: \"$GDBSERVER_PLATFORM_INCLUDE\"" >&6;}
+{ $as_echo "$as_me:${as_lineno-$LINENO}: includes is \"${srv_platform_include}\" PLATFORM is: \"${GDBSERVER_PLATFORM_INCLUDE}\"" >&5
+$as_echo "$as_me: includes is \"${srv_platform_include}\" PLATFORM is: \"${GDBSERVER_PLATFORM_INCLUDE}\"" >&6;}
 
 # END APPLE LOCAL
 
-GDBSERVER_DEPFILES="$srv_regobj $srv_tgtobj $srv_thread_depfiles"
-GDBSERVER_LIBS="$srv_libs"
+GDBSERVER_DEPFILES="${srv_regobj} ${srv_tgtobj} ${srv_thread_depfiles}"
+GDBSERVER_LIBS="${srv_libs}"
 
 
 
@@ -7404,9 +7404,9 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
 
 
   case $ac_file$ac_mode in
-    "default":C) case x$CONFIG_HEADERS in
+    "default":C) case x${CONFIG_HEADERS} in
 xconfig.h:config.in)
- export CPPFLAGS="$CPPFLAGS -DHAVE_CONFIG_H"
+ export CPPFLAGS="${CPPFLAGS} -DHAVE_CONFIG_H"
  echo "" > stamp-h ;;
 esac
  ;;

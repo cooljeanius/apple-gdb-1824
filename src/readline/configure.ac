@@ -321,7 +321,7 @@ if test -f ${srcdir}/support/shobj-conf; then
 	AC_SUBST([SHLIB_LIBSUFF])
 	AC_SUBST([SHLIB_LIBVERSION])
 	AC_SUBST([SHLIB_LIBS])
-        AC_MSG_RESULT([$SHLIB_STATUS])
+        AC_MSG_RESULT([${SHLIB_STATUS}])
 
 	# SHLIB_STATUS is either `supported' or `unsupported'. If it is
 	# `unsupported', turn off any default shared library building

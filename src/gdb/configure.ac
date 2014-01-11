@@ -47,7 +47,10 @@ if test -f ${srcdir}/config.status; then
   rm -f ${srcdir}/config.status
 fi
 AM_INIT_AUTOMAKE([1.11 gnu dejagnu dist-bzip2 dist-xz dist-zip dist-tarZ])
-AM_SANITY_CHECK
+if test -x ${srcdir}/missing; then
+  test -e missing
+  AM_SANITY_CHECK
+fi
 
 dnl# List of object files and targets accumulated by configure.
 
@@ -802,7 +805,10 @@ AC_CHECK_HEADERS([arpa/inet.h fcntl.h langinfo.h libintl.h limits.h \
 unset ac_cv_header_dlfcn_h
 unset ac_cv_header_memory_h
 unset ac_cv_header_sys_types_h
-AC_CHECK_HEADERS([dlfcn.h errno.h regex.h stdarg.h sys/types.h varargs.h])
+AC_CHECK_HEADERS([a.out.h dlfcn.h errno.h regex.h sys/types.h])
+# check these two together:
+AC_CHECK_HEADERS([stdarg.h varargs.h])
+# even more header checks:
 AC_CHECK_HEADERS([CoreFoundation/CoreFoundation.h \
                   architecture/byte_order.h bits/endian.h gettext.h \
                   libgen.h libgettext.h linux/byteorder/big_endian.h \
@@ -822,6 +828,20 @@ gl_HEADER_STRING_H
 AC_MSG_CHECKING([declarations])
 AC_MSG_RESULT([ ])
 
+AC_CHECK_DECLS([sys_siglist])
+# just a plain check for sys_syglist might be wrong, so redo it
+dnl# using the autoupdated version of AC\_DECL\_SYS\_SIGLIST
+if test "x${ac_cv_have_decl_sys_siglist}" = "xno"; then
+  unset ac_cv_have_decl_sys_siglist
+  AC_CHECK_DECLS([sys_siglist],[],[],[#include <signal.h>
+/* NetBSD declares sys_siglist in unistd.h.  */
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#else
+# warning this conftest for sys_siglist expects <unistd.h> to be included.
+#endif /* HAVE_UNISTD_H */
+  ])
+fi
 AC_CHECK_DECLS([free, malloc, realloc])
 AC_CHECK_DECLS([strerror, strstr])
 AC_CHECK_DECLS([getopt, snprintf, vsnprintf])
@@ -1255,8 +1275,8 @@ case "$host" in
     [enable_carbon_framework=no])
 
     AC_MSG_CHECKING([for Carbon framework])
-    if test x"$enable_carbon_framework" = xyes; then
-      if test -d "$SDKROOT/System/Library/Frameworks/Carbon.framework"
+    if test x"${enable_carbon_framework}" = xyes; then
+      if test -d "${SDKROOT}/System/Library/Frameworks/Carbon.framework"
       then
         AC_DEFINE([USE_CARBON_FRAMEWORK],[1],[Define if Carbon framework is available and we should use it.])
         CARBON_LIBS="-framework Carbon"
@@ -1323,7 +1343,7 @@ AC_CHECK_TYPES([thread_identifier_info_data_t],[],[],
 
 AC_CHECK_FUNCS([pthread_setname_np])
 
-if test "$ac_cv_header_sys_procfs_h" = yes; then
+if test "${ac_cv_header_sys_procfs_h}" = yes; then
   BFD_HAVE_SYS_PROCFS_TYPE([pstatus_t])
   BFD_HAVE_SYS_PROCFS_TYPE([prrun_t])
   BFD_HAVE_SYS_PROCFS_TYPE([gregset_t])
@@ -1587,7 +1607,7 @@ if test ${build} = ${host} -a ${host} = ${target} ; then
          CONFIG_OBS="${CONFIG_OBS} sol-thread.o"
          CONFIG_SRCS="${CONFIG_SRCS} sol-thread.c"
          AC_CHECK_LIB([dl],[dlopen])
-         if test "$GCC" = "yes" ; then
+         if test "${GCC}" = "yes" ; then
             # The GNU linker requires the -export-dynamic option to make
             # all symbols visible in the dynamic symbol table.
             hold_ldflags=$LDFLAGS
@@ -1675,14 +1695,14 @@ AC_ARG_WITH([sysroot],
 
  TARGET_SYSTEM_ROOT_DEFINE='-DTARGET_SYSTEM_ROOT=\"$(TARGET_SYSTEM_ROOT)\"'
 
- if test "x$exec_prefix" = xNONE; then
-  if test "x$prefix" = xNONE; then
+ if test "x${exec_prefix}" = xNONE; then
+  if test "x${prefix}" = xNONE; then
    test_prefix=/usr/local
   else
-   test_prefix=$prefix
+   test_prefix=${prefix}
   fi
  else
-  test_prefix=$exec_prefix
+  test_prefix=${exec_prefix}
  fi
  case ${TARGET_SYSTEM_ROOT} in
  "${test_prefix}"|"${test_prefix}/"*|\
@@ -2055,14 +2075,14 @@ fi
 # Enable multi-ice-gdb-server.
 AC_ARG_ENABLE([multi-ice],
 [AS_HELP_STRING([--enable-multi-ice],[build the multi-ice-gdb-server])],
-  [case $enableval in
+  [case ${enableval} in
     yes | no)
       ;;
-    *) AC_MSG_ERROR([bad value $enableval for --enable-multi-ice]) ;;
+    *) AC_MSG_ERROR([bad value ${enableval} for --enable-multi-ice]) ;;
   esac
 ])
 
-if test "x$enable_multi_ice" = "xyes"; then
+if test "x${enable_multi_ice}" = "xyes"; then
    if test -d multi-ice; then
      AC_CONFIG_SUBDIRS([multi-ice])
    else
@@ -2071,10 +2091,10 @@ if test "x$enable_multi_ice" = "xyes"; then
 fi
 
 # We only build gdbserver automatically if host and target are the same.
-if test "x$target" = "x$host"; then
+if test "x${target}" = "x${host}"; then
   AC_MSG_CHECKING([whether gdbserver is supported on this host])
   AC_ARG_VAR([build_gdbserver],[Try to override the decision to build the gdbserver (unsupported, might not work)])
-  if test "x$build_gdbserver" = xyes; then
+  if test "x${build_gdbserver}" = xyes; then
     AC_MSG_RESULT([yes])
     AC_CONFIG_SUBDIRS([gdbserver])
   else
@@ -2083,14 +2103,14 @@ if test "x$target" = "x$host"; then
 fi
 
 # We build rdi-share on ARM-based targets, as instructed by configure.tgt.
-if test "x$build_rdi_share" = "xyes"; then
+if test "x${build_rdi_share}" = "xyes"; then
   AC_ARG_VAR([build_rdi_share],[Try to override the decision to build in the rdi-share subdirectory (unsupported, might not work)])
    AC_CONFIG_SUBDIRS([rdi-share])
 fi
 
 # We configure the nlm subdirectory on netware targets, as instructed
 # by configure.tgt.
-if test "x$build_nlm" = "xyes"; then
+if test "x${build_nlm}" = "xyes"; then
   AC_ARG_VAR([build_nlm],[Try to override the decision to build in the nlm subdirectory (unsupported, might not work)])
    AC_CONFIG_SUBDIRS([nlm])
 fi
@@ -2099,8 +2119,8 @@ fi
 # nativefile (NAT_FILE) is not set in config/*/*.m[ht] files, we link
 # to an empty version.
 
-files=
-links=
+files=""
+links=""
 
 rm -f xm.h
 xm_h=""
@@ -2161,17 +2181,17 @@ else
 fi
 
 AC_DIAGNOSE([obsolete],[It is technically impossible to `autoupdate'
-cleanly from AC_LINK_FILES to AC_CONFIG_LINKS. `autoupdate' provides a
+cleanly from AC\_LINK\_FILES to AC_CONFIG_LINKS. `autoupdate' provides a
 functional but inelegant update, you should probably tune the result
 yourself.])dnl
-ac_sources="$files"
-ac_dests="$links"
+ac_sources="${files}"
+ac_dests="${links}"
 while test -n "${ac_sources}"; do
   set ${ac_dests}; ac_dest=${1}; shift; ac_dests=$*
   set ${ac_sources}; ac_source=${1}; shift; ac_sources=$*
   export ac_config_links_1="${ac_config_links_1} ${ac_dest}:${ac_source}"
 done
-AC_CONFIG_LINKS([$ac_config_links_1])
+AC_CONFIG_LINKS([${ac_config_links_1}])
 AC_SUBST([ac_config_links1])
 echo "symlinks to be made should be \"${ac_config_links1}\""
 
@@ -2233,14 +2253,14 @@ mv -f Makefile.tmp Makefile
 changequote([,])dnl
 
 
-case x$CONFIG_HEADERS in
+case x${CONFIG_HEADERS} in
 xconfig.h:config.in)
 echo > stamp-h ;;
 esac
 ],[
-gdb_host_cpu=$gdb_host_cpu
-gdb_target_cpu=$gdb_target_cpu
-nativefile=$nativefile
+gdb_host_cpu=${gdb_host_cpu}
+gdb_target_cpu=${gdb_target_cpu}
+nativefile=${nativefile}
 ])
 AC_OUTPUT
 

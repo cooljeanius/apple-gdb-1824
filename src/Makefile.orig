@@ -25,12 +25,12 @@
 # -------------------------------
 
 
-build_alias=i386-apple-darwin10.8.0
-build=i386-apple-darwin10.8.0
+build_alias=
+build=x86_64-apple-darwin10.8.0
 host_alias=
-host=i386-apple-darwin10.8.0
+host=x86_64-apple-darwin10.8.0
 target_alias=
-target=i386-apple-darwin10.8.0
+target=x86_64-apple-darwin10.8.0
 
 program_transform_name = s,x,x,
 
@@ -76,8 +76,8 @@ LN_S = ln -s
 # The gcc driver likes to know the arguments it was configured with.
 TOPLEVEL_CONFIGURE_ARGUMENTS=./configure 36 3 11
 
-tooldir = ${exec_prefix}/i386-apple-darwin10.8.0
-build_tooldir = ${exec_prefix}/i386-apple-darwin10.8.0
+tooldir = ${exec_prefix}/x86_64-apple-darwin10.8.0
+build_tooldir = ${exec_prefix}/x86_64-apple-darwin10.8.0
 
 GDB_NLM_DEPS = 
 
@@ -88,10 +88,10 @@ RPATH_ENVVAR = DYLD_LIBRARY_PATH
 # This is the list of directories to be built for the build system.
 BUILD_CONFIGDIRS = libiberty
 # Build programs are put under this directory.
-BUILD_SUBDIR = build-i386-apple-darwin10.8.0
+BUILD_SUBDIR = build-x86_64-apple-darwin10.8.0
 # This is set by the configure script to the arguments to use when configuring
 # directories built for the build system.
-BUILD_CONFIGARGS =  --cache-file=../config.cache --build=i386-apple-darwin10.8.0 --host=i386-apple-darwin10.8.0  --program-transform-name='s,y,y,' --with-build-subdir="$(BUILD_SUBDIR)"
+BUILD_CONFIGARGS =  --cache-file=../config.cache --build=x86_64-apple-darwin10.8.0 --host=x86_64-apple-darwin10.8.0  --program-transform-name='s,y,y,' --with-build-subdir="$(BUILD_SUBDIR)"
 
 # This is the list of variables to export in the environment when
 # configuring any subdirectory.  It must also be exported whenever
@@ -129,7 +129,7 @@ BUILD_EXPORTS = \
 SUBDIRS =  intl electric-fence mmalloc libiberty libdecnumber opcodes bfd readline tcl binutils sim gdb etc expect dejagnu utils cgen
 # This is set by the configure script to the arguments to use when configuring
 # directories built for the host system.
-HOST_CONFIGARGS =     --disable-shared --enable-64-bit-bfd --disable-softfloat --disable-werror  --enable-carbon-framework --enable-debug-symbols-framework --cache-file=./config.cache --build=i386-apple-darwin10.8.0 --host=i386-apple-darwin10.8.0 --target=i386-apple-darwin10.8.0   --program-transform-name='s,y,y,'
+HOST_CONFIGARGS =     --disable-shared --enable-64-bit-bfd --disable-softfloat --disable-werror  --enable-carbon-framework --enable-debug-symbols-framework --cache-file=./config.cache --build=x86_64-apple-darwin10.8.0 --host=x86_64-apple-darwin10.8.0 --target=x86_64-apple-darwin10.8.0   --program-transform-name='s,y,y,'
 # Host programs are put under this directory, which is . except if building
 # with srcdir=..
 HOST_SUBDIR = .
@@ -173,10 +173,10 @@ POSTSTAGE1_HOST_EXPORTS = \
 # should be built using the target tools.
 TARGET_CONFIGDIRS = 
 # Target libraries are put under this directory:
-TARGET_SUBDIR = i386-apple-darwin10.8.0
+TARGET_SUBDIR = x86_64-apple-darwin10.8.0
 # This is set by the configure script to the arguments to use when configuring
 # directories built for the target.
-TARGET_CONFIGARGS = --cache-file=./config.cache --build=i386-apple-darwin10.8.0 --host= --target= --enable-multilib  --program-transform-name='s,y,y,' --with-target-subdir="$(TARGET_SUBDIR)"
+TARGET_CONFIGARGS = --cache-file=./config.cache --build= --host= --target= --enable-multilib  --program-transform-name='s,y,y,' --with-target-subdir="$(TARGET_SUBDIR)"
 # This is the list of variables to export in the environment when
 # configuring subdirectories for the host system.
 BASE_TARGET_EXPORTS = \
@@ -228,7 +228,7 @@ PWD_COMMAND = $${PWDCMD-pwd}
 # compilers to use to create programs which must be run in the build
 # environment.
 CC_FOR_BUILD = $(CC)
-CFLAGS_FOR_BUILD = -g -O2 
+CFLAGS_FOR_BUILD = -g -O2
 
 CXX_FOR_BUILD = $(CXX)
 
@@ -308,7 +308,7 @@ AR = ar
 AR_FLAGS = rc
 
 CC = gcc
-CFLAGS = -g -O2 
+CFLAGS = -g -O2
 LIBCFLAGS = $(CFLAGS)
 
 CXX = g++
@@ -535,8 +535,6 @@ PICFLAG_FOR_TARGET =
 all:
 
 #### host and target specific makefile fragments come in here.
-# Add -fomit-frame-pointer to the usual BOOT_CFLAGS to speed up the compiler.
-BOOT_CFLAGS = -O2 -g -fomit-frame-pointer
 ###
 
 # This is the list of directories that may be needed in RPATH_ENVVAR

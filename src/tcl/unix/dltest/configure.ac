@@ -23,10 +23,10 @@ fi
 
 MY_TCL_CC=${TCL_CC}
 AC_SUBST([MY_TCL_CC])
-if test -z "$CC"; then
+if test -z "${CC}"; then
 	AC_PROG_CC
 else
-	test ! -z "$CC"
+	test ! -z "${CC}"
 	AC_SUBST([CC])
 fi
 SHLIB_CFLAGS=${TCL_SHLIB_CFLAGS}
@@ -61,7 +61,7 @@ AC_SUBST([TCL_DBGX])
 
 # Tcl8.1 requires writable strings for gcc
 
-if test "$GCC" = "yes"; then
+if test "${GCC}" = "yes"; then
    TCL_EXTRA_CFLAGS="-fwritable-strings"
 else
    TCL_EXTRA_CFLAGS=""

@@ -4,10 +4,12 @@ dnl# Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.12.1])dnl
 AC_INIT([gdbserve-nlm],[4.12],[])
 AC_CONFIG_SRCDIR([gdbserve.c])
+AC_CONFIG_HEADERS([config.h])
 
 AC_CONFIG_AUX_DIR([../..])
 AC_CANONICAL_TARGET
 AC_ARG_PROGRAM
+AM_MAINTAINER_MODE
 
 # Checks for programs.
 AC_PROG_CC
@@ -22,13 +24,17 @@ AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
   AC_REQUIRE([AC_HEADER_STDC])
 ])
 AC_REQUIRE_HEADER_STDC
-AC_CHECK_HEADERS([stddef.h])
+AC_HEADER_TIME
+AC_CHECK_HEADERS_ONCE([advanced.h aio.h conio.h debugapi.h dfs.h \
+                       nwadv.h nwconio.h nwdbgapi.h nwdfs.h nwpre.h \
+                       nwthread.h nwtypes.h process.h])
+AC_CHECK_HEADERS([ctype.h errno.h stddef.h time.h])
 
 # Checks for library functions.
 AC_CHECK_FUNCS([memset strtol])
 
 # Map target cpu into the config cpu subdirectory name.
-# The default is $target_cpu.
+# The default is ${target_cpu}.
 changequote(,)dnl
 case "${target_cpu}" in
 alpha)			gdb_target_cpu=alpha ;;
@@ -54,34 +60,54 @@ dnl# does NOT provide a mechanism to substitute a replacement keyword with
 dnl# arbitrary data or pathnames.
 dnl#
 
-if test "${target_makefile_frag}" != ""; then
-target_makefile_frag_path=$target_makefile_frag
+if test "x${target_makefile_frag}" != "x"; then
+target_makefile_frag_path=${target_makefile_frag}
 AC_SUBST([target_makefile_frag_path])
 AC_SUBST_FILE([target_makefile_frag])
+unset cpufile
 test -f ${target_makefile_frag} && export cpufile=`sed -n '
 s/CPU_FILE[ 	]*=[ 	]*\([^ 	]*\)/\1/p
 ' ${target_makefile_frag}`
 fi
 
-files=
-links=
+files=""
+links=""
 rm -f cpu.h
-if test "${cpufile}" != ""; then
+if test "x${cpufile}" != "x"; then
 	files="${files} ${cpufile}.h"
 	links="${links} cpu.h"
 fi
 
-AC_DIAGNOSE([obsolete],[It is technically impossible to `autoupdate' cleanly from AC_LINK_FILES
-to AC_CONFIG_LINKS. `autoupdate' provides a functional but inelegant
-update, you should probably tune the result yourself.])dnl
-ac_sources="$files"
-ac_dests="$links"
-while test -n "$ac_sources"; do
-  set $ac_dests; ac_dest=$1; shift; ac_dests=$*
-  set $ac_sources; ac_source=$1; shift; ac_sources=$*
-  ac_config_links_1="$ac_config_links_1 $ac_dest:$ac_source"
+if test "x${files}" = "x"; then
+  test -z "${files}"
+  AC_MSG_WARN([the files variable is empty; not making symlinks.])
+else
+  test ! -z "${files}"
+  AC_MSG_NOTICE([files should be "${files}"])
+fi
+
+if test "x${links}" = "x"; then
+  test -z "${links}"
+  AC_MSG_WARN([the links variable is empty; not making symlinks.])
+else
+  test ! -z "${links}"
+  AC_MSG_NOTICE([links should be "${links}"])
+fi
+
+AC_DIAGNOSE([obsolete],[It is technically impossible to `autoupdate'
+cleanly from AC_LINK_FILES to AC_CONFIG_LINKS. `autoupdate' provides a
+functional but inelegant update, you should probably tune the result
+yourself.])dnl
+ac_sources="${files}"
+ac_dests="${links}"
+while test -n "${ac_sources}"; do
+  set ${ac_dests}; ac_dest=${1}; shift; ac_dests=$*
+  set ${ac_sources}; ac_source=${1}; shift; ac_sources=$*
+  ac_config_links_1="${ac_config_links_1} ${ac_dest}:${ac_source}"
 done
-AC_CONFIG_LINKS([$ac_config_links_1])
+AC_CONFIG_LINKS([${ac_config_links_1}])
+AC_SUBST([ac_config_links1])
+echo "symlinks to be made should be \"${ac_config_links1}\""
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT
 

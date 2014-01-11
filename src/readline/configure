@@ -11175,8 +11175,8 @@ $as_echo_n "checking configuration for building shared libraries... " >&6; }
 
 
 
-        { $as_echo "$as_me:${as_lineno-$LINENO}: result: $SHLIB_STATUS" >&5
-$as_echo "$SHLIB_STATUS" >&6; }
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${SHLIB_STATUS}" >&5
+$as_echo "${SHLIB_STATUS}" >&6; }
 
 	# SHLIB_STATUS is either `supported' or `unsupported'. If it is
 	# `unsupported', turn off any default shared library building
