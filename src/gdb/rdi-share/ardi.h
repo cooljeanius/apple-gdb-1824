@@ -1,6 +1,6 @@
-/* 
+/*
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -85,3 +85,5 @@ typedef int angel_RDI_TargetStoppedProc(unsigned stopped_reason, void *arg);
 
 extern int angel_RDI_OnTargetStopping(angel_RDI_TargetStoppedProc *fn,
                                       void *arg);
+
+/* EOF */

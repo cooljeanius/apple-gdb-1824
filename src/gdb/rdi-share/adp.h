@@ -1,6 +1,6 @@
-/* 
+/* adp.h
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -2523,6 +2523,6 @@ typedef enum ADP_Boot_Ack {
 #define RDIError_UndefinedMessage       255
 
 
-#endif
+#endif /* !angel_adp_h */
 
 /* EOF adp_h */

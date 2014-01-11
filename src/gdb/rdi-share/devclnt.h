@@ -1,6 +1,6 @@
-/* 
+/* devcInt.h
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -67,12 +67,12 @@ typedef enum DevChanID {
  *             Output: -
  *             In/Out: -
  *
- *            Returns: DE_OKAY     write request is underway           
- *                     DE_NO_DEV   no such device                      
+ *            Returns: DE_OKAY     write request is underway
+ *                     DE_NO_DEV   no such device
  *                     DE_BAD_DEV  device does not support angel writes
- *                     DE_BAD_CHAN no such device channel              
- *                     DE_BUSY     device busy with another write      
- *                     DE_INVAL    silly length                        
+ *                     DE_BAD_CHAN no such device channel
+ *                     DE_BUSY     device busy with another write
+ *                     DE_INVAL    silly length
  *
  *      Reads globals: -
  *   Modifies globals: -
@@ -107,12 +107,12 @@ DevError angel_DeviceWrite(DeviceID devID, p_Buffer buff,
  *             Output: -
  *             In/Out: -
  *
- *            Returns: DE_OKAY     read request is underway           
- *                     DE_NO_DEV   no such device                      
+ *            Returns: DE_OKAY     read request is underway
+ *                     DE_NO_DEV   no such device
  *                     DE_BAD_DEV  device does not support angel reads
- *                     DE_BAD_CHAN no such device channel              
- *                     DE_BUSY     device busy with another read      
- *                     DE_INVAL    silly length                        
+ *                     DE_BAD_CHAN no such device channel
+ *                     DE_BUSY     device busy with another read
+ *                     DE_INVAL    silly length
  *
  *      Reads globals: -
  *   Modifies globals: -
@@ -141,8 +141,8 @@ DevError angel_DeviceRegisterRead(DeviceID devID,
  *                     op        operation to perform
  *                     arg       parameter depending on op
  *
- *            Returns: DE_OKAY     control request is underway           
- *                     DE_NO_DEV   no such device                      
+ *            Returns: DE_OKAY     control request is underway
+ *                     DE_NO_DEV   no such device
  *                     DE_BAD_OP   device does not support operation
  *
  *      Reads globals: -
@@ -150,7 +150,7 @@ DevError angel_DeviceRegisterRead(DeviceID devID,
  *
  * Other side effects: -
  *
- * Have a device perform a control operation.  Extra parameters vary 
+ * Have a device perform a control operation.  Extra parameters vary
  * according to the operation requested.
  */
 
@@ -223,7 +223,7 @@ bool angel_IsAngelDevice(DeviceID devID);
  *           but gets called indirectly, via the SWI handler.
  *
  *  Params:
- *      Input: swi_r0    Argument to SWI indicating that 
+ *      Input: swi_r0    Argument to SWI indicating that
  *                       angel_ApplDeviceHandler was to be called.  This
  *                       will not be used in this function, but is needed
  *                       by the SWI handler.

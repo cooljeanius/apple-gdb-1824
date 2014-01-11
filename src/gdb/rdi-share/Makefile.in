@@ -77,18 +77,23 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+build_triplet = @build@
+host_triplet = @host@
+target_triplet = @target@
 subdir = .
-DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
+DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog THANKS \
+	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
 	$(srcdir)/config.h.in $(top_srcdir)/../../mkinstalldirs \
-	$(top_srcdir)/../../depcomp $(noinst_HEADERS) ../../COPYING \
-	../../COPYING.LIB ../../ChangeLog ../../INSTALL ../../README \
-	../../ar-lib ../../compile ../../config.guess \
+	$(top_srcdir)/../../depcomp $(noinst_HEADERS) COPYING \
+	../../COPYING ../../COPYING.LIB ../../ChangeLog ../../INSTALL \
+	../../README ../../ar-lib ../../compile ../../config.guess \
 	../../config.rpath ../../config.sub ../../depcomp \
 	../../install-sh ../../missing ../../mkinstalldirs \
 	../../texinfo.tex ../../ylwrap ../../ltmain.sh ../../ltconfig \
 	../../ltcf-c.sh ../../ltcf-cxx.sh ../../ltcf-gcj.sh \
-	$(top_srcdir)/../../compile $(top_srcdir)/../../install-sh \
+	$(top_srcdir)/../../compile $(top_srcdir)/../../config.guess \
+	$(top_srcdir)/../../config.sub $(top_srcdir)/../../install-sh \
 	$(top_srcdir)/../../missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -258,14 +263,22 @@ am__quote = @am__quote@
 am__tar = @am__tar@
 am__untar = @am__untar@
 bindir = @bindir@
+build = @build@
 build_alias = @build_alias@
+build_cpu = @build_cpu@
+build_os = @build_os@
+build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
+host = @host@
 host_alias = @host_alias@
+host_cpu = @host_cpu@
+host_os = @host_os@
+host_vendor = @host_vendor@
 htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
@@ -285,12 +298,16 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
 sysconfdir = @sysconfdir@
+target = @target@
 target_alias = @target_alias@
+target_cpu = @target_cpu@
+target_os = @target_os@
+target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 ACLOCAL_AMFLAGS = -I../m4 --install
-AUTOMAKE_OPTIONS = foreign dejagnu
+AUTOMAKE_OPTIONS = gnits dejagnu
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 noinst_LIBRARIES = libangsd.a
 libangsd_a_SOURCES = ardi.c angel_bytesex.c crc.c devsw.c drivers.c \
@@ -306,6 +323,7 @@ noinst_HEADERS = adp.h adperr.h angel.h ardi.h armdbg.h buffers.h \
 
 EXTRA_DIST = README.CYGNUS
 AM_CPPFLAGS = -DRETRANS -DARM_RELEASE='"Berkeley Licence for Cygnus"'
+AM_CFLAGS = -Wall -Wimplicit -Wreturn-type -Wcomment -Wtrigraphs -Wformat -Wparentheses -Wpointer-arith -Wunused-label -Wunused-function -ggdb
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -317,15 +335,15 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
-	      echo ' cd $(srcdir) && $(AUTOMAKE) --foreign'; \
-	      $(am__cd) $(srcdir) && $(AUTOMAKE) --foreign \
+	      echo ' cd $(srcdir) && $(AUTOMAKE) --gnits'; \
+	      $(am__cd) $(srcdir) && $(AUTOMAKE) --gnits \
 		&& exit 0; \
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnits Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign Makefile
+	  $(AUTOMAKE) --gnits Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -483,6 +501,12 @@ site.exp: Makefile $(EXTRA_DEJAGNU_SITE_CONFIG)
 	@echo '# edit the last section' >>site.tmp
 	@echo 'set srcdir "$(srcdir)"' >>site.tmp
 	@echo "set objdir `pwd`" >>site.tmp
+	@echo 'set build_alias "$(build_alias)"' >>site.tmp
+	@echo 'set build_triplet $(build_triplet)' >>site.tmp
+	@echo 'set host_alias "$(host_alias)"' >>site.tmp
+	@echo 'set host_triplet $(host_triplet)' >>site.tmp
+	@echo 'set target_alias "$(target_alias)"' >>site.tmp
+	@echo 'set target_triplet $(target_triplet)' >>site.tmp
 	@list='$(EXTRA_DEJAGNU_SITE_CONFIG)'; for f in $$list; do \
 	  echo "## Begin content included from file $$f.  Do not modify. ##" \
 	   && cat `test -f "$$f" || echo '$(srcdir)/'`$$f \
@@ -504,6 +528,12 @@ distclean-DEJAGNU:
 	done
 
 distdir: $(DISTFILES)
+	@case `sed 15q $(srcdir)/NEWS` in \
+	*"$(VERSION)"*) : ;; \
+	*) \
+	  echo "NEWS not updated; not releasing" 1>&2; \
+	  exit 1;; \
+	esac
 	$(am__remove_distdir)
 	test -d "$(distdir)" || mkdir "$(distdir)"
 	@srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \

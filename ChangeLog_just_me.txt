@@ -1,3 +1,811 @@
+2014-01-10  Eric Gallager  <egall@gwmail.gwu.edu>
+
+    add some more old files from the 1990s
+
+    also:
+    - make some more makefiles respect @datarootdir@
+    - update changelog
+    - minor configure tweaks
+    - fix some arch-specific stuff for gdbserver
+    - silence some warnings in nindy-share now that I have a
+    (somewhat old, but working) Makefile for that subdir
+    - use autoheader for src/gdb/nlm
+    - fix some makefiles that would ignore archflags
+    - readline: properly clean up after a shlib build, and stop using
+    the `-v` flag when compiling (it just prints the version of gcc,
+    which makes output harder to read)
+    - src/sim: avoid using -Wuninitialized without optimization
+    - src/sim/testsuite: actually use maintainer mode
+    - src/tcl/unix/dltest is messed up, so mess it up even more
+    (Now TWO separate configure scripts try to AM_INIT_AUTOMAKE its
+    Makefile.am!)
+
+2014-01-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+    minor gitignore update
+
+    in src/autogen/add-on
+
+2014-01-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+    autogen: add stuff from its sourceforge git
+
+    also in autogen, switch to gnits strictness, and stub in dejagnu
+    tests
+
+2014-01-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+    actually vendor in autogen now
+
+    autogen is needed to regenerate src/Makefile.in and
+    src/utils/Makefile.in (apparently they are too complicated to just
+    use automake), and I failed to get it (autogen) installed
+    separately...
+
+2014-01-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+    regenerate things with autogen (the guile-based one)
+
+    this is in preparation for vendoring in a copy of autogen for this
+    purpose
+
+2014-01-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+    should have been part of previous commit
+
+    and gitignored, anyways...(?)
+
+2014-01-09  Eric Gallager  <egall@gwmail.gwu.edu>
+
+    found some stuff
+
+    - switch more automake-using subdirs to gnits strictness
+    - found sources for amd-udi and msdos in utils
+    - found some old doc-generating scripts for bfd
+    - other misc tweaks
+
+2014-01-07  Eric Gallager  <egall@gwmail.gwu.edu>
+
+    misc. build fixes
+
+    - Make Makefile.in files respect datarootdir
+    - Make configure scripts look in our specific intl subdir
+    - skip building zlib from src directory
+    - various .c files need to include <libintl.h> directly, apparently
+    - move to gnits strictness in intl
+    - gnulib was missing some files due to .gitignore files messing
+    stuff up
+
+2014-01-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+    renaming
+
+2014-01-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+    latest texinfo.tex macro file
+
+2014-01-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+    add some misc texinfo things
+
+2014-01-06  Eric Gallager  <egall@gwmail.gwu.edu>
+
+    zlib tweaks
+
+2014-01-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+    dejagnu tweaks
+
+2014-01-05  Eric Gallager  <egall@gwmail.gwu.edu>
+
+    fix building tcl with xcode project
+
+2014-01-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+    work on sim and Tcl
+
+2014-01-01  Eric Gallager  <egall@gwmail.gwu.edu>
+
+    do some clang static analysis
+
+    also fix readline
+
+2013-12-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+    I thought I had already made this change previously...
+
+2013-12-30  Eric Gallager  <egall@gwmail.gwu.edu>
+
+    deinit submodules (to save space temporarily)
+
+2013-12-19  Eric Gallager  <egallager@comcast.net>
+
+    touch/un-obsolete old m68k config files
+
+    Change-Id: Iaf1c2456aef5a91ccc8983133f8b4b22fe2cbcbe
+
+2013-12-19  Eric Gallager  <egallager@comcast.net>
+
+    touch more old mips config files
+
+    Change-Id: Iff991ce2549e61749c945c1c25fad91b7674b939
+
+2013-12-18  Eric Gallager  <egallager@comcast.net>
+
+    touch old mips config files
+
+    Change-Id: If238e03939f14bdd0603a2728c59b3a4c9bcdf95
+
+2013-12-18  Eric Gallager  <egallager@comcast.net>
+
+    touch/unobsolete old PPC config files
+
+    Change-Id: If8cdc5a81d87f5d41eb2d1f8d6f597f3df0ef421
+
+2013-12-18  Eric Gallager  <egallager@comcast.net>
+
+    touch old sparc config files
+
+    Change-Id: I01b3911377e6ee95c07dada8ac19b876d0965267
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+    fix some warnings in utils/sparclite and utils/wince
+
+    Change-Id: I072a258a9b1b3ff5862ccee7653aa2c34f1e5db0
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+    convert amd-udi to automake
+
+    Change-Id: I0ae2332f009099105dd271a4d12bfb196e11f873
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+    Try to figure out what is going on in utils/amd-udi
+
+    Change-Id: I7c2dda10ec5229a5b9c4c7951fcb41ead748a404
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+    more fighting with autoconf's cache mechanism
+
+    Change-Id: I0450706d8e4f2e3d296192635de9776b73c454b4
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+    touch more old files
+
+    Change-Id: Idd585fa0166e05dd8af174c0db2e22e96e1c1087
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+    use AC_USE_SYSTEM_EXTENSIONS macro in src/configure.ac
+
+    Change-Id: I91a767ccfb82218dc32605e6d9246ded0c3cc517
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+    touch more old files
+
+    Change-Id: I76b365ef5c79a8903c2264d34f55e032e2824638
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+    more touching/un-obsoleting old files
+
+    Change-Id: Ia569a5b14f94df33a3560e5ce1ccbf5267cc0c1d
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+    convert tcl/mac/MoreFiles\ 1.4.9/MoreFilesLib.make into a
+    Unix Makefile
+
+    Change-Id: I7dcefaefec8f31ea546701b4997aedf426b5cb6d
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+    tcl.m4 comparisons
+
+    Change-Id: Ib1e6fdceb6745ce2544cfb4adbfb9091bb0399ef
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+    touch old files in MoreFiles
+
+    Change-Id: Ibeb6a345fe7961c54044bd9b2139f73473ac971f
+
+2013-12-17  Eric Gallager  <egallager@comcast.net>
+
+    convert MoreFiles line endings using `mac2ux`
+
+    for proper diffing
+
+    Change-Id: I9ef0b3200619fce2170c506f2f1b6e9004eae830
+
+2013-12-16  Eric Gallager  <egallager@comcast.net>
+
+    Tcl's Mac versions says it depends on MoreFiles 1.4.9
+
+    so vendor in a local copy of that
+
+    Change-Id: I1d03b3e2bad5f4aec009a09a2a380e74d6ef9cbd
+
+2013-12-16  Eric Gallager  <egallager@comcast.net>
+
+    touch/un-obsolete more old files
+
+    Change-Id: I90b034b298479ada59b49f8916c10e6875f58f6a
+
+2013-12-11  Eric Gallager  <egallager@comcast.net>
+
+    add some relevant perl modules
+
+    also update the tcl macros some more, and the ChangeLog
+
+    Change-Id: I3eee5d1b4d7c914b8b157a9fcb3b8c176f31e76e
+
+2013-12-07  Eric Gallager  <egallager@comcast.net>
+
+    Update ReadMe.txt
+
+    src/zlib/test/Apple_test/ReadMe.txt that is
+    (get shell correct)
+
+2013-12-07  Eric Gallager  <egallager@comcast.net>
+
+    update cgen to my personal standards
+
+    also:
+    - check canonical target and friends in expect/testsuite
+    - a few minor tweaks for opcodes
+
+    Change-Id: I176e5994ea369de6689003003d7682322c9ba6aa
+
+2013-12-07  Eric Gallager  <egallager@comcast.net>
+
+    add cgen
+
+    from sourceware
+
+    Change-Id: Iaa99e1f63234570cef1368256125b4db898d1dec
+
+2013-12-07  Eric Gallager  <egallager@comcast.net>
+
+    darn it, I broke stuff again
+
+    - un-gitignore bfd texi files, as they are actually needed as
+    dependencies for make targets
+    - bfd: make sure bfd.h is present
+    - bfd/doc: make sure chew dSYMs get cleaned up
+    - bfd/m4/ax_patch_libtool_changing_cmd_ifs.m4: make sure libtool
+    exists before trying to move it
+    - accidentally deleted some bfd source files... (they might be
+    regenerate-able, idk...)
+    - work on tcl.m4
+    - configure script updates
+    - gdb/gnulib got broken somehow wrt <string.h>-related `sed`
+    substitutions, try to fix it
+    - touch old MPW headers
+    - opcodes: I broke something wrt i386-opc.lo, try to fix
+    - utils: recurse into "misc" subdir
+    - utils/misc/doschk: try to make it safe to include <stdlib.h>
+    (for the exit() function) by dealing with mismatched malloc()
+    prototype
+    - zlib: sometimes the ${AR} gets mismatched with the wrong
+    ${ARFLAGS}, try to compensate
+    - zlib: fix some warnings about implicit function declarations
+    - etc: add root-gdb-backtrace.sh script from CERN's ROOT package
+    (with some modifications to silence `shellcheck` warnings)
+    - add some more texinfo stuff
+    - add decomment.tproj and relpath.tproj from bootstrap_cmds to
+    utils (with some modifications)
+    - zlib: add some files from Apple's zlib fork, such as an
+    Apple-specific test suite, and an Xcode project
+
+    Change-Id: I4c97f86c672b91120bd22f020c214b9a259860d5
+
+2013-11-18  Eric Gallager  <egallager@comcast.net>
+
+    Convert MacClassic line endings in src/include/mpw/CIncludes to
+    unix line endings
+
+    Necessary for proper diffing
+
+    Change-Id: I66fac9010c1b0dd7c74021de8eb17a3fb02eaba0
+
+2013-11-18  Eric Gallager  <egallager@comcast.net>
+
+    touch more old files in src/gdb-next
+
+    Change-Id: Id8c3b4545f62903dfeb0216f5b5364523102c9ae
+
+2013-11-18  Eric Gallager  <egallager@comcast.net>
+
+    add MPW 3.3 CIncludes
+
+    Change-Id: I4b2b4082a0ba4e97a214c78a6bae2047dd41c3d3
+
+2013-11-18  Eric Gallager  <egallager@comcast.net>
+
+    fix building zlib from src, silence warning in gnulib
+
+    Change-Id: Ib7df27c98ac269ddd2c90ba81f96aabbb9c08ec1
+
+2013-11-18  Eric Gallager  <egallager@comcast.net>
+
+    autotools-ify src/zlib
+
+    Change-Id: I5cf7f8af2dca78d4268014c6f29411c5380f4800
+
+2013-11-18  Eric Gallager  <egallager@comcast.net>
+
+    vendor in a copy of zlib-1.2.8 in src
+
+    Change-Id: I3735489aaba057cbc322b2900940838622f145da
+
+2013-11-18  Eric Gallager  <egallager@comcast.net>
+
+    add a few more things to src's configure script
+
+    Change-Id: I6c426e3450ccdbc8ccdc6da34221d08f9253a8ad
+
+2013-11-18  Eric Gallager  <egallager@comcast.net>
+
+    check gnulib stdint stuff in src/gdb's configure script, too
+
+    Change-Id: Ib0366d1b086bffc917bb867684796531211f75c4
+
+2013-11-18  Eric Gallager  <egallager@comcast.net>
+
+    These should have been included in the previous commit
+
+    Change-Id: Icf7d0efd489fb15f751027ade4a87d0d7676f766
+
+2013-11-18  Eric Gallager  <egallager@comcast.net>
+
+    probably should have split this up into smaller commits...
+
+    - found Apple's binutils sources, which looks like they were a
+    precursor to their gdb sources, so include some old files from them
+    (mpw stuff, mostly)
+    - also found Apple's separate set of sources for expect, so include
+    some files from that, too
+    - update configure script for bfd
+    - touch old files in src/expect
+    - fix some implicit declaration warnings for src/expect by
+    including some more headers
+    - regenerate src/expect/Dbgconfigure (this is more complicated than
+    regenerating your normal autoconf script, because it involves
+    renaming stuff)
+    - apostrophe-phobia and formatting
+    - Make some expect scripts executable
+    - Make src/intl's configure script actually generate po2tbl.sed
+    - let libiberty link against mmalloc, if desired
+    - add src/electric-fence directory
+
+    Change-Id: I7dd962d80868251c47ee53f0e335e97d5e8e69a2
+
+2013-11-16  Eric Gallager  <egallager@comcast.net>
+
+    touch old dejagnu files, and also fix src/gdb/gnulib
+
+    Change-Id: Id601a21c6a7c27be88585c72f34aed5c06a027f5
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+    check for autogen in src/utils because it uses that to create its
+    makefile
+
+    Change-Id: Ic45575f42a9b6d56ec5a053d92e1356aba2beca7
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+    I thought these would have gone in the previous commit...
+
+    Change-Id: I457f04412b1343aea3c1fbfad91a3260d98b3cb6
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+    touch old files in src/gdb-next
+
+    Change-Id: I35fb15acb22f05cd557094b533680dc5e743345a
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+    convert pdf images to pngs
+
+    Change-Id: I80daa1718ca0685a596fe6021379126ff0d78fbb
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+    add some CustomDataViews plists
+
+    Change-Id: I2d89c3b9177a3a65b81b36775f79d9ad33580fb9
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+    oops, forgot to rename the XcodePlugins folder in the previous
+    commit...
+
+    Change-Id: I73b5979403d523602b77d2e0cbe90450be0cedff
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+    add stuff scavenged from various other gdb-related Xcode plugins
+
+    Change-Id: I9ecea92826490ccdfb153b6ad02b845fa2b97915
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+    add stuff scavenged from gdbmi Xcode plugin
+
+    also use config.status hack for src/gdb/gnulib's configure script
+
+    Change-Id: I7a5eaaa586bb1fa5b1c830f522869369de05f16b
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+    actually fix build in src/bfd this time
+
+    Change-Id: I242696788bbd43b0fd3d77843e1468b94d34d258
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+    try some more to fix src/bfd's build
+
+    Change-Id: I62e4887d55a4573a1841010f5132c6f1a512c834
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+    try again to fix src/bfd
+
+    Change-Id: I61bed789da3c03aae51f67ceb7c59948aa17850f
+
+2013-11-15  Eric Gallager  <egallager@comcast.net>
+
+    fix build in src/opcodes
+
+    also semi-fix/semi-break build in src/bfd
+
+    Change-Id: Id7079158a952ebbb73d9d71c3e5e5647f480c158
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    try fix building of src/bfd
+
+    Change-Id: I58a01ccabe92d5efb8840e29acdef5897495b79e
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    add new subdirectory src/sim/testsuite/sim/bfin
+
+    Change-Id: I90533728c01e8e1fafd88cb4f11e49ded9e871d1
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    update src/sim
+
+    many new simulators to ignore...
+
+    Change-Id: I0310439f41c9c18fe4976f2b0fe9b5759b8e2d15
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    add new files to src/gdb/testsuite/gdb.trace
+
+    Change-Id: Ibefc6ae7ebaec132492ff47e5c8ebdde1bbacf9e
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    add new files to src/gdb/testsuite/gdb.threads
+
+    Change-Id: I4f3508df6e6b3d4346b60cdfb280beca67cf8cd6
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    add new files to src/gdb/testsuite/gdb.reverse
+
+    Change-Id: Ic0785b8b8151d9861927670e4348e3d8d2b41931
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    add new subdirectory src/gdb/testsuite/gdb.btrace
+
+    Change-Id: I15ffeb2d0d69796db0673a614e3d31ddd1264193
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    add new files to src/gdb/testsuite/gdb.mi
+
+    Change-Id: Ib3bdba847cc42b6219802a0f455dc6cc4c3e9fa2
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    add new files to src/gdb/testsuite/gdb.dwarf2
+
+    Change-Id: I6812f93e114a9fb87ea7b17bae8e65eccae14e17
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    add new files to src/gdb/testsuite/gdb.cp
+
+    Change-Id: Ida8832d8394b8fc087564a52148e594c7de01d97
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    add new files to src/gdb/testsuite/gdb.base
+
+    Change-Id: I6bafe6dee4c7bff16ca82c8d27dac9e5f10dcb28
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    add new files to src/gdb/testsuite/gdb.arch
+
+    Change-Id: I51f865b924c44b81607ed646ab280be0defb496c
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    add new files to src/gdb/testsuite/gdb.python
+
+    Change-Id: Ib5f751c9ddd20a875961c1ad76286ba4ba76872c
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    oops vforked-prog.c slipped through somehow
+
+    Change-Id: I1da5131dc6519edde0571532deeec9ab8b79db6c
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    add new files to src/gdb/testsuite/gdb.fortran
+
+    Change-Id: Ia1a9538830aec5677a12769dcf9595b30567afcc
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    add new files to src/gdb/testsuite/gdb.ada
+
+    Change-Id: I49c9d2f73119df37a830711ad47f735d7efc037b
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    add new subdirectory src/gdb/testsuite/boards
+
+    Change-Id: I92517791142c52da2226a3db73f3eff54bc227ca
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    make testsuite actually run again
+
+    it still experiences a lot of failures though:
+        === gdb Summary ===
+
+    # of expected passes        1942
+    # of unexpected failures    192
+    # of known failures     3
+    # of unresolved testcases   19
+    # of untested testcases     15
+    # of unsupported tests      74
+
+    Change-Id: Id5fb58841f82294b2864b53f6b94e6ced14185f1
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    add new files to src/gdb
+
+    no new directories this time though
+
+    Change-Id: Ifdb81f86400581ec1a6d3a0090afd07b15413211
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    add more new files
+
+    - new files in src/gdb/gdbserver
+    - new files in src/gdb/testsuite
+    - new files in src/gdb/config
+    - configure tweaks
+
+    Change-Id: Ieda2969f262fbefd5104e0f39f0eb2d56c1bf7b0
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    more src/gdb additions
+
+    - new files in src/gdb/gnulib
+    - new files in src/gdb/python
+    - new files in src/gdb/regformats
+    - new files in src/gdb/syscalls
+    - some new subdirs in src/gdb
+
+    Change-Id: Ie1a1d90a9163b6dd36c0bd620d174c0d47887267
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    add src/gdb/common, src/gdb/contrib, and src/gdb/features
+
+    Change-Id: I814de56692faeddbc3c3f105ac97b4ffba645ab6
+
+2013-11-14  Eric Gallager  <egallager@comcast.net>
+
+    oops, forgot to clean these up
+
+    Change-Id: I7af922399b377df663821f64cc6f82d05de11756
+
+2013-11-13  Eric Gallager  <egallager@comcast.net>
+
+    new files for src/opcodes
+
+    - also a few new files for src/readline
+    - also move aside src/include/mach-o to prevent the headers from
+    masking system headers
+
+    Change-Id: Ic5c99061e74febcfe740bcce5382471bf0eb26d4
+
+2013-11-13  Eric Gallager  <egallager@comcast.net>
+
+    add new files to libiberty
+
+    Change-Id: I0d838690b4adf501fbbf5598051958992c73d0e1
+
+2013-11-13  Eric Gallager  <egallager@comcast.net>
+
+    add some new includes
+
+    Change-Id: If8b7c8bafd9350e415f2f6c0db5f8dbc92337fd5
+
+2013-11-13  Eric Gallager  <egallager@comcast.net>
+
+    more misc file additions
+
+    such as lazarus gdb support files
+
+    Change-Id: Ic6adbf3935ca25388eed0f904962a0daee9e5222
+
+2013-11-13  Eric Gallager  <egallager@comcast.net>
+
+    copy fpc bindings to gdb and bfd from Fink's fpcsrc package
+
+    and also BFD.pm from Fink's bfd-pm package
+
+    Change-Id: I517a6d0e7a4982a6d2b034e1b890f314f937b3c0
+
+2013-11-13  Eric Gallager  <egallager@comcast.net>
+
+    add src/elfcpp directory
+
+    Change-Id: I148b8a9f1cbca95cfa79cea86e5c580fe4aaed73
+
+2013-11-13  Eric Gallager  <egallager@comcast.net>
+
+    add src/cpu
+
+    Change-Id: Iec62e2c963657eed8fb2007db4287b59f8b38e90
+
+2013-11-13  Eric Gallager  <egallager@comcast.net>
+
+    newer src/config files
+
+    Change-Id: I15b57edc4acf7a46071916e95aa21d02d39c2176
+
+2013-11-13  Eric Gallager  <egallager@comcast.net>
+
+    add files from newer versions of binutils
+
+    Change-Id: I6673cc9edd385335f608fa84ad2fd51a123cff6c
+
+2013-11-11  Eric Gallager  <egallager@comcast.net>
+
+    add files from new versions of bfd
+
+    Change-Id: I148157f518eb0308b126ff607a7b0cc95574ad8f
+
+2013-11-11  Eric Gallager  <egallager@comcast.net>
+
+    more trying to fix build errors
+
+    also add a list of missing symbols so I can move on to other stuff
+    and then come back to this build error later
+
+    Change-Id: Ibcf279241ecd58686c752b1c3b9cddbaa0277409
+
+2013-11-11  Eric Gallager  <egallager@comcast.net>
+
+    try to fix errors
+
+    - add more dependencies to makefile targets
+    - try includes in multiple ways, just in case
+
+    Change-Id: Ia1d6aa9bf04a63d0f0f63cda537bd77c969b043e
+
+2013-11-11  Eric Gallager  <egallager@comcast.net>
+
+    Update Readme.md
+
+    strikethrough incorrect directions regarding darwinbuild
+
+2013-11-11  Eric Gallager  <egallager@comcast.net>
+
+    dredge through old files
+
+    - top-level: make an OpenSourceLicenses directory and copy gdb.txt
+    there, to clarify what it is
+    - rename "darwinbuild" directory to be more accurately named as
+    "darwinbuild-OpenSourceVersions"
+    - un-obsolete and touch a bunch of old code files that had not been
+    modified in over a decade
+    - add some configure checks to try to help with compiling really
+    old Classic MacOS files (trying to compile those files still fails,
+    so I have kept them out of the Makefile)
+    - add a rule to compile regex.o in libiberty's Makefile
+    - re-break the test suite (oops)
+
+    Change-Id: I924bb4c4c2d48f71015e8a5adc08dc858f050a1c
+
+2013-11-09  Eric Gallager  <egallager@comcast.net>
+
+    copy over a copy of the GPL3
+
+    Change-Id: I1d178bd73333198a2f0e8ef3e8783ba5a5993f27
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    copy the gdb.plist file back to the top level now that I know
+    where it *actually* goes
+
+    plus the top-level makefile looks for it in the top-level directory
+
+    Change-Id: I46ae5f8f199efe9d2069135d6baffb1a5c91869e
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    add gdb admin scripts and htdocs
+
+    `git cvsimport` did *not* seem to do anything for me, so instead I
+    had to import with `cvs` manually. See
+    http://www.gnu.org/software/gdb/current/ for commands used.
+
+    Change-Id: I1908b3b7571b4cc15c5715311ab53095b7c0fc83
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    Add FSF gdb as a git submodule
+
+    why am I doing this I hate git submodules arghhh
+
+    Change-Id: I72d4a85446a989daab98cf3d6689196974289c62
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    Add some more darwinbuild plists
+
+    Change-Id: Ibf5a8a978f3b8d29904f3216a127756aad0ca2a2
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    some minor changes:
+
+    - now that src/gdb uses automake, it requires the same hack that
+    other subdirectories that use automake require
+    - split off a copy of the top-level ChangeLog that just includes a
+    list of my own changes
+
+    (also if you are viewing this commit message via the ChangeLog
+    file, you should really be doing it from GitHub instead, as it has
+    the actual diffs and stuff)
+
+    Change-Id: Id4502e00ba2f82746e5c7c9de87e7a49fb582198
+
+2013-11-08  Eric Gallager  <egallager@comcast.net>
+
+    actually update ChangeLog
+
+    this time via http://stackoverflow.com/a/16738477
+
+    Change-Id: Id9f6a74aa82ae56735ac0261fbe28932251b7e8d
+
+
 2013-11-08  Eric Gallager  <egallager@comcast.net>
 
     more gitlog scripts

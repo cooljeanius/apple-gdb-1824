@@ -1,6 +1,6 @@
-/* 
+/* hsys.h
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -45,12 +45,12 @@ typedef struct {
 /*
  *  Function: HostSysInit
  *   Purpose: Set up the state block, filetable and register the and C lib
- *            callback fn 
+ *            callback fn
  *
  *    Params:
  *       Input: hostif, the host interface from the debug toolbox
  *              cmdline, the command line used to call the image
- *              state, the status block for the C lib 
+ *              state, the status block for the C lib
  *
  *   Returns:
  *          OK: an RDIError_* valuee
@@ -64,7 +64,7 @@ extern int HostSysInit(
  *   Purpose: Close down the host side C library support
  *
  *    Params:
- *       Input: hstate, the status block for the C lib 
+ *       Input: hstate, the status block for the C lib
  *
  *    Returns:  an RDIError_* valuee
  */

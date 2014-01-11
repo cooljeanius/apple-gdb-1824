@@ -388,6 +388,7 @@ dependencies = { module=all-automake; on=all-build-texinfo; };
 dependencies = { module=all-automake; on=all-autoconf; };
 dependencies = { module=all-bison; on=all-intl; };
 dependencies = { module=all-bison; on=all-build-texinfo; };
+dependencies = { module=all-cgen; on=all-guile; };
 dependencies = { module=all-diff; on=all-intl; };
 dependencies = { module=all-diff; on=all-build-texinfo; };
 dependencies = { module=all-fileutils; on=all-intl; };

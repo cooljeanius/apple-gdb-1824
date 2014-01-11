@@ -1,6 +1,6 @@
-/* 
+/*
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -15,7 +15,7 @@
 
 #ifdef DEBUG
 #  include <ctype.h>
-#endif
+#endif /* DEBUG */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,6 +23,7 @@
 #include <stdarg.h>
 #include <errno.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "adp.h"
 #include "host.h"
@@ -32,7 +33,7 @@
 #include "angel_endian.h"
 #include "logging.h"         /* Angel support functions. */
 #include "msgbuild.h"
-#include "sys.h"    
+#include "sys.h"
 #include "hsys.h"      /* Function and structure declarations. */
 #include "hostchan.h"
 
@@ -45,7 +46,7 @@
    points to the message body.  Functionality is provided by the debugger
    toolkit.  The routine is very loosely based on the HandleSWI routine from
    armos.c in the armulator source.                                         */
-/* These routines could be tested by providing a simple interface to armsd, 
+/* These routines could be tested by providing a simple interface to armsd,
    and running them in that.   */
 
 
@@ -69,10 +70,10 @@
 #       define isatty_(f) (~ioctl((f)->_file,FIOINTERACTIVE,NULL))
 #     else
 #       define isatty_(f) isatty(fileno(f))
-#     endif
-#   endif
-# endif
-#endif
+#     endif /* macintosh */
+#   endif /* __ZTC__ */
+# endif /* _WINDOWS || _CONSOLE */
+#endif /* __riscos */
 
 /* Set up the state block, filetable and register the C lib callback fn */
 int HostSysInit(const struct Dbg_HostosInterface *hostif, char **cmdline,
@@ -125,10 +126,10 @@ static void DebugCheckNullTermString(char *prefix, bool nl,
     }
 }
 
-#ifdef NEED_SYSERRLIST
+# ifdef NEED_SYSERRLIST
 extern int sys_nerr;
 extern char *sys_errlist[];
-#endif
+# endif /* NEED_SYSERRLIST */
 
 static char *DebugStrError(int last_errno)
 {
@@ -173,14 +174,14 @@ static void DebugCheckNonNull(char *prefix, bool nl,
     }
 }
 
-#define DebugPrintF(c) printf c;
+# define DebugPrintF(c) printf c;
 
 #else
 
-#define DebugCheckNullTermString(p, n, l, s)    ((void)(0))
-#define DebugCheckErr(p, n, e, l)               ((void)(0))
-#define DebugCheckNonNull(p, n, h, l)           ((void)(0))
-#define DebugPrintF(c)                          ((void)(0))
+# define DebugCheckNullTermString(p, n, l, s)    ((void)(0))
+# define DebugCheckErr(p, n, e, l)               ((void)(0))
+# define DebugCheckNonNull(p, n, h, l)           ((void)(0))
+# define DebugPrintF(c)                          ((void)(0))
 
 #endif /* ifdef DEBUG ... else */
 
@@ -236,7 +237,7 @@ int HandleSysMessage(Packet *packet, hsys_state *stateptr)
                                "r","r","r","r"} /* last 4 are illegal */ ;
 
   FILEHANDLE fh;  /* fh is used as an index to the real file handle
-                         * in OSptr */  
+                         * in OSptr */
   FILE *fhreal;
   unpack_message(BUFFERDATA(buffhead), "%w%w%w%w", &reason_code,
                  &DebugID, &OSInfo1, &OSInfo2);
@@ -244,7 +245,7 @@ int HandleSysMessage(Packet *packet, hsys_state *stateptr)
   reason_code &= 0xFFFF;        /* Strip away direction bit, OSInfo and     */
                                 /* DebugInfo fields.  Will want to do some  */
                                 /* sort of validation on this later.        */
-  
+
   switch(reason_code)
   {
 
@@ -254,7 +255,7 @@ int HandleSysMessage(Packet *packet, hsys_state *stateptr)
 #ifdef DEBUG
       int c = (int)(*buffp);
       printf("CL_WriteC: [%02x]>%c<", c, isprint(c) ? c : '.');
-#endif
+#endif /* DEBUG */
       stateptr->hostif->writec(stateptr->hostif->hostosarg, (int)(*buffp));
       DevSW_FreePacket(packet);
       return msgsend(CI_CLIB,"%w%w%w%w%w", CL_WriteC|HtoT,
@@ -268,7 +269,7 @@ int HandleSysMessage(Packet *packet, hsys_state *stateptr)
       stateptr->hostif->write(stateptr->hostif->hostosarg,
                               (char *) buffp+4, len);
       DevSW_FreePacket(packet);
-      return msgsend(CI_CLIB, "%w%w%w%w%w", CL_Write0|HtoT, DebugID, 
+      return msgsend(CI_CLIB, "%w%w%w%w%w", CL_Write0|HtoT, DebugID,
                     OSInfo1, OSInfo2, NoError);
     }
 
@@ -285,7 +286,7 @@ int HandleSysMessage(Packet *packet, hsys_state *stateptr)
                     DebugID, OSInfo1, OSInfo2, NoError, character);
     }
 
-  case CL_System:  /* Pass NULL terminated string to the hosts command 
+  case CL_System:  /* Pass NULL terminated string to the hosts command
                     * interpreter. As it is nULL terminated we dont need
                     * the length
                     */
@@ -306,20 +307,20 @@ int HandleSysMessage(Packet *packet, hsys_state *stateptr)
   case CL_GetCmdLine:  /* Returns the command line used to call the program */
     {
       /* Note: we reuse the packet here, this may not always be desirable */
-      /* /* TODO: Use long buffers if possible */
+      /* TODO: Use long buffers if possible */
       DebugPrintF(("CL_GetCmdLine: \"%s\"\n", *(stateptr->CommandLine)));
 
       if (buffhead!=NULL) {
         len = strlen(*(stateptr->CommandLine));
-        if (len > Armsd_BufferSize-24) len = Armsd_BufferSize-24; 
+        if (len > Armsd_BufferSize-24) len = Armsd_BufferSize-24;
         packet->pk_length = len + msgbuild(BUFFERDATA(buffhead),
                                            "%w%w%w%w%w%w", CL_GetCmdLine|HtoT,
                                            DebugID, OSInfo1, OSInfo2,
                                            NoError, len);
         strncpy((char *) BUFFERDATA(buffhead)+24,*(stateptr->CommandLine),
                 len);
-        
-        Adp_ChannelWrite(CI_CLIB, packet);/* Send message. */
+
+        Adp_ChannelWrite(CI_CLIB, packet); /* Send message. */
         return 0;
       }
       else return -1;
@@ -363,7 +364,7 @@ int HandleSysMessage(Packet *packet, hsys_state *stateptr)
       /* Removing an open file will cause problems but once again
        * its not our problem, likely result is a tangled FileTable */
       /* As the filename is passed with a null terminator we can use it
-       * straight out of the buffer without copying it.*/
+       * straight out of the buffer without copying it. */
 
       unpack_message(buffp, "%w", &len);
       DebugCheckNullTermString("CL_Remove", TRUE, len, buffp+4);
@@ -399,7 +400,7 @@ int HandleSysMessage(Packet *packet, hsys_state *stateptr)
       return msgsend(CI_CLIB, "%w%w%w%w%w",  CL_Rename|HtoT,
                      DebugID, OSInfo1, OSInfo2, (err==0)? NoError : -1);
     }
-  
+
   case CL_Open:    /* open the file */
     {
       /* Open(word nbytes, bytes name, byte mode)
@@ -501,7 +502,7 @@ int HandleSysMessage(Packet *packet, hsys_state *stateptr)
       unsigned int ack_reason = CL_Write; /* first ack is for CL_Write */
 
       err = -1;                 /* err == 0 is fwrite() error indication */
-      unpack_message(buffp, "%w%w%w", &fh, &nbtotal, &nbytes); 
+      unpack_message(buffp, "%w%w%w", &fh, &nbtotal, &nbytes);
       DebugPrintF(("CL_Write: fh %d nbtotal %u nbytes %u\n",
                    fh, nbtotal, nbytes));
 
@@ -541,7 +542,7 @@ int HandleSysMessage(Packet *packet, hsys_state *stateptr)
             stateptr->hostif->write(stateptr->hostif->hostosarg,
                                     (char *)write_source, nbtotal);
           }
-          else 
+          else
              err = fwrite(write_source, 1, nbtotal, fhreal);
           stateptr->last_errno = errno;
           DebugCheckErr("fwrite", TRUE, (err == 0), stateptr->last_errno);
@@ -585,7 +586,7 @@ int HandleSysMessage(Packet *packet, hsys_state *stateptr)
 
           buffhead = packet->pk_buffer;
           unpack_message(BUFFERDATA(buffhead), "%w%w%w%w%w", &reason_code,
-                         &DebugID, &OSInfo1, &OSInfo2, &nbytes); 
+                         &DebugID, &OSInfo1, &OSInfo2, &nbytes);
           if (reason_code != (CL_WriteX|TtoH)) {
             DevSW_FreePacket(packet);
             free(rwhead);
@@ -610,7 +611,7 @@ int HandleSysMessage(Packet *packet, hsys_state *stateptr)
                        * do this for the moment just so we do actually return
                        */
     fprintf(stderr, "ERROR: unexpected CL_WriteX message received\n");
-    return -1; 
+    return -1;
 
   case CL_Read:
     {
@@ -694,7 +695,7 @@ int HandleSysMessage(Packet *packet, hsys_state *stateptr)
                          ADP_HandleUnknown, err, nbytes, nbleft);
 
         if (err == NoError) {
-          /* copy data into buffptr */   
+          /* copy data into buffptr */
           memcpy(BUFFERDATA(buffhead)+28, rwdata, nbytes);
           rwdata += nbytes;
           count += nbytes;
@@ -755,12 +756,12 @@ int HandleSysMessage(Packet *packet, hsys_state *stateptr)
       if (fhreal == NULL)
          err = -1;
       else {
-        err = fseek(fhreal, posn, SEEK_SET); 
+        err = fseek(fhreal, posn, SEEK_SET);
         stateptr->last_errno = errno;
         DebugCheckErr("fseek", TRUE, err, stateptr->last_errno);
       }
 
-      return msgsend(CI_CLIB, "%w%w%w%w%w", CL_Seek|HtoT, 
+      return msgsend(CI_CLIB, "%w%w%w%w%w", CL_Seek|HtoT,
                          DebugID, OSInfo1, OSInfo2, err);
     }
 
@@ -787,7 +788,7 @@ int HandleSysMessage(Packet *packet, hsys_state *stateptr)
       DebugPrintF(("returning len %ld\n", fl));
       return msgsend(CI_CLIB, "%w%w%w%w%w", CL_Flen|HtoT, DebugID, OSInfo1,
                      OSInfo2, fl);
-    } 
+    }
 
   case CL_IsTTY:
     {
@@ -805,7 +806,7 @@ int HandleSysMessage(Packet *packet, hsys_state *stateptr)
       }
       DebugPrintF(("returning %s\n", ttyOrNot ? "tty (1)" : "not (0)"));
 
-      return msgsend(CI_CLIB, "%w%w%w%w%w",CL_IsTTY|HtoT, 
+      return msgsend(CI_CLIB, "%w%w%w%w%w",CL_IsTTY|HtoT,
                          DebugID, OSInfo1, OSInfo2, ttyOrNot);
     }
 
@@ -813,7 +814,7 @@ int HandleSysMessage(Packet *packet, hsys_state *stateptr)
     {
       char *name;
       unsigned int tnamelen, TargetID;
-      unpack_message(buffp, "%w%w", &tnamelen, &TargetID); 
+      unpack_message(buffp, "%w%w", &tnamelen, &TargetID);
       DebugPrintF(("CL_TmpNam: tnamelen %d TargetID %d: ",
                    tnamelen, TargetID));
       DevSW_FreePacket(packet);
@@ -890,10 +891,11 @@ void panic(const char *format, ...)
     /* SJ - Not the proper way to shutdown the app */
     exit(EXIT_FAILURE);
 
-/*
-    if (hwndParent != NULL)
+# if 0
+    if (hwndParent != NULL) {
         SendMessage(hwndParent, WM_QUIT, 0, 0);
-*/
+	}
+# endif /* 0 */
 
     va_end(args);
 }
@@ -912,6 +914,6 @@ void panic(const char *format, ...)
     exit(EXIT_FAILURE);
 }
 
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 
 /* EOF hsys.c */

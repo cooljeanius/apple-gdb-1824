@@ -1,7 +1,7 @@
 ## Process this file with automake to generate Makefile.in
 
 ACLOCAL_AMFLAGS = -I../m4 --install
-AUTOMAKE_OPTIONS = foreign dejagnu
+AUTOMAKE_OPTIONS = gnits dejagnu
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 noinst_LIBRARIES = libangsd.a
@@ -20,3 +20,4 @@ noinst_HEADERS = adp.h adperr.h angel.h ardi.h armdbg.h buffers.h \
 EXTRA_DIST = README.CYGNUS
 
 AM_CPPFLAGS = -DRETRANS -DARM_RELEASE='"Berkeley Licence for Cygnus"'
+AM_CFLAGS = -Wall -Wimplicit -Wreturn-type -Wcomment -Wtrigraphs -Wformat -Wparentheses -Wpointer-arith -Wunused-label -Wunused-function -ggdb

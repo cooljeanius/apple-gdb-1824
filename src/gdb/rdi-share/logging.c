@@ -1,6 +1,6 @@
-/* 
+/* logging.c
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -23,13 +23,13 @@
 # include "devconf.h"
 #else
 # include "host.h"
-#endif
+#endif /* TARGET */
 
 #include "logging.h"    /* Header file for this source code */
 
 #ifndef UNUSED
 # define UNUSED(x) ((x)=(x))
-#endif
+#endif /* !UNUSED */
 
 /*
  * __rt_warning
@@ -59,7 +59,7 @@
 
 # else
 #  error Must define DEBUG_METHOD
-# endif
+# endif /* DEBUG_METHOD */
 
 #endif /* def DEBUG */
 
@@ -274,7 +274,7 @@ static void va_warn1(int len, char *msg)
 {
     UNUSED(len); UNUSED(msg);
 }
-# endif
+# endif /* DEBUG_NEED_VA_WARN1 */
 
 void va_warn(WarnLevel level, char *format, va_list args)
 {

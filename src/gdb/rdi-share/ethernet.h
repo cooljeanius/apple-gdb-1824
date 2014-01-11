@@ -1,6 +1,6 @@
-/* 
+/* ethernet.h
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -90,7 +90,7 @@ extern angel_EthernetConfigBlock *angel_FindEthernetConfigBlock(void);
 # ifndef COMPILING_ON_WINDOWS
 #  define ioctlsocket(x, y, z)  ioctl((x), (y), (z))
 #  define closesocket(x)        close(x)
-# endif
+# endif /* !COMPILING_ON_WINDOWS */
 
 #endif /* def TARGET */
 

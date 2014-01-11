@@ -1,6 +1,6 @@
-/* 
+/* tx.c
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -37,14 +37,14 @@
 #define E_MASK          (0x1 << 2) /* mask for the Escaper state */
 
 #define F_HEAD          (0x0 << 3) /* 4th and 5th bits for F_ */
-#define F_DATA          (0x1 << 3) 
+#define F_DATA          (0x1 << 3)
 #define F_CRC           (0x1 << 4)
 #define F_MASK          (0x3 << 3) /* mask for the Escaper state */
 
 static unsigned char escape(unsigned char ch_in, struct te_state *txstate);
 
 void Angel_TxEngineInit(const struct re_config *txconfig,
-                        const struct data_packet *packet, 
+                        const struct data_packet *packet,
                         struct te_state *txstate){
   IGNORE(packet);
   txstate->tx_state = N_STX | E_PLAIN | F_HEAD;
@@ -67,7 +67,7 @@ te_status Angel_TxEngine(const struct data_packet *packet,
   case N_STX:
 #ifdef DO_TRACE
     __rt_trace("txe-stx ");
-#endif
+#endif /* DO_TRACE */
     txstate->tx_state = (txstate->tx_state & ~N_MASK) | N_BODY;
     *tx_ch = txstate->config->stx;
     txstate->field_c = 3; /* set up for the header */
@@ -78,7 +78,7 @@ te_status Angel_TxEngine(const struct data_packet *packet,
     case F_HEAD:
 #ifdef DO_TRACE
     __rt_trace("txe-head ");
-#endif
+#endif /* DO_TRACE */
       if (txstate->field_c == 3) {
         /* send type */
         *tx_ch = escape(packet->type, txstate);
@@ -97,42 +97,42 @@ te_status Angel_TxEngine(const struct data_packet *packet,
     case F_DATA:
 #ifdef DO_TRACE
     __rt_trace("txe-data ");
-#endif
+#endif /* DO_TRACE */
       *tx_ch = escape(packet->data[packet->len - txstate->field_c], txstate);
       if (txstate->field_c == 0) {
         /* move on to the next state */
         txstate->tx_state = (txstate->tx_state & ~F_MASK) | F_CRC;
         txstate->field_c = 4;
-      }      
+      }
       return TS_IN_PKT;
     case F_CRC:
 #ifdef DO_TRACE
     __rt_trace("txe-crc ");
-#endif
+#endif /* DO_TRACE */
      *tx_ch = escape((txstate->crc >> ((txstate->field_c - 1) * 8)) & 0xff,
                       txstate);
 
       if (txstate->field_c == 0) {
 #ifdef DO_TRACE
         __rt_trace("txe crc = 0x%x\n", txstate->crc);
-#endif
+#endif /* DO_TRACE */
         /* move on to the next state */
         txstate->tx_state = (txstate->tx_state & ~N_MASK) | N_ETX;
       }
-      return TS_IN_PKT;     
+      return TS_IN_PKT;
     }
   }
   case N_ETX:
 #ifdef DO_TRACE
     __rt_trace("txe-etx\n");
-#endif
+#endif /* DO_TRACE */
     txstate->tx_state = (txstate->tx_state & ~N_MASK) | N_IDLE;
     *tx_ch = txstate->config->etx;
     return TS_DONE_PKT;
   default:
 #ifdef DEBUG
     __rt_info("tx default\n");
-#endif
+#endif /* DEBUG */
     txstate->tx_state = (txstate->tx_state & ~N_MASK) | N_IDLE;
     return TS_IDLE;
   }
@@ -151,7 +151,7 @@ static unsigned char escape(unsigned char ch_in, struct te_state *txstate) {
       /* char has been escaped so send the real char */
 #ifdef DO_TRACE
      __rt_trace("txe-echar ");
-#endif
+#endif /* DO_TRACE */
       txstate->tx_state = (txstate->tx_state & ~E_MASK) | E_PLAIN;
       txstate->field_c--;
       if ((txstate->tx_state & F_MASK) != F_CRC)
@@ -162,7 +162,7 @@ static unsigned char escape(unsigned char ch_in, struct te_state *txstate) {
      /* char needs escaping */
 #ifdef DO_TRACE
      __rt_trace("txe-esc ");
-#endif
+#endif /* DO_TRACE */
      txstate->tx_state = (txstate->tx_state & ~E_MASK) | E_ESC;
      return txstate->config->esc;
    }

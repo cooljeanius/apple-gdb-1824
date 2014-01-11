@@ -1,3 +1,25 @@
+2014-01-10  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	add some more old files from the 1990s
+
+	also:
+	- make some more makefiles respect @datarootdir@
+	- update changelog
+	- minor configure tweaks
+	- fix some arch-specific stuff for gdbserver
+	- silence some warnings in nindy-share now that I have a
+	(somewhat old, but working) Makefile for that subdir
+	- use autoheader for src/gdb/nlm
+	- fix some makefiles that would ignore archflags
+	- readline: properly clean up after a shlib build, and stop using
+	the `-v` flag when compiling (it just prints the version of gcc,
+	which makes output harder to read)
+	- src/sim: avoid using -Wuninitialized without optimization
+	- src/sim/testsuite: actually use maintainer mode
+	- src/tcl/unix/dltest is messed up, so mess it up even more
+	(Now TWO separate configure scripts try to AM_INIT_AUTOMAKE its
+	Makefile.am!)
+
 2014-01-09  Eric Gallager  <egall@gwmail.gwu.edu>
 
 	minor gitignore update
@@ -8,15 +30,17 @@
 
 	autogen: add stuff from its sourceforge git
 
-	also in autogen, switch to gnits strictness, and stub in dejagnu tests
+	also in autogen, switch to gnits strictness, and stub in dejagnu
+	tests
 
 2014-01-09  Eric Gallager  <egall@gwmail.gwu.edu>
 
 	actually vendor in autogen now
 
 	autogen is needed to regenerate src/Makefile.in and
-	src/utils/Makefile.in (apparently they are too complicated to just use
-	automake), and I failed to get it (autogen) installed separately...
+	src/utils/Makefile.in (apparently they are too complicated to just
+	use automake), and I failed to get it (autogen) installed
+	separately...
 
 2014-01-09  Eric Gallager  <egall@gwmail.gwu.edu>
 
@@ -49,7 +73,8 @@
 	- skip building zlib from src directory
 	- various .c files need to include <libintl.h> directly, apparently
 	- move to gnits strictness in intl
-	- gnulib was missing some files due to .gitignore files messing stuff up
+	- gnulib was missing some files due to .gitignore files messing
+	stuff up
 
 2014-01-06  Eric Gallager  <egall@gwmail.gwu.edu>
 
@@ -173,7 +198,8 @@
 
 2013-12-17  Eric Gallager  <egallager@comcast.net>
 
-	convert tcl/mac/MoreFiles\ 1.4.9/MoreFilesLib.make into a Unix Makefile
+	convert tcl/mac/MoreFiles\ 1.4.9/MoreFilesLib.make into a
+	Unix Makefile
 
 	Change-Id: I7dcefaefec8f31ea546701b4997aedf426b5cb6d
 
@@ -252,8 +278,8 @@
 	dependencies for make targets
 	- bfd: make sure bfd.h is present
 	- bfd/doc: make sure chew dSYMs get cleaned up
-	- bfd/m4/ax_patch_libtool_changing_cmd_ifs.m4: make sure libtool exists
-	before trying to move it
+	- bfd/m4/ax_patch_libtool_changing_cmd_ifs.m4: make sure libtool
+	exists before trying to move it
 	- accidentally deleted some bfd source files... (they might be
 	regenerate-able, idk...)
 	- work on tcl.m4
@@ -263,16 +289,17 @@
 	- touch old MPW headers
 	- opcodes: I broke something wrt i386-opc.lo, try to fix
 	- utils: recurse into "misc" subdir
-	- utils/misc/doschk: try to make it safe to include <stdlib.h> (for the
-	exit() function) by dealing with mismatched malloc() prototype
-	- zlib: sometimes the ${AR} gets mismatched with the wrong ${ARFLAGS},
-	try to compensate
+	- utils/misc/doschk: try to make it safe to include <stdlib.h>
+	(for the exit() function) by dealing with mismatched malloc()
+	prototype
+	- zlib: sometimes the ${AR} gets mismatched with the wrong
+	${ARFLAGS}, try to compensate
 	- zlib: fix some warnings about implicit function declarations
-	- etc: add root-gdb-backtrace.sh script from CERN's ROOT package (with
-	some modifications to silence `shellcheck` warnings)
+	- etc: add root-gdb-backtrace.sh script from CERN's ROOT package
+	(with some modifications to silence `shellcheck` warnings)
 	- add some more texinfo stuff
-	- add decomment.tproj and relpath.tproj from bootstrap_cmds to utils
-	(with some modifications)
+	- add decomment.tproj and relpath.tproj from bootstrap_cmds to
+	utils (with some modifications)
 	- zlib: add some files from Apple's zlib fork, such as an
 	Apple-specific test suite, and an Xcode project
 
@@ -280,7 +307,8 @@
 
 2013-11-18  Eric Gallager  <egallager@comcast.net>
 
-	Convert MacClassic line endings in src/include/mpw/CIncludes to unix line endings
+	Convert MacClassic line endings in src/include/mpw/CIncludes to
+	unix line endings
 
 	Necessary for proper diffing
 
@@ -345,11 +373,11 @@
 	some files from that, too
 	- update configure script for bfd
 	- touch old files in src/expect
-	- fix some implicit declaration warnings for src/expect by including
-	some more headers
+	- fix some implicit declaration warnings for src/expect by
+	including some more headers
 	- regenerate src/expect/Dbgconfigure (this is more complicated than
-	regenerating your normal autoconf script, because it involves renaming
-	stuff)
+	regenerating your normal autoconf script, because it involves
+	renaming stuff)
 	- apostrophe-phobia and formatting
 	- Make some expect scripts executable
 	- Make src/intl's configure script actually generate po2tbl.sed
@@ -366,7 +394,8 @@
 
 2013-11-15  Eric Gallager  <egallager@comcast.net>
 
-	check for autogen in src/utils because it uses that to create its makefile
+	check for autogen in src/utils because it uses that to create its
+	makefile
 
 	Change-Id: Ic45575f42a9b6d56ec5a053d92e1356aba2beca7
 
@@ -396,7 +425,8 @@
 
 2013-11-15  Eric Gallager  <egallager@comcast.net>
 
-	oops, forgot to rename the XcodePlugins folder in the previous commit...
+	oops, forgot to rename the XcodePlugins folder in the previous
+	commit...
 
 	Change-Id: I73b5979403d523602b77d2e0cbe90450be0cedff
 
@@ -675,8 +705,8 @@
 
 	more trying to fix build errors
 
-	also add a list of missing symbols so I can move on to other stuff and
-	then come back to this build error later
+	also add a list of missing symbols so I can move on to other stuff
+	and then come back to this build error later
 
 	Change-Id: Ibcf279241ecd58686c752b1c3b9cddbaa0277409
 
@@ -701,12 +731,13 @@
 
 	- top-level: make an OpenSourceLicenses directory and copy gdb.txt
 	there, to clarify what it is
-	- rename "darwinbuild" directory to "darwinbuild-OpenSourceVersions"
+	- rename "darwinbuild" directory to be more accurately named as
+	"darwinbuild-OpenSourceVersions"
 	- un-obsolete and touch a bunch of old code files that had not been
 	modified in over a decade
-	- add some configure checks to try to help with compiling really old
-	Classic MacOS files (trying to compile those files still fails, so I
-	have kept them out of the Makefile)
+	- add some configure checks to try to help with compiling really
+	old Classic MacOS files (trying to compile those files still fails,
+	so I have kept them out of the Makefile)
 	- add a rule to compile regex.o in libiberty's Makefile
 	- re-break the test suite (oops)
 
@@ -720,7 +751,8 @@
 
 2013-11-08  Eric Gallager  <egallager@comcast.net>
 
-	copy the gdb.plist file back to the top level now that I know where it *actually* goes
+	copy the gdb.plist file back to the top level now that I know
+	where it *actually* goes
 
 	plus the top-level makefile looks for it in the top-level directory
 
@@ -730,8 +762,8 @@
 
 	add gdb admin scripts and htdocs
 
-	`git cvsimport` did *not* seem to do anything for me, so instead I had
-	to import with `cvs` manually. See
+	`git cvsimport` did *not* seem to do anything for me, so instead I
+	had to import with `cvs` manually. See
 	http://www.gnu.org/software/gdb/current/ for commands used.
 
 	Change-Id: I1908b3b7571b4cc15c5715311ab53095b7c0fc83
@@ -754,14 +786,14 @@
 
 	some minor changes:
 
-	- now that src/gdb uses automake, it requires the same hack that other
-	subdirectories that use automake require
-	- split off a copy of the top-level ChangeLog that just includes a list
-	of my own changes
+	- now that src/gdb uses automake, it requires the same hack that
+	other subdirectories that use automake require
+	- split off a copy of the top-level ChangeLog that just includes a
+	list of my own changes
 
-	(also if you are viewing this commit message via the ChangeLog file,
-	you should really be doing it from GitHub instead, as it has the actual
-	diffs and stuff)
+	(also if you are viewing this commit message via the ChangeLog
+	file, you should really be doing it from GitHub instead, as it has
+	the actual diffs and stuff)
 
 	Change-Id: Id4502e00ba2f82746e5c7c9de87e7a49fb582198
 

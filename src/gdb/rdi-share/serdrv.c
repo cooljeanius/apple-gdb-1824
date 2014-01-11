@@ -1,6 +1,6 @@
-/* 
+/*
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -18,7 +18,7 @@
 
 #ifdef __hpux
 #  define _POSIX_SOURCE 1
-#endif
+#endif /* __hpux */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,14 +47,14 @@ extern int baud_rate;   /* From gdb/top.c */
 #    undef _TERMIOS_INCLUDED
 #  else
 #    include <termios.h>
-#  endif
+#  endif /* __hpux */
 #  include "unixcomm.h"
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 
 #ifndef UNUSED
 #  define UNUSED(x) (x = x)      /* Silence compiler warnings */
-#endif
- 
+#endif /* !UNUSED */
+
 #define MAXREADSIZE 512
 #define MAXWRITESIZE 512
 
@@ -87,10 +87,10 @@ static struct writestate wstate;
 static unsigned int baud_options[] = {
 #if defined(B115200) || defined(__hpux)
     115200,
-#endif
+#endif /* B115200 || __hpux */
 #if defined(B57600) || defined(__hpux)
-    57600, 
-#endif
+    57600,
+#endif /* B57600 || __hpux */
     38400, 19200, 9600
 };
 
@@ -103,7 +103,7 @@ static ParameterList param_list[] = {
 static const ParameterOptions serial_options = {
     sizeof(param_list)/sizeof(ParameterList), param_list };
 
-/* 
+/*
  * The default parameter config for the device
  */
 static Parameter param_default[] = {
@@ -163,7 +163,7 @@ static void process_baud_rate( unsigned int target_baud_rate )
                {
 #ifdef DEBUG
                    printf( "user selected default\n" );
-#endif
+#endif /* DEBUG */
                }
                else
                {
@@ -173,21 +173,22 @@ static void process_baud_rate( unsigned int target_baud_rate )
                    for ( j = 0; j < user_list->num_options; ++j )
                       printf( "%u ", user_list->option[j] );
                    printf( "\n" );
-#endif
+#endif /* DEBUG */
                }
 
                break;   /* out of i loop */
            }
-                
+
 #ifdef DEBUG
-        if ( i >= full_list->num_options )
-           printf( "couldn't match baud rate %u\n", target_baud_rate );
-#endif
+        if ( i >= full_list->num_options ) {
+           printf( "could not match baud rate %u\n", target_baud_rate );
+		}
+#endif /* DEBUG */
     }
 #ifdef DEBUG
     else
        printf( "failed to find lists\n" );
-#endif
+#endif /* DEBUG */
 }
 
 static int SerialOpen(const char *name, const char *arg)
@@ -196,24 +197,25 @@ static int SerialOpen(const char *name, const char *arg)
 
 #ifdef DEBUG
     printf("SerialOpen: name %s arg %s\n", name, arg ? arg : "<NULL>");
-#endif
+#endif /* DEBUG */
 
 #ifdef COMPILING_ON_WINDOWS
     if (IsOpenSerial()) return -1;
 #else
     if (Unix_IsSerialInUse()) return -1;
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 
 #ifdef COMPILING_ON_WINDOWS
-    if (SerialMatch(name, arg) != adp_ok)
+    if (SerialMatch(name, arg) != adp_ok) {
         return adp_failed;
+	}
 #else
     port_name = Unix_MatchValidSerialDevice(port_name);
 # ifdef DEBUG
     printf("translated port to %s\n", port_name == 0 ? "NULL" : port_name);
-# endif
+# endif /* DEBUG */
     if (port_name == 0) return adp_failed;
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 
     user_options_set = FALSE;
 
@@ -226,13 +228,14 @@ static int SerialOpen(const char *name, const char *arg)
         {
 #ifdef DEBUG
             printf( "user selected baud rate %u\n", target_baud_rate );
-#endif
+#endif /* DEBUG */
             process_baud_rate( target_baud_rate );
         }
 #ifdef DEBUG
-        else
+        else {
            printf( "could not understand baud rate %s\n", arg );
-#endif
+		}
+#endif /* DEBUG */
     }
     else if (baud_rate > 0)
     {
@@ -248,22 +251,23 @@ static int SerialOpen(const char *name, const char *arg)
             return -1;
     }
 #else
-    if (Unix_OpenSerial(port_name) < 0)
+    if (Unix_OpenSerial(port_name) < 0) {
       return -1;
-#endif
+	}
+#endif /* COMPILING_ON_WINDOWS */
 
     serial_reset();
 
 #if defined(__unix) || defined(__CYGWIN__)
     Unix_ioctlNonBlocking();
-#endif
+#endif /* __unix || __CYGWIN__ */
 
     Angel_RxEngineInit(&config, &rxstate);
     /*
      * DANGER!: passing in NULL as the packet is ok for now as it is just
      * IGNOREd but this may well change
      */
-    Angel_TxEngineInit(&config, NULL, &wstate.txstate); 
+    Angel_TxEngineInit(&config, NULL, &wstate.txstate);
     return 0;
 }
 
@@ -277,20 +281,20 @@ static int SerialMatch(const char *name, const char *arg)
         return 0;
 #else
     return Unix_MatchValidSerialDevice(name) == 0 ? -1 : 0;
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 }
 
 static void SerialClose(void)
 {
 #ifdef DO_TRACE
     printf("SerialClose()\n");
-#endif
+#endif /* DO_TRACE */
 
 #ifdef COMPILING_ON_WINDOWS
     CloseSerial();
 #else
     Unix_CloseSerial();
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 }
 
 static int SerialRead(DriverCall *dc, bool block) {
@@ -327,13 +331,13 @@ static int SerialRead(DriverCall *dc, bool block) {
 #else
   nread = Unix_ReadSerial(readbuf+rbindex, MAXREADSIZE-rbindex, block);
   read_errno = errno;
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 
   if ((nread > 0) || (rbindex > 0)) {
 
 #ifdef DO_TRACE
     printf("[%d@%d] ", nread, rbindex);
-#endif
+#endif /* DO_TRACE */
 
     if (nread>0)
        rbindex = rbindex+nread;
@@ -346,17 +350,18 @@ static int SerialRead(DriverCall *dc, bool block) {
           printf("\n");
 #else
       c++;
-#endif
+#endif /* DO_TRACE */
     } while (c<rbindex &&
              ((restatus == RS_IN_PKT) || (restatus == RS_WAIT_PKT)));
 
 #ifdef DO_TRACE
-   if (c % 16)
+	  if (c % 16) {
         printf("\n");
-#endif
+	  }
+#endif /* DO_TRACE */
 
     switch(restatus) {
-      
+
       case RS_GOOD_PKT:
         ret_code = 1;
         /* fall through to: */
@@ -364,12 +369,12 @@ static int SerialRead(DriverCall *dc, bool block) {
       case RS_BAD_PKT:
         /*
          * We now need to shuffle any left over data down to the
-         * beginning of our private buffer ready to be used 
-         *for the next packet 
+         * beginning of our private buffer ready to be used
+         *for the next packet
          */
 #ifdef DO_TRACE
         printf("SerialRead() processed %d, moving down %d\n", c, rbindex-c);
-#endif
+#endif /* DO_TRACE */
         if (c != rbindex) memmove((char *) readbuf, (char *) (readbuf+c),
                                   rbindex-c);
         rbindex -= c;
@@ -384,7 +389,7 @@ static int SerialRead(DriverCall *dc, bool block) {
       default:
 #ifdef DEBUG
         printf("Bad re_status in serialRead()\n");
-#endif
+#endif /* DEBUG */
         break;
     }
   } else if (nread == 0)
@@ -393,9 +398,10 @@ static int SerialRead(DriverCall *dc, bool block) {
     ret_code = 0;
 
 #ifdef DEBUG
-  if ((nread<0) && (read_errno!=ERRNO_FOR_BLOCKED_IO))
-    perror("read() error in serialRead()");
-#endif
+	if ((nread<0) && (read_errno!=ERRNO_FOR_BLOCKED_IO)) {
+		perror("read() error in serialRead()");
+	}
+#endif /* DEBUG */
 
   return ret_code;
 }
@@ -422,11 +428,11 @@ static int SerialWrite(DriverCall *dc) {
   if (testatus == TS_IDLE) {
 #ifdef DEBUG
     printf("SerialWrite: testatus is TS_IDLE during preprocessing\n");
-#endif
+#endif /* DEBUG */
   }
 
 #ifdef DO_TRACE
-  { 
+  {
     int i = 0;
 
     while (i<wstate.wbindex)
@@ -436,10 +442,11 @@ static int SerialWrite(DriverCall *dc) {
         if (!(++i % 16))
             printf("\n");
     }
-    if (i % 16)
+	  if (i % 16) {
         printf("\n");
+	  }
   }
-#endif
+#endif /* DO_TRACE */
 
 #ifdef COMPILING_ON_WINDOWS
   if (WriteSerial(wstate.writebuf, wstate.wbindex) == COM_OK)
@@ -463,21 +470,22 @@ static int SerialWrite(DriverCall *dc) {
   if (nwritten < 0) {
     nwritten=0;
   }
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 
 #ifdef DEBUG
-  if (nwritten > 0)
-    printf("Wrote %#04x bytes\n", nwritten);
-#endif
+	if (nwritten > 0) {
+		printf("Wrote %#04x bytes\n", nwritten);
+	}
+#endif /* DEBUG */
 
-  if ((unsigned) nwritten == wstate.wbindex && 
+  if ((unsigned) nwritten == wstate.wbindex &&
       (testatus == TS_DONE_PKT || testatus == TS_IDLE)) {
 
     /* finished sending the packet */
 
 #ifdef DEBUG
     printf("SerialWrite: calling Angel_TxEngineInit after sending packet (len=%i)\n",wstate.wbindex);
-#endif
+#endif /* DEBUG */
     testatus = TS_IN_PKT;
     wstate.wbindex = 0;
     return 1;
@@ -486,8 +494,8 @@ static int SerialWrite(DriverCall *dc) {
 #ifdef DEBUG
     printf("SerialWrite: Wrote part of packet wbindex=%i, nwritten=%i\n",
            wstate.wbindex, nwritten);
-#endif
-   
+#endif /* DEBUG */
+
     /*
      *  still some data left to send shuffle whats left down and reset
      * the ptr
@@ -505,13 +513,13 @@ static int serial_reset( void )
 {
 #ifdef DEBUG
     printf( "serial_reset\n" );
-#endif
+#endif /* DEBUG */
 
 #ifdef COMPILING_ON_WINDOWS
     FlushSerial();
 #else
     Unix_ResetSerial();
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 
     return serial_set_params( &serial_defaults );
 }
@@ -526,18 +534,18 @@ static int find_baud_rate( unsigned int *speed )
 #if defined(__hpux)
         {115200,_B115200}, {57600,_B57600},
 #else
-#ifdef B115200
+# ifdef B115200
         {115200,B115200},
-#endif
-#ifdef B57600
+# endif /* B115200 */
+# ifdef B57600
 	{57600,B57600},
-#endif
-#endif
+# endif /* B57600 */
+#endif /* __hpux */
 #ifdef COMPILING_ON_WINDOWS
         {38400,CBR_38400}, {19200,CBR_19200}, {9600, CBR_9600}, {0,0}
 #else
         {38400,B38400}, {19200,B19200}, {9600, B9600}, {0,0}
-#endif
+#endif /* COMPILING_ON_WINDOWS */
     };
     unsigned int i;
 
@@ -559,13 +567,13 @@ static int serial_set_params( const ParameterConfig *config )
 
 #ifdef DEBUG
     printf( "serial_set_params\n" );
-#endif
+#endif /* DEBUG */
 
     if ( ! Angel_FindParam( AP_BAUD_RATE, config, &speed ) )
     {
 #ifdef DEBUG
         printf( "speed not found in config\n" );
-#endif
+#endif /* DEBUG */
         return DE_OKAY;
     }
 
@@ -574,19 +582,19 @@ static int serial_set_params( const ParameterConfig *config )
     {
 #ifdef DEBUG
         printf( "speed not valid: %u\n", speed );
-#endif
+#endif /* DEBUG */
         return DE_OKAY;
     }
 
 #ifdef DEBUG
     printf( "setting speed to %u\n", speed );
-#endif
+#endif /* DEBUG */
 
 #ifdef COMPILING_ON_WINDOWS
     SetBaudRate((WORD)termios_value);
 #else
     Unix_SetSerialBaudRate(termios_value);
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 
     return DE_OKAY;
 }
@@ -596,7 +604,7 @@ static int serial_get_user_params( ParameterOptions **p_options )
 {
 #ifdef DEBUG
     printf( "serial_get_user_params\n" );
-#endif
+#endif /* DEBUG */
 
     if ( user_options_set )
     {
@@ -615,7 +623,7 @@ static int serial_get_default_params( ParameterConfig **p_config )
 {
 #ifdef DEBUG
     printf( "serial_get_default_params\n" );
-#endif
+#endif /* DEBUG */
 
     *p_config = (ParameterConfig *) &serial_defaults;
     return DE_OKAY;
@@ -628,19 +636,19 @@ static int SerialIoctl(const int opcode, void *args) {
 
 #ifdef DEBUG
     printf( "SerialIoctl: op %d arg %p\n", opcode, args ? args : "<NULL>");
-#endif
+#endif /* DEBUG */
 
     switch (opcode)
     {
-       case DC_RESET:         
+       case DC_RESET:
            ret_code = serial_reset();
            break;
 
-       case DC_SET_PARAMS:     
+       case DC_SET_PARAMS:
            ret_code = serial_set_params((const ParameterConfig *)args);
            break;
 
-       case DC_GET_USER_PARAMS:     
+       case DC_GET_USER_PARAMS:
            ret_code = serial_get_user_params((ParameterOptions **)args);
            break;
 
@@ -648,7 +656,7 @@ static int SerialIoctl(const int opcode, void *args) {
            ret_code = serial_get_default_params((ParameterConfig **)args);
            break;
 
-       default:               
+       default:
            ret_code = DE_BAD_OP;
            break;
     }
@@ -665,3 +673,5 @@ DeviceDescr angel_SerialDevice = {
     SerialWrite,
     SerialIoctl
 };
+
+/* EOF */

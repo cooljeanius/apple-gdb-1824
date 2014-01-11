@@ -1,6 +1,6 @@
-/* 
+/*
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -19,27 +19,36 @@
 # define _POSIX_SOURCE 1
 # define _HPUX_SOURCE 1
 # define _XOPEN_SOURCE 1
-#endif
+#endif /* __hpux */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# warning etherdrv.c expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
 #include <stdio.h>
 #ifdef __hpux
 # define uint hide_HPs_uint
-#endif
-#ifdef STDC_HEADERS
-# include <unistd.h>
+#endif /* __hpux */
+#if defined(STDC_HEADERS) || defined (__STDC__)
+# ifdef HAVE_UNISTD_H
+#  include <unistd.h>
+# else
+#  warning etherdrv.c expects <unistd.h> to be included.
+# endif /* HAVE_UNISTD_H */
 # ifdef __hpux
 #   undef uint
-# endif
-#endif
+# endif /* __hpux */
+#endif /* STDC_HEADERS || __STDC__ */
 #include <stdlib.h>
 #include <string.h>
 #ifdef __hpux
 # define uint hide_HPs_uint
-#endif
+#endif /* __hpux */
 #include <fcntl.h>
 #ifdef __hpux
 # undef uint
-#endif
+#endif /* __hpux */
 #include <errno.h>
 #include <stdarg.h>
 #include <ctype.h>
@@ -53,21 +62,21 @@
 #else
 # ifdef __hpux
 #   define uint hide_HPs_uint
-# endif
+# endif /* __hpux */
 # include <sys/types.h>
 # include <sys/socket.h>
 # ifdef __hpux
 #   undef uint
-# endif
+# endif /* __hpux */
 # include <netdb.h>
 # include <sys/time.h>
 # include <sys/ioctl.h>
 # ifdef HAVE_SYS_FILIO_H
 #   include <sys/filio.h>
-# endif
+# endif /* HAVE_SYS_FILIO_H */
 # include <netinet/in.h>
 # include <arpa/inet.h>
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 
 #include "hsys.h"
 #include "devices.h"
@@ -83,11 +92,11 @@
 /* These two might not work for windows.  */
 extern int sys_nerr;
 extern char * sys_errlist[];
-#endif
+#endif /* !COMPILING_ON_WINDOWS && !STDC_HEADERS */
 
 #ifndef UNUSED
 # define UNUSED(x) (x = x)      /* Silence compiler warnings */
-#endif
+#endif /* !UNUSED */
 
 /*
  * forward declarations of static functions
@@ -182,7 +191,7 @@ static int open_socket(void)
     int sfd;
 #if 0                           /* see #if 0 just below -VVV- */
     int yesplease = 1;
-#endif
+#endif /* 0 */
     struct sockaddr_in local;
 
     /*
@@ -196,15 +205,15 @@ static int open_socket(void)
     {
 # ifdef DEBUG
         perror("socket");
-# endif
+# endif /* DEBUG */
         return -1;
     }
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 
     /*
      * 960731 KWelton
      *
-     * I don't believe that this should be necessary - if we
+     * I do NOT believe that this should be necessary - if we
      * use select(), then non-blocking I/O is redundant.
      * Unfortunately, select() appears to be broken (under
      * Solaris, with a limited amount of time available for
@@ -218,7 +227,7 @@ static int open_socket(void)
     {
 # ifdef DEBUG
         perror("ioctl(FIONBIO)");
-# endif
+# endif /* DEBUG */
         closesocket(sfd);
 
         return -1;
@@ -236,7 +245,7 @@ static int open_socket(void)
     {
 #ifdef DEBUG
         perror("bind");
-#endif
+#endif /* DEBUG */
         closesocket(sfd);
 
         return -1;
@@ -287,14 +296,14 @@ static void fetch_ports(void)
         ia->sin_port = htons(CTRL_PORT);
 #ifdef DEBUG
 	printf("CTLR_PORT=0x%04x  sin_port=0x%04x\n");
-#endif
+#endif /* DEBUG */
 
         if (sendto(sock, ctrlpacket, sizeof(ctrlpacket), 0,
                        (struct sockaddr *)ia, sizeof(*ia)) < 0)
         {
 #ifdef DEBUG
             perror("fetch_ports: sendto");
-#endif
+#endif /* DEBUG */
             return;
         }
 
@@ -307,7 +316,7 @@ static void fetch_ports(void)
         {
 #ifdef DEBUG
             perror("fetch_ports: select");
-#endif
+#endif /* DEBUG */
             return;
         }
 
@@ -324,7 +333,7 @@ static void fetch_ports(void)
                 if (werrno == WSAEWOULDBLOCK || werrno == 0)
 #else
                 if (errno == EWOULDBLOCK)
-#endif
+#endif /* COMPILING_ON_WINDOWS */
                 {
                     --i;
                     continue;
@@ -333,7 +342,7 @@ static void fetch_ports(void)
                 {
 #ifdef DEBUG
                     perror("fetch_ports: recv");
-#endif
+#endif /* DEBUG */
                     return;
                 }
             }
@@ -356,7 +365,7 @@ static void fetch_ports(void)
 #ifdef DEBUG
                 printf("fetch_ports: got response, DBUG=%d, APPL=%d\n",
                        ports[DBUG_INDEX], ports[APPL_INDEX]);
-#endif
+#endif /* DEBUG */
                 return;
             }
         }
@@ -367,7 +376,7 @@ static void fetch_ports(void)
      */
 #ifdef DEBUG
     printf("fetch_ports: failed to get a real answer\n");
-#endif
+#endif /* DEBUG */
 }
 
 /*
@@ -402,10 +411,10 @@ static int read_packet(struct data_packet *const packet)
         {
 # ifdef DEBUG
             perror("recv");
-# endif
+# endif /* DEBUG */
             panic("ethernet recv failure");
         }
-#endif
+#endif /* COMPILING_ON_WINDOWS */
         return 0;
     }
 
@@ -415,7 +424,7 @@ static int read_packet(struct data_packet *const packet)
         progressInfo.nRead += nbytes;
         (*pfnProgressCallback)(&progressInfo);
     }
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 
     /*
      * work out where the packet was from
@@ -428,7 +437,7 @@ static int read_packet(struct data_packet *const packet)
 #ifdef DEBUG
         printf("read_packet: ignoring packet from %s\n",
                inet_ntoa(from.sin_addr));
-#endif
+#endif /* DEBUG */
 
         return 0;
     }
@@ -444,7 +453,7 @@ static int read_packet(struct data_packet *const packet)
 #ifdef DEBUG
         printf("read_packet: ignore packet from port %hd\n",
                htons(from.sin_port));
-#endif
+#endif /* DEBUG */
 
         return 0;
     }
@@ -452,7 +461,7 @@ static int read_packet(struct data_packet *const packet)
 #if defined(DEBUG) && !defined(DO_TRACE)
     printf("EthernetRead: %d bytes from %s channel\n",
            nbytes, (devchan == DC_DBUG) ? "DBUG" : "APPL");
-#endif
+#endif /* DEBUG && !DO_TRACE */
 
 #ifdef DO_TRACE
     printf("[%d on %d]\n", nbytes, devchan);
@@ -471,7 +480,7 @@ static int read_packet(struct data_packet *const packet)
         if (i % 16)
             printf("\n");
     }
-#endif
+#endif /* DO_TRACE */
 
     /*
      * OK - fill in the details
@@ -496,7 +505,7 @@ static int EthernetOpen(const char *name, const char *arg)
 #ifdef COMPILING_ON_WINDOWS
     WORD wVersionRequested;
     WSADATA wsaData;
-#endif
+#endif /* COMPILING_ON_WINDOWS */
     /*
      * name is passed as e=<blah>, so skip 1st two characters
      */
@@ -504,7 +513,7 @@ static int EthernetOpen(const char *name, const char *arg)
 
 #ifdef DEBUG
     printf("EthernetOpen: name `%s'\n", name);
-#endif
+#endif /* DEBUG */
 
     /* Check that the name is a valid one */
     if (EthernetMatch(name, arg) != 0)
@@ -527,26 +536,27 @@ static int EthernetOpen(const char *name, const char *arg)
          */
         return -1;
     }
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 
     memset((char *)ia, 0, sizeof(*ia));
     if (set_address(etheraddr, ia) < 0)
     {
 #ifdef COMPILING_ON_WINDOWS
         /*
-         * SJ - I'm not sure that this is the correct way to handle this
+         * SJ - I am not sure that this is the correct way to handle this
          * as Fail calls remote_disable and exits, while panic just exits.
          * However at the time of writing remote_disable does nothing!
          */
  /*     Panic("EthernetOpen: bad name `%s'\n", etheraddr); */
 #else
         Fail("EthernetOpen: bad name `%s'\n", etheraddr);
-#endif
+#endif /* COMPILING_ON_WINDOWS */
         return -1;
     }
 
-    if ((sock = open_socket()) < 0)
+    if ((sock = open_socket()) < 0) {
         return -1;
+	}
 
     /*
      * fetch the port numbers assigned by the remote target
@@ -560,14 +570,17 @@ static int EthernetOpen(const char *name, const char *arg)
 static int EthernetMatch(const char *name, const char *arg)
 {
     /* IGNORE arg */
-    if (0)
+    if (0) {
         arg = arg;
+	}
 
-    if (name == NULL)
+    if (name == NULL) {
         return -1;
+	}
 
-    if (tolower(name[0]) != 'e' || name[1] != '=')
+    if (tolower(name[0]) != 'e' || name[1] != '=') {
         return -1;
+	}
 
     return 0;
 }
@@ -582,7 +595,7 @@ static void EthernetClose(void)
 
 #ifdef COMPILING_ON_WINDOWS
     WSACleanup();
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 }
 
 static int EthernetRead(DriverCall *dc, bool block)
@@ -600,7 +613,7 @@ static int EthernetRead(DriverCall *dc, bool block)
 #else
     tv.tv_sec = 0;
     tv.tv_usec = (block ? 10000 : 0);
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 
     err = select(sock + 1, &fdset, NULL, NULL, &tv);
 
@@ -636,7 +649,7 @@ static int EthernetWrite(DriverCall *dc)
 #if defined(DEBUG) && !defined(DO_TRACE)
     printf("EthernetWrite: %d bytes to %s channel\n",
            packet->len, (packet->type == DC_DBUG) ? "DBUG" : "APPL");
-#endif
+#endif  /* DEBUG && !DO_TRACE */
 
 #ifdef DO_TRACE
     printf("[%d on %d]\n", packet->len, packet->type);
@@ -655,7 +668,7 @@ static int EthernetWrite(DriverCall *dc)
         if (i % 16)
             printf("\n");
     }
-#endif
+#endif /* DO_TRACE */
 
     if ((nbytes = sendto(sock, (char *)(packet->data), packet->len, 0,
                          (struct sockaddr *)ia, sizeof(*ia))) != packet->len)
@@ -664,28 +677,28 @@ static int EthernetWrite(DriverCall *dc)
         if (nbytes == SOCKET_ERROR && WSAGetLastError() != WSAEWOULDBLOCK)
 #else
         if (nbytes < 0 && errno != EWOULDBLOCK)
-#endif
+#endif /* COMPILING_ON_WINDOWS */
         {
 #ifdef DEBUG
             perror("sendto");
-#endif
+#endif /* DEBUG */
 
 #ifdef COMPILING_ON_WINDOWS
             panic("ethernet send failure\n");
 #else
             /* might not work for Windows */
             panic("ethernet send failure [%s]\n",
-#ifdef STDC_HEADERS
+# ifdef STDC_HEADERS
 		  strerror(errno));
-#else
+# else
                   errno < sys_nerr ? sys_errlist[errno] : "unknown errno");
-#endif /* STDC_HEADERS */
-#endif
+# endif /* STDC_HEADERS */
+#endif /* COMPILING_ON_WINDOWS */
         }
 #ifdef DEBUG
         else if (nbytes >= 0)
             fprintf(stderr, "ethernet send: asked for %d, sent %d\n", packet->len, nbytes);
-#endif
+#endif /* DEBUG */
         return 0;
     }
 
@@ -695,7 +708,7 @@ static int EthernetWrite(DriverCall *dc)
         progressInfo.nWritten += nbytes;
         (*pfnProgressCallback)(&progressInfo);
     }
-#endif
+#endif /* COMPILING_ON_WINDOWS */
 
     return 1;
 }
@@ -704,7 +717,7 @@ static int EthernetIoctl(const int opcode, void *args)
 {
 #ifdef DEBUG
     printf( "EthernetIoctl: op %d arg %x\n", opcode, args );
-#endif
+#endif /* DEBUG */
 
     /*
      * IGNORE(opcode)
@@ -722,7 +735,7 @@ static int EthernetIoctl(const int opcode, void *args)
         {
 #ifdef DEBUG
             printf( "EthernetIoctl: resync\n" );
-#endif
+#endif /* DEBUG */
             fetch_ports();
             return 0;
         }

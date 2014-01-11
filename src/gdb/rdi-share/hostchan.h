@@ -1,4 +1,4 @@
-/*
+/* hostchan.h
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
  *
  * This software may be freely used, copied, modified, and distributed
@@ -28,7 +28,7 @@
 #else
 #  include "winsock.h"
 #  include "time.h"
-#endif
+#endif /* __unix || __CYGWIN__ */
 
 #include "chandefs.h"
 #include "adperr.h"

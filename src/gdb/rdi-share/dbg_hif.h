@@ -1,4 +1,4 @@
-/*
+/* dbg_hif.h
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
  *
  * This software may be freely used, copied, modified, and distributed
@@ -61,4 +61,6 @@ struct Dbg_HostosInterface {
     void *resetarg;
 };
 
-#endif
+#endif /* !dbg_hif__h */
+
+/* EOF */

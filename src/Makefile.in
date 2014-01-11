@@ -37645,6 +37645,7 @@ all-automake: maybe-all-build-texinfo
 all-automake: maybe-all-autoconf
 all-bison: maybe-all-intl
 all-bison: maybe-all-build-texinfo
+all-cgen: maybe-all-guile
 all-diff: maybe-all-intl
 all-diff: maybe-all-build-texinfo
 all-fileutils: maybe-all-intl

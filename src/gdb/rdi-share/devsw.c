@@ -1,6 +1,6 @@
-/* 
+/* devsw.c
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -37,12 +37,12 @@ static int angelDebugLogEnable = 0;
 static void openLogFile ()
 {
   time_t t;
-  
+
   if (angelDebugFilename == NULL || *angelDebugFilename =='\0')
     return;
-  
+
   angelDebugLogFile = fopen (angelDebugFilename,"a");
-  
+
   if (!angelDebugLogFile)
     {
       fprintf (stderr,"Error opening log file '%s'\n",angelDebugFilename);
@@ -55,9 +55,9 @@ static void openLogFile ()
       setvbuf(angelDebugLogFile, (char *)NULL, _IOLBF, 0);
 #if defined(__CYGWIN__)
       setmode(fileno(angelDebugLogFile), O_TEXT);
-#endif
+#endif /* __CYGWIN__ */
     }
-  
+
   time (&t);
   fprintf (angelDebugLogFile,"ADP log file opened at %s\n",asctime(localtime(&t)));
 }
@@ -66,13 +66,13 @@ static void openLogFile ()
 static void closeLogFile (void)
 {
   time_t t;
-  
+
   if (!angelDebugLogFile)
     return;
-  
+
   time (&t);
   fprintf (angelDebugLogFile,"ADP log file closed at %s\n",asctime(localtime(&t)));
-  
+
   fclose (angelDebugLogFile);
   angelDebugLogFile = NULL;
 }
@@ -83,7 +83,7 @@ void DevSW_SetLogEnable (int logEnableFlag)
     openLogFile ();
   else if (!logEnableFlag && angelDebugLogFile)
     closeLogFile ();
-  
+
   angelDebugLogEnable = logEnableFlag;
 }
 
@@ -91,13 +91,13 @@ void DevSW_SetLogEnable (int logEnableFlag)
 void DevSW_SetLogfile (const char *filename)
 {
   closeLogFile ();
-  
+
   if (angelDebugFilename)
     {
       free (angelDebugFilename);
       angelDebugFilename = NULL;
     }
-  
+
   if (filename && *filename)
     {
       angelDebugFilename = strdup (filename);
@@ -114,10 +114,10 @@ static void dumpPacket(FILE *fp, char *label, struct data_packet *p)
   unsigned r;
   int i;
   unsigned char channel;
-  
+
   if (!fp)
     return;
-  
+
   fprintf(fp,"%s [T=%d L=%d] ",label,p->type,p->len);
   for (i=0; i<p->len; ++i)
     fprintf(fp,"%02x ",p->data[i]);
@@ -126,7 +126,7 @@ static void dumpPacket(FILE *fp, char *label, struct data_packet *p)
   channel = p->data[0];
 
   r = WordAt(p->data+4);
-  
+
   fprintf(fp,"R=%08x ",r);
   fprintf(fp,"%s ", r&0x80000000 ? "H<-T" : "H->T");
 
@@ -151,12 +151,12 @@ static void dumpPacket(FILE *fp, char *label, struct data_packet *p)
      case ADP_Booted: fprintf(fp," ADP_Booted "); break;
 #if defined(ADP_TargetResetIndication)
      case ADP_TargetResetIndication: fprintf(fp," ADP_TargetResetIndication "); break;
-#endif
+#endif /* ADP_TargetResetIndication */
      case ADP_Reboot: fprintf(fp," ADP_Reboot "); break;
      case ADP_Reset: fprintf(fp," ADP_Reset "); break;
 #if defined(ADP_HostResetIndication)
      case ADP_HostResetIndication: fprintf(fp," ADP_HostResetIndication "); break;
-#endif      
+#endif /* ADP_HostResetIndication */
      case ADP_ParamNegotiate: fprintf(fp," ADP_ParamNegotiate "); break;
      case ADP_LinkCheck: fprintf(fp," ADP_LinkCheck "); break;
      case ADP_HADPUnrecognised: fprintf(fp," ADP_HADPUnrecognised "); break;
@@ -211,17 +211,17 @@ static void dumpPacket(FILE *fp, char *label, struct data_packet *p)
     }
 
   i = 20;
-  
+
   if (((r & 0xffffff) == ADP_CPUread ||
        (r & 0xffffff) == ADP_CPUwrite) && (r&0x80000000)==0)
     {
       fprintf(fp,"%02x ", p->data[i]);
       ++i;
     }
-  
+
   for (; i<p->len; i+=4)
     fprintf(fp,"%08x ",WordAt(p->data+i));
-  
+
   fprintf(fp,"\n");
 }
 
@@ -497,7 +497,7 @@ AdpErrs DevSW_Read(const DeviceDescr *device, const DevChanID type,
        * we failed to initialise the next packet, but can
        * still return a packet that has already arrived.
        */
-      *packet = Adp_removeFromQueue(&ds->ds_readqueue[type]); 
+      *packet = Adp_removeFromQueue(&ds->ds_readqueue[type]);
       return adp_ok;
     }
   read_err = device->DeviceRead(&ds->ds_activeread, block);
@@ -508,8 +508,8 @@ AdpErrs DevSW_Read(const DeviceDescr *device, const DevChanID type,
      */
 #ifdef RET_DEBUG
     printf("got a complete packet\n");
-#endif
-    
+#endif /* RET_DEBUG */
+
     if (angelDebugLogEnable)
       dumpPacket(angelDebugLogFile,"rx:",&ds->ds_activeread.dc_packet);
 
@@ -526,7 +526,7 @@ AdpErrs DevSW_Read(const DeviceDescr *device, const DevChanID type,
   case -1:
 #ifdef RET_DEBUG
     printf("got a bad packet\n");
-#endif
+#endif /* RET_DEBUG */
     /* bad packet */
     *packet = NULL;
     return adp_bad_packet;
@@ -584,10 +584,10 @@ AdpErrs DevSW_Write(const DeviceDescr *device, Packet *packet, DevChanID type)
      * we can take this packet - set things up, then try to get rid of it
      */
     initialise_write(dc, packet, type);
-  
+
     if (angelDebugLogEnable)
       dumpPacket(angelDebugLogFile,"tx:",&dc->dc_packet);
-  
+
     flush_packet(device, dc);
 
     return adp_ok;

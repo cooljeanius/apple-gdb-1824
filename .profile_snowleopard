@@ -30,5 +30,16 @@ if test -x /usr/bin/arch; then
 else
   export HOST_ARCHITECTURE=i386
 fi
+# Some subdirs in src/gdb are controlled by these:
+if test -z "${build_gdbserver}"; then
+  # only build if not already set:
+  export build_gdbserver=yes
+fi
+# never build:
+export build_nlm=no
+if test -z "${build_rdi_share}"; then
+  # avoid building unless already set:
+  export build_rdi_share=no
+fi
 
 echo "We should be done setting environment variables for Snow Leopard now."

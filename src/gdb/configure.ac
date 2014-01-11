@@ -475,10 +475,10 @@ AC_MSG_RESULT([ ])
 AN_PROGRAM([ar],[AM_PROG_AR])
 AN_MAKEVAR([AR],[AM_PROG_AR])
 if test -x `which automake`; then
-	test -z "$AR"
+	test -z "${AR}"
 	AM_PROG_AR
 else
-	test -z "$AR"
+	test -z "${AR}"
 	AC_CHECK_TOOL([AR],[ar])
 fi
 if test -e ./config.cache; then
@@ -1254,7 +1254,8 @@ if test "${target}" = "${host}"; then
 fi
 
 # APPLE LOCAL begin
-case "$host" in
+AC_MSG_NOTICE([doing some further APPLE_LOCAL checks])
+case "${host}" in
   *-apple-darwin* | *-apple-macos*)
     gdb_cv_printf_has_long_long=yes
     gdb_cv_printf_has_long_double=yes
@@ -1262,7 +1263,7 @@ case "$host" in
   ;;
 esac
 
-case "$host" in
+case "${host}" in
   *-apple-darwin* | *-apple-macos*)
     AC_ARG_ENABLE(carbon-framework,
     [AS_HELP_STRING([--disable-carbon-framework],[disable Carbon framework use even when available])],
@@ -1292,7 +1293,7 @@ esac
 
 AC_SUBST([CARBON_LIBS])
 
-case "$host" in
+case "${host}" in
   arm-apple-*)
   # We will NOT be using DebugSymbols.framework to locate dSYM files for
   # ARM yet.
@@ -1341,6 +1342,8 @@ AC_CHECK_TYPES([x86_debug_state32_t],[],[],
 AC_CHECK_TYPES([thread_identifier_info_data_t],[],[],
                [#include <mach/thread_info.h>])
 
+AC_MSG_NOTICE([done with second batch of APPLE_LOCAL checks])
+
 AC_CHECK_FUNCS([pthread_setname_np])
 
 if test "${ac_cv_header_sys_procfs_h}" = yes; then
@@ -1367,7 +1370,7 @@ if test "${ac_cv_header_sys_procfs_h}" = yes; then
   dnl# instead of the struct itself). We detect this here, and work
   dnl# around it in gdb_proc_service.h.
 
-  if test $bfd_cv_have_sys_procfs_type_prfpregset_t = yes; then
+  if test ${bfd_cv_have_sys_procfs_type_prfpregset_t} = yes; then
     AC_MSG_CHECKING([whether prfpregset_t type is broken])
     AC_CACHE_VAL([gdb_cv_prfpregset_t_broken],
       [AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <sys/procfs.h>
@@ -1476,7 +1479,7 @@ AC_CACHE_CHECK([for long long support in compiler],[gdb_cv_c_long_long],
 [[switch (foo & 2) { case 0: return 1; }]])],
                                   [gdb_cv_c_long_long=yes],
                                   [gdb_cv_c_long_long=no])])
-if test $gdb_cv_c_long_long = yes; then
+if test ${gdb_cv_c_long_long} = yes; then
   AC_DEFINE([CC_HAS_LONG_LONG],[1],
             [Define to 1 if the compiler supports long long.])
 fi
@@ -1511,7 +1514,7 @@ AC_CACHE_CHECK([for long double support in compiler],[gdb_cv_c_long_double],
                [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[long double foo;]])],
                                   [gdb_cv_c_long_double=yes],
                                   [gdb_cv_c_long_double=no])])
-if test $gdb_cv_c_long_double = yes; then
+if test ${gdb_cv_c_long_double} = yes; then
   AC_DEFINE([HAVE_LONG_DOUBLE],[1],
             [Define to 1 if the compiler supports long double.])
 fi
@@ -1528,7 +1531,7 @@ AC_CACHE_CHECK([for long double support in printf],
                               [gdb_cv_printf_has_long_double=yes],
                               [gdb_cv_printf_has_long_double=no],
                               [gdb_cv_printf_has_long_double=no])])
-if test $gdb_cv_printf_has_long_double = yes; then
+if test ${gdb_cv_printf_has_long_double} = yes; then
   AC_DEFINE([PRINTF_HAS_LONG_DOUBLE],[1],
             [Define to 1 if the "%Lg" format works to print long doubles.])
 fi
@@ -1546,7 +1549,7 @@ AC_CACHE_CHECK([for long double support in scanf],
                               [gdb_cv_scanf_has_long_double=yes],
                               [gdb_cv_scanf_has_long_double=no],
                               [gdb_cv_scanf_has_long_double=no])])
-if test $gdb_cv_scanf_has_long_double = yes; then
+if test ${gdb_cv_scanf_has_long_double} = yes; then
   AC_DEFINE([SCANF_HAS_LONG_DOUBLE],[1],
             [Define to 1 if the "%Lg" format works to scan long doubles.])
 fi
@@ -1556,12 +1559,13 @@ aix*)
   AC_CACHE_CHECK([for -bbigtoc option],[gdb_cv_bigtoc],[
     SAVE_LDFLAGS=$LDFLAGS
 
-    case $GCC in
+    case ${GCC} in
     yes) gdb_cv_bigtoc=-Wl,-bbigtoc ;;
     *) gdb_cv_bigtoc=-bbigtoc ;;
     esac
 
-    LDFLAGS=$LDFLAGS\ $gdb_cv_bigtoc
+    # why escape the space instead of just using quotes?
+    LDFLAGS=${LDFLAGS}\ ${gdb_cv_bigtoc}
     AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[int i;]])],[],[gdb_cv_bigtoc=])
     LDFLAGS="${SAVE_LDFLAGS}"
   ])
@@ -1630,8 +1634,8 @@ if test ${build} = ${host} -a ${host} = ${target} ; then
 		    (struct ps_prochandle*, psaddr_t, const void*, size_t);
 	    ]],[[]])],[gdb_cv_proc_service_is_old=no],[gdb_cv_proc_service_is_old=yes])
 	 ])
-	 AC_MSG_RESULT([$gdb_cv_proc_service_is_old])
-	 if test $gdb_cv_proc_service_is_old = yes; then
+	 AC_MSG_RESULT([${gdb_cv_proc_service_is_old}])
+	 if test ${gdb_cv_proc_service_is_old} = yes; then
 	    AC_DEFINE([PROC_SERVICE_IS_OLD],[1],
             [Define if <proc_service.h> on solaris uses int instead of
              size_t, and assorted other type changes.])
@@ -1646,8 +1650,8 @@ if test ${build} = ${host} -a ${host} = ${target} ; then
                    [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/pthdebug.h>]],[[#ifndef PTHDB_VERSION_3
                                     #error
                                     #endif]])],[gdb_cv_have_aix_thread_debug=yes],[gdb_cv_have_aix_thread_debug=no])])
-      AC_MSG_RESULT([$gdb_cv_have_aix_thread_debug])
-      if test $gdb_cv_have_aix_thread_debug = yes; then
+      AC_MSG_RESULT([${gdb_cv_have_aix_thread_debug}])
+      if test ${gdb_cv_have_aix_thread_debug} = yes; then
          CONFIG_SRCS="${CONFIG_SRCS} aix-thread.c"
          CONFIG_OBS="${CONFIG_OBS} aix-thread.o"
          CONFIG_LDFLAGS="${CONFIG_LDFLAGS} -lpthdebug"
@@ -1658,20 +1662,20 @@ if test ${build} = ${host} -a ${host} = ${target} ; then
 fi
 
 dnl# See if we have a thread_db header file that has TD_NOTALLOC.
-if test "x$ac_cv_header_thread_db_h" = "xyes"; then
+if test "x${ac_cv_header_thread_db_h}" = "xyes"; then
    AC_CACHE_CHECK([whether <thread_db.h> has TD_NOTALLOC],
                   [gdb_cv_thread_db_h_has_td_notalloc],
      [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <thread_db.h>]],[[int i = TD_NOTALLOC;]])],[gdb_cv_thread_db_h_has_td_notalloc=yes],[gdb_cv_thread_db_h_has_td_notalloc=no
      ])
    ])
 fi
-if test "x$gdb_cv_thread_db_h_has_td_notalloc" = "xyes"; then
+if test "x${gdb_cv_thread_db_h_has_td_notalloc}" = "xyes"; then
   AC_DEFINE([THREAD_DB_HAS_TD_NOTALLOC],[1],
             [Define if <thread_db.h> has the TD_NOTALLOC error code.])
 fi
 
 dnl# See if we have a sys/syscall header file that has __NR_tkill.
-if test "x$ac_cv_header_sys_syscall_h" = "xyes"; then
+if test "x${ac_cv_header_sys_syscall_h}" = "xyes"; then
    AC_CACHE_CHECK([whether <sys/syscall.h> has __NR_tkill],
                   [gdb_cv_sys_syscall_h_has_tkill],
      [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/syscall.h>]],[[int i = __NR_tkill;]])],[gdb_cv_sys_syscall_h_has_tkill=yes],[gdb_cv_sys_syscall_h_has_tkill=no
@@ -1679,7 +1683,7 @@ if test "x$ac_cv_header_sys_syscall_h" = "xyes"; then
    ])
 fi
 dnl# See if we can issue tkill syscall.
-if test "x$gdb_cv_sys_syscall_h_has_tkill" = "xyes" && test "x$ac_cv_func_syscall" = "xyes"; then
+if test "x${gdb_cv_sys_syscall_h_has_tkill}" = "xyes" && test "x${ac_cv_func_syscall}" = "xyes"; then
   AC_DEFINE([HAVE_TKILL_SYSCALL],[1],[Define if you support the tkill syscall.])
 fi
 
@@ -1723,9 +1727,16 @@ AC_SUBST([TARGET_SYSTEM_ROOT_DEFINE])
 # NOTE: If you add to this list, remember to update
 # gdb/doc/gdbint.texinfo.
 build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
--Wformat -Wparentheses -Wpointer-arith \
+-Wparentheses -Wpointer-arith \
 -Wunused-label -Wunused-function \
 -Wno-format-security -Wno-format"
+
+case "${host}" in
+  *-apple-darwin* | *-apple-macos*)
+    # -Wmost is APPLE_LOCAL
+    build_warnings="${build_warnings} -Wmost"
+  ;;
+esac
 
 # GCC supports -Wuninitialized only with -O or -On, n != 0.
 if test x${CFLAGS+set} = xset; then
@@ -1744,7 +1755,7 @@ fi
 # -Wchar-subscripts -Wtraditional -Wshadow -Wcast-qual
 # -Wcast-align -Wwrite-strings -Wconversion -Wstrict-prototypes
 # -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls
-# -Woverloaded-virtual -Winline -Werror
+# -Woverloaded-virtual -Winline -Wformat -Werror
 AC_ARG_ENABLE([build-warnings],
 [AS_HELP_STRING([--enable-build-warnings],[Enable build-time compiler warnings if gcc is used])],
 [case "${enableval}" in
@@ -1756,8 +1767,8 @@ AC_ARG_ENABLE([build-warnings],
         build_warnings="${t} ${build_warnings}";;
   *)    build_warnings=`echo "${enableval}" | sed -e "s/,/ /g"`;;
 esac
-if test x"$silent" != x"yes" && test x"$build_warnings" != x""; then
-  echo "Setting compiler warning flags = $build_warnings" 6>&1
+if test x"${silent}" != x"yes" && test x"${build_warnings}" != x""; then
+  echo "Setting compiler warning flags = ${build_warnings}" 6>&1
 fi])dnl
 AC_ARG_ENABLE([gdb-build-warnings],
 [AS_HELP_STRING([--enable-gdb-build-warnings],[Enable GDB-specific build-time compiler warnings if gcc is used])],
@@ -1770,39 +1781,40 @@ AC_ARG_ENABLE([gdb-build-warnings],
         build_warnings="${t} ${build_warnings}";;
   *)    build_warnings=`echo "${enableval}" | sed -e "s/,/ /g"`;;
 esac
-if test x"$silent" != x"yes" && test x"$build_warnings" != x""; then
-  echo "Setting GDB specific compiler warning flags = $build_warnings" 6>&1
+if test x"${silent}" != x"yes" && test x"${build_warnings}" != x""; then
+  echo "Setting GDB specific compiler warning flags = ${build_warnings}" 6>&1
 fi])dnl
 WARN_CFLAGS=""
 WERROR_CFLAGS=""
-if test "x${build_warnings}" != x -a "x$GCC" = xyes
+if test "x${build_warnings}" != x -a "x${GCC}" = xyes
 then
     AC_MSG_CHECKING([compiler warning flags])
     # Separate out the -Werror flag as some files just cannot be
     # compiled with it enabled.
     for w in ${build_warnings}; do
-	case $w in
+	case ${w} in
 	*) # Check that GCC accepts it
-	    saved_CFLAGS="$CFLAGS"
-	    CFLAGS="$CFLAGS $w"
-	    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],[WARN_CFLAGS="${WARN_CFLAGS} $w"],[])
-	    CFLAGS="$saved_CFLAGS"
+	    saved_CFLAGS="${CFLAGS}"
+	    CFLAGS="${CFLAGS} ${w}"
+	    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],[WARN_CFLAGS="${WARN_CFLAGS} ${w}"],[])
+	    CFLAGS="${saved_CFLAGS}"
 	esac
     done
-    AC_MSG_RESULT(${WARN_CFLAGS}${WERROR_CFLAGS})
+    AC_MSG_RESULT([${WARN_CFLAGS}${WERROR_CFLAGS}])
 fi
 AC_SUBST([WARN_CFLAGS])
 AC_SUBST([WERROR_CFLAGS])
 
 # In the Cygwin environment, we need some additional flags.
 AC_CACHE_CHECK([for cygwin],[gdb_cv_os_cygwin],
-[AC_EGREP_CPP([lose],[
+[AC_EGREP_CPP([you_lose],[
 #if defined (__CYGWIN__) || defined (__CYGWIN32__)
-lose
+you_lose
 #endif],[gdb_cv_os_cygwin=yes],[gdb_cv_os_cygwin=no])])
 
 
-dnl# Figure out which of the many generic ser-*.c files the _host_ supports.
+dnl# Figure out which of the many generic ser-*.c files the _host_
+dnl# supports.
 SER_HARDWIRE="ser-base.o ser-unix.o ser-pipe.o ser-tcp.o"
 case ${host} in
   *go32* ) SER_HARDWIRE=ser-go32.o ;;
@@ -1813,7 +1825,7 @@ AC_SUBST([SER_HARDWIRE])
 
 # libreadline needs libuser32.a in a cygwin environment
 WIN32LIBS=
-if test x$gdb_cv_os_cygwin = xyes; then
+if test x${gdb_cv_os_cygwin} = xyes; then
     WIN32LIBS="-luser32"
     case "${target}" in
 	*cygwin*) WIN32LIBS="$WIN32LIBS -limagehlp"
@@ -1860,7 +1872,7 @@ if test "${enable_gdbtk}" = "yes"; then
     here=`pwd`
     cd ${srcdir}
     GDBTK_SRC_DIR=`pwd`
-    cd $here
+    cd ${here}
 
     CY_AC_PATH_TCLCONFIG
     if test -z "${no_tcl}"; then
@@ -1954,14 +1966,14 @@ AC_PATH_XTRA dnl# calls AC_PATH_X
 
 # Check whether we should enable the TUI, but only do so if we really
 # can.
-if test x"$enable_tui" = xyes; then
+if test x"${enable_tui}" = xyes; then
   if test -d $srcdir/tui; then
-    if test "$ac_cv_search_waddstr" != no; then
-      CONFIG_OBS="$CONFIG_OBS \$(SUBDIR_TUI_OBS)"
-      CONFIG_DEPS="$CONFIG_DEPS \$(SUBDIR_TUI_DEPS)"
-      CONFIG_SRCS="$CONFIG_SRCS \$(SUBDIR_TUI_SRCS)"
-      CONFIG_INITS="$CONFIG_INITS \$(SUBDIR_TUI_INITS)"
-      ENABLE_CFLAGS="$ENABLE_CFLAGS \$(SUBDIR_TUI_CFLAGS)"
+    if test "${ac_cv_search_waddstr}" != no; then
+      CONFIG_OBS="${CONFIG_OBS} \$(SUBDIR_TUI_OBS)"
+      CONFIG_DEPS="${CONFIG_DEPS} \$(SUBDIR_TUI_DEPS)"
+      CONFIG_SRCS="${CONFIG_SRCS} \$(SUBDIR_TUI_SRCS)"
+      CONFIG_INITS="${CONFIG_INITS} \$(SUBDIR_TUI_INITS)"
+      ENABLE_CFLAGS="${ENABLE_CFLAGS} \$(SUBDIR_TUI_CFLAGS)"
       CONFIG_ALL="${CONFIG_ALL} all-tui"
       CONFIG_CLEAN="${CONFIG_CLEAN} clean-tui"
       CONFIG_INSTALL="${CONFIG_INSTALL} install-tui"
@@ -2034,7 +2046,7 @@ if test "${target}" = "${host}"; then
   if test ! -f ${host_makefile_frag}; then
     AC_MSG_ERROR([*** Gdb does not support native target ${host}])
   fi
-  frags="$frags $host_makefile_frag"
+  frags="${frags} ${host_makefile_frag}"
 else
   host_makefile_frag=/dev/null
 fi
@@ -2067,8 +2079,8 @@ s/NAT_FILE[ 	]*=[ 	]*\([^ 	]*\)/\1/p
 fi
 changequote([,])
 
-if test x"${gdb_osabi}" != x ; then
-    AC_DEFINE_UNQUOTED([GDB_OSABI_DEFAULT],[$gdb_osabi],
+if test x"${gdb_osabi}" != x"" ; then
+    AC_DEFINE_UNQUOTED([GDB_OSABI_DEFAULT],[${gdb_osabi}],
 		       [Define to the default OS ABI for this configuration.])
 fi
 
@@ -2103,7 +2115,7 @@ if test "x${target}" = "x${host}"; then
 fi
 
 # We build rdi-share on ARM-based targets, as instructed by configure.tgt.
-if test "x${build_rdi_share}" = "xyes"; then
+if test "x${build_rdi_share}" = "xyes" -o "x${target_cpu}" = "xarm"; then
   AC_ARG_VAR([build_rdi_share],[Try to override the decision to build in the rdi-share subdirectory (unsupported, might not work)])
    AC_CONFIG_SUBDIRS([rdi-share])
 fi

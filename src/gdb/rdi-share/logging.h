@@ -1,6 +1,6 @@
-/* 
+/*
  * Copyright (C) 1995 Advanced RISC Machines Limited. All rights reserved.
- * 
+ *
  * This software may be freely used, copied, modified, and distributed
  * provided that the above copyright notice is preserved in all copies of the
  * software.
@@ -56,20 +56,20 @@ void va_warn(WarnLevel level, char *format, va_list args);
 #ifdef _WINGDI_
 /* stupidity in MSVC <wingdi.h> (in <windows.h> in <winsock.h>) */
 # undef ERROR
-#endif
+#endif /* _WINGDI_ */
 
 #ifndef ERROR
 # define ERROR_FORMAT "Error \"%s\" in %s at line %d\n"
 # define ERROR(e) __rt_error(ERROR_FORMAT, (e), __FILE__, __LINE__)
-#endif
+#endif /* !ERROR */
 
 #ifndef ASSERT
 # ifdef ASSERTIONS_ENABLED
 #   define ASSERT(x, y) ((x) ? (void)(0) : ERROR((y)))
 # else
 #   define ASSERT(x, y) ((void)(0))
-# endif
-#endif
+# endif /* ASSERTIONS_ENABLED */
+#endif /* !ASSERT */
 
 #ifndef WARN
 # ifdef ASSERTIONS_ENABLED
@@ -77,15 +77,15 @@ void va_warn(WarnLevel level, char *format, va_list args);
 #   define WARN(w) __rt_warning(WARN_FORMAT, (w), __FILE__, __LINE__)
 # else
 #   define WARN(w) ((void)(0))
-# endif
-#endif
+# endif /* ASSERTIONS_ENABLED */
+#endif /* !WARN */
 
 
 #ifdef NO_INFO_MESSAGES
 # define __rt_info (void)
 # ifndef INFO
 #   define INFO(w)
-# endif
+# endif /* !INFO */
 #else
 # define __rt_info __rt_warning
 # ifndef INFO
@@ -93,28 +93,28 @@ void va_warn(WarnLevel level, char *format, va_list args);
 #   define INFO(w) __rt_warning("%s\n", (w))
 #  else
 #   define INFO(w) ((void)(0))
-#  endif
-# endif
-#endif
+#  endif /* DEBUG */
+# endif /* !INFO */
+#endif /* NO_INFO_MESSAGES */
 
 
 #if defined(DEBUG) && !defined(NO_IDLE_CHITCHAT)
 # ifndef DO_TRACE
 #   define DO_TRACE (1)
-# endif
-#endif
+# endif /* !DO_TRACE */
+#endif /* DEBUG && !NO_IDLE_CHITCHAT */
 
 #ifdef DO_TRACE
 extern void __rt_trace(char *format, ...);
-#endif
+#endif /* DO_TRACE */
 
 #ifndef TRACE
 # ifdef DO_TRACE
 #   define TRACE(w) __rt_trace("%s ", (w))
 # else
 #   define TRACE(w) ((void)(0))
-# endif
-#endif
+# endif /* DO_TRACE */
+#endif /* !TRACE */
 
 #endif /* ndef angel_logging_h */
 
