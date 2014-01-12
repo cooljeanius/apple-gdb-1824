@@ -727,13 +727,15 @@ install-gdb-macosx: install-gdb-macosx-common
 		cp $(DSTROOT)/$(LIBEXEC_GDB_DIR)/gdb-$${target} $(SYMROOT)/$(LIBEXEC_GDB_DIR)/gdb-$${target}; \
 	done
 
-# When this target is invoked, NATIVE is the binary that we will be outputting
-# and HOSTCOMBOS are the binaries that will be combined into that. For instance,
+# When this target is invoked, NATIVE is the binary that we will be
+# outputting and HOSTCOMBOS are the binaries that will be combined into
+# that. For instance,
 #
 # HOSTCOMBOS == i386-apple-darwin--i386-apple-darwin x86_64-apple-darwin--x86_64-apple-darwin powerpc-apple-darwin--i386-apple-darwin
 # NATIVE == i386-apple-darwin
 
-# NATIVE i386 is a special case where we add the x86_64-apple-darwin variant manually.
+# NATIVE i386 is a special case where we add the x86_64-apple-darwin
+# variant manually.
 
 install-gdb-fat: install-gdb-macosx-common
 	lipo -create $(patsubst %,$(OBJROOT)/%/gdb/gdb,$(HOSTCOMBOS)) \

@@ -69,6 +69,7 @@ AC_CHECK_HEADERS([fcntl.h float.h limits.h locale.h math.h \
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
+AC_C_INLINE
 AC_C_PROTOTYPES
 AC_TYPE_UID_T
 AC_TYPE_OFF_T
@@ -88,11 +89,11 @@ AC_FUNC_MKTIME
 AC_FUNC_REALLOC
 AC_FUNC_STRTOD
 AC_FUNC_WAIT3
-AC_CHECK_FUNCS([dup2 ftime ftruncate getcwd gettimeofday getwd memchr \
-                memmove memset putenv re_comp regcomp setlocale sqrt \
-                strcasecmp strchr strcspn strdup strerror strncasecmp \
-                strpbrk strrchr strspn strstr strtol strtoul strtoull \
-                tzset utime])
+AC_CHECK_FUNCS([dup2 floor ftime ftruncate getcwd gettimeofday getwd \
+                memchr memmove memset putenv re_comp regcomp setlocale \
+                sqrt strcasecmp strchr strcspn strdup strerror \
+                strncasecmp strpbrk strrchr strspn strstr strtol \
+                strtoul strtoull tzset utime])
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

@@ -44,6 +44,7 @@ bfd/po/*POTFILES
 POTFILES
 *-POTFILES
 blockit
+build/*
 confdefs.h
 config.h
 config.intl

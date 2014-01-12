@@ -6,6 +6,14 @@
 	objectVersion = 42;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		7BC331AE1881E6E300EF9359 /* Tcl-Common.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 7BC331AD1881E6E300EF9359 /* Tcl-Common.xcconfig */; };
+		7BC331B01881E6E900EF9359 /* Tcl-Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 7BC331AF1881E6E900EF9359 /* Tcl-Debug.xcconfig */; };
+		7BC331B21881E6EF00EF9359 /* Tcl-Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 7BC331B11881E6EF00EF9359 /* Tcl-Release.xcconfig */; };
+		7BC331B41881E7CA00EF9359 /* README in Resources */ = {isa = PBXBuildFile; fileRef = 7BC331AC1881E6B300EF9359 /* README */; };
+		7BC331B51881E7CE00EF9359 /* license.terms in Resources */ = {isa = PBXBuildFile; fileRef = 7BC331AB1881E6AE00EF9359 /* license.terms */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		A50F54D21808CA0D008BA312 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -39,6 +47,16 @@
 
 /* Begin PBXFileReference section */
 		00E2F84D016E92110ACA28DC /* Tcl.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Tcl.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		7BC331291881DD2000EF9359 /* tclMacOSXFCmd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tclMacOSXFCmd.c; sourceTree = "<group>"; };
+		7BC3312A1881DD2700EF9359 /* tclMacOSXNotify.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = tclMacOSXNotify.c; sourceTree = "<group>"; };
+		7BC331A81881E67700EF9359 /* acinclude.m4 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = acinclude.m4; sourceTree = "<group>"; };
+		7BC331A91881E68200EF9359 /* configure.ac */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = configure.ac; sourceTree = "<group>"; };
+		7BC331AA1881E68A00EF9359 /* AppleGNUmakefile */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; path = AppleGNUmakefile; sourceTree = "<group>"; };
+		7BC331AB1881E6AE00EF9359 /* license.terms */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = license.terms; sourceTree = "<group>"; };
+		7BC331AC1881E6B300EF9359 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		7BC331AD1881E6E300EF9359 /* Tcl-Common.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Tcl-Common.xcconfig"; sourceTree = "<group>"; };
+		7BC331AF1881E6E900EF9359 /* Tcl-Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Tcl-Debug.xcconfig"; sourceTree = "<group>"; };
+		7BC331B11881E6EF00EF9359 /* Tcl-Release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Tcl-Release.xcconfig"; sourceTree = "<group>"; };
 		A50F55611808CA1C008BA312 /* Info-Tcl__Upgraded_.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Tcl__Upgraded_.plist"; sourceTree = "<group>"; };
 		A50F55621808CA1C008BA312 /* Tcl.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Tcl.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F53ACC5C031D9D11016F146B /* tclsh8.4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = tclsh8.4; path = ../../build/tclsh8.4; sourceTree = SOURCE_ROOT; };
@@ -389,6 +407,14 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		00E2F857016E92B00ACA28DC /* macosx */ = {
 			isa = PBXGroup;
 			children = (
+				7BC331AD1881E6E300EF9359 /* Tcl-Common.xcconfig */,
+				7BC331AF1881E6E900EF9359 /* Tcl-Debug.xcconfig */,
+				7BC331B11881E6EF00EF9359 /* Tcl-Release.xcconfig */,
+				7BC331A81881E67700EF9359 /* acinclude.m4 */,
+				7BC331A91881E68200EF9359 /* configure.ac */,
+				7BC331AA1881E68A00EF9359 /* AppleGNUmakefile */,
+				7BC331AB1881E6AE00EF9359 /* license.terms */,
+				7BC331AC1881E6B300EF9359 /* README */,
 				00E2F858016E92B00ACA28DC /* Headers */,
 				00E2F859016E92B00ACA28DC /* Sources */,
 			);
@@ -405,6 +431,8 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		00E2F859016E92B00ACA28DC /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				7BC3312A1881DD2700EF9359 /* tclMacOSXNotify.c */,
+				7BC331291881DD2000EF9359 /* tclMacOSXFCmd.c */,
 				F5A1836F018242A501DC9062 /* tclMacOSXBundle.c */,
 			);
 			name = Sources;
@@ -535,7 +563,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		};
 		A50F55631808CA1C008BA312 /* Configure_Copied */ = {
 			isa = PBXLegacyTarget;
-			buildArgumentsString = "-c \"if [ \\\"${ACTION}\\\" != \\\"clean\\\" ]; then if [ -z \\\"`find . -name Makefile -newer \\\"${SRCROOT}/../unix/configure\\\"`\\\" ]; then \\\"${SRCROOT}/../unix/configure\\\" --prefix=/usr --mandir=/usr/share/man --libdir=\\\"${LIBDIR}\\\" --includedir=\\\"${LIBDIR}/Headers\\\" --enable-threads --enable-framework ${EXTRA_CONFIGURE_FLAGS}; mkdir -p Tcl.framework; ln -fs ../Tcl Tcl.framework/Tcl; fi; else rm -f Makefile; fi\"";
+			buildArgumentsString = "-cex \"if [ \\\"${ACTION}\\\" != \\\"clean\\\" ]; then if [ -z \\\"`find . -name Makefile -newer \\\"${SRCROOT}/../unix/configure\\\"`\\\" ]; then \\\"${SRCROOT}/../unix/configure\\\" --prefix=/usr --mandir=/usr/share/man --libdir=\\\"${LIBDIR}\\\" --includedir=\\\"${LIBDIR}/Headers\\\" --enable-threads --enable-framework ${EXTRA_CONFIGURE_FLAGS}; mkdir -pv Tcl.framework; ln -fsv ../Tcl Tcl.framework/Tcl; fi; else rm -fv Makefile; fi\"";
 			buildConfigurationList = A50F55641808CA1C008BA312 /* Build configuration list for PBXLegacyTarget "Configure_Copied" */;
 			buildPhases = (
 			);
@@ -549,7 +577,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		};
 		A50F55681808CA1C008BA312 /* Make_Copied */ = {
 			isa = PBXLegacyTarget;
-			buildArgumentsString = "-c \"if [ \\\"${ACTION}\\\" != \\\"clean\\\" ]; then gnumake tclsh tcltest TCL_LIBRARY=\\\"@TCL_IN_FRAMEWORK@\\\" TCL_PACKAGE_PATH=\\\"~/Library/Tcl /Library/Tcl /Network/Library/Tcl /System/Library/Tcl\\\" DYLIB_INSTALL_DIR=\\\"${DYLIB_INSTALL_DIR}\\\" ${EXTRA_MAKE_FLAGS}; else gnumake clean; fi\"";
+			buildArgumentsString = "-cex \"if [ \\\"${ACTION}\\\" != \\\"clean\\\" ]; then gnumake tclsh tcltest TCL_LIBRARY=\\\"@TCL_IN_FRAMEWORK@\\\" TCL_PACKAGE_PATH=\\\"~/Library/Tcl /Library/Tcl /Network/Library/Tcl /System/Library/Tcl\\\" DYLIB_INSTALL_DIR=\\\"${DYLIB_INSTALL_DIR}\\\" ${EXTRA_MAKE_FLAGS}; else gnumake clean; fi\"";
 			buildConfigurationList = A50F556B1808CA1C008BA312 /* Build configuration list for PBXLegacyTarget "Make_Copied" */;
 			buildPhases = (
 			);
@@ -626,6 +654,11 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7BC331B51881E7CE00EF9359 /* license.terms in Resources */,
+				7BC331B41881E7CA00EF9359 /* README in Resources */,
+				7BC331AE1881E6E300EF9359 /* Tcl-Common.xcconfig in Resources */,
+				7BC331B01881E6E900EF9359 /* Tcl-Debug.xcconfig in Resources */,
+				7BC331B21881E6EF00EF9359 /* Tcl-Release.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -801,20 +834,85 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "x86_64 i386 ppc";
+				BINDIR = "$(PREFIX)/bin";
+				CC = "$(GCC)-$(GCC_VERSION)";
+				CONFIGURE_ARGS = "--enable-symbols --enable-dtrace $(TCL_CONFIGURE_ARGS) $(CONFIGURE_ARGS)";
+				CPPFLAGS = "-mmacosx-version-min=$(MACOSX_DEPLOYMENT_TARGET) $(CPPFLAGS)";
+				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEPLOYMENT_POSTPROCESSING = NO;
+				FRAMEWORK_INSTALL_PATH = /Library/Frameworks;
+				GCC = "$(DEVELOPER_DIR)/usr/bin/gcc";
+				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREFIX_HEADER = "$(DERIVED_FILE_DIR)/tcl/tclConfig.h";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(TCL_DEFS)",
+					"$(GCC_PREPROCESSOR_DEFINITIONS)",
+				);
+				GCC_VERSION = 4.2;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_PROTOTYPE_CONVERSION = YES;
 				GENERATE_PKGINFO_FILE = YES;
 				GENERATE_PROFILING_CODE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_1)",
+					"$(HEADER_SEARCH_PATHS)",
+				);
+				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_1 = "\"$(DERIVED_FILE_DIR)/tcl\"";
+				INCLUDEDIR = "$(PREFIX)/include";
+				INSTALL_PATH = "$(BINDIR)";
+				LD = "$(CC)";
 				LD_GENERATE_MAP_FILE = YES;
+				LIBDIR = "$(PREFIX)/lib";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MAKE_TARGET = develop;
+				MANDIR = "$(PREFIX)/man";
+				OTHER_LDFLAGS = "-headerpad_max_install_names";
+				PER_ARCH_CFLAGS_ppc = "-mcpu=G3 -mtune=G4 $(PER_ARCH_CFLAGS_ppc)";
+				PER_ARCH_CFLAGS_ppc64 = "-mcpu=G5 -mpowerpc64 $(PER_ARCH_CFLAGS_ppc64)";
+				PREFIX = /usr/local;
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
+				TCL_DEFS = HAVE_TCL_CONFIG_H;
+				TCL_LIBRARY = "$(LIBDIR)/tcl$(VERSION)";
+				TCL_PACKAGE_PATH = "\"$(LIBDIR)\"";
 				VALIDATE_PRODUCT = YES;
+				VERSION = 8.5;
 				VERSIONING_SYSTEM = "apple-generic";
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Wextra",
+					"-Wno-missing-field-initializers",
+					"-Wcast-align",
+					"-Winit-self",
+					"-Wpointer-arith",
+					"-Wdisabled-optimization",
+					"-Winline",
+					"$(WARNING_CFLAGS_GCC3)",
+					"$(WARNING_CFLAGS)",
+				);
+				WARNING_CFLAGS_GCC3 = "-Wall -Wno-implicit-int -Wno-unused-parameter -Wno-deprecated-declarations";
 			};
 			name = Development;
 		};
 		A50F553D1808CA11008BA312 /* Deployment */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CONFIGURE_ARGS = "--disable-symbols $(TCL_CONFIGURE_ARGS) $(CONFIGURE_ARGS)";
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEPLOYMENT_POSTPROCESSING = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					NDEBUG,
+					"$(TCL_DEFS)",
+					"$(GCC_PREPROCESSOR_DEFINITIONS)",
+				);
+				GCC_VERSION = 4.2;
+				MAKE_TARGET = deploy;
 			};
 			name = Deployment;
 		};
@@ -971,7 +1069,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DSTROOT = "${TEMP_DIR}";
-				EXTRA_CONFIGURE_FLAGS = "--enable-symbols";
+				EXTRA_CONFIGURE_FLAGS = "--enable-symbols --enable-dtrace";
 				EXTRA_MAKE_INSTALL_FLAGS = "";
 				FRAMEWORK_VERSION = 8.4;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -1027,7 +1125,7 @@ MacOS X Port by Jim Ingham &lt;jingham@apple.com&gt; &amp; Ian Reid, Copyright Â
 		A50F55651808CA1C008BA312 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				EXTRA_CONFIGURE_FLAGS = "--enable-symbols";
+				EXTRA_CONFIGURE_FLAGS = "--enable-symbols --enable-dtrace";
 				FRAMEWORK_VERSION = 8.4;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;

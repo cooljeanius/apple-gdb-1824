@@ -1,0 +1,9 @@
+*.dylib
+Makefile
+Makefile.orig
+*.o
+*.cache
+*.log
+*.status
+lib.exp
+../dltest.marker

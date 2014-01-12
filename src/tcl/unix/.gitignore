@@ -22,3 +22,5 @@ tcltest
 *.dSYM
 dltest.marker
 Makefile.bak
+Tcl-Info.plist
+Tclsh-Info.plist

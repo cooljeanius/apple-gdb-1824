@@ -22,6 +22,9 @@ if test -z "${SDKROOT}" -a -d /Developer/SDKs/MacOSX10.6.sdk; then
     echo "Not setting SDKROOT because that will mess up mig."
   fi
 fi
+if test -z "${MAKEFILEPATH}" -a -d /Developer/Makefiles; then
+  export MAKEFILEPATH=/Developer/Makefiles
+fi
 export SEPARATE_STRIP=YES
 export UNAME_RELEASE=10.8.0
 export UNAME_SYSNAME=Darwin

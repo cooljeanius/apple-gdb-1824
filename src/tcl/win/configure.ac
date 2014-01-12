@@ -159,7 +159,7 @@ AC_CACHE_CHECK([for EXCEPTION_DISPOSITION support in include files],
   EXCEPTION_DISPOSITION x;
 ]])],[tcl_cv_eh_disposition=yes],[tcl_cv_eh_disposition=no])
 ])
-if test "$tcl_cv_eh_disposition" = "no" ; then
+if test "${tcl_cv_eh_disposition}" = "no" ; then
     AC_DEFINE([EXCEPTION_DISPOSITION],[int],
             [Defined when cygwin/mingw does not support EXCEPTION DISPOSITION])
 fi
@@ -229,6 +229,9 @@ AC_CHECK_DECLS([LC_TIME])
 AC_CHECK_DECLS([__try])
 
 # Checks for typedefs, structures, and compiler characteristics.
+AC_C_BIGENDIAN
+AC_C_INLINE
+AC_C_PROTOTYPES
 AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 AC_CHECK_MEMBERS([struct stat.st_rdev])
@@ -245,8 +248,8 @@ AC_FUNC_ALLOCA
 AC_FUNC_MALLOC
 AC_FUNC_MKTIME
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([ftime memset setlocale strchr strpbrk strrchr strspn \
-                strstr strtoull tzset])
+AC_CHECK_FUNCS([floor ftime memset setlocale strchr strpbrk strrchr \
+                strspn strstr strtoull tzset])
 
 #--------------------------------------------------------------------
 # Perform final evaluations of variables with possible substitutions.

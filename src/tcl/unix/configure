@@ -620,12 +620,29 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
+ac_func_list=
 enable_option_checking=no
 ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
-LTLIBOBJS
+DLTEST_SUFFIX
+DLTEST_LD
+EXTRA_TCLSH_LIBS
+EXTRA_BUILD_HTML
+EXTRA_INSTALL_BINARIES
+EXTRA_INSTALL
+EXTRA_APP_CC_SWITCHES
+EXTRA_CC_SWITCHES
+HTML_DIR
+PRIVATE_INCLUDE_DIR
+TCL_LIBRARY
+TCL_MODULE_PATH
 TCL_PACKAGE_PATH
 BUILD_DLTEST
+MAKEFILE_SHELL
+DTRACE_OBJ
+DTRACE_HDR
+DTRACE_SRC
+INSTALL_TZDATA
 TCL_HAS_LONGLONG
 TCL_UNSHARED_LIB_SUFFIX
 TCL_SHARED_LIB_SUFFIX
@@ -651,11 +668,13 @@ TCL_STUB_LIB_FILE
 TCL_LIB_SPEC
 TCL_LIB_FLAG
 TCL_LIB_FILE
+TCL_YEAR
 TCL_PATCH_LEVEL
 TCL_MINOR_VERSION
 TCL_MAJOR_VERSION
 TCL_VERSION
 subdirs
+DTRACE
 LDFLAGS_DEFAULT
 CFLAGS_DEFAULT
 INSTALL_STUB_LIB
@@ -686,6 +705,7 @@ AR
 RANLIB
 MATH_LIBS
 TCL_LIBS
+tcl_corefoundation
 POW_LIB
 LIBOBJS
 no_pipe
@@ -817,6 +837,9 @@ enable_64bit
 enable_64bit_vis
 enable_load
 enable_symbols
+enable_dll_unloading
+with_tzdata
+enable_dtrace
 enable_framework
 '
       ac_precious_vars='build_alias
@@ -833,7 +856,8 @@ CCC
 CPP
 YACC
 YFLAGS
-no_pipe'
+no_pipe
+tcl_corefoundation'
 ac_subdirs_all='dltest'
 
 # Initialize some variables set by options.
@@ -1474,8 +1498,15 @@ Optional Features:
   --enable-64bit-vis      enable 64bit Sparc VIS support
   --disable-load          disallow dynamic loading and "load" command
   --enable-symbols        build with debugging symbols [--disable-symbols]
+  --enable-dll-unloading  enable the 'unload' command (default: on)
+  --enable-dtrace         build with DTrace support (default: off)
   --enable-framework      package shared libraries in frameworks
                           [--disable-framework]
+
+Optional Packages:
+  --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
+  --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-tzdata           install timezone data (default: autodetect)
 
 Some influential environment variables:
   CC          C compiler command
@@ -1495,6 +1526,9 @@ Some influential environment variables:
               This script will default YFLAGS to the empty string to avoid a
               default value of `-d' given by some make applications.
   no_pipe     Set to try to keep the compiler from using -pipe
+  tcl_corefoundation
+              Set to try to build CoreFoundation support in Tcl (might not
+              work)
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -2119,6 +2153,60 @@ $as_echo "$ac_res" >&6; }
 
 } # ac_fn_c_check_decl
 
+# ac_fn_c_find_uintX_t LINENO BITS VAR
+# ------------------------------------
+# Finds an unsigned integer type with width BITS, setting cache variable VAR
+# accordingly.
+ac_fn_c_find_uintX_t ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for uint$2_t" >&5
+$as_echo_n "checking for uint$2_t... " >&6; }
+if eval \${$3+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  eval "$3=no"
+     # Order is important - never check a type that is potentially smaller
+     # than half of the expected target width.
+     for ac_type in uint$2_t 'unsigned int' 'unsigned long int' \
+	 'unsigned long long int' 'unsigned short int' 'unsigned char'; do
+       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+static int test_array [1 - 2 * !((($ac_type) -1 >> ($2 / 2 - 1)) >> ($2 / 2 - 1) == 3)];
+test_array [0] = 0;
+return test_array [0];
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  case $ac_type in #(
+  uint$2_t) :
+    eval "$3=yes" ;; #(
+  *) :
+    eval "$3=\$ac_type" ;;
+esac
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+       if eval test \"x\$"$3"\" = x"no"; then :
+
+else
+  break
+fi
+     done
+fi
+eval ac_res=\$$3
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+
+} # ac_fn_c_find_uintX_t
+
 # ac_fn_c_compute_int LINENO EXPR VAR INCLUDES
 # --------------------------------------------
 # Tries to find the compile-time value of EXPR in a program that includes
@@ -2589,6 +2677,9 @@ as_fn_append ac_header_list " float.h"
 as_fn_append ac_header_list " limits.h"
 as_fn_append ac_header_list " unistd.h"
 as_fn_append ac_header_list " utime.h"
+as_fn_append ac_func_list " rand"
+as_fn_append ac_header_list " sys/cdefs.h"
+as_fn_append ac_header_list " fts.h"
 # Check that the precious variables saved in the cache have kept the same
 # value.
 ac_cache_corrupted=false
@@ -2660,7 +2751,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-ac_config_headers="$ac_config_headers config.h"
+ac_config_headers="$ac_config_headers config.h:../unix/config.h.in"
 
 ac_aux_dir=
 for ac_dir in "$srcdir" "$srcdir/.." "$srcdir/../.."; do
@@ -2892,6 +2983,11 @@ fi
 
 
 
+if test -f ${srcdir}/config.status; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: config.status is already present, removing it." >&5
+$as_echo "$as_me: config.status is already present, removing it." >&6;}
+  rm -f ${srcdir}/config.status
+fi
 am__api_version='1.14'
 
 # Find a good install program.  We prefer a C program (faster),
@@ -3403,6 +3499,14 @@ END
     as_fn_error $? "Your 'rm' program is bad, sorry." "$LINENO" 5
   fi
 fi
+ac_config_commands="$ac_config_commands automake_post_configure"
+
+
+if test -z "${datarootdir}"; then
+  export datarootdir=${prefix}/share
+
+fi
+
 
 
 TCL_VERSION=8.4
@@ -5873,7 +5977,7 @@ $as_echo "no (default)" >&6; }
 
 
 if test -z "${no_pipe}"; then
-if test -n "${GCC}"; then
+ if test -n "${GCC}"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking if the compiler understands -pipe" >&5
 $as_echo_n "checking if the compiler understands -pipe... " >&6; }
   OLDCC="${CC}"
@@ -5898,8 +6002,18 @@ else
 $as_echo "no" >&6; }
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ fi
 fi
-fi
+
+#--------------------------------------------------------------------
+# The statements below define some defines.
+#--------------------------------------------------------------------
+
+$as_echo "#define TCL_TOMMATH 1" >>confdefs.h
+
+
+$as_echo "#define MP_PREC 4" >>confdefs.h
+
 
 #--------------------------------------------------------------------
 #	Detect what compiler flags to set for 64-bit support.
@@ -6557,6 +6671,13 @@ $as_echo "#define NO_UNAME 1" >>confdefs.h
 fi
 done
 
+
+if test "`uname -s`" = "Darwin" && test "${TCL_THREADS}" = 1 && \
+	test "`uname -r | awk -F. '{print $1}'`" -lt 7; then
+    # prior to Darwin 7, realpath is not threadsafe, so do NOT
+    # use it when threads are enabled, c.f. bug # 711232
+    export ac_cv_func_realpath=no
+fi
 for ac_func in realpath
 do :
   ac_fn_c_check_func "$LINENO" "realpath" "ac_cv_func_realpath"
@@ -6960,7 +7081,7 @@ $as_echo "#define malloc rpl_malloc" >>confdefs.h
 fi
 
 
-for ac_func in alarm atexit dup2 endgrent endpwent gethostbyaddr \
+for ac_func in alarm atexit bzero dup2 endgrent endpwent gethostbyaddr \
                 gethostname inet_ntoa isxdigit memset mkdir mkfifo \
                 nl_langinfo rmdir select setlocale socket strcasecmp \
                 strchr strrchr strstr strtol strtoull tzset utime
@@ -7235,10 +7356,101 @@ done
 
 
 # More headers
-for ac_header in CoreFoundation/CoreFoundation.h arpa/inet.h \
-                  fcntl.h locale.h netdb.h netinet/in.h sgtty.h stdarg.h \
-                  sys/file.h sys/socket.h sys/statfs.h termio.h termios.h \
-                  utime.h
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for stdbool.h that conforms to C99" >&5
+$as_echo_n "checking for stdbool.h that conforms to C99... " >&6; }
+if ${ac_cv_header_stdbool_h+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+             #include <stdbool.h>
+             #ifndef bool
+              "error: bool is not defined"
+             #endif
+             #ifndef false
+              "error: false is not defined"
+             #endif
+             #if false
+              "error: false is not 0"
+             #endif
+             #ifndef true
+              "error: true is not defined"
+             #endif
+             #if true != 1
+              "error: true is not 1"
+             #endif
+             #ifndef __bool_true_false_are_defined
+              "error: __bool_true_false_are_defined is not defined"
+             #endif
+
+             struct s { _Bool s: 1; _Bool t; } s;
+
+             char a[true == 1 ? 1 : -1];
+             char b[false == 0 ? 1 : -1];
+             char c[__bool_true_false_are_defined == 1 ? 1 : -1];
+             char d[(bool) 0.5 == true ? 1 : -1];
+             /* See body of main program for 'e'.  */
+             char f[(_Bool) 0.0 == false ? 1 : -1];
+             char g[true];
+             char h[sizeof (_Bool)];
+             char i[sizeof s.t];
+             enum { j = false, k = true, l = false * true, m = true * 256 };
+             /* The following fails for
+                HP aC++/ANSI C B3910B A.05.55 [Dec 04 2003]. */
+             _Bool n[m];
+             char o[sizeof n == m * sizeof n[0] ? 1 : -1];
+             char p[-1 - (_Bool) 0 < 0 && -1 - (bool) 0 < 0 ? 1 : -1];
+             /* Catch a bug in an HP-UX C compiler.  See
+                http://gcc.gnu.org/ml/gcc-patches/2003-12/msg02303.html
+                http://lists.gnu.org/archive/html/bug-coreutils/2005-11/msg00161.html
+              */
+             _Bool q = true;
+             _Bool *pq = &q;
+
+int
+main ()
+{
+
+             bool e = &s;
+             *pq |= q;
+             *pq |= ! q;
+             /* Refer to every declared value, to avoid compiler optimizations.  */
+             return (!a + !b + !c + !d + !e + !f + !g + !h + !i + !!j + !k + !!l
+                     + !m + !n + !o + !p + !q + !pq);
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_header_stdbool_h=yes
+else
+  ac_cv_header_stdbool_h=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_header_stdbool_h" >&5
+$as_echo "$ac_cv_header_stdbool_h" >&6; }
+   ac_fn_c_check_type "$LINENO" "_Bool" "ac_cv_type__Bool" "$ac_includes_default"
+if test "x$ac_cv_type__Bool" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE__BOOL 1
+_ACEOF
+
+
+fi
+
+
+if test $ac_cv_header_stdbool_h = yes; then
+
+$as_echo "#define HAVE_STDBOOL_H 1" >>confdefs.h
+
+fi
+ for ac_header in arpa/inet.h fcntl.h locale.h math.h \
+                  netdb.h netinet/in.h sgtty.h stdarg.h sys/file.h \
+                  sys/socket.h sys/statfs.h termio.h termios.h utime.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -8203,7 +8415,7 @@ rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
 
-if test $tcl_ok = yes; then
+if test ${tcl_ok} = yes; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 else
@@ -8596,6 +8808,20 @@ $as_echo "#define uid_t int" >>confdefs.h
 $as_echo "#define gid_t int" >>confdefs.h
 
 fi
+
+ac_fn_c_find_uintX_t "$LINENO" "32" "ac_cv_c_uint32_t"
+case $ac_cv_c_uint32_t in #(
+  no|yes) ;; #(
+  *)
+
+$as_echo "#define _UINT32_T 1" >>confdefs.h
+
+
+cat >>confdefs.h <<_ACEOF
+#define uint32_t $ac_cv_c_uint32_t
+_ACEOF
+;;
+  esac
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for socklen_t" >&5
@@ -9483,6 +9709,298 @@ $as_echo "#define HAVE_LANGINFO 1" >>confdefs.h
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $langinfo_ok" >&5
 $as_echo "$langinfo_ok" >&6; }
 
+
+#--------------------------------------------------------------------
+# Check for support of chflags function
+#--------------------------------------------------------------------
+
+for ac_func in chflags
+do :
+  ac_fn_c_check_func "$LINENO" "chflags" "ac_cv_func_chflags"
+if test "x$ac_cv_func_chflags" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_CHFLAGS 1
+_ACEOF
+
+fi
+done
+
+
+#--------------------------------------------------------------------
+# Check for support of isnan() function or macro
+#--------------------------------------------------------------------
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking isnan" >&5
+$as_echo_n "checking isnan... " >&6; }
+if ${tcl_cv_isnan+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <math.h>
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  tcl_cv_isnan=yes
+else
+  tcl_cv_isnan=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $tcl_cv_isnan" >&5
+$as_echo "$tcl_cv_isnan" >&6; }
+if test ${tcl_cv_isnan} = no; then
+
+$as_echo "#define NO_ISNAN 1" >>confdefs.h
+
+fi
+
+#--------------------------------------------------------------------
+# Darwin specific API checks and defines
+#--------------------------------------------------------------------
+
+if test "`uname -s`" = "Darwin" ; then
+    for ac_func in getattrlist
+do :
+  ac_fn_c_check_func "$LINENO" "getattrlist" "ac_cv_func_getattrlist"
+if test "x$ac_cv_func_getattrlist" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_GETATTRLIST 1
+_ACEOF
+
+fi
+done
+
+    for ac_header in copyfile.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "copyfile.h" "ac_cv_header_copyfile_h" "$ac_includes_default"
+if test "x$ac_cv_header_copyfile_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_COPYFILE_H 1
+_ACEOF
+
+fi
+
+done
+
+    for ac_func in copyfile
+do :
+  ac_fn_c_check_func "$LINENO" "copyfile" "ac_cv_func_copyfile"
+if test "x$ac_cv_func_copyfile" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_COPYFILE 1
+_ACEOF
+
+fi
+done
+
+    if test "x${tcl_corefoundation}" = "xyes"; then
+
+	for ac_header in CoreFoundation/CoreFoundation.h \
+                          libkern/OSAtomic.h
+do :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+
+done
+
+	for ac_func in OSSpinLockLock
+do :
+  ac_fn_c_check_func "$LINENO" "OSSpinLockLock" "ac_cv_func_OSSpinLockLock"
+if test "x$ac_cv_func_OSSpinLockLock" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_OSSPINLOCKLOCK 1
+_ACEOF
+
+fi
+done
+
+	for ac_func in pthread_atfork
+do :
+  ac_fn_c_check_func "$LINENO" "pthread_atfork" "ac_cv_func_pthread_atfork"
+if test "x$ac_cv_func_pthread_atfork" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_PTHREAD_ATFORK 1
+_ACEOF
+
+fi
+done
+
+    else
+        test -z "${tcl_corefoundation}"
+        { $as_echo "$as_me:${as_lineno-$LINENO}: CoreFoundation support is disabled" >&5
+$as_echo "$as_me: CoreFoundation support is disabled" >&6;}
+    fi
+
+$as_echo "#define USE_VFORK 1" >>confdefs.h
+
+
+$as_echo "#define TCL_DEFAULT_ENCODING \"utf-8\"" >>confdefs.h
+
+
+$as_echo "#define TCL_LOAD_FROM_MEMORY 1" >>confdefs.h
+
+
+$as_echo "#define TCL_WIDE_CLICKS 1" >>confdefs.h
+
+    for ac_header in AvailabilityMacros.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "AvailabilityMacros.h" "ac_cv_header_AvailabilityMacros_h" "$ac_includes_default"
+if test "x$ac_cv_header_AvailabilityMacros_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_AVAILABILITYMACROS_H 1
+_ACEOF
+
+fi
+
+done
+
+    if test "x${ac_cv_header_AvailabilityMacros_h}" = "xyes"; then
+
+
+
+  for ac_func in $ac_func_list
+do :
+  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
+ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
+if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+done
+
+
+
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if weak import is available" >&5
+$as_echo_n "checking if weak import is available... " >&6; }
+if ${tcl_cv_cc_weak_import+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+	    hold_cflags=${CFLAGS}; CFLAGS="${CFLAGS} -Werror"
+	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+	#ifdef __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__
+	# if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 1020
+	#  error __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 1020
+	# endif
+	#elif MAC_OS_X_VERSION_MIN_REQUIRED < 1020
+	# error MAC_OS_X_VERSION_MIN_REQUIRED < 1020
+	#endif
+	int rand(void) __attribute__((weak_import));
+
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  tcl_cv_cc_weak_import=yes
+else
+  tcl_cv_cc_weak_import=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+	    CFLAGS=${hold_cflags}
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $tcl_cv_cc_weak_import" >&5
+$as_echo "$tcl_cv_cc_weak_import" >&6; }
+	if test ${tcl_cv_cc_weak_import} = yes; then
+
+$as_echo "#define HAVE_WEAK_IMPORT 1" >>confdefs.h
+
+	fi
+
+
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if Darwin SUSv3 extensions are available" >&5
+$as_echo_n "checking if Darwin SUSv3 extensions are available... " >&6; }
+if ${tcl_cv_cc_darwin_c_source+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+	    hold_cflags=${CFLAGS}; CFLAGS="${CFLAGS} -Werror"
+	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+	#ifdef __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__
+	# if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 1050
+	#  error __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__ < 1050
+	# endif
+	#elif MAC_OS_X_VERSION_MIN_REQUIRED < 1050
+	# error MAC_OS_X_VERSION_MIN_REQUIRED < 1050
+	#endif
+	#define _DARWIN_C_SOURCE 1
+	#include <sys/cdefs.h>
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  tcl_cv_cc_darwin_c_source=yes
+else
+  tcl_cv_cc_darwin_c_source=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+	    CFLAGS=${hold_cflags}
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $tcl_cv_cc_darwin_c_source" >&5
+$as_echo "$tcl_cv_cc_darwin_c_source" >&6; }
+	if test ${tcl_cv_cc_darwin_c_source} = yes; then
+
+$as_echo "#define _DARWIN_C_SOURCE 1" >>confdefs.h
+
+	fi
+    fi
+    # Build .bundle dltest binaries in addition to .dylib
+    DLTEST_LD='${CC} -bundle -Wl,-w ${CFLAGS} ${LDFLAGS}'
+    DLTEST_SUFFIX=".bundle"
+else
+    DLTEST_LD='${SHLIB_LD}'
+    DLTEST_SUFFIX=""
+fi
+
+#--------------------------------------------------------------------
+# Check for support of fts functions (readdir replacement)
+#--------------------------------------------------------------------
+
+
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for fts" >&5
+$as_echo_n "checking for fts... " >&6; }
+if ${tcl_cv_api_fts+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+	   #include <sys/param.h>
+	   #include <sys/stat.h>
+	   #include <fts.h>
+
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  tcl_cv_api_fts=yes
+else
+  tcl_cv_api_fts=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $tcl_cv_api_fts" >&5
+$as_echo "$tcl_cv_api_fts" >&6; }
+if test ${tcl_cv_api_fts} = yes; then
+
+$as_echo "#define HAVE_FTS 1" >>confdefs.h
+
+fi
 
 #--------------------------------------------------------------------
 # Look for libraries that we will need when compiling the Tcl shell
@@ -11444,6 +11962,228 @@ $as_echo "O_NONBLOCK" >&6; }
     esac
 
 
+#------------------------------------------------------------------------
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to use dll unloading" >&5
+$as_echo_n "checking whether to use dll unloading... " >&6; }
+# Check whether --enable-dll-unloading was given.
+if test "${enable_dll_unloading+set}" = set; then :
+  enableval=$enable_dll_unloading; tcl_ok=${enableval}
+else
+  tcl_ok=yes
+fi
+
+if test ${tcl_ok} = yes; then
+
+$as_echo "#define TCL_UNLOAD_DLLS 1" >>confdefs.h
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${tcl_ok}" >&5
+$as_echo "${tcl_ok}" >&6; }
+
+#------------------------------------------------------------------------
+#	Check whether the timezone data is supplied by the OS or has
+#	to be installed by Tcl. The default is autodetection, but can
+#	be overriden on the configure command line either way.
+#------------------------------------------------------------------------
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for timezone data" >&5
+$as_echo_n "checking for timezone data... " >&6; }
+
+# Check whether --with-tzdata was given.
+if test "${with_tzdata+set}" = set; then :
+  withval=$with_tzdata; tcl_ok=${withval}
+else
+  tcl_ok=auto
+fi
+
+#
+# Any directories that get added here must also be added to the
+# search path in ::tcl::clock::Initialize (library/clock.tcl).
+#
+case ${tcl_ok} in
+    no)
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: supplied by OS vendor" >&5
+$as_echo "supplied by OS vendor" >&6; }
+    ;;
+    yes)
+	# nothing to do here
+    ;;
+    auto*)
+	if ${tcl_cv_dir_zoneinfo+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+	for dir in /usr/share/zoneinfo \
+		/usr/share/lib/zoneinfo \
+		/usr/lib/zoneinfo
+	do
+		if test -f ${dir}/UTC -o -f ${dir}/GMT
+		then
+			tcl_cv_dir_zoneinfo="${dir}"
+			break
+		fi
+	done
+fi
+
+	if test -n "${tcl_cv_dir_zoneinfo}"; then
+	    tcl_ok=no
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${dir}" >&5
+$as_echo "${dir}" >&6; }
+	else
+	    tcl_ok=yes
+	fi
+    ;;
+    *)
+	as_fn_error $? "invalid argument: ${tcl_ok}" "$LINENO" 5
+    ;;
+esac
+if test ${tcl_ok} = yes
+then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: supplied by Tcl" >&5
+$as_echo "supplied by Tcl" >&6; }
+    INSTALL_TZDATA=install-tzdata
+fi
+
+#--------------------------------------------------------------------
+#	DTrace support
+#--------------------------------------------------------------------
+
+# Check whether --enable-dtrace was given.
+if test "${enable_dtrace+set}" = set; then :
+  enableval=$enable_dtrace; tcl_ok=${enableval}
+else
+  tcl_ok=no
+fi
+
+if test ${tcl_ok} = yes; then
+    ac_fn_c_check_header_mongrel "$LINENO" "sys/sdt.h" "ac_cv_header_sys_sdt_h" "$ac_includes_default"
+if test "x$ac_cv_header_sys_sdt_h" = xyes; then :
+  tcl_ok=yes
+else
+  tcl_ok=no
+fi
+
+
+fi
+if test ${tcl_ok} = yes; then
+    # Extract the first word of "dtrace", so it can be a program name with args.
+set dummy dtrace; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_DTRACE+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $DTRACE in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_DTRACE="$DTRACE" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+as_dummy="${PATH}:/usr/sbin"
+for as_dir in $as_dummy
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_DTRACE="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+DTRACE=$ac_cv_path_DTRACE
+if test -n "$DTRACE"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $DTRACE" >&5
+$as_echo "$DTRACE" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+    test -z "${ac_cv_path_DTRACE}" && tcl_ok=no
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable DTrace support" >&5
+$as_echo_n "checking whether to enable DTrace support... " >&6; }
+MAKEFILE_SHELL='/bin/sh'
+if test ${tcl_ok} = yes; then
+
+$as_echo "#define USE_DTRACE 1" >>confdefs.h
+
+    DTRACE_SRC="\${DTRACE_SRC}"
+    DTRACE_HDR="\${DTRACE_HDR}"
+    if test "`uname -s`" != "Darwin" ; then
+	DTRACE_OBJ="\${DTRACE_OBJ}"
+	if test "`uname -s`" = "SunOS" -a "${SHARED_BUILD}" = "0" ; then
+	    # Need to create an intermediate obj file to ensure tclDTrace.o
+	    # gets included when linking against the static tcl library.
+	    STLIB_LD='stlib_ld () { /usr/ccs/bin/ld -r -o $${1%.a}.o "$${@:2}" && '"${STLIB_LD}"' $${1} $${1%.a}.o ; } && stlib_ld'
+	    MAKEFILE_SHELL='/bin/bash'
+	    # Force use of Sun ar and ranlib, the GNU versions choke on
+	    # tclDTrace.o and the combined object file above.
+	    AR='/usr/ccs/bin/ar'
+	    RANLIB='/usr/ccs/bin/ranlib'
+	fi
+    fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${tcl_ok}" >&5
+$as_echo "${tcl_ok}" >&6; }
+
+#--------------------------------------------------------------------
+#  Does the C stack grow upwards or downwards? Or cross-compiling?
+#--------------------------------------------------------------------
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if the C stack grows upwards in memory" >&5
+$as_echo_n "checking if the C stack grows upwards in memory... " >&6; }
+if ${tcl_cv_stack_grows_up+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+    if test "$cross_compiling" = yes; then :
+  tcl_cv_stack_grows_up=unknown
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+	int StackGrowsUp(int *parent) {
+	    int here;
+	    return (&here < parent);
+	}
+	int main (int argc, char *argv[]) {
+	    int foo;
+	    return StackGrowsUp(&foo);
+	}
+
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  tcl_cv_stack_grows_up=yes
+else
+  tcl_cv_stack_grows_up=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $tcl_cv_stack_grows_up" >&5
+$as_echo "$tcl_cv_stack_grows_up" >&6; }
+if test ${tcl_cv_stack_grows_up} = unknown; then
+
+$as_echo "#define TCL_CROSS_COMPILE 1" >>confdefs.h
+
+elif test ${tcl_cv_stack_grows_up} = yes; then
+
+$as_echo "#define TCL_STACK_GROWS_UP 1" >>confdefs.h
+
+fi
+
 #--------------------------------------------------------------------
 #	The statements below define a collection of symbols related to
 #	building libtcl as a shared library instead of a static library.
@@ -11453,6 +12193,19 @@ TCL_UNSHARED_LIB_SUFFIX=${UNSHARED_LIB_SUFFIX}
 TCL_SHARED_LIB_SUFFIX=${SHARED_LIB_SUFFIX}
 eval "TCL_LIB_FILE=libtcl${LIB_SUFFIX}"
 
+# tclConfig.sh needs a version of the _LIB_SUFFIX that has been eval'ed
+# so that the backslashes quoting the DBX braces are dropped.
+
+# Trick to replace DBGX with TCL_DBGX
+DBGX='${TCL_DBGX}'
+eval "TCL_LIB_FILE=${TCL_LIB_FILE}"
+
+# Note: in the following variable, it is important to use the absolute
+# path name of the Tcl directory rather than "..":  this is because
+# AIX remembers this path and will attempt to use it at run-time to look
+# up the Tcl library.
+
+if test "`uname -s`" = "Darwin" ; then
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking how to package libraries" >&5
 $as_echo_n "checking how to package libraries... " >&6; }
@@ -11486,24 +12239,52 @@ $as_echo "standard shared library" >&6; }
 	FRAMEWORK_BUILD=0
     fi
 
+    TCL_SHLIB_LD_EXTRAS="-compatibility_version ${TCL_VERSION} -current_version ${TCL_VERSION}`echo ${TCL_PATCH_LEVEL} | awk '{match($0, "\\\.[0-9]+"); print substr($0,RSTART,RLENGTH)}'`"
+    TCL_SHLIB_LD_EXTRAS="${TCL_SHLIB_LD_EXTRAS}"' -install_name "${DYLIB_INSTALL_DIR}"/${TCL_LIB_FILE}'
+    echo "$LDFLAGS " | grep -q -- '-prebind ' && TCL_SHLIB_LD_EXTRAS="${TCL_SHLIB_LD_EXTRAS}"' -seg1addr 0xa000000'
+    TCL_SHLIB_LD_EXTRAS="${TCL_SHLIB_LD_EXTRAS}"' -sectcreate __TEXT __info_plist Tcl-Info.plist'
+    EXTRA_TCLSH_LIBS='-sectcreate __TEXT __info_plist Tclsh-Info.plist'
+    EXTRA_APP_CC_SWITCHES='-mdynamic-no-pic'
+    ac_config_files="$ac_config_files Tcl-Info.plist:../macosx/Tcl-Info.plist.in Tclsh-Info.plist:../macosx/Tclsh-Info.plist.in"
 
-# tclConfig.sh needs a version of the _LIB_SUFFIX that has been eval'ed
-# so that the backslashes quoting the DBX braces are dropped.
-
-# Trick to replace DBGX with TCL_DBGX
-DBGX='${TCL_DBGX}'
-eval "TCL_LIB_FILE=${TCL_LIB_FILE}"
-
-# Note: in the following variable, it is important to use the absolute
-# path name of the Tcl directory rather than "..":  this is because
-# AIX remembers this path and will attempt to use it at run-time to look
-# up the Tcl library.
+    TCL_YEAR="`date +%Y`"
+fi
 
 if test "${FRAMEWORK_BUILD}" = "1" ; then
+
+$as_echo "#define TCL_FRAMEWORK 1" >>confdefs.h
+
+    # Construct a fake local framework structure to make linking with
+    # '-framework Tcl' and running of tcltest work
+    ac_config_commands="$ac_config_commands Tcl.framework"
+
+    LD_LIBRARY_PATH_VAR="DYLD_FRAMEWORK_PATH"
+    if test "${libdir}" = '${exec_prefix}/lib'; then
+        # override libdir default
+        libdir="/Library/Frameworks"
+    fi
+    TCL_LIB_FILE="Tcl"
+    TCL_LIB_FLAG="-framework Tcl"
     TCL_BUILD_LIB_SPEC="-F`pwd` -framework Tcl"
     TCL_LIB_SPEC="-framework Tcl"
-    TCL_LIB_FILE="Tcl"
+    libdir="${libdir}/Tcl.framework/Versions/\${VERSION}"
+    TCL_LIBRARY="${libdir}/Resources/Scripts"
+    includedir="${libdir}/Headers"
+    PRIVATE_INCLUDE_DIR="${libdir}/PrivateHeaders"
+    HTML_DIR="${libdir}/Resources/Documentation/Reference/Tcl"
+    EXTRA_INSTALL="install-private-headers html-tcl"
+    EXTRA_BUILD_HTML='@ln -fs contents.htm "$(HTML_INSTALL_DIR)"/TclTOC.html'
+    EXTRA_INSTALL_BINARIES='@echo "Installing Info.plist to $(LIB_INSTALL_DIR)/Resources" && mkdir -p "$(LIB_INSTALL_DIR)/Resources" && $(INSTALL_DATA) Tcl-Info.plist "$(LIB_INSTALL_DIR)/Resources/Info.plist"'
+    EXTRA_INSTALL_BINARIES="${EXTRA_INSTALL_BINARIES}"' && echo "Installing license.terms to $(LIB_INSTALL_DIR)/Resources" && $(INSTALL_DATA) "$(TOP_DIR)/license.terms" "$(LIB_INSTALL_DIR)/Resources"'
+    EXTRA_INSTALL_BINARIES="$EXTRA_INSTALL_BINARIES"' && echo "Finalizing Tcl.framework" && rm -f "$(LIB_INSTALL_DIR)/../Current" && ln -s "$(VERSION)" "$(LIB_INSTALL_DIR)/../Current" && for f in "$(LIB_FILE)" tclConfig.sh Resources Headers PrivateHeaders; do rm -f "$(LIB_INSTALL_DIR)/../../$$f" && ln -s "Versions/Current/$$f" "$(LIB_INSTALL_DIR)/../.."; done && f="$(STUB_LIB_FILE)" && rm -f "$(LIB_INSTALL_DIR)/../../$$f" && ln -s "Versions/$(VERSION)/$$f" "$(LIB_INSTALL_DIR)/../.."'
+    # Do NOT use AC_DEFINE for the following, as the framework version
+    # define needs to go into the Makefile even when using autoheader,
+    # so that we can pick up a potential make override of VERSION. Also,
+    # do NOT put this into CFLAGS as it should not go into tclConfig.sh
+    EXTRA_CC_SWITCHES='-DTCL_FRAMEWORK_VERSION=\"$(VERSION)\"'
 elif test "${SHARED_BUILD}" = "0" || test "${TCL_NEEDS_EXP_FILE}" = "0"; then
+    # libdir must be a fully qualified path and not ${exec_prefix}/lib
+    eval libdir="${libdir}"
     if test "${TCL_LIB_VERSIONS_OK}" = "ok"; then
         TCL_LIB_FLAG="-ltcl${TCL_VERSION}\${TCL_DBGX}"
     else
@@ -11624,7 +12405,32 @@ fi
 
 
 
-ac_config_files="$ac_config_files Makefile dltest/Makefile tclConfig.sh"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ac_config_files="$ac_config_files Makefile:../unix/Makefile.in dltest/Makefile:../unix/dltest/Makefile.in tclConfig.sh:../unix/tclConfig.sh.in"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -11717,22 +12523,6 @@ test "x$prefix" = xNONE && prefix=$ac_default_prefix
 test "x$exec_prefix" = xNONE && exec_prefix='${prefix}'
 
 DEFS=-DHAVE_CONFIG_H
-
-ac_libobjs=
-ac_ltlibobjs=
-U=
-for ac_i in : $LIBOBJS; do test "x$ac_i" = x: && continue
-  # 1. Remove the extension, and $U if already installed.
-  ac_script='s/\$U\././;s/\.o$//;s/\.obj$//'
-  ac_i=`$as_echo "$ac_i" | sed "$ac_script"`
-  # 2. Prepend LIBOBJDIR.  When used with automake>=1.10 LIBOBJDIR
-  #    will be set to the directory where LIBOBJS objects are built.
-  as_fn_append ac_libobjs " \${LIBOBJDIR}$ac_i\$U.$ac_objext"
-  as_fn_append ac_ltlibobjs " \${LIBOBJDIR}$ac_i"'$U.lo'
-done
-LIBOBJS=$ac_libobjs
-
-LTLIBOBJS=$ac_ltlibobjs
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking that generated files are newer than configure" >&5
@@ -12351,6 +13141,7 @@ cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
 # INIT-COMMANDS
 #
 AMDEP_TRUE="$AMDEP_TRUE" ac_aux_dir="$ac_aux_dir"
+VERSION=${TCL_VERSION}
 
 _ACEOF
 
@@ -12360,11 +13151,15 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
-    "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
+    "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h:../unix/config.h.in" ;;
+    "automake_post_configure") CONFIG_COMMANDS="$CONFIG_COMMANDS automake_post_configure" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
-    "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "dltest/Makefile") CONFIG_FILES="$CONFIG_FILES dltest/Makefile" ;;
-    "tclConfig.sh") CONFIG_FILES="$CONFIG_FILES tclConfig.sh" ;;
+    "Tcl-Info.plist") CONFIG_FILES="$CONFIG_FILES Tcl-Info.plist:../macosx/Tcl-Info.plist.in" ;;
+    "Tclsh-Info.plist") CONFIG_FILES="$CONFIG_FILES Tclsh-Info.plist:../macosx/Tclsh-Info.plist.in" ;;
+    "Tcl.framework") CONFIG_COMMANDS="$CONFIG_COMMANDS Tcl.framework" ;;
+    "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile:../unix/Makefile.in" ;;
+    "dltest/Makefile") CONFIG_FILES="$CONFIG_FILES dltest/Makefile:../unix/dltest/Makefile.in" ;;
+    "tclConfig.sh") CONFIG_FILES="$CONFIG_FILES tclConfig.sh:../unix/tclConfig.sh.in" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -12960,6 +13755,15 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
 
 
   case $ac_file$ac_mode in
+    "automake_post_configure":C)
+if test "${srcdir}" != "."; then
+  if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
+    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+  elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
+    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+  fi
+fi
+ ;;
     "depfiles":C) test x"$AMDEP_TRUE" != x"" || {
   # Older Autoconf quotes --file arguments for eval, but not when files
   # are listed without --file.  Let's play safe and only enable the eval
@@ -13053,6 +13857,13 @@ $as_echo X"$file" |
   done
 }
  ;;
+    "Tcl.framework":C) n=Tcl &&
+        f=${n}.framework && v="Versions/${VERSION}" &&
+        rm -rf ${f} && mkdir -p ${f}/${v}/Resources &&
+        ln -s ${v}/${n} ${v}/Resources ${f} && ln -s ../../../${n} ${f}/${v} &&
+        ln -s ../../../../${n}-Info.plist ${f}/${v}/Resources/Info.plist &&
+        unset n f v
+     ;;
 
   esac
 done # for ac_tag
@@ -13235,4 +14046,5 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: unrecognized options: $ac_unrecognized_opts" >&5
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
+
 
