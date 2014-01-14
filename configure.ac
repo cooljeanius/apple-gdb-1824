@@ -27,6 +27,15 @@ if test -x `which sw_vers`; then
     else
       AC_MSG_WARN([you will have to find out what to do for this platform yourself.])
     fi
+  else
+    AC_MSG_WARN([you will have to find out what to do for this platform yourself.])
+  fi
+else
+  if test -e ./.profile_generic; then
+    AC_MSG_NOTICE([sourcing ./.profile_generic])
+    . ./.profile_generic
+  else
+    AC_MSG_WARN([you will have to find out what to do for this platform yourself.])
   fi
 fi
 
@@ -44,11 +53,11 @@ _AM_PROG_TAR([pax])
 # Checks for programs.
 AM_PROG_AR
 AC_PROG_AWK
-if test "x$CC" = "x"; then
-    test -z "$CC"
+if test "x${CC}" = "x"; then
+    test -z "${CC}"
     AC_PROG_CC
 else
-    test ! -z "$CC"
+    test ! -z "${CC}"
     AC_PROG_GCC_TRADITIONAL
 fi
 AC_PROG_CPP

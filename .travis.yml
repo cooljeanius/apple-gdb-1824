@@ -1,8 +1,18 @@
 language: C
 
+before_install:
+  - "sudo apt-get update"
+
 install:
   # Prerequisites
-  - "sudo apt-get install texinfo"
+  - "sudo apt-get install autogen gobjc gobjc++ gobjc-multilib gobjc++-multilib libobjc2 libopts25 libopts25-dev texinfo flex flex-doc flex-old flex-old-doc binutils binutils-dev binutils-doc binutils-multiarch pax binutils-gold libcurses-perl dejagnu expect expect-dev libexpect-perl"
 
-# run the tests
+# set up env
+before_script: test -e ./.profile_generic && source ./.profile_generic && env | uniq | sort | uniq
+
+# try to build
 script: cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd && make && make check
+
+compiler:
+  - clang
+  - gcc

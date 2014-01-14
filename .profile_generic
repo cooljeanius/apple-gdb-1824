@@ -1,0 +1,18 @@
+# Source me!
+
+echo "Hello from .profile_generic"
+
+export INSTALLED_PRODUCT_ASIDES=YES
+export NEXT_ROOT=""
+export RC_JASPER=YES
+export RC_NONARCH_CFLAGS="-pipe"
+if test -d /private; then
+  export RC_PRIVATE=/private
+fi
+export RC_XBS=YES
+export SEPARATE_STRIP=YES
+if test -x /usr/bin/arch; then
+  export HOST_ARCHITECTURE=`/usr/bin/arch`
+fi
+
+echo "We should be done setting environment variables now."

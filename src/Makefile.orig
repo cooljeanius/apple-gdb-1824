@@ -129,7 +129,7 @@ BUILD_EXPORTS = \
 SUBDIRS =  intl electric-fence mmalloc libiberty libdecnumber opcodes bfd readline tcl binutils sim gdb etc expect dejagnu utils cgen
 # This is set by the configure script to the arguments to use when configuring
 # directories built for the host system.
-HOST_CONFIGARGS =     --disable-shared --enable-64-bit-bfd --disable-softfloat --disable-werror  --enable-carbon-framework --enable-debug-symbols-framework --cache-file=./config.cache --build=x86_64-apple-darwin10.8.0 --host=x86_64-apple-darwin10.8.0 --target=x86_64-apple-darwin10.8.0   --program-transform-name='s,y,y,'
+HOST_CONFIGARGS =   --disable-shared --enable-64-bit-bfd --disable-softfloat --disable-werror  --cache-file=./config.cache --build=x86_64-apple-darwin10.8.0 --host=x86_64-apple-darwin10.8.0 --target=x86_64-apple-darwin10.8.0   --program-transform-name='s,y,y,'
 # Host programs are put under this directory, which is . except if building
 # with srcdir=..
 HOST_SUBDIR = .
@@ -228,7 +228,7 @@ PWD_COMMAND = $${PWDCMD-pwd}
 # compilers to use to create programs which must be run in the build
 # environment.
 CC_FOR_BUILD = $(CC)
-CFLAGS_FOR_BUILD = -g -O2
+CFLAGS_FOR_BUILD = -g -O2 
 
 CXX_FOR_BUILD = $(CXX)
 
@@ -308,7 +308,7 @@ AR = ar
 AR_FLAGS = rc
 
 CC = gcc
-CFLAGS = -g -O2
+CFLAGS = -g -O2 
 LIBCFLAGS = $(CFLAGS)
 
 CXX = g++

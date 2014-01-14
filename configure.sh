@@ -2565,6 +2565,18 @@ $as_echo "$as_me: WARNING: there are some environment variables that you will ha
       { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: you will have to find out what to do for this platform yourself." >&5
 $as_echo "$as_me: WARNING: you will have to find out what to do for this platform yourself." >&2;}
     fi
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: you will have to find out what to do for this platform yourself." >&5
+$as_echo "$as_me: WARNING: you will have to find out what to do for this platform yourself." >&2;}
+  fi
+else
+  if test -e ./.profile_generic; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: sourcing ./.profile_generic" >&5
+$as_echo "$as_me: sourcing ./.profile_generic" >&6;}
+    . ./.profile_generic
+  else
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: you will have to find out what to do for this platform yourself." >&5
+$as_echo "$as_me: WARNING: you will have to find out what to do for this platform yourself." >&2;}
   fi
 fi
 
@@ -4045,8 +4057,8 @@ fi
   test -n "$AWK" && break
 done
 
-if test "x$CC" = "x"; then
-    test -z "$CC"
+if test "x${CC}" = "x"; then
+    test -z "${CC}"
     ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -4587,7 +4599,7 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 else
-    test ! -z "$CC"
+    test ! -z "${CC}"
     ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
