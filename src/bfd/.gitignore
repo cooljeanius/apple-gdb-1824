@@ -42,5 +42,6 @@ bfdver.h
 libtool
 libtool.old
 libtoolT
+libtool-soversion
 *.swp
 config/*

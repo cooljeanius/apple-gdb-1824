@@ -12,7 +12,7 @@ AC_DEFUN([ACX_ELF_TARGET_IFELSE],[
 AC_REQUIRE([AC_CANONICAL_TARGET])
 
 target_elf=no
-case $target in
+case ${target} in
   *-darwin* | *-aix* | *-cygwin* | *-mingw* | *-aout* | *-*coff* | \
   *-msdosdjgpp* | *-vms* | *-wince* | *-*-pe* | \
   alpha*-dec-osf* | *-interix* | hppa[[12]]*-*-hpux*)
@@ -23,5 +23,5 @@ case $target in
     ;;
 esac
 
-AS_IF([test $target_elf = yes],[$1],[$2])
+AS_IF([test ${target_elf} = yes],[$1],[$2])
 ])

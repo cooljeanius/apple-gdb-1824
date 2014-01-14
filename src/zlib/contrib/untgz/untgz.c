@@ -36,6 +36,12 @@
 # include <utime.h>
 #endif /* WIN32 */
 
+#if (!defined(chmod) || !defined(mkdir))
+# ifdef __APPLE__
+#  include <sys/types.h>
+#  include <sys/stat.h>
+# endif /* __APPLE__ */
+#endif /* !chmod || !mkdir */
 
 /* values used in typeflag field */
 

@@ -5,7 +5,6 @@ sinclude([../aclocal.m4])
 AC_PREREQ([2.69])
 AC_INIT([expect-testsuite],[5.26],[])
 AC_CONFIG_SRCDIR([exp_test.c])
-AC_CANONICAL_TARGET
 
 AC_PROG_SED
 
@@ -17,6 +16,8 @@ if test -e ./../config.cache; then
 	sed -i "s|ac_cv_env_host_alias|bad_host_alias|g" ./../config.cache
 	sed -i "s|ac_cv_env_target_alias|bad_target_alias|g" ./../config.cache
 fi
+
+AC_CANONICAL_TARGET
 
 CY_AC_PATH_TCLCONFIG
 CY_AC_LOAD_TCLCONFIG

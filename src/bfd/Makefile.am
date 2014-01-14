@@ -19,6 +19,8 @@ MKDEP = gcc -MM
 
 SUBDIRS = doc po
 
+bfddocdir = doc
+
 docdir = $(srcdir)/doc
 bfdlibdir = @bfdlibdir@
 bfdincludedir = @bfdincludedir@
@@ -31,6 +33,7 @@ libbfd_LTLIBRARIES = libbfd.la
 WARN_CFLAGS = @WARN_CFLAGS@
 NO_WERROR = @NO_WERROR@
 AM_CFLAGS = $(WARN_CFLAGS)
+AM_CPPFLAGS = -DBINDIR='"$(bindir)"'
 AM_WARNFLAGS = $(WARN_CFLAGS)
 
 # bfd.h goes here, for now
@@ -66,17 +69,20 @@ BFD64_LIBS_CFILES = archive64.c
 # This list is alphabetized to make it easier to keep in sync
 # with the decls and initializer in archures.c.
 ALL_MACHINES = \
+	cpu-aarch64.lo \
 	cpu-a29k.lo \
 	cpu-alpha.lo \
 	cpu-arc.lo \
 	cpu-arm.lo \
 	cpu-avr.lo \
+	cpu-cr16.lo \
 	cpu-cr16c.lo \
 	cpu-cris.lo \
 	cpu-crx.lo \
 	cpu-d10v.lo \
 	cpu-d30v.lo \
 	cpu-dlx.lo \
+	cpu-epiphany.lo \
 	cpu-fr30.lo \
 	cpu-frv.lo \
 	cpu-h8300.lo \
@@ -89,6 +95,8 @@ ALL_MACHINES = \
 	cpu-i960.lo \
 	cpu-ip2k.lo \
 	cpu-iq2000.lo \
+	cpu-k1om.lo \
+	cpu-l1om.lo \
 	cpu-m32c.lo \
 	cpu-m32r.lo \
 	cpu-m68hc11.lo \
@@ -99,44 +107,62 @@ ALL_MACHINES = \
 	cpu-m10300.lo \
 	cpu-maxq.lo \
 	cpu-mcore.lo \
+	cpu-mep.lo \
+	cpu-metag.lo \
+	cpu-microblaze.lo \
 	cpu-mips.lo \
 	cpu-mmix.lo \
+	cpu-moxie.lo \
 	cpu-ms1.lo \
 	cpu-msp430.lo \
-	cpu-or32.lo \
+	cpu-mt.lo \
+	cpu-nios2.lo \
 	cpu-ns32k.lo \
 	cpu-openrisc.lo \
+	cpu-or32.lo \
 	cpu-pdp11.lo \
 	cpu-pj.lo \
+	cpu-plugin.lo \
 	cpu-powerpc.lo \
+	cpu-rl78.lo \
 	cpu-rs6000.lo \
+	cpu-rx.lo \
 	cpu-s390.lo \
+	cpu-score.lo \
 	cpu-sh.lo \
 	cpu-sparc.lo \
+	cpu-spu.lo \
 	cpu-tic30.lo \
 	cpu-tic4x.lo \
 	cpu-tic54x.lo \
 	cpu-tic80.lo \
+	cpu-v850_rh850.lo \
 	cpu-v850.lo \
 	cpu-vax.lo \
 	cpu-we32k.lo \
 	cpu-w65.lo \
+	cpu-xc16x.lo \
+	cpu-xgate.lo \
 	cpu-xstormy16.lo \
 	cpu-xtensa.lo \
+	cpu-z80.lo \
 	cpu-z8k.lo
 
 ALL_MACHINES_CFILES = \
+	cpu-aarch64.c \
 	cpu-a29k.c \
 	cpu-alpha.c \
 	cpu-arc.c \
 	cpu-arm.c \
 	cpu-avr.c \
 	cpu-cris.c \
+	cpu-cr16.c \
 	cpu-cr16c.c \
 	cpu-crx.c \
 	cpu-d10v.c \
 	cpu-d30v.c \
 	cpu-dlx.c \
+	cpu-epiphany.c \
 	cpu-fr30.c \
 	cpu-frv.c \
 	cpu-h8300.c \
@@ -149,6 +175,8 @@ ALL_MACHINES_CFILES = \
 	cpu-i960.c \
 	cpu-ip2k.c \
 	cpu-iq2000.c \
+	cpu-k1om.c \
+	cpu-l1om.c \
 	cpu-m32c.c \
 	cpu-m32r.c \
 	cpu-m68hc11.c \
@@ -161,28 +189,39 @@ ALL_MACHINES_CFILES = \
 	cpu-mcore.c \
 	cpu-mips.c \
 	cpu-mmix.c \
+	cpu-moxie.c \
 	cpu-ms1.c \
 	cpu-msp430.c \
-	cpu-or32.c \
+	cpu-mt.c \
+	cpu-nios2.c \
 	cpu-ns32k.c \
 	cpu-openrisc.c \
+	cpu-or32.c \
 	cpu-pdp11.c \
 	cpu-pj.c \
+	cpu-plugin.c \
 	cpu-powerpc.c \
+	cpu-rl78.c \
 	cpu-rs6000.c \
+	cpu-rx.c \
 	cpu-s390.c \
+	cpu-score.c \
 	cpu-sh.c \
 	cpu-sparc.c \
 	cpu-tic30.c \
 	cpu-tic4x.c \
 	cpu-tic54x.c \
 	cpu-tic80.c \
+	cpu-v850_rh850.c \
 	cpu-v850.c \
 	cpu-vax.c \
 	cpu-we32k.c \
 	cpu-w65.c \
+	cpu-xc16x.c \
+	cpu-xgate.c \
 	cpu-xstormy16.c \
 	cpu-xtensa.c \
+	cpu-z80.c \
 	cpu-z8k.c
 
 # The .o files needed by all of the 32 bit vectors that are configured into
@@ -616,7 +655,7 @@ BFD_LIBS = @bfd_libs@
 BFD_MACHINES = @bfd_machines@
 TDEFAULTS = @tdefaults@
 
-AM_CPPFLAGS = @HDEFINES@ @COREFLAG@ @TDEFINES@ $(CSEARCH) $(CSWITCHES) -I$(srcdir)/../intl -I../intl
+AM_CPPFLAGS += @HDEFINES@ @COREFLAG@ @TDEFINES@ $(CSEARCH) $(CSWITCHES) -I$(srcdir)/../intl -I../intl
 
 # C source files that correspond to .o's.
 SOURCE_CFILES = \
@@ -635,7 +674,7 @@ CFILES = $(SOURCE_CFILES) $(BUILD_CFILES)
 ## This is a list of all .h files which are in the source tree.
 SOURCE_HFILES = \
 	aout-target.h aoutf1.h aoutx.h coffcode.h coffswap.h ecoffswap.h \
-	elf-bfd.h elf-hppa.h elf32-hppa.h \
+	elf-bfd.h elf-hppa.h elf-linux-psinfo.h elf32-hppa.h \
 	elf64-hppa.h elfcode.h elfcore.h \
 	freebsd.h genlink.h go32stub.h \
 	libaout.h libbfd.h libcoff.h libecoff.h libhppa.h libieee.h \
@@ -646,7 +685,10 @@ SOURCE_HFILES = \
 
 ## ... and all .h files which are in the build tree.
 BUILD_HFILES = \
-	bfdver.h elf32-target.h elf64-target.h targmatch.h
+	bfdver.h elf32-target.h elf64-target.h targmatch.h bfd_stdint.h
+
+# Ensure they are built early:
+BUILT_SOURCES = $(BUILD_HFILES)
 
 HFILES = $(SOURCE_HFILES) $(BUILD_HFILES)
 
@@ -688,7 +730,10 @@ stamp-ofiles: Makefile
 
 ofiles: stamp-ofiles ; @true
 
+# list all sources in EXTRA_libbfd_la_SOURCES so the
+# dependency tracking fragments are picked up in the Makefile.
 libbfd_la_SOURCES = $(BFD32_LIBS_CFILES) $(BFD64_LIBS_CFILES)
+EXTRA_libbfd_la_SOURCES = $(CFILES)
 libbfd_la_DEPENDENCIES = $(OFILES) stamp-ofiles ofiles $(srcdir)/ofiles
 libbfd_la_LIBADD = `cat ofiles` @WIN32LIBADD@
 libbfd_la_LDFLAGS = -release $(VERSION) @WIN32LDFLAGS@
@@ -974,7 +1019,10 @@ MOSTLYCLEANFILES = ofiles stamp-ofiles
 CLEANFILES = bfd.h dep.sed stmp-bfd-h DEP DEPA DEP1 DEP2 libbfd.a stamp-lib \
 	stmp-bin2-h stmp-lbfd-h stmp-lcoff-h
 
-DISTCLEANFILES = $(BUILD_CFILES) $(BUILD_HFILES)
+DISTCLEANFILES = $(BUILD_CFILES) $(BUILD_HFILES) libtool-soversion
+
+apple-clean:
+	(cd $(docdir); $(MAKE) apple-clean $(FLAGS_TO_PASS))
 
 bfdver.h: $(srcdir)/version.h $(srcdir)/Makefile.in
 	@echo "creating $@"

@@ -4,6 +4,7 @@ gdb.*/Makefile
 gdb.*/*/Makefile
 *~
 core
+.o
 *.o
 a.out
 xgdb
@@ -21,3 +22,5 @@ detail
 args
 vforked-prog.c
 conf*/*.awk
+cell*.c
+cell*-spu.c

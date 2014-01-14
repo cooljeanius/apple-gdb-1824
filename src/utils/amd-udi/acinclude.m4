@@ -26,12 +26,12 @@ AC_CACHE_VAL([bash_cv_signal_vintage],
     ])
   ])
 ])
-AC_MSG_RESULT([$bash_cv_signal_vintage])
-if test "$bash_cv_signal_vintage" = posix; then
+AC_MSG_RESULT([${bash_cv_signal_vintage}])
+if test "${bash_cv_signal_vintage}" = posix; then
 AC_DEFINE([HAVE_POSIX_SIGNALS],[1],[Define to 1 if we have POSIX signals])
-elif test "$bash_cv_signal_vintage" = "4.2bsd"; then
+elif test "${bash_cv_signal_vintage}" = "4.2bsd"; then
 AC_DEFINE([HAVE_BSD_SIGNALS],[1],[Define to 1 if we have BSD signals])
-elif test "$bash_cv_signal_vintage" = svr3; then
+elif test "${bash_cv_signal_vintage}" = svr3; then
 AC_DEFINE([HAVE_USG_SIGHOLD],[1],[Define to 1 if we have some obscure third type of signal])
 fi
 ])
@@ -279,7 +279,7 @@ int main() {
     }
     return 1;
 }]])],[tcl_cv_api_serial=termios],[tcl_cv_api_serial=no],[tcl_cv_api_serial=no])
-    if test $tcl_cv_api_serial = no ; then
+    if test ${tcl_cv_api_serial} = no ; then
 	AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <termio.h>
 
@@ -292,7 +292,7 @@ int main() {
     return 1;
 }]])],[tcl_cv_api_serial=termio],[tcl_cv_api_serial=no],[tcl_cv_api_serial=no])
     fi
-    if test $tcl_cv_api_serial = no ; then
+    if test ${tcl_cv_api_serial} = no ; then
 	AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <sgtty.h>
 
@@ -306,7 +306,7 @@ int main() {
     return 1;
 }]])],[tcl_cv_api_serial=sgtty],[tcl_cv_api_serial=no],[tcl_cv_api_serial=no])
     fi
-    if test $tcl_cv_api_serial = no ; then
+    if test ${tcl_cv_api_serial} = no ; then
 	AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <termios.h>
 #include <errno.h>
@@ -322,7 +322,7 @@ int main() {
     return 1;
 }]])],[tcl_cv_api_serial=termios],[tcl_cv_api_serial=no],[tcl_cv_api_serial=no])
     fi
-    if test $tcl_cv_api_serial = no; then
+    if test ${tcl_cv_api_serial} = no; then
 	AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <termio.h>
 #include <errno.h>
@@ -337,7 +337,7 @@ int main() {
     return 1;
     }]])],[tcl_cv_api_serial=termio],[tcl_cv_api_serial=no],[tcl_cv_api_serial=no])
     fi
-    if test $tcl_cv_api_serial = no; then
+    if test ${tcl_cv_api_serial} = no; then
 	AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <sgtty.h>
 #include <errno.h>
@@ -353,10 +353,75 @@ int main() {
     return 1;
 }]])],[tcl_cv_api_serial=sgtty],[tcl_cv_api_serial=none],[tcl_cv_api_serial=none])
     fi])
-    case $tcl_cv_api_serial in
+    case ${tcl_cv_api_serial} in
 	termios) AC_DEFINE([USE_TERMIOS],[1],[Define to 1 to use termios]);;
 	termio)  AC_DEFINE([USE_TERMIO],[1],[Define to 1 to use termio]);;
 	sgtty)   AC_DEFINE([USE_SGTTY],[1],[Define to 1 to use sgtty]);;
     esac
-    AC_MSG_RESULT([$tcl_cv_api_serial])
+    AC_MSG_RESULT([${tcl_cv_api_serial}])
 ])
+
+dnl#
+# AC_EXPECT_TCGETS_OR_TCGETA
+# stolen from expect's configure script
+
+AC_DEFUN([AC_EXPECT_TCGETS_OR_TCGETA],[
+AC_REQUIRE([AC_HEADER_STDC])
+AC_MSG_CHECKING([if TCGETS or TCGETA is in termios.h])
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
+/* including termios.h on Solaris 5.6 fails unless inttypes.h included */
+#ifdef HAVE_INTTYPES_H
+# include <inttypes.h>
+#else
+# warning this conftest expects <inttypes.h> to be included.
+#endif /* HAVE_INTTYPES_H */
+#include <termios.h>
+main() {
+#if defined(TCGETS) || defined(TCGETA)
+	return 0;
+#else
+	return 1;
+#endif /* TCGETS || TCGETA */
+}]])],[AC_DEFINE([HAVE_TCGETS_OR_TCGETA_IN_TERMIOS_H],[1],[Define to 1 if TCGETS or TCGETA is in termios.h])
+	AC_MSG_RESULT([yes])
+],[AC_MSG_RESULT([no])
+],[case "${host}" in
+	 *-*-cygwin*) AC_DEFINE([HAVE_TCGETS_OR_TCGETA_IN_TERMIOS_H],[1],[Define to 1 if TCGETS or TCGETA is in termios.h])
+			AC_MSG_RESULT([yes]) ;;
+	 *) AC_MSG_WARN([no known response for cross-compiling]) ;;
+	 esac
+])
+])
+
+# AC_EXPECT_TIOCGWINSZ
+# also stolen from expect's configure script
+
+AC_DEFUN([AC_EXPECT_TIOCGWINSZ],[
+AC_REQUIRE([AC_HEADER_STDC])
+AC_REQUIRE([AC_HEADER_TIOCGWINSZ])
+AC_MSG_CHECKING([if TIOCGWINSZ is in termios.h])
+AC_RUN_IFELSE([AC_LANG_SOURCE([[
+/* including termios.h on Solaris 5.6 fails unless inttypes.h included */
+#ifdef HAVE_INTTYPES_H
+# include <inttypes.h>
+#else
+# warning this conftest expects <inttypes.h> to be included.
+#endif /* HAVE_INTTYPES_H */
+#include <termios.h>
+main() {
+#ifdef TIOCGWINSZ
+	return 0;
+#else
+	return 1;
+#endif /* TIOCGWINSZ */
+}]])],[AC_DEFINE([HAVE_TIOCGWINSZ_IN_TERMIOS_H],[1],[Define to 1 if TIOCGWINSZ is in termios.h])
+	AC_MSG_RESULT([yes])
+],[AC_MSG_RESULT([no])
+],[case "${host}" in
+	 *-*-cygwin*) AC_DEFINE([HAVE_TIOCGWINSZ_IN_TERMIOS_H],[1],[Define to 1 if TIOCGWINSZ is in termios.h])
+			AC_MSG_RESULT([yes]) ;;
+	 *) AC_MSG_WARN([no known response for cross-compiling]) ;;
+	 esac
+])
+])
+dnl# EOF

@@ -54,9 +54,28 @@ AC_ARG_ENABLE([commonbfdlib],
   *)   AC_MSG_ERROR([bad value ${enableval} for BFD commonbfdlib option]) ;;
 esac])dnl
 
+AC_ARG_ENABLE([deterministic-archives],
+[AS_HELP_STRING([--enable-deterministic-archives],
+		[ar and ranlib default to -D behavior])], [
+if test "${enableval}" = no; then
+  default_ar_deterministic=0
+else
+  default_ar_deterministic=1
+fi],[default_ar_deterministic=0])
+
+AC_DEFINE_UNQUOTED([DEFAULT_AR_DETERMINISTIC],[${default_ar_deterministic}],
+		   [Should ar and ranlib use -D behavior by default?])
+
 AM_BINUTILS_WARNINGS
 		   
 AC_CONFIG_HEADERS([config.h])
+AH_VERBATIM([00_CONFIG_H_CHECK],
+[/* Check that config.h is #included before system headers
+   (this works only for glibc, but that should be enough).  */
+#if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
+#  error config.h must be #included before system headers
+#endif
+#define __CONFIG_H__ 1])
 AH_TOP([
 #ifndef HAVE_CONFIG_H
 # define HAVE_CONFIG_H
@@ -360,10 +379,16 @@ NLMCONV_DEFS=
 BUILD_SRCONV=
 BUILD_DLLTOOL=
 DLLTOOL_DEFS=
+DLLTOOL_DEFAULT=
 BUILD_WINDRES=
+BUILD_WINDMC=
 BUILD_DLLWRAP=
 BUILD_MISC=
+BUILD_INSTALL_MISC=
 OBJDUMP_DEFS=
+OBJDUMP_PRIVATE_VECTORS=
+OBJDUMP_PRIVATE_OFILES=
+od_vectors=
 
 for targ in ${target} ${canon_targets}
 do
@@ -372,8 +397,18 @@ do
 	BUILD_NLMCONV='$(NLMCONV_PROG)$(EXEEXT)'
 	BUILD_SRCONV='$(SRCONV_PROG)'
 	NLMCONV_DEFS="-DNLMCONV_I386 -DNLMCONV_ALPHA -DNLMCONV_POWERPC -DNLMCONV_SPARC"
+	BUILD_MISC="${BUILD_MISC} "'bin2c$(EXEEXT_FOR_BUILD)'
+	BUILD_WINDRES='$(WINDRES_PROG)$(EXEEXT)'
+	BUILD_WINDMC='$(WINDMC_PROG)$(EXEEXT)'
+	BUILD_DLLTOOL='$(DLLTOOL_PROG)$(EXEEXT)'
+	if test -z "${DLLTOOL_DEFAULT}"; then
+	  DLLTOOL_DEFAULT="-DDLLTOOL_DEFAULT_I386"
+	fi
+	DLLTOOL_DEFS="${DLLTOOL_DEFS} -DDLLTOOL_I386"
+	BUILD_DLLWRAP='$(DLLWRAP_PROG)$(EXEEXT)'
+	od_vectors="${od_vectors} objdump_private_desc_xcoff"
     else
-	case $targ in
+	case ${targ} in
 changequote(,)dnl
 	i[3-7]86*-*-netware*) 
 changequote([,])dnl
@@ -393,10 +428,12 @@ changequote([,])dnl
 	  NLMCONV_DEFS="$NLMCONV_DEFS -DNLMCONV_SPARC"
 	  ;;
 	esac
-	case $targ in
+
+	case ${targ} in
 	*-*-hms*) BUILD_SRCONV='$(SRCONV_PROG)' ;;
 	esac
-	case $targ in
+
+	case ${targ} in
 	arm-epoc-pe*)
   	  BUILD_DLLTOOL='$(DLLTOOL_PROG)$(EXEEXT)'
 	  DLLTOOL_DEFS="$DLLTOOL_DEFS -DDLLTOOL_ARM_EPOC -DDLLTOOL_ARM"
@@ -461,12 +498,62 @@ changequote([,])dnl
 	  DLLTOOL_DEFS="$DLLTOOL_DEFS -DDLLTOOL_MCORE_ELF"
 	  ;;
 	esac
+
+	# Add objdump private vectors.
+	case ${targ} in
+	powerpc-*-aix*)
+	  od_vectors="${od_vectors} objdump_private_desc_xcoff"
+	  ;;
+        *-*-darwin*)
+	  od_vectors="${od_vectors} objdump_private_desc_mach_o"
+	  ;;
+	esac
     fi
 done
+
+# Uniq objdump private vector, build objdump target ofiles.
+od_files=
+f=""
+for i in ${od_vectors} ; do
+    case " ${f} " in
+    *" ${i} "*) ;;
+    *)
+	f="${f} ${i}"
+	OBJDUMP_PRIVATE_VECTORS="${OBJDUMP_PRIVATE_VECTORS} &${i},"
+	case ${i} in
+	objdump_private_desc_xcoff)
+	    od_files="${od_files} od-xcoff" ;;
+	objdump_private_desc_mach_o)
+	    od_files="${od_files} od-macho" ;;
+	*) AC_MSG_ERROR([*** unknown private vector ${i}]) ;;
+	esac
+	;;
+    esac
+done
+
+# Uniq objdump target ofiles
+f=""
+for i in ${od_files} ; do
+    case " ${f} " in
+    *" ${i} "*) ;;
+    *)
+	f="${f} ${i}"
+	OBJDUMP_PRIVATE_OFILES="${OBJDUMP_PRIVATE_OFILES} ${i}.${objext}"
+	;;
+    esac
+done
+
+DLLTOOL_DEFS="${DLLTOOL_DEFS} ${DLLTOOL_DEFAULT}"
 
 if test "${with_windres+set}" = set; then
 	  BUILD_WINDRES='$(WINDRES_PROG)$(EXEEXT)'
 fi
+
+if test "${with_windmc+set}" = set; then
+	  BUILD_WINDMC='$(WINDMC_PROG)$(EXEEXT)'
+fi
+
+OBJDUMP_DEFS="${OBJDUMP_DEFS} -DOBJDUMP_PRIVATE_VECTORS=\"${OBJDUMP_PRIVATE_VECTORS}\""
 
 AC_SUBST([NLMCONV_DEFS])
 AC_SUBST([BUILD_NLMCONV])
@@ -474,9 +561,12 @@ AC_SUBST([BUILD_SRCONV])
 AC_SUBST([BUILD_DLLTOOL])
 AC_SUBST([DLLTOOL_DEFS])
 AC_SUBST([BUILD_WINDRES])
+AC_SUBST([BUILD_WINDMC])
 AC_SUBST([BUILD_DLLWRAP])
 AC_SUBST([BUILD_MISC])
+AC_SUBST([BUILD_INSTALL_MISC])
 AC_SUBST([OBJDUMP_DEFS])
+AC_SUBST([OBJDUMP_PRIVATE_OFILES])
 
 AC_DEFINE_UNQUOTED([TARGET],["${target}"],[Configured target name.])
 
@@ -516,6 +606,12 @@ AC_SUBST([EMULATION_VECTOR])
 AC_SUBST([INTLLIBS])
 AC_SUBST([INTLDEPS])
 AC_SUBST([SYSTEM_FRAMEWORK_LIBS])
+
+# Required for html and install-html
+AC_SUBST([datarootdir])
+AC_SUBST([docdir])
+AC_SUBST([htmldir])
+AC_SUBST([pdfdir])
 
 AC_CONFIG_FILES([Makefile \
                  doc/Makefile \

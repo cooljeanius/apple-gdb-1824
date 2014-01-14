@@ -1,0 +1,8 @@
+language: C
+
+install:
+  # Prerequisites
+  - "sudo apt-get install texinfo"
+
+# run the tests
+script: cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd && make && make check

@@ -45,6 +45,7 @@ POTFILES
 *-POTFILES
 blockit
 build/*
+conf*/*.awk
 confdefs.h
 config.h
 config.intl

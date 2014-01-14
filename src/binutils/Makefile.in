@@ -79,14 +79,15 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-bin_PROGRAMS = $(am__EXEEXT_5) $(am__EXEEXT_6) $(am__EXEEXT_7) \
-	$(am__EXEEXT_8) $(am__EXEEXT_9) $(am__EXEEXT_10) \
+bin_PROGRAMS = $(am__EXEEXT_6) $(am__EXEEXT_7) $(am__EXEEXT_8) \
+	$(am__EXEEXT_9) $(am__EXEEXT_10) $(am__EXEEXT_11) \
 	@BUILD_NLMCONV@ @BUILD_SRCONV@ @BUILD_DLLTOOL@ @BUILD_WINDRES@ \
-	$(am__EXEEXT_11) $(am__EXEEXT_12) @BUILD_DLLWRAP@ @BUILD_MISC@
-noinst_PROGRAMS = $(am__EXEEXT_13) $(am__EXEEXT_14) $(am__EXEEXT_15)
+	$(am__EXEEXT_12) $(am__EXEEXT_13) $(am__EXEEXT_14) \
+	@BUILD_DLLWRAP@ @BUILD_MISC@ $(am__empty)
+noinst_PROGRAMS = $(am__EXEEXT_18) $(am__EXEEXT_21)
 EXTRA_PROGRAMS = $(am__EXEEXT_1) srconv$(EXEEXT) sysdump$(EXEEXT) \
 	coffdump$(EXEEXT) $(am__EXEEXT_2) $(am__EXEEXT_3) \
-	$(am__EXEEXT_4)
+	$(am__EXEEXT_4) $(am__EXEEXT_5)
 subdir = .
 DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog THANKS \
 	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -94,16 +95,17 @@ DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog THANKS \
 	$(srcdir)/config.h.in $(top_srcdir)/../mkinstalldirs \
 	$(top_srcdir)/po/Make-in arparse.h arparse.c arlex.c \
 	defparse.h defparse.c deflex.c nlmheader.h nlmheader.c \
-	rcparse.h rcparse.c rclex.c $(top_srcdir)/../depcomp \
-	$(top_srcdir)/../ylwrap COPYING ../COPYING ../COPYING.LIB \
-	../ChangeLog ../INSTALL ../README ../ar-lib ../compile \
-	../config.guess ../config.rpath ../config.sub ../depcomp \
-	../install-sh ../missing ../mkinstalldirs ../texinfo.tex \
-	ylwrap ../ylwrap ../ltmain.sh ../ltconfig ../ltcf-c.sh \
-	../ltcf-cxx.sh ../ltcf-gcj.sh $(top_srcdir)/../compile \
-	$(top_srcdir)/../config.guess $(top_srcdir)/../config.rpath \
-	$(top_srcdir)/../config.sub $(top_srcdir)/../install-sh \
-	$(top_srcdir)/../ltmain.sh $(top_srcdir)/../missing
+	mcparse.h mcparse.c rcparse.h rcparse.c rclex.c \
+	$(top_srcdir)/../depcomp $(top_srcdir)/../ylwrap COPYING \
+	../COPYING ../COPYING.LIB ../ChangeLog ../INSTALL ../README \
+	../ar-lib ../compile ../config.guess ../config.rpath \
+	../config.sub ../depcomp ../install-sh ../missing \
+	../mkinstalldirs ../texinfo.tex ylwrap ../ylwrap ../ltmain.sh \
+	../ltconfig ../ltcf-c.sh ../ltcf-cxx.sh ../ltcf-gcj.sh \
+	$(top_srcdir)/../compile $(top_srcdir)/../config.guess \
+	$(top_srcdir)/../config.rpath $(top_srcdir)/../config.sub \
+	$(top_srcdir)/../install-sh $(top_srcdir)/../ltmain.sh \
+	$(top_srcdir)/../missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/iconv.m4 \
 	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/lib-ld.m4 \
@@ -126,19 +128,25 @@ CONFIG_CLEAN_VPATH_FILES =
 am__EXEEXT_1 = nlmconv$(EXEEXT)
 am__EXEEXT_2 = dlltool$(EXEEXT)
 am__EXEEXT_3 = windres$(EXEEXT)
-am__EXEEXT_4 = dllwrap$(EXEEXT)
-am__EXEEXT_5 = size$(EXEEXT)
-am__EXEEXT_6 = objdump$(EXEEXT)
-am__EXEEXT_7 = ar$(EXEEXT)
-am__EXEEXT_8 = strings$(EXEEXT)
-am__EXEEXT_9 = ranlib$(EXEEXT)
-am__EXEEXT_10 = objcopy$(EXEEXT)
-am__EXEEXT_11 = addr2line$(EXEEXT)
-am__EXEEXT_12 = readelf$(EXEEXT)
+am__EXEEXT_4 = windmc$(EXEEXT)
+am__EXEEXT_5 = dllwrap$(EXEEXT)
+am__EXEEXT_6 = size$(EXEEXT)
+am__EXEEXT_7 = objdump$(EXEEXT)
+am__EXEEXT_8 = ar$(EXEEXT)
+am__EXEEXT_9 = strings$(EXEEXT)
+am__EXEEXT_10 = ranlib$(EXEEXT)
+am__EXEEXT_11 = objcopy$(EXEEXT)
+am__EXEEXT_12 = addr2line$(EXEEXT)
+am__EXEEXT_13 = readelf$(EXEEXT)
+am__EXEEXT_14 = elfedit$(EXEEXT)
 am__installdirs = "$(DESTDIR)$(bindir)"
-am__EXEEXT_13 = nm-new$(EXEEXT)
-am__EXEEXT_14 = strip-new$(EXEEXT)
-am__EXEEXT_15 = cxxfilt$(EXEEXT)
+am__EXEEXT_15 = nm-new$(EXEEXT)
+am__EXEEXT_16 = strip-new$(EXEEXT)
+am__EXEEXT_17 = cxxfilt$(EXEEXT)
+am__EXEEXT_18 = $(am__EXEEXT_15) $(am__EXEEXT_16) $(am__EXEEXT_17)
+am__EXEEXT_19 = bfdtest1$(EXEEXT)
+am__EXEEXT_20 = bfdtest2$(EXEEXT)
+am__EXEEXT_21 = $(am__EXEEXT_19) $(am__EXEEXT_20)
 PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
 am__objects_1 = bucomm.$(OBJEXT) version.$(OBJEXT) filemode.$(OBJEXT)
 am_addr2line_OBJECTS = addr2line.$(OBJEXT) budemang.$(OBJEXT) \
@@ -153,6 +161,12 @@ am_ar_OBJECTS = arparse.$(OBJEXT) arlex.$(OBJEXT) ar.$(OBJEXT) \
 	not-ranlib.$(OBJEXT) arsup.$(OBJEXT) rename.$(OBJEXT) \
 	binemul.$(OBJEXT) emul_@EMULATION@.$(OBJEXT) $(am__objects_1)
 ar_OBJECTS = $(am_ar_OBJECTS)
+bfdtest1_SOURCES = bfdtest1.c
+bfdtest1_OBJECTS = bfdtest1.$(OBJEXT)
+bfdtest1_LDADD = $(LDADD)
+bfdtest2_SOURCES = bfdtest2.c
+bfdtest2_OBJECTS = bfdtest2.$(OBJEXT)
+bfdtest2_LDADD = $(LDADD)
 am_coffdump_OBJECTS = coffdump.$(OBJEXT) coffgrok.$(OBJEXT) \
 	$(am__objects_1)
 coffdump_OBJECTS = $(am_coffdump_OBJECTS)
@@ -163,19 +177,23 @@ am_dlltool_OBJECTS = dlltool.$(OBJEXT) defparse.$(OBJEXT) \
 dlltool_OBJECTS = $(am_dlltool_OBJECTS)
 am_dllwrap_OBJECTS = dllwrap.$(OBJEXT) version.$(OBJEXT)
 dllwrap_OBJECTS = $(am_dllwrap_OBJECTS)
+am__objects_2 = elfcomm.$(OBJEXT)
+am_elfedit_OBJECTS = elfedit.$(OBJEXT) version.$(OBJEXT) \
+	$(am__objects_2)
+elfedit_OBJECTS = $(am_elfedit_OBJECTS)
 am_nlmconv_OBJECTS = nlmconv.$(OBJEXT) nlmheader.$(OBJEXT) \
 	$(am__objects_1)
 nlmconv_OBJECTS = $(am_nlmconv_OBJECTS)
 am_nm_new_OBJECTS = nm.$(OBJEXT) budemang.$(OBJEXT) $(am__objects_1)
 nm_new_OBJECTS = $(am_nm_new_OBJECTS)
-am__objects_2 = rddbg.$(OBJEXT) debug.$(OBJEXT) stabs.$(OBJEXT) \
+am__objects_3 = rddbg.$(OBJEXT) debug.$(OBJEXT) stabs.$(OBJEXT) \
 	ieee.$(OBJEXT) rdcoff.$(OBJEXT)
-am__objects_3 = $(am__objects_2) wrstabs.$(OBJEXT)
+am__objects_4 = $(am__objects_3) wrstabs.$(OBJEXT)
 am_objcopy_OBJECTS = objcopy.$(OBJEXT) not-strip.$(OBJEXT) \
-	rename.$(OBJEXT) $(am__objects_3) $(am__objects_1)
+	rename.$(OBJEXT) $(am__objects_4) $(am__objects_1)
 objcopy_OBJECTS = $(am_objcopy_OBJECTS)
 am_objdump_OBJECTS = objdump.$(OBJEXT) budemang.$(OBJEXT) \
-	prdbg.$(OBJEXT) $(am__objects_2) $(am__objects_1)
+	prdbg.$(OBJEXT) $(am__objects_3) $(am__objects_1)
 objdump_OBJECTS = $(am_objdump_OBJECTS)
 am_ranlib_OBJECTS = ar.$(OBJEXT) is-ranlib.$(OBJEXT) arparse.$(OBJEXT) \
 	arlex.$(OBJEXT) arsup.$(OBJEXT) rename.$(OBJEXT) \
@@ -192,10 +210,14 @@ srconv_OBJECTS = $(am_srconv_OBJECTS)
 am_strings_OBJECTS = strings.$(OBJEXT) $(am__objects_1)
 strings_OBJECTS = $(am_strings_OBJECTS)
 am_strip_new_OBJECTS = objcopy.$(OBJEXT) is-strip.$(OBJEXT) \
-	rename.$(OBJEXT) $(am__objects_3) $(am__objects_1)
+	rename.$(OBJEXT) $(am__objects_4) $(am__objects_1)
 strip_new_OBJECTS = $(am_strip_new_OBJECTS)
 am_sysdump_OBJECTS = sysdump.$(OBJEXT) $(am__objects_1)
 sysdump_OBJECTS = $(am_sysdump_OBJECTS)
+am_windmc_OBJECTS = windmc.$(OBJEXT) mcparse.$(OBJEXT) mclex.$(OBJEXT) \
+	winduni.$(OBJEXT) $(am__objects_1)
+windmc_OBJECTS = $(am_windmc_OBJECTS)
+am__DEPENDENCIES_2 =
 am_windres_OBJECTS = windres.$(OBJEXT) resrc.$(OBJEXT) \
 	rescoff.$(OBJEXT) resbin.$(OBJEXT) rcparse.$(OBJEXT) \
 	rclex.$(OBJEXT) winduni.$(OBJEXT) resres.$(OBJEXT) \
@@ -254,18 +276,21 @@ AM_V_YACC = $(am__v_YACC_@AM_V@)
 am__v_YACC_ = $(am__v_YACC_@AM_DEFAULT_V@)
 am__v_YACC_0 = @echo "  YACC    " $@;
 am__v_YACC_1 = 
-SOURCES = $(addr2line_SOURCES) $(ar_SOURCES) $(coffdump_SOURCES) \
-	$(cxxfilt_SOURCES) $(dlltool_SOURCES) $(dllwrap_SOURCES) \
+SOURCES = $(addr2line_SOURCES) $(ar_SOURCES) bfdtest1.c bfdtest2.c \
+	$(coffdump_SOURCES) $(cxxfilt_SOURCES) $(dlltool_SOURCES) \
+	$(dllwrap_SOURCES) $(elfedit_SOURCES) $(nlmconv_SOURCES) \
+	$(nm_new_SOURCES) $(objcopy_SOURCES) $(objdump_SOURCES) \
+	$(ranlib_SOURCES) $(readelf_SOURCES) $(size_SOURCES) \
+	$(srconv_SOURCES) $(strings_SOURCES) $(strip_new_SOURCES) \
+	$(sysdump_SOURCES) $(windmc_SOURCES) $(windres_SOURCES)
+DIST_SOURCES = $(addr2line_SOURCES) $(ar_SOURCES) bfdtest1.c \
+	bfdtest2.c $(coffdump_SOURCES) $(cxxfilt_SOURCES) \
+	$(dlltool_SOURCES) $(dllwrap_SOURCES) $(elfedit_SOURCES) \
 	$(nlmconv_SOURCES) $(nm_new_SOURCES) $(objcopy_SOURCES) \
 	$(objdump_SOURCES) $(ranlib_SOURCES) $(readelf_SOURCES) \
 	$(size_SOURCES) $(srconv_SOURCES) $(strings_SOURCES) \
-	$(strip_new_SOURCES) $(sysdump_SOURCES) $(windres_SOURCES)
-DIST_SOURCES = $(addr2line_SOURCES) $(ar_SOURCES) $(coffdump_SOURCES) \
-	$(cxxfilt_SOURCES) $(dlltool_SOURCES) $(dllwrap_SOURCES) \
-	$(nlmconv_SOURCES) $(nm_new_SOURCES) $(objcopy_SOURCES) \
-	$(objdump_SOURCES) $(ranlib_SOURCES) $(readelf_SOURCES) \
-	$(size_SOURCES) $(srconv_SOURCES) $(strings_SOURCES) \
-	$(strip_new_SOURCES) $(sysdump_SOURCES) $(windres_SOURCES)
+	$(strip_new_SOURCES) $(sysdump_SOURCES) $(windmc_SOURCES) \
+	$(windres_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -367,9 +392,11 @@ AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 BUILD_DLLTOOL = @BUILD_DLLTOOL@
 BUILD_DLLWRAP = @BUILD_DLLWRAP@
+BUILD_INSTALL_MISC = @BUILD_INSTALL_MISC@
 BUILD_MISC = @BUILD_MISC@
 BUILD_NLMCONV = @BUILD_NLMCONV@
 BUILD_SRCONV = @BUILD_SRCONV@
+BUILD_WINDMC = @BUILD_WINDMC@
 BUILD_WINDRES = @BUILD_WINDRES@
 CATALOGS = @CATALOGS@
 CATOBJEXT = @CATOBJEXT@
@@ -448,6 +475,7 @@ NMEDIT = @NMEDIT@
 NO_WERROR = @NO_WERROR@
 OBJDUMP = @OBJDUMP@
 OBJDUMP_DEFS = @OBJDUMP_DEFS@
+OBJDUMP_PRIVATE_OFILES = @OBJDUMP_PRIVATE_OFILES@
 OBJEXT = @OBJEXT@
 OTOOL = @OTOOL@
 OTOOL64 = @OTOOL64@
@@ -557,6 +585,7 @@ OBJCOPY_PROG = objcopy
 STRIP_PROG = strip-new
 STRINGS_PROG = strings
 READELF_PROG = readelf
+ELFEDIT_PROG = elfedit
 
 # These should all be the same program too. (really?)
 SIZE_PROG = size
@@ -570,12 +599,18 @@ ADDR2LINE_PROG = addr2line
 NLMCONV_PROG = nlmconv
 DLLTOOL_PROG = dlltool
 WINDRES_PROG = windres
+WINDMC_PROG = windmc
 DLLWRAP_PROG = dllwrap
 SRCONV_PROG = srconv$(EXEEXT) sysdump$(EXEEXT) coffdump$(EXEEXT) 
 PROGS = $(SIZE_PROG) $(OBJDUMP_PROG) $(NM_PROG) $(AR_PROG) $(STRINGS_PROG) $(STRIP_PROG) $(RANLIB_PROG) $(DEMANGLER_PROG) $(OBJCOPY_PROG) @BUILD_NLMCONV@ @BUILD_SRCONV@ @BUILD_DLLTOOL@ @BUILD_WINDRES@ $(ADDR2LINE_PROG) $(READELF_PROG) @BUILD_DLLWRAP@ @BUILD_MISC@
+EXTRA_SCRIPTS = embedspu
+BFDTEST1_PROG = bfdtest1
+BFDTEST2_PROG = bfdtest2
+TEST_PROGS = $(BFDTEST1_PROG) $(BFDTEST2_PROG)
+RENAMED_PROGS = $(NM_PROG) $(STRIP_PROG) $(DEMANGLER_PROG)
 
 # Stuff that goes in tooldir/ if appropriate.
-TOOL_PROGS = nm-new strip-new ar ranlib dlltool objdump
+TOOL_PROGS = nm-new strip-new ar ranlib dlltool objdump objcopy
 BASEDIR = $(srcdir)/..
 BFDDIR = $(BASEDIR)/bfd
 INCDIR = $(BASEDIR)/include
@@ -589,25 +624,30 @@ AM_CPPFLAGS = -D_GNU_SOURCE \
 
 HFILES = \
 	arsup.h binemul.h bucomm.h budbg.h budemang.h \
-	coffgrok.h debug.h dlltool.h nlmconv.h \
-	windres.h winduni.h
+	coffgrok.h debug.h dlltool.h dwarf.h elfcomm.h nlmconv.h \
+	objdump.h sysdep.h unwind-ia64.h windres.h winduni.h windint.h \
+	windmc.h
 
 GENERATED_HFILES = arparse.h sysroff.h sysinfo.h defparse.h rcparse.h
+BUILT_SOURCES = $(GENERATED_HFILES)
 CFILES = \
-	addr2line.c ar.c arsup.c binemul.c bucomm.c budemang.c \
-	coffdump.c coffgrok.c cxxfilt.c debug.c dlltool.c dllwrap.c \
-	emul_aix.c emul_vanilla.c filemode.c \
+	addr2line.c ar.c arsup.c bin2c.c binemul.c bucomm.c budemang.c \
+	coffdump.c coffgrok.c cxxfilt.c \
+	dwarf.c debug.c dlltool.c dllwrap.c \
+	elfcomm.c emul_aix.c emul_vanilla.c filemode.c \
 	ieee.c is-ranlib.c is-strip.c maybe-ranlib.c maybe-strip.c \
 	nlmconv.c nm.c not-ranlib.c not-strip.c \
 	objcopy.c objdump.c prdbg.c \
-	rdcoff.c rddbg.c readelf.c rename.c \
+	od-xcoff.c od-macho.c \
+	rclex.c rdcoff.c rddbg.c readelf.c rename.c \
 	resbin.c rescoff.c resrc.c resres.c \
-	size.c srconv.c stabs.c strings.c sysdump.c version.c \
-	windres.c winduni.c wrstabs.c
+	size.c srconv.c stabs.c strings.c sysdump.c \
+	syslex_wrap.c unwind-ia64.c elfedit.c version.c \
+	windres.c winduni.c wrstabs.c windmc.c mclex.c
 
 GENERATED_CFILES = \
 	arparse.c arlex.c sysroff.c sysinfo.c syslex.c \
-	defparse.c deflex.c nlmheader.c rcparse.c rclex.c
+	defparse.c deflex.c nlmheader.c rcparse.c rclex.c mcparse.c
 
 OFILES = \
 	addr2line.o ar.o arsup.o binemul.o bucomm.o budemang.o \
@@ -630,8 +670,12 @@ WRITE_DEBUG_SRCS = $(DEBUG_SRCS) wrstabs.c
 
 # Code shared by all the binutils.
 BULIBS = bucomm.c version.c filemode.c
+
+# Code shared by the ELF related programs.
+ELFLIBS = elfcomm.c
 BFD = ../bfd/libbfd.la
 BFD_DEP = $(BFD)
+BFDLIB = $(BFD)
 OPCODES = ../opcodes/libopcodes.la
 OPCODES_DEP = $(OPCODES)
 LIBIBERTY = ../libiberty/libiberty.a
@@ -673,6 +717,9 @@ strings_DEPENDENCIES = $(BFD_DEP) $(LIBIBERTY_DEP) $(INTLDEP)
 readelf_SOURCES = readelf.c version.c unwind-ia64.c
 readelf_LDADD = $(LIBIBERTY) $(INTLLIBS)
 readelf_DEPENDENCIES = $(LIBIBERTY_DEP) $(INTLDEP)
+elfedit_SOURCES = elfedit.c version.c $(ELFLIBS)
+elfedit_LDADD = $(LIBINTL) $(LIBIBERTY)
+elfedit_DEPENDENCIES = $(LIBINTL_DEP) $(LIBIBERTY)
 strip_new_SOURCES = objcopy.c is-strip.c rename.c $(WRITE_DEBUG_SRCS) $(BULIBS)
 strip_new_LDADD = $(BFD) $(LIBIBERTY) $(INTLLIBS)
 strip_new_DEPENDENCIES = $(BFD_DEP) $(LIBIBERTY_DEP) $(INTLDEP)
@@ -718,14 +765,23 @@ windres_SOURCES = windres.c resrc.c rescoff.c resbin.c rcparse.y rclex.l \
 
 windres_LDADD = $(BFD) $(LIBIBERTY) @LEXLIB@ $(INTLLIBS)
 windres_DEPENDENCIES = $(BFD_DEP) $(LIBIBERTY_DEP) @LEXLIB@ $(INTLDEP)
+windmc_SOURCES = windmc.c mcparse.y mclex.c \
+	winduni.c $(BULIBS)
+
+windmc_LDADD = $(BFDLIB) $(LIBIBERTY) $(LEXLIB) $(LIBINTL) $(LIBICONV)
+windmc_DEPENDENCIES = $(LIBINTL_DEP) $(LIBIBERTY) $(BFDLIB)
 dllwrap_SOURCES = dllwrap.c version.c
 dllwrap_LDADD = $(LIBIBERTY) $(INTLLIBS)
 dllwrap_DEPENDENCIES = $(LIBIBERTY_DEP) $(INTLDEP)
 EXTRA_DIST = arparse.c arparse.h arlex.c nlmheader.c sysinfo.c sysinfo.h \
 	syslex.c deflex.c defparse.h defparse.c rclex.c rcparse.h rcparse.c
 
+
+# We extract version from bfd/configure.ac, make sure to rerun configure
+# when BFD's version changes.
+CONFIG_STATUS_DEPENDENCIES = $(BFDDIR)/configure.ac
 DISTCLEANFILES = sysinfo sysroff.c sysroff.h \
-	site.exp site.bak
+	site.exp site.bak embedspu
 
 
 # APPLE LOCAL begin framework building
@@ -752,7 +808,7 @@ BINUTILS_LIB = $(SYSTEM_FRAMEWORK)
 ###
 MOSTLYCLEANFILES = sysinfo binutils.log binutils.sum abcdefgh*
 CLEANFILES = dep.sed DEP DEPA DEP1 DEP2
-all: config.h
+all: $(BUILT_SOURCES) config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
 .SUFFIXES:
@@ -886,10 +942,21 @@ clean-noinstPROGRAMS:
 addr2line$(EXEEXT): $(addr2line_OBJECTS) $(addr2line_DEPENDENCIES) $(EXTRA_addr2line_DEPENDENCIES) 
 	@rm -f addr2line$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(addr2line_OBJECTS) $(addr2line_LDADD) $(LIBS)
+arparse.h: arparse.c
+	@if test ! -f $@; then rm -f arparse.c; else :; fi
+	@if test ! -f $@; then $(MAKE) $(AM_MAKEFLAGS) arparse.c; else :; fi
 
 ar$(EXEEXT): $(ar_OBJECTS) $(ar_DEPENDENCIES) $(EXTRA_ar_DEPENDENCIES) 
 	@rm -f ar$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(ar_OBJECTS) $(ar_LDADD) $(LIBS)
+
+bfdtest1$(EXEEXT): $(bfdtest1_OBJECTS) $(bfdtest1_DEPENDENCIES) $(EXTRA_bfdtest1_DEPENDENCIES) 
+	@rm -f bfdtest1$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(bfdtest1_OBJECTS) $(bfdtest1_LDADD) $(LIBS)
+
+bfdtest2$(EXEEXT): $(bfdtest2_OBJECTS) $(bfdtest2_DEPENDENCIES) $(EXTRA_bfdtest2_DEPENDENCIES) 
+	@rm -f bfdtest2$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(bfdtest2_OBJECTS) $(bfdtest2_LDADD) $(LIBS)
 
 coffdump$(EXEEXT): $(coffdump_OBJECTS) $(coffdump_DEPENDENCIES) $(EXTRA_coffdump_DEPENDENCIES) 
 	@rm -f coffdump$(EXEEXT)
@@ -898,6 +965,9 @@ coffdump$(EXEEXT): $(coffdump_OBJECTS) $(coffdump_DEPENDENCIES) $(EXTRA_coffdump
 cxxfilt$(EXEEXT): $(cxxfilt_OBJECTS) $(cxxfilt_DEPENDENCIES) $(EXTRA_cxxfilt_DEPENDENCIES) 
 	@rm -f cxxfilt$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(cxxfilt_OBJECTS) $(cxxfilt_LDADD) $(LIBS)
+defparse.h: defparse.c
+	@if test ! -f $@; then rm -f defparse.c; else :; fi
+	@if test ! -f $@; then $(MAKE) $(AM_MAKEFLAGS) defparse.c; else :; fi
 
 dlltool$(EXEEXT): $(dlltool_OBJECTS) $(dlltool_DEPENDENCIES) $(EXTRA_dlltool_DEPENDENCIES) 
 	@rm -f dlltool$(EXEEXT)
@@ -906,6 +976,13 @@ dlltool$(EXEEXT): $(dlltool_OBJECTS) $(dlltool_DEPENDENCIES) $(EXTRA_dlltool_DEP
 dllwrap$(EXEEXT): $(dllwrap_OBJECTS) $(dllwrap_DEPENDENCIES) $(EXTRA_dllwrap_DEPENDENCIES) 
 	@rm -f dllwrap$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(dllwrap_OBJECTS) $(dllwrap_LDADD) $(LIBS)
+
+elfedit$(EXEEXT): $(elfedit_OBJECTS) $(elfedit_DEPENDENCIES) $(EXTRA_elfedit_DEPENDENCIES) 
+	@rm -f elfedit$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(elfedit_OBJECTS) $(elfedit_LDADD) $(LIBS)
+nlmheader.h: nlmheader.c
+	@if test ! -f $@; then rm -f nlmheader.c; else :; fi
+	@if test ! -f $@; then $(MAKE) $(AM_MAKEFLAGS) nlmheader.c; else :; fi
 
 nlmconv$(EXEEXT): $(nlmconv_OBJECTS) $(nlmconv_DEPENDENCIES) $(EXTRA_nlmconv_DEPENDENCIES) 
 	@rm -f nlmconv$(EXEEXT)
@@ -950,6 +1027,16 @@ strip-new$(EXEEXT): $(strip_new_OBJECTS) $(strip_new_DEPENDENCIES) $(EXTRA_strip
 sysdump$(EXEEXT): $(sysdump_OBJECTS) $(sysdump_DEPENDENCIES) $(EXTRA_sysdump_DEPENDENCIES) 
 	@rm -f sysdump$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(sysdump_OBJECTS) $(sysdump_LDADD) $(LIBS)
+mcparse.h: mcparse.c
+	@if test ! -f $@; then rm -f mcparse.c; else :; fi
+	@if test ! -f $@; then $(MAKE) $(AM_MAKEFLAGS) mcparse.c; else :; fi
+
+windmc$(EXEEXT): $(windmc_OBJECTS) $(windmc_DEPENDENCIES) $(EXTRA_windmc_DEPENDENCIES) 
+	@rm -f windmc$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(windmc_OBJECTS) $(windmc_LDADD) $(LIBS)
+rcparse.h: rcparse.c
+	@if test ! -f $@; then rm -f rcparse.c; else :; fi
+	@if test ! -f $@; then $(MAKE) $(AM_MAKEFLAGS) rcparse.c; else :; fi
 
 windres$(EXEEXT): $(windres_OBJECTS) $(windres_DEPENDENCIES) $(EXTRA_windres_DEPENDENCIES) 
 	@rm -f windres$(EXEEXT)
@@ -966,6 +1053,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arlex.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arparse.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/arsup.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bfdtest1.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bfdtest2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/binemul.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bucomm.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/budemang.Po@am__quote@
@@ -978,11 +1067,15 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dlltool.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dllwrap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dyn-string.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elfcomm.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/elfedit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/emul_@EMULATION@.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/filemode.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ieee.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/is-ranlib.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/is-strip.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mclex.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mcparse.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nlmconv.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nlmheader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nm.Po@am__quote@
@@ -1008,6 +1101,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sysdump.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/unwind-ia64.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/version.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/windmc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/windres.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/winduni.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wrstabs.Po@am__quote@
@@ -1393,14 +1487,16 @@ distcleancheck: distclean
 	       exit 1; } >&2
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-DEJAGNU
-check: check-recursive
+check: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) check-recursive
 all-am: Makefile $(PROGRAMS) config.h
 installdirs: installdirs-recursive
 installdirs-am:
 	for dir in "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
-install: install-recursive
+install: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) install-recursive
 install-exec: install-exec-recursive
 install-data: install-data-recursive
 uninstall: uninstall-recursive
@@ -1439,11 +1535,14 @@ maintainer-clean-generic:
 	-rm -f deflex.c
 	-rm -f defparse.c
 	-rm -f defparse.h
+	-rm -f mcparse.c
+	-rm -f mcparse.h
 	-rm -f nlmheader.c
 	-rm -f nlmheader.h
 	-rm -f rclex.c
 	-rm -f rcparse.c
 	-rm -f rcparse.h
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-recursive
 
 clean-am: clean-binPROGRAMS clean-generic clean-libtool \
@@ -1519,7 +1618,8 @@ ps-am:
 
 uninstall-am: uninstall-binPROGRAMS
 
-.MAKE: $(am__recursive_targets) all check-am install-am install-strip
+.MAKE: $(am__recursive_targets) all check check-am install install-am \
+	install-strip
 
 .PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am \
 	am--refresh check check-DEJAGNU check-am clean \
@@ -1610,13 +1710,23 @@ sysinfo.o:
 	else \
 	  $(CC_FOR_BUILD) -c -I. $(AM_CFLAGS) $(CFLAGS) $(srcdir)/sysinfo.c -Wno-error ; \
 	fi
+bin2c$(EXEEXT_FOR_BUILD): bin2c.c
+	$(CC_FOR_BUILD) -o $@ $(AM_CPPFLAGS) $(AM_CFLAGS) $(CFLAGS_FOR_BUILD) $(LDFLAGS_FOR_BUILD) $(srcdir)/bin2c.c
+
+embedspu: embedspu.sh Makefile
+	awk '/^program_transform_name=/ {print "program_transform_name=\"$(program_transform_name)\""; next} {print}' < $< > $@
+	chmod a+x $@
 
 # We need these for parallel make.
 #TODO: fix warnings about these overriding automake targets
-arparse.h: arparse.c
-defparse.h: defparse.c
-nlmheader.h: nlmheader.c
-rcparse.h: rcparse.c
+my_arparse.h: arparse.c
+.PHONY: my_arparse.h
+my_defparse.h: defparse.c
+.PHONY: my_defparse.h
+my_nlmheader.h: nlmheader.c
+.PHONY: my_nlmheader.h
+my_rcparse.h: rcparse.c
+.PHONY: my_rcparse.h
 sysinfo.h: sysinfo.c
 
 # Disable -Werror, if it has been enabled, since old versions of bison/

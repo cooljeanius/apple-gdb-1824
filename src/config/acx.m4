@@ -3,8 +3,8 @@
 
 dnl ####
 dnl # _GCC_TOPLEV_NONCANONICAL_BUILD
-dnl # $build_alias or canonical $build if blank.
-dnl # Used when we would use $build_alias, but empty is not OK.
+dnl # ${build_alias} or canonical ${build} if blank.
+dnl # Used when we would use ${build_alias}, but empty is not OK.
 AC_DEFUN([_GCC_TOPLEV_NONCANONICAL_BUILD],
 [AC_REQUIRE([AC_CANONICAL_BUILD]) []dnl
 case ${build_alias} in
@@ -15,8 +15,8 @@ esac
 
 dnl ####
 dnl # _GCC_TOPLEV_NONCANONICAL_HOST
-dnl # $host_alias, or $build_noncanonical if blank.
-dnl # Used when we would use $host_alias, but empty is not OK.
+dnl # ${host_alias}, or ${build_noncanonical} if blank.
+dnl # Used when we would use ${host_alias}, but empty is not OK.
 AC_DEFUN([_GCC_TOPLEV_NONCANONICAL_HOST],
 [AC_REQUIRE([_GCC_TOPLEV_NONCANONICAL_BUILD]) []dnl
 case ${host_alias} in
@@ -27,8 +27,8 @@ esac
 
 dnl ####
 dnl # _GCC_TOPLEV_NONCANONICAL_TARGET
-dnl # $target_alias or $host_noncanonical if blank.
-dnl # Used when we would use $target_alias, but empty is not OK.
+dnl # ${target_alias} or ${host_noncanonical} if blank.
+dnl # Used when we would use ${target_alias}, but empty is not OK.
 AC_DEFUN([_GCC_TOPLEV_NONCANONICAL_TARGET],
 [AC_REQUIRE([_GCC_TOPLEV_NONCANONICAL_HOST]) []dnl
 case ${target_alias} in
@@ -63,9 +63,9 @@ AC_SUBST([target_noncanonical])
 
 dnl ####
 dnl # GCC_TOPLEV_SUBDIRS
-dnl # GCC & friends build 'build', 'host', and 'target' tools.  These must
-dnl # be separated into three well-known subdirectories of the build directory:
-dnl # build_subdir, host_subdir, and target_subdir.  The values are determined
+dnl # GCC & friends build 'build', 'host', and 'target' tools. These must
+dnl # be separated into 3 well-known subdirectories of the build directory:
+dnl # build_subdir, host_subdir, & target_subdir. The values are determined
 dnl # here so that they can (theoretically) be changed in the future.  They
 dnl # were previously reproduced across many different files.
 dnl #
@@ -136,11 +136,11 @@ fi
 AC_DEFUN([NCN_STRICT_CHECK_TARGET_TOOLS],
 [AC_REQUIRE([_NCN_TOOL_PREFIXES]) []dnl
 for ncn_progname in $2; do
-  if test -n "$ncn_target_tool_prefix"; then
+  if test -n "${ncn_target_tool_prefix}"; then
     AC_CHECK_PROG([$1],[${ncn_target_tool_prefix}${ncn_progname}], 
                   [${ncn_target_tool_prefix}${ncn_progname}],[],[$4])
   fi
-  if test -z "$ac_cv_prog_$1" && test $build = $target ; then
+  if test -z "$ac_cv_prog_$1" && test ${build} = ${target} ; then
     AC_CHECK_PROG([$1],[${ncn_progname}],[${ncn_progname}],[],[$4]) 
   fi
   test -n "$ac_cv_prog_$1" && break
@@ -201,7 +201,7 @@ if test x"$errors" = x && test -f conftest.$ac_objext; then
 fi
 rm -f conftest.*])
 
-if test x$GNATBIND != xno && test x$acx_cv_cc_gcc_supports_ada != xno; then
+if test x${GNATBIND} != xno && test x${acx_cv_cc_gcc_supports_ada} != xno; then
   have_gnat=yes
 else
   have_gnat=no
@@ -235,7 +235,7 @@ AC_DEFUN([ACX_PROG_CMP_IGNORE_INITIAL],
   fi
   rm t1 t2
 ])
-do_compare="$gcc_cv_prog_cmp_skip"
+do_compare="${gcc_cv_prog_cmp_skip}"
 AC_SUBST([do_compare])
 ])
 
@@ -246,7 +246,7 @@ AC_DEFUN([ACX_HEADER_STRING],
   [gcc_cv_header_string],
 [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[#include <string.h>
 #include <strings.h>]],[[]])],[gcc_cv_header_string=yes], [gcc_cv_header_string=no])])
-if test $gcc_cv_header_string = yes; then
+if test ${gcc_cv_header_string} = yes; then
   AC_DEFINE([STRING_WITH_STRINGS],[1],[Define if you can safely include both <string.h> and <strings.h>.])
 fi
 ])
@@ -269,7 +269,7 @@ AC_CACHE_CHECK([for built-in _Bool],[gcc_cv_c__bool],
 [[_Bool foo;]])],
 [gcc_cv_c__bool=yes],[gcc_cv_c__bool=no])
 ])
-if test $gcc_cv_c__bool = yes; then
+if test ${gcc_cv_c__bool} = yes; then
   AC_DEFINE([HAVE__BOOL],[1],[Define if the \`_Bool' type is built-in.])
 fi
 ])
@@ -289,13 +289,35 @@ else
 fi
 rm -f conftestdata_f conftestdata_t
 ])dnl
-if test $acx_cv_prog_LN = no; then
+if test ${acx_cv_prog_LN} = no; then
   LN="ifelse([$1],[],[cp],[$1])"
-  AC_MSG_RESULT([no, using $LN])
+  AC_MSG_RESULT([no, using ${LN}])
 else
-  LN="$acx_cv_prog_LN"
+  LN="${acx_cv_prog_LN}"
   AC_MSG_RESULT([yes])
 fi
 AC_SUBST([LN])dnl
 ])
 
+dnl ####
+dnl # ACX_CHECK_CYGWIN_CAT_WORKS
+dnl # On Cygwin hosts, check that the cat command ignores 
+dnl # carriage returns as otherwise builds will not work.
+dnl # See binutils PR 4334 for more details.
+AC_DEFUN([ACX_CHECK_CYGWIN_CAT_WORKS],[
+AC_MSG_CHECKING([to see if cat works as expected])
+echo a >cygwin-cat-check
+if test `cat cygwin-cat-check` = a ; then
+  rm cygwin-cat-check
+  AC_MSG_RESULT([yes])
+else
+  rm cygwin-cat-check
+  AC_MSG_RESULT([no])
+  AC_MSG_ERROR([The cat command does not ignore carriage return characters.
+  Please either mount the build directory in binary mode or run the following
+  commands before running any configure script:
+set -o igncr
+export SHELLOPTS 
+  ])
+fi
+])

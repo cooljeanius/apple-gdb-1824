@@ -639,9 +639,12 @@ LTLIBOBJS
 SYSTEM_FRAMEWORK_LIBS
 EMULATION_VECTOR
 EMULATION
+OBJDUMP_PRIVATE_OFILES
 OBJDUMP_DEFS
+BUILD_INSTALL_MISC
 BUILD_MISC
 BUILD_DLLWRAP
+BUILD_WINDMC
 BUILD_WINDRES
 DLLTOOL_DEFS
 BUILD_DLLTOOL
@@ -835,6 +838,7 @@ with_sysroot
 enable_libtool_lock
 enable_targets
 enable_commonbfdlib
+enable_deterministic_archives
 enable_werror
 enable_build_warnings
 enable_largefile
@@ -1494,6 +1498,8 @@ Optional Features:
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --enable-targets        alternative target configurations
   --enable-commonbfdlib   build shared BFD/opcodes/libiberty library
+  --enable-deterministic-archives
+                          ar and ranlib default to -D behavior
   --enable-werror         treat compile warnings as errors
   --enable-build-warnings Enable build-time compiler warnings
   --disable-largefile     omit support for large files
@@ -3732,8 +3738,7 @@ if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
 fi
-
-ac_ext=c
+ ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
@@ -9110,14 +9115,10 @@ rmdir .libs 2>/dev/null
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_objdir" >&5
 $as_echo "$lt_cv_objdir" >&6; }
-objdir=$lt_cv_objdir
-
-
-
-
+objdir=${lt_cv_objdir}
 
 cat >>confdefs.h <<_ACEOF
-#define LT_OBJDIR "$lt_cv_objdir/"
+#define LT_OBJDIR "${lt_cv_objdir}/"
 _ACEOF
 
 
@@ -16292,6 +16293,25 @@ if test "${enable_commonbfdlib+set}" = set; then :
 esac
 fi
 
+# Check whether --enable-deterministic-archives was given.
+if test "${enable_deterministic_archives+set}" = set; then :
+  enableval=$enable_deterministic_archives;
+if test "${enableval}" = no; then
+  default_ar_deterministic=0
+else
+  default_ar_deterministic=1
+fi
+else
+  default_ar_deterministic=0
+fi
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define DEFAULT_AR_DETERMINISTIC ${default_ar_deterministic}
+_ACEOF
+
+
 
 WARN_CFLAGS="-W -Wall -Wstrict-prototypes -Wmissing-prototypes"
 
@@ -16340,6 +16360,7 @@ fi
 
 
 ac_config_headers="$ac_config_headers config.h"
+
 
 
 
@@ -23249,10 +23270,16 @@ NLMCONV_DEFS=
 BUILD_SRCONV=
 BUILD_DLLTOOL=
 DLLTOOL_DEFS=
+DLLTOOL_DEFAULT=
 BUILD_WINDRES=
+BUILD_WINDMC=
 BUILD_DLLWRAP=
 BUILD_MISC=
+BUILD_INSTALL_MISC=
 OBJDUMP_DEFS=
+OBJDUMP_PRIVATE_VECTORS=
+OBJDUMP_PRIVATE_OFILES=
+od_vectors=
 
 for targ in ${target} ${canon_targets}
 do
@@ -23261,8 +23288,18 @@ do
 	BUILD_NLMCONV='$(NLMCONV_PROG)$(EXEEXT)'
 	BUILD_SRCONV='$(SRCONV_PROG)'
 	NLMCONV_DEFS="-DNLMCONV_I386 -DNLMCONV_ALPHA -DNLMCONV_POWERPC -DNLMCONV_SPARC"
+	BUILD_MISC="${BUILD_MISC} "'bin2c$(EXEEXT_FOR_BUILD)'
+	BUILD_WINDRES='$(WINDRES_PROG)$(EXEEXT)'
+	BUILD_WINDMC='$(WINDMC_PROG)$(EXEEXT)'
+	BUILD_DLLTOOL='$(DLLTOOL_PROG)$(EXEEXT)'
+	if test -z "${DLLTOOL_DEFAULT}"; then
+	  DLLTOOL_DEFAULT="-DDLLTOOL_DEFAULT_I386"
+	fi
+	DLLTOOL_DEFS="${DLLTOOL_DEFS} -DDLLTOOL_I386"
+	BUILD_DLLWRAP='$(DLLWRAP_PROG)$(EXEEXT)'
+	od_vectors="${od_vectors} objdump_private_desc_xcoff"
     else
-	case $targ in
+	case ${targ} in
 	i[3-7]86*-*-netware*)
 	  BUILD_NLMCONV='$(NLMCONV_PROG)$(EXEEXT)'
 	  NLMCONV_DEFS="$NLMCONV_DEFS -DNLMCONV_I386"
@@ -23280,10 +23317,12 @@ do
 	  NLMCONV_DEFS="$NLMCONV_DEFS -DNLMCONV_SPARC"
 	  ;;
 	esac
-	case $targ in
+
+	case ${targ} in
 	*-*-hms*) BUILD_SRCONV='$(SRCONV_PROG)' ;;
 	esac
-	case $targ in
+
+	case ${targ} in
 	arm-epoc-pe*)
   	  BUILD_DLLTOOL='$(DLLTOOL_PROG)$(EXEEXT)'
 	  DLLTOOL_DEFS="$DLLTOOL_DEFS -DDLLTOOL_ARM_EPOC -DDLLTOOL_ARM"
@@ -23342,12 +23381,65 @@ do
 	  DLLTOOL_DEFS="$DLLTOOL_DEFS -DDLLTOOL_MCORE_ELF"
 	  ;;
 	esac
+
+	# Add objdump private vectors.
+	case ${targ} in
+	powerpc-*-aix*)
+	  od_vectors="${od_vectors} objdump_private_desc_xcoff"
+	  ;;
+        *-*-darwin*)
+	  od_vectors="${od_vectors} objdump_private_desc_mach_o"
+	  ;;
+	esac
     fi
 done
+
+# Uniq objdump private vector, build objdump target ofiles.
+od_files=
+f=""
+for i in ${od_vectors} ; do
+    case " ${f} " in
+    *" ${i} "*) ;;
+    *)
+	f="${f} ${i}"
+	OBJDUMP_PRIVATE_VECTORS="${OBJDUMP_PRIVATE_VECTORS} &${i},"
+	case ${i} in
+	objdump_private_desc_xcoff)
+	    od_files="${od_files} od-xcoff" ;;
+	objdump_private_desc_mach_o)
+	    od_files="${od_files} od-macho" ;;
+	*) as_fn_error $? "*** unknown private vector ${i}" "$LINENO" 5 ;;
+	esac
+	;;
+    esac
+done
+
+# Uniq objdump target ofiles
+f=""
+for i in ${od_files} ; do
+    case " ${f} " in
+    *" ${i} "*) ;;
+    *)
+	f="${f} ${i}"
+	OBJDUMP_PRIVATE_OFILES="${OBJDUMP_PRIVATE_OFILES} ${i}.${objext}"
+	;;
+    esac
+done
+
+DLLTOOL_DEFS="${DLLTOOL_DEFS} ${DLLTOOL_DEFAULT}"
 
 if test "${with_windres+set}" = set; then
 	  BUILD_WINDRES='$(WINDRES_PROG)$(EXEEXT)'
 fi
+
+if test "${with_windmc+set}" = set; then
+	  BUILD_WINDMC='$(WINDMC_PROG)$(EXEEXT)'
+fi
+
+OBJDUMP_DEFS="${OBJDUMP_DEFS} -DOBJDUMP_PRIVATE_VECTORS=\"${OBJDUMP_PRIVATE_VECTORS}\""
+
+
+
 
 
 
@@ -23404,6 +23496,12 @@ $as_echo "$as_me: EMULATION_VECTOR is ${EMULATION_VECTOR}" >&6;}
 done
 
 
+
+
+
+
+
+# Required for html and install-html
 
 
 
@@ -24221,7 +24319,6 @@ lt_cv_sys_global_symbol_to_c_name_address='`$ECHO "$lt_cv_sys_global_symbol_to_c
 lt_cv_sys_global_symbol_to_c_name_address_lib_prefix='`$ECHO "$lt_cv_sys_global_symbol_to_c_name_address_lib_prefix" | $SED "$delay_single_quote_subst"`'
 nm_file_list_spec='`$ECHO "$nm_file_list_spec" | $SED "$delay_single_quote_subst"`'
 lt_sysroot='`$ECHO "$lt_sysroot" | $SED "$delay_single_quote_subst"`'
-objdir='`$ECHO "$objdir" | $SED "$delay_single_quote_subst"`'
 MAGIC_CMD='`$ECHO "$MAGIC_CMD" | $SED "$delay_single_quote_subst"`'
 lt_prog_compiler_no_builtin_flag='`$ECHO "$lt_prog_compiler_no_builtin_flag" | $SED "$delay_single_quote_subst"`'
 lt_prog_compiler_pic='`$ECHO "$lt_prog_compiler_pic" | $SED "$delay_single_quote_subst"`'
@@ -25520,9 +25617,6 @@ nm_file_list_spec=$lt_nm_file_list_spec
 
 # The root where to search for dependent libraries,and in which our libraries should be installed.
 lt_sysroot=$lt_sysroot
-
-# The name of the directory that contains temporary libtool files.
-objdir=$objdir
 
 # Used to examine libraries when file_magic_cmd begins with "file".
 MAGIC_CMD=$MAGIC_CMD

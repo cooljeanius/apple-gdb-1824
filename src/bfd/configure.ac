@@ -57,6 +57,17 @@ AC_DISABLE_SHARED
 # Libtool checks
 LT_INIT([disable-fast-install disable-shared dlopen static win32-dll])
 LT_LANG([C])
+if test -z "${lt_cv_objdir}"; then
+  AC_MSG_WARN([lt_cv_objdir somehow was left unset, setting to default])
+  lt_cv_objdir=.libs
+elif test "${lt_cv_objdir}" = ..; then
+  AC_MSG_WARN([lt_cv_objdir is one level too high, reassigning])
+  lt_cv_objdir=.
+elif test "${lt_cv_objdir}" = ../.libs; then
+  AC_MSG_WARN([lt_cv_objdir is in one level too high, reassigning])
+  lt_cv_objdir=./.libs
+fi
+AC_SUBST([lt_cv_objdir])
 AC_DEFUN([AX_LIBTOOL_FIXES],[
   AC_REQUIRE([AX_PATCH_LIBTOOL_CHANGING_CMDS_IFS])
   AC_REQUIRE([AX_MAINTAINER_MODE_AUTO_SILENT])
@@ -72,7 +83,7 @@ if test "${plugins}" = "yes"; then
     AC_MSG_ERROR([
       Building BFD with plugin support requires a host that supports -ldl.])
   fi
-  enable_targets="$enable_targets plugin"
+  enable_targets="${enable_targets} plugin"
 fi
 
 AC_ARG_ENABLE([64-bit-bfd],
@@ -112,7 +123,7 @@ AC_ARG_ENABLE([secureplt],
   no)   use_secureplt=false ;;
   *)    AC_MSG_ERROR([bad value ${enableval} for secureplt option]) ;;
 esac],[use_secureplt=false])dnl
-if test $use_secureplt = true; then
+if test ${use_secureplt} = true; then
   AC_DEFINE([USE_SECUREPLT],[1],
     [Define if we should default to creating read-only plt entries])
 fi
@@ -139,14 +150,23 @@ AC_ARG_ENABLE([elf-stt-common],
 # the loader does not support it. So by default we always choose to
 # disable this feature.
   want_elf_stt_common=false])dnl
-if test $want_elf_stt_common = true; then
+if test ${want_elf_stt_common} = true; then
   AC_DEFINE([USE_STT_COMMON],[1],
     [Define if we may generate symbols with ELF's STT_COMMON type])
 fi
 
 AM_BINUTILS_WARNINGS
 
-if test -z "$target" ; then
+# PR 14072
+AH_VERBATIM([00_CONFIG_H_CHECK],
+[/* Check that config.h is #included before system headers
+    (this works only for glibc, but that should be enough).  */
+#if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
+#  error config.h must be #included before system headers
+#endif
+#define __CONFIG_H__ 1])
+
+if test -z "${target}" ; then
     AC_MSG_ERROR([Unrecognized target system type; please check config.sub.])
 fi
 
@@ -171,6 +191,8 @@ esac
 dnl# APPLE LOCAL end mmap() always works right on Darwin. Take our word
 dnl# for it.
 
+# host stuff:
+
 ALL_LINGUAS="fr tr ja es sv da zh_CN ro rw vi"
 CY_GNU_GETTEXT
 
@@ -193,8 +215,8 @@ BFD_HOSTPTR_T="unsigned long"
 AC_MSG_CHECKING([for long long])
 AC_CACHE_VAL([bfd_cv_has_long_long],
 [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[unsigned long long ll = 18446744073709551615ULL;]])],[bfd_cv_has_long_long=yes],[bfd_cv_has_long_long=no])])
-AC_MSG_RESULT([$bfd_cv_has_long_long])
-if test $bfd_cv_has_long_long = yes; then
+AC_MSG_RESULT([${bfd_cv_has_long_long}])
+if test ${bfd_cv_has_long_long} = yes; then
   BFD_HOST_LONG_LONG=1
   AC_CHECK_SIZEOF([long long])
   AC_CHECK_ALIGNOF([long long])
@@ -593,7 +615,7 @@ changequote([,])dnl
 	;;
   esac
 
-  case "$COREFILE" in
+  case "${COREFILE}" in
   aix386-core.lo)	COREFLAG=-DAIX386_CORE ;;
   hppabsd-core.lo)	COREFLAG=-DHPPABSD_CORE ;;
   hpux-core.lo)		COREFLAG=-DHPUX_CORE ;;
@@ -610,7 +632,7 @@ changequote([,])dnl
   # ELF corefile support has several flavors, but all of
   # them use something called <sys/procfs.h>
   AC_CHECK_HEADERS([sys/procfs.h])
-  if test "$ac_cv_header_sys_procfs_h" = yes; then
+  if test "${ac_cv_header_sys_procfs_h}" = yes; then
     BFD_HAVE_SYS_PROCFS_TYPE([prstatus_t])
     BFD_HAVE_SYS_PROCFS_TYPE([prstatus32_t])
     BFD_HAVE_SYS_PROCFS_TYPE_MEMBER([prstatus_t],[pr_who])
@@ -631,7 +653,7 @@ changequote([,])dnl
 fi
 AC_SUBST([COREFILE])
 AC_SUBST([COREFLAG])
-if test -n "$TRAD_HEADER"; then
+if test -n "${TRAD_HEADER}"; then
   AC_DEFINE_UNQUOTED([TRAD_HEADER],[$TRAD_HEADER],
     [Name of host specific header file to include in trad-core.c.])
 fi
@@ -639,7 +661,7 @@ fi
 # Check if linker supports --as-needed and --no-as-needed options
 AC_CACHE_CHECK([linker --as-needed support],[bfd_cv_ld_as_needed],
 	[bfd_cv_ld_as_needed=no
-	if $LD --help 2>/dev/null | grep as-needed > /dev/null; then
+	if ${LD} --help 2>/dev/null | grep as-needed > /dev/null; then
 		bfd_cv_ld_as_needed=yes
 	fi
 	])
@@ -651,7 +673,7 @@ WIN32LDFLAGS=
 WIN32LIBADD=
 case "${host}" in
 *-*-cygwin*)
-  if test "$enable_shared" = "yes"; then
+  if test "${enable_shared}" = "yes"; then
     WIN32LDFLAGS="-no-undefined"
     WIN32LIBADD="-L`pwd`/../libiberty -liberty -L`pwd`/../intl -lintl -lcygwin -lkernel32"
   fi
@@ -662,7 +684,7 @@ case "${host}" in
   case "${host}" in
   mips*-*-linux*)
     # Linux/MIPS uses PIC by default.
-    if test "$enable_shared" = "yes"; then
+    if test "${enable_shared}" = "yes"; then
       WIN32LIBADD="-L../libiberty -liberty"
     fi
     ;;
@@ -1132,6 +1154,7 @@ else
   supports_plugins=0
 fi
 AC_SUBST([supports_plugins])
+AC_SUBST([lt_cv_dlopen_libs])
 
 # Determine the host dependant file_ptr a.k.a. off_t type. In order
 # prefer: off64_t - if ftello64 and fseeko64, off_t - if ftello and
@@ -1169,7 +1192,7 @@ case "$host" in
     ac_cv_func_mmap_fixed_mapped=yes
   ;;
 esac
-AC_CHECK_HEADERS([sys/mman.h])
+AC_CHECK_HEADERS_ONCE([sys/mman.h])
 AC_CHECK_FUNCS([madvise mprotect])
 case ${want_mmap}+${ac_cv_func_mmap_fixed_mapped} in
   true+yes )  AC_DEFINE([USE_MMAP],[1],[Use mmap if it is available?]) ;;

@@ -78,9 +78,15 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
+
+# Automake 1.9 will only build info files in the objdir if they are
+# mentioned in DISTCLEANFILES. It does NOT have to be unconditional,
+# though, so we use a bogus condition.
+@GENINSRC_NEVER_TRUE@am__append_1 = bfd.info
 subdir = doc
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
-	$(top_srcdir)/../mkinstalldirs texinfo.tex ChangeLog
+	$(top_srcdir)/../mkinstalldirs $(bfd_TEXINFOS) texinfo.tex \
+	ChangeLog
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps =  \
 	$(top_srcdir)/m4/ax_maintainer_mode_auto_silent.m4 \
@@ -142,7 +148,7 @@ AM_V_texidevnull = $(am__v_texidevnull_@AM_V@)
 am__v_texidevnull_ = $(am__v_texidevnull_@AM_DEFAULT_V@)
 am__v_texidevnull_0 = > /dev/null
 am__v_texidevnull_1 = 
-INFO_DEPS = $(srcdir)/bfd.info
+INFO_DEPS = bfd.info
 am__TEXINFO_TEX_DIR = $(srcdir)
 DVIS = bfd.dvi
 PDFS = bfd.pdf
@@ -360,6 +366,8 @@ libdir = @libdir@
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
+lt_cv_dlopen_libs = @lt_cv_dlopen_libs@
+lt_cv_objdir = @lt_cv_objdir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 nls_cv_force_use_gnu_gettext = @nls_cv_force_use_gnu_gettext@
@@ -393,7 +401,8 @@ DOCFILES = aoutx.texi archive.texi archures.texi \
 	libbfd.texi bfdwin.texi bfdio.texi \
 	opncls.texi reloc.texi section.texi  \
 	syms.texi targets.texi init.texi hash.texi linker.texi \
-	mmo.texi
+	mmo.texi \
+	bfdver.texi
 
 PROTOS = archive.p archures.p bfd.p \
 	 core.p format.p \
@@ -436,6 +445,7 @@ SRCIPROT = $(srcdir)/../cache.c $(srcdir)/../libbfd.c \
 
 TEXIDIR = $(srcdir)/../../texinfo/fsf
 info_TEXINFOS = bfd.texi
+bfd_TEXINFOS = $(DOCFILES) bfdsumm.texi
 MKDOC = chew$(EXEEXT_FOR_BUILD)
 AM_CPPFLAGS = -I.. -I$(srcdir)/.. -I$(srcdir)/../../include \
 	-I$(srcdir)/../../intl -I../../intl
@@ -488,12 +498,13 @@ BFD_H_DEP = \
 noinst_TEXINFOS = bfdint.texi
 MOSTLYCLEANFILES = $(MKDOC) *.o
 CLEANFILES = *.p *.ip *.dSYM
-DISTCLEANFILES = bfd.?? bfd.??? bfd.h libbfd.h libcoff.h texput.log
+DISTCLEANFILES = bfd.?? bfd.??? bfd.h libbfd.h libcoff.h texput.log \
+	$(am__append_1)
 MAINTAINERCLEANFILES = $(DOCFILES)
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .dvi .html .info .pdf .ps .texi
+.SUFFIXES: .dvi .ps
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -531,53 +542,45 @@ mostlyclean-libtool:
 clean-libtool:
 	-rm -rf .libs _libs
 
-.texi.info:
+bfd.info: bfd.texi $(bfd_TEXINFOS)
 	$(AM_V_MAKEINFO)restore=: && backupdir="$(am__leading_dot)am$$$$" && \
-	am__cwd=`pwd` && $(am__cd) $(srcdir) && \
 	rm -rf $$backupdir && mkdir $$backupdir && \
 	if ($(MAKEINFO) --version) >/dev/null 2>&1; then \
 	  for f in $@ $@-[0-9] $@-[0-9][0-9] $(@:.info=).i[0-9] $(@:.info=).i[0-9][0-9]; do \
 	    if test -f $$f; then mv $$f $$backupdir; restore=mv; else :; fi; \
 	  done; \
 	else :; fi && \
-	cd "$$am__cwd"; \
 	if $(MAKEINFO) $(AM_MAKEINFOFLAGS) $(MAKEINFOFLAGS) -I $(srcdir) \
-	 -o $@ $<; \
+	 -o $@ `test -f 'bfd.texi' || echo '$(srcdir)/'`bfd.texi; \
 	then \
 	  rc=0; \
-	  $(am__cd) $(srcdir); \
 	else \
 	  rc=$$?; \
-	  $(am__cd) $(srcdir) && \
 	  $$restore $$backupdir/* `echo "./$@" | sed 's|[^/]*$$||'`; \
 	fi; \
 	rm -rf $$backupdir; exit $$rc
 
-.texi.dvi:
+bfd.dvi: bfd.texi $(bfd_TEXINFOS) 
 	$(AM_V_TEXI2DVI)TEXINPUTS="$(am__TEXINFO_TEX_DIR)$(PATH_SEPARATOR)$$TEXINPUTS" \
 	MAKEINFO='$(MAKEINFO) $(AM_MAKEINFOFLAGS) $(MAKEINFOFLAGS) -I $(srcdir)' \
 	$(TEXI2DVI) $(AM_V_texinfo) --build-dir=$(@:.dvi=.t2d) -o $@ $(AM_V_texidevnull) \
-	$<
+	`test -f 'bfd.texi' || echo '$(srcdir)/'`bfd.texi
 
-.texi.pdf:
+bfd.pdf: bfd.texi $(bfd_TEXINFOS) 
 	$(AM_V_TEXI2PDF)TEXINPUTS="$(am__TEXINFO_TEX_DIR)$(PATH_SEPARATOR)$$TEXINPUTS" \
 	MAKEINFO='$(MAKEINFO) $(AM_MAKEINFOFLAGS) $(MAKEINFOFLAGS) -I $(srcdir)' \
 	$(TEXI2PDF) $(AM_V_texinfo) --build-dir=$(@:.pdf=.t2p) -o $@ $(AM_V_texidevnull) \
-	$<
+	`test -f 'bfd.texi' || echo '$(srcdir)/'`bfd.texi
 
-.texi.html:
+bfd.html: bfd.texi $(bfd_TEXINFOS) 
 	$(AM_V_MAKEINFO)rm -rf $(@:.html=.htp)
 	$(AM_V_at)if $(MAKEINFOHTML) $(AM_MAKEINFOHTMLFLAGS) $(MAKEINFOFLAGS) -I $(srcdir) \
-	 -o $(@:.html=.htp) $<; \
+	 -o $(@:.html=.htp) `test -f 'bfd.texi' || echo '$(srcdir)/'`bfd.texi; \
 	then \
 	  rm -rf $@ && mv $(@:.html=.htp) $@; \
 	else \
 	  rm -rf $(@:.html=.htp); exit 1; \
 	fi
-$(srcdir)/bfd.info: bfd.texi 
-bfd.dvi: bfd.texi 
-bfd.pdf: bfd.texi 
-bfd.html: bfd.texi 
 .dvi.ps:
 	$(AM_V_DVIPS)TEXINPUTS="$(am__TEXINFO_TEX_DIR)$(PATH_SEPARATOR)$$TEXINPUTS" \
 	$(DVIPS) $(AM_V_texinfo) -o $@ $<
@@ -1156,7 +1159,7 @@ libcoff.h: $(LIBCOFF_H_DEP)
 	  esac; \
 	done
 
-bfd.h $(srcdir)/bfd.h: $(BFD_H_DEP)
+bfd.h: $(BFD_H_DEP)
 	echo "$(BFD_H_DEP)" | sed -f $(srcdir)/header.sed > $@
 	for file in $(BFD_H_DEP); do \
 	  case $$file in \
@@ -1171,6 +1174,17 @@ bfd.h $(srcdir)/bfd.h: $(BFD_H_DEP)
 	echo "}" >> $@
 	echo "#endif" >> $@
 	echo "#endif" >> $@
+
+bfdver.texi: $(srcdir)/Makefile.in
+	@echo "creating $@"; \
+	echo "@set VERSION $(VERSION)" > bfdver.texi; \
+	if [ -n "$(PKGVERSION)" ]; then \
+	  echo "@set VERSION_PACKAGE $(PKGVERSION)" >> bfdver.texi; \
+	fi; \
+	echo "@set UPDATED `date '+%B %Y'`" >> bfdver.texi; \
+	if [ -n "$(REPORT_BUGS_TEXI)" ]; then \
+	  echo "@set BUGURL $(REPORT_BUGS_TEXI)" >> bfdver.texi; \
+	fi
 
 apple-clean:
 	rm -rfv *.dSYM || rmdir *.dSYM

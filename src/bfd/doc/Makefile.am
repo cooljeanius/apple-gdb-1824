@@ -11,7 +11,8 @@ DOCFILES = aoutx.texi archive.texi archures.texi \
 	libbfd.texi bfdwin.texi bfdio.texi \
 	opncls.texi reloc.texi section.texi  \
 	syms.texi targets.texi init.texi hash.texi linker.texi \
-	mmo.texi
+	mmo.texi \
+	bfdver.texi
 
 PROTOS = archive.p archures.p bfd.p \
 	 core.p format.p \
@@ -55,6 +56,7 @@ SRCIPROT = $(srcdir)/../cache.c $(srcdir)/../libbfd.c \
 TEXIDIR = $(srcdir)/../../texinfo/fsf
 
 info_TEXINFOS = bfd.texi
+bfd_TEXINFOS = $(DOCFILES) bfdsumm.texi
 
 MKDOC = chew$(EXEEXT_FOR_BUILD)
 
@@ -286,7 +288,7 @@ BFD_H_DEP = \
 	$(srcdir)/../version.h		\
 	$(MKDOC)
 
-bfd.h $(srcdir)/bfd.h: $(BFD_H_DEP)
+bfd.h: $(BFD_H_DEP)
 	echo "$(BFD_H_DEP)" | sed -f $(srcdir)/header.sed > $@
 	for file in $(BFD_H_DEP); do \
 	  case $$file in \
@@ -301,6 +303,17 @@ bfd.h $(srcdir)/bfd.h: $(BFD_H_DEP)
 	echo "}" >> $@
 	echo "#endif" >> $@
 	echo "#endif" >> $@
+
+bfdver.texi: $(srcdir)/Makefile.in
+	@echo "creating $@"; \
+	echo "@set VERSION $(VERSION)" > bfdver.texi; \
+	if [ -n "$(PKGVERSION)" ]; then \
+	  echo "@set VERSION_PACKAGE $(PKGVERSION)" >> bfdver.texi; \
+	fi; \
+	echo "@set UPDATED `date '+%B %Y'`" >> bfdver.texi; \
+	if [ -n "$(REPORT_BUGS_TEXI)" ]; then \
+	  echo "@set BUGURL $(REPORT_BUGS_TEXI)" >> bfdver.texi; \
+	fi
 
 noinst_TEXINFOS = bfdint.texi
 
@@ -318,3 +331,10 @@ MAINTAINERCLEANFILES = $(DOCFILES)
 # We want install to imply install-info as per GNU standards, despite the
 # (deprecated) cygnus option.
 install_my_texinfos: install-info
+
+# Automake 1.9 will only build info files in the objdir if they are
+# mentioned in DISTCLEANFILES. It does NOT have to be unconditional,
+# though, so we use a bogus condition.
+if GENINSRC_NEVER
+DISTCLEANFILES += bfd.info
+endif

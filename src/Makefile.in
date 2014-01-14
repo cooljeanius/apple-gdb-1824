@@ -591,7 +591,10 @@ BASE_FLAGS_TO_PASS = \
 	"datadir=$(datadir)" \
 	"exec_prefix=$(exec_prefix)" \
 	"includedir=$(includedir)" \
+	"datarootdir=$(datarootdir)" \
 	"infodir=$(infodir)" \
+	"pdfdir=$(pdfdir)" \
+	"htmldir=$(htmldir)" \
 	"libdir=$(libdir)" \
 	"libexecdir=$(libexecdir)" \
 	"lispdir=$(lispdir)" \
@@ -605,6 +608,7 @@ BASE_FLAGS_TO_PASS = \
 	"tooldir=$(tooldir)" \
 	"build_tooldir=$(build_tooldir)" \
 	"target_alias=$(target_alias)" \
+	"AWK=$(AWK)" \
 	"BISON=$(BISON)" \
 	"CC_FOR_BUILD=$(CC_FOR_BUILD)" \
 	"CFLAGS_FOR_BUILD=$(CFLAGS_FOR_BUILD)" \
@@ -615,19 +619,30 @@ BASE_FLAGS_TO_PASS = \
 	"INSTALL_DATA=$(INSTALL_DATA)" \
 	"INSTALL_PROGRAM=$(INSTALL_PROGRAM)" \
 	"INSTALL_SCRIPT=$(INSTALL_SCRIPT)" \
+	"LDFLAGS_FOR_BUILD=$(LDFLAGS_FOR_BUILD)" \
 	"LEX=$(LEX)" \
 	"M4=$(M4)" \
 	"MAKE=$(MAKE)" \
 	"RUNTEST=$(RUNTEST)" \
 	"RUNTESTFLAGS=$(RUNTESTFLAGS)" \
+	"SED=$(SED)" \
 	"SHELL=$(SHELL)" \
 	"YACC=$(YACC)" \
+	"ADAFLAGS=$(ADAFLAGS)" \
+	"ADA_CFLAGS=$(ADA_CFLAGS)" \
 	"AR_FLAGS=$(AR_FLAGS)" \
+	"BOOT_ADAFLAGS=$(BOOT_ADAFLAGS)" \
+	"BOOT_CFLAGS=$(BOOT_CFLAGS)" \
+	"BOOT_LDFLAGS=$(BOOT_LDFLAGS)" \
 	"CFLAGS=$(CFLAGS)" \
 	"CXXFLAGS=$(CXXFLAGS)" \
 	"LDFLAGS=$(LDFLAGS)" \
 	"LIBCFLAGS=$(LIBCFLAGS)" \
 	"LIBCXXFLAGS=$(LIBCXXFLAGS)" \
+	"STAGE1_CHECKING=$(STAGE1_CHECKING)" \
+	"STAGE1_LANGUAGES=$(STAGE1_LANGUAGES)" \
+	"GNATBIND=$(GNATBIND)" \
+	"GNATMAKE=$(GNATMAKE)" \
 	"AR_FOR_TARGET=$(AR_FOR_TARGET)" \
 	"AS_FOR_TARGET=$(AS_FOR_TARGET)" \
 	"CC_FOR_TARGET=$(CC_FOR_TARGET)" \
@@ -636,15 +651,26 @@ BASE_FLAGS_TO_PASS = \
 	"CXX_FOR_TARGET=$(CXX_FOR_TARGET)" \
 	"CXXFLAGS_FOR_TARGET=$(CXXFLAGS_FOR_TARGET)" \
 	"DLLTOOL_FOR_TARGET=$(DLLTOOL_FOR_TARGET)" \
+	"FLAGS_FOR_TARGET=$(FLAGS_FOR_TARGET)" \
 	"GCJ_FOR_TARGET=$(GCJ_FOR_TARGET)" \
 	"GFORTRAN_FOR_TARGET=$(GFORTRAN_FOR_TARGET)" \
+	"GOC_FOR_TARGET=$(GOC_FOR_TARGET)" \
+	"GOCFLAGS_FOR_TARGET=$(GOCFLAGS_FOR_TARGET)" \
 	"LD_FOR_TARGET=$(LD_FOR_TARGET)" \
 	"LDFLAGS_FOR_TARGET=$(LDFLAGS_FOR_TARGET)" \
 	"LIBCFLAGS_FOR_TARGET=$(LIBCFLAGS_FOR_TARGET)" \
 	"LIBCXXFLAGS_FOR_TARGET=$(LIBCXXFLAGS_FOR_TARGET)" \
+	"LIPO_FOR_TARGET=$(LIPO_FOR_TARGET)" \
 	"NM_FOR_TARGET=$(NM_FOR_TARGET)" \
+	"OBJDUMP_FOR_TARGET=$(OBJDUMP_FOR_TARGET)" \
 	"RANLIB_FOR_TARGET=$(RANLIB_FOR_TARGET)" \
+	"READELF_FOR_TARGET=$(READELF_FOR_TARGET)" \
+	"STRIP_FOR_TARGET=$(STRIP_FOR_TARGET)" \
 	"WINDRES_FOR_TARGET=$(WINDRES_FOR_TARGET)" \
+	"WINDMC_FOR_TARGET=$(WINDMC_FOR_TARGET)" \
+	"BUILD_CONFIG=$(BUILD_CONFIG)" \
+	"LANGUAGES=$(LANGUAGES)" \
+	"LEAN=$(LEAN)" \
 	"CONFIG_SHELL=$(SHELL)" \
 	"MAKEINFO=$(MAKEINFO) $(MAKEINFOFLAGS)" 
 
@@ -751,6 +777,7 @@ configure-host:  \
     maybe-configure-gawk \
     maybe-configure-gettext \
     maybe-configure-gnuserv \
+    maybe-configure-gold \
     maybe-configure-gprof \
     maybe-configure-gzip \
     maybe-configure-hello \
@@ -759,10 +786,13 @@ configure-host:  \
     maybe-configure-tcl \
     maybe-configure-itcl \
     maybe-configure-ld \
+    maybe-configure-libbacktrace \
     maybe-configure-libcpp \
     maybe-configure-libdecnumber \
+    maybe-configure-libelf \
     maybe-configure-libgui \
     maybe-configure-libiberty \
+    maybe-configure-libiconv \
     maybe-configure-libtool \
     maybe-configure-m4 \
     maybe-configure-make \
@@ -800,8 +830,12 @@ configure-target:  \
     maybe-configure-target-libmudflap \
     maybe-configure-target-libssp \
     maybe-configure-target-newlib \
+    maybe-configure-target-libgcc \
+    maybe-configure-target-libbacktrace \
+    maybe-configure-target-libquadmath \
     maybe-configure-target-libgfortran \
     maybe-configure-target-libobjc \
+    maybe-configure-target-libgo \
     maybe-configure-target-libtermcap \
     maybe-configure-target-winsup \
     maybe-configure-target-libgloss \
@@ -859,6 +893,7 @@ all-host:  \
     maybe-all-gawk \
     maybe-all-gettext \
     maybe-all-gnuserv \
+    maybe-all-gold \
     maybe-all-gprof \
     maybe-all-gzip \
     maybe-all-hello \
@@ -867,10 +902,13 @@ all-host:  \
     maybe-all-tcl \
     maybe-all-itcl \
     maybe-all-ld \
+    maybe-all-libbacktrace \
     maybe-all-libcpp \
     maybe-all-libdecnumber \
+    maybe-all-libelf \
     maybe-all-libgui \
     maybe-all-libiberty \
+    maybe-all-libiconv \
     maybe-all-libtool \
     maybe-all-m4 \
     maybe-all-make \
@@ -908,8 +946,12 @@ all-target:  \
     maybe-all-target-libmudflap \
     maybe-all-target-libssp \
     maybe-all-target-newlib \
+    maybe-all-target-libgcc \
+    maybe-all-target-libbacktrace \
+    maybe-all-target-libquadmath \
     maybe-all-target-libgfortran \
     maybe-all-target-libobjc \
+    maybe-all-target-libgo \
     maybe-all-target-libtermcap \
     maybe-all-target-winsup \
     maybe-all-target-libgloss \
@@ -962,6 +1004,7 @@ info-host:  \
     maybe-info-gawk \
     maybe-info-gettext \
     maybe-info-gnuserv \
+    maybe-info-gold \
     maybe-info-gprof \
     maybe-info-gzip \
     maybe-info-hello \
@@ -970,10 +1013,13 @@ info-host:  \
     maybe-info-tcl \
     maybe-info-itcl \
     maybe-info-ld \
+    maybe-info-libbacktrace \
     maybe-info-libcpp \
     maybe-info-libdecnumber \
+    maybe-info-libelf \
     maybe-info-libgui \
     maybe-info-libiberty \
+    maybe-info-libiconv \
     maybe-info-libtool \
     maybe-info-m4 \
     maybe-info-make \
@@ -1012,8 +1058,12 @@ info-target:  \
     maybe-info-target-libmudflap \
     maybe-info-target-libssp \
     maybe-info-target-newlib \
+    maybe-info-target-libgcc \
+    maybe-info-target-libbacktrace \
+    maybe-info-target-libquadmath \
     maybe-info-target-libgfortran \
     maybe-info-target-libobjc \
+    maybe-info-target-libgo \
     maybe-info-target-libtermcap \
     maybe-info-target-winsup \
     maybe-info-target-libgloss \
@@ -1061,6 +1111,7 @@ dvi-host:  \
     maybe-dvi-gawk \
     maybe-dvi-gettext \
     maybe-dvi-gnuserv \
+    maybe-dvi-gold \
     maybe-dvi-gprof \
     maybe-dvi-gzip \
     maybe-dvi-hello \
@@ -1069,10 +1120,13 @@ dvi-host:  \
     maybe-dvi-tcl \
     maybe-dvi-itcl \
     maybe-dvi-ld \
+    maybe-dvi-libbacktrace \
     maybe-dvi-libcpp \
     maybe-dvi-libdecnumber \
+    maybe-dvi-libelf \
     maybe-dvi-libgui \
     maybe-dvi-libiberty \
+    maybe-dvi-libiconv \
     maybe-dvi-libtool \
     maybe-dvi-m4 \
     maybe-dvi-make \
@@ -1111,8 +1165,12 @@ dvi-target:  \
     maybe-dvi-target-libmudflap \
     maybe-dvi-target-libssp \
     maybe-dvi-target-newlib \
+    maybe-dvi-target-libgcc \
+    maybe-dvi-target-libbacktrace \
+    maybe-dvi-target-libquadmath \
     maybe-dvi-target-libgfortran \
     maybe-dvi-target-libobjc \
+    maybe-dvi-target-libgo \
     maybe-dvi-target-libtermcap \
     maybe-dvi-target-winsup \
     maybe-dvi-target-libgloss \
@@ -1160,6 +1218,7 @@ html-host:  \
     maybe-html-gawk \
     maybe-html-gettext \
     maybe-html-gnuserv \
+    maybe-html-gold \
     maybe-html-gprof \
     maybe-html-gzip \
     maybe-html-hello \
@@ -1168,10 +1227,13 @@ html-host:  \
     maybe-html-tcl \
     maybe-html-itcl \
     maybe-html-ld \
+    maybe-html-libbacktrace \
     maybe-html-libcpp \
     maybe-html-libdecnumber \
+    maybe-html-libelf \
     maybe-html-libgui \
     maybe-html-libiberty \
+    maybe-html-libiconv \
     maybe-html-libtool \
     maybe-html-m4 \
     maybe-html-make \
@@ -1210,8 +1272,12 @@ html-target:  \
     maybe-html-target-libmudflap \
     maybe-html-target-libssp \
     maybe-html-target-newlib \
+    maybe-html-target-libgcc \
+    maybe-html-target-libbacktrace \
+    maybe-html-target-libquadmath \
     maybe-html-target-libgfortran \
     maybe-html-target-libobjc \
+    maybe-html-target-libgo \
     maybe-html-target-libtermcap \
     maybe-html-target-winsup \
     maybe-html-target-libgloss \
@@ -1259,6 +1325,7 @@ TAGS-host:  \
     maybe-TAGS-gawk \
     maybe-TAGS-gettext \
     maybe-TAGS-gnuserv \
+    maybe-TAGS-gold \
     maybe-TAGS-gprof \
     maybe-TAGS-gzip \
     maybe-TAGS-hello \
@@ -1267,10 +1334,13 @@ TAGS-host:  \
     maybe-TAGS-tcl \
     maybe-TAGS-itcl \
     maybe-TAGS-ld \
+    maybe-TAGS-libbacktrace \
     maybe-TAGS-libcpp \
     maybe-TAGS-libdecnumber \
+    maybe-TAGS-libelf \
     maybe-TAGS-libgui \
     maybe-TAGS-libiberty \
+    maybe-TAGS-libiconv \
     maybe-TAGS-libtool \
     maybe-TAGS-m4 \
     maybe-TAGS-make \
@@ -1309,8 +1379,12 @@ TAGS-target:  \
     maybe-TAGS-target-libmudflap \
     maybe-TAGS-target-libssp \
     maybe-TAGS-target-newlib \
+    maybe-TAGS-target-libgcc \
+    maybe-TAGS-target-libbacktrace \
+    maybe-TAGS-target-libquadmath \
     maybe-TAGS-target-libgfortran \
     maybe-TAGS-target-libobjc \
+    maybe-TAGS-target-libgo \
     maybe-TAGS-target-libtermcap \
     maybe-TAGS-target-winsup \
     maybe-TAGS-target-libgloss \
@@ -1358,6 +1432,7 @@ install-info-host:  \
     maybe-install-info-gawk \
     maybe-install-info-gettext \
     maybe-install-info-gnuserv \
+    maybe-install-info-gold \
     maybe-install-info-gprof \
     maybe-install-info-gzip \
     maybe-install-info-hello \
@@ -1366,10 +1441,13 @@ install-info-host:  \
     maybe-install-info-tcl \
     maybe-install-info-itcl \
     maybe-install-info-ld \
+    maybe-install-info-libbacktrace \
     maybe-install-info-libcpp \
     maybe-install-info-libdecnumber \
+    maybe-install-info-libelf \
     maybe-install-info-libgui \
     maybe-install-info-libiberty \
+    maybe-install-info-libiconv \
     maybe-install-info-libtool \
     maybe-install-info-m4 \
     maybe-install-info-make \
@@ -1408,8 +1486,12 @@ install-info-target:  \
     maybe-install-info-target-libmudflap \
     maybe-install-info-target-libssp \
     maybe-install-info-target-newlib \
+    maybe-install-info-target-libgcc \
+    maybe-install-info-target-libbacktrace \
+    maybe-install-info-target-libquadmath \
     maybe-install-info-target-libgfortran \
     maybe-install-info-target-libobjc \
+    maybe-install-info-target-libgo \
     maybe-install-info-target-libtermcap \
     maybe-install-info-target-winsup \
     maybe-install-info-target-libgloss \
@@ -1457,6 +1539,7 @@ installcheck-host:  \
     maybe-installcheck-gawk \
     maybe-installcheck-gettext \
     maybe-installcheck-gnuserv \
+    maybe-installcheck-gold \
     maybe-installcheck-gprof \
     maybe-installcheck-gzip \
     maybe-installcheck-hello \
@@ -1465,10 +1548,13 @@ installcheck-host:  \
     maybe-installcheck-tcl \
     maybe-installcheck-itcl \
     maybe-installcheck-ld \
+    maybe-installcheck-libbacktrace \
     maybe-installcheck-libcpp \
     maybe-installcheck-libdecnumber \
+    maybe-installcheck-libelf \
     maybe-installcheck-libgui \
     maybe-installcheck-libiberty \
+    maybe-installcheck-libiconv \
     maybe-installcheck-libtool \
     maybe-installcheck-m4 \
     maybe-installcheck-make \
@@ -1507,8 +1593,12 @@ installcheck-target:  \
     maybe-installcheck-target-libmudflap \
     maybe-installcheck-target-libssp \
     maybe-installcheck-target-newlib \
+    maybe-installcheck-target-libgcc \
+    maybe-installcheck-target-libbacktrace \
+    maybe-installcheck-target-libquadmath \
     maybe-installcheck-target-libgfortran \
     maybe-installcheck-target-libobjc \
+    maybe-installcheck-target-libgo \
     maybe-installcheck-target-libtermcap \
     maybe-installcheck-target-winsup \
     maybe-installcheck-target-libgloss \
@@ -1556,6 +1646,7 @@ mostlyclean-host:  \
     maybe-mostlyclean-gawk \
     maybe-mostlyclean-gettext \
     maybe-mostlyclean-gnuserv \
+    maybe-mostlyclean-gold \
     maybe-mostlyclean-gprof \
     maybe-mostlyclean-gzip \
     maybe-mostlyclean-hello \
@@ -1564,10 +1655,13 @@ mostlyclean-host:  \
     maybe-mostlyclean-tcl \
     maybe-mostlyclean-itcl \
     maybe-mostlyclean-ld \
+    maybe-mostlyclean-libbacktrace \
     maybe-mostlyclean-libcpp \
     maybe-mostlyclean-libdecnumber \
+    maybe-mostlyclean-libelf \
     maybe-mostlyclean-libgui \
     maybe-mostlyclean-libiberty \
+    maybe-mostlyclean-libiconv \
     maybe-mostlyclean-libtool \
     maybe-mostlyclean-m4 \
     maybe-mostlyclean-make \
@@ -1606,8 +1700,12 @@ mostlyclean-target:  \
     maybe-mostlyclean-target-libmudflap \
     maybe-mostlyclean-target-libssp \
     maybe-mostlyclean-target-newlib \
+    maybe-mostlyclean-target-libgcc \
+    maybe-mostlyclean-target-libbacktrace \
+    maybe-mostlyclean-target-libquadmath \
     maybe-mostlyclean-target-libgfortran \
     maybe-mostlyclean-target-libobjc \
+    maybe-mostlyclean-target-libgo \
     maybe-mostlyclean-target-libtermcap \
     maybe-mostlyclean-target-winsup \
     maybe-mostlyclean-target-libgloss \
@@ -1655,6 +1753,7 @@ clean-host:  \
     maybe-clean-gawk \
     maybe-clean-gettext \
     maybe-clean-gnuserv \
+    maybe-clean-gold \
     maybe-clean-gprof \
     maybe-clean-gzip \
     maybe-clean-hello \
@@ -1663,10 +1762,13 @@ clean-host:  \
     maybe-clean-tcl \
     maybe-clean-itcl \
     maybe-clean-ld \
+    maybe-clean-libbacktrace \
     maybe-clean-libcpp \
     maybe-clean-libdecnumber \
+    maybe-clean-libelf \
     maybe-clean-libgui \
     maybe-clean-libiberty \
+    maybe-clean-libiconv \
     maybe-clean-libtool \
     maybe-clean-m4 \
     maybe-clean-make \
@@ -1705,8 +1807,12 @@ clean-target:  \
     maybe-clean-target-libmudflap \
     maybe-clean-target-libssp \
     maybe-clean-target-newlib \
+    maybe-clean-target-libgcc \
+    maybe-clean-target-libbacktrace \
+    maybe-clean-target-libquadmath \
     maybe-clean-target-libgfortran \
     maybe-clean-target-libobjc \
+    maybe-clean-target-libgo \
     maybe-clean-target-libtermcap \
     maybe-clean-target-winsup \
     maybe-clean-target-libgloss \
@@ -1754,6 +1860,7 @@ distclean-host:  \
     maybe-distclean-gawk \
     maybe-distclean-gettext \
     maybe-distclean-gnuserv \
+    maybe-distclean-gold \
     maybe-distclean-gprof \
     maybe-distclean-gzip \
     maybe-distclean-hello \
@@ -1762,10 +1869,13 @@ distclean-host:  \
     maybe-distclean-tcl \
     maybe-distclean-itcl \
     maybe-distclean-ld \
+    maybe-distclean-libbacktrace \
     maybe-distclean-libcpp \
     maybe-distclean-libdecnumber \
+    maybe-distclean-libelf \
     maybe-distclean-libgui \
     maybe-distclean-libiberty \
+    maybe-distclean-libiconv \
     maybe-distclean-libtool \
     maybe-distclean-m4 \
     maybe-distclean-make \
@@ -1804,8 +1914,12 @@ distclean-target:  \
     maybe-distclean-target-libmudflap \
     maybe-distclean-target-libssp \
     maybe-distclean-target-newlib \
+    maybe-distclean-target-libgcc \
+    maybe-distclean-target-libbacktrace \
+    maybe-distclean-target-libquadmath \
     maybe-distclean-target-libgfortran \
     maybe-distclean-target-libobjc \
+    maybe-distclean-target-libgo \
     maybe-distclean-target-libtermcap \
     maybe-distclean-target-winsup \
     maybe-distclean-target-libgloss \
@@ -1853,6 +1967,7 @@ maintainer-clean-host:  \
     maybe-maintainer-clean-gawk \
     maybe-maintainer-clean-gettext \
     maybe-maintainer-clean-gnuserv \
+    maybe-maintainer-clean-gold \
     maybe-maintainer-clean-gprof \
     maybe-maintainer-clean-gzip \
     maybe-maintainer-clean-hello \
@@ -1861,10 +1976,13 @@ maintainer-clean-host:  \
     maybe-maintainer-clean-tcl \
     maybe-maintainer-clean-itcl \
     maybe-maintainer-clean-ld \
+    maybe-maintainer-clean-libbacktrace \
     maybe-maintainer-clean-libcpp \
     maybe-maintainer-clean-libdecnumber \
+    maybe-maintainer-clean-libelf \
     maybe-maintainer-clean-libgui \
     maybe-maintainer-clean-libiberty \
+    maybe-maintainer-clean-libiconv \
     maybe-maintainer-clean-libtool \
     maybe-maintainer-clean-m4 \
     maybe-maintainer-clean-make \
@@ -1903,8 +2021,12 @@ maintainer-clean-target:  \
     maybe-maintainer-clean-target-libmudflap \
     maybe-maintainer-clean-target-libssp \
     maybe-maintainer-clean-target-newlib \
+    maybe-maintainer-clean-target-libgcc \
+    maybe-maintainer-clean-target-libbacktrace \
+    maybe-maintainer-clean-target-libquadmath \
     maybe-maintainer-clean-target-libgfortran \
     maybe-maintainer-clean-target-libobjc \
+    maybe-maintainer-clean-target-libgo \
     maybe-maintainer-clean-target-libtermcap \
     maybe-maintainer-clean-target-winsup \
     maybe-maintainer-clean-target-libgloss \
@@ -2014,6 +2136,7 @@ do-check: unstage  \
     maybe-check-gawk \
     maybe-check-gettext \
     maybe-check-gnuserv \
+    maybe-check-gold \
     maybe-check-gprof \
     maybe-check-gzip \
     maybe-check-hello \
@@ -2022,10 +2145,13 @@ do-check: unstage  \
     maybe-check-tcl \
     maybe-check-itcl \
     maybe-check-ld \
+    maybe-check-libbacktrace \
     maybe-check-libcpp \
     maybe-check-libdecnumber \
+    maybe-check-libelf \
     maybe-check-libgui \
     maybe-check-libiberty \
+    maybe-check-libiconv \
     maybe-check-libtool \
     maybe-check-m4 \
     maybe-check-make \
@@ -2061,8 +2187,12 @@ do-check: unstage  \
     maybe-check-target-libmudflap \
     maybe-check-target-libssp \
     maybe-check-target-newlib \
+    maybe-check-target-libgcc \
+    maybe-check-target-libbacktrace \
+    maybe-check-target-libquadmath \
     maybe-check-target-libgfortran \
     maybe-check-target-libobjc \
+    maybe-check-target-libgo \
     maybe-check-target-libtermcap \
     maybe-check-target-winsup \
     maybe-check-target-libgloss \
@@ -2132,6 +2262,7 @@ install-host-nogcc:  \
     maybe-install-gawk \
     maybe-install-gettext \
     maybe-install-gnuserv \
+    maybe-install-gold \
     maybe-install-gprof \
     maybe-install-gzip \
     maybe-install-hello \
@@ -2140,10 +2271,13 @@ install-host-nogcc:  \
     maybe-install-tcl \
     maybe-install-itcl \
     maybe-install-ld \
+    maybe-install-libbacktrace \
     maybe-install-libcpp \
     maybe-install-libdecnumber \
+    maybe-install-libelf \
     maybe-install-libgui \
     maybe-install-libiberty \
+    maybe-install-libiconv \
     maybe-install-libtool \
     maybe-install-m4 \
     maybe-install-make \
@@ -2206,6 +2340,7 @@ install-host:  \
     maybe-install-gawk \
     maybe-install-gettext \
     maybe-install-gnuserv \
+    maybe-install-gold \
     maybe-install-gprof \
     maybe-install-gzip \
     maybe-install-hello \
@@ -2214,10 +2349,13 @@ install-host:  \
     maybe-install-tcl \
     maybe-install-itcl \
     maybe-install-ld \
+    maybe-install-libbacktrace \
     maybe-install-libcpp \
     maybe-install-libdecnumber \
+    maybe-install-libelf \
     maybe-install-libgui \
     maybe-install-libiberty \
+    maybe-install-libiconv \
     maybe-install-libtool \
     maybe-install-m4 \
     maybe-install-make \
@@ -2256,8 +2394,12 @@ install-target:  \
     maybe-install-target-libmudflap \
     maybe-install-target-libssp \
     maybe-install-target-newlib \
+    maybe-install-target-libgcc \
+    maybe-install-target-libbacktrace \
+    maybe-install-target-libquadmath \
     maybe-install-target-libgfortran \
     maybe-install-target-libobjc \
+    maybe-install-target-libgo \
     maybe-install-target-libtermcap \
     maybe-install-target-winsup \
     maybe-install-target-libgloss \
@@ -7580,6 +7722,11 @@ maybe-check-cgen:
 maybe-check-cgen: check-cgen
 
 check-cgen:
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/cgen && \
+	  $(MAKE) $(FLAGS_TO_PASS)  check)
 
 @endif cgen
 
@@ -13590,6 +13737,656 @@ maintainer-clean-gnuserv:
 
 
 
+.PHONY: configure-gold maybe-configure-gold
+maybe-configure-gold:
+@if gold
+maybe-configure-gold: configure-gold
+configure-gold: 
+	@test -f stage_last && exit 0; \
+	test ! -f $(HOST_SUBDIR)/gold/Makefile || exit 0; \
+	$(SHELL) $(srcdir)/mkinstalldirs $(HOST_SUBDIR)/gold ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	echo Configuring in $(HOST_SUBDIR)/gold; \
+	cd "$(HOST_SUBDIR)/gold" || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/gold/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/gold"; \
+	libsrcdir="$$s/gold"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption}  \
+	  || exit 1
+@endif gold
+
+
+
+.PHONY: configure-stage1-gold maybe-configure-stage1-gold
+maybe-configure-stage1-gold:
+@if gold-bootstrap
+maybe-configure-stage1-gold: configure-stage1-gold
+configure-stage1-gold: 
+	@$(MAKE) stage1-start
+	@[ -f $(HOST_SUBDIR)/gold/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	echo Configuring stage 1 in $(HOST_SUBDIR)/gold ; \
+	cd $(HOST_SUBDIR)/gold || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/gold/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/gold"; \
+	libsrcdir="$$s/gold"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  --disable-intermodule 	  --disable-coverage --enable-languages="$(STAGE1_LANGUAGES)" 
+@endif gold-bootstrap
+
+.PHONY: configure-stage2-gold maybe-configure-stage2-gold
+maybe-configure-stage2-gold:
+@if gold-bootstrap
+maybe-configure-stage2-gold: configure-stage2-gold
+configure-stage2-gold: 
+	@$(MAKE) stage2-start
+	@[ -f $(HOST_SUBDIR)/gold/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage 2 in $(HOST_SUBDIR)/gold ; \
+	cd $(HOST_SUBDIR)/gold || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/gold/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/gold"; \
+	libsrcdir="$$s/gold"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif gold-bootstrap
+
+.PHONY: configure-stage3-gold maybe-configure-stage3-gold
+maybe-configure-stage3-gold:
+@if gold-bootstrap
+maybe-configure-stage3-gold: configure-stage3-gold
+configure-stage3-gold: 
+	@$(MAKE) stage3-start
+	@[ -f $(HOST_SUBDIR)/gold/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage 3 in $(HOST_SUBDIR)/gold ; \
+	cd $(HOST_SUBDIR)/gold || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/gold/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/gold"; \
+	libsrcdir="$$s/gold"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif gold-bootstrap
+
+.PHONY: configure-stage4-gold maybe-configure-stage4-gold
+maybe-configure-stage4-gold:
+@if gold-bootstrap
+maybe-configure-stage4-gold: configure-stage4-gold
+configure-stage4-gold: 
+	@$(MAKE) stage4-start
+	@[ -f $(HOST_SUBDIR)/gold/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage 4 in $(HOST_SUBDIR)/gold ; \
+	cd $(HOST_SUBDIR)/gold || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/gold/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/gold"; \
+	libsrcdir="$$s/gold"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif gold-bootstrap
+
+.PHONY: configure-stageprofile-gold maybe-configure-stageprofile-gold
+maybe-configure-stageprofile-gold:
+@if gold-bootstrap
+maybe-configure-stageprofile-gold: configure-stageprofile-gold
+configure-stageprofile-gold: 
+	@$(MAKE) stageprofile-start
+	@[ -f $(HOST_SUBDIR)/gold/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage profile in $(HOST_SUBDIR)/gold ; \
+	cd $(HOST_SUBDIR)/gold || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/gold/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/gold"; \
+	libsrcdir="$$s/gold"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif gold-bootstrap
+
+.PHONY: configure-stagefeedback-gold maybe-configure-stagefeedback-gold
+maybe-configure-stagefeedback-gold:
+@if gold-bootstrap
+maybe-configure-stagefeedback-gold: configure-stagefeedback-gold
+configure-stagefeedback-gold: 
+	@$(MAKE) stagefeedback-start
+	@[ -f $(HOST_SUBDIR)/gold/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage feedback in $(HOST_SUBDIR)/gold ; \
+	cd $(HOST_SUBDIR)/gold || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/gold/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/gold"; \
+	libsrcdir="$$s/gold"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif gold-bootstrap
+
+
+
+
+
+.PHONY: all-gold maybe-all-gold
+maybe-all-gold:
+@if gold
+TARGET-gold=all
+maybe-all-gold: all-gold
+all-gold: configure-gold
+	@test -f stage_last && exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/gold && \
+	  $(MAKE) $(FLAGS_TO_PASS)  $(TARGET-gold))
+@endif gold
+
+
+
+.PHONY: all-stage1-gold maybe-all-stage1-gold
+.PHONY: clean-stage1-gold maybe-clean-stage1-gold
+maybe-all-stage1-gold:
+maybe-clean-stage1-gold:
+@if gold-bootstrap
+maybe-all-stage1-gold: all-stage1-gold
+all-stage1: all-stage1-gold
+all-stage1-gold: configure-stage1-gold
+	@$(MAKE) stage1-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/gold && \
+	$(MAKE) $(FLAGS_TO_PASS)  CFLAGS="$(STAGE1_CFLAGS)" 
+
+maybe-clean-stage1-gold: clean-stage1-gold
+clean-stage1: clean-stage1-gold
+clean-stage1-gold:
+	@[ -f $(HOST_SUBDIR)/gold/Makefile ] || [ -f $(HOST_SUBDIR)/stage1-gold/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/gold/Makefile ] || $(MAKE) stage1-start ; \
+	cd $(HOST_SUBDIR)/gold && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		CFLAGS="$(STAGE1_CFLAGS)"  clean
+@endif gold-bootstrap
+
+
+.PHONY: all-stage2-gold maybe-all-stage2-gold
+.PHONY: clean-stage2-gold maybe-clean-stage2-gold
+maybe-all-stage2-gold:
+maybe-clean-stage2-gold:
+@if gold-bootstrap
+maybe-all-stage2-gold: all-stage2-gold
+all-stage2: all-stage2-gold
+all-stage2-gold: configure-stage2-gold
+	@$(MAKE) stage2-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/gold && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS)  
+
+maybe-clean-stage2-gold: clean-stage2-gold
+clean-stage2: clean-stage2-gold
+clean-stage2-gold:
+	@[ -f $(HOST_SUBDIR)/gold/Makefile ] || [ -f $(HOST_SUBDIR)/stage2-gold/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/gold/Makefile ] || $(MAKE) stage2-start ; \
+	cd $(HOST_SUBDIR)/gold && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		  clean
+@endif gold-bootstrap
+
+
+.PHONY: all-stage3-gold maybe-all-stage3-gold
+.PHONY: clean-stage3-gold maybe-clean-stage3-gold
+maybe-all-stage3-gold:
+maybe-clean-stage3-gold:
+@if gold-bootstrap
+maybe-all-stage3-gold: all-stage3-gold
+all-stage3: all-stage3-gold
+all-stage3-gold: configure-stage3-gold
+	@$(MAKE) stage3-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/gold && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS)  
+
+maybe-clean-stage3-gold: clean-stage3-gold
+clean-stage3: clean-stage3-gold
+clean-stage3-gold:
+	@[ -f $(HOST_SUBDIR)/gold/Makefile ] || [ -f $(HOST_SUBDIR)/stage3-gold/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/gold/Makefile ] || $(MAKE) stage3-start ; \
+	cd $(HOST_SUBDIR)/gold && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		  clean
+@endif gold-bootstrap
+
+
+.PHONY: all-stage4-gold maybe-all-stage4-gold
+.PHONY: clean-stage4-gold maybe-clean-stage4-gold
+maybe-all-stage4-gold:
+maybe-clean-stage4-gold:
+@if gold-bootstrap
+maybe-all-stage4-gold: all-stage4-gold
+all-stage4: all-stage4-gold
+all-stage4-gold: configure-stage4-gold
+	@$(MAKE) stage4-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/gold && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS)  
+
+maybe-clean-stage4-gold: clean-stage4-gold
+clean-stage4: clean-stage4-gold
+clean-stage4-gold:
+	@[ -f $(HOST_SUBDIR)/gold/Makefile ] || [ -f $(HOST_SUBDIR)/stage4-gold/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/gold/Makefile ] || $(MAKE) stage4-start ; \
+	cd $(HOST_SUBDIR)/gold && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		  clean
+@endif gold-bootstrap
+
+
+.PHONY: all-stageprofile-gold maybe-all-stageprofile-gold
+.PHONY: clean-stageprofile-gold maybe-clean-stageprofile-gold
+maybe-all-stageprofile-gold:
+maybe-clean-stageprofile-gold:
+@if gold-bootstrap
+maybe-all-stageprofile-gold: all-stageprofile-gold
+all-stageprofile: all-stageprofile-gold
+all-stageprofile-gold: configure-stageprofile-gold
+	@$(MAKE) stageprofile-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/gold && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS) CFLAGS="$(BOOT_CFLAGS) -fprofile-generate" 
+
+maybe-clean-stageprofile-gold: clean-stageprofile-gold
+clean-stageprofile: clean-stageprofile-gold
+clean-stageprofile-gold:
+	@[ -f $(HOST_SUBDIR)/gold/Makefile ] || [ -f $(HOST_SUBDIR)/stageprofile-gold/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/gold/Makefile ] || $(MAKE) stageprofile-start ; \
+	cd $(HOST_SUBDIR)/gold && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		CFLAGS="$(BOOT_CFLAGS) -fprofile-generate"  clean
+@endif gold-bootstrap
+
+
+.PHONY: all-stagefeedback-gold maybe-all-stagefeedback-gold
+.PHONY: clean-stagefeedback-gold maybe-clean-stagefeedback-gold
+maybe-all-stagefeedback-gold:
+maybe-clean-stagefeedback-gold:
+@if gold-bootstrap
+maybe-all-stagefeedback-gold: all-stagefeedback-gold
+all-stagefeedback: all-stagefeedback-gold
+all-stagefeedback-gold: configure-stagefeedback-gold
+	@$(MAKE) stagefeedback-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/gold && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS) CFLAGS="$(BOOT_CFLAGS) -fprofile-use" 
+
+maybe-clean-stagefeedback-gold: clean-stagefeedback-gold
+clean-stagefeedback: clean-stagefeedback-gold
+clean-stagefeedback-gold:
+	@[ -f $(HOST_SUBDIR)/gold/Makefile ] || [ -f $(HOST_SUBDIR)/stagefeedback-gold/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/gold/Makefile ] || $(MAKE) stagefeedback-start ; \
+	cd $(HOST_SUBDIR)/gold && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		CFLAGS="$(BOOT_CFLAGS) -fprofile-use"  clean
+@endif gold-bootstrap
+
+
+
+
+
+.PHONY: check-gold maybe-check-gold
+maybe-check-gold:
+@if gold
+maybe-check-gold: check-gold
+
+check-gold:
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/gold && \
+	  $(MAKE) $(FLAGS_TO_PASS)  check)
+
+@endif gold
+
+.PHONY: install-gold maybe-install-gold
+maybe-install-gold:
+@if gold
+maybe-install-gold: install-gold
+
+install-gold: installdirs
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/gold && \
+	  $(MAKE) $(FLAGS_TO_PASS)  install)
+
+@endif gold
+
+# Other targets (info, dvi, etc.)
+
+.PHONY: maybe-info-gold info-gold
+maybe-info-gold:
+@if gold
+maybe-info-gold: info-gold
+
+info-gold: \
+    configure-gold 
+	@[ -f ./gold/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing info in gold" ; \
+	(cd $(HOST_SUBDIR)/gold && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          info) \
+	  || exit 1
+
+@endif gold
+
+.PHONY: maybe-dvi-gold dvi-gold
+maybe-dvi-gold:
+@if gold
+maybe-dvi-gold: dvi-gold
+
+dvi-gold: \
+    configure-gold 
+	@[ -f ./gold/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing dvi in gold" ; \
+	(cd $(HOST_SUBDIR)/gold && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          dvi) \
+	  || exit 1
+
+@endif gold
+
+.PHONY: maybe-html-gold html-gold
+maybe-html-gold:
+@if gold
+maybe-html-gold: html-gold
+
+html-gold: \
+    configure-gold 
+	@[ -f ./gold/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing html in gold" ; \
+	(cd $(HOST_SUBDIR)/gold && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          html) \
+	  || exit 1
+
+@endif gold
+
+.PHONY: maybe-TAGS-gold TAGS-gold
+maybe-TAGS-gold:
+@if gold
+maybe-TAGS-gold: TAGS-gold
+
+TAGS-gold: \
+    configure-gold 
+	@[ -f ./gold/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing TAGS in gold" ; \
+	(cd $(HOST_SUBDIR)/gold && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          TAGS) \
+	  || exit 1
+
+@endif gold
+
+.PHONY: maybe-install-info-gold install-info-gold
+maybe-install-info-gold:
+@if gold
+maybe-install-info-gold: install-info-gold
+
+install-info-gold: \
+    configure-gold \
+    info-gold 
+	@[ -f ./gold/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing install-info in gold" ; \
+	(cd $(HOST_SUBDIR)/gold && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          install-info) \
+	  || exit 1
+
+@endif gold
+
+.PHONY: maybe-installcheck-gold installcheck-gold
+maybe-installcheck-gold:
+@if gold
+maybe-installcheck-gold: installcheck-gold
+
+installcheck-gold: \
+    configure-gold 
+	@[ -f ./gold/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing installcheck in gold" ; \
+	(cd $(HOST_SUBDIR)/gold && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          installcheck) \
+	  || exit 1
+
+@endif gold
+
+.PHONY: maybe-mostlyclean-gold mostlyclean-gold
+maybe-mostlyclean-gold:
+@if gold
+maybe-mostlyclean-gold: mostlyclean-gold
+
+mostlyclean-gold: 
+	@[ -f ./gold/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing mostlyclean in gold" ; \
+	(cd $(HOST_SUBDIR)/gold && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          mostlyclean) \
+	  || exit 1
+
+@endif gold
+
+.PHONY: maybe-clean-gold clean-gold
+maybe-clean-gold:
+@if gold
+maybe-clean-gold: clean-gold
+
+clean-gold: 
+	@[ -f ./gold/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing clean in gold" ; \
+	(cd $(HOST_SUBDIR)/gold && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          clean) \
+	  || exit 1
+
+@endif gold
+
+.PHONY: maybe-distclean-gold distclean-gold
+maybe-distclean-gold:
+@if gold
+maybe-distclean-gold: distclean-gold
+
+distclean-gold: 
+	@[ -f ./gold/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing distclean in gold" ; \
+	(cd $(HOST_SUBDIR)/gold && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          distclean) \
+	  || exit 1
+
+@endif gold
+
+.PHONY: maybe-maintainer-clean-gold maintainer-clean-gold
+maybe-maintainer-clean-gold:
+@if gold
+maybe-maintainer-clean-gold: maintainer-clean-gold
+
+maintainer-clean-gold: 
+	@[ -f ./gold/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing maintainer-clean in gold" ; \
+	(cd $(HOST_SUBDIR)/gold && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          maintainer-clean) \
+	  || exit 1
+
+@endif gold
+
+
+
 .PHONY: configure-gprof maybe-configure-gprof
 maybe-configure-gprof:
 @if gprof
@@ -16814,6 +17611,656 @@ maintainer-clean-ld:
 
 
 
+.PHONY: configure-libbacktrace maybe-configure-libbacktrace
+maybe-configure-libbacktrace:
+@if libbacktrace
+maybe-configure-libbacktrace: configure-libbacktrace
+configure-libbacktrace: 
+	@test -f stage_last && exit 0; \
+	test ! -f $(HOST_SUBDIR)/libbacktrace/Makefile || exit 0; \
+	$(SHELL) $(srcdir)/mkinstalldirs $(HOST_SUBDIR)/libbacktrace ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	echo Configuring in $(HOST_SUBDIR)/libbacktrace; \
+	cd "$(HOST_SUBDIR)/libbacktrace" || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/libbacktrace/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libbacktrace"; \
+	libsrcdir="$$s/libbacktrace"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption}  \
+	  || exit 1
+@endif libbacktrace
+
+
+
+.PHONY: configure-stage1-libbacktrace maybe-configure-stage1-libbacktrace
+maybe-configure-stage1-libbacktrace:
+@if libbacktrace-bootstrap
+maybe-configure-stage1-libbacktrace: configure-stage1-libbacktrace
+configure-stage1-libbacktrace: 
+	@$(MAKE) stage1-start
+	@[ -f $(HOST_SUBDIR)/libbacktrace/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	echo Configuring stage 1 in $(HOST_SUBDIR)/libbacktrace ; \
+	cd $(HOST_SUBDIR)/libbacktrace || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/libbacktrace/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libbacktrace"; \
+	libsrcdir="$$s/libbacktrace"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  --disable-intermodule 	  --disable-coverage --enable-languages="$(STAGE1_LANGUAGES)" 
+@endif libbacktrace-bootstrap
+
+.PHONY: configure-stage2-libbacktrace maybe-configure-stage2-libbacktrace
+maybe-configure-stage2-libbacktrace:
+@if libbacktrace-bootstrap
+maybe-configure-stage2-libbacktrace: configure-stage2-libbacktrace
+configure-stage2-libbacktrace: 
+	@$(MAKE) stage2-start
+	@[ -f $(HOST_SUBDIR)/libbacktrace/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage 2 in $(HOST_SUBDIR)/libbacktrace ; \
+	cd $(HOST_SUBDIR)/libbacktrace || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/libbacktrace/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libbacktrace"; \
+	libsrcdir="$$s/libbacktrace"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libbacktrace-bootstrap
+
+.PHONY: configure-stage3-libbacktrace maybe-configure-stage3-libbacktrace
+maybe-configure-stage3-libbacktrace:
+@if libbacktrace-bootstrap
+maybe-configure-stage3-libbacktrace: configure-stage3-libbacktrace
+configure-stage3-libbacktrace: 
+	@$(MAKE) stage3-start
+	@[ -f $(HOST_SUBDIR)/libbacktrace/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage 3 in $(HOST_SUBDIR)/libbacktrace ; \
+	cd $(HOST_SUBDIR)/libbacktrace || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/libbacktrace/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libbacktrace"; \
+	libsrcdir="$$s/libbacktrace"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libbacktrace-bootstrap
+
+.PHONY: configure-stage4-libbacktrace maybe-configure-stage4-libbacktrace
+maybe-configure-stage4-libbacktrace:
+@if libbacktrace-bootstrap
+maybe-configure-stage4-libbacktrace: configure-stage4-libbacktrace
+configure-stage4-libbacktrace: 
+	@$(MAKE) stage4-start
+	@[ -f $(HOST_SUBDIR)/libbacktrace/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage 4 in $(HOST_SUBDIR)/libbacktrace ; \
+	cd $(HOST_SUBDIR)/libbacktrace || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/libbacktrace/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libbacktrace"; \
+	libsrcdir="$$s/libbacktrace"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libbacktrace-bootstrap
+
+.PHONY: configure-stageprofile-libbacktrace maybe-configure-stageprofile-libbacktrace
+maybe-configure-stageprofile-libbacktrace:
+@if libbacktrace-bootstrap
+maybe-configure-stageprofile-libbacktrace: configure-stageprofile-libbacktrace
+configure-stageprofile-libbacktrace: 
+	@$(MAKE) stageprofile-start
+	@[ -f $(HOST_SUBDIR)/libbacktrace/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage profile in $(HOST_SUBDIR)/libbacktrace ; \
+	cd $(HOST_SUBDIR)/libbacktrace || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/libbacktrace/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libbacktrace"; \
+	libsrcdir="$$s/libbacktrace"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libbacktrace-bootstrap
+
+.PHONY: configure-stagefeedback-libbacktrace maybe-configure-stagefeedback-libbacktrace
+maybe-configure-stagefeedback-libbacktrace:
+@if libbacktrace-bootstrap
+maybe-configure-stagefeedback-libbacktrace: configure-stagefeedback-libbacktrace
+configure-stagefeedback-libbacktrace: 
+	@$(MAKE) stagefeedback-start
+	@[ -f $(HOST_SUBDIR)/libbacktrace/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage feedback in $(HOST_SUBDIR)/libbacktrace ; \
+	cd $(HOST_SUBDIR)/libbacktrace || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/libbacktrace/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libbacktrace"; \
+	libsrcdir="$$s/libbacktrace"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libbacktrace-bootstrap
+
+
+
+
+
+.PHONY: all-libbacktrace maybe-all-libbacktrace
+maybe-all-libbacktrace:
+@if libbacktrace
+TARGET-libbacktrace=all
+maybe-all-libbacktrace: all-libbacktrace
+all-libbacktrace: configure-libbacktrace
+	@test -f stage_last && exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(FLAGS_TO_PASS)  $(TARGET-libbacktrace))
+@endif libbacktrace
+
+
+
+.PHONY: all-stage1-libbacktrace maybe-all-stage1-libbacktrace
+.PHONY: clean-stage1-libbacktrace maybe-clean-stage1-libbacktrace
+maybe-all-stage1-libbacktrace:
+maybe-clean-stage1-libbacktrace:
+@if libbacktrace-bootstrap
+maybe-all-stage1-libbacktrace: all-stage1-libbacktrace
+all-stage1: all-stage1-libbacktrace
+all-stage1-libbacktrace: configure-stage1-libbacktrace
+	@$(MAKE) stage1-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/libbacktrace && \
+	$(MAKE) $(FLAGS_TO_PASS)  CFLAGS="$(STAGE1_CFLAGS)" 
+
+maybe-clean-stage1-libbacktrace: clean-stage1-libbacktrace
+clean-stage1: clean-stage1-libbacktrace
+clean-stage1-libbacktrace:
+	@[ -f $(HOST_SUBDIR)/libbacktrace/Makefile ] || [ -f $(HOST_SUBDIR)/stage1-libbacktrace/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/libbacktrace/Makefile ] || $(MAKE) stage1-start ; \
+	cd $(HOST_SUBDIR)/libbacktrace && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		CFLAGS="$(STAGE1_CFLAGS)"  clean
+@endif libbacktrace-bootstrap
+
+
+.PHONY: all-stage2-libbacktrace maybe-all-stage2-libbacktrace
+.PHONY: clean-stage2-libbacktrace maybe-clean-stage2-libbacktrace
+maybe-all-stage2-libbacktrace:
+maybe-clean-stage2-libbacktrace:
+@if libbacktrace-bootstrap
+maybe-all-stage2-libbacktrace: all-stage2-libbacktrace
+all-stage2: all-stage2-libbacktrace
+all-stage2-libbacktrace: configure-stage2-libbacktrace
+	@$(MAKE) stage2-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/libbacktrace && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS)  
+
+maybe-clean-stage2-libbacktrace: clean-stage2-libbacktrace
+clean-stage2: clean-stage2-libbacktrace
+clean-stage2-libbacktrace:
+	@[ -f $(HOST_SUBDIR)/libbacktrace/Makefile ] || [ -f $(HOST_SUBDIR)/stage2-libbacktrace/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/libbacktrace/Makefile ] || $(MAKE) stage2-start ; \
+	cd $(HOST_SUBDIR)/libbacktrace && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		  clean
+@endif libbacktrace-bootstrap
+
+
+.PHONY: all-stage3-libbacktrace maybe-all-stage3-libbacktrace
+.PHONY: clean-stage3-libbacktrace maybe-clean-stage3-libbacktrace
+maybe-all-stage3-libbacktrace:
+maybe-clean-stage3-libbacktrace:
+@if libbacktrace-bootstrap
+maybe-all-stage3-libbacktrace: all-stage3-libbacktrace
+all-stage3: all-stage3-libbacktrace
+all-stage3-libbacktrace: configure-stage3-libbacktrace
+	@$(MAKE) stage3-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/libbacktrace && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS)  
+
+maybe-clean-stage3-libbacktrace: clean-stage3-libbacktrace
+clean-stage3: clean-stage3-libbacktrace
+clean-stage3-libbacktrace:
+	@[ -f $(HOST_SUBDIR)/libbacktrace/Makefile ] || [ -f $(HOST_SUBDIR)/stage3-libbacktrace/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/libbacktrace/Makefile ] || $(MAKE) stage3-start ; \
+	cd $(HOST_SUBDIR)/libbacktrace && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		  clean
+@endif libbacktrace-bootstrap
+
+
+.PHONY: all-stage4-libbacktrace maybe-all-stage4-libbacktrace
+.PHONY: clean-stage4-libbacktrace maybe-clean-stage4-libbacktrace
+maybe-all-stage4-libbacktrace:
+maybe-clean-stage4-libbacktrace:
+@if libbacktrace-bootstrap
+maybe-all-stage4-libbacktrace: all-stage4-libbacktrace
+all-stage4: all-stage4-libbacktrace
+all-stage4-libbacktrace: configure-stage4-libbacktrace
+	@$(MAKE) stage4-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/libbacktrace && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS)  
+
+maybe-clean-stage4-libbacktrace: clean-stage4-libbacktrace
+clean-stage4: clean-stage4-libbacktrace
+clean-stage4-libbacktrace:
+	@[ -f $(HOST_SUBDIR)/libbacktrace/Makefile ] || [ -f $(HOST_SUBDIR)/stage4-libbacktrace/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/libbacktrace/Makefile ] || $(MAKE) stage4-start ; \
+	cd $(HOST_SUBDIR)/libbacktrace && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		  clean
+@endif libbacktrace-bootstrap
+
+
+.PHONY: all-stageprofile-libbacktrace maybe-all-stageprofile-libbacktrace
+.PHONY: clean-stageprofile-libbacktrace maybe-clean-stageprofile-libbacktrace
+maybe-all-stageprofile-libbacktrace:
+maybe-clean-stageprofile-libbacktrace:
+@if libbacktrace-bootstrap
+maybe-all-stageprofile-libbacktrace: all-stageprofile-libbacktrace
+all-stageprofile: all-stageprofile-libbacktrace
+all-stageprofile-libbacktrace: configure-stageprofile-libbacktrace
+	@$(MAKE) stageprofile-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/libbacktrace && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS) CFLAGS="$(BOOT_CFLAGS) -fprofile-generate" 
+
+maybe-clean-stageprofile-libbacktrace: clean-stageprofile-libbacktrace
+clean-stageprofile: clean-stageprofile-libbacktrace
+clean-stageprofile-libbacktrace:
+	@[ -f $(HOST_SUBDIR)/libbacktrace/Makefile ] || [ -f $(HOST_SUBDIR)/stageprofile-libbacktrace/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/libbacktrace/Makefile ] || $(MAKE) stageprofile-start ; \
+	cd $(HOST_SUBDIR)/libbacktrace && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		CFLAGS="$(BOOT_CFLAGS) -fprofile-generate"  clean
+@endif libbacktrace-bootstrap
+
+
+.PHONY: all-stagefeedback-libbacktrace maybe-all-stagefeedback-libbacktrace
+.PHONY: clean-stagefeedback-libbacktrace maybe-clean-stagefeedback-libbacktrace
+maybe-all-stagefeedback-libbacktrace:
+maybe-clean-stagefeedback-libbacktrace:
+@if libbacktrace-bootstrap
+maybe-all-stagefeedback-libbacktrace: all-stagefeedback-libbacktrace
+all-stagefeedback: all-stagefeedback-libbacktrace
+all-stagefeedback-libbacktrace: configure-stagefeedback-libbacktrace
+	@$(MAKE) stagefeedback-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/libbacktrace && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS) CFLAGS="$(BOOT_CFLAGS) -fprofile-use" 
+
+maybe-clean-stagefeedback-libbacktrace: clean-stagefeedback-libbacktrace
+clean-stagefeedback: clean-stagefeedback-libbacktrace
+clean-stagefeedback-libbacktrace:
+	@[ -f $(HOST_SUBDIR)/libbacktrace/Makefile ] || [ -f $(HOST_SUBDIR)/stagefeedback-libbacktrace/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/libbacktrace/Makefile ] || $(MAKE) stagefeedback-start ; \
+	cd $(HOST_SUBDIR)/libbacktrace && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		CFLAGS="$(BOOT_CFLAGS) -fprofile-use"  clean
+@endif libbacktrace-bootstrap
+
+
+
+
+
+.PHONY: check-libbacktrace maybe-check-libbacktrace
+maybe-check-libbacktrace:
+@if libbacktrace
+maybe-check-libbacktrace: check-libbacktrace
+
+check-libbacktrace:
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(FLAGS_TO_PASS)  check)
+
+@endif libbacktrace
+
+.PHONY: install-libbacktrace maybe-install-libbacktrace
+maybe-install-libbacktrace:
+@if libbacktrace
+maybe-install-libbacktrace: install-libbacktrace
+
+install-libbacktrace: installdirs
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(FLAGS_TO_PASS)  install)
+
+@endif libbacktrace
+
+# Other targets (info, dvi, etc.)
+
+.PHONY: maybe-info-libbacktrace info-libbacktrace
+maybe-info-libbacktrace:
+@if libbacktrace
+maybe-info-libbacktrace: info-libbacktrace
+
+info-libbacktrace: \
+    configure-libbacktrace 
+	@[ -f ./libbacktrace/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing info in libbacktrace" ; \
+	(cd $(HOST_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          info) \
+	  || exit 1
+
+@endif libbacktrace
+
+.PHONY: maybe-dvi-libbacktrace dvi-libbacktrace
+maybe-dvi-libbacktrace:
+@if libbacktrace
+maybe-dvi-libbacktrace: dvi-libbacktrace
+
+dvi-libbacktrace: \
+    configure-libbacktrace 
+	@[ -f ./libbacktrace/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing dvi in libbacktrace" ; \
+	(cd $(HOST_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          dvi) \
+	  || exit 1
+
+@endif libbacktrace
+
+.PHONY: maybe-html-libbacktrace html-libbacktrace
+maybe-html-libbacktrace:
+@if libbacktrace
+maybe-html-libbacktrace: html-libbacktrace
+
+html-libbacktrace: \
+    configure-libbacktrace 
+	@[ -f ./libbacktrace/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing html in libbacktrace" ; \
+	(cd $(HOST_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          html) \
+	  || exit 1
+
+@endif libbacktrace
+
+.PHONY: maybe-TAGS-libbacktrace TAGS-libbacktrace
+maybe-TAGS-libbacktrace:
+@if libbacktrace
+maybe-TAGS-libbacktrace: TAGS-libbacktrace
+
+TAGS-libbacktrace: \
+    configure-libbacktrace 
+	@[ -f ./libbacktrace/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing TAGS in libbacktrace" ; \
+	(cd $(HOST_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          TAGS) \
+	  || exit 1
+
+@endif libbacktrace
+
+.PHONY: maybe-install-info-libbacktrace install-info-libbacktrace
+maybe-install-info-libbacktrace:
+@if libbacktrace
+maybe-install-info-libbacktrace: install-info-libbacktrace
+
+install-info-libbacktrace: \
+    configure-libbacktrace \
+    info-libbacktrace 
+	@[ -f ./libbacktrace/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing install-info in libbacktrace" ; \
+	(cd $(HOST_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          install-info) \
+	  || exit 1
+
+@endif libbacktrace
+
+.PHONY: maybe-installcheck-libbacktrace installcheck-libbacktrace
+maybe-installcheck-libbacktrace:
+@if libbacktrace
+maybe-installcheck-libbacktrace: installcheck-libbacktrace
+
+installcheck-libbacktrace: \
+    configure-libbacktrace 
+	@[ -f ./libbacktrace/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing installcheck in libbacktrace" ; \
+	(cd $(HOST_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          installcheck) \
+	  || exit 1
+
+@endif libbacktrace
+
+.PHONY: maybe-mostlyclean-libbacktrace mostlyclean-libbacktrace
+maybe-mostlyclean-libbacktrace:
+@if libbacktrace
+maybe-mostlyclean-libbacktrace: mostlyclean-libbacktrace
+
+mostlyclean-libbacktrace: 
+	@[ -f ./libbacktrace/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing mostlyclean in libbacktrace" ; \
+	(cd $(HOST_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          mostlyclean) \
+	  || exit 1
+
+@endif libbacktrace
+
+.PHONY: maybe-clean-libbacktrace clean-libbacktrace
+maybe-clean-libbacktrace:
+@if libbacktrace
+maybe-clean-libbacktrace: clean-libbacktrace
+
+clean-libbacktrace: 
+	@[ -f ./libbacktrace/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing clean in libbacktrace" ; \
+	(cd $(HOST_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          clean) \
+	  || exit 1
+
+@endif libbacktrace
+
+.PHONY: maybe-distclean-libbacktrace distclean-libbacktrace
+maybe-distclean-libbacktrace:
+@if libbacktrace
+maybe-distclean-libbacktrace: distclean-libbacktrace
+
+distclean-libbacktrace: 
+	@[ -f ./libbacktrace/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing distclean in libbacktrace" ; \
+	(cd $(HOST_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          distclean) \
+	  || exit 1
+
+@endif libbacktrace
+
+.PHONY: maybe-maintainer-clean-libbacktrace maintainer-clean-libbacktrace
+maybe-maintainer-clean-libbacktrace:
+@if libbacktrace
+maybe-maintainer-clean-libbacktrace: maintainer-clean-libbacktrace
+
+maintainer-clean-libbacktrace: 
+	@[ -f ./libbacktrace/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing maintainer-clean in libbacktrace" ; \
+	(cd $(HOST_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          maintainer-clean) \
+	  || exit 1
+
+@endif libbacktrace
+
+
+
 .PHONY: configure-libcpp maybe-configure-libcpp
 maybe-configure-libcpp:
 @if libcpp
@@ -18114,6 +19561,651 @@ maintainer-clean-libdecnumber:
 
 
 
+.PHONY: configure-libelf maybe-configure-libelf
+maybe-configure-libelf:
+@if libelf
+maybe-configure-libelf: configure-libelf
+configure-libelf: 
+	@test -f stage_last && exit 0; \
+	test ! -f $(HOST_SUBDIR)/libelf/Makefile || exit 0; \
+	$(SHELL) $(srcdir)/mkinstalldirs $(HOST_SUBDIR)/libelf ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	echo Configuring in $(HOST_SUBDIR)/libelf; \
+	cd "$(HOST_SUBDIR)/libelf" || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/libelf/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libelf"; \
+	libsrcdir="$$s/libelf"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption}  \
+	  || exit 1
+@endif libelf
+
+
+
+.PHONY: configure-stage1-libelf maybe-configure-stage1-libelf
+maybe-configure-stage1-libelf:
+@if libelf-bootstrap
+maybe-configure-stage1-libelf: configure-stage1-libelf
+configure-stage1-libelf: 
+	@$(MAKE) stage1-start
+	@[ -f $(HOST_SUBDIR)/libelf/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	echo Configuring stage 1 in $(HOST_SUBDIR)/libelf ; \
+	cd $(HOST_SUBDIR)/libelf || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/libelf/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libelf"; \
+	libsrcdir="$$s/libelf"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  --disable-intermodule 	  --disable-coverage --enable-languages="$(STAGE1_LANGUAGES)" 
+@endif libelf-bootstrap
+
+.PHONY: configure-stage2-libelf maybe-configure-stage2-libelf
+maybe-configure-stage2-libelf:
+@if libelf-bootstrap
+maybe-configure-stage2-libelf: configure-stage2-libelf
+configure-stage2-libelf: 
+	@$(MAKE) stage2-start
+	@[ -f $(HOST_SUBDIR)/libelf/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage 2 in $(HOST_SUBDIR)/libelf ; \
+	cd $(HOST_SUBDIR)/libelf || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/libelf/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libelf"; \
+	libsrcdir="$$s/libelf"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libelf-bootstrap
+
+.PHONY: configure-stage3-libelf maybe-configure-stage3-libelf
+maybe-configure-stage3-libelf:
+@if libelf-bootstrap
+maybe-configure-stage3-libelf: configure-stage3-libelf
+configure-stage3-libelf: 
+	@$(MAKE) stage3-start
+	@[ -f $(HOST_SUBDIR)/libelf/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage 3 in $(HOST_SUBDIR)/libelf ; \
+	cd $(HOST_SUBDIR)/libelf || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/libelf/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libelf"; \
+	libsrcdir="$$s/libelf"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libelf-bootstrap
+
+.PHONY: configure-stage4-libelf maybe-configure-stage4-libelf
+maybe-configure-stage4-libelf:
+@if libelf-bootstrap
+maybe-configure-stage4-libelf: configure-stage4-libelf
+configure-stage4-libelf: 
+	@$(MAKE) stage4-start
+	@[ -f $(HOST_SUBDIR)/libelf/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage 4 in $(HOST_SUBDIR)/libelf ; \
+	cd $(HOST_SUBDIR)/libelf || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/libelf/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libelf"; \
+	libsrcdir="$$s/libelf"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libelf-bootstrap
+
+.PHONY: configure-stageprofile-libelf maybe-configure-stageprofile-libelf
+maybe-configure-stageprofile-libelf:
+@if libelf-bootstrap
+maybe-configure-stageprofile-libelf: configure-stageprofile-libelf
+configure-stageprofile-libelf: 
+	@$(MAKE) stageprofile-start
+	@[ -f $(HOST_SUBDIR)/libelf/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage profile in $(HOST_SUBDIR)/libelf ; \
+	cd $(HOST_SUBDIR)/libelf || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/libelf/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libelf"; \
+	libsrcdir="$$s/libelf"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libelf-bootstrap
+
+.PHONY: configure-stagefeedback-libelf maybe-configure-stagefeedback-libelf
+maybe-configure-stagefeedback-libelf:
+@if libelf-bootstrap
+maybe-configure-stagefeedback-libelf: configure-stagefeedback-libelf
+configure-stagefeedback-libelf: 
+	@$(MAKE) stagefeedback-start
+	@[ -f $(HOST_SUBDIR)/libelf/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	echo Configuring stage feedback in $(HOST_SUBDIR)/libelf ; \
+	cd $(HOST_SUBDIR)/libelf || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/libelf/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libelf"; \
+	libsrcdir="$$s/libelf"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libelf-bootstrap
+
+
+
+
+
+.PHONY: all-libelf maybe-all-libelf
+maybe-all-libelf:
+@if libelf
+TARGET-libelf=all
+maybe-all-libelf: all-libelf
+all-libelf: configure-libelf
+	@test -f stage_last && exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/libelf && \
+	  $(MAKE) $(FLAGS_TO_PASS)  $(TARGET-libelf))
+@endif libelf
+
+
+
+.PHONY: all-stage1-libelf maybe-all-stage1-libelf
+.PHONY: clean-stage1-libelf maybe-clean-stage1-libelf
+maybe-all-stage1-libelf:
+maybe-clean-stage1-libelf:
+@if libelf-bootstrap
+maybe-all-stage1-libelf: all-stage1-libelf
+all-stage1: all-stage1-libelf
+all-stage1-libelf: configure-stage1-libelf
+	@$(MAKE) stage1-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/libelf && \
+	$(MAKE) $(FLAGS_TO_PASS)  CFLAGS="$(STAGE1_CFLAGS)" 
+
+maybe-clean-stage1-libelf: clean-stage1-libelf
+clean-stage1: clean-stage1-libelf
+clean-stage1-libelf:
+	@[ -f $(HOST_SUBDIR)/libelf/Makefile ] || [ -f $(HOST_SUBDIR)/stage1-libelf/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/libelf/Makefile ] || $(MAKE) stage1-start ; \
+	cd $(HOST_SUBDIR)/libelf && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		CFLAGS="$(STAGE1_CFLAGS)"  clean
+@endif libelf-bootstrap
+
+
+.PHONY: all-stage2-libelf maybe-all-stage2-libelf
+.PHONY: clean-stage2-libelf maybe-clean-stage2-libelf
+maybe-all-stage2-libelf:
+maybe-clean-stage2-libelf:
+@if libelf-bootstrap
+maybe-all-stage2-libelf: all-stage2-libelf
+all-stage2: all-stage2-libelf
+all-stage2-libelf: configure-stage2-libelf
+	@$(MAKE) stage2-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/libelf && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS)  
+
+maybe-clean-stage2-libelf: clean-stage2-libelf
+clean-stage2: clean-stage2-libelf
+clean-stage2-libelf:
+	@[ -f $(HOST_SUBDIR)/libelf/Makefile ] || [ -f $(HOST_SUBDIR)/stage2-libelf/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/libelf/Makefile ] || $(MAKE) stage2-start ; \
+	cd $(HOST_SUBDIR)/libelf && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		  clean
+@endif libelf-bootstrap
+
+
+.PHONY: all-stage3-libelf maybe-all-stage3-libelf
+.PHONY: clean-stage3-libelf maybe-clean-stage3-libelf
+maybe-all-stage3-libelf:
+maybe-clean-stage3-libelf:
+@if libelf-bootstrap
+maybe-all-stage3-libelf: all-stage3-libelf
+all-stage3: all-stage3-libelf
+all-stage3-libelf: configure-stage3-libelf
+	@$(MAKE) stage3-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/libelf && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS)  
+
+maybe-clean-stage3-libelf: clean-stage3-libelf
+clean-stage3: clean-stage3-libelf
+clean-stage3-libelf:
+	@[ -f $(HOST_SUBDIR)/libelf/Makefile ] || [ -f $(HOST_SUBDIR)/stage3-libelf/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/libelf/Makefile ] || $(MAKE) stage3-start ; \
+	cd $(HOST_SUBDIR)/libelf && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		  clean
+@endif libelf-bootstrap
+
+
+.PHONY: all-stage4-libelf maybe-all-stage4-libelf
+.PHONY: clean-stage4-libelf maybe-clean-stage4-libelf
+maybe-all-stage4-libelf:
+maybe-clean-stage4-libelf:
+@if libelf-bootstrap
+maybe-all-stage4-libelf: all-stage4-libelf
+all-stage4: all-stage4-libelf
+all-stage4-libelf: configure-stage4-libelf
+	@$(MAKE) stage4-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/libelf && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS)  
+
+maybe-clean-stage4-libelf: clean-stage4-libelf
+clean-stage4: clean-stage4-libelf
+clean-stage4-libelf:
+	@[ -f $(HOST_SUBDIR)/libelf/Makefile ] || [ -f $(HOST_SUBDIR)/stage4-libelf/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/libelf/Makefile ] || $(MAKE) stage4-start ; \
+	cd $(HOST_SUBDIR)/libelf && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		  clean
+@endif libelf-bootstrap
+
+
+.PHONY: all-stageprofile-libelf maybe-all-stageprofile-libelf
+.PHONY: clean-stageprofile-libelf maybe-clean-stageprofile-libelf
+maybe-all-stageprofile-libelf:
+maybe-clean-stageprofile-libelf:
+@if libelf-bootstrap
+maybe-all-stageprofile-libelf: all-stageprofile-libelf
+all-stageprofile: all-stageprofile-libelf
+all-stageprofile-libelf: configure-stageprofile-libelf
+	@$(MAKE) stageprofile-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/libelf && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS) CFLAGS="$(BOOT_CFLAGS) -fprofile-generate" 
+
+maybe-clean-stageprofile-libelf: clean-stageprofile-libelf
+clean-stageprofile: clean-stageprofile-libelf
+clean-stageprofile-libelf:
+	@[ -f $(HOST_SUBDIR)/libelf/Makefile ] || [ -f $(HOST_SUBDIR)/stageprofile-libelf/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/libelf/Makefile ] || $(MAKE) stageprofile-start ; \
+	cd $(HOST_SUBDIR)/libelf && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		CFLAGS="$(BOOT_CFLAGS) -fprofile-generate"  clean
+@endif libelf-bootstrap
+
+
+.PHONY: all-stagefeedback-libelf maybe-all-stagefeedback-libelf
+.PHONY: clean-stagefeedback-libelf maybe-clean-stagefeedback-libelf
+maybe-all-stagefeedback-libelf:
+maybe-clean-stagefeedback-libelf:
+@if libelf-bootstrap
+maybe-all-stagefeedback-libelf: all-stagefeedback-libelf
+all-stagefeedback: all-stagefeedback-libelf
+all-stagefeedback-libelf: configure-stagefeedback-libelf
+	@$(MAKE) stagefeedback-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	$(POSTSTAGE1_HOST_EXPORTS) \
+	cd $(HOST_SUBDIR)/libelf && \
+	$(MAKE) $(FLAGS_TO_PASS) $(POSTSTAGE1_FLAGS_TO_PASS) CFLAGS="$(BOOT_CFLAGS) -fprofile-use" 
+
+maybe-clean-stagefeedback-libelf: clean-stagefeedback-libelf
+clean-stagefeedback: clean-stagefeedback-libelf
+clean-stagefeedback-libelf:
+	@[ -f $(HOST_SUBDIR)/libelf/Makefile ] || [ -f $(HOST_SUBDIR)/stagefeedback-libelf/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(HOST_SUBDIR)/libelf/Makefile ] || $(MAKE) stagefeedback-start ; \
+	cd $(HOST_SUBDIR)/libelf && \
+	$(MAKE) $(FLAGS_TO_PASS)  \
+		$(POSTSTAGE1_FLAGS_TO_PASS)  \
+		CFLAGS="$(BOOT_CFLAGS) -fprofile-use"  clean
+@endif libelf-bootstrap
+
+
+
+
+
+.PHONY: check-libelf maybe-check-libelf
+maybe-check-libelf:
+@if libelf
+maybe-check-libelf: check-libelf
+
+check-libelf:
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/libelf && \
+	  $(MAKE) $(FLAGS_TO_PASS)  check)
+
+@endif libelf
+
+.PHONY: install-libelf maybe-install-libelf
+maybe-install-libelf:
+@if libelf
+maybe-install-libelf: install-libelf
+
+install-libelf:
+
+@endif libelf
+
+# Other targets (info, dvi, etc.)
+
+.PHONY: maybe-info-libelf info-libelf
+maybe-info-libelf:
+@if libelf
+maybe-info-libelf: info-libelf
+
+info-libelf: \
+    configure-libelf 
+	@[ -f ./libelf/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing info in libelf" ; \
+	(cd $(HOST_SUBDIR)/libelf && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          info) \
+	  || exit 1
+
+@endif libelf
+
+.PHONY: maybe-dvi-libelf dvi-libelf
+maybe-dvi-libelf:
+@if libelf
+maybe-dvi-libelf: dvi-libelf
+
+dvi-libelf: \
+    configure-libelf 
+	@[ -f ./libelf/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing dvi in libelf" ; \
+	(cd $(HOST_SUBDIR)/libelf && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          dvi) \
+	  || exit 1
+
+@endif libelf
+
+.PHONY: maybe-html-libelf html-libelf
+maybe-html-libelf:
+@if libelf
+maybe-html-libelf: html-libelf
+
+html-libelf: \
+    configure-libelf 
+	@[ -f ./libelf/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing html in libelf" ; \
+	(cd $(HOST_SUBDIR)/libelf && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          html) \
+	  || exit 1
+
+@endif libelf
+
+.PHONY: maybe-TAGS-libelf TAGS-libelf
+maybe-TAGS-libelf:
+@if libelf
+maybe-TAGS-libelf: TAGS-libelf
+
+TAGS-libelf: \
+    configure-libelf 
+	@[ -f ./libelf/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing TAGS in libelf" ; \
+	(cd $(HOST_SUBDIR)/libelf && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          TAGS) \
+	  || exit 1
+
+@endif libelf
+
+.PHONY: maybe-install-info-libelf install-info-libelf
+maybe-install-info-libelf:
+@if libelf
+maybe-install-info-libelf: install-info-libelf
+
+install-info-libelf: \
+    configure-libelf \
+    info-libelf 
+	@[ -f ./libelf/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing install-info in libelf" ; \
+	(cd $(HOST_SUBDIR)/libelf && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          install-info) \
+	  || exit 1
+
+@endif libelf
+
+.PHONY: maybe-installcheck-libelf installcheck-libelf
+maybe-installcheck-libelf:
+@if libelf
+maybe-installcheck-libelf: installcheck-libelf
+
+installcheck-libelf: \
+    configure-libelf 
+	@[ -f ./libelf/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing installcheck in libelf" ; \
+	(cd $(HOST_SUBDIR)/libelf && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          installcheck) \
+	  || exit 1
+
+@endif libelf
+
+.PHONY: maybe-mostlyclean-libelf mostlyclean-libelf
+maybe-mostlyclean-libelf:
+@if libelf
+maybe-mostlyclean-libelf: mostlyclean-libelf
+
+mostlyclean-libelf: 
+	@[ -f ./libelf/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing mostlyclean in libelf" ; \
+	(cd $(HOST_SUBDIR)/libelf && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          mostlyclean) \
+	  || exit 1
+
+@endif libelf
+
+.PHONY: maybe-clean-libelf clean-libelf
+maybe-clean-libelf:
+@if libelf
+maybe-clean-libelf: clean-libelf
+
+clean-libelf: 
+	@[ -f ./libelf/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing clean in libelf" ; \
+	(cd $(HOST_SUBDIR)/libelf && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          clean) \
+	  || exit 1
+
+@endif libelf
+
+.PHONY: maybe-distclean-libelf distclean-libelf
+maybe-distclean-libelf:
+@if libelf
+maybe-distclean-libelf: distclean-libelf
+
+distclean-libelf: 
+	@[ -f ./libelf/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing distclean in libelf" ; \
+	(cd $(HOST_SUBDIR)/libelf && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          distclean) \
+	  || exit 1
+
+@endif libelf
+
+.PHONY: maybe-maintainer-clean-libelf maintainer-clean-libelf
+maybe-maintainer-clean-libelf:
+@if libelf
+maybe-maintainer-clean-libelf: maintainer-clean-libelf
+
+maintainer-clean-libelf: 
+	@[ -f ./libelf/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing maintainer-clean in libelf" ; \
+	(cd $(HOST_SUBDIR)/libelf && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          maintainer-clean) \
+	  || exit 1
+
+@endif libelf
+
+
+
 .PHONY: configure-libgui maybe-configure-libgui
 maybe-configure-libgui:
 @if libgui
@@ -19084,6 +21176,308 @@ maintainer-clean-libiberty:
 	  || exit 1
 
 @endif libiberty
+
+
+
+.PHONY: configure-libiconv maybe-configure-libiconv
+maybe-configure-libiconv:
+@if libiconv
+maybe-configure-libiconv: configure-libiconv
+configure-libiconv: 
+	@test ! -f $(HOST_SUBDIR)/libiconv/Makefile || exit 0; \
+	$(SHELL) $(srcdir)/mkinstalldirs $(HOST_SUBDIR)/libiconv ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	echo Configuring in $(HOST_SUBDIR)/libiconv; \
+	cd "$(HOST_SUBDIR)/libiconv" || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(HOST_SUBDIR)/libiconv/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libiconv"; \
+	libsrcdir="$$s/libiconv"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(HOST_CONFIGARGS) $${srcdiroption} --disable-shared \
+	  || exit 1
+@endif libiconv
+
+
+
+
+
+.PHONY: all-libiconv maybe-all-libiconv
+maybe-all-libiconv:
+@if libiconv
+TARGET-libiconv=all
+maybe-all-libiconv: all-libiconv
+all-libiconv: configure-libiconv
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/libiconv && \
+	  $(MAKE) $(FLAGS_TO_PASS)  $(TARGET-libiconv))
+@endif libiconv
+
+
+
+
+.PHONY: check-libiconv maybe-check-libiconv
+maybe-check-libiconv:
+@if libiconv
+maybe-check-libiconv: check-libiconv
+
+check-libiconv:
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	(cd $(HOST_SUBDIR)/libiconv && \
+	  $(MAKE) $(FLAGS_TO_PASS)  check)
+
+@endif libiconv
+
+.PHONY: install-libiconv maybe-install-libiconv
+maybe-install-libiconv:
+@if libiconv
+maybe-install-libiconv: install-libiconv
+
+install-libiconv:
+
+@endif libiconv
+
+# Other targets (info, dvi, etc.)
+
+.PHONY: maybe-info-libiconv info-libiconv
+maybe-info-libiconv:
+@if libiconv
+maybe-info-libiconv: info-libiconv
+
+info-libiconv: \
+    configure-libiconv 
+	@[ -f ./libiconv/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing info in libiconv" ; \
+	(cd $(HOST_SUBDIR)/libiconv && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          info) \
+	  || exit 1
+
+@endif libiconv
+
+.PHONY: maybe-dvi-libiconv dvi-libiconv
+maybe-dvi-libiconv:
+@if libiconv
+maybe-dvi-libiconv: dvi-libiconv
+
+dvi-libiconv: \
+    configure-libiconv 
+	@[ -f ./libiconv/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing dvi in libiconv" ; \
+	(cd $(HOST_SUBDIR)/libiconv && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          dvi) \
+	  || exit 1
+
+@endif libiconv
+
+.PHONY: maybe-html-libiconv html-libiconv
+maybe-html-libiconv:
+@if libiconv
+maybe-html-libiconv: html-libiconv
+
+html-libiconv: \
+    configure-libiconv 
+	@[ -f ./libiconv/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing html in libiconv" ; \
+	(cd $(HOST_SUBDIR)/libiconv && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          html) \
+	  || exit 1
+
+@endif libiconv
+
+.PHONY: maybe-TAGS-libiconv TAGS-libiconv
+maybe-TAGS-libiconv:
+@if libiconv
+maybe-TAGS-libiconv: TAGS-libiconv
+
+TAGS-libiconv: \
+    configure-libiconv 
+	@[ -f ./libiconv/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing TAGS in libiconv" ; \
+	(cd $(HOST_SUBDIR)/libiconv && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          TAGS) \
+	  || exit 1
+
+@endif libiconv
+
+.PHONY: maybe-install-info-libiconv install-info-libiconv
+maybe-install-info-libiconv:
+@if libiconv
+maybe-install-info-libiconv: install-info-libiconv
+
+# libiconv doesn't support install-info.
+install-info-libiconv:
+
+@endif libiconv
+
+.PHONY: maybe-installcheck-libiconv installcheck-libiconv
+maybe-installcheck-libiconv:
+@if libiconv
+maybe-installcheck-libiconv: installcheck-libiconv
+
+installcheck-libiconv: \
+    configure-libiconv 
+	@[ -f ./libiconv/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing installcheck in libiconv" ; \
+	(cd $(HOST_SUBDIR)/libiconv && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          installcheck) \
+	  || exit 1
+
+@endif libiconv
+
+.PHONY: maybe-mostlyclean-libiconv mostlyclean-libiconv
+maybe-mostlyclean-libiconv:
+@if libiconv
+maybe-mostlyclean-libiconv: mostlyclean-libiconv
+
+mostlyclean-libiconv: 
+	@[ -f ./libiconv/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing mostlyclean in libiconv" ; \
+	(cd $(HOST_SUBDIR)/libiconv && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          mostlyclean) \
+	  || exit 1
+
+@endif libiconv
+
+.PHONY: maybe-clean-libiconv clean-libiconv
+maybe-clean-libiconv:
+@if libiconv
+maybe-clean-libiconv: clean-libiconv
+
+clean-libiconv: 
+	@[ -f ./libiconv/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing clean in libiconv" ; \
+	(cd $(HOST_SUBDIR)/libiconv && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          clean) \
+	  || exit 1
+
+@endif libiconv
+
+.PHONY: maybe-distclean-libiconv distclean-libiconv
+maybe-distclean-libiconv:
+@if libiconv
+maybe-distclean-libiconv: distclean-libiconv
+
+distclean-libiconv: 
+	@[ -f ./libiconv/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing distclean in libiconv" ; \
+	(cd $(HOST_SUBDIR)/libiconv && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          distclean) \
+	  || exit 1
+
+@endif libiconv
+
+.PHONY: maybe-maintainer-clean-libiconv maintainer-clean-libiconv
+maybe-maintainer-clean-libiconv:
+@if libiconv
+maybe-maintainer-clean-libiconv: maintainer-clean-libiconv
+
+maintainer-clean-libiconv: 
+	@[ -f ./libiconv/Makefile ] || exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(HOST_EXPORTS) \
+	for flag in $(EXTRA_HOST_FLAGS) ; do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	echo "Doing maintainer-clean in libiconv" ; \
+	(cd $(HOST_SUBDIR)/libiconv && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	          maintainer-clean) \
+	  || exit 1
+
+@endif libiconv
 
 
 
@@ -30680,6 +33074,1334 @@ maintainer-clean-target-newlib:
 
 
 # There is only one multilib.out. Cleverer subdirs should NOT need it copied.
+@if target-libgcc
+$(TARGET_SUBDIR)/libgcc/multilib.out: multilib.out
+	$(SHELL) $(srcdir)/mkinstalldirs $(TARGET_SUBDIR)/libgcc ; \
+	rm -f $(TARGET_SUBDIR)/libgcc/Makefile || : ; \
+	cp multilib.out $(TARGET_SUBDIR)/libgcc/multilib.out
+@endif target-libgcc
+
+
+
+.PHONY: configure-target-libgcc maybe-configure-target-libgcc
+maybe-configure-target-libgcc:
+@if target-libgcc
+maybe-configure-target-libgcc: configure-target-libgcc
+configure-target-libgcc: $(TARGET_SUBDIR)/libgcc/multilib.out
+	@test -f stage_last && exit 0; \
+	test ! -f $(TARGET_SUBDIR)/libgcc/Makefile || exit 0; \
+	$(SHELL) $(srcdir)/mkinstalldirs $(TARGET_SUBDIR)/libgcc ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo Configuring in $(TARGET_SUBDIR)/libgcc; \
+	cd "$(TARGET_SUBDIR)/libgcc" || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(TARGET_SUBDIR)/libgcc/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libgcc"; \
+	libsrcdir="$$s/libgcc"; \
+	rm -f no-such-file || : ; \
+	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
+	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
+	  || exit 1
+@endif target-libgcc
+
+
+
+.PHONY: configure-stage1-target-libgcc maybe-configure-stage1-target-libgcc
+maybe-configure-stage1-target-libgcc:
+@if libgcc-bootstrap
+maybe-configure-stage1-target-libgcc: configure-stage1-target-libgcc
+configure-stage1-target-libgcc: $(TARGET_SUBDIR)/libgcc/multilib.out
+	@$(MAKE) stage1-start
+	@[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo Configuring stage 1 in $(TARGET_SUBDIR)/libgcc ; \
+	cd $(TARGET_SUBDIR)/libgcc || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(TARGET_SUBDIR)/libgcc/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libgcc"; \
+	libsrcdir="$$s/libgcc"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(TARGET_CONFIGARGS) $${srcdiroption} \
+	  --disable-intermodule 	  --disable-coverage --enable-languages="$(STAGE1_LANGUAGES)" 
+@endif libgcc-bootstrap
+
+.PHONY: configure-stage2-target-libgcc maybe-configure-stage2-target-libgcc
+maybe-configure-stage2-target-libgcc:
+@if libgcc-bootstrap
+maybe-configure-stage2-target-libgcc: configure-stage2-target-libgcc
+configure-stage2-target-libgcc: $(TARGET_SUBDIR)/libgcc/multilib.out
+	@$(MAKE) stage2-start
+	@[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	 \
+	echo Configuring stage 2 in $(TARGET_SUBDIR)/libgcc ; \
+	cd $(TARGET_SUBDIR)/libgcc || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(TARGET_SUBDIR)/libgcc/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libgcc"; \
+	libsrcdir="$$s/libgcc"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(TARGET_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libgcc-bootstrap
+
+.PHONY: configure-stage3-target-libgcc maybe-configure-stage3-target-libgcc
+maybe-configure-stage3-target-libgcc:
+@if libgcc-bootstrap
+maybe-configure-stage3-target-libgcc: configure-stage3-target-libgcc
+configure-stage3-target-libgcc: $(TARGET_SUBDIR)/libgcc/multilib.out
+	@$(MAKE) stage3-start
+	@[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	 \
+	echo Configuring stage 3 in $(TARGET_SUBDIR)/libgcc ; \
+	cd $(TARGET_SUBDIR)/libgcc || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(TARGET_SUBDIR)/libgcc/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libgcc"; \
+	libsrcdir="$$s/libgcc"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(TARGET_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libgcc-bootstrap
+
+.PHONY: configure-stage4-target-libgcc maybe-configure-stage4-target-libgcc
+maybe-configure-stage4-target-libgcc:
+@if libgcc-bootstrap
+maybe-configure-stage4-target-libgcc: configure-stage4-target-libgcc
+configure-stage4-target-libgcc: $(TARGET_SUBDIR)/libgcc/multilib.out
+	@$(MAKE) stage4-start
+	@[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	 \
+	echo Configuring stage 4 in $(TARGET_SUBDIR)/libgcc ; \
+	cd $(TARGET_SUBDIR)/libgcc || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(TARGET_SUBDIR)/libgcc/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libgcc"; \
+	libsrcdir="$$s/libgcc"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(TARGET_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libgcc-bootstrap
+
+.PHONY: configure-stageprofile-target-libgcc maybe-configure-stageprofile-target-libgcc
+maybe-configure-stageprofile-target-libgcc:
+@if libgcc-bootstrap
+maybe-configure-stageprofile-target-libgcc: configure-stageprofile-target-libgcc
+configure-stageprofile-target-libgcc: $(TARGET_SUBDIR)/libgcc/multilib.out
+	@$(MAKE) stageprofile-start
+	@[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	 \
+	echo Configuring stage profile in $(TARGET_SUBDIR)/libgcc ; \
+	cd $(TARGET_SUBDIR)/libgcc || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(TARGET_SUBDIR)/libgcc/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libgcc"; \
+	libsrcdir="$$s/libgcc"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(TARGET_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libgcc-bootstrap
+
+.PHONY: configure-stagefeedback-target-libgcc maybe-configure-stagefeedback-target-libgcc
+maybe-configure-stagefeedback-target-libgcc:
+@if libgcc-bootstrap
+maybe-configure-stagefeedback-target-libgcc: configure-stagefeedback-target-libgcc
+configure-stagefeedback-target-libgcc: $(TARGET_SUBDIR)/libgcc/multilib.out
+	@$(MAKE) stagefeedback-start
+	@[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] && exit 0 || : ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	 \
+	echo Configuring stage feedback in $(TARGET_SUBDIR)/libgcc ; \
+	cd $(TARGET_SUBDIR)/libgcc || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(TARGET_SUBDIR)/libgcc/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libgcc"; \
+	libsrcdir="$$s/libgcc"; \
+	$(SHELL) $${libsrcdir}/configure \
+	  $(TARGET_CONFIGARGS) $${srcdiroption} \
+	  @stage2_werror_flag@ 
+@endif libgcc-bootstrap
+
+
+
+
+
+.PHONY: all-target-libgcc maybe-all-target-libgcc
+maybe-all-target-libgcc:
+@if target-libgcc
+TARGET-target-libgcc=all
+maybe-all-target-libgcc: all-target-libgcc
+all-target-libgcc: configure-target-libgcc
+	@test -f stage_last && exit 0; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	(cd $(TARGET_SUBDIR)/libgcc && \
+	  $(MAKE) $(TARGET_FLAGS_TO_PASS)  $(TARGET-target-libgcc))
+@endif target-libgcc
+
+
+
+.PHONY: all-stage1-target-libgcc maybe-all-stage1-target-libgcc
+.PHONY: clean-stage1-target-libgcc maybe-clean-stage1-target-libgcc
+maybe-all-stage1-target-libgcc:
+maybe-clean-stage1-target-libgcc:
+@if libgcc-bootstrap
+maybe-all-stage1-target-libgcc: all-stage1-target-libgcc
+all-stage1: all-stage1-target-libgcc
+all-stage1-target-libgcc: configure-stage1-target-libgcc
+	@$(MAKE) stage1-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	cd $(TARGET_SUBDIR)/libgcc && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)  CFLAGS="$(STAGE1_CFLAGS)" 
+
+maybe-clean-stage1-target-libgcc: clean-stage1-target-libgcc
+clean-stage1: clean-stage1-target-libgcc
+clean-stage1-target-libgcc:
+	@[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] || [ -f $(TARGET_SUBDIR)/stage1-libgcc/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] || $(MAKE) stage1-start ; \
+	cd $(TARGET_SUBDIR)/libgcc && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)  \
+		CFLAGS="$(STAGE1_CFLAGS)"  clean
+@endif libgcc-bootstrap
+
+
+.PHONY: all-stage2-target-libgcc maybe-all-stage2-target-libgcc
+.PHONY: clean-stage2-target-libgcc maybe-clean-stage2-target-libgcc
+maybe-all-stage2-target-libgcc:
+maybe-clean-stage2-target-libgcc:
+@if libgcc-bootstrap
+maybe-all-stage2-target-libgcc: all-stage2-target-libgcc
+all-stage2: all-stage2-target-libgcc
+all-stage2-target-libgcc: configure-stage2-target-libgcc
+	@$(MAKE) stage2-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	 \
+	cd $(TARGET_SUBDIR)/libgcc && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)   
+
+maybe-clean-stage2-target-libgcc: clean-stage2-target-libgcc
+clean-stage2: clean-stage2-target-libgcc
+clean-stage2-target-libgcc:
+	@[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] || [ -f $(TARGET_SUBDIR)/stage2-libgcc/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] || $(MAKE) stage2-start ; \
+	cd $(TARGET_SUBDIR)/libgcc && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)  \
+		  \
+		  clean
+@endif libgcc-bootstrap
+
+
+.PHONY: all-stage3-target-libgcc maybe-all-stage3-target-libgcc
+.PHONY: clean-stage3-target-libgcc maybe-clean-stage3-target-libgcc
+maybe-all-stage3-target-libgcc:
+maybe-clean-stage3-target-libgcc:
+@if libgcc-bootstrap
+maybe-all-stage3-target-libgcc: all-stage3-target-libgcc
+all-stage3: all-stage3-target-libgcc
+all-stage3-target-libgcc: configure-stage3-target-libgcc
+	@$(MAKE) stage3-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	 \
+	cd $(TARGET_SUBDIR)/libgcc && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)   
+
+maybe-clean-stage3-target-libgcc: clean-stage3-target-libgcc
+clean-stage3: clean-stage3-target-libgcc
+clean-stage3-target-libgcc:
+	@[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] || [ -f $(TARGET_SUBDIR)/stage3-libgcc/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] || $(MAKE) stage3-start ; \
+	cd $(TARGET_SUBDIR)/libgcc && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)  \
+		  \
+		  clean
+@endif libgcc-bootstrap
+
+
+.PHONY: all-stage4-target-libgcc maybe-all-stage4-target-libgcc
+.PHONY: clean-stage4-target-libgcc maybe-clean-stage4-target-libgcc
+maybe-all-stage4-target-libgcc:
+maybe-clean-stage4-target-libgcc:
+@if libgcc-bootstrap
+maybe-all-stage4-target-libgcc: all-stage4-target-libgcc
+all-stage4: all-stage4-target-libgcc
+all-stage4-target-libgcc: configure-stage4-target-libgcc
+	@$(MAKE) stage4-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	 \
+	cd $(TARGET_SUBDIR)/libgcc && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)   
+
+maybe-clean-stage4-target-libgcc: clean-stage4-target-libgcc
+clean-stage4: clean-stage4-target-libgcc
+clean-stage4-target-libgcc:
+	@[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] || [ -f $(TARGET_SUBDIR)/stage4-libgcc/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] || $(MAKE) stage4-start ; \
+	cd $(TARGET_SUBDIR)/libgcc && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)  \
+		  \
+		  clean
+@endif libgcc-bootstrap
+
+
+.PHONY: all-stageprofile-target-libgcc maybe-all-stageprofile-target-libgcc
+.PHONY: clean-stageprofile-target-libgcc maybe-clean-stageprofile-target-libgcc
+maybe-all-stageprofile-target-libgcc:
+maybe-clean-stageprofile-target-libgcc:
+@if libgcc-bootstrap
+maybe-all-stageprofile-target-libgcc: all-stageprofile-target-libgcc
+all-stageprofile: all-stageprofile-target-libgcc
+all-stageprofile-target-libgcc: configure-stageprofile-target-libgcc
+	@$(MAKE) stageprofile-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	 \
+	cd $(TARGET_SUBDIR)/libgcc && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)  CFLAGS="$(BOOT_CFLAGS) -fprofile-generate" 
+
+maybe-clean-stageprofile-target-libgcc: clean-stageprofile-target-libgcc
+clean-stageprofile: clean-stageprofile-target-libgcc
+clean-stageprofile-target-libgcc:
+	@[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] || [ -f $(TARGET_SUBDIR)/stageprofile-libgcc/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] || $(MAKE) stageprofile-start ; \
+	cd $(TARGET_SUBDIR)/libgcc && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)  \
+		  \
+		CFLAGS="$(BOOT_CFLAGS) -fprofile-generate"  clean
+@endif libgcc-bootstrap
+
+
+.PHONY: all-stagefeedback-target-libgcc maybe-all-stagefeedback-target-libgcc
+.PHONY: clean-stagefeedback-target-libgcc maybe-clean-stagefeedback-target-libgcc
+maybe-all-stagefeedback-target-libgcc:
+maybe-clean-stagefeedback-target-libgcc:
+@if libgcc-bootstrap
+maybe-all-stagefeedback-target-libgcc: all-stagefeedback-target-libgcc
+all-stagefeedback: all-stagefeedback-target-libgcc
+all-stagefeedback-target-libgcc: configure-stagefeedback-target-libgcc
+	@$(MAKE) stagefeedback-start
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	 \
+	cd $(TARGET_SUBDIR)/libgcc && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)  CFLAGS="$(BOOT_CFLAGS) -fprofile-use" 
+
+maybe-clean-stagefeedback-target-libgcc: clean-stagefeedback-target-libgcc
+clean-stagefeedback: clean-stagefeedback-target-libgcc
+clean-stagefeedback-target-libgcc:
+	@[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] || [ -f $(TARGET_SUBDIR)/stagefeedback-libgcc/Makefile ] \
+	  || exit 0 ; \
+	[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] || $(MAKE) stagefeedback-start ; \
+	cd $(TARGET_SUBDIR)/libgcc && \
+	$(MAKE) $(TARGET_FLAGS_TO_PASS)  \
+		  \
+		CFLAGS="$(BOOT_CFLAGS) -fprofile-use"  clean
+@endif libgcc-bootstrap
+
+
+
+
+
+
+.PHONY: check-target-libgcc maybe-check-target-libgcc
+maybe-check-target-libgcc:
+@if target-libgcc
+maybe-check-target-libgcc: check-target-libgcc
+
+# Dummy target for uncheckable module.
+check-target-libgcc:
+
+@endif target-libgcc
+
+.PHONY: install-target-libgcc maybe-install-target-libgcc
+maybe-install-target-libgcc:
+@if target-libgcc
+maybe-install-target-libgcc: install-target-libgcc
+
+install-target-libgcc: installdirs
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	(cd $(TARGET_SUBDIR)/libgcc && \
+	  $(MAKE) $(TARGET_FLAGS_TO_PASS)  install)
+
+@endif target-libgcc
+
+# Other targets (info, dvi, etc.)
+
+.PHONY: maybe-info-target-libgcc info-target-libgcc
+maybe-info-target-libgcc:
+@if target-libgcc
+maybe-info-target-libgcc: info-target-libgcc
+
+info-target-libgcc: \
+    configure-target-libgcc 
+	@[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing info in $(TARGET_SUBDIR)/libgcc" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libgcc && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           info) \
+	  || exit 1
+
+@endif target-libgcc
+
+.PHONY: maybe-dvi-target-libgcc dvi-target-libgcc
+maybe-dvi-target-libgcc:
+@if target-libgcc
+maybe-dvi-target-libgcc: dvi-target-libgcc
+
+dvi-target-libgcc: \
+    configure-target-libgcc 
+	@[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing dvi in $(TARGET_SUBDIR)/libgcc" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libgcc && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           dvi) \
+	  || exit 1
+
+@endif target-libgcc
+
+.PHONY: maybe-html-target-libgcc html-target-libgcc
+maybe-html-target-libgcc:
+@if target-libgcc
+maybe-html-target-libgcc: html-target-libgcc
+
+html-target-libgcc: \
+    configure-target-libgcc 
+	@[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing html in $(TARGET_SUBDIR)/libgcc" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libgcc && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           html) \
+	  || exit 1
+
+@endif target-libgcc
+
+.PHONY: maybe-TAGS-target-libgcc TAGS-target-libgcc
+maybe-TAGS-target-libgcc:
+@if target-libgcc
+maybe-TAGS-target-libgcc: TAGS-target-libgcc
+
+TAGS-target-libgcc: \
+    configure-target-libgcc 
+	@[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing TAGS in $(TARGET_SUBDIR)/libgcc" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libgcc && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           TAGS) \
+	  || exit 1
+
+@endif target-libgcc
+
+.PHONY: maybe-install-info-target-libgcc install-info-target-libgcc
+maybe-install-info-target-libgcc:
+@if target-libgcc
+maybe-install-info-target-libgcc: install-info-target-libgcc
+
+install-info-target-libgcc: \
+    configure-target-libgcc \
+    info-target-libgcc 
+	@[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing install-info in $(TARGET_SUBDIR)/libgcc" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libgcc && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           install-info) \
+	  || exit 1
+
+@endif target-libgcc
+
+.PHONY: maybe-installcheck-target-libgcc installcheck-target-libgcc
+maybe-installcheck-target-libgcc:
+@if target-libgcc
+maybe-installcheck-target-libgcc: installcheck-target-libgcc
+
+installcheck-target-libgcc: \
+    configure-target-libgcc 
+	@[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing installcheck in $(TARGET_SUBDIR)/libgcc" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libgcc && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           installcheck) \
+	  || exit 1
+
+@endif target-libgcc
+
+.PHONY: maybe-mostlyclean-target-libgcc mostlyclean-target-libgcc
+maybe-mostlyclean-target-libgcc:
+@if target-libgcc
+maybe-mostlyclean-target-libgcc: mostlyclean-target-libgcc
+
+mostlyclean-target-libgcc: 
+	@[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing mostlyclean in $(TARGET_SUBDIR)/libgcc" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libgcc && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           mostlyclean) \
+	  || exit 1
+
+@endif target-libgcc
+
+.PHONY: maybe-clean-target-libgcc clean-target-libgcc
+maybe-clean-target-libgcc:
+@if target-libgcc
+maybe-clean-target-libgcc: clean-target-libgcc
+
+clean-target-libgcc: 
+	@[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing clean in $(TARGET_SUBDIR)/libgcc" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libgcc && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           clean) \
+	  || exit 1
+
+@endif target-libgcc
+
+.PHONY: maybe-distclean-target-libgcc distclean-target-libgcc
+maybe-distclean-target-libgcc:
+@if target-libgcc
+maybe-distclean-target-libgcc: distclean-target-libgcc
+
+distclean-target-libgcc: 
+	@[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing distclean in $(TARGET_SUBDIR)/libgcc" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libgcc && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           distclean) \
+	  || exit 1
+
+@endif target-libgcc
+
+.PHONY: maybe-maintainer-clean-target-libgcc maintainer-clean-target-libgcc
+maybe-maintainer-clean-target-libgcc:
+@if target-libgcc
+maybe-maintainer-clean-target-libgcc: maintainer-clean-target-libgcc
+
+maintainer-clean-target-libgcc: 
+	@[ -f $(TARGET_SUBDIR)/libgcc/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing maintainer-clean in $(TARGET_SUBDIR)/libgcc" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libgcc && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           maintainer-clean) \
+	  || exit 1
+
+@endif target-libgcc
+
+
+
+# There is only one multilib.out. Cleverer subdirs should NOT need it copied.
+@if target-libbacktrace
+$(TARGET_SUBDIR)/libbacktrace/multilib.out: multilib.out
+	$(SHELL) $(srcdir)/mkinstalldirs $(TARGET_SUBDIR)/libbacktrace ; \
+	rm -f $(TARGET_SUBDIR)/libbacktrace/Makefile || : ; \
+	cp multilib.out $(TARGET_SUBDIR)/libbacktrace/multilib.out
+@endif target-libbacktrace
+
+
+
+.PHONY: configure-target-libbacktrace maybe-configure-target-libbacktrace
+maybe-configure-target-libbacktrace:
+@if target-libbacktrace
+maybe-configure-target-libbacktrace: configure-target-libbacktrace
+configure-target-libbacktrace: $(TARGET_SUBDIR)/libbacktrace/multilib.out
+	@test ! -f $(TARGET_SUBDIR)/libbacktrace/Makefile || exit 0; \
+	$(SHELL) $(srcdir)/mkinstalldirs $(TARGET_SUBDIR)/libbacktrace ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo Configuring in $(TARGET_SUBDIR)/libbacktrace; \
+	cd "$(TARGET_SUBDIR)/libbacktrace" || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(TARGET_SUBDIR)/libbacktrace/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libbacktrace"; \
+	libsrcdir="$$s/libbacktrace"; \
+	rm -f no-such-file || : ; \
+	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
+	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
+	  || exit 1
+@endif target-libbacktrace
+
+
+
+
+
+.PHONY: all-target-libbacktrace maybe-all-target-libbacktrace
+maybe-all-target-libbacktrace:
+@if target-libbacktrace
+TARGET-target-libbacktrace=all
+maybe-all-target-libbacktrace: all-target-libbacktrace
+all-target-libbacktrace: configure-target-libbacktrace
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	(cd $(TARGET_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(TARGET_FLAGS_TO_PASS)  $(TARGET-target-libbacktrace))
+@endif target-libbacktrace
+
+
+
+
+
+.PHONY: check-target-libbacktrace maybe-check-target-libbacktrace
+maybe-check-target-libbacktrace:
+@if target-libbacktrace
+maybe-check-target-libbacktrace: check-target-libbacktrace
+
+check-target-libbacktrace:
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	(cd $(TARGET_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(TARGET_FLAGS_TO_PASS)   check)
+
+@endif target-libbacktrace
+
+.PHONY: install-target-libbacktrace maybe-install-target-libbacktrace
+maybe-install-target-libbacktrace:
+@if target-libbacktrace
+maybe-install-target-libbacktrace: install-target-libbacktrace
+
+install-target-libbacktrace: installdirs
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	(cd $(TARGET_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(TARGET_FLAGS_TO_PASS)  install)
+
+@endif target-libbacktrace
+
+# Other targets (info, dvi, etc.)
+
+.PHONY: maybe-info-target-libbacktrace info-target-libbacktrace
+maybe-info-target-libbacktrace:
+@if target-libbacktrace
+maybe-info-target-libbacktrace: info-target-libbacktrace
+
+info-target-libbacktrace: \
+    configure-target-libbacktrace 
+	@[ -f $(TARGET_SUBDIR)/libbacktrace/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing info in $(TARGET_SUBDIR)/libbacktrace" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           info) \
+	  || exit 1
+
+@endif target-libbacktrace
+
+.PHONY: maybe-dvi-target-libbacktrace dvi-target-libbacktrace
+maybe-dvi-target-libbacktrace:
+@if target-libbacktrace
+maybe-dvi-target-libbacktrace: dvi-target-libbacktrace
+
+dvi-target-libbacktrace: \
+    configure-target-libbacktrace 
+	@[ -f $(TARGET_SUBDIR)/libbacktrace/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing dvi in $(TARGET_SUBDIR)/libbacktrace" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           dvi) \
+	  || exit 1
+
+@endif target-libbacktrace
+
+.PHONY: maybe-html-target-libbacktrace html-target-libbacktrace
+maybe-html-target-libbacktrace:
+@if target-libbacktrace
+maybe-html-target-libbacktrace: html-target-libbacktrace
+
+html-target-libbacktrace: \
+    configure-target-libbacktrace 
+	@[ -f $(TARGET_SUBDIR)/libbacktrace/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing html in $(TARGET_SUBDIR)/libbacktrace" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           html) \
+	  || exit 1
+
+@endif target-libbacktrace
+
+.PHONY: maybe-TAGS-target-libbacktrace TAGS-target-libbacktrace
+maybe-TAGS-target-libbacktrace:
+@if target-libbacktrace
+maybe-TAGS-target-libbacktrace: TAGS-target-libbacktrace
+
+TAGS-target-libbacktrace: \
+    configure-target-libbacktrace 
+	@[ -f $(TARGET_SUBDIR)/libbacktrace/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing TAGS in $(TARGET_SUBDIR)/libbacktrace" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           TAGS) \
+	  || exit 1
+
+@endif target-libbacktrace
+
+.PHONY: maybe-install-info-target-libbacktrace install-info-target-libbacktrace
+maybe-install-info-target-libbacktrace:
+@if target-libbacktrace
+maybe-install-info-target-libbacktrace: install-info-target-libbacktrace
+
+install-info-target-libbacktrace: \
+    configure-target-libbacktrace \
+    info-target-libbacktrace 
+	@[ -f $(TARGET_SUBDIR)/libbacktrace/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing install-info in $(TARGET_SUBDIR)/libbacktrace" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           install-info) \
+	  || exit 1
+
+@endif target-libbacktrace
+
+.PHONY: maybe-installcheck-target-libbacktrace installcheck-target-libbacktrace
+maybe-installcheck-target-libbacktrace:
+@if target-libbacktrace
+maybe-installcheck-target-libbacktrace: installcheck-target-libbacktrace
+
+installcheck-target-libbacktrace: \
+    configure-target-libbacktrace 
+	@[ -f $(TARGET_SUBDIR)/libbacktrace/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing installcheck in $(TARGET_SUBDIR)/libbacktrace" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           installcheck) \
+	  || exit 1
+
+@endif target-libbacktrace
+
+.PHONY: maybe-mostlyclean-target-libbacktrace mostlyclean-target-libbacktrace
+maybe-mostlyclean-target-libbacktrace:
+@if target-libbacktrace
+maybe-mostlyclean-target-libbacktrace: mostlyclean-target-libbacktrace
+
+mostlyclean-target-libbacktrace: 
+	@[ -f $(TARGET_SUBDIR)/libbacktrace/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing mostlyclean in $(TARGET_SUBDIR)/libbacktrace" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           mostlyclean) \
+	  || exit 1
+
+@endif target-libbacktrace
+
+.PHONY: maybe-clean-target-libbacktrace clean-target-libbacktrace
+maybe-clean-target-libbacktrace:
+@if target-libbacktrace
+maybe-clean-target-libbacktrace: clean-target-libbacktrace
+
+clean-target-libbacktrace: 
+	@[ -f $(TARGET_SUBDIR)/libbacktrace/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing clean in $(TARGET_SUBDIR)/libbacktrace" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           clean) \
+	  || exit 1
+
+@endif target-libbacktrace
+
+.PHONY: maybe-distclean-target-libbacktrace distclean-target-libbacktrace
+maybe-distclean-target-libbacktrace:
+@if target-libbacktrace
+maybe-distclean-target-libbacktrace: distclean-target-libbacktrace
+
+distclean-target-libbacktrace: 
+	@[ -f $(TARGET_SUBDIR)/libbacktrace/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing distclean in $(TARGET_SUBDIR)/libbacktrace" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           distclean) \
+	  || exit 1
+
+@endif target-libbacktrace
+
+.PHONY: maybe-maintainer-clean-target-libbacktrace maintainer-clean-target-libbacktrace
+maybe-maintainer-clean-target-libbacktrace:
+@if target-libbacktrace
+maybe-maintainer-clean-target-libbacktrace: maintainer-clean-target-libbacktrace
+
+maintainer-clean-target-libbacktrace: 
+	@[ -f $(TARGET_SUBDIR)/libbacktrace/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing maintainer-clean in $(TARGET_SUBDIR)/libbacktrace" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libbacktrace && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           maintainer-clean) \
+	  || exit 1
+
+@endif target-libbacktrace
+
+
+
+# There is only one multilib.out. Cleverer subdirs should NOT need it copied.
+@if target-libquadmath
+$(TARGET_SUBDIR)/libquadmath/multilib.out: multilib.out
+	$(SHELL) $(srcdir)/mkinstalldirs $(TARGET_SUBDIR)/libquadmath ; \
+	rm -f $(TARGET_SUBDIR)/libquadmath/Makefile || : ; \
+	cp multilib.out $(TARGET_SUBDIR)/libquadmath/multilib.out
+@endif target-libquadmath
+
+
+
+.PHONY: configure-target-libquadmath maybe-configure-target-libquadmath
+maybe-configure-target-libquadmath:
+@if target-libquadmath
+maybe-configure-target-libquadmath: configure-target-libquadmath
+configure-target-libquadmath: $(TARGET_SUBDIR)/libquadmath/multilib.out
+	@test ! -f $(TARGET_SUBDIR)/libquadmath/Makefile || exit 0; \
+	$(SHELL) $(srcdir)/mkinstalldirs $(TARGET_SUBDIR)/libquadmath ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo Configuring in $(TARGET_SUBDIR)/libquadmath; \
+	cd "$(TARGET_SUBDIR)/libquadmath" || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(TARGET_SUBDIR)/libquadmath/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libquadmath"; \
+	libsrcdir="$$s/libquadmath"; \
+	rm -f no-such-file || : ; \
+	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
+	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
+	  || exit 1
+@endif target-libquadmath
+
+
+
+
+
+.PHONY: all-target-libquadmath maybe-all-target-libquadmath
+maybe-all-target-libquadmath:
+@if target-libquadmath
+TARGET-target-libquadmath=all
+maybe-all-target-libquadmath: all-target-libquadmath
+all-target-libquadmath: configure-target-libquadmath
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	(cd $(TARGET_SUBDIR)/libquadmath && \
+	  $(MAKE) $(TARGET_FLAGS_TO_PASS)  $(TARGET-target-libquadmath))
+@endif target-libquadmath
+
+
+
+
+
+.PHONY: check-target-libquadmath maybe-check-target-libquadmath
+maybe-check-target-libquadmath:
+@if target-libquadmath
+maybe-check-target-libquadmath: check-target-libquadmath
+
+check-target-libquadmath:
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	(cd $(TARGET_SUBDIR)/libquadmath && \
+	  $(MAKE) $(TARGET_FLAGS_TO_PASS)   check)
+
+@endif target-libquadmath
+
+.PHONY: install-target-libquadmath maybe-install-target-libquadmath
+maybe-install-target-libquadmath:
+@if target-libquadmath
+maybe-install-target-libquadmath: install-target-libquadmath
+
+install-target-libquadmath: installdirs
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	(cd $(TARGET_SUBDIR)/libquadmath && \
+	  $(MAKE) $(TARGET_FLAGS_TO_PASS)  install)
+
+@endif target-libquadmath
+
+# Other targets (info, dvi, etc.)
+
+.PHONY: maybe-info-target-libquadmath info-target-libquadmath
+maybe-info-target-libquadmath:
+@if target-libquadmath
+maybe-info-target-libquadmath: info-target-libquadmath
+
+info-target-libquadmath: \
+    configure-target-libquadmath 
+	@[ -f $(TARGET_SUBDIR)/libquadmath/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing info in $(TARGET_SUBDIR)/libquadmath" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libquadmath && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           info) \
+	  || exit 1
+
+@endif target-libquadmath
+
+.PHONY: maybe-dvi-target-libquadmath dvi-target-libquadmath
+maybe-dvi-target-libquadmath:
+@if target-libquadmath
+maybe-dvi-target-libquadmath: dvi-target-libquadmath
+
+dvi-target-libquadmath: \
+    configure-target-libquadmath 
+	@[ -f $(TARGET_SUBDIR)/libquadmath/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing dvi in $(TARGET_SUBDIR)/libquadmath" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libquadmath && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           dvi) \
+	  || exit 1
+
+@endif target-libquadmath
+
+.PHONY: maybe-html-target-libquadmath html-target-libquadmath
+maybe-html-target-libquadmath:
+@if target-libquadmath
+maybe-html-target-libquadmath: html-target-libquadmath
+
+html-target-libquadmath: \
+    configure-target-libquadmath 
+	@[ -f $(TARGET_SUBDIR)/libquadmath/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing html in $(TARGET_SUBDIR)/libquadmath" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libquadmath && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           html) \
+	  || exit 1
+
+@endif target-libquadmath
+
+.PHONY: maybe-TAGS-target-libquadmath TAGS-target-libquadmath
+maybe-TAGS-target-libquadmath:
+@if target-libquadmath
+maybe-TAGS-target-libquadmath: TAGS-target-libquadmath
+
+TAGS-target-libquadmath: \
+    configure-target-libquadmath 
+	@[ -f $(TARGET_SUBDIR)/libquadmath/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing TAGS in $(TARGET_SUBDIR)/libquadmath" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libquadmath && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           TAGS) \
+	  || exit 1
+
+@endif target-libquadmath
+
+.PHONY: maybe-install-info-target-libquadmath install-info-target-libquadmath
+maybe-install-info-target-libquadmath:
+@if target-libquadmath
+maybe-install-info-target-libquadmath: install-info-target-libquadmath
+
+install-info-target-libquadmath: \
+    configure-target-libquadmath \
+    info-target-libquadmath 
+	@[ -f $(TARGET_SUBDIR)/libquadmath/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing install-info in $(TARGET_SUBDIR)/libquadmath" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libquadmath && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           install-info) \
+	  || exit 1
+
+@endif target-libquadmath
+
+.PHONY: maybe-installcheck-target-libquadmath installcheck-target-libquadmath
+maybe-installcheck-target-libquadmath:
+@if target-libquadmath
+maybe-installcheck-target-libquadmath: installcheck-target-libquadmath
+
+installcheck-target-libquadmath: \
+    configure-target-libquadmath 
+	@[ -f $(TARGET_SUBDIR)/libquadmath/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing installcheck in $(TARGET_SUBDIR)/libquadmath" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libquadmath && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           installcheck) \
+	  || exit 1
+
+@endif target-libquadmath
+
+.PHONY: maybe-mostlyclean-target-libquadmath mostlyclean-target-libquadmath
+maybe-mostlyclean-target-libquadmath:
+@if target-libquadmath
+maybe-mostlyclean-target-libquadmath: mostlyclean-target-libquadmath
+
+mostlyclean-target-libquadmath: 
+	@[ -f $(TARGET_SUBDIR)/libquadmath/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing mostlyclean in $(TARGET_SUBDIR)/libquadmath" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libquadmath && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           mostlyclean) \
+	  || exit 1
+
+@endif target-libquadmath
+
+.PHONY: maybe-clean-target-libquadmath clean-target-libquadmath
+maybe-clean-target-libquadmath:
+@if target-libquadmath
+maybe-clean-target-libquadmath: clean-target-libquadmath
+
+clean-target-libquadmath: 
+	@[ -f $(TARGET_SUBDIR)/libquadmath/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing clean in $(TARGET_SUBDIR)/libquadmath" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libquadmath && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           clean) \
+	  || exit 1
+
+@endif target-libquadmath
+
+.PHONY: maybe-distclean-target-libquadmath distclean-target-libquadmath
+maybe-distclean-target-libquadmath:
+@if target-libquadmath
+maybe-distclean-target-libquadmath: distclean-target-libquadmath
+
+distclean-target-libquadmath: 
+	@[ -f $(TARGET_SUBDIR)/libquadmath/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing distclean in $(TARGET_SUBDIR)/libquadmath" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libquadmath && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           distclean) \
+	  || exit 1
+
+@endif target-libquadmath
+
+.PHONY: maybe-maintainer-clean-target-libquadmath maintainer-clean-target-libquadmath
+maybe-maintainer-clean-target-libquadmath:
+@if target-libquadmath
+maybe-maintainer-clean-target-libquadmath: maintainer-clean-target-libquadmath
+
+maintainer-clean-target-libquadmath: 
+	@[ -f $(TARGET_SUBDIR)/libquadmath/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing maintainer-clean in $(TARGET_SUBDIR)/libquadmath" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libquadmath && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           maintainer-clean) \
+	  || exit 1
+
+@endif target-libquadmath
+
+
+
+# There is only one multilib.out. Cleverer subdirs should NOT need it copied.
 @if target-libgfortran
 $(TARGET_SUBDIR)/libgfortran/multilib.out: multilib.out
 	$(SHELL) $(srcdir)/mkinstalldirs $(TARGET_SUBDIR)/libgfortran ; \
@@ -31346,6 +35068,341 @@ maintainer-clean-target-libobjc:
 	  || exit 1
 
 @endif target-libobjc
+
+
+
+# There is only one multilib.out. Cleverer subdirs should NOT need it copied.
+@if target-libgo
+$(TARGET_SUBDIR)/libgo/multilib.out: multilib.out
+	$(SHELL) $(srcdir)/mkinstalldirs $(TARGET_SUBDIR)/libgo ; \
+	rm -f $(TARGET_SUBDIR)/libgo/Makefile || : ; \
+	cp multilib.out $(TARGET_SUBDIR)/libgo/multilib.out
+@endif target-libgo
+
+
+
+.PHONY: configure-target-libgo maybe-configure-target-libgo
+maybe-configure-target-libgo:
+@if target-libgo
+maybe-configure-target-libgo: configure-target-libgo
+configure-target-libgo: $(TARGET_SUBDIR)/libgo/multilib.out
+	@test ! -f $(TARGET_SUBDIR)/libgo/Makefile || exit 0; \
+	$(SHELL) $(srcdir)/mkinstalldirs $(TARGET_SUBDIR)/libgo ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo Configuring in $(TARGET_SUBDIR)/libgo; \
+	cd "$(TARGET_SUBDIR)/libgo" || exit 1; \
+	case $(srcdir) in \
+	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
+	  *) topdir=`echo $(TARGET_SUBDIR)/libgo/ | \
+		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+	esac; \
+	srcdiroption="--srcdir=$${topdir}/libgo"; \
+	libsrcdir="$$s/libgo"; \
+	rm -f no-such-file || : ; \
+	CONFIG_SITE=no-such-file $(SHELL) $${libsrcdir}/configure \
+	  $(TARGET_CONFIGARGS) $${srcdiroption}  \
+	  || exit 1
+@endif target-libgo
+
+
+
+
+
+.PHONY: all-target-libgo maybe-all-target-libgo
+maybe-all-target-libgo:
+@if target-libgo
+TARGET-target-libgo=all
+maybe-all-target-libgo: all-target-libgo
+all-target-libgo: configure-target-libgo
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	(cd $(TARGET_SUBDIR)/libgo && \
+	  $(MAKE) $(TARGET_FLAGS_TO_PASS)  $(TARGET-target-libgo))
+@endif target-libgo
+
+
+
+
+
+.PHONY: check-target-libgo maybe-check-target-libgo
+maybe-check-target-libgo:
+@if target-libgo
+maybe-check-target-libgo: check-target-libgo
+
+check-target-libgo:
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	(cd $(TARGET_SUBDIR)/libgo && \
+	  $(MAKE) $(TARGET_FLAGS_TO_PASS)   check)
+
+@endif target-libgo
+
+.PHONY: install-target-libgo maybe-install-target-libgo
+maybe-install-target-libgo:
+@if target-libgo
+maybe-install-target-libgo: install-target-libgo
+
+install-target-libgo: installdirs
+	@r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	(cd $(TARGET_SUBDIR)/libgo && \
+	  $(MAKE) $(TARGET_FLAGS_TO_PASS)  install)
+
+@endif target-libgo
+
+# Other targets (info, dvi, etc.)
+
+.PHONY: maybe-info-target-libgo info-target-libgo
+maybe-info-target-libgo:
+@if target-libgo
+maybe-info-target-libgo: info-target-libgo
+
+info-target-libgo: \
+    configure-target-libgo 
+	@[ -f $(TARGET_SUBDIR)/libgo/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing info in $(TARGET_SUBDIR)/libgo" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libgo && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           info) \
+	  || exit 1
+
+@endif target-libgo
+
+.PHONY: maybe-dvi-target-libgo dvi-target-libgo
+maybe-dvi-target-libgo:
+@if target-libgo
+maybe-dvi-target-libgo: dvi-target-libgo
+
+dvi-target-libgo: \
+    configure-target-libgo 
+	@[ -f $(TARGET_SUBDIR)/libgo/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing dvi in $(TARGET_SUBDIR)/libgo" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libgo && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           dvi) \
+	  || exit 1
+
+@endif target-libgo
+
+.PHONY: maybe-html-target-libgo html-target-libgo
+maybe-html-target-libgo:
+@if target-libgo
+maybe-html-target-libgo: html-target-libgo
+
+html-target-libgo: \
+    configure-target-libgo 
+	@[ -f $(TARGET_SUBDIR)/libgo/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing html in $(TARGET_SUBDIR)/libgo" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libgo && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           html) \
+	  || exit 1
+
+@endif target-libgo
+
+.PHONY: maybe-TAGS-target-libgo TAGS-target-libgo
+maybe-TAGS-target-libgo:
+@if target-libgo
+maybe-TAGS-target-libgo: TAGS-target-libgo
+
+TAGS-target-libgo: \
+    configure-target-libgo 
+	@[ -f $(TARGET_SUBDIR)/libgo/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing TAGS in $(TARGET_SUBDIR)/libgo" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libgo && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           TAGS) \
+	  || exit 1
+
+@endif target-libgo
+
+.PHONY: maybe-install-info-target-libgo install-info-target-libgo
+maybe-install-info-target-libgo:
+@if target-libgo
+maybe-install-info-target-libgo: install-info-target-libgo
+
+install-info-target-libgo: \
+    configure-target-libgo \
+    info-target-libgo 
+	@[ -f $(TARGET_SUBDIR)/libgo/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing install-info in $(TARGET_SUBDIR)/libgo" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libgo && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           install-info) \
+	  || exit 1
+
+@endif target-libgo
+
+.PHONY: maybe-installcheck-target-libgo installcheck-target-libgo
+maybe-installcheck-target-libgo:
+@if target-libgo
+maybe-installcheck-target-libgo: installcheck-target-libgo
+
+installcheck-target-libgo: \
+    configure-target-libgo 
+	@[ -f $(TARGET_SUBDIR)/libgo/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing installcheck in $(TARGET_SUBDIR)/libgo" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libgo && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           installcheck) \
+	  || exit 1
+
+@endif target-libgo
+
+.PHONY: maybe-mostlyclean-target-libgo mostlyclean-target-libgo
+maybe-mostlyclean-target-libgo:
+@if target-libgo
+maybe-mostlyclean-target-libgo: mostlyclean-target-libgo
+
+mostlyclean-target-libgo: 
+	@[ -f $(TARGET_SUBDIR)/libgo/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing mostlyclean in $(TARGET_SUBDIR)/libgo" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libgo && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           mostlyclean) \
+	  || exit 1
+
+@endif target-libgo
+
+.PHONY: maybe-clean-target-libgo clean-target-libgo
+maybe-clean-target-libgo:
+@if target-libgo
+maybe-clean-target-libgo: clean-target-libgo
+
+clean-target-libgo: 
+	@[ -f $(TARGET_SUBDIR)/libgo/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing clean in $(TARGET_SUBDIR)/libgo" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libgo && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           clean) \
+	  || exit 1
+
+@endif target-libgo
+
+.PHONY: maybe-distclean-target-libgo distclean-target-libgo
+maybe-distclean-target-libgo:
+@if target-libgo
+maybe-distclean-target-libgo: distclean-target-libgo
+
+distclean-target-libgo: 
+	@[ -f $(TARGET_SUBDIR)/libgo/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing distclean in $(TARGET_SUBDIR)/libgo" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libgo && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           distclean) \
+	  || exit 1
+
+@endif target-libgo
+
+.PHONY: maybe-maintainer-clean-target-libgo maintainer-clean-target-libgo
+maybe-maintainer-clean-target-libgo:
+@if target-libgo
+maybe-maintainer-clean-target-libgo: maintainer-clean-target-libgo
+
+maintainer-clean-target-libgo: 
+	@[ -f $(TARGET_SUBDIR)/libgo/Makefile ] || exit 0 ; \
+	r=`${PWD_COMMAND}`; export r; \
+	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
+	$(NORMAL_TARGET_EXPORTS) \
+	echo "Doing maintainer-clean in $(TARGET_SUBDIR)/libgo" ; \
+	for flag in $(EXTRA_TARGET_FLAGS); do \
+	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	done; \
+	(cd $(TARGET_SUBDIR)/libgo && \
+	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
+	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
+	          "RANLIB=$${RANLIB}" \
+	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
+	           maintainer-clean) \
+	  || exit 1
+
+@endif target-libgo
 
 
 
@@ -35860,6 +39917,12 @@ stage1-start::
 	set stage1-gcc gcc ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif gcc
+@if gold
+	@cd $(HOST_SUBDIR); [ -d stage1-gold ] || \
+	  mkdir stage1-gold; \
+	set stage1-gold gold ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif gold
 @if intl
 	@cd $(HOST_SUBDIR); [ -d stage1-intl ] || \
 	  mkdir stage1-intl; \
@@ -35872,6 +39935,12 @@ stage1-start::
 	set stage1-ld ld ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif ld
+@if libbacktrace
+	@cd $(HOST_SUBDIR); [ -d stage1-libbacktrace ] || \
+	  mkdir stage1-libbacktrace; \
+	set stage1-libbacktrace libbacktrace ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif libbacktrace
 @if libcpp
 	@cd $(HOST_SUBDIR); [ -d stage1-libcpp ] || \
 	  mkdir stage1-libcpp; \
@@ -35884,6 +39953,12 @@ stage1-start::
 	set stage1-libdecnumber libdecnumber ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif libdecnumber
+@if libelf
+	@cd $(HOST_SUBDIR); [ -d stage1-libelf ] || \
+	  mkdir stage1-libelf; \
+	set stage1-libelf libelf ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif libelf
 @if libiberty
 	@cd $(HOST_SUBDIR); [ -d stage1-libiberty ] || \
 	  mkdir stage1-libiberty; \
@@ -35896,6 +39971,12 @@ stage1-start::
 	set stage1-zlib zlib ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif zlib
+@if target-libgcc
+	@cd $(TARGET_SUBDIR); [ -d stage1-libgcc ] || \
+	  mkdir stage1-libgcc; \
+	set stage1-libgcc libgcc ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif target-libgcc
 
 stage1-end::
 	@rm -f stage_current
@@ -35923,6 +40004,10 @@ stage1-end::
 	@cd $(HOST_SUBDIR); set gcc stage1-gcc ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif gcc
+@if gold
+	@cd $(HOST_SUBDIR); set gold stage1-gold ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif gold
 @if intl
 	@cd $(HOST_SUBDIR); set intl stage1-intl ; \
 	@UNDO_LINK_TO_DIR@ 
@@ -35931,6 +40016,10 @@ stage1-end::
 	@cd $(HOST_SUBDIR); set ld stage1-ld ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif ld
+@if libbacktrace
+	@cd $(HOST_SUBDIR); set libbacktrace stage1-libbacktrace ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libbacktrace
 @if libcpp
 	@cd $(HOST_SUBDIR); set libcpp stage1-libcpp ; \
 	@UNDO_LINK_TO_DIR@ 
@@ -35939,6 +40028,10 @@ stage1-end::
 	@cd $(HOST_SUBDIR); set libdecnumber stage1-libdecnumber ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif libdecnumber
+@if libelf
+	@cd $(HOST_SUBDIR); set libelf stage1-libelf ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libelf
 @if libiberty
 	@cd $(HOST_SUBDIR); set libiberty stage1-libiberty ; \
 	@UNDO_LINK_TO_DIR@ 
@@ -35947,6 +40040,10 @@ stage1-end::
 	@cd $(HOST_SUBDIR); set zlib stage1-zlib ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif zlib
+@if target-libgcc
+	@cd $(HOST_SUBDIR); set libgcc stage1-libgcc ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libgcc
 
 # Bubble a bugfix through all the stages up to stage 1.  They
 # are remade, but not reconfigured.  The next stage (if any) will not
@@ -36035,6 +40132,14 @@ stage2-start::
 	set stage1-gcc prev-gcc ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif gcc
+@if gold
+	@cd $(HOST_SUBDIR); [ -d stage2-gold ] || \
+	  mkdir stage2-gold; \
+	set stage2-gold gold ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage1-gold prev-gold ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif gold
 @if intl
 	@cd $(HOST_SUBDIR); [ -d stage2-intl ] || \
 	  mkdir stage2-intl; \
@@ -36051,6 +40156,14 @@ stage2-start::
 	set stage1-ld prev-ld ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif ld
+@if libbacktrace
+	@cd $(HOST_SUBDIR); [ -d stage2-libbacktrace ] || \
+	  mkdir stage2-libbacktrace; \
+	set stage2-libbacktrace libbacktrace ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage1-libbacktrace prev-libbacktrace ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif libbacktrace
 @if libcpp
 	@cd $(HOST_SUBDIR); [ -d stage2-libcpp ] || \
 	  mkdir stage2-libcpp; \
@@ -36067,6 +40180,14 @@ stage2-start::
 	set stage1-libdecnumber prev-libdecnumber ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif libdecnumber
+@if libelf
+	@cd $(HOST_SUBDIR); [ -d stage2-libelf ] || \
+	  mkdir stage2-libelf; \
+	set stage2-libelf libelf ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage1-libelf prev-libelf ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif libelf
 @if libiberty
 	@cd $(HOST_SUBDIR); [ -d stage2-libiberty ] || \
 	  mkdir stage2-libiberty; \
@@ -36083,6 +40204,14 @@ stage2-start::
 	set stage1-zlib prev-zlib ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif zlib
+@if target-libgcc
+	@cd $(TARGET_SUBDIR); [ -d stage2-libgcc ] || \
+	  mkdir stage2-libgcc; \
+	set stage2-libgcc libgcc ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage1-libgcc prev-libgcc ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif target-libgcc
 
 stage2-end::
 	@rm -f stage_current
@@ -36122,6 +40251,12 @@ stage2-end::
 	set prev-gcc stage1-gcc ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif gcc
+@if gold
+	@cd $(HOST_SUBDIR); set gold stage2-gold ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-gold stage1-gold ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif gold
 @if intl
 	@cd $(HOST_SUBDIR); set intl stage2-intl ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -36134,6 +40269,12 @@ stage2-end::
 	set prev-ld stage1-ld ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif ld
+@if libbacktrace
+	@cd $(HOST_SUBDIR); set libbacktrace stage2-libbacktrace ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libbacktrace stage1-libbacktrace ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libbacktrace
 @if libcpp
 	@cd $(HOST_SUBDIR); set libcpp stage2-libcpp ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -36146,6 +40287,12 @@ stage2-end::
 	set prev-libdecnumber stage1-libdecnumber ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif libdecnumber
+@if libelf
+	@cd $(HOST_SUBDIR); set libelf stage2-libelf ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libelf stage1-libelf ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libelf
 @if libiberty
 	@cd $(HOST_SUBDIR); set libiberty stage2-libiberty ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -36158,6 +40305,12 @@ stage2-end::
 	set prev-zlib stage1-zlib ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif zlib
+@if target-libgcc
+	@cd $(HOST_SUBDIR); set libgcc stage2-libgcc ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libgcc stage1-libgcc ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libgcc
 
 # Bubble a bugfix through all the stages up to stage 2.  They
 # are remade, but not reconfigured.  The next stage (if any) will not
@@ -36249,6 +40402,14 @@ stage3-start::
 	set stage2-gcc prev-gcc ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif gcc
+@if gold
+	@cd $(HOST_SUBDIR); [ -d stage3-gold ] || \
+	  mkdir stage3-gold; \
+	set stage3-gold gold ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage2-gold prev-gold ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif gold
 @if intl
 	@cd $(HOST_SUBDIR); [ -d stage3-intl ] || \
 	  mkdir stage3-intl; \
@@ -36265,6 +40426,14 @@ stage3-start::
 	set stage2-ld prev-ld ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif ld
+@if libbacktrace
+	@cd $(HOST_SUBDIR); [ -d stage3-libbacktrace ] || \
+	  mkdir stage3-libbacktrace; \
+	set stage3-libbacktrace libbacktrace ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage2-libbacktrace prev-libbacktrace ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif libbacktrace
 @if libcpp
 	@cd $(HOST_SUBDIR); [ -d stage3-libcpp ] || \
 	  mkdir stage3-libcpp; \
@@ -36281,6 +40450,14 @@ stage3-start::
 	set stage2-libdecnumber prev-libdecnumber ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif libdecnumber
+@if libelf
+	@cd $(HOST_SUBDIR); [ -d stage3-libelf ] || \
+	  mkdir stage3-libelf; \
+	set stage3-libelf libelf ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage2-libelf prev-libelf ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif libelf
 @if libiberty
 	@cd $(HOST_SUBDIR); [ -d stage3-libiberty ] || \
 	  mkdir stage3-libiberty; \
@@ -36297,6 +40474,14 @@ stage3-start::
 	set stage2-zlib prev-zlib ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif zlib
+@if target-libgcc
+	@cd $(TARGET_SUBDIR); [ -d stage3-libgcc ] || \
+	  mkdir stage3-libgcc; \
+	set stage3-libgcc libgcc ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage2-libgcc prev-libgcc ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif target-libgcc
 
 stage3-end::
 	@rm -f stage_current
@@ -36336,6 +40521,12 @@ stage3-end::
 	set prev-gcc stage2-gcc ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif gcc
+@if gold
+	@cd $(HOST_SUBDIR); set gold stage3-gold ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-gold stage2-gold ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif gold
 @if intl
 	@cd $(HOST_SUBDIR); set intl stage3-intl ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -36348,6 +40539,12 @@ stage3-end::
 	set prev-ld stage2-ld ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif ld
+@if libbacktrace
+	@cd $(HOST_SUBDIR); set libbacktrace stage3-libbacktrace ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libbacktrace stage2-libbacktrace ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libbacktrace
 @if libcpp
 	@cd $(HOST_SUBDIR); set libcpp stage3-libcpp ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -36360,6 +40557,12 @@ stage3-end::
 	set prev-libdecnumber stage2-libdecnumber ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif libdecnumber
+@if libelf
+	@cd $(HOST_SUBDIR); set libelf stage3-libelf ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libelf stage2-libelf ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libelf
 @if libiberty
 	@cd $(HOST_SUBDIR); set libiberty stage3-libiberty ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -36372,6 +40575,12 @@ stage3-end::
 	set prev-zlib stage2-zlib ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif zlib
+@if target-libgcc
+	@cd $(HOST_SUBDIR); set libgcc stage3-libgcc ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libgcc stage2-libgcc ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libgcc
 
 # Bubble a bugfix through all the stages up to stage 3.  They
 # are remade, but not reconfigured.  The next stage (if any) will not
@@ -36494,6 +40703,14 @@ stage4-start::
 	set stage3-gcc prev-gcc ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif gcc
+@if gold
+	@cd $(HOST_SUBDIR); [ -d stage4-gold ] || \
+	  mkdir stage4-gold; \
+	set stage4-gold gold ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage3-gold prev-gold ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif gold
 @if intl
 	@cd $(HOST_SUBDIR); [ -d stage4-intl ] || \
 	  mkdir stage4-intl; \
@@ -36510,6 +40727,14 @@ stage4-start::
 	set stage3-ld prev-ld ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif ld
+@if libbacktrace
+	@cd $(HOST_SUBDIR); [ -d stage4-libbacktrace ] || \
+	  mkdir stage4-libbacktrace; \
+	set stage4-libbacktrace libbacktrace ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage3-libbacktrace prev-libbacktrace ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif libbacktrace
 @if libcpp
 	@cd $(HOST_SUBDIR); [ -d stage4-libcpp ] || \
 	  mkdir stage4-libcpp; \
@@ -36526,6 +40751,14 @@ stage4-start::
 	set stage3-libdecnumber prev-libdecnumber ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif libdecnumber
+@if libelf
+	@cd $(HOST_SUBDIR); [ -d stage4-libelf ] || \
+	  mkdir stage4-libelf; \
+	set stage4-libelf libelf ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage3-libelf prev-libelf ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif libelf
 @if libiberty
 	@cd $(HOST_SUBDIR); [ -d stage4-libiberty ] || \
 	  mkdir stage4-libiberty; \
@@ -36542,6 +40775,14 @@ stage4-start::
 	set stage3-zlib prev-zlib ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif zlib
+@if target-libgcc
+	@cd $(TARGET_SUBDIR); [ -d stage4-libgcc ] || \
+	  mkdir stage4-libgcc; \
+	set stage4-libgcc libgcc ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage3-libgcc prev-libgcc ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif target-libgcc
 
 stage4-end::
 	@rm -f stage_current
@@ -36581,6 +40822,12 @@ stage4-end::
 	set prev-gcc stage3-gcc ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif gcc
+@if gold
+	@cd $(HOST_SUBDIR); set gold stage4-gold ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-gold stage3-gold ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif gold
 @if intl
 	@cd $(HOST_SUBDIR); set intl stage4-intl ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -36593,6 +40840,12 @@ stage4-end::
 	set prev-ld stage3-ld ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif ld
+@if libbacktrace
+	@cd $(HOST_SUBDIR); set libbacktrace stage4-libbacktrace ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libbacktrace stage3-libbacktrace ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libbacktrace
 @if libcpp
 	@cd $(HOST_SUBDIR); set libcpp stage4-libcpp ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -36605,6 +40858,12 @@ stage4-end::
 	set prev-libdecnumber stage3-libdecnumber ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif libdecnumber
+@if libelf
+	@cd $(HOST_SUBDIR); set libelf stage4-libelf ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libelf stage3-libelf ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libelf
 @if libiberty
 	@cd $(HOST_SUBDIR); set libiberty stage4-libiberty ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -36617,6 +40876,12 @@ stage4-end::
 	set prev-zlib stage3-zlib ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif zlib
+@if target-libgcc
+	@cd $(HOST_SUBDIR); set libgcc stage4-libgcc ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libgcc stage3-libgcc ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libgcc
 
 # Bubble a bugfix through all the stages up to stage 4.  They
 # are remade, but not reconfigured.  The next stage (if any) will not
@@ -36736,6 +41001,14 @@ stageprofile-start::
 	set stage1-gcc prev-gcc ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif gcc
+@if gold
+	@cd $(HOST_SUBDIR); [ -d stageprofile-gold ] || \
+	  mkdir stageprofile-gold; \
+	set stageprofile-gold gold ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage1-gold prev-gold ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif gold
 @if intl
 	@cd $(HOST_SUBDIR); [ -d stageprofile-intl ] || \
 	  mkdir stageprofile-intl; \
@@ -36752,6 +41025,14 @@ stageprofile-start::
 	set stage1-ld prev-ld ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif ld
+@if libbacktrace
+	@cd $(HOST_SUBDIR); [ -d stageprofile-libbacktrace ] || \
+	  mkdir stageprofile-libbacktrace; \
+	set stageprofile-libbacktrace libbacktrace ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage1-libbacktrace prev-libbacktrace ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif libbacktrace
 @if libcpp
 	@cd $(HOST_SUBDIR); [ -d stageprofile-libcpp ] || \
 	  mkdir stageprofile-libcpp; \
@@ -36768,6 +41049,14 @@ stageprofile-start::
 	set stage1-libdecnumber prev-libdecnumber ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif libdecnumber
+@if libelf
+	@cd $(HOST_SUBDIR); [ -d stageprofile-libelf ] || \
+	  mkdir stageprofile-libelf; \
+	set stageprofile-libelf libelf ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage1-libelf prev-libelf ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif libelf
 @if libiberty
 	@cd $(HOST_SUBDIR); [ -d stageprofile-libiberty ] || \
 	  mkdir stageprofile-libiberty; \
@@ -36784,6 +41073,14 @@ stageprofile-start::
 	set stage1-zlib prev-zlib ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif zlib
+@if target-libgcc
+	@cd $(TARGET_SUBDIR); [ -d stageprofile-libgcc ] || \
+	  mkdir stageprofile-libgcc; \
+	set stageprofile-libgcc libgcc ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stage1-libgcc prev-libgcc ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif target-libgcc
 
 stageprofile-end::
 	@rm -f stage_current
@@ -36823,6 +41120,12 @@ stageprofile-end::
 	set prev-gcc stage1-gcc ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif gcc
+@if gold
+	@cd $(HOST_SUBDIR); set gold stageprofile-gold ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-gold stage1-gold ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif gold
 @if intl
 	@cd $(HOST_SUBDIR); set intl stageprofile-intl ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -36835,6 +41138,12 @@ stageprofile-end::
 	set prev-ld stage1-ld ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif ld
+@if libbacktrace
+	@cd $(HOST_SUBDIR); set libbacktrace stageprofile-libbacktrace ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libbacktrace stage1-libbacktrace ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libbacktrace
 @if libcpp
 	@cd $(HOST_SUBDIR); set libcpp stageprofile-libcpp ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -36847,6 +41156,12 @@ stageprofile-end::
 	set prev-libdecnumber stage1-libdecnumber ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif libdecnumber
+@if libelf
+	@cd $(HOST_SUBDIR); set libelf stageprofile-libelf ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libelf stage1-libelf ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libelf
 @if libiberty
 	@cd $(HOST_SUBDIR); set libiberty stageprofile-libiberty ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -36859,6 +41174,12 @@ stageprofile-end::
 	set prev-zlib stage1-zlib ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif zlib
+@if target-libgcc
+	@cd $(HOST_SUBDIR); set libgcc stageprofile-libgcc ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libgcc stage1-libgcc ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libgcc
 
 # Bubble a bugfix through all the stages up to stage profile.  They
 # are remade, but not reconfigured.  The next stage (if any) will not
@@ -36947,6 +41268,14 @@ stagefeedback-start::
 	set stageprofile-gcc prev-gcc ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif gcc
+@if gold
+	@cd $(HOST_SUBDIR); [ -d stagefeedback-gold ] || \
+	  mkdir stagefeedback-gold; \
+	set stagefeedback-gold gold ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stageprofile-gold prev-gold ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif gold
 @if intl
 	@cd $(HOST_SUBDIR); [ -d stagefeedback-intl ] || \
 	  mkdir stagefeedback-intl; \
@@ -36963,6 +41292,14 @@ stagefeedback-start::
 	set stageprofile-ld prev-ld ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif ld
+@if libbacktrace
+	@cd $(HOST_SUBDIR); [ -d stagefeedback-libbacktrace ] || \
+	  mkdir stagefeedback-libbacktrace; \
+	set stagefeedback-libbacktrace libbacktrace ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stageprofile-libbacktrace prev-libbacktrace ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif libbacktrace
 @if libcpp
 	@cd $(HOST_SUBDIR); [ -d stagefeedback-libcpp ] || \
 	  mkdir stagefeedback-libcpp; \
@@ -36979,6 +41316,14 @@ stagefeedback-start::
 	set stageprofile-libdecnumber prev-libdecnumber ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif libdecnumber
+@if libelf
+	@cd $(HOST_SUBDIR); [ -d stagefeedback-libelf ] || \
+	  mkdir stagefeedback-libelf; \
+	set stagefeedback-libelf libelf ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stageprofile-libelf prev-libelf ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif libelf
 @if libiberty
 	@cd $(HOST_SUBDIR); [ -d stagefeedback-libiberty ] || \
 	  mkdir stagefeedback-libiberty; \
@@ -36995,6 +41340,14 @@ stagefeedback-start::
 	set stageprofile-zlib prev-zlib ; \
 	@CREATE_LINK_TO_DIR@ 
 @endif zlib
+@if target-libgcc
+	@cd $(TARGET_SUBDIR); [ -d stagefeedback-libgcc ] || \
+	  mkdir stagefeedback-libgcc; \
+	set stagefeedback-libgcc libgcc ; \
+	@CREATE_LINK_TO_DIR@  ; \
+	set stageprofile-libgcc prev-libgcc ; \
+	@CREATE_LINK_TO_DIR@ 
+@endif target-libgcc
 
 stagefeedback-end::
 	@rm -f stage_current
@@ -37034,6 +41387,12 @@ stagefeedback-end::
 	set prev-gcc stageprofile-gcc ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif gcc
+@if gold
+	@cd $(HOST_SUBDIR); set gold stagefeedback-gold ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-gold stageprofile-gold ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif gold
 @if intl
 	@cd $(HOST_SUBDIR); set intl stagefeedback-intl ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -37046,6 +41405,12 @@ stagefeedback-end::
 	set prev-ld stageprofile-ld ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif ld
+@if libbacktrace
+	@cd $(HOST_SUBDIR); set libbacktrace stagefeedback-libbacktrace ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libbacktrace stageprofile-libbacktrace ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libbacktrace
 @if libcpp
 	@cd $(HOST_SUBDIR); set libcpp stagefeedback-libcpp ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -37058,6 +41423,12 @@ stagefeedback-end::
 	set prev-libdecnumber stageprofile-libdecnumber ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif libdecnumber
+@if libelf
+	@cd $(HOST_SUBDIR); set libelf stagefeedback-libelf ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libelf stageprofile-libelf ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libelf
 @if libiberty
 	@cd $(HOST_SUBDIR); set libiberty stagefeedback-libiberty ; \
 	@UNDO_LINK_TO_DIR@  ; \
@@ -37070,6 +41441,12 @@ stagefeedback-end::
 	set prev-zlib stageprofile-zlib ; \
 	@UNDO_LINK_TO_DIR@ 
 @endif zlib
+@if target-libgcc
+	@cd $(HOST_SUBDIR); set libgcc stagefeedback-libgcc ; \
+	@UNDO_LINK_TO_DIR@  ; \
+	set prev-libgcc stageprofile-libgcc ; \
+	@UNDO_LINK_TO_DIR@ 
+@endif libgcc
 
 # Bubble a bugfix through all the stages up to stage feedback.  They
 # are remade, but not reconfigured.  The next stage (if any) will not
@@ -37140,9 +41517,25 @@ configure-target-libssp: maybe-all-gcc
 
 configure-target-newlib: maybe-all-gcc
 
+@if gcc-bootstrap
+configure-stage1-target-libgcc: maybe-all-stage1-gcc
+configure-stage2-target-libgcc: maybe-all-stage2-gcc
+configure-stage3-target-libgcc: maybe-all-stage3-gcc
+configure-stage4-target-libgcc: maybe-all-stage4-gcc
+configure-stageprofile-target-libgcc: maybe-all-stageprofile-gcc
+configure-stagefeedback-target-libgcc: maybe-all-stagefeedback-gcc
+@endif gcc-bootstrap
+configure-target-libgcc: maybe-all-gcc
+
+configure-target-libbacktrace: maybe-all-gcc
+
+configure-target-libquadmath: maybe-all-gcc
+
 configure-target-libgfortran: maybe-all-gcc
 
 configure-target-libobjc: maybe-all-gcc
+
+configure-target-libgo: maybe-all-gcc
 
 configure-target-libtermcap: maybe-all-gcc
 
@@ -37262,6 +41655,22 @@ configure-stage3-gcc: maybe-all-stage3-ld
 configure-stage4-gcc: maybe-all-stage4-ld
 configure-stageprofile-gcc: maybe-all-stageprofile-ld
 configure-stagefeedback-gcc: maybe-all-stagefeedback-ld
+configure-gcc: maybe-all-gold
+
+configure-stage1-gcc: maybe-all-stage1-gold
+configure-stage2-gcc: maybe-all-stage2-gold
+configure-stage3-gcc: maybe-all-stage3-gold
+configure-stage4-gcc: maybe-all-stage4-gold
+configure-stageprofile-gcc: maybe-all-stageprofile-gold
+configure-stagefeedback-gcc: maybe-all-stagefeedback-gold
+configure-gcc: maybe-all-libelf
+
+configure-stage1-gcc: maybe-all-stage1-libelf
+configure-stage2-gcc: maybe-all-stage2-libelf
+configure-stage3-gcc: maybe-all-stage3-libelf
+configure-stage4-gcc: maybe-all-stage4-libelf
+configure-stageprofile-gcc: maybe-all-stageprofile-libelf
+configure-stagefeedback-gcc: maybe-all-stagefeedback-libelf
 all-gcc: all-libiberty
 
 all-stage1-gcc: all-stage1-libiberty
@@ -37340,6 +41749,14 @@ all-stage3-gcc: maybe-all-stage3-zlib
 all-stage4-gcc: maybe-all-stage4-zlib
 all-stageprofile-gcc: maybe-all-stageprofile-zlib
 all-stagefeedback-gcc: maybe-all-stagefeedback-zlib
+all-gcc: maybe-all-libbacktrace
+
+all-stage1-gcc: maybe-all-stage1-libbacktrace
+all-stage2-gcc: maybe-all-stage2-libbacktrace
+all-stage3-gcc: maybe-all-stage3-libbacktrace
+all-stage4-gcc: maybe-all-stage4-libbacktrace
+all-stageprofile-gcc: maybe-all-stageprofile-libbacktrace
+all-stagefeedback-gcc: maybe-all-stagefeedback-libbacktrace
 all-gcc: all-libcpp
 
 all-stage1-gcc: all-stage1-libcpp
@@ -37348,6 +41765,14 @@ all-stage3-gcc: all-stage3-libcpp
 all-stage4-gcc: all-stage4-libcpp
 all-stageprofile-gcc: all-stageprofile-libcpp
 all-stagefeedback-gcc: all-stagefeedback-libcpp
+all-gcc: maybe-all-libdecnumber
+
+all-stage1-gcc: maybe-all-stage1-libdecnumber
+all-stage2-gcc: maybe-all-stage2-libdecnumber
+all-stage3-gcc: maybe-all-stage3-libdecnumber
+all-stage4-gcc: maybe-all-stage4-libdecnumber
+all-stageprofile-gcc: maybe-all-stageprofile-libdecnumber
+all-stagefeedback-gcc: maybe-all-stagefeedback-libdecnumber
 all-gcc: maybe-all-libiberty
 
 all-stage1-gcc: maybe-all-stage1-libiberty
@@ -37357,7 +41782,44 @@ all-stage4-gcc: maybe-all-stage4-libiberty
 all-stageprofile-gcc: maybe-all-stageprofile-libiberty
 all-stagefeedback-gcc: maybe-all-stagefeedback-libiberty
 all-gcc: maybe-all-fixincludes
+info-gcc: maybe-all-build-libiberty
+
+info-stage1-gcc: maybe-all-build-libiberty
+info-stage2-gcc: maybe-all-build-libiberty
+info-stage3-gcc: maybe-all-build-libiberty
+info-stage4-gcc: maybe-all-build-libiberty
+info-stageprofile-gcc: maybe-all-build-libiberty
+info-stagefeedback-gcc: maybe-all-build-libiberty
+all-prebootstrap: maybe-all-build-libiberty
+dvi-gcc: maybe-all-build-libiberty
+
+dvi-stage1-gcc: maybe-all-build-libiberty
+dvi-stage2-gcc: maybe-all-build-libiberty
+dvi-stage3-gcc: maybe-all-build-libiberty
+dvi-stage4-gcc: maybe-all-build-libiberty
+dvi-stageprofile-gcc: maybe-all-build-libiberty
+dvi-stagefeedback-gcc: maybe-all-build-libiberty
+all-prebootstrap: maybe-all-build-libiberty
+pdf-gcc: maybe-all-build-libiberty
+
+pdf-stage1-gcc: maybe-all-build-libiberty
+pdf-stage2-gcc: maybe-all-build-libiberty
+pdf-stage3-gcc: maybe-all-build-libiberty
+pdf-stage4-gcc: maybe-all-build-libiberty
+pdf-stageprofile-gcc: maybe-all-build-libiberty
+pdf-stagefeedback-gcc: maybe-all-build-libiberty
+all-prebootstrap: maybe-all-build-libiberty
+html-gcc: maybe-all-build-libiberty
+
+html-stage1-gcc: maybe-all-build-libiberty
+html-stage2-gcc: maybe-all-build-libiberty
+html-stage3-gcc: maybe-all-build-libiberty
+html-stage4-gcc: maybe-all-build-libiberty
+html-stageprofile-gcc: maybe-all-build-libiberty
+html-stagefeedback-gcc: maybe-all-build-libiberty
+all-prebootstrap: maybe-all-build-libiberty
 install-gcc: maybe-install-fixincludes
+install-strip-gcc: maybe-install-strip-fixincludes
 configure-libcpp: configure-libiberty
 
 configure-stage1-libcpp: configure-stage1-libiberty
@@ -37392,17 +41854,25 @@ all-stageprofile-libcpp: maybe-all-stageprofile-intl
 all-stagefeedback-libcpp: maybe-all-stagefeedback-intl
 all-fixincludes: maybe-all-libiberty
 all-gnattools: maybe-all-target-libada
+configure-gdb: maybe-all-intl
 configure-gdb: maybe-configure-itcl
 configure-gdb: maybe-configure-tcl
 configure-gdb: maybe-configure-tk
 configure-gdb: maybe-configure-sim
+configure-gdb: maybe-all-bfd
+configure-gdb: maybe-all-libiconv
 all-gdb: maybe-all-libiberty
+all-gdb: maybe-all-libiconv
 all-gdb: maybe-all-opcodes
 all-gdb: maybe-all-bfd
 all-gdb: maybe-all-readline
 all-gdb: maybe-all-build-bison
 all-gdb: maybe-all-build-byacc
 all-gdb: maybe-all-sim
+all-gdb: maybe-all-electric-fence
+all-gdb: maybe-all-mmalloc
+all-gdb: maybe-all-libdecnumber
+all-gdb: maybe-all-libtermcap
 install-gdb: maybe-install-tcl
 install-gdb: maybe-install-tk
 install-gdb: maybe-install-itcl
@@ -37420,6 +41890,14 @@ configure-stage3-bfd: configure-stage3-libiberty
 configure-stage4-bfd: configure-stage4-libiberty
 configure-stageprofile-bfd: configure-stageprofile-libiberty
 configure-stagefeedback-bfd: configure-stagefeedback-libiberty
+configure-bfd: maybe-configure-intl
+
+configure-stage1-bfd: maybe-configure-stage1-intl
+configure-stage2-bfd: maybe-configure-stage2-intl
+configure-stage3-bfd: maybe-configure-stage3-intl
+configure-stage4-bfd: maybe-configure-stage4-intl
+configure-stageprofile-bfd: maybe-configure-stageprofile-intl
+configure-stagefeedback-bfd: maybe-configure-stagefeedback-intl
 all-bfd: maybe-all-libiberty
 
 all-stage1-bfd: maybe-all-stage1-libiberty
@@ -37436,6 +41914,22 @@ all-stage3-bfd: maybe-all-stage3-intl
 all-stage4-bfd: maybe-all-stage4-intl
 all-stageprofile-bfd: maybe-all-stageprofile-intl
 all-stagefeedback-bfd: maybe-all-stagefeedback-intl
+all-bfd: maybe-all-zlib
+
+all-stage1-bfd: maybe-all-stage1-zlib
+all-stage2-bfd: maybe-all-stage2-zlib
+all-stage3-bfd: maybe-all-stage3-zlib
+all-stage4-bfd: maybe-all-stage4-zlib
+all-stageprofile-bfd: maybe-all-stageprofile-zlib
+all-stagefeedback-bfd: maybe-all-stagefeedback-zlib
+configure-binutils: maybe-configure-intl
+
+configure-stage1-binutils: maybe-configure-stage1-intl
+configure-stage2-binutils: maybe-configure-stage2-intl
+configure-stage3-binutils: maybe-configure-stage3-intl
+configure-stage4-binutils: maybe-configure-stage4-intl
+configure-stageprofile-binutils: maybe-configure-stageprofile-intl
+configure-stagefeedback-binutils: maybe-configure-stagefeedback-intl
 all-binutils: maybe-all-libiberty
 
 all-stage1-binutils: maybe-all-stage1-libiberty
@@ -37495,8 +41989,26 @@ all-stage3-binutils: maybe-all-stage3-intl
 all-stage4-binutils: maybe-all-stage4-intl
 all-stageprofile-binutils: maybe-all-stageprofile-intl
 all-stagefeedback-binutils: maybe-all-stagefeedback-intl
+all-binutils: maybe-all-gas
+
+all-stage1-binutils: maybe-all-stage1-gas
+all-stage2-binutils: maybe-all-stage2-gas
+all-stage3-binutils: maybe-all-stage3-gas
+all-stage4-binutils: maybe-all-stage4-gas
+all-stageprofile-binutils: maybe-all-stageprofile-gas
+all-stagefeedback-binutils: maybe-all-stagefeedback-gas
 install-binutils: maybe-install-opcodes
+install-strip-binutils: maybe-install-strip-opcodes
 install-opcodes: maybe-install-bfd
+install-strip-opcodes: maybe-install-strip-bfd
+configure-gas: maybe-configure-intl
+
+configure-stage1-gas: maybe-configure-stage1-intl
+configure-stage2-gas: maybe-configure-stage2-intl
+configure-stage3-gas: maybe-configure-stage3-intl
+configure-stage4-gas: maybe-configure-stage4-intl
+configure-stageprofile-gas: maybe-configure-stageprofile-intl
+configure-stagefeedback-gas: maybe-configure-stagefeedback-intl
 all-gas: maybe-all-libiberty
 
 all-stage1-gas: maybe-all-stage1-libiberty
@@ -37529,10 +42041,12 @@ all-stage3-gas: maybe-all-stage3-intl
 all-stage4-gas: maybe-all-stage4-intl
 all-stageprofile-gas: maybe-all-stageprofile-intl
 all-stagefeedback-gas: maybe-all-stagefeedback-intl
+configure-gprof: maybe-configure-intl
 all-gprof: maybe-all-libiberty
 all-gprof: maybe-all-bfd
 all-gprof: maybe-all-opcodes
 all-gprof: maybe-all-intl
+all-gprof: maybe-all-gas
 all-ld: maybe-all-libiberty
 
 all-stage1-ld: maybe-all-stage1-libiberty
@@ -37592,6 +42106,124 @@ all-stage3-ld: maybe-all-stage3-intl
 all-stage4-ld: maybe-all-stage4-intl
 all-stageprofile-ld: maybe-all-stageprofile-intl
 all-stagefeedback-ld: maybe-all-stagefeedback-intl
+all-ld: maybe-all-gas
+
+all-stage1-ld: maybe-all-stage1-gas
+all-stage2-ld: maybe-all-stage2-gas
+all-stage3-ld: maybe-all-stage3-gas
+all-stage4-ld: maybe-all-stage4-gas
+all-stageprofile-ld: maybe-all-stageprofile-gas
+all-stagefeedback-ld: maybe-all-stagefeedback-gas
+install-ld: maybe-install-gold
+install-strip-ld: maybe-install-strip-gold
+configure-gold: maybe-configure-intl
+
+configure-stage1-gold: maybe-configure-stage1-intl
+configure-stage2-gold: maybe-configure-stage2-intl
+configure-stage3-gold: maybe-configure-stage3-intl
+configure-stage4-gold: maybe-configure-stage4-intl
+configure-stageprofile-gold: maybe-configure-stageprofile-intl
+configure-stagefeedback-gold: maybe-configure-stagefeedback-intl
+all-gold: maybe-all-libiberty
+
+all-stage1-gold: maybe-all-stage1-libiberty
+all-stage2-gold: maybe-all-stage2-libiberty
+all-stage3-gold: maybe-all-stage3-libiberty
+all-stage4-gold: maybe-all-stage4-libiberty
+all-stageprofile-gold: maybe-all-stageprofile-libiberty
+all-stagefeedback-gold: maybe-all-stagefeedback-libiberty
+all-gold: maybe-all-bfd
+
+all-stage1-gold: maybe-all-stage1-bfd
+all-stage2-gold: maybe-all-stage2-bfd
+all-stage3-gold: maybe-all-stage3-bfd
+all-stage4-gold: maybe-all-stage4-bfd
+all-stageprofile-gold: maybe-all-stageprofile-bfd
+all-stagefeedback-gold: maybe-all-stagefeedback-bfd
+all-gold: maybe-all-opcodes
+
+all-stage1-gold: maybe-all-stage1-opcodes
+all-stage2-gold: maybe-all-stage2-opcodes
+all-stage3-gold: maybe-all-stage3-opcodes
+all-stage4-gold: maybe-all-stage4-opcodes
+all-stageprofile-gold: maybe-all-stageprofile-opcodes
+all-stagefeedback-gold: maybe-all-stagefeedback-opcodes
+all-gold: maybe-all-build-bison
+
+all-stage1-gold: maybe-all-build-bison
+all-stage2-gold: maybe-all-build-bison
+all-stage3-gold: maybe-all-build-bison
+all-stage4-gold: maybe-all-build-bison
+all-stageprofile-gold: maybe-all-build-bison
+all-stagefeedback-gold: maybe-all-build-bison
+all-prebootstrap: maybe-all-build-bison
+all-gold: maybe-all-build-byacc
+
+all-stage1-gold: maybe-all-build-byacc
+all-stage2-gold: maybe-all-build-byacc
+all-stage3-gold: maybe-all-build-byacc
+all-stage4-gold: maybe-all-build-byacc
+all-stageprofile-gold: maybe-all-build-byacc
+all-stagefeedback-gold: maybe-all-build-byacc
+all-prebootstrap: maybe-all-build-byacc
+all-gold: maybe-all-build-flex
+
+all-stage1-gold: maybe-all-build-flex
+all-stage2-gold: maybe-all-build-flex
+all-stage3-gold: maybe-all-build-flex
+all-stage4-gold: maybe-all-build-flex
+all-stageprofile-gold: maybe-all-build-flex
+all-stagefeedback-gold: maybe-all-build-flex
+all-prebootstrap: maybe-all-build-flex
+all-gold: maybe-all-intl
+
+all-stage1-gold: maybe-all-stage1-intl
+all-stage2-gold: maybe-all-stage2-intl
+all-stage3-gold: maybe-all-stage3-intl
+all-stage4-gold: maybe-all-stage4-intl
+all-stageprofile-gold: maybe-all-stageprofile-intl
+all-stagefeedback-gold: maybe-all-stagefeedback-intl
+all-gold: maybe-all-gas
+
+all-stage1-gold: maybe-all-stage1-gas
+all-stage2-gold: maybe-all-stage2-gas
+all-stage3-gold: maybe-all-stage3-gas
+all-stage4-gold: maybe-all-stage4-gas
+all-stageprofile-gold: maybe-all-stageprofile-gas
+all-stagefeedback-gold: maybe-all-stagefeedback-gas
+check-gold: maybe-all-binutils
+
+check-stage1-gold: maybe-all-stage1-binutils
+check-stage2-gold: maybe-all-stage2-binutils
+check-stage3-gold: maybe-all-stage3-binutils
+check-stage4-gold: maybe-all-stage4-binutils
+check-stageprofile-gold: maybe-all-stageprofile-binutils
+check-stagefeedback-gold: maybe-all-stagefeedback-binutils
+check-gold: maybe-all-gas
+
+check-stage1-gold: maybe-all-stage1-gas
+check-stage2-gold: maybe-all-stage2-gas
+check-stage3-gold: maybe-all-stage3-gas
+check-stage4-gold: maybe-all-stage4-gas
+check-stageprofile-gold: maybe-all-stageprofile-gas
+check-stagefeedback-gold: maybe-all-stagefeedback-gas
+configure-opcodes: maybe-configure-cgen
+configure-opcodes: maybe-configure-libiberty
+
+configure-stage1-opcodes: maybe-configure-stage1-libiberty
+configure-stage2-opcodes: maybe-configure-stage2-libiberty
+configure-stage3-opcodes: maybe-configure-stage3-libiberty
+configure-stage4-opcodes: maybe-configure-stage4-libiberty
+configure-stageprofile-opcodes: maybe-configure-stageprofile-libiberty
+configure-stagefeedback-opcodes: maybe-configure-stagefeedback-libiberty
+configure-opcodes: maybe-configure-intl
+
+configure-stage1-opcodes: maybe-configure-stage1-intl
+configure-stage2-opcodes: maybe-configure-stage2-intl
+configure-stage3-opcodes: maybe-configure-stage3-intl
+configure-stage4-opcodes: maybe-configure-stage4-intl
+configure-stageprofile-opcodes: maybe-configure-stageprofile-intl
+configure-stagefeedback-opcodes: maybe-configure-stagefeedback-intl
 all-opcodes: maybe-all-bfd
 
 all-stage1-opcodes: maybe-all-stage1-bfd
@@ -37608,18 +42240,34 @@ all-stage3-opcodes: maybe-all-stage3-libiberty
 all-stage4-opcodes: maybe-all-stage4-libiberty
 all-stageprofile-opcodes: maybe-all-stageprofile-libiberty
 all-stagefeedback-opcodes: maybe-all-stagefeedback-libiberty
+all-opcodes: maybe-all-intl
+
+all-stage1-opcodes: maybe-all-stage1-intl
+all-stage2-opcodes: maybe-all-stage2-intl
+all-stage3-opcodes: maybe-all-stage3-intl
+all-stage4-opcodes: maybe-all-stage4-intl
+all-stageprofile-opcodes: maybe-all-stageprofile-intl
+all-stagefeedback-opcodes: maybe-all-stagefeedback-intl
+configure-dejagnu: maybe-configure-tcl
 all-dejagnu: maybe-all-tcl
+configure-dejagnu: maybe-configure-itcl
+all-dejagnu: maybe-all-itcl
+configure-dejagnu: maybe-configure-expect
 all-dejagnu: maybe-all-expect
+configure-dejagnu: maybe-configure-tk
 all-dejagnu: maybe-all-tk
 configure-expect: maybe-configure-tcl
+configure-expect: maybe-configure-itcl
 configure-expect: maybe-configure-tk
 all-expect: maybe-all-tcl
+all-expect: maybe-all-itcl
 all-expect: maybe-all-tk
 configure-itcl: maybe-configure-tcl
 configure-itcl: maybe-configure-tk
 all-itcl: maybe-all-tcl
 all-itcl: maybe-all-tk
 install-itcl: maybe-install-tcl
+install-strip-itcl: maybe-install-strip-tcl
 configure-tk: maybe-configure-tcl
 all-tk: maybe-all-tcl
 all-sid: maybe-all-libiberty
@@ -37628,12 +42276,17 @@ all-sid: maybe-all-opcodes
 all-sid: maybe-all-tcl
 all-sid: maybe-all-tk
 install-sid: maybe-install-tcl
+install-strip-sid: maybe-install-strip-tcl
 install-sid: maybe-install-tk
+install-strip-sid: maybe-install-strip-tk
+configure-sim: maybe-configure-intl
+all-sim: maybe-all-intl
 all-sim: maybe-all-libiberty
 all-sim: maybe-all-bfd
 all-sim: maybe-all-opcodes
 all-sim: maybe-all-readline
 all-sim: maybe-configure-gdb
+all-sim: maybe-configure-cgen
 all-fastjar: maybe-all-zlib
 all-fastjar: maybe-all-build-texinfo
 all-fastjar: maybe-all-libiberty
@@ -37671,6 +42324,8 @@ all-recode: maybe-all-build-texinfo
 all-sed: maybe-all-build-texinfo
 all-send-pr: maybe-all-prms
 all-tar: maybe-all-build-texinfo
+configure-utils: maybe-all-autogen
+all-utils: maybe-all-autogen
 all-uudecode: maybe-all-build-texinfo
 configure-target-boehm-gc: maybe-configure-target-qthreads
 configure-target-fastjar: maybe-configure-target-zlib
@@ -37690,6 +42345,9 @@ all-target-libstdc++-v3: maybe-all-target-libiberty
 all-target-libgloss: maybe-configure-target-newlib
 all-target-winsup: maybe-all-target-libiberty
 all-target-winsup: maybe-all-target-libtermcap
+configure-target-newlib: maybe-all-binutils
+configure-target-newlib: maybe-all-ld
+configure-target-libgfortran: maybe-all-target-libquadmath
 
 
 # Non-toplevel bootstrap rules must depend on several packages, to be built
@@ -37701,10 +42359,13 @@ all-prebootstrap: maybe-all-bfd
 all-prebootstrap: maybe-all-opcodes
 all-prebootstrap: maybe-all-binutils
 all-prebootstrap: maybe-all-gas
+all-prebootstrap: maybe-all-gold
 all-prebootstrap: maybe-all-intl
 all-prebootstrap: maybe-all-ld
+all-prebootstrap: maybe-all-libbacktrace
 all-prebootstrap: maybe-all-libcpp
 all-prebootstrap: maybe-all-libdecnumber
+all-prebootstrap: maybe-all-libelf
 all-prebootstrap: maybe-all-libiberty
 all-prebootstrap: maybe-all-zlib
 @endif gcc-no-bootstrap

@@ -41,8 +41,8 @@ fi
 # never build:
 export build_nlm=no
 if test -z "${build_rdi_share}"; then
-  # avoid building unless already set:
-  export build_rdi_share=no
+  # only build if not already set:
+  export build_rdi_share=yes
 fi
 
 echo "We should be done setting environment variables for Snow Leopard now."

@@ -6,6 +6,13 @@
 #endif /* !HAVE_CONFIG_H */
 
 
+/* Check that config.h is #included before system headers
+   (this works only for glibc, but that should be enough).  */
+#if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
+#  error config.h must be #included before system headers
+#endif
+#define __CONFIG_H__ 1
+
 /* Define if building universal (internal helper macro) */
 #undef AC_APPLE_UNIVERSAL_BUILD
 
@@ -16,6 +23,9 @@
 
 /* Define to 1 if using `alloca.c'. */
 #undef C_ALLOCA
+
+/* Should ar and ranlib use -D behavior by default? */
+#undef DEFAULT_AR_DETERMINISTIC
 
 /* Define to 1 if NLS is requested */
 #undef ENABLE_NLS

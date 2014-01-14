@@ -39,6 +39,8 @@ STRINGS_PROG=strings
 
 READELF_PROG=readelf
 
+ELFEDIT_PROG=elfedit
+
 # These should all be the same program too. (really?)
 SIZE_PROG=size
 NM_PROG=nm-new
@@ -53,22 +55,32 @@ ADDR2LINE_PROG=addr2line
 NLMCONV_PROG=nlmconv
 DLLTOOL_PROG=dlltool
 WINDRES_PROG=windres
+WINDMC_PROG=windmc
 DLLWRAP_PROG=dllwrap
 
 SRCONV_PROG=srconv$(EXEEXT) sysdump$(EXEEXT) coffdump$(EXEEXT) 
 
 PROGS = $(SIZE_PROG) $(OBJDUMP_PROG) $(NM_PROG) $(AR_PROG) $(STRINGS_PROG) $(STRIP_PROG) $(RANLIB_PROG) $(DEMANGLER_PROG) $(OBJCOPY_PROG) @BUILD_NLMCONV@ @BUILD_SRCONV@ @BUILD_DLLTOOL@ @BUILD_WINDRES@ $(ADDR2LINE_PROG) $(READELF_PROG) @BUILD_DLLWRAP@ @BUILD_MISC@
 
-bin_PROGRAMS = $(SIZE_PROG) $(OBJDUMP_PROG) $(AR_PROG) $(STRINGS_PROG) $(RANLIB_PROG) $(OBJCOPY_PROG) @BUILD_NLMCONV@ @BUILD_SRCONV@ @BUILD_DLLTOOL@ @BUILD_WINDRES@ $(ADDR2LINE_PROG) $(READELF_PROG) @BUILD_DLLWRAP@ @BUILD_MISC@
+bin_PROGRAMS = $(SIZE_PROG) $(OBJDUMP_PROG) $(AR_PROG) $(STRINGS_PROG) $(RANLIB_PROG) $(OBJCOPY_PROG) @BUILD_NLMCONV@ @BUILD_SRCONV@ @BUILD_DLLTOOL@ @BUILD_WINDRES@ $(ADDR2LINE_PROG) $(READELF_PROG) $(ELFEDIT_PROG) @BUILD_DLLWRAP@ @BUILD_MISC@
+
+EXTRA_SCRIPTS = embedspu
+
+## Test programs.
+BFDTEST1_PROG = bfdtest1
+BFDTEST2_PROG = bfdtest2
+
+TEST_PROGS = $(BFDTEST1_PROG) $(BFDTEST2_PROG)
 
 ## We need a special rule to install the programs which are built with
 ## -new, and to rename cxxfilt to c++filt.
-noinst_PROGRAMS = $(NM_PROG) $(STRIP_PROG) $(DEMANGLER_PROG)
+RENAMED_PROGS = $(NM_PROG) $(STRIP_PROG) $(DEMANGLER_PROG)
+noinst_PROGRAMS = $(RENAMED_PROGS) $(TEST_PROGS)
 
-EXTRA_PROGRAMS = $(NLMCONV_PROG) srconv sysdump coffdump $(DLLTOOL_PROG) $(WINDRES_PROG) $(DLLWRAP_PROG)
+EXTRA_PROGRAMS = $(NLMCONV_PROG) srconv sysdump coffdump $(DLLTOOL_PROG) $(WINDRES_PROG) $(WINDMC_PROG) $(DLLWRAP_PROG)
 
 # Stuff that goes in tooldir/ if appropriate.
-TOOL_PROGS = nm-new strip-new ar ranlib dlltool objdump
+TOOL_PROGS = nm-new strip-new ar ranlib dlltool objdump objcopy
 
 BASEDIR = $(srcdir)/..
 BFDDIR = $(BASEDIR)/bfd
@@ -88,26 +100,31 @@ AM_CPPFLAGS = -D_GNU_SOURCE \
 
 HFILES = \
 	arsup.h binemul.h bucomm.h budbg.h budemang.h \
-	coffgrok.h debug.h dlltool.h nlmconv.h \
-	windres.h winduni.h
+	coffgrok.h debug.h dlltool.h dwarf.h elfcomm.h nlmconv.h \
+	objdump.h sysdep.h unwind-ia64.h windres.h winduni.h windint.h \
+	windmc.h
 
 GENERATED_HFILES = arparse.h sysroff.h sysinfo.h defparse.h rcparse.h
+BUILT_SOURCES = $(GENERATED_HFILES)
 
 CFILES = \
-	addr2line.c ar.c arsup.c binemul.c bucomm.c budemang.c \
-	coffdump.c coffgrok.c cxxfilt.c debug.c dlltool.c dllwrap.c \
-	emul_aix.c emul_vanilla.c filemode.c \
+	addr2line.c ar.c arsup.c bin2c.c binemul.c bucomm.c budemang.c \
+	coffdump.c coffgrok.c cxxfilt.c \
+	dwarf.c debug.c dlltool.c dllwrap.c \
+	elfcomm.c emul_aix.c emul_vanilla.c filemode.c \
 	ieee.c is-ranlib.c is-strip.c maybe-ranlib.c maybe-strip.c \
 	nlmconv.c nm.c not-ranlib.c not-strip.c \
 	objcopy.c objdump.c prdbg.c \
-	rdcoff.c rddbg.c readelf.c rename.c \
+	od-xcoff.c od-macho.c \
+	rclex.c rdcoff.c rddbg.c readelf.c rename.c \
 	resbin.c rescoff.c resrc.c resres.c \
-	size.c srconv.c stabs.c strings.c sysdump.c version.c \
-	windres.c winduni.c wrstabs.c
+	size.c srconv.c stabs.c strings.c sysdump.c \
+	syslex_wrap.c unwind-ia64.c elfedit.c version.c \
+	windres.c winduni.c wrstabs.c windmc.c mclex.c
 
 GENERATED_CFILES = \
 	arparse.c arlex.c sysroff.c sysinfo.c syslex.c \
-	defparse.c deflex.c nlmheader.c rcparse.c rclex.c
+	defparse.c deflex.c nlmheader.c rcparse.c rclex.c mcparse.c
 
 OFILES = \
 	addr2line.o ar.o arsup.o binemul.o bucomm.o budemang.o \
@@ -131,8 +148,12 @@ WRITE_DEBUG_SRCS = $(DEBUG_SRCS) wrstabs.c
 # Code shared by all the binutils.
 BULIBS = bucomm.c version.c filemode.c
 
+# Code shared by the ELF related programs.
+ELFLIBS = elfcomm.c
+
 BFD = ../bfd/libbfd.la
 BFD_DEP = $(BFD)
+BFDLIB = $(BFD)
 
 OPCODES = ../opcodes/libopcodes.la
 OPCODES_DEP = $(OPCODES)
@@ -204,6 +225,10 @@ strings_DEPENDENCIES = $(BFD_DEP) $(LIBIBERTY_DEP) $(INTLDEP)
 readelf_SOURCES = readelf.c version.c unwind-ia64.c
 readelf_LDADD = $(LIBIBERTY) $(INTLLIBS)
 readelf_DEPENDENCIES = $(LIBIBERTY_DEP) $(INTLDEP)
+
+elfedit_SOURCES = elfedit.c version.c $(ELFLIBS)
+elfedit_LDADD = $(LIBINTL) $(LIBIBERTY)
+elfedit_DEPENDENCIES = $(LIBINTL_DEP) $(LIBIBERTY)
 
 strip_new_SOURCES = objcopy.c is-strip.c rename.c $(WRITE_DEBUG_SRCS) $(BULIBS)
 strip_new_LDADD = $(BFD) $(LIBIBERTY) $(INTLLIBS)
@@ -283,13 +308,23 @@ sysinfo.o:
 	else \
 	  $(CC_FOR_BUILD) -c -I. $(AM_CFLAGS) $(CFLAGS) $(srcdir)/sysinfo.c -Wno-error ; \
 	fi
+bin2c$(EXEEXT_FOR_BUILD): bin2c.c
+	$(CC_FOR_BUILD) -o $@ $(AM_CPPFLAGS) $(AM_CFLAGS) $(CFLAGS_FOR_BUILD) $(LDFLAGS_FOR_BUILD) $(srcdir)/bin2c.c
+
+embedspu: embedspu.sh Makefile
+	awk '/^program_transform_name=/ {print "program_transform_name=\"$(program_transform_name)\""; next} {print}' < $< > $@
+	chmod a+x $@
 
 # We need these for parallel make.
 #TODO: fix warnings about these overriding automake targets
-arparse.h: arparse.c
-defparse.h: defparse.c
-nlmheader.h: nlmheader.c
-rcparse.h: rcparse.c
+my_arparse.h: arparse.c
+.PHONY: my_arparse.h
+my_defparse.h: defparse.c
+.PHONY: my_defparse.h
+my_nlmheader.h: nlmheader.c
+.PHONY: my_nlmheader.h
+my_rcparse.h: rcparse.c
+.PHONY: my_rcparse.h
 sysinfo.h: sysinfo.c
 
 # Disable -Werror, if it has been enabled, since old versions of bison/
@@ -348,6 +383,11 @@ windres_SOURCES = windres.c resrc.c rescoff.c resbin.c rcparse.y rclex.l \
 windres_LDADD = $(BFD) $(LIBIBERTY) @LEXLIB@ $(INTLLIBS)
 windres_DEPENDENCIES = $(BFD_DEP) $(LIBIBERTY_DEP) @LEXLIB@ $(INTLDEP)
 
+windmc_SOURCES = windmc.c mcparse.y mclex.c \
+	winduni.c $(BULIBS)
+windmc_LDADD = $(BFDLIB) $(LIBIBERTY) $(LEXLIB) $(LIBINTL) $(LIBICONV)
+windmc_DEPENDENCIES =    $(LIBINTL_DEP) $(LIBIBERTY) $(BFDLIB)
+
 dllwrap_SOURCES = dllwrap.c version.c
 dllwrap_LDADD = $(LIBIBERTY) $(INTLLIBS)
 dllwrap_DEPENDENCIES = $(LIBIBERTY_DEP) $(INTLDEP)
@@ -358,8 +398,12 @@ EXTRA_DIST = arparse.c arparse.h arlex.c nlmheader.c sysinfo.c sysinfo.h \
 diststuff: $(EXTRA_DIST) info
 all: info
 
+# We extract version from bfd/configure.ac, make sure to rerun configure
+# when BFD's version changes.
+CONFIG_STATUS_DEPENDENCIES = $(BFDDIR)/configure.ac
+
 DISTCLEANFILES = sysinfo sysroff.c sysroff.h \
-	site.exp site.bak
+	site.exp site.bak embedspu
 
 Makefile_depends: $(BFDDIR)/configure.ac config.status
 

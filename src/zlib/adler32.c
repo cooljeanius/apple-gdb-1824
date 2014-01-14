@@ -143,8 +143,9 @@ local uLong adler32_combine_(adler1, adler2, len2)
     unsigned rem;
 
     /* for negative len, return invalid adler32 as a clue for debugging */
-    if (len2 < 0)
+    if (len2 < 0) {
         return 0xffffffffUL;
+	}
 
     /* the derivation of this formula is left as an exercise for the reader */
     MOD63(len2);                /* assumes len2 >= 0 */
@@ -177,3 +178,5 @@ uLong ZEXPORT adler32_combine64(adler1, adler2, len2)
 {
     return adler32_combine_(adler1, adler2, len2);
 }
+
+/* EOF */

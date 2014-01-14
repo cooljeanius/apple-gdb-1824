@@ -525,13 +525,13 @@ AC_CACHE_CHECK([for Cygwin32 environment],[ac_cv_cygwin32],
 [ac_cv_cygwin32=yes],[ac_cv_cygwin32=no])
 rm -f conftest*])
 CYGWIN=
-test "$ac_cv_cygwin32" = yes && CYGWIN=yes
+test "${ac_cv_cygwin32}" = yes && CYGWIN=yes
 # done with Cygwin test
 ])
 
-# Check to see if we are running under Win32, without using
-# AC_CANONICAL_*. If so, set output variable EXEEXT to ".exe".
-# Otherwise set it to "".
+# Check to see if we are running under Win32, without(?) using
+# AC_CANONICAL_* (why without it? I needed it so I added it back). If so,
+# set output variable EXEEXT to ".exe". Otherwise set it to "".
 
 dnl# CY_AC_EXEEXT([])
 dnl# This knows we add .exe if we are building in the Cygwin32

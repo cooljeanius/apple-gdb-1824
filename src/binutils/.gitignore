@@ -23,6 +23,7 @@ config.h
 cxxfilt
 dep.sed
 doc/Makefile
+embedspu
 lex.yy.c
 libtool
 nm-new

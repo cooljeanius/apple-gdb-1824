@@ -44,6 +44,9 @@ if test -e ./config.cache; then
 	sed -i "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
 	sed -i "s|ac_cv_prog_CC|bad_CC|g" ./config.cache
 	sed -i "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
+	sed -i "s|ac_cv_env_build_alias|bad_build_alias|g" ./config.cache
+	sed -i "s|ac_cv_env_host_alias|bad_host_alias|g" ./config.cache
+	sed -i "s|ac_cv_env_target_alias|bad_target_alias|g" ./config.cache
 fi
 
 # /bin/sh on some systems is too deficient (in particular, Ultrix 4.3
@@ -150,7 +153,13 @@ AC_PROG_CXX
 AC_PROG_LN_S
 
 # these are the other subdirectories we need to configure
-AC_CONFIG_SUBDIRS([testsuite])
+if test -z "${build_alias}" -a -z "${host_alias}" -a -z "${target_alias}"; then
+  AC_MSG_NOTICE([will recurse into the testsuite for Expect])
+  AC_CONFIG_SUBDIRS([testsuite])
+else
+  test -d testsuite
+  AC_MSG_NOTICE([the testsuite for Expect will have to be configured and run manually])
+fi
 
 # This is for LynxOS, which needs a flag to force true POSIX when
 # building. The flag varies depending how old the compiler is.
@@ -933,7 +942,7 @@ if test -r /dev/ptmx -a "x$svr4_ptys_broken" = x -a "$cross_compiling" != "yes" 
   AC_DEFINE([HAVE_PTMX],[1],[Define to 1 if we have ptmx])
   # aargg. Some systems need libpt.a to use /dev/ptmx
   AC_CHECK_FUNC([ptsname],[],[LIBS="${LIBS} -lpt"])
-  # I have never seen Tcl or Tk include -lpt so do NOT bother with explicit test
+  # I have never seen Tcl/Tk include -lpt so do NOT bother w/explicit test
   unset ac_cv_func_ptsname
   AC_CHECK_FUNC([ptsname],[],[EXP_AND_TCL_LIBS="${EXP_AND_TCL_LIBS} -lpt"])
   unset ac_cv_func_ptsname
@@ -979,7 +988,7 @@ tcgetattr=0
 tcsetattr=0
 AC_CHECK_FUNC([tcgetattr],[tcgetattr=1])
 AC_CHECK_FUNC([tcsetattr],[tcsetattr=1])
-if test $tcgetattr -eq 1 -a $tcsetattr -eq 1 ; then
+if test ${tcgetattr} -eq 1 -a ${tcsetattr} -eq 1 ; then
     AC_DEFINE([HAVE_TCSETATTR],[1],[Define to 1 if we have tcsetattr])
     AC_DEFINE([POSIX],[1],[Define to 1 for POSIX])
 fi
@@ -1033,6 +1042,8 @@ if test ${mach} -eq 0 ; then
   AC_RUN_IFELSE([AC_LANG_SOURCE([[
 # ifdef HAVE_INTTYPES_H
 #  include <inttypes.h>
+# else
+#  warning this conftest expects <inttypes.h> to be included.
 # endif /* HAVE_INTTYPES_H */
 #  include <termios.h>
   main()
@@ -1057,6 +1068,8 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 /* including termios.h on Solaris 5.6 fails unless inttypes.h included */
 #ifdef HAVE_INTTYPES_H
 # include <inttypes.h>
+#else
+# warning this conftest expects <inttypes.h> to be included.
 #endif /* HAVE_INTTYPES_H */
 #include <termios.h>
 main() {
@@ -1064,7 +1077,7 @@ main() {
 	return 0;
 #else
 	return 1;
-#endif
+#endif /* TCGETS || TCGETA */
 }]])],[AC_DEFINE([HAVE_TCGETS_OR_TCGETA_IN_TERMIOS_H],[1],[Define to 1 if TCGETS or TCGETA is in termios.h])
 	AC_MSG_RESULT([yes])
 ],[AC_MSG_RESULT([no])
@@ -1082,6 +1095,8 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[
 /* including termios.h on Solaris 5.6 fails unless inttypes.h included */
 #ifdef HAVE_INTTYPES_H
 # include <inttypes.h>
+#else
+# warning this conftest expects <inttypes.h> to be included.
 #endif /* HAVE_INTTYPES_H */
 #include <termios.h>
 main() {
@@ -1089,7 +1104,7 @@ main() {
 	return 0;
 #else
 	return 1;
-#endif
+#endif /* TIOCGWINSZ */
 }]])],[AC_DEFINE([HAVE_TIOCGWINSZ_IN_TERMIOS_H],[1],[Define to 1 if TIOCGWINSZ is in termios.h])
 	AC_MSG_RESULT([yes])
 ],[AC_MSG_RESULT([no])
@@ -1198,11 +1213,11 @@ fi
 # the same command as Tcl's configure
 AC_ARG_ENABLE([load],
 	[AS_HELP_STRING([--disable-load],[disallow dynamic loading])],
-	[disable_dl=$enableval],[disable_dl=no])
+	[disable_dl=${enableval}],[disable_dl=no])
 
 AC_ARG_ENABLE([gcc],
 	[AS_HELP_STRING([--enable-gcc],[allow use of gcc if available])],
-	[enable_gcc=$enableval],[enable_gcc=no])
+	[enable_gcc=${enableval}],[enable_gcc=no])
 
 
 # Following comment stolen from Tcl's configure.ac:
@@ -1212,12 +1227,12 @@ AC_ARG_ENABLE([gcc],
 #   up the Tcl library.
 
 if test "${TCL_LIB_VERSIONS_OK}" = "ok"; then
-    EXP_LIB_VERSION=$EXP_VERSION
+    EXP_LIB_VERSION=${EXP_VERSION}
 else
-    EXP_LIB_VERSION=$EXP_VERSION_NODOTS
+    EXP_LIB_VERSION=${EXP_VERSION_NODOTS}
 fi
-if test $iunix -eq 1 ; then
-    EXP_LIB_VERSION=$EXP_VERSION_NODOTS
+if test ${iunix} -eq 1 ; then
+    EXP_LIB_VERSION=${EXP_VERSION_NODOTS}
 fi
 
 # also remove dots on systems that do NOT support filenames > 14
@@ -1234,36 +1249,36 @@ EXP_UNSHARED_LIB_FILE=libexpect${EXP_LIB_VERSION}.a
 EXP_BUILD_LIB_SPEC=${EXP_UNSHARED_LIB_FILE}
 
 AC_MSG_CHECKING([for type of library to build])
-if test "$enable_shared" = "yes" && test "x${TCL_SHLIB_SUFFIX}" != "x" ; then
-  EXP_SHLIB_CFLAGS=$TCL_SHLIB_CFLAGS
+if test "${enable_shared}" = "yes" && test "x${TCL_SHLIB_SUFFIX}" != "x" ; then
+  EXP_SHLIB_CFLAGS=${TCL_SHLIB_CFLAGS}
   eval "EXP_SHARED_LIB_FILE=libexpect${TCL_SHARED_LIB_SUFFIX}"
-  EXP_LIB_FILE=$EXP_SHARED_LIB_FILE
-  EXP_LIB_FILES="$EXP_SHARED_LIB_FILE $EXP_UNSHARED_LIB_FILE"
+  EXP_LIB_FILE=${EXP_SHARED_LIB_FILE}
+  EXP_LIB_FILES="${EXP_SHARED_LIB_FILE} ${EXP_UNSHARED_LIB_FILE}"
   AC_MSG_RESULT([both shared and unshared])
 else
   EXP_SHLIB_CFLAGS=
   EXP_SHARED_LIB_FILE="reconfigure_Tcl_for_shared_library"
-  EXP_LIB_FILE=$EXP_UNSHARED_LIB_FILE
-  EXP_LIB_FILES="$EXP_UNSHARED_LIB_FILE"
+  EXP_LIB_FILE=${EXP_UNSHARED_LIB_FILE}
+  EXP_LIB_FILES="${EXP_UNSHARED_LIB_FILE}"
   AC_MSG_RESULT([unshared])
 fi
 
 # now broken out into EXP_AND_TCL_LIBS and EXP_AND_TK_LIBS. Had to do this
 # in order to avoid repeating lib specs to which some systems object.
-EXP_AND_TCL_LIBS="$EXP_AND_TCL_LIBS $TCL_LD_SEARCH_FLAGS"
-EXP_AND_TK_LIBS="$EXP_AND_TK_LIBS $TCL_LD_SEARCH_FLAGS"
+EXP_AND_TCL_LIBS="${EXP_AND_TCL_LIBS} ${TCL_LD_SEARCH_FLAGS}"
+EXP_AND_TK_LIBS="${EXP_AND_TK_LIBS} ${TCL_LD_SEARCH_FLAGS}"
 
 # Sigh - Tcl defines SHLIB_LD_LIBS to be either empty or ${LIBS} and
 # LIBS is intended to be expanded by Make. But since we are too close
 # to hitting config's max symbols, pack everything together here and
 # do test ourselves. Ugh.  
 #
-if test "x$TCL_SHLIB_LD_LIBS" = "x" ; then
+if test "x${TCL_SHLIB_LD_LIBS}" = "x" ; then
 	EXP_SHLIB_LD_LIBS=""
 else
 	# seems a little strange to build in Tcl's build-lib, but
 	# that is what Tk does.
-	EXP_SHLIB_LD_LIBS="$TCL_BUILD_LIB_SPEC $TCL_DL_LIBS $LIBS -lc"
+	EXP_SHLIB_LD_LIBS="${TCL_BUILD_LIB_SPEC} ${TCL_DL_LIBS} ${LIBS} -lc"
 fi
 
 dnl# CYGNUS LOCAL
@@ -1293,7 +1308,7 @@ LIB_RUNTIME_DIR='${LIB_RUNTIME_DIR}'
 # If Tcl and Expect are installed in different places, adjust the library
 # search path to reflect this.
 
-if test "$TCL_EXEC_PREFIX" != "$exec_prefix"; then
+if test "${TCL_EXEC_PREFIX}" != "${exec_prefix}"; then
     LIB_RUNTIME_DIR="${LIB_RUNTIME_DIR}:${TCL_EXEC_PREFIX}"
 fi
 
@@ -1305,8 +1320,8 @@ fi
 # string in TCL_LD_SEARCH_FLAGS, which causes a substitution of the
 # variable LIB_RUNTIME_DIR.
 
-eval "EXP_CC_SEARCH_FLAGS=\"$TCL_LD_SEARCH_FLAGS\""
-if test "$GCC" = yes; then
+eval "EXP_CC_SEARCH_FLAGS=\"${TCL_LD_SEARCH_FLAGS}\""
+if test "${GCC}" = yes; then
   true
 else
   EXP_LD_SEARCH_FLAGS=`echo ${EXP_CC_SEARCH_FLAGS} |sed -e "s|-Wl,||g" -e "s|,| |g"`

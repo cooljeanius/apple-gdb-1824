@@ -3849,6 +3849,9 @@ if test -e ./config.cache; then
 	sed -i "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
 	sed -i "s|ac_cv_prog_CC|bad_CC|g" ./config.cache
 	sed -i "s|ac_cv_prog_CPP|bad_CPP|g" ./config.cache
+	sed -i "s|ac_cv_env_build_alias|bad_build_alias|g" ./config.cache
+	sed -i "s|ac_cv_env_host_alias|bad_host_alias|g" ./config.cache
+	sed -i "s|ac_cv_env_target_alias|bad_target_alias|g" ./config.cache
 fi
 
 # /bin/sh on some systems is too deficient (in particular, Ultrix 4.3
@@ -5718,10 +5721,18 @@ fi
 
 
 # these are the other subdirectories we need to configure
+if test -z "${build_alias}" -a -z "${host_alias}" -a -z "${target_alias}"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: will recurse into the testsuite for Expect" >&5
+$as_echo "$as_me: will recurse into the testsuite for Expect" >&6;}
 
 
 subdirs="$subdirs testsuite"
 
+else
+  test -d testsuite
+  { $as_echo "$as_me:${as_lineno-$LINENO}: the testsuite for Expect will have to be configured and run manually" >&5
+$as_echo "$as_me: the testsuite for Expect will have to be configured and run manually" >&6;}
+fi
 
 # This is for LynxOS, which needs a flag to force true POSIX when
 # building. The flag varies depending how old the compiler is.
@@ -9401,7 +9412,7 @@ else
   LIBS="${LIBS} -lpt"
 fi
 
-  # I have never seen Tcl or Tk include -lpt so do NOT bother with explicit test
+  # I have never seen Tcl/Tk include -lpt so do NOT bother w/explicit test
   unset ac_cv_func_ptsname
   ac_fn_c_check_func "$LINENO" "ptsname" "ac_cv_func_ptsname"
 if test "x$ac_cv_func_ptsname" = xyes; then :
@@ -9496,7 +9507,7 @@ if test "x$ac_cv_func_tcsetattr" = xyes; then :
   tcsetattr=1
 fi
 
-if test $tcgetattr -eq 1 -a $tcsetattr -eq 1 ; then
+if test ${tcgetattr} -eq 1 -a ${tcsetattr} -eq 1 ; then
 
 $as_echo "#define HAVE_TCSETATTR 1" >>confdefs.h
 
@@ -9641,6 +9652,8 @@ else
 
 # ifdef HAVE_INTTYPES_H
 #  include <inttypes.h>
+# else
+#  warning this conftest expects <inttypes.h> to be included.
 # endif /* HAVE_INTTYPES_H */
 #  include <termios.h>
   main()
@@ -9687,6 +9700,8 @@ else
 /* including termios.h on Solaris 5.6 fails unless inttypes.h included */
 #ifdef HAVE_INTTYPES_H
 # include <inttypes.h>
+#else
+# warning this conftest expects <inttypes.h> to be included.
 #endif /* HAVE_INTTYPES_H */
 #include <termios.h>
 main() {
@@ -9694,7 +9709,7 @@ main() {
 	return 0;
 #else
 	return 1;
-#endif
+#endif /* TCGETS || TCGETA */
 }
 _ACEOF
 if ac_fn_c_try_run "$LINENO"; then :
@@ -9794,6 +9809,8 @@ else
 /* including termios.h on Solaris 5.6 fails unless inttypes.h included */
 #ifdef HAVE_INTTYPES_H
 # include <inttypes.h>
+#else
+# warning this conftest expects <inttypes.h> to be included.
 #endif /* HAVE_INTTYPES_H */
 #include <termios.h>
 main() {
@@ -9801,7 +9818,7 @@ main() {
 	return 0;
 #else
 	return 1;
-#endif
+#endif /* TIOCGWINSZ */
 }
 _ACEOF
 if ac_fn_c_try_run "$LINENO"; then :
@@ -10163,7 +10180,7 @@ fi
 # the same command as Tcl's configure
 # Check whether --enable-load was given.
 if test "${enable_load+set}" = set; then :
-  enableval=$enable_load; disable_dl=$enableval
+  enableval=$enable_load; disable_dl=${enableval}
 else
   disable_dl=no
 fi
@@ -10171,7 +10188,7 @@ fi
 
 # Check whether --enable-gcc was given.
 if test "${enable_gcc+set}" = set; then :
-  enableval=$enable_gcc; enable_gcc=$enableval
+  enableval=$enable_gcc; enable_gcc=${enableval}
 else
   enable_gcc=no
 fi
@@ -10185,12 +10202,12 @@ fi
 #   up the Tcl library.
 
 if test "${TCL_LIB_VERSIONS_OK}" = "ok"; then
-    EXP_LIB_VERSION=$EXP_VERSION
+    EXP_LIB_VERSION=${EXP_VERSION}
 else
-    EXP_LIB_VERSION=$EXP_VERSION_NODOTS
+    EXP_LIB_VERSION=${EXP_VERSION_NODOTS}
 fi
-if test $iunix -eq 1 ; then
-    EXP_LIB_VERSION=$EXP_VERSION_NODOTS
+if test ${iunix} -eq 1 ; then
+    EXP_LIB_VERSION=${EXP_VERSION_NODOTS}
 fi
 
 # also remove dots on systems that do NOT support filenames > 14
@@ -10247,38 +10264,38 @@ EXP_BUILD_LIB_SPEC=${EXP_UNSHARED_LIB_FILE}
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for type of library to build" >&5
 $as_echo_n "checking for type of library to build... " >&6; }
-if test "$enable_shared" = "yes" && test "x${TCL_SHLIB_SUFFIX}" != "x" ; then
-  EXP_SHLIB_CFLAGS=$TCL_SHLIB_CFLAGS
+if test "${enable_shared}" = "yes" && test "x${TCL_SHLIB_SUFFIX}" != "x" ; then
+  EXP_SHLIB_CFLAGS=${TCL_SHLIB_CFLAGS}
   eval "EXP_SHARED_LIB_FILE=libexpect${TCL_SHARED_LIB_SUFFIX}"
-  EXP_LIB_FILE=$EXP_SHARED_LIB_FILE
-  EXP_LIB_FILES="$EXP_SHARED_LIB_FILE $EXP_UNSHARED_LIB_FILE"
+  EXP_LIB_FILE=${EXP_SHARED_LIB_FILE}
+  EXP_LIB_FILES="${EXP_SHARED_LIB_FILE} ${EXP_UNSHARED_LIB_FILE}"
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: both shared and unshared" >&5
 $as_echo "both shared and unshared" >&6; }
 else
   EXP_SHLIB_CFLAGS=
   EXP_SHARED_LIB_FILE="reconfigure_Tcl_for_shared_library"
-  EXP_LIB_FILE=$EXP_UNSHARED_LIB_FILE
-  EXP_LIB_FILES="$EXP_UNSHARED_LIB_FILE"
+  EXP_LIB_FILE=${EXP_UNSHARED_LIB_FILE}
+  EXP_LIB_FILES="${EXP_UNSHARED_LIB_FILE}"
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: unshared" >&5
 $as_echo "unshared" >&6; }
 fi
 
 # now broken out into EXP_AND_TCL_LIBS and EXP_AND_TK_LIBS. Had to do this
 # in order to avoid repeating lib specs to which some systems object.
-EXP_AND_TCL_LIBS="$EXP_AND_TCL_LIBS $TCL_LD_SEARCH_FLAGS"
-EXP_AND_TK_LIBS="$EXP_AND_TK_LIBS $TCL_LD_SEARCH_FLAGS"
+EXP_AND_TCL_LIBS="${EXP_AND_TCL_LIBS} ${TCL_LD_SEARCH_FLAGS}"
+EXP_AND_TK_LIBS="${EXP_AND_TK_LIBS} ${TCL_LD_SEARCH_FLAGS}"
 
 # Sigh - Tcl defines SHLIB_LD_LIBS to be either empty or ${LIBS} and
 # LIBS is intended to be expanded by Make. But since we are too close
 # to hitting config's max symbols, pack everything together here and
 # do test ourselves. Ugh.
 #
-if test "x$TCL_SHLIB_LD_LIBS" = "x" ; then
+if test "x${TCL_SHLIB_LD_LIBS}" = "x" ; then
 	EXP_SHLIB_LD_LIBS=""
 else
 	# seems a little strange to build in Tcl's build-lib, but
 	# that is what Tk does.
-	EXP_SHLIB_LD_LIBS="$TCL_BUILD_LIB_SPEC $TCL_DL_LIBS $LIBS -lc"
+	EXP_SHLIB_LD_LIBS="${TCL_BUILD_LIB_SPEC} ${TCL_DL_LIBS} ${LIBS} -lc"
 fi
 
 # Check for Cygwin
@@ -10302,7 +10319,7 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_cygwin32" >&5
 $as_echo "$ac_cv_cygwin32" >&6; }
 CYGWIN=
-test "$ac_cv_cygwin32" = yes && CYGWIN=yes
+test "${ac_cv_cygwin32}" = yes && CYGWIN=yes
 # done with Cygwin test
 
 
@@ -10464,7 +10481,7 @@ LIB_RUNTIME_DIR='${LIB_RUNTIME_DIR}'
 # If Tcl and Expect are installed in different places, adjust the library
 # search path to reflect this.
 
-if test "$TCL_EXEC_PREFIX" != "$exec_prefix"; then
+if test "${TCL_EXEC_PREFIX}" != "${exec_prefix}"; then
     LIB_RUNTIME_DIR="${LIB_RUNTIME_DIR}:${TCL_EXEC_PREFIX}"
 fi
 
@@ -10476,8 +10493,8 @@ fi
 # string in TCL_LD_SEARCH_FLAGS, which causes a substitution of the
 # variable LIB_RUNTIME_DIR.
 
-eval "EXP_CC_SEARCH_FLAGS=\"$TCL_LD_SEARCH_FLAGS\""
-if test "$GCC" = yes; then
+eval "EXP_CC_SEARCH_FLAGS=\"${TCL_LD_SEARCH_FLAGS}\""
+if test "${GCC}" = yes; then
   true
 else
   EXP_LD_SEARCH_FLAGS=`echo ${EXP_CC_SEARCH_FLAGS} |sed -e "s|-Wl,||g" -e "s|,| |g"`

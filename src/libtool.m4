@@ -888,5 +888,25 @@ ifelse([AC_DISABLE_FAST_INSTALL])dnl
 AC_DEFUN([LT_AC_PROG_GCJ],
 [AC_CHECK_TOOL([GCJ],[gcj],[no])
   test "x${GCJFLAGS+set}" = xset || GCJFLAGS="-g -O2"
-  AC_SUBST(GCJFLAGS)
+  AC_SUBST([GCJFLAGS])
 ])
+
+# _LT_CHECK_OBJDIR
+# ----------------
+m4_defun([_LT_CHECK_OBJDIR],
+[AC_CACHE_CHECK([for objdir],[lt_cv_objdir],
+[rm -f .libs 2>/dev/null
+mkdir .libs 2>/dev/null
+if test -d .libs; then
+  lt_cv_objdir=.libs
+else
+  # MS-DOS does not allow filenames that begin with a dot.
+  lt_cv_objdir=_libs
+fi
+rmdir .libs 2>/dev/null])
+objdir=${lt_cv_objdir}
+m4_pattern_allow([LT_OBJDIR])dnl
+AC_DEFINE_UNQUOTED([LT_OBJDIR],["${lt_cv_objdir}/"],
+  [Define to the sub-directory in which libtool stores uninstalled libraries.])
+])# _LT_CHECK_OBJDIR
+
