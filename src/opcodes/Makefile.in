@@ -86,7 +86,7 @@ DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog THANKS \
 	$(top_srcdir)/configure $(am__configure_deps) \
 	$(srcdir)/config.h.in $(top_srcdir)/../mkinstalldirs \
 	$(top_srcdir)/po/Make-in $(top_srcdir)/../depcomp COPYING TODO \
-	$(top_srcdir)/../ar-lib $(top_srcdir)/../compile \
+	ltmain.sh $(top_srcdir)/../ar-lib $(top_srcdir)/../compile \
 	$(top_srcdir)/../config.guess $(top_srcdir)/../config.sub \
 	$(top_srcdir)/../install-sh $(top_srcdir)/../ltmain.sh \
 	$(top_srcdir)/../missing
@@ -309,6 +309,10 @@ CC_FOR_BUILD = @CC_FOR_BUILD@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CXX = @CXX@
+CXXCPP = @CXXCPP@
+CXXDEPMODE = @CXXDEPMODE@
+CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
 DEFS = @DEFS@
@@ -403,6 +407,7 @@ abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
+ac_ct_CXX = @ac_ct_CXX@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@

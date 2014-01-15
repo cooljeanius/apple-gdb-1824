@@ -86,10 +86,11 @@ DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog THANKS \
 	$(top_srcdir)/configure $(am__configure_deps) \
 	$(srcdir)/config.h.in $(top_srcdir)/../mkinstalldirs \
 	$(srcdir)/bfd-in2.h $(top_srcdir)/po/Make-in \
-	$(top_srcdir)/../depcomp COPYING TODO $(top_srcdir)/../ar-lib \
-	$(top_srcdir)/../compile $(top_srcdir)/../config.guess \
-	$(top_srcdir)/../config.sub $(top_srcdir)/../install-sh \
-	$(top_srcdir)/../ltmain.sh $(top_srcdir)/../missing
+	$(top_srcdir)/../depcomp COPYING TODO ltmain.sh \
+	$(top_srcdir)/../ar-lib $(top_srcdir)/../compile \
+	$(top_srcdir)/../config.guess $(top_srcdir)/../config.sub \
+	$(top_srcdir)/../install-sh $(top_srcdir)/../ltmain.sh \
+	$(top_srcdir)/../missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps =  \
 	$(top_srcdir)/m4/ax_maintainer_mode_auto_silent.m4 \
@@ -322,6 +323,10 @@ COREFILE = @COREFILE@
 COREFLAG = @COREFLAG@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CXX = @CXX@
+CXXCPP = @CXXCPP@
+CXXDEPMODE = @CXXDEPMODE@
+CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DATADIRNAME = @DATADIRNAME@
 DEBUGDIR = @DEBUGDIR@
@@ -416,6 +421,7 @@ abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
+ac_ct_CXX = @ac_ct_CXX@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 ac_cv_func_mmap_fixed_mapped = @ac_cv_func_mmap_fixed_mapped@
 all_backends = @all_backends@

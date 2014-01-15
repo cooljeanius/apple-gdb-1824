@@ -706,7 +706,7 @@ case "${target}" in
       esac],[])
     ;;
 # END APPLE LOCAL
-# Travis triplet:
+# Travis triplet (technically a quadruplet but whatever):
   x86_64-unknown-linux-gnu*)
 # Same as with Apple case above:
     if test ! -z "${build_alias}" -o ! -z "${host_alias}" -o ! -z "${target_alias}"; then
@@ -721,6 +721,17 @@ case "${target}" in
     if test ! -d guile; then
       noconfigdirs="${noconfigdirs} build-autogen autogen"
     fi
+# also steal some stuff from the Intel Linux section below:
+    case "${target}" in
+      *-*-*libc1*)
+        noconfigdirs="${noconfigdirs} ${libgcj}"
+        ;;
+    esac
+    # If we are using a cross compiler then do NOT configure newlib.
+    if test x${is_cross_compiler} != xno ; then
+      noconfigdirs="${noconfigdirs} target-newlib"
+    fi
+    noconfigdirs="${noconfigdirs} target-libgloss"
     ;;
   *-*-freebsd[[12]] | *-*-freebsd[[12]].* | *-*-freebsd*aout*)
     noconfigdirs="${noconfigdirs} target-newlib target-libgloss ${libgcj}"
@@ -821,7 +832,8 @@ case "${target}" in
   arc-*-*)
     noconfigdirs="${noconfigdirs} target-libgloss ${libgcj}"
     ;;
-  arm-semi-aof )
+  arm-semi-aof*)
+    noconfigdirs="${noconfigdirs}"
     ;;
   arm-*-coff | strongarm-*-coff | xscale-*-coff)
     noconfigdirs="${noconfigdirs} ${libgcj}"
@@ -857,18 +869,18 @@ case "${target}" in
     noconfigdirs="${noconfigdirs} target-libstdc++-v3 target-libgloss ${libgcj} gcc gdb newlib"
     ;;
   cris-*-* | crisv32-*-*)
-    unsupported_languages="$unsupported_languages java"
+    unsupported_languages="${unsupported_languages} java"
     case "${target}" in
       *-*-aout)
-	unsupported_languages="$unsupported_languages f95"
+	unsupported_languages="${unsupported_languages} f95"
 	noconfigdirs="${noconfigdirs} target-libffi target-boehm-gc";;
       *-*-elf)
-	unsupported_languages="$unsupported_languages f95"
+	unsupported_languages="${unsupported_languages} f95"
 	noconfigdirs="${noconfigdirs} target-boehm-gc";;
       *-*-linux*)
 	noconfigdirs="${noconfigdirs} target-newlib target-libgloss";;
       *)
-	unsupported_languages="$unsupported_languages f95"
+	unsupported_languages="${unsupported_languages} f95"
 	noconfigdirs="${noconfigdirs} ${libgcj} target-newlib target-libgloss";;
     esac
     ;;
@@ -979,6 +991,7 @@ case "${target}" in
     ;;    
   i[[3456789]]86-moss-msdos | i[[3456789]]86-*-moss* | \
   i[[3456789]]86-*-uwin* | i[[3456789]]86-*-interix* )
+    noconfigdirs="${noconfigdirs}"
     ;;
   i[[3456789]]86-*-pe)
     noconfigdirs="${noconfigdirs} target-libstdc++-v3 target-libgloss ${libgcj}"
@@ -1070,7 +1083,7 @@ case "${target}" in
   mips*-*-irix6*)
     # Linking libjava exceeds command-line length limits on at least
     # IRIX 6.2, but not on IRIX 6.5.
-    # Also, boehm-gc will NOT build on IRIX 6.5, according to Jeffrey Oldham
+    # Also, boehm-gc will NOT build on IRIX 6.5 according to Jeffrey Oldham
     # <oldham@codesourcery.com>
     noconfigdirs="${noconfigdirs} gprof target-libgloss ${libgcj}"
     ;;
@@ -1588,8 +1601,8 @@ AC_CHECK_FUNCS([atexit floor getcwd gethostbyaddr gethostbyname \
                 gettimeofday isascii localeconv mblen memchr memmove \
                 memset modf pow printf putenv re_comp regcomp rint \
                 select setlocale socket sqrt strcasecmp strchr strcspn \
-                strerror strpbrk strrchr strspn strstr strtol strtoul \
-                strverscmp system utime])
+                strerror strncasecmp strpbrk strrchr strspn strstr \
+                strtol strtoul strverscmp system utime])
 # Checks for tcl-related functions
 AC_DEFUN([SC_TCL_NEW_MACROS],[
   AC_REQUIRE([SC_PROG_TCLSH])
@@ -2908,6 +2921,7 @@ if test "x${RANLIB}" = "x"; then
 else
 	test ! -z "${RANLIB}"
 fi
+AC_PROG_MKDIR_P
 if test -x ${srcdir}/libtool; then
   test -r libtool
   if test "x${LIBTOOL_FLAGS}" = "x"; then

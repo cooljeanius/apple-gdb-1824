@@ -55,6 +55,7 @@ dnl# configure option --enable-shared.
 AC_DISABLE_SHARED
 
 # Libtool checks
+AC_PROG_CXX
 LT_INIT([disable-fast-install disable-shared dlopen static win32-dll])
 LT_LANG([C])
 if test -z "${lt_cv_objdir}"; then
