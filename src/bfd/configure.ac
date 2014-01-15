@@ -189,7 +189,7 @@ bfd_default_target_size=32
 dnl# APPLE LOCAL begin mmap() always works right on Darwin. Take our word
 dnl# for it.
 dnl# CY_GNU_GETTEXT will call AC_FUNC_MMAP for us.
-case "$host" in
+case "${host}" in
   *-apple-darwin* | *-apple-macos*)
    ac_cv_func_mmap_fixed_mapped=yes
    AC_SUBST([ac_cv_func_mmap_fixed_mapped])
@@ -199,7 +199,20 @@ dnl# APPLE LOCAL end mmap() always works right on Darwin. Take our word
 dnl# for it.
 
 # host stuff:
-
+# gettext stuff first specifically:
+if test -d ../intl; then
+  if test -z "${LDFLAGS}"; then
+    export LDFLAGS="-L../intl"
+  else
+    export LDFLAGS="${LDFLAGS} -L../intl"
+  fi
+elif test -d ../libintl; then
+  if test -z "${LDFLAGS}"; then
+    export LDFLAGS="-L../libintl"
+  else
+    export LDFLAGS="${LDFLAGS} -L../libintl"
+  fi
+fi
 ALL_LINGUAS="fr tr ja es sv da zh_CN ro rw vi"
 CY_GNU_GETTEXT
 
@@ -278,19 +291,7 @@ if test -z "${SYSTEM_FRAMEWORK_LIBS}"; then
 fi
 AC_SUBST([SYSTEM_FRAMEWORK_LIBS])
 AC_CHECK_LIB([c],[printf])
-if test -d ../intl; then
-  if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L../intl"
-  else
-    export LDFLAGS="${LDFLAGS} -L../intl"
-  fi
-elif test -d ../libintl; then
-  if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L../libintl"
-  else
-    export LDFLAGS="${LDFLAGS} -L../libintl"
-  fi
-fi
+# ../intl is added to LDFLAGS above
 AC_CHECK_LIB([intl],[gettext],[],[
   AC_CHECK_LIB([intl],[main],[],[])
 ])
@@ -1298,4 +1299,32 @@ if test ! -e ${srcdir}/bfd.h; then
       cp -v bfd.h ${srcdir}/bfd.h || echo ""
     fi
   fi
+fi
+
+# Hack for when the configure script generates a libtool that is too short:
+if test -e libtool -a -e libtool.old; then
+  stat libtool > /dev/null
+  stat libtool.old > /dev/null
+changequote(,)
+  if test "$(wc -l < libtool.old | tr -d [:blank:])" -gt "$(wc -l < libtool | tr -d [:blank:])"; then
+changequote([,])
+    echo "libtool.old is longer than libtool"
+    echo "that means that it is probably the better one to use"
+    cp -vf libtool.old libtool
+  else
+    echo "libtool.old is NOT longer than libtool"
+    echo "leaving it alone..."
+  fi
+elif test -e libtool.old -a ! -e libtool; then
+  stat libtool.old > /dev/null
+  echo "libtool is not present, but libtool.old is"
+  echo "so use libtool.old instead"
+  cp -v libtool.old libtool
+elif test -e libtool -a ! -e libtool.old; then
+  stat libtool > /dev/null
+  echo "using default libtool"
+elif test ! -e libtool -a ! -e libtool.old; then
+  echo "no libtool found"
+else
+  echo "this should not happen"
 fi

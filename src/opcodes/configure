@@ -8982,14 +8982,10 @@ rmdir .libs 2>/dev/null
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_objdir" >&5
 $as_echo "$lt_cv_objdir" >&6; }
-objdir=$lt_cv_objdir
-
-
-
-
+objdir=${lt_cv_objdir}
 
 cat >>confdefs.h <<_ACEOF
-#define LT_OBJDIR "$lt_cv_objdir/"
+#define LT_OBJDIR "${lt_cv_objdir}/"
 _ACEOF
 
 
@@ -12786,7 +12782,7 @@ if test "${enable_targets+set}" = set; then :
   yes | "") as_fn_error $? "enable-targets option must specify target names or 'all'" "$LINENO" 5
             ;;
   no)       enable_targets= ;;
-  *)        enable_targets=$enableval ;;
+  *)        enable_targets=${enableval} ;;
 esac
 fi
 # Check whether --enable-commonbfdlib was given.
@@ -12897,16 +12893,16 @@ $as_echo_n "checking whether to install libbfd... " >&6; }
 if test "${enable_install_libbfd+set}" = set; then :
   enableval=$enable_install_libbfd; install_libbfd_p=$enableval
 else
-  if test "${host}" = "${target}" || test "$enable_shared" = "yes"; then
+  if test "${host}" = "${target}" || test "${enable_shared}" = "yes"; then
         install_libbfd_p=yes
       else
         install_libbfd_p=no
       fi
 fi
 
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $install_libbfd_p" >&5
-$as_echo "$install_libbfd_p" >&6; }
-   if test $install_libbfd_p = yes; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${install_libbfd_p}" >&5
+$as_echo "${install_libbfd_p}" >&6; }
+   if test ${install_libbfd_p} = yes; then
   INSTALL_LIBBFD_TRUE=
   INSTALL_LIBBFD_FALSE='#'
 else
@@ -12923,7 +12919,12 @@ fi
   if test "${host}" != "${target}"; then
     bfdlibdir='$(exec_prefix)/$(host_noncanonical)/$(target_noncanonical)/lib'
     bfdincludedir='$(exec_prefix)/$(host_noncanonical)/$(target_noncanonical)/include'
+  else
+    bfdlibdir='$(libdir)'
+    bfdincludedir='$(includedir)'
   fi
+
+
 
 
 
@@ -15009,8 +15010,8 @@ $as_echo "$as_me: sourcing ../bfd/configure.host" >&6;}
 
 # Put a plausible default for CC_FOR_BUILD in Makefile.
 
-if test -z "$CC_FOR_BUILD"; then
-  if test "x$cross_compiling" = "xno"; then
+if test -z "${CC_FOR_BUILD}"; then
+  if test "x${cross_compiling}" = "xno"; then
     CC_FOR_BUILD='$(CC)'
   else
     CC_FOR_BUILD=gcc
@@ -15019,7 +15020,7 @@ fi
 
 # Also set EXEEXT_FOR_BUILD.
 
-if test "x$cross_compiling" = "xno"; then
+if test "x${cross_compiling}" = "xno"; then
   EXEEXT_FOR_BUILD='$(EXEEXT)'
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for build system executable suffix" >&5
@@ -15027,17 +15028,17 @@ $as_echo_n "checking for build system executable suffix... " >&6; }
 if ${bfd_cv_build_exeext+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  rm -f conftest*
+  rm -f conftest* || rm -rfv conftest* || rmdir conftest*
      echo 'int main () { return 0; }' > conftest.c
-     bfd_cv_build_exeext=
+     bfd_cv_build_exeext=""
      ${CC_FOR_BUILD} -o conftest conftest.c 1>&5 2>&5
      for file in conftest.*; do
-       case $file in
+       case ${file} in
        *.c | *.o | *.obj | *.ilk | *.pdb) ;;
-       *) bfd_cv_build_exeext=`echo $file | sed -e s/conftest//` ;;
+       *) bfd_cv_build_exeext=`echo ${file} | sed -e s/conftest//` ;;
        esac
      done
-     rm -f conftest*
+     rm -f conftest* || rm -rfv conftest* || rmdir conftest*
      test x"${bfd_cv_build_exeext}" = x && bfd_cv_build_exeext=no
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $bfd_cv_build_exeext" >&5
@@ -15319,6 +15320,7 @@ _ACEOF
 
 fi
 
+# ../intl is added to LDFLAGS above
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing dcgettext" >&5
 $as_echo_n "checking for library containing dcgettext... " >&6; }
 if ${ac_cv_search_dcgettext+:} false; then :
@@ -16633,7 +16635,7 @@ else
   # if cross-compiling, assume that the system provides -liberty
   # and that the version is compatible with new headers.
   BUILD_LIBS=-liberty
-  BUILD_LIB_DEPS=
+  BUILD_LIB_DEPS=""
 fi
 BUILD_LIBS="${BUILD_LIBS} ${LIBINTL}"
 BUILD_LIB_DEPS="${BUILD_LIB_DEPS} ${LIBINTL_DEP}"
@@ -16642,8 +16644,8 @@ BUILD_LIB_DEPS="${BUILD_LIB_DEPS} ${LIBINTL_DEP}"
 
 
 # Horrible hacks to build DLLs on Windows.
-WIN32LDFLAGS=
-WIN32LIBADD=
+WIN32LDFLAGS=""
+WIN32LIBADD=""
 case "${host}" in
 *-*-cygwin*)
   if test "${enable_shared}" = "yes"; then
@@ -17670,7 +17672,6 @@ lt_cv_sys_global_symbol_to_c_name_address='`$ECHO "$lt_cv_sys_global_symbol_to_c
 lt_cv_sys_global_symbol_to_c_name_address_lib_prefix='`$ECHO "$lt_cv_sys_global_symbol_to_c_name_address_lib_prefix" | $SED "$delay_single_quote_subst"`'
 nm_file_list_spec='`$ECHO "$nm_file_list_spec" | $SED "$delay_single_quote_subst"`'
 lt_sysroot='`$ECHO "$lt_sysroot" | $SED "$delay_single_quote_subst"`'
-objdir='`$ECHO "$objdir" | $SED "$delay_single_quote_subst"`'
 MAGIC_CMD='`$ECHO "$MAGIC_CMD" | $SED "$delay_single_quote_subst"`'
 lt_prog_compiler_no_builtin_flag='`$ECHO "$lt_prog_compiler_no_builtin_flag" | $SED "$delay_single_quote_subst"`'
 lt_prog_compiler_pic='`$ECHO "$lt_prog_compiler_pic" | $SED "$delay_single_quote_subst"`'
@@ -18794,9 +18795,6 @@ nm_file_list_spec=$lt_nm_file_list_spec
 # The root where to search for dependent libraries,and in which our libraries should be installed.
 lt_sysroot=$lt_sysroot
 
-# The name of the directory that contains temporary libtool files.
-objdir=$objdir
-
 # Used to examine libraries when file_magic_cmd begins with "file".
 MAGIC_CMD=$MAGIC_CMD
 
@@ -19385,5 +19383,31 @@ if test "${srcdir}" != "."; then
     cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
   elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
     cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+  fi
+fi
+
+# Hack in case libtool is too short:
+
+# The "1000" is just an arbitrarily chosen number that is usually right
+if test "$(wc -l < libtool | tr -d [:blank:])" -lt "1000"; then
+
+  echo "libtool is too short, trying to create a new one"
+  if test -x ../ltconfig; then
+    # I have no clue why this is a thing:
+    if test -e /mount/endor/wildenhu/local-x86_64/bin/sed; then
+      if test -r ../ltmain.sh; then
+        ../ltconfig ../ltmain.sh
+      elif test -r ../ltmain-old.sh; then
+        ../ltconfig ../ltmain-old.sh
+      elif test -r ../ltcf-c.sh; then
+        ../ltconfig ../ltmain-old.sh
+      else
+        echo "not sure which ltmain.sh to use to do so"
+      fi
+    else
+      echo "actually never mind (for now)"
+    fi
+  else
+    echo "unable to do so: ../ltconfig is missing and/or unusable"
   fi
 fi

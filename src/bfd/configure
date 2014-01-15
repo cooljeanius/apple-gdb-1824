@@ -14209,7 +14209,7 @@ host64=false
 target64=false
 bfd_default_target_size=32
 
-case "$host" in
+case "${host}" in
   *-apple-darwin* | *-apple-macos*)
    ac_cv_func_mmap_fixed_mapped=yes
 
@@ -14217,7 +14217,20 @@ case "$host" in
 esac
 
 # host stuff:
-
+# gettext stuff first specifically:
+if test -d ../intl; then
+  if test -z "${LDFLAGS}"; then
+    export LDFLAGS="-L../intl"
+  else
+    export LDFLAGS="${LDFLAGS} -L../intl"
+  fi
+elif test -d ../libintl; then
+  if test -z "${LDFLAGS}"; then
+    export LDFLAGS="-L../libintl"
+  else
+    export LDFLAGS="${LDFLAGS} -L../libintl"
+  fi
+fi
 ALL_LINGUAS="fr tr ja es sv da zh_CN ro rw vi"
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for an ANSI C-conforming const" >&5
 $as_echo_n "checking for an ANSI C-conforming const... " >&6; }
@@ -15834,19 +15847,7 @@ _ACEOF
 
 fi
 
-if test -d ../intl; then
-  if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L../intl"
-  else
-    export LDFLAGS="${LDFLAGS} -L../intl"
-  fi
-elif test -d ../libintl; then
-  if test -z "${LDFLAGS}"; then
-    export LDFLAGS="-L../libintl"
-  else
-    export LDFLAGS="${LDFLAGS} -L../libintl"
-  fi
-fi
+# ../intl is added to LDFLAGS above
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gettext in -lintl" >&5
 $as_echo_n "checking for gettext in -lintl... " >&6; }
 if ${ac_cv_lib_intl_gettext+:} false; then :
@@ -23282,4 +23283,32 @@ if test ! -e ${srcdir}/bfd.h; then
       cp -v bfd.h ${srcdir}/bfd.h || echo ""
     fi
   fi
+fi
+
+# Hack for when the configure script generates a libtool that is too short:
+if test -e libtool -a -e libtool.old; then
+  stat libtool > /dev/null
+  stat libtool.old > /dev/null
+
+  if test "$(wc -l < libtool.old | tr -d [:blank:])" -gt "$(wc -l < libtool | tr -d [:blank:])"; then
+
+    echo "libtool.old is longer than libtool"
+    echo "that means that it is probably the better one to use"
+    cp -vf libtool.old libtool
+  else
+    echo "libtool.old is NOT longer than libtool"
+    echo "leaving it alone..."
+  fi
+elif test -e libtool.old -a ! -e libtool; then
+  stat libtool.old > /dev/null
+  echo "libtool is not present, but libtool.old is"
+  echo "so use libtool.old instead"
+  cp -v libtool.old libtool
+elif test -e libtool -a ! -e libtool.old; then
+  stat libtool > /dev/null
+  echo "using default libtool"
+elif test ! -e libtool -a ! -e libtool.old; then
+  echo "no libtool found"
+else
+  echo "this should not happen"
 fi

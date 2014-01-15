@@ -54,7 +54,7 @@ AC_ARG_ENABLE([targets],
   yes | "") AC_MSG_ERROR([enable-targets option must specify target names or 'all'])
             ;;
   no)       enable_targets= ;;
-  *)        enable_targets=$enableval ;;
+  *)        enable_targets=${enableval} ;;
 esac])dnl
 AC_ARG_ENABLE([commonbfdlib],
 [AS_HELP_STRING([--enable-commonbfdlib],[build shared BFD/opcodes/libiberty library])],
@@ -143,6 +143,7 @@ if test -z "${SYSTEM_FRAMEWORK_LIBS}"; then
 fi
 AC_SUBST([SYSTEM_FRAMEWORK_LIBS])
 AC_CHECK_LIB([c],[printf])
+# ../intl is added to LDFLAGS above
 AC_SEARCH_LIBS([dcgettext],[intl])
 AC_CHECK_LIB([intl],[gettext],[],[
   AC_CHECK_LIB([intl],[main])
@@ -231,7 +232,7 @@ else
   # if cross-compiling, assume that the system provides -liberty
   # and that the version is compatible with new headers.
   BUILD_LIBS=-liberty
-  BUILD_LIB_DEPS=
+  BUILD_LIB_DEPS=""
 fi
 BUILD_LIBS="${BUILD_LIBS} ${LIBINTL}"
 BUILD_LIB_DEPS="${BUILD_LIB_DEPS} ${LIBINTL_DEP}"
@@ -240,8 +241,8 @@ AC_SUBST([BUILD_LIBS])
 AC_SUBST([BUILD_LIB_DEPS])
 
 # Horrible hacks to build DLLs on Windows.
-WIN32LDFLAGS=
-WIN32LIBADD=
+WIN32LDFLAGS=""
+WIN32LIBADD=""
 case "${host}" in
 *-*-cygwin*)
   if test "${enable_shared}" = "yes"; then
@@ -432,5 +433,31 @@ if test "${srcdir}" != "."; then
     cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
   elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
     cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+  fi
+fi
+
+# Hack in case libtool is too short:
+changequote(,)
+# The "1000" is just an arbitrarily chosen number that is usually right
+if test "$(wc -l < libtool | tr -d [:blank:])" -lt "1000"; then
+changequote([,])
+  echo "libtool is too short, trying to create a new one"
+  if test -x ../ltconfig; then
+    # I have no clue why this is a thing:
+    if test -e /mount/endor/wildenhu/local-x86_64/bin/sed; then
+      if test -r ../ltmain.sh; then
+        ../ltconfig ../ltmain.sh
+      elif test -r ../ltmain-old.sh; then
+        ../ltconfig ../ltmain-old.sh
+      elif test -r ../ltcf-c.sh; then
+        ../ltconfig ../ltmain-old.sh
+      else
+        echo "not sure which ltmain.sh to use to do so"
+      fi
+    else
+      echo "actually never mind (for now)"
+    fi
+  else
+    echo "unable to do so: ../ltconfig is missing and/or unusable"
   fi
 fi

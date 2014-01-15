@@ -40,7 +40,7 @@ bfdver.h
 *site.bak
 *.framework
 libtool
-libtool.old
+# un-gitignoring libtool.old until stuff is fixed
 libtoolT
 libtool-soversion
 *.swp
