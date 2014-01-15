@@ -13896,6 +13896,8 @@ CC="$lt_save_CC"
 
 
 if test -z "${lt_cv_objdir}"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: lt_cv_objdir somehow was left unset, setting to default" >&5
+$as_echo "$as_me: WARNING: lt_cv_objdir somehow was left unset, setting to default" >&2;}
   lt_cv_objdir=.libs
 elif test "${lt_cv_objdir}" = ..; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: lt_cv_objdir is one level too high, reassigning" >&5

@@ -591,10 +591,7 @@ BASE_FLAGS_TO_PASS = \
 	"datadir=$(datadir)" \
 	"exec_prefix=$(exec_prefix)" \
 	"includedir=$(includedir)" \
-	"datarootdir=$(datarootdir)" \
 	"infodir=$(infodir)" \
-	"pdfdir=$(pdfdir)" \
-	"htmldir=$(htmldir)" \
 	"libdir=$(libdir)" \
 	"libexecdir=$(libexecdir)" \
 	"lispdir=$(lispdir)" \
@@ -608,7 +605,6 @@ BASE_FLAGS_TO_PASS = \
 	"tooldir=$(tooldir)" \
 	"build_tooldir=$(build_tooldir)" \
 	"target_alias=$(target_alias)" \
-	"AWK=$(AWK)" \
 	"BISON=$(BISON)" \
 	"CC_FOR_BUILD=$(CC_FOR_BUILD)" \
 	"CFLAGS_FOR_BUILD=$(CFLAGS_FOR_BUILD)" \
@@ -619,30 +615,20 @@ BASE_FLAGS_TO_PASS = \
 	"INSTALL_DATA=$(INSTALL_DATA)" \
 	"INSTALL_PROGRAM=$(INSTALL_PROGRAM)" \
 	"INSTALL_SCRIPT=$(INSTALL_SCRIPT)" \
-	"LDFLAGS_FOR_BUILD=$(LDFLAGS_FOR_BUILD)" \
 	"LEX=$(LEX)" \
 	"M4=$(M4)" \
 	"MAKE=$(MAKE)" \
 	"RUNTEST=$(RUNTEST)" \
 	"RUNTESTFLAGS=$(RUNTESTFLAGS)" \
-	"SED=$(SED)" \
 	"SHELL=$(SHELL)" \
 	"YACC=$(YACC)" \
-	"ADAFLAGS=$(ADAFLAGS)" \
 	"ADA_CFLAGS=$(ADA_CFLAGS)" \
 	"AR_FLAGS=$(AR_FLAGS)" \
-	"BOOT_ADAFLAGS=$(BOOT_ADAFLAGS)" \
-	"BOOT_CFLAGS=$(BOOT_CFLAGS)" \
-	"BOOT_LDFLAGS=$(BOOT_LDFLAGS)" \
 	"CFLAGS=$(CFLAGS)" \
 	"CXXFLAGS=$(CXXFLAGS)" \
 	"LDFLAGS=$(LDFLAGS)" \
 	"LIBCFLAGS=$(LIBCFLAGS)" \
 	"LIBCXXFLAGS=$(LIBCXXFLAGS)" \
-	"STAGE1_CHECKING=$(STAGE1_CHECKING)" \
-	"STAGE1_LANGUAGES=$(STAGE1_LANGUAGES)" \
-	"GNATBIND=$(GNATBIND)" \
-	"GNATMAKE=$(GNATMAKE)" \
 	"AR_FOR_TARGET=$(AR_FOR_TARGET)" \
 	"AS_FOR_TARGET=$(AS_FOR_TARGET)" \
 	"CC_FOR_TARGET=$(CC_FOR_TARGET)" \
@@ -651,26 +637,15 @@ BASE_FLAGS_TO_PASS = \
 	"CXX_FOR_TARGET=$(CXX_FOR_TARGET)" \
 	"CXXFLAGS_FOR_TARGET=$(CXXFLAGS_FOR_TARGET)" \
 	"DLLTOOL_FOR_TARGET=$(DLLTOOL_FOR_TARGET)" \
-	"FLAGS_FOR_TARGET=$(FLAGS_FOR_TARGET)" \
 	"GCJ_FOR_TARGET=$(GCJ_FOR_TARGET)" \
 	"GFORTRAN_FOR_TARGET=$(GFORTRAN_FOR_TARGET)" \
-	"GOC_FOR_TARGET=$(GOC_FOR_TARGET)" \
-	"GOCFLAGS_FOR_TARGET=$(GOCFLAGS_FOR_TARGET)" \
 	"LD_FOR_TARGET=$(LD_FOR_TARGET)" \
 	"LDFLAGS_FOR_TARGET=$(LDFLAGS_FOR_TARGET)" \
 	"LIBCFLAGS_FOR_TARGET=$(LIBCFLAGS_FOR_TARGET)" \
 	"LIBCXXFLAGS_FOR_TARGET=$(LIBCXXFLAGS_FOR_TARGET)" \
-	"LIPO_FOR_TARGET=$(LIPO_FOR_TARGET)" \
 	"NM_FOR_TARGET=$(NM_FOR_TARGET)" \
-	"OBJDUMP_FOR_TARGET=$(OBJDUMP_FOR_TARGET)" \
 	"RANLIB_FOR_TARGET=$(RANLIB_FOR_TARGET)" \
-	"READELF_FOR_TARGET=$(READELF_FOR_TARGET)" \
-	"STRIP_FOR_TARGET=$(STRIP_FOR_TARGET)" \
 	"WINDRES_FOR_TARGET=$(WINDRES_FOR_TARGET)" \
-	"WINDMC_FOR_TARGET=$(WINDMC_FOR_TARGET)" \
-	"BUILD_CONFIG=$(BUILD_CONFIG)" \
-	"LANGUAGES=$(LANGUAGES)" \
-	"LEAN=$(LEAN)" \
 	"CONFIG_SHELL=$(SHELL)" \
 	"MAKEINFO=$(MAKEINFO) $(MAKEINFOFLAGS)" 
 
@@ -41930,6 +41905,14 @@ configure-stage3-binutils: maybe-configure-stage3-intl
 configure-stage4-binutils: maybe-configure-stage4-intl
 configure-stageprofile-binutils: maybe-configure-stageprofile-intl
 configure-stagefeedback-binutils: maybe-configure-stagefeedback-intl
+configure-binutils: maybe-configure-bfd
+
+configure-stage1-binutils: maybe-configure-stage1-bfd
+configure-stage2-binutils: maybe-configure-stage2-bfd
+configure-stage3-binutils: maybe-configure-stage3-bfd
+configure-stage4-binutils: maybe-configure-stage4-bfd
+configure-stageprofile-binutils: maybe-configure-stageprofile-bfd
+configure-stagefeedback-binutils: maybe-configure-stagefeedback-bfd
 all-binutils: maybe-all-libiberty
 
 all-stage1-binutils: maybe-all-stage1-libiberty

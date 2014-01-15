@@ -5,7 +5,7 @@ before_install:
 
 install:
   # Prerequisites
-  - "sudo apt-get install autogen gobjc gobjc++ gobjc-multilib gobjc++-multilib libobjc2 libopts25 libopts25-dev texinfo flex flex-doc flex-old flex-old-doc binutils binutils-dev binutils-doc binutils-multiarch pax binutils-gold libcurses-perl dejagnu expect expect-dev libexpect-perl"
+  - "sudo apt-get install autogen gobjc gobjc++ gobjc-multilib gobjc++-multilib libobjc2 libopts25 libopts25-dev texinfo flex flex-doc binutils binutils-dev binutils-doc binutils-multiarch pax binutils-gold libcurses-perl dejagnu expect expect-dev libexpect-perl"
 
 # set up env
 before_script: test -e ./.profile_generic && source ./.profile_generic && env | uniq | sort | uniq

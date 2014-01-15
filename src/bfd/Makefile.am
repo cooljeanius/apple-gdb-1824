@@ -33,7 +33,7 @@ libbfd_LTLIBRARIES = libbfd.la
 WARN_CFLAGS = @WARN_CFLAGS@
 NO_WERROR = @NO_WERROR@
 AM_CFLAGS = $(WARN_CFLAGS)
-AM_CPPFLAGS = -DBINDIR='"$(bindir)"'
+MY_AM_CPPFLAGS_EXTRA = -DBINDIR='"$(bindir)"'
 AM_WARNFLAGS = $(WARN_CFLAGS)
 
 # bfd.h goes here, for now
@@ -655,7 +655,7 @@ BFD_LIBS = @bfd_libs@
 BFD_MACHINES = @bfd_machines@
 TDEFAULTS = @tdefaults@
 
-AM_CPPFLAGS += @HDEFINES@ @COREFLAG@ @TDEFINES@ $(CSEARCH) $(CSWITCHES) -I$(srcdir)/../intl -I../intl
+AM_CPPFLAGS = @HDEFINES@ @COREFLAG@ @TDEFINES@ $(CSEARCH) $(CSWITCHES) -I$(srcdir)/../intl -I../intl
 
 # C source files that correspond to .o's.
 SOURCE_CFILES = \
@@ -688,7 +688,7 @@ BUILD_HFILES = \
 	bfdver.h elf32-target.h elf64-target.h targmatch.h bfd_stdint.h
 
 # Ensure they are built early:
-BUILT_SOURCES = $(BUILD_HFILES)
+MY_BUILT_SOURCES_COMMENTED_OUT = $(BUILD_HFILES)
 
 HFILES = $(SOURCE_HFILES) $(BUILD_HFILES)
 
@@ -733,7 +733,7 @@ ofiles: stamp-ofiles ; @true
 # list all sources in EXTRA_libbfd_la_SOURCES so the
 # dependency tracking fragments are picked up in the Makefile.
 libbfd_la_SOURCES = $(BFD32_LIBS_CFILES) $(BFD64_LIBS_CFILES)
-EXTRA_libbfd_la_SOURCES = $(CFILES)
+MY_EXTRA_libbfd_la_SOURCES_COMMENTED_OUT = $(CFILES)
 libbfd_la_DEPENDENCIES = $(OFILES) stamp-ofiles ofiles $(srcdir)/ofiles
 libbfd_la_LIBADD = `cat ofiles` @WIN32LIBADD@
 libbfd_la_LDFLAGS = -release $(VERSION) @WIN32LDFLAGS@
