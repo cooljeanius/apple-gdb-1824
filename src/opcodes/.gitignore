@@ -23,6 +23,7 @@ DEP1
 DEP2
 *libs/*
 *.lo
+*.loT
 *deps/*.*o
 *.sum
 *.framework

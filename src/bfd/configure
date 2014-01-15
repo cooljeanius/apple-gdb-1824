@@ -27300,3 +27300,30 @@ elif test ! -e libtool -a ! -e libtool.old; then
 else
   echo "this should not happen"
 fi
+
+# Also try the hack from ../opcodes here as well:
+
+# The "1000" is just an arbitrarily chosen number that is usually right
+if test "$(wc -l < libtool | tr -d [:blank:])" -lt "1000"; then
+
+  echo "even after all that libtool is still too short"
+  echo "trying to create a new one in a different way this time"
+  if test -x ../ltconfig; then
+    # I have no clue why this is a thing:
+    if test -e /mount/endor/wildenhu/local-x86_64/bin/sed; then
+      if test -r ../ltmain.sh; then
+        ../ltconfig ../ltmain.sh
+      elif test -r ../ltmain-old.sh; then
+        ../ltconfig ../ltmain-old.sh
+      elif test -r ../ltcf-c.sh; then
+        ../ltconfig ../ltmain-old.sh
+      else
+        echo "not sure which ltmain.sh to use to do so"
+      fi
+    else
+      echo "actually never mind (for now)"
+    fi
+  else
+    echo "unable to do so: ../ltconfig is missing and/or unusable"
+  fi
+fi

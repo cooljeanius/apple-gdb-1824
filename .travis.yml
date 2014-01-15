@@ -16,3 +16,5 @@ script: cd src && ./configure --with-x --disable-werror --disable-opts-test --en
 compiler:
   - clang
   - gcc
+
+after_success: pwd

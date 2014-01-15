@@ -17620,6 +17620,21 @@ fi
 
 
 
+
+# Gettext:
+if test -d ../intl; then
+  if test -z "${LDFLAGS}"; then
+    export LDFLAGS="-L../intl"
+  else
+    export LDFLAGS="${LDFLAGS} -L../intl"
+  fi
+elif test -d ../libintl; then
+  if test -z "${LDFLAGS}"; then
+    export LDFLAGS="-L../libintl"
+  else
+    export LDFLAGS="${LDFLAGS} -L../libintl"
+  fi
+fi
 ALL_LINGUAS="fr tr ja es sv da zh_CN ru ro rw zh_TW"
 if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
@@ -18879,7 +18894,7 @@ _ACEOF
 
 # host-specific stuff:
 
-HDEFINES=
+HDEFINES=""
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: sourcing ../bfd/configure.host" >&5
 $as_echo "$as_me: sourcing ../bfd/configure.host" >&6;}
@@ -19107,8 +19122,8 @@ fi
 
 # Put a plausible default for CC_FOR_BUILD in Makefile.
 
-if test -z "$CC_FOR_BUILD"; then
-  if test "x$cross_compiling" = "xno"; then
+if test -z "${CC_FOR_BUILD}"; then
+  if test "x${cross_compiling}" = "xno"; then
     CC_FOR_BUILD='$(CC)'
   else
     CC_FOR_BUILD=gcc
@@ -19117,7 +19132,7 @@ fi
 
 # Also set EXEEXT_FOR_BUILD.
 
-if test "x$cross_compiling" = "xno"; then
+if test "x${cross_compiling}" = "xno"; then
   EXEEXT_FOR_BUILD='$(EXEEXT)'
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for build system executable suffix" >&5
@@ -19125,17 +19140,17 @@ $as_echo_n "checking for build system executable suffix... " >&6; }
 if ${bfd_cv_build_exeext+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  rm -f conftest*
+  rm -f conftest* || rm -rfv conftest* || rmdir conftest*
      echo 'int main () { return 0; }' > conftest.c
-     bfd_cv_build_exeext=
+     bfd_cv_build_exeext=""
      ${CC_FOR_BUILD} -o conftest conftest.c 1>&5 2>&5
      for file in conftest.*; do
-       case $file in
+       case ${file} in
        *.c | *.o | *.obj | *.ilk | *.pdb) ;;
-       *) bfd_cv_build_exeext=`echo $file | sed -e s/conftest//` ;;
+       *) bfd_cv_build_exeext=`echo ${file} | sed -e s/conftest//` ;;
        esac
      done
-     rm -f conftest*
+     rm -f conftest* || rm -rfv conftest* || rmdir conftest*
      test x"${bfd_cv_build_exeext}" = x && bfd_cv_build_exeext=no
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $bfd_cv_build_exeext" >&5
@@ -19285,6 +19300,7 @@ fi
 esac
 
 
+# ../intl is added to LDFLAGS above
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing dcgettext" >&5
 $as_echo_n "checking for library containing dcgettext... " >&6; }
 if ${ac_cv_search_dcgettext+:} false; then :
@@ -21194,10 +21210,10 @@ unset ac_cv_header_malloc_h
 unset ac_cv_header_stdlib_h
 unset ac_cv_header_sys_param_h
 unset ac_cv_header_unistd_h
-for ac_header in assert.h errno.h fcntl.h gettext.h iconv.h langinfo.h \
-                  libgettext.h libintl.h limits.h locale.h mach/mach.h \
-                  malloc.h malloc/malloc.h stdarg.h stddef.h stdio.h \
-                  sys/file.h sys/param.h sys/time.h utime.h \
+for ac_header in assert.h binary-io.h errno.h fcntl.h gettext.h iconv.h \
+                  langinfo.h libgettext.h libintl.h limits.h locale.h \
+                  mach/mach.h malloc.h malloc/malloc.h stdarg.h stddef.h \
+                  stdio.h sys/file.h sys/param.h sys/time.h utime.h \
                   varargs.h wchar.h wctype.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
@@ -22608,12 +22624,12 @@ esac
 
 
 unset ac_cv_func_setlocale
-for ac_func in bindtextdomain ctime dcgettext dup2 fclose fopen \
-                fprintf fputs fread free getc_unlocked gettimeofday \
-                memchr memcmp memcpy memmove memset re_comp regcomp \
-                rmdir sbrk setlocale setmode strdup strerror strncasecmp \
-                strrchr strspn strstr strtol strtoul strverscmp \
-                textdomain utime utimes
+for ac_func in bindtextdomain ctime dcgettext dup2 expandargv \
+                fclose fopen fprintf fputs fread free getc_unlocked \
+                gettimeofday memchr memcmp memcpy memmove memset \
+                re_comp regcomp rmdir sbrk setlocale setmode \
+                strdup strerror strncasecmp strrchr strspn strstr \
+                strtol strtoul strverscmp textdomain utime utimes
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"

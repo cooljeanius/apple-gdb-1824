@@ -107,6 +107,21 @@ AM_PROG_LEX
 AC_PATH_PROG([ICONV_BIN],[iconv])
 AC_SUBST([ICONV_BIN])
 
+
+# Gettext:
+if test -d ../intl; then
+  if test -z "${LDFLAGS}"; then
+    export LDFLAGS="-L../intl"
+  else
+    export LDFLAGS="${LDFLAGS} -L../intl"
+  fi
+elif test -d ../libintl; then
+  if test -z "${LDFLAGS}"; then
+    export LDFLAGS="-L../libintl"
+  else
+    export LDFLAGS="${LDFLAGS} -L../libintl"
+  fi
+fi
 ALL_LINGUAS="fr tr ja es sv da zh_CN ru ro rw zh_TW"
 CY_GNU_GETTEXT
 
@@ -122,7 +137,7 @@ AC_DEFINE_UNQUOTED([EXECUTABLE_SUFFIX],["${EXEEXT}"],
 
 # host-specific stuff:
 
-HDEFINES=
+HDEFINES=""
 
 AC_MSG_NOTICE([sourcing ../bfd/configure.host])
 . ${srcdir}/../bfd/configure.host
@@ -170,6 +185,7 @@ AC_SUBST([DEMANGLER_NAME])
 
 # Checks for libraries.
 LT_LIB_M
+# ../intl is added to LDFLAGS above
 AC_SEARCH_LIBS([dcgettext],[intl])
 AC_SEARCH_LIBS([bindtextdomain],[intl])
 AC_SEARCH_LIBS([textdomain],[intl])
@@ -226,10 +242,10 @@ unset ac_cv_header_malloc_h
 unset ac_cv_header_stdlib_h
 unset ac_cv_header_sys_param_h
 unset ac_cv_header_unistd_h
-AC_CHECK_HEADERS([assert.h errno.h fcntl.h gettext.h iconv.h langinfo.h \
-                  libgettext.h libintl.h limits.h locale.h mach/mach.h \
-                  malloc.h malloc/malloc.h stdarg.h stddef.h stdio.h \
-                  sys/file.h sys/param.h sys/time.h utime.h \
+AC_CHECK_HEADERS([assert.h binary-io.h errno.h fcntl.h gettext.h iconv.h \
+                  langinfo.h libgettext.h libintl.h limits.h locale.h \
+                  mach/mach.h malloc.h malloc/malloc.h stdarg.h stddef.h \
+                  stdio.h sys/file.h sys/param.h sys/time.h utime.h \
                   varargs.h wchar.h wctype.h])
 AC_CHECK_HEADERS_ONCE([time.h])
 AC_HEADER_SYS_WAIT
@@ -262,12 +278,12 @@ AC_FUNC_REALLOC
 AC_FUNC_STRCOLL
 AC_FUNC_STRNLEN
 unset ac_cv_func_setlocale
-AC_CHECK_FUNCS([bindtextdomain ctime dcgettext dup2 fclose fopen \
-                fprintf fputs fread free getc_unlocked gettimeofday \
-                memchr memcmp memcpy memmove memset re_comp regcomp \
-                rmdir sbrk setlocale setmode strdup strerror strncasecmp \
-                strrchr strspn strstr strtol strtoul strverscmp \
-                textdomain utime utimes])
+AC_CHECK_FUNCS([bindtextdomain ctime dcgettext dup2 expandargv \
+                fclose fopen fprintf fputs fread free getc_unlocked \
+                gettimeofday memchr memcmp memcpy memmove memset \
+                re_comp regcomp rmdir sbrk setlocale setmode \
+                strdup strerror strncasecmp strrchr strspn strstr \
+                strtol strtoul strverscmp textdomain utime utimes])
 AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu])
 AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu])
 

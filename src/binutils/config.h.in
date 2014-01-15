@@ -46,6 +46,9 @@
 /* Define to 1 if you have the <assert.h> header file. */
 #undef HAVE_ASSERT_H
 
+/* Define to 1 if you have the <binary-io.h> header file. */
+#undef HAVE_BINARY_IO_H
+
 /* Define to 1 if you have the `bindtextdomain' function. */
 #undef HAVE_BINDTEXTDOMAIN
 
@@ -104,6 +107,9 @@
 
 /* Does the platform use an executable suffix? */
 #undef HAVE_EXECUTABLE_SUFFIX
+
+/* Define to 1 if you have the `expandargv' function. */
+#undef HAVE_EXPANDARGV
 
 /* Define to 1 if you have the `fclose' function. */
 #undef HAVE_FCLOSE

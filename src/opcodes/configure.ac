@@ -462,3 +462,31 @@ changequote([,])
     echo "unable to do so: ../ltconfig is missing and/or unusable"
   fi
 fi
+
+# Also try the hack from ../bfd here as well:
+if test -e libtool -a -e libtool.old; then
+  stat libtool > /dev/null
+  stat libtool.old > /dev/null
+changequote(,)
+  if test "$(wc -l < libtool.old | tr -d [:blank:])" -gt "$(wc -l < libtool | tr -d [:blank:])"; then
+changequote([,])
+    echo "libtool.old is longer than libtool"
+    echo "that means that it is probably the better one to use"
+    cp -vf libtool.old libtool
+  else
+    echo "libtool.old is NOT longer than libtool"
+    echo "leaving it alone..."
+  fi
+elif test -e libtool.old -a ! -e libtool; then
+  stat libtool.old > /dev/null
+  echo "libtool is not present, but libtool.old is"
+  echo "so use libtool.old instead"
+  cp -v libtool.old libtool
+elif test -e libtool -a ! -e libtool.old; then
+  stat libtool > /dev/null
+  echo "using default libtool"
+elif test ! -e libtool -a ! -e libtool.old; then
+  echo "no libtool found"
+else
+  echo "this should not happen"
+fi
