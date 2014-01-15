@@ -17,7 +17,8 @@
 #   quite in --maintainer-mode. That is very annoying. Likewise, a user who
 #   installs from source does not want to see doubled compiler messages.
 #
-#   I did not put an AC_REQUIRE(MAINTAINER_MODE) in here - should I?
+#   I did not originally put an AC_REQUIRE(MAINTAINER_MODE) in here -
+#   should I have done so from the start?
 #
 # LICENSE
 #
@@ -52,7 +53,7 @@
 #serial 8
 
 AC_DEFUN([AX_MAINTAINER_MODE_AUTO_SILENT],[dnl
-dnl# AC\_REQUIRE([AM\_MAINTAINER\_MODE])dnl
+AC_REQUIRE([AM_MAINTAINER_MODE])dnl
 AC_MSG_CHECKING([auto silent in maintainer mode])
 if test "${USE_MAINTAINER_MODE}" = "no" ; then
    test ".${TIMEOUT}" = "." && TIMEOUT="9"

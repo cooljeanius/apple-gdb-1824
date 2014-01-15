@@ -69,10 +69,14 @@ elif test "${lt_cv_objdir}" = ../.libs; then
 fi
 AC_SUBST([lt_cv_objdir])
 AC_DEFUN([AX_LIBTOOL_FIXES],[
+  AC_MSG_WARN([changing how libtool works])
   AC_REQUIRE([AX_PATCH_LIBTOOL_CHANGING_CMDS_IFS])
   AC_REQUIRE([AX_MAINTAINER_MODE_AUTO_SILENT])
 ])
-AX_LIBTOOL_FIXES
+if test -x ${srcdir}/libtool; then
+  test -r libtool
+  AX_LIBTOOL_FIXES
+fi
 
 AC_PLUGINS
 
@@ -163,7 +167,7 @@ AH_VERBATIM([00_CONFIG_H_CHECK],
     (this works only for glibc, but that should be enough).  */
 #if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
 #  error config.h must be #included before system headers
-#endif
+#endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ */
 #define __CONFIG_H__ 1])
 
 if test -z "${target}" ; then
@@ -328,6 +332,7 @@ AC_CHECK_FUNCS([fcntl fdopen fprintf getgid getuid memchr memmove memset \
                 rpl_malloc rpl_realloc setitimer strdup strncasecmp \
                 strrchr strspn strstr strtol strtoul strtoull sysconf \
                 system uname])
+AC_CHECK_FUNCS_ONCE([libtool])
 AC_FUNC_FORK
 AC_FUNC_FSEEKO
 AC_FUNC_MALLOC
@@ -382,9 +387,9 @@ AC_CHECK_DECLS([vsnprintf])
 AC_SEARCH_LIBS([zlibVersion],[z],[AC_CHECK_HEADERS([zlib.h])])
 
 # If we are configured native, pick a core file support file.
-COREFILE=
-COREFLAG=
-TRAD_HEADER=
+COREFILE=""
+COREFLAG=""
+TRAD_HEADER=""
 if test "${target}" = "${host}"; then
   case "${host}" in
   alpha*-*-freebsd* | alpha*-*-kfreebsd*-gnu)
@@ -565,13 +570,14 @@ changequote(,)dnl
   rs6000-*-aix4.[3-9]* | powerpc-*-aix4.[3-9]*)
 changequote([,])dnl
         COREFILE=rs6000-core.lo
-	COREFLAG="$COREFLAG -DAIX_CORE_DUMPX_CORE"
+	COREFLAG="${COREFLAG} -DAIX_CORE_DUMPX_CORE"
 	# Not all versions of AIX with -DAIX_CORE_DUMPX_CORE
 	# have c_impl as a member of struct core_dumpx
+	AC_CHECK_HEADERS_ONCE([core.h])
 	AC_MSG_CHECKING([for c_impl in struct core_dumpx])
-	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <core.h>]], [[struct core_dumpx c; c.c_impl = 0;]])],[AC_DEFINE(HAVE_ST_C_IMPL, 1,
+	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <core.h>]],[[struct core_dumpx c; c.c_impl = 0;]])],[AC_DEFINE([HAVE_ST_C_IMPL],[1],
 	    [Define if struct core_dumpx has member c_impl])
-	  AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no)])
+	  AC_MSG_RESULT([yes])],[AC_MSG_RESULT([no])])
 	;;
   rs6000-*-aix4*)	COREFILE=rs6000-core.lo ;;
   rs6000-*-*)		COREFILE=rs6000-core.lo ;;

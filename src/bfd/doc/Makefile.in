@@ -98,7 +98,7 @@ am__aclocal_m4_deps =  \
 	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/stdint.m4 \
 	$(top_srcdir)/acinclude.m4 $(top_srcdir)/../config/acx.m4 \
 	$(top_srcdir)/../bfd/bfd.m4 $(top_srcdir)/../bfd/warning.m4 \
-	$(top_srcdir)/../libtool.m4 $(top_srcdir)/../gettext.m4 \
+	$(top_srcdir)/../config/zlib.m4 $(top_srcdir)/../gettext.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
@@ -337,8 +337,6 @@ bfd_file_ptr = @bfd_file_ptr@
 bfd_libs = @bfd_libs@
 bfd_machines = @bfd_machines@
 bfd_ufile_ptr = @bfd_ufile_ptr@
-bfdincludedir = @bfdincludedir@
-bfdlibdir = @bfdlibdir@
 bindir = @bindir@
 build = @build@
 build_alias = @build_alias@

@@ -633,6 +633,7 @@ ac_includes_default="\
 #endif"
 
 ac_header_list=
+ac_func_list=
 ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
@@ -1507,10 +1508,9 @@ Optional Features:
   --enable-maintainer-mode
                           enable make rules and dependencies not useful (and
                           sometimes confusing) to the casual installer
-  --enable-shared=PKGS  build shared libraries default=[no]
+  --enable-shared[=PKGS]  build shared libraries [default=no]
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=no]
-  --enable-shared[=PKGS]  build shared libraries [default=no]
   --enable-static[=PKGS]  build static libraries [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --enable-plugins        Enable support for plugins (defaults no)
@@ -2692,6 +2692,8 @@ as_fn_append ac_header_list " malloc.h"
 as_fn_append ac_header_list " string.h"
 as_fn_append ac_header_list " values.h"
 as_fn_append ac_header_list " strings.h"
+as_fn_append ac_func_list " libtool"
+as_fn_append ac_header_list " core.h"
 as_fn_append ac_header_list " sys/procfs.h"
 as_fn_append ac_header_list " sys/mman.h"
 # Check that the precious variables saved in the cache have kept the same
@@ -6476,24 +6478,33 @@ fi
 # Check whether --enable-shared was given.
 if test "${enable_shared+set}" = set; then :
   enableval=$enable_shared; p=${PACKAGE-default}
-case $enableval in
-yes) enable_shared=yes ;;
-no) enable_shared=no ;;
-*)
-  enable_shared=no
-  # Look at the argument we got.  We use all the common list separators.
-  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:,"
-  for pkg in $enableval; do
-    if test "X$pkg" = "X$p"; then
-      enable_shared=yes
-    fi
-  done
-  IFS="$ac_save_ifs"
-  ;;
-esac
+    case $enableval in
+    yes) enable_shared=yes ;;
+    no) enable_shared=no ;;
+    *)
+      enable_shared=no
+      # Look at the argument we got.  We use all the common list separators.
+      lt_save_ifs="$IFS"; IFS="${IFS}$PATH_SEPARATOR,"
+      for pkg in $enableval; do
+	IFS="$lt_save_ifs"
+	if test "X$pkg" = "X$p"; then
+	  enable_shared=yes
+	fi
+      done
+      IFS="$lt_save_ifs"
+      ;;
+    esac
 else
   enable_shared=no
 fi
+
+
+
+
+
+
+
+
 
 
 # Libtool checks
@@ -9655,9 +9666,6 @@ fi
 
 
 
-
-
-
 enable_dlopen=yes
 # Check whether --enable-static was given.
 if test "${enable_static+set}" = set; then :
@@ -10102,10 +10110,14 @@ rmdir .libs 2>/dev/null
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_objdir" >&5
 $as_echo "$lt_cv_objdir" >&6; }
-objdir=${lt_cv_objdir}
+objdir=$lt_cv_objdir
+
+
+
+
 
 cat >>confdefs.h <<_ACEOF
-#define LT_OBJDIR "${lt_cv_objdir}/"
+#define LT_OBJDIR "$lt_cv_objdir/"
 _ACEOF
 
 
@@ -13910,7 +13922,9 @@ $as_echo "$as_me: WARNING: lt_cv_objdir is in one level too high, reassigning" >
 fi
 
 
-# patch libtool to change $_cmds IFS from ~ to ? character
+if test -x ${srcdir}/libtool; then
+  test -r libtool
+  # patch libtool to change $_cmds IFS from ~ to ? character
 if grep "^[_$as_cr_letters]_cmds=.*[?]" libtool >/dev/null; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING:   patching libtool skipped - _cmds already contain question marks" >&5
 $as_echo "$as_me: WARNING:   patching libtool skipped - _cmds already contain question marks" >&2;}
@@ -13946,9 +13960,12 @@ $as_echo "no" >&6; }
 fi
 
 
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: changing how libtool works" >&5
+$as_echo "$as_me: WARNING: changing how libtool works" >&2;}
 
 
 
+fi
 
 
 # Check whether --enable-plugins was given.
@@ -14148,16 +14165,16 @@ $as_echo_n "checking whether to install libbfd... " >&6; }
 if test "${enable_install_libbfd+set}" = set; then :
   enableval=$enable_install_libbfd; install_libbfd_p=$enableval
 else
-  if test "${host}" = "${target}" || test "$enable_shared" = "yes"; then
+  if test "${host}" = "${target}" || test "${enable_shared}" = "yes"; then
         install_libbfd_p=yes
       else
         install_libbfd_p=no
       fi
 fi
 
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $install_libbfd_p" >&5
-$as_echo "$install_libbfd_p" >&6; }
-   if test $install_libbfd_p = yes; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${install_libbfd_p}" >&5
+$as_echo "${install_libbfd_p}" >&6; }
+   if test ${install_libbfd_p} = yes; then
   INSTALL_LIBBFD_TRUE=
   INSTALL_LIBBFD_FALSE='#'
 else
@@ -14174,7 +14191,12 @@ fi
   if test "${host}" != "${target}"; then
     bfdlibdir='$(exec_prefix)/$(host_noncanonical)/$(target_noncanonical)/lib'
     bfdincludedir='$(exec_prefix)/$(host_noncanonical)/$(target_noncanonical)/include'
+  else
+    bfdlibdir='$(libdir)'
+    bfdincludedir='$(includedir)'
   fi
+
+
 
 
 
@@ -15622,8 +15644,8 @@ fi
 
 # Put a plausible default for CC_FOR_BUILD in Makefile.
 
-if test -z "$CC_FOR_BUILD"; then
-  if test "x$cross_compiling" = "xno"; then
+if test -z "${CC_FOR_BUILD}"; then
+  if test "x${cross_compiling}" = "xno"; then
     CC_FOR_BUILD='$(CC)'
   else
     CC_FOR_BUILD=gcc
@@ -15632,7 +15654,7 @@ fi
 
 # Also set EXEEXT_FOR_BUILD.
 
-if test "x$cross_compiling" = "xno"; then
+if test "x${cross_compiling}" = "xno"; then
   EXEEXT_FOR_BUILD='$(EXEEXT)'
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for build system executable suffix" >&5
@@ -15640,17 +15662,17 @@ $as_echo_n "checking for build system executable suffix... " >&6; }
 if ${bfd_cv_build_exeext+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  rm -f conftest*
+  rm -f conftest* || rm -rfv conftest* || rmdir conftest*
      echo 'int main () { return 0; }' > conftest.c
-     bfd_cv_build_exeext=
+     bfd_cv_build_exeext=""
      ${CC_FOR_BUILD} -o conftest conftest.c 1>&5 2>&5
      for file in conftest.*; do
-       case $file in
+       case ${file} in
        *.c | *.o | *.obj | *.ilk | *.pdb) ;;
-       *) bfd_cv_build_exeext=`echo $file | sed -e s/conftest//` ;;
+       *) bfd_cv_build_exeext=`echo ${file} | sed -e s/conftest//` ;;
        esac
      done
-     rm -f conftest*
+     rm -f conftest* || rm -rfv conftest* || rmdir conftest*
      test x"${bfd_cv_build_exeext}" = x && bfd_cv_build_exeext=no
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $bfd_cv_build_exeext" >&5
@@ -17095,6 +17117,24 @@ _ACEOF
 
 fi
 done
+
+
+
+
+  for ac_func in $ac_func_list
+do :
+  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
+ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
+if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+done
+
+
+
 
 for ac_header in vfork.h
 do :
@@ -18734,9 +18774,9 @@ fi
 
 
 # If we are configured native, pick a core file support file.
-COREFILE=
-COREFLAG=
-TRAD_HEADER=
+COREFILE=""
+COREFLAG=""
+TRAD_HEADER=""
 if test "${target}" = "${host}"; then
   case "${host}" in
   alpha*-*-freebsd* | alpha*-*-kfreebsd*-gnu)
@@ -18891,9 +18931,12 @@ if test "${target}" = "${host}"; then
 	;;
   rs6000-*-aix4.[3-9]* | powerpc-*-aix4.[3-9]*)
         COREFILE=rs6000-core.lo
-	COREFLAG="$COREFLAG -DAIX_CORE_DUMPX_CORE"
+	COREFLAG="${COREFLAG} -DAIX_CORE_DUMPX_CORE"
 	# Not all versions of AIX with -DAIX_CORE_DUMPX_CORE
 	# have c_impl as a member of struct core_dumpx
+
+
+
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for c_impl in struct core_dumpx" >&5
 $as_echo_n "checking for c_impl in struct core_dumpx... " >&6; }
 	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -21057,10 +21100,10 @@ AMDEP_TRUE="$AMDEP_TRUE" ac_aux_dir="$ac_aux_dir"
 sed_quote_subst='$sed_quote_subst'
 double_quote_subst='$double_quote_subst'
 delay_variable_subst='$delay_variable_subst'
+enable_shared='`$ECHO "$enable_shared" | $SED "$delay_single_quote_subst"`'
 macro_version='`$ECHO "$macro_version" | $SED "$delay_single_quote_subst"`'
 macro_revision='`$ECHO "$macro_revision" | $SED "$delay_single_quote_subst"`'
 enable_fast_install='`$ECHO "$enable_fast_install" | $SED "$delay_single_quote_subst"`'
-enable_shared='`$ECHO "$enable_shared" | $SED "$delay_single_quote_subst"`'
 enable_static='`$ECHO "$enable_static" | $SED "$delay_single_quote_subst"`'
 AS='`$ECHO "$AS" | $SED "$delay_single_quote_subst"`'
 DLLTOOL='`$ECHO "$DLLTOOL" | $SED "$delay_single_quote_subst"`'
@@ -21117,6 +21160,7 @@ lt_cv_sys_global_symbol_to_c_name_address='`$ECHO "$lt_cv_sys_global_symbol_to_c
 lt_cv_sys_global_symbol_to_c_name_address_lib_prefix='`$ECHO "$lt_cv_sys_global_symbol_to_c_name_address_lib_prefix" | $SED "$delay_single_quote_subst"`'
 nm_file_list_spec='`$ECHO "$nm_file_list_spec" | $SED "$delay_single_quote_subst"`'
 lt_sysroot='`$ECHO "$lt_sysroot" | $SED "$delay_single_quote_subst"`'
+objdir='`$ECHO "$objdir" | $SED "$delay_single_quote_subst"`'
 MAGIC_CMD='`$ECHO "$MAGIC_CMD" | $SED "$delay_single_quote_subst"`'
 lt_prog_compiler_no_builtin_flag='`$ECHO "$lt_prog_compiler_no_builtin_flag" | $SED "$delay_single_quote_subst"`'
 lt_prog_compiler_pic='`$ECHO "$lt_prog_compiler_pic" | $SED "$delay_single_quote_subst"`'
@@ -22115,15 +22159,15 @@ available_tags=""
 
 # ### BEGIN LIBTOOL CONFIG
 
+# Whether or not to build shared libraries.
+build_libtool_libs=$enable_shared
+
 # Which release of libtool.m4 was used?
 macro_version=$macro_version
 macro_revision=$macro_revision
 
 # Whether or not to optimize for fast installation.
 fast_install=$enable_fast_install
-
-# Whether or not to build shared libraries.
-build_libtool_libs=$enable_shared
 
 # Whether or not to build static libraries.
 build_old_libs=$enable_static
@@ -22262,6 +22306,9 @@ nm_file_list_spec=$lt_nm_file_list_spec
 
 # The root where to search for dependent libraries,and in which our libraries should be installed.
 lt_sysroot=$lt_sysroot
+
+# The name of the directory that contains temporary libtool files.
+objdir=$objdir
 
 # Used to examine libraries when file_magic_cmd begins with "file".
 MAGIC_CMD=$MAGIC_CMD

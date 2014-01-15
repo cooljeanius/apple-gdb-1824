@@ -4,7 +4,7 @@
     (this works only for glibc, but that should be enough).  */
 #if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
 #  error config.h must be #included before system headers
-#endif
+#endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ */
 #define __CONFIG_H__ 1
 
 /* Define if building universal (internal helper macro) */
@@ -43,6 +43,9 @@
 
 /* Define to 1 if you have the <argz.h> header file. */
 #undef HAVE_ARGZ_H
+
+/* Define to 1 if you have the <core.h> header file. */
+#undef HAVE_CORE_H
 
 /* Define to 1 if you have the <ctype.h> header file. */
 #undef HAVE_CTYPE_H
@@ -195,6 +198,9 @@
 
 /* Define to 1 if you have the <libintl.h> header file. */
 #undef HAVE_LIBINTL_H
+
+/* Define to 1 if you have the `libtool' function. */
+#undef HAVE_LIBTOOL
 
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H

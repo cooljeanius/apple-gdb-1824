@@ -706,6 +706,22 @@ case "${target}" in
       esac],[])
     ;;
 # END APPLE LOCAL
+# Travis triplet:
+  x86_64-unknown-linux-gnu*)
+# Same as with Apple case above:
+    if test ! -z "${build_alias}" -o ! -z "${host_alias}" -o ! -z "${target_alias}"; then
+      noconfigdirs="${noconfigdirs} expect"
+    fi
+# Also same as with Apple case above:
+    if test -z "${AR}" -o -z "${ARFLAGS}" -o "${ARFLAGS}" = "-o"; then
+      noconfigdirs="${noconfigdirs} zlib"
+    fi
+# autogen support in this tree is still tentative, so disable if guile is
+# not also present in this tree:
+    if test ! -d guile; then
+      noconfigdirs="${noconfigdirs} build-autogen autogen"
+    fi
+    ;;
   *-*-freebsd[[12]] | *-*-freebsd[[12]].* | *-*-freebsd*aout*)
     noconfigdirs="${noconfigdirs} target-newlib target-libgloss ${libgcj}"
     ;;
