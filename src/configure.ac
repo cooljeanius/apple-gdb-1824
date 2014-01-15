@@ -2910,6 +2910,13 @@ else
 fi
 if test -x ${srcdir}/libtool; then
   test -r libtool
+  if test "x${LIBTOOL_FLAGS}" = "x"; then
+    test -z "${LIBTOOL_FLAGS}"
+    export LIBTOOL_FLAGS=--debug
+  else
+    test ! -z "${LIBTOOL_FLAGS}"
+    AC_MSG_NOTICE([LIBTOOL_FLAGS are set to "${LIBTOOL_FLAGS}"])
+  fi
 else
   test -e libtool
   AC_CHECK_HEADERS_ONCE([dlfcn.h])

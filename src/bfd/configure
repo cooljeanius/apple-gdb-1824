@@ -1508,9 +1508,10 @@ Optional Features:
   --enable-maintainer-mode
                           enable make rules and dependencies not useful (and
                           sometimes confusing) to the casual installer
-  --enable-shared[=PKGS]  build shared libraries [default=no]
+  --enable-shared=PKGS  build shared libraries default=[no]
   --enable-fast-install[=PKGS]
                           optimize for fast installation [default=no]
+  --enable-shared[=PKGS]  build shared libraries [default=no]
   --enable-static[=PKGS]  build static libraries [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --enable-plugins        Enable support for plugins (defaults no)
@@ -2692,7 +2693,7 @@ as_fn_append ac_header_list " malloc.h"
 as_fn_append ac_header_list " string.h"
 as_fn_append ac_header_list " values.h"
 as_fn_append ac_header_list " strings.h"
-as_fn_append ac_func_list " libtool"
+as_fn_append ac_func_list " lt_dlinit"
 as_fn_append ac_header_list " core.h"
 as_fn_append ac_header_list " sys/procfs.h"
 as_fn_append ac_header_list " sys/mman.h"
@@ -6478,33 +6479,24 @@ fi
 # Check whether --enable-shared was given.
 if test "${enable_shared+set}" = set; then :
   enableval=$enable_shared; p=${PACKAGE-default}
-    case $enableval in
-    yes) enable_shared=yes ;;
-    no) enable_shared=no ;;
-    *)
-      enable_shared=no
-      # Look at the argument we got.  We use all the common list separators.
-      lt_save_ifs="$IFS"; IFS="${IFS}$PATH_SEPARATOR,"
-      for pkg in $enableval; do
-	IFS="$lt_save_ifs"
-	if test "X$pkg" = "X$p"; then
-	  enable_shared=yes
-	fi
-      done
-      IFS="$lt_save_ifs"
-      ;;
-    esac
+case $enableval in
+yes) enable_shared=yes ;;
+no) enable_shared=no ;;
+*)
+  enable_shared=no
+  # Look at the argument we got.  We use all the common list separators.
+  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:,"
+  for pkg in $enableval; do
+    if test "X$pkg" = "X$p"; then
+      enable_shared=yes
+    fi
+  done
+  IFS="$ac_save_ifs"
+  ;;
+esac
 else
   enable_shared=no
 fi
-
-
-
-
-
-
-
-
 
 
 # Libtool checks
@@ -9666,6 +9658,9 @@ fi
 
 
 
+
+
+
 enable_dlopen=yes
 # Check whether --enable-static was given.
 if test "${enable_static+set}" = set; then :
@@ -10110,14 +10105,10 @@ rmdir .libs 2>/dev/null
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_objdir" >&5
 $as_echo "$lt_cv_objdir" >&6; }
-objdir=$lt_cv_objdir
-
-
-
-
+objdir=${lt_cv_objdir}
 
 cat >>confdefs.h <<_ACEOF
-#define LT_OBJDIR "$lt_cv_objdir/"
+#define LT_OBJDIR "${lt_cv_objdir}/"
 _ACEOF
 
 
@@ -13911,6 +13902,7 @@ if test -z "${lt_cv_objdir}"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: lt_cv_objdir somehow was left unset, setting to default" >&5
 $as_echo "$as_me: WARNING: lt_cv_objdir somehow was left unset, setting to default" >&2;}
   lt_cv_objdir=.libs
+
 elif test "${lt_cv_objdir}" = ..; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: lt_cv_objdir is one level too high, reassigning" >&5
 $as_echo "$as_me: WARNING: lt_cv_objdir is one level too high, reassigning" >&2;}
@@ -13920,7 +13912,6 @@ elif test "${lt_cv_objdir}" = ../.libs; then
 $as_echo "$as_me: WARNING: lt_cv_objdir is in one level too high, reassigning" >&2;}
   lt_cv_objdir=./.libs
 fi
-
 
 if test -x ${srcdir}/libtool; then
   test -r libtool
@@ -15843,6 +15834,19 @@ _ACEOF
 
 fi
 
+if test -d ../intl; then
+  if test -z "${LDFLAGS}"; then
+    export LDFLAGS="-L../intl"
+  else
+    export LDFLAGS="${LDFLAGS} -L../intl"
+  fi
+elif test -d ../libintl; then
+  if test -z "${LDFLAGS}"; then
+    export LDFLAGS="-L../libintl"
+  else
+    export LDFLAGS="${LDFLAGS} -L../libintl"
+  fi
+fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gettext in -lintl" >&5
 $as_echo_n "checking for gettext in -lintl... " >&6; }
 if ${ac_cv_lib_intl_gettext+:} false; then :
@@ -18536,6 +18540,14 @@ fi
 
 
 
+
+
+
+
+
+
+
+
  if test "x${GETTEXT_MACRO_VERSION}" = "x"; then
  	 test -z "${GETTEXT_MACRO_VERSION}"
 
@@ -19016,9 +19028,9 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
   netbsd-core.lo)	COREFLAG=-DNETBSD_CORE ;;
   osf-core.lo)		COREFLAG=-DOSF_CORE ;;
   ptrace-core.lo)	COREFLAG=-DPTRACE_CORE ;;
-  rs6000-core.lo)	COREFLAG="$COREFLAG -DAIX_CORE" ;;
-  sco5-core.lo)		COREFLAG="$COREFLAG -DSCO5_CORE" ;;
-  trad-core.lo)		COREFLAG="$COREFLAG -DTRAD_CORE" ;;
+  rs6000-core.lo)	COREFLAG="${COREFLAG} -DAIX_CORE" ;;
+  sco5-core.lo)		COREFLAG="${COREFLAG} -DSCO5_CORE" ;;
+  trad-core.lo)		COREFLAG="${COREFLAG} -DTRAD_CORE" ;;
   esac
 
   # ELF corefile support has several flavors, but all of
@@ -19659,8 +19671,8 @@ esac
 
 
 # Horrible hacks to build DLLs on Windows.
-WIN32LDFLAGS=
-WIN32LIBADD=
+WIN32LDFLAGS=""
+WIN32LIBADD=""
 case "${host}" in
 *-*-cygwin*)
   if test "${enable_shared}" = "yes"; then
@@ -19707,11 +19719,11 @@ if test -n "${enable_targets}" ; then
 fi
 
 all_targets=false
-defvec=
-selvecs=
-assocvecs=
-selarchs=
-TDEFINES=
+defvec=""
+selvecs=""
+assocvecs=""
+selarchs=""
+TDEFINES=""
 for targ in ${target} ${canon_targets}
 do
     if test "x${targ}" = "xall"; then
@@ -19816,7 +19828,7 @@ elf="elf.lo elflink.lo elf-strtab.lo elf-eh-frame.lo dwarf1.lo"
 for vec in ${selvecs}
 do
     target_size=32
-    case "$vec" in
+    case "${vec}" in
     # This list is alphabetized to make it easy to compare
     # with the two vector lists in targets.c. For the same reason,
     # use one entry per line, even though this leads to long lines.
@@ -19842,125 +19854,125 @@ do
     b_out_vec_little_host)	tb="${tb} bout.lo aout32.lo" ;;
     bfd_efi_app_ia32_vec)	tb="${tb} efi-app-ia32.lo peigen.lo cofflink.lo" ;;
     bfd_efi_app_ia64_vec)	tb="${tb} efi-app-ia64.lo pepigen.lo cofflink.lo"; target_size=64 ;;
-    bfd_elf32_am33lin_vec)	tb="${tb} elf32-am33lin.lo elf32.lo $elf" ;;
-    bfd_elf32_avr_vec)		tb="${tb} elf32-avr.lo elf32.lo $elf" ;;
-    bfd_elf32_big_generic_vec) 	tb="${tb} elf32-gen.lo elf32.lo $elf" ;;
-    bfd_elf32_bigarc_vec)	tb="${tb} elf32-arc.lo elf32.lo $elf" ;;
-    bfd_elf32_bigarm_vec)	tb="${tb} elf32-arm.lo elf32.lo $elf" ;;
+    bfd_elf32_am33lin_vec)	tb="${tb} elf32-am33lin.lo elf32.lo ${elf}" ;;
+    bfd_elf32_avr_vec)		tb="${tb} elf32-avr.lo elf32.lo ${elf}" ;;
+    bfd_elf32_big_generic_vec) 	tb="${tb} elf32-gen.lo elf32.lo ${elf}" ;;
+    bfd_elf32_bigarc_vec)	tb="${tb} elf32-arc.lo elf32.lo ${elf}" ;;
+    bfd_elf32_bigarm_vec)	tb="${tb} elf32-arm.lo elf32.lo ${elf}" ;;
     bfd_elf32_bigarm_symbian_vec)
-                                tb="${tb} elf32-arm.lo elf32.lo $elf" ;;
+                                tb="${tb} elf32-arm.lo elf32.lo ${elf}" ;;
     bfd_elf32_bigarm_vxworks_vec)
-                                tb="${tb} elf32-arm.lo elf32.lo $elf" ;;
-    bfd_elf32_bigmips_vec) 	tb="${tb} elf32-mips.lo elfxx-mips.lo elf32.lo $elf ecofflink.lo" ;;
-    bfd_elf32_cr16c_vec)	tb="${tb} elf32-cr16c.lo elf32.lo $elf" ;;
-    bfd_elf32_cris_vec)		tb="${tb} elf32-cris.lo elf32.lo $elf" ;;
-    bfd_elf32_crx_vec)          tb="${tb} elf32-crx.lo elf32.lo $elf" ;;
-    bfd_elf32_d10v_vec)		tb="${tb} elf32-d10v.lo elf32.lo $elf" ;;
-    bfd_elf32_d30v_vec)		tb="${tb} elf32-d30v.lo elf32.lo $elf" ;;
-    bfd_elf32_dlx_big_vec)	tb="${tb} elf32-dlx.lo elf32.lo $elf" ;;
-    bfd_elf32_fr30_vec)		tb="${tb} elf32-fr30.lo elf32.lo $elf" ;;
-    bfd_elf32_frv_vec)		tb="${tb} elf32-frv.lo elf32.lo $elf" ;;
-    bfd_elf32_frvfdpic_vec)	tb="${tb} elf32-frv.lo elf32.lo $elf" ;;
-    bfd_elf32_h8300_vec)	tb="${tb} elf32-h8300.lo elf32.lo $elf" ;;
-    bfd_elf32_hppa_linux_vec)	tb="${tb} elf32-hppa.lo elf32.lo $elf" ;;
-    bfd_elf32_hppa_nbsd_vec)	tb="${tb} elf32-hppa.lo elf32.lo $elf" ;;
-    bfd_elf32_hppa_vec)		tb="${tb} elf32-hppa.lo elf32.lo $elf" ;;
-    bfd_elf32_i370_vec)		tb="${tb} elf32-i370.lo elf32.lo $elf" ;;
-    bfd_elf32_i386_freebsd_vec)	tb="${tb} elf32-i386.lo elf-vxworks.lo elf32.lo $elf" ;;
-    bfd_elf32_i386_vxworks_vec)	tb="${tb} elf32-i386.lo elf-vxworks.lo elf32.lo $elf" ;;
-    bfd_elf32_i386_vec)		tb="${tb} elf32-i386.lo elf-vxworks.lo elf32.lo $elf" ;;
-    bfd_elf32_i860_little_vec)	tb="${tb} elf32-i860.lo elf32.lo $elf" ;;
-    bfd_elf32_i860_vec)		tb="${tb} elf32-i860.lo elf32.lo $elf" ;;
-    bfd_elf32_i960_vec)		tb="${tb} elf32-i960.lo elf32.lo $elf" ;;
-    bfd_elf32_ia64_big_vec)	tb="${tb} elf32-ia64.lo elf32.lo $elf" ;;
-    bfd_elf32_ia64_hpux_big_vec) tb="${tb} elf32-ia64.lo elf32.lo $elf";;
-    bfd_elf32_ip2k_vec)		tb="${tb} elf32-ip2k.lo elf32.lo $elf" ;;
-    bfd_elf32_iq2000_vec)       tb="${tb} elf32-iq2000.lo elf32.lo $elf" ;;
-    bfd_elf32_little_generic_vec) tb="${tb} elf32-gen.lo elf32.lo $elf" ;;
-    bfd_elf32_littlearc_vec)	tb="${tb} elf32-arc.lo elf32.lo $elf" ;;
+                                tb="${tb} elf32-arm.lo elf32.lo ${elf}" ;;
+    bfd_elf32_bigmips_vec) 	tb="${tb} elf32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo" ;;
+    bfd_elf32_cr16c_vec)	tb="${tb} elf32-cr16c.lo elf32.lo ${elf}" ;;
+    bfd_elf32_cris_vec)		tb="${tb} elf32-cris.lo elf32.lo ${elf}" ;;
+    bfd_elf32_crx_vec)          tb="${tb} elf32-crx.lo elf32.lo ${elf}" ;;
+    bfd_elf32_d10v_vec)		tb="${tb} elf32-d10v.lo elf32.lo ${elf}" ;;
+    bfd_elf32_d30v_vec)		tb="${tb} elf32-d30v.lo elf32.lo ${elf}" ;;
+    bfd_elf32_dlx_big_vec)	tb="${tb} elf32-dlx.lo elf32.lo ${elf}" ;;
+    bfd_elf32_fr30_vec)		tb="${tb} elf32-fr30.lo elf32.lo ${elf}" ;;
+    bfd_elf32_frv_vec)		tb="${tb} elf32-frv.lo elf32.lo ${elf}" ;;
+    bfd_elf32_frvfdpic_vec)	tb="${tb} elf32-frv.lo elf32.lo ${elf}" ;;
+    bfd_elf32_h8300_vec)	tb="${tb} elf32-h8300.lo elf32.lo ${elf}" ;;
+    bfd_elf32_hppa_linux_vec)	tb="${tb} elf32-hppa.lo elf32.lo ${elf}" ;;
+    bfd_elf32_hppa_nbsd_vec)	tb="${tb} elf32-hppa.lo elf32.lo ${elf}" ;;
+    bfd_elf32_hppa_vec)		tb="${tb} elf32-hppa.lo elf32.lo ${elf}" ;;
+    bfd_elf32_i370_vec)		tb="${tb} elf32-i370.lo elf32.lo ${elf}" ;;
+    bfd_elf32_i386_freebsd_vec)	tb="${tb} elf32-i386.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    bfd_elf32_i386_vxworks_vec)	tb="${tb} elf32-i386.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    bfd_elf32_i386_vec)		tb="${tb} elf32-i386.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    bfd_elf32_i860_little_vec)	tb="${tb} elf32-i860.lo elf32.lo ${elf}" ;;
+    bfd_elf32_i860_vec)		tb="${tb} elf32-i860.lo elf32.lo ${elf}" ;;
+    bfd_elf32_i960_vec)		tb="${tb} elf32-i960.lo elf32.lo ${elf}" ;;
+    bfd_elf32_ia64_big_vec)	tb="${tb} elf32-ia64.lo elf32.lo ${elf}" ;;
+    bfd_elf32_ia64_hpux_big_vec) tb="${tb} elf32-ia64.lo elf32.lo ${elf}";;
+    bfd_elf32_ip2k_vec)		tb="${tb} elf32-ip2k.lo elf32.lo ${elf}" ;;
+    bfd_elf32_iq2000_vec)       tb="${tb} elf32-iq2000.lo elf32.lo ${elf}" ;;
+    bfd_elf32_little_generic_vec) tb="${tb} elf32-gen.lo elf32.lo ${elf}" ;;
+    bfd_elf32_littlearc_vec)	tb="${tb} elf32-arc.lo elf32.lo ${elf}" ;;
     bfd_elf32_littlearm_symbian_vec)
-                                tb="${tb} elf32-arm.lo elf32.lo $elf" ;;
+                                tb="${tb} elf32-arm.lo elf32.lo ${elf}" ;;
     bfd_elf32_littlearm_vxworks_vec)
-                                tb="${tb} elf32-arm.lo elf32.lo $elf" ;;
-    bfd_elf32_littlearm_vec)	tb="${tb} elf32-arm.lo elf32.lo $elf" ;;
-    bfd_elf32_littlemips_vec) 	tb="${tb} elf32-mips.lo elfxx-mips.lo elf32.lo $elf ecofflink.lo" ;;
-    bfd_elf32_m32c_vec)         tb="${tb} elf32-m32c.lo elf32.lo $elf" ;;
-    bfd_elf32_m32r_vec)		tb="${tb} elf32-m32r.lo elf32.lo $elf" ;;
-    bfd_elf32_m32rle_vec)       tb="${tb} elf32-m32r.lo elf32.lo $elf" ;;
-    bfd_elf32_m32rlin_vec)      tb="${tb} elf32-m32r.lo elf32.lo $elf" ;;
-    bfd_elf32_m32rlelin_vec)    tb="${tb} elf32-m32r.lo elf32.lo $elf" ;;
-    bfd_elf32_m68hc11_vec)	tb="${tb} elf32-m68hc11.lo elf32-m68hc1x.lo elf32.lo $elf" ;;
-    bfd_elf32_m68hc12_vec)	tb="${tb} elf32-m68hc12.lo elf32-m68hc1x.lo elf32.lo $elf" ;;
-    bfd_elf32_m68k_vec)		tb="${tb} elf32-m68k.lo elf32.lo $elf" ;;
-    bfd_elf32_m88k_vec)		tb="${tb} elf32-m88k.lo elf32.lo $elf" ;;
-    bfd_elf32_mcore_big_vec)	tb="${tb} elf32-mcore.lo elf32.lo $elf" ;;
-    bfd_elf32_mcore_little_vec)	tb="${tb} elf32-mcore.lo elf32.lo $elf" ;;
-    bfd_elf32_mn10200_vec)	tb="${tb} elf-m10200.lo elf32.lo $elf" ;;
-    bfd_elf32_mn10300_vec)	tb="${tb} elf-m10300.lo elf32.lo $elf" ;;
-    bfd_elf32_ms1_vec)          tb="${tb} elf32-ms1.lo elf32.lo $elf" ;;
-    bfd_elf32_msp430_vec)	tb="${tb} elf32-msp430.lo elf32.lo $elf" ;;
-    bfd_elf32_nbigmips_vec)	tb="${tb} elfn32-mips.lo elfxx-mips.lo elf32.lo $elf ecofflink.lo"; target_size=64 ;;
-    bfd_elf32_nlittlemips_vec)	tb="${tb} elfn32-mips.lo elfxx-mips.lo elf32.lo $elf ecofflink.lo"; target_size=64 ;;
-    bfd_elf32_ntradbigmips_vec)	tb="${tb} elfn32-mips.lo elfxx-mips.lo elf32.lo $elf ecofflink.lo"; target_size=64 ;;
-    bfd_elf32_ntradlittlemips_vec) tb="${tb} elfn32-mips.lo elfxx-mips.lo elf32.lo $elf ecofflink.lo"; target_size=64 ;;
-    bfd_elf32_openrisc_vec)	tb="${tb} elf32-openrisc.lo elf32.lo $elf" ;;
-    bfd_elf32_or32_big_vec)	tb="${tb} elf32-or32.lo elf32.lo $elf" ;;
-    bfd_elf32_pj_vec)           tb="${tb} elf32-pj.lo elf32.lo $elf";;
-    bfd_elf32_pjl_vec)          tb="${tb} elf32-pj.lo elf32.lo $elf";;
-    bfd_elf32_powerpc_vec)	tb="${tb} elf32-ppc.lo elf-vxworks.lo elf32.lo $elf" ;;
-    bfd_elf32_powerpcle_vec)	tb="${tb} elf32-ppc.lo elf-vxworks.lo elf32.lo $elf" ;;
-    bfd_elf32_powerpc_vxworks_vec) tb="${tb} elf32-ppc.lo elf-vxworks.lo elf32.lo $elf" ;;
-    bfd_elf32_s390_vec)		tb="${tb} elf32-s390.lo elf32.lo $elf" ;;
-    # FIXME: We include cofflink.lo not because it's needed for
+                                tb="${tb} elf32-arm.lo elf32.lo ${elf}" ;;
+    bfd_elf32_littlearm_vec)	tb="${tb} elf32-arm.lo elf32.lo ${elf}" ;;
+    bfd_elf32_littlemips_vec) 	tb="${tb} elf32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo" ;;
+    bfd_elf32_m32c_vec)         tb="${tb} elf32-m32c.lo elf32.lo ${elf}" ;;
+    bfd_elf32_m32r_vec)		tb="${tb} elf32-m32r.lo elf32.lo ${elf}" ;;
+    bfd_elf32_m32rle_vec)       tb="${tb} elf32-m32r.lo elf32.lo ${elf}" ;;
+    bfd_elf32_m32rlin_vec)      tb="${tb} elf32-m32r.lo elf32.lo ${elf}" ;;
+    bfd_elf32_m32rlelin_vec)    tb="${tb} elf32-m32r.lo elf32.lo ${elf}" ;;
+    bfd_elf32_m68hc11_vec)	tb="${tb} elf32-m68hc11.lo elf32-m68hc1x.lo elf32.lo ${elf}" ;;
+    bfd_elf32_m68hc12_vec)	tb="${tb} elf32-m68hc12.lo elf32-m68hc1x.lo elf32.lo ${elf}" ;;
+    bfd_elf32_m68k_vec)		tb="${tb} elf32-m68k.lo elf32.lo ${elf}" ;;
+    bfd_elf32_m88k_vec)		tb="${tb} elf32-m88k.lo elf32.lo ${elf}" ;;
+    bfd_elf32_mcore_big_vec)	tb="${tb} elf32-mcore.lo elf32.lo ${elf}" ;;
+    bfd_elf32_mcore_little_vec)	tb="${tb} elf32-mcore.lo elf32.lo ${elf}" ;;
+    bfd_elf32_mn10200_vec)	tb="${tb} elf-m10200.lo elf32.lo ${elf}" ;;
+    bfd_elf32_mn10300_vec)	tb="${tb} elf-m10300.lo elf32.lo ${elf}" ;;
+    bfd_elf32_ms1_vec)          tb="${tb} elf32-ms1.lo elf32.lo ${elf}" ;;
+    bfd_elf32_msp430_vec)	tb="${tb} elf32-msp430.lo elf32.lo ${elf}" ;;
+    bfd_elf32_nbigmips_vec)	tb="${tb} elfn32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    bfd_elf32_nlittlemips_vec)	tb="${tb} elfn32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    bfd_elf32_ntradbigmips_vec)	tb="${tb} elfn32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    bfd_elf32_ntradlittlemips_vec) tb="${tb} elfn32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    bfd_elf32_openrisc_vec)	tb="${tb} elf32-openrisc.lo elf32.lo ${elf}" ;;
+    bfd_elf32_or32_big_vec)	tb="${tb} elf32-or32.lo elf32.lo ${elf}" ;;
+    bfd_elf32_pj_vec)           tb="${tb} elf32-pj.lo elf32.lo ${elf}";;
+    bfd_elf32_pjl_vec)          tb="${tb} elf32-pj.lo elf32.lo ${elf}";;
+    bfd_elf32_powerpc_vec)	tb="${tb} elf32-ppc.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    bfd_elf32_powerpcle_vec)	tb="${tb} elf32-ppc.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    bfd_elf32_powerpc_vxworks_vec) tb="${tb} elf32-ppc.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    bfd_elf32_s390_vec)		tb="${tb} elf32-s390.lo elf32.lo ${elf}" ;;
+    # FIXME: We include cofflink.lo not because it is needed for
     # bfd_elf32_sh64[l]_vec, but because we include bfd_elf32_sh[l]_vec
-    # which needs it but does not list it.  Should be fixed in right place.
-    bfd_elf32_sh64_vec)		tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo $elf cofflink.lo" target_size=64 ;;
-    bfd_elf32_sh64l_vec)	tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo $elf cofflink.lo" target_size=64 ;;
-    bfd_elf32_sh64lin_vec)	tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo $elf cofflink.lo" target_size=64 ;;
-    bfd_elf32_sh64blin_vec)	tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo $elf cofflink.lo" target_size=64 ;;
-    bfd_elf32_sh64lnbsd_vec)	tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo $elf cofflink.lo" ;;
-    bfd_elf32_sh64nbsd_vec)	tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo $elf cofflink.lo" ;;
-    bfd_elf32_sh_vec)		tb="${tb} elf32-sh.lo elf32.lo $elf coff-sh.lo" ;;
-    bfd_elf32_shblin_vec)	tb="${tb} elf32-sh.lo elf32.lo $elf coff-sh.lo cofflink.lo" ;;
-    bfd_elf32_shl_vec)		tb="${tb} elf32-sh.lo elf32.lo $elf coff-sh.lo" ;;
-    bfd_elf32_shl_symbian_vec)	tb="${tb} elf32-sh-symbian.lo elf32-sh64-com.lo elf32.lo $elf coff-sh.lo" ;;
-    bfd_elf32_shlin_vec)	tb="${tb} elf32-sh.lo elf32.lo $elf coff-sh.lo cofflink.lo" ;;
-    bfd_elf32_shlnbsd_vec)	tb="${tb} elf32-sh.lo elf32.lo $elf coff-sh.lo cofflink.lo" ;;
-    bfd_elf32_shnbsd_vec)	tb="${tb} elf32-sh.lo elf32.lo $elf coff-sh.lo cofflink.lo" ;;
-    bfd_elf32_sparc_vec)	tb="${tb} elf32-sparc.lo elfxx-sparc.lo elf32.lo $elf" ;;
-    bfd_elf32_tradbigmips_vec)  tb="${tb} elf32-mips.lo elfxx-mips.lo elf32.lo $elf ecofflink.lo" ;;
-    bfd_elf32_tradlittlemips_vec) tb="${tb} elf32-mips.lo elfxx-mips.lo elf32.lo $elf ecofflink.lo" ;;
-    bfd_elf32_us_cris_vec)	tb="${tb} elf32-cris.lo elf32.lo $elf" ;;
-    bfd_elf32_v850_vec)		tb="${tb} elf32-v850.lo elf32.lo $elf" ;;
-    bfd_elf32_vax_vec)		tb="${tb} elf32-vax.lo elf32.lo $elf" ;;
-    bfd_elf32_xstormy16_vec)	tb="${tb} elf32-xstormy16.lo elf32.lo $elf" ;;
-    bfd_elf32_xtensa_le_vec)	tb="${tb} xtensa-isa.lo xtensa-modules.lo elf32-xtensa.lo elf32.lo $elf" ;;
-    bfd_elf32_xtensa_be_vec)	tb="${tb} xtensa-isa.lo xtensa-modules.lo elf32-xtensa.lo elf32.lo $elf" ;;
-    bfd_elf64_alpha_freebsd_vec) tb="${tb} elf64-alpha.lo elf64.lo $elf"; target_size=64 ;;
-    bfd_elf64_alpha_vec)	tb="${tb} elf64-alpha.lo elf64.lo $elf"; target_size=64 ;;
-    bfd_elf64_big_generic_vec) 	tb="${tb} elf64-gen.lo elf64.lo $elf"; target_size=64 ;;
-    bfd_elf64_bigmips_vec) 	tb="${tb} elf64-mips.lo elf64.lo elfxx-mips.lo elf32.lo $elf ecofflink.lo"; target_size=64 ;;
-    bfd_elf64_hppa_linux_vec)	tb="${tb} elf64-hppa.lo elf64.lo $elf"; target_size=64 ;;
-    bfd_elf64_hppa_vec)		tb="${tb} elf64-hppa.lo elf64.lo $elf"; target_size=64 ;;
-    bfd_elf64_ia64_big_vec)	tb="${tb} elf64-ia64.lo elf64.lo $elf"; target_size=64 ;;
-    bfd_elf64_ia64_hpux_big_vec) tb="${tb} elf64-ia64.lo elf64.lo $elf"; target_size=64 ;;
-    bfd_elf64_ia64_little_vec)	tb="${tb} elf64-ia64.lo elf64.lo $elf"; target_size=64 ;;
-    bfd_elf64_little_generic_vec) tb="${tb} elf64-gen.lo elf64.lo $elf"; target_size=64 ;;
-    bfd_elf64_littlemips_vec) 	tb="${tb} elf64-mips.lo elf64.lo elfxx-mips.lo elf32.lo $elf ecofflink.lo"; target_size=64 ;;
-    bfd_elf64_mmix_vec) 	tb="${tb} elf64-mmix.lo elf64.lo $elf" target_size=64 ;;
-    bfd_elf64_powerpc_vec)	tb="${tb} elf64-ppc.lo elf64-gen.lo elf64.lo $elf"; target_size=64 ;;
-    bfd_elf64_powerpcle_vec)	tb="${tb} elf64-ppc.lo elf64-gen.lo elf64.lo $elf" target_size=64 ;;
-    bfd_elf64_s390_vec)		tb="${tb} elf64-s390.lo elf64.lo $elf"; target_size=64 ;;
-    bfd_elf64_sh64_vec)		tb="${tb} elf64-sh64.lo elf64.lo $elf" target_size=64 ;;
-    bfd_elf64_sh64l_vec)	tb="${tb} elf64-sh64.lo elf64.lo $elf" target_size=64 ;;
-    bfd_elf64_sh64lin_vec)	tb="${tb} elf64-sh64.lo elf64.lo $elf" target_size=64 ;;
-    bfd_elf64_sh64blin_vec)	tb="${tb} elf64-sh64.lo elf64.lo $elf" target_size=64 ;;
-    bfd_elf64_sh64lnbsd_vec)	tb="${tb} elf64-sh64.lo elf64.lo $elf" target_size=64 ;;
-    bfd_elf64_sh64nbsd_vec)	tb="${tb} elf64-sh64.lo elf64.lo $elf" target_size=64 ;;
-    bfd_elf64_sparc_vec)	tb="${tb} elf64-sparc.lo elfxx-sparc.lo elf64.lo $elf"; target_size=64 ;;
-    bfd_elf64_tradbigmips_vec)	tb="${tb} elf64-mips.lo elf64.lo elfxx-mips.lo elf32.lo $elf ecofflink.lo"; target_size=64 ;;
-    bfd_elf64_tradlittlemips_vec) tb="${tb} elf64-mips.lo elf64.lo elfxx-mips.lo elf32.lo $elf ecofflink.lo"; target_size=64 ;;
-    bfd_elf64_x86_64_vec)	tb="${tb} elf64-x86-64.lo elf64.lo $elf"; target_size=64 ;;
+    # which needs it but does not list it. Should be fixed in right place.
+    bfd_elf32_sh64_vec)		tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo ${elf} cofflink.lo" target_size=64 ;;
+    bfd_elf32_sh64l_vec)	tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo ${elf} cofflink.lo" target_size=64 ;;
+    bfd_elf32_sh64lin_vec)	tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo ${elf} cofflink.lo" target_size=64 ;;
+    bfd_elf32_sh64blin_vec)	tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo ${elf} cofflink.lo" target_size=64 ;;
+    bfd_elf32_sh64lnbsd_vec)	tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo ${elf} cofflink.lo" ;;
+    bfd_elf32_sh64nbsd_vec)	tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo ${elf} cofflink.lo" ;;
+    bfd_elf32_sh_vec)		tb="${tb} elf32-sh.lo elf32.lo ${elf} coff-sh.lo" ;;
+    bfd_elf32_shblin_vec)	tb="${tb} elf32-sh.lo elf32.lo ${elf} coff-sh.lo cofflink.lo" ;;
+    bfd_elf32_shl_vec)		tb="${tb} elf32-sh.lo elf32.lo ${elf} coff-sh.lo" ;;
+    bfd_elf32_shl_symbian_vec)	tb="${tb} elf32-sh-symbian.lo elf32-sh64-com.lo elf32.lo ${elf} coff-sh.lo" ;;
+    bfd_elf32_shlin_vec)	tb="${tb} elf32-sh.lo elf32.lo ${elf} coff-sh.lo cofflink.lo" ;;
+    bfd_elf32_shlnbsd_vec)	tb="${tb} elf32-sh.lo elf32.lo ${elf} coff-sh.lo cofflink.lo" ;;
+    bfd_elf32_shnbsd_vec)	tb="${tb} elf32-sh.lo elf32.lo ${elf} coff-sh.lo cofflink.lo" ;;
+    bfd_elf32_sparc_vec)	tb="${tb} elf32-sparc.lo elfxx-sparc.lo elf32.lo ${elf}" ;;
+    bfd_elf32_tradbigmips_vec)  tb="${tb} elf32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo" ;;
+    bfd_elf32_tradlittlemips_vec) tb="${tb} elf32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo" ;;
+    bfd_elf32_us_cris_vec)	tb="${tb} elf32-cris.lo elf32.lo ${elf}" ;;
+    bfd_elf32_v850_vec)		tb="${tb} elf32-v850.lo elf32.lo ${elf}" ;;
+    bfd_elf32_vax_vec)		tb="${tb} elf32-vax.lo elf32.lo ${elf}" ;;
+    bfd_elf32_xstormy16_vec)	tb="${tb} elf32-xstormy16.lo elf32.lo ${elf}" ;;
+    bfd_elf32_xtensa_le_vec)	tb="${tb} xtensa-isa.lo xtensa-modules.lo elf32-xtensa.lo elf32.lo ${elf}" ;;
+    bfd_elf32_xtensa_be_vec)	tb="${tb} xtensa-isa.lo xtensa-modules.lo elf32-xtensa.lo elf32.lo ${elf}" ;;
+    bfd_elf64_alpha_freebsd_vec) tb="${tb} elf64-alpha.lo elf64.lo ${elf}"; target_size=64 ;;
+    bfd_elf64_alpha_vec)	tb="${tb} elf64-alpha.lo elf64.lo ${elf}"; target_size=64 ;;
+    bfd_elf64_big_generic_vec) 	tb="${tb} elf64-gen.lo elf64.lo ${elf}"; target_size=64 ;;
+    bfd_elf64_bigmips_vec) 	tb="${tb} elf64-mips.lo elf64.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    bfd_elf64_hppa_linux_vec)	tb="${tb} elf64-hppa.lo elf64.lo ${elf}"; target_size=64 ;;
+    bfd_elf64_hppa_vec)		tb="${tb} elf64-hppa.lo elf64.lo ${elf}"; target_size=64 ;;
+    bfd_elf64_ia64_big_vec)	tb="${tb} elf64-ia64.lo elf64.lo ${elf}"; target_size=64 ;;
+    bfd_elf64_ia64_hpux_big_vec) tb="${tb} elf64-ia64.lo elf64.lo ${elf}"; target_size=64 ;;
+    bfd_elf64_ia64_little_vec)	tb="${tb} elf64-ia64.lo elf64.lo ${elf}"; target_size=64 ;;
+    bfd_elf64_little_generic_vec) tb="${tb} elf64-gen.lo elf64.lo ${elf}"; target_size=64 ;;
+    bfd_elf64_littlemips_vec) 	tb="${tb} elf64-mips.lo elf64.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    bfd_elf64_mmix_vec) 	tb="${tb} elf64-mmix.lo elf64.lo ${elf}" target_size=64 ;;
+    bfd_elf64_powerpc_vec)	tb="${tb} elf64-ppc.lo elf64-gen.lo elf64.lo ${elf}"; target_size=64 ;;
+    bfd_elf64_powerpcle_vec)	tb="${tb} elf64-ppc.lo elf64-gen.lo elf64.lo ${elf}" target_size=64 ;;
+    bfd_elf64_s390_vec)		tb="${tb} elf64-s390.lo elf64.lo ${elf}"; target_size=64 ;;
+    bfd_elf64_sh64_vec)		tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
+    bfd_elf64_sh64l_vec)	tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
+    bfd_elf64_sh64lin_vec)	tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
+    bfd_elf64_sh64blin_vec)	tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
+    bfd_elf64_sh64lnbsd_vec)	tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
+    bfd_elf64_sh64nbsd_vec)	tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
+    bfd_elf64_sparc_vec)	tb="${tb} elf64-sparc.lo elfxx-sparc.lo elf64.lo ${elf}"; target_size=64 ;;
+    bfd_elf64_tradbigmips_vec)	tb="${tb} elf64-mips.lo elf64.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    bfd_elf64_tradlittlemips_vec) tb="${tb} elf64-mips.lo elf64.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    bfd_elf64_x86_64_vec)	tb="${tb} elf64-x86-64.lo elf64.lo ${elf}"; target_size=64 ;;
     bfd_mmo_vec)		tb="${tb} mmo.lo" target_size=64 ;;
     bfd_powerpc_pe_vec)         tb="${tb} pe-ppc.lo peigen.lo cofflink.lo" ;;
     bfd_powerpc_pei_vec)        tb="${tb} pei-ppc.lo peigen.lo cofflink.lo" ;;
@@ -21103,10 +21115,10 @@ AMDEP_TRUE="$AMDEP_TRUE" ac_aux_dir="$ac_aux_dir"
 sed_quote_subst='$sed_quote_subst'
 double_quote_subst='$double_quote_subst'
 delay_variable_subst='$delay_variable_subst'
-enable_shared='`$ECHO "$enable_shared" | $SED "$delay_single_quote_subst"`'
 macro_version='`$ECHO "$macro_version" | $SED "$delay_single_quote_subst"`'
 macro_revision='`$ECHO "$macro_revision" | $SED "$delay_single_quote_subst"`'
 enable_fast_install='`$ECHO "$enable_fast_install" | $SED "$delay_single_quote_subst"`'
+enable_shared='`$ECHO "$enable_shared" | $SED "$delay_single_quote_subst"`'
 enable_static='`$ECHO "$enable_static" | $SED "$delay_single_quote_subst"`'
 AS='`$ECHO "$AS" | $SED "$delay_single_quote_subst"`'
 DLLTOOL='`$ECHO "$DLLTOOL" | $SED "$delay_single_quote_subst"`'
@@ -21163,7 +21175,6 @@ lt_cv_sys_global_symbol_to_c_name_address='`$ECHO "$lt_cv_sys_global_symbol_to_c
 lt_cv_sys_global_symbol_to_c_name_address_lib_prefix='`$ECHO "$lt_cv_sys_global_symbol_to_c_name_address_lib_prefix" | $SED "$delay_single_quote_subst"`'
 nm_file_list_spec='`$ECHO "$nm_file_list_spec" | $SED "$delay_single_quote_subst"`'
 lt_sysroot='`$ECHO "$lt_sysroot" | $SED "$delay_single_quote_subst"`'
-objdir='`$ECHO "$objdir" | $SED "$delay_single_quote_subst"`'
 MAGIC_CMD='`$ECHO "$MAGIC_CMD" | $SED "$delay_single_quote_subst"`'
 lt_prog_compiler_no_builtin_flag='`$ECHO "$lt_prog_compiler_no_builtin_flag" | $SED "$delay_single_quote_subst"`'
 lt_prog_compiler_pic='`$ECHO "$lt_prog_compiler_pic" | $SED "$delay_single_quote_subst"`'
@@ -22162,15 +22173,15 @@ available_tags=""
 
 # ### BEGIN LIBTOOL CONFIG
 
-# Whether or not to build shared libraries.
-build_libtool_libs=$enable_shared
-
 # Which release of libtool.m4 was used?
 macro_version=$macro_version
 macro_revision=$macro_revision
 
 # Whether or not to optimize for fast installation.
 fast_install=$enable_fast_install
+
+# Whether or not to build shared libraries.
+build_libtool_libs=$enable_shared
 
 # Whether or not to build static libraries.
 build_old_libs=$enable_static
@@ -22309,9 +22320,6 @@ nm_file_list_spec=$lt_nm_file_list_spec
 
 # The root where to search for dependent libraries,and in which our libraries should be installed.
 lt_sysroot=$lt_sysroot
-
-# The name of the directory that contains temporary libtool files.
-objdir=$objdir
 
 # Used to examine libraries when file_magic_cmd begins with "file".
 MAGIC_CMD=$MAGIC_CMD

@@ -199,9 +199,6 @@
 /* Define to 1 if you have the <libintl.h> header file. */
 #undef HAVE_LIBINTL_H
 
-/* Define to 1 if you have the `libtool' function. */
-#undef HAVE_LIBTOOL
-
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
 
@@ -213,6 +210,9 @@
 
 /* Define to 1 if the system has the type `long long int'. */
 #undef HAVE_LONG_LONG_INT
+
+/* Define to 1 if you have the `lt_dlinit' function. */
+#undef HAVE_LT_DLINIT
 
 /* Define if <sys/procfs.h> has lwpstatus_t. */
 #undef HAVE_LWPSTATUS_T

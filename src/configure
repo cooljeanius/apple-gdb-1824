@@ -14893,6 +14893,14 @@ else
 fi
 if test -x ${srcdir}/libtool; then
   test -r libtool
+  if test "x${LIBTOOL_FLAGS}" = "x"; then
+    test -z "${LIBTOOL_FLAGS}"
+    export LIBTOOL_FLAGS=--debug
+  else
+    test ! -z "${LIBTOOL_FLAGS}"
+    { $as_echo "$as_me:${as_lineno-$LINENO}: LIBTOOL_FLAGS are set to \"${LIBTOOL_FLAGS}\"" >&5
+$as_echo "$as_me: LIBTOOL_FLAGS are set to \"${LIBTOOL_FLAGS}\"" >&6;}
+  fi
 else
   test -e libtool
 

@@ -690,6 +690,7 @@ BUILD_HFILES = \
 
 # Ensure they are built early:
 MY_BUILT_SOURCES_COMMENTED_OUT = $(BUILD_HFILES)
+BUILT_SOURCES = $(BUILD_HFILES)
 
 HFILES = $(SOURCE_HFILES) $(BUILD_HFILES)
 
@@ -735,6 +736,7 @@ ofiles: stamp-ofiles ; @true
 # dependency tracking fragments are picked up in the Makefile.
 libbfd_la_SOURCES = $(BFD32_LIBS_CFILES) $(BFD64_LIBS_CFILES)
 MY_EXTRA_libbfd_la_SOURCES_COMMENTED_OUT = $(CFILES)
+EXTRA_libbfd_la_SOURCES = $(CFILES)
 libbfd_la_DEPENDENCIES = $(OFILES) stamp-ofiles ofiles $(srcdir)/ofiles
 libbfd_la_LIBADD = `cat ofiles` @WIN32LIBADD@
 libbfd_la_LDFLAGS = -release $(VERSION) @WIN32LDFLAGS@
