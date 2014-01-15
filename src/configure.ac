@@ -2908,6 +2908,12 @@ if test "x${RANLIB}" = "x"; then
 else
 	test ! -z "${RANLIB}"
 fi
+if test -x ${srcdir}/libtool; then
+  test -r libtool
+else
+  test -e libtool
+  AC_CHECK_HEADERS_ONCE([dlfcn.h])
+fi
 
 AC_SUBST([CC])
 AC_SUBST([CXX])
@@ -3073,7 +3079,7 @@ case ${build} in
     # sources; use -no-cpp-precomp to get to GNU cpp.
     # Apple's GCC has bugs in designated initializer handling, so disable
     # that too.
-    stage1_cflags="-g -no-cpp-precomp -DHAVE_DESIGNATED_INITIALIZERS=0"
+    stage1_cflags="-ggdb -no-cpp-precomp -DHAVE_DESIGNATED_INITIALIZERS=0"
     ;;
 esac
 AC_SUBST([stage1_cflags])

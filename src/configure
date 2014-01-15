@@ -2717,6 +2717,7 @@ as_fn_append ac_func_list " alarm"
 as_fn_append ac_header_list " netdb.h"
 as_fn_append ac_header_list " pwd.h"
 as_fn_append ac_header_list " grp.h"
+as_fn_append ac_header_list " dlfcn.h"
 # Check that the precious variables saved in the cache have kept the same
 # value.
 ac_cache_corrupted=false
@@ -14890,6 +14891,14 @@ fi
 else
 	test ! -z "${RANLIB}"
 fi
+if test -x ${srcdir}/libtool; then
+  test -r libtool
+else
+  test -e libtool
+
+
+
+fi
 
 
 
@@ -16209,7 +16218,7 @@ case ${build} in
     # sources; use -no-cpp-precomp to get to GNU cpp.
     # Apple's GCC has bugs in designated initializer handling, so disable
     # that too.
-    stage1_cflags="-g -no-cpp-precomp -DHAVE_DESIGNATED_INITIALIZERS=0"
+    stage1_cflags="-ggdb -no-cpp-precomp -DHAVE_DESIGNATED_INITIALIZERS=0"
     ;;
 esac
 

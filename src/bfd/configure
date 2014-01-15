@@ -13924,7 +13924,9 @@ fi
 
 if test -x ${srcdir}/libtool; then
   test -r libtool
-  # patch libtool to change $_cmds IFS from ~ to ? character
+  if test "${USE_MAINTAINER_MODE}" = "yes" ; then
+    test ! -z "${USE_MAINTAINER_MODE}"
+    # patch libtool to change $_cmds IFS from ~ to ? character
 if grep "^[_$as_cr_letters]_cmds=.*[?]" libtool >/dev/null; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING:   patching libtool skipped - _cmds already contain question marks" >&5
 $as_echo "$as_me: WARNING:   patching libtool skipped - _cmds already contain question marks" >&2;}
@@ -13965,6 +13967,7 @@ $as_echo "$as_me: WARNING: changing how libtool works" >&2;}
 
 
 
+  fi
 fi
 
 

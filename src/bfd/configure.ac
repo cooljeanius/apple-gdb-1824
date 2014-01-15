@@ -75,7 +75,10 @@ AC_DEFUN([AX_LIBTOOL_FIXES],[
 ])
 if test -x ${srcdir}/libtool; then
   test -r libtool
-  AX_LIBTOOL_FIXES
+  if test "${USE_MAINTAINER_MODE}" = "yes" ; then
+    test ! -z "${USE_MAINTAINER_MODE}"
+    AX_LIBTOOL_FIXES
+  fi
 fi
 
 AC_PLUGINS
