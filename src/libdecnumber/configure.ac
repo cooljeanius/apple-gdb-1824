@@ -21,7 +21,7 @@
 
 AC_PREREQ([2.64])
 dnl# override.m4 is annoying
-AC_INIT([libdecnumber],[ ],[gcc-bugs@gcc.gnu.org],[libdecnumber])
+AC_INIT([libdecnumber],[0.0.1],[gcc-bugs@gcc.gnu.org],[libdecnumber])
 AC_CONFIG_SRCDIR([decNumber.h])
 AC_CONFIG_MACRO_DIR([../config])
 
@@ -31,10 +31,10 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_RANLIB
 
-MISSING=`cd $ac_aux_dir && ${PWDCMD-pwd}`/missing
-AC_CHECK_PROGS([ACLOCAL],[aclocal],[$MISSING aclocal])
-AC_CHECK_PROGS([AUTOCONF],[autoconf],[$MISSING autoconf])
-AC_CHECK_PROGS([AUTOHEADER],[autoheader],[$MISSING autoheader])
+MISSING=`cd ${ac_aux_dir} && ${PWDCMD-pwd}`/missing
+AC_CHECK_PROGS([ACLOCAL],[aclocal],[${MISSING} aclocal])
+AC_CHECK_PROGS([AUTOCONF],[autoconf],[${MISSING} autoconf])
+AC_CHECK_PROGS([AUTOHEADER],[autoheader],[${MISSING} autoheader])
 
 # Figure out what compiler warnings we can enable.
 # See config/warnings.m4 for details.
@@ -79,7 +79,7 @@ AC_ARG_ENABLE([maintainer-mode],
 [AS_HELP_STRING([--enable-maintainer-mode],[enable rules only needed by maintainers])],[],
 [enable_maintainer_mode=no])
 
-if test "x$enable_maintainer_mode" = xno; then
+if test "x${enable_maintainer_mode}" = xno; then
   MAINT='#'
 else
   MAINT=
@@ -89,7 +89,8 @@ AC_SUBST([MAINT])
 AC_CANONICAL_TARGET
 
 # Default decimal format
-# If you change the defaults here, be sure to change them in the GCC directory also
+# If you change the defaults here, be sure to change them in the GCC
+# directory (if it exists) also
 AC_MSG_CHECKING([for decimal floating point])
 AC_ARG_ENABLE([decimal-float],
 [AS_HELP_STRING([--enable-decimal-float={no,yes,bid,dpd}],[
@@ -97,14 +98,14 @@ AC_ARG_ENABLE([decimal-float],
 			or 'dpd' to choose which decimal floating point
 			format to use])],
 [
-  case $enable_decimal_float in
+  case ${enable_decimal_float} in
     yes | no | bid | dpd) ;;
-    *) AC_MSG_ERROR(['$enable_decimal_float' is an invalid value for --enable-decimal-float.
+    *) AC_MSG_ERROR(['${enable_decimal_float}' is an invalid value for --enable-decimal-float.
 Valid choices are 'yes', 'bid', 'dpd', and 'no'.]) ;;
   esac
 ],
 [
-  case $target in
+  case ${target} in
     powerpc*-*-linux* | i?86*-*-linux* | x86_64*-*-linux*)
       enable_decimal_float=yes
       ;;
@@ -117,8 +118,8 @@ Valid choices are 'yes', 'bid', 'dpd', and 'no'.]) ;;
 # x86's use BID format instead of DPD
 # In theory --enable-decimal-float=no should not compile anything
 # For the sake of simplicity, just use the default format in this directory
-if test x$enable_decimal_float = xyes -o x$enable_decimal_float = xno; then
-  case $target in
+if test x${enable_decimal_float} = xyes -o x${enable_decimal_float} = xno; then
+  case ${target} in
     i?86*-*-linux* | x86_64*-*-linux*)
       enable_decimal_float=bid
       ;;
@@ -129,13 +130,13 @@ if test x$enable_decimal_float = xyes -o x$enable_decimal_float = xno; then
 fi
 
 # If BID is being used, additional objects should be linked in.
-if test x$enable_decimal_float = xbid; then
-  ADDITIONAL_OBJS="$ADDITIONAL_OBJS \$(bid_OBJS)"
+if test x${enable_decimal_float} = xbid; then
+  ADDITIONAL_OBJS="${ADDITIONAL_OBJS} \$(bid_OBJS)"
 else
-  ADDITIONAL_OBJS=
+  ADDITIONAL_OBJS=""
 fi
 
-AC_MSG_RESULT([$enable_decimal_float])
+AC_MSG_RESULT([${enable_decimal_float}])
 AC_SUBST([enable_decimal_float])
 AC_SUBST([ADDITIONAL_OBJS])
 

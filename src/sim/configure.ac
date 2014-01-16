@@ -6,7 +6,11 @@ AC_CONFIG_SRCDIR([Makefile.in])
 
 AC_PROG_CC
 AC_PROG_INSTALL
+m4_ifdef([AM_PROG_AR],[
+AM_PROG_AR
+],[
 AC_CHECK_TOOL([AR],[ar])
+])
 AC_CHECK_TOOL([RANLIB],[ranlib],[:])
 
 AC_CONFIG_AUX_DIR([..])
@@ -17,16 +21,16 @@ AC_SUBST([CFLAGS])
 AC_SUBST([HDEFINES])
 AR=${AR-ar}
 AC_SUBST([AR])
-if test "x$RANLIB" = "x"; then
-	test -z "$RANLIB"
+if test "x${RANLIB}" = "x"; then
+	test -z "${RANLIB}"
 	AC_PROG_RANLIB
 else
-	test ! -z "$RANLIB" && export RANLIB
+	test ! -z "${RANLIB}" && export RANLIB
 	AC_SUBST([RANLIB])
 fi
 
 # Put a plausible default for CC_FOR_BUILD in Makefile.
-if test "x$cross_compiling" = "xno"; then
+if test "x${cross_compiling}" = "xno"; then
   CC_FOR_BUILD='$(CC)'
 else
   CC_FOR_BUILD=gcc
@@ -161,7 +165,7 @@ case "${target}" in
 	;;
   *)
 	# The "igen" subdir always successfully configures.
-	# So does the "testsuite" subdir, but that is checked farther below.
+	# So does the "testsuite" subdir, but that is checked lower below.
 	# Also the subdirs are useful to have regardless of which simulator
 	# you want.
 	extra_subdirs="${extra_subdirs} igen"

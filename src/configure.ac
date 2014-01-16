@@ -732,6 +732,7 @@ case "${target}" in
       noconfigdirs="${noconfigdirs} target-newlib"
     fi
     noconfigdirs="${noconfigdirs} target-libgloss"
+    host_configargs=" ${host_configargs} --disable-werror "
     ;;
   *-*-freebsd[[12]] | *-*-freebsd[[12]].* | *-*-freebsd*aout*)
     noconfigdirs="${noconfigdirs} target-newlib target-libgloss ${libgcj}"
@@ -2924,12 +2925,12 @@ fi
 AC_PROG_MKDIR_P
 if test -x ${srcdir}/libtool; then
   test -r libtool
-  if test "x${LIBTOOL_FLAGS}" = "x"; then
-    test -z "${LIBTOOL_FLAGS}"
-    export LIBTOOL_FLAGS=--debug
+  if test "x${LIBTOOLFLAGS}" = "x"; then
+    test -z "${LIBTOOLFLAGS}"
+    export LIBTOOLFLAGS="--verbose --debug --no-silent"
   else
-    test ! -z "${LIBTOOL_FLAGS}"
-    AC_MSG_NOTICE([LIBTOOL_FLAGS are set to "${LIBTOOL_FLAGS}"])
+    test ! -z "${LIBTOOLFLAGS}"
+    AC_MSG_NOTICE([LIBTOOLFLAGS are set to "${LIBTOOLFLAGS}"])
   fi
 else
   test -e libtool

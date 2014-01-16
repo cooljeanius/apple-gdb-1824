@@ -49,10 +49,10 @@ AC_MSG_CHECKING([whether to enable maintainer-specific portions of Makefiles])
   dnl# maintainer-mode is disabled by default
   AC_ARG_ENABLE([maintainer-mode],
 [AS_HELP_STRING([--enable-maintainer-mode],[enable make rules and dependencies not useful (and sometimes confusing) to the casual installer])],
-      [maintainer_mode=$enableval],
+      [maintainer_mode=${enableval}],
       [maintainer_mode=no])
 
-AC_MSG_RESULT([$maintainer_mode])
+AC_MSG_RESULT([${maintainer_mode}])
 
 if test "$maintainer_mode" = "yes"; then
   MAINT=''
@@ -706,8 +706,8 @@ LIBOBJS="$L"
 AC_ARG_VAR([PICFLAG],[If you know what flags to set for compiling with PIC, you can try setting them with this variable (unsupported)])
 AC_SUBST([PICFLAG])
 
-MMALLOC_CFLAGS=
-MMALLOC=
+MMALLOC_CFLAGS=""
+MMALLOC=""
 AC_SUBST([MMALLOC_CFLAGS])
 AC_SUBST([MMALLOC])
 

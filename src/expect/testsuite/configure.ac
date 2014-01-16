@@ -3,7 +3,7 @@ dnl# Process this file with autoconf to produce a configure script.
 sinclude([../aclocal.m4])
 
 AC_PREREQ([2.69])
-AC_INIT([expect-testsuite],[5.26],[])
+AC_INIT([expect-testsuite],[5.26],[libes@nist.gov])
 AC_CONFIG_SRCDIR([exp_test.c])
 
 AC_PROG_SED

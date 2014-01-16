@@ -2274,8 +2274,8 @@ gdb_host_cpu=${gdb_host_cpu}
 gdb_target_cpu=${gdb_target_cpu}
 nativefile=${nativefile}
 ])
-AC_OUTPUT
 
+AC_CONFIG_COMMANDS([config_status_vpath_build_fix],[
 if test "${srcdir}" != "."; then
   if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
     cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
@@ -2283,5 +2283,8 @@ if test "${srcdir}" != "."; then
     cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
   fi
 fi
+],[])
+
+AC_OUTPUT
 
 exit 0

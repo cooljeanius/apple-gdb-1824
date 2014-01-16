@@ -77,8 +77,7 @@ AM_MAINTAINER_MODE
 AC_EXEEXT
 
 AC_CONFIG_FILES([Makefile])
-AC_OUTPUT
-
+AC_CONFIG_COMMANDS([config_status_vpath_build_fix],[
 if test "${srcdir}" != "."; then
   if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
     cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
@@ -86,3 +85,7 @@ if test "${srcdir}" != "."; then
     cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
   fi
 fi
+],[])
+AC_OUTPUT
+
+

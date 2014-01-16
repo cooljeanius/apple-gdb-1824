@@ -24076,6 +24076,21 @@ ac_config_commands="$ac_config_commands default"
 ac_config_commands="$ac_config_commands default-2"
 
 
+ac_config_commands="$ac_config_commands config_status_vpath_build_fix"
+
+
+ac_config_commands="$ac_config_commands bfd_h_vpath_fix"
+
+
+ac_config_commands="$ac_config_commands bfd_h_vpath_fix2"
+
+
+ac_config_commands="$ac_config_commands libtool_lengthening_hack_fix1"
+
+
+ac_config_commands="$ac_config_commands libtool_lengthening_hack_fix2"
+
+
 
 
 
@@ -25253,6 +25268,11 @@ do
     "po/Makefile.in") CONFIG_FILES="$CONFIG_FILES po/Makefile.in:po/Make-in" ;;
     "default") CONFIG_COMMANDS="$CONFIG_COMMANDS default" ;;
     "default-2") CONFIG_COMMANDS="$CONFIG_COMMANDS default-2" ;;
+    "config_status_vpath_build_fix") CONFIG_COMMANDS="$CONFIG_COMMANDS config_status_vpath_build_fix" ;;
+    "bfd_h_vpath_fix") CONFIG_COMMANDS="$CONFIG_COMMANDS bfd_h_vpath_fix" ;;
+    "bfd_h_vpath_fix2") CONFIG_COMMANDS="$CONFIG_COMMANDS bfd_h_vpath_fix2" ;;
+    "libtool_lengthening_hack_fix1") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool_lengthening_hack_fix1" ;;
+    "libtool_lengthening_hack_fix2") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool_lengthening_hack_fix2" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -27183,25 +27203,117 @@ fi
     done ;;
     "default":C) sed -e '/SRC-POTFILES =/r po/SRC-POTFILES' -e '/BLD-POTFILES =/r po/BLD-POTFILES' po/Makefile.in > po/Makefile ;;
     "default-2":C)
-case "$srcdir" in
+case "${srcdir}" in
   .) srcdirpre= ;;
   *) srcdirpre='$(srcdir)/' ;;
 esac
-POFILES=
-GMOFILES=
-for lang in dummy $OBSOLETE_ALL_LINGUAS; do
-  if test $lang != dummy; then
-    POFILES="$POFILES $srcdirpre$lang.po"
-    GMOFILES="$GMOFILES $srcdirpre$lang.gmo"
+POFILES=""
+GMOFILES=""
+for lang in dummy ${OBSOLETE_ALL_LINGUAS}; do
+  if test ${lang} != dummy; then
+    POFILES="${POFILES} ${srcdirpre}${lang}.po"
+    GMOFILES="${GMOFILES} ${srcdirpre}${lang}.gmo"
   fi
 done
 if test ! -e po/Makefile; then
   sed -e '/SRC-POTFILES =/r po/SRC-POTFILES' \
       -e '/BLD-POTFILES =/r po/BLD-POTFILES' \
-      -e "s,@POFILES@,$POFILES," \
-      -e "s,@GMOFILES@,$GMOFILES," \
+      -e "s,@POFILES@,${POFILES}," \
+      -e "s,@GMOFILES@,${GMOFILES}," \
       po/Makefile.in > po/Makefile
 fi ;;
+    "config_status_vpath_build_fix":C)
+if test "${srcdir}" != "."; then
+  if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
+    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+  elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
+    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+  fi
+fi
+ ;;
+    "bfd_h_vpath_fix":C)
+if test ! -e bfd.h; then
+  if test -e doc/bfd.h; then
+    cp -v doc/bfd.h bfd.h || echo ""
+  elif test "${srcdir}" != "."; then
+    if test -e ${srcdir}/doc/bfd.h; then
+      cp -v ${srcdir}/doc/bfd.h bfd.h || echo ""
+    elif test -e ${srcdir}/bfd.h -a "${srcdir}" != "."; then
+      cp -v ${srcdir}/bfd.h bfd.h || echo ""
+    fi
+  fi
+fi
+ ;;
+    "bfd_h_vpath_fix2":C)
+if test ! -e ${srcdir}/bfd.h; then
+  if test -e ${srcdir}/doc/bfd.h; then
+    cp -v ${srcdir}/doc/bfd.h ${srcdir}/bfd.h || echo ""
+  elif test "${srcdir}" != "."; then
+    if test -e doc/bfd.h; then
+      cp -v doc/bfd.h ${srcdir}/bfd.h || echo ""
+    elif test -e bfd.h -a "${srcdir}" != "."; then
+      cp -v bfd.h ${srcdir}/bfd.h || echo ""
+    fi
+  fi
+fi
+ ;;
+    "libtool_lengthening_hack_fix1":C)
+# Hack for when the configure script generates a libtool that is too short:
+if test -e libtool -a -e libtool.old; then
+  stat libtool > /dev/null
+  stat libtool.old > /dev/null
+
+  if test "$(wc -l < libtool.old | tr -d [:blank:])" -gt "$(wc -l < libtool | tr -d [:blank:])"; then
+
+    echo "libtool.old is longer than libtool"
+    echo "that means that it is probably the better one to use"
+    cp -vf libtool.old libtool
+  else
+    echo "libtool.old is NOT longer than libtool"
+    echo "leaving it alone..."
+  fi
+elif test -e libtool.old -a ! -e libtool; then
+  stat libtool.old > /dev/null
+  echo "libtool is not present, but libtool.old is"
+  echo "so use libtool.old instead"
+  cp -v libtool.old libtool
+elif test -e libtool -a ! -e libtool.old; then
+  stat libtool > /dev/null
+  echo "using default libtool"
+elif test ! -e libtool -a ! -e libtool.old; then
+  echo "no libtool found"
+else
+  echo "this should not happen"
+fi
+ ;;
+    "libtool_lengthening_hack_fix2":C)
+# Also try the hack from ../opcodes here as well:
+
+# The "1000" is just an arbitrarily chosen number that is usually right
+if test "$(wc -l < libtool | tr -d [:blank:])" -lt "1000"; then
+
+  echo "even after all that libtool is still too short"
+  echo "trying to create a new one in a different way this time"
+  if test -x ../ltconfig; then
+    # I have no clue why this is even a thing that I have to check for:
+    if test -e /mount/endor/wildenhu/local-x86_64/bin/sed; then
+      if test -r ../ltmain.sh; then
+        ../ltconfig ../ltmain.sh
+      elif test -r ../ltmain-old.sh; then
+        ../ltconfig ../ltmain-old.sh
+      elif test -r ../ltcf-c.sh; then
+        ../ltconfig ../ltmain-old.sh
+      else
+        echo "not sure which ltmain.sh to use to do so"
+      fi
+    else
+      echo "actually never mind (for now)"
+    fi
+  else
+    echo "unable to do so: ../ltconfig is missing and/or unusable"
+  fi
+fi
+ ;;
 
   esac
 done # for ac_tag
@@ -27240,90 +27352,3 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
 
-
-if test "${srcdir}" != "."; then
-  if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
-    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
-  elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
-    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
-  fi
-fi
-
-if test ! -e bfd.h; then
-  if test -e doc/bfd.h; then
-    cp -v doc/bfd.h bfd.h || echo ""
-  elif test "${srcdir}" != "."; then
-    if test -e ${srcdir}/doc/bfd.h; then
-      cp -v ${srcdir}/doc/bfd.h bfd.h || echo ""
-    elif test -e ${srcdir}/bfd.h -a "${srcdir}" != "."; then
-      cp -v ${srcdir}/bfd.h bfd.h || echo ""
-    fi
-  fi
-fi
-
-if test ! -e ${srcdir}/bfd.h; then
-  if test -e ${srcdir}/doc/bfd.h; then
-    cp -v ${srcdir}/doc/bfd.h ${srcdir}/bfd.h || echo ""
-  elif test "${srcdir}" != "."; then
-    if test -e doc/bfd.h; then
-      cp -v doc/bfd.h ${srcdir}/bfd.h || echo ""
-    elif test -e bfd.h -a "${srcdir}" != "."; then
-      cp -v bfd.h ${srcdir}/bfd.h || echo ""
-    fi
-  fi
-fi
-
-# Hack for when the configure script generates a libtool that is too short:
-if test -e libtool -a -e libtool.old; then
-  stat libtool > /dev/null
-  stat libtool.old > /dev/null
-
-  if test "$(wc -l < libtool.old | tr -d [:blank:])" -gt "$(wc -l < libtool | tr -d [:blank:])"; then
-
-    echo "libtool.old is longer than libtool"
-    echo "that means that it is probably the better one to use"
-    cp -vf libtool.old libtool
-  else
-    echo "libtool.old is NOT longer than libtool"
-    echo "leaving it alone..."
-  fi
-elif test -e libtool.old -a ! -e libtool; then
-  stat libtool.old > /dev/null
-  echo "libtool is not present, but libtool.old is"
-  echo "so use libtool.old instead"
-  cp -v libtool.old libtool
-elif test -e libtool -a ! -e libtool.old; then
-  stat libtool > /dev/null
-  echo "using default libtool"
-elif test ! -e libtool -a ! -e libtool.old; then
-  echo "no libtool found"
-else
-  echo "this should not happen"
-fi
-
-# Also try the hack from ../opcodes here as well:
-
-# The "1000" is just an arbitrarily chosen number that is usually right
-if test "$(wc -l < libtool | tr -d [:blank:])" -lt "1000"; then
-
-  echo "even after all that libtool is still too short"
-  echo "trying to create a new one in a different way this time"
-  if test -x ../ltconfig; then
-    # I have no clue why this is a thing:
-    if test -e /mount/endor/wildenhu/local-x86_64/bin/sed; then
-      if test -r ../ltmain.sh; then
-        ../ltconfig ../ltmain.sh
-      elif test -r ../ltmain-old.sh; then
-        ../ltconfig ../ltmain-old.sh
-      elif test -r ../ltcf-c.sh; then
-        ../ltconfig ../ltmain-old.sh
-      else
-        echo "not sure which ltmain.sh to use to do so"
-      fi
-    else
-      echo "actually never mind (for now)"
-    fi
-  else
-    echo "unable to do so: ../ltconfig is missing and/or unusable"
-  fi
-fi

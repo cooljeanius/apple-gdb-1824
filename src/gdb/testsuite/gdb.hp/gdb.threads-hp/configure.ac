@@ -6,18 +6,19 @@ dnl# script appropriate for this directory.  For more information, check
 dnl# any existing configure script.
 
 AC_PREREQ([2.5])
-AC_INIT([gdb.hp.threads-hp-testsuite],[1824],[])
+AC_INIT([gdb.hp.threads-hp-testsuite],[1824],[sympa@lists.hp.com])
+dnl# found bug report address on HP's website
 
 MY_CC=${CC-cc}
 AC_SUBST([MY_CC])
 AC_CONFIG_AUX_DIR([../../../..])
 AC_CANONICAL_TARGET
 
-if test "x$CC" = "x"; then
-	test -z "$CC"
+if test "x${CC}" = "x"; then
+	test -z "${CC}"
 	AC_PROG_CC
 else
-	test ! -z "$CC"
+	test ! -z "${CC}"
 	AC_PROG_GCC_TRADITIONAL
 fi
 AC_PROG_CPP

@@ -22,7 +22,7 @@
 sinclude(../../config/acx.m4)
 
 AC_PREREQ([2.69])
-AC_INIT([gdb-testsuite],[1824],[])
+AC_INIT([gdb-testsuite],[1824],[bug-gdb@gnu.org])
 AC_CONFIG_SRCDIR([gdb.base])
 
 AC_CANONICAL_BUILD
@@ -32,7 +32,7 @@ AC_CANONICAL_TARGET
 ACX_NONCANONICAL_TARGET
 
 # Add HP-specific tests when appropriate.
-case $target in
+case ${target} in
   hppa*-*-hpux*)
     AC_CONFIG_SUBDIRS([gdb.hp]) ;;
 esac
@@ -41,7 +41,7 @@ esac
 AC_ARG_WITH([stabs],
 [AS_HELP_STRING([--with-stabs],[arrange to use stabs instead of host debug format])],[],
 [# We enable stabs tests by default on selected targets.
-case $target in
+case ${target} in
    *-apple-darwin* \
  | powerpc-*-aix* \
  | rs6000-*-aix*  \
@@ -59,14 +59,14 @@ case $target in
 esac])
 
 # Add stabs tests when appropriate.
-if test $with_stabs = yes; then
+if test ${with_stabs} = yes; then
    AC_CONFIG_SUBDIRS([gdb.stabs])
 fi
 
 # Enable gdbtk.
 AC_ARG_ENABLE([gdbtk],
 [AS_HELP_STRING([--enable-gtk],[enable gdbtk graphical user interface (GUI)])],[],
-  [if test -d $srcdir/gdb.gdbtk; then
+  [if test -d ${srcdir}/gdb.gdbtk; then
     enable_gdbtk=yes
   else
     enable_gdbtk=no
@@ -83,7 +83,7 @@ AC_SYS_LARGEFILE
 AC_SYS_LONG_FILE_NAMES
 
 # Add gdbtk tests when appropriate.
-if test $enable_gdbtk = yes; then
+if test ${enable_gdbtk} = yes; then
    AC_CONFIG_SUBDIRS([gdb.gdbtk])
 fi
 
@@ -94,7 +94,7 @@ AC_ARG_ENABLE([shared],
 
 # If we have shared libraries, try to set RPATH_ENVVAR reasonably,
 # such that we can find the shared libraries in the build tree.
-if test $enable_shared = no; then
+if test ${enable_shared} = no; then
   # The variable `RPATH_ENVVAR' itself is not likely to be used on any
   # platform.
   RPATH_ENVVAR=RPATH_ENVVAR
@@ -102,9 +102,9 @@ else
   # The variable `LD_LIBRARY_PATH' is used on most platforms.
   RPATH_ENVVAR=LD_LIBRARY_PATH
   # The following exceptions are taken from Libtool 1.4.3.
-  case $host_os in
+  case ${host_os} in
     aix*)
-      if test $host_cpu != ia64; then
+      if test ${host_cpu} != ia64; then
         RPATH_ENVVAR=LIBPATH
       fi ;;
     *darwin* | rhapsody*)

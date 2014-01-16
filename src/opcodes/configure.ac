@@ -427,8 +427,7 @@ AC_CONFIG_FILES([Makefile \
 
 AC_CONFIG_COMMANDS([default],[[sed -e '/POTFILES =/r po/POTFILES' po/Makefile.in > po/Makefile]],[[]])
 
-AC_OUTPUT
-
+AC_CONFIG_COMMANDS([config_status_vpath_build_fix],[
 if test "${srcdir}" != "."; then
   if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
     cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
@@ -436,7 +435,9 @@ if test "${srcdir}" != "."; then
     cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
   fi
 fi
+],[])
 
+AC_CONFIG_COMMANDS([libtool_lengthening_hack_fix1],[
 # Hack in case libtool is too short:
 changequote(,)
 # The "1000" is just an arbitrarily chosen number that is usually right
@@ -462,7 +463,9 @@ changequote([,])
     echo "unable to do so: ../ltconfig is missing and/or unusable"
   fi
 fi
+],[])
 
+AC_CONFIG_COMMANDS([libtool_lengthening_hack_fix2],[
 # Also try the hack from ../bfd here as well:
 if test -e libtool -a -e libtool.old; then
   stat libtool > /dev/null
@@ -490,3 +493,6 @@ elif test ! -e libtool -a ! -e libtool.old; then
 else
   echo "this should not happen"
 fi
+],[])
+
+AC_OUTPUT

@@ -2,7 +2,7 @@ dnl#                                               -*- Autoconf -*-
 dnl# Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.13])
-AC_INIT([Dbg-expect],[1.7.0],[])
+AC_INIT([Dbg-expect],[1.7.0],[libes@nist.gov])
 AC_CONFIG_SRCDIR([Dbg.h])
 
 DBG_MAJOR_VERSION=1
@@ -35,13 +35,13 @@ UNSHARED_RANLIB=${RANLIB}
 # how old the compiler is. So...
 # -X is for the old "cc" and "gcc" (based on 1.42)
 # -mposix is for the new gcc (at least 2.5.8)
-# This modifies the value of $CC to have the POSIX flag added
+# This modifies the value of ${CC} to have the POSIX flag added
 # so it will configure correctly
 CY_AC_TCL_LYNX_POSIX
 
 # we really only need the header files
 CY_AC_PATH_TCLH
-if test x"$no_tcl" = x"true" ; then
+if test x"${no_tcl}" = x"true" ; then
     echo "      ERROR: Cannot find Tcl directory"
     echo "      See README for information on how to obtain Tcl."
     echo "      If Tcl is installed, see INSTALL on how to tell"
@@ -49,12 +49,13 @@ if test x"$no_tcl" = x"true" ; then
     exit 1
 fi
 
-# Use -g on all systems but Linux where it upsets the dynamic X libraries.
+# Use -ggdb on all systems but Linux where it upsets the dynamic X
+# libraries.
 AC_MSG_CHECKING([if we are running Linux])
 if test "x`(uname) 2>/dev/null`" = xLinux; then
   AC_MSG_RESULT([yes])
   linux=1
-  DBG_CFLAGS=
+  DBG_CFLAGS=""
 else
   AC_MSG_RESULT([no])
   linux=0
@@ -131,15 +132,15 @@ AC_MSG_CHECKING([type of library to build])
 AC_ARG_ENABLE([shared],
 	[AS_HELP_STRING([--enable-shared],[build libtcldbg as a shared library])],
 	[enable_shared=yes],[enable_shared=no])
-if test "$enable_shared" = "yes" -a "x${TCL_SHLIB_SUFFIX}" != "x" ; then
-  DBG_SHLIB_CFLAGS=$TCL_SHLIB_CFLAGS
+if test "${enable_shared}" = "yes" -a "x${TCL_SHLIB_SUFFIX}" != "x" ; then
+  DBG_SHLIB_CFLAGS=${TCL_SHLIB_CFLAGS}
   MY_DBG_SHARED_LIB_FILE=libtcldbg${DBG_VERSION}${TCL_SHLIB_SUFFIX}
   eval "DBG_SHARED_LIB_FILE=libdbg${TCL_SHARED_LIB_SUFFIX}"
-  DBG_LIB_FILE=$DBG_SHARED_LIB_FILE
-  DBG_LIB_FILES="$DBG_SHARED_LIB_FILE $DBG_UNSHARED_LIB_FILE"
+  DBG_LIB_FILE=${DBG_SHARED_LIB_FILE}
+  DBG_LIB_FILES="${DBG_SHARED_LIB_FILE} ${DBG_UNSHARED_LIB_FILE}"
   AC_MSG_RESULT([both shared and unshared])
 else
-  DBG_SHLIB_CFLAGS=
+  DBG_SHLIB_CFLAGS=""
   DBG_SHARED_LIB_FILE="reconfigure_Tcl_for_shared_library"
   DBG_LIB_FILE=${DBG_UNSHARED_LIB_FILE}
   DBG_LIB_FILES="${DBG_UNSHARED_LIB_FILE}"

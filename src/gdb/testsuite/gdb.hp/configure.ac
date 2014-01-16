@@ -6,7 +6,10 @@ dnl# script appropriate for this directory.  For more information, check
 dnl# any existing configure script.
 
 AC_PREREQ([2.59])
-AC_INIT([gdb.hp-testsuite],[1824],[])
+AC_INIT([gdb.hp-testsuite],[1824],[guo@cup.hp.com])
+dnl# bug report address is listed as a "past maintainer" for gdb.hp in
+dnl# MAINTAINERS a few levels up, but there is no current one, so a past
+dnl# one will have to do...
 AC_CONFIG_SRCDIR([gdb.aCC])
 
 MY_CC=${CC-cc}
@@ -14,11 +17,11 @@ AC_SUBST([MY_CC])
 AC_CONFIG_AUX_DIR([../../..])
 AC_CANONICAL_TARGET
 
-if test "x$CC" = "x"; then
-	test -z "$CC"
+if test "x${CC}" = "x"; then
+	test -z "${CC}"
 	AC_PROG_CC
 else
-	test ! -z "$CC"
+	test ! -z "${CC}"
 	AC_PROG_GCC_TRADITIONAL
 fi
 AC_PROG_CPP

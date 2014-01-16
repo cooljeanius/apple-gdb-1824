@@ -3,10 +3,10 @@ dnl#	This file is an input file used by the GNU "autoconf" program to
 dnl#	generate the file "configure", which is run during Tcl installation
 dnl#	to configure the system for the local environment.
 #
-# RCS: @(#) configure.in,v 1.9 2003/01/21 19:40:19 hunt Exp
+# RCS: @(#) configure.ac,v 1.9 2003/01/21 19:40:19 hunt Exp
 # -*- Autoconf -*-
 
-AC_INIT([Tcl-unix],[8.4.1],[])
+AC_INIT([Tcl-unix],[8.4.1],[tromey@cygnus.com])
 AC_CONFIG_SRCDIR([../generic/tcl.h])
 AC_PREREQ([2.59])
 AC_CONFIG_MACRO_DIR([m4])

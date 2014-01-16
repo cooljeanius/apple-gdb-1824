@@ -16,7 +16,7 @@ AC_SUBST([cpu_arch])
 
 AM_MAINTAINER_MODE
 
-# See doc/Makefile.am.
+# See doc/Makefile.am (this is a hack).
 AM_CONDITIONAL([GENINSRC_NEVER],[false])
 
 AC_CONFIG_FILES([Makefile doc/Makefile])

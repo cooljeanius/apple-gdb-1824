@@ -20,7 +20,7 @@ dnl# along with this program. If not, see <http://www.gnu.org/licenses/>.
 dnl# Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.64])dnl
-AC_INIT([libgnu],[2013.11.14],[])
+AC_INIT([libgnu],[2013.11.14],[bug-gnulib@gnu.org])
 AC_CONFIG_SRCDIR([import/memmem.c])
 AC_CONFIG_HEADER([config.h])
 AM_MAINTAINER_MODE
@@ -104,13 +104,13 @@ fi
 
 AC_CONFIG_FILES([Makefile Makefile.orig import/Makefile])
 AC_CONFIG_COMMANDS([default],[
-case x$CONFIG_HEADERS in
+case x${CONFIG_HEADERS} in
 xconfig.h:config.in)
 echo > stamp-h ;;
 esac
 ],[])
-AC_OUTPUT
 
+AC_CONFIG_COMMANDS([config_status_vpath_build_fix],[
 if test "${srcdir}" != "."; then
   if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
     cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
@@ -118,5 +118,8 @@ if test "${srcdir}" != "."; then
     cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
   fi
 fi
+],[])
+
+AC_OUTPUT
 
 exit 0

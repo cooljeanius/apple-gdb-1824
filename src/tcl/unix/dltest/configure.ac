@@ -7,7 +7,7 @@ dnl# CYGNUS LOCAL, need 2.5 or higher for --bindir et al
 AC_PREREQ([2.5])
 dnl# END CYGNUS LOCAL
 
-AC_INIT([dltest],[1.4],[])
+AC_INIT([dltest],[1.4],[tromey@cygnus.com])
 AC_CONFIG_SRCDIR([pkga.c])
 AC_CONFIG_MACRO_DIR([../m4])
 AC_CONFIG_AUX_DIR([..])

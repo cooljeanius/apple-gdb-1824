@@ -2482,7 +2482,7 @@ fi
 
 
 
-# See doc/Makefile.am.
+# See doc/Makefile.am (this is a hack).
  if false; then
   GENINSRC_NEVER_TRUE=
   GENINSRC_NEVER_FALSE='#'

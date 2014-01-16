@@ -6,7 +6,7 @@
 # RCS: @(#) configure.in,v 1.12 2003/01/21 19:40:21 hunt Exp
 # -*- Autoconf -*-
 
-AC_INIT([Tcl-Win],[8.4.1],[])
+AC_INIT([Tcl-Win],[8.4.1],[tromey@cygnus.com])
 AC_CONFIG_SRCDIR([../generic/tcl.h])
 AC_PREREQ([2.13])
 AC_CONFIG_MACRO_DIR([m4])

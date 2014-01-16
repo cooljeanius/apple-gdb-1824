@@ -20489,15 +20489,11 @@ ac_config_links="$ac_config_links ${ac_config_links_1}"
 
 
 
-if test -e libgettext.h -a ! -e libintl.h; then
-  ln -sv libgettext.h libintl.h
-elif test -e ${srcdir}/libgettext.h -a ! -e ${srcdir}/libintl.h; then
-  ln -sv ${srcdir}/libgettext.h ${srcdir}/libintl.h
-elif test -e ${srcdir}/libgettext.h -a ! -e libintl.h; then
-  ln -sv ${srcdir}/libgettext.h libintl.h
-elif test -e libgettext.h -a ! -e ${srcdir}/libintl.h; then
-  ln -sv libgettext.h ${srcdir}/libintl.h
-fi
+ac_config_commands="$ac_config_commands libintl_h_compat"
+
+
+ac_config_commands="$ac_config_commands config_status_vpath_build_fix"
+
 
 ac_config_files="$ac_config_files Makefile Makefile.orig po/Makefile.in po/Makevars po2tbl.sed"
 
@@ -21636,6 +21632,8 @@ do
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "po-directories") CONFIG_COMMANDS="$CONFIG_COMMANDS po-directories" ;;
     "${ac_config_links_1}") CONFIG_LINKS="$CONFIG_LINKS ${ac_config_links_1}" ;;
+    "libintl_h_compat") CONFIG_COMMANDS="$CONFIG_COMMANDS libintl_h_compat" ;;
+    "config_status_vpath_build_fix") CONFIG_COMMANDS="$CONFIG_COMMANDS config_status_vpath_build_fix" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "Makefile.orig") CONFIG_FILES="$CONFIG_FILES Makefile.orig" ;;
     "po/Makefile.in") CONFIG_FILES="$CONFIG_FILES po/Makefile.in" ;;
@@ -23275,6 +23273,26 @@ _LT_EOF
         ;;
       esac
     done ;;
+    "libintl_h_compat":C)
+if test -e libgettext.h -a ! -e libintl.h; then
+  ln -sv libgettext.h libintl.h
+elif test -e ${srcdir}/libgettext.h -a ! -e ${srcdir}/libintl.h; then
+  ln -sv ${srcdir}/libgettext.h ${srcdir}/libintl.h
+elif test -e ${srcdir}/libgettext.h -a ! -e libintl.h; then
+  ln -sv ${srcdir}/libgettext.h libintl.h
+elif test -e libgettext.h -a ! -e ${srcdir}/libintl.h; then
+  ln -sv libgettext.h ${srcdir}/libintl.h
+fi
+ ;;
+    "config_status_vpath_build_fix":C)
+if test "${srcdir}" != "."; then
+  if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
+    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+  elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
+    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+  fi
+fi
+ ;;
 
   esac
 done # for ac_tag
@@ -23313,11 +23331,3 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
 
-
-if test "${srcdir}" != "."; then
-  if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
-    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
-  elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
-    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
-  fi
-fi

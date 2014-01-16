@@ -3,7 +3,7 @@ dnl# Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.13])
 
-AC_INIT([libtcl_cygwin],[8.4],[])
+AC_INIT([libtcl_cygwin],[8.4],[tromey@cygnus.com])
 AC_CONFIG_SRCDIR([Makefile.in])
 AC_CONFIG_HEADERS([config.h])
 AC_CANONICAL_TARGET

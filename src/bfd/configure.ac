@@ -1242,34 +1242,27 @@ dnl# We need this duplication, even though we use AM_PO_SUBDIRS, because of
 dnl# our two separate POTFILES. Yuck.
 AC_CONFIG_COMMANDS([default-2],
 [[
-case "$srcdir" in
+case "${srcdir}" in
   .) srcdirpre= ;;
   *) srcdirpre='$(srcdir)/' ;;
 esac
-POFILES=
-GMOFILES=
-for lang in dummy $OBSOLETE_ALL_LINGUAS; do
-  if test $lang != dummy; then
-    POFILES="$POFILES $srcdirpre$lang.po"
-    GMOFILES="$GMOFILES $srcdirpre$lang.gmo"
+POFILES=""
+GMOFILES=""
+for lang in dummy ${OBSOLETE_ALL_LINGUAS}; do
+  if test ${lang} != dummy; then
+    POFILES="${POFILES} ${srcdirpre}${lang}.po"
+    GMOFILES="${GMOFILES} ${srcdirpre}${lang}.gmo"
   fi
 done
 if test ! -e po/Makefile; then
   sed -e '/SRC-POTFILES =/r po/SRC-POTFILES' \
       -e '/BLD-POTFILES =/r po/BLD-POTFILES' \
-      -e "s,@POFILES@,$POFILES," \
-      -e "s,@GMOFILES@,$GMOFILES," \
+      -e "s,@POFILES@,${POFILES}," \
+      -e "s,@GMOFILES@,${GMOFILES}," \
       po/Makefile.in > po/Makefile
 fi]],[[]])
 
-dnl# Required by html, pdf, install-pdf and install-html
-AC_SUBST([datarootdir])
-AC_SUBST([docdir])
-AC_SUBST([htmldir])
-AC_SUBST([pdfdir])
-
-AC_OUTPUT
-
+AC_CONFIG_COMMANDS([config_status_vpath_build_fix],[
 if test "${srcdir}" != "."; then
   if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
     cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
@@ -1277,7 +1270,9 @@ if test "${srcdir}" != "."; then
     cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
   fi
 fi
+],[])
 
+AC_CONFIG_COMMANDS([bfd_h_vpath_fix],[
 if test ! -e bfd.h; then
   if test -e doc/bfd.h; then
     cp -v doc/bfd.h bfd.h || echo ""
@@ -1289,7 +1284,9 @@ if test ! -e bfd.h; then
     fi
   fi
 fi
+],[])
 
+AC_CONFIG_COMMANDS([bfd_h_vpath_fix2],[
 if test ! -e ${srcdir}/bfd.h; then
   if test -e ${srcdir}/doc/bfd.h; then
     cp -v ${srcdir}/doc/bfd.h ${srcdir}/bfd.h || echo ""
@@ -1301,7 +1298,9 @@ if test ! -e ${srcdir}/bfd.h; then
     fi
   fi
 fi
+],[])
 
+AC_CONFIG_COMMANDS([libtool_lengthening_hack_fix1],[
 # Hack for when the configure script generates a libtool that is too short:
 if test -e libtool -a -e libtool.old; then
   stat libtool > /dev/null
@@ -1329,7 +1328,9 @@ elif test ! -e libtool -a ! -e libtool.old; then
 else
   echo "this should not happen"
 fi
+],[])
 
+AC_CONFIG_COMMANDS([libtool_lengthening_hack_fix2],[
 # Also try the hack from ../opcodes here as well:
 changequote(,)
 # The "1000" is just an arbitrarily chosen number that is usually right
@@ -1338,7 +1339,7 @@ changequote([,])
   echo "even after all that libtool is still too short"
   echo "trying to create a new one in a different way this time"
   if test -x ../ltconfig; then
-    # I have no clue why this is a thing:
+    # I have no clue why this is even a thing that I have to check for:
     if test -e /mount/endor/wildenhu/local-x86_64/bin/sed; then
       if test -r ../ltmain.sh; then
         ../ltconfig ../ltmain.sh
@@ -1356,3 +1357,12 @@ changequote([,])
     echo "unable to do so: ../ltconfig is missing and/or unusable"
   fi
 fi
+],[])
+
+dnl# Required by html, pdf, install-pdf and install-html
+AC_SUBST([datarootdir])
+AC_SUBST([docdir])
+AC_SUBST([htmldir])
+AC_SUBST([pdfdir])
+
+AC_OUTPUT

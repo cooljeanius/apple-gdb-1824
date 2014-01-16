@@ -27,8 +27,8 @@
    as this will allow us to read in and parse 64bit and 32bit ELF files.
    Only do this if we believe that the compiler can support a 64 bit
    data type.  For now we only rely on GCC being able to do this.  */
-#define BFD64
-#endif
+# define BFD64
+#endif /* __GNUC__ >= 2 */
 
 #include "bfd.h"
 #include "elfcomm.h"
@@ -83,12 +83,13 @@ update_elf_header (const char *file_name, FILE *file)
     }
 
   /* Return if e_machine is the same as output_elf_machine.  */
-  if (output_elf_machine == elf_header.e_machine)
-    return 1;
+	if (output_elf_machine == elf_header.e_machine) {
+		return 1;
+	}
 
   class = elf_header.e_ident[EI_CLASS];
 
-  /* Skip if class doesn't match. */
+  /* Skip if class does NOT match. */
   if (input_elf_class != -1 && class != input_elf_class)
     {
       error
@@ -99,7 +100,7 @@ update_elf_header (const char *file_name, FILE *file)
 
   machine = elf_header.e_machine;
 
-  /* Skip if e_machine doesn't match. */
+  /* Skip if e_machine does NOT match. */
   if (input_elf_machine != -1 && machine != input_elf_machine)
     {
       error
@@ -110,7 +111,7 @@ update_elf_header (const char *file_name, FILE *file)
 
   type = elf_header.e_type;
 
-  /* Skip if e_type doesn't match. */
+  /* Skip if e_type does NOT match. */
   if (input_elf_type != -1 && type != input_elf_type)
     {
       error
@@ -121,7 +122,7 @@ update_elf_header (const char *file_name, FILE *file)
 
   osabi = elf_header.e_ident[EI_OSABI];
 
-  /* Skip if OSABI doesn't match. */
+  /* Skip if OSABI does NOT match. */
   if (input_elf_osabi != -1 && osabi != input_elf_osabi)
     {
       error
@@ -659,10 +660,10 @@ main (int argc, char ** argv)
 
 #if defined (HAVE_SETLOCALE) && defined (HAVE_LC_MESSAGES)
   setlocale (LC_MESSAGES, "");
-#endif
+#endif /* HAVE_SETLOCALE && HAVE_LC_MESSAGES */
 #if defined (HAVE_SETLOCALE)
   setlocale (LC_CTYPE, "");
-#endif
+#endif /* HAVE_SETLOCALE */
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
@@ -736,3 +737,5 @@ main (int argc, char ** argv)
 
   return status;
 }
+
+/* EOF */

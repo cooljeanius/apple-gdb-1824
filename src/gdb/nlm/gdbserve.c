@@ -16,7 +16,7 @@
 		THIS SOFTWARE IS NOT COPYRIGHTED
 
    HP offers the following for use in the public domain.  HP makes no
-   warranty with regard to the software or it's performance and the
+   warranty with regard to the software or its performance and the
    user accepts the software "AS IS" with all faults.
 
    HP DISCLAIMS ANY WARRANTIES, EXPRESS OR IMPLIED, WITH REGARD
@@ -91,7 +91,7 @@
 # include <nwadv.h>
 # include <nwdbgapi.h>
 # include <nwthread.h>
-#endif
+#endif /* __i386__ */
 
 #include <aio.h>
 #include "cpu.h"
@@ -757,7 +757,7 @@ struct bitRate {
   const char *bitRateString;
 };
 
-struct bitRate bitRateTable[] = 
+struct bitRate bitRateTable[] =
 {
   { AIO_BAUD_50    ,      "50" },
   { AIO_BAUD_75    ,      "75" },
@@ -822,39 +822,39 @@ main (int argc, char **argv)
   parityMode = AIO_PARITY_NONE;
 
   cmdindx = 0;
-  for (argc--, argv++; *argv; argc--, argv++) 
+  for (argc--, argv++; *argv; argc--, argv++)
     {
       char *bp;
       char *ep;
 
-      if (strnicmp(*argv, "BAUD=", 5) == 0) 
+      if (strnicmp(*argv, "BAUD=", 5) == 0)
 	{
 	  struct bitRate *brp;
 
 	  bp = *argv + 5;
-	  for (brp = bitRateTable; brp->bitRate != (BYTE) -1; brp++) 
+	  for (brp = bitRateTable; brp->bitRate != (BYTE) -1; brp++)
 	    {
-	      if (strcmp(brp->bitRateString, bp) == 0) 
+	      if (strcmp(brp->bitRateString, bp) == 0)
 		{
 		  bitRate = brp->bitRate;
 		  break;
 		}
 	    }
 
-	  if (brp->bitRateString == NULL) 
+	  if (brp->bitRateString == NULL)
 	    {
 	      fprintf(stderr, "%s: %s: unknown or unsupported bit rate",
 		      progname, bp);
 	      exit (1);
 	    }
 	}
-      else if (strnicmp(*argv, "BOARD=", 6) == 0) 
+      else if (strnicmp(*argv, "BOARD=", 6) == 0)
         {
 	  bp = *argv + 6;
 	  board = strtol (bp, &ep, 0);
-	  if (ep == bp || *ep != '\0') 
+	  if (ep == bp || *ep != '\0')
 	    {
-	      fprintf (stderr, "%s: %s: expected integer argument\n", 
+	      fprintf (stderr, "%s: %s: expected integer argument\n",
 		       progname, bp);
 	      exit(1);
 	    }
@@ -864,9 +864,9 @@ main (int argc, char **argv)
 	{
 	  bp = *argv + 5;
 	  board = strtol (bp, &ep, 0);
-	  if (ep == bp || *ep != '\0') 
+	  if (ep == bp || *ep != '\0')
 	    {
-	      fprintf (stderr, "%s: %s: expected integer argument\n", 
+	      fprintf (stderr, "%s: %s: expected integer argument\n",
 		       progname, bp);
 	      exit(1);
 	    }
@@ -878,7 +878,7 @@ main (int argc, char **argv)
 	  port = strtol (bp, &ep, 0);
 	  if (ep == bp || *ep != '\0')
 	    {
-	      fprintf (stderr, "%s: %s: expected integer argument\n", 
+	      fprintf (stderr, "%s: %s: expected integer argument\n",
 		       progname, bp);
 	      exit(1);
 	    }
@@ -956,7 +956,7 @@ main (int argc, char **argv)
 
       fprintf (stderr, "Could not set desired port controls!\n");
       AIOGetExternalStatus (AIOhandle, &extStatus, &chgdExtStatus);
-      fprintf (stderr, "Port controls now: %d, %d\n", extStatus, 
+      fprintf (stderr, "Port controls now: %d, %d\n", extStatus,
 	       chgdExtStatus);
     }
 
@@ -993,7 +993,7 @@ main (int argc, char **argv)
       while (isspace (*cmdlin))
 	++cmdlin;
     }
-  
+
   /* In case GDB is started before us, ack any packets (presumably
      "$?#xx") sitting there.  */
   if (! putDebugChar ('+'))

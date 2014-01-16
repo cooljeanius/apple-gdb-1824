@@ -7274,7 +7274,7 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
 
 
   case $ac_file$ac_mode in
-    "default":C) case x$CONFIG_HEADERS in xcconfig.h:config.in) echo > stamp-h ;; esac ;;
+    "default":C) case x${CONFIG_HEADERS} in xcconfig.h:config.in) echo > stamp-h ;; esac ;;
 
   esac
 done # for ac_tag

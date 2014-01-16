@@ -155,6 +155,7 @@ AH_TOP([
 #define _INCLUDING_CONFIG_H
 ])
 
+AC_CONFIG_COMMANDS([libintl_h_compat],[
 if test -e libgettext.h -a ! -e libintl.h; then
   ln -sv libgettext.h libintl.h
 elif test -e ${srcdir}/libgettext.h -a ! -e ${srcdir}/libintl.h; then
@@ -164,14 +165,9 @@ elif test -e ${srcdir}/libgettext.h -a ! -e libintl.h; then
 elif test -e libgettext.h -a ! -e ${srcdir}/libintl.h; then
   ln -sv libgettext.h ${srcdir}/libintl.h
 fi
+],[])
 
-AC_CONFIG_FILES([Makefile \
-                 Makefile.orig \
-                 po/Makefile.in \
-                 po/Makevars \
-                 po2tbl.sed])
-AC_OUTPUT
-
+AC_CONFIG_COMMANDS([config_status_vpath_build_fix],[
 if test "${srcdir}" != "."; then
   if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
     cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
@@ -179,3 +175,11 @@ if test "${srcdir}" != "."; then
     cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
   fi
 fi
+],[])
+
+AC_CONFIG_FILES([Makefile \
+                 Makefile.orig \
+                 po/Makefile.in \
+                 po/Makevars \
+                 po2tbl.sed])
+AC_OUTPUT

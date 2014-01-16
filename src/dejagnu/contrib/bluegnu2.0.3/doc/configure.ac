@@ -2,7 +2,7 @@ dnl#                                               -*- Autoconf -*-
 dnl# Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([bluegnu-doc],[2.0.3])
+AC_INIT([bluegnu-doc],[2.0.3],[neurdenburgj@acm.org])
 AC_CONFIG_SRCDIR([dejagnu.texi])
 
 # Checks for programs.

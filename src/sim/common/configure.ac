@@ -88,5 +88,5 @@ AC_CHECK_FUNCS([fprintf isascii])
 AC_SUBST([LDFLAGS])
 
 AC_CONFIG_FILES([Makefile])
-AC_CONFIG_COMMANDS([default],[case x$CONFIG_HEADERS in xcconfig.h:config.in) echo > stamp-h ;; esac],[])
+AC_CONFIG_COMMANDS([default],[case x${CONFIG_HEADERS} in xcconfig.h:config.in) echo > stamp-h ;; esac],[])
 AC_OUTPUT

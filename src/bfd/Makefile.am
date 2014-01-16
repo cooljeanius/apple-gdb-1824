@@ -35,7 +35,7 @@ NO_WERROR = @NO_WERROR@
 AM_CFLAGS = $(WARN_CFLAGS)
 MY_AM_CPPFLAGS_EXTRA = -DBINDIR='"$(bindir)"'
 AM_WARNFLAGS = $(WARN_CFLAGS)
-AM_LIBTOOL_FLAGS = --no-silent --verbose
+AM_LIBTOOLFLAGS = --no-silent --verbose
 
 # bfd.h goes here, for now
 BFD_H = bfd.h

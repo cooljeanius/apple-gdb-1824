@@ -40535,6 +40535,10 @@ ac_config_files="$ac_config_files Makefile data-directory/Makefile .gdbinit:gdbi
 
 ac_config_commands="$ac_config_commands default"
 
+
+ac_config_commands="$ac_config_commands config_status_vpath_build_fix"
+
+
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -42113,6 +42117,7 @@ do
     "gcore") CONFIG_FILES="$CONFIG_FILES gcore" ;;
     "gdb-gdb.gdb") CONFIG_FILES="$CONFIG_FILES gdb-gdb.gdb" ;;
     "default") CONFIG_COMMANDS="$CONFIG_COMMANDS default" ;;
+    "config_status_vpath_build_fix") CONFIG_COMMANDS="$CONFIG_COMMANDS config_status_vpath_build_fix" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -44447,6 +44452,15 @@ xconfig.h:config.in)
 echo > stamp-h ;;
 esac
  ;;
+    "config_status_vpath_build_fix":C)
+if test "${srcdir}" != "."; then
+  if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
+    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+  elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
+    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+  fi
+fi
+ ;;
 
   esac
 done # for ac_tag
@@ -44630,13 +44644,5 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
 
-
-if test "${srcdir}" != "."; then
-  if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
-    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
-  elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
-    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
-  fi
-fi
 
 exit 0

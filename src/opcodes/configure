@@ -20589,6 +20589,15 @@ ac_config_files="$ac_config_files Makefile po/Makefile.in:po/Make-in"
 ac_config_commands="$ac_config_commands default"
 
 
+ac_config_commands="$ac_config_commands config_status_vpath_build_fix"
+
+
+ac_config_commands="$ac_config_commands libtool_lengthening_hack_fix1"
+
+
+ac_config_commands="$ac_config_commands libtool_lengthening_hack_fix2"
+
+
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -21726,6 +21735,9 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "po/Makefile.in") CONFIG_FILES="$CONFIG_FILES po/Makefile.in:po/Make-in" ;;
     "default") CONFIG_COMMANDS="$CONFIG_COMMANDS default" ;;
+    "config_status_vpath_build_fix") CONFIG_COMMANDS="$CONFIG_COMMANDS config_status_vpath_build_fix" ;;
+    "libtool_lengthening_hack_fix1") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool_lengthening_hack_fix1" ;;
+    "libtool_lengthening_hack_fix2") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool_lengthening_hack_fix2" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -23327,6 +23339,71 @@ _LT_EOF
       esac
     done ;;
     "default":C) sed -e '/POTFILES =/r po/POTFILES' po/Makefile.in > po/Makefile ;;
+    "config_status_vpath_build_fix":C)
+if test "${srcdir}" != "."; then
+  if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
+    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+  elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
+    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+  fi
+fi
+ ;;
+    "libtool_lengthening_hack_fix1":C)
+# Hack in case libtool is too short:
+
+# The "1000" is just an arbitrarily chosen number that is usually right
+if test "$(wc -l < libtool | tr -d [:blank:])" -lt "1000"; then
+
+  echo "libtool is too short, trying to create a new one"
+  if test -x ../ltconfig; then
+    # I have no clue why this is a thing:
+    if test -e /mount/endor/wildenhu/local-x86_64/bin/sed; then
+      if test -r ../ltmain.sh; then
+        ../ltconfig ../ltmain.sh
+      elif test -r ../ltmain-old.sh; then
+        ../ltconfig ../ltmain-old.sh
+      elif test -r ../ltcf-c.sh; then
+        ../ltconfig ../ltmain-old.sh
+      else
+        echo "not sure which ltmain.sh to use to do so"
+      fi
+    else
+      echo "actually never mind (for now)"
+    fi
+  else
+    echo "unable to do so: ../ltconfig is missing and/or unusable"
+  fi
+fi
+ ;;
+    "libtool_lengthening_hack_fix2":C)
+# Also try the hack from ../bfd here as well:
+if test -e libtool -a -e libtool.old; then
+  stat libtool > /dev/null
+  stat libtool.old > /dev/null
+
+  if test "$(wc -l < libtool.old | tr -d [:blank:])" -gt "$(wc -l < libtool | tr -d [:blank:])"; then
+
+    echo "libtool.old is longer than libtool"
+    echo "that means that it is probably the better one to use"
+    cp -vf libtool.old libtool
+  else
+    echo "libtool.old is NOT longer than libtool"
+    echo "leaving it alone..."
+  fi
+elif test -e libtool.old -a ! -e libtool; then
+  stat libtool.old > /dev/null
+  echo "libtool is not present, but libtool.old is"
+  echo "so use libtool.old instead"
+  cp -v libtool.old libtool
+elif test -e libtool -a ! -e libtool.old; then
+  stat libtool > /dev/null
+  echo "using default libtool"
+elif test ! -e libtool -a ! -e libtool.old; then
+  echo "no libtool found"
+else
+  echo "this should not happen"
+fi
+ ;;
 
   esac
 done # for ac_tag
@@ -23365,65 +23442,3 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
 $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
 
-
-if test "${srcdir}" != "."; then
-  if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
-    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
-  elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
-    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
-  fi
-fi
-
-# Hack in case libtool is too short:
-
-# The "1000" is just an arbitrarily chosen number that is usually right
-if test "$(wc -l < libtool | tr -d [:blank:])" -lt "1000"; then
-
-  echo "libtool is too short, trying to create a new one"
-  if test -x ../ltconfig; then
-    # I have no clue why this is a thing:
-    if test -e /mount/endor/wildenhu/local-x86_64/bin/sed; then
-      if test -r ../ltmain.sh; then
-        ../ltconfig ../ltmain.sh
-      elif test -r ../ltmain-old.sh; then
-        ../ltconfig ../ltmain-old.sh
-      elif test -r ../ltcf-c.sh; then
-        ../ltconfig ../ltmain-old.sh
-      else
-        echo "not sure which ltmain.sh to use to do so"
-      fi
-    else
-      echo "actually never mind (for now)"
-    fi
-  else
-    echo "unable to do so: ../ltconfig is missing and/or unusable"
-  fi
-fi
-
-# Also try the hack from ../bfd here as well:
-if test -e libtool -a -e libtool.old; then
-  stat libtool > /dev/null
-  stat libtool.old > /dev/null
-
-  if test "$(wc -l < libtool.old | tr -d [:blank:])" -gt "$(wc -l < libtool | tr -d [:blank:])"; then
-
-    echo "libtool.old is longer than libtool"
-    echo "that means that it is probably the better one to use"
-    cp -vf libtool.old libtool
-  else
-    echo "libtool.old is NOT longer than libtool"
-    echo "leaving it alone..."
-  fi
-elif test -e libtool.old -a ! -e libtool; then
-  stat libtool.old > /dev/null
-  echo "libtool is not present, but libtool.old is"
-  echo "so use libtool.old instead"
-  cp -v libtool.old libtool
-elif test -e libtool -a ! -e libtool.old; then
-  stat libtool > /dev/null
-  echo "using default libtool"
-elif test ! -e libtool -a ! -e libtool.old; then
-  echo "no libtool found"
-else
-  echo "this should not happen"
-fi

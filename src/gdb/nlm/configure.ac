@@ -2,7 +2,8 @@ dnl#                                               -*- Autoconf -*-
 dnl# Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.12.1])dnl
-AC_INIT([gdbserve-nlm],[4.12],[])
+AC_INIT([gdbserve-nlm],[4.12],[martin@hinner.info])
+dnl# bug report address is from the pdf in nlm-doc
 AC_CONFIG_SRCDIR([gdbserve.c])
 AC_CONFIG_HEADERS([config.h])
 

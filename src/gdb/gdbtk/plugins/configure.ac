@@ -1,7 +1,9 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([insight-plugins],[1.0],[])
+AC_INIT([insight-plugins],[1.0],[keiths@redhat.com])
+dnl# bug report address is last person to touch this directory
+dnl# according to the ChangeLog in this directory
 AC_CONFIG_SRCDIR([Make-rules])
 AC_CONFIG_AUX_DIR([../../..])
 AC_CONFIG_MACRO_DIR([../../m4])

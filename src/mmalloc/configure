@@ -5025,7 +5025,7 @@ esac
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${PAGECHECK_SRC}" >&5
 $as_echo "${PAGECHECK_SRC}" >&6; }
 
-ac_config_headers="$ac_config_headers config.h:config.in"
+ac_config_headers="$ac_config_headers config.h"
 
 ac_config_files="$ac_config_files Makefile"
 
@@ -5721,7 +5721,7 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
-    "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h:config.in" ;;
+    "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;

@@ -1,7 +1,8 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_INIT([insight],[1.0],[])
+AC_INIT([insight],[1.0],[insight@sources.redhat.com])
+dnl# bug report address taken from README
 AC_CONFIG_SRCDIR([generic/gdbtk.h])
 AC_CONFIG_AUX_DIR([../..])
 AC_CONFIG_MACRO_DIR([../m4])

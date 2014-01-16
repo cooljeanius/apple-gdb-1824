@@ -25,6 +25,8 @@ dnl# Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.59])dnl
 
 AC_INIT([gdbserver],[1824],[gclayton@apple.com])
+dnl# bug report address is email address of last person to touch this
+dnl# directory, according to the Changelog-Apple in this directory
 AC_CONFIG_SRCDIR([server.c])
 AC_CONFIG_HEADER([config.h])
 AM_SANITY_CHECK

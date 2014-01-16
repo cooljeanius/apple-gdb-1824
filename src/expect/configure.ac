@@ -9,7 +9,7 @@ define([AC_CACHE_SAVE],[])
 dnl# END CYGNUS LOCAL
 
 AC_PREREQ([2.69])
-AC_INIT([expect],[5.26],[])
+AC_INIT([expect],[5.26],[libes@nist.gov])
 AC_CONFIG_SRCDIR([expect.h])
 
 dnl# CYGNUS LOCAL: find aux files in ..
