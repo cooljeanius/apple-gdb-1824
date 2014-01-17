@@ -1,4 +1,5 @@
-/* BFD back-end for Intel 386 COFF files.
+/* coff-i386.c
+   BFD back-end for Intel 386 COFF files.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
    2000, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
@@ -29,12 +30,12 @@
 #include "coff/internal.h"
 
 #ifdef COFF_WITH_PE
-#include "coff/pe.h"
-#endif
+# include "coff/pe.h"
+#endif /* COFF_WITH_PE */
 
 #ifdef COFF_GO32_EXE
-#include "coff/go32exe.h"
-#endif
+# include "coff/go32exe.h"
+#endif /* COFF_GO32_EXE */
 
 #include "libcoff.h"
 
@@ -75,36 +76,37 @@ coff_i386_reloc (abfd, reloc_entry, symbol, data, input_section, output_bfd,
   symvalue diff;
 
 #ifndef COFF_WITH_PE
-  if (output_bfd == (bfd *) NULL)
-    return bfd_reloc_continue;
-#endif
+	if (output_bfd == (bfd *) NULL) {
+		return bfd_reloc_continue;
+	}
+#endif /* !COFF_WITH_PE */
 
   if (bfd_is_com_section (symbol->section))
     {
 #ifndef COFF_WITH_PE
-      /* We are relocating a common symbol.  The current value in the
-	 object file is ORIG + OFFSET, where ORIG is the value of the
-	 common symbol as seen by the object file when it was compiled
-	 (this may be zero if the symbol was undefined) and OFFSET is
-	 the offset into the common symbol (normally zero, but may be
-	 non-zero when referring to a field in a common structure).
-	 ORIG is the negative of reloc_entry->addend, which is set by
-	 the CALC_ADDEND macro below.  We want to replace the value in
-	 the object file with NEW + OFFSET, where NEW is the value of
-	 the common symbol which we are going to put in the final
-	 object file.  NEW is symbol->value.  */
+      /* We are relocating a common symbol. The current value in the
+	   * object file is ORIG + OFFSET, where ORIG is the value of the
+	   * common symbol as seen by the object file when it was compiled
+	   * (this may be zero if the symbol was undefined) and OFFSET is
+	   * the offset into the common symbol (normally zero, but may be
+	   * non-zero when referring to a field in a common structure).
+	   * ORIG is the negative of reloc_entry->addend, which is set by
+	   * the CALC_ADDEND macro below. We want to replace the value in
+	   * the object file with NEW + OFFSET, where NEW is the value of
+	   * the common symbol which we are going to put in the final
+	   * object file.  NEW is symbol->value.  */
       diff = symbol->value + reloc_entry->addend;
 #else
       /* In PE mode, we do not offset the common symbol.  */
       diff = reloc_entry->addend;
-#endif
+#endif /* !COFF_WITH_PE */
     }
   else
     {
       /* For some reason bfd_perform_relocation always effectively
-	 ignores the addend for a COFF target when producing
-	 relocatable output.  This seems to be always wrong for 386
-	 COFF, so we handle the addend here instead.  */
+	   * ignores the addend for a COFF target when producing
+	   * relocatable output.  This seems to be always wrong for 386
+	   * COFF, so we handle the addend here instead.  */
 #ifdef COFF_WITH_PE
       if (output_bfd == (bfd *) NULL)
 	{
@@ -117,15 +119,16 @@ coff_i386_reloc (abfd, reloc_entry, symbol, data, input_section, output_bfd,
 	     When we link PE and non-PE object files together to
 	     generate a non-PE executable, we have to compensate it
 	     here.  */
-	  if (howto->pc_relative && howto->pcrel_offset)
-	    diff = -(1 << howto->size);
-	  else if (symbol->flags & BSF_WEAK)
-	    diff = reloc_entry->addend - symbol->value;
-	  else
-	    diff = -reloc_entry->addend;
+		if (howto->pc_relative && howto->pcrel_offset) {
+			diff = -(1 << howto->size);
+		} else if (symbol->flags & BSF_WEAK) {
+			diff = reloc_entry->addend - symbol->value;
+		} else {
+			diff = -reloc_entry->addend;
+		}
 	}
       else
-#endif
+#endif /* COFF_WITH_PE */
 	diff = reloc_entry->addend;
     }
 
@@ -133,9 +136,10 @@ coff_i386_reloc (abfd, reloc_entry, symbol, data, input_section, output_bfd,
   /* FIXME: How should this case be handled?  */
   if (reloc_entry->howto->type == R_IMAGEBASE
       && output_bfd != NULL
-      && bfd_get_flavour(output_bfd) == bfd_target_coff_flavour)
-    diff -= pe_data (output_bfd)->pe_opthdr.ImageBase;
-#endif
+      && bfd_get_flavour(output_bfd) == bfd_target_coff_flavour) {
+	  diff -= pe_data (output_bfd)->pe_opthdr.ImageBase;
+  }
+#endif /* COFF_WITH_PE */
 
 #define DOIT(x) \
   x = ((x & ~howto->dst_mask) | (((x & howto->src_mask) + diff) & howto->dst_mask))
@@ -195,8 +199,8 @@ static bfd_boolean in_reloc_p (abfd, howto)
 #endif /* COFF_WITH_PE */
 
 #ifndef PCRELOFFSET
-#define PCRELOFFSET FALSE
-#endif
+# define PCRELOFFSET FALSE
+#endif /* !PCRELOFFSET */
 
 static reloc_howto_type howto_table[] =
 {
@@ -253,7 +257,7 @@ static reloc_howto_type howto_table[] =
 	 TRUE),			/* pcrel_offset */
 #else
   EMPTY_HOWTO (013),
-#endif
+#endif /* COFF_WITH_PE */
   EMPTY_HOWTO (014),
   EMPTY_HOWTO (015),
   EMPTY_HOWTO (016),
@@ -393,8 +397,8 @@ static reloc_howto_type howto_table[] =
       cache_ptr->addend += asect->vma;				\
   }
 
-/* We use the special COFF backend linker.  For normal i386 COFF, we
-   can use the generic relocate_section routine.  For PE, we need our
+/* We use the special COFF backend linker. For normal i386 COFF, we
+   can use the generic relocate_section routine. For PE, we need our
    own routine.  */
 
 #ifndef COFF_WITH_PE
@@ -403,8 +407,8 @@ static reloc_howto_type howto_table[] =
 
 #else /* COFF_WITH_PE */
 
-/* The PE relocate section routine.  The only difference between this
-   and the regular routine is that we don't want to do anything for a
+/* The PE relocate section routine. The only difference between this
+   and the regular routine is that we do NOT want to do anything for a
    relocatable link.  */
 
 static bfd_boolean coff_pe_i386_relocate_section
@@ -424,8 +428,9 @@ coff_pe_i386_relocate_section (output_bfd, info, input_bfd,
      struct internal_syment *syms;
      asection **sections;
 {
-  if (info->relocatable)
-    return TRUE;
+	if (info->relocatable) {
+		return TRUE;
+	}
 
   return _bfd_coff_generic_relocate_section (output_bfd, info, input_bfd,
 					     input_section, contents,
@@ -460,40 +465,41 @@ coff_i386_rtype_to_howto (abfd, sec, rel, h, sym, addendp)
 #ifdef COFF_WITH_PE
   /* Cancel out code in _bfd_coff_generic_relocate_section.  */
   *addendp = 0;
-#endif
+#endif /* COFF_WITH_PE */
 
   if (howto->pc_relative)
     *addendp += sec->vma;
 
   if (sym != NULL && sym->n_scnum == 0 && sym->n_value != 0)
     {
-      /* This is a common symbol.  The section contents include the
-	 size (sym->n_value) as an addend.  The relocate_section
-	 function will be adding in the final value of the symbol.  We
-	 need to subtract out the current size in order to get the
-	 correct result.  */
+      /* This is a common symbol. The section contents include the
+	   * size (sym->n_value) as an addend. The relocate_section
+	   * function will be adding in the final value of the symbol. We
+	   * need to subtract out the current size in order to get the
+	   * correct result.  */
 
       BFD_ASSERT (h != NULL);
 
 #ifndef COFF_WITH_PE
-      /* I think we *do* want to bypass this.  If we don't, I have
-	 seen some data parameters get the wrong relocation address.
-	 If I link two versions with and without this section bypassed
-	 and then do a binary comparison, the addresses which are
-	 different can be looked up in the map.  The case in which
-	 this section has been bypassed has addresses which correspond
-	 to values I can find in the map.  */
+      /* I think we *do* want to bypass this. If we do NOT, I have
+	   * seen some data parameters get the wrong relocation address.
+	   * If I link two versions with and without this section bypassed
+	   * and then do a binary comparison, the addresses which are
+	   * different can be looked up in the map. The case in which
+	   * this section has been bypassed has addresses which correspond
+	   * to values I can find in the map.  */
       *addendp -= sym->n_value;
-#endif
+#endif /* !COFF_WITH_PE */
     }
 
 #ifndef COFF_WITH_PE
   /* If the output symbol is common (in which case this must be a
      relocatable link), we need to add in the final size of the
      common symbol.  */
-  if (h != NULL && h->root.type == bfd_link_hash_common)
-    *addendp += h->root.u.c.size;
-#endif
+	if (h != NULL && h->root.type == bfd_link_hash_common) {
+		*addendp += h->root.u.c.size;
+	}
+#endif /* !COFF_WITH_PE */
 
 #ifdef COFF_WITH_PE
   if (howto->pc_relative)
@@ -506,8 +512,9 @@ coff_i386_rtype_to_howto (abfd, sec, rel, h, sym, addendp)
          to 0 at the start of this function.  We need to adjust here,
          to avoid the adjustment the generic code will make.  FIXME:
          This is getting a bit hackish.  */
-      if (sym != NULL && sym->n_scnum != 0)
-	*addendp -= sym->n_value;
+		if (sym != NULL && sym->n_scnum != 0) {
+			*addendp -= sym->n_value;
+		}
     }
 
   if (rel->r_type == R_IMAGEBASE
@@ -522,25 +529,25 @@ coff_i386_rtype_to_howto (abfd, sec, rel, h, sym, addendp)
       bfd_vma osect_vma;
 
       if (h && (h->type == bfd_link_hash_defined
-		|| h->type == bfd_link_hash_defweak))
-	osect_vma = h->root.u.def.section->output_section->vma;
-      else
-	{
+			|| h->type == bfd_link_hash_defweak)) {
+		  osect_vma = h->root.u.def.section->output_section->vma;
+      } else {
 	  asection *sec;
 	  int i;
 
 	  /* Sigh, the only way to get the section to offset against
 	     is to find it the hard way.  */
 
-	  for (sec = abfd->sections, i = 1; i < sym->n_scnum; i++)
-	    sec = sec->next;
+		for (sec = abfd->sections, i = 1; i < sym->n_scnum; i++) {
+			sec = sec->next;
+		}
 
 	  osect_vma = sec->output_section->vma;
 	}
 
       *addendp -= osect_vma;
     }
-#endif
+#endif /* COFF_WITH_PE */
 
   return howto;
 }
@@ -571,7 +578,7 @@ coff_i386_reloc_type_lookup (abfd, code)
 #ifdef COFF_WITH_PE
     case BFD_RELOC_32_SECREL:
       return howto_table + R_SECREL32;
-#endif
+#endif /* COFF_WITH_PE */
     default:
       BFD_FAIL ();
       return 0;
@@ -594,8 +601,9 @@ coff_i386_is_local_label_name (abfd, name)
      bfd *abfd;
      const char *name;
 {
-  if (name[0] == 'L')
-    return TRUE;
+	if (name[0] == 'L') {
+		return TRUE;
+	}
 
   return _bfd_coff_is_local_label_name (abfd, name);
 }
@@ -611,13 +619,13 @@ const bfd_target
   TARGET_SYM =
 #else
   i386coff_vec =
-#endif
+#endif /* TARGET_SYM */
 {
 #ifdef TARGET_NAME
   TARGET_NAME,
 #else
-  "coff-i386",			/* name */
-#endif
+  "coff-i386",	/* name */
+#endif /* TARGET_NAME */
   bfd_target_coff_flavour,
   BFD_ENDIAN_LITTLE,		/* data byte order is little */
   BFD_ENDIAN_LITTLE,		/* header byte order is little */
@@ -629,14 +637,14 @@ const bfd_target
   (SEC_HAS_CONTENTS | SEC_ALLOC | SEC_LOAD | SEC_RELOC /* section flags */
 #ifdef COFF_WITH_PE
    | SEC_LINK_ONCE | SEC_LINK_DUPLICATES | SEC_READONLY
-#endif
+#endif /* COFF_WITH_PE */
    | SEC_CODE | SEC_DATA),
 
 #ifdef TARGET_UNDERSCORE
   TARGET_UNDERSCORE,		/* leading underscore */
 #else
   0,				/* leading underscore */
-#endif
+#endif /* TARGET_UNDERSCORE */
   '/',				/* ar_pad_char */
   15,				/* ar_max_namelen */
 
@@ -647,7 +655,7 @@ const bfd_target
      bfd_getl32, bfd_getl_signed_32, bfd_putl32,
      bfd_getl16, bfd_getl_signed_16, bfd_putl16, /* hdrs */
 
-/* Note that we allow an object file to be treated as a core file as well.  */
+/* Note that we allow an object file to be treated as a core file as well. */
     {_bfd_dummy_target, coff_object_p, /* bfd_check_format */
        bfd_generic_archive_p, coff_object_p},
     {bfd_false, coff_mkobject, _bfd_generic_mkarchive, /* bfd_set_format */
@@ -655,7 +663,9 @@ const bfd_target
     {bfd_false, coff_write_object_contents, /* bfd_write_contents */
        _bfd_write_archive_contents, bfd_false},
 
+#ifdef coff_get_section_contents_in_window_with_mode
      BFD_JUMP_TABLE_GENERIC (coff),
+#endif /* coff_get_section_contents_in_window_with_mode */
      BFD_JUMP_TABLE_COPY (coff),
      BFD_JUMP_TABLE_CORE (_bfd_nocore),
      BFD_JUMP_TABLE_ARCHIVE (_bfd_archive_coff),
@@ -669,3 +679,5 @@ const bfd_target
 
   COFF_SWAP_TABLE
 };
+
+/* EOF */
