@@ -11,7 +11,7 @@ install:
 before_script: test -e ./.profile_generic && source ./.profile_generic && env | uniq | sort | uniq
 
 # try to build
-script: cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd && make && make check
+script: cd src && ./configure --with-x --disable-werror --disable-opts-test --enable-64-bit-bfd --target=i386-apple-darwin && make && make check
 
 compiler:
   - clang

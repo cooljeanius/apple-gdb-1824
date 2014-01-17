@@ -7241,7 +7241,7 @@ _bfd_elfcore_strndup (bfd *abfd, char *start, size_t max)
   return dups;
 }
 
-#if defined (HAVE_PRPSINFO_T) || defined (HAVE_PSINFO_T)
+#if (defined (HAVE_PRPSINFO_T) && defined prpsinfo_t) || (defined (HAVE_PSINFO_T) && defined psinfo_t)
 static bfd_boolean
 elfcore_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
 {
@@ -7259,7 +7259,7 @@ elfcore_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
 	= _bfd_elfcore_strndup (abfd, psinfo.pr_psargs,
 				sizeof (psinfo.pr_psargs));
     }
-# if defined (HAVE_PRPSINFO32_T) || defined (HAVE_PSINFO32_T)
+# if (defined (HAVE_PRPSINFO32_T) && defined prpsinfo32_t) || (defined (HAVE_PSINFO32_T) && defined psinfo32_t)
   else if (note->descsz == sizeof (elfcore_psinfo32_t))
     {
       /* 64-bit host, 32-bit corefile */
@@ -7275,7 +7275,7 @@ elfcore_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
 	= _bfd_elfcore_strndup (abfd, psinfo.pr_psargs,
 				sizeof (psinfo.pr_psargs));
     }
-# endif /* HAVE_PRPSINFO32_T || HAVE_PSINFO32_T */
+# endif /* (HAVE_PRPSINFO32_T && prpsinfo32_t) || (HAVE_PSINFO32_T && psinfo32_t) */
 
   else
     {
@@ -7299,7 +7299,7 @@ elfcore_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
 
   return TRUE;
 }
-#endif /* defined (HAVE_PRPSINFO_T) || defined (HAVE_PSINFO_T) */
+#endif /* (defined (HAVE_PRPSINFO32_T) && defined prpsinfo32_t) || (defined (HAVE_PSINFO32_T) && defined psinfo32_t) */
 
 #if defined (HAVE_PSTATUS_T) && defined pstatus_t
 static bfd_boolean
@@ -7526,18 +7526,18 @@ elfcore_grok_note (bfd *abfd, Elf_Internal_Note *note)
       if (bed->elf_backend_grok_prstatus)
 	if ((*bed->elf_backend_grok_prstatus) (abfd, note))
 	  return TRUE;
-#if defined (HAVE_PRSTATUS_T)
+#if defined (HAVE_PRSTATUS_T) && defined prstatus_t
       return elfcore_grok_prstatus (abfd, note);
 #else
       return TRUE;
-#endif /* HAVE_PRSTATUS_T */
+#endif /* HAVE_PRSTATUS_T && prstatus_t */
 
-#if defined (HAVE_PSTATUS_T)
+#if defined (HAVE_PSTATUS_T) && defined pstatus_t
     case NT_PSTATUS:
       return elfcore_grok_pstatus (abfd, note);
-#endif /* HAVE_PSTATUS_T */
+#endif /* HAVE_PSTATUS_T && pstatus_t */
 
-#if defined (HAVE_LWPSTATUS_T)
+#if defined (HAVE_LWPSTATUS_T) && defined lwpstatus_t
     case NT_LWPSTATUS:
       return elfcore_grok_lwpstatus (abfd, note);
 #endif /* HAVE_LWPSTATUS_T */
@@ -7545,10 +7545,10 @@ elfcore_grok_note (bfd *abfd, Elf_Internal_Note *note)
     case NT_FPREGSET:		/* FIXME: rename to NT_PRFPREG */
       return elfcore_grok_prfpreg (abfd, note);
 
-#if defined (HAVE_WIN32_PSTATUS_T)
+#if defined (HAVE_WIN32_PSTATUS_T) && defined win32_pstatus_t
     case NT_WIN32PSTATUS:
       return elfcore_grok_win32pstatus (abfd, note);
-#endif /* HAVE_WIN32_PSTATUS_T */
+#endif /* HAVE_WIN32_PSTATUS_T && win32_pstatus_t */
 
     case NT_PRXFPREG:		/* Linux SSE extension */
       if (note->namesz == 6
@@ -7564,11 +7564,11 @@ elfcore_grok_note (bfd *abfd, Elf_Internal_Note *note)
 		  if ((*bed->elf_backend_grok_psinfo) (abfd, note)) {
 			  return TRUE;
 		  }
-#if defined (HAVE_PRPSINFO_T) || defined (HAVE_PSINFO_T)
+#if (defined (HAVE_PRPSINFO_T) && defined prpsinfo_t) || (defined (HAVE_PSINFO_T) && defined psinfo_t)
       return elfcore_grok_psinfo (abfd, note);
 #else
       return TRUE;
-#endif /* HAVE_PRPSINFO_T || HAVE_PSINFO_T */
+#endif /* (HAVE_PRPSINFO_T && prpsinfo_t) || (HAVE_PSINFO_T && psinfo_t) */
 
     case NT_AUXV:
       {

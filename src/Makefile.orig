@@ -29,10 +29,10 @@ build_alias=
 build=x86_64-apple-darwin10.8.0
 host_alias=
 host=x86_64-apple-darwin10.8.0
-target_alias=
-target=x86_64-apple-darwin10.8.0
+target_alias=i386-apple-darwin
+target=i386-apple-darwin
 
-program_transform_name = s,x,x,
+program_transform_name = s&^&i386-apple-darwin-&
 
 prefix = /usr/local
 exec_prefix = ${prefix}
@@ -76,8 +76,8 @@ LN_S = ln -s
 # The gcc driver likes to know the arguments it was configured with.
 TOPLEVEL_CONFIGURE_ARGUMENTS=./configure 36 3 11
 
-tooldir = ${exec_prefix}/x86_64-apple-darwin10.8.0
-build_tooldir = ${exec_prefix}/x86_64-apple-darwin10.8.0
+tooldir = ${exec_prefix}/i386-apple-darwin
+build_tooldir = ${exec_prefix}/i386-apple-darwin
 
 GDB_NLM_DEPS = 
 
@@ -91,7 +91,7 @@ BUILD_CONFIGDIRS = libiberty
 BUILD_SUBDIR = build-x86_64-apple-darwin10.8.0
 # This is set by the configure script to the arguments to use when configuring
 # directories built for the build system.
-BUILD_CONFIGARGS =  --cache-file=../config.cache --build=x86_64-apple-darwin10.8.0 --host=x86_64-apple-darwin10.8.0  --program-transform-name='s,y,y,' --with-build-subdir="$(BUILD_SUBDIR)"
+BUILD_CONFIGARGS =  --cache-file=../config.cache --build=x86_64-apple-darwin10.8.0 --host=x86_64-apple-darwin10.8.0  --program-transform-name='s&^&i386-apple-darwin-&' --with-build-subdir="$(BUILD_SUBDIR)"
 
 # This is the list of variables to export in the environment when
 # configuring any subdirectory.  It must also be exported whenever
@@ -126,10 +126,10 @@ BUILD_EXPORTS = \
 	WINDRES="$(WINDRES_FOR_BUILD)"; export WINDRES;
 
 # This is the list of directories to built for the host system.
-SUBDIRS =  intl electric-fence mmalloc libiberty libdecnumber opcodes bfd readline tcl binutils sim gdb etc expect dejagnu utils cgen
+SUBDIRS =  intl electric-fence mmalloc libiberty libdecnumber opcodes bfd readline tcl binutils sim gdb etc dejagnu utils cgen
 # This is set by the configure script to the arguments to use when configuring
 # directories built for the host system.
-HOST_CONFIGARGS =     --disable-shared --enable-64-bit-bfd --disable-softfloat --disable-werror  --enable-carbon-framework --enable-debug-symbols-framework --cache-file=./config.cache --build=x86_64-apple-darwin10.8.0 --host=x86_64-apple-darwin10.8.0 --target=x86_64-apple-darwin10.8.0   --program-transform-name='s,y,y,'
+HOST_CONFIGARGS =     --disable-shared --enable-64-bit-bfd --disable-softfloat --disable-werror  --enable-carbon-framework --enable-debug-symbols-framework --cache-file=./config.cache --build=x86_64-apple-darwin10.8.0 --host=x86_64-apple-darwin10.8.0 --target=i386-apple-darwin   --program-transform-name='s&^&i386-apple-darwin-&'
 # Host programs are put under this directory, which is . except if building
 # with srcdir=..
 HOST_SUBDIR = .
@@ -173,10 +173,10 @@ POSTSTAGE1_HOST_EXPORTS = \
 # should be built using the target tools.
 TARGET_CONFIGDIRS = 
 # Target libraries are put under this directory:
-TARGET_SUBDIR = x86_64-apple-darwin10.8.0
+TARGET_SUBDIR = i386-apple-darwin
 # This is set by the configure script to the arguments to use when configuring
 # directories built for the target.
-TARGET_CONFIGARGS = --cache-file=./config.cache --build= --host= --target= --enable-multilib  --program-transform-name='s,y,y,' --with-target-subdir="$(TARGET_SUBDIR)"
+TARGET_CONFIGARGS = --cache-file=./config.cache --build= --host=i386-apple-darwin --target=i386-apple-darwin --enable-multilib --with-cross-host=x86_64-apple-darwin10.8.0  --program-transform-name='s&^&i386-apple-darwin-&' --with-target-subdir="$(TARGET_SUBDIR)"
 # This is the list of variables to export in the environment when
 # configuring subdirectories for the host system.
 BASE_TARGET_EXPORTS = \
@@ -335,7 +335,7 @@ PICFLAG =
 FLAGS_FOR_TARGET = 
 
 AR_FOR_TARGET=$(USUAL_AR_FOR_TARGET)
-CONFIGURED_AR_FOR_TARGET=ar
+CONFIGURED_AR_FOR_TARGET=i386-apple-darwin-ar
 USUAL_AR_FOR_TARGET = ` \
   if [ -f $$r/$(HOST_SUBDIR)/binutils/ar ] ; then \
     echo $$r/$(HOST_SUBDIR)/binutils/ar ; \
@@ -348,7 +348,7 @@ USUAL_AR_FOR_TARGET = ` \
   fi`
 
 AS_FOR_TARGET=$(USUAL_AS_FOR_TARGET)
-CONFIGURED_AS_FOR_TARGET=as
+CONFIGURED_AS_FOR_TARGET=i386-apple-darwin-as
 USUAL_AS_FOR_TARGET = ` \
   if [ -f $$r/$(HOST_SUBDIR)/gas/as-new ] ; then \
     echo $$r/$(HOST_SUBDIR)/gas/as-new ; \
@@ -363,7 +363,7 @@ USUAL_AS_FOR_TARGET = ` \
   fi`
 
 CC_FOR_TARGET=$(STAGE_CC_WRAPPER) $(USUAL_CC_FOR_TARGET) $(FLAGS_FOR_TARGET)
-CONFIGURED_CC_FOR_TARGET=cc
+CONFIGURED_CC_FOR_TARGET=i386-apple-darwin-cc
 USUAL_CC_FOR_TARGET = ` \
   if [ -f $$r/$(HOST_SUBDIR)/gcc/xgcc ] ; then \
     echo $$r/$(HOST_SUBDIR)/gcc/xgcc -B$$r/$(HOST_SUBDIR)/gcc ; \
@@ -387,13 +387,13 @@ SYSROOT_CFLAGS_FOR_TARGET =
 # build libgcc2.a.  We define it here so that it can itself be
 # overridden on the command line.
 GCC_FOR_TARGET=$(USUAL_GCC_FOR_TARGET)
-CONFIGURED_GCC_FOR_TARGET=gcc
+CONFIGURED_GCC_FOR_TARGET=i386-apple-darwin-cc
 USUAL_GCC_FOR_TARGET = $(STAGE_CC_WRAPPER) \
   $$r/$(HOST_SUBDIR)/gcc/xgcc -B$$r/$(HOST_SUBDIR)/gcc/ $(FLAGS_FOR_TARGET)
 LIBCFLAGS_FOR_TARGET = $(CFLAGS_FOR_TARGET)
 
 CXX_FOR_TARGET=$(STAGE_CC_WRAPPER) $(USUAL_CXX_FOR_TARGET) $(FLAGS_FOR_TARGET)
-CONFIGURED_CXX_FOR_TARGET=c++
+CONFIGURED_CXX_FOR_TARGET=i386-apple-darwin-c++
 USUAL_CXX_FOR_TARGET = ` \
   if [ -f $$r/$(HOST_SUBDIR)/gcc/g++ ] ; then \
     (echo $$r/$(HOST_SUBDIR)/gcc/g++ -B$$r/$(HOST_SUBDIR)/gcc -nostdinc++; \
@@ -423,7 +423,7 @@ CXXFLAGS_FOR_TARGET = $(CXXFLAGS) $(SYSROOT_CFLAGS_FOR_TARGET)
 LIBCXXFLAGS_FOR_TARGET = $(CXXFLAGS_FOR_TARGET) -fno-implicit-templates
 
 GCJ_FOR_TARGET=$(STAGE_CC_WRAPPER) $(USUAL_GCJ_FOR_TARGET) $(FLAGS_FOR_TARGET)
-CONFIGURED_GCJ_FOR_TARGET=gcj
+CONFIGURED_GCJ_FOR_TARGET=i386-apple-darwin-gcj
 USUAL_GCJ_FOR_TARGET = ` \
   if [ -f $$r/$(HOST_SUBDIR)/gcc/gcj ] ; then \
     echo $$r/$(HOST_SUBDIR)/gcc/gcj -B$$r/$(HOST_SUBDIR)/gcc ; \
@@ -436,7 +436,7 @@ USUAL_GCJ_FOR_TARGET = ` \
   fi`
 
 GFORTRAN_FOR_TARGET=$(STAGE_CC_WRAPPER) $(USUAL_GFORTRAN_FOR_TARGET) $(FLAGS_FOR_TARGET)
-CONFIGURED_GFORTRAN_FOR_TARGET=gfortran
+CONFIGURED_GFORTRAN_FOR_TARGET=i386-apple-darwin-gfortran
 USUAL_GFORTRAN_FOR_TARGET = ` \
   if [ -f $$r/$(HOST_SUBDIR)/gcc/gfortran ] ; then \
     echo $$r/$(HOST_SUBDIR)/gcc/gfortran -B$$r/$(HOST_SUBDIR)/gcc ; \
@@ -450,7 +450,7 @@ USUAL_GFORTRAN_FOR_TARGET = ` \
 
 
 DLLTOOL_FOR_TARGET=$(USUAL_DLLTOOL_FOR_TARGET)
-CONFIGURED_DLLTOOL_FOR_TARGET=dlltool
+CONFIGURED_DLLTOOL_FOR_TARGET=i386-apple-darwin-dlltool
 USUAL_DLLTOOL_FOR_TARGET = ` \
   if [ -f $$r/$(HOST_SUBDIR)/binutils/dlltool ] ; then \
     echo $$r/$(HOST_SUBDIR)/binutils/dlltool ; \
@@ -463,7 +463,7 @@ USUAL_DLLTOOL_FOR_TARGET = ` \
   fi`
 
 LD_FOR_TARGET=$(USUAL_LD_FOR_TARGET)
-CONFIGURED_LD_FOR_TARGET=ld
+CONFIGURED_LD_FOR_TARGET=i386-apple-darwin-ld
 USUAL_LD_FOR_TARGET = ` \
   if [ -f $$r/$(HOST_SUBDIR)/ld/ld-new ] ; then \
     echo $$r/$(HOST_SUBDIR)/ld/ld-new ; \
@@ -480,7 +480,7 @@ USUAL_LD_FOR_TARGET = ` \
 LDFLAGS_FOR_TARGET = 
 
 NM_FOR_TARGET=$(USUAL_NM_FOR_TARGET)
-CONFIGURED_NM_FOR_TARGET=nm
+CONFIGURED_NM_FOR_TARGET=i386-apple-darwin-nm
 USUAL_NM_FOR_TARGET = ` \
   if [ -f $$r/$(HOST_SUBDIR)/binutils/nm-new ] ; then \
     echo $$r/$(HOST_SUBDIR)/binutils/nm-new ; \
@@ -495,7 +495,7 @@ USUAL_NM_FOR_TARGET = ` \
   fi`
 
 RANLIB_FOR_TARGET=$(USUAL_RANLIB_FOR_TARGET) -c
-CONFIGURED_RANLIB_FOR_TARGET=ranlib
+CONFIGURED_RANLIB_FOR_TARGET=:
 USUAL_RANLIB_FOR_TARGET = ` \
   if [ -f $$r/$(HOST_SUBDIR)/binutils/ranlib ] ; then \
     echo $$r/$(HOST_SUBDIR)/binutils/ranlib ; \
@@ -512,7 +512,7 @@ USUAL_RANLIB_FOR_TARGET = ` \
   fi`
 
 WINDRES_FOR_TARGET=$(USUAL_WINDRES_FOR_TARGET)
-CONFIGURED_WINDRES_FOR_TARGET=windres
+CONFIGURED_WINDRES_FOR_TARGET=i386-apple-darwin-windres
 USUAL_WINDRES_FOR_TARGET = ` \
   if [ -f $$r/$(HOST_SUBDIR)/binutils/windres ] ; then \
     echo $$r/$(HOST_SUBDIR)/binutils/windres ; \
@@ -9152,25 +9152,6 @@ maintainer-clean-gdb:
 
 .PHONY: configure-expect maybe-configure-expect
 maybe-configure-expect:
-maybe-configure-expect: configure-expect
-configure-expect: 
-	@test ! -f $(HOST_SUBDIR)/expect/Makefile || exit 0; \
-	$(SHELL) $(srcdir)/mkinstalldirs $(HOST_SUBDIR)/expect ; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	echo Configuring in $(HOST_SUBDIR)/expect; \
-	cd "$(HOST_SUBDIR)/expect" || exit 1; \
-	case $(srcdir) in \
-	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
-	  *) topdir=`echo $(HOST_SUBDIR)/expect/ | \
-		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
-	esac; \
-	srcdiroption="--srcdir=$${topdir}/expect"; \
-	libsrcdir="$$s/expect"; \
-	$(SHELL) $${libsrcdir}/configure \
-	  $(HOST_CONFIGARGS) $${srcdiroption}  \
-	  || exit 1
 
 
 
@@ -9178,270 +9159,47 @@ configure-expect:
 
 .PHONY: all-expect maybe-all-expect
 maybe-all-expect:
-TARGET-expect=all
-maybe-all-expect: all-expect
-all-expect: configure-expect
-	@r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	(cd $(HOST_SUBDIR)/expect && \
-	  $(MAKE) $(FLAGS_TO_PASS) $(X11_FLAGS_TO_PASS) $(TARGET-expect))
 
 
 
 
 .PHONY: check-expect maybe-check-expect
 maybe-check-expect:
-maybe-check-expect: check-expect
-
-check-expect:
-	@r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	(cd $(HOST_SUBDIR)/expect && \
-	  $(MAKE) $(FLAGS_TO_PASS) $(X11_FLAGS_TO_PASS) check)
-
 
 .PHONY: install-expect maybe-install-expect
 maybe-install-expect:
-maybe-install-expect: install-expect
-
-install-expect: installdirs
-	@r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	(cd $(HOST_SUBDIR)/expect && \
-	  $(MAKE) $(FLAGS_TO_PASS) $(X11_FLAGS_TO_PASS) install)
-
 
 # Other targets (info, dvi, etc.)
 
 .PHONY: maybe-info-expect info-expect
 maybe-info-expect:
-maybe-info-expect: info-expect
-
-info-expect: \
-    configure-expect 
-	@[ -f ./expect/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) $(X11_FLAGS_TO_PASS); do \
-	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing info in expect" ; \
-	(cd $(HOST_SUBDIR)/expect && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          info) \
-	  || exit 1
-
 
 .PHONY: maybe-dvi-expect dvi-expect
 maybe-dvi-expect:
-maybe-dvi-expect: dvi-expect
-
-dvi-expect: \
-    configure-expect 
-	@[ -f ./expect/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) $(X11_FLAGS_TO_PASS); do \
-	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing dvi in expect" ; \
-	(cd $(HOST_SUBDIR)/expect && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          dvi) \
-	  || exit 1
-
 
 .PHONY: maybe-html-expect html-expect
 maybe-html-expect:
-maybe-html-expect: html-expect
-
-html-expect: \
-    configure-expect 
-	@[ -f ./expect/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) $(X11_FLAGS_TO_PASS); do \
-	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing html in expect" ; \
-	(cd $(HOST_SUBDIR)/expect && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          html) \
-	  || exit 1
-
 
 .PHONY: maybe-TAGS-expect TAGS-expect
 maybe-TAGS-expect:
-maybe-TAGS-expect: TAGS-expect
-
-TAGS-expect: \
-    configure-expect 
-	@[ -f ./expect/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) $(X11_FLAGS_TO_PASS); do \
-	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing TAGS in expect" ; \
-	(cd $(HOST_SUBDIR)/expect && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          TAGS) \
-	  || exit 1
-
 
 .PHONY: maybe-install-info-expect install-info-expect
 maybe-install-info-expect:
-maybe-install-info-expect: install-info-expect
-
-install-info-expect: \
-    configure-expect \
-    info-expect 
-	@[ -f ./expect/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) $(X11_FLAGS_TO_PASS); do \
-	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing install-info in expect" ; \
-	(cd $(HOST_SUBDIR)/expect && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          install-info) \
-	  || exit 1
-
 
 .PHONY: maybe-installcheck-expect installcheck-expect
 maybe-installcheck-expect:
-maybe-installcheck-expect: installcheck-expect
-
-installcheck-expect: \
-    configure-expect 
-	@[ -f ./expect/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) $(X11_FLAGS_TO_PASS); do \
-	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing installcheck in expect" ; \
-	(cd $(HOST_SUBDIR)/expect && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          installcheck) \
-	  || exit 1
-
 
 .PHONY: maybe-mostlyclean-expect mostlyclean-expect
 maybe-mostlyclean-expect:
-maybe-mostlyclean-expect: mostlyclean-expect
-
-mostlyclean-expect: 
-	@[ -f ./expect/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) $(X11_FLAGS_TO_PASS); do \
-	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing mostlyclean in expect" ; \
-	(cd $(HOST_SUBDIR)/expect && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          mostlyclean) \
-	  || exit 1
-
 
 .PHONY: maybe-clean-expect clean-expect
 maybe-clean-expect:
-maybe-clean-expect: clean-expect
-
-clean-expect: 
-	@[ -f ./expect/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) $(X11_FLAGS_TO_PASS); do \
-	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing clean in expect" ; \
-	(cd $(HOST_SUBDIR)/expect && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          clean) \
-	  || exit 1
-
 
 .PHONY: maybe-distclean-expect distclean-expect
 maybe-distclean-expect:
-maybe-distclean-expect: distclean-expect
-
-distclean-expect: 
-	@[ -f ./expect/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) $(X11_FLAGS_TO_PASS); do \
-	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing distclean in expect" ; \
-	(cd $(HOST_SUBDIR)/expect && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          distclean) \
-	  || exit 1
-
 
 .PHONY: maybe-maintainer-clean-expect maintainer-clean-expect
 maybe-maintainer-clean-expect:
-maybe-maintainer-clean-expect: maintainer-clean-expect
-
-maintainer-clean-expect: 
-	@[ -f ./expect/Makefile ] || exit 0; \
-	r=`${PWD_COMMAND}`; export r; \
-	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
-	$(HOST_EXPORTS) \
-	for flag in $(EXTRA_HOST_FLAGS) $(X11_FLAGS_TO_PASS); do \
-	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
-	done; \
-	echo "Doing maintainer-clean in expect" ; \
-	(cd $(HOST_SUBDIR)/expect && \
-	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
-	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
-	          "RANLIB=$${RANLIB}" \
-	          "DLLTOOL=$${DLLTOOL}" "WINDRES=$${WINDRES}" \
-	          maintainer-clean) \
-	  || exit 1
-
 
 
 
