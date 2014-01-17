@@ -22,7 +22,7 @@ rather than @file{coff-m88k.h}.
 @subsection Porting to a new version of coff
 The recommended method is to select from the existing
 implementations the version of coff which is most like the one
-you want to use.  For example, we'll say that i386 coff is
+you want to use. For example, we will say that i386 coff is
 the one you select, and that your coff flavour is called foo.
 Copy @file{i386coff.c} to @file{foocoff.c}, copy
 @file{../include/coff/i386.h} to @file{../include/coff/foo.h},
@@ -35,12 +35,12 @@ what you need. You will probably also have to add
 
 You can verify that your new BFD backend works quite simply by
 building @file{objdump} from the @file{binutils} directory,
-and making sure that its version of what's going on and your
+and making sure that its version of what is going on and your
 host system's idea (assuming it has the pretty standard coff
 dump utility, usually called @code{att-dump} or just
-@code{dump}) are the same.  Then clean up your code, and send
-what you've done to Cygnus. Then your stuff will be in the
-next release, and you won't have to keep integrating it.
+@code{dump}) are the same. Then clean up your code, and send
+what you have done to Cygnus. Then your stuff will be in the
+next release, and you will NOT have to keep integrating it.
 
 @subsection How the coff backend works
 
@@ -149,7 +149,7 @@ Any linenumbers are read from the coff file too, and attached
 to the symbols which own the functions the linenumbers belong to.
 
 @subsubsection Symbol writing
-Writing a symbol to a coff file which didn't come from a coff
+Writing a symbol to a coff file which did NOT come from a coff
 file will lose any debugging information. The @code{asymbol}
 structure remembers the BFD from which the symbol was taken, and on
 output the back end makes sure that the same destination target as
@@ -596,7 +596,7 @@ Turn the symbol referenced in the relocation's symbol index
 into a pointer into the canonical symbol table.
 This table is the same as the one returned by a call to
 @code{bfd_canonicalize_symtab}. The back end will call that
-routine and save the result if a canonicalization hasn't been done.
+routine and save the result if a canonicalization has NOT been done.
 
 @item
 The reloc index is turned into a pointer to a howto

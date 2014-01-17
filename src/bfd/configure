@@ -869,6 +869,7 @@ enable_secureplt
 with_separate_debug_dir
 enable_elf_stt_common
 enable_werror
+enable_pedantic
 enable_build_warnings
 enable_install_libbfd
 enable_nls
@@ -1533,6 +1534,7 @@ Optional Features:
   --enable-elf-stt-common Allow the generation of ELF symbols with the
                           STT_COMMON type
   --enable-werror         treat compile warnings as errors
+  --enable-pedantic       enable pedantic warnings
   --enable-build-warnings Enable build-time compiler warnings
   --enable-install-libbfd controls installation of libbfd and related headers
   --disable-nls           do not use Native Language Support
@@ -17800,7 +17802,26 @@ $as_echo "#define USE_STT_COMMON 1" >>confdefs.h
 fi
 
 
-WARN_CFLAGS="-W -Wall -Wstrict-prototypes -Wmissing-prototypes"
+WARN_CFLAGS="-W -Wall -Wstrict-prototypes -Wmissing-prototypes -Wimplicit -Wparentheses -Wextra"
+
+case "${host}" in
+  *-apple-darwin* | *-apple-macos*)
+    # -Wmost is APPLE_LOCAL
+    WARN_CFLAGS="${WARN_CFLAGS} -Wmost"
+  ;;
+esac
+
+# GCC supports -Wuninitialized only with -O or -On, n != 0.
+if test x${CFLAGS+set} = xset; then
+  case "${CFLAGS}" in
+    *"-O0"* ) ;;
+    *"-O"* )
+      WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized"
+    ;;
+  esac
+else
+  WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized"
+fi
 
 # Check whether --enable-werror was given.
 if test "${enable_werror+set}" = set; then :
@@ -17812,16 +17833,29 @@ if test "${enable_werror+set}" = set; then :
 fi
 
 
+# Check whether --enable-pedantic was given.
+if test "${enable_pedantic+set}" = set; then :
+  enableval=$enable_pedantic; case "${enableval}" in
+     yes | y) PEDANTIC_WARNINGS="yes" ;;
+     no | n)  PEDANTIC_WARNINGS="no" ;;
+     *) as_fn_error $? "bad value ${enableval} for --enable-werror" "$LINENO" 5 ;;
+   esac
+fi
+
 
 # Enable -Werror by default when using gcc
 if test "${GCC}" = yes -a -z "${ERROR_ON_WARNING}" ; then
     ERROR_ON_WARNING=yes
 fi
 
-NO_WERROR=
-if test "${ERROR_ON_WARNING}" = yes ; then
-    WARN_CFLAGS="$WARN_CFLAGS -Werror"
+NO_WERROR=""
+if test "x${ERROR_ON_WARNING}" = "xyes"; then
+    WARN_CFLAGS="${WARN_CFLAGS} -Werror"
     NO_WERROR="-Wno-error"
+fi
+
+if test "x${PEDANTIC_WARNINGS}" = "xyes" ; then
+    WARN_CFLAGS="${WARN_CFLAGS} -pedantic"
 fi
 
 # Check whether --enable-build-warnings was given.
@@ -17838,8 +17872,41 @@ esac
 fi
 
 
-if test x"$silent" != x"yes" && test x"$WARN_CFLAGS" != x""; then
-  echo "Setting warning flags = $WARN_CFLAGS" 6>&1
+if test "x${WARN_CFLAGS}" != "x" -a "x${GCC}" = "xyes"
+then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking compiler warning flags" >&5
+$as_echo_n "checking compiler warning flags... " >&6; }
+    for w in ${WARN_CFLAGS}; do
+	case ${w} in
+	*) # Check that GCC accepts it
+	    saved_CFLAGS="${CFLAGS}"
+	    CFLAGS="${CFLAGS} ${w}"
+	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  MY_WARN_CFLAGS="${MY_WARN_CFLAGS} ${w}"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+	    CFLAGS="${saved_CFLAGS}"
+	esac
+    done
+    # Have to use second variable to avoid overwriting and/or duplicates:
+    WARN_CFLAGS="${MY_WARN_CFLAGS}"
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${WARN_CFLAGS}" >&5
+$as_echo "${WARN_CFLAGS}" >&6; }
+fi
+
+if test x"${silent}" != x"yes" && test x"${WARN_CFLAGS}" != x""; then
+  echo "Setting warning flags = ${WARN_CFLAGS}" 6>&1
 fi
 
 

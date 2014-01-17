@@ -1,3 +1,111 @@
+2014-01-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	touch up coff-i386.c which fails on Travis
+
+	and coffcode.h which it includes
+
+2014-01-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	revert targetting darwin on travis
+
+2014-01-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try to fix pef.c build error
+
+2014-01-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	target darwin on Travis
+
+	also a few more elf.c tweaks
+
+2014-01-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more tweaks to elf.c
+
+2014-01-17  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	touch elf.c which fails on Travis
+
+2014-01-15  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	make sure all configure scripts have a bug report email
+
+	- also somehow some python things had gotten left out previously when I
+	was copying stuff from newer gdb sources, so make sure they make it
+	back in this time.
+	- also convert post-configure script fragments to use AC_CONFIG_COMMANDS
+
+2014-01-15  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	well at least I have made it to binutils now before I error out
+
+2014-01-15  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	more struggling against GNU libtool
+
+2014-01-15  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	sweet I think I fixed my libtool issues for bfd at least
+
+	running into similar issues for opcodes, but it looks like I will
+	require a different solution for that subdir...
+
+2014-01-15  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	re-revert some recent GNU libtool related changes
+
+	have I mentioned that GNU libtool is annoying yet?
+
+2014-01-15  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	GNU libtool is really annoying
+
+2014-01-15  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	GNU libtool is annoying
+
+2014-01-14  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	revert passing flags part added in @d4fcd2d
+
+	and some other changes from that commit that might have been problematic
+
+2014-01-14  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	try to fix build on Travis
+
+2014-01-14  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	move travis file up one level
+
+2014-01-14  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	gitignore stuff for zlib perl bindings
+
+2014-01-14  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	break stuff
+
+	- default to building rdi-share
+	- add note about gdbforcw
+	- try to bring build system more up-to-date with current gdb,
+	unfortunately this means that bfd now mis-builds its libtool archive,
+	which breaks binutils...
+	- add old files to zlib
+
+2014-01-12  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	Add files from Apple's Tcl distribution
+
+2014-01-11  Eric Gallager  <egall@gwmail.gwu.edu>
+
+	housekeeping
+
+	- format ChangeLogs
+	- cgen depends on guile
+	- move rdi-share to gnits strictness and update everything in it
+	- un-gitignore old readline docs
+
 2014-01-10  Eric Gallager  <egall@gwmail.gwu.edu>
 
 	add some more old files from the 1990s
