@@ -1,4 +1,5 @@
-/* PEF support for BFD.
+/* pef.h
+   PEF (Preferred Executable Format) support for BFD.
    Copyright 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -16,7 +17,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin Street - 5th Floor, Boston, MA 02110-1301, USA. */
 
 #include "bfd.h"
 
@@ -184,3 +185,5 @@ int  bfd_pef_parse_imported_symbol  (bfd *, unsigned char *, size_t, bfd_pef_imp
 int  bfd_pef_scan_section           (bfd *, bfd_pef_section *);
 int  bfd_pef_scan_start_address     (bfd *);
 int  bfd_pef_scan                   (bfd *, bfd_pef_header *, bfd_pef_data_struct *);
+
+/* EOF */

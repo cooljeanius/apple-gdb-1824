@@ -22,9 +22,13 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #ifndef BFD_SYSDEP_H
 #define BFD_SYSDEP_H
 
-#include "ansidecl.h"
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# warning sysdep.h expects "config.h" to be included.
+#endif /* HAVE_CONFIG_H */
 
-#include "config.h"
+#include "ansidecl.h"
 
 #ifdef HAVE_STDDEF_H
 # include <stddef.h>
