@@ -23,7 +23,8 @@ AC_DEFUN([BFD_HAVE_SYS_PROCFS_TYPE],
 dnl# Check for existence of member $2 in type $1 in sys/procfs.h
 
 AC_DEFUN([BFD_HAVE_SYS_PROCFS_TYPE_MEMBER],
-[AC_MSG_CHECKING([for $1.$2 in sys/procfs.h])
+[AC_CHECK_HEADERS_ONCE([sys/procfs.h])
+ AC_MSG_CHECKING([for $1.$2 in sys/procfs.h])
  AC_CACHE_VAL([bfd_cv_have_sys_procfs_type_member_$1_$2],
    [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
 #define _SYSCALL32
@@ -57,9 +58,13 @@ AC_CACHE_VAL([bfd_cv_decl_needed_$1],
 #endif /* HAVE_STRING_H */
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
+#else
+# warning this conftest expects <stdlib.h> to be included.
 #endif /* HAVE_STDLIB_H */
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
+#else
+# warning this conftest expects <unistd.h> to be included.
 #endif /* HAVE_UNISTD_H */
 ]],[[
 char *(*pfn) = (char *(*)) $1

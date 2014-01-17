@@ -347,7 +347,7 @@ AC_TYPE_VARIOUS_INT_TYPES
 # Checks for library functions.
 AM_WITH_DMALLOC
 AC_CHECK_FUNCS([fcntl fdopen fprintf getgid getuid memchr memmove memset \
-                rpl_malloc rpl_realloc setitimer strdup strncasecmp \
+                qsort rpl_malloc rpl_realloc setitimer strdup strncasecmp \
                 strrchr strspn strstr strtol strtoul strtoull sysconf \
                 system uname])
 AC_CHECK_FUNCS_ONCE([lt_dlinit])
@@ -686,7 +686,7 @@ fi
 AC_SUBST([COREFILE])
 AC_SUBST([COREFLAG])
 if test -n "${TRAD_HEADER}"; then
-  AC_DEFINE_UNQUOTED([TRAD_HEADER],[$TRAD_HEADER],
+  AC_DEFINE_UNQUOTED([TRAD_HEADER],[${TRAD_HEADER}],
     [Name of host specific header file to include in trad-core.c.])
 fi
 
