@@ -339,9 +339,7 @@ dependencies = { module=all-libgui; on=all-itcl; };
 // Host modules specific to binutils.
 dependencies = { module=configure-bfd; on=configure-libiberty; hard=true; };
 dependencies = { module=configure-bfd; on=configure-intl; };
-dependencies = { module=configure-bfd; on=configure-libtool_gnu; };
 dependencies = { module=all-bfd; on=all-libiberty; };
-dependencies = { module=all-bfd; on=all-libtool_gnu; };
 dependencies = { module=all-bfd; on=all-intl; };
 dependencies = { module=all-bfd; on=all-zlib; };
 

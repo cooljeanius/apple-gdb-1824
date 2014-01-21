@@ -41873,7 +41873,6 @@ configure-stage3-bfd: maybe-configure-stage3-intl
 configure-stage4-bfd: maybe-configure-stage4-intl
 configure-stageprofile-bfd: maybe-configure-stageprofile-intl
 configure-stagefeedback-bfd: maybe-configure-stagefeedback-intl
-configure-bfd: maybe-configure-libtool_gnu
 all-bfd: maybe-all-libiberty
 
 all-stage1-bfd: maybe-all-stage1-libiberty
@@ -41882,7 +41881,6 @@ all-stage3-bfd: maybe-all-stage3-libiberty
 all-stage4-bfd: maybe-all-stage4-libiberty
 all-stageprofile-bfd: maybe-all-stageprofile-libiberty
 all-stagefeedback-bfd: maybe-all-stagefeedback-libiberty
-all-bfd: maybe-all-libtool_gnu
 all-bfd: maybe-all-intl
 
 all-stage1-bfd: maybe-all-stage1-intl
