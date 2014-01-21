@@ -142,11 +142,12 @@ subdir_do: force
 force:
 
 clean mostlyclean:
-	@echo "Doing clean mosttlyclean +++++"
+	@echo "Doing clean mostlyclean +++++"
 	-rm -f \#* *~ core *.o a.out xgdb *.x
 	$(MAKE) subdir_do DO=$@ $(FLAGS_TO_PASS)
 	@for l in `find . -name logs`; do rm -fr $$l; done
 	@for f in `find . -name '*~'`; do rm -fr $$f; done
+.PHONY: clean mostlyclean
 
 distclean: clean
 	@echo "Doing distclean +++++"
@@ -154,6 +155,8 @@ distclean: clean
 	-rm -f Makefile *-init.exp site.bak site.exp conftest.c
 	-rm -f config.status config.log config.cache
 	-rm -fr *.log summary detail *.sum blockit
+	-rm -fr autom4te.cache || rmdir autom4te.cache
+.PHONY: distclean
 
 maintainer-clean realclean:
 	@echo "Doing maintainer-clean realclean +++++"
@@ -161,7 +164,9 @@ maintainer-clean realclean:
 	-rm -f Makefile *-init.exp site.bak site.exp conftest.c
 	-rm -f config.status config.log config.cache
 	-rm -fr *.log summary detail *.sum blockit
+	-rm -fr autom4te.cache || rmdir autom4te.cache
 	-rm -f README.bluegnu contents
+.PHONY: maintainer-clean realclean
 
 check:	
 	@if [ -f testsuite/Makefile ]; then \
@@ -169,12 +174,13 @@ check:
 	   cd testsuite; \
 	   $(MAKE) $(FLAGS_TO_PASS) check; \
 	else true; fi
+# check is already made phony above
 
 Makefile: $(srcdir)/Makefile.in config.status
 	@echo "Rebuilding the Makefile..."
 	$(SHELL) ./config.status
 
-configure: $(srcdir)/configure.in $(srcdir)/Makefile.in $(srcdir)/aclocal.m4
+configure: $(srcdir)/configure.ac $(srcdir)/Makefile.in $(srcdir)/aclocal.m4
 	@echo "Rebuilding configure..."
 	@if [ x"${srcdir}" = x"@srcdir@" ] ; then \
 	  srcdir=. ; export srcdir ; \

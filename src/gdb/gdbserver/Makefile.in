@@ -216,6 +216,7 @@ clean:
 	rm -f reg-arm.c reg-i386.c reg-ia64.c reg-m32r.c reg-m68k.c reg-mips.c
 	rm -f reg-ppc.c reg-sh.c reg-x86-64.c reg-i386-linux.c reg-ppc64.c
 	rm -f reg-cris.c reg-crisv32.c reg-arm-macosx.c 
+	rm -fr autom4te.cache || rmdir autom4te.cache
 
 maintainer-clean realclean distclean: clean
 	rm -f nm.h tm.h xm.h config.status config.h stamp-h config.log

@@ -4766,7 +4766,9 @@ ac_fn_c_check_type "$LINENO" "task_t" "ac_cv_type_task_t" "
 #ifdef HAVE_MACH_MACH_H
 # include <mach/mach.h>
 #else
-# warning this conftest expects <mach/mach.h> to be included.
+# ifdef __APPLE__
+#  warning this conftest expects <mach/mach.h> to be included.
+# endif /* __APPLE__ */
 #endif /* HAVE_MACH_MACH_H */
 
 "
@@ -4797,7 +4799,9 @@ ac_fn_c_check_type "$LINENO" "mach_vm_size_t" "ac_cv_type_mach_vm_size_t" "
 #ifdef HAVE_MACH_MACH_VM_H
 # include <mach/mach_vm.h>
 #else
-# warning this conftest expects <mach/mach_vm.h> to be included.
+# ifdef __APPLE__
+#  warning this conftest expects <mach/mach_vm.h> to be included.
+# endif /* __APPLE__ */
 #endif /* HAVE_MACH_MACH_VM_H */
 
 "
@@ -4814,7 +4818,9 @@ ac_fn_c_check_type "$LINENO" "vm_size_t" "ac_cv_type_vm_size_t" "
 #ifdef HAVE_MACH_MACH_VM_H
 # include <mach/mach_vm.h>
 #else
-# warning this conftest expects <mach/mach_vm.h> to be included.
+# ifdef __APPLE__
+#  warning this conftest expects <mach/mach_vm.h> to be included.
+# endif /* __APPLE__ */
 #endif /* HAVE_MACH_MACH_VM_H */
 
 "
@@ -5780,8 +5786,8 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 fi
 
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gdbsrv_cv_have_ptrace_getregs" >&5
-$as_echo "$gdbsrv_cv_have_ptrace_getregs" >&6; }
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${gdbsrv_cv_have_ptrace_getregs}" >&5
+$as_echo "${gdbsrv_cv_have_ptrace_getregs}" >&6; }
   if test "${gdbsrv_cv_have_ptrace_getregs}" = "yes"; then
 
 $as_echo "#define HAVE_PTRACE_GETREGS 1" >>confdefs.h
@@ -5812,8 +5818,8 @@ fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 fi
 
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gdbsrv_cv_have_ptrace_getfpxregs" >&5
-$as_echo "$gdbsrv_cv_have_ptrace_getfpxregs" >&6; }
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${gdbsrv_cv_have_ptrace_getfpxregs}" >&5
+$as_echo "${gdbsrv_cv_have_ptrace_getfpxregs}" >&6; }
   if test "${gdbsrv_cv_have_ptrace_getfpxregs}" = "yes"; then
 
 $as_echo "#define HAVE_PTRACE_GETFPXREGS 1" >>confdefs.h
@@ -5975,7 +5981,7 @@ fi
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gdb_cv_prfpregset_t_broken" >&5
 $as_echo "$gdb_cv_prfpregset_t_broken" >&6; }
-    if test $gdb_cv_prfpregset_t_broken = yes; then
+    if test ${gdb_cv_prfpregset_t_broken} = yes; then
 
 $as_echo "#define PRFPREGSET_T_BROKEN 1" >>confdefs.h
 
@@ -6013,9 +6019,9 @@ $as_echo "$bfd_cv_have_sys_procfs_type_elf_fpregset_t" >&6; }
 
 fi
 
-srv_thread_depfiles=
-srv_libs=
-USE_THREAD_DB=
+srv_thread_depfiles=""
+srv_libs=""
+USE_THREAD_DB=""
 
 if test "${srv_linux_thread_db}" = "yes"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libthread_db" >&5

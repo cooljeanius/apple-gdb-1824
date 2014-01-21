@@ -20,20 +20,26 @@
 # The third example adds a Signed-off-by line to the message, that can
 # still be edited.  This is rarely a good idea.
 
-case "$2,$3" in
-  merge,)
-    /opt/local/bin/perl5.12 -i.bak -ne 's/^/# /, s/^# #/#/ if /^Conflicts/ .. /#/; print' "$1" ;;
+echo "hello from your git prepare-commit-msg hook"
 
-# ,|template,)
-#   /opt/local/bin/perl5.12 -i.bak -pe '
-#      print "\n" . `git diff --cached --name-status -r`
-#	 if /^#/ && $first++ == 0' "$1" ;;
+if test -x /opt/local/bin/perl5.12; then
+  case "$2,$3" in
+    merge,)
+      /opt/local/bin/perl5.12 -i.bak -ne 's/^/# /, s/^# #/#/ if /^Conflicts/ .. /#/; print' "$1" ;;
 
-  *) ;;
-esac
+    ,|template,)
+      /opt/local/bin/perl5.12 -i.bak -pe '
+         print "\n" . `git diff --cached --name-status -r`
+	if /^#/ && $first++ == 0' "$1" ;;
 
-# SOB=$(git var GIT_AUTHOR_IDENT | sed -n 's/^\(.*>\).*$/Signed-off-by: \1/p')
-# grep -qs "^$SOB" "$1" || echo "$SOB" >> "$1"
+    *) ;;
+  esac
+fi
+
+if test "x${USE_SIGNED_OFF_BY_LINE}" = "xyes"; then
+  SOB=$(git var GIT_AUTHOR_IDENT | sed -n 's/^\(.*>\).*$/Signed-off-by: \1/p')
+  grep -qs "^$SOB" "$1" || echo "$SOB" >> "$1"
+fi
 
 #
 # Hook used to produce a commit message based on ChangeLog
@@ -43,15 +49,17 @@ FILE="$1"
 SOURCE="$2"
 COMMIT="$3"
 
-case $SOURCE in
-'')
-    TMP=$(mktemp) && \
-    cat $FILE >$TMP && \
-    git diff --cached ChangeLog | sed -n '/^+/p' | sed -n '/^+++/!p' | sed 's/^.\{1\}//g' >$FILE && \
-    cat $TMP >>$FILE && \
-    rm $TMP
-  ;;
-*)
-  ;;
-esac
+if test -e ChangeLog; then
+  case ${SOURCE} in
+  '')
+      TMP=$(mktemp) && \
+      cat ${FILE} >${TMP} && \
+      git diff --cached ChangeLog | sed -n '/^+/p' | sed -n '/^+++/!p' | sed 's/^.\{1\}//g' >${FILE} && \
+      cat ${TMP} >>${FILE} && \
+      rm ${TMP}
+    ;;
+  *)
+    ;;
+  esac
+fi
 

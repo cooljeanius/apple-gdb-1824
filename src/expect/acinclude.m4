@@ -257,7 +257,7 @@ changequote([,])
   else
     no_tcl=
     TCLCONFIG=${ac_cv_c_tclconfig}/tclConfig.sh
-    AC_MSG_RESULT([found $TCLCONFIG])
+    AC_MSG_RESULT([found ${TCLCONFIG}])
   fi
 fi
 ])
@@ -266,13 +266,18 @@ fi
 # from PATH_TCLCONFIG (because this can also be cached).
 AC_DEFUN([CY_AC_LOAD_TCLCONFIG],[
     AC_REQUIRE([CY_AC_PATH_TCLCONFIG])
-    . $TCLCONFIG
+    if test ! -z "${TCLCONFIG}"; then
+      if test -f "${TCLCONFIG}"; then
+        AC_MSG_NOTICE([sourcing ${TCLCONFIG}])
+        . ${TCLCONFIG}
+      fi
+    fi
 
     AC_SUBST([TCL_DEFS])
     AC_SUBST([TCL_SHLIB_LD])
 # Tcl defines TCL_SHLIB_SUFFIX but TCL_SHARED_LIB_SUFFIX then looks for it
 # as just SHLIB_SUFFIX. How bizarre.
-    SHLIB_SUFFIX=$TCL_SHLIB_SUFFIX
+    SHLIB_SUFFIX=${TCL_SHLIB_SUFFIX}
     AC_SUBST([SHLIB_SUFFIX])
     AC_SUBST([TCL_LD_FLAGS])
     AC_SUBST([TCL_RANLIB])
@@ -471,9 +476,11 @@ fi
 # from PATH_TKCONFIG (because this can also be cached).
 AC_DEFUN([CY_AC_LOAD_TKCONFIG],[
     AC_REQUIRE([CY_AC_PATH_TKCONFIG])
-    if test -f "$TKCONFIG" ; then
-      AC_MSG_NOTICE([sourcing $TKCONFIG])
-      . $TKCONFIG
+    if test ! -z "${TKCONFIG}"; then
+      if test -f "${TKCONFIG}" ; then
+        AC_MSG_NOTICE([sourcing ${TKCONFIG}])
+        . ${TKCONFIG}
+      fi
     fi
 
     AC_SUBST([TK_VERSION])
@@ -487,11 +494,11 @@ AC_DEFUN([CY_AC_LOAD_TKCONFIG],[
 # check for Itcl headers. 
 
 AC_DEFUN([CY_AC_PATH_ITCLH],[
-AC_MSG_CHECKING([for Itcl private headers. srcdir=${srcdir}])
+AC_MSG_CHECKING([for Itcl private headers, while using "${srcdir}" as srcdir])
 if test x"${ac_cv_c_itclh}" = x ; then
   for i in ${srcdir}/../itcl ${srcdir}/../../itcl ${srcdir}/../../../itcl ; do
-    if test -f $i/itcl/generic/itcl.h ; then
-      ac_cv_c_itclh=`(cd $i/itcl/generic; pwd)`
+    if test -f ${i}/itcl/generic/itcl.h ; then
+      ac_cv_c_itclh=`(cd ${i}/itcl/generic; pwd)`
       break
     fi
   done
@@ -499,6 +506,7 @@ fi
 if test x"${ac_cv_c_itclh}" = x ; then
   ITCLHDIR="# no Itcl private headers found"
   ITCLLIB="# no Itcl private headers found"
+  AC_MSG_RESULT([ ])
   AC_MSG_WARN([Cannot find Itcl private headers])
   no_itcl=true
 else
@@ -566,7 +574,7 @@ EOF
 # getting thrown into the mix
 OLD_CFLAGS=${CFLAGS}
 unset CFLAGS
-${CC-cc} -o ac_c_test $CFLAGS $CPPFLAGS $LDFLAGS ac_c_test.c $LIBS 1>&5
+${CC-cc} -o ac_c_test ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} ac_c_test.c ${LIBS} 1>&5
 ac_cv_exeext=`ls ac_c_test.* | grep -v ac_c_test.c | sed -e s/ac_c_test//`
 CFLAGS=${OLD_CFLAGS}
 rm -rf ac_c_test*])

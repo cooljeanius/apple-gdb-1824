@@ -4184,20 +4184,26 @@ $as_echo "$as_me: WARNING: Cannot find Tcl configuration definitions" >&2;}
   else
     no_tcl=
     TCLCONFIG=${ac_cv_c_tclconfig}/tclConfig.sh
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: found $TCLCONFIG" >&5
-$as_echo "found $TCLCONFIG" >&6; }
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: found ${TCLCONFIG}" >&5
+$as_echo "found ${TCLCONFIG}" >&6; }
   fi
 fi
 
 
 
-    . $TCLCONFIG
+    if test ! -z "${TCLCONFIG}"; then
+      if test -f "${TCLCONFIG}"; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: sourcing ${TCLCONFIG}" >&5
+$as_echo "$as_me: sourcing ${TCLCONFIG}" >&6;}
+        . ${TCLCONFIG}
+      fi
+    fi
 
 
 
 # Tcl defines TCL_SHLIB_SUFFIX but TCL_SHARED_LIB_SUFFIX then looks for it
 # as just SHLIB_SUFFIX. How bizarre.
-    SHLIB_SUFFIX=$TCL_SHLIB_SUFFIX
+    SHLIB_SUFFIX=${TCL_SHLIB_SUFFIX}
 
 
 
@@ -4294,10 +4300,12 @@ fi
 
 
 
-    if test -f "$TKCONFIG" ; then
-      { $as_echo "$as_me:${as_lineno-$LINENO}: sourcing $TKCONFIG" >&5
-$as_echo "$as_me: sourcing $TKCONFIG" >&6;}
-      . $TKCONFIG
+    if test ! -z "${TKCONFIG}"; then
+      if test -f "${TKCONFIG}" ; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: sourcing ${TKCONFIG}" >&5
+$as_echo "$as_me: sourcing ${TKCONFIG}" >&6;}
+        . ${TKCONFIG}
+      fi
     fi
 
 
@@ -4315,7 +4323,7 @@ EXP_CFLAGS=""
 # If we built a cygwin-specific tcl, use it here.
 case "${host}" in
 *-*-cygwin*)
-  if test -d $srcdir/../tcl/cygwin/.
+  if test -d ${srcdir}/../tcl/cygwin/.
   then
     TCL_BUILD_LIB_SPEC="../tcl/cygwin/libtcl_cygwin.a"
     # Use the same static lib for installed_expect
@@ -6070,7 +6078,7 @@ case "${host}" in
   *-*-solaris*)		solaris=1;;
 esac
 
-if test $solaris -eq 1 ; then
+if test ${solaris} -eq 1 ; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 
@@ -6255,7 +6263,7 @@ fi
 # If defective, add to all three LIBS. (It is not actually necessary for
 # EXP_LIBS since -Xp will just be ignored the way that EXP_LIBS is used in
 # the Makefile, but we include it for consistency.)
-if test $iunix -eq 1 ; then
+if test ${iunix} -eq 1 ; then
   EXP_LIBS=${LIBS}
   LIBS=${EXP_AND_TCL_LIBS}
   ac_fn_c_check_func "$LINENO" "strftime" "ac_cv_func_strftime"
@@ -6408,12 +6416,12 @@ if test x"$no_tcl" = x"true" ; then
     exit 1
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Itcl private headers. srcdir=${srcdir}" >&5
-$as_echo_n "checking for Itcl private headers. srcdir=${srcdir}... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Itcl private headers, while using \"${srcdir}\" as srcdir" >&5
+$as_echo_n "checking for Itcl private headers, while using \"${srcdir}\" as srcdir... " >&6; }
 if test x"${ac_cv_c_itclh}" = x ; then
   for i in ${srcdir}/../itcl ${srcdir}/../../itcl ${srcdir}/../../../itcl ; do
-    if test -f $i/itcl/generic/itcl.h ; then
-      ac_cv_c_itclh=`(cd $i/itcl/generic; pwd)`
+    if test -f ${i}/itcl/generic/itcl.h ; then
+      ac_cv_c_itclh=`(cd ${i}/itcl/generic; pwd)`
       break
     fi
   done
@@ -6421,6 +6429,8 @@ fi
 if test x"${ac_cv_c_itclh}" = x ; then
   ITCLHDIR="# no Itcl private headers found"
   ITCLLIB="# no Itcl private headers found"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Cannot find Itcl private headers" >&5
 $as_echo "$as_me: WARNING: Cannot find Itcl private headers" >&2;}
   no_itcl=true
@@ -6439,7 +6449,7 @@ fi
 $as_echo_n "checking if generating shared or nonshared library... " >&6; }
 # Check whether --enable-shared was given.
 if test "${enable_shared+set}" = set; then :
-  enableval=$enable_shared; enable_shared=$enableval
+  enableval=$enable_shared; enable_shared=${enableval}
 else
   enable_shared=no
 fi
@@ -7951,7 +7961,7 @@ LIBS=${EXP_LIBS}
 case "${host}" in
 *-*-linux*) ;;
 *-*-cygwin*)
-  EXP_AND_TCL_LIBS="$EXP_AND_TCL_LIBS -luser32" ;;
+  EXP_AND_TCL_LIBS="${EXP_AND_TCL_LIBS} -luser32" ;;
 *)
   unset ac_cv_func_openpty
   ac_fn_c_check_func "$LINENO" "openpty" "ac_cv_func_openpty"
@@ -8007,7 +8017,7 @@ if test "x$ac_cv_lib_util_openpty" = xyes; then :
 
 $as_echo "#define HAVE_OPENPTY 1" >>confdefs.h
 
-	  LIBS="$LIBS -lutil"
+	  LIBS="${LIBS} -lutil"
 
 else
 
@@ -10361,7 +10371,7 @@ EOF
 # getting thrown into the mix
 OLD_CFLAGS=${CFLAGS}
 unset CFLAGS
-${CC-cc} -o ac_c_test $CFLAGS $CPPFLAGS $LDFLAGS ac_c_test.c $LIBS 1>&5
+${CC-cc} -o ac_c_test ${CFLAGS} ${CPPFLAGS} ${LDFLAGS} ac_c_test.c ${LIBS} 1>&5
 ac_cv_exeext=`ls ac_c_test.* | grep -v ac_c_test.c | sed -e s/ac_c_test//`
 CFLAGS=${OLD_CFLAGS}
 rm -rf ac_c_test*

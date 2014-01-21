@@ -768,7 +768,7 @@ configure-host:  \
     maybe-configure-libgui \
     maybe-configure-libiberty \
     maybe-configure-libiconv \
-    maybe-configure-libtool \
+    maybe-configure-libtool_gnu \
     maybe-configure-m4 \
     maybe-configure-make \
     maybe-configure-mmalloc \
@@ -884,7 +884,7 @@ all-host:  \
     maybe-all-libgui \
     maybe-all-libiberty \
     maybe-all-libiconv \
-    maybe-all-libtool \
+    maybe-all-libtool_gnu \
     maybe-all-m4 \
     maybe-all-make \
     maybe-all-mmalloc \
@@ -995,7 +995,7 @@ info-host:  \
     maybe-info-libgui \
     maybe-info-libiberty \
     maybe-info-libiconv \
-    maybe-info-libtool \
+    maybe-info-libtool_gnu \
     maybe-info-m4 \
     maybe-info-make \
     maybe-info-mmalloc \
@@ -1102,7 +1102,7 @@ dvi-host:  \
     maybe-dvi-libgui \
     maybe-dvi-libiberty \
     maybe-dvi-libiconv \
-    maybe-dvi-libtool \
+    maybe-dvi-libtool_gnu \
     maybe-dvi-m4 \
     maybe-dvi-make \
     maybe-dvi-mmalloc \
@@ -1209,7 +1209,7 @@ html-host:  \
     maybe-html-libgui \
     maybe-html-libiberty \
     maybe-html-libiconv \
-    maybe-html-libtool \
+    maybe-html-libtool_gnu \
     maybe-html-m4 \
     maybe-html-make \
     maybe-html-mmalloc \
@@ -1316,7 +1316,7 @@ TAGS-host:  \
     maybe-TAGS-libgui \
     maybe-TAGS-libiberty \
     maybe-TAGS-libiconv \
-    maybe-TAGS-libtool \
+    maybe-TAGS-libtool_gnu \
     maybe-TAGS-m4 \
     maybe-TAGS-make \
     maybe-TAGS-mmalloc \
@@ -1423,7 +1423,7 @@ install-info-host:  \
     maybe-install-info-libgui \
     maybe-install-info-libiberty \
     maybe-install-info-libiconv \
-    maybe-install-info-libtool \
+    maybe-install-info-libtool_gnu \
     maybe-install-info-m4 \
     maybe-install-info-make \
     maybe-install-info-mmalloc \
@@ -1530,7 +1530,7 @@ installcheck-host:  \
     maybe-installcheck-libgui \
     maybe-installcheck-libiberty \
     maybe-installcheck-libiconv \
-    maybe-installcheck-libtool \
+    maybe-installcheck-libtool_gnu \
     maybe-installcheck-m4 \
     maybe-installcheck-make \
     maybe-installcheck-mmalloc \
@@ -1637,7 +1637,7 @@ mostlyclean-host:  \
     maybe-mostlyclean-libgui \
     maybe-mostlyclean-libiberty \
     maybe-mostlyclean-libiconv \
-    maybe-mostlyclean-libtool \
+    maybe-mostlyclean-libtool_gnu \
     maybe-mostlyclean-m4 \
     maybe-mostlyclean-make \
     maybe-mostlyclean-mmalloc \
@@ -1744,7 +1744,7 @@ clean-host:  \
     maybe-clean-libgui \
     maybe-clean-libiberty \
     maybe-clean-libiconv \
-    maybe-clean-libtool \
+    maybe-clean-libtool_gnu \
     maybe-clean-m4 \
     maybe-clean-make \
     maybe-clean-mmalloc \
@@ -1851,7 +1851,7 @@ distclean-host:  \
     maybe-distclean-libgui \
     maybe-distclean-libiberty \
     maybe-distclean-libiconv \
-    maybe-distclean-libtool \
+    maybe-distclean-libtool_gnu \
     maybe-distclean-m4 \
     maybe-distclean-make \
     maybe-distclean-mmalloc \
@@ -1958,7 +1958,7 @@ maintainer-clean-host:  \
     maybe-maintainer-clean-libgui \
     maybe-maintainer-clean-libiberty \
     maybe-maintainer-clean-libiconv \
-    maybe-maintainer-clean-libtool \
+    maybe-maintainer-clean-libtool_gnu \
     maybe-maintainer-clean-m4 \
     maybe-maintainer-clean-make \
     maybe-maintainer-clean-mmalloc \
@@ -2127,7 +2127,7 @@ do-check: unstage  \
     maybe-check-libgui \
     maybe-check-libiberty \
     maybe-check-libiconv \
-    maybe-check-libtool \
+    maybe-check-libtool_gnu \
     maybe-check-m4 \
     maybe-check-make \
     maybe-check-mmalloc \
@@ -2253,7 +2253,7 @@ install-host-nogcc:  \
     maybe-install-libgui \
     maybe-install-libiberty \
     maybe-install-libiconv \
-    maybe-install-libtool \
+    maybe-install-libtool_gnu \
     maybe-install-m4 \
     maybe-install-make \
     maybe-install-mmalloc \
@@ -2331,7 +2331,7 @@ install-host:  \
     maybe-install-libgui \
     maybe-install-libiberty \
     maybe-install-libiconv \
-    maybe-install-libtool \
+    maybe-install-libtool_gnu \
     maybe-install-m4 \
     maybe-install-make \
     maybe-install-mmalloc \
@@ -21456,96 +21456,96 @@ maintainer-clean-libiconv:
 
 
 
-.PHONY: configure-libtool maybe-configure-libtool
-maybe-configure-libtool:
-@if libtool
-maybe-configure-libtool: configure-libtool
-configure-libtool: 
-	@test ! -f $(HOST_SUBDIR)/libtool/Makefile || exit 0; \
-	$(SHELL) $(srcdir)/mkinstalldirs $(HOST_SUBDIR)/libtool ; \
+.PHONY: configure-libtool_gnu maybe-configure-libtool_gnu
+maybe-configure-libtool_gnu:
+@if libtool_gnu
+maybe-configure-libtool_gnu: configure-libtool_gnu
+configure-libtool_gnu: 
+	@test ! -f $(HOST_SUBDIR)/libtool_gnu/Makefile || exit 0; \
+	$(SHELL) $(srcdir)/mkinstalldirs $(HOST_SUBDIR)/libtool_gnu ; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(HOST_EXPORTS) \
-	echo Configuring in $(HOST_SUBDIR)/libtool; \
-	cd "$(HOST_SUBDIR)/libtool" || exit 1; \
+	echo Configuring in $(HOST_SUBDIR)/libtool_gnu; \
+	cd "$(HOST_SUBDIR)/libtool_gnu" || exit 1; \
 	case $(srcdir) in \
 	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
-	  *) topdir=`echo $(HOST_SUBDIR)/libtool/ | \
+	  *) topdir=`echo $(HOST_SUBDIR)/libtool_gnu/ | \
 		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
 	esac; \
-	srcdiroption="--srcdir=$${topdir}/libtool"; \
-	libsrcdir="$$s/libtool"; \
+	srcdiroption="--srcdir=$${topdir}/libtool_gnu"; \
+	libsrcdir="$$s/libtool_gnu"; \
 	$(SHELL) $${libsrcdir}/configure \
 	  $(HOST_CONFIGARGS) $${srcdiroption}  \
 	  || exit 1
-@endif libtool
+@endif libtool_gnu
 
 
 
 
 
-.PHONY: all-libtool maybe-all-libtool
-maybe-all-libtool:
-@if libtool
-TARGET-libtool=all
-maybe-all-libtool: all-libtool
-all-libtool: configure-libtool
+.PHONY: all-libtool_gnu maybe-all-libtool_gnu
+maybe-all-libtool_gnu:
+@if libtool_gnu
+TARGET-libtool_gnu=all
+maybe-all-libtool_gnu: all-libtool_gnu
+all-libtool_gnu: configure-libtool_gnu
 	@r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(HOST_EXPORTS) \
-	(cd $(HOST_SUBDIR)/libtool && \
-	  $(MAKE) $(FLAGS_TO_PASS)  $(TARGET-libtool))
-@endif libtool
+	(cd $(HOST_SUBDIR)/libtool_gnu && \
+	  $(MAKE) $(FLAGS_TO_PASS)  $(TARGET-libtool_gnu))
+@endif libtool_gnu
 
 
 
 
-.PHONY: check-libtool maybe-check-libtool
-maybe-check-libtool:
-@if libtool
-maybe-check-libtool: check-libtool
+.PHONY: check-libtool_gnu maybe-check-libtool_gnu
+maybe-check-libtool_gnu:
+@if libtool_gnu
+maybe-check-libtool_gnu: check-libtool_gnu
 
-check-libtool:
+check-libtool_gnu:
 	@r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(HOST_EXPORTS) \
-	(cd $(HOST_SUBDIR)/libtool && \
+	(cd $(HOST_SUBDIR)/libtool_gnu && \
 	  $(MAKE) $(FLAGS_TO_PASS)  check)
 
-@endif libtool
+@endif libtool_gnu
 
-.PHONY: install-libtool maybe-install-libtool
-maybe-install-libtool:
-@if libtool
-maybe-install-libtool: install-libtool
+.PHONY: install-libtool_gnu maybe-install-libtool_gnu
+maybe-install-libtool_gnu:
+@if libtool_gnu
+maybe-install-libtool_gnu: install-libtool_gnu
 
-install-libtool: installdirs
+install-libtool_gnu: installdirs
 	@r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(HOST_EXPORTS) \
-	(cd $(HOST_SUBDIR)/libtool && \
+	(cd $(HOST_SUBDIR)/libtool_gnu && \
 	  $(MAKE) $(FLAGS_TO_PASS)  install)
 
-@endif libtool
+@endif libtool_gnu
 
 # Other targets (info, dvi, etc.)
 
-.PHONY: maybe-info-libtool info-libtool
-maybe-info-libtool:
-@if libtool
-maybe-info-libtool: info-libtool
+.PHONY: maybe-info-libtool_gnu info-libtool_gnu
+maybe-info-libtool_gnu:
+@if libtool_gnu
+maybe-info-libtool_gnu: info-libtool_gnu
 
-info-libtool: \
-    configure-libtool 
-	@[ -f ./libtool/Makefile ] || exit 0; \
+info-libtool_gnu: \
+    configure-libtool_gnu 
+	@[ -f ./libtool_gnu/Makefile ] || exit 0; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(HOST_EXPORTS) \
 	for flag in $(EXTRA_HOST_FLAGS) ; do \
 	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
-	echo "Doing info in libtool" ; \
-	(cd $(HOST_SUBDIR)/libtool && \
+	echo "Doing info in libtool_gnu" ; \
+	(cd $(HOST_SUBDIR)/libtool_gnu && \
 	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
 	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
 	          "RANLIB=$${RANLIB}" \
@@ -21553,24 +21553,24 @@ info-libtool: \
 	          info) \
 	  || exit 1
 
-@endif libtool
+@endif libtool_gnu
 
-.PHONY: maybe-dvi-libtool dvi-libtool
-maybe-dvi-libtool:
-@if libtool
-maybe-dvi-libtool: dvi-libtool
+.PHONY: maybe-dvi-libtool_gnu dvi-libtool_gnu
+maybe-dvi-libtool_gnu:
+@if libtool_gnu
+maybe-dvi-libtool_gnu: dvi-libtool_gnu
 
-dvi-libtool: \
-    configure-libtool 
-	@[ -f ./libtool/Makefile ] || exit 0; \
+dvi-libtool_gnu: \
+    configure-libtool_gnu 
+	@[ -f ./libtool_gnu/Makefile ] || exit 0; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(HOST_EXPORTS) \
 	for flag in $(EXTRA_HOST_FLAGS) ; do \
 	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
-	echo "Doing dvi in libtool" ; \
-	(cd $(HOST_SUBDIR)/libtool && \
+	echo "Doing dvi in libtool_gnu" ; \
+	(cd $(HOST_SUBDIR)/libtool_gnu && \
 	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
 	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
 	          "RANLIB=$${RANLIB}" \
@@ -21578,24 +21578,24 @@ dvi-libtool: \
 	          dvi) \
 	  || exit 1
 
-@endif libtool
+@endif libtool_gnu
 
-.PHONY: maybe-html-libtool html-libtool
-maybe-html-libtool:
-@if libtool
-maybe-html-libtool: html-libtool
+.PHONY: maybe-html-libtool_gnu html-libtool_gnu
+maybe-html-libtool_gnu:
+@if libtool_gnu
+maybe-html-libtool_gnu: html-libtool_gnu
 
-html-libtool: \
-    configure-libtool 
-	@[ -f ./libtool/Makefile ] || exit 0; \
+html-libtool_gnu: \
+    configure-libtool_gnu 
+	@[ -f ./libtool_gnu/Makefile ] || exit 0; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(HOST_EXPORTS) \
 	for flag in $(EXTRA_HOST_FLAGS) ; do \
 	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
-	echo "Doing html in libtool" ; \
-	(cd $(HOST_SUBDIR)/libtool && \
+	echo "Doing html in libtool_gnu" ; \
+	(cd $(HOST_SUBDIR)/libtool_gnu && \
 	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
 	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
 	          "RANLIB=$${RANLIB}" \
@@ -21603,24 +21603,24 @@ html-libtool: \
 	          html) \
 	  || exit 1
 
-@endif libtool
+@endif libtool_gnu
 
-.PHONY: maybe-TAGS-libtool TAGS-libtool
-maybe-TAGS-libtool:
-@if libtool
-maybe-TAGS-libtool: TAGS-libtool
+.PHONY: maybe-TAGS-libtool_gnu TAGS-libtool_gnu
+maybe-TAGS-libtool_gnu:
+@if libtool_gnu
+maybe-TAGS-libtool_gnu: TAGS-libtool_gnu
 
-TAGS-libtool: \
-    configure-libtool 
-	@[ -f ./libtool/Makefile ] || exit 0; \
+TAGS-libtool_gnu: \
+    configure-libtool_gnu 
+	@[ -f ./libtool_gnu/Makefile ] || exit 0; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(HOST_EXPORTS) \
 	for flag in $(EXTRA_HOST_FLAGS) ; do \
 	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
-	echo "Doing TAGS in libtool" ; \
-	(cd $(HOST_SUBDIR)/libtool && \
+	echo "Doing TAGS in libtool_gnu" ; \
+	(cd $(HOST_SUBDIR)/libtool_gnu && \
 	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
 	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
 	          "RANLIB=$${RANLIB}" \
@@ -21628,25 +21628,25 @@ TAGS-libtool: \
 	          TAGS) \
 	  || exit 1
 
-@endif libtool
+@endif libtool_gnu
 
-.PHONY: maybe-install-info-libtool install-info-libtool
-maybe-install-info-libtool:
-@if libtool
-maybe-install-info-libtool: install-info-libtool
+.PHONY: maybe-install-info-libtool_gnu install-info-libtool_gnu
+maybe-install-info-libtool_gnu:
+@if libtool_gnu
+maybe-install-info-libtool_gnu: install-info-libtool_gnu
 
-install-info-libtool: \
-    configure-libtool \
-    info-libtool 
-	@[ -f ./libtool/Makefile ] || exit 0; \
+install-info-libtool_gnu: \
+    configure-libtool_gnu \
+    info-libtool_gnu 
+	@[ -f ./libtool_gnu/Makefile ] || exit 0; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(HOST_EXPORTS) \
 	for flag in $(EXTRA_HOST_FLAGS) ; do \
 	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
-	echo "Doing install-info in libtool" ; \
-	(cd $(HOST_SUBDIR)/libtool && \
+	echo "Doing install-info in libtool_gnu" ; \
+	(cd $(HOST_SUBDIR)/libtool_gnu && \
 	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
 	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
 	          "RANLIB=$${RANLIB}" \
@@ -21654,24 +21654,24 @@ install-info-libtool: \
 	          install-info) \
 	  || exit 1
 
-@endif libtool
+@endif libtool_gnu
 
-.PHONY: maybe-installcheck-libtool installcheck-libtool
-maybe-installcheck-libtool:
-@if libtool
-maybe-installcheck-libtool: installcheck-libtool
+.PHONY: maybe-installcheck-libtool_gnu installcheck-libtool_gnu
+maybe-installcheck-libtool_gnu:
+@if libtool_gnu
+maybe-installcheck-libtool_gnu: installcheck-libtool_gnu
 
-installcheck-libtool: \
-    configure-libtool 
-	@[ -f ./libtool/Makefile ] || exit 0; \
+installcheck-libtool_gnu: \
+    configure-libtool_gnu 
+	@[ -f ./libtool_gnu/Makefile ] || exit 0; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(HOST_EXPORTS) \
 	for flag in $(EXTRA_HOST_FLAGS) ; do \
 	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
-	echo "Doing installcheck in libtool" ; \
-	(cd $(HOST_SUBDIR)/libtool && \
+	echo "Doing installcheck in libtool_gnu" ; \
+	(cd $(HOST_SUBDIR)/libtool_gnu && \
 	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
 	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
 	          "RANLIB=$${RANLIB}" \
@@ -21679,23 +21679,23 @@ installcheck-libtool: \
 	          installcheck) \
 	  || exit 1
 
-@endif libtool
+@endif libtool_gnu
 
-.PHONY: maybe-mostlyclean-libtool mostlyclean-libtool
-maybe-mostlyclean-libtool:
-@if libtool
-maybe-mostlyclean-libtool: mostlyclean-libtool
+.PHONY: maybe-mostlyclean-libtool_gnu mostlyclean-libtool_gnu
+maybe-mostlyclean-libtool_gnu:
+@if libtool_gnu
+maybe-mostlyclean-libtool_gnu: mostlyclean-libtool_gnu
 
-mostlyclean-libtool: 
-	@[ -f ./libtool/Makefile ] || exit 0; \
+mostlyclean-libtool_gnu: 
+	@[ -f ./libtool_gnu/Makefile ] || exit 0; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(HOST_EXPORTS) \
 	for flag in $(EXTRA_HOST_FLAGS) ; do \
 	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
-	echo "Doing mostlyclean in libtool" ; \
-	(cd $(HOST_SUBDIR)/libtool && \
+	echo "Doing mostlyclean in libtool_gnu" ; \
+	(cd $(HOST_SUBDIR)/libtool_gnu && \
 	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
 	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
 	          "RANLIB=$${RANLIB}" \
@@ -21703,23 +21703,23 @@ mostlyclean-libtool:
 	          mostlyclean) \
 	  || exit 1
 
-@endif libtool
+@endif libtool_gnu
 
-.PHONY: maybe-clean-libtool clean-libtool
-maybe-clean-libtool:
-@if libtool
-maybe-clean-libtool: clean-libtool
+.PHONY: maybe-clean-libtool_gnu clean-libtool_gnu
+maybe-clean-libtool_gnu:
+@if libtool_gnu
+maybe-clean-libtool_gnu: clean-libtool_gnu
 
-clean-libtool: 
-	@[ -f ./libtool/Makefile ] || exit 0; \
+clean-libtool_gnu: 
+	@[ -f ./libtool_gnu/Makefile ] || exit 0; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(HOST_EXPORTS) \
 	for flag in $(EXTRA_HOST_FLAGS) ; do \
 	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
-	echo "Doing clean in libtool" ; \
-	(cd $(HOST_SUBDIR)/libtool && \
+	echo "Doing clean in libtool_gnu" ; \
+	(cd $(HOST_SUBDIR)/libtool_gnu && \
 	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
 	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
 	          "RANLIB=$${RANLIB}" \
@@ -21727,23 +21727,23 @@ clean-libtool:
 	          clean) \
 	  || exit 1
 
-@endif libtool
+@endif libtool_gnu
 
-.PHONY: maybe-distclean-libtool distclean-libtool
-maybe-distclean-libtool:
-@if libtool
-maybe-distclean-libtool: distclean-libtool
+.PHONY: maybe-distclean-libtool_gnu distclean-libtool_gnu
+maybe-distclean-libtool_gnu:
+@if libtool_gnu
+maybe-distclean-libtool_gnu: distclean-libtool_gnu
 
-distclean-libtool: 
-	@[ -f ./libtool/Makefile ] || exit 0; \
+distclean-libtool_gnu: 
+	@[ -f ./libtool_gnu/Makefile ] || exit 0; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(HOST_EXPORTS) \
 	for flag in $(EXTRA_HOST_FLAGS) ; do \
 	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
-	echo "Doing distclean in libtool" ; \
-	(cd $(HOST_SUBDIR)/libtool && \
+	echo "Doing distclean in libtool_gnu" ; \
+	(cd $(HOST_SUBDIR)/libtool_gnu && \
 	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
 	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
 	          "RANLIB=$${RANLIB}" \
@@ -21751,23 +21751,23 @@ distclean-libtool:
 	          distclean) \
 	  || exit 1
 
-@endif libtool
+@endif libtool_gnu
 
-.PHONY: maybe-maintainer-clean-libtool maintainer-clean-libtool
-maybe-maintainer-clean-libtool:
-@if libtool
-maybe-maintainer-clean-libtool: maintainer-clean-libtool
+.PHONY: maybe-maintainer-clean-libtool_gnu maintainer-clean-libtool_gnu
+maybe-maintainer-clean-libtool_gnu:
+@if libtool_gnu
+maybe-maintainer-clean-libtool_gnu: maintainer-clean-libtool_gnu
 
-maintainer-clean-libtool: 
-	@[ -f ./libtool/Makefile ] || exit 0; \
+maintainer-clean-libtool_gnu: 
+	@[ -f ./libtool_gnu/Makefile ] || exit 0; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(HOST_EXPORTS) \
 	for flag in $(EXTRA_HOST_FLAGS) ; do \
 	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
-	echo "Doing maintainer-clean in libtool" ; \
-	(cd $(HOST_SUBDIR)/libtool && \
+	echo "Doing maintainer-clean in libtool_gnu" ; \
+	(cd $(HOST_SUBDIR)/libtool_gnu && \
 	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
 	          "CC=$${CC}" "CXX=$${CXX}" "LD=$${LD}" "NM=$${NM}" \
 	          "RANLIB=$${RANLIB}" \
@@ -21775,7 +21775,7 @@ maintainer-clean-libtool:
 	          maintainer-clean) \
 	  || exit 1
 
-@endif libtool
+@endif libtool_gnu
 
 
 
@@ -41873,6 +41873,7 @@ configure-stage3-bfd: maybe-configure-stage3-intl
 configure-stage4-bfd: maybe-configure-stage4-intl
 configure-stageprofile-bfd: maybe-configure-stageprofile-intl
 configure-stagefeedback-bfd: maybe-configure-stagefeedback-intl
+configure-bfd: maybe-configure-libtool_gnu
 all-bfd: maybe-all-libiberty
 
 all-stage1-bfd: maybe-all-stage1-libiberty
@@ -41881,6 +41882,7 @@ all-stage3-bfd: maybe-all-stage3-libiberty
 all-stage4-bfd: maybe-all-stage4-libiberty
 all-stageprofile-bfd: maybe-all-stageprofile-libiberty
 all-stagefeedback-bfd: maybe-all-stagefeedback-libiberty
+all-bfd: maybe-all-libtool_gnu
 all-bfd: maybe-all-intl
 
 all-stage1-bfd: maybe-all-stage1-intl
@@ -42296,12 +42298,16 @@ all-gzip: maybe-all-zlib
 all-gzip: maybe-all-build-texinfo
 all-hello: maybe-all-intl
 all-hello: maybe-all-build-texinfo
+all-libtool_gnu: maybe-all-m4
+all-libtool_gnu: maybe-all-make
+all-libtool_gnu: maybe-all-autoconf
+all-libtool_gnu: maybe-all-automake
 all-m4: maybe-all-intl
 all-m4: maybe-all-build-texinfo
 all-make: maybe-all-intl
 all-make: maybe-all-build-texinfo
+all-make: maybe-all-texinfo
 all-patch: maybe-all-build-texinfo
-all-make: maybe-all-build-texinfo
 all-prms: maybe-all-libiberty
 all-recode: maybe-all-build-texinfo
 all-sed: maybe-all-build-texinfo

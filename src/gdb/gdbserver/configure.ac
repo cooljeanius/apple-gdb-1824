@@ -87,7 +87,9 @@ AC_CHECK_TYPES([task_t],[],[],[
 #ifdef HAVE_MACH_MACH_H
 # include <mach/mach.h>
 #else
-# warning this conftest expects <mach/mach.h> to be included.
+# ifdef __APPLE__
+#  warning this conftest expects <mach/mach.h> to be included.
+# endif /* __APPLE__ */
 #endif /* HAVE_MACH_MACH_H */
 ])
 AC_CHECK_TYPES([socklen_t],[],[],[
@@ -98,14 +100,18 @@ AC_CHECK_TYPES([mach_vm_size_t],[],[],[
 #ifdef HAVE_MACH_MACH_VM_H
 # include <mach/mach_vm.h>
 #else
-# warning this conftest expects <mach/mach_vm.h> to be included.
+# ifdef __APPLE__
+#  warning this conftest expects <mach/mach_vm.h> to be included.
+# endif /* __APPLE__ */
 #endif /* HAVE_MACH_MACH_VM_H */
 ])
 AC_CHECK_TYPES([vm_size_t],[],[],[
 #ifdef HAVE_MACH_MACH_VM_H
 # include <mach/mach_vm.h>
 #else
-# warning this conftest expects <mach/mach_vm.h> to be included.
+# ifdef __APPLE__
+#  warning this conftest expects <mach/mach_vm.h> to be included.
+# endif /* __APPLE__ */
 #endif /* HAVE_MACH_MACH_VM_H */
 ])
 AC_CHECK_TYPES([gregset_t])
@@ -151,7 +157,7 @@ if test "${srv_linux_regsets}" = "yes"; then
   AC_MSG_CHECKING([for PTRACE_GETREGS])
   AC_CACHE_VAL([gdbsrv_cv_have_ptrace_getregs],
   [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/ptrace.h>]], [[PTRACE_GETREGS;]])],[gdbsrv_cv_have_ptrace_getregs=yes],[gdbsrv_cv_have_ptrace_getregs=no])])
-  AC_MSG_RESULT([$gdbsrv_cv_have_ptrace_getregs])
+  AC_MSG_RESULT([${gdbsrv_cv_have_ptrace_getregs}])
   if test "${gdbsrv_cv_have_ptrace_getregs}" = "yes"; then
     AC_DEFINE([HAVE_PTRACE_GETREGS],[1],
 	      [Define if the target supports PTRACE_GETREGS for register ]
@@ -161,7 +167,7 @@ if test "${srv_linux_regsets}" = "yes"; then
   AC_MSG_CHECKING([for PTRACE_GETFPXREGS])
   AC_CACHE_VAL([gdbsrv_cv_have_ptrace_getfpxregs],
   [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/ptrace.h>]], [[PTRACE_GETFPXREGS;]])],[gdbsrv_cv_have_ptrace_getfpxregs=yes],[gdbsrv_cv_have_ptrace_getfpxregs=no])])
-  AC_MSG_RESULT([$gdbsrv_cv_have_ptrace_getfpxregs])
+  AC_MSG_RESULT([${gdbsrv_cv_have_ptrace_getfpxregs}])
   if test "${gdbsrv_cv_have_ptrace_getfpxregs}" = "yes"; then
     AC_DEFINE([HAVE_PTRACE_GETFPXREGS],[1],
 	      [Define if the target supports PTRACE_GETFPXREGS for extended ]
@@ -193,7 +199,7 @@ if test "${ac_cv_header_sys_procfs_h}" = yes; then
          return 0;
        }]])],[gdb_cv_prfpregset_t_broken=no],[gdb_cv_prfpregset_t_broken=yes],[gdb_cv_prfpregset_t_broken=yes])])
     AC_MSG_RESULT([$gdb_cv_prfpregset_t_broken])
-    if test $gdb_cv_prfpregset_t_broken = yes; then
+    if test ${gdb_cv_prfpregset_t_broken} = yes; then
       AC_DEFINE([PRFPREGSET_T_BROKEN],[1],
 		[Define if the prfpregset_t type is broken.])
     fi
@@ -202,9 +208,9 @@ if test "${ac_cv_header_sys_procfs_h}" = yes; then
   BFD_HAVE_SYS_PROCFS_TYPE([elf_fpregset_t])
 fi
 
-srv_thread_depfiles=
-srv_libs=
-USE_THREAD_DB=
+srv_thread_depfiles=""
+srv_libs=""
+USE_THREAD_DB=""
 
 if test "${srv_linux_thread_db}" = "yes"; then
   SRV_CHECK_THREAD_DB

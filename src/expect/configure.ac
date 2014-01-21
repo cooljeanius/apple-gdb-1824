@@ -79,7 +79,7 @@ EXP_CFLAGS=""
 # If we built a cygwin-specific tcl, use it here.
 case "${host}" in
 *-*-cygwin*)
-  if test -d $srcdir/../tcl/cygwin/.
+  if test -d ${srcdir}/../tcl/cygwin/.
   then
     TCL_BUILD_LIB_SPEC="../tcl/cygwin/libtcl_cygwin.a"
     # Use the same static lib for installed_expect
@@ -299,7 +299,7 @@ case "${host}" in
   *-*-solaris*)		solaris=1;;
 esac
 
-if test $solaris -eq 1 ; then
+if test ${solaris} -eq 1 ; then
   AC_MSG_RESULT([yes])
   AC_DEFINE([SOLARIS],[1],[Define to 1 for Solaris])
 else
@@ -320,7 +320,7 @@ AC_CHECK_FUNC([sin],[],[LIBS="${LIBS} -lm"])
 # If defective, add to all three LIBS. (It is not actually necessary for
 # EXP_LIBS since -Xp will just be ignored the way that EXP_LIBS is used in
 # the Makefile, but we include it for consistency.)
-if test $iunix -eq 1 ; then
+if test ${iunix} -eq 1 ; then
   EXP_LIBS=${LIBS}
   LIBS=${EXP_AND_TCL_LIBS}
   AC_CHECK_FUNC([strftime],[],[
@@ -348,7 +348,7 @@ CY_AC_PATH_ITCLH
 AC_MSG_CHECKING([if generating shared or nonshared library])
 AC_ARG_ENABLE([shared],
 	[AS_HELP_STRING([--enable-shared],[build libexpect as a shared library])],
-	[enable_shared=$enableval],[enable_shared=no])
+	[enable_shared=${enableval}],[enable_shared=no])
 if test "$enable_shared" = "yes" && test "x${TCL_SHLIB_SUFFIX}" != "x" ; then
   AC_MSG_RESULT([both shared and unshared])
 else
@@ -582,7 +582,7 @@ LIBS=${EXP_LIBS}
 case "${host}" in
 *-*-linux*) ;;
 *-*-cygwin*)
-  EXP_AND_TCL_LIBS="$EXP_AND_TCL_LIBS -luser32" ;;
+  EXP_AND_TCL_LIBS="${EXP_AND_TCL_LIBS} -luser32" ;;
 *)
   unset ac_cv_func_openpty
   AC_CHECK_FUNC([openpty],[openpty=1],[openpty=0])
@@ -593,7 +593,7 @@ case "${host}" in
 	  # the default behavior, we must also handle augment LIBS too.
 	  # This need NOT be done in the 2nd and 3rd tests.
 	  AC_DEFINE([HAVE_OPENPTY],[1],[Define to 1 if you have the openpty function.])
-	  LIBS="$LIBS -lutil"
+	  LIBS="${LIBS} -lutil"
     ],[
 	  AC_CHECK_LIB([util],[main])
     ])

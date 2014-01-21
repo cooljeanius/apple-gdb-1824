@@ -155,7 +155,7 @@ AC_FUNC_MALLOC
 AC_FUNC_MMAP
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([atexit alarm clock_gettime memset munmap select socket \
-                strchr strerror strstr strtol])
+                strchr strerror strstr strtol strtoul])
 
 # Other
 AC_EXEEXT

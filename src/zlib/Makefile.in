@@ -258,10 +258,16 @@ clean:
 	rm -rf *.dSYM
 	rm -f *.gcda *.gcno *.gcov
 	rm -f contrib/infback9/*.gcda contrib/infback9/*.gcno contrib/infback9/*.gcov
+	-rm -f CMakeCache.txt
+	-if test -d test/Apple_test; then (cd test/Apple_test && rm -f *.o tmpfile* *.gz compress decompress); fi
+	-if test -e contrib/perl/Compress-Raw-Zlib-2.063/Makefile; then (cd contrib/perl/Compress-Raw-Zlib-2.063 && make clean); fi
 
 maintainer-clean: distclean
 distclean: clean zconf zconf.h.cmakein docs
 	rm -f Makefile zlib.pc configure.log
+	rm -rf autom4te.cache || rmdir autom4te.cache
+	-if test -e zlib.xcodeproj; then (rm -rf build || rmdir build); fi
+	-if test -e contrib/perl/Compress-Raw-Zlib-2.063/Makefile; then (cd contrib/perl/Compress-Raw-Zlib-2.063 && make distclean); fi
 	-@rm -f .DS_Store
 	-@printf 'all:\n\t-@echo "Please use ./configure first.  Thank you."\n' > Makefile
 	-@printf '\ndistclean:\n\tmake -f Makefile.in distclean\n' >> Makefile

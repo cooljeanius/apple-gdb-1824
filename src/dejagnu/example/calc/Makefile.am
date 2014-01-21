@@ -24,3 +24,5 @@ calc_SOURCES = calc.c
 
 # renamed because the old variable overrode the default Automake one:
 RUNTESTDEFAULTFLAGSLOCAL = --tool calc CALC=`pwd`/calc --srcdir $$srcdir/testsuite
+
+CLEANFILES = *~ *.o .DS_Store

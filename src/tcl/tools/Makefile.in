@@ -32,10 +32,11 @@ ITCL_DOCS	= \
 	$(ITCL_SOURCE)/itcl/doc/*.[13n] \
 	$(ITCL_SOURCE)/itk/doc/*.[13n]
 
-#	$(ITCL_SOURCE)/iwidgets3.0.0/doc/*.[13n]
+EXTRA_ITCL_DOCS	= \
+	$(ITCL_SOURCE)/iwidgets3.0.0/doc/*.[13n]
 
 COREDOCS	= $(TCL_DOCS) $(TK_DOCS) 
-#PRODOCS	= $(COREDOCS) $(PRO_DOCS) $(ITCL_DOCS)
+PRODOCS_WITH_ITCL = $(COREDOCS) $(PRO_DOCS) $(ITCL_DOCS)
 PRODOCS		= $(COREDOCS) $(PRO_DOCS) 
 TCLSH		= $(TCL_BIN_DIR)/tclsh
 CC		= @CC@
@@ -64,6 +65,11 @@ man2tcl: $(TCL_SOURCE)/tools/man2tcl.c
 
 clean:
 	-rm -f man2tcl *.o *.cnt *.rtf
+.PHONY: clean
+
+distclean: clean
+	-rm -f Makefile
+.PHONY: distclean
 
 helpfile:
 	hcw /c /e tcl.hpj

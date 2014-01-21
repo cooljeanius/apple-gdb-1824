@@ -177,6 +177,7 @@ distclean maintainer-clean realclean: clean
 	-rm -f *~ core
 	-rm -f Makefile config.status *-init.exp
 	-rm -fr *.log summary detail *.plog *.sum *.psum site.*
+	-rm -fr autom4te.cache || rmdir autom4te.cache
 	if [ x"${ALL_SUBDIRS}" != x ] ; then \
 	    for dir in ${ALL_SUBDIRS}; \
 	    do \

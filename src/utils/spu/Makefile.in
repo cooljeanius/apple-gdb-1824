@@ -48,7 +48,7 @@ INSTALL = @INSTALL@
 INSTALL_PROGRAM = $(INSTALL)
 INSTALL_DATA = $(INSTALL)
 
-# Where is the "include" directory?  Traditionally ../include or ./include
+# Where is the "include" directory? Traditionally ../include or ./include
 
 INCLUDE_DIR = ${srcdir}/../../include
 
@@ -80,10 +80,11 @@ spu.o: $(srcdir)/spu.c
 mostlyclean:
 
 clean: mostlyclean
-	rm -f *.o spu *~
+	rm -f *.o spu *~ .DS_Store
 
 distclean: clean
 	rm -f Makefile config.status config.log config.cache
+	rm -fr autom4te.cache || rmdir autom4te.cache
 
 maintainer-clean realclean: distclean
 
@@ -93,5 +94,5 @@ Makefile: $(srcdir)/Makefile.in config.status
 config.status: $(srcdir)/configure
 	./config.status --recheck
 
-$(srcdir)/configure: $(srcdir)/configure.in
-	cd $(srcdir) && autoconf
+$(srcdir)/configure: $(srcdir)/configure.ac
+	cd $(srcdir) && autoconf --force

@@ -123,6 +123,7 @@ distclean mostlyclean maintainer-clean realclean: clean
 	rm -f TAGS
 	rm -f Makefile config.cache config.log config.status
 	rm -f cconfig.h config.h stamp-h
+	rm -fr autom4te.cache || rmdir autom4te.cache
 
 # Dummy target to force execution of dependent targets.
 force:

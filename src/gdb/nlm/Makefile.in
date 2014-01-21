@@ -146,8 +146,9 @@ clean:
 	rm -f *.o ${ADD_FILES} *~
 	rm -f gdbserve.O gdbserve.nlm core make.log
 
-distclean: clean TAGS
+distclean: clean
 	rm -f config.log config.cache config.status
+	rm -fr autom4te.cache || rmdir autom4te.cache
 	rm -f Makefile
 
 maintainer-clean realclean: clean

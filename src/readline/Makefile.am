@@ -284,22 +284,26 @@ tags-local: force
 clean-local: config.status force
 	$(RM) $(OBJECTS) $(STATIC_LIBS)
 	$(RM) readline readline.exe
-	-( cd shlib && $(MAKE) $(MFLAGS) $@ )
-	-( cd doc && $(MAKE) $(MFLAGS) $@ )
-	-( cd examples && $(MAKE) $(MFLAGS) $@ )
+	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(MFLAGS) $@ ; fi )
 
 mostlyclean-local: clean-local config.status
-	-( cd shlib && $(MAKE) $(MFLAGS) $@ )
-	-( cd doc && $(MAKE) $(MFLAGS) $@ )
-	-( cd examples && $(MAKE) $(MFLAGS) $@ )
+	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(MFLAGS) $@ ; fi )
 
 distclean-local maintainer-clean-local: clean-local config.status
-	-( cd shlib && $(MAKE) $(MFLAGS) $@ )
-	-( cd doc && $(MAKE) $(MFLAGS) $@ )
-	-( cd examples && $(MAKE) $(MFLAGS) $@ )
+	-( if test -e shlib/Makefile; then cd shlib && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e doc/Makefile; then cd doc && $(MAKE) $(MFLAGS) $@ ; fi )
+	-( if test -e examples/Makefile; then cd examples && $(MAKE) $(MFLAGS) $@ ; fi )
 	$(RM) Makefile
 	$(RM) $(CREATED_CONFIGURE)
 	$(RM) $(CREATED_TAGS)
+	$(RM) -r autom4te.cache || rmdir autom4te.cache
+
+CLEANFILES = *~
+DISTCLEANFILES = .DS_Store
 
 info dvi:
 	-( cd doc && $(MAKE) $(MFLAGS) $@ )

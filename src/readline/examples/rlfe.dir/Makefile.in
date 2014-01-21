@@ -95,9 +95,11 @@ tty.c:	tty.sh
 
 mostlyclean:
 	rm -f $(OFILES) rlfe *.o
+.PHONY: mostlyclean
 
-clean celan: mostlyclean
-	rm -f tty.c term.h comm.h osdef.h kmapdef.c core
+clean: mostlyclean
+	rm -f tty.c term.h comm.h osdef.h kmapdef.c core *~
+.PHONY: clean
 
 # Delete all files from the current directory that are created by 
 # configuring or building the program.
@@ -108,21 +110,27 @@ distclean-local: mostlyclean
 	rm -f $(SCREEN).tar $(SCREEN).tar.gz
 	rm -f config.status Makefile
 	rm -f osdef.h doc/Makefile
+	rm -rf autom4te.cache || rmdir autom4te.cache
+.PHONY: distclean-local
+
+distclean: clean distclean-local
+.PHONY: distclean
 
 maintainer-clean:
 	@echo "This command is not even intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
-
+.PHONY: maintainer-clean
 
 # Delete everything from the current directory that can be
 # reconstructed with this Makefile.
-realclean: .version mostlyclean
+realclean: maintainer-clean .version mostlyclean
 	rm -f $(SCREEN).tar $(SCREEN).tar.gz
 	rm -f config.status Makefile doc/Makefile
 	rm -f tty.c term.h comm.h osdef.h kmapdef.c
 	rm -f config.h
 	echo "install all Makefiles and config:" > Makefile
 	echo "  sh ./configure" >> Makefile
+.PHONY: realclean
 
 tags TAGS: $(CFILES)
 	-ctags    *.sh $(CFILES) *.h
@@ -133,10 +141,13 @@ dist: .version $(SCREEN).tar.gz
 
 # Perform self-tests (if any).
 check:
+	@true
+.PHONY: check
 
 config:
 	rm -f config.cache
 	sh ./configure
+.PHONY: config
 
 Makefile: Makefile.in config.status
 

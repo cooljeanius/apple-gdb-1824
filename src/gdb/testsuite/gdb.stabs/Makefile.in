@@ -11,6 +11,7 @@ clean mostlyclean:
 
 distclean maintainer-clean realclean: clean
 	-rm -f Makefile config.status config.log
+	-rm -fr autom4te.cache || rmdir autom4te.cache
 
 Makefile: $(srcdir)/Makefile.in $(srcdir)/configure.ac
 	$(SHELL) ./config.status --recheck

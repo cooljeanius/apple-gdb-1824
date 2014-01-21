@@ -193,8 +193,8 @@ OFILES = testglue.o stub-loader.o
 
 ALL_OFILES = $(OFILES) i960glue.o
 
-CLEANFILES = x.log x.sum site.bak setval.tmp $(ALL_OFILES)
-DISTCLEANFILES = xXx.log xXx.sum testrun.log testrun.sum
+CLEANFILES = x.log x.sum site.bak setval.tmp $(ALL_OFILES) *~
+DISTCLEANFILES = xXx.log xXx.sum testrun.log testrun.sum .DS_Store
 
 CFILES = testglue.c stub-loader.c i960glue.c
 
@@ -242,6 +242,7 @@ clean-local: Makefile
 .PHONY: -c
 
 distclean-local: config.status Makefile
+	-rm -fr autom4te.cache || rmdir autom4te.cache
 .PHONY: distclean-local
 
 # Set ourselves up to build a RedHat package

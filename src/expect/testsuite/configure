@@ -2428,20 +2428,26 @@ $as_echo "$as_me: WARNING: Cannot find Tcl configuration definitions" >&2;}
   else
     no_tcl=
     TCLCONFIG=${ac_cv_c_tclconfig}/tclConfig.sh
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: found $TCLCONFIG" >&5
-$as_echo "found $TCLCONFIG" >&6; }
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: found ${TCLCONFIG}" >&5
+$as_echo "found ${TCLCONFIG}" >&6; }
   fi
 fi
 
 
 
-    . $TCLCONFIG
+    if test ! -z "${TCLCONFIG}"; then
+      if test -f "${TCLCONFIG}"; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: sourcing ${TCLCONFIG}" >&5
+$as_echo "$as_me: sourcing ${TCLCONFIG}" >&6;}
+        . ${TCLCONFIG}
+      fi
+    fi
 
 
 
 # Tcl defines TCL_SHLIB_SUFFIX but TCL_SHARED_LIB_SUFFIX then looks for it
 # as just SHLIB_SUFFIX. How bizarre.
-    SHLIB_SUFFIX=$TCL_SHLIB_SUFFIX
+    SHLIB_SUFFIX=${TCL_SHLIB_SUFFIX}
 
 
 

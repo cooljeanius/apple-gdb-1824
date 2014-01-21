@@ -34,6 +34,7 @@ distclean maintainer-clean realclean: clean
 	-rm -f Makefile config.status config.log
 	-rm -f *-init.exp
 	-rm -fr *.log summary detail *.plog *.sum *.psum site.*
+	-rm -fr autom4te.cache || rmdir autom4te.cache
 	if [ x"${SUBDIRS}" != x ] ; then \
 	    for dir in ${SUBDIRS}; \
 	    do \

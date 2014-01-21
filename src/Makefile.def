@@ -93,7 +93,7 @@ host_modules= { module= libiconv;
                 missing= install-pdf;
                 missing= install-html;
                 missing= install-info; };
-host_modules= { module= libtool; };
+host_modules= { module= libtool_gnu; };
 host_modules= { module= m4; };
 host_modules= { module= make; };
 host_modules= { module= mmalloc; no_check=true; };
@@ -339,7 +339,9 @@ dependencies = { module=all-libgui; on=all-itcl; };
 // Host modules specific to binutils.
 dependencies = { module=configure-bfd; on=configure-libiberty; hard=true; };
 dependencies = { module=configure-bfd; on=configure-intl; };
+dependencies = { module=configure-bfd; on=configure-libtool_gnu; };
 dependencies = { module=all-bfd; on=all-libiberty; };
+dependencies = { module=all-bfd; on=all-libtool_gnu; };
 dependencies = { module=all-bfd; on=all-intl; };
 dependencies = { module=all-bfd; on=all-zlib; };
 
@@ -483,12 +485,16 @@ dependencies = { module=all-gzip; on=all-zlib; };
 dependencies = { module=all-gzip; on=all-build-texinfo; };
 dependencies = { module=all-hello; on=all-intl; };
 dependencies = { module=all-hello; on=all-build-texinfo; };
+dependencies = { module=all-libtool_gnu; on=all-m4; };
+dependencies = { module=all-libtool_gnu; on=all-make; };
+dependencies = { module=all-libtool_gnu; on=all-autoconf; };
+dependencies = { module=all-libtool_gnu; on=all-automake; };
 dependencies = { module=all-m4; on=all-intl; };
 dependencies = { module=all-m4; on=all-build-texinfo; };
 dependencies = { module=all-make; on=all-intl; };
 dependencies = { module=all-make; on=all-build-texinfo; };
+dependencies = { module=all-make; on=all-texinfo; };
 dependencies = { module=all-patch; on=all-build-texinfo; };
-dependencies = { module=all-make; on=all-build-texinfo; };
 dependencies = { module=all-prms; on=all-libiberty; };
 dependencies = { module=all-recode; on=all-build-texinfo; };
 dependencies = { module=all-sed; on=all-build-texinfo; };
@@ -498,7 +504,7 @@ dependencies = { module=configure-utils; on=all-autogen; };
 dependencies = { module=all-utils; on=all-autogen; };
 dependencies = { module=all-uudecode; on=all-build-texinfo; };
 
-// Target modules.  These can also have dependencies on the language
+// Target modules. These can also have dependencies on the language
 // environment (e.g. on libstdc++).
 lang_env_dependencies = { module=boehm-gc; };
 lang_env_dependencies = { module=gperf; cxx=true; };

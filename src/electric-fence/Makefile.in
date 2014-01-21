@@ -262,6 +262,7 @@ mostlyclean clean:
 distclean:	clean 
 		rm -f config.cache config.log config.status
 		rm -f Makefile depend
+		rm -fr autom4te.cache || rmdir autom4te.cache
 
 maintainer-clean realclean: distclean clean
 		@echo "This command is intended for maintainers to use;"

@@ -196,4 +196,6 @@ _gen_ChangeId() {
 	git hash-object -t commit --stdin
 }
 
+set -x
+
 add_ChangeId

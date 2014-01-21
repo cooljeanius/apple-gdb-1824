@@ -14,7 +14,7 @@ RUNTESTLOCAL = ` \
   else echo "ERROR: runtest not found" ; exit 1; fi`
 RUNTESTDEFAULTFLAGSLOCAL = --srcdir $$srcdir
 
-CLEANFILES = *.log *.sum site.bak setval.tmp
+CLEANFILES = *.log *.sum site.bak setval.tmp .DS_Store
 
 SUBDIRS = libdejagnu .
 

@@ -194,7 +194,7 @@ host_libs="intl electric-fence mmalloc libiberty libdecnumber opcodes bfd readli
 # binutils, gas and ld appear in that order because it makes sense to run
 # "make check" in that particular order.
 # If --enable-gold is used, "gold" may replace "ld".
-host_tools="texinfo byacc flex bison binutils gas ld fixincludes gcc sid sim gdb make patch prms send-pr gprof etc expect dejagnu ash bash bzip2 m4 autoconf autogen automake libtool diff rcs fileutils shellutils time textutils wdiff find uudecode hello tar gzip indent recode release sed utils guile perl gawk findutils gettext zip fastjar gnattools cgen"
+host_tools="texinfo byacc flex bison binutils gas ld fixincludes gcc sid sim gdb make patch prms send-pr gprof etc expect dejagnu ash bash bzip2 m4 autoconf autogen automake libtool_gnu diff rcs fileutils shellutils time textutils wdiff find uudecode hello tar gzip indent recode release sed utils guile perl gawk findutils gettext zip fastjar gnattools cgen"
 
 # libgcj represents the runtime libraries only used by gcj.
 libgcj="target-libffi \
@@ -327,7 +327,7 @@ AC_MSG_CHECKING([subdirectories to skip])
 AC_MSG_RESULT([(will announce results later)])
 # Some tools are only suitable for building in a "native" situation.
 # Remove these if host!=target.  
-native_only="autoconf autogen automake libtool fileutils find gawk gettext gzip hello indent m4 rcs recode sed shellutils tar textutils texinfo uudecode wdiff gprof target-groff guile perl time ash bash bzip2 prms gnuserv target-gperf"
+native_only="autoconf autogen automake libtool_gnu fileutils find gawk gettext gzip hello indent m4 rcs recode sed shellutils tar textutils texinfo uudecode wdiff gprof target-groff guile perl time ash bash bzip2 prms gnuserv target-gperf"
 
 # Similarly, some are only suitable for cross toolchains.
 # Remove these if host=target.
@@ -470,7 +470,7 @@ case "${host}" in
     ;;
   i[[3456789]]86-*-mingw32*)
     noconfigdirs_commented_out="tcl tk expect dejagnu make texinfo bison patch flex byacc send-pr uudecode dejagnu diff guile autogen perl itcl gnuserv"
-    noconfigdirs="${noconfigdirs} expect dejagnu autoconf autogen automake send-pr rcs guile perl texinfo libtool"
+    noconfigdirs="${noconfigdirs} expect dejagnu autoconf autogen automake send-pr rcs guile perl texinfo libtool_gnu"
     ;;
   i[[3456789]]86-*-beos*)
     noconfigdirs="${noconfigdirs} tk itcl libgui gdb"
@@ -2923,7 +2923,7 @@ else
 	test ! -z "${RANLIB}"
 fi
 AC_PROG_MKDIR_P
-if test -x ${srcdir}/libtool; then
+if test -x ${srcdir}/libtool -a ! -d ${srcdir}/libtool; then
   test -r libtool
   if test "x${LIBTOOLFLAGS}" = "x"; then
     test -z "${LIBTOOLFLAGS}"

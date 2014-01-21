@@ -128,7 +128,7 @@ install_amd-udi:
 .PHONY: install_amd-udi
 
 clean-local mostlyclean-local:
-	-rm -f *~ core *.o a.out 
+	-rm -f *~ core *.o a.out .DS_Store
 	@for dir in ${SUBDIRS}; do \
 	    echo "$$dir:"; \
 	    if [ -d $$dir ]; then \
@@ -143,7 +143,8 @@ distclean-local maintainer-clean-local realclean-local: clean-local
 	    (cd $$dir; $(MAKE) $@); \
 	done
 	-rm -f *~ core
-	-rm -f Makefile config.status 
+	-rm -fr autom4te.cache || rmdir autom4te.cache
+	-rm -f Makefile config.status
 .PHONY: distclean-local maintainer-clean-local realclean-local
 
 .c.o:
