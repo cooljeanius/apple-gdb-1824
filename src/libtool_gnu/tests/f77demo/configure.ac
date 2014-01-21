@@ -38,6 +38,7 @@ AC_ARG_WITH([dist],[AS_HELP_STRING([--with-dist],
 ## Automake Initialisation. ##
 ## ------------------------ ##
 AM_INIT_AUTOMAKE([foreign])
+AM_MAINTAINER_MODE
 
 
 ## ------------------ ##

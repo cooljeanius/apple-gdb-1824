@@ -35,6 +35,7 @@ AC_CONFIG_AUX_DIR([../../libltdl/config])
 ## Automake Initialisation. ##
 ## ------------------------ ##
 AM_INIT_AUTOMAKE([foreign])
+AM_MAINTAINER_MODE
 
 
 ## ------------------ ##

@@ -38,6 +38,7 @@ AC_CANONICAL_TARGET
 ## Automake Initialisation. ##
 ## ------------------------ ##
 AM_INIT_AUTOMAKE([foreign])
+AM_MAINTAINER_MODE
 
 
 ## ---------------- ##

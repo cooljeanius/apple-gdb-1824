@@ -53,6 +53,7 @@ LT_CONFIG_LTDL_DIR([.]) # I am me!
 ## ------------------------ ##
 
 AM_INIT_AUTOMAKE([foreign subdir-objects])
+AM_MAINTAINER_MODE
 
 
 ## ------------------------------- ##
