@@ -1,0 +1,5 @@
+This directory contains old headers from gdb 4.x.x. Rename it to just "sys"
+if you have includes that are failing to find headers in here.
+
+I skipped renaming these files with the "_old" suffix because I already
+did that with the directory that they are in.

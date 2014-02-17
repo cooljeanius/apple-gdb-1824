@@ -1,4 +1,5 @@
-/* Multi-thread control defs for remote server for GDB.
+/* gdbthread.h
+   Multi-thread control defs for remote server for GDB.
    Copyright (C) 1993-2013 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -52,7 +53,7 @@ struct thread_info
    action covering the whole range.
 
    On the other hand, the same tracepoint with a while-stepping action
-   may be hit by more than one thread simultaneously, hence we can't
+   may be hit by more than one thread simultaneously, hence we cannot
    keep the current step count in the tracepoint itself.
 
    This is the head of the list of the states of `while-stepping'
@@ -76,3 +77,5 @@ struct thread_info *gdb_id_to_thread (unsigned int);
 /* Get current thread ID (Linux task ID).  */
 #define current_ptid ((struct inferior_list_entry *) current_inferior)->id
 #endif /* GDB_THREAD_H */
+
+/* EOF */

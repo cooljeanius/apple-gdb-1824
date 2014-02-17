@@ -1,4 +1,5 @@
-/* Terminal interface definitions for the GDB remote server.
+/* terminal.h
+   Terminal interface definitions for the GDB remote server.
    Copyright 2002, Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -25,27 +26,29 @@
    and HAVE_SGTTY_H for us as appropriate.  */
 
 #if defined(HAVE_TERMIOS_H)
-#define HAVE_TERMIOS
-#include <termios.h>
+# define HAVE_TERMIOS
+# include <termios.h>
 #else /* ! HAVE_TERMIOS_H */
-#if defined(HAVE_TERMIO_H)
-#define HAVE_TERMIO
-#include <termio.h>
+# if defined(HAVE_TERMIO_H)
+#  define HAVE_TERMIO
+#  include <termio.h>
 
-#undef TIOCGETP
-#define TIOCGETP TCGETA
-#undef TIOCSETN
-#define TIOCSETN TCSETA
-#undef TIOCSETP
-#define TIOCSETP TCSETAF
-#define TERMINAL struct termio
-#else /* ! HAVE_TERMIO_H; default to SGTTY.  */
-#define HAVE_SGTTY
-#include <fcntl.h>
-#include <sgtty.h>
-#include <sys/ioctl.h>
-#define TERMINAL struct sgttyb
-#endif
-#endif
+#  undef TIOCGETP
+#  define TIOCGETP TCGETA
+#  undef TIOCSETN
+#  define TIOCSETN TCSETA
+#  undef TIOCSETP
+#  define TIOCSETP TCSETAF
+#  define TERMINAL struct termio
+# else /* ! HAVE_TERMIO_H; default to SGTTY.  */
+#  define HAVE_SGTTY
+#  include <fcntl.h>
+#  include <sgtty.h>
+#  include <sys/ioctl.h>
+#  define TERMINAL struct sgttyb
+# endif /* HAVE_TERMIO_H */
+#endif /* HAVE_TERMIOS_H */
 
 #endif /* !defined (TERMINAL_H) */
+
+/* EOF */

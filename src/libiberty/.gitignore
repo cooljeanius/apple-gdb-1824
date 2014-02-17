@@ -15,6 +15,7 @@ errors
 dummy
 needed-list
 config.h
+conf*/*.awk
 stamp-*
 libiberty.aux
 libiberty.cp
@@ -38,3 +39,4 @@ libiberty.dvi
 libiberty.info*
 libiberty.html
 *.framework
+libtoolT

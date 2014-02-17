@@ -1,4 +1,5 @@
-/* Copyright (C) 2002-2013 Free Software Foundation, Inc.
+/* dll.c
+   Copyright (C) 2002-2013 Free Software Foundation, Inc.
 
    This file is part of GDB.
 
@@ -18,6 +19,14 @@
 #include "server.h"
 #include "dll.h"
 
+#if !defined(xmalloc) || !defined(xstrdup)
+# include "libiberty.h"
+#endif /* !xmalloc || !xstrdup */
+
+#ifndef minus_one_ptid
+# include "ptid.h" /* from ../common */
+#endif /* !minus_one_ptid */
+
 #define get_dll(inf) ((struct dll_info *)(inf))
 
 struct inferior_list all_dlls;
@@ -27,8 +36,9 @@ static void
 free_one_dll (struct inferior_list_entry *inf)
 {
   struct dll_info *dll = get_dll (inf);
-  if (dll->name != NULL)
-    free (dll->name);
+	if (dll->name != NULL) {
+		free (dll->name);
+	}
   free (dll);
 }
 
@@ -42,12 +52,13 @@ match_dll (struct inferior_list_entry *inf, void *arg)
   struct dll_info *key = arg;
 
   if (key->base_addr != ~(CORE_ADDR) 0
-      && iter->base_addr == key->base_addr)
-    return 1;
-  else if (key->name != NULL
-	   && iter->name != NULL
-	   && strcmp (key->name, iter->name) == 0)
-    return 1;
+      && iter->base_addr == key->base_addr) {
+	  return 1;
+  } else if (key->name != NULL
+			 && iter->name != NULL
+			 && strcmp (key->name, iter->name) == 0) {
+	  return 1;
+  }
 
   return 0;
 }
@@ -60,7 +71,9 @@ loaded_dll (const char *name, CORE_ADDR base_addr)
   struct dll_info *new_dll = xmalloc (sizeof (*new_dll));
   memset (new_dll, 0, sizeof (*new_dll));
 
-  new_dll->entry.id = minus_one_ptid;
+  new_dll->entry.id = minus_one_ptid; /* incompatible types in assignment(?) */
+  /* (clang says it that we are assigning to 'unsigned long' here, when ptid_t
+   * is actually supposed to be of type 'struct ptid'...) */
 
   new_dll->name = xstrdup (name);
   new_dll->base_addr = base_addr;
@@ -83,18 +96,17 @@ unloaded_dll (const char *name, CORE_ADDR base_addr)
 
   dll = (void *) find_inferior (&all_dlls, match_dll, &key_dll);
 
-  if (dll == NULL)
+	if (dll == NULL) {
     /* For some inferiors we might get unloaded_dll events without having
-       a corresponding loaded_dll.  In that case, the dll cannot be found
+       a corresponding loaded_dll. In that case, the dll cannot be found
        in ALL_DLL, and there is nothing further for us to do.
 
        This has been observed when running 32bit executables on Windows64
        (i.e. through WOW64, the interface between the 32bits and 64bits
-       worlds).  In that case, the inferior always does some strange
+       worlds). In that case, the inferior always does some strange
        unloading of unnamed dll.  */
-    return;
-  else
-    {
+		return;
+	} else {
       /* DLL has been found so remove the entry and free associated
          resources.  */
       remove_inferior (&all_dlls, &dll->entry);
@@ -109,3 +121,5 @@ clear_dlls (void)
   for_each_inferior (&all_dlls, free_one_dll);
   all_dlls.head = all_dlls.tail = NULL;
 }
+
+/* EOF */

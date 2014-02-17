@@ -1,4 +1,5 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* macosx-threads.c
+   Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -40,6 +41,8 @@
 # include <mach/x86_64/thread_act.h>
 #elif defined (TARGET_POWERPC) || defined (HOST_POWERPC) || defined (__ppc__)
 # include <mach/ppc/thread_act.h>
+#elif defined (TARGET_POWERPC64) || defined (HOST_POWERPC64) || defined (__ppc64__)
+# include <mach/ppc64/thread_act.h>
 #else
 # warning unknown architecture, check the ifdefs...
 #endif /* architecture checks */
@@ -116,3 +119,5 @@ gdb_pthread_fork (pthread_fn_t function, void *arg)
 
   return pthread;
 }
+
+/* EOF */

@@ -1,4 +1,5 @@
-/* Host file transfer support for gdbserver.
+/* hostio-errno.c
+   Host file transfer support for gdbserver.
    Copyright (C) 2007, 2008, 2009 Free Software Foundation, Inc.
 
    Contributed by CodeSourcery.
@@ -84,3 +85,5 @@ hostio_last_error_from_errno (char *buf)
   int fileio_error = errno_to_fileio_error (error);
   sprintf (buf, "F-1,%x", fileio_error);
 }
+
+/* EOF */

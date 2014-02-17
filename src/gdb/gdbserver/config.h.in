@@ -6,6 +6,9 @@
 /* The normal alignment of `int', in bytes. */
 #undef ALIGNOF_INT
 
+/* The normal alignment of `void *', in bytes. */
+#undef ALIGNOF_VOID_P
+
 /* Define to one of `_getb67', `GETB67', `getb67' for Cray-2 and Cray-YMP
    systems. This function is required for `alloca.c' support on those systems.
    */
@@ -51,6 +54,12 @@
 /* Define to 1 if the system has the type `elf_gregset_t'. */
 #undef HAVE_ELF_GREGSET_T
 
+/* Define to 1 if you have the <errno.h> header file. */
+#undef HAVE_ERRNO_H
+
+/* Define to 1 if the system has the type `exception_mask_t'. */
+#undef HAVE_EXCEPTION_MASK_T
+
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
 
@@ -78,26 +87,41 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
+/* Define to 1 if you have the <libintl.h> header file. */
+#undef HAVE_LIBINTL_H
+
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
 
 /* Define to 1 if you have the <linux/elf.h> header file. */
 #undef HAVE_LINUX_ELF_H
 
-/* Define if the target supports register sets. */
+/* Define to 1 if targ supports register sets. */
 #undef HAVE_LINUX_REGSETS
 
-/* Define if the target supports PTRACE_PEEKUSR for register access. */
+/* Define to 1 if targ supports PTRACE_PEEKUSR for register access. */
 #undef HAVE_LINUX_USRREGS
+
+/* Define to 1 if the system has the type `long long'. */
+#undef HAVE_LONG_LONG
 
 /* Define to 1 if the system has the type `long long int'. */
 #undef HAVE_LONG_LONG_INT
+
+/* Define to 1 if the system has the type `long unsigned int'. */
+#undef HAVE_LONG_UNSIGNED_INT
 
 /* Define if <sys/procfs.h> has lwpid_t. */
 #undef HAVE_LWPID_T
 
 /* Define to 1 if you have the <mach/arm/thread_act.h> header file. */
 #undef HAVE_MACH_ARM_THREAD_ACT_H
+
+/* Define to 1 if you have the <mach/exception_types.h> header file. */
+#undef HAVE_MACH_EXCEPTION_TYPES_H
+
+/* Define to 1 if you have the <mach/i386/thread_act.h> header file. */
+#undef HAVE_MACH_I386_THREAD_ACT_H
 
 /* Define to 1 if you have the <mach/machine/thread_status.h> header file. */
 #undef HAVE_MACH_MACHINE_THREAD_STATUS_H
@@ -120,8 +144,17 @@
 /* Define to 1 if you have the <mach/port.h> header file. */
 #undef HAVE_MACH_PORT_H
 
+/* Define to 1 if you have the <mach/ppc64/thread_act.h> header file. */
+#undef HAVE_MACH_PPC64_THREAD_ACT_H
+
+/* Define to 1 if you have the <mach/ppc/thread_act.h> header file. */
+#undef HAVE_MACH_PPC_THREAD_ACT_H
+
 /* Define to 1 if the system has the type `mach_vm_size_t'. */
 #undef HAVE_MACH_VM_SIZE_T
+
+/* Define to 1 if you have the <mach/x86_64/thread_act.h> header file. */
+#undef HAVE_MACH_X86_64_THREAD_ACT_H
 
 /* Define to 1 if your system has a GNU libc compatible `malloc' function, and
    to 0 otherwise. */
@@ -139,6 +172,9 @@
 /* Define to 1 if you have the `memset' function. */
 #undef HAVE_MEMSET
 
+/* Define to 1 if you have the `minus_one_ptid' function. */
+#undef HAVE_MINUS_ONE_PTID
+
 /* Define to 1 if you have a working `mmap' system call. */
 #undef HAVE_MMAP
 
@@ -147,6 +183,9 @@
 
 /* Define to 1 if you have the <netinet/in.h> header file. */
 #undef HAVE_NETINET_IN_H
+
+/* Define to 1 if you have the <netinet/tcp.h> header file. */
+#undef HAVE_NETINET_TCP_H
 
 /* Define to 1 if you have the <prctl.h> header file. */
 #undef HAVE_PRCTL_H
@@ -166,11 +205,14 @@
 /* Define to 1 if you have the <pthread.h> header file. */
 #undef HAVE_PTHREAD_H
 
-/* Define if the target supports PTRACE_GETFPXREGS for extended register
-   access. */
+/* Define to 1 if the system has the type `ptid_t'. */
+#undef HAVE_PTID_T
+
+/* Define to 1 if targ supports PTRACE_GETFPXREGS for extra register access.
+   */
 #undef HAVE_PTRACE_GETFPXREGS
 
-/* Define if the target supports PTRACE_GETREGS for register access. */
+/* Define to 1 if targ supports PTRACE_GETREGS for register access. */
 #undef HAVE_PTRACE_GETREGS
 
 /* Define to 1 if the system has the type `ptrdiff_t'. */
@@ -224,6 +266,12 @@
 
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
+
+/* Define to 1 if you have the `strlen' function. */
+#undef HAVE_STRLEN
+
+/* Define to 1 if you have the `strncmp' function. */
+#undef HAVE_STRNCMP
 
 /* Define to 1 if you have the `strrchr' function. */
 #undef HAVE_STRRCHR
@@ -294,8 +342,17 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
+/* Define to 1 if the system has the type `unsigned char'. */
+#undef HAVE_UNSIGNED_CHAR
+
 /* Define to 1 if the system has the type `unsigned int'. */
 #undef HAVE_UNSIGNED_INT
+
+/* Define to 1 if the system has the type `unsigned long'. */
+#undef HAVE_UNSIGNED_LONG
+
+/* Define to 1 if the system has the type `unsigned long long'. */
+#undef HAVE_UNSIGNED_LONG_LONG
 
 /* Define to 1 if the system has the type `unsigned long long int'. */
 #undef HAVE_UNSIGNED_LONG_LONG_INT
@@ -315,6 +372,18 @@
 /* Define to 1 if `vfork' works. */
 #undef HAVE_WORKING_VFORK
 
+/* Define to 1 if you have the `xmalloc' function. */
+#undef HAVE_XMALLOC
+
+/* Define to 1 if you have the `xsnprintf' function. */
+#undef HAVE_XSNPRINTF
+
+/* Define to 1 if you have the `xstrdup' function. */
+#undef HAVE_XSTRDUP
+
+/* Length of macosx-i386-low.c in lines */
+#undef MACOSX_I386_LOW_C_LENGTH_C_DEFINE
+
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
 
@@ -333,7 +402,7 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
-/* Define if the prfpregset_t type is broken. */
+/* Define to 1 if the prfpregset_t type is broken. */
 #undef PRFPREGSET_T_BROKEN
 
 /* Define to 1 if the C compiler supports function prototypes. */
@@ -341,6 +410,9 @@
 
 /* The size of `int', as computed by sizeof. */
 #undef SIZEOF_INT
+
+/* The size of `void *', as computed by sizeof. */
+#undef SIZEOF_VOID_P
 
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be
@@ -379,6 +451,11 @@
    <pthread.h>, or <semaphore.h> is not used. If the typedef were allowed, the
    #define below would cause a syntax error. */
 #undef _UINT8_T
+
+/* Define to 1 if type `char' is unsigned and you are not using gcc.  */
+#ifndef __CHAR_UNSIGNED__
+# undef __CHAR_UNSIGNED__
+#endif
 
 /* Define like PROTOTYPES; this can be used by system headers. */
 #undef __PROTOTYPES
@@ -453,3 +530,7 @@
 
 /* Define as `fork' if `vfork' does not work. */
 #undef vfork
+
+/* Define to empty if the keyword `volatile' does not work. Warning: valid
+   code using `volatile' can become incorrect without. Disable with care. */
+#undef volatile

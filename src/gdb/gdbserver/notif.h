@@ -1,4 +1,5 @@
-/* Notification to GDB.
+/* notif.h
+   Notification to GDB.
    Copyright (C) 1989-2013 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -64,3 +65,5 @@ void notif_event_enque (struct notif_server *notif,
 			struct notif_event *event);
 
 void initialize_notif (void);
+
+/* EOF */

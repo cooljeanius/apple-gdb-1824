@@ -1,4 +1,5 @@
-/* Register support routines for the remote server for GDB.
+/* regcache.c
+   Register support routines for the remote server for GDB.
    Copyright 2001, 2002, 2004, 2005
    Free Software Foundation, Inc.
 
@@ -102,7 +103,7 @@ new_register_cache (void)
   regcache = malloc (sizeof (*regcache));
 
   /* Make sure to zero-initialize the register cache when it is created,
-     in case there are registers the target never fetches.  This way they'll
+     in case there are registers the target never fetches. This way they will
      read as zero instead of garbage.  */
   regcache->registers = calloc (1, register_bytes);
   if (regcache->registers == NULL)
@@ -127,7 +128,7 @@ void
 set_register_cache (struct reg *regs, int n)
 {
   int offset, i;
-  
+
   reg_defs = regs;
   num_registers = n;
 
@@ -238,3 +239,5 @@ collect_register_by_name (const char *name, void *buf)
 {
   collect_register (find_regno (name), buf);
 }
+
+/* EOF */

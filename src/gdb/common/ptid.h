@@ -1,4 +1,5 @@
-/* The ptid_t type and common functions operating on it.
+/* ptid.h
+   The ptid_t type and common functions operating on it.
 
    Copyright (C) 1986-2013 Free Software Foundation, Inc.
 
@@ -45,7 +46,7 @@ typedef struct ptid ptid_t;
 extern ptid_t null_ptid;
 
 /* The (-1,0,0) ptid, often used to indicate either an error condition
-   or a "don't care" condition, i.e, "run all threads."  */
+   or a "do NOT care" condition, i.e, "run all threads."  */
 extern ptid_t minus_one_ptid;
 
 /* Make a ptid given the necessary PID, LWP, and TID components.  */
@@ -78,4 +79,6 @@ int ptid_lwp_p (ptid_t ptid);
 /* Return true if PTID's tid member is non-zero.  */
 int ptid_tid_p (ptid_t ptid);
 
-#endif
+#endif /* !PTID_H */
+
+/* EOF */

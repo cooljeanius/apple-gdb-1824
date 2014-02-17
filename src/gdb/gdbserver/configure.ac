@@ -35,6 +35,15 @@ AM_MAINTAINER_MODE
 # Checks for programs.
 AC_PROG_CC
 AC_PROG_CPP
+#TODO: improve this check for profiling support:
+AC_MSG_CHECKING([if we can do profiling])
+if test "x${ac_cv_c_compiler_gnu}" = "xyes" -a "x${CC}" != "xclang"; then
+  export PROFILE_CFLAGS="-pg"
+  AC_SUBST([PROFILE_CFLAGS])
+  AC_MSG_RESULT([yes, with ${PROFILE_CFLAGS}])
+else
+  AC_MSG_RESULT([no, we are not using a GNU compiler])
+fi
 
 AC_CANONICAL_TARGET
 
@@ -42,21 +51,49 @@ AC_PROG_INSTALL
 
 AC_ARG_PROGRAM
 
+# Checks for libraries.
+AC_SEARCH_LIBS([xmalloc],[iberty c gnu])
+AC_SEARCH_LIBS([xsnprintf],[iberty c gnu])
+AC_SEARCH_LIBS([xstrdup],[iberty c gnu])
+
 # Checks for header files.
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
   AC_REQUIRE([AC_HEADER_STDC])
 ])
 AC_REQUIRE_HEADER_STDC
+AC_SYS_POSIX_TERMIOS
+AC_HEADER_SYS_WAIT
+AC_CHECK_HEADERS([AvailabilityMacros.h arpa/inet.h errno.h fcntl.h \
+                  libintl.h limits.h linux/elf.h mach/exception_types.h \
+                  mach/mach.h mach/mach_error.h mach/mach_types.h \
+                  mach/mach_vm.h mach/machine/thread_status.h mach/port.h \
+                  mach-o/nlist.h malloc.h malloc/malloc.h netdb.h \
+                  netinet/in.h netinet/tcp.h prctl.h proc_service.h \
+                  pthread.h sgtty.h signal.h stddef.h stdio.h sys/file.h \
+                  sys/ioctl.h sys/param.h sys/ptrace.h sys/signal.h \
+                  sys/socket.h sys/procfs.h sys/reg.h sys/time.h \
+                  termio.h termios.h thread_db.h])
+AC_CHECK_HEADERS_ONCE([sys/wait.h])
 
-AC_CHECK_HEADERS([AvailabilityMacros.h arpa/inet.h fcntl.h limits.h \
-                  linux/elf.h mach/arm/thread_act.h mach/mach.h \
-                  mach/mach_error.h mach/mach_types.h mach/mach_vm.h \
-                  mach/machine/thread_status.h mach/port.h mach-o/nlist.h \
-                  malloc.h malloc/malloc.h netdb.h netinet/in.h prctl.h \
-                  proc_service.h pthread.h sgtty.h signal.h stddef.h \
-                  stdio.h sys/file.h sys/ioctl.h sys/param.h sys/ptrace.h \
-                  sys/signal.h sys/socket.h sys/procfs.h sys/reg.h \
-                  sys/time.h sys/wait.h termio.h termios.h thread_db.h])
+case ${host} in
+  *arm*-apple-darwin*)
+    AC_CHECK_HEADERS([mach/arm/thread_act.h])
+    ;;
+  i386-apple-darwin*)
+    AC_CHECK_HEADERS([mach/i386/thread_act.h])
+    ;;
+  i686-apple-darwin*)
+    AC_CHECK_HEADERS([mach/i386/thread_act.h])
+    AC_CHECK_HEADERS([mach/x86_64/thread_act.h])
+    ;;
+  powerpc-apple-darwin*)
+    AC_CHECK_HEADERS([mach/ppc/thread_act.h])
+    AC_CHECK_HEADERS([mach/ppc64/thread_act.h])
+    ;;
+  x86_64-apple-darwin*)
+    AC_CHECK_HEADERS([mach/x86_64/thread_act.h])
+    ;;
+esac
 
 # Checks for declarations
 AC_CHECK_DECLS([child_get_pagesize])
@@ -65,8 +102,10 @@ AC_CHECK_DECLS([NULL])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
+AC_C_CHAR_UNSIGNED
 AC_C_INLINE
 AC_C_PROTOTYPES
+AC_C_VOLATILE
 AC_TYPE_INT8_T
 AC_TYPE_INT16_T
 AC_TYPE_INT32_T
@@ -83,6 +122,16 @@ AC_TYPE_UINT64_T
 AC_TYPE_UINTMAX_T
 AC_TYPE_UINTPTR_T
 AC_CHECK_TYPES([ptrdiff_t])
+AC_CHECK_TYPES([ptid_t])
+AC_CHECK_TYPES([exception_mask_t],[],[],[
+#ifdef HAVE_MACH_EXCEPTION_TYPES_H
+# include <mach/exception_types.h>
+#else
+# ifdef __APPLE__
+#  warning this conftest expects <mach/exception_types.h> to be included.
+# endif /* __APPLE__ */
+#endif /* HAVE_MACH_EXCEPTION_TYPES_H */
+])
 AC_CHECK_TYPES([task_t],[],[],[
 #ifdef HAVE_MACH_MACH_H
 # include <mach/mach.h>
@@ -93,8 +142,16 @@ AC_CHECK_TYPES([task_t],[],[],[
 #endif /* HAVE_MACH_MACH_H */
 ])
 AC_CHECK_TYPES([socklen_t],[],[],[
-#include <sys/types.h>
-#include <sys/socket.h>
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#else
+# warning this conftest expects <sys/types.h> to be included.
+#endif /* HAVE_SYS_TYPES_H */
+#ifdef HAVE_SYS_SOCKET_H
+# include <sys/socket.h>
+#else
+# warning this conftest expects <sys/socket.h> to be included.
+#endif /* HAVE_SYS_SOCKET_H */
 ])
 AC_CHECK_TYPES([mach_vm_size_t],[],[],[
 #ifdef HAVE_MACH_MACH_VM_H
@@ -126,9 +183,16 @@ AC_CHECK_TYPES([elf_fpregset_t],[],[],[
 # include <linux/elf.h>
 #endif /* HAVE_LINUX_ELF_H */
 ])
+AC_CHECK_TYPES([unsigned char])
 AC_CHECK_TYPES([unsigned int])
+AC_CHECK_TYPES([unsigned long])
+AC_CHECK_TYPES([unsigned long long])
+AC_CHECK_TYPES([long unsigned int])
+AC_CHECK_TYPES([long long])
 AC_CHECK_SIZEOF([int])
 AC_CHECK_ALIGNOF([int])
+AC_CHECK_SIZEOF([void *])
+AC_CHECK_ALIGNOF([void *])
 
 # Checks for library functions.
 AC_FUNC_ALLOCA
@@ -138,29 +202,30 @@ AC_FUNC_MALLOC
 AC_FUNC_MMAP
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([atexit child_get_pagesize gettimeofday inet_ntoa memset \
-                select setenv socket strchr strdup strerror strrchr \
-                strtol strtoul strtoull])
+                minus_one_ptid select setenv socket strchr strdup \
+                strerror strlen strncmp strrchr strtol strtoul strtoull \
+                xmalloc xsnprintf xstrdup])
 
-AC_MSG_NOTICE([sourcing ${srcdir}/configure.srv])
+AC_MSG_NOTICE([sourcing ${srcdir}/configure.srv to check for ${target}])
 . ${srcdir}/configure.srv
 
-if test "${srv_linux_usrregs}" = "yes"; then
+if test "x${srv_linux_usrregs}" = "xyes"; then
   AC_DEFINE([HAVE_LINUX_USRREGS],[1],
-	    [Define if the target supports PTRACE_PEEKUSR for register ]
+	    [Define to 1 if targ supports PTRACE_PEEKUSR for register ]
 	    [access.])
 fi
 
-if test "${srv_linux_regsets}" = "yes"; then
+if test "x${srv_linux_regsets}" = "xyes"; then
   AC_DEFINE([HAVE_LINUX_REGSETS],[1],
-	    [Define if the target supports register sets.])
+	    [Define to 1 if targ supports register sets.])
 
   AC_MSG_CHECKING([for PTRACE_GETREGS])
   AC_CACHE_VAL([gdbsrv_cv_have_ptrace_getregs],
   [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/ptrace.h>]], [[PTRACE_GETREGS;]])],[gdbsrv_cv_have_ptrace_getregs=yes],[gdbsrv_cv_have_ptrace_getregs=no])])
   AC_MSG_RESULT([${gdbsrv_cv_have_ptrace_getregs}])
-  if test "${gdbsrv_cv_have_ptrace_getregs}" = "yes"; then
+  if test "x${gdbsrv_cv_have_ptrace_getregs}" = "xyes"; then
     AC_DEFINE([HAVE_PTRACE_GETREGS],[1],
-	      [Define if the target supports PTRACE_GETREGS for register ]
+	      [Define to 1 if targ supports PTRACE_GETREGS for register ]
 	      [access.])
   fi
 
@@ -168,14 +233,16 @@ if test "${srv_linux_regsets}" = "yes"; then
   AC_CACHE_VAL([gdbsrv_cv_have_ptrace_getfpxregs],
   [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/ptrace.h>]], [[PTRACE_GETFPXREGS;]])],[gdbsrv_cv_have_ptrace_getfpxregs=yes],[gdbsrv_cv_have_ptrace_getfpxregs=no])])
   AC_MSG_RESULT([${gdbsrv_cv_have_ptrace_getfpxregs}])
-  if test "${gdbsrv_cv_have_ptrace_getfpxregs}" = "yes"; then
+  if test "x${gdbsrv_cv_have_ptrace_getfpxregs}" = "xyes"; then
     AC_DEFINE([HAVE_PTRACE_GETFPXREGS],[1],
-	      [Define if the target supports PTRACE_GETFPXREGS for extended ]
+	      [Define to 1 if targ supports PTRACE_GETFPXREGS for extra ]
 	      [register access.])
   fi
+else
+  AC_MSG_NOTICE([skipping Linux-specific tests])
 fi
 
-if test "${ac_cv_header_sys_procfs_h}" = yes; then
+if test "x${ac_cv_header_sys_procfs_h}" = "xyes"; then
   BFD_HAVE_SYS_PROCFS_TYPE([lwpid_t])
   BFD_HAVE_SYS_PROCFS_TYPE([psaddr_t])
   BFD_HAVE_SYS_PROCFS_TYPE([prgregset_t])
@@ -199,20 +266,22 @@ if test "${ac_cv_header_sys_procfs_h}" = yes; then
          return 0;
        }]])],[gdb_cv_prfpregset_t_broken=no],[gdb_cv_prfpregset_t_broken=yes],[gdb_cv_prfpregset_t_broken=yes])])
     AC_MSG_RESULT([$gdb_cv_prfpregset_t_broken])
-    if test ${gdb_cv_prfpregset_t_broken} = yes; then
+    if test "x${gdb_cv_prfpregset_t_broken}" = "xyes"; then
       AC_DEFINE([PRFPREGSET_T_BROKEN],[1],
-		[Define if the prfpregset_t type is broken.])
+		[Define to 1 if the prfpregset_t type is broken.])
     fi
   fi
 
   BFD_HAVE_SYS_PROCFS_TYPE([elf_fpregset_t])
+else
+  AC_MSG_NOTICE([skipping tests that require a working system procfs])
 fi
 
 srv_thread_depfiles=""
 srv_libs=""
 USE_THREAD_DB=""
 
-if test "${srv_linux_thread_db}" = "yes"; then
+if test "x${srv_linux_thread_db}" = "xyes"; then
   SRV_CHECK_THREAD_DB
   if test "${srv_cv_thread_db}" = no; then
     AC_MSG_WARN([Could not find libthread_db.])
@@ -221,14 +290,18 @@ if test "${srv_linux_thread_db}" = "yes"; then
   else
     srv_libs="${srv_cv_thread_db}"
   fi
+  AC_MSG_CHECKING([for -rdynamic linker flag])
   old_LDFLAGS="${LDFLAGS}"
   LDFLAGS="${LDFLAGS} -rdynamic"
   AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[]])],[RDYNAMIC=-rdynamic],[RDYNAMIC=])
   AC_SUBST([RDYNAMIC])
   LDFLAGS="${old_LDFLAGS}"
+  AC_MSG_RESULT([${RDYNAMIC}])
+else
+  AC_MSG_NOTICE([skipping more Linux-specific tests])
 fi
 
-if test "${srv_linux_thread_db}" = "yes"; then
+if test "x${srv_linux_thread_db}" = "xyes"; then
   srv_thread_depfiles="thread-db.o proc-service.o"
   USE_THREAD_DB="-DUSE_THREAD_DB"
 fi
@@ -239,7 +312,8 @@ if test "x${srv_platform_include}" = "x"; then
 else
   GDBSERVER_PLATFORM_INCLUDE="${srv_platform_include}"
 fi
-AC_MSG_NOTICE([includes is "${srv_platform_include}" PLATFORM is: "${GDBSERVER_PLATFORM_INCLUDE}"])
+AC_MSG_NOTICE([includes is "${srv_platform_include}"])
+AC_MSG_NOTICE([PLATFORM is: "${GDBSERVER_PLATFORM_INCLUDE}"])
 AC_SUBST([GDBSERVER_PLATFORM_INCLUDE])
 # END APPLE LOCAL
 
@@ -251,11 +325,31 @@ AC_SUBST([GDBSERVER_LIBS])
 AC_SUBST([USE_THREAD_DB])
 AC_SUBST([CPPFLAGS])
 
+case ${target} in
+*86*-apple-darwin*)
+ if test -e macosx-i386-low.c; then
+  AC_MSG_CHECKING([length of macosx-i386-low.c])
+changequote(,)
+  export MACOSX_I386_LOW_C_LENGTH=`wc -l < macosx-i386-low.c | tr -d [:blank:]`
+changequote([,])
+  AC_DEFINE_UNQUOTED([MACOSX_I386_LOW_C_LENGTH_C_DEFINE],
+                     [${MACOSX_I386_LOW_C_LENGTH}],
+                     [Length of macosx-i386-low.c in lines])
+  AC_MSG_RESULT([${MACOSX_I386_LOW_C_LENGTH} lines])
+ fi
+ ;;
+esac
+
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_COMMANDS([default],[case x${CONFIG_HEADERS} in
 xconfig.h:config.in)
  export CPPFLAGS="${CPPFLAGS} -DHAVE_CONFIG_H"
+ echo "warning: using wrong config header" | tee stamp-h ;;
+xconfig.h)
+ export CPPFLAGS="${CPPFLAGS} -DHAVE_CONFIG_H"
  echo "" > stamp-h ;;
+x*)
+ touch stamp-h ;;
 esac
 ],[])
 AC_OUTPUT

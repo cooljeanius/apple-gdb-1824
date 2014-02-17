@@ -1,4 +1,5 @@
-/* Common definitions for remote server for GDB.
+/* server.h
+   Common definitions for remote server for GDB.
    Copyright 1993, 1995, 1997, 1998, 1999, 2000, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
@@ -31,32 +32,36 @@
 #include <setjmp.h>
 
 #ifdef HAVE_STRING_H
-#include <string.h>
-#endif
+# include <string.h>
+#else
+# ifdef __GNUC__
+#  warning server.h expects <string.h> to be included.
+# endif /* __GNUC__ */
+#endif /* HAVE_STRING_H */
 
 #if !HAVE_DECL_STRERROR
-#ifndef strerror
+# ifndef strerror
 extern char *strerror (int);	/* X3.159-1989  4.11.6.2 */
-#endif
-#endif
+# endif /* !strerror */
+#endif /* !HAVE_DECL_STRERROR */
 
 #ifndef ATTR_NORETURN
-#if defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 7))
-#define ATTR_NORETURN __attribute__ ((noreturn))
-#else
-#define ATTR_NORETURN           /* nothing */
-#endif
-#endif
+# if defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 7))
+#  define ATTR_NORETURN __attribute__ ((noreturn))
+# else
+#  define ATTR_NORETURN           /* nothing */
+# endif /* GCC 2.7+ */
+#endif /* !ATTR_NORETURN */
 
 #ifndef ATTR_FORMAT
-#if defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 4))
-#define ATTR_FORMAT(type, x, y) __attribute__ ((format(type, x, y)))
-#else
-#define ATTR_FORMAT(type, x, y) /* nothing */
-#endif
-#endif
+# if defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 4))
+#  define ATTR_FORMAT(type, x, y) __attribute__ ((format(type, x, y)))
+# else
+#  define ATTR_FORMAT(type, x, y) /* nothing */
+# endif /* GCC 2.4+ */
+#endif /* !ATTR_FORMAT */
 
-/* FIXME: This should probably be autoconf'd for.  It's an integer type at
+/* FIXME: This should probably be autoconf'd for. It is an integer type at
    least the size of a (void *).  */
 typedef long long CORE_ADDR;
 
@@ -94,7 +99,7 @@ void add_inferior_to_list (struct inferior_list *list,
 void for_each_inferior (struct inferior_list *list,
 			void (*action) (struct inferior_list_entry *));
 /* APPLE LOCAL: Need a version of this that takes a client data.
-   It's really annoying to have to pass everything through globals...  */
+   It is really annoying to have to pass everything through globals... */
 void for_each_inferior_data (struct inferior_list *list, void *data,
 			     void (*action) (struct inferior_list_entry *, void *));
 
@@ -134,6 +139,7 @@ extern jmp_buf toplevel;
 
 /* Functions from remote-utils.c */
 
+#ifndef REMOTE_UTILS_H
 int putpkt (char *buf);
 int getpkt (char *buf);
 void remote_open (char *name);
@@ -159,6 +165,7 @@ int unhexify (char *bin, const char *hex, int count);
 int hexify (char *hex, const char *bin, int count);
 
 int look_up_one_symbol (const char *name, CORE_ADDR *addrp);
+#endif /* !REMOTE_UTILS_H */
 
 /* Functions from ``signals.c''.  */
 enum target_signal target_signal_from_host (int hostsig);
@@ -177,14 +184,16 @@ void warning (const char *string,...) ATTR_FORMAT (printf, 1, 2);
 
 void init_registers (void);
 
-/* Maximum number of bytes to read/write at once.  The value here
+/* Maximum number of bytes to read/write at once. The value here
    is chosen to fill up a packet (the headers account for the 32).  */
 #define MAXBUFBYTES(N) (((N)-32)/2)
 
-/* Buffer sizes for transferring memory, registers, etc.  Round up PBUFSIZ to
+/* Buffer sizes for transferring memory, registers, etc. Round up PBUFSIZ to
    hold all the registers, at least.  */
 #define	PBUFSIZ ((registers_length () + 32 > 2000) \
 		 ? (registers_length () + 32) \
 		 : 2000)
 
 #endif /* SERVER_H */
+
+/* EOF */

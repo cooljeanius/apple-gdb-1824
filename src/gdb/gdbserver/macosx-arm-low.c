@@ -50,8 +50,8 @@ extract_unsigned_integer (const void *addr, int len)
 }
 
 
-/* This is roughly cribbed from ppc-maocsx-regs.c.  We don't have the
-   gdbarch stuff going in gdbserver, however.  So we can't just use it
+/* This is roughly cribbed from ppc-maocsx-regs.c. We do NOT have the
+   gdbarch stuff going in gdbserver, however. So we cannot just use it
    exactly...  */
 static inline uint32_t
 collect_uint32 (int regnum)
@@ -152,9 +152,9 @@ arm_fetch_inferior_registers (int regno)
 
   if (get_all || ARM_MACOSX_IS_FP_RELATED_REGNUM (regno))
     {
-      /* We don't have F0-F7, though they need to exist in our register
-         numbering scheme so we can connect to remote gdbserver's that use
-	 FSF register numbers.  */
+      /* We do NOT have F0-F7, though they need to exist in our register
+       * numbering scheme so we can connect to remote gdbserver's that use
+       * FSF register numbers.  */
       char buf[FP_REGISTER_RAW_SIZE] = { 0 };
       for (i = ARM_F0_REGNUM; i <= ARM_F7_REGNUM; i++)
 	supply_register (i, buf);
@@ -238,7 +238,7 @@ read_register (int regno)
 /* FIXME: This is wrong for now.  */
 
 /* Addresses for calling Thumb functions have the bit 0 set and if
-   bit 1 is set, it has to be thumb since it isn't a mutliple of four.
+   bit 1 is set, it has to be thumb since it is NOT a mutliple of four.
    Here are some macros to test, set, or clear bit 0 of addresses.  */
 #define IS_THUMB_ADDR(addr)	((addr) & 3)
 
@@ -251,7 +251,7 @@ arm_pc_is_thumb (unsigned long pc)
   if (IS_THUMB_ADDR (pc))
     return 1;
 
-  /* We don't have access to any symbols in gdbserver, so we can't do
+  /* We do NOT have access to any symbols in gdbserver, so we cannot do
      any symbol lookups. If we ever need to more with this function we
      may need to figure out what we can do to determine if a pc value
      is arm or thumb using a system map, extra executable section, or
@@ -397,7 +397,7 @@ thumb_get_next_pc (CORE_ADDR pc)
     {
       CORE_ADDR sp;
 
-      /* Fetch the saved PC from the stack.  It's stored above
+      /* Fetch the saved PC from the stack. It should be stored above
          all of the other registers.  */
       offset = bitcount (bits (inst1, 0, 7)) * 4; /* DEPRECATED_REGISTER_SIZE; */
       sp = read_register (ARM_SP_REGNUM);
@@ -679,11 +679,11 @@ arm_get_next_pc (unsigned long pc)
 }
 
 /* We are currently keeping only one single-step breakpoint
-   around.  We don't need to step over it or anything, since
-   we just want it to implement software single stepping.  When
+   around. We do NOT need to step over it or anything, since
+   we just want it to implement software single stepping. When
    we do that, we suspend all but the stepping thread, get the
    next pc, put a breakpoint on that, continue, then remove that
-   breakpoint and report that we've hit the step.  */
+   breakpoint and report that we have hit the step.  */
 
 static struct arm_breakpoint
 {
@@ -794,3 +794,5 @@ struct macosx_target_ops the_low_target =
   arm_single_step_thread,
   arm_clear_single_step
 };
+
+/* EOF */

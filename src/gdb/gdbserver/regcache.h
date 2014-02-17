@@ -1,4 +1,5 @@
-/* Register support routines for the remote server for GDB.
+/* regcache.h
+   Register support routines for the remote server for GDB.
    Copyright 2001, 2002 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -70,3 +71,5 @@ void collect_register_as_string (int n, char *buf);
 void collect_register_by_name (const char *name, void *buf);
 
 #endif /* REGCACHE_H */
+
+/* EOF */

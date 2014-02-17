@@ -1,4 +1,5 @@
-/* Inferior process information for the remote server for GDB.
+/* inferiors.c
+   Inferior process information for the remote server for GDB.
    Copyright 2002, 2005
    Free Software Foundation, Inc.
 
@@ -127,7 +128,7 @@ add_thread (unsigned long thread_id, void *target_data, unsigned int gdb_id)
   new_thread->entry.id = thread_id;
 
   add_inferior_to_list (&all_threads, & new_thread->entry);
-  
+
   if (current_inferior == NULL)
     current_inferior = new_thread;
 
@@ -251,3 +252,5 @@ set_inferior_regcache_data (struct thread_info *inferior, void *data)
 {
   inferior->regcache_data = data;
 }
+
+/* EOF */

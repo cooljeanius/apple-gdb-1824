@@ -1,4 +1,5 @@
-/* Replay a remote debug session logfile for GDB.
+/* gdbreplay.c
+   Replay a remote debug session logfile for GDB.
    Copyright 1996, 1998, 1999, 2000, 2002, 2003, 2005
    Free Software Foundation, Inc.
    Written by Fred Fish (fnf@cygnus.com) from pieces of gdbserver.
@@ -33,18 +34,30 @@
 #include <errno.h>
 
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#else
+# ifdef __GNUC__
+#  warning gdbreplay.c expects <stdlib.h> to be included.
+# endif /* __GNUC__ */
+#endif /* HAVE_STRING_H */
 #ifdef HAVE_STRING_H
-#include <string.h>
-#endif
+# include <string.h>
+#else
+# ifdef __GNUC__
+#  warning gdbreplay.c expects <string.h> to be included.
+# endif /* __GNUC__ */
+#endif /* HAVE_STRING_H */
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+# include <unistd.h>
+#else
+# ifdef __GNUC__
+#  warning gdbreplay.c expects <unistd.h> to be included.
+# endif /* __GNUC__ */
+#endif /* HAVE_UNISTD_H */
 
 #ifndef HAVE_SOCKLEN_T
 typedef int socklen_t;
-#endif
+#endif /* !HAVE_SOCKLEN_T */
 
 /* Sort of a hack... */
 #define EOL (EOF - 1)
@@ -60,7 +73,7 @@ perror_with_name (char *string)
 {
 #ifndef STDC_HEADERS
   extern int errno;
-#endif
+#endif /* !STDC_HEADERS */
   const char *err;
   char *combined;
 
@@ -119,7 +132,7 @@ remote_open (char *name)
 
       tmp_desc = socket (PF_INET, SOCK_STREAM, 0);
       if (tmp_desc < 0)
-	perror_with_name ("Can't open socket");
+	perror_with_name ("Cannot open socket");
 
       /* Allow rapid reuse of this port. */
       tmp = 1;
@@ -132,7 +145,7 @@ remote_open (char *name)
 
       if (bind (tmp_desc, (struct sockaddr *) &sockaddr, sizeof (sockaddr))
 	  || listen (tmp_desc, 1))
-	perror_with_name ("Can't bind address");
+	perror_with_name ("Cannot bind address");
 
       tmp = sizeof (sockaddr);
       remote_desc = accept (tmp_desc, (struct sockaddr *) &sockaddr, &tmp);
@@ -143,7 +156,7 @@ remote_open (char *name)
       tmp = 1;
       setsockopt (tmp_desc, SOL_SOCKET, SO_KEEPALIVE, (char *) &tmp, sizeof (tmp));
 
-      /* Tell TCP not to delay small packets.  This greatly speeds up
+      /* Tell TCP not to delay small packets. This greatly speeds up
          interactive response. */
       tmp = 1;
       setsockopt (remote_desc, IPPROTO_TCP, TCP_NODELAY,
@@ -151,8 +164,8 @@ remote_open (char *name)
 
       close (tmp_desc);		/* No longer need this */
 
-      signal (SIGPIPE, SIG_IGN);	/* If we don't do this, then gdbreplay simply
-					   exits when the remote side dies.  */
+      signal (SIGPIPE, SIG_IGN); /* If we do NOT do this, then gdbreplay simply
+								  * exits when the remote side dies.  */
     }
 
   fcntl (remote_desc, F_SETFL, FASYNC);
@@ -332,3 +345,5 @@ main (int argc, char *argv[])
   remote_close ();
   exit (0);
 }
+
+/* EOF */

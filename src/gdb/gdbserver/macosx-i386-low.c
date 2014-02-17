@@ -69,7 +69,13 @@
 #  include "../gdb_proc_service.h"
 # endif /* HAVE_FPREGSET_T && HAVE_GREGSET_T */
 
-# warning This file (macosx-i386-low.c) does not really do much yet, try adding more stuff to it.
+# ifdef MACOSX_I386_LOW_C_LENGTH_C_DEFINE
+#  if (MACOSX_I386_LOW_C_LENGTH_C_DEFINE < 100)
+#   warning This file (macosx-i386-low.c) does not really do much yet, try adding more stuff to it.
+#  endif /* < 100 */
+# else
+#  define UNSURE_OF_LENGTH_OF_THIS_FILE 1
+# endif /* MACOSX_I386_LOW_C_LENGTH_C_DEFINE */
 
 # ifndef HAVE_ELF_FPREGSET_T
   /* Make sure we have said types. Not all platforms bring in <linux/elf.h>
@@ -83,12 +89,16 @@
 # ifdef HAVE_SYS_REG_H
 #  include <sys/reg.h>
 # else
-#  warning macosx-i386-low.c wants to include <sys/reg.h> but it is not available, consider removing this include.
+#  ifndef __APPLE__
+#   warning macosx-i386-low.c wants to include <sys/reg.h> but it is not available, consider removing this include.
+#  endif /* !__APPLE__ */
 # endif /* HAVE_SYS_REG_H */
 # ifdef HAVE_SYS_PROCFS_H
 #  include <sys/procfs.h>
 # else
-#  warning macosx-i386-low.c wants to include <sys/procfs.h> but it is not available, consider removing this include.
+#  ifndef __APPLE__
+#   warning macosx-i386-low.c wants to include <sys/procfs.h> but it is not available, consider removing this include.
+#  endif /* !__APPLE__ */
 # endif /* HAVE_SYS_PTRACE_H */
 
 /* Correct for all GNU/Linux targets (for quite some time).  */

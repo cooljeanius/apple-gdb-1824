@@ -1,4 +1,5 @@
-/* Event loop machinery for the remote server for GDB.
+/* event-loop.h
+   Event loop machinery for the remote server for GDB.
    Copyright (C) 1993-2013 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -34,3 +35,5 @@ extern void start_event_loop (void);
 extern void initialize_event_loop (void);
 
 #endif /* EVENT_LOOP_H */
+
+/* EOF */

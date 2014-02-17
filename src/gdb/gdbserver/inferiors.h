@@ -1,4 +1,5 @@
-/* Inferior process information for the remote server for GDB.
+/* inferiors.h
+   Inferior process information for the remote server for GDB.
    Copyright (C) 1993-2013 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -71,7 +72,7 @@ struct process_info
 };
 
 /* Return a pointer to the process that corresponds to the current
-   thread (current_inferior).  It is an error to call this if there is
+   thread (current_inferior). It is an error to call this if there is
    no current thread selected.  */
 
 struct process_info *current_process (void);
@@ -112,3 +113,5 @@ void *inferior_regcache_data (struct thread_info *);
 void set_inferior_regcache_data (struct thread_info *, void *);
 
 #endif /* INFERIORS_H */
+
+/* EOF */

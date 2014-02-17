@@ -1,4 +1,5 @@
-/* Memory breakpoint interfaces for the remote server for GDB.
+/* mem-break.h
+   Memory breakpoint interfaces for the remote server for GDB.
    Copyright 2002, 2005
    Free Software Foundation, Inc.
 
@@ -46,7 +47,7 @@ void reinsert_breakpoint (CORE_ADDR where);
 
 void uninsert_breakpoint (CORE_ADDR where);
 
-/* See if any breakpoint claims ownership of STOP_PC.  Call the handler for
+/* See if any breakpoint claims ownership of STOP_PC. Call the handler for
    the breakpoint, if found.  */
 
 int check_breakpoints (CORE_ADDR stop_pc);
@@ -69,3 +70,5 @@ void check_mem_write (CORE_ADDR mem_addr, unsigned char *buf, int mem_len);
 void set_breakpoint_data (const unsigned char *bp_data, int bp_len);
 
 #endif /* MEM_BREAK_H */
+
+/* EOF */

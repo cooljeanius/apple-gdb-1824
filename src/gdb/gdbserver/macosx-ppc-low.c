@@ -285,6 +285,7 @@ ppc_single_step_thread (thread_t thread, int on)
 int
 ppc_clear_single_step (thread_t thread)
 {
+	return 0; /* return something to silence warning */
 }
 
 struct macosx_target_ops the_low_target =
@@ -294,3 +295,5 @@ struct macosx_target_ops the_low_target =
   ppc_single_step_thread,
   ppc_clear_single_step
 };
+
+/* EOF */

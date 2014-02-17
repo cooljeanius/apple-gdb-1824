@@ -1,4 +1,5 @@
-/* Target operations for the remote server for GDB.
+/* target.c
+   Target operations for the remote server for GDB.
    Copyright 2002, 2004, 2005
    Free Software Foundation, Inc.
 
@@ -40,8 +41,8 @@ set_desired_inferior (int use_general)
       found = NULL;
 
       /* If we are continuing any (all) thread(s), use step_thread
-	 to decide which thread to step and/or send the specified
-	 signal to.  */
+	   * to decide which thread to step and/or send the specified
+	   * signal to.  */
       if ((step_thread != 0 && step_thread != -1)
 	  && (cont_thread == 0 || cont_thread == -1))
 	found = (struct thread_info *) find_inferior_id (&all_threads,
@@ -112,3 +113,5 @@ set_target_ops (struct target_ops *target)
   the_target = (struct target_ops *) malloc (sizeof (*the_target));
   memcpy (the_target, target, sizeof (*the_target));
 }
+
+/* EOF */

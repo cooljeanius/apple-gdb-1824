@@ -23,9 +23,8 @@
 # else
 #  warning macosx-mutils.h expects <mach/mach_vm.h> to be included.
 # endif /* HAVE_MACH_MACH_VM_H */
-#else /* ! MACH64 */
-# warning re-defining stuff when not MACH64 in this header can be dangerous.
-/* Do your re-defining elsewhere (not here). */
+#else
+# define NOT_MACH64_IN_MACOSX_MUTILS_H 1
 #endif /* MACH64 */
 
 #ifdef HAVE_UNSIGNED_INT

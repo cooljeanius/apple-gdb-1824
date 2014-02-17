@@ -1,4 +1,5 @@
-/* Memory breakpoint operations for the remote server for GDB.
+/* mem-break.c
+   Memory breakpoint operations for the remote server for GDB.
    Copyright 2002, 2003, 2005
    Free Software Foundation, Inc.
 
@@ -276,3 +277,5 @@ check_mem_write (CORE_ADDR mem_addr, unsigned char *buf, int mem_len)
 	memcpy (buf + buf_offset, breakpoint_data + copy_offset, copy_len);
     }
 }
+
+/* EOF */

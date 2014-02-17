@@ -245,8 +245,9 @@ macosx_create_inferior (char *program, char **allargs)
   gdbserver_has_a_terminal ();
 
   pid = fork ();
-  if (pid < 0)
-    perror_with_name ("fork");
+	if (pid < 0) {
+		perror_with_name ("fork");
+	}
 
   if (pid == 0)
     {
@@ -257,17 +258,17 @@ macosx_create_inferior (char *program, char **allargs)
       /* signal (__SIGRTMIN + 1, SIG_DFL); */
 
       /* Set the process group ID of the child process (from within the
-         child process) to be in its own process group. One of the
-	 SETPGID calls in the parent or child process will be redundant,
-	 but both are needed to avoid a race condition since we do NOT
-	 know which process will get to execute first. Passing zero for
-	 the pid and pgrp will set the child's process group ID to match
-	 its pid. */
+       * child process) to be in its own process group. One of the
+	   * SETPGID calls in the parent or child process will be redundant,
+	   * but both are needed to avoid a race condition since we do NOT
+	   * know which process will get to execute first. Passing zero for
+	   * the pid and pgrp will set the child's process group ID to match
+	   * its pid. */
       setpgid (0, 0);
 
       /* I am not sure why I need to sleep a bit here...
-	 But if I do not do so, then the gdbserver goes comatose, and
-	 actually locks up the terminal...  */
+	   * But if I do not do so, then the gdbserver goes comatose, and
+	   * actually locks up the terminal...  */
       sleep (1);
       execv (program, allargs);
 
@@ -505,11 +506,11 @@ macosx_translate_exception (struct macosx_exception_thread_message *msg)
     {
     case EXC_BAD_ACCESS:
       return TARGET_SIGNAL_BUS;
-      // return TARGET_EXC_BAD_ACCESS;
+      /* return TARGET_EXC_BAD_ACCESS; */
       break;
     case EXC_BAD_INSTRUCTION:
       return TARGET_SIGNAL_ILL;
-      // return TARGET_EXC_BAD_INSTRUCTION;
+      /* return TARGET_EXC_BAD_INSTRUCTION; */
       break;
     case EXC_ARITHMETIC:
       return TARGET_EXC_ARITHMETIC;
@@ -1098,7 +1099,7 @@ macosx_wait_for_event (struct thread_info *child,
     }
 
   /* Okay, now the exception thread is waiting for us to wake it
-     up.  We should release the lock so it will be able to
+     up. We should release the lock so it will be able to
      acquire it when it wakes up & gets more data.  */
 
   macosx_exception_release_write_lock (inferior->status);
@@ -1138,8 +1139,8 @@ macosx_wait_for_event (struct thread_info *child,
   else if (signal_event != NULL)
     {
       /* For now, handle the signal event, and discard
-	 the others... Set the status to indicate an error,
-         but we will set it back when we find the exception event.  */
+	   * the others... Set the status to indicate an error,
+       * but we will set it back when we find the exception event.  */
       macosx_backup_threads_before_break (NULL);
       retval = macosx_service_event (inferior, signal_event);
       *status = 'T';
@@ -1365,16 +1366,16 @@ terminal_inferior (void)
       result = tcsetattr (STDIN_FILENO, TCSANOW, &inferior_ttystate);
 
       /* If attach_flag is set, we do NOT know whether we are sharing a
-         terminal with the inferior or not. (attaching a process
-         without a terminal is one case where we do not; attaching a
-         process which we ran from the same shell as GDB via `&' is
-         one case where we do, I think (but perhaps this is not
-         `sharing' in the sense that we need to save and restore tty
-         state)). I do NOT know if there is any way to tell whether we
-         are sharing a terminal. So what we do is to go through all
-         the saving and restoring of the tty state, but ignore errors
-         setting the process group, which will happen if we are not
-         sharing a terminal).  */
+       * terminal with the inferior or not. (attaching a process
+       * without a terminal is one case where we do not; attaching a
+       * process which we ran from the same shell as GDB via `&' is
+       * one case where we do, I think (but perhaps this is not
+       * `sharing' in the sense that we need to save and restore tty
+       * state)). I do NOT know if there is any way to tell whether we
+       * are sharing a terminal. So what we do is to go through all
+       * the saving and restoring of the tty state, but ignore errors
+       * setting the process group, which will happen if we are not
+       * sharing a terminal).  */
 
       if (inferior_process_group >= 0)
 	result = tcsetpgrp (STDIN_FILENO, inferior_process_group);
@@ -1386,8 +1387,9 @@ terminal_inferior (void)
 static void
 terminal_ours (void)
 {
-  if (gdbserver_has_a_terminal () == 0)
-    return;
+	if (gdbserver_has_a_terminal () == 0) {
+		return;
+	}
 
   if (terminal_is_ours == 0)
     {
@@ -1468,5 +1470,7 @@ initialize_low (void)
   signal (SIGCHLD, sigchld_handler);
 #if 0 /* FIXME: Figure out what this does.  */
   linux_init_signals ();
-#endif
+#endif /* 0 */
 }
+
+/* EOF */

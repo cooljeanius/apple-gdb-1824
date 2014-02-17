@@ -98,11 +98,11 @@ case "${target}" in
 			srv_platform_include="-I\$(srcdir)/../macosx"
 			;;
   i386-*-darwin*)  srv_regobj=reg-i386.o
-			srv_tgtobj="macosx-low.o macosx-excthread.o macosx-i386-low.o macosx-threads.o macosx-mutils.o"
+			srv_tgtobj="macosx-low.o macosx-excthread.o macosx-i386-low.o i387-fp.o macosx-threads.o macosx-mutils.o hostio-errno.o"
 			srv_platform_include="-I\$(srcdir)/../macosx"
 			;;
   x86_64-*-darwin*)  srv_regobj=reg-x86-64.o
-			srv_tgtobj="macosx-low.o macosx-excthread.o macosx-i386-low.o macosx-threads.o macosx-mutils.o"
+			srv_tgtobj="macosx-low.o macosx-excthread.o macosx-i386-low.o i387-fp.o macosx-threads.o macosx-mutils.o hostio-errno.o"
 			srv_platform_include="-I\$(srcdir)/../macosx"
 			;;
   arm-*-darwin*)  srv_regobj=reg-arm-macosx.o

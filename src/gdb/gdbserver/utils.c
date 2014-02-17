@@ -1,4 +1,5 @@
-/* General utility routines for the remote server for GDB.
+/* utils.c
+   General utility routines for the remote server for GDB.
    Copyright 1986, 1989, 1993, 1995, 1996, 1997, 1999, 2000, 2002, 2003
    Free Software Foundation, Inc.
 
@@ -34,7 +35,7 @@ perror_with_name (char *string)
 {
 #ifndef STDC_HEADERS
   extern int errno;
-#endif
+#endif /* !STDC_HEADERS */
   const char *err;
   char *combined;
 
@@ -94,3 +95,5 @@ warning (const char *string,...)
   fprintf (stderr, "\n");
   va_end (args);
 }
+
+/* EOF */

@@ -809,7 +809,7 @@ AC_CHECK_HEADERS([a.out.h dlfcn.h errno.h regex.h sys/types.h])
 # check these two together:
 AC_CHECK_HEADERS([stdarg.h varargs.h])
 # even more header checks:
-AC_CHECK_HEADERS([CoreFoundation/CoreFoundation.h \
+AC_CHECK_HEADERS([CoreFoundation/CoreFoundation.h assert.h \
                   architecture/byte_order.h bits/endian.h gettext.h \
                   libgen.h libgettext.h linux/byteorder/big_endian.h \
                   linux/byteorder/little_endian.h mach/thread_info.h \
@@ -1021,7 +1021,7 @@ AC_CHECK_FUNCS([wborder])
 
 # Other functions (that autoscan complains about missing):
 unset ac_cv_func_strchr
-AC_CHECK_FUNCS([alarm atexit bzero dup2 fflush fprintf fwrite \
+AC_CHECK_FUNCS([alarm assert atexit bzero dup2 fflush fprintf fwrite \
                 gethostbyaddr gethostbyname gethostname getpass \
                 gettimeofday inet_ntoa isascii memchr memcmp memcpy \
                 memmove mempcpy memset mkdir nl_langinfo pathconf pow \

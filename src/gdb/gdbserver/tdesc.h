@@ -1,4 +1,5 @@
-/* Target description definitions for remote server for GDB.
+/* tdesc.h
+   Target description definitions for remote server for GDB.
    Copyright (C) 2012-2013 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -62,3 +63,5 @@ void init_target_desc (struct target_desc *tdesc);
 const struct target_desc *current_target_desc (void);
 
 #endif /* TDESC_H */
+
+/* EOF */

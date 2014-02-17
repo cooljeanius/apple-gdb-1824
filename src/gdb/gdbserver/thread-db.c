@@ -1,4 +1,5 @@
-/* Thread management interface, for the remote server for GDB.
+/* thread-db.c
+   Thread management interface, for the remote server for GDB.
    Copyright 2002
    Free Software Foundation, Inc.
 
@@ -28,20 +29,20 @@
 extern int debug_threads;
 
 #ifdef HAVE_THREAD_DB_H
-#include <thread_db.h>
-#endif
+# include <thread_db.h>
+#endif /* HAVE_THREAD_DB_H */
 
 /* Correct for all GNU/Linux targets (for quite some time).  */
 #define GDB_GREGSET_T elf_gregset_t
 #define GDB_FPREGSET_T elf_fpregset_t
 
 #ifndef HAVE_ELF_FPREGSET_T
-/* Make sure we have said types.  Not all platforms bring in <linux/elf.h>
+/* Make sure we have said types. Not all platforms bring in <linux/elf.h>
    via <sys/procfs.h>.  */
-#ifdef HAVE_LINUX_ELF_H
-#include <linux/elf.h>
-#endif
-#endif
+# ifdef HAVE_LINUX_ELF_H
+#  include <linux/elf.h>
+# endif /* HAVE_LINUX_ELF_H */
+#endif /* !HAVE_ELF_FPREGSET_T */
 
 #include "../gdb_proc_service.h"
 
@@ -134,7 +135,7 @@ thread_db_state_str (td_thr_state_e state)
       return buf;
     }
 }
-#endif
+#endif /* 0 */
 
 static void
 thread_db_create_event (CORE_ADDR where)
@@ -148,7 +149,7 @@ thread_db_create_event (CORE_ADDR where)
 
   tdata = inferior_target_data (current_inferior);
 
-  /* FIXME: This assumes we don't get another event.
+  /* FIXME: This assumes we do NOT get another event.
      In the LinuxThreads implementation, this is safe,
      because all events come from the manager thread
      (except for its own creation, of course).  */
@@ -169,7 +170,7 @@ thread_db_death_event (CORE_ADDR where)
   if (debug_threads)
     fprintf (stderr, "Thread death event.\n");
 }
-#endif
+#endif /* 0 */
 
 static int
 thread_db_enable_reporting ()
@@ -178,15 +179,15 @@ thread_db_enable_reporting ()
   td_notify_t notify;
   td_err_e err;
 
-  /* Set the process wide mask saying which events we're interested in.  */
+  /* Set the process wide mask saying which events we are interested in. */
   td_event_emptyset (&events);
   td_event_addset (&events, TD_CREATE);
 
 #if 0
-  /* This is reported to be broken in glibc 2.1.3.  A different approach
+  /* This is reported to be broken in glibc 2.1.3. A different approach
      will be necessary to support that.  */
   td_event_addset (&events, TD_DEATH);
-#endif
+#endif /* 0 */
 
   err = td_ta_set_event (thread_agent, &events);
   if (err != TD_OK)
@@ -208,7 +209,7 @@ thread_db_enable_reporting ()
 		     thread_db_create_event);
 
 #if 0
-  /* Don't concern ourselves with reported thread deaths, only
+  /* Do NOT concern ourselves with reported thread deaths, only
      with actual thread deaths (via wait).  */
 
   /* Get address for thread death breakpoint.  */
@@ -221,7 +222,7 @@ thread_db_enable_reporting ()
     }
   set_breakpoint_at ((CORE_ADDR) (unsigned long) notify.u.bptaddr,
 		     thread_db_death_event);
-#endif
+#endif /* 0 */
 
   return 1;
 }
@@ -246,7 +247,7 @@ maybe_attach_thread (const td_thrhandle_t *th_p, td_thrinfo_t *ti_p)
 	  goto found;
 	}
     }
-  
+
   inferior = (struct thread_info *) find_inferior_id (&all_threads,
 						      ti_p->ti_tid);
   if (inferior != NULL)
@@ -337,10 +338,10 @@ thread_db_init ()
      attaching to threads, the original thread may not be the correct
      thread.  We would have to get the process ID from /proc for NPTL.
      For LinuxThreads we could do something similar: follow the chain
-     of parent processes until we find the highest one we're attached
-     to, and use its tgid.
+     of parent processes until we find the highest one we are/were
+     attached to, and use its tgid.
 
-     This isn't the only place in gdbserver that assumes that the first
+     This is NOT the only place in gdbserver that assumes that the first
      process in the list is the thread group leader.  */
   proc_handle.pid = ((struct inferior_list_entry *)current_inferior)->id;
 
@@ -354,8 +355,9 @@ thread_db_init ()
     case TD_OK:
       /* The thread library was detected.  */
 
-      if (thread_db_enable_reporting () == 0)
-	return 0;
+			if (thread_db_enable_reporting () == 0) {
+				return 0;
+			}
       thread_db_find_new_threads ();
       thread_db_look_up_symbols ();
       return 1;
@@ -366,3 +368,5 @@ thread_db_init ()
 
   return 0;
 }
+
+/* EOF */

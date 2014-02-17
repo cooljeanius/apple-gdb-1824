@@ -1,4 +1,5 @@
-/* i387-specific utility functions, for the remote server for GDB.
+/* i387-fp.c
+   i387-specific utility functions, for the remote server for GDB.
    Copyright 2000, 2001, 2002, 2005
    Free Software Foundation, Inc.
 
@@ -82,8 +83,8 @@ i387_cache_to_fsave (void *buf)
 
   collect_register_by_name ("fioff", &fp->fioff);
   collect_register_by_name ("fooff", &fp->fooff);
-  
-  /* This one's 11 bits... */
+
+  /* This one is 11 bits... */
   collect_register_by_name ("fop", &val2);
   fp->fop = (val2 & 0x7FF) | (fp->fop & 0xF800);
 
@@ -121,7 +122,7 @@ i387_fsave_to_cache (const void *buf)
 
   supply_register_by_name ("fioff", &fp->fioff);
   supply_register_by_name ("fooff", &fp->fooff);
-  
+
   /* Some registers are 16-bit.  */
   val = fp->fctrl & 0xFFFF;
   supply_register_by_name ("fctrl", &val);
@@ -159,8 +160,8 @@ i387_cache_to_fxsave (void *buf)
   collect_register_by_name ("fioff", &fp->fioff);
   collect_register_by_name ("fooff", &fp->fooff);
   collect_register_by_name ("mxcsr", &fp->mxcsr);
-  
-  /* This one's 11 bits... */
+
+  /* This one is 11 bits... */
   collect_register_by_name ("fop", &val2);
   fp->fop = (val2 & 0x7FF) | (fp->fop & 0xF800);
 
@@ -257,7 +258,7 @@ i387_fxsave_to_cache (const void *buf)
   supply_register_by_name ("fioff", &fp->fioff);
   supply_register_by_name ("fooff", &fp->fooff);
   supply_register_by_name ("mxcsr", &fp->mxcsr);
-  
+
   /* Some registers are 16-bit.  */
   val = fp->fctrl & 0xFFFF;
   supply_register_by_name ("fctrl", &val);
@@ -288,3 +289,5 @@ i387_fxsave_to_cache (const void *buf)
   val = (fp->fop) & 0x7FF;
   supply_register_by_name ("fop", &val);
 }
+
+/* EOF */

@@ -1,4 +1,5 @@
-/* Debug register code for the i386.
+/* i386-low.c
+   Debug register code for the i386.
 
    Copyright (C) 2009
    Free Software Foundation, Inc.
@@ -25,8 +26,8 @@
 /* Support for 8-byte wide hw watchpoints.  */
 #ifndef TARGET_HAS_DR_LEN_8
 /* NOTE: sizeof (long) == 4 on win64.  */
-#define TARGET_HAS_DR_LEN_8 (sizeof (void *) == 8)
-#endif
+# define TARGET_HAS_DR_LEN_8 (sizeof (void *) == 8)
+#endif /* !TARGET_HAS_DR_LEN_8 */
 
 enum target_hw_bp_type
   {
@@ -52,8 +53,8 @@ enum target_hw_bp_type
    functionality yet (as of March 2001).  Note that the DE flag in the
    CR4 register needs to be set to support this.  */
 #ifndef DR_RW_IORW
-#define DR_RW_IORW	(0x2)	/* Break on I/O reads or writes.  */
-#endif
+# define DR_RW_IORW	(0x2)	/* Break on I/O reads or writes.  */
+#endif /* !DR_RW_IORW */
 
 /* Watchpoint/breakpoint length fields in DR7.  The 2-bit left shift
    is so we could OR this with the read/write field defined above.  */
@@ -145,7 +146,12 @@ enum target_hw_bp_type
 
 /* Types of operations supported by i386_handle_nonaligned_watchpoint.  */
 typedef enum { WP_INSERT, WP_REMOVE, WP_COUNT } i386_wp_op_t;
-
+
+#ifndef paddress
+/* Like 0x%lx, replaces deprecated_print_address_numeric.  */
+extern const char *paddress (CORE_ADDR addr);
+#endif /* !paddress */
+
 /* Implementation.  */
 
 /* Clear the reference counts and forget everything we knew about the
@@ -220,7 +226,7 @@ i386_length_and_rw_bits (int len, enum target_hw_bp_type type)
 	rw = DR_RW_WRITE;
 	break;
       case hw_read:
-	/* The i386 doesn't support data-read watchpoints.  */
+	/* The i386 does NOT support data-read watchpoints.  */
       case hw_access:
 	rw = DR_RW_READ;
 	break;
@@ -229,7 +235,7 @@ i386_length_and_rw_bits (int len, enum target_hw_bp_type type)
       case hw_io_access:
 	rw = DR_RW_IORW;
 	break;
-#endif
+#endif /* 0 */
       default:
 	error ("\
 Invalid hardware breakpoint type %d in i386_length_and_rw_bits.\n",
@@ -546,8 +552,8 @@ i386_low_stopped_data_address (struct i386_debug_reg_state *state,
       if (I386_DR_WATCH_HIT (state, i)
 	  /* This second condition makes sure DRi is set up for a data
 	     watchpoint, not a hardware breakpoint.  The reason is
-	     that GDB doesn't call the target_stopped_data_address
-	     method except for data watchpoints.  In other words, I'm
+	     that GDB does NOT call the target_stopped_data_address
+	     method except for data watchpoints.  In other words, I am
 	     being paranoiac.  */
 	  && I386_DR_GET_RW_LEN (state, i) != 0)
 	{
@@ -575,3 +581,5 @@ i386_low_stopped_by_watchpoint (struct i386_debug_reg_state *state)
   CORE_ADDR addr = 0;
   return i386_low_stopped_data_address (state, &addr);
 }
+
+/* EOF */

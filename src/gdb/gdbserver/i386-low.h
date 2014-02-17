@@ -1,4 +1,5 @@
-/* Misc. low level support for i386.
+/* i386-low.h
+   Misc. low level support for i386.
 
    Copyright (C) 2009
    Free Software Foundation, Inc.
@@ -107,3 +108,5 @@ extern void i386_dr_low_set_control (const struct i386_debug_reg_state *state);
 /* Get the value of the inferior's DR6 debug status register
    and record it in STATE.  */
 extern void i386_dr_low_get_status (struct i386_debug_reg_state *state);
+
+/* EOF */

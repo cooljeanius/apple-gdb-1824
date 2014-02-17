@@ -1,4 +1,5 @@
-/* Main code for remote server for GDB.
+/* server.c
+   Main code for remote server for GDB.
    Copyright 1989, 1993, 1994, 1995, 1997, 1998, 1999, 2000, 2002, 2003, 2004,
    2005
    Free Software Foundation, Inc.
@@ -36,7 +37,7 @@ int server_waiting;
 
 jmp_buf toplevel;
 
-/* The PID of the originally created or attached inferior.  Used to
+/* The PID of the originally created or attached inferior. Used to
    send signals to the process when GDB sends us an asynchronous interrupt
    (user hitting Control-C in the client), and to wait for the child to exit
    when no longer debugging it.  */
@@ -57,7 +58,7 @@ restore_old_foreground_pgrp (void)
 {
   tcsetpgrp (terminal_fd, old_foreground_pgrp);
 }
-#endif
+#endif /* SIGTTOU */
 
 static int
 start_inferior (char *argv[], char *statusptr)
@@ -65,7 +66,7 @@ start_inferior (char *argv[], char *statusptr)
 #ifdef SIGTTOU
   signal (SIGTTOU, SIG_DFL);
   signal (SIGTTIN, SIG_DFL);
-#endif
+#endif /* SIGTTOU */
 
   signal_pid = create_inferior (argv[0], argv);
 
@@ -80,7 +81,7 @@ start_inferior (char *argv[], char *statusptr)
   old_foreground_pgrp = tcgetpgrp (terminal_fd);
   tcsetpgrp (terminal_fd, signal_pid);
   atexit (restore_old_foreground_pgrp);
-#endif
+#endif /* SIGTTOU */
 
   /* Wait till we are at 1st instruction in program, return signal number.  */
   return mywait (statusptr, 0);
@@ -106,8 +107,8 @@ attach_inferior (int pid, char *statusptr, int *sigptr)
   *sigptr = mywait (statusptr, 0);
 
   /* GDB knows to ignore the first SIGSTOP after attaching to a running
-     process using the "attach" command, but this is different; it's
-     just using "target remote".  Pretend it's just starting up.  */
+     process using the "attach" command, but this is different; it is
+     just using "target remote". Pretend that it is just starting up. */
   if (*statusptr == 'T' && *sigptr == TARGET_SIGNAL_STOP)
     *sigptr = TARGET_SIGNAL_TRAP;
 
@@ -174,8 +175,8 @@ handle_query (char *own_buf)
       return;
     }
 
-  /* Otherwise we didn't know what packet it was.  Say we didn't
-     understand it.  */
+  /* Otherwise we did NOT know what packet it was. Say that we did
+     NOT understand it.  */
   own_buf[0] = 0;
 }
 
@@ -187,7 +188,7 @@ handle_v_cont (char *own_buf, char *status, int *signal)
   int n = 0, i = 0;
   struct thread_resume *resume_info, default_action;
 
-  /* Count the number of semicolons in the packet.  There should be one
+  /* Count the number of semicolons in the packet. There should be one
      for every action.  */
   p = &own_buf[5];
   while (p)
@@ -197,7 +198,7 @@ handle_v_cont (char *own_buf, char *status, int *signal)
       p = strchr (p, ';');
     }
   /* Allocate room for one extra action, for the default remain-stopped
-     behavior; if no default action is in the list, we'll need the extra
+     behavior; if no default action is in the list, we will need the extra
      slot.  */
   resume_info = malloc ((n + 1) * sizeof (resume_info[0]));
 
@@ -244,7 +245,7 @@ handle_v_cont (char *own_buf, char *status, int *signal)
 	  resume_info[i].thread = -1;
 	  default_action = resume_info[i];
 
-	  /* Note: we don't increment i here, we'll overwrite this entry
+	  /* Note: we do NOT increment i here, as we will overwrite this entry
 	     the next time through.  */
 	}
       else if (p[0] == ':')
@@ -308,8 +309,8 @@ handle_v_requests (char *own_buf, char *status, int *signal)
       return;
     }
 
-  /* Otherwise we didn't know what packet it was.  Say we didn't
-     understand it.  */
+  /* Otherwise we did NOT know what packet it was. Say that we did
+     NOT understand it.  */
   own_buf[0] = 0;
   return;
 }
@@ -380,7 +381,7 @@ main (int argc, char *argv[])
 
       for (i = 1; i < argc-1; i++)
 	argv[i] = argv[i+1];
-	    
+
       argc--;
     }
   /* APPLE LOCAL END */
@@ -457,7 +458,7 @@ main (int argc, char *argv[])
 		extern int excthread_debugflag;
 		if (!low_debuglevel)
 		  low_debuglevel = 6;
-		else 
+		else
 		  low_debuglevel = 0;
 		if (!excthread_debugflag)
 		  excthread_debugflag = 6;
@@ -499,7 +500,7 @@ main (int argc, char *argv[])
 		{
 		  /* We can not use the extended protocol if we are
 		     attached, because we can not restart the running
-		     program.  So return unrecognized.  */
+		     program. So return unrecognized.  */
 		  own_buf[0] = '\0';
 		}
 	      break;
@@ -659,7 +660,7 @@ main (int argc, char *argv[])
 	      fprintf (stderr, "Killing inferior\n");
 	      kill_inferior ();
 	      /* When using the extended protocol, we start up a new
-	         debugging session.   The traditional protocol will
+	         debugging session. The traditional protocol will
 	         exit instead.  */
 	      if (extended_protocol)
 		{
@@ -710,8 +711,8 @@ main (int argc, char *argv[])
 		}
 	      else
 		{
-		  /* It is a request we don't understand.  Respond with an
-		     empty packet so that gdb knows that we don't support this
+		  /* It is a request that we do NOT understand. Respond with an
+		     empty packet so that gdb knows that we do NOT support this
 		     request.  */
 		  own_buf[0] = '\0';
 		  break;
@@ -721,8 +722,8 @@ main (int argc, char *argv[])
 	      handle_v_requests (own_buf, &status, &signal);
 	      break;
 	    default:
-	      /* It is a request we don't understand.  Respond with an
-	         empty packet so that gdb knows that we don't support this
+	      /* It is a request that we do NOT understand. Respond with an
+	         empty packet so that gdb knows that we do NOT support this
 	         request.  */
 	      own_buf[0] = '\0';
 	      break;
@@ -779,3 +780,5 @@ main (int argc, char *argv[])
 	}
     }
 }
+
+/* EOF */

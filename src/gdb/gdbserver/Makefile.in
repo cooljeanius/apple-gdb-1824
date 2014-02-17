@@ -15,7 +15,7 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+# Foundation, Inc., 59 Temple Place: Suite 330, Boston, MA 02111-1307, USA.
 
 prefix = @prefix@
 exec_prefix = @exec_prefix@
@@ -51,14 +51,14 @@ INSTALL_DATA = @INSTALL_DATA@
 
 CC = @CC@
 
-# Directory containing source files.  Don't clean up the spacing,
+# Directory containing source files.  Do NOT clean up the spacing,
 # this exact string is matched for by the "configure" script.
 srcdir = @srcdir@
 VPATH = @srcdir@
 
 # It is also possible that you will need to add -I/usr/include/sys to the
-# CFLAGS section if your system doesn't have fcntl.h in /usr/include (which 
-# is where it should be according to Posix).
+# CFLAGS section if your system does NOT have fcntl.h in /usr/include
+# (which is where it should be according to Posix).
 
 # Set this up with gcc if you have gnu ld and the loader will print out
 # line numbers for undefinded refs.
@@ -88,14 +88,14 @@ READLINE_DEP = $$(READLINE_DIR)
 # and mach stuff with regular gdb.  So I am adding another
 # platform include directory to get this stuff.
 PLATFORM_INCLUDE = @GDBSERVER_PLATFORM_INCLUDE@
-INCLUDE_CFLAGS = -I. -I${srcdir} -I$(srcdir)/../regformats $(PLATFORM_INCLUDE) -I$(INCLUDE_DIR)
+INCLUDE_CFLAGS = -I. -I.. -I../common -I${srcdir} -I$(srcdir)/../regformats $(PLATFORM_INCLUDE) -I$(INCLUDE_DIR)
 
 # M{H,T}_CFLAGS, if defined, has host- and target-dependent CFLAGS
 # from the config/ directory.
 GLOBAL_CFLAGS = ${MT_CFLAGS} ${MH_CFLAGS}
-PROFILE_CFLAGS = -pg
+PROFILE_CFLAGS = @PROFILE_CFLAGS@
 
-WARN_CFLAGS = -Wall
+WARN_CFLAGS = -Wall -Wextra -Wimplicit
 
 # CFLAGS is specifically reserved for setting from the command line
 # when running make.  E.G.  "make CFLAGS=-Wmissing-prototypes".
@@ -160,7 +160,7 @@ all: gdbserver gdbreplay
 
 # Traditionally "install" depends on "all".  But it may be useful
 # not to; for example, if the user has made some trivial change to a 
-# source file and doesn't care about rebuilding or just wants to save the
+# source file and does NOT care about rebuilding or just wants to save the
 # time it takes for make to check that all is up to date.
 # install-only is intended to address that need.
 install: all install-only
@@ -226,7 +226,7 @@ STAGESTUFF=${OBS} ${TSOBS} ${NTSOBS} ${ADD_FILES} init.c init.o version.c gdb
 
 config.h: stamp-h ; @true
 stamp-h: config.in config.status
-	CONFIG_FILES="" CONFIG_HEADERS=config.h:config.in $(SHELL) ./config.status
+	CONFIG_FILES="" CONFIG_HEADERS=config.h $(SHELL) ./config.status
 
 Makefile: Makefile.in config.status
 	CONFIG_HEADERS="" $(SHELL) ./config.status

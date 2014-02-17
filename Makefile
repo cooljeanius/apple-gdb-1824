@@ -8,7 +8,7 @@ BINUTILS_VERSION = 2.13-20021117
 BINUTILS_RC_VERSION = 46
 
 # Uncomment line below for debugging shell commands
-#SHELL = /bin/sh -x
+SHELL = /bin/sh -ex
 
 .PHONY: all clean configure build install installsrc installhdrs headers \
 	build-core build-binutils build-gdb \
@@ -129,7 +129,7 @@ BINUTILS_HEADERS = $(BINUTILS_FRAMEWORK)/Headers
 INTL_FRAMEWORK = $(BINUTILS_BUILD_ROOT)/usr/lib/libintl.dylib
 INTL_HEADERS = $(BINUTILS_BUILD_ROOT)/usr/include
 
-export SDKROOT_FOR_BUILD = $(shell xcodebuild -version -sdk macosx Path | head -1)
+export SDKROOT_FOR_BUILD = $(shell xcodebuild -version -sdk macosx Path 2>/dev/null | head -1)
 
 export AR       = $(shell xcrun -find ar)
 export CC       = $(shell (xcrun -find clang 2>/dev/null || xcrun -find gcc))
@@ -142,7 +142,7 @@ export NM       = $(shell xcrun -find nm)
 export RANLIB   = $(shell xcrun -find ranlib)
 export TAR      = $(shell xcrun -find gnutar)
 
-export CC_FOR_BUILD      = $(shell xcrun -find clang)
+export CC_FOR_BUILD      = $(shell (xcrun -find clang 2>/dev/null || xcrun -find gcc))
 export CCFLAGS_FOR_BUILD = -I$(SDKROOT_FOR_BUILD)/usr/include
 export LDFLAGS_FOR_BUILD = -isysroot $(SDKROOT_FOR_BUILD)
 

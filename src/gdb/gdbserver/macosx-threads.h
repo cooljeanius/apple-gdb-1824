@@ -32,3 +32,5 @@ typedef pthread_cond_t gdb_cond_t;
 #define gdb_cond_signal(c) pthread_cond_signal(c)
 
 #endif /* __GDB_MACOSX_NAT_THREADS_H__ */
+
+/* EOF */

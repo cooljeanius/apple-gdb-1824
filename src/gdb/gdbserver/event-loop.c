@@ -1,4 +1,5 @@
-/* Event loop machinery for the remote server for GDB.
+/* event-loop.c
+   Event loop machinery for the remote server for GDB.
    Copyright (C) 1999-2013 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -18,23 +19,50 @@
 
 /* Based on src/gdb/event-loop.c.  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# warning not including autoheader-generated config header
+# define EVENT_LOOP_C_NON_AUTOTOOLS_BUILD 1
+#endif /* HAVE_CONFIG_H */
+
+#include "event-loop.h"
 #include "server.h"
-#include "queue.h"
+#include "queue.h" /* from ../common */
+
+#ifndef internal_error
+# include "common-utils.h" /* from ../common */
+#endif /* !internal_error */
 
 #include <sys/types.h>
 #include <string.h>
 #include <sys/time.h>
 
 #ifdef USE_WIN32API
-#include <windows.h>
-#include <io.h>
-#endif
+# include <windows.h>
+# include <io.h>
+#endif /* USE_WIN32API */
 
 #ifdef HAVE_ERRNO_H
-#include <errno.h>
+# include <errno.h>
+#else
+# ifdef __GNUC__
+#  warning event-loop.c expects <errno.h> to be included.
+# endif /* __GNUC__ */
 #endif
 
 #include <unistd.h>
+
+#ifdef ENABLE_NLS
+# ifdef HAVE_LIBINTL_H
+#  include <libintl.h>
+#  define _(String) gettext (String)
+# else
+#  ifdef gettext
+#   define _(String) gettext (String)
+#  endif /* gettext */
+# endif /* HAVE_LIBINTL_H */
+#endif /* ENABLE_NLS */
 
 typedef struct gdb_event gdb_event;
 typedef int (event_handler_func) (gdb_fildes_t);
@@ -122,10 +150,10 @@ static struct
 gdb_notifier;
 
 /* Callbacks are just routines that are executed before waiting for the
-   next event.  In GDB this is struct gdb_timer.  We don't need timers
+   next event.  In GDB this is struct gdb_timer. We do NOT need timers
    so rather than copy all that complexity in gdbserver, we provide what
    we need, but we do so in a way that if/when the day comes that we need
-   that complexity, it'll be easier to add - replace callbacks with timers
+   that complexity, it will be easier to add - replace callbacks with timers
    and use a delta of zero (which is all gdb currently uses timers for anyway).
 
    PROC will be executed before gdbserver goes to sleep to wait for the
@@ -173,10 +201,10 @@ initialize_event_loop (void)
 static int
 process_event (void)
 {
-  /* Let's get rid of the event from the event queue.  We need to
+  /* Let us get rid of the event from the event queue. We need to
      do this now because while processing the event, since the
      proc function could end up jumping out to the caller of this
-     function.  In that case, we would have on the event queue an
+     function. In that case, we would have on the event queue an
      event which has been processed, but not deleted.  */
   if (!QUEUE_is_empty (gdb_event_p, event_queue))
     {
@@ -186,8 +214,9 @@ process_event (void)
 
       gdb_event_xfree (event_ptr);
       /* Now call the procedure associated with the event.  */
-      if ((*proc) (fd))
-	return -1;
+		if ((*proc) (fd)) {
+			return -1;
+		}
       return 1;
     }
 
@@ -209,16 +238,18 @@ append_callback_event (callback_handler_func *proc, gdb_client_data data)
   event_ptr->proc = proc;
   event_ptr->data = data;
   event_ptr->next = NULL;
-  if (callback_list.first == NULL)
-    callback_list.first = event_ptr;
-  if (callback_list.last != NULL)
-    callback_list.last->next = event_ptr;
+	if (callback_list.first == NULL) {
+		callback_list.first = event_ptr;
+	}
+	if (callback_list.last != NULL) {
+		callback_list.last->next = event_ptr;
+	}
   callback_list.last = event_ptr;
   return event_ptr->id;
 }
 
 /* Delete callback ID.
-   It is not an error callback ID doesn't exist.  */
+   It is not an error callback ID does NOT exist.  */
 
 void
 delete_callback_event (int id)
@@ -232,8 +263,9 @@ delete_callback_event (int id)
       if (event_ptr->id == id)
 	{
 	  *p = event_ptr->next;
-	  if (event_ptr == callback_list.last)
-	    callback_list.last = NULL;
+		if (event_ptr == callback_list.last) {
+			callback_list.last = NULL;
+		}
 	  free (event_ptr);
 	  break;
 	}
@@ -257,13 +289,15 @@ process_callback (void)
       gdb_client_data *data = event_ptr->data;
 
       /* Remove the event before calling PROC,
-	 more events may get added by PROC.  */
+	   * more events may get added by PROC.  */
       callback_list.first = event_ptr->next;
-      if (callback_list.first == NULL)
-	callback_list.last = NULL;
+		if (callback_list.first == NULL) {
+			callback_list.last = NULL;
+		}
       free  (event_ptr);
-      if ((*proc) (data))
-	return -1;
+		if ((*proc) (data)) {
+			return -1;
+		}
       return 1;
     }
 
@@ -286,9 +320,11 @@ create_file_handler (gdb_fildes_t fd, int mask, handler_func *proc,
      changing its associated procedure).  */
   for (file_ptr = gdb_notifier.first_file_handler;
        file_ptr != NULL;
-       file_ptr = file_ptr->next_file)
-    if (file_ptr->fd == fd)
-      break;
+       file_ptr = file_ptr->next_file) {
+		if (file_ptr->fd == fd) {
+			break;
+		}
+  }
 
   /* It is a new file descriptor.  Add it to the list.  Otherwise,
      just change the data associated with it.  */
@@ -300,23 +336,27 @@ create_file_handler (gdb_fildes_t fd, int mask, handler_func *proc,
       file_ptr->next_file = gdb_notifier.first_file_handler;
       gdb_notifier.first_file_handler = file_ptr;
 
-      if (mask & GDB_READABLE)
-	FD_SET (fd, &gdb_notifier.check_masks[0]);
-      else
-	FD_CLR (fd, &gdb_notifier.check_masks[0]);
+		if (mask & GDB_READABLE) {
+			FD_SET (fd, &gdb_notifier.check_masks[0]);
+		} else {
+			FD_CLR (fd, &gdb_notifier.check_masks[0]);
+		}
 
-      if (mask & GDB_WRITABLE)
-	FD_SET (fd, &gdb_notifier.check_masks[1]);
-      else
-	FD_CLR (fd, &gdb_notifier.check_masks[1]);
+		if (mask & GDB_WRITABLE) {
+			FD_SET (fd, &gdb_notifier.check_masks[1]);
+		} else {
+			FD_CLR (fd, &gdb_notifier.check_masks[1]);
+		}
 
-      if (mask & GDB_EXCEPTION)
-	FD_SET (fd, &gdb_notifier.check_masks[2]);
-      else
-	FD_CLR (fd, &gdb_notifier.check_masks[2]);
+		if (mask & GDB_EXCEPTION) {
+			FD_SET (fd, &gdb_notifier.check_masks[2]);
+		} else {
+			FD_CLR (fd, &gdb_notifier.check_masks[2]);
+		}
 
-      if (gdb_notifier.num_fds <= fd)
-	gdb_notifier.num_fds = fd + 1;
+		if (gdb_notifier.num_fds <= fd) {
+			gdb_notifier.num_fds = fd + 1;
+		}
     }
 
   file_ptr->proc = proc;
@@ -334,7 +374,7 @@ add_file_handler (gdb_fildes_t fd,
 }
 
 /* Remove the file descriptor FD from the list of monitored fd's:
-   i.e. we don't care anymore about events on the FD.  */
+   i.e. we do NOT care anymore about events on the FD.  */
 
 void
 delete_file_handler (gdb_fildes_t fd)
@@ -346,19 +386,25 @@ delete_file_handler (gdb_fildes_t fd)
 
   for (file_ptr = gdb_notifier.first_file_handler;
        file_ptr != NULL;
-       file_ptr = file_ptr->next_file)
-    if (file_ptr->fd == fd)
-      break;
+       file_ptr = file_ptr->next_file) {
+		if (file_ptr->fd == fd) {
+			break;
+		}
+  }
 
-  if (file_ptr == NULL)
-    return;
+	if (file_ptr == NULL) {
+		return;
+	}
 
-  if (file_ptr->mask & GDB_READABLE)
-    FD_CLR (fd, &gdb_notifier.check_masks[0]);
-  if (file_ptr->mask & GDB_WRITABLE)
-    FD_CLR (fd, &gdb_notifier.check_masks[1]);
-  if (file_ptr->mask & GDB_EXCEPTION)
-    FD_CLR (fd, &gdb_notifier.check_masks[2]);
+	if (file_ptr->mask & GDB_READABLE) {
+		FD_CLR (fd, &gdb_notifier.check_masks[0]);
+	}
+	if (file_ptr->mask & GDB_WRITABLE) {
+		FD_CLR (fd, &gdb_notifier.check_masks[1]);
+	}
+	if (file_ptr->mask & GDB_EXCEPTION) {
+		FD_CLR (fd, &gdb_notifier.check_masks[2]);
+	}
 
   /* Find current max fd.  */
 
@@ -369,8 +415,9 @@ delete_file_handler (gdb_fildes_t fd)
 	{
 	  if (FD_ISSET (i - 1, &gdb_notifier.check_masks[0])
 	      || FD_ISSET (i - 1, &gdb_notifier.check_masks[1])
-	      || FD_ISSET (i - 1, &gdb_notifier.check_masks[2]))
-	    break;
+	      || FD_ISSET (i - 1, &gdb_notifier.check_masks[2])) {
+		  break;
+	  }
 	}
       gdb_notifier.num_fds = i;
     }
@@ -420,9 +467,9 @@ handle_file_event (gdb_fildes_t event_file_desc)
 	      fprintf (stderr, "Exception condition detected on fd %s\n",
 		       pfildes (file_ptr->fd));
 	      file_ptr->error = 1;
-	    }
-	  else
-	    file_ptr->error = 0;
+	    } else {
+			file_ptr->error = 0;
+		}
 	  mask = file_ptr->ready_mask & file_ptr->mask;
 
 	  /* Clear the received events for next time around.  */
@@ -432,8 +479,9 @@ handle_file_event (gdb_fildes_t event_file_desc)
 	  if (mask != 0)
 	    {
 	      if ((*file_ptr->proc) (file_ptr->error,
-				     file_ptr->client_data) < 0)
-		return -1;
+								 file_ptr->client_data) < 0) {
+			  return -1;
+		  }
 	    }
 	  break;
 	}
@@ -474,8 +522,9 @@ wait_for_event (void)
   fflush (stdout);
   fflush (stderr);
 
-  if (gdb_notifier.num_fds == 0)
-    return -1;
+	if (gdb_notifier.num_fds == 0) {
+		return -1;
+	}
 
   gdb_notifier.ready_masks[0] = gdb_notifier.check_masks[0];
   gdb_notifier.ready_masks[1] = gdb_notifier.check_masks[1];
@@ -493,11 +542,12 @@ wait_for_event (void)
       FD_ZERO (&gdb_notifier.ready_masks[1]);
       FD_ZERO (&gdb_notifier.ready_masks[2]);
 #ifdef EINTR
-      /* Dont print anything if we got a signal, let gdb handle
-	 it.  */
-      if (errno != EINTR)
-	perror_with_name ("select");
-#endif
+      /* Do NOT print anything if we got a signal, let gdb handle
+	   * it.  */
+		if (errno != EINTR) {
+			perror_with_name ("select");
+		}
+#endif /* EINTR */
     }
 
   /* Enqueue all detected file events.  */
@@ -515,13 +565,14 @@ wait_for_event (void)
       if (FD_ISSET (file_ptr->fd, &gdb_notifier.ready_masks[2]))
 	mask |= GDB_EXCEPTION;
 
-      if (!mask)
-	continue;
-      else
-	num_found--;
+		if (!mask) {
+			continue;
+		} else {
+			num_found--;
+		}
 
       /* Enqueue an event only if this is still a new event for this
-	 fd.  */
+	   * fd.  */
 
       if (file_ptr->ready_mask == 0)
 	{
@@ -552,31 +603,38 @@ start_event_loop (void)
       int res = process_event ();
 
       /* Did the event handler want the event loop to stop?  */
-      if (res == -1)
-	return;
+		if (res == -1) {
+			return;
+		}
 
-      if (res)
-	continue;
+		if (res) {
+			continue;
+		}
 
       /* Process any queued callbacks before we go to sleep.  */
       res = process_callback ();
 
       /* Did the callback want the event loop to stop?  */
-      if (res == -1)
-	return;
+		if (res == -1) {
+			return;
+		}
 
-      if (res)
-	continue;
+		if (res) {
+			continue;
+		}
 
-      /* Wait for a new event.  If wait_for_event returns -1, we
-	 should get out because this means that there are no event
-	 sources left.  This will make the event loop stop, and the
-	 application exit.  */
+      /* Wait for a new event. If wait_for_event returns -1, we
+       * should get out because this means that there are no event
+       * sources left. This will make the event loop stop, and the
+       * application exit.  */
 
-      if (wait_for_event () < 0)
-	return;
+		if (wait_for_event () < 0) {
+			return;
+		}
     }
 
   /* We are done with the event loop.  There are no more event sources
      to listen to.  So we exit gdbserver.  */
 }
+
+/* EOF */

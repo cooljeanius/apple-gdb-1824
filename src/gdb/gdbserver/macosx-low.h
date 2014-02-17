@@ -16,8 +16,9 @@
    thread. But on MacOS X there is a process that is separate from its
    threads. So I have a macosx_process_info - which is a singleton, and
    then a macosx_thread_info for each thread. Since I am using the inferiors.c
-   code to manage all the threads, I include a backpointer to the macosx_process_info
-   in the macosx_thread_info. That way I am not just poking a global all the time.  */
+   code to manage all the threads, I include a backpointer to the
+   macosx_process_info in the macosx_thread_info. That way I am not just poking
+   a global all the time.  */
 
 struct macosx_process_info
 {
@@ -66,10 +67,10 @@ extern struct macosx_target_ops the_low_target;
 /* This originally comes from macosx-nat-mutils.h - though I moved it to
    macosx-tdep.h because it was needed for kdp...  */
 #if (defined __GNUC__)
-#define __MACH_CHECK_FUNCTION __PRETTY_FUNCTION__
+# define __MACH_CHECK_FUNCTION __PRETTY_FUNCTION__
 #else
-#define __MACH_CHECK_FUNCTION ((__const char *) 0)
-#endif
+# define __MACH_CHECK_FUNCTION ((__const char *) 0)
+#endif /* __GNUC__ */
 
 #define MACH_PROPAGATE_ERROR(ret) \
 { MACH_WARN_ERROR(ret); if ((ret) != KERN_SUCCESS) { return ret; } }
@@ -88,4 +89,4 @@ void mach_check_error (kern_return_t ret, const char *file, unsigned int line,
 void mach_warn_error (kern_return_t ret, const char *file, unsigned int line,
                       const char *func);
 
-
+/* EOF */

@@ -1,4 +1,5 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* macosx-mutils.c
+   Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -24,78 +25,117 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning not including "config.h".
+# warning not including "config.h"
+# define MACOSX_MUTILS_C_NON_AUTOTOOLS_BUILD 1
 #endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_MACH_MACH_H
 # include <mach/mach.h>
 #else
-# warning macosx-mutils.c expects <mach/mach.h> to be included.
+# ifdef __APPLE__
+#  warning macosx-mutils.c expects <mach/mach.h> to be included.
+# endif /* __APPLE__ */
 #endif /* HAVE_MACH_MACH_H */
 
 #ifdef HAVE_MACH_O_NLIST_H
 # include <mach-o/nlist.h>
 #else
-# warning macosx-mutils.c expects <mach-o/nlist.h> to be included.
+# ifdef __APPLE__
+#  warning macosx-mutils.c expects <mach-o/nlist.h> to be included.
+# endif /* __APPLE__ */
 #endif /* HAVE_MACH_O_NLIST_H */
 
 #ifdef HAVE_MACH_MACH_ERROR_H
 # include <mach/mach_error.h>
 #else
-# warning macosx-mutils.c expects <mach/mach_error.h> to be included.
+# ifdef __APPLE__
+#  warning macosx-mutils.c expects <mach/mach_error.h> to be included.
+# endif /* __APPLE__ */
 #endif /* HAVE_MACH_MACH_ERROR_H */
 
 #ifdef HAVE_SYS_SIGNAL_H
 # include <sys/signal.h>
 #else
-# warning macosx-mutils.c expects <sys/signal.h> to be included.
+# ifdef __GNUC__
+#  warning macosx-mutils.c expects <sys/signal.h> to be included.
+# endif /* __GNUC__ */
 #endif /* HAVE_SYS_SIGNAL_H */
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
-# warning macosx-mutils.c expects <sys/types.h> to be included.
+# ifdef __GNUC__
+#  warning macosx-mutils.c expects <sys/types.h> to be included.
+# endif /* __GNUC__ */
 #endif /* HAVE_SYS_TYPES_H */
 #ifdef HAVE_SYS_WAIT_H
 # include <sys/wait.h>
 #else
-# warning macosx-mutils.c expects <sys/wait.h> to be included.
+# ifdef __GNUC__
+#  warning macosx-mutils.c expects <sys/wait.h> to be included.
+# endif /* __GNUC__ */
 #endif /* HAVE_SYS_WAIT_H */
 #ifdef HAVE_LIMITS_H
 # include <limits.h>
 #else
-# warning macosx-mutils.c expects <limits.h> to be included.
+# ifdef __GNUC__
+#  warning macosx-mutils.c expects <limits.h> to be included.
+# endif /* __GNUC__ */
 #endif /* HAVE_LIMITS_H */
 
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #else
-# warning macosx-mutils.c expects <unistd.h> to be included.
+# ifdef __GNUC__
+#  warning macosx-mutils.c expects <unistd.h> to be included.
+# endif /* __GNUC__ */
 #endif /* HAVE_UNISTD_H */
 
 #ifdef HAVE_AVAILABILITYMACROS_H
 # include <AvailabilityMacros.h>
 #else
-# warning macosx-mutils.c expects <AvailabilityMacros.h> to be included.
+# ifdef __APPLE__
+#  warning macosx-mutils.c expects <AvailabilityMacros.h> to be included.
+# endif /* __APPLE__ */
 #endif /* HAVE_AVAILABILITYMACROS_H */
 
 #include "server.h"
 #include "macosx-low.h"
 #include "macosx-mutils.h"
 
-#define MACH64 (MAC_OS_X_VERSION_MAX_ALLOWED >= 1040)
+#ifndef MACH64
+# ifdef MAC_OS_X_VERSION_MAX_ALLOWED
+#  define MACH64 (MAC_OS_X_VERSION_MAX_ALLOWED >= 1040)
+# else
+#  ifdef __APPLE__
+#   warning need to define MAC_OS_X_VERSION_MAX_ALLOWED to be able to define MACH64
+#  endif /* __APPLE__ */
+# endif /* MAC_OS_X_VERSION_MAX_ALLOWED */
+#endif /* !MACH64 */
 
 #if MACH64
 # ifdef HAVE_MACH_MACH_VM_H
 #  include <mach/mach_vm.h>
 #  ifdef HAVE_UNSIGNED_INT
 #   ifndef HAVE_VM_SIZE_T
-#    warning We do not have the vm_size_t type, which this file needs.
+#    ifndef vm_size_t
+#     warning We do not have the vm_size_t type, which this file needs.
 /* Try defining it as an "unsigned int". */
+#    else
+#     define VM_SIZE_T_PRESENT_BUT_NOT_DETECTED_BY_CONFIGURE 1
+#    endif /* !vm_size_t */
 #   else
-#    warning Your pre-existing definition for vm_size_t might conflict with the type that this file expects.
+#    ifdef vm_size_t
+#     warning Your pre-existing definition for vm_size_t might conflict with the type that this file expects.
+#    else
+#     define VM_SIZE_T_NOT_PRESENT_BUT_DETECTED_BY_CONFIGURE 1
+#    endif /* vm_size_t */
 #   endif /* !HAVE_VM_SIZE_T */
 #  else
-#   warning "macosx-mutils.h" (which this file includes) will want to use the "unsigned int" type.
+#   ifdef __GDBSERVER_MACOSX_MUTILS_H__
+#    warning "macosx-mutils.h" (which this file includes) will want to use the "unsigned int" type.
+#   else
+#    define MACOSX_MUTILS_H_NOT_INCLUDED 1
+#   endif /* __GDBSERVER_MACOSX_MUTILS_H__ */
 #  endif /* HAVE_UNSIGNED_INT */
 # else
 #  warning macosx-mutils.c expects <mach/mach_vm.h> to be included.
@@ -114,7 +154,7 @@
 #define MAX_INSTRUCTION_CACHE_WARNINGS 0
 
 /* MINUS_INT_MIN is the absolute value of the minimum value that can
-   be stored in a int.  We cannot just use -INT_MIN, as that would
+   be stored in a int. We cannot just use -INT_MIN, as that would
    implicitly be a int, not an unsigned int, and would overflow on 2's
    complement machines. */
 
@@ -131,8 +171,9 @@ mutils_debug (const char *fmt, ...)
 {
   va_list ap;
 
-  if (mutils_stderr == NULL)
-    mutils_stderr = fdopen (fileno (stderr), "w");
+	if (mutils_stderr == NULL) {
+		mutils_stderr = fdopen (fileno (stderr), "w");
+	}
 
   va_start (ap, fmt);
   fprintf (mutils_stderr, "[%d mutils]: ", getpid ());
@@ -159,8 +200,9 @@ child_get_pagesize (void)
       /* This is probably being over-careful, since if we
          cannot call host_page_size on ourselves, we probably
          are not going to get much further.  */
-      if (status != KERN_SUCCESS)
-        g_cached_child_page_size = 0;
+		if (status != KERN_SUCCESS) {
+			g_cached_child_page_size = 0;
+		}
       MACH_CHECK_ERROR (status);
     }
 
@@ -915,3 +957,5 @@ macosx_thread_valid (task_t task, thread_t thread)
 #endif /* DEBUG_MACOSX_MUTILS */
   return found;
 }
+
+/* EOF */
