@@ -1,4 +1,4 @@
-/* Test for NaN that does not need libm.
+/* isnan.c: Test for NaN that does not need libm.
    Copyright (C) 2007-2012 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
@@ -83,7 +83,12 @@ int
 FUNC (DOUBLE x)
 {
 #ifdef KNOWN_EXPBIT0_LOCATION
-# if defined USE_LONG_DOUBLE && ((defined __ia64 && LDBL_MANT_DIG == 64) || (defined __x86_64__ || defined __amd64__) || (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_)) && !HAVE_SAME_LONG_DOUBLE_AS_DOUBLE
+# if defined USE_LONG_DOUBLE && \
+             ((defined __ia64 && (LDBL_MANT_DIG == 64)) || \
+              (defined __x86_64 || defined __x86_64__ || defined __amd64 || defined __amd64__) || \
+			  (defined __i386 || defined __i386__ || defined _I386 || defined _M_IX86 || defined _X86_)) && \
+             (!defined(HAVE_SAME_LONG_DOUBLE_AS_DOUBLE) || \
+              (defined(HAVE_SAME_LONG_DOUBLE_AS_DOUBLE) && !HAVE_SAME_LONG_DOUBLE_AS_DOUBLE))
   /* Special CPU dependent code is needed to treat bit patterns outside the
      IEEE 754 specification (such as Pseudo-NaNs, Pseudo-Infinities,
      Pseudo-Zeroes, Unnormalized Numbers, and Pseudo-Denormals) as NaNs.

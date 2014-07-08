@@ -1,0 +1,6 @@
+# macos.mh
+# Host: really old Mac (MacOS Classic running on an old m68k Mac)
+
+NATDEPFILES= mac-nat.o
+XDEPFILES= mac-xdep.o
+NAT_FILE= nm-macos.h

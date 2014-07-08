@@ -1,3 +1,5 @@
+/* mipsmach3.h */
+
 #include <machine/vmparam.h>
 #include <machine/machparam.h>
 #include <sys/param.h>

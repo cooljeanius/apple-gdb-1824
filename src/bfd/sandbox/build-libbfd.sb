@@ -1,0 +1,59 @@
+;; -*- Mode: Scheme; tab-width: 4 -*-
+;;
+;; To try to keep the build system from writing to the root of the fs
+;;
+(version 1)
+
+(debug deny)
+;; the MacPorts sandbox profile does "allow default" by default, but most
+;; other sandbox profiles do "deny default" by default. In this case
+;; "deny default" is currently needed for this to work as intended:
+(deny default)
+
+;; FIXME: this should work for our intended purposes instead, so that
+;; we can avoid having to use "deny default" by default, but unfortunately
+;; it does NOT work like that:
+(deny file-write*
+       (literal "/"))
+
+;; exceptions to the above:
+(allow file-write-data
+ (literal "/dev/null")
+ (literal "/dev/zero")
+ (literal "/dev/dtracehelper")
+ (literal "/dev/tty")
+ (literal "/dev/stdin")
+ (literal "/dev/stdout")
+ (literal "/dev/stderr")
+ (regex
+  #"^/dev/fd/"))
+
+(allow file-write*
+       (regex
+         #"^/dev/null$"
+         #"^(./)?config.log$"
+         #"^(./)?doc$"
+         #"^(/private)?(/var)?/tmp/"
+         #"^(/private)?/var/folders/"
+       )
+       (literal "config.log")
+)
+
+(allow file-write*
+ (subpath "/Users"))
+
+;; alphabetize the other things to allow:
+(allow file-chroot)
+(allow file-fsctl)
+(allow file-ioctl)
+(allow file-read*)
+(allow ipc-posix-shm)
+(allow job-creation)
+(allow mach*)
+(allow network*)
+(allow process*)
+(allow signal)
+(allow sysctl*)
+(allow system-audit)
+(if (defined? 'system-socket)
+    (allow system-socket))

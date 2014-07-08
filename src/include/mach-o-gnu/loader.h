@@ -1,4 +1,4 @@
-/* Mach-O support for BFD.
+/* mach-o[-gnu]/loader.h: Mach-O support for BFD.
    Copyright 2011, 2012
    Free Software Foundation, Inc.
 
@@ -20,7 +20,7 @@
    MA 02110-1301, USA.  */
 
 #ifndef _MACH_O_LOADER_H
-#define _MACH_O_LOADER_H
+#define _MACH_O_LOADER_H 1
 
 /* Constants for header. */
 
@@ -35,6 +35,8 @@ bfd_mach_o_mach_header_magic;
 
 #define BFD_MACH_O_CPU_IS64BIT 0x1000000
 
+#ifndef _ENUM_BFD_MACH_O_CPU_TYPE_DEFINED
+# define _ENUM_BFD_MACH_O_CPU_TYPE_DEFINED 1
 typedef enum bfd_mach_o_cpu_type
 {
   BFD_MACH_O_CPU_TYPE_VAX = 1,
@@ -53,7 +55,10 @@ typedef enum bfd_mach_o_cpu_type
   BFD_MACH_O_CPU_TYPE_X86_64 = (BFD_MACH_O_CPU_TYPE_I386 | BFD_MACH_O_CPU_IS64BIT)
 }
 bfd_mach_o_cpu_type;
+#endif /* !_ENUM_BFD_MACH_O_CPU_TYPE_DEFINED */
 
+#ifndef _ENUM_BFD_MACH_O_CPU_SUBTYPE_DEFINED
+# define _ENUM_BFD_MACH_O_CPU_SUBTYPE_DEFINED 1
 typedef enum bfd_mach_o_cpu_subtype
 {
   /* i386.  */
@@ -68,7 +73,10 @@ typedef enum bfd_mach_o_cpu_subtype
   BFD_MACH_O_CPU_SUBTYPE_ARM_V7 = 9
 }
 bfd_mach_o_cpu_subtype;
+#endif /* !_ENUM_BFD_MACH_O_CPU_SUBTYPE_DEFINED */
 
+#ifndef _ENUM_BFD_MACH_O_FILETYPE_DEFINED
+# define _ENUM_BFD_MACH_O_FILETYPE_DEFINED 1
 typedef enum bfd_mach_o_filetype
 {
   BFD_MACH_O_MH_OBJECT      = 0x01,
@@ -84,7 +92,10 @@ typedef enum bfd_mach_o_filetype
   BFD_MACH_O_MH_KEXT_BUNDLE = 0x0b
 }
 bfd_mach_o_filetype;
+#endif /* !_ENUM_BFD_MACH_O_FILETYPE_DEFINED */
 
+#ifndef _ENUM_BFD_MACH_O_HEADER_FLAGS_DEFINED
+# define _ENUM_BFD_MACH_O_HEADER_FLAGS_DEFINED 1
 typedef enum bfd_mach_o_header_flags
 {
   BFD_MACH_O_MH_NOUNDEFS		= 0x0000001,
@@ -114,10 +125,13 @@ typedef enum bfd_mach_o_header_flags
   BFD_MACH_O_MH_NO_HEAP_EXECUTION       = 0x1000000
 }
 bfd_mach_o_header_flags;
-
+#endif /* !_ENUM_BFD_MACH_O_HEADER_FLAGS_DEFINED */
+
 /* Load command constants.  */
 #define BFD_MACH_O_LC_REQ_DYLD 0x80000000
 
+#ifndef _ENUM_BFD_MACH_O_LOAD_COMMAND_TYPE_DEFINED
+# define _ENUM_BFD_MACH_O_LOAD_COMMAND_TYPE_DEFINED 1
 typedef enum bfd_mach_o_load_command_type
 {
   BFD_MACH_O_LC_SEGMENT = 0x1,		/* File segment to be mapped.  */
@@ -169,10 +183,13 @@ typedef enum bfd_mach_o_load_command_type
   BFD_MACH_O_LC_DYLIB_CODE_SIGN_DRS = 0x2b /* DRs from dylibs.  */
 }
 bfd_mach_o_load_command_type;
-
+#endif /* !_ENUM_BFD_MACH_O_LOAD_COMMAND_TYPE_DEFINED */
+
 /* Section constants.  */
 /* Constants for the type of a section.  */
 
+#ifndef _ENUM_BFD_MACH_O_SECTION_TYPE_DEFINED
+# define _ENUM_BFD_MACH_O_SECTION_TYPE_DEFINED 1
 typedef enum bfd_mach_o_section_type
 {
   /* Regular section.  */
@@ -241,6 +258,7 @@ typedef enum bfd_mach_o_section_type
   BFD_MACH_O_S_LAZY_DYLIB_SYMBOL_POINTERS = 0x10
 }
 bfd_mach_o_section_type;
+#endif /* !_ENUM_BFD_MACH_O_SECTION_TYPE_DEFINED */
 
 /* The flags field of a section structure is separated into two parts a section
    type and section attributes.  The section types are mutually exclusive (it
@@ -271,7 +289,10 @@ typedef enum bfd_mach_o_section_attribute
   /* Section contains some machine instructions.  */
   BFD_MACH_O_S_ATTR_SOME_INSTRUCTIONS = 0x00000400,
 
-  /* A debug section.  */
+  /* A debug section.
+   * FIXME: there are discrepancies between which enum this is in,
+   * depending on whether we use the bfd_mach_o_section_type enum from
+   * this file or not. */
   BFD_MACH_O_S_ATTR_DEBUG             = 0x02000000,
 
   /* Used with i386 stubs.  */

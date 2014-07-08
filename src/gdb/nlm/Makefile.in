@@ -15,7 +15,7 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+# Foundation, Inc., 59 Temple Place Suite 330, Boston, MA 02111-1307, USA.
 
 srcdir = @srcdir@
 VPATH = @srcdir@
@@ -24,7 +24,12 @@ prefix = @prefix@
 exec_prefix = @exec_prefix@
 
 host_alias = @host_alias@
+host_cpu = @host_cpu@
 target_alias = @target_alias@
+target_cpu = @target_cpu@
+gdb_target_cpu = @gdb_target_cpu@
+cpufile = @cpufile@
+target_makefile_frag_path = @target_makefile_frag_path@
 program_transform_name = @program_transform_name@
 bindir = @bindir@
 libdir = @libdir@
@@ -52,28 +57,45 @@ INSTALL = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_DATA = @INSTALL_DATA@
 
+LN_S = @LN_S@
+
+SED = @SED@
+
 CC_FOR_TARGET = ` \
   if test -f ../../gcc/xgcc; then \
     echo ../../gcc/xgcc -B../../gcc/; \
   else \
-    t='$(program_transform_name)'; echo gcc | sed -e '' $$t; \
+    t='$(program_transform_name)'; \
+    if test "x$${t}" != "xs,x,x,"; then \
+      echo "gcc" | $(SED) -e '' $${t}; \
+    else \
+      echo "gcc"; \
+    fi; \
   fi`
 
 NLMCONV_FOR_TARGET = ` \
   if test -f ../../binutils/nlmconv; then \
     echo ../../binutils/nlmconv; \
   else \
-    t='$(program_transform_name)'; echo nlmconv | sed -e '' $$t; \
+    t='$(program_transform_name)'; \
+    if test "x$${t}" != "xs,x,x,"; then \
+      echo "nlmconv" | $(SED) -e '' $${t}; \
+    else \
+      echo "nlmconv"; \
+    fi; \
   fi`
 
 # All the includes used for CFLAGS and for lint.
 INCLUDE_CFLAGS = -I. -I${srcdir}
 
+# defines:
+DEFS = @DEFS@
+
 # CFLAGS is specifically reserved for setting from the command line
 # when running make.  I.E.  "make CFLAGS=-Wmissing-prototypes".
 CFLAGS = -ggdb @CFLAGS@
 # INTERNAL_CFLAGS is the aggregate of all other *CFLAGS macros.
-INTERNAL_CFLAGS = ${CFLAGS} ${INCLUDE_CFLAGS} ${USER_CFLAGS} 
+INTERNAL_CFLAGS = ${CFLAGS} ${INCLUDE_CFLAGS} ${USER_CFLAGS} ${DEFS}
 LDFLAGS = $(CFLAGS)
 
 # Perhaps should come from parent Makefile
@@ -124,7 +146,7 @@ install-html:
 gdbserve.nlm:	gdbserve.O $(srcdir)/gdbserve.def
 	${NLMCONV_FOR_TARGET} -T $(srcdir)/gdbserve.def
 
-gdbserve.O: prelude.o gdbserve.o $(TDEPFILES)
+gdbserve.O: prelude.o gdbserve.o $(TDEPFILES) cpu.h
 	${CC_FOR_TARGET} $(LDFLAGS) -r -o gdbserve.O prelude.o gdbserve.o ${TDEPFILES}
 
 # Put the proper machine-specific files first, so M-. on a machine
@@ -135,20 +157,22 @@ TAGS:	${TAGFILES}
 	  `find ${srcdir}/../config -name ${XM_FILE} -print` \
 	  `find ${srcdir}/../config -name ${NAT_FILE} -print` \
 	  `for i in yzzy ${DEPFILES}; do \
-	     if [ x$$i != xyzzy ]; then \
-	       echo ${srcdir}/$$i | sed -e 's/\.o$$/\.c/' ; \
+	     if [ "x$${i}" != "xyzzy" ]; then \
+	       echo ${srcdir}/$${i} | $(SED) -e 's/\.o$$/\.c/' ; \
 	     fi; \
 	   done` \
 	  ${TAGFILES}
 tags: TAGS
 
+# 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 clean:
-	rm -f *.o ${ADD_FILES} *~
+	rm -fv *.o ${ADD_FILES} *~
 	rm -f gdbserve.O gdbserve.nlm core make.log
+	if test -L cpu.h; then unlink cpu.h; fi || echo "no cpu.h here"
 
 distclean: clean
-	rm -f config.log config.cache config.status
-	rm -fr autom4te.cache || rmdir autom4te.cache
+	rm -f autoscan.log config.log config.cache config.status
+	rm -frv autom4te.cache || rmdir autom4te.cache
 	rm -f Makefile
 
 maintainer-clean realclean: clean

@@ -1,4 +1,4 @@
-/* Support for memory-mapped windows into a BFD.
+/* bdfwin.c: Support for memory-mapped windows into a BFD.
    Copyright 1995, 1996, 2001, 2002, 2003 Free Software Foundation, Inc.
    Written by Cygnus Support.
 
@@ -100,8 +100,8 @@ bfd_free_window (bfd_window *windowp)
 
   i->refcount--;
   if (debug_windows)
-    fprintf (stderr, "freeing window @%p<%p,%lx,%p>\n",
-	     windowp, windowp->data, (unsigned long) windowp->size, windowp->i);
+    fprintf(stderr, "freeing window @%p<%p,%lx,%p>\n",
+	    windowp, windowp->data, (unsigned long)windowp->size, windowp->i);
   if (i->refcount > 0)
     return;
 
@@ -113,26 +113,26 @@ bfd_free_window (bfd_window *windowp)
 
   case 1:
 #if HAVE_MMAP
-    munmap (i->data, i->size);
+    munmap(i->data, i->size);
     i->data = NULL;
 #else
-    abort ();
-#endif
+    abort();
+#endif /* HAVE_MMAP */
 
   case 0:
-#if HAVE_MPROTECT
-    mprotect (i->data, i->size, PROT_READ | PROT_WRITE);
-#endif
-    free (i->data);
+#if defined(HAVE_MPROTECT) && HAVE_MPROTECT
+    mprotect(i->data, i->size, (PROT_READ | PROT_WRITE));
+#endif /* HAVE_MPROTECT */
+    free(i->data);
     i->data = NULL;
     break;
 
   default:
-    BFD_ASSERT ((i->mapped == 0) || (i->mapped == 1) || (i->mapped == 2));
+    BFD_ASSERT((i->mapped == 0) || (i->mapped == 1) || (i->mapped == 2));
   }
 
   /* There should be no more references to i at this point.  */
-  free (i);
+  free(i);
 }
 
 static int ok_to_map = 1;
@@ -365,7 +365,7 @@ bfd_get_file_window (abfd, offset, size, windowp, writable)
       i->data = 0;
     }
 
-  if ((abfd->flags & BFD_IN_MEMORY) != 0) 
+  if ((abfd->flags & BFD_IN_MEMORY) != 0)
     {
       struct bfd_in_memory *bim = (struct bfd_in_memory *) abfd->iostream;
       BFD_ASSERT (bim != NULL);
@@ -375,7 +375,7 @@ bfd_get_file_window (abfd, offset, size, windowp, writable)
 	  bfd_set_error (bfd_error_file_truncated);
 	  return FALSE;
 	}
-      
+
       i->next = NULL;
       i->data = bim->buffer + offset;
       i->size = size;
@@ -386,17 +386,19 @@ bfd_get_file_window (abfd, offset, size, windowp, writable)
       windowp->size = i->size;
 
       return TRUE;
-    }
-  else
-    {
+  } else {
 #if HAVE_MMAP
-      if (! _bfd_get_file_window_mmap (abfd, offset, size, windowp, i, writable))
+    if (! _bfd_get_file_window_mmap(abfd, offset, size, windowp, i, writable)) {
 	return FALSE;
-#else
-      if (! _bfd_get_file_window_malloc (abfd, offset, size, windowp, i, writable))
-	return FALSE;
-#endif
     }
+#else
+    if (! _bfd_get_file_window_malloc(abfd, offset, size, windowp, i, writable)) {
+	return FALSE;
+    }
+#endif /* HAVE_MMAP */
+  }
 
   return TRUE;
 }
+
+/* EOF */

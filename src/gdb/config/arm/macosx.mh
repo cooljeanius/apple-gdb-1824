@@ -33,6 +33,9 @@ MACOSX_FILES = \
 
 ARM_FILES = arm-macosx-nat-exec.o 
 
+SIM_OBS = remote-sim.o
+SIM = ../sim/arm/libsim.a
+
 NAT_FILE = nm-arm-macosx.h
 
 NATDEPFILES = \
@@ -45,7 +48,7 @@ MH_CFLAGS = -I$(srcdir)/macosx
 
 # APPLE LOCAL - Allow more than 256 streams to be open at a time.
 
-MH_CFLAGS += -DUSE_PTHREADS=1 -Wall -Wimplicit -D_DARWIN_UNLIMITED_STREAMS -miphoneos-version-min=5.0
+MH_CFLAGS += -DUSE_PTHREADS=1 -Wall -Wimplicit -D_DARWIN_UNLIMITED_STREAMS -miphoneos-version-min=4.3
 
 CFM_CFLAGS = -DWITH_CFM=0
 

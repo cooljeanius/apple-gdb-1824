@@ -1,4 +1,4 @@
-/* BFD back-end for MS-DOS executables.
+/* i386msdos.c: BFD back-end for MS-DOS executables.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2001, 2002,
    2003, 2004, 2005 Free Software Foundation, Inc.
    Written by Bryan Ford of the University of Utah.

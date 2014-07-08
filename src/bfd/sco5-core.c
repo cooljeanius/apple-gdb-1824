@@ -1,4 +1,4 @@
-/* BFD back end for SCO5 core files (U-area and raw sections)
+/* sco5-core.c: BFD back end for SCO5 core files (U-area and raw sections)
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
    Written by Jouke Numan <jnuman@hiscom.nl>
@@ -30,9 +30,13 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #include <sys/dir.h>
 #include <signal.h>
 
-#include <sys/user.h>		/* After a.out.h  */
-#include <sys/paccess.h>
-#include <sys/region.h>
+#include <sys/user.h> /* After a.out.h  */
+#if defined(__USLC__) || defined(HAVE_SYS_PACCESS_H)
+# include <sys/paccess.h>
+#endif /* __USLC__ || HAVE_SYS_PACCESS_H */
+#if defined(__USLC__) || defined(HAVE_SYS_REGION_H)
+# include <sys/region.h>
+#endif /* __USLC__ || HAVE_SYS_REGION_H */
 
 struct sco5_core_struct
 {
@@ -415,5 +419,7 @@ const bfd_target sco5_core_vec =
 
     NULL,
 
-    (PTR) 0			/* backend_data */
+    (PTR)0 /* backend_data */
   };
+
+/* EOF */

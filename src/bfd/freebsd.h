@@ -1,4 +1,4 @@
-/* BFD back-end definitions used by all FreeBSD targets.
+/* freebsd.h: BFD back-end definitions used by all FreeBSD targets.
    Copyright 1990, 1991, 1992, 1996, 1997, 2000, 2001, 2002, 2005
    Free Software Foundation, Inc.
 

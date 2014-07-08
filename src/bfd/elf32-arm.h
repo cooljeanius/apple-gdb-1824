@@ -1,4 +1,4 @@
-/* 32-bit ELF support for ARM
+/* elf32-arm.h: 32-bit ELF support for ARM
    Copyright 1998, 1999, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
    This file is part of BFD, the Binary File Descriptor library.
@@ -15,11 +15,18 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
+
+#ifndef __BFD_ELF32_ARM_H__
+#define __BFD_ELF32_ARM_H__ 1
+
+#ifndef __BFD_ELFLINK_H__
+# include "elflink.h"
+#endif /* !__BFD_ELFLINK_H__ */
 
 #ifndef USE_REL
-#define USE_REL	0
-#endif
+# define USE_REL 0
+#endif /* !USE_REL */
 
 typedef unsigned long int insn32;
 typedef unsigned short int insn16;
@@ -84,11 +91,11 @@ static struct bfd_hash_entry * elf32_arm_link_hash_newfunc
 static void arm_add_to_rel
   PARAMS ((bfd *, bfd_byte *, reloc_howto_type *, bfd_signed_vma));
 #endif
-static bfd_boolean allocate_dynrelocs 
+static bfd_boolean allocate_dynrelocs
   PARAMS ((struct elf_link_hash_entry *h, PTR inf));
-static bfd_boolean create_got_section 
+static bfd_boolean create_got_section
   PARAMS ((bfd * dynobj, struct bfd_link_info * info));
-static bfd_boolean elf32_arm_create_dynamic_sections 
+static bfd_boolean elf32_arm_create_dynamic_sections
   PARAMS ((bfd * dynobj, struct bfd_link_info * info));
 static enum elf_reloc_type_class elf32_arm_reloc_type_class
   PARAMS ((const Elf_Internal_Rela *));
@@ -255,12 +262,11 @@ struct elf32_arm_link_hash_table
     asection *sdynbss;
     asection *srelbss;
 
-    /* Small local sym to section mapping cache.  */
+    /* Small local sym to section mapping cache: */
     struct sym_sec_cache sym_sec;
   };
 
-/* Create an entry in an ARM ELF linker hash table.  */
-
+/* Create an entry in an ARM ELF linker hash table: */
 static struct bfd_hash_entry *
 elf32_arm_link_hash_newfunc (entry, table, string)
      struct bfd_hash_entry * entry;
@@ -283,17 +289,16 @@ elf32_arm_link_hash_newfunc (entry, table, string)
   ret = ((struct elf32_arm_link_hash_entry *)
 	 _bfd_elf_link_hash_newfunc ((struct bfd_hash_entry *) ret,
 				     table, string));
-  if (ret != (struct elf32_arm_link_hash_entry *) NULL)
+  if (ret != (struct elf32_arm_link_hash_entry *)NULL)
     ret->relocs_copied = NULL;
 
-  return (struct bfd_hash_entry *) ret;
+  return (struct bfd_hash_entry *)ret;
 }
 
-/* Create .got, .gotplt, and .rel.got sections in DYNOBJ, and set up
-   shortcuts to them in our hash table.  */
-
+/* Create .got, .gotplt, and .rel.got sections in DYNOBJ, and set up shortcuts
+ * to them in our hash table: */
 static bfd_boolean
-create_got_section (dynobj, info)
+create_got_section(dynobj, info)
      bfd *dynobj;
      struct bfd_link_info *info;
 {
@@ -305,8 +310,9 @@ create_got_section (dynobj, info)
   htab = elf32_arm_hash_table (info);
   htab->sgot = bfd_get_section_by_name (dynobj, ".got");
   htab->sgotplt = bfd_get_section_by_name (dynobj, ".got.plt");
-  if (!htab->sgot || !htab->sgotplt)
-    abort ();
+  if (!htab->sgot || !htab->sgotplt) {
+    abort();
+  }
 
   htab->srelgot = bfd_make_section (dynobj, ".rel.got");
   if (htab->srelgot == NULL
@@ -462,7 +468,7 @@ find_thumb_glue (link_info, name, input_bfd)
   if (hash == NULL)
     /* xgettext:c-format */
     (*_bfd_error_handler) (_("%s: unable to find THUMB glue '%s' for `%s'"),
-			   bfd_archive_filename (input_bfd), tmp_name, name);
+			   bfd_archive_filename(input_bfd), tmp_name, name);
 
   free (tmp_name);
 
@@ -1209,8 +1215,8 @@ elf32_arm_to_thumb_stub (info, name, input_bfd, output_bfd, input_section,
 }
 
 /* This is the condition under which elf32_arm_finish_dynamic_symbol
-   will be called from elflink.h.  If elflink.h doesn't call our
-   finish_dynamic_symbol routine, we'll need to do something about
+   will be called from elflink.h. If elflink.h does NOT call our
+   finish_dynamic_symbol routine, then we will need to do something about
    initializing any .plt and .got entries in elf32_arm_relocate_section
    and elf32_arm_final_link_relocate.  */
 #define WILL_CALL_FINISH_DYNAMIC_SYMBOL(DYN, SHARED, H)			\
@@ -1220,8 +1226,7 @@ elf32_arm_to_thumb_stub (info, name, input_bfd, output_bfd, input_section,
    && ((H)->dynindx != -1						\
        || ((H)->elf_link_hash_flags & ELF_LINK_FORCED_LOCAL) != 0))
 
-/* Perform a relocation as part of a final link.  */
-
+/* Perform a relocation as part of a final link: */
 static bfd_reloc_status_type
 elf32_arm_final_link_relocate (howto, input_bfd, output_bfd,
 			       input_section, contents, rel, value,
@@ -2128,7 +2133,7 @@ elf32_arm_relocate_section (output_bfd, info, input_bfd, input_section,
 				   symtab_hdr, relocation,
 				   sec, unresolved_reloc, info,
 				   warned);
-	  
+
 	  if (unresolved_reloc || relocation != 0)
 	    {
 	      /* In these cases, we don't need the relocation value.
@@ -2267,7 +2272,7 @@ elf32_arm_object_p (abfd)
      bfd *abfd;
 {
   unsigned int mach;
-  
+
   mach = bfd_arm_get_mach_from_notes (abfd, ARM_NOTE_SECTION);
 
   if (mach != bfd_mach_arm_unknown)
@@ -3023,17 +3028,17 @@ elf32_arm_check_relocs (abfd, info, sec, relocs)
 		    /* Track dynamic relocs needed for local syms too.
 		       We really need local syms available to do this
 		       easily.  Oh well.  */
-		    
+
 		    asection *s;
 		    s = bfd_section_from_r_symndx (abfd, &htab->sym_sec,
 						   sec, r_symndx);
 		    if (s == NULL)
 		      return FALSE;
-		    
+
 		    head = ((struct elf32_arm_relocs_copied **)
 			    &elf_section_data (s)->local_dynrel);
 		  }
-		
+
 		p = *head;
 		if (p == NULL || p->section != sec)
 		  {
@@ -3046,7 +3051,7 @@ elf32_arm_check_relocs (abfd, info, sec, relocs)
 		    p->section = sec;
 		    p->count = 0;
 		  }
-		
+
 		if (ELF32_R_TYPE (rel->r_info) == R_ARM_ABS32
 		    || ELF32_R_TYPE (rel->r_info) == R_ARM_REL32)
 		  p->count += 1;
@@ -3753,7 +3758,7 @@ elf32_arm_finish_dynamic_symbol (output_bfd, info, h, sym)
 		  (splt->output_section->vma
 		   + splt->output_offset),
 		  sgot->contents + got_offset);
-      
+
       /* Fill in the entry in the .rel.plt section.  */
       rel.r_offset = (sgot->output_section->vma
 		      + sgot->output_offset
@@ -4047,7 +4052,7 @@ elf32_arm_section_flags (flags, hdr)
      Elf_Internal_Shdr *hdr;
 {
   if (hdr->sh_type == SHT_NOTE)
-    *flags |= SEC_LINK_ONCE | SEC_LINK_DUPLICATES_SAME_CONTENTS;
+    *flags |= (SEC_LINK_ONCE | SEC_LINK_DUPLICATES_SAME_CONTENTS);
 
   return TRUE;
 }
@@ -4099,10 +4104,13 @@ elf32_arm_final_write_processing (abfd, linker)
 #define elf_backend_want_got_plt    1
 #define elf_backend_want_plt_sym    0
 #if !USE_REL
-#define elf_backend_rela_normal     1
-#endif
+# define elf_backend_rela_normal     1
+#endif /* !USE_REL */
 
 #define elf_backend_got_header_size	12
 
 #include "elf32-target.h"
 
+#endif /* !__BFD_ELF32_ARM_H__ */
+
+/* EOF */

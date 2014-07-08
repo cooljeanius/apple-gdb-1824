@@ -31,3 +31,6 @@ TDEPFILES = \
 	pefread.o
 
 DEPRECATED_TM_FILE = tm-ppc-macosx.h
+
+SIM_OBS = remote-sim.o
+SIM = ../sim/ppc/libsim.a

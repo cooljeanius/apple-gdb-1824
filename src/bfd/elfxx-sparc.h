@@ -1,4 +1,4 @@
-/* SPARC ELF specific backend routines.
+/* elfxx-sparc.h SPARC ELF specific backend routines.
    Copyright 2005 Free Software Foundation, Inc.
 
 This file is part of BFD, the Binary File Descriptor library.

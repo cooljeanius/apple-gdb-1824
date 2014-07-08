@@ -44,56 +44,74 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning readelf.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "readelf.c expects config.h to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #if HAVE_LOCALE_H
 # include <locale.h>
 #else
-# warning readelf.c expects <locale.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "readelf.c expects <locale.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LOCALE_H */
 
 #ifdef HAVE_ASSERT_H
 # include <assert.h>
 #else
-# warning readelf.c expects <assert.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "readelf.c expects <assert.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_ASSERT_H */
 #ifdef HAVE_LIBINTL_H
 # include <libintl.h>
 #else
-# warning readelf.c expects <libintl.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "readelf.c expects <libintl.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LIBINTL_H */
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
-# warning readelf.c expects <sys/types.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "readelf.c expects <sys/types.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_TYPES_H */
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #else
-# warning readelf.c expects <sys/stat.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "readelf.c expects <sys/stat.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_STAT_H */
 #ifdef HAVE_STDIO_H
 # include <stdio.h>
 #else
-# warning readelf.c expects <stdio.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "readelf.c expects <stdio.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDIO_H */
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #else
-# warning readelf.c expects <stdlib.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "readelf.c expects <stdlib.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDLIB_H */
 #ifdef HAVE_TIME_H
 # include <time.h>
 #else
-# warning readelf.c expects <time.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "readelf.c expects <time.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_TIME_H */
 
-#if __GNUC__ >= 2
+#if defined(__GNUC__) && (__GNUC__ >= 2)
 /* Define BFD64 here, even if our default architecture is 32 bit ELF
-   as this will allow us to read in and parse 64bit and 32bit ELF files.
-   Only do this if we believe that the compiler can support a 64 bit
-   data type.  For now we only rely on GCC being able to do this.  */
+ * as this will allow us to read in and parse 64bit and 32bit ELF files.
+ * Only do this if we believe that the compiler can support a 64 bit
+ * data type. For now we only rely on GCC being able to do this.  */
 # define BFD64
 #endif /* __GNUC__ >= 2 */
 
@@ -105,8 +123,8 @@
 #include "elf/dwarf2.h"
 
 /* The following headers use the elf/reloc-macros.h file to
-   automatically generate relocation recognition functions
-   such as elf_mips_reloc_type()  */
+ * automatically generate relocation recognition functions
+ * such as elf_mips_reloc_type()  */
 
 #define RELOC_MACROS_GEN_FUNC
 
@@ -12537,8 +12555,7 @@ process_archive (char *file_name, FILE *file)
   return ret;
 }
 
-static int
-process_file (char *file_name)
+static int process_file(char *file_name)
 {
   FILE *file;
   struct stat statbuf;
@@ -12575,85 +12592,86 @@ process_file (char *file_name)
       return 1;
     }
 
-  if (memcmp (armag, ARMAG, SARMAG) == 0)
-    ret = process_archive (file_name, file);
-  else
-    {
-      rewind (file);
+  if (memcmp(armag, ARMAG, SARMAG) == 0) {
+      ret = process_archive(file_name, file);
+  } else {
+      rewind(file);
       archive_file_size = archive_file_offset = 0;
-      ret = process_object (file_name, file);
-    }
+      ret = process_object(file_name, file);
+  }
 
-  fclose (file);
+  fclose(file);
 
   return ret;
 }
 
 #ifdef SUPPORT_DISASSEMBLY
 /* Needed by the i386 disassembler. For extra credit, someone could
-   fix this so that we insert symbolic addresses here, esp for GOT/PLT
-   symbols.  */
+ * fix this so that we insert symbolic addresses here, esp. for GOT/PLT
+ * symbols. */
 
-void
-print_address (unsigned int addr, FILE *outfile)
+void print_address(unsigned int addr, FILE *outfile)
 {
-  fprintf (outfile,"0x%8.8x", addr);
+  fprintf(outfile,"0x%8.8x", addr);
 }
 
-/* Needed by the i386 disassembler.  */
-void
-db_task_printsym (unsigned int addr)
+/* Needed by the i386 disassembler: */
+void db_task_printsym(unsigned int addr)
 {
   print_address (addr, stderr);
 }
 #endif /* SUPPORT_DISASSEMBLY */
 
-int
-main (int argc, char **argv)
+int main(int argc, char **argv)
 {
   int err;
 
 #if defined(HAVE_SETLOCALE) && defined(HAVE_LC_MESSAGES)
-  setlocale (LC_MESSAGES, "");
+  setlocale(LC_MESSAGES, "");
 #endif /* HAVE_SETLOCALE && HAVE_LC_MESSAGES */
 #if defined(HAVE_SETLOCALE)
-  setlocale (LC_CTYPE, "");
+  setlocale(LC_CTYPE, "");
 #endif /* HAVE_SETLOCALE */
 #if !defined(HAVE_BINDTEXTDOMAIN) && !defined(bindtextdomain)
-# warning bindtextdomain is needed.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "bindtextdomain is needed."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* !HAVE_BINDTEXTDOMAIN && !bindtextdomain */
-  bindtextdomain (PACKAGE, LOCALEDIR);
+  bindtextdomain(PACKAGE, LOCALEDIR);
 #if !defined(HAVE_TEXTDOMAIN) && !defined(textdomain)
-# warning textdomain is needed.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "textdomain is needed."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* !HAVE_TEXTDOMAIN && !textdomain */
-  textdomain (PACKAGE);
+  textdomain(PACKAGE);
 
   parse_args (argc, argv);
 
-  if (num_dump_sects > 0)
-    {
+  if (num_dump_sects > 0) {
       /* Make a copy of the dump_sects array.  */
-      cmdline_dump_sects = malloc (num_dump_sects);
-      if (cmdline_dump_sects == NULL)
-	error (_("Out of memory allocating dump request table."));
-      else
-	{
-	  memcpy (cmdline_dump_sects, dump_sects, num_dump_sects);
+      cmdline_dump_sects = malloc(num_dump_sects);
+      if (cmdline_dump_sects == NULL) {
+	  error(_("Out of memory allocating dump request table."));
+      } else {
+	  memcpy(cmdline_dump_sects, dump_sects, num_dump_sects);
 	  num_cmdline_dump_sects = num_dump_sects;
-	}
-    }
+      }
+  }
 
   if (optind < (argc - 1))
     show_name = 1;
 
   err = 0;
-  while (optind < argc)
-    err |= process_file (argv[optind++]);
+  while (optind < argc) {
+      err |= process_file(argv[optind++]);
+  }
 
-  if (dump_sects != NULL)
-    free (dump_sects);
-  if (cmdline_dump_sects != NULL)
-    free (cmdline_dump_sects);
+  if (dump_sects != NULL) {
+      free(dump_sects);
+  }
+  if (cmdline_dump_sects != NULL) {
+      free(cmdline_dump_sects);
+  }
 
   return err;
 }

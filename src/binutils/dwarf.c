@@ -30,10 +30,10 @@
 #include "gdb/gdb-index.h"
 
 #if !HAVE_DECL_STRNLEN
-size_t strnlen (const char *, size_t);
-#endif
+size_t strnlen(const char *, size_t);
+#endif /* !HAVE_DECL_STRNLEN */
 
-static const char *regname (unsigned int regno, int row);
+static const char *regname(unsigned int regno, int row);
 
 static int have_frame_base;
 static int need_base_address;
@@ -2007,7 +2007,9 @@ read_and_display_attr_value (unsigned long attribute,
     case DW_AT_allocated:
     case DW_AT_associated:
     case DW_AT_data_location:
+#ifdef DW_AT_stride
     case DW_AT_stride:
+#endif /* DW_AT_stride */
     case DW_AT_upper_bound:
     case DW_AT_lower_bound:
       if (block_start)

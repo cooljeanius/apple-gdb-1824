@@ -22,13 +22,13 @@
 #include "sysdep.h"
 #include <assert.h>
 
-#if __GNUC__ >= 2
+#if defined(__GNUC__) && (__GNUC__ >= 2)
 /* Define BFD64 here, even if our default architecture is 32 bit ELF
-   as this will allow us to read in and parse 64bit and 32bit ELF files.
-   Only do this if we believe that the compiler can support a 64 bit
-   data type.  For now we only rely on GCC being able to do this.  */
+ * as this will allow us to read in and parse 64bit and 32bit ELF files.
+ * Only do this if we believe that the compiler can support a 64 bit
+ * data type. For now we only rely on GCC being able to do this.  */
 # define BFD64
-#endif /* __GNUC__ >= 2 */
+#endif /* (__GNUC__ >= 2) */
 
 #include "bfd.h"
 #include "elfcomm.h"
@@ -630,14 +630,13 @@ static struct option options[] =
   {0,			no_argument, 0, 0}
 };
 
-static void
-usage (FILE *stream, int exit_status)
+static void usage(FILE *stream, int exit_status)
 {
-  fprintf (stream, _("Usage: %s <option(s)> elffile(s)\n"),
-	   program_name);
-  fprintf (stream, _(" Update the ELF header of ELF files\n"));
-  fprintf (stream, _(" The options are:\n"));
-  fprintf (stream, _("\
+  fprintf(stream, _("Usage: %s <option(s)> elffile(s)\n"),
+	  program_name);
+  fprintf(stream, _(" Update the ELF header of ELF files\n"));
+  fprintf(stream, _(" The options are:\n"));
+  fprintf(stream, _("\
   --input-mach <machine>      Set input machine type to <machine>\n\
   --output-mach <machine>     Set output machine type to <machine>\n\
   --input-type <type>         Set input file type to <type>\n\
@@ -647,93 +646,94 @@ usage (FILE *stream, int exit_status)
   -h --help                   Display this information\n\
   -v --version                Display the version number of %s\n\
 "),
-	   program_name);
-  if (REPORT_BUGS_TO[0] && exit_status == 0)
-    fprintf (stream, _("Report bugs to %s\n"), REPORT_BUGS_TO);
-  exit (exit_status);
+	  program_name);
+  if (REPORT_BUGS_TO[0] && (exit_status == 0)) {
+      fprintf(stream, _("Report bugs to %s\n"), REPORT_BUGS_TO);
+  }
+  exit(exit_status);
 }
 
-int
-main (int argc, char ** argv)
+int main(int argc, char ** argv)
 {
   int c, status;
 
-#if defined (HAVE_SETLOCALE) && defined (HAVE_LC_MESSAGES)
-  setlocale (LC_MESSAGES, "");
+#if defined(HAVE_SETLOCALE) && defined(HAVE_LC_MESSAGES)
+  setlocale(LC_MESSAGES, "");
 #endif /* HAVE_SETLOCALE && HAVE_LC_MESSAGES */
 #if defined (HAVE_SETLOCALE)
-  setlocale (LC_CTYPE, "");
+  setlocale(LC_CTYPE, "");
 #endif /* HAVE_SETLOCALE */
-  bindtextdomain (PACKAGE, LOCALEDIR);
-  textdomain (PACKAGE);
+  bindtextdomain(PACKAGE, LOCALEDIR);
+  textdomain(PACKAGE);
 
-  expandargv (&argc, &argv);
+  expandargv(&argc, &argv);
 
-  while ((c = getopt_long (argc, argv, "hv",
-			   options, (int *) 0)) != EOF)
+  while ((c = getopt_long(argc, argv, "hv",
+			  options, (int *)0)) != EOF)
     {
       switch (c)
 	{
 	case OPTION_INPUT_MACH:
-	  input_elf_machine = elf_machine (optarg);
+	  input_elf_machine = elf_machine(optarg);
 	  if (input_elf_machine < 0)
 	    return 1;
-	  input_elf_class = elf_class (input_elf_machine);
+	  input_elf_class = elf_class(input_elf_machine);
 	  if (input_elf_class < 0)
 	    return 1;
 	  break;
 
 	case OPTION_OUTPUT_MACH:
-	  output_elf_machine = elf_machine (optarg);
+	  output_elf_machine = elf_machine(optarg);
 	  if (output_elf_machine < 0)
 	    return 1;
 	  break;
 
 	case OPTION_INPUT_TYPE:
-	  input_elf_type = elf_type (optarg);
+	  input_elf_type = elf_type(optarg);
 	  if (input_elf_type < 0)
 	    return 1;
 	  break;
 
 	case OPTION_OUTPUT_TYPE:
-	  output_elf_type = elf_type (optarg);
+	  output_elf_type = elf_type(optarg);
 	  if (output_elf_type < 0)
 	    return 1;
 	  break;
 
 	case OPTION_INPUT_OSABI:
-	  input_elf_osabi = elf_osabi (optarg);
+	  input_elf_osabi = elf_osabi(optarg);
 	  if (input_elf_osabi < 0)
 	    return 1;
 	  break;
 
 	case OPTION_OUTPUT_OSABI:
-	  output_elf_osabi = elf_osabi (optarg);
+	  output_elf_osabi = elf_osabi(optarg);
 	  if (output_elf_osabi < 0)
 	    return 1;
 	  break;
 
 	case 'h':
-	  usage (stdout, 0);
+	  usage(stdout, 0);
 
 	case 'v':
-	  print_version (program_name);
+	  print_version(program_name);
 	  break;
 
 	default:
-	  usage (stderr, 1);
+	  usage(stderr, 1);
 	}
     }
 
-  if (optind == argc
-      || (output_elf_machine == -1
-	  && output_elf_type == -1
-	  && output_elf_osabi == -1))
-    usage (stderr, 1);
+  if ((optind == argc)
+      || ((output_elf_machine == -1)
+	  && (output_elf_type == -1)
+	  && (output_elf_osabi == -1))) {
+      usage(stderr, 1);
+  }
 
   status = 0;
   while (optind < argc)
-    status |= process_file (argv[optind++]);
+    status |= process_file(argv[optind++]);
 
   return status;
 }

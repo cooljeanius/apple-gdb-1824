@@ -180,20 +180,20 @@ coff_arm_reloc (bfd *abfd,
 #define ARM_THUMB23 14
 
 #ifdef ARM_WINCE
-#undef  ARM_32
-#undef  ARM_RVA32
-#undef  ARM_26
-#undef  ARM_THUMB12
-#undef  ARM_26D
+# undef  ARM_32
+# undef  ARM_RVA32
+# undef  ARM_26
+# undef  ARM_THUMB12
+# undef  ARM_26D
 
-#define ARM_26D      0
-#define ARM_32       1
-#define ARM_RVA32    2
-#define ARM_26	     3
-#define ARM_THUMB12  4
-#define ARM_SECTION  14
-#define ARM_SECREL   15
-#endif
+# define ARM_26D      0
+# define ARM_32       1
+# define ARM_RVA32    2
+# define ARM_26	      3
+# define ARM_THUMB12  4
+# define ARM_SECTION  14
+# define ARM_SECREL   15
+#endif /* ARM_WINCE */
 
 static bfd_reloc_status_type aoutarm_fix_pcrel_26_done
   (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
@@ -206,24 +206,14 @@ static bfd_reloc_status_type coff_thumb_pcrel_9
   (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
 static bfd_reloc_status_type coff_thumb_pcrel_23
   (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
-#endif
+#endif /* !ARM_WINCE */
 
 static reloc_howto_type aoutarm_std_reloc_howto[] =
   {
 #ifdef ARM_WINCE
-    HOWTO (ARM_26D,
-	   2,
-	   2,
-	   24,
-	   TRUE,
-	   0,
-	   complain_overflow_dont,
-	   aoutarm_fix_pcrel_26_done,
-	   "ARM_26D",
-	   FALSE,
-	   0x00ffffff,
-	   0x0,
-	   PCRELOFFSET),
+    HOWTO(ARM_26D, 2, 2, 24, TRUE, 0, complain_overflow_dont,
+	  aoutarm_fix_pcrel_26_done, (char *)"ARM_26D", FALSE, 0x00ffffff,
+	  0x0, PCRELOFFSET),
     HOWTO (ARM_32,
 	   0,
 	   2,
@@ -276,15 +266,15 @@ static reloc_howto_type aoutarm_std_reloc_howto[] =
 	   0x000007ff,
 	   0x000007ff,
 	   PCRELOFFSET),
-    EMPTY_HOWTO (-1),
-    EMPTY_HOWTO (-1),
-    EMPTY_HOWTO (-1),
-    EMPTY_HOWTO (-1),
-    EMPTY_HOWTO (-1),
-    EMPTY_HOWTO (-1),
-    EMPTY_HOWTO (-1),
-    EMPTY_HOWTO (-1),
-    EMPTY_HOWTO (-1),
+    EMPTY_HOWTO(-1),
+    EMPTY_HOWTO(-1),
+    EMPTY_HOWTO(-1),
+    EMPTY_HOWTO(-1),
+    EMPTY_HOWTO(-1),
+    EMPTY_HOWTO(-1),
+    EMPTY_HOWTO(-1),
+    EMPTY_HOWTO(-1),
+    EMPTY_HOWTO(-1),
     HOWTO (ARM_SECTION,
 	   0,
 	   1,
@@ -502,16 +492,13 @@ static reloc_howto_type aoutarm_std_reloc_howto[] =
 #define NUM_RELOCS NUM_ELEM (aoutarm_std_reloc_howto)
 
 #ifdef COFF_WITH_PE
-/* Return TRUE if this relocation should
-   appear in the output .reloc section.  */
-
+/* Return TRUE if this relocation should appear in the output .reloc section: */
 static bfd_boolean
-in_reloc_p (bfd * abfd ATTRIBUTE_UNUSED,
-	    reloc_howto_type * howto)
+in_reloc_p(bfd * abfd ATTRIBUTE_UNUSED, reloc_howto_type * howto)
 {
   return !howto->pc_relative && howto->type != ARM_RVA32;
 }
-#endif
+#endif /* COFF_WITH_PE */
 
 #define RTYPE2HOWTO(cache_ptr, dst)		\
   (cache_ptr)->howto =				\
@@ -867,24 +854,23 @@ struct coff_arm_link_hash_table
 #define coff_arm_hash_table(info) \
   ((struct coff_arm_link_hash_table *) ((info)->hash))
 
-/* Create an ARM coff linker hash table.  */
-
+/* Create an ARM coff linker hash table: */
 static struct bfd_link_hash_table *
-coff_arm_link_hash_table_create (bfd * abfd)
+coff_arm_link_hash_table_create(bfd * abfd)
 {
-  struct coff_arm_link_hash_table * ret;
-  bfd_size_type amt = sizeof (struct coff_arm_link_hash_table);
+  struct coff_arm_link_hash_table *ret;
+  bfd_size_type amt = sizeof(struct coff_arm_link_hash_table);
 
-  ret = bfd_malloc (amt);
-  if (ret == NULL)
+  ret = (struct coff_arm_link_hash_table *)bfd_malloc(amt);
+  if (ret == NULL) {
     return NULL;
+  }
 
   if (! _bfd_coff_link_hash_table_init
-      (& ret->root, abfd, _bfd_coff_link_hash_newfunc))
-    {
-      free (ret);
+      (& ret->root, abfd, _bfd_coff_link_hash_newfunc)) {
+      free(ret);
       return NULL;
-    }
+  }
 
   ret->thumb_glue_size   = 0;
   ret->arm_glue_size     = 0;
@@ -974,13 +960,13 @@ find_thumb_glue (struct bfd_link_info *info,
 {
   char *tmp_name;
   struct coff_link_hash_entry *myh;
-  bfd_size_type amt = strlen (name) + strlen (THUMB2ARM_GLUE_ENTRY_NAME) + 1;
+  bfd_size_type amt = strlen(name) + strlen(THUMB2ARM_GLUE_ENTRY_NAME) + 1;
 
-  tmp_name = bfd_malloc (amt);
+  tmp_name = (char *)bfd_malloc(amt);
 
-  BFD_ASSERT (tmp_name);
+  BFD_ASSERT(tmp_name);
 
-  sprintf (tmp_name, THUMB2ARM_GLUE_ENTRY_NAME, name);
+  sprintf(tmp_name, THUMB2ARM_GLUE_ENTRY_NAME, name);
 
   myh = coff_link_hash_lookup
     (coff_hash_table (info), tmp_name, FALSE, FALSE, TRUE);
@@ -1003,9 +989,9 @@ find_arm_glue (struct bfd_link_info *info,
 {
   char *tmp_name;
   struct coff_link_hash_entry * myh;
-  bfd_size_type amt = strlen (name) + strlen (ARM2THUMB_GLUE_ENTRY_NAME) + 1;
+  bfd_size_type amt = (strlen(name) + strlen(ARM2THUMB_GLUE_ENTRY_NAME) + 1);
 
-  tmp_name = bfd_malloc (amt);
+  tmp_name = (char *)bfd_malloc(amt);
 
   BFD_ASSERT (tmp_name);
 
@@ -1752,7 +1738,7 @@ bfd_arm_allocate_interworking_sections (struct bfd_link_info * info)
 
       BFD_ASSERT (s != NULL);
 
-      foo = bfd_alloc (globals->bfd_of_glue_owner, globals->arm_glue_size);
+      foo = (bfd_byte *)bfd_alloc(globals->bfd_of_glue_owner, globals->arm_glue_size);
 
       s->size = globals->arm_glue_size;
       s->contents = foo;
@@ -1767,7 +1753,8 @@ bfd_arm_allocate_interworking_sections (struct bfd_link_info * info)
 
       BFD_ASSERT (s != NULL);
 
-      foo = bfd_alloc (globals->bfd_of_glue_owner, globals->thumb_glue_size);
+      foo = (bfd_byte *)bfd_alloc(globals->bfd_of_glue_owner,
+				  globals->thumb_glue_size);
 
       s->size = globals->thumb_glue_size;
       s->contents = foo;
@@ -1797,10 +1784,10 @@ record_arm_to_thumb_glue (struct bfd_link_info *        info,
   s = bfd_get_section_by_name
     (globals->bfd_of_glue_owner, ARM2THUMB_GLUE_SECTION_NAME);
 
-  BFD_ASSERT (s != NULL);
+  BFD_ASSERT(s != NULL);
 
-  amt = strlen (name) + strlen (ARM2THUMB_GLUE_ENTRY_NAME) + 1;
-  tmp_name = bfd_malloc (amt);
+  amt = (strlen(name) + strlen(ARM2THUMB_GLUE_ENTRY_NAME) + 1);
+  tmp_name = (char *)bfd_malloc(amt);
 
   BFD_ASSERT (tmp_name);
 
@@ -1833,8 +1820,8 @@ record_arm_to_thumb_glue (struct bfd_link_info *        info,
 
 #ifndef ARM_WINCE
 static void
-record_thumb_to_arm_glue (struct bfd_link_info *        info,
-			  struct coff_link_hash_entry * h)
+record_thumb_to_arm_glue(struct bfd_link_info *        info,
+			 struct coff_link_hash_entry * h)
 {
   const char *                       name = h->root.root.string;
   asection *                         s;
@@ -1845,55 +1832,53 @@ record_thumb_to_arm_glue (struct bfd_link_info *        info,
   bfd_vma val;
   bfd_size_type amt;
 
-  globals = coff_arm_hash_table (info);
+  globals = coff_arm_hash_table(info);
 
-  BFD_ASSERT (globals != NULL);
-  BFD_ASSERT (globals->bfd_of_glue_owner != NULL);
+  BFD_ASSERT(globals != NULL);
+  BFD_ASSERT(globals->bfd_of_glue_owner != NULL);
 
   s = bfd_get_section_by_name
     (globals->bfd_of_glue_owner, THUMB2ARM_GLUE_SECTION_NAME);
 
-  BFD_ASSERT (s != NULL);
+  BFD_ASSERT(s != NULL);
 
-  amt = strlen (name) + strlen (THUMB2ARM_GLUE_ENTRY_NAME) + 1;
-  tmp_name = bfd_malloc (amt);
+  amt = (strlen(name) + strlen(THUMB2ARM_GLUE_ENTRY_NAME) + 1);
+  tmp_name = (char *)bfd_malloc(amt);
 
-  BFD_ASSERT (tmp_name);
+  BFD_ASSERT(tmp_name);
 
-  sprintf (tmp_name, THUMB2ARM_GLUE_ENTRY_NAME, name);
+  sprintf(tmp_name, THUMB2ARM_GLUE_ENTRY_NAME, name);
 
   myh = coff_link_hash_lookup
-    (coff_hash_table (info), tmp_name, FALSE, FALSE, TRUE);
+    (coff_hash_table(info), tmp_name, FALSE, FALSE, TRUE);
 
-  if (myh != NULL)
-    {
-      free (tmp_name);
-      /* We've already seen this guy.  */
+  if (myh != NULL) {
+      free(tmp_name);
+      /* We have already seen this guy, so return: */
       return;
-    }
+  }
 
   bh = NULL;
-  val = globals->thumb_glue_size + 1;
-  bfd_coff_link_add_one_symbol (info, globals->bfd_of_glue_owner, tmp_name,
-				BSF_GLOBAL, s, val, NULL, TRUE, FALSE, &bh);
+  val = (globals->thumb_glue_size + 1);
+  bfd_coff_link_add_one_symbol(info, globals->bfd_of_glue_owner, tmp_name,
+			       BSF_GLOBAL, s, val, NULL, TRUE, FALSE, &bh);
 
-  /* If we mark it 'thumb', the disassembler will do a better job.  */
-  myh = (struct coff_link_hash_entry *) bh;
+  /* If we mark it 'thumb', the disassembler will do a better job: */
+  myh = (struct coff_link_hash_entry *)bh;
   myh->class = C_THUMBEXTFUNC;
 
-  free (tmp_name);
+  free(tmp_name);
 
-  /* Allocate another symbol to mark where we switch to arm mode.  */
-
+  /* Allocate another symbol to mark where we switch to arm mode: */
 #define CHANGE_TO_ARM "__%s_change_to_arm"
 #define BACK_FROM_ARM "__%s_back_from_arm"
 
-  amt = strlen (name) + strlen (CHANGE_TO_ARM) + 1;
-  tmp_name = bfd_malloc (amt);
+  amt = (strlen(name) + strlen(CHANGE_TO_ARM) + 1);
+  tmp_name = (char *)bfd_malloc(amt);
 
-  BFD_ASSERT (tmp_name);
+  BFD_ASSERT(tmp_name);
 
-  sprintf (tmp_name, globals->support_old_code ? BACK_FROM_ARM : CHANGE_TO_ARM, name);
+  sprintf(tmp_name, (globals->support_old_code ? BACK_FROM_ARM : CHANGE_TO_ARM), name);
 
   bh = NULL;
   val = globals->thumb_glue_size + (globals->support_old_code ? 8 : 4);
@@ -2485,24 +2470,30 @@ coff_arm_final_link_postscript (bfd * abfd ATTRIBUTE_UNUSED,
 #define TARGET_BIG_SYM armcoff_big_vec
 #endif
 #ifndef TARGET_BIG_NAME
-#define TARGET_BIG_NAME "coff-arm-big"
-#endif
+# define TARGET_BIG_NAME "coff-arm-big"
+#endif /* !TARGET_BIG_NAME */
 
 #ifndef TARGET_UNDERSCORE
-#define TARGET_UNDERSCORE 0
-#endif
+# define TARGET_UNDERSCORE 0
+#endif /* !TARGET_UNDERSCORE */
 
 #ifndef EXTRA_S_FLAGS
-#ifdef COFF_WITH_PE
-#define EXTRA_S_FLAGS (SEC_CODE | SEC_LINK_ONCE | SEC_LINK_DUPLICATES)
-#else
-#define EXTRA_S_FLAGS SEC_CODE
-#endif
-#endif
+# ifdef COFF_WITH_PE
+#  define EXTRA_S_FLAGS (SEC_CODE | SEC_LINK_ONCE | SEC_LINK_DUPLICATES)
+# else
+#  define EXTRA_S_FLAGS SEC_CODE
+# endif /* COFF_WITH_PE */
+#endif /* !EXTRA_S_FLAGS */
 
-/* Forward declaration for use initialising alternative_target field.  */
+/* Forward declaration for use initialising alternative_target field: */
 extern const bfd_target TARGET_BIG_SYM ;
 
-/* Target vectors.  */
-CREATE_LITTLE_COFF_TARGET_VEC (TARGET_LITTLE_SYM, TARGET_LITTLE_NAME, D_PAGED, EXTRA_S_FLAGS, TARGET_UNDERSCORE, & TARGET_BIG_SYM, COFF_SWAP_TABLE)
-CREATE_BIG_COFF_TARGET_VEC (TARGET_BIG_SYM, TARGET_BIG_NAME, D_PAGED, EXTRA_S_FLAGS, TARGET_UNDERSCORE, & TARGET_LITTLE_SYM, COFF_SWAP_TABLE)
+/* Target vectors: */
+CREATE_LITTLE_COFF_TARGET_VEC(TARGET_LITTLE_SYM, TARGET_LITTLE_NAME, D_PAGED,
+			      EXTRA_S_FLAGS, TARGET_UNDERSCORE,
+			      & TARGET_BIG_SYM, COFF_SWAP_TABLE)
+CREATE_BIG_COFF_TARGET_VEC(TARGET_BIG_SYM, TARGET_BIG_NAME, D_PAGED,
+			   EXTRA_S_FLAGS, TARGET_UNDERSCORE,
+			   & TARGET_LITTLE_SYM, COFF_SWAP_TABLE)
+
+/* EOF */

@@ -8615,6 +8615,14 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
   CXXFLAGS=${CXXFLAGS-"-g -O2"}
 fi
 
+if test "x${ac_tool_prefix}" = "x"; then
+  test -z "${ac_tool_prefix}"
+  if test "x${host}" != "x${build}"; then
+    ac_tool_prefix="${host_alias}-"
+  else
+    ac_tool_prefix=""
+  fi
+fi
 
 
 

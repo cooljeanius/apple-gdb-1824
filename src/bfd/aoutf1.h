@@ -593,11 +593,11 @@ sunos4_core_file_p (bfd *abfd)
   if (core_size > 20000)
     return NULL;
 
-  if (bfd_seek (abfd, (file_ptr) 0, SEEK_SET) != 0)
+  if (bfd_seek(abfd, (file_ptr)0, SEEK_SET) != 0)
     return NULL;
 
-  amt = core_size + sizeof (struct mergem);
-  mergem = bfd_zalloc (abfd, amt);
+  amt = core_size + sizeof(struct mergem);
+  mergem = (struct mergem *)bfd_zalloc(abfd, amt);
   if (mergem == NULL)
     return NULL;
 
@@ -616,21 +616,20 @@ sunos4_core_file_p (bfd *abfd)
      botching the positioning of registers and other fields in a machine
      dependent way.  */
   core = &mergem->internal_sunos_core;
-  switch (core_size)
-    {
+  switch (core_size) {
     case SPARC_CORE_LEN:
-      swapcore_sparc (abfd, extcore, core);
+      swapcore_sparc(abfd, extcore, core);
       break;
     case SUN3_CORE_LEN:
-      swapcore_sun3 (abfd, extcore, core);
+      swapcore_sun3(abfd, extcore, core);
       break;
     case SOLARIS_BCP_CORE_LEN:
-      swapcore_solaris_bcp (abfd, extcore, core);
+      swapcore_solaris_bcp(abfd, extcore, core);
       break;
     default:
-      bfd_set_error (bfd_error_system_call);	/* FIXME.  */
+      bfd_set_error(bfd_error_system_call);	/* FIXME.  */
       goto loser;
-    }
+  }
 
   abfd->tdata.sun_core_data = &mergem->suncoredata;
   abfd->tdata.sun_core_data->hdr = core;

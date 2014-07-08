@@ -47,3 +47,10 @@ GSYMS
 GPATH
 *deps/*.*o
 Makefile
+
+# The "./" prefix on these above originally made git fail to actually
+# ignore these, but now we no longer need to make git fail to ignore them
+# like that, so do them again un-prefixed-ly:
+arg-nonnull.h
+c++defs.h
+warn-on-use.h

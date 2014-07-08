@@ -1,3 +1,5 @@
+/* pc532mach.h */
+
 #include <machine/vmparam.h>
 #include <sys/param.h>
 

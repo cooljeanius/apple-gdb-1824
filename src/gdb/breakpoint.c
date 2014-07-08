@@ -4774,11 +4774,10 @@ void set_bp_objfile (struct breakpoint *b, struct symtab_and_line *sal)
    prior to completing the initialization of the breakpoint.  If this
    should happen, a bogus breakpoint will be left on the chain.  */
 
-/* APPLE LOCAL: Added pending_p so we can not set the breakpoint shlib if
-   we are pending.  */
-
-struct breakpoint *
-set_raw_breakpoint (struct symtab_and_line sal, enum bptype bptype, int pending_p)
+/* APPLE LOCAL: Added pending_p so we cannot set the breakpoint shlib if
+ * we are pending: */
+struct breakpoint *set_raw_breakpoint(struct symtab_and_line sal,
+									  enum bptype bptype, int pending_p)
 {
   struct breakpoint *b, *b1;
 

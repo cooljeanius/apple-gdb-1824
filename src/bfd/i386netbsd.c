@@ -18,7 +18,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. */
 
-#define	BYTES_IN_WORD	4
+#ifndef BYTES_IN_WORD
+# define BYTES_IN_WORD 4
+#endif /* !BYTES_IN_WORD */
 #undef TARGET_IS_BIG_ENDIAN_P
 
 #define	TARGET_PAGE_SIZE	4096

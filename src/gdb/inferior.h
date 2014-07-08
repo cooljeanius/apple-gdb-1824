@@ -1,4 +1,4 @@
-/* Variables that describe the inferior process running under GDB:
+/* inferior.h: Variables that describe the inferior process running under GDB:
    Where it is, why it stopped, and how to step it.
 
    Copyright 1986, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995,
@@ -233,18 +233,27 @@ extern int attach (int);
 
 extern void detach (int);
 
-/* PTRACE method of waiting for inferior process.  */
-int ptrace_wait (ptid_t, int *);
+/* PTRACE method of waiting for inferior process: */
+int ptrace_wait(ptid_t, int *);
 
-extern void child_resume (ptid_t, int, enum target_signal);
+extern void child_resume(ptid_t, int, enum target_signal);
 
 #ifndef PTRACE_ARG3_TYPE
-#define PTRACE_ARG3_TYPE PTRACE_TYPE_ARG3
-#endif
+# define PTRACE_ARG3_TYPE PTRACE_TYPE_ARG3
+#endif /* !PTRACE_ARG3_TYPE */
 
-extern int call_ptrace (int, int, PTRACE_ARG3_TYPE, int);
+#if defined(PTRACE_ARG3_TYPE) && (PTRACE_ARG3_TYPE == caddr_t) && (!defined(_SYS_TYPES_H_) || !defined(caddr_t))
+# include <sys/types.h>
+#endif /* (PTRACE_ARG3_TYPE == caddr_t) && !caddr_t */
 
-extern void pre_fork_inferior (void);
+/* if that still failed, try again: */
+#if defined(PTRACE_ARG3_TYPE) && (PTRACE_ARG3_TYPE == caddr_t) && !defined(caddr_t)
+typedef char * caddr_t;
+#endif /* (PTRACE_ARG3_TYPE == caddr_t) && !caddr_t */
+
+extern int call_ptrace(int, int, PTRACE_ARG3_TYPE, int);
+
+extern void pre_fork_inferior(void);
 
 /* From procfs.c */
 

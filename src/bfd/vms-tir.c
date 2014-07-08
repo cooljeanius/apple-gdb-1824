@@ -69,7 +69,7 @@ check_section (bfd * abfd, int size)
 static void
 image_set_ptr (bfd * abfd, int psect, uquad offset)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (4, "image_set_ptr (%d=%s, %d)\n",
 		  psect, PRIV (sections)[psect]->name, offset);
 #endif
@@ -83,7 +83,7 @@ image_set_ptr (bfd * abfd, int psect, uquad offset)
 static void
 image_inc_ptr (bfd * abfd, uquad offset)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (4, "image_inc_ptr (%d)\n", offset);
 #endif
 
@@ -98,7 +98,7 @@ image_dump (bfd * abfd,
 	    int size,
 	    int offset ATTRIBUTE_UNUSED)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (8, "image_dump from (%p, %d) to (%p)\n", ptr, size,
 		  PRIV (image_ptr));
   _bfd_hexdump (9, ptr, size, offset);
@@ -116,7 +116,7 @@ image_dump (bfd * abfd,
 static void
 image_write_b (bfd * abfd, unsigned int value)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (6, "image_write_b (%02x)\n", (int) value);
 #endif
 
@@ -131,7 +131,7 @@ image_write_b (bfd * abfd, unsigned int value)
 static void
 image_write_w (bfd * abfd, unsigned int value)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (6, "image_write_w (%04x)\n", (int) value);
 #endif
 
@@ -147,7 +147,7 @@ image_write_w (bfd * abfd, unsigned int value)
 static void
 image_write_l (bfd * abfd, unsigned long value)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (6, "image_write_l (%08lx)\n", value);
 #endif
 
@@ -163,7 +163,7 @@ image_write_l (bfd * abfd, unsigned long value)
 static void
 image_write_q (bfd * abfd, uquad value)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (6, "image_write_q (%016lx)\n", value);
 #endif
 
@@ -233,7 +233,7 @@ cmd_name (int cmd)
 static bfd_boolean
 etir_sta (bfd * abfd, int cmd, unsigned char *ptr)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (5, "etir_sta %d/%x\n", cmd, cmd);
   _bfd_hexdump (8, ptr, 16, (int) ptr);
 #endif
@@ -254,7 +254,7 @@ etir_sta (bfd * abfd, int cmd, unsigned char *ptr)
 	  bfd_hash_lookup (PRIV (vms_symbol_table), name, FALSE, FALSE);
 	if (entry == NULL)
 	  {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 	    _bfd_vms_debug (3, "%s: no symbol \"%s\"\n",
 			    cmd_name (cmd), name);
 #endif
@@ -317,7 +317,7 @@ etir_sta (bfd * abfd, int cmd, unsigned char *ptr)
       return FALSE;
       break;
     }
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (5, "etir_sta true\n");
 #endif
   return TRUE;
@@ -338,7 +338,7 @@ etir_sto (bfd * abfd, int cmd, unsigned char *ptr)
   uquad dummy;
   int psect;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (5, "etir_sto %d/%x\n", cmd, cmd);
   _bfd_hexdump (8, ptr, 16, (int) ptr);
 #endif
@@ -478,7 +478,7 @@ etir_sto (bfd * abfd, int cmd, unsigned char *ptr)
 						      name, FALSE, FALSE);
 	if (entry == NULL)
 	  {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 	    _bfd_vms_debug (3, "%s: no symbol \"%s\"\n", cmd_name (cmd), name);
 #endif
 	    image_write_l (abfd, (unsigned long) 0);	/* FIXME, reloc */
@@ -520,7 +520,7 @@ etir_opr (bfd * abfd, int cmd, unsigned char *ptr ATTRIBUTE_UNUSED)
 {
   long op1, op2;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (5, "etir_opr %d/%x\n", cmd, cmd);
   _bfd_hexdump (8, ptr, 16, (int) ptr);
 #endif
@@ -633,7 +633,7 @@ etir_ctl (bfd * abfd, int cmd, unsigned char *ptr)
   uquad	 dummy;
   int psect;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (5, "etir_ctl %d/%x\n", cmd, cmd);
   _bfd_hexdump (8, ptr, 16, (int) ptr);
 #endif
@@ -689,7 +689,7 @@ etir_ctl (bfd * abfd, int cmd, unsigned char *ptr)
 static bfd_boolean
 etir_stc (bfd * abfd, int cmd, unsigned char *ptr ATTRIBUTE_UNUSED)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (5, "etir_stc %d/%x\n", cmd, cmd);
   _bfd_hexdump (8, ptr, 16, (int) ptr);
 #endif
@@ -777,7 +777,7 @@ etir_stc (bfd * abfd, int cmd, unsigned char *ptr ATTRIBUTE_UNUSED)
       break;
 
     default:
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
       _bfd_vms_debug (3,  "reserved STC cmd %d", cmd);
 #endif
       break;
@@ -792,7 +792,7 @@ new_section (bfd * abfd ATTRIBUTE_UNUSED, int idx)
   char sname[16];
   char *name;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (5, "new_section %d\n", idx);
 #endif
   sprintf (sname, SECTION_NAME_TEMPLATE, idx);
@@ -805,7 +805,7 @@ new_section (bfd * abfd ATTRIBUTE_UNUSED, int idx)
   section = bfd_malloc ((bfd_size_type) sizeof (asection));
   if (section == 0)
     {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
       _bfd_vms_debug (6,  "bfd_make_section (%s) failed", name);
 #endif
       return NULL;
@@ -825,7 +825,7 @@ alloc_section (bfd * abfd, unsigned int idx)
 {
   bfd_size_type amt;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (4, "alloc_section %d\n", idx);
 #endif
 
@@ -861,7 +861,7 @@ tir_sta (bfd * abfd, unsigned char *ptr)
 {
   int cmd = *ptr++;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (5, "tir_sta %d\n", cmd);
 #endif
 
@@ -1169,7 +1169,7 @@ tir_sto (bfd * abfd, unsigned char *ptr)
   int size;
   int psect;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (5, "tir_sto %d\n", *ptr);
 #endif
 
@@ -1315,7 +1315,7 @@ tir_opr (bfd * abfd, unsigned char *ptr)
 {
   long op1, op2;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (5, "tir_opr %d\n", *ptr);
 #endif
 
@@ -1457,7 +1457,7 @@ tir_ctl (bfd * abfd, unsigned char *ptr)
   unsigned long dummy;
   unsigned int psect;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (5, "tir_ctl %d\n", *ptr);
 #endif
 
@@ -1531,7 +1531,7 @@ tir_cmd (bfd * abfd, unsigned char *ptr)
   };
   int i = 0;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (4, "tir_cmd %d/%x\n", *ptr, *ptr);
   _bfd_hexdump (8, ptr, 16, (int) ptr);
 #endif
@@ -1588,7 +1588,7 @@ etir_cmd (bfd * abfd, int cmd, unsigned char *ptr)
 
   int i = 0;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (4, "etir_cmd %d/%x\n", cmd, cmd);
   _bfd_hexdump (8, ptr, 16, (int) ptr);
 #endif
@@ -1605,7 +1605,7 @@ etir_cmd (bfd * abfd, int cmd, unsigned char *ptr)
       i++;
     }
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (4, "etir_cmd: = 0\n");
 #endif
   return 0;
@@ -1619,7 +1619,7 @@ analyze_tir (bfd * abfd, unsigned char *ptr, unsigned int length)
 {
   unsigned char *maxptr;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (3, "analyze_tir: %d bytes\n", length);
 #endif
 
@@ -1645,7 +1645,7 @@ analyze_etir (bfd * abfd, unsigned char *ptr, unsigned int length)
   unsigned char *maxptr;
   int result = 0;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (3, "analyze_etir: %d bytes\n", length);
 #endif
 
@@ -1661,7 +1661,7 @@ analyze_etir (bfd * abfd, unsigned char *ptr, unsigned int length)
       ptr += length;
     }
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (3, "analyze_etir: = %d\n", result);
 #endif
 
@@ -1676,7 +1676,7 @@ _bfd_vms_slurp_tir (bfd * abfd, int objtype)
 {
   int result;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (2, "TIR/ETIR\n");
 #endif
 
@@ -1708,7 +1708,7 @@ _bfd_vms_slurp_tir (bfd * abfd, int objtype)
 int
 _bfd_vms_slurp_dbg (bfd * abfd, int objtype ATTRIBUTE_UNUSED)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (2, "DBG/EDBG\n");
 #endif
 
@@ -1725,7 +1725,7 @@ int
 _bfd_vms_slurp_tbt (bfd * abfd ATTRIBUTE_UNUSED,
 		    int objtype ATTRIBUTE_UNUSED)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (2, "TBT/ETBT\n");
 #endif
 
@@ -1741,7 +1741,7 @@ int
 _bfd_vms_slurp_lnk (bfd * abfd ATTRIBUTE_UNUSED,
 		    int objtype ATTRIBUTE_UNUSED)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (2, "LNK\n");
 #endif
 
@@ -1779,47 +1779,44 @@ end_etir_record (bfd * abfd)
 }
 
 /* WRITE ETIR SECTION
-
-   This is still under construction and therefore not documented.  */
-
-static void
-sto_imm (bfd * abfd, vms_section *sptr, bfd_vma vaddr, int index)
+ *
+ * This is still under construction and therefore not documented: */
+static void sto_imm(bfd * abfd, vms_section *sptr, bfd_vma vaddr, int my_index)
 {
   int size;
   int ssize;
   unsigned char *cptr;
 
-#if VMS_DEBUG
-  _bfd_vms_debug (8, "sto_imm %d bytes\n", sptr->size);
-  _bfd_hexdump (9, sptr->contents, (int) sptr->size, (int) vaddr);
-#endif
+#if defined(VMS_DEBUG) && VMS_DEBUG
+  _bfd_vms_debug(8, "sto_imm %d bytes\n", sptr->size);
+  _bfd_hexdump(9, sptr->contents, (int)sptr->size, (int)vaddr);
+#endif /* VMS_DEBUG */
 
   ssize = sptr->size;
   cptr = sptr->contents;
 
-  while (ssize > 0)
-    {
+  while (ssize > 0) {
       /* Try all the rest.  */
       size = ssize;
 
-      if (_bfd_vms_output_check (abfd, size) < 0)
-	{
-	  /* Doesn't fit, split !  */
+      if (_bfd_vms_output_check(abfd, size) < 0) {
+	  /* Does NOT fit, split! */
 	  end_etir_record (abfd);
-	  start_etir_record (abfd, index, vaddr, FALSE);
-	  /* Get max size.  */
-	  size = _bfd_vms_output_check (abfd, 0);
-	  /* More than what's left ?  */
-	  if (size > ssize)
-	    size = ssize;
-	}
+	  start_etir_record(abfd, my_index, vaddr, FALSE);
+	  /* Get max size: */
+	  size = _bfd_vms_output_check(abfd, 0);
+	  /* More than what is left? */
+	  if (size > ssize) {
+	      size = ssize;
+	  }
+      }
 
-      _bfd_vms_output_begin (abfd, ETIR_S_C_STO_IMM, -1);
-      _bfd_vms_output_long (abfd, (unsigned long) (size));
-      _bfd_vms_output_dump (abfd, cptr, size);
-      _bfd_vms_output_flush (abfd);
+      _bfd_vms_output_begin(abfd, ETIR_S_C_STO_IMM, -1);
+      _bfd_vms_output_long(abfd, (unsigned long)(size));
+      _bfd_vms_output_dump(abfd, cptr, size);
+      _bfd_vms_output_flush(abfd);
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
       _bfd_vms_debug (10, "dumped %d bytes\n", size);
       _bfd_hexdump (10, cptr, (int) size, (int) vaddr);
 #endif
@@ -1839,7 +1836,7 @@ _bfd_vms_write_tir (bfd * abfd, int objtype ATTRIBUTE_UNUSED)
   vms_section *sptr;
   int nextoffset;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (2, "vms_write_tir (%p, %d)\n", abfd, objtype);
 #endif
 
@@ -1854,7 +1851,7 @@ _bfd_vms_write_tir (bfd * abfd, int objtype ATTRIBUTE_UNUSED)
   while (section != NULL)
     {
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
       _bfd_vms_debug (4, "writing %d. section '%s' (%d bytes)\n",
 		      section->index, section->name,
 		      (int) (section->size));
@@ -1867,7 +1864,7 @@ _bfd_vms_write_tir (bfd * abfd, int objtype ATTRIBUTE_UNUSED)
 	  if ((i = section->reloc_count) <= 0)
 	    (*_bfd_error_handler) (_("SEC_RELOC with no relocs in section %s"),
 				   section->name);
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 	  else
 	    {
 	      arelent **rptr;
@@ -2214,7 +2211,7 @@ int
 _bfd_vms_write_tbt (bfd * abfd ATTRIBUTE_UNUSED,
 		    int objtype ATTRIBUTE_UNUSED)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (2, "vms_write_tbt (%p, %d)\n", abfd, objtype);
 #endif
 
@@ -2227,7 +2224,7 @@ int
 _bfd_vms_write_dbg (bfd * abfd ATTRIBUTE_UNUSED,
 		    int objtype ATTRIBUTE_UNUSED)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (2, "vms_write_dbg (%p, objtype)\n", abfd, objtype);
 #endif
 

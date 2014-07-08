@@ -179,7 +179,7 @@ xtensa_insnbuf_to_chars (xtensa_isa isa,
 /* Inward conversion from byte stream to xtensa_insnbuf.  See
    xtensa_insnbuf_to_chars for a discussion of why this is complicated
    by endianness.  */
-    
+
 void
 xtensa_insnbuf_from_chars (xtensa_isa isa,
 			   xtensa_insnbuf insn,
@@ -274,28 +274,27 @@ xtensa_isa_init (xtensa_isa_status *errno_p, char **error_msg_p)
   qsort (isa->sysreg_lookup_table, isa->num_sysregs,
 	 sizeof (xtensa_lookup_entry), xtensa_isa_name_compare);
 
-  /* Set up the user & system sysreg number tables.  */
-  for (is_user = 0; is_user < 2; is_user++)
-    {
+  /* Set up the user & system sysreg number tables: */
+  for ((is_user = 0); (is_user < 2); is_user++) {
       isa->sysreg_table[is_user] =
-	bfd_malloc ((isa->max_sysreg_num[is_user] + 1)
-		    * sizeof (xtensa_sysreg));
-      CHECK_ALLOC_FOR_INIT (isa->sysreg_table[is_user], NULL,
-			    errno_p, error_msg_p);
+	bfd_malloc((isa->max_sysreg_num[is_user] + 1)
+		    * sizeof(xtensa_sysreg));
+      CHECK_ALLOC_FOR_INIT(isa->sysreg_table[is_user], NULL,
+			   errno_p, error_msg_p);
 
-      for (n = 0; n <= isa->max_sysreg_num[is_user]; n++)
-	isa->sysreg_table[is_user][n] = XTENSA_UNDEFINED;
-    }
-  for (n = 0; n < isa->num_sysregs; n++)
-    {
+      for ((n = 0); (n <= isa->max_sysreg_num[is_user]); n++) {
+	  isa->sysreg_table[is_user][n] = XTENSA_UNDEFINED;
+      }
+  }
+  for ((n = 0); (n < isa->num_sysregs); n++) {
       xtensa_sysreg_internal *sreg = &isa->sysregs[n];
       is_user = sreg->is_user;
 
       isa->sysreg_table[is_user][sreg->number] = n;
-    }
+  }
 
   /* Set up the interface lookup table.  */
-  isa->interface_lookup_table = 
+  isa->interface_lookup_table =
     bfd_malloc (isa->num_interfaces * sizeof (xtensa_lookup_entry));
   CHECK_ALLOC_FOR_INIT (isa->interface_lookup_table, NULL, errno_p,
 			error_msg_p);
@@ -308,7 +307,7 @@ xtensa_isa_init (xtensa_isa_status *errno_p, char **error_msg_p)
 	 sizeof (xtensa_lookup_entry), xtensa_isa_name_compare);
 
   /* Set up the funcUnit lookup table.  */
-  isa->funcUnit_lookup_table = 
+  isa->funcUnit_lookup_table =
     bfd_malloc (isa->num_funcUnits * sizeof (xtensa_lookup_entry));
   CHECK_ALLOC_FOR_INIT (isa->funcUnit_lookup_table, NULL, errno_p,
 			error_msg_p);
@@ -405,7 +404,7 @@ xtensa_isa_length_from_chars (xtensa_isa isa, const unsigned char *cp)
 
 
 int
-xtensa_isa_num_pipe_stages (xtensa_isa isa) 
+xtensa_isa_num_pipe_stages (xtensa_isa isa)
 {
   xtensa_opcode opcode;
   xtensa_funcUnit_use *use;
@@ -538,7 +537,7 @@ xtensa_format_lookup (xtensa_isa isa, const char *fmtname)
       if (strcasecmp (fmtname, intisa->formats[fmt].name) == 0)
 	return fmt;
     }
-  
+
   xtisa_errno = xtensa_isa_bad_format;
   sprintf (xtisa_error_msg, "format \"%s\" not recognized", fmtname);
   return XTENSA_UNDEFINED;
@@ -1013,24 +1012,22 @@ xtensa_operand_set_field (xtensa_isa isa, xtensa_opcode opc, int opnd,
 }
 
 
-int
-xtensa_operand_encode (xtensa_isa isa, xtensa_opcode opc, int opnd,
-		       uint32 *valp)
+int xtensa_operand_encode(xtensa_isa isa, xtensa_opcode opc, int opnd,
+			  uint32 *valp)
 {
-  xtensa_isa_internal *intisa = (xtensa_isa_internal *) isa;
+  xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
   xtensa_operand_internal *intop;
   uint32 test_val, orig_val;
 
-  intop = get_operand (intisa, opc, opnd);
+  intop = get_operand(intisa, opc, opnd);
   if (!intop) return -1;
 
-  if (!intop->encode)
-    {
-      /* This is a default operand for a field.  How can we tell if the
-	 value fits in the field?  Write the value into the field,
-	 read it back, and then make sure we get the same value.  */
+  if (!intop->encode) {
+      /* This is a default operand for a field. How can we tell if the value
+       * fits in the field? Write the value into the field, read it back,
+       * and then make sure we get the same value. */
 
-      xtensa_isa_internal *intisa = (xtensa_isa_internal *) isa;
+      xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
       static xtensa_insnbuf tmpbuf = 0;
       int slot_id;
 

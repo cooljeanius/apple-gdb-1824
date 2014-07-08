@@ -365,32 +365,30 @@ static int SerparRead(DriverCall *dc, bool block)
     read_errno = errno;
 #endif /* COMPILING_ON_WINDOWS */
 
-    if ((nread > 0) || (rbindex > 0))
-    {
+    if ((nread > 0) || (rbindex > 0)) {
 #ifdef DO_TRACE
         printf("[%d@%d] ", nread, rbindex);
 #endif /* DO_TRACE */
 
-        if (nread > 0)
-            rbindex = rbindex + nread;
+	if (nread > 0) {
+            rbindex = (rbindex + nread);
+	}
 
-        do
-        {
-            restatus = Angel_RxEngine(readbuf[c], &(dc->dc_packet), &rxstate);
-
+        do {
+            restatus = Angel_RxEngine((unsigned char)readbuf[c],
+				      &(dc->dc_packet), &rxstate);
 #ifdef DO_TRACE
             printf("<%02X ",readbuf[c]);
 #endif /* DO_TRACE */
             c++;
-        } while (c < rbindex &&
+        } while ((c < rbindex) &&
                  ((restatus == RS_IN_PKT) || (restatus == RS_WAIT_PKT)));
 
 #ifdef DO_TRACE
         printf("\n");
 #endif /* DO_TRACE */
 
-        switch(restatus)
-        {
+        switch(restatus) {
           case RS_GOOD_PKT:
               ret_code = 1;
               /* fall through to: */
@@ -399,15 +397,17 @@ static int SerparRead(DriverCall *dc, bool block)
               /*
                * We now need to shuffle any left over data down to the
                * beginning of our private buffer ready to be used
-               *for the next packet
+               * for the next packet
                */
 #ifdef DO_TRACE
               printf("SerparRead() processed %d, moving down %d\n",
-                     c, rbindex - c);
+                     c, (rbindex - c));
 #endif /* DO_TRACE */
 
-              if (c != rbindex)
-                  memmove((char *) readbuf, (char *) (readbuf + c), rbindex - c);
+	      if (c != rbindex) {
+                  memmove((char *)readbuf, (char *)(readbuf + c),
+			  (size_t)(rbindex - c));
+	      }
 
               rbindex -= c;
 
@@ -522,18 +522,19 @@ static int SerparWrite(DriverCall *dc)
       progressInfo.nWritten += nwritten;
       (*pfnProgressCallback)(&progressInfo);
     }
-  }
-  else
-  {
+  } else {
       MessageBox(GetFocus(), "Write error\n", "Angel", MB_OK | MB_ICONSTOP);
-      return -1;   /* SJ - This really needs to return a value, which is picked up in */
-                   /*      DevSW_Read as meaning stop debugger but don't kill. */
+      return -1;   /* SJ - This really needs to return a value, which is picked
+		    *      up in DevSW_Read() as meaning,
+		    *      "Stop the debugger, but do NOT kill". */
   }
 #else
-    nwritten = Unix_WriteParallel(txstate.writebuf, txstate.index);
+    nwritten = Unix_WriteParallel(txstate.writebuf, (int)txstate.index);
 #endif /* COMPILING_ON_WINDOWS */
 
-    if (nwritten < 0) nwritten = 0;
+    if (nwritten < 0) {
+      nwritten = 0;
+    }
 
 #ifdef DO_TRACE
     printf("SerparWrite: wrote %d out of %d bytes\n",
@@ -543,27 +544,25 @@ static int SerparWrite(DriverCall *dc)
     /*
      * has the whole packet gone?
      */
-    if (nwritten == (int)txstate.index &&
-        (status == TS_DONE_PKT || status == TS_IDLE))
+    if ((nwritten == (int)txstate.index) &&
+        ((status == TS_DONE_PKT) || (status == TS_IDLE))) {
         /*
          * yes it has
          */
         return 1;
-    else
-    {
+    } else {
         /*
          * if some data are left, shuffle them
          * to the start of the buffer
          */
-        if (nwritten != (int)txstate.index && nwritten != 0)
-        {
+        if ((nwritten != (int)txstate.index) && (nwritten != 0)) {
             txstate.index -= nwritten;
-            (void)memmove((char *) txstate.writebuf,
-                          (char *) (txstate.writebuf + nwritten),
-                          txstate.index);
-        }
-        else if (nwritten == (int)txstate.index)
+            (void)memmove((char *)txstate.writebuf,
+                          (char *)(txstate.writebuf + nwritten),
+                          (size_t)txstate.index);
+        } else if (nwritten == (int)txstate.index) {
             txstate.index = 0;
+	}
 
         return 0;
     }

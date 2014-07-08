@@ -13,12 +13,13 @@ AC_CONFIG_AUX_DIR([../../..])
 AC_CANONICAL_TARGET
 
 if test "x${CC}" = "x"; then
-	test -z "${CC}"
-	AC_PROG_CC
+  test -z "${CC}"
+  AC_PROG_CC
 else
-	test ! -z "${CC}"
-	AC_PROG_GCC_TRADITIONAL
+  test ! -z "${CC}"
+  AC_PROG_GCC_TRADITIONAL
 fi
 
+# Output:
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

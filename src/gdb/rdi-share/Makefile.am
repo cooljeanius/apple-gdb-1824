@@ -20,4 +20,14 @@ noinst_HEADERS = adp.h adperr.h angel.h ardi.h armdbg.h buffers.h \
 EXTRA_DIST = README.CYGNUS
 
 AM_CPPFLAGS = -DRETRANS -DARM_RELEASE='"Berkeley Licence for Cygnus"'
-AM_CFLAGS = -Wall -Wimplicit -Wreturn-type -Wcomment -Wtrigraphs -Wformat -Wparentheses -Wpointer-arith -Wunused-label -Wunused-function -ggdb
+AM_CFLAGS = -Wall -Wextra -Wimplicit -Wreturn-type -Wcomment -Wtrigraphs -Wformat=2 -Wparentheses -Wpointer-arith -Wunused-label -Wunused-function -Wno-unused-parameter -Wundef -Wc++-compat -Wmissing-prototypes -Wstrict-prototypes -Wmissing-declarations -Winline -Wvolatile-register-var -Woverlength-strings -Wno-pragmas -ggdb
+
+DISTCLEANFILES = *~ autoscan.log
+
+MAINTAINERCLEANFILES = configure.scan
+
+configure.scan:
+	autoscan || touch $@
+
+distclean-local:
+	rm -rfv autom4te.cache || rmdir autom4te.cache

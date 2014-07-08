@@ -25,77 +25,79 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning not including "config.h"
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning not including "config.h"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 # define MACOSX_MUTILS_C_NON_AUTOTOOLS_BUILD 1
 #endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_MACH_MACH_H
 # include <mach/mach.h>
 #else
-# ifdef __APPLE__
-#  warning macosx-mutils.c expects <mach/mach.h> to be included.
-# endif /* __APPLE__ */
+# if defined(__APPLE__) && defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "macosx-mutils.c expects <mach/mach.h> to be included."
+# endif /* __APPLE__ && __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_MACH_H */
 
 #ifdef HAVE_MACH_O_NLIST_H
 # include <mach-o/nlist.h>
 #else
-# ifdef __APPLE__
-#  warning macosx-mutils.c expects <mach-o/nlist.h> to be included.
-# endif /* __APPLE__ */
+# if defined(__APPLE__) && defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "macosx-mutils.c expects <mach-o/nlist.h> to be included."
+# endif /* __APPLE__ && __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_O_NLIST_H */
 
 #ifdef HAVE_MACH_MACH_ERROR_H
 # include <mach/mach_error.h>
 #else
-# ifdef __APPLE__
-#  warning macosx-mutils.c expects <mach/mach_error.h> to be included.
-# endif /* __APPLE__ */
+# if defined(__APPLE__) && defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "macosx-mutils.c expects <mach/mach_error.h> to be included."
+# endif /* __APPLE__ && __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_MACH_ERROR_H */
 
 #ifdef HAVE_SYS_SIGNAL_H
 # include <sys/signal.h>
 #else
-# ifdef __GNUC__
-#  warning macosx-mutils.c expects <sys/signal.h> to be included.
-# endif /* __GNUC__ */
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "macosx-mutils.c expects <sys/signal.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_SIGNAL_H */
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
-# ifdef __GNUC__
-#  warning macosx-mutils.c expects <sys/types.h> to be included.
-# endif /* __GNUC__ */
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "macosx-mutils.c expects <sys/types.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_TYPES_H */
 #ifdef HAVE_SYS_WAIT_H
 # include <sys/wait.h>
 #else
-# ifdef __GNUC__
-#  warning macosx-mutils.c expects <sys/wait.h> to be included.
-# endif /* __GNUC__ */
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "macosx-mutils.c expects <sys/wait.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_WAIT_H */
 #ifdef HAVE_LIMITS_H
 # include <limits.h>
 #else
-# ifdef __GNUC__
-#  warning macosx-mutils.c expects <limits.h> to be included.
-# endif /* __GNUC__ */
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "macosx-mutils.c expects <limits.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LIMITS_H */
 
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #else
-# ifdef __GNUC__
-#  warning macosx-mutils.c expects <unistd.h> to be included.
-# endif /* __GNUC__ */
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "macosx-mutils.c expects <unistd.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
 
 #ifdef HAVE_AVAILABILITYMACROS_H
 # include <AvailabilityMacros.h>
 #else
-# ifdef __APPLE__
-#  warning macosx-mutils.c expects <AvailabilityMacros.h> to be included.
-# endif /* __APPLE__ */
+# if defined(__APPLE__) && defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "macosx-mutils.c expects <AvailabilityMacros.h> to be included."
+# endif /* __APPLE__ && __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_AVAILABILITYMACROS_H */
 
 #include "server.h"
@@ -106,39 +108,47 @@
 # ifdef MAC_OS_X_VERSION_MAX_ALLOWED
 #  define MACH64 (MAC_OS_X_VERSION_MAX_ALLOWED >= 1040)
 # else
-#  ifdef __APPLE__
-#   warning need to define MAC_OS_X_VERSION_MAX_ALLOWED to be able to define MACH64
-#  endif /* __APPLE__ */
+#  if defined(__APPLE__) && defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "need to define MAC_OS_X_VERSION_MAX_ALLOWED to be able to define MACH64"
+#  endif /* __APPLE__ && __GNUC__ && !__STRICT_ANSI__ */
 # endif /* MAC_OS_X_VERSION_MAX_ALLOWED */
 #endif /* !MACH64 */
 
-#if MACH64
+#if defined(MACH64) && MACH64
 # ifdef HAVE_MACH_MACH_VM_H
 #  include <mach/mach_vm.h>
 #  ifdef HAVE_UNSIGNED_INT
 #   ifndef HAVE_VM_SIZE_T
 #    ifndef vm_size_t
-#     warning We do not have the vm_size_t type, which this file needs.
+#     if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#      warning "We do not have the vm_size_t type, which this file needs."
+#     endif /* __GNUC__ && !__STRICT_ANSI__ */
 /* Try defining it as an "unsigned int". */
 #    else
 #     define VM_SIZE_T_PRESENT_BUT_NOT_DETECTED_BY_CONFIGURE 1
 #    endif /* !vm_size_t */
 #   else
 #    ifdef vm_size_t
-#     warning Your pre-existing definition for vm_size_t might conflict with the type that this file expects.
+#     if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#      warning "Your pre-existing definition for vm_size_t might conflict with the type that this file expects."
+#     endif /* __GNUC__ && !__STRICT_ANSI__ */
 #    else
 #     define VM_SIZE_T_NOT_PRESENT_BUT_DETECTED_BY_CONFIGURE 1
 #    endif /* vm_size_t */
 #   endif /* !HAVE_VM_SIZE_T */
 #  else
 #   ifdef __GDBSERVER_MACOSX_MUTILS_H__
-#    warning "macosx-mutils.h" (which this file includes) will want to use the "unsigned int" type.
+#    if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#     warning "macosx-mutils.h" (which this file includes) will want to use the "unsigned int" type.
+#    endif /* __GNUC__ && !__STRICT_ANSI__ */
 #   else
 #    define MACOSX_MUTILS_H_NOT_INCLUDED 1
 #   endif /* __GDBSERVER_MACOSX_MUTILS_H__ */
 #  endif /* HAVE_UNSIGNED_INT */
 # else
-#  warning macosx-mutils.c expects <mach/mach_vm.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "macosx-mutils.c expects <mach/mach_vm.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_MACH_MACH_VM_H */
 #else /* ! MACH64 */
 # define mach_vm_size_t vm_size_t
@@ -151,45 +161,42 @@
 # define VM_REGION_BASIC_INFO_64 VM_REGION_BASIC_INFO
 #endif /* MACH64 */
 
-#define MAX_INSTRUCTION_CACHE_WARNINGS 0
+#ifndef MAX_INSTRUCTION_CACHE_WARNINGS
+# define MAX_INSTRUCTION_CACHE_WARNINGS 0
+#endif /* !MAX_INSTRUCTION_CACHE_WARNINGS */
 
-/* MINUS_INT_MIN is the absolute value of the minimum value that can
-   be stored in a int. We cannot just use -INT_MIN, as that would
-   implicitly be a int, not an unsigned int, and would overflow on 2's
-   complement machines. */
+/* MINUS_INT_MIN is the absolute value of the minimum value that can be stored
+ * in a int. We cannot just use -INT_MIN, as that would implicitly be a int,
+ * not an unsigned int, and would overflow on 2's complement machines. */
 
 #define MINUS_INT_MIN (((unsigned int) (- (INT_MAX + INT_MIN))) + INT_MAX)
 
 #ifdef DEBUG_MACOSX_MUTILS
-
 static FILE *mutils_stderr = NULL;
 static const char* g_macosx_protection_strs [8] =
 { "---", "--r", "-w-", "-wr", "x--", "x-r", "xw-", "xwr" };
 
-static void
-mutils_debug (const char *fmt, ...)
+static void mutils_debug(const char *fmt, ...)
 {
   va_list ap;
 
-	if (mutils_stderr == NULL) {
-		mutils_stderr = fdopen (fileno (stderr), "w");
-	}
+  if (mutils_stderr == NULL) {
+	  mutils_stderr = fdopen(fileno(stderr), "w");
+  }
 
-  va_start (ap, fmt);
-  fprintf (mutils_stderr, "[%d mutils]: ", getpid ());
-  vfprintf (mutils_stderr, fmt, ap);
-  va_end (ap);
-  fflush (mutils_stderr);
+  va_start(ap, fmt);
+  fprintf(mutils_stderr, "[%d mutils]: ", getpid());
+  vfprintf(mutils_stderr, fmt, ap);
+  va_end(ap);
+  fflush(mutils_stderr);
 }
-
 #endif /* DEBUG_MACOSX_MUTILS */
 
 #define CHECK_FATAL(expression) \
-  ((void) ((expression) ? 0 : fatal ("on %s:%d - assert: %s", __FILE__, __LINE__, #expression)))
+  ((void) ((expression) ? 0 : fatal("on %s:%d - assert: %s", __FILE__, __LINE__, #expression)))
 
 /* macosx-mutils.h has child_get_pagesize as being of type unsigned int */
-vm_size_t
-child_get_pagesize (void)
+vm_size_t child_get_pagesize(void)
 {
   kern_return_t status;
   static vm_size_t g_cached_child_page_size = 0;
@@ -909,12 +916,11 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
         }
     }
 
-  return len - cur_len;
+  return (len - cur_len);
 }
 
 
-int
-macosx_thread_valid (task_t task, thread_t thread)
+int macosx_thread_valid(task_t task, thread_t thread)
 {
   thread_array_t thread_list;
   unsigned int thread_count = 0;
@@ -923,39 +929,44 @@ macosx_thread_valid (task_t task, thread_t thread)
   unsigned int found = 0;
   unsigned int i;
 
-  CHECK_FATAL (task != TASK_NULL);
+  CHECK_FATAL(task != TASK_NULL);
 
   kret = task_threads (task, &thread_list, &thread_count);
 #ifdef DEBUG_MACOSX_MUTILS
-  mutils_debug ("macosx_thread_valid - task_threads (%d, %p, %d) returned 0x%lx\n", task, &thread_list, thread_count, kret);
+  mutils_debug("macosx_thread_valid - task_threads (%d, %p, %d) returned 0x%lx\n", task, &thread_list, thread_count, kret);
 #endif /* DEBUG_MACOSX_MUTILS */
   if ((kret == KERN_INVALID_ARGUMENT)
-      || (kret == MACH_SEND_INVALID_RIGHT) || (kret == MACH_RCV_INVALID_NAME))
-    {
+      || (kret == MACH_SEND_INVALID_RIGHT) || (kret == MACH_RCV_INVALID_NAME)) {
       return 0;
-    }
-  MACH_CHECK_ERROR (kret);
+  }
+  MACH_CHECK_ERROR(kret);
 
-  for (i = 0; i < thread_count; i++)
-    {
-      if (thread_list[i] == thread)
-        {
+  for ((i = 0); (i < thread_count); i++) {
+      if (thread_list[i] == thread) {
           found = 1;
-        }
-    }
+	  }
+  }
 
-  kret = vm_deallocate (mach_task_self (), (vm_address_t) thread_list,
-                        (vm_size_t) (thread_count * sizeof (thread_t)));
-  MACH_CHECK_ERROR (kret);
+  kret = vm_deallocate(mach_task_self(), (vm_address_t)thread_list,
+					   (vm_size_t)(thread_count * sizeof(thread_t)));
+  MACH_CHECK_ERROR(kret);
 
 #ifdef DEBUG_MACOSX_MUTILS
-  if (!found)
-    {
-      mutils_debug ("thread 0x%lx no longer valid for task 0x%lx\n",
-                    (unsigned long) thread, (unsigned long) task);
-    }
+  if (!found) {
+      mutils_debug("thread 0x%lx no longer valid for task 0x%lx\n",
+				   (unsigned long)thread, (unsigned long)task);
+  }
 #endif /* DEBUG_MACOSX_MUTILS */
   return found;
 }
+
+
+/* Silence warnings from '-Wunused-macros': */
+#ifdef VM_SIZE_T_NOT_PRESENT_BUT_DETECTED_BY_CONFIGURE
+# undef VM_SIZE_T_NOT_PRESENT_BUT_DETECTED_BY_CONFIGURE
+#endif /* VM_SIZE_T_NOT_PRESENT_BUT_DETECTED_BY_CONFIGURE */
+#ifdef MAX_INSTRUCTION_CACHE_WARNINGS
+# undef MAX_INSTRUCTION_CACHE_WARNINGS
+#endif /* MAX_INSTRUCTION_CACHE_WARNINGS */
 
 /* EOF */

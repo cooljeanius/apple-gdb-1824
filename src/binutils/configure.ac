@@ -6,16 +6,26 @@ AC_PREREQ([2.57])
 dnl# keep version number synced with the one in ../bfd
 AC_INIT([binutils],[2.16.91],[jmolenda@apple.com])
 dnl# bug report address is email address of last person to touch this
-dnl# directory, according to the Changelog-Apple in this directory
+dnl# directory, according to the Changelog-Apple in this directory.
 AC_CONFIG_SRCDIR([ar.c])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([..])
+AC_REQUIRE_AUX_FILE([mkinstalldirs])
 
+# target stuff:
 AC_CANONICAL_TARGET
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  AC_SUBST([HOST_ARCHITECTURE])
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+  AC_SUBST([TARGET_ARCHITECTURE])
+fi
 AC_SEARCH_LIBS([strerror],[cposix]) dnl# used to be AC\_ISC\_POSIX
 AC_USE_SYSTEM_EXTENSIONS
 
-# Automake
+# Automake:
 if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
@@ -23,71 +33,82 @@ fi
 AM_INIT_AUTOMAKE([1.9.6 gnits dejagnu])
 AM_SANITY_CHECK
 
-AC_PROG_SED
+# Make sure that sed is checked early:
+AC_DEFUN([AC_REQUIRE_SED],[
+  AC_REQUIRE([AC_PROG_SED])dnl
+])dnl
+AC_REQUIRE_SED
 
 if test -e ./config.cache; then
-	sed -i "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
-	sed -i "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
-	sed -i "s|ac_cv_exeext|bad_exeext|g" ./config.cache
+  sed -i "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
+  sed -i "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
+  sed -i "s|ac_cv_exeext|bad_exeext|g" ./config.cache
 fi
 
-# Libtool checks
+# Libtool checks:
 AC_PROG_CXX
-LT_INIT([disable-fast-install disable-shared dlopen static win32-dll])
-LT_LANG([C])
-LT_LANG([C++])
-LT_LANG([Windows Resource])
+LT_INIT([disable-fast-install disable-shared dlopen static win32-dll])dnl
+LT_LANG([C])dnl
+LT_LANG([C++])dnl
+LT_LANG([Windows Resource])dnl
 
 AC_ARG_ENABLE([targets],
-[AS_HELP_STRING([--enable-targets],[alternative target configurations])],
+[AS_HELP_STRING([--enable-targets],
+                [A comma-delimited list of alternate target configurations.
+                 Alternatively, whitespace-delimiting it could work, too,
+                 if you remember to quote it properly.])],
 [case "${enableval}" in
-  yes | "") AC_MSG_ERROR([enable-targets option must specify target names or 'all'])
-            ;;
-  no)       enable_targets= ;;
-  *)        enable_targets=$enableval ;;
+  yes | "")
+    AC_MSG_ERROR([enable-targets flag must specify target names or 'all'])
+    ;;
+  no) enable_targets="" ;;
+  *)  enable_targets="${enableval}" ;;
 esac])dnl
+
 AC_ARG_ENABLE([commonbfdlib],
-[AS_HELP_STRING([--enable-commonbfdlib],[build shared BFD/opcodes/libiberty library])],
+[AS_HELP_STRING([--enable-commonbfdlib],
+                [build shared BFD/opcodes/libiberty library])],
 [case "${enableval}" in
   yes) commonbfdlib=true ;;
-  no)  commonbfdlib=false ;;
-  *)   AC_MSG_ERROR([bad value ${enableval} for BFD commonbfdlib option]) ;;
+  no) commonbfdlib=false ;;
+  *) AC_MSG_ERROR([bad value ${enableval} for BFD commonbfdlib flag]) ;;
 esac])dnl
 
 AC_ARG_ENABLE([deterministic-archives],
 [AS_HELP_STRING([--enable-deterministic-archives],
-		[ar and ranlib default to -D behavior])], [
-if test "${enableval}" = no; then
+		[ar and ranlib default to -D behavior])],[
+if test "x${enableval}" = "xno"; then
   default_ar_deterministic=0
 else
   default_ar_deterministic=1
-fi],[default_ar_deterministic=0])
+fi],[default_ar_deterministic=0])dnl
 
-AC_DEFINE_UNQUOTED([DEFAULT_AR_DETERMINISTIC],[${default_ar_deterministic}],
-		   [Should ar and ranlib use -D behavior by default?])
+AC_DEFINE_UNQUOTED([DEFAULT_AR_DETERMINISTIC],
+                   [${default_ar_deterministic}],
+		   [Should ar and ranlib use -D behavior by default?])dnl
 
 AM_BINUTILS_WARNINGS
 		   
-AC_CONFIG_HEADERS([config.h])
-AH_VERBATIM([00_CONFIG_H_CHECK],
-[/* Check that config.h is #included before system headers
-   (this works only for glibc, but that should be enough).  */
+AC_CONFIG_HEADERS([config.h])dnl
+AH_VERBATIM([00_CONFIG_H_CHECK],[
+/* Check that config.h is #included before system headers
+ * (this works only for glibc, but that should be enough).  */
 #if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
 #  error config.h must be #included before system headers
-#endif
-#define __CONFIG_H__ 1])
+#endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ */
+#define __CONFIG_H__ 1])dnl
 AH_TOP([
 #ifndef HAVE_CONFIG_H
 # define HAVE_CONFIG_H
 #endif /* !HAVE_CONFIG_H */
-])
+])dnl
 
 # Checks for systems.
-if test -z "${target}" ; then
-    AC_MSG_ERROR([Unrecognized target system type; please check config.sub.])
+if test -z "${target}"; then
+  AC_MSG_ERROR([Unrecognized target system type; please check config.sub.])
 fi
-if test -z "${host}" ; then
-    AC_MSG_ERROR([Unrecognized host system type; please check config.sub.])
+if test -z "${host}"; then
+  AC_MSG_ERROR([Unrecognized host system type; please check config.sub.])
 fi
 AC_SYS_INTERPRETER
 AC_SYS_LARGEFILE
@@ -95,17 +116,17 @@ AC_SYS_LARGEFILE
 # Checks for programs.
 AM_PROG_AS
 if test "x${CC}" = "x"; then
-    test -z "${CC}"
-    AC_PROG_CC
+  test -z "${CC}"
+  AC_PROG_CC
 else
-    test ! -z "${CC}"
-    AC_PROG_GCC_TRADITIONAL
+  test ! -z "${CC}"
+  AC_PROG_GCC_TRADITIONAL
 fi
 
 AC_PROG_YACC
 AM_PROG_LEX
-AC_PATH_PROG([ICONV_BIN],[iconv])
-AC_SUBST([ICONV_BIN])
+AC_PATH_PROGS([ICONV_BIN],[iconv giconv])dnl
+AC_SUBST([ICONV_BIN])dnl
 
 
 # Gettext:
@@ -122,10 +143,23 @@ elif test -d ../libintl; then
     export LDFLAGS="${LDFLAGS} -L../libintl"
   fi
 fi
-ALL_LINGUAS="fr tr ja es sv da zh_CN ru ro rw zh_TW"
+# keep alphabetical:
+ALL_LINGUAS="bg da es fi fr hr id it ja ro ru rw sk sv tr uk vi zh_CN zh_TW"
+m4_ifdef([CY_GNU_GETTEXT],[
 CY_GNU_GETTEXT
+],[
+  m4_ifdef([ZW_GNU_GETTEXT_SISTER_DIR],[
+  ZW_GNU_GETTEXT_SISTER_DIR
+  ],[:])dnl
+  m4_ifdef([AM_PO_SUBDIRS],[
+  AM_PO_SUBDIRS
+  ],[:])dnl
+])dnl
 
 AM_MAINTAINER_MODE
+dnl# this should fix the "building texinfos in srcdir" described in the
+dnl# Makefile:
+AM_CONDITIONAL([GENINSRC_NEVER],[false])dnl
 AC_OBJEXT
 AC_EXEEXT
 if test -n "${EXEEXT}"; then
@@ -142,23 +176,26 @@ HDEFINES=""
 AC_MSG_NOTICE([sourcing ../bfd/configure.host])
 . ${srcdir}/../bfd/configure.host
 
-AC_SUBST([HDEFINES])
+AC_SUBST([HDEFINES])dnl
 
 # More programs:
 AR=${AR-ar}
 AC_SUBST([AR])
-if test "x${RANLIB}" = "x"; then
-	test -z "${RANLIB}"
-	AC_PROG_RANLIB
+dnl# (skip actually checking for ar, because we build it here)
+if test "x${RANLIB}" = "x" && test "x${ac_cv_prog_ac_ct_RANLIB}" = "x"; then
+  test -z "${RANLIB}" && test -z "${ac_cv_prog_ac_ct_RANLIB}"
+  AC_PROG_RANLIB
 else
-	test ! -z "${RANLIB}"
+  test ! -z "${RANLIB}"
+  test -n "${ac_cv_prog_ac_ct_RANLIB}"
 fi
 AC_PROG_INSTALL
 AM_PROG_INSTALL_STRIP
 AC_PROG_LN_S
+AC_PROG_MKDIR_P
 
 AC_DEFUN([AM_REQUIRE_EXTRA_AUTOMAKE_CHECKS],[
-  AC_PREREQ([2.65])
+  AC_PREREQ([2.65])dnl
   dnl# Autoconf wants to disallow AM_ names. We explicitly allow
   dnl# the ones we care about.
   m4_pattern_allow([^AM_[A-Z]+FLAGS$])dnl
@@ -167,11 +204,13 @@ AC_DEFUN([AM_REQUIRE_EXTRA_AUTOMAKE_CHECKS],[
   AC_REQUIRE([AM_MISSING_HAS_RUN])dnl
   AC_REQUIRE([AM_MAINTAINER_MODE])dnl
   AC_REQUIRE([AC_PROG_GREP])dnl
+  AC_REQUIRE([AC_PROG_EGREP])dnl
+  AC_REQUIRE([AC_PROG_FGREP])dnl
   AC_REQUIRE([AM_MAKE_INCLUDE])dnl
   AC_REQUIRE([AM_SANITY_CHECK])dnl
   AC_REQUIRE([AC_PROG_AWK])dnl
   AC_REQUIRE([AC_PROG_CPP])dnl
-])
+])dnl
 AM_REQUIRE_EXTRA_AUTOMAKE_CHECKS
 
 BFD_CC_FOR_BUILD
@@ -181,26 +220,31 @@ case "${host}" in
   *-*-go32* | *-*-msdos*)
     DEMANGLER_NAME=cxxfilt
 esac
-AC_SUBST([DEMANGLER_NAME])
+AC_SUBST([DEMANGLER_NAME])dnl
 
 # Checks for libraries.
 LT_LIB_M
 # ../intl is added to LDFLAGS above
-AC_SEARCH_LIBS([dcgettext],[intl])
-AC_SEARCH_LIBS([bindtextdomain],[intl])
-AC_SEARCH_LIBS([textdomain],[intl])
+AC_SEARCH_LIBS([dcgettext],[intl])dnl
+AC_SEARCH_LIBS([bindtextdomain],[intl])dnl
+AC_SEARCH_LIBS([textdomain],[intl])dnl
 AC_CHECK_LIB([intl],[gettext],[],[
-  AC_CHECK_LIB([intl],[main],[],[])
-])
+  AC_CHECK_LIB([intl],[main],[],[])dnl
+])dnl
 AC_DEFUN([AC_GETTEXT_SUBCHECKS],[
-  AC_REQUIRE([gt_INTL_MACOSX])
-  AC_REQUIRE([AM_ICONV])
+  AC_REQUIRE([gt_INTL_MACOSX])dnl
+  AC_REQUIRE([AM_ICONV])dnl
+  dnl# this next bit used to be lower below:
+  m4_ifdef([AM_LC_MESSAGES],[
+  test -z "${am_cv_val_LC_MESSAGES}"
+  AC_REQUIRE([AM_LC_MESSAGES])dnl
+  ],[:])dnl
   AC_CHECK_LIB([iconv],[iconv],[],[
     AC_CHECK_LIB([iconv],[libiconv],[],[
-      AC_CHECK_LIB([iconv],[main],[],[])
-    ])
-  ])
-])
+      AC_CHECK_LIB([iconv],[main],[],[])dnl
+    ])dnl
+  ])dnl
+])dnl
 AC_GETTEXT_SUBCHECKS
 dnl# I forget, why am I not just using AM\_GNU\_GETTEXT?
 dnl# Anyways... continuing with library checks:
@@ -221,18 +265,26 @@ AC_CHECK_LIB([iberty],[main])
 AC_CHECK_LIB([gnu],[main])
 
 # Checks for header files.
-AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
+AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 if test -d ../intl; then
   if test -z "${CPPFLAGS}"; then
     export CPPFLAGS="-I../intl"
   else
     export CPPFLAGS="${CPPFLAGS} -I../intl"
   fi
+  if test -z "${INCINTL}"; then
+    export INCINTL="-I../intl"
+    AC_SUBST([INCINTL])
+  fi
 elif test -d ../libintl; then
   if test -z "${CPPFLAGS}"; then
     export CPPFLAGS="-I../libintl"
   else
     export CPPFLAGS="${CPPFLAGS} -I../libintl"
+  fi
+  if test -z "${INCINTL}"; then
+    export INCINTL="-I../libintl"
+    AC_SUBST([INCINTL])
   fi
 fi
 unset ac_cv_header_libintl_h
@@ -242,76 +294,141 @@ unset ac_cv_header_malloc_h
 unset ac_cv_header_stdlib_h
 unset ac_cv_header_sys_param_h
 unset ac_cv_header_unistd_h
+unset ac_cv_header_utime_h
 AC_CHECK_HEADERS([assert.h binary-io.h errno.h fcntl.h gettext.h iconv.h \
                   langinfo.h libgettext.h libintl.h limits.h locale.h \
-                  mach/mach.h malloc.h malloc/malloc.h stdarg.h stddef.h \
-                  stdio.h sys/file.h sys/param.h sys/time.h utime.h \
-                  varargs.h wchar.h wctype.h])
-AC_CHECK_HEADERS_ONCE([time.h])
+                  mach/mach.h mach-o/loader.h malloc.h malloc/malloc.h \
+                  stdarg.h stddef.h stdio.h sys/file.h sys/param.h \
+                  sys/time.h utime.h varargs.h wchar.h wctype.h])dnl
+AC_CHECK_HEADERS_ONCE([time.h])dnl
 AC_HEADER_SYS_WAIT
+AC_HEADER_STAT
+AC_HEADER_TIME
+m4_ifdef([ACX_HEADER_STRING],[
+ACX_HEADER_STRING
+],[:])dnl
+
+dnl# if we are using internal include paths, see if renaming has occurred:
+AC_CHECK_HEADERS([mach-o/codesign.h],[],[
+  AC_CHECK_HEADERS([mach-o-gnu/codesign.h])dnl
+])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
+AC_DEFUN([AC_REQUIRE_C_CONST],[
+  AC_REQUIRE([AC_C_CONST])dnl
+])dnl
+AC_REQUIRE_C_CONST
 AC_C_BIGENDIAN
 AC_C_PROTOTYPES
 AC_C_RESTRICT
-AC_CHECK_TYPES([FILE])
+AC_CHECK_TYPES([FILE])dnl
 AC_TYPE_INT8_T
 AC_TYPE_INT16_T
 AC_TYPE_INT32_T
 AC_TYPE_SSIZE_T
+AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
 AC_TYPE_UINT8_T
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
-AC_CHECK_TYPES([iconv_t])
+AC_CHECK_TYPES([iconv_t])dnl
+dnl# one hand-rolled one:
+AC_MSG_CHECKING([for mbstate_t])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <wchar.h>
+]],[[mbstate_t teststate;]])],[have_mbstate_t=yes],[have_mbstate_t=no])
+AC_MSG_RESULT([${have_mbstate_t}])
+if test x"${have_mbstate_t}" = x"yes"; then
+  AC_DEFINE([HAVE_MBSTATE_T],[1],[Define if mbstate_t exists in wchar.h.])
+fi
 
 # Checks for library functions.
 AM_WITH_DMALLOC
-AC_FUNC_ALLOCA
+AC_DEFUN([AC_REQUIRE_ALLOCA],[
+  AC_REQUIRE([AC_FUNC_ALLOCA])dnl
+])dnl
+AC_REQUIRE_ALLOCA
 AC_FUNC_CHOWN
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_FORK
 AC_FUNC_LSTAT dnl# calls the _FOLLOWS_SLASHED_SYMLINK version of it
 AC_FUNC_MALLOC
+AC_FUNC_MEMCMP
 AC_FUNC_OBSTACK
 AC_FUNC_REALLOC
+AC_FUNC_STAT
+m4_ifdef([AC_FUNC_STRCOLL],[
 AC_FUNC_STRCOLL
+],[
+AC_CHECK_FUNCS([strcoll])dnl
+])dnl
 AC_FUNC_STRNLEN
+AC_FUNC_UTIME_NULL
+AC_FUNC_VPRINTF
 unset ac_cv_func_setlocale
 AC_CHECK_FUNCS([bindtextdomain ctime dcgettext dup2 expandargv \
                 fclose fopen fprintf fputs fread free getc_unlocked \
                 gettimeofday memchr memcmp memcpy memmove memset \
                 re_comp regcomp rmdir sbrk setlocale setmode \
                 strdup strerror strncasecmp strrchr strspn strstr \
-                strtol strtoul strverscmp textdomain utime utimes])
-AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu])
-AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu])
+                strtol strtoul strverscmp textdomain utime utimes])dnl
+AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu])dnl
+AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu])dnl
+
+AC_CHECK_FUNC([mkstemp],
+	      [AC_DEFINE([HAVE_MKSTEMP],[1],
+	                 [Define to 1 if you have the `mkstemp' function.])
+])dnl
+AC_CHECK_FUNC([mkdtemp],
+              [AC_DEFINE([HAVE_MKDTEMP],[1],
+                         [Define to 1 if you have the `mkdtemp' function.])
+])dnl
 
 # Check whether fopen64 is available and whether _LARGEFILE64_SOURCE
-# needs to be defined for it
+# needs to be defined for it:
 AC_MSG_CHECKING([for fopen64])
-AC_CACHE_VAL([bu_cv_have_fopen64],
-[AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>]],[[FILE *f = fopen64 ("/tmp/foo","r");]])],[bu_cv_have_fopen64=yes],[saved_CPPFLAGS=$CPPFLAGS
- CPPFLAGS="$CPPFLAGS -D_LARGEFILE64_SOURCE"
- AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>]],[[FILE *f = fopen64 ("/tmp/foo","r");]])],
-[bu_cv_have_fopen64="need -D_LARGEFILE64_SOURCE"],
-[bu_cv_have_fopen64=no])
- CPPFLAGS=${saved_CPPFLAGS}])])
+AC_CACHE_VAL([bu_cv_have_fopen64],[
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <stdio.h>
+]],[[
+FILE *f = fopen64("/tmp/foo","r");
+]])],[bu_cv_have_fopen64=yes],
+     [saved_CPPFLAGS="${CPPFLAGS}"
+      CPPFLAGS="${CPPFLAGS} -D_LARGEFILE64_SOURCE"
+      AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <stdio.h>
+      ]],[[
+FILE *f = fopen64("/tmp/foo","r");
+      ]])],[bu_cv_have_fopen64="need -D_LARGEFILE64_SOURCE"],
+           [bu_cv_have_fopen64=no])
+      CPPFLAGS="${saved_CPPFLAGS}"])
+])
 AC_MSG_RESULT([${bu_cv_have_fopen64}])
 if test "${bu_cv_have_fopen64}" != no; then
   AC_DEFINE([HAVE_FOPEN64],[1],
 	    [Is fopen64 available?])
 fi
 AC_MSG_CHECKING([for stat64])
-AC_CACHE_VAL([bu_cv_have_stat64],
-[AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/stat.h>]],[[struct stat64 st; stat64 ("/tmp/foo", &st);]])],[bu_cv_have_stat64=yes],[saved_CPPFLAGS=$CPPFLAGS
- CPPFLAGS="$CPPFLAGS -D_LARGEFILE64_SOURCE"
- AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/stat.h>]],[[struct stat64 st; stat64 ("/tmp/foo", &st);]])],
-[bu_cv_have_stat64="need -D_LARGEFILE64_SOURCE"],
-[bu_cv_have_stat64=no])
- CPPFLAGS=$saved_CPPFLAGS])])
+AC_CACHE_VAL([bu_cv_have_stat64],[
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <sys/stat.h>
+]],[[
+struct stat64 st;
+stat64("/tmp/foo", &st);
+]])],[bu_cv_have_stat64=yes],
+     [saved_CPPFLAGS="${CPPFLAGS}"
+      CPPFLAGS="${CPPFLAGS} -D_LARGEFILE64_SOURCE"
+      AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <sys/stat.h>
+      ]],[[
+struct stat64 st;
+stat64("/tmp/foo", &st);
+      ]])],[bu_cv_have_stat64="need -D_LARGEFILE64_SOURCE"],
+           [bu_cv_have_stat64=no])
+      CPPFLAGS="${saved_CPPFLAGS}"])
+])
 AC_MSG_RESULT([${bu_cv_have_stat64}])
-if test "${bu_cv_have_stat64}" != no; then
+if test "x${bu_cv_have_stat64}" != "xno"; then
   AC_DEFINE([HAVE_STAT64],[1],
 	    [Is stat64 available?])
 fi
@@ -323,55 +440,102 @@ if test "${bu_cv_have_fopen64}" = "need -D_LARGEFILE64_SOURCE" \
 fi
 
 # Some systems have frexp only in -lm, not in -lc.
-AC_SEARCH_LIBS([frexp],[m])
-LT_LIB_M
+AC_SEARCH_LIBS([frexp],[m c])dnl
+dnl# libm should now already be checked above, but leave this here
+dnl# temporarily just in case:
+AC_DEFUN([AC_REQUIRE_LT_LIB_M],[
+  AC_REQUIRE([LT_LIB_M])dnl
+])dnl
+AC_REQUIRE_LT_LIB_M
 
+dnl# (check for LC_MESSAGES has been moved so that it is now done
+dnl# with the other gettext checks)
+
+# other misc. (time-related) checks:
 AC_MSG_CHECKING([for time_t in time.h])
-AC_CACHE_VAL([bu_cv_decl_time_t_time_h],
-[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <time.h>]],[[time_t i;]])],[bu_cv_decl_time_t_time_h=yes],[bu_cv_decl_time_t_time_h=no])])
+AC_CACHE_VAL([bu_cv_decl_time_t_time_h],[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <time.h>
+]],[[
+time_t i;
+]])],[bu_cv_decl_time_t_time_h=yes],[bu_cv_decl_time_t_time_h=no])])
 AC_MSG_RESULT([${bu_cv_decl_time_t_time_h}])
-if test ${bu_cv_decl_time_t_time_h} = yes; then
+if test "x${bu_cv_decl_time_t_time_h}" = "xyes"; then
   AC_DEFINE([HAVE_TIME_T_IN_TIME_H],[1],
 	    [Is the type time_t defined in <time.h>?])
 fi
 
 AC_MSG_CHECKING([for time_t in sys/types.h])
-AC_CACHE_VAL([bu_cv_decl_time_t_types_h],
-[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>]],[[time_t i;]])],[bu_cv_decl_time_t_types_h=yes],[bu_cv_decl_time_t_types_h=no])])
+AC_CACHE_VAL([bu_cv_decl_time_t_types_h],[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <sys/types.h>
+]],[[
+time_t i;
+]])],[bu_cv_decl_time_t_types_h=yes],[bu_cv_decl_time_t_types_h=no])])
 AC_MSG_RESULT([${bu_cv_decl_time_t_types_h}])
-if test ${bu_cv_decl_time_t_types_h} = yes; then
+if test "x${bu_cv_decl_time_t_types_h}" = "xyes"; then
   AC_DEFINE([HAVE_TIME_T_IN_TYPES_H],[1],
 	    [Is the type time_t defined in <sys/types.h>?])
 fi
 
 AC_MSG_CHECKING([for a known getopt prototype in unistd.h])
-AC_CACHE_VAL([bu_cv_decl_getopt_unistd_h],
-[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <unistd.h>]],[[extern int getopt (int, char *const*, const char *);]])],[bu_cv_decl_getopt_unistd_h=yes],[bu_cv_decl_getopt_unistd_h=no])])
+AC_CACHE_VAL([bu_cv_decl_getopt_unistd_h],[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <unistd.h>
+]],[[
+extern int getopt(int, char *const*, const char *);
+]])],[bu_cv_decl_getopt_unistd_h=yes],[bu_cv_decl_getopt_unistd_h=no])])
 AC_MSG_RESULT([${bu_cv_decl_getopt_unistd_h}])
-if test ${bu_cv_decl_getopt_unistd_h} = yes; then
+if test "x${bu_cv_decl_getopt_unistd_h}" = "xyes"; then
   AC_DEFINE([HAVE_DECL_GETOPT],[1],
-	    [Is the prototype for getopt in <unistd.h> in the expected format?])
+	    [Define to 1 if prototype for getopt in <unistd.h>
+             is in expected format])
 fi
 
 # Under Next 3.2 <utime.h> apparently does not define struct utimbuf
 # by default.
 AC_MSG_CHECKING([for a good utime.h])
-AC_CACHE_VAL([bu_cv_header_utime_h],
-[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <sys/types.h>
+AC_CACHE_VAL([bu_cv_header_utime_h],[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <sys/types.h>
 #ifdef HAVE_TIME_H
 # include <time.h>
 #else
-# warning this conftest expects <time.h> to be included.
+# warning "this conftest expects <time.h> to be included."
 #endif /* HAVE_TIME_H */
-#include <utime.h>]],[[struct utimbuf s;]])],[bu_cv_header_utime_h=yes],[bu_cv_header_utime_h=no])])
+#include <utime.h>
+]],[[
+struct utimbuf s;
+]])],[bu_cv_header_utime_h=yes],[bu_cv_header_utime_h=no])])
 AC_MSG_RESULT([${bu_cv_header_utime_h}])
-if test ${bu_cv_header_utime_h} = yes; then
-  AC_DEFINE([HAVE_GOOD_UTIME_H],[1],[Does <utime.h> define struct utimbuf?])
+if test "x${bu_cv_header_utime_h}" = "xyes"; then
+  AC_DEFINE([HAVE_GOOD_UTIME_H],[1],
+            [Does <utime.h> define struct utimbuf?])
 fi
 
-AC_CHECK_DECLS([fprintf, strstr, sbrk, getenv, environ, getc_unlocked])
+# checks for declarations (keep alphabetized please):
+unset ac_cv_have_decl_getenv
+AC_CHECK_DECLS([environ, fprintf, getc_unlocked, getenv,
+		sbrk, snprintf, stpcpy, strnlen, strstr, vsnprintf])dnl
+
+# Link in zlib if we can. This allows us to read compressed debug
+# sections. This is used only by readelf.c (objdump uses bfd for
+# reading compressed sections).
+m4_ifdef([AM_ZLIB],[
+AM_ZLIB
+],[
+AC_CHECK_LIB([z],[zlibVersion],[
+  AC_CHECK_HEADERS([zlib.h])dnl
+],[
+  AC_CHECK_LIB([z],[main],[
+    AC_CHECK_HEADERS([zlib.h])dnl
+  ])dnl
+])dnl
+])dnl
 
 BFD_BINARY_FOPEN
+
+dnl# (iconv checks are done above)
 
 # target-specific stuff:
 
@@ -389,23 +553,27 @@ if test -n "${enable_targets}"; then
     done
 fi
 
-all_targets=false
-BUILD_NLMCONV=
-NLMCONV_DEFS=
-BUILD_SRCONV=
-BUILD_DLLTOOL=
-DLLTOOL_DEFS=
-DLLTOOL_DEFAULT=
-BUILD_WINDRES=
-BUILD_WINDMC=
-BUILD_DLLWRAP=
-BUILD_MISC=
-BUILD_INSTALL_MISC=
-OBJDUMP_DEFS=
-OBJDUMP_PRIVATE_VECTORS=
-OBJDUMP_PRIVATE_OFILES=
-od_vectors=
+AC_SUBST([ac_config_sub])dnl
 
+all_targets=false
+BUILD_NLMCONV=""
+NLMCONV_DEFS=""
+BUILD_SRCONV=""
+BUILD_DLLTOOL=""
+DLLTOOL_DEFS=""
+DLLTOOL_DEFAULT=""
+BUILD_WINDRES=""
+BUILD_WINDMC=""
+BUILD_DLLWRAP=""
+BUILD_MISC=""
+BUILD_INSTALL_MISC=""
+OBJDUMP_DEFS=""
+OBJDUMP_PRIVATE_VECTORS=""
+OBJDUMP_PRIVATE_OFILES=""
+od_vectors=""
+
+AC_MSG_CHECKING([which targets to look up])
+AC_MSG_RESULT([plain ones are '${target}' and canonical ones are '${canon_targets}'])
 for targ in ${target} ${canon_targets}
 do
     if test "x${targ}" = "xall"; then
@@ -429,19 +597,19 @@ changequote(,)dnl
 	i[3-7]86*-*-netware*) 
 changequote([,])dnl
 	  BUILD_NLMCONV='$(NLMCONV_PROG)$(EXEEXT)'
-	  NLMCONV_DEFS="$NLMCONV_DEFS -DNLMCONV_I386"
+	  NLMCONV_DEFS="${NLMCONV_DEFS} -DNLMCONV_I386"
 	  ;;
 	alpha*-*-netware*)
 	  BUILD_NLMCONV='$(NLMCONV_PROG)$(EXEEXT)'
-	  NLMCONV_DEFS="$NLMCONV_DEFS -DNLMCONV_ALPHA"
+	  NLMCONV_DEFS="${NLMCONV_DEFS} -DNLMCONV_ALPHA"
 	  ;;
 	powerpc*-*-netware*)
 	  BUILD_NLMCONV='$(NLMCONV_PROG)$(EXEEXT)'
-	  NLMCONV_DEFS="$NLMCONV_DEFS -DNLMCONV_POWERPC"
+	  NLMCONV_DEFS="${NLMCONV_DEFS} -DNLMCONV_POWERPC"
 	  ;;
 	sparc*-*-netware*)
 	  BUILD_NLMCONV='$(NLMCONV_PROG)$(EXEEXT)'
-	  NLMCONV_DEFS="$NLMCONV_DEFS -DNLMCONV_SPARC"
+	  NLMCONV_DEFS="${NLMCONV_DEFS} -DNLMCONV_SPARC"
 	  ;;
 	esac
 
@@ -452,66 +620,137 @@ changequote([,])dnl
 	case ${targ} in
 	arm-epoc-pe*)
   	  BUILD_DLLTOOL='$(DLLTOOL_PROG)$(EXEEXT)'
-	  DLLTOOL_DEFS="$DLLTOOL_DEFS -DDLLTOOL_ARM_EPOC -DDLLTOOL_ARM"
+	  if test -z "${DLLTOOL_DEFAULT}"; then
+	    DLLTOOL_DEFAULT="-DDLLTOOL_DEFAULT_ARM_EPOC"
+	  fi
+	  DLLTOOL_DEFS="${DLLTOOL_DEFS} -DDLLTOOL_ARM_EPOC -DDLLTOOL_ARM"
 	  BUILD_WINDRES='$(WINDRES_PROG)$(EXEEXT)'
+	  BUILD_WINDMC='$(WINDMC_PROG)$(EXEEXT)'
 	  ;;
-	arm-*-pe* | arm-*-wince)
+	arm-wince-pe* | arm-*-wince | arm*-*-cegcc* | arm*-*-mingw32ce*)
   	  BUILD_DLLTOOL='$(DLLTOOL_PROG)$(EXEEXT)'
-	  DLLTOOL_DEFS="$DLLTOOL_DEFS -DDLLTOOL_ARM"
+	  if test -z "${DLLTOOL_DEFAULT}"; then
+	    DLLTOOL_DEFAULT="-DDLLTOOL_DEFAULT_ARM_WINCE"
+	  fi
+	  DLLTOOL_DEFS="${DLLTOOL_DEFS} -DDLLTOOL_ARM_WINCE -DDLLTOOL_ARM"
 	  BUILD_WINDRES='$(WINDRES_PROG)$(EXEEXT)'
+	  BUILD_WINDMC='$(WINDMC_PROG)$(EXEEXT)'
+	  ;;
+	arm-*-pe*)
+  	  BUILD_DLLTOOL='$(DLLTOOL_PROG)$(EXEEXT)'
+	  if test -z "${DLLTOOL_DEFAULT}"; then
+	    DLLTOOL_DEFAULT="-DDLLTOOL_DEFAULT_ARM"
+	  fi
+	  DLLTOOL_DEFS="${DLLTOOL_DEFS} -DDLLTOOL_ARM"
+	  BUILD_WINDRES='$(WINDRES_PROG)$(EXEEXT)'
+	  BUILD_WINDMC='$(WINDMC_PROG)$(EXEEXT)'
 	  ;;
 	thumb-*-pe*)
   	  BUILD_DLLTOOL='$(DLLTOOL_PROG)$(EXEEXT)'
-	  DLLTOOL_DEFS="$DLLTOOL_DEFS -DDLLTOOL_ARM"
+	  if test -z "${DLLTOOL_DEFAULT}"; then
+	    DLLTOOL_DEFAULT="-DDLLTOOL_DEFAULT_ARM"
+	  fi
+	  DLLTOOL_DEFS="${DLLTOOL_DEFS} -DDLLTOOL_ARM -DDLLTOOL_THUMB"
 	  BUILD_WINDRES='$(WINDRES_PROG)$(EXEEXT)'
+	  BUILD_WINDMC='$(WINDMC_PROG)$(EXEEXT)'
 	  ;;
   	arm*-* | xscale-* | strongarm-* | d10v-*)
 	  OBJDUMP_DEFS="-DDISASSEMBLER_NEEDS_RELOCS"
+	  ;;
+	x86_64-*-mingw* | x86_64-*-cygwin*)
+  	  BUILD_DLLTOOL='$(DLLTOOL_PROG)$(EXEEXT)'
+	  if test -z "${DLLTOOL_DEFAULT}"; then
+	    DLLTOOL_DEFAULT="-DDLLTOOL_DEFAULT_MX86_64"
+	  fi
+	  DLLTOOL_DEFS="${DLLTOOL_DEFS} -DDLLTOOL_MX86_64"
+	  BUILD_WINDRES='$(WINDRES_PROG)$(EXEEXT)'
+	  BUILD_WINDMC='$(WINDMC_PROG)$(EXEEXT)'
+	  BUILD_DLLWRAP='$(DLLWRAP_PROG)$(EXEEXT)'
 	  ;;
 changequote(,)dnl
 	i[3-7]86-*-pe* | i[3-7]86-*-cygwin* | i[3-7]86-*-mingw32** | i[3-7]86-*-netbsdpe*)
 changequote([,])dnl
   	  BUILD_DLLTOOL='$(DLLTOOL_PROG)$(EXEEXT)'
-	  DLLTOOL_DEFS="$DLLTOOL_DEFS -DDLLTOOL_I386"
+	  if test -z "${DLLTOOL_DEFAULT}"; then
+	    DLLTOOL_DEFAULT="-DDLLTOOL_DEFAULT_I386"
+	  fi
+	  DLLTOOL_DEFS="${DLLTOOL_DEFS} -DDLLTOOL_I386"
 	  BUILD_WINDRES='$(WINDRES_PROG)$(EXEEXT)'
+	  BUILD_WINDMC='$(WINDMC_PROG)$(EXEEXT)'
 	  BUILD_DLLWRAP='$(DLLWRAP_PROG)$(EXEEXT)'
 	  ;;
 changequote(,)dnl
 	i[3-7]86-*-interix)
 changequote([,])dnl
 	  BUILD_DLLTOOL='$(DLLTOOL_PROG)'
-	  DLLTOOL_DEFS="$DLLTOOL_DEFS -DDLLTOOL_I386"
+	  if test -z "${DLLTOOL_DEFAULT}"; then
+	    DLLTOOL_DEFAULT="-DDLLTOOL_DEFAULT_I386"
+	  fi
+	  DLLTOOL_DEFS="${DLLTOOL_DEFS} -DDLLTOOL_I386"
 	  ;;
 changequote(,)dnl
 	powerpc*-aix5.[01])
 changequote([,])dnl
 	  ;;
-	powerpc*-aix5.*)
+changequote(,)dnl
+	powerpc*-aix[5-9].*)
+changequote([,])dnl
 	  OBJDUMP_DEFS="-DAIX_WEAK_SUPPORT"
 	  ;;
 	powerpc*-*-pe* | powerpc*-*-cygwin*)
   	  BUILD_DLLTOOL='$(DLLTOOL_PROG)$(EXEEXT)'
-	  DLLTOOL_DEFS="$DLLTOOL_DEFS -DDLLTOOL_PPC"
+	  if test -z "${DLLTOOL_DEFAULT}"; then
+	    DLLTOOL_DEFAULT="-DDLLTOOL_DEFAULT_PPC"
+	  fi
+	  DLLTOOL_DEFS="${DLLTOOL_DEFS} -DDLLTOOL_PPC"
 	  BUILD_WINDRES='$(WINDRES_PROG)$(EXEEXT)'
+	  BUILD_WINDMC='$(WINDMC_PROG)$(EXEEXT)'
+	  ;;
+	powerpc*-*-linux* | powerpc*-*-elf* | powerpc*-*-eabi*)
+	  case "${BUILD_INSTALL_MISC}" in
+	    *embedspu*) ;;
+	    *) BUILD_INSTALL_MISC="${BUILD_INSTALL_MISC} embedspu"
+	  esac
 	  ;;
 	sh*-*-pe)
   	  BUILD_DLLTOOL='$(DLLTOOL_PROG)$(EXEEXT)'
-	  DLLTOOL_DEFS="$DLLTOOL_DEFS -DDLLTOOL_SH"
+	  if test -z "${DLLTOOL_DEFAULT}"; then
+	    DLLTOOL_DEFAULT="-DDLLTOOL_DEFAULT_SH"
+	  fi
+	  DLLTOOL_DEFS="${DLLTOOL_DEFS} -DDLLTOOL_SH"
 	  BUILD_WINDRES='$(WINDRES_PROG)$(EXEEXT)'
+	  BUILD_WINDMC='$(WINDMC_PROG)$(EXEEXT)'
+	  ;;
+	spu-*-*)
+	  BUILD_MISC="${BUILD_MISC} "'bin2c$(EXEEXT_FOR_BUILD)'
 	  ;;
 	mips*-*-pe)
   	  BUILD_DLLTOOL='$(DLLTOOL_PROG)$(EXEEXT)'
-	  DLLTOOL_DEFS="$DLLTOOL_DEFS -DDLLTOOL_MIPS"
+	  if test -z "${DLLTOOL_DEFAULT}"; then
+	    DLLTOOL_DEFAULT="-DDLLTOOL_DEFAULT_MIPS"
+	  fi
+	  DLLTOOL_DEFS="${DLLTOOL_DEFS} -DDLLTOOL_MIPS"
 	  BUILD_WINDRES='$(WINDRES_PROG)$(EXEEXT)'
+	  BUILD_WINDMC='$(WINDMC_PROG)$(EXEEXT)'
 	  ;;
 	mcore-*-pe)
   	  BUILD_DLLTOOL='$(DLLTOOL_PROG)$(EXEEXT)'
-	  DLLTOOL_DEFS="$DLLTOOL_DEFS -DDLLTOOL_MCORE"
+	  if test -z "${DLLTOOL_DEFAULT}"; then
+	    DLLTOOL_DEFAULT="-DDLLTOOL_DEFAULT_MCORE"
+	  fi
+	  DLLTOOL_DEFS="${DLLTOOL_DEFS} -DDLLTOOL_MCORE"
 	  BUILD_WINDRES='$(WINDRES_PROG)$(EXEEXT)'
+	  BUILD_WINDMC='$(WINDMC_PROG)$(EXEEXT)'
 	  ;;
 	mcore-*-elf)
   	  BUILD_DLLTOOL='$(DLLTOOL_PROG)$(EXEEXT)'
-	  DLLTOOL_DEFS="$DLLTOOL_DEFS -DDLLTOOL_MCORE_ELF"
+	  if test -z "${DLLTOOL_DEFAULT}"; then
+	    DLLTOOL_DEFAULT="-DDLLTOOL_DEFAULT_MCORE_ELF"
+	  fi
+	  DLLTOOL_DEFS="${DLLTOOL_DEFS} -DDLLTOOL_MCORE_ELF"
+	  ;;
+  	mep-*)
+	  OBJDUMP_DEFS="-DSKIP_ZEROES=256 -DSKIP_ZEROES_AT_END=0"
 	  ;;
 	esac
 
@@ -527,8 +766,10 @@ changequote([,])dnl
     fi
 done
 
+dnl# saw the word "uniq" coming up, so that reminded me:
+AC_PATH_PROGS([UNIQ_BIN],[uniq guniq],[])
 # Uniq objdump private vector, build objdump target ofiles.
-od_files=
+od_files=""
 f=""
 for i in ${od_vectors} ; do
     case " ${f} " in
@@ -547,7 +788,7 @@ for i in ${od_vectors} ; do
     esac
 done
 
-# Uniq objdump target ofiles
+# Uniq objdump target ofiles:
 f=""
 for i in ${od_files} ; do
     case " ${f} " in
@@ -562,29 +803,29 @@ done
 DLLTOOL_DEFS="${DLLTOOL_DEFS} ${DLLTOOL_DEFAULT}"
 
 if test "${with_windres+set}" = set; then
-	  BUILD_WINDRES='$(WINDRES_PROG)$(EXEEXT)'
+  BUILD_WINDRES='$(WINDRES_PROG)$(EXEEXT)'
 fi
 
 if test "${with_windmc+set}" = set; then
-	  BUILD_WINDMC='$(WINDMC_PROG)$(EXEEXT)'
+  BUILD_WINDMC='$(WINDMC_PROG)$(EXEEXT)'
 fi
 
 OBJDUMP_DEFS="${OBJDUMP_DEFS} -DOBJDUMP_PRIVATE_VECTORS=\"${OBJDUMP_PRIVATE_VECTORS}\""
 
-AC_SUBST([NLMCONV_DEFS])
-AC_SUBST([BUILD_NLMCONV])
-AC_SUBST([BUILD_SRCONV])
-AC_SUBST([BUILD_DLLTOOL])
-AC_SUBST([DLLTOOL_DEFS])
-AC_SUBST([BUILD_WINDRES])
-AC_SUBST([BUILD_WINDMC])
-AC_SUBST([BUILD_DLLWRAP])
-AC_SUBST([BUILD_MISC])
-AC_SUBST([BUILD_INSTALL_MISC])
-AC_SUBST([OBJDUMP_DEFS])
-AC_SUBST([OBJDUMP_PRIVATE_OFILES])
+AC_SUBST([NLMCONV_DEFS])dnl
+AC_SUBST([BUILD_NLMCONV])dnl
+AC_SUBST([BUILD_SRCONV])dnl
+AC_SUBST([BUILD_DLLTOOL])dnl
+AC_SUBST([DLLTOOL_DEFS])dnl
+AC_SUBST([BUILD_WINDRES])dnl
+AC_SUBST([BUILD_WINDMC])dnl
+AC_SUBST([BUILD_DLLWRAP])dnl
+AC_SUBST([BUILD_MISC])dnl
+AC_SUBST([BUILD_INSTALL_MISC])dnl
+AC_SUBST([OBJDUMP_DEFS])dnl
+AC_SUBST([OBJDUMP_PRIVATE_OFILES])dnl
 
-AC_DEFINE_UNQUOTED([TARGET],["${target}"],[Configured target name.])
+AC_DEFINE_UNQUOTED([TARGET],["${target}"],[Configured target name.])dnl
 
 targ=${target}
 AC_MSG_NOTICE([sourcing ../bfd/config.bfd])
@@ -595,49 +836,51 @@ else
     UNDERSCORE=0
 fi
 AC_DEFINE_UNQUOTED([TARGET_PREPENDS_UNDERSCORE],[${UNDERSCORE}],
- [Define to 1 if user symbol names have a leading underscore, 0 if not.])
+[Define to 1 if user symbol names have a leading underscore, 0 if not.])dnl
 
-# Emulation 
+# Emulation:
 for targ_alias in `echo ${target} ${enable_targets} | sed 's/,/ /g'`
 do
   # Canonicalize the secondary target names.
   result=`${ac_config_sub} ${targ_alias} 2>/dev/null`
   if test -n "${result}"; then
-    targ=${result}
+    targ="${result}"
   else
-    targ=${targ_alias}
+    targ="${targ_alias}"
   fi
 
-  AC_MSG_NOTICE([sourcing ./configure.tgt for ${targ}])
+  AC_MSG_NOTICE([sourcing ./configure.tgt for target '${targ}'])
   . ${srcdir}/configure.tgt
 
-  export EMULATION=${targ_emul}
-  export EMULATION_VECTOR=${targ_emul_vector}
-  AC_MSG_NOTICE([EMULATION is ${EMULATION}])
-  AC_MSG_NOTICE([EMULATION_VECTOR is ${EMULATION_VECTOR}])	
+  export EMULATION="${targ_emul}"
+  export EMULATION_VECTOR="${targ_emul_vector}"
+  AC_MSG_NOTICE([EMULATION is '${EMULATION}' for target '${targ}'])
+  AC_MSG_NOTICE([EMULATION_VECTOR is '${EMULATION_VECTOR}' for target '${targ}'])
 done
 
-AC_SUBST([EMULATION])
-AC_SUBST([EMULATION_VECTOR])
-AC_SUBST([INTLLIBS])
-AC_SUBST([INTLDEPS])
-AC_SUBST([SYSTEM_FRAMEWORK_LIBS])
+dnl# finally, some output:
+AC_SUBST([EMULATION])dnl
+AC_SUBST([EMULATION_VECTOR])dnl
+AC_SUBST([INTLLIBS])dnl
+AC_SUBST([INTLDEPS])dnl
+AC_SUBST([SYSTEM_FRAMEWORK_LIBS])dnl
 
-# Required for html and install-html
-AC_SUBST([datarootdir])
-AC_SUBST([docdir])
-AC_SUBST([htmldir])
-AC_SUBST([pdfdir])
+dnl# Required for html and install-html:
+AC_SUBST([datarootdir])dnl
+AC_SUBST([docdir])dnl
+AC_SUBST([htmldir])dnl
+AC_SUBST([pdfdir])dnl
 
+dnl# the files to actually output:
 AC_CONFIG_FILES([Makefile \
                  doc/Makefile \
-                 po/Makefile.in:po/Make-in])
+                 po/Makefile.in:po/Make-in])dnl
 
 AC_CONFIG_COMMANDS([default],[
 case "x${CONFIG_FILES}" in
 *) sed -e '/POTFILES =/r po/POTFILES' po/Makefile.in > po/Makefile ;;
 esac
-],[])
+],[])dnl
 
 AC_OUTPUT
 

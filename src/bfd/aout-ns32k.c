@@ -1,4 +1,4 @@
-/* BFD back-end for ns32k a.out-ish binaries.
+/* aout-ns32k.c: BFD back-end for ns32k a.out-ish binaries.
    Copyright 1990, 1991, 1992, 1994, 1995, 1996, 1998, 1999, 2000, 2001,
    2002, 2003, 2005 Free Software Foundation, Inc.
    Contributed by Ian Dall (idall@eleceng.adelaide.edu.au).
@@ -76,59 +76,59 @@ void bfd_ns32k_arch (void);
 
 reloc_howto_type MY (howto_table)[] =
 {
-  /* ns32k immediate operands.  */
-  HOWTO (BFD_RELOC_NS32K_IMM_8, 0, 0, 8, FALSE, 0, complain_overflow_signed,
-	 _bfd_ns32k_reloc_imm, "NS32K_IMM_8",
+  /* ns32k immediate operands: */
+  HOWTO(BFD_RELOC_NS32K_IMM_8, 0, 0, 8, FALSE, 0, complain_overflow_signed,
+	 _bfd_ns32k_reloc_imm, (char *)"NS32K_IMM_8",
 	 TRUE, 0x000000ff,0x000000ff, FALSE),
-  HOWTO (BFD_RELOC_NS32K_IMM_16, 0, 1, 16, FALSE, 0, complain_overflow_signed,
-	 _bfd_ns32k_reloc_imm,  "NS32K_IMM_16",
+  HOWTO(BFD_RELOC_NS32K_IMM_16, 0, 1, 16, FALSE, 0, complain_overflow_signed,
+	 _bfd_ns32k_reloc_imm,  (char *)"NS32K_IMM_16",
 	 TRUE, 0x0000ffff,0x0000ffff, FALSE),
-  HOWTO (BFD_RELOC_NS32K_IMM_32, 0, 2, 32, FALSE, 0, complain_overflow_signed,
-	 _bfd_ns32k_reloc_imm, "NS32K_IMM_32",
+  HOWTO(BFD_RELOC_NS32K_IMM_32, 0, 2, 32, FALSE, 0, complain_overflow_signed,
+	 _bfd_ns32k_reloc_imm, (char *)"NS32K_IMM_32",
 	 TRUE, 0xffffffff,0xffffffff, FALSE),
-  HOWTO (BFD_RELOC_NS32K_IMM_8_PCREL, 0, 0, 8, TRUE, 0, complain_overflow_signed,
-	 _bfd_ns32k_reloc_imm, "PCREL_NS32K_IMM_8",
+  HOWTO(BFD_RELOC_NS32K_IMM_8_PCREL, 0, 0, 8, TRUE, 0, complain_overflow_signed,
+	 _bfd_ns32k_reloc_imm, (char *)"PCREL_NS32K_IMM_8",
 	 TRUE, 0x000000ff, 0x000000ff, FALSE),
-  HOWTO (BFD_RELOC_NS32K_IMM_16_PCREL, 0, 1, 16, TRUE, 0, complain_overflow_signed,
-	 _bfd_ns32k_reloc_imm, "PCREL_NS32K_IMM_16",
+  HOWTO(BFD_RELOC_NS32K_IMM_16_PCREL, 0, 1, 16, TRUE, 0, complain_overflow_signed,
+	 _bfd_ns32k_reloc_imm, (char *)"PCREL_NS32K_IMM_16",
 	 TRUE, 0x0000ffff,0x0000ffff, FALSE),
-  HOWTO (BFD_RELOC_NS32K_IMM_32_PCREL, 0, 2, 32, TRUE, 0, complain_overflow_signed,
-	 _bfd_ns32k_reloc_imm, "PCREL_NS32K_IMM_32",
+  HOWTO(BFD_RELOC_NS32K_IMM_32_PCREL, 0, 2, 32, TRUE, 0, complain_overflow_signed,
+	 _bfd_ns32k_reloc_imm, (char *)"PCREL_NS32K_IMM_32",
 	 TRUE, 0xffffffff,0xffffffff, FALSE),
 
   /* ns32k displacements.  */
-  HOWTO (BFD_RELOC_NS32K_DISP_8, 0, 0, 7, FALSE, 0, complain_overflow_signed,
-	 _bfd_ns32k_reloc_disp, "NS32K_DISP_8",
+  HOWTO(BFD_RELOC_NS32K_DISP_8, 0, 0, 7, FALSE, 0, complain_overflow_signed,
+	 _bfd_ns32k_reloc_disp, (char *)"NS32K_DISP_8",
 	 TRUE, 0x000000ff,0x000000ff, FALSE),
-  HOWTO (BFD_RELOC_NS32K_DISP_16, 0, 1, 14, FALSE, 0, complain_overflow_signed,
-	 _bfd_ns32k_reloc_disp, "NS32K_DISP_16",
+  HOWTO(BFD_RELOC_NS32K_DISP_16, 0, 1, 14, FALSE, 0, complain_overflow_signed,
+	 _bfd_ns32k_reloc_disp, (char *)"NS32K_DISP_16",
 	 TRUE, 0x0000ffff, 0x0000ffff, FALSE),
-  HOWTO (BFD_RELOC_NS32K_DISP_32, 0, 2, 30, FALSE, 0, complain_overflow_signed,
-	 _bfd_ns32k_reloc_disp, "NS32K_DISP_32",
+  HOWTO(BFD_RELOC_NS32K_DISP_32, 0, 2, 30, FALSE, 0, complain_overflow_signed,
+	 _bfd_ns32k_reloc_disp, (char *)"NS32K_DISP_32",
 	 TRUE, 0xffffffff, 0xffffffff, FALSE),
-  HOWTO (BFD_RELOC_NS32K_DISP_8_PCREL, 0, 0, 7, TRUE, 0, complain_overflow_signed,
-	   _bfd_ns32k_reloc_disp, "PCREL_NS32K_DISP_8",
+  HOWTO(BFD_RELOC_NS32K_DISP_8_PCREL, 0, 0, 7, TRUE, 0, complain_overflow_signed,
+	   _bfd_ns32k_reloc_disp, (char *)"PCREL_NS32K_DISP_8",
 	 TRUE, 0x000000ff,0x000000ff, FALSE),
-  HOWTO (BFD_RELOC_NS32K_DISP_16_PCREL, 0, 1, 14, TRUE, 0, complain_overflow_signed,
-	 _bfd_ns32k_reloc_disp, "PCREL_NS32K_DISP_16",
+  HOWTO(BFD_RELOC_NS32K_DISP_16_PCREL, 0, 1, 14, TRUE, 0, complain_overflow_signed,
+	 _bfd_ns32k_reloc_disp, (char *)"PCREL_NS32K_DISP_16",
 	 TRUE, 0x0000ffff,0x0000ffff, FALSE),
-  HOWTO (BFD_RELOC_NS32K_DISP_32_PCREL, 0, 2, 30, TRUE, 0, complain_overflow_signed,
-	 _bfd_ns32k_reloc_disp, "PCREL_NS32K_DISP_32",
+  HOWTO(BFD_RELOC_NS32K_DISP_32_PCREL, 0, 2, 30, TRUE, 0, complain_overflow_signed,
+	 _bfd_ns32k_reloc_disp, (char *)"PCREL_NS32K_DISP_32",
 	 TRUE, 0xffffffff,0xffffffff, FALSE),
 
   /* Normal 2's complement.  */
-  HOWTO (BFD_RELOC_8, 0, 0, 8, FALSE, 0, complain_overflow_bitfield,0,
-	 "8", TRUE, 0x000000ff,0x000000ff, FALSE),
-  HOWTO (BFD_RELOC_16, 0, 1, 16, FALSE, 0, complain_overflow_bitfield,0,
-	 "16", TRUE, 0x0000ffff,0x0000ffff, FALSE),
-  HOWTO (BFD_RELOC_32, 0, 2, 32, FALSE, 0, complain_overflow_bitfield,0,
-	 "32", TRUE, 0xffffffff,0xffffffff, FALSE),
-  HOWTO (BFD_RELOC_8_PCREL, 0, 0, 8, TRUE, 0, complain_overflow_signed, 0,
-	 "PCREL_8", TRUE, 0x000000ff,0x000000ff, FALSE),
-  HOWTO (BFD_RELOC_16_PCREL, 0, 1, 16, TRUE, 0, complain_overflow_signed, 0,
-	 "PCREL_16", TRUE, 0x0000ffff,0x0000ffff, FALSE),
-  HOWTO (BFD_RELOC_32_PCREL, 0, 2, 32, TRUE, 0, complain_overflow_signed, 0,
-	 "PCREL_32", TRUE, 0xffffffff,0xffffffff, FALSE),
+  HOWTO(BFD_RELOC_8, 0, 0, 8, FALSE, 0, complain_overflow_bitfield,0,
+	 (char *)"8", TRUE, 0x000000ff,0x000000ff, FALSE),
+  HOWTO(BFD_RELOC_16, 0, 1, 16, FALSE, 0, complain_overflow_bitfield,0,
+	 (char *)"16", TRUE, 0x0000ffff,0x0000ffff, FALSE),
+  HOWTO(BFD_RELOC_32, 0, 2, 32, FALSE, 0, complain_overflow_bitfield,0,
+	 (char *)"32", TRUE, 0xffffffff,0xffffffff, FALSE),
+  HOWTO(BFD_RELOC_8_PCREL, 0, 0, 8, TRUE, 0, complain_overflow_signed, 0,
+	 (char *)"PCREL_8", TRUE, 0x000000ff,0x000000ff, FALSE),
+  HOWTO(BFD_RELOC_16_PCREL, 0, 1, 16, TRUE, 0, complain_overflow_signed, 0,
+	 (char *)"PCREL_16", TRUE, 0x0000ffff,0x0000ffff, FALSE),
+  HOWTO(BFD_RELOC_32_PCREL, 0, 2, 32, TRUE, 0, complain_overflow_signed, 0,
+	 (char *)"PCREL_32", TRUE, 0xffffffff,0xffffffff, FALSE),
 };
 
 #define CTOR_TABLE_RELOC_HOWTO(BFD) (MY (howto_table) + 14)
@@ -348,3 +348,13 @@ _bfd_ns32k_relocate_contents (reloc_howto_type *howto,
   return _bfd_do_ns32k_reloc_contents (howto, input_bfd, relocation,
 				       location, get_data, put_data);
 }
+
+/* Silence some '-Wunused-macros' warnings: */
+#ifdef RELOC_STD_BITS_NS32K_TYPE_BIG
+# undef RELOC_STD_BITS_NS32K_TYPE_BIG
+#endif /* RELOC_STD_BITS_NS32K_TYPE_BIG */
+#ifdef RELOC_STD_BITS_NS32K_TYPE_SH_BIG
+# undef RELOC_STD_BITS_NS32K_TYPE_SH_BIG
+#endif /* RELOC_STD_BITS_NS32K_TYPE_SH_BIG */
+
+/* EOF */

@@ -1,4 +1,4 @@
-/* Declarations and definitions of codes relating to the DWARF2 and
+/* dwarf2.h: Declarations and definitions of codes relating to the DWARF2 and
    DWARF3 symbolic debugging information formats.
    Copyright (C) 1992, 1993, 1995, 1996, 1997, 1999, 2000, 2001, 2002,
    2003, 2004, 2005, 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
@@ -44,8 +44,166 @@
    prototypes.  */
 
 #ifndef _ELF_DWARF2_H
-#define _ELF_DWARF2_H
+#define _ELF_DWARF2_H 1
 
+/* put parts of new dwarf header first: */
+#ifndef _DWARF2_H
+#define _DWARF2_H 1
+
+#ifndef _DWARF2_NEW_H
+# define _DWARF2_NEW_H 1
+#endif /* !_DWARF2_NEW_H */
+
+#ifndef DW_TAG
+# define DW_TAG(name, value) , name = value
+#endif /* !DW_TAG */
+#ifndef DW_TAG_DUP
+# define DW_TAG_DUP(name, value) , name = value
+#endif /* !DW_TAG_DUP */
+#ifndef DW_FORM
+# define DW_FORM(name, value) , name = value
+#endif /* !DW_FORM */
+#ifndef DW_AT
+# define DW_AT(name, value) , name = value
+#endif /* !DW_AT */
+#ifndef DW_AT_DUP
+# define DW_AT_DUP(name, value) , name = value
+#endif /* !DW_AT_DUP */
+#ifndef DW_OP
+# define DW_OP(name, value) , name = value
+#endif /* !DW_OP */
+#ifndef DW_OP_DUP
+# define DW_OP_DUP(name, value) , name = value
+#endif /* !DW_OP_DUP */
+#ifndef DW_ATE
+# define DW_ATE(name, value) , name = value
+#endif /* !DW_ATE */
+#ifndef DW_ATE_DUP
+# define DW_ATE_DUP(name, value) , name = value
+#endif /* !DW_ATE_DUP */
+#ifndef DW_CFA
+# define DW_CFA(name, value) , name = value
+#endif /* !DW_CFA */
+
+#ifndef DW_FIRST_TAG
+# define DW_FIRST_TAG(name, value) enum dwarf_tag { \
+   name = value
+#endif /* !DW_FIRST_TAG */
+#ifndef DW_END_TAG
+# define DW_END_TAG };
+#endif /* !DW_END_TAG */
+#ifndef DW_FIRST_FORM
+# define DW_FIRST_FORM(name, value) enum dwarf_form { \
+   name = value
+#endif /* !DW_FIRST_FORM */
+#ifndef DW_END_FORM
+# define DW_END_FORM };
+#endif /* !DW_END_FORM */
+#ifndef DW_FIRST_AT
+# define DW_FIRST_AT(name, value) enum dwarf_attribute { \
+   name = value
+#endif /* !DW_FIRST_AT */
+#ifndef DW_END_AT
+# define DW_END_AT };
+#endif /* !DW_END_AT */
+#ifndef DW_FIRST_OP
+# define DW_FIRST_OP(name, value) enum dwarf_location_atom { \
+   name = value
+#endif /* !DW_FIRST_OP */
+#ifndef DW_END_OP
+# define DW_END_OP };
+#endif /* !DW_END_OP */
+#ifndef DW_FIRST_ATE
+# define DW_FIRST_ATE(name, value) enum dwarf_type { \
+   name = value
+#endif /* !DW_FIRST_ATE */
+#ifndef DW_END_ATE
+# define DW_END_ATE };
+#endif /* !DW_END_ATE */
+#ifndef DW_FIRST_CFA
+# define DW_FIRST_CFA(name, value) enum dwarf_call_frame_info { \
+   name = value
+#endif /* !DW_FIRST_CFA */
+#ifndef DW_END_CFA
+# define DW_END_CFA };
+#endif /* !DW_END_CFA */
+
+#ifndef _DWARF2_DEF_INCLUDED
+# define _DWARF2_DEF_INCLUDED 1
+# include "dwarf2.def"
+#endif /* !_DWARF2_DEF_INCLUDED */
+
+#ifdef DW_FIRST_TAG
+# undef DW_FIRST_TAG
+#endif /* DW_FIRST_TAG */
+#ifdef DW_END_TAG
+# undef DW_END_TAG
+#endif /* DW_END_TAG */
+#ifdef DW_FIRST_FORM
+# undef DW_FIRST_FORM
+#endif /* DW_FIRST_FORM */
+#ifdef DW_END_FORM
+# undef DW_END_FORM
+#endif /* DW_END_FORM */
+#ifdef DW_FIRST_AT
+# undef DW_FIRST_AT
+#endif /* DW_FIRST_AT */
+#ifdef DW_END_AT
+# undef DW_END_AT
+#endif /* DW_END_AT */
+#ifdef DW_FIRST_OP
+# undef DW_FIRST_OP
+#endif /* DW_FIRST_OP */
+#ifdef DW_END_OP
+# undef DW_END_OP
+#endif /* DW_END_OP */
+#ifdef DW_FIRST_ATE
+# undef DW_FIRST_ATE
+#endif /* DW_FIRST_ATE */
+#ifdef DW_END_ATE
+# undef DW_END_ATE
+#endif /* DW_END_ATE */
+#ifdef DW_FIRST_CFA
+# undef DW_FIRST_CFA
+#endif /* DW_FIRST_CFA */
+#ifdef DW_END_CFA
+# undef DW_END_CFA
+#endif /* DW_END_CFA */
+
+#ifdef DW_TAG
+# undef DW_TAG
+#endif /* DW_TAG */
+#ifdef DW_TAG_DUP
+# undef DW_TAG_DUP
+#endif /* DW_TAG_DUP */
+#ifdef DW_FORM
+# undef DW_FORM
+#endif /* DW_FORM */
+#ifdef DW_AT
+# undef DW_AT
+#endif /* DW_AT */
+#ifdef DW_AT_DUP
+# undef DW_AT_DUP
+#endif /* DW_AT_DUP */
+#ifdef DW_OP
+# undef DW_OP
+#endif /* DW_OP */
+#ifdef DW_OP_DUP
+# undef DW_OP_DUP
+#endif /* DW_OP_DUP */
+#ifdef DW_ATE
+# undef DW_ATE
+#endif /* DW_ATE */
+#ifdef DW_ATE_DUP
+# undef DW_ATE_DUP
+#endif /* DW_ATE_DUP */
+#ifdef DW_CFA
+# undef DW_CFA
+#endif /* DW_CFA */
+
+#endif /* !_DWARF2_H */
+
+#ifndef _DWARF2_DEF_INCLUDED
 /* Structure found in the .debug_line section.  */
 typedef struct
 {
@@ -73,7 +231,7 @@ typedef struct
 }
 DWARF2_Internal_LineInfo;
 
-/* Structure found in .debug_pubnames section.  */
+/* Structure found in .debug_pubnames section: */
 typedef struct
 {
   unsigned char pn_length  [4];
@@ -92,7 +250,7 @@ typedef struct
 }
 DWARF2_Internal_PubNames;
 
-/* Structure found in .debug_info section.  */
+/* Structure found in .debug_info section: */
 typedef struct
 {
   unsigned char  cu_length        [4];
@@ -132,7 +290,7 @@ typedef struct
 DWARF2_Internal_ARange;
 
 
-/* Tag names and codes.  */
+/* Tag names and codes: */
 enum dwarf_tag
   {
     DW_TAG_padding = 0x00,
@@ -183,7 +341,7 @@ enum dwarf_tag
     DW_TAG_variant_part = 0x33,
     DW_TAG_variable = 0x34,
     DW_TAG_volatile_type = 0x35,
-    /* DWARF 3.  */
+    /* DWARF 3. */
     DW_TAG_dwarf_procedure = 0x36,
     DW_TAG_restrict_type = 0x37,
     DW_TAG_interface_type = 0x38,
@@ -194,15 +352,16 @@ enum dwarf_tag
     DW_TAG_imported_unit = 0x3d,
     DW_TAG_condition = 0x3f,
     DW_TAG_shared_type = 0x40,
-    /* DWARF 4.  */
+    /* DWARF 4. */
     DW_TAG_type_unit = 0x41,
 
     DW_TAG_lo_user = 0x4080,
     DW_TAG_hi_user = 0xffff,
 
-    /* SGI/MIPS Extensions.  */
+    /* SGI/MIPS Extensions. */
     DW_TAG_MIPS_loop = 0x4081,
-    /* HP extensions.  See: ftp://ftp.hp.com/pub/lang/tools/WDB/wdb-4.0.tar.gz .  */
+    /* HP extensions. See: ftp://ftp.hp.com/pub/lang/tools/WDB/wdb-4.0.tar.gz
+	 * for reference. */
     DW_TAG_HP_array_descriptor = 0x4090,
     /* GNU extensions.  */
     DW_TAG_format_label = 0x4101,	/* For FORTRAN 77 and Fortran 90.  */
@@ -211,22 +370,25 @@ enum dwarf_tag
     DW_TAG_GNU_BINCL = 0x4104,
     DW_TAG_GNU_EINCL = 0x4105,
     /* Template template parameter.
-       See http://gcc.gnu.org/wiki/TemplateParmsDwarf .  */
+     * See http://gcc.gnu.org/wiki/TemplateParmsDwarf for more. */
     DW_TAG_GNU_template_template_param = 0x4106,
-    /* Extensions for UPC.  See: http://upc.gwu.edu/~upc.  */
+    /* Extensions for UPC. See: http://upc.gwu.edu/~upc for more info.
+	 * (hey, that happens to be my school! -EBG) */
     DW_TAG_upc_shared_type = 0x8765,
     DW_TAG_upc_strict_type = 0x8766,
     DW_TAG_upc_relaxed_type = 0x8767,
-    /* PGI (STMicroelectronics) extensions.  No documentation available.  */
+    /* PGI (STMicroelectronics) extensions. No documentation available. */
     DW_TAG_PGI_kanji_type      = 0xA000,
     DW_TAG_PGI_interface_block = 0xA020
   };
+#endif /* !_DWARF2_DEF_INCLUDED */
 
-/* Flag that tells whether entry has a child or not.  */
+/* Flag that tells whether entry has a child or not: */
 #define DW_children_no   0
 #define	DW_children_yes  1
 
-/* Form names and codes.  */
+#ifndef _DWARF2_DEF_INCLUDED
+/* Form names and codes. */
 enum dwarf_form
   {
     DW_FORM_addr = 0x01,
@@ -250,14 +412,16 @@ enum dwarf_form
     DW_FORM_ref8 = 0x14,
     DW_FORM_ref_udata = 0x15,
     DW_FORM_indirect = 0x16,
-    /* DWARF 4.  */
+    /* DWARF 4. */
     DW_FORM_sec_offset = 0x17,
     DW_FORM_exprloc = 0x18,
     DW_FORM_flag_present = 0x19,
     DW_FORM_sig8 = 0x20
   };
+#endif /* !_DWARF2_DEF_INCLUDED */
 
-/* Attribute names and codes.  */
+#ifndef _DWARF2_DEF_INCLUDED
+/* Attribute names and codes: */
 enum dwarf_attribute
   {
     DW_AT_sibling = 0x01,
@@ -292,7 +456,7 @@ enum dwarf_attribute
     DW_AT_return_addr = 0x2a,
     DW_AT_start_scope = 0x2c,
     DW_AT_bit_stride = 0x2e,
-#define DW_AT_stride_size   DW_AT_bit_stride  /* Note: The use of DW_AT_stride_size is deprecated.  */
+#define DW_AT_stride_size   DW_AT_bit_stride  /* Note: The use of DW_AT_stride_size is deprecated. */
     DW_AT_upper_bound = 0x2f,
     DW_AT_abstract_origin = 0x31,
     DW_AT_accessibility = 0x32,
@@ -323,12 +487,12 @@ enum dwarf_attribute
     DW_AT_variable_parameter = 0x4b,
     DW_AT_virtuality = 0x4c,
     DW_AT_vtable_elem_location = 0x4d,
-    /* DWARF 3 values.  */
+    /* DWARF 3 values. */
     DW_AT_allocated     = 0x4e,
     DW_AT_associated    = 0x4f,
     DW_AT_data_location = 0x50,
     DW_AT_byte_stride   = 0x51,
-#define DW_AT_stride   DW_AT_byte_stride  /* Note: The use of DW_AT_stride is deprecated.  */
+#define DW_AT_stride   DW_AT_byte_stride  /* Note: The use of DW_AT_stride is deprecated. */
     DW_AT_entry_pc      = 0x52,
     DW_AT_use_UTF8      = 0x53,
     DW_AT_extension     = 0x54,
@@ -355,10 +519,10 @@ enum dwarf_attribute
     /* DWARF 4.  */
     DW_AT_signature     = 0x69,
 
-    DW_AT_lo_user = 0x2000,	/* Implementation-defined range start.  */
-    DW_AT_hi_user = 0x3ff0,	/* Implementation-defined range end.  */
+    DW_AT_lo_user = 0x2000,	/* Implementation-defined range start. */
+    DW_AT_hi_user = 0x3ff0,	/* Implementation-defined range end. */
 
-    /* SGI/MIPS extensions.  */
+    /* SGI/MIPS extensions. */
     DW_AT_MIPS_fde = 0x2001,
     DW_AT_MIPS_loop_begin = 0x2002,
     DW_AT_MIPS_tail_loop_begin = 0x2003,
@@ -370,9 +534,9 @@ enum dwarf_attribute
     DW_AT_MIPS_abstract_name = 0x2009,
     DW_AT_MIPS_clone_origin = 0x200a,
     DW_AT_MIPS_has_inlines = 0x200b,
-    /* HP extensions.  */
+    /* HP extensions. */
     DW_AT_HP_block_index         = 0x2000,
-    DW_AT_HP_unmodifiable        = 0x2001, /* Same as DW_AT_MIPS_fde.  */
+    DW_AT_HP_unmodifiable        = 0x2001, /* Same as DW_AT_MIPS_fde. */
     DW_AT_HP_actuals_stmt_list   = 0x2010,
     DW_AT_HP_proc_per_section    = 0x2011,
     DW_AT_HP_raw_data_ptr        = 0x2012,
@@ -384,8 +548,8 @@ enum dwarf_attribute
     DW_AT_HP_cold_region_high_pc = 0x2018,
     DW_AT_HP_all_variables_modifiable = 0x2019,
     DW_AT_HP_linkage_name        = 0x201a,
-    DW_AT_HP_prof_flags          = 0x201b,  /* In comp unit of procs_info for -g.  */
-    /* GNU extensions.  */
+    DW_AT_HP_prof_flags          = 0x201b, /* In comp unit of procs_info for -g. */
+    /* GNU extensions. */
     DW_AT_sf_names   = 0x2101,
     DW_AT_src_info   = 0x2102,
     DW_AT_mac_info   = 0x2103,
@@ -394,19 +558,28 @@ enum dwarf_attribute
     DW_AT_body_end   = 0x2106,
     DW_AT_GNU_vector = 0x2107,
     /* Template template argument name.
-       See http://gcc.gnu.org/wiki/TemplateParmsDwarf .  */
+     * See http://gcc.gnu.org/wiki/TemplateParmsDwarf for more. */
     DW_AT_GNU_template_name = 0x2110,
-    /* VMS extensions.  */
+    /* VMS extensions. */
     DW_AT_VMS_rtnbeg_pd_address = 0x2201,
-    /* UPC extension.  */
+    /* UPC extension. */
     DW_AT_upc_threads_scaled = 0x3210,
-    /* PGI (STMicroelectronics) extensions.  */
+    /* PGI (STMicroelectronics) extensions. */
     DW_AT_PGI_lbase    = 0x3a00,
     DW_AT_PGI_soffset  = 0x3a01,
     DW_AT_PGI_lstride  = 0x3a02
   };
+#else
+# if !defined(DW_AT_stride_size) && defined(DW_AT_bit_stride)
+#  define DW_AT_stride_size DW_AT_bit_stride /* Note: The use of DW_AT_stride_size is deprecated. */
+# endif /* !DW_AT_stride_size && DW_AT_bit_stride */
+# if !defined(DW_AT_stride) && defined(DW_AT_byte_stride)
+#  define DW_AT_stride DW_AT_byte_stride /* Note: The use of DW_AT_stride is deprecated. */
+# endif /* !DW_AT_stride && DW_AT_byte_stride */
+#endif /* !_DWARF2_DEF_INCLUDED */
 
-/* Location atom names and codes.  */
+#ifndef _DWARF2_DEF_INCLUDED
+/* Location atom names and codes. */
 enum dwarf_location_atom
   {
     DW_OP_addr = 0x03,
@@ -586,8 +759,10 @@ enum dwarf_location_atom
     /* PGI (STMicroelectronics) extensions.  */
     DW_OP_PGI_omp_thread_num = 0xf8
   };
+#endif /* !_DWARF2_DEF_INCLUDED */
 
-/* Type encodings.  */
+#ifndef _DWARF2_DEF_INCLUDED
+/* Type encodings: */
 enum dwarf_type
   {
     DW_ATE_void = 0x0,
@@ -620,6 +795,7 @@ enum dwarf_type
     DW_ATE_HP_imaginary_float80  = 0x85,
     DW_ATE_HP_imaginary_float128 = 0x86
   };
+#endif /* !_DWARF2_DEF_INCLUDED */
 
 /* Decimal sign encodings.  */
 enum dwarf_decimal_sign_encoding
@@ -694,7 +870,16 @@ enum dwarf_calling_convention
     DW_CC_lo_user = 0x40,
     DW_CC_hi_user = 0xff,
 
-    DW_CC_GNU_renesas_sh = 0x40
+    DW_CC_GNU_renesas_sh = 0x40,
+	DW_CC_GNU_borland_fastcall_i386 = 0x41,
+
+	/* This DW_CC_ value is not currently generated by any toolchain. It is
+	 * used internally to GDB to indicate OpenCL C functions that have been
+	 * compiled with the IBM XL C for OpenCL compiler and use a non-platform
+	 * calling convention for passing OpenCL C vector types. This value may
+	 * be changed freely as long as it does not conflict with any other DW_CC_
+	 * value defined here. */
+	DW_CC_GDB_IBM_OpenCL = 0xff
   };
 
 /* Inline attribute.  */
@@ -750,12 +935,14 @@ enum dwarf_line_number_x_ops
     DW_LNE_HP_negate_function_exit     = 0x18,
     DW_LNE_HP_negate_front_end_logical = 0x19,
     DW_LNE_HP_define_proc              = 0x20,
+	DW_LNE_HP_source_file_correlation  = 0x80,
 
     DW_LNE_lo_user = 0x80,
     DW_LNE_hi_user = 0xff
   };
 
-/* Call frame information.  */
+#ifndef _DWARF2_DEF_INCLUDED
+/* Call frame information: */
 enum dwarf_call_frame_info
   {
     DW_CFA_advance_loc = 0x40,
@@ -796,6 +983,25 @@ enum dwarf_call_frame_info
     DW_CFA_GNU_args_size = 0x2e,
     DW_CFA_GNU_negative_offset_extended = 0x2f
   };
+#endif /* !_DWARF2_DEF_INCLUDED */
+
+/* Sub-opcodes for DW_LNE_HP_source_file_correlation.  */
+enum dwarf_line_number_hp_sfc_ops
+{
+    DW_LNE_HP_SFC_formfeed = 1,
+    DW_LNE_HP_SFC_set_listing_line = 2,
+    DW_LNE_HP_SFC_associate = 3
+};
+
+/* Type codes for location list entries.
+ * Extension for Fission. See http://gcc.gnu.org/wiki/DebugFission for more. */
+enum dwarf_location_list_entry_type
+{
+    DW_LLE_GNU_end_of_list_entry = 0,
+    DW_LLE_GNU_base_address_selection_entry = 1,
+    DW_LLE_GNU_start_end_entry = 2,
+    DW_LLE_GNU_start_length_entry = 3
+};
 
 #define DW_CIE_ID	  0xffffffff
 #define DW64_CIE_ID	  0xffffffffffffffffULL
@@ -831,6 +1037,10 @@ enum dwarf_source_language
     DW_LANG_ObjC_plus_plus = 0x0011,
     DW_LANG_UPC = 0x0012,
     DW_LANG_D = 0x0013,
+	/* DWARF 4.  */
+	DW_LANG_Python = 0x0014,
+	/* DWARF 5.  */
+	DW_LANG_Go = 0x0016,
 
     DW_LANG_lo_user = 0x8000,	/* Implementation-defined range start.  */
     DW_LANG_hi_user = 0xffff,	/* Implementation-defined range start.  */
@@ -838,7 +1048,13 @@ enum dwarf_source_language
     /* MIPS.  */
     DW_LANG_Mips_Assembler = 0x8001,
     /* UPC.  */
-    DW_LANG_Upc = 0x8765
+	DW_LANG_Upc = 0x8765,
+	/* HP extensions.  */
+	DW_LANG_HP_Bliss     = 0x8003,
+	DW_LANG_HP_Basic91   = 0x8004,
+	DW_LANG_HP_Pascal91  = 0x8005,
+	DW_LANG_HP_IMacro    = 0x8006,
+	DW_LANG_HP_Assembler = 0x8007
   };
 
 /* Names and codes for macro information.  */
@@ -850,7 +1066,27 @@ enum dwarf_macinfo_record_type
     DW_MACINFO_end_file = 4,
     DW_MACINFO_vendor_ext = 255
   };
-
+
+/* Names and codes for new style macro information.  */
+enum dwarf_macro_record_type
+{
+    DW_MACRO_GNU_define = 1,
+    DW_MACRO_GNU_undef = 2,
+    DW_MACRO_GNU_start_file = 3,
+    DW_MACRO_GNU_end_file = 4,
+    DW_MACRO_GNU_define_indirect = 5,
+    DW_MACRO_GNU_undef_indirect = 6,
+    DW_MACRO_GNU_transparent_include = 7,
+    /* Extensions for DWZ multifile.
+	 * See http://www.dwarfstd.org/ShowIssue.php?issue=120604.1&type=open for
+	 * more info. */
+    DW_MACRO_GNU_define_indirect_alt = 8,
+    DW_MACRO_GNU_undef_indirect_alt = 9,
+    DW_MACRO_GNU_transparent_include_alt = 10,
+    DW_MACRO_GNU_lo_user = 0xe0,
+    DW_MACRO_GNU_hi_user = 0xff
+};
+
 /* @@@ For use with GNU frame unwind information.  */
 
 #define DW_EH_PE_absptr		0x00
@@ -874,4 +1110,54 @@ enum dwarf_macinfo_record_type
 
 #define DW_EH_PE_indirect	0x80
 
+/* Codes for the debug sections in a dwarf package (.dwp) file.
+ Extensions for Fission.  See http://gcc.gnu.org/wiki/DebugFissionDWP.  */
+enum dwarf_sect
+{
+    DW_SECT_INFO = 1,
+    DW_SECT_TYPES = 2,
+    DW_SECT_ABBREV = 3,
+    DW_SECT_LINE = 4,
+    DW_SECT_LOC = 5,
+    DW_SECT_STR_OFFSETS = 6,
+    DW_SECT_MACINFO = 7,
+    DW_SECT_MACRO = 8,
+    DW_SECT_MAX = 8
+};
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
+	/* Return the name of a DW_TAG_ constant, or NULL if the value is not
+	 * recognized: */
+	extern const char *get_DW_TAG_name(unsigned int tag);
+
+	/* Return the name of a DW_AT_ constant, or NULL if the value is not
+	 * recognized: */
+	extern const char *get_DW_AT_name(unsigned int attr);
+
+	/* Return the name of a DW_FORM_ constant, or NULL if the value is not
+	 * recognized: */
+	extern const char *get_DW_FORM_name(unsigned int form);
+
+	/* Return the name of a DW_OP_ constant, or NULL if the value is not
+	 * recognized: */
+	extern const char *get_DW_OP_name(unsigned int op);
+
+	/* Return the name of a DW_ATE_ constant, or NULL if the value is not
+	 * recognized: */
+	extern const char *get_DW_ATE_name(unsigned int enc);
+
+	/* Return the name of a DW_CFA_ constant, or NULL if the value is not
+	 * recognized: */
+	extern const char *get_DW_CFA_name(unsigned int opc);
+
+#ifdef __cplusplus
+}
+#endif /* __cplusplus */
+
 #endif /* _ELF_DWARF2_H */
+
+/* -*- c -*- */
+/* EOF */

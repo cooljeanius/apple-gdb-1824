@@ -34,19 +34,19 @@ extern reloc_howto_type apollocoff_howto_table[];
 #else
 reloc_howto_type apollocoff_howto_table[] =
   {
-    HOWTO (R_RELBYTE,	       0,  0,  	8,  FALSE, 0, complain_overflow_bitfield, 0, "8",	TRUE, 0x000000ff,0x000000ff, FALSE),
-    HOWTO (R_RELWORD,	       0,  1, 	16, FALSE, 0, complain_overflow_bitfield, 0, "16",	TRUE, 0x0000ffff,0x0000ffff, FALSE),
-    HOWTO (R_RELLONG,	       0,  2, 	32, FALSE, 0, complain_overflow_bitfield, 0, "32",	TRUE, 0xffffffff,0xffffffff, FALSE),
-    HOWTO (R_PCRBYTE,	       0,  0, 	8,  TRUE,  0, complain_overflow_signed,   0, "DISP8",   TRUE, 0x000000ff,0x000000ff, FALSE),
-    HOWTO (R_PCRWORD,	       0,  1, 	16, TRUE,  0, complain_overflow_signed,   0, "DISP16",  TRUE, 0x0000ffff,0x0000ffff, FALSE),
-    HOWTO (R_PCRLONG,	       0,  2, 	32, TRUE,  0, complain_overflow_signed,   0, "DISP32",  TRUE, 0xffffffff,0xffffffff, FALSE),
-    HOWTO (R_RELLONG_NEG,      0,  -2, 	32, FALSE, 0, complain_overflow_bitfield, 0, "-32",	TRUE, 0xffffffff,0xffffffff, FALSE),
+    HOWTO (R_RELBYTE,	       0,  0,  	8,  FALSE, 0, complain_overflow_bitfield, 0, (char *)"8",	TRUE, 0x000000ff,0x000000ff, FALSE),
+    HOWTO (R_RELWORD,	       0,  1, 	16, FALSE, 0, complain_overflow_bitfield, 0, (char *)"16",	TRUE, 0x0000ffff,0x0000ffff, FALSE),
+    HOWTO (R_RELLONG,	       0,  2, 	32, FALSE, 0, complain_overflow_bitfield, 0, (char *)"32",	TRUE, 0xffffffff,0xffffffff, FALSE),
+    HOWTO (R_PCRBYTE,	       0,  0, 	8,  TRUE,  0, complain_overflow_signed,   0, (char *)"DISP8",   TRUE, 0x000000ff,0x000000ff, FALSE),
+    HOWTO (R_PCRWORD,	       0,  1, 	16, TRUE,  0, complain_overflow_signed,   0, (char *)"DISP16",  TRUE, 0x0000ffff,0x0000ffff, FALSE),
+    HOWTO (R_PCRLONG,	       0,  2, 	32, TRUE,  0, complain_overflow_signed,   0, (char *)"DISP32",  TRUE, 0xffffffff,0xffffffff, FALSE),
+    HOWTO (R_RELLONG_NEG,      0,  -2, 	32, FALSE, 0, complain_overflow_bitfield, 0, (char *)"-32",	TRUE, 0xffffffff,0xffffffff, FALSE),
   };
 #endif /* not ONLY_DECLARE_RELOCS */
 
 #ifndef BADMAG
-#define BADMAG(x) M68KBADMAG(x)
-#endif
+# define BADMAG(x) M68KBADMAG(x)
+#endif /* !BADMAG */
 #define APOLLO_M68 1		/* Customize coffcode.h */
 
 /* Turn a howto into a reloc number.  */
@@ -60,8 +60,7 @@ apollo_rtype2howto (internal, relocentry)
      arelent *internal;
      int relocentry;
 {
-  switch (relocentry)
-    {
+  switch (relocentry) {
     case R_RELBYTE:	internal->howto = apollocoff_howto_table + 0; break;
     case R_RELWORD:	internal->howto = apollocoff_howto_table + 1; break;
     case R_RELLONG:	internal->howto = apollocoff_howto_table + 2; break;
@@ -69,30 +68,30 @@ apollo_rtype2howto (internal, relocentry)
     case R_PCRWORD:	internal->howto = apollocoff_howto_table + 4; break;
     case R_PCRLONG:	internal->howto = apollocoff_howto_table + 5; break;
     case R_RELLONG_NEG:	internal->howto = apollocoff_howto_table + 6; break;
-    }
+    default: break;
+  }
 }
 
-int
-apollo_howto2rtype (internal)
+int apollo_howto2rtype(internal)
      reloc_howto_type *internal;
 {
   if (internal->pc_relative)
     {
-      switch (internal->bitsize)
-	{
+      switch (internal->bitsize) {
 	case 32: return R_PCRLONG;
 	case 16: return R_PCRWORD;
 	case 8: return R_PCRBYTE;
-	}
+	default: break;
+      }
     }
   else
     {
-      switch (internal->bitsize)
-	{
+      switch (internal->bitsize) {
 	case 32: return R_RELLONG;
 	case 16: return R_RELWORD;
 	case 8: return R_RELBYTE;
-	}
+	default: break;
+      }
     }
   return R_RELLONG;
 }

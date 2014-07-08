@@ -27,26 +27,43 @@ AC_INIT([mmalloc],[2005-03-24],[jmolenda@apple.com])
 dnl# bug report address is email address of last person to touch this
 dnl# directory, according to the Changelog-Apple in this directory
 AC_CONFIG_SRCDIR([mmalloc.c])
+AC_CONFIG_AUX_DIR([..])
 AC_CANONICAL_TARGET
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  AC_SUBST([HOST_ARCHITECTURE])
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+  AC_SUBST([TARGET_ARCHITECTURE])
+fi
+AM_SANITY_CHECK
 
 AC_PROG_AWK
 AC_PROG_CC
 AC_PROG_CPP
+AC_PROG_FGREP
 AC_PROG_INSTALL
 AC_PROG_LN_S
+AM_MISSING_PROG([MAKEINFO],[makeinfo])
+AC_PROG_MKDIR_P
+m4_ifdef([AM_PROG_AR],[
+AM_PROG_AR
+],[
 AC_CHECK_TOOL([AR],[ar])
+])
 AC_CHECK_TOOL([RANLIB],[ranlib],[:])
 if test "x${RANLIB}" = "x"; then
-	test -z "${RANLIB}"
-	AC_PROG_RANLIB
+  test -z "${RANLIB}"
+  AC_PROG_RANLIB
 else
-	test ! -z "${RANLIB}" && export RANLIB
-	AC_SUBST([RANLIB])
+  test ! -z "${RANLIB}" && export RANLIB
+  AC_SUBST([RANLIB])
 fi
 
 # Checks for libraries.
 AC_CHECK_LIB([c],[printf])
-AC_SEARCH_LIBS([vm_region],[System])
+AC_SEARCH_LIBS([vm_region],[System c kern mach gnumach])
 
 # Checks for header files.
 AC_CHECK_HEADERS([AvailabilityMacros.h db.h errno.h fcntl.h \
@@ -56,46 +73,60 @@ AC_CHECK_HEADERS([AvailabilityMacros.h db.h errno.h fcntl.h \
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
+AC_C_CONST
 AC_C_PROTOTYPES
 AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
 AC_CHECK_TYPES([caddr_t])
 AC_CHECK_TYPES([port_t],[],[
+  # failed to find port_t, try a replacement type:
   AC_CHECK_TYPES([mach_port_t],[
+    # mach_port_t IS found, check some associated types:
     AC_CHECK_TYPES([mach_port_array_t],[],[],[
 #ifdef HAVE_MACH_PORT_H
 # include <mach/port.h>
 #else
-# warning this conftest expects <mach/port.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest for mach_port_array_t wants <mach/port.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_PORT_H */
     ])
     AC_CHECK_TYPES([mach_port_type_t],[],[],[
 #ifdef HAVE_MACH_PORT_H
 # include <mach/port.h>
 #else
-# warning this conftest expects <mach/port.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest for mach_port_type_t wants <mach/port.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_PORT_H */
     ])
   ],[
+    # failed to find mach_port_t, try a replacement type:
     AC_CHECK_TYPES([ipc_port_t],[],[],[
 #ifdef HAVE_IPC_IPC_TYPES_H
 # include <ipc/ipc_types.h>
 #else
-# warning this conftest expects <ipc/ipc_types.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest for ipc_port_t wants <ipc/ipc_types.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_IPC_IPC_TYPES_H */
     ])
   ],[
 #ifdef HAVE_MACH_PORT_H
 # include <mach/port.h>
 #else
-# warning this conftest expects <mach/port.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest for mach_port_t wants to include <mach/port.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_PORT_H */
   ])
 ],[
 #ifdef HAVE_MACH_PORT_H
 # include <mach/port.h>
 #else
-# warning this conftest expects <mach/port.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "This conftest for port_t expects <mach/port.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_PORT_H */
 ])
 AC_TYPE_INT32_T

@@ -41,7 +41,7 @@ print_general (num, stream)
 }
 
 /* Like print_general but a special-purpose register.
-   
+
    The mnemonics used by the AMD assembler are not quite the same
    as the ones in the User's Manual.  We use the ones that the
    assembler uses.  */
@@ -104,7 +104,7 @@ find_bytes (insn, insn0, insn8, insn16, insn24)
      unsigned char *insn16;
      unsigned char *insn24;
 {
-#if TARGET_BYTE_ORDER == BIG_ENDIAN
+#if defined(TARGET_BYTE_ORDER) && defined(BIG_ENDIAN) && (TARGET_BYTE_ORDER == BIG_ENDIAN)
   *insn24 = insn[0];
   *insn16 = insn[1];
   *insn8  = insn[2];
@@ -144,7 +144,7 @@ print_insn (memaddr, stream)
       if (insn24 == opcode->opcode)
 	{
 	  char *s;
-	  
+
 	  fprintf_filtered (stream, "%s ", opcode->name);
 	  for (s = opcode->args; *s != '\0'; ++s)
 	    {
@@ -153,7 +153,7 @@ print_insn (memaddr, stream)
 		case 'a':
 		  print_general (insn8, stream);
 		  break;
-		  
+
 		case 'b':
 		  print_general (insn0, stream);
 		  break;
@@ -247,7 +247,7 @@ print_insn (memaddr, stream)
 	      int errcode;
 	      char prev_insn[4];
 	      unsigned char prev_insn0, prev_insn8, prev_insn16, prev_insn24;
-	      
+
 	      errcode = target_read_memory (memaddr - 4,
 					    &prev_insn[0],
 					    4);
@@ -256,7 +256,7 @@ print_insn (memaddr, stream)
 		  /* If it is a delayed branch, we need to look at the
 		     instruction before the delayed brach to handle
 		     things like
-		     
+
 		     const _foo
 		     call _printf
 		     consth _foo
@@ -271,7 +271,7 @@ print_insn (memaddr, stream)
 				  &prev_insn16, &prev_insn24);
 		    }
 		}
-		  
+
 	      /* If there was a problem reading memory, then assume
 		 the previous instruction was not const.  */
 	      if (errcode == 0)

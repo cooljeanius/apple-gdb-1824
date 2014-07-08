@@ -1,4 +1,4 @@
-/* BFD back-end for i386 a.out binaries.
+/* i386mach3.c: BFD back-end for i386 a.out binaries.
    Copyright 1990, 1991, 1993, 1994, 1995, 1997, 2001, 2002, 2003
    Free Software Foundation, Inc.
 

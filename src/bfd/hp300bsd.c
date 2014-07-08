@@ -1,4 +1,4 @@
-/* BFD back-end for HP 9000/300 (68000-based) machines running BSD Unix.
+/* hp300bsd.c: BFD backend for HP 9000/300 (68k-based) machines running BSD Unix
    Copyright 1992, 1994, 1995, 2001, 2003 Free Software Foundation, Inc.
 
 This file is part of BFD, the Binary File Descriptor library.

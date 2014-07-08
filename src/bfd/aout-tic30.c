@@ -1,4 +1,4 @@
-/* BFD back-end for TMS320C30 a.out binaries.
+/* aout-tic30.c: BFD back-end for TMS320C30 a.out binaries.
    Copyright 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
    Contributed by Steven Haworth (steve@pm.cse.rmit.edu.au)
@@ -20,7 +20,9 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
    02110-1301, USA.  */
 
-#define TARGET_IS_BIG_ENDIAN_P
+#ifndef TARGET_IS_BIG_ENDIAN_P
+# define TARGET_IS_BIG_ENDIAN_P /* (nothing) */
+#endif /* !TARGET_IS_BIG_ENDIAN_P */
 #define N_HEADER_IN_TEXT(x)	1
 #define TEXT_START_ADDR 	1024
 #define TARGET_PAGE_SIZE 	128
@@ -28,10 +30,11 @@
 #define DEFAULT_ARCH 		bfd_arch_tic30
 #define ARCH_SIZE 32
 
-/* Do not "beautify" the CONCAT* macro args.  Traditional C will not
-   remove whitespace added here, and thus will fail to concatenate
-   the tokens.  */
-#define MY(OP) CONCAT2 (tic30_aout_,OP)
+#ifndef MY
+/* Do not "beautify" the CONCAT* macro args. Traditional C will not remove
+ * whitespace added here, and thus will fail to concatenate the tokens. */
+# define MY(OP) CONCAT2 (tic30_aout_,OP)
+#endif /* !MY */
 #define TARGETNAME "a.out-tic30"
 #define NAME(x,y) CONCAT3 (tic30_aout,_32_,y)
 
@@ -231,15 +234,15 @@ reloc_howto_type tic30_aout_howto_table[] =
 {
   EMPTY_HOWTO (-1),
   HOWTO (1, 2, 1, 16, FALSE, 0, 0, tic30_aout_fix_16,
-	 "16", FALSE, 0x0000FFFF, 0x0000FFFF, FALSE),
+	 (char *)"16", FALSE, 0x0000FFFF, 0x0000FFFF, FALSE),
   HOWTO (2, 2, 2, 24, FALSE, 0, complain_overflow_bitfield, NULL,
-	 "24", FALSE, 0x00FFFFFF, 0x00FFFFFF, FALSE),
+	 (char *)"24", FALSE, 0x00FFFFFF, 0x00FFFFFF, FALSE),
   HOWTO (3, 18, 3, 24, FALSE, 0, complain_overflow_bitfield, NULL,
-	 "LDP", FALSE, 0x00FF0000, 0x000000FF, FALSE),
+	 (char *)"LDP", FALSE, 0x00FF0000, 0x000000FF, FALSE),
   HOWTO (4, 2, 4, 32, FALSE, 0, complain_overflow_bitfield, tic30_aout_fix_32,
-	 "32", FALSE, 0xFFFFFFFF, 0xFFFFFFFF, FALSE),
+	 (char *)"32", FALSE, 0xFFFFFFFF, 0xFFFFFFFF, FALSE),
   HOWTO (5, 2, 1, 16, TRUE, 0, complain_overflow_signed,
-	 tic30_aout_fix_pcrel_16, "PCREL", TRUE, 0x0000FFFF, 0x0000FFFF, TRUE),
+	 tic30_aout_fix_pcrel_16, (char *)"PCREL", TRUE, 0x0000FFFF, 0x0000FFFF, TRUE),
   EMPTY_HOWTO (-1),
   EMPTY_HOWTO (-1),
   EMPTY_HOWTO (-1),
@@ -271,15 +274,12 @@ tic30_aout_reloc_type_lookup (bfd *abfd ATTRIBUTE_UNUSED,
 }
 
 static reloc_howto_type *
-tic30_aout_reloc_howto (bfd *abfd,
-			struct reloc_std_external *relocs,
-			int *r_index,
-			int *r_extern,
-			int *r_pcrel)
+tic30_aout_reloc_howto(bfd *abfd, struct reloc_std_external *relocs,
+		       int *r_index, int *r_extern, int *r_pcrel)
 {
   unsigned int r_length;
   unsigned int r_pcrel_done;
-  int index;
+  int local_index;
 
   *r_pcrel = 0;
   if (bfd_header_big_endian (abfd))
@@ -296,8 +296,8 @@ tic30_aout_reloc_howto (bfd *abfd,
       r_pcrel_done = (0 != (relocs->r_type[0] & RELOC_STD_BITS_PCREL_LITTLE));
       r_length = ((relocs->r_type[0] & RELOC_STD_BITS_LENGTH_LITTLE) >> RELOC_STD_BITS_LENGTH_SH_LITTLE);
     }
-  index = r_length + 4 * r_pcrel_done;
-  return tic30_aout_howto_table + index;
+  local_index = r_length + 4 * r_pcrel_done;
+  return tic30_aout_howto_table + local_index;
 }
 
 /* These macros will get 24-bit values from the bfd definition.
@@ -315,8 +315,7 @@ tic30_aout_reloc_howto (bfd *abfd,
 /* Set parameters about this a.out file that are machine-dependent.
    This routine is called from some_aout_object_p just before it returns.  */
 
-static const bfd_target *
-tic30_aout_callback (bfd *abfd)
+static const bfd_target *tic30_aout_callback(bfd *abfd)
 {
   struct internal_exec *execp = exec_hdr (abfd);
   unsigned int arch_align_power;
@@ -670,9 +669,7 @@ tic30_aout_write_object_contents (bfd *abfd)
 }
 
 #ifndef MY_final_link_callback
-
-/* Callback for the final_link routine to set the section offsets.  */
-
+/* Callback for the final_link routine to set the section offsets: */
 static void
 MY_final_link_callback (bfd *abfd,
 			file_ptr *ptreloff,
@@ -686,13 +683,11 @@ MY_final_link_callback (bfd *abfd,
   *psymoff = *pdreloff + execp->a_drsize;;
 }
 
-#endif
+#endif /* !MY_final_link_callback */
 
 #ifndef MY_bfd_final_link
-
 /* Final link routine.  We need to use a call back to get the correct
    offsets in the output file.  */
-
 static bfd_boolean
 MY_bfd_final_link (bfd *abfd, struct bfd_link_info *info)
 {
@@ -745,13 +740,12 @@ MY_bfd_final_link (bfd *abfd, struct bfd_link_info *info)
   obj_bsssec (abfd)->vma = vma;
   obj_bsssec (abfd)->user_set_vma = 1;
 
-  /* We are fully resized, so don't readjust in final_link.  */
+  /* We are fully resized, so do NOT readjust in final_link: */
   adata (abfd).magic = z_magic;
 
   return NAME (aout, final_link) (abfd, info, MY_final_link_callback);
 }
-
-#endif
+#endif /* !MY_bfd_final_link */
 
 static enum machine_type
 tic30_aout_machine_type (enum bfd_architecture arch,
@@ -843,15 +837,15 @@ tic30_aout_set_arch_mach (bfd *abfd,
 #endif
 
 #ifndef MY_bfd_debug_info_start
-#define MY_bfd_debug_info_start		bfd_void
-#endif
+# define MY_bfd_debug_info_start	bfd_void
+#endif /* !MY_bfd_debug_info_start */
 #ifndef MY_bfd_debug_info_end
-#define MY_bfd_debug_info_end		bfd_void
-#endif
+# define MY_bfd_debug_info_end		bfd_void
+#endif /* !MY_bfd_debug_info_end */
 #ifndef MY_bfd_debug_info_accumulate
-#define MY_bfd_debug_info_accumulate	\
-		(void (*) (bfd*, struct bfd_section *)) bfd_void
-#endif
+# define MY_bfd_debug_info_accumulate	\
+		(void (*) (bfd*, struct bfd_section *))bfd_void
+#endif /* !MY_bfd_debug_info_accumulate */
 
 #ifndef MY_core_file_failing_command
 #define MY_core_file_failing_command NAME (aout, core_file_failing_command)
@@ -1026,20 +1020,20 @@ tic30_aout_set_arch_mach (bfd *abfd,
   _bfd_nodynamic_canonicalize_dynamic_reloc
 #endif
 
-/* Aout symbols normally have leading underscores.  */
+/* Aout symbols normally have leading underscores: */
 #ifndef MY_symbol_leading_char
 #define MY_symbol_leading_char '_'
 #endif
 
-/* Aout archives normally use spaces for padding.  */
+/* Aout archives normally use spaces for padding: */
 #ifndef AR_PAD_CHAR
-#define AR_PAD_CHAR ' '
-#endif
+# define AR_PAD_CHAR ' '
+#endif /* !AR_PAD_CHAR */
 
-#ifndef MY_BFD_TARGET
+#if !defined(MY_BFD_TARGET) && defined(TARGETNAME)
 const bfd_target tic30_aout_vec =
 {
-  TARGETNAME,			/* Name.  */
+  (char *)TARGETNAME,			/* Name.  */
   bfd_target_aout_flavour,
   BFD_ENDIAN_BIG,		/* Target byte order (big).  */
   BFD_ENDIAN_BIG,		/* Target headers byte order (big).  */
@@ -1062,18 +1056,28 @@ const bfd_target tic30_aout_vec =
   {bfd_false, MY_write_object_contents,		/* bfd_write_contents.  */
    _bfd_write_archive_contents, bfd_false},
 
-  BFD_JUMP_TABLE_GENERIC (MY),
-  BFD_JUMP_TABLE_COPY (MY),
-  BFD_JUMP_TABLE_CORE (MY),
-  BFD_JUMP_TABLE_ARCHIVE (MY),
-  BFD_JUMP_TABLE_SYMBOLS (MY),
-  BFD_JUMP_TABLE_RELOCS (MY),
-  BFD_JUMP_TABLE_WRITE (MY),
-  BFD_JUMP_TABLE_LINK (MY),
-  BFD_JUMP_TABLE_DYNAMIC (MY),
+  BFD_JUMP_TABLE_GENERIC(MY),
+  BFD_JUMP_TABLE_COPY(MY),
+  BFD_JUMP_TABLE_CORE(MY),
+  BFD_JUMP_TABLE_ARCHIVE(MY),
+  BFD_JUMP_TABLE_SYMBOLS(MY),
+  BFD_JUMP_TABLE_RELOCS(MY),
+  BFD_JUMP_TABLE_WRITE(MY),
+  BFD_JUMP_TABLE_LINK(MY),
+  BFD_JUMP_TABLE_DYNAMIC(MY),
 
   NULL,
 
   MY_backend_data
 };
 #endif /* MY_BFD_TARGET */
+
+/* probably a bad idea to do this: */
+#if !defined(__BFD_AOUT_TARGET_H__) && !defined(tic30_aout_callback) \
+    && !defined(MY_final_link_callback) && !defined(MY_bfd_final_link) && 0 \
+    && defined(MY_bfd_debug_info_start) && defined(MY_bfd_debug_info_accumulate) \
+    && defined(TARGET_IS_BIG_ENDIAN_P) && defined(MY_bfd_debug_info_end) && defined(MY)
+# include "aout-target.h"
+#endif /* !__BFD_AOUT_TARGET_H__ && !tic30_aout_callback && !MY_final_link_callback && !MY_bfd_final_link and so on */
+
+/* EOF */

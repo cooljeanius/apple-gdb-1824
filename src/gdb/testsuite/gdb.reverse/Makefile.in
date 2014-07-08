@@ -1,3 +1,5 @@
+# Makefile for gdb.reverse part of testsuite
+
 VPATH = @srcdir@
 srcdir = @srcdir@
 
@@ -10,10 +12,11 @@ MISCELLANEOUS =
 all info install-info dvi install uninstall installcheck check:
 	@echo "Nothing to be done for $@..."
 
+# 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 clean mostlyclean:
-	rm -f *~ *.o *.x *.ci *.sl a.out core
-	rm -f $(EXECUTABLES) $(MISCELLANEOUS)
+	rm -fv *~ *.o *.x *.ci *.sl a.out core
+	rm -fv $(EXECUTABLES) $(MISCELLANEOUS)
 
 distclean maintainer-clean realclean: clean
-	rm -f Makefile config.status config.log site.*
+	rm -fv Makefile config.status config.log site.*
 

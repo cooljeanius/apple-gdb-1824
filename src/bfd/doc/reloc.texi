@@ -2222,14 +2222,14 @@ Xtensa relocations for backward compatibility.  These have all been
 replaced by BFD_RELOC_XTENSA_SLOT0_OP.
 @end deffn
 @deffn {} BFD_RELOC_XTENSA_ASM_EXPAND
-Xtensa relocation to mark that the assembler expanded the 
+Xtensa relocation to mark that the assembler expanded the
 instructions from an original target.  The expansion size is
 encoded in the reloc size.
 @end deffn
 @deffn {} BFD_RELOC_XTENSA_ASM_SIMPLIFY
-Xtensa relocation to mark that the linker should simplify 
-assembler-expanded instructions.  This is commonly used 
-internally by the linker after analysis of a 
+Xtensa relocation to mark that the linker should simplify
+assembler-expanded instructions.  This is commonly used
+internally by the linker after analysis of a
 BFD_RELOC_XTENSA_ASM_EXPAND.
 @end deffn
 

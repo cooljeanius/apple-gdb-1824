@@ -286,11 +286,11 @@ void FAR *out_desc;
     put = state->window;
     left = state->wsize;
 
-    /* Inflate until end of block marked as last */
+    /* Inflate until end of block marked as last: */
     for (;;)
         switch (state->mode) {
         case TYPE:
-            /* determine and dispatch block type */
+            /* determine and dispatch block type: */
             if (state->last) {
                 BYTEBITS();
                 state->mode = DONE;
@@ -319,6 +319,8 @@ void FAR *out_desc;
             case 3:
                 strm->msg = (char *)"invalid block type";
                 state->mode = BAD;
+			default:
+				break; /* (?) */
             }
             DROPBITS(2);
             break;

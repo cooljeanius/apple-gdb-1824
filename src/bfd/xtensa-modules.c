@@ -1,30 +1,28 @@
-/* Xtensa configuration-specific ISA information.
-   Copyright 2003, 2004, 2005 Free Software Foundation, Inc.
-
-   This file is part of BFD, the Binary File Descriptor library.
-
-   This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public License as
-   published by the Free Software Foundation; either version 2 of the
-   License, or (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-   02110-1301, USA.  */
+/* xtensa-modules.c: Xtensa configuration-specific ISA information.
+ * Copyright 2003, 2004, 2005 Free Software Foundation, Inc.
+ *
+ * This file is part of BFD, the Binary File Descriptor library.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
+ * 02110-1301, USA. */
 
 #include "ansidecl.h"
 #include <xtensa-isa.h>
 #include "xtensa-isa-internal.h"
 
-
-/* Sysregs.  */
-
+/* Sysregs: */
 static xtensa_sysreg_internal sysregs[] = {
   { "LBEG", 0, 0 },
   { "LEND", 1, 0 },
@@ -81,9 +79,8 @@ static xtensa_sysreg_internal sysregs[] = {
 #define MAX_SPECIAL_REG 245
 #define MAX_USER_REG 0
 
-
-/* Processor states.  */
 
+/* Processor states: */
 static xtensa_state_internal states[] = {
   { "LCOUNT", 32, 0 },
   { "PC", 32, 0 },
@@ -148,10 +145,11 @@ static xtensa_state_internal states[] = {
 #define NUM_STATES 58
 
 /* Macros for xtensa_state numbers (for use in iclasses because the
-   state numbers are not available when the iclass table is generated).  */
-
+ * state numbers are not available when the iclass table is generated): */
 #define STATE_LCOUNT 0
-#define STATE_PC 1
+#ifndef STATE_PC
+# define STATE_PC 1
+#endif /* !STATE_PC */
 #define STATE_ICOUNT 2
 #define STATE_DDR 3
 #define STATE_INTERRUPT 4
@@ -209,11 +207,10 @@ static xtensa_state_internal states[] = {
 #define STATE_DATAPGSZID4 56
 #define STATE_PTBASE 57
 
-
-/* Field definitions.  */
 
+/* Field definitions: */
 static unsigned
-Field_t_Slot_inst_get (const xtensa_insnbuf insn)
+Field_t_Slot_inst_get(const xtensa_insnbuf insn)
 {
   unsigned tie_t = 0;
   tie_t = (tie_t << 4) | ((insn[0] << 12) >> 28);
@@ -1179,7 +1176,7 @@ static void
 Implicit_Field_set (xtensa_insnbuf insn ATTRIBUTE_UNUSED,
 		    uint32 val ATTRIBUTE_UNUSED)
 {
-  /* Do nothing.  */
+  /* Do nothing. */ ;
 }
 
 static unsigned
@@ -1206,98 +1203,48 @@ Implicit_Field_ar12_get (const xtensa_insnbuf insn ATTRIBUTE_UNUSED)
   return 12;
 }
 
-
-/* Functional units.  */
 
+/* Functional units: */
 static xtensa_funcUnit_internal funcUnits[] = {
 
 };
 
-
-/* Register files.  */
 
+/* Register files: */
 static xtensa_regfile_internal regfiles[] = {
   { "AR", "a", 0, 32, 64 }
 };
 
-
-/* Interfaces.  */
 
+/* Interfaces: */
 static xtensa_interface_internal interfaces[] = {
 
 };
 
-
-/* Constant tables.  */
 
+/* Constant tables: */
 /* constant table ai4c */
 static const unsigned CONST_TBL_ai4c_0[] = {
-  0xffffffff,
-  0x1,
-  0x2,
-  0x3,
-  0x4,
-  0x5,
-  0x6,
-  0x7,
-  0x8,
-  0x9,
-  0xa,
-  0xb,
-  0xc,
-  0xd,
-  0xe,
-  0xf,
-  0
+  0xffffffff, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9,
+  0xa, 0xb, 0xc, 0xd, 0xe, 0xf, 0
 };
 
 /* constant table b4c */
 static const unsigned CONST_TBL_b4c_0[] = {
-  0xffffffff,
-  0x1,
-  0x2,
-  0x3,
-  0x4,
-  0x5,
-  0x6,
-  0x7,
-  0x8,
-  0xa,
-  0xc,
-  0x10,
-  0x20,
-  0x40,
-  0x80,
-  0x100,
-  0
+  0xffffffff, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0xa, 0xc,
+  0x10, 0x20, 0x40, 0x80, 0x100, 0
 };
 
 /* constant table b4cu */
 static const unsigned CONST_TBL_b4cu_0[] = {
-  0x8000,
-  0x10000,
-  0x2,
-  0x3,
-  0x4,
-  0x5,
-  0x6,
-  0x7,
-  0x8,
-  0xa,
-  0xc,
-  0x10,
-  0x20,
-  0x40,
-  0x80,
-  0x100,
-  0
+  0x8000, 0x10000, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0xa, 0xc,
+  0x10, 0x20, 0x40, 0x80, 0x100, 0
 };
 
-
-/* Instruction operands.  */
 
+/* Instruction operands: */
 static int
-Operand_soffsetx4_decode (uint32 *valp)
+Operand_soffsetx4_decode(uint32 *valp)
 {
   unsigned soffsetx4_0, offset_0;
   offset_0 = *valp & 0x3ffff;
@@ -1629,8 +1576,7 @@ Operand_b4const_encode (uint32 *valp)
 {
   unsigned r_0, b4const_0;
   b4const_0 = *valp;
-  switch (b4const_0)
-    {
+  switch (b4const_0) {
     case 0xffffffff: r_0 = 0; break;
     case 0x1: r_0 = 0x1; break;
     case 0x2: r_0 = 0x2; break;
@@ -1647,7 +1593,7 @@ Operand_b4const_encode (uint32 *valp)
     case 0x40: r_0 = 0xd; break;
     case 0x80: r_0 = 0xe; break;
     default: r_0 = 0xf; break;
-    }
+  }
   *valp = r_0;
   return 0;
 }
@@ -1667,8 +1613,7 @@ Operand_b4constu_encode (uint32 *valp)
 {
   unsigned r_0, b4constu_0;
   b4constu_0 = *valp;
-  switch (b4constu_0)
-    {
+  switch (b4constu_0) {
     case 0x8000: r_0 = 0; break;
     case 0x10000: r_0 = 0x1; break;
     case 0x2: r_0 = 0x2; break;
@@ -1685,7 +1630,7 @@ Operand_b4constu_encode (uint32 *valp)
     case 0x40: r_0 = 0xd; break;
     case 0x80: r_0 = 0xe; break;
     default: r_0 = 0xf; break;
-    }
+  }
   *valp = r_0;
   return 0;
 }
@@ -8602,45 +8547,40 @@ static xtensa_opcode_internal opcodes[] = {
     Opcode_nsau_encode_fns, 0, 0 }
 };
 
-
-/* Slot-specific opcode decode functions.  */
 
+/* Slot-specific opcode decode functions: */
 static int
-Slot_inst_decode (const xtensa_insnbuf insn)
+Slot_inst_decode(const xtensa_insnbuf insn)
 {
-  switch (Field_op0_Slot_inst_get (insn))
-    {
+  switch (Field_op0_Slot_inst_get(insn)) {
     case 0:
-      switch (Field_op1_Slot_inst_get (insn))
-	{
+      switch (Field_op1_Slot_inst_get(insn)) {
 	case 0:
-	  switch (Field_op2_Slot_inst_get (insn))
-	    {
+	  switch (Field_op2_Slot_inst_get(insn)) {
 	    case 0:
-	      switch (Field_r_Slot_inst_get (insn))
-		{
+	      switch (Field_r_Slot_inst_get(insn)) {
 		case 0:
-		  switch (Field_m_Slot_inst_get (insn))
-		    {
+		  switch (Field_m_Slot_inst_get (insn)) {
 		    case 0:
-		      if (Field_s_Slot_inst_get (insn) == 0 &&
-			  Field_n_Slot_inst_get (insn) == 0)
-			return 77; /* ill */
+		      if ((Field_s_Slot_inst_get(insn) == 0) &&
+			  (Field_n_Slot_inst_get(insn) == 0)) {
+			  return 77; /* ill */
+		      }
 		      break;
 		    case 2:
-		      switch (Field_n_Slot_inst_get (insn))
-			{
+		      switch (Field_n_Slot_inst_get(insn)) {
 			case 0:
 			  return 96; /* ret */
 			case 1:
 			  return 14; /* retw */
 			case 2:
 			  return 79; /* jx */
-			}
+			default:
+			  break;
+		      } /* end "switch (Field_n_Slot_inst_get(insn))" */
 		      break;
 		    case 3:
-		      switch (Field_n_Slot_inst_get (insn))
-			{
+		      switch (Field_n_Slot_inst_get(insn)) {
 			case 0:
 			  return 75; /* callx0 */
 			case 1:
@@ -8649,17 +8589,19 @@ Slot_inst_decode (const xtensa_insnbuf insn)
 			  return 9; /* callx8 */
 			case 3:
 			  return 8; /* callx12 */
-			}
+			default:
+			  break;
+		      } /* end "switch (Field_n_Slot_inst_get(insn))" */
 		      break;
-		    }
+		    default:
+		      break;
+		  } /* end "switch (Field_m_Slot_inst_get (insn))" */
 		  break;
 		case 1:
 		  return 12; /* movsp */
 		case 2:
-		  if (Field_s_Slot_inst_get (insn) == 0)
-		    {
-		      switch (Field_t_Slot_inst_get (insn))
-			{
+		  if (Field_s_Slot_inst_get(insn) == 0) {
+		      switch (Field_t_Slot_inst_get(insn)) {
 			case 0:
 			  return 114; /* isync */
 			case 1:
@@ -8676,15 +8618,15 @@ Slot_inst_decode (const xtensa_insnbuf insn)
 			  return 113; /* extw */
 			case 15:
 			  return 95; /* nop */
-			}
-		    }
+			default:
+			  break;
+		      } /* end "switch (Field_t_Slot_inst_get(insn))" */
+		  }
 		  break;
 		case 3:
-		  switch (Field_t_Slot_inst_get (insn))
-		    {
+		  switch (Field_t_Slot_inst_get(insn)) {
 		    case 0:
-		      switch (Field_s_Slot_inst_get (insn))
-			{
+		      switch (Field_s_Slot_inst_get(insn)) {
 			case 0:
 			  return 1; /* rfe */
 			case 2:
@@ -8693,34 +8635,44 @@ Slot_inst_decode (const xtensa_insnbuf insn)
 			  return 16; /* rfwo */
 			case 5:
 			  return 17; /* rfwu */
-			}
+			default:
+			  break;
+		      } /* end "switch (Field_s_Slot_inst_get(insn))" */
 		      break;
 		    case 1:
 		      return 188; /* rfi */
-		    }
+		    default:
+		      break;
+		  } /* end "switch (Field_t_Slot_inst_get(insn))" */
 		  break;
 		case 4:
 		  return 196; /* break */
 		case 5:
-		  switch (Field_s_Slot_inst_get (insn))
-		    {
+		  switch (Field_s_Slot_inst_get(insn)) {
 		    case 0:
-		      if (Field_t_Slot_inst_get (insn) == 0)
+		      if (Field_t_Slot_inst_get(insn) == 0) {
 			return 3; /* syscall */
+		      }
 		      break;
 		    case 1:
-		      if (Field_t_Slot_inst_get (insn) == 0)
+		      if (Field_t_Slot_inst_get(insn) == 0) {
 			return 4; /* simcall */
+		      }
 		      break;
-		    }
+		    default:
+		      break;
+		  } /* end "switch (Field_s_Slot_inst_get(insn))" */
 		  break;
 		case 6:
 		  return 118; /* rsil */
 		case 7:
-		  if (Field_t_Slot_inst_get (insn) == 0)
+		  if (Field_t_Slot_inst_get(insn) == 0) {
 		    return 189; /* waiti */
+		  }
 		  break;
-		}
+		default:
+		  break;
+	      } /* end "switch (Field_r_Slot_inst_get(insn))" */
 	      break;
 	    case 1:
 	      return 47; /* and */
@@ -8729,48 +8681,55 @@ Slot_inst_decode (const xtensa_insnbuf insn)
 	    case 3:
 	      return 49; /* xor */
 	    case 4:
-	      switch (Field_r_Slot_inst_get (insn))
-		{
+	      switch (Field_r_Slot_inst_get(insn)) {
 		case 0:
-		  if (Field_t_Slot_inst_get (insn) == 0)
+		  if (Field_t_Slot_inst_get(insn) == 0) {
 		    return 100; /* ssr */
+		  }
 		  break;
 		case 1:
-		  if (Field_t_Slot_inst_get (insn) == 0)
+		  if (Field_t_Slot_inst_get(insn) == 0) {
 		    return 101; /* ssl */
+		  }
 		  break;
 		case 2:
-		  if (Field_t_Slot_inst_get (insn) == 0)
+		  if (Field_t_Slot_inst_get(insn) == 0) {
 		    return 102; /* ssa8l */
+		  }
 		  break;
 		case 3:
-		  if (Field_t_Slot_inst_get (insn) == 0)
+		  if (Field_t_Slot_inst_get(insn) == 0) {
 		    return 103; /* ssa8b */
+		  }
 		  break;
 		case 4:
-		  if (Field_thi3_Slot_inst_get (insn) == 0)
+		  if (Field_thi3_Slot_inst_get(insn) == 0) {
 		    return 104; /* ssai */
+		  }
 		  break;
 		case 8:
-		  if (Field_s_Slot_inst_get (insn) == 0)
+		  if (Field_s_Slot_inst_get(insn) == 0) {
 		    return 13; /* rotw */
+		  }
 		  break;
 		case 14:
 		  return 289; /* nsa */
 		case 15:
 		  return 290; /* nsau */
-		}
+		default:
+		  break;
+	      } /* end "switch (Field_r_Slot_inst_get(insn))" */
 	      break;
 	    case 5:
-	      switch (Field_r_Slot_inst_get (insn))
-		{
+	      switch (Field_r_Slot_inst_get(insn)) {
 		case 1:
 		  return 287; /* hwwitlba */
 		case 3:
 		  return 283; /* ritlb0 */
 		case 4:
-		  if (Field_t_Slot_inst_get (insn) == 0)
+		  if (Field_t_Slot_inst_get(insn) == 0) {
 		    return 281; /* iitlb */
+		  }
 		  break;
 		case 5:
 		  return 282; /* pitlb */
@@ -8783,8 +8742,9 @@ Slot_inst_decode (const xtensa_insnbuf insn)
 		case 11:
 		  return 278; /* rdtlb0 */
 		case 12:
-		  if (Field_t_Slot_inst_get (insn) == 0)
+		  if (Field_t_Slot_inst_get(insn) == 0) {
 		    return 276; /* idtlb */
+		  }
 		  break;
 		case 13:
 		  return 277; /* pdtlb */
@@ -8792,16 +8752,19 @@ Slot_inst_decode (const xtensa_insnbuf insn)
 		  return 280; /* wdtlb */
 		case 15:
 		  return 279; /* rdtlb1 */
-		}
+		default:
+		  break;
+	      } /* end "switch (Field_r_Slot_inst_get(insn))" */
 	      break;
 	    case 6:
-	      switch (Field_s_Slot_inst_get (insn))
-		{
+	      switch (Field_s_Slot_inst_get(insn)) {
 		case 0:
 		  return 93; /* neg */
 		case 1:
 		  return 94; /* abs */
-		}
+		default:
+		  break;
+	      } /* end "switch (Field_s_Slot_inst_get(insn))" */
 	      break;
 	    case 8:
 	      return 39; /* add */
@@ -8819,11 +8782,12 @@ Slot_inst_decode (const xtensa_insnbuf insn)
 	      return 45; /* subx4 */
 	    case 15:
 	      return 46; /* subx8 */
-	    }
+	    default:
+	      break;
+	  } /* end "switch (Field_op2_Slot_inst_get(insn))" */
 	  break;
 	case 1:
-	  switch (Field_op2_Slot_inst_get (insn))
-	    {
+	  switch (Field_op2_Slot_inst_get(insn)) {
 	    case 0:
 	    case 1:
 	      return 109; /* slli */
@@ -8833,8 +8797,7 @@ Slot_inst_decode (const xtensa_insnbuf insn)
 	    case 4:
 	      return 111; /* srli */
 	    case 6:
-	      switch (Field_sr_Slot_inst_get (insn))
-		{
+	      switch (Field_sr_Slot_inst_get(insn)) {
 		case 0:
 		  return 127; /* xsr.lbeg */
 		case 1:
@@ -8923,25 +8886,29 @@ Slot_inst_decode (const xtensa_insnbuf insn)
 		  return 183; /* xsr.misc0 */
 		case 245:
 		  return 186; /* xsr.misc1 */
-		}
+		default:
+		  break;
+	      } /* end "switch (Field_sr_Slot_inst_get(insn))" */
 	      break;
 	    case 8:
 	      return 106; /* src */
 	    case 9:
-	      if (Field_s_Slot_inst_get (insn) == 0)
+	      if (Field_s_Slot_inst_get(insn) == 0) {
 		return 107; /* srl */
+	      }
 	      break;
 	    case 10:
-	      if (Field_t_Slot_inst_get (insn) == 0)
+	      if (Field_t_Slot_inst_get(insn) == 0) {
 		return 105; /* sll */
+	      }
 	      break;
 	    case 11:
-	      if (Field_s_Slot_inst_get (insn) == 0)
+	      if (Field_s_Slot_inst_get(insn) == 0) {
 		return 108; /* sra */
+	      }
 	      break;
 	    case 15:
-	      switch (Field_r_Slot_inst_get (insn))
-		{
+	      switch (Field_r_Slot_inst_get(insn)) {
 		case 0:
 		  return 248; /* lict */
 		case 1:
@@ -8955,25 +8922,29 @@ Slot_inst_decode (const xtensa_insnbuf insn)
 		case 9:
 		  return 262; /* sdct */
 		case 14:
-		  if (Field_t_Slot_inst_get (insn) == 0 &&
-		      Field_s_Slot_inst_get (insn) == 0)
+		  if ((Field_t_Slot_inst_get(insn) == 0) &&
+		      (Field_s_Slot_inst_get(insn) == 0)) {
 		    return 231; /* rfdo */
-		  if (Field_t_Slot_inst_get (insn) == 1 &&
-		      Field_s_Slot_inst_get (insn) == 0)
+		  }
+		  if ((Field_t_Slot_inst_get(insn) == 1) &&
+		      (Field_s_Slot_inst_get(insn) == 0)) {
 		    return 232; /* rfdd */
+		  }
 		  break;
 		case 15:
 		  return 286; /* ldpte */
-		}
+		default:
+		  break;
+	      } /* end "switch (Field_r_Slot_inst_get(insn))" */
 	      break;
-	    }
+	    default:
+	      break;
+	  } /* end "(Field_op2_Slot_inst_get(insn))" */
 	  break;
 	case 3:
-	  switch (Field_op2_Slot_inst_get (insn))
-	    {
+	  switch (Field_op2_Slot_inst_get(insn)) {
 	    case 0:
-	      switch (Field_sr_Slot_inst_get (insn))
-		{
+	      switch (Field_sr_Slot_inst_get(insn)) {
 		case 0:
 		  return 125; /* rsr.lbeg */
 		case 1:
@@ -9070,11 +9041,12 @@ Slot_inst_decode (const xtensa_insnbuf insn)
 		  return 181; /* rsr.misc0 */
 		case 245:
 		  return 184; /* rsr.misc1 */
-		}
+		default:
+		  break;
+	      } /* end "switch (Field_sr_Slot_inst_get(insn))" */
 	      break;
 	    case 1:
-	      switch (Field_sr_Slot_inst_get (insn))
-		{
+	      switch (Field_sr_Slot_inst_get(insn)) {
 		case 0:
 		  return 126; /* wsr.lbeg */
 		case 1:
@@ -9167,7 +9139,9 @@ Slot_inst_decode (const xtensa_insnbuf insn)
 		  return 182; /* wsr.misc0 */
 		case 245:
 		  return 185; /* wsr.misc1 */
-		}
+		default:
+		  break;
+	      } /* end "switch (Field_sr_Slot_inst_get(insn))" */
 	      break;
 	    case 8:
 	      return 89; /* moveqz */
@@ -9177,27 +9151,31 @@ Slot_inst_decode (const xtensa_insnbuf insn)
 	      return 91; /* movltz */
 	    case 11:
 	      return 92; /* movgez */
-	    }
+	    default:
+	      break;
+	  } /* end "switch (Field_op2_Slot_inst_get(insn))" */
 	  break;
 	case 4:
 	case 5:
 	  return 76; /* extui */
 	case 9:
-	  switch (Field_op2_Slot_inst_get (insn))
-	    {
+	  switch (Field_op2_Slot_inst_get(insn)) {
 	    case 0:
 	      return 18; /* l32e */
 	    case 4:
 	      return 19; /* s32e */
-	    }
+	    default:
+	      break;
+	  } /* end "switch (Field_op2_Slot_inst_get(insn))" */
 	  break;
-	}
+	default:
+	  break;
+      } /* end "switch (Field_op1_Slot_inst_get(insn))" */
       break;
     case 1:
       return 83; /* l32r */
     case 2:
-      switch (Field_r_Slot_inst_get (insn))
-	{
+      switch (Field_r_Slot_inst_get(insn)) {
 	case 0:
 	  return 84; /* l8ui */
 	case 1:
@@ -9211,8 +9189,7 @@ Slot_inst_decode (const xtensa_insnbuf insn)
 	case 6:
 	  return 98; /* s32i */
 	case 7:
-	  switch (Field_t_Slot_inst_get (insn))
-	    {
+	  switch (Field_t_Slot_inst_get(insn)) {
 	    case 0:
 	      return 258; /* dpfr */
 	    case 1:
@@ -9230,13 +9207,14 @@ Slot_inst_decode (const xtensa_insnbuf insn)
 	    case 7:
 	      return 257; /* dii */
 	    case 8:
-	      switch (Field_op1_Slot_inst_get (insn))
-		{
+	      switch (Field_op1_Slot_inst_get(insn)) {
 		case 4:
 		  return 254; /* diwb */
 		case 5:
 		  return 255; /* diwbi */
-		}
+		default:
+		  break;
+	      } /* end "switch (Field_op1_Slot_inst_get(insn))" */
 	      break;
 	    case 12:
 	      return 245; /* ipf */
@@ -9244,7 +9222,9 @@ Slot_inst_decode (const xtensa_insnbuf insn)
 	      return 246; /* ihi */
 	    case 15:
 	      return 247; /* iii */
-	    }
+	    default:
+	      break;
+	  } /* end "switch (Field_t_Slot_inst_get(insn))" */
 	  break;
 	case 9:
 	  return 81; /* l16si */
@@ -9254,11 +9234,12 @@ Slot_inst_decode (const xtensa_insnbuf insn)
 	  return 37; /* addi */
 	case 13:
 	  return 38; /* addmi */
-	}
+	default:
+	  break;
+      } /* end "switch (Field_r_Slot_inst_get(insn))" */
       break;
     case 5:
-      switch (Field_n_Slot_inst_get (insn))
-	{
+      switch (Field_n_Slot_inst_get(insn)) {
 	case 0:
 	  return 74; /* call0 */
 	case 1:
@@ -9267,16 +9248,16 @@ Slot_inst_decode (const xtensa_insnbuf insn)
 	  return 6; /* call8 */
 	case 3:
 	  return 5; /* call12 */
-	}
+	default:
+	  break;
+      } /* end "switch (Field_n_Slot_inst_get(insn))" */
       break;
     case 6:
-      switch (Field_n_Slot_inst_get (insn))
-	{
+      switch (Field_n_Slot_inst_get(insn)) {
 	case 0:
 	  return 78; /* j */
 	case 1:
-	  switch (Field_m_Slot_inst_get (insn))
-	    {
+	  switch (Field_m_Slot_inst_get(insn)) {
 	    case 0:
 	      return 70; /* beqz */
 	    case 1:
@@ -9285,11 +9266,12 @@ Slot_inst_decode (const xtensa_insnbuf insn)
 	      return 73; /* bltz */
 	    case 3:
 	      return 72; /* bgez */
-	    }
+	    default:
+	      break;
+	  } /* end "switch (Field_m_Slot_inst_get(insn))" */
 	  break;
 	case 2:
-	  switch (Field_m_Slot_inst_get (insn))
-	    {
+	  switch (Field_m_Slot_inst_get(insn)) {
 	    case 0:
 	      return 50; /* beqi */
 	    case 1:
@@ -9298,35 +9280,40 @@ Slot_inst_decode (const xtensa_insnbuf insn)
 	      return 53; /* blti */
 	    case 3:
 	      return 52; /* bgei */
-	    }
+	    default:
+	      break;
+	  } /* end "switch (Field_m_Slot_inst_get(insn))" */
 	  break;
 	case 3:
-	  switch (Field_m_Slot_inst_get (insn))
-	    {
+	  switch (Field_m_Slot_inst_get(insn)) {
 	    case 0:
 	      return 11; /* entry */
 	    case 1:
-	      switch (Field_r_Slot_inst_get (insn))
-		{
+	      switch (Field_r_Slot_inst_get(insn)) {
 		case 8:
 		  return 85; /* loop */
 		case 9:
 		  return 86; /* loopnez */
 		case 10:
 		  return 87; /* loopgtz */
-		}
+		default:
+		  break;
+	      } /* end "switch (Field_r_Slot_inst_get(insn))" */
 	      break;
 	    case 2:
 	      return 57; /* bltui */
 	    case 3:
 	      return 56; /* bgeui */
-	    }
+	    default:
+	      break;
+	  } /* end "switch (Field_m_Slot_inst_get(insn))" */
 	  break;
-	}
+	default:
+	  break;
+      } /* end "switch (Field_n_Slot_inst_get(insn))" */
       break;
     case 7:
-      switch (Field_r_Slot_inst_get (insn))
-	{
+      switch (Field_r_Slot_inst_get(insn)) {
 	case 0:
 	  return 65; /* bnone */
 	case 1:
@@ -9357,41 +9344,44 @@ Slot_inst_decode (const xtensa_insnbuf insn)
 	case 14:
 	case 15:
 	  return 55; /* bbsi */
-	}
+	default:
+	  break;
+      } /* end "switch (Field_r_Slot_inst_get(insn))" */
       break;
-    }
+    default:
+      break;
+  } /* end "switch (Field_op0_Slot_inst_get(insn))" */
   return 0;
 }
 
 static int
-Slot_inst16b_decode (const xtensa_insnbuf insn)
+Slot_inst16b_decode(const xtensa_insnbuf insn)
 {
-  switch (Field_op0_Slot_inst16b_get (insn))
-    {
+  switch (Field_op0_Slot_inst16b_get(insn)) {
     case 12:
-      switch (Field_i_Slot_inst16b_get (insn))
-	{
+      switch (Field_i_Slot_inst16b_get(insn)) {
 	case 0:
 	  return 33; /* movi.n */
 	case 1:
-	  switch (Field_z_Slot_inst16b_get (insn))
-	    {
+	  switch (Field_z_Slot_inst16b_get(insn)) {
 	    case 0:
 	      return 28; /* beqz.n */
 	    case 1:
 	      return 29; /* bnez.n */
-	    }
+	    default:
+	      break;
+	  }
 	  break;
-	}
+	default:
+	  break;
+      }
       break;
     case 13:
-      switch (Field_r_Slot_inst16b_get (insn))
-	{
+      switch (Field_r_Slot_inst16b_get(insn)) {
 	case 0:
 	  return 32; /* mov.n */
 	case 15:
-	  switch (Field_t_Slot_inst16b_get (insn))
-	    {
+	  switch (Field_t_Slot_inst16b_get(insn)) {
 	    case 0:
 	      return 35; /* ret.n */
 	    case 1:
@@ -9399,26 +9389,33 @@ Slot_inst16b_decode (const xtensa_insnbuf insn)
 	    case 2:
 	      return 197; /* break.n */
 	    case 3:
-	      if (Field_s_Slot_inst16b_get (insn) == 0)
-		return 34; /* nop.n */
+	      if (Field_s_Slot_inst16b_get(insn) == 0) {
+		  return 34; /* nop.n */
+	      }
 	      break;
 	    case 6:
-	      if (Field_s_Slot_inst16b_get (insn) == 0)
-		return 30; /* ill.n */
+	      if (Field_s_Slot_inst16b_get(insn) == 0) {
+		  return 30; /* ill.n */
+	      }
 	      break;
-	    }
+	    default:
+	      break;
+	  }
 	  break;
-	}
+	default:
+	  break;
+      }
       break;
-    }
+    default:
+      break;
+  }
   return 0;
 }
 
 static int
 Slot_inst16a_decode (const xtensa_insnbuf insn)
 {
-  switch (Field_op0_Slot_inst16a_get (insn))
-    {
+  switch (Field_op0_Slot_inst16a_get (insn)) {
     case 8:
       return 31; /* l32i.n */
     case 9:
@@ -9427,13 +9424,14 @@ Slot_inst16a_decode (const xtensa_insnbuf insn)
       return 26; /* add.n */
     case 11:
       return 27; /* addi.n */
-    }
+    default:
+      break;
+  }
   return 0;
 }
 
 
-/* Instruction slots.  */
-
+/* Instruction slots: */
 static void
 Slot_x24_Format_inst_0_get (const xtensa_insnbuf insn,
 			    xtensa_insnbuf slotbuf)
@@ -9505,14 +9503,7 @@ Slot_inst_get_field_fns[] = {
   Field_thi3_Slot_inst_get,
   Field_imm4_Slot_inst_get,
   Field_mn_Slot_inst_get,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
+  0, 0, 0, 0, 0, 0, 0, 0,
   Implicit_Field_ar0_get,
   Implicit_Field_ar4_get,
   Implicit_Field_ar8_get,
@@ -9548,14 +9539,7 @@ Slot_inst_set_field_fns[] = {
   Field_thi3_Slot_inst_set,
   Field_imm4_Slot_inst_set,
   Field_mn_Slot_inst_set,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
+  0, 0, 0, 0, 0, 0, 0, 0,
   Implicit_Field_set,
   Implicit_Field_set,
   Implicit_Field_set,
@@ -9565,27 +9549,13 @@ Slot_inst_set_field_fns[] = {
 static xtensa_get_field_fn
 Slot_inst16a_get_field_fns[] = {
   Field_t_Slot_inst16a_get,
-  0,
-  0,
-  0,
-  0,
+  0, 0, 0, 0,
   Field_s_Slot_inst16a_get,
-  0,
-  0,
-  0,
-  0,
-  0,
+  0, 0, 0, 0, 0,
   Field_op0_Slot_inst16a_get,
-  0,
-  0,
+  0, 0,
   Field_r_Slot_inst16a_get,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
+  0, 0, 0, 0, 0, 0, 0,
   Field_sr_Slot_inst16a_get,
   Field_st_Slot_inst16a_get,
   0,
@@ -9608,27 +9578,13 @@ Slot_inst16a_get_field_fns[] = {
 static xtensa_set_field_fn
 Slot_inst16a_set_field_fns[] = {
   Field_t_Slot_inst16a_set,
-  0,
-  0,
-  0,
-  0,
+  0, 0, 0, 0,
   Field_s_Slot_inst16a_set,
-  0,
-  0,
-  0,
-  0,
-  0,
+  0, 0, 0, 0, 0,
   Field_op0_Slot_inst16a_set,
-  0,
-  0,
+  0, 0,
   Field_r_Slot_inst16a_set,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
+  0, 0, 0, 0, 0, 0, 0,
   Field_sr_Slot_inst16a_set,
   Field_st_Slot_inst16a_set,
   0,
@@ -9651,27 +9607,13 @@ Slot_inst16a_set_field_fns[] = {
 static xtensa_get_field_fn
 Slot_inst16b_get_field_fns[] = {
   Field_t_Slot_inst16b_get,
-  0,
-  0,
-  0,
-  0,
+  0, 0, 0, 0,
   Field_s_Slot_inst16b_get,
-  0,
-  0,
-  0,
-  0,
-  0,
+  0, 0, 0, 0, 0,
   Field_op0_Slot_inst16b_get,
-  0,
-  0,
+  0, 0,
   Field_r_Slot_inst16b_get,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
+  0, 0, 0, 0, 0, 0, 0,
   Field_sr_Slot_inst16b_get,
   Field_st_Slot_inst16b_get,
   0,
@@ -9694,27 +9636,13 @@ Slot_inst16b_get_field_fns[] = {
 static xtensa_set_field_fn
 Slot_inst16b_set_field_fns[] = {
   Field_t_Slot_inst16b_set,
-  0,
-  0,
-  0,
-  0,
+  0, 0, 0, 0,
   Field_s_Slot_inst16b_set,
-  0,
-  0,
-  0,
-  0,
-  0,
+  0, 0, 0, 0, 0,
   Field_op0_Slot_inst16b_set,
-  0,
-  0,
+  0, 0,
   Field_r_Slot_inst16b_set,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
-  0,
+  0, 0, 0, 0, 0, 0, 0,
   Field_sr_Slot_inst16b_set,
   Field_st_Slot_inst16b_set,
   0,
@@ -9749,23 +9677,22 @@ static xtensa_slot_internal slots[] = {
     Slot_inst16b_decode, "nop.n" }
 };
 
-
-/* Instruction formats.  */
 
+/* Instruction formats: */
 static void
-Format_x24_encode (xtensa_insnbuf insn)
+Format_x24_encode(xtensa_insnbuf insn)
 {
   insn[0] = 0;
 }
 
 static void
-Format_x16a_encode (xtensa_insnbuf insn)
+Format_x16a_encode(xtensa_insnbuf insn)
 {
   insn[0] = 0x800000;
 }
 
 static void
-Format_x16b_encode (xtensa_insnbuf insn)
+Format_x16b_encode(xtensa_insnbuf insn)
 {
   insn[0] = 0xc00000;
 }
@@ -9784,46 +9711,33 @@ static xtensa_format_internal formats[] = {
 
 
 static int
-format_decoder (const xtensa_insnbuf insn)
+format_decoder(const xtensa_insnbuf insn)
 {
-  if ((insn[0] & 0x800000) == 0)
+  if ((insn[0] & 0x800000) == 0) {
     return 0; /* x24 */
-  if ((insn[0] & 0xc00000) == 0x800000)
+  }
+  if ((insn[0] & 0xc00000) == 0x800000) {
     return 1; /* x16a */
-  if ((insn[0] & 0xe00000) == 0xc00000)
+  }
+  if ((insn[0] & 0xe00000) == 0xc00000) {
     return 2; /* x16b */
+  }
   return -1;
 }
 
 static int length_table[16] = {
-  3,
-  3,
-  3,
-  3,
-  3,
-  3,
-  3,
-  3,
-  2,
-  2,
-  2,
-  2,
-  2,
-  2,
-  -1,
-  -1
+  3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, -1, -1
 };
 
 static int
-length_decoder (const unsigned char *insn)
+length_decoder(const unsigned char *insn)
 {
-  int op0 = (insn[0] >> 4) & 0xf;
+  int op0;
+  op0 = ((insn[0] >> 4) & 0xf);
   return length_table[op0];
 }
 
-
-/* Top-level ISA structure.  */
-
+/* Top-level ISA structure: */
 xtensa_isa_internal xtensa_modules = {
   1 /* big-endian */,
   3 /* insn_size */, 0,
@@ -9840,3 +9754,10 @@ xtensa_isa_internal xtensa_modules = {
   0, interfaces, 0,
   0, funcUnits, 0
 };
+
+/* silence warning from '-Wunused-macros': */
+#ifdef STATE_PC
+# undef STATE_PC
+#endif /* STATE_PC */
+
+/* EOF */

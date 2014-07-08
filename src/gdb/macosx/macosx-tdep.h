@@ -53,14 +53,14 @@ struct objfile *macosx_find_objfile_matching_dsym_in_bundle (char *dsym_bundle_p
 
 int macosx_get_uuid_for_path(const char *filename, unsigned char uuid[], unsigned long len);
 
-char *macosx_kext_info (const char *filename,
+char *macosx_kext_info(const char *filename,
                   const char **bundle_executable_name_from_plist,
                   const char **bundle_identifier_name_from_plist);
 
-enum gdb_osabi generic_mach_o_osabi_sniffer (bfd *abfd, enum bfd_architecture arch,
+enum gdb_osabi generic_mach_o_osabi_sniffer(bfd *abfd, enum bfd_architecture arch,
 			      unsigned long mach_32,
 			      unsigned long mach_64,
-			      int (*query_64_bit_fn) ());
+			      int (*query_64_bit_fn)(void));
 
 int fast_show_stack_trace_prologue (unsigned int count_limit,
 				unsigned int print_start,
@@ -77,7 +77,7 @@ int macosx_enable_exception_callback (enum exception_event_kind kind, int enable
 
 struct symtabs_and_lines *macosx_find_exception_catchpoints (enum exception_event_kind kind, struct objfile *restrict_objfile);
 
-struct exception_event_record *macosx_get_current_exception_event ();
+struct exception_event_record *macosx_get_current_exception_event(void);
 
 struct section_addr_info *get_section_addresses_for_macho_in_memory (CORE_ADDR mh_addr);
 
@@ -110,9 +110,9 @@ int try_to_find_and_load_kernel_via_uuid (CORE_ADDR in_memory_addr, uuid_t in_me
 
 struct gdb_copy_dyld_cache_local_symbols_entry
 {
-        uint32_t        dylibOffset;      // file (pre-loaded) address of this dylib minus 0x30000000
-        uint32_t        nlistStartIndex;  // nlist record number in the array at dyld_shared_cache_local_nlists
-        uint32_t        nlistCount;       // number of nlist records for this dylib
+  uint32_t dylibOffset; /* file (pre-loaded) address of this dylib minus 0x30000000 */
+  uint32_t nlistStartIndex; /* nlist record number in the array at dyld_shared_cache_local_nlists */
+  uint32_t nlistCount; /* number of nlist records for this dylib */
 };
 
 extern uint8_t *dyld_shared_cache_local_nlists;
@@ -122,8 +122,8 @@ extern int dyld_shared_cache_strings_size;
 extern struct gdb_copy_dyld_cache_local_symbols_entry *dyld_shared_cache_entries;
 extern int dyld_shared_cache_entries_count;
 
-void free_dyld_shared_cache_local_syms ();
-void get_dyld_shared_cache_local_syms ();
+void free_dyld_shared_cache_local_syms(void);
+void get_dyld_shared_cache_local_syms(void);
 struct gdb_copy_dyld_cache_local_symbols_entry *get_dyld_shared_cache_entry (CORE_ADDR intended_load_addr);
 
 

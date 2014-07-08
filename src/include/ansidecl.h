@@ -1,4 +1,4 @@
-/* ANSI and traditional C compatability macros
+/* ansidecl.h: ANSI and traditional C compatability macros
    Copyright 1991, 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001
    Free Software Foundation, Inc.
    This file is part of the GNU C Library.
@@ -133,7 +133,7 @@ So instead we use the macro below and test it against specific values.  */
    significant.)  This macro will evaluate to 0 if we are not using
    gcc at all.  */
 #ifndef GCC_VERSION
-#define GCC_VERSION (__GNUC__ * 1000 + __GNUC_MINOR__)
+# define GCC_VERSION (__GNUC__ * 1000 + __GNUC_MINOR__)
 #endif /* GCC_VERSION */
 
 #if defined (__STDC__) || defined (_AIX) || (defined (__mips) && defined (_SYSTYPE_SVR4)) || defined(_WIN32) || (defined(__alpha) && defined(__cplusplus))
@@ -152,7 +152,7 @@ So instead we use the macro below and test it against specific values.  */
 /* PARAMS is often defined elsewhere (e.g. by libintl.h), so wrap it in
    a #ifndef.  */
 #ifndef PARAMS
-#define PARAMS(ARGS)		ARGS
+# define PARAMS(ARGS)		ARGS
 #endif
 
 #define VPARAMS(ARGS)		ARGS
@@ -165,23 +165,23 @@ So instead we use the macro below and test it against specific values.  */
 #define VA_OPEN(AP, VAR)	{ va_list AP; va_start(AP, VAR); { struct Qdmy
 #define VA_CLOSE(AP)		} va_end(AP); }
 #define VA_FIXEDARG(AP, T, N)	struct Qdmy
- 
+
 #undef const
 #undef volatile
 #undef signed
 
-/* inline requires special treatment; it's in C99, and GCC >=2.7 supports
-   it too, but it's not in C89.  */
+/* inline requires special treatment; it is in C99, and GCC >=2.7 supports
+ * it too, but it is not in C89.  */
 #undef inline
-#if __STDC_VERSION__ > 199901L
-/* it's a keyword */
+#if defined(__STDC_VERSION__) && (__STDC_VERSION__ > 199901L)
+/* it is a keyword */
 #else
-# if GCC_VERSION >= 2007
+# if defined(GCC_VERSION) && (GCC_VERSION >= 2007)
 #  define inline __inline__   /* __inline__ prevents -pedantic warnings */
 # else
 #  define inline  /* nothing */
-# endif
-#endif
+# endif /* gcc 2.7+ */
+#endif /* C99 || GCC */
 
 /* These are obsolete.  Do not use.  */
 #ifndef IN_GCC
@@ -361,11 +361,12 @@ So instead we use the macro below and test it against specific values.  */
 # endif /* GNUC >= 3.0 */
 #endif /* ATTRIBUTE_ALIGNED_ALIGNOF */
 
-/* We use __extension__ in some places to suppress -pedantic warnings
-   about GCC extensions.  This feature didn't work properly before
-   gcc 2.8.  */
+/* We use __extension__ in some places to suppress -pedantic warnings about
+ * GCC extensions. This feature did NOT work properly before gcc 2.8. */
 #if GCC_VERSION < 2008
-#define __extension__
+# define __extension__
 #endif
 
 #endif	/* ansidecl.h	*/
+
+/* EOF */

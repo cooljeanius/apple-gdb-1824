@@ -28,7 +28,9 @@
 #include <sys/param.h>
 #include <sys/dir.h>
 #include <signal.h>
-#include <sys/core.h>
+#if defined(__NetBSD__) || defined(HAVE_SYS_CORE_H)
+# include <sys/core.h>
+#endif /* __NetBSD__ || HAVE_SYS_CORE_H */
 
 /* The machine ID for OpenBSD/sparc64 and older versions of
    NetBSD/sparc64 overlaps with M_MIPS1.  */
@@ -47,10 +49,8 @@ struct netbsd_core_struct
   struct core core;
 } *rawptr;
 
-/* Handle NetBSD-style core dump file.  */
-
-static const bfd_target *
-netbsd_core_file_p (bfd *abfd)
+/* Handle NetBSD-style core dump file: */
+static const bfd_target *netbsd_core_file_p(bfd *abfd)
 {
   int val;
   unsigned i;
@@ -307,17 +307,19 @@ const bfd_target netbsd_core_vec =
       bfd_false, bfd_false
     },
 
-    BFD_JUMP_TABLE_GENERIC (_bfd_generic),
-    BFD_JUMP_TABLE_COPY (_bfd_generic),
-    BFD_JUMP_TABLE_CORE (netbsd),
-    BFD_JUMP_TABLE_ARCHIVE (_bfd_noarchive),
-    BFD_JUMP_TABLE_SYMBOLS (_bfd_nosymbols),
-    BFD_JUMP_TABLE_RELOCS (_bfd_norelocs),
-    BFD_JUMP_TABLE_WRITE (_bfd_generic),
-    BFD_JUMP_TABLE_LINK (_bfd_nolink),
-    BFD_JUMP_TABLE_DYNAMIC (_bfd_nodynamic),
+    BFD_JUMP_TABLE_GENERIC(_bfd_generic),
+    BFD_JUMP_TABLE_COPY(_bfd_generic),
+    BFD_JUMP_TABLE_CORE(netbsd),
+    BFD_JUMP_TABLE_ARCHIVE(_bfd_noarchive),
+    BFD_JUMP_TABLE_SYMBOLS(_bfd_nosymbols),
+    BFD_JUMP_TABLE_RELOCS(_bfd_norelocs),
+    BFD_JUMP_TABLE_WRITE(_bfd_generic),
+    BFD_JUMP_TABLE_LINK(_bfd_nolink),
+    BFD_JUMP_TABLE_DYNAMIC(_bfd_nodynamic),
 
     NULL,
 
-    (PTR) 0			        /* Backend_data.  */
+    (PTR)0			        /* Backend_data.  */
   };
+
+/* EOF */

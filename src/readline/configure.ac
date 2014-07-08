@@ -337,13 +337,13 @@ if test -f ${srcdir}/support/shobj-conf; then
 	AC_SUBST([SHLIB_MINOR])
 fi
 
-if test "${opt_static_libs}" = "yes"; then
-	STATIC_TARGET=static
-	STATIC_INSTALL_TARGET=install-static
+if test "x${opt_static_libs}" = "xyes"; then
+  STATIC_TARGET=static
+  STATIC_INSTALL_TARGET=install-static
 fi
-if test "${opt_shared_libs}" = "yes"; then
-	SHARED_TARGET=shared
-	SHARED_INSTALL_TARGET=install-shared
+if test "x${opt_shared_libs}" = "xyes"; then
+  SHARED_TARGET=shared
+  SHARED_INSTALL_TARGET=install-shared
 fi
 
 # Libtool

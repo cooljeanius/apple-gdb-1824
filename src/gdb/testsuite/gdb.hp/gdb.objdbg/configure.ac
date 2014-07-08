@@ -17,16 +17,17 @@ AC_CANONICAL_TARGET
 
 AC_PROG_AWK
 if test "x${CC}" = "x"; then
-	test -z "${CC}"
-	AC_PROG_CC
+  test -z "${CC}"
+  AC_PROG_CC
 else
-	test ! -z "${CC}"
-	AC_PROG_GCC_TRADITIONAL
+  test ! -z "${CC}"
+  AC_PROG_GCC_TRADITIONAL
 fi
 AC_PROG_CPP
 AC_PROG_CXX
 
 AC_CHECK_HEADERS([stdio.h])
 
+# Output:
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

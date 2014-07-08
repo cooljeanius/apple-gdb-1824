@@ -44,13 +44,13 @@ decompress_contents (bfd_byte *compressed_buffer,
   strm.zalloc = NULL;
   strm.zfree = NULL;
   strm.opaque = NULL;
-  strm.avail_in = compressed_size - 12;
-  strm.next_in = (Bytef*) compressed_buffer + 12;
+  strm.avail_in = (compressed_size - 12);
+  strm.next_in = (Bytef*)compressed_buffer + 12;
   strm.avail_out = uncompressed_size;
 
-  BFD_ASSERT (Z_OK == 0);
-  rc = inflateInit (&strm);
-  while (strm.avail_in > 0 && strm.avail_out > 0)
+  BFD_ASSERT(Z_OK == 0);
+  rc = inflateInit(&strm);
+  while ((strm.avail_in > 0) && (strm.avail_out > 0))
     {
       if (rc != Z_OK)
 	break;
@@ -94,7 +94,7 @@ bfd_compress_section_contents (bfd *abfd ATTRIBUTE_UNUSED,
 			       bfd_size_type uncompressed_size ATTRIBUTE_UNUSED)
 {
 #ifndef HAVE_ZLIB_H
-  bfd_set_error (bfd_error_invalid_operation);
+  bfd_set_error(bfd_error_invalid_operation);
   return FALSE;
 #else
   uLong compressed_size;

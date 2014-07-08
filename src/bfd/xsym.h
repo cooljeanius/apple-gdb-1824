@@ -1,4 +1,4 @@
-/* xSYM symbol-file support for BFD.
+/* xsym.h: xSYM symbol-file support for BFD.
    Copyright 1999, 2000, 2001, 2002, 2003, 2005
    Free Software Foundation, Inc.
 
@@ -707,28 +707,30 @@ extern int bfd_sym_sizeof_headers
   (bfd *, bfd_boolean);
 
 extern void
-bfd_sym_parse_file_reference_v33r0 (unsigned char *buf, size_t len, bfd_sym_file_reference *entry);
+bfd_sym_parse_file_reference_v33r0(unsigned char *buf, size_t len, bfd_sym_file_reference *entry);
 
 extern void
 bfd_sym_parse_file_references_index_table_entry_v33r0
 (unsigned char *buf, size_t len, bfd_sym_file_references_index_table_entry *entry);
 
 extern void
-bfd_sym_parse_modules_table_entry_v33r0 (unsigned char *buf, size_t len, bfd_sym_modules_table_entry *entry);
+bfd_sym_parse_modules_table_entry_v33r0(unsigned char *buf, size_t len, bfd_sym_modules_table_entry *entry);
 
 extern void
-bfd_sym_parse_contained_statements_table_entry_v33r0 (unsigned char *buf, size_t len, bfd_sym_contained_statements_table_entry *entry);
+bfd_sym_parse_contained_statements_table_entry_v33r0(unsigned char *buf, size_t len, bfd_sym_contained_statements_table_entry *entry);
 
 extern void
-bfd_sym_parse_contained_variables_table_entry_v33r0 (unsigned char *buf, size_t len, bfd_sym_contained_variables_table_entry *entry);
+bfd_sym_parse_contained_variables_table_entry_v33r0(unsigned char *buf, size_t len, bfd_sym_contained_variables_table_entry *entry);
 
 extern void
-bfd_sym_parse_contained_modules_table_entry_v33r0 (unsigned char *buf, size_t len, bfd_sym_contained_modules_table_entry *entry);
+bfd_sym_parse_contained_modules_table_entry_v33r0(unsigned char *buf, size_t len, bfd_sym_contained_modules_table_entry *entry);
 
 extern void
-bfd_sym_parse_file_references_table_entry_v33r0 (unsigned char *buf, size_t len, bfd_sym_file_references_table_entry *entry);
+bfd_sym_parse_file_references_table_entry_v33r0(unsigned char *buf, size_t len, bfd_sym_file_references_table_entry *entry);
 
 extern void
-bfd_sym_parse_resources_table_entry_v33r0 (unsigned char *buf, size_t len, bfd_sym_resources_table_entry *entry);
+bfd_sym_parse_resources_table_entry_v33r0(unsigned char *buf, size_t len, bfd_sym_resources_table_entry *entry);
 
 #endif /* __xSYM_H__ */
+
+/* EOF */

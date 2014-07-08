@@ -1,11 +1,11 @@
-/* Low-level I/O routines for BFDs.
-
-   Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998,
-   1999, 2000, 2001, 2002, 2003, 2004, 2005
-   Free Software Foundation, Inc.
-
-   Written by Cygnus Support.
-
+/* bfdio.c: Low-level I/O routines for BFDs.
+ *
+ * Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998,
+ * 1999, 2000, 2001, 2002, 2003, 2004, 2005
+ * Free Software Foundation, Inc.
+ *
+ * Written by Cygnus Support. */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,8 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 
 #include "sysdep.h"
 
@@ -227,7 +228,7 @@ bfd_flush (bfd *abfd)
   if ((abfd->flags & BFD_IN_MEMORY) != 0)
     {
       return 0;
-    } 
+    }
   else if (abfd->iovec)
     return abfd->iovec->bflush (abfd);
   else
@@ -250,7 +251,7 @@ bfd_stat (bfd *abfd, struct stat *statbuf)
       memset (statbuf, 0, sizeof (struct stat));
       statbuf->st_size = b->size;
       return 0;
-    } 
+    }
   else if (abfd->iovec)
     result = abfd->iovec->bstat (abfd, statbuf);
   else
@@ -466,19 +467,19 @@ _bfd_io_close (bfd *abfd)
   if (abfd->flags & BFD_IN_MEMORY)
     {
       int ret = 0;
-      
+
       struct bfd_in_memory *b = (struct bfd_in_memory *) abfd->iostream;
       BFD_ASSERT (b != NULL);
 
 #if 0
-      ret = munmap (b->buffer, b->size);
-#endif
+      ret = munmap(b->buffer, b->size);
+#endif /* 0 */
 
       abfd->iostream = NULL;
       BFD_ASSERT (ret == 0);
-      
+
       return TRUE;
-    } 
+    }
   else
     {
       bfd_boolean ret = TRUE;
@@ -487,3 +488,5 @@ _bfd_io_close (bfd *abfd)
       return (ret);
     }
 }
+
+/* EOF */

@@ -240,24 +240,30 @@ local int gz_fetch(state)
     do {
         switch(state->how) {
         case LOOK:      /* -> LOOK, COPY (only if never GZIP), or GZIP */
-            if (gz_look(state) == -1)
+			if (gz_look(state) == -1) {
                 return -1;
-            if (state->how == LOOK)
+			}
+			if (state->how == LOOK) {
                 return 0;
+			}
             break;
         case COPY:      /* -> COPY */
-            if (gz_load(state, state->out, state->size << 1, &(state->x.have))
-                    == -1)
+            if (gz_load(state, state->out, (state->size << 1), &(state->x.have))
+					== -1) {
                 return -1;
+			}
             state->x.next = state->out;
             return 0;
         case GZIP:      /* -> GZIP or LOOK (if end of gzip stream) */
-            strm->avail_out = state->size << 1;
+            strm->avail_out = (state->size << 1);
             strm->next_out = state->out;
-            if (gz_decomp(state) == -1)
+			if (gz_decomp(state) == -1) {
                 return -1;
+			}
+		default:
+			break; /* (?) */
         }
-    } while (state->x.have == 0 && (!state->eof || strm->avail_in));
+    } while ((state->x.have == 0) && (!state->eof || strm->avail_in));
     return 0;
 }
 

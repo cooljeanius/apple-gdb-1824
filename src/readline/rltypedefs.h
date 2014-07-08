@@ -27,16 +27,21 @@
 extern "C" {
 #endif /* __cplusplus */
 
-/* Old-style */
-
+/* Old-style: */
 #if !defined (_FUNCTION_DEF)
-#  define _FUNCTION_DEF
-
-typedef int Function ();
-typedef void VFunction ();
-typedef char *CPFunction ();
-typedef char **CPPFunction ();
-
+#  define _FUNCTION_DEF 1
+#  if !defined(__STDC__)
+/* really old style: */
+typedef int Function();
+typedef void VFunction();
+typedef char *CPFunction();
+typedef char **CPPFunction();
+#  else
+typedef int Function(void);
+typedef void VFunction(void);
+typedef char *CPFunction(void);
+typedef char **CPPFunction(void);
+#  endif /* !__STDC__ */
 #endif /* _FUNCTION_DEF */
 
 /* New style. */

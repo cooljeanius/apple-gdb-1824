@@ -1,4 +1,4 @@
-/* BFD back-end for mmo objects (MMIX-specific object-format).
+/* mmo.c: BFD back-end for mmo objects (MMIX-specific object-format).
    Copyright 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
    Written by Hans-Peter Nilsson (hp@bitrange.com).
@@ -361,7 +361,7 @@ static void mmo_find_sec_w_addr (bfd *, asection *, void *);
 static void mmo_find_sec_w_addr_grow (bfd *, asection *, void *);
 static asection *mmo_make_section (bfd *, const char *);
 static void mmo_get_symbol_info (bfd *, asymbol *, symbol_info *);
-static void mmo_print_symbol (bfd *, void *, asymbol *, 
+static void mmo_print_symbol (bfd *, void *, asymbol *,
 			      bfd_print_symbol_type);
 static void mmo_init (void);
 static bfd_boolean mmo_mkobject (bfd *);
@@ -3305,7 +3305,7 @@ const bfd_target bfd_mmo_vec =
   BFD_JUMP_TABLE_ARCHIVE (_bfd_noarchive),
   BFD_JUMP_TABLE_SYMBOLS (mmo),
   /* We have to provide a valid method for getting relocs, returning zero,
-     so we can't say BFD_JUMP_TABLE_RELOCS (_bfd_norelocs).  */
+   * so we cannot say BFD_JUMP_TABLE_RELOCS (_bfd_norelocs).  */
   BFD_JUMP_TABLE_RELOCS (mmo),
   BFD_JUMP_TABLE_WRITE (mmo),
   BFD_JUMP_TABLE_LINK (mmo),
@@ -3315,3 +3315,5 @@ const bfd_target bfd_mmo_vec =
 
   NULL
 };
+
+/* EOF */

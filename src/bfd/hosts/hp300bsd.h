@@ -1,3 +1,5 @@
+/* hp300bsd.h */
+
 #include <sys/param.h>
 #ifdef BSD4_4
 #define NO_CORE_COMMAND

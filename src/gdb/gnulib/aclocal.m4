@@ -1,4 +1,4 @@
-# generated automatically by aclocal 1.14 -*- Autoconf -*-
+# generated automatically by aclocal 1.14.1 -*- Autoconf -*-
 
 # Copyright (C) 1996-2013 Free Software Foundation, Inc.
 
@@ -35,7 +35,7 @@ AC_DEFUN([AM_AUTOMAKE_VERSION],
 [am__api_version='1.14'
 dnl Some users find AM_AUTOMAKE_VERSION and mistake it for a way to
 dnl require some minimum version.  Point them to the right macro.
-m4_if([$1], [1.14], [],
+m4_if([$1], [1.14.1], [],
       [AC_FATAL([Do not call $0, use AM_INIT_AUTOMAKE([$1]).])])dnl
 ])
 
@@ -51,7 +51,7 @@ m4_define([_AM_AUTOCONF_VERSION], [])
 # Call AM_AUTOMAKE_VERSION and AM_AUTOMAKE_VERSION so they can be traced.
 # This function is AC_REQUIREd by AM_INIT_AUTOMAKE.
 AC_DEFUN([AM_SET_CURRENT_AUTOMAKE_VERSION],
-[AM_AUTOMAKE_VERSION([1.14])dnl
+[AM_AUTOMAKE_VERSION([1.14.1])dnl
 m4_ifndef([AC_AUTOCONF_VERSION],
   [m4_copy([m4_PACKAGE_VERSION], [AC_AUTOCONF_VERSION])])dnl
 _AM_AUTOCONF_VERSION(m4_defn([AC_AUTOCONF_VERSION]))])
@@ -1243,11 +1243,16 @@ AC_SUBST([am__tar])
 AC_SUBST([am__untar])
 ]) # _AM_PROG_TAR
 
+m4_include([m4/gnulib-use-manually.m4])
+m4_include([m4/memcmp.m4])
 m4_include([m4/onceonly_2_57.m4])
 m4_include([import/m4/00gnulib.m4])
 m4_include([import/m4/alloca.m4])
 m4_include([import/m4/codeset.m4])
 m4_include([import/m4/configmake.m4])
+m4_include([import/m4/dirent_h.m4])
+m4_include([import/m4/dirfd.m4])
+m4_include([import/m4/errno_h.m4])
 m4_include([import/m4/exponentd.m4])
 m4_include([import/m4/exponentl.m4])
 m4_include([import/m4/extensions.m4])
@@ -1266,6 +1271,8 @@ m4_include([import/m4/inttypes-pri.m4])
 m4_include([import/m4/inttypes.m4])
 m4_include([import/m4/isnand.m4])
 m4_include([import/m4/isnanl.m4])
+m4_include([import/m4/iswctype.m4])
+m4_include([import/m4/largefile.m4])
 m4_include([import/m4/localcharset.m4])
 m4_include([import/m4/locale-fr.m4])
 m4_include([import/m4/locale-ja.m4])
@@ -1278,6 +1285,7 @@ m4_include([import/m4/mbsrtowcs.m4])
 m4_include([import/m4/mbstate_t.m4])
 m4_include([import/m4/memchr.m4])
 m4_include([import/m4/memmem.m4])
+m4_include([import/m4/mempcpy.m4])
 m4_include([import/m4/mmap-anon.m4])
 m4_include([import/m4/multiarch.m4])
 m4_include([import/m4/off_t.m4])
@@ -1287,10 +1295,16 @@ m4_include([import/m4/stdbool.m4])
 m4_include([import/m4/stddef_h.m4])
 m4_include([import/m4/stdint.m4])
 m4_include([import/m4/string_h.m4])
+m4_include([import/m4/strstr.m4])
+m4_include([import/m4/sys_stat_h.m4])
 m4_include([import/m4/sys_types_h.m4])
+m4_include([import/m4/time_h.m4])
+m4_include([import/m4/towctrans.m4])
 m4_include([import/m4/unistd_h.m4])
 m4_include([import/m4/warn-on-use.m4])
 m4_include([import/m4/wchar_h.m4])
 m4_include([import/m4/wchar_t.m4])
+m4_include([import/m4/wctrans.m4])
+m4_include([import/m4/wctype.m4])
 m4_include([import/m4/wctype_h.m4])
 m4_include([import/m4/wint_t.m4])

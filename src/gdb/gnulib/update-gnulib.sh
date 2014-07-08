@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Copyright (C) 2011-2013 Free Software Foundation, Inc.
+# Copyright (C) 2011-2014 Free Software Foundation, Inc.
 #
 # This file is part of GDB.
 #
@@ -29,7 +29,20 @@
 #     regenerate the various scripts and Makefiles are on the PATH.
 
 # The list of gnulib modules we are importing in GDB.
-IMPORTED_GNULIB_MODULES="fnmatch-gnu frexpl inttypes memmem update-copyright unistd pathmax"
+IMPORTED_GNULIB_MODULES="\
+    alloca alloca-opt \
+    configmake \
+    dirfd dirent \
+    float fnmatch fnmatch-gnu fpucw frexp frexpl \
+    inttypes inttypes-incomplete isnand-nolibm isnanl-nolibm iswctype \
+    link-warning localcharset \
+    math mbrtowc mbsinit mbsrtowcs memchr memcmp memmem memmem-simple mempcpy \
+    pathmax \
+    snippet/arg-nonnull snippet/c++defs snippet/warn-on-use \
+    stdbool stddef stdint streq string strnlen1 strstr strstr-simple sys_stat sys_types \
+    unistd update-copyright \
+    verify \
+    wchar wctype-h"
 
 # The gnulib commit ID to use for the update.
 GNULIB_COMMIT_SHA1="8d5bd1402003bd0153984b138735adf537d960b0"
@@ -47,21 +60,21 @@ if [ $# -ne 1 ]; then
 fi
 gnulib_prefix=$1
 
-gnulib_tool="$gnulib_prefix/gnulib-tool"
+gnulib_tool="${gnulib_prefix}/gnulib-tool"
 
 # Verify that the gnulib directory does exist...
-if [ ! -f "$gnulib_tool" ]; then
+if [ ! -f "${gnulib_tool}" ]; then
    echo "Error: Invalid gnulib directory. Cannot find gnulib tool"
-   echo "       ($gnulib_tool)."
+   echo "       (${gnulib_tool})."
    echo "Aborting."
    exit 1
 fi
 
 # Verify that we have the right version of gnulib...
-gnulib_head_sha1=`cd $gnulib_prefix && git rev-parse HEAD`
-if [ "$gnulib_head_sha1" != "$GNULIB_COMMIT_SHA1" ]; then
-   echo "Error: Wrong version of gnulib: $gnulib_head_sha1"
-   echo "       (we expected it to be $GNULIB_COMMIT_SHA1)"
+gnulib_head_sha1=`cd ${gnulib_prefix} && git rev-parse HEAD`
+if [ "${gnulib_head_sha1}" != "${GNULIB_COMMIT_SHA1}" ]; then
+   echo "Error: Wrong version of gnulib: ${gnulib_head_sha1}"
+   echo "       (we expected it to be ${GNULIB_COMMIT_SHA1})"
    echo "Aborting."
    exit 1
 fi
@@ -75,43 +88,43 @@ fi
 
 # Verify that we have the correct version of autoconf.
 ver=`autoconf --version 2>&1 | head -1 | sed 's/.*) //'`
-if [ "$ver" != "$AUTOCONF_VERSION" ]; then
-   echo "Error: Wrong autoconf version: $ver. Aborting."
+if [ "${ver}" != "${AUTOCONF_VERSION}" ]; then
+   echo "Error: Wrong autoconf version: ${ver}. Aborting."
    exit 1
 fi
 
 # Verify that we have the correct version of automake.
 ver=`automake --version 2>&1 | head -1 | sed 's/.*) //'`
-if [ "$ver" != "$AUTOMAKE_VERSION" ]; then
-   echo "Error: Wrong automake version ($ver), we need $AUTOMAKE_VERSION."
+if [ "${ver}" != "${AUTOMAKE_VERSION}" ]; then
+   echo "Error: Wrong automake version (${ver}), we need ${AUTOMAKE_VERSION}."
    echo "Aborting."
    exit 1
 fi
 
 # Verify that we have the correct version of aclocal.
 ver=`aclocal --version 2>&1 | head -1 | sed 's/.*) //'`
-if [ "$ver" != "$ACLOCAL_VERSION" ]; then
-   echo "Error: Wrong aclocal version: $ver. Aborting."
+if [ "${ver}" != "${ACLOCAL_VERSION}" ]; then
+   echo "Error: Wrong aclocal version: ${ver}. Aborting."
    exit 1
 fi
 
 # Update our gnulib import.
-$gnulib_prefix/gnulib-tool --import --dir=. --lib=libgnu \
+${gnulib_prefix}/gnulib-tool --import --dir=. --lib=libgnu \
   --source-base=import --m4-base=import/m4 --doc-base=doc \
   --tests-base=tests --aux-dir=import/extra \
   --no-conditional-dependencies --no-libtool --macro-prefix=gl \
   --no-vc-files \
-  $IMPORTED_GNULIB_MODULES
+  ${IMPORTED_GNULIB_MODULES}
 if [ $? -ne 0 ]; then
    echo "Error: gnulib import failed.  Aborting."
    exit 1
 fi
 
 # Regenerate all necessary files...
-aclocal -Iimport/m4 &&
-autoconf &&
-autoheader &&
-automake
+aclocal -Iimport/m4 -Im4 --install --warnings=all &&
+autoconf --warnings=all &&
+autoheader --warnings=all &&
+automake --add-missing --copy
 if [ $? -ne 0 ]; then
    echo "Error: Failed to regenerate Makefiles and configure scripts."
    exit 1

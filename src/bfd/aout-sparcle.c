@@ -1,4 +1,4 @@
-/* BFD backend for sparc little-endian aout binaries.
+/* aout-sparcle.c: BFD backend for sparc little-endian aout binaries.
    Copyright 1996, 2001 Free Software Foundation, Inc.
    Written by Cygnus Support.
 

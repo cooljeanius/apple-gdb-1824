@@ -1,3 +1,5 @@
+# Makefile for gdb.pascal part of testsuite
+
 VPATH = @srcdir@
 srcdir = @srcdir@
 
@@ -8,17 +10,18 @@ MISCELLANEOUS =
 all info install-info dvi install uninstall installcheck check:
 	@echo "Nothing to be done for $@..."
 
+# 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 clean mostlyclean:
-	-find . -name '*.o' -print | xargs rm -f
-	-find . -name '*.ali' -print | xargs rm -f
-	-find . -name 'b~*.ad[sb]' -print | xargs rm -f
-	-rm -f *~ a.out xgdb *.x *.ci *.tmp
-	-rm -f *~ *.o a.out xgdb *.x *.ci *.tmp
-	-rm -f core core.coremaker coremaker.core corefile $(EXECUTABLES)
-	-rm -f $(MISCELLANEOUS) twice-tmp.c
+	-find . -name '*.o' -print | xargs rm -fv
+	-find . -name '*.ali' -print | xargs rm -fv
+	-find . -name 'b~*.ad[sb]' -print | xargs rm -fv
+	-rm -fv *~ a.out xgdb *.x *.ci *.tmp
+	-rm -fv *~ *.o a.out xgdb *.x *.ci *.tmp
+	-rm -fv core core.coremaker coremaker.core corefile $(EXECUTABLES)
+	-rm -fv $(MISCELLANEOUS) twice-tmp.c
 
 distclean maintainer-clean realclean: clean
-	-rm -f *~ core
+	-rm -fv *~ core
 	-rm -f Makefile config.status config.log
-	-rm -f *-init.exp
-	-rm -fr *.log summary detail *.plog *.sum *.psum site.*
+	-rm -fv *-init.exp
+	-rm -frv *.log summary detail *.plog *.sum *.psum site.*

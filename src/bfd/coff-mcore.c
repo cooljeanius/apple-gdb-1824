@@ -551,7 +551,15 @@ coff_mcore_relocate_section (output_bfd, info, input_bfd, input_section,
 #define COFF_PAGE_SIZE               0x1000
 
 #include "coffcode.h"
-
+
+
+#ifndef TARGET_BIG_NAME
+# define TARGET_BIG_NAME "coff-mcore-big"
+#endif
+#ifndef TARGET_LITTLE_NAME
+# define TARGET_LITTLE_NAME "coff-mcore-little"
+#endif
+
 /* Forward declaration to initialise alternative_target field.  */
 extern const bfd_target TARGET_LITTLE_SYM;
 

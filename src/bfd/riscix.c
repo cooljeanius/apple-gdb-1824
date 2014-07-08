@@ -1,4 +1,4 @@
-/* BFD back-end for RISC iX (Acorn, arm) binaries.
+/* riscix.c: BFD back-end for RISC iX (Acorn, arm) binaries.
    Copyright 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2004,
    2005 Free Software Foundation, Inc.
    Contributed by Richard Earnshaw (rwe@pegasus.esprit.ec.org)
@@ -43,7 +43,7 @@
 /* A reference to a shared library.
    The text portion of the object contains "overflow text" from
    the shared library to be linked in with an object.  */
-#define SLOMAGIC        (MF_IS_SL | OMAGIC) 
+#define SLOMAGIC        (MF_IS_SL | OMAGIC)
 
 /* Sqeezed demand paged.
    NOTE: This interpretation of QMAGIC seems to be at variance

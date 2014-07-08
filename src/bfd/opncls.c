@@ -1633,16 +1633,17 @@ bfd_fill_in_gnu_debuglink_section (bfd *abfd,
     }
 
   strcpy (contents, filename);
-  crc_offset = debuglink_size - 4;
+  crc_offset = (debuglink_size - 4);
 
-  bfd_put_32 (abfd, crc32, contents + crc_offset);
+  bfd_put_32(abfd, crc32, (contents + crc_offset));
 
-  if (! bfd_set_section_contents (abfd, sect, contents, 0, debuglink_size))
-    {
-      /* XXX Should we delete the section from the bfd ?  */
-      free (contents);
+  if (! bfd_set_section_contents(abfd, sect, contents, 0, debuglink_size)) {
+      /* XXX Should we delete the section from the bfd? */
+      free(contents);
       return FALSE;
-    }
+  }
 
   return TRUE;
 }
+
+/* EOF */

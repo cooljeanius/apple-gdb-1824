@@ -90,7 +90,7 @@ struct _msg_ent
 };
 
 
-#if HAVE_CATGETS
+#if defined(HAVE_CATGETS) && HAVE_CATGETS
 /* These two variables are defined in the automatically by po-to-tbl.sed
    generated file `cat-id-tbl.c'.  */
 extern const struct _msg_ent _msg_tbl[];
@@ -135,20 +135,23 @@ extern char *bindtextdomain PARAMS ((const char *__domainname,
 extern char *bindtextdomain__ PARAMS ((const char *__domainname,
 				    const char *__dirname));
 
-#if ENABLE_NLS
+#if defined(ENABLE_NLS) && ENABLE_NLS
 
 /* Solaris 2.3 has the gettext function but dcgettext is missing.
-   So we omit this optimization for Solaris 2.3.  BTW, Solaris 2.4
-   has dcgettext.  */
-# if !HAVE_CATGETS && (!HAVE_GETTEXT || HAVE_DCGETTEXT)
+ * So we omit this optimization for Solaris 2.3.  BTW, Solaris 2.4
+ * has dcgettext.  */
+# if (!defined(HAVE_CATGETS) || (defined(HAVE_CATGETS) && !HAVE_CATGETS)) && \
+     ((!defined(HAVE_GETTEXT) || (defined(HAVE_GETTEXT) && !HAVE_GETTEXT)) || \
+      (defined(HAVE_DCGETTEXT) && HAVE_DCGETTEXT))
 
 #  define gettext(Msgid)						      \
-     dgettext (NULL, Msgid)
+     dgettext(NULL, Msgid)
 
 #  define dgettext(Domainname, Msgid)					      \
-     dcgettext (Domainname, Msgid, LC_MESSAGES)
+     dcgettext(Domainname, Msgid, LC_MESSAGES)
 
-#  if defined __GNUC__ && __GNUC__ == 2 && __GNUC_MINOR__ >= 7
+#  if defined(__GNUC__) && (__GNUC__ == 2) && \
+      defined(__GNUC_MINOR__) && (__GNUC_MINOR__ >= 7)
 /* This global variable is defined in loadmsgcat.c.  We need a sign,
    whether a new catalog was loaded, which can be associated with all
    translations.  */

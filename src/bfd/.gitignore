@@ -28,6 +28,7 @@ stmp-lbfd-h
 stmp-lcoff-h
 *libs/*
 ofiles
+lofiles
 Makefile
 doc/Makefile
 config.h
@@ -40,8 +41,13 @@ bfdver.h
 *site.bak
 *.framework
 libtool
-# un-gitignoring libtool.old until stuff is fixed
+# (un-gitignoring libtool.old until stuff is fixed)
 libtoolT
 libtool-soversion
 *.swp
 config/*
+# some more generated files:
+elf32-ia64.c
+elf64-ia64.c
+peigen.c
+pepigen.c

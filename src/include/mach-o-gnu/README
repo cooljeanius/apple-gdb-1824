@@ -1,0 +1,21 @@
+This directory has been temporarily renamed from "mach-o" to "mach-o-gnu"
+because it was shadowing some system headers, which led to issues.
+Specifically, the following headers were shadowing system ones
+(using their full include names):
+- mach-o/loader.h
+- mach-o/reloc.h
+Unfortunately this workaround has led to additional issues for files that
+include the headers here that do NOT shadow system ones.
+Specifically, the following headers have no system equivalents
+(using their full include names):
+- mach-o/arm.h (closest thing is mach-o/arm/reloc.h)
+- mach-o/codesign.h
+- mach-o/external.h
+- mach-o/unwind.h (closest thing is mach-o/compact_unwind_encoding.h)
+- mach-o/x86-64.h (closest thing is mach-o/x86_64/reloc.h)
+Even though there are more of these headers, they were introduced to FSF
+gdb long after the point where Apple gdb branched off, which is what this
+fork is based upon, so moving them aside causes fewer errors than are
+caused by having the shadowing ones around. Of course it would make sense
+to deal with these headers more granularly, instead of just moving aside
+the entire directory, but that can wait for a future commit.

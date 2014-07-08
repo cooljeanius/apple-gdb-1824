@@ -3136,7 +3136,7 @@ $as_echo "no" >&6; }
 fi
 
 
-# Automake
+# Automake:
 am__api_version='1.14'
 
 # Find a good install program.  We prefer a C program (faster),
@@ -3896,7 +3896,7 @@ fi
 
 
 
-# Find Tcl, Tk, etc
+# Find Tcl, Tk, and things related to them:
 
 dirlist=".. ../../ ../../../ ../../../../ ../../../../../ ../../../../../../ ../../../../../../.. ../../../../../../../.. ../../../../../../../../.. ../../../../../../../../../.."
 if test x"${no_tcl}" = x ; then
@@ -4686,8 +4686,8 @@ fi
 
 
 
-# Make sure TCL_SHLIB_SUFFIX is set
-if test x$TCL_SHLIB_SUFFIX = x ; then
+# Make sure TCL_SHLIB_SUFFIX is set:
+if test "x${TCL_SHLIB_SUFFIX}" = "x"; then
   case "${host}" in
     *cygwin*) TCL_SHLIB_SUFFIX=".dll" ;;
     *darwin*) TCL_SHLIB_SUFFIX=".dylib" ;;
@@ -5024,9 +5024,9 @@ fi
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking \"for libcygwin.a\"" >&5
 $as_echo_n "checking \"for libcygwin.a\"... " >&6; }
-    LIBCYGWIN_A=`$CC -print-file-name=libcygwin.a`
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $LIBCYGWIN_A" >&5
-$as_echo "$LIBCYGWIN_A" >&6; }
+    LIBCYGWIN_A=`${CC} -print-file-name=libcygwin.a`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${LIBCYGWIN_A}" >&5
+$as_echo "${LIBCYGWIN_A}" >&6; }
 
     if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}dlltool", so it can be a program name with args.
@@ -5259,7 +5259,7 @@ fi
 esac
 
 # Plugins supported by this configuration
-if test x${supported} = xyes; then
+if test "x${supported}" = "xyes"; then
   plugins="rhabout"
   case "${target}" in
     *cygwin*) ;;
@@ -5269,8 +5269,8 @@ if test x${supported} = xyes; then
       ;;
   esac
 
-  for i in $plugins ; do
-    make_subdirs="${make_subdirs} $i"
+  for i in ${plugins}; do
+    make_subdirs="${make_subdirs} ${i}"
   done
 fi
 

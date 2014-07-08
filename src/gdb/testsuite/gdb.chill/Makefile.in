@@ -1,5 +1,10 @@
+# Makefile for gdb.chill part of testsuite
+
 srcdir = @srcdir@
 VPATH = @srcdir@
+
+# changed name for old default cc to this:
+MY_CC = @MY_CC@
 
 all: 
 	@echo "Nothing to be done for all..."
@@ -12,16 +17,17 @@ all:
 
 .exp.check:
 	rootme=`pwd`/; export rootme; \
-	cd .. ; \
+	cd ..; \
 	$(MAKE) just-check RUNTESTFLAGS="${RUNTESTFLAGS} $*.exp" \
 	  EXPECT=${EXPECT}
 
+# 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 clean mostlyclean:
-	-rm -f *.o ${OBJS} *.exe *~ core 
+	-rm -fv *.o ${OBJS} *.exe *~ core 
 
 distclean maintainer-clean realclean: clean
 	-rm -f Makefile config.status config.log
-	-rm -fr autom4te.cache || rmdir autom4te.cache
+	-rm -frv autom4te.cache || rmdir autom4te.cache
 
-Makefile: $(srcdir)/Makefile.in $(srcdir)/configure.in
+Makefile: $(srcdir)/Makefile.in $(srcdir)/configure.ac
 	$(SHELL) ./config.status --recheck

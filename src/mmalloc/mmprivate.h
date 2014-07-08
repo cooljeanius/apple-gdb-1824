@@ -1,9 +1,9 @@
-/* Declarations for `mmalloc' and friends.
-   Copyright 1990, 1991, 1992 Free Software Foundation
-
-   Written May 1989 by Mike Haertel.
-   Heavily modified Mar 1992 by Fred Fish. (fnf@cygnus.com)
-
+/* mmprivate.h: Declarations for `mmalloc' and friends.
+ * Copyright 1990, 1991, 1992 Free Software Foundation
+ *
+ * Written May 1989 by Mike Haertel.
+ * Heavily modified Mar 1992 by Fred Fish. (fnf@cygnus.com) */
+/*
 The GNU C Library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Library General Public License as
 published by the Free Software Foundation; either version 2 of the
@@ -18,15 +18,27 @@ You should have received a copy of the GNU Library General Public
 License along with the GNU C Library; see the file COPYING.LIB.  If
 not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.
-
-   The author may be reached (Email) at the address mike@ai.mit.edu,
-   or (US mail) as Mike Haertel c/o Free Software Foundation. */
+ */
+/*
+ * The author may be reached (Email) at the address mike@ai.mit.edu,
+ * or (US mail) as Mike Haertel c/o Free Software Foundation.
+ */
 
 
 #ifndef __MMPRIVATE_H
 #define __MMPRIVATE_H 1
 
-#include "config.h"
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# ifndef _MMPRIVATE_H_NON_AUTOTOOLS_BUILD
+#  define _MMPRIVATE_H_NON_AUTOTOOLS_BUILD 1
+# endif /* !_MMPRIVATE_H_NON_AUTOTOOLS_BUILD */
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "mmprivate expects config.h to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_CONFIG_H */
+
 #include "mmalloc.h"
 
 #ifdef HAVE_LIMITS_H
@@ -34,12 +46,12 @@ Boston, MA 02111-1307, USA.
 #else
 #  ifndef CHAR_BIT
 #    define CHAR_BIT 8
-#  endif
-#endif
+#  endif /* !CHAR_BIT */
+#endif /* HAVE_LIMITS_H */
 
 #ifndef MIN
 #  define MIN(A, B) ((A) < (B) ? (A) : (B))
-#endif
+#endif /* !MIN */
 
 #define MMALLOC_MAGIC		"mmalloc"	/* Mapped file magic number */
 #define MMALLOC_MAGIC_SIZE	8		/* Size of magic number buf */
@@ -193,7 +205,7 @@ struct mdesc
      needs to be maintained on a per-process basis. */
 
   PTR (*morecore) PARAMS ((struct mdesc *, int));
-     
+
   /* Pointer to the function that causes an abort when the memory checking
      features are activated.  By default this is set to abort(), but can
      be set to another function by the application using mmalloc().
@@ -313,7 +325,7 @@ extern struct mdesc *mmalloc_sbrk_init PARAMS ((void));
 
 extern PTR __mmalloc_mmap_morecore PARAMS ((struct mdesc *, int));
 
-#endif
+#endif /* HAVE_MMAP */
 
 /* Macro to convert from a user supplied malloc descriptor to pointer to the
    internal malloc descriptor.  If the user supplied descriptor is NULL, then
@@ -331,3 +343,5 @@ extern struct mdesc *__mmalloc_default_mdp;
    : (struct mdesc *) (md))
 
 #endif  /* __MMPRIVATE_H */
+
+/* EOF */

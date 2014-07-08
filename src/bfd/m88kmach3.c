@@ -1,4 +1,4 @@
-/* BFD back-end for Motorola m88k a.out (Mach 3) binaries.
+/* m88kmach3.c: BFD back-end for Motorola m88k a.out (Mach 3) binaries.
    Copyright 1990, 1991, 1993, 1994, 1995, 2001, 2003
    Free Software Foundation, Inc.
 

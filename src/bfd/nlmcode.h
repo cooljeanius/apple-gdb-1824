@@ -1,4 +1,4 @@
-/* NLM (NetWare Loadable Module) executable support for BFD.
+/* nlmcode.h: NLM (NetWare Loadable Module) executable support for BFD.
    Copyright 1993, 1994, 1995, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
    2005 Free Software Foundation, Inc.
 
@@ -1137,48 +1137,48 @@ nlm_print_symbol (bfd *abfd,
    nlm_relocation_fixup_secs, an array of section pointers.  The
    section pointers are needed because the relocs are not sorted by
    section.  */
-
 static bfd_boolean
-nlm_slurp_reloc_fixups (bfd *abfd)
+nlm_slurp_reloc_fixups(bfd *abfd)
 {
-  bfd_boolean (*read_func) (bfd *, nlm_symbol_type *, asection **, arelent *);
+  bfd_boolean(*read_func)(bfd *, nlm_symbol_type *, asection **, arelent *);
   bfd_size_type count, amt;
   arelent *rels;
   asection **secs;
 
-  if (nlm_relocation_fixups (abfd) != NULL)
+  if (nlm_relocation_fixups(abfd) != NULL) {
     return TRUE;
-  read_func = nlm_read_reloc_func (abfd);
-  if (read_func == NULL)
+  }
+  read_func = nlm_read_reloc_func(abfd);
+  if (read_func == NULL) {
     return TRUE;
+  }
 
-  if (bfd_seek (abfd, nlm_fixed_header (abfd)->relocationFixupOffset,
-		SEEK_SET) != 0)
+  if (bfd_seek(abfd, nlm_fixed_header(abfd)->relocationFixupOffset, SEEK_SET) != 0) {
     return FALSE;
+  }
 
   count = nlm_fixed_header (abfd)->numberOfRelocationFixups;
-  amt = count * sizeof (arelent);
-  rels = bfd_alloc (abfd, amt);
-  amt = count * sizeof (asection *);
-  secs = bfd_alloc (abfd, amt);
-  if ((rels == NULL || secs == NULL) && count != 0)
+  amt = count * sizeof(arelent);
+  rels = (arelent *)bfd_alloc(abfd, amt);
+  amt = count * sizeof(asection *);
+  secs = (asection **)bfd_alloc(abfd, amt);
+  if (((rels == NULL) || (secs == NULL)) && (count != 0)) {
     return FALSE;
+  }
   nlm_relocation_fixups (abfd) = rels;
   nlm_relocation_fixup_secs (abfd) = secs;
 
-  /* We have to read piece by piece, because we don't know how large
-     the machine specific reloc information is.  */
-  while (count-- != 0)
-    {
-      if (! (*read_func) (abfd, NULL, secs, rels))
-	{
-	  nlm_relocation_fixups (abfd) = NULL;
-	  nlm_relocation_fixup_secs (abfd) = NULL;
+  /* We have to read piece by piece, because we do NOT know how large
+   * the machine-specific reloc information is: */
+  while (count-- != 0) {
+      if (!(*read_func)(abfd, NULL, secs, rels)) {
+	  nlm_relocation_fixups(abfd) = NULL;
+	  nlm_relocation_fixup_secs(abfd) = NULL;
 	  return FALSE;
-	}
+      }
       ++secs;
       ++rels;
-    }
+  }
 
   return TRUE;
 }
@@ -1599,17 +1599,17 @@ bfd_boolean
 nlm_write_object_contents (bfd *abfd)
 {
   asection *sec;
-  bfd_boolean (*write_import_func) (bfd *, asection *, arelent *);
+  bfd_boolean(*write_import_func)(bfd *, asection *, arelent *);
   bfd_size_type external_reloc_count, internal_reloc_count, i, c;
   struct reloc_and_sec *external_relocs;
   asymbol **sym_ptr_ptr;
   file_ptr last;
-  bfd_boolean (*write_prefix_func) (bfd *);
+  bfd_boolean(*write_prefix_func)(bfd *);
   unsigned char *fixed_header = NULL;
   file_ptr pos;
   bfd_size_type amt;
 
-  fixed_header = bfd_malloc (nlm_fixed_header_size (abfd));
+  fixed_header = (unsigned char *)bfd_malloc(nlm_fixed_header_size(abfd));
   if (fixed_header == NULL)
     goto error_return;
 
@@ -1617,9 +1617,9 @@ nlm_write_object_contents (bfd *abfd)
       && ! nlm_compute_section_file_positions (abfd))
     goto error_return;
 
-  /* Write out the variable length headers.  */
-  pos = nlm_optional_prefix_size (abfd) + nlm_fixed_header_size (abfd);
-  if (bfd_seek (abfd, pos, SEEK_SET) != 0)
+  /* Write out the variable length headers: */
+  pos = nlm_optional_prefix_size(abfd) + nlm_fixed_header_size(abfd);
+  if (bfd_seek(abfd, pos, SEEK_SET) != 0)
     goto error_return;
   if (! nlm_swap_variable_header_out (abfd)
       || ! nlm_swap_auxiliary_headers_out (abfd))
@@ -1628,22 +1628,20 @@ nlm_write_object_contents (bfd *abfd)
       goto error_return;
     }
 
-  /* A weak check on whether the section file positions were
-     reasonable.  */
+  /* A weak check on whether the section file positions were reasonable: */
   if (bfd_tell (abfd) > nlm_fixed_header (abfd)->codeImageOffset)
     {
       bfd_set_error (bfd_error_invalid_operation);
       goto error_return;
     }
 
-  /* Advance to the relocs.  */
+  /* Advance to the relocs: */
   if (bfd_seek (abfd, nlm_fixed_header (abfd)->relocationFixupOffset,
 		SEEK_SET) != 0)
     goto error_return;
 
-  /* The format of the relocation entries is dependent upon the
-     particular target.  We use an external routine to write the reloc
-     out.  */
+  /* The format of the reloc entries is dependent upon the particular target.
+   * We use an external routine to write out the reloc. */
   write_import_func = nlm_write_import_func (abfd);
 
   /* Write out the internal relocation fixups.  While we're looping
@@ -1696,13 +1694,12 @@ nlm_write_object_contents (bfd *abfd)
      are output as a symbol name followed by all the relocs for that
      symbol, so we must first gather together all the relocs against
      external symbols and sort them.  */
-  amt = external_reloc_count * sizeof (struct reloc_and_sec);
-  external_relocs = bfd_alloc (abfd, amt);
+  amt = external_reloc_count * sizeof(struct reloc_and_sec);
+  external_relocs = (struct reloc_and_sec *)bfd_alloc(abfd, amt);
   if (external_relocs == NULL)
     goto error_return;
   i = 0;
-  for (sec = abfd->sections; sec != NULL; sec = sec->next)
-    {
+  for ((sec = abfd->sections); (sec != NULL); (sec = sec->next)) {
       arelent **rel_ptr_ptr, **rel_end;
 
       if (sec->reloc_count == 0)
@@ -1979,3 +1976,5 @@ error_return:
     free (fixed_header);
   return FALSE;
 }
+
+/* EOF */

@@ -1,4 +1,4 @@
-/* BFD backend for MIPS BSD (a.out) binaries.
+/* mipsbsd.c: BFD backend for MIPS BSD (a.out) binaries.
    Copyright 1993, 1994, 1995, 1997, 1998, 1999, 2000, 2001, 2002, 2003
    Free Software Foundation, Inc.
    Written by Ralph Campbell.

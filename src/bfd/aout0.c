@@ -1,4 +1,4 @@
-/* BFD backend for SunOS style a.out with flags set to 0
+/* aout0.c: BFD backend for SunOS style a.out with flags set to 0
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 2001
    Free Software Foundation, Inc.
    Written by Cygnus Support.

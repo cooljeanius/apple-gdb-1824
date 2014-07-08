@@ -1,4 +1,4 @@
-/* ELF linker support.
+/* elflink.h: ELF linker support.
    Copyright 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003
    Free Software Foundation, Inc.
 
@@ -20,58 +20,58 @@
 
 /* ELF linker code.  */
 
+#ifndef __BFD_ELFLINK_H__
+#define __BFD_ELFLINK_H__ 1
+
 #include "safe-ctype.h"
 
-static bfd_boolean elf_link_add_object_symbols (bfd *, struct bfd_link_info *);
-static bfd_boolean elf_finalize_dynstr (bfd *, struct bfd_link_info *);
-static bfd_boolean elf_collect_hash_codes (struct elf_link_hash_entry *,
-					   void *);
-static bfd_boolean elf_section_ignore_discarded_relocs (asection *);
+static bfd_boolean elf_bfd_link_add_symbols(bfd *abfd,
+					    struct bfd_link_info *info);
+static bfd_boolean elf_link_add_object_symbols(bfd *, struct bfd_link_info *);
+static bfd_boolean elf_finalize_dynstr(bfd *, struct bfd_link_info *);
+static bfd_boolean elf_collect_hash_codes(struct elf_link_hash_entry *, void *);
+static bfd_boolean elf_section_ignore_discarded_relocs(asection *);
 
-/* Given an ELF BFD, add symbols to the global hash table as
-   appropriate.  */
 
-bfd_boolean
-elf_bfd_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
+/* Given an ELF BFD, add symbols to the global hash table as appropriate: */
+bfd_boolean elf_bfd_link_add_symbols(bfd *abfd, struct bfd_link_info *info)
 {
-  switch (bfd_get_format (abfd))
-    {
+  switch (bfd_get_format(abfd)) {
     case bfd_object:
-      return elf_link_add_object_symbols (abfd, info);
+      return elf_link_add_object_symbols(abfd, info);
     case bfd_archive:
-      return _bfd_elf_link_add_archive_symbols (abfd, info);
+      return _bfd_elf_link_add_archive_symbols(abfd, info);
     default:
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
       return FALSE;
-    }
+  }
 }
-
-/* Sort symbol by value and section.  */
-static int
-sort_symbol (const void *arg1, const void *arg2)
+
+
+/* Sort symbol by value and section: */
+static int sort_symbol(const void *arg1, const void *arg2)
 {
   const struct elf_link_hash_entry *h1
     = *(const struct elf_link_hash_entry **) arg1;
   const struct elf_link_hash_entry *h2
     = *(const struct elf_link_hash_entry **) arg2;
-  bfd_signed_vma vdiff = h1->root.u.def.value - h2->root.u.def.value;
+  bfd_signed_vma vdiff = (h1->root.u.def.value - h2->root.u.def.value);
 
-  if (vdiff)
-    return vdiff > 0 ? 1 : -1;
-  else
-    {
-      long sdiff = h1->root.u.def.section - h2->root.u.def.section;
-      if (sdiff)
-	return sdiff > 0 ? 1 : -1;
-      else
-	return 0;
-    }
+  if (vdiff) {
+      return ((vdiff > 0) ? 1 : -1);
+  } else {
+      long sdiff = (h1->root.u.def.section - h2->root.u.def.section);
+      if (sdiff) {
+	  return ((sdiff > 0) ? 1 : -1);
+      } else {
+	  return 0;
+      }
+  }
 }
 
-/* Add symbols from an ELF object file to the linker hash table.  */
-
+/* Add symbols from an ELF object file to the linker hash table: */
 static bfd_boolean
-elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
+elf_link_add_object_symbols(bfd *abfd, struct bfd_link_info *info)
 {
   bfd_boolean (*add_symbol_hook)
     (bfd *, struct bfd_link_info *, const Elf_Internal_Sym *,
@@ -165,7 +165,7 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 		      && (h->root.type == bfd_link_hash_defined
 			  || h->root.type == bfd_link_hash_defweak))
 		    {
-		      /* We don't want to issue this warning.  Clobber
+		      /* We do NOT want to issue this warning.  Clobber
 			 the section size so that the warning does not
 			 get copied into the output file.  */
 		      s->_raw_size = 0;
@@ -778,7 +778,7 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 	    case bfd_link_hash_defweak:
 	      old_bfd = h->root.u.def.section->owner;
 	      break;
-	    
+
 	    case bfd_link_hash_common:
 	      old_bfd = h->root.u.c.p->section->owner;
 	      old_alignment = h->root.u.c.p->alignment_power;
@@ -1357,7 +1357,7 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
       && (info->strip != strip_all && info->strip != strip_debugger))
     {
       asection *stabstr;
-      
+
       stabstr = bfd_get_section_by_name (abfd, ".stabstr");
       if (stabstr != NULL)
 	{
@@ -1372,7 +1372,7 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 		&& !bfd_is_abs_section (stab->output_section))
 	      {
 		struct bfd_elf_section_data *secdata;
-		
+
 		secdata = elf_section_data (stab);
 		if (! _bfd_link_section_stabs (abfd,
 					       & hash_table->stab_info,
@@ -6081,3 +6081,7 @@ elf_section_ignore_discarded_relocs (asection *sec)
 
   return FALSE;
 }
+
+#endif /* !__BFD_ELFLINK_H__ */
+
+/* EOF */

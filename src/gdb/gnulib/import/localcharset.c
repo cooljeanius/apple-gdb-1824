@@ -30,18 +30,18 @@
 
 #if defined __APPLE__ && defined __MACH__ && HAVE_LANGINFO_CODESET
 # define DARWIN7 /* Darwin 7 or newer, i.e. Mac OS X 10.3 or newer */
-#endif
+#endif /* __APPLE__ && __MACH__ && HAVE_LANGINFO_CODESET */
 
 #if defined _WIN32 || defined __WIN32__
 # define WINDOWS_NATIVE
-#endif
+#endif /* _WIN32 || __WIN32__ */
 
 #if defined __EMX__
 /* Assume EMX program runs on OS/2, even if compiled under DOS.  */
 # ifndef OS2
 #  define OS2
-# endif
-#endif
+# endif /* !OS2 */
+#endif /* __EMX__ */
 
 #if !defined WINDOWS_NATIVE
 # include <unistd.h>
@@ -50,7 +50,7 @@
 # else
 #  if 0 /* see comment below */
 #   include <locale.h>
-#  endif
+#  endif /* 0 */
 # endif
 # ifdef __CYGWIN__
 #  define WIN32_LEAN_AND_MEAN
@@ -65,21 +65,21 @@
 # include <os2.h>
 #endif
 
-#if ENABLE_RELOCATABLE
+#if defined(ENABLE_RELOCATABLE) && ENABLE_RELOCATABLE
 # include "relocatable.h"
 #else
 # define relocate(pathname) (pathname)
 #endif
 
-/* Get LIBDIR.  */
+/* Get LIBDIR. */
 #ifndef LIBDIR
 # include "configmake.h"
-#endif
+#endif /* !LIBDIR */
 
-/* Define O_NOFOLLOW to 0 on platforms where it does not exist.  */
+/* Define O_NOFOLLOW to 0 on platforms where it does not exist: */
 #ifndef O_NOFOLLOW
 # define O_NOFOLLOW 0
-#endif
+#endif /* !O_NOFOLLOW */
 
 #if defined _WIN32 || defined __WIN32__ || defined __CYGWIN__ || defined __EMX__ || defined __DJGPP__
   /* Native Windows, Cygwin, OS/2, DOS */

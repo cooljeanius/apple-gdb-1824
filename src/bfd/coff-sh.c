@@ -375,8 +375,10 @@ static reloc_howto_type sh_coff_howtos[] =
 /* Customize coffcode.h (this is not currently used).  */
 #define SH 1
 
-/* FIXME: This should not be set here.  */
-#define __A_MAGIC_SET__
+/* FIXME: This should not be set here: */
+#ifndef __A_MAGIC_SET__
+# define __A_MAGIC_SET__
+#endif /* !__A_MAGIC_SET__ */
 
 #ifndef COFF_WITH_PE
 /* Swap the r_offset field in and out.  */
@@ -3144,11 +3146,21 @@ static const bfd_coff_backend_data bfd_coff_small_swap_table =
 #define coff_small_get_section_contents_in_window \
   coff_get_section_contents_in_window
 
+#ifndef coff_get_section_contents_in_window_with_mode
+# define coff_get_section_contents_in_window_with_mode \
+   _bfd_generic_get_section_contents_in_window_with_mode
+#endif /* !coff_get_section_contents_in_window_with_mode */
+
+#if !defined(coff_small_get_section_contents_in_window_with_mode) && defined(coff_get_section_contents_in_window_with_mode)
+# define coff_small_get_section_contents_in_window_with_mode \
+   coff_get_section_contents_in_window_with_mode
+#endif /* !coff_small_get_section_contents_in_window && coff_get_section_contents_in_window_with_mode */
+
 extern const bfd_target shlcoff_small_vec;
 
 const bfd_target shcoff_small_vec =
 {
-  "coff-sh-small",		/* name */
+  (char *)"coff-sh-small",		/* name */
   bfd_target_coff_flavour,
   BFD_ENDIAN_BIG,		/* data byte order is big */
   BFD_ENDIAN_BIG,		/* header byte order is big */

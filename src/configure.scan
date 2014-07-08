@@ -71,6 +71,7 @@ AC_CONFIG_SUBDIRS([autogen
                    libdecnumber
                    libiberty
                    libintl
+                   libtool_gnu
                    mmalloc
                    opcodes
                    readline

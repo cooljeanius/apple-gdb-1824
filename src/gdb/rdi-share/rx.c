@@ -326,7 +326,7 @@ static re_status unexp_etx(struct re_state *rxstate)
  * Note that this REQUIRES that the device id is installed as ba_data
  * in the rx engine config structure for the driver.
  */
-bool angel_DD_RxEng_BufferAlloc( struct data_packet *packet, void *cb_data )
+bool angel_DD_RxEng_BufferAlloc(struct data_packet *packet, void *cb_data)
 {
 #ifdef TARGET
     DeviceID devid = (DeviceID)cb_data;
@@ -334,25 +334,20 @@ bool angel_DD_RxEng_BufferAlloc( struct data_packet *packet, void *cb_data )
     IGNORE(cb_data);
 #endif /* TARGET */
 
-    if ( packet->type < DC_NUM_CHANNELS )
-    {
+    if (packet->type < DC_NUM_CHANNELS) {
         /* request a buffer down from the channels layer */
 #ifdef TARGET
-        packet->data = angel_DD_GetBuffer( devid, packet->type,
-                                           packet->len              );
+        packet->data = angel_DD_GetBuffer(devid, packet->type, packet->len);
 #else
-        packet->data = malloc(packet->len);
+        packet->data = (unsigned char *)malloc((size_t)packet->len);
 #endif /* TARGET */
-        if ( packet->data == NULL )
+	if (packet->data == NULL) {
            return FALSE;
-        else
-        {
+        } else {
             packet->buf_len = packet->len;
             return TRUE;
         }
-    }
-    else
-    {
+    } else {
         /* bad type field */
         return FALSE;
     }

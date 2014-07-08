@@ -1,4 +1,4 @@
-/* RISC/os 4.52C, and presumably other versions.  */
+/* riscos.h: RISC/os 4.52C, and presumably other versions.  */
 
 #include <bsd43/machine/machparam.h>
 #include <bsd43/machine/vmparam.h>

@@ -1,4 +1,4 @@
-/* BFD back-end for a.out.adobe binaries.
+/* aout-adobe.c: BFD back-end for a.out.adobe binaries.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000,
    2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
@@ -84,39 +84,36 @@ aout_adobe_callback (bfd *abfd)
   int trynum;
   flagword flags;
 
-  /* Architecture and machine type -- unknown in this format.  */
-  bfd_set_arch_mach (abfd, bfd_arch_unknown, 0L);
+  /* Architecture and machine type -- unknown in this format: */
+  bfd_set_arch_mach(abfd, bfd_arch_unknown, 0L);
 
-  /* The positions of the string table and symbol table.  */
-  obj_str_filepos (abfd) = N_STROFF (*execp);
-  obj_sym_filepos (abfd) = N_SYMOFF (*execp);
+  /* The positions of the string table and symbol table: */
+  obj_str_filepos(abfd) = N_STROFF(*execp);
+  obj_sym_filepos(abfd) = N_SYMOFF(*execp);
 
-  /* Suck up the section information from the file, one section at a time.  */
-  for (;;)
-    {
+  /* Suck up the section information from the file, one section at a time: */
+  for (;;) {
       bfd_size_type amt = sizeof (*ext);
-      if (bfd_bread ( ext, amt, abfd) != amt)
-	{
-	  if (bfd_get_error () != bfd_error_system_call)
-	    bfd_set_error (bfd_error_wrong_format);
-
+      if (bfd_bread(ext, amt, abfd) != amt) {
+	  if (bfd_get_error() != bfd_error_system_call) {
+	      bfd_set_error(bfd_error_wrong_format);
+	  }
 	  return NULL;
-	}
-      switch (ext->e_type[0])
-	{
+      }
+      switch (ext->e_type[0]) {
 	case N_TEXT:
-	  section_name = ".text";
-	  flags = SEC_CODE | SEC_LOAD | SEC_ALLOC | SEC_HAS_CONTENTS;
+	  section_name = (char *)".text";
+	  flags = (SEC_CODE | SEC_LOAD | SEC_ALLOC | SEC_HAS_CONTENTS);
 	  break;
 
 	case N_DATA:
-	  section_name = ".data";
-	  flags = SEC_DATA | SEC_LOAD | SEC_ALLOC | SEC_HAS_CONTENTS;
+	  section_name = (char *)".data";
+	  flags = (SEC_DATA | SEC_LOAD | SEC_ALLOC | SEC_HAS_CONTENTS);
 	  break;
 
 	case N_BSS:
-	  section_name = ".bss";
-	  flags = SEC_DATA | SEC_HAS_CONTENTS;
+	  section_name = (char *)".bss";
+	  flags = (SEC_DATA | SEC_HAS_CONTENTS);
 	  break;
 
 	case 0:
@@ -130,30 +127,30 @@ aout_adobe_callback (bfd *abfd)
 	}
 
       /* First one is called ".text" or whatever; subsequent ones are
-	 ".text1", ".text2", ...  */
-      bfd_set_error (bfd_error_no_error);
-      sect = bfd_make_section (abfd, section_name);
+       * ".text1", ".text2", ...  */
+      bfd_set_error(bfd_error_no_error);
+      sect = bfd_make_section(abfd, section_name);
       trynum = 0;
 
-      while (!sect)
-	{
-	  if (bfd_get_error () != bfd_error_no_error)
-	    /* Some other error -- slide into the sunset.  */
-	    return NULL;
+      while (!sect) {
+	  if (bfd_get_error() != bfd_error_no_error) {
+	      /* Some other error -- slide into the sunset.  */
+	      return NULL;
+	  }
 	  sprintf (try_again, "%s%d", section_name, ++trynum);
 	  sect = bfd_make_section (abfd, try_again);
-	}
+      }
 
       /* Fix the name, if it is a sprintf'd name.  */
-      if (sect->name == try_again)
-	{
-	  amt = strlen (sect->name);
-	  newname = bfd_zalloc (abfd, amt);
-	  if (newname == NULL)
-	    return NULL;
+      if (sect->name == try_again) {
+	  amt = strlen(sect->name);
+	  newname = (char *)bfd_zalloc(abfd, amt);
+	  if (newname == NULL) {
+	      return NULL;
+	  }
 	  strcpy (newname, sect->name);
 	  sect->name = newname;
-	}
+      }
 
       /* Now set the section's attributes.  */
       bfd_set_section_flags (abfd, sect, flags);
@@ -185,53 +182,51 @@ aout_adobe_callback (bfd *abfd)
     }
  no_more_sections:
 
-  adata (abfd).reloc_entry_size = sizeof (struct reloc_std_external);
-  adata (abfd).symbol_entry_size = sizeof (struct external_nlist);
-  adata (abfd).page_size = 1; /* Not applicable.  */
-  adata (abfd).segment_size = 1; /* Not applicable.  */
-  adata (abfd).exec_bytes_size = EXEC_BYTES_SIZE;
+  adata(abfd).reloc_entry_size = sizeof (struct reloc_std_external);
+  adata(abfd).symbol_entry_size = sizeof (struct external_nlist);
+  adata(abfd).page_size = 1; /* Not applicable.  */
+  adata(abfd).segment_size = 1; /* Not applicable.  */
+  adata(abfd).exec_bytes_size = EXEC_BYTES_SIZE;
 
   return abfd->xvec;
 }
 
 static const bfd_target *
-aout_adobe_object_p (bfd *abfd)
+aout_adobe_object_p(bfd *abfd)
 {
   struct internal_exec anexec;
   struct external_exec exec_bytes;
   char *targ;
   bfd_size_type amt = EXEC_BYTES_SIZE;
 
-  if (bfd_bread (& exec_bytes, amt, abfd) != amt)
-    {
-      if (bfd_get_error () != bfd_error_system_call)
-	bfd_set_error (bfd_error_wrong_format);
+  if (bfd_bread(& exec_bytes, amt, abfd) != amt) {
+      if (bfd_get_error() != bfd_error_system_call) {
+	  bfd_set_error(bfd_error_wrong_format);
+      }
       return NULL;
-    }
+  }
 
-  anexec.a_info = H_GET_32 (abfd, exec_bytes.e_info);
+  anexec.a_info = H_GET_32(abfd, exec_bytes.e_info);
 
   /* Normally we just compare for the magic number.
-     However, a bunch of Adobe tools aren't fixed up yet; they generate
-     files using ZMAGIC(!).
-     If the environment variable GNUTARGET is set to "a.out.adobe", we will
-     take just about any a.out file as an Adobe a.out file.  FIXME!  */
+   * However, a bunch of Adobe tools are NOT fixed up yet; they generate
+   * files using ZMAGIC(!).
+   * If the environment variable GNUTARGET is set to "a.out.adobe", we will
+   * take just about any a.out file as an Adobe a.out file.  FIXME!  */
 
-  if (N_BADMAG (anexec))
-    {
-      targ = getenv ("GNUTARGET");
-      if (targ && !strcmp (targ, a_out_adobe_vec.name))
-	/* Just continue anyway, if specifically set to this format.  */
-	;
-      else
-	{
-	  bfd_set_error (bfd_error_wrong_format);
+  if (N_BADMAG(anexec)) {
+      targ = getenv("GNUTARGET");
+      if (targ && !strcmp(targ, a_out_adobe_vec.name)) {
+	  /* Just continue anyway, if specifically set to this format. */
+	  ;
+      } else {
+	  bfd_set_error(bfd_error_wrong_format);
 	  return NULL;
-	}
-    }
+      }
+  }
 
-  aout_adobe_swap_exec_header_in (abfd, &exec_bytes, &anexec);
-  return aout_32_some_aout_object_p (abfd, &anexec, aout_adobe_callback);
+  aout_adobe_swap_exec_header_in(abfd, &exec_bytes, &anexec);
+  return aout_32_some_aout_object_p(abfd, &anexec, aout_adobe_callback);
 }
 
 struct bout_data_struct
@@ -241,32 +236,32 @@ struct bout_data_struct
 };
 
 static bfd_boolean
-aout_adobe_mkobject (bfd *abfd)
+aout_adobe_mkobject(bfd *abfd)
 {
   struct bout_data_struct *rawptr;
-  bfd_size_type amt = sizeof (struct bout_data_struct);
+  bfd_size_type amt = sizeof(struct bout_data_struct);
 
-  rawptr = bfd_zalloc (abfd, amt);
-  if (rawptr == NULL)
-    return FALSE;
+  rawptr = (struct bout_data_struct *)bfd_zalloc(abfd, amt);
+  if (rawptr == NULL) {
+      return FALSE;
+  }
 
   abfd->tdata.bout_data = rawptr;
-  exec_hdr (abfd) = &rawptr->e;
+  exec_hdr(abfd) = &rawptr->e;
 
-  adata (abfd).reloc_entry_size = sizeof (struct reloc_std_external);
-  adata (abfd).symbol_entry_size = sizeof (struct external_nlist);
-  adata (abfd).page_size = 1; /* Not applicable.  */
-  adata (abfd).segment_size = 1; /* Not applicable.  */
-  adata (abfd).exec_bytes_size = EXEC_BYTES_SIZE;
+  adata(abfd).reloc_entry_size = sizeof(struct reloc_std_external);
+  adata(abfd).symbol_entry_size = sizeof(struct external_nlist);
+  adata(abfd).page_size = 1; /* Not applicable. */
+  adata(abfd).segment_size = 1; /* Not applicable. */
+  adata(abfd).exec_bytes_size = EXEC_BYTES_SIZE;
 
   return TRUE;
 }
 
-static void
-aout_adobe_write_section (bfd *abfd ATTRIBUTE_UNUSED,
-			  sec_ptr sect ATTRIBUTE_UNUSED)
+static void aout_adobe_write_section(bfd *abfd ATTRIBUTE_UNUSED,
+				     sec_ptr sect ATTRIBUTE_UNUSED)
 {
-  /* FIXME XXX.  */
+  /* FIXME: put something here. XXX. */ ;
 }
 
 static bfd_boolean
@@ -476,7 +471,7 @@ aout_adobe_sizeof_headers (bfd *ignore_abfd ATTRIBUTE_UNUSED,
 
 const bfd_target a_out_adobe_vec =
 {
-  "a.out.adobe",		/* Name.  */
+  (char *)"a.out.adobe",		/* Name.  */
   bfd_target_aout_flavour,
   BFD_ENDIAN_BIG,		/* Data byte order is unknown (big assumed).  */
   BFD_ENDIAN_BIG,		/* Header byte order is big.  */
@@ -517,3 +512,5 @@ const bfd_target a_out_adobe_vec =
 
   NULL
 };
+
+/* EOF */

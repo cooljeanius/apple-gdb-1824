@@ -1,31 +1,40 @@
-/* Mach-O support for BFD.
-   Copyright 1999, 2000, 2001, 2002, 2003, 2005
-   Free Software Foundation, Inc.
-
-   This file is part of BFD, the Binary File Descriptor library.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+/* mach-o.h: Mach-O support for BFD.
+ * Copyright 1999, 2000, 2001, 2002, 2003, 2005
+ * Free Software Foundation, Inc.
+ *
+ * This file is part of BFD, the Binary File Descriptor library.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St. - 5th Floor, Boston, MA 02110-1301, USA.
+ */
 
 #ifndef _BFD_MACH_O_H_
-#define _BFD_MACH_O_H_
+#define _BFD_MACH_O_H_ 1
 
 #include "bfd.h"
 #ifdef HAVE_MACH_O_LOADER_H
 # include <mach-o/loader.h>
 #else
-# warning mach-o.h expects <mach-o/loader.h> to be included.
+# if defined(__APPLE__) && defined(__MACH__)
+/* this should only be a temporary renaming: */
+#  include "mach-o-gnu/loader.h"
+# else
+#  include "mach-o/loader.h"
+# endif /* __APPLE__ && __MACH__ */
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "mach-o.h expects a proper <mach-o/loader.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_O_LOADER_H */
 
 #define BFD_MACH_O_N_STAB  0xe0	/* If any of these bits set, a symbolic debugging entry.  */
@@ -77,6 +86,8 @@ bfd_mach_o_arm_thread_flavour;
 
 #define BFD_MACH_O_LC_REQ_DYLD 0x80000000
 
+#ifndef _ENUM_BFD_MACH_O_LOAD_COMMAND_TYPE_DEFINED
+# define _ENUM_BFD_MACH_O_LOAD_COMMAND_TYPE_DEFINED 1
 typedef enum bfd_mach_o_load_command_type
 {
   BFD_MACH_O_LC_SEGMENT = 0x1,		/* File segment to be mapped.  */
@@ -130,9 +141,12 @@ typedef enum bfd_mach_o_load_command_type
   BFD_MACH_O_LC_DYLIB_CODE_SIGN_DRS = 0x2b,  /* Code signing DRs copied from linked dylibs */
 }
 bfd_mach_o_load_command_type;
+#endif /* !_ENUM_BFD_MACH_O_LOAD_COMMAND_TYPE_DEFINED */
 
 #define BFD_MACH_O_CPU_IS64BIT 0x1000000
 
+#ifndef _ENUM_BFD_MACH_O_CPU_TYPE_DEFINED
+# define _ENUM_BFD_MACH_O_CPU_TYPE_DEFINED 1
 typedef enum bfd_mach_o_cpu_type
 {
   BFD_MACH_O_CPU_TYPE_VAX = 1,
@@ -153,7 +167,10 @@ typedef enum bfd_mach_o_cpu_type
   , BFD_MACH_O_CPU_TYPE_X86_64 = (BFD_MACH_O_CPU_TYPE_I386 | BFD_MACH_O_CPU_IS64BIT)
 }
 bfd_mach_o_cpu_type;
+#endif /* !_ENUM_BFD_MACH_O_CPU_TYPE_DEFINED */
 
+#ifndef _ENUM_BFD_MACH_O_CPU_SUBTYPE_DEFINED
+# define _ENUM_BFD_MACH_O_CPU_SUBTYPE_DEFINED 1
 typedef enum bfd_mach_o_cpu_subtype
   {
     BFD_MACH_O_CPU_SUBTYPE_POWERPC_ALL = 0,
@@ -166,7 +183,10 @@ typedef enum bfd_mach_o_cpu_subtype
     BFD_MACH_O_CPU_SUBTYPE_POWERPC_970 = 100
   }
 bfd_mach_o_cpu_subtype;
+#endif /* !_ENUM_BFD_MACH_O_CPU_SUBTYPE_DEFINED */
 
+#ifndef _ENUM_BFD_MACH_O_FILETYPE_DEFINED
+# define _ENUM_BFD_MACH_O_FILETYPE_DEFINED 1
 typedef enum bfd_mach_o_filetype
 {
   BFD_MACH_O_MH_OBJECT = 1,
@@ -182,7 +202,10 @@ typedef enum bfd_mach_o_filetype
   BFD_MACH_O_MH_BUNDLE_KEXT = 11
 }
 bfd_mach_o_filetype;
+#endif /* !_ENUM_BFD_MACH_O_FILETYPE_DEFINED */
 
+#ifndef _ENUM_BFD_MACH_O_HEADER_FLAGS_DEFINED
+# define _ENUM_BFD_MACH_O_HEADER_FLAGS_DEFINED 1
 typedef enum bfd_mach_o_header_flags
 {
   BFD_MACH_O_MH_NOUNDEFS	= 0x1,
@@ -212,9 +235,12 @@ typedef enum bfd_mach_o_header_flags
   BFD_MACH_O_MH_NO_HEAP_EXECUTION = 0x1000000
 }
 bfd_mach_o_header_flags;
+#endif /* !_ENUM_BFD_MACH_O_HEADER_FLAGS_DEFINED */
 
 /* Constants for the type of a section.  */
 
+#ifndef _ENUM_BFD_MACH_O_SECTION_TYPE_DEFINED
+# define _ENUM_BFD_MACH_O_SECTION_TYPE_DEFINED 1
 typedef enum bfd_mach_o_section_type
 {
   /* Regular section.  */
@@ -271,6 +297,7 @@ typedef enum bfd_mach_o_section_type
   /* APPLE LOCAL end Mach-O */
 }
 bfd_mach_o_section_type;
+#endif /* !_ENUM_BFD_MACH_O_SECTION_TYPE_DEFINED */
 
 #define BFD_MACH_O_SECTION_TYPE_MASK 0x000000ff
 #define BFD_MACH_O_SECTION_ATTRIBUTES_MASK 0xffffff00
@@ -580,6 +607,13 @@ typedef struct mach_o_data_struct
 mach_o_data_struct;
 
 typedef struct mach_o_data_struct bfd_mach_o_data_struct;
+
+typedef struct bfd_mach_o_xlat_name
+{
+  const char *name;
+  unsigned long val;
+}
+bfd_mach_o_xlat_name;
 
 /* APPLE LOCAL  Mach-O */
 unsigned int bfd_mach_o_version (bfd *);

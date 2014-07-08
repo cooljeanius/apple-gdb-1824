@@ -24,7 +24,9 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning etherdrv.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning etherdrv.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 #include <stdio.h>
 #ifdef __hpux
@@ -34,7 +36,9 @@
 # ifdef HAVE_UNISTD_H
 #  include <unistd.h>
 # else
-#  warning etherdrv.c expects <unistd.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "etherdrv.c expects <unistd.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_UNISTD_H */
 # ifdef __hpux
 #   undef uint
@@ -162,14 +166,14 @@ static int set_address(const char *const addr, struct sockaddr_in *const ia)
     /*
      * If that failed, try it as a hostname
      */
-    if (ia->sin_addr.s_addr == (u_int)-1)
-    {
+    if (ia->sin_addr.s_addr == (u_int)-1) {
         struct hostent *hp = gethostbyname(addr);
 
-        if (hp == NULL)
+	if (hp == NULL) {
             return -1;
+	}
 
-        (void)memcpy((caddr_t)&ia->sin_addr, hp->h_addr, hp->h_length);
+        (void)memcpy((caddr_t)&ia->sin_addr, hp->h_addr, (size_t)hp->h_length);
     }
 
     return 0;
@@ -241,8 +245,7 @@ static int open_socket(void)
     local.sin_family = AF_INET;
     local.sin_port = htons(0);
     local.sin_addr.s_addr = INADDR_ANY;
-    if (bind(sfd, (struct sockaddr *)&local, sizeof(local)) < 0)
-    {
+    if (bind(sfd, (struct sockaddr *)&local, (socklen_t)sizeof(local)) < 0) {
 #ifdef DEBUG
         perror("bind");
 #endif /* DEBUG */
@@ -278,14 +281,13 @@ static void fetch_ports(void)
     char ctrlpacket[10];
     CtrlResponse response;
 
-    memset (ctrlpacket, 0, 10);
-    strcpy (ctrlpacket, CTRL_MAGIC);
-    memset (response, 0, sizeof(CtrlResponse));
+    memset(ctrlpacket, 0, (size_t)10);
+    strcpy(ctrlpacket, CTRL_MAGIC);
+    memset(response, 0, sizeof(CtrlResponse));
     /*
      * we will try 3 times to elicit a response from the target
      */
-    for (i = 0; i < 3; ++i)
-    {
+    for ((i = 0); (i < 3); ++i) {
         struct timeval tv;
         fd_set fdset;
 
@@ -299,8 +301,7 @@ static void fetch_ports(void)
 #endif /* DEBUG */
 
         if (sendto(sock, ctrlpacket, sizeof(ctrlpacket), 0,
-                       (struct sockaddr *)ia, sizeof(*ia)) < 0)
-        {
+		   (struct sockaddr *)ia, (socklen_t)sizeof(*ia)) < 0) {
 #ifdef DEBUG
             perror("fetch_ports: sendto");
 #endif /* DEBUG */
@@ -312,34 +313,29 @@ static void fetch_ports(void)
         tv.tv_sec = 0;
         tv.tv_usec = 250000;
 
-        if (select(sock + 1, &fdset, NULL, NULL, &tv) < 0)
-        {
+        if (select((sock + 1), &fdset, NULL, NULL, &tv) < 0) {
 #ifdef DEBUG
             perror("fetch_ports: select");
 #endif /* DEBUG */
             return;
         }
 
-        if (FD_ISSET(sock, &fdset))
-        {
+        if (FD_ISSET(sock, &fdset)) {
             /*
              * there is something there - read it
              */
-            if (recv(sock, (char *)&response, sizeof(response), 0) < 0)
-            {
+            if (recv(sock, (char *)&response, sizeof(response), 0) < 0) {
 #ifdef COMPILING_ON_WINDOWS
                 unsigned int werrno = WSAGetLastError();
 
-                if (werrno == WSAEWOULDBLOCK || werrno == 0)
+                if ((werrno == WSAEWOULDBLOCK) || (werrno == 0))
 #else
                 if (errno == EWOULDBLOCK)
 #endif /* COMPILING_ON_WINDOWS */
                 {
                     --i;
                     continue;
-                }
-                else
-                {
+                } else {
 #ifdef DEBUG
                     perror("fetch_ports: recv");
 #endif /* DEBUG */
@@ -355,8 +351,7 @@ static void fetch_ports(void)
                  */
                 unsigned short *sptr = (unsigned short *)(response + RESP_DBUG);
 
-                if (strcmp(response, ctrlpacket) == 0)
-                {
+                if (strcmp((const char *)response, ctrlpacket) == 0) {
                     ports[DBUG_INDEX] = htons(*sptr);
                     sptr++;
                     ports[APPL_INDEX] = htons(*sptr);
@@ -400,15 +395,16 @@ static int read_packet(struct data_packet *const packet)
     /*
      * try to get the packet
      */
-    if ((nbytes = recvfrom(sock, (char *)(packet->data), packet->buf_len, 0,
-                           (struct sockaddr *)&from, &fromlen)) < 0)
-    {
+    if ((nbytes = recvfrom(sock, (char *)(packet->data),
+			   (size_t)packet->buf_len, 0,
+                           (struct sockaddr *)&from,
+			   (socklen_t *)&fromlen)) < 0) {
 #ifdef COMPILING_ON_WINDOWS
-        if (nbytes == SOCKET_ERROR && WSAGetLastError() != WSAEWOULDBLOCK)
-            MessageBox(GetFocus(), "Error receiving packet\n", "Angel", MB_OK | MB_ICONSTOP);
+        if ((nbytes == SOCKET_ERROR) && (WSAGetLastError() != WSAEWOULDBLOCK))
+            MessageBox(GetFocus(), "Error receiving packet\n", "Angel",
+		       (MB_OK | MB_ICONSTOP));
 #else
-        if (errno != EWOULDBLOCK)
-        {
+        if (errno != EWOULDBLOCK) {
 # ifdef DEBUG
             perror("recv");
 # endif /* DEBUG */
@@ -419,8 +415,7 @@ static int read_packet(struct data_packet *const packet)
     }
 
 #ifdef COMPILING_ON_WINDOWS
-    if (pfnProgressCallback != NULL && nbytes != SOCKET_ERROR)
-    {
+    if ((pfnProgressCallback != NULL) && (nbytes != SOCKET_ERROR)) {
         progressInfo.nRead += nbytes;
         (*pfnProgressCallback)(&progressInfo);
     }
@@ -429,8 +424,7 @@ static int read_packet(struct data_packet *const packet)
     /*
      * work out where the packet was from
      */
-    if (from.sin_addr.s_addr != remote.sin_addr.s_addr)
-    {
+    if (from.sin_addr.s_addr != remote.sin_addr.s_addr)  {
         /*
          * not from our target - ignore it
          */
@@ -440,13 +434,11 @@ static int read_packet(struct data_packet *const packet)
 #endif /* DEBUG */
 
         return 0;
-    }
-    else if (ntohs(from.sin_port) == ports[DBUG_INDEX])
+    } else if (ntohs(from.sin_port) == ports[DBUG_INDEX]) {
         devchan = DC_DBUG;
-    else if (ntohs(from.sin_port) == ports[APPL_INDEX])
+    } else if (ntohs(from.sin_port) == ports[APPL_INDEX]) {
         devchan = DC_APPL;
-    else
-    {
+    } else {
         /*
          * unknown port number - ignore it
          */
@@ -469,16 +461,17 @@ static int read_packet(struct data_packet *const packet)
         int i = 0;
         unsigned char *cptr = packet->data;
 
-        while (i < nbytes)
-        {
+        while (i < nbytes) {
             printf("<%02X ", *(cptr++));
 
-            if (!(++i % 16))
+	    if (!(++i % 16)) {
                 printf("\n");
+	    }
         }
 
-        if (i % 16)
+	if (i % 16) {
             printf("\n");
+	}
     }
 #endif /* DO_TRACE */
 
@@ -509,45 +502,46 @@ static int EthernetOpen(const char *name, const char *arg)
     /*
      * name is passed as e=<blah>, so skip 1st two characters
      */
-    const char *etheraddr = name + 2;
+    const char *etheraddr = (name + 2);
 
 #ifdef DEBUG
     printf("EthernetOpen: name `%s'\n", name);
 #endif /* DEBUG */
 
     /* Check that the name is a valid one */
-    if (EthernetMatch(name, arg) != 0)
+    if (EthernetMatch(name, arg) != 0) {
         return -1;
+    }
 
 #ifdef COMPILING_ON_WINDOWS
     wVersionRequested = MAKEWORD(1, 1);
     if (WSAStartup(wVersionRequested, &wsaData) != 0)
         /*
-         * Couldn't find a useable winsock.dll.
+         * Could NOT find a useable winsock.dll.
          */
         return -1;
 
-    if ( LOBYTE( wsaData.wVersion ) != 1 || HIBYTE( wsaData.wVersion ) != 1 )
-    {
+    if ((LOBYTE(wsaData.wVersion) != 1) || (HIBYTE(wsaData.wVersion) != 1)) {
         WSACleanup();
 
         /*
-         * Couldn't find a winsock.dll with supported version.
+         * Could NOT find a winsock.dll with supported version.
          */
         return -1;
     }
 #endif /* COMPILING_ON_WINDOWS */
 
     memset((char *)ia, 0, sizeof(*ia));
-    if (set_address(etheraddr, ia) < 0)
-    {
+    if (set_address(etheraddr, ia) < 0) {
 #ifdef COMPILING_ON_WINDOWS
         /*
          * SJ - I am not sure that this is the correct way to handle this
          * as Fail calls remote_disable and exits, while panic just exits.
          * However at the time of writing remote_disable does nothing!
          */
- /*     Panic("EthernetOpen: bad name `%s'\n", etheraddr); */
+# if 0
+	Panic("EthernetOpen: bad name `%s'\n", etheraddr);
+# endif /* 0 */
 #else
         Fail("EthernetOpen: bad name `%s'\n", etheraddr);
 #endif /* COMPILING_ON_WINDOWS */
@@ -556,7 +550,7 @@ static int EthernetOpen(const char *name, const char *arg)
 
     if ((sock = open_socket()) < 0) {
         return -1;
-	}
+    }
 
     /*
      * fetch the port numbers assigned by the remote target
@@ -572,23 +566,22 @@ static int EthernetMatch(const char *name, const char *arg)
     /* IGNORE arg */
     if (0) {
         arg = arg;
-	}
+    }
 
     if (name == NULL) {
         return -1;
-	}
+    }
 
-    if (tolower(name[0]) != 'e' || name[1] != '=') {
+    if ((tolower(name[0]) != 'e') || (name[1] != '=')) {
         return -1;
-	}
+    }
 
     return 0;
 }
 
 static void EthernetClose(void)
 {
-    if (sock >= 0)
-    {
+    if (sock >= 0) {
         closesocket(sock);
         sock = -1;
     }
@@ -615,7 +608,7 @@ static int EthernetRead(DriverCall *dc, bool block)
     tv.tv_usec = (block ? 10000 : 0);
 #endif /* COMPILING_ON_WINDOWS */
 
-    err = select(sock + 1, &fdset, NULL, NULL, &tv);
+    err = select((sock + 1), &fdset, NULL, NULL, &tv);
 
     if (err < 0) {
       if (errno == EINTR) {
@@ -636,12 +629,11 @@ static int EthernetWrite(DriverCall *dc)
     int nbytes;
     struct data_packet *packet = &dc->dc_packet;
 
-    if (packet->type == DC_DBUG)
+    if (packet->type == DC_DBUG) {
         ia->sin_port = htons(ports[DBUG_INDEX]);
-    else if (packet->type == DC_APPL)
+    } else if (packet->type == DC_APPL) {
         ia->sin_port = htons(ports[APPL_INDEX]);
-    else
-    {
+    } else {
         panic("EthernetWrite: unknown devchan");
         return 0;
     }
@@ -657,26 +649,27 @@ static int EthernetWrite(DriverCall *dc)
         int i = 0;
         unsigned char *cptr = packet->data;
 
-        while (i < packet->len)
-        {
+        while (i < packet->len) {
             printf(">%02X ", *(cptr++));
 
-            if (!(++i % 16))
+	    if (!(++i % 16)) {
                 printf("\n");
+	    }
         }
 
-        if (i % 16)
+	if (i % 16) {
             printf("\n");
+	}
     }
 #endif /* DO_TRACE */
 
-    if ((nbytes = sendto(sock, (char *)(packet->data), packet->len, 0,
-                         (struct sockaddr *)ia, sizeof(*ia))) != packet->len)
-    {
+    if ((nbytes = sendto(sock, (char *)(packet->data), (size_t)packet->len,
+			 0, (struct sockaddr *)ia,
+			 (socklen_t)sizeof(*ia))) != packet->len) {
 #ifdef COMPILING_ON_WINDOWS
-        if (nbytes == SOCKET_ERROR && WSAGetLastError() != WSAEWOULDBLOCK)
+        if ((nbytes == SOCKET_ERROR) && (WSAGetLastError() != WSAEWOULDBLOCK))
 #else
-        if (nbytes < 0 && errno != EWOULDBLOCK)
+        if ((nbytes < 0) && (errno != EWOULDBLOCK))
 #endif /* COMPILING_ON_WINDOWS */
         {
 #ifdef DEBUG
@@ -691,20 +684,21 @@ static int EthernetWrite(DriverCall *dc)
 # ifdef STDC_HEADERS
 		  strerror(errno));
 # else
-                  errno < sys_nerr ? sys_errlist[errno] : "unknown errno");
+                  ((errno < sys_nerr) ? sys_errlist[errno] : "unknown errno"));
 # endif /* STDC_HEADERS */
 #endif /* COMPILING_ON_WINDOWS */
         }
 #ifdef DEBUG
-        else if (nbytes >= 0)
-            fprintf(stderr, "ethernet send: asked for %d, sent %d\n", packet->len, nbytes);
+        else if (nbytes >= 0) {
+            fprintf(stderr, "ethernet send: asked for %d, sent %d\n",
+		    packet->len, nbytes);
+	}
 #endif /* DEBUG */
         return 0;
     }
 
 #ifdef COMPILING_ON_WINDOWS
-    if (pfnProgressCallback != NULL && nbytes != SOCKET_ERROR)
-    {
+    if ((pfnProgressCallback != NULL) && (nbytes != SOCKET_ERROR)) {
         progressInfo.nWritten += nbytes;
         (*pfnProgressCallback)(&progressInfo);
     }
@@ -716,25 +710,23 @@ static int EthernetWrite(DriverCall *dc)
 static int EthernetIoctl(const int opcode, void *args)
 {
 #ifdef DEBUG
-    printf( "EthernetIoctl: op %d arg %x\n", opcode, args );
+    printf("EthernetIoctl: op %d arg %x\n", opcode, args);
 #endif /* DEBUG */
 
     /*
      * IGNORE(opcode)
      */
-    if (0)
-    {
+    if (0) {
         int dummy = opcode;
         UNUSED(dummy);
     }
     UNUSED(args);
 
-    switch ( opcode )
-    {
+    switch (opcode) {
         case DC_RESYNC:
         {
 #ifdef DEBUG
-            printf( "EthernetIoctl: resync\n" );
+            printf("EthernetIoctl: resync\n");
 #endif /* DEBUG */
             fetch_ports();
             return 0;

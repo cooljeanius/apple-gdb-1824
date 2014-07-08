@@ -12,9 +12,11 @@
 # Library General Public License for more details.
 
 # You should have received a copy of the GNU Library General Public
-# License along with the GNU C Library; see the file COPYING.LIB.  If
-# not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-# Boston, MA 02111-1307, USA.
+# License along with the GNU C Library; see the file COPYING.LIB.
+# If not, write to:
+#  The Free Software Foundation, Inc.
+#  59 Temple Place - Suite 330
+#  Boston, MA 02111-1307, USA.
 
 #
 # Makefile for mmalloc directory
@@ -50,22 +52,30 @@ datarootdir =   @datarootdir@
 SHELL =		@SHELL@
 
 INSTALL =	@INSTALL@
-INSTALL_PROGRAM=@INSTALL_PROGRAM@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_DATA =	@INSTALL_DATA@
+RUN_MKINSTALLDIRS = $(SHELL) $(srcdir)/../mkinstalldirs
+
+HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
+TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
 
 AR =		@AR@
 AR_FLAGS =	qv
-CFLAGS =	-ggdb -Wall -Wimplicit
+C_ARCHFLAGS =	-arch $(HOST_ARCHITECTURE)
+CFLAGS =	-ggdb -Wall -Wimplicit $(C_ARCHFLAGS)
+FGREP = 	@FGREP@
+LN_S = 		@LN_S@
 MAKEINFO =	makeinfo
+MKDIR_P =	@MKDIR_P@
 RANLIB =	@RANLIB@
 RM =		rm
 
 NSLIBTOOL =	cc -dynamiclib
 
-# where to find makeinfo (duplicate of above?)
-MAKEINFO=makeinfo
+# where to actually find makeinfo:
+CONFIGURED_MAKEINFO = @MAKEINFO@
 
-SET_TEXINPUTS = TEXINPUTS=${TEXIDIR}:.:$(srcdir):$(READLINE_DIR):$$TEXINPUTS
+SET_TEXINPUTS = TEXINPUTS=${TEXIDIR}:.:$(srcdir):$(READLINE_DIR):$${TEXINPUTS}
 
 # Files which should be generated via 'info' and installed by
 # 'install-info'
@@ -119,43 +129,43 @@ mmalloc.info: mmalloc.texi
 # This file does NOT need texindex currently.
 mmalloc.dvi: mmalloc.texi
 	$(SET_TEXINPUTS) $(TEX) mmalloc.texi
-	rm -f mmalloc.?? mmalloc.??s mmalloc.log mmalloc.aux mmalloc.toc
+	rm -fv mmalloc.?? mmalloc.??s mmalloc.log mmalloc.aux mmalloc.toc
 
 install-info: info
-	$(SHELL) $(srcdir)/../mkinstalldirs $(DESTDIR)$(infodir)
+	$(RUN_MKINSTALLDIRS) $(DESTDIR)$(infodir)
 	@list='$(INFO_DEPS)'; \
-	for file in $$list; do \
-	  if test -f $$file; then d=.; else d=$(srcdir); fi; \
-	  for ifile in `cd $$d && echo $$file $$file-[0-9] $$file-[0-9][0-9]`; do \
-	    if test -f $$d/$$ifile; then \
-	      echo " $(INSTALL_DATA) $$d/$$ifile $(DESTDIR)$(infodir)/$$ifile"; \
-	      $(INSTALL_DATA) $$d/$$ifile $(DESTDIR)$(infodir)/$$ifile; \
-	    else : ; fi; \
+	for file in $${list}; do \
+	  if test -f $${file}; then d=.; else d=$(srcdir); fi; \
+	  for ifile in `cd $${d} && echo $${file} $$file-[0-9] $$file-[0-9][0-9]`; do \
+	    if test -f $${d}/$${ifile}; then \
+	      echo " $(INSTALL_DATA) $${d}/$${ifile} $(DESTDIR)$(infodir)/$${ifile}"; \
+	      $(INSTALL_DATA) $${d}/$${ifile} $(DESTDIR)$(infodir)/$${ifile}; \
+	    else echo "nothing to do for $${ifile}"; fi; \
 	  done; \
 	done
 	$(POST_INSTALL)
-	@if $(SHELL) -c 'install-info --version | sed 1q | fgrep -s -v -i debian' >/dev/null 2>&1; then \
+	@if $(SHELL) -c 'install-info --version | $(SED) 1q | $(FGREP) -s -v -i debian' >/dev/null 2>&1; then \
 	  list='$(INFO_DEPS)'; \
-	  for file in $$list; do \
-	    echo " install-info --info-dir=$(DESTDIR)$(infodir) $(DESTDIR)$(infodir)/$$file";\
-	    install-info --info-dir=$(DESTDIR)$(infodir) $(DESTDIR)$(infodir)/$$file || :;\
+	  for file in $${list}; do \
+	    echo " install-info --info-dir=$(DESTDIR)$(infodir) $(DESTDIR)$(infodir)/$${file}";\
+	    install-info --info-dir=$(DESTDIR)$(infodir) $(DESTDIR)$(infodir)/$${file} || echo "...or not";\
 	  done; \
-	else : ; fi
+	else echo "not using your install-info"; fi
 
 uninstall-info:
 	$(PRE_UNINSTALL)
-	@if $(SHELL) -c 'install-info --version | sed 1q | fgrep -s -v -i debian' >/dev/null 2>&1; then \
+	@if $(SHELL) -c 'install-info --version | $(SED) 1q | $(FGREP) -s -v -i debian' >/dev/null 2>&1; then \
 	  ii=yes; \
-	else ii=; fi; \
+	else ii=""; fi; \
 	list='$(INFO_DEPS)'; \
-	for file in $$list; do \
-	  test -z "$$ii" \
-	    || install-info --info-dir=$(DESTDIR)$(infodir) --remove $$file; \
+	for file in $${list}; do \
+	  test -z "$${ii}" \
+	    || install-info --info-dir=$(DESTDIR)$(infodir) --remove $${file}; \
 	done
 	$(NORMAL_UNINSTALL)
 	list='$(INFO_DEPS)'; \
-	for file in $$list; do \
-	  (cd $(DESTDIR)$(infodir) && rm -f $$file $$file-[0-9] $$file-[0-9][0-9]); \
+	for file in $${list}; do \
+	  (cd $(DESTDIR)$(infodir) && rm -fv $${file} $$file-[0-9] $$file-[0-9][0-9]); \
 	done
 
 check: test1.c
@@ -165,6 +175,7 @@ check: test1.c
 # for gdb, perhaps).
 #	./a.out
 
+# APPLE LOCAL begin framework building:
 SYSTEM_FRAMEWORK = -framework System -lSystem
 
 FRAMEWORK = mmalloc
@@ -177,46 +188,49 @@ FRAMEWORK_OFILES = $(TARGETOBJS)
 FRAMEWORK_LIB = $(SYSTEM_FRAMEWORK)
 
 stamp-framework-headers:
-	$(RM) -f stamp-framework stamp-framework-headers
-	$(RM) -rf $(FRAMEWORK).framework
-	mkdir -p $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Headers
-	mkdir -p $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/PrivateHeaders
-	ln -s Versions/Current/Headers $(FRAMEWORK).framework/Headers
-	ln -s Versions/Current/PrivateHeaders $(FRAMEWORK).framework/PrivateHeaders
-	ln -s A $(FRAMEWORK).framework/Versions/Current
-	cp -p $(srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/
-	cp -p *.h $(FRAMEWORK).framework/Versions/Current/Headers/
+	$(RM) -fv stamp-framework stamp-framework-headers
+	$(RM) -rfv $(FRAMEWORK).framework
+	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Headers
+	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/PrivateHeaders
+	$(LN_S) -v Versions/Current/Headers $(FRAMEWORK).framework/Headers
+	$(LN_S) -v Versions/Current/PrivateHeaders $(FRAMEWORK).framework/PrivateHeaders
+	$(LN_S) -v A $(FRAMEWORK).framework/Versions/Current
+	cp -pv $(srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/
+	cp -pv *.h $(FRAMEWORK).framework/Versions/Current/Headers/
 	touch stamp-framework-headers
 
 stamp-framework: $(FRAMEWORK_OFILES)
-	$(RM) -f stamp-framework-headers
+	$(RM) -fv stamp-framework-headers
 	$(MAKE) stamp-framework-headers
-	mkdir -p $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
-	ln -s Versions/Current/Resources $(FRAMEWORK).framework/Resources
-	mkdir -p $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
+	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
+	$(LN_S) -v Versions/Current/Resources $(FRAMEWORK).framework/Resources
+	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
 
-	set -e; if [ "$(FRAMEWORK_SUFFIX)" != "" ]; then \
-		$(NSLIBTOOL) -arch $(HOST_ARCHITECTURE)  -seg1addr $(FRAMEWORK_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
-		ln -s $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
-		ln -s Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX); \
-		ln -s Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
-		ln -s $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK); \
+	set -ex; \
+	if [ "$(FRAMEWORK_SUFFIX)" != "" ]; then \
+	    test -n "$(FRAMEWORK_SUFFIX)"; \
+	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(FRAMEWORK_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
+	    $(LN_S) -v $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
+	    $(LN_S) -v Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX); \
+	    $(LN_S) -v Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
+	    $(LN_S) -v $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK); \
 	else \
-		$(NSLIBTOOL) -arch $(HOST_ARCHITECTURE)  -seg1addr $(FRAMEWORK_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
-		ln -s Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK); \
+	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(FRAMEWORK_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
+	    $(LN_S) -v Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK); \
 	fi
 	touch stamp-framework
+# APPLE LOCAL end framework building.
 
 install:	all install-info
-		$(SHELL) $(srcdir)/../mkinstalldirs $(DESTDIR)$(libdir)
+		$(RUN_MKINSTALLDIRS) $(DESTDIR)$(libdir)
 		$(INSTALL_DATA) $(TARGETLIB) $(DESTDIR)$(libdir)/$(TARGETLIB)n
 		$(RANLIB) $(DESTDIR)$(libdir)/$(TARGETLIB)n
-		mv -f $(DESTDIR)$(libdir)/$(TARGETLIB)n $(DESTDIR)$(libdir)/$(TARGETLIB)
+		mv -fv $(DESTDIR)$(libdir)/$(TARGETLIB)n $(DESTDIR)$(libdir)/$(TARGETLIB)
 
 uninstall:	uninstall-info
 
 $(TARGETLIB):	$(TARGETOBJS)
-		$(RM) -rf $@
+		$(RM) -rfv $@
 		$(AR) $(AR_FLAGS) $@ $(TARGETOBJS)
 		$(RANLIB) $@
 
@@ -231,63 +245,64 @@ mm.o:		$(HFILES) $(CFILES)
 .PHONY: all etags tags ls clean stage1 stage2 .always.
 
 stage1:		force
-		-mkdir stage1
-		-mv -f $(STAGESTUFF) stage1
+		-mkdir -v stage1
+		-mv -fv $(STAGESTUFF) stage1
 
 stage2:		force
-		-mkdir stage2
-		-mv -f $(STAGESTUFF) stage2
+		-mkdir -v stage2
+		-mv -fv $(STAGESTUFF) stage2
 
 stage3:		force
-		-mkdir stage3
-		-mv -f $(STAGESTUFF) stage3
+		-mkdir -v stage3
+		-mv -fv $(STAGESTUFF) stage3
 
 stage4:		force
-		-mkdir stage4
-		-mv -f $(STAGESTUFF) stage4
+		-mkdir -v stage4
+		-mv -fv $(STAGESTUFF) stage4
 
 against=stage2
 
 comparison:	force
-		for i in *.o ; do cmp $$i $(against)/$$i || exit 1 ; done
+		for i in *.o; do cmp $${i} $(against)/$${i} || exit 1; done
 
 de-stage1:	force
-		-(cd stage1 ; mv -f * ..)
+		-(cd stage1 ; mv -fv * ..)
 		-rmdir stage1
 
 de-stage2:	force
-		-(cd stage2 ; mv -f * ..)
+		-(cd stage2 ; mv -fv * ..)
 		-rmdir stage2
 
 de-stage3:	force
-		-(cd stage3 ; mv -f * ..)
+		-(cd stage3 ; mv -fv * ..)
 		-rmdir stage3
 
 de-stage4:	force
-		-(cd stage4 ; mv -f * ..)
+		-(cd stage4 ; mv -fv * ..)
 		-rmdir stage4
 
 etags tags:	TAGS
 
 TAGS:		$(CFILES)
-	etags `for i in $(HFILES) $(CFILES); do echo $(srcdir)/$$i ; done`
+	etags `for i in $(HFILES) $(CFILES); do echo $(srcdir)/$${i}; done`
 
 ls:
 		@echo Makefile $(HFILES) $(CFILES)
 
 # Need to deal with profiled libraries, too.
 
+# 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 mostlyclean clean:
-		rm -f *.a *.o core errs *~ \#* TAGS *.E a.out errors 
+		rm -fv *.a *.o core errs *~ \#* TAGS *.E a.out errors 
 
 distclean:	clean 
 		rm -f config.cache config.log config.status
 		rm -f Makefile depend
-		rm -fr autom4te.cache || rmdir autom4te.cache
+		rm -frv autom4te.cache || rmdir autom4te.cache
 
 maintainer-clean realclean: distclean clean
 		@echo "This command is intended for maintainers to use;"
-		@echo "it deletes files that may require special tools to rebuild."
+		@echo "it deletes files that need special tools to regen"
 		rm -f mmalloc.info
 
 force:

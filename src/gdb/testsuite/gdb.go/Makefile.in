@@ -1,3 +1,5 @@
+# Makefile for gdb.go part of testsuite
+
 VPATH = @srcdir@
 srcdir = @srcdir@
 
@@ -8,14 +10,15 @@ EXECUTABLES = \
 all info install-info dvi install uninstall installcheck check:
 	@echo "Nothing to be done for $@..."
 
+# 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 clean mostlyclean:
-	-find . -name '*.o' -print | xargs rm -f
-	-find . -name '*.ali' -print | xargs rm -f
-	-rm -f *~ a.out
-	-rm -f *.dwo *.dwp
-	-rm -f core core.coremaker coremaker.core corefile $(EXECUTABLES)
+	-find . -name '*.o' -print | xargs rm -fv
+	-find . -name '*.ali' -print | xargs rm -fv
+	-rm -fv *~ a.out
+	-rm -fv *.dwo *.dwp
+	-rm -fv core core.coremaker coremaker.core corefile $(EXECUTABLES)
 
 distclean maintainer-clean realclean: clean
 	-rm -f Makefile config.status config.log
-	-rm -f *-init.exp gdb.log gdb.sum
-	-rm -fr *.log summary detail *.plog *.sum *.psum site.*
+	-rm -fv *-init.exp gdb.log gdb.sum
+	-rm -frv *.log summary detail *.plog *.sum *.psum site.*

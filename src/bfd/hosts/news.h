@@ -1,4 +1,4 @@
-/* Sony News running NewsOS 3.2.  */
+/* news.h: Sony News running NewsOS 3.2.  */
 
 #include <machine/vmparam.h>
 

@@ -372,7 +372,7 @@ static bfd_boolean in_reloc_p PARAMS((bfd *abfd, reloc_howto_type *howto));
    get us started, so those I'll make sure work. Those marked FIXME are either
    completely unverified or have a specific unknown marked in the comment.  */
 
-/* Relocation entries for Windows/NT on PowerPC.                             
+/* Relocation entries for Windows/NT on PowerPC.
 
    From the document "" we find the following listed as used relocs:
 
@@ -1268,11 +1268,11 @@ coff_ppc_relocate_section (output_bfd, info, input_bfd, input_section,
 	  {
 	    /* To solve this, we need to know whether or not the symbol
 	       appearing on the call instruction is a glue function or not.
-	       A glue function must announce itself via a IMGLUE reloc, and 
+	       A glue function must announce itself via a IMGLUE reloc, and
 	       the reloc contains the required toc restore instruction.  */
 	    bfd_vma x;
 	    const char *my_name;
-	    
+
 	    DUMP_RELOC2 (howto->name, rel);
 
 	    if (h != 0)
@@ -1537,15 +1537,14 @@ void
 dump_toc (vfile)
      PTR vfile;
 {
-  FILE *file = (FILE *) vfile;
+  FILE *file = (FILE *)vfile;
   struct list_ele *t;
 
-  fprintf (file, _(h1));
-  fprintf (file, _(h2));
-  fprintf (file, _(h3));
+  fprintf(file, "%s", _(h1));
+  fprintf(file, "%s", _(h2));
+  fprintf(file, "%s", _(h3));
 
-  for (t = head; t != 0; t=t->next)
-    {
+  for (t = head; t != 0; t=t->next) {
       const char *cat = "";
 
       if (t->cat == priv)

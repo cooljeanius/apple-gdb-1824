@@ -1,32 +1,34 @@
-/* `a.out' object-file definitions, including extensions to 64-bit fields
-
-   Copyright 1999, 2000, 2001, 2003 Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-   
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+/* aout64.h: `a.out' object-file definitions, including extensions
+ * to 64-bit fields
+ *
+ * Copyright 1999, 2000, 2001, 2003 Free Software Foundation, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St. - 5th Floor, Boston, MA 02110-1301, USA.
+ */
 
 #ifndef __A_OUT_64_H__
 #define __A_OUT_64_H__
 
 #ifndef BYTES_IN_WORD
-#define BYTES_IN_WORD 4
-#endif
+# define BYTES_IN_WORD 4
+#endif /* !BYTES_IN_WORD */
 
 /* This is the layout on disk of the 32-bit or 64-bit exec header.  */
 
 #ifndef external_exec
-struct external_exec 
+struct external_exec
 {
   bfd_byte e_info[4];		    /* Magic number and stuff.  */
   bfd_byte e_text[BYTES_IN_WORD];   /* Length of text section in bytes.  */
@@ -40,60 +42,66 @@ struct external_exec
 
 #define	EXEC_BYTES_SIZE	(4 + BYTES_IN_WORD * 7)
 
-/* Magic numbers for a.out files.  */
+#ifndef ARCH_SIZE
+# if defined(__LP64__) && __LP64__
+#  define ARCH_SIZE 64
+# else
+#  define ARCH_SIZE 32 /* seems like a reasonable assumption */
+# endif /* __LP64__ */
+#endif /* !ARCH_SIZE */
 
-#if ARCH_SIZE==64
-#define OMAGIC 0x1001		/* Code indicating object file.  */
-#define ZMAGIC 0x1002		/* Code indicating demand-paged executable.  */
-#define NMAGIC 0x1003		/* Code indicating pure executable.  */
-
-/* There is no 64-bit QMAGIC as far as I know.  */
-
-#define N_BADMAG(x)	  (N_MAGIC(x) != OMAGIC		\
-			&& N_MAGIC(x) != NMAGIC		\
-  			&& N_MAGIC(x) != ZMAGIC)
+/* Magic numbers for a.out files: */
+#if defined(ARCH_SIZE) && (ARCH_SIZE==64)
+# define OMAGIC 0x1001 /* Code indicating object file.  */
+# define ZMAGIC 0x1002 /* Code indicating demand-paged executable.  */
+# define NMAGIC 0x1003 /* Code indicating pure executable.  */
+/* There is no 64-bit QMAGIC as far as I know. */
+# ifndef N_BADMAG
+#  define N_BADMAG(x)	  ((N_MAGIC(x) != OMAGIC)		\
+			&& (N_MAGIC(x) != NMAGIC)		\
+  			&& (N_MAGIC(x) != ZMAGIC))
+# endif /* !N_BADMAG */
 #else
-#define OMAGIC 0407		/* Object file or impure executable.  */
-#define NMAGIC 0410		/* Code indicating pure executable.  */
-#define ZMAGIC 0413		/* Code indicating demand-paged executable.  */
-#define BMAGIC 0415		/* Used by a b.out object.  */
+# define OMAGIC 0407 /* Object file or impure executable.  */
+# define NMAGIC 0410 /* Code indicating pure executable.  */
+# define ZMAGIC 0413 /* Code indicating demand-paged executable.  */
+# define BMAGIC 0415 /* Used by a b.out object.  */
 
 /* This indicates a demand-paged executable with the header in the text.
-   It is used by 386BSD (and variants) and Linux, at least.  */
-#ifndef QMAGIC
-#define QMAGIC 0314
-#endif
+ * It is used by 386BSD (and variants) and Linux, at least.  */
+# ifndef QMAGIC
+#  define QMAGIC 0314
+# endif /* !QMAGIC */
 # ifndef N_BADMAG
 #  define N_BADMAG(x)	  (N_MAGIC(x) != OMAGIC		\
 			&& N_MAGIC(x) != NMAGIC		\
   			&& N_MAGIC(x) != ZMAGIC \
 		        && N_MAGIC(x) != QMAGIC)
 # endif /* N_BADMAG */
-#endif
+#endif /* ARCH_SIZE && (ARCH_SIZE==64) */
 
-#endif
+#endif /* !external_exec */
 
 #ifdef QMAGIC
-#define N_IS_QMAGIC(x) (N_MAGIC (x) == QMAGIC)
+# define N_IS_QMAGIC(x) (N_MAGIC (x) == QMAGIC)
 #else
-#define N_IS_QMAGIC(x) (0)
-#endif
+# define N_IS_QMAGIC(x) (0)
+#endif /* QMAGIC */
 
-/* The difference between TARGET_PAGE_SIZE and N_SEGSIZE is that TARGET_PAGE_SIZE is
-   the finest granularity at which you can page something, thus it
-   controls the padding (if any) before the text segment of a ZMAGIC
-   file.  N_SEGSIZE is the resolution at which things can be marked as
-   read-only versus read/write, so it controls the padding between the
-   text segment and the data segment (in memory; on disk the padding
-   between them is TARGET_PAGE_SIZE).  TARGET_PAGE_SIZE and N_SEGSIZE are the same
-   for most machines, but different for sun3.  */
+/* The difference between TARGET_PAGE_SIZE and N_SEGSIZE is that
+ * TARGET_PAGE_SIZE is the finest granularity at which you can page something,
+ * thus it controls the padding (if any) before the text segment of a ZMAGIC
+ * file. N_SEGSIZE is the resolution at which things can be marked as read-only
+ * versus read/write, so it controls the padding between the text segment and
+ * the data segment (in memory; on disk the padding between them is
+ * TARGET_PAGE_SIZE). TARGET_PAGE_SIZE and N_SEGSIZE are the same for most
+ * machines, but different for sun3. */
 
-/* By default, segment size is constant.  But some machines override this
-   to be a function of the a.out header (e.g. machine type).  */
-
+/* By default, segment size is constant. But some machines override this to be
+ * a function of the a.out header (e.g. machine type).  */
 #ifndef	N_SEGSIZE
-#define	N_SEGSIZE(x)	SEGMENT_SIZE
-#endif
+# define N_SEGSIZE(x) SEGMENT_SIZE
+#endif /* !N_SEGSIZE */
 
 /* Virtual memory address of the text section.
    This is getting very complicated.  A good reason to discard a.out format
@@ -331,7 +339,7 @@ struct internal_nlist
 #define N_WEAKD 0x10		/* Weak data symbol.  */
 #define N_WEAKB 0x11		/* Weak bss symbol.  */
 
-/* Relocations 
+/* Relocations
 
   There	are two types of relocation flavours for a.out systems,
   standard and extended. The standard form is used on systems where the
@@ -416,31 +424,33 @@ struct reloc_ext_external
 };
 
 #ifndef RELOC_EXT_BITS_EXTERN_BIG
-#define	RELOC_EXT_BITS_EXTERN_BIG	((unsigned int) 0x80)
-#endif
+# define RELOC_EXT_BITS_EXTERN_BIG ((unsigned int)0x80)
+#endif /* !RELOC_EXT_BITS_EXTERN_BIG */
 
 #ifndef RELOC_EXT_BITS_EXTERN_LITTLE
-#define	RELOC_EXT_BITS_EXTERN_LITTLE	((unsigned int) 0x01)
+# define RELOC_EXT_BITS_EXTERN_LITTLE ((unsigned int)0x01)
 #endif
 
 #ifndef RELOC_EXT_BITS_TYPE_BIG
-#define	RELOC_EXT_BITS_TYPE_BIG		((unsigned int) 0x1F)
-#endif
+# define RELOC_EXT_BITS_TYPE_BIG ((unsigned int)0x1F)
+#endif /* !RELOC_EXT_BITS_TYPE_BIG */
 
 #ifndef RELOC_EXT_BITS_TYPE_SH_BIG
-#define	RELOC_EXT_BITS_TYPE_SH_BIG	0
-#endif
+# define RELOC_EXT_BITS_TYPE_SH_BIG 0
+#endif /* !RELOC_EXT_BITS_TYPE_SH_BIG */
 
 #ifndef RELOC_EXT_BITS_TYPE_LITTLE
-#define	RELOC_EXT_BITS_TYPE_LITTLE	((unsigned int) 0xF8)
-#endif
+# define RELOC_EXT_BITS_TYPE_LITTLE ((unsigned int)0xF8)
+#endif /* !RELOC_EXT_BITS_TYPE_LITTLE */
 
 #ifndef RELOC_EXT_BITS_TYPE_SH_LITTLE
-#define	RELOC_EXT_BITS_TYPE_SH_LITTLE	3
-#endif
+# define RELOC_EXT_BITS_TYPE_SH_LITTLE 3
+#endif /* !RELOC_EXT_BITS_TYPE_SH_LITTLE */
 
-/* Bytes per relocation entry.  */
-#define	RELOC_EXT_SIZE	(BYTES_IN_WORD + 3 + 1 + BYTES_IN_WORD)
+#ifndef RELOC_EXT_SIZE
+/* Bytes per relocation entry. */
+# define RELOC_EXT_SIZE (BYTES_IN_WORD + 3 + 1 + BYTES_IN_WORD)
+#endif /* !RELOC_EXT_SIZE */
 
 enum reloc_type
 {
@@ -459,7 +469,7 @@ enum reloc_type
   RELOC_22,			/* data[0:21] = (addend + sv) 		*/
   RELOC_13,			/* data[0:12] = (addend + sv)		*/
   RELOC_LO10,			/* data[0:9] = (addend + sv)		*/
-  RELOC_SFA_BASE,		
+  RELOC_SFA_BASE,
   RELOC_SFA_OFF13,
   /* P.I.C. (base-relative).  */
   RELOC_BASE10,  		/* Not sure - maybe we can do this the */
@@ -476,17 +486,17 @@ enum reloc_type
   RELOC_JMP_SLOT,
   RELOC_RELATIVE,
 
-  RELOC_11,	
+  RELOC_11,
   RELOC_WDISP2_14,
   RELOC_WDISP19,
   RELOC_HHI22,			/* data[0:21] = (addend + sv) >> 42     */
   RELOC_HLO10,			/* data[0:9] = (addend + sv) >> 32      */
-  
+
   /* 29K relocation types.  */
   RELOC_JUMPTARG,
   RELOC_CONST,
   RELOC_CONSTH,
-  
+
   /* All the new ones I can think of, for sparc v9.  */
   RELOC_64,			/* data[0:63] = addend + sv 		*/
   RELOC_DISP64,			/* data[0:63] = addend - pc + sv 	*/
@@ -511,9 +521,16 @@ struct reloc_internal
 };
 
 /* Q.
-   Should the length of the string table be 4 bytes or 8 bytes ?
+ * Should the length of the string table be 4 bytes or 8 bytes?
+ * A.
+ * ...?
+ *
+ * Q.
+ * What about archive indexes?
+ * A.
+ * ...?
+ */
 
-   Q.
-   What about archive indexes ?  */
+#endif /* __A_OUT_64_H__ */
 
-#endif				/* __A_OUT_64_H__ */
+/* EOF */

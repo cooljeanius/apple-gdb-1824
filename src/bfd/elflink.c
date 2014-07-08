@@ -1,4 +1,4 @@
-/* ELF linking support for BFD.
+/* elflink.c: ELF linking support for BFD.
    Copyright 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
@@ -4100,14 +4100,15 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
 	    /* If the symbol already has a dynamic index, but
 	       visibility says it should not be visible, turn it into
 	       a local symbol.  */
-	    switch (ELF_ST_VISIBILITY (h->other))
-	      {
+	    switch (ELF_ST_VISIBILITY(h->other)) {
 	      case STV_INTERNAL:
 	      case STV_HIDDEN:
-		(*bed->elf_backend_hide_symbol) (info, h, TRUE);
+		(*bed->elf_backend_hide_symbol)(info, h, TRUE);
 		dynsym = FALSE;
 		break;
-	      }
+	      default:
+		break; /* (?) */
+	    }
 
 	  if (!add_needed
 	      && definition
@@ -4550,7 +4551,7 @@ _bfd_elf_archive_symbol_lookup (bfd *abfd,
    table until nothing further is resolved.  */
 
 static bfd_boolean
-elf_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
+elf_link_add_archive_symbols(bfd *abfd, struct bfd_link_info *info)
 {
   symindex c;
   bfd_boolean *defined = NULL;
@@ -4578,18 +4579,18 @@ elf_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
   if (c == 0)
     return TRUE;
   amt = c;
-  amt *= sizeof (bfd_boolean);
-  defined = bfd_zmalloc (amt);
-  included = bfd_zmalloc (amt);
-  if (defined == NULL || included == NULL)
-    goto error_return;
+  amt *= sizeof(bfd_boolean);
+  defined = (bfd_boolean *)bfd_zmalloc(amt);
+  included = (bfd_boolean *)bfd_zmalloc(amt);
+  if ((defined == NULL) || (included == NULL)) {
+      goto error_return;
+  }
 
   symdefs = bfd_ardata (abfd)->symdefs;
   bed = get_elf_backend_data (abfd);
   archive_symbol_lookup = bed->elf_backend_archive_symbol_lookup;
 
-  do
-    {
+  do {
       file_ptr last;
       symindex i;
       carsym *symdef;
@@ -4698,11 +4699,10 @@ elf_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
 	     on through the loop.  */
 	  last = symdef->file_offset;
 	}
-    }
-  while (loop);
+  } while (loop);
 
-  free (defined);
-  free (included);
+  free(defined);
+  free(included);
 
   return TRUE;
 
@@ -4714,29 +4714,25 @@ elf_link_add_archive_symbols (bfd *abfd, struct bfd_link_info *info)
   return FALSE;
 }
 
-/* Given an ELF BFD, add symbols to the global hash table as
-   appropriate.  */
-
-bfd_boolean
-bfd_elf_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
+/* Given an ELF BFD, add symbols to the global hash table as appropriate: */
+bfd_boolean bfd_elf_link_add_symbols(bfd *abfd, struct bfd_link_info *info)
 {
-  switch (bfd_get_format (abfd))
-    {
+  switch (bfd_get_format(abfd)) {
     case bfd_object:
-      return elf_link_add_object_symbols (abfd, info);
+      return elf_link_add_object_symbols(abfd, info);
     case bfd_archive:
-      return elf_link_add_archive_symbols (abfd, info);
+      return elf_link_add_archive_symbols(abfd, info);
     default:
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
       return FALSE;
-    }
+  }
 }
-
-/* This function will be called though elf_link_hash_traverse to store
-   all hash value of the exported symbols in an array.  */
 
+
+/* This function will be called though elf_link_hash_traverse to store
+ * all hash value of the exported symbols in an array: */
 static bfd_boolean
-elf_collect_hash_codes (struct elf_link_hash_entry *h, void *data)
+elf_collect_hash_codes(struct elf_link_hash_entry *h, void *data)
 {
   unsigned long **valuep = data;
   const char *name;
@@ -9159,7 +9155,7 @@ bfd_elf_gc_sections (bfd *abfd, struct bfd_link_info *info)
 
       /* Keep .gcc_except_table.* if the associated .text.* is
 	 marked.  This isn't very nice, but the proper solution,
-	 splitting .eh_frame up and using comdat doesn't pan out 
+	 splitting .eh_frame up and using comdat doesn't pan out
 	 easily due to needing special relocs to handle the
 	 difference of two symbols in separate sections.
 	 Don't keep code sections referenced by .eh_frame.  */

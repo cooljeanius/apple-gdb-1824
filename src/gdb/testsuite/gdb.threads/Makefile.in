@@ -1,3 +1,5 @@
+# Makefile for gdb.threads part of testsuite
+
 VPATH = @srcdir@
 srcdir = @srcdir@
 
@@ -6,8 +8,9 @@ EXECUTABLES = pthreads
 all info install-info dvi install uninstall installcheck check:
 	@echo "Nothing to be done for $@..."
 
+# 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 clean mostlyclean:
-	-rm -f *~ *.o a.out xgdb *.x *.ci *.tmp core* $(EXECUTABLES)
+	-rm -fv *~ *.o a.out xgdb *.x *.ci *.tmp core* $(EXECUTABLES)
 
 distclean maintainer-clean realclean: clean
 	-rm -f Makefile config.status config.log config.h

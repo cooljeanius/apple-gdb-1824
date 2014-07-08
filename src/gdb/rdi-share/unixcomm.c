@@ -20,7 +20,9 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning unixcomm.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning unixcomm.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #include <stdio.h>
@@ -77,11 +79,14 @@
 # ifdef HAVE_SYS_IOCTL_H
 #  include <sys/ioctl.h>
 # else
-#  warning unixcomm.c expects <sys/ioctl.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "unixcomm.c expects <sys/ioctl.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_SYS_IOCTL_H */
 #endif /* !ioctl */
 
 #include "host.h"
+#include "hsys.h" /* for panic() */
 #include "unixcomm.h"
 
 #define PP_TIMEOUT      1              /* seconds */
@@ -302,27 +307,23 @@ extern int Unix_ReadSerial(unsigned char *buf, int n, bool block)
     tv.tv_sec = 0;
     tv.tv_usec = (block ? 10000 : 0);
 
-    err = select(serpfd + 1, &fdset, NULL, NULL, &tv);
+    err = select((serpfd + 1), &fdset, NULL, NULL, &tv);
 
-    if (err < 0 && errno != EINTR)
-    {
+    if ((err < 0) && (errno != EINTR)) {
 #ifdef DEBUG
         perror("select");
 #endif /* DEBUG */
         panic("select failure");
         return -1;
-    }
-    else if (err > 0 && FD_ISSET(serpfd, &fdset))
-      {
+    } else if ((err > 0) && FD_ISSET(serpfd, &fdset)) {
 	int s;
 
 	s = read(serpfd, buf, n);
-	if (s < 0)
-	  perror("read:");
+	if (s < 0) {
+	    perror("read:");
+	}
 	return s;
-      }
-    else /* err == 0 || FD_CLR(serpfd, &fdset) */
-    {
+    } else { /* ((err == 0) || FD_CLR(serpfd, &fdset)) */
         errno = ERRNO_FOR_BLOCKED_IO;
         return -1;
     }
@@ -499,8 +500,7 @@ extern int Unix_OpenParallel(const char *name)
 
 extern void Unix_CloseParallel(void)
 {
-    if (parpfd >= 0)
-    {
+    if (parpfd >= 0) {
         (void)close(parpfd);
         parpfd = -1;
     }
@@ -511,8 +511,7 @@ extern unsigned int Unix_WriteParallel(unsigned char *buf, int n)
 {
     int ngone;
 
-    if ((ngone = write(parpfd, buf, n)) < 0)
-    {
+    if ((ngone = write(parpfd, buf, n)) < 0) {
         /*
          * we ignore errors (except for debug purposes)
          */

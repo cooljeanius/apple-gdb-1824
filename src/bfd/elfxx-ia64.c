@@ -678,9 +678,9 @@ static const bfd_byte oor_ip[48] =
 static size_t oor_branch_size = sizeof (oor_brl);
 
 void
-bfd_elfNN_ia64_after_parse (int itanium)
+bfd_elfNN_ia64_after_parse(int itanium)
 {
-  oor_branch_size = itanium ? sizeof (oor_ip) : sizeof (oor_brl);
+  oor_branch_size = (itanium ? sizeof(oor_ip) : sizeof(oor_brl));
 }
 
 #define BTYPE_SHIFT	6
@@ -780,7 +780,7 @@ elfNN_ia64_relax_br (bfd_byte *contents, bfd_vma off)
       /* It should never happen.  */
       abort ();
     }
-  
+
   /* We can turn br.cond/br.call into brl.cond/brl.call.  */
   if (!(IS_BR_COND (br_code) || IS_BR_CALL (br_code)))
     return FALSE;

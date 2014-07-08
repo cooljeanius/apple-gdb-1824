@@ -43,6 +43,8 @@ dnl#-----------------------------------------------------------------------
 
 AC_DEFUN([AC_BAKEFILE_GNUMAKE],
 [
+    AC_REQUIRE([AC_PROG_EGREP])
+
     dnl# does make support "-include" (only GNU make does AFAIK)?
     AC_CACHE_CHECK([if make is GNU make],[bakefile_cv_prog_makeisgnu],
     [
@@ -54,7 +56,7 @@ AC_DEFUN([AC_BAKEFILE_GNUMAKE],
         fi
     ])
 
-    if test "x$bakefile_cv_prog_makeisgnu" = "xyes"; then
+    if test "x${bakefile_cv_prog_makeisgnu}" = "xyes"; then
         IF_GNU_MAKE=""
     else
         IF_GNU_MAKE="#"
@@ -79,7 +81,7 @@ AC_DEFUN([AC_BAKEFILE_PLATFORM],
     PLATFORM_OS2=0
     PLATFORM_BEOS=0
 
-    if test "x$BAKEFILE_FORCE_PLATFORM" = "x"; then
+    if test "x${BAKEFILE_FORCE_PLATFORM}" = "x"; then
         case "${BAKEFILE_HOST}" in
             *-*-mingw32* )
                 PLATFORM_WIN32=1
@@ -106,7 +108,7 @@ AC_DEFUN([AC_BAKEFILE_PLATFORM],
             ;;
         esac
     else
-        case "$BAKEFILE_FORCE_PLATFORM" in
+        case "${BAKEFILE_FORCE_PLATFORM}" in
             win32 )
                 PLATFORM_WIN32=1
             ;;
@@ -127,7 +129,7 @@ AC_DEFUN([AC_BAKEFILE_PLATFORM],
                 PLATFORM_BEOS=1
             ;;
             * )
-                AC_MSG_ERROR([Unknown platform: $BAKEFILE_FORCE_PLATFORM])
+               AC_MSG_ERROR([Unknown platform: ${BAKEFILE_FORCE_PLATFORM}])
             ;;
         esac
     fi
@@ -153,29 +155,29 @@ AC_DEFUN([AC_BAKEFILE_PLATFORM_SPECIFICS],
 [
     AC_ARG_ENABLE([omf],[AS_HELP_STRING([--enable-omf],
                                         [use OMF object format (OS/2)])],
-                  [bk_os2_use_omf="$enableval"])
+                  [bk_os2_use_omf="${enableval}"])
 
     case "${BAKEFILE_HOST}" in
       *-*-darwin* )
         dnl# For Unix to Mac OS X porting instructions, see:
         dnl# http://fink.sourceforge.net/doc/porting/porting.html
-        if test "x$GCC" = "xyes"; then
-            CFLAGS="$CFLAGS -fno-common"
-            CXXFLAGS="$CXXFLAGS -fno-common"
+        if test "x${GCC}" = "xyes"; then
+            CFLAGS="${CFLAGS} -fno-common"
+            CXXFLAGS="${CXXFLAGS} -fno-common"
         fi
-        if test "x$XLCC" = "xyes"; then
-            CFLAGS="$CFLAGS -qnocommon"
-            CXXFLAGS="$CXXFLAGS -qnocommon"
+        if test "x${XLCC}" = "xyes"; then
+            CFLAGS="${CFLAGS} -qnocommon"
+            CXXFLAGS="${CXXFLAGS} -qnocommon"
         fi
         ;;
 
       *-pc-os2_emx | *-pc-os2-emx )
-        if test "x$bk_os2_use_omf" = "xyes" ; then
+        if test "x${bk_os2_use_omf}" = "xyes"; then
             AR=emxomfar
             RANLIB=:
-            LDFLAGS="-Zomf $LDFLAGS"
-            CFLAGS="-Zomf $CFLAGS"
-            CXXFLAGS="-Zomf $CXXFLAGS"
+            LDFLAGS="-Zomf ${LDFLAGS}"
+            CFLAGS="-Zomf ${CFLAGS}"
+            CXXFLAGS="-Zomf ${CXXFLAGS}"
             OS2_LIBEXT="lib"
         else
             OS2_LIBEXT="a"
@@ -183,7 +185,7 @@ AC_DEFUN([AC_BAKEFILE_PLATFORM_SPECIFICS],
         ;;
 
       i*86-*-beos* )
-        LDFLAGS="-L/boot/develop/lib/x86 $LDFLAGS"
+        LDFLAGS="-L/boot/develop/lib/x86 ${LDFLAGS}"
         ;;
     esac
 ])
@@ -205,11 +207,11 @@ AC_DEFUN([AC_BAKEFILE_SUFFIXES],
     DLLPREFIX="lib"
     DLLPREFIX_MODULE=""
     DLLIMP_SUFFIX=""
-    dlldir="$libdir"
+    dlldir="${libdir}"
 
     case "${BAKEFILE_HOST}" in
-        dnl PA-RISC HP systems used .sl but IA64 use ELF-64 and so use the
-        dnl standard .so extension
+        dnl# PA-RISC HP systems used .sl but IA64 use ELF-64 and so use the
+        dnl# standard .so extension
         ia64-hp-hpux* )
         ;;
         *-hp-hpux* )
@@ -290,8 +292,8 @@ AC_DEFUN([AC_BAKEFILE_SHARED_LD],
 [
     dnl# the extra compiler flags needed for compilation of shared library
     PIC_FLAG=""
-    if test "x$GCC" = "xyes"; then
-        dnl the switch for gcc is the same under all platforms
+    if test "x${GCC}" = "xyes"; then
+        dnl# the switch for gcc is the same under all platforms:
         PIC_FLAG="-fPIC"
     fi
 
@@ -302,10 +304,10 @@ AC_DEFUN([AC_BAKEFILE_SHARED_LD],
 
     case "${BAKEFILE_HOST}" in
       *-hp-hpux* )
-        dnl default settings are good for gcc but not for the native HP-UX
-        if test "x$GCC" != "xyes"; then
-            dnl no idea why it wants it, but it does
-            LDFLAGS="$LDFLAGS -L/usr/lib"
+        dnl# default settings are good for gcc but not for the native HP-UX
+        if test "x${GCC}" != "xyes"; then
+            dnl# no idea why it wants it, but it does:
+            LDFLAGS="${LDFLAGS} -L/usr/lib"
 
             SHARED_LD_CC="${CC} -b -o"
             SHARED_LD_CXX="${CXX} -b -o"
@@ -317,9 +319,9 @@ AC_DEFUN([AC_BAKEFILE_SHARED_LD],
         dnl# newer icc versions use -fPIC just as gcc does and, in fact,
         dnl# the newest (v10+) ones do not even understand -KPIC any
         dnl# longer
-        if test "$INTELCC" = "yes" -a "$INTELCC8" != "yes"; then
+        if test "x${INTELCC}" = "xyes" -a "x${INTELCC8}" != "xyes"; then
             PIC_FLAG="-KPIC"
-        elif test "x$SUNCXX" = "xyes"; then
+        elif test "x${SUNCXX}" = "xyes"; then
             SHARED_LD_CC="${CC} -G -o"
             SHARED_LD_CXX="${CXX} -G -o"
             PIC_FLAG="-KPIC"
@@ -327,7 +329,7 @@ AC_DEFUN([AC_BAKEFILE_SHARED_LD],
       ;;
 
       *-*-solaris2* )
-        if test "x$SUNCXX" = xyes ; then
+        if test "x${SUNCXX}" = xyes ; then
             SHARED_LD_CC="${CC} -G -o"
             SHARED_LD_CXX="${CXX} -G -o"
             PIC_FLAG="-KPIC"
@@ -358,7 +360,7 @@ AC_DEFUN([AC_BAKEFILE_SHARED_LD],
                    #if (__GNUC__ < 3) || \
                        ((__GNUC__ == 3) && (__GNUC_MINOR__ < 1))
                        This is old gcc
-                   #endif
+                   #endif /* old gcc */
                ]])],
                [
                    bakefile_cv_gcc31=yes
@@ -367,21 +369,21 @@ AC_DEFUN([AC_BAKEFILE_SHARED_LD],
                    bakefile_cv_gcc31=no
                ])
         ])
-        if test "$bakefile_cv_gcc31" = "no"; then
+        if test "x${bakefile_cv_gcc31}" = "xno"; then
             dnl# Use the shared-ld-sh helper script
             SHARED_LD_CC="`pwd`/shared-ld-sh -dynamiclib -headerpad_max_install_names -o"
-            SHARED_LD_CXX="$SHARED_LD_CC"
+            SHARED_LD_CXX="${SHARED_LD_CC}"
         else
             dnl# Use the -single_module flag and let the linker do it for
-            dnl# us
+            dnl# us:
             SHARED_LD_CC="\${CC} -dynamiclib -single_module -headerpad_max_install_names -o"
             SHARED_LD_CXX="\${CXX} -dynamiclib -single_module -headerpad_max_install_names -o"
         fi
 
-        if test "x$GCC" == "xyes"; then
+        if test "x${GCC}" == "xyes"; then
             PIC_FLAG="-dynamic -fPIC"
         fi
-        if test "x$XLCC" = "xyes"; then
+        if test "x${XLCC}" = "xyes"; then
             PIC_FLAG="-dynamic -DPIC"
         fi
       ;;
@@ -462,15 +464,15 @@ AC_DEFUN([AC_BAKEFILE_SHARED_LD],
         AC_MSG_ERROR([unknown system type $BAKEFILE_HOST.])
     esac
 
-    if test "x$PIC_FLAG" != "x" ; then
+    if test "x${PIC_FLAG}" != "x" ; then
         PIC_FLAG="$PIC_FLAG -DPIC"
     fi
 
-    if test "x$SHARED_LD_MODULE_CC" = "x" ; then
-        SHARED_LD_MODULE_CC="$SHARED_LD_CC"
+    if test "x${SHARED_LD_MODULE_CC}" = "x" ; then
+        SHARED_LD_MODULE_CC="${SHARED_LD_CC}"
     fi
-    if test "x$SHARED_LD_MODULE_CXX" = "x" ; then
-        SHARED_LD_MODULE_CXX="$SHARED_LD_CXX"
+    if test "x${SHARED_LD_MODULE_CXX}" = "x" ; then
+        SHARED_LD_MODULE_CXX="${SHARED_LD_CXX}"
     fi
 
     AC_SUBST([SHARED_LD_CC])
@@ -497,12 +499,12 @@ AC_DEFUN([AC_BAKEFILE_SHARED_VERSIONS],
     USE_SOVERCYGWIN=0
     USE_SOSYMLINKS=0
     USE_MACVERSION=0
-    SONAME_FLAG=
+    SONAME_FLAG=""
 
     case "${BAKEFILE_HOST}" in
       *-*-linux* | *-*-freebsd* | *-*-openbsd* | *-*-netbsd* | \
       *-*-k*bsd*-gnu | *-*-mirbsd* )
-        if test "x$SUNCXX" = "xyes"; then
+        if test "x${SUNCXX}" = "xyes"; then
             SONAME_FLAG="-h "
         else
             SONAME_FLAG="-Wl,-soname,"
@@ -551,19 +553,19 @@ AC_DEFUN([AC_BAKEFILE_DEPS],
 [
     AC_ARG_ENABLE([dependency-tracking],
                   [AS_HELP_STRING([--disable-dependency-tracking],
-                                  [do not use dependency tracking even if the compiler can do so])],
+         [do not use dependency tracking even if the compiler can do so])],
                   [bk_use_trackdeps="$enableval"])
 
     AC_MSG_CHECKING([for dependency tracking method])
 
     BK_DEPS=""
-    if test "x$bk_use_trackdeps" = "xno" ; then
+    if test "x${bk_use_trackdeps}" = "xno"; then
         DEPS_TRACKING=0
         AC_MSG_RESULT([disabled])
     else
         DEPS_TRACKING=1
 
-        if test "x$GCC" = "xyes"; then
+        if test "x${GCC}" = "xyes"; then
             DEPSMODE=gcc
             case "${BAKEFILE_HOST}" in
                 *-*-darwin* )
@@ -577,23 +579,23 @@ AC_DEFUN([AC_BAKEFILE_DEPS],
                 ;;
             esac
             AC_MSG_RESULT([gcc])
-        elif test "x$MWCC" = "xyes"; then
+        elif test "x${MWCC}" = "xyes"; then
             DEPSMODE=mwcc
             DEPSFLAG="-MM"
             AC_MSG_RESULT([mwcc])
-        elif test "x$SUNCC" = "xyes"; then
+        elif test "x${SUNCC}" = "xyes"; then
             DEPSMODE=unixcc
             DEPSFLAG="-xM1"
             AC_MSG_RESULT([Sun cc])
-        elif test "x$SGICC" = "xyes"; then
+        elif test "x${SGICC}" = "xyes"; then
             DEPSMODE=unixcc
             DEPSFLAG="-M"
             AC_MSG_RESULT([SGI cc])
-        elif test "x$HPCC" = "xyes"; then
+        elif test "x${HPCC}" = "xyes"; then
             DEPSMODE=unixcc
             DEPSFLAG="+make"
             AC_MSG_RESULT([HP cc])
-        elif test "x$COMPAQCC" = "xyes"; then
+        elif test "x${COMPAQCC}" = "xyes"; then
             DEPSMODE=gcc
             DEPSFLAG="-MD"
             AC_MSG_RESULT([Compaq cc])
@@ -602,7 +604,7 @@ AC_DEFUN([AC_BAKEFILE_DEPS],
             AC_MSG_RESULT([none])
         fi
 
-        if test $DEPS_TRACKING = 1 ; then
+        if test ${DEPS_TRACKING} = 1; then
             AC_BAKEFILE_CREATE_FILE_BK_DEPS
             chmod +x bk-deps
             dnl# FIXME: make this $(top_builddir)/bk-deps once
@@ -630,18 +632,18 @@ AC_DEFUN([AC_BAKEFILE_CHECK_BASIC_STUFF],
     AC_REQUIRE([AC_PROG_LN_S])
 
     AC_REQUIRE([AC_PROG_MAKE_SET])
-    AC_SUBST(MAKE_SET)
+    AC_SUBST([MAKE_SET])
 
-    if test "x$SUNCXX" = "xyes"; then
+    if test "x${SUNCXX}" = "xyes"; then
         dnl# Sun C++ compiler requires special way of creating static libs;
         dnl# see here for more details:
         dnl# https://sourceforge.net/tracker/?func=detail&atid=109863&aid=1229751&group_id=9863
-        AR=$CXX
+        AR=${CXX}
         AROPTIONS="-xar -o"
         AC_SUBST([AR])
-    elif test "x$SGICC" = "xyes"; then
-        dnl# Almost the same as above for SGI mipsPro compiler
-        AR=$CXX
+    elif test "x${SGICC" = "xyes"; then
+        dnl# Almost the same as above for SGI mipsPro compiler:
+        AR=${CXX}
         AROPTIONS="-ar -o"
         AC_SUBST([AR])
     else
@@ -657,20 +659,20 @@ AC_DEFUN([AC_BAKEFILE_CHECK_BASIC_STUFF],
     dnl# all platforms (e.g. HP/UX), see http://www.bakefile.org/ticket/80
     AC_MSG_CHECKING([for command to install directories])
     INSTALL_TEST_DIR=acbftest$$
-    $INSTALL -d $INSTALL_TEST_DIR > /dev/null 2>&1
-    if test $? = 0 -a -d $INSTALL_TEST_DIR; then
+    ${INSTALL} -d ${INSTALL_TEST_DIR} > /dev/null 2>&1
+    if test $? = 0 -a -d ${INSTALL_TEST_DIR}; then
         rmdir $INSTALL_TEST_DIR
         dnl# we must refer to makefile's $(INSTALL) variable and not
         dnl# current value of shell variable, hence the single quoting:
         INSTALL_DIR='$(INSTALL) -d'
-        AC_MSG_RESULT([$INSTALL -d])
+        AC_MSG_RESULT([${INSTALL} -d])
     else
         INSTALL_DIR="mkdir -p"
         AC_MSG_RESULT([mkdir -p])
     fi
     AC_SUBST([INSTALL_DIR])
 
-    LDFLAGS_GUI=
+    LDFLAGS_GUI=""
     case ${BAKEFILE_HOST} in
         *-*-cygwin* | *-*-mingw32* )
         LDFLAGS_GUI="-mwindows"
@@ -695,7 +697,8 @@ AC_DEFUN([AC_BAKEFILE_RES_COMPILERS],
 
       *-*-darwin* | powerpc-apple-macos* )
             AC_CHECK_PROG([REZ],[Rez],[Rez],[/Developer/Tools/Rez])
-            AC_CHECK_PROG([SETFILE],[SetFile],[SetFile],[/Developer/Tools/SetFile])
+            AC_CHECK_PROG([SETFILE],[SetFile],[SetFile],
+                          [/Developer/Tools/SetFile])
         ;;
     esac
 
@@ -714,9 +717,9 @@ AC_DEFUN([AC_BAKEFILE_PRECOMP_HEADERS],
 [
 
     AC_ARG_ENABLE([precomp-headers],
-                  AS_HELP_STRING([--disable-precomp-headers],
-                                 [do not use precompiled headers even if compiler can do so]),
-                  [bk_use_pch="$enableval"])
+                  [AS_HELP_STRING([--disable-precomp-headers],
+             [do not use precompiled headers even if compiler can do so])],
+                  [bk_use_pch="${enableval}"])
 
     GCC_PCH=0
     ICC_PCH=0
@@ -742,16 +745,16 @@ AC_DEFUN([AC_BAKEFILE_PRECOMP_HEADERS],
                 [[
                     #if !defined(__GNUC__) || !defined(__GNUC_MINOR__)
                         There is no PCH support
-                    #endif
+                    #endif /* !__GNUC__ */
                     #if (__GNUC__ < 3)
                         There is no PCH support
-                    #endif
+                    #endif /* gcc 2 and lower */
                     #if (__GNUC__ == 3) && \
-                       ((!defined(__APPLE_CC__) && (__GNUC_MINOR__ < 4)) || \
-                       ( defined(__APPLE_CC__) && (__GNUC_MINOR__ < 3))) || \
-                       ( defined(__INTEL_COMPILER) )
+                     ((!defined(__APPLE_CC__) && (__GNUC_MINOR__ < 4)) || \
+                     ( defined(__APPLE_CC__) && (__GNUC_MINOR__ < 3))) || \
+                     ( defined(__INTEL_COMPILER) )
                         There is no PCH support
-                    #endif
+                    #endif /* version */
                 ]])],
                 [
                     AC_MSG_RESULT([yes])
@@ -826,15 +829,15 @@ AC_DEFUN([AC_BAKEFILE],
     AC_REQUIRE([AC_BAKEFILE_PROG_CC])
     AC_REQUIRE([AC_BAKEFILE_PROG_CXX])
 
-    if test "x$BAKEFILE_HOST" = "x"; then
-               if test "x${host}" = "x" ; then
+    if test "x${BAKEFILE_HOST}" = "x"; then
+               if test "x${host}" = "x"; then
                        AC_MSG_ERROR([You must call the autoconf "CANONICAL_HOST" macro in your configure.ac (or .in) file.])
                fi
 
         BAKEFILE_HOST="${host}"
     fi
 
-    if test "x$BAKEFILE_CHECK_BASICS" != "xno"; then
+    if test "x${BAKEFILE_CHECK_BASICS}" != "xno"; then
         AC_BAKEFILE_CHECK_BASIC_STUFF
     fi
     AC_REQUIRE([AC_BAKEFILE_GNUMAKE])
@@ -855,12 +858,12 @@ AC_DEFUN([AC_BAKEFILE],
     dnl# includes autoconf_inc.m4:
     $1
 
-    if test "$BAKEFILE_AUTOCONF_INC_M4_VERSION" = "" ; then
+    if test "x${BAKEFILE_AUTOCONF_INC_M4_VERSION}" = "x"; then
         AC_MSG_ERROR([No version found in autoconf_inc.m4 - bakefile macro was changed to take additional argument, perhaps configure.in wasn't updated (see the documentation)?])
     fi
 
-    if test "$BAKEFILE_BAKEFILE_M4_VERSION" != "$BAKEFILE_AUTOCONF_INC_M4_VERSION" ; then
-        AC_MSG_ERROR([Versions of Bakefile used to generate makefiles ($BAKEFILE_AUTOCONF_INC_M4_VERSION) and configure ($BAKEFILE_BAKEFILE_M4_VERSION) do not match.])
+    if test "${BAKEFILE_BAKEFILE_M4_VERSION}" != "${BAKEFILE_AUTOCONF_INC_M4_VERSION}"; then
+        AC_MSG_ERROR([Versions of Bakefile used to generate makefiles (${BAKEFILE_AUTOCONF_INC_M4_VERSION}) and configure (${BAKEFILE_BAKEFILE_M4_VERSION}) do not match.])
     fi
 ])
 

@@ -1,4 +1,4 @@
-/* Support for the generic parts of PE/PEI, for BFD.
+/* peicode.h: Support for the generic parts of PE/PEI, for BFD.
    Copyright 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
    2005 Free Software Foundation, Inc.
    Written by Cygnus Solutions.
@@ -146,7 +146,7 @@ coff_swap_reloc_out (bfd * abfd, void * src, void * dst)
   H_PUT_32 (abfd, reloc_src->r_symndx, reloc_dst->r_symndx);
   H_PUT_16 (abfd, reloc_src->r_type, reloc_dst->r_type);
 
-#ifdef SWAP_OUT_RELOC_OFFSET 
+#ifdef SWAP_OUT_RELOC_OFFSET
   SWAP_OUT_RELOC_OFFSET (abfd, reloc_src->r_offset, reloc_dst->r_offset);
 #endif
 #ifdef SWAP_OUT_RELOC_EXTRA
@@ -347,7 +347,7 @@ pe_bfd_copy_private_bfd_data (bfd *ibfd, bfd *obfd)
       && pe_data (ibfd) != NULL
       && pe_data (ibfd)->real_flags & IMAGE_FILE_LARGE_ADDRESS_AWARE)
     pe_data (obfd)->real_flags |= IMAGE_FILE_LARGE_ADDRESS_AWARE;
-      
+
   if (!_bfd_XX_bfd_copy_private_bfd_data_common (ibfd, obfd))
     return FALSE;
 
@@ -700,12 +700,8 @@ static jump_table jtab[] =
 /* Build a full BFD from the information supplied in a ILF object.  */
 
 static bfd_boolean
-pe_ILF_build_a_bfd (bfd *           abfd,
-		    unsigned int    magic,
-		    char *          symbol_name,
-		    char *          source_dll,
-		    unsigned int    ordinal,
-		    unsigned int    types)
+pe_ILF_build_a_bfd(bfd *abfd, unsigned int magic, char *symbol_name,
+		   char *source_dll, unsigned int ordinal, unsigned int types)
 {
   bfd_byte *               ptr;
   pe_ILF_vars              vars;
@@ -716,9 +712,9 @@ pe_ILF_build_a_bfd (bfd *           abfd,
   coff_symbol_type **      imp_sym;
   unsigned int             imp_index;
 
-  /* Decode and verify the types field of the ILF structure.  */
-  import_type = types & 0x3;
-  import_name_type = (types & 0x1c) >> 2;
+  /* Decode and verify the types field of the ILF structure: */
+  import_type = (types & 0x3);
+  import_name_type = ((types & 0x1c) >> 2);
 
   switch (import_type)
     {
@@ -752,60 +748,61 @@ pe_ILF_build_a_bfd (bfd *           abfd,
       return FALSE;
     }
 
-  /* Initialise local variables.
-
-     Note these are kept in a structure rather than being
-     declared as statics since bfd frowns on global variables.
-
-     We are going to construct the contents of the BFD in memory,
-     so allocate all the space that we will need right now.  */
-  ptr = bfd_zalloc (abfd, (bfd_size_type) ILF_DATA_SIZE);
-  if (ptr == NULL)
+  /* Initialize local variables.
+   *
+   * Note these are kept in a structure rather than being
+   * declared as statics since bfd frowns on global variables.
+   *
+   * We are going to construct the contents of the BFD in memory,
+   * so allocate all the space that we will need right now.  */
+  ptr = (bfd_byte *)bfd_zalloc(abfd, (bfd_size_type)ILF_DATA_SIZE);
+  if (ptr == NULL) {
     return FALSE;
+  }
 
   /* Create a bfd_in_memory structure.  */
-  vars.bim = (struct bfd_in_memory *) ptr;
+  vars.bim = (struct bfd_in_memory *)ptr;
   vars.bim->buffer = ptr;
-  vars.bim->size   = ILF_DATA_SIZE;
-  ptr += sizeof (* vars.bim);
+  vars.bim->size = ILF_DATA_SIZE;
+  ptr += sizeof(* vars.bim);
 
   /* Initialise the pointers to regions of the memory and the
-     other contents of the pe_ILF_vars structure as well.  */
-  vars.sym_cache = (coff_symbol_type *) ptr;
-  vars.sym_ptr   = (coff_symbol_type *) ptr;
+   * other contents of the pe_ILF_vars structure as well: */
+  vars.sym_cache = (coff_symbol_type *)ptr;
+  vars.sym_ptr = (coff_symbol_type *)ptr;
   vars.sym_index = 0;
   ptr += SIZEOF_ILF_SYMS;
 
-  vars.sym_table = (unsigned int *) ptr;
-  vars.table_ptr = (unsigned int *) ptr;
+  vars.sym_table = (unsigned int *)ptr;
+  vars.table_ptr = (unsigned int *)ptr;
   ptr += SIZEOF_ILF_SYM_TABLE;
 
-  vars.native_syms = (combined_entry_type *) ptr;
-  vars.native_ptr  = (combined_entry_type *) ptr;
+  vars.native_syms = (combined_entry_type *)ptr;
+  vars.native_ptr = (combined_entry_type *)ptr;
   ptr += SIZEOF_ILF_NATIVE_SYMS;
 
-  vars.sym_ptr_table = (coff_symbol_type **) ptr;
-  vars.sym_ptr_ptr   = (coff_symbol_type **) ptr;
+  vars.sym_ptr_table = (coff_symbol_type **)ptr;
+  vars.sym_ptr_ptr = (coff_symbol_type **)ptr;
   ptr += SIZEOF_ILF_SYM_PTR_TABLE;
 
-  vars.esym_table = (SYMENT *) ptr;
-  vars.esym_ptr   = (SYMENT *) ptr;
+  vars.esym_table = (SYMENT *)ptr;
+  vars.esym_ptr = (SYMENT *)ptr;
   ptr += SIZEOF_ILF_EXT_SYMS;
 
-  vars.reltab   = (arelent *) ptr;
+  vars.reltab = (arelent *)ptr;
   vars.relcount = 0;
   ptr += SIZEOF_ILF_RELOCS;
 
-  vars.int_reltab  = (struct internal_reloc *) ptr;
+  vars.int_reltab = (struct internal_reloc *)ptr;
   ptr += SIZEOF_ILF_INT_RELOCS;
 
-  vars.string_table = (char *) ptr;
-  vars.string_ptr   = (char *) ptr + STRING_SIZE_SIZE;
+  vars.string_table = (char *)ptr;
+  vars.string_ptr = ((char *)ptr + STRING_SIZE_SIZE);
   ptr += SIZEOF_ILF_STRINGS;
-  vars.end_string_ptr = (char *) ptr;
+  vars.end_string_ptr = (char *)ptr;
 
-  /* The remaining space in bim->buffer is used
-     by the pe_ILF_make_a_section() function.  */
+  /* The remaining space in bim->buffer is used by the
+   * pe_ILF_make_a_section() function: */
   vars.data = ptr;
   vars.abfd = abfd;
   vars.sec_index = 0;
@@ -859,7 +856,7 @@ pe_ILF_build_a_bfd (bfd *           abfd,
 	  if (c == '_' || c == '@' || c == '?')
 	    symbol++;
 	}
-      
+
       len = strlen (symbol);
       if (import_name_type == IMPORT_NAME_UNDECORATE)
 	{
@@ -1159,8 +1156,8 @@ pe_ILF_object_p (bfd * abfd)
   types = H_GET_16 (abfd, ptr);
   /* ptr += 2; */
 
-  /* Now read in the two strings that follow.  */
-  ptr = bfd_alloc (abfd, size);
+  /* Now read in the two strings that follow: */
+  ptr = (bfd_byte *)bfd_alloc(abfd, size);
   if (ptr == NULL)
     return NULL;
 
@@ -1271,3 +1268,5 @@ pe_bfd_object_p (bfd * abfd)
 
 #define coff_object_p pe_bfd_object_p
 #endif /* COFF_IMAGE_WITH_PE */
+
+/* EOF */

@@ -1,20 +1,22 @@
-/* Copyright 2002 Free Software Foundation, Inc.
-
-   This file is part of BFD, the Binary File Descriptor library.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+/* ticoff.h
+ * Copyright 2002 Free Software Foundation, Inc.
+ *
+ * This file is part of BFD, the Binary File Descriptor library.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St. - 5th Floor, Boston, MA 02110-1301, USA.
+ */
 
 #undef  F_LSYMS
 #define	F_LSYMS		F_LSYMS_TICOFF
@@ -47,7 +49,7 @@ ticoff1_bad_format_hook (abfd, filehdr)
 
 /* Replace the stock _bfd_coff_is_local_label_name
    to recognize TI COFF local labels.  */
-static bfd_boolean 
+static bfd_boolean
 ticoff_bfd_is_local_label_name (abfd, name)
   bfd *abfd ATTRIBUTE_UNUSED;
   const char *name;
@@ -59,15 +61,15 @@ ticoff_bfd_is_local_label_name (abfd, name)
 
 #define coff_bfd_is_local_label_name ticoff_bfd_is_local_label_name
 
-/* Customize coffcode.h; the default coff_ functions are set up to use COFF2; 
+/* Customize coffcode.h; the default coff_ functions are set up to use COFF2;
    coff_bad_format_hook uses BADMAG, so set that for COFF2.  The COFF1
    and COFF0 vectors use custom _bad_format_hook procs instead of setting
-   BADMAG.  */ 
+   BADMAG.  */
 #define BADMAG(x) COFF2_BADMAG(x)
 #include "coffcode.h"
 
 /* COFF0 differs in file/section header size and relocation entry size.  */
-static const bfd_coff_backend_data ticoff0_swap_table = 
+static const bfd_coff_backend_data ticoff0_swap_table =
 {
   coff_SWAP_aux_in, coff_SWAP_sym_in, coff_SWAP_lineno_in,
   coff_SWAP_aux_out, coff_SWAP_sym_out,
@@ -98,7 +100,7 @@ static const bfd_coff_backend_data ticoff0_swap_table =
 };
 
 /* COFF1 differs in section header size.  */
-static const bfd_coff_backend_data ticoff1_swap_table = 
+static const bfd_coff_backend_data ticoff1_swap_table =
 {
   coff_SWAP_aux_in, coff_SWAP_sym_in, coff_SWAP_lineno_in,
   coff_SWAP_aux_out, coff_SWAP_sym_out,
@@ -115,7 +117,7 @@ static const bfd_coff_backend_data ticoff1_swap_table =
   TRUE,
 #else
   FALSE,
-#endif
+#endif /* COFF_LONG_SECTION_NAMES */
   COFF_DEFAULT_SECTION_ALIGNMENT_POWER,
   coff_SWAP_filehdr_in, coff_SWAP_aouthdr_in, coff_SWAP_scnhdr_in,
   coff_SWAP_reloc_in, ticoff1_bad_format_hook, coff_set_arch_mach_hook,
@@ -128,3 +130,4 @@ static const bfd_coff_backend_data ticoff1_swap_table =
   coff_link_output_has_begun, coff_final_link_postscript
 };
 
+/* EOF */

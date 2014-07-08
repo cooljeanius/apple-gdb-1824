@@ -1,4 +1,4 @@
-/* Assorted BFD support routines, only used internally.
+/* libbfd.c: Assorted BFD support routines, only used internally.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
    2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
@@ -1064,3 +1064,5 @@ _bfd_generic_find_line (bfd *abfd ATTRIBUTE_UNUSED,
 {
   return FALSE;
 }
+
+/* EOF */

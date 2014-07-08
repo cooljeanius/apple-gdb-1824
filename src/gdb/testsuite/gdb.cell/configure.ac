@@ -19,15 +19,17 @@ AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
 if test "x${CC}" = "x"; then
-	test -z "${CC}"
-	AC_PROG_CC
+  test -z "${CC}"
+  AC_PROG_CC
 else
-	test ! -z "${CC}"
-	AC_PROG_GCC_TRADITIONAL
+  test ! -z "${CC}"
+  AC_PROG_GCC_TRADITIONAL
 fi
+AC_PROG_CPP
 
 AC_PROG_INSTALL
 
+AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS([stdio.h])
 
 AC_FUNC_FORK

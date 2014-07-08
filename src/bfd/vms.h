@@ -24,10 +24,9 @@
 #ifndef VMS_H
 #define VMS_H
 
-/* Constants starting with 'Exxx_' are for openVMS/Alpha (EVAX object language)  */
+/* Constants starting with 'Exxx_' are for openVMS/Alpha (EVAX object language) */
 
-/* VMS Text, information and relocation record (TIR/ETIR) definitions.  */
-
+/* VMS Text, information and relocation record (TIR/ETIR) definitions: */
 #define TIR_S_C_STA_GBL		0
 #define TIR_S_C_STA_SB		1
 #define TIR_S_C_STA_SW		2
@@ -420,29 +419,29 @@ extern int _bfd_vms_slurp_tir (bfd *, int);
 extern int _bfd_vms_slurp_dbg (bfd *, int);
 extern int _bfd_vms_slurp_tbt (bfd *, int);
 extern int _bfd_vms_slurp_lnk (bfd *, int);
-				    	 
+
 extern int _bfd_vms_write_tir (bfd *, int);
 extern int _bfd_vms_write_tbt (bfd *, int);
 extern int _bfd_vms_write_dbg (bfd *, int);
-					 
+
 /* The r_type field in a reloc is one of he following values.  */
-#define ALPHA_R_IGNORE		0	 
-#define ALPHA_R_REFQUAD		1	 
-#define ALPHA_R_BRADDR		2	 
-#define ALPHA_R_HINT		3	 
-#define ALPHA_R_SREL16		4	 
-#define ALPHA_R_SREL32		5	 
-#define ALPHA_R_SREL64		6	 
-#define ALPHA_R_OP_PUSH		7	 
-#define ALPHA_R_OP_STORE	8	 
-#define ALPHA_R_OP_PSUB		9	 
-#define ALPHA_R_OP_PRSHIFT	10	 
-#define ALPHA_R_LINKAGE		11	 
-#define ALPHA_R_REFLONG		12	 
-#define ALPHA_R_CODEADDR	13	 
-					 
-/* Object language definitions.  */	 
-					 
+#define ALPHA_R_IGNORE		0
+#define ALPHA_R_REFQUAD		1
+#define ALPHA_R_BRADDR		2
+#define ALPHA_R_HINT		3
+#define ALPHA_R_SREL16		4
+#define ALPHA_R_SREL32		5
+#define ALPHA_R_SREL64		6
+#define ALPHA_R_OP_PUSH		7
+#define ALPHA_R_OP_STORE	8
+#define ALPHA_R_OP_PSUB		9
+#define ALPHA_R_OP_PRSHIFT	10
+#define ALPHA_R_LINKAGE		11
+#define ALPHA_R_REFLONG		12
+#define ALPHA_R_CODEADDR	13
+
+/* Object language definitions.  */
+
 #define OBJ_S_C_HDR 0		/* VAX moule header record.		*/
 #define OBJ_S_C_GSD 1		/* VAX glbal symbol definition record.	*/
 #define OBJ_S_C_TIR 2		/* VAX tet information record.		*/
@@ -459,10 +458,10 @@ extern int _bfd_vms_write_dbg (bfd *, int);
 #define EOBJ_S_C_EDBG 12	/* EVAX Dbugger information record.	*/
 #define EOBJ_S_C_ETBT 13	/* EVAX Taceback information record.	*/
 #define EOBJ_S_C_MAXRECTYP 13	/* EVAX Lst assigned record type.	*/
-#define OBJ_S_K_SUBTYP 1		 
-#define OBJ_S_C_SUBTYP 1		 
-#define EOBJ_S_K_SUBTYP 4		 
-#define EOBJ_S_C_SUBTYP 4		 
+#define OBJ_S_K_SUBTYP 1
+#define OBJ_S_C_SUBTYP 1
+#define EOBJ_S_K_SUBTYP 4
+#define EOBJ_S_C_SUBTYP 4
 #define OBJ_S_C_MAXRECSIZ 2048	/* Maximu legal record size.           */
 #define EOBJ_S_C_MAXRECSIZ 8192 /* Maximu legal record size.           */
 #define OBJ_S_C_STRLVL 0	/* Structre level.                     */
@@ -474,95 +473,95 @@ extern int _bfd_vms_write_dbg (bfd *, int);
 #define EOBJ_S_C_STOREPLIM -1	/* Maximu repeat count on store commands.  */
 #define OBJ_S_C_PSCALILIM 9	/* Maximu p-sect alignment.            */
 #define EOBJ_S_C_PSCALILIM 16	/* Maximu p-sect alignment.            */
-					 
-#define EVAX_OFFSET	256	/* Type ofset for EVAX codes in switch.  */
-/* Miscellaneous definitions.  */	 
 
-#if __GNUC__				 
-typedef unsigned long long uquad;	 
-#else					 
-typedef unsigned long uquad;		 
-#endif					 
-					 
-#define MAX_OUTREC_SIZE 4096		 
-#define MIN_OUTREC_LUFT 64		 
-					 
-typedef struct _vms_section		 
-{					 
-  unsigned char *contents;		 
-  bfd_vma offset;			 
-  bfd_size_type size;			 
-  struct _vms_section *next;		 
-} vms_section;				 
-					 
+#define EVAX_OFFSET	256	/* Type ofset for EVAX codes in switch.  */
+/* Miscellaneous definitions.  */
+
+#if __GNUC__
+typedef unsigned long long uquad;
+#else
+typedef unsigned long uquad;
+#endif
+
+#define MAX_OUTREC_SIZE 4096
+#define MIN_OUTREC_LUFT 64
+
+typedef struct _vms_section
+{
+  unsigned char *contents;
+  bfd_vma offset;
+  bfd_size_type size;
+  struct _vms_section *next;
+} vms_section;
+
 extern vms_section * _bfd_get_vms_section (bfd *, int);
-					 
-typedef struct _vms_reloc		 
-{					 
-  struct _vms_reloc *next;		 
-  arelent *reloc;			 
-  asection *section;			 
-} vms_reloc;				 
-					 
-/* VMS module header.  */		 
-					 
-struct hdr_struc			 
-{					 
-  int    hdr_b_strlvl;			 
-  long   hdr_l_arch1;			 
-  long   hdr_l_arch2;			 
-  long   hdr_l_recsiz;			 
-  char * hdr_t_name;			 
-  char * hdr_t_version;			 
-  char * hdr_t_date;			 
-  char * hdr_c_lnm;			 
-  char * hdr_c_src;			 
-  char * hdr_c_ttl;			 
-};					 
-					 
-/* VMS end of module.  */		 
-					 
-struct eom_struc			 
-{					 
-  long          eom_l_total_lps;	 
-  unsigned char eom_b_comcod;		 
-  bfd_boolean   eom_has_transfer;	 
-  unsigned char eom_b_tfrflg;		 
-  long          eom_l_psindx;		 
-  long          eom_l_tfradr;		 
-};					 
-					 
+
+typedef struct _vms_reloc
+{
+  struct _vms_reloc *next;
+  arelent *reloc;
+  asection *section;
+} vms_reloc;
+
+/* VMS module header.  */
+
+struct hdr_struc
+{
+  int    hdr_b_strlvl;
+  long   hdr_l_arch1;
+  long   hdr_l_arch2;
+  long   hdr_l_recsiz;
+  char * hdr_t_name;
+  char * hdr_t_version;
+  char * hdr_t_date;
+  char * hdr_c_lnm;
+  char * hdr_c_src;
+  char * hdr_c_ttl;
+};
+
+/* VMS end of module.  */
+
+struct eom_struc
+{
+  long          eom_l_total_lps;
+  unsigned char eom_b_comcod;
+  bfd_boolean   eom_has_transfer;
+  unsigned char eom_b_tfrflg;
+  long          eom_l_psindx;
+  long          eom_l_tfradr;
+};
+
 enum file_format_enum { FF_UNKNOWN, FF_FOREIGN, FF_NATIVE, FF_VAX };
-					 
-typedef struct vms_symbol_struct	 
-{					 
-  struct bfd_hash_entry bfd_hash;	 
-  asymbol *symbol;			 
-} vms_symbol_entry;			 
-					 
+
+typedef struct vms_symbol_struct
+{
+  struct bfd_hash_entry bfd_hash;
+  asymbol *symbol;
+} vms_symbol_entry;
+
 /* Stack value for push/pop commands.  */
-					 
-struct stack_struct			 
-{					 
-  uquad value;				 
-  int psect;				 
-};					 
-#define STACKSIZE 8192			 
-					 
+
+struct stack_struct
+{
+  uquad value;
+  int psect;
+};
+#define STACKSIZE 8192
+
 /* location stack definitions for CTL_DFLC, CTL_STLOC, and CTL_STKDL  */
-					 
-struct location_struct			 
-{					 
-  unsigned long value;			 
-  int psect;				 
-};					 
-#define LOCATION_SAVE_SIZE 32		 
-					 
-#define VMS_SECTION_COUNT 1024		 
-					 
-struct vms_private_data_struct		 
-{					 
-  bfd_boolean is_vax;				 
+
+struct location_struct
+{
+  unsigned long value;
+  int psect;
+};
+#define LOCATION_SAVE_SIZE 32
+
+#define VMS_SECTION_COUNT 1024
+
+struct vms_private_data_struct
+{
+  bfd_boolean is_vax;
   bfd_boolean fixup_done;		/* Flag to indicate if all
 					   section pointers and PRIV(sections)
 					   are set up correctly.  */
@@ -572,60 +571,60 @@ struct vms_private_data_struct
   int rec_length;			/* Remaining record length.  */
   int rec_size;				/* Actual record size.  */
   int rec_type;				/* Actual record type.  */
-  enum file_format_enum file_format;	 
-					 
+  enum file_format_enum file_format;
+
   struct hdr_struc hdr_data;		/* Data from HDR/EMH record.  */
   struct eom_struc eom_data;		/* Data from EOM/EEOM record.  */
   unsigned int section_count;		/* # of sections in following array.  */
   asection **sections;			/* Array of GSD/EGSD sections.  */
   int gsd_sym_count;			/* # of GSD/EGSD symbols.  */
   asymbol **symbols;			/* Vector of GSD/EGSD symbols.  */
-  struct proc_value *procedure;		 
-					 
-  struct stack_struct *stack;		 
-  int stackptr;				 
-					 
+  struct proc_value *procedure;
+
+  struct stack_struct *stack;
+  int stackptr;
+
   vms_section *vms_section_table[VMS_SECTION_COUNT];
-					 
+
   struct bfd_hash_table *vms_symbol_table;
-  struct bfd_symbol **symcache;		 
-  int symnum;				 
-					 
+  struct bfd_symbol **symcache;
+  int symnum;
+
   struct location_struct *location_stack;
-					 
+
   asection *image_section;		/* Section for image_ptr.  */
   unsigned char *image_ptr;		/* A pointer to section->contents.  */
-					 
+
   unsigned char pdsc[8];		/* Procedure descriptor.  */
-					 
-  /* Output routine storage.  */	 
+
+  /* Output routine storage.  */
   unsigned char *output_buf;		/* Output data.  */
-  int push_level;			 
-  int pushed_size;			 
-  int length_pos;			 
-  int output_size;			 
-  int output_alignment;			 
-					 
-  /* Linkage index counter		 
+  int push_level;
+  int pushed_size;
+  int length_pos;
+  int output_size;
+  int output_alignment;
+
+  /* Linkage index counter
      used by conditional store commands (TIR_S_C_STC_).   */
-  int vms_linkage_index;		 
-					 
+  int vms_linkage_index;
+
   /* see tc-alpha.c of gas for a descripton.  */
   int flag_hash_long_names;	/* -+, hash instead of truncate.  */
   int flag_show_after_trunc;	/* -H, shw hashing/truncation.  */
-};					 
-					 
-#define PRIV(name)	((struct vms_private_data_struct *) abfd->tdata.any)->name
-					 
+};
+
+#define PRIV(name) ((struct vms_private_data_struct *)abfd->tdata.any)->name
+
 #define SECTION_NAME_TEMPLATE "__SEC__%d"
-					 
-#if VMS_DEBUG				 
+
+#if defined(VMS_DEBUG) && VMS_DEBUG
 extern void _bfd_vms_debug (int, char *, ...) ATTRIBUTE_PRINTF_2;
 extern void _bfd_hexdump   (int, unsigned char *, int, int);
-					 
-#define vms_debug _bfd_vms_debug	 
-#endif					 
-					 
+
+#define vms_debug _bfd_vms_debug
+#endif
+
 extern struct bfd_hash_entry * _bfd_vms_hash_newfunc (struct bfd_hash_entry *, struct bfd_hash_table *, const char *);
 extern void        _bfd_vms_get_header_values (bfd *, unsigned char *, int *, int *);
 extern int         _bfd_vms_get_record  (bfd *abf);
@@ -653,3 +652,5 @@ extern char *      _bfd_vms_length_hash_symbol (bfd *, const char *, int);
 extern vms_symbol_entry * _bfd_vms_enter_symbol (bfd *, char *);
 
 #endif /* VMS_H */
+
+/* EOF */

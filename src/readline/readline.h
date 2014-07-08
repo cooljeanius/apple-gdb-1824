@@ -370,10 +370,10 @@ extern int rl_clear_message PARAMS((void));
 extern int rl_reset_line_state PARAMS((void));
 extern int rl_crlf PARAMS((void));
 
-#if (defined (__STDC__) || defined (__cplusplus)) && defined (USE_VARARGS) && defined (PREFER_STDARG)
-extern int rl_message (const char *, ...)  __attribute__((__format__ (printf, 1, 2)));
+#if (defined (__STDC__) || defined (__cplusplus)) && defined (USE_VARARGS) && defined(PREFER_STDARG)
+extern int rl_message(const char *, ...)  __attribute__((__format__ (printf, 1, 2)));
 #else
-extern int rl_message ();
+extern int rl_message();
 #endif
 
 extern int rl_show_char PARAMS((int));

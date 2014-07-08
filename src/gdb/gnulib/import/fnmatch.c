@@ -1,17 +1,19 @@
-/* Copyright (C) 1991-1993, 1996-2007, 2009-2012 Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 3, or (at your option)
-   any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, see <http://www.gnu.org/licenses/>.  */
+/* fnmatch.c
+ * Copyright (C) 1991-1993, 1996-2007, 2009-2012 Free Software Foundation, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef _LIBC
 # include <config.h>
@@ -22,9 +24,9 @@
 # define _GNU_SOURCE 1
 #endif /* !_GNU_SOURCE */
 
-#if ! defined __builtin_expect && __GNUC__ < 3
+#if ! defined __builtin_expect && (__GNUC__ < 3)
 # define __builtin_expect(expr, expected) (expr)
-#endif /* !__builtin_expect && __GNUC__ < 3 */
+#endif /* !__builtin_expect && (__GNUC__ < 3) */
 
 #include <fnmatch.h>
 
@@ -37,12 +39,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define WIDE_CHAR_SUPPORT \
-  (HAVE_WCTYPE_H && HAVE_BTOWC && HAVE_ISWCTYPE \
-   && HAVE_WMEMCHR && (HAVE_WMEMCPY || HAVE_WMEMPCPY))
+#ifndef WIDE_CHAR_SUPPORT
+# define WIDE_CHAR_SUPPORT \
+   (HAVE_WCTYPE_H && HAVE_BTOWC && HAVE_ISWCTYPE \
+    && HAVE_WMEMCHR && (HAVE_WMEMCPY || HAVE_WMEMPCPY))
+#endif /* !WIDE_CHAR_SUPPORT */
 
 /* For platform which support the ISO C amendment 1 functionality we
-   support user defined character classes.  */
+ * support user defined character classes.  */
 #if defined _LIBC || WIDE_CHAR_SUPPORT
 # include <wctype.h>
 # include <wchar.h>
@@ -60,11 +64,11 @@
 # define CONCAT(a,b) __CONCAT(a,b)
 # define mbsrtowcs __mbsrtowcs
 # define fnmatch __fnmatch
-extern int fnmatch (const char *pattern, const char *string, int flags);
+extern int fnmatch(const char *pattern, const char *string, int flags);
 #endif /* _LIBC */
 
 #ifndef SIZE_MAX
-# define SIZE_MAX ((size_t) -1)
+# define SIZE_MAX ((size_t)-1)
 #endif /* !SIZE_MAX */
 
 /* We often have to test for FNM_FILE_NAME and FNM_PERIOD being both set.  */
@@ -83,11 +87,13 @@ extern int fnmatch (const char *pattern, const char *string, int flags);
 #if defined _LIBC || !defined __GNU_LIBRARY__ || !HAVE_FNMATCH_GNU
 
 
-# if ! (defined isblank || (HAVE_ISBLANK && HAVE_DECL_ISBLANK))
-#  define isblank(c) ((c) == ' ' || (c) == '\t')
+# if !(defined isblank || (HAVE_ISBLANK && HAVE_DECL_ISBLANK))
+#  define isblank(c) (((c) == ' ') || ((c) == '\t'))
 # endif /* !(isblank || (HAVE_ISBLANK && HAVE_DECL_ISBLANK)) */
 
-# define STREQ(s1, s2) (strcmp (s1, s2) == 0)
+# ifndef STREQ
+#  define STREQ(s1, s2) (strcmp(s1, s2) == 0)
+# endif /* !STREQ */
 
 # if defined _LIBC || WIDE_CHAR_SUPPORT
 /* The GNU C library provides support for user-defined character classes
@@ -101,38 +107,39 @@ extern int fnmatch (const char *pattern, const char *string, int flags);
 #  endif /* CHARCLASS_NAME_MAX */
 
 #  ifdef _LIBC
-#   define IS_CHAR_CLASS(string) __wctype (string)
+#   define IS_CHAR_CLASS(string) __wctype(string)
 #  else
-#   define IS_CHAR_CLASS(string) wctype (string)
+#   define IS_CHAR_CLASS(string) wctype(string)
 #  endif /* _LIBC */
 
 #  ifdef _LIBC
-#   define ISWCTYPE(WC, WT)     __iswctype (WC, WT)
+#   define ISWCTYPE(WC, WT)     __iswctype(WC, WT)
 #  else
-#   define ISWCTYPE(WC, WT)     iswctype (WC, WT)
+#   define ISWCTYPE(WC, WT)     iswctype(WC, WT)
 #  endif /* _LIBC */
 
-#  if (HAVE_MBSTATE_T && HAVE_MBSRTOWCS) || _LIBC
-/* In this case we are implementing the multibyte character handling.  */
+#  if (defined(HAVE_MBSTATE_T) && HAVE_MBSTATE_T && HAVE_MBSRTOWCS) || \
+	  (defined(_LIBC) && _LIBC)
+/* In this case we are implementing the multibyte character handling: */
 #   define HANDLE_MULTIBYTE     1
 #  endif /* (HAVE_MBSTATE_T && HAVE_MBSRTOWCS) || _LIBC */
 
 # else
 #  define CHAR_CLASS_MAX_LENGTH  6 /* Namely, 'xdigit'.  */
 
-#  define IS_CHAR_CLASS(string)                                               \
-   (STREQ (string, "alpha") || STREQ (string, "upper")                        \
-    || STREQ (string, "lower") || STREQ (string, "digit")                     \
-    || STREQ (string, "alnum") || STREQ (string, "xdigit")                    \
-    || STREQ (string, "space") || STREQ (string, "print")                     \
-    || STREQ (string, "punct") || STREQ (string, "graph")                     \
-    || STREQ (string, "cntrl") || STREQ (string, "blank"))
+#  define IS_CHAR_CLASS(string)                                             \
+   (STREQ(string, "alpha") || STREQ(string, "upper")                        \
+    || STREQ(string, "lower") || STREQ(string, "digit")                     \
+    || STREQ(string, "alnum") || STREQ(string, "xdigit")                    \
+    || STREQ(string, "space") || STREQ(string, "print")                     \
+    || STREQ(string, "punct") || STREQ(string, "graph")                     \
+    || STREQ(string, "cntrl") || STREQ(string, "blank"))
 # endif /* _LIBC || WIDE_CHAR_SUPPORT */
 
 /* Avoid depending on library functions or files
  * whose names are inconsistent.  */
 
-/* Global variable.  */
+/* Global variable: */
 static int posixly_correct;
 
 # ifndef internal_function
@@ -160,7 +167,7 @@ static int posixly_correct;
 # ifdef _LIBC
 #  define MEMPCPY(D, S, N) __mempcpy (D, S, N)
 # else
-#  if HAVE_MEMPCPY
+#  if defined(HAVE_MEMPCPY) && HAVE_MEMPCPY
 #   ifndef mempcpy
 void *mempcpy(void *dst, const void *src, size_t len) {
 	return (void*)(((char*)memcpy(dst, src, len)) + len);
@@ -175,7 +182,7 @@ void *mempcpy(void *dst, const void *src, size_t len) {
 # include "fnmatch_loop.c"
 
 
-# if HANDLE_MULTIBYTE
+# if defined(HANDLE_MULTIBYTE) && HANDLE_MULTIBYTE
 #  define FOLD(c) ((flags & FNM_CASEFOLD) ? towlower (c) : (c))
 #  define CHAR  wchar_t
 #  define UCHAR wint_t
@@ -214,16 +221,15 @@ is_char_class (const wchar_t *wcs)
   char s[CHAR_CLASS_MAX_LENGTH + 1];
   char *cp = s;
 
-  do
-    {
+  do {
       /* Test for a printable character from the portable character set.  */
 #  ifdef _LIBC
-      if (*wcs < 0x20 || *wcs > 0x7e
-          || *wcs == 0x24 || *wcs == 0x40 || *wcs == 0x60)
-        return (wctype_t) 0;
+      if ((*wcs < 0x20) || (*wcs > 0x7e)
+          || (*wcs == 0x24) || (*wcs == 0x40) || (*wcs == 0x60)) {
+		  return (wctype_t)0;
+	  }
 #  else
-      switch (*wcs)
-        {
+      switch (*wcs) {
         case L' ': case L'!': case L'"': case L'#': case L'%':
         case L'&': case L'\'': case L'(': case L')': case L'*':
         case L'+': case L',': case L'-': case L'.': case L'/':
@@ -246,24 +252,24 @@ is_char_class (const wchar_t *wcs)
         case L'z': case L'{': case L'|': case L'}': case L'~':
           break;
         default:
-          return (wctype_t) 0;
-        }
+          return (wctype_t)0;
+	  }
 #  endif /* _LIBC */
 
-      /* Avoid overrunning the buffer.  */
-      if (cp == s + CHAR_CLASS_MAX_LENGTH)
-        return (wctype_t) 0;
+      /* Avoid overrunning the buffer: */
+      if (cp == (s + CHAR_CLASS_MAX_LENGTH)) {
+        return (wctype_t)0;
+	  }
 
-      *cp++ = (char) *wcs++;
-    }
-  while (*wcs != L'\0');
+      *cp++ = (char)*wcs++;
+  } while (*wcs != L'\0');
 
   *cp = '\0';
 
 #  ifdef _LIBC
-  return __wctype (s);
+  return __wctype(s);
 #  else
-  return wctype (s);
+  return wctype(s);
 #  endif /* _LIBC */
 }
 #  define IS_CHAR_CLASS(string) is_char_class (string)
@@ -275,7 +281,7 @@ is_char_class (const wchar_t *wcs)
 int
 fnmatch (const char *pattern, const char *string, int flags)
 {
-# if HANDLE_MULTIBYTE
+# if defined(HANDLE_MULTIBYTE) && HANDLE_MULTIBYTE
 #  define ALLOCA_LIMIT 2000
   if (__builtin_expect (MB_CUR_MAX, 1) != 1)
     {
@@ -289,19 +295,19 @@ fnmatch (const char *pattern, const char *string, int flags)
 
       /* Calculate the size needed to convert the strings to
        * wide characters.  */
-      memset (&ps, '\0', sizeof (ps));
-      patsize = mbsrtowcs (NULL, &pattern, 0, &ps) + 1;
-      if (__builtin_expect (patsize != 0, 1))
+      memset(&ps, '\0', sizeof (ps));
+      patsize = (mbsrtowcs(NULL, &pattern, 0, &ps) + 1);
+      if (__builtin_expect(patsize != 0, 1))
         {
-          assert (mbsinit (&ps));
-          strsize = mbsrtowcs (NULL, &string, 0, &ps) + 1;
-          if (__builtin_expect (strsize != 0, 1))
+          assert(mbsinit(&ps));
+          strsize = (mbsrtowcs(NULL, &string, 0, &ps) + 1);
+          if (__builtin_expect(strsize != 0, 1))
             {
               assert (mbsinit (&ps));
-              totsize = patsize + strsize;
-              if (__builtin_expect (! (patsize <= totsize
-                                       && totsize <= SIZE_MAX / sizeof (wchar_t)),
-                                    0))
+              totsize = (patsize + strsize);
+              if (__builtin_expect(!((patsize <= totsize)
+									&& (totsize <= (SIZE_MAX / sizeof(wchar_t)))),
+								   0))
                 {
                   errno = ENOMEM;
                   return -1;

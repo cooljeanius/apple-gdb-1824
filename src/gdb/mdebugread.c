@@ -1,4 +1,4 @@
-/* Read a symbol table in ECOFF format (Third-Eye).
+/* mdebugread.c: Read a symbol table in ECOFF format (Third-Eye).
 
    Copyright 1986, 1987, 1989, 1990, 1991, 1992, 1993, 1994, 1995,
    1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004 Free Software
@@ -72,9 +72,9 @@
 
 extern void _initialize_mdebugread (void);
 
-/* Provide a way to test if we have both ECOFF and ELF symbol tables.  
-   We use this define in order to know whether we should override a 
-   symbol's ECOFF section with its ELF section.  This is necessary in 
+/* Provide a way to test if we have both ECOFF and ELF symbol tables.
+   We use this define in order to know whether we should override a
+   symbol's ECOFF section with its ELF section.  This is necessary in
    case the symbol's ELF section could not be represented in ECOFF.  */
 #define ECOFF_IN_ELF(bfd) (bfd_get_flavour (bfd) == bfd_target_elf_flavour \
 			   && bfd_get_section_by_name (bfd, ".mdebug") != NULL)
@@ -380,7 +380,7 @@ mdebug_build_psymtabs (struct objfile *objfile,
   buildsym_new_init ();
   free_header_files ();
   init_header_files ();
-        
+
   /* Make sure all the FDR information is swapped in.  */
   if (info->fdr == (FDR *) NULL)
     {
@@ -880,7 +880,7 @@ parse_symbol (SYMR *sh, union aux_ext *ax, char *ext_sh, int bigend,
                    (in particular constructor method names are different
                    from the class name).  There is therefore no risk that
                    this check stops the count on the StEnd of a method.
-		   
+
 		   Also, assume that we're really at the end when tsym.iss
 		   is 0 (issNull).  */
                 if (tsym.iss == issNull
@@ -2377,32 +2377,32 @@ parse_partial_symbols (struct objfile *objfile)
   /* ECOFF in ELF:
 
      For ECOFF in ELF, we skip the creation of the minimal symbols.
-     The ECOFF symbols should be a subset of the Elf symbols, and the 
+     The ECOFF symbols should be a subset of the Elf symbols, and the
      section information of the elf symbols will be more accurate.
      FIXME!  What about Irix 5's native linker?
 
-     By default, Elf sections which don't exist in ECOFF 
+     By default, Elf sections which don't exist in ECOFF
      get put in ECOFF's absolute section by the gnu linker.
-     Since absolute sections don't get relocated, we 
-     end up calculating an address different from that of 
+     Since absolute sections don't get relocated, we
+     end up calculating an address different from that of
      the symbol's minimal symbol (created earlier from the
-     Elf symtab).  
+     Elf symtab).
 
      To fix this, either :
      1) don't create the duplicate symbol
      (assumes ECOFF symtab is a subset of the ELF symtab;
      assumes no side-effects result from ignoring ECOFF symbol)
-     2) create it, only if lookup for existing symbol in ELF's minimal 
+     2) create it, only if lookup for existing symbol in ELF's minimal
      symbols fails
-     (inefficient; 
+     (inefficient;
      assumes no side-effects result from ignoring ECOFF symbol)
      3) create it, but lookup ELF's minimal symbol and use it's section
-     during relocation, then modify "uniqify" phase to merge and 
+     during relocation, then modify "uniqify" phase to merge and
      eliminate the duplicate symbol
      (highly inefficient)
 
      I've implemented #1 here...
-     Skip the creation of the minimal symbols based on the ECOFF 
+     Skip the creation of the minimal symbols based on the ECOFF
      symbol table. */
 
   /* Pass 2 over external syms: fill in external symbols */
@@ -2474,7 +2474,7 @@ parse_partial_symbols (struct objfile *objfile)
           else if (SC_IS_SBSS (ext_in->asym.sc))
             {
               ms_type = mst_bss;
-              svalue += ANOFFSET (objfile->section_offsets, 
+              svalue += ANOFFSET (objfile->section_offsets,
                                   get_section_index (objfile, ".sbss"));
             }
 	  else
@@ -2502,12 +2502,12 @@ parse_partial_symbols (struct objfile *objfile)
              usually useless for the debugger user anyway, we just
              discard these symbols.
            */
-          
+
 	  if (SC_IS_TEXT (ext_in->asym.sc))
 	    {
               if (objfile->sect_index_text == -1)
                 continue;
-                
+
 	      ms_type = mst_file_text;
 	      svalue += ANOFFSET (objfile->section_offsets, SECT_OFF_TEXT (objfile));
 	    }
@@ -2723,7 +2723,7 @@ parse_partial_symbols (struct objfile *objfile)
 			  break;
 
 			default:
-			  /* FIXME!  Shouldn't this use cases for bss, 
+			  /* FIXME!  Shouldn't this use cases for bss,
 			     then have the default be abs? */
 			  namestring = debug_info->ss + fh->issBase + sh.iss;
 			  sh.value += ANOFFSET (objfile->section_offsets, SECT_OFF_BSS (objfile));
@@ -3987,7 +3987,7 @@ psymtab_to_symtab_1 (struct partial_symtab *pst, char *filename)
 		  /* Handle encoded stab line number. */
 		  valu += ANOFFSET (pst->section_offsets, SECT_OFF_TEXT (pst->objfile));
 		  /* APPLE LOCAL begin subroutine inlining  */
-		  record_line (current_subfile, sh.index, valu, 0, 
+		  record_line (current_subfile, sh.index, valu, 0,
 			       NORMAL_LT_ENTRY);
 		  /* APPLE LOCAL end subroutine inlining  */
 		}
@@ -4231,14 +4231,14 @@ has_opaque_xref (FDR *fh, SYMR *sh)
   return 1;
 }
 
-/* Lookup the type at relative index RN.  Return it in TPP
-   if found and in any event come up with its name PNAME.
-   BIGEND says whether aux symbols are big-endian or not (from fh->fBigendian).
-   Return value says how many aux symbols we ate. */
-
+/* Lookup the type at relative index RN. Return it in TPP if found,
+ * and in any event come up with its name PNAME. BIGEND says whether
+ * aux symbols are big-endian or not (from fh->fBigendian). Return value
+ * says how many aux symbols we ate. */
 static int
-cross_ref (int fd, union aux_ext *ax, struct type **tpp, enum type_code type_code,	/* Use to alloc new type if none is found. */
-	   char **pname, int bigend, char *sym_name)
+cross_ref(int fd, union aux_ext *ax, struct type **tpp,
+		  enum type_code type_code, /* Use to alloc new type if none is found */
+		  char **pname, int bigend, char *sym_name)
 {
   RNDXR rn[1];
   unsigned int rf;
@@ -4249,20 +4249,17 @@ cross_ref (int fd, union aux_ext *ax, struct type **tpp, enum type_code type_cod
   int xref_fd;
   struct mdebug_pending *pend;
 
-  *tpp = (struct type *) NULL;
+  *tpp = (struct type *)NULL;
 
-  (*debug_swap->swap_rndx_in) (bigend, &ax->a_rndx, rn);
+  (*debug_swap->swap_rndx_in)(bigend, &ax->a_rndx, rn);
 
-  /* Escape index means 'the next one' */
-  if (rn->rfd == 0xfff)
-    {
+  /* Escape index means 'the next one': */
+  if (rn->rfd == 0xfff) {
       result++;
-      rf = AUX_GET_ISYM (bigend, ax + 1);
-    }
-  else
-    {
+      rf = AUX_GET_ISYM (bigend, (ax + 1));
+  } else {
       rf = rn->rfd;
-    }
+  }
 
   /* mips cc uses a rf of -1 for opaque struct definitions.
      Set TYPE_FLAG_STUB for these types so that check_typedef will

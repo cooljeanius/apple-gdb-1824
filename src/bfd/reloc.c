@@ -1,4 +1,4 @@
-/* BFD support for handling relocation entries.
+/* reloc.c: BFD support for handling relocation entries.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
    2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
@@ -4093,7 +4093,7 @@ ENUMX
   BFD_RELOC_CRX_SWITCH16
 ENUMX
   BFD_RELOC_CRX_SWITCH32
-ENUMDOC 
+ENUMDOC
   NS CRX Relocations.
 
 ENUM
@@ -4264,19 +4264,19 @@ ENUMX
   BFD_RELOC_VAX_RELATIVE
 ENUMDOC
   Relocations used by VAX ELF.
-  
+
 ENUM
   BFD_RELOC_MS1_PC16
 ENUMDOC
-  Morpho MS1 - 16 bit immediate relocation. 
+  Morpho MS1 - 16 bit immediate relocation.
 ENUM
   BFD_RELOC_MS1_HI16
 ENUMDOC
-  Morpho MS1 - Hi 16 bits of an address. 
+  Morpho MS1 - Hi 16 bits of an address.
 ENUM
   BFD_RELOC_MS1_LO16
 ENUMDOC
-  Morpho MS1 - Low 16 bits of an address. 
+  Morpho MS1 - Low 16 bits of an address.
 ENUM
   BFD_RELOC_MS1_GNU_VTINHERIT
 ENUMDOC
@@ -4424,15 +4424,15 @@ ENUMDOC
 ENUM
   BFD_RELOC_XTENSA_ASM_EXPAND
 ENUMDOC
-  Xtensa relocation to mark that the assembler expanded the 
+  Xtensa relocation to mark that the assembler expanded the
   instructions from an original target.  The expansion size is
   encoded in the reloc size.
 ENUM
   BFD_RELOC_XTENSA_ASM_SIMPLIFY
 ENUMDOC
-  Xtensa relocation to mark that the linker should simplify 
-  assembler-expanded instructions.  This is commonly used 
-  internally by the linker after analysis of a 
+  Xtensa relocation to mark that the linker should simplify
+  assembler-expanded instructions.  This is commonly used
+  internally by the linker after analysis of a
   BFD_RELOC_XTENSA_ASM_EXPAND.
 
 ENDSENUM
@@ -4712,3 +4712,5 @@ error_return:
     free (reloc_vector);
   return NULL;
 }
+
+/* EOF */

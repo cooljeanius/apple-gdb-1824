@@ -30,3 +30,5 @@ DEPRECATED_TM_FILE = tm-arm-macosx.h
 
 CFM_CFLAGS = -DWITH_CFM=0
 
+SIM_OBS = remote-sim.o
+SIM = ../sim/arm/libsim.a

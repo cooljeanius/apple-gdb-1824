@@ -729,3 +729,5 @@ _bfd_stringtab_emit (bfd *abfd, struct bfd_strtab_hash *tab)
 
   return TRUE;
 }
+
+/* EOF */

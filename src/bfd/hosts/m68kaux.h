@@ -1,3 +1,4 @@
+/* m68kaux.h */
 /* Definitions for an Apple Macintosh running A/UX 3.x. */
 
 #include <sys/param.h>

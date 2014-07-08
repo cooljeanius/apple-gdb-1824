@@ -1,4 +1,4 @@
-/* BFD back-end for NetBSD/ARM a.out-ish binaries.
+/* armnetbsd.c: BFD back-end for NetBSD/ARM a.out-ish binaries.
    Copyright 1999, 2000, 2001, 2002, 2005
    Free Software Foundation, Inc.
 
@@ -18,7 +18,9 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
-#define	BYTES_IN_WORD		4
+#ifndef BYTES_IN_WORD
+# define BYTES_IN_WORD 4
+#endif /* !BYTES_IN_WORD */
 #undef TARGET_IS_BIG_ENDIAN_P
 
 #define	TARGET_PAGE_SIZE	4096
@@ -26,7 +28,9 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 
 #define	DEFAULT_ARCH		bfd_arch_arm
 #define	DEFAULT_MID 		M_ARM6_NETBSD
-/*#define MACHTYPE_OK(mtype) ((mtype) == M_ARM6_NETBSD)*/
+#if !defined(MACHTYPE_OK) && defined(M_ARM6_NETBSD)
+# define MACHTYPE_OK(mtype) ((mtype) == M_ARM6_NETBSD)
+#endif /* !MACHTYPE_OK && M_ARM6_NETBSD */
 
 /* Do not "beautify" the CONCAT* macro args.  Traditional C will not
    remove whitespace added here, and thus will fail to concatenate
@@ -37,3 +41,10 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #define TARGETNAME 		"a.out-arm-netbsd"
 
 #include "netbsd.h"
+
+/* silence '-Wunused-macros' warning: */
+#ifdef BYTES_IN_WORD
+# undef BYTES_IN_WORD
+#endif /* BYTES_IN_WORD */
+
+/* EOF */

@@ -1,5 +1,10 @@
+# Makefile for gdb.defects part of gdb.hp part of testsuite
+
 VPATH = @srcdir@
 srcdir = @srcdir@
+
+# changed name for old default cc to this:
+MY_CC = @MY_CC@
 
 EXECUTABLES = bs14602 bs15503 solib-d solib-d1.sl solib-d2.sl
 
@@ -14,15 +19,16 @@ uninstall: force
 installcheck:
 check:
 
+# 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 clean mostlyclean:
-	-rm -f *~ *.o *.ci
-	-rm -f core $(EXECUTABLES)
+	-rm -fv *~ *.o *.ci
+	-rm -fv core $(EXECUTABLES)
 
 distclean maintainer-clean realclean: clean
 	-rm -f Makefile config.status config.log
-	-rm -f *-init.exp
-	-rm -fr *.log summary detail *.plog *.sum *.psum site.*
-	-rm -fr autom4te.cache || rmdir autom4te.cache
+	-rm -fv *-init.exp
+	-rm -frv *.log summary detail *.plog *.sum *.psum site.*
+	-rm -frv autom4te.cache || rmdir autom4te.cache
 
 Makefile : $(srcdir)/Makefile.in $(srcdir)/configure.ac
 	$(SHELL) ./config.status --recheck

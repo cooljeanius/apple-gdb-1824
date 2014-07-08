@@ -1,31 +1,33 @@
-/* bfd back-end for HP PA-RISC SOM objects.
-   Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
-   2000, 2001, 2002, 2003, 2004, 2005
-   Free Software Foundation, Inc.
-
-   Contributed by the Center for Software Science at the
-   University of Utah.
-
-   This file is part of BFD, the Binary File Descriptor library.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
-   02110-1301, USA.  */
+/* som.c: bfd back-end for HP PA-RISC SOM objects.
+ * Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
+ * 2000, 2001, 2002, 2003, 2004, 2005
+ * Free Software Foundation, Inc.
+ *
+ * Contributed by the Center for Software Science at the
+ * University of Utah.
+ *
+ * This file is part of BFD, the Binary File Descriptor library.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
+ * 02110-1301, USA.  */
 
 #include "alloca-conf.h"
 #include "bfd.h"
-#include "sysdep.h"
+#ifndef BFD_SYSDEP_H
+# include "sysdep.h"
+#endif /* !BFD_SYSDEP_H */
 
 #if defined (HOST_HPPAHPUX) || defined (HOST_HPPABSD) || defined (HOST_HPPAOSF) || defined(HOST_HPPAMPEIX)
 
@@ -51,31 +53,31 @@ static unsigned int som_slurp_symbol_table (bfd *);
 /* Magic not defined in standard HP-UX header files until 8.0.  */
 
 #ifndef CPU_PA_RISC1_0
-#define CPU_PA_RISC1_0 0x20B
+# define CPU_PA_RISC1_0 0x20B
 #endif /* CPU_PA_RISC1_0 */
 
 #ifndef CPU_PA_RISC1_1
-#define CPU_PA_RISC1_1 0x210
+# define CPU_PA_RISC1_1 0x210
 #endif /* CPU_PA_RISC1_1 */
 
 #ifndef CPU_PA_RISC2_0
-#define CPU_PA_RISC2_0 0x214
+# define CPU_PA_RISC2_0 0x214
 #endif /* CPU_PA_RISC2_0 */
 
 #ifndef _PA_RISC1_0_ID
-#define _PA_RISC1_0_ID CPU_PA_RISC1_0
+# define _PA_RISC1_0_ID CPU_PA_RISC1_0
 #endif /* _PA_RISC1_0_ID */
 
 #ifndef _PA_RISC1_1_ID
-#define _PA_RISC1_1_ID CPU_PA_RISC1_1
+# define _PA_RISC1_1_ID CPU_PA_RISC1_1
 #endif /* _PA_RISC1_1_ID */
 
 #ifndef _PA_RISC2_0_ID
-#define _PA_RISC2_0_ID CPU_PA_RISC2_0
+# define _PA_RISC2_0_ID CPU_PA_RISC2_0
 #endif /* _PA_RISC2_0_ID */
 
 #ifndef _PA_RISC_MAXID
-#define _PA_RISC_MAXID	0x2FF
+# define _PA_RISC_MAXID	0x2FF
 #endif /* _PA_RISC_MAXID */
 
 #ifndef _PA_RISC_ID
@@ -2167,7 +2169,7 @@ som_object_p (bfd *abfd)
      a non-existant auxiliary header.  */
   if (file_hdr.aux_header_size != 0)
     {
-      aux_hdr_ptr = bfd_zalloc (abfd, 
+      aux_hdr_ptr = bfd_zalloc (abfd,
 				(bfd_size_type) sizeof (*aux_hdr_ptr));
       if (aux_hdr_ptr == NULL)
 	return NULL;

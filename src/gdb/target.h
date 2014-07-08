@@ -434,7 +434,7 @@ struct target_ops
 				   void *);
     char * (*to_make_corefile_notes) (bfd *, int *);
     int (*to_bind_function) (char *);
-    
+
     /* Return the thread-local address at OFFSET in the
        thread-local storage for the thread PTID and the shared library
        or executable file given by OBJFILE.  If that block of
@@ -453,7 +453,7 @@ struct target_ops
 				ULONGEST offset, LONGEST len);
 
     /* APPLE LOCAL: If this system supports setting names on threads, return
-       the name of this thread in a static buffer that will be reused on 
+       the name of this thread in a static buffer that will be reused on
        subsequent calls.  */
    char *(*to_get_thread_name) (ptid_t ptid);
 
@@ -486,7 +486,7 @@ struct target_ops
        from that objfile.)  */
     int (*to_check_is_objfile_loaded) (struct objfile *objfile);
 
-    /* APPLE LOCAL: How do we load a shared library into the target?  
+    /* APPLE LOCAL: How do we load a shared library into the target?
        Returns a value containing the return value of the native
        loader function.  */
     struct value *(*to_load_solib) (char *path, char *flags);
@@ -1106,14 +1106,14 @@ extern void (*deprecated_target_new_objfile_hook) (struct objfile *);
   (current_target.to_get_thread_id_str) (PTID)
 
 /*
- * APPLE LOCAL: Check whether it is safe to call functions on this thread 
+ * APPLE LOCAL: Check whether it is safe to call functions on this thread
  */
 
 #define target_check_safe_call(WHICH, THREAD_MODE)	\
   (current_target.to_check_safe_call) (WHICH, THREAD_MODE)
 
 /*
- * APPLE LOCAL: Check whether it is safe to call functions on this thread 
+ * APPLE LOCAL: Check whether it is safe to call functions on this thread
  */
 
 #define target_setup_safe_print	\
@@ -1394,16 +1394,18 @@ extern void push_remote_macosx_target (char *name, int from_tty);
 /* Blank target vector entries are initialized to target_ignore. */
 void target_ignore (void);
 
-/* APPLE LOCAL update current target */
+/* APPLE LOCAL update current target: */
 void update_current_target (void);
 
 extern struct target_ops deprecated_child_ops;
 
 /* APPLE LOCAL: Override trust-readonly-sections.  */
-extern int set_trust_readonly (int);
-void set_trust_readonly_cleanup (void *new);
+extern int set_trust_readonly(int);
+void set_trust_readonly_cleanup(void *new);
 /* END APPLE LOCAL */
 
 /* APPLE LOCAL */
-int length_of_this_instruction (CORE_ADDR memaddr);
+int length_of_this_instruction(CORE_ADDR memaddr);
 #endif /* !defined (TARGET_H) */
+
+/* EOF */

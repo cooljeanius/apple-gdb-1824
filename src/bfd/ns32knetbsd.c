@@ -1,4 +1,4 @@
-/* BFD back-end for NetBSD/ns32k a.out-ish binaries.
+/* ns32knetbsd.c: BFD back-end for NetBSD/ns32k a.out-ish binaries.
    Copyright 1990, 1991, 1992, 1994, 1995, 1998, 2000, 2001, 2002, 2005
    Free Software Foundation, Inc.
 

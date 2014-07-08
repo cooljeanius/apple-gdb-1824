@@ -25,15 +25,19 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning not including "config.h".
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning not including "config.h".
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #if defined(STDC_HEADERS) || defined(HAVE_STDARG_H)
-#  include <stdarg.h>
+# include <stdarg.h>
 #elif defined(HAVE_VARARGS_H)
-#  include <varargs.h>
+# include <varargs.h>
 #else
-#  warning dbg_hif.h expects either <stdarg.h> or <varargs.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "dbg_hif.h expects either <stdarg.h> or <varargs.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* STDC_HEADERS || HAVE_STDARG_H */
 
 typedef void Hif_DbgPrint(void *arg, const char *format, va_list ap);

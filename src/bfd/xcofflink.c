@@ -219,11 +219,13 @@ _bfd_xcoff_canonicalize_dynamic_symtab (bfd *abfd, asymbol **psyms)
 
   strings = (char *) contents + ldhdr.l_stoff;
 
-  symbuf = bfd_zalloc (abfd, ldhdr.l_nsyms * sizeof (* symbuf));
-  if (symbuf == NULL)
-    return -1;
+  symbuf = (coff_symbol_type *)bfd_zalloc(abfd,
+					  (ldhdr.l_nsyms * sizeof(* symbuf)));
+  if (symbuf == NULL) {
+      return -1;
+  }
 
-  elsym = contents + bfd_xcoff_loader_symbol_offset(abfd, &ldhdr);
+  elsym = (contents + bfd_xcoff_loader_symbol_offset(abfd, &ldhdr));
 
   elsymend = elsym + ldhdr.l_nsyms * bfd_xcoff_ldsymsz(abfd);
   for (; elsym < elsymend; elsym += bfd_xcoff_ldsymsz(abfd), symbuf++, psyms++)

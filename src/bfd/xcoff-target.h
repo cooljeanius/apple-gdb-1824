@@ -1,25 +1,27 @@
-/* Common definitions for backends based on IBM RS/6000 "XCOFF64" files.
-   Copyright 2000, 2001, 2002, 2004, 2005
-   Free Software Foundation, Inc.
-   Contributed by Cygnus Support.
+/* xcoff-target.h:
+ * Common definitions for backends based on IBM RS/6000 "XCOFF64" files.
+ * Copyright 2000, 2001, 2002, 2004, 2005
+ * Free Software Foundation, Inc.
+ * Contributed by Cygnus Support.
+ *
+ * This file is part of BFD, the Binary File Descriptor library.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St. - 5th Floor, Boston, MA 02110-1301, USA.
+ */
 
-   This file is part of BFD, the Binary File Descriptor library.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
-
-/* Internalcoff.h and coffcode.h modify themselves based on this flag.  */
+/* Internalcoff.h and coffcode.h modify themselves based on this flag: */
 #define RS6000COFF_C 1
 
 #define SELECT_RELOC(internal, howto)					\
@@ -142,11 +144,20 @@ extern const bfd_target * _bfd_xcoff_archive_p (bfd *);
 
 #include "coffcode.h"
 
-/* The transfer vector that leads the outside world to all of the above.  */
+#if !defined(_bfd_xcoff_bfd_link_just_syms)
+# define _bfd_xcoff_bfd_link_just_syms _bfd_generic_link_just_syms
+#endif /* !_bfd_xcoff_bfd_link_just_syms */
+#if !defined(_bfd_xcoff_bfd_is_group_section)
+# define _bfd_xcoff_bfd_is_group_section bfd_generic_is_group_section
+#endif /* !_bfd_xcoff_bfd_is_group_section */
+#if !defined(_bfd_xcoff_get_synthetic_symtab)
+# define _bfd_xcoff_get_synthetic_symtab _bfd_nodynamic_get_synthetic_symtab
+#endif /* !_bfd_xcoff_get_synthetic_symtab */
 
+/* The transfer vector that leads the outside world to all of the above.  */
 const bfd_target TARGET_SYM =
 {
-  TARGET_NAME,
+  (char *)TARGET_NAME,
   bfd_target_xcoff_flavour,
   BFD_ENDIAN_BIG,		/* Data byte order is big.  */
   BFD_ENDIAN_BIG,		/* Header byte order is big.  */

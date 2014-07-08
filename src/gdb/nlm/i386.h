@@ -1,6 +1,6 @@
 /* i386.h */
 
-/* Register values.  All of these values *MUST* agree with tm.h */
+/* Register values. All of these values *MUST* agree with tm.h */
 #define SP_REGNUM 4		/* Contains address of top of stack */
 #define PC_REGNUM 8		/* Contains program counter */
 #define DEPRECATED_FP_REGNUM 5		/* Virtual frame pointer */

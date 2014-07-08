@@ -7,14 +7,12 @@
 
 #include "reloc_old.h" /* renamed from "reloc.h" */
 
-#define __GNU_EXEC_MACROS__
+#define __GNU_EXEC_MACROS__ 1
 
 #ifndef __STRUCT_EXEC_OVERRIDE__
-
 /* This is the layout on disk of a Unix V7, Berkeley, SunOS, Vax Ultrix
-   "struct exec".  Don't assume that on this machine, the "struct exec"
-   will lay out the same sizes or alignments.  */
-
+ * "struct exec".  Do NOT assume that on this machine, the "struct exec"
+ * will lay out the same sizes or alignments.  */
 struct exec_bytes {
   unsigned char a_info[4];
   unsigned char a_text[4];
@@ -26,11 +24,10 @@ struct exec_bytes {
   unsigned char a_drsize[4];
 };
 
-/* How big the "struct exec" is on disk */
+/* How big the "struct exec" is on disk: */
 #define	EXEC_BYTES_SIZE	(8 * 4)
 
-/* This is the layout in memory of a "struct exec" while we process it.  */
-
+/* This is the layout in memory of a "struct exec" while we process it: */
 struct exec
 {
   unsigned long a_info;		/* Use macros N_MAGIC, etc for access */
@@ -42,7 +39,6 @@ struct exec
   unsigned a_trsize;		/* length of relocation info for text, in bytes */
   unsigned a_drsize;		/* length of relocation info for data, in bytes */
 };
-
 #endif /* __STRUCT_EXEC_OVERRIDE__ */
 
 /* these go in the N_MACHTYPE field */

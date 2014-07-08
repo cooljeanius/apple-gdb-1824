@@ -1,4 +1,4 @@
-/* BFD backend for demonstration 64-bit a.out binaries.
+/* demo64.c: BFD backend for demonstration 64-bit a.out binaries.
    Copyright 1990, 1991, 1992, 1993, 1994, 2001
    Free Software Foundation, Inc.
    Written by Cygnus Support.

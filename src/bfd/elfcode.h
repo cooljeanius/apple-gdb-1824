@@ -1,4 +1,4 @@
-/* ELF executable support for BFD.
+/* elfcode.h: ELF executable support for BFD.
    Copyright 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
    2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
@@ -140,10 +140,10 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #endif
 
 #ifdef DEBUG
-static void elf_debug_section (int, Elf_Internal_Shdr *);
-static void elf_debug_file (Elf_Internal_Ehdr *);
-static char *elf_symbol_flags (flagword);
-#endif
+static void elf_debug_section(int, Elf_Internal_Shdr *);
+static void elf_debug_file(Elf_Internal_Ehdr *);
+static char *elf_symbol_flags(flagword);
+#endif /* DEBUG */
 
 /* Structure swapping routines */
 
@@ -171,9 +171,13 @@ elf_swap_symbol_in (bfd *abfd,
 		    const void *pshn,
 		    Elf_Internal_Sym *dst)
 {
-  const Elf_External_Sym *src = psrc;
-  const Elf_External_Sym_Shndx *shndx = pshn;
-  int signed_vma = get_elf_backend_data (abfd)->sign_extend_vma;
+  const Elf_External_Sym *src;
+  const Elf_External_Sym_Shndx *shndx;
+  int signed_vma;
+
+  src = (const Elf_External_Sym *)psrc;
+  shndx = (const Elf_External_Sym_Shndx *)pshn;
+  signed_vma = get_elf_backend_data(abfd)->sign_extend_vma;
 
   dst->st_name = H_GET_32 (abfd, src->st_name);
   if (signed_vma)
@@ -193,30 +197,27 @@ elf_swap_symbol_in (bfd *abfd,
 }
 
 /* Translate an ELF symbol in internal format into an ELF symbol in external
-   format.  */
-
-void
-elf_swap_symbol_out (bfd *abfd,
-		     const Elf_Internal_Sym *src,
-		     void *cdst,
-		     void *shndx)
+ * format: */
+void elf_swap_symbol_out(bfd *abfd, const Elf_Internal_Sym *src,
+			 void *cdst, void *shndx)
 {
   unsigned int tmp;
-  Elf_External_Sym *dst = cdst;
-  H_PUT_32 (abfd, src->st_name, dst->st_name);
-  H_PUT_WORD (abfd, src->st_value, dst->st_value);
-  H_PUT_WORD (abfd, src->st_size, dst->st_size);
-  H_PUT_8 (abfd, src->st_info, dst->st_info);
-  H_PUT_8 (abfd, src->st_other, dst->st_other);
+  Elf_External_Sym *dst;
+  dst = (Elf_External_Sym *)cdst;
+  H_PUT_32(abfd, src->st_name, dst->st_name);
+  H_PUT_WORD(abfd, src->st_value, dst->st_value);
+  H_PUT_WORD(abfd, src->st_size, dst->st_size);
+  H_PUT_8(abfd, src->st_info, dst->st_info);
+  H_PUT_8(abfd, src->st_other, dst->st_other);
   tmp = src->st_shndx;
-  if (tmp > SHN_HIRESERVE)
-    {
-      if (shndx == NULL)
-	abort ();
-      H_PUT_32 (abfd, tmp, shndx);
+  if (tmp > SHN_HIRESERVE) {
+      if (shndx == NULL) {
+	abort();
+      }
+      H_PUT_32(abfd, tmp, shndx);
       tmp = SHN_XINDEX;
-    }
-  H_PUT_16 (abfd, tmp, dst->st_shndx);
+  }
+  H_PUT_16(abfd, tmp, dst->st_shndx);
 }
 
 /* Translate an ELF file header in external format into an ELF file header in
@@ -420,26 +421,22 @@ elf_swap_reloca_out (bfd *abfd,
   H_PUT_SIGNED_WORD (abfd, src->r_addend, dst->r_addend);
 }
 
-void
-elf_swap_dyn_in (bfd *abfd,
-		 const void *p,
-		 Elf_Internal_Dyn *dst)
+void elf_swap_dyn_in(bfd *abfd, const void *p, Elf_Internal_Dyn *dst)
 {
-  const Elf_External_Dyn *src = p;
+  const Elf_External_Dyn *src;
+  src = (const Elf_External_Dyn *)p;
 
   dst->d_tag = H_GET_WORD (abfd, src->d_tag);
   dst->d_un.d_val = H_GET_WORD (abfd, src->d_un.d_val);
 }
 
-void
-elf_swap_dyn_out (bfd *abfd,
-		  const Elf_Internal_Dyn *src,
-		  void *p)
+void elf_swap_dyn_out (bfd *abfd, const Elf_Internal_Dyn *src, void *p)
 {
-  Elf_External_Dyn *dst = p;
+  Elf_External_Dyn *dst;
+  dst = (Elf_External_Dyn *)p;
 
-  H_PUT_WORD (abfd, src->d_tag, dst->d_tag);
-  H_PUT_WORD (abfd, src->d_un.d_val, dst->d_un.d_val);
+  H_PUT_WORD(abfd, src->d_tag, dst->d_tag);
+  H_PUT_WORD(abfd, src->d_un.d_val, dst->d_un.d_val);
 }
 
 /* ELF .o/exec file reading */
@@ -1811,3 +1808,5 @@ const struct elf_size_info NAME(_bfd_elf,size_info) = {
   elf_swap_reloca_in,
   elf_swap_reloca_out
 };
+
+/* EOF */

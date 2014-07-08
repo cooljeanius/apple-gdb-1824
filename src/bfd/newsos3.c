@@ -1,4 +1,4 @@
-/* BFD back-end for NewsOS3 (Sony, 68k) binaries.
+/* newsos3.c: BFD back-end for NewsOS3 (Sony, 68k) binaries.
    Copyright 1990, 1991, 1994, 1995, 2000, 2001, 2003
    Free Software Foundation, Inc.
 

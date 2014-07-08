@@ -9,6 +9,8 @@ different host. GDB and GDBserver communicate using the standard remote
 serial protocol implemented in remote.c, and various *-stub.c files. They
 communicate via either a serial line or a TCP connection.
 
+For more information about GDBserver, see the GDB manual.
+
 Usage (server (target) side):
 
 First, you need to have a copy of the program you want to debug put onto

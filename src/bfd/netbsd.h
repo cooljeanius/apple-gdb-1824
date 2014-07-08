@@ -1,4 +1,4 @@
-/* BFD back-end definitions used by all NetBSD targets.
+/* netbsd.h: BFD back-end definitions used by all NetBSD targets.
    Copyright 1990, 1991, 1992, 1994, 1995, 1996, 1997, 1998, 2000, 2002, 2005
    Free Software Foundation, Inc.
 
@@ -75,7 +75,7 @@ static bfd_boolean MY (write_object_contents) (bfd *);
    file header, symbols, and relocation.  */
 
 static bfd_boolean
-MY (write_object_contents) (bfd *abfd)
+MY(write_object_contents)(bfd *abfd)
 {
   struct external_exec exec_bytes;
   struct internal_exec *execp = exec_hdr (abfd);
@@ -106,7 +106,7 @@ MY (write_object_contents) (bfd *abfd)
 
   /* The NetBSD magic number is always big-endian */
 #ifndef TARGET_IS_BIG_ENDIAN_P
-  /* XXX aren't there any macro to change byteorder of a word independent of
+  /* XXX are there not any macros to change byteorder of a word independent of
      the host's or target's endianesses?  */
   execp->a_info
     = (execp->a_info & 0xff) << 24 | (execp->a_info & 0xff00) << 8
@@ -117,3 +117,5 @@ MY (write_object_contents) (bfd *abfd)
 
   return TRUE;
 }
+
+/* EOF */

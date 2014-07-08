@@ -1,5 +1,21 @@
 # macos.mh
 # Host: PowerMac (PowerPC running MacOS Classic)
 
-NATDEPFILES= mac-nat.o
+XM_FILE = xm-mpw.h
+
+XDEPFILES = mac-xdep.o
+
+PPC_FILES = ppc-linux-nat.o
+
+NATDEPFILES= mac-nat.o $(PPC_FILES)
 NAT_FILE= nm-macos.h
+
+CFM_CFLAGS = \
+	-DWITH_CFM=1 \
+	-Wno-four-char-constants \
+	-traditional-cpp
+
+MH_CFLAGS = $(CFM_CFLAGS)
+
+SIM_OBS = remote-sim.o
+SIM = ../sim/ppc/libsim.a

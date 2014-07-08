@@ -1,5 +1,10 @@
+# Makefile for gdb.objc part of testsuite
+
 VPATH = @srcdir@
 srcdir = @srcdir@
+
+# changed name for old default cc to this:
+MY_CC = @MY_CC@
 
 EXECUTABLES = myclass
 
@@ -14,13 +19,14 @@ uninstall: force
 installcheck:
 check:
 
+# 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 clean mostlyclean:
-	-rm -f *~ *.o *.ci
-	-rm -f core ${EXECUTABLES}
+	-rm -fv *~ *.o *.ci
+	-rm -fv core ${EXECUTABLES}
 
 distclean maintainer-clean realclean: clean
 	-rm -f Makefile config.status config.log
-	-rm -fr autom4te.cache || rmdir autom4te.cache
+	-rm -frv autom4te.cache || rmdir autom4te.cache
 
-Makefile: $(srcdir)/Makefile.in $(srcdir)/configure.in
+Makefile: $(srcdir)/Makefile.in $(srcdir)/configure.ac
 	$(SHELL) ./config.status --recheck

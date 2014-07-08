@@ -1,4 +1,4 @@
-/* Target definitions for 32/64-bit NLM (NetWare Loadable Module)
+/* nlm-target.h: Target definitions for 32/64-bit NLM (NetWare Loadable Module)
    Copyright 1993, 1994, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
    2005 Free Software Foundation, Inc.
 
@@ -16,7 +16,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. */
 
 #define nlm_core_file_p _bfd_dummy_target
 
@@ -252,3 +252,5 @@ const bfd_target TARGET_LITTLE_SYM =
   (void *) TARGET_BACKEND_DATA
 };
 #endif
+
+/* EOF */

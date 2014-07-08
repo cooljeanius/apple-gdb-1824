@@ -76,3 +76,5 @@ extern char *tilde_expand_word PARAMS((const char *));
 #endif
 
 #endif /* _TILDE_H_ */
+
+/* EOF */

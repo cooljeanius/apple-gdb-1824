@@ -81,15 +81,14 @@ te_status Angel_TxEngine(const struct data_packet *packet,
 #endif /* DO_TRACE */
       if (txstate->field_c == 3) {
         /* send type */
-        *tx_ch = escape(packet->type, txstate);
+        *tx_ch = escape((unsigned char)packet->type, txstate);
         return TS_IN_PKT;
-      }
-      else {
-        *tx_ch = escape((packet->len >> (txstate->field_c - 1) * 8) & 0xff,
-                      txstate);
+      } else {
+        *tx_ch = escape((unsigned char)((packet->len >> (txstate->field_c - 1) * 8) & 0xff),
+			txstate);
           if (txstate->field_c == 0) {
-            /* move on to the next state */
-            txstate->tx_state = (txstate->tx_state & ~F_MASK) | F_DATA;
+            /* move on to the next state: */
+            txstate->tx_state = ((txstate->tx_state & ~F_MASK) | F_DATA);
             txstate->field_c = packet->len;
           }
         return TS_IN_PKT;
@@ -98,10 +97,11 @@ te_status Angel_TxEngine(const struct data_packet *packet,
 #ifdef DO_TRACE
     __rt_trace("txe-data ");
 #endif /* DO_TRACE */
-      *tx_ch = escape(packet->data[packet->len - txstate->field_c], txstate);
+      *tx_ch = escape((unsigned char)packet->data[(packet->len - txstate->field_c)],
+		      txstate);
       if (txstate->field_c == 0) {
-        /* move on to the next state */
-        txstate->tx_state = (txstate->tx_state & ~F_MASK) | F_CRC;
+        /* move on to the next state: */
+        txstate->tx_state = ((txstate->tx_state & ~F_MASK) | F_CRC);
         txstate->field_c = 4;
       }
       return TS_IN_PKT;
@@ -109,8 +109,8 @@ te_status Angel_TxEngine(const struct data_packet *packet,
 #ifdef DO_TRACE
     __rt_trace("txe-crc ");
 #endif /* DO_TRACE */
-     *tx_ch = escape((txstate->crc >> ((txstate->field_c - 1) * 8)) & 0xff,
-                      txstate);
+     *tx_ch = escape((unsigned char)((txstate->crc >> ((txstate->field_c - 1) * 8)) & 0xff),
+		     txstate);
 
       if (txstate->field_c == 0) {
 #ifdef DO_TRACE
@@ -144,7 +144,7 @@ te_status Angel_TxEngine(const struct data_packet *packet,
  * crc generation occurs in the escape function because it is the only
  * place where we know that we're putting a real char into the buffer
  * rather than an escaped one.
- * We must be careful here not to update the crc when we're sending it
+ * We must be careful here not to update the crc when we are sending it
  */
 static unsigned char escape(unsigned char ch_in, struct te_state *txstate) {
    if (((txstate->tx_state) & E_MASK) == E_ESC) {

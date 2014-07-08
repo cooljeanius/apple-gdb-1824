@@ -21,7 +21,7 @@
 
 sinclude(../../config/acx.m4)
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.61])
 AC_INIT([gdb-testsuite],[1824],[bug-gdb@gnu.org])
 AC_CONFIG_SRCDIR([gdb.base])
 
@@ -39,7 +39,8 @@ esac
 
 # With stabs.
 AC_ARG_WITH([stabs],
-[AS_HELP_STRING([--with-stabs],[arrange to use stabs instead of host debug format])],[],
+[AS_HELP_STRING([--with-stabs],
+                [arrange to use stabs instead of host debug format])],[],
 [# We enable stabs tests by default on selected targets.
 case ${target} in
    *-apple-darwin* \
@@ -59,13 +60,14 @@ case ${target} in
 esac])
 
 # Add stabs tests when appropriate.
-if test ${with_stabs} = yes; then
+if test "x${with_stabs}" = "xyes"; then
    AC_CONFIG_SUBDIRS([gdb.stabs])
 fi
 
 # Enable gdbtk.
 AC_ARG_ENABLE([gdbtk],
-[AS_HELP_STRING([--enable-gtk],[enable gdbtk graphical user interface (GUI)])],[],
+[AS_HELP_STRING([--enable-gtk],
+                [enable gdbtk graphical user interface (GUI)])],[],
   [if test -d ${srcdir}/gdb.gdbtk; then
     enable_gdbtk=yes
   else
@@ -78,23 +80,24 @@ case "${target}" in
     enable_gdbtk=no ;;
 esac
 
-# Other system-related checks
+# Other system-related checks:
 AC_SYS_LARGEFILE
 AC_SYS_LONG_FILE_NAMES
 
 # Add gdbtk tests when appropriate.
-if test ${enable_gdbtk} = yes; then
+if test "x${enable_gdbtk}" = "xyes"; then
    AC_CONFIG_SUBDIRS([gdb.gdbtk])
 fi
 
 # Enable shared libraries.
 AC_ARG_ENABLE([shared],
-[AS_HELP_STRING([--enable-shared],[build shared libraries [deault=yes]])],[],
-  [enable_shared=yes])
+[AS_HELP_STRING([--enable-shared],
+                [build shared libraries [deault=yes]])],
+[],[enable_shared=yes])
 
 # If we have shared libraries, try to set RPATH_ENVVAR reasonably,
 # such that we can find the shared libraries in the build tree.
-if test ${enable_shared} = no; then
+if test "x${enable_shared}" = "xno"; then
   # The variable `RPATH_ENVVAR' itself is not likely to be used on any
   # platform.
   RPATH_ENVVAR=RPATH_ENVVAR
@@ -104,7 +107,7 @@ else
   # The following exceptions are taken from Libtool 1.4.3.
   case ${host_os} in
     aix*)
-      if test ${host_cpu} != ia64; then
+      if test "x${host_cpu}" != "xia64"; then
         RPATH_ENVVAR=LIBPATH
       fi ;;
     *darwin* | rhapsody*)
@@ -125,17 +128,23 @@ AC_DEFUN([AC_REQUIRE_COMPILER],[
 ])
 AC_REQUIRE_COMPILER
 AC_PROG_INSTALL
+AC_PROG_SED
 
 # Checks for header files.
-AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
+AC_HEADER_DIRENT
+AC_HEADER_STDBOOL dnl# also "_CHECK"s it
+AC_HEADER_SYS_WAIT
+AC_HEADER_TIME
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h stddef.h stdio.h \
                   sys/socket.h sys/time.h wchar.h])
 AC_CHECK_HEADERS([pthread.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
 AC_C_INLINE
 AC_C_PROTOTYPES
 AC_C_RESTRICT
+AC_C_VOLATILE
 AC_TYPE_INT8_T
 AC_TYPE_INT16_T
 AC_TYPE_INT32_T
@@ -147,19 +156,38 @@ AC_TYPE_UINT8_T
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
+AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
+dnl# Begin what used to be AC\_TYPE\_SIGNAL
+AC_CACHE_CHECK([return type of signal handlers],[ac_cv_type_signal],[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <sys/types.h>
+#include <signal.h>
+]],[[
+return *(signal (0, 0)) (0) == 1;
+]])],[ac_cv_type_signal=int],[ac_cv_type_signal=void])
+])
+AC_DEFINE_UNQUOTED([RETSIGTYPE],[${ac_cv_type_signal}],[Define as the return type of signal handlers (`int' or `void').])
+dnl# End what used to be AC\_TYPE\_SIGNAL
 
 # Checks for library functions.
 AC_FUNC_ALLOCA
+AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_FORK
 AC_FUNC_MALLOC
+AC_FUNC_MEMCMP
 AC_FUNC_MMAP
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([atexit alarm clock_gettime memset munmap select socket \
-                strchr strerror strstr strtol strtoul])
+AC_FUNC_SELECT_ARGTYPES
+AC_FUNC_STAT
+AC_FUNC_VPRINTF
+AC_CHECK_FUNCS([atexit alarm clock_gettime gettimeofday memset munmap \
+                select socket strchr strerror strstr strtol strtoul])
 
-# Other
+# Other:
 AC_EXEEXT
+AC_OBJEXT
 
+# Output:
 case "${target}" in
     *-*-darwin*) AC_CONFIG_FILES([gdb.apple/Makefile])
                  AC_CONFIG_FILES([gdb.apple/gused/Makefile])
@@ -197,6 +225,7 @@ fi
 AC_SUBST([gdb_target_cpu])
 
 AC_CONFIG_SUBDIRS([gdb.cell])
+AC_CONFIG_SUBDIRS([gdb.chill])
 AC_CONFIG_FILES([Makefile \
   gdb.ada/Makefile \
   gdb.arch/Makefile \
@@ -205,10 +234,12 @@ AC_CONFIG_FILES([Makefile \
   gdb.btrace/Makefile \
   gdb.cp/Makefile \
   gdb.disasm/Makefile \
+  gdb.dlang/Makefile \
   gdb.dwarf2/Makefile \
   gdb.fortran/Makefile \
+  gdb.gdb/Makefile \
   gdb.go/Makefile \
-  gdb.server/Makefile \
+  gdb.guile/Makefile \
   gdb.java/Makefile \
   gdb.linespec/Makefile \
   gdb.mi/Makefile \
@@ -219,6 +250,7 @@ AC_CONFIG_FILES([Makefile \
   gdb.pascal/Makefile \
   gdb.perf/Makefile \
   gdb.reverse/Makefile \
+  gdb.server/Makefile \
   gdb.threads/Makefile \
   gdb.trace/Makefile \
   gdb.xml/Makefile])

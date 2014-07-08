@@ -19,14 +19,16 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-move_if_change ()
+set -e
+
+move_if_change()
 {
     file=$1
     if test -r ${file} && cmp -s "${file}" new-"${file}"
     then
 	echo "${file} unchanged." 1>&2
     else
-	mv new-"${file}" "${file}"
+	mv -v new-"${file}" "${file}"
 	echo "${file} updated." 1>&2
     fi
 }
@@ -34,7 +36,7 @@ move_if_change ()
 # Format of the input files
 read="type entry"
 
-do_read ()
+do_read()
 {
     type=""
     entry=""
@@ -89,7 +91,7 @@ if test ! -r $1; then
   exit 1
 fi
 
-copyright ()
+copyright()
 {
 cat <<EOF
 /* *INDENT-OFF* */ /* THIS FILE IS GENERATED */
@@ -122,19 +124,33 @@ EOF
 
 exec > new-$2
 copyright $1
+echo '#include "server.h"'
 echo '#include "regdef.h"'
 echo '#include "regcache.h"'
-echo
+echo '#include "tdesc.h"'
+echo ""
 offset=0
 i=0
 name=x
+xmltarget=x
+xmlarch=x
+xmlosabi=x
 expedite=x
 exec < $1
 while do_read
 do
   if test "${type}" = "name"; then
     name="${entry}"
-    echo "struct reg regs_${name}[] = {"
+    echo "static struct reg regs_${name}[] = {"
+    continue
+  elif test "${type}" = "xmltarget"; then
+    xmltarget="${entry}"
+    continue
+  elif test "${type}" = "xmlarch"; then
+    xmlarch="${entry}"
+    continue
+  elif test "${type}" = "osabi"; then
+    xmlosabi="${entry}"
     continue
   elif test "${type}" = "expedite"; then
     expedite="${entry}"
@@ -150,20 +166,60 @@ do
 done
 
 echo "};"
-echo
+echo ""
 echo "const char *expedite_regs_${name}[] = { \"`echo ${expedite} | sed 's/,/", "/g'`\", 0 };"
-echo
+if test "${xmltarget}" = "x"; then
+  if test "${xmlarch}" = "x" && test "${xmlosabi}" = "x"; then
+    echo "static const char *xmltarget_${name} = 0;"
+  else
+    echo "static const char *xmltarget_${name} = \"@<target>\\"
+    if test "${xmlarch}" != "x"; then
+      echo "<architecture>${xmlarch}</architecture>\\"
+    fi
+    if test "${xmlosabi}" != "x"; then
+      echo "<osabi>${xmlosabi}</osabi>\\"
+    fi
+    echo "</target>\";"
+  fi
+else
+  echo "static const char *xmltarget_${name} = \"${xmltarget}\";"
+fi
+echo ""
 
 cat <<EOF
-void
-init_registers ()
+const struct target_desc *tdesc_${name};
+
+/* old version (define from command line to enable): */
+#ifdef _USE_OLD_INIT_REGISTERS
+# ifndef _INIT_REGISTERS_DECLARED
+#  defined _INIT_REGISTERS_DECLARED 1
+void init_registers(void)
 {
-    set_register_cache (regs_${name},
-			sizeof (regs_${name}) / sizeof (regs_${name}[0]));
+    set_register_cache(regs_${name},
+					   (sizeof(regs_${name}) / sizeof(regs_${name}[0])));
     gdbserver_expedite_regs = expedite_regs_${name};
+}
+# endif /* !_INIT_REGISTERS_DECLARED */
+#endif /* _USE_OLD_INIT_REGISTERS */
+
+void init_registers_${name}(void)
+{
+  static struct target_desc tdesc_${name}_s;
+  struct target_desc *result = &tdesc_${name}_s;
+
+  result->reg_defs = regs_${name};
+  result->num_registers = (sizeof(regs_${name}) / sizeof(regs_${name}[0]));
+  result->expedite_regs = expedite_regs_${name};
+  result->xmltarget = xmltarget_${name};
+
+  init_target_desc(result);
+
+  tdesc_${name} = result;
 }
 EOF
 
-# close things off
+# close things off:
 exec 1>&2
 move_if_change $2
+
+# end of script

@@ -1,5 +1,10 @@
+# Makefile for gdb.cell part of testsuite
+
 VPATH = @srcdir@
 srcdir = @srcdir@
+
+# changed name for old default cc to this:
+MY_CC = @MY_CC@
 
 EXECUTABLES = break bt coremaker data mem-access size
 
@@ -9,13 +14,14 @@ SPU_EXECUTABLES = break-spu bt-spu bt2-spu coremaker-spu data-spu \
 all info install-info dvi install uninstall installcheck check:
 	@echo "Nothing to be done for $@..."
 
+# 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 clean mostlyclean:
-	-rm -f *~ *.o a.out core corefile gcore.test
-	-rm -f $(EXECUTABLES) $(SPU_EXECUTABLES)
+	-rm -fv *~ *.o a.out core corefile gcore.test
+	-rm -fv $(EXECUTABLES) $(SPU_EXECUTABLES)
 
 distclean maintainer-clean realclean: clean
-	-rm -f *~ core
+	-rm -fv *~ core
 	-rm -f Makefile config.status config.log
-	-rm -f *-init.exp
-	-rm -fr *.log summary detail *.plog *.sum *.psum site.*
-	-rm -fr autom4te.cache || rmdir autom4te.cache
+	-rm -fv *-init.exp
+	-rm -frv *.log summary detail *.plog *.sum *.psum site.*
+	-rm -frv autom4te.cache || rmdir autom4te.cache

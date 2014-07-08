@@ -1,4 +1,4 @@
-/* BFD back-end for HP/UX core files.
+/* hpux-core.c: BFD back-end for HP/UX core files.
    Copyright 1993, 1994, 1996, 1998, 1999, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
    Written by Stu Grossman, Cygnus Support.
@@ -21,7 +21,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 /* This file can only be compiled on systems which use HP/UX style
-   core files.  */
+ * core files.  */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 
 #if defined (HOST_HPPAHPUX) || defined (HOST_HP300HPUX) || defined (HOST_HPPAMPEIX)
 
-/* FIXME: sys/core.h doesn't exist for HPUX version 7.  HPUX version
+/* FIXME: sys/core.h does NOT exist for HPUX version 7.  HPUX version
    5, 6, and 7 core files seem to be standard trad-core.c type core
    files; can we just use trad-core.c in addition to this file?  */
 
@@ -40,8 +40,8 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 
 #ifdef HOST_HPPABSD
 
-/* Not a very swift place to put it, but that's where the BSD port
-   puts them.  */
+/* Not a very swift place to put it, but that is where the BSD port
+ * puts them.  */
 #include "/hpux/usr/include/sys/core.h"
 
 #endif /* HOST_HPPABSD */
@@ -52,20 +52,22 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #else
 # ifdef HAVE_SYS_NDIR_H
 #  include <sys/ndir.h>
-# endif
+# endif /* HAVE_SYS_NDIR_H */
 # ifdef HAVE_SYS_DIR_H
 #  include <sys/dir.h>
-# endif
+# endif /* HAVE_SYS_DIR_H */
 # ifdef HAVE_NDIR_H
 #  include <ndir.h>
-# endif
-#endif
+# endif /* HAVE_NDIR_H */
+#endif /* HAVE_DIRENT_H */
 #include <signal.h>
-#include <machine/reg.h>
+#if defined(__HP_aCC) || defined(__hpux) || defined(HAVE_MACHINE_REG_H)
+# include <machine/reg.h>
+#endif /* __HP_aCC || __hpux || HAVE_MACHINE_REG_H */
 #include <sys/user.h>		/* After a.out.h  */
 #include <sys/file.h>
 
-/* Kludge: There's no explicit mechanism provided by sys/core.h to
+/* Kludge: There is no explicit mechanism provided by sys/core.h to
    conditionally know whether a proc_info has thread id fields.
    However, CORE_ANON_SHMEM shows up first at 10.30, which is
    happily also when meaningful thread id's show up in proc_info. */
@@ -126,7 +128,7 @@ make_bfd_asection (abfd, name, flags, size, vma, alignment_power)
   asection *asect;
   char *newname;
 
-  newname = bfd_alloc (abfd, (bfd_size_type) strlen (name) + 1);
+  newname = (char *)bfd_alloc(abfd, ((bfd_size_type)strlen(name) + 1));
   if (!newname)
     return NULL;
 
@@ -177,8 +179,7 @@ hpux_core_core_file_p (abfd)
   if (!core_hdr (abfd))
     return NULL;
 
-  while (1)
-    {
+  while (1) {
       int val;
       struct corehead core_header;
 

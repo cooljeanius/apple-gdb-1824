@@ -1,9 +1,9 @@
-/* BFD back-end for Motorola 68000 COFF binaries.
-   Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1999,
-   2000, 2001, 2002, 2003, 2005
-   Free Software Foundation, Inc.
-   Written by Cygnus Support.
-
+/* coff-m68k.c: BFD back-end for Motorola 68000 COFF binaries.
+ * Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1999,
+ * 2000, 2001, 2002, 2003, 2005
+ * Free Software Foundation, Inc.
+ * Written by Cygnus Support. */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,8 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -98,7 +99,7 @@ extern reloc_howto_type m68kcoff_howto_table[];
 #else
 #ifdef STATIC_RELOCS
 static
-#endif
+#endif /* STATIC_RELOCS */
 reloc_howto_type m68kcoff_howto_table[] =
   {
     HOWTO (R_RELBYTE,	       0,  0,  	8,  FALSE, 0, complain_overflow_bitfield, RELOC_SPECIAL_FN, "8",	TRUE, 0x000000ff,0x000000ff, FALSE),
@@ -141,60 +142,54 @@ m68k_rtype2howto(internal, relocentry)
      arelent *internal;
      int relocentry;
 {
-  switch (relocentry)
-    {
-    case R_RELBYTE:	internal->howto = m68kcoff_howto_table + 0; break;
-    case R_RELWORD:	internal->howto = m68kcoff_howto_table + 1; break;
-    case R_RELLONG:	internal->howto = m68kcoff_howto_table + 2; break;
-    case R_PCRBYTE:	internal->howto = m68kcoff_howto_table + 3; break;
-    case R_PCRWORD:	internal->howto = m68kcoff_howto_table + 4; break;
-    case R_PCRLONG:	internal->howto = m68kcoff_howto_table + 5; break;
-    case R_RELLONG_NEG:	internal->howto = m68kcoff_howto_table + 6; break;
-    }
+  switch (relocentry) {
+    case R_RELBYTE:	internal->howto = (m68kcoff_howto_table + 0); break;
+    case R_RELWORD:	internal->howto = (m68kcoff_howto_table + 1); break;
+    case R_RELLONG:	internal->howto = (m68kcoff_howto_table + 2); break;
+    case R_PCRBYTE:	internal->howto = (m68kcoff_howto_table + 3); break;
+    case R_PCRWORD:	internal->howto = (m68kcoff_howto_table + 4); break;
+    case R_PCRLONG:	internal->howto = (m68kcoff_howto_table + 5); break;
+    case R_RELLONG_NEG:	internal->howto = (m68kcoff_howto_table + 6); break;
+    default: break;
+  }
 }
 
-STAT_REL int
-m68k_howto2rtype (internal)
+STAT_REL int m68k_howto2rtype(internal)
      reloc_howto_type *internal;
 {
-  if (internal->pc_relative)
-    {
-      switch (internal->bitsize)
-	{
+  if (internal->pc_relative) {
+      switch (internal->bitsize) {
 	case 32: return R_PCRLONG;
 	case 16: return R_PCRWORD;
 	case 8: return R_PCRBYTE;
-	}
-    }
-  else
-    {
-      switch (internal->bitsize)
-	{
+	default: break;
+      }
+  } else {
+      switch (internal->bitsize) {
 	case 32: return R_RELLONG;
 	case 16: return R_RELWORD;
 	case 8: return R_RELBYTE;
-	}
-    }
+	default: break;
+      }
+  }
   return R_RELLONG;
 }
 
-STAT_REL reloc_howto_type *
-m68k_reloc_type_lookup (abfd, code)
+STAT_REL reloc_howto_type *m68k_reloc_type_lookup(abfd, code)
      bfd *abfd ATTRIBUTE_UNUSED;
      bfd_reloc_code_real_type code;
 {
-  switch (code)
-    {
+  switch (code) {
     default:			return NULL;
-    case BFD_RELOC_8:		return m68kcoff_howto_table + 0;
-    case BFD_RELOC_16:		return m68kcoff_howto_table + 1;
+    case BFD_RELOC_8:		return (m68kcoff_howto_table + 0);
+    case BFD_RELOC_16:		return (m68kcoff_howto_table + 1);
     case BFD_RELOC_CTOR:
-    case BFD_RELOC_32:		return m68kcoff_howto_table + 2;
-    case BFD_RELOC_8_PCREL:	return m68kcoff_howto_table + 3;
-    case BFD_RELOC_16_PCREL:	return m68kcoff_howto_table + 4;
-    case BFD_RELOC_32_PCREL:	return m68kcoff_howto_table + 5;
-      /* FIXME: There doesn't seem to be a code for R_RELLONG_NEG.  */
-    }
+    case BFD_RELOC_32:		return (m68kcoff_howto_table + 2);
+    case BFD_RELOC_8_PCREL:	return (m68kcoff_howto_table + 3);
+    case BFD_RELOC_16_PCREL:	return (m68kcoff_howto_table + 4);
+    case BFD_RELOC_32_PCREL:	return (m68kcoff_howto_table + 5);
+      /* FIXME: There does NOT seem to be a code for R_RELLONG_NEG. */
+  }
   /*NOTREACHED*/
 }
 
@@ -524,15 +519,17 @@ bfd_m68k_coff_create_embedded_relocs (abfd, info, datasec, relsec, errmsg)
 #include "coffcode.h"
 
 #ifndef TARGET_SYM
-#define TARGET_SYM m68kcoff_vec
-#endif
+# define TARGET_SYM m68kcoff_vec
+#endif /* !TARGET_SYM */
 
 #ifndef TARGET_NAME
-#define TARGET_NAME "coff-m68k"
-#endif
+# define TARGET_NAME "coff-m68k"
+#endif /* !TARGET_NAME */
 
 #ifdef NAMES_HAVE_UNDERSCORE
-CREATE_BIG_COFF_TARGET_VEC (TARGET_SYM, TARGET_NAME, D_PAGED, 0, '_', NULL, COFF_SWAP_TABLE)
+CREATE_BIG_COFF_TARGET_VEC(TARGET_SYM, TARGET_NAME, D_PAGED, 0, '_', NULL, COFF_SWAP_TABLE)
 #else
-CREATE_BIG_COFF_TARGET_VEC (TARGET_SYM, TARGET_NAME, D_PAGED, 0, 0, NULL, COFF_SWAP_TABLE)
-#endif
+CREATE_BIG_COFF_TARGET_VEC(TARGET_SYM, TARGET_NAME, D_PAGED, 0, 0, NULL, COFF_SWAP_TABLE)
+#endif /* NAMES_HAVE_UNDERSCORE */
+
+/* EOF */

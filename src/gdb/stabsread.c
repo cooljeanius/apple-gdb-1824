@@ -60,7 +60,7 @@
 
 extern void _initialize_stabsread (void);
 
-/* The routines that read and process a complete stabs for a C struct or 
+/* The routines that read and process a complete stabs for a C struct or
    C++ class pass lists of data member fields and lists of member function
    fields in an instance of a field_info structure, as defined below.
    This is part of some reorganization of low level C++ support and is
@@ -337,11 +337,11 @@ dbx_fixup_variants (struct type *real_type)
   unsigned len = real_type->length;
   struct type *variant;
 
-  /* We should also reset the length of the types in the 
+  /* We should also reset the length of the types in the
      type chain if they are not of address class, since
      all the other type variants are supposed to have the
      same length according to gdbtypes.h.  */
-  
+
   variant = real_type->chain;
   while (variant != real_type)
     {
@@ -407,7 +407,7 @@ dbx_alloc_type (int typenums[2], struct objfile *objfile)
   return (*type_addr);
 }
 
-/* for all the stabs in a given stab vector, build appropriate types 
+/* for all the stabs in a given stab vector, build appropriate types
    and fix their symbols in given symbol vector. */
 
 static void
@@ -422,7 +422,7 @@ patch_block_stabs (struct pending *symbols, struct pending_stabs *stabs,
   if (stabs)
     {
 
-      /* for all the stab entries, find their corresponding symbols and 
+      /* for all the stab entries, find their corresponding symbols and
          patch their types! */
 
       for (ii = 0; ii < stabs->count; ++ii)
@@ -528,7 +528,7 @@ read_type_number (char **pp, int *typenums)
 #define VISIBILITY_PUBLIC	'2'	/* Stabs character for public field */
 #define VISIBILITY_IGNORE	'9'	/* Optimized out or zero length */
 
-/* Structure for storing pointers to reference definitions for fast lookup 
+/* Structure for storing pointers to reference definitions for fast lookup
    during "process_later". */
 
 struct ref_map
@@ -561,8 +561,8 @@ stabsread_clear_cache (void)
 }
 
 /* Create array of pointers mapping refids to symbols and stab strings.
-   Add pointers to reference definition symbols and/or their values as we 
-   find them, using their reference numbers as our index. 
+   Add pointers to reference definition symbols and/or their values as we
+   find them, using their reference numbers as our index.
    These will be used later when we resolve references. */
 void
 ref_add (int refnum, struct symbol *sym, char *stabs, CORE_ADDR value)
@@ -619,7 +619,7 @@ process_reference (char **string)
   return refnum;
 }
 
-/* If STRING defines a reference, store away a pointer to the reference 
+/* If STRING defines a reference, store away a pointer to the reference
    definition for later use.  Return the reference number.  */
 
 int
@@ -646,7 +646,7 @@ symbol_reference_defined (char **string)
     }
 }
 
-/* APPLE LOCAL: When reading debug info from the .o file, we may come 
+/* APPLE LOCAL: When reading debug info from the .o file, we may come
    across functions that don't exist in the final linked image (they
    might be coalesced inline functions, or they may be dead code stripped.)
    In that case, we want to read the type from the symbol, but we don't
@@ -712,7 +712,7 @@ process_symbol_types_only (char *string, const char *prefix,
     case 'G':
     case 's':
     case 'l':
-      /* NOTE that this could be 'pF' a function parameter.  We don't need to 
+      /* NOTE that this could be 'pF' a function parameter.  We don't need to
 	 treat this specially, because all we want out of it is the type defined
 	 herein.  */
     case 'p':
@@ -737,7 +737,7 @@ process_symbol_types_only (char *string, const char *prefix,
 
 struct symbol *
 /* APPLE LOCAL symbol prefixes */
-define_symbol (CORE_ADDR valu, char *string, const char *prefix, 
+define_symbol (CORE_ADDR valu, char *string, const char *prefix,
                int desc, int type, struct objfile *objfile)
 {
   struct symbol *sym;
@@ -1383,7 +1383,7 @@ define_symbol (CORE_ADDR valu, char *string, const char *prefix,
 		 double type that's different from the TARGET one, I fix it up here.
 		 Turns out the ieee long doubl format works for all types, so this
 		 is trivial...  */
-	      if (TYPE_CODE (symtype) == TYPE_CODE_FLT 
+	      if (TYPE_CODE (symtype) == TYPE_CODE_FLT
 		  && TYPE_NAME (symtype) != NULL
 		  && strcmp (TYPE_NAME (symtype), "long double") == 0
 		  && TYPE_LENGTH (symtype) * TARGET_CHAR_BIT != TARGET_LONG_DOUBLE_BIT)
@@ -1403,7 +1403,7 @@ define_symbol (CORE_ADDR valu, char *string, const char *prefix,
 	p++;
 
       SYMBOL_TYPE (sym) = read_type (&p, objfile);
- 
+
       /* For a nameless type, we don't want a create a symbol, thus we
          did not use `sym'. Return without further processing. */
       if (nameless)
@@ -1622,9 +1622,9 @@ read_type (char **pp, struct objfile *objfile)
 	  /* APPLE LOCAL: For built-in types, we haven't consumed the trailing
 	     semi-colon yet.  If we don't do that, then cases where
 	     the built-in type is defined recursively will fall
-	     over. */ 
+	     over. */
 
-	  if (typenums[0] == 0 && typenums[1] < 0) 
+	  if (typenums[0] == 0 && typenums[1] < 0)
 	    {
 	      if (**pp == ';')
 		(*pp)++;
@@ -1745,23 +1745,23 @@ again:
 	     This seems like it shouldn't happen, but because stabs
 	     type names don't record namespace information, it
 	     actually can happen.  */
-  
+
           struct type **slot_addr = dbx_lookup_type (typenums, objfile);
           struct type *this_slot_type = slot_addr ? *slot_addr : NULL;
-      
+
           /* APPLE LOCAL: If this type is actually already defined, then just
              return it.  This can happen because gcc will define a type, but
              then use the "xs" to reference it later on.  */
-         
+
           if (this_slot_type != NULL
               && TYPE_CODE (this_slot_type) != TYPE_CODE_UNDEF)
             return this_slot_type;
-         
+
           for (ppt = file_symbols; ppt; ppt = ppt->next)
             for (i = 0; i < ppt->nsyms; i++)
               {
                 struct symbol *sym = ppt->symbol[i];
-          
+
                 if (SYMBOL_CLASS (sym) == LOC_TYPEDEF
                     && SYMBOL_DOMAIN (sym) == STRUCT_DOMAIN
                     && SYMBOL_TYPE (sym) == this_slot_type
@@ -2074,7 +2074,7 @@ again:
 	    ++(*pp);
 
 	  return_type = read_type (pp, objfile);
-	  /* If we are defining a type within the argument list 
+	  /* If we are defining a type within the argument list
 	     then there will be a closing ";" after the type
 	     def'n.  Walk past it */
 
@@ -2728,7 +2728,7 @@ read_member_functions (struct field_info *fip, char **pp, struct type *type,
 #if 0
 	  /* APPLE LOCAL begin delete bad method name code */
 	  /* This code is of marginal value for gcc 3, and has horrible
-	     performance.  Until it is made to perform better, we should just 
+	     performance.  Until it is made to perform better, we should just
 	     not use it */
 
 	  int has_stub = 0;
@@ -2839,7 +2839,7 @@ read_member_functions (struct field_info *fip, char **pp, struct type *type,
 		      tmp_sublist = tmp_sublist->next;
 		      continue;
 		    }
-		  
+
 		  destr_fnlist->fn_fieldlist.fn_fields[i++]
 		    = tmp_sublist->fn_field;
 		  if (last_sublist)
@@ -3127,19 +3127,19 @@ read_one_struct_field (struct field_info *fip, char **pp, char *p,
 /* APPLE LOCAL: We need to do this twice.  Once in read_one_struct_field,
    and once if the field type was undefined in cleanup_undefined_fields.
    So we abstract this into a function.  The only change in behavior
-   from the FSF version is if the type of the field in UNDEF, then 
+   from the FSF version is if the type of the field in UNDEF, then
    we don't adjust the BITSIZE, since we don't know how to do it here.  */
 
 static void
 adjust_field_bitsize (struct field *field)
 {
   struct type *field_type = check_typedef (FIELD_TYPE (*field));
-  
+
   /* Detect an unpacked field and mark it as such.
      dbx gives a bit size for all fields.
      Note that forward refs cannot be packed,
      and treat enums as if they had the width of ints.  */
-  
+
   if (TYPE_CODE (field_type) != TYPE_CODE_UNDEF)
     {
       if (TYPE_CODE (field_type) != TYPE_CODE_INT
@@ -3586,7 +3586,7 @@ attach_fields_to_type (struct field_info *fip, struct type *type,
 	}
       /* APPLE LOCAL: If the TYPE_CODE of this field is TYPE_CODE_UNDEF, then
 	 we weren't able to check whether it was packed correctly or not.  So
-	 we add this field to a list of fields, and then at the end of this 
+	 we add this field to a list of fields, and then at the end of this
 	 compilation unit, we will clean them up...  */
       if (TYPE_CODE (FIELD_TYPE (fip->list->field)) == TYPE_CODE_UNDEF
 	  || (TYPE_CODE (FIELD_TYPE (fip->list->field)) == TYPE_CODE_TYPEDEF
@@ -3602,7 +3602,7 @@ attach_fields_to_type (struct field_info *fip, struct type *type,
 
 /* Complain that the compiler has emitted more than one definition for the
    structure type TYPE.  */
-static void 
+static void
 complain_about_struct_wipeout (struct type *type)
 {
   char *name = "";
@@ -3636,22 +3636,21 @@ complain_about_struct_wipeout (struct type *type)
 
 
 /* Read the description of a structure (or union type) and return an object
-   describing the type.
-
-   PP points to a character pointer that points to the next unconsumed token
-   in the the stabs string.  For example, given stabs "A:T4=s4a:1,0,32;;",
-   *PP will point to "4a:1,0,32;;".
-
-   TYPE points to an incomplete type that needs to be filled in.
-
-   OBJFILE points to the current objfile from which the stabs information is
-   being read.  (Note that it is redundant in that TYPE also contains a pointer
-   to this same objfile, so it might be a good idea to eliminate it.  FIXME). 
+ * describing the type.
+ *
+ * PP points to a character pointer that points to the next unconsumed token
+ * in the the stabs string. For example, given stabs "A:T4=s4a:1,0,32;;", *PP
+ * will point to "4a:1,0,32;;".
+ *
+ * TYPE points to an incomplete type that needs to be filled in.
+ *
+ * OBJFILE points to the current objfile from which the stabs information is
+ * being read. (Note that it is redundant in that TYPE also contains a pointer
+ * to this same objfile, so it might be a good idea to eliminate it. FIXME).
  */
-
 static struct type *
-read_struct_type (char **pp, struct type *type, enum type_code type_code,
-                  struct objfile *objfile)
+read_struct_type(char **pp, struct type *type, enum type_code type_code,
+				 struct objfile *objfile)
 {
   struct cleanup *back_to;
   struct field_info fi;
@@ -4267,7 +4266,7 @@ read_range_type (char **pp, int typenums[2], int type_size,
 
       if (self_subrange)
 	{
-	  struct type *complex_type = 
+	  struct type *complex_type =
 	    init_type (TYPE_CODE_COMPLEX, 2 * n2, 0, NULL, objfile);
 	  TYPE_TARGET_TYPE (complex_type) = float_type;
 	  return complex_type;
@@ -4420,7 +4419,7 @@ read_args (char **pp, int end, struct objfile *objfile, int *nargsp,
 	  talloc = (struct type **) xrealloc (talloc, tsize * sizeof (struct type *));
 	  tcur = talloc;
 	}
-      
+
       /* Add to the array to be returned.  */
       tcur[n++] = type;
     }
@@ -4680,7 +4679,7 @@ cleanup_undefined_types (void)
                            "type code %d: name: %s target: %s",
                            TYPE_CODE (*type),
                            TYPE_NAME (*type) ? TYPE_NAME (*type) : "NULL",
-                           (TYPE_TARGET_TYPE (*type) 
+                           (TYPE_TARGET_TYPE (*type)
                             && TYPE_NAME (TYPE_TARGET_TYPE (*type)))
                            ? TYPE_NAME (TYPE_TARGET_TYPE(*type))
                            : "NULL");
@@ -4711,7 +4710,7 @@ scan_file_globals (struct objfile *objfile)
      them from the minimal symbols of the main executable first.  */
 
   /* APPLE LOCAL fix-and-continue:  We must try to find global syms
-     in the shared library first.  In an F&C situation, we may have a 
+     in the shared library first.  In an F&C situation, we may have a
      second definition in the just-loaded fixed objfile and we need
      to correctly point to it.  This SVR4 assumption is probably wrong for
      two level namespace programs, as well.  */
@@ -4809,7 +4808,7 @@ scan_file_globals (struct objfile *objfile)
          the objfile, and then failing that, search for them in the
          symfile_objfile (the main app).  */
 
-      if (symfile_objfile && objfile != symfile_objfile && 
+      if (symfile_objfile && objfile != symfile_objfile &&
           resolve_objfile == objfile)
         {
           resolve_objfile = symfile_objfile;
@@ -4926,7 +4925,7 @@ find_name_end (char *name)
      the full symtab.  If that ever bothers anybody, they can switch
      the define here.  */
 
-#if 1 
+#if 1
    first_colon = strchr (name, ':');
    if (first_colon == NULL)
      return NULL;
@@ -4947,7 +4946,7 @@ find_name_end (char *name)
       else
 	  first_colon += 2;
     }
-#endif   
+#endif
 
   /* It's tempting to use strchr to look for the
      leftmost lbrac but that would mean scanning
@@ -4966,7 +4965,7 @@ find_name_end (char *name)
 	  break;
 	}
     }
-  
+
   if (first_lbrac == NULL
       || (first_lbrac == name
 	  || (first_lbrac[-1] != '-'
@@ -4980,7 +4979,7 @@ find_name_end (char *name)
       return strchr (first_rbrac, ':');
     }
 }
-/* END APPLE LOCAL */      
+/* END APPLE LOCAL */
 
 /* Initializer for this module */
 

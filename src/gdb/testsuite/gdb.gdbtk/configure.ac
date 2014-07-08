@@ -20,11 +20,11 @@ AC_EXEEXT
 
 # Checks for programs
 if test "x${CC}" = "x"; then
-	test -z "${CC}"
-	AC_PROG_CC
+  test -z "${CC}"
+  AC_PROG_CC
 else
-	test ! -z "${CC}"
-	AC_PROG_GCC_TRADITIONAL
+  test ! -z "${CC}"
+  AC_PROG_GCC_TRADITIONAL
 fi
 AC_PROG_CPP
 AC_PROG_CXX
@@ -32,5 +32,6 @@ AC_PROG_CXX
 # Checks for library functions.
 AC_FUNC_MALLOC
 
+# Output:
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

@@ -27,3 +27,12 @@ tm.h
 xm.h
 nm.h
 stamp-*
+# some new generated source files:
+amd64-avx.c
+amd64-avx512.c
+amd64-mpx.c
+amd64.c
+x32-avx.c
+x32-avx512.c
+x32.c
+xml-builtin.c

@@ -97,21 +97,21 @@ examine_prologue (pc, rsize, msize, mfp_used)
     *msize = 0;
   if (mfp_used != NULL)
     *mfp_used = 0;
-  
+
   /* Prologue must start with subtracting a constant from gr1.
      Normally this is sub gr1,gr1,<rsize * 4>.  */
   insn = read_memory_integer (p, 4);
   if ((insn & 0xffffff00) != 0x25010100)
     {
-      /* If the frame is large, instead of a single instruction it
-	 might be a pair of instructions:
-	 const <reg>, <rsize * 4>
-	 sub gr1,gr1,<reg>
-	 */
+      /* If the frame is large, instead of a single instruction, it might
+	   * be a pair of instructions:
+	   * const <reg>, <rsize * 4>
+	   * sub gr1,gr1,<reg>
+	  */
       int reg;
       /* Possible value for rsize.  */
       unsigned int rsize0;
-      
+
       if ((insn & 0xff000000) != 0x03000000)
 	{
 	  p = pc;
@@ -178,9 +178,9 @@ examine_prologue (pc, rsize, msize, mfp_used)
      frame pointer is in use.  We just check for add lr<anything>,msp,0;
      we don't check this rsize against the first instruction, and
      we don't check that the trace-back tag indicates a memory frame pointer
-     is in use.  
+     is in use.
 
-     The recommended instruction is actually "sll lr<whatever>,msp,0". 
+     The recommended instruction is actually "sll lr<whatever>,msp,0".
      We check for that, too.  Originally Jim Kingdon's code seemed
      to be looking for a "sub" instruction here, but the mask was set
      up to lose all the time. */
@@ -312,23 +312,23 @@ init_frame_info (innermost_frame, fci)
     fci->frame = read_register (GR1_REGNUM);
   else
     fci->frame = fci->next_frame + fci->next->rsize;
-  
-#if CALL_DUMMY_LOCATION == ON_STACK
+
+#if defined(CALL_DUMMY_LOCATION) && defined(ON_STACK) && (CALL_DUMMY_LOCATION == ON_STACK)
   This wont work;
 #else
   if (PC_IN_CALL_DUMMY (p, 0, 0))
-#endif
+#endif /* (CALL_DUMMY_LOCATION == ON_STACK) */
     {
       fci->rsize = DUMMY_FRAME_RSIZE;
-      /* This doesn't matter since we never try to get locals or args
-	 from a dummy frame.  */
+      /* This does NOT matter since we never try to get locals or args
+	   * from a dummy frame.  */
       fci->msize = 0;
       /* Dummy frames always use a memory frame pointer.  */
-      fci->saved_msp = 
+      fci->saved_msp =
 	read_register_stack_integer (fci->frame + DUMMY_FRAME_RSIZE - 4, 4);
       return;
     }
-    
+
   func = find_pc_function (p);
   if (func != NULL)
     p = BLOCK_START (SYMBOL_BLOCK_VALUE (func));
@@ -340,7 +340,7 @@ init_frame_info (innermost_frame, fci)
       while (p >= text_start
 	     && ((insn = read_memory_integer (p, 4)) & 0xff000000) != 0)
 	p -= 4;
-      
+
       if (p < text_start)
 	{
 	  /* Couldn't find the trace-back tag.
@@ -573,7 +573,7 @@ get_saved_register (raw_buffer, optimized, addrp, frame, regnum, lvalp)
 	*addrp = REGISTER_BYTE (regnum);
       return;
     }
-      
+
   addr = fi->frame + (regnum - LR0_REGNUM) * 4;
   if (raw_buffer != NULL)
     read_register_stack (addr, raw_buffer, &addr, &lval);
@@ -589,11 +589,11 @@ get_saved_register (raw_buffer, optimized, addrp, frame, regnum, lvalp)
 void
 pop_frame ()
 {
-  FRAME frame = get_current_frame ();					      
-  struct frame_info *fi = get_frame_info (frame);			      
-  CORE_ADDR rfb = read_register (RFB_REGNUM);				      
+  FRAME frame = get_current_frame ();
+  struct frame_info *fi = get_frame_info (frame);
+  CORE_ADDR rfb = read_register (RFB_REGNUM);
   CORE_ADDR gr1 = fi->frame + fi->rsize;
-  CORE_ADDR lr1;							      
+  CORE_ADDR lr1;
   CORE_ADDR ret_addr;
   int i;
 
@@ -613,43 +613,43 @@ pop_frame ()
     }
 
   /* Restore the memory stack pointer.  */
-  write_register (MSP_REGNUM, fi->saved_msp);				      
-  /* Restore the register stack pointer.  */				      
+  write_register (MSP_REGNUM, fi->saved_msp);
+  /* Restore the register stack pointer.  */
   write_register (GR1_REGNUM, gr1);
-  /* Check whether we need to fill registers.  */			      
-  lr1 = read_register (LR0_REGNUM + 1);				      
-  if (lr1 > rfb)							      
-    {									      
-      /* Fill.  */							      
+  /* Check whether we need to fill registers.  */
+  lr1 = read_register (LR0_REGNUM + 1);
+  if (lr1 > rfb)
+    {
+      /* Fill.  */
       int num_bytes = lr1 - rfb;
-      int i;								      
-      long word;							      
-      write_register (RAB_REGNUM, read_register (RAB_REGNUM) + num_bytes);  
-      write_register (RFB_REGNUM, lr1);				      
-      for (i = 0; i < num_bytes; i += 4)				      
+      int i;
+      long word;
+      write_register (RAB_REGNUM, read_register (RAB_REGNUM) + num_bytes);
+      write_register (RFB_REGNUM, lr1);
+      for (i = 0; i < num_bytes; i += 4)
         {
 	  /* Note: word is in host byte order.  */
           word = read_memory_integer (rfb + i, 4);
-          write_register (LR0_REGNUM + ((rfb - gr1) % 0x80) + i / 4, word);					      
-        }								      
+          write_register (LR0_REGNUM + ((rfb - gr1) % 0x80) + i / 4, word);
+        }
     }
   ret_addr = read_register (LR0_REGNUM);
   write_register (PC_REGNUM, ret_addr);
   write_register (NPC_REGNUM, ret_addr + 4);
-  flush_cached_frames ();						      
-  set_current_frame (create_new_frame (0, read_pc()));		      
+  flush_cached_frames ();
+  set_current_frame (create_new_frame (0, read_pc()));
 }
 
 /* Push an empty stack frame, to record the current PC, etc.  */
 
-void 
+void
 push_dummy_frame ()
 {
   long w;
   CORE_ADDR rab, gr1;
   CORE_ADDR msp = read_register (MSP_REGNUM);
   int i;
-  
+
   /* Save the PC.  */
   write_register (LR0_REGNUM, read_register (PC_REGNUM));
 

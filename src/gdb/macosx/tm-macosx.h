@@ -56,12 +56,12 @@ macosx_internalize_symbol (&intern, &sect_p, extern, abfd)
 #define SOLIB_CREATE_CATCH_UNLOAD_HOOK(pid,tempflag,filename,cond_string) \
   error("catch of library loads/unloads not yet implemented on this platform")
 
-extern void macosx_add_shared_symbol_files ();
+extern void macosx_add_shared_symbol_files(void);
 #define ADD_SHARED_SYMBOL_FILES(args, from_tty) \
-  macosx_add_shared_symbol_files (args, from_tty)
+  macosx_add_shared_symbol_files(args, from_tty)
 
 /* Dummy definition */
-const char *macosx_pc_solib (CORE_ADDR addr);
+const char *macosx_pc_solib(CORE_ADDR addr);
 #define PC_SOLIB(addr) ((char *) macosx_pc_solib (addr))
 
 #define target_pid_or_tid_to_str(PTID) \

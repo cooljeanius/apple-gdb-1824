@@ -26,7 +26,9 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #include "libbfd.h"
 
 #include <sys/user.h>
-#include <sys/core.h>
+#if defined(__OSF__) || defined(HAVE_SYS_CORE_H)
+# include <sys/core.h>
+#endif /* __OSF__ || HAVE_SYS_CORE_H */
 
 /* forward declarations */
 
@@ -79,8 +81,7 @@ make_bfd_asection (abfd, name, flags, size, vma, filepos)
   return asect;
 }
 
-static const bfd_target *
-osf_core_core_file_p (abfd)
+static const bfd_target *osf_core_core_file_p(abfd)
      bfd *abfd;
 {
   int val;

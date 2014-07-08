@@ -1,4 +1,4 @@
-/* Shared utility routines for GDB to interact with agent.
+/* agent.c: Shared utility routines for GDB to interact with agent.
 
    Copyright (C) 2009-2013 Free Software Foundation, Inc.
 
@@ -18,11 +18,11 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #ifdef GDBSERVER
-#include "server.h"
+# include "server.h"
 #else
-#include "defs.h"
-#include "target.h"
-#include "inferior.h" /* for non_stop */
+# include "defs.h"
+# include "target.h"
+# include "inferior.h" /* for non_stop */
 #endif
 
 #include <string.h>

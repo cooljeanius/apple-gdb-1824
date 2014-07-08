@@ -21,45 +21,47 @@
 AC_DEFUN_ONCE([GCC_NO_EXECUTABLES],
 [m4_divert_push([KILL])
 
-AC_BEFORE([$0], [_AC_COMPILER_EXEEXT])
-AC_BEFORE([$0], [AC_LINK_IFELSE])
+AC_BEFORE([$0],[_AC_COMPILER_EXEEXT])
+AC_BEFORE([$0],[AC_LINK_IFELSE])
 
 m4_define([_AC_COMPILER_EXEEXT],
-AC_LANG_CONFTEST([AC_LANG_PROGRAM()])
+AC_LANG_CONFTEST([AC_LANG_PROGRAM([[]],[[]])])
 # FIXME: Cleanup?
-AS_IF([AC_TRY_EVAL(ac_link)], [gcc_no_link=no], [gcc_no_link=yes])
-if test x$gcc_no_link = xyes; then
+AS_IF([AC_TRY_EVAL(ac_link)],[gcc_no_link=no],[gcc_no_link=yes])
+if test "x${gcc_no_link}" = "xyes"; then
   # Setting cross_compile will disable run tests; it will
   # also disable AC_CHECK_FILE but that's generally
-  # correct if we can't link.
+  # correct if we cannot link.
   cross_compiling=yes
-  EXEEXT=
+  EXEEXT=""
 else
   m4_defn([_AC_COMPILER_EXEEXT])dnl
 fi
 )
 
 m4_define([AC_LINK_IFELSE],
-if test x$gcc_no_link = xyes; then
+if test "x${gcc_no_link}" = "xyes"; then
   AC_MSG_ERROR([Link tests are not allowed after [[$0]].])
 fi
 m4_defn([AC_LINK_IFELSE]))
 
-dnl This is a shame.  We have to provide a default for some link tests,
-dnl similar to the default for run tests.
+dnl# This is a shame.  We have to provide a default for some link tests,
+dnl# similar to the default for run tests.
 m4_define([AC_FUNC_MMAP],
-dnl APPLE LOCAL:  mmap() always works right on Darwin.  Take our word for it.
-case "$host" in
+dnl# APPLE LOCAL: mmap() always works right on Darwin. Take our word for it
+case "${host}" in
   *-apple-darwin* | *-apple-macos*)
     ac_cv_func_mmap_fixed_mapped=yes
-  ;;
+    ;;
+  *)
+    if test "x${gcc_no_link}" = "xyes"; then
+      if test "x${ac_cv_func_mmap_fixed_mapped+set}" != "xset"; then
+        ac_cv_func_mmap_fixed_mapped=no
+      fi
+    fi
+    ;;
 esac
-#if test x$gcc_no_link = xyes; then
-#  if test "x${ac_cv_func_mmap_fixed_mapped+set}" != xset; then
-#    ac_cv_func_mmap_fixed_mapped=no
-#  fi
-#fi
-if test "x${ac_cv_func_mmap_fixed_mapped}" != xno; then
+if test "x${ac_cv_func_mmap_fixed_mapped}" != "xno"; then
   m4_defn([AC_FUNC_MMAP])
 fi)
 

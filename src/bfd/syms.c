@@ -1,4 +1,4 @@
-/* Generic symbol-table support for the BFD library.
+/* syms.c: Generic symbol-table support for the BFD library.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
    2000, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
@@ -76,7 +76,7 @@ SUBSECTION
 |
 |	  if (storage_needed == 0)
 |	    return;
-|	  
+|
 |	  symbol_table = xmalloc (storage_needed);
 |	    ...
 |	  number_of_symbols =
@@ -1378,7 +1378,7 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
       char *s;
 
       /* This will typically be something like main:F(0,1), so we want
-         to clobber the colon.  It's OK to change the name, since the
+         to clobber the colon.  It is OK to change the name, since the
          string is in our own local storage anyhow.  */
       s = strchr (indexentry->function_name, ':');
       if (s != NULL)
@@ -1389,3 +1389,5 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
 
   return TRUE;
 }
+
+/* EOF */

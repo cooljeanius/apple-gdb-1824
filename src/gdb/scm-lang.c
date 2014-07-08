@@ -132,7 +132,7 @@ static int
 in_eval_c (void)
 {
   struct symtab_and_line cursal = get_current_source_symtab_and_line ();
-  
+
   if (cursal.symtab && cursal.symtab->filename)
     {
       char *filename = cursal.symtab->filename;
@@ -185,22 +185,23 @@ scm_lookup_name (char *str)
 }
 
 struct value *
-scm_evaluate_string (char *str, int len)
+scm_evaluate_string(char *str, int len)
 {
   struct value *func;
-  struct value *addr = value_allocate_space_in_inferior (len + 1);
-  LONGEST iaddr = value_as_long (addr);
-  write_memory (iaddr, (gdb_byte *) str, len);
+  struct value *addr = value_allocate_space_in_inferior(len + 1);
+  LONGEST iaddr = value_as_long(addr);
+  write_memory(iaddr, (gdb_byte *)str, len);
   /* FIXME - should find and pass env */
-  write_memory (iaddr + len, (gdb_byte *) "", 1);
+  write_memory((iaddr + len), (gdb_byte *)"", 1);
   /* APPLE LOCAL inferior function type */
-  func = find_function_in_inferior ("scm_evstr", builtin_type_voidptrfuncptr);
-  return call_function_by_hand (func, 1, &addr);
+  func = find_function_in_inferior("scm_evstr", builtin_type_voidptrfuncptr);
+  return call_function_by_hand(func, 1, &addr);
 }
 
+/* ... */
 static struct value *
-evaluate_subexp_scm (struct type *expect_type, struct expression *exp,
-		     int *pos, enum noside noside)
+evaluate_subexp_scm(struct type *expect_type, struct expression *exp,
+					int *pos, enum noside noside)
 {
   enum exp_opcode op = exp->elts[*pos].opcode;
   int len, pc;
@@ -230,7 +231,7 @@ nosideret:
   return value_from_longest (builtin_type_long, (LONGEST) 1);
 }
 
-const struct exp_descriptor exp_descriptor_scm = 
+const struct exp_descriptor exp_descriptor_scm =
 {
   print_subexp_standard,
   operator_length_standard,

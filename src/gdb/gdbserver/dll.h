@@ -29,9 +29,9 @@ struct dll_info
 extern struct inferior_list all_dlls;
 extern int dlls_changed;
 
-extern void clear_dlls (void);
-extern void loaded_dll (const char *name, CORE_ADDR base_addr);
-extern void unloaded_dll (const char *name, CORE_ADDR base_addr);
+extern void clear_dlls(void);
+extern void loaded_dll(const char *name, CORE_ADDR base_addr);
+extern void unloaded_dll(const char *name, CORE_ADDR base_addr);
 
 #endif /* DLL_H */
 

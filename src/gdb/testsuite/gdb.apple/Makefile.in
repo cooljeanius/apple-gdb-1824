@@ -1,7 +1,12 @@
+# Makefile for gdb.apple part of testsuite
+
 VPATH = @srcdir@
 srcdir = @srcdir@
 
 SUBDIRS = @subdirs@
+
+# changed name for old default cc to this:
+MY_CC = @MY_CC@
 
 EXECUTABLES = bigenum blocks blocks-linetables blocks-linetables2 blocks-queues check-errno dylib-loader file\ \(my\ name\) file-statics function-statics global-blocks-lines global-blocks-lines2 inf-call-interrupt info-pid long-long-call malloc-history nick objc-prog objc-throw-in-inf-fn ostype pc-verify r3376901 r3376907 r3384998 recurse scoped-typedefs sections shared-cache-sym sigtramp slipnslide struct-ret-err varobj-sel-frame watch-location
 
@@ -16,34 +21,35 @@ uninstall: force
 installcheck:
 check:
 
+# 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 clean mostlyclean:
-	-rm -f *~ core *.o *.dylib
-	-rm -f $(EXECUTABLES)
-	-rm -rf *.dSYM *_unstripped
-	if [ x"${SUBDIRS}" != x ] ; then \
+	-rm -fv *~ core *.o *.dylib
+	-rm -fv $(EXECUTABLES)
+	-rm -rfv *.dSYM *_unstripped
+	if [ x"${SUBDIRS}" != x"" ]; then \
 	    for dir in ${SUBDIRS}; \
 	    do \
-		    echo "$$dir:"; \
-		    if [ -d $$dir ]; then \
-			    (cd $$dir; $(MAKE) clean); \
+		    echo "$${dir}:"; \
+		    if [ -d $${dir} ]; then \
+			    (cd $${dir}; $(MAKE) clean); \
 		    fi; \
-	    done ; \
-	else true; fi
+	    done; \
+	else echo "no subdirs to recurse into for target '$@'"; fi
 
 distclean maintainer-clean realclean: clean
 	-rm -f Makefile config.status config.log
-	-rm -f *-init.exp
-	-rm -fr *.log summary detail *.plog *.sum *.psum site.*
-	-rm -fr autom4te.cache || rmdir autom4te.cache
-	if [ x"${SUBDIRS}" != x ] ; then \
+	-rm -fv *-init.exp
+	-rm -frv *.log summary detail *.plog *.sum *.psum site.*
+	-rm -frv autom4te.cache || rmdir autom4te.cache
+	if [ x"${SUBDIRS}" != x"" ]; then \
 	    for dir in ${SUBDIRS}; \
 	    do \
-		    echo "$$dir:"; \
-		    if [ -d $$dir ]; then \
-			    (cd $$dir; $(MAKE) distclean); \
+		    echo "$${dir}:"; \
+		    if [ -d $${dir} ]; then \
+			    (cd $${dir}; $(MAKE) distclean); \
 		    fi; \
 	    done ; \
-	else true; fi
+	else echo "no subdirs to recurse into for target '$@'"; fi
 
-Makefile: $(srcdir)/Makefile.in $(srcdir)/configure.in
+Makefile: $(srcdir)/Makefile.in $(srcdir)/configure.ac
 	$(SHELL) ./config.status --recheck

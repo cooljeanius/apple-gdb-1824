@@ -1,3 +1,5 @@
+/* tahoe.h */
+
 #define	NO_CORE_COMMAND
 
 #undef	ALIGN			/* They use it, we use it too */

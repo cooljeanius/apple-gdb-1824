@@ -66,7 +66,7 @@ dnl # GCC_TOPLEV_SUBDIRS
 dnl # GCC & friends build 'build', 'host', and 'target' tools. These must
 dnl # be separated into 3 well-known subdirectories of the build directory:
 dnl # build_subdir, host_subdir, & target_subdir. The values are determined
-dnl # here so that they can (theoretically) be changed in the future.  They
+dnl # here so that they can (theoretically) be changed in the future. They
 dnl # were previously reproduced across many different files.
 dnl #
 dnl # This logic really amounts to very little with autoconf 2.13; it will
@@ -74,11 +74,11 @@ dnl # amount to a lot more with autoconf 2.5x.
 AC_DEFUN([GCC_TOPLEV_SUBDIRS],
 [AC_REQUIRE([_GCC_TOPLEV_NONCANONICAL_TARGET]) []dnl
 AC_REQUIRE([_GCC_TOPLEV_NONCANONICAL_BUILD]) []dnl
-# Prefix 'build-' so this never conflicts with target_subdir.
+# Prefix 'build-' so this never conflicts with target_subdir:
 build_subdir="build-${build_noncanonical}"
 # --srcdir=. covers the toplevel, while "test -d" covers the subdirectories
-if ( test $srcdir = . && test -d gcc ) \
-   || test -d $srcdir/../host-${host_noncanonical}; then
+if ( test "x${srcdir}" = "x." && test -d gcc ) \
+   || test -d ${srcdir}/../host-${host_noncanonical}; then
   host_subdir="host-${host_noncanonical}"
 else
   host_subdir=.
@@ -92,28 +92,30 @@ AC_SUBST([target_subdir]) []dnl
 
 
 ####
-# _NCN_TOOL_PREFIXES: Some stuff that oughtta be done in AC_CANONICAL_SYSTEM 
+# _NCN_TOOL_PREFIXES: Stuff that oughtta be done in AC_CANONICAL_SYSTEM 
 # or AC_INIT.
 # These demand that AC_CANONICAL_SYSTEM be called beforehand.
-AC_DEFUN([_NCN_TOOL_PREFIXES],
-[ncn_tool_prefix=
-test -n "$host_alias" && ncn_tool_prefix=$host_alias-
-ncn_target_tool_prefix=
-test -n "$target_alias" && ncn_target_tool_prefix=$target_alias-
+AC_DEFUN([_NCN_TOOL_PREFIXES],[
+AC_REQUIRE([AC_CANONICAL_TARGET])
+ncn_tool_prefix=""
+test -n "${host_alias}" && ncn_tool_prefix="${host_alias}-"
+ncn_target_tool_prefix=""
+test -n "${target_alias}" && ncn_target_tool_prefix="${target_alias}-"
 ]) []dnl # _NCN_TOOL_PREFIXES
 
 ####
-# NCN_STRICT_CHECK_TOOLS(variable, progs-to-check-for,[value-if-not-found],[path])
+# NCN_STRICT_CHECK_TOOLS([variable],[progs-to-check-for],
+#                        [value-if-not-found],[path])
 # Like plain AC_CHECK_TOOLS, but require prefix if build!=target.
 
 AC_DEFUN([NCN_STRICT_CHECK_TOOLS],
 [AC_REQUIRE([_NCN_TOOL_PREFIXES]) []dnl
 for ncn_progname in $2; do
-  if test -n "$ncn_tool_prefix"; then
+  if test -n "${ncn_tool_prefix}"; then
     AC_CHECK_PROG([$1],[${ncn_tool_prefix}${ncn_progname}], 
                   [${ncn_tool_prefix}${ncn_progname}],[],[$4])
   fi
-  if test -z "$ac_cv_prog_$1" && test $build = $host ; then
+  if test -z "$ac_cv_prog_$1" && test "x${build}" = "x${host}"; then
     AC_CHECK_PROG([$1],[${ncn_progname}],[${ncn_progname}],[],[$4]) 
   fi
   test -n "$ac_cv_prog_$1" && break
@@ -121,7 +123,7 @@ done
 
 if test -z "$ac_cv_prog_$1" ; then
   ifelse([$3],[], [set dummy $2
-  if test $build = $host ; then
+  if test "x${build}" = "x${host}"; then
     $1="[$]2"
   else
     $1="${ncn_tool_prefix}[$]2"
@@ -170,6 +172,19 @@ AC_DEFUN([AC_PROG_CPP_WERROR],
 [AC_REQUIRE([AC_PROG_CPP])dnl
 m4_define([AC_CHECK_HEADER],m4_defn([_AC_CHECK_HEADER_OLD]))
 ac_c_preproc_warn_flag=yes])# AC_PROG_CPP_WERROR
+
+dnl# Internal subroutine from autoconf 2.13; obsolete in newer versions:
+AC_DEFUN([AC_CHECK_TOOL_PREFIX],
+[AC_REQUIRE([AC_CANONICAL_HOST])AC_REQUIRE([AC_CANONICAL_BUILD])dnl
+if test "x${ac_tool_prefix}" = "x"; then
+  test -z "${ac_tool_prefix}"
+  if test "x${host}" != "x${build}"; then
+    ac_tool_prefix="${host_alias}-"
+  else
+    ac_tool_prefix=""
+  fi
+fi
+])
 
 # Test for GNAT.
 # We require the gnatbind program, and a compiler driver that
@@ -244,10 +259,13 @@ AC_DEFUN([ACX_HEADER_STRING],
 [AC_CHECK_HEADERS_ONCE([string.h strings.h])
  AC_CACHE_CHECK([whether string.h and strings.h may both be included],
   [gcc_cv_header_string],
-[AC_COMPILE_IFELSE([AC_LANG_SOURCE([[#include <string.h>
-#include <strings.h>]],[[]])],[gcc_cv_header_string=yes], [gcc_cv_header_string=no])])
-if test ${gcc_cv_header_string} = yes; then
-  AC_DEFINE([STRING_WITH_STRINGS],[1],[Define if you can safely include both <string.h> and <strings.h>.])
+[AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#include <string.h>
+#include <strings.h>
+]],[[]])],[gcc_cv_header_string=yes],[gcc_cv_header_string=no])])
+if test "x${gcc_cv_header_string}" = "xyes"; then
+  AC_DEFINE([STRING_WITH_STRINGS],[1],
+       [Define if you can safely include both <string.h> and <strings.h>.])
 fi
 ])
 
@@ -257,10 +275,14 @@ AC_DEFUN([ACX_HEADER_STDBOOL],
 [AC_CHECK_HEADERS_ONCE([stdbool.h])
  AC_CACHE_CHECK([for working stdbool.h],
   [ac_cv_header_stdbool_h],
-[AC_COMPILE_IFELSE([AC_LANG_SOURCE([[#include <stdbool.h>]],
-[[bool foo = false;]])],
-[ac_cv_header_stdbool_h=yes],[ac_cv_header_stdbool_h=no])])
-if test $ac_cv_header_stdbool_h = yes; then
+[AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#include <stdbool.h>
+]],[[
+bool foo = false;
+]])],[ac_cv_header_stdbool_h=yes],
+     [ac_cv_header_stdbool_h=no])
+])
+if test "x${ac_cv_header_stdbool_h}" = "xyes"; then
   AC_DEFINE([HAVE_STDBOOL_H],[1],
   [Define if you have a working <stdbool.h> header file.])
 fi
@@ -269,7 +291,7 @@ AC_CACHE_CHECK([for built-in _Bool],[gcc_cv_c__bool],
 [[_Bool foo;]])],
 [gcc_cv_c__bool=yes],[gcc_cv_c__bool=no])
 ])
-if test ${gcc_cv_c__bool} = yes; then
+if test "x${gcc_cv_c__bool}" = "xyes"; then
   AC_DEFINE([HAVE__BOOL],[1],[Define if the \`_Bool' type is built-in.])
 fi
 ])

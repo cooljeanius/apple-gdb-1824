@@ -1,3 +1,5 @@
+/* i386mach3.h */
+
 #include <machine/vmparam.h>
 #include <sys/param.h>
 

@@ -1,22 +1,28 @@
-/* Mach-O support for BFD.
-   Copyright 1999, 2000, 2001, 2002
-   Free Software Foundation, Inc.
+/* mach-o-target.c: Mach-O support for BFD.
+ * Copyright 1999, 2000, 2001, 2002
+ * Free Software Foundation, Inc.
+ *
+ * This file is part of BFD, the Binary File Descriptor library.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St. - 5th Floor, Boston, MA 02110-1301, USA.
+ */
 
-   This file is part of BFD, the Binary File Descriptor library.
+#ifndef __BFD_MACH_O_TARGET_C__
+#define __BFD_MACH_O_TARGET_C__ 1
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+#ifdef __BFD_MACH_O_C__
 
 #ifndef TARGET_NAME
 # error TARGET_NAME must be defined
@@ -100,23 +106,32 @@ const bfd_target TARGET_NAME =
     bfd_mach_o_write_contents,
   },
 
-  BFD_JUMP_TABLE_GENERIC (bfd_mach_o),
-  BFD_JUMP_TABLE_COPY (bfd_mach_o),
-  BFD_JUMP_TABLE_CORE (bfd_mach_o),
+  BFD_JUMP_TABLE_GENERIC(bfd_mach_o),
+  BFD_JUMP_TABLE_COPY(bfd_mach_o),
+  BFD_JUMP_TABLE_CORE(bfd_mach_o),
 #if TARGET_ARCHIVE
-  BFD_JUMP_TABLE_ARCHIVE (bfd_mach_o),
+  BFD_JUMP_TABLE_ARCHIVE(bfd_mach_o),
 #else
-  BFD_JUMP_TABLE_ARCHIVE (_bfd_archive_bsd),
+  BFD_JUMP_TABLE_ARCHIVE(_bfd_archive_bsd),
 #endif /* TARGET_ARCHIVE */
-  BFD_JUMP_TABLE_SYMBOLS (bfd_mach_o),
-  BFD_JUMP_TABLE_RELOCS (bfd_mach_o),
-  BFD_JUMP_TABLE_WRITE (bfd_mach_o),
-  BFD_JUMP_TABLE_LINK (bfd_mach_o),
-  BFD_JUMP_TABLE_DYNAMIC (_bfd_nodynamic),
+  BFD_JUMP_TABLE_SYMBOLS(bfd_mach_o),
+  BFD_JUMP_TABLE_RELOCS(bfd_mach_o),
+  BFD_JUMP_TABLE_WRITE(bfd_mach_o),
+  BFD_JUMP_TABLE_LINK(bfd_mach_o),
+  BFD_JUMP_TABLE_DYNAMIC(_bfd_nodynamic),
 
   NULL,
 
   NULL
 };
+
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning mach-o-target.c should only be compiled when being included from mach-o.c
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+/* so the file will not be empty: */
+typedef int mach_o_target_c_dummy_t;
+#endif /* __BFD_MACH_O_C__ */
+#endif /* !__BFD_MACH_O_TARGET_C__ */
 
 /* EOF */

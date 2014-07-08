@@ -596,6 +596,7 @@ PACKAGE_BUGREPORT='jmolenda@apple.com'
 PACKAGE_URL=''
 
 ac_unique_file="xmalloc.c"
+ac_config_libobj_dir=.
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>
@@ -632,10 +633,10 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
+ac_header_list=
 ac_subst_vars='LTLIBOBJS
 MMALLOC
 MMALLOC_CFLAGS
-PICFLAG
 INSTALL_DEST
 pexecute
 ac_cv_func_vfork_works
@@ -646,6 +647,8 @@ CHECK
 POW_LIB
 LIBOBJS
 ALLOCA
+NOASANFLAG
+PICFLAG
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
@@ -697,7 +700,6 @@ RANLIB
 ac_ct_AR
 AR
 EGREP
-GREP
 CPP
 OBJEXT
 EXEEXT
@@ -706,6 +708,9 @@ CPPFLAGS
 LDFLAGS
 CFLAGS
 CC
+AUTOCONF
+TARGET_ARCHITECTURE
+HOST_ARCHITECTURE
 target_os
 target_vendor
 target_cpu
@@ -721,6 +726,7 @@ build
 HAVE_PERL
 PERL
 BUILD_INFO
+GREP
 MAKEINFO
 NOTMAINT
 MAINT
@@ -771,7 +777,9 @@ with_build_subdir
 with_cross_host
 with_newlib
 enable_maintainer_mode
+enable_multilib
 enable_dependency_tracking
+enable_largefile
 enable_shared
 with_pic
 enable_static
@@ -1415,10 +1423,12 @@ Optional Features:
   --enable-maintainer-mode
                           enable make rules and dependencies not useful (and
                           sometimes confusing) to the casual installer
+  --enable-multilib       try to build many library versions (default)
   --enable-dependency-tracking
                           do not reject slow dependency extractors
   --disable-dependency-tracking
                           speeds up one-time build
+  --disable-largefile     omit support for large files
   --enable-shared[=PKGS]  build shared libraries [default=no]
   --enable-static[=PKGS]  build static libraries [default=yes]
   --enable-fast-install[=PKGS]
@@ -1434,11 +1444,11 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-target-subdir=SUBDIR
-                          Configuring in a subdirectory for target
+                          Flag for configuring in a subdirectory for target
   --with-build-subdir=SUBDIR
-                          Configuring in a subdirectory for build
-  --with-cross-host=HOST  Configuring with a cross compiler
-  --with-newlib           Configuring with newlib
+                          Flag for configuring in a subdirectory for build
+  --with-cross-host=HOST  Flag for configuring with a cross compiler
+  --with-newlib           Flag for configuring with newlib
   --with-pic[=PKGS]       try to use only PIC/non-PIC objects [default=use
                           both]
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
@@ -1906,46 +1916,49 @@ $as_echo_n "checking for $2... " >&6; }
 if eval \${$3+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test x$gcc_no_link = xyes; then
+  if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+
 /* System header to define __stub macros and hopefully few prototypes,
-    which can conflict with char $2 (); below.
-    Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
-    <limits.h> exists even on freestanding compilers.  Under hpux,
-    including <limits.h> includes <sys/time.h> and causes problems
-    checking for functions defined therein.  */
-#if defined (__STDC__) && !defined (_HPUX_SOURCE)
+ *  which can conflict with char $2 (); below.
+ *  Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
+ *  <limits.h> exists even on freestanding compilers.  Under hpux,
+ *  including <limits.h> includes <sys/time.h> and causes problems
+ *  checking for functions defined therein.  */
+#if defined(__STDC__) && !defined(_HPUX_SOURCE)
 # include <limits.h>
 #else
 # include <assert.h>
-#endif
+#endif /* __STDC__ && !_HPUX_SOURCE */
 /* Override any gcc2 internal prototype to avoid an error.  */
 #ifdef __cplusplus
 extern "C"
 {
-#endif
+#endif /* __cplusplus */
 /* We use char because int might match the return type of a gcc2
    builtin and then its argument prototype would still apply.  */
 char $2 ();
 /* The GNU C library defines this for functions which it implements
-    to always fail with ENOSYS.  Some functions are actually named
-    something starting with __ and the normal name is an alias.  */
-#if defined (__stub_$2) || defined (__stub___$2)
+ *  to always fail with ENOSYS. Some functions are actually named
+ *  something starting with __ and the normal name is an alias. */
+#if defined(__stub_$2) || defined(__stub___$2)
 choke me
 #else
-char (*f) () = $2;
-#endif
+char (*f)() = $2;
+#endif /* __stub_$2 || __stub___$2 */
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
 int
 main ()
 {
+
 return f != $2;
+
   ;
   return 0;
 }
@@ -2415,6 +2428,63 @@ $as_echo "$ac_res" >&6; }
 
 } # ac_fn_c_find_uintX_t
 
+# ac_fn_c_check_member LINENO AGGR MEMBER VAR INCLUDES
+# ----------------------------------------------------
+# Tries to find if the field MEMBER exists in type AGGR, after including
+# INCLUDES, setting cache variable VAR accordingly.
+ac_fn_c_check_member ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $2.$3" >&5
+$as_echo_n "checking for $2.$3... " >&6; }
+if eval \${$4+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$5
+int
+main ()
+{
+static $2 ac_aggr;
+if (ac_aggr.$3)
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  eval "$4=yes"
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$5
+int
+main ()
+{
+static $2 ac_aggr;
+if (sizeof ac_aggr.$3)
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  eval "$4=yes"
+else
+  eval "$4=no"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+eval ac_res=\$$4
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+
+} # ac_fn_c_check_member
+
 # ac_fn_c_check_decl LINENO SYMBOL VAR INCLUDES
 # ---------------------------------------------
 # Tests whether SYMBOL is declared in INCLUDES, setting cache variable VAR
@@ -2744,6 +2814,7 @@ $as_echo "$as_me: creating cache $cache_file" >&6;}
   >$cache_file
 fi
 
+as_fn_append ac_header_list " utime.h"
 # Check that the precious variables saved in the cache have kept the same
 # value.
 ac_cache_corrupted=false
@@ -2845,14 +2916,14 @@ if test "${with_newlib+set}" = set; then :
 fi
 
 
-if test "${srcdir}" = "."; then
+if test "x${srcdir}" = "x."; then
   if test -n "${with_build_subdir}"; then
     libiberty_topdir="${srcdir}/../.."
     with_target_subdir=
   elif test -z "${with_target_subdir}"; then
     libiberty_topdir="${srcdir}/.."
   else
-    if test "${with_target_subdir}" != "."; then
+    if test "x${with_target_subdir}" != "x."; then
       libiberty_topdir="${srcdir}/${with_multisrctop}../.."
     else
       libiberty_topdir="${srcdir}/${with_multisrctop}.."
@@ -2907,7 +2978,7 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${maintainer_mode}" >&5
 $as_echo "${maintainer_mode}" >&6; }
 
-if test "$maintainer_mode" = "yes"; then
+if test "x${maintainer_mode}" = "xyes"; then
   MAINT=''
   NOTMAINT='#'
 else
@@ -2954,24 +3025,87 @@ $as_echo "no" >&6; }
 fi
 
 
-if test "x$MAKEINFO" = "x"; then
+if test "x${MAKEINFO}" = "x"; then
     MAKEINFO="@echo makeinfo missing; true"
-    BUILD_INFO=
+    BUILD_INFO=""
 else
     BUILD_INFO=info
-    case "$MAKEINFO" in
+    case "${MAKEINFO}" in
       */missing\ makeinfo*)
-	BUILD_INFO=
+	BUILD_INFO=""
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING:
 *** Makeinfo is missing. Info documentation will not be built." >&5
 $as_echo "$as_me: WARNING:
 *** Makeinfo is missing. Info documentation will not be built." >&2;}
         ;;
       *)
-	case x"`$MAKEINFO --version | grep 'GNU texinfo'`" in
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for grep that handles long lines and -e" >&5
+$as_echo_n "checking for grep that handles long lines and -e... " >&6; }
+if ${ac_cv_path_GREP+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -z "$GREP"; then
+  ac_path_GREP_found=false
+  # Loop through the user's path and test for each of PROGNAME-LIST
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH$PATH_SEPARATOR/usr/xpg4/bin
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_prog in grep ggrep; do
+    for ac_exec_ext in '' $ac_executable_extensions; do
+      ac_path_GREP="$as_dir/$ac_prog$ac_exec_ext"
+      as_fn_executable_p "$ac_path_GREP" || continue
+# Check for GNU ac_path_GREP and select it if it is found.
+  # Check for GNU $ac_path_GREP
+case `"$ac_path_GREP" --version 2>&1` in
+*GNU*)
+  ac_cv_path_GREP="$ac_path_GREP" ac_path_GREP_found=:;;
+*)
+  ac_count=0
+  $as_echo_n 0123456789 >"conftest.in"
+  while :
+  do
+    cat "conftest.in" "conftest.in" >"conftest.tmp"
+    mv "conftest.tmp" "conftest.in"
+    cp "conftest.in" "conftest.nl"
+    $as_echo 'GREP' >> "conftest.nl"
+    "$ac_path_GREP" -e 'GREP$' -e '-(cannot match)-' < "conftest.nl" >"conftest.out" 2>/dev/null || break
+    diff "conftest.out" "conftest.nl" >/dev/null 2>&1 || break
+    as_fn_arith $ac_count + 1 && ac_count=$as_val
+    if test $ac_count -gt ${ac_path_GREP_max-0}; then
+      # Best one so far, save it but keep looking for a better one
+      ac_cv_path_GREP="$ac_path_GREP"
+      ac_path_GREP_max=$ac_count
+    fi
+    # 10*(2^10) chars as input seems more than enough
+    test $ac_count -gt 10 && break
+  done
+  rm -f conftest.in conftest.tmp conftest.nl conftest.out;;
+esac
+
+      $ac_path_GREP_found && break 3
+    done
+  done
+  done
+IFS=$as_save_IFS
+  if test -z "$ac_cv_path_GREP"; then
+    as_fn_error $? "no acceptable grep could be found in $PATH$PATH_SEPARATOR/usr/xpg4/bin" "$LINENO" 5
+  fi
+else
+  ac_cv_path_GREP=$GREP
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_GREP" >&5
+$as_echo "$ac_cv_path_GREP" >&6; }
+ GREP="$ac_cv_path_GREP"
+
+
+	case x"`${MAKEINFO} --version | grep 'GNU texinfo'`" in
 	  x*\ [1-3].* )
-	    MAKEINFO="@echo $MAKEINFO is too old, 4.0 or newer required; true"
-	    BUILD_INFO=
+	    MAKEINFO="@echo ${MAKEINFO} is too old, 4.0 or newer required; true"
+	    BUILD_INFO=""
 	    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING:
 *** Makeinfo is too old. Info documentation will not be built." >&5
 $as_echo "$as_me: WARNING:
@@ -3021,13 +3155,14 @@ $as_echo "no" >&6; }
 fi
 
 
-if test x"$PERL" = x""; then
+if test x"${PERL}" = x""; then
   HAVE_PERL='#'
 else
   HAVE_PERL=''
 fi
 
 
+# architectures:
 # Make sure we can run config.sub.
 $SHELL "$ac_aux_dir/config.sub" sun4 >/dev/null 2>&1 ||
   as_fn_error $? "cannot run $SHELL $ac_aux_dir/config.sub" "$LINENO" 5
@@ -3138,6 +3273,37 @@ test -n "$target_alias" &&
   test "$program_prefix$program_suffix$program_transform_name" = \
     NONENONEs,x,x, &&
   program_prefix=${target_alias}-
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+
+fi
+
+# expand $ac_aux_dir to an absolute path
+am_aux_dir=`cd $ac_aux_dir && pwd`
+
+if test x"${MISSING+set}" != xset; then
+  case $am_aux_dir in
+  *\ * | *\	*)
+    MISSING="\${SHELL} \"$am_aux_dir/missing\"" ;;
+  *)
+    MISSING="\${SHELL} $am_aux_dir/missing" ;;
+  esac
+fi
+# Use eval to expand $SHELL
+if eval "$MISSING --is-lightweight"; then
+  am_missing_run="$MISSING "
+else
+  am_missing_run=
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: 'missing' script is too old or missing" >&5
+$as_echo "$as_me: WARNING: 'missing' script is too old or missing" >&2;}
+fi
+
+
+AUTOCONF=${AUTOCONF-"${am_missing_run}autoconf"}
 
 
 
@@ -3490,12 +3656,12 @@ if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_link\""; } >&5
 else
   gcc_no_link=yes
 fi
-if test x$gcc_no_link = xyes; then
+if test "x${gcc_no_link}" = "xyes"; then
   # Setting cross_compile will disable run tests; it will
   # also disable AC_CHECK_FILE but that's generally
-  # correct if we can't link.
+  # correct if we cannot link.
   cross_compiling=yes
-  EXEEXT=
+  EXEEXT=""
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4098,69 +4264,6 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for grep that handles long lines and -e" >&5
-$as_echo_n "checking for grep that handles long lines and -e... " >&6; }
-if ${ac_cv_path_GREP+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -z "$GREP"; then
-  ac_path_GREP_found=false
-  # Loop through the user's path and test for each of PROGNAME-LIST
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH$PATH_SEPARATOR/usr/xpg4/bin
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_prog in grep ggrep; do
-    for ac_exec_ext in '' $ac_executable_extensions; do
-      ac_path_GREP="$as_dir/$ac_prog$ac_exec_ext"
-      as_fn_executable_p "$ac_path_GREP" || continue
-# Check for GNU ac_path_GREP and select it if it is found.
-  # Check for GNU $ac_path_GREP
-case `"$ac_path_GREP" --version 2>&1` in
-*GNU*)
-  ac_cv_path_GREP="$ac_path_GREP" ac_path_GREP_found=:;;
-*)
-  ac_count=0
-  $as_echo_n 0123456789 >"conftest.in"
-  while :
-  do
-    cat "conftest.in" "conftest.in" >"conftest.tmp"
-    mv "conftest.tmp" "conftest.in"
-    cp "conftest.in" "conftest.nl"
-    $as_echo 'GREP' >> "conftest.nl"
-    "$ac_path_GREP" -e 'GREP$' -e '-(cannot match)-' < "conftest.nl" >"conftest.out" 2>/dev/null || break
-    diff "conftest.out" "conftest.nl" >/dev/null 2>&1 || break
-    as_fn_arith $ac_count + 1 && ac_count=$as_val
-    if test $ac_count -gt ${ac_path_GREP_max-0}; then
-      # Best one so far, save it but keep looking for a better one
-      ac_cv_path_GREP="$ac_path_GREP"
-      ac_path_GREP_max=$ac_count
-    fi
-    # 10*(2^10) chars as input seems more than enough
-    test $ac_count -gt 10 && break
-  done
-  rm -f conftest.in conftest.tmp conftest.nl conftest.out;;
-esac
-
-      $ac_path_GREP_found && break 3
-    done
-  done
-  done
-IFS=$as_save_IFS
-  if test -z "$ac_cv_path_GREP"; then
-    as_fn_error $? "no acceptable grep could be found in $PATH$PATH_SEPARATOR/usr/xpg4/bin" "$LINENO" 5
-  fi
-else
-  ac_cv_path_GREP=$GREP
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_GREP" >&5
-$as_echo "$ac_cv_path_GREP" >&6; }
- GREP="$ac_cv_path_GREP"
-
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for egrep" >&5
 $as_echo_n "checking for egrep... " >&6; }
 if ${ac_cv_path_EGREP+:} false; then :
@@ -4227,6 +4330,48 @@ fi
 $as_echo "$ac_cv_path_EGREP" >&6; }
  EGREP="$ac_cv_path_EGREP"
 
+
+if test $ac_cv_c_compiler_gnu = yes; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CC needs -traditional" >&5
+$as_echo_n "checking whether $CC needs -traditional... " >&6; }
+if ${ac_cv_prog_gcc_traditional+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+    ac_pattern="Autoconf.*'x'"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sgtty.h>
+Autoconf TIOCGETP
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "$ac_pattern" >/dev/null 2>&1; then :
+  ac_cv_prog_gcc_traditional=yes
+else
+  ac_cv_prog_gcc_traditional=no
+fi
+rm -f conftest*
+
+
+  if test $ac_cv_prog_gcc_traditional = no; then
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <termio.h>
+Autoconf TCGETA
+_ACEOF
+if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
+  $EGREP "$ac_pattern" >/dev/null 2>&1; then :
+  ac_cv_prog_gcc_traditional=yes
+fi
+rm -f conftest*
+
+  fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_prog_gcc_traditional" >&5
+$as_echo "$ac_cv_prog_gcc_traditional" >&6; }
+  if test $ac_cv_prog_gcc_traditional = yes; then
+    CC="$CC -traditional"
+  fi
+fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ANSI C header files" >&5
 $as_echo_n "checking for ANSI C header files... " >&6; }
@@ -4419,9 +4564,6 @@ $as_echo "$ac_cv_safe_to_define___extensions__" >&6; }
 
 
 
-# expand $ac_aux_dir to an absolute path
-am_aux_dir=`cd $ac_aux_dir && pwd`
-
 if test -n "$ac_tool_prefix"; then
   for ac_prog in ar lib "link -lib"
   do
@@ -4595,7 +4737,9 @@ esac
 
 
 
-if test -n "$ac_tool_prefix"; then
+if test "x${RANLIB}" = "x"; then
+  test -z "${RANLIB}"
+  if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ranlib; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -4687,8 +4831,34 @@ else
   RANLIB="$ac_cv_prog_RANLIB"
 fi
 
+fi
 
 
+# Add --enable-multilib to configure.
+# Default to --enable-multilib
+# Check whether --enable-multilib was given.
+if test "${enable_multilib+set}" = set; then :
+  enableval=$enable_multilib; case "${enableval}" in
+  yes) multilib=yes ;;
+  no)  multilib=no ;;
+  *)   as_fn_error $? "bad value ${enableval} for multilib option" "$LINENO" 5 ;;
+ esac
+else
+  multilib=yes
+fi
+
+
+# Even if the default multilib is not a cross compilation,
+# it may be that some of the other multilibs are.
+if test "x${cross_compiling}" = "xno" && test "x${multilib}" = "xyes" \
+   && test "x${with_multisubdir}" != "x"; then
+   cross_compiling=maybe
+fi
+
+# The flag for installing the target headers is further below.
+test -d .
+
+# More checks for programs:
 rm -rf .tst 2>/dev/null
 mkdir .tst 2>/dev/null
 if test -d .tst; then
@@ -4894,6 +5064,206 @@ else
 fi
 
 
+# Check whether --enable-largefile was given.
+if test "${enable_largefile+set}" = set; then :
+  enableval=$enable_largefile;
+fi
+
+if test "$enable_largefile" != no; then
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for special C compiler options needed for large files" >&5
+$as_echo_n "checking for special C compiler options needed for large files... " >&6; }
+if ${ac_cv_sys_largefile_CC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_cv_sys_largefile_CC=no
+     if test "$GCC" != yes; then
+       ac_save_CC=$CC
+       while :; do
+	 # IRIX 6.2 and later do not support large files by default,
+	 # so use the C compiler's -n32 option if that helps.
+	 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+ /* Check that off_t can represent 2**63 - 1 correctly.
+    We can't simply define LARGE_OFF_T to be 9223372036854775807,
+    since some C++ compilers masquerading as C compilers
+    incorrectly reject 9223372036854775807.  */
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+  int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+		       && LARGE_OFF_T % 2147483647 == 1)
+		      ? 1 : -1];
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+	 if ac_fn_c_try_compile "$LINENO"; then :
+  break
+fi
+rm -f core conftest.err conftest.$ac_objext
+	 CC="$CC -n32"
+	 if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_sys_largefile_CC=' -n32'; break
+fi
+rm -f core conftest.err conftest.$ac_objext
+	 break
+       done
+       CC=$ac_save_CC
+       rm -f conftest.$ac_ext
+    fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sys_largefile_CC" >&5
+$as_echo "$ac_cv_sys_largefile_CC" >&6; }
+  if test "$ac_cv_sys_largefile_CC" != no; then
+    CC=$CC$ac_cv_sys_largefile_CC
+  fi
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for _FILE_OFFSET_BITS value needed for large files" >&5
+$as_echo_n "checking for _FILE_OFFSET_BITS value needed for large files... " >&6; }
+if ${ac_cv_sys_file_offset_bits+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  while :; do
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+ /* Check that off_t can represent 2**63 - 1 correctly.
+    We can't simply define LARGE_OFF_T to be 9223372036854775807,
+    since some C++ compilers masquerading as C compilers
+    incorrectly reject 9223372036854775807.  */
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+  int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+		       && LARGE_OFF_T % 2147483647 == 1)
+		      ? 1 : -1];
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_sys_file_offset_bits=no; break
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#define _FILE_OFFSET_BITS 64
+#include <sys/types.h>
+ /* Check that off_t can represent 2**63 - 1 correctly.
+    We can't simply define LARGE_OFF_T to be 9223372036854775807,
+    since some C++ compilers masquerading as C compilers
+    incorrectly reject 9223372036854775807.  */
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+  int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+		       && LARGE_OFF_T % 2147483647 == 1)
+		      ? 1 : -1];
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_sys_file_offset_bits=64; break
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  ac_cv_sys_file_offset_bits=unknown
+  break
+done
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sys_file_offset_bits" >&5
+$as_echo "$ac_cv_sys_file_offset_bits" >&6; }
+case $ac_cv_sys_file_offset_bits in #(
+  no | unknown) ;;
+  *)
+cat >>confdefs.h <<_ACEOF
+#define _FILE_OFFSET_BITS $ac_cv_sys_file_offset_bits
+_ACEOF
+;;
+esac
+rm -rf conftest*
+  if test $ac_cv_sys_file_offset_bits = unknown; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for _LARGE_FILES value needed for large files" >&5
+$as_echo_n "checking for _LARGE_FILES value needed for large files... " >&6; }
+if ${ac_cv_sys_large_files+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  while :; do
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+ /* Check that off_t can represent 2**63 - 1 correctly.
+    We can't simply define LARGE_OFF_T to be 9223372036854775807,
+    since some C++ compilers masquerading as C compilers
+    incorrectly reject 9223372036854775807.  */
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+  int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+		       && LARGE_OFF_T % 2147483647 == 1)
+		      ? 1 : -1];
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_sys_large_files=no; break
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#define _LARGE_FILES 1
+#include <sys/types.h>
+ /* Check that off_t can represent 2**63 - 1 correctly.
+    We can't simply define LARGE_OFF_T to be 9223372036854775807,
+    since some C++ compilers masquerading as C compilers
+    incorrectly reject 9223372036854775807.  */
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+  int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+		       && LARGE_OFF_T % 2147483647 == 1)
+		      ? 1 : -1];
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_sys_large_files=1; break
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  ac_cv_sys_large_files=unknown
+  break
+done
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sys_large_files" >&5
+$as_echo "$ac_cv_sys_large_files" >&6; }
+case $ac_cv_sys_large_files in #(
+  no | unknown) ;;
+  *)
+cat >>confdefs.h <<_ACEOF
+#define _LARGE_FILES $ac_cv_sys_large_files
+_ACEOF
+;;
+esac
+rm -rf conftest*
+  fi
+
+
+fi
+
 
 ac_c_preproc_warn_flag=yes
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for a thread-safe mkdir -p" >&5
@@ -4939,9 +5309,15 @@ fi
 $as_echo "$MKDIR_P" >&6; }
 
 
-if test x${GCC} = xyes; then
-  ac_libiberty_warn_cflags='-W -Wall -pedantic -Wwrite-strings -Wstrict-prototypes'
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking warning flags to use" >&5
+$as_echo_n "checking warning flags to use... " >&6; }
+if test "x${GCC}" = "xyes"; then
+  ac_libiberty_warn_cflags='-W -Wall -pedantic -Wwrite-strings -Wc++-compat -Wstrict-prototypes'
+else
+  ac_libiberty_warn_cflags=''
 fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: ${ac_libiberty_warn_cflags}" >&5
+$as_echo "${ac_libiberty_warn_cflags}" >&6; }
 
 
 if test "x$CC" != xcc; then
@@ -5055,7 +5431,7 @@ $as_echo "#define NO_MINUS_C_MINUS_O 1" >>confdefs.h
 
 fi
 
-# autoconf is lame and does not give us any substitution variable for this.
+# autoconf is lame and does not give us any substitution variable for this:
 if eval "test \"`echo '$ac_cv_prog_cc_'${ac_cc}_c_o`\" = no"; then
   NO_MINUS_C_MINUS_O=yes
 else
@@ -5064,6 +5440,7 @@ fi
 
 
 
+# C compiler characteristics:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for an ANSI C-conforming const" >&5
 $as_echo_n "checking for an ANSI C-conforming const... " >&6; }
 if ${ac_cv_c_const+:} false; then :
@@ -5425,6 +5802,40 @@ $as_echo "#define __PROTOTYPES 1" >>confdefs.h
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for working volatile" >&5
+$as_echo_n "checking for working volatile... " >&6; }
+if ${ac_cv_c_volatile+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+volatile int x;
+int * volatile y = (int *) 0;
+return !x && !y;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_c_volatile=yes
+else
+  ac_cv_c_volatile=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_volatile" >&5
+$as_echo "$ac_cv_c_volatile" >&6; }
+if test $ac_cv_c_volatile = no; then
+
+$as_echo "#define volatile /**/" >>confdefs.h
+
 fi
 
 
@@ -6369,7 +6780,7 @@ else
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
   fi
-  rm -rf conftest*
+  rm -f conftest*
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_nm_interface" >&5
 $as_echo "$lt_cv_nm_interface" >&6; }
@@ -7735,7 +8146,7 @@ for ac_symprfx in "" "_"; do
   # Check to see that the pipe works correctly.
   pipe_works=no
 
-  rm -rf conftest*
+  rm -f conftest*
   cat > conftest.$ac_ext <<_LT_EOF
 #ifdef __cplusplus
 extern "C" {
@@ -8074,7 +8485,7 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-     if test x$gcc_no_link = xyes; then
+     if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -8254,7 +8665,7 @@ else
   if $GREP 'Manifest Tool' conftest.out > /dev/null; then
     lt_cv_path_mainfest_tool=yes
   fi
-  rm -rf conftest*
+  rm -f conftest*
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_path_mainfest_tool" >&5
 $as_echo "$lt_cv_path_mainfest_tool" >&6; }
@@ -8800,7 +9211,7 @@ else
       save_LDFLAGS=$LDFLAGS
       echo "_main" > conftest.sym
       LDFLAGS="$LDFLAGS -Wl,-exported_symbols_list,conftest.sym"
-      if test x$gcc_no_link = xyes; then
+      if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -9369,7 +9780,7 @@ ac_outfile=conftest.$ac_objext
 echo "$lt_simple_compile_test_code" >conftest.$ac_ext
 eval "$ac_compile" 2>&1 >/dev/null | $SED '/^$/d; /^ *+/d' >conftest.err
 _lt_compiler_boilerplate=`cat conftest.err`
-$RM -r conftest*
+$RM conftest*
 
 ac_outfile=conftest.$ac_objext
 echo "$lt_simple_link_test_code" >conftest.$ac_ext
@@ -9426,7 +9837,7 @@ else
        lt_cv_prog_compiler_rtti_exceptions=yes
      fi
    fi
-   $RM -r conftest*
+   $RM conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_rtti_exceptions" >&5
@@ -9803,7 +10214,7 @@ else
        lt_cv_prog_compiler_pic_works=yes
      fi
    fi
-   $RM -r conftest*
+   $RM conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_pic_works" >&5
@@ -9915,14 +10326,14 @@ else
      fi
    fi
    chmod u+w . 2>&5
-   $RM -r conftest*
+   $RM conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM -r conftest*
+   $RM conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_c_o" >&5
@@ -9970,14 +10381,14 @@ else
      fi
    fi
    chmod u+w . 2>&5
-   $RM -r conftest*
+   $RM conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM -r conftest*
+   $RM conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_c_o" >&5
@@ -9992,7 +10403,7 @@ if test "$lt_cv_prog_compiler_c_o" = no && test "$need_locks" != no; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking if we can lock with hard links" >&5
 $as_echo_n "checking if we can lock with hard links... " >&6; }
   hard_links=yes
-  $RM -r conftest*
+  $RM conftest*
   ln conftest.a conftest.b 2>/dev/null && hard_links=no
   touch conftest.a
   ln conftest.a conftest.b 2>&5 || hard_links=no
@@ -10501,7 +10912,7 @@ else
   if ${lt_cv_aix_libpath_+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test x$gcc_no_link = xyes; then
+  if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -10557,7 +10968,7 @@ else
   if ${lt_cv_aix_libpath_+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test x$gcc_no_link = xyes; then
+  if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -10900,7 +11311,7 @@ if ${lt_cv_irix_exported_symbol+:} false; then :
 else
   save_LDFLAGS="$LDFLAGS"
 	   LDFLAGS="$LDFLAGS -shared ${wl}-exported_symbol ${wl}foo ${wl}-update_registry ${wl}/dev/null"
-	   if test x$gcc_no_link = xyes; then
+	   if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -11217,7 +11628,7 @@ $as_echo_n "checking whether -lc should be explicitly linked in... " >&6; }
 if ${lt_cv_archive_cmds_need_lc+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  $RM -r conftest*
+  $RM conftest*
 	echo "$lt_simple_compile_test_code" > conftest.$ac_ext
 
 	if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
@@ -11252,7 +11663,7 @@ else
 	else
 	  cat conftest.err 1>&5
 	fi
-	$RM -r conftest*
+	$RM conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_archive_cmds_need_lc" >&5
@@ -11915,7 +12326,7 @@ else
     save_libdir=$libdir
     eval "libdir=/foo; wl=\"$lt_prog_compiler_wl\"; \
 	 LDFLAGS=\"\$LDFLAGS $hardcode_libdir_flag_spec\""
-    if test x$gcc_no_link = xyes; then
+    if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -12335,7 +12746,7 @@ if ${ac_cv_lib_dl_dlopen+:} false; then :
 else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-ldl  $LIBS"
-if test x$gcc_no_link = xyes; then
+if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -12391,7 +12802,7 @@ if ${ac_cv_lib_dld_shl_load+:} false; then :
 else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-ldld  $LIBS"
-if test x$gcc_no_link = xyes; then
+if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -12437,7 +12848,7 @@ if ${ac_cv_lib_dl_dlopen+:} false; then :
 else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-ldl  $LIBS"
-if test x$gcc_no_link = xyes; then
+if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -12479,7 +12890,7 @@ if ${ac_cv_lib_svld_dlopen+:} false; then :
 else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-lsvld  $LIBS"
-if test x$gcc_no_link = xyes; then
+if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -12521,7 +12932,7 @@ if ${ac_cv_lib_dld_dld_link+:} false; then :
 else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-ldld  $LIBS"
-if test x$gcc_no_link = xyes; then
+if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -13136,7 +13547,7 @@ compiler=$CC
 echo "$lt_simple_compile_test_code" >conftest.$ac_ext
 eval "$ac_compile" 2>&1 >/dev/null | $SED '/^$/d; /^ *+/d' >conftest.err
 _lt_compiler_boilerplate=`cat conftest.err`
-$RM -r conftest*
+$RM conftest*
 
   ac_outfile=conftest.$ac_objext
 echo "$lt_simple_link_test_code" >conftest.$ac_ext
@@ -13454,7 +13865,7 @@ else
   if ${lt_cv_aix_libpath__CXX+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test x$gcc_no_link = xyes; then
+  if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -13511,7 +13922,7 @@ else
   if ${lt_cv_aix_libpath__CXX+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test x$gcc_no_link = xyes; then
+  if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -14964,7 +15375,7 @@ else
        lt_cv_prog_compiler_pic_works_CXX=yes
      fi
    fi
-   $RM -r conftest*
+   $RM conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_pic_works_CXX" >&5
@@ -15067,14 +15478,14 @@ else
      fi
    fi
    chmod u+w . 2>&5
-   $RM -r conftest*
+   $RM conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM -r conftest*
+   $RM conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_c_o_CXX" >&5
@@ -15119,14 +15530,14 @@ else
      fi
    fi
    chmod u+w . 2>&5
-   $RM -r conftest*
+   $RM conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM -r conftest*
+   $RM conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_c_o_CXX" >&5
@@ -15141,7 +15552,7 @@ if test "$lt_cv_prog_compiler_c_o_CXX" = no && test "$need_locks" != no; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking if we can lock with hard links" >&5
 $as_echo_n "checking if we can lock with hard links... " >&6; }
   hard_links=yes
-  $RM -r conftest*
+  $RM conftest*
   ln conftest.a conftest.b 2>/dev/null && hard_links=no
   touch conftest.a
   ln conftest.a conftest.b 2>&5 || hard_links=no
@@ -15228,7 +15639,7 @@ $as_echo_n "checking whether -lc should be explicitly linked in... " >&6; }
 if ${lt_cv_archive_cmds_need_lc_CXX+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  $RM -r conftest*
+  $RM conftest*
 	echo "$lt_simple_compile_test_code" > conftest.$ac_ext
 
 	if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
@@ -15263,7 +15674,7 @@ else
 	else
 	  cat conftest.err 1>&5
 	fi
-	$RM -r conftest*
+	$RM conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_archive_cmds_need_lc_CXX" >&5
@@ -15770,7 +16181,7 @@ else
     save_libdir=$libdir
     eval "libdir=/foo; wl=\"$lt_prog_compiler_wl_CXX\"; \
 	 LDFLAGS=\"\$LDFLAGS $hardcode_libdir_flag_spec_CXX\""
-    if test x$gcc_no_link = xyes; then
+    if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -16396,7 +16807,7 @@ if [ -n "${with_build_subdir}" ]; then
   enable_shared=no
 fi
 
-frag=
+frag=""
 case "${host}" in
   rs6000-ibm-aix3.1 | rs6000-ibm-aix)
                         frag=mh-aix ;;
@@ -16413,8 +16824,12 @@ esac
 if [ -n "${frag}" ]; then
   frags=${libiberty_topdir}/libiberty/config/$frag
 else
-  frags=
+  frags=""
 fi
+
+
+test -z "${PICFLAG}" && PICFLAG=""
+
 
 # If they did NOT specify --enable-shared, do NOT generate shared libs.
 case "${enable_shared}" in
@@ -16423,8 +16838,12 @@ case "${enable_shared}" in
   "") shared=no ;;
   *) shared=yes ;;
 esac
-if [ "${shared}" = "yes" ]; then
-  frag=
+# ...unless --enable-host-shared was passed from top-level config:
+if [ "x${enable_host_shared}" = "xyes" ]; then
+  shared=yes
+fi
+if [ "x${shared}" = "xyes" ]; then
+  frag=""
   case "${host}" in
     *-*-cygwin*)	;;
     alpha*-*-linux*)	frag=mh-elfalphapic ;;
@@ -16441,8 +16860,21 @@ if [ "${shared}" = "yes" ]; then
   if [ -n "${frag}" ]; then
     frags="${frags} ${libiberty_topdir}/config/${frag}"
   fi
+elif [ "${shared}" != "yes" ]; then
+  PICFLAG=""
 fi
 
+
+NOASANFLAG=""
+case " ${CFLAGS} " in
+  *\ -fsanitize=address\ *) NOASANFLAG=-fno-sanitize=address ;;
+esac
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if we need to modify your Makefile fragment at all" >&5
+$as_echo_n "checking if we need to modify your Makefile fragment at all... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 echo "# Warning: this fragment is automatically generated" > temp-frag
 
 for frag in ${frags}; do
@@ -16453,11 +16885,11 @@ for frag in ${frags}; do
   fi
 done
 
-# record if we want to build shared libs.
-if [ "${shared}" = "yes" ]; then
-  echo enable_shared = yes >> temp-frag
+# record if we want to build shared libs:
+if [ "x${shared}" = "xyes" ]; then
+  echo "enable_shared = yes" >> temp-frag
 else
-  echo enable_shared = no >> temp-frag
+  echo "enable_shared = no" >> temp-frag
 fi
 
 frag=xhost-mkfrag
@@ -16467,8 +16899,12 @@ host_makefile_frag=${frag}
 
 
 # It is OK to check for header files. Although the compiler may not be
-# able to link anything, it had better be able to at least compile
-# something.
+# able to link anything, it had better be able to at least
+# compile (or at least preprocess) something.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking headers" >&5
+$as_echo_n "checking headers... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 
 
 
@@ -16607,15 +17043,17 @@ if test $ac_cv_header_stdbool_h = yes; then
 $as_echo "#define HAVE_STDBOOL_H 1" >>confdefs.h
 
 fi
- for ac_header in alloca.h assert.h ctype.h fcntl.h float.h langinfo.h \
-                  libintl.h limits.h locale.h locale/coll-lookup.h \
-                  locale/elem-hash.h locale/localeinfo.h locale/weight.h \
-                  locale/weightwc.h mach/mach.h machine/hal_sysinfo.h \
-                  math.h malloc.h malloc/malloc.h stdarg.h stddef.h \
-                  stdio.h stdio_ext.h sys/file.h sys/mman.h sys/param.h \
-                  sys/pstat.h sys/resource.h sys/sysctl.h sys/sysinfo.h \
-                  sys/sysmp.h sys/systemcfg.h sys/table.h sys/time.h \
-                  time.h wchar.h wctype.h
+ for ac_header in alloca.h assert.h ctype.h fcntl.h float.h \
+  langinfo.h libgen.h libintl.h limits.h locale.h \
+  locale/coll-lookup.h locale/elem-hash.h locale/localeinfo.h \
+  locale/weight.h locale/weightwc.h \
+  mach/mach.h machine/hal_sysinfo.h math.h malloc.h malloc/malloc.h \
+  process.h regex.h \
+  stdarg.h stddef.h stdio.h stdio_ext.h \
+  sys/file.h sys/mman.h sys/param.h sys/prctl.h sys/pstat.h \
+  sys/resource.h sys/sysctl.h sys/sysinfo.h sys/sysmp.h sys/systemcfg.h \
+  sys/table.h sys/time.h \
+  time.h wchar.h wctype.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_preproc "$LINENO" "$ac_header" "$as_ac_Header"
@@ -16724,12 +17162,18 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $libiberty_cv_declare_errno" >&5
 $as_echo "$libiberty_cv_declare_errno" >&6; }
-if test $libiberty_cv_declare_errno = yes
-then
+if test "x${libiberty_cv_declare_errno}" = "xyes"; then
+
 $as_echo "#define NEED_DECLARATION_ERRNO 1" >>confdefs.h
 
 fi
 
+
+# It is also okay to check for types.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking types" >&5
+$as_echo_n "checking types... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 
 # Determine the size of an int for struct fibnode.
 # The cast to long int works around a bug in the HP C Compiler
@@ -16798,46 +17242,6 @@ $as_echo "$ac_cv_alignof_int" >&6; }
 cat >>confdefs.h <<_ACEOF
 #define ALIGNOF_INT $ac_cv_alignof_int
 _ACEOF
-
-
-
-
-
-  ac_fn_c_check_type "$LINENO" "uintptr_t" "ac_cv_type_uintptr_t" "$ac_includes_default"
-if test "x$ac_cv_type_uintptr_t" = xyes; then :
-
-$as_echo "#define HAVE_UINTPTR_T 1" >>confdefs.h
-
-else
-  for ac_type in 'unsigned int' 'unsigned long int' \
-	'unsigned long long int'; do
-       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-$ac_includes_default
-int
-main ()
-{
-static int test_array [1 - 2 * !(sizeof (void *) <= sizeof ($ac_type))];
-test_array [0] = 0;
-return test_array [0];
-
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-
-cat >>confdefs.h <<_ACEOF
-#define uintptr_t $ac_type
-_ACEOF
-
-	  ac_type=
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-       test -z "$ac_type" && break
-     done
-fi
-
 
 
 
@@ -16911,13 +17315,89 @@ fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $liberty_cv_uint64" >&5
 $as_echo "$liberty_cv_uint64" >&6; }
-if test "$liberty_cv_uint64" != none; then
+if test "x${liberty_cv_uint64}" != "xnone"; then
 
 cat >>confdefs.h <<_ACEOF
-#define UNSIGNED_64BIT_TYPE $liberty_cv_uint64
+#define UNSIGNED_64BIT_TYPE ${liberty_cv_uint64}
 _ACEOF
 
 fi
+
+
+  ac_fn_c_check_type "$LINENO" "intptr_t" "ac_cv_type_intptr_t" "$ac_includes_default"
+if test "x$ac_cv_type_intptr_t" = xyes; then :
+
+$as_echo "#define HAVE_INTPTR_T 1" >>confdefs.h
+
+else
+  for ac_type in 'int' 'long int' 'long long int'; do
+       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+static int test_array [1 - 2 * !(sizeof (void *) <= sizeof ($ac_type))];
+test_array [0] = 0;
+return test_array [0];
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+
+cat >>confdefs.h <<_ACEOF
+#define intptr_t $ac_type
+_ACEOF
+
+	  ac_type=
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+       test -z "$ac_type" && break
+     done
+fi
+
+
+
+
+  ac_fn_c_check_type "$LINENO" "uintptr_t" "ac_cv_type_uintptr_t" "$ac_includes_default"
+if test "x$ac_cv_type_uintptr_t" = xyes; then :
+
+$as_echo "#define HAVE_UINTPTR_T 1" >>confdefs.h
+
+else
+  for ac_type in 'unsigned int' 'unsigned long int' \
+	'unsigned long long int'; do
+       cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+static int test_array [1 - 2 * !(sizeof (void *) <= sizeof ($ac_type))];
+test_array [0] = 0;
+return test_array [0];
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+
+cat >>confdefs.h <<_ACEOF
+#define uintptr_t $ac_type
+_ACEOF
+
+	  ac_type=
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+       test -z "$ac_type" && break
+     done
+fi
+
+
+
 
 # Given the above check, we always have uintptr_t or a fallback
 # definition. So define HAVE_UINTPTR_T in case any imported code
@@ -16926,6 +17406,7 @@ fi
 $as_echo "#define HAVE_UINTPTR_T 1" >>confdefs.h
 
 
+# other types and structs:
 ac_fn_c_check_type "$LINENO" "off_t" "ac_cv_type_off_t" "$ac_includes_default"
 if test "x$ac_cv_type_off_t" = xyes; then :
 
@@ -17061,7 +17542,12 @@ _ACEOF
 ;;
   esac
 
-ac_fn_c_check_type "$LINENO" "regex_t" "ac_cv_type_regex_t" "$ac_includes_default"
+ac_fn_c_check_type "$LINENO" "regex_t" "ac_cv_type_regex_t" "
+#ifdef HAVE_REGEX_H
+# include <regex.h>
+#endif /* HAVE_REGEX_H */
+
+"
 if test "x$ac_cv_type_regex_t" = xyes; then :
 
 cat >>confdefs.h <<_ACEOF
@@ -17071,7 +17557,12 @@ _ACEOF
 
 fi
 
-ac_fn_c_check_type "$LINENO" "regmatch_t" "ac_cv_type_regmatch_t" "$ac_includes_default"
+ac_fn_c_check_type "$LINENO" "regmatch_t" "ac_cv_type_regmatch_t" "
+#ifdef HAVE_REGEX_H
+# include <regex.h>
+#endif /* HAVE_REGEX_H */
+
+"
 if test "x$ac_cv_type_regmatch_t" = xyes; then :
 
 cat >>confdefs.h <<_ACEOF
@@ -17081,71 +17572,182 @@ _ACEOF
 
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether struct tm is in sys/time.h or time.h" >&5
+$as_echo_n "checking whether struct tm is in sys/time.h or time.h... " >&6; }
+if ${ac_cv_struct_tm+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+#include <time.h>
+
+int
+main ()
+{
+struct tm tm;
+				     int *p = &tm.tm_sec;
+				     return !p;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_struct_tm=time.h
+else
+  ac_cv_struct_tm=sys/time.h
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_struct_tm" >&5
+$as_echo "$ac_cv_struct_tm" >&6; }
+if test $ac_cv_struct_tm = sys/time.h; then
+
+$as_echo "#define TM_IN_SYS_TIME 1" >>confdefs.h
+
+fi
+
+ac_fn_c_check_member "$LINENO" "struct tm" "tm_zone" "ac_cv_member_struct_tm_tm_zone" "#include <sys/types.h>
+#include <$ac_cv_struct_tm>
+
+"
+if test "x$ac_cv_member_struct_tm_tm_zone" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_STRUCT_TM_TM_ZONE 1
+_ACEOF
+
+
+fi
+
+if test "$ac_cv_member_struct_tm_tm_zone" = yes; then
+
+$as_echo "#define HAVE_TM_ZONE 1" >>confdefs.h
+
+else
+  ac_fn_c_check_decl "$LINENO" "tzname" "ac_cv_have_decl_tzname" "#include <time.h>
+"
+if test "x$ac_cv_have_decl_tzname" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_TZNAME $ac_have_decl
+_ACEOF
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for tzname" >&5
+$as_echo_n "checking for tzname... " >&6; }
+if ${ac_cv_var_tzname+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "x${gcc_no_link}" = "xyes"; then
+  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+fi
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <time.h>
+#if !HAVE_DECL_TZNAME
+extern char *tzname[];
+#endif
+
+int
+main ()
+{
+return tzname[0][0];
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_var_tzname=yes
+else
+  ac_cv_var_tzname=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_var_tzname" >&5
+$as_echo "$ac_cv_var_tzname" >&6; }
+  if test $ac_cv_var_tzname = yes; then
+
+$as_echo "#define HAVE_TZNAME 1" >>confdefs.h
+
+  fi
+fi
 
 # This is the list of functions which libiberty will provide if they
-# are not available on the host.
-
+# are not available on the host:
 funcs="asprintf"
-funcs="$funcs atexit"
-funcs="$funcs basename"
-funcs="$funcs bcmp"
-funcs="$funcs bcopy"
-funcs="$funcs bsearch"
-funcs="$funcs bzero"
-funcs="$funcs calloc"
-funcs="$funcs clock"
-funcs="$funcs ffs"
-funcs="$funcs getcwd"
-funcs="$funcs getpagesize"
-funcs="$funcs gettimeofday"
-funcs="$funcs index"
-funcs="$funcs insque"
-funcs="$funcs memchr"
-funcs="$funcs memcmp"
-funcs="$funcs memcpy"
-funcs="$funcs memmove"
-funcs="$funcs mempcpy"
-funcs="$funcs memset"
-funcs="$funcs mkstemps"
-funcs="$funcs putenv"
-funcs="$funcs random"
-funcs="$funcs rename"
-funcs="$funcs rindex"
-funcs="$funcs setenv"
-funcs="$funcs snprintf"
-funcs="$funcs sigsetmask"
-funcs="$funcs stpcpy"
-funcs="$funcs stpncpy"
-funcs="$funcs strcasecmp"
-funcs="$funcs strchr"
-funcs="$funcs strdup"
-funcs="$funcs strncasecmp"
-funcs="$funcs strndup"
-funcs="$funcs strrchr"
-funcs="$funcs strstr"
-funcs="$funcs strtod"
-funcs="$funcs strtol"
-funcs="$funcs strtoul"
-funcs="$funcs strverscmp"
-funcs="$funcs tmpnam"
-funcs="$funcs vasprintf"
-funcs="$funcs vfprintf"
-funcs="$funcs vprintf"
-funcs="$funcs vsnprintf"
-funcs="$funcs vsprintf"
-funcs="$funcs waitpid"
+funcs="${funcs} atexit"
+funcs="${funcs} basename"
+funcs="${funcs} bcmp"
+funcs="${funcs} bcopy"
+funcs="${funcs} bsearch"
+funcs="${funcs} bzero"
+funcs="${funcs} calloc"
+funcs="${funcs} clock"
+funcs="${funcs} ffs"
+funcs="${funcs} getcwd"
+funcs="${funcs} getpagesize"
+funcs="${funcs} gettimeofday"
+funcs="${funcs} index"
+funcs="${funcs} insque"
+funcs="${funcs} memchr"
+funcs="${funcs} memcmp"
+funcs="${funcs} memcpy"
+funcs="${funcs} memmem"
+funcs="${funcs} memmove"
+funcs="${funcs} mempcpy"
+funcs="${funcs} memset"
+funcs="${funcs} mkstemps"
+funcs="${funcs} putenv"
+funcs="${funcs} random"
+funcs="${funcs} rename"
+funcs="${funcs} rindex"
+funcs="${funcs} setenv"
+funcs="${funcs} snprintf"
+funcs="${funcs} sigsetmask"
+funcs="${funcs} stpcpy"
+funcs="${funcs} stpncpy"
+funcs="${funcs} strcasecmp"
+funcs="${funcs} strchr"
+funcs="${funcs} strdup"
+funcs="${funcs} strncasecmp"
+funcs="${funcs} strndup"
+funcs="${funcs} strnlen"
+funcs="${funcs} strrchr"
+funcs="${funcs} strstr"
+funcs="${funcs} strtod"
+funcs="${funcs} strtol"
+funcs="${funcs} strtoul"
+funcs="${funcs} strverscmp"
+funcs="${funcs} tmpnam"
+funcs="${funcs} vasprintf"
+funcs="${funcs} vfprintf"
+funcs="${funcs} vprintf"
+funcs="${funcs} vsnprintf"
+funcs="${funcs} vsprintf"
+funcs="${funcs} waitpid"
+funcs="${funcs} setproctitle"
 
 # Also in the old function.def file: alloca, vfork, getopt.
 
 vars="sys_errlist sys_nerr sys_siglist"
 
-checkfuncs="getrusage on_exit psignal strerror strsignal sysconf times sbrk gettimeofday"
-checkfuncs="$checkfuncs realpath canonicalize_file_name pstat_getstatic pstat_getdynamic sysmp"
-checkfuncs="$checkfuncs getsysinfo table sysctl wait3 wait4 __fsetlocking"
+checkfuncs="__fsetlocking canonicalize_file_name dup3 getrlimit getrusage"
+checkfuncs="${checkfuncs} getsysinfo gettimeofday on_exit psignal"
+checkfuncs="${checkfuncs} pstat_getdynamic pstat_getstatic realpath"
+checkfuncs="${checkfuncs} setrlimit sbrk spawnve spawnvpe strerror"
+checkfuncs="${checkfuncs} strsignal sysconf sysctl sysmp table times"
+checkfuncs="${checkfuncs} wait3 wait4"
 
 # These are neither executed nor required, but they help keep
 # autoheader happy without adding a bunch of text to acconfig.h.
-if test "x" = "y"; then
+if test "x" = "Y0"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: this condition should not actually be reached" >&5
+$as_echo "$as_me: WARNING: this condition should not actually be reached" >&2;}
   # The Ultrix 4.2 mips builtin alloca declared by alloca.h only works
 # for constant arguments.  Useless!
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for working alloca.h" >&5
@@ -17153,7 +17755,7 @@ $as_echo_n "checking for working alloca.h... " >&6; }
 if ${ac_cv_working_alloca_h+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test x$gcc_no_link = xyes; then
+  if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -17189,7 +17791,7 @@ $as_echo_n "checking for alloca... " >&6; }
 if ${ac_cv_func_alloca_works+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test x$gcc_no_link = xyes; then
+  if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -17407,7 +18009,7 @@ $as_echo_n "checking for error_at_line... " >&6; }
 if ${ac_cv_lib_error_at_line+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test x$gcc_no_link = xyes; then
+  if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -17613,13 +18215,75 @@ $as_echo "#define malloc rpl_malloc" >>confdefs.h
 fi
 
 
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for working memcmp" >&5
+$as_echo_n "checking for working memcmp... " >&6; }
+if ${ac_cv_func_memcmp_working+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  ac_cv_func_memcmp_working=no
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+
+  /* Some versions of memcmp are not 8-bit clean.  */
+  char c0 = '\100', c1 = '\200', c2 = '\201';
+  if (memcmp(&c0, &c2, 1) >= 0 || memcmp(&c1, &c2, 1) >= 0)
+    return 1;
+
+  /* The Next x86 OpenStep bug shows up only when comparing 16 bytes
+     or more and with at least one buffer not starting on a 4-byte boundary.
+     William Lewis provided this test program.   */
+  {
+    char foo[21];
+    char bar[21];
+    int i;
+    for (i = 0; i < 4; i++)
+      {
+	char *a = foo + i;
+	char *b = bar + i;
+	strcpy (a, "--------01111111");
+	strcpy (b, "--------10000000");
+	if (memcmp (a, b, 16) >= 0)
+	  return 1;
+      }
+    return 0;
+  }
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_memcmp_working=yes
+else
+  ac_cv_func_memcmp_working=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_memcmp_working" >&5
+$as_echo "$ac_cv_func_memcmp_working" >&6; }
+test $ac_cv_func_memcmp_working = no && case " $LIBOBJS " in
+  *" memcmp.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS memcmp.$ac_objext"
+ ;;
+esac
+
+
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether mbrtowc and mbstate_t are properly declared" >&5
 $as_echo_n "checking whether mbrtowc and mbstate_t are properly declared... " >&6; }
 if ${ac_cv_func_mbrtowc+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test x$gcc_no_link = xyes; then
+  if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -17658,7 +18322,7 @@ $as_echo_n "checking for obstacks... " >&6; }
 if ${ac_cv_func_obstack+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test x$gcc_no_link = xyes; then
+  if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -17885,7 +18549,7 @@ if ${ac_cv_lib_m_pow+:} false; then :
 else
   ac_check_lib_save_LIBS=$LIBS
 LIBS="-lm  $LIBS"
-if test x$gcc_no_link = xyes; then
+if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -17985,19 +18649,239 @@ test $ac_cv_func_strnlen_working = no && case " $LIBOBJS " in
 esac
 
 
-  for ac_func in __fsetlocking abort asprintf atexit basename bcmp bcopy \
-                  bsearch btowc bzero calloc canonicalize_file_name \
-                  clock dup2 ffs getcwd getpagesize getrusage getsysinfo \
-                  gettext gettimeofday getwd index insque memchr memcmp \
-                  memcpy memmove mempcpy memset mkdir mkstemps on_exit \
-                  pathconf psignal pstat_getdynamic pstat_getstatic \
-                  putenv random realpath re_comp regcomp rename rindex \
-                  rmdir sbrk setenv sigsetmask snprintf stpcpy stpncpy \
-                  strcasecmp strchr strcspn strdup strerror strlen \
-                  strncasecmp strndup strpbrk strrchr strsignal strspn \
-                  strstr strtod strtol strtoul strverscmp sysconf sysctl \
-                  sysmp system table times tmpnam utime vasprintf \
-                  vfprintf vprintf vsnprintf vsprintf wait3 wait4 waitpid
+
+
+
+  for ac_header in $ac_header_list
+do :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_c_check_header_preproc "$LINENO" "$ac_header" "$as_ac_Header"
+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+done
+
+
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether utime accepts a null argument" >&5
+$as_echo_n "checking whether utime accepts a null argument... " >&6; }
+if ${ac_cv_func_utime_null+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  rm -f conftest.data; >conftest.data
+# Sequent interprets utime(file, 0) to mean use start of epoch.  Wrong.
+if test "$cross_compiling" = yes; then :
+  ac_cv_func_utime_null='guessing yes'
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+	       #ifdef HAVE_UTIME_H
+	       # include <utime.h>
+	       #endif
+int
+main ()
+{
+struct stat s, t;
+  return ! (stat ("conftest.data", &s) == 0
+	    && utime ("conftest.data", 0) == 0
+	    && stat ("conftest.data", &t) == 0
+	    && t.st_mtime >= s.st_mtime
+	    && t.st_mtime - s.st_mtime < 120);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_utime_null=yes
+else
+  ac_cv_func_utime_null=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_utime_null" >&5
+$as_echo "$ac_cv_func_utime_null" >&6; }
+if test "x$ac_cv_func_utime_null" != xno; then
+  ac_cv_func_utime_null=yes
+
+$as_echo "#define HAVE_UTIME_NULL 1" >>confdefs.h
+
+fi
+rm -f conftest.data
+
+  for ac_func in vprintf
+do :
+  ac_fn_c_check_func "$LINENO" "vprintf" "ac_cv_func_vprintf"
+if test "x$ac_cv_func_vprintf" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_VPRINTF 1
+_ACEOF
+
+ac_fn_c_check_func "$LINENO" "_doprnt" "ac_cv_func__doprnt"
+if test "x$ac_cv_func__doprnt" = xyes; then :
+
+$as_echo "#define HAVE_DOPRNT 1" >>confdefs.h
+
+fi
+
+fi
+done
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for mbstate_t" >&5
+$as_echo_n "checking for mbstate_t... " >&6; }
+if ${ac_cv_type_mbstate_t+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+#	    include <wchar.h>
+int
+main ()
+{
+mbstate_t x; return sizeof x;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_type_mbstate_t=yes
+else
+  ac_cv_type_mbstate_t=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_type_mbstate_t" >&5
+$as_echo "$ac_cv_type_mbstate_t" >&6; }
+   if test $ac_cv_type_mbstate_t = yes; then
+
+$as_echo "#define HAVE_MBSTATE_T 1" >>confdefs.h
+
+   else
+
+$as_echo "#define mbstate_t int" >>confdefs.h
+
+   fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for working POSIX fnmatch" >&5
+$as_echo_n "checking for working POSIX fnmatch... " >&6; }
+if ${ac_cv_func_fnmatch_works+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  # Some versions of Solaris, SCO, and the GNU C Library
+   # have a broken or incompatible fnmatch.
+   # So we run a test program.  If we are cross-compiling, take no chance.
+   # Thanks to John Oleynick, Franc,ois Pinard, and Paul Eggert for this test.
+   if test "$cross_compiling" = yes; then :
+  ac_cv_func_fnmatch_works=cross
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <fnmatch.h>
+#	   define y(a, b, c) (fnmatch (a, b, c) == 0)
+#	   define n(a, b, c) (fnmatch (a, b, c) == FNM_NOMATCH)
+
+int
+main ()
+{
+return
+	   (!(y ("a*", "abc", 0)
+	      && n ("d*/*1", "d/s/1", FNM_PATHNAME)
+	      && y ("a\\\\bc", "abc", 0)
+	      && n ("a\\\\bc", "abc", FNM_NOESCAPE)
+	      && y ("*x", ".x", 0)
+	      && n ("*x", ".x", FNM_PERIOD)
+	      && 1));
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_fnmatch_works=yes
+else
+  ac_cv_func_fnmatch_works=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_fnmatch_works" >&5
+$as_echo "$ac_cv_func_fnmatch_works" >&6; }
+if test $ac_cv_func_fnmatch_works = yes; then :
+  rm -f "$ac_config_libobj_dir/fnmatch.h"
+else
+  ac_fn_c_check_decl "$LINENO" "getenv" "ac_cv_have_decl_getenv" "$ac_includes_default"
+if test "x$ac_cv_have_decl_getenv" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_GETENV $ac_have_decl
+_ACEOF
+
+for ac_func in btowc mbsrtowcs mempcpy wmempcpy
+do :
+  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
+ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
+if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+done
+
+for ac_header in wchar.h wctype.h
+do :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_c_check_header_preproc "$LINENO" "$ac_header" "$as_ac_Header"
+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+done
+
+case " $LIBOBJS " in
+  *" fnmatch.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS fnmatch.$ac_objext"
+ ;;
+esac
+
+ac_config_links="$ac_config_links $ac_config_libobj_dir/fnmatch.h:$ac_config_libobj_dir/fnmatch_.h"
+
+
+$as_echo "#define fnmatch rpl_fnmatch" >>confdefs.h
+
+
+fi
+
+
+  for ac_func in abort asprintf atexit \
+    basename bcmp bcopy bsearch btowc bzero \
+    calloc canonicalize_file_name clock dup2 dup3 ffs __fsetlocking \
+    getcwd getpagesize getrlimit getrusage getsysinfo \
+    gettext gettimeofday getwd index insque \
+    memchr memcmp memcpy memmem memmove mempcpy memset mkdir mkstemps \
+    on_exit pathconf psignal pstat_getdynamic pstat_getstatic putenv \
+    random realpath re_comp regcomp rename rindex rmdir \
+    sbrk setenv setproctitle setrlimit sigsetmask snprintf \
+    spawnve spawnvpe stpcpy stpncpy strcasecmp strchr strcspn \
+    strdup strerror strlen strncasecmp strndup strnlen strpbrk strrchr \
+    strsignal strspn strstr strtod strtol strtoul strverscmp \
+    sysconf sysctl sysmp system table times tmpnam utime \
+    vasprintf vfprintf vprintf vsnprintf vsprintf wait3 wait4 waitpid
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -18096,9 +18980,9 @@ fi
 # function we want to put FN.o in LIBOBJS, and if the host does
 # provide the function, we want to define HAVE_FN in config.h.
 
-setobjs=
-CHECK=
-target_header_dir=
+setobjs=""
+CHECK=""
+target_header_dir=""
 if test -n "${with_target_subdir}"; then
 
   # We are being configured as a target library.  AC_REPLACE_FUNCS
@@ -18147,46 +19031,257 @@ esac
 esac
 
 
-    for f in $funcs; do
-      case "$f" in
+    for f in ${funcs}; do
+      case "${f}" in
 	asprintf | basename | insque | random | strdup | vasprintf)
 	  ;;
 	*)
-	  n=HAVE_`echo $f | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
+	  n=HAVE_`echo ${f} | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
 
 cat >>confdefs.h <<_ACEOF
-#define $n 1
+#define ${n} 1
 _ACEOF
 
 	  ;;
       esac
     done
 
-    # newlib doesnt provide any of the variables in $vars, so we
+    # newlib doesnt provide any of the variables in ${vars}, so we
     # do not have to check them here.
 
-    # Of the functions in $checkfuncs, newlib only has strerror.
+    # Of the functions in ${checkfuncs}, newlib only has strerror.
 
 $as_echo "#define HAVE_STRERROR 1" >>confdefs.h
 
     setobjs=yes
   fi
 
+  # If we are being configured for Mingw, we know which functions
+  # Mingw provides and which ones we will be expected to provide.
+
+  case "${host}" in
+  *-*-mingw*)
+    case " $LIBOBJS " in
+  *" asprintf.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS asprintf.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" basename.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS basename.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" bcmp.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS bcmp.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" bcopy.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS bcopy.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" bzero.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS bzero.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" clock.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS clock.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" ffs.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS ffs.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" getpagesize.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS getpagesize.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" index.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS index.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" insque.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS insque.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" mempcpy.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS mempcpy.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" mkstemps.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS mkstemps.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" random.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS random.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" rindex.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS rindex.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" sigsetmask.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS sigsetmask.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" stpcpy.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS stpcpy.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" stpncpy.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS stpncpy.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" strndup.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS strndup.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" strnlen.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS strnlen.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" strverscmp.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS strverscmp.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" vasprintf.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS vasprintf.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" waitpid.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS waitpid.$ac_objext"
+ ;;
+esac
+
+
+    for f in ${funcs}; do
+      case "${f}" in
+	asprintf | basename | bcmp | bcopy | bzero | clock | ffs | getpagesize | index | insque | mempcpy | mkstemps | random | rindex | sigsetmask | stpcpy | stpncpy | strdup | strndup | strnlen | strverscmp | vasprintf | waitpid)
+	  ;;
+	*)
+	  n=HAVE_`echo ${f} | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
+
+cat >>confdefs.h <<_ACEOF
+#define ${n} 1
+_ACEOF
+
+	  ;;
+      esac
+    done
+
+    # Mingw does NOT provide any of the variables in ${vars}, so we
+    # dont have to check them here.
+
+    # Of the functions in ${checkfuncs}, Mingw only has strerror.
+
+$as_echo "#define HAVE_STRERROR 1" >>confdefs.h
+
+    setobjs=yes
+    ;;
+
+  *-*-msdosdjgpp)
+    case " $LIBOBJS " in
+  *" vasprintf.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS vasprintf.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" vsnprintf.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS vsnprintf.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" snprintf.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS snprintf.$ac_objext"
+ ;;
+esac
+
+    case " $LIBOBJS " in
+  *" asprintf.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS asprintf.$ac_objext"
+ ;;
+esac
+
+
+    for f in atexit basename bcmp bcopy bsearch bzero calloc clock ffs \
+             getcwd getpagesize getrusage gettimeofday \
+             index insque memchr memcmp memcpy memmove memset psignal \
+             putenv random rename rindex sbrk setenv stpcpy strcasecmp \
+             strchr strdup strerror strncasecmp strrchr strstr strtod \
+             strtol strtoul sysconf times tmpnam vfprintf vprintf \
+             vsprintf waitpid
+    do
+      n=HAVE_`echo ${f} | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
+
+cat >>confdefs.h <<_ACEOF
+#define ${n} 1
+_ACEOF
+
+
+    done
+
+    setobjs=yes
+    ;;
+
+  esac
+
   # We may wish to install the target headers somewhere.
   # Check whether --enable-install-libiberty was given.
 if test "${enable_install_libiberty+set}" = set; then :
-  enableval=$enable_install_libiberty; enable_install_libiberty=$enableval
+  enableval=$enable_install_libiberty; enable_install_libiberty=${enableval}
 else
   enable_install_libiberty=no
 fi
 
   # Option parsed, now set things appropriately.
-  case x"$enable_install_libiberty" in
+  case x"${enable_install_libiberty}" in
     xyes|x)
       target_header_dir=libiberty
       ;;
     xno)
-      target_header_dir=
+      target_header_dir=""
       ;;
     *)
       # This could be sanity-checked in various ways...
@@ -18279,17 +19374,17 @@ esac
  ;;
 esac
 
-      for f in $funcs; do
-        case "$f" in
+      for f in ${funcs}; do
+        case "${f}" in
 	      basename | getpagesize | insque | random | strcasecmp)
 	        ;;
 	      strncasecmp | strdup | vfork | waitpid | vasprintf)
 	        ;;
 	      *)
-	        n=HAVE_`echo $f | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
+	        n=HAVE_`echo ${f} | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
 
 cat >>confdefs.h <<_ACEOF
-#define $n 1
+#define ${n} 1
 _ACEOF
 
 	        ;;
@@ -18299,7 +19394,7 @@ _ACEOF
       # VxWorks does NOT provide any of the variables in $vars, so we
       # do NOT have to check them here.
 
-      # Of the functions in $checkfuncs, VxWorks only has strerror.
+      # Of the functions in ${checkfuncs}, VxWorks only has strerror.
 
 $as_echo "#define HAVE_STRERROR 1" >>confdefs.h
 
@@ -18314,6 +19409,78 @@ $as_echo "#define HAVE_STRERROR 1" >>confdefs.h
 fi
 
 if test -z "${setobjs}"; then
+  if test "x${SED}" = "x" -a "x${ac_cv_path_SED}" = "x"; then
+    test -z "${SED}" && test -z "${ac_cv_path_SED}"
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
+$as_echo_n "checking for a sed that does not truncate output... " >&6; }
+if ${ac_cv_path_SED+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+            ac_script=s/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/
+     for ac_i in 1 2 3 4 5 6 7; do
+       ac_script="$ac_script$as_nl$ac_script"
+     done
+     echo "$ac_script" 2>/dev/null | sed 99q >conftest.sed
+     { ac_script=; unset ac_script;}
+     if test -z "$SED"; then
+  ac_path_SED_found=false
+  # Loop through the user's path and test for each of PROGNAME-LIST
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_prog in sed gsed; do
+    for ac_exec_ext in '' $ac_executable_extensions; do
+      ac_path_SED="$as_dir/$ac_prog$ac_exec_ext"
+      as_fn_executable_p "$ac_path_SED" || continue
+# Check for GNU ac_path_SED and select it if it is found.
+  # Check for GNU $ac_path_SED
+case `"$ac_path_SED" --version 2>&1` in
+*GNU*)
+  ac_cv_path_SED="$ac_path_SED" ac_path_SED_found=:;;
+*)
+  ac_count=0
+  $as_echo_n 0123456789 >"conftest.in"
+  while :
+  do
+    cat "conftest.in" "conftest.in" >"conftest.tmp"
+    mv "conftest.tmp" "conftest.in"
+    cp "conftest.in" "conftest.nl"
+    $as_echo '' >> "conftest.nl"
+    "$ac_path_SED" -f conftest.sed < "conftest.nl" >"conftest.out" 2>/dev/null || break
+    diff "conftest.out" "conftest.nl" >/dev/null 2>&1 || break
+    as_fn_arith $ac_count + 1 && ac_count=$as_val
+    if test $ac_count -gt ${ac_path_SED_max-0}; then
+      # Best one so far, save it but keep looking for a better one
+      ac_cv_path_SED="$ac_path_SED"
+      ac_path_SED_max=$ac_count
+    fi
+    # 10*(2^10) chars as input seems more than enough
+    test $ac_count -gt 10 && break
+  done
+  rm -f conftest.in conftest.tmp conftest.nl conftest.out;;
+esac
+
+      $ac_path_SED_found && break 3
+    done
+  done
+  done
+IFS=$as_save_IFS
+  if test -z "$ac_cv_path_SED"; then
+    as_fn_error $? "no acceptable sed could be found in \$PATH" "$LINENO" 5
+  fi
+else
+  ac_cv_path_SED=$SED
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_SED" >&5
+$as_echo "$ac_cv_path_SED" >&6; }
+ SED="$ac_cv_path_SED"
+  rm -f conftest.sed
+
+  fi
   case "${host}" in
     *-*-cygwin*)
       # The Cygwin library actually uses a couple of files from
@@ -18331,15 +19498,15 @@ if test -z "${setobjs}"; then
 
       if test -n "${with_target_subdir}"
       then
-        funcs="`echo $funcs | sed -e 's/random//'`"
+        funcs="`echo ${funcs} | sed -e 's/random//'`"
         case " $LIBOBJS " in
   *" random.$ac_objext "* ) ;;
   *) LIBOBJS="$LIBOBJS random.$ac_objext"
  ;;
 esac
 
-        vars="`echo $vars | sed -e 's/sys_siglist//'`"
-        checkfuncs="`echo $checkfuncs | sed -e 's/strsignal//' -e 's/psignal//'`"
+        vars="`echo ${vars} | sed -e 's/sys_siglist//'`"
+        checkfuncs="`echo ${checkfuncs} | sed -e 's/strsignal//' -e 's/psignal//'`"
       fi
       ;;
     *-*-mingw32*)
@@ -18411,7 +19578,7 @@ for ac_lib in '' cposix; do
     ac_res=-l$ac_lib
     LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
   fi
-  if test x$gcc_no_link = xyes; then
+  if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 if ac_fn_c_try_link "$LINENO"; then :
@@ -18438,8 +19605,11 @@ if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
 fi
-
-  for ac_func in $funcs
+   { $as_echo "$as_me:${as_lineno-$LINENO}: checking which functions we need to replace" >&5
+$as_echo_n "checking which functions we need to replace... " >&6; }
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
+  for ac_func in ${funcs}
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -18460,6 +19630,7 @@ done
 
 
 
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether alloca needs Cray hooks" >&5
 $as_echo_n "checking whether alloca needs Cray hooks... " >&6; }
 if ${ac_cv_os_cray+:} false; then :
@@ -18467,11 +19638,12 @@ if ${ac_cv_os_cray+:} false; then :
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#if defined(CRAY) && ! defined(CRAY2)
+
+#if defined(CRAY) && !defined(CRAY2)
 webecray
 #else
 wenotbecray
-#endif
+#endif /* CRAY && !CRAY2 */
 
 _ACEOF
 if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
@@ -18485,14 +19657,14 @@ rm -f conftest*
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_os_cray" >&5
 $as_echo "$ac_cv_os_cray" >&6; }
-if test $ac_cv_os_cray = yes; then
+if test "x${ac_cv_os_cray}" = "xyes"; then
   for ac_func in _getb67 GETB67 getb67; do
-    as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
-ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
+    as_ac_var=`$as_echo "ac_cv_func_${ac_func}" | $as_tr_sh`
+ac_fn_c_check_func "$LINENO" "${ac_func}" "$as_ac_var"
 if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
 
 cat >>confdefs.h <<_ACEOF
-#define CRAY_STACKSEG_END $ac_func
+#define CRAY_STACKSEG_END ${ac_func}
 _ACEOF
   break
 fi
@@ -18511,22 +19683,28 @@ else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-find_stack_direction ()
+#if defined(HAVE_STDLIB_H) && !defined(exit)
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H && !exit */
+
+int find_stack_direction(void)
 {
   static char *addr = 0;
   auto char dummy;
-  if (addr == 0)
-    {
+  if (addr == 0) {
       addr = &dummy;
-      return find_stack_direction ();
-    }
-  else
-    return (&dummy > addr) ? 1 : -1;
+      return find_stack_direction();
+  } else {
+      return ((&dummy > addr) ? 1 : -1);
+  }
 }
-main ()
+
+int main(void)
 {
-  exit (find_stack_direction() < 0);
+  exit(find_stack_direction() < 0);
+  return 0;
 }
+
 _ACEOF
 if ac_fn_c_try_run "$LINENO"; then :
   ac_cv_c_stack_direction=1
@@ -18542,7 +19720,7 @@ fi
 $as_echo "$ac_cv_c_stack_direction" >&6; }
 
 cat >>confdefs.h <<_ACEOF
-#define STACK_DIRECTION $ac_cv_c_stack_direction
+#define STACK_DIRECTION ${ac_cv_c_stack_direction}
 _ACEOF
 
 
@@ -18757,7 +19935,7 @@ if test "x$ac_cv_func_fork_works" = xyes; then
 $as_echo "#define HAVE_WORKING_FORK 1" >>confdefs.h
 
 fi
-   if test $ac_cv_func_vfork_works = no; then
+                                 if test "x${ac_cv_func_vfork_works}" = "xno"; then
     case " $LIBOBJS " in
   *" vfork.$ac_objext "* ) ;;
   *) LIBOBJS="$LIBOBJS vfork.$ac_objext"
@@ -18766,9 +19944,9 @@ esac
 
   fi
   # We only need _doprnt if we might use it to implement v*printf.
-  if test $ac_cv_func_vprintf != yes \
-     || test $ac_cv_func_vfprintf != yes \
-     || test $ac_cv_func_vsprintf != yes; then
+  if test "x${ac_cv_func_vprintf}" != "xyes" \
+     || test "x${ac_cv_func_vfprintf}" != "xyes" \
+     || test "x${ac_cv_func_vsprintf}" != "xyes"; then
     ac_fn_c_check_func "$LINENO" "_doprnt" "ac_cv_func__doprnt"
 if test "x$ac_cv_func__doprnt" = xyes; then :
   $as_echo "#define HAVE__DOPRNT 1" >>confdefs.h
@@ -18797,13 +19975,13 @@ done
 
   fi
 
-  for v in $vars; do
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $v" >&5
-$as_echo_n "checking for $v... " >&6; }
+  for v in ${vars}; do
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for var ${v}" >&5
+$as_echo_n "checking for var ${v}... " >&6; }
     if eval \${libiberty_cv_var_$v+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test x$gcc_no_link = xyes; then
+  if test "x${gcc_no_link}" = "xyes"; then
   as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
 fi
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
@@ -18812,7 +19990,9 @@ int *p;
 int
 main ()
 {
-extern int $v []; p = $v;
+
+extern int ${v} []; p = ${v};
+
   ;
   return 0;
 }
@@ -18824,15 +20004,16 @@ else
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
+
 fi
 
     if eval "test \"`echo '$libiberty_cv_var_'$v`\" = yes"; then
       { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-      n=HAVE_`echo $v | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
+      n=HAVE_`echo ${v} | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
 
 cat >>confdefs.h <<_ACEOF
-#define $n 1
+#define ${n} 1
 _ACEOF
 
     else
@@ -18847,11 +20028,21 @@ $as_echo "no" >&6; }
 $as_echo_n "checking for external symbol _system_configuration... " >&6; }
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
-#include <sys/systemcfg.h>
+
+#ifdef HAVE_SYS_SYSTEMCFG_H
+# include <sys/systemcfg.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "The conftest for _system_configuration wants <sys/systemcfg.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SYS_SYTEMCFG_H */
+
 int
 main ()
 {
+
 double x = _system_configuration.physmem;
+
   ;
   return 0;
 }
@@ -18868,7 +20059,12 @@ $as_echo "no" >&6; }
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 
-  for ac_func in $checkfuncs
+  # More function checks:
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for functions that only need to be checked and not necessarily replaced" >&5
+$as_echo_n "checking for functions that only need to be checked and not necessarily replaced... " >&6; }
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
+  for ac_func in ${checkfuncs}
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -18880,7 +20076,18 @@ _ACEOF
 fi
 done
 
-  ac_fn_c_check_decl "$LINENO" "basename" "ac_cv_have_decl_basename" "$ac_includes_default"
+
+  # (more) declaration checks:
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking declarations" >&5
+$as_echo_n "checking declarations... " >&6; }
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
+  ac_fn_c_check_decl "$LINENO" "basename" "ac_cv_have_decl_basename" "
+#ifdef HAVE_LIBGEN_H
+# include <libgen.h>
+#endif /* HAVE_LIBGEN_H */
+
+"
 if test "x$ac_cv_have_decl_basename" = xyes; then :
   ac_have_decl=1
 else
@@ -18890,7 +20097,8 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_BASENAME $ac_have_decl
 _ACEOF
-ac_fn_c_check_decl "$LINENO" "ffs" "ac_cv_have_decl_ffs" "$ac_includes_default"
+
+  ac_fn_c_check_decl "$LINENO" "ffs" "ac_cv_have_decl_ffs" "$ac_includes_default"
 if test "x$ac_cv_have_decl_ffs" = xyes; then :
   ac_have_decl=1
 else
@@ -19059,11 +20267,12 @@ fi
 fi
 
 # Figure out which version of pexecute to use.
+# objext is now attached in the Makefile instead of here.
 case "${host}" in
-     *-*-mingw* | *-*-winnt*)	pexecute=./pex-win32.o  ;;
-     *-*-msdosdjgpp*)		pexecute=./pex-djgpp.o  ;;
-     *-*-msdos*)		pexecute=./pex-msdos.o  ;;
-     *)				pexecute=./pex-unix.o   ;;
+     *-*-mingw* | *-*-winnt*)	pexecute=pex-win32  ;;
+     *-*-msdosdjgpp*)		pexecute=pex-djgpp  ;;
+     *-*-msdos*)		pexecute=pex-msdos  ;;
+     *)				pexecute=pex-unix   ;;
 esac
 
 
@@ -19080,7 +20289,11 @@ else
 /* end confdefs.h.  */
 
 /* Test by Jim Wilson and Kaveh Ghazi.
-   Check whether strncmp reads past the end of its string parameters. */
+ * Check whether strncmp reads past the end of its string parameters. */
+#if defined(HAVE_STDLIB_H) && !defined(exit)
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H && !exit */
+
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #endif /* HAVE_SYS_TYPES_H */
@@ -19098,47 +20311,48 @@ else
 #  define MAP_ANON MAP_ANONYMOUS
 # else
 #  define MAP_ANON MAP_FILE
-# endif
-#endif
+# endif /* MAP_ANONYMOUS */
+#endif /* !MAP_ANON */
 
 #ifndef MAP_FILE
 # define MAP_FILE 0
-#endif
+#endif /* !MAP_FILE */
 #ifndef O_RDONLY
 # define O_RDONLY 0
-#endif
+#endif /* !O_RDONLY */
 
 #define MAP_LEN 0x10000
 
-main ()
+int main(void)
 {
 #if defined(HAVE_MMAP) || defined(HAVE_MMAP_ANYWHERE)
   char *p;
   int dev_zero;
 
-  dev_zero = open ("/dev/zero", O_RDONLY);
-  if (dev_zero < 0)
-    exit (1);
+  dev_zero = open("/dev/zero", O_RDONLY);
+  if (dev_zero < 0) {
+    exit(1);
+  }
 
-  p = (char *) mmap (0, MAP_LEN, PROT_READ|PROT_WRITE,
-		     MAP_ANON|MAP_PRIVATE, dev_zero, 0);
-  if (p == (char *)-1)
-    p = (char *) mmap (0, MAP_LEN, PROT_READ|PROT_WRITE,
-		       MAP_ANON|MAP_PRIVATE, -1, 0);
-  if (p == (char *)-1)
-    exit (2);
-  else
-    {
+  p = (char *)mmap(0, MAP_LEN, (PROT_READ | PROT_WRITE),
+		   (MAP_ANON | MAP_PRIVATE), dev_zero, 0);
+  if (p == (char *)-1) {
+    p = (char *)mmap(0, MAP_LEN, (PROT_READ | PROT_WRITE),
+		     (MAP_ANON | MAP_PRIVATE), -1, 0);
+  if (p == (char *)-1) {
+    exit(2);
+  } else {
       char *string = "__si_type_info";
-      char *q = (char *) p + MAP_LEN - strlen (string) - 2;
-      char *r = (char *) p + 0xe;
+      char *q = ((char *)p + MAP_LEN - strlen(string) - 2);
+      char *r = ((char *)p + 0xe);
 
-      strcpy (q, string);
-      strcpy (r, string);
-      strncmp (r, q, 14);
-    }
+      strcpy(q, string);
+      strcpy(r, string);
+      strncmp(r, q, 14);
+  }
 #endif /* HAVE_MMAP || HAVE_MMAP_ANYWHERE */
-  exit (0);
+  exit(0);
+  return 0;
 }
 
 _ACEOF
@@ -19155,7 +20369,7 @@ rm -f core core.* *.core
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_strncmp_works" >&5
 $as_echo "$ac_cv_func_strncmp_works" >&6; }
-if test $ac_cv_func_strncmp_works = no ; then
+if test "x${ac_cv_func_strncmp_works}" = "xno"; then
   case " $LIBOBJS " in
   *" strncmp.$ac_objext "* ) ;;
   *) LIBOBJS="$LIBOBJS strncmp.$ac_objext"
@@ -19176,13 +20390,17 @@ fi
 
 
 L=""
-for l in x $LIBOBJS; do
-  case $l in
+for l in x ${LIBOBJS}; do
+  case ${l} in
     x) ;;
-    *) L="$L ./$l" ;;
+    *) L="${L} ./${l}" ;;
   esac
 done
-LIBOBJS="$L"
+LIBOBJS="${L}"
+
+
+
+
 
 
 
@@ -19196,9 +20414,10 @@ MMALLOC=""
 # Check whether --with-mmalloc was given.
 if test "${with_mmalloc+set}" = set; then :
   withval=$with_mmalloc; case "${withval}" in
-  yes)  want_mmalloc=true ;;
-  no)   want_mmalloc=false;;
-  *)    as_fn_error $? "bad value ${withval} for libiberty with-mmalloc option" "$LINENO" 5 ;;
+  yes) want_mmalloc=true ;;
+  no) want_mmalloc=false;;
+  *) as_fn_error $? "bad value ${withval} for libiberty with-mmalloc flag" "$LINENO" 5
+     ;;
 esac
 else
   want_mmalloc=false
@@ -19763,6 +20982,7 @@ cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
 # Files that config.status was made for.
 config_files="$ac_config_files"
 config_headers="$ac_config_headers"
+config_links="$ac_config_links"
 config_commands="$ac_config_commands"
 
 _ACEOF
@@ -19792,6 +21012,9 @@ $config_files
 
 Configuration headers:
 $config_headers
+
+Configuration links:
+$config_links
 
 Configuration commands:
 $config_commands
@@ -20319,6 +21542,7 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
+    "$ac_config_libobj_dir/fnmatch.h") CONFIG_LINKS="$CONFIG_LINKS $ac_config_libobj_dir/fnmatch.h:$ac_config_libobj_dir/fnmatch_.h" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "testsuite/Makefile") CONFIG_FILES="$CONFIG_FILES testsuite/Makefile" ;;
     "default") CONFIG_COMMANDS="$CONFIG_COMMANDS default" ;;
@@ -20335,6 +21559,7 @@ done
 if $ac_need_defaults; then
   test "${CONFIG_FILES+set}" = set || CONFIG_FILES=$config_files
   test "${CONFIG_HEADERS+set}" = set || CONFIG_HEADERS=$config_headers
+  test "${CONFIG_LINKS+set}" = set || CONFIG_LINKS=$config_links
   test "${CONFIG_COMMANDS+set}" = set || CONFIG_COMMANDS=$config_commands
 fi
 
@@ -20666,7 +21891,7 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 fi # test -n "$CONFIG_HEADERS"
 
 
-eval set X "  :F $CONFIG_FILES  :H $CONFIG_HEADERS    :C $CONFIG_COMMANDS"
+eval set X "  :F $CONFIG_FILES  :H $CONFIG_HEADERS  :L $CONFIG_LINKS  :C $CONFIG_COMMANDS"
 shift
 for ac_tag
 do
@@ -20914,7 +22139,38 @@ $as_echo "$as_me: $ac_file is unchanged" >&6;}
       || as_fn_error $? "could not create -" "$LINENO" 5
   fi
  ;;
+  :L)
+  #
+  # CONFIG_LINK
+  #
 
+  if test "$ac_source" = "$ac_file" && test "$srcdir" = '.'; then
+    :
+  else
+    # Prefer the file from the source tree if names are identical.
+    if test "$ac_source" = "$ac_file" || test ! -r "$ac_source"; then
+      ac_source=$srcdir/$ac_source
+    fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: linking $ac_source to $ac_file" >&5
+$as_echo "$as_me: linking $ac_source to $ac_file" >&6;}
+
+    if test ! -r "$ac_source"; then
+      as_fn_error $? "$ac_source: file not found" "$LINENO" 5
+    fi
+    rm -f "$ac_file"
+
+    # Try a relative symlink, then a hard link, then a copy.
+    case $ac_source in
+    [\\/$]* | ?:[\\/]* ) ac_rel_source=$ac_source ;;
+	*) ac_rel_source=$ac_top_build_prefix$ac_source ;;
+    esac
+    ln -s "$ac_rel_source" "$ac_file" 2>/dev/null ||
+      ln "$ac_source" "$ac_file" 2>/dev/null ||
+      cp -p "$ac_source" "$ac_file" ||
+      as_fn_error $? "cannot link or copy $ac_source to $ac_file" "$LINENO" 5
+  fi
+ ;;
   :C)  { $as_echo "$as_me:${as_lineno-$LINENO}: executing $ac_file commands" >&5
 $as_echo "$as_me: executing $ac_file commands" >&6;}
  ;;
@@ -21812,12 +23068,13 @@ compiler_lib_search_path=$lt_compiler_lib_search_path_CXX
 _LT_EOF
 
  ;;
-    "default":C) test -z "$CONFIG_HEADERS" || echo timestamp > stamp-h
-if test -n "$CONFIG_FILES"; then
+    "default":C) test -z "${CONFIG_HEADERS}" || echo "timestamp: `date`" > stamp-h
+if test -n "${CONFIG_FILES}"; then
   if test -n "${with_target_subdir}"; then
-    # FIXME: We should NOT need to set ac_file
+    # FIXME: We should NOT need to set ac_file here:
     ac_file=Makefile
     LD="${ORIGINAL_LD_FOR_MULTILIBS}"
+    echo "sourcing '${libiberty_topdir}/config-ml.in'..."
     . ${libiberty_topdir}/config-ml.in
   fi
 fi ;;

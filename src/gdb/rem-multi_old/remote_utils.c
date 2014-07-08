@@ -45,26 +45,24 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <sgtty.h>
 #include <errno.h>
 
-extern int remote_desc; 
-extern int remote_debugging; 
-extern int kiodebug; 
+extern int remote_desc;
+extern int remote_debugging;
+extern int kiodebug;
 
-void remote_open(); 
-void remote_send(); 
-void putpkt(); 
-void getpkt(); 
+void remote_open();
+void remote_send();
+void putpkt();
+void getpkt();
 
-void write_ok(); 
-void write_enn(); 
-void convert_ascii_to_int(); 
-void convert_int_to_ascii(); 
-void prepare_resume_reply(); 
+void write_ok();
+void write_enn();
+void convert_ascii_to_int();
+void convert_int_to_ascii();
+void prepare_resume_reply();
 
 /* Open a connection to a remote debugger.
-   NAME is the filename used for communication.  */
-
-void
-remote_open (name, from_tty)
+ * NAME is the filename used for communication. */
+void remote_open(name, from_tty)
      char *name;
      int from_tty;
 {
@@ -74,7 +72,7 @@ remote_open (name, from_tty)
 
   remote_desc = open (name, O_RDWR);
   if (remote_desc < 0)
-    printf("\ncould not open remote device\n"); 
+    printf("\ncould not open remote device\n");
 
   ioctl (remote_desc, TIOCGETP, &sg);
   sg.sg_flags = RAW;
@@ -192,7 +190,7 @@ getpkt (buf)
 
   while (1)
     {
-	  csum = 0; 
+	  csum = 0;
       while ((c = readchar()) != '$');
 
       bp = buf;
@@ -224,18 +222,18 @@ getpkt (buf)
 }
 
 
-void 
+void
 write_ok(buf)
-	char *buf; 
+	char *buf;
 {
 	buf[0] = 'O';
 	buf[1] = 'k';
 	buf[2] = '\0';
 }
 
-void 
+void
 write_enn(buf)
-	char *buf; 
+	char *buf;
 {
 	buf[0] = 'E';
 	buf[1] = 'N';
@@ -245,120 +243,119 @@ write_enn(buf)
 
 void
 convert_int_to_ascii(from,to,n)
-char *from, *to; int n; 
+char *from, *to; int n;
 {
- 	int nib ; 
-	char ch; 
+ 	int nib ;
+	char ch;
 	while( n-- )
 	{
-		ch = *from++; 		
-		nib = ((ch & 0xf0) >> 4)& 0x0f; 
-		*to++ = tohex(nib); 
-		nib = ch & 0x0f; 
-		*to++ = tohex(nib); 
-	} 
-	*to++ = 0; 
+		ch = *from++;
+		nib = ((ch & 0xf0) >> 4)& 0x0f;
+		*to++ = tohex(nib);
+		nib = ch & 0x0f;
+		*to++ = tohex(nib);
+	}
+	*to++ = 0;
 }
 
 
 void
 convert_ascii_to_int(from,to,n)
-char *from, *to; int n;  
+char *from, *to; int n;
 {
- 	int nib1,nib2 ; 
+ 	int nib1,nib2 ;
 	while( n-- )
 	{
-		nib1 = fromhex(*from++); 
-		nib2 = fromhex(*from++); 
-		*to++ = (((nib1 & 0x0f)<< 4)& 0xf0) | (nib2 & 0x0f); 
-	} 
+		nib1 = fromhex(*from++);
+		nib2 = fromhex(*from++);
+		*to++ = (((nib1 & 0x0f)<< 4)& 0xf0) | (nib2 & 0x0f);
+	}
 }
 
 void
 prepare_resume_reply(buf,status,signal)
-char *buf ,status; 
-unsigned char signal; 
+char *buf ,status;
+unsigned char signal;
 {
- 	int nib; 
-	char ch; 
+ 	int nib;
+	char ch;
 
-	*buf++ = 'S';  
-	*buf++ = status;  
-	nib = ((signal & 0xf0) >> 4) ; 
-	*buf++ = tohex(nib); 
-	nib = signal & 0x0f; 
-	*buf++ = tohex(nib); 
-	*buf++ = 0; 
+	*buf++ = 'S';
+	*buf++ = status;
+	nib = ((signal & 0xf0) >> 4) ;
+	*buf++ = tohex(nib);
+	nib = signal & 0x0f;
+	*buf++ = tohex(nib);
+	*buf++ = 0;
 }
 
-void 
+void
 decode_m_packet(from,mem_addr_ptr,len_ptr)
 char *from;
-unsigned int *mem_addr_ptr, *len_ptr; 
+unsigned int *mem_addr_ptr, *len_ptr;
 {
-	int i = 0, j = 0 ; 
-	char ch; 
-	*mem_addr_ptr = *len_ptr = 0; 
-	/************debugging begin************/ 
-	printf("\nIn decode_m_packet"); 
-	/************debugging end************/ 
+	int i = 0, j = 0 ;
+	char ch;
+	*mem_addr_ptr = *len_ptr = 0;
+	/************debugging begin************/
+	printf("\nIn decode_m_packet");
+	/************debugging end************/
 
-	while((ch = from[i++]) != ',') 
-	{ 
-		*mem_addr_ptr = *mem_addr_ptr << 4; 
-		*mem_addr_ptr |= fromhex(ch) & 0x0f; 
-	} 
-	/************debugging begin************/ 
-	printf("\nFinished mem_addr part"); 
-	/************debugging end************/ 
+	while((ch = from[i++]) != ',')
+	{
+		*mem_addr_ptr = *mem_addr_ptr << 4;
+		*mem_addr_ptr |= fromhex(ch) & 0x0f;
+	}
+	/************debugging begin************/
+	printf("\nFinished mem_addr part");
+	/************debugging end************/
 
-	for(j=0; j < 4; j++) 
-	{ 
-		if((ch = from[i++]) == 0)  
-			break; 
-		*len_ptr = *len_ptr << 4; 
-		*len_ptr |= fromhex(ch) & 0x0f; 
-	} 
-	/************debugging begin************/ 
-	printf("\nFinished len_ptr part"); 
-	/************debugging end************/ 
+	for(j=0; j < 4; j++)
+	{
+		if((ch = from[i++]) == 0)
+			break;
+		*len_ptr = *len_ptr << 4;
+		*len_ptr |= fromhex(ch) & 0x0f;
+	}
+	/************debugging begin************/
+	printf("\nFinished len_ptr part");
+	/************debugging end************/
 }
 
-void 
+void
 decode_M_packet(from,mem_addr_ptr,len_ptr,to)
 char *from, *to;
-unsigned int *mem_addr_ptr, *len_ptr; 
+unsigned int *mem_addr_ptr, *len_ptr;
 {
-	int i = 0, j = 0 ; 
-	char ch; 
-	*mem_addr_ptr = *len_ptr = 0; 
-	/************debugging begin************/ 
-	printf("\nIn decode_M_packet"); 
-	/************debugging end************/ 
+	int i = 0, j = 0 ;
+	char ch;
+	*mem_addr_ptr = *len_ptr = 0;
+	/************debugging begin************/
+	printf("\nIn decode_M_packet");
+	/************debugging end************/
 
-	while((ch = from[i++]) != ',') 
-	{ 
-		*mem_addr_ptr = *mem_addr_ptr << 4; 
-		*mem_addr_ptr |= fromhex(ch) & 0x0f; 
-	} 
-	/************debugging begin************/ 
-	printf("\nFinished mem_addr part: memaddr = %x",*mem_addr_ptr); 
-	/************debugging end************/ 
+	while((ch = from[i++]) != ',')
+	{
+		*mem_addr_ptr = *mem_addr_ptr << 4;
+		*mem_addr_ptr |= fromhex(ch) & 0x0f;
+	}
+	/************debugging begin************/
+	printf("\nFinished mem_addr part: memaddr = %x",*mem_addr_ptr);
+	/************debugging end************/
 
-	while((ch = from[i++]) != ':') 
-	{ 
-		*len_ptr = *len_ptr << 4; 
-		*len_ptr |= fromhex(ch) & 0x0f; 
-	} 
-	/************debugging begin************/ 
-	printf("\nFinished len_ptr part: len = %d",*len_ptr); 
-	/************debugging end************/ 
+	while((ch = from[i++]) != ':') {
+		*len_ptr = (*len_ptr << 4);
+		*len_ptr |= (fromhex(ch) & 0x0f);
+	}
+	/************debugging begin************/
+	printf("\nFinished len_ptr part: len = %d", *len_ptr);
+	/************debugging end************/
 
-	convert_ascii_to_int(&from[i++],to,*len_ptr); 
+	convert_ascii_to_int(&from[i++], to, *len_ptr);
 
-	/************debugging begin************/ 
-	printf("\nmembuf : %x",*(int *)to); 
-	/************debugging end************/ 
+	/************debugging begin************/
+	printf("\nmembuf : %x", *(int *)to);
+	/************debugging end************/
 }
 
 /* EOF */

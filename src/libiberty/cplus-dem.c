@@ -463,7 +463,7 @@ static const char* qualifier_string (int);
 
 static const char* demangle_qualifier (int);
 
-static int demangle_expression (struct work_stuff *, const char **, string *, 
+static int demangle_expression (struct work_stuff *, const char **, string *,
                                 type_kind_t);
 
 static int
@@ -788,7 +788,7 @@ cplus_mangle_opname (const char *opname, int options)
 enum demangling_styles
 cplus_demangle_set_style (enum demangling_styles style)
 {
-  const struct demangler_engine *demangler = libiberty_demanglers; 
+  const struct demangler_engine *demangler = libiberty_demanglers;
 
   for (; demangler->demangling_style != unknown_demangling; ++demangler)
     if (style == demangler->demangling_style)
@@ -805,7 +805,7 @@ cplus_demangle_set_style (enum demangling_styles style)
 enum demangling_styles
 cplus_demangle_name_to_style (const char *name)
 {
-  const struct demangler_engine *demangler = libiberty_demanglers; 
+  const struct demangler_engine *demangler = libiberty_demanglers;
 
   for (; demangler->demangling_style != unknown_demangling; ++demangler)
     if (strcmp (name, demangler->demangling_style_name) == 0)
@@ -814,96 +814,96 @@ cplus_demangle_name_to_style (const char *name)
   return unknown_demangling;
 }
 
-/* char *cplus_demangle (const char *mangled, int options)
-
-   If MANGLED is a mangled function name produced by GNU C++, then
-   a pointer to a @code{malloc}ed string giving a C++ representation
-   of the name will be returned; otherwise NULL will be returned.
-   It is the caller's responsibility to free the string which
-   is returned.
-
-   The OPTIONS arg may contain one or more of the following bits:
-
-   	DMGL_ANSI	ANSI qualifiers such as `const' and `void' are
-			included.
-	DMGL_PARAMS	Function parameters are included.
-
-   For example,
-
-   cplus_demangle ("foo__1Ai", DMGL_PARAMS)		=> "A::foo(int)"
-   cplus_demangle ("foo__1Ai", DMGL_PARAMS | DMGL_ANSI)	=> "A::foo(int)"
-   cplus_demangle ("foo__1Ai", 0)			=> "A::foo"
-
-   cplus_demangle ("foo__1Afe", DMGL_PARAMS)		=> "A::foo(float,...)"
-   cplus_demangle ("foo__1Afe", DMGL_PARAMS | DMGL_ANSI)=> "A::foo(float,...)"
-   cplus_demangle ("foo__1Afe", 0)			=> "A::foo"
-
-   Note that any leading underscores, or other such characters prepended by
-   the compilation system, are presumed to have already been stripped from
-   MANGLED.  */
-
+/* char *cplus_demangle(const char *mangled, int options)
+ *
+ * If MANGLED is a mangled function name produced by GNU C++, then
+ * a pointer to a @code{malloc}ed string giving a C++ representation
+ * of the name will be returned; otherwise NULL will be returned.
+ * It is the caller's responsibility to free the string which
+ * is returned.
+ *
+ * The OPTIONS arg may contain one or more of the following bits:
+ *
+ * 	DMGL_ANSI	ANSI qualifiers such as `const' and `void' are
+ *			included.
+ *	DMGL_PARAMS	Function parameters are included.
+ *
+ * For example,
+ *
+ * cplus_demangle("foo__1Ai", DMGL_PARAMS)		=> "A::foo(int)"
+ * cplus_demangle("foo__1Ai", DMGL_PARAMS | DMGL_ANSI)	=> "A::foo(int)"
+ * cplus_demangle("foo__1Ai", 0)			=> "A::foo"
+ *
+ * cplus_demangle("foo__1Afe", DMGL_PARAMS)		=> "A::foo(float,...)"
+ * cplus_demangle("foo__1Afe", DMGL_PARAMS | DMGL_ANSI)	=> "A::foo(float,...)"
+ * cplus_demangle("foo__1Afe", 0)			=> "A::foo"
+ *
+ * Note that any leading underscores, or other such characters prepended by
+ * the compilation system, are presumed to have already been stripped from
+ * MANGLED. */
 char *
-cplus_demangle (const char *mangled, int options)
+cplus_demangle(const char *mangled, int options)
 {
   char *ret;
   struct work_stuff work[1];
 
-  if (current_demangling_style == no_demangling)
-    return xstrdup (mangled);
+  if (current_demangling_style == no_demangling) {
+      return xstrdup(mangled);
+  }
 
-  memset ((char *) work, 0, sizeof (work));
+  memset((char *)work, 0, sizeof(work));
   work->options = options;
-  if ((work->options & DMGL_STYLE_MASK) == 0)
-    work->options |= (int) current_demangling_style & DMGL_STYLE_MASK;
+  if ((work->options & DMGL_STYLE_MASK) == 0) {
+      work->options |= ((int)current_demangling_style & DMGL_STYLE_MASK);
+  }
 
-  /* The V3 ABI demangling is implemented elsewhere.  */
-  if (GNU_V3_DEMANGLING || AUTO_DEMANGLING)
-    {
-      ret = cplus_demangle_v3 (mangled, work->options);
-      if (ret || GNU_V3_DEMANGLING)
-	return ret;
-    }
+  /* The V3 ABI demangling is implemented elsewhere. */
+  if (GNU_V3_DEMANGLING || AUTO_DEMANGLING) {
+      ret = cplus_demangle_v3(mangled, work->options);
+      if (ret || GNU_V3_DEMANGLING) {
+	  return ret;
+      }
+  }
 
-  if (JAVA_DEMANGLING)
-    {
-      ret = java_demangle_v3 (mangled);
-      if (ret)
-        return ret;
-    }
+  if (JAVA_DEMANGLING) {
+      ret = java_demangle_v3(mangled);
+      if (ret) {
+	  return ret;
+      }
+  }
 
-  if (GNAT_DEMANGLING)
-    return ada_demangle(mangled,options);
+  if (GNAT_DEMANGLING) {
+      return ada_demangle(mangled,options);
+  }
 
-  ret = internal_cplus_demangle (work, mangled);
-  squangle_mop_up (work);
+  ret = internal_cplus_demangle(work, mangled);
+  squangle_mop_up(work);
   return (ret);
 }
 
 
 /* Assuming *OLD_VECT points to an array of *SIZE objects of size
-   ELEMENT_SIZE, grow it to contain at least MIN_SIZE objects,
-   updating *OLD_VECT and *SIZE as necessary.  */
-
+ * ELEMENT_SIZE, grow it to contain at least MIN_SIZE objects,
+ * updating *OLD_VECT and *SIZE as necessary. */
 static void
-grow_vect (char **old_vect, size_t *size, size_t min_size, int element_size)
+grow_vect(char **old_vect, size_t *size, size_t min_size, int element_size)
 {
-  if (*size < min_size)
-    {
+  if (*size < min_size) {
       *size *= 2;
-      if (*size < min_size)
-	*size = min_size;
-      *old_vect = XRESIZEVAR (char, *old_vect, *size * element_size);
-    }
+      if (*size < min_size) {
+	  *size = min_size;
+      }
+      *old_vect = XRESIZEVAR(char, *old_vect, *size * element_size);
+  }
 }
 
 /* Demangle ada names:
-   1. Discard final __{DIGIT}+ or ${DIGIT}+
-   2. Convert other instances of embedded "__" to `.'.
-   3. Discard leading _ada_.
-   4. Remove everything after first ___ if it is followed by 'X'.
-   5. Put symbols that should be suppressed in <...> brackets.
-   The resulting string is valid until the next call of ada_demangle.  */
-
+ *  1. Discard final __{DIGIT}+ or ${DIGIT}+
+ *  2. Convert other instances of embedded "__" to `.'.
+ *  3. Discard leading _ada_.
+ *  4. Remove everything after first ___ if it is followed by 'X'.
+ *  5. Put symbols that should be suppressed in <...> brackets.
+ * The resulting string is valid until the next call of ada_demangle. */
 static char *
 ada_demangle (const char *mangled, int option ATTRIBUTE_UNUSED)
 {
@@ -913,7 +913,7 @@ ada_demangle (const char *mangled, int option ATTRIBUTE_UNUSED)
   char *demangled = NULL;
   int changed;
   size_t demangled_size = 0;
-  
+
   changed = 0;
 
   if (strncmp (mangled, "_ada_", 5) == 0)
@@ -921,10 +921,10 @@ ada_demangle (const char *mangled, int option ATTRIBUTE_UNUSED)
       mangled += 5;
       changed = 1;
     }
-  
+
   if (mangled[0] == '_' || mangled[0] == '<')
     goto Suppress;
-  
+
   p = strstr (mangled, "___");
   if (p == NULL)
     len0 = strlen (mangled);
@@ -938,12 +938,12 @@ ada_demangle (const char *mangled, int option ATTRIBUTE_UNUSED)
       else
 	goto Suppress;
     }
-  
+
   /* Make demangled big enough for possible expansion by operator name.  */
   grow_vect (&demangled,
 	     &demangled_size,  2 * len0 + 1,
 	     sizeof (char));
-  
+
   if (ISDIGIT ((unsigned char) mangled[len0 - 1])) {
     for (i = len0 - 2; i >= 0 && ISDIGIT ((unsigned char) mangled[i]); i -= 1)
       ;
@@ -958,11 +958,11 @@ ada_demangle (const char *mangled, int option ATTRIBUTE_UNUSED)
 	changed = 1;
       }
   }
-  
+
   for (i = 0, j = 0; i < len0 && ! ISALPHA ((unsigned char)mangled[i]);
        i += 1, j += 1)
     demangled[j] = mangled[i];
-  
+
   while (i < len0)
     {
       if (i < len0 - 2 && mangled[i] == '_' && mangled[i + 1] == '_')
@@ -978,7 +978,7 @@ ada_demangle (const char *mangled, int option ATTRIBUTE_UNUSED)
 	}
     }
   demangled[j] = '\000';
-  
+
   for (i = 0; demangled[i] != '\0'; i += 1)
     if (ISUPPER ((unsigned char)demangled[i]) || demangled[i] == ' ')
       goto Suppress;
@@ -987,7 +987,7 @@ ada_demangle (const char *mangled, int option ATTRIBUTE_UNUSED)
     return NULL;
   else
     return demangled;
-  
+
  Suppress:
   grow_vect (&demangled,
 	     &demangled_size,  strlen (mangled) + 3,
@@ -1880,7 +1880,7 @@ demangle_template_value_parm (struct work_stuff *work, const char **mangled,
     {
       if (**mangled == 'Q')
 	success = demangle_qualified (work, mangled, s,
-				      /*isfuncname=*/0, 
+				      /*isfuncname=*/0,
 				      /*append=*/1);
       else
 	{
@@ -3525,7 +3525,7 @@ do_type (struct work_stuff *work, const char **mangled, string *result)
 	    else if (**mangled == 'Q')
 	      {
 		success = demangle_qualified (work, mangled, &decl,
-					      /*isfuncnam=*/0, 
+					      /*isfuncnam=*/0,
 					      /*append=*/0);
 		if (!success)
 		  break;

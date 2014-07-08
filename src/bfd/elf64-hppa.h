@@ -1,4 +1,4 @@
-/* ELF64/HPPA support
+/* elf64-hppa.h: ELF64/HPPA support
 
    Copyright 1999, 2000, 2002 Free Software Foundation, Inc.
 

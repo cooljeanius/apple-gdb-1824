@@ -1,4 +1,4 @@
-/* Extended regular expression matching and search library,
+/* regex.c: Extended regular expression matching and search library,
    version 0.12.
    (Implements POSIX draft P1003.2/D11.2, except for some of the
    internationalization features.)
@@ -38,7 +38,9 @@
 # ifdef HAVE_CONFIG_H
 #  include "config.h"
 # else
-#  warning regex.c expects "config.h" to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning regex.c expects "config.h" to be included.
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_CONFIG_H */
 #endif /* !INSIDE_RECURSION */
 

@@ -6,11 +6,11 @@
 #define __INCLUDE_MPW_H
 
 #ifndef MPW
-# define MPW
+# define MPW /* (nothing) */
 #endif /* !MPW */
 
-/* MPW C is basically ANSI, but does NOT actually enable __STDC__,
-   nor does it allow __STDC__ to be #defined. */
+/* MPW C is basically ANSI, but does NOT actually enable __STDC__, nor does it
+ * allow __STDC__ to be #defined. */
 
 #ifndef ALMOST_STDC
 # define ALMOST_STDC
@@ -38,10 +38,16 @@
 # include <unix.h>
 #else
 # include <fcntl.h>
-# include <ioctl.h>
+# ifdef HAVE_IOCTL_H
+#  include <ioctl.h>
+# else
+#  ifdef HAVE_SYS_IOCTL_H
+#   include <sys/ioctl.h>
+#  endif /* HAVE_SYS_IOCTL_H */
+# endif /* HAVE_IOCTL_H */
 # include <sys/stat.h>
 # define HAVE_FCNTL_H 1
-# ifndef	O_ACCMODE
+# ifndef O_ACCMODE
 #  define O_ACCMODE (O_RDONLY | O_WRONLY | O_RDWR)
 # endif /* !O_ACCMODE */
 # ifndef fileno
@@ -75,9 +81,8 @@ FILE *fdopen(int fildes, const char *mode);
 #endif /* !R_OK */
 
 /* Binary files have different characteristics; for instance, no cr/nl
-   translation. */
-
-#define USE_BINARY_FOPEN
+ * translation: */
+#define USE_BINARY_FOPEN /* (nothing) */
 
 #include <spin.h>
 
@@ -90,19 +95,20 @@ FILE *fdopen(int fildes, const char *mode);
 
 #define NO_FCNTL
 
-int fstat ();
+#if !defined(_SYS_STAT_H_) && !defined(__SYS_STAT_H__)
+int fstat(void);
+#endif /* !_SYS_STAT_H_ && !__SYS_STAT_H__ */
 
-FILE *mpw_fopen ();
-int mpw_fseek ();
-int mpw_fread ();
-int mpw_fwrite ();
-int mpw_access ();
-int mpw_open ();
-int mpw_creat ();
-void mpw_abort (void);
+FILE *mpw_fopen(void);
+int mpw_fseek(void);
+int mpw_fread(void);
+int mpw_fwrite(void);
+int mpw_access(void);
+int mpw_open(void);
+int mpw_creat(void);
+void mpw_abort(void);
 
-/* Map these standard functions to improved versions in libiberty. */
-
+/* Map these standard functions to improved versions in libiberty: */
 #define fopen mpw_fopen
 #define fseek mpw_fseek
 #define fread mpw_fread
@@ -112,12 +118,13 @@ void mpw_abort (void);
 #define creat mpw_creat
 #define abort mpw_abort
 
-#define POSIX_UTIME
+#define POSIX_UTIME /* (nothing) */
 
-#define LOSING_TOTALLY
+#define LOSING_TOTALLY /* (nothing) */
 
-/* Define this so that files will be closed before being unlinked. */
-
-#define CLOSE_BEFORE_UNLINK
+/* Define this so that files will be closed before being unlinked: */
+#define CLOSE_BEFORE_UNLINK /* (nothing) */
 
 #endif /* __INCLUDE_MPW_H */
+
+/* EOF */

@@ -1,10 +1,10 @@
-/* Declarations of constants for internal format of MIPS ECOFF symbols.
-   Originally contributed by MIPS Computer Systems and Third Eye Software.
-   Changes contributed by Cygnus Support are in the public domain.
-
-   This file is just aggregated with the files that make up the GNU
-   release; it is not considered part of GAS, GDB, or other GNU
-   programs.  */
+/* symconst.h:
+ * Declarations of constants for internal format of MIPS ECOFF symbols.
+ * Originally contributed by MIPS Computer Systems and Third Eye Software.
+ * Changes contributed by Cygnus Support are in the public domain.
+ *
+ * This file is just aggregated with the files that make up the GNU release;
+ * it is not considered part of GAS, GDB, or other GNU programs. */
 
 /*
  * |-----------------------------------------------------------|
@@ -36,7 +36,7 @@
 #define magicSym2	0x1992
 
 /* Language codes */
-#define langC		0	
+#define langC		0
 #define langPascal	1
 #define langFortran	2
 #define	langAssembler	3	/* one Assembley inst might map to many mach */
@@ -80,7 +80,7 @@
 #define scVariant	20	/* Variant record */
 #define scSUndefined	21	/* small undefined(external) data */
 #define scInit		22	/* .init section symbol */
-#define scBasedVar	23	/* Fortran or PL/1 ptr based var */ 
+#define scBasedVar	23	/* Fortran or PL/1 ptr based var */
 #define scXData         24      /* exception handling data */
 #define scPData         25      /* Procedure section */
 #define scFini          26      /* .fini section */
@@ -165,13 +165,15 @@
 #define btULongLong	28	/* unsigned long long */
 #define btMax		64
 
-#if (_MFG == _MIPS)
+#if defined(_MFG) && defined(_MIPS) && (_MFG == _MIPS)
 /* optimization type codes */
-#define otNil		0
-#define otReg		1	/* move var to reg */
-#define otBlock		2	/* begin basic block */
-#define	otProc		3	/* procedure */
-#define otInline	4	/* inline procedure */
-#define otEnd		5	/* whatever you started */
-#define otMax		6	/* KEEP UP TO DATE */
-#endif /* (_MFG == _MIPS) */
+# define otNil		0
+# define otReg		1	/* move var to reg */
+# define otBlock	2	/* begin basic block */
+# define otProc		3	/* procedure */
+# define otInline	4	/* inline procedure */
+# define otEnd		5	/* whatever you started */
+# define otMax		6	/* KEEP UP TO DATE */
+#endif /* _MFG && _MIPS && (_MFG == _MIPS) */
+
+/* EOF */

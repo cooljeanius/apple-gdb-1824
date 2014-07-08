@@ -138,7 +138,7 @@ DESCRIPTION
 
 #ifndef errno
 extern int errno;
-#endif
+#endif /* !errno */
 
 /* We keep a cache of archive filepointers to archive elements to
    speed up searching the archive by filepos.  We only add an entry to
@@ -154,23 +154,21 @@ struct ar_cache {
 #define ar_padchar(abfd) ((abfd)->xvec->ar_pad_char)
 #define ar_maxnamelen(abfd) ((abfd)->xvec->ar_max_namelen)
 
-#define arch_eltdata(bfd) ((struct areltdata *) ((bfd)->arelt_data))
-#define arch_hdr(bfd) ((struct ar_hdr *) arch_eltdata(bfd)->arch_header)
+#define arch_eltdata(bfd) ((struct areltdata *)((bfd)->arelt_data))
+#define arch_hdr(bfd) ((struct ar_hdr *)arch_eltdata(bfd)->arch_header)
 
-void
-_bfd_ar_spacepad (char *p, size_t n, const char *fmt, long val)
+void _bfd_ar_spacepad(char *p, size_t n, const char *fmt, long val)
 {
   static char buf[20];
   size_t len;
-  snprintf (buf, sizeof (buf), fmt, val);
-  len = strlen (buf);
-  if (len < n)
-    {
-      memcpy (p, buf, len);
-      memset (p + len, ' ', n - len);
-    }
-  else
-    memcpy (p, buf, n);
+  snprintf(buf, sizeof(buf), fmt, val);
+  len = strlen(buf);
+  if (len < n) {
+      memcpy(p, buf, len);
+      memset((p + len), ' ', (n - len));
+  } else {
+      memcpy(p, buf, n);
+  }
 }
 
 bfd_boolean
@@ -350,26 +348,24 @@ _bfd_add_bfd_to_archive_cache (bfd *arch_bfd, file_ptr filepos, bfd *new_elt)
   return TRUE;
 }
 
-/* The name begins with space.  Hence the rest of the name is an index into
-   the string table.  */
-
-static char *
-get_extended_arelt_filename (bfd *arch, const char *name)
+/* The name begins with space. Hence the rest of the name is an index into
+ * the string table: */
+static char *get_extended_arelt_filename(bfd *arch, const char *name)
 {
-  unsigned long index = 0;
+  unsigned long local_index = 0;
 
   /* Should extract string so that I can guarantee not to overflow into
-     the next region, but I'm too lazy.  */
+   * the next region, but I am too lazy.  */
   errno = 0;
   /* Skip first char, which is '/' in SVR4 or ' ' in some other variants.  */
-  index = strtol (name + 1, NULL, 10);
-  if (errno != 0 || index >= bfd_ardata (arch)->extended_names_size)
+  local_index = strtol(name + 1, NULL, 10);
+  if ((errno != 0) || (local_index >= bfd_ardata(arch)->extended_names_size))
     {
       bfd_set_error (bfd_error_malformed_archive);
       return NULL;
     }
 
-  return bfd_ardata (arch)->extended_names + index;
+  return bfd_ardata (arch)->extended_names + local_index;
 }
 
 /* This functions reads an arch header and returns an areltdata pointer, or
@@ -447,12 +443,12 @@ _bfd_generic_read_ar_hdr_mag (bfd *abfd, const char *mag)
       allocsize += namelen + 1;
       parsed_size -= namelen;
 
-      allocptr = bfd_zalloc (abfd, allocsize);
+      allocptr = bfd_zalloc(abfd, allocsize);
       if (allocptr == NULL)
 	return NULL;
       filename = (allocptr
-		  + sizeof (struct areltdata)
-		  + sizeof (struct ar_hdr));
+		  + sizeof(struct areltdata)
+		  + sizeof(struct ar_hdr));
       if (bfd_bread (filename, namelen, abfd) != namelen)
 	{
 	  if (bfd_get_error () != bfd_error_system_call)
@@ -526,7 +522,7 @@ _bfd_get_elt_at_filepos (bfd *archive, file_ptr filepos)
   bfd *n_nfd;
 
 /* APPLE LOCAL: This change to supported nested archive files breaks
-   our own universal files and .a files combination, so #if 0 it out.  
+   our own universal files and .a files combination, so #if 0 it out.
    A universal .a file is a Mach-O archive (a universal file), and
    contained within is a BSD archive (a .a file).  The two have
    very different tdata elements (tdata.aout_ar_data vs
@@ -545,9 +541,9 @@ _bfd_get_elt_at_filepos (bfd *archive, file_ptr filepos)
   if (n_nfd)
     {
 #ifdef BFD_TRACK_OPEN_CLOSE
-      printf ("Opening 0x%lx from cache of archive 0x%lx: \"%s\"\n", 
-	      (unsigned long) n_nfd, 
-	      (unsigned long) archive, 
+      printf ("Opening 0x%lx from cache of archive 0x%lx: \"%s\"\n",
+	      (unsigned long) n_nfd,
+	      (unsigned long) archive,
 	      n_nfd->filename);
 #endif
       return n_nfd;
@@ -573,9 +569,9 @@ _bfd_get_elt_at_filepos (bfd *archive, file_ptr filepos)
   if (_bfd_add_bfd_to_archive_cache (archive, filepos, n_nfd))
     {
 #ifdef BFD_TRACK_OPEN_CLOSE
-      printf ("Opening 0x%lx from archive 0x%lx: \"%s\"\n", 
+      printf ("Opening 0x%lx from archive 0x%lx: \"%s\"\n",
 	      (unsigned long) n_nfd,
-	      (unsigned long) archive, 
+	      (unsigned long) archive,
 	      n_nfd->filename);
 #endif
       return n_nfd;
@@ -588,15 +584,13 @@ _bfd_get_elt_at_filepos (bfd *archive, file_ptr filepos)
 }
 
 /* Return the BFD which is referenced by the symbol in ABFD indexed by
-   INDEX.  INDEX should have been returned by bfd_get_next_mapent.  */
-
-bfd *
-_bfd_generic_get_elt_at_index (bfd *abfd, symindex index)
+ * INDEX. INDEX should have been returned by bfd_get_next_mapent. */
+bfd *_bfd_generic_get_elt_at_index(bfd *abfd, symindex our_index)
 {
   carsym *entry;
 
-  entry = bfd_ardata (abfd)->symdefs + index;
-  return _bfd_get_elt_at_filepos (abfd, entry->file_offset);
+  entry = bfd_ardata(abfd)->symdefs + our_index;
+  return _bfd_get_elt_at_filepos(abfd, entry->file_offset);
 }
 
 /*
@@ -642,11 +636,11 @@ bfd_generic_openr_next_archived_file (bfd *archive, bfd *last_file)
       filestart = last_file->origin + size;
 
 /* APPLE LOCAL: This change to supported nested archive files breaks
-   our own universal files and .a files combination, so #if 0 it out.  
+   our own universal files and .a files combination, so #if 0 it out.
    A universal .a file is a Mach-O archive (a universal file), and
-   contained within is a BSD archive (a .a file).  The two have 
+   contained within is a BSD archive (a .a file).  The two have
    very different tdata elements (tdata.aout_ar_data vs
-   tdata.mach_o_fat_data) so referring to the containing bfd (a   
+   tdata.mach_o_fat_data) so referring to the containing bfd (a
    mach_o_fat_data file) here where we expect generic .a file
    (aout_ar_data) will cause problems.  */
 #if 0 /* APPLE LOCAL */
@@ -985,12 +979,12 @@ bfd_slurp_armap (bfd *abfd)
     {
       /* 64bit ELF (Irix 6) archive.  */
 #ifdef BFD64
-      extern bfd_boolean bfd_elf64_archive_slurp_armap (bfd *);
+      extern bfd_boolean bfd_elf64_archive_slurp_armap(bfd *);
       return bfd_elf64_archive_slurp_armap (abfd);
 #else
       bfd_set_error (bfd_error_wrong_format);
       return FALSE;
-#endif
+#endif /* BFD64 */
     }
 
   bfd_has_map (abfd) = FALSE;

@@ -1,4 +1,4 @@
-/* ELF32/HPPA support
+/* elf32-hppa.h: ELF32/HPPA support
 
    This file contains ELF32/HPPA relocation support as specified
    in the Stratus FTX/Golf Object File Format (SED-1762) dated
@@ -58,14 +58,14 @@ elf_hppa_reloc_type elf32_hppa_reloc_final_type
 extern elf_hppa_reloc_type ** _bfd_elf32_hppa_gen_reloc_type
   (bfd *, elf_hppa_reloc_type, int, unsigned int, int, asymbol *);
 
-/* Define groups of basic relocations.  FIXME:  These should
-   be the only basic relocations created by GAS.  The rest
-   should be internal to the BFD backend.
-
-   The idea is both SOM and ELF define these basic relocation
-   types so they map into a SOM or ELF specific relocation
-   as appropriate.  This allows GAS to share much more code
-   between the two target object formats.  */
+/* Define groups of basic relocations.
+ * FIXME: These should be the only basic relocations created by GAS.
+ * The rest should be internal to the BFD backend.
+ *
+ * The idea is both SOM and ELF define these basic relocation
+ * types so they map into a SOM or ELF specific relocation
+ * as appropriate. This allows GAS to share much more code
+ * between the two target object formats. */
 
 #define R_HPPA_NONE			R_PARISC_NONE
 #define R_HPPA				R_PARISC_DIR32
@@ -75,3 +75,5 @@ extern elf_hppa_reloc_type ** _bfd_elf32_hppa_gen_reloc_type
 #define R_HPPA_COMPLEX			R_PARISC_UNIMPLEMENTED
 
 #endif /* _ELF32_HPPA_H */
+
+/* EOF */

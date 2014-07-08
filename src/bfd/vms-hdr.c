@@ -35,14 +35,11 @@
 #include "vms.h"
 
 #ifdef HAVE_ALLOCA_H
-#include <alloca.h>
-#endif
+# include <alloca.h>
+#endif /* HAVE_ALLOCA_H */
 
-/* Read & process emh record
-   return 0 on success, -1 on error.  */
-
-int
-_bfd_vms_slurp_hdr (bfd *abfd, int objtype)
+/* Read & process emh record. Return 0 on success, -1 on error: */
+int _bfd_vms_slurp_hdr(bfd *abfd, int objtype)
 {
   unsigned char *ptr;
   unsigned char *vms_rec;
@@ -50,7 +47,7 @@ _bfd_vms_slurp_hdr (bfd *abfd, int objtype)
 
   vms_rec = PRIV(vms_rec);
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(2, "HDR/EMH\n");
 #endif
 
@@ -66,7 +63,7 @@ _bfd_vms_slurp_hdr (bfd *abfd, int objtype)
       subtype = -1;
     }
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(3, "subtype %d\n", subtype);
 #endif
 
@@ -172,7 +169,7 @@ get_vms_time_string (void)
   SYS$ASCTIM (0, &Descriptor, 0, 0);
 #endif /* not VMS */
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (6, "vmstimestring:'%s'\n", tbuf);
 #endif
 
@@ -189,7 +186,7 @@ _bfd_vms_write_hdr (bfd *abfd, int objtype)
   int had_case = 0;
   int had_file = 0;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (2, "vms_write_hdr (%p)\n", abfd);
 #endif
 
@@ -211,7 +208,7 @@ _bfd_vms_write_hdr (bfd *abfd, int objtype)
       char *fname, *fout, *fptr;
 
       fptr = bfd_get_filename (abfd);
-      fname = alloca (strlen (fptr) + 1);
+      fname = (char *)alloca(strlen(fptr) + 1);
       strcpy (fname, fptr);
       fout = strrchr (fname, ']');
       if (fout == 0)
@@ -307,7 +304,7 @@ _bfd_vms_slurp_eom (bfd *abfd, int objtype)
 {
   unsigned char *vms_rec;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug(2, "EOM/EEOM\n");
 #endif
 
@@ -347,7 +344,7 @@ _bfd_vms_slurp_eom (bfd *abfd, int objtype)
 int
 _bfd_vms_write_eom (bfd *abfd, int objtype)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (2, "vms_write_eom (%p, %d)\n", abfd, objtype);
 #endif
 

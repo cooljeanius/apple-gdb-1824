@@ -1,4 +1,4 @@
-/* PowerPC64-specific support for 64-bit ELF.
+/* elf64-ppc.h: PowerPC64-specific support for 64-bit ELF.
    Copyright 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
 This file is part of BFD, the Binary File Descriptor library.

@@ -44,7 +44,7 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #include <sys/user.h>		/* After a.out.h  */
 
 #ifdef TRAD_HEADER
-#include TRAD_HEADER
+# include TRAD_HEADER
 #endif
 
 struct trad_core_struct
@@ -55,10 +55,18 @@ struct trad_core_struct
   struct user u;
 };
 
-#define core_upage(bfd) (&((bfd)->tdata.trad_core_data->u))
+#ifndef core_upage
+# define core_upage(bfd) (&((bfd)->tdata.trad_core_data->u))
+#endif /* !core_upage */
+
 #define core_datasec(bfd) ((bfd)->tdata.trad_core_data->data_section)
 #define core_stacksec(bfd) ((bfd)->tdata.trad_core_data->stack_section)
 #define core_regsec(bfd) ((bfd)->tdata.trad_core_data->reg_section)
+
+#ifndef UPAGES
+# define UPAGES 0
+#endif /* !UPAGES */
+
 
 /* forward declarations */
 
@@ -69,12 +77,10 @@ bfd_boolean trad_unix_core_file_matches_executable_p
   PARAMS ((bfd *core_bfd, bfd *exec_bfd));
 static void swap_abort PARAMS ((void));
 
-/* Handle 4.2-style (and perhaps also sysV-style) core dump file.  */
-
+/* Handle 4.2-style (and perhaps also sysV-style) core dump file: */
 const bfd_target *
-trad_unix_core_file_p (abfd)
+trad_unix_core_file_p(abfd)
      bfd *abfd;
-
 {
   int val;
   struct user u;
@@ -96,7 +102,7 @@ trad_unix_core_file_p (abfd)
     }
 
   /* Sanity check perhaps??? */
-  if (u.u_dsize > 0x1000000)	/* Remember, it's in pages...  */
+  if (u.u_dsize > 0x1000000)	/* Remember, it is in pages...  */
     {
       bfd_set_error (bfd_error_wrong_format);
       return 0;

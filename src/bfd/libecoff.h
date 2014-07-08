@@ -1,4 +1,4 @@
-/* BFD ECOFF object file private structure.
+/* libecoff.h: BFD ECOFF object file private structure.
    Copyright 1993, 1994, 1995, 1996, 1999, 2001, 2002, 2003, 2004,
    2005 Free Software Foundation, Inc.
    Written by Ian Lance Taylor, Cygnus Support.

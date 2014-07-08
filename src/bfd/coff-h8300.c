@@ -245,37 +245,37 @@ special (bfd *abfd ATTRIBUTE_UNUSED,
 }
 
 static reloc_howto_type howto_table[] = {
-  HOWTO (R_RELBYTE, 0, 0, 8, FALSE, 0, complain_overflow_bitfield, special, "8", FALSE, 0x000000ff, 0x000000ff, FALSE),
-  HOWTO (R_RELWORD, 0, 1, 16, FALSE, 0, complain_overflow_bitfield, special, "16", FALSE, 0x0000ffff, 0x0000ffff, FALSE),
-  HOWTO (R_RELLONG, 0, 2, 32, FALSE, 0, complain_overflow_bitfield, special, "32", FALSE, 0xffffffff, 0xffffffff, FALSE),
-  HOWTO (R_PCRBYTE, 0, 0, 8, TRUE, 0, complain_overflow_signed, special, "DISP8", FALSE, 0x000000ff, 0x000000ff, TRUE),
-  HOWTO (R_PCRWORD, 0, 1, 16, TRUE, 0, complain_overflow_signed, special, "DISP16", FALSE, 0x0000ffff, 0x0000ffff, TRUE),
-  HOWTO (R_PCRLONG, 0, 2, 32, TRUE, 0, complain_overflow_signed, special, "DISP32", FALSE, 0xffffffff, 0xffffffff, TRUE),
-  HOWTO (R_MOV16B1, 0, 1, 16, FALSE, 0, complain_overflow_bitfield, special, "relaxable mov.b:16", FALSE, 0x0000ffff, 0x0000ffff, FALSE),
-  HOWTO (R_MOV16B2, 0, 1, 8, FALSE, 0, complain_overflow_bitfield, special, "relaxed mov.b:16", FALSE, 0x000000ff, 0x000000ff, FALSE),
-  HOWTO (R_JMP1, 0, 1, 16, FALSE, 0, complain_overflow_bitfield, special, "16/pcrel", FALSE, 0x0000ffff, 0x0000ffff, FALSE),
-  HOWTO (R_JMP2, 0, 0, 8, FALSE, 0, complain_overflow_bitfield, special, "pcrecl/16", FALSE, 0x000000ff, 0x000000ff, FALSE),
-  HOWTO (R_JMPL1, 0, 2, 32, FALSE, 0, complain_overflow_bitfield, special, "24/pcrell", FALSE, 0x00ffffff, 0x00ffffff, FALSE),
-  HOWTO (R_JMPL2, 0, 0, 8, FALSE, 0, complain_overflow_bitfield, special, "pc8/24", FALSE, 0x000000ff, 0x000000ff, FALSE),
-  HOWTO (R_MOV24B1, 0, 1, 32, FALSE, 0, complain_overflow_bitfield, special, "relaxable mov.b:24", FALSE, 0xffffffff, 0xffffffff, FALSE),
-  HOWTO (R_MOV24B2, 0, 1, 8, FALSE, 0, complain_overflow_bitfield, special, "relaxed mov.b:24", FALSE, 0x0000ffff, 0x0000ffff, FALSE),
+  HOWTO(R_RELBYTE, 0, 0, 8, FALSE, 0, complain_overflow_bitfield, special, (char *)"8", FALSE, 0x000000ff, 0x000000ff, FALSE),
+  HOWTO(R_RELWORD, 0, 1, 16, FALSE, 0, complain_overflow_bitfield, special, (char *)"16", FALSE, 0x0000ffff, 0x0000ffff, FALSE),
+  HOWTO(R_RELLONG, 0, 2, 32, FALSE, 0, complain_overflow_bitfield, special, (char *)"32", FALSE, 0xffffffff, 0xffffffff, FALSE),
+  HOWTO(R_PCRBYTE, 0, 0, 8, TRUE, 0, complain_overflow_signed, special, (char *)"DISP8", FALSE, 0x000000ff, 0x000000ff, TRUE),
+  HOWTO(R_PCRWORD, 0, 1, 16, TRUE, 0, complain_overflow_signed, special, (char *)"DISP16", FALSE, 0x0000ffff, 0x0000ffff, TRUE),
+  HOWTO(R_PCRLONG, 0, 2, 32, TRUE, 0, complain_overflow_signed, special, (char *)"DISP32", FALSE, 0xffffffff, 0xffffffff, TRUE),
+  HOWTO(R_MOV16B1, 0, 1, 16, FALSE, 0, complain_overflow_bitfield, special, (char *)"relaxable mov.b:16", FALSE, 0x0000ffff, 0x0000ffff, FALSE),
+  HOWTO(R_MOV16B2, 0, 1, 8, FALSE, 0, complain_overflow_bitfield, special, (char *)"relaxed mov.b:16", FALSE, 0x000000ff, 0x000000ff, FALSE),
+  HOWTO(R_JMP1, 0, 1, 16, FALSE, 0, complain_overflow_bitfield, special, (char *)"16/pcrel", FALSE, 0x0000ffff, 0x0000ffff, FALSE),
+  HOWTO(R_JMP2, 0, 0, 8, FALSE, 0, complain_overflow_bitfield, special, (char *)"pcrecl/16", FALSE, 0x000000ff, 0x000000ff, FALSE),
+  HOWTO(R_JMPL1, 0, 2, 32, FALSE, 0, complain_overflow_bitfield, special, (char *)"24/pcrell", FALSE, 0x00ffffff, 0x00ffffff, FALSE),
+  HOWTO(R_JMPL2, 0, 0, 8, FALSE, 0, complain_overflow_bitfield, special, (char *)"pc8/24", FALSE, 0x000000ff, 0x000000ff, FALSE),
+  HOWTO(R_MOV24B1, 0, 1, 32, FALSE, 0, complain_overflow_bitfield, special, (char *)"relaxable mov.b:24", FALSE, 0xffffffff, 0xffffffff, FALSE),
+  HOWTO(R_MOV24B2, 0, 1, 8, FALSE, 0, complain_overflow_bitfield, special, (char *)"relaxed mov.b:24", FALSE, 0x0000ffff, 0x0000ffff, FALSE),
 
   /* An indirect reference to a function.  This causes the function's address
      to be added to the function vector in lo-mem and puts the address of
      the function vector's entry in the jsr instruction.  */
-  HOWTO (R_MEM_INDIRECT, 0, 0, 8, FALSE, 0, complain_overflow_bitfield, special, "8/indirect", FALSE, 0x000000ff, 0x000000ff, FALSE),
+  HOWTO(R_MEM_INDIRECT, 0, 0, 8, FALSE, 0, complain_overflow_bitfield, special, (char *)"8/indirect", FALSE, 0x000000ff, 0x000000ff, FALSE),
 
   /* Internal reloc for relaxing.  This is created when a 16-bit pc-relative
      branch is turned into an 8-bit pc-relative branch.  */
-  HOWTO (R_PCRWORD_B, 0, 0, 8, TRUE, 0, complain_overflow_bitfield, special, "relaxed bCC:16", FALSE, 0x000000ff, 0x000000ff, FALSE),
+  HOWTO(R_PCRWORD_B, 0, 0, 8, TRUE, 0, complain_overflow_bitfield, special, (char *)"relaxed bCC:16", FALSE, 0x000000ff, 0x000000ff, FALSE),
 
-  HOWTO (R_MOVL1, 0, 2, 32, FALSE, 0, complain_overflow_bitfield,special, "32/24 relaxable move", FALSE, 0xffffffff, 0xffffffff, FALSE),
+  HOWTO(R_MOVL1, 0, 2, 32, FALSE, 0, complain_overflow_bitfield,special, (char *)"32/24 relaxable move", FALSE, 0xffffffff, 0xffffffff, FALSE),
 
-  HOWTO (R_MOVL2, 0, 1, 16, FALSE, 0, complain_overflow_bitfield, special, "32/24 relaxed move", FALSE, 0x0000ffff, 0x0000ffff, FALSE),
+  HOWTO(R_MOVL2, 0, 1, 16, FALSE, 0, complain_overflow_bitfield, special, (char *)"32/24 relaxed move", FALSE, 0x0000ffff, 0x0000ffff, FALSE),
 
-  HOWTO (R_BCC_INV, 0, 0, 8, TRUE, 0, complain_overflow_signed, special, "DISP8 inverted", FALSE, 0x000000ff, 0x000000ff, TRUE),
+  HOWTO(R_BCC_INV, 0, 0, 8, TRUE, 0, complain_overflow_signed, special, (char *)"DISP8 inverted", FALSE, 0x000000ff, 0x000000ff, TRUE),
 
-  HOWTO (R_JMP_DEL, 0, 0, 8, TRUE, 0, complain_overflow_signed, special, "Deleted jump", FALSE, 0x000000ff, 0x000000ff, TRUE),
+  HOWTO(R_JMP_DEL, 0, 0, 8, TRUE, 0, complain_overflow_signed, special, (char *)"Deleted jump", FALSE, 0x000000ff, 0x000000ff, TRUE),
 };
 
 /* Turn a howto into a reloc number.  */
@@ -285,26 +285,25 @@ static reloc_howto_type howto_table[] = {
 
 #define BADMAG(x) (H8300BADMAG (x) && H8300HBADMAG (x) && H8300SBADMAG (x) \
 				   && H8300HNBADMAG(x) && H8300SNBADMAG(x))
-#define H8300 1			/* Customize coffcode.h  */
+#ifndef H8300
+# define H8300 1		/* Customize coffcode.h  */
+#endif /* !H8300 */
 #define __A_MAGIC_SET__
 
-/* Code to swap in the reloc.  */
+/* Code to swap in the reloc: */
 #define SWAP_IN_RELOC_OFFSET	H_GET_32
 #define SWAP_OUT_RELOC_OFFSET	H_PUT_32
 #define SWAP_OUT_RELOC_EXTRA(abfd, src, dst) \
   dst->r_stuff[0] = 'S'; \
   dst->r_stuff[1] = 'C';
 
-static int
-select_reloc (reloc_howto_type *howto)
+static int select_reloc(reloc_howto_type *howto)
 {
   return howto->type;
 }
 
-/* Code to turn a r_type into a howto ptr, uses the above howto table.  */
-
-static void
-rtype2howto (arelent *internal, struct internal_reloc *dst)
+/* Code to turn a r_type into a howto ptr, uses the above howto table: */
+static void rtype2howto(arelent *internal, struct internal_reloc *dst)
 {
   switch (dst->r_type)
     {
@@ -1175,10 +1174,12 @@ h8300_reloc16_extra_cases (bfd *abfd, struct bfd_link_info *link_info,
 	name = symbol->name;
 	if (symbol->flags & BSF_LOCAL)
 	  {
-	    char *new_name = bfd_malloc ((bfd_size_type) strlen (name) + 10);
+	    char *new_name;
+	    new_name = (char *)bfd_malloc((bfd_size_type)strlen(name) + 10);
 
-	    if (new_name == NULL)
-	      abort ();
+	    if (new_name == NULL) {
+	      abort();
+	    }
 
 	    sprintf (new_name, "%s_%08x", name, symbol->section->id);
 	    name = new_name;
@@ -1363,11 +1364,12 @@ h8300_bfd_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
 		{
 		  char *new_name;
 
-		  new_name = bfd_malloc ((bfd_size_type) strlen (name) + 10);
-		  if (new_name == NULL)
-		    abort ();
+		  new_name = (char *)bfd_malloc((bfd_size_type)strlen(name) + 10);
+		  if (new_name == NULL) {
+		      abort();
+		  }
 
-		  sprintf (new_name, "%s_%08x", name, symbol->section->id);
+		  sprintf(new_name, "%s_%08x", name, symbol->section->id);
 		  name = new_name;
 		}
 
@@ -1410,18 +1412,18 @@ h8300_bfd_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
       free (relocs);
     }
 
-  /* Now actually allocate some space for the function vector.  It's
-     wasteful to do this more than once, but this is easier.  */
+  /* Now actually allocate some space for the function vector. It is wasteful
+   * to do this more than once, but this is easier: */
   sec = htab->vectors_sec;
-  if (sec->size != 0)
-    {
-      /* Free the old contents.  */
-      if (sec->contents)
-	free (sec->contents);
+  if (sec->size != 0) {
+      /* Free the old contents: */
+      if (sec->contents) {
+	  free(sec->contents);
+      }
 
-      /* Allocate new contents.  */
-      sec->contents = bfd_malloc (sec->size);
-    }
+      /* Allocate new contents: */
+      sec->contents = (unsigned char *)bfd_malloc(sec->size);
+  }
 
   return TRUE;
 }
@@ -1440,4 +1442,11 @@ h8300_bfd_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
   bfd_coff_reloc16_get_relocated_section_contents
 #define coff_bfd_relax_section bfd_coff_reloc16_relax_section
 
-CREATE_BIG_COFF_TARGET_VEC (h8300coff_vec, "coff-h8300", BFD_IS_RELAXABLE, 0, '_', NULL, COFF_SWAP_TABLE)
+CREATE_BIG_COFF_TARGET_VEC(h8300coff_vec, "coff-h8300", BFD_IS_RELAXABLE, 0, '_', NULL, COFF_SWAP_TABLE)
+
+/* Silence '-Wunused-macros' warning: */
+#ifdef H8300
+# undef H8300
+#endif /* H8300 */
+
+/* EOF */

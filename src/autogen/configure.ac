@@ -81,9 +81,9 @@ fi
 # encounters no `make' conflicts. Ignore error if shell does not have
 # unset, but at least set these to empty values.
 # ----------------------------------------------------------------------
-MFLAGS=
-MAKEFLAGS=
-MAKELEVEL=
+MFLAGS=""
+MAKEFLAGS=""
+MAKELEVEL=""
 unset MFLAGS MAKEFLAGS MAKELEVEL 2>/dev/null]
 
 AM_WITH_DMALLOC
@@ -188,20 +188,23 @@ AC_CHECK_FUNCS([alarm atexit dup2 getcwd localtime_r mbrlen memmove \
                 strstr strtol strtoul snprintf sysinfo tzset uname utime])
 AC_SEARCH_LIBS([copysign],[m],
                [AC_DEFINE([HAVE_COPYSIGN],[1],
-                          [Define to 1 if you have the `copysign' function.])])
+                          [Define if you have the `copysign' function])
+])
 AC_SEARCH_LIBS([copysignl],[m],
                [AC_DEFINE([HAVE_COPYSIGNL],[1],
-                          [Define to 1 if you have the `copysignl' function.])])
+                          [Define if you have the `copysignl' function])
+])
 AC_SEARCH_LIBS([modfl],[m],
                [AC_DEFINE([HAVE_MODFL],[1],
-                          [Define to 1 if you have the `modfl' function.])])
+                          [Define if you have the `modfl' function])
+])
 
 # ----------------------------------------------------------------------
 # Check for the functions needed from libgen and libdl
 # ----------------------------------------------------------------------
 
-AM_CONDITIONAL([NEED_PATHFIND],[test X${ac_cv_func_pathfind} = Xyes])
-[if test X${ac_cv_func_dlopen} = Xyes
+AM_CONDITIONAL([NEED_PATHFIND],[test "X${ac_cv_func_pathfind}" = "Xyes"])
+[if test "X${ac_cv_func_dlopen}" = "Xyes"
 then DYNAMIC_AG=-export-dynamic
 else DYNAMIC_AG=""
 fi]
@@ -212,14 +215,14 @@ AC_SUBST([DYNAMIC_AG])
 # ----------------------------------------------------------------------
 INVOKE_AG_MACROS
 [
-if ! test x${ag_cv_sys_siglist} = xyes
+if ! test "x${ag_cv_sys_siglist}" = "xyes"
 then
-  if ! test x${ac_cv_func_strsignal} = xyes
+  if ! test "x${ac_cv_func_strsignal}" = "xyes"
   then
     echo "WARNING:  strsignal will use POSIX names and Linux signal numbers"
   fi
 fi >&2
-if test "X${ag_cv_link_sigsetjmp}" = Xno
+if test "X${ag_cv_link_sigsetjmp}" = "Xno"
 then]
   AC_MSG_ERROR([AutoGen requires sigsetjmp(3)])[
 fi

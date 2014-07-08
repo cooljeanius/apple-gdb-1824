@@ -23,6 +23,7 @@
 
 #include "server.h"
 #include "terminal.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <sys/ioctl.h>
@@ -37,12 +38,16 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <sys/stat.h>
+#if defined(HAVE_ERRNO_H) && HAVE_ERRNO_H
+# include <errno.h>
+#endif /* HAVE_ERRNO_H */
 
 #ifndef HAVE_SOCKLEN_T
 typedef int socklen_t;
 #endif /* !HAVE_SOCKLEN_T */
 
-/* A cache entry for a successfully looked-up symbol.  */
+/* A cache entry for a successfully looked-up symbol: */
 struct sym_cache
 {
   const char *name;
@@ -50,8 +55,12 @@ struct sym_cache
   struct sym_cache *next;
 };
 
-/* The symbol cache.  */
+/* The symbol cache: */
 static struct sym_cache *symbol_cache;
+
+#ifndef REMOTE_UTILS_H
+void clear_symbol_cache(struct sym_cache **symcache_p);
+#endif /* !REMOTE_UTILS_H */
 
 int remote_debug = 0;
 struct ui_file *gdb_stdlog;
@@ -772,6 +781,27 @@ decode_M_packet (char *from, CORE_ADDR *mem_addr_ptr, unsigned int *len_ptr,
   convert_ascii_to_int (&from[i++], to, *len_ptr);
 }
 
+static void free_sym_cache(struct sym_cache *sym)
+{
+  if (sym != NULL) {
+      free((void *)sym->name);
+      free((void *)sym);
+  }
+}
+
+void clear_symbol_cache(struct sym_cache **symcache_p)
+{
+  struct sym_cache *sym, *next;
+
+  /* Check the cache first.  */
+  for ((sym = *symcache_p); sym; (sym = next)) {
+      next = sym->next;
+      free_sym_cache(sym);
+  }
+
+  *symcache_p = NULL;
+}
+
 /* Ask GDB for the address of NAME, and return it in ADDRP if found.
    Returns 1 if the symbol is found, 0 if it is not, -1 on error.  */
 
@@ -813,23 +843,27 @@ look_up_one_symbol (const char *name, CORE_ADDR *addrp)
       return -1;
     }
 
-  p = own_buf + strlen ("qSymbol:");
+  p = (own_buf + strlen("qSymbol:"));
   q = p;
-  while (*q && *q != ':')
-    q++;
+  while (*q && (*q != ':')) {
+      q++;
+  }
 
-  /* Make sure we found a value for the symbol.  */
-  if (p == q || *q == '\0')
-    return 0;
+  /* Make sure we found a value for the symbol: */
+  if ((p == q) || (*q == '\0')) {
+      return 0;
+  }
 
-  decode_address (addrp, p, q - p);
+  decode_address(addrp, p, (q - p));
 
-  /* Save the symbol in our cache.  */
-  sym = malloc (sizeof (*sym));
-  sym->name = strdup (name);
+  /* Save the symbol in our cache: */
+  sym = malloc(sizeof(*sym));
+  sym->name = strdup(name);
   sym->addr = *addrp;
   sym->next = symbol_cache;
   symbol_cache = sym;
 
   return 1;
 }
+
+/* EOF */

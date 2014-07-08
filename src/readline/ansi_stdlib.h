@@ -24,10 +24,10 @@
 #define	_STDLIB_H_ 1
 
 /* String conversion functions. */
-extern int atoi ();
+extern int atoi();
 
-extern double atof ();
-extern double strtod ();
+extern double atof();
+extern double strtod();
 
 /* Memory allocation functions. */
 /* Generic pointer type. */
@@ -41,14 +41,16 @@ extern double strtod ();
 
 #endif /* PTR_T */
 
-extern PTR_T malloc ();
-extern PTR_T realloc ();
-extern void free ();
+extern PTR_T malloc();
+extern PTR_T realloc();
+extern void free();
 
-/* Other miscellaneous functions. */
-extern void abort ();
-extern void exit ();
-extern char *getenv ();
-extern void qsort ();
+/* Other miscellaneous functions: */
+extern void abort();
+extern void exit();
+extern char *getenv();
+extern void qsort();
 
 #endif /* _STDLIB_H  */
+
+/* EOF */

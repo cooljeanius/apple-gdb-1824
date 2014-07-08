@@ -42,7 +42,9 @@ fi
 AC_CANONICAL_TARGET
 AC_SYS_INTERPRETER
 
-# Automake checks, separated out
+# Automake checks, separated out:
+AC_MSG_CHECKING([things that automake would want if we were actually using automake here])
+AC_MSG_RESULT([ ])
 AM_MAINTAINER_MODE
 AM_SANITY_CHECK
 AM_PROG_INSTALL_SH
@@ -51,14 +53,16 @@ AM_MAKE_INCLUDE
 _AM_PROG_TAR([pax])
 
 # Checks for programs.
+AC_MSG_CHECKING([programs])
+AC_MSG_RESULT([ ])
 AM_PROG_AR
 AC_PROG_AWK
 if test "x${CC}" = "x"; then
-    test -z "${CC}"
-    AC_PROG_CC
+  test -z "${CC}"
+  AC_PROG_CC
 else
-    test ! -z "${CC}"
-    AC_PROG_GCC_TRADITIONAL
+  test ! -z "${CC}"
+  AC_PROG_GCC_TRADITIONAL
 fi
 AC_PROG_CPP
 AC_PROG_CXX
@@ -68,7 +72,9 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_MKDIR_P
 AC_PROG_OBJC
+AC_PROG_OBJCPP
 AC_PROG_OBJCXX
+AC_PROG_OBJCXXCPP
 AC_PROG_RANLIB
 AC_PROG_SED
 AC_PROG_YACC
@@ -76,31 +82,60 @@ AC_PATH_PROG([BUILDIT],[buildit])
 AC_SUBST([BUILDIT])
 
 # Checks for libraries.
+AC_MSG_CHECKING([libraries])
+AC_MSG_RESULT([ ])
 AC_CHECK_LIB([c],[printf])
 AC_CHECK_LIB([dl],[dlopen])
-AC_CHECK_LIB([iberty],[xmalloc])
-AC_CHECK_LIB([iconv],[iconv])
-AC_CHECK_LIB([intl],[gettext])
+# FIXME: Replace `main' with a function in `-lgmp':
+AC_CHECK_LIB([gmp],[main])
+AC_CHECK_LIB([iberty],[xmalloc],[],[
+  AC_CHECK_LIB([iberty],[main])
+])
+AC_CHECK_LIB([iconv],[iconv],[],[
+  AC_CHECK_LIB([iconv],[libiconv],[],[
+    AC_CHECK_LIB([iconv],[main])
+  ])
+])
+AC_CHECK_LIB([intl],[gettext],[],[
+  AC_CHECK_LIB([intl],[main])
+])
 AC_CHECK_LIB([m],[sqrt])
+m4_ifdef([LT_LIB_M],[
+LT_LIB_M
+],[:])
+# FIXME: Replace `main' with a function in `-lmpfr':
+AC_CHECK_LIB([mpfr],[main])
 AC_CHECK_LIB([readline],[rl_initialize])
 AC_CHECK_LIB([sqlite3],[sqlite3_initialize])
 AC_CHECK_LIB([z],[gzopen])
 
 # Checks for header files.
-AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
+AC_MSG_CHECKING([headers])
+AC_MSG_RESULT([ ])
+AC_HEADER_STAT
+AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_CHECK_HEADERS([ApplicationServices/ApplicationServices.h argz.h \
                   fcntl.h float.h gettext.h langinfo.h libgettext.h \
                   libintl.h limits.h locale.h mach/mach.h \
                   malloc.h malloc/malloc.h netinet/in.h nl_types.h \
                   sgtty.h stddef.h stdio.h stdio_ext.h sys/file.h \
-                  sys/ioctl.h sys/param.h sys/socket.h sys/time.h \
+                  sys/ioctl.h sys/socket.h sys/time.h \
                   termio.h termios.h wchar.h wctype.h])
+if test "x${ac_cv_header_sys_param_h}" = "x"; then
+  test -z "${ac_cv_header_sys_param_h}"
+  AC_CHECK_HEADERS([sys/param.h])
+fi
 
 # Checks for typedefs, structures, and compiler characteristics.
+AC_MSG_CHECKING([C compiler charactersistics])
+AC_MSG_RESULT([ ])
+AC_C_CONST
 AC_C_BIGENDIAN
 AC_C_INLINE
 AC_C_PROTOTYPES
 AC_C_RESTRICT
+AC_MSG_CHECKING([types])
+AC_MSG_RESULT([ ])
 AC_TYPE_INT16_T
 AC_TYPE_INT32_T
 AC_TYPE_INT64_T
@@ -113,18 +148,35 @@ AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
 AC_CHECK_TYPES([ptrdiff_t])
+AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
+dnl# Begin what used to be AC\_TYPE\_SIGNAL
+AC_CACHE_CHECK([return type of signal handlers],[ac_cv_type_signal],[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <sys/types.h>
+#include <signal.h>
+]],[[
+return *(signal (0, 0)) (0) == 1;
+]])],[ac_cv_type_signal=int],[ac_cv_type_signal=void])
+])
+AC_DEFINE_UNQUOTED([RETSIGTYPE],[${ac_cv_type_signal}],[Define as the return type of signal handlers (`int' or `void').])
+dnl# End what used to be AC\_TYPE\_SIGNAL
 
 # Checks for library functions.
+AC_MSG_CHECKING([functions])
+AC_MSG_RESULT([ ])
 AC_FUNC_ALLOCA
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_FORK
 AC_FUNC_FSEEKO
-AC_FUNC_LSTAT dnl# calls AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
+AC_FUNC_LSTAT dnl# also checks whether it "_FOLLOWS_SLASHED_SYMLINK"
 AC_FUNC_MALLOC
+AC_FUNC_MEMCMP
 AC_FUNC_MBRTOWC
 AC_FUNC_MMAP
 AC_FUNC_OBSTACK
 AC_FUNC_REALLOC
+AC_FUNC_STAT
+AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify bzero \
                 dcgettext getcwd gettimeofday localeconv mblen mbrlen \
                 memchr memmove mempcpy memset munmap nl_langinfo \
@@ -132,10 +184,13 @@ AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify bzero \
                 strchr strcspn strdup strerror strpbrk strrchr strstr \
                 strtol strtoul strtoull strverscmp])
 
-# Gettext checks
+# Gettext checks:
+AC_MSG_CHECKING([gettext])
+AC_MSG_RESULT([ ])
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.18.3])
 
+# Output:
 AC_CONFIG_SUBDIRS([src])
 AC_OUTPUT
 
@@ -145,8 +200,8 @@ AC_OUTPUT
 # target has already been made.
 # Use a separate script for this.
 if test -e rename-configure.sh; then
-	echo "Running a separate script to rename this configure script..."
-	sh ./rename-configure.sh
+  echo "Running a separate script to rename this configure script..."
+  ${SHELL} ./rename-configure.sh
 else
-	echo "Warning: The Makefile might think there is nothing to be done."
+  echo "Warning: The Makefile might think there is nothing to be done."
 fi

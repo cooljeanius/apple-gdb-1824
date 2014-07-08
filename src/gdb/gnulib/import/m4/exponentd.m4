@@ -1,8 +1,8 @@
-# exponentd.m4 serial 3
-dnl Copyright (C) 2007-2008, 2010-2012 Free Software Foundation, Inc.
-dnl This file is free software; the Free Software Foundation
-dnl gives unlimited permission to copy and/or distribute it,
-dnl with or without modifications, as long as this notice is preserved.
+# exponentd.m4 serial 4
+dnl# Copyright (C) 2007-2008, 2010-2014 Free Software Foundation, Inc.
+dnl# This file is free software; the Free Software Foundation
+dnl# gives unlimited permission to copy and/or distribute it,
+dnl# with or without modifications, as long as this notice is preserved.
 AC_DEFUN([gl_DOUBLE_EXPONENT_LOCATION],
 [
   AC_CACHE_CHECK([where to find the exponent in a 'double'],
@@ -91,12 +91,14 @@ int main ()
             [
               pushdef([AC_MSG_CHECKING],[:])dnl
               pushdef([AC_MSG_RESULT],[:])dnl
-              pushdef([AC_MSG_RESULT_UNQUOTED],[:])dnl
+              pushdef([_AS_ECHO_UNQUOTED([$as_me:${as_lineno-$LINENO}: result: ],[AS_MESSAGE_LOG_FD])
+_AS_ECHO_UNQUOTED([])],[:])dnl
               AC_C_BIGENDIAN(
                 [gl_cv_cc_double_expbit0="word 0 bit 20"],
                 [gl_cv_cc_double_expbit0="word 1 bit 20"],
                 [gl_cv_cc_double_expbit0="unknown"])
-              popdef([AC_MSG_RESULT_UNQUOTED])dnl
+              popdef([_AS_ECHO_UNQUOTED([$as_me:${as_lineno-$LINENO}: result: ],[AS_MESSAGE_LOG_FD])
+_AS_ECHO_UNQUOTED([])])dnl
               popdef([AC_MSG_RESULT])dnl
               popdef([AC_MSG_CHECKING])dnl
             ])

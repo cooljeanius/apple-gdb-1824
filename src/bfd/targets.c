@@ -1,4 +1,4 @@
-/* Generic target-file-type support for the BFD library.
+/* targets.c: Generic target-file-type support for the BFD library.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
    2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
@@ -970,7 +970,7 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&bfd_elf64_tradbigmips_vec,
 	&bfd_elf64_tradlittlemips_vec,
 	&bfd_elf64_x86_64_vec,
-	&bfd_mmo_vec, 
+	&bfd_mmo_vec,
 #endif
 	&bfd_powerpc_pe_vec,
 	&bfd_powerpc_pei_vec,
@@ -1407,3 +1407,5 @@ bfd_search_for_target (int (*search_func) (const bfd_target *, void *),
 
   return NULL;
 }
+
+/* EOF */

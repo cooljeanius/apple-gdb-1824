@@ -1,4 +1,4 @@
-/* HP PA-RISC SOM object file format:  definitions internal to BFD.
+/* libhppa.h: HP PA-RISC SOM object file format:  definitions internal to BFD.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000,
    2003 Free Software Foundation, Inc.
 
@@ -538,57 +538,57 @@ bfd_hppa_insn2fmt (bfd *abfd, int insn)
 }
 
 
-/* Insert VALUE into INSN using R_FORMAT to determine exactly what
-   bits to change.  */
-
+/* Insert VALUE into INSN using R_FORMAT to determine exactly which bits
+ * to change: */
 static inline int
-hppa_rebuild_insn (int insn, int value, int r_format)
+hppa_rebuild_insn(int insn, int value, int r_format)
 {
-  switch (r_format)
-    {
+  switch (r_format) {
     case 11:
-      return (insn & ~ 0x7ff) | low_sign_unext (value, 11);
+      return ((insn & ~ 0x7ff) | low_sign_unext(value, 11));
 
     case 12:
-      return (insn & ~ 0x1ffd) | re_assemble_12 (value);
+      return ((insn & ~ 0x1ffd) | re_assemble_12(value));
 
 
     case 10:
-      return (insn & ~ 0x3ff1) | re_assemble_14 (value & -8);
+      return ((insn & ~ 0x3ff1) | re_assemble_14(value & -8));
 
     case -11:
-      return (insn & ~ 0x3ff9) | re_assemble_14 (value & -4);
+      return ((insn & ~ 0x3ff9) | re_assemble_14(value & -4));
 
     case 14:
-      return (insn & ~ 0x3fff) | re_assemble_14 (value);
+      return ((insn & ~ 0x3fff) | re_assemble_14(value));
 
 
     case -10:
-      return (insn & ~ 0xfff1) | re_assemble_16 (value & -8);
+      return ((insn & ~ 0xfff1) | re_assemble_16(value & -8));
 
     case -16:
-      return (insn & ~ 0xfff9) | re_assemble_16 (value & -4);
+      return ((insn & ~ 0xfff9) | re_assemble_16(value & -4));
 
     case 16:
-      return (insn & ~ 0xffff) | re_assemble_16 (value);
+      return ((insn & ~ 0xffff) | re_assemble_16(value));
 
 
     case 17:
-      return (insn & ~ 0x1f1ffd) | re_assemble_17 (value);
+      return ((insn & ~ 0x1f1ffd) | re_assemble_17(value));
 
     case 21:
-      return (insn & ~ 0x1fffff) | re_assemble_21 (value);
+      return ((insn & ~ 0x1fffff) | re_assemble_21(value));
 
     case 22:
-      return (insn & ~ 0x3ff1ffd) | re_assemble_22 (value);
+      return ((insn & ~ 0x3ff1ffd) | re_assemble_22(value));
 
     case 32:
       return value;
 
     default:
-      abort ();
-    }
-  return insn;
+      abort();
+  }
+  return insn; /*NOTREACHED*/
 }
 
 #endif /* _LIBHPPA_H */
+
+/* EOF */

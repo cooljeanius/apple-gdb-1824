@@ -17,15 +17,17 @@ AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
 # Checks for programs
-if test "x$CC" = "x"; then
-	test -z "$CC"
-	AC_PROG_CC
+if test "x${CC}" = "x"; then
+  test -z "${CC}"
+  AC_PROG_CC
 else
-	test ! -z "$CC"
-	AC_PROG_GCC_TRADITIONAL
+  test ! -z "${CC}"
+  AC_PROG_GCC_TRADITIONAL
 fi
 AC_PROG_CPP
 AC_PROG_SED
+
+AC_C_CONST
 
 AC_CHECK_HEADERS([stdio.h])
 

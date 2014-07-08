@@ -1,3 +1,5 @@
+/* vaxult.h */
+
 #include <machine/param.h>
 #include <machine/vmparam.h>
 #define	HOST_PAGE_SIZE		(NBPG*CLSIZE)

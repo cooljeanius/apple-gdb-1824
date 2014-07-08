@@ -43,18 +43,30 @@ NATDEPFILES = \
 	$(MACOSX_FILES) \
 	$(CFM_FILES)
 
-XM_CLIBS = $(CFM_LIBS) -framework Security
+XM_CLIBS = -framework Foundation $(CFM_LIBS) -framework Security
 
-MH_CFLAGS = -I$(srcdir)/macosx $(CFM_CFLAGS)
+MH_CFLAGS = \
+	-I$(srcdir)/macosx \
+	$(CFM_CFLAGS)
 
 CFM_FILES = \
+	macosx-metrowerks.o \
 	macosx-nat-cfm.o \
 	macosx-nat-cfm-io.o \
 	macosx-nat-cfmthread.o
 
-CFM_CFLAGS = -DWITH_CFM=1
+CFM_CFLAGS = \
+	-DWITH_CFM=1 \
+	-I/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Headers \
+	-Wno-four-char-constants \
+	-traditional-cpp
 
-CFM_LIBS = 
+CFM_LIBS = \
+	-L/System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/Current/Support \
+	-lGDBCFMHelper
+
+SIM_OBS = remote-sim.o
+SIM = ../sim/ppc/libsim.a
 
 # APPLE LOCAL - Allow more than 256 streams to be open at a time.
 
@@ -66,4 +78,4 @@ $(MACH_EXC_SERVER_PREFACE)excServer.c $(MACH_EXC_SERVER_PREFACE)excUser.c: macos
 	$(SDKROOT)/usr/bin/mig -I. $<
 
 clean::
-	rm -f $(MACH_EXC_SERVER_PREFACE)excServer.c $(MACH_EXC_SERVER_PREFACE)excUser.c $(MACH_EXC_SERVER_PREFACE)exc.h
+	rm -fv $(MACH_EXC_SERVER_PREFACE)excServer.c $(MACH_EXC_SERVER_PREFACE)excUser.c $(MACH_EXC_SERVER_PREFACE)exc.h

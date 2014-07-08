@@ -26,14 +26,15 @@
 # define REMOTE_UTILS_H_NON_AUTOTOOLS_BUILD 1
 #endif /* HAVE_CONFIG_H */
 
-#ifndef gdb_byte
+/* pretty sure about this being '&&' instead of '||', but not entirely: */
+#if !defined(gdb_byte) && !defined(SERVER_H)
 # include "bfd.h"
 # ifdef bfd_byte
 typedef bfd_byte gdb_byte;
 # else
 typedef unsigned char gdb_byte;
 # endif /* bfd_byte */
-#endif /* !gdb_byte */
+#endif /* !gdb_byte && !SERVER_H */
 
 #ifndef ULONGEST
 # define ULONGEST unsigned long long
@@ -94,21 +95,20 @@ int decode_search_memory_packet (const char *buf, int packet_len,
 				 gdb_byte *pattern,
 				 unsigned int *pattern_lenp);
 
-int unhexify (char *bin, const char *hex, int count);
-int hexify (char *hex, const char *bin, int count);
-int remote_escape_output (const gdb_byte *buffer, int len,
-			  gdb_byte *out_buf, int *out_len,
-			  int out_maxlen);
-char *unpack_varlen_hex (char *buff,  ULONGEST *result);
+int unhexify(char *bin, const char *hex, int count);
+int hexify(char *hex, const char *bin, int count);
+int remote_escape_output(const gdb_byte *buffer, int len, gdb_byte *out_buf,
+						 int *out_len, int out_maxlen);
+char *unpack_varlen_hex(char *buff,  ULONGEST *result);
 
-void clear_symbol_cache (struct sym_cache **symcache_p);
+void clear_symbol_cache(struct sym_cache **symcache_p);
 #ifndef SERVER_H
-int look_up_one_symbol (const char *name, CORE_ADDR *addrp, int may_ask_gdb);
+int look_up_one_symbol(const char *name, CORE_ADDR *addrp, int may_ask_gdb);
 #endif /* !SERVER_H */
 
-int relocate_instruction (CORE_ADDR *to, CORE_ADDR oldloc);
+int relocate_instruction(CORE_ADDR *to, CORE_ADDR oldloc);
 
-void monitor_output (const char *msg);
+void monitor_output(const char *msg);
 
 #endif /* REMOTE_UTILS_H */
 

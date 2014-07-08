@@ -15,11 +15,11 @@ AC_EXEEXT
 AC_PROG_CC
 AC_PROG_MAKE_SET
 
-# Automake
-AM_INIT_AUTOMAKE([foreign dejagnu -Wall])
+# Automake:
+AM_INIT_AUTOMAKE([foreign dejagnu -Wall -Wno-obsolete])
 AM_MAINTAINER_MODE
 
-# Find Tcl, Tk, etc
+# Find Tcl, Tk, and things related to them:
 CYG_AC_PATH_TCLCONFIG
 CYG_AC_LOAD_TCLCONFIG
 CYG_AC_PATH_TKCONFIG
@@ -28,8 +28,8 @@ CYG_AC_PATH_TCLH
 CYG_AC_PATH_TKH
 AC_SUBST([TCL_DBGX])
 
-# Make sure TCL_SHLIB_SUFFIX is set
-if test x$TCL_SHLIB_SUFFIX = x ; then
+# Make sure TCL_SHLIB_SUFFIX is set:
+if test "x${TCL_SHLIB_SUFFIX}" = "x"; then
   case "${host}" in
     *cygwin*) TCL_SHLIB_SUFFIX=".dll" ;;
     *darwin*) TCL_SHLIB_SUFFIX=".dylib" ;;
@@ -46,7 +46,8 @@ case "${host}" in
   *cygwin*)
     ocflags=${CFLAGS}
     CFLAGS="${CFLAGS} -mwin32"
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],[],[CFLAGS="${ocflags}"])
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
+                      [],[CFLAGS="${ocflags}"])
     ;;
   *) ;;
 esac
@@ -76,8 +77,8 @@ case "${host}" in
     AC_CHECK_TOOL([AS],[as],[as])
     AC_CHECK_TOOL([LD],[ld],[ld])
     AC_MSG_CHECKING(["for libcygwin.a"])
-    LIBCYGWIN_A=`$CC -print-file-name=libcygwin.a`
-    AC_MSG_RESULT([$LIBCYGWIN_A])
+    LIBCYGWIN_A=`${CC} -print-file-name=libcygwin.a`
+    AC_MSG_RESULT([${LIBCYGWIN_A}])
     AC_SUBST([LIBCYGWIN_A])
     AC_CHECK_TOOL([DLLTOOL],[dlltool])
     ;;
@@ -87,7 +88,7 @@ case "${host}" in
 esac
 
 # Plugins supported by this configuration
-if test x${supported} = xyes; then
+if test "x${supported}" = "xyes"; then
   plugins="rhabout"
   case "${target}" in
     *cygwin*) ;;
@@ -97,8 +98,8 @@ if test x${supported} = xyes; then
       ;;
   esac
 
-  for i in $plugins ; do
-    make_subdirs="${make_subdirs} $i"
+  for i in ${plugins}; do
+    make_subdirs="${make_subdirs} ${i}"
   done
 fi
 

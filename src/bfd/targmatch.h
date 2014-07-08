@@ -1,3 +1,4 @@
+/* targmatch.h is generated from multiple files */
 #ifdef BFD64
 #if !defined (SELECT_VECS) || defined (HAVE_bfd_elf64_alpha_freebsd_vec)
 
@@ -525,7 +526,7 @@
 
 
     
-#endif
+#endif /* BFD64 */
 
 #if !defined (SELECT_VECS) || defined (HAVE_bfd_elf32_hppa_linux_vec)
 
@@ -807,7 +808,7 @@
 
 
     
-#endif
+#endif /* BFD64 */
 #if !defined (SELECT_VECS) || defined (HAVE_bfd_elf32_i386_vec)
 
 { "i[3-7]86-*-lynxos*",
@@ -1349,7 +1350,7 @@
 
 
     
-#endif
+#endif /* BFD64 */
 #if !defined (SELECT_VECS) || defined (HAVE_bfd_elf32_bigmips_vec)
 
 { "mips*-*-irix5*",
@@ -1423,7 +1424,7 @@
 
 
     
-#endif
+#endif /* BFD64 */
 #if !defined (SELECT_VECS) || defined (HAVE_bfd_elf32_littlemips_vec)
 
 { "mips*el-*-openbsd*",
@@ -1457,7 +1458,7 @@
 
 
     
-#endif
+#endif /* BFD64 */
 #if !defined (SELECT_VECS) || defined (HAVE_bfd_elf32_tradlittlemips_vec)
 
 { "mips*el-*-linux*",
@@ -1485,7 +1486,7 @@
 
 
     
-#endif
+#endif /* BFD64 */
 #if !defined (SELECT_VECS) || defined (HAVE_bfd_elf32_mn10200_vec)
 
 { "mn10200-*-*",
@@ -1607,7 +1608,7 @@
 
 
     
-#endif
+#endif /* BFD64 */
 
 #if !defined (SELECT_VECS) || defined (HAVE_rs6000coff_vec)
 
@@ -1629,7 +1630,7 @@
 
 
     
-#endif
+#endif /* BFD64 */
 
 #if !defined (SELECT_VECS) || defined (HAVE_rs6000coff_vec)
 
@@ -1665,7 +1666,7 @@
 
 
     
-#endif
+#endif /* BFD64 */
 #if !defined (SELECT_VECS) || defined (HAVE_bfd_elf32_powerpc_vec)
 
 { "powerpc-*-*bsd*", NULL },{ "powerpc-*-elf*", NULL },{ "powerpc-*-sysv4*", NULL },{ "powerpc-*-eabi*", NULL },
@@ -1789,7 +1790,7 @@
 #endif
 
     
-#endif
+#endif /* BFD64 */
 
 #ifdef BFD64
 #if !defined (SELECT_VECS) || defined (HAVE_bfd_elf32_sh64l_vec)
@@ -1837,7 +1838,7 @@
 
 #ifdef BFD64
 
-#endif
+#endif /* BFD64 */
     
 #if !defined (SELECT_VECS) || defined (HAVE_bfd_elf32_shblin_vec)
 
@@ -1890,7 +1891,7 @@
 
 
     
-#endif
+#endif /* BFD64 */
 
 #if !defined (SELECT_VECS) || defined (HAVE_bfd_elf32_shlnbsd_vec)
 
@@ -1901,7 +1902,7 @@
 
 #ifdef BFD64
 
-#endif
+#endif /* BFD64 */
     
 #if !defined (SELECT_VECS) || defined (HAVE_bfd_elf32_shnbsd_vec)
 
@@ -1912,7 +1913,7 @@
 
 #ifdef BFD64
 
-#endif
+#endif /* BFD64 */
     
 #if !defined (SELECT_VECS) || defined (HAVE_bfd_elf32_shnbsd_vec)
 
@@ -1940,7 +1941,7 @@
 
 #ifdef BFD64
 
-#endif
+#endif /* BFD64 */
 
     
 #if !defined (SELECT_VECS) || defined (HAVE_shcoff_vec)
@@ -1961,7 +1962,7 @@
 
 #ifdef BFD64
 
-#endif
+#endif /* BFD64 */
 
     
 #if !defined (SELECT_VECS) || defined (HAVE_bfd_elf32_sh_vec)
@@ -2110,7 +2111,7 @@
 
 
     
-#endif
+#endif /* BFD64 */
 #if !defined (SELECT_VECS) || defined (HAVE_bfd_elf32_sparc_vec)
 
 { "sparc-*-sysv4*",
@@ -2185,7 +2186,7 @@
 
 
     
-#endif
+#endif /* HAVE_host_aout_vec */
 
 #if !defined (SELECT_VECS) || defined (HAVE_tic80coff_vec)
 

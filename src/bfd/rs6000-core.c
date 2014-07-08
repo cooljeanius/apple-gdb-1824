@@ -35,14 +35,16 @@
    system include files that conflict with coff/rs6000.h.  */
 
 /* Internalcoff.h and coffcode.h modify themselves based on this flag.  */
-#define RS6000COFF_C 1
+#ifndef RS6000COFF_C
+# define RS6000COFF_C 1
+#endif /* !RS6000COFF_C */
 
 /* The AIX 4.1 kernel is obviously compiled with -D_LONG_LONG, so
    we have to define _LONG_LONG for older versions of gcc to get the
    proper alignments in the user structure.  */
 #if defined(_AIX41) && !defined(_LONG_LONG)
-#define _LONG_LONG
-#endif
+# define _LONG_LONG
+#endif /* _AIX41 && !_LONG_LONG */
 
 #include "bfd.h"
 #include "sysdep.h"

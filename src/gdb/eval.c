@@ -86,7 +86,7 @@ static struct value *
 evaluate_subexp (struct type *expect_type, struct expression *exp,
 		 int *pos, enum noside noside)
 {
-  return (*exp->language_defn->la_exp_desc->evaluate_exp) 
+  return (*exp->language_defn->la_exp_desc->evaluate_exp)
     (expect_type, exp, pos, noside);
 }
 
@@ -228,14 +228,13 @@ get_label (struct expression *exp, int *pos)
 }
 
 /* This function evaluates tuples (in (the deleted) Chill) or
-   brace-initializers (in C/C++) for structure types.  */
-
+ * brace-initializers (in C/C++) for structure types: */
 static struct value *
-evaluate_struct_tuple (struct value *struct_val,
-		       struct expression *exp,
-		       int *pos, enum noside noside, int nargs)
+evaluate_struct_tuple(struct value *struct_val,
+					  struct expression *exp,
+					  int *pos, enum noside noside, int nargs)
 {
-  struct type *struct_type = check_typedef (value_type (struct_val));
+  struct type *struct_type = check_typedef(value_type(struct_val));
   struct type *substruct_type = struct_type;
   struct type *field_type;
   int fieldno = -1;
@@ -367,16 +366,14 @@ evaluate_struct_tuple (struct value *struct_val,
 }
 
 /* Recursive helper function for setting elements of array tuples for
-   (the deleted) Chill.  The target is ARRAY (which has bounds
-   LOW_BOUND to HIGH_BOUND); the element value is ELEMENT; EXP, POS
-   and NOSIDE are as usual.  Evaluates index expresions and sets the
-   specified element(s) of ARRAY to ELEMENT.  Returns last index
-   value.  */
-
+ * (the deleted) Chill.  The target is ARRAY (which has bounds
+ * LOW_BOUND to HIGH_BOUND); the element value is ELEMENT; EXP, POS
+ * and NOSIDE are as usual. Evaluates index expresions and sets the
+ * specified element(s) of ARRAY to ELEMENT. Returns last index value. */
 static LONGEST
-init_array_element (struct value *array, struct value *element,
-		    struct expression *exp, int *pos,
-		    enum noside noside, LONGEST low_bound, LONGEST high_bound)
+init_array_element(struct value *array, struct value *element,
+				   struct expression *exp, int *pos,
+				   enum noside noside, LONGEST low_bound, LONGEST high_bound)
 {
   LONGEST index;
   int element_size = TYPE_LENGTH (value_type (element));
@@ -482,7 +479,7 @@ evaluate_subexp_standard (struct type *expect_type,
 	/* APPLE LOCAL - We don't want to print the closure type always.
 	   This made things look better in command-line gdb but it
 	   obscures the distinction between dynamic & static type
-	   changes.  So we add this variable and toggle it off in 
+	   changes.  So we add this variable and toggle it off in
 	   the varobj code where this is important.  */
 	if (print_closure)
 	  {
@@ -534,8 +531,8 @@ evaluate_subexp_standard (struct type *expect_type,
 	goto nosideret;
       return value_string (&exp->elts[pc + 2].string, tem);
 
-      /* FIXME: I think above call is likely wrong, and should be 
-         value_string (..., tem + 1);  I can't easily test it, since 
+      /* FIXME: I think above call is likely wrong, and should be
+         value_string (..., tem + 1);  I can't easily test it, since
          while Fortran and Chill still use OP_STRING, C and C++ do not. */
 
     case OP_OBJC_NSSTRING:		/* Objective C Foundation Class NSString constant.  */
@@ -773,7 +770,7 @@ evaluate_subexp_standard (struct type *expect_type,
 
 	struct value *target = NULL;
 	struct value *method = NULL;
-	struct value *called_method = NULL; 
+	struct value *called_method = NULL;
 
 	struct type *selector_type = NULL;
 
@@ -781,14 +778,14 @@ evaluate_subexp_standard (struct type *expect_type,
 	CORE_ADDR addr = 0;
 
         /* APPLE LOCAL: SELECTOR can be sign-extended because .longconst
-           is signed; mask off the upper 32 bits if we're not a 64 bit 
+           is signed; mask off the upper 32 bits if we're not a 64 bit
            program.  */
         if (TARGET_PTR_BIT == 64)
 	  selector = exp->elts[pc + 1].longconst;
         else
 	  selector = exp->elts[pc + 1].longconst & 0xffffffff;
 	nargs = exp->elts[pc + 2].longconst;
-	argvec = (struct value **) alloca (sizeof (struct value *) 
+	argvec = (struct value **) alloca (sizeof (struct value *)
 					   * (nargs + 5));
 
 	(*pos) += 3;
@@ -803,7 +800,7 @@ evaluate_subexp_standard (struct type *expect_type,
 
 	/* APPLE LOCAL: If we go on from here we are going to try to look
 	   up TARGET as an objc class.  But getting the target (OP_VAR_VALUE)
-	   when NOSIDE is EVAL_SKIP just returns "1", which is not going to 
+	   when NOSIDE is EVAL_SKIP just returns "1", which is not going to
 	   work when we start grubbing around in memory there.  */
 	if (noside == EVAL_SKIP)
 	  goto nosideret;
@@ -823,24 +820,24 @@ evaluate_subexp_standard (struct type *expect_type,
 	       can't find any symbol information, then we'll use these to
 	       call the method, otherwise we can call the method
 	       directly. The msg_send_stret function is used in the special
-	       case of a method that returns a structure (Apple runtime 
+	       case of a method that returns a structure (Apple runtime
 	       only).  */
 	    if (gnu_runtime)
 	      {
 
 		/* APPLE LOCAL: FIXME - it seems innocent enough to give
-		   a type to the msg_send function here.  But the code 
-		   below this will use the type of the cached function 
+		   a type to the msg_send function here.  But the code
+		   below this will use the type of the cached function
 		   value as the type of the method call if debug symbols
 		   for the call can't be found.  Look particularly where
 		   we check for (!method) and then inherit called_method
-		   from there.  I think THAT code is what is actually 
-		   wrong, but it works correctly if you don't set the 
-		   type here.  
+		   from there.  I think THAT code is what is actually
+		   wrong, but it works correctly if you don't set the
+		   type here.
 		   So don't be tempted to move this bit of code out to the
 		   Apple Runtime part of the code without fixing the
 		   way called_method is used below.  */
-	 
+
                 struct type *type;
                 type = lookup_pointer_type (builtin_type_void);
                 type = lookup_function_type (type);
@@ -875,7 +872,7 @@ evaluate_subexp_standard (struct type *expect_type,
 	    /* is it a high_level symbol?  */
 
 	    sym = find_pc_function (addr);
-	    if (sym != NULL) 
+	    if (sym != NULL)
 	      method = value_of_variable (sym, 0);
 	  }
 
@@ -896,8 +893,8 @@ evaluate_subexp_standard (struct type *expect_type,
 	    using_gcc = (b == NULL ? 2 : BLOCK_GCC_COMPILED (b));
 
 	    CHECK_TYPEDEF (value_type);
-	  
-	    if ((value_type == NULL) 
+
+	    if ((value_type == NULL)
 		|| (TYPE_CODE(value_type) == TYPE_CODE_ERROR))
 	      {
 		if (expect_type != NULL)
@@ -910,7 +907,7 @@ evaluate_subexp_standard (struct type *expect_type,
 	  {
 	    struct_return = using_struct_return (check_typedef (expect_type), using_gcc);
 	  }
-	
+
 	/* Found a function symbol.  Now we will substitute its
 	   value in place of the message dispatcher (obj_msgSend),
 	   so that we call the method directly instead of thru
@@ -919,11 +916,11 @@ evaluate_subexp_standard (struct type *expect_type,
 	   according to their known data types, in case we need to
 	   do things like promotion, dereferencing, special handling
 	   of structs and doubles, etc.
-	  
+
 	   We want to use the type signature of 'method', but still
 	   jump to objc_msgSend() or objc_msgSend_stret() to better
 	   mimic the behavior of the runtime.  */
-	
+
 	if (method)
 	  {
 	    if (TYPE_CODE (value_type (method)) != TYPE_CODE_FUNC)
@@ -1211,7 +1208,7 @@ evaluate_subexp_standard (struct type *expect_type,
 	{
 	  /* Non-member function being called */
           /* fn: This can only be done for C++ functions.  A C-style function
-             in a C++ program, for instance, does not have the fields that 
+             in a C++ program, for instance, does not have the fields that
              are expected here */
 
 	  /* APPLE LOCAL ObjC++ */
@@ -1282,11 +1279,11 @@ evaluate_subexp_standard (struct type *expect_type,
 
     case OP_F77_UNDETERMINED_ARGLIST:
 
-      /* Remember that in F77, functions, substring ops and 
-         array subscript operations cannot be disambiguated 
-         at parse time.  We have made all array subscript operations, 
-         substring operations as well as function calls  come here 
-         and we now have to discover what the heck this thing actually was.  
+      /* Remember that in F77, functions, substring ops and
+         array subscript operations cannot be disambiguated
+         at parse time.  We have made all array subscript operations,
+         substring operations as well as function calls  come here
+         and we now have to discover what the heck this thing actually was.
          If it is a function, we process just as if we got an OP_FUNCALL. */
 
       nargs = longest_to_int (exp->elts[pc + 1].longconst);
@@ -1302,7 +1299,7 @@ evaluate_subexp_standard (struct type *expect_type,
 	  /* Fortran always passes variable to subroutines as pointer.
 	     So we need to look into its target type to see if it is
 	     array, string or function.  If it is, we need to switch
-	     to the target value the original one points to.  */ 
+	     to the target value the original one points to.  */
 	  struct type *target_type = check_typedef (TYPE_TARGET_TYPE (type));
 
 	  if (TYPE_CODE (target_type) == TYPE_CODE_ARRAY
@@ -1313,7 +1310,7 @@ evaluate_subexp_standard (struct type *expect_type,
 	      type = check_typedef (value_type (arg1));
 	      code = TYPE_CODE (type);
 	    }
-	} 
+	}
 
       switch (code)
 	{
@@ -1341,7 +1338,7 @@ evaluate_subexp_standard (struct type *expect_type,
 	}
 
     op_f77_substr:
-      /* We have a substring operation on our hands here, 
+      /* We have a substring operation on our hands here,
          let us get the string we will be dealing with */
 
       /* Now evaluate the 'from' and 'to' */
@@ -1362,7 +1359,7 @@ evaluate_subexp_standard (struct type *expect_type,
       return value_slice (arg1, tem2, tem3 - tem2 + 1);
 
     case OP_COMPLEX:
-      /* We have a complex number, There should be 2 floating 
+      /* We have a complex number, There should be 2 floating
          point numbers that compose it */
       arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
       arg2 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
@@ -1401,7 +1398,7 @@ evaluate_subexp_standard (struct type *expect_type,
         struct type *type = value_type (arg1);
         struct type *real_type = NULL;
         int full, top, using_enc;
-        
+
         if (objectprint && TYPE_TARGET_TYPE(type) &&
             (TYPE_CODE (TYPE_TARGET_TYPE (type)) == TYPE_CODE_CLASS))
           {
@@ -1702,7 +1699,7 @@ evaluate_subexp_standard (struct type *expect_type,
 	if (nargs != ndimensions)
 	  error (_("Wrong number of subscripts"));
 
-	/* Now that we know we have a legal array subscript expression 
+	/* Now that we know we have a legal array subscript expression
 	   let us actually find out where this element exists in the array. */
 
 	offset_item = 0;
@@ -1734,12 +1731,12 @@ evaluate_subexp_standard (struct type *expect_type,
 
 	    subscript_array[nargs - i - 1] -= lower;
 
-	    /* If we are at the bottom of a multidimensional 
+	    /* If we are at the bottom of a multidimensional
 	       array type then keep a ptr to the last ARRAY
 	       type around for use when calling value_subscript()
 	       below. This is done because we pretend to value_subscript
-	       that we actually have a one-dimensional array 
-	       of base element type that we apply a simple 
+	       that we actually have a one-dimensional array
+	       of base element type that we apply a simple
 	       offset to. */
 
 	    if (i < nargs - 1)
@@ -1758,10 +1755,10 @@ evaluate_subexp_standard (struct type *expect_type,
 
 	arg2 = value_from_longest (builtin_type_f_integer, offset_item);
 
-	/* Let us now play a dirty trick: we will take arg1 
+	/* Let us now play a dirty trick: we will take arg1
 	   which is a value node pointing to the topmost level
 	   of the multidimensional array-set and pretend
-	   that it is actually a array of the final element 
+	   that it is actually a array of the final element
 	   type, this will ensure that value_subscript()
 	   returns the correct type value */
 
@@ -1939,7 +1936,7 @@ evaluate_subexp_standard (struct type *expect_type,
 	return value_x_unop (arg1, op, noside);
       else
 	return value_pos (arg1);
-      
+
     case UNOP_NEG:
       arg1 = evaluate_subexp (NULL_TYPE, exp, pos, noside);
       if (noside == EVAL_SKIP)
@@ -2125,11 +2122,11 @@ evaluate_subexp_standard (struct type *expect_type,
     case OP_THIS:
       (*pos) += 1;
       /* APPLE LOCAL */
-      return value_of_local ("this", 1);
+      return value_of_local("this", 1);
 
     case OP_OBJC_SELF:
       (*pos) += 1;
-      return value_of_local ("self", 1);
+      return value_of_local("self", 1);
 
     case OP_TYPE:
       error (_("Attempt to use a type name as an expression"));
@@ -2152,16 +2149,14 @@ nosideret:
   return value_from_longest (builtin_type_long, (LONGEST) 1);
 }
 
-/* Evaluate a subexpression of EXP, at index *POS,
-   and return the address of that subexpression.
-   Advance *POS over the subexpression.
-   If the subexpression isn't an lvalue, get an error.
-   NOSIDE may be EVAL_AVOID_SIDE_EFFECTS;
-   then only the type of the result need be correct.  */
-
+/* Evaluate a subexpression of EXP, at index *POS, and return the address
+ * of that subexpression. Advance *POS over the subexpression.
+ * If the subexpression is NOT an lvalue, then get an error.
+ * NOSIDE may be EVAL_AVOID_SIDE_EFFECTS; then only the type of the result
+ * needs to be correct: */
 static struct value *
-evaluate_subexp_for_address (struct expression *exp, int *pos,
-			     enum noside noside)
+evaluate_subexp_for_address(struct expression *exp, int *pos,
+							enum noside noside)
 {
   enum exp_opcode op;
   int pc;

@@ -1,4 +1,4 @@
-/* BFD back-end data structures for ELF files.
+/* elf-bfd.h: BFD back-end data structures for ELF files.
    Copyright 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
    2002, 2003, 2004, 2005 Free Software Foundation, Inc.
    Written by Cygnus Support.
@@ -34,19 +34,27 @@
    symbol table sections.  */
 #define NUM_SHDR_ENTRIES(shdr) ((shdr)->sh_size / (shdr)->sh_entsize)
 
-/* If size isn't specified as 64 or 32, NAME macro should fail.  */
+#ifndef ARCH_SIZE
+# if defined(__LP64__) && __LP64__
+#  define ARCH_SIZE 64
+# else
+#  define ARCH_SIZE 32 /* seems like a safe assumption */
+# endif /* __LP64__ */
+#endif /* !ARCH_SIZE */
+
+/* If size is NOT specified as 64 or 32, NAME macro should fail: */
 #ifndef NAME
-#if ARCH_SIZE == 64
-#define NAME(x, y) x ## 64 ## _ ## y
-#endif
-#if ARCH_SIZE == 32
-#define NAME(x, y) x ## 32 ## _ ## y
-#endif
-#endif
+# if defined(ARCH_SIZE) && (ARCH_SIZE == 64)
+#  define NAME(x, y) x ## 64 ## _ ## y
+# endif /* ARCH_SIZE == 64 */
+# if defined(ARCH_SIZE) && (ARCH_SIZE == 32)
+#  define NAME(x, y) x ## 32 ## _ ## y
+# endif /* ARCH_SIZE == 32 */
+#endif /* !NAME */
 
 #ifndef NAME
-#define NAME(x, y) x ## NOSIZE ## _ ## y
-#endif
+# define NAME(x, y) x ## NOSIZE ## _ ## y
+#endif /* !NAME */
 
 #define ElfNAME(X)	NAME(Elf,X)
 #define elfNAME(X)	NAME(elf,X)

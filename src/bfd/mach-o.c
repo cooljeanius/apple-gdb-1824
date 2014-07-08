@@ -1,22 +1,26 @@
-/* Mach-O support for BFD.
-   Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005
-   Free Software Foundation, Inc.
+/* mach-o.c: Mach-O support for BFD.
+ * Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005
+ * Free Software Foundation, Inc.
+ *
+ * This file is part of BFD, the Binary File Descriptor library.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St. - 5th Floor, Boston, MA 02110-1301, USA.
+ */
 
-   This file is part of BFD, the Binary File Descriptor library.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+#ifndef __BFD_MACH_O_C__
+#define __BFD_MACH_O_C__ 1
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -3215,7 +3219,7 @@ mach_o_bfd_fat_free_cached_info (bfd *input)
 #define TARGET_ARCHIVE 		1
 
 #undef bfd_mach_o_bfd_free_cached_info
-#define bfd_mach_o_bfd_free_cached_info               mach_o_bfd_fat_free_cached_info
+#define bfd_mach_o_bfd_free_cached_info     mach_o_bfd_fat_free_cached_info
 
 #include "mach-o-target.c"
 
@@ -3223,5 +3227,7 @@ mach_o_bfd_fat_free_cached_info (bfd *input)
 #undef TARGET_STRING
 #undef TARGET_BIG_ENDIAN
 #undef TARGET_ARCHIVE
+
+#endif /* !__BFD_MACH_O_C__ */
 
 /* EOF */

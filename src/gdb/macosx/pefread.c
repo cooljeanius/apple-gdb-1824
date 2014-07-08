@@ -1,4 +1,5 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* pefread.c
+   Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -231,3 +232,5 @@ _initialize_pefread (void)
   add_symtab_fns (&pef_sym_fns);
   add_symtab_fns (&pef_xlib_sym_fns);
 }
+
+/* EOF */

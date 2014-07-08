@@ -3385,13 +3385,13 @@ add_dsym_command (char *args, int from_tty)
   do_cleanups (argv_cleanup);
 }
 
-static void
-add_shared_symbol_files_command (char *args, int from_tty)
+static void add_shared_symbol_files_command(char *args, int from_tty)
 {
+#undef ADD_SHARED_SYMBOL_FILES /*FIXME*/
 #ifdef ADD_SHARED_SYMBOL_FILES
-  ADD_SHARED_SYMBOL_FILES (args, from_tty);
+  ADD_SHARED_SYMBOL_FILES(args, from_tty);
 #else
-  error (_("This command is not available in this configuration of GDB."));
+  error(_("This command is not available in this configuration of GDB."));
 #endif /* ADD_SHARED_SYMBOL_FILES */
 }
 

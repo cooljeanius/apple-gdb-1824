@@ -34,55 +34,57 @@ static char *angelDebugFilename = NULL;
 static FILE *angelDebugLogFile = NULL;
 static int angelDebugLogEnable = 0;
 
-static void openLogFile ()
+static void openLogFile(void)
 {
   time_t t;
 
-  if (angelDebugFilename == NULL || *angelDebugFilename =='\0')
+  if ((angelDebugFilename == NULL) || (*angelDebugFilename =='\0')) {
     return;
+  }
 
-  angelDebugLogFile = fopen (angelDebugFilename,"a");
+  angelDebugLogFile = fopen(angelDebugFilename, "a");
 
-  if (!angelDebugLogFile)
-    {
-      fprintf (stderr,"Error opening log file '%s'\n",angelDebugFilename);
-      perror ("fopen");
-    }
-  else
-    {
+  if (!angelDebugLogFile) {
+      fprintf(stderr, "Error opening log file '%s'\n", angelDebugFilename);
+      perror("fopen");
+  } else {
       /* The following line is equivalent to: */
       /* setlinebuf (angelDebugLogFile); */
-      setvbuf(angelDebugLogFile, (char *)NULL, _IOLBF, 0);
+      setvbuf(angelDebugLogFile, (char *)NULL, _IOLBF, (size_t)0);
 #if defined(__CYGWIN__)
       setmode(fileno(angelDebugLogFile), O_TEXT);
 #endif /* __CYGWIN__ */
-    }
+  }
 
-  time (&t);
-  fprintf (angelDebugLogFile,"ADP log file opened at %s\n",asctime(localtime(&t)));
+  time(&t);
+  fprintf(angelDebugLogFile, "ADP log file opened at %s\n",
+	  asctime(localtime(&t)));
 }
 
 
-static void closeLogFile (void)
+static void closeLogFile(void)
 {
   time_t t;
 
-  if (!angelDebugLogFile)
-    return;
+  if (!angelDebugLogFile) {
+      return;
+  }
 
-  time (&t);
-  fprintf (angelDebugLogFile,"ADP log file closed at %s\n",asctime(localtime(&t)));
+  time(&t);
+  fprintf(angelDebugLogFile, "ADP log file closed at %s\n",
+	  asctime(localtime(&t)));
 
-  fclose (angelDebugLogFile);
+  fclose(angelDebugLogFile);
   angelDebugLogFile = NULL;
 }
 
-void DevSW_SetLogEnable (int logEnableFlag)
+void DevSW_SetLogEnable(int logEnableFlag)
 {
-  if (logEnableFlag && !angelDebugLogFile)
-    openLogFile ();
-  else if (!logEnableFlag && angelDebugLogFile)
-    closeLogFile ();
+  if (logEnableFlag && !angelDebugLogFile) {
+    openLogFile();
+  } else if (!logEnableFlag && angelDebugLogFile) {
+    closeLogFile();
+  }
 
   angelDebugLogEnable = logEnableFlag;
 }
@@ -90,20 +92,19 @@ void DevSW_SetLogEnable (int logEnableFlag)
 
 void DevSW_SetLogfile (const char *filename)
 {
-  closeLogFile ();
+  closeLogFile();
 
-  if (angelDebugFilename)
-    {
-      free (angelDebugFilename);
+  if (angelDebugFilename) {
+      free(angelDebugFilename);
       angelDebugFilename = NULL;
-    }
+  }
 
-  if (filename && *filename)
-    {
-      angelDebugFilename = strdup (filename);
-      if (angelDebugLogEnable)
-        openLogFile ();
-    }
+  if (filename && *filename) {
+      angelDebugFilename = strdup(filename);
+      if (angelDebugLogEnable) {
+        openLogFile();
+      }
+  }
 }
 
 
@@ -365,21 +366,19 @@ static void flush_packet(const DeviceDescr *device, DriverCall *dc)
 /**********************************************************************/
 
 /*
- * These are the externally visible functions.  They are documented in
+ * These are the externally visible functions. They are documented in
  * devsw.h
  */
 Packet *DevSW_AllocatePacket(const unsigned int length)
 {
     Packet *pk;
 
-    if ((pk = malloc(sizeof(*pk))) == NULL)
-    {
+    if ((pk = (struct Packet *)malloc(sizeof(*pk))) == NULL) {
         WARN("malloc failure");
         return NULL;
     }
 
-    if ((pk->pk_buffer = malloc(length+CHAN_HEADER_SIZE)) == NULL)
-    {
+    if ((pk->pk_buffer = (unsigned char *)malloc((size_t)(length + CHAN_HEADER_SIZE))) == NULL) {
         WARN("malloc failure");
         free(pk);
         return NULL;
@@ -402,14 +401,14 @@ AdpErrs DevSW_Open(DeviceDescr *device, const char *name, const char *arg,
     /*
      * is this the very first open call for this driver?
      */
-    if ((ds = (DevSWState *)(device->SwitcherState)) == NULL)
-    {
+    if ((ds = (DevSWState *)(device->SwitcherState)) == NULL) {
         /*
          * yes, it is: initialise state
          */
-        if ((ds = malloc(sizeof(*ds))) == NULL)
+	if ((ds = (struct DevSWState *)malloc(sizeof(*ds))) == NULL) {
             /* give up */
             return adp_malloc_failure;
+	}
 
         (void)memset(ds, 0, sizeof(*ds));
         device->SwitcherState = (void *)ds;
@@ -477,7 +476,8 @@ AdpErrs DevSW_Read(const DeviceDescr *device, const DevChanID type,
                    Packet **packet, bool block)
 {
   int read_err;
-  DevSWState *ds = device->SwitcherState;
+  DevSWState *ds;
+  ds = (struct DevSWState *)device->SwitcherState;
 
     /*
      * To try to get information out of the device driver as

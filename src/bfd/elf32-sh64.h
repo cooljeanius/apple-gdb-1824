@@ -1,4 +1,4 @@
-/* SH ELF support for BFD.
+/* elf32-sh64.h: SH ELF support for BFD.
    Copyright 2003 Free Software Foundation, Inc.
 
    This file is part of BFD, the Binary File Descriptor library.

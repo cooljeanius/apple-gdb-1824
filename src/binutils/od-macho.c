@@ -29,8 +29,17 @@
 #include "bfdlink.h"
 #include "libbfd.h"
 #include "mach-o.h"
-#include "mach-o/external.h"
-#include "mach-o/codesign.h"
+#if defined(__APPLE__) && defined(__MACH__)
+/* these should only be temporary renamings: */
+# include "mach-o-gnu/external.h"
+# include "mach-o-gnu/codesign.h"
+# if !defined(BFD_MACH_O_MH_KEXT_BUNDLE) && 0
+#  include "mach-o-gnu/loader.h"
+# endif /* !BFD_MACH_O_MH_KEXT_BUNDLE && 0 */
+#else
+# include "mach-o/external.h"
+# include "mach-o/codesign.h"
+#endif /* __APPLE__ && __MACH__ */
 
 /* Index of the options in the options[] array.  */
 #define OPT_HEADER 0

@@ -1,7 +1,7 @@
-/* Implement the snprintf function.
-   Copyright (C) 2003 Free Software Foundation, Inc.
-   Written by Kaveh R. Ghazi <ghazi@caip.rutgers.edu>.
-
+/* snprintf.c: Implement the snprintf function.
+ * Copyright (C) 2003 Free Software Foundation, Inc.
+ * Written by Kaveh R. Ghazi <ghazi@caip.rutgers.edu>. */
+/*
 This file is part of the libiberty library.  This library is free
 software; you can redistribute it and/or modify it under the
 terms of the GNU General Public License as published by the
@@ -15,13 +15,14 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with GNU CC; see the file COPYING.  If not, write to
-the Free Software Foundation, 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+the Free Software Foundation, 51 Franklin St. - 5th Floor, Boston, MA 02110-1301, USA.
 
 As a special exception, if you link this library with files
 compiled with a GNU compiler to produce an executable, this does not cause
 the resulting executable to be covered by the GNU General Public License.
 This exception does not however invalidate any other reasons why
-the executable file might be covered by the GNU General Public License. */
+the executable file might be covered by the GNU General Public License.
+ */
 
 /*
 
@@ -44,17 +45,18 @@ this function is used.
 #include <stdarg.h>
 #include <stddef.h>
 
-int vsnprintf (char *, size_t, const char *, va_list);
+int vsnprintf(char *, size_t, const char *, va_list);
 
-int
-snprintf (char *s, size_t n, const char *format, ...)
+int snprintf(char *s, size_t n, const char *format, ...)
 {
   int result;
-  VA_OPEN (ap, format);
-  VA_FIXEDARG (ap, char *, s);
-  VA_FIXEDARG (ap, size_t, n);
-  VA_FIXEDARG (ap, const char *, format);
-  result = vsnprintf (s, n, format, ap);
-  VA_CLOSE (ap);
+  VA_OPEN(ap, format);
+  VA_FIXEDARG(ap, char *, s);
+  VA_FIXEDARG(ap, size_t, n);
+  VA_FIXEDARG(ap, const char *, format);
+  result = vsnprintf(s, n, format, ap);
+  VA_CLOSE(ap);
   return result;
 }
+
+/* EOF */

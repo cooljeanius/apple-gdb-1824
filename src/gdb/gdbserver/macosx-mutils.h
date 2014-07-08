@@ -3,7 +3,7 @@
  */
 
 #ifndef __GDBSERVER_MACOSX_MUTILS_H__
-#define __GDBSERVER_MACOSX_MUTILS_H__
+#define __GDBSERVER_MACOSX_MUTILS_H__ 1
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -17,7 +17,7 @@
 # warning macosx-mutils.h expects <mach/port.h> to be included.
 #endif /* HAVE_MACH_PORT_H */
 
-#if MACH64
+#if defined(MACH64) && MACH64
 # ifdef HAVE_MACH_MACH_VM_H
 #  include <mach/mach_vm.h>
 # else

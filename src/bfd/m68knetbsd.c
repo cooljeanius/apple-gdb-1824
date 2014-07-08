@@ -1,4 +1,4 @@
-/* BFD back-end for NetBSD/m68k a.out-ish binaries.
+/* m68knetbsd.c: BFD back-end for NetBSD/m68k a.out-ish binaries.
    Copyright 1990, 1991, 1992, 1994, 1995, 1997, 1998, 2000, 2001, 2003
    Free Software Foundation, Inc.
 

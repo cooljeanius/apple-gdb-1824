@@ -1,3 +1,5 @@
+/* m88kmach3.h */
+
 #include <machine/vmparam.h>
 #include <sys/param.h>
 

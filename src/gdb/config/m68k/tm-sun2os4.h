@@ -1,4 +1,4 @@
-/* Copyright (C) 1990, Free Software Foundation, Inc.
+/* tm-sun2os4.h: Copyright (C) 1990, Free Software Foundation, Inc.
 
    This file is part of GDB.
 

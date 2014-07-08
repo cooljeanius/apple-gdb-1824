@@ -11,6 +11,15 @@ AC_CONFIG_SRCDIR([z8k-dis.c])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
 
+# PR 14072
+AH_VERBATIM([00_CONFIG_H_CHECK],[
+/* Check that config.h is #included before system headers
+ * (this works only for glibc, but that should be enough).  */
+#if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
+#  error config.h must be #included before system headers
+#endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ */
+#define __CONFIG_H__ 1])
+
 AC_CANONICAL_TARGET
 AC_SEARCH_LIBS([strerror],[cposix])
 
@@ -24,19 +33,19 @@ dnl# These must be called before AM_PROG_LIBTOOL, because it may want
 dnl# to call AC_CHECK_PROG.
 AM_PROG_AR
 if test "x${AR}" = "x"; then
-	test -z "${AR}"
-	AC_CHECK_TOOL([AR],[ar])
+  test -z "${AR}"
+  AC_CHECK_TOOL([AR],[ar])
 else
-	test ! -z "${AR}" && export AR
-	AC_SUBST([AR])
+  test ! -z "${AR}" && export AR
+  AC_SUBST([AR])
 fi
 AC_CHECK_TOOL([RANLIB],[ranlib],[:])
 if test "x${RANLIB}" = "x"; then
-	test -z "${RANLIB}"
-	AC_PROG_RANLIB
+  test -z "${RANLIB}"
+  AC_PROG_RANLIB
 else
-	test ! -z "${RANLIB}" && export RANLIB
-	AC_SUBST([RANLIB])
+  test ! -z "${RANLIB}" && export RANLIB
+  AC_SUBST([RANLIB])
 fi
 AM_PROG_AS
 
@@ -44,7 +53,7 @@ dnl# Default to a non shared library. This may be overridden by the
 dnl# configure option --enable-shared.
 AC_DISABLE_SHARED
 
-# Libtool checks
+# Libtool checks:
 AC_PROG_CXX
 LT_INIT([disable-fast-install disable-shared dlopen static win32-dll])
 LT_LANG([C])
@@ -69,8 +78,8 @@ dnl# APPLE LOCAL change is to omit the following:
 AM_BINUTILS_WARNINGS
 dnl# (I uncommented it to add it back in anyways)
 
-if test -z "${target}" ; then
-    AC_MSG_ERROR([Unrecognized target system type; please check config.sub.])
+if test -z "${target}"; then
+  AC_MSG_ERROR([Unrecognized target system type; please check config.sub.])
 fi
 
 AM_MAINTAINER_MODE
@@ -81,11 +90,11 @@ AC_EXEEXT
 # host-specific stuff:
 
 if test "x${CC}" = "x"; then
-    test -z "${CC}"
-    AC_PROG_CC
+  test -z "${CC}"
+  AC_PROG_CC
 else
-    test ! -z "${CC}"
-    AC_PROG_GCC_TRADITIONAL
+  test ! -z "${CC}"
+  AC_PROG_GCC_TRADITIONAL
 fi
 
 dnl# APPLE LOCAL:  mmap() always works right on Darwin. Take our word for
@@ -111,7 +120,7 @@ elif test -d ../libintl; then
     export LDFLAGS="${LDFLAGS} -L../libintl"
   fi
 fi
-ALL_LINGUAS="fr sv tr es da de id it pt_BR ro nl fi uk vi"
+ALL_LINGUAS="fr sv tr es da de id it pt_BR ro nl fi uk vi ga zh_CN"
 CY_GNU_GETTEXT
 ZW_GNU_GETTEXT_SISTER_DIR
 if test "x${GETTEXT_MACRO_VERSION}" = "x"; then
@@ -131,16 +140,19 @@ AC_PROG_LN_S
 
 # Checks for libraries.
 if test -d /usr/lib/gcc/darwin/2.95.2; then
-	export LDFLAGS="${LDFLAGS} -L/usr/lib/gcc/darwin/2.95.2"
+  export LDFLAGS="${LDFLAGS} -L/usr/lib/gcc/darwin/2.95.2"
 fi
 # FIXME: Replace `main' with a function in `-lcc_dynamic':
-AC_CHECK_LIB([cc_dynamic],[main],[SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lcc_dynamic"])
+AC_CHECK_LIB([cc_dynamic],[main],
+           [SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lcc_dynamic"])
 # FIXME: Replace `main' with a function in `-lgcc':
-AC_CHECK_LIB([gcc],[main],[SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lgcc"])
+AC_CHECK_LIB([gcc],[main],
+             [SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lgcc"])
 # FIXME: Replace `main' with a function in `-lSystem':
-AC_CHECK_LIB([System],[main],[SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lSystem"])
+AC_CHECK_LIB([System],[main],
+             [SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lSystem"])
 if test -z "${SYSTEM_FRAMEWORK_LIBS}"; then
-	AC_MSG_ERROR([Missing some required system libraries.])
+  AC_MSG_ERROR([Missing some required system libraries.])
 fi
 AC_SUBST([SYSTEM_FRAMEWORK_LIBS])
 AC_CHECK_LIB([c],[printf])

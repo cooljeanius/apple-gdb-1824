@@ -44,7 +44,7 @@
 #include "params.h"
 
 #ifdef COMPILING_ON_WINDOWS
-#  define IGNORE(x) (x = x)   /* must go after #includes to work on Windows */
+# define IGNORE(x) (x = x)   /* must go after #includes to work on Windows */
 #endif /* COMPILING_ON_WINDOWS */
 #define NOT(x) (!(x))
 
@@ -104,7 +104,8 @@ static receive_dbgmsg_state dbgmsg_state;
 
 static void receive_debug_packet(Packet *packet, void *stateptr)
 {
-  receive_dbgmsg_state *state = stateptr;
+  receive_dbgmsg_state *state;
+  state = (struct receive_dbgmsg_state *)stateptr;
 
   state->packet = packet;
   state->received = 1;
@@ -117,7 +118,9 @@ static int register_debug_message_handler(void)
 
   err = Adp_ChannelRegisterRead(CI_HADP, receive_debug_packet, &dbgmsg_state);
 #ifdef DEBUG
-  if (err!=adp_ok) angel_DebugPrint("register_debug_message_handler failed %i\n", err);
+  if (err!=adp_ok) {
+    angel_DebugPrint("register_debug_message_handler failed %i\n", err);
+  }
 #endif /* DEBUG */
   return err;
 }
@@ -174,22 +177,23 @@ static int wait_for_debug_message(int *rcode, int *debugID,
 /*
  * Handler and registration for logging messages from target
  */
-static void TargetLogCallback( Packet *packet, void *state )
+static void TargetLogCallback(Packet *packet, void *state)
 {
     p_Buffer     reply = BUFFERDATA(packet->pk_buffer);
     unsigned int len   = packet->pk_length;
     IGNORE(state);
     angel_hostif->write(angel_hostif->hostosarg,
-                        (char *)reply, len - CHAN_HEADER_SIZE);
+                        (char *)reply, (int)(len - CHAN_HEADER_SIZE));
     DevSW_FreePacket(packet);
 
-    packet = DevSW_AllocatePacket(4); /* better not ask for 0 */
+    packet = DevSW_AllocatePacket((const unsigned int)4); /* better not ask for 0 */
     /* the reply is the ACK - any contents are ignored */
-    if (packet != NULL)
-       Adp_ChannelWrite( CI_TLOG, packet );
+    if (packet != NULL) {
+       Adp_ChannelWrite(CI_TLOG, packet);
+    }
 }
 
-static void TargetLogInit( void )
+static void TargetLogInit(void)
 {
     AdpErrs err = Adp_ChannelRegisterRead( CI_TLOG, TargetLogCallback, NULL );
 
@@ -282,7 +286,7 @@ static void receive_negotiate(Packet *packet, void *stateptr)
 /*
  * convert a config into a single-valued options list
  */
-static ParameterOptions *config_to_options( const ParameterConfig *config )
+static ParameterOptions *config_to_options(const ParameterConfig *config)
 {
     unsigned int        num_params;
     size_t              size;
@@ -291,11 +295,10 @@ static ParameterOptions *config_to_options( const ParameterConfig *config )
     num_params  = config->num_parameters;
     size        =
         sizeof(ParameterOptions)
-        + num_params*(sizeof(ParameterList) + sizeof(unsigned int));
-    base_p      = malloc( size );
+        + num_params * (sizeof(ParameterList) + sizeof(unsigned int));
+    base_p      = (struct ParameterOptions *)malloc(size);
 
-    if ( base_p != NULL )
-    {
+    if (base_p != NULL) {
         unsigned int    u;
         ParameterList  *list_p          =
             (ParameterList *)((char *)base_p + sizeof(ParameterOptions));
@@ -305,19 +308,18 @@ static ParameterOptions *config_to_options( const ParameterConfig *config )
         base_p->num_param_lists = num_params;
         base_p->param_list = list_p;
 
-        for ( u = 0; u < num_params; ++u )
-        {
-            option_p[u]                 = config->param[u].value;
-            list_p[u].type              = config->param[u].type;
-            list_p[u].num_options       = 1;
-            list_p[u].option            = &option_p[u];
+        for ((u = 0); (u < num_params); ++u) {
+            option_p[u]           = config->param[u].value;
+            list_p[u].type        = config->param[u].type;
+            list_p[u].num_options = 1;
+            list_p[u].option      = &option_p[u];
         }
     }
 
     return base_p;
 }
 
-static AdpErrs negotiate_params( const ParameterOptions *user_options )
+static AdpErrs negotiate_params(const ParameterOptions *user_options)
 {
     Packet                    *packet;
     unsigned int               count;
@@ -333,22 +335,22 @@ static AdpErrs negotiate_params( const ParameterOptions *user_options )
     n_state.accepted_config = &accepted_config;
 
 #ifdef DEBUG
-    angel_DebugPrint( "negotiate_params\n" );
+    angel_DebugPrint("negotiate_params\n");
 #endif /* DEBUG */
 
-    Adp_ChannelRegisterRead( CI_HBOOT, receive_negotiate, (void *)&n_state );
+    Adp_ChannelRegisterRead(CI_HBOOT, receive_negotiate, (void *)&n_state);
 
-    packet = (Packet *)DevSW_AllocatePacket(Armsd_BufferSize);
-    count = msgbuild( BUFFERDATA(packet->pk_buffer), "%w%w%w%w",
-                      ADP_ParamNegotiate | HtoT, 0,
-                      ADP_HandleUnknown, ADP_HandleUnknown );
-    count += Angel_BuildParamOptionsMessage(
-        BUFFERDATA(packet->pk_buffer) + count, user_options );
+    packet = (Packet *)DevSW_AllocatePacket((const unsigned int)Armsd_BufferSize);
+    count = msgbuild(BUFFERDATA(packet->pk_buffer), "%w%w%w%w",
+		     (ADP_ParamNegotiate | HtoT), 0, ADP_HandleUnknown,
+		     ADP_HandleUnknown);
+    count += Angel_BuildParamOptionsMessage((BUFFERDATA(packet->pk_buffer) + count),
+					    user_options);
     packet->pk_length = count;
-    Adp_ChannelWriteAsync( CI_HBOOT, packet );
+    Adp_ChannelWriteAsync(CI_HBOOT, packet);
 
 #ifdef DEBUG
-    angel_DebugPrint( "sent negotiate packet\n" );
+    angel_DebugPrint("sent negotiate packet\n");
 #endif /* DEBUG */
 
     t=time(NULL);
@@ -733,12 +735,14 @@ int angel_RDI_read(ARMword source, void *dest, unsigned *nbytes)
                                 &status, &packet);
     TracePrint(("angel_RDI_read: nbinpacket =%d status=%08x err = %d\n",
                 nbinpacket,status,err));
-    if (err != RDIError_NoError) return err;       /* Was there an error? */
+    if (err != RDIError_NoError) {
+      return err; /* Was there an error? */
+    }
     if (status == RDIError_NoError){
       rnbytes += PREAD(LE,(unsigned int *)(BUFFERDATA(packet->pk_buffer)+20));
       TracePrint(("angel_RDI_read: rnbytes = %d\n",rnbytes));
-      memcpy(((unsigned char *)dest)+nbdone, BUFFERDATA(packet->pk_buffer)+24,
-             nbinpacket);
+      memcpy((((unsigned char *)dest) + nbdone),
+	     (BUFFERDATA(packet->pk_buffer) + 24), (size_t)nbinpacket);
     }
     nbdone += nbinpacket;
     nbtogo -= nbinpacket;
@@ -767,21 +771,21 @@ int angel_RDI_write(const void *source, ARMword dest, unsigned *nbytes)
 
   *nbytes = 0;
   while (nbtogo > 0) {
-    packet = (Packet *) DevSW_AllocatePacket(Armsd_LongBufSize);
-    nbinpacket = (nbtogo <= maxlen) ? nbtogo : maxlen;
+    packet = (Packet *)DevSW_AllocatePacket((const unsigned int)Armsd_LongBufSize);
+    nbinpacket = ((nbtogo <= maxlen) ? nbtogo : maxlen);
     len = msgbuild(BUFFERDATA(packet->pk_buffer), "%w%w%w%w%w%w",
                    ADP_Write | HtoT, 0, ADP_HandleUnknown,
                    ADP_HandleUnknown, dest+nboffset, nbinpacket);
     /* Copy the data into the packet. */
 
-    memcpy(BUFFERDATA(packet->pk_buffer)+len,
-           ((const unsigned char *) source)+nboffset, nbinpacket);
+    memcpy((BUFFERDATA(packet->pk_buffer) + len),
+           (((const unsigned char *)source) + nboffset), (size_t)nbinpacket);
     nboffset += nbinpacket;
     packet->pk_length = nbinpacket+len;
 
 #ifdef MONITOR_DOWNLOAD_PACKETS
     angel_DebugPrint("angel_RDI_write packet size=%i, bytes done=%i\n",
-            nbinpacket, nboffset);
+		     nbinpacket, nboffset);
 #endif /* MONITOR_DOWNLOAD_PACKETS */
 
     register_debug_message_handler();
@@ -872,9 +876,12 @@ int angel_RDI_CPUwrite(unsigned mode, unsigned long mask,
     angel_DebugPrint("\n") ;
     }
 #endif /* RDI_VERBOSE */
- packet = (Packet *)DevSW_AllocatePacket(Armsd_BufferSize);
- for (i=0, j=0; i < RDINumCPURegs ; i++)
-   if (mask & (1L << i)) j++; /* count the number of registers */
+ packet = (Packet *)DevSW_AllocatePacket((const unsigned int)Armsd_BufferSize);
+ for ((i = 0), (j = 0); (i < RDINumCPURegs); i++) {
+   if (mask & (1L << i)) {
+     j++; /* count the number of registers */
+   }
+ }
 
  len = msgbuild(BUFFERDATA(packet->pk_buffer), "%w%w%w%w%b%w",
                 ADP_CPUwrite | HtoT, 0,
@@ -989,14 +996,18 @@ int angel_RDI_CPwrite(unsigned CPnum, unsigned long mask,
  }
 #endif /* RDI_VERBOSE */
 
-  for (j=i=0; i < n ; i++) /* Count the number of registers. */
-    if (mask & (1L << i)) j++;
-  packet = DevSW_AllocatePacket(Armsd_BufferSize);
+  for ((j = i = 0); (i < n); i++) { /* Count the number of registers. */
+    if (mask & (1L << i)) {
+      j++;
+    }
+  }
+  packet = DevSW_AllocatePacket((const unsigned int)Armsd_BufferSize);
   len = msgbuild(BUFFERDATA(packet->pk_buffer), "%w%w%w%w%c%w",
-                 ADP_CPwrite | HtoT, 0,
+                 (ADP_CPwrite | HtoT), 0,
                  ADP_HandleUnknown, ADP_HandleUnknown, CPnum, mask);
-  for(i=0;  i<j; i++)
-    len+=msgbuild(BUFFERDATA(packet->pk_buffer) + len, "%w", buffer[i]);
+  for ((i = 0); (i < j); i++) {
+    len+=msgbuild((BUFFERDATA(packet->pk_buffer) + len), "%w", buffer[i]);
+  }
   packet->pk_length = len;
   register_debug_message_handler();
   Adp_ChannelWrite(CI_HADP, packet);    /* Transmit message. */
@@ -1028,7 +1039,7 @@ int angel_RDI_pointinq(ARMword *address, unsigned type, unsigned datatype,
       ("angel_RDI_pointinq: address=%.8lx type=%d datatype=%d bound=%.8lx ",
       (unsigned long)*address, type, datatype, (unsigned long)*bound));
        /* for a buffer.  */
-  packet = DevSW_AllocatePacket(Armsd_BufferSize);
+  packet = DevSW_AllocatePacket((const unsigned int)Armsd_BufferSize);
   len = msgbuild(BUFFERDATA(packet->pk_buffer), "%w%w%w%w%w%b",
                  ((datatype == 0) ? ADP_SetBreak : ADP_SetWatch) | HtoT, 0,
                  ADP_HandleUnknown, ADP_HandleUnknown, address, type);
@@ -1319,7 +1330,7 @@ static int HandleStoppedMessage(Packet *packet, void *stateptr) {
 }
 
 
-static void interrupt_target( void )
+static void interrupt_target(void)
 {
     Packet *packet = NULL;
     int err;
@@ -1330,8 +1341,8 @@ static void interrupt_target( void )
 #endif /* DEBUG */
 
     register_debug_message_handler();
-    msgsend(CI_HADP, "%w%w%w%w", ADP_InterruptRequest | HtoT, 0,
-                   ADP_HandleUnknown, ADP_HandleUnknown);
+    msgsend(CI_HADP, "%w%w%w%w", (ADP_InterruptRequest | HtoT), 0,
+	    ADP_HandleUnknown, ADP_HandleUnknown);
 
     reason = ADP_InterruptRequest |TtoH;
     err = wait_for_debug_message(&reason, &debugID, &OSinfo1, &OSinfo2,
@@ -1346,8 +1357,7 @@ static void interrupt_target( void )
 }
 
 #ifdef TEST_DC_APPL
-  extern void test_dc_appl_handler( const DeviceDescr *device,
-                                    Packet *packet );
+extern void test_dc_appl_handler(const DeviceDescr *device, Packet *packet);
 #endif /* TEST_DC_APPL */
 
 void angel_RDI_stop_request(void)
@@ -1355,11 +1365,11 @@ void angel_RDI_stop_request(void)
   stop_request = 1;
 }
 
-/* Core functionality for execute and step */
+/* Core functionality for execute and step: */
 static int angel_RDI_ExecuteOrStep(PointHandle *handle, word type,
                                    unsigned ninstr)
 {
-  extern int (*deprecated_ui_loop_hook) (int);
+  extern int (*deprecated_ui_loop_hook)(int);
   int err;
   adp_stopped_struct stopped_info;
   void* stateptr = (void *)&stopped_info;
@@ -1395,16 +1405,18 @@ static int angel_RDI_ExecuteOrStep(PointHandle *handle, word type,
 #endif /* DEBUG */
 
   register_debug_message_handler();
-  /* Extra ninstr parameter for execute message will simply be ignored */
-  err = msgsend(CI_HADP,"%w%w%w%w%w", type | HtoT, 0,
+  /* Extra ninstr parameter for execute message will simply be ignored: */
+  err = msgsend(CI_HADP,"%w%w%w%w%w", (type | HtoT), 0,
                 ADP_HandleUnknown, ADP_HandleUnknown, ninstr);
-#if DEBUG
-  if (err != RDIError_NoError) angel_DebugPrint("Transmit failed.\n");
+#if defined(DEBUG) && DEBUG
+  if (err != RDIError_NoError) {
+    angel_DebugPrint("Transmit failed.\n");
+  }
 #endif /* DEBUG */
 
   reasoncode = type | TtoH;
-  err = wait_for_debug_message( &reasoncode, &debugID, &OSinfo1, &OSinfo2,
-                                &status, &packet );
+  err = wait_for_debug_message(&reasoncode, &debugID, &OSinfo1, &OSinfo2,
+			       &status, &packet);
   if (err != RDIError_NoError)
      return err;
   else if (status != RDIError_NoError)
@@ -1418,24 +1430,23 @@ static int angel_RDI_ExecuteOrStep(PointHandle *handle, word type,
   stop_request = FALSE;
 
   signal(SIGINT, ardi_sigint_handler);
-  while( executing )
-  {
-    if (deprecated_ui_loop_hook)
+  while (executing) {
+    if (deprecated_ui_loop_hook) {
       deprecated_ui_loop_hook(0);
+    }
 
-    if (interrupt_request || stop_request)
-      {
+    if (interrupt_request || stop_request) {
         interrupt_target();
         interrupt_request = FALSE;
         stop_request = FALSE;
-      }
-    Adp_AsynchronousProcessing( async_block_on_nothing );
+    }
+    Adp_AsynchronousProcessing(async_block_on_nothing);
   }
   signal(SIGINT, SIG_IGN);
 
 
 #ifdef TEST_DC_APPL
-  Adp_Install_DC_Appl_Handler( NULL );
+  Adp_Install_DC_Appl_Handler(NULL);
 #endif /* TEST_DC_APPL */
 
   (void)Adp_ChannelRegisterRead(CI_TADP, NULL, NULL);
@@ -1447,8 +1458,8 @@ static int angel_RDI_ExecuteOrStep(PointHandle *handle, word type,
   return stopped_info.stopped_status;
 }
 
-/* Request that the target starts executing from the stored CPU state: use
-   ADP_Execute. */
+/* Request that the target starts executing from the stored CPU state:
+ * use ADP_Execute. */
 int angel_RDI_execute(PointHandle *handle)
 {
     return angel_RDI_ExecuteOrStep(handle, ADP_Execute, 0);
@@ -1483,18 +1494,26 @@ int angel_RDI_step(unsigned ninstr, PointHandle *handle)
 
 static void SetCPWords(int cpnum, struct Dbg_CoProDesc const *cpd) {
   int i, rmax = 0;
-  for (i = 0; i < cpd->entries; i++)
-    if (cpd->regdesc[i].rmax > rmax)
+  for ((i = 0); (i < cpd->entries); i++) {
+    if (cpd->regdesc[i].rmax > rmax) {
       rmax = cpd->regdesc[i].rmax;
+    }
+  }
 
-  { unsigned char *rmap = (unsigned char *)malloc(rmax + 2);
-    *rmap++ = rmax + 1;
-    for (i = 0; i < cpd->entries; i++) {
+  { unsigned char *rmap;
+    rmap = (unsigned char *)malloc((size_t)(rmax + 2));
+    *rmap++ = (rmax + 1);
+    for ((i = 0); (i < cpd->entries); i++) {
       int r;
-      for (r = cpd->regdesc[i].rmin; r <= cpd->regdesc[i].rmax; r++)
-        rmap[r] = (cpd->regdesc[i].nbytes+3) / 4;
+      for ((r = cpd->regdesc[i].rmin); (r <= cpd->regdesc[i].rmax); r++) {
+        rmap[r] = ((cpd->regdesc[i].nbytes + 3) / 4);
       }
-/*    if (cpwords[cpnum] != NULL) free(cpwords[cpnum]); */
+    }
+#if 0
+    if (cpwords[cpnum] != NULL) {
+      free(cpwords[cpnum]);
+    }
+#endif /* 0 */
     cpwords[cpnum] = rmap;
   }
 }
@@ -1556,28 +1575,27 @@ static void HandleDCCMessage( Packet *packet, void *stateptr )
 
   count = unpack_message( BUFFERDATA(packet->pk_buffer), "%w%w%w%w",
                           &reason, &debugID, &OSinfo1, &OSinfo2 );
-  switch ( reason )
-  {
-      case ADP_TDCC_ToHost | TtoH:
+  switch (reason) {
+      case (ADP_TDCC_ToHost | TtoH):
       {
            /* only handles a single word of data, for now */
 
           unsigned int nbytes, data;
 
-          unpack_message( BUFFERDATA(packet->pk_buffer)+count, "%w%w",
-                          &nbytes, &data );
+          unpack_message((BUFFERDATA(packet->pk_buffer) + count), "%w%w",
+			 &nbytes, &data );
 #ifdef DEBUG
-          angel_DebugPrint( "DEBUG: received CC_ToHost message: nbytes %d data %08x.\n",
-                  nbytes, data );
+          angel_DebugPrint("DEBUG: received CC_ToHost message: nbytes %d data %08x.\n",
+			   nbytes, data );
 #endif /* DEBUG */
-          ccstate_p->tohost( ccstate_p->tohostarg, data );
+          ccstate_p->tohost(ccstate_p->tohostarg, (ARMword)data);
           msgsend(CI_TTDCC, "%w%w%w%w%w",
-                  ADP_TDCC_ToHost | HtoT, debugID, OSinfo1, OSinfo2,
+                  (ADP_TDCC_ToHost | HtoT), debugID, OSinfo1, OSinfo2,
                   RDIError_NoError );
           break;
       }
 
-      case ADP_TDCC_FromHost | TtoH:
+      case (ADP_TDCC_FromHost | TtoH):
       {
            /* only handles a single word of data, for now */
 
@@ -1605,42 +1623,36 @@ static void HandleDCCMessage( Packet *packet, void *stateptr )
   return;
 }
 
-static void angel_check_DCC_handler( CCState *ccstate_p )
+static void angel_check_DCC_handler(CCState *ccstate_p)
 {
     int err;
 
-    if ( ccstate_p->tohost != NULL || ccstate_p->fromhost != NULL )
-    {
-        /* doing DCC, so need a handler */
-        if ( ! ccstate_p->registered )
-        {
+    if ((ccstate_p->tohost != NULL) || (ccstate_p->fromhost != NULL)) {
+        /* doing DCC, so need a handler: */
+        if (! ccstate_p->registered) {
 #ifdef DEBUG
-            angel_DebugPrint( "Registering handler for TTDCC channel.\n" );
+            angel_DebugPrint("Registering handler for TTDCC channel.\n");
 #endif /* DEBUG */
-            err = Adp_ChannelRegisterRead( CI_TTDCC, HandleDCCMessage,
-                                           ccstate_p );
-            if ( err == adp_ok )
+            err = Adp_ChannelRegisterRead(CI_TTDCC, HandleDCCMessage, ccstate_p);
+            if (err == adp_ok)
                ccstate_p->registered = TRUE;
 #ifdef DEBUG
             else
-               angel_DebugPrint( "angel_check_DCC_handler: register failed!\n" );
+               angel_DebugPrint("angel_check_DCC_handler: register failed!\n");
 #endif /* DEBUG */
         }
-    }
-    else
-    {
-        /* not doing DCC, so don't need a handler */
-        if ( ccstate_p->registered )
-        {
+    } else {
+        /* not doing DCC, so do NOT need a handler */
+        if (ccstate_p->registered) {
 #ifdef DEBUG
-            angel_DebugPrint( "Unregistering handler for TTDCC channel.\n" );
+            angel_DebugPrint("Unregistering handler for TTDCC channel.\n");
 #endif /* DEBUG */
-            err = Adp_ChannelRegisterRead( CI_TTDCC, NULL, NULL );
-            if ( err == adp_ok )
+            err = Adp_ChannelRegisterRead(CI_TTDCC, NULL, NULL);
+            if (err == adp_ok)
                ccstate_p->registered = FALSE;
 #ifdef DEBUG
             else
-               angel_DebugPrint( "angel_check_DCC_handler: unregister failed!\n" );
+               angel_DebugPrint("angel_check_DCC_handler: unregister failed!\n");
 #endif /* DEBUG */
         }
     }
@@ -1658,9 +1670,11 @@ static int CheckSubMessageReply(int reason, int subreason) {
     status = err;
   } else {
     int sr;
-    unpack_message(BUFFERDATA(packet->pk_buffer), "%w%w%w%w%w%w", &reason, &debugID,
-                   &OSinfo1, &OSinfo2, &sr, &status);
-    if (subreason != sr) status = RDIError_Error;
+    unpack_message(BUFFERDATA(packet->pk_buffer), "%w%w%w%w%w%w",
+		   &reason, &debugID, &OSinfo1, &OSinfo2, &sr, &status);
+    if (subreason != sr) {
+      status = RDIError_Error;
+    }
   }
   DevSW_FreePacket(packet);
   return status;
@@ -1668,7 +1682,7 @@ static int CheckSubMessageReply(int reason, int subreason) {
 
 static int SendSubMessageAndCheckReply(int reason, int subreason) {
   register_debug_message_handler();
-  msgsend(CI_HADP, "%w%w%w%w%w", reason | HtoT, 0,
+  msgsend(CI_HADP, "%w%w%w%w%w", (reason | HtoT), 0,
           ADP_HandleUnknown, ADP_HandleUnknown,
           subreason);
   return CheckSubMessageReply(reason, subreason);
@@ -1676,7 +1690,7 @@ static int SendSubMessageAndCheckReply(int reason, int subreason) {
 
 static int SendSubMessageWordAndCheckReply(int reason, int subreason, ARMword word) {
   register_debug_message_handler();
-  msgsend(CI_HADP, "%w%w%w%w%w%w", reason | HtoT, 0,
+  msgsend(CI_HADP, "%w%w%w%w%w%w", (reason | HtoT), 0,
           ADP_HandleUnknown, ADP_HandleUnknown,
           subreason, word);
   return CheckSubMessageReply(reason, subreason);
@@ -1688,7 +1702,7 @@ static int SendSubMessageGetWordAndCheckReply(int reason, int subreason, ARMword
   int err = RDIError_NoError;
 
   register_debug_message_handler();
-  msgsend(CI_HADP, "%w%w%w%w%w", reason | HtoT, 0,
+  msgsend(CI_HADP, "%w%w%w%w%w", (reason | HtoT), 0,
           ADP_HandleUnknown, ADP_HandleUnknown,
           subreason);
   reason |= TtoH;
@@ -1698,9 +1712,11 @@ static int SendSubMessageGetWordAndCheckReply(int reason, int subreason, ARMword
     status = err;
   } else {
     int sr;
-    unpack_message(BUFFERDATA(packet->pk_buffer), "%w%w%w%w%w%w%w", &reason, &debugID,
-                   &OSinfo1, &OSinfo2,  &sr, &status, resp);
-    if (subreason != sr) status = RDIError_Error;
+    unpack_message(BUFFERDATA(packet->pk_buffer), "%w%w%w%w%w%w%w",
+		   &reason, &debugID, &OSinfo1, &OSinfo2,  &sr, &status, resp);
+    if (subreason != sr) {
+      status = RDIError_Error;
+    }
   }
   DevSW_FreePacket(packet);
   return status;
@@ -1711,7 +1727,7 @@ static int const hostsex = 1;
 int angel_RDI_info(unsigned type, ARMword *arg1, ARMword *arg2) {
   Packet *packet = NULL;
   int len, status, c, reason, subreason, debugID, OSinfo1, OSinfo2;
-  int err=RDIError_NoError, cpnum=0;
+  int err = RDIError_NoError, cpnum = 0;
   struct Dbg_CoProDesc *cpd;
   int count, i;
   unsigned char *bp;
@@ -1839,7 +1855,7 @@ int angel_RDI_info(unsigned type, ARMword *arg1, ARMword *arg2) {
 #endif /* DEBUG */
     cpnum = *(int *)arg1;
     cpd = (struct Dbg_CoProDesc *)arg2;
-    packet = DevSW_AllocatePacket(Armsd_BufferSize);
+    packet = DevSW_AllocatePacket((const unsigned int)Armsd_BufferSize);
     if (angel_RDI_info(ADP_Info_CoPro, NULL, NULL) != RDIError_NoError)
       return RDIError_Error;
     len = msgbuild(BUFFERDATA(packet->pk_buffer), "%w%w%w%w%w", ADP_Info | HtoT, 0,
@@ -1884,7 +1900,7 @@ int angel_RDI_info(unsigned type, ARMword *arg1, ARMword *arg2) {
 #endif /* DEBUG */
     cpnum = *(int *)arg1;
     cpd = (struct Dbg_CoProDesc *)arg2;
-    packet = DevSW_AllocatePacket(Armsd_BufferSize);
+    packet = DevSW_AllocatePacket((const unsigned int)Armsd_BufferSize);
     len = msgbuild(BUFFERDATA(packet->pk_buffer), "%w%w%w%w%w", ADP_Info | HtoT, 0,
                    ADP_HandleUnknown, ADP_HandleUnknown,
                    ADP_Info_RequestCoProDesc);
@@ -2104,9 +2120,9 @@ int angel_RDI_info(unsigned type, ARMword *arg1, ARMword *arg2) {
       if (subreason !=  ADP_ICEM_ConfigNth) {
         DevSW_FreePacket(packet);
         return RDIError_Error;
-      }
-      else {
-        memcpy( cd->name, BUFFERDATA(packet->pk_buffer)+len, n+1 );
+      } else {
+        memcpy(cd->name, (BUFFERDATA(packet->pk_buffer) + len),
+	       (size_t)(n + 1));
         cd->name[n] = 0;
         return status;
       }
@@ -2206,22 +2222,23 @@ int angel_RDI_info(unsigned type, ARMword *arg1, ARMword *arg2) {
       status = RDIError_NoError;
       if (!host_little) {
         bytesex_reverse(1);
-        for (offset = 0; offset < maplen; offset++)
-          map->map[offset] = bytesex_hostval(map->map[offset]);
+        for ((offset = 0); (offset < maplen); offset++) {
+          map->map[offset] = bytesex_hostval((int32)map->map[offset]);
+	}
       }
       for (offset = 0; offset < maplen; offset += size) {
         unsigned hdrlen;
         size = maplen - offset;
-        packet = (Packet *)DevSW_AllocatePacket(Armsd_LongBufSize);
+        packet = (Packet *)DevSW_AllocatePacket((const unsigned int)Armsd_LongBufSize);
         if (size > chunk) size = chunk;
         hdrlen = msgbuild(BUFFERDATA(packet->pk_buffer), "%w%w%w%w%w%w%w%w",
                           ADP_Profile | HtoT, 0, ADP_HandleUnknown,
                           ADP_HandleUnknown, ADP_Profile_WriteMap,
                           maplen, size, offset);
 
-        /* Copy the data into the packet. */
+        /* Copy the data into the packet: */
         memcpy(BUFFERDATA(packet->pk_buffer)+hdrlen,
-               &map->map[offset], (size_t)size * sizeof(ARMword));
+               &map->map[offset], ((size_t)size * sizeof(ARMword)));
         packet->pk_length = size * sizeof(ARMword) + hdrlen;
         register_debug_message_handler();
         Adp_ChannelWrite(CI_HADP, packet);
@@ -2236,11 +2253,15 @@ int angel_RDI_info(unsigned type, ARMword *arg1, ARMword *arg2) {
           }
           DevSW_FreePacket(packet);
         }
-        if (err != RDIError_NoError) { status = err; break; }
+        if (err != RDIError_NoError) {
+	  status = err;
+	  break;
+	}
       }
       if (!host_little) {
-        for (offset = 0; offset < maplen; offset++)
-          map->map[offset] = bytesex_hostval(map->map[offset]);
+        for ((offset = 0); (offset < maplen); offset++) {
+          map->map[offset] = bytesex_hostval((int32)map->map[offset]);
+	}
         bytesex_reverse(oldrev);
       }
       return status;
@@ -2268,17 +2289,21 @@ int angel_RDI_info(unsigned type, ARMword *arg1, ARMword *arg2) {
         if (err != RDIError_NoError) return err;
         unpack_message(BUFFERDATA(packet->pk_buffer), "%w%w%w%w%w%w", &reason,
                        &debugID, &OSinfo1, &OSinfo2, &subreason, &status);
-        memcpy(&arg2[offset], BUFFERDATA(packet->pk_buffer)+ADP_ProfileReadHeaderSize,
-               size * sizeof(ARMword));
+        memcpy(&arg2[offset],
+	       (BUFFERDATA(packet->pk_buffer) + ADP_ProfileReadHeaderSize),
+               (size * sizeof(ARMword)));
         DevSW_FreePacket(packet);
-        if (status != RDIError_NoError) break;
+        if (status != RDIError_NoError) {
+	  break;
+	}
       }
       { int oldrev = bytesex_reversing();
         int host_little = *(uint8 const *)&hostsex;
         if (!host_little) {
           bytesex_reverse(1);
-          for (offset = 0; offset < maplen; offset++)
-            arg2[offset] = bytesex_hostval(arg2[offset]);
+          for ((offset = 0); (offset < maplen); offset++) {
+            arg2[offset] = bytesex_hostval((int32)arg2[offset]);
+	  }
         }
         bytesex_reverse(oldrev);
       }
@@ -2363,16 +2388,16 @@ int angel_RDI_LoadConfigData(unsigned long nbytes, char const *data) {
   angel_DebugPrint("DEBUG: Entered angel_RDI_LoadConfigData (%d bytes)\n", nbytes);
 #endif /* DEBUG */
 #if 0
-	if (err = angel_RDI_AddConfig(nbytes) != RDIError_NoError) {
-		return err;
-	}
+  if (err = angel_RDI_AddConfig(nbytes) != RDIError_NoError) {
+    return err;
+  }
 #endif /* 0 */
-  packet = DevSW_AllocatePacket(Armsd_LongBufSize);
+  packet = DevSW_AllocatePacket((const unsigned int)Armsd_LongBufSize);
   len = msgbuild(BUFFERDATA(packet->pk_buffer), "%w%w%w%w%w%w",
                  ADP_Control | HtoT, 0,
                  ADP_HandleUnknown, ADP_HandleUnknown,
                  ADP_Ctrl_Download_Data, nbytes);
-  memcpy(BUFFERDATA(packet->pk_buffer)+len, data, nbytes);
+  memcpy(BUFFERDATA(packet->pk_buffer)+len, data, (size_t)nbytes);
   len += nbytes;
   packet->pk_length = len;
 #ifdef DEBUG
@@ -2412,14 +2437,14 @@ int angel_RDI_SelectConfig(RDI_ConfigAspect aspect, char const *name,
 #ifdef DEBUG
   angel_DebugPrint("DEBUG: Entered angel_RDI_SelectConfig.\n");
 #endif /* DEBUG */
-  packet = DevSW_AllocatePacket(Armsd_BufferSize);
+  packet = DevSW_AllocatePacket((const unsigned int)Armsd_BufferSize);
   len = msgbuild(BUFFERDATA(packet->pk_buffer), "%w%w%w%w%w%b%b%b%w",
                  ADP_ICEman | HtoT, 0,
                  ADP_HandleUnknown, ADP_HandleUnknown,
                  ADP_ICEM_SelectConfig, aspect, strlen(name),
                  matchtype, versionreq);
-  /* copy the name into the buffer */
-  memcpy(BUFFERDATA(packet->pk_buffer)+len, name, strlen(name));
+  /* copy the name into the buffer: */
+  memcpy(BUFFERDATA(packet->pk_buffer)+len, name, (size_t)strlen(name));
   len += strlen(name);
   packet->pk_length = len;
   register_debug_message_handler();
@@ -2635,9 +2660,11 @@ static int angel_RDI_errmess(char *buf, int blen, int errnum) {
       s=AdpMess_NewAgentStarting; break;
     default: return 0;
   }
-  n=strlen(s);
-  if (n>blen-1) n=blen-1;
-  memcpy(buf, s, n);
+  n = strlen(s);
+  if (n > (blen - 1)) {
+    n = (blen - 1);
+  }
+  memcpy(buf, s, (size_t)n);
   buf[n++]=0;
   return n;
 }
@@ -2688,13 +2715,12 @@ struct foo {
     int doinmidline;
 } hostappl_CmdTable[1] = {{"", NULL}};
 
-void
-hostappl_Init()
+void hostappl_Init(void)
 {
+  /* (do nothing) */ ;
 }
 
-int
-hostappl_Backstop()
+int hostappl_Backstop(void)
 {
   return -30;
 }

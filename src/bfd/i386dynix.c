@@ -1,6 +1,6 @@
-/* BFD back-end for i386 a.out binaries under dynix.
-   Copyright 1994, 1995, 2001, 2003 Free Software Foundation, Inc.
-
+/* i386dynix.c: BFD back-end for i386 a.out binaries under dynix.
+ * Copyright 1994, 1995, 2001, 2003 Free Software Foundation, Inc. */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -15,11 +15,10 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 
-/* This BFD is currently only tested with gdb, writing object files
-   may not work.  */
-
+/* This BFD has only been tested with gdb, writing object files may not work. */
 #define TEXT_START_ADDR 4096
 #define TARGET_PAGE_SIZE	4096
 #define SEGMENT_SIZE	TARGET_PAGE_SIZE

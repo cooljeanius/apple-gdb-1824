@@ -19,16 +19,16 @@
 
 #include "gdb/signals.h"
 
-static unsigned char macosx_translate_exception (struct macosx_exception_thread_message *msg);
+static unsigned char macosx_translate_exception(struct macosx_exception_thread_message *msg);
 
 int low_debuglevel = 0;
 extern unsigned long signal_pid;
 static int last_sent_signal = 0;
 
 
-static int gdbserver_has_a_terminal (void);
-static void terminal_inferior (void);
-static void terminal_ours (void);
+static int gdbserver_has_a_terminal(void);
+static void terminal_inferior(void);
+static void terminal_ours(void);
 
 /* Record terminal status separately for debugger and inferior.  */
 
@@ -36,50 +36,45 @@ static int terminal_is_ours = 0;
 static int attached_to_process = 0;
 
 /* TTY state for the inferior. We save it whenever the inferior stops, and
-   restore it when it resumes.  */
+ * restore it when it resumes.  */
 static int inferior_ttystate_err = -1;
 static struct termios inferior_ttystate;
 static pid_t inferior_process_group = -1;
 static int inferior_tflags;
 
 /* Our own tty state, which we restore every time we need to deal with the
-   terminal. We only set it once, when GDB first starts. The settings of
-   flags which readline saves and restores and unimportant.  */
+ * terminal. We only set it once, when GDB first starts. The settings of
+ * flags which readline saves and restores and unimportant.  */
 static int our_ttystate_err = -1;
 static struct termios our_ttystate;
 static pid_t our_process_group = -1;
 static int our_tflags;
 
-static void
-macosx_low_debug (int level, const char *fmt, ...)
+static void macosx_low_debug(int level, const char *fmt, ...)
 {
   va_list ap;
-  if (low_debuglevel >= level)
-    {
-      va_start (ap, fmt);
-      printf ("[%d/%d macosx-low]: ", getpid (), mach_thread_self ());
-      vprintf (fmt, ap);
-      va_end (ap);
-      fflush (stdout);
-    }
+  if (low_debuglevel >= level) {
+      va_start(ap, fmt);
+      printf("[%d/%d macosx-low]: ", getpid(), mach_thread_self());
+      vprintf(fmt, ap);
+      va_end(ap);
+      fflush(stdout);
+  }
 }
 
 /* mach_check_error & friends comes from macosx-tdep.c.  */
-void
-mach_check_error (kern_return_t ret, const char *file,
-                  unsigned int line, const char *func)
+void mach_check_error(kern_return_t ret, const char *file,
+					  unsigned int line, const char *func)
 {
-  if (ret == KERN_SUCCESS)
-    {
+  if (ret == KERN_SUCCESS) {
       return;
-    }
-  if (func == NULL)
-    {
+  }
+  if (func == NULL) {
       func = "[UNKNOWN]";
-    }
+  }
 
-  error ("error on line %u of \"%s\" in function \"%s\": %s (0x%lx)\n",
-         line, file, func, MACH_ERROR_STRING (ret), (unsigned long) ret);
+  error("error on line %u of \"%s\" in function \"%s\": %s (0x%lx)\n",
+		line, file, func, MACH_ERROR_STRING(ret), (unsigned long)ret);
 }
 
 void
@@ -132,16 +127,15 @@ create_process (int pid)
      exception port.  */
 
   process->status = (macosx_exception_thread_status *)
-    malloc (sizeof (macosx_exception_thread_status));
-  macosx_exception_thread_init (process->status);
+    malloc (sizeof(macosx_exception_thread_status));
+  macosx_exception_thread_init(process->status);
 
-  kret = task_for_pid (mach_task_self (), pid, &(process->status->task));
+  kret = task_for_pid(mach_task_self(), pid, &(process->status->task));
 
-  if (kret != KERN_SUCCESS)
-    {
-      error ("Unable to find Mach task port for process-id %d: %s (0x%lx).",
-             pid, MACH_ERROR_STRING (kret), (unsigned long) kret);
-    }
+  if (kret != KERN_SUCCESS) {
+      error("Unable to find Mach task port for process-id %d: %s (0x%lx).",
+			pid, MACH_ERROR_STRING (kret), (unsigned long)kret);
+  }
 
   macosx_exception_thread_create (process->status);
 
@@ -154,28 +148,23 @@ struct mach_thread_list
   unsigned int nthreads;
 };
 
-void
-check_native_thread_exists (struct inferior_list_entry *entry, void *data)
+void check_native_thread_exists(struct inferior_list_entry *entry, void *data)
 {
   struct mach_thread_list *threads = (struct mach_thread_list *) data;
   int i;
   int found_it = 0;
-  for (i = 0; i < threads->nthreads; i++)
-    {
-      if (entry->id == threads->thread_list[i])
-	{
-	  found_it = 1;
-	  break;
-	}
-    }
-  if (!found_it)
-    {
-      remove_thread ((struct thread_info *) entry);
-    }
+  for ((i = 0); (i < threads->nthreads); i++) {
+      if (entry->id == threads->thread_list[i]) {
+		  found_it = 1;
+		  break;
+	  }
+  }
+  if (!found_it) {
+      remove_thread((struct thread_info *)entry);
+  }
 }
 
-void
-macosx_check_new_threads (struct macosx_process_info *process)
+void macosx_check_new_threads(struct macosx_process_info *process)
 {
   thread_array_t thread_list = NULL;
   unsigned int nthreads = 0;
@@ -184,56 +173,51 @@ macosx_check_new_threads (struct macosx_process_info *process)
   struct mach_thread_list threads;
 
   /* We will need to free THREAD_LIST with a call to VM_DEALLOCATE.  */
-  kret = task_threads (process->status->task, &thread_list, &nthreads);
-  MACH_CHECK_ERROR (kret);
+  kret = task_threads(process->status->task, &thread_list, &nthreads);
+  MACH_CHECK_ERROR(kret);
 
-  /* First cull the threads that have exited.  */
+  /* First cull the threads that have exited: */
   threads.nthreads = nthreads;
   threads.thread_list = thread_list;
-  for_each_inferior_data (&all_threads, &threads,  check_native_thread_exists);
+  for_each_inferior_data(&all_threads, &threads,  check_native_thread_exists);
 
-  /* Then add the new threads.  */
-  for (i = 0; i < nthreads; i++)
-    {
-      if (find_inferior_id (&all_threads, thread_list[i]) == NULL)
-	{
-	  struct macosx_thread_info *new_thread =
-	    (struct macosx_thread_info *) malloc (sizeof (struct macosx_thread_info));
-	  new_thread->process = process;
-	  /* FIXME - should probably get the user thread id too...
-	     FIXME: The FSF added this "gdb_id" argument, which seems to be the pid.  But
-	     it also looks like they use it to match what is sent with the vCont message.
-	     But that is supposed to be a TID.  So I am redundantly supplying the thread id.  */
-	  add_thread (thread_list[i], new_thread, thread_list[i]);
-	}
-    }
-  /* Free the memory given to use by the TASK_THREADS kernel call.  */
-  kret = vm_deallocate (mach_task_self (), (vm_address_t) thread_list,
-                        (vm_size_t) (nthreads * sizeof (thread_t)));
-  MACH_CHECK_ERROR (kret);
+  /* Then add the new threads: */
+  for ((i = 0); (i < nthreads); i++) {
+      if (find_inferior_id(&all_threads, thread_list[i]) == NULL) {
+		struct macosx_thread_info *new_thread =
+	    (struct macosx_thread_info *)malloc(sizeof(struct macosx_thread_info));
+		new_thread->process = process;
+		/* FIXME - should probably get the user thread id too...
+		 * FIXME: The FSF added this "gdb_id" argument, which seems to be
+		 * the pid. But it also looks like they use it to match what is sent
+		 * with the vCont message. But that is supposed to be a TID. So I am
+		 * redundantly supplying the thread id. */
+		add_thread (thread_list[i], new_thread, thread_list[i]);
+	  }
+  }
+  /* Free the memory given to use by the TASK_THREADS kernel call: */
+  kret = vm_deallocate(mach_task_self(), (vm_address_t)thread_list,
+                        (vm_size_t)(nthreads * sizeof(thread_t)));
+  MACH_CHECK_ERROR(kret);
 }
 
-static int
-wait_for_stop (pid_t pid)
+static int wait_for_stop(pid_t pid)
 {
   int status;
   pid_t wait_return;
 
-  wait_return = waitpid (pid, &status, WUNTRACED);
-  if (wait_return == -1)
-    {
-      perror ("Error waiting for child to start up");
+  wait_return = waitpid(pid, &status, WUNTRACED);
+  if (wait_return == -1) {
+      perror("Error waiting for child to start up");
       return -1;
-    }
+  }
   return wait_return;
 
 }
 
 /* Start an inferior process and returns its pid.
-   ALLARGS is a vector of program-name and args. */
-
-static int
-macosx_create_inferior (char *program, char **allargs)
+ * ALLARGS is a vector of program-name and args: */
+static int macosx_create_inferior(char *program, char **allargs)
 {
   struct macosx_process_info *new_process;
   pid_t pid;
@@ -241,13 +225,13 @@ macosx_create_inferior (char *program, char **allargs)
   /* Set a flag indicating if we did not attach.  */
   attached_to_process = 0;
 
-  /* Check if we have a tty, and if we do, remember our settings.  */
-  gdbserver_has_a_terminal ();
+  /* Check if we have a tty, and if we do, remember our settings: */
+  gdbserver_has_a_terminal();
 
-  pid = fork ();
-	if (pid < 0) {
-		perror_with_name ("fork");
-	}
+  pid = fork();
+  if (pid < 0) {
+	  perror_with_name("fork");
+  }
 
   if (pid == 0)
     {
@@ -1179,12 +1163,11 @@ macosx_wait_for_event (struct thread_info *child,
       *status = 'T';
     }
 
-  macosx_clear_events ();
+  macosx_clear_events();
   return retval;
 }
 
-static unsigned char
-macosx_wait (char *status)
+static unsigned char macosx_wait (char *status)
 {
   /* Use child to hold the thread that we are going to resume.  The
      Linux code stores a global that it uses to remember which child
@@ -1203,8 +1186,7 @@ macosx_wait (char *status)
   return (unsigned char) w;
 }
 
-static void
-macosx_fetch_registers (int regno)
+static void macosx_fetch_registers(int regno)
 {
   struct macosx_process_info *inferior;
   inferior = get_thread_process (current_inferior);
@@ -1213,8 +1195,7 @@ macosx_fetch_registers (int regno)
   macosx_low_debug (6, "Called macosx_fetch_registers (%d)\n", regno);
 }
 
-static void
-macosx_store_registers (int regno)
+static void macosx_store_registers(int regno)
 {
   struct macosx_process_info *inferior;
   inferior = get_thread_process (current_inferior);
@@ -1224,16 +1205,16 @@ macosx_store_registers (int regno)
 }
 
 static int
-macosx_read_memory (CORE_ADDR memaddr, unsigned char *myaddr, int len)
+macosx_read_memory(CORE_ADDR memaddr, unsigned char *myaddr, int len)
 {
   struct macosx_process_info *inferior;
   int result;
 
   inferior = get_thread_process (current_inferior);
 
-  result = mach_xfer_memory (memaddr, myaddr, len, 0, inferior->status->task);
+  result = mach_xfer_memory(memaddr, myaddr, len, 0, inferior->status->task);
 
-  macosx_low_debug (6, "Called macosx_read_memory\n");
+  macosx_low_debug(6, "Called macosx_read_memory\n");
   if (result > 0)
     return 0;
   else
@@ -1242,14 +1223,14 @@ macosx_read_memory (CORE_ADDR memaddr, unsigned char *myaddr, int len)
 }
 
 static int
-macosx_write_memory (CORE_ADDR memaddr, const unsigned char *myaddr, int len)
+macosx_write_memory(CORE_ADDR memaddr, const unsigned char *myaddr, int len)
 {
   struct macosx_process_info *inferior;
   int result;
 
-  inferior = get_thread_process (current_inferior);
+  inferior = get_thread_process(current_inferior);
 
-  result = mach_xfer_memory (memaddr, myaddr, len, 1, inferior->status->task);
+  result = mach_xfer_memory(memaddr, myaddr, len, 1, inferior->status->task);
 
   macosx_low_debug (6, "Called macosx_write_memory\n");
   if (result > 0)
@@ -1258,14 +1239,12 @@ macosx_write_memory (CORE_ADDR memaddr, const unsigned char *myaddr, int len)
     return errno;
 }
 
-static void
-macosx_lookup_symbols (void)
+static void macosx_lookup_symbols(void)
 {
-  macosx_low_debug (6, "UNIMPLEMENTED: Called macosx_lookup_symbols\n");
+  macosx_low_debug(6, "UNIMPLEMENTED: Called macosx_lookup_symbols\n");
 }
 
-static void
-macosx_send_signal (int signum)
+static void macosx_send_signal(int signum)
 {
   macosx_low_debug (6, "Called macosx_send_signal -> kill (%d, %d);\n",
 		    signal_pid, signum);
@@ -1278,37 +1257,32 @@ macosx_send_signal (int signum)
 static int
 macosx_read_auxv (CORE_ADDR offset, unsigned char *myaddr, unsigned int len)
 {
-  macosx_low_debug (6, "UNIMPLEMENTED: Called macosx_read_auxv\n");
+  macosx_low_debug(6, "UNIMPLEMENTED: Called macosx_read_auxv\n");
   return 0;
 }
 
-int
-macosx_insert_watchpoint (char type, CORE_ADDR addr, int len)
+int macosx_insert_watchpoint(char type, CORE_ADDR addr, int len)
 {
   return 1;
 }
 
-int
-macosx_remove_watchpoint (char type, CORE_ADDR addr, int len)
+int macosx_remove_watchpoint(char type, CORE_ADDR addr, int len)
 {
   return 1;
 }
 
-int
-macosx_stopped_by_watchpoint (void)
+int macosx_stopped_by_watchpoint(void)
 {
   return 0;
 }
 
-CORE_ADDR
-macosx_stopped_data_address (void)
+CORE_ADDR macosx_stopped_data_address(void)
 {
   return 0;
 }
 
 /* Does GDBSERVER have a terminal (on stdin)?  */
-static int
-gdbserver_has_a_terminal (void)
+static int gdbserver_has_a_terminal(void)
 {
   static enum
   {
@@ -1340,8 +1314,8 @@ gdbserver_has_a_terminal (void)
 	      our_process_group = tcgetpgrp (0);
 	    }
 	}
-      macosx_low_debug (6, "%s () => %d\n", __FUNCTION__,
-			we_have_a_terminal == yes);
+      macosx_low_debug(6, "%s () => %d\n", __FUNCTION__,
+					   we_have_a_terminal == yes);
       return we_have_a_terminal == yes;
 
     default:
@@ -1351,19 +1325,17 @@ gdbserver_has_a_terminal (void)
   return 0;
 }
 
-static void
-terminal_inferior (void)
+static void terminal_inferior(void)
 {
-  if (gdbserver_has_a_terminal () && terminal_is_ours &&
-      inferior_ttystate_err == 0)
-    {
+  if (gdbserver_has_a_terminal() && terminal_is_ours &&
+      (inferior_ttystate_err == 0)) {
       int result;
-      result = fcntl (STDIN_FILENO, F_SETFL, inferior_tflags);
+      result = fcntl(STDIN_FILENO, F_SETFL, inferior_tflags);
 
       /* Because we were careful to not change in or out of raw mode in
-         terminal_ours, we will not change in our out of raw mode with
-         this call, so we do NOT flush any input.  */
-      result = tcsetattr (STDIN_FILENO, TCSANOW, &inferior_ttystate);
+       * terminal_ours, we will not change in our out of raw mode with
+       * this call, so we do NOT flush any input.  */
+      result = tcsetattr(STDIN_FILENO, TCSANOW, &inferior_ttystate);
 
       /* If attach_flag is set, we do NOT know whether we are sharing a
        * terminal with the inferior or not. (attaching a process
@@ -1377,64 +1349,64 @@ terminal_inferior (void)
        * setting the process group, which will happen if we are not
        * sharing a terminal).  */
 
-      if (inferior_process_group >= 0)
-	result = tcsetpgrp (STDIN_FILENO, inferior_process_group);
-    }
+	  if (inferior_process_group >= 0) {
+		  result = tcsetpgrp(STDIN_FILENO, inferior_process_group);
+	  }
+  }
   terminal_is_ours = 0;
 }
 
 
-static void
-terminal_ours (void)
+static void terminal_ours(void)
 {
-	if (gdbserver_has_a_terminal () == 0) {
-		return;
-	}
+  if (gdbserver_has_a_terminal () == 0) {
+	  return;
+  }
 
-  if (terminal_is_ours == 0)
-    {
-      /* Ignore this signal since it will happen when we try to set the
-         pgrp.  */
-      void (*osigttou) () = NULL;
+  if (terminal_is_ours == 0) {
+      /* Ignore this signal since it will happen when we try to set the pgrp: */
+      void (*osigttou)() = NULL;
       int result;
 
       terminal_is_ours = 1;
 
-      osigttou = (void (*)()) signal (SIGTTOU, SIG_IGN);
+      osigttou = (void (*)())signal(SIGTTOU, SIG_IGN);
 
-      inferior_ttystate_err = tcgetattr (STDIN_FILENO, &inferior_ttystate);
+      inferior_ttystate_err = tcgetattr(STDIN_FILENO, &inferior_ttystate);
 
       /* FIXME: For MacOS X: if you are attaching then the most common
-	 case is that the process you are attaching to is NOT running
-	 from the same terminal.  In this case, the code below will
-	 erroneously swap the PID that you got from the process with
-	 the process group for gdb.  This will cause interrupting the
-	 process to fail later on.  So we will just NOT do this when
-	 we are attaching...
-	 In the long run, we should just not use this terminal code for
-         MacOS X, since it is broken in a bunch of ways... */
+	   * case is that the process you are attaching to is NOT running
+	   * from the same terminal.  In this case, the code below will
+	   * erroneously swap the PID that you got from the process with
+	   * the process group for gdb.  This will cause interrupting the
+	   * process to fail later on.  So we will just NOT do this when
+	   * we are attaching...
+	   * In the long run, we should just not use this terminal code for
+       * MacOS X, since it is broken in a bunch of ways... */
 
-      if (attached_to_process)
-	inferior_process_group = -1;
-      else
-	inferior_process_group = tcgetpgrp (0);
+	  if (attached_to_process) {
+		  inferior_process_group = -1;
+      } else {
+		  inferior_process_group = tcgetpgrp(0);
+	  }
 
-      inferior_tflags = fcntl (STDIN_FILENO, F_GETFL, 0);
+      inferior_tflags = fcntl(STDIN_FILENO, F_GETFL, 0);
 
-      result = tcsetattr (STDIN_FILENO, TCSANOW, &our_ttystate);
+      result = tcsetattr(STDIN_FILENO, TCSANOW, &our_ttystate);
 
-      if (our_process_group >= 0)
-	result = tcsetpgrp (STDIN_FILENO, our_process_group);
+	  if (our_process_group >= 0) {
+		  result = tcsetpgrp(STDIN_FILENO, our_process_group);
+	  }
 
       /* Is there a reason this is being done twice? It happens both
-         places we use F_SETFL, so I am inclined to think perhaps there
-         is some reason, however perverse.  Perhaps not though...  */
-      result = fcntl (STDIN_FILENO, F_SETFL, our_tflags);
+       * places we use F_SETFL, so I am inclined to think perhaps there
+       * is some reason, however perverse. Perhaps not though...  */
+      result = fcntl(STDIN_FILENO, F_SETFL, our_tflags);
 
-      /* Restore the previous signal handler.  */
-      signal (SIGTTOU, osigttou);
+      /* Restore the previous signal handler. */
+      signal(SIGTTOU, osigttou);
 
-    }
+  }
 }
 
 static struct target_ops macosx_target_ops = {
@@ -1461,15 +1433,14 @@ static struct target_ops macosx_target_ops = {
 int using_threads;
 int debug_threads;
 
-void
-initialize_low (void)
+void initialize_low(void)
 {
   using_threads = 1;
-  set_target_ops (&macosx_target_ops);
-  init_registers ();
-  signal (SIGCHLD, sigchld_handler);
+  set_target_ops(&macosx_target_ops);
+  init_registers();
+  signal(SIGCHLD, sigchld_handler);
 #if 0 /* FIXME: Figure out what this does.  */
-  linux_init_signals ();
+  linux_init_signals();
 #endif /* 0 */
 }
 

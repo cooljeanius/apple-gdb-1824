@@ -1,4 +1,4 @@
-/* PowerPC-specific support for 64-bit ELF.
+/* elf32-ppc.h: PowerPC-specific support for 64-bit ELF.
    Copyright 2003, 2005 Free Software Foundation, Inc.
 
 This file is part of BFD, the Binary File Descriptor library.
@@ -17,7 +17,14 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
-int ppc_elf_select_plt_layout (bfd *, struct bfd_link_info *, int);
-asection *ppc_elf_tls_setup (bfd *, struct bfd_link_info *);
-bfd_boolean ppc_elf_tls_optimize (bfd *, struct bfd_link_info *);
-void ppc_elf_set_sdata_syms (bfd *, struct bfd_link_info *);
+#ifndef __BFD_ELF32_PPC_H__
+#define __BFD_ELF32_PPC_H__ 1
+
+int ppc_elf_select_plt_layout(bfd *, struct bfd_link_info *, int);
+asection *ppc_elf_tls_setup(bfd *, struct bfd_link_info *);
+bfd_boolean ppc_elf_tls_optimize(bfd *, struct bfd_link_info *);
+void ppc_elf_set_sdata_syms(bfd *, struct bfd_link_info *);
+
+#endif /* !__BFD_ELF32_PPC_H__ */
+
+/* EOF */

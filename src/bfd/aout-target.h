@@ -1,53 +1,68 @@
-/* Define a target vector and some small routines for a variant of a.out.
-   Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
-   2000, 2001, 2002, 2003, 2004, 2005
-   Free Software Foundation, Inc.
+/* aout-target.h:
+ * Define a target vector and some small routines for a variant of a.out.
+ * Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
+ * 2000, 2001, 2002, 2003, 2004, 2005
+ * Free Software Foundation, Inc.
+ *
+ * This file is part of BFD, the Binary File Descriptor library.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St. - 5th Floor, Boston, MA 02110-1301, USA.
+ */
 
-   This file is part of BFD, the Binary File Descriptor library.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+#ifndef __BFD_AOUT_TARGET_H__
+#define __BFD_AOUT_TARGET_H__ 1
 
 #include "aout/aout64.h"
 #include "aout/stab_gnu.h"
 #include "aout/ar.h"
-/*#include "libaout.h"*/
+#ifndef LIBAOUT_H
+# include "libaout.h"
+#endif /* !LIBAOUT_H */
+#if !defined(__BFD_H_SEEN__) && !defined(abfd)
+# include "bfd.h"
+#endif /* !__BFD_H_SEEN__ && !abfd */
 
 #ifndef SEGMENT_SIZE
-#define SEGMENT_SIZE TARGET_PAGE_SIZE
-#endif
+# define SEGMENT_SIZE TARGET_PAGE_SIZE
+#endif /* !SEGMENT_SIZE */
 
-extern reloc_howto_type * NAME (aout, reloc_type_lookup) (bfd *, bfd_reloc_code_real_type);
+extern reloc_howto_type * NAME(aout, reloc_type_lookup)(bfd *, bfd_reloc_code_real_type);
 
 /* Set parameters about this a.out file that are machine-dependent.
-   This routine is called from some_aout_object_p just before it returns.  */
-#ifndef MY_callback
+ * This routine is called from some_aout_object_p just before it returns. */
+#if !defined(MY_callback) && defined(MY)
 
-static const bfd_target *
-MY (callback) (bfd *abfd)
+# ifndef TEXT_START_ADDR
+#  define TEXT_START_ADDR 0
+# endif /* !TEXT_START_ADDR */
+# ifndef TARGET_PAGE_SIZE
+#  define TARGET_PAGE_SIZE 0
+# endif /* !TARGET_PAGE_SIZE */
+static const bfd_target *MY(callback)(bfd *abfd)
 {
-  struct internal_exec *execp = exec_hdr (abfd);
+  struct internal_exec *execp = exec_hdr(abfd);
   unsigned int arch_align_power;
   unsigned long arch_align;
 
   /* Calculate the file positions of the parts of a newly read aout header.  */
-  obj_textsec (abfd)->size = N_TXTSIZE (*execp);
+  obj_textsec(abfd)->size = N_TXTSIZE(*execp);
 
   /* The virtual memory addresses of the sections.  */
-  obj_textsec (abfd)->vma = N_TXTADDR (*execp);
-  obj_datasec (abfd)->vma = N_DATADDR (*execp);
-  obj_bsssec  (abfd)->vma = N_BSSADDR (*execp);
+  obj_textsec(abfd)->vma = N_TXTADDR(*execp);
+  obj_datasec(abfd)->vma = N_DATADDR(*execp);
+  obj_bsssec(abfd)->vma = N_BSSADDR(*execp);
 
   /* For some targets, if the entry point is not in the same page
      as the start of the text, then adjust the VMA so that it is.
@@ -82,12 +97,16 @@ MY (callback) (bfd *abfd)
   obj_sym_filepos (abfd) = N_SYMOFF (*execp);
   obj_str_filepos (abfd) = N_STROFF (*execp);
 
-  /* Determine the architecture and machine type of the object file.  */
+  /* Determine the architecture and machine type of the object file: */
 #ifdef SET_ARCH_MACH
-  SET_ARCH_MACH (abfd, *execp);
+  SET_ARCH_MACH(abfd, *execp);
 #else
-  bfd_default_set_arch_mach (abfd, DEFAULT_ARCH, 0);
-#endif
+# ifdef DEFAULT_ARCH
+  bfd_default_set_arch_mach(abfd, DEFAULT_ARCH, 0);
+# else
+  bfd_default_set_arch_mach(abfd, bfd_arch_i386, 0);
+# endif /* DEFAULT_ARCH */
+#endif /* SET_ARCH_MACH */
 
   /* The number of relocation records.  This must be called after
      SET_ARCH_MACH.  It assumes that SET_ARCH_MACH will set
@@ -118,18 +137,16 @@ MY (callback) (bfd *abfd)
       obj_bsssec (abfd)->alignment_power = arch_align_power;
     }
 
-  /* Don't set sizes now -- can't be sure until we know arch & mach.
-     Sizes get set in set_sizes callback, later.  */
-
+  /* Do NOT set sizes now -- cannot be sure until we know arch & mach.
+   * Sizes get set in set_sizes callback, later. */
   return abfd->xvec;
 }
-#endif
+# define MY_callback MY(callback)
+#endif /* !MY_callback && MY */
 
-#ifndef MY_object_p
-/* Finish up the reading of an a.out file header.  */
-
-static const bfd_target *
-MY (object_p) (bfd *abfd)
+#if !defined(MY_object_p) && defined(MY) && defined(NAME)
+/* Finish up the reading of an a.out file header: */
+static const bfd_target *MY(object_p)(bfd *abfd)
 {
   struct external_exec exec_bytes;	/* Raw exec header from file.  */
   struct internal_exec exec;		/* Cleaned-up exec header.  */
@@ -157,14 +174,14 @@ MY (object_p) (bfd *abfd)
     return 0;
 #endif
 
-  NAME (aout, swap_exec_header_in) (abfd, &exec_bytes, &exec);
+  NAME(aout, swap_exec_header_in)(abfd, &exec_bytes, &exec);
 
 #ifdef SWAP_MAGIC
   /* Swap_exec_header_in read in a_info with the wrong byte order.  */
-  exec.a_info = SWAP_MAGIC (exec_bytes.e_info);
+  exec.a_info = SWAP_MAGIC(exec_bytes.e_info);
 #endif
 
-  target = NAME (aout, some_aout_object_p) (abfd, &exec, MY (callback));
+  target = NAME(aout, some_aout_object_p) (abfd, &exec, MY (callback));
 
 #ifdef ENTRY_CAN_BE_ZERO
   /* The NEWSOS3 entry-point is/was 0, which (amongst other lossage)
@@ -178,8 +195,8 @@ MY (object_p) (bfd *abfd)
     {
       struct stat buf;
 #ifndef S_IXUSR
-#define S_IXUSR 0100	/* Execute by owner.  */
-#endif
+# define S_IXUSR 0100	/* Execute by owner.  */
+#endif /* !S_IXUSR */
       if (stat(abfd->filename, &buf) == 0 && (buf.st_mode & S_IXUSR))
 	abfd->flags |= EXEC_P;
     }
@@ -187,19 +204,18 @@ MY (object_p) (bfd *abfd)
 
   return target;
 }
-#define MY_object_p MY (object_p)
-#endif
+# define MY_object_p MY(object_p)
+#endif /* !MY_object_p && MY && NAME */
 
-#ifndef MY_mkobject
+#if !defined(MY_mkobject) && defined(MY) && defined(NAME)
 
-static bfd_boolean
-MY (mkobject) (bfd *abfd)
+static bfd_boolean MY(mkobject)(bfd *abfd)
 {
-  return NAME (aout, mkobject (abfd));
+  return NAME(aout, mkobject (abfd));
 }
 
-#define MY_mkobject MY (mkobject)
-#endif
+# define MY_mkobject MY(mkobject)
+#endif /* !MY_mkobject && MY && NAME */
 
 #ifndef MY_bfd_copy_private_section_data
 
@@ -221,52 +237,50 @@ MY_bfd_copy_private_section_data (bfd *ibfd,
   return TRUE;
 }
 
-#endif
+#endif /* !MY_bfd_copy_private_section_data */
 
 /* Write an object file.
    Section contents have already been written.  We write the
    file header, symbols, and relocation.  */
 
-#ifndef MY_write_object_contents
+#if !defined(MY_write_object_contents) && defined(MY)
 
-static bfd_boolean
-MY (write_object_contents) (bfd *abfd)
+static bfd_boolean MY(write_object_contents)(bfd *abfd)
 {
   struct external_exec exec_bytes;
-  struct internal_exec *execp = exec_hdr (abfd);
+  struct internal_exec *execp = exec_hdr(abfd);
 
-  obj_reloc_entry_size (abfd) = RELOC_STD_SIZE;
+  obj_reloc_entry_size(abfd) = RELOC_STD_SIZE;
 
-  WRITE_HEADERS (abfd, execp);
+  WRITE_HEADERS(abfd, execp);
 
   return TRUE;
 }
-#define MY_write_object_contents MY (write_object_contents)
-#endif
+# define MY_write_object_contents MY(write_object_contents)
+#endif /* !MY_write_object_contents && MY */
 
-#ifndef MY_set_sizes
+#if !defined(MY_set_sizes) && defined(MY)
 
-static bfd_boolean
-MY (set_sizes) (bfd *abfd)
+static bfd_boolean MY(set_sizes)(bfd *abfd)
 {
   adata(abfd).page_size = TARGET_PAGE_SIZE;
   adata(abfd).segment_size = SEGMENT_SIZE;
 
-#ifdef ZMAGIC_DISK_BLOCK_SIZE
+# ifdef ZMAGIC_DISK_BLOCK_SIZE
   adata(abfd).zmagic_disk_block_size = ZMAGIC_DISK_BLOCK_SIZE;
-#else
+# else
   adata(abfd).zmagic_disk_block_size = TARGET_PAGE_SIZE;
-#endif
+# endif /* ZMAGIC_DISK_BLOCK_SIZE */
 
   adata(abfd).exec_bytes_size = EXEC_BYTES_SIZE;
   return TRUE;
 }
-#define MY_set_sizes MY (set_sizes)
-#endif
+# define MY_set_sizes MY(set_sizes)
+#endif /* !MY_set_sizes && MY */
 
 #ifndef MY_exec_hdr_flags
-#define MY_exec_hdr_flags 0
-#endif
+# define MY_exec_hdr_flags 0
+#endif /* !MY_exec_hdr_flags */
 
 #ifndef MY_backend_data
 
@@ -588,15 +602,15 @@ MY_bfd_final_link (bfd *abfd, struct bfd_link_info *info)
 #define MY_symbol_leading_char '_'
 #endif
 
-/* Aout archives normally use spaces for padding.  */
+/* Aout archives normally use spaces for padding: */
 #ifndef AR_PAD_CHAR
-#define AR_PAD_CHAR ' '
-#endif
+# define AR_PAD_CHAR ' '
+#endif /* !AR_PAD_CHAR */
 
 #ifndef MY_BFD_TARGET
-const bfd_target MY (vec) =
+const bfd_target MY(vec) =
 {
-  TARGETNAME,			/* Name.  */
+  (char *)TARGETNAME,			/* Name.  */
   bfd_target_aout_flavour,
 #ifdef TARGET_IS_BIG_ENDIAN_P
   BFD_ENDIAN_BIG,		/* Target byte order (big).  */
@@ -626,7 +640,7 @@ const bfd_target MY (vec) =
   bfd_getl64, bfd_getl_signed_64, bfd_putl64,
      bfd_getl32, bfd_getl_signed_32, bfd_putl32,
      bfd_getl16, bfd_getl_signed_16, bfd_putl16, /* Headers.  */
-#endif
+#endif /* TARGET_IS_BIG_ENDIAN_P */
     {_bfd_dummy_target, MY_object_p, 		/* bfd_check_format.  */
        bfd_generic_archive_p, MY_core_file_p},
     {bfd_false, MY_mkobject,			/* bfd_set_format.  */
@@ -634,19 +648,23 @@ const bfd_target MY (vec) =
     {bfd_false, MY_write_object_contents, 	/* bfd_write_contents.  */
        _bfd_write_archive_contents, bfd_false},
 
-     BFD_JUMP_TABLE_GENERIC (MY),
-     BFD_JUMP_TABLE_COPY (MY),
-     BFD_JUMP_TABLE_CORE (MY),
-     BFD_JUMP_TABLE_ARCHIVE (MY),
-     BFD_JUMP_TABLE_SYMBOLS (MY),
-     BFD_JUMP_TABLE_RELOCS (MY),
-     BFD_JUMP_TABLE_WRITE (MY),
-     BFD_JUMP_TABLE_LINK (MY),
-     BFD_JUMP_TABLE_DYNAMIC (MY),
+     BFD_JUMP_TABLE_GENERIC(MY),
+     BFD_JUMP_TABLE_COPY(MY),
+     BFD_JUMP_TABLE_CORE(MY),
+     BFD_JUMP_TABLE_ARCHIVE(MY),
+     BFD_JUMP_TABLE_SYMBOLS(MY),
+     BFD_JUMP_TABLE_RELOCS(MY),
+     BFD_JUMP_TABLE_WRITE(MY),
+     BFD_JUMP_TABLE_LINK(MY),
+     BFD_JUMP_TABLE_DYNAMIC(MY),
 
-  /* Alternative_target.  */
+  /* Alternative_target: */
   NULL,
 
   MY_backend_data
 };
 #endif /* MY_BFD_TARGET */
+
+#endif /* !__BFD_AOUT_TARGET_H__ */
+
+/* EOF */

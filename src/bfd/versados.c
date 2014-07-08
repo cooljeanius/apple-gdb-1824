@@ -1,4 +1,4 @@
-/* BFD back-end for VERSAdos-E objects.
+/* versados.c: BFD back-end for VERSAdos-E objects.
    Copyright 1995, 1996, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
    Written by Steve Chamberlain of Cygnus Support <sac@cygnus.com>.
@@ -145,10 +145,12 @@ union ext_any
 static bfd_boolean
 versados_mkobject (bfd *abfd)
 {
-  if (abfd->tdata.versados_data == NULL)
-    {
-      bfd_size_type amt = sizeof (tdata_type);
-      tdata_type *tdata = bfd_alloc (abfd, amt);
+  if (abfd->tdata.versados_data == NULL) {
+      bfd_size_type amt;
+      tdata_type *tdata;
+
+      amt = sizeof(tdata_type);
+      tdata = (tdata_type *)bfd_alloc(abfd, amt);
 
       if (tdata == NULL)
 	return FALSE;
@@ -855,17 +857,24 @@ const bfd_target versados_vec =
     bfd_false,
   },
 
-  BFD_JUMP_TABLE_GENERIC (versados),
-  BFD_JUMP_TABLE_COPY (_bfd_generic),
-  BFD_JUMP_TABLE_CORE (_bfd_nocore),
-  BFD_JUMP_TABLE_ARCHIVE (_bfd_noarchive),
-  BFD_JUMP_TABLE_SYMBOLS (versados),
-  BFD_JUMP_TABLE_RELOCS (versados),
-  BFD_JUMP_TABLE_WRITE (versados),
-  BFD_JUMP_TABLE_LINK (versados),
-  BFD_JUMP_TABLE_DYNAMIC (_bfd_nodynamic),
+  BFD_JUMP_TABLE_GENERIC(versados),
+  BFD_JUMP_TABLE_COPY(_bfd_generic),
+  BFD_JUMP_TABLE_CORE(_bfd_nocore),
+  BFD_JUMP_TABLE_ARCHIVE(_bfd_noarchive),
+  BFD_JUMP_TABLE_SYMBOLS(versados),
+  BFD_JUMP_TABLE_RELOCS(versados),
+  BFD_JUMP_TABLE_WRITE(versados),
+  BFD_JUMP_TABLE_LINK(versados),
+  BFD_JUMP_TABLE_DYNAMIC(_bfd_nodynamic),
 
   NULL,
 
   NULL
 };
+
+/* Silence some '-Wunused-macros' warnings: */
+#ifdef ESD_COMMON
+# undef ESD_COMMON
+#endif /* ESD_COMMON */
+
+/* EOF */

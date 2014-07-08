@@ -1,4 +1,4 @@
-/* BFD back-end for i386 a.out binaries.
+/* i386aout.c: BFD back-end for i386 a.out binaries.
    Copyright 1990, 1991, 1992, 1994, 1996, 1997, 2001, 2002, 2003, 2005
    Free Software Foundation, Inc.
 

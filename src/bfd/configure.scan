@@ -22,7 +22,7 @@ AC_CHECK_LIB([intl], [main])
 
 # Checks for header files.
 AC_FUNC_ALLOCA
-AC_CHECK_HEADERS([fcntl.h libintl.h limits.h malloc.h stddef.h stdint.h stdlib.h string.h strings.h sys/file.h sys/param.h sys/time.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h libintl.h limits.h malloc.h stddef.h stdint.h stdlib.h string.h strings.h sys/file.h sys/param.h sys/socket.h sys/time.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL

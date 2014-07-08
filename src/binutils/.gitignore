@@ -48,3 +48,8 @@ strings
 strip-new
 sysinfo
 tmpdir
+
+# this header is generated:
+sysroff.h
+# ...as is this:
+sysroff.c

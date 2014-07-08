@@ -1,5 +1,6 @@
+/* decstation.h */
 /* Hopefully this should include either machine/param.h (Ultrix) or
-   machine/machparam.h (Mach), whichever is its name on this system.  */
+ * machine/machparam.h (Mach), whichever is its name on this system. */
 #include <sys/param.h>
 
 #include <machine/vmparam.h>
@@ -15,3 +16,5 @@
 
 #define TRAD_UNIX_CORE_FILE_FAILING_SIGNAL(core_bfd) \
   ((core_bfd)->tdata.trad_core_data->u.u_arg[0])
+
+/* EOF */

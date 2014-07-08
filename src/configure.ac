@@ -46,20 +46,28 @@ AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
 
-# System-detecting stuff
+# System-detecting stuff:
 AC_CANONICAL_TARGET
 ACX_NONCANONICAL_BUILD
 ACX_NONCANONICAL_HOST
 ACX_NONCANONICAL_TARGET
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  AC_SUBST([HOST_ARCHITECTURE])
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+  AC_SUBST([TARGET_ARCHITECTURE])
+fi
 AC_ARG_PROGRAM
 AC_OBJEXT
 AC_EXEEXT
 AC_USE_SYSTEM_EXTENSIONS
 
-# Autobuild
+# Autobuild:
 AB_INIT
 
-# Check for an already-installed autogen
+# Check for an already-installed autogen:
 AG_PATH_AUTOOPTS([5.17.4])
 # TODO: figure out how to pass the --disable-opts-test configure flag
 # to the configure script in the "utils" subdirectory.
@@ -109,7 +117,7 @@ AC_SYS_INTERPRETER
 
 progname=${0}
 # if PWD already has a value, it is probably wrong.
-if test -n "${PWD}" ; then PWD=`${PWDCMD-pwd}`; fi
+if test -n "${PWD}"; then PWD=`${PWDCMD-pwd}`; fi
 
 # Test for sed
 AC_PROG_SED
@@ -133,7 +141,7 @@ AC_SUBST([TOPLEVEL_CONFIGURE_ARGUMENTS])
 
 moveifchange=${srcdir}/move-if-change
 
-srcpwd=`cd ${srcdir} ; ${PWDCMD-pwd}`
+srcpwd=`cd "${srcdir}"; ${PWDCMD-pwd}`
 
 # We pass INSTALL explicitly to sub-makes. Make sure that it is not
 # a relative path.
@@ -144,7 +152,7 @@ fi
 AC_SUBST([INSTALLdir])
 AC_SUBST([TEMPLATEdir])
 
-# Check Make
+# Check Make, the prog and var:
 AC_PROG_MAKE_SET
 
 # Set srcdir to "." if that is what it is.
@@ -158,7 +166,7 @@ topsrcdir=${srcpwd}
 
 extra_host_args=""
 
-# Test for awk
+# Test for awk:
 AC_PROG_AWK
 
 ### To add a new directory to the tree, first choose whether it is a target
@@ -175,20 +183,18 @@ AC_PROG_AWK
 # Double entries in build_configdirs, configdirs, or target_configdirs may
 # cause circular dependencies and break everything horribly.
 
-# these library is used by various programs built for the build
-# environment
-#
+# this library is used by various programs built for the build
+# environment:
 build_libs="build-libiberty"
 
-# these tools are built for the build environment
+# these tools are built for the build environment:
 build_tools="build-autogen build-texinfo build-byacc build-flex build-bison build-m4 build-fixincludes"
 
 # these libraries are used by various programs built for the host
-# environment
-#
+# environment:
 host_libs="intl electric-fence mmalloc libiberty libdecnumber opcodes bfd readline tcl tk itcl libgui zlib libcpp libbacktrace libelf libiconv"
 
-# These tools are built for the host environment
+# These tools are built for the host environment.
 # Note, the powerpc-eabi build depends on sim occurring before gdb in order
 # to know that we are building the simulator.
 # binutils, gas and ld appear in that order because it makes sense to run
@@ -204,8 +210,7 @@ libgcj="target-libffi \
 	target-libjava"
 
 # These libraries are built for the target environment, and are built after
-# the host libraries and the host tools (which may be a cross compiler)
-#
+# the host libraries and the host tools (which may be a cross compiler):
 target_libraries="target-libiberty \
 		target-libgcc \
 		target-libbacktrace \
@@ -228,13 +233,12 @@ target_libraries="target-libiberty \
 		target-libgo"
 
 # these tools are built using the target libraries, and are intended to
-# run only in the target environment
+# run only in the target environment.
 #
 # note: any program that *uses* libraries that are in the
 # "target_libraries" list belongs in this list. Those programs
 # are also very likely candidates for the "native_only" list
-# which follows
-#
+# which follows later.
 target_tools="target-examples target-groff target-gperf target-rda"
 
 ###########################################################################
@@ -251,11 +255,11 @@ build_configdirs=`echo ${build_libs} ${build_tools}`
 # Only make build modules if build != host.
 # This should be done more generally, but at the moment it does NOT matter.
 # APPLE LOCAL: Use "host" over "host_alias" - autoconf 2.13/2.57 diff?
-if test ${host} != ${build} ; then
+if test "x${host}" != "x${build}"; then
   # This is the only build module.
-  build_modules=libiberty
+  build_modules="libiberty"
 else
-  build_modules=
+  build_modules=""
 fi
 
 ###########################################################################
@@ -266,8 +270,8 @@ srcname="gnu development package"
 appdirs=""
 
 # Define is_cross_compiler to save on calls to 'test'.
-is_cross_compiler=
-if test x"${host}" = x"${target}" ; then
+is_cross_compiler=""
+if test x"${host}" = x"${target}"; then
   is_cross_compiler=no
 else
   is_cross_compiler=yes
@@ -288,7 +292,7 @@ noconfigdirs=""
 
 use_gnu_ld=""
 # Make sure we do NOT let GNU ld be added if we did NOT want it.
-if test x${with_gnu_ld} = xno ; then
+if test "x${with_gnu_ld}" = "xno"; then
   use_gnu_ld=no
   noconfigdirs="${noconfigdirs} ld gold"
 fi
@@ -302,7 +306,7 @@ fi
 
 use_included_zlib="yes"
 # Make sure we do NOT let ZLIB be added if we did NOT want it.
-if test x${with_system_zlib} = xyes ; then
+if test "x${with_system_zlib}" = "xyes"; then
   use_included_zlib=no
   noconfigdirs="${noconfigdirs} zlib"
 fi
@@ -452,7 +456,7 @@ esac
 # A target can indicate whether a language is not supported for some
 # reason.
 # Only spaces may be used in this macro; not newlines or tabs.
-unsupported_languages=
+unsupported_languages=""
 
 # Remove more programs from consideration, based on the host or 
 # target this usually means that a port of the program does NOT
@@ -545,7 +549,7 @@ yes)
   # If we reset it here, it will NOT get added to noconfigdirs in the
   # target-specific build rules, so it will be forcibly enabled
   # (unless the Java language itself is NOT enabled).
-  libgcj=
+  libgcj=""
   ;;
 no)
   # Make sure we get it printed in the list of not supported target libs.
@@ -572,8 +576,8 @@ if test x${enable_static_libjava} != xyes ; then
 fi
 AC_SUBST([EXTRA_CONFIGARGS_LIBJAVA])
 
-# Disable libgomp on non POSIX hosted systems.
-if test x${enable_libgomp} = x ; then
+# Disable libgomp on non-POSIX hosted systems.
+if test "x${enable_libgomp}" = "x"; then
     # Enable libgomp by default on hosted POSIX systems.
     case "${target}" in
     *-*-linux* | *-*-gnu* | *-*-k*bsd*-gnu | *-*-kopensolaris*-gnu)
@@ -590,7 +594,7 @@ if test x${enable_libgomp} = x ; then
     esac
 fi
 
-# Allow --disable-libmudflap to exclude target-libmudflap
+# Allow --disable-libmudflap to exclude target-libmudflap like this:
 case ${enable_libmudflap} in
 yes)
     ;;
@@ -613,7 +617,8 @@ no)
 esac
 
 AC_ARG_ENABLE([64-bit-bfd],
-[AS_HELP_STRING([--enable-64-bit-bfd],[64-bit bfd support (on hosts with narrower word sizes)])],
+[AS_HELP_STRING([--enable-64-bit-bfd],
+                [64-bit bfd support (on hosts with narrower word sizes)])],
 [case "${enableval}" in
   yes)  want64=true  ;;
   no)   want64=false ;;
@@ -631,7 +636,7 @@ case "${target}" in
     ;;
 # APPLE LOCAL: Customize our platform configuration a bit.
   *-*-darwin*)
-    # PR 46986
+    # PR 46986 says to do this:
     noconfigdirs="${noconfigdirs} target-libgo"
 # The Apple linker and assembler packages are part of the cctools and ld64
 # packages respectively (see opensource.apple.com for more info)
@@ -657,12 +662,12 @@ case "${target}" in
       AC_MSG_WARN([You appear to be at Apple, in that case disabling subdirectories that Apple says to disable (unset the APPLE_INTERNAL_DIR environment variable to avoid this)])
       noconfigdirs="${applespecifiednoconfigdirs}"
     fi
-# building zlib from this level can mess it up; build it manually instead
+# building zlib from this level can mess it up; build it manually instead:
     if test -z "${AR}" -o -z "${ARFLAGS}" -o "${AR}" = "libtool" -o "${AR}" = "ar" -o "${ARFLAGS}" = "-o"; then
       noconfigdirs="${noconfigdirs} zlib"
     fi
 # autogen support in this tree is still tentative, so disable if guile is
-# not also present in this tree
+# not also present in this tree:
     if test ! -d guile; then
       noconfigdirs="${noconfigdirs} build-autogen autogen"
     fi
@@ -673,7 +678,8 @@ case "${target}" in
     host_configargs=" ${host_configargs} --disable-shared --enable-64-bit-bfd --disable-softfloat --disable-werror "
 
     AC_ARG_ENABLE([carbon-framework],
-    [AS_HELP_STRING([--disable-carbon-framework],[disable Carbon framework use even when available])],
+    [AS_HELP_STRING([--disable-carbon-framework],
+                    [disable Carbon framework use even when available])],
     [case ${enableval} in
       yes)
         host_configargs=" ${host_configargs} --enable-carbon-framework" ;;
@@ -684,7 +690,8 @@ case "${target}" in
     esac],[])
 
     AC_ARG_ENABLE([debug-symbols-framework],
-    [AS_HELP_STRING([--disable-debug-symbols-framework],[disable DebugSymbols framework use even when available])],
+    [AS_HELP_STRING([--disable-debug-symbols-framework],
+                [disable DebugSymbols framework use even when available])],
     [case ${enableval} in
       yes)
         host_configargs=" ${host_configargs} --enable-debug-symbols-framework" ;;
@@ -695,7 +702,8 @@ case "${target}" in
     esac],[])
 
     AC_ARG_ENABLE([arch-for-exec],
-      [AS_HELP_STRING([--disable-arch-for-exec],[disable use of arch for exec])],
+      [AS_HELP_STRING([--disable-arch-for-exec],
+                      [disable use of arch for exec])],
       [case ${enableval} in
         yes) 
           host_configargs=" ${host_configargs} --enable-arch-for-exec" ;;
@@ -3159,15 +3167,14 @@ case ${enable_werror} in
 esac
 AC_SUBST([stage2_werror_flag])
 
-# Enable --enable-host-shared.
+# Enable --enable-host-shared:
 AC_ARG_ENABLE([host-shared],
 [AS_HELP_STRING([--enable-host-shared],
 		[build host code as shared libraries])],
 [host_shared=${enableval}],[host_shared=no])
 AC_SUBST(host_shared)
 
-# Specify what files to not compare during bootstrap.
-
+# Specify what files to not compare during bootstrap:
 compare_exclusions="gcc/cc*-checksum\$(objext) | gcc/ada/*tools/*"
 case "${target}" in
   hppa*64*-*-hpux*) ;;

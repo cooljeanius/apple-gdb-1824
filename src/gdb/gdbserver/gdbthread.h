@@ -68,14 +68,17 @@ struct thread_info
 
 extern struct inferior_list all_threads;
 
-void remove_thread (struct thread_info *thread);
-void add_thread (ptid_t ptid, void *target_data);
+void remove_thread(struct thread_info *thread);
+void add_thread(ptid_t ptid, void *target_data);
 
-struct thread_info *find_thread_ptid (ptid_t ptid);
-struct thread_info *gdb_id_to_thread (unsigned int);
+struct thread_info *find_thread_ptid(ptid_t ptid);
+struct thread_info *gdb_id_to_thread(unsigned int);
 
-/* Get current thread ID (Linux task ID).  */
-#define current_ptid ((struct inferior_list_entry *) current_inferior)->id
+#ifndef current_ptid
+/* Get current thread ID (Linux task ID): */
+# define current_ptid ((struct inferior_list_entry *)current_inferior)->id
+#endif /* !current_ptid */
+
 #endif /* GDB_THREAD_H */
 
 /* EOF */

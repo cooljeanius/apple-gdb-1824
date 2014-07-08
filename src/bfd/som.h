@@ -1,4 +1,4 @@
-/* HP PA-RISC SOM object file format:  definitions internal to BFD.
+/* som.h: HP PA-RISC SOM object file format: definitions internal to BFD.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1998, 2000, 2001,
    2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
@@ -165,7 +165,7 @@ struct som_subspace_dictionary_record
   unsigned int initialization_length;
   unsigned int subspace_start;
   unsigned int subspace_length;
-  unsigned int reserved2 : 5;   
+  unsigned int reserved2 : 5;
   unsigned int alignment :27;
   union name_pt name;
   int fixup_request_index;
@@ -267,3 +267,5 @@ int **       hppa_som_gen_reloc_type           (bfd *, int, int, enum hppa_reloc
 bfd_boolean  bfd_som_attach_compilation_unit   (bfd *, const char *, const char *, const char *, const char *);
 
 #endif /* _SOM_H */
+
+/* EOF */

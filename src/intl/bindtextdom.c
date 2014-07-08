@@ -1,25 +1,26 @@
-/* Implementation of the bindtextdomain(3) function
-   Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
-   any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software Foundation,
-   Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+/* bindtextdom.c: Implementation of the bindtextdomain(3) function
+ * Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
 # warning bindtextdomain.c expects "config.h" to be included.
-#endif
+#endif /* HAVE_CONFIG_H */
 
 #if defined STDC_HEADERS || defined _LIBC || defined HAVE_STDLIB_H
 # include <stdlib.h>
@@ -27,16 +28,29 @@
 # ifdef HAVE_MALLOC_H
 #  include <malloc.h>
 # else
-void free ();
+#  ifdef HAVE_MALLOC_MALLOC_H
+#   include <malloc/malloc.h>
+#  else
+void free();
+#  endif /* HAVE_MALLOC_MALLOC_H */
 # endif /* HAVE_MALLOC_H */
 #endif /* HAVE_STDLIB_H */
 
-#if defined HAVE_STRING_H || defined _LIBC
+#if defined STDC_HEADERS || (defined(__STDC__) && __STDC__) || \
+    (defined(HAVE_STDIO_H) && defined(HAVE_STDDEF_H))
+# include <stdio.h>
+# include <stddef.h>
+# if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199409L)) || defined(HAVE_WCHAR_H)
+#  include <wchar.h>
+# endif /* STDC NA1+ || HAVE_WCHAR_H */
+#endif /* STDC_HEADERS || __STDC__ || (HAVE_STDIO_H && HAVE_STDDEF_H) */
+
+#if defined HAVE_STRING_H || defined _LIBC || defined STDC_HEADERS
 # include <string.h>
 #elif defined HAVE_STRINGS_H
 # include <strings.h>
 # ifndef memcpy
-#  define memcpy(Dst, Src, Num) bcopy (Src, Dst, Num)
+#  define memcpy(Dst, Src, Num) bcopy(Src, Dst, Num)
 # endif /* !memcpy */
 #endif /* HAVE_STRING_H || _LIBC */
 
@@ -57,10 +71,10 @@ extern const char _nl_default_dirname[];
 extern struct binding *_nl_domain_bindings;
 
 
-/* Names for the libintl functions are a problem.  They must not clash
-   with existing names and they should follow ANSI C.  But this source
-   code is also used in GNU C Library where the names have a __
-   prefix.  So we have to make a difference here.  */
+/* Names for the libintl functions are a problem. They must not clash
+ * with existing names and they should follow ANSI C. But this source
+ * code is also used in GNU C Library where the names have a __
+ * prefix. So we have to make a difference here.  */
 #ifdef _LIBC
 # define BINDTEXTDOMAIN __bindtextdomain
 # ifndef strdup
@@ -71,7 +85,7 @@ extern struct binding *_nl_domain_bindings;
 #endif /* _LIBC */
 
 /* Specify that the DOMAINNAME message catalog will be found
-   in DIRNAME rather than in the system locale data base.  */
+ * in DIRNAME rather than in the system locale data base.  */
 char *
 BINDTEXTDOMAIN (domainname, dirname)
      const char *domainname;
@@ -80,22 +94,22 @@ BINDTEXTDOMAIN (domainname, dirname)
   struct binding *binding;
 
   /* Some sanity checks.  */
-  if (domainname == NULL || domainname[0] == '\0')
+  if ((domainname == NULL) || (domainname[0] == '\0'))
     return NULL;
 
-  for (binding = _nl_domain_bindings; binding != NULL; binding = binding->next)
-    {
-      int compare = strcmp (domainname, binding->domainname);
-      if (compare == 0)
-	/* We found it!  */
-	break;
-      if (compare < 0)
-	{
+  for ((binding = _nl_domain_bindings); (binding != NULL);
+       (binding = binding->next)) {
+      int compare = strcmp(domainname, binding->domainname);
+      if (compare == 0) {
+	  /* We found it!  */
+	  break;
+      }
+      if (compare < 0) {
 	  /* It is not in the list.  */
 	  binding = NULL;
 	  break;
-	}
-    }
+      }
+  }
 
   if (dirname == NULL)
     /* The current binding has be to returned.  */

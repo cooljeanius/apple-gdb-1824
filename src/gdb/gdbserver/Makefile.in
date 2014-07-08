@@ -17,6 +17,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place: Suite 330, Boston, MA 02111-1307, USA.
 
+ACLOCAL_AMFLAGS = -I../m4 --install
+
 prefix = @prefix@
 exec_prefix = @exec_prefix@
 
@@ -44,16 +46,44 @@ htmldir = $(prefix)/html
 includedir = @includedir@
 
 SHELL = /bin/sh
+CONFIGURED_SHELL = @SHELL@
+EXEEXT = @EXEEXT@
 
+RUN_MKINSTALLDIRS = $(SHELL) $(srcdir)/../../mkinstalldirs
 INSTALL = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_DATA = @INSTALL_DATA@
+RANLIB = @RANLIB@
+SED = @SED@
+GREP = @GREP@
+
+HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
+TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
 
 CC = @CC@
+
+NM = @NM@
+NM_INTERFACE = @NM_INTERFACE@
+PARSE_NM_OUTPUT_CMD_ONE = @gdb_cv_sys_global_symbol_pipe@
+PARSE_NM_OUTPUT_CMD_TWO = @gdb_cv_sys_global_symbol_to_cdecl@
+PARSE_NM_OUTPUT_CMD_THREE = @gdb_cv_sys_global_symbol_to_c_name_address@
+PARSE_NM_OUTPUT_CMD_FOUR = @gdb_cv_sys_global_symbol_to_c_name_address_lib_prefix@
+
+# Dependency tracking information.
+depcomp = $(SHELL) $(srcdir)/../depcomp
+
+# Note that these are overridden by GNU make-specific code below if
+# GNU make is used.  The overrides implement dependency tracking.
+COMPILE.pre = $(CC)
+COMPILE.post = -c -o $@
+COMPILE = $(COMPILE.pre) $(INTERNAL_CFLAGS) $(COMPILE.post)
+POSTCOMPILE = @echo "done compiling '$@'"
 
 # Directory containing source files.  Do NOT clean up the spacing,
 # this exact string is matched for by the "configure" script.
 srcdir = @srcdir@
+abs_top_srcdir=@abs_top_srcdir@
+abs_srcdir=@abs_srcdir@
 VPATH = @srcdir@
 
 # It is also possible that you will need to add -I/usr/include/sys to the
@@ -69,7 +99,16 @@ CC-LD=${CC}
 INCLUDE_DIR =  ${srcdir}/../../include
 INCLUDE_DEP = $$(INCLUDE_DIR)
 
-# Where are the BFD library?
+# gnulib
+GNULIB_BUILDDIR = ../gnulib
+LIBGNU = $(GNULIB_BUILDDIR)/import/libgnu.a
+INCGNU = -I$(srcdir)/../gnulib/import -I$(GNULIB_BUILDDIR)/import
+
+# Generated headers in the gnulib directory. These must be listed
+# so that they are generated before other files are compiled.
+GNULIB_H = $(GNULIB_BUILDDIR)/import/string.h
+
+# Where is the BFD library? Typically in ../../bfd:
 BFD_DIR = ../../bfd
 BFD = $(BFD_DIR)/libbfd.a
 BFD_SRC = $(srcdir)/$(BFD_DIR)
@@ -80,38 +119,62 @@ BFD_CFLAGS = -I$(BFD_DIR) -I$(BFD_SRC)
 READLINE_DIR = ${srcdir}/../readline
 READLINE_DEP = $$(READLINE_DIR)
 
+# Where are the regformat files? Typically in $(srcdir)/../regformats:
+regformat_dir = $(srcdir)/../regformats
+
 # All the includes used for CFLAGS and for lint.
 # -I. for config files.
 # -I${srcdir} for our headers.
-# -I$(srcdir)/../regformats for regdef.h.
+# -I$(regformat_dir) for regdef.h.
+#
+# We do not include ../target or ../nat in here because headers
+# in those directories should be included with the subdirectory.
+# e.g.: "target/wait.h".
+#
 # APPLE LOCAL: I want to share some of the register definition
-# and mach stuff with regular gdb.  So I am adding another
+# and mach stuff with regular gdb. So I am adding another
 # platform include directory to get this stuff.
 PLATFORM_INCLUDE = @GDBSERVER_PLATFORM_INCLUDE@
-INCLUDE_CFLAGS = -I. -I.. -I../common -I${srcdir} -I$(srcdir)/../regformats $(PLATFORM_INCLUDE) -I$(INCLUDE_DIR)
+INCLUDE_CFLAGS = -I. -I.. -I../common -I${srcdir} -I$(srcdir)/../common \
+	 -I$(regformat_dir) -I$(srcdir)/.. \
+	 $(PLATFORM_INCLUDE) -I$(INCLUDE_DIR) $(INCGNU)
 
 # M{H,T}_CFLAGS, if defined, has host- and target-dependent CFLAGS
 # from the config/ directory.
 GLOBAL_CFLAGS = ${MT_CFLAGS} ${MH_CFLAGS}
 PROFILE_CFLAGS = @PROFILE_CFLAGS@
+HARDCODED_PROFILE_CFLAGS = -pg
 
-WARN_CFLAGS = -Wall -Wextra -Wimplicit
+# Warnings:
+WARN_CFLAGS = -Wall -Wno-unused -Wextra -Wimplicit -std=gnu99
+CONFIGURED_WARN_CFLAGS = @WARN_CFLAGS@
+WARN_CFLAGS_NO_FORMAT = `echo " $(CONFIGURED_WARN_CFLAGS) " \
+	 | $(SED) "s/ -Wformat-nonliteral / -Wno-format-nonliteral /g"`
+
+# archflags:
+C_ARCHFLAGS = @C_ARCHFLAGS@
 
 # CFLAGS is specifically reserved for setting from the command line
 # when running make.  E.G.  "make CFLAGS=-Wmissing-prototypes".
 CFLAGS = @CFLAGS@
+# (configure script should have already put archflags into CFLAGS itself)
 
 # CPPFLAGS is specifically reserved for setting from the command line
 # when running make.  E.G.  "make CPPFLAGS=-I.".
 CPPFLAGS = @CPPFLAGS@ -DHAVE_CONFIG_H
+DEFS = -DGDBSERVER
+CONFIGURED_DEFS = @DEFS@
+INTERNAL_DEFS = $(CONFIGURED_DEFS) $(DEFS)
 
 # INTERNAL_CFLAGS is the aggregate of all other *CFLAGS macros.
-INTERNAL_CFLAGS =  $(WARN_CFLAGS) ${CFLAGS} ${GLOBAL_CFLAGS} \
-	${PROFILE_CFLAGS} ${INCLUDE_CFLAGS} ${BFD_CFLAGS}
+INTERNAL_CFLAGS_BASE = ${CFLAGS} ${GLOBAL_CFLAGS} \
+	${PROFILE_CFLAGS} ${INCLUDE_CFLAGS}
+INTERNAL_WARN_CFLAGS = ${INTERNAL_CFLAGS_BASE} $(WARN_CFLAGS) $(CONFIGURED_WARN_CFLAGS)
+INTERNAL_CFLAGS = ${INTERNAL_WARN_CFLAGS} ${BFD_CFLAGS} $(INTERNAL_DEFS)
 
 # LDFLAGS is specifically reserved for setting from the command line
 # when running make.
-LDFLAGS = @LDFLAGS@
+LDFLAGS = @LDFLAGS@ $(C_ARCHFLAGS)
 INTERNAL_LDFLAGS = $(LDFLAGS) @RDYNAMIC@
 
 # Perhaps should come from parent Makefile
@@ -123,40 +186,128 @@ LINTFLAGS= $(BFD_CFLAGS)
 
 # All source files that go into linking GDB remote server.
 
-SFILES=	$(srcdir)/gdbreplay.c $(srcdir)/inferiors.c \
-	$(srcdir)/mem-break.c $(srcdir)/proc-service.c $(srcdir)/regcache.c \
+SFILES=	$(srcdir)/gdbreplay.c $(srcdir)/inferiors.c $(srcdir)/dll.c \
+	$(srcdir)/mem-break.c $(srcdir)/proc-service.c \
+	$(srcdir)/proc-service.list $(srcdir)/regcache.c \
 	$(srcdir)/remote-utils.c $(srcdir)/server.c $(srcdir)/target.c \
-	$(srcdir)/thread-db.c $(srcdir)/utils.c \
-	$(srcdir)/linux-arm-low.c $(srcdir)/linux-cris-low.c \
-	$(srcdir)/linux-crisv32-low.c $(srcdir)/linux-i386-low.c \
-	$(srcdir)/i387-fp.c \
+	$(srcdir)/thread-db.c $(srcdir)/utils.c $(srcdir)/debug.c \
+	$(srcdir)/linux-arm-low.c $(srcdir)/linux-bfin-low.c \
+	$(srcdir)/linux-cris-low.c $(srcdir)/linux-crisv32-low.c \
+	$(srcdir)/linux-i386-low.c \
+	$(srcdir)/i386-low.c $(srcdir)/i387-fp.c \
 	$(srcdir)/linux-ia64-low.c $(srcdir)/linux-low.c \
 	$(srcdir)/linux-m32r-low.c \
 	$(srcdir)/linux-m68k-low.c $(srcdir)/linux-mips-low.c \
+	$(srcdir)/linux-nios2-low.c \
 	$(srcdir)/linux-ppc-low.c $(srcdir)/linux-ppc64-low.c \
 	$(srcdir)/linux-s390-low.c \
-	$(srcdir)/linux-sh-low.c $(srcdir)/linux-x86-64-low.c \
+	$(srcdir)/linux-sh-low.c $(srcdir)/linux-sparc-low.c \
+	$(srcdir)/linux-x86-64-low.c \
+	$(srcdir)/linux-xtensa-low.c \
+	$(srcdir)/linux-tile-low.c \
+	$(srcdir)/win32-arm-low.c $(srcdir)/win32-i386-low.c \
+	$(srcdir)/win32-low.c $(srcdir)/wincecompat.c \
+	$(srcdir)/hostio.c $(srcdir)/hostio-errno.c \
+	$(srcdir)/common/vec.c $(srcdir)/common/gdb_vecs.c \
+	$(srcdir)/common/common-utils.c $(srcdir)/common/xml-utils.c \
+	$(srcdir)/common/linux-osdata.c $(srcdir)/common/ptid.c \
+	$(srcdir)/common/buffer.c $(srcdir)/common/linux-btrace.c \
+	$(srcdir)/common/filestuff.c $(srcdir)/target/waitstatus.c \
+	$(srcdir)/common/mips-linux-watch.c $(srcdir)/common/print-utils.c \
+	$(srcdir)/common/rsp-low.c \
  	$(srcdir)/macosx-low.c $(srcdir)/macosx-excthread.c \
  	$(srcdir)/macosx-ppc-low.c $(srcdir)/macosx-threads.c \
  	$(srcdir)/macosx-mutils.c $(srcdir)/macosx-i386-low.c
 
 DEPFILES = @GDBSERVER_DEPFILES@
 
+LIBOBJS = @LIBOBJS@
+
 SOURCES = $(SFILES)
 TAGFILES = $(SOURCES) ${HFILES} ${ALLPARAM} ${POSSLIBS} 
 
-OBS = inferiors.o regcache.o remote-utils.o server.o signals.o target.o \
+# the objects that were originally needed:
+ORIG_OBS = inferiors.o regcache.o remote-utils.o server.o signals.o \
+	target.o \
 	utils.o \
 	mem-break.o \
 	$(DEPFILES)
+# a newer set of objects:
+OBS = inferiors.o regcache.o remote-utils.o server.o \
+	signals.o target.o \
+	utils.o debug.o version.o \
+	mem-break.o xml-utils.o \
+	ptid.o buffer.o format.o dll.o \
+	rsp-low.o tdesc.o \
+	init_all_my_registers.o \
+	$(XML_BUILTIN) \
+	$(DEPFILES) \
+	$(LIBOBJS)
+# objects that would be part of OBS, but fail to compile, and as such have
+# been removed because they were not part of ORIG_OBS:
+BROKEN_OBS = agent.o ax.o waitstatus.o hostio.o event-loop.o tracepoint.o \
+	filestuff.o notif.o
+# objects that compile, but are missing symbols upon linking, and as such
+# have been removed because they were not part of ORIG_OBS:
+NONLINK_OBS = common-utils.o vec.o gdb_vecs.o print-utils.o
+# objects for gdbreplay:
+GDBREPLAY_OBS = gdbreplay.o version.o
 GDBSERVER_LIBS = @GDBSERVER_LIBS@
+XM_CLIBS = @LIBS@
+CDEPS = $(srcdir)/proc-service.list
+
+# XML files to compile in to gdbserver, if any.
+XML_DIR = $(srcdir)/../features
+XML_FILES = @srv_xmlfiles@
+XML_BUILTIN = @srv_xmlbuiltin@
+
+IPA_DEPFILES = @IPA_DEPFILES@
+extra_libraries = @extra_libraries@
+
+# If we ever treat gnulib as a subdir as FSF gdb does, these will be
+# necessary. It is okay to put them even when not using subdirs though,
+# even if it is kind of pointless...
+FLAGS_TO_PASS = \
+	"prefix=$(prefix)" \
+	"exec_prefix=$(exec_prefix)" \
+	"infodir=$(infodir)" \
+	"datarootdir=$(datarootdir)" \
+	"docdir=$(docdir)" \
+	"htmldir=$(htmldir)" \
+	"pdfdir=$(pdfdir)" \
+	"libdir=$(libdir)" \
+	"mandir=$(mandir)" \
+	"datadir=$(datadir)" \
+	"includedir=$(includedir)" \
+	"against=$(against)" \
+	"DESTDIR=$(DESTDIR)" \
+	"AR=$(AR)" \
+	"AR_FLAGS=$(AR_FLAGS)" \
+	"CC=$(CC)" \
+	"CFLAGS=$(CFLAGS)" \
+	"CXX=$(CXX)" \
+	"CXXFLAGS=$(CXXFLAGS)" \
+	"DLLTOOL=$(DLLTOOL)" \
+	"LDFLAGS=$(LDFLAGS)" \
+	"RANLIB=$(RANLIB)" \
+	"MAKEINFO=$(MAKEINFO)" \
+	"MAKEHTML=$(MAKEHTML)" \
+	"MAKEHTMLFLAGS=$(MAKEHTMLFLAGS)" \
+	"INSTALL=$(INSTALL)" \
+	"INSTALL_PROGRAM=$(INSTALL_PROGRAM)" \
+	"INSTALL_DATA=$(INSTALL_DATA)" \
+	"RUNTEST=$(RUNTEST)" \
+	"RUNTESTFLAGS=$(RUNTESTFLAGS)"
+
+# All generated files which can be included by another file.
+generated_files = config.h $(GNULIB_H)
 
 # Prevent Sun make from putting in the machine type.  Setting
 # TARGET_ARCH to nothing works for SunOS 3, 4.0, but not for 4.1.
 .c.o:
 	${CC} -c $(CPPFLAGS) ${INTERNAL_CFLAGS} $<
 
-all: gdbserver gdbreplay
+all: gdbserver$(EXEEXT) gdbreplay$(EXEEXT) $(extra_libraries)
 
 # Traditionally "install" depends on "all".  But it may be useful
 # not to; for example, if the user has made some trivial change to a 
@@ -164,36 +315,67 @@ all: gdbserver gdbreplay
 # time it takes for make to check that all is up to date.
 # install-only is intended to address that need.
 install: all install-only
-install-only: 
-	n=`echo gdbserver | sed '$(program_transform_name)'`; \
-	if [ x$$n = x ]; then n=gdbserver; else true; fi; \
-	$(SHELL) $(srcdir)/../../mkinstalldirs $(DESTDIR)$(bindir); \
-	$(INSTALL_PROGRAM) gdbserver $(DESTDIR)$(bindir)/$$n; \
-	$(SHELL) $(srcdir)/../../mkinstalldirs $(DESTDIR)$(man1dir); \
-	$(INSTALL_DATA) $(srcdir)/gdbserver.1 $(DESTDIR)$(man1dir)/$$n.1
+install-only:
+	n=`echo gdbserver | $(SED) '$(program_transform_name)'`; \
+	if [ "x$${n}" = "x" ]; then \
+	  n=gdbserver; \
+	else \
+	  echo "n is set to $${n}"; \
+	fi; \
+	if [ x"$(IPA_DEPFILES)" != x"" ]; then \
+	  $(RUN_MKINSTALLDIRS) $(DESTDIR)$(libdir); \
+	  $(INSTALL_PROGRAM) $(IPA_LIB) $(DESTDIR)$(libdir)/$(IPA_LIB); \
+	fi; \
+	$(RUN_MKINSTALLDIRS) $(DESTDIR)$(bindir); \
+	$(INSTALL_PROGRAM) gdbserver$(EXEEXT) $(DESTDIR)$(bindir)/$${n}$(EXEEXT); \
+	$(RUN_MKINSTALLDIRS) $(DESTDIR)$(man1dir); \
+	$(INSTALL_DATA) $(srcdir)/gdbserver.1 $(DESTDIR)$(man1dir)/$${n}.1
 
 uninstall: force
-	n=`echo gdbserver | sed '$(program_transform_name)'`; \
-	if [ x$$n = x ]; then n=gdbserver; else true; fi; \
-	rm -f $(bindir)/$$n $(DESTDIR)$(man1dir)/$$n.1
+	n=`echo gdbserver | $(SED) '$(program_transform_name)'`; \
+	if [ "x$${n}" = "x" ]; then \
+	  n=gdbserver; \
+	else \
+	  echo "n is set to $${n}"; \
+	fi; \
+	rm -fv $(bindir)/$${n}$(EXEEXT) $(DESTDIR)$(man1dir)/$${n}.1
 
 installcheck:
 check:
-info dvi:
+info dvi pdf:
 install-info:
+install-pdf:
 html:
 install-html:
-clean-info:
+clean-info: force
 
-gdbserver: $(OBS) ${ADD_DEPS} ${CDEPS}
-	rm -f gdbserver
-	${CC-LD} $(GLOBAL_CFLAGS) $(INTERNAL_LDFLAGS) -o gdbserver $(OBS) \
+gdbserver$(EXEEXT): $(OBS) ${ADD_DEPS} ${CDEPS}
+	rm -fv gdbserver$(EXEEXT)
+	${CC-LD} $(GLOBAL_CFLAGS) $(INTERNAL_LDFLAGS) -o gdbserver$(EXEEXT) $(OBS) \
 	  $(GDBSERVER_LIBS) $(XM_CLIBS)
 
-gdbreplay: gdbreplay.o
-	rm -f gdbreplay
-	${CC-LD} $(GLOBAL_CFLAGS) $(INTERNAL_LDFLAGS) -o gdbreplay gdbreplay.o \
+$(LIBGNU) $(GNULIB_H): all-lib
+all-lib: $(GNULIB_BUILDDIR)/Makefile
+.PHONY: all-lib
+
+# Depend on, but do NOT actually link against LIBGNU here, because while it
+# does have a rule for it, that rule does NOT actually make it (because we
+# are not treating gnulib as a subdir like FSF gdb does), and so the
+# dependency can be satisfied without it actually existing to be available
+# for linking against
+gdbreplay$(EXEEXT): $(GDBREPLAY_OBS) $(LIBGNU)
+	rm -fv gdbreplay$(EXEEXT)
+	${CC-LD} $(GLOBAL_CFLAGS) $(INTERNAL_LDFLAGS) -o gdbreplay$(EXEEXT) $(GDBREPLAY_OBS) \
 	  $(XM_CLIBS)
+
+IPA_OBJS=ax-ipa.o tracepoint-ipa.o format-ipa.o utils-ipa.o regcache-ipa.o remote-utils-ipa.o common-utils-ipa.o tdesc-ipa.o print-utils-ipa.o rsp-low-ipa.o ${IPA_DEPFILES}
+
+IPA_LIB=libinproctrace.so
+
+$(IPA_LIB): $(IPA_OBJS) ${ADD_DEPS} ${CDEPS}
+	rm -fv $(IPA_LIB)
+	${CC-LD} -shared -fPIC -Wl,--no-undefined $(INTERNAL_CFLAGS) \
+	$(INTERNAL_LDFLAGS) -o $(IPA_LIB) ${IPA_OBJS} -ldl -pthread
 
 # Put the proper machine-specific files first, so M-. on a machine
 # specific routine gets the one for the correct machine.
@@ -203,41 +385,105 @@ TAGS:	${TAGFILES}
 	  `find ${srcdir}/../config -name ${XM_FILE} -print` \
 	  `find ${srcdir}/../config -name ${NAT_FILE} -print` \
 	  `for i in yzzy ${DEPFILES}; do \
-	     if [ x$$i != xyzzy ]; then \
-	       echo ${srcdir}/$$i | sed -e 's/\.o$$/\.c/' ; \
+	     if [ "x$${i}" != "xyzzy" ]; then \
+	       echo ${srcdir}/$${i} | $(SED) -e 's/\.o$$/\.c/' ; \
 	     fi; \
 	   done` \
 	  ${TAGFILES}
 tags: TAGS
 
+# 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 clean:
-	rm -f *.o ${ADD_FILES} *~
-	rm -f gdbserver gdbreplay core make.log
-	rm -f reg-arm.c reg-i386.c reg-ia64.c reg-m32r.c reg-m68k.c reg-mips.c
-	rm -f reg-ppc.c reg-sh.c reg-x86-64.c reg-i386-linux.c reg-ppc64.c
-	rm -f reg-cris.c reg-crisv32.c reg-arm-macosx.c 
-	rm -fr autom4te.cache || rmdir autom4te.cache
+	rm -fv *.o ${ADD_FILES} *~
+	rm -f version.c
+	rm -fv gdbserver$(EXEEXT) gdbreplay$(EXEEXT) core make.log
+	rm -fv $(IPA_LIB)
+	rm -f aarch64.c
+	rm -f reg-arm.c reg-bfin.c i386.c reg-i386.c reg-ia64.c reg-m32r.c
+	rm -f reg-m68k.c reg-mips.c
+	rm -f reg-ppc.c reg-sh.c reg-sparc.c reg-spu.c amd64.c i386-linux.c
+	rm -f reg-x86-64.c reg-i386-linux.c reg-ppc64.c
+	rm -f reg-cris.c reg-crisv32.c amd64-linux.c reg-xtensa.c
+	rm -f reg-tilegx.c reg-tilegx32.c
+	rm -f reg-arm-macosx.c
+	rm -f arm-with-iwmmxt.c
+	rm -f arm-with-vfpv2.c arm-with-vfpv3.c arm-with-neon.c
+	rm -f mips-linux.c mips64-linux.c
+	rm -f nios2-linux.c
+	rm -f powerpc-32.c powerpc-32l.c powerpc-64l.c powerpc-e500l.c
+	rm -f powerpc-altivec32l.c powerpc-cell32l.c powerpc-vsx32l.c
+	rm -f powerpc-altivec64l.c powerpc-cell64l.c powerpc-vsx64l.c
+	rm -f powerpc-isa205-32l.c powerpc-isa205-64l.c
+	rm -f powerpc-isa205-altivec32l.c powerpc-isa205-vsx32l.c
+	rm -f powerpc-isa205-altivec64l.c powerpc-isa205-vsx64l.c
+	rm -f s390-linux32.c s390-linux64.c s390x-linux64.c
+	rm -f s390-linux32v1.c s390-linux32v2.c s390-linux64v1.c
+	rm -f s390-linux64v2.c s390x-linux64v1.c s390x-linux64v2.c
+	rm -f s390-te-linux32.c s390-te-linux64.c
+	rm -f tic6x-c64xp-linux.c tic6x-c64x-linux.c tic6x-c62x-linux.c
+	rm -f xml-builtin.c stamp-xml
+	rm -f i386-avx.c i386-avx-linux.c
+	rm -f i386-mpx.c i386-mpx-linux.c
+	rm -f i386-avx512.c i386-avx512-linux.c
+	rm -f amd64-avx.c amd64-avx-linux.c
+	rm -f amd64-mpx.c amd64-mpx-linux.c
+	rm -f amd64-avx512.c amd64-avx512-linux.c
+	rm -f i386-mmx.c i386-mmx-linux.c
+	rm -f x32.c x32-linux.c
+	rm -f x32-avx.c x32-avx-linux.c
+	rm -f x32-avx512.c x32-avx512-linux.c
+	rm -frv autom4te.cache || rmdir autom4te.cache
+# (once init_all_my_registers.c builds properly from this Makefile, it can
+# be cleaned here, too)
 
+# Do NOT remove GNULIB_BUILDDIR here, because we are defining it to be the
+# actual source directory for gnulib here, unlike FSF gdb, which creates
+# a separate build directory for it
 maintainer-clean realclean distclean: clean
 	rm -f nm.h tm.h xm.h config.status config.h stamp-h config.log
 	rm -f Makefile
 
 STAGESTUFF=${OBS} ${TSOBS} ${NTSOBS} ${ADD_FILES} init.c init.o version.c gdb
 
-config.h: stamp-h ; @true
+config.h: stamp-h ; @echo "this target, '$@', just makes its dep, '$<'"
 stamp-h: config.in config.status
 	CONFIG_FILES="" CONFIG_HEADERS=config.h $(SHELL) ./config.status
 
 Makefile: Makefile.in config.status
 	CONFIG_HEADERS="" $(SHELL) ./config.status
 
-config.status: configure configure.srv
+$(GNULIB_BUILDDIR)/Makefile: $(srcdir)/../gnulib/Makefile.in config.status
+
+config.status: configure configure.srv $(srcdir)/../development.sh
 	$(SHELL) ./config.status --recheck
+
+# automatic rebuilding in automake-generated Makefiles requires
+# this rule in the toplevel Makefile, which, with GNU make, causes
+# the desired updates through the implicit regeneration of the Makefile
+# and all of its prerequisites.
+am--refresh:
+	@:
 
 force:
 
-version.c: Makefile
-	echo 'char *version = "$(VERSION)";' >version.c
+version.c: Makefile $(srcdir)/../version.in $(srcdir)/../../bfd/version.h $(srcdir)/../common/create-version.sh
+	if [ -f $(srcdir)/../common/create-version.sh ]; then \
+	  echo "using new rules to make $@"; \
+	  $(SHELL) $(srcdir)/../common/create-version.sh $(srcdir)/.. \
+	    $(host_alias) $(target_alias) version.c; \
+	else \
+	  echo "using old rules to make $@"; \
+	  echo 'char *version = "$(VERSION)";' | tee version.c; \
+	fi
+
+xml-builtin.c: stamp-xml; @echo "this target '$@' just makes its dep '$<'"
+stamp-xml: $(XML_DIR)/feature_to_c.sh Makefile $(XML_FILES)
+	rm -fv xml-builtin.tmp
+	$(SHELL) $(XML_DIR)/feature_to_c.sh xml-builtin.tmp $(XML_FILES)
+	$(SHELL) $(srcdir)/../../move-if-change xml-builtin.tmp xml-builtin.c
+	echo "timestamp: `date`" | tee stamp-xml
+
+.PRECIOUS: xml-builtin.c
 
 # GNU Make has an annoying habit of putting *all* the Makefile variables
 # into the environment, unless you include this target as a circumvention.
@@ -251,11 +497,68 @@ version.c: Makefile
 MAKEOVERRIDES=
 
 gdb_proc_service_h = $(srcdir)/../gdb_proc_service.h $(srcdir)/../gregset.h
-regdat_sh = $(srcdir)/../regformats/regdat.sh
-regdef_h = $(srcdir)/../regformats/regdef.h
+regdat_sh = $(regformat_dir)/regdat.sh
+run_regdat_sh = $(SHELL) $(regdat_sh)
+regdef_h = $(regformat_dir)/regdef.h
 regcache_h = $(srcdir)/regcache.h
 server_h = $(srcdir)/server.h $(regcache_h) config.h $(srcdir)/target.h \
 		$(srcdir)/mem-break.h
+
+UST_CFLAGS = -DCONFIG_UST_GDB_INTEGRATION
+
+# Note, we only build the IPA if -fvisibility=hidden is supported in
+# the first place.
+IPAGENT_CFLAGS = $(CPPFLAGS) $(INTERNAL_CFLAGS) $(UST_CFLAGS) \
+	-fPIC -DIN_PROCESS_AGENT \
+	-fvisibility=hidden
+
+IPAGENT_COMPILE = $(COMPILE.pre) $(IPAGENT_CFLAGS) $(COMPILE.post)
+
+# In-process agent object rules:
+ax-ipa.o: ax.c
+	$(IPAGENT_COMPILE) $(WARN_CFLAGS_NO_FORMAT) $<
+	$(POSTCOMPILE)
+tracepoint-ipa.o: tracepoint.c
+	$(IPAGENT_COMPILE) $<
+	$(POSTCOMPILE)
+utils-ipa.o: utils.c
+	$(IPAGENT_COMPILE) $<
+	$(POSTCOMPILE)
+format-ipa.o: ../common/format.c
+	$(IPAGENT_COMPILE) $<
+	$(POSTCOMPILE)
+common-utils-ipa.o: ../common/common-utils.c
+	$(IPAGENT_COMPILE) $<
+	$(POSTCOMPILE)
+remote-utils-ipa.o: remote-utils.c
+	$(IPAGENT_COMPILE) $<
+	$(POSTCOMPILE)
+regcache-ipa.o: regcache.c
+	$(IPAGENT_COMPILE) $<
+	$(POSTCOMPILE)
+i386-linux-ipa.o: i386-linux.c
+	$(IPAGENT_COMPILE) $<
+	$(POSTCOMPILE)
+linux-i386-ipa.o: linux-i386-ipa.c
+	$(IPAGENT_COMPILE) $<
+	$(POSTCOMPILE)
+linux-amd64-ipa.o: linux-amd64-ipa.c
+	$(IPAGENT_COMPILE) $<
+	$(POSTCOMPILE)
+amd64-linux-ipa.o: amd64-linux.c
+	$(IPAGENT_COMPILE) $<
+	$(POSTCOMPILE)
+tdesc-ipa.o: tdesc.c
+	$(IPAGENT_COMPILE) $<
+	$(POSTCOMPILE)
+print-utils-ipa.o: ../common/print-utils.c
+	$(IPAGENT_COMPILE) $<
+	$(POSTCOMPILE)
+rsp-low-ipa.o: ../common/rsp-low.c
+	$(IPAGENT_COMPILE) $<
+	$(POSTCOMPILE)
+
+# end ipa rules
 
 inferiors.o: inferiors.c $(server_h)
 mem-break.o: mem-break.c $(server_h)
@@ -267,8 +570,90 @@ target.o: target.c $(server_h)
 thread-db.o: thread-db.c $(server_h) $(gdb_proc_service_h)
 utils.o: utils.c $(server_h)
 
+ax.o: ax.c
+	$(COMPILE) $(WARN_CFLAGS_NO_FORMAT) $<
+	$(POSTCOMPILE)
+
+# objects whose sources are from ../signals:
 signals.o: ../signals/signals.c $(server_h)
 	$(CC) -c $(CPPFLAGS) $(INTERNAL_CFLAGS) $< -DGDBSERVER
+
+# non-ipa objects whose sources are from ../common:
+print-utils.o: ../common/print-utils.c
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+rsp-low.o: ../common/rsp-low.c
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+linux-procfs.o: ../common/linux-procfs.c
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+linux-ptrace.o: ../common/linux-ptrace.c
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+common-utils.o: ../common/common-utils.c
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+vec.o: ../common/vec.c
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+gdb_vecs.o: ../common/gdb_vecs.c
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+xml-utils.o: ../common/xml-utils.c
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+linux-osdata.o: ../common/linux-osdata.c
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+ptid.o: ../common/ptid.c
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+buffer.o: ../common/buffer.c
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+format.o: ../common/format.c
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+filestuff.o: ../common/filestuff.c
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+agent.o: ../common/agent.c
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+linux-btrace.o: ../common/linux-btrace.c
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+mips-linux-watch.o: ../common/mips-linux-watch.c
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+
+# Native object files rules from ../nat:
+linux-waitpid.o: ../nat/linux-waitpid.c
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+
+# objects whose sources are from ../target:
+waitstatus.o: ../target/waitstatus.c
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+
+# We build vasprintf with -DHAVE_CONFIG_H because we want that unit to
+# include our config.h file.  Otherwise, some system headers do not get
+# included, and the compiler emits a warning about implicitly defined
+# functions (missing declaration).
+vasprintf.o: $(srcdir)/../../libiberty/vasprintf.c
+	$(COMPILE) $< -DHAVE_CONFIG_H
+	$(POSTCOMPILE)
+vsnprintf.o: $(srcdir)/../../libiberty/vsnprintf.c
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+safe-ctype.o: $(srcdir)/../../libiberty/safe-ctype.c
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+lbasename.o: $(srcdir)/../../libiberty/lbasename.c
+	$(COMPILE) $<
+	$(POSTCOMPILE)
 
 i387-fp.o: i387-fp.c $(server_h)
 
@@ -300,54 +685,243 @@ macosx-ppc-low.o: macosx-ppc-low.c $(macosx_low_h) $(macosx_excthread_h) $(macos
 macosx-threads.o: macosx-threads.c $(macosx_low_h) $(macosx_excthread_h) $(macosx_threads_h)
 macosx-mutils.o: macosx-mutils.c $(srcdir)/macosx-mutils.h
 
+# files prefixed with "reg-" are generally older than those without
+# that prefix, so put the prefixed ones before the un-prefixed ones
+# (but try to keep it alphabetical otherwise)
+aarch64.o : aarch64.c $(regdef_h)
+aarch64.c : $(regformat_dir)/aarch64.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/aarch64.dat aarch64.c
 reg-arm.o : reg-arm.c $(regdef_h)
-reg-arm.c : $(srcdir)/../regformats/reg-arm.dat $(regdat_sh)
-	sh $(regdat_sh) $(srcdir)/../regformats/reg-arm.dat reg-arm.c
+reg-arm.c : $(regformat_dir)/reg-arm.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-arm.dat reg-arm.c
 reg-arm-macosx.o : reg-arm-macosx.c $(regdef_h)
-reg-arm-macosx.c : $(srcdir)/../regformats/reg-arm-macosx.dat $(regdat_sh)
-	sh $(regdat_sh) $(srcdir)/../regformats/reg-arm-macosx.dat reg-arm-macosx.c
+reg-arm-macosx.c : $(regformat_dir)/reg-arm-macosx.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-arm-macosx.dat reg-arm-macosx.c
+arm-with-iwmmxt.o : arm-with-iwmmxt.c $(regdef_h)
+arm-with-iwmmxt.c : $(regformat_dir)/arm-with-iwmmxt.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/arm-with-iwmmxt.dat arm-with-iwmmxt.c
+arm-with-vfpv2.o : arm-with-vfpv2.c $(regdef_h)
+arm-with-vfpv2.c : $(regformat_dir)/arm-with-vfpv2.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/arm-with-vfpv2.dat arm-with-vfpv2.c
+arm-with-vfpv3.o : arm-with-vfpv3.c $(regdef_h)
+arm-with-vfpv3.c : $(regformat_dir)/arm-with-vfpv3.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/arm-with-vfpv3.dat arm-with-vfpv3.c
+arm-with-neon.o : arm-with-neon.c $(regdef_h)
+arm-with-neon.c : $(regformat_dir)/arm-with-neon.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/arm-with-neon.dat arm-with-neon.c
+reg-bfin.o : reg-bfin.c $(regdef_h)
+reg-bfin.c : $(regformat_dir)/reg-bfin.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-bfin.dat reg-bfin.c
 reg-cris.o : reg-cris.c $(regdef_h)
-reg-cris.c : $(srcdir)/../regformats/reg-cris.dat $(regdat_sh)
-	sh $(regdat_sh) $(srcdir)/../regformats/reg-cris.dat reg-cris.c
+reg-cris.c : $(regformat_dir)/reg-cris.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-cris.dat reg-cris.c
 reg-crisv32.o : reg-crisv32.c $(regdef_h)
-reg-crisv32.c : $(srcdir)/../regformats/reg-crisv32.dat $(regdat_sh)
-	sh $(regdat_sh) $(srcdir)/../regformats/reg-crisv32.dat reg-crisv32.c
+reg-crisv32.c : $(regformat_dir)/reg-crisv32.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-crisv32.dat reg-crisv32.c
 reg-i386.o : reg-i386.c $(regdef_h)
-reg-i386.c : $(srcdir)/../regformats/reg-i386.dat $(regdat_sh)
-	sh $(regdat_sh) $(srcdir)/../regformats/reg-i386.dat reg-i386.c
+reg-i386.c : $(regformat_dir)/reg-i386.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-i386.dat reg-i386.c
 reg-i386-linux.o : reg-i386-linux.c $(regdef_h)
-reg-i386-linux.c : $(srcdir)/../regformats/reg-i386-linux.dat $(regdat_sh)
-	sh $(regdat_sh) $(srcdir)/../regformats/reg-i386-linux.dat reg-i386-linux.c
+reg-i386-linux.c : $(regformat_dir)/reg-i386-linux.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-i386-linux.dat reg-i386-linux.c
+i386.o : i386.c $(regdef_h)
+i386.c : $(regformat_dir)/i386/i386.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/i386.dat i386.c
+i386-linux.o : i386-linux.c $(regdef_h)
+i386-linux.c : $(regformat_dir)/i386/i386-linux.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/i386-linux.dat i386-linux.c
+i386-avx.c : $(regformat_dir)/i386/i386-avx.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/i386-avx.dat i386-avx.c
+i386-avx-linux.c : $(regformat_dir)/i386/i386-avx-linux.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/i386-avx-linux.dat i386-avx-linux.c
+i386-avx512.c : $(regformat_dir)/i386/i386-avx512.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/i386-avx512.dat i386-avx512.c
+i386-avx512-linux.c : $(regformat_dir)/i386/i386-avx512-linux.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/i386-avx512-linux.dat i386-avx512-linux.c
+i386-mpx.c : $(regformat_dir)/i386/i386-mpx.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/i386-mpx.dat i386-mpx.c
+i386-mpx-linux.c : $(regformat_dir)/i386/i386-mpx-linux.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/i386-mpx-linux.dat i386-mpx-linux.c
+i386-mmx.c : $(regformat_dir)/i386/i386-mmx.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/i386-mmx.dat i386-mmx.c
+i386-mmx-linux.c : $(regformat_dir)/i386/i386-mmx-linux.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/i386-mmx-linux.dat i386-mmx-linux.c
 reg-ia64.o : reg-ia64.c $(regdef_h)
-reg-ia64.c : $(srcdir)/../regformats/reg-ia64.dat $(regdat_sh)
-	sh $(regdat_sh) $(srcdir)/../regformats/reg-ia64.dat reg-ia64.c
+reg-ia64.c : $(regformat_dir)/reg-ia64.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-ia64.dat reg-ia64.c
 reg-m32r.o : reg-m32r.c $(regdef_h)
-reg-m32r.c : $(srcdir)/../regformats/reg-m32r.dat $(regdat_sh)
-	sh $(regdat_sh) $(srcdir)/../regformats/reg-m32r.dat reg-m32r.c
+reg-m32r.c : $(regformat_dir)/reg-m32r.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-m32r.dat reg-m32r.c
 reg-m68k.o : reg-m68k.c $(regdef_h)
-reg-m68k.c : $(srcdir)/../regformats/reg-m68k.dat $(regdat_sh)
-	sh $(regdat_sh) $(srcdir)/../regformats/reg-m68k.dat reg-m68k.c
+reg-m68k.c : $(regformat_dir)/reg-m68k.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-m68k.dat reg-m68k.c
+reg-cf.c : $(regformat_dir)/reg-cf.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-cf.dat reg-cf.c
 reg-mips.o : reg-mips.c $(regdef_h)
-reg-mips.c : $(srcdir)/../regformats/reg-mips.dat $(regdat_sh)
-	sh $(regdat_sh) $(srcdir)/../regformats/reg-mips.dat reg-mips.c
+reg-mips.c : $(regformat_dir)/reg-mips.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-mips.dat reg-mips.c
+mips-linux.c : $(regformat_dir)/mips-linux.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/mips-linux.dat mips-linux.c
+mips-dsp-linux.c : $(regformat_dir)/mips-dsp-linux.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/mips-dsp-linux.dat mips-dsp-linux.c
+mips64-linux.c : $(regformat_dir)/mips64-linux.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/mips64-linux.dat mips64-linux.c
+mips64-dsp-linux.c : $(regformat_dir)/mips64-dsp-linux.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/mips64-dsp-linux.dat mips64-dsp-linux.c
+nios2-linux.c :	$(regformat_dir)/nios2-linux.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/nios2-linux.dat nios2-linux.c
 reg-ppc.o : reg-ppc.c $(regdef_h)
-reg-ppc.c : $(srcdir)/../regformats/reg-ppc.dat $(regdat_sh)
-	sh $(regdat_sh) $(srcdir)/../regformats/reg-ppc.dat reg-ppc.c
+reg-ppc.c : $(regformat_dir)/reg-ppc.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-ppc.dat reg-ppc.c
 reg-ppc64.o : reg-ppc64.c $(regdef_h)
-reg-ppc64.c : $(srcdir)/../regformats/reg-ppc64.dat $(regdat_sh)
-	sh $(regdat_sh) $(srcdir)/../regformats/reg-ppc64.dat reg-ppc64.c
+reg-ppc64.c : $(regformat_dir)/reg-ppc64.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-ppc64.dat reg-ppc64.c
+powerpc-32.c : $(regformat_dir)/rs6000/powerpc-32.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-32.dat powerpc-32.c
+powerpc-32l.c : $(regformat_dir)/rs6000/powerpc-32l.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-32l.dat powerpc-32l.c
+powerpc-altivec32l.c : $(regformat_dir)/rs6000/powerpc-altivec32l.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-altivec32l.dat powerpc-altivec32l.c
+powerpc-cell32l.c : $(regformat_dir)/rs6000/powerpc-cell32l.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-cell32l.dat powerpc-cell32l.c
+powerpc-vsx32l.c : $(regformat_dir)/rs6000/powerpc-vsx32l.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-vsx32l.dat powerpc-vsx32l.c
+powerpc-isa205-32l.c : $(regformat_dir)/rs6000/powerpc-isa205-32l.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-isa205-32l.dat powerpc-isa205-32l.c
+powerpc-isa205-altivec32l.c : $(regformat_dir)/rs6000/powerpc-isa205-altivec32l.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-isa205-altivec32l.dat powerpc-isa205-altivec32l.c
+powerpc-isa205-vsx32l.c : $(regformat_dir)/rs6000/powerpc-isa205-vsx32l.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-isa205-vsx32l.dat powerpc-isa205-vsx32l.c
+powerpc-e500l.c : $(regformat_dir)/rs6000/powerpc-e500l.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-e500l.dat powerpc-e500l.c
+powerpc-64l.c : $(regformat_dir)/rs6000/powerpc-64l.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-64l.dat powerpc-64l.c
+powerpc-altivec64l.c : $(regformat_dir)/rs6000/powerpc-altivec64l.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-altivec64l.dat powerpc-altivec64l.c
+powerpc-cell64l.c : $(regformat_dir)/rs6000/powerpc-cell64l.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-cell64l.dat powerpc-cell64l.c
+powerpc-vsx64l.c : $(regformat_dir)/rs6000/powerpc-vsx64l.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-vsx64l.dat powerpc-vsx64l.c
+powerpc-isa205-64l.c : $(regformat_dir)/rs6000/powerpc-isa205-64l.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-isa205-64l.dat powerpc-isa205-64l.c
+powerpc-isa205-altivec64l.c : $(regformat_dir)/rs6000/powerpc-isa205-altivec64l.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-isa205-altivec64l.dat powerpc-isa205-altivec64l.c
+powerpc-isa205-vsx64l.c : $(regformat_dir)/rs6000/powerpc-isa205-vsx64l.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/rs6000/powerpc-isa205-vsx64l.dat powerpc-isa205-vsx64l.c
 reg-s390.o : reg-s390.c $(regdef_h)
-reg-s390.c : $(srcdir)/../regformats/reg-s390.dat $(regdat_sh)
-	sh $(regdat_sh) $(srcdir)/../regformats/reg-s390.dat reg-s390.c
+reg-s390.c : $(regformat_dir)/reg-s390.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-s390.dat reg-s390.c
 reg-s390x.o : reg-s390x.c $(regdef_h)
-reg-s390x.c : $(srcdir)/../regformats/reg-s390x.dat $(regdat_sh)
-	sh $(regdat_sh) $(srcdir)/../regformats/reg-s390x.dat reg-s390x.c
+reg-s390x.c : $(regformat_dir)/reg-s390x.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-s390x.dat reg-s390x.c
+s390-linux32.c : $(regformat_dir)/s390-linux32.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/s390-linux32.dat s390-linux32.c
+s390-linux32v1.c : $(regformat_dir)/s390-linux32v1.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/s390-linux32v1.dat s390-linux32v1.c
+s390-linux32v2.c : $(regformat_dir)/s390-linux32v2.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/s390-linux32v2.dat s390-linux32v2.c
+s390-linux64.c : $(regformat_dir)/s390-linux64.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/s390-linux64.dat s390-linux64.c
+s390-linux64v1.c : $(regformat_dir)/s390-linux64v1.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/s390-linux64v1.dat s390-linux64v1.c
+s390-linux64v2.c : $(regformat_dir)/s390-linux64v2.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/s390-linux64v2.dat s390-linux64v2.c
+s390-te-linux64.c : $(regformat_dir)/s390-te-linux64.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/s390-te-linux64.dat s390-te-linux64.c
+s390x-linux64.c : $(regformat_dir)/s390x-linux64.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/s390x-linux64.dat s390x-linux64.c
+s390x-linux64v1.c : $(regformat_dir)/s390x-linux64v1.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/s390x-linux64v1.dat s390x-linux64v1.c
+s390x-linux64v2.c : $(regformat_dir)/s390x-linux64v2.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/s390x-linux64v2.dat s390x-linux64v2.c
+s390x-te-linux64.c : $(regformat_dir)/s390x-te-linux64.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/s390x-te-linux64.dat s390x-te-linux64.c
 reg-sh.o : reg-sh.c $(regdef_h)
-reg-sh.c : $(srcdir)/../regformats/reg-sh.dat $(regdat_sh)
-	sh $(regdat_sh) $(srcdir)/../regformats/reg-sh.dat reg-sh.c
+reg-sh.c : $(regformat_dir)/reg-sh.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-sh.dat reg-sh.c
+tic6x-c64xp-linux.c : $(regformat_dir)/tic6x-c64xp-linux.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/tic6x-c64xp-linux.dat tic6x-c64xp-linux.c
+tic6x-c64x-linux.c : $(regformat_dir)/tic6x-c64x-linux.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/tic6x-c64x-linux.dat tic6x-c64x-linux.c
+tic6x-c62x-linux.c : $(regformat_dir)/tic6x-c62x-linux.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/tic6x-c62x-linux.dat tic6x-c62x-linux.c
+reg-tilegx.c : $(regformat_dir)/reg-tilegx.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-tilegx.dat reg-tilegx.c
+reg-tilegx32.c : $(regformat_dir)/reg-tilegx32.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-tilegx32.dat reg-tilegx32.c
+reg-sparc64.c : $(regformat_dir)/reg-sparc64.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-sparc64.dat reg-sparc64.c
+reg-spu.c : $(regformat_dir)/reg-spu.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-spu.dat reg-spu.c
 # Yes, the underscore does change into a hyphen for x64_64 here...
 reg-x86-64.o : reg-x86-64.c $(regdef_h)
-reg-x86-64.c : $(srcdir)/../regformats/reg-x86-64.dat $(regdat_sh)
-	sh $(regdat_sh) $(srcdir)/../regformats/reg-x86-64.dat reg-x86-64.c
+reg-x86-64.c : $(regformat_dir)/reg-x86-64.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-x86-64.dat reg-x86-64.c
+amd64.c : $(regformat_dir)/i386/amd64.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/amd64.dat amd64.c
+amd64-linux.c : $(regformat_dir)/i386/amd64-linux.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/amd64-linux.dat amd64-linux.c
+amd64-avx.c : $(regformat_dir)/i386/amd64-avx.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/amd64-avx.dat amd64-avx.c
+amd64-avx-linux.c : $(regformat_dir)/i386/amd64-avx-linux.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/amd64-avx-linux.dat amd64-avx-linux.c
+amd64-avx512.c : $(regformat_dir)/i386/amd64-avx512.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/amd64-avx512.dat amd64-avx512.c
+amd64-avx512-linux.c : $(regformat_dir)/i386/amd64-avx512-linux.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/amd64-avx512-linux.dat amd64-avx512-linux.c
+amd64-mpx.c : $(regformat_dir)/i386/amd64-mpx.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/amd64-mpx.dat amd64-mpx.c
+amd64-mpx-linux.c : $(regformat_dir)/i386/amd64-mpx-linux.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/amd64-mpx-linux.dat amd64-mpx-linux.c
+x32.c : $(regformat_dir)/i386/x32.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/x32.dat x32.c
+x32-linux.c : $(regformat_dir)/i386/x32-linux.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/x32-linux.dat x32-linux.c
+x32-avx.c : $(regformat_dir)/i386/x32-avx.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/x32-avx.dat x32-avx.c
+x32-avx-linux.c : $(regformat_dir)/i386/x32-avx-linux.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/x32-avx-linux.dat x32-avx-linux.c
+x32-avx512.c : $(regformat_dir)/i386/x32-avx512.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/x32-avx512.dat x32-avx512.c
+x32-avx512-linux.c : $(regformat_dir)/i386/x32-avx512-linux.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/i386/x32-avx512-linux.dat x32-avx512-linux.c
+reg-xtensa.o : reg-xtensa.c $(regdef_h)
+reg-xtensa.c : $(regformat_dir)/reg-xtensa.dat $(regdat_sh)
+	$(run_regdat_sh) $(regformat_dir)/reg-xtensa.dat reg-xtensa.c
+
+# for compatibility with the old "init_registers" function:
+init_all_my_registers.c : $(OBS)
+# For some reason the sed commands work when run manually, but error out
+# when run through this make rule...
+# commenting out until I fix it
+#	echo "/* *INDENT-OFF* */" >$@ 
+#	echo "/* THIS FILE IS GENERATED */" >>$@
+#	echo "" >>$@
+#	echo '#include "server.h"' >>$@
+#	echo '#include "regdef.h"' >>$@
+#	echo '#include "regcache.h"' >>$@
+#	echo '#include "tdesc.h"' >>$@
+#	echo "" >>$@
+#	echo "/* prototypes: */" >>$@
+#	$(NM) $(OBS) | $(PARSE_NM_OUTPUT_CMD_ONE) | $(GREP) "init_registers_" | $(PARSE_NM_OUTPUT_CMD_TWO) | $(SED) "s|extern int|extern void|g" | tee -a $@
+#	echo "" >>$@
+#	echo '#ifndef _INIT_REGISTERS_DECLARED' >>$@
+#	echo '# define _INIT_REGISTERS_DECLARED 1' >>$@
+#	echo 'void init_registers(void) {' >>$@
+#	$(NM) $(OBS) | $(PARSE_NM_OUTPUT_CMD_ONE) | $(GREP) "init_registers_" | $(PARSE_NM_OUTPUT_CMD_TWO) | cut -d\  -f3 | tee -a $@
+#	echo '}' >>$@
+#	echo '#endif /* !_INIT_REGISTERS_DECLARED */' >>$@
+#	echo "" >>$@
+
+#
+# Dependency tracking.
+#
+
+# A list of all the objects we might care about in this build
+# (for reasons such as dependency tracking):
+all_object_files = $(OBS) $(GDBREPLAY_OBS)
+
+# Ensure that generated files are created early:
+$(all_object_files) : $(generated_files)
 
 # This is the end of "Makefile.in".

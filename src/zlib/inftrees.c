@@ -190,7 +190,7 @@ unsigned short FAR *work;
         extra -= 257;
         end = 256;
         break;
-    default:            /* DISTS */
+	case DISTS: default:            /* DISTS */
         base = dbase;
         extra = dext;
         end = -1;

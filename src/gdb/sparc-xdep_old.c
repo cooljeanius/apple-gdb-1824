@@ -100,20 +100,21 @@ fetch_inferior_registers (regno)
       register_valid[CPS_REGNUM] = 1;	/* Not true yet, FIXME */
     }
 
-  /* Floating point registers */
-  if (regno == -1 || (regno >= FP0_REGNUM && regno <= FP0_REGNUM + 31))
-    {
-      if (0 != ptrace (PTRACE_GETFPREGS, inferior_pid, &inferior_fp_registers))
+  /* Floating point registers: */
+  if ((regno == -1) || ((regno >= FP0_REGNUM) && (regno <= (FP0_REGNUM + 31)))) {
+      if (0 != ptrace(PTRACE_GETFPREGS, inferior_pid, &inferior_fp_registers)) {
 	    perror("ptrace_getfpregs");
-      bcopy (&inferior_fp_registers, &registers[REGISTER_BYTE (FP0_REGNUM)],
-	     sizeof inferior_fp_registers.fpu_fr);
-      /* bcopy (&inferior_fp_registers.Fpu_fsr,
-	     &registers[REGISTER_BYTE (FPS_REGNUM)],
-	     sizeof (FPU_FSR_TYPE));  FIXME???  -- gnu@cyg */
-      for (i = FP0_REGNUM; i <= FP0_REGNUM+31; i++)
-	register_valid[i] = 1;
+	  }
+      bcopy(&inferior_fp_registers, &registers[REGISTER_BYTE(FP0_REGNUM)],
+			sizeof(inferior_fp_registers.fpu_fr));
+      /* bcopy(&inferior_fp_registers.Fpu_fsr,
+	   *	   &registers[REGISTER_BYTE(FPS_REGNUM)],
+	   * sizeof(FPU_FSR_TYPE));  FIXME???  -- gnu@cyg */
+      for ((i = FP0_REGNUM); (i <= (FP0_REGNUM + 31)); i++) {
+		  register_valid[i] = 1;
+	  }
       register_valid[FPS_REGNUM] = 1;
-    }
+  }
 
   /* These regs are saved on the stack by the kernel.  Only read them
      all (16 ptrace calls!) if we really need them.  */

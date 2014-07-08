@@ -1,21 +1,23 @@
-/* Copyright (C) 1991-1993, 1996-2006, 2009-2012 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 3, or (at your option)
-   any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, see <http://www.gnu.org/licenses/>.  */
+/* fnmatch-loop.c
+ * Copyright (C) 1991-1993, 1996-2006, 2009-2012 Free Software Foundation, Inc.
+ * This file is part of the GNU C Library.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
+ */
 
 /* Match STRING against the file name pattern PATTERN, returning zero if
-   it matches, nonzero if not.  */
+ * it matches, nonzero if not.  */
 
 #ifndef _STRING_H_
 # include <string.h>
@@ -134,18 +136,17 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                this means it cannot match, unless the FNM_LEADING_DIR
                flag is set.  */
             {
-              int result = (flags & FNM_FILE_NAME) == 0 ? 0 : FNM_NOMATCH;
+              int result = (((flags & FNM_FILE_NAME) == 0) ? 0 : FNM_NOMATCH);
 
-              if (flags & FNM_FILE_NAME)
-                {
-                  if (flags & FNM_LEADING_DIR)
+              if (flags & FNM_FILE_NAME) {
+                  if (flags & FNM_LEADING_DIR) {
                     result = 0;
-                  else
-                    {
-                      if (MEMCHR (n, L_('/'), string_end - n) == NULL)
-                        result = 0;
-                    }
-                }
+                  } else {
+                      if (MEMCHR(n, L_('/'), (size_t)(string_end - n)) == NULL) {
+						  result = 0;
+					  }
+				  }
+			  }
 
               return result;
             }
@@ -153,8 +154,8 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
             {
               const CHAR *endp;
 
-              endp = MEMCHR (n, (flags & FNM_FILE_NAME) ? L_('/') : L_('\0'),
-                             string_end - n);
+              endp = MEMCHR(n, ((flags & FNM_FILE_NAME) ? L_('/') : L_('\0')),
+							(size_t)(string_end - n));
               if (endp == NULL)
                 endp = string_end;
 
@@ -508,33 +509,25 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                             hash = elem_hash (str, c1);
 
                             idx = 0;
-                            elem = hash % table_size;
-                            if (symb_table[2 * elem] != 0)
-                              {
-                                second = hash % (table_size - 2) + 1;
+                            elem = (hash % table_size);
+                            if (symb_table[(2 * elem)] != 0) {
+                                second = (hash % (table_size - 2) + 1);
 
-                                do
-                                  {
-                                    /* First compare the hashing value.  */
-                                    if (symb_table[2 * elem] == hash
-                                        && (c1
-                                            == extra[symb_table[2 * elem + 1]])
-                                        && memcmp (str,
-                                                   &extra[symb_table[2 * elem
-                                                                     + 1]
-                                                          + 1], c1) == 0)
-                                      {
-                                        /* Yep, this is the entry.  */
-                                        idx = symb_table[2 * elem + 1];
-                                        idx += 1 + extra[idx];
+                                do {
+                                    /* First compare the hashing value: */
+                                    if ((symb_table[(2 * elem)] == hash)
+                                        && (c1 == extra[symb_table[(2 * elem + 1)]])
+                                        && (memcmp(str, &extra[(symb_table[(2 * elem + 1)] + 1)], c1) == 0)) {
+                                        /* Yep, this is the entry: */
+                                        idx = symb_table[(2 * elem + 1)];
+                                        idx += (1 + extra[idx]);
                                         break;
-                                      }
+									}
 
                                     /* Next entry.  */
                                     elem += second;
-                                  }
-                                while (symb_table[2 * elem] != 0);
-                              }
+								} while (symb_table[2 * elem] != 0);
+							}
 
                             if (symb_table[2 * elem] != 0)
                               {
@@ -614,9 +607,9 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                         if (!is_range && c == fn)
                           goto matched;
 
-#if _LIBC
+#if defined(_LIBC) && _LIBC
                         /* This is needed if we goto normal_bracket; from
-                           outside of is_seqval's scope.  */
+                         * outside of is_seqval's scope.  */
                         is_seqval = false;
 #endif /* _LIBC */
 
@@ -626,7 +619,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 
                     if (c == L_('-') && *p != L_(']'))
                       {
-#if _LIBC
+#if defined(_LIBC) && _LIBC
                         /* We have to find the collation sequence
                            value for C.  Collation sequence is nothing
                            we can regularly access.  The sequence
@@ -1052,9 +1045,9 @@ EXT (INT opt, const CHAR *pattern, const CHAR *string, const CHAR *string_end,
       return -1;
     else if (*p == L_('['))
       {
-        /* Handle brackets special.  */
+        /* Handle brackets special: */
         if (posixly_correct == 0)
-          posixly_correct = getenv ("POSIXLY_CORRECT") != NULL ? 1 : -1;
+          posixly_correct = getenv("POSIXLY_CORRECT") != NULL ? 1 : -1;
 
         /* Skip the not sign.  We have to recognize it because of a possibly
            following ']'.  */
@@ -1075,8 +1068,7 @@ EXT (INT opt, const CHAR *pattern, const CHAR *string, const CHAR *string_end,
       ++level;
     else if (*p == L_(')'))
       {
-        if (level-- == 0)
-          {
+        if (level-- == 0) {
             /* This means we found the end of the pattern.  */
 #define NEW_PATTERN \
             struct patternlist *newp;                                         \
@@ -1084,23 +1076,23 @@ EXT (INT opt, const CHAR *pattern, const CHAR *string, const CHAR *string_end,
             size_t plensize;                                                  \
             size_t newpsize;                                                  \
                                                                               \
-            plen = (opt == L_('?') || opt == L_('@')                          \
+            plen = ((opt == L_('?')) || (opt == L_('@'))                      \
                     ? pattern_len                                             \
-                    : p - startp + 1UL);                                      \
-            plensize = plen * sizeof (CHAR);                                  \
-            newpsize = offsetof (struct patternlist, str) + plensize;         \
-            if ((size_t) -1 / sizeof (CHAR) < plen                            \
-                || newpsize < offsetof (struct patternlist, str)              \
-                || ALLOCA_LIMIT <= newpsize)                                  \
+                    : (p - startp + 1UL));                                    \
+            plensize = (plen * sizeof(CHAR));                                 \
+            newpsize = (offsetof(struct patternlist, str) + plensize);        \
+            if ((((size_t)-1 / sizeof(CHAR)) < plen)                          \
+                || (newpsize < offsetof(struct patternlist, str))             \
+                || (ALLOCA_LIMIT <= newpsize))                                \
               return -1;                                                      \
-            newp = (struct patternlist *) alloca (newpsize);                  \
-            *((CHAR *) MEMPCPY (newp->str, startp, p - startp)) = L_('\0');    \
+            newp = (struct patternlist *)alloca(newpsize);                    \
+            *((CHAR *)MEMPCPY(newp->str, startp, (size_t)(p - startp))) = L_('\0'); \
             newp->next = NULL;                                                \
             *lastp = newp;                                                    \
             lastp = &newp->next
             NEW_PATTERN;
             break;
-          }
+		}
       }
     else if (*p == L_('|'))
       {

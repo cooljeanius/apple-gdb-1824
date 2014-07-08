@@ -134,45 +134,42 @@ static int serial_reset( void );
 static int serial_set_params( const ParameterConfig *config );
 static int SerialMatch(const char *name, const char *arg);
 
-static void process_baud_rate( unsigned int target_baud_rate )
+static void process_baud_rate(unsigned int target_baud_rate)
 {
     const ParameterList *full_list;
     ParameterList       *user_list;
 
     /* create subset of full options */
-    full_list = Angel_FindParamList( &serial_options, AP_BAUD_RATE );
-    user_list = Angel_FindParamList( &user_options,   AP_BAUD_RATE );
+    full_list = Angel_FindParamList(&serial_options, AP_BAUD_RATE);
+    user_list = Angel_FindParamList(&user_options,   AP_BAUD_RATE);
 
-    if ( full_list != NULL && user_list != NULL )
-    {
+    if ((full_list != NULL) && (user_list != NULL)) {
         unsigned int i, j;
         unsigned int def_baud = 0;
 
         /* find lower or equal to */
-        for ( i = 0; i < full_list->num_options; ++i )
-           if ( target_baud_rate >= full_list->option[i] )
-           {
-               /* copy remaining */
-               for ( j = 0; j < (full_list->num_options - i); ++j )
-                  user_list->option[j] = full_list->option[i+j];
+        for ((i = 0); (i < full_list->num_options); ++i)
+           if (target_baud_rate >= full_list->option[i]) {
+	       /* copy remaining */
+	       for ((j = 0); (j < (full_list->num_options - i)); ++j) {
+                  user_list->option[j] = full_list->option[(i + j)];
+	       }
                user_list->num_options = j;
 
                /* check this is not the default */
-               Angel_FindParam( AP_BAUD_RATE, &serial_defaults, &def_baud );
-               if ( (j == 1) && (user_list->option[0] == def_baud) )
-               {
+               Angel_FindParam(AP_BAUD_RATE, &serial_defaults, &def_baud);
+               if ((j == 1) && (user_list->option[0] == def_baud)) {
 #ifdef DEBUG
-                   printf( "user selected default\n" );
+                   printf("user selected default\n" );
 #endif /* DEBUG */
-               }
-               else
-               {
+               } else {
                    user_options_set = TRUE;
 #ifdef DEBUG
-                   printf( "user options are: " );
-                   for ( j = 0; j < user_list->num_options; ++j )
-                      printf( "%u ", user_list->option[j] );
-                   printf( "\n" );
+                   printf("user options are: ");
+		   for ((j = 0); (j < user_list->num_options); ++j) {
+                      printf("%u ", user_list->option[j]);
+		   }
+                   printf("\n");
 #endif /* DEBUG */
                }
 
@@ -180,14 +177,14 @@ static void process_baud_rate( unsigned int target_baud_rate )
            }
 
 #ifdef DEBUG
-        if ( i >= full_list->num_options ) {
-           printf( "could not match baud rate %u\n", target_baud_rate );
-		}
+        if (i >= full_list->num_options) {
+           printf("could not match baud rate %u\n", target_baud_rate);
+	}
 #endif /* DEBUG */
     }
 #ifdef DEBUG
     else
-       printf( "failed to find lists\n" );
+       printf("failed to find lists\n");
 #endif /* DEBUG */
 }
 
@@ -233,27 +230,26 @@ static int SerialOpen(const char *name, const char *arg)
         }
 #ifdef DEBUG
         else {
-           printf( "could not understand baud rate %s\n", arg );
-		}
+           printf("could not understand baud rate %s\n", arg);
+	}
 #endif /* DEBUG */
-    }
-    else if (baud_rate > 0)
-    {
+    } else if (baud_rate > 0) {
       /* If the user specified a baud rate on the command line "-b" or via
-         the "set remotebaud" command then try to use that one */
-      process_baud_rate( baud_rate );
+       * the "set remotebaud" command then try to use that one */
+      process_baud_rate((unsigned int)baud_rate);
     }
 
 #ifdef COMPILING_ON_WINDOWS
     {
         int port = IsValidDevice(name);
-        if (OpenSerial(port, FALSE) != COM_OK)
+	if (OpenSerial(port, FALSE) != COM_OK) {
             return -1;
+	}
     }
 #else
     if (Unix_OpenSerial(port_name) < 0) {
       return -1;
-	}
+    }
 #endif /* COMPILING_ON_WINDOWS */
 
     serial_reset();
@@ -339,15 +335,18 @@ static int SerialRead(DriverCall *dc, bool block) {
     printf("[%d@%d] ", nread, rbindex);
 #endif /* DO_TRACE */
 
-    if (nread>0)
-       rbindex = rbindex+nread;
+    if (nread > 0) {
+       rbindex = (rbindex + nread);
+    }
 
     do {
-      restatus = Angel_RxEngine(readbuf[c], &(dc->dc_packet), &rxstate);
+      restatus = Angel_RxEngine((unsigned char)readbuf[c], &(dc->dc_packet),
+				&rxstate);
 #ifdef DO_TRACE
-      printf("<%02X ",readbuf[c]);
-      if (!(++c % 16))
+      printf("<%02X ", readbuf[c]);
+      if (!(++c % 16)) {
           printf("\n");
+      }
 #else
       c++;
 #endif /* DO_TRACE */
@@ -373,10 +372,12 @@ static int SerialRead(DriverCall *dc, bool block) {
          *for the next packet
          */
 #ifdef DO_TRACE
-        printf("SerialRead() processed %d, moving down %d\n", c, rbindex-c);
+        printf("SerialRead() processed %d, moving down %d\n", c, rbindex - c);
 #endif /* DO_TRACE */
-        if (c != rbindex) memmove((char *) readbuf, (char *) (readbuf+c),
-                                  rbindex-c);
+        if (c != rbindex) {
+	  memmove((char *)readbuf, (char *)(readbuf + c),
+		  (size_t)(rbindex - c));
+	}
         rbindex -= c;
         break;
 
@@ -449,23 +450,20 @@ static int SerialWrite(DriverCall *dc) {
 #endif /* DO_TRACE */
 
 #ifdef COMPILING_ON_WINDOWS
-  if (WriteSerial(wstate.writebuf, wstate.wbindex) == COM_OK)
-  {
+  if (WriteSerial(wstate.writebuf, wstate.wbindex) == COM_OK) {
     nwritten = wstate.wbindex;
-    if (pfnProgressCallback != NULL)
-    {
+    if (pfnProgressCallback != NULL) {
       progressInfo.nWritten += nwritten;
       (*pfnProgressCallback)(&progressInfo);
     }
-  }
-  else
-  {
-      MessageBox(GetFocus(), "Write error\n", "Angel", MB_OK | MB_ICONSTOP);
-      return -1;   /* SJ - This really needs to return a value, which is picked up in */
-                   /*      DevSW_Read as meaning stop debugger but don't kill. */
+  } else {
+      MessageBox(GetFocus(), "Write error\n", "Angel", (MB_OK | MB_ICONSTOP));
+      return -1;   /* SJ - This really needs to return a value, which is picked
+                    *      up in DevSW_Read as meaning,
+		    *      "Stop the debugger, but do NOT kill". */
   }
 #else
-  nwritten = Unix_WriteSerial(wstate.writebuf, wstate.wbindex);
+  nwritten = Unix_WriteSerial(wstate.writebuf, (int)wstate.wbindex);
 
   if (nwritten < 0) {
     nwritten=0;
@@ -489,8 +487,7 @@ static int SerialWrite(DriverCall *dc) {
     testatus = TS_IN_PKT;
     wstate.wbindex = 0;
     return 1;
-  }
-  else {
+  } else {
 #ifdef DEBUG
     printf("SerialWrite: Wrote part of packet wbindex=%i, nwritten=%i\n",
            wstate.wbindex, nwritten);
@@ -500,8 +497,8 @@ static int SerialWrite(DriverCall *dc) {
      *  still some data left to send shuffle whats left down and reset
      * the ptr
      */
-    memmove((char *) wstate.writebuf, (char *) (wstate.writebuf+nwritten),
-            wstate.wbindex-nwritten);
+    memmove((char *)wstate.writebuf, (char *)(wstate.writebuf+nwritten),
+            (size_t)(wstate.wbindex - nwritten));
     wstate.wbindex -= nwritten;
     return 0;
   }
@@ -509,10 +506,10 @@ static int SerialWrite(DriverCall *dc) {
 }
 
 
-static int serial_reset( void )
+static int serial_reset(void)
 {
 #ifdef DEBUG
-    printf( "serial_reset\n" );
+    printf("serial_reset\n");
 #endif /* DEBUG */
 
 #ifdef COMPILING_ON_WINDOWS

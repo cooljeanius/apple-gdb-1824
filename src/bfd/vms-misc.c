@@ -19,9 +19,9 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
-#if __STDC__
-#include <stdarg.h>
-#endif
+#if (defined(__STDC__) && __STDC__) || defined(HAVE_STDARG_H)
+# include <stdarg.h>
+#endif /* __STDC__ || HAVE_STDARG_H */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -30,7 +30,7 @@
 
 #include "vms.h"
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
 /* Debug functions.  */
 
 /* Debug function for all vms extensions
@@ -137,7 +137,7 @@ _bfd_vms_hash_newfunc (struct bfd_hash_entry *entry,
 {
   vms_symbol_entry *ret;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (5, "_bfd_vms_hash_newfunc (%p, %p, %s)\n", entry, table, string);
 #endif
 
@@ -155,7 +155,7 @@ _bfd_vms_hash_newfunc (struct bfd_hash_entry *entry,
 
   /* Call the allocation method of the base class.  */
   ret = (vms_symbol_entry *) bfd_hash_newfunc (entry, table, string);
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (6, "_bfd_vms_hash_newfunc ret %p\n", ret);
 #endif
 
@@ -180,7 +180,7 @@ _bfd_vms_get_header_values (bfd * abfd ATTRIBUTE_UNUSED,
   if (length != 0)
     *length = bfd_getl16 (buf);
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (10, "_bfd_vms_get_header_values type %x, length %x\n", (type?*type:0), (length?*length:0));
 #endif
 }
@@ -225,7 +225,7 @@ _bfd_vms_get_record (bfd * abfd)
   int test_len, test_start, remaining;
   unsigned char *vms_buf;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (8, "_bfd_vms_get_record\n");
 #endif
 
@@ -246,8 +246,8 @@ _bfd_vms_get_record (bfd * abfd)
 	}
       else
 	amt = 6;
-      PRIV (vms_buf) = bfd_malloc (amt);
-      PRIV (buf_size) = amt;
+      PRIV(vms_buf) = (unsigned char *)bfd_malloc(amt);
+      PRIV(buf_size) = amt;
     }
 
   vms_buf = PRIV (vms_buf);
@@ -359,7 +359,7 @@ _bfd_vms_get_record (bfd * abfd)
       /* Read the remaining record.  */
       remaining = PRIV (rec_length) - test_len + test_start;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
       vms_debug (10, "bfd_bread remaining %d\n", remaining);
 #endif
       if (bfd_bread (vms_buf + test_len, (bfd_size_type) remaining, abfd) !=
@@ -371,7 +371,7 @@ _bfd_vms_get_record (bfd * abfd)
       PRIV (vms_rec) = vms_buf + test_start;
     }
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (11, "bfd_bread rec_length %d\n", PRIV (rec_length));
 #endif
 
@@ -384,7 +384,7 @@ _bfd_vms_get_record (bfd * abfd)
 int
 _bfd_vms_next_record (bfd * abfd)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (8, "_bfd_vms_next_record (len %d, size %d)\n",
 	      PRIV (rec_length), PRIV (rec_size));
 #endif
@@ -412,7 +412,7 @@ _bfd_vms_next_record (bfd * abfd)
 
   PRIV (rec_length) -= PRIV (rec_size);
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (8, "_bfd_vms_next_record: rec %p, size %d, length %d, type %d\n",
 	      PRIV (vms_rec), PRIV (rec_size), PRIV (rec_length),
 	      PRIV (rec_type));
@@ -457,7 +457,7 @@ _bfd_vms_push (bfd * abfd, uquad val, int psect)
 {
   static int last_psect;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (4, "<push %016lx (%d) at %d>\n", val, psect, PRIV (stackptr));
 #endif
 
@@ -493,7 +493,7 @@ _bfd_vms_pop (bfd * abfd, int *psect)
   if ((psect != NULL) && (PRIV (stack[PRIV (stackptr)]).psect >= 0))
     *psect = PRIV (stack[PRIV (stackptr)]).psect;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (4, "<pop %016lx(%d)>\n", value, PRIV (stack[PRIV (stackptr)]).psect);
 #endif
 
@@ -581,7 +581,7 @@ _bfd_get_vms_section (bfd * abfd, int index)
 void
 _bfd_vms_output_begin (bfd * abfd, int rectype, int rechead)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (6, "_bfd_vms_output_begin (type %d, head %d)\n", rectype,
 	      rechead);
 #endif
@@ -593,7 +593,7 @@ _bfd_vms_output_begin (bfd * abfd, int rectype, int rechead)
   if (PRIV (push_level) > 0)
     PRIV (length_pos) = PRIV (output_size);
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (6, "_bfd_vms_output_begin: length_pos = %d\n",
 	      PRIV (length_pos));
 #endif
@@ -610,7 +610,7 @@ _bfd_vms_output_begin (bfd * abfd, int rectype, int rechead)
 void
 _bfd_vms_output_alignment (bfd * abfd, int alignto)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (6, "_bfd_vms_output_alignment (%d)\n", alignto);
 #endif
 
@@ -622,7 +622,7 @@ _bfd_vms_output_alignment (bfd * abfd, int alignto)
 void
 _bfd_vms_output_push (bfd * abfd)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (6, "vms_output_push (pushed_size = %d)\n", PRIV (output_size));
 #endif
 
@@ -635,14 +635,14 @@ _bfd_vms_output_push (bfd * abfd)
 void
 _bfd_vms_output_pop (bfd * abfd)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (6, "vms_output_pop (pushed_size = %d)\n", PRIV (pushed_size));
 #endif
 
   _bfd_vms_output_flush (abfd);
   PRIV (length_pos) = 2;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (6, "vms_output_pop: length_pos = %d\n", PRIV (length_pos));
 #endif
 
@@ -659,7 +659,7 @@ _bfd_vms_output_flush (bfd * abfd)
   int aligncount;
   int length;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (6, "_bfd_vms_output_flush (real_size = %d, pushed_size %d at lenpos %d)\n",
 	      real_size, PRIV (pushed_size), PRIV (length_pos));
 #endif
@@ -674,7 +674,7 @@ _bfd_vms_output_flush (bfd * abfd)
   aligncount = (PRIV (output_alignment)
 		- (length % PRIV (output_alignment))) % PRIV (output_alignment);
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (6, "align: adding %d bytes\n", aligncount);
 #endif
 
@@ -711,7 +711,7 @@ _bfd_vms_output_flush (bfd * abfd)
 void
 _bfd_vms_output_end (bfd * abfd)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (6, "_bfd_vms_output_end\n");
 #endif
 
@@ -725,7 +725,7 @@ _bfd_vms_output_end (bfd * abfd)
 int
 _bfd_vms_output_check (bfd * abfd, int size)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (6, "_bfd_vms_output_check (%d)\n", size);
 #endif
 
@@ -737,7 +737,7 @@ _bfd_vms_output_check (bfd * abfd, int size)
 void
 _bfd_vms_output_byte (bfd * abfd, unsigned int value)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (6, "_bfd_vms_output_byte (%02x)\n", value);
 #endif
 
@@ -750,7 +750,7 @@ _bfd_vms_output_byte (bfd * abfd, unsigned int value)
 void
 _bfd_vms_output_short (bfd * abfd, unsigned int value)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (6, "_bfd_vms_output_short (%04x)\n", value);
 #endif
 
@@ -764,7 +764,7 @@ _bfd_vms_output_short (bfd * abfd, unsigned int value)
 void
 _bfd_vms_output_long (bfd * abfd, unsigned long value)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (6, "_bfd_vms_output_long (%08lx)\n", value);
 #endif
 
@@ -777,7 +777,7 @@ _bfd_vms_output_long (bfd * abfd, unsigned long value)
 void
 _bfd_vms_output_quad (bfd * abfd, uquad value)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (6, "_bfd_vms_output_quad (%016lx)\n", value);
 #endif
 
@@ -792,7 +792,7 @@ _bfd_vms_output_counted (bfd * abfd, char *value)
 {
   int len;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (6, "_bfd_vms_output_counted (%s)\n", value);
 #endif
 
@@ -818,7 +818,7 @@ _bfd_vms_output_dump (bfd * abfd,
 		      unsigned char *data,
 		      int length)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (6, "_bfd_vms_output_dump (%d)\n", length);
 #endif
 
@@ -836,7 +836,7 @@ _bfd_vms_output_fill (bfd * abfd,
 		      int value,
 		      int count)
 {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (6, "_bfd_vms_output_fill (val %02x times %d)\n", value, count);
 #endif
 
@@ -877,7 +877,7 @@ _bfd_vms_length_hash_symbol (bfd * abfd, const char *in, int maxlen)
   static char outbuf[EOBJ_S_C_SYMSIZ+1];
   char *out = outbuf;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   vms_debug (4, "_bfd_vms_length_hash_symbol \"%s\"\n", in);
 #endif
 
@@ -910,19 +910,21 @@ _bfd_vms_length_hash_symbol (bfd * abfd, const char *in, int maxlen)
   out += i;
 
   if ((in_len > maxlen)
-      && PRIV (flag_hash_long_names))
-    sprintf (out, "_%08lx", result);
-  else
-    *out = 0;
+      && PRIV(flag_hash_long_names)) {
+      sprintf(out, "_%08lx", result);
+  } else {
+      *out = 0;
+  }
 
-#if VMS_DEBUG
-  vms_debug (4, "--> [%d]\"%s\"\n", strlen (outbuf), outbuf);
-#endif
+#if defined(VMS_DEBUG) && VMS_DEBUG
+  vms_debug(4, "--> [%d]\"%s\"\n", strlen (outbuf), outbuf);
+#endif /* VMS_DEBUG */
 
-  if (in_len > maxlen
-	&& PRIV (flag_hash_long_names)
-	&& PRIV (flag_show_after_trunc))
-    printf (_("Symbol %s replaced by %s\n"), old_name, new_name);
+  if ((in_len > maxlen)
+      && PRIV(flag_hash_long_names)
+      && PRIV(flag_show_after_trunc)) {
+      printf(_("Symbol %s replaced by %s\n"), old_name, new_name);
+  }
 
   return outbuf;
 }
@@ -934,7 +936,7 @@ new_symbol (bfd * abfd, char *name)
 {
   asymbol *symbol;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (7,  "new_symbol %s\n", name);
 #endif
 
@@ -954,7 +956,7 @@ _bfd_vms_enter_symbol (bfd * abfd, char *name)
 {
   vms_symbol_entry *entry;
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (6,  "_bfd_vms_enter_symbol %s\n", name);
 #endif
 
@@ -962,7 +964,7 @@ _bfd_vms_enter_symbol (bfd * abfd, char *name)
 	  bfd_hash_lookup (PRIV (vms_symbol_table), name, FALSE, FALSE);
   if (entry == 0)
     {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
       _bfd_vms_debug (8,  "creating hash entry for %s\n", name);
 #endif
       entry = (vms_symbol_entry *) bfd_hash_lookup (PRIV (vms_symbol_table),
@@ -985,12 +987,12 @@ _bfd_vms_enter_symbol (bfd * abfd, char *name)
     }
   else
     {
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
       _bfd_vms_debug (8,  "found hash entry for %s\n", name);
 #endif
     }
 
-#if VMS_DEBUG
+#if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (7, "-> entry %p, entry->symbol %p\n", entry, entry->symbol);
 #endif
   return entry;

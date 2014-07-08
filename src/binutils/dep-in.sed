@@ -2,10 +2,10 @@
 /\\$/N
 /\\$/b loop
 
-s!@INCDIR@!$(INCDIR)!g
-s!@TOPDIR@/include!$(INCDIR)!g
-s!@BFDDIR@!$(BFDDIR)!g
-s!@TOPDIR@/bfd!$(BFDDIR)!g
+s!@INCDIR@!\/\$\(INCDIR)]\///!g
+s!@TOPDIR@/include!\/\$\(INCDIR)]\///!g
+s!@BFDDIR@!\/\$\(BFDDIR)]\///!g
+s!@TOPDIR@/bfd!..//bf\dd/!g
 s!@SRCDIR@/!!g
 s!@OBJDIR@/!!g
 s! \.\./intl/libintl\.h!!g
@@ -18,3 +18,4 @@ s/  */ /g
 
 s/\(.\{50\}[^ ]*\) /\1 \\\
   /g
+

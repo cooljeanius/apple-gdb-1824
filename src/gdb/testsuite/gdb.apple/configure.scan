@@ -7,8 +7,8 @@ AC_CONFIG_SRCDIR([add-dsym.c])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
-AC_PROG_CXX
 AC_PROG_AWK
+AC_PROG_CXX
 AC_PROG_CC
 
 # Checks for libraries.
@@ -30,8 +30,6 @@ AC_CHECK_FUNCS([alarm getcwd sqrt])
 
 AC_CONFIG_FILES([Makefile
                  debug-in-ofile/Makefile
-                 fix-and-continue/small-c/Makefile
-                 fix-and-continue/small-objc/Makefile
                  gused/Makefile
                  ld-r/Makefile
                  xcode/Makefile])

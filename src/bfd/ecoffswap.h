@@ -1,4 +1,4 @@
-/* Generic ECOFF swapping routines, for BFD.
+/* ecoffswap.h: Generic ECOFF swapping routines, for BFD.
    Copyright 1992, 1993, 1994, 1995, 1996, 2000, 2001, 2002, 2004, 2005
    Free Software Foundation, Inc.
    Written by Cygnus Support.
@@ -449,7 +449,7 @@ ecoff_swap_sym_in (bfd *abfd, void * ext_copy, SYMR *intern)
 #if defined (ECOFF_64) || defined (ECOFF_SIGNED_64)
   if (intern->iss == (signed long) 0xffffffff)
     intern->iss = -1;
-#endif  
+#endif
 
   /* Now the fun stuff...  */
   if (bfd_header_big_endian (abfd))

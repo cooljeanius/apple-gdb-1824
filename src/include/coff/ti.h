@@ -1,26 +1,29 @@
-/* COFF information for TI COFF support.  Definitions in this file should be
-   customized in a target-specific file, and then this file included (see
-   tic54x.h for an example).
-   
-   Copyright 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+/* ti.h: COFF information for TI COFF support. Definitions in this file
+ * should be customized in a target-specific file, and then this file included
+ * (see tic54x.h for an example).
+ *
+ * Copyright 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St. - 5th Floor, Boston, MA 02110-1301, USA.
+ */
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-   
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 #ifndef COFF_TI_H
 #define COFF_TI_H
 
-/* Note "coff/external.h is not used because TI adds extra fields to the structures.  */
+/* Note "coff/external.h" is not used because TI adds extra fields
+ * to the structures. */
 
 /********************** FILE HEADER **********************/
 
@@ -38,7 +41,7 @@ struct external_filehdr
 
 /* COFF0 has magic number in f_magic, and omits f_target_id from the file
    header; for later versions, f_magic is 0xC1 for COFF1 and 0xC2 for COFF2
-   and the target-specific magic number is found in f_target_id */ 
+   and the target-specific magic number is found in f_target_id */
 
 #define TICOFF0MAGIC    TI_TARGET_ID
 #define TICOFF1MAGIC    0x00C1
@@ -139,7 +142,7 @@ struct external_filehdr
 /********************** OPTIONAL HEADER **********************/
 
 
-typedef struct 
+typedef struct
 {
   char 	magic[2];		/* type of file (0x108) 		*/
   char	vstamp[2];		/* version stamp			*/
@@ -170,7 +173,7 @@ struct external_scnhdr_v01 {
 	char		s_nreloc[2];	/* number of relocation entries	*/
 	char		s_nlnno[2];	/* number of line number entries*/
 	char		s_flags[2];	/* flags			*/
-        char            s_reserved[1];  /* reserved                     */ 
+        char            s_reserved[1];  /* reserved                     */
         char            s_page[1];      /* section page number (LOAD)   */
 };
 
@@ -186,7 +189,7 @@ struct external_scnhdr {
 	char		s_nreloc[4];	/* number of relocation entries	*/
 	char		s_nlnno[4];	/* number of line number entries*/
 	char		s_flags[4];	/* flags			*/
-        char            s_reserved[2];  /* reserved                     */ 
+        char            s_reserved[2];  /* reserved                     */
         char            s_page[2];      /* section page number (LOAD)   */
 };
 
@@ -194,14 +197,14 @@ struct external_scnhdr {
  * Special section flags
  */
 
-/* TI COFF defines these flags; 
+/* TI COFF defines these flags;
    STYP_CLINK: the section should be excluded from the final
    linker output if there are no references found to any symbol in the section
    STYP_BLOCK: the section should be blocked, i.e. if the section would cross
    a page boundary, it is started at a page boundary instead.
    TI COFF puts the section alignment power of two in the section flags
    e.g. 2**N is alignment, flags |= (N & 0xF) << 8
-*/ 
+*/
 #define STYP_CLINK      (0x4000)
 #define STYP_BLOCK      (0x1000)
 #define STYP_ALIGN      (0x0F00) /* TI COFF stores section alignment here */
@@ -211,9 +214,9 @@ struct external_scnhdr {
 #define	SCNHSZ_V01 40                  /* for v0 and v1 */
 #define SCNHSZ 48
 
-/* COFF2 changes the offsets and sizes of these fields 
+/* COFF2 changes the offsets and sizes of these fields
    Assume we're dealing with the COFF2 scnhdr structure, and adjust
-   accordingly 
+   accordingly
  */
 #define GET_SCNHDR_NRELOC(ABFD, LOC) \
   (COFF2_P (ABFD) ? H_GET_32 (ABFD, LOC) : H_GET_16 (ABFD, LOC))
@@ -236,7 +239,7 @@ struct external_scnhdr {
    : H_PUT_8 (ABFD, VAL, (LOC) - 7), H_PUT_8 (ABFD, 0, (LOC) - 8))
 
 /* TI COFF stores section size as number of bytes (address units, not octets),
-   so adjust to be number of octets, which is what BFD expects */ 
+   so adjust to be number of octets, which is what BFD expects */
 #define GET_SCNHDR_SIZE(ABFD, SZP) \
   (H_GET_32 (ABFD, SZP) * bfd_octets_per_byte (ABFD))
 #define PUT_SCNHDR_SIZE(ABFD, SZ, SZP) \
@@ -312,7 +315,7 @@ struct external_lineno {
 #define E_FILNMLEN	14	/* # characters in a file name		*/
 #define E_DIMNUM	4	/* # array dimensions in auxiliary entry */
 
-struct external_syment 
+struct external_syment
 {
   union {
     char e_name[E_SYMNMLEN];
@@ -333,7 +336,7 @@ struct external_syment
 #define N_TMASK		(060)
 #define N_BTSHFT	(4)
 #define N_TSHIFT	(2)
-  
+
 
 union external_auxent {
   struct {
@@ -356,7 +359,7 @@ union external_auxent {
 	} x_fcnary;
 	char x_tvndx[2];		/* tv index */
   } x_sym;
-  
+
   union {
 	char x_fname[E_FILNMLEN];
 	struct {
@@ -364,24 +367,24 @@ union external_auxent {
 	  char x_offset[4];
 	} x_n;
   } x_file;
-  
+
   struct {
 	char x_scnlen[4];			/* section length */
 	char x_nreloc[2];	/* # relocation entries */
 	char x_nlinno[2];	/* # line numbers */
   } x_scn;
-  
+
   struct {
 	char x_tvfill[4];	/* tv fill value */
 	char x_tvlen[2];	/* length of .tv */
 	char x_tvran[2][2];	/* tv range */
   } x_tv;		/* info about .tv section (in auxent of symbol .tv)) */
-  
+
 
 };
 
 #define	SYMENT	struct external_syment
-#define	SYMESZ	18	
+#define	SYMESZ	18
 #define	AUXENT	union external_auxent
 #define	AUXESZ	18
 
@@ -398,30 +401,29 @@ union external_auxent {
 #define PUT_LNSZ_SIZE(abfd, in, ext) \
   H_PUT_16 (abfd, ((class != C_FIELD) ? (in) * 8 : (in)), \
 	   ext->x_sym.x_misc.x_lnsz.x_size)
- 
-/* TI COFF stores offsets for MOS and MOU in bits; BFD expects bytes 
+
+/* TI COFF stores offsets for MOS and MOU in bits; BFD expects bytes
    Also put the load page flag of the section into the symbol value if it's an
    address.  */
 #ifndef NEEDS_PAGE
-#define NEEDS_PAGE(X) 0
-#define PAGE_MASK 0
-#endif
+# define NEEDS_PAGE(X) 0
+# ifndef PAGE_MASK
+#  define PAGE_MASK 0
+# endif /* !PAGE_MASK */
+#endif /* !NEEDS_PAGE */
 #define COFF_ADJUST_SYM_IN_POST(ABFD, EXT, INT) \
-  do									\
-    {									\
+  do {									\
       struct internal_syment *dst = (struct internal_syment *)(INT);	\
-      if (dst->n_sclass == C_MOS || dst->n_sclass == C_MOU)		\
+      if (dst->n_sclass == C_MOS || dst->n_sclass == C_MOU) {		\
 	dst->n_value /= 8;						\
-      else if (NEEDS_PAGE (dst->n_sclass)) {                            \
+      } else if (NEEDS_PAGE (dst->n_sclass)) {                            \
         asection *scn = coff_section_from_bfd_index (abfd, dst->n_scnum); \
         dst->n_value |= (scn->lma & PAGE_MASK);                         \
       }									\
-    }									\
-   while (0)
+  } while (0)
 
 #define COFF_ADJUST_SYM_OUT_POST(ABFD, INT, EXT) \
-  do									\
-    {									\
+  do {									\
        struct internal_syment *src = (struct internal_syment *)(INT);	\
        SYMENT *dst = (SYMENT *)(EXT);					\
        if (src->n_sclass == C_MOU || src->n_sclass == C_MOS)		\
@@ -429,11 +431,10 @@ union external_auxent {
        else if (NEEDS_PAGE (src->n_sclass)) {                           \
          H_PUT_32 (abfd, src->n_value &= ~PAGE_MASK, dst->e_value);     \
        }								\
-    }									\
-   while (0)
+  } while (0)
 
 /* Detect section-relative absolute symbols so they get flagged with a sym
-   index of -1.
+ * index of -1.
 */
 #define SECTION_RELATIVE_ABSOLUTE_SYMBOL_P(RELOC, SECT) \
   ((*(RELOC)->sym_ptr_ptr)->section->output_section == (SECT) \

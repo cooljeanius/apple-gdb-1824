@@ -1,4 +1,4 @@
-/* BFD back-end for PDP-11 a.out binaries.
+/* pdp11.c: BFD back-end for PDP-11 a.out binaries.
    Copyright 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
    This file is part of BFD, the Binary File Descriptor library.
@@ -327,7 +327,7 @@ pdp11_aout_write_headers (bfd *abfd, struct internal_exec *execp)
       if (bfd_seek (abfd, (file_ptr) (N_TRELOFF(*execp)), SEEK_SET) != 0
 	  || !NAME (aout, squirt_out_relocs) (abfd, obj_textsec (abfd))
 	  || bfd_seek (abfd, (file_ptr) (N_DRELOFF(*execp)), SEEK_SET) != 0
-	  || !NAME (aout, squirt_out_relocs) (abfd, obj_datasec (abfd)))  
+	  || !NAME (aout, squirt_out_relocs) (abfd, obj_datasec (abfd)))
 	return FALSE;
     }
 

@@ -1,3 +1,4 @@
+/* i860mach3.h */
 /* This file was hacked from i386mach3.h   [dolan@ssd.intel.com] */
 
 #include <machine/vmparam.h>

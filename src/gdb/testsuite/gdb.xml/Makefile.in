@@ -1,3 +1,5 @@
+# Makefile for gdb.xml part of testsuite
+
 VPATH = @srcdir@
 srcdir = @srcdir@
 
@@ -6,8 +8,9 @@ PROGS =
 all info install-info dvi install uninstall installcheck check:
 	@echo "Nothing to be done for $@..."
 
+# 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 clean mostlyclean:
-	-rm -f *.ci *.o $(OBJS) $(PROGS) *~ core
+	-rm -fv *.ci *.o $(OBJS) $(PROGS) *~ core
 
 distclean maintainer-clean realclean: clean
 	-rm -f Makefile

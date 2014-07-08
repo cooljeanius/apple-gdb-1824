@@ -1,59 +1,63 @@
-/* Support for the generic parts of PE/PEI; the common executable parts.
-   Copyright 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
-   2005 Free Software Foundation, Inc.
-   Written by Cygnus Solutions.
-
-   This file is part of BFD, the Binary File Descriptor library.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+/* peXXigen.c: Support for the generic parts of PE/PEI;
+ * the common executable parts.
+ *
+ * Copyright 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004,
+ * 2005 Free Software Foundation, Inc.
+ * Written by Cygnus Solutions.
+ *
+ * This file is part of BFD, the Binary File Descriptor library.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St. - 5th Floor, Boston, MA 02110-1301, USA.
+ */
 
 /* Most of this hacked by Steve Chamberlain <sac@cygnus.com>.
-
-   PE/PEI rearrangement (and code added): Donn Terry
-					  Softway Systems, Inc.  */
+ *
+ * PE/PEI rearrangement (and code added): Donn Terry
+ *					  Softway Systems, Inc.
+ */
 
 /* Hey look, some documentation [and in a place you expect to find it]!
-
-   The main reference for the pei format is "Microsoft Portable Executable
-   and Common Object File Format Specification 4.1".  Get it if you need to
-   do some serious hacking on this code.
-
-   Another reference:
-   "Peering Inside the PE: A Tour of the Win32 Portable Executable
-   File Format", MSJ 1994, Volume 9.
-
-   The *sole* difference between the pe format and the pei format is that the
-   latter has an MSDOS 2.0 .exe header on the front that prints the message
-   "This app must be run under Windows." (or some such).
-   (FIXME: Whether that statement is *really* true or not is unknown.
-   Are there more subtle differences between pe and pei formats?
-   For now assume there aren't.  If you find one, then for God sakes
-   document it here!)
-
-   The Microsoft docs use the word "image" instead of "executable" because
-   the former can also refer to a DLL (shared library).  Confusion can arise
-   because the `i' in `pei' also refers to "image".  The `pe' format can
-   also create images (i.e. executables), it's just that to run on a win32
-   system you need to use the pei format.
-
-   FIXME: Please add more docs here so the next poor fool that has to hack
-   on this code has a chance of getting something accomplished without
-   wasting too much time.  */
+ *
+ * The main reference for the pei format is "Microsoft Portable Executable
+ * and Common Object File Format Specification 4.1". Get it if you need to
+ * do some serious hacking on this code.
+ *
+ * Another reference:
+ * "Peering Inside the PE: A Tour of the Win32 Portable Executable
+ * File Format", MSJ 1994, Volume 9.
+ *
+ * The *sole* difference between the pe format and the pei format is that the
+ * latter has an MSDOS 2.0 .exe header on the front that prints the message
+ * "This app must be run under Windows." (or some such).
+ * (FIXME: Whether that statement is *really* true or not is unknown.
+ * Are there more subtle differences between pe and pei formats?
+ * For now assume there are NOT any such differences. If you find one,
+ * then for God sakes document it here!)
+ *
+ * The Microsoft docs use the word "image" instead of "executable" because
+ * the former can also refer to a DLL (shared library). Confusion can arise
+ * because the `i' in `pei' also refers to "image". The `pe' format can
+ * also create images (i.e. executables), it is just that to run on a win32
+ * system you need to use the pei format.
+ *
+ * FIXME: Please add more docs here so the next poor fool that has to hack
+ * on this code has a chance of getting something accomplished without
+ * wasting too much time. */
 
 /* This expands into COFF_WITH_pe or COFF_WITH_pep depending on whether
-   we're compiling for straight PE or PE+.  */
+ * we are compiling for straight PE or PE+ (how?). */
 #define COFF_WITH_XX
 
 #include "bfd.h"
@@ -61,17 +65,17 @@
 #include "libbfd.h"
 #include "coff/internal.h"
 
-/* NOTE: it's strange to be including an architecture specific header
-   in what's supposed to be general (to PE/PEI) code.  However, that's
-   where the definitions are, and they don't vary per architecture
-   within PE/PEI, so we get them from there.  FIXME: The lack of
-   variance is an assumption which may prove to be incorrect if new
-   PE/PEI targets are created.  */
+/* NOTE: it is strange to be including an architecture specific header
+ * in what is supposed to be general (to PE/PEI) code. However, that is
+ * where the definitions are, and they do NOT vary per architecture
+ * within PE/PEI, so we get them from there. FIXME: The lack of
+ * variance is an assumption which may prove to be incorrect if new
+ * PE/PEI targets are created.  */
 #ifdef COFF_WITH_pep
 # include "coff/ia64.h"
 #else
 # include "coff/i386.h"
-#endif
+#endif /* COFF_WITH_pep */
 
 #include "coff/pe.h"
 #include "libcoff.h"
@@ -187,29 +191,31 @@ _bfd_XXi_swap_sym_in (bfd * abfd, void * ext1, void * in1)
 }
 
 unsigned int
-_bfd_XXi_swap_sym_out (bfd * abfd, void * inp, void * extp)
+_bfd_XXi_swap_sym_out(bfd * abfd, void * inp, void * extp)
 {
-  struct internal_syment *in = (struct internal_syment *) inp;
-  SYMENT *ext = (SYMENT *) extp;
+  struct internal_syment *in = (struct internal_syment *)inp;
+  SYMENT *ext = (SYMENT *)extp;
 
-  if (in->_n._n_name[0] == 0)
-    {
-      H_PUT_32 (abfd, 0, ext->e.e.e_zeroes);
-      H_PUT_32 (abfd, in->_n._n_n._n_offset, ext->e.e.e_offset);
-    }
-  else
-    memcpy (ext->e.e_name, in->_n._n_name, SYMNMLEN);
+  if (in->_n._n_name[0] == 0) {
+      H_PUT_32(abfd, 0, ext->e.e.e_zeroes);
+      H_PUT_32(abfd, in->_n._n_n._n_offset, ext->e.e.e_offset);
+  } else {
+      memcpy(ext->e.e_name, in->_n._n_name, SYMNMLEN);
+  }
 
-  H_PUT_32 (abfd, in->n_value, ext->e_value);
-  H_PUT_16 (abfd, in->n_scnum, ext->e_scnum);
+  H_PUT_32(abfd, in->n_value, ext->e_value);
+  H_PUT_16(abfd, in->n_scnum, ext->e_scnum);
 
-  if (sizeof (ext->e_type) == 2)
-    H_PUT_16 (abfd, in->n_type, ext->e_type);
-  else
-    H_PUT_32 (abfd, in->n_type, ext->e_type);
+  /*NOTREACHED*/
 
-  H_PUT_8 (abfd, in->n_sclass, ext->e_sclass);
-  H_PUT_8 (abfd, in->n_numaux, ext->e_numaux);
+  if (sizeof (ext->e_type) == 2) {
+      H_PUT_16 (abfd, in->n_type, ext->e_type);
+  } else {
+      H_PUT_32 (abfd, in->n_type, ext->e_type);
+  }
+
+  H_PUT_8(abfd, in->n_sclass, ext->e_sclass);
+  H_PUT_8(abfd, in->n_numaux, ext->e_numaux);
 
   return SYMESZ;
 }
@@ -226,44 +232,40 @@ _bfd_XXi_swap_aux_in (bfd *	abfd,
   AUXENT *ext = (AUXENT *) ext1;
   union internal_auxent *in = (union internal_auxent *) in1;
 
-  switch (class)
-    {
+  switch (class) {
     case C_FILE:
-      if (ext->x_file.x_fname[0] == 0)
-	{
+      if (ext->x_file.x_fname[0] == 0) {
 	  in->x_file.x_n.x_zeroes = 0;
-	  in->x_file.x_n.x_offset = H_GET_32 (abfd, ext->x_file.x_n.x_offset);
-	}
-      else
-	memcpy (in->x_file.x_fname, ext->x_file.x_fname, FILNMLEN);
+	  in->x_file.x_n.x_offset = H_GET_32(abfd, ext->x_file.x_n.x_offset);
+      } else {
+	  memcpy(in->x_file.x_fname, ext->x_file.x_fname, FILNMLEN);
+      }
       return;
 
     case C_STAT:
     case C_LEAFSTAT:
     case C_HIDDEN:
-      if (type == T_NULL)
-	{
-	  in->x_scn.x_scnlen = GET_SCN_SCNLEN (abfd, ext);
-	  in->x_scn.x_nreloc = GET_SCN_NRELOC (abfd, ext);
-	  in->x_scn.x_nlinno = GET_SCN_NLINNO (abfd, ext);
-	  in->x_scn.x_checksum = H_GET_32 (abfd, ext->x_scn.x_checksum);
-	  in->x_scn.x_associated = H_GET_16 (abfd, ext->x_scn.x_associated);
-	  in->x_scn.x_comdat = H_GET_8 (abfd, ext->x_scn.x_comdat);
+      if (type == T_NULL) {
+	  in->x_scn.x_scnlen = GET_SCN_SCNLEN(abfd, ext);
+	  in->x_scn.x_nreloc = GET_SCN_NRELOC(abfd, ext);
+	  in->x_scn.x_nlinno = GET_SCN_NLINNO(abfd, ext);
+	  in->x_scn.x_checksum = H_GET_32(abfd, ext->x_scn.x_checksum);
+	  in->x_scn.x_associated = H_GET_16(abfd, ext->x_scn.x_associated);
+	  in->x_scn.x_comdat = H_GET_8(abfd, ext->x_scn.x_comdat);
 	  return;
-	}
+      }
       break;
-    }
+    default:
+      break; /* not sure if correct... */
+  }
 
-  in->x_sym.x_tagndx.l = H_GET_32 (abfd, ext->x_sym.x_tagndx);
-  in->x_sym.x_tvndx = H_GET_16 (abfd, ext->x_sym.x_tvndx);
+  in->x_sym.x_tagndx.l = H_GET_32(abfd, ext->x_sym.x_tagndx);
+  in->x_sym.x_tvndx = H_GET_16(abfd, ext->x_sym.x_tvndx);
 
-  if (class == C_BLOCK || class == C_FCN || ISFCN (type) || ISTAG (class))
-    {
-      in->x_sym.x_fcnary.x_fcn.x_lnnoptr = GET_FCN_LNNOPTR (abfd, ext);
-      in->x_sym.x_fcnary.x_fcn.x_endndx.l = GET_FCN_ENDNDX (abfd, ext);
-    }
-  else
-    {
+  if ((class == C_BLOCK) || (class == C_FCN) || ISFCN(type) || ISTAG(class)) {
+      in->x_sym.x_fcnary.x_fcn.x_lnnoptr = GET_FCN_LNNOPTR(abfd, ext);
+      in->x_sym.x_fcnary.x_fcn.x_endndx.l = GET_FCN_ENDNDX(abfd, ext);
+  } else {
       in->x_sym.x_fcnary.x_ary.x_dimen[0] =
 	H_GET_16 (abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[0]);
       in->x_sym.x_fcnary.x_ary.x_dimen[1] =
@@ -272,7 +274,7 @@ _bfd_XXi_swap_aux_in (bfd *	abfd,
 	H_GET_16 (abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[2]);
       in->x_sym.x_fcnary.x_ary.x_dimen[3] =
 	H_GET_16 (abfd, ext->x_sym.x_fcnary.x_ary.x_dimen[3]);
-    }
+  }
 
   if (ISFCN (type))
     {
@@ -294,39 +296,38 @@ _bfd_XXi_swap_aux_out (bfd *  abfd,
 		       int    numaux ATTRIBUTE_UNUSED,
 		       void * extp)
 {
-  union internal_auxent *in = (union internal_auxent *) inp;
-  AUXENT *ext = (AUXENT *) extp;
+  union internal_auxent *in = (union internal_auxent *)inp;
+  AUXENT *ext = (AUXENT *)extp;
 
-  memset (ext, 0, AUXESZ);
+  memset(ext, 0, AUXESZ);
 
-  switch (class)
-    {
+  switch (class) {
     case C_FILE:
-      if (in->x_file.x_fname[0] == 0)
-	{
-	  H_PUT_32 (abfd, 0, ext->x_file.x_n.x_zeroes);
-	  H_PUT_32 (abfd, in->x_file.x_n.x_offset, ext->x_file.x_n.x_offset);
-	}
-      else
-	memcpy (ext->x_file.x_fname, in->x_file.x_fname, FILNMLEN);
+      if (in->x_file.x_fname[0] == 0) {
+	  H_PUT_32(abfd, 0, ext->x_file.x_n.x_zeroes);
+	  H_PUT_32(abfd, in->x_file.x_n.x_offset, ext->x_file.x_n.x_offset);
+      } else {
+	  memcpy(ext->x_file.x_fname, in->x_file.x_fname, FILNMLEN);
+      }
 
       return AUXESZ;
 
     case C_STAT:
     case C_LEAFSTAT:
     case C_HIDDEN:
-      if (type == T_NULL)
-	{
-	  PUT_SCN_SCNLEN (abfd, in->x_scn.x_scnlen, ext);
-	  PUT_SCN_NRELOC (abfd, in->x_scn.x_nreloc, ext);
-	  PUT_SCN_NLINNO (abfd, in->x_scn.x_nlinno, ext);
-	  H_PUT_32 (abfd, in->x_scn.x_checksum, ext->x_scn.x_checksum);
-	  H_PUT_16 (abfd, in->x_scn.x_associated, ext->x_scn.x_associated);
-	  H_PUT_8 (abfd, in->x_scn.x_comdat, ext->x_scn.x_comdat);
+      if (type == T_NULL) {
+	  PUT_SCN_SCNLEN(abfd, in->x_scn.x_scnlen, ext);
+	  PUT_SCN_NRELOC(abfd, in->x_scn.x_nreloc, ext);
+	  PUT_SCN_NLINNO(abfd, in->x_scn.x_nlinno, ext);
+	  H_PUT_32(abfd, in->x_scn.x_checksum, ext->x_scn.x_checksum);
+	  H_PUT_16(abfd, in->x_scn.x_associated, ext->x_scn.x_associated);
+	  H_PUT_8(abfd, in->x_scn.x_comdat, ext->x_scn.x_comdat);
 	  return AUXESZ;
-	}
+      }
       break;
-    }
+    default:
+      break; /* not sure if correct? */
+  }
 
   H_PUT_32 (abfd, in->x_sym.x_tagndx.l, ext->x_sym.x_tagndx);
   H_PUT_16 (abfd, in->x_sym.x_tvndx, ext->x_sym.x_tvndx);
@@ -524,7 +525,7 @@ _bfd_XXi_swap_aouthdr_out (bfd * abfd, void * in, void * out)
   PEAOUTHDR *aouthdr_out = (PEAOUTHDR *) out;
   bfd_vma sa, fa, ib;
   IMAGE_DATA_DIRECTORY idata2, idata5, tls;
-  
+
   if (pe->force_minimum_alignment)
     {
       if (!extra->FileAlignment)
@@ -543,7 +544,7 @@ _bfd_XXi_swap_aouthdr_out (bfd * abfd, void * in, void * out)
   idata2 = pe->pe_opthdr.DataDirectory[1];
   idata5 = pe->pe_opthdr.DataDirectory[12];
   tls = pe->pe_opthdr.DataDirectory[9];
-  
+
   if (aouthdr_in->tsize)
     {
       aouthdr_in->text_start -= ib;
@@ -600,7 +601,7 @@ _bfd_XXi_swap_aouthdr_out (bfd * abfd, void * in, void * out)
     /* Until other .idata fixes are made (pending patch), the entry for
        .idata is needed for backwards compatibility.  FIXME.  */
     add_data_entry (abfd, extra, 1, ".idata", ib);
-    
+
   /* For some reason, the virtual size (which is what's set by
      add_data_entry) for .reloc is not the same as the size recorded
      in this slot by MSVC; it doesn't seem to cause problems (so far),
@@ -903,7 +904,7 @@ _bfd_XXi_swap_scnhdr_out (bfd * abfd, void * in, void * out)
        (0x02000000).  Also, the resource data should also be read and
        writable.  */
 
-    /* FIXME: Alignment is also encoded in this field, at least on PPC and 
+    /* FIXME: Alignment is also encoded in this field, at least on PPC and
        ARM-WINCE.  Although - how do we get the original alignment field
        back ?  */
 
@@ -913,7 +914,7 @@ _bfd_XXi_swap_scnhdr_out (bfd * abfd, void * in, void * out)
       unsigned long	must_have;
     }
     pe_required_section_flags;
-    
+
     pe_required_section_flags known_sections [] =
       {
 	{ ".arch",  IMAGE_SCN_MEM_READ | IMAGE_SCN_CNT_INITIALIZED_DATA | IMAGE_SCN_MEM_DISCARDABLE | IMAGE_SCN_ALIGN_8BYTES },
@@ -1207,13 +1208,13 @@ pe_print_idata (bfd * abfd, void * vfile)
 	  fprintf (file, _("\tvma:  Hint/Ord Member-Name Bound-To\n"));
 
 	  idx = hint_addr - adj;
-	  
+
 	  ft_addr = first_thunk + extra->ImageBase;
 	  ft_data = data;
 	  ft_idx = first_thunk - adj;
-	  ft_allocated = 0; 
-      
-	  if (first_thunk != hint_addr) 
+	  ft_allocated = 0;
+
+	  if (first_thunk != hint_addr)
 	    {
 	      /* Find the section which contains the first thunk.  */
 	      for (ft_section = abfd->sections;
@@ -1265,7 +1266,7 @@ pe_print_idata (bfd * abfd, void * vfile)
 	    {
 	      unsigned long member = bfd_get_32 (abfd, data + idx + j);
 
-	      /* Print single IMAGE_IMPORT_BY_NAME vector.  */ 
+	      /* Print single IMAGE_IMPORT_BY_NAME vector.  */
 	      if (member == 0)
 		break;
 
@@ -1808,8 +1809,7 @@ _bfd_XX_print_private_bfd_data_common (bfd * abfd, void * vfile)
   fprintf (file, "SizeOfHeaders\t\t%08lx\n", i->SizeOfHeaders);
   fprintf (file, "CheckSum\t\t%08lx\n", i->CheckSum);
 
-  switch (i->Subsystem)
-    {
+  switch (i->Subsystem) {
     case IMAGE_SUBSYSTEM_UNKNOWN:
       subsystem_name = "unspecified";
       break;
@@ -1837,7 +1837,10 @@ _bfd_XX_print_private_bfd_data_common (bfd * abfd, void * vfile)
     case IMAGE_SUBSYSTEM_EFI_RUNTIME_DRIVER:
       subsystem_name = "EFI runtime driver";
       break;
-    }
+    default:
+      subsystem_name = "unknown subsystem";
+      break;
+  }
 
   fprintf (file, "Subsystem\t\t%08x", i->Subsystem);
   if (subsystem_name)
@@ -1988,7 +1991,7 @@ _bfd_XXi_final_link_postscript (bfd * abfd, struct coff_final_link_info *pfinfo)
 	((h1->root.u.def.value
 	  + h1->root.u.def.section->output_section->vma
 	  + h1->root.u.def.section->output_offset)
-	 - pe_data (abfd)->pe_opthdr.DataDirectory[12].VirtualAddress);      
+	 - pe_data (abfd)->pe_opthdr.DataDirectory[12].VirtualAddress);
     }
 
   h1 = coff_link_hash_lookup (coff_hash_table (info),
@@ -2003,8 +2006,10 @@ _bfd_XXi_final_link_postscript (bfd * abfd, struct coff_final_link_info *pfinfo)
       pe_data (abfd)->pe_opthdr.DataDirectory[9].Size = 0x18;
     }
 
-  /* If we couldn't find idata$2, we either have an excessively
+  /* If we could NOT find idata$2, we either have an excessively
      trivial program or are in DEEP trouble; we have to assume trivial
      program....  */
   return TRUE;
 }
+
+/* EOF */

@@ -18,7 +18,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-/* The child target can't deal with floating registers.  */
+/* The child target cannot deal with floating registers.  */
 #define CANNOT_STORE_REGISTER(regno) ((regno) >= FP0_REGNUM)
 
 #include "m68k/tm-m68k.h"

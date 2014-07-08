@@ -646,10 +646,13 @@ bfd_default_target_size
 bfd_machines
 bfd_backends
 all_backends
+bfd64_libs
 bfd_libs
 wordsize
 UNIQ_BIN
 TDEFINES
+SHARED_LIBADD
+SHARED_LDFLAGS
 WIN32LIBADD
 WIN32LDFLAGS
 LIBM
@@ -714,6 +717,8 @@ WARN_CFLAGS
 DEBUGDIR
 PLUGINS_FALSE
 PLUGINS_TRUE
+libtooldir
+objdir
 lt_cv_objdir
 CXXCPP
 OTOOL64
@@ -739,6 +744,10 @@ CXXDEPMODE
 ac_ct_CXX
 CXXFLAGS
 CXX
+CAN_BUILD_IN_SANDBOX
+sb_build_profile
+MAKE
+SANDBOX_EXEC
 RANLIB
 ac_ct_AR
 AR
@@ -787,9 +796,11 @@ am__isrc
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
+HOST_ARCHITECTURE
 EGREP
 GREP
 CPP
+TARGET_ARCHITECTURE
 OBJEXT
 EXEEXT
 ac_ct_CC
@@ -876,6 +887,7 @@ enable_nls
 with_included_gettext
 with_dmalloc
 enable_largefile
+with_zlib
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1554,6 +1566,7 @@ Optional Packages:
                           [[default=LIBDIR/debug]]
   --with-included-gettext use the GNU gettext library included here
   --with-dmalloc          use dmalloc, as in http://www.dmalloc.com
+  --with-zlib             include zlib support (auto/yes/no) [default=auto]
 
 Some influential environment variables:
   CC          C compiler command
@@ -2490,6 +2503,63 @@ $as_echo "$ac_res" >&6; }
 
 } # ac_fn_c_find_uintX_t
 
+# ac_fn_c_check_member LINENO AGGR MEMBER VAR INCLUDES
+# ----------------------------------------------------
+# Tries to find if the field MEMBER exists in type AGGR, after including
+# INCLUDES, setting cache variable VAR accordingly.
+ac_fn_c_check_member ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $2.$3" >&5
+$as_echo_n "checking for $2.$3... " >&6; }
+if eval \${$4+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$5
+int
+main ()
+{
+static $2 ac_aggr;
+if (ac_aggr.$3)
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  eval "$4=yes"
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$5
+int
+main ()
+{
+static $2 ac_aggr;
+if (sizeof ac_aggr.$3)
+return 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  eval "$4=yes"
+else
+  eval "$4=no"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+eval ac_res=\$$4
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+
+} # ac_fn_c_check_member
+
 # ac_fn_c_check_decl LINENO SYMBOL VAR INCLUDES
 # ---------------------------------------------
 # Tests whether SYMBOL is declared in INCLUDES, setting cache variable VAR
@@ -2907,6 +2977,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 ac_config_headers="$ac_config_headers config.h"
 
 
+# target stuff:
 ac_aux_dir=
 for ac_dir in "$srcdir" "$srcdir/.." "$srcdir/../.."; do
   if test -f "$ac_dir/install-sh"; then
@@ -3953,11 +4024,15 @@ if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
 fi
+ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+
+fi
 
 # host stuff:
 if test "x${CC}" = "x"; then
-    test -z "${CC}"
-    ac_ext=c
+  test -z "${CC}"
+   ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
@@ -4556,8 +4631,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 else
-    test ! -z "${CC}"
-    ac_ext=c
+  test ! -z "${CC}"
+  ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
@@ -5058,11 +5133,19 @@ $as_echo "$ac_cv_safe_to_define___extensions__" >&6; }
   $as_echo "#define _TANDEM_SOURCE 1" >>confdefs.h
 
 
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
 
-# Automake
+fi
+
+# Automake:
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking automake things" >&5
+$as_echo_n "checking automake things... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 if test -f ${srcdir}/config.status; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: config.status is already present, removing it." >&5
-$as_echo "$as_me: config.status is already present, removing it." >&6;}
+  { $as_echo "$as_me:${as_lineno-$LINENO}: ${srcdir}/config.status is already present, removing it." >&5
+$as_echo "$as_me: ${srcdir}/config.status is already present, removing it." >&6;}
   rm -f ${srcdir}/config.status
 fi
 am__api_version='1.14'
@@ -6022,6 +6105,10 @@ fi
 rm -f conftest.file
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking programs" >&5
+$as_echo_n "checking programs... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 # By default we simply use the C compiler to build assembly code.
 
 test "${CCAS+set}" = set || CCAS=$CC
@@ -6327,8 +6414,8 @@ unknown)
 esac
 
 if test "x${AR}" = "x"; then
-	test -z "${AR}"
-	if test -n "$ac_tool_prefix"; then
+  test -z "${AR}"
+  if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ar", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ar; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -6421,7 +6508,7 @@ else
 fi
 
 else
-	test ! -z "${AR}"
+  test ! -z "${AR}"
 fi
 if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
@@ -6516,8 +6603,8 @@ else
 fi
 
 if test "x${RANLIB}" = "x"; then
-	test -z "${RANLIB}"
-	if test -n "$ac_tool_prefix"; then
+  test -z "${RANLIB}"
+  if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ranlib; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -6610,7 +6697,124 @@ else
 fi
 
 else
-	test ! -z "${RANLIB}"
+  test ! -z "${RANLIB}"
+fi
+# Extract the first word of "sandbox-exec", so it can be a program name with args.
+set dummy sandbox-exec; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_SANDBOX_EXEC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $SANDBOX_EXEC in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_SANDBOX_EXEC="$SANDBOX_EXEC" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in /usr/bin
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_SANDBOX_EXEC="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+SANDBOX_EXEC=$ac_cv_path_SANDBOX_EXEC
+if test -n "$SANDBOX_EXEC"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $SANDBOX_EXEC" >&5
+$as_echo "$SANDBOX_EXEC" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+for ac_prog in make gmake gnumake remake "xcrun make"
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_MAKE+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $MAKE in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_MAKE="$MAKE" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_MAKE="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+MAKE=$ac_cv_path_MAKE
+if test -n "$MAKE"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $MAKE" >&5
+$as_echo "$MAKE" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$MAKE" && break
+done
+
+if test -n "${SANDBOX_EXEC}" -a -n "${MAKE}"; then
+  if test -e `pwd`/sandbox/build-libbfd.sb; then
+    sb_build_profile=`pwd`/sandbox/build-libbfd.sb
+  elif test -e ${srcdir}/sandbox/build-libbfd.sb; then
+    sb_build_profile=${srcdir}/sandbox/build-libbfd.sb
+  fi
+
+  if test -e `pwd`/sandbox/dummy-Makefile; then
+    sb_dummy_Makefile=`pwd`/sandbox/dummy-Makefile
+  elif test -e ${srcdir}/sandbox/build-libbfd.sb; then
+    sb_dummy_Makefile=${srcdir}/sandbox/dummy-Makefile
+  fi
+  if test -n "${sb_build_profile}" -a -n "${sb_dummy_Makefile}"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking if ${MAKE} can be run by ${SANDBOX_EXEC} with profile ${sb_build_profile}" >&5
+$as_echo_n "checking if ${MAKE} can be run by ${SANDBOX_EXEC} with profile ${sb_build_profile}... " >&6; }
+    if (${SANDBOX_EXEC} -f ${sb_build_profile} ${MAKE} -f ${sb_dummy_Makefile} nothing); then
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+      # this does not actually work yet, so hide it in a dummy condition
+      # to prevent it from actually being done:
+      if test "x" = "Y0"; then
+        export MAKE="${SANDBOX_EXEC} -f ${sb_build_profile} ${MAKE}"
+
+      fi
+      export CAN_BUILD_IN_SANDBOX=1
+
+    else
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+    fi
+  fi
 fi
 
 # Check whether --enable-shared was given.
@@ -6636,7 +6840,7 @@ else
 fi
 
 
-# Libtool checks
+# Libtool checks:
 ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -7022,6 +7226,10 @@ else
 fi
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking libtool things" >&5
+$as_echo_n "checking libtool things... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 case `pwd` in
   *\ * | *\	*)
     { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Libtool does not cope well with whitespace in \`pwd\`" >&5
@@ -7593,7 +7801,7 @@ else
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
   fi
-  rm -rf conftest*
+  rm -f conftest*
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_nm_interface" >&5
 $as_echo "$lt_cv_nm_interface" >&6; }
@@ -8953,7 +9161,7 @@ for ac_symprfx in "" "_"; do
   # Check to see that the pipe works correctly.
   pipe_works=no
 
-  rm -rf conftest*
+  rm -f conftest*
   cat > conftest.$ac_ext <<_LT_EOF
 #ifdef __cplusplus
 extern "C" {
@@ -9469,7 +9677,7 @@ else
   if $GREP 'Manifest Tool' conftest.out > /dev/null; then
     lt_cv_path_mainfest_tool=yes
   fi
-  rm -rf conftest*
+  rm -f conftest*
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_path_mainfest_tool" >&5
 $as_echo "$lt_cv_path_mainfest_tool" >&6; }
@@ -10878,7 +11086,7 @@ ac_outfile=conftest.$ac_objext
 echo "$lt_simple_compile_test_code" >conftest.$ac_ext
 eval "$ac_compile" 2>&1 >/dev/null | $SED '/^$/d; /^ *+/d' >conftest.err
 _lt_compiler_boilerplate=`cat conftest.err`
-$RM -r conftest*
+$RM conftest*
 
 ac_outfile=conftest.$ac_objext
 echo "$lt_simple_link_test_code" >conftest.$ac_ext
@@ -10935,7 +11143,7 @@ else
        lt_cv_prog_compiler_rtti_exceptions=yes
      fi
    fi
-   $RM -r conftest*
+   $RM conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_rtti_exceptions" >&5
@@ -11312,7 +11520,7 @@ else
        lt_cv_prog_compiler_pic_works=yes
      fi
    fi
-   $RM -r conftest*
+   $RM conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_pic_works" >&5
@@ -11424,14 +11632,14 @@ else
      fi
    fi
    chmod u+w . 2>&5
-   $RM -r conftest*
+   $RM conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM -r conftest*
+   $RM conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_c_o" >&5
@@ -11479,14 +11687,14 @@ else
      fi
    fi
    chmod u+w . 2>&5
-   $RM -r conftest*
+   $RM conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM -r conftest*
+   $RM conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_c_o" >&5
@@ -11501,7 +11709,7 @@ if test "$lt_cv_prog_compiler_c_o" = no && test "$need_locks" != no; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking if we can lock with hard links" >&5
 $as_echo_n "checking if we can lock with hard links... " >&6; }
   hard_links=yes
-  $RM -r conftest*
+  $RM conftest*
   ln conftest.a conftest.b 2>/dev/null && hard_links=no
   touch conftest.a
   ln conftest.a conftest.b 2>&5 || hard_links=no
@@ -12717,7 +12925,7 @@ $as_echo_n "checking whether -lc should be explicitly linked in... " >&6; }
 if ${lt_cv_archive_cmds_need_lc+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  $RM -r conftest*
+  $RM conftest*
 	echo "$lt_simple_compile_test_code" > conftest.$ac_ext
 
 	if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
@@ -12752,7 +12960,7 @@ else
 	else
 	  cat conftest.err 1>&5
 	fi
-	$RM -r conftest*
+	$RM conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_archive_cmds_need_lc" >&5
@@ -14618,7 +14826,7 @@ compiler=$CC
 echo "$lt_simple_compile_test_code" >conftest.$ac_ext
 eval "$ac_compile" 2>&1 >/dev/null | $SED '/^$/d; /^ *+/d' >conftest.err
 _lt_compiler_boilerplate=`cat conftest.err`
-$RM -r conftest*
+$RM conftest*
 
   ac_outfile=conftest.$ac_objext
 echo "$lt_simple_link_test_code" >conftest.$ac_ext
@@ -16440,7 +16648,7 @@ else
        lt_cv_prog_compiler_pic_works_CXX=yes
      fi
    fi
-   $RM -r conftest*
+   $RM conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_pic_works_CXX" >&5
@@ -16543,14 +16751,14 @@ else
      fi
    fi
    chmod u+w . 2>&5
-   $RM -r conftest*
+   $RM conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM -r conftest*
+   $RM conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_c_o_CXX" >&5
@@ -16595,14 +16803,14 @@ else
      fi
    fi
    chmod u+w . 2>&5
-   $RM -r conftest*
+   $RM conftest*
    # SGI C++ compiler will create directory out/ii_files/ for
    # template instantiation
    test -d out/ii_files && $RM out/ii_files/* && rmdir out/ii_files
    $RM out/* && rmdir out
    cd ..
    $RM -r conftest
-   $RM -r conftest*
+   $RM conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_prog_compiler_c_o_CXX" >&5
@@ -16617,7 +16825,7 @@ if test "$lt_cv_prog_compiler_c_o_CXX" = no && test "$need_locks" != no; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking if we can lock with hard links" >&5
 $as_echo_n "checking if we can lock with hard links... " >&6; }
   hard_links=yes
-  $RM -r conftest*
+  $RM conftest*
   ln conftest.a conftest.b 2>/dev/null && hard_links=no
   touch conftest.a
   ln conftest.a conftest.b 2>&5 || hard_links=no
@@ -16704,7 +16912,7 @@ $as_echo_n "checking whether -lc should be explicitly linked in... " >&6; }
 if ${lt_cv_archive_cmds_need_lc_CXX+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  $RM -r conftest*
+  $RM conftest*
 	echo "$lt_simple_compile_test_code" > conftest.$ac_ext
 
 	if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
@@ -16739,7 +16947,7 @@ else
 	else
 	  cat conftest.err 1>&5
 	fi
-	$RM -r conftest*
+	$RM conftest*
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_archive_cmds_need_lc_CXX" >&5
@@ -17622,21 +17830,63 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 if test -z "${lt_cv_objdir}"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: lt_cv_objdir somehow was left unset, setting to default" >&5
 $as_echo "$as_me: WARNING: lt_cv_objdir somehow was left unset, setting to default" >&2;}
-  lt_cv_objdir=.libs
+  export lt_cv_objdir=.libs
 
-elif test "${lt_cv_objdir}" = ..; then
+  if test -z "${objdir}"; then
+    export objdir=.libs
+
+  fi
+  if test -z "${libtooldir}"; then
+    export libtooldir=.libs
+
+  fi
+elif test "x${lt_cv_objdir}" = "x.."; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: lt_cv_objdir is one level too high, reassigning" >&5
 $as_echo "$as_me: WARNING: lt_cv_objdir is one level too high, reassigning" >&2;}
-  lt_cv_objdir=.
-elif test "${lt_cv_objdir}" = ../.libs; then
+  export lt_cv_objdir=.
+  if test -z "${objdir}" -o "x${objdir}" = "x.."; then
+    export objdir=.
+  fi
+  if test -z "${libtooldir}" -o "x${libtooldir}" = "x.."; then
+    export libtooldir=.
+  fi
+elif test "x${lt_cv_objdir}" = "x../.libs"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: lt_cv_objdir is in one level too high, reassigning" >&5
 $as_echo "$as_me: WARNING: lt_cv_objdir is in one level too high, reassigning" >&2;}
-  lt_cv_objdir=./.libs
+  export lt_cv_objdir=./.libs
+  export objdir=.
+  if test -z "${objdir}" -o "x${objdir}" = "x../.libs"; then
+    export objdir=./.libs
+  fi
+  if test -z "${libtooldir}" -o "x${libtooldir}" = "x../.libs"; then
+    export libtooldir=./.libs
+  fi
+elif test -n "${lt_cv_objdir}"; then
+  if test -z "${objdir}"; then
+    export objdir="${lt_cv_objdir}"
+  fi
+  if test -z "${libtooldir}"; then
+    export libtooldir="${lt_cv_objdir}"
+  fi
+# This last one should not be reached; the previous cases should have
+# covered all the possibilities, but just in case they failed to do so:
+elif test -n "${objdir}"; then
+  if test -z "${libtooldir}"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: setting libtooldir to \"${objdir}\" should be unnecessary" >&5
+$as_echo "$as_me: WARNING: setting libtooldir to \"${objdir}\" should be unnecessary" >&2;}
+    export libtooldir="${objdir}"
+  fi
+fi
+if test "x${lt_sysroot}" = "x" -a "x${prefix}" != "x"; then
+  test -z "${lt_sysroot}" && test -n "${prefix}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: trying to set lt_sysroot to prefix" >&5
+$as_echo "$as_me: trying to set lt_sysroot to prefix" >&6;}
+  lt_sysroot="${prefix}"
 fi
 
 if test -x ${srcdir}/libtool; then
   test -r libtool
-  if test "${USE_MAINTAINER_MODE}" = "yes" ; then
+  if test "x${USE_MAINTAINER_MODE}" = "xyes"; then
     test ! -z "${USE_MAINTAINER_MODE}"
     # patch libtool to change $_cmds IFS from ~ to ? character
 if grep "^[_$as_cr_letters]_cmds=.*[?]" libtool >/dev/null; then
@@ -17682,6 +17932,8 @@ $as_echo "$as_me: WARNING: changing how libtool works" >&2;}
   fi
 fi
 
+# AC_PLUGINS (setting "${plugins}") is called by ACX_LARGEFILE:
+
 
 # Check whether --enable-plugins was given.
 if test "${enable_plugins+set}" = set; then :
@@ -17696,7 +17948,8 @@ fi
 
 
 
- if test "${plugins}" = "yes"; then
+
+ if test "x${plugins}" = "xyes"; then
   PLUGINS_TRUE=
   PLUGINS_FALSE='#'
 else
@@ -17705,10 +17958,10 @@ else
 fi
 
 
-if test "${plugins}" = "yes"; then
-  if test "${enable_dlopen}" != "yes" ; then
+if test "x${plugins}" = "xyes"; then
+  if test "x${enable_dlopen}" != "xyes"; then
     as_fn_error $? "
-      Building BFD with plugin support requires a host that supports -ldl." "$LINENO" 5
+      Building BFD with plugin support requires a host that supports -ldl" "$LINENO" 5
   fi
   enable_targets="${enable_targets} plugin"
 fi
@@ -17726,10 +17979,11 @@ fi
 # Check whether --enable-targets was given.
 if test "${enable_targets+set}" = set; then :
   enableval=$enable_targets; case "${enableval}" in
-  yes | "") as_fn_error $? "enable-targets option must specify target names or 'all'" "$LINENO" 5
-            ;;
-  no)       enable_targets= ;;
-  *)        enable_targets=$enableval ;;
+  yes | "")
+      as_fn_error $? "enable-targets flag must specify targ names or 'all'" "$LINENO" 5
+      ;;
+  no) enable_targets="" ;;
+  *)  enable_targets=${enableval} ;;
 esac
 fi
 # Check whether --enable-commonbfdlib was given.
@@ -17737,7 +17991,7 @@ if test "${enable_commonbfdlib+set}" = set; then :
   enableval=$enable_commonbfdlib; case "${enableval}" in
   yes) commonbfdlib=true ;;
   no)  commonbfdlib=false ;;
-  *)   as_fn_error $? "bad value ${enableval} for BFD commonbfdlib option" "$LINENO" 5 ;;
+  *)   as_fn_error $? "bad value ${enableval} for BFD commonbfdlib flag" "$LINENO" 5 ;;
 esac
 fi
 
@@ -17755,14 +18009,14 @@ fi
 # Check whether --enable-secureplt was given.
 if test "${enable_secureplt+set}" = set; then :
   enableval=$enable_secureplt; case "${enableval}" in
-  yes)  use_secureplt=true  ;;
-  no)   use_secureplt=false ;;
+  yes)  use_secureplt="true"  ;;
+  no)   use_secureplt="false" ;;
   *)    as_fn_error $? "bad value ${enableval} for secureplt option" "$LINENO" 5 ;;
 esac
 else
-  use_secureplt=false
+  use_secureplt="false"
 fi
-if test ${use_secureplt} = true; then
+if test "x${use_secureplt}" = "xtrue"; then
 
 $as_echo "#define USE_SECUREPLT 1" >>confdefs.h
 
@@ -17782,8 +18036,8 @@ fi
 # Check whether --enable-elf-stt-common was given.
 if test "${enable_elf_stt_common+set}" = set; then :
   enableval=$enable_elf_stt_common; case "${enableval}" in
-  yes) want_elf_stt_common=true ;;
-  no)  want_elf_stt_common=false ;;
+  yes) want_elf_stt_common="true"  ;;
+  no)  want_elf_stt_common="false" ;;
   *)   as_fn_error $? "bad value ${enableval} for ELF STT_COMMON option" "$LINENO" 5 ;;
  esac
 else
@@ -17793,13 +18047,16 @@ else
 # mean that built binaries could not be exported to older systems where
 # the loader does not support it. So by default we always choose to
 # disable this feature.
-  want_elf_stt_common=false
+  want_elf_stt_common="false"
 fi
-if test ${want_elf_stt_common} = true; then
+if test "x${want_elf_stt_common}" = "xtrue"; then
 
 $as_echo "#define USE_STT_COMMON 1" >>confdefs.h
 
 fi
+
+:
+:
 
 
 WARN_CFLAGS="-W -Wall -Wstrict-prototypes -Wmissing-prototypes -Wimplicit -Wparentheses -Wextra"
@@ -17916,8 +18173,8 @@ fi
 # PR 14072
 
 
-if test -z "${target}" ; then
-    as_fn_error $? "Unrecognized target system type; please check config.sub." "$LINENO" 5
+if test -z "${target}"; then
+  as_fn_error $? "Unrecognized target system type; please check config.sub" "$LINENO" 5
 fi
 
  case ${build_alias} in
@@ -17945,7 +18202,7 @@ $as_echo_n "checking whether to install libbfd... " >&6; }
 if test "${enable_install_libbfd+set}" = set; then :
   enableval=$enable_install_libbfd; install_libbfd_p=$enableval
 else
-  if test "${host}" = "${target}" || test "${enable_shared}" = "yes"; then
+  if test "x${host}" = "x${target}" || test "x${enable_shared}" = "xyes"; then
         install_libbfd_p=yes
       else
         install_libbfd_p=no
@@ -17954,7 +18211,7 @@ fi
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${install_libbfd_p}" >&5
 $as_echo "${install_libbfd_p}" >&6; }
-   if test ${install_libbfd_p} = yes; then
+   if test "x${install_libbfd_p}" = "xyes"; then
   INSTALL_LIBBFD_TRUE=
   INSTALL_LIBBFD_FALSE='#'
 else
@@ -17968,7 +18225,7 @@ fi
   # libbfd.a is a host library containing target dependent code
   bfdlibdir='$(libdir)'
   bfdincludedir='$(includedir)'
-  if test "${host}" != "${target}"; then
+  if test "x${host}" != "x${target}"; then
     bfdlibdir='$(exec_prefix)/$(host_noncanonical)/$(target_noncanonical)/lib'
     bfdincludedir='$(exec_prefix)/$(host_noncanonical)/$(target_noncanonical)/include'
   else
@@ -18004,6 +18261,10 @@ esac
 
 # host stuff:
 # gettext stuff first specifically:
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking gettext stuff" >&5
+$as_echo_n "checking gettext stuff... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 if test -d ../intl; then
   if test -z "${LDFLAGS}"; then
     export LDFLAGS="-L../intl"
@@ -18017,7 +18278,7 @@ elif test -d ../libintl; then
     export LDFLAGS="${LDFLAGS} -L../libintl"
   fi
 fi
-ALL_LINGUAS="fr tr ja es sv da zh_CN ro rw vi"
+ALL_LINGUAS="fr tr ja es sv da zh_CN ro rw vi fi id ru uk"
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for an ANSI C-conforming const" >&5
 $as_echo_n "checking for an ANSI C-conforming const... " >&6; }
 if ${ac_cv_c_const+:} false; then :
@@ -19147,8 +19408,8 @@ fi
 
 
 # Permit host specific settings.
-{ $as_echo "$as_me:${as_lineno-$LINENO}: sourcing ./configure.host" >&5
-$as_echo "$as_me: sourcing ./configure.host" >&6;}
+{ $as_echo "$as_me:${as_lineno-$LINENO}: sourcing ${srcdir}/configure.host" >&5
+$as_echo "$as_me: sourcing ${srcdir}/configure.host" >&6;}
 . ${srcdir}/configure.host
 
 
@@ -19165,12 +19426,16 @@ $as_echo "no, using $LN_S" >&6; }
 fi
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking host types" >&5
+$as_echo_n "checking host types... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 BFD_HOST_64BIT_LONG=0
 BFD_HOST_64BIT_LONG_LONG=0
 BFD_HOST_LONG_LONG=0
 BFD_HOST_64_BIT_DEFINED=0
-BFD_HOST_64_BIT=
-BFD_HOST_U_64_BIT=
+BFD_HOST_64_BIT=""
+BFD_HOST_U_64_BIT=""
 BFD_HOSTPTR_T="unsigned long"
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for long long" >&5
@@ -19181,25 +19446,29 @@ else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
+
 int
 main ()
 {
+
 unsigned long long ll = 18446744073709551615ULL;
+
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
-  bfd_cv_has_long_long=yes
+  bfd_cv_has_long_long="yes"
 else
-  bfd_cv_has_long_long=no
+  bfd_cv_has_long_long="no"
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${bfd_cv_has_long_long}" >&5
 $as_echo "${bfd_cv_has_long_long}" >&6; }
-if test ${bfd_cv_has_long_long} = yes; then
+if test "x${bfd_cv_has_long_long}" = "xyes"; then
   BFD_HOST_LONG_LONG=1
   # The cast to long int works around a bug in the HP C Compiler
 # version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
@@ -19466,7 +19735,7 @@ else
        esac
      done
      rm -f conftest* || rm -rfv conftest* || rmdir conftest*
-     test x"${bfd_cv_build_exeext}" = x && bfd_cv_build_exeext=no
+     test x"${bfd_cv_build_exeext}" = x"" && bfd_cv_build_exeext=no
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $bfd_cv_build_exeext" >&5
 $as_echo "$bfd_cv_build_exeext" >&6; }
@@ -19476,8 +19745,12 @@ fi
 
 
 # Checks for libraries.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking libraries" >&5
+$as_echo_n "checking libraries... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 if test -d /usr/lib/gcc/darwin/2.95.2; then
-	export LDFLAGS="${LDFLAGS} -L/usr/lib/gcc/darwin/2.95.2"
+  export LDFLAGS="${LDFLAGS} -L/usr/lib/gcc/darwin/2.95.2"
 fi
 # FIXME: Replace `main' with a function in `-lcc_dynamic':
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lcc_dynamic" >&5
@@ -19585,7 +19858,7 @@ if test "x$ac_cv_lib_System_main" = xyes; then :
 fi
 
 if test -z "${SYSTEM_FRAMEWORK_LIBS}"; then
-	as_fn_error $? "Missing some required system libraries." "$LINENO" 5
+  as_fn_error $? "Missing some required system libraries." "$LINENO" 5
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for printf in -lc" >&5
@@ -19633,7 +19906,52 @@ _ACEOF
 
 fi
 
-# ../intl is added to LDFLAGS above
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for dlsym in -ldl" >&5
+$as_echo_n "checking for dlsym in -ldl... " >&6; }
+if ${ac_cv_lib_dl_dlsym+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-ldl  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char dlsym ();
+int
+main ()
+{
+return dlsym ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_dl_dlsym=yes
+else
+  ac_cv_lib_dl_dlsym=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_dl_dlsym" >&5
+$as_echo "$ac_cv_lib_dl_dlsym" >&6; }
+if test "x$ac_cv_lib_dl_dlsym" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBDL 1
+_ACEOF
+
+  LIBS="-ldl $LIBS"
+
+fi
+
+# ../intl is added to LDFLAGS above, so this should work:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gettext in -lintl" >&5
 $as_echo_n "checking for gettext in -lintl... " >&6; }
 if ${ac_cv_lib_intl_gettext+:} false; then :
@@ -19803,6 +20121,10 @@ fi
 
 
 # Checks for header files.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking headers" >&5
+$as_echo_n "checking headers... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for stdbool.h that conforms to C99" >&5
 $as_echo_n "checking for stdbool.h that conforms to C99... " >&6; }
 if ${ac_cv_header_stdbool_h+:} false; then :
@@ -19915,7 +20237,8 @@ unset ac_cv_header_sys_param_h
 for ac_header in ctype.h errno.h fcntl.h gettext.h iconv.h libgettext.h \
                   libintl.h limits.h mach/mach.h mach-o/loader.h \
                   malloca.h malloc/malloc.h realloc.h stdarg.h stddef.h \
-                  stdio.h sys/file.h sys/param.h sys/time.h time.h
+                  stdio.h sys/file.h sys/param.h sys/resource.h \
+                  sys/socket.h sys/time.h time.h windows.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -20522,6 +20845,48 @@ fi
 
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether stat file-mode macros are broken" >&5
+$as_echo_n "checking whether stat file-mode macros are broken... " >&6; }
+if ${ac_cv_header_stat_broken+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+#include <sys/stat.h>
+
+#if defined S_ISBLK && defined S_IFDIR
+extern char c1[S_ISBLK (S_IFDIR) ? -1 : 1];
+#endif
+
+#if defined S_ISBLK && defined S_IFCHR
+extern char c2[S_ISBLK (S_IFCHR) ? -1 : 1];
+#endif
+
+#if defined S_ISLNK && defined S_IFREG
+extern char c3[S_ISLNK (S_IFREG) ? -1 : 1];
+#endif
+
+#if defined S_ISSOCK && defined S_IFREG
+extern char c4[S_ISSOCK (S_IFREG) ? -1 : 1];
+#endif
+
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_header_stat_broken=no
+else
+  ac_cv_header_stat_broken=yes
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_header_stat_broken" >&5
+$as_echo "$ac_cv_header_stat_broken" >&6; }
+if test $ac_cv_header_stat_broken = yes; then
+
+$as_echo "#define STAT_MACROS_BROKEN 1" >>confdefs.h
+
+fi
+
 
 
 
@@ -20566,6 +20931,10 @@ done
 
 
 # Checks for typedefs, structures, and compiler characteristics.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking C language characteristics that your C compiler supports" >&5
+$as_echo_n "checking C language characteristics that your C compiler supports... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether byte ordering is bigendian" >&5
 $as_echo_n "checking whether byte ordering is bigendian... " >&6; }
 if ${ac_cv_c_bigendian+:} false; then :
@@ -20806,6 +21175,90 @@ else
 $as_echo "no" >&6; }
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for C/C++ restrict keyword" >&5
+$as_echo_n "checking for C/C++ restrict keyword... " >&6; }
+if ${ac_cv_c_restrict+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_cv_c_restrict=no
+   # The order here caters to the fact that C++ does not require restrict.
+   for ac_kw in __restrict __restrict__ _Restrict restrict; do
+     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+typedef int * int_ptr;
+	int foo (int_ptr $ac_kw ip) {
+	return ip[0];
+       }
+int
+main ()
+{
+int s[1];
+	int * $ac_kw t = s;
+	t[0] = 0;
+	return foo(t)
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_c_restrict=$ac_kw
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+     test "$ac_cv_c_restrict" != no && break
+   done
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_restrict" >&5
+$as_echo "$ac_cv_c_restrict" >&6; }
+
+ case $ac_cv_c_restrict in
+   restrict) ;;
+   no) $as_echo "#define restrict /**/" >>confdefs.h
+ ;;
+   *)  cat >>confdefs.h <<_ACEOF
+#define restrict $ac_cv_c_restrict
+_ACEOF
+ ;;
+ esac
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for working volatile" >&5
+$as_echo_n "checking for working volatile... " >&6; }
+if ${ac_cv_c_volatile+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+volatile int x;
+int * volatile y = (int *) 0;
+return !x && !y;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_c_volatile=yes
+else
+  ac_cv_c_volatile=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_volatile" >&5
+$as_echo "$ac_cv_c_volatile" >&6; }
+if test $ac_cv_c_volatile = no; then
+
+$as_echo "#define volatile /**/" >>confdefs.h
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking other types that did not fit with the host ones above" >&5
+$as_echo_n "checking other types that did not fit with the host ones above... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 ac_fn_c_check_type "$LINENO" "pid_t" "ac_cv_type_pid_t" "$ac_includes_default"
 if test "x$ac_cv_type_pid_t" = xyes; then :
 
@@ -20872,8 +21325,113 @@ _ACEOF
 
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether struct tm is in sys/time.h or time.h" >&5
+$as_echo_n "checking whether struct tm is in sys/time.h or time.h... " >&6; }
+if ${ac_cv_struct_tm+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+#include <time.h>
+
+int
+main ()
+{
+struct tm tm;
+				     int *p = &tm.tm_sec;
+				     return !p;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_struct_tm=time.h
+else
+  ac_cv_struct_tm=sys/time.h
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_struct_tm" >&5
+$as_echo "$ac_cv_struct_tm" >&6; }
+if test $ac_cv_struct_tm = sys/time.h; then
+
+$as_echo "#define TM_IN_SYS_TIME 1" >>confdefs.h
+
+fi
+
+ac_fn_c_check_member "$LINENO" "struct tm" "tm_zone" "ac_cv_member_struct_tm_tm_zone" "#include <sys/types.h>
+#include <$ac_cv_struct_tm>
+
+"
+if test "x$ac_cv_member_struct_tm_tm_zone" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_STRUCT_TM_TM_ZONE 1
+_ACEOF
+
+
+fi
+
+if test "$ac_cv_member_struct_tm_tm_zone" = yes; then
+
+$as_echo "#define HAVE_TM_ZONE 1" >>confdefs.h
+
+else
+  ac_fn_c_check_decl "$LINENO" "tzname" "ac_cv_have_decl_tzname" "#include <time.h>
+"
+if test "x$ac_cv_have_decl_tzname" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_TZNAME $ac_have_decl
+_ACEOF
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for tzname" >&5
+$as_echo_n "checking for tzname... " >&6; }
+if ${ac_cv_var_tzname+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <time.h>
+#if !HAVE_DECL_TZNAME
+extern char *tzname[];
+#endif
+
+int
+main ()
+{
+return tzname[0][0];
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_var_tzname=yes
+else
+  ac_cv_var_tzname=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_var_tzname" >&5
+$as_echo "$ac_cv_var_tzname" >&6; }
+  if test $ac_cv_var_tzname = yes; then
+
+$as_echo "#define HAVE_TZNAME 1" >>confdefs.h
+
+  fi
+fi
 
 # Checks for library functions.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking functions" >&5
+$as_echo_n "checking functions... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking if malloc debugging is wanted" >&5
 $as_echo_n "checking if malloc debugging is wanted... " >&6; }
 
@@ -20897,10 +21455,11 @@ $as_echo "no" >&6; }
 fi
 
 
-for ac_func in fcntl fdopen fprintf getgid getuid memchr memmove memset \
-                qsort rpl_malloc rpl_realloc setitimer strdup strncasecmp \
-                strrchr strspn strstr strtol strtoul strtoull sysconf \
-                system uname
+for ac_func in exit fcntl fdopen feof ferror fileno fopen fprintf fread \
+                getgid getrlimit getuid islower isspace isupper \
+                memchr memmove memset qsort rpl_malloc rpl_realloc \
+                setitimer strcmp strdup strncasecmp strrchr strspn \
+                strstr strtol strtoul strtoull sysconf system uname
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -20929,6 +21488,48 @@ done
 
 
 
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether closedir returns void" >&5
+$as_echo_n "checking whether closedir returns void... " >&6; }
+if ${ac_cv_func_closedir_void+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  ac_cv_func_closedir_void=yes
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+#include <$ac_header_dirent>
+#ifndef __cplusplus
+int closedir ();
+#endif
+
+int
+main ()
+{
+return closedir (opendir (".")) != 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_closedir_void=no
+else
+  ac_cv_func_closedir_void=yes
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_closedir_void" >&5
+$as_echo "$ac_cv_func_closedir_void" >&6; }
+if test $ac_cv_func_closedir_void = yes; then
+
+$as_echo "#define CLOSEDIR_VOID 1" >>confdefs.h
+
+fi
 
 for ac_header in vfork.h
 do :
@@ -21278,6 +21879,68 @@ $as_echo "#define malloc rpl_malloc" >>confdefs.h
 fi
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for working memcmp" >&5
+$as_echo_n "checking for working memcmp... " >&6; }
+if ${ac_cv_func_memcmp_working+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  ac_cv_func_memcmp_working=no
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+
+  /* Some versions of memcmp are not 8-bit clean.  */
+  char c0 = '\100', c1 = '\200', c2 = '\201';
+  if (memcmp(&c0, &c2, 1) >= 0 || memcmp(&c1, &c2, 1) >= 0)
+    return 1;
+
+  /* The Next x86 OpenStep bug shows up only when comparing 16 bytes
+     or more and with at least one buffer not starting on a 4-byte boundary.
+     William Lewis provided this test program.   */
+  {
+    char foo[21];
+    char bar[21];
+    int i;
+    for (i = 0; i < 4; i++)
+      {
+	char *a = foo + i;
+	char *b = bar + i;
+	strcpy (a, "--------01111111");
+	strcpy (b, "--------10000000");
+	if (memcmp (a, b, 16) >= 0)
+	  return 1;
+      }
+    return 0;
+  }
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_memcmp_working=yes
+else
+  ac_cv_func_memcmp_working=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_memcmp_working" >&5
+$as_echo "$ac_cv_func_memcmp_working" >&6; }
+test $ac_cv_func_memcmp_working = no && case " $LIBOBJS " in
+  *" memcmp.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS memcmp.$ac_objext"
+ ;;
+esac
+
+
 for ac_header in stdlib.h
 do :
   ac_fn_c_check_header_mongrel "$LINENO" "stdlib.h" "ac_cv_header_stdlib_h" "$ac_includes_default"
@@ -21345,7 +22008,324 @@ $as_echo "#define realloc rpl_realloc" >>confdefs.h
 fi
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing rpl_realloc" >&5
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether lstat correctly handles trailing slash" >&5
+$as_echo_n "checking whether lstat correctly handles trailing slash... " >&6; }
+if ${ac_cv_func_lstat_dereferences_slashed_symlink+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  rm -f conftest.sym conftest.file
+echo >conftest.file
+if test "$as_ln_s" = "ln -s" && ln -s conftest.file conftest.sym; then
+  if test "$cross_compiling" = yes; then :
+  ac_cv_func_lstat_dereferences_slashed_symlink=no
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+struct stat sbuf;
+     /* Linux will dereference the symlink and fail, as required by POSIX.
+	That is better in the sense that it means we will not
+	have to compile and use the lstat wrapper.  */
+     return lstat ("conftest.sym/", &sbuf) == 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_lstat_dereferences_slashed_symlink=yes
+else
+  ac_cv_func_lstat_dereferences_slashed_symlink=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+else
+  # If the `ln -s' command failed, then we probably don't even
+  # have an lstat function.
+  ac_cv_func_lstat_dereferences_slashed_symlink=no
+fi
+rm -f conftest.sym conftest.file
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_lstat_dereferences_slashed_symlink" >&5
+$as_echo "$ac_cv_func_lstat_dereferences_slashed_symlink" >&6; }
+
+test $ac_cv_func_lstat_dereferences_slashed_symlink = yes &&
+
+cat >>confdefs.h <<_ACEOF
+#define LSTAT_FOLLOWS_SLASHED_SYMLINK 1
+_ACEOF
+
+
+if test "x$ac_cv_func_lstat_dereferences_slashed_symlink" = xno; then
+  case " $LIBOBJS " in
+  *" lstat.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS lstat.$ac_objext"
+ ;;
+esac
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether stat accepts an empty string" >&5
+$as_echo_n "checking whether stat accepts an empty string... " >&6; }
+if ${ac_cv_func_stat_empty_string_bug+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  ac_cv_func_stat_empty_string_bug=yes
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+struct stat sbuf;
+  return stat ("", &sbuf) == 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_stat_empty_string_bug=no
+else
+  ac_cv_func_stat_empty_string_bug=yes
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_stat_empty_string_bug" >&5
+$as_echo "$ac_cv_func_stat_empty_string_bug" >&6; }
+if test $ac_cv_func_stat_empty_string_bug = yes; then
+  case " $LIBOBJS " in
+  *" stat.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS stat.$ac_objext"
+ ;;
+esac
+
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_STAT_EMPTY_STRING_BUG 1
+_ACEOF
+
+fi
+
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for working strnlen" >&5
+$as_echo_n "checking for working strnlen... " >&6; }
+if ${ac_cv_func_strnlen_working+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  # Guess no on AIX systems, yes otherwise.
+		case "$host_os" in
+		  aix*) ac_cv_func_strnlen_working=no;;
+		  *)    ac_cv_func_strnlen_working=yes;;
+		esac
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+
+#define S "foobar"
+#define S_LEN (sizeof S - 1)
+
+  /* At least one implementation is buggy: that of AIX 4.3 would
+     give strnlen (S, 1) == 3.  */
+
+  int i;
+  for (i = 0; i < S_LEN + 1; ++i)
+    {
+      int expected = i <= S_LEN ? i : S_LEN;
+      if (strnlen (S, i) != expected)
+	return 1;
+    }
+  return 0;
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_strnlen_working=yes
+else
+  ac_cv_func_strnlen_working=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_strnlen_working" >&5
+$as_echo "$ac_cv_func_strnlen_working" >&6; }
+test $ac_cv_func_strnlen_working = no && case " $LIBOBJS " in
+  *" strnlen.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS strnlen.$ac_objext"
+ ;;
+esac
+
+
+for ac_func in vprintf
+do :
+  ac_fn_c_check_func "$LINENO" "vprintf" "ac_cv_func_vprintf"
+if test "x$ac_cv_func_vprintf" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_VPRINTF 1
+_ACEOF
+
+ac_fn_c_check_func "$LINENO" "_doprnt" "ac_cv_func__doprnt"
+if test "x$ac_cv_func__doprnt" = xyes; then :
+
+$as_echo "#define HAVE_DOPRNT 1" >>confdefs.h
+
+fi
+
+fi
+done
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for mbstate_t" >&5
+$as_echo_n "checking for mbstate_t... " >&6; }
+if ${ac_cv_type_mbstate_t+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+#	    include <wchar.h>
+int
+main ()
+{
+mbstate_t x; return sizeof x;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_type_mbstate_t=yes
+else
+  ac_cv_type_mbstate_t=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_type_mbstate_t" >&5
+$as_echo "$ac_cv_type_mbstate_t" >&6; }
+   if test $ac_cv_type_mbstate_t = yes; then
+
+$as_echo "#define HAVE_MBSTATE_T 1" >>confdefs.h
+
+   else
+
+$as_echo "#define mbstate_t int" >>confdefs.h
+
+   fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for working POSIX fnmatch" >&5
+$as_echo_n "checking for working POSIX fnmatch... " >&6; }
+if ${ac_cv_func_fnmatch_works+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  # Some versions of Solaris, SCO, and the GNU C Library
+   # have a broken or incompatible fnmatch.
+   # So we run a test program.  If we are cross-compiling, take no chance.
+   # Thanks to John Oleynick, Franc,ois Pinard, and Paul Eggert for this test.
+   if test "$cross_compiling" = yes; then :
+  ac_cv_func_fnmatch_works=cross
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <fnmatch.h>
+#	   define y(a, b, c) (fnmatch (a, b, c) == 0)
+#	   define n(a, b, c) (fnmatch (a, b, c) == FNM_NOMATCH)
+
+int
+main ()
+{
+return
+	   (!(y ("a*", "abc", 0)
+	      && n ("d*/*1", "d/s/1", FNM_PATHNAME)
+	      && y ("a\\\\bc", "abc", 0)
+	      && n ("a\\\\bc", "abc", FNM_NOESCAPE)
+	      && y ("*x", ".x", 0)
+	      && n ("*x", ".x", FNM_PERIOD)
+	      && 1));
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_fnmatch_works=yes
+else
+  ac_cv_func_fnmatch_works=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_fnmatch_works" >&5
+$as_echo "$ac_cv_func_fnmatch_works" >&6; }
+if test $ac_cv_func_fnmatch_works = yes; then :
+  rm -f "$ac_config_libobj_dir/fnmatch.h"
+else
+  ac_fn_c_check_decl "$LINENO" "getenv" "ac_cv_have_decl_getenv" "$ac_includes_default"
+if test "x$ac_cv_have_decl_getenv" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_GETENV $ac_have_decl
+_ACEOF
+
+for ac_func in btowc mbsrtowcs mempcpy wmempcpy
+do :
+  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
+ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
+if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+done
+
+for ac_header in wchar.h wctype.h
+do :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+
+done
+
+case " $LIBOBJS " in
+  *" fnmatch.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS fnmatch.$ac_objext"
+ ;;
+esac
+
+ac_config_links="$ac_config_links $ac_config_libobj_dir/fnmatch.h:$ac_config_libobj_dir/fnmatch_.h"
+
+
+$as_echo "#define fnmatch rpl_fnmatch" >>confdefs.h
+
+
+fi
+
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing rpl_realloc" >&5
 $as_echo_n "checking for library containing rpl_realloc... " >&6; }
 if ${ac_cv_search_rpl_realloc+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -21458,7 +22438,12 @@ if test "$ac_res" != no; then :
 fi
 
 
-# Hack because AC_REQUIRE cannot be used outside of macro definitions
+# other misc. stuff:
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking stuff that we might have already checked" >&5
+$as_echo_n "checking stuff that we might have already checked... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
+# Hack because AC_REQUIRE cannot be used outside of macro definitions:
 
 # Check whether --enable-largefile was given.
 if test "${enable_largefile+set}" = set; then :
@@ -22335,12 +23320,17 @@ fi
 
 
 
+
  if test "x${GETTEXT_MACRO_VERSION}" = "x"; then
- 	 test -z "${GETTEXT_MACRO_VERSION}"
+   test -z "${GETTEXT_MACRO_VERSION}"
 
  fi
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking declarations" >&5
+$as_echo_n "checking declarations... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 ac_fn_c_check_decl "$LINENO" "basename" "ac_cv_have_decl_basename" "$ac_includes_default"
 if test "x$ac_cv_have_decl_basename" = xyes; then :
   ac_have_decl=1
@@ -22504,10 +23494,38 @@ cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_VSNPRINTF $ac_have_decl
 _ACEOF
 
+ac_fn_c_check_decl "$LINENO" "strnlen" "ac_cv_have_decl_strnlen" "$ac_includes_default"
+if test "x$ac_cv_have_decl_strnlen" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_STRNLEN $ac_have_decl
+_ACEOF
+
 
 # Link in zlib if we can. This allows us to read compressed debug sections.
 # This is used only by compress.c.
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing zlibVersion" >&5
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking zlib" >&5
+$as_echo_n "checking zlib... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
+
+
+  # See if the user specified whether he wants zlib support or not.
+
+# Check whether --with-zlib was given.
+if test "${with_zlib+set}" = set; then :
+  withval=$with_zlib;
+else
+  with_zlib=auto
+fi
+
+
+  if test "$with_zlib" != "no"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing zlibVersion" >&5
 $as_echo_n "checking for library containing zlibVersion... " >&6; }
 if ${ac_cv_search_zlibVersion+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -22574,10 +23592,21 @@ done
 
 fi
 
+    if test "$with_zlib" = "yes" -a "$ac_cv_header_zlib_h" != "yes"; then
+      as_fn_error $? "zlib (libz) library was explicitly requested but not found" "$LINENO" 5
+    fi
+  fi
+
+
 
 # If we are configured native, pick a core file support file.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking more system-specific things" >&5
+$as_echo_n "checking more system-specific things... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 COREFILE=""
 COREFLAG=""
+CORE_HEADER=""
 TRAD_HEADER=""
 if test "${target}" = "${host}"; then
   case "${host}" in
@@ -22620,13 +23649,13 @@ if test "${target}" = "${host}"; then
 	TRAD_HEADER='"hosts/symmetry.h"'
 	;;
   i[3-7]86-*-bsdi)
-	COREFILE=
+	COREFILE=''
 	;;
   i[3-7]86-*-bsd* | i[3-7]86-*-freebsd[123] | i[3-7]86-*-freebsd[123]\.* | i[3-7]86-*-freebsd4\.[01234] | i[3-7]86-*-freebsd4\.[01234]\.* | i[3-7]86-*-freebsd*aout*)
 	COREFILE=trad-core.lo
 	TRAD_HEADER='"hosts/i386bsd.h"'
 	;;
-  i[3-7]86-*-freebsd* | i[3-7]86-*-kfreebsd*-gnu)
+  i[3-7]86-*-freebsd* | i[3-7]86-*-kfreebsd*-gnu | i[3-7]86-*-dragonfly*)
 	COREFILE=''
 	TRAD_HEADER='"hosts/i386bsd.h"'
 	;;
@@ -22651,6 +23680,10 @@ if test "${target}" = "${host}"; then
   i[3-7]86-*-linux-*)
 	COREFILE=trad-core.lo
 	TRAD_HEADER='"hosts/i386linux.h"'
+	case "${enable_targets}"-"${want64}" in
+	  *x86_64-*linux*|*-true)
+	    CORE_HEADER='"hosts/x86-64linux.h"' ;;
+	esac
 	;;
   i[3-7]86-*-isc*)	COREFILE=trad-core.lo ;;
   i[3-7]86-*-aix*)	COREFILE=aix386-core.lo ;;
@@ -22743,11 +23776,15 @@ if test "${target}" = "${host}"; then
 $as_echo_n "checking for c_impl in struct core_dumpx... " >&6; }
 	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+
 #include <core.h>
+
 int
 main ()
 {
+
 struct core_dumpx c; c.c_impl = 0;
+
   ;
   return 0;
 }
@@ -22756,11 +23793,12 @@ if ac_fn_c_try_compile "$LINENO"; then :
 
 $as_echo "#define HAVE_ST_C_IMPL 1" >>confdefs.h
 
-	  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+	      { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
+
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 	;;
@@ -22774,7 +23812,9 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
   powerpc-*-netbsd*)	COREFILE=netbsd-core.lo ;;
   powerpc-*-*bsd*)	COREFILE=netbsd-core.lo ;;
   s390*-*-*)            COREFILE=trad-core.lo ;;
-  sh*-*-netbsd*)	COREFILE=netbsd-core.lo ;;
+  sh*-*-netbsd* | sh*-*-openbsd*)
+	COREFILE=netbsd-core.lo
+	;;
   sparc-*-netbsd* | sparc*-*-openbsd*)
 	COREFILE=netbsd-core.lo
 	;;
@@ -22801,20 +23841,23 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 	COREFILE=trad-core.lo
 	TRAD_HEADER='"hosts/vaxbsd.h"'
 	;;
+  x86_64-*-linux*)
+	CORE_HEADER='"hosts/x86-64linux.h"'
+	;;
   x86_64-*-netbsd* | x86_64-*-openbsd*)
 	COREFILE=netbsd-core.lo
 	;;
   esac
 
   case "${COREFILE}" in
-  aix386-core.lo)	COREFLAG=-DAIX386_CORE ;;
-  hppabsd-core.lo)	COREFLAG=-DHPPABSD_CORE ;;
-  hpux-core.lo)		COREFLAG=-DHPUX_CORE ;;
-  irix-core.lo)		COREFLAG=-DIRIX_CORE ;;
-  lynx-core.lo)		COREFLAG=-DLYNX_CORE ;;
-  netbsd-core.lo)	COREFLAG=-DNETBSD_CORE ;;
-  osf-core.lo)		COREFLAG=-DOSF_CORE ;;
-  ptrace-core.lo)	COREFLAG=-DPTRACE_CORE ;;
+  aix386-core.lo)	COREFLAG="-DAIX386_CORE" ;;
+  hppabsd-core.lo)	COREFLAG="-DHPPABSD_CORE" ;;
+  hpux-core.lo)		COREFLAG="-DHPUX_CORE" ;;
+  irix-core.lo)		COREFLAG="-DIRIX_CORE" ;;
+  lynx-core.lo)		COREFLAG="-DLYNX_CORE" ;;
+  netbsd-core.lo)	COREFLAG="-DNETBSD_CORE" ;;
+  osf-core.lo)		COREFLAG="-DOSF_CORE" ;;
+  ptrace-core.lo)	COREFLAG="-DPTRACE_CORE" ;;
   rs6000-core.lo)	COREFLAG="${COREFLAG} -DAIX_CORE" ;;
   sco5-core.lo)		COREFLAG="${COREFLAG} -DSCO5_CORE" ;;
   trad-core.lo)		COREFLAG="${COREFLAG} -DTRAD_CORE" ;;
@@ -22834,7 +23877,7 @@ fi
 
 done
 
-  if test "${ac_cv_header_sys_procfs_h}" = yes; then
+  if test "x${ac_cv_header_sys_procfs_h}" = "xyes"; then
 
 
 
@@ -23070,6 +24113,35 @@ $as_echo "#define HAVE_PRPSINFO_T 1" >>confdefs.h
 $as_echo "$bfd_cv_have_sys_procfs_type_prpsinfo_t" >&6; }
 
 
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for prpsinfo_t.pr_pid in sys/procfs.h" >&5
+$as_echo_n "checking for prpsinfo_t.pr_pid in sys/procfs.h... " >&6; }
+ if ${bfd_cv_have_sys_procfs_type_member_prpsinfo_t_pr_pid+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#define _SYSCALL32
+#include <sys/procfs.h>
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  bfd_cv_have_sys_procfs_type_member_prpsinfo_t_pr_pid=yes
+else
+  bfd_cv_have_sys_procfs_type_member_prpsinfo_t_pr_pid=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+fi
+
+ if test $bfd_cv_have_sys_procfs_type_member_prpsinfo_t_pr_pid = yes; then
+
+$as_echo "#define HAVE_PRPSINFO_T_PR_PID 1" >>confdefs.h
+
+ fi
+ { $as_echo "$as_me:${as_lineno-$LINENO}: result: $bfd_cv_have_sys_procfs_type_member_prpsinfo_t_pr_pid" >&5
+$as_echo "$bfd_cv_have_sys_procfs_type_member_prpsinfo_t_pr_pid" >&6; }
+
+
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for prpsinfo32_t in sys/procfs.h" >&5
 $as_echo_n "checking for prpsinfo32_t in sys/procfs.h... " >&6; }
  if ${bfd_cv_have_sys_procfs_type_prpsinfo32_t+:} false; then :
@@ -23097,6 +24169,35 @@ $as_echo "#define HAVE_PRPSINFO32_T 1" >>confdefs.h
  fi
  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $bfd_cv_have_sys_procfs_type_prpsinfo32_t" >&5
 $as_echo "$bfd_cv_have_sys_procfs_type_prpsinfo32_t" >&6; }
+
+
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for prpsinfo32_t.pr_pid in sys/procfs.h" >&5
+$as_echo_n "checking for prpsinfo32_t.pr_pid in sys/procfs.h... " >&6; }
+ if ${bfd_cv_have_sys_procfs_type_member_prpsinfo32_t_pr_pid+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#define _SYSCALL32
+#include <sys/procfs.h>
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  bfd_cv_have_sys_procfs_type_member_prpsinfo32_t_pr_pid=yes
+else
+  bfd_cv_have_sys_procfs_type_member_prpsinfo32_t_pr_pid=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+fi
+
+ if test $bfd_cv_have_sys_procfs_type_member_prpsinfo32_t_pr_pid = yes; then
+
+$as_echo "#define HAVE_PRPSINFO32_T_PR_PID 1" >>confdefs.h
+
+ fi
+ { $as_echo "$as_me:${as_lineno-$LINENO}: result: $bfd_cv_have_sys_procfs_type_member_prpsinfo32_t_pr_pid" >&5
+$as_echo "$bfd_cv_have_sys_procfs_type_member_prpsinfo32_t_pr_pid" >&6; }
 
 
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for psinfo_t in sys/procfs.h" >&5
@@ -23128,6 +24229,35 @@ $as_echo "#define HAVE_PSINFO_T 1" >>confdefs.h
 $as_echo "$bfd_cv_have_sys_procfs_type_psinfo_t" >&6; }
 
 
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for psinfo_t.pr_pid in sys/procfs.h" >&5
+$as_echo_n "checking for psinfo_t.pr_pid in sys/procfs.h... " >&6; }
+ if ${bfd_cv_have_sys_procfs_type_member_psinfo_t_pr_pid+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#define _SYSCALL32
+#include <sys/procfs.h>
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  bfd_cv_have_sys_procfs_type_member_psinfo_t_pr_pid=yes
+else
+  bfd_cv_have_sys_procfs_type_member_psinfo_t_pr_pid=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+fi
+
+ if test $bfd_cv_have_sys_procfs_type_member_psinfo_t_pr_pid = yes; then
+
+$as_echo "#define HAVE_PSINFO_T_PR_PID 1" >>confdefs.h
+
+ fi
+ { $as_echo "$as_me:${as_lineno-$LINENO}: result: $bfd_cv_have_sys_procfs_type_member_psinfo_t_pr_pid" >&5
+$as_echo "$bfd_cv_have_sys_procfs_type_member_psinfo_t_pr_pid" >&6; }
+
+
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for psinfo32_t in sys/procfs.h" >&5
 $as_echo_n "checking for psinfo32_t in sys/procfs.h... " >&6; }
  if ${bfd_cv_have_sys_procfs_type_psinfo32_t+:} false; then :
@@ -23155,6 +24285,35 @@ $as_echo "#define HAVE_PSINFO32_T 1" >>confdefs.h
  fi
  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $bfd_cv_have_sys_procfs_type_psinfo32_t" >&5
 $as_echo "$bfd_cv_have_sys_procfs_type_psinfo32_t" >&6; }
+
+
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for psinfo32_t.pr_pid in sys/procfs.h" >&5
+$as_echo_n "checking for psinfo32_t.pr_pid in sys/procfs.h... " >&6; }
+ if ${bfd_cv_have_sys_procfs_type_member_psinfo32_t_pr_pid+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#define _SYSCALL32
+#include <sys/procfs.h>
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  bfd_cv_have_sys_procfs_type_member_psinfo32_t_pr_pid=yes
+else
+  bfd_cv_have_sys_procfs_type_member_psinfo32_t_pr_pid=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+fi
+
+ if test $bfd_cv_have_sys_procfs_type_member_psinfo32_t_pr_pid = yes; then
+
+$as_echo "#define HAVE_PSINFO32_T_PR_PID 1" >>confdefs.h
+
+ fi
+ { $as_echo "$as_me:${as_lineno-$LINENO}: result: $bfd_cv_have_sys_procfs_type_member_psinfo32_t_pr_pid" >&5
+$as_echo "$bfd_cv_have_sys_procfs_type_member_psinfo32_t_pr_pid" >&6; }
 
 
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for lwpstatus_t in sys/procfs.h" >&5
@@ -23305,6 +24464,13 @@ $as_echo "$bfd_cv_have_sys_procfs_type_win32_pstatus_t" >&6; }
 fi
 
 
+if test -n "${CORE_HEADER}"; then
+
+cat >>confdefs.h <<_ACEOF
+#define CORE_HEADER ${CORE_HEADER}
+_ACEOF
+
+fi
 if test -n "${TRAD_HEADER}"; then
 
 cat >>confdefs.h <<_ACEOF
@@ -23313,16 +24479,16 @@ _ACEOF
 
 fi
 
-# Check if linker supports --as-needed and --no-as-needed options
+# Check if linker supports --as-needed and --no-as-needed options:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking linker --as-needed support" >&5
 $as_echo_n "checking linker --as-needed support... " >&6; }
 if ${bfd_cv_ld_as_needed+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   bfd_cv_ld_as_needed=no
-	if ${LD} --help 2>/dev/null | grep as-needed > /dev/null; then
-		bfd_cv_ld_as_needed=yes
-	fi
+ if ${LD} --help 2>/dev/null | grep as-needed > /dev/null; then
+    bfd_cv_ld_as_needed=yes
+ fi
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $bfd_cv_ld_as_needed" >&5
@@ -23461,42 +24627,75 @@ esac
 
 
 
-# Horrible hacks to build DLLs on Windows.
+# When building a shared libbfd, link against the pic version of libiberty
+# so that apps that use libbfd will NOT need libiberty just to satisfy any
+# libbfd references.
+# We cannot do that if a pic libiberty is unavailable since including non-pic
+# code would insert text relocations into libbfd.
+# These are also horrible hacks to build DLLs on Windows.
 WIN32LDFLAGS=""
 WIN32LIBADD=""
+SHARED_LIBADD=""
+SHARED_LDFLAGS=""
 case "${host}" in
 *-*-cygwin*)
-  if test "${enable_shared}" = "yes"; then
+  if test "x${enable_shared}" = "xyes"; then
     WIN32LDFLAGS="-no-undefined"
+    SHARED_LDFLAGS="${WIN32LDFLAGS}"
     WIN32LIBADD="-L`pwd`/../libiberty -liberty -L`pwd`/../intl -lintl -lcygwin -lkernel32"
+    SHARED_LIBADD="${WIN32LIBADD}"
   fi
   ;;
 *-*-linux*)
   # We borrow WIN32LIBADD so that the shared libbfd will not depend on
   # libiberty.a.
   case "${host}" in
-  mips*-*-linux*)
-    # Linux/MIPS uses PIC by default.
-    if test "${enable_shared}" = "yes"; then
-      WIN32LIBADD="-L../libiberty -liberty"
-    fi
-    ;;
-  *)
-    x=`sed -n -e 's/^[ 	]*PICFLAG[ 	]*=[ 	]*//p' < ../libiberty/Makefile | sed -n '$p'`
-    if test -n "${x}"; then
-      WIN32LIBADD="-L../libiberty/pic -liberty"
-    fi
-  ;;
+    mips*-*-linux*)
+      # Linux/MIPS uses PIC by default.
+      if test "x${enable_shared}" = "xyes"; then
+        WIN32LIBADD="-L../libiberty -liberty"
+      fi
+      ;;
+    *)
+      x=`sed -n -e 's/^[ 	]*PICFLAG[ 	]*=[ 	]*//p' < ../libiberty/Makefile | sed -n '$p'`
+      if test -n "${x}"; then
+        WIN32LIBADD="-L../libiberty/pic -liberty"
+        SHARED_LIBADD="-L`pwd`/../libiberty/pic -liberty"
+      fi
+      ;;
   esac
   ;;
+# Hack to build or1k-src on OSX:
+or1k*-*-darwin*)
+  if test "x${enable_shared}" = "xyes"; then
+    SHARED_LIBADD="-L`pwd`/../libiberty/pic -L`pwd`/../intl -liberty -lintl"
+  fi
+  ;;
+*)
+  if test "x${enable_shared}" = "xyes"; then
+    if test -n "${SHARED_LIBADD}"; then
+      if test -n "${LIBM}"; then
+        if test x"${bfd_cv_ld_as_needed}" = x"yes"; then
+	  # Link against libm only when needed.  Put -lc, -lm inside -Wl
+	  # to stop libtool reordering these options.
+	  SHARED_LIBADD="${SHARED_LIBADD} -Wl,-lc,--as-needed,`echo ${LIBM} | sed 's/ /,/g'`,--no-as-needed"
+        else
+	  SHARED_LIBADD="${SHARED_LIBADD} ${LIBM}"
+        fi
+      fi
+    fi
+  fi
+  ;;
 esac
+
+
 
 
 
 # target stuff:
 
 # Canonicalize the secondary target names.
-if test -n "${enable_targets}" ; then
+if test -n "${enable_targets}"; then
     for targ in `echo ${enable_targets} | sed 's/,/ /g'`
     do
 	result=`${ac_config_sub} ${targ} 2>/dev/null`
@@ -23521,9 +24720,9 @@ do
         all_targets=true
 	assocvecs="${assocvecs} ${targ_defvec} ${targ_selvecs}"
     else
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: sourcing ./config.bfd" >&5
-$as_echo "$as_me: sourcing ./config.bfd" >&6;}
-	. $srcdir/config.bfd
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: sourcing ${srcdir}/config.bfd" >&5
+$as_echo "$as_me: sourcing ${srcdir}/config.bfd" >&6;}
+	. ${srcdir}/config.bfd
 	if test "x${targ}" = "x${target}"; then
 	    defvec=${targ_defvec}
 	fi
@@ -23541,8 +24740,10 @@ done
 # requested, and no "--with-64-bit-bfd" option is given, even if
 # "--enable-targets=all" is used.
 
-# Extract the first word of "uniq guniq", so it can be a program name with args.
-set dummy uniq guniq; ac_word=$2
+for ac_prog in uniq guniq
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
 if ${ac_cv_path_UNIQ_BIN+:} false; then :
@@ -23581,6 +24782,9 @@ $as_echo "no" >&6; }
 fi
 
 
+  test -n "$UNIQ_BIN" && break
+done
+
 # uniq the default and selected vectors in all the configured targets.
 f=""
 for i in ${selvecs} ; do
@@ -23593,7 +24797,7 @@ selvecs="${f}"
 
 # uniq the associated vectors in all the configured targets.
 f=""
-for i in ${assocvecs} ; do
+for i in ${assocvecs}; do
     case " ${f} " in
     *" ${i} "*) ;;
     *) f="${f} ${i}" ;;
@@ -23603,7 +24807,7 @@ assocvecs="${f}"
 
 # uniq the architectures in all the configured targets.
 f=""
-for i in ${selarchs} ; do
+for i in ${selarchs}; do
     case " ${f} " in
     *" ${i} "*) ;;
     *) f="${f} ${i}" ;;
@@ -23612,9 +24816,9 @@ done
 selarchs="${f}"
 
 # Target backend .o files.
-tb=
+tb=""
 
-elf="elf.lo elflink.lo elf-strtab.lo elf-eh-frame.lo dwarf1.lo"
+elf="elf.lo elflink.lo elf-attrs.lo elf-strtab.lo elf-eh-frame.lo dwarf1.lo"
 
 for vec in ${selvecs}
 do
@@ -23623,271 +24827,577 @@ do
     # This list is alphabetized to make it easy to compare
     # with the two vector lists in targets.c. For the same reason,
     # use one entry per line, even though this leads to long lines.
-    a29kcoff_big_vec)		tb="${tb} coff-a29k.lo cofflink.lo" ;;
-    a_out_adobe_vec)		tb="${tb} aout-adobe.lo aout32.lo" ;;
-    aix5coff64_vec)		tb="${tb} coff64-rs6000.lo xcofflink.lo aix5ppc-core.lo"; target_size=64 ;;
-    aout0_big_vec)		tb="${tb} aout0.lo aout32.lo" ;;
-    aout_arm_big_vec)		tb="${tb} aout-arm.lo aout32.lo" ;;
-    aout_arm_little_vec)	tb="${tb} aout-arm.lo aout32.lo" ;;
-    apollocoff_vec)		tb="${tb} coff-apollo.lo" ;;
-    arm_epoc_pe_big_vec)	tb="${tb} epoc-pe-arm.lo peigen.lo cofflink.lo " ;;
-    arm_epoc_pe_little_vec)	tb="${tb} epoc-pe-arm.lo peigen.lo cofflink.lo " ;;
-    arm_epoc_pei_big_vec)	tb="${tb} epoc-pei-arm.lo peigen.lo cofflink.lo " ;;
-    arm_epoc_pei_little_vec)	tb="${tb} epoc-pei-arm.lo peigen.lo cofflink.lo " ;;
-    armcoff_big_vec)		tb="${tb} coff-arm.lo cofflink.lo " ;;
-    armcoff_little_vec)		tb="${tb} coff-arm.lo cofflink.lo " ;;
-    armnetbsd_vec)		tb="${tb} armnetbsd.lo aout32.lo" ;;
-    armpe_big_vec)		tb="${tb} pe-arm.lo peigen.lo cofflink.lo " ;;
-    armpe_little_vec)		tb="${tb} pe-arm.lo peigen.lo cofflink.lo " ;;
-    armpei_big_vec)		tb="${tb} pei-arm.lo peigen.lo cofflink.lo " ;;
-    armpei_little_vec)		tb="${tb} pei-arm.lo peigen.lo cofflink.lo " ;;
-    b_out_vec_big_host)		tb="${tb} bout.lo aout32.lo" ;;
-    b_out_vec_little_host)	tb="${tb} bout.lo aout32.lo" ;;
-    bfd_efi_app_ia32_vec)	tb="${tb} efi-app-ia32.lo peigen.lo cofflink.lo" ;;
-    bfd_efi_app_ia64_vec)	tb="${tb} efi-app-ia64.lo pepigen.lo cofflink.lo"; target_size=64 ;;
-    bfd_elf32_am33lin_vec)	tb="${tb} elf32-am33lin.lo elf32.lo ${elf}" ;;
-    bfd_elf32_avr_vec)		tb="${tb} elf32-avr.lo elf32.lo ${elf}" ;;
-    bfd_elf32_big_generic_vec) 	tb="${tb} elf32-gen.lo elf32.lo ${elf}" ;;
-    bfd_elf32_bigarc_vec)	tb="${tb} elf32-arc.lo elf32.lo ${elf}" ;;
-    bfd_elf32_bigarm_vec)	tb="${tb} elf32-arm.lo elf32.lo ${elf}" ;;
+    a29kcoff_big_vec) tb="${tb} coff-a29k.lo cofflink.lo" ;;
+    a_out_adobe_vec) tb="${tb} aout-adobe.lo aout32.lo" ;;
+    aarch64_elf32_be_vec) tb="${tb} elf32-aarch64.lo elfxx-aarch64.lo elf-ifunc.lo elf32.lo ${elf}"; target_size=64 ;;
+    aarch64_elf32_le_vec) tb="${tb} elf32-aarch64.lo elfxx-aarch64.lo elf-ifunc.lo elf32.lo ${elf}"; target_size=64 ;;
+    aarch64_elf64_be_vec) tb="${tb} elf64-aarch64.lo elfxx-aarch64.lo elf-ifunc.lo elf64.lo ${elf}"; target_size=64 ;;
+    aarch64_elf64_le_vec) tb="${tb} elf64-aarch64.lo elfxx-aarch64.lo elf-ifunc.lo elf64.lo ${elf}"; target_size=64 ;;
+    aix5coff64_vec) tb="${tb} coff64-rs6000.lo xcofflink.lo aix5ppc-core.lo"; target_size=64 ;;
+    alpha_ecoff_le_vec) tb="${tb} coff-alpha.lo ecoff.lo ecofflink.lo"; target_size=64 ;;
+    alpha_elf64_vec) tb="${tb} elf64-alpha.lo elf64.lo $elf"; target_size=64 ;;
+    alpha_elf64_fbsd_vec) tb="${tb} elf64-alpha.lo elf64.lo $elf"; target_size=64 ;;
+    alpha_nlm32_vec) tb="${tb} nlm32-alpha.lo nlm32.lo nlm.lo"; target_size=64 ;;
+    alpha_vms_vec) tb="${tb} vms-alpha.lo vms-misc.lo vms-lib.lo"; target_size=64 ;;
+    alpha_vms_lib_txt_vec) tb="${tb} vms-lib.lo vms-misc.lo" ;;
+    am33_elf32_linux_vec) tb="${tb} elf32-am33lin.lo elf32.lo ${elf}" ;;
+    aout0_be_vec) tb="${tb} aout0.lo aout32.lo" ;;
+    aout0_big_vec) tb="${tb} aout0.lo aout32.lo" ;;
+    aout64_vec) tb="${tb} demo64.lo aout64.lo"; target_size=64 ;;
+    aout_vec) tb="${tb} host-aout.lo aout32.lo" ;;
+    aout_adobe_vec) tb="${tb} aout-adobe.lo aout32.lo" ;;
+    aout_arm_big_vec) tb="${tb} aout-arm.lo aout32.lo" ;;
+    aout_arm_little_vec) tb="${tb} aout-arm.lo aout32.lo" ;;
+    apollocoff_vec) tb="${tb} coff-apollo.lo" ;;
+    arc_elf32_be_vec) tb="${tb} elf32-arc.lo elf32.lo ${elf}" ;;
+    arc_elf32_le_vec) tb="${tb} elf32-arc.lo elf32.lo ${elf}" ;;
+    arm_aout_be_vec) tb="${tb} aout-arm.lo aout32.lo" ;;
+    arm_aout_le_vec) tb="${tb} aout-arm.lo aout32.lo" ;;
+    arm_aout_nbsd_vec) tb="${tb} armnetbsd.lo aout32.lo" ;;
+    arm_aout_riscix_vec) tb="${tb} aout32.lo riscix.lo" ;;
+    arm_coff_be_vec) tb="${tb} coff-arm.lo cofflink.lo " ;;
+    arm_coff_le_vec) tb="${tb} coff-arm.lo cofflink.lo " ;;
+    arm_elf32_be_vec) tb="${tb} elf32-arm.lo elf32.lo elf-nacl.lo elf-vxworks.lo ${elf}" ;;
+    arm_elf32_le_vec) tb="${tb} elf32-arm.lo elf32.lo elf-nacl.lo elf-vxworks.lo ${elf}" ;;
+    arm_elf32_nacl_be_vec) tb="${tb} elf32-arm.lo elf32.lo elf-nacl.lo elf-vxworks.lo ${elf}" ;;
+    arm_elf32_nacl_le_vec) tb="${tb} elf32-arm.lo elf32.lo elf-nacl.lo elf-vxworks.lo ${elf}" ;;
+    arm_elf32_symbian_be_vec) tb="${tb} elf32-arm.lo elf32.lo elf-nacl.lo elf-vxworks.lo ${elf}" ;;
+    arm_elf32_symbian_le_vec) tb="${tb} elf32-arm.lo elf32.lo elf-nacl.lo elf-vxworks.lo ${elf}" ;;
+    arm_elf32_vxworks_be_vec) tb="${tb} elf32-arm.lo elf32.lo elf-nacl.lo elf-vxworks.lo ${elf}" ;;
+    arm_elf32_vxworks_le_vec) tb="${tb} elf32-arm.lo elf32.lo elf-nacl.lo elf-vxworks.lo ${elf}" ;;
+    arm_epoc_pe_big_vec) tb="${tb} epoc-pe-arm.lo peigen.lo cofflink.lo " ;;
+    arm_epoc_pe_little_vec) tb="${tb} epoc-pe-arm.lo peigen.lo cofflink.lo " ;;
+    arm_epoc_pei_big_vec) tb="${tb} epoc-pei-arm.lo peigen.lo cofflink.lo " ;;
+    arm_epoc_pei_little_vec) tb="${tb} epoc-pei-arm.lo peigen.lo cofflink.lo " ;;
+    arm_pe_be_vec) tb="${tb} pe-arm.lo peigen.lo cofflink.lo " ;;
+    arm_pe_le_vec) tb="${tb} pe-arm.lo peigen.lo cofflink.lo " ;;
+    arm_pe_epoc_be_vec) tb="${tb} epoc-pe-arm.lo peigen.lo cofflink.lo " ;;
+    arm_pe_epoc_le_vec) tb="${tb} epoc-pe-arm.lo peigen.lo cofflink.lo " ;;
+    arm_pe_wince_be_vec) tb="${tb} pe-arm-wince.lo pe-arm.lo peigen.lo cofflink.lo " ;;
+    arm_pe_wince_le_vec) tb="${tb} pe-arm-wince.lo pe-arm.lo peigen.lo cofflink.lo " ;;
+    arm_pei_be_vec) tb="${tb} pei-arm.lo peigen.lo cofflink.lo " ;;
+    arm_pei_le_vec) tb="${tb} pei-arm.lo peigen.lo cofflink.lo " ;;
+    arm_pei_epoc_be_vec) tb="${tb} epoc-pei-arm.lo peigen.lo cofflink.lo " ;;
+    arm_pei_epoc_le_vec) tb="${tb} epoc-pei-arm.lo peigen.lo cofflink.lo " ;;
+    arm_pei_wince_be_vec) tb="${tb} pei-arm-wince.lo pei-arm.lo peigen.lo cofflink.lo " ;;
+    arm_pei_wince_le_vec) tb="${tb} pei-arm-wince.lo pei-arm.lo peigen.lo cofflink.lo " ;;
+    armcoff_big_vec) tb="${tb} coff-arm.lo cofflink.lo " ;;
+    armcoff_little_vec) tb="${tb} coff-arm.lo cofflink.lo " ;;
+    armnetbsd_vec) tb="${tb} armnetbsd.lo aout32.lo" ;;
+    armpe_big_vec) tb="${tb} pe-arm.lo peigen.lo cofflink.lo " ;;
+    armpe_little_vec) tb="${tb} pe-arm.lo peigen.lo cofflink.lo " ;;
+    armpei_big_vec) tb="${tb} pei-arm.lo peigen.lo cofflink.lo " ;;
+    armpei_little_vec) tb="${tb} pei-arm.lo peigen.lo cofflink.lo " ;;
+    avr_elf32_vec) tb="${tb} elf32-avr.lo elf32.lo ${elf}" ;;
+    b_out_vec_big_host) tb="${tb} bout.lo aout32.lo" ;;
+    b_out_vec_little_host) tb="${tb} bout.lo aout32.lo" ;;
+    bfd_efi_app_ia32_vec) tb="${tb} efi-app-ia32.lo peigen.lo cofflink.lo" ;;
+    bfd_efi_app_ia64_vec) tb="${tb} efi-app-ia64.lo pepigen.lo cofflink.lo"; target_size=64 ;;
+    bfd_elf32_am33lin_vec) tb="${tb} elf32-am33lin.lo elf32.lo ${elf}" ;;
+    bfd_elf32_avr_vec) tb="${tb} elf32-avr.lo elf32.lo ${elf}" ;;
+    bfd_elf32_big_generic_vec) tb="${tb} elf32-gen.lo elf32.lo ${elf}" ;;
+    bfd_elf32_bigarc_vec) tb="${tb} elf32-arc.lo elf32.lo ${elf}" ;;
+    bfd_elf32_bigarm_vec) tb="${tb} elf32-arm.lo elf32.lo ${elf}" ;;
     bfd_elf32_bigarm_symbian_vec)
                                 tb="${tb} elf32-arm.lo elf32.lo ${elf}" ;;
     bfd_elf32_bigarm_vxworks_vec)
                                 tb="${tb} elf32-arm.lo elf32.lo ${elf}" ;;
-    bfd_elf32_bigmips_vec) 	tb="${tb} elf32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo" ;;
-    bfd_elf32_cr16c_vec)	tb="${tb} elf32-cr16c.lo elf32.lo ${elf}" ;;
-    bfd_elf32_cris_vec)		tb="${tb} elf32-cris.lo elf32.lo ${elf}" ;;
-    bfd_elf32_crx_vec)          tb="${tb} elf32-crx.lo elf32.lo ${elf}" ;;
-    bfd_elf32_d10v_vec)		tb="${tb} elf32-d10v.lo elf32.lo ${elf}" ;;
-    bfd_elf32_d30v_vec)		tb="${tb} elf32-d30v.lo elf32.lo ${elf}" ;;
-    bfd_elf32_dlx_big_vec)	tb="${tb} elf32-dlx.lo elf32.lo ${elf}" ;;
-    bfd_elf32_fr30_vec)		tb="${tb} elf32-fr30.lo elf32.lo ${elf}" ;;
-    bfd_elf32_frv_vec)		tb="${tb} elf32-frv.lo elf32.lo ${elf}" ;;
-    bfd_elf32_frvfdpic_vec)	tb="${tb} elf32-frv.lo elf32.lo ${elf}" ;;
-    bfd_elf32_h8300_vec)	tb="${tb} elf32-h8300.lo elf32.lo ${elf}" ;;
-    bfd_elf32_hppa_linux_vec)	tb="${tb} elf32-hppa.lo elf32.lo ${elf}" ;;
-    bfd_elf32_hppa_nbsd_vec)	tb="${tb} elf32-hppa.lo elf32.lo ${elf}" ;;
-    bfd_elf32_hppa_vec)		tb="${tb} elf32-hppa.lo elf32.lo ${elf}" ;;
-    bfd_elf32_i370_vec)		tb="${tb} elf32-i370.lo elf32.lo ${elf}" ;;
-    bfd_elf32_i386_freebsd_vec)	tb="${tb} elf32-i386.lo elf-vxworks.lo elf32.lo ${elf}" ;;
-    bfd_elf32_i386_vxworks_vec)	tb="${tb} elf32-i386.lo elf-vxworks.lo elf32.lo ${elf}" ;;
-    bfd_elf32_i386_vec)		tb="${tb} elf32-i386.lo elf-vxworks.lo elf32.lo ${elf}" ;;
-    bfd_elf32_i860_little_vec)	tb="${tb} elf32-i860.lo elf32.lo ${elf}" ;;
-    bfd_elf32_i860_vec)		tb="${tb} elf32-i860.lo elf32.lo ${elf}" ;;
-    bfd_elf32_i960_vec)		tb="${tb} elf32-i960.lo elf32.lo ${elf}" ;;
-    bfd_elf32_ia64_big_vec)	tb="${tb} elf32-ia64.lo elf32.lo ${elf}" ;;
+    bfd_elf32_bigmips_vec) tb="${tb} elf32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo" ;;
+    bfd_elf32_cr16c_vec) tb="${tb} elf32-cr16c.lo elf32.lo ${elf}" ;;
+    bfd_elf32_cris_vec) tb="${tb} elf32-cris.lo elf32.lo ${elf}" ;;
+    bfd_elf32_crx_vec) tb="${tb} elf32-crx.lo elf32.lo ${elf}" ;;
+    bfd_elf32_d10v_vec) tb="${tb} elf32-d10v.lo elf32.lo ${elf}" ;;
+    bfd_elf32_d30v_vec) tb="${tb} elf32-d30v.lo elf32.lo ${elf}" ;;
+    bfd_elf32_dlx_big_vec) tb="${tb} elf32-dlx.lo elf32.lo ${elf}" ;;
+    bfd_elf32_fr30_vec) tb="${tb} elf32-fr30.lo elf32.lo ${elf}" ;;
+    bfd_elf32_frv_vec) tb="${tb} elf32-frv.lo elf32.lo ${elf}" ;;
+    bfd_elf32_frvfdpic_vec) tb="${tb} elf32-frv.lo elf32.lo ${elf}" ;;
+    bfd_elf32_h8300_vec) tb="${tb} elf32-h8300.lo elf32.lo ${elf}" ;;
+    bfd_elf32_hppa_linux_vec) tb="${tb} elf32-hppa.lo elf32.lo ${elf}" ;;
+    bfd_elf32_hppa_nbsd_vec) tb="${tb} elf32-hppa.lo elf32.lo ${elf}" ;;
+    bfd_elf32_hppa_vec) tb="${tb} elf32-hppa.lo elf32.lo ${elf}" ;;
+    bfd_elf32_i370_vec) tb="${tb} elf32-i370.lo elf32.lo ${elf}" ;;
+    bfd_elf32_i386_freebsd_vec) tb="${tb} elf32-i386.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    bfd_elf32_i386_vxworks_vec) tb="${tb} elf32-i386.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    bfd_elf32_i386_vec) tb="${tb} elf32-i386.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    bfd_elf32_i860_little_vec) tb="${tb} elf32-i860.lo elf32.lo ${elf}" ;;
+    bfd_elf32_i860_vec) tb="${tb} elf32-i860.lo elf32.lo ${elf}" ;;
+    bfd_elf32_i960_vec) tb="${tb} elf32-i960.lo elf32.lo ${elf}" ;;
+    bfd_elf32_ia64_big_vec) tb="${tb} elf32-ia64.lo elf32.lo ${elf}" ;;
     bfd_elf32_ia64_hpux_big_vec) tb="${tb} elf32-ia64.lo elf32.lo ${elf}";;
-    bfd_elf32_ip2k_vec)		tb="${tb} elf32-ip2k.lo elf32.lo ${elf}" ;;
-    bfd_elf32_iq2000_vec)       tb="${tb} elf32-iq2000.lo elf32.lo ${elf}" ;;
+    bfd_elf32_ip2k_vec) tb="${tb} elf32-ip2k.lo elf32.lo ${elf}" ;;
+    bfd_elf32_iq2000_vec) tb="${tb} elf32-iq2000.lo elf32.lo ${elf}" ;;
     bfd_elf32_little_generic_vec) tb="${tb} elf32-gen.lo elf32.lo ${elf}" ;;
-    bfd_elf32_littlearc_vec)	tb="${tb} elf32-arc.lo elf32.lo ${elf}" ;;
+    bfd_elf32_littlearc_vec) tb="${tb} elf32-arc.lo elf32.lo ${elf}" ;;
     bfd_elf32_littlearm_symbian_vec)
                                 tb="${tb} elf32-arm.lo elf32.lo ${elf}" ;;
     bfd_elf32_littlearm_vxworks_vec)
                                 tb="${tb} elf32-arm.lo elf32.lo ${elf}" ;;
-    bfd_elf32_littlearm_vec)	tb="${tb} elf32-arm.lo elf32.lo ${elf}" ;;
-    bfd_elf32_littlemips_vec) 	tb="${tb} elf32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo" ;;
-    bfd_elf32_m32c_vec)         tb="${tb} elf32-m32c.lo elf32.lo ${elf}" ;;
-    bfd_elf32_m32r_vec)		tb="${tb} elf32-m32r.lo elf32.lo ${elf}" ;;
-    bfd_elf32_m32rle_vec)       tb="${tb} elf32-m32r.lo elf32.lo ${elf}" ;;
-    bfd_elf32_m32rlin_vec)      tb="${tb} elf32-m32r.lo elf32.lo ${elf}" ;;
-    bfd_elf32_m32rlelin_vec)    tb="${tb} elf32-m32r.lo elf32.lo ${elf}" ;;
-    bfd_elf32_m68hc11_vec)	tb="${tb} elf32-m68hc11.lo elf32-m68hc1x.lo elf32.lo ${elf}" ;;
-    bfd_elf32_m68hc12_vec)	tb="${tb} elf32-m68hc12.lo elf32-m68hc1x.lo elf32.lo ${elf}" ;;
-    bfd_elf32_m68k_vec)		tb="${tb} elf32-m68k.lo elf32.lo ${elf}" ;;
-    bfd_elf32_m88k_vec)		tb="${tb} elf32-m88k.lo elf32.lo ${elf}" ;;
-    bfd_elf32_mcore_big_vec)	tb="${tb} elf32-mcore.lo elf32.lo ${elf}" ;;
-    bfd_elf32_mcore_little_vec)	tb="${tb} elf32-mcore.lo elf32.lo ${elf}" ;;
-    bfd_elf32_mn10200_vec)	tb="${tb} elf-m10200.lo elf32.lo ${elf}" ;;
-    bfd_elf32_mn10300_vec)	tb="${tb} elf-m10300.lo elf32.lo ${elf}" ;;
-    bfd_elf32_ms1_vec)          tb="${tb} elf32-ms1.lo elf32.lo ${elf}" ;;
-    bfd_elf32_msp430_vec)	tb="${tb} elf32-msp430.lo elf32.lo ${elf}" ;;
-    bfd_elf32_nbigmips_vec)	tb="${tb} elfn32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
-    bfd_elf32_nlittlemips_vec)	tb="${tb} elfn32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
-    bfd_elf32_ntradbigmips_vec)	tb="${tb} elfn32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    bfd_elf32_littlearm_vec) tb="${tb} elf32-arm.lo elf32.lo ${elf}" ;;
+    bfd_elf32_littlemips_vec) tb="${tb} elf32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo" ;;
+    bfd_elf32_m32c_vec) tb="${tb} elf32-m32c.lo elf32.lo ${elf}" ;;
+    bfd_elf32_m32r_vec) tb="${tb} elf32-m32r.lo elf32.lo ${elf}" ;;
+    bfd_elf32_m32rle_vec) tb="${tb} elf32-m32r.lo elf32.lo ${elf}" ;;
+    bfd_elf32_m32rlin_vec) tb="${tb} elf32-m32r.lo elf32.lo ${elf}" ;;
+    bfd_elf32_m32rlelin_vec) tb="${tb} elf32-m32r.lo elf32.lo ${elf}" ;;
+    bfd_elf32_m68hc11_vec) tb="${tb} elf32-m68hc11.lo elf32-m68hc1x.lo elf32.lo ${elf}" ;;
+    bfd_elf32_m68hc12_vec) tb="${tb} elf32-m68hc12.lo elf32-m68hc1x.lo elf32.lo ${elf}" ;;
+    bfd_elf32_m68k_vec) tb="${tb} elf32-m68k.lo elf32.lo ${elf}" ;;
+    bfd_elf32_m88k_vec) tb="${tb} elf32-m88k.lo elf32.lo ${elf}" ;;
+    bfd_elf32_mcore_big_vec) tb="${tb} elf32-mcore.lo elf32.lo ${elf}" ;;
+    bfd_elf32_mcore_little_vec) tb="${tb} elf32-mcore.lo elf32.lo ${elf}" ;;
+    bfd_elf32_mn10200_vec) tb="${tb} elf-m10200.lo elf32.lo ${elf}" ;;
+    bfd_elf32_mn10300_vec) tb="${tb} elf-m10300.lo elf32.lo ${elf}" ;;
+    bfd_elf32_ms1_vec) tb="${tb} elf32-ms1.lo elf32.lo ${elf}" ;;
+    bfd_elf32_msp430_vec) tb="${tb} elf32-msp430.lo elf32.lo ${elf}" ;;
+    bfd_elf32_nbigmips_vec) tb="${tb} elfn32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    bfd_elf32_nlittlemips_vec) tb="${tb} elfn32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    bfd_elf32_ntradbigmips_vec) tb="${tb} elfn32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
     bfd_elf32_ntradlittlemips_vec) tb="${tb} elfn32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
-    bfd_elf32_openrisc_vec)	tb="${tb} elf32-openrisc.lo elf32.lo ${elf}" ;;
-    bfd_elf32_or32_big_vec)	tb="${tb} elf32-or32.lo elf32.lo ${elf}" ;;
-    bfd_elf32_pj_vec)           tb="${tb} elf32-pj.lo elf32.lo ${elf}";;
-    bfd_elf32_pjl_vec)          tb="${tb} elf32-pj.lo elf32.lo ${elf}";;
-    bfd_elf32_powerpc_vec)	tb="${tb} elf32-ppc.lo elf-vxworks.lo elf32.lo ${elf}" ;;
-    bfd_elf32_powerpcle_vec)	tb="${tb} elf32-ppc.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    bfd_elf32_openrisc_vec) tb="${tb} elf32-openrisc.lo elf32.lo ${elf}" ;;
+    bfd_elf32_or32_big_vec) tb="${tb} elf32-or32.lo elf32.lo ${elf}" ;;
+    bfd_elf32_pj_vec) tb="${tb} elf32-pj.lo elf32.lo ${elf}";;
+    bfd_elf32_pjl_vec) tb="${tb} elf32-pj.lo elf32.lo ${elf}";;
+    bfd_elf32_powerpc_vec) tb="${tb} elf32-ppc.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    bfd_elf32_powerpcle_vec) tb="${tb} elf32-ppc.lo elf-vxworks.lo elf32.lo ${elf}" ;;
     bfd_elf32_powerpc_vxworks_vec) tb="${tb} elf32-ppc.lo elf-vxworks.lo elf32.lo ${elf}" ;;
-    bfd_elf32_s390_vec)		tb="${tb} elf32-s390.lo elf32.lo ${elf}" ;;
+    bfd_elf32_s390_vec) tb="${tb} elf32-s390.lo elf32.lo ${elf}" ;;
     # FIXME: We include cofflink.lo not because it is needed for
     # bfd_elf32_sh64[l]_vec, but because we include bfd_elf32_sh[l]_vec
     # which needs it but does not list it. Should be fixed in right place.
-    bfd_elf32_sh64_vec)		tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo ${elf} cofflink.lo" target_size=64 ;;
-    bfd_elf32_sh64l_vec)	tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo ${elf} cofflink.lo" target_size=64 ;;
-    bfd_elf32_sh64lin_vec)	tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo ${elf} cofflink.lo" target_size=64 ;;
-    bfd_elf32_sh64blin_vec)	tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo ${elf} cofflink.lo" target_size=64 ;;
-    bfd_elf32_sh64lnbsd_vec)	tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo ${elf} cofflink.lo" ;;
-    bfd_elf32_sh64nbsd_vec)	tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo ${elf} cofflink.lo" ;;
-    bfd_elf32_sh_vec)		tb="${tb} elf32-sh.lo elf32.lo ${elf} coff-sh.lo" ;;
-    bfd_elf32_shblin_vec)	tb="${tb} elf32-sh.lo elf32.lo ${elf} coff-sh.lo cofflink.lo" ;;
-    bfd_elf32_shl_vec)		tb="${tb} elf32-sh.lo elf32.lo ${elf} coff-sh.lo" ;;
-    bfd_elf32_shl_symbian_vec)	tb="${tb} elf32-sh-symbian.lo elf32-sh64-com.lo elf32.lo ${elf} coff-sh.lo" ;;
-    bfd_elf32_shlin_vec)	tb="${tb} elf32-sh.lo elf32.lo ${elf} coff-sh.lo cofflink.lo" ;;
-    bfd_elf32_shlnbsd_vec)	tb="${tb} elf32-sh.lo elf32.lo ${elf} coff-sh.lo cofflink.lo" ;;
-    bfd_elf32_shnbsd_vec)	tb="${tb} elf32-sh.lo elf32.lo ${elf} coff-sh.lo cofflink.lo" ;;
-    bfd_elf32_sparc_vec)	tb="${tb} elf32-sparc.lo elfxx-sparc.lo elf32.lo ${elf}" ;;
-    bfd_elf32_tradbigmips_vec)  tb="${tb} elf32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo" ;;
+    bfd_elf32_sh64_vec) tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo ${elf} cofflink.lo" target_size=64 ;;
+    bfd_elf32_sh64l_vec) tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo ${elf} cofflink.lo" target_size=64 ;;
+    bfd_elf32_sh64lin_vec) tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo ${elf} cofflink.lo" target_size=64 ;;
+    bfd_elf32_sh64blin_vec) tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo ${elf} cofflink.lo" target_size=64 ;;
+    bfd_elf32_sh64lnbsd_vec) tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo ${elf} cofflink.lo" ;;
+    bfd_elf32_sh64nbsd_vec) tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf32.lo ${elf} cofflink.lo" ;;
+    bfd_elf32_sh_vec) tb="${tb} elf32-sh.lo elf32.lo ${elf} coff-sh.lo" ;;
+    bfd_elf32_shblin_vec) tb="${tb} elf32-sh.lo elf32.lo ${elf} coff-sh.lo cofflink.lo" ;;
+    bfd_elf32_shl_vec) tb="${tb} elf32-sh.lo elf32.lo ${elf} coff-sh.lo" ;;
+    bfd_elf32_shl_symbian_vec) tb="${tb} elf32-sh-symbian.lo elf32-sh64-com.lo elf32.lo ${elf} coff-sh.lo" ;;
+    bfd_elf32_shlin_vec) tb="${tb} elf32-sh.lo elf32.lo ${elf} coff-sh.lo cofflink.lo" ;;
+    bfd_elf32_shlnbsd_vec) tb="${tb} elf32-sh.lo elf32.lo ${elf} coff-sh.lo cofflink.lo" ;;
+    bfd_elf32_shnbsd_vec) tb="${tb} elf32-sh.lo elf32.lo ${elf} coff-sh.lo cofflink.lo" ;;
+    bfd_elf32_sparc_vec) tb="${tb} elf32-sparc.lo elfxx-sparc.lo elf32.lo ${elf}" ;;
+    bfd_elf32_tradbigmips_vec) tb="${tb} elf32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo" ;;
     bfd_elf32_tradlittlemips_vec) tb="${tb} elf32-mips.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo" ;;
-    bfd_elf32_us_cris_vec)	tb="${tb} elf32-cris.lo elf32.lo ${elf}" ;;
-    bfd_elf32_v850_vec)		tb="${tb} elf32-v850.lo elf32.lo ${elf}" ;;
-    bfd_elf32_vax_vec)		tb="${tb} elf32-vax.lo elf32.lo ${elf}" ;;
-    bfd_elf32_xstormy16_vec)	tb="${tb} elf32-xstormy16.lo elf32.lo ${elf}" ;;
-    bfd_elf32_xtensa_le_vec)	tb="${tb} xtensa-isa.lo xtensa-modules.lo elf32-xtensa.lo elf32.lo ${elf}" ;;
-    bfd_elf32_xtensa_be_vec)	tb="${tb} xtensa-isa.lo xtensa-modules.lo elf32-xtensa.lo elf32.lo ${elf}" ;;
+    bfd_elf32_us_cris_vec) tb="${tb} elf32-cris.lo elf32.lo ${elf}" ;;
+    bfd_elf32_v850_vec) tb="${tb} elf32-v850.lo elf32.lo ${elf}" ;;
+    bfd_elf32_vax_vec) tb="${tb} elf32-vax.lo elf32.lo ${elf}" ;;
+    bfd_elf32_xstormy16_vec) tb="${tb} elf32-xstormy16.lo elf32.lo ${elf}" ;;
+    bfd_elf32_xtensa_le_vec) tb="${tb} xtensa-isa.lo xtensa-modules.lo elf32-xtensa.lo elf32.lo ${elf}" ;;
+    bfd_elf32_xtensa_be_vec) tb="${tb} xtensa-isa.lo xtensa-modules.lo elf32-xtensa.lo elf32.lo ${elf}" ;;
     bfd_elf64_alpha_freebsd_vec) tb="${tb} elf64-alpha.lo elf64.lo ${elf}"; target_size=64 ;;
-    bfd_elf64_alpha_vec)	tb="${tb} elf64-alpha.lo elf64.lo ${elf}"; target_size=64 ;;
-    bfd_elf64_big_generic_vec) 	tb="${tb} elf64-gen.lo elf64.lo ${elf}"; target_size=64 ;;
-    bfd_elf64_bigmips_vec) 	tb="${tb} elf64-mips.lo elf64.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
-    bfd_elf64_hppa_linux_vec)	tb="${tb} elf64-hppa.lo elf64.lo ${elf}"; target_size=64 ;;
-    bfd_elf64_hppa_vec)		tb="${tb} elf64-hppa.lo elf64.lo ${elf}"; target_size=64 ;;
-    bfd_elf64_ia64_big_vec)	tb="${tb} elf64-ia64.lo elf64.lo ${elf}"; target_size=64 ;;
+    bfd_elf64_alpha_vec) tb="${tb} elf64-alpha.lo elf64.lo ${elf}"; target_size=64 ;;
+    bfd_elf64_big_generic_vec) tb="${tb} elf64-gen.lo elf64.lo ${elf}"; target_size=64 ;;
+    bfd_elf64_bigmips_vec) tb="${tb} elf64-mips.lo elf64.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    bfd_elf64_hppa_linux_vec) tb="${tb} elf64-hppa.lo elf64.lo ${elf}"; target_size=64 ;;
+    bfd_elf64_hppa_vec) tb="${tb} elf64-hppa.lo elf64.lo ${elf}"; target_size=64 ;;
+    bfd_elf64_ia64_big_vec) tb="${tb} elf64-ia64.lo elf64.lo ${elf}"; target_size=64 ;;
     bfd_elf64_ia64_hpux_big_vec) tb="${tb} elf64-ia64.lo elf64.lo ${elf}"; target_size=64 ;;
-    bfd_elf64_ia64_little_vec)	tb="${tb} elf64-ia64.lo elf64.lo ${elf}"; target_size=64 ;;
+    bfd_elf64_ia64_little_vec) tb="${tb} elf64-ia64.lo elf64.lo ${elf}"; target_size=64 ;;
     bfd_elf64_little_generic_vec) tb="${tb} elf64-gen.lo elf64.lo ${elf}"; target_size=64 ;;
-    bfd_elf64_littlemips_vec) 	tb="${tb} elf64-mips.lo elf64.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
-    bfd_elf64_mmix_vec) 	tb="${tb} elf64-mmix.lo elf64.lo ${elf}" target_size=64 ;;
-    bfd_elf64_powerpc_vec)	tb="${tb} elf64-ppc.lo elf64-gen.lo elf64.lo ${elf}"; target_size=64 ;;
-    bfd_elf64_powerpcle_vec)	tb="${tb} elf64-ppc.lo elf64-gen.lo elf64.lo ${elf}" target_size=64 ;;
-    bfd_elf64_s390_vec)		tb="${tb} elf64-s390.lo elf64.lo ${elf}"; target_size=64 ;;
-    bfd_elf64_sh64_vec)		tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
-    bfd_elf64_sh64l_vec)	tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
-    bfd_elf64_sh64lin_vec)	tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
-    bfd_elf64_sh64blin_vec)	tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
-    bfd_elf64_sh64lnbsd_vec)	tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
-    bfd_elf64_sh64nbsd_vec)	tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
-    bfd_elf64_sparc_vec)	tb="${tb} elf64-sparc.lo elfxx-sparc.lo elf64.lo ${elf}"; target_size=64 ;;
-    bfd_elf64_tradbigmips_vec)	tb="${tb} elf64-mips.lo elf64.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    bfd_elf64_littlemips_vec) tb="${tb} elf64-mips.lo elf64.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    bfd_elf64_mmix_vec) tb="${tb} elf64-mmix.lo elf64.lo ${elf}" target_size=64 ;;
+    bfd_elf64_powerpc_vec) tb="${tb} elf64-ppc.lo elf64-gen.lo elf64.lo ${elf}"; target_size=64 ;;
+    bfd_elf64_powerpcle_vec) tb="${tb} elf64-ppc.lo elf64-gen.lo elf64.lo ${elf}" target_size=64 ;;
+    bfd_elf64_s390_vec) tb="${tb} elf64-s390.lo elf64.lo ${elf}"; target_size=64 ;;
+    bfd_elf64_sh64_vec) tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
+    bfd_elf64_sh64l_vec) tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
+    bfd_elf64_sh64lin_vec) tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
+    bfd_elf64_sh64blin_vec) tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
+    bfd_elf64_sh64lnbsd_vec) tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
+    bfd_elf64_sh64nbsd_vec) tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
+    bfd_elf64_sparc_vec) tb="${tb} elf64-sparc.lo elfxx-sparc.lo elf64.lo ${elf}"; target_size=64 ;;
+    bfd_elf64_tradbigmips_vec) tb="${tb} elf64-mips.lo elf64.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
     bfd_elf64_tradlittlemips_vec) tb="${tb} elf64-mips.lo elf64.lo elfxx-mips.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
-    bfd_elf64_x86_64_vec)	tb="${tb} elf64-x86-64.lo elf64.lo ${elf}"; target_size=64 ;;
-    bfd_mmo_vec)		tb="${tb} mmo.lo" target_size=64 ;;
-    bfd_powerpc_pe_vec)         tb="${tb} pe-ppc.lo peigen.lo cofflink.lo" ;;
-    bfd_powerpc_pei_vec)        tb="${tb} pei-ppc.lo peigen.lo cofflink.lo" ;;
-    bfd_powerpcle_pe_vec)       tb="${tb} pe-ppc.lo peigen.lo cofflink.lo" ;;
-    bfd_powerpcle_pei_vec)      tb="${tb} pei-ppc.lo peigen.lo cofflink.lo" ;;
-    cris_aout_vec)		tb="${tb} aout-cris.lo" ;;
-    demo_64_vec)		tb="${tb} demo64.lo aout64.lo"; target_size=64 ;;
-    ecoff_big_vec)		tb="${tb} coff-mips.lo ecoff.lo ecofflink.lo" ;;
-    ecoff_biglittle_vec)	tb="${tb} coff-mips.lo ecoff.lo ecofflink.lo" ;;
-    ecoff_little_vec)		tb="${tb} coff-mips.lo ecoff.lo ecofflink.lo" ;;
-    ecoffalpha_little_vec)	tb="${tb} coff-alpha.lo ecoff.lo ecofflink.lo"; target_size=64 ;;
-    go32coff_vec)		tb="${tb} coff-go32.lo cofflink.lo" ;;
-    go32stubbedcoff_vec)	tb="${tb} coff-stgo32.lo cofflink.lo" ;;
-    h8300coff_vec)		tb="${tb} coff-h8300.lo reloc16.lo" ;;
-    h8500coff_vec)		tb="${tb} coff-h8500.lo reloc16.lo" ;;
-    host_aout_vec)		tb="${tb} host-aout.lo aout32.lo" ;;
-    hp300bsd_vec)		tb="${tb} hp300bsd.lo aout32.lo" ;;
-    hp300hpux_vec)		tb="${tb} hp300hpux.lo aout32.lo" ;;
-    i386aout_vec)		tb="${tb} i386aout.lo aout32.lo" ;;
-    i386bsd_vec)		tb="${tb} i386bsd.lo aout32.lo" ;;
-    i386coff_vec)		tb="${tb} coff-i386.lo cofflink.lo" ;;
-    i386dynix_vec)		tb="${tb} i386dynix.lo aout32.lo" ;;
-    i386freebsd_vec)		tb="${tb} i386freebsd.lo aout32.lo" ;;
-    i386linux_vec)		tb="${tb} i386linux.lo aout32.lo" ;;
-    i386lynx_aout_vec)		tb="${tb} i386lynx.lo lynx-core.lo aout32.lo" ;;
-    i386lynx_coff_vec)		tb="${tb} cf-i386lynx.lo cofflink.lo lynx-core.lo" ;;
-    i386mach3_vec)		tb="${tb} i386mach3.lo aout32.lo" ;;
-    i386msdos_vec)		tb="${tb} i386msdos.lo" ;;
-    i386netbsd_vec)		tb="${tb} i386netbsd.lo aout32.lo" ;;
-    i386os9k_vec)		tb="${tb} i386os9k.lo aout32.lo" ;;
-    i386pe_vec)			tb="${tb} pe-i386.lo peigen.lo cofflink.lo" ;;
-    i386pei_vec)		tb="${tb} pei-i386.lo peigen.lo cofflink.lo" ;;
-    i860coff_vec)		tb="${tb} coff-i860.lo cofflink.lo" ;;
-    icoff_big_vec)		tb="${tb} coff-i960.lo cofflink.lo" ;;
-    icoff_little_vec)		tb="${tb} coff-i960.lo cofflink.lo" ;;
-    ieee_vec)			tb="${tb} ieee.lo" ;;
-    m68k4knetbsd_vec)		tb="${tb} m68k4knetbsd.lo aout32.lo" ;;
-    m68kaux_coff_vec)		tb="${tb} coff-aux.lo coff-m68k.lo cofflink.lo" ;;
-    m68kcoff_vec)		tb="${tb} coff-m68k.lo cofflink.lo" ;;
-    m68kcoffun_vec)		tb="${tb} coff-u68k.lo coff-m68k.lo cofflink.lo" ;;
-    m68klinux_vec)		tb="${tb} m68klinux.lo aout32.lo" ;;
-    m68knetbsd_vec)		tb="${tb} m68knetbsd.lo aout32.lo" ;;
-    m68ksysvcoff_vec)		tb="${tb} coff-svm68k.lo cofflink.lo" ;;
-    m88kbcs_vec)		tb="${tb} coff-m88k.lo" ;;
-    m88kmach3_vec)		tb="${tb} m88kmach3.lo aout32.lo" ;;
-    m88kopenbsd_vec)		tb="${tb} m88kopenbsd.lo aout32.lo" ;;
-    maxqcoff_vec)               tb="${tb} coff-maxq.lo" ;;
-    mach_o_be_vec)              tb="${tb} mach-o.lo" ;;
-    mach_o_le_vec)              tb="${tb} mach-o.lo" ;;
-    mach_o_fat_vec)             tb="${tb} mach-o.lo" ;;
-    mcore_pe_big_vec)		tb="${tb} pe-mcore.lo peigen.lo cofflink.lo" ;;
-    mcore_pe_little_vec)	tb="${tb} pe-mcore.lo peigen.lo cofflink.lo" ;;
-    mcore_pei_big_vec)		tb="${tb} pei-mcore.lo peigen.lo cofflink.lo" ;;
-    mcore_pei_little_vec)	tb="${tb} pei-mcore.lo peigen.lo cofflink.lo" ;;
-    mipslpe_vec)		tb="${tb} pe-mips.lo peigen.lo cofflink.lo" ;;
-    mipslpei_vec)		tb="${tb} pei-mips.lo peigen.lo cofflink.lo" ;;
-    newsos3_vec)		tb="${tb} newsos3.lo aout32.lo" ;;
-    nlm32_alpha_vec)		tb="${tb} nlm32-alpha.lo nlm32.lo nlm.lo"; target_size=64 ;;
-    nlm32_i386_vec)		tb="${tb} nlm32-i386.lo nlm32.lo nlm.lo" ;;
-    nlm32_powerpc_vec)		tb="${tb} nlm32-ppc.lo nlm32.lo nlm.lo" ;;
-    nlm32_sparc_vec)		tb="${tb} nlm32-sparc.lo nlm32.lo nlm.lo" ;;
-    or32coff_big_vec)		tb="${tb} coff-or32.lo cofflink.lo" ;;
-    pc532machaout_vec)		tb="${tb} pc532-mach.lo aout-ns32k.lo" ;;
-    pc532netbsd_vec)		tb="${tb} ns32knetbsd.lo aout-ns32k.lo" ;;
-    pef_vec)                    tb="${tb} pef.lo" ;;
-    pef_xlib_vec)               tb="${tb} pef.lo" ;;
-    pdp11_aout_vec)		tb="${tb} pdp11.lo" ;;
-    pmac_xcoff_vec)		tb="${tb} coff-rs6000.lo xcofflink.lo" ;;
-    ppcboot_vec)		tb="${tb} ppcboot.lo" ;;
-    riscix_vec)			tb="${tb} aout32.lo riscix.lo" ;;
-    rs6000coff64_vec)		tb="${tb} coff64-rs6000.lo xcofflink.lo aix5ppc-core.lo"; target_size=64 ;;
-    rs6000coff_vec)		tb="${tb} coff-rs6000.lo xcofflink.lo" ;;
-    shcoff_small_vec)		tb="${tb} coff-sh.lo cofflink.lo" ;;
-    shcoff_vec)			tb="${tb} coff-sh.lo cofflink.lo" ;;
-    shlcoff_small_vec)		tb="${tb} coff-sh.lo cofflink.lo" ;;
-    shlcoff_vec)		tb="${tb} coff-sh.lo cofflink.lo" ;;
-    shlpe_vec)			tb="${tb} pe-sh.lo coff-sh.lo peigen.lo cofflink.lo" ;;
-    shlpei_vec)			tb="${tb} pei-sh.lo coff-sh.lo peigen.lo cofflink.lo" ;;
-    som_vec)			tb="${tb} som.lo" ;;
-    sparccoff_vec)		tb="${tb} coff-sparc.lo" ;;
-    sparcle_aout_vec)		tb="${tb} aout-sparcle.lo aout32.lo" ;;
-    sparclinux_vec)		tb="${tb} sparclinux.lo aout32.lo" ;;
-    sparclynx_aout_vec)		tb="${tb} sparclynx.lo lynx-core.lo aout32.lo" ;;
-    sparclynx_coff_vec)		tb="${tb} cf-sparclynx.lo lynx-core.lo" ;;
-    sparcnetbsd_vec)		tb="${tb} sparcnetbsd.lo aout32.lo" ;;
-    sunos_big_vec)		tb="${tb} sunos.lo aout32.lo" ;;
-    sym_vec)                    tb="${tb} xsym.lo" ;;
-    tic30_aout_vec)		tb="${tb} aout-tic30.lo" ;;
-    tic30_coff_vec)		tb="${tb} coff-tic30.lo" ;;
-    tic4x_coff0_vec)            tb="${tb} coff-tic4x.lo" ;;
-    tic4x_coff0_beh_vec)        tb="${tb} coff-tic4x.lo" ;;
-    tic4x_coff1_vec)            tb="${tb} coff-tic4x.lo" ;;
-    tic4x_coff1_beh_vec)        tb="${tb} coff-tic4x.lo" ;;
-    tic4x_coff2_vec)            tb="${tb} coff-tic4x.lo" ;;
-    tic4x_coff2_beh_vec)        tb="${tb} coff-tic4x.lo" ;;
-    tic54x_coff0_beh_vec)	tb="${tb} coff-tic54x.lo" ;;
-    tic54x_coff0_vec)		tb="${tb} coff-tic54x.lo" ;;
-    tic54x_coff1_beh_vec)	tb="${tb} coff-tic54x.lo" ;;
-    tic54x_coff1_vec)		tb="${tb} coff-tic54x.lo" ;;
-    tic54x_coff2_beh_vec)	tb="${tb} coff-tic54x.lo" ;;
-    tic54x_coff2_vec)		tb="${tb} coff-tic54x.lo" ;;
-    tic80coff_vec)		tb="${tb} coff-tic80.lo cofflink.lo" ;;
-    vaxnetbsd_vec)		tb="${tb} vaxnetbsd.lo aout32.lo" ;;
-    vax1knetbsd_vec)		tb="${tb} vax1knetbsd.lo aout32.lo" ;;
-    vaxbsd_vec)			tb="${tb} vaxbsd.lo aout32.lo" ;;
-    versados_vec)		tb="${tb} versados.lo" ;;
-    vms_alpha_vec)		tb="${tb} vms.lo vms-hdr.lo vms-gsd.lo vms-tir.lo vms-misc.lo"; target_size=64 ;;
-    vms_vax_vec)		tb="${tb} vms.lo vms-hdr.lo vms-gsd.lo vms-tir.lo vms-misc.lo" ;;
-    w65_vec)			tb="${tb} coff-w65.lo reloc16.lo" ;;
-    we32kcoff_vec)		tb="${tb} coff-we32k.lo" ;;
-    z8kcoff_vec)		tb="${tb} coff-z8k.lo reloc16.lo" ;;
+    bfd_elf64_x86_64_vec) tb="${tb} elf64-x86-64.lo elf64.lo ${elf}"; target_size=64 ;;
+    bfd_mmo_vec) tb="${tb} mmo.lo" target_size=64 ;;
+    bfd_powerpc_pe_vec) tb="${tb} pe-ppc.lo peigen.lo cofflink.lo" ;;
+    bfd_powerpc_pei_vec) tb="${tb} pei-ppc.lo peigen.lo cofflink.lo" ;;
+    bfd_powerpcle_pe_vec) tb="${tb} pe-ppc.lo peigen.lo cofflink.lo" ;;
+    bfd_powerpcle_pei_vec) tb="${tb} pei-ppc.lo peigen.lo cofflink.lo" ;;
+    bfin_elf32_vec) tb="${tb} elf32-bfin.lo elf32.lo ${elf}" ;;
+    bfin_elf32_fdpic_vec) tb="${tb} elf32-bfin.lo elf32.lo ${elf}" ;;
+    bout_be_vec) tb="${tb} bout.lo aout32.lo" ;;
+    bout_le_vec) tb="${tb} bout.lo aout32.lo" ;;
+    cr16_elf32_vec) tb="${tb} elf32-cr16.lo elf32.lo ${elf}" ;;
+    cr16c_elf32_vec) tb="${tb} elf32-cr16c.lo elf32.lo ${elf}" ;;
+    cris_aout_vec) tb="${tb} aout-cris.lo" ;;
+    cris_elf32_vec) tb="${tb} elf32-cris.lo elf32.lo ${elf}" ;;
+    cris_elf32_us_vec) tb="${tb} elf32-cris.lo elf32.lo ${elf}" ;;
+    crx_elf32_vec) tb="${tb} elf32-crx.lo elf32.lo ${elf}" ;;
+    d10v_elf32_vec) tb="${tb} elf32-d10v.lo elf32.lo ${elf}" ;;
+    d30v_elf32_vec) tb="${tb} elf32-d30v.lo elf32.lo ${elf}" ;;
+    demo_64_vec) tb="${tb} demo64.lo aout64.lo"; target_size=64 ;;
+    dlx_elf32_be_vec) tb="${tb} elf32-dlx.lo elf32.lo ${elf}" ;;
+    ecoff_big_vec) tb="${tb} coff-mips.lo ecoff.lo ecofflink.lo" ;;
+    ecoff_biglittle_vec) tb="${tb} coff-mips.lo ecoff.lo ecofflink.lo" ;;
+    ecoff_little_vec) tb="${tb} coff-mips.lo ecoff.lo ecofflink.lo" ;;
+    ecoffalpha_little_vec) tb="${tb} coff-alpha.lo ecoff.lo ecofflink.lo"; target_size=64 ;;
+    elf32_be_vec) tb="${tb} elf32-gen.lo elf32.lo ${elf}" ;;
+    elf32_le_vec) tb="${tb} elf32-gen.lo elf32.lo ${elf}" ;;
+    elf64_be_vec) tb="${tb} elf64-gen.lo elf64.lo $elf"; target_size=64 ;;
+    elf64_le_vec) tb="${tb} elf64-gen.lo elf64.lo $elf"; target_size=64 ;;
+    epiphany_elf32_vec) tb="${tb} elf32-epiphany.lo elf32.lo ${elf}" ;;
+    fr30_elf32_vec) tb="${tb} elf32-fr30.lo elf32.lo ${elf}" ;;
+    frv_elf32_vec) tb="${tb} elf32-frv.lo elf32.lo ${elf}" ;;
+    frv_elf32_fdpic_vec) tb="${tb} elf32-frv.lo elf32.lo ${elf}" ;;
+    go32coff_vec) tb="${tb} coff-go32.lo cofflink.lo" ;;
+    go32stubbedcoff_vec) tb="${tb} coff-stgo32.lo cofflink.lo" ;;
+    h8300coff_vec) tb="${tb} coff-h8300.lo reloc16.lo" ;;
+    h8300_elf32_vec) tb="${tb} elf32-h8300.lo elf32.lo ${elf}" ;;
+    h8500coff_vec) tb="${tb} coff-h8500.lo reloc16.lo" ;;
+    host_aout_vec) tb="${tb} host-aout.lo aout32.lo" ;;
+    hp300bsd_vec) tb="${tb} hp300bsd.lo aout32.lo" ;;
+    hp300hpux_vec) tb="${tb} hp300hpux.lo aout32.lo" ;;
+    hppa_elf32_vec) tb="${tb} elf32-hppa.lo elf32.lo ${elf}" ;;
+    hppa_elf32_linux_vec) tb="${tb} elf32-hppa.lo elf32.lo ${elf}" ;;
+    hppa_elf32_nbsd_vec) tb="${tb} elf32-hppa.lo elf32.lo ${elf}" ;;
+    hppa_elf64_vec) tb="${tb} elf64-hppa.lo elf64.lo $elf"; target_size=64 ;;
+    hppa_elf64_linux_vec) tb="${tb} elf64-hppa.lo elf64.lo $elf"; target_size=64 ;;
+    hppa_som_vec) tb="${tb} som.lo" ;;
+    i370_elf32_vec) tb="${tb} elf32-i370.lo elf32.lo ${elf}" ;;
+    i386_aout_vec)tb="${tb} i386aout.lo aout32.lo" ;;
+    i386_aout_bsd_vec) tb="${tb} i386bsd.lo aout32.lo" ;;
+    i386_aout_dynix_vec) tb="${tb} i386dynix.lo aout32.lo" ;;
+    i386_aout_fbsd_vec) tb="${tb} i386freebsd.lo aout32.lo" ;;
+    i386_aout_linux_vec) tb="${tb} i386linux.lo aout32.lo" ;;
+    i386_aout_lynx_vec) tb="${tb} i386lynx.lo lynx-core.lo aout32.lo" ;;
+    i386_aout_mach3_vec) tb="${tb} i386mach3.lo aout32.lo" ;;
+    i386_aout_nbsd_vec) tb="${tb} i386netbsd.lo aout32.lo" ;;
+    i386_aout_os9k_vec) tb="${tb} i386os9k.lo aout32.lo" ;;
+    i386_coff_vec) tb="${tb} coff-i386.lo cofflink.lo" ;;
+    i386_coff_go32_vec) tb="${tb} coff-go32.lo cofflink.lo" ;;
+    i386_coff_go32stubbed_vec) tb="${tb} coff-stgo32.lo cofflink.lo" ;;
+    i386_coff_lynx_vec) tb="${tb} cf-i386lynx.lo cofflink.lo lynx-core.lo" ;;
+    i386_elf32_vec) tb="${tb} elf32-i386.lo elf-ifunc.lo elf-nacl.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    i386_elf32_fbsd_vec) tb="${tb} elf32-i386.lo elf-ifunc.lo elf-nacl.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    i386_elf32_nacl_vec) tb="${tb} elf32-i386.lo elf-ifunc.lo elf-nacl.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    i386_elf32_sol2_vec) tb="${tb} elf32-i386.lo elf-ifunc.lo elf-nacl.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    i386_elf32_vxworks_vec) tb="${tb} elf32-i386.lo elf-ifunc.lo elf-nacl.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    i386_mach_o_vec) tb="${tb} mach-o-i386.lo" ;;
+    i386_msdos_vec) tb="${tb} i386msdos.lo" ;;
+    i386_nlm32_vec) tb="${tb} nlm32-i386.lo nlm32.lo nlm.lo" ;;
+    i386_pe_vec) tb="${tb} pe-i386.lo peigen.lo cofflink.lo" ;;
+    i386_pei_vec) tb="${tb} pei-i386.lo peigen.lo cofflink.lo" ;;
+    i386aout_vec) tb="${tb} i386aout.lo aout32.lo" ;;
+    i386bsd_vec) tb="${tb} i386bsd.lo aout32.lo" ;;
+    i386coff_vec) tb="${tb} coff-i386.lo cofflink.lo" ;;
+    i386dynix_vec) tb="${tb} i386dynix.lo aout32.lo" ;;
+    i386freebsd_vec) tb="${tb} i386freebsd.lo aout32.lo" ;;
+    i386linux_vec) tb="${tb} i386linux.lo aout32.lo" ;;
+    i386lynx_aout_vec) tb="${tb} i386lynx.lo lynx-core.lo aout32.lo" ;;
+    i386lynx_coff_vec) tb="${tb} cf-i386lynx.lo cofflink.lo lynx-core.lo" ;;
+    i386mach3_vec) tb="${tb} i386mach3.lo aout32.lo" ;;
+    i386msdos_vec) tb="${tb} i386msdos.lo" ;;
+    i386netbsd_vec) tb="${tb} i386netbsd.lo aout32.lo" ;;
+    i386os9k_vec) tb="${tb} i386os9k.lo aout32.lo" ;;
+    i386pe_vec) tb="${tb} pe-i386.lo peigen.lo cofflink.lo" ;;
+    i386pei_vec) tb="${tb} pei-i386.lo peigen.lo cofflink.lo" ;;
+    i860_coff_vec) tb="${tb} coff-i860.lo cofflink.lo" ;;
+    i860_elf32_vec) tb="${tb} elf32-i860.lo elf32.lo ${elf}" ;;
+    i860_elf32_le_vec) tb="${tb} elf32-i860.lo elf32.lo ${elf}" ;;
+    i860coff_vec) tb="${tb} coff-i860.lo cofflink.lo" ;;
+    i960_elf32_vec) tb="${tb} elf32-i960.lo elf32.lo ${elf}" ;;
+    ia64_elf32_be_vec) tb="${tb} elf32-ia64.lo elfxx-ia64.lo elf32.lo ${elf}" ;;
+    ia64_elf32_hpux_be_vec) tb="${tb} elf32-ia64.lo elfxx-ia64.lo elf32.lo ${elf}" ;;
+    ia64_elf64_be_vec) tb="${tb} elf64-ia64.lo elfxx-ia64.lo elf64.lo $elf"; target_size=64 ;;
+    ia64_elf64_le_vec) tb="${tb} elf64-ia64.lo elfxx-ia64.lo elf64.lo $elf"; target_size=64 ;;
+    ia64_elf64_hpux_be_vec) tb="${tb} elf64-ia64.lo elfxx-ia64.lo elf64.lo $elf"; target_size=64 ;;
+    ia64_elf64_vms_vec) tb="${tb} elf64-ia64-vms.lo elf64-ia64.lo elfxx-ia64.lo elf64.lo vms-lib.lo vms-misc.lo $elf"; target_size=64 ;;
+    ia64_pei_vec) tb="${tb} pei-ia64.lo pepigen.lo cofflink.lo"; target_size=64 ;;
+    icoff_be_vec) tb="${tb} coff-i960.lo cofflink.lo" ;;
+    icoff_big_vec) tb="${tb} coff-i960.lo cofflink.lo" ;;
+    icoff_le_vec) tb="${tb} coff-i960.lo cofflink.lo" ;;
+    icoff_little_vec) tb="${tb} coff-i960.lo cofflink.lo" ;;
+    ieee_vec) tb="${tb} ieee.lo" ;;
+    ip2k_elf32_vec) tb="${tb} elf32-ip2k.lo elf32.lo ${elf}" ;;
+    iq2000_elf32_vec) tb="${tb} elf32-iq2000.lo elf32.lo ${elf}" ;;
+    k1om_elf64_vec) tb="${tb} elf64-x86-64.lo elf-ifunc.lo elf-nacl.lo elf64.lo $elf"; target_size=64 ;;
+    k1om_elf64_fbsd_vec) tb="${tb} elf64-x86-64.lo elf-ifunc.lo elf-nacl.lo elf64.lo $elf"; target_size=64 ;;
+    l1om_elf64_vec) tb="${tb} elf64-x86-64.lo elf-ifunc.lo elf-nacl.lo elf64.lo $elf"; target_size=64 ;;
+    l1om_elf64_fbsd_vec) tb="${tb} elf64-x86-64.lo elf-ifunc.lo elf-nacl.lo elf64.lo $elf"; target_size=64 ;;
+    lm32_elf32_vec) tb="${tb} elf32-lm32.lo elf32.lo ${elf}" ;;
+    lm32_elf32_fdpic_vec) tb="${tb} elf32-lm32.lo elf32.lo ${elf}" ;;
+    m32c_elf32_vec) tb="${tb} elf32-m32c.lo elf32.lo ${elf}" ;;
+    m32r_elf32_vec) tb="${tb} elf32-m32r.lo elf32.lo ${elf}" ;;
+    m32r_elf32_le_vec) tb="${tb} elf32-m32r.lo elf32.lo ${elf}" ;;
+    m32r_elf32_linux_vec) tb="${tb} elf32-m32r.lo elf32.lo ${elf}" ;;
+    m32r_elf32_linux_le_vec) tb="${tb} elf32-m32r.lo elf32.lo ${elf}" ;;
+    m68hc11_elf32_vec) tb="${tb} elf32-m68hc11.lo elf32-m68hc1x.lo elf32.lo ${elf}" ;;
+    m68hc12_elf32_vec) tb="${tb} elf32-m68hc12.lo elf32-m68hc1x.lo elf32.lo ${elf}" ;;
+    m68k_aout_4knbsd_vec) tb="${tb} m68k4knetbsd.lo aout32.lo" ;;
+    m68k_aout_hp300bsd_vec) tb="${tb} hp300bsd.lo aout32.lo" ;;
+    m68k_aout_hp300hpux_vec) tb="${tb} hp300hpux.lo aout32.lo" ;;
+    m68k_aout_linux_vec) tb="${tb} m68klinux.lo aout32.lo" ;;
+    m68k_aout_nbsd_vec) tb="${tb} m68knetbsd.lo aout32.lo" ;;
+    m68k_aout_newsos3_vec) tb="${tb} newsos3.lo aout32.lo" ;;
+    m68k_coff_vec) tb="${tb} coff-m68k.lo cofflink.lo" ;;
+    m68k_coff_apollo_vec) tb="${tb} coff-apollo.lo" ;;
+    m68k_coff_aux_vec) tb="${tb} coff-aux.lo coff-m68k.lo cofflink.lo" ;;
+    m68k_coff_sysv_vec) tb="${tb} coff-svm68k.lo cofflink.lo" ;;
+    m68k_coff_un_vec) tb="${tb} coff-u68k.lo coff-m68k.lo cofflink.lo" ;;
+    m68k_elf32_vec) tb="${tb} elf32-m68k.lo elf32.lo ${elf}" ;;
+    m68k_versados_vec) tb="${tb} versados.lo" ;;
+    m68k4knetbsd_vec) tb="${tb} m68k4knetbsd.lo aout32.lo" ;;
+    m68kaux_coff_vec) tb="${tb} coff-aux.lo coff-m68k.lo cofflink.lo" ;;
+    m68kcoff_vec) tb="${tb} coff-m68k.lo cofflink.lo" ;;
+    m68kcoffun_vec) tb="${tb} coff-u68k.lo coff-m68k.lo cofflink.lo" ;;
+    m68klinux_vec) tb="${tb} m68klinux.lo aout32.lo" ;;
+    m68knetbsd_vec) tb="${tb} m68knetbsd.lo aout32.lo" ;;
+    m68ksysvcoff_vec) tb="${tb} coff-svm68k.lo cofflink.lo" ;;
+    m88k_aout_mach3_vec) tb="${tb} m88kmach3.lo aout32.lo" ;;
+    m88k_aout_obsd_vec) tb="${tb} m88kopenbsd.lo aout32.lo" ;;
+    m88k_coff_bcs_vec) tb="${tb} coff-m88k.lo" ;;
+    m88k_elf32_vec) tb="${tb} elf32-m88k.lo elf32.lo ${elf}" ;;
+    m88kbcs_vec) tb="${tb} coff-m88k.lo" ;;
+    m88kmach3_vec) tb="${tb} m88kmach3.lo aout32.lo" ;;
+    m88kopenbsd_vec) tb="${tb} m88kopenbsd.lo aout32.lo" ;;
+    maxqcoff_vec) tb="${tb} coff-maxq.lo" ;;
+    mach_o_be_vec) tb="${tb} mach-o.lo" ;;
+    mach_o_le_vec) tb="${tb} mach-o.lo" ;;
+    mach_o_fat_vec) tb="${tb} mach-o.lo" ;;
+    mcore_elf32_be_vec) tb="${tb} elf32-mcore.lo elf32.lo ${elf}" ;;
+    mcore_elf32_le_vec) tb="${tb} elf32-mcore.lo elf32.lo ${elf}" ;;
+    mcore_pe_be_vec) tb="${tb} pe-mcore.lo peigen.lo cofflink.lo" ;;
+    mcore_pe_big_vec) tb="${tb} pe-mcore.lo peigen.lo cofflink.lo" ;;
+    mcore_pe_le_vec) tb="${tb} pe-mcore.lo peigen.lo cofflink.lo" ;;
+    mcore_pe_little_vec) tb="${tb} pe-mcore.lo peigen.lo cofflink.lo" ;;
+    mcore_pei_be_vec) tb="${tb} pei-mcore.lo peigen.lo cofflink.lo" ;;
+    mcore_pei_big_vec) tb="${tb} pei-mcore.lo peigen.lo cofflink.lo" ;;
+    mcore_pei_le_vec) tb="${tb} pei-mcore.lo peigen.lo cofflink.lo" ;;
+    mcore_pei_little_vec) tb="${tb} pei-mcore.lo peigen.lo cofflink.lo" ;;
+    mep_elf32_vec) tb="${tb} elf32-mep.lo elf32.lo ${elf}" ;;
+    mep_elf32_le_vec) tb="${tb} elf32-mep.lo elf32.lo ${elf}" ;;
+    metag_elf32_vec) tb="${tb} elf32-metag.lo elf32.lo ${elf}" ;;
+    microblaze_elf32_vec) tb="${tb} elf32-microblaze.lo elf32.lo ${elf}" ;;
+    microblaze_elf32_le_vec) tb="${tb} elf32-microblaze.lo elf32.lo ${elf}" ;;
+    mips_ecoff_be_vec) tb="${tb} coff-mips.lo ecoff.lo ecofflink.lo" ;;
+    mips_ecoff_le_vec) tb="${tb} coff-mips.lo ecoff.lo ecofflink.lo" ;;
+    mips_ecoff_bele_vec) tb="${tb} coff-mips.lo ecoff.lo ecofflink.lo" ;;
+    mips_elf32_be_vec) tb="${tb} elf32-mips.lo elfxx-mips.lo elf-vxworks.lo elf32.lo ${elf} ecofflink.lo" ;;
+    mips_elf32_le_vec) tb="${tb} elf32-mips.lo elfxx-mips.lo elf-vxworks.lo elf32.lo ${elf} ecofflink.lo" ;;
+    mips_elf32_n_be_vec) tb="${tb} elfn32-mips.lo elfxx-mips.lo elf-vxworks.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    mips_elf32_n_le_vec) tb="${tb} elfn32-mips.lo elfxx-mips.lo elf-vxworks.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    mips_elf32_ntrad_be_vec) tb="${tb} elfn32-mips.lo elfxx-mips.lo elf-vxworks.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    mips_elf32_ntrad_le_vec) tb="${tb} elfn32-mips.lo elfxx-mips.lo elf-vxworks.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    mips_elf32_ntradfbsd_be_vec) tb="${tb} elfn32-mips.lo elfxx-mips.lo elf-vxworks.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    mips_elf32_ntradfbsd_le_vec) tb="${tb} elfn32-mips.lo elfxx-mips.lo elf-vxworks.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    mips_elf32_trad_be_vec) tb="${tb} elf32-mips.lo elfxx-mips.lo elf-vxworks.lo elf32.lo ${elf} ecofflink.lo" ;;
+    mips_elf32_trad_le_vec) tb="${tb} elf32-mips.lo elfxx-mips.lo elf-vxworks.lo elf32.lo ${elf} ecofflink.lo" ;;
+    mips_elf32_tradfbsd_be_vec) tb="${tb} elf32-mips.lo elfxx-mips.lo elf-vxworks.lo elf32.lo ${elf} ecofflink.lo" ;;
+    mips_elf32_tradfbsd_le_vec) tb="${tb} elf32-mips.lo elfxx-mips.lo elf-vxworks.lo elf32.lo ${elf} ecofflink.lo" ;;
+    mips_elf32_vxworks_be_vec) tb="${tb} elf32-mips.lo elfxx-mips.lo elf-vxworks.lo elf32.lo ${elf} ecofflink.lo" ;;
+    mips_elf32_vxworks_le_vec) tb="${tb} elf32-mips.lo elfxx-mips.lo elf-vxworks.lo elf32.lo ${elf} ecofflink.lo" ;;
+    mips_elf64_be_vec) tb="${tb} elf64-mips.lo elf64.lo elfxx-mips.lo elf-vxworks.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    mips_elf64_le_vec) tb="${tb} elf64-mips.lo elf64.lo elfxx-mips.lo elf-vxworks.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    mips_elf64_trad_be_vec) tb="${tb} elf64-mips.lo elf64.lo elfxx-mips.lo elf-vxworks.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    mips_elf64_trad_le_vec) tb="${tb} elf64-mips.lo elf64.lo elfxx-mips.lo elf-vxworks.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    mips_elf64_tradfbsd_be_vec) tb="${tb} elf64-mips.lo elf64.lo elfxx-mips.lo elf-vxworks.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    mips_elf64_tradfbsd_le_vec) tb="${tb} elf64-mips.lo elf64.lo elfxx-mips.lo elf-vxworks.lo elf32.lo ${elf} ecofflink.lo"; target_size=64 ;;
+    mips_pe_le_vec) tb="${tb} pe-mips.lo peigen.lo cofflink.lo" ;;
+    mips_pei_le_vec) tb="${tb} pei-mips.lo peigen.lo cofflink.lo" ;;
+    mipslpe_vec) tb="${tb} pe-mips.lo peigen.lo cofflink.lo" ;;
+    mipslpei_vec) tb="${tb} pei-mips.lo peigen.lo cofflink.lo" ;;
+    mmix_elf64_vec) tb="${tb} elf64-mmix.lo elf64.lo ${elf}" target_size=64 ;;
+    mmix_mmo_vec) tb="${tb} mmo.lo" target_size=64 ;;
+    mn10200_elf32_vec) tb="${tb} elf-m10200.lo elf32.lo ${elf}" ;;
+    mn10300_elf32_vec) tb="${tb} elf-m10300.lo elf32.lo ${elf}" ;;
+    moxie_elf32_be_vec) tb="${tb} elf32-moxie.lo elf32.lo ${elf}" ;;
+    moxie_elf32_le_vec) tb="${tb} elf32-moxie.lo elf32.lo ${elf}" ;;
+    msp430_elf32_vec) tb="${tb} elf32-msp430.lo elf32.lo ${elf}" ;;
+    msp430_elf32_ti_vec) tb="${tb} elf32-msp430.lo elf32.lo ${elf}" ;;
+    mt_elf32_vec) tb="${tb} elf32-mt.lo elf32.lo ${elf}" ;;
+    nds32_elf32_be_vec) tb="${tb} elf32-nds32.lo elf32.lo ${elf}" ;;
+    nds32_elf32_le_vec) tb="${tb} elf32-nds32.lo elf32.lo ${elf}" ;;
+    nds32_elf32_linux_be_vec) tb="${tb} elf32-nds32.lo elf32.lo ${elf}" ;;
+    nds32_elf32_linux_le_vec) tb="${tb} elf32-nds32.lo elf32.lo ${elf}" ;;
+    newsos3_vec) tb="${tb} newsos3.lo aout32.lo" ;;
+    nios2_elf32_be_vec) tb="${tb} elf32-nios2.lo elf32.lo ${elf}" ;;
+    nios2_elf32_le_vec) tb="${tb} elf32-nios2.lo elf32.lo ${elf}" ;;
+    nlm32_alpha_vec) tb="${tb} nlm32-alpha.lo nlm32.lo nlm.lo"; target_size=64 ;;
+    nlm32_i386_vec) tb="${tb} nlm32-i386.lo nlm32.lo nlm.lo" ;;
+    nlm32_powerpc_vec) tb="${tb} nlm32-ppc.lo nlm32.lo nlm.lo" ;;
+    nlm32_sparc_vec) tb="${tb} nlm32-sparc.lo nlm32.lo nlm.lo" ;;
+    ns32k_aout_pc532mach_vec) tb="${tb} pc532-mach.lo aout-ns32k.lo" ;;
+    ns32k_aout_pc532nbsd_vec) tb="${tb} ns32knetbsd.lo aout-ns32k.lo" ;;
+    or1k_elf32_vec) tb="${tb} elf32-or1k.lo elf32.lo ${elf}" ;;
+    or32coff_big_vec) tb="${tb} coff-or32.lo cofflink.lo" ;;
+    pc532machaout_vec) tb="${tb} pc532-mach.lo aout-ns32k.lo" ;;
+    pc532netbsd_vec) tb="${tb} ns32knetbsd.lo aout-ns32k.lo" ;;
+    pdp11_aout_vec) tb="${tb} pdp11.lo" ;;
+    pef_vec) tb="${tb} pef.lo" ;;
+    pef_xlib_vec) tb="${tb} pef.lo" ;;
+    pj_elf32_vec) tb="${tb} elf32-pj.lo elf32.lo ${elf}" ;;
+    pj_elf32_le_vec) tb="${tb} elf32-pj.lo elf32.lo ${elf}" ;;
+    plugin_vec) tb="${tb} plugin.lo" ;;
+    pmac_xcoff_vec) tb="${tb} coff-rs6000.lo xcofflink.lo" ;;
+    powerpc_boot_vec) tb="${tb} ppcboot.lo" ;;
+    powerpc_elf32_vec) tb="${tb} elf32-ppc.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    powerpc_elf32_le_vec) tb="${tb} elf32-ppc.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    powerpc_elf32_fbsd_vec) tb="${tb} elf32-ppc.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    powerpc_elf32_vxworks_vec) tb="${tb} elf32-ppc.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    powerpc_elf64_vec) tb="${tb} elf64-ppc.lo elf64-gen.lo elf64.lo $elf"; target_size=64 ;;
+    powerpc_elf64_le_vec) tb="${tb} elf64-ppc.lo elf64-gen.lo elf64.lo ${elf}" target_size=64 ;;
+    powerpc_elf64_fbsd_vec) tb="${tb} elf64-ppc.lo elf64-gen.lo elf64.lo ${elf}" target_size=64 ;;
+    powerpc_nlm32_vec) tb="${tb} nlm32-ppc.lo nlm32.lo nlm.lo" ;;
+    powerpc_pe_vec) tb="${tb} pe-ppc.lo peigen.lo cofflink.lo" ;;
+    powerpc_pe_le_vec) tb="${tb} pe-ppc.lo peigen.lo cofflink.lo" ;;
+    powerpc_pei_vec) tb="${tb} pei-ppc.lo peigen.lo cofflink.lo" ;;
+    powerpc_pei_le_vec) tb="${tb} pei-ppc.lo peigen.lo cofflink.lo" ;;
+    powerpc_xcoff_vec) tb="${tb} coff-rs6000.lo xcofflink.lo" ;;
+    ppcboot_vec) tb="${tb} ppcboot.lo" ;;
+    riscix_vec) tb="${tb} aout32.lo riscix.lo" ;;
+    rl78_elf32_vec) tb="${tb} elf32-rl78.lo elf32.lo ${elf}" ;;
+    rs6000_xcoff64_vec) tb="${tb} coff64-rs6000.lo xcofflink.lo aix5ppc-core.lo"; target_size=64 ;;
+    rs6000_xcoff64_aix_vec) tb="${tb} coff64-rs6000.lo xcofflink.lo aix5ppc-core.lo"; target_size=64 ;;
+    rs6000_xcoff_vec) tb="${tb} coff-rs6000.lo xcofflink.lo" ;;
+    rs6000coff64_vec) tb="${tb} coff64-rs6000.lo xcofflink.lo aix5ppc-core.lo"; target_size=64 ;;
+    rs6000coff_vec) tb="${tb} coff-rs6000.lo xcofflink.lo" ;;
+    rx_elf32_be_vec) tb="${tb} elf32-rx.lo elf32.lo ${elf}" ;;
+    rx_elf32_be_ns_vec)tb="${tb} elf32-rx.lo elf32.lo ${elf}" ;;
+    rx_elf32_le_vec) tb="${tb} elf32-rx.lo elf32.lo ${elf}" ;;
+    s390_elf32_vec) tb="${tb} elf32-s390.lo elf32.lo ${elf}" ;;
+    s390_elf64_vec) tb="${tb} elf64-s390.lo elf64.lo $elf"; target_size=64 ;;
+    score_elf32_be_vec) tb="${tb} elf32-score.lo elf32-score7.lo elf32.lo $elf"; want64=true; target_size=64 ;;
+    score_elf32_le_vec) tb="${tb} elf32-score.lo elf32-score7.lo elf32.lo $elf"; want64=true; target_size=64 ;;
+    # FIXME: We include cofflink.lo not because it's needed for
+    # sh64_elf32[_le]_vec, but because we include sh_elf32[_le]_vec
+    # which needs it but does not list it.  Should be fixed in right place.
+    sh64_elf32_vec) tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf-vxworks.lo elf32.lo ${elf} cofflink.lo" target_size=64 ;;
+    sh64_elf32_le_vec) tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf-vxworks.lo elf32.lo ${elf} cofflink.lo" target_size=64 ;;
+    sh64_elf32_linux_vec) tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf-vxworks.lo elf32.lo ${elf} cofflink.lo" target_size=64 ;;
+    sh64_elf32_linux_be_vec) tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf-vxworks.lo elf32.lo ${elf} cofflink.lo" target_size=64 ;;
+    sh64_elf32_nbsd_vec) tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf-vxworks.lo elf32.lo ${elf} cofflink.lo" ;;
+    sh64_elf32_nbsd_le_vec) tb="${tb} elf32-sh64.lo elf32-sh64-com.lo elf-vxworks.lo elf32.lo ${elf} cofflink.lo" ;;
+    sh64_elf64_vec) tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
+    sh64_elf64_le_vec) tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
+    sh64_elf64_linux_vec) tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
+    sh64_elf64_linux_be_vec) tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
+    sh64_elf64_nbsd_vec) tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
+    sh64_elf64_nbsd_le_vec) tb="${tb} elf64-sh64.lo elf64.lo ${elf}" target_size=64 ;;
+    sh_coff_vec) tb="${tb} coff-sh.lo cofflink.lo" ;;
+    sh_coff_le_vec) tb="${tb} coff-sh.lo cofflink.lo" ;;
+    sh_coff_small_vec) tb="${tb} coff-sh.lo cofflink.lo" ;;
+    sh_coff_small_le_vec) tb="${tb} coff-sh.lo cofflink.lo" ;;
+    sh_elf32_vec) tb="${tb} elf32-sh.lo elf-vxworks.lo elf32.lo ${elf} coff-sh.lo" ;;
+    sh_elf32_le_vec) tb="${tb} elf32-sh.lo elf-vxworks.lo elf32.lo ${elf} coff-sh.lo" ;;
+    sh_elf32_fdpic_be_vec) tb="${tb} elf32-sh.lo elf-vxworks.lo elf32.lo ${elf} coff-sh.lo cofflink.lo" ;;
+    sh_elf32_fdpic_le_vec) tb="${tb} elf32-sh.lo elf-vxworks.lo elf32.lo ${elf} coff-sh.lo cofflink.lo" ;;
+    sh_elf32_linux_vec) tb="${tb} elf32-sh.lo elf-vxworks.lo elf32.lo ${elf} coff-sh.lo cofflink.lo" ;;
+    sh_elf32_linux_be_vec) tb="${tb} elf32-sh.lo elf-vxworks.lo elf32.lo ${elf} coff-sh.lo cofflink.lo" ;;
+    sh_elf32_nbsd_vec) tb="${tb} elf32-sh.lo elf-vxworks.lo elf32.lo ${elf} coff-sh.lo cofflink.lo" ;;
+    sh_elf32_nbsd_le_vec) tb="${tb} elf32-sh.lo elf-vxworks.lo elf32.lo ${elf} coff-sh.lo cofflink.lo" ;;
+    sh_elf32_symbian_le_vec) tb="${tb} elf32-sh-symbian.lo elf32-sh64-com.lo elf-vxworks.lo elf32.lo ${elf} coff-sh.lo" ;;
+    sh_elf32_vxworks_vec) tb="${tb} elf32-sh.lo elf-vxworks.lo elf32.lo ${elf} coff-sh.lo" ;;
+    sh_elf32_vxworks_le_vec) tb="${tb} elf32-sh.lo elf-vxworks.lo elf32.lo ${elf} coff-sh.lo" ;;
+    sh_pe_le_vec) tb="${tb} pe-sh.lo coff-sh.lo peigen.lo cofflink.lo" ;;
+    sh_pei_le_vec) tb="${tb} pei-sh.lo coff-sh.lo peigen.lo cofflink.lo" ;;
+    shcoff_small_vec) tb="${tb} coff-sh.lo cofflink.lo" ;;
+    shcoff_vec) tb="${tb} coff-sh.lo cofflink.lo" ;;
+    shlcoff_small_vec) tb="${tb} coff-sh.lo cofflink.lo" ;;
+    shlcoff_vec) tb="${tb} coff-sh.lo cofflink.lo" ;;
+    shlpe_vec) tb="${tb} pe-sh.lo coff-sh.lo peigen.lo cofflink.lo" ;;
+    shlpei_vec) tb="${tb} pei-sh.lo coff-sh.lo peigen.lo cofflink.lo" ;;
+    som_vec) tb="${tb} som.lo" ;;
+    sparc_aout_le_vec)	tb="${tb} aout-sparcle.lo aout32.lo" ;;
+    sparc_aout_linux_vec) tb="${tb} sparclinux.lo aout32.lo" ;;
+    sparc_aout_lynx_vec) tb="${tb} sparclynx.lo lynx-core.lo aout32.lo" ;;
+    sparc_aout_nbsd_vec) tb="${tb} sparcnetbsd.lo aout32.lo" ;;
+    sparc_aout_sunos_be_vec) tb="${tb} sunos.lo aout32.lo" ;;
+    sparc_coff_vec) tb="${tb} coff-sparc.lo" ;;
+    sparc_coff_lynx_vec) tb="${tb} cf-sparclynx.lo lynx-core.lo" ;;
+    sparc_elf32_vec) tb="${tb} elf32-sparc.lo elfxx-sparc.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    sparc_elf32_sol2_vec) tb="${tb} elf32-sparc.lo elfxx-sparc.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    sparc_elf32_vxworks_vec) tb="${tb} elf32-sparc.lo elfxx-sparc.lo elf-vxworks.lo elf32.lo ${elf}" ;;
+    sparc_elf64_vec) tb="${tb} elf64-sparc.lo elfxx-sparc.lo elf-vxworks.lo elf64.lo $elf"; target_size=64 ;;
+    sparc_elf64_fbsd_vec) tb="${tb} elf64-sparc.lo elfxx-sparc.lo elf-vxworks.lo elf64.lo $elf"; target_size=64 ;;
+    sparc_elf64_sol2_vec) tb="${tb} elf64-sparc.lo elfxx-sparc.lo elf-vxworks.lo elf64.lo $elf"; target_size=64 ;;
+    sparc_nlm32_vec) tb="${tb} nlm32-sparc.lo nlm32.lo nlm.lo" ;;
+    sparccoff_vec) tb="${tb} coff-sparc.lo" ;;
+    sparcle_aout_vec) tb="${tb} aout-sparcle.lo aout32.lo" ;;
+    sparclinux_vec) tb="${tb} sparclinux.lo aout32.lo" ;;
+    sparclynx_aout_vec)	tb="${tb} sparclynx.lo lynx-core.lo aout32.lo" ;;
+    sparclynx_coff_vec)	tb="${tb} cf-sparclynx.lo lynx-core.lo" ;;
+    sparcnetbsd_vec) tb="${tb} sparcnetbsd.lo aout32.lo" ;;
+    spu_elf32_vec) tb="${tb} elf32-spu.lo elf32.lo ${elf}" ;;
+    sunos_big_vec) tb="${tb} sunos.lo aout32.lo" ;;
+    sym_vec) tb="${tb} xsym.lo" ;;
+    tic30_aout_vec) tb="${tb} aout-tic30.lo" ;;
+    tic30_coff_vec) tb="${tb} coff-tic30.lo" ;;
+    tic4x_coff0_vec) tb="${tb} coff-tic4x.lo" ;;
+    tic4x_coff0_beh_vec) tb="${tb} coff-tic4x.lo" ;;
+    tic4x_coff1_vec) tb="${tb} coff-tic4x.lo" ;;
+    tic4x_coff1_beh_vec) tb="${tb} coff-tic4x.lo" ;;
+    tic4x_coff2_vec) tb="${tb} coff-tic4x.lo" ;;
+    tic4x_coff2_beh_vec) tb="${tb} coff-tic4x.lo" ;;
+    tic54x_coff0_beh_vec) tb="${tb} coff-tic54x.lo" ;;
+    tic54x_coff0_vec) tb="${tb} coff-tic54x.lo" ;;
+    tic54x_coff1_beh_vec) tb="${tb} coff-tic54x.lo" ;;
+    tic54x_coff1_vec) tb="${tb} coff-tic54x.lo" ;;
+    tic54x_coff2_beh_vec) tb="${tb} coff-tic54x.lo" ;;
+    tic54x_coff2_vec) tb="${tb} coff-tic54x.lo" ;;
+    tic6x_elf32_be_vec) tb="${tb} elf32-tic6x.lo elf32.lo ${elf}" ;;
+    tic6x_elf32_le_vec) tb="${tb} elf32-tic6x.lo elf32.lo ${elf}" ;;
+    tic6x_elf32_c6000_be_vec) tb="${tb} elf32-tic6x.lo elf32.lo ${elf}" ;;
+    tic6x_elf32_c6000_le_vec) tb="${tb} elf32-tic6x.lo elf32.lo ${elf}" ;;
+    tic6x_elf32_linux_be_vec) tb="${tb} elf32-tic6x.lo elf32.lo ${elf}" ;;
+    tic6x_elf32_linux_le_vec) tb="${tb} elf32-tic6x.lo elf32.lo ${elf}" ;;
+    tic80coff_vec) tb="${tb} coff-tic80.lo cofflink.lo" ;;
+    tilegx_elf32_be_vec) tb="${tb} elf32-tilegx.lo elfxx-tilegx.lo elf32.lo ${elf}" ; target_size=32 ;;
+    tilegx_elf32_le_vec) tb="${tb} elf32-tilegx.lo elfxx-tilegx.lo elf32.lo ${elf}" ; target_size=32 ;;
+    tilegx_elf64_be_vec) tb="${tb} elf64-tilegx.lo elfxx-tilegx.lo elf64.lo ${elf}" ; target_size=64 ;;
+    tilegx_elf64_le_vec) tb="${tb} elf64-tilegx.lo elfxx-tilegx.lo elf64.lo ${elf}" ; target_size=64 ;;
+    tilepro_elf32_vec) tb="${tb} elf32-tilepro.lo elf32.lo ${elf}" ;;
+    v800_elf32_vec) tb="${tb} elf32-v850.lo elf32.lo ${elf}" ;;
+    v850_elf32_vec) tb="${tb} elf32-v850.lo elf32.lo ${elf}" ;;
+    vax_aout_1knbsd_vec) tb="${tb} vax1knetbsd.lo aout32.lo" ;;
+    vax_aout_bsd_vec) tb="${tb} vaxbsd.lo aout32.lo" ;;
+    vax_aout_nbsd_vec) tb="${tb} vaxnetbsd.lo aout32.lo" ;;
+    vax_elf32_vec) tb="${tb} elf32-vax.lo elf32.lo ${elf}" ;;
+    vaxnetbsd_vec) tb="${tb} vaxnetbsd.lo aout32.lo" ;;
+    vax1knetbsd_vec) tb="${tb} vax1knetbsd.lo aout32.lo" ;;
+    vaxbsd_vec) tb="${tb} vaxbsd.lo aout32.lo" ;;
+    versados_vec) tb="${tb} versados.lo" ;;
+    vms_alpha_vec) tb="${tb} vms.lo vms-hdr.lo vms-gsd.lo vms-tir.lo vms-misc.lo"; target_size=64 ;;
+    vms_vax_vec) tb="${tb} vms.lo vms-hdr.lo vms-gsd.lo vms-tir.lo vms-misc.lo" ;;
+    w65_coff_vec) tb="${tb} coff-w65.lo reloc16.lo" ;;
+    w65_vec) tb="${tb} coff-w65.lo reloc16.lo" ;;
+    we32k_coff_vec) tb="${tb} coff-we32k.lo" ;;
+    we32kcoff_vec) tb="${tb} coff-we32k.lo" ;;
+    x86_64_coff_vec) tb="${tb} coff-x86_64.lo cofflink.lo"; target_size=64 ;;
+    x86_64_elf32_vec) tb="${tb} elf64-x86-64.lo elf-ifunc.lo elf-nacl.lo elf64.lo elf32.lo $elf"; target_size=64 ;;
+    x86_64_elf32_nacl_vec) tb="${tb} elf64-x86-64.lo elf-ifunc.lo elf-nacl.lo elf64.lo elf32.lo $elf"; target_size=64 ;;
+    x86_64_elf64_vec) tb="${tb} elf64-x86-64.lo elf-ifunc.lo elf-nacl.lo elf64.lo $elf"; target_size=64 ;;
+    x86_64_elf64_fbsd_vec) tb="${tb} elf64-x86-64.lo elf-ifunc.lo elf-nacl.lo elf64.lo $elf"; target_size=64 ;;
+    x86_64_elf64_nacl_vec) tb="${tb} elf64-x86-64.lo elf-ifunc.lo elf-nacl.lo elf64.lo $elf"; target_size=64 ;;
+    x86_64_elf64_sol2_vec) tb="${tb} elf64-x86-64.lo elf-ifunc.lo elf-nacl.lo elf64.lo $elf"; target_size=64 ;;
+    x86_64_mach_o_vec) tb="${tb} mach-o-x86-64.lo" ;;
+    x86_64_pe_vec) tb="${tb} pe-x86_64.lo pex64igen.lo cofflink.lo"; target_size=64 ;;
+    x86_64_pe_be_vec) tb="${tb} pe-x86_64.lo pex64igen.lo cofflink.lo"; target_size=64 ;;
+    x86_64_pei_vec) tb="${tb} pei-x86_64.lo pex64igen.lo cofflink.lo"; target_size=64 ;;
+    xc16x_elf32_vec) tb="${tb} elf32-xc16x.lo elf32.lo ${elf}" ;;
+    xgate_elf32_vec) tb="${tb} elf32-xgate.lo elf32.lo ${elf}" ;;
+    xstormy16_elf32_vec) tb="${tb} elf32-xstormy16.lo elf32.lo ${elf}" ;;
+    xtensa_elf32_be_vec) tb="${tb} xtensa-isa.lo xtensa-modules.lo elf32-xtensa.lo elf32.lo ${elf}" ;;
+    xtensa_elf32_le_vec) tb="${tb} xtensa-isa.lo xtensa-modules.lo elf32-xtensa.lo elf32.lo ${elf}" ;;
+    z80_coff_vec) tb="${tb} coff-z80.lo reloc16.lo" ;;
+    z8k_coff_vec) tb="${tb} coff-z8k.lo reloc16.lo cofflink.lo" ;;
+    z8kcoff_vec) tb="${tb} coff-z8k.lo reloc16.lo" ;;
 
     # These appear out of order in targets.c
-    srec_vec)			tb="${tb} srec.lo" ;;
-    symbolsrec_vec)		tb="${tb} srec.lo" ;;
-    tekhex_vec)			tb="${tb} tekhex.lo" ;;
-    cisco_core_big_vec)		tb="${tb} cisco-core.lo" ;;
-    cisco_core_little_vec)	tb="${tb} cisco-core.lo" ;;
+    srec_vec) tb="${tb} srec.lo" ;;
+    symbolsrec_vec) tb="${tb} srec.lo" ;;
+    tekhex_vec) tb="${tb} tekhex.lo" ;;
+    cisco_core_big_vec) tb="${tb} cisco-core.lo" ;;
+    cisco_core_little_vec) tb="${tb} cisco-core.lo" ;;
 
     "")			;;
     *) as_fn_error $? "*** unknown target vector ${vec}" "$LINENO" 5 ;;
     esac
 
-    if test ${target_size} = 64; then
+    if test "x${target_size}" = "x64"; then
 	target64=true
     fi
     if test x"${vec}" = x"${defvec}"; then
@@ -23898,11 +25408,11 @@ done
 # Target architecture .o files.
 # A couple of CPUs use shorter file names to avoid problems on DOS
 # filesystems.
-ta=`echo $selarchs | sed -e s/bfd_/cpu-/g -e s/_arch/.lo/g -e s/mn10200/m10200/ -e s/mn10300/m10300/`
+ta=`echo ${selarchs} | sed -e s/bfd_/cpu-/g -e s/_arch/.lo/g -e s/mn10200/m10200/ -e s/mn10300/m10300/`
 
 # Weed out duplicate .o files.
 f=""
-for i in ${tb} ; do
+for i in ${tb}; do
     case " ${f} " in
     *" ${i} "*) ;;
     *) f="${f} ${i}" ;;
@@ -23911,7 +25421,7 @@ done
 tb="${f}"
 
 f=""
-for i in ${ta} ; do
+for i in ${ta}; do
     case " ${f} " in
     *" ${i} "*) ;;
     *) f="${f} ${i}" ;;
@@ -23922,18 +25432,18 @@ ta="${f}"
 bfd_backends="${tb}"
 bfd_machines="${ta}"
 
-if test x${all_targets} = xtrue ; then
+if test "x${all_targets}" = "xtrue"; then
   bfd_backends="${bfd_backends}"' $(ALL_BACKENDS)'
   bfd_machines="${bfd_machines}"' $(ALL_MACHINES)'
-  selvecs=
-  havevecs=
-  selarchs=
+  selvecs=""
+  havevecs="-DHAVE_all_vecs"
+  selarchs=""
   test -n "${assocvecs}" &&
     assocvecs=`echo ${assocvecs} | sed -e 's/^/\&/' -e 's/ \(.\)/,\&\1/g'`
 else	# all_targets is true
   # Only set these if they will be nonempty, for the clever echo.
-  havevecs=
-  assocvecs=
+  havevecs=""
+  assocvecs=""
   test -n "${selvecs}" &&
     havevecs=`echo ${selvecs} | sed -e 's/^/-DHAVE_/' -e 's/ \(.\)/ -DHAVE_\1/g'`
   test -n "${selvecs}" &&
@@ -23946,6 +25456,7 @@ case ${host64}-${target64}-${want64} in
   *true*)
     wordsize=64
     bfd_libs='$(BFD64_LIBS) $(BFD32_LIBS)'
+    bfd64_libs='$(BFD64_LIBS)'
     all_backends='$(BFD64_BACKENDS) $(BFD32_BACKENDS)'
     if test ${BFD_HOST_64_BIT_DEFINED} = 0; then
       { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: You have requested a 64 bit BFD configuration, but" >&5
@@ -23954,7 +25465,7 @@ $as_echo "$as_me: WARNING: You have requested a 64 bit BFD configuration, but" >
 $as_echo "$as_me: WARNING: your compiler may not have a 64 bit integral type" >&2;}
     fi
     if test -n "${GCC}" ; then
-       bad_64bit_gcc=no;
+       bad_64bit_gcc="no";
        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gcc version with buggy 64-bit support" >&5
 $as_echo_n "checking for gcc version with buggy 64-bit support... " >&6; }
        # Add more tests for gcc versions with non-working 64-bit support
@@ -23965,8 +25476,8 @@ $as_echo_n "checking for gcc version with buggy 64-bit support... " >&6; }
 _ACEOF
 if (eval "$ac_cpp conftest.$ac_ext") 2>&5 |
   $EGREP ": 2 : 91 : 1 :" >/dev/null 2>&1; then :
-  bad_64bit_gcc=yes;
-		    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes: egcs-1.1.2 on ix86 spotted" >&5
+  bad_64bit_gcc="yes";
+		     { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes: egcs-1.1.2 on ix86 spotted" >&5
 $as_echo "yes: egcs-1.1.2 on ix86 spotted" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
@@ -23974,7 +25485,7 @@ $as_echo "no" >&6; }
 fi
 rm -f conftest*
 
-       if test ${bad_64bit_gcc} = yes ; then
+       if test "x${bad_64bit_gcc}" = "xyes"; then
 	 as_fn_error $? "A newer version of gcc is needed for the requested 64-bit BFD configuration" "$LINENO" 5
        fi
     fi
@@ -23993,7 +25504,8 @@ esac
 
 
 
-if test "${plugins}" = "yes"; then
+
+if test "x${plugins}" = "xyes"; then
   supports_plugins=1
 else
   supports_plugins=0
@@ -24001,7 +25513,7 @@ fi
 
 
 
-# Determine the host dependant file_ptr a.k.a. off_t type. In order
+# Determine the host-dependent file_ptr a.k.a. off_t type. In order
 # prefer: off64_t - if ftello64 and fseeko64, off_t - if ftello and
 # fseeko, long. This assumes that sizeof off_t is .ge. sizeof long.
 # Hopefully a reasonable assumption since fseeko et.al. should be
@@ -24111,7 +25623,7 @@ test -n "${havevecs}" && tdefaults="${tdefaults} ${havevecs}"
 
 
 # APPLE LOCAL:  mmap() always works right on Darwin.  Take our word for it.
-case "$host" in
+case "${host}" in
   *-apple-darwin* | *-apple-macos*)
     ac_cv_func_mmap_fixed_mapped=yes
   ;;
@@ -24137,7 +25649,11 @@ $as_echo "#define USE_MMAP 1" >>confdefs.h
  ;;
 esac
 
-rm -f doc/config.status
+if test -f doc/config.status; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: doc/config.status is already present, removing it." >&5
+$as_echo "$as_me: doc/config.status is already present, removing it." >&6;}
+  rm -f doc/config.status
+fi
 ac_config_files="$ac_config_files Makefile doc/Makefile bfd-in3.h:bfd-in2.h po/Makefile.in:po/Make-in"
 
 
@@ -24160,6 +25676,9 @@ ac_config_commands="$ac_config_commands libtool_lengthening_hack_fix1"
 
 
 ac_config_commands="$ac_config_commands libtool_lengthening_hack_fix2"
+
+
+ac_config_commands="$ac_config_commands broken_libtool_hack_fix3"
 
 
 
@@ -24757,6 +26276,7 @@ cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
 # Files that config.status was made for.
 config_files="$ac_config_files"
 config_headers="$ac_config_headers"
+config_links="$ac_config_links"
 config_commands="$ac_config_commands"
 
 _ACEOF
@@ -24786,6 +26306,9 @@ $config_files
 
 Configuration headers:
 $config_headers
+
+Configuration links:
+$config_links
 
 Configuration commands:
 $config_commands
@@ -25332,6 +26855,7 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "bfd_stdint.h") CONFIG_COMMANDS="$CONFIG_COMMANDS bfd_stdint.h" ;;
+    "$ac_config_libobj_dir/fnmatch.h") CONFIG_LINKS="$CONFIG_LINKS $ac_config_libobj_dir/fnmatch.h:$ac_config_libobj_dir/fnmatch_.h" ;;
     "po-directories") CONFIG_COMMANDS="$CONFIG_COMMANDS po-directories" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
@@ -25344,6 +26868,7 @@ do
     "bfd_h_vpath_fix2") CONFIG_COMMANDS="$CONFIG_COMMANDS bfd_h_vpath_fix2" ;;
     "libtool_lengthening_hack_fix1") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool_lengthening_hack_fix1" ;;
     "libtool_lengthening_hack_fix2") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool_lengthening_hack_fix2" ;;
+    "broken_libtool_hack_fix3") CONFIG_COMMANDS="$CONFIG_COMMANDS broken_libtool_hack_fix3" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -25357,6 +26882,7 @@ done
 if $ac_need_defaults; then
   test "${CONFIG_FILES+set}" = set || CONFIG_FILES=$config_files
   test "${CONFIG_HEADERS+set}" = set || CONFIG_HEADERS=$config_headers
+  test "${CONFIG_LINKS+set}" = set || CONFIG_LINKS=$config_links
   test "${CONFIG_COMMANDS+set}" = set || CONFIG_COMMANDS=$config_commands
 fi
 
@@ -25654,7 +27180,7 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 fi # test -n "$CONFIG_HEADERS"
 
 
-eval set X "  :F $CONFIG_FILES  :H $CONFIG_HEADERS    :C $CONFIG_COMMANDS"
+eval set X "  :F $CONFIG_FILES  :H $CONFIG_HEADERS  :L $CONFIG_LINKS  :C $CONFIG_COMMANDS"
 shift
 for ac_tag
 do
@@ -25931,7 +27457,38 @@ $as_echo X"$_am_arg" |
 	  }
 	  s/.*/./; q'`/stamp-h$_am_stamp_count
  ;;
+  :L)
+  #
+  # CONFIG_LINK
+  #
 
+  if test "$ac_source" = "$ac_file" && test "$srcdir" = '.'; then
+    :
+  else
+    # Prefer the file from the source tree if names are identical.
+    if test "$ac_source" = "$ac_file" || test ! -r "$ac_source"; then
+      ac_source=$srcdir/$ac_source
+    fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: linking $ac_source to $ac_file" >&5
+$as_echo "$as_me: linking $ac_source to $ac_file" >&6;}
+
+    if test ! -r "$ac_source"; then
+      as_fn_error $? "$ac_source: file not found" "$LINENO" 5
+    fi
+    rm -f "$ac_file"
+
+    # Try a relative symlink, then a hard link, then a copy.
+    case $ac_source in
+    [\\/$]* | ?:[\\/]* ) ac_rel_source=$ac_source ;;
+	*) ac_rel_source=$ac_top_build_prefix$ac_source ;;
+    esac
+    ln -s "$ac_rel_source" "$ac_file" 2>/dev/null ||
+      ln "$ac_source" "$ac_file" 2>/dev/null ||
+      cp -p "$ac_source" "$ac_file" ||
+      as_fn_error $? "cannot link or copy $ac_source to $ac_file" "$LINENO" 5
+  fi
+ ;;
   :C)  { $as_echo "$as_me:${as_lineno-$LINENO}: executing $ac_file commands" >&5
 $as_echo "$as_me: executing $ac_file commands" >&6;}
  ;;
@@ -27281,7 +28838,7 @@ esac
 POFILES=""
 GMOFILES=""
 for lang in dummy ${OBSOLETE_ALL_LINGUAS}; do
-  if test ${lang} != dummy; then
+  if test "x${lang}" != "xdummy"; then
     POFILES="${POFILES} ${srcdirpre}${lang}.po"
     GMOFILES="${GMOFILES} ${srcdirpre}${lang}.gmo"
   fi
@@ -27369,11 +28926,14 @@ if test "$(wc -l < libtool | tr -d [:blank:])" -lt "1000"; then
     # I have no clue why this is even a thing that I have to check for:
     if test -e /mount/endor/wildenhu/local-x86_64/bin/sed; then
       if test -r ../ltmain.sh; then
+        echo "../ltconfig ../ltmain.sh"
         ../ltconfig ../ltmain.sh
       elif test -r ../ltmain-old.sh; then
+        echo "../ltconfig ../ltmain-old.sh"
         ../ltconfig ../ltmain-old.sh
       elif test -r ../ltcf-c.sh; then
-        ../ltconfig ../ltmain-old.sh
+        echo "../ltconfig ../ltcf-c.sh"
+        ../ltconfig ../ltcf-c.sh
       else
         echo "not sure which ltmain.sh to use to do so"
       fi
@@ -27384,6 +28944,56 @@ if test "$(wc -l < libtool | tr -d [:blank:])" -lt "1000"; then
     echo "unable to do so: ../ltconfig is missing and/or unusable"
   fi
 fi
+ ;;
+    "broken_libtool_hack_fix3":C)
+  if test -z "${our_libtool_script}"; then
+    if test -x ./libtool; then
+      our_libtool_script="./libtool"
+    elif test -n "${srcdir}" -a -x ${srcdir}/libtool; then
+      our_libtool_script="${srcdir}/libtool"
+    else
+      our_libtool_script=libtool
+    fi
+  fi
+  if test -z "${LIBTOOL}"; then
+    if test -n "${SHELL}"; then
+      LIBTOOL="${SHELL} ${our_libtool_script}"
+    elif test -x /bin/sh; then
+      LIBTOOL="/bin/sh ${our_libtool_script}"
+    else
+      LIBTOOL="${our_libtool_script}"
+    fi
+  fi
+  if (${LIBTOOL} --config | ${GREP} "objdir="); then
+    my_libtooldir=`${LIBTOOL} --config | ${SED} -n -e 's/^objdir=//p'`
+    if test -n "${my_libtooldir}"; then
+      echo "${our_libtool_script} already defines objdir: '${my_libtooldir}'"
+    else
+      echo "error: my_libtooldir should be defined if ${our_libtool_script} already defines objdir" >&2
+      exit 1
+    fi
+  else
+    echo "" >> ${our_libtool_script}
+    if test -n "${lt_cv_objdir}"; then
+      echo "using lt_cv_objdir ('${lt_cv_objdir}') to define objdir in ${our_libtool_script}"
+      echo "objdir=${lt_cv_objdir}" >> ${our_libtool_script}
+    elif test -n "${objdir}"; then
+      echo "using objdir ('${objdir}') to define objdir in ${our_libtool_script}"
+      echo "objdir=${objdir}" >> ${our_libtool_script}
+    elif test -n "${libtooldir}"; then
+      echo "using libtooldir ('${libtooldir}') to define objdir in ${our_libtool_script}"
+      echo "objdir=${libtooldir}" >> ${our_libtool_script}
+    elif test -d .libs; then
+      echo "using .libs to define objdir in ${our_libtool_script}"
+      echo "objdir=.libs" >> ${our_libtool_script}
+    elif test -n "${srcdir}" -a -d ${srcdir}/.libs; then
+      echo "using ${srcdir}/.libs to define objdir in ${our_libtool_script}"
+      echo "objdir=${srcdir}/.libs" >> ${our_libtool_script}
+    else
+      echo "error: need to define objdir in ${our_libtool_script}, but cannot figure out how to do so" >&2
+      exit 1
+    fi
+  fi
  ;;
 
   esac

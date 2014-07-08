@@ -1,4 +1,4 @@
-/* BFD backend for CRIS a.out binaries.
+/* aout-cris.c: BFD backend for CRIS a.out binaries.
    Copyright 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
    Contributed by Axis Communications AB.
    Written by Hans-Peter Nilsson.

@@ -1,7 +1,7 @@
-/* Generate parameters for an a.out system.
-   Copyright 1990, 1991, 1992, 1993, 1994, 1995, 2001, 2002
-   Free Software Foundation, Inc.
-
+/* gen-aout.c: Generate parameters for an a.out system.
+ * Copyright 1990, 1991, 1992, 1993, 1994, 1995, 2001, 2002
+ * Free Software Foundation, Inc. */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,8 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+ */
 
 #include "/usr/include/a.out.h"
 #include <stdio.h>
@@ -25,8 +26,7 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 # define _(X) X
 #endif /* !_ */
 
-int
-main (argc, argv)
+int main(argc, argv)
      int argc; char** argv;
 {
   struct exec my_exec;
@@ -46,23 +46,23 @@ main (argc, argv)
   target = argv[1];
   if (target == NULL) {
       fprintf(stderr, "Usage: gen-aout target_name\n");
-      exit (1);
+      exit(1);
   }
 
 #ifdef N_TXTOFF
   page_size = N_TXTOFF(my_exec);
-  if (page_size == 0)
+  if (page_size == 0) {
     printf("#define N_HEADER_IN_TEXT(x) 1\n");
-  else
+  } else {
     printf("#define N_HEADER_IN_TEXT(x) 0\n");
+  }
 #endif /* N_TXTOFF */
 
   printf("#define BYTES_IN_WORD %d\n", sizeof (int));
   if (my_exec.a_entry == 0) {
       printf("#define ENTRY_CAN_BE_ZERO\n");
       printf("#define N_SHARED_LIB(x) 0 /* Avoids warning */\n");
-  }
-  else {
+  } else {
       printf("/*#define ENTRY_CAN_BE_ZERO*/\n");
       printf("/*#define N_SHARED_LIB(x) 0*/\n");
   }
@@ -70,13 +70,15 @@ main (argc, argv)
   printf("#define TEXT_START_ADDR %d\n", my_exec.a_entry);
 
 #ifdef PAGSIZ
-  if (page_size == 0)
+  if (page_size == 0) {
     page_size = PAGSIZ;
+  }
 #endif /* PAGSIZ */
-  if (page_size != 0)
+  if (page_size != 0) {
     printf("#define TARGET_PAGE_SIZE %d\n", page_size);
-  else
+  } else {
     printf("/* #define TARGET_PAGE_SIZE ??? */\n");
+  }
   printf("#define SEGMENT_SIZE TARGET_PAGE_SIZE\n");
 
 #ifdef vax
@@ -85,12 +87,11 @@ main (argc, argv)
 #ifdef m68k
   arch = "m68k";
 #endif /* m68k */
-  if (arch[0] == '1')
-    {
-      fprintf (stderr, _("warning: preprocessor substituted architecture name inside string;"));
-      fprintf (stderr, _("         fix DEFAULT_ARCH in the output file yourself\n"));
+  if (arch[0] == '1') {
+      fprintf(stderr, _("warning: preprocessor substituted architecture name inside string;"));
+      fprintf(stderr, _("         fix DEFAULT_ARCH in the output file yourself\n"));
       arch = "unknown";
-    }
+  }
   printf("#define DEFAULT_ARCH bfd_arch_%s\n\n", arch);
 
   printf("/* Do not \"beautify\" the CONCAT* macro args.  Traditional C will not");

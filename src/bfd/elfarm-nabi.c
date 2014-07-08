@@ -641,7 +641,13 @@ static const struct elf32_arm_reloc_map elf32_arm_reloc_map[] =
     {BFD_RELOC_ARM_OFFSET_IMM,       R_ARM_ABS12},
     {BFD_RELOC_ARM_THUMB_OFFSET,     R_ARM_THM_ABS5},
     {BFD_RELOC_THUMB_PCREL_BRANCH23, R_ARM_THM_PC22},
+#ifdef BFD_RELOC_ARM_COPY
     {BFD_RELOC_ARM_COPY,             R_ARM_COPY},
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__) && !defined(__STDC__)
+#  warning "elf32_arm_reloc_map is missing a member"
+# endif /* __GNUC__ && !__STRICT_ANSI__ && !__STDC__ */
+#endif /* BFD_RELOC_ARM_COPY */
     {BFD_RELOC_ARM_GLOB_DAT,         R_ARM_GLOB_DAT},
     {BFD_RELOC_ARM_JUMP_SLOT,        R_ARM_JUMP_SLOT},
     {BFD_RELOC_ARM_RELATIVE,         R_ARM_RELATIVE},
@@ -651,8 +657,7 @@ static const struct elf32_arm_reloc_map elf32_arm_reloc_map[] =
     {BFD_RELOC_ARM_PLT32,            R_ARM_PLT32}
   };
 
-static reloc_howto_type *
-elf32_arm_reloc_type_lookup (abfd, code)
+static reloc_howto_type *elf32_arm_reloc_type_lookup(abfd, code)
      bfd *abfd ATTRIBUTE_UNUSED;
      bfd_reloc_code_real_type code;
 {
