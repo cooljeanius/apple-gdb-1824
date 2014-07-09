@@ -651,6 +651,9 @@ bfd_libs
 wordsize
 UNIQ_BIN
 TDEFINES
+selarchs
+selvecs
+ac_config_sub
 SHARED_LIBADD
 SHARED_LDFLAGS
 WIN32LIBADD
@@ -874,6 +877,7 @@ enable_libtool_lock
 enable_plugins
 enable_64_bit_bfd
 enable_targets
+enable_obsolete
 enable_commonbfdlib
 with_mmap
 enable_secureplt
@@ -1540,7 +1544,11 @@ Optional Features:
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --enable-plugins        Enable support for plugins (defaults no)
   --enable-64-bit-bfd     64-bit support (on hosts with narrower word sizes)
-  --enable-targets        alternative target configurations
+  --enable-targets        A comma-delimited list of alternate target
+                          configurations. Alternatively, whitespace-delimiting
+                          it could work, too, if you remember to quote it
+                          properly.
+  --enable-obsolete       allow building of obsolete target configurations
   --enable-commonbfdlib   build shared BFD/opcodes/libiberty library
   --enable-secureplt      Default to creating read-only plt entries
   --enable-elf-stt-common Allow the generation of ELF symbols with the
@@ -17927,8 +17935,6 @@ fi
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: changing how libtool works" >&5
 $as_echo "$as_me: WARNING: changing how libtool works" >&2;}
 
-
-
   fi
 fi
 
@@ -17948,7 +17954,6 @@ fi
 
 
 
-
  if test "x${plugins}" = "xyes"; then
   PLUGINS_TRUE=
   PLUGINS_FALSE='#'
@@ -17956,7 +17961,6 @@ else
   PLUGINS_TRUE='#'
   PLUGINS_FALSE=
 fi
-
 
 if test "x${plugins}" = "xyes"; then
   if test "x${enable_dlopen}" != "xyes"; then
@@ -17983,9 +17987,21 @@ if test "${enable_targets+set}" = set; then :
       as_fn_error $? "enable-targets flag must specify targ names or 'all'" "$LINENO" 5
       ;;
   no) enable_targets="" ;;
-  *)  enable_targets=${enableval} ;;
+  *)  enable_targets="${enableval}" ;;
 esac
+test -n "${enable_targets}"
 fi
+
+# Check whether --enable-obsolete was given.
+if test "${enable_obsolete+set}" = set; then :
+  enableval=$enable_obsolete; case "${enableval}" in
+  yes) export enable_obsolete="yes" ;;
+  no)  export enable_obsolete="no" ;;
+  *)   as_fn_error $? "bad value '${enableval}' for obsolete flag" "$LINENO" 5 ;;
+esac
+test -n "${enable_obsolete}"
+fi
+
 # Check whether --enable-commonbfdlib was given.
 if test "${enable_commonbfdlib+set}" = set; then :
   enableval=$enable_commonbfdlib; case "${enableval}" in
@@ -17993,6 +18009,7 @@ if test "${enable_commonbfdlib+set}" = set; then :
   no)  commonbfdlib=false ;;
   *)   as_fn_error $? "bad value ${enableval} for BFD commonbfdlib flag" "$LINENO" 5 ;;
 esac
+test -n "${commonbfdlib}"
 fi
 
 # Check whether --with-mmap was given.
@@ -18002,6 +18019,7 @@ if test "${with_mmap+set}" = set; then :
   no)   want_mmap=false ;;
   *)    as_fn_error $? "bad value ${withval} for BFD with-mmap option" "$LINENO" 5 ;;
 esac
+test -n "${want_mmap}"
 else
   want_mmap=false
 fi
@@ -18028,7 +18046,6 @@ DEBUGDIR=${libdir}/debug
 if test "${with_separate_debug_dir+set}" = set; then :
   withval=$with_separate_debug_dir; DEBUGDIR="${withval}"
 fi
-
 
 
 # Check to see if we should allow the generation of
@@ -18172,7 +18189,6 @@ fi
 
 # PR 14072
 
-
 if test -z "${target}"; then
   as_fn_error $? "Unrecognized target system type; please check config.sub" "$LINENO" 5
 fi
@@ -18244,7 +18260,6 @@ else
   GENINSRC_NEVER_TRUE='#'
   GENINSRC_NEVER_FALSE=
 fi
-
 
 
 
@@ -19413,7 +19428,6 @@ $as_echo "$as_me: sourcing ${srcdir}/configure.host" >&6;}
 . ${srcdir}/configure.host
 
 
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ln -s works" >&5
 $as_echo_n "checking whether ln -s works... " >&6; }
 LN_S=$as_ln_s
@@ -19572,7 +19586,6 @@ cat >>confdefs.h <<_ACEOF
 #define SIZEOF_VOID_P $ac_cv_sizeof_void_p
 _ACEOF
 
-
 # The cast to long int works around a bug in the HP C Compiler,
 # see AC_CHECK_SIZEOF for more information.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking alignment of void *" >&5
@@ -19607,7 +19620,6 @@ cat >>confdefs.h <<_ACEOF
 #define ALIGNOF_VOID_P $ac_cv_alignof_void_p
 _ACEOF
 
-
 # The cast to long int works around a bug in the HP C Compiler
 # version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
 # declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
@@ -19639,7 +19651,6 @@ $as_echo "$ac_cv_sizeof_long" >&6; }
 cat >>confdefs.h <<_ACEOF
 #define SIZEOF_LONG $ac_cv_sizeof_long
 _ACEOF
-
 
 # The cast to long int works around a bug in the HP C Compiler,
 # see AC_CHECK_SIZEOF for more information.
@@ -19675,7 +19686,6 @@ cat >>confdefs.h <<_ACEOF
 #define ALIGNOF_LONG $ac_cv_alignof_long
 _ACEOF
 
-
 if test "x${ac_cv_sizeof_long}" = "x8"; then
   host64=true
   BFD_HOST_64BIT_LONG=1
@@ -19695,13 +19705,6 @@ if test -n "${HOST_64BIT_TYPE}" -a -n "${HOST_U_64BIT_TYPE}"; then
   BFD_HOST_64_BIT="${HOST_64BIT_TYPE}"
   BFD_HOST_U_64_BIT="${HOST_U_64BIT_TYPE}"
 fi
-
-
-
-
-
-
-
 
 
 # Put a plausible default for CC_FOR_BUILD in Makefile.
@@ -19860,7 +19863,6 @@ fi
 if test -z "${SYSTEM_FRAMEWORK_LIBS}"; then
   as_fn_error $? "Missing some required system libraries." "$LINENO" 5
 fi
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for printf in -lc" >&5
 $as_echo_n "checking for printf in -lc... " >&6; }
 if ${ac_cv_lib_c_printf+:} false; then :
@@ -19905,7 +19907,6 @@ _ACEOF
   LIBS="-lc $LIBS"
 
 fi
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for dlsym in -ldl" >&5
 $as_echo_n "checking for dlsym in -ldl... " >&6; }
 if ${ac_cv_lib_dl_dlsym+:} false; then :
@@ -19950,7 +19951,6 @@ _ACEOF
   LIBS="-ldl $LIBS"
 
 fi
-
 # ../intl is added to LDFLAGS above, so this should work:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gettext in -lintl" >&5
 $as_echo_n "checking for gettext in -lintl... " >&6; }
@@ -20036,9 +20036,7 @@ _ACEOF
 
 fi
 
-
 fi
-
 # FIXME: Replace `main' with a function in `-liberty':
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -liberty" >&5
 $as_echo_n "checking for main in -liberty... " >&6; }
@@ -20078,7 +20076,6 @@ _ACEOF
   LIBS="-liberty $LIBS"
 
 fi
-
 # FIXME: Replace `main' with a function in `-lgnu':
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lgnu" >&5
 $as_echo_n "checking for main in -lgnu... " >&6; }
@@ -20118,7 +20115,6 @@ _ACEOF
   LIBS="-lgnu $LIBS"
 
 fi
-
 
 # Checks for header files.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking headers" >&5
@@ -20238,7 +20234,8 @@ for ac_header in ctype.h errno.h fcntl.h gettext.h iconv.h libgettext.h \
                   libintl.h limits.h mach/mach.h mach-o/loader.h \
                   malloca.h malloc/malloc.h realloc.h stdarg.h stddef.h \
                   stdio.h sys/file.h sys/param.h sys/resource.h \
-                  sys/socket.h sys/time.h time.h windows.h
+                  sys/socket.h sys/time.h time.h wchar.h wctype.h \
+                  windows.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -20250,7 +20247,6 @@ _ACEOF
 fi
 
 done
-
 
 
 inttype_headers=`echo inttypes.h sys/inttypes.h stdint.h | sed -e 's/,/ /g'`
@@ -20651,7 +20647,6 @@ fi
 ac_config_commands="$ac_config_commands bfd_stdint.h"
 
 
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether time.h and sys/time.h may both be included" >&5
 $as_echo_n "checking whether time.h and sys/time.h may both be included... " >&6; }
 if ${ac_cv_header_time+:} false; then :
@@ -20897,8 +20892,10 @@ if ${gcc_cv_header_string+:} false; then :
 else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
+
 #include <string.h>
 #include <strings.h>
+
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
   gcc_cv_header_string=yes
@@ -20909,7 +20906,7 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gcc_cv_header_string" >&5
 $as_echo "$gcc_cv_header_string" >&6; }
-if test ${gcc_cv_header_string} = yes; then
+if test "x${gcc_cv_header_string}" = "xyes"; then
 
 $as_echo "#define STRING_WITH_STRINGS 1" >>confdefs.h
 
@@ -20928,7 +20925,6 @@ _ACEOF
 fi
 
 done
-
 
 # Checks for typedefs, structures, and compiler characteristics.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking C language characteristics that your C compiler supports" >&5
@@ -21280,7 +21276,6 @@ _ACEOF
 
 fi
 
-
 ac_fn_c_find_intX_t "$LINENO" "32" "ac_cv_c_int32_t"
 case $ac_cv_c_int32_t in #(
   no|yes) ;; #(
@@ -21319,9 +21314,6 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 ;;
   esac
-
-
-
 
 
 
@@ -21455,11 +21447,12 @@ $as_echo "no" >&6; }
 fi
 
 
-for ac_func in exit fcntl fdopen feof ferror fileno fopen fprintf fread \
-                getgid getrlimit getuid islower isspace isupper \
-                memchr memmove memset qsort rpl_malloc rpl_realloc \
-                setitimer strcmp strdup strncasecmp strrchr strspn \
-                strstr strtol strtoul strtoull sysconf system uname
+for ac_func in btowc exit fcntl fdopen feof ferror fileno fopen fprintf \
+                fread getgid getrlimit getuid islower isspace isupper \
+                mbsrtowcs memchr memmove mempcpy memset qsort \
+                rpl_malloc rpl_realloc setitimer strcmp strdup \
+                strncasecmp strrchr strspn strstr strtol strtoul strtoull \
+                sysconf system uname wmempcpy
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
@@ -21470,7 +21463,6 @@ _ACEOF
 
 fi
 done
-
 
 
 
@@ -21485,7 +21477,6 @@ _ACEOF
 
 fi
 done
-
 
 
 
@@ -21530,6 +21521,58 @@ if test $ac_cv_func_closedir_void = yes; then
 $as_echo "#define CLOSEDIR_VOID 1" >>confdefs.h
 
 fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for working POSIX fnmatch" >&5
+$as_echo_n "checking for working POSIX fnmatch... " >&6; }
+if ${ac_cv_func_fnmatch_works+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  # Some versions of Solaris, SCO, and the GNU C Library
+   # have a broken or incompatible fnmatch.
+   # So we run a test program.  If we are cross-compiling, take no chance.
+   # Thanks to John Oleynick, Franc,ois Pinard, and Paul Eggert for this test.
+   if test "$cross_compiling" = yes; then :
+  ac_cv_func_fnmatch_works=cross
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <fnmatch.h>
+#	   define y(a, b, c) (fnmatch (a, b, c) == 0)
+#	   define n(a, b, c) (fnmatch (a, b, c) == FNM_NOMATCH)
+
+int
+main ()
+{
+return
+	   (!(y ("a*", "abc", 0)
+	      && n ("d*/*1", "d/s/1", FNM_PATHNAME)
+	      && y ("a\\\\bc", "abc", 0)
+	      && n ("a\\\\bc", "abc", FNM_NOESCAPE)
+	      && y ("*x", ".x", 0)
+	      && n ("*x", ".x", FNM_PERIOD)
+	      && 1));
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_fnmatch_works=yes
+else
+  ac_cv_func_fnmatch_works=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_fnmatch_works" >&5
+$as_echo "$ac_cv_func_fnmatch_works" >&6; }
+if test $ac_cv_func_fnmatch_works = yes; then :
+
+$as_echo "#define HAVE_FNMATCH 1" >>confdefs.h
+
+fi
+
 
 for ac_header in vfork.h
 do :
@@ -22192,140 +22235,7 @@ fi
 done
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for mbstate_t" >&5
-$as_echo_n "checking for mbstate_t... " >&6; }
-if ${ac_cv_type_mbstate_t+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-$ac_includes_default
-#	    include <wchar.h>
-int
-main ()
-{
-mbstate_t x; return sizeof x;
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  ac_cv_type_mbstate_t=yes
-else
-  ac_cv_type_mbstate_t=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_type_mbstate_t" >&5
-$as_echo "$ac_cv_type_mbstate_t" >&6; }
-   if test $ac_cv_type_mbstate_t = yes; then
-
-$as_echo "#define HAVE_MBSTATE_T 1" >>confdefs.h
-
-   else
-
-$as_echo "#define mbstate_t int" >>confdefs.h
-
-   fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for working POSIX fnmatch" >&5
-$as_echo_n "checking for working POSIX fnmatch... " >&6; }
-if ${ac_cv_func_fnmatch_works+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  # Some versions of Solaris, SCO, and the GNU C Library
-   # have a broken or incompatible fnmatch.
-   # So we run a test program.  If we are cross-compiling, take no chance.
-   # Thanks to John Oleynick, Franc,ois Pinard, and Paul Eggert for this test.
-   if test "$cross_compiling" = yes; then :
-  ac_cv_func_fnmatch_works=cross
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <fnmatch.h>
-#	   define y(a, b, c) (fnmatch (a, b, c) == 0)
-#	   define n(a, b, c) (fnmatch (a, b, c) == FNM_NOMATCH)
-
-int
-main ()
-{
-return
-	   (!(y ("a*", "abc", 0)
-	      && n ("d*/*1", "d/s/1", FNM_PATHNAME)
-	      && y ("a\\\\bc", "abc", 0)
-	      && n ("a\\\\bc", "abc", FNM_NOESCAPE)
-	      && y ("*x", ".x", 0)
-	      && n ("*x", ".x", FNM_PERIOD)
-	      && 1));
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_run "$LINENO"; then :
-  ac_cv_func_fnmatch_works=yes
-else
-  ac_cv_func_fnmatch_works=no
-fi
-rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
-  conftest.$ac_objext conftest.beam conftest.$ac_ext
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_fnmatch_works" >&5
-$as_echo "$ac_cv_func_fnmatch_works" >&6; }
-if test $ac_cv_func_fnmatch_works = yes; then :
-  rm -f "$ac_config_libobj_dir/fnmatch.h"
-else
-  ac_fn_c_check_decl "$LINENO" "getenv" "ac_cv_have_decl_getenv" "$ac_includes_default"
-if test "x$ac_cv_have_decl_getenv" = xyes; then :
-  ac_have_decl=1
-else
-  ac_have_decl=0
-fi
-
-cat >>confdefs.h <<_ACEOF
-#define HAVE_DECL_GETENV $ac_have_decl
-_ACEOF
-
-for ac_func in btowc mbsrtowcs mempcpy wmempcpy
-do :
-  as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
-ac_fn_c_check_func "$LINENO" "$ac_func" "$as_ac_var"
-if eval test \"x\$"$as_ac_var"\" = x"yes"; then :
-  cat >>confdefs.h <<_ACEOF
-#define `$as_echo "HAVE_$ac_func" | $as_tr_cpp` 1
-_ACEOF
-
-fi
-done
-
-for ac_header in wchar.h wctype.h
-do :
-  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
-ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
-if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
-  cat >>confdefs.h <<_ACEOF
-#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
-_ACEOF
-
-fi
-
-done
-
-case " $LIBOBJS " in
-  *" fnmatch.$ac_objext "* ) ;;
-  *) LIBOBJS="$LIBOBJS fnmatch.$ac_objext"
- ;;
-esac
-
-ac_config_links="$ac_config_links $ac_config_libobj_dir/fnmatch.h:$ac_config_libobj_dir/fnmatch_.h"
-
-
-$as_echo "#define fnmatch rpl_fnmatch" >>confdefs.h
-
-
-fi
-
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing rpl_realloc" >&5
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing rpl_realloc" >&5
 $as_echo_n "checking for library containing rpl_realloc... " >&6; }
 if ${ac_cv_search_rpl_realloc+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -22380,7 +22290,6 @@ if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
 fi
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing rpl_malloc" >&5
 $as_echo_n "checking for library containing rpl_malloc... " >&6; }
 if ${ac_cv_search_rpl_malloc+:} false; then :
@@ -22436,7 +22345,6 @@ if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
 fi
-
 
 # other misc. stuff:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking stuff that we might have already checked" >&5
@@ -22726,6 +22634,41 @@ $as_echo "#define HAVE_SYS_WAIT_H 1" >>confdefs.h
 
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for mbstate_t" >&5
+$as_echo_n "checking for mbstate_t... " >&6; }
+if ${ac_cv_type_mbstate_t+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+#	    include <wchar.h>
+int
+main ()
+{
+mbstate_t x; return sizeof x;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_type_mbstate_t=yes
+else
+  ac_cv_type_mbstate_t=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_type_mbstate_t" >&5
+$as_echo "$ac_cv_type_mbstate_t" >&6; }
+   if test $ac_cv_type_mbstate_t = yes; then
+
+$as_echo "#define HAVE_MBSTATE_T 1" >>confdefs.h
+
+   else
+
+$as_echo "#define mbstate_t int" >>confdefs.h
+
+   fi
 ac_fn_c_find_intX_t "$LINENO" "8" "ac_cv_c_int8_t"
 case $ac_cv_c_int8_t in #(
   no|yes) ;; #(
@@ -23298,30 +23241,7 @@ fi
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- if test "x${GETTEXT_MACRO_VERSION}" = "x"; then
+  if test "x${GETTEXT_MACRO_VERSION}" = "x"; then
    test -z "${GETTEXT_MACRO_VERSION}"
 
  fi
@@ -23341,7 +23261,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_BASENAME $ac_have_decl
 _ACEOF
-
 ac_fn_c_check_decl "$LINENO" "ftello" "ac_cv_have_decl_ftello" "$ac_includes_default"
 if test "x$ac_cv_have_decl_ftello" = xyes; then :
   ac_have_decl=1
@@ -23352,7 +23271,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_FTELLO $ac_have_decl
 _ACEOF
-
 ac_fn_c_check_decl "$LINENO" "ftello64" "ac_cv_have_decl_ftello64" "$ac_includes_default"
 if test "x$ac_cv_have_decl_ftello64" = xyes; then :
   ac_have_decl=1
@@ -23363,7 +23281,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_FTELLO64 $ac_have_decl
 _ACEOF
-
 ac_fn_c_check_decl "$LINENO" "fseeko" "ac_cv_have_decl_fseeko" "$ac_includes_default"
 if test "x$ac_cv_have_decl_fseeko" = xyes; then :
   ac_have_decl=1
@@ -23374,7 +23291,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_FSEEKO $ac_have_decl
 _ACEOF
-
 ac_fn_c_check_decl "$LINENO" "fseeko64" "ac_cv_have_decl_fseeko64" "$ac_includes_default"
 if test "x$ac_cv_have_decl_fseeko64" = xyes; then :
   ac_have_decl=1
@@ -23385,7 +23301,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_FSEEKO64 $ac_have_decl
 _ACEOF
-
 
 
 case "${host}" in
@@ -23405,7 +23320,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_FFS $ac_have_decl
 _ACEOF
-
 ac_fn_c_check_decl "$LINENO" "free" "ac_cv_have_decl_free" "$ac_includes_default"
 if test "x$ac_cv_have_decl_free" = xyes; then :
   ac_have_decl=1
@@ -23416,7 +23330,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_FREE $ac_have_decl
 _ACEOF
-
 ac_fn_c_check_decl "$LINENO" "getenv" "ac_cv_have_decl_getenv" "$ac_includes_default"
 if test "x$ac_cv_have_decl_getenv" = xyes; then :
   ac_have_decl=1
@@ -23427,7 +23340,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_GETENV $ac_have_decl
 _ACEOF
-
 ac_fn_c_check_decl "$LINENO" "malloc" "ac_cv_have_decl_malloc" "$ac_includes_default"
 if test "x$ac_cv_have_decl_malloc" = xyes; then :
   ac_have_decl=1
@@ -23438,7 +23350,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_MALLOC $ac_have_decl
 _ACEOF
-
 ac_fn_c_check_decl "$LINENO" "realloc" "ac_cv_have_decl_realloc" "$ac_includes_default"
 if test "x$ac_cv_have_decl_realloc" = xyes; then :
   ac_have_decl=1
@@ -23449,7 +23360,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_REALLOC $ac_have_decl
 _ACEOF
-
 ac_fn_c_check_decl "$LINENO" "stpcpy" "ac_cv_have_decl_stpcpy" "$ac_includes_default"
 if test "x$ac_cv_have_decl_stpcpy" = xyes; then :
   ac_have_decl=1
@@ -23460,7 +23370,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_STPCPY $ac_have_decl
 _ACEOF
-
 ac_fn_c_check_decl "$LINENO" "strstr" "ac_cv_have_decl_strstr" "$ac_includes_default"
 if test "x$ac_cv_have_decl_strstr" = xyes; then :
   ac_have_decl=1
@@ -23471,7 +23380,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_STRSTR $ac_have_decl
 _ACEOF
-
 ac_fn_c_check_decl "$LINENO" "snprintf" "ac_cv_have_decl_snprintf" "$ac_includes_default"
 if test "x$ac_cv_have_decl_snprintf" = xyes; then :
   ac_have_decl=1
@@ -23482,7 +23390,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_SNPRINTF $ac_have_decl
 _ACEOF
-
 ac_fn_c_check_decl "$LINENO" "vsnprintf" "ac_cv_have_decl_vsnprintf" "$ac_includes_default"
 if test "x$ac_cv_have_decl_vsnprintf" = xyes; then :
   ac_have_decl=1
@@ -23493,7 +23400,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_VSNPRINTF $ac_have_decl
 _ACEOF
-
 ac_fn_c_check_decl "$LINENO" "strnlen" "ac_cv_have_decl_strnlen" "$ac_includes_default"
 if test "x$ac_cv_have_decl_strnlen" = xyes; then :
   ac_have_decl=1
@@ -23504,7 +23410,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_STRNLEN $ac_have_decl
 _ACEOF
-
 
 # Link in zlib if we can. This allows us to read compressed debug sections.
 # This is used only by compress.c.
@@ -23596,7 +23501,6 @@ fi
       as_fn_error $? "zlib (libz) library was explicitly requested but not found" "$LINENO" 5
     fi
   fi
-
 
 
 # If we are configured native, pick a core file support file.
@@ -24463,7 +24367,6 @@ $as_echo "$bfd_cv_have_sys_procfs_type_win32_pstatus_t" >&6; }
   fi
 fi
 
-
 if test -n "${CORE_HEADER}"; then
 
 cat >>confdefs.h <<_ACEOF
@@ -24493,7 +24396,6 @@ else
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $bfd_cv_ld_as_needed" >&5
 $as_echo "$bfd_cv_ld_as_needed" >&6; }
-
 LIBM=
 case $host in
 *-*-beos* | *-*-cegcc* | *-*-cygwin* | *-*-haiku* | *-*-pw32* | *-*-darwin*)
@@ -24630,8 +24532,8 @@ esac
 # When building a shared libbfd, link against the pic version of libiberty
 # so that apps that use libbfd will NOT need libiberty just to satisfy any
 # libbfd references.
-# We cannot do that if a pic libiberty is unavailable since including non-pic
-# code would insert text relocations into libbfd.
+# We cannot do that if a pic libiberty is unavailable since including
+# non-pic code would insert text relocations into libbfd.
 # These are also horrible hacks to build DLLs on Windows.
 WIN32LDFLAGS=""
 WIN32LIBADD=""
@@ -24688,10 +24590,6 @@ or1k*-*-darwin*)
   ;;
 esac
 
-
-
-
-
 # target stuff:
 
 # Canonicalize the secondary target names.
@@ -24699,7 +24597,7 @@ if test -n "${enable_targets}"; then
     for targ in `echo ${enable_targets} | sed 's/,/ /g'`
     do
 	result=`${ac_config_sub} ${targ} 2>/dev/null`
-	if test -n "${result}" ; then
+	if test -n "${result}"; then
 	    canon_targets="${canon_targets} ${result}"
 	else
 	    # Allow targets that config.sub does NOT recognize, like "all".
@@ -24708,30 +24606,57 @@ if test -n "${enable_targets}"; then
     done
 fi
 
+
 all_targets=false
 defvec=""
 selvecs=""
 assocvecs=""
 selarchs=""
 TDEFINES=""
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking which targets to look up" >&5
+$as_echo_n "checking which targets to look up... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: plain ones are '${target}' and canonical ones are '${canon_targets}'" >&5
+$as_echo "plain ones are '${target}' and canonical ones are '${canon_targets}'" >&6; }
 for targ in ${target} ${canon_targets}
 do
     if test "x${targ}" = "xall"; then
+        { $as_echo "$as_me:${as_lineno-$LINENO}: no need to source config.bfd when targ is 'all'" >&5
+$as_echo "$as_me: no need to source config.bfd when targ is 'all'" >&6;}
         all_targets=true
 	assocvecs="${assocvecs} ${targ_defvec} ${targ_selvecs}"
     else
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: sourcing ${srcdir}/config.bfd" >&5
-$as_echo "$as_me: sourcing ${srcdir}/config.bfd" >&6;}
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: sourcing ${srcdir}/config.bfd for target '${targ}'" >&5
+$as_echo "$as_me: sourcing ${srcdir}/config.bfd for target '${targ}'" >&6;}
 	. ${srcdir}/config.bfd
+        if test -z "${BREAK_MY_BUILD}"; then
+            # reassign these to avoid build errors:
+            if test "x${targ_defvec}" = "xx86_64_mach_o_vec"; then
+                targ_defvec=mach_o_le_vec
+            fi
+            if test "x${targ_selvecs}" = "xx86_64_mach_o_vec"; then
+                unset targ_selvecs
+            fi
+            if test "x${targ64_selvecs}" = "xx86_64_mach_o_vec"; then
+                unset targ64_selvecs
+            fi
+        fi
 	if test "x${targ}" = "x${target}"; then
-	    defvec=${targ_defvec}
+	    defvec="${targ_defvec}"
+            { $as_echo "$as_me:${as_lineno-$LINENO}: defvec is now '${defvec}'" >&5
+$as_echo "$as_me: defvec is now '${defvec}'" >&6;}
 	fi
 	selvecs="${selvecs} ${targ_defvec} ${targ_selvecs}"
+        { $as_echo "$as_me:${as_lineno-$LINENO}: selvecs are now '${selvecs}'" >&5
+$as_echo "$as_me: selvecs are now '${selvecs}'" >&6;}
 	selarchs="${selarchs} ${targ_archs}"
+        { $as_echo "$as_me:${as_lineno-$LINENO}: selarchs are now '${selarchs}'" >&5
+$as_echo "$as_me: selarchs are now '${selarchs}'" >&6;}
 	TDEFINES="${TDEFINES} ${targ_cflags}"
+        { $as_echo "$as_me:${as_lineno-$LINENO}: TDEFINES are now '${TDEFINES}'" >&5
+$as_echo "$as_me: TDEFINES are now '${TDEFINES}'" >&6;}
     fi
 done
-
 
 # This processing still needs to be done if we are to decide properly
 # whether 64-bit support needs to be compiled in. Currently, it will be
@@ -24787,7 +24712,7 @@ done
 
 # uniq the default and selected vectors in all the configured targets.
 f=""
-for i in ${selvecs} ; do
+for i in ${selvecs}; do
     case " ${f} " in
     *" ${i} "*) ;;
     *) f="${f} ${i}" ;;
@@ -25373,7 +25298,7 @@ do
     x86_64_elf64_fbsd_vec) tb="${tb} elf64-x86-64.lo elf-ifunc.lo elf-nacl.lo elf64.lo $elf"; target_size=64 ;;
     x86_64_elf64_nacl_vec) tb="${tb} elf64-x86-64.lo elf-ifunc.lo elf-nacl.lo elf64.lo $elf"; target_size=64 ;;
     x86_64_elf64_sol2_vec) tb="${tb} elf64-x86-64.lo elf-ifunc.lo elf-nacl.lo elf64.lo $elf"; target_size=64 ;;
-    x86_64_mach_o_vec) tb="${tb} mach-o-x86-64.lo" ;;
+    x86_64_mach_o_vec) if test -n "${BREAK_MY_BUILD}"; then tb="${tb} mach-o-x86-64.lo"; fi ;;
     x86_64_pe_vec) tb="${tb} pe-x86_64.lo pex64igen.lo cofflink.lo"; target_size=64 ;;
     x86_64_pe_be_vec) tb="${tb} pe-x86_64.lo pex64igen.lo cofflink.lo"; target_size=64 ;;
     x86_64_pei_vec) tb="${tb} pei-x86_64.lo pex64igen.lo cofflink.lo"; target_size=64 ;;
@@ -25498,20 +25423,11 @@ rm -f conftest*
 esac
 
 
-
-
-
-
-
-
-
 if test "x${plugins}" = "xyes"; then
   supports_plugins=1
 else
   supports_plugins=0
 fi
-
-
 
 # Determine the host-dependent file_ptr a.k.a. off_t type. In order
 # prefer: off64_t - if ftello64 and fseeko64, off_t - if ftello and
@@ -25612,15 +25528,12 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${bfd_file_ptr}" >&5
 $as_echo "${bfd_file_ptr}" >&6; }
 
-
-
 tdefaults=""
 test -n "${defvec}" && tdefaults="${tdefaults} -DDEFAULT_VECTOR=${defvec}"
 test -n "${selvecs}" && tdefaults="${tdefaults} -DSELECT_VECS='${selvecs}'"
 test -n "${assocvecs}" && tdefaults="${tdefaults} -DASSOCIATED_VECS='${assocvecs}'"
 test -n "${selarchs}" && tdefaults="${tdefaults} -DSELECT_ARCHITECTURES='${selarchs}'"
 test -n "${havevecs}" && tdefaults="${tdefaults} ${havevecs}"
-
 
 # APPLE LOCAL:  mmap() always works right on Darwin.  Take our word for it.
 case "${host}" in
@@ -25656,34 +25569,22 @@ $as_echo "$as_me: doc/config.status is already present, removing it." >&6;}
 fi
 ac_config_files="$ac_config_files Makefile doc/Makefile bfd-in3.h:bfd-in2.h po/Makefile.in:po/Make-in"
 
-
 ac_config_commands="$ac_config_commands default"
 
 
 ac_config_commands="$ac_config_commands default-2"
 
-
 ac_config_commands="$ac_config_commands config_status_vpath_build_fix"
-
 
 ac_config_commands="$ac_config_commands bfd_h_vpath_fix"
 
-
 ac_config_commands="$ac_config_commands bfd_h_vpath_fix2"
-
 
 ac_config_commands="$ac_config_commands libtool_lengthening_hack_fix1"
 
-
 ac_config_commands="$ac_config_commands libtool_lengthening_hack_fix2"
 
-
 ac_config_commands="$ac_config_commands broken_libtool_hack_fix3"
-
-
-
-
-
 
 
 cat >confcache <<\_ACEOF
@@ -26276,7 +26177,6 @@ cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
 # Files that config.status was made for.
 config_files="$ac_config_files"
 config_headers="$ac_config_headers"
-config_links="$ac_config_links"
 config_commands="$ac_config_commands"
 
 _ACEOF
@@ -26306,9 +26206,6 @@ $config_files
 
 Configuration headers:
 $config_headers
-
-Configuration links:
-$config_links
 
 Configuration commands:
 $config_commands
@@ -26855,7 +26752,6 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "bfd_stdint.h") CONFIG_COMMANDS="$CONFIG_COMMANDS bfd_stdint.h" ;;
-    "$ac_config_libobj_dir/fnmatch.h") CONFIG_LINKS="$CONFIG_LINKS $ac_config_libobj_dir/fnmatch.h:$ac_config_libobj_dir/fnmatch_.h" ;;
     "po-directories") CONFIG_COMMANDS="$CONFIG_COMMANDS po-directories" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
@@ -26882,7 +26778,6 @@ done
 if $ac_need_defaults; then
   test "${CONFIG_FILES+set}" = set || CONFIG_FILES=$config_files
   test "${CONFIG_HEADERS+set}" = set || CONFIG_HEADERS=$config_headers
-  test "${CONFIG_LINKS+set}" = set || CONFIG_LINKS=$config_links
   test "${CONFIG_COMMANDS+set}" = set || CONFIG_COMMANDS=$config_commands
 fi
 
@@ -27180,7 +27075,7 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 fi # test -n "$CONFIG_HEADERS"
 
 
-eval set X "  :F $CONFIG_FILES  :H $CONFIG_HEADERS  :L $CONFIG_LINKS  :C $CONFIG_COMMANDS"
+eval set X "  :F $CONFIG_FILES  :H $CONFIG_HEADERS    :C $CONFIG_COMMANDS"
 shift
 for ac_tag
 do
@@ -27457,38 +27352,7 @@ $as_echo X"$_am_arg" |
 	  }
 	  s/.*/./; q'`/stamp-h$_am_stamp_count
  ;;
-  :L)
-  #
-  # CONFIG_LINK
-  #
 
-  if test "$ac_source" = "$ac_file" && test "$srcdir" = '.'; then
-    :
-  else
-    # Prefer the file from the source tree if names are identical.
-    if test "$ac_source" = "$ac_file" || test ! -r "$ac_source"; then
-      ac_source=$srcdir/$ac_source
-    fi
-
-    { $as_echo "$as_me:${as_lineno-$LINENO}: linking $ac_source to $ac_file" >&5
-$as_echo "$as_me: linking $ac_source to $ac_file" >&6;}
-
-    if test ! -r "$ac_source"; then
-      as_fn_error $? "$ac_source: file not found" "$LINENO" 5
-    fi
-    rm -f "$ac_file"
-
-    # Try a relative symlink, then a hard link, then a copy.
-    case $ac_source in
-    [\\/$]* | ?:[\\/]* ) ac_rel_source=$ac_source ;;
-	*) ac_rel_source=$ac_top_build_prefix$ac_source ;;
-    esac
-    ln -s "$ac_rel_source" "$ac_file" 2>/dev/null ||
-      ln "$ac_source" "$ac_file" 2>/dev/null ||
-      cp -p "$ac_source" "$ac_file" ||
-      as_fn_error $? "cannot link or copy $ac_source to $ac_file" "$LINENO" 5
-  fi
- ;;
   :C)  { $as_echo "$as_me:${as_lineno-$LINENO}: executing $ac_file commands" >&5
 $as_echo "$as_me: executing $ac_file commands" >&6;}
  ;;
@@ -28990,8 +28854,7 @@ fi
       echo "using ${srcdir}/.libs to define objdir in ${our_libtool_script}"
       echo "objdir=${srcdir}/.libs" >> ${our_libtool_script}
     else
-      echo "error: need to define objdir in ${our_libtool_script}, but cannot figure out how to do so" >&2
-      exit 1
+      echo "warning: need to define objdir in ${our_libtool_script}, but cannot figure out how to do so"
     fi
   fi
  ;;

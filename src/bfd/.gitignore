@@ -47,7 +47,11 @@ libtool-soversion
 *.swp
 config/*
 # some more generated files:
+elf32-aarch64.c
 elf32-ia64.c
+elf64-aarch64.c
 elf64-ia64.c
 peigen.c
 pepigen.c
+pex64igen.c
+targmatch.h

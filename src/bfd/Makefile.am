@@ -873,25 +873,26 @@ elf32-ia64.c : elfxx-ia64.c
 
 elf64-ia64.c : elfxx-ia64.c
 	rm -fv $@
-	echo "/* $@ is generated from $< */" > tee elf64-ia64.new
-	$(SED) -e s/NN/64/g < $(srcdir)/elfxx-ia64.c >> tee -a elf64-ia64.new
+	echo "/* $@ is generated from $< */" > elf64-ia64.new
+	$(SED) -e s/NN/64/g < $(srcdir)/elfxx-ia64.c >> elf64-ia64.new
 	mv -f elf64-ia64.new $@
 
 peigen.c : peXXigen.c
 	rm -fv $@
-	echo "/* $@ is generated from $< */" > tee peigen.new
-	$(SED) -e s/XX/pe/g < $(srcdir)/peXXigen.c >> tee -a peigen.new
+	echo "/* $@ is generated from $< */" > peigen.new
+	$(SED) -e s/XX/pe/g < $(srcdir)/peXXigen.c >> peigen.new
 	mv -fv peigen.new $@
 
 pepigen.c : peXXigen.c
 	rm -fv $@
-	echo "/* $@ is generated from $< */" > tee pepigen.new
-	$(SED) -e s/XX/pep/g < $(srcdir)/peXXigen.c >> tee -a pepigen.new
+	echo "/* $@ is generated from $< */" > pepigen.new
+	$(SED) -e s/XX/pep/g < $(srcdir)/peXXigen.c >> pepigen.new
 	mv -fv pepigen.new $@
 
 pex64igen.c : peXXigen.c
 	rm -fv $@
-	$(SED) -e s/XX/pex64/g < $(srcdir)/peXXigen.c > pex64igen.new
+	echo "/* $@ is generated from $< */" > pex64igen.new
+	$(SED) -e s/XX/pex64/g < $(srcdir)/peXXigen.c >> pex64igen.new
 	mv -fv pex64igen.new pex64igen.c
 
 BFD_H_DEPS = $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h

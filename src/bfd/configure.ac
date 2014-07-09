@@ -158,8 +158,8 @@ if test "x${lt_sysroot}" = "x" -a "x${prefix}" != "x"; then
 fi
 AC_DEFUN([AX_LIBTOOL_FIXES],[
   AC_MSG_WARN([changing how libtool works])
-  AC_REQUIRE([AX_PATCH_LIBTOOL_CHANGING_CMDS_IFS])
-  AC_REQUIRE([AX_MAINTAINER_MODE_AUTO_SILENT])
+  AC_REQUIRE([AX_PATCH_LIBTOOL_CHANGING_CMDS_IFS])dnl
+  AC_REQUIRE([AX_MAINTAINER_MODE_AUTO_SILENT])dnl
 ])
 if test -x ${srcdir}/libtool; then
   test -r libtool
@@ -174,9 +174,9 @@ m4_ifdef([ACX_LARGEFILE],[
 ACX_LARGEFILE
 ],[
 AC_PLUGINS
-])
+])dnl
 
-AM_CONDITIONAL([PLUGINS],[test "x${plugins}" = "xyes"])
+AM_CONDITIONAL([PLUGINS],[test "x${plugins}" = "xyes"])dnl
 
 if test "x${plugins}" = "xyes"; then
   if test "x${enable_dlopen}" != "xyes"; then
@@ -195,14 +195,27 @@ AC_ARG_ENABLE([64-bit-bfd],
   *)    AC_MSG_ERROR([bad value ${enableval} for 64-bit-bfd option]) ;;
 esac],[want64=false])dnl
 AC_ARG_ENABLE([targets],
-[AS_HELP_STRING([--enable-targets],[alternative target configurations])],
+[AS_HELP_STRING([--enable-targets],
+                [A comma-delimited list of alternate target configurations.
+                 Alternatively, whitespace-delimiting it could work, too,
+                 if you remember to quote it properly.])],
 [case "${enableval}" in
   yes | "") 
       AC_MSG_ERROR([enable-targets flag must specify targ names or 'all'])
       ;;
   no) enable_targets="" ;;
-  *)  enable_targets=${enableval} ;;
-esac])dnl
+  *)  enable_targets="${enableval}" ;;
+esac
+test -n "${enable_targets}"])
+AC_ARG_ENABLE([obsolete],
+[AS_HELP_STRING([--enable-obsolete],
+                [allow building of obsolete target configurations])],
+[case "${enableval}" in
+  yes) export enable_obsolete="yes" ;;
+  no)  export enable_obsolete="no" ;;
+  *)   AC_MSG_ERROR([bad value '${enableval}' for obsolete flag]) ;;
+esac
+test -n "${enable_obsolete}"])
 AC_ARG_ENABLE([commonbfdlib],
 [AS_HELP_STRING([--enable-commonbfdlib],
                 [build shared BFD/opcodes/libiberty library])],
@@ -210,7 +223,8 @@ AC_ARG_ENABLE([commonbfdlib],
   yes) commonbfdlib=true ;;
   no)  commonbfdlib=false ;;
   *)   AC_MSG_ERROR([bad value ${enableval} for BFD commonbfdlib flag]) ;;
-esac])dnl
+esac
+test -n "${commonbfdlib}"])dnl
 AC_ARG_WITH([mmap],
 [AS_HELP_STRING([--with-mmap],
                 [try using mmap for BFD input files if available])],
@@ -218,7 +232,8 @@ AC_ARG_WITH([mmap],
   yes)  want_mmap=true ;;
   no)   want_mmap=false ;;
   *)    AC_MSG_ERROR([bad value ${withval} for BFD with-mmap option]) ;;
-esac],[want_mmap=false])dnl
+esac
+test -n "${want_mmap}"],[want_mmap=false])dnl
 
 AC_ARG_ENABLE([secureplt],
 [AS_HELP_STRING([--enable-secureplt],
@@ -238,7 +253,7 @@ AC_ARG_WITH([separate-debug-dir],
 [AS_HELP_STRING([--with-separate-debug-dir=DIR],
                 [Look for global separate debug info in DIR [[default=LIBDIR/debug]]])],
 [DEBUGDIR="${withval}"])
-AC_SUBST([DEBUGDIR])
+AC_SUBST([DEBUGDIR])dnl
 
 # Check to see if we should allow the generation of
 # symbols with the ELF standard's STT_COMMON type.
@@ -279,14 +294,14 @@ AH_VERBATIM([00_CONFIG_H_CHECK],
 #  warning "config.h should be #included before system headers"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ */
-#define __CONFIG_H__ 1])
+#define __CONFIG_H__ 1])dnl
 
 if test -z "${target}"; then
   AC_MSG_ERROR([Unrecognized target system type; please check config.sub])
 fi
 
 AM_INSTALL_LIBBFD
-AM_CONDITIONAL([GENINSRC_NEVER],[false])
+AM_CONDITIONAL([GENINSRC_NEVER],[false])dnl
 AC_OBJEXT
 AC_EXEEXT
 
@@ -330,7 +345,7 @@ CY_GNU_GETTEXT
 AC_MSG_NOTICE([sourcing ${srcdir}/configure.host])
 . ${srcdir}/configure.host
 
-AC_SUBST([HDEFINES])
+AC_SUBST([HDEFINES])dnl
 AC_PROG_INSTALL
 AC_PROG_LN_S
 
@@ -359,10 +374,10 @@ if test "x${bfd_cv_has_long_long}" = "xyes"; then
   AC_CHECK_ALIGNOF([long long])
 fi
 
-AC_CHECK_SIZEOF([void *])
-AC_CHECK_ALIGNOF([void *])
-AC_CHECK_SIZEOF([long])
-AC_CHECK_ALIGNOF([long])
+AC_CHECK_SIZEOF([void *])dnl
+AC_CHECK_ALIGNOF([void *])dnl
+AC_CHECK_SIZEOF([long])dnl
+AC_CHECK_ALIGNOF([long])dnl
 if test "x${ac_cv_sizeof_long}" = "x8"; then
   host64=true
   BFD_HOST_64BIT_LONG=1
@@ -383,13 +398,13 @@ if test -n "${HOST_64BIT_TYPE}" -a -n "${HOST_U_64BIT_TYPE}"; then
   BFD_HOST_U_64_BIT="${HOST_U_64BIT_TYPE}"
 fi
 
-AC_SUBST([BFD_HOST_64BIT_LONG])
-AC_SUBST([BFD_HOST_64BIT_LONG_LONG])
-AC_SUBST([BFD_HOST_LONG_LONG])
-AC_SUBST([BFD_HOST_64_BIT_DEFINED])
-AC_SUBST([BFD_HOST_64_BIT])
-AC_SUBST([BFD_HOST_U_64_BIT])
-AC_SUBST([BFD_HOSTPTR_T])
+AC_SUBST([BFD_HOST_64BIT_LONG])dnl
+AC_SUBST([BFD_HOST_64BIT_LONG_LONG])dnl
+AC_SUBST([BFD_HOST_LONG_LONG])dnl
+AC_SUBST([BFD_HOST_64_BIT_DEFINED])dnl
+AC_SUBST([BFD_HOST_64_BIT])dnl
+AC_SUBST([BFD_HOST_U_64_BIT])dnl
+AC_SUBST([BFD_HOSTPTR_T])dnl
 
 BFD_CC_FOR_BUILD
 
@@ -411,19 +426,19 @@ AC_CHECK_LIB([System],[main],
 if test -z "${SYSTEM_FRAMEWORK_LIBS}"; then
   AC_MSG_ERROR([Missing some required system libraries.])
 fi
-AC_SUBST([SYSTEM_FRAMEWORK_LIBS])
-AC_CHECK_LIB([c],[printf])
+AC_SUBST([SYSTEM_FRAMEWORK_LIBS])dnl
+AC_CHECK_LIB([c],[printf])dnl
 dnl# the libtool checks will already check for dlopen, so use a different
 dnl# symbol here:
-AC_CHECK_LIB([dl],[dlsym])
+AC_CHECK_LIB([dl],[dlsym])dnl
 # ../intl is added to LDFLAGS above, so this should work:
 AC_CHECK_LIB([intl],[gettext],[],[
-  AC_CHECK_LIB([intl],[main],[],[])
-])
+  AC_CHECK_LIB([intl],[main],[],[])dnl
+])dnl
 # FIXME: Replace `main' with a function in `-liberty':
-AC_CHECK_LIB([iberty],[main])
+AC_CHECK_LIB([iberty],[main])dnl
 # FIXME: Replace `main' with a function in `-lgnu':
-AC_CHECK_LIB([gnu],[main])
+AC_CHECK_LIB([gnu],[main])dnl
 
 # Checks for header files.
 AC_MSG_CHECKING([headers])
@@ -450,15 +465,16 @@ AC_CHECK_HEADERS([ctype.h errno.h fcntl.h gettext.h iconv.h libgettext.h \
                   libintl.h limits.h mach/mach.h mach-o/loader.h \
                   malloca.h malloc/malloc.h realloc.h stdarg.h stddef.h \
                   stdio.h sys/file.h sys/param.h sys/resource.h \
-                  sys/socket.h sys/time.h time.h windows.h])
-GCC_HEADER_STDINT([bfd_stdint.h],[stdint.h])
+                  sys/socket.h sys/time.h time.h wchar.h wctype.h \
+                  windows.h])dnl
+GCC_HEADER_STDINT([bfd_stdint.h],[stdint.h])dnl
 AC_HEADER_TIME
 AC_HEADER_DIRENT
 AC_HEADER_STAT
 ACX_HEADER_STRING
 # This should have already been checked:
 unset ac_cv_header_malloc_h
-AC_CHECK_HEADERS([malloc.h])
+AC_CHECK_HEADERS([malloc.h])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_MSG_CHECKING([C language characteristics that your C compiler supports])
@@ -472,10 +488,10 @@ AC_MSG_RESULT([ ])
 AC_TYPE_PID_T
 AC_CHECK_TYPES([ptrdiff_t])
 AC_DEFUN([AC_TYPE_VARIOUS_INT_TYPES],[
-  AC_REQUIRE([AC_TYPE_INT32_T])
-  AC_REQUIRE([AC_TYPE_UINT32_T])
-  AC_REQUIRE([AC_TYPE_UINT64_T])
-])
+  AC_REQUIRE([AC_TYPE_INT32_T])dnl
+  AC_REQUIRE([AC_TYPE_UINT32_T])dnl
+  AC_REQUIRE([AC_TYPE_UINT64_T])dnl
+])dnl
 AC_TYPE_VARIOUS_INT_TYPES
 AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
 
@@ -483,13 +499,15 @@ AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
 AC_MSG_CHECKING([functions])
 AC_MSG_RESULT([ ])
 AM_WITH_DMALLOC
-AC_CHECK_FUNCS([exit fcntl fdopen feof ferror fileno fopen fprintf fread \
-                getgid getrlimit getuid islower isspace isupper \
-                memchr memmove memset qsort rpl_malloc rpl_realloc \
-                setitimer strcmp strdup strncasecmp strrchr strspn \
-                strstr strtol strtoul strtoull sysconf system uname])
-AC_CHECK_FUNCS_ONCE([lt_dlinit])
+AC_CHECK_FUNCS([btowc exit fcntl fdopen feof ferror fileno fopen fprintf \
+                fread getgid getrlimit getuid islower isspace isupper \
+                mbsrtowcs memchr memmove mempcpy memset qsort \
+                rpl_malloc rpl_realloc setitimer strcmp strdup \
+                strncasecmp strrchr strspn strstr strtol strtoul strtoull \
+                sysconf system uname wmempcpy])dnl
+AC_CHECK_FUNCS_ONCE([lt_dlinit])dnl
 AC_FUNC_CLOSEDIR_VOID
+AC_FUNC_FNMATCH
 AC_FUNC_FORK
 AC_FUNC_FSEEKO
 AC_FUNC_MALLOC
@@ -498,39 +516,43 @@ AC_FUNC_REALLOC
 AC_FUNC_STAT
 AC_FUNC_STRNLEN
 AC_FUNC_VPRINTF
-AC_REPLACE_FNMATCH dnl# not actually needed
-AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu])
-AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu])
+AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu])dnl
+AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu])dnl
 
 # other misc. stuff:
 AC_MSG_CHECKING([stuff that we might have already checked])
 AC_MSG_RESULT([ ])
 # Hack because AC_REQUIRE cannot be used outside of macro definitions:
 AC_DEFUN([AC_POSSIBLE_DUPLICATE_CHECKS],
-[AC_REQUIRE([AC_FUNC_ALLOCA])
- AC_REQUIRE([AC_FUNC_MMAP])
- AC_REQUIRE([AC_TYPE_OFF_T])
- AC_REQUIRE([AC_TYPE_SIZE_T])
- AC_REQUIRE([AC_C_CONST])
- AC_REQUIRE([AC_C_INLINE])
- AC_REQUIRE([AM_PROG_CC_C_O])
- AC_REQUIRE([AM_DEP_TRACK])
- AC_REQUIRE([AM_SET_DEPDIR])
- AC_REQUIRE([AM_OUTPUT_DEPENDENCY_COMMANDS])
- AC_REQUIRE([AM_MAKE_INCLUDE])
- AC_REQUIRE([AM_SET_CURRENT_AUTOMAKE_VERSION])
- AC_REQUIRE([AM_PROG_INSTALL_SH])
- AC_REQUIRE([AM_SET_LEADING_DOT])
- AC_REQUIRE([AC_ARG_PROGRAM])
- AC_REQUIRE([AC_SYS_LARGEFILE])
- AC_REQUIRE([AC_SYS_LONG_FILE_NAMES])
- AC_REQUIRE([AC_PROG_AWK])
- AC_REQUIRE([AC_PROG_EGREP])
- AC_REQUIRE([AC_PROG_MKDIR_P])
- AC_REQUIRE([AC_PROG_SED])
- AC_REQUIRE([AC_HEADER_SYS_WAIT])
- AC_REQUIRE([GCC_STDINT_TYPES])
- AC_REQUIRE([ZW_GNU_GETTEXT_SISTER_DIR])
+[AC_REQUIRE([AC_FUNC_ALLOCA])dnl
+ AC_REQUIRE([AC_FUNC_MMAP])dnl
+ AC_REQUIRE([AC_TYPE_OFF_T])dnl
+ AC_REQUIRE([AC_TYPE_SIZE_T])dnl
+ AC_REQUIRE([AC_C_CONST])dnl
+ AC_REQUIRE([AC_C_INLINE])dnl
+ AC_REQUIRE([AM_PROG_CC_C_O])dnl
+ AC_REQUIRE([AM_DEP_TRACK])dnl
+ AC_REQUIRE([AM_SET_DEPDIR])dnl
+ AC_REQUIRE([AM_OUTPUT_DEPENDENCY_COMMANDS])dnl
+ AC_REQUIRE([AM_MAKE_INCLUDE])dnl
+ AC_REQUIRE([AM_SET_CURRENT_AUTOMAKE_VERSION])dnl
+ AC_REQUIRE([AM_PROG_INSTALL_SH])dnl
+ AC_REQUIRE([AM_SET_LEADING_DOT])dnl
+ AC_REQUIRE([AC_ARG_PROGRAM])dnl
+ AC_REQUIRE([AC_SYS_LARGEFILE])dnl
+ AC_REQUIRE([AC_SYS_LONG_FILE_NAMES])dnl
+ AC_REQUIRE([AC_PROG_AWK])dnl
+ AC_REQUIRE([AC_PROG_GREP])dnl
+ AC_REQUIRE([AC_PROG_EGREP])dnl
+ AC_REQUIRE([AC_PROG_FGREP])dnl
+ AC_REQUIRE([AC_PROG_MKDIR_P])dnl
+ AC_REQUIRE([AC_PROG_SED])dnl
+ AC_REQUIRE([AC_HEADER_SYS_WAIT])dnl
+ AC_REQUIRE([AC_TYPE_MBSTATE_T])dnl
+ AC_REQUIRE([GCC_STDINT_TYPES])dnl
+ AC_REQUIRE([ZW_GNU_GETTEXT_SISTER_DIR])dnl
+
+ dnl#FIXME: require does NOT work with conditionals like this:
  if test "x${GETTEXT_MACRO_VERSION}" = "x"; then
    test -z "${GETTEXT_MACRO_VERSION}"
    AC_REQUIRE([AM_PO_SUBDIRS])
@@ -540,24 +562,24 @@ AC_POSSIBLE_DUPLICATE_CHECKS
 
 AC_MSG_CHECKING([declarations])
 AC_MSG_RESULT([ ])
-AC_CHECK_DECLS([basename])
-AC_CHECK_DECLS([ftello])
-AC_CHECK_DECLS([ftello64])
-AC_CHECK_DECLS([fseeko])
-AC_CHECK_DECLS([fseeko64])
+AC_CHECK_DECLS([basename])dnl
+AC_CHECK_DECLS([ftello])dnl
+AC_CHECK_DECLS([ftello64])dnl
+AC_CHECK_DECLS([fseeko])dnl
+AC_CHECK_DECLS([fseeko64])dnl
 
 BFD_BINARY_FOPEN
 
-AC_CHECK_DECLS([ffs])
-AC_CHECK_DECLS([free])
-AC_CHECK_DECLS([getenv])
-AC_CHECK_DECLS([malloc])
-AC_CHECK_DECLS([realloc])
-AC_CHECK_DECLS([stpcpy])
-AC_CHECK_DECLS([strstr])
-AC_CHECK_DECLS([snprintf])
-AC_CHECK_DECLS([vsnprintf])
-AC_CHECK_DECLS([strnlen])
+AC_CHECK_DECLS([ffs])dnl
+AC_CHECK_DECLS([free])dnl
+AC_CHECK_DECLS([getenv])dnl
+AC_CHECK_DECLS([malloc])dnl
+AC_CHECK_DECLS([realloc])dnl
+AC_CHECK_DECLS([stpcpy])dnl
+AC_CHECK_DECLS([strstr])dnl
+AC_CHECK_DECLS([snprintf])dnl
+AC_CHECK_DECLS([vsnprintf])dnl
+AC_CHECK_DECLS([strnlen])dnl
 
 # Link in zlib if we can. This allows us to read compressed debug sections.
 # This is used only by compress.c.
@@ -574,8 +596,8 @@ if test -d ../zlib -o -d ${srcdir}/../zlib; then
 else
   AC_MSG_RESULT([no])
 fi
-AC_SEARCH_LIBS([zlibVersion],[z],[AC_CHECK_HEADERS([zlib.h])])
-])
+AC_SEARCH_LIBS([zlibVersion],[z],[AC_CHECK_HEADERS([zlib.h])])dnl
+])dnl
 
 # If we are configured native, pick a core file support file.
 AC_MSG_CHECKING([more system-specific things])
@@ -870,8 +892,9 @@ struct core_dumpx c; c.c_impl = 0;
     BFD_HAVE_SYS_PROCFS_TYPE([win32_pstatus_t])
   fi
 fi
-AC_SUBST([COREFILE])
-AC_SUBST([COREFLAG])
+AC_SUBST([COREFILE])dnl
+AC_SUBST([COREFLAG])dnl
+
 if test -n "${CORE_HEADER}"; then
   AC_DEFINE_UNQUOTED([CORE_HEADER],[${CORE_HEADER}],
     [Name of host specific core header file to include in elf.c.])
@@ -887,15 +910,15 @@ AC_CACHE_CHECK([linker --as-needed support],[bfd_cv_ld_as_needed],
  if ${LD} --help 2>/dev/null | grep as-needed > /dev/null; then
     bfd_cv_ld_as_needed=yes
  fi
-])
+])dnl
 
 LT_LIB_M
 
 # When building a shared libbfd, link against the pic version of libiberty
 # so that apps that use libbfd will NOT need libiberty just to satisfy any
 # libbfd references.
-# We cannot do that if a pic libiberty is unavailable since including non-pic
-# code would insert text relocations into libbfd.
+# We cannot do that if a pic libiberty is unavailable since including
+# non-pic code would insert text relocations into libbfd.
 # These are also horrible hacks to build DLLs on Windows.
 WIN32LDFLAGS=""
 WIN32LIBADD=""
@@ -953,10 +976,10 @@ or1k*-*-darwin*)
   fi
   ;;
 esac
-AC_SUBST([WIN32LDFLAGS])
-AC_SUBST([WIN32LIBADD])
-AC_SUBST([SHARED_LDFLAGS])
-AC_SUBST([SHARED_LIBADD])
+AC_SUBST([WIN32LDFLAGS])dnl
+AC_SUBST([WIN32LIBADD])dnl
+AC_SUBST([SHARED_LDFLAGS])dnl
+AC_SUBST([SHARED_LIBADD])dnl
 
 # target stuff:
 
@@ -965,7 +988,7 @@ if test -n "${enable_targets}"; then
     for targ in `echo ${enable_targets} | sed 's/,/ /g'`
     do
 	result=`${ac_config_sub} ${targ} 2>/dev/null`
-	if test -n "${result}" ; then
+	if test -n "${result}"; then
 	    canon_targets="${canon_targets} ${result}"
 	else
 	    # Allow targets that config.sub does NOT recognize, like "all".
@@ -974,29 +997,53 @@ if test -n "${enable_targets}"; then
     done
 fi
 
+AC_SUBST([ac_config_sub])dnl
+
 all_targets=false
 defvec=""
 selvecs=""
 assocvecs=""
 selarchs=""
 TDEFINES=""
+
+AC_MSG_CHECKING([which targets to look up])
+AC_MSG_RESULT([plain ones are '${target}' and canonical ones are '${canon_targets}'])
 for targ in ${target} ${canon_targets}
 do
     if test "x${targ}" = "xall"; then
+        AC_MSG_NOTICE([no need to source config.bfd when targ is 'all'])
         all_targets=true
 	assocvecs="${assocvecs} ${targ_defvec} ${targ_selvecs}"
     else
-	AC_MSG_NOTICE([sourcing ${srcdir}/config.bfd])
+	AC_MSG_NOTICE([sourcing ${srcdir}/config.bfd for target '${targ}'])
 	. ${srcdir}/config.bfd
+        if test -z "${BREAK_MY_BUILD}"; then
+            # reassign these to avoid build errors:
+            if test "x${targ_defvec}" = "xx86_64_mach_o_vec"; then
+                targ_defvec=mach_o_le_vec
+            fi
+            if test "x${targ_selvecs}" = "xx86_64_mach_o_vec"; then
+                unset targ_selvecs
+            fi
+            if test "x${targ64_selvecs}" = "xx86_64_mach_o_vec"; then
+                unset targ64_selvecs
+            fi
+        fi
 	if test "x${targ}" = "x${target}"; then
-	    defvec=${targ_defvec}
+	    defvec="${targ_defvec}"
+            AC_MSG_NOTICE([defvec is now '${defvec}'])
 	fi
 	selvecs="${selvecs} ${targ_defvec} ${targ_selvecs}"
+        AC_MSG_NOTICE([selvecs are now '${selvecs}'])
 	selarchs="${selarchs} ${targ_archs}"
+        AC_MSG_NOTICE([selarchs are now '${selarchs}'])
 	TDEFINES="${TDEFINES} ${targ_cflags}"
+        AC_MSG_NOTICE([TDEFINES are now '${TDEFINES}'])
     fi
 done
-AC_SUBST([TDEFINES])
+AC_SUBST([selvecs])dnl
+AC_SUBST([selarchs])dnl
+AC_SUBST([TDEFINES])dnl
 
 # This processing still needs to be done if we are to decide properly
 # whether 64-bit support needs to be compiled in. Currently, it will be
@@ -1594,7 +1641,7 @@ do
     x86_64_elf64_fbsd_vec) tb="${tb} elf64-x86-64.lo elf-ifunc.lo elf-nacl.lo elf64.lo $elf"; target_size=64 ;;
     x86_64_elf64_nacl_vec) tb="${tb} elf64-x86-64.lo elf-ifunc.lo elf-nacl.lo elf64.lo $elf"; target_size=64 ;;
     x86_64_elf64_sol2_vec) tb="${tb} elf64-x86-64.lo elf-ifunc.lo elf-nacl.lo elf64.lo $elf"; target_size=64 ;;
-    x86_64_mach_o_vec) tb="${tb} mach-o-x86-64.lo" ;;
+    x86_64_mach_o_vec) if test -n "${BREAK_MY_BUILD}"; then tb="${tb} mach-o-x86-64.lo"; fi ;;
     x86_64_pe_vec) tb="${tb} pe-x86_64.lo pex64igen.lo cofflink.lo"; target_size=64 ;;
     x86_64_pe_be_vec) tb="${tb} pe-x86_64.lo pex64igen.lo cofflink.lo"; target_size=64 ;;
     x86_64_pei_vec) tb="${tb} pei-x86_64.lo pex64igen.lo cofflink.lo"; target_size=64 ;;
@@ -1704,21 +1751,21 @@ case ${host64}-${target64}-${want64} in
     ;;
 esac
 
-AC_SUBST([wordsize])
-AC_SUBST([bfd_libs])
-AC_SUBST([bfd64_libs])
-AC_SUBST([all_backends])
-AC_SUBST([bfd_backends])
-AC_SUBST([bfd_machines])
-AC_SUBST([bfd_default_target_size])
+AC_SUBST([wordsize])dnl
+AC_SUBST([bfd_libs])dnl
+AC_SUBST([bfd64_libs])dnl
+AC_SUBST([all_backends])dnl
+AC_SUBST([bfd_backends])dnl
+AC_SUBST([bfd_machines])dnl
+AC_SUBST([bfd_default_target_size])dnl
 
 if test "x${plugins}" = "xyes"; then
   supports_plugins=1
 else
   supports_plugins=0
 fi
-AC_SUBST([supports_plugins])
-AC_SUBST([lt_cv_dlopen_libs])
+AC_SUBST([supports_plugins])dnl
+AC_SUBST([lt_cv_dlopen_libs])dnl
 
 # Determine the host-dependent file_ptr a.k.a. off_t type. In order
 # prefer: off64_t - if ftello64 and fseeko64, off_t - if ftello and
@@ -1739,8 +1786,8 @@ if test x"${ac_cv_func_ftello64}" = xyes -a x"${ac_cv_func_fseeko64}" = xyes \
     bfd_ufile_ptr=BFD_HOST_U_64_BIT
 fi
 AC_MSG_RESULT([${bfd_file_ptr}])
-AC_SUBST([bfd_file_ptr])
-AC_SUBST([bfd_ufile_ptr])
+AC_SUBST([bfd_file_ptr])dnl
+AC_SUBST([bfd_ufile_ptr])dnl
 
 tdefaults=""
 test -n "${defvec}" && tdefaults="${tdefaults} -DDEFAULT_VECTOR=${defvec}"
@@ -1748,7 +1795,7 @@ test -n "${selvecs}" && tdefaults="${tdefaults} -DSELECT_VECS='${selvecs}'"
 test -n "${assocvecs}" && tdefaults="${tdefaults} -DASSOCIATED_VECS='${assocvecs}'"
 test -n "${selarchs}" && tdefaults="${tdefaults} -DSELECT_ARCHITECTURES='${selarchs}'"
 test -n "${havevecs}" && tdefaults="${tdefaults} ${havevecs}"
-AC_SUBST([tdefaults])
+AC_SUBST([tdefaults])dnl
 
 # APPLE LOCAL:  mmap() always works right on Darwin.  Take our word for it.
 case "${host}" in
@@ -1769,7 +1816,7 @@ fi
 AC_CONFIG_FILES([Makefile \
                  doc/Makefile \
                  bfd-in3.h:bfd-in2.h \
-                 po/Makefile.in:po/Make-in])
+                 po/Makefile.in:po/Make-in])dnl
 
 AC_CONFIG_COMMANDS([default],[[sed -e '/SRC-POTFILES =/r po/SRC-POTFILES' -e '/BLD-POTFILES =/r po/BLD-POTFILES' po/Makefile.in > po/Makefile]],[[]])
 
@@ -1795,7 +1842,7 @@ if test ! -e po/Makefile; then
       -e "s,@POFILES@,${POFILES}," \
       -e "s,@GMOFILES@,${GMOFILES}," \
       po/Makefile.in > po/Makefile
-fi]],[[]])
+fi]],[[]])dnl
 
 AC_CONFIG_COMMANDS([config_status_vpath_build_fix],[
 if test "${srcdir}" != "."; then
@@ -1805,7 +1852,7 @@ if test "${srcdir}" != "."; then
     cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
   fi
 fi
-],[])
+],[])dnl
 
 AC_CONFIG_COMMANDS([bfd_h_vpath_fix],[
 if test ! -e bfd.h; then
@@ -1819,7 +1866,7 @@ if test ! -e bfd.h; then
     fi
   fi
 fi
-],[])
+],[])dnl
 
 AC_CONFIG_COMMANDS([bfd_h_vpath_fix2],[
 if test ! -e ${srcdir}/bfd.h; then
@@ -1833,7 +1880,7 @@ if test ! -e ${srcdir}/bfd.h; then
     fi
   fi
 fi
-],[])
+],[])dnl
 
 AC_CONFIG_COMMANDS([libtool_lengthening_hack_fix1],[
 # Hack for when the configure script generates a libtool that is too short:
@@ -1863,7 +1910,7 @@ elif test ! -e libtool -a ! -e libtool.old; then
 else
   echo "this should not happen"
 fi
-],[])
+],[])dnl
 
 AC_CONFIG_COMMANDS([libtool_lengthening_hack_fix2],[
 # Also try the hack from ../opcodes here as well:
@@ -1895,7 +1942,7 @@ changequote([,])
     echo "unable to do so: ../ltconfig is missing and/or unusable"
   fi
 fi
-],[])
+],[])dnl
 
 AC_CONFIG_COMMANDS([broken_libtool_hack_fix3],[
   if test -z "${our_libtool_script}"; then
@@ -1942,16 +1989,15 @@ AC_CONFIG_COMMANDS([broken_libtool_hack_fix3],[
       echo "using ${srcdir}/.libs to define objdir in ${our_libtool_script}"
       echo "objdir=${srcdir}/.libs" >> ${our_libtool_script}
     else
-      echo "error: need to define objdir in ${our_libtool_script}, but cannot figure out how to do so" >&2
-      exit 1
+      echo "warning: need to define objdir in ${our_libtool_script}, but cannot figure out how to do so"
     fi
   fi
-],[])
+],[])dnl
 
 dnl# Required by html, pdf, install-pdf, and install-html:
-AC_SUBST([datarootdir])
-AC_SUBST([docdir])
-AC_SUBST([htmldir])
-AC_SUBST([pdfdir])
+AC_SUBST([datarootdir])dnl
+AC_SUBST([docdir])dnl
+AC_SUBST([htmldir])dnl
+AC_SUBST([pdfdir])dnl
 
 AC_OUTPUT

@@ -30,7 +30,11 @@ targ_cflags=""
 targ_underscore=no
 
 # Catch obsolete configurations.
-echo "catching obsolete configurations..."
+if test "x${enable_obsolete}" != "xyes"; then
+  echo "catching possibly obsolete configurations..."
+else
+  echo "warning: possibly obsolete configurations will be allowed."
+fi
 case ${targ} in
  openrisc-*-* | or32-*-*)
     if test "x${enable_obsolete}" != "xyes"; then
@@ -38,6 +42,9 @@ case ${targ} in
       echo "*** Use or1k-*-elf or or1k-*-linux as the target instead" >&2
       echo "*** Or specify --enable-obsolete to try to build anyways." >&2
       exit 1
+    else
+      echo "*** Configuration ${targ} is obsolete."
+      echo "*** Use or1k-*-elf or or1k-*-linux as the target instead"
     fi
     ;;
  *-go32-rtems* | \
@@ -67,6 +74,8 @@ case ${targ} in
       echo "*** Support may be REMOVED in a release of BINUTILS," >&2
       echo "*** unless a maintainer comes forward." >&2
       exit 1
+    else
+      echo "*** Configuration ${targ} is obsolete."
     fi
     ;;
 esac
@@ -140,17 +149,17 @@ esac
 
 case "${targ}" in
   mips*-dec-bsd*)
-    echo "Target '${targ}' is obsolete and has been removed."
+    echo "Target '${targ}' is obsolete and has been removed." >&2
     exit 1
     ;;
 
   mips*-*-mach3*)
-    echo "Target '${targ}' is obsolete and has been removed."
+    echo "Target '${targ}' is obsolete and has been removed." >&2
     exit 1
     ;;
 
   mips*-*-pe*)
-    echo "Target '${targ}' is obsolete and has been removed."
+    echo "Target '${targ}' is obsolete and has been removed." >&2
     exit 1
     ;;
 
@@ -594,10 +603,18 @@ case "${targ}" in
     targ_defvec=bfd_elf32_i386_vec
     targ_selvecs="i386coff_vec i386aout_vec"
     ;;
-  i[3-7]86-*-darwin* | i[3-7]86-*-macos10* | i[3-7]86-*-rhapsody* | x86_64-*-darwin* )
+  i386-*-darwin* | i386-*-macos10* | i386-*-rhapsody* )
     targ_defvec=mach_o_le_vec
     targ_selvecs="mach_o_le_vec mach_o_be_vec mach_o_fat_vec pef_vec pef_xlib_vec sym_vec"
+    targ_archs="${targ_archs} bfd_i386_arch bfd_powerpc_arch bfd_rs6000_arch"
+    targ_underscore=yes
+    ;;
+  i[4-7]86-*-darwin* | i[4-7]86-*-macos10* | i[4-7]86-*-rhapsody* | x86_64-*-darwin* )
+    targ_defvec=mach_o_le_vec
+    targ_selvecs="mach_o_le_vec mach_o_be_vec mach_o_fat_vec pef_vec pef_xlib_vec sym_vec"
+#ifdef BFD64
     targ64_selvecs=x86_64_mach_o_vec
+#endif /* BFD64 */
     targ_archs="${targ_archs} bfd_i386_arch bfd_powerpc_arch bfd_rs6000_arch"
     targ_underscore=yes
     ;;
@@ -1691,7 +1708,17 @@ esac
 
 case "${host64}${want64}" in
   *true*)
-    targ_selvecs="${targ_selvecs} ${targ64_selvecs}"
+    if test -z "${BREAK_MY_BUILD}"; then
+        if test "x${targ_selvecs}" = "xx86_64_mach_o_vec"; then
+            targ_selvecs="${targ64_selvecs}"
+        elif test "x${targ64_selvecs}" = "xx86_64_mach_o_vec"; then
+            targ_selvecs="${targ_selvecs}"
+        else
+            targ_selvecs="${targ_selvecs} ${targ64_selvecs}"
+        fi
+    else
+        targ_selvecs="${targ_selvecs} ${targ64_selvecs}"
+    fi
     ;;
 esac
 

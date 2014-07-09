@@ -161,6 +161,9 @@
 /* Define to 1 if you have the `fileno' function. */
 #undef HAVE_FILENO
 
+/* Define to 1 if your system has a working POSIX `fnmatch' function. */
+#undef HAVE_FNMATCH
+
 /* Define to 1 if you have the `fopen' function. */
 #undef HAVE_FOPEN
 
@@ -778,9 +781,6 @@
 
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
-
-/* Define to rpl_fnmatch if the replacement function should be used. */
-#undef fnmatch
 
 /* Define to `__inline__' or `__inline' if that's what the C compiler
    calls it, or to nothing if 'inline' is not supported under any name.  */
