@@ -1,1 +1,1 @@
-/Users/ericgallager/apple-gdb-1824/src/gdb/macosx/../../../src/intl/libgettext.h
+libgettext.h
