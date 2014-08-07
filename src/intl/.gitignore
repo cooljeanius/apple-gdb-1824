@@ -28,3 +28,6 @@ po/stamp*
 po2tbl.sed
 site.bak
 site.exp
+*.tar.gz
+libintl-*.*.*/*
+*.output

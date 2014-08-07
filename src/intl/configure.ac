@@ -100,17 +100,36 @@ AC_C_CONST
 AC_C_INLINE
 AC_C_PROTOTYPES
 AC_C_VOLATILE
+AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
 AC_TYPE_UINTMAX_T
 AC_CHECK_TYPES([iconv_t])dnl
 
 # Checks for library functions.
 AM_GNU_GETTEXT([external])dnl
-dnl#TODO: add the version once it is safe to do so
-AC_SUBST([GT_YES])dnl
+AM_GNU_GETTEXT_VERSION([0.19.2])dnl
+AC_SUBST([GT_YES],['#'])dnl
 AC_SUBST([GT_NO])dnl
 AC_DEFUN([AC_GETTEXT_SUBCHECKS],[
+  AC_REQUIRE([gl_EXTERN_INLINE])dnl
+  AC_REQUIRE([gl_FCNTL_O_FLAGS])dnl
+  AC_REQUIRE([gt_GLIBC2])dnl
+  AC_REQUIRE([gl_GLIBC21])dnl
+  AC_REQUIRE([gt_INTDIV0])dnl
   AC_REQUIRE([gt_INTL_MACOSX])dnl
+  AC_REQUIRE([gt_TYPE_INTMAX_T])dnl
+  AC_REQUIRE([gt_INTTYPES_PRI])dnl
+  AC_REQUIRE([gl_AC_HEADER_INTTYPES_H])dnl
+  AC_REQUIRE([gt_LC_MESSAGES])dnl
+  AC_REQUIRE([AC_TYPE_LONG_LONG_INT])dnl
+  AC_REQUIRE([gt_PRINTF_POSIX])dnl
+  AC_REQUIRE([gl_SIZE_MAX])dnl
+  AC_REQUIRE([gl_AC_HEADER_STDINT_H])dnl
+  AC_REQUIRE([gl_AC_TYPE_UINTMAX_T])dnl
+  AC_REQUIRE([gl_VISIBILITY])dnl
+  AC_REQUIRE([gt_TYPE_WCHAR_T])dnl
+  AC_REQUIRE([gt_TYPE_WINT_T])dnl
+  AC_REQUIRE([gl_XSIZE])dnl
   AC_REQUIRE([AM_ICONV])dnl
   m4_ifdef([AM_LANGINFO_CODESET],[
     AC_REQUIRE([AM_LANGINFO_CODESET])dnl
@@ -210,21 +229,41 @@ fi
 AC_CONFIG_COMMANDS([libintl_h_compat],[
 if test -e libgettext.h -a ! -e libintl.h; then
   ln -sv libgettext.h libintl.h
-elif test -e ${srcdir}/libgettext.h -a ! -e ${srcdir}/libintl.h; then
-  ln -sv ${srcdir}/libgettext.h ${srcdir}/libintl.h
-elif test -e ${srcdir}/libgettext.h -a ! -e libintl.h; then
-  ln -sv ${srcdir}/libgettext.h libintl.h
-elif test -e libgettext.h -a ! -e ${srcdir}/libintl.h; then
-  ln -sv libgettext.h ${srcdir}/libintl.h
+fi
+if test "x${srcdir}" != "x."; then
+  if test -e ${srcdir}/libgettext.h -a ! -e libintl.h; then
+    ln -sv ${srcdir}/libgettext.h libintl.h
+  fi
+  if test -w ${srcdir}; then
+    if test -e ${srcdir}/libgettext.h -a ! -e ${srcdir}/libintl.h; then
+      ln -sv ${srcdir}/libgettext.h ${srcdir}/libintl.h
+    fi
+    if test -e libgettext.h -a ! -e ${srcdir}/libintl.h; then
+      ln -sv libgettext.h ${srcdir}/libintl.h
+    fi
+  else
+    # this can happen during distcheck, so check for that:
+    if test "x${srcdir}" != "x.."; then
+      echo "warning: srcdir '${srcdir}' is unwritable"
+    fi
+  fi
 fi
 ],[])dnl
 
 AC_CONFIG_COMMANDS([config_status_vpath_build_fix],[
-if test "${srcdir}" != "."; then
+if test "x${srcdir}" != "x."; then
   if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
     cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
-  elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
-    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+  fi
+  if test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
+    if test -w ${srcdir}; then
+      cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+    else
+      # this can happen during distcheck, so check for that:
+      if test "x${srcdir}" != "x.."; then
+        echo "warning: srcdir '${srcdir}' is unwritable"
+      fi
+    fi
   fi
 fi
 ],[])dnl

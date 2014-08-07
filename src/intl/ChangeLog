@@ -1,3 +1,6 @@
+2014-08-07  Eric Gallager  <egall@gwmail.gwu.edu>
+	* Try to choose whether this is 0.12.1 or 0.19.2 or something else.
+
 2013-09-24  gettextize  <bug-gnu-gettext@gnu.org>
 
 	* configure.in (AC_OUTPUT): Add po/Makefile.in.

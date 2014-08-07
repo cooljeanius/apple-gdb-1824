@@ -50,7 +50,7 @@ LIBTOOL = @LIBTOOL@
 RANLIB = @RANLIB@
 
 DEFS = -DLOCALEDIR=\"$(localedir)\" -DGNULOCALEDIR=\"$(gnulocaledir)\" \
--DLOCALE_ALIAS_PATH=\"$(aliaspath)\" @DEFS@
+-DLOCALE_ALIAS_PATH=\"$(aliaspath)\" -DLIBDIR="\"$(libdir)\"" -DINSTALLDIR="\"$(libdir)\"" @DEFS@
 CPPFLAGS = @CPPFLAGS@
 CFLAGS = @CFLAGS@
 LDFLAGS = @LDFLAGS@
@@ -82,7 +82,7 @@ DISTFILES.gettext = libintl.glibc intlh.inst.in
 
 INCLUDES = -I. -I$(srcdir)
 
-all: config.status all-@USE_INCLUDED_LIBINTL@
+all: all-@USE_INCLUDED_LIBINTL@ @MAINT@ config.status
 
 all-yes: libintl.$la intlh.inst
 all-no:
@@ -100,9 +100,9 @@ libintl.la: $(OBJECTS)
 ../po/cat-id-tbl.$lo: ../po/cat-id-tbl.c $(top_srcdir)/po/$(PACKAGE).pot
 	cd ../po && $(MAKE) cat-id-tbl.$lo
 
-check: config.status all
+check: all @MAINT@ config.status
 
-# This installation goal is only used in GNU gettext.  Packages which
+# This installation goal is only used in GNU gettext. Packages which
 # only use the library should use install instead.
 
 # We must not install the libintl.h/libintl.a files if we are on a
@@ -112,9 +112,9 @@ check: config.status all
 # If you want to use the one which comes with this version of the
 # package, you have to use `configure --with-included-gettext'.
 install: install-exec install-data
-install-exec: all config.status
-	if test "$(PACKAGE)" = "gettext" \
-	   && test '@INTLOBJS@' = '$(GETTOBJS)'; then \
+install-exec: all @MAINT@ config.status
+	if test "x$(PACKAGE)" = "xgettext" \
+	   && test 'x@INTLOBJS@' = 'x$(GETTOBJS)'; then \
 	  if test -r $(MKINSTALLDIRS); then \
 	    $(MKINSTALLDIRS) $(libdir) $(includedir); \
 	  else \
@@ -123,10 +123,10 @@ install-exec: all config.status
 	  $(INSTALL_DATA) intlh.inst $(includedir)/libintl.h; \
 	  $(INSTALL_DATA) libintl.a $(libdir)/libintl.a; \
 	else \
-	  : ; \
+	  echo "no extra exec things to install"; \
 	fi
-install-data: all config.status
-	if test "$(PACKAGE)" = "gettext"; then \
+install-data: all @MAINT@ config.status
+	if test "x$(PACKAGE)" = "xgettext"; then \
 	  if test -r $(MKINSTALLDIRS); then \
 	    $(MKINSTALLDIRS) $(gettextsrcdir); \
 	  else \
@@ -134,11 +134,11 @@ install-data: all config.status
 	  fi; \
 	  $(INSTALL_DATA) VERSION $(gettextsrcdir)/VERSION; \
 	  dists="$(DISTFILES.common)"; \
-	  for file in $$dists; do \
-	    $(INSTALL_DATA) $(srcdir)/$$file $(gettextsrcdir)/$$file; \
+	  for file in $${dists}; do \
+	    $(INSTALL_DATA) $(srcdir)/$${file} $(gettextsrcdir)/$${file}; \
 	  done; \
 	else \
-	  : ; \
+	  echo "no extra data to install"; \
 	fi
 
 # Define this as empty until I found a useful application.
@@ -146,8 +146,8 @@ installcheck:
 
 uninstall:
 	dists="$(DISTFILES.common)"; \
-	for file in $$dists; do \
-	  rm -f $(gettextsrcdir)/$$file; \
+	for file in $${dists}; do \
+	  rm -f $(gettextsrcdir)/$${file}; \
 	done
 
 info dvi:
@@ -159,53 +159,59 @@ dcgettext.$lo: gettextP.h gettext.h hash-string.h loadinfo.h
 tags: TAGS
 
 TAGS: $(HEADERS) $(SOURCES)
-	here=`pwd`; cd $(srcdir) && etags -o $$here/TAGS $(HEADERS) $(SOURCES)
+	here=`pwd`; cd $(srcdir) && etags -o $${here}/TAGS $(HEADERS) $(SOURCES)
 
 id: ID
 
 ID: $(HEADERS) $(SOURCES)
-	here=`pwd`; cd $(srcdir) && mkid -f$$here/ID $(HEADERS) $(SOURCES)
+	here=`pwd`; cd $(srcdir) && \
+		mkid -f$${here}/ID $(HEADERS) $(SOURCES)
 
+mostlyclean: @MAINT@ config.status
+	rm -fv *.a *.la *.o *.obj *.lo core core.* @MAINT@ libintl.h
 
-mostlyclean: config.status
-	rm -f *.a *.o *.lo core core.*
+clean: mostlyclean @MAINT@ config.status
 
-clean: mostlyclean config.status
+distclean: clean @MAINT@ config.status
+	rm -f po2msg.sed po2tbl.sed
+	rm -f config.log config.intl config.h @MAINT@ libintl.h
+	rm -f Makefile ID TAGS
+	rm -fv *.status Makefile*orig *~ m4/*~
+	rm -rfv autom4te.cache || rmdir autom4te.cache
 
-distclean: clean config.status
-	rm -f Makefile ID TAGS po2msg.sed po2tbl.sed libintl.h config.log
-
-maintainer-clean: distclean config.status
+maintainer-clean: distclean @MAINT@ config.status
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
+	rm -f libintl.h
 
 
 # GNU gettext needs not contain the file `VERSION' but contains some
 # other files which should not be distributed in other packages.
 distdir = ../$(PACKAGE)-$(VERSION)/$(subdir)
 dist distdir: Makefile $(DISTFILES)
-	if test "$(PACKAGE)" = gettext; then \
+	if test "x$(PACKAGE)" = "xgettext"; then \
 	  additional="$(DISTFILES.gettext)"; \
 	else \
 	  additional="$(DISTFILES.normal)"; \
 	fi; \
-	for file in $(DISTFILES.common) $$additional; do \
-	  ln $(srcdir)/$$file $(distdir) 2> /dev/null \
-	    || cp -p $(srcdir)/$$file $(distdir); \
+	for file in $(DISTFILES.common) $${additional}; do \
+	  ln $(srcdir)/$${file} $(distdir) 2>/dev/null \
+	    || cp -pv $(srcdir)/$${file} $(distdir); \
 	done
 
-dist-libc: config.status
+dist-libc: @MAINT@ config.status
 	tar zcvf intl-glibc.tar.gz $(COMSRCS) $(COMHDRS) libintl.h.glibc
+.PHONY: dist-libc
 
 Makefile: Makefile.in config.status
-	CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
+	CONFIG_FILES=$@ CONFIG_HEADERS="" $(SHELL) ./config.status
 
 # The dependency for intlh.inst is different in gettext and all other
 # packages.  Because we cannot you GNU make features we have to solve
 # the problem while rewriting Makefile.in.
 @GT_YES@intlh.inst: intlh.inst.in ../config.status
 @GT_YES@	cd .. \
-@GT_YES@	&& CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= \
+@GT_YES@	&& CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS="" \
 @GT_YES@	  $(SHELL) ./config.status
 @GT_NO@.PHONY: intlh.inst
 @GT_NO@intlh.inst:

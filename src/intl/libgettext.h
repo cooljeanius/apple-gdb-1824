@@ -190,11 +190,21 @@ extern int _nl_msg_cat_cntr;
 
 #else
 
-# define gettext(Msgid) (Msgid)
-# define dgettext(Domainname, Msgid) (Msgid)
-# define dcgettext(Domainname, Msgid, Category) (Msgid)
-# define textdomain(Domainname) ((char *)Domainname)
-# define bindtextdomain(Domainname, Dirname) ((char *)Dirname)
+# ifndef gettext
+#  define gettext(Msgid) (Msgid)
+# endif /* !gettext */
+# ifndef dgettext
+#  define dgettext(Domainname, Msgid) (Msgid)
+# endif /* !dgettext */
+# ifndef dcgettext
+#  define dcgettext(Domainname, Msgid, Category) (Msgid)
+# endif /* !dcgettext */
+# ifndef textdomain
+#  define textdomain(Domainname) ((char *)Domainname)
+# endif /* !textdomain */
+# ifndef bindtextdomain
+#  define bindtextdomain(Domainname, Dirname) ((char *)Dirname)
+# endif /* !bindtextdomain */
 
 #endif /* ENABLE_NLS */
 

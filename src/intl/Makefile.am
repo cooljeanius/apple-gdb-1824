@@ -17,7 +17,7 @@
 
 ACLOCAL_AMFLAGS = -I m4 --install
 
-SUBDIRS = . po
+SUBDIRS = po
 
 PACKAGE = @PACKAGE@
 VERSION = @VERSION@
@@ -70,10 +70,10 @@ AM_WARNFLAGS = -Wall @MAINT@ $(AM_ANSIFICATION_FLAGS)
 AM_LDFLAGS = -framework CoreFoundation
 AM_YFLAGS = -Wall -Wyacc -d
 
-COMPILE = $(CC) -c $(DEFS) $(INCLUDES) $(AM_WARNFLAGS) $(CPPFLAGS) $(CFLAGS) $(XCFLAGS) # $(AM_CPPFLAGS)
+COMPILE = $(CC) -c $(DEFS) $(AM_CPPFLAGS) $(AM_WARNFLAGS) $(CPPFLAGS) $(CFLAGS) $(XCFLAGS) @MAINT@ $(INCLUDES)
 .PHONY: -c -m 644 
-# The above `.PHONY:` is a hack; `-c` and `-m` and `644` should not even
-# have been treated as targets in the first place...
+## The above `.PHONY:` is a hack; `-c` and `-m` and `644` should not even
+## have been treated as targets in the first place...
 
 include_HEADERS = $(COMHDRS) gmo.h libgettext.h loadinfo.h plural-exp.h \
 eval-plural.h localcharset.h relocatable.h libgnuintl.h
@@ -83,6 +83,7 @@ COMSRCS = bindtextdom.c dcgettext.c dgettext.c gettext.c \
 finddomain.c loadmsgcat.c localealias.c textdomain.c l10nflist.c \
 explodename.c dcigettext.c dcngettext.c dngettext.c ngettext.c plural.y \
 plural-exp.c localcharset.c relocatable.c localename.c log.c osdep.c
+EXTRA_DIST = $(SOURCES)
 OBJECTS = @INTLOBJS@ bindtextdom.o dcgettext.o dgettext.o gettext.o \
 finddomain.o loadmsgcat.o localealias.o textdomain.o l10nflist.o \
 explodename.o dcigettext.o dcngettext.o dngettext.o ngettext.o plural.o \
@@ -113,16 +114,21 @@ SUFFIXES = .c .y .o .lo
 	$(YACC) $(YFLAGS) $(AM_YFLAGS) --output $@ $<
 	rm -f $*.h
 
-all: config.status all-@USE_INCLUDED_LIBINTL@
-.PHONY: all-@USE_INCLUDED_LIBINTL@
+EXTRA_DIST += plural.c
 
-all-yes: libintl.la intlh.inst libintl.a config.status libintl.h config.intl
+AM_INCLUDES = -I. -I$(srcdir)
+
+all: all-@USE_INCLUDED_LIBINTL@ @MAINT@ config.status
+.PHONY: all all-@USE_INCLUDED_LIBINTL@
+
+all-yes: libintl.la intlh.inst libintl.a libintl.h config.intl @MAINT@ config.status
 	@test -e Makefile_orig && make -f Makefile_orig
-all-no: config.status
+all-no: @MAINT@ config.status
 	@test -e Makefile_orig && make -f Makefile_orig
 install-info-local:
+.PHONY: install-info-local
 
-libintl.h: config.status
+libintl.h: @MAINT@ config.status
 
 libintl.a: $(OBJECTS) $(LTOBJECTS)
 	rm -f $@
@@ -139,7 +145,10 @@ libintl.la: $(LTOBJECTS) $(OBJECTS)
 ../po/cat-id-tbl.o: ../po/cat-id-tbl.c $(top_srcdir)/po/$(PACKAGE).pot
 	cd ../po && $(MAKE) cat-id-tbl.o
 
-check: all config.status
+EXTRA_DIST += po/Makevars.in
+
+check: all @MAINT@ config.status
+.PHONY: check
 
 # This installation goal is only used in GNU gettext. Packages which
 # only use the library should use install instead.
@@ -151,7 +160,8 @@ check: all config.status
 # If you want to use the one which comes with this version of the
 # package, you have to use `configure --with-included-gettext'.
 install-libintl: install-exec-local install-data-local
-install-exec-local: all config.status
+.PHONY: install-libintl
+install-exec-local: all @MAINT@ config.status
 	if test "x$(PACKAGE)" = "xgettext" \
 	   && test 'x@INTLOBJS@' = 'x$(GETTOBJS)'; then \
 	  if test -r $(MKINSTALLDIRS); then \
@@ -164,8 +174,9 @@ install-exec-local: all config.status
 	else \
 	  echo "no extra exec things to install"; \
 	fi
+.PHONY: install-exec-local
 
-install-data-local: all config.status
+install-data-local: all @MAINT@ config.status
 	if test "x$(PACKAGE)" = "xgettext"; then \
 	  if test -r $(MKINSTALLDIRS); then \
 	    $(MKINSTALLDIRS) $(gettextsrcdir); \
@@ -180,17 +191,21 @@ install-data-local: all config.status
 	else \
 	  echo "no extra data to install"; \
 	fi
+.PHONY: install-data-local
 
 install-strip-local: install
+.PHONY: install-strip-local
 
 # Define this as empty until I found a useful application.
 installcheck-local:
+.PHONY: installcheck-local
 
 uninstall-local:
 	dists="$(DISTFILES.common)"; \
 	for file in $${dists}; do \
 	  rm -fv $(gettextsrcdir)/$${file}; \
 	done
+.PHONY: uninstall-local
 
 .PHONY: info dvi ps pdf html
 .PHONY: install-info install-dvi install-ps install-pdf install-html
@@ -229,28 +244,33 @@ TAGS-uppercase: $(HEADERS) $(SOURCES)
 .PHONY: TAGS-uppercase
 
 id: ID-uppercase
+.PHONY: id
 
 ID-uppercase: $(HEADERS) $(SOURCES)
 	here=`pwd`; cd $(srcdir) && \
 		mkid -f$${here}/ID $(HEADERS) $(SOURCES)
 .PHONY: ID-uppercase
 
-mostlyclean-local: config.status
+mostlyclean-local: @MAINT@ config.status
 	rm -fv *.a *.la *.o *.obj *.lo core core.* @MAINT@ libintl.h
+.PHONY: mostlyclean-local
 
-clean-local: mostlyclean-local config.status
+clean-local: mostlyclean-local @MAINT@ config.status
+.PHONY: clean-local
 
-distclean-local: clean-local config.status
-	rm -f po2msg.sed po2tbl.sed
-	rm -f libintl.h config.log config.intl config.h
+distclean-local: clean-local @MAINT@ config.status
+	rm -f po2msg.sed po2tbl.sed po/Makevars
+	rm -f config.log config.intl config.h @MAINT@ libintl.h
 	rm -f Makefile ID TAGS
-	rm -fv *.status Makefile*orig
+	rm -fv *.status *.output Makefile*orig *~ m4/*~ po/*~
 	rm -rfv autom4te.cache || rmdir autom4te.cache
+.PHONY: distclean-local
 
-maintainer-clean-local: distclean-local config.status
+maintainer-clean-local: distclean-local @MAINT@ config.status
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
-
+	rm -f libintl.h
+.PHONY: maintainer-clean-local
 
 # GNU gettext needs not contain the file `VERSION' but contains some
 # other files which should not be distributed in other packages.
@@ -265,12 +285,15 @@ dist_mydistdir: Makefile $(DISTFILES)
 	  ln $(srcdir)/$${file} $(mydistdir) 2>/dev/null \
 	    || cp -pv $(srcdir)/$${file} $(mydistdir); \
 	done
+.PHONY: dist_mydistdir
 
 dist-libc:
 	tar zcvf intl-glibc.tar.gz $(COMSRCS) $(COMHDRS) libintl.h.glibc
+.PHONY: dist-libc
 
 Makefile-original: Makefile.in config.status
 	CONFIG_FILES=$@ CONFIG_HEADERS="" $(SHELL) ./config.status
+.PHONY: Makefile-original
 
 # The dependency for intlh.inst is different in gettext and all other
 # packages. Because we cannot you GNU make features we have to solve
@@ -282,3 +305,4 @@ Makefile-original: Makefile.in config.status
 @GT_NO@.PHONY: intlh.inst
 @GT_NO@intlh.inst:
 
+EXTRA_DIST += intlh.inst.in
