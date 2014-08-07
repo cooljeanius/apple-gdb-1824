@@ -2,4 +2,5 @@
 *.log
 !libtoolconf.a
 !toolconf.dll
-#TODO: come back to after initial commit
+*.tar.gz
+multi-ice-server-*.*/*

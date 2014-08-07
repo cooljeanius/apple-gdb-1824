@@ -1,4 +1,5 @@
-/* Host-dependent definitions for i386.
+/* xm-i386.h
+   Host-dependent definitions for i386.
    Copyright 2001 Free Software Foundation, Inc.
 
    This file is part of GDB.

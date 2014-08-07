@@ -1,4 +1,5 @@
-/* Host-dependent definitions for Intel 386 running LynxOS.
+/* xm-i386lynx.h
+   Host-dependent definitions for Intel 386 running LynxOS.
    Copyright 1993 Free Software Foundation, Inc.
 
    This file is part of GDB.

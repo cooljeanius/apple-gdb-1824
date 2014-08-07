@@ -11,26 +11,26 @@ sinclude(../gettext.m4)
 dnl# The lines below arrange for aclocal not to bring gettext.m4's
 dnl# CY_GNU_GETTEXT into aclocal.m4.
 ifelse([yes],[no],[
-AC_DEFUN([CY_GNU_GETTEXT],)
-])
+AC_DEFUN([CY_GNU_GETTEXT],[])dnl
+])dnl
 
 dnl# CYGNUS LOCAL: This gets the right posix flag for gcc
-AC_DEFUN([CY_AC_TCL_LYNX_POSIX],
-[AC_REQUIRE([AC_PROG_CC])
-AC_REQUIRE([AC_PROG_CPP])
-AC_REQUIRE([AC_PROG_EGREP])
+AC_DEFUN([CY_AC_TCL_LYNX_POSIX],[
+AC_REQUIRE([AC_PROG_CC])dnl
+AC_REQUIRE([AC_PROG_CPP])dnl
+AC_REQUIRE([AC_PROG_EGREP])dnl
 AC_MSG_CHECKING([if running LynxOS])
 AC_CACHE_VAL([ac_cv_os_lynx],
-[AC_EGREP_CPP([yes],
+[AC_EGREP_CPP([yes_this_is_lynx],
 [/*
  * The old Lynx "cc" only defines "Lynx", but the newer one uses "__Lynx__"
  */
 #if defined(__Lynx__) || defined(Lynx)
-yes
-#endif
+yes_this_is_lynx
+#endif /* __Lynx__ || Lynx */
 ],[ac_cv_os_lynx=yes],[ac_cv_os_lynx=no])])
 #
-if test "$ac_cv_os_lynx" = "yes" ; then
+if test "x${ac_cv_os_lynx}" = "xyes"; then
   AC_MSG_RESULT([yes])
   AC_DEFINE([LYNX],[1],[Define to 1 for LynxOS])
   AC_MSG_CHECKING([whether -mposix or -X is available])
@@ -41,16 +41,16 @@ if test "$ac_cv_os_lynx" = "yes" ; then
    * -X is for the old "cc" and "gcc" (based on 1.42).
    * -mposix is for the new gcc (at least 2.5.8).
    */
-  #if defined(__GNUC__) && __GNUC__ >= 2
+  #if defined(__GNUC__) && (__GNUC__ >= 2)
   choke me
-  #endif
+  #endif /* gcc 2+ */
   ]])],[ac_cv_c_posix_flag=" -mposix"],[ac_cv_c_posix_flag=" -X"])])
-  CC="$CC $ac_cv_c_posix_flag"
-  AC_MSG_RESULT([$ac_cv_c_posix_flag])
-  else
+  CC="${CC} ${ac_cv_c_posix_flag}"
+  AC_MSG_RESULT([${ac_cv_c_posix_flag}])
+else
   AC_MSG_RESULT([no])
 fi
-])
+])dnl
 
 #
 # Sometimes the native compiler is a bogus stub for gcc or /usr/ucb/cc.
@@ -58,21 +58,21 @@ fi
 # was NOT used, then we cannot configure, so something is wrong. We do NOT
 # use the cache here cause if somebody fixes their compiler install, we
 # want this to work.
-AC_DEFUN([CY_AC_C_WORKS],
-[# If we cannot compile and link a trivial program, we cannot expect
-#anything to work
-AC_MSG_CHECKING(whether the compiler ($CC) actually works)
+AC_DEFUN([CY_AC_C_WORKS],[
+# If we cannot compile and link a trivial program, then we cannot expect
+# anything to work:
+AC_MSG_CHECKING([whether the compiler (${CC}) actually works])
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([[]],[[/* do NOT need anything here */]])],
         [c_compiles=yes],[c_compiles=no])
 
 AC_LINK_IFELSE([AC_LANG_SOURCE([[]],[[/* do NOT need anything here */]])],
         [c_links=yes],[c_links=no])
 
-if test x"${c_compiles}" = x"no" ; then
+if test x"${c_compiles}" = x"no"; then
   AC_MSG_ERROR([the native compiler is broken and will NOT compile.])
 fi
 
-if test x"${c_links}" = x"no" ; then
+if test x"${c_links}" = x"no"; then
   AC_MSG_ERROR([the native compiler is broken and will NOT link.])
 fi
 AC_MSG_RESULT([yes])
@@ -92,10 +92,10 @@ AC_MSG_CHECKING([for Tcl private headers. dir=${configdir}])
 AC_ARG_WITH([tclinclude],[AS_HELP_STRING([--with-tclinclude=DIR],[Directory where tcl private headers are])],[with_tclinclude=${withval}])
 AC_CACHE_VAL([ac_cv_c_tclh],[
 # first check to see if --with-tclinclude was specified
-if test x"${with_tclinclude}" != x ; then
-  if test -f ${with_tclinclude}/tclInt.h ; then
+if test x"${with_tclinclude}" != x""; then
+  if test -f ${with_tclinclude}/tclInt.h; then
     ac_cv_c_tclh=`(cd ${with_tclinclude}; pwd)`
-  elif test -f ${with_tclinclude}/generic/tclInt.h ; then
+  elif test -f ${with_tclinclude}/generic/tclInt.h; then
     ac_cv_c_tclh=`(cd ${with_tclinclude}/generic; pwd)`
   else
     AC_MSG_ERROR([${with_tclinclude} directory does NOT contain private headers])
@@ -103,16 +103,16 @@ if test x"${with_tclinclude}" != x ; then
 fi
 
 # next check if it came with Tcl configuration file
-if test x"${ac_cv_c_tclconfig}" = x ; then
-  if test -f $ac_cv_c_tclconfig/../generic/tclInt.h ; then
-    ac_cv_c_tclh=`(cd $ac_cv_c_tclconfig/..; pwd)`
+if test x"${ac_cv_c_tclconfig}" = x""; then
+  if test -f ${ac_cv_c_tclconfig}/../generic/tclInt.h ; then
+    ac_cv_c_tclh=`(cd ${ac_cv_c_tclconfig}/..; pwd)`
   fi
 fi
 
 # next check in private source directory
 #
 # since ls returns lowest version numbers first, reverse its output
-if test x"${ac_cv_c_tclh}" = x ; then
+if test x"${ac_cv_c_tclh}" = x""; then
   for i in \
 		${srcdir}/../tcl \
 		`ls -dr ${srcdir}/../tcl[[7-9]]* 2>/dev/null` \
@@ -143,7 +143,7 @@ if test x"${ac_cv_c_tclh}" = x ; then
   done
 fi
 # see if one is installed
-if test x"${ac_cv_c_tclh}" = x ; then
+if test x"${ac_cv_c_tclh}" = x""; then
    AC_CHECK_HEADER([tclInt.h],[ac_cv_c_tclh=installed],[ac_cv_c_tclh=""])
 fi
 ])
@@ -164,8 +164,8 @@ if test x"${ac_cv_c_tclh}" != x ; then
   fi
 fi
 
-AC_SUBST([TCLHDIR])
-])
+AC_SUBST([TCLHDIR])dnl
+])dnl
 
 
 AC_DEFUN([CY_AC_PATH_TCLCONFIG],[
@@ -938,5 +938,5 @@ if test x = y ; then
     [AC_DEFINE([HAVE_DECL_\&],[1],
       [Define to 1 if we found this declaration otherwise define to 0.])])dnl
 fi
-])
+])dnl
 

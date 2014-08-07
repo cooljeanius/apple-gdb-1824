@@ -1,4 +1,5 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* kdp-transactions.c
+   Mac OS X kdp support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -390,23 +391,23 @@ kdp_reattach (kdp_connection *c)
   return RR_SUCCESS;
 }
 
-kdp_return_t
-kdp_hostreboot (kdp_connection *c)
+kdp_return_t kdp_hostreboot(kdp_connection *c)
 {
   kdp_return_t ret;
 
-  CHECK_FATAL (kdp_is_connected (c));
+  CHECK_FATAL(kdp_is_connected(c));
 
   c->request->hostreboot_req.hdr.request = KDP_HOSTREBOOT;
   c->retries = 1;
-  ret = kdp_transaction (c, c->request, c->response, "kdp_hostreboot");
+  ret = kdp_transaction(c, c->request, c->response, "kdp_hostreboot");
 
   c->connected = 0;
 
-  if (ret != RR_SUCCESS)
-    {
+  if (ret != RR_SUCCESS) {
       return ret;
-    }
+  }
 
   return RR_SUCCESS;
 }
+
+/* EOF */

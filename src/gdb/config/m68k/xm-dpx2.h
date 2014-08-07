@@ -1,4 +1,5 @@
-/* Parameters for execution on a Bull DPX2.
+/* xm-dpx2.h
+   Parameters for execution on a Bull DPX2.
    Copyright 1986, 1987, 1989, 1993 Free Software Foundation, Inc.
 
    This file is part of GDB.

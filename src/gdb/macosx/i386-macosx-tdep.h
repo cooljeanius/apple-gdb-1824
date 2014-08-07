@@ -1,3 +1,5 @@
+/* i386-macosx-tdep.h */
+
 #ifndef __GDB_I386_MACOSX_TDEP_H__
 #define __GDB_I386_MACOSX_TDEP_H__
 
@@ -39,10 +41,10 @@
 
 /* All fetch functions below that don't end with '_raw' assume that the
    register structure argument is in host endian byte order and, if
-   needed, endian swap the values into target endian format and store 
-   the values into the register cache. The register cache stores 
+   needed, endian swap the values into target endian format and store
+   the values into the register cache. The register cache stores
    register values in target endian byte order.
-   
+
    All fetch functions that do end with '_raw' will trust that the
    register structure argument is already in target endian format and
    will copy the values in without swapping.  */
@@ -67,3 +69,5 @@ int  x86_64_macosx_store_fp_registers_raw (gdb_x86_float_state64_t *fp_regs);
 #define INVALID_ADDRESS ((CORE_ADDR) (-1))
 
 #endif /* __GDB_I386_MACOSX_TDEP_H__ */
+
+/* EOF */

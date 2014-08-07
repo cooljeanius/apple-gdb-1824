@@ -59,8 +59,7 @@ set_desired_inferior (int use_general)
     current_inferior = found;
 }
 
-int
-read_inferior_memory (CORE_ADDR memaddr, unsigned char *myaddr, int len)
+int read_inferior_memory(CORE_ADDR memaddr, unsigned char *myaddr, int len)
 {
   int res;
   res = (*the_target->read_memory) (memaddr, myaddr, len);

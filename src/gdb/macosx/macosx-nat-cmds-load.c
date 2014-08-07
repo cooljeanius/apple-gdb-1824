@@ -1,4 +1,5 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* macosx-nat-cmds-load.c
+   Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -129,7 +130,7 @@ load_plugin (char *arg, int from_tty)
 
   CHECK_FATAL (fptr != NULL);
 
-  /* Make sure the names and data arrays are updated BEFORE calling 
+  /* Make sure the names and data arrays are updated BEFORE calling
      init_func_name() so that the plugin can use _plugin_private_data()  */
 
   pstate.plugin_data =

@@ -1,4 +1,5 @@
-/* Target machine description for generic Motorola 88000, for GDB.
+/* tm-m88k.h
+   Target machine description for generic Motorola 88000, for GDB.
 
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1993, 1994, 1996,
    1998, 1999, 2000, 2002 Free Software Foundation, Inc.

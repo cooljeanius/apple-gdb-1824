@@ -42,13 +42,13 @@
 #define DECR_PC_AFTER_BREAK 0
 
 #if 0
--- -this code can 't be used unless we know we are running native,
-since it uses host specific ptrace calls.
+/*-- -this code cannot be used unless we know we are running native,
+ * since it uses host specific ptrace calls. */
 /* code for 80387 fpu.  Functions are from i386-dep.c, copied into
  * symm-dep.c.
  */
 #define FLOAT_INFO { i386_float_info(); }
-#endif
+#endif /* 0 */
 
 /* Number of machine registers */
 

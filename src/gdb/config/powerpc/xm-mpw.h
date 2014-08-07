@@ -1,4 +1,5 @@
-/* Macro definitions for running GDB on Apple Power Macintoshes.
+/* xm-mpw.h
+   Macro definitions for running GDB on Apple Power Macintoshes.
    Copyright 1994, 1995 Free Software Foundation, Inc.
 
    This file is part of GDB.

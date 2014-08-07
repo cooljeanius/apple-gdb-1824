@@ -2,13 +2,17 @@ dnl#                                               -*- Autoconf -*-
 dnl# Process this file with autoconf to produce a configure script.
 dnl# libintl/configure.ac
 
-AC_PREREQ([2.69])
+AC_PREREQ([2.69])dnl
 AC_INIT([libintl],[0.12.1],[jmolenda@apple.com])
 dnl# bug report address is email address of last person to touch this
 dnl# directory, according to the Changelog-Apple in this directory
 AC_CONFIG_SRCDIR([dgettext.c])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
+m4_ifdef([AC_REQUIRE_AUX_FILE],[
+  AC_REQUIRE_AUX_FILE([mkinstalldirs])dnl
+  AC_REQUIRE_AUX_FILE([ylwrap])dnl
+])dnl
 
 AC_CANONICAL_TARGET
 AC_OBJEXT
@@ -19,7 +23,7 @@ if test -f ${srcdir}/config.status; then
   rm -f ${srcdir}/config.status
 fi
 AM_INIT_AUTOMAKE([1.7 gnits dejagnu])
-ifdef([AM_MAINTAINER_MODE],[
+m4_ifdef([AM_MAINTAINER_MODE],[
   test -e "."
   if test -e "Makefile"; then
     AC_MSG_NOTICE([A Makefile is already present; removing it.])
@@ -28,8 +32,8 @@ ifdef([AM_MAINTAINER_MODE],[
     AC_MSG_NOTICE([No Makefile present...])
   fi
   AM_MAINTAINER_MODE
-])
-ifdef([AM_SANITY_CHECK],[
+])dnl
+m4_ifdef([AM_SANITY_CHECK],[
   test -e "."
   if test -e "Makefile"; then
     AC_MSG_NOTICE([A Makefile is already present; removing it.])
@@ -38,7 +42,7 @@ ifdef([AM_SANITY_CHECK],[
     AC_MSG_NOTICE([No Makefile present, the sanity check should pass next...])
   fi
   AM_SANITY_CHECK
-])
+])dnl
 
 AC_SYS_LARGEFILE
 AC_SYS_LONG_FILE_NAMES
@@ -47,113 +51,161 @@ AC_SYS_LONG_FILE_NAMES
 AM_PROG_AR
 AC_PROG_CXX
 AC_DISABLE_SHARED
-LT_INIT([shared static win32-dll])
-LT_LANG([C])
+LT_INIT([shared static win32-dll])dnl
+LT_LANG([C])dnl
 AM_PROG_INSTALL_STRIP
 AC_PROG_INSTALL
-AC_SUBST([INSTALLdir])
+AC_SUBST([INSTALLdir])dnl
 AC_PROG_LN_S
 if test "x${RANLIB}" = "x"; then
-	test -z "${RANLIB}"
-	AC_PROG_RANLIB
+  test -z "${RANLIB}"
+  AC_PROG_RANLIB
 else
-	test ! -z "${RANLIB}"
+  test ! -z "${RANLIB}"
 fi
 AC_DEFUN([AC_REQUIRE_PROG_SED],[
-  AC_REQUIRE([AC_PROG_SED])
-])
+  AC_REQUIRE([AC_PROG_SED])dnl
+])dnl
 AC_REQUIRE_PROG_SED
-AC_PATH_PROG([ICONV_BIN],[iconv])
-AC_SUBST([ICONV_BIN])
+AC_PATH_PROG([ICONV_BIN],[iconv])dnl
+AC_SUBST([ICONV_BIN])dnl
+AC_PROG_YACC
+AM_PROG_LEX
 
 # Checks for libraries.
-AC_CHECK_LIB([c],[printf])
-# FIXME: Replace `main' with a function in `-liberty':
-AC_CHECK_LIB([iberty],[main])
-# FIXME: Replace `main' with a function in `-lgnu':
-AC_CHECK_LIB([gnu],[main])
+AC_CHECK_LIB([c],[printf])dnl
+AC_CHECK_LIB([gnu],[gl_dummy_symbol],[],[
+  AC_CHECK_LIB([gnu],[main],[],[])dnl
+])dnl
+AC_CHECK_LIB([iberty],[xmalloc],[],[
+  AC_CHECK_LIB([iberty],[main])dnl
+])dnl
 
 # Checks for header files.
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
-  AC_REQUIRE([AC_HEADER_STDC])
-])
+  AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE_HEADER_STDC
-AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
+AC_HEADER_STAT
+AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_CHECK_HEADERS([argz.h bits/libc-lock.h byteswap.h ctype.h errno.h \
                   fcntl.h iconv.h langinfo.h libintl.h limits.h locale.h \
                   malloc.h malloc/malloc.h nl_types.h \
-                  stddef.h stdio.h sys/mman.h sys/param.h])
-AC_CHECK_HEADERS_ONCE([sys/types.h])
+                  stddef.h stdio.h sys/mman.h sys/param.h wchar.h])dnl
+AC_CHECK_HEADERS_ONCE([sys/types.h])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
+AC_C_CONST
 AC_C_INLINE
 AC_C_PROTOTYPES
+AC_C_VOLATILE
 AC_TYPE_SIZE_T
 AC_TYPE_UINTMAX_T
-AC_CHECK_TYPES([iconv_t])
+AC_CHECK_TYPES([iconv_t])dnl
 
 # Checks for library functions.
-AM_GNU_GETTEXT([external])
-AC_SUBST([GT_YES])
-AC_SUBST([GT_NO])
+AM_GNU_GETTEXT([external])dnl
+dnl#TODO: add the version once it is safe to do so
+AC_SUBST([GT_YES])dnl
+AC_SUBST([GT_NO])dnl
 AC_DEFUN([AC_GETTEXT_SUBCHECKS],[
-  AC_REQUIRE([gt_INTL_MACOSX])
-  AC_REQUIRE([AM_ICONV])
+  AC_REQUIRE([gt_INTL_MACOSX])dnl
+  AC_REQUIRE([AM_ICONV])dnl
+  m4_ifdef([AM_LANGINFO_CODESET],[
+    AC_REQUIRE([AM_LANGINFO_CODESET])dnl
+  ],[
+    AC_CHECK_FUNCS([langinfo codeset])dnl
+  ])dnl
+
+  dnl# libiconv symbol prefixing can vary:
   AC_CHECK_LIB([iconv],[iconv],[],[
     AC_CHECK_LIB([iconv],[libiconv],[],[
-      AC_CHECK_LIB([iconv],[main],[],[])
-    ])
-  ])
-])
+      AC_CHECK_LIB([iconv],[main],[],[])dnl
+    ])dnl
+  ])dnl
+])dnl
 AC_GETTEXT_SUBCHECKS
 export DATADIRNAME=share
 AC_SUBST([DATADIRNAME])
 export MKINSTALLDIRS=../mkinstalldirs
-AC_SUBST([MKINSTALLDIRS])
-AC_SUBST([l])
+AC_SUBST([MKINSTALLDIRS])dnl
+AC_SUBST([l])dnl
 AC_SUBST([INTLOBJS])
 export USE_INCLUDED_LIBINTL=yes
-AC_SUBST([USE_INCLUDED_LIBINTL])
+AC_SUBST([USE_INCLUDED_LIBINTL])dnl
 AM_WITH_DMALLOC
 AC_FUNC_ALLOCA
 AC_FUNC_MALLOC
 AC_FUNC_MMAP
 AC_FUNC_REALLOC
 AC_FUNC_STRNLEN
-AC_CHECK_FUNCS_ONCE([gettext _gettext])
+AC_CHECK_FUNCS_ONCE([gettext _gettext])dnl
 AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify \
                 dcgettext__ dgettext__ errno free fgets getcwd \
                 getenv getwd memcpy mempcpy munmap \
                 nl_langinfo putenv setenv setlocale stpcpy \
                 strcasecmp strchr strdup strlen strstr strtoul \
-                system tolower])
-AC_CHECK_DECLS([dcgettext__])
-AC_CHECK_DECLS([dgettext__])
-AC_CHECK_DECLS([free])
-AC_CHECK_DECLS([index])
-AC_CHECK_DECLS([NULL])
-AC_CHECK_DECLS([malloc])
-AC_CHECK_DECLS([realloc])
-AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu])
-AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu])
+                system tolower])dnl
+AC_CHECK_DECLS([dcgettext__])dnl
+AC_CHECK_DECLS([dgettext__])dnl
+AC_CHECK_DECLS([free])dnl
+AC_CHECK_DECLS([index])dnl
+AC_CHECK_DECLS([NULL])dnl
+AC_CHECK_DECLS([mempcpy])dnl
+AC_CHECK_DECLS([stpcpy])dnl
+AC_CHECK_DECLS([malloc])dnl
+AC_CHECK_DECLS([realloc])dnl
+AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu])dnl
+AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu])dnl
 
-# Output
+# Output:
 AC_DIAGNOSE([obsolete],[It is technically impossible to `autoupdate'
-cleanly from AC_LINK_FILES to AC_CONFIG_LINKS. `autoupdate' provides a
+cleanly from AC\_LINK\_FILES to AC_CONFIG_LINKS. `autoupdate' provides a
 functional but inelegant update, you should probably tune the result
 yourself.])dnl
 ac_sources="${nls_cv_header_libgt}"
 ac_dests="${nls_cv_header_intl}"
-while test -n "$ac_sources"; do
-  set $ac_dests; ac_dest=$1; shift; ac_dests=$*
-  set $ac_sources; ac_source=$1; shift; ac_sources=$*
-  ac_config_links_1="${ac_config_links_1} $ac_dest:$ac_source"
+while test -n "${ac_sources}"; do
+  set ${ac_dests}; ac_dest=$1; shift; ac_dests=$*
+  set ${ac_sources}; ac_source=$1; shift; ac_sources=$*
+  ac_config_links_1="${ac_config_links_1} ${ac_dest}:${ac_source}"
 done
 AC_CONFIG_LINKS([${ac_config_links_1}])
 AH_TOP([
-#define _INCLUDING_CONFIG_H
-])
+#ifndef _INCLUDING_CONFIG_H
+# define _INCLUDING_CONFIG_H 1
+#endif /* !_INCLUDING_CONFIG_H */
+])dnl
+dnl# This replaces the extensive use of DEFS in the original Makefile.in:
+AC_DEFINE([IN_LIBINTL],[1],[Define because this is libintl.])dnl
+AC_DEFINE([IN_LIBRARY],[1],[Define because this is a library.])dnl
+AC_DEFINE([DEPENDS_ON_LIBICONV],[1],
+          [Define to 1 because we depend on libiconv.])dnl
+AC_DEFINE([ENABLE_RELOCATABLE],[1],[Define to enable relocation.])dnl
+AC_DEFINE([NO_XMALLOC],[1],[Define if there is no xmalloc.])dnl
+AC_DEFINE([set_relocation_prefix],[libintl_set_relocation_prefix],
+          [Define this entry point correctly.])dnl
+AC_DEFINE([relocate],[libintl_relocate],
+          [Define this entry point correctly.])dnl
+
+# Additional info for config.intl.
+AC_SUBST([LIBINTL_DEP])dnl
+AC_SUBST([INCINTL])dnl
+
+LIBINTL_DEP=""
+INCINTL=""
+if test "x${USE_INCLUDED_LIBINTL}" != "x"; then
+  test -n "${USE_INCLUDED_LIBINTL}" || test ! -z "${USE_INCLUDED_LIBINTL}"
+  case ${USE_INCLUDED_LIBINTL} in
+    yes)
+      LIBINTL=`echo ${LIBINTL} | sed 's,${top_builddir},&/..,' `
+      LTLIBINTL=`echo ${LTLIBINTL} | sed 's,${top_builddir},&/..,' `
+      LIBINTL_DEP='${top_builddir}/../intl/libintl.a'
+      INCINTL='-I${top_builddir}/../intl'
+      ;;
+  esac
+fi
 
 AC_CONFIG_COMMANDS([libintl_h_compat],[
 if test -e libgettext.h -a ! -e libintl.h; then
@@ -165,7 +217,7 @@ elif test -e ${srcdir}/libgettext.h -a ! -e libintl.h; then
 elif test -e libgettext.h -a ! -e ${srcdir}/libintl.h; then
   ln -sv libgettext.h ${srcdir}/libintl.h
 fi
-],[])
+],[])dnl
 
 AC_CONFIG_COMMANDS([config_status_vpath_build_fix],[
 if test "${srcdir}" != "."; then
@@ -175,11 +227,12 @@ if test "${srcdir}" != "."; then
     cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
   fi
 fi
-],[])
+],[])dnl
 
 AC_CONFIG_FILES([Makefile \
-                 Makefile.orig \
+                 Makefile_orig \
                  po/Makefile.in \
                  po/Makevars \
-                 po2tbl.sed])
+                 po2tbl.sed \
+                 config.intl])dnl
 AC_OUTPUT

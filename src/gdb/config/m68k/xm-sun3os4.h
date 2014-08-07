@@ -1,4 +1,5 @@
-/* Macro definitions for a sun 3 running os 4.
+/* xm-sun3os4.h
+   Macro definitions for a sun 3 running os 4.
    Copyright 1989, 1996, 1998 Free Software Foundation, Inc.
 
    This file is part of GDB.

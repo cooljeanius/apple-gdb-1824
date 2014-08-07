@@ -1,4 +1,6 @@
-/* Parameters for Intel 960 running NINDY monitor, for GDB, the GNU debugger.
+/* tm-nindy960.h
+   Parameters for Intel 960 running NINDY monitor, for GDB,
+   the GNU debugger.
    Copyright 1990, 1991, 1996, 1999, 2000 Free Software Foundation, Inc.
    Contributed by Intel Corporation and Cygnus Support.
 
@@ -19,9 +21,9 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-/*****************************************************************************
+/**************************************************************************
  * Definitions to target GDB to an i960 debugged over a serial line.
- ******************************************************************************/
+ *************************************************************************/
 
 #include "i960/tm-i960.h"
 
@@ -43,7 +45,7 @@ extern char *nindy_ttyname;	/* Name of serial port to talk to nindy */
 #define	ADDITIONAL_OPTIONS \
 	{"O", no_argument, &nindy_old_protocol, 1},	\
 	{"brk", no_argument, &nindy_initial_brk, 1},	\
-	{"ser", required_argument, 0, 1004},	/* 1004 is magic cookie for ADDL_CASES */
+	{"ser", required_argument, 0, 1004}, /* 1004 is magic cookie for ADDL_CASES */
 
 #define	ADDITIONAL_OPTION_CASES	\
 	case 1004:	/* -ser option:  remote nindy auto-start */	\

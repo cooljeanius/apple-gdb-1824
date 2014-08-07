@@ -1,4 +1,5 @@
-/* Macro definitions for a Delta.
+/* xm-delta68.h
+   Macro definitions for a Delta.
    Copyright (C) 1986, 1987, 1989, 1992 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -18,16 +19,17 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-/* I'm running gdb 4.9 under sysV68 R3V7.1.
+/* I am running gdb 4.9 under sysV68 R3V7.1.
 
-   On some machines, gdb crashes when it's starting up while calling the
-   vendor's termio tgetent() routine.  It always works when run under
-   itself (actually, under 3.2, it's not an infinitely recursive bug.)
+   On some machines, gdb crashes when it is starting up while calling the
+   vendor's termio tgetent() routine. It always works when run under
+   itself (actually, under 3.2, it was not an infinitely recursive bug.)
    After some poking around, it appears that depending on the environment
-   size, or whether you're running YP, or the phase of the moon or something,
-   the stack is not always long-aligned when main() is called, and tgetent()
-   takes strong offense at that.  On some machines this bug never appears, but
-   on those where it does, it occurs quite reliably.  */
+   size, or whether you are/were running YP, or the phase of the moon
+   or something like that, the stack is not always long-aligned when main()
+   is called, and tgetent() takes strong offense at that.
+   On some machines this bug never appears, but on those where it does,
+   it occurs quite reliably.  */
 #define ALIGN_STACK_ON_STARTUP
 
 #define USG

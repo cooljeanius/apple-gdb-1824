@@ -718,14 +718,14 @@ fi
 
 dnl# GDBSERVER_DEPFILES and GDBSERVER_LIBS are set farther up now.
 
-AC_SUBST([GDBSERVER_DEPFILES])
-AC_SUBST([GDBSERVER_LIBS])
-AC_SUBST([srv_xmlbuiltin])
-AC_SUBST([srv_xmlfiles])
-AC_SUBST([IPA_DEPFILES])
-AC_SUBST([extra_libraries])
-AC_SUBST([USE_THREAD_DB])
-AC_SUBST([CPPFLAGS])
+AC_SUBST([GDBSERVER_DEPFILES])dnl
+AC_SUBST([GDBSERVER_LIBS])dnl
+AC_SUBST([srv_xmlbuiltin])dnl
+AC_SUBST([srv_xmlfiles])dnl
+AC_SUBST([IPA_DEPFILES])dnl
+AC_SUBST([extra_libraries])dnl
+AC_SUBST([USE_THREAD_DB])dnl
+AC_SUBST([CPPFLAGS])dnl
 
 dnl# warning flags get set at the bottom, to try to prevent them from
 dnl# messing with the other conftets:
@@ -756,7 +756,7 @@ else
 fi
 
 WARN_CFLAGS=""
-if test "x${GCC}" = xyes
+if test "x${GCC}" = "xyes"
 then
     AC_MSG_CHECKING([compiler warning flags])
     for w in ${build_warnings}; do

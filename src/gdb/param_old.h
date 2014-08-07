@@ -17,14 +17,20 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
-/* The standard thing is to include param.h.  However, files that are
-   specific to a particular target can include that tm-xxx.h file and
-   param-no-tm.h.  Any future inclusions of param.h will be protected
-   against by the #if !defined stuff below.  */
+/* The standard thing is to include param.h. However, files that are
+ * specific to a particular target can include that tm-xxx.h file and
+ * param-no-tm.h. Any future inclusions of param.h will be protected
+ * against by the #if !defined stuff below.  */
 
-/* This file requires defs.h.  */
+/* This file requires defs.h (so why not include it?). */
+#ifdef HAVE_CONFIG_H
+# if !defined(__CONFIG_H__)
+#  include "config.h"
+# endif /* !__CONFIG_H__ */
+# include "defs.h"
+#endif /* HAVE_CONFIG_H */
 
-#if !defined (PARAM_H)
+#if !defined(PARAM_H)
 # include "tm.h"
 #endif /* !PARAM_H */
 

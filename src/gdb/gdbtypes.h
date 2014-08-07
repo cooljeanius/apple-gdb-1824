@@ -1,4 +1,4 @@
-/* Internal type definitions for GDB.
+/* gdbtypes.h: Internal type definitions for GDB.
 
    Copyright 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
    2001, 2002, 2003, 2004 Free Software Foundation, Inc.
@@ -212,7 +212,7 @@ enum type_code
 #define TYPE_FLAG_TARGET_STUB	(1 << 3)
 #define TYPE_TARGET_STUB(t)	(TYPE_FLAGS (t) & TYPE_FLAG_TARGET_STUB)
 
-/* Static type.  If this is set, the corresponding type had 
+/* Static type.  If this is set, the corresponding type had
  * a static modifier.
  * Note: This may be unnecessary, since static data members
  * are indicated by other means (bitpos == -1)
@@ -266,7 +266,7 @@ enum type_code
    resides in instruction memory, even if its address (in the extended
    flat address space) does not reflect this.
 
-   Similarly, if TYPE_FLAG_DATA is set, then an object of the 
+   Similarly, if TYPE_FLAG_DATA is set, then an object of the
    corresponding type resides in the data memory space, even if
    this is not indicated by its (flat address space) address.
 
@@ -311,9 +311,9 @@ enum type_code
    to represent all Ada types---especially those whose size depends on
    dynamic quantities.  Therefore, the GNAT Ada compiler includes
    extra information in the form of additional type definitions
-   connected by naming conventions.  This flag indicates that the 
-   type is an ordinary (unencoded) GDB type that has been created from 
-   the necessary run-time information, and does not need further 
+   connected by naming conventions.  This flag indicates that the
+   type is an ordinary (unencoded) GDB type that has been created from
+   the necessary run-time information, and does not need further
    interpretation. Optionally marks ordinary, fixed-size GDB type. */
 
 #define TYPE_FLAG_FIXED_INSTANCE (1 << 15)
@@ -322,7 +322,7 @@ enum type_code
    AND it is treated by the compiler as a "function pointer".  */
 #define TYPE_FLAG_APPLE_CLOSURE (1 << 16)
 
-/* APPLE LOCAL: This is a restrict qualifier on the type, similar to 
+/* APPLE LOCAL: This is a restrict qualifier on the type, similar to
    const or volatile.  */
 #define TYPE_FLAG_RESTRICT (1 << 17)
 #define TYPE_RESTRICT(t)	(TYPE_INSTANCE_FLAGS (t) & TYPE_FLAG_RESTRICT)
@@ -492,7 +492,7 @@ struct main_type
   } *fields;
 
   /* For types with virtual functions (TYPE_CODE_STRUCT), VPTR_BASETYPE
-     is the base class which defined the virtual function table pointer.  
+     is the base class which defined the virtual function table pointer.
 
      For types that are pointer to member types (TYPE_CODE_MEMBER),
      VPTR_BASETYPE is the type that this pointer is a member of.
@@ -571,14 +571,14 @@ struct type
      the other choice would be to make it consistently in units of
      HOST_CHAR_BIT.  However, this would still fail to address
      machines based on a ternary or decimal representation.  */
-  
+
   /* APPLE LOCAL: I changed length from an unsigned int to an int.
-     I need to be able to mark the length as "uncertain", which I do
-     by reversing the sign.  See the comments in front of 
-     objc_invalidate_class in objc-lang.c for more details.
-     I doubt we'll ever get a struct whose length overflows 
-     a signed integer so for all practical purposes this should
-     be fine.  */
+   * I need to be able to mark the length as "uncertain", which I do
+   * by reversing the sign.  See the comments in front of
+   * objc_invalidate_class in objc-lang.c for more details.
+   * I doubt we will ever get a struct whose length overflows
+   * a signed integer so for all practical purposes this should
+   * be fine.  */
   int length;
 
   /* Core type, shared by a group of qualified types.  */
@@ -593,7 +593,7 @@ struct type
 enum runtime_type
   {
     CPLUS_RUNTIME,
-    OBJC_RUNTIME,
+    OBJC_RUNTIME/*,*/
   };
 
 struct cplus_struct_type
@@ -618,7 +618,7 @@ struct cplus_struct_type
     /* The "declared_type" field contains a code saying how the
        user really declared this type, e.g., "class s", "union s",
        "struct s".
-       The 3 above things come out from the C++ compiler looking like classes, 
+       The 3 above things come out from the C++ compiler looking like classes,
        but we keep track of the real declaration so we can give
        the correct information on "ptype". (Note: TEMPLATE may not
        belong in this list...)  */
@@ -706,7 +706,7 @@ struct cplus_struct_type
 
 	    /* The function type for the method.
 	       (This comment used to say "The return value of the method",
-	       but that's wrong. The function type 
+	       but that's wrong. The function type
 	       is expected here, i.e. something with TYPE_CODE_FUNC,
 	       and *not* the return-value type). */
 
@@ -754,7 +754,7 @@ struct cplus_struct_type
       }
      *fn_fieldlists;
 
-    /* If this "struct type" describes a template, then it 
+    /* If this "struct type" describes a template, then it
      * has arguments. "template_args" points to an array of
      * template arg descriptors, of length "ntemplate_args".
      * The only real information in each of these template arg descriptors
@@ -787,7 +787,7 @@ struct cplus_struct_type
      *
      * Fields in structure pointed to:
      * ->HAS_VTABLE : 0 => no virtual table, 1 => vtable present
-     * 
+     *
      * ->PRIMARY_BASE points to the first non-virtual base class that has
      * a virtual table.
      *
@@ -828,7 +828,7 @@ struct badness_vector
     int *rank;
   };
 
-/* APPLE LOCAL BEGIN: Helper function type defintions for easily 
+/* APPLE LOCAL BEGIN: Helper function type defintions for easily
    building bitfield built in types.  */
 struct gdbtypes_enum_info
   {
@@ -968,7 +968,7 @@ extern void allocate_cplus_struct_type (struct type *);
    go fix it on readin, but that would be slow.  Instead I want to intercept
    reading the bitpos & just fix it up on demand.  To do that I need to separate
    assigning the BITPOS from reading it.  */
-#define TYPE_FIELD_BITPOS_ASSIGN(thistype, n) FIELD_BITPOS(TYPE_FIELD(thistype,n)) 
+#define TYPE_FIELD_BITPOS_ASSIGN(thistype, n) FIELD_BITPOS(TYPE_FIELD(thistype,n))
 #define TYPE_FIELD_BITPOS(thistype, n) \
   (FIELD_BITPOS(TYPE_FIELD(thistype,n)) < 0 \
    ? objc_fixup_ivar_offset(thistype,n) \
@@ -1054,11 +1054,11 @@ extern void allocate_cplus_struct_type (struct type *);
 #define TYPE_LOCALTYPE_FILE(thistype) (TYPE_CPLUS_SPECIFIC_NONULL(thistype)->localtype_ptr->file)
 #define TYPE_LOCALTYPE_LINE(thistype) (TYPE_CPLUS_SPECIFIC_NONULL(thistype)->localtype_ptr->line)
 
-/* APPLE LOCAL: A struct type is opaque (a declaration only, no definition 
+/* APPLE LOCAL: A struct type is opaque (a declaration only, no definition
    available) if it has no subelements (NFIELDS==0) *or* if it has a non-zero
    length.  This latter part comes in to play if you define a struct with no
    elements, e.g. 'struct POSITION { };' - that type will have a length of 1
-   (at least by gcc's current behavior) and is a definition, 
+   (at least by gcc's current behavior) and is a definition,
    not just a declaration.  */
 
 #define TYPE_IS_OPAQUE(thistype) (((TYPE_CODE (thistype) == TYPE_CODE_STRUCT) ||        \
@@ -1315,7 +1315,7 @@ extern int address_space_name_to_int (char *);
 
 extern const char *address_space_int_to_name (int);
 
-extern struct type *make_type_with_address_space (struct type *type, 
+extern struct type *make_type_with_address_space (struct type *type,
 						  int space_identifier);
 
 extern struct type *lookup_member_type (struct type *, struct type *);
@@ -1409,9 +1409,9 @@ extern int count_virtual_fns (struct type *);
  * typeinfo pointer, and dup base info pointer */
 #define HP_ACC_VFUNC_START        4
 
-/* (Negative) Offset where virtual base offset entries begin 
+/* (Negative) Offset where virtual base offset entries begin
  * in the virtual table. Skips over metavtable pointer and
- * the self-offset entry. 
+ * the self-offset entry.
  * NOTE: NEGATE THIS BEFORE USING! The virtual base offsets
  * appear before the address point of the vtable (the slot
  * pointed to by the object's vtable pointer), i.e. at lower
@@ -1489,14 +1489,14 @@ extern void maintenance_print_type (char *, int);
    when the array type was constructed.  */
 extern void cleanup_undefined_arrays (void);
 
-/* APPLE LOCAL BEGIN: Helper functions for easily building bitfield 
+/* APPLE LOCAL BEGIN: Helper functions for easily building bitfield
    built in types.  */
-extern struct type *build_builtin_enum (const char *name, uint32_t size, 
-					int flags, struct gdbtypes_enum_info *, 
+extern struct type *build_builtin_enum (const char *name, uint32_t size,
+					int flags, struct gdbtypes_enum_info *,
 					uint32_t n);
 
-extern struct type *build_builtin_bitfield (const char *name, uint32_t size, 
-					    struct gdbtypes_bitfield_info *, 
+extern struct type *build_builtin_bitfield (const char *name, uint32_t size,
+					    struct gdbtypes_bitfield_info *,
 					    uint32_t n);
 extern struct type *get_closure_dynamic_type (struct value *in_value);
 extern struct value *get_closure_implementation_fn (struct value *);

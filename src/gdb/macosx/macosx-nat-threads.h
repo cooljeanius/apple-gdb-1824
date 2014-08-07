@@ -1,3 +1,5 @@
+/* macosx-nat-threads.h */
+
 #ifndef __GDB_MACOSX_NAT_THREADS_H__
 #define __GDB_MACOSX_NAT_THREADS_H__
 

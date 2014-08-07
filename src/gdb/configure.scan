@@ -82,5 +82,6 @@ AC_CONFIG_SUBDIRS([doc
                    multi-ice
                    nlm
                    rdi-share
+                   rem-multi_old
                    testsuite])
 AC_OUTPUT

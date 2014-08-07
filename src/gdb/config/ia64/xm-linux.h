@@ -1,4 +1,5 @@
-/* Native support for GNU/Linux, for GDB, the GNU debugger.
+/* xm-linux.h
+   Native support for GNU/Linux, for GDB, the GNU debugger.
    Copyright 1999, 2000, 2001 Free Software Foundation, Inc.
 
    This file is part of GDB.

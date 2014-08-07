@@ -1,6 +1,7 @@
-/* Target machine sub-description for QNX Neutrino version 6.
+/* tm-nto.h
+   Target machine sub-description for QNX Neutrino version 6.
    This is included by other tm-*.h files to specify nto specific
-   stuff. 
+   stuff.
 
    Copyright 2003 Free Software Foundation, Inc.
 

@@ -1,3 +1,5 @@
+/* arm-macosx-thread-status.h */
+
 #ifndef __GDB_ARM_MACOSX_THREAD_STATUS_H__
 #define __GDB_ARM_MACOSX_THREAD_STATUS_H__
 
@@ -54,6 +56,6 @@ typedef struct gdb_arm_thread_debug_state gdb_arm_thread_debug_state_t;
 #define GDB_ARM_THREAD_DEBUG_STATE_COUNT \
     (sizeof (struct gdb_arm_thread_debug_state) / sizeof (uint32_t))
 
-
 #endif /* __GDB_ARM_MACOSX_THREAD_STATUS_H__ */
 
+/* EOF */

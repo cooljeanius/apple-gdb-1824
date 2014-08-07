@@ -26,6 +26,9 @@
    the user is concerned but do serve to get the desired values when
    passed to read_register.  */
 
+#ifndef __ARM_REGNUMS_H__
+#define __ARM_REGNUMS_H__ 1
+
 /* APPLE LOCAL: Use R7 as FP for ARM for Darwin, use R11 for everything
    else. */
 #ifdef TM_NEXTSTEP
@@ -162,5 +165,6 @@ enum gdb_regnum {
 #define FLAG_Z		(1<<30)
 #define FLAG_N		(1<<31)
 
+#endif /* !__ARM_REGNUMS_H__ */
 
 /* EOF */

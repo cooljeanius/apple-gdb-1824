@@ -1,8 +1,8 @@
 /* tm-linux.h
-   Definitions to target GDB to GNU/Linux on PowerPC.
-
-   Copyright 1992, 1993, 2000, 2002 Free Software Foundation, Inc.
-
+ * Definitions to target GDB to GNU/Linux on PowerPC.
+ *
+ * Copyright 1992, 1993, 2000, 2002 Free Software Foundation, Inc. */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,8 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 
 #ifndef TM_LINUX_H
 #define TM_LINUX_H

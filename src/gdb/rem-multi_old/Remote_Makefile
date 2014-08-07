@@ -17,20 +17,27 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-CPPFLAGS = -I.. -I../config -I../../include -I../../bfd -I../../intl
+CPPFLAGS = -I.. -I../common -I../config -I../macosx -I../../include -I../../bfd -I../../intl
 DEFS = -DHAVE_CONFIG_H
-CFLAGS = -ggdb ${CPPFLAGS} ${DEFS}
-CC = cc
+CFLAGS = -ggdb ${CPPFLAGS} ${DEFS} -std=gnu99 -Wall -Wextra -Wold-style-definition -Wtrampolines -Wwrite-strings -Wformat=2 # -Wstrict-prototypes -Wnested-externs
+LDFLAGS = -L. -L..
+CC = gcc
 
-SERVER = remote_server.o\
-		 remote_inflow.o\
-		 remote_utils.o\
-		 remote_gutils.o 
+SERVER = remote_server.o \
+	 remote_inflow.o \
+	 remote_utils.o \
+	 remote_gutils.o
 
-prog : $(SERVER)
-	$(CC) -ggdb -o serve $(SERVER) 
+all: prog
+.PHONY: all
+
+prog: $(SERVER) Remote_Makefile
+	$(CC) -ggdb -o serve $(SERVER) ${LDFLAGS}
+.PHONY: prog
 
 clean:
 	rm -f $(SERVER) serve prog
+.PHONY: clean
 
 distclean: clean
+.PHONY: distclean

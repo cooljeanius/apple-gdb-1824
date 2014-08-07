@@ -22,3 +22,5 @@
 #define GDB_NATIVE_HPUX_11
 
 #include "pa/nm-hppah.h"
+
+/* EOF */

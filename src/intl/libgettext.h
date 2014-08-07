@@ -1,4 +1,5 @@
-/* Message catalogs for internationalization.
+/* libgettext.h
+   Message catalogs for internationalization.
    Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
@@ -16,9 +17,9 @@
    Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 /* Because on some systems (e.g. Solaris) we sometimes have to include
-   the systems libintl.h as well as this file we have more complex
-   include protection above.  But the systems header might perhaps also
-   define _LIBINTL_H and therefore we have to protect the definition here.  */
+ * the systems libintl.h as well as this file we have more complex
+ * include protection above.  But the systems header might perhaps also
+ * define _LIBINTL_H & therefore we have to protect the definition here. */
 
 #if !defined _LIBINTL_H || !defined _LIBGETTEXT_H
 #ifndef _LIBINTL_H
@@ -31,19 +32,25 @@
 #define __USE_GNU_GETTEXT 1
 
 #ifdef HAVE_CONFIG_H
-# define _INCLUDING_CONFIG_H
+# ifndef _INCLUDING_CONFIG_H
+#  define _INCLUDING_CONFIG_H 1
+# endif /* !_INCLUDING_CONFIG_H */
 #endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
-# warning libgettext.h expects <sys/types.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "libgettext.h expects <sys/types.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_TYPES_H */
 
-#if HAVE_LOCALE_H
+#if defined(HAVE_LOCALE_H) && HAVE_LOCALE_H
 # include <locale.h>
 #else
-# warning libgettext.h expects <locale.h> to be included.
+# if defined(__GNUC__) && !defined(__STRINCT_ANSI__)
+#  warning "libgettext.h expects <locale.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LOCALE_H */
 
 
@@ -63,7 +70,7 @@ extern "C" {
 
 #ifndef NULL
 # if !defined __cplusplus || defined __GNUC__
-#  define NULL ((void *) 0)
+#  define NULL ((void *)0)
 # else
 #  define NULL (0)
 # endif /* !__cplusplus || __GNUC__ */
@@ -99,41 +106,42 @@ extern int _msg_tbl_length;
 
 
 /* For automatical extraction of messages sometimes no real
-   translation is needed.  Instead the string itself is the result.  */
+   translation is needed.  Instead the string itself is the result. */
 #define gettext_noop(Str) (Str)
 
 /* Look up MSGID in the current default message catalog for the current
    LC_MESSAGES locale.  If not found, returns MSGID itself (the default
    text).  */
-extern char *gettext PARAMS ((const char *__msgid));
-extern char *gettext__ PARAMS ((const char *__msgid));
+extern char *gettext PARAMS((const char *__msgid));
+extern char *gettext__ PARAMS((const char *__msgid));
 
 /* Look up MSGID in the DOMAINNAME message catalog for the current
    LC_MESSAGES locale.  */
-extern char *dgettext PARAMS ((const char *__domainname, const char *__msgid));
-extern char *dgettext__ PARAMS ((const char *__domainname,
-				 const char *__msgid));
+extern char *dgettext PARAMS((const char *__domainname,
+                              const char *__msgid));
+extern char *dgettext__ PARAMS((const char *__domainname,
+                                const char *__msgid));
 
 /* Look up MSGID in the DOMAINNAME message catalog for the current CATEGORY
    locale.  */
-extern char *dcgettext PARAMS ((const char *__domainname, const char *__msgid,
-				int __category));
-extern char *dcgettext__ PARAMS ((const char *__domainname,
-				  const char *__msgid, int __category));
+extern char *dcgettext PARAMS((const char *__domainname,
+                               const char *__msgid, int __category));
+extern char *dcgettext__ PARAMS((const char *__domainname,
+                                 const char *__msgid, int __category));
 
 
 /* Set the current default message catalog to DOMAINNAME.
    If DOMAINNAME is null, return the current default.
    If DOMAINNAME is "", reset to the default of "messages".  */
-extern char *textdomain PARAMS ((const char *__domainname));
-extern char *textdomain__ PARAMS ((const char *__domainname));
+extern char *textdomain PARAMS((const char *__domainname));
+extern char *textdomain__ PARAMS((const char *__domainname));
 
 /* Specify that the DOMAINNAME message catalog will be found
    in DIRNAME rather than in the system locale data base.  */
-extern char *bindtextdomain PARAMS ((const char *__domainname,
-				  const char *__dirname));
-extern char *bindtextdomain__ PARAMS ((const char *__domainname,
-				    const char *__dirname));
+extern char *bindtextdomain PARAMS((const char *__domainname,
+                                    const char *__dirname));
+extern char *bindtextdomain__ PARAMS((const char *__domainname,
+                                      const char *__dirname));
 
 #if defined(ENABLE_NLS) && ENABLE_NLS
 
@@ -144,10 +152,10 @@ extern char *bindtextdomain__ PARAMS ((const char *__domainname,
      ((!defined(HAVE_GETTEXT) || (defined(HAVE_GETTEXT) && !HAVE_GETTEXT)) || \
       (defined(HAVE_DCGETTEXT) && HAVE_DCGETTEXT))
 
-#  define gettext(Msgid)						      \
+#  define gettext(Msgid) \
      dgettext(NULL, Msgid)
 
-#  define dgettext(Domainname, Msgid)					      \
+#  define dgettext(Domainname, Msgid) \
      dcgettext(Domainname, Msgid, LC_MESSAGES)
 
 #  if defined(__GNUC__) && (__GNUC__ == 2) && \
@@ -157,27 +165,27 @@ extern char *bindtextdomain__ PARAMS ((const char *__domainname,
    translations.  */
 extern int _nl_msg_cat_cntr;
 
-#   define dcgettext(Domainname, Msgid, Category)			      \
-  (__extension__							      \
-   ({									      \
-     char *__result;							      \
-     if (__builtin_constant_p (Msgid))					      \
-       {								      \
-	 static char *__translation__;					      \
-	 static int __catalog_counter__;				      \
-	 if (! __translation__ || __catalog_counter__ != _nl_msg_cat_cntr)    \
-	   {								      \
-	     __translation__ =						      \
-	       dcgettext__ (Domainname, Msgid, Category);		      \
-	     __catalog_counter__ = _nl_msg_cat_cntr;			      \
-	   }								      \
-	 __result = __translation__;					      \
-       }								      \
-     else								      \
-       __result = dcgettext__ (Domainname, Msgid, Category);		      \
-     __result;								      \
+#   define dcgettext(Domainname, Msgid, Category)			  \
+  (__extension__							  \
+   ({									  \
+     char *__result;							  \
+     if (__builtin_constant_p(Msgid))					  \
+       {								  \
+	 static char *__translation__;					  \
+	 static int __catalog_counter__;				  \
+	 if (! __translation__ || (__catalog_counter__ != _nl_msg_cat_cntr)) \
+	   {								  \
+	     __translation__ =						  \
+	       dcgettext__(Domainname, Msgid, Category);		  \
+	     __catalog_counter__ = _nl_msg_cat_cntr;			  \
+	   }								  \
+	 __result = __translation__;					  \
+       }								  \
+     else								  \
+       __result = dcgettext__(Domainname, Msgid, Category);		  \
+     __result;								  \
     }))
-#  endif /* __GNUC__ && __GNUC__ == 2 && __GNUC_MINOR__ >= 7 */
+#  endif /* __GNUC__ && (__GNUC__ == 2) && (__GNUC_MINOR__ >= 7) */
 # endif /* !HAVE_CATGETS && (!HAVE_GETTEXT || HAVE_DCGETTEXT) */
 
 #else
@@ -185,8 +193,8 @@ extern int _nl_msg_cat_cntr;
 # define gettext(Msgid) (Msgid)
 # define dgettext(Domainname, Msgid) (Msgid)
 # define dcgettext(Domainname, Msgid, Category) (Msgid)
-# define textdomain(Domainname) ((char *) Domainname)
-# define bindtextdomain(Domainname, Dirname) ((char *) Dirname)
+# define textdomain(Domainname) ((char *)Domainname)
+# define bindtextdomain(Domainname, Dirname) ((char *)Dirname)
 
 #endif /* ENABLE_NLS */
 
@@ -197,3 +205,5 @@ extern int _nl_msg_cat_cntr;
 #endif /* __cplusplus */
 
 #endif /* !_LIBINTL_H || !_LIBGETTEXT_H */
+
+/* EOF */

@@ -11,3 +11,12 @@ DISTCLEANFILES = autoscan.log
 
 distclean-local:
 	rm -rfv autom4te.cache || rmdir autom4te.cache
+.PHONY: distclean-local
+
+pdf-local:
+.PHONY: pdf-local
+
+dist-hook:
+	@test -d .. && echo "avoid making distributions in subdirs" >&2
+	@exit 1 || false
+.PHONY: dist-hook

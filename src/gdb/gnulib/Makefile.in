@@ -101,12 +101,13 @@ DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_check_compile_flag.m4 \
 	$(top_srcdir)/m4/ax_compiler_vendor.m4 \
-	$(top_srcdir)/m4/bakefile-lang.m4 \
+	$(top_srcdir)/m4/bakefile-lang.m4 $(top_srcdir)/m4/codeset.m4 \
 	$(top_srcdir)/m4/gnulib_stdint.m4 \
 	$(top_srcdir)/m4/gnulib_string_h.m4 \
 	$(top_srcdir)/m4/include_next.m4 $(top_srcdir)/m4/libtool.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
 	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/m4/ptrace.m4 $(top_srcdir)/m4/setpgrp.m4 \
 	$(top_srcdir)/acinclude.m4 $(top_srcdir)/../bfd/bfd.m4 \
 	$(top_srcdir)/../config/acinclude.m4 \
 	$(top_srcdir)/../gettext.m4 $(top_srcdir)/configure.ac
@@ -297,6 +298,7 @@ EMACSLOADPATH = @EMACSLOADPATH@
 ENABLE_CFLAGS = @ENABLE_CFLAGS@
 ENABLE_LDFLAGS = @ENABLE_LDFLAGS@
 EXEEXT = @EXEEXT@
+EXTRA_DEFS = @EXTRA_DEFS@
 F77 = @F77@
 FC = @FC@
 FCFLAGS = @FCFLAGS@
@@ -949,6 +951,9 @@ distdir: $(DISTFILES)
 	      || exit 1; \
 	  fi; \
 	done
+	$(MAKE) $(AM_MAKEFLAGS) \
+	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
+	  dist-hook
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-DEJAGNU
 check: $(BUILT_SOURCES)
@@ -1055,7 +1060,7 @@ mostlyclean-am: mostlyclean-compile mostlyclean-generic \
 
 pdf: pdf-recursive
 
-pdf-am:
+pdf-am: pdf-local
 
 ps: ps-recursive
 
@@ -1069,18 +1074,18 @@ uninstall-am:
 .PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am check \
 	check-DEJAGNU check-am clean clean-generic clean-libtool \
 	clean-noinstLIBRARIES clean-noinstLTLIBRARIES cscopelist-am \
-	ctags ctags-am distclean distclean-DEJAGNU distclean-compile \
-	distclean-generic distclean-libtool distclean-local \
-	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	installdirs-am maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool mostlyclean-local pdf pdf-am ps ps-am tags \
-	tags-am uninstall uninstall-am
+	ctags ctags-am dist-hook distclean distclean-DEJAGNU \
+	distclean-compile distclean-generic distclean-libtool \
+	distclean-local distclean-tags distdir dvi dvi-am html html-am \
+	info info-am install install-am install-data install-data-am \
+	install-dvi install-dvi-am install-exec install-exec-am \
+	install-html install-html-am install-info install-info-am \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs installdirs-am maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool mostlyclean-local pdf \
+	pdf-am pdf-local ps ps-am tags tags-am uninstall uninstall-am
 
 # The link-warning.h that gets inserted into generated .h files is the same
 # as build-aux/snippet/link-warning.h, except that it has the copyright
@@ -1391,6 +1396,14 @@ distclean-local:
 	rm -rf autom4te.cache || rmdir autom4te.cache
 
 .PHONY: all all-am all-local all-recursive
+
+pdf-local:
+.PHONY: pdf-local
+
+dist-hook:
+	@test -d .. && echo "avoid making distributions in subdirs" >&2
+	@exit 1 || false
+.PHONY: dist-hook
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

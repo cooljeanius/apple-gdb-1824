@@ -1,3 +1,5 @@
+/* kdp-udp.h */
+
 #ifndef __GDB_KDP_UDP_H__
 #define __GDB_KDP_UDP_H__
 
@@ -9,7 +11,6 @@
 
 struct kdp_connection
 {
-
   /* connection information */
 
   kdp_log_function *logger;
@@ -84,3 +85,5 @@ int kdp_is_bound (kdp_connection *c);
 int kdp_is_connected (kdp_connection *c);
 
 #endif /* __GDB_KDP_UDP_H__ */
+
+/* EOF */

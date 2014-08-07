@@ -11,7 +11,7 @@
 #include "macosx-nat-dyld.h"
 #include "macosx-nat-dyld-info.h"
 
-#if WITH_CFM
+#if defined(WITH_CFM) && WITH_CFM
 # include "macosx-nat-cfmthread.h"
 #endif /* WITH_CFM */
 
@@ -48,7 +48,7 @@ struct macosx_inferior_status
 
   macosx_signal_thread_status signal_status;
   macosx_exception_thread_status exception_status;
-#if WITH_CFM
+#if defined(WITH_CFM) && WITH_CFM
   macosx_cfm_thread_status cfm_status;
 #endif                          /* WITH_CFM */
 };

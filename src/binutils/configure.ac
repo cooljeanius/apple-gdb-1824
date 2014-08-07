@@ -94,12 +94,12 @@ AH_VERBATIM([00_CONFIG_H_CHECK],[
 /* Check that config.h is #included before system headers
  * (this works only for glibc, but that should be enough).  */
 #if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
-#  error config.h must be #included before system headers
+#  error "config.h must be #included before system headers"
 #endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ */
 #define __CONFIG_H__ 1])dnl
 AH_TOP([
 #ifndef HAVE_CONFIG_H
-# define HAVE_CONFIG_H
+# define HAVE_CONFIG_H 1
 #endif /* !HAVE_CONFIG_H */
 ])dnl
 
@@ -150,10 +150,10 @@ CY_GNU_GETTEXT
 ],[
   m4_ifdef([ZW_GNU_GETTEXT_SISTER_DIR],[
   ZW_GNU_GETTEXT_SISTER_DIR
-  ],[:])dnl
+  ],[:])
   m4_ifdef([AM_PO_SUBDIRS],[
   AM_PO_SUBDIRS
-  ],[:])dnl
+  ],[:])
 ])dnl
 
 AM_MAINTAINER_MODE

@@ -1,4 +1,5 @@
-/* Parameters for execution on a Matsushita mn10200 processor.
+/* tm-mn10200.h
+   Parameters for execution on a Matsushita mn10200 processor.
 
    Copyright 1997, 1998, 1999, 2000, 2001, 2002 Free Software
    Foundation, Inc.

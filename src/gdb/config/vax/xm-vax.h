@@ -25,7 +25,7 @@
 
 #define KERNEL_U_ADDR (0x80000000 - (UPAGES * NBPG))
 
-/* Kernel is a bit tenacious about sharing text segments, disallowing bpts.  */
+/* Kernel is tenacious about sharing text segments, disallowing bpts: */
 #define	ONE_PROCESS_WRITETEXT
 
 /* Interface definitions for kernel debugger KDB.  */

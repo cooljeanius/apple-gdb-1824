@@ -1,7 +1,7 @@
-/* intl-compat.c - Stub functions to call gettext functions from GNU gettext
-   Library.
-   Copyright (C) 1995 Software Foundation, Inc.
-
+/* intl-compat.c: Stub functions to call gettext functions from GNU gettext
+ * Library.
+ * Copyright (C) 1995 Software Foundation, Inc. */
+/*
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
@@ -14,12 +14,15 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, 51 Franklin Street - 5th Floor, Boston, MA 02110-1301, USA.
+ */
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning intl-compat.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning intl-compat.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #include "libgettext.h"
@@ -34,47 +37,33 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #undef bindtextdomain
 
 
-char *
-bindtextdomain (domainname, dirname)
-     const char *domainname;
-     const char *dirname;
+char *bindtextdomain(const char *domainname, const char *dirname)
 {
-  return bindtextdomain__ (domainname, dirname);
+  return bindtextdomain__(domainname, dirname);
 }
 
 
-char *
-dcgettext (domainname, msgid, category)
-     const char *domainname;
-     const char *msgid;
-     int category;
+char *dcgettext(const char *domainname, const char *msgid, int category)
 {
-  return dcgettext__ (domainname, msgid, category);
+  return dcgettext__(domainname, msgid, category);
 }
 
 
-char *
-dgettext (domainname, msgid)
-     const char *domainname;
-     const char *msgid;
+char *dgettext(const char *domainname, const char *msgid)
 {
-  return dgettext__ (domainname, msgid);
+  return dgettext__(domainname, msgid);
 }
 
 
-char *
-gettext (msgid)
-     const char *msgid;
+char *gettext(const char *msgid)
 {
-  return gettext__ (msgid);
+  return gettext__(msgid);
 }
 
 
-char *
-textdomain (domainname)
-     const char *domainname;
+char *textdomain(const char *domainname)
 {
-  return textdomain__ (domainname);
+  return textdomain__(domainname);
 }
 
 /* EOF */

@@ -1,0 +1,318 @@
+bplist00“_WebMainResource_WebSubresources’	
+_WebResourceData^WebResourceURL_WebResourceTextEncodingName_WebResourceMIMEType_WebResourceFrameNameO6‰<html><script id="jsb-e4cvdvxb96" data-jsb_special="ajax_intercept" data-jsb_added="34act6kmga"></script><script id="jsb-73j8jcjuyw" data-jsb_special="autocomplete_disabler" data-jsb_added="smzadnazus"></script><script id="jsb-4ndfuk61y3" data-jsb_special="alert_dialogs" data-jsb_added="wjfmswb3qy"></script><script id="jsb-omwzlqmfhd" data-jsb_special="genericSpecial" data-jsb_added="o1ov4y681g"></script><script id="jsb-wb9wlgpjah" data-jsb_special="inlineScriptsCheck" data-jsb_added="rbhqs2axaf"></script><head>
+<title>Using the ARM Multi-ICE with GDB</title>
+  <meta name="keywords" content="multi-ice, Cygnus, multi-ice-gdb-server, eCos">
+<style type="text/css"></style></head>
+
+<body bgcolor="white" text="black" link="#CC0000" alink="red" vlink="#880000">
+
+<table width="100%" cellpadding="10" cellspacing="0" border="0"><tbody><tr>
+<td valign="top" align="center" bgcolor="#AAAAAA" width="125">
+  <center>
+  <p>
+    <br><font face="Verdana, Arial, Helvetica, sans-serif" size="-1"><b>
+    <a href="http://ecos.sourceware.org/" target="_top">eCos Home</a><br><br>
+    <a href="/redboot/" target="_top">RedBoot Home</a><br>
+    </b></font>
+  </p>
+  <hr noshade="" width="90%" size="4">
+  <p>
+    <font face="Verdana, Arial, Helvetica, sans-serif" size="-1"><b>
+    <a href="http://ecos.sourceware.org/about.html" data-jsb_prepared="rpcqu22v3u" rel="noreferrer">About eCos</a><br><br>
+    <a href="http://ecos.sourceware.org/hardware.html" data-jsb_prepared="gvabidi4mz" rel="noreferrer">Supported Hardware</a><br><br>
+    <a href="http://ecos.sourceware.org/getstart.html" data-jsb_prepared="1qqznumysm" rel="noreferrer">Downloading and Installation</a><br><br>
+    <a href="http://ecos.sourceware.org/docs.html" data-jsb_prepared="09x9886occ" rel="noreferrer">Documentation</a><br><br>
+    <a href="/fom/ecos" data-jsb_prepared="pu8vdagez0" rel="noreferrer">FAQ</a><br><br>
+    <a href="http://ecos.sourceware.org/intouch.html" data-jsb_prepared="7x01z6iblb" rel="noreferrer">Mailing lists</a><br><br>
+    <a href="http://ecos.sourceware.org/problemreport.html" data-jsb_prepared="rc5ddlvek6" rel="noreferrer">Problems</a><br><br>
+    <a href="http://ecos.sourceware.org/license-overview.html" data-jsb_prepared="y71jp6aqv1" rel="noreferrer">Licensing</a><br><br>
+    <a href="http://ecos.sourceware.org/anoncvs.html" data-jsb_prepared="sryu2t0jk1" rel="noreferrer">Anonymous CVS</a><br><br>
+    <a href="http://ecos.sourceware.org/contrib.html" data-jsb_prepared="1rfat0cy9q" rel="noreferrer">Contributions and Development Projects</a><br><br>
+    <a href="http://ecos.sourceware.org/legal.html" data-jsb_prepared="nnu9c94336" rel="noreferrer">Legal</a><br><br>
+    </b></font>
+  </p>
+  </center>
+</td>
+
+<td valign="top">
+
+<div>
+  <img src="/ecos/ecos.gif" height="63" width="200" alt="eCos" border="0">
+</div>
+
+
+
+
+<h1>Using the ARM Multi-ICE with GDB</h1>
+<hr noshade="" size="3">
+
+<h2>Introduction</h2>
+
+<p>For some time now, Red Hat has been in possession of a program named the
+<tt>multi-ice-gdb-server</tt>, which allows GDB to communicate with
+the <a href="http://www.arm.com/devtools/multi_ice?OpenDocument" data-jsb_prepared="u095dftelx" rel="noreferrer">ARM 
+Multi-ICE</a> JTAG emulator. </p>
+
+<p>However a legal issue prevented the software being released. Recently though,
+<a href="http://www.arm.com/" data-jsb_prepared="2akmojm8pj" rel="noreferrer">ARM</a> were kind enough to release a GPL
+friendly version of the ARM RDI headers. This has allowed Red Hat to
+release the sources to the <tt>multi-ice-gdb-server</tt>. </p>
+
+<p>The server should work with both the 1.x and 2.x versions of the ARM
+Multi-ICE.</p>
+
+<p><b>Note:</b> The only supported host is Windows.</p>
+
+<h2>Legal status</h2>
+
+<p>As explained in great detail in the GNU General Public Licence, this
+software is supplied without warranty or guarantee of any kind. This
+software makes use of Dynamically Linked Libraries on Windows, to which
+the source code is not available. This is a known grey area of the GPL.
+</p>
+
+<p><b>Neither Red Hat Inc. nor ARM Ltd. may be held responsible for the
+obligations that the use of this software puts on you, under the terms
+of the GNU General Public Licence.</b> It is your responsibility to comply
+with the terms of the licence.</p>
+
+<p>It is considered likely that under the terms of the GPL it would be a
+breach of the GPL to distribute this software in binary form. Hence it is
+provided here on an as-is basis in source form only.</p>
+
+<h2>Downloading software for building the <tt>multi-ice-gdb-server</tt></h2>
+
+<p>To build the <tt>multi-ice-gdb-server</tt> you must first download and
+install several pieces of software. Most obviously you must obtain a copy
+of <a href="http://sources.redhat.com/gdb/" data-jsb_prepared="hl9uqc51f8" rel="noreferrer">GDB</a>, and
+<a href="http://www.cygwin.com/" data-jsb_prepared="r4q73q8yfo" rel="noreferrer">Cygwin</a> on which it depends. At this
+point you should download and install Cygwin, and download GDB, but not try
+to install it.</p>
+
+<p>You must also have installed the ARM Multi-ICE server software that came
+supplied with the Multi-ICE unit.</p>
+
+<p>Next, you should download the RDI 1.5.1 distribution from
+<a href="http://www.arm.com/" data-jsb_prepared="967489nvi3" rel="noreferrer">ARM</a>. The download is available
+<a href="http://www.arm.com/support/downloads/info/5570.html" data-jsb_prepared="uem373oaq6" rel="noreferrer">from this
+page</a>. You should
+download and install the package in an appropriate location.</p>
+
+<p>Finally, you should download the
+<a href="ftp://ecos.sourceware.org/pub/ecos/multi-ice-gdb.tar.gz" data-jsb_prepared="lfp694exyc" rel="noreferrer">
+<tt>multi-ice-gdb-server</tt> sources</a>.</p>
+
+<h2>Preparing to build the <tt>multi-ice-gdb-server</tt></h2>
+
+<p>Open a Cygwin bash shell window, create a directory to contain
+the sources and build directory, and change into it, e.g.:
+</p><pre>  bash-2.04$ mkdir /tmp/migdb
+  bash-2.04$ cd /tmp/migdb
+</pre><p></p>
+<p>Unarchive the GDB sources, e.g. for GDB 5.1.1, assuming the .tar.gz file
+had been saved to <tt>C:\</tt>:
+</p><pre>  bash-2.04$ tar -zxvf /cygdrive/c/gdb-5.1.1.tar.gz
+</pre><p></p>
+<p>Create a GDB multi-ice source directory and unarchive the 
+<tt>multi-ice-gdb-server</tt> sources, e.g. assuming the multi-ice-gdb-server
+sources were saved to <tt>C:\</tt>:
+</p><pre>  bash-2.04$ cd gdb-5.1.1/gdb
+  bash-2.04$ mkdir multi-ice
+  bash-2.04$ cd multi-ice
+  bash-2.04$ tar -zxvf /cygdrive/c/multi-ice-gdb.tar.gz
+</pre><p></p>
+<p>Create a directory for building, and change to it, e.g.:
+</p><pre>  bash-2.04$ mkdir /tmp/migdb/build
+  bash-2.04$ cd /tmp/migdb/build
+</pre><p></p>
+
+<h2>Building the <tt>multi-ice-gdb-server</tt></h2>
+
+<p>First configure the sources, e.g.:
+</p><pre>  bash-2.04$ /tmp/migdb/gdb-5.1.1/configure -v --target arm-elf --enable-multi-ice 2&gt;&amp;1 | tee configure.out
+</pre>
+which should produce a lot of output. The configure.out file contains a copy
+of the output for further diagnosis if something goes wrong.<p></p>
+<p> If you want to build all of GDB as well, at this point type:
+</p><pre>  bash-2.04$ make -w all install 2&gt;&amp;1 | tee make.out
+</pre>
+which will build and install everything into the default install location
+( /usr/local/bin ). If you wish to install to a different location you
+should configure the sources with a different prefix. Read the GDB manual on
+how to do this.<p></p>
+<p>Alternatively to only build the minimum required for the
+<tt>multi-ice-gdb-server</tt>, type:
+</p><pre>  bash-2.04$ make -w all-libiberty all-bfd 2&gt;&amp;1 | tee make.out
+</pre><p></p>
+<p>Finally to build the <tt>multi-ice-gdb-server</tt> itself, change
+to the multi-ice build directory and type make, supplying the make
+variables MULTI_ICE_INCLUDES which should point to the location of the ARM
+RDI 1.5 headers, and MULTI_ICE_LIBS which should point to the location of
+the ARM Multi-ICE server directory, as well as the location of the GDB
+multi-ice directory. For example:
+</p><pre>  bash-2.04$ cd gdb/multi-ice
+  bash-2.04$ make -w MULTI_ICE_INCLUDES="-I/cygdrive/c/Rdi/Headers" \
+    MULTI_ICE_LIBS="-L/cygdrive/c/Multi-ICE -L/tmp/migdb/gdb-5.1.1/gdb/multi-ice -ltoolconf" 2&gt;&amp;1 | tee make.out
+</pre>
+<b>Note:</b> There may be a large number of warnings.<p></p>
+<p>At this point the build of the multi-ice-gdb-server should be complete.
+As it needs access to the Multi-ICE.dll file, it is probably easiest to
+copy it straight alongside the ARM Multi-ICE server software:
+</p><pre>  bash-2.04$ cp -i multi-ice-gdb-server.exe /cygdrive/c/Multi-ICE
+  bash-2.04$ cp -i /tmp/migdb/gdb-5.1.1/gdb/multi-ice/*.dll /cygdrive/c/Multi-ICE
+</pre><p></p>
+
+<h2>Running the <tt>multi-ice-gdb-server</tt></h2>
+
+<h3>Connecting to the Multi-ICE server software</h3>
+
+<ol>
+<li><i>Start the ARM Multi-ICE server software:</i>
+
+<p>Start the ARM Multi-ICE server software from the Windows Start menu on
+the host computer. You will need to set up a Multi-ICE Server configuration
+file for your hardware. Ensure the
+board is reset and awakened (if applicable) before trying to make a
+connection. Use the Multi-ICE server graphical interface to load the
+configuration file. Once the Multi-ICE server is happy talking to the
+hardware, the hardware graphic will indicate the processor core model
+connected to in green.</p>
+
+<p>Note that certain targets may require jumper modifications, or re-soldered
+connections. For more details, see the ARM Multi-ICE User Guide.</p></li>
+
+<li><i>Start the `multi-ice-gdb-server' software</i>
+<p>Open a DOS window or a bash shell and start the <tt>multi-ice-gdb-server</tt>
+software on the host computer. If starting a DOS window, ensure the Cygwin
+DLL is also on your PATH.
+</p><pre>C:\&gt; multi-ice-gdb-server.exe --remote-port 9000 --byte-sex l --config-dialog
+</pre><p></p></li>
+
+<li><i>Changing the default MultiICE settings:</i>
+
+<p>It is probably not necessary to change the settings from the command-line
+given in step 2. But if your configuration has special requirements, you can
+configure the connection both to the Multi-ICE Interface Unit and to the
+remote GDB. The connection to the Multi-ICE Interface Unit can be configured
+with the ARM Multi-ICE server. The configuration of the remote GDB can be
+configured by passing arguments to the Multi-ICE GDB server.</p>
+
+<p>In the command-line given in step 2, the options are interpreted as follows:
+</p><ul>
+
+<li>"<tt>--remote-port 9000</tt>" specifies the TCP port that GDB clients use to connect
+to this server. You can use any available port.</li>
+
+<li>"<tt>--byte-sex l</tt>" tells GDB what endian-ness to respond with. Some GDB
+responses are byte-order (endian-ness) sensitive. The default is to attempt
+to determine the endianness from the target.</li>
+
+<li>"<tt>--config-dialog</tt>" forces the GDB server to bring up the Multi-ICE
+configuration dialog when starting. This is required in order to force the
+Multi-ICE server to connect properly.</li></ul><p></p>
+
+<p>Other available options include:
+</p><ul>
+<li>"<tt>--debug</tt>": setting this turns on GDB protocol tracing - analagous to the GDB
+command `set remotedebug 1'</li>
+
+<li>"<tt>--rdi-logging</tt>": setting this turns on logging at the RDI level</li>
+
+<li>"<tt>--target-port &lt;port&gt;</tt>": If the target is ID sensitive (the Multi-ICE can
+actually work with multiple devices simultaneously, each with their own ID),
+it may be specified with this option.</li>
+
+<li>"<tt>--stop-others</tt>": setting this specifies that a resume stops all
+the other processors</li>
+
+<li>"<tt>--help</tt>": produces help output.</li></ul><p></p></li>
+
+<li><i>Test the remote connection:</i>
+
+<p>Run gdb on the development computer by typing the command `arm-elf-gdb
+&lt;executable&gt;' where `&lt;executable&gt;' is the program to download and debug.
+Connect to the Multi-ICE GDB server by typing the command: `target remote
+&lt;hostname:port&gt;',  where `&lt;hostname&gt;' is the IP address/hostname of the host
+computer and `&lt;port&gt;' is the remote port number, 9000 in the above example
+and 2331 by default. For example, if the host and development computer are
+the same, type `target remote localhost:9000'. You can then use GDB debugger
+commands normally.</p>
+
+<p><b>NOTE:</b> Only one remote GDB can connect to the GDB Multi-ICE server at the
+same time. When you quit the remote GDB, or issue the `disconnect' command,
+the connection to the GDB Multi-ICE server is dropped and the connection is
+available to another remote GDB. If you attempt to make a second connection
+while one connection is already established, no error message is generated;
+the second connection attempt will just time out.</p>
+        </li></ol>
+
+<h3>eCos Thread debugging using Multi-ICE</h3>
+
+<p><b>Note:</b> This functionality will not be available until eCos 2.0.</p>
+
+<p>Normally, the Multi-ICE (and the Multi-ICE GDB server) have no knowledge of
+threads which might be running on the target hardware. In the case of an
+eCos application, some additional support is provided. If the eCos program
+has been built with the "CYGHWR_HAL_ARM_ICE_THREAD_SUPPORT" option enabled
+(found in the eCos Configuration Tool under the ARM architecture-specific
+flags), then the Multi-ICE GDB server and the eCos application co-operate to
+provide the thread information.</p>
+
+<p><b>Note:</b> It is also required that the following options are also enabled:
+</p><ul>
+<li>CYGDBG_HAL_DEBUG_GDB_INCLUDE_STUBS</li>
+<li>CYGDBG_HAL_DEBUG_GDB_THREAD_SUPPORT</li>
+<li>CYGDBG_KERNEL_DEBUG_GDB_THREAD_SUPPORT</li></ul><p></p>
+
+<p>When an eCos program is built with these options, then the server will call
+into the program in order to obtain thread information. This can take place
+at any time and does not require any explicit action on the eCos application
+side other than being compiled with the appropriate options enabled. The GDB
+requests are made as anonymous function calls run transparently behind the
+scenes as far as the running eCos program is concerned.</p>
+
+<hr noshade="" size="3">
+</td>
+</tr>
+</tbody></table>
+
+
+
+</body></html>_)http://ecos.sourceware.org/multi-ice.htmlUUTF-8Ytext/htmlP°‘_WebResourceResponseOHGIF89a» ? ˜     ˇˇˇÈ$˙∑π˘”‘˘º¿˝ÈÍ˝ÎÏ˙ÈÍ˝ÒÚ˝ÔÒifg˛¸˝˛˚˝ 545NMNbab˛˝˛¯˜¯ÔÓÔ°†°ÌÏÓ  ""+BBF""#!!"nnq<<=TTUHHIgghÒ‰‰ÂÆÆØQR_"$/!"&√ƒ» !"$abd")6#(/19Aäéíæ¬∆ÈÌÒV`enpqÉÉKLL˛ˇˇ˝˛˛˜¯¯ÈÍÍiigtts˛˛˝~}z“œÀîëéRQPxwvèéç‡ﬂﬁ«∆≈È" È$ Í$È(Î4ÏL0ÏR8ÓX>ÔZ@Ô^FÓfO˚€’˝ÒÔÍ È  Ë Ë ÈÎ Ë#È$È"Í&Í)Í.Í1Í4Î9 ÏA'ÏH/ÏH2ÌN5ÔWAÔWBÌWAÔ[CÌYBÓYCÌZCjXÔr^Òr`¯…¬˝ÔÌÈ Ë Ë Ë Á Á Á ÎËËÍ Ë#Í)Î/Î3ÌF4ÌJ5ÌM<ÔS?ÌVCÌUCÌXFÔXGÔ\IÓ`PcTvfÚxjÚ~pÚÑv˜≈øË Ë Á Á ÍÍ8&ÔTDÒTEÔXJÔk_ÚoeÛà}ÛéÖÙìäÙöíı†òˆ§ùˆ¨¶˜≤¨¯Ω∑˘»ƒ˘—Õ¸Â„˚ÓÌ¯∂≤˜πµ¯¿º˙¬ø˙’”˘◊’¸ËÁ¸ÏÎ˝ÔÓÔF?˘≈√˙ »¸“–¸÷’˚‡ﬂ  ˜≤≤˘Ωº˚ÃÀ˜ÃÃ˘““˚››˝ııA??˝˜˜˛˙˙877poocbba``[ZZ¸˚˚˙˘˘ÌÏÏÁÊÊƒ√√∂µµ˛˛˛¸¸¸¯¯¯ˆˆˆÛÛÛÌÌÌËËË€€€ÿÿÿ’’’“““ŒŒŒøøø®®®òòòãããàààÇÇÇÄÄÄkkkeeeaaa^^^PPPEEEBBBAAA111///***&&&!!!			ˇˇˇ!˘  ˇ ,    » ?  ˇ H∞†¿jI¶â#˜£Y;w#JúH±¢≈ã'∂Kbp +*n‹ƒ°≤é6p‚¿YπÚú7*Yæq9”ÂJ6(Yæº…ffOô6q
+]3g6kí*m£tç#J§`!ËX\∏
+T©VS≤ 1 `√äK∂¨Ÿ≥h”¯ñ’ ñ<w‚Í—WÆ]∫sÎ÷≈{Ô‹º}ˇ
+ÏWÆ‡=ÉÁÓAú8/<[»<Be¨#8x˙2üÀJp9‘äMöt?omù,¿∫µÎ◊∞cÀûMª∂m◊Kñ‰…sF´Çö¡;ßûŒ◊∆’+Õºπs∞ßSØæMΩ∫ıÎ≥ôh±TËT2Å·‡Öˇ£˜éûvYø){Œæ}⁄ËT≠®∆Nøæ}⁄X21˙>‹;v'úÄ^G„Ë„ﬁÅÜ_GÚMwﬂÉ“áG!ï;Iºc\GG$Ë·Å‘`Ñ$ñx€Çúr<ÏË≥ôAÈ|(#{!4¢â8ÊËöú¢ÉUX‘·åD2W#A7Í®§âXxQ!U„)•i®≈7ﬂ}KlqG|±€Z8ò#πÂ∆Ñ}[òÒõAﬂ|Â!1ÙÃ#œ<L)Zï^âùn|åa$íP $í4r∆xË!Ê}LdqG¢Må!Ü[Ê°GgZ◊#M;~ ¬‘òê◊`cB8Hà0èùa˘ˇ√èl–MVªÄ±ËmZ‡1Ü¶“@G…‘!
+a‡±ÎuZ‹Q$§º¢+¨ ã)íDAÜy,+xúRPîÌe B8Ÿd5Å`3ç¸9œ'Ä√M€$Æ_x+€|ò!
+/ú4K(É(K¢õîr g:–Ú
+(É\íuXRÀ@–»”û+¿n¡±é:nÄŒ
+–å<r¡ªÙ[ùbàÚ0…M0(\`q]ÄÑ¢¿84Ã(õ¯˚Z&£ål{ÚàS¥AÏû™{˛¨SÂÀE«¨tkL\b»*SSÖJ!yT∑¶î-—æÙAùg|W<œâ–◊nˇT¡:Ì—é»}‰µmKd"IÖƒ#óÃ›v·0¢Guw∏ 8Ò6GB5çwƒs!p√∑€á◊∂%°w§¿#i◊ñáß≠
+ _ªñ«#A ·≠SuNsŸzÍ≥ı1IT#≥¥-Ò≈,µì<¡#wXóEW∞”\;œ0ﬂë•…≥ç¯»«∆#ﬂâ_êglëº$°ø"∑uk´≤sÚòÄÛ5“ËF7∏a<Œd#£ŸÄ‹óæ◊h¡süAr!oÌú©E)"ÒàOàB√ô#≤wù<ò¢9É„4®—åy»Ä¸ÿ«=B0éÏ˝Õ8™g‡¬£Ö)ˇ*° ÇÏ¬˛¬Ñ∏¨'TêB§@≈0ä
+>ƒf{∂» ,6ë	<·1ZPC*.H(ÃYF¡ƒ¥ÿ£˚ J9‘è8Lü(ƒ£É-‚¿0esHÑ0+∂Ö!ºêá«ÏFà(Ee8ì4»Ô5zêBVpÜ<dä5K∏√‰`I˙‰a•)∆≤≤É—â∆È¢J6ñsñúÄd…† ˙Ä)‹Ù*°–¡0d@í3∏8dƒD&=\ª(X)†˜ö<T!+≤»Mlñ†ü—ÁU(≤Çé“åÄYﬁYB¿CÅÄñP⁄0Ò	aàaYzHD¡NˇàÀeÁÉcVåq-TìYiE.i"=pÇ4ƒ∏UÊò∆¨tcfG¡ê—L‹\Ü∏gl@
+Œº"µÕ°
+Œå"v≠…B≥Ú
+A(¨DzPiFê%<ÁñTqÜYˆ¡çÇÖ¬£’¡B∂9Ü5uÑÉHÈmÓ`Ü+hëò¨Ÿ]¡râÑÂ·b“HCé¨åcÍH´Z◊ ÷t0CÎ@BVûV¥S∫äPQ=D¬ä÷…C0©íå3xì5[8ŒÜa
+9êa7`≠è1§PÇÛFÁ∆béÇMÇö¬Î®2ë‚o¥»
+ˆpÉZúM`¥8Ö U…ˇ>T4˚HB;1Ält†,‘‡2‚G¢>LÆ#£ ÏuÓ∞ƒéTÒ5w@Eﬂ0
+BÙ!w∞qËhÍKﬁrdy 8xOFà	[àÖjaÿHd≈˜kÕ“Äå¬±bw¿Æk&;öxÄŒªúY¯!Q™ò¥ZBrëïC0‘:w†BVPﬂòNÇ]ˇ-€)Ÿ€W4 p¡<ñ¯/+§»â|LÉ˜∞÷ŸÇ≤2 <|≤5zêD˚˙v
+‹Õå≤ qÄ…Béº¡X“É;¬ ”GS»ä+l› ûö$Åd⁄|X-Ú_G¨QÇT¿Ã—àÜ6¥ëf5Ø˘ˇÕpésúA5ñ#$}∏±}–ãA™å–îr» )îõG%¢Vp€0¬†ﬂ/ß•%†J‰qè{ÿ£˘»>6≠ÈL{˙”†5>6´ipÑ–ØmLòJt˘6yä	&Ëa@Ñ(¨–)úy¬ü∂—Æh¨¬
+,«·å^M>å∂#π»+˛¥@6™|ˆ6‹ƒµ!(!å›ñÇΩ^æ≠hÇKq,Õ(X*®°;8"+:®≠msá7Ïÿ o 6∂∑¿0Ã!µ45o∞Å,ö#p∆ÿ∞™68≥9DNmÀ !êïUH€`êEV@Ü´QòdG`q=À∆—iˇÅ@≤27ŸÈ¶Ê+
+Ò‡ËÖ!≤¡C)≤RçR‰˜£ñg\±ì îJcB⁄ë_º6(GÃ9#éê&Á»∫÷œaérò94ãˆãA‘<6(2Ö<Œö|zñ_[Ç%$—ŒOÄª5NxÑ§õ<Ï‹lw?9¡E„åÇY@¢πu@W≥ÿC$#¿&0±£g!Ö F2:æÕ.Tõ*:(≈∫er› BáÏ»*±¨;∏! Æ(D&ñ≈Õ:ô:z`CiàQTŒ(ÅhÅÄ‘TË1¥ g! J-d°Yx √$~cŒ˜˝ªÕ≈#¬–á<lAZ¬√ˇÅ¢¡;ÃÓÉt¿ãHÑÅabô≤Ä	H‹ª ê a∞„¿‡,Œ–V ∞ <@2‰ÇEÊZp
+UpfPg‡	•‡T’«v¨¡ôC2¬$[Ü∞	i–	§∞ª ¡pq∫S˜∂°`_p{∞Ñ 
+ıE`0F}@¥D√G2·‡pb$√> 9`G8ì	`˜ ∂`}hwVU4ê ùb~ï˙÷“Ûya≤ ©ê–Nß_ô
+¿ı`dﬁıq8B‡>∂ÿ| 	YÜY°x`M+<◊FÃµÄ§ˇÁ]ÂDΩP‚c|Xx tﬁE
+›≤Mb0Ã3¶Ö8b¿
+8‘"–]Ó„;ÃAî<ñÿábxö(AßÄU’Ùl°cà†*`x”#iÓcÏqNÿ7±à8¢’kÃ√â˛ícv–:»	Ã&ôPR¿à•‡¿< TÌ°‘8ÕËåû0E≠ì ü∞_sõ`
+Sà3≥ÄÑ(XP’ÿ[?»˜PèX8‘ ^B?¿Ãxâ‘1!Ùÿ8ÆpÏVZr£¿éã%
+Ñt∑ë	∫HQœ‘`nÛ #¸`' ySìé‘¡œÙ
+7à3†
+û J÷ˇÅ^| rÄ
+≥ rQ¨P	ë | ã≤ëÉA~”FÌH@áYë§&#¯†Î H`Epé·í‘Å^zpì@Yœ0£pXPrıJyg‡t 	¢
+ë j0X–â◊.«5· ¢« ‚†ﬁêI¿C@H‡Wsna¡Y!ñ’°|∞gPPa
+®p
+§
+§î,[†j—”,\ÚE}–©©ö∫£3I  #˝∞ƒ∞D`ôfAô…êı°ç‰H^Ñﬁ'õK2[PLY<êæÈõòIö˘ F∑úíÅ–gT±9ù∞ˇ¢¡âî⁄yûµ°ö‡#S'ûRBû÷)úËYü&æÄ3:†‰üE"üaIüˆ9†µ∆-U4ÏÇWÈü	†qù:†ËÖü¿8}w»†‚†°zûK∞ñppÇúaÄä J˙°9¢`[–a‡	ßêz≠≥(¿+⁄Ögùc‡}[0§DZ§Fz§Hö§J∫§LZ§Z§P
+~ª—úi@	ÏËÖ‚S406Ù¶b:¶Ùfj¶bä¶†- ¶k™-‡†)†êxZß†kjßyjßx
+Ñ™*ÄYqRÄP%–®é˙®ê©í:©îZ©ñ˙®hpö∫©gsP
+ï@ÅH2 ;OÌbplist00‘deT$topX$objectsX$versionY$archiver—_WebResourceResponseÄØ	
+$*+234JKLMNOPQRSTUVWXYZ^_U$null› !"#R$6S$10R$2R$7R$3S$11R$8R$4R$9R$0V$classR$5R$1ÄÄÄ ÄÄÄ ÄÄ”%& ()WNS.base[NS.relativeÄ ÄÄ_(http://ecos.sourceware.org/ecos/ecos.gif“,-.1X$classesZ$classname¢/0UNSURLXNSObjectUNSURL#AπsÖ¡¿e«»”567@IZNS.objectsWNS.keys®89:;<=>?ÄÄÄÄÄÄÄÄ®ABCDEFGHÄ	Ä
+ÄÄÄÄÄÄÄTDateVServerTEtagZConnection]Last-Modified\Content-Type^Content-Length]Accept-Ranges_Mon, 14 Jul 2014 03:28:01 GMTVApache_"e47d05-1048-4498479fd5980"Uclose_Fri, 28 Mar 2008 19:40:38 GMTYimage/gifT4168Ubytes“,-[\£\]0_NSMutableDictionary\NSDictionaryH“,-`c£ab0_NSHTTPURLResponse]NSURLResponse_NSHTTPURLResponse Ü†_NSKeyedArchiver     ( 2 5 K M l r ç ê î ó ö ù ° § ß ™ ≠ ¥ ∑ ∫ º æ ¿ ¬ ƒ ∆ »   Ã Œ – “ Ÿ · Ì Ô Ò Û#,7:@IOXZalt}ÅÉÖáâãçñòöúû†¢§¶®≠¥πƒ“ﬂÓ¸#AGgqv|ÅÖõ®´∞¥»÷ÍÔ             f              _(http://ecos.sourceware.org/ecos/ecos.gifYimage/gif    1 < N ] { ë ®7ê7º7¬7Ã7Õ7œ7ÿ7ÓH:L+LV                           L`

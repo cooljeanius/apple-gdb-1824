@@ -1,7 +1,8 @@
-/* Parameters for execution on ES-1800 emulator for 68000.
+/* tm-es1800.h
+   Parameters for execution on ES-1800 emulator for 68000.
    The code was originally written by Johan Holmberg TT/SJ Ericsson Telecom
-   AB and later modified by Johan Henriksson TT/SJ. It was adapted to GDB 4.0
-   by Jan Norden TX/DK.
+   AB and later modified by Johan Henriksson TT/SJ.
+   It was adapted to GDB 4.0 by Jan Norden TX/DK.
    Copyright 1986, 1987, 1989, 1991, 1992, 1993, 1996, 2000
    Free Software Foundation, Inc.
 
@@ -28,7 +29,7 @@
 
 #include "m68k/tm-m68k.h"
 
-/* Longjmp stuff borrowed from sun3 configuration.  Don't know if correct. 
+/* Longjmp stuff borrowed from sun3 configuration.  Don't know if correct.
    FIXME.  */
 /* Offsets (in target ints) into jmp_buf.  Not defined by Sun, but at least
    documented in a comment in <machine/setjmp.h>! */
@@ -52,9 +53,9 @@
 #define JB_A5 14
 #define JB_A6 15
 
-/* Figure out where the longjmp will land.  Slurp the args out of the stack.
-   We expect the first arg to be a pointer to the jmp_buf structure from which
-   we extract the pc (JB_PC) that we will land at.  The pc is copied into ADDR.
-   This routine returns true on success */
+/* Figure out where the longjmp will land. Slurp the args out of the stack.
+   We expect the first arg to be a pointer to the jmp_buf structure
+   from which we extract the pc (JB_PC) that we will land at.
+   The pc is copied into ADDR. This routine returns true on success. */
 
 #define GET_LONGJMP_TARGET(ADDR) m68k_get_longjmp_target(ADDR)

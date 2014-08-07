@@ -85,32 +85,8 @@ AC_DEFUN([AX_PROG_BISON], [
   )
 ])
 
-# codeset.m4 serial 5 (gettext-0.18.2)
-dnl Copyright (C) 2000-2002, 2006, 2008-2013 Free Software Foundation, Inc.
-dnl This file is free software; the Free Software Foundation
-dnl gives unlimited permission to copy and/or distribute it,
-dnl with or without modifications, as long as this notice is preserved.
-
-dnl From Bruno Haible.
-
-AC_DEFUN([AM_LANGINFO_CODESET],
-[
-  AC_CACHE_CHECK([for nl_langinfo and CODESET], [am_cv_langinfo_codeset],
-    [AC_LINK_IFELSE(
-       [AC_LANG_PROGRAM(
-          [[#include <langinfo.h>]],
-          [[char* cs = nl_langinfo(CODESET); return !cs;]])],
-       [am_cv_langinfo_codeset=yes],
-       [am_cv_langinfo_codeset=no])
-    ])
-  if test $am_cv_langinfo_codeset = yes; then
-    AC_DEFINE([HAVE_LANGINFO_CODESET], [1],
-      [Define if you have <langinfo.h> and nl_langinfo(CODESET).])
-  fi
-])
-
 # longlong.m4 serial 17
-dnl Copyright (C) 1999-2007, 2009-2013 Free Software Foundation, Inc.
+dnl Copyright (C) 1999-2007, 2009-2014 Free Software Foundation, Inc.
 dnl This file is free software; the Free Software Foundation
 dnl gives unlimited permission to copy and/or distribute it,
 dnl with or without modifications, as long as this notice is preserved.
@@ -1830,6 +1806,7 @@ AC_DEFUN([AM_PROG_VALAC],
 m4_include([m4/ax_check_compile_flag.m4])
 m4_include([m4/ax_compiler_vendor.m4])
 m4_include([m4/bakefile-lang.m4])
+m4_include([m4/codeset.m4])
 m4_include([m4/gnulib_stdint.m4])
 m4_include([m4/gnulib_string_h.m4])
 m4_include([m4/include_next.m4])
@@ -1838,4 +1815,6 @@ m4_include([m4/ltoptions.m4])
 m4_include([m4/ltsugar.m4])
 m4_include([m4/ltversion.m4])
 m4_include([m4/lt~obsolete.m4])
+m4_include([m4/ptrace.m4])
+m4_include([m4/setpgrp.m4])
 m4_include([acinclude.m4])

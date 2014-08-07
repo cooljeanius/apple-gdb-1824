@@ -1,4 +1,5 @@
-/* Parameters for execution on a TI TMS320C80 (MVP) processor.
+/* tm-tic80.h
+   Parameters for execution on a TI TMS320C80 (MVP) processor.
    Copyright 1997
    Free Software Foundation, Inc.
 

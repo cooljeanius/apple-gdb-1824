@@ -1,3 +1,5 @@
+/* macosx-nat-watchpoint.h */
+
 #ifndef __GDB_MACOSX_NAT_WATCHPOINT_H__
 #define __GDB_MACOSX_NAT_WATCHPOINT_H__
 
@@ -14,3 +16,5 @@ int macosx_remove_watchpoint (CORE_ADDR addr, size_t len, int type);
 int macosx_stopped_by_watchpoint (struct target_waitstatus *w, int, int);
 
 #endif /* __GDB_MACOSX_NAT_WATCHPOINT_H__ */
+
+/* EOF */

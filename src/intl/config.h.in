@@ -1,28 +1,9 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
-/* Define to 1 if NLS is requested.  */
-#undef ENABLE_NLS
-
-/* Define as 1 if you have catgets and do NOT want to use GNU gettext.  */
-#undef HAVE_CATGETS
-
-/* Define as 1 if you have gettext and do NOT want to use GNU gettext.  */
-#undef HAVE_GETTEXT
-
-/* Define as 1 if you have the stpcpy function.  */
-#undef HAVE_STPCPY
-
-/* Define if your locale.h file contains LC_MESSAGES.  */
-#undef HAVE_LC_MESSAGES
-
-#ifdef HAVE_CONFIG_H
-# ifndef _INCLUDING_CONFIG_H
-#  define _INCLUDING_CONFIG_H
-#  include "config.h"
-# endif /* _INCLUDING_CONFIG_H */
-#endif /* HAVE_CONFIG_H */
 
 
-#define _INCLUDING_CONFIG_H
+#ifndef _INCLUDING_CONFIG_H
+# define _INCLUDING_CONFIG_H 1
+#endif /* !_INCLUDING_CONFIG_H */
 
 
 /* Define if building universal (internal helper macro) */
@@ -36,9 +17,15 @@
 /* Define to 1 if using `alloca.c'. */
 #undef C_ALLOCA
 
+/* Define to 1 because we depend on libiconv. */
+#undef DEPENDS_ON_LIBICONV
+
 /* Define to 1 if translation of program messages to the user's native
    language is requested. */
 #undef ENABLE_NLS
+
+/* Define to enable relocation. */
+#undef ENABLE_RELOCATABLE
 
 /* Define to 1 if you have `alloca', as a function or macro. */
 #undef HAVE_ALLOCA
@@ -63,6 +50,9 @@
 /* Define to 1 if you have the Mac OS X function CFPreferencesCopyAppValue in
    the CoreFoundation framework. */
 #undef HAVE_CFPREFERENCESCOPYAPPVALUE
+
+/* Define to 1 if you have the `codeset' function. */
+#undef HAVE_CODESET
 
 /* Define to 1 if you have the <ctype.h> header file. */
 #undef HAVE_CTYPE_H
@@ -94,6 +84,10 @@
    */
 #undef HAVE_DECL_MALLOC
 
+/* Define to 1 if you have the declaration of `mempcpy', and to 0 if you
+   don't. */
+#undef HAVE_DECL_MEMPCPY
+
 /* Define to 1 if you have the declaration of `NULL', and to 0 if you don't.
    */
 #undef HAVE_DECL_NULL
@@ -101,6 +95,10 @@
 /* Define to 1 if you have the declaration of `realloc', and to 0 if you
    don't. */
 #undef HAVE_DECL_REALLOC
+
+/* Define to 1 if you have the declaration of `stpcpy', and to 0 if you don't.
+   */
+#undef HAVE_DECL_STPCPY
 
 /* Define to 1 if you have the `dgettext__' function. */
 #undef HAVE_DGETTEXT__
@@ -149,6 +147,12 @@
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the `langinfo' function. */
+#undef HAVE_LANGINFO
+
+/* Define if you have <langinfo.h> and nl_langinfo(CODESET). */
+#undef HAVE_LANGINFO_CODESET
 
 /* Define to 1 if you have the <langinfo.h> header file. */
 #undef HAVE_LANGINFO_H
@@ -290,6 +294,9 @@
 /* Define to 1 if the system has the type `unsigned long long int'. */
 #undef HAVE_UNSIGNED_LONG_LONG_INT
 
+/* Define to 1 if you have the <wchar.h> header file. */
+#undef HAVE_WCHAR_H
+
 /* Define to 1 if the system has the type `_Bool'. */
 #undef HAVE__BOOL
 
@@ -308,9 +315,18 @@
 /* Define as const if the declaration of iconv() needs const. */
 #undef ICONV_CONST
 
+/* Define because this is libintl. */
+#undef IN_LIBINTL
+
+/* Define because this is a library. */
+#undef IN_LIBRARY
+
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
 #undef LT_OBJDIR
+
+/* Define if there is no xmalloc. */
+#undef NO_XMALLOC
 
 /* Name of package */
 #undef PACKAGE
@@ -343,6 +359,9 @@
 	STACK_DIRECTION < 0 => grows toward lower addresses
 	STACK_DIRECTION = 0 => direction of growth unknown */
 #undef STACK_DIRECTION
+
+/* Define to 1 if the `S_IS*' macros in <sys/stat.h> do not work properly. */
+#undef STAT_MACROS_BROKEN
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
@@ -387,6 +406,10 @@
 # endif
 #endif
 
+/* Define to 1 if `lex' declares `yytext' as a `char *' by default, not a
+   `char[]'. */
+#undef YYTEXT_POINTER
+
 /* Enable large inode numbers on Mac OS X 10.5.  */
 #ifndef _DARWIN_USE_64_BIT_INODE
 # define _DARWIN_USE_64_BIT_INODE 1
@@ -411,6 +434,9 @@
 /* Define like PROTOTYPES; this can be used by system headers. */
 #undef __PROTOTYPES
 
+/* Define to empty if `const' does not conform to ANSI C. */
+#undef const
+
 /* Define to `__inline__' or `__inline' if that's what the C compiler
    calls it, or to nothing if 'inline' is not supported under any name.  */
 #ifndef __cplusplus
@@ -423,9 +449,19 @@
 /* Define to rpl_realloc if the replacement function should be used. */
 #undef realloc
 
+/* Define this entry point correctly. */
+#undef relocate
+
+/* Define this entry point correctly. */
+#undef set_relocation_prefix
+
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 #undef size_t
 
 /* Define to the widest unsigned integer type if <stdint.h> and <inttypes.h>
    do not define. */
 #undef uintmax_t
+
+/* Define to empty if the keyword `volatile' does not work. Warning: valid
+   code using `volatile' can become incorrect without. Disable with care. */
+#undef volatile

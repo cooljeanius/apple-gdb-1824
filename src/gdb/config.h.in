@@ -1,5 +1,36 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+
+#ifndef HAVE_CONFIG_H
+# define HAVE_CONFIG_H 1
+#endif /* !HAVE_CONFIG_H */
+
+
+
+/* Check that config.h is #included before system headers
+ * (this works only for glibc, but that should be enough). */
+#if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "config.h should be #included before system headers"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ */
+#ifndef __CONFIG_H__
+# define __CONFIG_H__ 1
+# ifndef __GDB_CONFIG_H__
+#  define __GDB_CONFIG_H__ 1
+# endif /* __GDB_CONFIG_H__ */
+
+
+/* make sure that caddr_t is defined for us: */
+#if defined(HAVE_SYS_TYPES_H) && HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "config.h expects <sys/types.h> to be included for caddr_t."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_SYS_TYPES_H */
+
+
 /* Define to the number of bits in type 'ptrdiff_t'. */
 #undef BITSIZEOF_PTRDIFF_T
 
@@ -77,7 +108,8 @@
 /* Define to 1 to use 64 bit stack logging functions. */
 #undef HAVE_32_BIT_STACK_LOGGING
 
-/* Define to 1 if you have 64 bit mach exceptions. */
+/* Define to 1 if you have 64 bit mach exceptions in the SDK, and to 2 if you
+   have them, but NOT from your SDK. */
 #undef HAVE_64_BIT_MACH_EXCEPTIONS
 
 /* Define to 1 to use 64 bit stack logging functions. */
@@ -123,8 +155,14 @@
 /* Define to 1 if you have the `bzero' function. */
 #undef HAVE_BZERO
 
+/* Define to 1 if the system has the type `caddr_t'. */
+#undef HAVE_CADDR_T
+
 /* Define to 1 if you have the `canonicalize_file_name' function. */
 #undef HAVE_CANONICALIZE_FILE_NAME
+
+/* Define to 1 if you have the `codeset' function. */
+#undef HAVE_CODESET
 
 /* Define to 1 if you have the <CoreFoundation/CoreFoundation.h> header file.
    */
@@ -168,6 +206,10 @@
 /* Define to 1 if you have the declaration of `name_server_port', and to 0 if
    you don't. */
 #undef HAVE_DECL_NAME_SERVER_PORT
+
+/* Define to 1 if you have the declaration of `POSIX_SPAWN_SETEXEC', and to 0
+   if you don't. */
+#undef HAVE_DECL_POSIX_SPAWN_SETEXEC
 
 /* Define to 1 if you have the declaration of `ptrace', and to 0 if you don't.
    */
@@ -246,6 +288,9 @@
 /* Define to 1 if you have the `fflush' function. */
 #undef HAVE_FFLUSH
 
+/* Define to 1 if you have the `fgets' function. */
+#undef HAVE_FGETS
+
 /* Define to 1 if you have the `fork' function. */
 #undef HAVE_FORK
 
@@ -285,6 +330,9 @@
 /* Define to 1 if you have the `getrusage' function. */
 #undef HAVE_GETRUSAGE
 
+/* Define to 1 if you have the `gets' function. */
+#undef HAVE_GETS
+
 /* Define to 1 if you have the `gettext' function. */
 #undef HAVE_GETTEXT
 
@@ -299,6 +347,9 @@
 
 /* Define to 1 if you have the <gnu/libc-version.h> header file. */
 #undef HAVE_GNU_LIBC_VERSION_H
+
+/* Define to 1 if you have the <gnu-versions.h> header file. */
+#undef HAVE_GNU_VERSIONS_H
 
 /* Define if <sys/procfs.h> has gregset_t. */
 #undef HAVE_GREGSET_T
@@ -329,6 +380,9 @@
 
 /* Define to 1 if the system has the type `kern_return_t'. */
 #undef HAVE_KERN_RETURN_T
+
+/* Define to 1 if you have the `langinfo' function. */
+#undef HAVE_LANGINFO
 
 /* Define if you have <langinfo.h> and nl_langinfo(CODESET). */
 #undef HAVE_LANGINFO_CODESET
@@ -657,7 +711,7 @@
 /* Define to 1 if you have the `ptrace64' function. */
 #undef HAVE_PTRACE64
 
-/* Define if sys/ptrace.h defines the PTRACE_GETFPXREGS request. */
+/* Define if sys/ptrace.h defines the PTRACE_GETFPXREGS request */
 #undef HAVE_PTRACE_GETFPXREGS
 
 /* Define if sys/ptrace.h defines the PTRACE_GETREGS request. */
@@ -774,6 +828,9 @@
 
 /* Define to 1 if you have the <spawn.h> header file. */
 #undef HAVE_SPAWN_H
+
+/* Define to 1 if you have the `stack_logging_enumerate_records' function. */
+#undef HAVE_STACK_LOGGING_ENUMERATE_RECORDS
 
 /* Define to 1 if `stat' has the bug that it succeeds when given the
    zero-length file name argument. */
@@ -1157,6 +1214,10 @@
 /* Define to 1 if you have the `__argz_stringify' function. */
 #undef HAVE___ARGZ_STRINGIFY
 
+/* Define to 1 if you have the `__mach_stack_logging_enumerate_records'
+   function. */
+#undef HAVE___MACH_STACK_LOGGING_ENUMERATE_RECORDS
+
 /* Define as const if the declaration of iconv() needs const. */
 #undef ICONV_CONST
 
@@ -1178,7 +1239,7 @@
 #undef NDEBUG
 
 /* Define if you want to use new multi-fd /proc interface (replaces
-   HAVE_MULTIPLE_PROC_FDS as well as other macros). */
+   HAVE_MULTIPLE_PROC_FDS and other macros) */
 #undef NEW_PROC_API
 
 /* Name of this package. */
@@ -1522,3 +1583,7 @@
 /* Define to empty if the keyword `volatile' does not work. Warning: valid
    code using `volatile' can become incorrect without. Disable with care. */
 #undef volatile
+
+
+#endif /* __CONFIG_H__ */
+

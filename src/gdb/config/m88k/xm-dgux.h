@@ -1,4 +1,5 @@
-/* Host-machine dependent parameters for Motorola 88000, for GDB.
+/* xm-dgux.h
+   Host-machine dependent parameters for Motorola 88000, for GDB.
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1993, 1998
    Free Software Foundation, Inc.
 

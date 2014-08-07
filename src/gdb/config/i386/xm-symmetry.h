@@ -1,4 +1,5 @@
-/* Definitions to make GDB run on a Sequent Symmetry under
+/* xm-symmetry.h
+   Definitions to make GDB run on a Sequent Symmetry under
    dynix 3.1, with Weitek 1167 and i387 support.
    Copyright 1986, 1987, 1989, 1992, 1993, 1994
    Free Software Foundation, Inc.
@@ -22,7 +23,7 @@
 
 /* Symmetry version by Jay Vosburgh (fubar@sequent.com) */
 
-/* This machine doesn't have the siginterrupt call.  */
+/* This machine does NOT have the siginterrupt call: */
 #define NO_SIGINTERRUPT
 
 #define HAVE_WAIT_STRUCT

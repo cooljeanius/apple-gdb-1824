@@ -21,3 +21,5 @@
    Boston, MA 02111-1307, USA.  */
 
 #define HOST_BYTE_ORDER LITTLE_ENDIAN
+
+/* EOF */

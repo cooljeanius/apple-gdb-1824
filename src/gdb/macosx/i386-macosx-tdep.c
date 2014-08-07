@@ -1,4 +1,5 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* i386-macosx-tdep.c
+   Mac OS X support for i386 targets for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002, 2005
    Free Software Foundation, Inc.
 
@@ -343,7 +344,7 @@ i386_macosx_thread_state_addr_1 (CORE_ADDR start_of_func, CORE_ADDR pc,
    'struct sigframe' (cf xnu's bsd/dev/i386/unix_signal.c).
    The 6th word in the struct sigframe is a 'struct ucontext *'.
 
-   struct ucontext (cf sys/_types.h)'s 7th word is a 
+   struct ucontext (cf sys/_types.h)'s 7th word is a
    __darwin_size_t uc_mcsize to indicate the size of the
    saved machine context, and the 8th word is a struct mcontext *
    pointing to the saved context structure.
@@ -364,7 +365,7 @@ i386_macosx_thread_state_addr (struct frame_info *frame)
   esp = extract_unsigned_integer (buf, 4);
   frame_unwind_register (frame, I386_EBP_REGNUM, buf);
   ebp = extract_unsigned_integer (buf, 4);
-  return i386_macosx_thread_state_addr_1 (get_frame_func (frame), 
+  return i386_macosx_thread_state_addr_1 (get_frame_func (frame),
                                           get_frame_pc (frame), ebp, esp);
 }
 
@@ -384,7 +385,7 @@ i386_macosx_thread_state_addr_1 (CORE_ADDR start_of_func, CORE_ADDR pc,
      These sorts of things NEVER come back to bite us years down the road,
      no sir-ee bob.  The only saving grace is that _sigtramp() is a tough
      function to screw up as it stands today.  Oh, and if we get this wrong,
-     signal backtraces should break outright and we get nice little testsuite 
+     signal backtraces should break outright and we get nice little testsuite
      failures. */
 
   limit = min (pc - start_of_func + 1, 16);
@@ -401,7 +402,7 @@ i386_macosx_thread_state_addr_1 (CORE_ADDR start_of_func, CORE_ADDR pc,
           else
             {
               /* If this isn't the push %ebp, and we haven't seen push %ebp yet,
-                 skip whatever insn we're sitting on and keep looking for 
+                 skip whatever insn we're sitting on and keep looking for
                  push %ebp.  It must occur before mov %esp, %ebp.  */
               offset++;
               continue;
@@ -416,7 +417,7 @@ i386_macosx_thread_state_addr_1 (CORE_ADDR start_of_func, CORE_ADDR pc,
           mov_esp_ebp_addr = start_of_func + offset;
           break;
         }
-      offset++;  /* I'm single byte stepping through unknown instructions.  
+      offset++;  /* I'm single byte stepping through unknown instructions.
                     SURELY this won't cause an improper match, cough cough. */
     }
   if (!push_ebp_addr || !mov_esp_ebp_addr)
@@ -434,13 +435,13 @@ i386_macosx_thread_state_addr_1 (CORE_ADDR start_of_func, CORE_ADDR pc,
   if (pc > mov_esp_ebp_addr)
     address_of_struct_sigframe = ebp + 4;
 
-  address_of_struct_ucontext = read_memory_unsigned_integer 
+  address_of_struct_ucontext = read_memory_unsigned_integer
                                 (address_of_struct_sigframe + 20, 4);
 
-  /* the element 'uc_mcontext' -- the pointer to the struct sigcontext -- 
+  /* the element 'uc_mcontext' -- the pointer to the struct sigcontext --
      is 28 bytes into the 'struct ucontext' */
-  address_of_struct_mcontext = read_memory_unsigned_integer 
-                                (address_of_struct_ucontext + 28, 4); 
+  address_of_struct_mcontext = read_memory_unsigned_integer
+                                (address_of_struct_ucontext + 28, 4);
 
   return address_of_struct_mcontext + 12;
 }
@@ -448,11 +449,11 @@ i386_macosx_thread_state_addr_1 (CORE_ADDR start_of_func, CORE_ADDR pc,
 /* On entry to _sigtramp, r8 has the address of a ucontext_t structure.
    48 bytes into the ucontext_t we have the address of an mcontext structure.
    Starting 16 bytes into the mcontext structure, we have the saved registers,
-   the mapping of them is handled by amd64_macosx_thread_state_reg_offset. 
+   the mapping of them is handled by amd64_macosx_thread_state_reg_offset.
    libSystem has eh_frame instructions for doing the same thing; they are of
    the form,
          DW_CFA_expression (1, expr(breg3 +48, deref , plus uconst 0x0018))
-   On function entry we can find the ucontext_t structure off of R8; when 
+   On function entry we can find the ucontext_t structure off of R8; when
    _sigtramp calls down into the handler we should look at RBX (reg3) to
    find it.
  */
@@ -532,7 +533,7 @@ static int amd64_macosx_thread_state_reg_offset[] =
 
 
 static CORE_ADDR
-i386_integer_to_address (struct gdbarch *gdbarch, struct type *type, 
+i386_integer_to_address (struct gdbarch *gdbarch, struct type *type,
                          const gdb_byte *buf)
 {
   gdb_byte *tmp = alloca (TYPE_LENGTH (builtin_type_void_data_ptr));
@@ -607,7 +608,7 @@ i386_mach_o_query_64bit ()
   int result;
   int supports64bit;
   size_t sz;
-  
+
   sz = sizeof (supports64bit);
   result = sysctlbyname ("hw.optional.x86_64", &supports64bit, &sz, NULL, 0);
   return (result == 0
@@ -626,7 +627,7 @@ i386_mach_o_osabi_sniffer (bfd *abfd)
 /*
  * This is set to the FAST_COUNT_STACK macro for i386.  The return value
  * is 1 if no errors were encountered traversing the stack, and 0 otherwise.
- * It sets COUNT to the stack depth.  If PRINT_FUN is non-null, then 
+ * It sets COUNT to the stack depth.  If PRINT_FUN is non-null, then
  * it will be passed the pc & fp for each frame as it is encountered.
  */
 
@@ -640,7 +641,7 @@ i386_mach_o_osabi_sniffer (bfd *abfd)
  */
 
 int
-i386_fast_show_stack (unsigned int count_limit, 
+i386_fast_show_stack (unsigned int count_limit,
 		      unsigned int print_start,
 		      unsigned int print_end,
                      unsigned int *count,
@@ -659,7 +660,7 @@ i386_fast_show_stack (unsigned int count_limit,
   int wordsize = gdbarch_tdep (current_gdbarch)->wordsize;
 
   more_frames = fast_show_stack_trace_prologue (count_limit, print_start, print_end, wordsize,
-						&sigtramp_start, &sigtramp_end, 
+						&sigtramp_start, &sigtramp_end,
 						&i, &fi, print_fun);
 
   if (more_frames < 0)
@@ -673,7 +674,7 @@ i386_fast_show_stack (unsigned int count_limit,
 
   /* gdb's idea of a stack frame is 8 bytes off from the actual
      values of EBP (gdb probably includes the saved esp and saved
-     eip as part of the frame).  So pull off 8 bytes from the 
+     eip as part of the frame).  So pull off 8 bytes from the
      "fp" to get an actual EBP value for walking the stack.  */
 
   fp = get_frame_base (fi);
@@ -685,16 +686,16 @@ i386_fast_show_stack (unsigned int count_limit,
     {
       if ((sigtramp_start <= pc) && (pc < sigtramp_end))
         {
-          CORE_ADDR thread_state_at = 
-                    i386_macosx_thread_state_addr_1 (sigtramp_start, pc, 
+          CORE_ADDR thread_state_at =
+                    i386_macosx_thread_state_addr_1 (sigtramp_start, pc,
                                                      fp, prev_fp + 2 * wordsize);
           prev_fp = fp;
-          if (!safe_read_memory_unsigned_integer (thread_state_at + 
-                          i386_macosx_thread_state_reg_offset[I386_EBP_REGNUM], 
+          if (!safe_read_memory_unsigned_integer (thread_state_at +
+                          i386_macosx_thread_state_reg_offset[I386_EBP_REGNUM],
                            wordsize, &fp))
             goto i386_count_finish;
-          if (!safe_read_memory_unsigned_integer (thread_state_at + 
-                          i386_macosx_thread_state_reg_offset[I386_EIP_REGNUM], 
+          if (!safe_read_memory_unsigned_integer (thread_state_at +
+                          i386_macosx_thread_state_reg_offset[I386_EIP_REGNUM],
                            wordsize, &pc))
             goto i386_count_finish;
         }
@@ -723,11 +724,11 @@ i386_fast_show_stack (unsigned int count_limit,
       /* Add 8 to the EBP to show the frame pointer as gdb likes
          to show it.  */
 
-      /* Let's raise the load level here.  That will mean that if we are 
+      /* Let's raise the load level here.  That will mean that if we are
 	 going to print the names, they will be accurate.  Also, it means
 	 if the main executable has it's load-state lowered, we'll detect
 	 main correctly.  */
-      
+
       pc_set_load_state (pc, OBJF_SYM_ALL, 0);
 
       if (print_fun && (i >= print_start && i < print_end))
@@ -758,7 +759,7 @@ i386_macosx_get_longjmp_target_helper (int offset, CORE_ADDR *pc)
   /* The first argument to longjmp is the pointer to the jump buf.
      The saved eip/rip there is offset by OFFSET as given above.  */
 
-  jmp_buf = FETCH_POINTER_ARGUMENT (get_current_frame (), 0, 
+  jmp_buf = FETCH_POINTER_ARGUMENT (get_current_frame (), 0,
                                     builtin_type_void_func_ptr);
 
   if (safe_read_memory_unsigned_integer
@@ -797,7 +798,7 @@ i386_macosx_get_longjmp_target (CORE_ADDR *pc)
    the string with the name of the exception we're processing and return
    that string.
 
-   In our current library, these functions are 
+   In our current library, these functions are
      __cxa_throw (void *obj, std::type_info *tinfo, void (*dest) (void *))
      __cxa_begin_catch (void *exc_obj_in) throw()
    In the case of __cxa_throw, its second argument is a pointer to an address
@@ -807,7 +808,7 @@ i386_macosx_get_longjmp_target (CORE_ADDR *pc)
    contained within (at the end of) a __cxa_exception struct.  So given
    the pointer to the _Unwind_Exception, we subtract the necessary amount
    to get the start of the __cxa_exception object.  The first element of
-   the __cxa_exception struct is the pointer to a symbol like _ZTIi 
+   the __cxa_exception struct is the pointer to a symbol like _ZTIi
    ("typeinfo for int").  */
 
 char *
@@ -821,14 +822,14 @@ i386_throw_catch_find_typeinfo (struct frame_info *curr_frame,
     {
       if (exception_type == EX_EVENT_THROW)
         {
-          CORE_ADDR typeinfo_ptr = 
+          CORE_ADDR typeinfo_ptr =
               get_frame_register_unsigned (curr_frame, AMD64_RSI_REGNUM);
           typeinfo_sym = lookup_minimal_symbol_by_pc (typeinfo_ptr);
         }
       else
         {
           ULONGEST typeinfo_ptr;
-          CORE_ADDR unwind_exception = 
+          CORE_ADDR unwind_exception =
               get_frame_register_unsigned (curr_frame, AMD64_RDI_REGNUM);
           /* The start of the __cxa_exception structure is the addr of the
              _Unwind_Exception element minus 80 bytes.  */
@@ -873,8 +874,7 @@ i386_throw_catch_find_typeinfo (struct frame_info *curr_frame,
   return typeinfo_str + strlen ("typeinfo for ");
 }
 
-void
-_initialize_i386_macosx_tdep (void)
+void _initialize_i386_macosx_tdep(void)
 {
   gdbarch_register_osabi_sniffer (bfd_arch_unknown, bfd_target_mach_o_flavour,
                                   i386_mach_o_osabi_sniffer);
@@ -885,3 +885,5 @@ _initialize_i386_macosx_tdep (void)
   gdbarch_register_osabi (bfd_arch_i386, bfd_mach_x86_64,
                           GDB_OSABI_DARWIN64, x86_macosx_init_abi_64);
 }
+
+/* EOF */

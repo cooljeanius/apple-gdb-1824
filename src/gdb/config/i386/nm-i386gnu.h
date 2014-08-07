@@ -1,4 +1,5 @@
-/* Native-dependent definitions for Intel 386 running the GNU Hurd
+/* nm-i386gnu.h
+   Native-dependent definitions for Intel 386 running the GNU Hurd
    Copyright 1994, 1995, 1996, 2002 Free Software Foundation, Inc.
 
    This file is part of GDB.

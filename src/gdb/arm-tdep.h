@@ -1,4 +1,4 @@
-/* Common target dependent code for GDB on ARM systems.
+/* arm-tdep.h: Common target dependent code for GDB on ARM systems.
    Copyright 2002, 2003 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -268,14 +268,14 @@ typedef struct register_info register_info_t;
 # define LOWEST_PC (gdbarch_tdep (current_gdbarch)->lowest_pc)
 #endif /* !LOWEST_PC */
 
-/* Prototypes for internal interfaces needed by more than one MD file.  */
-int arm_pc_is_thumb_dummy (CORE_ADDR);
+/* Prototypes for internal interfaces needed by more than one MD file: */
+int arm_pc_is_thumb_dummy(CORE_ADDR);
 
-int arm_pc_is_thumb (CORE_ADDR);
+int arm_pc_is_thumb(CORE_ADDR);
 
-CORE_ADDR thumb_get_next_pc (CORE_ADDR);
+CORE_ADDR thumb_get_next_pc(CORE_ADDR);
 
-CORE_ADDR arm_get_next_pc (CORE_ADDR);
+CORE_ADDR arm_get_next_pc(CORE_ADDR);
 
 enum {
   arm_single_step_mode_auto = 0,
@@ -283,7 +283,9 @@ enum {
   arm_single_step_mode_hardware = 2
 };
 
-int get_arm_single_step_mode ();
-int set_arm_single_step_mode (struct gdbarch *gdbarch, int single_step_mode);
+int get_arm_single_step_mode();
+int set_arm_single_step_mode(struct gdbarch *gdbarch, int single_step_mode);
 
 #endif /* !__GDB_ARM_TDEP_H__ */
+
+/* EOF */

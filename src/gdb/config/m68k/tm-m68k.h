@@ -1,4 +1,5 @@
-/* Parameters for execution on a 68000 series machine.
+/* tm-m68k.h
+   Parameters for execution on a 68000 series machine.
    Copyright 1986, 1987, 1989, 1990, 1992, 1993, 1994, 1995, 1996, 1998,
    1999, 2000 Free Software Foundation, Inc.
 

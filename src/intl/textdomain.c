@@ -1,4 +1,5 @@
-/* Implementation of the textdomain(3) function.
+/* textdomain.c
+   Implementation of the textdomain(3) function.
    Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
    Written by Ulrich Drepper <drepper@gnu.ai.mit.edu>, 1995.
 
@@ -19,13 +20,17 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning textdomain.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning textdomain.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #if defined STDC_HEADERS || defined _LIBC || defined HAVE_STDLIB_H
 # include <stdlib.h>
 #else
-# warning dcgettext.c expects <stdlib.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "textdomain.c expects <stdlib.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDLIB_H */
 
 #if defined STDC_HEADERS || defined HAVE_STRING_H || defined _LIBC
@@ -33,7 +38,7 @@
 #elif defined HAVE_STRINGS_H
 # include <strings.h>
 # ifndef memcpy
-#  define memcpy(Dst, Src, Num) bcopy (Src, Dst, Num)
+#  define memcpy(Dst, Src, Num) bcopy(Src, Dst, Num)
 # endif /* !memcpy */
 #endif /* STDC_HEADERS || HAVE_STRING_H || _LIBC */
 
@@ -59,7 +64,7 @@ extern const char *_nl_current_default_domain;
 #ifdef _LIBC
 # define TEXTDOMAIN __textdomain
 # ifndef strdup
-#  define strdup(str) __strdup (str)
+#  define strdup(str) __strdup(str)
 # endif /* !strdup */
 #else
 # define TEXTDOMAIN textdomain__
@@ -68,9 +73,7 @@ extern const char *_nl_current_default_domain;
 /* Set the current default message catalog to DOMAINNAME.
    If DOMAINNAME is null, return the current default.
    If DOMAINNAME is "", reset to the default of "messages".  */
-char *
-TEXTDOMAIN (domainname)
-     const char *domainname;
+char *TEXTDOMAIN(const char *domainname)
 {
   char *old;
 
@@ -80,9 +83,9 @@ TEXTDOMAIN (domainname)
 
   old = (char *) _nl_current_default_domain;
 
-  /* If domain name is the null string set to default domain "messages".  */
-  if (domainname[0] == '\0'
-      || strcmp (domainname, _nl_default_default_domain) == 0)
+  /* If domain name is the null string set to default domain "messages": */
+  if ((domainname[0] == '\0')
+      || (strcmp(domainname, _nl_default_default_domain) == 0))
     _nl_current_default_domain = _nl_default_default_domain;
   else
     {
@@ -92,18 +95,20 @@ TEXTDOMAIN (domainname)
 #if defined _LIBC || defined HAVE_STRDUP
       _nl_current_default_domain = strdup (domainname);
 #else
-      size_t len = strlen (domainname) + 1;
-      char *cp = (char *) malloc (len);
-      if (cp != NULL)
-	memcpy (cp, domainname, len);
+      size_t len = (strlen(domainname) + 1);
+      char *cp = (char *)malloc(len);
+      if (cp != NULL) {
+	memcpy(cp, domainname, len);
+      }
       _nl_current_default_domain = cp;
 #endif /* _LIBC || HAVE_STRDUP */
     }
 
-  if (old != _nl_default_default_domain)
-    free (old);
+  if (old != _nl_default_default_domain) {
+    free(old);
+  }
 
-  return (char *) _nl_current_default_domain;
+  return (char *)_nl_current_default_domain;
 }
 
 #ifdef _LIBC

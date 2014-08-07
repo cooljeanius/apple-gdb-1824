@@ -1,6 +1,6 @@
-/* Main code for multi-ice server for GDB.
-   Copyright (C) 1999 Free Software Foundation, Inc.
-
+/* server-main.c: Main code for multi-ice server for GDB.
+ * Copyright (C) 1999 Free Software Foundation, Inc. */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -15,8 +15,17 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#else
+# define SERVER_MAIN_C_NON_AUTOTOOLS_BUILD 1
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "server-main.c expects the config header to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_CONFIG_H */
 #include <getopt.h>
 #include <stdio.h>
 #include <signal.h>
@@ -25,7 +34,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
 
 #include "defs.h"
 #include "tm.h"
-#include "config.h"
 #include "server.h"
 #include "low.h"
 #include "remote-utils.h"
@@ -61,7 +69,7 @@ int exit_now = 0;
 int close_connection_now = 0;
 
 /*
- * Thread information.  
+ * Thread information.
  */
 int selected_thread = 0;
 int current_thread = 0;
@@ -104,12 +112,21 @@ char *help_strings[] =
   "  --target-driver driver - Specify which ICE driver to use.\n",
   "  --target-port port - Specify the port to which the target is attached.\n",
   "  --version          - Print version information and then exit.\n",
-  (char *) NULL
+  (char *)NULL
 };
 
+#if 0
+# ifndef RETSIGTYPE
+#  define RETSIGTYPE void
+# endif /* !RETSIGTYPE */
+/* FIXME: add a conftest for this next one: */
+# ifndef ARGSIGTYPE
+#  define ARGSIGTYPE int unused_arg
+# endif /* !ARGSIGTYPE */
+#endif /* 0 */
 void exit_handler();
 int run_test(char *input_buffer);
-  
+
 /* ------------------------------------------------------------
  *  main
  *
@@ -121,12 +138,11 @@ int run_test(char *input_buffer);
  * ------------------------------------------------------------
  */
 
-int
-main (int argc, char *argv[])
+int main(int argc, char *argv[])
 {
 
 #define INITIAL_LENGTH 2000
-  
+
   char initial_buf[INITIAL_LENGTH], *input_buffer = initial_buf;
   int input_buffer_len = INITIAL_LENGTH, message_len;
   char *remote_port = "2331", *target_port = NULL, *byte_sex = NULL;
@@ -139,8 +155,8 @@ main (int argc, char *argv[])
   while (1)
     {
       int option_index;
- 
-      c = getopt_long_only (argc, argv, "", long_options, &option_index);
+
+      c = getopt_long_only(argc, argv, "", long_options, &option_index);
 
       if (c == EOF)
 	{
@@ -177,8 +193,8 @@ main (int argc, char *argv[])
             show_version = 1;
 	    break;
   	  case '?':
-	    output ("Available options are:\n");
-	    print_help ();
+	    output("Available options are:\n");
+	    print_help();
 	    exit (1);
 	  }
       }
@@ -187,13 +203,13 @@ main (int argc, char *argv[])
     {
       print_version(0);
       exit (0);
-    }  
+    }
 
   print_version(1);
-  
+
   if (show_help)
     {
-      print_help ();
+      print_help();
       exit (0);
     }
 
@@ -203,25 +219,25 @@ main (int argc, char *argv[])
    */
 
   platform_init();
-  
+
   /*
    * First establish a connection to the target.
    */
-  
+
   if (!low_open_target (target_port, byte_sex, show_config_dialog))
     {
       if (target_port == NULL)
 	output("Error opening target.\nExiting...\n");
       else
 	output("Error opening target at %s\nExiting...\n", remote_port);
-      
+
       exit(1);
     }
 
   /*
    * Now open the listening port.  Bag out if we can't open it.
    */
-  
+
   if (!open_listener (remote_port))
     {
       output ("Error opening listener port %s\nExiting...\n", remote_port);
@@ -231,10 +247,10 @@ main (int argc, char *argv[])
 
   output ("GDB Server starting on port %s\n", remote_port);
 
-  signal (SIGINT, exit_handler);
-  signal (SIGTERM, exit_handler);
-  signal (SIGQUIT, exit_handler);
-  
+  signal(SIGINT, exit_handler);
+  signal(SIGTERM, exit_handler);
+  signal(SIGQUIT, exit_handler);
+
   while (!exit_now)
     {
       if (wait_for_connection())
@@ -248,9 +264,9 @@ main (int argc, char *argv[])
             using_threads = 0;
 #if 0
             low_reset_thread_op();
-#endif
-            
-	  
+#endif /* 0 */
+
+
 	  while (!exit_now && !close_connection_now)
 	    {
 	      if (!handle_system_events ())
@@ -264,7 +280,7 @@ main (int argc, char *argv[])
 		  close_connection_now = 0;
 		  break;
 		}
-	      
+
 	      message_len = getpkt (input_buffer, &input_buffer_len);
 	      if (message_len >= 0)
 		{
@@ -282,7 +298,7 @@ main (int argc, char *argv[])
 	  /* If we got here, then the remote user died or detached,
 	   * so close the connection, and wait for another...
 	   */
-	  
+
 	  close_connection ();
 	  close_connection_now = 0;
 	}
@@ -314,7 +330,7 @@ update_current_thread(void)
 {
     char *result, *ptr;
     int res;
-    if ((using_threads == 0) || (current_thread != 0)) return;    
+    if ((using_threads == 0) || (current_thread != 0)) return;
     // Using thread operations
     res = low_thread_op("qC#", &result);
     if (res) {
@@ -348,7 +364,7 @@ dispatch (char *input_buffer, int message_length)
 
   key = input_buffer[0];
     input_buffer++;
-    
+
     switch (key)
       {
 
@@ -356,7 +372,7 @@ dispatch (char *input_buffer, int message_length)
 	return handle_thread (input_buffer, THREAD_SET);
       case 'g': /* read registers */
           update_current_thread();
-          if ((selected_thread == 0) || 
+          if ((selected_thread == 0) ||
               (current_thread == selected_thread)) {
               return handle_read_registers(input_buffer);
           } else {
@@ -365,7 +381,7 @@ dispatch (char *input_buffer, int message_length)
               return handle_read_registers (input_buffer);
           }
       case 'G': /* write registers */
-          if ((selected_thread == 0) || 
+          if ((selected_thread == 0) ||
               (current_thread == selected_thread)) {
               return handle_write_registers (input_buffer);
           } else {
@@ -374,7 +390,7 @@ dispatch (char *input_buffer, int message_length)
               return handle_write_registers (input_buffer);
           }
       case 'P': /* write a particular register */
-          if ((selected_thread == 0) || 
+          if ((selected_thread == 0) ||
               (current_thread == selected_thread)) {
               return handle_write_a_register (input_buffer);
           } else {
@@ -476,8 +492,7 @@ dispatch (char *input_buffer, int message_length)
  *
  * This prints out all the help strings.
  */
-void
-print_help()
+void print_help(void)
 {
     int i;
 
@@ -528,7 +543,7 @@ handle_thread (char *input_buffer, enum thread_mode mode)
     case THREAD_SET:
       key = input_buffer[0];
       input_buffer++;
-      
+
       thread_id = strtol (input_buffer, &ptr, 0x10);  // Protocol uses hex values
       if (ptr == input_buffer)
 	{
@@ -536,7 +551,7 @@ handle_thread (char *input_buffer, enum thread_mode mode)
 	  output_error ("Got invalid thread id: %s\n", input_buffer);
 	  return 0;
 	}
-      
+
       switch (key)
 	{
 	case 'c':
@@ -563,7 +578,7 @@ handle_thread (char *input_buffer, enum thread_mode mode)
 	}
       break;
     case THREAD_ALIVE:
-      
+
       thread_id = strtol (input_buffer, &ptr, 0x10);
       if (ptr == input_buffer)
 	{
@@ -581,7 +596,7 @@ handle_thread (char *input_buffer, enum thread_mode mode)
       putpkt("");
       return 1;
     }
-  
+
   return 1;
 }
 
@@ -601,7 +616,7 @@ handle_read_registers (char *input_buffer)
         putpkt("ENN");
         return 0;
     }
-  
+
   convert_bytes_to_ascii (aregisters, buffer, REGISTER_BYTES, 0);
   putpkt(buffer);
   return 1;
@@ -619,13 +634,13 @@ handle_write_registers (char *input_buffer)
 {
 
   char *buffer = alloca(REGISTER_BYTES);
-  
+
   if (!low_update_registers ())
     {
       putpkt ("ENN");
       return 0;
     }
-  
+
   convert_ascii_to_bytes (input_buffer, buffer, REGISTER_BYTES, 0);
   memcpy (&aregisters, (char *) buffer, REGISTER_BYTES);
   registers_are_dirty = 1;
@@ -666,7 +681,7 @@ handle_write_a_register (char *input_buffer)
   *val_ptr = '\0';
   sscanf (input_buffer, "%x", &regno);
   /* FIXME - Check that regno is a valid register */
-  
+
   val_ptr++;
   if (strlen (val_ptr) != (REGISTER_RAW_SIZE (regno) * 2))
     {
@@ -681,9 +696,9 @@ handle_write_a_register (char *input_buffer)
 
   /* For now, I am always flushing the changes so I can test the
      code.  Remove this from the production version. */
-  
+
   low_write_registers();
-  
+
   putpkt("OK");
   return 1;
 }
@@ -697,7 +712,7 @@ handle_read_memory (char *input_buffer)
   CORE_ADDR start_addr;
   int result;
 
-  decode_m_packet (input_buffer, &start_addr, &nbytes);  
+  decode_m_packet (input_buffer, &start_addr, &nbytes);
   if (debug_on)
     {
       output ("Reading %d bytes starting at 0x%x\n", nbytes, start_addr);
@@ -708,7 +723,7 @@ handle_read_memory (char *input_buffer)
     {
       buffer = (char *) malloc (nchars);
     }
-  
+
   len = low_read_memory (buffer, start_addr, nbytes);
   if (len > 0)
     {
@@ -721,19 +736,19 @@ handle_read_memory (char *input_buffer)
 	 to decode the prolog, and than ends up getting it to read
 	 invalid memory, and the whole thing chokes.  To keep this
 	 from happening, I will return as many zeros as requested... */
-      
+
       memset (buffer, '0', nchars);
       output_error ("Failed to read memory at address 0x%x\n", start_addr);
       result = 0;
     }
 
   putpkt (buffer);
-  
+
   if (buffer != static_buf)
     {
       free (buffer);
     }
-  
+
   return result;
 }
 
@@ -744,12 +759,12 @@ handle_write_memory (char *input_buffer)
   char data[1024]; /* FIXME -static buffer used! */
   CORE_ADDR start_addr;
 
-  decode_M_packet (input_buffer, data, &start_addr, &nbytes);  
+  decode_M_packet (input_buffer, data, &start_addr, &nbytes);
   if (debug_on)
     {
       output ("Writing %d bytes starting at 0x%x\n", nbytes, start_addr);
     }
-  
+
   len = low_write_memory (data, start_addr, nbytes);
   if (len == nbytes)
     {
@@ -774,7 +789,7 @@ char *
 remove_signal (char *input_buffer, int *signo)
 {
   char *p;
-  
+
   p = (char *) strchr (input_buffer, ';');
 
   /* If there is no ";", then the whole thing is the signal... */
@@ -787,7 +802,7 @@ remove_signal (char *input_buffer, int *signo)
     {
       *p = '\0';
       sscanf (input_buffer, "%x", signo);
-      
+
       p = input_buffer++;
     }
 
@@ -813,7 +828,7 @@ handle_resume (char *input_buffer, enum resume_mode mode, int signo)
   /* Forget about 'selected' thread */
   selected_thread = 0;
   current_thread = 0;
-  
+
   /*
    * See if there is an address to resume at, if not default
    * to the current PC.
@@ -837,7 +852,7 @@ handle_resume (char *input_buffer, enum resume_mode mode, int signo)
     {
       output ("Stopped...\n");
     }
-  
+
   /* We have run, so the registers are no longer up-to-date */
 
   registers_up_to_date = 0;
@@ -855,15 +870,15 @@ handle_resume (char *input_buffer, enum resume_mode mode, int signo)
       convert_bytes_to_ascii(&aregisters[REGISTER_BYTE (SP_REGNUM)],
                              SP_reg,
                              REGISTER_RAW_SIZE (SP_REGNUM), 0);
-      sprintf (return_pkt, "T%02xthread:%08x;%02x:%s;%02x:%s;", 
+      sprintf (return_pkt, "T%02xthread:%08x;%02x:%s;%02x:%s;",
                stop_signal, current_thread, PC_REGNUM, PC_reg, SP_REGNUM, SP_reg);
   } else {
       /* Now write the return signal. */
       sprintf (return_pkt, "S%02x", stop_signal);
   }
-  
+
   putpkt (return_pkt);
-  
+
   return 1;
 }
 
@@ -878,7 +893,7 @@ handle_last_signal (char *input_buffer)
 {
   enum target_signal signal;
   char buffer[8];
-  
+
   signal = low_query_last_signal ();
   sprintf (buffer, "S%02x", signal);
   putpkt (buffer);
@@ -928,7 +943,7 @@ handle_toggle_debug (char *input_buffer)
     debug_on = 0;
   else
     debug_on = 1;
-  
+
   return 1;
 }
 
@@ -981,10 +996,10 @@ handle_general_query (char *input_buffer)
   long thread_id;
   char *result, *ptr;
   int res;
-  
+
   /* I couldn't find a general enumeration of the
      general query messages...  So these are all I could find. */
-  
+
   key = input_buffer[0];
 
   switch (key)
@@ -1008,7 +1023,7 @@ handle_general_query (char *input_buffer)
       {
 	char buffer[256];
 	CORE_ADDR text, data, bss;
-	
+
 	if (low_get_offsets (&text, &data, &bss))
 	  {
 	    sprintf (buffer, "Text=%x;Data=%x;Bss=%x", text, data, bss);
@@ -1106,7 +1121,7 @@ handle_breakpoint (enum bp_action_type action, char *input_buffer)
     {
       putpkt ("ENN");
     }
-  
+
   return result;
 }
 
@@ -1167,7 +1182,7 @@ int handle_watchpoint (enum bp_action_type action,
     {
       putpkt ("ENN");
     }
-  
+
   return result;
 }
 
@@ -1177,7 +1192,7 @@ int handle_watchpoint (enum bp_action_type action,
  * Store away the fact that we are using the extended remote protocol.
  */
 
-void enable_extended_ops ()
+void enable_extended_ops(void)
 {
   use_extended_ops = 1;
 }
@@ -1187,28 +1202,25 @@ void enable_extended_ops ()
  *
  * Flag the main loop to exit.
  */
-
-void
-exit_handler()
+void exit_handler()
 {
   exit_now = 1;
   close_connection_now = 1;
 }
-
+
+
 #define ARMword unsigned int
-extern void record_register (int regno, ARMword val);
-extern ARMword restore_register (int regno);
+extern void record_register(int regno, ARMword val);
+extern ARMword restore_register(int regno);
 
 /* run_test
  *
  * This does nothing now, but you can shove in anything here, and
  * sending an 'qE' packet will activate it.  Just for testing.
  */
-
-int
-run_test (char *input_buffer)
+int run_test(char *input_buffer)
 {
-
   return low_test (input_buffer);
-
 }
+
+/* EOF */

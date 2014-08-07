@@ -19,3 +19,7 @@
 # pre-releases.  When true, provide more thorough testing with
 # -lmcheck.
 development=true
+
+if test "x${development}" = "xtrue" && test "x${DEBUG_CONFTEST_INCLUDES}" = "xyes"; then
+  CFLAGS="${CFLAGS} -Wundef"
+fi

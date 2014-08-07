@@ -45,10 +45,9 @@ struct pef_symfile_info
   long nsyms;
 };
 
-static void
-pef_new_init (objfile)
-     struct objfile *objfile;
+static void pef_new_init(struct objfile *objfile;)
 {
+  return; /* FIXME: actually do something here */
 }
 
 static void
@@ -117,7 +116,9 @@ pef_symfile_read (struct objfile *objfile, int mainline)
 
           if (sym->name[0] == '\0')
             {
-              /* warning ("ignoring symbol with empty name"); */
+#if 0
+              warning("ignoring symbol with empty name");
+#endif /* 0 */
               continue;
             }
 
@@ -143,6 +144,7 @@ pef_symfile_read (struct objfile *objfile, int mainline)
 static void
 pef_symfile_finish (struct objfile *objfile)
 {
+  return; /* FIXME: actually do something here */
 }
 
 static void
@@ -179,18 +181,18 @@ pef_symfile_offsets (struct objfile *objfile, struct section_addr_info *addrs)
 
 static struct sym_fns pef_sym_fns = {
   bfd_target_pef_flavour,
-
-  pef_new_init,                 /* sym_new_init: init anything gbl to entire symtab */
-  pef_symfile_init,             /* sym_init: read initial info, setup for sym_read() */
-  pef_symfile_read,             /* sym_read: read a symbol file into symtab */
-  pef_symfile_finish,           /* sym_finish: finished with file, cleanup */
-  pef_symfile_offsets,          /* sym_offsets:  xlate external to internal form */
-  NULL                          /* next: pointer to next struct sym_fns */
+  pef_new_init,      /* sym_new_init: init anything gbl to entire symtab */
+  pef_symfile_init, /* sym_init: read initial info, setup for sym_read() */
+  pef_symfile_read,    /* sym_read: read a symbol file into symtab */
+  pef_symfile_finish,  /* sym_finish: finished with file, cleanup */
+  pef_symfile_offsets, /* sym_offsets:  xlate external to internal form */
+  NULL                 /* next: pointer to next struct sym_fns */
 };
 
 static void
 pef_xlib_new_init (struct objfile *objfile)
 {
+  return; /* FIXME: actually do something here */
 }
 
 static void
@@ -202,35 +204,36 @@ pef_xlib_symfile_init (struct objfile *objfile)
 static void
 pef_xlib_symfile_read (struct objfile *objfile, int mainline)
 {
+  return; /* FIXME: actually do something here */
 }
 
 static void
 pef_xlib_symfile_finish (struct objfile *objfile)
 {
+  return; /* FIXME: actually do something here */
 }
 
 static void
 pef_xlib_symfile_offsets (struct objfile *objfile,
                           struct section_addr_info *addrs)
 {
+  return; /* FIXME: actually do something here */
 }
 
 static struct sym_fns pef_xlib_sym_fns = {
   bfd_target_pef_xlib_flavour,
-
-  pef_xlib_new_init,            /* sym_new_init: init anything gbl to entire symtab */
-  pef_xlib_symfile_init,        /* sym_init: read initial info, setup for sym_read() */
-  pef_xlib_symfile_read,        /* sym_read: read a symbol file into symtab */
-  pef_xlib_symfile_finish,      /* sym_finish: finished with file, cleanup */
-  pef_xlib_symfile_offsets,     /* sym_offsets:  xlate external to internal form */
-  NULL                          /* next: pointer to next struct sym_fns */
+  pef_xlib_new_init, /* sym_new_init: init anything gbl to entire symtab */
+  pef_xlib_symfile_init, /* sym_init: read initial info, setup for sym_read() */
+  pef_xlib_symfile_read,    /* sym_read: read a symbol file into symtab */
+  pef_xlib_symfile_finish,  /* sym_finish: finished with file, cleanup */
+  pef_xlib_symfile_offsets, /* sym_offsets:  xlate external to internal form */
+  NULL                      /* next: pointer to next struct sym_fns */
 };
 
-void
-_initialize_pefread (void)
+void _initialize_pefread(void)
 {
-  add_symtab_fns (&pef_sym_fns);
-  add_symtab_fns (&pef_xlib_sym_fns);
+  add_symtab_fns(&pef_sym_fns);
+  add_symtab_fns(&pef_xlib_sym_fns);
 }
 
 /* EOF */

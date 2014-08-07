@@ -1,4 +1,5 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* kdp-udp.c
+   Mac OS X kdp support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -552,3 +553,5 @@ kdp_receive_exception (kdp_connection *c, kdp_pkt_t * packet, int timeout)
   CHECK_FATAL (kdp_is_bound (c));
   return kdp_receive_fd (c, packet, c->excfd, timeout);
 }
+
+/* EOF */

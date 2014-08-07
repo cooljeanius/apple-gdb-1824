@@ -1556,3 +1556,8 @@ mostlyclean-local: mostlyclean-generic
 	:
 
 .PHONY: all all-am all-local all-recursive am--refresh
+
+dist-hook:
+	@test -d .. && echo "avoid making distributions in subdirs" >&2
+	@exit 1 || false
+.PHONY: dist-hook

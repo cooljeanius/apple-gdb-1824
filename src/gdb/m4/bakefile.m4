@@ -41,13 +41,11 @@ dnl#
 dnl# Detects GNU make
 dnl#-----------------------------------------------------------------------
 
-AC_DEFUN([AC_BAKEFILE_GNUMAKE],
-[
-    AC_REQUIRE([AC_PROG_EGREP])
+AC_DEFUN([AC_BAKEFILE_GNUMAKE],[
+    AC_REQUIRE([AC_PROG_EGREP])dnl
 
     dnl# does make support "-include" (only GNU make does AFAIK)?
-    AC_CACHE_CHECK([if make is GNU make],[bakefile_cv_prog_makeisgnu],
-    [
+    AC_CACHE_CHECK([if make is GNU make],[bakefile_cv_prog_makeisgnu],[
         if ( ${SHELL-sh} -c "${MAKE-make} --version" 2> /dev/null |
                 egrep -s GNU > /dev/null); then
             bakefile_cv_prog_makeisgnu="yes"
@@ -61,8 +59,8 @@ AC_DEFUN([AC_BAKEFILE_GNUMAKE],
     else
         IF_GNU_MAKE="#"
     fi
-    AC_SUBST([IF_GNU_MAKE])
-])
+    AC_SUBST([IF_GNU_MAKE])dnl
+])dnl
 
 dnl#-----------------------------------------------------------------------
 dnl# AC_BAKEFILE_PLATFORM
@@ -70,8 +68,7 @@ dnl#
 dnl# Detects platform and sets PLATFORM_XXX variables accordingly
 dnl#-----------------------------------------------------------------------
 
-AC_DEFUN([AC_BAKEFILE_PLATFORM],
-[
+AC_DEFUN([AC_BAKEFILE_PLATFORM],[
     PLATFORM_UNIX=0
     PLATFORM_WIN32=0
     PLATFORM_MSDOS=0
@@ -134,15 +131,15 @@ AC_DEFUN([AC_BAKEFILE_PLATFORM],
         esac
     fi
 
-    AC_SUBST([PLATFORM_UNIX])
-    AC_SUBST([PLATFORM_WIN32])
-    AC_SUBST([PLATFORM_MSDOS])
-    AC_SUBST([PLATFORM_MAC])
-    AC_SUBST([PLATFORM_MACOS])
-    AC_SUBST([PLATFORM_MACOSX])
-    AC_SUBST([PLATFORM_OS2])
-    AC_SUBST([PLATFORM_BEOS])
-])
+    AC_SUBST([PLATFORM_UNIX])dnl
+    AC_SUBST([PLATFORM_WIN32])dnl
+    AC_SUBST([PLATFORM_MSDOS])dnl
+    AC_SUBST([PLATFORM_MAC])dnl
+    AC_SUBST([PLATFORM_MACOS])dnl
+    AC_SUBST([PLATFORM_MACOSX])dnl
+    AC_SUBST([PLATFORM_OS2])dnl
+    AC_SUBST([PLATFORM_BEOS])dnl
+])dnl
 
 
 dnl#-----------------------------------------------------------------------
@@ -151,8 +148,7 @@ dnl#
 dnl# Sets misc platform-specific settings
 dnl#-----------------------------------------------------------------------
 
-AC_DEFUN([AC_BAKEFILE_PLATFORM_SPECIFICS],
-[
+AC_DEFUN([AC_BAKEFILE_PLATFORM_SPECIFICS],[
     AC_ARG_ENABLE([omf],[AS_HELP_STRING([--enable-omf],
                                         [use OMF object format (OS/2)])],
                   [bk_os2_use_omf="${enableval}"])
@@ -188,7 +184,7 @@ AC_DEFUN([AC_BAKEFILE_PLATFORM_SPECIFICS],
         LDFLAGS="-L/boot/develop/lib/x86 ${LDFLAGS}"
         ;;
     esac
-])
+])dnl
 
 dnl#-----------------------------------------------------------------------
 dnl# AC_BAKEFILE_SUFFIXES
@@ -197,8 +193,7 @@ dnl# Detects shared various suffixes for shared libraries, libraries,
 dnl# programs, plugins, and so on.
 dnl#-----------------------------------------------------------------------
 
-AC_DEFUN([AC_BAKEFILE_SUFFIXES],
-[
+AC_DEFUN([AC_BAKEFILE_SUFFIXES],[
     SO_SUFFIX="so"
     SO_SUFFIX_MODULE="so"
     EXEEXT=""
@@ -234,7 +229,7 @@ AC_DEFUN([AC_BAKEFILE_SUFFIXES],
             DLLIMP_SUFFIX="dll.a"
             EXEEXT=".exe"
             DLLPREFIX="cyg"
-            dlldir="$bindir"
+            dlldir="${bindir}"
         ;;
         *-*-mingw32* )
             SO_SUFFIX="dll"
@@ -242,22 +237,22 @@ AC_DEFUN([AC_BAKEFILE_SUFFIXES],
             DLLIMP_SUFFIX="dll.a"
             EXEEXT=".exe"
             DLLPREFIX=""
-            dlldir="$bindir"
+            dlldir="${bindir}"
         ;;
         *-pc-msdosdjgpp )
             EXEEXT=".exe"
             DLLPREFIX=""
-            dlldir="$bindir"
+            dlldir="${bindir}"
         ;;
         *-pc-os2_emx | *-pc-os2-emx )
             SO_SUFFIX="dll"
             SO_SUFFIX_MODULE="dll"
-            DLLIMP_SUFFIX=$OS2_LIBEXT
+            DLLIMP_SUFFIX="${OS2_LIBEXT}"
             EXEEXT=".exe"
             DLLPREFIX=""
             LIBPREFIX=""
-            LIBEXT=".$OS2_LIBEXT"
-            dlldir="$bindir"
+            LIBEXT=".${OS2_LIBEXT}"
+            dlldir="${bindir}"
         ;;
         *-*-darwin* )
             SO_SUFFIX="dylib"
@@ -265,20 +260,20 @@ AC_DEFUN([AC_BAKEFILE_SUFFIXES],
         ;;
     esac
 
-    if test "x$DLLIMP_SUFFIX" = "x" ; then
-        DLLIMP_SUFFIX="$SO_SUFFIX"
+    if test "x${DLLIMP_SUFFIX}" = "x"; then
+        DLLIMP_SUFFIX="${SO_SUFFIX}"
     fi
 
-    AC_SUBST([SO_SUFFIX])
-    AC_SUBST([SO_SUFFIX_MODULE])
-    AC_SUBST([DLLIMP_SUFFIX])
-    AC_SUBST([EXEEXT])
-    AC_SUBST([LIBPREFIX])
-    AC_SUBST([LIBEXT])
-    AC_SUBST([DLLPREFIX])
-    AC_SUBST([DLLPREFIX_MODULE])
-    AC_SUBST([dlldir])
-])
+    AC_SUBST([SO_SUFFIX])dnl
+    AC_SUBST([SO_SUFFIX_MODULE])dnl
+    AC_SUBST([DLLIMP_SUFFIX])dnl
+    AC_SUBST([EXEEXT])dnl
+    AC_SUBST([LIBPREFIX])dnl
+    AC_SUBST([LIBEXT])dnl
+    AC_SUBST([DLLPREFIX])dnl
+    AC_SUBST([DLLPREFIX_MODULE])dnl
+    AC_SUBST([dlldir])dnl
+])dnl
 
 
 dnl#-----------------------------------------------------------------------
@@ -288,8 +283,7 @@ dnl# Detects command for making shared libraries, substitutes SHARED_LD_CC
 dnl# and SHARED_LD_CXX.
 dnl#-----------------------------------------------------------------------
 
-AC_DEFUN([AC_BAKEFILE_SHARED_LD],
-[
+AC_DEFUN([AC_BAKEFILE_SHARED_LD],[
     dnl# the extra compiler flags needed for compilation of shared library
     PIC_FLAG=""
     if test "x${GCC}" = "xyes"; then
@@ -318,7 +312,7 @@ AC_DEFUN([AC_BAKEFILE_SHARED_LD],
       *-*-linux* )
         dnl# newer icc versions use -fPIC just as gcc does and, in fact,
         dnl# the newest (v10+) ones do not even understand -KPIC any
-        dnl# longer
+        dnl# longer:
         if test "x${INTELCC}" = "xyes" -a "x${INTELCC8}" != "xyes"; then
             PIC_FLAG="-KPIC"
         elif test "x${SUNCXX}" = "xyes"; then
@@ -329,7 +323,7 @@ AC_DEFUN([AC_BAKEFILE_SHARED_LD],
       ;;
 
       *-*-solaris2* )
-        if test "x${SUNCXX}" = xyes ; then
+        if test "x${SUNCXX}" = "xyes"; then
             SHARED_LD_CC="${CC} -G -o"
             SHARED_LD_CXX="${CXX} -G -o"
             PIC_FLAG="-KPIC"
@@ -341,7 +335,7 @@ AC_DEFUN([AC_BAKEFILE_SHARED_LD],
         chmod +x shared-ld-sh
 
         SHARED_LD_MODULE_CC="`pwd`/shared-ld-sh -bundle -headerpad_max_install_names -o"
-        SHARED_LD_MODULE_CXX="CXX=\$(CXX) $SHARED_LD_MODULE_CC"
+        SHARED_LD_MODULE_CXX="CXX=\$(CXX) ${SHARED_LD_MODULE_CC}"
 
         dnl# Most apps benefit from being fully binded (it is faster and
         dnl# static variables initialized at startup work). This can be
@@ -357,17 +351,12 @@ AC_DEFUN([AC_BAKEFILE_SHARED_LD],
         AC_CACHE_CHECK([for gcc 3.1 or later],[bakefile_cv_gcc31],[
            AC_COMPILE_IFELSE([AC_LANG_SOURCE([[]],
                [[
-                   #if (__GNUC__ < 3) || \
-                       ((__GNUC__ == 3) && (__GNUC_MINOR__ < 1))
-                       This is old gcc
-                   #endif /* old gcc */
-               ]])],
-               [
-                   bakefile_cv_gcc31=yes
-               ],
-               [
-                   bakefile_cv_gcc31=no
-               ])
+#if (__GNUC__ < 3) || \
+    ((__GNUC__ == 3) && (__GNUC_MINOR__ < 1))
+    This is old gcc
+#endif /* old gcc */
+               ]])],[bakefile_cv_gcc31=yes],
+                    [bakefile_cv_gcc31=no])
         ])
         if test "x${bakefile_cv_gcc31}" = "xno"; then
             dnl# Use the shared-ld-sh helper script
@@ -389,10 +378,10 @@ AC_DEFUN([AC_BAKEFILE_SHARED_LD],
       ;;
 
       *-*-aix* )
-        if test "x$GCC" = "xyes"; then
+        if test "x${GCC}" = "xyes"; then
             dnl# at least gcc 2.95 warns that -fPIC is ignored when
             dnl# compiling each and every file under AIX which is annoying,
-            dnl# so do not use it there (it's useless as AIX runs on
+            dnl# so do not use it there (it is useless as AIX runs on
             dnl# position-independent architectures only anyhow)
             PIC_FLAG=""
 
@@ -408,15 +397,16 @@ AC_DEFUN([AC_BAKEFILE_SHARED_LD],
                     ;;
             esac
 
-            SHARED_LD_CC="\$(CC) -shared $LD_EXPFULL -o"
-            SHARED_LD_CXX="\$(CXX) -shared $LD_EXPFULL -o"
+            SHARED_LD_CC="\$(CC) -shared ${LD_EXPFULL} -o"
+            SHARED_LD_CXX="\$(CXX) -shared ${LD_EXPFULL} -o"
         else
             dnl# FIXME: makeC++SharedLib is obsolete, what should we do for
             dnl#        recent AIX versions?
             AC_CHECK_PROG([AIX_CXX_LD],[makeC++SharedLib],
-                          [makeC++SharedLib],[/usr/lpp/xlC/bin/makeC++SharedLib])
-            SHARED_LD_CC="$AIX_CC_LD -p 0 -o"
-            SHARED_LD_CXX="$AIX_CXX_LD -p 0 -o"
+                          [makeC++SharedLib],
+                          [/usr/lpp/xlC/bin/makeC++SharedLib])
+            SHARED_LD_CC="${AIX_CC_LD} -p 0 -o"
+            SHARED_LD_CXX="${AIX_CXX_LD} -p 0 -o"
         fi
       ;;
 
@@ -428,8 +418,8 @@ AC_DEFUN([AC_BAKEFILE_SHARED_LD],
       ;;
 
       *-*-irix* )
-        dnl# default settings are ok for gcc
-        if test "x$GCC" != "xyes"; then
+        dnl# default settings are ok for gcc:
+        if test "x${GCC}" != "xyes"; then
             PIC_FLAG="-KPIC"
         fi
       ;;
@@ -461,27 +451,27 @@ AC_DEFUN([AC_BAKEFILE_SHARED_LD],
       ;;
 
       *)
-        AC_MSG_ERROR([unknown system type $BAKEFILE_HOST.])
+        AC_MSG_ERROR([unknown system type ${BAKEFILE_HOST}.])
     esac
 
-    if test "x${PIC_FLAG}" != "x" ; then
+    if test "x${PIC_FLAG}" != "x"; then
         PIC_FLAG="$PIC_FLAG -DPIC"
     fi
 
-    if test "x${SHARED_LD_MODULE_CC}" = "x" ; then
+    if test "x${SHARED_LD_MODULE_CC}" = "x"; then
         SHARED_LD_MODULE_CC="${SHARED_LD_CC}"
     fi
-    if test "x${SHARED_LD_MODULE_CXX}" = "x" ; then
+    if test "x${SHARED_LD_MODULE_CXX}" = "x"; then
         SHARED_LD_MODULE_CXX="${SHARED_LD_CXX}"
     fi
 
-    AC_SUBST([SHARED_LD_CC])
-    AC_SUBST([SHARED_LD_CXX])
-    AC_SUBST([SHARED_LD_MODULE_CC])
-    AC_SUBST([SHARED_LD_MODULE_CXX])
-    AC_SUBST([PIC_FLAG])
-    AC_SUBST([WINDOWS_IMPLIB])
-])
+    AC_SUBST([SHARED_LD_CC])dnl
+    AC_SUBST([SHARED_LD_CXX])dnl
+    AC_SUBST([SHARED_LD_MODULE_CC])dnl
+    AC_SUBST([SHARED_LD_MODULE_CXX])dnl
+    AC_SUBST([PIC_FLAG])dnl
+    AC_SUBST([WINDOWS_IMPLIB])dnl
+])dnl
 
 
 dnl#-----------------------------------------------------------------------
@@ -491,8 +481,7 @@ dnl# Detects linker options for attaching versions (sonames) to shared
 dnl# libs.
 dnl#-----------------------------------------------------------------------
 
-AC_DEFUN([AC_BAKEFILE_SHARED_VERSIONS],
-[
+AC_DEFUN([AC_BAKEFILE_SHARED_VERSIONS],[
     USE_SOVERSION=0
     USE_SOVERLINUX=0
     USE_SOVERSOLARIS=0
@@ -533,14 +522,14 @@ AC_DEFUN([AC_BAKEFILE_SHARED_VERSIONS],
       ;;
     esac
 
-    AC_SUBST([USE_SOVERSION])
-    AC_SUBST([USE_SOVERLINUX])
-    AC_SUBST([USE_SOVERSOLARIS])
-    AC_SUBST([USE_SOVERCYGWIN])
-    AC_SUBST([USE_MACVERSION])
-    AC_SUBST([USE_SOSYMLINKS])
-    AC_SUBST([SONAME_FLAG])
-])
+    AC_SUBST([USE_SOVERSION])dnl
+    AC_SUBST([USE_SOVERLINUX])dnl
+    AC_SUBST([USE_SOVERSOLARIS])dnl
+    AC_SUBST([USE_SOVERCYGWIN])dnl
+    AC_SUBST([USE_MACVERSION])dnl
+    AC_SUBST([USE_SOSYMLINKS])dnl
+    AC_SUBST([SONAME_FLAG])dnl
+])dnl
 
 
 dnl#-----------------------------------------------------------------------
@@ -549,8 +538,7 @@ dnl#
 dnl# Detects available C/C++ dependency tracking options
 dnl#-----------------------------------------------------------------------
 
-AC_DEFUN([AC_BAKEFILE_DEPS],
-[
+AC_DEFUN([AC_BAKEFILE_DEPS],[
     AC_ARG_ENABLE([dependency-tracking],
                   [AS_HELP_STRING([--disable-dependency-tracking],
          [do not use dependency tracking even if the compiler can do so])],
@@ -614,9 +602,9 @@ AC_DEFUN([AC_BAKEFILE_DEPS],
         fi
     fi
 
-    AC_SUBST([DEPS_TRACKING])
-    AC_SUBST([BK_DEPS])
-])
+    AC_SUBST([DEPS_TRACKING])dnl
+    AC_SUBST([BK_DEPS])dnl
+])dnl
 
 dnl#-----------------------------------------------------------------------
 dnl# AC_BAKEFILE_CHECK_BASIC_STUFF
@@ -625,14 +613,13 @@ dnl# Checks for presence of basic programs, such as C and C++ compiler,
 dnl# "ranlib", or "install"
 dnl#-----------------------------------------------------------------------
 
-AC_DEFUN([AC_BAKEFILE_CHECK_BASIC_STUFF],
-[
-    AC_REQUIRE([AC_PROG_RANLIB])
-    AC_REQUIRE([AC_PROG_INSTALL])
-    AC_REQUIRE([AC_PROG_LN_S])
+AC_DEFUN([AC_BAKEFILE_CHECK_BASIC_STUFF],[
+    AC_REQUIRE([AC_PROG_RANLIB])dnl
+    AC_REQUIRE([AC_PROG_INSTALL])dnl
+    AC_REQUIRE([AC_PROG_LN_S])dnl
 
-    AC_REQUIRE([AC_PROG_MAKE_SET])
-    AC_SUBST([MAKE_SET])
+    AC_REQUIRE([AC_PROG_MAKE_SET])dnl
+    AC_SUBST([MAKE_SET])dnl
 
     if test "x${SUNCXX}" = "xyes"; then
         dnl# Sun C++ compiler requires special way of creating static libs;
@@ -650,10 +637,10 @@ AC_DEFUN([AC_BAKEFILE_CHECK_BASIC_STUFF],
         AC_CHECK_TOOL([AR],[ar],[ar])
         AROPTIONS=rcu
     fi
-    AC_SUBST([AROPTIONS])
+    AC_SUBST([AROPTIONS])dnl
 
-    AC_CHECK_TOOL([STRIP],[strip],[:])
-    AC_CHECK_TOOL([NM],[nm],[:])
+    AC_CHECK_TOOL([STRIP],[strip],[:])dnl
+    AC_CHECK_TOOL([NM],[nm],[:])dnl
 
     dnl# This check is necessary because "install -d" does not exist on
     dnl# all platforms (e.g. HP/UX), see http://www.bakefile.org/ticket/80
@@ -670,15 +657,15 @@ AC_DEFUN([AC_BAKEFILE_CHECK_BASIC_STUFF],
         INSTALL_DIR="mkdir -p"
         AC_MSG_RESULT([mkdir -p])
     fi
-    AC_SUBST([INSTALL_DIR])
+    AC_SUBST([INSTALL_DIR])dnl
 
     LDFLAGS_GUI=""
     case ${BAKEFILE_HOST} in
         *-*-cygwin* | *-*-mingw32* )
         LDFLAGS_GUI="-mwindows"
     esac
-    AC_SUBST([LDFLAGS_GUI])
-])
+    AC_SUBST([LDFLAGS_GUI])dnl
+])dnl
 
 
 dnl#-----------------------------------------------------------------------
@@ -687,8 +674,7 @@ dnl#
 dnl# Checks for presence of resource compilers for win32 or mac
 dnl#-----------------------------------------------------------------------
 
-AC_DEFUN([AC_BAKEFILE_RES_COMPILERS],
-[
+AC_DEFUN([AC_BAKEFILE_RES_COMPILERS],[
     case ${BAKEFILE_HOST} in
         *-*-cygwin* | *-*-mingw32* )
             dnl# Check for win32 resources compiler:
@@ -702,10 +688,10 @@ AC_DEFUN([AC_BAKEFILE_RES_COMPILERS],
         ;;
     esac
 
-    AC_SUBST([WINDRES])
-    AC_SUBST([REZ])
-    AC_SUBST([SETFILE])
-])
+    AC_SUBST([WINDRES])dnl
+    AC_SUBST([REZ])dnl
+    AC_SUBST([SETFILE])dnl
+])dnl
 
 dnl#-----------------------------------------------------------------------
 dnl# AC_BAKEFILE_PRECOMP_HEADERS
@@ -713,13 +699,11 @@ dnl#
 dnl# Check for precompiled headers support (GCC >= 3.4)
 dnl#-----------------------------------------------------------------------
 
-AC_DEFUN([AC_BAKEFILE_PRECOMP_HEADERS],
-[
-
+AC_DEFUN([AC_BAKEFILE_PRECOMP_HEADERS],[
     AC_ARG_ENABLE([precomp-headers],
                   [AS_HELP_STRING([--disable-precomp-headers],
              [do not use precompiled headers even if compiler can do so])],
-                  [bk_use_pch="${enableval}"])
+                  [bk_use_pch="${enableval}"])dnl
 
     GCC_PCH=0
     ICC_PCH=0
@@ -743,28 +727,26 @@ AC_DEFUN([AC_BAKEFILE_PRECOMP_HEADERS],
             AC_MSG_CHECKING([if the compiler supports precompiled headers])
             AC_COMPILE_IFELSE([AC_LANG_SOURCE([[]],
                 [[
-                    #if !defined(__GNUC__) || !defined(__GNUC_MINOR__)
-                        There is no PCH support
-                    #endif /* !__GNUC__ */
-                    #if (__GNUC__ < 3)
-                        There is no PCH support
-                    #endif /* gcc 2 and lower */
-                    #if (__GNUC__ == 3) && \
-                     ((!defined(__APPLE_CC__) && (__GNUC_MINOR__ < 4)) || \
-                     ( defined(__APPLE_CC__) && (__GNUC_MINOR__ < 3))) || \
-                     ( defined(__INTEL_COMPILER) )
-                        There is no PCH support
-                    #endif /* version */
-                ]])],
-                [
+#if !defined(__GNUC__) || !defined(__GNUC_MINOR__)
+    There is no PCH support
+#endif /* !__GNUC__ */
+#if (__GNUC__ < 3)
+    There is no PCH support
+#endif /* gcc 2 and lower */
+#if (__GNUC__ == 3) && \
+ ((!defined(__APPLE_CC__) && (__GNUC_MINOR__ < 4)) || \
+ ( defined(__APPLE_CC__) && (__GNUC_MINOR__ < 3))) || \
+ ( defined(__INTEL_COMPILER) )
+    There is no PCH support
+#endif /* version */
+                ]])],[
                     AC_MSG_RESULT([yes])
                     GCC_PCH=1
-                ],
-                [
-                    if test "$INTELCXX8" = "yes"; then
+                ],[
+                    if test "x${INTELCXX8}" = "xyes"; then
                         AC_MSG_RESULT([yes])
                         ICC_PCH=1
-                        if test "$INTELCXX10" = "yes"; then
+                        if test "x${INTELCXX10}" = "xyes"; then
                             ICC_PCH_CREATE_SWITCH="-pch-create"
                             ICC_PCH_USE_SWITCH="-pch-use"
                         else
@@ -775,7 +757,7 @@ AC_DEFUN([AC_BAKEFILE_PRECOMP_HEADERS],
                         AC_MSG_RESULT([no])
                     fi
                 ])
-            if test $GCC_PCH = 1 -o $ICC_PCH = 1 ; then
+            if test ${GCC_PCH} = 1 -o ${ICC_PCH} = 1; then
                 USE_PCH=1
                 AC_BAKEFILE_CREATE_FILE_BK_MAKE_PCH
                 chmod +x bk-make-pch
@@ -787,13 +769,12 @@ AC_DEFUN([AC_BAKEFILE_PRECOMP_HEADERS],
         fi
     fi
 
-    AC_SUBST([GCC_PCH])
-    AC_SUBST([ICC_PCH])
-    AC_SUBST([ICC_PCH_CREATE_SWITCH])
-    AC_SUBST([ICC_PCH_USE_SWITCH])
-    AC_SUBST([BK_MAKE_PCH])
-])
-
+    AC_SUBST([GCC_PCH])dnl
+    AC_SUBST([ICC_PCH])dnl
+    AC_SUBST([ICC_PCH_CREATE_SWITCH])dnl
+    AC_SUBST([ICC_PCH_USE_SWITCH])dnl
+    AC_SUBST([BK_MAKE_PCH])dnl
+])dnl
 
 
 dnl#-----------------------------------------------------------------------
@@ -818,21 +799,20 @@ dnl# (yes, it is ugly, but thanks to a bug in aclocal, it is the only thing
 dnl# we can do...)
 dnl#-----------------------------------------------------------------------
 
-AC_DEFUN([AC_BAKEFILE],
-[
-    AC_PREREQ([2.58])
+AC_DEFUN([AC_BAKEFILE],[
+    AC_PREREQ([2.58])dnl
 
     dnl# We need to always run C/C++ compiler tests, but it is also
     dnl# possible for the user to call these macros manually, hence this
     dnl# instead of simply calling these macros.
     dnl# See http://www.bakefile.org/ticket/64
-    AC_REQUIRE([AC_BAKEFILE_PROG_CC])
-    AC_REQUIRE([AC_BAKEFILE_PROG_CXX])
+    AC_REQUIRE([AC_BAKEFILE_PROG_CC])dnl
+    AC_REQUIRE([AC_BAKEFILE_PROG_CXX])dnl
 
     if test "x${BAKEFILE_HOST}" = "x"; then
-               if test "x${host}" = "x"; then
-                       AC_MSG_ERROR([You must call the autoconf "CANONICAL_HOST" macro in your configure.ac (or .in) file.])
-               fi
+        if test "x${host}" = "x"; then
+            AC_MSG_ERROR([You must call the autoconf "CANONICAL_HOST" macro in your configure.ac file.])
+        fi
 
         BAKEFILE_HOST="${host}"
     fi
@@ -840,18 +820,17 @@ AC_DEFUN([AC_BAKEFILE],
     if test "x${BAKEFILE_CHECK_BASICS}" != "xno"; then
         AC_BAKEFILE_CHECK_BASIC_STUFF
     fi
-    AC_REQUIRE([AC_BAKEFILE_GNUMAKE])
-    AC_REQUIRE([AC_BAKEFILE_PLATFORM])
-    AC_REQUIRE([AC_BAKEFILE_PLATFORM_SPECIFICS])
-    AC_REQUIRE([AC_BAKEFILE_SUFFIXES])
-    AC_REQUIRE([AC_BAKEFILE_SHARED_LD])
-    AC_REQUIRE([AC_BAKEFILE_SHARED_VERSIONS])
-    AC_REQUIRE([AC_BAKEFILE_DEPS])
-    AC_REQUIRE([AC_BAKEFILE_RES_COMPILERS])
+    AC_REQUIRE([AC_BAKEFILE_GNUMAKE])dnl
+    AC_REQUIRE([AC_BAKEFILE_PLATFORM])dnl
+    AC_REQUIRE([AC_BAKEFILE_PLATFORM_SPECIFICS])dnl
+    AC_REQUIRE([AC_BAKEFILE_SUFFIXES])dnl
+    AC_REQUIRE([AC_BAKEFILE_SHARED_LD])dnl
+    AC_REQUIRE([AC_BAKEFILE_SHARED_VERSIONS])dnl
+    AC_REQUIRE([AC_BAKEFILE_DEPS])dnl
+    AC_REQUIRE([AC_BAKEFILE_RES_COMPILERS])dnl
 
     dnl# OBJCFLAGS is set by Autoconf, but OBJCXXFLAGS is not:
-    AC_SUBST([OBJCXXFLAGS])
-
+    AC_SUBST([OBJCXXFLAGS])dnl
 
     BAKEFILE_BAKEFILE_M4_VERSION="0.2.6"
 
@@ -859,7 +838,7 @@ AC_DEFUN([AC_BAKEFILE],
     $1
 
     if test "x${BAKEFILE_AUTOCONF_INC_M4_VERSION}" = "x"; then
-        AC_MSG_ERROR([No version found in autoconf_inc.m4 - bakefile macro was changed to take additional argument, perhaps configure.in wasn't updated (see the documentation)?])
+        AC_MSG_ERROR([No version found in autoconf_inc.m4 - bakefile macro was changed to take additional argument, perhaps configure.ac was NOT updated (see the documentation)?])
     fi
 
     if test "${BAKEFILE_BAKEFILE_M4_VERSION}" != "${BAKEFILE_AUTOCONF_INC_M4_VERSION}"; then
@@ -872,8 +851,7 @@ dnl#-----------------------------------------------------------------------
 dnl#              Embedded copies of helper scripts follow:
 dnl#-----------------------------------------------------------------------
 
-AC_DEFUN([AC_BAKEFILE_CREATE_FILE_BK_DEPS],
-[
+AC_DEFUN([AC_BAKEFILE_CREATE_FILE_BK_DEPS],[
 dnl# ===================== bk-deps begins here =====================
 dnl#    (Created by merge-scripts.py from bk-deps
 dnl#     file do not edit here!)
@@ -1003,10 +981,9 @@ else
 fi
 EOF
 dnl# ===================== bk-deps ends here =====================
-])
+])dnl
 
-AC_DEFUN([AC_BAKEFILE_CREATE_FILE_SHARED_LD_SH],
-[
+AC_DEFUN([AC_BAKEFILE_CREATE_FILE_SHARED_LD_SH],[
 dnl# ===================== shared-ld-sh begins here =====================
 dnl#    (Created by merge-scripts.py from shared-ld-sh
 dnl#     file do not edit here!)
@@ -1114,10 +1091,9 @@ rm -f master.${D}${D}.o
 exit ${D}status
 EOF
 dnl# ===================== shared-ld-sh ends here =====================
-])
+])dnl
 
-AC_DEFUN([AC_BAKEFILE_CREATE_FILE_BK_MAKE_PCH],
-[
+AC_DEFUN([AC_BAKEFILE_CREATE_FILE_BK_MAKE_PCH],[
 dnl# ===================== bk-make-pch begins here =====================
 dnl#    (Created by merge-scripts.py from bk-make-pch
 dnl#     file do not edit here!)
@@ -1189,4 +1165,4 @@ EOT
 fi
 EOF
 dnl# ===================== bk-make-pch ends here =====================
-])
+])dnl

@@ -1,4 +1,5 @@
-/* Parameters for targeting to a Bull DPX2.
+/* tm-dpx2.h
+   Parameters for targeting to a Bull DPX2.
    Copyright 1986, 1987, 1989, 1991, 1993, 1994
    Free Software Foundation, Inc.
 

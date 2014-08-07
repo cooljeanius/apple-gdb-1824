@@ -1,4 +1,5 @@
-/* Native support for GNU/Linux.
+/* nm-linux.h
+   Native support for GNU/Linux.
 
    Copyright 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
 

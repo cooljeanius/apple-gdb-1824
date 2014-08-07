@@ -1,4 +1,5 @@
-/* Definitions to target GDB to GNU/Linux on IA-64 running AIX.
+/* tm-aix.h
+   Definitions to target GDB to GNU/Linux on IA-64 running AIX.
    Copyright 2000, 2001 Free Software Foundation, Inc.
 
    This file is part of GDB.

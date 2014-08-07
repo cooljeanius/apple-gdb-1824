@@ -1,4 +1,5 @@
-/* Target machine description for Motorola Delta 88 box, for GDB.
+/* tm-delta88v4.h
+   Target machine description for Motorola Delta 88 box, for GDB.
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1993, 1994, 1998, 1999
    Free Software Foundation, Inc.
 

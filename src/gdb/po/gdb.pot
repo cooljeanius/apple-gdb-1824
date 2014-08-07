@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-06-01 23:29-0400\n"
+"POT-Creation-Date: 2014-08-07 13:13-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4606,7 +4606,7 @@ msgstr ""
 #. Should never come here as hookc would be 0.
 #: cli/cli-script.c:1278 complaints.c:301 exceptions.c:153 exceptions.c:170
 #: exceptions.c:196 exceptions.c:256 hppa-tdep.c:2801 hppa-tdep.c:2814
-#: infcall.c:696 infcmd.c:2174 infrun.c:1568 language.c:902 language.c:928
+#: infcall.c:696 infcmd.c:2174 infrun.c:1567 language.c:902 language.c:928
 #: mi/mi-out.c:406 mi/mi-out.c:427 mips-tdep.c:273 mips-tdep.c:334
 #: mips-tdep.c:697 mips-tdep.c:1194 mips-tdep.c:3371 mips-tdep.c:4248
 #: mn10300-tdep.c:89 reggroups.c:218 remote.c:4205 remote.c:4275 utils.c:929
@@ -4684,7 +4684,21 @@ msgstr ""
 #.
 #. Presently, this functionality is not implemented.
 #.
+#. This function is called by the "catch load" command.  It allows
+#. the debugger to be notified by the dynamic linker when a specified
+#. library file (or any library file, if filename is NULL) is loaded.
+#.
+#. Presently, this functionality is not implemented.
+#.
+#. This function is called by the "catch unload" command.  It allows
+#. the debugger to be notified by the dynamic linker when a specified
+#. library file (or any library file, if filename is NULL) is unloaded.
+#.
+#. Presently, this functionality is not implemented.
+#.
 #: coff-solib.h:65 coff-solib.h:74
+#: gdb.framework/Versions/A/Headers/coff-solib.h:65
+#: gdb.framework/Versions/A/Headers/coff-solib.h:74
 msgid "catch of library loads/unloads not yet implemented on this platform"
 msgstr ""
 
@@ -4843,12 +4857,14 @@ msgstr ""
 msgid "Inappropriate modifiers to format specifier '%c' in printf"
 msgstr ""
 
-#: common/gdb_assert.h:54 gdb_assert.h:50
+#: common/gdb_assert.h:54 gdb.framework/Versions/A/Headers/gdb_assert.h:50
+#: gdb_assert.h:50
 #, possible-c-format
 msgid "%s: Assertion `%s' failed."
 msgstr ""
 
-#: common/gdb_assert.h:58 gdb_assert.h:54
+#: common/gdb_assert.h:58 gdb.framework/Versions/A/Headers/gdb_assert.h:54
+#: gdb_assert.h:54
 #, possible-c-format
 msgid "Assertion `%s' failed."
 msgstr ""
@@ -8532,6 +8548,26 @@ msgstr ""
 msgid "When non-zero, event/notify debugging is enabled."
 msgstr ""
 
+#: gdb.framework/Versions/A/Headers/objfiles.h:836 objfiles.h:836
+msgid "sect_index_data not initialized"
+msgstr ""
+
+#: gdb.framework/Versions/A/Headers/objfiles.h:841 objfiles.h:841
+msgid "sect_index_rodata not initialized"
+msgstr ""
+
+#: gdb.framework/Versions/A/Headers/objfiles.h:846 objfiles.h:846
+msgid "sect_index_text not initialized"
+msgstr ""
+
+#: gdb.framework/Versions/A/Headers/remote-utils.h:73 remote-utils.h:73
+msgid "Remote device not open"
+msgstr ""
+
+#: gdb.framework/Versions/A/Headers/symtab.h:793 objfiles.c:2326 symtab.h:797
+msgid "Section index is uninitialized"
+msgstr ""
+
 #: gdb_bfd.c:419
 #, possible-c-format
 msgid "Can't read data for section '%s' in file '%s'"
@@ -11492,69 +11528,69 @@ msgstr ""
 msgid "Mode for locking scheduler during execution is \"%s\".\n"
 msgstr ""
 
-#: infrun.c:950
+#: infrun.c:949
 msgid "Proceeding from a rollback; are you sure? "
 msgstr ""
 
-#: infrun.c:3650
+#: infrun.c:3649
 msgid "print_stop_reason: unrecognized enum value"
 msgstr ""
 
-#: infrun.c:3693 linux-fork.c:375 linux-fork.c:407
+#: infrun.c:3692 linux-fork.c:375 linux-fork.c:407
 #, possible-c-format
 msgid "[Switching to %s]\n"
 msgstr ""
 
-#: infrun.c:3714
+#: infrun.c:3713
 msgid ""
 "Cannot remove breakpoints because program is no longer writable.\n"
 "It might be running in another process.\n"
 "Further execution is probably impossible.\n"
 msgstr ""
 
-#: infrun.c:3871
+#: infrun.c:3870
 msgid "Unknown value."
 msgstr ""
 
-#: infrun.c:4069
+#: infrun.c:4068
 msgid "Signal        Stop\tPrint\tPass to program\tDescription\n"
 msgstr ""
 
-#: infrun.c:4106
+#: infrun.c:4105
 msgid "signal to handle"
 msgstr ""
 
 #. Not a number and not a recognized flag word => complain.
-#: infrun.c:4213
+#: infrun.c:4212
 #, possible-c-format
 msgid "Unrecognized or ambiguous flag word: \"%s\"."
 msgstr ""
 
-#: infrun.c:4235
+#: infrun.c:4234
 msgid "Not confirmed, unchanged.\n"
 msgstr ""
 
-#: infrun.c:4331
+#: infrun.c:4330
 msgid "Invalid signal handling flag.\n"
 msgstr ""
 
-#: infrun.c:4377
+#: infrun.c:4376
 msgid ""
 "\n"
 "Use the \"handle\" command to change these tables.\n"
 msgstr ""
 
-#: infrun.c:4546
+#: infrun.c:4545
 msgid "Unable to restore previously selected frame."
 msgstr ""
 
-#: infrun.c:4800 infrun.c:4822
+#: infrun.c:4799 infrun.c:4821
 msgid ""
 "What debugger does when program gets various signals.\n"
 "Specify a signal as argument to print info on that signal only."
 msgstr ""
 
-#: infrun.c:4805
+#: infrun.c:4804
 msgid ""
 "Specify how to handle a signal.\n"
 "Args are signals and actions to apply to those signals.\n"
@@ -11572,7 +11608,7 @@ msgid ""
 "Pass and Stop may be combined."
 msgstr ""
 
-#: infrun.c:4825
+#: infrun.c:4824
 msgid ""
 "Specify how to handle a signal.\n"
 "Args are signals and actions to apply to those signals.\n"
@@ -11591,49 +11627,49 @@ msgid ""
 "Pass and Stop may be combined."
 msgstr ""
 
-#: infrun.c:4845
+#: infrun.c:4844
 msgid ""
 "There is no `stop' command, but you can set a hook on `stop'.\n"
 "This allows you to set a list of commands to be run each time execution\n"
 "of the program stops."
 msgstr ""
 
-#: infrun.c:4850
+#: infrun.c:4849
 msgid "Set inferior debugging."
 msgstr ""
 
-#: infrun.c:4851
+#: infrun.c:4850
 msgid "Show inferior debugging."
 msgstr ""
 
-#: infrun.c:4852
+#: infrun.c:4851
 msgid "When non-zero, inferior specific debugging is enabled."
 msgstr ""
 
-#: infrun.c:4965
+#: infrun.c:4964
 msgid "Set stopping for shared library events."
 msgstr ""
 
-#: infrun.c:4966
+#: infrun.c:4965
 msgid "Show stopping for shared library events."
 msgstr ""
 
-#: infrun.c:4967
+#: infrun.c:4966
 msgid ""
 "If nonzero, gdb will give control to the user when the dynamic linker\n"
 "notifies gdb of shared library events.  The most common event of interest\n"
 "to the user would be loading/unloading of a new library."
 msgstr ""
 
-#: infrun.c:4977
+#: infrun.c:4976
 msgid "Set debugger response to a program call of fork or vfork."
 msgstr ""
 
-#: infrun.c:4978
+#: infrun.c:4977
 msgid "Show debugger response to a program call of fork or vfork."
 msgstr ""
 
-#: infrun.c:4979
+#: infrun.c:4978
 msgid ""
 "A fork or vfork creates a new process.  follow-fork-mode can be:\n"
 "  parent  - the original process is debugged after a fork\n"
@@ -11642,15 +11678,15 @@ msgid ""
 "By default, the debugger will follow the parent process."
 msgstr ""
 
-#: infrun.c:4990
+#: infrun.c:4989
 msgid "Set mode for locking scheduler during execution."
 msgstr ""
 
-#: infrun.c:4991
+#: infrun.c:4990
 msgid "Show mode for locking scheduler during execution."
 msgstr ""
 
-#: infrun.c:4992
+#: infrun.c:4991
 msgid ""
 "off  == no locking (threads may preempt at any time)\n"
 "on   == full locking (no thread except the current thread may run)\n"
@@ -11659,15 +11695,15 @@ msgid ""
 "\tOther threads may run while stepping over a function call ('next')."
 msgstr ""
 
-#: infrun.c:5005
+#: infrun.c:5004
 msgid "Set mode of the step operation."
 msgstr ""
 
-#: infrun.c:5006
+#: infrun.c:5005
 msgid "Show mode of the step operation."
 msgstr ""
 
-#: infrun.c:5007
+#: infrun.c:5006
 msgid ""
 "When set, doing a step over a function without debug line information\n"
 "will stop at the first instruction of that function. Otherwise, the\n"
@@ -12917,163 +12953,163 @@ msgstr ""
 msgid "Show if printing Mach-O symbols processing."
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:823
+#: macosx/arm-macosx-tdep.c:815
 #, c-format
 msgid "VFP fpscr = 0x%8.8x\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:824
+#: macosx/arm-macosx-tdep.c:816
 #, c-format
 msgid "     N = %u  Set if comparison produces a less than result\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:826
+#: macosx/arm-macosx-tdep.c:818
 #, c-format
 msgid "     Z = %u  Set if comparison produces an equal result\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:828
+#: macosx/arm-macosx-tdep.c:820
 #, c-format
 msgid ""
 "     C = %u  Set if comparison produces an equal, greater than, or unordered "
 "result\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:831
+#: macosx/arm-macosx-tdep.c:823
 #, c-format
 msgid "     V = %u  Set if comparison produces an unordered result\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:834
+#: macosx/arm-macosx-tdep.c:826
 #, c-format
 msgid "    DN = %u  default NaN mode %s\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:836
+#: macosx/arm-macosx-tdep.c:828
 #, c-format
 msgid "    Fz = %u  flush-to-zero mode %s\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:838
+#: macosx/arm-macosx-tdep.c:830
 #, c-format
 msgid " Rmode = %u  %s\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:839
+#: macosx/arm-macosx-tdep.c:831
 #, c-format
 msgid "Stride = %u\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:840
+#: macosx/arm-macosx-tdep.c:832
 #, c-format
 msgid "   LEN = %u\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:841
+#: macosx/arm-macosx-tdep.c:833
 #, c-format
 msgid "   IDE = %u  Input Subnormal exception\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:842
+#: macosx/arm-macosx-tdep.c:834
 #, c-format
 msgid "   IXE = %u  Inexact exception\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:843
+#: macosx/arm-macosx-tdep.c:835
 #, c-format
 msgid "   UFE = %u  Underflow exception\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:844
+#: macosx/arm-macosx-tdep.c:836
 #, c-format
 msgid "   OFE = %u  Overflow exception\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:845
+#: macosx/arm-macosx-tdep.c:837
 #, c-format
 msgid "   DZE = %u  Division by Zero exception\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:846
+#: macosx/arm-macosx-tdep.c:838
 #, c-format
 msgid "   IOE = %u  Invalid Operation exception\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:847
+#: macosx/arm-macosx-tdep.c:839
 #, c-format
 msgid "   IDC = %u  Input Subnormal cumulative\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:848
+#: macosx/arm-macosx-tdep.c:840
 #, c-format
 msgid "   IXC = %u  Inexact cumulative\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:849
+#: macosx/arm-macosx-tdep.c:841
 #, c-format
 msgid "   UFC = %u  Underflow cumulative\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:850
+#: macosx/arm-macosx-tdep.c:842
 #, c-format
 msgid "   OFC = %u  Overflow cumulative\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:851
+#: macosx/arm-macosx-tdep.c:843
 #, c-format
 msgid "   DZC = %u  Division by Zero cumulative\n"
 msgstr ""
 
-#: macosx/arm-macosx-tdep.c:852
+#: macosx/arm-macosx-tdep.c:844
 #, c-format
 msgid "   IOC = %u  Invalid Operation cumulative\n"
 msgstr ""
 
-#: macosx/darwin-kernel.c:335
+#: macosx/darwin-kernel.c:331
 msgid "Set level of verbosity for Darwin Kernel debugging information."
 msgstr ""
 
-#: macosx/darwin-kernel.c:336
+#: macosx/darwin-kernel.c:332
 msgid "Show level of verbosity for Darwin Kernel debugging information."
 msgstr ""
 
-#: macosx/darwin-kernel.c:337 macosx/remote-kdp.c:2342
-#: macosx/remote-kdp.c:2351 macosx/remote-kdp.c:2360 macosx/remote-kdp.c:2369
-#: macosx/remote-kdp.c:2378 macosx/remote-kdp.c:2387 macosx/remote-kdp.c:2396
+#: macosx/darwin-kernel.c:333 macosx/remote-kdp.c:2343
+#: macosx/remote-kdp.c:2352 macosx/remote-kdp.c:2361 macosx/remote-kdp.c:2370
+#: macosx/remote-kdp.c:2379 macosx/remote-kdp.c:2388 macosx/remote-kdp.c:2397
 msgid "No additional help."
 msgstr ""
 
-#: macosx/machoread.c:1052
+#: macosx/machoread.c:1053
 msgid "Set if GDB should use mmap() to read STABS info."
 msgstr ""
 
-#: macosx/machoread.c:1053
+#: macosx/machoread.c:1054
 msgid "Show if GDB should use mmap() to read STABS info."
 msgstr ""
 
-#: macosx/machoread.c:1060
+#: macosx/machoread.c:1061
 msgid "Set if GDB should use the EH frame/DWARF CFI information to backtrace."
 msgstr ""
 
-#: macosx/machoread.c:1061
+#: macosx/machoread.c:1062
 msgid "Show if GDB should use the EH frame/DWARF CFI information to backtrace."
-msgstr ""
-
-#: macosx/machoread.c:1067
-msgid ""
-"Set if GDB should process indirect function stub symbols from object files."
 msgstr ""
 
 #: macosx/machoread.c:1068
 msgid ""
+"Set if GDB should process indirect function stub symbols from object files."
+msgstr ""
+
+#: macosx/machoread.c:1069
+msgid ""
 "Show if GDB should process indirect function stub symbols from object files."
 msgstr ""
 
-#: macosx/macosx-nat-cmds-load.c:172
+#: macosx/macosx-nat-cmds-load.c:173
 msgid "Set if tracing of plugin loading is enabled"
 msgstr ""
 
-#: macosx/macosx-nat-cmds-load.c:173
+#: macosx/macosx-nat-cmds-load.c:174
 msgid "Show if tracing of plugin loading is enabled"
 msgstr ""
 
@@ -13460,63 +13496,63 @@ msgstr ""
 msgid "Show the maximum size to expect for a valid PPC frame."
 msgstr ""
 
-#: macosx/remote-kdp.c:2340
+#: macosx/remote-kdp.c:2341
 msgid ""
 "Set CPU type to be used for hosts providing incorrect information (powerpc/"
 "ia32)."
 msgstr ""
 
-#: macosx/remote-kdp.c:2341
+#: macosx/remote-kdp.c:2342
 msgid ""
 "Show CPU type to be used for hosts providing incorrect information (powerpc/"
 "ia32)."
 msgstr ""
 
-#: macosx/remote-kdp.c:2349
+#: macosx/remote-kdp.c:2350
 msgid "Set UDP timeout in milliseconds for (non-exception) KDP transactions."
 msgstr ""
 
-#: macosx/remote-kdp.c:2350
+#: macosx/remote-kdp.c:2351
 msgid "Show UDP timeout in milliseconds for (non-exception) KDP transactions."
 msgstr ""
 
-#: macosx/remote-kdp.c:2358
+#: macosx/remote-kdp.c:2359
 msgid "Set number of UDP retries for (non-exception) KDP transactions."
 msgstr ""
 
-#: macosx/remote-kdp.c:2359
+#: macosx/remote-kdp.c:2360
 msgid "Show number of UDP retries for (non-exception) KDP transactions."
 msgstr ""
 
-#: macosx/remote-kdp.c:2367
+#: macosx/remote-kdp.c:2368
 msgid "Set default UDP port on which to attempt to contact KDP."
 msgstr ""
 
-#: macosx/remote-kdp.c:2368
+#: macosx/remote-kdp.c:2369
 msgid "Show default UDP port on which to attempt to contact KDP."
 msgstr ""
 
-#: macosx/remote-kdp.c:2376
+#: macosx/remote-kdp.c:2377
 msgid "Set level of verbosity for KDP debugging information."
 msgstr ""
 
-#: macosx/remote-kdp.c:2377
+#: macosx/remote-kdp.c:2378
 msgid "Show level of verbosity for KDP debugging information."
 msgstr ""
 
-#: macosx/remote-kdp.c:2385
+#: macosx/remote-kdp.c:2386
 msgid "Set current sequence number for KDP transactions."
 msgstr ""
 
-#: macosx/remote-kdp.c:2386
+#: macosx/remote-kdp.c:2387
 msgid "Show current sequence number for KDP transactions."
 msgstr ""
 
-#: macosx/remote-kdp.c:2394
+#: macosx/remote-kdp.c:2395
 msgid "Set current sequence number for KDP exception transactions."
 msgstr ""
 
-#: macosx/remote-kdp.c:2395
+#: macosx/remote-kdp.c:2396
 msgid "Show current sequence number for KDP exception transactions."
 msgstr ""
 
@@ -15292,10 +15328,6 @@ msgstr ""
 msgid "Objfile section offsets are uninitialized"
 msgstr ""
 
-#: objfiles.c:2326 symtab.h:793
-msgid "Section index is uninitialized"
-msgstr ""
-
 #: objfiles.c:2328
 msgid "Section index is out of range for objfile"
 msgstr ""
@@ -15310,18 +15342,6 @@ msgstr ""
 msgid ""
 "Show if GDB should raise the symbol loading level on all frames found in "
 "backtraces."
-msgstr ""
-
-#: objfiles.h:836
-msgid "sect_index_data not initialized"
-msgstr ""
-
-#: objfiles.h:841
-msgid "sect_index_rodata not initialized"
-msgstr ""
-
-#: objfiles.h:846
-msgid "sect_index_text not initialized"
 msgstr ""
 
 #: observer.c:64
@@ -17978,10 +17998,6 @@ msgstr ""
 
 #: remote-utils.c:608
 msgid "Send a command to the remote monitor."
-msgstr ""
-
-#: remote-utils.h:73
-msgid "Remote device not open"
 msgstr ""
 
 #: remote.c:581 remote.c:5469 remote.c:5724

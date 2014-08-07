@@ -1,4 +1,5 @@
-/* Native support for AIX, for GDB, the GNU debugger.
+/* nm-aix.h
+   Native support for AIX, for GDB, the GNU debugger.
    Copyright 2000, 2001 Free Software Foundation, Inc.
 
    This file is part of GDB.

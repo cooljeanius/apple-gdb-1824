@@ -793,3 +793,7 @@ maintainer-clean realclean: distclean
 install: install-info install-man
 
 uninstall: uninstall-info uninstall-man
+
+pdf-local:
+	@echo "FIXME: pdfs are broken"
+.PHONY: pdf-local

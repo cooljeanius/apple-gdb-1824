@@ -436,3 +436,11 @@ distclean-local:
 	rm -rf autom4te.cache || rmdir autom4te.cache
 
 .PHONY: all all-am all-local all-recursive
+
+pdf-local:
+.PHONY: pdf-local
+
+dist-hook:
+	@test -d .. && echo "avoid making distributions in subdirs" >&2
+	@exit 1 || false
+.PHONY: dist-hook

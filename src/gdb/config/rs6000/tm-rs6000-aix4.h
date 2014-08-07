@@ -1,4 +1,5 @@
-/* Macro definitions for RS/6000 running AIX4.
+/* tm-rs6000-aix4.h
+   Macro definitions for RS/6000 running AIX4.
    Copyright 1995, 1997 Free Software Foundation, Inc.
 
    This file is part of GDB.

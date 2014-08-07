@@ -8,38 +8,38 @@
 
 Copy the absolute pathname for the current working directory into
 @var{pathname}, which is assumed to point to a buffer of at least
-@var{len} bytes, and return a pointer to the buffer.  If the current
-directory's path doesn't fit in @var{len} characters, the result is
-@code{NULL} and @code{errno} is set.  If @var{pathname} is a null pointer,
-@code{getcwd} will obtain @var{len} bytes of space using
+@var{len} bytes, and return a pointer to the buffer. If the current
+directory's path does NOT fit in @var{len} characters, then the result is
+@code{NULL} and @code{errno} is set. If @var{pathname} is a null pointer,
+then @code{getcwd} will obtain @var{len} bytes of space using
 @code{malloc}.
 
 @end deftypefn
 
 */
 
-/* includes */
+/* includes: */
 #include "config.h"
 
 #ifdef HAVE_SYS_PARAM_H
 # include <sys/param.h>
 #else
-# warning getcwd.c expects <sys/param.h> to be included.
+# warning "getcwd.c expects <sys/param.h> to be included."
 #endif /* HAVE_SYS_PARAM_H */
 #include <errno.h>
 #ifdef HAVE_STRING_H
 # include <string.h>
 #else
-# warning getcwd.c expects <string.h> to be included.
+# warning "getcwd.c expects <string.h> to be included."
 #endif /* HAVE_STRING_H */
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #else
-# warning getcwd.c expects <stdlib.h> to be included.
+# warning "getcwd.c expects <stdlib.h> to be included."
 #endif /* HAVE_STDLIB_H */
 
-/* prototypes */
-extern char *getwd ();
+/* prototypes: */
+extern char *getwd(char *buf, size_t len);
 extern int errno;
 
 /* defines */
@@ -47,9 +47,8 @@ extern int errno;
 # define MAXPATHLEN 1024
 #endif /* !MAXPATHLEN */
 
-/* actual function */
-char *
-getcwd (char *buf, size_t len)
+/* actual function: */
+char *getcwd(char *buf, size_t len)
 {
   char ourbuf[MAXPATHLEN];
   char *result;

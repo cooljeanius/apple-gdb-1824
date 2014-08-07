@@ -1,4 +1,6 @@
-/* Parameters for execution on an HP 9000 model 320, for GDB, the GNU debugger.
+/* tm-hp300hpux.h
+   Parameters for execution on an HP 9000 model 320, for GDB,
+   the GNU debugger.
    Copyright 1986, 1987, 1989, 1991, 1992, 1993
    Free Software Foundation, Inc.
 

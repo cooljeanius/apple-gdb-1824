@@ -18,8 +18,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 #if defined(__CYGWIN32__) && !defined(__CYGWIN__)
-#define __CYGWIN__
-#endif
+# define __CYGWIN__ 32
+#endif /* __CYGWIN32__ && !__CYGWIN__ */
 
 #include <stdio.h>
 #include <string.h>
@@ -31,8 +31,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #include <sys/socket.h>
 #include <netdb.h>
 #ifndef __CYGWIN__ /* Cygwin does not have netint/tcp.h */
-#include <netinet/tcp.h>
-#endif
+# include <netinet/tcp.h>
+#endif /* !__CYGWIN__ */
 #include <sys/select.h>
 #include <sys/time.h>
 #include <signal.h>
@@ -41,6 +41,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #include "server.h"
 #include "remote-utils.h"
 #include "tm.h"
+
+#if !defined(inet_ntoa) && defined(HAVE_ARPA_INET_H)
+# include <arpa/inet.h>
+#endif /* !inet_ntoa && HAVE_ARPA_INET_H */
 
 int remote_debug = 0;
 
@@ -64,37 +68,37 @@ open_listener (port_str)
   char *ptr;
   struct sockaddr_in sockaddr;
   int tmp;
-    
+
   port = (int) strtol (port_str, &ptr, 10);
   if (ptr == port_str)
     {
       output ("Invalid port number: %s\n", port_str);
       return 0;
     }
-  
+
   listener_desc = socket (PF_INET, SOCK_STREAM, 0);
   if (listener_desc < 0)
     {
       perror_with_name ("Can't open socket");
       return 0;
     }
-  
+
   /* Allow rapid reuse of this port. */
   tmp = 1;
   setsockopt (listener_desc, SOL_SOCKET, SO_REUSEADDR, (char *)&tmp,
 	      sizeof(tmp));
-  
+
   sockaddr.sin_family = PF_INET;
   sockaddr.sin_port = htons(port);
   sockaddr.sin_addr.s_addr = INADDR_ANY;
-  
+
   if (bind (listener_desc, (struct sockaddr *)&sockaddr, sizeof (sockaddr))
       || listen (listener_desc, 1))
     {
       perror_with_name ("Can't bind address");
       return 0;
     }
-  
+
   return 1;
 }
 
@@ -107,7 +111,7 @@ wait_for_connection()
   int enable_async = 1;
   int tmp;
   struct protoent *protoent;
-	
+
   tmp = sizeof (sockaddr);
   remote_desc = accept (listener_desc, (struct sockaddr *)&sockaddr, &tmp);
 
@@ -116,28 +120,28 @@ wait_for_connection()
       perror_with_name ("Accept failed");
       return 0;
     }
-  
+
   protoent = getprotobyname ("tcp");
   if (!protoent)
     {
       perror_with_name ("getprotobyname");
       return 0;
     }
-  
+
   /* Enable TCP keep alive process. */
   tmp = 1;
   setsockopt (remote_desc, SOL_SOCKET, SO_KEEPALIVE,
 	      (char *)&tmp, sizeof(tmp));
-  
+
   /* Tell TCP not to delay small packets.  This greatly speeds up
      interactive response. */
   tmp = 1;
   setsockopt (remote_desc, protoent->p_proto, TCP_NODELAY,
 	      (char *)&tmp, sizeof(tmp));
-    
+
   signal (SIGPIPE, SIG_IGN); /* If we don't do this, then gdbserver simply
 				exits when the remote side dies.  */
-  
+
 #if defined(F_SETFL) && defined (FASYNC)
   save_fcntl_flags = fcntl (remote_desc, F_GETFL, 0);
   save_fcntl_flags |= FASYNC;
@@ -149,7 +153,7 @@ wait_for_connection()
   disable_async_io ();
 #endif /* FASYNC */
   tmp = sizeof (sockaddr);
-  
+
   if (getpeername(remote_desc, (struct sockaddr *) &sockaddr, &tmp) >= 0)
     {
       hostEntPtr = gethostbyaddr((char *) &(sockaddr.sin_addr),
@@ -176,7 +180,7 @@ close_connection()
 {
   if (remote_desc == -1)
     return;
-  
+
   output ("Closing connection...\n");
   close (remote_desc);
   remote_desc = -1;
@@ -381,7 +385,7 @@ getpkt (buf, buf_len)
 
       c1 = fromhex (readchar ());
       c2 = fromhex (readchar ());
-      
+
       if (csum == (c1 << 4) + c2)
 	break;
 
@@ -473,3 +477,5 @@ close_listener (void)
   close (listener_desc);
   listener_desc = -1;
 }
+
+/* EOF */

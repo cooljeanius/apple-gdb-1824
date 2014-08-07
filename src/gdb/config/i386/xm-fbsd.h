@@ -1,4 +1,5 @@
-/* Host-dependent definitions for FreeBSD/i386.
+/* xm-fbsd.h
+   Host-dependent definitions for FreeBSD/i386.
    Copyright (C) 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.

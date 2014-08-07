@@ -1,4 +1,5 @@
-/* Definitions to make GDB run on Mach 3 on an Intel 386
+/* xm-i386m3.h
+   Definitions to make GDB run on Mach 3 on an Intel 386
    Copyright 1986, 1987, 1989, 1991, 1993, 1994, 1996
    Free Software Foundation, Inc.
 

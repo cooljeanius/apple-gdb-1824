@@ -1,4 +1,5 @@
-/* Definitions to make GDB run on Mach on an Intel 386
+/* xm-i386mach.h
+   Definitions to make GDB run on Mach on an Intel 386
    Copyright 1986, 1987, 1989, 1991, 1992, 1994, 1996, 2001
    Free Software Foundation, Inc.
 

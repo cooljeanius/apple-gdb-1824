@@ -699,8 +699,7 @@ set_schedlock_func (char *args, int from_tty, struct cmd_list_element *c)
 
    STEP nonzero if we should step (zero to continue instead).
    SIG is the signal to give the inferior (zero for none).  */
-void
-resume (int step, enum target_signal sig)
+void resume(int step, enum target_signal sig)
 {
   int should_resume = 1;
   struct cleanup *old_cleanups = make_cleanup (resume_cleanups, 0);

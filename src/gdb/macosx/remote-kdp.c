@@ -1,4 +1,5 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* remote-kdp.c
+   Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -433,7 +434,7 @@ kdp_hostinfo ()
 }
 
 /* Look at the KDP_VERSIONINFO string to see if the kernel's
- * Mach-O UUID and load address are provided.  
+ * Mach-O UUID and load address are provided.
  */
 
 static void
@@ -463,8 +464,8 @@ kdp_uuid_and_load_addr ()
       error ("kdp_attach: unable to determine kernel version string: %s",
              kdp_return_string (kdpret));
     }
-    
-  if (c.response->kernelversion_reply.version == NULL 
+
+  if (c.response->kernelversion_reply.version == NULL
       || c.response->kernelversion_reply.version[0] == '\0')
     {
       return;
@@ -481,7 +482,7 @@ kdp_uuid_and_load_addr ()
   if (strstr (c.response->kernelversion_reply.version, "; UUID="))
     {
       const char *j = strstr (c.response->kernelversion_reply.version, "; UUID=") + strlen ("; UUID=");
-      if (strlen (j) > 36 
+      if (strlen (j) > 36
           && (*(j + 36) == '\0' || *(j + 36) == ';'))
         {
           char uuid_alone[40];
@@ -496,8 +497,8 @@ kdp_uuid_and_load_addr ()
             }
           uuid_t local_kernel_uuid;
           if (got_remote_uuid
-              && symfile_objfile 
-              && symfile_objfile->obfd 
+              && symfile_objfile
+              && symfile_objfile->obfd
               && bfd_mach_o_get_uuid (symfile_objfile->obfd, local_kernel_uuid, sizeof (uuid_t)))
             {
               if (memcmp (remote_uuid, local_kernel_uuid, sizeof (uuid_t)) != 0)
@@ -541,7 +542,7 @@ kdp_uuid_and_load_addr ()
   if (symfile_objfile)
     {
       CORE_ADDR file_load_addr = INVALID_ADDRESS;
-      if (symfile_objfile 
+      if (symfile_objfile
           && get_information_about_macho (NULL, INVALID_ADDRESS, symfile_objfile->obfd, 1, 0, NULL, NULL, NULL, &file_load_addr, NULL, NULL))
         {
           slide_kernel_objfile (symfile_objfile, actual_load_address, remote_uuid, mem_osabi);
@@ -683,8 +684,8 @@ kdp_attach (char *args, int from_tty)
   set_internalvar (lookup_internalvar ("gdb_kdp_support_level"),
                    value_from_longest (builtin_type_int, (LONGEST)GDB_KDP_SUPPORT_LEVEL));
 
-  // retrieve the cpu type & cpusubtype, set kdp_cpu_type kdp_host_type globals  
-  kdp_hostinfo ();  
+  // retrieve the cpu type & cpusubtype, set kdp_cpu_type kdp_host_type globals
+  kdp_hostinfo ();
 
   // See if the kdp_versioninfo tells us where the kernel is loaded in memory
   kdp_uuid_and_load_addr ();
@@ -820,7 +821,7 @@ kdp_reboot_command (char *args, int from_tty)
 
   if (!((argv == NULL) || (argv[0] == NULL)))
     {
-      error ("usage: kdp-reboot");      
+      error ("usage: kdp-reboot");
     }
 
   kdpret = kdp_hostreboot (&c);
@@ -1531,10 +1532,10 @@ kdp_fetch_registers_arm (int regno)
             ("kdp_fetch_registers_arm: unable to fetch ARM_THREAD_FPSTATE: %s",
              kdp_return_string (kdpret));
         }
-	    
+
 	      if (vfp_version == ARM_VFP_VERSION_1)
         {
-		  if (c.response->readregs_reply.nbytes == 
+		  if (c.response->readregs_reply.nbytes ==
 		      sizeof (gdb_arm_thread_vfpv1_state_t))
 		    {
 		      gdb_arm_thread_vfpv1_state_t fp_regs;
@@ -1553,7 +1554,7 @@ kdp_fetch_registers_arm (int regno)
 		}
 	      else if (vfp_version == ARM_VFP_VERSION_3)
 		{
-		  if (c.response->readregs_reply.nbytes == 
+		  if (c.response->readregs_reply.nbytes ==
 		      sizeof (gdb_arm_thread_vfpv3_state_t))
 		    {
 		      gdb_arm_thread_vfpv3_state_t fp_regs;
@@ -1566,13 +1567,13 @@ kdp_fetch_registers_arm (int regno)
 		      error
 			("kdp_fetch_registers_arm: kdp returned %lu bytes of "
 			  "register data (expected %lu)",
-			  c.response->readregs_reply.nbytes, 
+			  c.response->readregs_reply.nbytes,
 			  sizeof (gdb_arm_thread_vfpv3_state_t));
 		    }
 		}
 	    }
 	    break;
-	    
+
 	  default:
 	    error ("kdp_fetch_registers_arm: unable to fetch ARM_THREAD_FPSTATE: "
 		 "unsupported vfp version: %d", (int)vfp_version);
@@ -1689,7 +1690,7 @@ kdp_store_registers_arm (int regno)
 
 	  kdpret = kdp_transaction (&c, c.request, c.response,
                          "kdp_store_registers_arm");
-      
+
       if (kdpret != RR_SUCCESS)
         {
           error
@@ -1929,8 +1930,8 @@ kdp_xfer_memory (CORE_ADDR memaddr, gdb_byte *myaddr, int len, int write,
 	      return 0;
 	    }
 	  memcpy (myaddr, c.response->readmem64_reply.data, len);
-	} 
-      else 
+	}
+      else
         {
           if (c.response->readmem_reply.nbytes != len)
             {
@@ -2079,7 +2080,7 @@ Would you like to disconnect? "))
 		}
 	    }
 	  target_mourn_inferior ();
-	  target_executing = 0; 
+	  target_executing = 0;
 	  printf_unfiltered ("Disconnected.\n");
 	  deprecated_throw_reason (RETURN_QUIT);
 	}
@@ -2401,3 +2402,5 @@ No additional help."),
 
   kdp_reset (&c);
 }
+
+/* EOF */

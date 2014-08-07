@@ -1,4 +1,5 @@
-/* Macro defintions for AIX PS/2 (i386)
+/* xm-i386aix.h
+   Macro defintions for AIX PS/2 (i386)
    Copyright 1986, 1987, 1989, 1992, 1993 Free Software Foundation, Inc.
 
    This file is part of GDB.

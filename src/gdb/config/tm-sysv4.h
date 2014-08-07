@@ -1,4 +1,5 @@
-/* Macro definitions for GDB on all SVR4 target systems.
+/* tm-sysv4.h
+   Macro definitions for GDB on all SVR4 target systems.
    Copyright 1991, 1992, 1993, 1994, 1996, 1997, 2000
    Free Software Foundation, Inc.
    Written by Fred Fish at Cygnus Support (fnf@cygnus.com).

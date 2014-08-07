@@ -1,6 +1,6 @@
-# Host: Intel x86 running Windows 95/98/NT/2000 (Win32)
+# Host: Intel x86 running Windows 95/98/NT/2000 (Win32) with PDO
 
-TERMCAP = 
+TERMCAP =
 
 DISPLAY = \
 	nextstep-nat-pb.o nextstep-nat-display.o \

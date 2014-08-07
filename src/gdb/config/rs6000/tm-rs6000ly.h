@@ -1,4 +1,5 @@
-/* Macro definitions for RS6000 running under LynxOS.
+/* tm-rs6000ly.h
+   Macro definitions for RS6000 running under LynxOS.
    Copyright 1993, 2000 Free Software Foundation, Inc.
 
    This file is part of GDB.

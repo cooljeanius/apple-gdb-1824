@@ -4940,7 +4940,7 @@ The current list of warning flags includes:
 @item -Wimplicit
 Since @value{GDBN} coding standard requires all functions to be declared
 using a prototype, the flag has the side effect of ensuring that
-prototyped functions are always visible with out resorting to
+prototyped functions are always visible without resorting to
 @samp{-Wstrict-prototypes}.
 
 @item -Wreturn-type
@@ -4948,22 +4948,40 @@ Such code often appears to work except on instruction set architectures
 that use register windows.
 
 @item -Wcomment
+Normally this would be part of @option{-Wall}, but we do not use that here.
 
 @item -Wtrigraphs
+Likewise.
 
 @item -Wformat
+Only part of this flag is actually used, specifically:
 @itemx -Wformat-nonliteral
 Since @value{GDBN} uses the @code{format printf} attribute on all
 @code{printf} like functions these check not just @code{printf} calls
 but also calls to functions such as @code{fprintf_unfiltered}.
 
+@itemx -Wno-format-security
+This subset of format checks is left out because it is annoying.
+
 @item -Wparentheses
 This warning includes uses of the assignment operator within an
 @code{if} statement.
 
+@item -Wdeclaration-after-statement
+Kind of pedantic.
+
 @item -Wpointer-arith
+Pointer arithmetic can be tricky.
+
+@item -Wpointer-sign
+Another flag normally enabled by @option{-Wall}.
 
 @item -Wuninitialized
+This flag is only used with optimization, and allows the use of
+@option{-Winit-self} as well.
+
+@item -Wunused-value
+Emulate a similar check often performed by the clang static analyzer.
 
 @item -Wunused-label
 This warning has the additional benefit of detecting the absence of the
@@ -4983,6 +5001,41 @@ switch (sched)
 @end smallexample
 
 @item -Wunused-function
+This one can often be ignored.
+
+@item -Wunused-macros
+This one goes hand-in-hand with the following @option{-Wundef} flag.
+
+@item -Wundef
+Makes sure the proper configure checks have been run.
+
+@item -Wempty-body
+Normally this would be part of @option{-Wextra}, but we do not use that
+here.
+
+@item -Wmissing-parameter-type
+Likewise.
+
+@item -Wmissing-declarations
+Elsewhere in this document, it says that it is okay to write code to pacify
+this option.
+
+@item -Wold-style-declaration
+For tranisitioning away from pre-ANSI code.
+
+@item -Wold-style-definition
+Likewise.
+
+@item -Wmost
+This is an Apple-specific subset of @option{-Wall}.
+
+@item -Wextra-tokens
+This is Apple-specific; make sure the construct to which it refers is
+properly commented out.
+
+@item -Wnewline-eof
+This is Apple-specific; a missing newline at the end of a file can make it
+hard to @code{diff} it properly, and can confuse other similar utilities.
 @end table
 
 @emph{Pragmatics: Due to the way that @value{GDBN} is implemented most
@@ -5001,7 +5054,7 @@ when and where their benefits can be demonstrated.}
 
 @cindex source code formatting
 The standard GNU recommendations for formatting must be followed
-strictly.
+strictly if you intend to contribute your changes back upstream to the FSF.
 
 A function declaration should not have its name in column zero.  A
 function definition should have its name in column zero.
@@ -5047,7 +5100,8 @@ void* foo;
 @subsection Comments
 
 @cindex comment formatting
-The standard GNU requirements on comments must be followed strictly.
+The standard GNU requirements on comments must be followed strictly if you
+intend to contribute your changes back upstream to the FSF.
 
 Block comments must appear in the following form, with no @code{/*}- or
 @code{*/}-only lines, and no leading @code{*}:
@@ -5180,7 +5234,7 @@ An external declaration should only appear in one include file.
 
 An external declaration should never appear in a @code{.c} file.
 Exception: a declaration for the @code{_initialize} function that
-pacifies @option{-Wmissing-declaration}.
+pacifies @option{-Wmissing-declarations}.
 
 A @code{typedef} definition should only appear in one include file.
 

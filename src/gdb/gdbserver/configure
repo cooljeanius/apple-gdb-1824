@@ -9618,14 +9618,6 @@ fi
 
 
 
-
-
-
-
-
-
-
-
 build_warnings="-Wdeclaration-after-statement -Wmissing-declarations \
 -Wstrict-prototypes -Wold-style-definition -Wmissing-prototypes \
 -Wpointer-arith -Wformat-nonliteral -Wno-char-subscripts -Wempty-body \
@@ -9653,7 +9645,7 @@ else
 fi
 
 WARN_CFLAGS=""
-if test "x${GCC}" = xyes
+if test "x${GCC}" = "xyes"
 then
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking compiler warning flags" >&5
 $as_echo_n "checking compiler warning flags... " >&6; }

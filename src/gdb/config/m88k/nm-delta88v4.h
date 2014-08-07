@@ -1,4 +1,5 @@
-/* Native machine description for Motorola Delta 88 box, for GDB.
+/* nm-delta88v4.h
+   Native machine description for Motorola Delta 88 box, for GDB.
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1993
    Free Software Foundation, Inc.
 

@@ -1,4 +1,5 @@
-/* Parameters for execution on a Mitsubishi m32r processor.
+/* tm-m32r.h
+   Parameters for execution on a Mitsubishi m32r processor.
    Copyright 1996, 1997 Free Software Foundation, Inc.
 
    This file is part of GDB.

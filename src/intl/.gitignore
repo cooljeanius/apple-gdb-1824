@@ -6,8 +6,10 @@
 *~
 Makefile
 Makefile.orig
+Makefile_orig
 confdefs.h
 config.h
+config.intl
 conftest*
 conf*/*.awk
 core*

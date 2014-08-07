@@ -1,3 +1,5 @@
+/* kdp-protocol.h */
+
 #ifndef __GDB_KDP_PROTOCOL_H__
 #define __GDB_KDP_PROTOCOL_H__
 
@@ -8,7 +10,6 @@
 
 typedef enum kdp_req_t
 {
-
   /* connection oriented requests */
   KDP_CONNECT, KDP_DISCONNECT,
 
@@ -47,9 +48,9 @@ typedef enum kdp_req_t
 
   /* breakpoint control (64-bit wide addresses). Version 11 protocol */
   KDP_BREAKPOINT64_SET, KDP_BREAKPOINT64_REMOVE,
-        
+
   /* kernel version string, like "xnu-1234.5~6". Version 11 protocol */
-  KDP_KERNELVERSION,        
+  KDP_KERNELVERSION,
 
 } kdp_req_t;
 
@@ -167,7 +168,7 @@ typedef struct
   {
     /* FIXME: Should this be uint64_t all the time?  Or uint64_t for K64
        but uint32_t otherwise?  It was originally 'unsigned long'.  */
-    uint32_t address;  
+    uint32_t address;
     size_t nbytes;
     unsigned int protection;
   } regions[0];
@@ -535,3 +536,5 @@ kdp_return_t kdp_unmarshal
    size_t rlen);
 
 #endif /* __GDB_KDP_PROTOCOL_H__ */
+
+/* EOF */

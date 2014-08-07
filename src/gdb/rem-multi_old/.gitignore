@@ -1,3 +1,8 @@
 *.o
 serve
 prog
+conf*/*.awk
+rem-multi-old/*
+*.tar.gz
+*.cache
+*.log

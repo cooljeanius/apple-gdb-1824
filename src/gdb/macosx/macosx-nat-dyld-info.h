@@ -43,29 +43,29 @@ struct dyld_objfile_entry
   /* The mach header as found in inferior memory gets stored with each dyld
      entry so we always will know if the entry is in the shared cache, and
      the exact slice that was laoded (cputype and cpusubtype).  */
-  struct mach_header mem_header;  
+  struct mach_header mem_header;
   CORE_ADDR dyld_addr;
   CORE_ADDR dyld_slide;
   CORE_ADDR dyld_length;
   struct section_offsets *dyld_section_offsets;
 
   /* This boolean seems to indicate that dyld has told us about this particular
-      dyld_objfile_entry.  I guess that's distinguished from load
-      command-discovered images that aren't actually loaded yet?  */
+      dyld_objfile_entry.  I guess that is distinguished from load
+      command-discovered images that are NOT actually loaded yet?  */
 
   int dyld_valid;
 
-#if WITH_CFM
-  unsigned long cfm_container;  /* it really is 32 bits - CFM won't go 64bit */
-#endif
+#if defined(WITH_CFM) && WITH_CFM
+  unsigned long cfm_container;  /* it really is 32 bits - CFM will NOT go 64bit */
+#endif /* WITH_CFM */
 
   /* Names names names.
-     Why oh why lord are there all these names? 
+     Why oh why lord are there all these names?
      What use can they possibly have? */
 
   /* USER_NAME is a name coming from the user.  This can happen with
      a DYLD_INSERT_LIBRARY name, or it can happen if we've got an
-     objfile w/o a corresponding dyld_objfile_entry - we'll use the
+     objfile w/o a corresponding dyld_objfile_entry - we will use the
      objfile->name and put it in the d_o_e's user_name field.  */
 
   char *user_name;
@@ -109,7 +109,7 @@ struct dyld_objfile_entry
      which is at 0x0, and if the DYLD_VALID isn't set and
      IMAGE_ADDR_VALID isn't set, dyld_load_symfile will set it to
      the slide, which I guess somehow got set without DYLD_VALID getting set...
-     uh.... 
+     uh....
      I don't think it actually does anything.  jsm/2004-12-15*/
 
   int loaded_addrisoffset;
@@ -144,7 +144,7 @@ struct dyld_objfile_info
      relationship or you'll have conflicting input/output.
 
      This "offset is the key" appraoch works, but it would be just as easy
-     to disassociate the two and have dyld_objfile_entry contain a KEY 
+     to disassociate the two and have dyld_objfile_entry contain a KEY
      field... */
 
   struct dyld_objfile_entry *entries;
@@ -164,7 +164,7 @@ enum dyld_entry_filename_type
 };
 
 const char *dyld_entry_filename (const struct dyld_objfile_entry *e,
-                                 const struct dyld_path_info *d, 
+                                 const struct dyld_path_info *d,
                                  enum dyld_entry_filename_type type);
 
 char *dyld_offset_string (CORE_ADDR offset);

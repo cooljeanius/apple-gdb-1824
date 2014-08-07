@@ -29,3 +29,5 @@ void arm_macosx_restore_thread_inferior_status (void *);
 void arm_macosx_free_thread_inferior_status (void *);
 
 #endif /* __GDB_ARM_MACOSX_TDEP_H__ */
+
+/* EOF */

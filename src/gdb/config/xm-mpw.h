@@ -29,7 +29,7 @@
 
 #define CANT_FORK
 
-/* Map these standard functions to ones that can do I/O in a console window: */
+/* Map these standard funcs to ones that can do I/O in a console window: */
 #define printf hacked_printf
 #define fprintf hacked_fprintf
 #define vprintf hacked_vfprintf

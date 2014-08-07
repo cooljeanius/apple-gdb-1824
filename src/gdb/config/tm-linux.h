@@ -1,4 +1,5 @@
-/* Native support for GNU/Linux, for GDB, the GNU debugger.
+/* tm-linux.h
+   Native support for GNU/Linux, for GDB, the GNU debugger.
    Copyright 1999, 2000
    Free Software Foundation, Inc.
 

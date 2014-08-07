@@ -1,4 +1,5 @@
-/* Internal header for GNU gettext internationalization functions.
+/* gettext.h
+   Internal header for GNU gettext internationalization functions.
    Copyright (C) 1995, 1997 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
@@ -12,8 +13,8 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU Library General Public
-   License along with the GNU C Library; see the file COPYING.LIB.  If not,
-   write to the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
+   License along with the GNU C Library; see the file COPYING.LIB. If not,
+   write to the Free Software Foundation, 51 Franklin Street - 5th Floor,
    Boston, MA 02110-1301, USA.  */
 
 #ifndef _GETTEXT_H
@@ -22,28 +23,34 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning gettext.h expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__) && !defined(HAVE_CONFDEFS_H)
+#  warning gettext.h expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ && !HAVE_CONFDEFS_H */
 #endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_STDIO_H
 # include <stdio.h>
 #else
-# warning gettext.h expects <stdio.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "gettext.h expects <stdio.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDIO_H */
 
 #if HAVE_LIMITS_H || _LIBC
 # include <limits.h>
 #else
-# warning gettext.h expects <limits.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "gettext.h expects <limits.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LIMITS_H */
 
 /* @@ end of prolog @@ */
 
-/* The magic number of the GNU message catalog format.  */
+/* The magic number of the GNU message catalog format: */
 #define _MAGIC 0x950412de
 #define _MAGIC_SWAPPED 0xde120495
 
-/* Revision number of the currently used .mo (binary) file format.  */
+/* Revision number of the currently used .mo (binary) file format: */
 #define MO_REVISION_NUMBER 0
 
 /* The following contortions are an attempt to use the C preprocessor
@@ -68,50 +75,52 @@
 # define UINT_MAX UINT_MAX_32_BITS
 #endif /* !UINT_MAX */
 
-#if UINT_MAX == UINT_MAX_32_BITS
+#if (UINT_MAX == UINT_MAX_32_BITS)
 typedef unsigned nls_uint32;
 #else
-# if USHRT_MAX == UINT_MAX_32_BITS
+# if (USHRT_MAX == UINT_MAX_32_BITS)
 typedef unsigned short nls_uint32;
 # else
-#  if ULONG_MAX == UINT_MAX_32_BITS
+#  if (ULONG_MAX == UINT_MAX_32_BITS)
 typedef unsigned long nls_uint32;
 #  else
-  /* The following line is intended to throw an error.  Using #error is
-     not portable enough.  */
+  /* The following line is intended to throw an error. Using #error is
+   * not portable enough (really? it is in the standard...): */
   "Cannot determine unsigned 32-bit data type."
 #  endif /* ULONG_MAX == UINT_MAX_32_BITS */
 # endif /* USHRT_MAX == UINT_MAX_32_BITS */
 #endif /* UINT_MAX == UINT_MAX_32_BITS */
 
 
-/* Header for binary .mo file format.  */
+/* Header for binary .mo file format: */
 struct mo_file_header
 {
-  /* The magic number.  */
+  /* The magic number: */
   nls_uint32 magic;
-  /* The revision number of the file format.  */
+  /* The revision number of the file format: */
   nls_uint32 revision;
-  /* The number of strings pairs.  */
+  /* The number of strings pairs: */
   nls_uint32 nstrings;
-  /* Offset of table with start offsets of original strings.  */
+  /* Offset of table with start offsets of original strings: */
   nls_uint32 orig_tab_offset;
-  /* Offset of table with start offsets of translation strings.  */
+  /* Offset of table with start offsets of translation strings: */
   nls_uint32 trans_tab_offset;
-  /* Size of hashing table.  */
+  /* Size of hashing table: */
   nls_uint32 hash_tab_size;
-  /* Offset of first hashing entry.  */
+  /* Offset of first hashing entry: */
   nls_uint32 hash_tab_offset;
 };
 
 struct string_desc
 {
-  /* Length of addressed string.  */
+  /* Length of addressed string: */
   nls_uint32 length;
-  /* Offset of string in file.  */
+  /* Offset of string in file: */
   nls_uint32 offset;
 };
 
 /* @@ begin of epilog @@ */
 
 #endif	/* gettext.h  */
+
+/* EOF */

@@ -1,7 +1,7 @@
 /* nm-ppc64-linux.h
-   IBM PowerPC64 native-dependent macros for GDB, the GNU debugger.
-   Copyright 2003 Free Software Foundation, Inc.
-
+ * IBM PowerPC64 native-dependent macros for GDB, the GNU debugger.
+ * Copyright 2003 Free Software Foundation, Inc. */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify

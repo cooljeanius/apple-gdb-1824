@@ -1,5 +1,6 @@
-/* Native support for GNU/Linux, for GDB, the GNU debugger.
-   Copyright (C) 1986, 1987, 1989, 1992, 2000 Free Software Foundation, Inc.
+/* xm-linux.h
+   Native support for GNU/Linux, for GDB, the GNU debugger.
+   Copyright (C) 1986, 1987, 1989, 1992, 2000 Free Software Foundation, Inc
 
    This file is part of GDB.
 
@@ -35,7 +36,7 @@
 
 #define NEED_POSIX_SETPGID
 
-/* Need R_OK etc, but USG isn't defined.  */
+/* Need R_OK etc, but USG is NOT defined.  */
 #include <unistd.h>
 
 #endif /* #ifndef XM_LINUX_H */

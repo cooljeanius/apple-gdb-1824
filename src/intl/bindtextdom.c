@@ -19,8 +19,18 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning bindtextdomain.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning bindtextdomain.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
+
+#ifndef PARAMS
+# if __STDC__ || defined __GNUC__ || defined __SUNPRO_C || defined __cplusplus || __PROTOTYPES
+#  define PARAMS(args) args
+# else
+#  define PARAMS(args) ()
+# endif /* __STDC__ */
+#endif /* !PARAMS */
 
 #if defined STDC_HEADERS || defined _LIBC || defined HAVE_STDLIB_H
 # include <stdlib.h>
@@ -31,7 +41,7 @@
 #  ifdef HAVE_MALLOC_MALLOC_H
 #   include <malloc/malloc.h>
 #  else
-void free();
+void free PARAMS((void *));
 #  endif /* HAVE_MALLOC_MALLOC_H */
 # endif /* HAVE_MALLOC_H */
 #endif /* HAVE_STDLIB_H */
@@ -86,10 +96,7 @@ extern struct binding *_nl_domain_bindings;
 
 /* Specify that the DOMAINNAME message catalog will be found
  * in DIRNAME rather than in the system locale data base.  */
-char *
-BINDTEXTDOMAIN (domainname, dirname)
-     const char *domainname;
-     const char *dirname;
+char *BINDTEXTDOMAIN(const char *domainname, const char *dirname)
 {
   struct binding *binding;
 
@@ -120,12 +127,12 @@ BINDTEXTDOMAIN (domainname, dirname)
       /* The domain is already bound. If the new value and the old
 	 one are equal we simply do nothing. Otherwise replace the
 	 old binding.  */
-      if (strcmp (dirname, binding->dirname) != 0)
+      if (strcmp(dirname, binding->dirname) != 0)
 	{
 	  char *new_dirname;
 
-	  if (strcmp (dirname, _nl_default_dirname) == 0)
-	    new_dirname = (char *) _nl_default_dirname;
+	  if (strcmp(dirname, _nl_default_dirname) == 0)
+	    new_dirname = (char *)_nl_default_dirname;
 	  else
 	    {
 #if defined _LIBC || defined HAVE_STRDUP
@@ -199,8 +206,8 @@ BINDTEXTDOMAIN (domainname, dirname)
       else
 	{
 	  binding = _nl_domain_bindings;
-	  while (binding->next != NULL
-		 && strcmp (domainname, binding->next->domainname) > 0)
+	  while ((binding->next != NULL)
+		 && (strcmp(domainname, binding->next->domainname) > 0))
 	    binding = binding->next;
 
 	  new_binding->next = binding->next;
@@ -215,7 +222,7 @@ BINDTEXTDOMAIN (domainname, dirname)
 
 #ifdef _LIBC
 /* Alias for function name in GNU C Library.  */
-weak_alias (__bindtextdomain, bindtextdomain);
+weak_alias(__bindtextdomain, bindtextdomain);
 #endif /* _LIBC */
 
 /* EOF */

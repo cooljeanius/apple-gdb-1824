@@ -15,8 +15,12 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+# along with this program; if not, write to:
+#
+#  The Free Software Foundation, Inc.
+#  59 Temple Place - Suite 330
+#  Boston, MA 02111-1307, USA.
+#
 
 prefix = @prefix@
 exec_prefix = @exec_prefix@
@@ -76,6 +80,7 @@ DESTDIR =
 AR = @AR@
 AR_FLAGS = qv
 RANLIB = @RANLIB@
+RANLIB_FLAGS = -fq
 STRIP = @STRIP@
 DLLTOOL = @DLLTOOL@
 WINDRES = @WINDRES@
@@ -395,7 +400,7 @@ CONFIG_UNINSTALL = @CONFIG_UNINSTALL@
 # It is also possible that you will need to add -I/usr/include/sys if
 # your system does NOT have fcntl.h in /usr/include (which is where it
 # should be according to Posix).
-DEFS = @DEFS@
+DEFS = @DEFS@ @EXTRA_DEFS@
 GDB_CFLAGS = -I. -I$(srcdir) -I$(srcdir)/config -DLOCALEDIR="\"$(localedir)\"" $(DEFS)
 
 # M{H,T}_CFLAGS, if defined, have host- and target-dependent CFLAGS
@@ -1116,8 +1121,12 @@ check//%: force
 	    "$${target}"; \
 	else echo "testsuite is not configured"; fi
 
-info dvi install-info clean-info html install-html: force
+info dvi install-info clean-info html install-html pdf-local: force
 	@$(MAKE) $(FLAGS_TO_PASS) DO=$@ "DODIRS=$(SUBDIRS)" subdir_do
+.PHONY: info dvi install-info clean-info html install-html pdf-local
+
+pdf: pdf-local
+.PHONY: pdf
 
 gdb.z:gdb.1
 	nroff -man $(srcdir)/gdb.1 | col -b > gdb.t
@@ -1263,7 +1272,7 @@ init.c: $(INIT_FILES)
 	  if [ ! -z "$${f}" ]; then \
 	    filebase=`basename "$${f}"`; \
 	  else \
-	    echo "reading 'f' failed"; \
+	    echo "reading 'f' failed" 1>&2; \
 	  fi; \
 	  if [ ! -z "$${filebase}" ]; then \
 	  for prefix in . tui mi cli macosx signals; do \
@@ -1341,11 +1350,10 @@ nlm:	force
 LIBGDB_OBS= $(COMMON_OBS) $(TSOBS) $(ADD_FILES) init.o
 libgdb.a: $(LIBGDB_OBS)
 	-rm -f libgdb.a
-	$(AR) q libgdb.a $(LIBGDB_OBS)
-	$(RANLIB) libgdb.a
+	$(AR) $(AR_FLAGS) libgdb.a $(LIBGDB_OBS)
+	$(RANLIB) $(RANLIB_FLAGS) libgdb.a
 
 # A Mach 3.0 program to force gdb back to command level:
-
 stop-gdb: stop-gdb.o
 	${CC_LD} $(GLOBAL_CFLAGS) $(LDFLAGS) -o stop-gdb \
 	stop-gdb.o $(CLIBS) $(LOADLIBES)
@@ -1463,7 +1471,17 @@ config.status: configure configure.tgt configure.host
 	$(SHELL) config.status --recheck
 	touch config.status
 
-configure: configure.ac
+# a compromise between the built-in rule and the automake rule:
+configure: @MAINT@ configure.ac configure.sh
+	if test -x "`which autoconf`"; then \
+	  echo "running autoconf" && autoconf; \
+	elif test -e configure.sh; then \
+	  echo "using backup $@ script"; \
+	  cat configure.sh >$@; \
+	  chmod a+x $@; \
+	else \
+	  echo "unsure what to do, so just touching $@" && touch $@; \
+	fi
 
 force:
 
@@ -1476,9 +1494,17 @@ doc/refcard.dvi:
 doc/refcard.ps:
 	cd doc; $(MAKE) refcard.ps $(FLAGS_TO_PASS)
 
+ps: doc/refcard.ps
+	cd doc; $(MAKE) dvi $(FLAGS_TO_PASS)
+.PHONY: ps
+
 # GDB MANUAL: TeX dvi file
 doc/gdb.dvi:
 	cd doc; $(MAKE) gdb.dvi $(FLAGS_TO_PASS)
+
+dvi-local: doc/gdb.dvi doc/refcard.dvi
+	cd doc; $(MAKE) dvi $(FLAGS_TO_PASS)
+.PHONY: dvi-local
 
 # GDB MANUAL: info file
 doc/gdb.info:
@@ -3066,7 +3092,8 @@ uninstall-gdbtk:
 clean-gdbtk:
 	rm -fv insight$(EXEEXT)
 
-# Removing the old gdb first works better if it is running, at least on SunOS.
+# Removing the old gdb first works better if it is running,
+# at least on SunOS:
 insight$(EXEEXT): gdbtk-main.o libgdb.a $(ADD_DEPS) \
 		$(CDEPS) $(TDEPLIBS)
 	rm -fv insight$(EXEEXT)

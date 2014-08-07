@@ -1,7 +1,7 @@
 # Host: Intel 386 running DGUX, cloned from SVR4
 
 XM_FILE= xm-i386v4.h
-# for network communication
+# for network communication:
 XM_CLIBS= -lsocket -lnsl
 
 NAT_FILE= nm-i386v4.h

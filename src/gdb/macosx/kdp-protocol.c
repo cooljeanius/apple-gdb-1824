@@ -1,4 +1,5 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* kdp-protocol.c
+   Mac OS X kdp support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -1254,3 +1255,5 @@ kdp_unmarshal (kdp_connection *c,
 
   return RR_SUCCESS;
 }
+
+/* EOF */

@@ -1,4 +1,5 @@
-/* Host definitions for GDB running on an alpha under OSF/1
+/* xm-alphaosf.h
+   Host definitions for GDB running on an alpha under OSF/1
    Copyright 1992, 1993, 1996 Free Software Foundation, Inc.
 
    This file is part of GDB.

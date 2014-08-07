@@ -1,11 +1,11 @@
 /* tm-hppa64.h
-   Parameters for execution on any Hewlett-Packard PA-RISC machine.
-   Copyright 1986, 1987, 1989, 1990, 1991, 1992, 1993, 1995, 1999, 2000
-   Free Software Foundation, Inc.
-
-   Contributed by the Center for Software Science at the
-   University of Utah (pa-gdb-bugs@cs.utah.edu).
-
+ * Parameters for execution on any Hewlett-Packard PA-RISC machine.
+ * Copyright 1986, 1987, 1989, 1990, 1991, 1992, 1993, 1995, 1999, 2000
+ * Free Software Foundation, Inc.
+ *
+ * Contributed by the Center for Software Science at the
+ * University of Utah (pa-gdb-bugs@cs.utah.edu). */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,8 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 
 /* PA 64-bit specific definitions.  Override those which are in
    tm-hppa.h */

@@ -1,4 +1,5 @@
-/* Target machine sub-description for SunOS version 4.
+/* tm-sunos.h
+   Target machine sub-description for SunOS version 4.
    This is included by other tm-*.h files to specify SunOS-specific stuff.
    Copyright 1990, 1991, 1992, 1993, 1994 Free Software Foundation, Inc.
 

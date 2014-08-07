@@ -1,5 +1,5 @@
 /* tm-hppah.h
-   Parameters for execution on an HP PA-RISC machine, running HPUX, for GDB.
+   Parameters for execution on an HP PA-RISC machine, running HPUX, for GDB
    Copyright 1991, 1992, 1995, 1998, 2002, 2003, 2004
    Free Software Foundation, Inc.
 
@@ -38,3 +38,5 @@ extern void hppa_skip_permanent_breakpoint (void);
 
 /* Mostly it is common to all HPPA's.  */
 #include "pa/tm-hppa.h"
+
+/* EOF */

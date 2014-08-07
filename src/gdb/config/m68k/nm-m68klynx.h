@@ -1,4 +1,5 @@
-/* Native-dependent definitions for Motorola 680x0 running LynxOS.
+/* nm-m68klynx.h
+   Native-dependent definitions for Motorola 680x0 running LynxOS.
    Copyright 1993 Free Software Foundation, Inc.
 
    This file is part of GDB.

@@ -58,7 +58,7 @@ enum machine_type {
   /* HP/BSD formats */
   M_HP200 = 200,	/* hp200 (68010) BSD binary */
   M_HP300 = 300,	/* hp300 (68020+68881) BSD binary */
-  M_HPUX23 = 0x020C,	/* hp200/300 HPUX binary */
+  M_HPUX23 = 0x020C/*,*/	/* hp200/300 HPUX binary */
 };
 
 #define N_MAGIC(exec) ((exec).a_info & 0xffff)
@@ -106,7 +106,7 @@ enum machine_type {
 #define	N_SEGSIZE(x)	SEGMENT_SIZE
 #endif
 
-/* This complexity is for encapsulated COFF support */
+/* This complexity is for encapsulated COFF support: */
 #ifndef _N_HDROFF
 #define _N_HDROFF(x)	(N_SEGSIZE(x) - sizeof (struct exec))
 #endif
@@ -119,29 +119,29 @@ enum machine_type {
 
 
 #ifndef N_DATOFF
-#define N_DATOFF(x)	( N_TXTOFF(x) + (x).a_text )
-#endif
+# define N_DATOFF(x) (N_TXTOFF(x) + (x).a_text)
+#endif /* !N_DATOFF */
 
 #ifndef N_TRELOFF
-#define N_TRELOFF(x)	( N_DATOFF(x) + (x).a_data )
-#endif
+# define N_TRELOFF(x) (N_DATOFF(x) + (x).a_data)
+#endif /* !N_TRELOFF */
 
 #ifndef N_DRELOFF
-#define N_DRELOFF(x)	( N_TRELOFF(x) + (x).a_trsize )
-#endif
+# define N_DRELOFF(x) (N_TRELOFF(x) + (x).a_trsize)
+#endif /* !N_DRELOFF */
 
 #ifndef N_SYMOFF
-#define N_SYMOFF(x)	( N_DRELOFF(x) + (x).a_drsize )
-#endif
+# define N_SYMOFF(x) (N_DRELOFF(x) + (x).a_drsize)
+#endif /* !N_SYMOFF */
 
 #ifndef N_STROFF
-#define N_STROFF(x)	( N_SYMOFF(x) + (x).a_syms )
-#endif
+# define N_STROFF(x) (N_SYMOFF(x) + (x).a_syms)
+#endif /* !N_STROFF */
 
-/* Address of text segment in memory after it is loaded.  */
+/* Address of text segment in memory after it is loaded: */
 #ifndef N_TXTADDR
-#define	N_TXTADDR(x)	0
-#endif
+# define N_TXTADDR(x) 0
+#endif /* !N_TXTADDR */
 
 #ifndef N_DATADDR
 #define N_DATADDR(x) \

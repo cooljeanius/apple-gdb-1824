@@ -28,3 +28,5 @@ void macosx_cfm_thread_destroy (macosx_cfm_thread_status *s);
 
 #endif /* WITH_CFM */
 #endif /* __GDB_MACOSX_NAT_CFMTHREAD_H__ */
+
+/* EOF */

@@ -1,4 +1,5 @@
-/* Description of GNU message catalog format: general file layout.
+/* gmo.h
+   Description of GNU message catalog format: general file layout.
    Copyright (C) 1995, 1997, 2000-2002 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify it
@@ -13,7 +14,7 @@
 
    You should have received a copy of the GNU Library General Public
    License along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301,
+   Foundation, Inc., 51 Franklin Street - 5th Floor, Boston, MA 02110-1301,
    USA.  */
 
 #ifndef _GETTEXT_H
@@ -40,7 +41,7 @@
 # define UINT_MAX_32_BITS 4294967295U
 #else
 # define UINT_MAX_32_BITS 0xFFFFFFFF
-#endif
+#endif /* __STDC__ */
 
 /* If UINT_MAX isn't defined, assume it's a 32-bit type.
    This should be valid for all systems GNU cares about because
@@ -49,31 +50,31 @@
 
 #ifndef UINT_MAX
 # define UINT_MAX UINT_MAX_32_BITS
-#endif
+#endif /* !UINT_MAX */
 
-#if UINT_MAX == UINT_MAX_32_BITS
+#if (UINT_MAX == UINT_MAX_32_BITS)
 typedef unsigned nls_uint32;
 #else
-# if USHRT_MAX == UINT_MAX_32_BITS
+# if (USHRT_MAX == UINT_MAX_32_BITS)
 typedef unsigned short nls_uint32;
 # else
-#  if ULONG_MAX == UINT_MAX_32_BITS
+#  if (ULONG_MAX == UINT_MAX_32_BITS)
 typedef unsigned long nls_uint32;
 #  else
-  /* The following line is intended to throw an error.  Using #error is
-     not portable enough.  */
+  /* The following line is intended to throw an error. Using #error is
+   * not portable enough (really? it is in the standard...): */
   "Cannot determine unsigned 32-bit data type."
 #  endif
 # endif
 #endif
 
 
-/* Header for binary .mo file format.  */
+/* Header for binary .mo file format: */
 struct mo_file_header
 {
-  /* The magic number.  */
+  /* The magic number: */
   nls_uint32 magic;
-  /* The revision number of the file format.  */
+  /* The revision number of the file format: */
   nls_uint32 revision;
 
   /* The following are only used in .mo files with major revision 0.  */
@@ -139,9 +140,9 @@ struct sysdep_string
   } segments[1];
 };
 
-/* Marker for the end of the segments[] array.  This has the value 0xFFFFFFFF,
+/* Marker for end of the segments[] array. This has the value 0xFFFFFFFF,
    regardless whether 'int' is 16 bit, 32 bit, or 64 bit.  */
-#define SEGMENTS_END ((nls_uint32) ~0)
+#define SEGMENTS_END ((nls_uint32)~0)
 
 /* @@ begin of epilog @@ */
 

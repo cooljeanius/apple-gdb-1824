@@ -25,7 +25,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include "macosx-tdep.h"
 
 #define BLOCK_ADDRESS_ABSOLUTE 1
-#define BELIEVE_PCC_PROMOTION 1
+#ifndef BELIEVE_PCC_PROMOTION
+# define BELIEVE_PCC_PROMOTION 1
+#else
+# ifndef HAVE_BELIEVE_PCC_PROMOTION
+#  define HAVE_BELIEVE_PCC_PROMOTION 1
+# endif /* !HAVE_BELIEVE_PCC_PROMOTION */
+#endif /* !BELIEVE_PCC_PROMOTION */
 
 #define INTERNALIZE_SYMBOL(intern, sect_p, extern, abfd) \
 macosx_internalize_symbol (&intern, &sect_p, extern, abfd)
@@ -69,3 +75,5 @@ const char *macosx_pc_solib (CORE_ADDR addr);
   macosx_pid_or_tid_to_str (PTID)
 
 #endif /* _TM_NEXTSTEP_H_ */
+
+/* EOF */

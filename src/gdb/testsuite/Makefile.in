@@ -96,6 +96,7 @@ install-info:
 dvi:
 html:
 install-html:
+pdf-local:
 
 install:
 

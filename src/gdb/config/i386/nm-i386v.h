@@ -1,4 +1,5 @@
-/* Native support for i386 running System V (pre-SVR4).
+/* nm-i386v.h
+   Native support for i386 running System V (pre-SVR4).
 
    Copyright 1986, 1987, 1989, 1992, 1993, 1998, 2000, 2002
    Free Software Foundation, Inc.

@@ -4,4 +4,5 @@
 XM_CLIBS= -lbsd
 
 NAT_FILE= config/nm-lynx.h
-NATDEPFILES= fork-child.o infptrace.o inftarg.o corelow.o lynx-nat.o xcoffread.o
+NATDEPFILES= fork-child.o infptrace.o inftarg.o corelow.o lynx-nat.o \
+	xcoffread.o

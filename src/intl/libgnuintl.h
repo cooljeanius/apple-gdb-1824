@@ -17,7 +17,7 @@
    USA.  */
 
 #ifndef _LIBINTL_H
-#define _LIBINTL_H	1
+#define _LIBINTL_H 1
 
 #include <locale.h>
 
@@ -59,7 +59,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 
 /* We redirect the functions to those prefixed with "libintl_".  This is
@@ -165,6 +165,34 @@ extern char *dcgettext _INTL_PARAMS ((const char *__domainname,
 				      int __category))
        _INTL_ASM (libintl_dcgettext);
 #endif
+
+/* Look up MSGID in the DOMAINNAME message catalog for the current
+ * CATEGORY locale and, if PLURAL is nonzero, search over string
+ * depending on the plural form determined by N.  */
+#ifdef _INTL_REDIRECT_INLINE
+extern char *libintl_dcigettext(const char *__domainname,
+                                const char *__msgid1, const char *__msgid2,
+                                int __plural, unsigned long int __n,
+                                int __category);
+static inline char *dcigettext(const char *__domainname,
+                               const char *__msgid1, const char *__msgid2,
+                               int __plural, unsigned long int __n,
+                               int __category);
+{
+  return libintl_dcigettext(__domainname, __msgid1, __msgid2, __plural,
+                            __n, __category);
+}
+#else
+# ifdef _INTL_REDIRECT_MACROS
+#  define dcigettext libintl_dcigettext
+# endif /* _INTL_REDIRECT_MACROS */
+extern char *dcigettext _INTL_PARAMS((const char *__domainname,
+                                      const char *__msgid1,
+                                      const char *__msgid2,
+                                      int __plural, unsigned long int __n,
+                                      int __category))
+       _INTL_ASM(libintl_dcigettext);
+#endif /* _INTL_REDIRECT_INLINE */
 
 
 /* Similar to `gettext' but select the plural form corresponding to the
@@ -298,12 +326,14 @@ extern char *bind_textdomain_codeset _INTL_PARAMS ((const char *__domainname,
    instead of "/").  */
 #define libintl_set_relocation_prefix libintl_set_relocation_prefix
 extern void
-       libintl_set_relocation_prefix _INTL_PARAMS ((const char *orig_prefix,
-						    const char *curr_prefix));
+       libintl_set_relocation_prefix _INTL_PARAMS((const char *orig_prefix,
+                                                   const char *curr_prefix));
 
 
 #ifdef __cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
-#endif /* libintl.h */
+#endif /* lib[gnu]intl.h */
+
+/* EOF */

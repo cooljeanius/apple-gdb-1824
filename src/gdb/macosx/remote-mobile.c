@@ -1,4 +1,5 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* remote-mobile.c
+   Mac OS X support for GDB, the GNU debugger.
    Copyright 2007
    Free Software Foundation, Inc.
 
@@ -73,7 +74,7 @@ open_unix_socket (char *name)
   sockaddr.sun_family = AF_UNIX;
   strcpy (sockaddr.sun_path, name);
   len = offsetof (struct sockaddr_un, sun_path) + strlen (name);
-  
+
   retval = connect (source_fd, (struct sockaddr *) &sockaddr, len);
   if (retval == -1)
     {
@@ -89,7 +90,7 @@ open_unix_socket (char *name)
 /* receive_fd receives a control message on SOURCE_FD containing
    a file descriptor.  It returns the file descriptor, or
    -1 on error.  Right now we do nothing with the actual
-   data in the message, though it would be easy enough to 
+   data in the message, though it would be easy enough to
    do that.  */
 
 static int
@@ -150,8 +151,8 @@ receive_fd (int source_fd)
 	  break;
 	}
     }
-   
-  
+
+
   return return_fd;
 }
 
@@ -176,11 +177,11 @@ remote_mobile_open (char *unix_sock_name, int from_tty)
   close (source_fd);
 
   if (md_fd < 0)
-    error ("Could not get the mobile device fd - error: %d.\n", md_fd); 
-     
-  /* Now construct the file descriptor target name, and push the remote 
+    error ("Could not get the mobile device fd - error: %d.\n", md_fd);
+
+  /* Now construct the file descriptor target name, and push the remote
      target.  */
-  
+
   name = malloc (strlen ("filedesc:") + 12);
   sprintf (name, "filedesc:%d", md_fd);
   push_remote_macosx_target (name, from_tty);
@@ -189,7 +190,7 @@ remote_mobile_open (char *unix_sock_name, int from_tty)
   current_target.to_shortname = remote_mobile_shortname;
   current_target.to_longname = remote_mobile_longname;
   current_target.to_doc = remote_mobile_doc;
-  
+
 }
 
 static void
@@ -254,13 +255,12 @@ filedesc_close (struct serial *sb)
   close(sb->fd);
 }
 
-void
-_initialize_remote_mobile (void)
+void _initialize_remote_mobile(void)
 {
-  struct serial_ops *ops = xmalloc (sizeof(struct serial_ops));
+  struct serial_ops *ops = xmalloc(sizeof(struct serial_ops));
 
-  init_remote_mobile_ops ();
-  add_target (&remote_mobile_ops);
+  init_remote_mobile_ops();
+  add_target(&remote_mobile_ops);
 
   /* This is the "file handle" serial ops.  The only difference
      from the standard serial ops is that we already have an open
@@ -289,5 +289,6 @@ _initialize_remote_mobile (void)
   ops->read_prim = ser_unix_read_prim;
   ops->write_prim = ser_unix_write_prim;
   serial_add_interface (ops);
-
 }
+
+/* EOF */

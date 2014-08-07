@@ -1,4 +1,5 @@
-/* Parameters for target execution on an RS6000, for GDB, the GNU debugger.
+/* tm-rs6000.h
+   Parameters for target execution on an RS6000, for GDB, the GNU debugger.
 
    Copyright 1986, 1987, 1989, 1991, 1992, 1993, 1994, 1995, 1996,
    1997, 1998, 1999, 2000, 2004 Free Software Foundation, Inc.

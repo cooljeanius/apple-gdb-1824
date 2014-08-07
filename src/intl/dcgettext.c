@@ -1,4 +1,5 @@
-/* Implementation of the dcgettext(3) function.
+/* dcgettext.c
+   Implementation of the dcgettext(3) function.
    Copyright (C) 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify
@@ -18,14 +19,26 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning dcgettext.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning dcgettext.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
-# warning dcgettext.c expects <sys/types.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "dcgettext.c expects <sys/types.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_TYPES_H */
+
+#ifndef PARAMS
+# if __STDC__ || defined __GNUC__ || defined __SUNPRO_C || defined __cplusplus || __PROTOTYPES
+#  define PARAMS(args) args
+# else
+#  define PARAMS(args) ()
+# endif /* __STDC__ */
+#endif /* !PARAMS */
 
 #ifdef __GNUC__
 # define alloca __builtin_alloca
@@ -38,7 +51,7 @@
  #pragma alloca
 #  else
 #   ifndef alloca
-char *alloca ();
+char *alloca PARAMS((size_t size));
 #   endif /* !alloca */
 #  endif /* _AIX */
 # endif /* HAVE_ALLOCA || _LIBC */
@@ -47,11 +60,16 @@ char *alloca ();
 #ifdef HAVE_ERRNO_H
 # include <errno.h>
 #else
-# warning dcgettext.c expects <errno.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "dcgettext.c expects <errno.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_ERRNO_H */
 #ifndef errno
 extern int errno;
 #endif /* !errno */
+#ifndef ERANGE
+# define ERANGE 34 /* Result too large */
+#endif /* !ERANGE */
 #ifndef __set_errno
 # define __set_errno(val) errno = (val)
 #endif /* !__set_errno */
@@ -59,11 +77,11 @@ extern int errno;
 #if defined STDC_HEADERS || defined _LIBC || defined HAVE_STDLIB_H
 # include <stdlib.h>
 #else
-char *getenv ();
+char *getenv PARAMS((const char *envvariable));
 # ifdef HAVE_MALLOC_H
 #  include <malloc.h>
 # else
-void free ();
+void free PARAMS((void *buffer));
 # endif /* HAVE_MALLOC_H */
 #endif /* HAVE_STDLIB_H */
 
@@ -84,7 +102,9 @@ void free ();
 #if defined HAVE_UNISTD_H || defined _LIBC
 # include <unistd.h>
 #else
-# warning dcgettext.c expects <unistd.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "dcgettext.c expects <unistd.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
 
 #include "gettext.h"
@@ -100,21 +120,23 @@ void free ();
 
 #ifdef _LIBC
 /* Rename the non ANSI C functions. This is required by the standard
-   because some ANSI C functions will require linking with this object
-   file and the name space must not be polluted.  */
+ * because some ANSI C functions will require linking with this object
+ * file and the name space must not be polluted.  */
 # define getcwd __getcwd
 # ifndef stpcpy
 #  define stpcpy __stpcpy
-# endif
+# endif /* !stpcpy */
 #else
 # if !defined HAVE_GETCWD
-char *getwd (); /* You will get warnings saying to use getcwd instead, but this is for the case where that is not available. */
-#  define getcwd(buf, max) getwd (buf)
+/* We might get warnings saying to use getcwd instead,
+ * but this is for when that is unavailable: */
+char *getwd PARAMS((char *b));
+#  define getcwd(buf, max) getwd(buf)
 # else
-char *getcwd ();
+char *getcwd PARAMS((char *buf, size_t len));
 # endif /* !HAVE_GETCWD */
 # ifndef HAVE_STPCPY
-static char *stpcpy PARAMS ((char *dest, const char *src));
+static char *stpcpy PARAMS((char *dest, const char *src));
 # endif /* HAVE_STPCPY */
 #endif /* _LIBC */
 
@@ -122,29 +144,33 @@ static char *stpcpy PARAMS ((char *dest, const char *src));
 #define PATH_INCR 32
 
 /* The following is from pathmax.h.  */
-/* Non-POSIX BSD systems might have gcc's limits.h, which doesn't define
-   PATH_MAX but might cause redefinition warnings when sys/param.h is
-   later included (as on MORE/BSD 4.3).  */
+/* Non-POSIX BSD systems might have gcc's limits.h, which does NOT define
+ * PATH_MAX but might cause redefinition warnings when sys/param.h is
+ * later included (as on MORE/BSD 4.3).  */
 #if defined(_POSIX_VERSION) || (defined(HAVE_LIMITS_H) && !defined(__GNUC__))
 # include <limits.h>
 #else
-# warning dcgettext.c expects <limits.h> to be included.
-#endif /* (_POSIX_VERSION) || (HAVE_LIMITS_H && !__GNUC__ */
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "dcgettext.c expects <limits.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* (_POSIX_VERSION) || (HAVE_LIMITS_H && !__GNUC__) */
 
 #ifndef _POSIX_PATH_MAX
 # define _POSIX_PATH_MAX 255
 #endif /* !_POSIX_PATH_MAX */
 
 #if !defined(PATH_MAX) && defined(_PC_PATH_MAX)
-# define PATH_MAX (pathconf ("/", _PC_PATH_MAX) < 1 ? 1024 : pathconf ("/", _PC_PATH_MAX))
-#endif
+# define PATH_MAX ((pathconf("/", _PC_PATH_MAX) < 1) ? 1024 : pathconf("/", _PC_PATH_MAX))
+#endif /* !PATH_MAX && _PC_PATH_MAX */
 
-/* Do NOT include sys/param.h if it already has been.  */
+/* Do NOT include sys/param.h if it already has been: */
 #if defined(HAVE_SYS_PARAM_H) && !defined(PATH_MAX) && !defined(MAXPATHLEN)
 # include <sys/param.h>
 #else
 # if !defined(PATH_MAX) && !defined(MAXPATHLEN)
-#  warning dcgettext.c expects <sys/param.h> to be included. (Ignore this warning if you know you already have done so.)
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "dcgettext.c expects <sys/param.h> to be included. (Ignore this warning if you know you already have done so.)"
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* !PATH_MAX && !MAXPATHLEN */
 #endif /* HAVE_SYS_PARAM_H && !PATH_MAX && !MAXPATHLEN */
 
@@ -201,24 +227,24 @@ struct block_list
   void *address;
   struct block_list *next;
 };
-# define ADD_BLOCK(list, addr)						      \
-  do {									      \
-    struct block_list *newp = (struct block_list *) malloc (sizeof (*newp));  \
-    /* If we cannot get a free block we cannot add the new element to	      \
-       the list.  */							      \
-    if (newp != NULL) {							      \
-      newp->address = (addr);						      \
-      newp->next = (list);						      \
-      (list) = newp;							      \
-    }									      \
+# define ADD_BLOCK(list, addr)						  \
+  do {									  \
+    struct block_list *newp = (struct block_list *)malloc(sizeof(*newp)); \
+    /* If we cannot get a free block we cannot add the new element to	  \
+       the list.  */							  \
+    if (newp != NULL) {							  \
+      newp->address = (addr);						  \
+      newp->next = (list);						  \
+      (list) = newp;							  \
+    }									  \
   } while (0)
-# define FREE_BLOCKS(list)						      \
-  do {									      \
-    while (list != NULL) {						      \
-      struct block_list *old = list;					      \
-      list = list->next;						      \
-      free (old);							      \
-    }									      \
+# define FREE_BLOCKS(list)						  \
+  do {									  \
+    while (list != NULL) {						  \
+      struct block_list *old = list;					  \
+      list = list->next;						  \
+      free (old);							  \
+    }									  \
   } while (0)
 # undef alloca
 # define alloca(size) (malloc (size))
@@ -237,11 +263,7 @@ struct block_list
 
 /* Look up MSGID in the DOMAINNAME message catalog for the current CATEGORY
    locale.  */
-char *
-DCGETTEXT (domainname, msgid, category)
-     const char *domainname;
-     const char *msgid;
-     int category;
+char *DCGETTEXT(const char *domainname, const char *msgid, int category)
 {
 #ifndef HAVE_ALLOCA
   struct block_list *block_list = NULL;
@@ -255,9 +277,10 @@ DCGETTEXT (domainname, msgid, category)
   char *retval;
   int saved_errno = errno;
 
-  /* If no real MSGID is given return NULL.  */
-  if (msgid == NULL)
+  /* If no real MSGID is given, then return NULL: */
+  if (msgid == NULL) {
     return NULL;
+  }
 
   /* If DOMAINNAME is NULL, we are interested in the default domain.  If
      CATEGORY is not LC_MESSAGES this might not make much sense but the
@@ -292,18 +315,18 @@ DCGETTEXT (domainname, msgid, category)
       char *ret;
 
       path_max = (unsigned) PATH_MAX;
-      path_max += 2;		/* The getcwd docs say to do this.  */
+      path_max += 2; /* The getcwd docs say to do this.  */
 
       dirname = (char *) alloca (path_max + dirname_len);
       ADD_BLOCK (block_list, dirname);
 
       __set_errno (0);
-      while ((ret = getcwd (dirname, path_max)) == NULL && errno == ERANGE)
+      while (((ret = getcwd(dirname, path_max)) == NULL) && (errno == ERANGE))
 	{
 	  path_max += PATH_INCR;
-	  dirname = (char *) alloca (path_max + dirname_len);
+	  dirname = (char *)alloca(path_max + dirname_len);
 	  ADD_BLOCK (block_list, dirname);
-	  __set_errno (0);
+	  __set_errno(0);
 	}
 
       if (ret == NULL)
@@ -403,16 +426,14 @@ DCGETTEXT (domainname, msgid, category)
 }
 
 #ifdef _LIBC
-/* Alias for function name in GNU C Library.  */
-weak_alias (__dcgettext, dcgettext);
+/* Alias for function name in GNU C Library: */
+weak_alias(__dcgettext, dcgettext);
 #endif /* _LIBC */
 
 
 static char *
 internal_function
-find_msg (domain_file, msgid)
-     struct loaded_l10nfile *domain_file;
-     const char *msgid;
+find_msg (struct loaded_l10nfile *domain_file, const char *msgid)
 {
   size_t top, act, bottom;
   struct loaded_domain *domain;
@@ -429,15 +450,16 @@ find_msg (domain_file, msgid)
   if (domain->hash_size > 2 && domain->hash_tab != NULL)
     {
       /* Use the hashing table.  */
-      nls_uint32 len = strlen (msgid);
-      nls_uint32 hash_val = hash_string (msgid);
-      nls_uint32 idx = hash_val % domain->hash_size;
-      nls_uint32 incr = 1 + (hash_val % (domain->hash_size - 2));
+      nls_uint32 len = (nls_uint32)strlen(msgid);
+      nls_uint32 hash_val = (nls_uint32)hash_string(msgid);
+      nls_uint32 idx = (hash_val % domain->hash_size);
+      nls_uint32 incr = (1 + (hash_val % (domain->hash_size - 2)));
       nls_uint32 nstr = W (domain->must_swap, domain->hash_tab[idx]);
 
-      if (nstr == 0)
-	/* Hash table entry is empty.  */
+      if (nstr == 0) {
+	/* Hash table entry is empty: */
 	return NULL;
+      }
 
       if (W (domain->must_swap, domain->orig_tab[nstr - 1].length) == len
 	  && strcmp (msgid,
@@ -496,11 +518,10 @@ find_msg (domain_file, msgid)
 }
 
 
-/* Return string representation of locale CATEGORY.  */
+/* Return string representation of locale CATEGORY: */
 static const char *
 internal_function
-category_to_name (category)
-     int category;
+category_to_name(int category)
 {
   const char *retval;
 
@@ -543,57 +564,62 @@ category_to_name (category)
 #endif /* LC_RESPONSE */
 #ifdef LC_ALL
   case LC_ALL:
-    /* This might not make sense but is perhaps better than any other
+    /* This might not make sense, but is perhaps better than any other
        value.  */
     retval = "LC_ALL";
     break;
 #endif /* LC_ALL */
   default:
-    /* If you have a better idea for a default value let me know.  */
+    /* If you have a better idea for a default value let me know: */
     retval = "LC_XXX";
   }
 
   return retval;
 }
 
-/* Guess value of current locale from value of the environment variables.  */
+/* Guess value of current locale from value of the environment variables: */
 static const char *
 internal_function
-guess_category_value (category, categoryname)
-     int category;
-     const char *categoryname;
+guess_category_value(int category, const char *categoryname)
 {
   const char *retval;
 
   /* The highest priority value is the `LANGUAGE' environment
-     variable.  This is a GNU extension.  */
-  retval = getenv ("LANGUAGE");
-  if (retval != NULL && retval[0] != '\0')
+   * variable. This is a GNU extension: */
+  retval = getenv("LANGUAGE");
+  if ((retval != NULL) && (retval[0] != '\0')) {
     return retval;
+  }
 
-  /* `LANGUAGE' is not set.  So we have to proceed with the POSIX
-     methods of looking to `LC_ALL', `LC_xxx', and `LANG'.  On some
-     systems this can be done by the `setlocale' function itself.  */
+  /* `LANGUAGE' is not set. So we have to proceed with the POSIX
+   * methods of looking to `LC_ALL', `LC_xxx', and `LANG'. On some
+   * systems this can be done by the `setlocale' function itself: */
 #if defined HAVE_SETLOCALE && defined HAVE_LC_MESSAGES && defined HAVE_LOCALE_NULL
-  return setlocale (category, NULL);
+  return setlocale(category, NULL);
 #else
-  /* Setting of LC_ALL overwrites all other.  */
-  retval = getenv ("LC_ALL");
-  if (retval != NULL && retval[0] != '\0')
+  if (category == 0) {
+    /* (do nothing) */ ;
+  }
+  /* Setting of LC_ALL overwrites all other: */
+  retval = getenv("LC_ALL");
+  if ((retval != NULL) && (retval[0] != '\0')) {
     return retval;
+  }
 
-  /* Next comes the name of the desired category.  */
-  retval = getenv (categoryname);
-  if (retval != NULL && retval[0] != '\0')
+  /* Next comes the name of the desired category: */
+  retval = getenv(categoryname);
+  if ((retval != NULL) && (retval[0] != '\0')) {
     return retval;
+  }
 
-  /* Last possibility is the LANG environment variable.  */
-  retval = getenv ("LANG");
-  if (retval != NULL && retval[0] != '\0')
+  /* Last possibility is the LANG environment variable: */
+  retval = getenv("LANG");
+  if ((retval != NULL) && (retval[0] != '\0')) {
     return retval;
+  }
 
-  /* We use C as the default domain.  POSIX says this is implementation
-     defined.  */
+  /* We use C as the default domain. POSIX says this is implementation
+   * defined: */
   return "C";
 #endif /* HAVE_SETLOCALE && HAVE_LC_MESSAGES && HAVE_LOCALE_NULL */
 }
@@ -604,11 +630,8 @@ guess_category_value (category, categoryname)
    avoid the non-standard function stpcpy. In GNU C Library this
    function is available, though. Also allow the symbol HAVE_STPCPY
    to be defined.  */
-#if !_LIBC && !HAVE_STPCPY
-static char *
-stpcpy (dest, src)
-     char *dest;
-     const char *src;
+#if (!defined(_LIBC) || !_LIBC) && !HAVE_STPCPY
+static char *stpcpy(char *dest, const char *src)
 {
   while ((*dest++ = *src++) != '\0')
     /* Do nothing. */ ;
@@ -620,8 +643,8 @@ stpcpy (dest, src)
 #ifdef _LIBC
 /* If we want to free all resources we have to do some work at
    program's end.  */
-static void __attribute__ ((unused))
-free_mem (void)
+static void __attribute__((unused))
+free_mem(void)
 {
   struct binding *runp;
 
@@ -630,13 +653,15 @@ free_mem (void)
       free (runp->domainname);
       if (runp->dirname != _nl_default_dirname)
 	/* Yes, this is a pointer comparison.  */
-	free (runp->dirname);
+	free(runp->dirname);
     }
 
   if (_nl_current_default_domain != _nl_default_default_domain)
     /* Yes, again a pointer comparison.  */
-    free ((char *) _nl_current_default_domain);
+    free((char *)_nl_current_default_domain);
 }
 
-text_set_element (__libc_subfreeres, free_mem);
+text_set_element(__libc_subfreeres, free_mem);
 #endif /* _LIBC */
+
+/* EOF */

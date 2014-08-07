@@ -1,7 +1,7 @@
 /* nm-linux.h
-   IBM PowerPC native-dependent macros for GDB, the GNU debugger.
-   Copyright 1995, 2000 Free Software Foundation, Inc.
-
+ * IBM PowerPC native-dependent macros for GDB, the GNU debugger.
+ * Copyright 1995, 2000 Free Software Foundation, Inc. */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify

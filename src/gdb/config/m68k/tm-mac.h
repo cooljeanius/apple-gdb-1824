@@ -1,5 +1,6 @@
 /* tm-mac.h
- * Target-dependent definitions for Mac running MacOS Classic on an m68k Mac.
+ * Target-dependent definitions for Mac running MacOS Classic
+ * on an old m68k Mac.
  * Copyright 1994, 1995 Free Software Foundation, Inc.
  *
  * This file is part of GDB.

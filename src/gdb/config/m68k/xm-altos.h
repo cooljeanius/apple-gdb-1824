@@ -1,4 +1,5 @@
-/* Definitions to make GDB run on an Altos 3068 (m68k running SVR2)
+/* xm-altos.h
+   Definitions to make GDB run on an Altos 3068 (m68k running SVR2)
    Copyright (C) 1987,1989 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -64,15 +65,15 @@
 #define REGISTER_ADDR(u_ar0, regno)                                 \
   (((regno) < PS_REGNUM)                                            \
    ? (&((struct exception_stack *) (u_ar0))->e_regs[(regno + R0)])  \
-   : (((regno) == PS_REGNUM)                                                \
-      ? ((int *) (&((struct exception_stack *) (u_ar0))->e_PS))             \
+   : (((regno) == PS_REGNUM)                                              \
+      ? ((int *) (&((struct exception_stack *) (u_ar0))->e_PS))           \
       : (&((struct exception_stack *) (u_ar0))->e_PC)))
 
 #define FP_REGISTER_ADDR(u, regno)                                  \
-  (((char *)                                                                \
+  (((char *)                                                              \
     (((regno) < FPC_REGNUM)                                         \
      ? (&u.u_pcb.pcb_mc68881[FMC68881_R0 + (((regno) - FP0_REGNUM) * 3)]) \
-     : (&u.u_pcb.pcb_mc68881[FMC68881_C + ((regno) - FPC_REGNUM)])))        \
+     : (&u.u_pcb.pcb_mc68881[FMC68881_C + ((regno) - FPC_REGNUM)])))      \
    - ((char *) (& u)))
 
 

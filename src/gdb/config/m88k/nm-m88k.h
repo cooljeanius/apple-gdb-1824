@@ -1,4 +1,5 @@
-/* Native support macros for m88k, for GDB.
+/* nm-m88k.h
+   Native support macros for m88k, for GDB.
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992
    Free Software Foundation, Inc.
 

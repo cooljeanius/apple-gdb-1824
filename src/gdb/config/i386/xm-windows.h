@@ -1,4 +1,6 @@
-/* Definitions for hosting on WIN32, built with Microsoft Visual C/C++, for GDB.
+/* xm-windows.h
+   Definitions for hosting on WIN32, built with Microsoft Visual C/C++,
+   for GDB.
    Copyright 1996, 1998 Free Software Foundation, Inc.
 
    This file is part of GDB.

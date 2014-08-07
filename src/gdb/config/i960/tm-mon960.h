@@ -1,4 +1,6 @@
-/* Parameters for Intel 960 running MON960 monitor, for GDB, the GNU debugger.
+/* tm-mon960.h
+   Parameters for Intel 960 running MON960 monitor, for GDB,
+   the GNU debugger.
    Copyright 1990, 1991, 1996, 1999, 2000 Free Software Foundation, Inc.
    Contributed by Intel Corporation and Cygnus Support.
 
@@ -19,9 +21,9 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
-/*****************************************************************************
+/**************************************************************************
  * Definitions to target GDB to an i960 debugged over a serial line.
- ******************************************************************************/
+ *************************************************************************/
 
 #include "i960/tm-i960.h"
 
@@ -52,8 +54,8 @@ struct frame_info;
    and has no caller.
 
    On the i960, each various target system type defines FRAME_CHAIN_VALID,
-   since it differs between Nindy, Mon960 and VxWorks, the currently supported
-   target types.  */
+   since it differs between Nindy, Mon960 and VxWorks,
+   the "currently" supported target types.  */
 
 extern int mon960_frame_chain_valid (CORE_ADDR, struct frame_info *);
 #define	FRAME_CHAIN_VALID(chain, thisframe) mon960_frame_chain_valid (chain, thisframe)

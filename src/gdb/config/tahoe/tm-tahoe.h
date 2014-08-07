@@ -1,6 +1,6 @@
 /* tm-tahoe.h
    Definitions to make GDB target for a tahoe running 4.3-Reno.
-   Copyright 1986, 1987, 1989, 1991, 1992, 1993 Free Software Foundation, Inc.
+   Copyright 1986, 1987, 1989, 1991, 1992, 1993 Free Software Foundation
 
    This file is part of GDB.
 

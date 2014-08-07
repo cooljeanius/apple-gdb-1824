@@ -1,4 +1,5 @@
-/* Macro definitions for an Apollo m68k in BSD mode
+/* xm-apollo68b.h
+   Macro definitions for an Apollo m68k in BSD mode
    Copyright 1992, 2001 Free Software Foundation, Inc.
 
    This file is part of GDB.

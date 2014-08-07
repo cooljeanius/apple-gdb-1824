@@ -1,4 +1,5 @@
-/* Native support for i386 running SVR4.
+/* nm-i386v42mp.h
+   Native support for i386 running SVR4.
    Copyright 1986, 1987, 1989, 1992, 1996, 1997, 1998
    Free Software Foundation, Inc.
    Changes for 80386 by Pace Willisson (pace@prep.ai.mit.edu), July 1988.
@@ -71,8 +72,8 @@
 /* New definitions of the ptid stuff.  Due to the way the
    code is structured in uw-thread.c, I'm overloading the thread id
    and lwp id onto the lwp field.  The tid field is used to indicate
-   whether the lwp is a tid or not.  
-   
+   whether the lwp is a tid or not.
+
    FIXME: Check that core file support is not bBoken.  (See original
    #if 0'd comments above.)
    FIXME: Restructure uw-thread.c so that the struct ptid fields

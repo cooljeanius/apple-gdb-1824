@@ -28,10 +28,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 /* Need this for NSIG: */
 #include <signal.h>
 
-#if (!defined (_NSIG) && defined (NSIG))
+#if (!defined(_NSIG) && defined(NSIG))
 # define _NSIG NSIG
 #endif /* !_NSIG && NSIG */
 
+/* is this logic correct? */
 #if !defined(NS_TARGET_MAJOR) || (defined(NS_TARGET_MAJOR) && (NS_TARGET_MAJOR < 5))
 # ifdef HAVE_TERMIOS_H
 #  undef HAVE_TERMIOS_H
@@ -46,9 +47,9 @@ extern void macosx_resize_window(int *width, int *height);
 #define	SIGWINCH_HANDLER macosx_resize_window_handler
 
 #define	SIGWINCH_HANDLER_BODY \
-void macosx_resize_window_handler (void *d) \
+void macosx_resize_window_handler(void *d) \
 { \
-  macosx_resize_window (&lines_per_page, &chars_per_line); \
+  macosx_resize_window(&lines_per_page, &chars_per_line); \
 }
 
 char *strchr(const char *s, int c);

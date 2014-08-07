@@ -121,3 +121,5 @@ void cfm_init (void);
 
 #endif /* WITH_CFM */
 #endif /* __GDB_MACOSX_NAT_CFM_H__ */
+
+/* EOF */

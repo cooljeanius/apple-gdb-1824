@@ -1,6 +1,6 @@
-/* General utility routines for the remote server for GDB.
-   Copyright (C) 1986, 1989, 1993 Free Software Foundation, Inc.
-
+/* utils.c: General utility routines for the remote server for GDB.
+ * Copyright (C) 1986, 1989, 1993 Free Software Foundation, Inc. */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,8 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 
 #include <errno.h>
 #include <stdarg.h>
@@ -27,28 +28,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 extern int target_byte_order;
 
-/* Generally useful subroutines used throughout the program.  */
+/* Generally useful subroutines used throughout the program. */
 
 /* Print the system error message for errno, and also mention STRING
-   as the file name for which the error was encountered.
-   Then return to command level.  */
-
-void
-perror_with_name (string)
-     char *string;
+ * as the file name for which the error was encountered.
+ * Then return to command level. */
+void perror_with_name(const char *string)
 {
   extern int errno;
   char *err;
   char *combined;
 
   err = strerror(errno);
-  
-  combined = (char *) alloca (strlen (err) + strlen (string) + 3);
-  strcpy (combined, string);
-  strcat (combined, ": ");
-  strcat (combined, err);
 
-  output_error ("%s.\n", combined);
+  combined = (char *)alloca(strlen(err) + strlen(string) + 3);
+  strcpy(combined, string);
+  strcat(combined, ": ");
+  strcat(combined, err);
+
+  output_error("%s.\n", combined);
 }
 
 
@@ -59,8 +57,7 @@ perror_with_name (string)
  * representation in TO.  If SWAP is 1 the bytes are swapped.
  */
 
-void
-convert_bytes_to_ascii (char *from, char * to, int n, int swap)
+void convert_bytes_to_ascii(char *from, char * to, int n, int swap)
 {
   int nib;
   char ch;
@@ -75,7 +72,7 @@ convert_bytes_to_ascii (char *from, char * to, int n, int swap)
 	  *to++ = tohex (nib);
 	}
       else
-	{ 
+	{
 	  ch = *from++;
 	  nib = ((ch & 0xf0) >> 4) & 0x0f;
 	  *to++ = tohex (nib);
@@ -98,7 +95,7 @@ void
 convert_ascii_to_bytes (char *from, char *to, int n, int swap)
 {
   int nib1, nib2;
-  
+
   if (!swap)
     {
       while (n--)
@@ -120,12 +117,10 @@ convert_ascii_to_bytes (char *from, char *to, int n, int swap)
 }
 
 /*
- * FIXME: These are routines hacked out of findvar.c.  I should really
+ * FIXME: These are routines hacked out of findvar.c. I should really
  * use that file, but I don't have the time to get it to build right now.
  */
-
-void
-store_unsigned_integer (PTR addr, int len, ULONGEST val)
+void store_unsigned_integer(gdb_byte *addr, int len, ULONGEST val)
 {
   unsigned char *p;
   unsigned char *startaddr = (unsigned char *)addr;
@@ -151,8 +146,7 @@ store_unsigned_integer (PTR addr, int len, ULONGEST val)
     }
 }
 
-ULONGEST
-extract_unsigned_integer (PTR addr, int len)
+ULONGEST extract_unsigned_integer(const gdb_byte *addr, int len)
 {
   ULONGEST retval;
   unsigned char *p;
@@ -175,25 +169,23 @@ extract_unsigned_integer (PTR addr, int len)
   return retval;
 }
 
-LONGEST
-extract_signed_integer (PTR addr, int len)
+LONGEST extract_signed_integer(const gdb_byte *addr, int len)
 {
   LONGEST retval;
   unsigned char *p;
   unsigned char *startaddr = (unsigned char *)addr;
   unsigned char *endaddr = startaddr + len;
 
-  /* Need to do better than this, but I don't want to longjump.  Really
+  /* Need to do better than this, but I do NOT want to longjump.  Really
    * should be an return status parameter.
    */
-  
-  if (len > (int) sizeof (LONGEST))
-    {
-      output_error ("\
+
+  if (len > (int)sizeof(LONGEST)) {
+      output_error("\
 That operation is not available on integers of more than %d bytes.",
-		    sizeof (LONGEST));
+                   sizeof(LONGEST));
       return 0;
-    }
+  }
 
   /* Start at the most significant end of the integer, and work towards
      the least significant.  */
@@ -217,9 +209,7 @@ That operation is not available on integers of more than %d bytes.",
 }
 
 /* Convert number NIB to a hex digit.  */
-
-int
-tohex (int nib)
+int tohex(int nib)
 {
   if (nib < 10)
     return '0' + nib;
@@ -227,22 +217,17 @@ tohex (int nib)
     return 'a' + nib - 10;
 }
 
-/* Convert hex digit A to a number.  Return -1 on error.*/
-
-int
-fromhex (int a)
+/* Convert hex digit A to a number. Return -1 on error. */
+int fromhex (int a)
 {
-  if (a >= '0' && a <= '9')
-    {
-      return a - '0';
-    }
-  else if (a >= 'a' && a <= 'f')
-    {
-      return a - 'a' + 10;
-    }
-  else
-    {
-      output_error ("Reply contains invalid hex digit");
+  if ((a >= '0') && (a <= '9')) {
+      return (a - '0');
+  } else if ((a >= 'a') && (a <= 'f')) {
+      return (a - 'a' + 10);
+  } else {
+      output_error("Reply contains invalid hex digit");
       return -1;
-    }
+  }
 }
+
+/* EOF */

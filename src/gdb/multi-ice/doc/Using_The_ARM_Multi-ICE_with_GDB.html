@@ -1,0 +1,290 @@
+<HTML>
+<HEAD>
+<TITLE>Using the ARM Multi-ICE with GDB</TITLE>
+  <META NAME="keywords" CONTENT="multi-ice, Cygnus, multi-ice-gdb-server, eCos">
+</HEAD>
+
+<BODY BGCOLOR="white" TEXT="black" LINK="#CC0000" ALINK="red" VLINK="#880000">
+
+<table width="100%" cellpadding=10 cellspacing=0 border=0><tr>
+<td valign=top align=center bgcolor="#AAAAAA" width=125>
+  <center>
+  <p>
+    <br><font face="Verdana, Arial, Helvetica, sans-serif" size=-1><B>
+    <A HREF="http://ecos.sourceware.org/" target="_top">eCos Home</A><br><br>
+    <A HREF="/redboot/" target="_top">RedBoot Home</A><br>
+    </b></font>
+  </p>
+  <hr noshade width="90%" size=4>
+  <p>
+    <font face="Verdana, Arial, Helvetica, sans-serif" size=-1><B>
+    <A HREF="http://ecos.sourceware.org/about.html">About eCos</A><br><br>
+    <A HREF="http://ecos.sourceware.org/hardware.html">Supported Hardware</A><br><br>
+    <A HREF="http://ecos.sourceware.org/getstart.html">Downloading and Installation</A><br><br>
+    <A HREF="http://ecos.sourceware.org/docs.html">Documentation</A><br><br>
+    <A HREF="/fom/ecos">FAQ</A><br><br>
+    <A HREF="http://ecos.sourceware.org/intouch.html">Mailing lists</A><br><br>
+    <A HREF="http://ecos.sourceware.org/problemreport.html">Problems</A><br><br>
+    <A HREF="http://ecos.sourceware.org/license-overview.html">Licensing</A><br><br>
+    <A HREF="http://ecos.sourceware.org/anoncvs.html">Anonymous CVS</A><br><br>
+    <A HREF="http://ecos.sourceware.org/contrib.html">Contributions and Development Projects</A><br><br>
+    <A HREF="http://ecos.sourceware.org/legal.html">Legal</A><br><br>
+    </b></font>
+  </p>
+  </center>
+</td>
+
+<td valign=top>
+
+<div>
+  <IMG SRC="/ecos/ecos.gif" height="63" width="200" ALT="eCos" border=0>
+</div>
+
+
+
+
+<h1>Using the ARM Multi-ICE with GDB</h1>
+<HR noshade SIZE=3>
+
+<h2>Introduction</h2>
+
+<p>For some time now, Red Hat has been in possession of a program named the
+<tt>multi-ice-gdb-server</tt>, which allows GDB to communicate with
+the <a href="http://www.arm.com/devtools/multi_ice?OpenDocument">ARM 
+Multi-ICE</a> JTAG emulator. </p>
+
+<p>However a legal issue prevented the software being released. Recently though,
+<a href="http://www.arm.com/">ARM</a> were kind enough to release a GPL
+friendly version of the ARM RDI headers. This has allowed Red Hat to
+release the sources to the <tt>multi-ice-gdb-server</tt>. </p>
+
+<p>The server should work with both the 1.x and 2.x versions of the ARM
+Multi-ICE.</p>
+
+<p><b>Note:</b> The only supported host is Windows.</p>
+
+<h2>Legal status</h2>
+
+<p>As explained in great detail in the GNU General Public Licence, this
+software is supplied without warranty or guarantee of any kind. This
+software makes use of Dynamically Linked Libraries on Windows, to which
+the source code is not available. This is a known grey area of the GPL.
+</p>
+
+<p><b>Neither Red Hat Inc. nor ARM Ltd. may be held responsible for the
+obligations that the use of this software puts on you, under the terms
+of the GNU General Public Licence.</b> It is your responsibility to comply
+with the terms of the licence.</p>
+
+<p>It is considered likely that under the terms of the GPL it would be a
+breach of the GPL to distribute this software in binary form. Hence it is
+provided here on an as-is basis in source form only.</p>
+
+<h2>Downloading software for building the <tt>multi-ice-gdb-server</tt></h2>
+
+<p>To build the <tt>multi-ice-gdb-server</tt> you must first download and
+install several pieces of software. Most obviously you must obtain a copy
+of <a href="http://sources.redhat.com/gdb/">GDB</a>, and
+<a href="http://www.cygwin.com/">Cygwin</a> on which it depends. At this
+point you should download and install Cygwin, and download GDB, but not try
+to install it.</p>
+
+<p>You must also have installed the ARM Multi-ICE server software that came
+supplied with the Multi-ICE unit.</a></p>
+
+<p>Next, you should download the RDI 1.5.1 distribution from
+<a href="http://www.arm.com/">ARM</a>. The download is available
+<a href="http://www.arm.com/support/downloads/info/5570.html">from this
+page</a>. You should
+download and install the package in an appropriate location.</p>
+
+<p>Finally, you should download the
+<a href="ftp://ecos.sourceware.org/pub/ecos/multi-ice-gdb.tar.gz">
+<tt>multi-ice-gdb-server</tt> sources</a>.</p>
+
+<h2>Preparing to build the <tt>multi-ice-gdb-server</tt></h2>
+
+<p>Open a Cygwin bash shell window, create a directory to contain
+the sources and build directory, and change into it, e.g.:
+<pre>
+  bash-2.04$ mkdir /tmp/migdb
+  bash-2.04$ cd /tmp/migdb
+</pre></p>
+<p>Unarchive the GDB sources, e.g. for GDB 5.1.1, assuming the .tar.gz file
+had been saved to <tt>C:\</tt>:
+<pre>
+  bash-2.04$ tar -zxvf /cygdrive/c/gdb-5.1.1.tar.gz
+</pre></p>
+<p>Create a GDB multi-ice source directory and unarchive the 
+<tt>multi-ice-gdb-server</tt> sources, e.g. assuming the multi-ice-gdb-server
+sources were saved to <tt>C:\</tt>:
+<pre>
+  bash-2.04$ cd gdb-5.1.1/gdb
+  bash-2.04$ mkdir multi-ice
+  bash-2.04$ cd multi-ice
+  bash-2.04$ tar -zxvf /cygdrive/c/multi-ice-gdb.tar.gz
+</pre></p>
+<p>Create a directory for building, and change to it, e.g.:
+<pre>
+  bash-2.04$ mkdir /tmp/migdb/build
+  bash-2.04$ cd /tmp/migdb/build
+</pre></p>
+
+<h2>Building the <tt>multi-ice-gdb-server</tt></h2>
+
+<p>First configure the sources, e.g.:
+<pre>
+  bash-2.04$ /tmp/migdb/gdb-5.1.1/configure -v --target arm-elf --enable-multi-ice 2>&1 | tee configure.out
+</pre>
+which should produce a lot of output. The configure.out file contains a copy
+of the output for further diagnosis if something goes wrong.</p>
+<p> If you want to build all of GDB as well, at this point type:
+<pre>
+  bash-2.04$ make -w all install 2>&1 | tee make.out
+</pre>
+which will build and install everything into the default install location
+( /usr/local/bin ). If you wish to install to a different location you
+should configure the sources with a different prefix. Read the GDB manual on
+how to do this.</p>
+<p>Alternatively to only build the minimum required for the
+<tt>multi-ice-gdb-server</tt>, type:
+<pre>
+  bash-2.04$ make -w all-libiberty all-bfd 2>&1 | tee make.out
+</pre></p>
+<p>Finally to build the <tt>multi-ice-gdb-server</tt> itself, change
+to the multi-ice build directory and type make, supplying the make
+variables MULTI_ICE_INCLUDES which should point to the location of the ARM
+RDI 1.5 headers, and MULTI_ICE_LIBS which should point to the location of
+the ARM Multi-ICE server directory, as well as the location of the GDB
+multi-ice directory. For example:
+<pre>
+  bash-2.04$ cd gdb/multi-ice
+  bash-2.04$ make -w MULTI_ICE_INCLUDES="-I/cygdrive/c/Rdi/Headers" \
+    MULTI_ICE_LIBS="-L/cygdrive/c/Multi-ICE -L/tmp/migdb/gdb-5.1.1/gdb/multi-ice -ltoolconf" 2>&1 | tee make.out
+</pre>
+<b>Note:</b> There may be a large number of warnings.</p>
+<p>At this point the build of the multi-ice-gdb-server should be complete.
+As it needs access to the Multi-ICE.dll file, it is probably easiest to
+copy it straight alongside the ARM Multi-ICE server software:
+<pre>
+  bash-2.04$ cp -i multi-ice-gdb-server.exe /cygdrive/c/Multi-ICE
+  bash-2.04$ cp -i /tmp/migdb/gdb-5.1.1/gdb/multi-ice/*.dll /cygdrive/c/Multi-ICE
+</pre></p>
+
+<h2>Running the <tt>multi-ice-gdb-server</tt></h2>
+
+<h3>Connecting to the Multi-ICE server software</h3>
+
+<ol>
+<li><i>Start the ARM Multi-ICE server software:</i>
+
+<p>Start the ARM Multi-ICE server software from the Windows Start menu on
+the host computer. You will need to set up a Multi-ICE Server configuration
+file for your hardware. Ensure the
+board is reset and awakened (if applicable) before trying to make a
+connection. Use the Multi-ICE server graphical interface to load the
+configuration file. Once the Multi-ICE server is happy talking to the
+hardware, the hardware graphic will indicate the processor core model
+connected to in green.</p>
+
+<p>Note that certain targets may require jumper modifications, or re-soldered
+connections. For more details, see the ARM Multi-ICE User Guide.</p></li>
+
+<li><i>Start the `multi-ice-gdb-server' software</i>
+<p>Open a DOS window or a bash shell and start the <tt>multi-ice-gdb-server</tt>
+software on the host computer. If starting a DOS window, ensure the Cygwin
+DLL is also on your PATH.
+<pre>
+C:\> multi-ice-gdb-server.exe --remote-port 9000 --byte-sex l --config-dialog
+</pre></p></li>
+
+<li><i>Changing the default MultiICE settings:</i>
+
+<p>It is probably not necessary to change the settings from the command-line
+given in step 2. But if your configuration has special requirements, you can
+configure the connection both to the Multi-ICE Interface Unit and to the
+remote GDB. The connection to the Multi-ICE Interface Unit can be configured
+with the ARM Multi-ICE server. The configuration of the remote GDB can be
+configured by passing arguments to the Multi-ICE GDB server.</p>
+
+<p>In the command-line given in step 2, the options are interpreted as follows:
+<ul>
+
+<li>"<tt>--remote-port 9000</tt>" specifies the TCP port that GDB clients use to connect
+to this server. You can use any available port.</li>
+
+<li>"<tt>--byte-sex l</tt>" tells GDB what endian-ness to respond with. Some GDB
+responses are byte-order (endian-ness) sensitive. The default is to attempt
+to determine the endianness from the target.</li>
+
+<li>"<tt>--config-dialog</tt>" forces the GDB server to bring up the Multi-ICE
+configuration dialog when starting. This is required in order to force the
+Multi-ICE server to connect properly.</li></ul></p>
+
+<p>Other available options include:
+<ul>
+<li>"<tt>--debug</tt>": setting this turns on GDB protocol tracing - analagous to the GDB
+command `set remotedebug 1'</li>
+
+<li>"<tt>--rdi-logging</tt>": setting this turns on logging at the RDI level</li>
+
+<li>"<tt>--target-port &lt;port></tt>": If the target is ID sensitive (the Multi-ICE can
+actually work with multiple devices simultaneously, each with their own ID),
+it may be specified with this option.</li>
+
+<li>"<tt>--stop-others</tt>": setting this specifies that a resume stops all
+the other processors</li>
+
+<li>"<tt>--help</tt>": produces help output.</li></ul></p></li>
+
+<li><i>Test the remote connection:</i>
+
+<p>Run gdb on the development computer by typing the command `arm-elf-gdb
+&lt;executable>' where `&lt;executable>' is the program to download and debug.
+Connect to the Multi-ICE GDB server by typing the command: `target remote
+&lt;hostname:port>',  where `&lt;hostname>' is the IP address/hostname of the host
+computer and `&lt;port>' is the remote port number, 9000 in the above example
+and 2331 by default. For example, if the host and development computer are
+the same, type `target remote localhost:9000'. You can then use GDB debugger
+commands normally.</p>
+
+<p><b>NOTE:</b> Only one remote GDB can connect to the GDB Multi-ICE server at the
+same time. When you quit the remote GDB, or issue the `disconnect' command,
+the connection to the GDB Multi-ICE server is dropped and the connection is
+available to another remote GDB. If you attempt to make a second connection
+while one connection is already established, no error message is generated;
+the second connection attempt will just time out.</p>
+        </li></ol>
+
+<h3>eCos Thread debugging using Multi-ICE</h3>
+
+<p><b>Note:</b> This functionality will not be available until eCos 2.0.</p>
+
+<p>Normally, the Multi-ICE (and the Multi-ICE GDB server) have no knowledge of
+threads which might be running on the target hardware. In the case of an
+eCos application, some additional support is provided. If the eCos program
+has been built with the "CYGHWR_HAL_ARM_ICE_THREAD_SUPPORT" option enabled
+(found in the eCos Configuration Tool under the ARM architecture-specific
+flags), then the Multi-ICE GDB server and the eCos application co-operate to
+provide the thread information.</p>
+
+<p><b>Note:</b> It is also required that the following options are also enabled:
+<ul>
+<li>CYGDBG_HAL_DEBUG_GDB_INCLUDE_STUBS</li>
+<li>CYGDBG_HAL_DEBUG_GDB_THREAD_SUPPORT</li>
+<li>CYGDBG_KERNEL_DEBUG_GDB_THREAD_SUPPORT</li></ul></p>
+
+<p>When an eCos program is built with these options, then the server will call
+into the program in order to obtain thread information. This can take place
+at any time and does not require any explicit action on the eCos application
+side other than being compiled with the appropriate options enabled. The GDB
+requests are made as anonymous function calls run transparently behind the
+scenes as far as the running eCos program is concerned.</p>
+
+<HR noshade SIZE=3>
+</TD>
+</TR>
+</TABLE>
+</BODY>
+</HTML>
+

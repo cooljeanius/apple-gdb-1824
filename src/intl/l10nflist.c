@@ -1,4 +1,5 @@
-/* Handle list of needed message catalogs
+/* l10nflist.c
+   Handle list of needed message catalogs
    Copyright (C) 1995, 1996, 1997 Free Software Foundation, Inc.
    Contributed by Ulrich Drepper <drepper@gnu.ai.mit.edu>, 1995.
 
@@ -19,22 +20,26 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning l10nflist.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning l10nflist.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #if defined HAVE_STRING_H || defined _LIBC
 # ifndef _GNU_SOURCE
-#  define _GNU_SOURCE	1
+#  define _GNU_SOURCE 1
 # endif
 # include <string.h>
 #else
 # if defined HAVE_STRINGS_H
 #  include <strings.h>
 #  ifndef memcpy
-#   define memcpy(Dst, Src, Num) bcopy (Src, Dst, Num)
+#   define memcpy(Dst, Src, Num) bcopy(Src, Dst, Num)
 #  endif /* !memcpy */
 # else
-#  warning l10nflist.c expects a string-related header to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "l10nflist.c expects a string-related header to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_STRINGS_H */
 #endif /* HAVE_STRING_H || _LIBC */
 #if !HAVE_STRCHR && !defined _LIBC
@@ -46,14 +51,17 @@
 #if defined _LIBC || defined HAVE_ARGZ_H
 # include <argz.h>
 #else
-# if defined(__GNUC__) && defined(__STDC__) && defined(ANSI_PROTOTYPES)
-#  warning l10nflist.c expects <argz.h> to be included on some systems.
-# endif /* __GNUC__ && __STDC__ && ANSI_PROTOTYPES */
+# if defined(__GNUC__) && defined(__STDC__) && defined(ANSI_PROTOTYPES) \
+     && !defined(__STRICT_ANSI__)
+#  warning "l10nflist.c expects <argz.h> to be included on some systems."
+# endif /* __GNUC__ && __STDC__ && ANSI_PROTOTYPES && !__STRICT_ANSI__ */
 #endif /* HAVE_ARGZ_H */
 #ifdef HAVE_CTYPE_H
 # include <ctype.h>
 #else
-# warning l10nflist.c expects <ctype.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "l10nflist.c expects <ctype.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CTYPE_H */
 #ifdef HAVE_MALLOC_H
 # include <malloc.h>
@@ -61,44 +69,58 @@
 # ifdef HAVE_MALLOC_MALLOC_H
 #  include <malloc/malloc.h>
 # else
-#  warning l10nflist.c expects a malloc-related header to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "l10nflist.c expects a malloc-related header to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_MALLOC_MALLOC_H */
 #endif /* HAVE_MALLOC_H */
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
-# warning l10nflist.c expects <sys/types.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "l10nflist.c expects <sys/types.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_TYPES_H */
 
 #if defined STDC_HEADERS || defined _LIBC || defined HAVE_STDLIB_H
 # include <stdlib.h>
 #else
-# warning l10nflist.c expects <stdlib.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "l10nflist.c expects <stdlib.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* STDC_HEADERS || _LIBC || HAVE_STDLIB_H */
 
 #include "loadinfo.h"
 
-/* On some strange systems still no definition of NULL is found.  Sigh!  */
+/* On some strange systems still no definition of NULL is found. Sigh! */
 #ifndef NULL
 # if defined __STDC__ && __STDC__
-#  define NULL ((void *) 0)
+#  define NULL ((void *)0)
 # else
 #  define NULL 0
 # endif /* __STDC__ && __STDC__ */
 #endif /* !NULL */
 
+#ifndef PARAMS
+# if __STDC__ || defined __GNUC__ || defined __SUNPRO_C || defined __cplusplus || __PROTOTYPES
+#  define PARAMS(args) args
+# else
+#  define PARAMS(args) ()
+# endif /* __STDC__ */
+#endif /* !PARAMS */
+
 /* @@ end of prolog @@ */
 
 #ifdef _LIBC
-/* Rename the non ANSI C functions.  This is required by the standard
-   because some ANSI C functions will require linking with this object
-   file and the name space must not be polluted.  */
+/* Rename the non ANSI C functions. This is required by the standard
+ * because some ANSI C functions will require linking with this object
+ * file and the name space must not be polluted.  */
 # ifndef stpcpy
 #  define stpcpy(dest, src) __stpcpy(dest, src)
 # endif /* !stpcpy */
 #else
 # ifndef HAVE_STPCPY
-static char *stpcpy PARAMS ((char *dest, const char *src));
+static char *stpcpy PARAMS((char *dest, const char *src));
 # endif /* !HAVE_STPCPY */
 #endif /* _LIBC */
 
@@ -106,21 +128,17 @@ static char *stpcpy PARAMS ((char *dest, const char *src));
 
 #if !defined _LIBC && !defined HAVE___ARGZ_COUNT
 /* Returns the number of strings in ARGZ.  */
-static size_t argz_count__ PARAMS ((const char *argz, size_t len));
+static size_t argz_count__ PARAMS((const char *argz, size_t len));
 
-static size_t
-argz_count__ (argz, len)
-     const char *argz;
-     size_t len;
+static size_t argz_count__(const char *argz, size_t len)
 {
   size_t count = 0;
-  while (len > 0)
-    {
-      size_t part_len = strlen (argz);
-      argz += part_len + 1;
-      len -= part_len + 1;
+  while (len > 0) {
+      size_t part_len = strlen(argz);
+      argz += (part_len + 1);
+      len -= (part_len + 1);
       count++;
-    }
+  }
   return count;
 }
 # undef __argz_count
@@ -130,36 +148,28 @@ argz_count__ (argz, len)
 #if !defined _LIBC && !defined HAVE___ARGZ_STRINGIFY
 /* Make '\0' separated arg vector ARGZ printable by converting all the '\0's
    except the last into the character SEP.  */
-static void argz_stringify__ PARAMS ((char *argz, size_t len, int sep));
+static void argz_stringify__ PARAMS((char *argz, size_t len, int sep));
 
-static void
-argz_stringify__ (argz, len, sep)
-     char *argz;
-     size_t len;
-     int sep;
+static void argz_stringify__(char *argz, size_t len, int sep)
 {
-  while (len > 0)
-    {
-      size_t part_len = strlen (argz);
+  while (len > 0) {
+      size_t part_len = strlen(argz);
       argz += part_len;
-      len -= part_len + 1;
-      if (len > 0)
-	*argz++ = sep;
-    }
+      len -= (part_len + 1);
+      if (len > 0) {
+	*argz++ = (char)sep;
+      }
+  }
 }
 # undef __argz_stringify
-# define __argz_stringify(argz, len, sep) argz_stringify__ (argz, len, sep)
+# define __argz_stringify(argz, len, sep) argz_stringify__(argz, len, sep)
 #endif	/* !_LIBC && !HAVE___ARGZ_STRINGIFY */
 
 #if !defined _LIBC && !defined HAVE___ARGZ_NEXT
-static char *argz_next__ PARAMS ((char *argz, size_t argz_len,
-				  const char *entry));
+static char *argz_next__ PARAMS((char *argz, size_t argz_len,
+                                 const char *entry));
 
-static char *
-argz_next__ (argz, argz_len, entry)
-     char *argz;
-     size_t argz_len;
-     const char *entry;
+static char *argz_next__(char *argz, size_t argz_len, const char *entry)
 {
   if (entry)
     {
@@ -180,11 +190,13 @@ argz_next__ (argz, argz_len, entry)
 
 
 /* Return number of bits set in X.  */
-static int pop PARAMS ((int x));
+static int pop PARAMS((int x));
 
-static inline int
-pop (x)
-     int x;
+static
+#if !defined(__STRICT_ANSI__)
+inline
+#endif /* !__STRICT_ANSI__ */
+int pop(int x)
 {
   /* We assume that no more than 16 bits are used.  */
   x = ((x & ~0x5555) >> 1) + (x & 0x5555);
@@ -197,23 +209,13 @@ pop (x)
 
 
 struct loaded_l10nfile *
-_nl_make_l10nflist (l10nfile_list, dirlist, dirlist_len, mask, language,
-		    territory, codeset, normalized_codeset, modifier, special,
-		    sponsor, revision, filename, do_allocate)
-     struct loaded_l10nfile **l10nfile_list;
-     const char *dirlist;
-     size_t dirlist_len;
-     int mask;
-     const char *language;
-     const char *territory;
-     const char *codeset;
-     const char *normalized_codeset;
-     const char *modifier;
-     const char *special;
-     const char *sponsor;
-     const char *revision;
-     const char *filename;
-     int do_allocate;
+_nl_make_l10nflist(struct loaded_l10nfile **l10nfile_list,
+                   const char *dirlist, size_t dirlist_len, int mask,
+                   const char *language, const char *territory,
+                   const char *codeset, const char *normalized_codeset,
+                   const char *modifier, const char *special,
+                   const char *sponsor, const char *revision,
+                   const char *filename, int do_allocate)
 {
   char *abs_filename;
   struct loaded_l10nfile *last = NULL;
@@ -222,7 +224,7 @@ _nl_make_l10nflist (l10nfile_list, dirlist, dirlist_len, mask, language,
   size_t entries;
   int cnt;
 
-  /* Allocate room for the full file name.  */
+  /* Allocate room for the full file name: */
   abs_filename = (char *) malloc (dirlist_len
 				  + strlen (language)
 				  + ((mask & TERRITORY) != 0
@@ -244,110 +246,102 @@ _nl_make_l10nflist (l10nfile_list, dirlist, dirlist_len, mask, language,
 					   ? strlen (revision) + 1 : 0)) : 0)
 				  + 1 + strlen (filename) + 1);
 
-  if (abs_filename == NULL)
+  if (abs_filename == NULL) {
     return NULL;
+  }
 
   retval = NULL;
   last = NULL;
 
-  /* Construct file name.  */
-  memcpy (abs_filename, dirlist, dirlist_len);
-  __argz_stringify (abs_filename, dirlist_len, ':');
-  cp = abs_filename + (dirlist_len - 1);
+  /* Construct file name: */
+  memcpy(abs_filename, dirlist, dirlist_len);
+  __argz_stringify(abs_filename, dirlist_len, ':');
+  cp = (abs_filename + (dirlist_len - 1));
   *cp++ = '/';
-  cp = stpcpy (cp, language);
+  cp = stpcpy(cp, language);
 
-  if ((mask & TERRITORY) != 0)
-    {
+  if ((mask & TERRITORY) != 0) {
       *cp++ = '_';
-      cp = stpcpy (cp, territory);
-    }
-  if ((mask & XPG_CODESET) != 0)
-    {
+      cp = stpcpy(cp, territory);
+  }
+  if ((mask & XPG_CODESET) != 0) {
       *cp++ = '.';
-      cp = stpcpy (cp, codeset);
-    }
-  if ((mask & XPG_NORM_CODESET) != 0)
-    {
+      cp = stpcpy(cp, codeset);
+  }
+  if ((mask & XPG_NORM_CODESET) != 0) {
       *cp++ = '.';
       cp = stpcpy (cp, normalized_codeset);
-    }
-  if ((mask & (XPG_MODIFIER | CEN_AUDIENCE)) != 0)
-    {
+  }
+  if ((mask & (XPG_MODIFIER | CEN_AUDIENCE)) != 0) {
       /* This component can be part of both syntaces but has different
-	 leading characters.  For CEN we use `+', else `@'.  */
-      *cp++ = (mask & CEN_AUDIENCE) != 0 ? '+' : '@';
-      cp = stpcpy (cp, modifier);
-    }
-  if ((mask & CEN_SPECIAL) != 0)
-    {
+       * leading characters.  For CEN we use `+', else `@'.  */
+      *cp++ = (((mask & CEN_AUDIENCE) != 0) ? '+' : '@');
+      cp = stpcpy(cp, modifier);
+  }
+  if ((mask & CEN_SPECIAL) != 0) {
       *cp++ = '+';
-      cp = stpcpy (cp, special);
-    }
-  if ((mask & (CEN_SPONSOR | CEN_REVISION)) != 0)
-    {
+      cp = stpcpy(cp, special);
+  }
+  if ((mask & (CEN_SPONSOR | CEN_REVISION)) != 0) {
       *cp++ = ',';
-      if ((mask & CEN_SPONSOR) != 0)
-	cp = stpcpy (cp, sponsor);
-      if ((mask & CEN_REVISION) != 0)
-	{
+      if ((mask & CEN_SPONSOR) != 0) {
+	cp = stpcpy(cp, sponsor);
+      }
+      if ((mask & CEN_REVISION) != 0) {
 	  *cp++ = '_';
-	  cp = stpcpy (cp, revision);
-	}
-    }
+	  cp = stpcpy(cp, revision);
+      }
+  }
 
   *cp++ = '/';
-  stpcpy (cp, filename);
+  stpcpy(cp, filename);
 
   /* Look in list of already loaded domains whether it is already
-     available.  */
+   * available: */
   last = NULL;
-  for (retval = *l10nfile_list; retval != NULL; retval = retval->next)
-    if (retval->filename != NULL)
-      {
-	int compare = strcmp (retval->filename, abs_filename);
-	if (compare == 0)
+  for ((retval = *l10nfile_list); (retval != NULL); (retval = retval->next)) {
+    if (retval->filename != NULL) {
+	int compare = strcmp(retval->filename, abs_filename);
+	if (compare == 0) {
 	  /* We found it!  */
 	  break;
-	if (compare < 0)
-	  {
-	    /* It is (was?) not in the list.  */
+        }
+	if (compare < 0) {
+	    /* It is (was?) not in the list: */
 	    retval = NULL;
 	    break;
-	  }
+        }
 
 	last = retval;
-      }
-
-  if (retval != NULL || do_allocate == 0)
-    {
-      free (abs_filename);
-      return retval;
     }
+  }
+
+  if ((retval != NULL) || (do_allocate == 0)) {
+      free(abs_filename);
+      return retval;
+  }
 
   retval = (struct loaded_l10nfile *)
-    malloc (sizeof (*retval) + (__argz_count (dirlist, dirlist_len)
-				* (1 << pop (mask))
-				* sizeof (struct loaded_l10nfile *)));
-  if (retval == NULL)
+    malloc(sizeof(*retval) + (__argz_count(dirlist, dirlist_len)
+                              * (1UL << (size_t)pop(mask))
+                              * sizeof(struct loaded_l10nfile *)));
+  if (retval == NULL) {
     return NULL;
+  }
 
   retval->filename = abs_filename;
-  retval->decided = (__argz_count (dirlist, dirlist_len) != 1
-		     || ((mask & XPG_CODESET) != 0
-			 && (mask & XPG_NORM_CODESET) != 0));
+  retval->decided = ((__argz_count(dirlist, dirlist_len) != 1)
+		     || (((mask & XPG_CODESET) != 0)
+			 && ((mask & XPG_NORM_CODESET) != 0)));
   retval->data = NULL;
 
-  if (last == NULL)
-    {
+  if (last == NULL) {
       retval->next = *l10nfile_list;
       *l10nfile_list = retval;
-    }
-  else
-    {
+  } else {
       retval->next = last->next;
       last->next = retval;
-    }
+  }
 
   entries = 0;
   /* If the DIRLIST is a real list the RETVAL entry corresponds not to
@@ -374,14 +368,13 @@ _nl_make_l10nflist (l10nfile_list, dirlist, dirlist_len, mask, language,
 
   return retval;
 }
-
+
+
 /* Normalize codeset name. There is no standard for the codeset
    names. Normalization allows the user to use any of the common
    names.  */
-const char *
-_nl_normalize_codeset (codeset, name_len)
-     const unsigned char *codeset;
-     size_t name_len;
+const char *_nl_normalize_codeset(const unsigned char *codeset,
+                                  size_t name_len)
 {
   int len = 0;
   int only_digit = 1;
@@ -389,34 +382,37 @@ _nl_normalize_codeset (codeset, name_len)
   char *wp;
   size_t cnt;
 
-  for (cnt = 0; cnt < name_len; ++cnt)
-    if (isalnum (codeset[cnt]))
-      {
+  for ((cnt = 0); (cnt < name_len); ++cnt) {
+    if (isalnum(codeset[cnt])) {
 	++len;
 
-	if (isalpha (codeset[cnt]))
+	if (isalpha(codeset[cnt])) {
 	  only_digit = 0;
+        }
+    }
+  }
+
+  retval = (char *)malloc((only_digit ? 3L : 0L) + (size_t)len + 1L);
+
+  if (retval != NULL) {
+      if (only_digit) {
+	wp = stpcpy(retval, "iso");
+      } else {
+	wp = retval;
       }
 
-  retval = (char *) malloc ((only_digit ? 3 : 0) + len + 1);
-
-  if (retval != NULL)
-    {
-      if (only_digit)
-	wp = stpcpy (retval, "iso");
-      else
-	wp = retval;
-
-      for (cnt = 0; cnt < name_len; ++cnt)
-	if (isalpha (codeset[cnt]))
-	  *wp++ = tolower (codeset[cnt]);
-	else if (isdigit (codeset[cnt]))
-	  *wp++ = codeset[cnt];
+      for ((cnt = 0); (cnt < name_len); ++cnt) {
+	if (isalpha(codeset[cnt])) {
+	  *wp++ = (char)tolower(codeset[cnt]);
+	} else if (isdigit(codeset[cnt])) {
+	  *wp++ = (char)codeset[cnt];
+        }
+      }
 
       *wp = '\0';
-    }
+  }
 
-  return (const char *) retval;
+  return (const char *)retval;
 }
 
 
@@ -426,15 +422,13 @@ _nl_normalize_codeset (codeset, name_len)
    avoid the non-standard function stpcpy. In GNU C Library this
    function is available, though. Also allow the symbol HAVE_STPCPY
    to be defined.  */
-#if !_LIBC && !HAVE_STPCPY
-static char *
-stpcpy (dest, src)
-     char *dest;
-     const char *src;
+#if (!defined(_LIBC) || !_LIBC) && !HAVE_STPCPY
+static char *stpcpy(char *dest, const char *src)
 {
-  while ((*dest++ = *src++) != '\0')
+  while ((*dest++ = *src++) != '\0') {
     /* Do nothing. */ ;
-  return dest - 1;
+  }
+  return (dest - 1);
 }
 #endif /* !_LIBC && !HAVE_STPCPY */
 

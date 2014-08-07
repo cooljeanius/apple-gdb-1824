@@ -1,4 +1,5 @@
-/* Parameters for VxWorks Intel 960's, for GDB, the GNU debugger.
+/* tm-vx960.h
+   Parameters for VxWorks Intel 960's, for GDB, the GNU debugger.
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1993, 1998, 1999
    Free Software Foundation, Inc.
    Contributed by Cygnus Support.
@@ -33,7 +34,7 @@
 
 #define	DECR_PC_AFTER_BREAK	0
 
-/* We are guaranteed to have a zero frame pointer at bottom of stack, too. */
+/* We are guaranteed to have a 0-frame pointer at bottom of stack, too. */
 
 #define FRAME_CHAIN_VALID(chain, thisframe) nonnull_frame_chain_valid (chain, thisframe)
 
@@ -48,7 +49,8 @@
 
     /* @@ Cannot use this -- the rdb library for the 960 target
        does NOT support setting or retrieving FP regs.  KR  */
-
-/* #define VX_SIZE_FPREGS (REGISTER_RAW_SIZE (FP0_REGNUM) * 4) */
+#if 0
+# define VX_SIZE_FPREGS (REGISTER_RAW_SIZE (FP0_REGNUM) * 4)
+#endif /* 0 */
 
 /* EOF */

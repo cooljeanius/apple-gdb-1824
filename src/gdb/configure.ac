@@ -32,6 +32,28 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADER([config.h])
 AM_MAINTAINER_MODE
 
+AH_TOP([
+#ifndef HAVE_CONFIG_H
+# define HAVE_CONFIG_H 1
+#endif /* !HAVE_CONFIG_H */
+])dnl
+AH_VERBATIM([00_CONFIG_H_CHECK],[
+/* Check that config.h is #included before system headers
+ * (this works only for glibc, but that should be enough). */
+#if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "config.h should be #included before system headers"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ */
+#ifndef __CONFIG_H__
+# define __CONFIG_H__ 1
+# ifndef __GDB_CONFIG_H__
+#  define __GDB_CONFIG_H__ 1
+# endif /* __GDB_CONFIG_H__ */])dnl
+AH_BOTTOM([
+#endif /* __CONFIG_H__ */
+])dnl
+
 if test -e ${srcdir}/development.sh; then
   # Set the 'development' global.
   AC_MSG_NOTICE([sourcing ${srcdir}/development.sh])
@@ -55,7 +77,7 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
 fi
 
 # Check for the 'make' the user wants to use:
-AC_CHECK_PROGS([MAKE],[make])
+AC_CHECK_PROGS([MAKE],[make])dnl
 AC_SUBST([MAKE])
 MAKE_IS_GNU=""
 case "`${MAKE} --version 2>&1 | sed 1q`" in
@@ -64,7 +86,7 @@ case "`${MAKE} --version 2>&1 | sed 1q`" in
     AC_SUBST([MAKE_IS_GNU])
     ;;
 esac
-AM_CONDITIONAL([GMAKE],[test "x${MAKE_IS_GNU}" = "xyes"])
+AM_CONDITIONAL([GMAKE],[test "x${MAKE_IS_GNU}" = "xyes"])dnl
 
 # Automake (we can use this now that gnulib has a Makefile.am, even if
 # srcdir itself still uses just a Makefile.in)
@@ -72,7 +94,8 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.11 gnu dejagnu dist-bzip2 dist-xz dist-zip dist-tarZ])
+AM_INIT_AUTOMAKE([1.11 gnits dejagnu \
+                  dist-bzip2 dist-xz dist-zip dist-tarZ])
 if test -x ${srcdir}/missing; then
   test -e missing
   AM_SANITY_CHECK
@@ -120,6 +143,12 @@ case "${host}" in
                 [Define to 1 if you have 64 bit mach exceptions.])
       MACH_EXC_SERVER_PREFACE='mach_'
       AC_MSG_RESULT([yes])
+    elif test "x${SDKROOT}/usr" != "x/usr" && test -r "/usr/include/mach/mach_exc.defs"; then
+      AC_MSG_WARN([SDK is unusable, having to fall back to system])
+      AC_DEFINE([HAVE_64_BIT_MACH_EXCEPTIONS],[2],
+                [Define to 1 if you have 64 bit mach exceptions in the SDK,
+                 and to 2 if you have them, but NOT from your SDK.])
+      MACH_EXC_SERVER_PREFACE='mach_'
     else
       MACH_EXC_SERVER_PREFACE=""
       AC_MSG_RESULT([no])
@@ -134,20 +163,21 @@ dnl# present, since Tiger has an "arch" program, but it only echoes the
 dnl# current system architecture.
 case "${host}" in
   *-apple-darwin* | *-apple-macosx*)
-    AC_CHECK_HEADERS_ONCE([spawn.h])
-    # not sure why a bunch of other headers are checked between these 2...
-    # (it is because of the "_ONCE" in the header check, FIXME)
+    dnl# we are inside a conditional; no "_ONCE" allowed:
+    AC_CHECK_HEADERS([spawn.h])
+    AC_CHECK_DECLS([POSIX_SPAWN_SETEXEC])
     AC_MSG_CHECKING([whether posix_spawn supports SETEXEC])
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
-[[#include <spawn.h>;]],
-[[int foo = POSIX_SPAWN_SETEXEC;]])],
-      [gdb_cv_posix_spawn=yes],
-      [gdb_cv_posix_spawn=no])
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <spawn.h>
+    ]],[[
+int foo = POSIX_SPAWN_SETEXEC;
+    ]])],[gdb_cv_posix_spawn=yes],
+         [gdb_cv_posix_spawn=no])
     AC_MSG_RESULT([${gdb_cv_posix_spawn}])
 
     if test "x${gdb_cv_posix_spawn}" = "xyes"; then
       AC_DEFINE([USE_POSIX_SPAWN],[1],
-                [Define to 1 to use posix_spawn instead of execvp.])
+                [Define to 1 to use posix_spawn instead of execvp.])dnl
 
       AC_ARG_ENABLE([arch-for-exec],
       	[AS_HELP_STRING([--disable-arch-for-exec],
@@ -185,12 +215,14 @@ dnl# stack_logging_enumerate_records and define
 dnl# HAVE_32_BIT_STACK_LOGGING if it is available.
 case "${host}" in
   *-apple-darwin* | *-apple-macosx*)
+    AC_CHECK_FUNCS([__mach_stack_logging_enumerate_records])
     AC_MSG_CHECKING([whether 64 bit stack logging is supported])
-    AC_LINK_IFELSE([AC_LANG_PROGRAM(
-[[extern int __mach_stack_logging_enumerate_records();]],
-[[__mach_stack_logging_enumerate_records();]])],
-      [gdb_cv_stack_logging_64=yes],
-      [gdb_cv_stack_logging_64=no])
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+extern int __mach_stack_logging_enumerate_records();
+    ]],[[
+__mach_stack_logging_enumerate_records();
+    ]])],[gdb_cv_stack_logging_64=yes],
+         [gdb_cv_stack_logging_64=no])
     if test "x${gdb_cv_stack_logging_64}" = "xyes"; then
       AC_DEFINE([HAVE_64_BIT_STACK_LOGGING],[1],
                 [Define to 1 to use 64 bit stack logging functions.])
@@ -198,12 +230,14 @@ case "${host}" in
     AC_MSG_RESULT([${gdb_cv_stack_logging_64}])
 
     if test "x${gdb_cv_stack_logging_64}" = "xno"; then
+        AC_CHECK_FUNCS([stack_logging_enumerate_records])
     	AC_MSG_CHECKING([whether 32 bit stack logging is supported])
-    	AC_LINK_IFELSE([AC_LANG_PROGRAM(
-[[extern int stack_logging_enumerate_records();]],
-[[stack_logging_enumerate_records();]])],
-      	[gdb_cv_stack_logging_32=yes],
-      	[gdb_cv_stack_logging_32=no])
+    	AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+extern int stack_logging_enumerate_records();
+        ]],[[
+stack_logging_enumerate_records();
+        ]])],[gdb_cv_stack_logging_32=yes],
+      	     [gdb_cv_stack_logging_32=no])
     	if test "x${gdb_cv_stack_logging_32}" = "xyes"; then
       	  AC_DEFINE([HAVE_32_BIT_STACK_LOGGING],[1],
                     [Define to 1 to use 64 bit stack logging functions.])
@@ -216,11 +250,13 @@ esac
 dnl# APPLE LOCAL check for task_get_state.
 case "${host}" in
   *-apple-darwin* | *-apple-macosx*)
-    AC_CHECK_HEADERS_ONCE([mach/task.h])
+    dnl# we are inside a conditional; no "_ONCE" allowed:
+    AC_CHECK_HEADERS([mach/task.h])
     AC_MSG_CHECKING([whether task_set_state is available])
-    AC_LINK_IFELSE([AC_LANG_PROGRAM(
-[[#include <mach/mach.h>]
- [#include <mach/task.h>]],
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <mach/mach.h>
+#include <mach/task.h>
+    ]],
 [[task_t task;]
  [thread_state_flavor_t flavor;]
  [thread_state_t new_state;]
@@ -245,6 +281,12 @@ case "${host}" in
     ;;
 esac
 
+if test "x${host_vendor}" = "xapple" || test "x${host_cpu}" = "xppc"; then
+  AX_CHECK_COMPILE_FLAG([-force_cpusubtype_ALL],
+                        [CFLAGS="${CFLAGS} -force_cpusubtype_ALL"],
+                        [:])
+fi
+
 AC_MSG_NOTICE([done with first batch of APPLE_LOCAL checks])
 
 dnl# Set up for gettext. PACKAGE is used when we call bindtextdomain.
@@ -265,10 +307,10 @@ elif test -d ../libintl; then
 fi
 ALL_LINGUAS=""
 CY_GNU_GETTEXT
-AC_CHECK_FUNCS([gettext _gettext])
+AC_CHECK_FUNCS([gettext _gettext])dnl
 
 localedir='${datadir}/locale'
-AC_SUBST([localedir])
+AC_SUBST([localedir])dnl
 
 if test "x${POSUB}" != "x"; then
 
@@ -315,6 +357,11 @@ elif test x"${USE_NLS}" = x"yes"; then
   CONFIG_CLEAN="${CONFIG_CLEAN} clean-po"
   CONFIG_INSTALL="${CONFIG_INSTALL} install-po"
   CONFIG_UNINSTALL="${CONFIG_UNINSTALL} uninstall-po"
+else
+  CONFIG_ALL="${CONFIG_ALL}"
+  CONFIG_CLEAN="${CONFIG_CLEAN}"
+  CONFIG_INSTALL="${CONFIG_INSTALL}"
+  CONFIG_UNINSTALL="${CONFIG_UNINSTALL}"
 fi
 
 GNULIB_IMPORT_DIR=build-gnulib/import
@@ -325,20 +372,20 @@ if test x"${STDINT_H}" != x""; then
   test -n "${STDINT_H}" && test -n "${GNULIB_IMPORT_DIR}"
   export GNULIB_STDINT_H=${GNULIB_IMPORT_DIR}/${STDINT_H}
 fi
-AC_SUBST([GNULIB_STDINT_H])
+AC_SUBST([GNULIB_STDINT_H])dnl
 
 PACKAGE=gdb
-AC_DEFINE_UNQUOTED([PACKAGE],["${PACKAGE}"],[Name of this package. ])
-AC_SUBST([PACKAGE])
+AC_DEFINE_UNQUOTED([PACKAGE],["${PACKAGE}"],[Name of this package. ])dnl
+AC_SUBST([PACKAGE])dnl
 
 AC_MSG_NOTICE([done with Cygnus gettext checks])
 
 # We never need to detect it in this sub-configure.
 # But preserve it for config.status --recheck.
 AC_ARG_VAR([MAKEINFO],
-  [Parent configure detects if it is of sufficient version.])
+           [Parent configure detects if it is of sufficient version.])dnl
 AC_ARG_VAR([MAKEINFOFLAGS],
-  [Parameters for MAKEINFO.])
+           [Parameters for MAKEINFO.])dnl
 
 MAKEINFO_EXTRA_FLAGS=""
 if test "x${MAKEINFO}" != "x"; then
@@ -373,8 +420,8 @@ if test -z "${DEBUGDIR}" -a ! -z "${debugdir}" -a "x${GCC}" = "xno"; then
                      [Global directory for separate debug files. ])
 fi
 
-AC_CONFIG_SUBDIRS([doc testsuite])
-AC_CONFIG_SUBDIRS([gnulib])
+AC_CONFIG_SUBDIRS([doc testsuite])dnl
+AC_CONFIG_SUBDIRS([gnulib])dnl
 
 if test "x${target}" = "x${host}"; then
   gdb_native=yes
@@ -437,7 +484,7 @@ AC_ARG_ENABLE([gdbcli],
     no)
       AC_MSG_ERROR([the command-line interface cannot be disabled yet]) ;;
     *)
-      AC_MSG_ERROR([bad value ${enableval} for --enable-gdbcli]) ;;
+      AC_MSG_ERROR([bad value '${enableval}' for --enable-gdbcli]) ;;
   esac],
   [enable_gdbcli=yes])
 if test x"${enable_gdbcli}" = x"yes"; then
@@ -461,7 +508,7 @@ AC_ARG_ENABLE([gdbmi],
       AC_MSG_ERROR([bad value ${enableval} for --enable-gdbmi]) ;;
   esac],
   [enable_gdbmi=yes])
-if test x"${enable_gdbmi}" = xyes; then
+if test x"${enable_gdbmi}" = x"yes"; then
   if test -d ${srcdir}/mi; then
     CONFIG_OBS="${CONFIG_OBS} \$(SUBDIR_MI_OBS)"
     CONFIG_DEPS="${CONFIG_DEPS} \$(SUBDIR_MI_DEPS)"
@@ -551,7 +598,7 @@ AC_ARG_ENABLE([profiling],
     *)
       AC_MSG_ERROR([bad value ${enableval} for --enable-profile]) ;;
   esac],
- [enable_profiling=no])
+ [enable_profiling=no])dnl
 
 AC_CHECK_FUNCS([monstartup _mcleanup])
 AC_CACHE_CHECK([for _etext],[ac_cv_var__etext],
@@ -627,24 +674,24 @@ if test -e ./config.cache; then
   sed -i "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
   sed -i "s|ac_cv_exeext|bad_exeext|g" ./config.cache
 fi
-AN_PROGRAM([as],[AM_PROG_AS])
-AN_MAKEVAR([AS],[AM_PROG_AS])
+AN_PROGRAM([as],[AM_PROG_AS])dnl
+AN_MAKEVAR([AS],[AM_PROG_AS])dnl
 AM_PROG_AS
 AC_PROG_CPP
 AC_PROG_CXX
 
 AC_MSG_CHECKING([libtool things])
 AC_MSG_RESULT([ ])
-LT_INIT([disable-fast-install dlopen])
-LT_LANG([C])
+LT_INIT([disable-fast-install dlopen])dnl
+LT_LANG([C])dnl
 dnl# even though gdb is written only in C, it has tests written
 dnl# for debugging the following languages, so check them, too:
-LT_LANG([C++])
-LT_LANG([Go])
-LT_LANG([Java])
-LT_LANG([Fortran 77])
-LT_LANG([Fortran])
-LT_LANG([Windows Resource])
+LT_LANG([C++])dnl
+LT_LANG([Go])dnl
+LT_LANG([Java])dnl
+LT_LANG([Fortran 77])dnl
+LT_LANG([Fortran])dnl
+LT_LANG([Windows Resource])dnl
 
 AC_MSG_CHECKING([other programs])
 AC_MSG_RESULT([ ])
@@ -676,44 +723,44 @@ fi
 AC_BAKEFILE_METROWERKS_EXTO
 AX_COMPILER_VENDOR
 
-AC_PATH_PROG([XCODEBUILD],[xcodebuild])
+AC_PATH_PROG([XCODEBUILD],[xcodebuild])dnl
 
 # ResourceManager-related tools:
-AC_PATH_PROG([REZ],[Rez],[],[],[${PATH}:/Developer/Tools])
-AC_PATH_PROG([DEREZ],[DeRez],[],[],[${PATH}:/Developer/Tools])
-AC_PATH_PROG([REZDET],[RezDet],[],[],[${PATH}:/Developer/Tools])
-AC_PATH_PROG([REZWACK],[RezWack],[],[],[${PATH}:/Developer/Tools])
-AC_PATH_PROG([RESMERGER],[ResMerger],[],[],[${PATH}:/Developer/Tools])
-AC_SUBST([REZ])
-AC_SUBST([DEREZ])
-AC_SUBST([REZDET])
-AC_SUBST([REZWACK])
-AC_SUBST([RESMERGER])
+AC_PATH_PROG([REZ],[Rez],[],[],[${PATH}:/Developer/Tools])dnl
+AC_PATH_PROG([DEREZ],[DeRez],[],[],[${PATH}:/Developer/Tools])dnl
+AC_PATH_PROG([REZDET],[RezDet],[],[],[${PATH}:/Developer/Tools])dnl
+AC_PATH_PROG([REZWACK],[RezWack],[],[],[${PATH}:/Developer/Tools])dnl
+AC_PATH_PROG([RESMERGER],[ResMerger],[],[],[${PATH}:/Developer/Tools])dnl
+AC_SUBST([REZ])dnl
+AC_SUBST([DEREZ])dnl
+AC_SUBST([REZDET])dnl
+AC_SUBST([REZWACK])dnl
+AC_SUBST([RESMERGER])dnl
 
 # Other Mac-specific tools:
-AC_PATH_PROG([LD_CLASSIC],[ld_classic])
-AC_PATH_PROG([MERGE_PEF],[MergePef])
-AC_PATH_PROG([CODESIGN],[codesign])
+AC_PATH_PROG([LD_CLASSIC],[ld_classic])dnl
+AC_PATH_PROG([MERGE_PEF],[MergePef])dnl
+AC_PATH_PROG([CODESIGN],[codesign])dnl
 
 # A few more compiler-y things
 AM_PROG_VALAC([],[],[])
 AC_PROG_YACC
 AX_PROG_BISON([
-  AC_MSG_WARN([Actually using bison broke stuff once when I tried it...])
+  AC_MSG_WARN([Actually using bison broke stuff one time when I tried it])
 ],[
   AC_MSG_WARN([Using something other than bison is untested.])
 ])
 
-AC_CHECK_TOOL([DLLTOOL],[dlltool])
-AC_CHECK_TOOL([WINDRES],[windres])
+AC_CHECK_TOOL([DLLTOOL],[dlltool])dnl
+AC_CHECK_TOOL([WINDRES],[windres])dnl
 
 # Needed for GNU/Hurd.
-# (and for separate reasons for OS X)
+# (and for separate but similar reasons for OS X)
 AC_CHECK_TOOL([MIG],[mig])
 
 # Tools for docs:
-AC_PATH_PROGS([ROFF],[nroff groff troff roff])
-AC_PATH_PROG([CXREF],[cxref])
+AC_PATH_PROGS([ROFF],[nroff groff troff roff])dnl
+AC_PATH_PROG([CXREF],[cxref])dnl
 
 dnl# We could not originally use AM\_INIT\_AUTOMAKE here (I have since 
 dnl# added it above since then), but we might still need some of its
@@ -736,23 +783,23 @@ AC_DEFUN([AM_INIT_MY_AUTOMAKE_LITE],[
       CYGPATH_W=echo
     fi
   fi
-  AC_SUBST([CYGPATH_W])
+  AC_SUBST([CYGPATH_W])dnl
 
   # Some tools Automake needs.
   AC_REQUIRE([AM_SANITY_CHECK])dnl
   AC_REQUIRE([AC_ARG_PROGRAM])dnl
   AC_REQUIRE([AM_MISSING_HAS_RUN])dnl
-  AM_MISSING_PROG([AUTOCONF],[autoconf])
-  AM_MISSING_PROG([AUTOHEADER],[autoheader])
-  AM_MISSING_PROG([MAKEINFO],[makeinfo])
+  AM_MISSING_PROG([AUTOCONF],[autoconf])dnl
+  AM_MISSING_PROG([AUTOHEADER],[autoheader])dnl
+  AM_MISSING_PROG([MAKEINFO],[makeinfo])dnl
   AC_REQUIRE([AM_PROG_INSTALL_SH])dnl
   AC_REQUIRE([AM_PROG_INSTALL_STRIP])dnl
   AC_REQUIRE([AC_PROG_MKDIR_P])dnl
-  # For better backward compatibility. To be removed once Automake 1.9.x
-  # dies out for good.
-  AC_SUBST([mkdir_p],['$(MKDIR_P)'])
-  # We need awk for the "check" target. The system "awk" is bad on
-  # some platforms.
+  dnl# For better backward compatibility. To be removed once Automake 1.9.x
+  dnl# dies out for good.
+  AC_SUBST([mkdir_p],['$(MKDIR_P)'])dnl
+  dnl# We need awk for the "check" target. The system "awk" is bad on
+  dnl# some platforms.
   AC_REQUIRE([AC_PROG_AWK])dnl
   AC_REQUIRE([AC_PROG_MAKE_SET])dnl
   AC_REQUIRE([AM_SET_LEADING_DOT])dnl
@@ -764,7 +811,7 @@ AC_DEFUN([AM_INIT_MY_AUTOMAKE_LITE],[
   AC_REQUIRE([AM_OUTPUT_DEPENDENCY_COMMANDS])dnl
   AC_REQUIRE([AM_MAKE_INCLUDE])dnl
   AC_REQUIRE([AM_DEP_TRACK])dnl
-])
+])dnl
 AM_INIT_MY_AUTOMAKE_LITE
 
 # ---------------------- #
@@ -792,7 +839,7 @@ case "${host}" in
 esac
 
 # I like forcing a link against -lc:
-AC_CHECK_LIB([c],[printf])
+AC_CHECK_LIB([c],[printf])dnl
 
 # APPLE LOCAL begin: Get the libxml2 headers and libraries
 AC_PATH_PROG([LIBXML2_CONFIG],[xml2-config],[no])
@@ -814,8 +861,8 @@ if test "x${ac_cv_header_libxml_tree_h}" = "xyes" -a \
 then
   AC_DEFINE([LIBXML2_IS_USABLE],[1],[libxml2 on this system is usable])
 fi
-AC_SUBST([LIBXML2_INCLUDES])
-AC_SUBST([LIBXML2_LIBS])
+AC_SUBST([LIBXML2_INCLUDES])dnl
+AC_SUBST([LIBXML2_LIBS])dnl
 # APPLE LOCAL end: Get the libxml2 headers and libraries
 
 # We need to link with -lw to get `wctype' on Solaris before Solaris
@@ -823,16 +870,16 @@ AC_SUBST([LIBXML2_LIBS])
 # libw that some versions of the GNU linker cannot hanle (GNU ld 2.9.1
 # is known to have this problem).  Therefore we avoid libw if we can.
 AC_CHECK_FUNC([wctype],[],
-  [AC_CHECK_LIB([w],[wctype])])
+  [AC_CHECK_LIB([w],[wctype])])dnl
 
 # Some systems (e.g. Solaris) have `gethostbyname' in libnsl.
-AC_SEARCH_LIBS([gethostbyname],[nsl])
+AC_SEARCH_LIBS([gethostbyname],[nsl])dnl
 
 # Some systems (e.g. Solaris) have `socketpair' in libsocket.
-AC_SEARCH_LIBS([socketpair],[socket])
+AC_SEARCH_LIBS([socketpair],[socket])dnl
 
 # On HP/UX we may need libxpdl for dlgetmodinfo (used by solib-pa64.c).
-AC_SEARCH_LIBS([dlgetmodinfo],[dl xpdl dlcompat dyld])
+AC_SEARCH_LIBS([dlgetmodinfo],[dl xpdl dlcompat dyld])dnl
 
 # For the TUI, we need enhanced curses functionality.
 #
@@ -843,7 +890,7 @@ AC_SEARCH_LIBS([dlgetmodinfo],[dl xpdl dlcompat dyld])
 # search /usr/local/include, if ncurses is installed in /usr/local. A
 # default installation of ncurses on alpha*-dec-osf* will lead to such
 # a situation.
-AC_SEARCH_LIBS([waddstr],[ncurses cursesX curses])
+AC_SEARCH_LIBS([waddstr],[ncurses cursesX curses])dnl
 
 # Since GDB uses Readline, we need termcap functionality. In many
 # cases this will be provided by the curses library, but some systems
@@ -905,23 +952,25 @@ fi
 
 # Other libraries that autoscan added to configure.scan:
 AC_CHECK_LIB([bfd],[bfd_set_reloc],[],[
-  AC_CHECK_LIB([bfd],[main])
-])
+  AC_CHECK_LIB([bfd],[main])dnl
+])dnl
 AC_CHECK_LIB([gnu],[gl_dummy_symbol],[],[
-  AC_CHECK_LIB([gnu],[main],[],[])
-])
-AC_CHECK_LIB([iberty],[xmalloc])
+  AC_CHECK_LIB([gnu],[main],[],[])dnl
+])dnl
+AC_CHECK_LIB([iberty],[xmalloc],[],[
+  AC_CHECK_LIB([iberty],[main])dnl
+])dnl
 AC_SEARCH_LIBS([gettext],
              [intl c gettext gnu asprintf gettextlib gettextpo gettextsrc])
 AC_CHECK_LIB([intl],[gettext],[],[
-  AC_CHECK_LIB([intl],[main],[],[])
-])
+  AC_CHECK_LIB([intl],[main],[],[])dnl
+])dnl
 AC_CHECK_LIB([opcodes],[op_cmp],[],[
-  AC_CHECK_LIB([opcodes],[main])
-])
-AC_CHECK_LIB([readline],[rl_initialize])
-AC_CHECK_LIB([sqlite3],[sqlite3_initialize])
-AC_CHECK_LIB([z],[gzread])
+  AC_CHECK_LIB([opcodes],[main])dnl
+])dnl
+AC_CHECK_LIB([readline],[rl_initialize])dnl
+AC_CHECK_LIB([sqlite3],[sqlite3_initialize])dnl
+AC_CHECK_LIB([z],[gzread])dnl
 
 # ------------------------- #
 # Checks for header files.  #
@@ -933,11 +982,11 @@ AC_MSG_RESULT([ ])
 AC_HEADER_DIRENT
 AC_HEADER_STAT
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
-  AC_REQUIRE([AC_HEADER_STDC])
-])
+  AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE_HEADER_STDC
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([nlist.h])
+AC_CHECK_HEADERS([nlist.h])dnl
 AC_CHECK_HEADERS([link.h],[],[],[
 #if HAVE_SYS_TYPES_H
 # include <sys/types.h>
@@ -954,15 +1003,15 @@ AC_CHECK_HEADERS([link.h],[],[],[
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_NLIST_H */
 ])
-AC_CHECK_HEADERS([machine/reg.h])
-AC_CHECK_HEADERS([poll.h sys/poll.h])
-AC_CHECK_HEADERS([proc_service.h thread_db.h gnu/libc-version.h])
-AC_CHECK_HEADERS([stddef.h])
-AC_CHECK_HEADERS([stdio.h])
-AC_CHECK_HEADERS([sys/fault.h])
-AC_CHECK_HEADERS([sys/file.h])
-AC_CHECK_HEADERS([sys/filio.h])
-AC_CHECK_HEADERS([sys/ioctl.h])
+AC_CHECK_HEADERS([machine/reg.h])dnl
+AC_CHECK_HEADERS([poll.h sys/poll.h])dnl
+AC_CHECK_HEADERS([proc_service.h thread_db.h gnu/libc-version.h])dnl
+AC_CHECK_HEADERS([stddef.h])dnl
+AC_CHECK_HEADERS([stdio.h])dnl
+AC_CHECK_HEADERS([sys/fault.h])dnl
+AC_CHECK_HEADERS([sys/file.h])dnl
+AC_CHECK_HEADERS([sys/filio.h])dnl
+AC_CHECK_HEADERS([sys/ioctl.h])dnl
 if test "x${ac_cv_header_sys_procfs_h}" = "x"; then
   test -z "${ac_cv_header_sys_procfs_h}"
   AC_CHECK_HEADERS([sys/procfs.h])
@@ -975,15 +1024,15 @@ AC_CHECK_HEADERS([sys/proc.h],[],[],[
 #  warning "This conftest for sys/proc.h wants to include <sys/param.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_PARAM_H */
-])
-AC_CHECK_HEADERS([sys/ptrace.h ptrace.h])
-AC_CHECK_HEADERS([sys/resource.h])
-AC_CHECK_HEADERS([sys/reg.h sys/debugreg.h])
+])dnl
+AC_CHECK_HEADERS([sys/ptrace.h ptrace.h])dnl
+AC_CHECK_HEADERS([sys/resource.h])dnl
+AC_CHECK_HEADERS([sys/reg.h sys/debugreg.h])dnl
 if test "x${ac_cv_header_sys_select_h}" = "x"; then
   test -z "${ac_cv_header_sys_select_h}"
   AC_CHECK_HEADERS([sys/select.h])
 fi
-AC_CHECK_HEADERS([sys/syscall.h])
+AC_CHECK_HEADERS([sys/syscall.h])dnl
 AC_CHECK_HEADERS([sys/user.h],[],[],[
 #if HAVE_SYS_PARAM_H
 # include <sys/param.h>
@@ -997,8 +1046,8 @@ if test "x${ac_cv_header_sys_wait_h}" = "x"; then
   test -z "${ac_cv_header_sys_wait_h}"
   AC_CHECK_HEADERS([sys/wait.h])
 fi
-AC_CHECK_HEADERS([wait.h])
-AC_CHECK_HEADERS([termios.h termio.h sgtty.h])
+AC_CHECK_HEADERS([wait.h])dnl
+AC_CHECK_HEADERS([termios.h termio.h sgtty.h])dnl
 AC_HEADER_TIOCGWINSZ
 AC_SYS_POSIX_TERMIOS
 
@@ -1013,8 +1062,8 @@ case ${host_os} in
          Solaris 2.[789] when using GCC. ])
     fi ;;
 esac
-AC_CHECK_HEADERS([curses.h cursesX.h ncurses.h ncurses/ncurses.h])
-AC_CHECK_HEADERS([ncurses/term.h])
+AC_CHECK_HEADERS([curses.h cursesX.h ncurses.h ncurses/ncurses.h])dnl
+AC_CHECK_HEADERS([ncurses/term.h])dnl
 AC_CHECK_HEADERS([term.h],[],[],[
 #if HAVE_CURSES_H
 # include <curses.h>
@@ -1023,15 +1072,15 @@ AC_CHECK_HEADERS([term.h],[],[],[
 #  warning "This conftest for term.h expects <curses.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CURSES_H */
-])
+])dnl
 
 # FIXME: kettenis/20030102: In most cases we include these
 # unconditionally, so what is the point in checking these?
 # ^How about "why not?"?
-AC_CHECK_HEADERS([ctype.h time.h])
+AC_CHECK_HEADERS([ctype.h time.h])dnl
 
 # Other headers that autoscan complains about:
-AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
+AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_HEADER_TIME
 if test -d ../intl; then
   if test -z "${CPPFLAGS}"; then
@@ -1058,19 +1107,28 @@ AC_CHECK_HEADERS([arpa/inet.h fcntl.h langinfo.h libintl.h limits.h \
                   locale.h mach/mach.h malloc.h malloc/malloc.h \
                   netdb.h netinet/in.h nl_types.h paths.h \
                   sys/param.h sys/socket.h sys/sysctl.h sys/time.h \
-                  utmp.h wchar.h wctype.h])
+                  utmp.h wchar.h wctype.h])dnl
 
 # Other headers needed for things that I have ifdef-ed:
 unset ac_cv_header_dlfcn_h
 unset ac_cv_header_memory_h
 unset ac_cv_header_sys_types_h
 AC_CHECK_HEADERS([a.out.h dlfcn.h errno.h regex.h sys/types.h])
-# check these two together:
+EXTRA_DEFS=""
+if test "x${ac_cv_header_sys_types_h}" = "xyes"; then
+  # this has to go separate from the configure header, because we check
+  # for it to be defined at the top of it (for caddr_t for ptrace):
+  export DEFS="${DEFS} -DHAVE_SYS_TYPES_H"
+  export EXTRA_DEFS="-DHAVE_SYS_TYPES_H"
+fi
+AC_SUBST([EXTRA_DEFS])dnl
+
+# check these two headers together:
 AC_CHECK_HEADERS([stdarg.h varargs.h])
 # even more header checks:
 AC_HEADER_ASSERT
 AC_CHECK_HEADERS([CoreFoundation/CoreFoundation.h assert.h \
-                  architecture/byte_order.h bits/endian.h gettext.h \
+                  architecture/byte_order.h bits/endian.h \
                   libgen.h libgettext.h linux/byteorder/big_endian.h \
                   linux/byteorder/little_endian.h mach.h mach_error.h \
                   mach/kern_return.h mach/mach_error.h mach/mach_init.h \
@@ -1079,9 +1137,14 @@ AC_CHECK_HEADERS([CoreFoundation/CoreFoundation.h assert.h \
                   mach-o/loader.h mach-o/nlist.h memory.h pc.h pthread.h \
                   rpc/rpc.h servers/netname.h servers/netname_defs.h \
                   setjmp.h sys/uio.h sys/utsname.h])
+AC_CHECK_HEADERS([gettext.h],[],[],[
+#ifndef HAVE_CONDEFS_H
+# define HAVE_CONFDEFS_H 1
+#endif /* !HAVE_CONFDEFS_H */
+])dnl
 # The gnulib subdirectory needs this:
 gl_STDINT_H
-AC_SUBST([STDINT_H])
+AC_SUBST([STDINT_H])dnl
 gl_HEADER_STRING_H
 
 # ------------------------- #
@@ -1091,10 +1154,15 @@ gl_HEADER_STRING_H
 AC_MSG_CHECKING([declarations])
 AC_MSG_RESULT([ ])
 
-AC_CHECK_DECLS([sys_siglist])
+dnl# just skip the first one, getting different results from the two
+dnl# conftests can lead to warnings:
+if test "x${ac_cv_have_decl_sys_siglist}" = "x" && test "x" = "Y0"; then
+  test -z "${ac_cv_have_decl_sys_siglist}"
+  AC_CHECK_DECLS([sys_siglist])
+fi
 # just a plain check for sys_syglist might be wrong, so redo it
 dnl# using the autoupdated version of AC\_DECL\_SYS\_SIGLIST
-if test "x${ac_cv_have_decl_sys_siglist}" = "xno"; then
+if test "x${ac_cv_have_decl_sys_siglist}" != "xyes"; then
   unset ac_cv_have_decl_sys_siglist
   AC_CHECK_DECLS([sys_siglist],[],[],[
 #include <signal.h>
@@ -1108,9 +1176,11 @@ if test "x${ac_cv_have_decl_sys_siglist}" = "xno"; then
 #endif /* HAVE_UNISTD_H */
   ])
 fi
-AC_CHECK_DECLS([free, malloc, realloc])
-AC_CHECK_DECLS([strerror, strstr])
-AC_CHECK_DECLS([getopt, snprintf, vsnprintf])
+AC_CHECK_DECLS([free, malloc, realloc])dnl
+AC_CHECK_DECLS([strerror, strstr])dnl
+AC_CHECK_DECLS([getopt, snprintf, vsnprintf])dnl
+dnl# these should probably be done above with the rest of the libunwind
+dnl# checks:
 AC_CHECK_DECLS([UNW_SLT_NONE],[],[],[
 #ifdef HAVE_LIBUNWIND_H
 # include <libunwind.h>
@@ -1119,7 +1189,7 @@ AC_CHECK_DECLS([UNW_SLT_NONE],[],[],[
 #  warning "This conftest for UNW_SLT_NONE wants to include <libunwind.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LIBUNWIND_H */
-])
+])dnl
 AC_CHECK_DECLS([UNW_SLT_MEMORY],[],[],[
 #ifdef HAVE_LIBUNWIND_H
 # include <libunwind.h>
@@ -1128,7 +1198,7 @@ AC_CHECK_DECLS([UNW_SLT_MEMORY],[],[],[
 #  warning "A conftest for UNW_SLT_MEMORY wants to include <libunwind.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LIBUNWIND_H */
-])
+])dnl
 AC_CHECK_DECLS([UNW_SLT_REG],[],[],[
 #ifdef HAVE_LIBUNWIND_H
 # include <libunwind.h>
@@ -1137,7 +1207,7 @@ AC_CHECK_DECLS([UNW_SLT_REG],[],[],[
 #  warning "This conftest for UNW_SLT_REG wants to include <libunwind.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LIBUNWIND_H */
-])
+])dnl
 m4_ifdef([AM_LC_MESSAGES],[
 unset am_cv_val_LC_MESSAGES
 AM_LC_MESSAGES
@@ -1146,7 +1216,7 @@ AC_CHECK_DECLS([basename],[],[],[
 #ifdef HAVE_LIBGEN_H
 # include <libgen.h>
 #endif /* HAVE_LIBGEN_H */
-])
+])dnl
 AC_CHECK_DECLS([name_server_port],[],[],[
 #ifdef HAVE_MACH_MACH_INIT_H
 # include <mach/mach_init.h>
@@ -1155,7 +1225,7 @@ AC_CHECK_DECLS([name_server_port],[],[],[
 #  warning "This conftest for name_server_port wants <mach/mach_init.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_MACH_INIT_H */
-])
+])dnl
 
 # ----------------------- #
 # Checks for structures.  #
@@ -1165,8 +1235,8 @@ AC_MSG_CHECKING([structures])
 AC_MSG_RESULT([ ])
 
 AC_STRUCT_ST_BLOCKS
-AC_CHECK_MEMBERS([struct stat.st_blksize])
-AC_CHECK_MEMBERS([struct stat.st_rdev])
+AC_CHECK_MEMBERS([struct stat.st_blksize])dnl
+AC_CHECK_MEMBERS([struct stat.st_rdev])dnl
 AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
 
 # ------------------ #
@@ -1188,10 +1258,10 @@ return *(signal (0, 0)) (0) == 1;
 AC_DEFINE_UNQUOTED([RETSIGTYPE],[${ac_cv_type_signal}],
          [Define as the return type of signal handlers (`int' or `void').])
 dnl# End what used to be AC\_TYPE\_SIGNAL
-AC_CHECK_TYPES([socklen_t],[],[],
-[#include <sys/types.h>
+AC_CHECK_TYPES([socklen_t],[],[],[
+#include <sys/types.h>
 #include <sys/socket.h>
-])
+])dnl
 AC_CHECK_TYPES([uintptr_t],[],[],[
 #ifdef HAVE_STDINT_H
 # include <stdint.h>
@@ -1200,8 +1270,8 @@ AC_CHECK_TYPES([uintptr_t],[],[],[
 #  warning "This conftest for uintptr_t expects <stdint.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDINT_H */
-])
-AC_CHECK_TYPES([ptrdiff_t])
+])dnl
+AC_CHECK_TYPES([ptrdiff_t])dnl
 AC_TYPE_INT8_T
 AC_TYPE_INT16_T
 AC_TYPE_INT32_T
@@ -1216,7 +1286,8 @@ AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
 AC_TYPE_UINTMAX_T
-AC_CHECK_TYPES([thread_t])
+AC_CHECK_TYPES([caddr_t])dnl
+AC_CHECK_TYPES([thread_t])dnl
 AC_CHECK_TYPES([regex_t],[],[],[
 #ifdef HAVE_REGEX_H
 # include <regex.h>
@@ -1225,7 +1296,9 @@ AC_CHECK_TYPES([regex_t],[],[],[
 #  warning "This conftest for regex_t expects <regex.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_REGEX_H */
-])
+])dnl
+dnl# these should probably be done above with the rest of the libunwind
+dnl# checks:
 AC_CHECK_TYPES([unw_dyn_info_t],[],[],[
 #ifdef HAVE_LIBUNWIND_H
 # include <libunwind.h>
@@ -1234,7 +1307,7 @@ AC_CHECK_TYPES([unw_dyn_info_t],[],[],[
 #  warning "The conftest for unw_dyn_info_t wants to include <libunwind.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LIBUNWIND_H */
-])
+])dnl
 AC_CHECK_TYPES([unw_save_loc_t],[],[],[
 #ifdef HAVE_LIBUNWIND_H
 # include <libunwind.h>
@@ -1243,7 +1316,7 @@ AC_CHECK_TYPES([unw_save_loc_t],[],[],[
 #  warning "The conftest for unw_save_loc_t wants to include <libunwind.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LIBUNWIND_H */
-])
+])dnl
 AC_CHECK_TYPES([unw_accessors_t],[],[],[
 #ifdef HAVE_LIBUNWIND_H
 # include <libunwind.h>
@@ -1252,7 +1325,8 @@ AC_CHECK_TYPES([unw_accessors_t],[],[],[
 #  warning "A conftest for unw_accessors_t wants to include <libunwind.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LIBUNWIND_H */
-])
+])dnl
+dnl# some mach-specific ones:
 AC_CHECK_TYPES([kern_return_t],[],[],[
 #ifdef HAVE_MACH_KERN_RETURN_H
 # include <mach/kern_return.h>
@@ -1261,7 +1335,7 @@ AC_CHECK_TYPES([kern_return_t],[],[],[
 #  warning "This conftest for kern_return_t wants <mach/kern_return.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_KERN_RETURN_H */
-])
+])dnl
 AC_CHECK_HEADERS([mach/mach_vm.h])
 AC_CHECK_TYPES([mach_vm_address_t],[],[],[
 #ifdef HAVE_MACH_MACH_VM_H
@@ -1271,7 +1345,7 @@ AC_CHECK_TYPES([mach_vm_address_t],[],[],[
 #  warning "This conftest for mach_vm_address_t wants <mach/mach_vm.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_MACH_VM_H */
-])
+])dnl
 AC_CHECK_TYPES([mach_msg_header_t],[
   # Found the type, so check a member:
   AC_CHECK_MEMBER([mach_msg_header_t.msgh_seqno],[],[],[
@@ -1291,7 +1365,7 @@ AC_CHECK_TYPES([mach_msg_header_t],[
 #  warning "This conftest for mach_msg_header_t wants <mach/message.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_MESSAGE_H */
-])
+])dnl
 AC_CHECK_TYPES([mach_port_t],[],[],[
 #ifdef HAVE_MACH_PORT_H
 # include <mach/port.h>
@@ -1300,7 +1374,7 @@ AC_CHECK_TYPES([mach_port_t],[],[],[
 #  warning "This conftest for mach_port_t wants to include <mach/port.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_PORT_H */
-])
+])dnl
 dnl# The "x86_debug_state32_t" type is checked for in an APPLE_LOCAL
 dnl# section below.
 
@@ -1313,25 +1387,27 @@ AC_MSG_RESULT([ ])
 
 AC_PROG_GCC_TRADITIONAL
 AC_C_BIGENDIAN([
-  AC_CHECK_DECLS([__BIG_ENDIAN])
+  AC_CHECK_DECLS([__BIG_ENDIAN])dnl
 ],[
-  AC_CHECK_DECLS([__LITTLE_ENDIAN])
+  AC_CHECK_DECLS([__LITTLE_ENDIAN])dnl
 ],[],[
-  AC_CHECK_DECLS([__BIG_ENDIAN])
-  AC_CHECK_DECLS([__LITTLE_ENDIAN])
-])
+  AC_CHECK_DECLS([__BIG_ENDIAN])dnl
+  AC_CHECK_DECLS([__LITTLE_ENDIAN])dnl
+])dnl
 AC_C_PROTOTYPES
 AC_C_VOLATILE
 AC_DEFUN([AC_C_DUPES],[
-  AC_REQUIRE([AC_C_CONST])
-  AC_REQUIRE([AC_C_INLINE])
-  AC_REQUIRE([AC_C_RESTRICT])
-])
+  AC_REQUIRE([AC_C_CONST])dnl
+  AC_REQUIRE([AC_C_INLINE])dnl
+  AC_REQUIRE([AC_C_RESTRICT])dnl
+])dnl
 AC_C_DUPES
 
-#FIXME: This check can sometimes say that the compiler does not support the
+#FIXME: This check can sometimes say that the compiler does NOT support the
 # -fpascal-strings flag, even when it does actually support it:
-AX_CHECK_COMPILE_FLAG([-fpascal-strings])
+AX_CHECK_COMPILE_FLAG([-fpascal-strings],
+                      [CFLAGS="${CFLAGS} -fpascal-strings"],
+                      [:])dnl
 
 # ------------------------------ #
 # Checks for library functions.  #
@@ -1369,32 +1445,32 @@ AC_FUNC_STRNLEN
 AC_FUNC_STRTOD
 AC_FUNC_VPRINTF
 AC_FUNC_WAIT3
-AC_CHECK_FUNCS([canonicalize_file_name realpath])
-AC_CHECK_FUNCS([getrusage])
-AC_CHECK_FUNCS([getuid getgid])
-AC_CHECK_FUNCS([pipe poll])
-AC_CHECK_FUNCS([pread pread64])
-AC_CHECK_FUNCS([pwrite pwrite64])
-AC_CHECK_FUNCS([sbrk])
-AC_CHECK_FUNCS([setpgid setpgrp setsid])
-AC_CHECK_FUNCS([sigaction sigprocmask sigsetmask])
-AC_CHECK_FUNCS([socketpair])
-AC_CHECK_FUNCS([syscall])
-AC_CHECK_FUNCS([ttrace])
+AC_CHECK_FUNCS([canonicalize_file_name realpath])dnl
+AC_CHECK_FUNCS([getrusage])dnl
+AC_CHECK_FUNCS([getuid getgid])dnl
+AC_CHECK_FUNCS([pipe poll])dnl
+AC_CHECK_FUNCS([pread pread64])dnl
+AC_CHECK_FUNCS([pwrite pwrite64])dnl
+AC_CHECK_FUNCS([sbrk])dnl
+AC_CHECK_FUNCS([setpgid setpgrp setsid])dnl
+AC_CHECK_FUNCS([sigaction sigprocmask sigsetmask])dnl
+AC_CHECK_FUNCS([socketpair])dnl
+AC_CHECK_FUNCS([syscall])dnl
+AC_CHECK_FUNCS([ttrace])dnl
 AC_CHECK_FUNCS([wborder wresize])
 if test "x${ac_cv_func_setlocale}" = "x"; then
   test -z "${ac_cv_func_setlocale}"
   AC_CHECK_FUNCS([setlocale])
 fi
-AC_CHECK_FUNCS([iconvlist libiconvlist btowc])
-AC_CHECK_FUNCS([setrlimit getrlimit])
-AC_CHECK_FUNCS([posix_madvise])
-AC_CHECK_FUNCS([waitpid])
-AC_CHECK_FUNCS([ptrace ptrace64])
+AC_CHECK_FUNCS([iconvlist libiconvlist btowc])dnl
+AC_CHECK_FUNCS([setrlimit getrlimit])dnl
+AC_CHECK_FUNCS([posix_madvise])dnl
+AC_CHECK_FUNCS([waitpid])dnl
+AC_CHECK_FUNCS([ptrace ptrace64])dnl
 m4_ifdef([AM_LANGINFO_CODESET],[
 AM_LANGINFO_CODESET
 ],[
-AC_CHECK_FUNCS([langinfo codeset])
+AC_CHECK_FUNCS([langinfo codeset])dnl
 ])
 
 # Other functions (that autoscan complains about missing):
@@ -1402,15 +1478,15 @@ unset ac_cv_func_getcwd
 unset ac_cv_func_gethostbyname
 unset ac_cv_func_strcasecmp
 unset ac_cv_func_strchr
-AC_CHECK_FUNCS([alarm assert atexit bzero dup2 exit fflush fprintf fwrite \
-                getcwd gethostbyaddr gethostbyname gethostname getpass \
-                gettimeofday inet_ntoa isascii mach_error_string \
-                memchr memcmp memcpy memmove mempcpy memset mkdir \
-                netname_look_up nl_langinfo pathconf pow \
+AC_CHECK_FUNCS([alarm assert atexit bzero dup2 exit fflush fgets fprintf \
+                fwrite getcwd gethostbyaddr gethostbyname gethostname \
+                getpass gets gettimeofday inet_ntoa isascii \
+                mach_error_string memchr memcmp memcpy memmove mempcpy \
+                memset mkdir netname_look_up nl_langinfo pathconf pow \
                 re_comp regcomp select socket strcasecmp strcat strchr \
                 strcpy strcspn strdup strerror strlen strncasecmp \
                 strncat strncmp strncpy strndup strpbrk strrchr \
-                strspn strstr strtok strtol strtoul uname wcwidth])
+                strspn strstr strtok strtol strtoul uname wcwidth])dnl
 
 # ----- #
 # Other #
@@ -1419,100 +1495,23 @@ AC_CHECK_FUNCS([alarm assert atexit bzero dup2 exit fflush fprintf fwrite \
 AC_MSG_CHECKING([miscellaneous things that require custom checks])
 AC_MSG_RESULT([ ])
 
-# Check the return and argument types of ptrace. No canned test for
-# this, so roll our own.
-gdb_ptrace_headers='
-#if HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif /* HAVE_SYS_TYPES_H */
-#if HAVE_SYS_PTRACE_H
-# include <sys/ptrace.h>
-#endif /* HAVE_SYS_PTRACE_H */
-#if HAVE_UNISTD_H
-# include <unistd.h>
-#endif /* HAVE_UNISTD_H */
-'
-# There is no point in checking if we do not have a prototype.
-AC_CHECK_DECLS([ptrace],[],[
-  : ${gdb_cv_func_ptrace_ret='int'}
-  : ${gdb_cv_func_ptrace_args='int,int,long,long'}
-],[${gdb_ptrace_headers}])
-# Check return type:
-AC_CACHE_CHECK([return type of ptrace],[gdb_cv_func_ptrace_ret],
-  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-${gdb_ptrace_headers}
-   ]],[[
-extern int ptrace();
-   ]])],[gdb_cv_func_ptrace_ret='int'],[gdb_cv_func_ptrace_ret='long'])
-])
-AC_DEFINE_UNQUOTED([PTRACE_TYPE_RET],[${gdb_cv_func_ptrace_ret}],
-                   [Define as the return type of ptrace.])
-# Check argument types:
-AC_CACHE_CHECK([types of arguments for ptrace],[gdb_cv_func_ptrace_args],[
-for gdb_arg1 in 'int' 'long'; do
- for gdb_arg2 in 'pid_t' 'int' 'long'; do
-  for gdb_arg3 in 'int *' 'caddr_t' 'int' 'long'; do
-   for gdb_arg4 in 'int' 'long'; do
-     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[${gdb_ptrace_headers}]],[[
-extern ${gdb_cv_func_ptrace_ret}
-  ptrace(${gdb_arg1}, ${gdb_arg2}, ${gdb_arg3}, ${gdb_arg4});
-]])],[gdb_cv_func_ptrace_args="${gdb_arg1},${gdb_arg2},${gdb_arg3},${gdb_arg4}";
-    break 4;],[])
-    for gdb_arg5 in 'int *' 'int' 'long'; do
-     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[${gdb_ptrace_headers}]],[[
-extern ${gdb_cv_func_ptrace_ret}
-  ptrace(${gdb_arg1}, ${gdb_arg2}, ${gdb_arg3}, ${gdb_arg4}, ${gdb_arg5});
-]])],[
-gdb_cv_func_ptrace_args="${gdb_arg1},${gdb_arg2},${gdb_arg3},${gdb_arg4},${gdb_arg5}";
-    break 5;],[])
-    done
-   done
-  done
- done
-done
-# Provide a safe default value:
-: ${gdb_cv_func_ptrace_args='int,int,long,long'}
-])
-ac_save_IFS=${IFS}; IFS=','
-set dummy `echo "${gdb_cv_func_ptrace_args}" | sed 's/\*/\*/g'`
-IFS=${ac_save_IFS}
-shift
-AC_DEFINE_UNQUOTED([PTRACE_TYPE_ARG3],$[3],
-  [Define to the type of arg 3 for ptrace.])
-if test -n "$[5]"; then
-  AC_DEFINE_UNQUOTED([PTRACE_TYPE_ARG5],$[5],
-    [Define to the type of arg 5 for ptrace.])
-fi
+dnl# moved to a separate macro file, so subdirs can use it:
+GDB_CHECK_PTRACE
 
-dnl# AC_FUNC_SETPGRP does not work when cross compiling
-dnl# Instead, assume we will have a prototype for setpgrp
-dnl# if we are cross-compiling:
-if test "x${cross_compiling}" = "xno"; then
-  AC_FUNC_SETPGRP
-else
-  AC_CACHE_CHECK([whether setpgrp takes no argument],
-                 [ac_cv_func_setpgrp_void],
-    [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#include <unistd.h>
-]],[[
-  if (setpgrp(1, 1) == -1) {
-      exit(0);
-  } else {
-      exit(1);
-  }
-]])],[ac_cv_func_setpgrp_void=no],[ac_cv_func_setpgrp_void=yes])])
-if test "x${ac_cv_func_setpgrp_void}" = "xyes"; then
-  AC_DEFINE([SETPGRP_VOID],[1],
-            [Define to 1 if setgrp takes no argument (i.e. void)])
-fi
-fi
+dnl# likewise:
+GDB_FUNC_SETPGRP
 
 # Check if sigsetjmp is available. Using AC_CHECK_FUNCS will not do
 # since sigsetjmp might only be defined as a macro.
-AC_CACHE_CHECK([for sigsetjmp],[gdb_cv_func_sigsetjmp],
-[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+AC_CACHE_CHECK([for sigsetjmp],[gdb_cv_func_sigsetjmp],[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <setjmp.h>
-]],[[sigjmp_buf env; while (! sigsetjmp (env, 1)) siglongjmp (env, 1);]])],[gdb_cv_func_sigsetjmp=yes],[gdb_cv_func_sigsetjmp=no])])
+]],[[
+sigjmp_buf env;
+while (! sigsetjmp(env, 1)) {
+  siglongjmp(env, 1);
+}
+]])],[gdb_cv_func_sigsetjmp=yes],[gdb_cv_func_sigsetjmp=no])])
 if test "x${gdb_cv_func_sigsetjmp}" = "xyes"; then
   AC_DEFINE([HAVE_SIGSETJMP],[1],[Define if sigsetjmp is available. ])
 fi
@@ -1520,21 +1519,30 @@ fi
 # Assume we shall default to using the included libiberty regex:
 gdb_use_included_regex=yes
 
+dnl# for next conftest:
+AC_CHECK_HEADERS([gnu-versions.h])dnl
+
 # However, if the system regex is GNU regex, then default to *not*
 # using the included regex.
 AC_CACHE_CHECK([for GNU regex],
   [gdb_cv_have_gnu_regex],
-  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <gnu-versions.h>]],[[
+  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <gnu-versions.h>
+   ]],[[
 #define REGEX_INTERFACE_VERSION 1
 #if _GNU_REGEX_INTERFACE_VERSION != REGEX_INTERFACE_VERSION
-# error "Version mismatch"
-#endif]])],[gdb_cv_have_gnu_regex=yes],[gdb_cv_have_gnu_regex=no])])
+# error "Version mismatch between regex interfaces"
+#endif /* _GNU_REGEX_INTERFACE_VERSION != REGEX_INTERFACE_VERSION */
+   ]])],[gdb_cv_have_gnu_regex=yes],[gdb_cv_have_gnu_regex=no])])
 if test "x${gdb_cv_have_gnu_regex}" = "xyes"; then
   gdb_use_included_regex=no
 fi
 
 AC_ARG_WITH([included-regex],
-  [AS_HELP_STRING([--without-included-regex],[Do NOT use included regex; this is the default on systems with version 2 of the GNU C library (use with caution on other system)])],
+  [AS_HELP_STRING([--without-included-regex],
+                  [Do NOT use included regex; this is the default
+                   on systems with version 2 of the GNU C library
+                   (use with caution on other systems)])],
   [gdb_with_regex=${withval}],
   [gdb_with_regex=${gdb_use_included_regex}])
 if test "x${gdb_with_regex}" = "xyes"; then
@@ -1546,7 +1554,7 @@ fi
 AC_CHECK_MEMBERS([struct thread.td_pcb],[],[],[
 #include <sys/param.h>
 #include <sys/proc.h>
-])
+])dnl
 
 # See if <sys/lwp.h> defines `struct lwp`.
 AC_CACHE_CHECK([for struct lwp],[gdb_cv_struct_lwp],
@@ -1560,8 +1568,9 @@ if test "x${gdb_cv_struct_lwp}" = "xyes"; then
 fi
 
 # See if <machine/reg.h> defines `struct reg'.
-AC_CACHE_CHECK([for struct reg in machine/reg.h],[gdb_cv_struct_reg],
-[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+AC_CACHE_CHECK([for struct reg in machine/reg.h],[gdb_cv_struct_reg],[
+dnl# (machine/reg.h header is already checked-for above)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <sys/types.h>
 #include <machine/reg.h>
 ]],[[struct reg r;]])],[gdb_cv_struct_reg=yes],[gdb_cv_struct_reg=no])])
@@ -1573,75 +1582,75 @@ fi
 # See if <machine/reg.h> supports the %fs and %gs i386 segment registers.
 # Older i386 BSD's do NOT have the r_fs and r_gs members of `struct reg'.
 AC_CHECK_MEMBERS([struct reg.r_fs, struct reg.r_gs],[],[],
-                 [#include <machine/reg.h>])
+                 [#include <machine/reg.h>])dnl
 
 # See if <sys/user.h> supports the %fs_base and %gs_bas amd64 segment
 # registers. Older amd64 Linuxes do NOT have the fs_base and gs_base
 # members of `struct user_regs_struct'.
 AC_CHECK_MEMBERS([struct user_regs_struct.fs_base, struct user_regs_struct.gs_base],
-		 [],[],[#include <sys/user.h>])
+		 [],[],[#include <sys/user.h>])dnl
 
 # See if <sys/ptrace.h> provides the PTRACE_GETREGS request.
 AC_MSG_CHECKING([for PTRACE_GETREGS])
-AC_CACHE_VAL([gdb_cv_have_ptrace_getregs],
-[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+AC_CACHE_VAL([gdb_cv_have_ptrace_getregs],[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <sys/ptrace.h>
- ]],[[
+]],[[
 PTRACE_GETREGS;
- ]])],[gdb_cv_have_ptrace_getregs=yes],[gdb_cv_have_ptrace_getregs=no])
+]])],[gdb_cv_have_ptrace_getregs=yes],[gdb_cv_have_ptrace_getregs=no])
 ])
 AC_MSG_RESULT([${gdb_cv_have_ptrace_getregs}])
 if test "x${gdb_cv_have_ptrace_getregs}" = "xyes"; then
   AC_DEFINE([HAVE_PTRACE_GETREGS],[1], 
-  [Define if sys/ptrace.h defines the PTRACE_GETREGS request.])
+            [Define if sys/ptrace.h defines the PTRACE_GETREGS request.])
 fi
 
 # See if <sys/ptrace.h> provides the PTRACE_GETFPXREGS request:
 AC_MSG_CHECKING([for PTRACE_GETFPXREGS])
-AC_CACHE_VAL([gdb_cv_have_ptrace_getfpxregs],
-[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+AC_CACHE_VAL([gdb_cv_have_ptrace_getfpxregs],[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <sys/ptrace.h>
- ]],[[
+]],[[
 PTRACE_GETFPXREGS;
- ]])],[gdb_cv_have_ptrace_getfpxregs=yes],
-      [gdb_cv_have_ptrace_getfpxregs=no])
+]])],[gdb_cv_have_ptrace_getfpxregs=yes],
+     [gdb_cv_have_ptrace_getfpxregs=no])
 ])
 AC_MSG_RESULT([${gdb_cv_have_ptrace_getfpxregs}])
 if test "x${gdb_cv_have_ptrace_getfpxregs}" = "xyes"; then
   AC_DEFINE([HAVE_PTRACE_GETFPXREGS],[1],
-  [Define if sys/ptrace.h defines the PTRACE_GETFPXREGS request.])
+            [Define if sys/ptrace.h defines the PTRACE_GETFPXREGS request])
 fi
 
 # See if <sys/ptrace.h> provides the PT_GETDBREGS request.
 AC_MSG_CHECKING([for PT_GETDBREGS])
-AC_CACHE_VAL([gdb_cv_have_pt_getdbregs],
-[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+AC_CACHE_VAL([gdb_cv_have_pt_getdbregs],[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <sys/types.h>
 #include <sys/ptrace.h>
- ]],[[
+]],[[
 PT_GETDBREGS;
- ]])],[gdb_cv_have_pt_getdbregs=yes],[gdb_cv_have_pt_getdbregs=no])
+]])],[gdb_cv_have_pt_getdbregs=yes],[gdb_cv_have_pt_getdbregs=no])
 ])
 AC_MSG_RESULT([${gdb_cv_have_pt_getdbregs}])
 if test "x${gdb_cv_have_pt_getdbregs}" = "xyes"; then
   AC_DEFINE([HAVE_PT_GETDBREGS],[1],
-  [Define if sys/ptrace.h defines the PT_GETDBREGS request.])
+            [Define if sys/ptrace.h defines the PT_GETDBREGS request.])
 fi
 
 # See if <sys/ptrace.h> provides the PT_GETXMMREGS request:
 AC_MSG_CHECKING([for PT_GETXMMREGS])
-AC_CACHE_VAL([gdb_cv_have_pt_getxmmregs],
-[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+AC_CACHE_VAL([gdb_cv_have_pt_getxmmregs],[
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <sys/types.h>
 #include <sys/ptrace.h>
- ]],[[
+]],[[
 PT_GETXMMREGS;
- ]])],[gdb_cv_have_pt_getxmmregs=yes],[gdb_cv_have_pt_getxmmregs=no])
+]])],[gdb_cv_have_pt_getxmmregs=yes],[gdb_cv_have_pt_getxmmregs=no])
 ])
 AC_MSG_RESULT([${gdb_cv_have_pt_getxmmregs}])
 if test "x${gdb_cv_have_pt_getxmmregs}" = "xyes"; then
   AC_DEFINE([HAVE_PT_GETXMMREGS],[1],
-  [Define if sys/ptrace.h defines the PT_GETXMMREGS request.])
+            [Define if sys/ptrace.h defines the PT_GETXMMREGS request.])
 fi
 
 # If we are configured native on GNU/Linux, work around problems with
@@ -1653,25 +1662,25 @@ if test "${target}" = "${host}"; then
   case "${host}" in
   i[[3456]]86-*-linux*)
 	AC_DEFINE([START_INFERIOR_TRAPS_EXPECTED],[2],
-        [Define on a GNU/Linux system to fix problems in sys/procfs.h])
+            [Define on a GNU/Linux system to fix problems in sys/procfs.h])
 	AC_DEFINE([sys_quotactl],[1],
-        [Define on a GNU/Linux system to fix problems in sys/procfs.h])
+            [Define on a GNU/Linux system to fix problems in sys/procfs.h])
 	;;
   *-*-unixware* | *-*-sysv4.2* | *-*-sysv5* | *-*-interix* )
       AC_DEFINE([NEW_PROC_API],[1],
-      [Define if you want to use new multi-fd /proc interface
-       (replaces HAVE_MULTIPLE_PROC_FDS as well as other macros).])
+                [Define if you want to use new multi-fd /proc interface
+                 (replaces HAVE_MULTIPLE_PROC_FDS and other macros)])
       ;;
   *-*-solaris2.[[6789]] | *-*-solaris2.1[[0-9]])
       AC_DEFINE([NEW_PROC_API],[1],
-      [Define if you want to use new multi-fd /proc interface
-       (replaces HAVE_MULTIPLE_PROC_FDS as well as other macros).])
+                [Define if you want to use new multi-fd /proc interface
+                 (replaces HAVE_MULTIPLE_PROC_FDS and other macros)])
       ;;
   mips-sgi-irix5*)
       # Work around <sys/proc.h> needing _KMEMUSER problem on IRIX 5.
       AC_DEFINE([_KMEMUSER],[1],
-      [Define to 1 so <sys/proc.h> gets a definition of anon_hdl. Works
-       around a <sys/proc.h> problem on IRIX 5.])
+                [Define to 1 so <sys/proc.h> gets a definition of anon_hdl.
+                 Works around a <sys/proc.h> problem on IRIX 5.])
       ;;
   esac
 fi
@@ -1697,7 +1706,7 @@ case "${host}" in
       *)
         AC_MSG_ERROR([bad value '${enableval}' for --disable-carbon-framework]) ;;
     esac],
-    [enable_carbon_framework=no])
+    [enable_carbon_framework=no])dnl
 
     AC_MSG_CHECKING([for Carbon framework])
     if test x"${enable_carbon_framework}" = xyes; then
@@ -1716,7 +1725,7 @@ case "${host}" in
     ;;
 esac
 
-AC_SUBST([CARBON_LIBS])
+AC_SUBST([CARBON_LIBS])dnl
 
 case "${host}" in
   arm-apple-*)
@@ -1734,7 +1743,7 @@ case "${host}" in
         AC_MSG_ERROR([bad value '${enableval}' for --disable-debug-symbols-framework])
         ;;
     esac],
-    [enable_debug_symbols_framework=yes])
+    [enable_debug_symbols_framework=yes])dnl
 
     AC_MSG_CHECKING([for DebugSymbols framework])
     if test x"${enable_debug_symbols_framework}" = x"yes"; then
@@ -1753,11 +1762,11 @@ case "${host}" in
   ;;
 esac
 
-AC_SUBST([DEBUG_SYMBOLS_LIBS])
+AC_SUBST([DEBUG_SYMBOLS_LIBS])dnl
 
 # APPLE LOCAL: Enable MIG checking for macosx/macosx.defs.
 MIG_CHECKING=-D__MigTypeCheck=1
-AC_SUBST([MIG_CHECKING])
+AC_SUBST([MIG_CHECKING])dnl
 # APPLE LOCAL end
 
 # APPLE LOCAL: See if we have the i386 debug register structs, i.e.
@@ -1765,33 +1774,32 @@ AC_SUBST([MIG_CHECKING])
 # we will need to use the old page-protection method.
 
 AC_CHECK_TYPES([x86_debug_state32_t],[],[],
-               [#include <mach/mach_types.h>])
+               [#include <mach/mach_types.h>])dnl
 
 AC_CHECK_TYPES([thread_identifier_info_data_t],[],[],
-               [#include <mach/thread_info.h>])
+               [#include <mach/thread_info.h>])dnl
 
 AC_MSG_NOTICE([done with second batch of APPLE_LOCAL checks])
 
-AC_CHECK_FUNCS([pthread_setname_np])
+AC_CHECK_FUNCS([pthread_setname_np])dnl
 
 if test "x${ac_cv_header_sys_procfs_h}" = "xyes"; then
-  BFD_HAVE_SYS_PROCFS_TYPE([pstatus_t])
-  BFD_HAVE_SYS_PROCFS_TYPE([prrun_t])
-  BFD_HAVE_SYS_PROCFS_TYPE([gregset_t])
-  BFD_HAVE_SYS_PROCFS_TYPE([fpregset_t])
-  BFD_HAVE_SYS_PROCFS_TYPE([prgregset_t])
-  BFD_HAVE_SYS_PROCFS_TYPE([prfpregset_t])
-  BFD_HAVE_SYS_PROCFS_TYPE([prgregset32_t])
-  BFD_HAVE_SYS_PROCFS_TYPE([prfpregset32_t])
-  BFD_HAVE_SYS_PROCFS_TYPE([lwpid_t])
-  BFD_HAVE_SYS_PROCFS_TYPE([psaddr_t])
-  BFD_HAVE_SYS_PROCFS_TYPE([prsysent_t])
-  BFD_HAVE_SYS_PROCFS_TYPE([pr_sigset_t])
-  BFD_HAVE_SYS_PROCFS_TYPE([pr_sigaction64_t])
-  BFD_HAVE_SYS_PROCFS_TYPE([pr_siginfo64_t])
+  BFD_HAVE_SYS_PROCFS_TYPE([pstatus_t])dnl
+  BFD_HAVE_SYS_PROCFS_TYPE([prrun_t])dnl
+  BFD_HAVE_SYS_PROCFS_TYPE([gregset_t])dnl
+  BFD_HAVE_SYS_PROCFS_TYPE([fpregset_t])dnl
+  BFD_HAVE_SYS_PROCFS_TYPE([prgregset_t])dnl
+  BFD_HAVE_SYS_PROCFS_TYPE([prfpregset_t])dnl
+  BFD_HAVE_SYS_PROCFS_TYPE([prgregset32_t])dnl
+  BFD_HAVE_SYS_PROCFS_TYPE([prfpregset32_t])dnl
+  BFD_HAVE_SYS_PROCFS_TYPE([lwpid_t])dnl
+  BFD_HAVE_SYS_PROCFS_TYPE([psaddr_t])dnl
+  BFD_HAVE_SYS_PROCFS_TYPE([prsysent_t])dnl
+  BFD_HAVE_SYS_PROCFS_TYPE([pr_sigset_t])dnl
+  BFD_HAVE_SYS_PROCFS_TYPE([pr_sigaction64_t])dnl
+  BFD_HAVE_SYS_PROCFS_TYPE([pr_siginfo64_t])dnl
 
-
-  dnl# Check for broken prfpregset_t type
+  dnl# Check for broken prfpregset_t type.
 
   dnl# For Linux/i386, glibc 2.1.3 was released with a bogus
   dnl# prfpregset_t type (it was a typedef for the pointer to a struct
@@ -1801,14 +1809,15 @@ if test "x${ac_cv_header_sys_procfs_h}" = "xyes"; then
   if test "x${bfd_cv_have_sys_procfs_type_prfpregset_t}" = "xyes"; then
     AC_MSG_CHECKING([whether prfpregset_t type is broken])
     AC_CACHE_VAL([gdb_cv_prfpregset_t_broken],
-      [AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <sys/procfs.h>
-       int main(void)
-       {
-         if (sizeof(prfpregset_t) == sizeof(void *)) {
-           return 1;
-         }
-         return 0;
-       }
+      [AC_RUN_IFELSE([AC_LANG_SOURCE([[
+#include <sys/procfs.h>
+int main(void)
+{
+  if (sizeof(prfpregset_t) == sizeof(void *)) {
+    return 1;
+  }
+  return 0;
+}
        ]])],[gdb_cv_prfpregset_t_broken=no],
             [gdb_cv_prfpregset_t_broken=yes],
             [gdb_cv_prfpregset_t_broken=yes])
@@ -1821,10 +1830,9 @@ if test "x${ac_cv_header_sys_procfs_h}" = "xyes"; then
   fi
 
   dnl# Check for PIOCSET ioctl entry:
-
   AC_MSG_CHECKING([for PIOCSET ioctl entry in sys/procfs.h])
-  AC_CACHE_VAL([gdb_cv_have_procfs_piocset],
-  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+  AC_CACHE_VAL([gdb_cv_have_procfs_piocset],[
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/procfs.h>
@@ -1846,10 +1854,9 @@ dnl# legacy link.h support is needed.  (See solib-legacy.c.)
 if test "x${host}" = "x${target}"; then
   dnl# Check for struct link_map with l_ members which are indicative
   dnl# of SVR4-like shared libraries:
-
   AC_MSG_CHECKING([for member l_addr in struct link_map])
-  AC_CACHE_VAL([gdb_cv_have_struct_link_map_with_l_members],
-    [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+  AC_CACHE_VAL([gdb_cv_have_struct_link_map_with_l_members],[
+     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <link.h>
      ]],[[
 struct link_map lm; (void)lm.l_addr;
@@ -1859,17 +1866,16 @@ struct link_map lm; (void)lm.l_addr;
   AC_MSG_RESULT([${gdb_cv_have_struct_link_map_with_l_members}])
   if test "x${gdb_cv_have_struct_link_map_with_l_members}" = "xyes"; then
     AC_DEFINE([HAVE_STRUCT_LINK_MAP_WITH_L_MEMBERS],[1],
-    [Define if <link.h> exists and defines struct link_map which has
-     members with an ``l_'' prefix.  (For Solaris, SVR4, and
-     SVR4-like systems.)])
+              [Define if <link.h> exists and defines struct link_map
+               which has members with an ``l_'' prefix.
+               (For Solaris, SVR4, and SVR4-like systems.)])
   fi
 
   dnl# Check for struct link_map with lm_ members which are indicative
-  dnl# of SunOS-like shared libraries
-
+  dnl# of SunOS-like shared libraries:
   AC_MSG_CHECKING([for member lm_addr in struct link_map])
-  AC_CACHE_VAL([gdb_cv_have_struct_link_map_with_lm_members],
-    [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+  AC_CACHE_VAL([gdb_cv_have_struct_link_map_with_lm_members],[
+     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <sys/types.h>
 #include <link.h>
      ]],[[
@@ -1880,13 +1886,12 @@ struct link_map lm; (void)lm.lm_addr;
   AC_MSG_RESULT([${gdb_cv_have_struct_link_map_with_lm_members}])
   if test "x${gdb_cv_have_struct_link_map_with_lm_members}" = "xyes"; then
     AC_DEFINE([HAVE_STRUCT_LINK_MAP_WITH_LM_MEMBERS],[1],
-    [Define if <link.h> exists and defines struct link_map which has
-     members with an ``lm_'' prefix.  (For SunOS.)])
+              [Define if <link.h> exists and defines struct link_map
+               which has members with an ``lm_'' prefix. (For SunOS.)])
   fi
 
   dnl# Check for struct so_map with som_ members which are found on 
-  dnl# some *BSD systems.
-
+  dnl# some *BSD systems:
   AC_MSG_CHECKING([for member som_addr in struct so_map])
   AC_CACHE_VAL([gdb_cv_have_struct_so_map_with_som_members],
     [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
@@ -1907,16 +1912,16 @@ struct so_map lm; (void) lm.som_addr;
   AC_MSG_RESULT([${gdb_cv_have_struct_so_map_with_som_members}])
   if test "x${gdb_cv_have_struct_so_map_with_som_members}" = "xyes"; then
     AC_DEFINE([HAVE_STRUCT_SO_MAP_WITH_SOM_MEMBERS],[1],
-    [Define if <link.h> exists and defines a struct so_map which has
-     members with an ``som_'' prefix.  (Found on older *BSD systems.)])
+              [Define if <link.h> exists and defines a struct so_map
+               which has members with an ``som_'' prefix.
+               (Found on older *BSD systems.)])
   fi
 
   dnl# Check for struct link_map32 type, which allows a 64-bit Solaris
-  dnl# debugger to debug a 32-bit Solaris app with 32-bit shared libraries.
-
+  dnl# debugger to debug a 32-bit Solaris app with 32-bit shared libraries:
   AC_MSG_CHECKING([for struct link_map32 in sys/link.h])
-  AC_CACHE_VAL([gdb_cv_have_struct_link_map32], 
-    [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+  AC_CACHE_VAL([gdb_cv_have_struct_link_map32],[
+     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #define _SYSCALL32
 #include <sys/link.h>
      ]],[[
@@ -1927,22 +1932,23 @@ struct link_map32 l;
   AC_MSG_RESULT([${gdb_cv_have_struct_link_map32}])
   if test "x${gdb_cv_have_struct_link_map32}" = "xyes"; then
     AC_DEFINE([HAVE_STRUCT_LINK_MAP32],[1],
-    [Define if <sys/link.h> has struct link_map32])
+              [Define if <sys/link.h> has struct link_map32])
     AC_DEFINE([_SYSCALL32],[1],
-    [Define if <sys/link.h> has link_map32 (solaris sparc-64 target)])
+              [Define if <sys/link.h> has link_map32
+               (solaris sparc-64 target)])
   fi
 else
   AC_MSG_NOTICE([skipping some checks that require a native build])
 fi
 
-# Check if the compiler supports the `long long' type.
-
-AC_CACHE_CHECK([for long long support in compiler],[gdb_cv_c_long_long],
-               [AC_COMPILE_IFELSE([AC_LANG_PROGRAM(
-[[extern long long foo;]],
-[[switch (foo & 2) { case 0: return 1; }]])],
-                                  [gdb_cv_c_long_long=yes],
-                                  [gdb_cv_c_long_long=no])])
+# Check if the compiler supports the `long long' type:
+AC_CACHE_CHECK([for long long support in compiler],[gdb_cv_c_long_long],[
+                AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+extern long long foo;
+                ]],[[
+switch (foo & 2) { case 0: return 1; }
+                ]])],[gdb_cv_c_long_long=yes],
+                     [gdb_cv_c_long_long=no])])
 if test "x${gdb_cv_c_long_long}" = "xyes"; then
   AC_DEFINE([CC_HAS_LONG_LONG],[1],
             [Define to 1 if the compiler supports long long.])
@@ -1996,7 +2002,7 @@ fi
 # AC\_C\_LONG\_DOUBLE because that one does additional checks on the
 # constants defined in <float.h> that fail on some systems,
 # e.g. FreeBSD/i386 4.7 and OpenBSD/i386 3.6.
-
+# Anyways:
 AC_CACHE_CHECK([for long double support in compiler],
                [gdb_cv_c_long_double],
                [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[long double foo;]])],
@@ -2007,8 +2013,7 @@ if test "x${gdb_cv_c_long_double}" = "xyes"; then
             [Define to 1 if the compiler supports long double.])
 fi
 
-# Check if the compiler and runtime support printing long doubles.
-
+# Check if the compiler and runtime support printing long doubles:
 AC_CACHE_CHECK([for long double support in printf],
                [gdb_cv_printf_has_long_double],
                [AC_RUN_IFELSE([AC_LANG_PROGRAM([AC_INCLUDES_DEFAULT],
@@ -2026,8 +2031,7 @@ if test "x${gdb_cv_printf_has_long_double}" = "xyes"; then
             [Define to 1 if the "%Lg" format works to print long doubles.])
 fi
 
-# Check if the compiler and runtime support scanning long doubles.
-
+# Check if the compiler and runtime support scanning long doubles:
 AC_CACHE_CHECK([for long double support in scanf], 
                [gdb_cv_scanf_has_long_double],
                [AC_RUN_IFELSE([AC_LANG_PROGRAM(
@@ -2058,7 +2062,8 @@ aix*)
 
     # why escape the space instead of just using quotes?
     LDFLAGS=${LDFLAGS}\ ${gdb_cv_bigtoc}
-    AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[int i;]])],[],[gdb_cv_bigtoc=])
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[int i;]])],
+                   [],[gdb_cv_bigtoc=""])
     LDFLAGS="${SAVE_LDFLAGS}"
   ])
   CONFIG_LDFLAGS="${CONFIG_LDFLAGS} ${gdb_cv_bigtoc}"
@@ -2106,16 +2111,15 @@ else
   found="-rdynamic"
   RDYNAMIC="-rdynamic"
 fi
-AC_SUBST([RDYNAMIC])
 AC_MSG_RESULT([${found}])
-
+AC_SUBST([RDYNAMIC])dnl
 
 dnl# For certain native configurations, we need to check whether thread
 dnl# support can be built in or not.
 dnl#
 dnl# Note that we only want this if we are both native (host == target),
 dnl# and not doing a canadian cross build (build == host).
-
+dnl# Anyways:
 if test "x${build}" = "x${host}" -a "x${host}" = "x${target}"; then
    case ${host_os} in
    hpux*)
@@ -2255,8 +2259,8 @@ fi
 dnl# See if we have a sys/syscall header file that has __NR_tkill.
 if test "x${ac_cv_header_sys_syscall_h}" = "xyes"; then
    AC_CACHE_CHECK([whether <sys/syscall.h> has __NR_tkill],
-                  [gdb_cv_sys_syscall_h_has_tkill],
-     [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+                  [gdb_cv_sys_syscall_h_has_tkill],[
+      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <sys/syscall.h>
       ]],[[
 int i = __NR_tkill;
@@ -2302,14 +2306,13 @@ case ${host_os} in
     gdbinit=.gdbinit
     ;;
 esac
-AC_DEFINE_UNQUOTED([GDBINIT],["${gdbinit}"],[The .gdbinit filename.])
+AC_DEFINE_UNQUOTED([GDBINIT],["${gdbinit}"],[The .gdbinit filename.])dnl
 
 dnl# Handle optional features that can be enabled.
 
 AC_ARG_WITH([sysroot],
-[AS_HELP_STRING([--with-sysroot[=DIR]],
-                [Search for usr/lib et al within DIR.])],
-[
+            [AS_HELP_STRING([--with-sysroot[=DIR]],
+                            [Search for usr/lib et al within DIR.])],[
  case ${with_sysroot} in
  yes) TARGET_SYSTEM_ROOT='${exec_prefix}/${target_alias}/sys-root' ;;
  *) TARGET_SYSTEM_ROOT=${with_sysroot} ;;
@@ -2321,10 +2324,10 @@ AC_ARG_WITH([sysroot],
   if test "x${prefix}" = "xNONE"; then
    test_prefix=/usr/local
   else
-   test_prefix=${prefix}
+   test_prefix="${prefix}"
   fi
  else
-  test_prefix=${exec_prefix}
+  test_prefix="${exec_prefix}"
  fi
  case ${TARGET_SYSTEM_ROOT} in
  "${test_prefix}"|"${test_prefix}/"*|\
@@ -2337,8 +2340,8 @@ AC_ARG_WITH([sysroot],
  TARGET_SYSTEM_ROOT=""
  TARGET_SYSTEM_ROOT_DEFINE='-DTARGET_SYSTEM_ROOT=\"\"'
 ])
-AC_SUBST([TARGET_SYSTEM_ROOT])
-AC_SUBST([TARGET_SYSTEM_ROOT_DEFINE])
+AC_SUBST([TARGET_SYSTEM_ROOT])dnl
+AC_SUBST([TARGET_SYSTEM_ROOT_DEFINE])dnl
 
 # NOTE: Do NOT add -Wall or -Wunused, they both include
 # -Wunused-parameter which reports bogus warnings.
@@ -2349,13 +2352,20 @@ build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
 -Wpointer-sign \
 -Wno-unused -Wunused-value -Wunused-label -Wunused-function \
 -Wunused-macros -Wundef \
--Wempty-body -Wmissing-paramater-type \
+-Wempty-body -Wmissing-paramater-type -Wmissing-declarations \
 -Wno-format-security -Wno-format \
 -Wold-style-declaration -Wold-style-definition"
+
+# If compiler does NOT support the long long data type, see if it can
+# at least warn about it:
+if test "x${gdb_cv_c_long_long}" != "xyes"; then
+  build_warnings="${build_warnings} -Wlong-long"
+fi
 
 case "${host}" in
   *-apple-darwin* | *-apple-macos*)
     # -Wmost is APPLE_LOCAL, as are -Wextra-tokens and -Wnewline-eof
+    # (-Wmost might have to be removed for the same reason as -Wall)
     build_warnings="${build_warnings} -Wmost -Wformat-nonliteral -Wextra-tokens -Wnewline-eof -std=gnu99"
   ;;
 esac
@@ -2373,12 +2383,31 @@ else
   build_warnings="${build_warnings} -Wuninitialized -Winit-self"
 fi
 
-# Up for debate: -Wswitch -Wcomment -trigraphs -Wtrigraphs
-# -Wunused-function -Wunused-variable -Wunused-value
-# -Wchar-subscripts -Wtraditional -Wshadow -Wcast-qual
-# -Wcast-align -Wwrite-strings -Wconversion -Wstrict-prototypes
-# -Wmissing-prototypes -Wmissing-declarations -Wredundant-decls
-# -Woverloaded-virtual -Winline -Wformat -Werror
+# Up for debate (i.e. for debating adding to existing flags): 
+#  * -Wswitch (I like this one)
+#  * -trigraphs (only assuming we leave -Wtrigraphs in, see below)
+#  * -Wunused-variable (to go with -Wunused-value)
+#  * -Wchar-subscripts
+#  * -Wtraditional (yeah right)
+#  * -Wshadow (usually easy enough to fix, if you are using an IDE)
+#  * -Wcast-qual (casting can silence other warnings, so this can conflict)
+#  * -Wcast-align (same as with -Wcast-align)
+#  * -Wwrite-strings (would require a lot of const-ifying)
+#  * -Wconversion (would require a lot of casting)
+#  * -Wstrict-prototypes (already include some parts of it)
+#  * -Wmissing-prototypes (I like this one)
+#  * -Wredundant-decls (I like redundant declarations & dislike this flag)
+#  * -Woverloaded-virtual (If we ever switch to c++)
+#  * -Winline (I can never tell if the compiler is right or not with this)
+#  * -Wformat (currently we explicitly disable this)
+# Up for debate (i.e. for debating removing from existing flags):
+#  * -Wcomment (if we just switch to -Wall instead)
+#  * -Wtrigraphs (might need -trigraphs to be added to stay in, see above)
+#  * -Wunused-function (hard to fix)
+#  * -Wunused-value (dummy workaround method for this is dumb)
+# NOT actually up for debate:
+#  * -Werror (never add this)
+#  * -pedantic-errors (likewise, never add this)
 AC_ARG_ENABLE([build-warnings],
 [AS_HELP_STRING([--enable-build-warnings],
                 [Enable build-time compiler warnings if gcc is used])],
@@ -2408,19 +2437,20 @@ AC_ARG_ENABLE([gdb-build-warnings],
 esac
 if test x"${silent}" != x"yes" && test x"${build_warnings}" != x""; then
   echo "Setting GDB specific compiler warning flags = ${build_warnings}" 6>&1
-fi])dnl
+fi])
 WARN_CFLAGS=""
 WERROR_CFLAGS=""
-if test "x${build_warnings}" != x -a "x${GCC}" = "xyes"
+if test "x${build_warnings}" != "x" -a "x${GCC}" = "xyes"
 then
     AC_MSG_CHECKING([compiler warning flags])
     # Separate out the -Werror flag as some files just cannot be
     # compiled with it enabled.
+    # Do need to use it for these conftests though.
     for w in ${build_warnings}; do
 	case ${w} in
 	*) # Check that GCC accepts it
 	    saved_CFLAGS="${CFLAGS}"
-	    CFLAGS="${CFLAGS} ${w}"
+	    CFLAGS="${CFLAGS} ${w} -Werror"
 	    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
                               [WARN_CFLAGS="${WARN_CFLAGS} ${w}"],[])
 	    CFLAGS="${saved_CFLAGS}"
@@ -2428,15 +2458,16 @@ then
     done
     AC_MSG_RESULT([${WARN_CFLAGS}${WERROR_CFLAGS}])
 fi
-AC_SUBST([WARN_CFLAGS])
-AC_SUBST([WERROR_CFLAGS])
+AC_SUBST([WARN_CFLAGS])dnl
+AC_SUBST([WERROR_CFLAGS])dnl
 
 MMALLOC_CFLAGS=""
 MMALLOC=""
-AC_SUBST([MMALLOC_CFLAGS])
-AC_SUBST([MMALLOC])
+AC_SUBST([MMALLOC_CFLAGS])dnl
+AC_SUBST([MMALLOC])dnl
 
-# APPLE LOCAL: We (used to) need to use mmalloc all the time on our platform.
+# APPLE LOCAL: We (used to) need to use mmalloc all the time on our
+# platform.
 case "${host}" in
   *-apple-darwin* | *-apple-macos*)
     mmalloc_default_value="true" ;;
@@ -2464,8 +2495,7 @@ AC_CACHE_CHECK([for cygwin],[gdb_cv_os_cygwin],
 [AC_EGREP_CPP([you_lose],[
 #if defined (__CYGWIN__) || defined (__CYGWIN32__)
 you_lose
-#endif],[gdb_cv_os_cygwin=yes],[gdb_cv_os_cygwin=no])])
-
+#endif],[gdb_cv_os_cygwin=yes],[gdb_cv_os_cygwin=no])])dnl
 
 dnl# Figure out which of the many generic ser-*.c files the _host_
 dnl# supports.
@@ -2475,7 +2505,7 @@ case ${host} in
   *djgpp* ) SER_HARDWIRE=ser-go32.o ;;
   *mingw32*) SER_HARDWIRE="ser-base.o ser-tcp.o" ;;
 esac
-AC_SUBST([SER_HARDWIRE])
+AC_SUBST([SER_HARDWIRE])dnl
 
 # libreadline needs libuser32.a in a cygwin environment
 WIN32LIBS=""
@@ -2498,7 +2528,7 @@ case ${host} in
     WIN32LIBS="${WIN32LIBS} -lws2_32"
     ;;
 esac	    
-AC_SUBST([WIN32LIBS])
+AC_SUBST([WIN32LIBS])dnl
 
 if test "x${gdb_host_obs}" != "x"; then
   # Add any host-specific objects to GDB.
@@ -2507,12 +2537,12 @@ fi
 
 LIBGUI="../libgui/src/libgui.a"
 GUI_CFLAGS_X="-I${srcdir}/../libgui/src"
-AC_SUBST([LIBGUI])
-AC_SUBST([GUI_CFLAGS_X])
+AC_SUBST([LIBGUI])dnl
+AC_SUBST([GUI_CFLAGS_X])dnl
 
 WIN32LDAPP=""
-AC_SUBST([WIN32LIBS])
-AC_SUBST([WIN32LDAPP])
+AC_SUBST([WIN32LIBS])dnl
+AC_SUBST([WIN32LDAPP])dnl
 
 case "${host}" in
 *-*-cygwin* | *-*-mingw* )
@@ -2606,18 +2636,18 @@ else
     AC_MSG_NOTICE([skipping gdbtk tests])
 fi
 
-AC_SUBST([X_CFLAGS])
-AC_SUBST([X_LDFLAGS])
-AC_SUBST([X_LIBS])
-AC_SUBST([TCL_DEPS])
-AC_SUBST([TK_DEPS])
-AC_SUBST([ITCLLIB])
-AC_SUBST([ITCL_DEPS])
-AC_SUBST([ITKLIB])
-AC_SUBST([ITK_DEPS])
-AC_SUBST([GDBTKLIBS])
-AC_SUBST([GDBTK_CFLAGS])
-AC_SUBST([GDBTK_SRC_DIR])
+AC_SUBST([X_CFLAGS])dnl
+AC_SUBST([X_LDFLAGS])dnl
+AC_SUBST([X_LIBS])dnl
+AC_SUBST([TCL_DEPS])dnl
+AC_SUBST([TK_DEPS])dnl
+AC_SUBST([ITCLLIB])dnl
+AC_SUBST([ITCL_DEPS])dnl
+AC_SUBST([ITKLIB])dnl
+AC_SUBST([ITK_DEPS])dnl
+AC_SUBST([GDBTKLIBS])dnl
+AC_SUBST([GDBTK_CFLAGS])dnl
+AC_SUBST([GDBTK_SRC_DIR])dnl
 
 AC_PATH_XTRA dnl# calls AC_PATH_X as well
 
@@ -2658,7 +2688,7 @@ AC_ARG_ENABLE([sim],
   no)  ignore_sim=true ;;
   *)   ignore_sim=false ;;
  esac],
-[ignore_sim=false])
+[ignore_sim=false])dnl
 
 if test ! -d "${srcdir}/../sim"; then
   ignore_sim=true
@@ -2674,37 +2704,37 @@ else
     IGNORE_SIM_OBS=""
     AC_DEFINE([WITH_SIM],[1],[Define if the simulator is being linked in.])
 fi
-AC_SUBST([IGNORE_SIM])
-AC_SUBST([IGNORE_SIM_OBS])
+AC_SUBST([IGNORE_SIM])dnl
+AC_SUBST([IGNORE_SIM_OBS])dnl
 
-AC_SUBST([ENABLE_CFLAGS])
-AC_SUBST([ENABLE_LDFLAGS])
+AC_SUBST([ENABLE_CFLAGS])dnl
+AC_SUBST([ENABLE_LDFLAGS])dnl
 
-AC_SUBST([PROFILE_CFLAGS])
+AC_SUBST([PROFILE_CFLAGS])dnl
 
-AC_SUBST([CONFIG_OBS])
-AC_SUBST([CONFIG_DEPS])
-AC_SUBST([CONFIG_SRCS])
-AC_SUBST([CONFIG_ALL])
-AC_SUBST([CONFIG_CLEAN])
-AC_SUBST([CONFIG_INSTALL])
-AC_SUBST([CONFIG_UNINSTALL])
+AC_SUBST([CONFIG_OBS])dnl
+AC_SUBST([CONFIG_DEPS])dnl
+AC_SUBST([CONFIG_SRCS])dnl
+AC_SUBST([CONFIG_ALL])dnl
+AC_SUBST([CONFIG_CLEAN])dnl
+AC_SUBST([CONFIG_INSTALL])dnl
+AC_SUBST([CONFIG_UNINSTALL])dnl
 
 # List of host floatformats.
 AC_DEFINE_UNQUOTED([GDB_HOST_FLOAT_FORMAT],[${gdb_host_float_format}],
-                   [Host float floatformat])
+                   [Host float floatformat])dnl
 AC_DEFINE_UNQUOTED([GDB_HOST_DOUBLE_FORMAT],[${gdb_host_double_format}],
-                   [Host double floatformat])
+                   [Host double floatformat])dnl
 AC_DEFINE_UNQUOTED([GDB_HOST_LONG_DOUBLE_FORMAT],
                    [${gdb_host_long_double_format}],
-                   [Host long double floatformat])
+                   [Host long double floatformat])dnl
 
 # target_subdir is used by the testsuite to find the target libraries.
 target_subdir=""
 if test "${host}" != "${target}"; then
     target_subdir="${target_alias}/"
 fi
-AC_SUBST([target_subdir])
+AC_SUBST([target_subdir])dnl
 
 frags=""
 if test "${target}" = "${host}"; then
@@ -2723,9 +2753,9 @@ if test ! -f ${target_makefile_frag}; then
 fi
 frags="${frags} ${target_makefile_frag}"
 
-AC_SUBST_FILE([host_makefile_frag])
-AC_SUBST_FILE([target_makefile_frag])
-AC_SUBST([frags])
+AC_SUBST_FILE([host_makefile_frag])dnl
+AC_SUBST_FILE([target_makefile_frag])dnl
+AC_SUBST([frags])dnl
 
 changequote(,)dnl
 hostfile=`sed -n '
@@ -2758,15 +2788,21 @@ AC_ARG_ENABLE([multi-ice],
       ;;
     *) AC_MSG_ERROR([bad value ${enableval} for --enable-multi-ice]) ;;
   esac
-])
+])dnl
 
 if test "x${enable_multi_ice}" = "xyes"; then
    if test -d multi-ice; then
-dnl# uncomment once it is ready:
-dnl#     AC_CONFIG_SUBDIRS([multi-ice])
+     AC_CONFIG_SUBDIRS([multi-ice])
      :
    else
      AC_MSG_WARN([multi-ice is requested but the subdir for it is missing])
+   fi
+fi
+
+if test "x${enable_multi_ice}" != "xno"; then
+   if test -d rem-multi_old; then
+     AC_CONFIG_SUBDIRS([rem-multi_old])
+     :
    fi
 fi
 
@@ -2774,8 +2810,8 @@ fi
 if test "x${target}" = "x${host}"; then
   AC_MSG_CHECKING([whether gdbserver is supported on this host])
   AC_ARG_VAR([build_gdbserver],
-        [Try to override the decision to build the gdbserver
-         (unsupported, might not work)])
+             [Try to override the decision to build the gdbserver
+              (unsupported, might not work)])
   if test "x${build_gdbserver}" = "xyes"; then
     AC_MSG_RESULT([yes])
     AC_CONFIG_SUBDIRS([gdbserver])
@@ -2787,7 +2823,7 @@ fi
 # We build rdi-share on ARM-based targets, as instructed by configure.tgt.
 if test "x${build_rdi_share}" = "xyes" -o "x${target_cpu}" = "xarm"; then
   AC_ARG_VAR([build_rdi_share],
-             [Try to override the decision to build in the rdi-share subdirectory
+             [Try to override decision to build the rdi-share subdirectory
               (unsupported, might not work)])
   AC_CONFIG_SUBDIRS([rdi-share])
 fi
@@ -2820,7 +2856,7 @@ if test "${hostfile}" != ""; then
     links="${links} xm.h"
     AC_DEFINE_UNQUOTED([GDB_XM_FILE],["${GDB_XM_FILE}"],[hostfile])
 fi
-AC_SUBST([xm_h])
+AC_SUBST([xm_h])dnl
 
 rm -f tm.h
 tm_h=""
@@ -2834,7 +2870,7 @@ if test "${targetfile}" != ""; then
     links="${links} tm.h"
     AC_DEFINE_UNQUOTED([GDB_TM_FILE],["${GDB_TM_FILE}"],[targetfile])
 fi
-AC_SUBST([tm_h])
+AC_SUBST([tm_h])dnl
 
 rm -f nm.h
 nm_h=""
@@ -2848,7 +2884,7 @@ if test "${nativefile}" != ""; then
     links="${links} nm.h"
     AC_DEFINE_UNQUOTED([GDB_NM_FILE],["${GDB_NM_FILE}"],[nativefile])
 fi
-AC_SUBST([nm_h])
+AC_SUBST([nm_h])dnl
 
 if test "x${files}" = "x"; then
   test -z "${files}"
@@ -2866,6 +2902,7 @@ else
   AC_MSG_NOTICE([links should be "${links}"])
 fi
 
+dnl# keep this warning in here just in case:
 AC_DIAGNOSE([obsolete],[It is technically impossible to `autoupdate'
 cleanly from AC\_LINK\_FILES to AC_CONFIG_LINKS. `autoupdate' provides a
 functional but inelegant update, you should probably tune the result
@@ -2913,23 +2950,23 @@ GCORE_TRANSFORM_NAME=`echo gcore | sed -e "${transform}"`
 if test "x${GCORE_TRANSFORM_NAME}" = "x"; then
   test -z "${GCORE_TRANSFORM_NAME}" && export GCORE_TRANSFORM_NAME=gcore
 fi
-AC_SUBST([GCORE_TRANSFORM_NAME])
+AC_SUBST([GCORE_TRANSFORM_NAME])dnl
 AC_ARG_VAR([GDB_DATADIR],[where to put gdb's data files])
 if test -z "${GDB_DATADIR}"; then
     export GDB_DATADIR=${datadir}/gdb
 fi
-AC_SUBST([GDB_DATADIR])
+AC_SUBST([GDB_DATADIR])dnl
 
 AC_CONFIG_FILES([Makefile \
                  data-directory/Makefile \
                  .gdbinit:gdbinit.in \
                  gnulib/Makefile \
-                 gdb-gdb.gdb])
-AC_CONFIG_FILES([gcore],[chmod +x gcore])
+                 gdb-gdb.gdb])dnl
+AC_CONFIG_FILES([gcore],[chmod +x gcore])dnl
 AC_CONFIG_COMMANDS([default],[
 dnl# Autoconf does NOT provide a mechanism for modifying definitions 
 dnl# provided by makefile fragments.
-dnl#
+dnl# So instead do this:
 
 changequote(,)dnl
 sed -e '/^DEPRECATED_TM_FILE[ 	]*=/s,^DEPRECATED_TM_FILE[ 	]*=[ 	]*,&config/'"${gdb_target_cpu}"'/,
@@ -2947,7 +2984,7 @@ esac
 gdb_host_cpu=${gdb_host_cpu}
 gdb_target_cpu=${gdb_target_cpu}
 nativefile=${nativefile}
-])
+])dnl
 
 AC_CONFIG_COMMANDS([config_status_vpath_build_fix],[
 if test "${srcdir}" != "."; then
@@ -2957,7 +2994,7 @@ if test "${srcdir}" != "."; then
     cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
   fi
 fi
-],[])
+],[])dnl
 
 AC_OUTPUT
 

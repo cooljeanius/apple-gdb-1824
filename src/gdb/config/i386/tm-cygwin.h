@@ -1,4 +1,5 @@
-/* Macro definitions for i386 running under the win32 API Unix.
+/* tm-cygwin.h
+   Macro definitions for i386 running under the win32 API Unix.
 
    Copyright 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2004 Free
    Software Foundation, Inc.

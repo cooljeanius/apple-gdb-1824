@@ -1,3 +1,5 @@
+/* ppc-macosx-thread-status.h */
+
 #ifndef __GDB_PPC_MACOSX_THREAD_STATUS_H__
 #define __GDB_PPC_MACOSX_THREAD_STATUS_H__
 

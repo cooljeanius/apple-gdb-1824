@@ -103,14 +103,14 @@ builddir=`cd $2 && /bin/pwd` || exit 1
 make=${MAKE:-make}
 MAKE=${make}
 export MAKE
-# We dont want GDB do dump cores.
+# We do NOT want GDB do dump cores.
 ulimit -c 0
 
-# Just make sure we're in the right directory.
+# Just make sure we are in the right directory.
 maintainers=${srcdir}/gdb/MAINTAINERS
 if [ ! -r ${maintainers} ]
 then
-    echo Maintainers file ${maintainers} not found
+    echo "Maintainers file ${maintainers} not found" >&2
     exit 1
 fi
 
@@ -124,14 +124,14 @@ dir=${builddir}/ALL
 # Should a scratch rebuild be forced, for perhaps the entire build be skipped?
 if ${force}
 then
-  echo ... forcing rebuild
+  echo "... forcing rebuild"
   rm -rf ${dir}
 fi
 
 # Did the previous configure attempt fail?  If it did restart from scratch
 if test -d ${dir} -a ! -r ${dir}/Makefile
 then
-  echo ... removing partially configured 
+  echo ... removing partially configured
   rm -rf ${dir}
   if test -d ${dir}
   then
@@ -168,7 +168,7 @@ then
   # Without Makefile GDB won't build.
   if test ! -r Makefile
   then
-    echo "... CONFIG ERROR: GDB couldn't be configured " | tee -a Config.log
+    echo "... CONFIG ERROR: GDB could NOT be configured " | tee -a Config.log
     echo "... CONFIG ERROR: see Config.log for details "
     exit 1
   fi
@@ -185,7 +185,7 @@ then
   # If the build fails, exit.
   if test ! -x gdb/gdb -a ! -x gdb/gdb.exe
   then
-    echo "... BUILD ERROR: GDB couldn't be compiled " | tee -a Build.log
+    echo "... BUILD ERROR: GDB could NOT be compiled " | tee -a Build.log
     echo "... BUILD ERROR: see Build.log for details "
     exit 1
   fi
@@ -209,7 +209,7 @@ mv arch gdb_archs
 if test "${targexp}" != ""
 then
   alltarg=`cat gdb_archs | grep ${targexp}`
-else 
+else
   alltarg=`cat gdb_archs`
 fi
 rm -f gdb_archs
@@ -237,7 +237,7 @@ EOF
   else
     echo " OK"
   fi
-  
+
   # Create a sed script that cleans up the output from GDB.
   rm -f mbuild.sed
   # Rules to replace <0xNNNN> with the corresponding function's name.

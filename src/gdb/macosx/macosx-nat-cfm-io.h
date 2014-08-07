@@ -8,3 +8,5 @@
 #include "symtab.h"
 
 #endif /* __GDB_MACOSX_NAT_CFM_IO_H__ */
+
+/* EOF */

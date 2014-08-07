@@ -1,63 +1,71 @@
-dnl This file is included into all any other acinclude file that needs
-dnl to use these macros.
+dnl# This file is included into all any other acinclude file that needs
+dnl# to use these macros.
 
-dnl This is copied from autoconf 2.12, but does calls our own AC_PROG_CC_WORKS,
-dnl and doesn't call AC_PROG_CXX_GNU, cause we test for that in  AC_PROG_CC_WORKS.
-dnl We are probably using a cross compiler, which will not be able to fully
-dnl link an executable.  This should really be fixed in autoconf itself.
-dnl Find a working G++ cross compiler. This only works for the GNU C++ compiler.
-AC_DEFUN([CYG_AC_PROG_CXX_CROSS],
-[AC_BEFORE([$0], [AC_PROG_CXXCPP])
-AC_CHECK_PROGS(CXX, $CCC c++ g++ gcc CC cxx cc++, gcc)
+dnl#TODO: autoupdate
+
+dnl# This is copied from autoconf 2.12, but does calls our own
+dnl# AC_PROG_CC_WORKS, and does NOT call AC_PROG_CXX_GNU, because we test
+dnl# for that in  AC_PROG_CC_WORKS. We are probably using a cross compiler,
+dnl# which will not be able to fully link an executable.
+dnl# This should really be fixed in autoconf itself.
+dnl# Find a working G++ cross compiler.
+dnl# This only works for the GNU C++ compiler.
+AC_DEFUN([CYG_AC_PROG_CXX_CROSS],[
+AC_BEFORE([$0],[AC_PROG_CXXCPP])dnl
+AC_CHECK_PROGS([CXX],[${CCC} c++ g++ gcc CC cxx cc++],[gcc])dnl
 
 CYG_AC_PROG_GXX_WORKS
 
-if test $ac_cv_prog_gxx = yes; then
+if test "x${ac_cv_prog_gxx}" = "xyes"; then
   GXX=yes
-dnl Check whether -g works, even if CXXFLAGS is set, in case the package
-dnl plays around with CXXFLAGS (such as to build both debugging and
-dnl normal versions of a library), tasteless as that idea is.
+dnl# Check whether -g works, even if CXXFLAGS is set, in case the package
+dnl# plays around with CXXFLAGS (such as to build both debugging and
+dnl# normal versions of a library), tasteless as that idea is.
   ac_test_CXXFLAGS="${CXXFLAGS+set}"
-  ac_save_CXXFLAGS="$CXXFLAGS"
-  CXXFLAGS=
+  ac_save_CXXFLAGS="${CXXFLAGS}"
+  CXXFLAGS=""
   AC_PROG_CXX_G
-  if test "$ac_test_CXXFLAGS" = set; then
-    CXXFLAGS="$ac_save_CXXFLAGS"
-  elif test $ac_cv_prog_cxx_g = yes; then
+  if test "x${ac_test_CXXFLAGS}" = "xset"; then
+    CXXFLAGS="${ac_save_CXXFLAGS}"
+  elif test "x${ac_cv_prog_cxx_g}" = "xyes"; then
     CXXFLAGS="-g -O2"
   else
     CXXFLAGS="-O2"
   fi
 else
-  GXX=
-  test "${CXXFLAGS+set}" = set || CXXFLAGS="-g"
+  GXX=""
+  test "${CXXFLAGS+set}" = "set" || CXXFLAGS="-g"
 fi
 ])
 
-dnl See if the G++ compiler we found works.
-AC_DEFUN([CYG_AC_PROG_GXX_WORKS],
-[AC_MSG_CHECKING([whether the G++ compiler ($CXX $CXXFLAGS $LDFLAGS) actually works])
+dnl# See if the G++ compiler we found works:
+AC_DEFUN([CYG_AC_PROG_GXX_WORKS],[
+AC_REQUIRE([AC_PROG_CXX])dnl
+AC_REQUIRE([AC_PROG_SED])dnl
+
+AC_MSG_CHECKING([whether the G++ compiler (${CXX} ${CXXFLAGS} ${LDFLAGS}) actually works])
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
-dnl Try a test case. We only compile, because it's close to impossible
+dnl Try a test case. We only compile, because it is close to impossible
 dnl to get a correct fully linked executable with a cross compiler. For
 dnl most cross compilers, this test is bogus. For G++, we can use various
 dnl other compile line options to get a decent idea that the cross compiler
-dnl actually does work, even though we can't produce an executable without
-dnl more info about the target it's being compiled for. This only works
+dnl actually does work, even though we cannot produce an executable without
+dnl more info about the target it is being compiled for. This only works
 dnl for the GNU C++ compiler.
 
-dnl Transform the name of the compiler to it's cross variant, unless
+dnl Transform the name of the compiler to its cross variant, unless
 dnl CXX is set. This is also what CXX gets set to in the generated
 dnl Makefile.
-if test x"${CXX}" = xc++ ; then
+if test x"${CXX}" = x"c++"; then
     CXX=`echo gcc | sed -e "${program_transform_name}"`
 fi
 
-dnl Get G++'s full path to libgcc.a
+dnl# Get G++'s full path to libgcc.a
 libgccpath=`${CXX} --print-libgcc`
 
-dnl If we don't have a path with libgcc.a on the end, this isn't G++.
+dnl# If we do NOT have a path with libgcc.a on the end, then this is NOT
+dnl# G++:
 if test `echo $libgccpath | sed -e 's:/.*/::'` = libgcc.a ; then
    ac_cv_prog_gxx=yes
 else
@@ -100,12 +108,13 @@ cross_compiling=$ac_cv_prog_cxx_cross
 AC_SUBST(CXX)
 ])
 
-dnl ====================================================================
-dnl Find a working GCC cross compiler. This only works for the GNU gcc compiler.
-dnl This is based on the macros above for G++.
-AC_DEFUN([CYG_AC_PROG_CC_CROSS],
-[AC_BEFORE([$0], [AC_PROG_CCPP])
-AC_CHECK_PROGS(CC, cc, gcc)
+dnl#====================================================================
+dnl# Find a working GCC cross compiler. This only works for the GNU gcc
+dnl# compiler.
+dnl# This is based on the macros above for G++.
+AC_DEFUN([CYG_AC_PROG_CC_CROSS],[
+AC_BEFORE([$0],[AC_PROG_CCPP])dnl
+AC_CHECK_PROGS([CC],[cc gcc],[gcc])dnl
 
 CYG_AC_PROG_GCC_WORKS
 
@@ -126,34 +135,38 @@ dnl normal versions of a library), tasteless as that idea is.
     CFLAGS="-O2"
   fi
 else
-  GXX=
-  test "${CFLAGS+set}" = set || CFLAGS="-g"
+  GCC=""
+  test "${CFLAGS+set}" = "set" || CFLAGS="-g"
 fi
 ])
 
 dnl See if the GCC compiler we found works.
-AC_DEFUN([CYG_AC_PROG_GCC_WORKS],
-[AC_MSG_CHECKING([whether the Gcc compiler ($CC $CFLAGS $LDFLAGS) actually works])
+AC_DEFUN([CYG_AC_PROG_GCC_WORKS],[
+AC_REQUIRE([AC_PROG_CC])dnl
+AC_REQUIRE([AC_PROG_SED])dnl
+
+AC_MSG_CHECKING([whether the Gcc compiler ($CC $CFLAGS $LDFLAGS) actually works])
 AC_LANG_SAVE
 AC_LANG_C
-dnl Try a test case. We only compile, because it's close to impossible
+dnl Try a test case. We only compile, because it is close to impossible
 dnl to get a correct fully linked executable with a cross
-dnl compiler. For most cross compilers, this test is bogus. For G++,
+dnl compiler. For most cross compilers, this test is bogus. For Gcc,
 dnl we can use various other compile line options to get a decent idea
-dnl that the cross compiler actually does work, even though we can't
-dnl produce an executable without more info about the target it's
-dnl being compiled for. This only works for the GNU C++ compiler.
+dnl that the cross compiler actually does work, even though we cannot
+dnl produce an executable without more info about the target it is
+dnl being compiled for. This only works for the GNU C compiler.
 
-dnl Transform the name of the compiler to it's cross variant, unless
-dnl CXX is set. This is also what CC gets set to in the generated Makefile.
+dnl Transform the name of the compiler to its cross variant, unless
+dnl CC is set. This is also what CC gets set to in the generated Makefile.
 if test x"${CC}" = xcc ; then
     CC=`echo gcc | sed -e "${program_transform_name}"`
 fi
 
-dnl Get Gcc's full path to libgcc.a
+dnl# Get Gcc's full path to libgcc.a
 libgccpath=`${CC} --print-libgcc`
 
-dnl If we don't have a path with libgcc.a on the end, this isn't G++.
+dnl# If we do NOT have a path with libgcc.a on the end, then this is NOT
+dnl# Gcc:
 if test `echo $libgccpath | sed -e 's:/.*/::'` = libgcc.a ; then
    ac_cv_prog_gcc=yes
 else
@@ -187,18 +200,25 @@ fi
 
 AC_LANG_RESTORE
 AC_MSG_RESULT($ac_cv_prog_cc_works)
-if test x"$ac_cv_prog_cc_works" = xno; then
+if test x"$ac_cv_prog_cc_works" = x"no"; then
   AC_MSG_ERROR([installation or configuration problem: C++ compiler cannot create executables.])
 fi
-AC_MSG_CHECKING([whether the Gcc compiler ($CC $CFLAGS $LDFLAGS) is a cross-compiler])
-AC_MSG_RESULT($ac_cv_prog_cc_cross)
-cross_compiling=$ac_cv_prog_cc_cross
-AC_SUBST(CC)
-])
+AC_MSG_CHECKING([whether the Gcc compiler (${CC} ${CFLAGS} ${LDFLAGS}) is a cross-compiler])
+AC_MSG_RESULT([${ac_cv_prog_cc_cross}])
+cross_compiling="${ac_cv_prog_cc_cross}"
+AC_SUBST([CC])dnl
+])dnl
 
-dnl ====================================================================
-dnl Find the BFD library in the build tree. This is used to access and
-dnl manipulate object or executable files.
+dnl# This might have been a typo above, but just in case it was meant
+dnl# to actually be a macro that is not yet defined:
+AC_DEFUN([AC_PROG_CCPP],[
+  AC_REQUIRE([AC_PROG_CC])dnl
+  AC_REQUIRE([AC_PROG_CPP])dnl
+])dnl
+
+dnl#====================================================================
+dnl# Find the BFD library in the build tree. This is used to access and
+dnl# manipulate object or executable files.
 AC_DEFUN([CYG_AC_PATH_BFD], [
 AC_MSG_CHECKING(for the bfd header in the build tree)
 dirlist=".. ../../ ../../../ ../../../../ ../../../../../ ../../../../../../ ../../../../../../.. ../../../../../../../.. ../../../../../../../../.. ../../../../../../../../../.."
@@ -235,14 +255,15 @@ if test x"${ac_cv_c_bfdlib}" != x; then
 else
     AC_MSG_RESULT(none)
 fi
-AC_SUBST(BFDLIB)
-])
 
-dnl ====================================================================
-dnl Find the libiberty library. This defines many commonly used C
-dnl functions that exists in various states based on the underlying OS.
-AC_DEFUN([CYG_AC_PATH_LIBERTY], [
-AC_MSG_CHECKING(for the liberty library in the build tree)
+AC_SUBST([BFDLIB])dnl
+])dnl
+
+dnl#====================================================================
+dnl# Find the libiberty library. This defines many commonly used C
+dnl# functions that exists in various states based on the underlying OS.
+AC_DEFUN([CYG_AC_PATH_LIBERTY],[
+AC_MSG_CHECKING([for the liberty library in the build tree])
 dirlist=".. ../../ ../../../ ../../../../ ../../../../../ ../../../../../../ ../../../../../../.. ../../../../../../../.. ../../../../../../../../.. ../../../../../../../../../.."
 AC_CACHE_VAL(ac_cv_c_liberty,[
 for i in $dirlist; do
@@ -257,11 +278,12 @@ if test x"${ac_cv_c_liberty}" != x; then
 else
     AC_MSG_RESULT(none)
 fi
-AC_SUBST(LIBERTY)
-])
 
-dnl ====================================================================
-dnl Find the opcodes library. This is used to do dissasemblies.
+AC_SUBST([LIBERTY])dnl
+])dnl
+
+dnl#====================================================================
+dnl# Find the opcodes library. This is used to do dissasemblies.
 AC_DEFUN([CYG_AC_PATH_OPCODES], [
 AC_MSG_CHECKING(for the opcodes library in the build tree)
 dirlist=".. ../../ ../../../ ../../../../ ../../../../../ ../../../../../../ ../../../../../../.. ../../../../../../../.. ../../../../../../../../.. ../../../../../../../../../.."
@@ -278,13 +300,14 @@ if test x"${ac_cv_c_opc}" != x; then
 else
     AC_MSG_RESULT(none)
 fi
-AC_SUBST(OPCODESLIB)
-])
 
-dnl ====================================================================
-dnl Look for the DejaGnu header file in the source tree. This file
-dnl defines the functions used to testing support.
-AC_DEFUN([CYG_AC_PATH_DEJAGNU], [
+AC_SUBST([OPCODESLIB])dnl
+])dnl
+
+dnl#====================================================================
+dnl# Look for the DejaGnu header file in the source tree. This file
+dnl# defines the functions used to testing support.
+AC_DEFUN([CYG_AC_PATH_DEJAGNU],[
 AC_MSG_CHECKING(for the testing support files in the source tree)
 dirlist=".. ../../ ../../../ ../../../../ ../../../../../ ../../../../../../ ../../../../../../.. ../../../../../../../.. ../../../../../../../../.. ../../../../../../../../../.."
 AC_CACHE_VAL(ac_cv_c_dejagnu,[
@@ -327,14 +350,15 @@ else
     RUNTESTDIR=""
     AC_MSG_RESULT(none)
 fi
-AC_SUBST(RUNTESTDIR)
-AC_SUBST(DEJAGNULIB)
-AC_SUBST(DEJAGNUHDIR)
-])
 
-dnl ====================================================================
-dnl Find the libintl library in the build tree. This is for
-dnl  internationalization support.
+AC_SUBST([RUNTESTDIR])dnl
+AC_SUBST([DEJAGNULIB])dnl
+AC_SUBST([DEJAGNUHDIR])dnl
+])dnl
+
+dnl#====================================================================
+dnl# Find the libintl library in the build tree. This is for
+dnl#  internationalization support.
 AC_DEFUN([CYG_AC_PATH_INTL], [
 AC_MSG_CHECKING(for the intl header in the build tree)
 dirlist=".. ../../ ../../../ ../../../../ ../../../../../ ../../../../../../ ../../../../../../.. ../../../../../../../.. ../../../../../../../../.. ../../../../../../../../../.."
@@ -370,12 +394,13 @@ if test x"${ac_cv_c_intllib}" != x; then
 else
     AC_MSG_RESULT(none)
 fi
-AC_SUBST(INTLLIB)
-])
 
-dnl ====================================================================
-dnl Find the simulator library.
-AC_DEFUN([CYG_AC_PATH_SIM], [
+AC_SUBST([INTLLIB])dnl
+])dnl
+
+dnl#====================================================================
+dnl# Find the simulator library:
+AC_DEFUN([CYG_AC_PATH_SIM],[
 dirlist=".. ../../ ../../../ ../../../../ ../../../../../ ../../../../../../ ../../../../../../.. ../../../../../../../.. ../../../../../../../../.. ../../../../../../../../../.. ../../../../../../../../../.."
 case "$target_cpu" in
     powerpc)	target_dir=ppc ;;
@@ -401,9 +426,9 @@ else
 fi
 AC_SUBST(SIMHDIR)
 
-dnl See whether it's a devo or Foundry branch simulator
-AC_MSG_CHECKING(Whether this is a devo simulator )
-AC_CACHE_VAL(ac_cv_c_simdevo,[
+dnl# See whether it is a devo or Foundry branch simulator:
+AC_MSG_CHECKING([Whether this is a devo simulator ])
+AC_CACHE_VAL([ac_cv_c_simdevo],[
     CPPFLAGS="$CPPFLAGS $SIMHDIR"
     AC_EGREP_HEADER([SIM_DESC sim_open.*struct _bfd], remote-sim.h,
         ac_cv_c_simdevo=yes,
@@ -415,7 +440,7 @@ fi
 AC_MSG_RESULT(${ac_cv_c_simdevo})
 AC_SUBST(HAVE_DEVO_SIM)
 
-dnl Next look for the library
+dnl# Next look for the library:
 AC_MSG_CHECKING(for the simulator library)
 AC_CACHE_VAL(ac_cv_c_simlib,[
 for i in $dirlist; do
@@ -428,16 +453,16 @@ if test x"${ac_cv_c_simlib}" != x; then
     SIMLIB="-L${ac_cv_c_simlib}"
 else
     AC_MSG_RESULT(none)
-    dnl FIXME: this is kinda bogus, cause umtimately the TM will build
+    dnl FIXME: this is kinda bogus, because ultimately the TM will build
     dnl all the libraries for several architectures. But for now, this
     dnl will work till then.
 dnl     AC_MSG_CHECKING(for the simulator installed with the compiler libraries)
-    dnl Transform the name of the compiler to it's cross variant, unless
+    dnl Transform the name of the compiler to its cross variant, unless
     dnl CXX is set. This is also what CXX gets set to in the generated
     dnl Makefile.
     CROSS_GCC=`echo gcc | sed -e "s/^/$target/"`
 
-    dnl Get G++'s full path to libgcc.a
+    dnl# Get G++'s full path to libgcc.a
 changequote(,)
     gccpath=`${CROSS_GCC} --print-libgcc | sed -e 's:[a-z0-9A-Z\.\-]*/libgcc.a::' -e 's:lib/gcc-lib/::'`lib
 changequote([,])
@@ -452,12 +477,13 @@ changequote([,])
 dnl         ac_cv_c_simlib=none
     fi
 fi
-AC_SUBST(SIMLIB)
-])
 
-dnl ====================================================================
-dnl Find the libiberty library.
-AC_DEFUN([CYG_AC_PATH_LIBIBERTY], [
+AC_SUBST([SIMLIB])dnl
+])dnl
+
+dnl#====================================================================
+dnl# Find the libiberty library.
+AC_DEFUN([CYG_AC_PATH_LIBIBERTY],[
 AC_MSG_CHECKING(for the libiberty library in the build tree)
 dirlist=".. ../../ ../../../ ../../../../ ../../../../../ ../../../../../../ ../../../../../../.. ../../../../../../../.. ../../../../../../../../.. ../../../../../../../../../.."
 AC_CACHE_VAL(ac_cv_c_libib,[
@@ -473,12 +499,13 @@ if test x"${ac_cv_c_libib}" != x; then
 else
     AC_MSG_RESULT(none)
 fi
-AC_SUBST(LIBIBERTY)
-])
 
-dnl ====================================================================
-AC_DEFUN([CYG_AC_PATH_DEVO], [
-AC_MSG_CHECKING(for devo headers in the source tree)
+AC_SUBST([LIBIBERTY])dnl
+])dnl
+
+dnl#====================================================================
+AC_DEFUN([CYG_AC_PATH_DEVO],[
+AC_MSG_CHECKING([for devo headers in the source tree])
 dirlist=".. ../../ ../../../ ../../../../ ../../../../../ ../../../../../../ ../../../../../../.. ../../../../../../../.. ../../../../../../../../.. ../../../../../../../../../.."
 AC_CACHE_VAL(ac_cv_c_devoh,[
 for i in $dirlist; do
@@ -493,13 +520,14 @@ if test x"${ac_cv_c_devoh}" != x; then
 else
     AC_MSG_RESULT(none)
 fi
-AC_SUBST(DEVOHDIR)
-])
 
-dnl ====================================================================
-dnl find the IDE library and headers.
-AC_DEFUN([CYG_AC_PATH_IDE], [
-AC_MSG_CHECKING(for IDE headers in the source tree)
+AC_SUBST([DEVOHDIR])dnl
+])dnl
+
+dnl#====================================================================
+dnl# find the IDE library and headers.
+AC_DEFUN([CYG_AC_PATH_IDE],[
+AC_MSG_CHECKING([for IDE headers in the source tree])
 dirlist=".. ../../ ../../../ ../../../../ ../../../../../ ../../../../../../ ../../../../../../.. ../../../../../../../.. ../../../../../../../../.. ../../../../../../../../../.."
 IDEHDIR=
 IDELIB=
@@ -589,9 +617,9 @@ AC_SUBST(IDELIB)
 AC_SUBST(IDETCLLIB)
 ])
 
-dnl ====================================================================
-dnl Find all the ILU headers and libraries
-AC_DEFUN([CYG_AC_PATH_ILU], [
+dnl#====================================================================
+dnl# Find all the ILU headers and libraries
+AC_DEFUN([CYG_AC_PATH_ILU],[
 AC_MSG_CHECKING(for ILU kernel headers in the source tree)
 dirlist=".. ../../ ../../../ ../../../../ ../../../../../ ../../../../../../ ../../../../../../.. ../../../../../../../.. ../../../../../../../../.. ../../../../../../../../../.."
 AC_CACHE_VAL(ac_cv_c_iluh,[
@@ -730,7 +758,7 @@ if test x"${ILULIB}" = x; then
     AC_CACHE_VAL(ac_cv_c_ilulib5,[
     NATIVE_GCC=`echo gcc | sed -e "${program_transform_name}"`
 
-    dnl Get G++'s full path to it's libraries
+    dnl# Get G++'s full path to its libraries:
     ac_cv_c_ilulib5=`${NATIVE_GCC} --print-libgcc | sed -e 's:lib/gcc-lib/.*::'`lib
     if test -f $ac_cv_c_ilulib5/libilu-c.a -o -f $ac_cv_c_ilulib5/libilu-c.so ; then
         if test x"${ILUHDIR}" = x; then
@@ -748,11 +776,11 @@ AC_SUBST(ILULIB)
 AC_SUBST(ILUTOP)
 ])
 
-dnl ====================================================================
-dnl This defines the byte order for the host. We can't use
-dnl AC_C_BIGENDIAN, cause we want to create a config file and
-dnl substitue the real value, so the header files work right
-AC_DEFUN([CYG_AC_C_ENDIAN], [
+dnl#====================================================================
+dnl# This defines the byte order for the host. We cannot use
+dnl# AC_C_BIGENDIAN, because we want to create a config file and
+dnl# substitue the real value, so that the header files work right
+AC_DEFUN([CYG_AC_C_ENDIAN],[
 AC_MSG_CHECKING(to see if this is a little endian host)
 AC_CACHE_VAL(ac_cv_c_little_endian, [
 ac_cv_c_little_endian=unknown
@@ -777,7 +805,7 @@ main () {
   union
   {
     long l;
-    char c[sizeof (long)];
+    char c[sizeof(long)];
   } u;
   u.l = 1;
   exit (u.c[0] == 1);
@@ -791,7 +819,7 @@ changequote(,)
    i[3456789]86-*-*) ac_cv_c_little_endian=yes ;;
    sparc*-*-*)    ac_cv_c_little_endian=no ;;
 changequote([,])
-  *)    AC_MSG_WARN(Can't cross compile this test) ;;
+  *)    AC_MSG_WARN([Cannot cross compile this test]) ;;
 esac])
 CFLAGS=$old_cflags
 fi])
@@ -803,21 +831,22 @@ else
     ENDIAN="CYG_MSBFIRST";
 fi
 AC_MSG_RESULT(${ac_cv_c_little_endian})
-AC_SUBST(ENDIAN)
-])
+AC_SUBST([ENDIAN])dnl
+])dnl
 
-dnl ====================================================================
-dnl Look for the path to libgcc, so we can use it to directly link
-dnl in libgcc.a with LD.
-AC_DEFUN([CYG_AC_PATH_LIBGCC],
-[AC_MSG_CHECKING([Looking for the path to libgcc.a])
+dnl#====================================================================
+dnl# Look for the path to libgcc, so we can use it to directly link
+dnl# in libgcc.a with LD.
+AC_DEFUN([CYG_AC_PATH_LIBGCC],[
+AC_MSG_CHECKING([Looking for the path to libgcc.a])
 AC_LANG_SAVE
 AC_LANG_C
 
-dnl Get Gcc's full path to libgcc.a
+dnl# Get Gcc's full path to libgcc.a
 libgccpath=`${CC} --print-libgcc`
 
-dnl If we don't have a path with libgcc.a on the end, this isn't G++.
+dnl# If we do NOT have a path with libgcc.a on the end, then this is NOT
+dnl# Gcc:
 if test `echo $libgccpath | sed -e 's:/.*/::'` = libgcc.a ; then
    ac_cv_prog_gcc=yes
 else
@@ -825,7 +854,7 @@ else
 fi
 
 dnl 
-if test x"${ac_cv_prog_gcc}" = xyes ; then
+if test x"${ac_cv_prog_gcc}" = x"yes"; then
    gccpath=`echo $libgccpath | sed -e 's:/libgcc.a::'`
    LIBGCC="-L${gccpath}"
    AC_MSG_RESULT(${gccpath})
@@ -835,21 +864,22 @@ else
 fi
 
 AC_LANG_RESTORE
-AC_SUBST(LIBGCC)
-])
+AC_SUBST([LIBGCC])dnl
+])dnl
 
-dnl ====================================================================
-dnl Ok, lets find the tcl source trees so we can use the headers
-dnl Warning: transition of version 9 to 10 will break this algorithm
-dnl because 10 sorts before 9. We also look for just tcl. We have to
-dnl be careful that we don't match stuff like tclX by accident.
-dnl the alternative search directory is involked by --with-tclinclude
-AC_DEFUN([CYG_AC_PATH_TCL], [
-    CYG_AC_PATH_TCLH
-    CYG_AC_PATH_TCLCONFIG
-    CYG_AC_LOAD_TCLCONFIG
-])
-AC_DEFUN([CYG_AC_PATH_TCLH], [
+dnl#====================================================================
+dnl# Ok, let us find the tcl source trees so we can use the headers
+dnl# Warning: transition of version 9 to 10 will break this algorithm
+dnl# because 10 sorts before 9. We also look for just tcl. We have to
+dnl# be careful that we do NOT match stuff like tclX by accident.
+dnl# the alternative search directory is involked by --with-tclinclude
+AC_DEFUN([CYG_AC_PATH_TCL],[
+    AC_REQUIRE([CYG_AC_PATH_TCLH])dnl
+    AC_REQUIRE([CYG_AC_PATH_TCLCONFIG])dnl
+    AC_REQUIRE([CYG_AC_LOAD_TCLCONFIG])dnl
+])dnl
+
+AC_DEFUN([CYG_AC_PATH_TCLH],[
 dirlist=".. ../../ ../../../ ../../../../ ../../../../../ ../../../../../../ ../../../../../../.. ../../../../../../../.. ../../../../../../../../.. ../../../../../../../../../.."
 no_tcl=true
 AC_MSG_CHECKING(for Tcl headers in the source tree)
@@ -862,7 +892,7 @@ if test x"${with_tclinclude}" != x ; then
   elif test -f ${with_tclinclude}/generic/tcl.h ; then
     ac_cv_c_tclh=`(cd ${with_tclinclude}/generic; ${PWDCMD-pwd})`
   else
-    AC_MSG_ERROR([${with_tclinclude} directory doesn't contain headers])
+    AC_MSG_ERROR([${with_tclinclude} directory does NOT contain headers])
   fi
 fi
 
@@ -897,8 +927,8 @@ if test x"${ac_cv_c_tclh}" = x ; then
     done
 fi
 
-dnl check if its installed with the compiler
-if test x"${ac_cv_c_tclh}" = x ; then
+dnl# check if it is/was installed with the compiler:
+if test x"${ac_cv_c_tclh}" = x""; then
     dnl Get the path to the compiler
     ccpath=`which ${CC}  | sed -e 's:/bin/.*::'`/include
     if test -f $ccpath/tcl.h; then
@@ -906,8 +936,8 @@ if test x"${ac_cv_c_tclh}" = x ; then
     fi
 fi
 
-dnl see if one is installed
-if test x"${ac_cv_c_tclh}" = x ; then
+dnl# see if one is installed:
+if test x"${ac_cv_c_tclh}" = x""; then
    AC_MSG_RESULT(none)
    AC_CHECK_HEADER(tcl.h, ac_cv_c_tclh=installed, ac_cv_c_tclh="")
 else
@@ -916,7 +946,7 @@ fi
 ])
   TCLHDIR=""
 if test x"${ac_cv_c_tclh}" = x ; then
-    AC_MSG_ERROR([Can't find any Tcl headers])
+    AC_MSG_ERROR([Cannot find any Tcl headers])
 fi
 if test x"${ac_cv_c_tclh}" != x ; then
     no_tcl=""
@@ -930,17 +960,17 @@ if test x"${ac_cv_c_tclh}" != x ; then
     fi
 fi
 
-AC_SUBST(TCLHDIR)
-])
+AC_SUBST([TCLHDIR])dnl
+])dnl
 
-dnl ====================================================================
-dnl Ok, lets find the tcl configuration
-AC_DEFUN([CYG_AC_PATH_TCLCONFIG], [
+dnl#====================================================================
+dnl# Ok, let us find the tcl configuration
+AC_DEFUN([CYG_AC_PATH_TCLCONFIG],[
 dirlist=".. ../../ ../../../ ../../../../ ../../../../../ ../../../../../../ ../../../../../../.. ../../../../../../../.. ../../../../../../../../.. ../../../../../../../../../.."
-dnl First, look for one uninstalled.  
-dnl the alternative search directory is invoked by --with-tclconfig
-if test x"${no_tcl}" = x ; then
-  dnl we reset no_tcl in case something fails here
+dnl# First, look for one uninstalled.  
+dnl# the alternative search directory is invoked by --with-tclconfig
+if test x"${no_tcl}" = x""; then
+  dnl# we reset no_tcl in case something fails here:
     no_tcl=true
     AC_ARG_WITH(tclconfig, [  --with-tclconfig           directory containing tcl configuration (tclConfig.sh)],
          with_tclconfig=${withval})
@@ -952,7 +982,7 @@ if test x"${no_tcl}" = x ; then
         if test -f "${with_tclconfig}/tclConfig.sh" ; then
             ac_cv_c_tclconfig=`(cd ${with_tclconfig}; ${PWDCMD-pwd})`
         else
-            AC_MSG_ERROR([${with_tclconfig} directory doesn't contain tclConfig.sh])
+            AC_MSG_ERROR([${with_tclconfig} directory does NOT contain tclConfig.sh])
         fi
     fi
 
@@ -999,9 +1029,10 @@ if test x"${no_tcl}" = x ; then
         done
     fi
 
-    dnl Check to see if it's installed. We have to look in the $CC path
-    dnl to find it, cause our $prefix may not match the compilers.
-    if test x"${ac_cv_c_tclconfig}" = x ; then
+    dnl# Check to see if it is installed. We have to look in the ${CC} path
+    dnl# to find it, because our ${prefix} may not match that of the
+    dnl# compiler.
+    if test x"${ac_cv_c_tclconfig}" = x""; then
         dnl Get the path to the compiler
 	ccpath=`which ${CC}  | sed -e 's:/bin/.*::'`/lib
         if test -f $ccpath/tclConfig.sh; then
@@ -1012,72 +1043,47 @@ if test x"${no_tcl}" = x ; then
 
     if test x"${ac_cv_c_tclconfig}" = x ; then
         TCLCONFIG=""
-        AC_MSG_WARN(Can't find Tcl configuration definitions)
+        AC_MSG_WARN([Cannot find Tcl configuration definitions])
     else
         no_tcl=""
         TCLCONFIG=${ac_cv_c_tclconfig}/tclConfig.sh
         AC_MSG_RESULT(${TCLCONFIG})
      fi
 fi
-AC_SUBST(TCLCONFIG)
-])
 
-dnl Defined as a separate macro so we don't have to cache the values
+AC_SUBST([TCLCONFIG])dnl
+])dnl
+
+dnl Defined as a separate macro so we do NOT have to cache the values
 dnl from PATH_TCLCONFIG (because this can also be cached).
-AC_DEFUN([CYG_AC_LOAD_TCLCONFIG], [
-    . $TCLCONFIG
+AC_DEFUN([CYG_AC_LOAD_TCLCONFIG],[
+    . ${TCLCONFIG}
 
-dnl AC_SUBST(TCL_VERSION)
-dnl AC_SUBST(TCL_MAJOR_VERSION)
-dnl AC_SUBST(TCL_MINOR_VERSION)
-dnl AC_SUBST(TCL_CC)
-    AC_SUBST(TCL_DEFS)
+    AC_SUBST([TCL_DEFS])dnl
+    AC_SUBST([TCL_LIB_FILE])dnl
+    AC_SUBST([TCL_LIB_FULL_PATH])dnl
+    AC_SUBST([TCL_LIBS])dnl
+    AC_SUBST([TCL_CFLAGS])dnl
+    AC_SUBST([TCL_SHLIB_CFLAGS])dnl
+    AC_SUBST([TCL_SHLIB_LD])dnl
+    AC_SUBST([TCL_LD_FLAGS])dnl
+    AC_SUBST([TCL_LD_SEARCH_FLAGS])dnl
+    AC_SUBST([TCL_RANLIB])dnl
+    AC_SUBST([TCL_BUILD_LIB_SPEC])dnl
+    AC_SUBST([TCL_LIB_SPEC])dnl
+    AC_SUBST([TCL_BIN_DIR])dnl
+])dnl
 
-dnl not used, don't export to save symbols
-    AC_SUBST(TCL_LIB_FILE)
-    AC_SUBST(TCL_LIB_FULL_PATH)
-    AC_SUBST(TCL_LIBS)
-dnl not used, don't export to save symbols
-dnl    AC_SUBST(TCL_PREFIX)
+dnl#====================================================================
+AC_DEFUN([CYG_AC_PATH_TK],[
+    AC_REQUIRE([CYG_AC_PATH_TKH])dnl
+    AC_REQUIRE([CYG_AC_PATH_TKCONFIG])dnl
+    AC_REQUIRE([CYG_AC_LOAD_TKCONFIG])dnl
+])dnl
 
-    AC_SUBST(TCL_CFLAGS)
-
-dnl not used, don't export to save symbols
-dnl    AC_SUBST(TCL_EXEC_PREFIX)
-
-    AC_SUBST(TCL_SHLIB_CFLAGS)
-    AC_SUBST(TCL_SHLIB_LD)
-dnl don't export, not used outside of configure
-dnl AC_SUBST(TCL_SHLIB_LD_LIBS)
-dnl AC_SUBST(TCL_SHLIB_SUFFIX)
-dnl not used, don't export to save symbols
-dnl AC_SUBST(TCL_DL_LIBS)
-    AC_SUBST(TCL_LD_FLAGS)
-    AC_SUBST(TCL_LD_SEARCH_FLAGS)
-dnl don't export, not used outside of configure
-dnl AC_SUBST(TCL_COMPAT_OBJS)
-    AC_SUBST(TCL_RANLIB)
-    AC_SUBST(TCL_BUILD_LIB_SPEC)
-    AC_SUBST(TCL_LIB_SPEC)
-    AC_SUBST(TCL_BIN_DIR)
-dnl AC_SUBST(TCL_LIB_VERSIONS_OK)
-
-dnl not used, don't export to save symbols
-dnl    AC_SUBST(TCL_SHARED_LIB_SUFFIX)
-
-dnl not used, don't export to save symbols
-dnl    AC_SUBST(TCL_UNSHARED_LIB_SUFFIX)
-])
-
-dnl ====================================================================
-AC_DEFUN([CYG_AC_PATH_TK], [
-    CYG_AC_PATH_TKH
-    CYG_AC_PATH_TKCONFIG
-    CYG_AC_LOAD_TKCONFIG
-])
-AC_DEFUN([CYG_AC_PATH_TKH], [
+AC_DEFUN([CYG_AC_PATH_TKH],[
 #
-# Ok, lets find the tk source trees so we can use the headers
+# Ok, let us find the tk source trees so we can use the headers
 # If the directory (presumably symlink) named "tk" exists, use that one
 # in preference to any others.  Same logic is used when choosing library
 # and again with Tcl. The search order is the best place to look first, then in
@@ -1101,7 +1107,7 @@ if test x"${with_tkinclude}" != x ; then
   elif test -f ${with_tkinclude}/generic/tk.h ; then
     ac_cv_c_tkh=`(cd ${with_tkinclude}/generic; ${PWDCMD-pwd})`
   else
-    AC_MSG_ERROR([${with_tkinclude} directory doesn't contain headers])
+    AC_MSG_ERROR([${with_tkinclude} directory does NOT contain headers])
   fi
 fi
 
@@ -1139,8 +1145,9 @@ fi
 dnl see if one is installed
 if test x"${ac_cv_c_tkh}" = x ; then
     AC_MSG_RESULT(none)
-    dnl Get the path to the compiler. We do it this way instead of using
-    dnl AC_CHECK_HEADER, cause this doesn't depend in having X configured.
+    dnl# Get the path to the compiler. We do it this way instead of using
+    dnl# AC_CHECK_HEADER, because this does NOT depend in having X
+    dnl# configured.
     ccpath=`which ${CC}  | sed -e 's:/bin/.*::'`/include
     if test -f $ccpath/tk.h; then
 	ac_cv_c_tkh=$ccpath
@@ -1150,12 +1157,12 @@ else
 fi
 ])
   TKHDIR=""
-if test x"${ac_cv_c_tkh}" = x ; then
-    AC_MSG_ERROR([Can't find any Tk headers])
+if test x"${ac_cv_c_tkh}" = x""; then
+    AC_MSG_ERROR([Cannot find any Tk headers])
 fi
-if test x"${ac_cv_c_tkh}" != x ; then
+if test x"${ac_cv_c_tkh}" != x""; then
     no_tk=""
-    if test x"${ac_cv_c_tkh}" != x"installed" ; then
+    if test x"${ac_cv_c_tkh}" != x"installed"; then
 	if test x"${CC}" = xcl ; then
 	    tmp="`cygpath --windows ${ac_cv_c_tkh}`"
 	    ac_cv_c_tkh="`echo $tmp | sed -e s#\\\\\\\\#/#g`"
@@ -1165,10 +1172,10 @@ if test x"${ac_cv_c_tkh}" != x ; then
     fi
 fi
 
-AC_SUBST(TKHDIR)
-])
+AC_SUBST([TKHDIR])dnl
+])dnl
 
-AC_DEFUN([CYG_AC_PATH_TKCONFIG], [
+AC_DEFUN([CYG_AC_PATH_TKCONFIG],[
 dirlist=".. ../../ ../../../ ../../../../ ../../../../../ ../../../../../../ ../../../../../../.. ../../../../../../../.. ../../../../../../../../.. ../../../../../../../../../.."
 dnl First, look for one uninstalled.  
 dnl the alternative search directory is invoked by --with-tkconfig
@@ -1185,7 +1192,7 @@ if test x"${no_tk}" = x ; then
         if test -f "${with_tkconfig}/tkConfig.sh" ; then
             ac_cv_c_tkconfig=`(cd ${with_tkconfig}; ${PWDCMD-pwd})`
         else
-            AC_MSG_ERROR([${with_tkconfig} directory doesn't contain tkConfig.sh])
+            AC_MSG_ERROR([${with_tkconfig} directory does NOT contain tkConfig.sh])
         fi
     fi
 
@@ -1232,68 +1239,61 @@ if test x"${no_tk}" = x ; then
         done
     fi
 
-    dnl Check to see if it's installed. We have to look in the $CC path
-    dnl to find it, cause our $prefix may not match the compilers.
-    if test x"${ac_cv_c_tkconfig}" = x ; then
-        dnl Get the path to the compiler
+    dnl# Check to see if it is installed. We have to look in the ${CC} path
+    dnl# to find it, because our ${prefix} may not match that of the
+    dnl# compiler.
+    if test x"${ac_cv_c_tkconfig}" = x""; then
+        dnl# Get the path to the compiler:
 	ccpath=`which ${CC}  | sed -e 's:/bin/.*::'`/lib
         if test -f $ccpath/tkConfig.sh; then
 	    ac_cv_c_tkconfig=$ccpath
         fi
     fi
-    ])	dnl end of cache_val
+    ])	dnl# end of cache_val
 
-    if test x"${ac_cv_c_tkconfig}" = x ; then
+    if test x"${ac_cv_c_tkconfig}" = x""; then
         TKCONFIG=""
-        AC_MSG_WARN(Can't find Tk configuration definitions)
+        AC_MSG_WARN([Cannot find Tk configuration definitions])
     else
         no_tk=""
         TKCONFIG=${ac_cv_c_tkconfig}/tkConfig.sh
-        AC_MSG_RESULT(${TKCONFIG})
+        AC_MSG_RESULT([${TKCONFIG}])
      fi
 fi
-AC_SUBST(TKCONFIG)
-])
 
-dnl Defined as a separate macro so we don't have to cache the values
-dnl from PATH_TKCONFIG (because this can also be cached).
-AC_DEFUN([CYG_AC_LOAD_TKCONFIG], [
-    if test -f "$TKCONFIG" ; then
-      . $TKCONFIG
+AC_SUBST([TKCONFIG])dnl
+])dnl
+
+dnl# Defined as a separate macro so we do NOT have to cache the values
+dnl# from PATH_TKCONFIG (because this can also be cached).
+AC_DEFUN([CYG_AC_LOAD_TKCONFIG],[
+    if test -f "${TKCONFIG}"; then
+      . ${TKCONFIG}
     fi
 
-    AC_SUBST(TK_VERSION)
-dnl not actually used, don't export to save symbols
-dnl    AC_SUBST(TK_MAJOR_VERSION)
-dnl    AC_SUBST(TK_MINOR_VERSION)
-    AC_SUBST(TK_DEFS)
+    AC_SUBST([TK_VERSION])dnl
+    AC_SUBST([TK_DEFS])dnl
+    AC_SUBST([TK_LIB_FILE])dnl
+    AC_SUBST([TK_LIB_FULL_PATH])dnl
+    AC_SUBST([TK_LIBS])dnl
+    AC_SUBST([TK_BUILD_INCLUDES])dnl
+    AC_SUBST([TK_XINCLUDES])dnl
+    AC_SUBST([TK_XLIBSW])dnl
+    AC_SUBST([TK_BUILD_LIB_SPEC])dnl
+    AC_SUBST([TK_LIB_SPEC])dnl
+])dnl
 
-dnl not used, don't export to save symbols
-    AC_SUBST(TK_LIB_FILE)
-    AC_SUBST(TK_LIB_FULL_PATH)
-    AC_SUBST(TK_LIBS)
-dnl not used, don't export to save symbols
-dnl    AC_SUBST(TK_PREFIX)
+dnl#====================================================================
+dnl# Ok, let us find the itcl source trees so we can use the headers
+dnl# the alternative search directory is involked by --with-itclinclude
+AC_DEFUN([CYG_AC_PATH_ITCL],[
+    AC_REQUIRE([CYG_AC_PATH_ITCLH])dnl
+    AC_REQUIRE([CYG_AC_PATH_ITCLLIB])dnl
+    AC_REQUIRE([CYG_AC_PATH_ITCLSH])dnl
+    AC_REQUIRE([CYG_AC_PATH_ITCLMKIDX])dnl
+])dnl
 
-dnl not used, don't export to save symbols
-dnl    AC_SUBST(TK_EXEC_PREFIX)
-    AC_SUBST(TK_BUILD_INCLUDES)
-    AC_SUBST(TK_XINCLUDES)
-    AC_SUBST(TK_XLIBSW)
-    AC_SUBST(TK_BUILD_LIB_SPEC)
-    AC_SUBST(TK_LIB_SPEC)
-])
-
-dnl ====================================================================
-dnl Ok, lets find the itcl source trees so we can use the headers
-dnl the alternative search directory is involked by --with-itclinclude
-AC_DEFUN([CYG_AC_PATH_ITCL], [
-    CYG_AC_PATH_ITCLH
-    CYG_AC_PATH_ITCLLIB
-    CYG_AC_PATH_ITCLSH
-    CYG_AC_PATH_ITCLMKIDX
-])
-AC_DEFUN([CYG_AC_PATH_ITCLH], [
+AC_DEFUN([CYG_AC_PATH_ITCLH],[
 dirlist=".. ../../ ../../../ ../../../../ ../../../../../ ../../../../../../ ../../../../../../.. ../../../../../../../.. ../../../../../../../../.. ../../../../../../../../../.."
 no_itcl=true
 AC_MSG_CHECKING(for Itcl headers in the source tree)
@@ -1306,7 +1306,7 @@ if test x"${with_itclinclude}" != x ; then
   elif test -f ${with_itclinclude}/src/itcl.h ; then
     ac_cv_c_itclh=`(cd ${with_itclinclude}/src; ${PWDCMD-pwd})`
   else
-    AC_MSG_ERROR([${with_itclinclude} directory doesn't contain headers])
+    AC_MSG_ERROR([${with_itclinclude} directory does NOT contain headers])
   fi
 fi
 
@@ -1350,8 +1350,8 @@ else
 fi
 ])
   ITCLHDIR=""
-if test x"${ac_cv_c_itclh}" = x ; then
-    AC_MSG_ERROR([Can't find any Itcl headers])
+if test x"${ac_cv_c_itclh}" = x""; then
+    AC_MSG_ERROR([Cannot find any Itcl headers])
 fi
 if test x"${ac_cv_c_itclh}" != x ; then
     no_itcl=""
@@ -1361,16 +1361,16 @@ if test x"${ac_cv_c_itclh}" != x ; then
     fi
 fi
 
-AC_SUBST(ITCLHDIR)
-])
+AC_SUBST([ITCLHDIR])dnl
+])dnl
 
-dnl Ok, lets find the itcl library
-dnl First, look for one uninstalled.  
-dnl the alternative search directory is invoked by --with-itcllib
-AC_DEFUN([CYG_AC_PATH_ITCLLIB], [
+dnl# Ok, let us find the itcl library
+dnl# First, look for one uninstalled.  
+dnl# the alternative search directory is invoked by --with-itcllib
+AC_DEFUN([CYG_AC_PATH_ITCLLIB],[
 dirlist=".. ../../ ../../../ ../../../../ ../../../../../ ../../../../../../ ../../../../../../.. ../../../../../../../.. ../../../../../../../../.. ../../../../../../../../../.."
 if test x"${no_itcl}" = x ; then
-    dnl we reset no_itcl incase something fails here
+    dnl# we reset no_itcl incase something fails here#
     no_itcl=true
     AC_ARG_WITH(itcllib,
 	[  --with-itcllib           directory where the itcl library is],
@@ -1438,7 +1438,7 @@ if test x"${no_itcl}" = x ; then
     ])
     if test x"${ac_cv_c_itcllib}" = x ; then
         ITCLLIB=""
-        AC_MSG_WARN(Can't find Itcl library)
+        AC_MSG_WARN([Cannot find Itcl library])
     else
         ITCLLIB="-L${ac_cv_c_itcllib}"
         AC_MSG_RESULT(${ac_cv_c_itcllib})
@@ -1446,15 +1446,15 @@ if test x"${no_itcl}" = x ; then
     fi
 fi
 
-AC_PROVIDE([$0])
-AC_SUBST(ITCLLIB)
-])
+AC_PROVIDE([$0])dnl
+AC_SUBST([ITCLLIB])dnl
+])dnl
 
 
-dnl ====================================================================
-dnl Ok, lets find the itcl source trees so we can use the itcl_sh script
-dnl the alternative search directory is involked by --with-itclinclude
-AC_DEFUN([CYG_AC_PATH_ITCLSH], [
+dnl#====================================================================
+dnl# Ok, let us find the itcl source trees so we can use the itcl_sh script
+dnl# the alternative search directory is involked by --with-itclinclude
+AC_DEFUN([CYG_AC_PATH_ITCLSH],[
 dirlist=".. ../../ ../../../ ../../../../ ../../../../../ ../../../../../../ ../../../../../../.. ../../../../../../../.. ../../../../../../../../.. ../../../../../../../../../.."
 no_itcl=true
 AC_MSG_CHECKING(for the itcl_sh script)
@@ -1467,7 +1467,7 @@ if test x"${with_itclinclude}" != x ; then
   elif test -f ${with_itclinclude}/src/itcl_sh ; then
     ac_cv_c_itclsh=`(cd ${with_itclinclude}/src; ${PWDCMD-pwd})`
   else
-    AC_MSG_ERROR([${with_itclinclude} directory doesn't contain itcl_sh])
+    AC_MSG_ERROR([${with_itclinclude} directory does NOT contain itcl_sh])
   fi
 fi
 
@@ -1501,22 +1501,23 @@ else
 fi
 ])
 
-if test x"${ac_cv_c_itclsh}" = x ; then
-    AC_MSG_ERROR([Can't find the itcl_sh script])
+if test x"${ac_cv_c_itclsh}" = x""; then
+    AC_MSG_ERROR([Cannot find the itcl_sh script])
 fi
-if test x"${ac_cv_c_itclsh}" != x ; then
+if test x"${ac_cv_c_itclsh}" != x""; then
     no_itcl=""
-    AC_MSG_RESULT(${ac_cv_c_itclsh})
+    AC_MSG_RESULT([${ac_cv_c_itclsh}])
     ITCLSH="${ac_cv_c_itclsh}"
 fi
-AC_SUBST(ITCLSH)
-])
+
+AC_SUBST([ITCLSH])dnl
+])dnl
 
 
-dnl ====================================================================
-dnl Ok, lets find the itcl source trees so we can use the itcl_sh script
-dnl the alternative search directory is involked by --with-itclinclude
-AC_DEFUN([CYG_AC_PATH_ITCLMKIDX], [
+dnl#====================================================================
+dnl# Ok, let us find the itcl source trees so we can use the itcl_sh script
+dnl# the alternative search directory is involked by --with-itclinclude
+AC_DEFUN([CYG_AC_PATH_ITCLMKIDX],[
 dirlist=".. ../../ ../../../ ../../../../ ../../../../../ ../../../../../../ ../../../../../../.. ../../../../../../../.. ../../../../../../../../.. ../../../../../../../../../.."
 no_itcl=true
 AC_MSG_CHECKING(for itcl_mkindex.tcl script)
@@ -1529,7 +1530,7 @@ if test x"${with_itclinclude}" != x ; then
   elif test -f ${with_itclinclude}/src/itcl_sh ; then
     ac_cv_c_itclmkidx=`(cd ${with_itclinclude}/src; ${PWDCMD-pwd})`
   else
-    AC_MSG_ERROR([${with_itclinclude} directory doesn't contain itcl_sh])
+    AC_MSG_ERROR([${with_itclinclude} directory does NOT contain itcl_sh])
   fi
 fi
 
@@ -1566,27 +1567,29 @@ if test x"${ac_cv_c_itclmkidx}" = x ; then
 fi
 ])
 
-if test x"${ac_cv_c_itclmkidx}" = x ; then
-    AC_MSG_ERROR([Can't find the itcl_mkindex.tcl script])
+if test x"${ac_cv_c_itclmkidx}" = x""; then
+    AC_MSG_ERROR([Cannot find the itcl_mkindex.tcl script])
 fi
-if test x"${ac_cv_c_itclmkidx}" != x ; then
+if test x"${ac_cv_c_itclmkidx}" != x""; then
     no_itcl=""
     AC_MSG_RESULT(${ac_cv_c_itclmkidx})
     ITCLMKIDX="${ac_cv_c_itclmkidx}"
 else
    AC_MSG_RESULT(none)
 fi
-AC_SUBST(ITCLMKIDX)
-])
 
-dnl ====================================================================
-dnl Ok, lets find the tix source trees so we can use the headers
-dnl the alternative search directory is involked by --with-tixinclude
-AC_DEFUN([CYG_AC_PATH_TIX], [
-    CYG_AC_PATH_TIXH
-    CYG_AC_PATH_TIXLIB
-])
-AC_DEFUN([CYG_AC_PATH_TIXH], [
+AC_SUBST([ITCLMKIDX])dnl
+])dnl
+
+dnl#====================================================================
+dnl# Ok, let us find the tix source trees so we can use the headers
+dnl# the alternative search directory is involked by --with-tixinclude
+AC_DEFUN([CYG_AC_PATH_TIX],[
+    AC_REQUIRE([CYG_AC_PATH_TIXH])dnl
+    AC_REQUIRE([CYG_AC_PATH_TIXLIB])dnl
+])dnl
+
+AC_DEFUN([CYG_AC_PATH_TIXH],[
 dirlist=".. ../../ ../../../ ../../../../ ../../../../../ ../../../../../../ ../../../../../../.. ../../../../../../../.. ../../../../../../../../.. ../../../../../../../../../.."
 no_tix=true
 AC_MSG_CHECKING(for Tix headers in the source tree)
@@ -1599,7 +1602,7 @@ if test x"${with_tixinclude}" != x ; then
   elif test -f ${with_tixinclude}/generic/tix.h ; then
     ac_cv_c_tixh=`(cd ${with_tixinclude}/generic; ${PWDCMD-pwd})`
   else
-    AC_MSG_ERROR([${with_tixinclude} directory doesn't contain headers])
+    AC_MSG_ERROR([${with_tixinclude} directory does NOT contain headers])
   fi
 fi
 
@@ -1640,7 +1643,7 @@ if test x"${ac_cv_c_tixh}" = x ; then
     dnl Get the path to the compiler
 
    dnl Get the path to the compiler. We do it this way instead of using
-    dnl AC_CHECK_HEADER, cause this doesn't depend in having X configured.
+    dnl AC_CHECK_HEADER, cause this does NOT depend in having X configured.
     ccpath=`which ${CC}  | sed -e 's:/bin/.*::'`/include
     if test -f $ccpath/tix.h; then
 	ac_cv_c_tixh=installed
@@ -1650,22 +1653,22 @@ else
 fi
 ])
 if test x"${ac_cv_c_tixh}" = x ; then
-    AC_MSG_ERROR([Can't find any Tix headers])
+    AC_MSG_ERROR([Cannot find any Tix headers])
 fi
-if test x"${ac_cv_c_tixh}" != x ; then
+if test x"${ac_cv_c_tixh}" != x""; then
     no_tix=""
     AC_MSG_RESULT(${ac_cv_c_tixh})
-    if test x"${ac_cv_c_tixh}" != x"installed" ; then
+    if test x"${ac_cv_c_tixh}" != x"installed"; then
         TIXHDIR="-I${ac_cv_c_tixh}"
     fi
 fi
 
-AC_SUBST(TIXHDIR)
-])
+AC_SUBST([TIXHDIR])dnl
+])dnl
 
-AC_DEFUN([CYG_AC_PATH_TIXCONFIG], [
+AC_DEFUN([CYG_AC_PATH_TIXCONFIG],[
 #
-# Ok, lets find the tix configuration
+# Ok, let us find the tix configuration.
 # First, look for one uninstalled.  
 # the alternative search directory is invoked by --with-tixconfig
 #
@@ -1683,12 +1686,12 @@ if test x"${no_tix}" = x ; then
     if test -f "${with_tixconfig}/tixConfig.sh" ; then
       ac_cv_c_tixconfig=`(cd ${with_tixconfig}; ${PWDCMD-pwd})`
     else
-      AC_MSG_ERROR([${with_tixconfig} directory doesn't contain tixConfig.sh])
+      AC_MSG_ERROR([${with_tixconfig} directory does NOT contain tixConfig.sh])
     fi
   fi
 
   # then check for a private Tix library
-  if test x"${ac_cv_c_tixconfig}" = x ; then
+  if test x"${ac_cv_c_tixconfig}" = x""; then
     for i in \
 		../tix \
 		`ls -dr ../tix[[4]]* 2>/dev/null` \
@@ -1725,53 +1728,52 @@ if test x"${no_tix}" = x ; then
   ])
   if test x"${ac_cv_c_tixconfig}" = x ; then
     TIXCONFIG="# no Tix configs found"
-    AC_MSG_WARN(Can't find Tix configuration definitions)
+    AC_MSG_WARN([Cannot find Tix configuration definitions])
   else
-    no_tix=
-    TIXCONFIG=${ac_cv_c_tixconfig}/tixConfig.sh
-    AC_MSG_RESULT(found $TIXCONFIG)
+    no_tix=""
+    TIXCONFIG="${ac_cv_c_tixconfig}/tixConfig.sh"
+    AC_MSG_RESULT([found ${TIXCONFIG}])
   fi
 fi
 
 ])
 
-# Defined as a separate macro so we don't have to cache the values
+# Defined as a separate macro so we do NOT have to cache the values
 # from PATH_TIXCONFIG (because this can also be cached).
-AC_DEFUN([CYG_AC_LOAD_TIXCONFIG], [
-    if test -f "$TIXCONFIG" ; then
-      . $TIXCONFIG
+AC_DEFUN([CYG_AC_LOAD_TIXCONFIG],[
+    if test -f "${TIXCONFIG}"; then
+      . ${TIXCONFIG}
     fi
 
-    AC_SUBST(TIX_BUILD_LIB_SPEC)
-    AC_SUBST(TIX_LIB_FULL_PATH)
-])
+    AC_SUBST([TIX_BUILD_LIB_SPEC])dnl
+    AC_SUBST([TIX_LIB_FULL_PATH])dnl
+])dnl
 
-AC_DEFUN([CYG_AC_PATH_ITCLCONFIG], [
+AC_DEFUN([CYG_AC_PATH_ITCLCONFIG],[
 #
-# Ok, lets find the itcl configuration
+# Ok, let us find the itcl configuration
 # First, look for one uninstalled.  
 # the alternative search directory is invoked by --with-itclconfig
 #
-
-if test x"${no_itcl}" = x ; then
+if test x"${no_itcl}" = x""; then
   # we reset no_itcl in case something fails here
   no_itcl=true
   AC_ARG_WITH(itclconfig, [  --with-itclconfig           directory containing itcl configuration (itclConfig.sh)],
          with_itclconfig=${withval})
   AC_MSG_CHECKING([for Itcl configuration])
-  AC_CACHE_VAL(ac_cv_c_itclconfig,[
+  AC_CACHE_VAL([ac_cv_c_itclconfig],[
 
   # First check to see if --with-itclconfig was specified.
   if test x"${with_itclconfig}" != x ; then
     if test -f "${with_itclconfig}/itclConfig.sh" ; then
       ac_cv_c_itclconfig=`(cd ${with_itclconfig}; ${PWDCMD-pwd})`
     else
-      AC_MSG_ERROR([${with_itclconfig} directory doesn't contain itclConfig.sh])
+      AC_MSG_ERROR([${with_itclconfig} directory does NOT contain itclConfig.sh])
     fi
   fi
 
   # then check for a private itcl library
-  if test x"${ac_cv_c_itclconfig}" = x ; then
+  if test x"${ac_cv_c_itclconfig}" = x""; then
     for i in \
 		../itcl/itcl \
 		`ls -dr ../itcl/itcl[[3]]* 2>/dev/null` \
@@ -1806,41 +1808,40 @@ if test x"${no_itcl}" = x ; then
     done
   fi
   ])
-  if test x"${ac_cv_c_itclconfig}" = x ; then
+  if test x"${ac_cv_c_itclconfig}" = x""; then
     ITCLCONFIG="# no itcl configs found"
-    AC_MSG_WARN(Can't find itcl configuration definitions)
+    AC_MSG_WARN([Cannot find itcl configuration definitions])
   else
-    no_itcl=
-    ITCLCONFIG=${ac_cv_c_itclconfig}/itclConfig.sh
-    AC_MSG_RESULT(found $ITCLCONFIG)
+    no_itcl=""
+    ITCLCONFIG="${ac_cv_c_itclconfig}/itclConfig.sh"
+    AC_MSG_RESULT([found ${ITCLCONFIG}])
   fi
 fi
 
-])
+])dnl
 
-# Defined as a separate macro so we don't have to cache the values
+# Defined as a separate macro so we do NOT have to cache the values
 # from PATH_ITCLCONFIG (because this can also be cached).
-AC_DEFUN([CYG_AC_LOAD_ITCLCONFIG], [
-    if test -f "$ITCLCONFIG" ; then
-      . $ITCLCONFIG
+AC_DEFUN([CYG_AC_LOAD_ITCLCONFIG],[
+    if test -f "${ITCLCONFIG}"; then
+      . ${ITCLCONFIG}
     fi
 
-    AC_SUBST(ITCL_BUILD_LIB_SPEC)
-    AC_SUBST(ITCL_SH)
-    AC_SUBST(ITCL_LIB_FILE)
-    AC_SUBST(ITCL_LIB_FULL_PATH)
-
+    AC_SUBST([ITCL_BUILD_LIB_SPEC])dnl
+    AC_SUBST([ITCL_SH])dnl
+    AC_SUBST([ITCL_LIB_FILE])dnl
+    AC_SUBST([ITCL_LIB_FULL_PATH])dnl
 ])
 
 
-AC_DEFUN([CYG_AC_PATH_ITKCONFIG], [
+AC_DEFUN([CYG_AC_PATH_ITKCONFIG],[
 #
-# Ok, lets find the itk configuration
+# Ok, let us find the itk configuration.
 # First, look for one uninstalled.  
 # the alternative search directory is invoked by --with-itkconfig
 #
 
-if test x"${no_itk}" = x ; then
+if test x"${no_itk}" = x""; then
   # we reset no_itk in case something fails here
   no_itk=true
   AC_ARG_WITH(itkconfig, [  --with-itkconfig           directory containing itk configuration (itkConfig.sh)],
@@ -1853,7 +1854,7 @@ if test x"${no_itk}" = x ; then
     if test -f "${with_itkconfig}/itkConfig.sh" ; then
       ac_cv_c_itkconfig=`(cd ${with_itkconfig}; ${PWDCMD-pwd})`
     else
-      AC_MSG_ERROR([${with_itkconfig} directory doesn't contain itkConfig.sh])
+      AC_MSG_ERROR([${with_itkconfig} directory does NOT contain itkConfig.sh])
     fi
   fi
 
@@ -1895,37 +1896,37 @@ if test x"${no_itk}" = x ; then
   ])
   if test x"${ac_cv_c_itkconfig}" = x ; then
     ITCLCONFIG="# no itk configs found"
-    AC_MSG_WARN(Can't find itk configuration definitions)
+    AC_MSG_WARN([Cannot find itk configuration definitions])
   else
-    no_itk=
-    ITKCONFIG=${ac_cv_c_itkconfig}/itkConfig.sh
-    AC_MSG_RESULT(found $ITKCONFIG)
+    no_itk=""
+    ITKCONFIG="${ac_cv_c_itkconfig}/itkConfig.sh"
+    AC_MSG_RESULT([found ${ITKCONFIG}])
   fi
 fi
+])dnl
 
-])
-
-# Defined as a separate macro so we don't have to cache the values
+# Defined as a separate macro so we do NOT have to cache the values
 # from PATH_ITKCONFIG (because this can also be cached).
-AC_DEFUN([CYG_AC_LOAD_ITKCONFIG], [
-    if test -f "$ITKCONFIG" ; then
-      . $ITKCONFIG
+AC_DEFUN([CYG_AC_LOAD_ITKCONFIG],[
+    if test -f "${ITKCONFIG}"; then
+      . ${ITKCONFIG}
     fi
 
-    AC_SUBST(ITK_BUILD_LIB_SPEC)
-    AC_SUBST(ITK_LIB_FILE)
-    AC_SUBST(ITK_LIB_FULL_PATH)
-])
+    AC_SUBST([ITK_BUILD_LIB_SPEC])dnl
+    AC_SUBST([ITK_LIB_FILE])dnl
+    AC_SUBST([ITK_LIB_FULL_PATH])dnl
+])dnl
 
 
-dnl ====================================================================
-dnl Ok, lets find the libgui source trees so we can use the headers
-dnl the alternative search directory is involked by --with-libguiinclude
-AC_DEFUN([CYG_AC_PATH_LIBGUI], [
-    CYG_AC_PATH_LIBGUIH
-    CYG_AC_PATH_LIBGUILIB
-])
-AC_DEFUN([CYG_AC_PATH_LIBGUIH], [
+dnl#====================================================================
+dnl# Ok, let us find the libgui source trees so we can use the headers
+dnl# the alternative search directory is involked by --with-libguiinclude
+AC_DEFUN([CYG_AC_PATH_LIBGUI],[
+    AC_REQUIRE([CYG_AC_PATH_LIBGUIH])dnl
+    AC_REQUIRE([CYG_AC_PATH_LIBGUILIB])dnl
+])dnl
+
+AC_DEFUN([CYG_AC_PATH_LIBGUIH],[
 dirlist=".. ../../ ../../../ ../../../../ ../../../../../ ../../../../../../ ../../../../../../.. ../../../../../../../.. ../../../../../../../../.. ../../../../../../../../../..../../../../../../../../../../.."
 no_libgui=true
 AC_MSG_CHECKING(for Libgui headers in the source tree)
@@ -1938,7 +1939,7 @@ if test x"${with_libguiinclude}" != x ; then
   elif test -f ${with_libguiinclude}/src/guitcl.h ; then
     ac_cv_c_libguih=`(cd ${with_libguiinclude}/src; ${PWDCMD-pwd})`
   else
-    AC_MSG_ERROR([${with_libguiinclude} directory doesn't contain headers])
+    AC_MSG_ERROR([${with_libguiinclude} directory does NOT contain headers])
   fi
 fi
 
@@ -1981,43 +1982,44 @@ fi
 ])
 LIBGUIHDIR=""
 if test x"${ac_cv_c_libguih}" = x ; then
-    AC_MSG_WARN([Can't find any Libgui headers])
+    AC_MSG_WARN([Cannot find any Libgui headers])
 fi
-if test x"${ac_cv_c_libguih}" != x ; then
+if test x"${ac_cv_c_libguih}" != x""; then
     no_libgui=""
-    if test x"${ac_cv_c_libguih}" != x"installed" ; then
+    if test x"${ac_cv_c_libguih}" != x"installed"; then
         LIBGUIHDIR="-I${ac_cv_c_libguih}"
     fi
 fi
-AC_MSG_RESULT(${ac_cv_c_libguih})
-AC_SUBST(LIBGUIHDIR)
-])
+AC_MSG_RESULT([${ac_cv_c_libguih}])
 
-dnl ====================================================================
-dnl find the GUI library
-AC_DEFUN([CYG_AC_PATH_LIBGUILIB], [
-AC_MSG_CHECKING(for GUI library  in the build tree)
+AC_SUBST([LIBGUIHDIR])dnl
+])dnl
+
+dnl#====================================================================
+dnl# find the GUI library:
+AC_DEFUN([CYG_AC_PATH_LIBGUILIB],[
+AC_MSG_CHECKING([for GUI library  in the build tree])
 dirlist=".. ../../ ../../../ ../../../../ ../../../../../ ../../../../../../ ../../../../../../.. ../../../../../../../.. ../../../../../../../../.. ../../../../../../../../../.."
-dnl look for the library
-AC_MSG_CHECKING(for GUI library)
-AC_CACHE_VAL(ac_cv_c_libguilib,[
-if test x"${ac_cv_c_libguilib}" = x ; then
-    for i in $dirlist; do
-      if test -f "$i/libgui/src/Makefile" ; then
-        ac_cv_c_libguilib=`(cd $i/libgui/src; ${PWDCMD-pwd})`
+dnl# look for the library:
+AC_MSG_CHECKING([for GUI library])
+AC_CACHE_VAL([ac_cv_c_libguilib],[
+if test x"${ac_cv_c_libguilib}" = x""; then
+    for i in ${dirlist}; do
+      if test -f "${i}/libgui/src/Makefile"; then
+        ac_cv_c_libguilib=`(cd ${i}/libgui/src; ${PWDCMD-pwd})`
         break
       fi
     done
 fi
 ]) 
-if test x"${ac_cv_c_libguilib}" != x ; then
+if test x"${ac_cv_c_libguilib}" != x""; then
      GUILIB="${GUILIB} -L${ac_cv_c_libguilib}"
      LIBGUILIB="-lgui"
-     AC_MSG_RESULT(${ac_cv_c_libguilib})
+     AC_MSG_RESULT([${ac_cv_c_libguilib}])
 else
-     AC_MSG_RESULT(none)
+     AC_MSG_RESULT([none])
 fi
 
-AC_SUBST(GUILIB)
-AC_SUBST(LIBGUILIB)
-])
+AC_SUBST([GUILIB])dnl
+AC_SUBST([LIBGUILIB])dnl
+])dnl

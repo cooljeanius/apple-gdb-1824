@@ -1,4 +1,5 @@
-/* Parameters for execution on a Sun, for GDB, the GNU debugger.
+/* tm-sun2.h
+   Parameters for execution on a Sun, for GDB, the GNU debugger.
    Copyright (C) 1986, 1987, 1989, 1992 Free Software Foundation, Inc.
 
    This file is part of GDB.

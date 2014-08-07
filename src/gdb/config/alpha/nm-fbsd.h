@@ -1,4 +1,5 @@
-/* Native-dependent definitions for FreeBSD/alpha.
+/* nm-fbsd.h
+   Native-dependent definitions for FreeBSD/alpha.
 
    Copyright 1986, 1987, 1989, 1992, 1996, 2000, 2004, 2005
    Free Software Foundation, Inc.

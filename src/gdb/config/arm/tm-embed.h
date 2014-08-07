@@ -46,6 +46,10 @@
 extern int arm_in_call_stub (CORE_ADDR pc, char *name);
 extern CORE_ADDR arm_skip_stub (CORE_ADDR pc);
 
+#ifndef INVALID_ADDRESS
+# define INVALID_ADDRESS ((CORE_ADDR) (-1))
+#endif /* !INVALID_ADDRESS */
+
 #endif /* TM_ARMEMBED_H */
 
 /* EOF */

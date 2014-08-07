@@ -1,5 +1,6 @@
-/* Parameters for execution on os68k's, for GDB, the GNU debugger.
-   Copyright 1986, 1987, 1989, 1991, 1998, 2003 Free Software Foundation, Inc.
+/* tm-os68k.h
+   Parameters for execution on os68k's, for GDB, the GNU debugger.
+   Copyright 1986, 1987, 1989, 1991, 1998, 2003 Free Software Foundation
    Contributed by Cygnus Support.
 
    This file is part of GDB.

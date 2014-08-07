@@ -1,101 +1,107 @@
 1999-11-22  Jonathan Larmour  <jlarmour@cygnus.co.uk>
 
-	* server.h:
-	* server-main.c (print_version): New function
-	(long_options): Add --version
-	(help_strings): Likewise
-	(main): Print full version information on -v/--version, and program
-	banner otherwise
+    * server.h:
+    * server-main.c (print_version): New function
+    (long_options): Add --version
+    (help_strings): Likewise
+    (main): Print full version information on -v/--version, and program
+    banner otherwise
 
-	* configure.in: Update version number
-	* configure: Regenerate
-	
+    * configure.in: Update version number
+    * configure: Regenerate
+    
 1999-11-04  Gary Thomas  <gthomas@cygnus.co.uk>
 
-	* remote-utils.c (prepare_resume_reply): Remove unused function.
+    * remote-utils.c (prepare_resume_reply): Remove unused function.
 
-	* rdi150-low.c (low_thread_op): New function - split from actual
-	worker function to make remote board functions easier to use.
+    * rdi150-low.c (low_thread_op): New function - split from actual
+    worker function to make remote board functions easier to use.
 
-	* server-main.c (handle_resume): Add 'T' response when running
-	thread-aware.
-	(handle_general_query): Rework due to change in 'low_thread_op()'
-	Need to pass results on via 'putpkt()'.
+    * server-main.c (handle_resume): Add 'T' response when running
+    thread-aware.
+    (handle_general_query): Rework due to change in 'low_thread_op()'
+    Need to pass results on via 'putpkt()'.
 
 1999-11-03  Gary Thomas  <gthomas@cygnus.co.uk>
 
-	* server-main.c : 
-	* server.h: 	
-	* rdi150-low.c: Add "--target-driver" to let driver name be given
-	on command line instead of requiring "--config-dialog".  There is,
-	however, confusion about what the actual 'tag' names are.
+    * server-main.c : 
+    * server.h:     
+    * rdi150-low.c: Add "--target-driver" to let driver name be given
+    on command line instead of requiring "--config-dialog".  There is,
+    however, confusion about what the actual 'tag' names are.
 
 1999-11-02  Gary Thomas  <gthomas@cygnus.co.uk>
 
-	* server-main.c: Fix problem with <null> thread information.  This
-	happened because the registers for the "current" thread are not
-	accessible on the board, but only available to the ICE environment.
+    * server-main.c: Fix problem with <null> thread information.  This
+    happened because the registers for the "current" thread are not
+    accessible on the board, but only available to the ICE environment.
 
 1999-11-01  Gary Thomas  <gthomas@cygnus.co.uk>
 
-	* server-main.c (handle_general_query): Need to pass 'qPxxx' on to
-	board to get thread details.  Also 'qC' (current thread) query.
+    * server-main.c (handle_general_query): Need to pass 'qPxxx' on to
+    board to get thread details.  Also 'qC' (current thread) query.
 
-	* remote-utils.c (check_for_SIGIO): Don't try if no connection (fixes
-	segmentation violation when Multi-ICE doesn't connect properly).
+    * remote-utils.c (check_for_SIGIO): Do NOT try if no connection (fixes
+    segmentation violation when Multi-ICE does NOT connect properly).
 
 1999-10-29  Gary Thomas  <gthomas@cygnus.co.uk>
 
-	* server-main.c (handle_resume): Forget 'selected' thread after
-	starting execution (continue, step).  Only print 'Executing'/'Stopped' 
-	messages if --debug was specified.
-	(handle_thread): Fix parsing of thread numbers (use hex).
+    * server-main.c (handle_resume): Forget 'selected' thread after
+    starting execution (continue, step).  Only print 'Executing'/'Stopped' 
+    messages if --debug was specified.
+    (handle_thread): Fix parsing of thread numbers (use hex).
 
-	* rdi150-low.c: Change to get read/write of CPSR register to work.
+    * rdi150-low.c: Change to get read/write of CPSR register to work.
 
 1999-10-13  Gary Thomas  <gthomas@cygnus.co.uk>
 
-	* server-main.c: Add/complete support for remote thread functions.
-	Add support for watchpoints.
+    * server-main.c: Add/complete support for remote thread functions.
+    Add support for watchpoints.
 
-	* remote-utils.c: Rework SIGIO support using 'yield()', since
-	SIGIO doesn't work well on Cygwin.
+    * remote-utils.c: Rework SIGIO support using 'yield()', since
+    SIGIO does NOT work well on Cygwin.
 
-	* rdi150-low.c (yield_func): New function - used to regain control
-	while executing on target - required in order to abort execution.
-	Add support for remote thread functions and watchpoints.
+    * rdi150-low.c (yield_func): New function - used to regain control
+    while executing on target - required in order to abort execution.
+    Add support for remote thread functions and watchpoints.
 
-	* low.h: Update/add for new thread support.
+    * low.h: Update/add for new thread support.
 
 1999-09-03  Felix Lee  <flee@cygnus.com>
 
-	* configure.in (--with-multi-ice): add.
-	* configure: regen.
+    * configure.in (--with-multi-ice): add.
+    * configure: regen.
 
 1999-08-18  James Ingham  <jingham@leda.cygnus.com>
 
-	* arm-singlestep.c (server_arm_get_next_pc): Fix the processing of 
-	ARM BX instruction.
-	(thumb_get_next_pc): Fix the processing of the thumb bx instruction.
+    * arm-singlestep.c (server_arm_get_next_pc): Fix the processing of 
+    ARM BX instruction.
+    (thumb_get_next_pc): Fix the processing of the thumb bx instruction.
 
 1999-07-30  James Ingham  <jingham@leda.cygnus.com>
 
-	* server-win.c (console_control_handler): Close and exit manually
-	when you get the Control-C.
-        * rdi150-low.c: Add the MultiIce Vr. 1.3 and greater init
-        strings.
-        * server-main.c: Fix bug in setting byte-sex argument.
+    * server-win.c (console_control_handler): Close and exit manually
+    when you get the Control-C.
+    * rdi150-low.c: Add the MultiIce Vr. 1.3 and greater init
+    strings.
+    * server-main.c: Fix bug in setting byte-sex argument.
 
 1999-06-24  Jason Molenda  (jsm@bugshack.cygnus.com)
 
-	* Makefile.in: Add empty html and install-html targets.
+    * Makefile.in: Add empty html and install-html targets.
 
 1999-05-28  James Ingham  <jingham@cygnus.com>
 
-	* arm-singlestep.c (arm_pc_is_thumb): Take out some unnecessary
-	debugging info.
+    * arm-singlestep.c (arm_pc_is_thumb): Take out some unnecessary
+    debugging info.
 
-	* Added Files: server-main.c, server-win.c, rdi150-low.c,
-	remote-utils.c, utils.c, server.h, low.h, remote-utils.h
- 	
+    * Added Files: server-main.c, server-win.c, rdi150-low.c,
+    remote-utils.c, utils.c, server.h, low.h, remote-utils.h
+    
 
+Local Variables:
+mode: change-log
+left-margin: 8
+fill-column: 74
+version-control: never
+End:

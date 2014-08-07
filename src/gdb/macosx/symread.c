@@ -1,4 +1,5 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* symread.c
+   Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -1539,14 +1540,13 @@ sym_dump_command (char *args, int from_tty)
     }
 
   immediate_quit++;
-  sym_symfile_display (abfd, f);
+  sym_symfile_display(abfd, f);
   immediate_quit--;
 
   do_cleanups (cleanups);
 }
 
-void
-_initialize_symread (void)
+void _initialize_symread(void)
 {
   sym_builtin_type_pstr = make_pointer_type (builtin_type_char, NULL);
   sym_builtin_type_cstr = make_pointer_type (builtin_type_char, NULL);
@@ -1556,3 +1556,5 @@ _initialize_symread (void)
   add_com ("sym-dump", class_run, sym_dump_command,
            "Print the contents of the specified SYM-format symbol file.");
 }
+
+/* EOF */

@@ -1,4 +1,5 @@
-/* Parameters for hosting on an PowerPC, for GDB, the GNU debugger.
+/* xm-aix4.h
+   Parameters for hosting on an PowerPC, for GDB, the GNU debugger.
    Copyright 1995, 1996, 1998, 1999, 2000, 2001
    Free Software Foundation, Inc.
    Contributed by Cygnus Corporation.
@@ -52,7 +53,7 @@
 #undef NULL
 #define NULL 0
 
-/* The IBM compiler requires this in order to properly compile alloca().  */
+/* The IBM compiler requires this in order to properly compile alloca(). */
 #pragma alloca
 
 /* There is no vfork.  */

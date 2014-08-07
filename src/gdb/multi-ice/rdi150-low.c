@@ -1,6 +1,7 @@
-/* RDI 1.5 translation code for Arm Multi-ice server for GDB.
-   Copyright (C) 1999 Free Software Foundation, Inc.
-
+/* rdi150-low.c
+ * RDI 1.5 translation code for Arm Multi-ice server for GDB.
+ * Copyright (C) 1999 Free Software Foundation, Inc. */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -15,9 +16,13 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. */
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 
+#ifndef _UNSIGNED32_DEFINED
+# define _UNSIGNED32_DEFINED 1
 typedef unsigned int unsigned32;
+#endif /* _UNSIGNED32_DEFINED */
 typedef unsigned short unsigned16;
 typedef unsigned char unsigned8;
 typedef int bool;
@@ -29,8 +34,7 @@ typedef int bool;
 #include "remote-utils.h"
 #include "tm.h"
 
-/* These are all the WinRDI defines that we need. */
-
+/* These are all the WinRDI defines that we need: */
 #include "windows.h"
 #include "host.h"
 #include "rdi.h"
@@ -40,18 +44,52 @@ typedef int bool;
 #include "rdi_info.h"
 #include "winrdi.h"
 
-/* This is set in low_resume, it indicates when we are running.  This is so
-   that a call to low_close_target can know to stop the target before it tries
-   to shut down.
-*/
+/* the following are mostly from "dbg_rdi.h" in ../rdi-share */
+#ifndef RDIInfo_Target
+# define RDIInfo_Target 0
+#endif /* !RDIInfo_Target */
+#ifndef RDIInfo_Step
+# define RDIInfo_Step 2
+#endif /* !RDIInfo_Step */
+#ifndef RDIStep_Single
+# define RDIStep_Single 4
+#endif /* !RDIStep_Single */
+#ifndef RDIInfo_Modules
+# define RDIInfo_Modules 28
+#endif /* !RDIInfo_Modules */
+#ifndef RDITarget_HW
+# define RDITarget_HW 0x10 /* else emulator */
+#endif /* !RDITarget_HW */
+#ifndef RDIPointStatus_Watch
+# define RDIPointStatus_Watch 0x80
+#endif /* !RDIPointStatus_Watch */
+#ifndef RDIPointStatus_Break
+# define RDIPointStatus_Break 0x81
+#endif /* !RDIPointStatus_Break */
+#ifndef RDIInfo_CustomLoad
+# define RDIInfo_CustomLoad 0x8a01
+#endif /* !RDIInfo_CustomLoad */
+#ifndef RDISignal_Stop
+# define RDISignal_Stop 0x100
+#endif /* !RDISignal_Stop */
+#ifndef RDIInfo_GetLoadSize
+# define RDIInfo_GetLoadSize 0x187
+#endif /* !RDIInfo_GetLoadSize */
+#ifndef RDITarget_HasCommsChannel
+# define RDITarget_HasCommsChannel 0x10000
+#endif /* !RDITarget_HasCommsChannel */
 
+
+/* This is set in low_resume, it indicates when we are running. This is so
+ * that a call to low_close_target can know to stop the target before
+ * it tries to shut down.
+ */
 int currently_running = 0;
 
 /*
  * We will keep a linked list of the RDI "points" that have been set.
  * We need these tokens to delete the points again.
  */
-
 struct rdi_points {
   RDI_PointHandle handle;
   CORE_ADDR addr;
@@ -62,15 +100,13 @@ struct rdi_points *breakpoint_list; /* This one keeps the breakpoints. */
 struct rdi_points *watchpoint_list; /* This one the watchpoints. */
 
 /*
- * Really have to do better than this...  I don't want to put routines
+ * Really have to do better than this... I do NOT want to put routines
  * that need platform types in server.h, so I need to abstract the "window"
- * type, and coerce on the other end.  For another day.
+ * type, and coerce on the other end. For another day.
  */
+extern HWND get_main_window(void);
 
-extern HWND get_main_window (void);
-
-/* Pointers to the functions we have dug out of the Multi-ICE DLL. */
-
+/* Pointers to the functions we have dug out of the Multi-ICE DLL: */
 WinRDI_funcGetVersion winRDI_GetVersion;
 WinRDI_funcValid_RDI_DLL winRDI_Valid_RDI_DLL;
 WinRDI_funcGet_DLL_Description winRDI_Get_DLL_Description;
@@ -81,23 +117,20 @@ WinRDI_funcConfig winRDI_Config;
 WinRDI_funcRegister_Yield_Callback winRDI_Register_Yield_Callback;
 
 /*
- * This is the RDI proc vector
+ * This is the RDI proc vector:
  */
+struct RDI_ProcVec *rdi_proc_vec;
 
-struct RDI_ProcVec * rdi_proc_vec;
-
-/* This is the that we need to pass to WinRDI_Initialise.  There are a lot of
- * other calls that this also gets passed to, but according to the docs, it is
- * ignored in all of them.
+/* This is the that we need to pass to WinRDI_Initialise. There are a lot
+ * of other calls that this also gets passed to, but according to the docs,
+ * it is ignored in all of them.
  */
-
 RDI_ConfigPointer gdb_config;
 
 /*
- * This is the agent handle for the arm processor.  It is filled out
+ * This is the agent handle for the arm processor. It is filled out
  * in the initialisation section.
  */
-
 RDI_AgentHandle gdb_agent;
 
 RDI_DbgState *gdb_debug_state;
@@ -105,7 +138,6 @@ RDI_DbgState *gdb_debug_state;
 /*
  * This is the interface for debug messages used by the Multi-ICE.
  */
-
 struct RDI_HostosInterface gdb_IO_struct;
 
 
@@ -114,7 +146,6 @@ struct RDI_HostosInterface gdb_IO_struct;
  * et al on the
  * board.  num_procs is the number of processers on board.
  */
-
 unsigned num_procs;
 
 RDI_ModuleDesc *proc_desc_array = NULL;
@@ -133,41 +164,38 @@ RDI_ModuleDesc *proc_desc_array = NULL;
  *
  * which we use all the time.
  */
-
 int target_arm_core = -1;
 RDI_ModuleHandle target_arm_module = NULL;
 
 /* Gives the target byte order returned from the RDI initialization
-   for the "target_arm_core" processor. I don't understand the response
-   that I get back from the RDI info call for ByteSex, so for now, 
-   initialize this to the same value you put in the cfnArray's BYTESEX
-   parameter below. */
-
+ * for the "target_arm_core" processor. I do NOT understand the response
+ * that I get back from the RDI info call for ByteSex, so for now,
+ * initialize this to the same value you put in the cfnArray's BYTESEX
+ * parameter below. */
 int target_byte_order = BIG_ENDIAN;
 
 /* Does the target_arm_core support single-stepping? */
-
 int target_step = 0;
 
 /* TARGET_LOAD_SIZE is the largest Memory write that the target supports
-   Not all targets support reporting this, -1 indicates unknown. */
+ * Not all targets support reporting this, -1 indicates unknown. */
 int target_load_size = -1;
 
 /* If TARGET_STOP_OTHERS = 1, then a resume stops all the other
-   processors. */
+ * processors. */
 int target_stop_others = 0;
 
 /*
  * This is the default Toolconf database that we will use.
  * Because the RDIinfo ByteSex call comes back with some
- * response I don't understand, be sure to initialize 
+ * response I don't understand, be sure to initialize
  * target_byte_order to the value in the BYTESEX field below.
  * Also, the array needs to end with a NULL element.
  */
 
 /* This was the original version of the array that I cooked up based
-   on Multi-ICE 1.0.  It doesn't work with versions >=  1.3, however.
-*/
+ * on Multi-ICE 1.0.  It does NOT work with versions >=  1.3, however.
+ */
 
 char *cfnArray[] = {
 "MEMORYSIZE=0",
@@ -186,12 +214,12 @@ char *cfnArray[] = {
 "MICETAPPOS0=0",
 "FPE=TRUE",
 /* These fields were added from on the advice of David Adshead from ARM.
-   They work with versions > 1.3 of the Multi-ICE DLL.  Some of these
-   fields need to get filled in for the DLL to start properly.  If they
-   are not filled the get_agent call will report success, but will return
-   a null agent token, which is not good.  I haven't played around with
-   which ones are needed, however.
-*/
+ * They work with versions > 1.3 of the Multi-ICE DLL. Some of these
+ * fields need to get filled in for the DLL to start properly. If they
+ * are not filled the get_agent call will report success, but will return
+ * a null agent token, which is not good. I have NOT played around with
+ * which ones are needed, however.
+ */
 "Multi-ICE_Tap1_Position=0",
 "Multi-ICE_Connection_Name=",
 "Multi-ICE_Driver1_Name=",
@@ -204,9 +232,8 @@ NULL
 char *target_driver_name = "ARM7TDMI";  /* Default driver */
 
 /* Define the registers array here. */
-
 char *aregisters;
-char hold_registers[REGISTER_BYTES];   /* Used while running thread code on target */
+char hold_registers[REGISTER_BYTES]; /* Used while running thread code on target */
 
 int registers_up_to_date = 0;
 int registers_are_dirty = 0;
@@ -216,7 +243,6 @@ int need_to_abort = 0;
 /*
  * Defines for functions used only in this file.
  */
-
 RDI_Hif_DbgPrint my_IO_dbgprint;
 RDI_Hif_DbgPause my_IO_dbgpause;
 void my_IO_dbgarg(RDI_Hif_DbgArg *arg);
@@ -228,38 +254,39 @@ RDI_Hif_GetS my_IO_gets;
 
 RDI_Hif_ResetProc my_IO_reset;
 void my_IO_resetarg(RDI_Hif_ResetArg *arg);
-  
-char *rdi_error_message (int err);
-static int rdi_to_gdb_signal (int rdi_error);
-void record_register (int regno, ARMword val);
-ARMword restore_register (int regno);
+
+char *rdi_error_message(int err);
+static int rdi_to_gdb_signal(int rdi_error);
+void record_register(int regno, ARMword val);
+ARMword restore_register(int regno);
 
 /* These functions come from arm-singlestep.c */
-
-extern CORE_ADDR server_arm_get_next_pc (CORE_ADDR pc,
-					 unsigned short *is_thumb);
-extern int arm_pc_is_thumb (bfd_vma memaddr);
+extern CORE_ADDR server_arm_get_next_pc(CORE_ADDR pc,
+                                        unsigned short *is_thumb);
+extern int arm_pc_is_thumb(bfd_vma memaddr);
 
 /* Yield callback */
 static int yield_arg;
 static int yield_count;
 #define YIELD_PERIOD 10
 
-void
-yield_func(WinRDI_YieldArg *arg)
+void yield_func(WinRDI_YieldArg *arg)
 {
     ARMword empty;
     if (++yield_count == YIELD_PERIOD) {
         yield_count = 0;
+#if 0
         check_for_SIGIO();
+#endif /* 0 */
     }
     if (need_to_abort) {
         need_to_abort = 0;
-        rdi_proc_vec->info (target_arm_module, RDISignal_Stop, &empty, &empty);
+        rdi_proc_vec->info(target_arm_module, RDISignal_Stop,
+                           &empty, &empty);
     }
 }
 
-
+
 /*
  * low_open_target
  *
@@ -267,9 +294,7 @@ yield_func(WinRDI_YieldArg *arg)
  * gives the port address for the board.  If QUERY is 1, the
  * user is queried for the setup of the connection parameters.
  */
-
-int
-low_open_target (char *target_port, char *byte_sex, int query)
+int low_open_target(char *target_port, char *byte_sex, int query)
 {
   int vers;
   int valid, result = 0;
@@ -286,21 +311,21 @@ low_open_target (char *target_port, char *byte_sex, int query)
    * First, we will open the Multi-ICE DLL and dig all the procs
    * that we need out of it.
    */
-  
+
   handle = LoadLibrary ("Multi-ICE.dll");
   if (handle == NULL)
     {
       output_error ("Could not load the Multi-ICE DLL\n");
       return 0;
     }
-  
+
   winRDI_GetVersion = WinRDI_GetProcAddress (handle, GetVersion);
   if (winRDI_GetVersion == NULL)
     {
       output_error ("Could not get GetVersion from the Multi-ICE DLL\n");
       return 0;
     }
-  
+
   winRDI_Valid_RDI_DLL = WinRDI_GetProcAddress (handle, Valid_RDI_DLL);
   if (winRDI_Valid_RDI_DLL == NULL)
     {
@@ -315,14 +340,14 @@ low_open_target (char *target_port, char *byte_sex, int query)
       output_error ("Could not get Get_DLL_Description from the Multi-ICE DLL\n");
       return 0;
     }
-  
+
   winRDI_Config = WinRDI_GetProcAddress (handle, Config);
   if (winRDI_Config == NULL)
     {
       output_error ("Could not get Config from the Multi-ICE DLL\n");
       return 0;
     }
-  
+
   winRDI_Initialise = WinRDI_GetProcAddress (handle, Initialise);
   if (winRDI_Initialise == NULL)
     {
@@ -346,21 +371,21 @@ low_open_target (char *target_port, char *byte_sex, int query)
 
   /* Register a "yield" callback so we can regain control while 'executing' */
   winRDI_Register_Yield_Callback(yield_func, (WinRDI_YieldArg *)&yield_arg);
-  
+
   /*
    * Okay, now we are ready to start the actual initialization process.
    * First we check that the DLL is copasetic, then start to open the
    * connection to the target.
    */
-  
+
   valid = winRDI_Valid_RDI_DLL ();
-  
+
   if (!valid)
     {
       output_error ("RDI DLL says it is not valid\n");
       return 0;
     }
-  
+
   vers = winRDI_GetVersion ();
   if (vers < 150 || vers >= 200)
     {
@@ -368,27 +393,27 @@ low_open_target (char *target_port, char *byte_sex, int query)
 		    vers);
       return 0;
     }
-  
+
   rdi_proc_vec = winRDI_GetRDIProcVec ();
   if (rdi_proc_vec == NULL)
     {
       output_error ("Got null proc vector from GetRDIProcVec\n");
       return 0;
     }
-  
+
   /*
    * Now fill the ToolConf database.  Some of these have to be
    * filled BEFORE you call winRDI_Initialise, or the DLL will
    * crash in random places...  This is supposed to be fixed in
    * the 1.4 version of the DLL.
    */
-  
+
   gdb_config = ToolConf_New (30);
   for (i = 0; cfnArray[i] != NULL; i++)
     {
       ToolConf_Add (gdb_config, cfnArray[i]);
     }
-  
+
   if (target_port != NULL)
     {
       char buffer[256];
@@ -421,7 +446,7 @@ low_open_target (char *target_port, char *byte_sex, int query)
   ToolConf_Update (gdb_config, driver);
 
   main_win = get_main_window ();
-  
+
   if (main_win == NULL)
     {
       output_error ("The main window handle was null.\n");
@@ -437,36 +462,36 @@ low_open_target (char *target_port, char *byte_sex, int query)
 	  return 0;
 	}
     }
-  
+
   result = winRDI_Initialise (main_win, gdb_config);
   if (!result)
     {
       output_error ("Initialise failed...\n");
       return 0;
     }
-  
+
   /*
    * Set the open type to cold boot, reset comm, byte sex dont care
    */
-  
+
   open_type = (0 << RDIOpen_BootLevel);
   open_type |= (1 << RDIOpen_CommsReset);
   open_type |= (RDISex_DontCare << RDIOpen_ByteSexShift);
-  
+
   /*
    * Fill the IO structure with the appropriate functions.
    */
-  
+
   gdb_IO_struct.dbgprint = my_IO_dbgprint;
   gdb_IO_struct.dbgpause = my_IO_dbgpause;
   gdb_IO_struct.writec = my_IO_writec;
   gdb_IO_struct.readc = my_IO_readc;
   gdb_IO_struct.write = my_IO_write;
   gdb_IO_struct.gets = my_IO_gets;
-  
-  result = rdi_proc_vec->openagent (&gdb_agent, open_type, gdb_config, 
+
+  result = rdi_proc_vec->openagent (&gdb_agent, open_type, gdb_config,
 				   &gdb_IO_struct, gdb_debug_state);
-  
+
   if (result != RDIError_NoError) {
     output_error ("RDI_OpenAgent failed with error %d.\n", result);
     if (gdb_agent != NULL)
@@ -482,20 +507,20 @@ low_open_target (char *target_port, char *byte_sex, int query)
    * you have to open all of them even though you only intend to
    * talk to one of them.
    */
-  
+
   num_procs = 0;
-  result = rdi_proc_vec->info (gdb_agent, RDIInfo_Modules, 
-			      (ARMword *) &num_procs,
-			      (ARMword *) NULL);
-  if (num_procs == 0) 
+  result = rdi_proc_vec->info(gdb_agent, RDIInfo_Modules,
+                              (ARMword *)&num_procs,
+                              (ARMword *)NULL);
+  if (num_procs == 0)
     {
       output_error ("Found no processors for agent %d\n", gdb_agent);
       return 0;
     }
 
-  proc_desc_array = (RDI_ModuleDesc *) 
+  proc_desc_array = (RDI_ModuleDesc *)
     malloc(sizeof(RDI_ModuleDesc) * num_procs);
-  result = rdi_proc_vec->info(gdb_agent, RDIInfo_Modules, 
+  result = rdi_proc_vec->info(gdb_agent, RDIInfo_Modules,
 			      (ARMword *) &num_procs,
 			      (ARMword *) proc_desc_array);
 
@@ -505,27 +530,27 @@ low_open_target (char *target_port, char *byte_sex, int query)
        * Some modules may have their own RDI vectors, use it if
        * it is present.
        */
-      
+
       if (proc_desc_array[i].rdi == NULL)
 	{
-	  result = rdi_proc_vec->open (proc_desc_array[i].handle, 
+	  result = rdi_proc_vec->open (proc_desc_array[i].handle,
 				       open_type, gdb_config,
 				       &gdb_IO_struct,
 				       gdb_debug_state);
 	}
       else
 	{
-	  result = proc_desc_array[i].rdi->open (proc_desc_array[i].handle, 
+	  result = proc_desc_array[i].rdi->open (proc_desc_array[i].handle,
 						 open_type, gdb_config,
 						 &gdb_IO_struct,
 						 gdb_debug_state);
 	}
-      
+
       if (result != RDIError_NoError && result != RDIError_LittleEndian && result != RDIError_BigEndian)
 	{
 	  int j;
-	  
-	  output_error ("Error #%d opening module module %d\n%s\n", result, 
+
+	  output_error ("Error #%d opening module module %d\n%s\n", result,
                         i, rdi_error_message(result));
 	  for (j = 0; j < i; j++)
 	    {
@@ -548,7 +573,7 @@ low_open_target (char *target_port, char *byte_sex, int query)
        * you want to debug.  We default to the first one found.
        * At this point we also get its byte order.
        */
-      
+
       if (target_arm_core < 0)
 	{
 	  if (strcmp (proc_desc_array[i].type, "ARM") == 0)
@@ -558,25 +583,25 @@ low_open_target (char *target_port, char *byte_sex, int query)
 	      target_arm_module = proc_desc_array[i].handle;
 
 
-	      
+
 #if 0
 	      rdi_proc_vec->info(target_arm_module,
 				 RDIInfo_ByteSex,
 				 &sex,
 				 NULL);
               /* The "sex" value is coming back with some
-                 bogus value, so if I don't recognize it, 
+                 bogus value, so if I don't recognize it,
                  just leave it alone, since the code above
                  sets it to whatever I have requested... */
 
-	      if (sex == RDISex_Big) 
+	      if (sex == RDISex_Big)
 		{
 		  target_byte_order = BIG_ENDIAN;
 		}
 	      else if (sex == RDISex_Little)
 		{
 		  target_byte_order = LITTLE_ENDIAN;
-		}	    
+		}
 #else
 		  if (result == RDIError_BigEndian)
 		      target_byte_order = BIG_ENDIAN;
@@ -587,7 +612,7 @@ low_open_target (char *target_port, char *byte_sex, int query)
 #endif
 	    }
 	}
-      
+
   }
 
   if (target_arm_core < 0)
@@ -627,7 +652,7 @@ low_open_target (char *target_port, char *byte_sex, int query)
     {
       output ("NO\n");
     }
-  
+
   output ("\tComms Channel?:\t\t");
   if (flags & RDITarget_HasCommsChannel)
     {
@@ -637,7 +662,7 @@ low_open_target (char *target_port, char *byte_sex, int query)
     {
       output ("NO\n");
     }
-  
+
   output ("\tEndian-ness:\t\t");
   if (target_byte_order ==BIG_ENDIAN)
     {
@@ -661,7 +686,7 @@ low_open_target (char *target_port, char *byte_sex, int query)
       target_step = 0;
       output ("NO\n");
     }
-  
+
   result = rdi_proc_vec->info (target_arm_module,
 			      RDIInfo_GetLoadSize,
 			      (ARMword *) &target_load_size,
@@ -677,10 +702,10 @@ low_open_target (char *target_port, char *byte_sex, int query)
       target_load_size = -1;
     }
 
-  result = rdi_proc_vec->info (target_arm_module,
-			      RDIInfo_CustomLoad,
-			      (ARMword *) &dummy,
-			      NULL);
+  result = rdi_proc_vec->info(target_arm_module,
+                              RDIInfo_CustomLoad,
+                              (ARMword *)&dummy,
+                              NULL);
   output ("\tCustom Load?:\t\t");
   if (result == RDIError_NoError)
     {
@@ -691,7 +716,7 @@ low_open_target (char *target_port, char *byte_sex, int query)
       output ("NO\n");
     }
 
-  
+
   output ("\n");
 
   if (num_procs > 1)
@@ -718,7 +743,7 @@ low_open_target (char *target_port, char *byte_sex, int query)
 
   if ( !aregisters )
       aregisters = malloc( REGISTER_BYTES );
-  
+
   return 1;
 }
 
@@ -738,7 +763,7 @@ low_close_target()
   /* If we haven't allocated the processor description array yet,
      then we have probably not gotten anywhere yet, so just exit.
   */
-  
+
   if (proc_desc_array == NULL)
     return 1;
 
@@ -749,19 +774,19 @@ low_close_target()
      if (result != RDIError_NoError)
        {
 	 output_error ("Could not stop the target.\n");
-	 
+
 	 /* If we could not stop the target, it does not seem safe
 	    to shut down (we often crash when we do...) */
 	 return 0;
        }
     }
-  
+
   for (i = 0; i < num_procs; i++) {
     rdi_proc_vec->close(proc_desc_array[i].handle);
   }
   rdi_proc_vec->closeagent(gdb_agent);
   free (proc_desc_array);
-  return 1;  
+  return 1;
 }
 
 
@@ -779,7 +804,7 @@ low_close_target()
    would indicate all threads.
 
    Returns 1 for success, 0 for error.
-   
+
 */
 
 int
@@ -793,7 +818,7 @@ low_set_thread_for_resume (long thread_id)
    This sets the target for all query operations.
 
    Returns 1 for success, 0 for error.
-   
+
 */
 
 int
@@ -806,7 +831,7 @@ low_set_thread_for_query (char *input_buffer)
 /* low_is_thread_alive:
 
    Returns 1 if thread THREAD_ID is alive, 0 otherwise.
-   
+
 */
 
 int
@@ -845,7 +870,7 @@ low_get_offsets (CORE_ADDR *text, CORE_ADDR *data, CORE_ADDR *bss)
    * since it has nothing really to do with loading the executible.
    * So I just pretend I don't understand the query.
    */
-  
+
   return 0;
 }
 
@@ -881,7 +906,7 @@ int low_update_registers()
     {
       return 1;
     }
-  
+
   result = rdi_proc_vec->CPUread (target_arm_module,
 				  RDIMode_Curr, 0x7fff|RDIReg_CPSR, rawregs);
   if (result)
@@ -889,22 +914,22 @@ int low_update_registers()
       output_error ("RDI_CPUread: %s\n", rdi_error_message (result));
       return 0;
     }
-  
+
   for (regno = 0; regno < 15; regno++)
     {
-     
+
       record_register (regno, rawregs[regno]);
     }
 
 /* Note: this is very strange.  It seems that only R15 will return the PS,
  * but RDIReg_CPSR must be used to set it!  Looks like an ARM server bug.
- */  
+ */
   record_register (PS_REGNUM, rawregs[15]);
 
   /*
    * Now get the PC register...
    */
-  
+
   rdi_regmask = RDIReg_PC;
 
   result = rdi_proc_vec->CPUread (target_arm_module,
@@ -914,12 +939,12 @@ int low_update_registers()
       output_error ("RDI_CPUread: %s\n", rdi_error_message (result));
       return 0;
     }
-  
+
   record_register (PC_REGNUM, rawreg);
 
   registers_up_to_date = 1;
   registers_are_dirty = 0;
-  
+
   return 1;
 }
 /*
@@ -963,7 +988,7 @@ low_write_registers ()
 			  write_mask, &rawreg);
 
   registers_are_dirty = 0;
-  
+
   return 1;
 
 }
@@ -972,13 +997,13 @@ int
 low_read_memory_raw (CORE_ADDR start, void *buffer, unsigned int *nbytes)
 {
   int result;
-  
+
   result = rdi_proc_vec->read (target_arm_module,
 		  (ARMword) start, buffer,
 		  nbytes, RDIAccess_Data);
   switch (result)
     {
-    case RDIError_BigEndian:    
+    case RDIError_BigEndian:
       output ("Processor has switched endianness - now BIG ENDIAN\n");
       break;
     case RDIError_LittleEndian:
@@ -998,21 +1023,21 @@ low_read_memory (char *buffer, CORE_ADDR start, unsigned int nbytes)
 {
 #define BUFF_LEN 1024
   char rdi_out[BUFF_LEN];
-  
+
   if (nbytes > BUFF_LEN)
     {
       output_error ("Requested too much data: %d\n", nbytes);
       return 0;
     }
-  
+
   if (!low_read_memory_raw (start, rdi_out, &nbytes))
     {
       return 0;
     }
-  
+
   convert_bytes_to_ascii (rdi_out, buffer, nbytes, 0);
-  return nbytes;      
-		  
+  return nbytes;
+
 }
 
 int
@@ -1027,7 +1052,7 @@ low_write_memory (char *data, CORE_ADDR start_addr, unsigned int nbytes)
   /* This is stupid, but let's see whether we got back what we
    * put in...
    */
-    
+
   rdi_proc_vec->read (target_arm_module, start_addr, buff, &nbytes,
 			RDIAccess_Data);
 
@@ -1038,10 +1063,10 @@ low_write_memory (char *data, CORE_ADDR start_addr, unsigned int nbytes)
 	  output_error ("Readback did not match original data\n");
 	}
     }
-  
+
   switch (result)
     {
-    case RDIError_BigEndian:    
+    case RDIError_BigEndian:
       output ("Processor has switched endianness - now BIG ENDIAN\n");
       break;
     case RDIError_LittleEndian:
@@ -1054,7 +1079,7 @@ low_write_memory (char *data, CORE_ADDR start_addr, unsigned int nbytes)
       return 0;
     }
   return nbytes;
-  
+
 }
 
 int
@@ -1073,9 +1098,9 @@ low_set_breakpoint (CORE_ADDR bp_addr, int size)
     {
       type |= RDIPoint_16Bit;
     }
-  
+
   if (debug_on)
-    {      
+    {
       output ("Adding breakpoint at 0x%x, size: %d\n", bp_addr, size);
     }
 
@@ -1099,7 +1124,7 @@ low_set_breakpoint (CORE_ADDR bp_addr, int size)
       free (new_point);
       return 0; /* All errors fall through to here. */
     }
-  
+
   if (breakpoint_list == NULL)
     {
       breakpoint_list = new_point;
@@ -1116,7 +1141,7 @@ low_set_breakpoint (CORE_ADDR bp_addr, int size)
       ARMword arg1, arg2;
       int result;
       struct rdi_points *iter;
-      
+
       for (iter = breakpoint_list; iter != NULL; iter = iter->next)
 	{
 	  arg1 = (ARMword) iter->handle;
@@ -1143,7 +1168,7 @@ low_delete_breakpoint (CORE_ADDR bp_addr, int size)
       ARMword arg1, arg2;
       int result;
       struct rdi_points *iter;
-      
+
       output ("Before deletion of 0x%x, Current breakpoint list:\n", bp_addr);
       for (iter = breakpoint_list; iter != NULL; iter = iter->next)
 	{
@@ -1189,9 +1214,9 @@ low_delete_breakpoint (CORE_ADDR bp_addr, int size)
     {
       prev_ptr->next = point_ptr->next;
     }
-  
+
   free (point_ptr);
-  
+
   if (debug_on)
     {
       struct rdi_points *iter;
@@ -1199,7 +1224,7 @@ low_delete_breakpoint (CORE_ADDR bp_addr, int size)
       for (iter = breakpoint_list; iter != NULL; iter = iter->next)
 	output ("\t-- 0x%x\n", iter->addr);
     }
-  
+
   return 1;
 }
 
@@ -1223,14 +1248,14 @@ low_set_watchpoint (CORE_ADDR watch_addr, int size, enum watch_type mode)
   if ((mode == WATCHPOINT_READ) || (mode == WATCHPOINT_ACCESS)) {
       watch_mode |= size*RDIWatch_ByteRead;
   }
-  
+
   if (debug_on)
-    {      
+    {
       output ("Adding watchpoint at 0x%x, size: %d, mode: %x\n", watch_addr, size, watch_mode);
     }
 
   result = rdi_proc_vec->setwatch (target_arm_module, watch_addr,
-				   type, watch_mode, 
+				   type, watch_mode,
 				   0, RDI_NoHandle, &new_point->handle);
   switch (result)
     {
@@ -1249,7 +1274,7 @@ low_set_watchpoint (CORE_ADDR watch_addr, int size, enum watch_type mode)
       free (new_point);
       return 0; /* All errors fall through to here. */
     }
-  
+
   if (watchpoint_list == NULL)
     {
       watchpoint_list = new_point;
@@ -1266,11 +1291,11 @@ low_set_watchpoint (CORE_ADDR watch_addr, int size, enum watch_type mode)
       ARMword arg1, arg2;
       int result;
       struct rdi_points *iter;
-      
+
       for (iter = watchpoint_list; iter != NULL; iter = iter->next)
 	{
 	  arg1 = (ARMword) iter->handle;
-	  result = rdi_proc_vec->info (target_arm_module,
+	  result = rdi_proc_vec->info(target_arm_module,
 			      RDIPointStatus_Watch,
 			      &arg1,
 			      &arg2);
@@ -1293,7 +1318,7 @@ low_delete_watchpoint (CORE_ADDR watch_addr, int size, enum watch_type type)
       ARMword arg1, arg2;
       int result;
       struct rdi_points *iter;
-      
+
       output ("Before deletion of 0x%x, Current watchpoint list:\n", watch_addr);
       for (iter = watchpoint_list; iter != NULL; iter = iter->next)
 	{
@@ -1339,9 +1364,9 @@ low_delete_watchpoint (CORE_ADDR watch_addr, int size, enum watch_type type)
     {
       prev_ptr->next = point_ptr->next;
     }
-  
+
   free (point_ptr);
-  
+
   if (debug_on)
     {
       struct rdi_points *iter;
@@ -1349,7 +1374,7 @@ low_delete_watchpoint (CORE_ADDR watch_addr, int size, enum watch_type type)
       for (iter = watchpoint_list; iter != NULL; iter = iter->next)
 	output ("\t-- 0x%x\n", iter->addr);
     }
-  
+
   return 1;
 }
 
@@ -1362,10 +1387,10 @@ low_resume (enum resume_mode mode, int signo)
 
   /* Make sure any changes to the registers are flushed before
      proceeding */
-  
+
   low_write_registers();
 
-  
+
   switch (mode)
     {
     case RESUME_STEP:
@@ -1391,7 +1416,7 @@ low_resume (enum resume_mode mode, int signo)
 	  /* Now get the next pc.  We need to know whether the next
 	     PC is in arm or thumb code, so that we can set the right
 	     kind of breakpoint there. */
-	  
+
 	  next_pc = server_arm_get_next_pc (current_pc, &is_thumb);
 
 	  if (debug_on)
@@ -1399,10 +1424,10 @@ low_resume (enum resume_mode mode, int signo)
 	      output ("Single stepping from 0x%x to 0x%x.\n", current_pc,
 		      next_pc);
 	    }
-	  
+
 	  temp_point = RDI_NoPointHandle;
 	  type = RDIPoint_EQ;
-	  
+
 	  if (is_thumb)
 	    {
 	      type |= RDIPoint_16Bit;
@@ -1414,7 +1439,7 @@ low_resume (enum resume_mode mode, int signo)
 	   * If there is already a breakpoint here, then don't remove
 	   * it.  The RDI only allows one Breakpoint at an address.
 	   */
-	  
+
 	  dont_delete = 0;
 	  if (result == RDIError_PointInUse)
 	    {
@@ -1433,7 +1458,7 @@ low_resume (enum resume_mode mode, int signo)
 	     stepping, since we would rather now hit one of their
 	     breakpoints.
 	  */
-	  
+
 	  currently_running = 1;
 	  result = rdi_proc_vec->execute (gdb_agent,
 					  &target_module,
@@ -1466,23 +1491,23 @@ low_resume (enum resume_mode mode, int signo)
 			  rdi_error_message (result));
 		}
 	    }
-	      
+
 	  break;
 	}
     case RESUME_CONTINUE:
       currently_running = 1;
-      result = rdi_proc_vec->execute (gdb_agent, 
+      result = rdi_proc_vec->execute (gdb_agent,
 			     &target_module,
 			     target_stop_others,
 			     &ret_point);
       currently_running = 0;
-      
+
       if (debug_on)
 	{
 	  if (result == RDIError_BreakpointReached)
 	    {
 	      struct rdi_points *iter_ptr;
-	      
+
 	      for (iter_ptr = breakpoint_list; iter_ptr != NULL;
 		   iter_ptr = iter_ptr->next)
 		{
@@ -1512,15 +1537,13 @@ low_resume (enum resume_mode mode, int signo)
      At least figure out a signal that will keep gdb from getting
      all confused about this.
   */
-  
-  if (target_module != target_arm_module)
-    {
-      output_error ("Oops, somebody else caused the stop while single stepping.\n");
-    }
+
+  if (target_module != target_arm_module) {
+      output_error("Oops, somebody else caused the stop while single stepping.\n");
+  }
 
   currently_running = 0;
-  return rdi_to_gdb_signal (result);
-
+  return rdi_to_gdb_signal(result);
 }
 
 /*
@@ -1529,12 +1552,9 @@ low_resume (enum resume_mode mode, int signo)
  * Translate an rdi ending signal to a signal you can send back to gdb.
  * Comes from remote-rdi.c.
  */
-
-static int
-rdi_to_gdb_signal (int rdi_error)
+static int rdi_to_gdb_signal(int rdi_error)
 {
-  switch (rdi_error)
-    {
+  switch (rdi_error) {
     case RDIError_NoError:
     case RDIError_TargetStopped:
       return TARGET_SIGNAL_TERM;
@@ -1589,61 +1609,52 @@ rdi_to_gdb_signal (int rdi_error)
     case RDIError_UnimplementedMessage:
     case RDIError_UndefinedMessage:
     default:
-      return TARGET_SIGNAL_UNKNOWN; 
-    }  
+      return TARGET_SIGNAL_UNKNOWN;
+  }
 }
-
+
+
 /*
- * This next set of routines are the IO channel for the Target.  I haven't
- * done anything with this yet.  Currently they are just stubs.
+ * This next set of routines are the IO channel for the Target. I have NOT
+ * done anything with this yet. Currently they are just stubs.
  */
-
-void 
-my_IO_dbgprint (RDI_Hif_DbgArg *arg, const char *format, va_list ap)
+void my_IO_dbgprint(RDI_Hif_DbgArg *arg, const char *format, va_list ap)
 {
-	
+    return;
 }
 
-void 
-my_IO_dbgpause(RDI_Hif_DbgArg *arg) 
+void my_IO_dbgpause(RDI_Hif_DbgArg *arg)
 {
-	
+    return;
 }
 
-void 
-my_IO_writec(RDI_Hif_HostosArg *arg, int c)
-{  
-
+void my_IO_writec(RDI_Hif_HostosArg *arg, int c)
+{
+    return;
 }
 
-int 
-my_IO_readc(RDI_Hif_HostosArg *arg)
+int my_IO_readc(RDI_Hif_HostosArg *arg)
 {
     return 0;
 }
 
-int 
-my_IO_write(RDI_Hif_HostosArg *arg, char const *buffer, int len)
+int my_IO_write(RDI_Hif_HostosArg *arg, char const *buffer, int len)
 {
     return 0;
 }
 
-char *
-my_IO_gets(RDI_Hif_HostosArg *arg, char *buffer, int len)
+char *my_IO_gets(RDI_Hif_HostosArg *arg, char *buffer, int len)
 {
 	return buffer;
 }
 
-
 
 /*
  * rdi_error_message
  *
  * Translate an rdi error number into a string, and return it.
  */
-
-char *
-rdi_error_message (int err)
+char *rdi_error_message(int err)
 {
     static char msg[256];
     rdi_proc_vec->errmess(gdb_agent, msg, sizeof(msg), err);
@@ -1658,45 +1669,40 @@ rdi_error_message (int err)
  * over into the registers array.
  * Make sure that it stays in target byte order.
  */
-
-void
-record_register (int regno, ARMword val)
+void record_register(int regno, ARMword val)
 {
   unsigned char cookedreg[12];
 
-  store_unsigned_integer (cookedreg, REGISTER_RAW_SIZE (regno), val);
- 
-  memcpy (&aregisters[REGISTER_BYTE (regno)], (char *) cookedreg,
-	  REGISTER_RAW_SIZE (regno));
+  store_unsigned_integer(cookedreg, REGISTER_RAW_SIZE(regno), val);
+
+  memcpy(&aregisters[REGISTER_BYTE(regno)], (char *)cookedreg,
+         REGISTER_RAW_SIZE(regno));
 }
 
-ARMword
-restore_register (int regno)
+ARMword restore_register(int regno)
 {
-  
   PTR addr;
   int len;
   ULONGEST retval;
 
-  addr = &aregisters[REGISTER_BYTE (regno)];
-  len = REGISTER_RAW_SIZE (regno);
+  addr = &aregisters[REGISTER_BYTE(regno)];
+  len = REGISTER_RAW_SIZE(regno);
 
   retval = 0;
-  retval = extract_unsigned_integer (addr, len);
+  retval = extract_unsigned_integer(addr, len);
 
   return retval;
 }
 
-int
-low_test (char *buffer)
+int low_test(char *buffer)
 {
-
+    return 0;
 }
 
-int
-low_stop(void)
+int low_stop(void)
 {
     need_to_abort++;
+    return 0;
 }
 
 #define ICE_THREAD_VECTOR 0x50
@@ -1728,41 +1734,41 @@ struct ice_thread_handler {
 /* This routine is the fallback for thread oriented functions when there is
  * no thread support available at the target.
  */
-int
-no_thread_op(char *input_buffer)
+int no_thread_op(char *input_buffer)
 {
     switch (input_buffer[0]) {
     case 'g':
-        return handle_read_registers(input_buffer+1);
+        return handle_read_registers(input_buffer + 1);
     default:
         putpkt("ENN");
         return 0;  /* Can't handle it! */
     }
 }
 
-/* This routine tries to call into the target for thread oriented functions. */
-static int
-_low_thread_op(char *input_buffer, char *result, int result_len)
+/* This routine tries to call into the target for thread-oriented funcs: */
+static int _low_thread_op(char *input_buffer, char *result, int result_len)
 {
     struct ice_thread_handler handler;
     struct ice_thread_vector vector;
     int nbytes, res;
 
     nbytes = sizeof(vector);
-    if (!low_read_memory_raw(ICE_THREAD_VECTOR, (char *)&vector, &nbytes)) {
+    if (!low_read_memory_raw(ICE_THREAD_VECTOR, (void *)(char *)&vector,
+                             (unsigned int *)&nbytes)) {
         return 0;
     }
-    if ((vector._key0 != ICE_THREAD_VECTOR_KEY0) || 
+    if ((vector._key0 != ICE_THREAD_VECTOR_KEY0) ||
         (vector._key1 != ICE_THREAD_VECTOR_KEY1) ||
         (vector.eCosRunning == 0)) {
         output("Not a good vector or eCos not running!\n");
         return 0;
     }
     nbytes = sizeof(handler);
-    if (!low_read_memory_raw(vector.handler, (char *)&handler, &nbytes)) {
+    if (!low_read_memory_raw(vector.handler, (char *)&handler,
+                             (unsigned int *)&nbytes)) {
         return no_thread_op(input_buffer);
     }
-    if ((handler._key0 != ICE_THREAD_HANDLER_KEY0) || 
+    if ((handler._key0 != ICE_THREAD_HANDLER_KEY0) ||
         (handler._key1 != ICE_THREAD_HANDLER_KEY1)) {
         output("Not a good handler!\n");
         return 0;
@@ -1775,10 +1781,12 @@ _low_thread_op(char *input_buffer, char *result, int result_len)
     /* Save current registers */
     low_update_registers();
     memcpy(hold_registers, aregisters, sizeof(aregisters));
-    /* Set up to call the thread support function */
-    record_register(SP_REGNUM, (int)handler.stack+handler.stack_size);
+    /* Set up to call the thread support function: */
+    record_register(SP_REGNUM, ((int)handler.stack + handler.stack_size));
+#ifdef LR_REGNUM
     record_register(LR_REGNUM, ICE_THREAD_VECTOR);
-    low_set_breakpoint(ICE_THREAD_VECTOR, 4);  
+#endif /* LR_REGNUM */
+    low_set_breakpoint(ICE_THREAD_VECTOR, 4);
     record_register(PC_REGNUM, handler.fun);
     record_register(PS_REGNUM, 0xD3);
     registers_are_dirty = 1;
@@ -1787,16 +1795,17 @@ _low_thread_op(char *input_buffer, char *result, int result_len)
     registers_are_dirty = 1;
     registers_up_to_date = 1;
     memcpy(aregisters, hold_registers, sizeof(aregisters));
-    low_delete_breakpoint(ICE_THREAD_VECTOR, 4);  
+    low_delete_breakpoint(ICE_THREAD_VECTOR, 4);
     /* Return results */
     if (res == TARGET_SIGNAL_TRAP) {
         nbytes = result_len;
-        if (!low_read_memory_raw((int)handler.outbuf, result, &nbytes)) {
+        if (!low_read_memory_raw((int)handler.outbuf, result,
+                                 (unsigned int *)&nbytes)) {
             output("Error reading result\n");
             strcpy(result, "ENN");
         }
     } else {
-        output("Target didn't execute/stop properly\n");
+        output("Target failed to execute/stop properly\n");
         strcpy(result, "ENN");
     }
     return 1;
@@ -1805,13 +1814,11 @@ _low_thread_op(char *input_buffer, char *result, int result_len)
 /*
  * low_thread_op
  *
- * This is the interface function which calls to the board.  It is separated
+ * This is the interface function which calls to the board. It is separated
  * out from the actual worker function to allow some routines to pass the
  * result on to the GDB client, and others to use the results locally.
  */
-
-int
-low_thread_op(char *input_buffer, char **resptr)
+int low_thread_op(char *input_buffer, char **resptr)
 {
     int res;
     static char result[2048];
@@ -1827,8 +1834,7 @@ low_thread_op(char *input_buffer, char **resptr)
 }
 
 #if 0
-void
-low_reset_thread_op(void)
+void low_reset_thread_op(void)
 {
     struct ice_thread_handler handler;
     struct ice_thread_vector vector;
@@ -1838,7 +1844,7 @@ low_reset_thread_op(void)
     if (!low_read_memory_raw(ICE_THREAD_VECTOR, (char *)&vector, &nbytes)) {
         return;
     }
-    if ((vector._key0 != ICE_THREAD_VECTOR_KEY0) || 
+    if ((vector._key0 != ICE_THREAD_VECTOR_KEY0) ||
         (vector._key1 != ICE_THREAD_VECTOR_KEY1) ||
         (vector.eCosRunning == 0)) {
     }
@@ -1846,4 +1852,6 @@ low_reset_thread_op(void)
     nbytes = sizeof(vector);
     low_write_memory((char *)&vector, ICE_THREAD_VECTOR, nbytes);
 }
-#endif
+#endif /* 0 */
+
+/* EOF */

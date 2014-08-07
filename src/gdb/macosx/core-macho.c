@@ -1,5 +1,5 @@
-/* APPLE LOCAL file Darwin */
-/* Mac OS X support for GDB, the GNU debugger.
+/* APPLE LOCAL file (core-macho.c) for Darwin */
+/* Mac OS X support for mach-o core files for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -91,20 +91,20 @@ check_thread (bfd *abfd, asection *asect, unsigned int num)
   unsigned int i;
   const char *expected = NULL;
 #if defined (TARGET_POWERPC)
-  const char *names[] = 
+  const char *names[] =
     {
       "LC_THREAD.PPC_THREAD_STATE.",
       "LC_THREAD.PPC_THREAD_STATE_64."
     };
 #elif defined (TARGET_I386)
-  const char *names[] = 
+  const char *names[] =
     {
       "LC_THREAD.i386_THREAD_STATE.",
       "LC_THREAD.x86_THREAD_STATE.",
       "LC_THREAD.x86_THREAD_STATE64."
     };
 #elif defined (TARGET_ARM)
-  const char *names[] = 
+  const char *names[] =
     {
       "LC_THREAD.ARM_THREAD_STATE."
     };
@@ -309,7 +309,7 @@ core_open (char *filename, int from_tty)
               mem_read_ret = safe_read_memory_unsigned_integer (0xffffff8000002010ULL, 4, &possible_kernel_address);
               gdb_stderr = prev_stderr;
               do_cleanups (uiclean);
-              
+
               if (mem_read_ret
                   && get_information_about_macho (NULL, possible_kernel_address, NULL, 1, 1, &in_memory_uuid, &in_memory_osabi, NULL, NULL, NULL, NULL))
                 {
@@ -357,12 +357,12 @@ core_open (char *filename, int from_tty)
               if (got_info)
                 {
                   in_memory_addr = possible_kernel_address;
-    
+
               /* OK we found a Mach-O kernel in the core file memory. If the user specified a kernel file
                  on startup, slide it to the correct address. If no kernel was specified, see if we cannot
                  find one via DBGShellCommand. In any case, print a message about the load address and
                  UUID of the kernel we found in memory.  */
-    
+
                   CORE_ADDR file_load_addr = INVALID_ADDRESS;
                   if (symfile_objfile
                       && get_information_about_macho (NULL, INVALID_ADDRESS, symfile_objfile->obfd, 1, 0, NULL, NULL, NULL, &file_load_addr, NULL, NULL))
@@ -421,20 +421,20 @@ core_detach (char *args, int from_tty)
     printf_filtered ("No core file now.\n");
 }
 
-/* Each architecture that supports core files needs to define a 
+/* Each architecture that supports core files needs to define a
    structure that contains pointers to each possible flavour of
-   registers that a core file for said arch can contain. When a 
+   registers that a core file for said arch can contain. When a
    core file is opened,  the register contents found in the mach-o
-   load commands for each thread will be cached in the 
+   load commands for each thread will be cached in the
    "thrd_info->private->core_thread_state" member of the
    thread_info structure. Any register sets that do NOT have values
-   stored in the mach-o load commands will be NULL. This allows 
-   read/write access to core file registers for all threads and 
-   modified thread register values will survive thread context 
-   switches. Values stored in these buffers are not swapped 
-   to match the host byte order. This is done for fetch/store 
-   efficiency reasons. Structures and functions that use the 
-   unswapped values have a "_raw" suffix appended to them to 
+   stored in the mach-o load commands will be NULL. This allows
+   read/write access to core file registers for all threads and
+   modified thread register values will survive thread context
+   switches. Values stored in these buffers are not swapped
+   to match the host byte order. This is done for fetch/store
+   efficiency reasons. Structures and functions that use the
+   unswapped values have a "_raw" suffix appended to them to
    clarify their usage.  */
 
 #if defined (TARGET_POWERPC)
@@ -513,10 +513,10 @@ core_fetch_cached_thread_registers ()
 
   if (cached_regs_raw->i386_fp_regs)
     i386_macosx_fetch_fp_registers_raw (cached_regs_raw->i386_fp_regs);
-    
+
   if (cached_regs_raw->x86_64_gp_regs)
     x86_64_macosx_fetch_gp_registers_raw (cached_regs_raw->x86_64_gp_regs);
-    
+
   if (cached_regs_raw->x86_64_fp_regs)
     x86_64_macosx_fetch_fp_registers_raw (cached_regs_raw->x86_64_fp_regs);
 
@@ -540,7 +540,7 @@ core_fetch_cached_thread_registers ()
 
 
 static void
-core_cache_section_registers (asection *sec, int flavour, 
+core_cache_section_registers (asection *sec, int flavour,
 			      core_cached_registers_raw_t* cached_regs_raw)
 {
   unsigned size;
@@ -566,12 +566,12 @@ core_cache_section_registers (asection *sec, int flavour,
       cached_regs_raw->ppc_gp_regs = (gdb_ppc_thread_state_t *) regs;
       regs = NULL;
       break;
-      
+
     case BFD_MACH_O_PPC_FLOAT_STATE:
       cached_regs_raw->ppc_fp_regs = (gdb_ppc_thread_fpstate_t *) regs;
       regs = NULL;
       break;
-      
+
     case BFD_MACH_O_PPC_EXCEPTION_STATE:
       break;
 
@@ -579,7 +579,7 @@ core_cache_section_registers (asection *sec, int flavour,
       cached_regs_raw->ppc_vp_regs = (gdb_ppc_thread_vpstate_t *) regs;
       regs = NULL;
       break;
-    
+
     case BFD_MACH_O_PPC_THREAD_STATE_64:
       cached_regs_raw->ppc64_gp_regs = (gdb_ppc_thread_state_64_t *) regs;
       regs = NULL;
@@ -592,7 +592,7 @@ core_cache_section_registers (asection *sec, int flavour,
       cached_regs_raw->i386_gp_regs = (gdb_i386_thread_state_t *) regs;
       regs = NULL;
       break;
-      
+
     case BFD_MACH_O_i386_FLOAT_STATE:
       cached_regs_raw->i386_fp_regs = (gdb_i386_float_state_t *) regs;
       regs = NULL;
@@ -612,7 +612,7 @@ core_cache_section_registers (asection *sec, int flavour,
       {
 	/* We are going to copy out just what we need from this structure
 	   since it contains a flavour, and a count followed by other bytes.
-	   We need to be sure not to set regs to NULL or we will have a 
+	   We need to be sure not to set regs to NULL or we will have a
 	   memory leak since we will copy out just what we need into a new
 	   buffer.  */
 	ULONGEST sub_flavour = extract_unsigned_integer ((const gdb_byte *)regs, 4);
@@ -621,7 +621,7 @@ core_cache_section_registers (asection *sec, int flavour,
 	    gdb_assert (cached_regs_raw->i386_gp_regs == NULL);
 	    cached_regs_raw->i386_gp_regs = (gdb_i386_thread_state_t *)
 	                           xmalloc (sizeof (gdb_i386_thread_state_t));
-	    memcpy (cached_regs_raw->i386_gp_regs, regs + 8, 
+	    memcpy (cached_regs_raw->i386_gp_regs, regs + 8,
 		    sizeof (gdb_i386_thread_state_t));
 	  }
 	else if (sub_flavour == BFD_MACH_O_x86_THREAD_STATE64)
@@ -629,7 +629,7 @@ core_cache_section_registers (asection *sec, int flavour,
 	    gdb_assert (cached_regs_raw->x86_64_gp_regs == NULL);
 	    cached_regs_raw->x86_64_gp_regs = (gdb_x86_thread_state64_t *)
 	                           xmalloc (sizeof (gdb_x86_thread_state64_t));
-	    memcpy (cached_regs_raw->x86_64_gp_regs, regs + 8, 
+	    memcpy (cached_regs_raw->x86_64_gp_regs, regs + 8,
 		    sizeof (gdb_x86_thread_state64_t));
 	  }
       }
@@ -639,7 +639,7 @@ core_cache_section_registers (asection *sec, int flavour,
       {
 	/* We are going to copy out just what we need from this structure
 	   since it contains a flavour, and a count followed by other bytes.
-	   We need to be sure not to set regs to NULL or we will have a 
+	   We need to be sure not to set regs to NULL or we will have a
 	   memory leak since we will copy out just what we need into a new
 	   buffer.  */
 	ULONGEST sub_flavour = extract_unsigned_integer ((const gdb_byte *)regs, 4);
@@ -648,7 +648,7 @@ core_cache_section_registers (asection *sec, int flavour,
 	    gdb_assert (cached_regs_raw->i386_fp_regs == NULL);
 	    cached_regs_raw->i386_fp_regs = (gdb_i386_float_state_t *)
 	                           xmalloc (sizeof (gdb_i386_float_state_t));
-	    memcpy (cached_regs_raw->i386_fp_regs, regs + 8, 
+	    memcpy (cached_regs_raw->i386_fp_regs, regs + 8,
 		    sizeof (gdb_i386_float_state_t));
 	  }
 	else if (sub_flavour == BFD_MACH_O_x86_FLOAT_STATE64)
@@ -656,7 +656,7 @@ core_cache_section_registers (asection *sec, int flavour,
 	    gdb_assert (cached_regs_raw->x86_64_fp_regs == NULL);
 	    cached_regs_raw->x86_64_fp_regs = (gdb_x86_float_state64_t *)
 	                           xmalloc (sizeof (gdb_x86_float_state64_t));
-	    memcpy (cached_regs_raw->x86_64_fp_regs, regs + 8, 
+	    memcpy (cached_regs_raw->x86_64_fp_regs, regs + 8,
 		    sizeof (gdb_x86_float_state64_t));
 	  }
       }
@@ -673,7 +673,7 @@ core_cache_section_registers (asection *sec, int flavour,
       cached_regs_raw->arm_gp_regs = (gdb_arm_thread_state_t *) regs;
       regs = NULL;
       break;
-      
+
     case BFD_MACH_O_ARM_VFP_STATE:
       if (size/4 == GDB_ARM_THREAD_FPSTATE_VFPV1_COUNT)
 	{
@@ -690,7 +690,7 @@ core_cache_section_registers (asection *sec, int flavour,
 #else
 # error "unsupported architecture"
 #endif /* TARGET_foo */
-  /* If the flavor was recognized and are now owned by CACHED_REGS_RAW, 
+  /* If the flavor was recognized and are now owned by CACHED_REGS_RAW,
      then REGS should have been set to NULL so we do NOT free them here.  */
   if (regs != NULL)
     xfree (regs);
@@ -754,13 +754,13 @@ create_core_thread_state_cache (struct thread_info *thrd_info)
       else
 	{
 	  /* Allocate our core thread state struct and initialize it.  */
-	  thrd_info->private->core_thread_state = 
+	  thrd_info->private->core_thread_state =
 	    (core_cached_registers_raw_t *)
 	    xmalloc (sizeof (core_cached_registers_raw_t));
-	  
+
 	  if (thrd_info->private->core_thread_state)
 	    {
-	      memset (thrd_info->private->core_thread_state, 0, 
+	      memset (thrd_info->private->core_thread_state, 0,
 		      sizeof (core_cached_registers_raw_t));
 	      return 1;
 	    }
@@ -777,47 +777,47 @@ delete_core_thread_state_cache (struct thread_info *thrd_info)
 {
   if (thrd_info && thrd_info->private && thrd_info->private->core_thread_state)
     {
-      core_cached_registers_raw_t *cached_regs_raw = 
+      core_cached_registers_raw_t *cached_regs_raw =
 	(core_cached_registers_raw_t *)thrd_info->private->core_thread_state;
 #if defined (TARGET_POWERPC)
 
-      if (cached_regs_raw->ppc_gp_regs) 
+      if (cached_regs_raw->ppc_gp_regs)
 	xfree (cached_regs_raw->ppc_gp_regs);
-	
-      if (cached_regs_raw->ppc_fp_regs) 
+
+      if (cached_regs_raw->ppc_fp_regs)
 	xfree (cached_regs_raw->ppc_fp_regs);
-	
-      if (cached_regs_raw->ppc_vp_regs) 
+
+      if (cached_regs_raw->ppc_vp_regs)
 	xfree (cached_regs_raw->ppc_vp_regs);
-	
+
       if (cached_regs_raw->ppc64_gp_regs)
 	xfree (cached_regs_raw->ppc64_gp_regs);
-	
+
 #elif defined (TARGET_I386)
 
-      if (cached_regs_raw->i386_gp_regs) 
+      if (cached_regs_raw->i386_gp_regs)
 	xfree (cached_regs_raw->i386_gp_regs);
-	
-      if (cached_regs_raw->i386_fp_regs) 
+
+      if (cached_regs_raw->i386_fp_regs)
 	xfree (cached_regs_raw->i386_fp_regs);
-	
-      if (cached_regs_raw->x86_64_gp_regs) 
+
+      if (cached_regs_raw->x86_64_gp_regs)
 	xfree (cached_regs_raw->x86_64_gp_regs);
-	
-      if (cached_regs_raw->x86_64_fp_regs) 
+
+      if (cached_regs_raw->x86_64_fp_regs)
 	xfree (cached_regs_raw->x86_64_fp_regs);
 
 #elif defined (TARGET_ARM)
 
-      if (cached_regs_raw->arm_gp_regs) 
+      if (cached_regs_raw->arm_gp_regs)
 	xfree (cached_regs_raw->arm_gp_regs);
-	
-      if (cached_regs_raw->arm_vfpv1_regs) 
+
+      if (cached_regs_raw->arm_vfpv1_regs)
 	xfree (cached_regs_raw->arm_vfpv1_regs);
-	
-      if (cached_regs_raw->arm_vfpv3_regs) 
+
+      if (cached_regs_raw->arm_vfpv3_regs)
 	xfree (cached_regs_raw->arm_vfpv3_regs);
-	
+
 #else
 # error "unsupported architecture"
 #endif /* TARGET_foo */
@@ -838,19 +838,19 @@ core_fetch_registers (int regno)
      -- and subsequent sections will contain other registers for this
      thread.  */
   long tid;
-  
+
   asection *sec;
   const char *thread_index_str = NULL;
   char flavour_str[256];
   unsigned int flavour = 0;
   struct thread_info * thrd_info = find_thread_pid (inferior_ptid);
-  
+
   /* Make sure we have a valid thread to fetch our registers for.  */
   if (thrd_info == NULL)
     return;
-    
+
   /* Check to see if we have already cached the core registers for this
-     thread. This allows us to modify the registers found in a core 
+     thread. This allows us to modify the registers found in a core
      file by reading them into a cache and always using that cache
      when reading and writing registers.  */
   if (thrd_info->private == NULL || thrd_info->private->core_thread_state == NULL)
@@ -861,7 +861,7 @@ core_fetch_registers (int regno)
 	   tid++)
 	{
 	  const char *sname = bfd_section_name (abfd, sec);
-	  
+
 	  /* See if the section names starts with "LC_THREAD.".  */
 	  if (strstr (sname, "LC_THREAD.") == sname)
 	    {
@@ -870,7 +870,7 @@ core_fetch_registers (int regno)
 	      char *dot = strchr (flavour_str, '.');
 	      if (dot)
 		{
-		  /* Set the thread index string it it has NOT arlready been set 
+		  /* Set the thread index string it it has NOT arlready been set
 		     to match the thread index of the inferior_ptid. If the
 		     thread index string has been set, make sure it matches that
 		     of the current thread so we can get all registers for this
@@ -879,18 +879,18 @@ core_fetch_registers (int regno)
 		    thread_index_str = strrchr(sname, '.');
 		  else if (strcmp (thread_index_str, dot) != 0)
 		    continue;
-		    
+
 		  /* NULL terminate the flavour string and lookup the flavour
 		     by name.  */
 		  *dot = '\0';
 #if defined (TARGET_POWERPC)
-		  flavour = bfd_mach_o_flavour_from_string (BFD_MACH_O_CPU_TYPE_POWERPC, 
+		  flavour = bfd_mach_o_flavour_from_string (BFD_MACH_O_CPU_TYPE_POWERPC,
 							    flavour_str);
 #elif defined (TARGET_I386)
-		  flavour = bfd_mach_o_flavour_from_string (BFD_MACH_O_CPU_TYPE_I386, 
+		  flavour = bfd_mach_o_flavour_from_string (BFD_MACH_O_CPU_TYPE_I386,
 							    flavour_str);
 #elif defined (TARGET_ARM)
-		  flavour = bfd_mach_o_flavour_from_string (BFD_MACH_O_CPU_TYPE_ARM, 
+		  flavour = bfd_mach_o_flavour_from_string (BFD_MACH_O_CPU_TYPE_ARM,
 							    flavour_str);
 #else
 # error "unsupported architecture"
@@ -899,7 +899,7 @@ core_fetch_registers (int regno)
 		  if (flavour != 0)
 		    {
 		      if (create_core_thread_state_cache (thrd_info))
-			core_cache_section_registers (sec, flavour, 
+			core_cache_section_registers (sec, flavour,
 				  thrd_info->private->core_thread_state);
 		    }
 		}
@@ -975,13 +975,13 @@ core_store_registers (int regno)
 
   if (cached_regs_raw->i386_fp_regs)
     i386_macosx_store_fp_registers_raw (cached_regs_raw->i386_fp_regs);
-    
+
   if (cached_regs_raw->x86_64_gp_regs)
     x86_64_macosx_store_gp_registers_raw (cached_regs_raw->x86_64_gp_regs);
-    
+
   if (cached_regs_raw->x86_64_fp_regs)
     x86_64_macosx_store_fp_registers_raw (cached_regs_raw->x86_64_fp_regs);
-    
+
 
 #elif defined (TARGET_ARM)
 
@@ -990,14 +990,14 @@ core_store_registers (int regno)
 
   if (cached_regs_raw->arm_vfpv1_regs)
     arm_macosx_store_vfpv1_regs_raw (cached_regs_raw->arm_vfpv1_regs);
-    
+
   if (cached_regs_raw->arm_vfpv3_regs)
     arm_macosx_store_vfpv3_regs_raw (cached_regs_raw->arm_vfpv3_regs);
-    
+
 #else
 # error "unsupported architecture"
 #endif /* TARGET_foo */
-     
+
 }
 
 static void
@@ -1028,11 +1028,10 @@ init_macho_core_ops ()
   macho_core_ops.to_magic = OPS_MAGIC;
 };
 
-void
-_initialize_core_macho ()
+void _initialize_core_macho(void)
 {
-  init_macho_core_ops ();
-  add_target (&macho_core_ops);
+  init_macho_core_ops();
+  add_target(&macho_core_ops);
 }
 
 /* EOF */

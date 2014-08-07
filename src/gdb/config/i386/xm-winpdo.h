@@ -1,6 +1,7 @@
-/* Definitions for hosting on WIN32, for GDB.
-   Copyright 1995, 1996 Free Software Foundation, Inc.
-
+/* xm-winpdo.h
+ * Definitions for hosting on WIN32 with PDO, for GDB.
+ * Copyright 1995, 1996 Free Software Foundation, Inc. */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -15,7 +16,8 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
 
 #define HOST_BYTE_ORDER LITTLE_ENDIAN
 
@@ -30,7 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 extern char *global_gdbinit_dir();
 #define GLOBAL_GDBINIT_DIR global_gdbinit_dir()
 
-/* our extra command line arguments */
+/* our extra command line arguments: */
 #include "nextstep-nat-display.h"
 
 #define ADDITIONAL_OPTIONS \
@@ -45,7 +47,7 @@ extern char *global_gdbinit_dir();
 
 #endif /* NeXT_PDO */
 
-    
+
 #define SLASH_P(X) ((X)=='\\' || (X) == '/')
 #define ROOTED_P(X) ((SLASH_P((X)[0]))|| ((X)[1] ==':'))
 #define SLASH_CHAR '/'
@@ -55,14 +57,10 @@ extern char *global_gdbinit_dir();
 #ifndef NeXT_PDO
 /* If we longjmp out of the signal handler we never get another one.
    So disable immediate_quit inside request_quit */
-#define REQUEST_QUIT 
+#define REQUEST_QUIT
 
 #define MAXPATHLEN 1024
 
 #endif /* NeXT_PDO */
 
-
-
-
-
-
+/* EOF */

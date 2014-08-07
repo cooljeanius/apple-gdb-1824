@@ -1,3 +1,5 @@
+# (is the shebang missing on purpose?)
+#   exsummary.py
 #   Copyright 2011, 2013 Free Software Foundation, Inc.
 #
 #   This is free software: you can redistribute it and/or modify it

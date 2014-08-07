@@ -1,4 +1,5 @@
-/* Parameters for targeting GDB to a 3b1.
+/* tm-3b1.h
+   Parameters for targeting GDB to a 3b1.
    Copyright 1986, 1987, 1989, 1991, 1993 Free Software Foundation, Inc.
 
    This file is part of GDB.

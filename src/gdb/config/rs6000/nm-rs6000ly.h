@@ -1,4 +1,5 @@
-/* Native-dependent definitions for RS6000 running LynxOS.
+/* nm-rs6000ly.h
+   Native-dependent definitions for RS6000 running LynxOS.
    Copyright 1993 Free Software Foundation, Inc.
 
    This file is part of GDB.
