@@ -1,5 +1,5 @@
 # DO NOT EDIT! GENERATED AUTOMATICALLY!
-# Copyright (C) 2002-2012 Free Software Foundation, Inc.
+# Copyright (C) 2002-2014 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,9 +38,19 @@ AC_DEFUN([gl_EARLY],
   m4_pattern_allow([^gl_LIBOBJS$])dnl a variable
   m4_pattern_allow([^gl_LTLIBOBJS$])dnl a variable
   AC_REQUIRE([gl_PROG_AR_RANLIB])
+  # Code from module absolute-header:
+  # Code from module alignof:
   # Code from module alloca:
   # Code from module alloca-opt:
+  # Code from module autobuild:
+  AB_INIT
   # Code from module configmake:
+  # Code from module dirent:
+  # Code from module dirfd:
+  # Code from module dosname:
+  # Code from module double-slash-root:
+  # Code from module errno:
+  # Code from module exitfail:
   # Code from module extensions:
   AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
   # Code from module extern-inline:
@@ -52,36 +62,68 @@ AC_DEFUN([gl_EARLY],
   # Code from module fpucw:
   # Code from module frexp:
   # Code from module frexpl:
+  # Code from module gettext-h:
+  # Code from module gettimeofday:
+  # Code from module git-version-gen:
+  # Code from module gitlog-to-changelog:
+  # Code from module gnu-make:
+  # Code from module havelib:
+  # Code from module host-cpu-c-abi:
+  # Code from module host-os:
   # Code from module include_next:
+  # Code from module inline:
   # Code from module inttypes:
   # Code from module inttypes-incomplete:
   # Code from module isnand-nolibm:
   # Code from module isnanl-nolibm:
+  # Code from module iswctype:
+  # Code from module largefile:
+  AC_REQUIRE([AC_SYS_LARGEFILE])
+  # Code from module ldd:
   # Code from module localcharset:
+  # Code from module manywarnings:
   # Code from module math:
   # Code from module mbrtowc:
   # Code from module mbsinit:
   # Code from module mbsrtowcs:
   # Code from module memchr:
+  # Code from module memcmp:
   # Code from module memmem:
   # Code from module memmem-simple:
+  # Code from module mempcpy:
   # Code from module multiarch:
+  # Code from module nextafter:
+  # Code from module no-c++:
+  # Code from module nocrash:
+  # Code from module obstack:
+  # Code from module openmp:
   # Code from module pathmax:
+  # Code from module snippet/_Noreturn:
   # Code from module snippet/arg-nonnull:
   # Code from module snippet/c++defs:
+  # Code from module snippet/link-warning:
   # Code from module snippet/warn-on-use:
   # Code from module ssize_t:
   # Code from module stdbool:
   # Code from module stddef:
   # Code from module stdint:
+  # Code from module stdlib:
   # Code from module streq:
   # Code from module string:
   # Code from module strnlen1:
+  # Code from module strstr:
+  # Code from module strstr-simple:
+  # Code from module sys_stat:
+  # Code from module sys_time:
   # Code from module sys_types:
+  # Code from module time:
   # Code from module unistd:
   # Code from module update-copyright:
+  # Code from module vc-list-files:
   # Code from module verify:
+  # Code from module warnings:
   # Code from module wchar:
+  # Code from module wcsncasecmp:
   # Code from module wctype-h:
 ])
 
@@ -103,6 +145,15 @@ AC_DEFUN([gl_INIT],
   gl_source_base='import'
   gl_FUNC_ALLOCA
   gl_CONFIGMAKE_PREP
+  gl_DIRENT_H
+  gl_FUNC_DIRFD
+  if test $ac_cv_func_dirfd = no && test $gl_cv_func_dirfd_macro = no; then
+    AC_LIBOBJ([dirfd])
+    gl_PREREQ_DIRFD
+  fi
+  gl_DIRENT_MODULE_INDICATOR([dirfd])
+  gl_DOUBLE_SLASH_ROOT
+  gl_HEADER_ERRNO_H
   AC_REQUIRE([gl_EXTERN_INLINE])
   gl_FLOAT_H
   if test $REPLACE_FLOAT_LDBL = 1; then
@@ -131,6 +182,18 @@ AC_DEFUN([gl_INIT],
     AC_LIBOBJ([frexpl])
   fi
   gl_MATH_MODULE_INDICATOR([frexpl])
+  AC_SUBST([LIBINTL])
+  AC_SUBST([LTLIBINTL])
+  gl_FUNC_GETTIMEOFDAY
+  if test $HAVE_GETTIMEOFDAY = 0 || test $REPLACE_GETTIMEOFDAY = 1; then
+    AC_LIBOBJ([gettimeofday])
+    gl_PREREQ_GETTIMEOFDAY
+  fi
+  gl_SYS_TIME_MODULE_INDICATOR([gettimeofday])
+  gl_GNU_MAKE
+  gl_HOST_CPU_C_ABI
+  gl_HOST_OS
+  gl_INLINE
   gl_INTTYPES_H
   gl_INTTYPES_INCOMPLETE
   gl_FUNC_ISNAND_NO_LIBM
@@ -143,6 +206,14 @@ AC_DEFUN([gl_INIT],
     AC_LIBOBJ([isnanl])
     gl_PREREQ_ISNANL
   fi
+  gl_FUNC_ISWCTYPE
+  if test $HAVE_WCTYPE_T = 0; then
+    AC_LIBOBJ([iswctype])
+  fi
+  gl_WCTYPE_MODULE_INDICATOR([iswctype])
+  AC_REQUIRE([gl_LARGEFILE])
+  gl_LDD
+  AC_CONFIG_FILES([ldd.sh:import/extra/ldd.sh.in])
   gl_LOCALCHARSET
   LOCALCHARSET_TESTS_ENVIRONMENT="CHARSETALIASDIR=\"\$(abs_top_builddir)/$gl_source_base\""
   AC_SUBST([LOCALCHARSET_TESTS_ENVIRONMENT])
@@ -172,6 +243,11 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_MEMCHR
   fi
   gl_STRING_MODULE_INDICATOR([memchr])
+  gl_FUNC_MEMCMP
+  if test $gl_func_memcmp = no; then
+    AC_LIBOBJ([memcmp])
+    gl_PREREQ_MEMCMP
+  fi
   gl_FUNC_MEMMEM
   if test $HAVE_MEMMEM = 0 || test $REPLACE_MEMMEM = 1; then
     AC_LIBOBJ([memmem])
@@ -181,17 +257,49 @@ AC_DEFUN([gl_INIT],
     AC_LIBOBJ([memmem])
   fi
   gl_STRING_MODULE_INDICATOR([memmem])
+  gl_FUNC_MEMPCPY
+  if test $HAVE_MEMPCPY = 0; then
+    AC_LIBOBJ([mempcpy])
+    gl_PREREQ_MEMPCPY
+  fi
+  gl_STRING_MODULE_INDICATOR([mempcpy])
   gl_MULTIARCH
+  gl_MATHFUNC([nextafter], [double], [(double, double)])
+  gt_NO_CXX
+  AC_FUNC_OBSTACK
+  dnl Note: AC_FUNC_OBSTACK does AC_LIBSOURCES([obstack.h, obstack.c]).
+  AC_OPENMP
   gl_PATHMAX
+  AC_REQUIRE([gl_FEATURES_H])
   gt_TYPE_SSIZE_T
   AM_STDBOOL_H
   gl_STDDEF_H
   gl_STDINT_H
+  gl_STDLIB_H
   gl_HEADER_STRING_H
+  gl_FUNC_STRSTR
+  if test $REPLACE_STRSTR = 1; then
+    AC_LIBOBJ([strstr])
+  fi
+  gl_FUNC_STRSTR_SIMPLE
+  if test $REPLACE_STRSTR = 1; then
+    AC_LIBOBJ([strstr])
+  fi
+  gl_STRING_MODULE_INDICATOR([strstr])
+  gl_HEADER_SYS_STAT_H
+  AC_PROG_MKDIR_P
+  gl_HEADER_SYS_TIME_H
+  AC_PROG_MKDIR_P
   gl_SYS_TYPES_H
   AC_PROG_MKDIR_P
+  gl_HEADER_TIME_H
   gl_UNISTD_H
   gl_WCHAR_H
+  gl_FUNC_WCSNCASECMP
+  if test $HAVE_WCSNCASECMP = 0; then
+    AC_LIBOBJ([wcsncasecmp])
+  fi
+  gl_WCHAR_MODULE_INDICATOR([wcsncasecmp])
   gl_WCTYPE_H
   # End of code from modules
   m4_ifval(gl_LIBSOURCES_LIST, [
@@ -239,6 +347,7 @@ changequote([, ])dnl
   AC_SUBST([gltests_WITNESS])
   gl_module_indicator_condition=$gltests_WITNESS
   m4_pushdef([gl_MODULE_INDICATOR_CONDITION], [$gl_module_indicator_condition])
+  AC_REQUIRE([gl_FEATURES_H])
   m4_popdef([gl_MODULE_INDICATOR_CONDITION])
   m4_ifval(gltests_LIBSOURCES_LIST, [
     m4_syscmd([test ! -d ]m4_defn([gltests_LIBSOURCES_DIR])[ ||
@@ -333,13 +442,27 @@ AC_DEFUN([gltests_LIBSOURCES], [
 # This macro records the list of files which have been installed by
 # gnulib-tool and may be removed by future gnulib-tool invocations.
 AC_DEFUN([gl_FILE_LIST], [
+  build-aux/config.rpath
+  build-aux/git-version-gen
+  build-aux/gitlog-to-changelog
+  build-aux/ldd.sh.in
+  build-aux/snippet/_Noreturn.h
   build-aux/snippet/arg-nonnull.h
   build-aux/snippet/c++defs.h
+  build-aux/snippet/link-warning.h
   build-aux/snippet/warn-on-use.h
   build-aux/update-copyright
+  build-aux/vc-list-files
+  lib/alignof.h
   lib/alloca.c
   lib/alloca.in.h
   lib/config.charset
+  lib/dirent.in.h
+  lib/dirfd.c
+  lib/dosname.h
+  lib/errno.in.h
+  lib/exitfail.c
+  lib/exitfail.h
   lib/float+.h
   lib/float.c
   lib/float.in.h
@@ -349,12 +472,16 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/fpucw.h
   lib/frexp.c
   lib/frexpl.c
+  lib/gettext.h
+  lib/gettimeofday.c
   lib/inttypes.in.h
   lib/isnan.c
   lib/isnand-nolibm.h
   lib/isnand.c
   lib/isnanl-nolibm.h
   lib/isnanl.c
+  lib/iswctype-impl.h
+  lib/iswctype.c
   lib/itold.c
   lib/localcharset.c
   lib/localcharset.h
@@ -367,29 +494,46 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/mbsrtowcs.c
   lib/memchr.c
   lib/memchr.valgrind
+  lib/memcmp.c
   lib/memmem.c
+  lib/mempcpy.c
+  lib/obstack.c
+  lib/obstack.h
   lib/pathmax.h
   lib/ref-add.sin
   lib/ref-del.sin
   lib/stdbool.in.h
   lib/stddef.in.h
   lib/stdint.in.h
+  lib/stdlib.in.h
   lib/str-two-way.h
   lib/streq.h
   lib/string.in.h
   lib/strnlen1.c
   lib/strnlen1.h
+  lib/strstr.c
+  lib/sys_stat.in.h
+  lib/sys_time.in.h
   lib/sys_types.in.h
+  lib/time.in.h
   lib/unistd.c
   lib/unistd.in.h
   lib/verify.h
   lib/wchar.in.h
+  lib/wcsncasecmp-impl.h
+  lib/wcsncasecmp.c
   lib/wctype-h.c
   lib/wctype.in.h
   m4/00gnulib.m4
+  m4/absolute-header.m4
   m4/alloca.m4
+  m4/autobuild.m4
   m4/codeset.m4
   m4/configmake.m4
+  m4/dirent_h.m4
+  m4/dirfd.m4
+  m4/double-slash-root.m4
+  m4/errno_h.m4
   m4/exponentd.m4
   m4/exponentl.m4
   m4/extensions.m4
@@ -400,39 +544,66 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/fpieee.m4
   m4/frexp.m4
   m4/frexpl.m4
+  m4/gettimeofday.m4
   m4/glibc21.m4
+  m4/gnu-make.m4
   m4/gnulib-common.m4
+  m4/host-cpu-c-abi.m4
+  m4/host-os.m4
   m4/include_next.m4
+  m4/inline.m4
   m4/inttypes-pri.m4
   m4/inttypes.m4
   m4/isnand.m4
   m4/isnanl.m4
+  m4/iswctype.m4
+  m4/largefile.m4
+  m4/ldd.m4
+  m4/lib-ld.m4
+  m4/lib-link.m4
+  m4/lib-prefix.m4
   m4/localcharset.m4
   m4/locale-fr.m4
   m4/locale-ja.m4
   m4/locale-zh.m4
   m4/longlong.m4
+  m4/manywarnings.m4
   m4/math_h.m4
+  m4/mathfunc.m4
   m4/mbrtowc.m4
   m4/mbsinit.m4
   m4/mbsrtowcs.m4
   m4/mbstate_t.m4
   m4/memchr.m4
+  m4/memcmp.m4
   m4/memmem.m4
+  m4/mempcpy.m4
   m4/mmap-anon.m4
   m4/multiarch.m4
+  m4/no-c++.m4
+  m4/nocrash.m4
+  m4/obstack.m4
   m4/off_t.m4
+  m4/openmp.m4
   m4/pathmax.m4
   m4/ssize_t.m4
   m4/stdbool.m4
   m4/stddef_h.m4
   m4/stdint.m4
+  m4/stdlib_h.m4
   m4/string_h.m4
+  m4/strstr.m4
+  m4/sys_socket_h.m4
+  m4/sys_stat_h.m4
+  m4/sys_time_h.m4
   m4/sys_types_h.m4
+  m4/time_h.m4
   m4/unistd_h.m4
   m4/warn-on-use.m4
+  m4/warnings.m4
   m4/wchar_h.m4
   m4/wchar_t.m4
+  m4/wcsncasecmp.m4
   m4/wctype_h.m4
   m4/wint_t.m4
 ])

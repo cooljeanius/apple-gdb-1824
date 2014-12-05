@@ -14,7 +14,7 @@ ifelse([yes],[no],[
 AC_DEFUN([CY_GNU_GETTEXT],[])dnl
 ])dnl
 
-dnl# CYGNUS LOCAL: This gets the right posix flag for gcc
+dnl# CYGNUS LOCAL: This gets the right posix flag for gcc:
 AC_DEFUN([CY_AC_TCL_LYNX_POSIX],[
 AC_REQUIRE([AC_PROG_CC])dnl
 AC_REQUIRE([AC_PROG_CPP])dnl

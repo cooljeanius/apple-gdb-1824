@@ -1,4 +1,4 @@
-# generated automatically by aclocal 1.14 -*- Autoconf -*-
+# generated automatically by aclocal 1.14.1 -*- Autoconf -*-
 
 # Copyright (C) 1996-2013 Free Software Foundation, Inc.
 
@@ -35,7 +35,7 @@ AC_DEFUN([AM_AUTOMAKE_VERSION],
 [am__api_version='1.14'
 dnl Some users find AM_AUTOMAKE_VERSION and mistake it for a way to
 dnl require some minimum version.  Point them to the right macro.
-m4_if([$1], [1.14], [],
+m4_if([$1], [1.14.1], [],
       [AC_FATAL([Do not call $0, use AM_INIT_AUTOMAKE([$1]).])])dnl
 ])
 
@@ -51,7 +51,7 @@ m4_define([_AM_AUTOCONF_VERSION], [])
 # Call AM_AUTOMAKE_VERSION and AM_AUTOMAKE_VERSION so they can be traced.
 # This function is AC_REQUIREd by AM_INIT_AUTOMAKE.
 AC_DEFUN([AM_SET_CURRENT_AUTOMAKE_VERSION],
-[AM_AUTOMAKE_VERSION([1.14])dnl
+[AM_AUTOMAKE_VERSION([1.14.1])dnl
 m4_ifndef([AC_AUTOCONF_VERSION],
   [m4_copy([m4_PACKAGE_VERSION], [AC_AUTOCONF_VERSION])])dnl
 _AM_AUTOCONF_VERSION(m4_defn([AC_AUTOCONF_VERSION]))])
@@ -1208,6 +1208,12 @@ AC_SUBST([am__untar])
 
 m4_include([config/ag_macros.m4])
 m4_include([config/extensions.m4])
+m4_include([config/gettext.m4])
+m4_include([config/iconv.m4])
+m4_include([config/intlmacosx.m4])
+m4_include([config/lib-ld.m4])
+m4_include([config/lib-link.m4])
+m4_include([config/lib-prefix.m4])
 m4_include([config/libopts.m4])
 m4_include([config/libtool.m4])
 m4_include([config/longlong.m4])
@@ -1215,5 +1221,10 @@ m4_include([config/ltoptions.m4])
 m4_include([config/ltsugar.m4])
 m4_include([config/ltversion.m4])
 m4_include([config/lt~obsolete.m4])
+m4_include([config/nls.m4])
+m4_include([config/onceonly.m4])
+m4_include([config/po.m4])
+m4_include([config/progtest.m4])
+m4_include([config/setvbuf.m4])
 m4_include([config/snprintfv.m4])
 m4_include([config/unlocked-io.m4])

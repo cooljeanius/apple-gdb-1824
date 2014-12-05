@@ -6962,6 +6962,46 @@ _ACEOF
 
 fi
 
+# FIXME: Replace `main' with a function in `-lgmp':
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lgmp" >&5
+$as_echo_n "checking for main in -lgmp... " >&6; }
+if ${ac_cv_lib_gmp_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lgmp  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_gmp_main=yes
+else
+  ac_cv_lib_gmp_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_gmp_main" >&5
+$as_echo "$ac_cv_lib_gmp_main" >&6; }
+if test "x$ac_cv_lib_gmp_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBGMP 1
+_ACEOF
+
+  LIBS="-lgmp $LIBS"
+
+fi
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for xmalloc in -liberty" >&5
 $as_echo_n "checking for xmalloc in -liberty... " >&6; }
 if ${ac_cv_lib_iberty_xmalloc+:} false; then :
@@ -7360,7 +7400,7 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_mw__mwvalidcheckl" >&5
 $as_echo "$ac_cv_lib_mw__mwvalidcheckl" >&6; }
 if test "x$ac_cv_lib_mw__mwvalidcheckl" = xyes; then :
-  LIBM="-lmw"
+  LIBM=-lmw
 fi
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for cos in -lm" >&5
@@ -7442,13 +7482,53 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_m_cos" >&5
 $as_echo "$ac_cv_lib_m_cos" >&6; }
 if test "x$ac_cv_lib_m_cos" = xyes; then :
-  LIBM="-lm"
+  LIBM=-lm
 fi
 
   ;;
 esac
 
 
+
+# FIXME: Replace `main' with a function in `-lmpfr':
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lmpfr" >&5
+$as_echo_n "checking for main in -lmpfr... " >&6; }
+if ${ac_cv_lib_mpfr_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lmpfr  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_mpfr_main=yes
+else
+  ac_cv_lib_mpfr_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_mpfr_main" >&5
+$as_echo "$ac_cv_lib_mpfr_main" >&6; }
+if test "x$ac_cv_lib_mpfr_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBMPFR 1
+_ACEOF
+
+  LIBS="-lmpfr $LIBS"
+
+fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for rl_initialize in -lreadline" >&5
 $as_echo_n "checking for rl_initialize in -lreadline... " >&6; }

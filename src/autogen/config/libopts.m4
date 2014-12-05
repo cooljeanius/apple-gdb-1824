@@ -13,8 +13,8 @@ dnl#
 dnl# do always before generated macros:
 dnl#
 AC_DEFUN([INVOKE_LIBOPTS_MACROS_FIRST],[
-  AC_REQUIRE([AC_HEADER_STDC])
-  AC_REQUIRE([AC_HEADER_DIRENT])
+  AC_REQUIRE([AC_HEADER_STDC])dnl
+  AC_REQUIRE([AC_HEADER_DIRENT])dnl
   
   # =================
   # AC_CHECK_HEADERS
@@ -24,34 +24,34 @@ AC_DEFUN([INVOKE_LIBOPTS_MACROS_FIRST],[
       memory.h     netinet/in.h  setjmp.h      sys/mman.h   \
       sys/param.h  sys/poll.h    sys/procset.h sys/select.h \
       sys/socket.h sys/stropts.h sys/time.h    sys/un.h     \
-      sys/wait.h   unistd.h      utime.h       sysexits.h ])
+      sys/wait.h   unistd.h      utime.h       sysexits.h ])dnl
   
   AC_CHECK_HEADERS([stdarg.h     varargs.h],
       [lo_have_arg_hdr=true;break],
-      [lo_have_arg_hdr=false])
+      [lo_have_arg_hdr=false])dnl
   
   AC_CHECK_HEADERS([string.h     strings.h],
       [lo_have_str_hdr=true;break],
-      [lo_have_str_hdr=false])
+      [lo_have_str_hdr=false])dnl
   
   AC_CHECK_HEADERS([limits.h     sys/limits.h  values.h],
       [lo_have_lim_hdr=true;break],
-      [lo_have_lim_hdr=false])
+      [lo_have_lim_hdr=false])dnl
   
   AC_CHECK_HEADERS([inttypes.h   stdint.h],
       [lo_have_typ_hdr=true;break],
-      [lo_have_typ_hdr=false])
+      [lo_have_typ_hdr=false])dnl
   
   # ----------------------------------------------------------------------
   # check for various programs used during the build.
   # On OS/X, "wchar.h" needs "runetype.h" to work properly.
   # ----------------------------------------------------------------------
-  AC_CHECK_HEADERS([runetype.h wchar.h], [], [],[
+  AC_CHECK_HEADERS([runetype.h wchar.h],[],[],[
   AC_INCLUDES_DEFAULT
   #if HAVE_RUNETYPE_H
   # include <runetype.h>
   #endif /* HAVE_RUNETYPE_H */
-  ])
+  ])dnl
   
   # --------------------------------------------
   # Verify certain entries from AC_CHECK_HEADERS
@@ -80,7 +80,7 @@ AC_DEFUN([INVOKE_LIBOPTS_MACROS_FIRST],[
   # ----------------------------------------------------------------------
   # Checks for typedefs
   # ----------------------------------------------------------------------
-  AC_CHECK_TYPES([wchar_t])
+  AC_CHECK_TYPES([wchar_t])dnl
   AC_CHECK_TYPES([wint_t],[],[],[
     AC_INCLUDES_DEFAULT
     #if HAVE_RUNETYPE_H
@@ -89,23 +89,23 @@ AC_DEFUN([INVOKE_LIBOPTS_MACROS_FIRST],[
     #if HAVE_WCHAR_H
     # include <wchar.h>
     #endif /* HAVE_WCHAR_H */
-  ])
+  ])dnl
   AC_CHECK_TYPES([int8_t, uint8_t, int16_t, uint16_t, int32_t, uint32_t,
-  intptr_t, uintptr_t, uint_t, pid_t, size_t])
-  AC_CHECK_SIZEOF([char*],[8])
-  AC_CHECK_SIZEOF([int],[4])
-  AC_CHECK_SIZEOF([long],[8])
-  AC_CHECK_SIZEOF([short],[2])
+  intptr_t, uintptr_t, uint_t, pid_t, size_t])dnl
+  AC_CHECK_SIZEOF([char*],[8])dnl
+  AC_CHECK_SIZEOF([int],[4])dnl
+  AC_CHECK_SIZEOF([long],[8])dnl
+  AC_CHECK_SIZEOF([short],[2])dnl
   
   # ----------------------------------------------------------------------
   # AC_CHECK_LIB for SVR4 libgen, and use it if it defines pathfind.
   # ----------------------------------------------------------------------
-  AC_CHECK_LIB([gen],[pathfind])
-  AC_REQUIRE([AC_FUNC_VPRINTF])
-  AC_REQUIRE([AC_FUNC_FORK])
+  AC_CHECK_LIB([gen],[pathfind])dnl
+  AC_REQUIRE([AC_FUNC_VPRINTF])dnl
+  AC_REQUIRE([AC_FUNC_FORK])dnl
   AC_CHECK_FUNCS([mmap canonicalize_file_name snprintf strdup strchr \
-                 strrchr strsignal])
-  AC_REQUIRE([AC_PROG_SED])
+                 strrchr strsignal])dnl
+  AC_REQUIRE([AC_PROG_SED])dnl
   [while :
   do
       POSIX_SHELL=`which bash`
@@ -119,12 +119,12 @@ AC_DEFUN([INVOKE_LIBOPTS_MACROS_FIRST],[
           if ! true ; then exit 1 ; fi
           echo /bin/sh'`
       test -x "${POSIX_SHELL}" && break
-      ]AC_ERROR([Cannot locate a working POSIX shell])[
+      ]AC_MSG_ERROR([Cannot locate a working POSIX shell])[
   done]
   AC_DEFINE_UNQUOTED([POSIX_SHELL], ["${POSIX_SHELL}"],
-           [define to a working POSIX compliant shell])
-  AC_SUBST([POSIX_SHELL])
-])
+           [define to a working POSIX compliant shell])dnl
+  AC_SUBST([POSIX_SHELL])dnl
+])dnl
 
 dnl#
 dnl# @synopsis  INVOKE_LIBOPTS_MACROS
@@ -134,31 +134,34 @@ dnl#  that have not been disabled with "omit-invocation".
 dnl#
 AC_DEFUN([LIBOPTS_WITH_REGEX_HEADER],[
   AC_ARG_WITH([regex-header],
-    [AS_HELP_STRING([--with-regex-header],[a reg expr header is specified])],
+    [AS_HELP_STRING([--with-regex-header],
+                    [a reg expr header is specified])],
     [libopts_cv_with_regex_header=${with_regex_header}],[
-    AC_CACHE_CHECK([whether a reg expr header is specified], [libopts_cv_with_regex_header],
+    AC_CACHE_CHECK([whether a reg expr header is specified],
+      [libopts_cv_with_regex_header],
       [libopts_cv_with_regex_header=no])
-  ]) # end of AC_ARG_WITH
-  if test "X${libopts_cv_with_regex_header}" != Xno
+  ])dnl# end of AC_ARG_WITH
+  if test "X${libopts_cv_with_regex_header}" != "Xno"
   then
     AC_DEFINE_UNQUOTED([REGEX_HEADER],[<${libopts_cv_with_regex_header}>])
   else
     AC_DEFINE([REGEX_HEADER],[<regex.h>],[name of regex header file])
   fi
   
-]) # end of AC_DEFUN of LIBOPTS_WITH_REGEX_HEADER
+])dnl# end of AC_DEFUN of LIBOPTS_WITH_REGEX_HEADER
 
 
 AC_DEFUN([LIBOPTS_WITHLIB_REGEX],[
   AC_ARG_WITH([libregex],
     [AS_HELP_STRING([--with-libregex],[libregex installation prefix])],
     [libopts_cv_with_libregex_root=${with_libregex}],
-    [AC_CACHE_CHECK([whether with-libregex was specified],[libopts_cv_with_libregex_root],
+    [AC_CACHE_CHECK([whether with-libregex was specified],
+      [libopts_cv_with_libregex_root],
       [libopts_cv_with_libregex_root=no])
-  ]) # end of AC_ARG_WITH libregex
+  ])dnl# end of AC_ARG_WITH libregex
 
   if test "${with_libregex+set}" = set && \
-     test "X${withval}" = Xno
+     test "X${withval}" = "Xno"
   then ## disabled by request
     libopts_cv_with_libregex_root=no
     libopts_cv_with_libregex_cflags=no
@@ -170,14 +173,15 @@ AC_DEFUN([LIBOPTS_WITHLIB_REGEX],[
     [libopts_cv_with_libregex_cflags=${with_libregex_cflags}],
     [AC_CACHE_CHECK([whether with-libregex-cflags was specified],[libopts_cv_with_libregex_cflags],
       [libopts_cv_with_libregex_cflags=no])
-  ]) # end of AC_ARG_WITH libregex-cflags
+  ])dnl# end of AC_ARG_WITH libregex-cflags
 
   AC_ARG_WITH([libregex-libs],
-    [AS_HELP_STRING([--with-libregex-libs],[libregex link command arguments])],
+    [AS_HELP_STRING([--with-libregex-libs],
+                    [libregex link command arguments])],
     [libopts_cv_with_libregex_libs=${with_libregex_libs}],
     [AC_CACHE_CHECK([whether with-libregex-libs was specified],[libopts_cv_with_libregex_libs],
       [libopts_cv_with_libregex_libs=no])
-  ]) # end of AC_ARG_WITH libregex-libs
+  ])dnl# end of AC_ARG_WITH libregex-libs
 
   case "X${libopts_cv_with_libregex_cflags}" in
   Xyes|Xno|X )
@@ -212,7 +216,7 @@ AC_DEFUN([LIBOPTS_WITHLIB_REGEX],[
   LIBREGEX_LIBS=""
   AC_MSG_CHECKING([whether libregex functions properly])
   AC_CACHE_VAL([libopts_cv_with_libregex],[
-  AC_TRY_RUN([@%:@include <stdio.h>
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[@%:@include <stdio.h>
 @%:@include <stdlib.h>
 @%:@include <sys/types.h>
 @%:@include REGEX_HEADER
@@ -231,12 +235,10 @@ int main() {
     fputs( "error: regex -->.<-- did not match\n", stderr );
     return 1;
   }
-  return 0; }],
-    [libopts_cv_with_libregex=yes], [libopts_cv_with_libregex=no],
-    [libopts_cv_with_libregex=no]) # end of AC_TRY_RUN 
-  ]) # end of AC_CACHE_VAL for libopts_cv_with_libregex
+  return 0; }]])],[libopts_cv_with_libregex=yes],[libopts_cv_with_libregex=no],[libopts_cv_with_libregex=no])dnl# end of run
+  ])dnl# end of AC_CACHE_VAL for libopts_cv_with_libregex
   AC_MSG_RESULT([${libopts_cv_with_libregex}])
-  if test "X${libopts_cv_with_libregex}" != Xno
+  if test "X${libopts_cv_with_libregex}" != "Xno"
   then
     AC_DEFINE([WITH_LIBREGEX],[1],
         [Define this if a working libregex can be found])
@@ -245,29 +247,28 @@ int main() {
     LIBS="${libopts_save_LIBS}"
   fi
   
-]) # end of AC_DEFUN of LIBOPTS_WITHLIB_REGEX
+])dnl# end of AC_DEFUN of LIBOPTS_WITHLIB_REGEX
 
 
 AC_DEFUN([LIBOPTS_RUN_PATHFIND],[
   AC_MSG_CHECKING([whether pathfind(3) works])
   AC_CACHE_VAL([libopts_cv_run_pathfind],[
-  AC_TRY_RUN([@%:@include <string.h>
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[@%:@include <string.h>
 @%:@include <stdlib.h>
 int main (int argc, char** argv) {
    char* pz = pathfind( getenv( "PATH" ), "sh", "x" );
    return (pz == 0) ? 1 : 0;
-}],
-    [libopts_cv_run_pathfind=yes],[libopts_cv_run_pathfind=no],[libopts_cv_run_pathfind=no]
-  ) # end of TRY_RUN
-  ]) # end of AC_CACHE_VAL for libopts_cv_run_pathfind
+}]])],[libopts_cv_run_pathfind=yes],[libopts_cv_run_pathfind=no],[libopts_cv_run_pathfind=no
+  ])dnl# end of TRY_RUN
+  ])dnl# end of AC_CACHE_VAL for libopts_cv_run_pathfind
   AC_MSG_RESULT([${libopts_cv_run_pathfind}])
-  if test "X${libopts_cv_run_pathfind}" != Xno
+  if test "X${libopts_cv_run_pathfind}" != "Xno"
   then
     AC_DEFINE([HAVE_PATHFIND],[1],
         [Define this if pathfind(3) works])
   fi
   
-]) # end of AC_DEFUN of LIBOPTS_RUN_PATHFIND
+])dnl# end of AC_DEFUN of LIBOPTS_RUN_PATHFIND
 
 
 AC_DEFUN([LIBOPTS_TEST_DEV_ZERO],[
@@ -280,21 +281,21 @@ echo ${dzero}`
     if test $? -ne 0 || test -z "$libopts_cv_test_dev_zero"
     then libopts_cv_test_dev_zero=no
     fi
-  ]) # end of CACHE_VAL of libopts_cv_test_dev_zero
+  ])dnl# end of CACHE_VAL of libopts_cv_test_dev_zero
   AC_MSG_RESULT([${libopts_cv_test_dev_zero}])
-  if test "X${libopts_cv_test_dev_zero}" != Xno
+  if test "X${libopts_cv_test_dev_zero}" != "Xno"
   then
     AC_DEFINE([HAVE_DEV_ZERO],[1],
         [Define this if /dev/zero is readable device])
   fi
   
-]) # end of AC_DEFUN of LIBOPTS_TEST_DEV_ZERO
+])dnl# end of AC_DEFUN of LIBOPTS_TEST_DEV_ZERO
 
 
 AC_DEFUN([LIBOPTS_RUN_REALPATH],[
   AC_MSG_CHECKING([whether we have a functional realpath(3C)])
   AC_CACHE_VAL([libopts_cv_run_realpath],[
-  AC_TRY_RUN([@%:@include <limits.h>
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[@%:@include <limits.h>
 @%:@include <stdlib.h>
 int main (int argc, char** argv) {
 @%:@ifndef PATH_MAX
@@ -304,24 +305,23 @@ choke me!!
 @%:@endif
    char *pz = realpath(argv@<:@0@:>@, zPath);
    return (pz == zPath) ? 0 : 1;
-}],
-    [libopts_cv_run_realpath=yes],[libopts_cv_run_realpath=no],[libopts_cv_run_realpath=no]
-  ) # end of TRY_RUN
-  ]) # end of AC_CACHE_VAL for libopts_cv_run_realpath
+}]])],[libopts_cv_run_realpath=yes],[libopts_cv_run_realpath=no],[libopts_cv_run_realpath=no
+  ])dnl# end of TRY_RUN
+  ])dnl# end of AC_CACHE_VAL for libopts_cv_run_realpath
   AC_MSG_RESULT([${libopts_cv_run_realpath}])
-  if test "X${libopts_cv_run_realpath}" != Xno
+  if test "X${libopts_cv_run_realpath}" != "Xno"
   then
     AC_DEFINE([HAVE_REALPATH],[1],
         [Define this if we have a functional realpath(3C)])
   fi
   
-]) # end of AC_DEFUN of LIBOPTS_RUN_REALPATH
+])dnl# end of AC_DEFUN of LIBOPTS_RUN_REALPATH
 
 
 AC_DEFUN([LIBOPTS_RUN_STRFTIME],[
   AC_MSG_CHECKING([whether strftime() works])
   AC_CACHE_VAL([libopts_cv_run_strftime],[
-  AC_TRY_RUN([@%:@include <time.h>
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[@%:@include <time.h>
 @%:@include <string.h>
 char t_buf@<:@ 64 @:>@;
 int main() {
@@ -337,32 +337,30 @@ int main() {
   tm.tm_yday  = 239; /* days since January 1 @<:@0, 365@:>@ */
   tm.tm_isdst =  1;  /* flag for daylight savings time */
   strftime( t_buf, sizeof( t_buf ), "%A %b %d %j", &tm );
-  return (strcmp( t_buf, z ) != 0); }],
-    [libopts_cv_run_strftime=yes],[libopts_cv_run_strftime=no],[libopts_cv_run_strftime=no]
-  ) # end of TRY_RUN
-  ]) # end of AC_CACHE_VAL for libopts_cv_run_strftime
+  return (strcmp( t_buf, z ) != 0); }]])],[libopts_cv_run_strftime=yes],[libopts_cv_run_strftime=no],[libopts_cv_run_strftime=no
+  ])dnl# end of TRY_RUN
+  ])dnl# end of AC_CACHE_VAL for libopts_cv_run_strftime
   AC_MSG_RESULT([${libopts_cv_run_strftime}])
-  if test "X${libopts_cv_run_strftime}" != Xno
+  if test "X${libopts_cv_run_strftime}" != "Xno"
   then
     AC_DEFINE([HAVE_STRFTIME],[1],
         [Define this if strftime() works])
   fi
   
-]) # end of AC_DEFUN of LIBOPTS_RUN_STRFTIME
+])dnl# end of AC_DEFUN of LIBOPTS_RUN_STRFTIME
 
 
 AC_DEFUN([LIBOPTS_RUN_FOPEN_BINARY],[
   AC_MSG_CHECKING([whether fopen accepts "b" mode])
   AC_CACHE_VAL([libopts_cv_run_fopen_binary],[
-  AC_TRY_RUN([@%:@include <stdio.h>
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[@%:@include <stdio.h>
 int main (int argc, char** argv) {
 FILE* fp = fopen("conftest.@S|@ac_ext", "rb");
-return (fp == NULL) ? 1 : fclose(fp); }],
-    [libopts_cv_run_fopen_binary=yes],[libopts_cv_run_fopen_binary=no],[libopts_cv_run_fopen_binary=no]
-  ) # end of TRY_RUN
-  ]) # end of AC_CACHE_VAL for libopts_cv_run_fopen_binary
+return (fp == NULL) ? 1 : fclose(fp); }]])],[libopts_cv_run_fopen_binary=yes],[libopts_cv_run_fopen_binary=no],[libopts_cv_run_fopen_binary=no
+  ])dnl# end of TRY_RUN
+  ])dnl# end of AC_CACHE_VAL for libopts_cv_run_fopen_binary
   AC_MSG_RESULT([${libopts_cv_run_fopen_binary}])
-  if test "X${libopts_cv_run_fopen_binary}" != Xno
+  if test "X${libopts_cv_run_fopen_binary}" != "Xno"
   then
     AC_DEFINE([FOPEN_BINARY_FLAG],["b"],
 	[fopen(3) accepts a 'b' in the mode flag])
@@ -371,21 +369,20 @@ return (fp == NULL) ? 1 : fclose(fp); }],
 	[fopen(3) accepts a 'b' in the mode flag])
   fi
   
-]) # end of AC_DEFUN of LIBOPTS_RUN_FOPEN_BINARY
+])dnl# end of AC_DEFUN of LIBOPTS_RUN_FOPEN_BINARY
 
 
 AC_DEFUN([LIBOPTS_RUN_FOPEN_TEXT],[
   AC_MSG_CHECKING([whether fopen accepts "t" mode])
   AC_CACHE_VAL([libopts_cv_run_fopen_text],[
-  AC_TRY_RUN([@%:@include <stdio.h>
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[@%:@include <stdio.h>
 int main (int argc, char** argv) {
 FILE* fp = fopen("conftest.@S|@ac_ext", "rt");
-return (fp == NULL) ? 1 : fclose(fp); }],
-    [libopts_cv_run_fopen_text=yes],[libopts_cv_run_fopen_text=no],[libopts_cv_run_fopen_text=no]
-  ) # end of TRY_RUN
-  ]) # end of AC_CACHE_VAL for libopts_cv_run_fopen_text
+return (fp == NULL) ? 1 : fclose(fp); }]])],[libopts_cv_run_fopen_text=yes],[libopts_cv_run_fopen_text=no],[libopts_cv_run_fopen_text=no
+  ])dnl# end of TRY_RUN
+  ])dnl# end of AC_CACHE_VAL for libopts_cv_run_fopen_text
   AC_MSG_RESULT([${libopts_cv_run_fopen_text}])
-  if test "X${libopts_cv_run_fopen_text}" != Xno
+  if test "X${libopts_cv_run_fopen_text}" != "Xno"
   then
     AC_DEFINE([FOPEN_TEXT_FLAG],"t",
 	[fopen(3) accepts a 't' in the mode flag])
@@ -394,52 +391,44 @@ return (fp == NULL) ? 1 : fclose(fp); }],
 	[fopen(3) accepts a 't' in the mode flag])
   fi
   
-]) # end of AC_DEFUN of LIBOPTS_RUN_FOPEN_TEXT
+])dnl# end of AC_DEFUN of LIBOPTS_RUN_FOPEN_TEXT
 
 
 AC_DEFUN([LIBOPTS_DISABLE_OPTIONAL_ARGS],[
   AC_ARG_ENABLE([optional-args],
-    [AS_HELP_STRING([--disable-optional-args],[not wanting optional option args])],
+    [AS_HELP_STRING([--disable-optional-args],
+                    [not wanting optional option args])],
     [libopts_cv_enable_optional_args=${enable_optional_args}],
     [AC_CACHE_CHECK([whether not wanting optional option args],[libopts_cv_enable_optional_args],
       [libopts_cv_enable_optional_args=yes])
-  ]) # end of AC_ARG_ENABLE
-  if test "X${libopts_cv_enable_optional_args}" = Xno
+  ])dnl# end of AC_ARG_ENABLE
+  if test "X${libopts_cv_enable_optional_args}" = "Xno"
   then
     AC_DEFINE([NO_OPTIONAL_OPT_ARGS],[1],
           [Define this if optional arguments are disallowed])
   fi
   
-]) # end of AC_DEFUN of LIBOPTS_DISABLE_OPTIONAL_ARGS
+])dnl# end of AC_DEFUN of LIBOPTS_DISABLE_OPTIONAL_ARGS
 
 
 AC_DEFUN([INVOKE_LIBOPTS_MACROS],[
-  AC_REQUIRE([INVOKE_LIBOPTS_MACROS_FIRST])
-  # Check to see if a reg expr header is specified.
-  AC_REQUIRE([LIBOPTS_WITH_REGEX_HEADER])
-
-  # Check to see if a working libregex can be found.
-  AC_REQUIRE([LIBOPTS_WITHLIB_REGEX])
-
-  # Check to see if pathfind(3) works.
-  AC_REQUIRE([LIBOPTS_RUN_PATHFIND])
-
-  # Check to see if /dev/zero is readable device.
-  AC_REQUIRE([LIBOPTS_TEST_DEV_ZERO])
-
-  # Check to see if we have a functional realpath(3C).
-  AC_REQUIRE([LIBOPTS_RUN_REALPATH])
-
-  # Check to see if strftime() works.
-  AC_REQUIRE([LIBOPTS_RUN_STRFTIME])
-
-  # Check to see if fopen accepts "b" mode.
-  AC_REQUIRE([LIBOPTS_RUN_FOPEN_BINARY])
-
-  # Check to see if fopen accepts "t" mode.
-  AC_REQUIRE([LIBOPTS_RUN_FOPEN_TEXT])
-
-  # Check to see if not wanting optional option args.
-  AC_REQUIRE([LIBOPTS_DISABLE_OPTIONAL_ARGS])
-
-]) # end AC_DEFUN of INVOKE_LIBOPTS_MACROS
+  AC_REQUIRE([INVOKE_LIBOPTS_MACROS_FIRST])dnl
+  dnl# Check to see if a reg expr header is specified:
+  AC_REQUIRE([LIBOPTS_WITH_REGEX_HEADER])dnl
+  dnl# Check to see if a working libregex can be found:
+  AC_REQUIRE([LIBOPTS_WITHLIB_REGEX])dnl
+  dnl# Check to see if pathfind(3) works:
+  AC_REQUIRE([LIBOPTS_RUN_PATHFIND])dnl
+  dnl# Check to see if /dev/zero is readable device:
+  AC_REQUIRE([LIBOPTS_TEST_DEV_ZERO])dnl
+  dnl# Check to see if we have a functional realpath(3C):
+  AC_REQUIRE([LIBOPTS_RUN_REALPATH])dnl
+  dnl# Check to see if strftime() works:
+  AC_REQUIRE([LIBOPTS_RUN_STRFTIME])dnl
+  dnl# Check to see if fopen accepts "b" mode:
+  AC_REQUIRE([LIBOPTS_RUN_FOPEN_BINARY])dnl
+  dnl# Check to see if fopen accepts "t" mode:
+  AC_REQUIRE([LIBOPTS_RUN_FOPEN_TEXT])dnl
+  dnl# Check to see if not wanting optional option args:
+  AC_REQUIRE([LIBOPTS_DISABLE_OPTIONAL_ARGS])dnl
+])dnl# end AC_DEFUN of INVOKE_LIBOPTS_MACROS

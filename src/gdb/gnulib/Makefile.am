@@ -367,6 +367,21 @@ libgnu_a_SOURCES += dummy.c
 
 ## end   gnulib module dummy
 
+alignof.h: import/alignof.h
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+BUILT_SOURCES += alignof.h
+
+dosname.h: import/dosname.h
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+BUILT_SOURCES += dosname.h
+
+exitfail.h: import/exitfail.h
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+BUILT_SOURCES += exitfail.h
+
 float+.h: import/float+.h
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
@@ -385,6 +400,14 @@ import/fnmatch.h: import/fnmatch.in.h
 	$(MAKE) -C import fnmatch.h
 
 BUILT_SOURCES += fnmatch_loop.c fnmatch.c fnmatch.h
+
+gettext.h: import/gettext.h
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+gettimeofday.c: import/gettimeofday.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+BUILT_SOURCES += gettext.h gettimeofday.c
 
 isnan.c: import/isnan.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
@@ -416,6 +439,14 @@ mempcpy.c: import/mempcpy.c
 
 BUILT_SOURCES += mempcpy.c
 
+obstack.c: import/obstack.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+obstack.h: import/obstack.h
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+BUILT_SOURCES += obstack.c obstack.h
+
 strnlen.c: import/strnlen.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
@@ -423,6 +454,14 @@ strstr.c: import/strstr.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += strnlen.c strstr.c
+
+wcsncasecmp.c: import/wcsncasecmp.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+wcsncasecmp-impl.h: import/wcsncasecmp-impl.h
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+BUILT_SOURCES += wcsncasecmp.c wcsncasecmp-impl.h
 
 mostlyclean-local: mostlyclean-generic
 	@for dir in '' $(MOSTLYCLEANDIRS); do \

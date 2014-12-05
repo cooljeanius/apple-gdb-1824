@@ -275,7 +275,7 @@ AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
-CFLAGS = @CFLAGS@
+CFLAGS = @CFLAGS@ $(C_ARCHFLAGS)
 CFLAG_VISIBILITY = @CFLAG_VISIBILITY@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
@@ -307,6 +307,7 @@ GREP = @GREP@
 GT_NO = @GT_NO@
 GT_YES = @GT_YES@
 HAVE_VISIBILITY = @HAVE_VISIBILITY@
+HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
 ICONV_BIN = @ICONV_BIN@
 INCINTL = @INCINTL@
 INSTALL = @INSTALL@
@@ -363,6 +364,7 @@ SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = /bin/sh
 STRIP = @STRIP@
+TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
 USE_INCLUDED_LIBINTL = @USE_INCLUDED_LIBINTL@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
@@ -435,6 +437,9 @@ gnulocaledir = $(datadir)/locale
 gettextsrcdir = @datadir@/gettext/intl
 aliaspath = $(localedir):.
 subdir = intl
+
+# architecture flags:
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 AM_CPPFLAGS = -I. -I$(srcdir)
 AM_ANSIFICATION_FLAGS = -Wstrict-prototypes -Wmissing-prototypes -Wconversion -Wold-style-definition -Wshadow -Wundef -Wextra -Wno-unused @MAINT@ -ansi -pedantic
 AM_WARNFLAGS = -Wall @MAINT@ $(AM_ANSIFICATION_FLAGS)
@@ -1225,6 +1230,7 @@ distclean-local: clean-local @MAINT@ config.status
 	rm -f Makefile ID TAGS
 	rm -fv *.status *.output Makefile*orig *~ m4/*~ po/*~
 	rm -rfv autom4te.cache || rmdir autom4te.cache
+	-rm -f .DS_Store
 .PHONY: distclean-local
 
 maintainer-clean-local: distclean-local @MAINT@ config.status

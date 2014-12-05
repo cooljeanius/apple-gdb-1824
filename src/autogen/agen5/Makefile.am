@@ -5,7 +5,7 @@
 ## Time-stamp:      "2011-12-30 11:40:17 bkorb"
 ##
 ##  This file is part of AutoGen.
-##  AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##  AutoGen Copyright (c) 1992-2013 by Bruce Korb - all rights reserved
 ##
 ## AutoGen is free software: you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by the

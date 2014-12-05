@@ -7,7 +7,7 @@
 ## Author:          Bruce Korb <bkorb@gnu.org>
 ##
 ## This file is part of AutoGen.
-##  AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+##  AutoGen Copyright (c) 1992-2013 by Bruce Korb - all rights reserved
 ##
 ## AutoGen is free software: you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by the
@@ -36,17 +36,23 @@ man_MANS        = $(TARG).1
 DOCFILES        = $(TARG).texi $(TARG).menu $(TARG).1
 DISTCLEANFILES  = $(DOCFILES) $(nodist_xml2ag_SOURCES) stamp-*
 AM_CPPFLAGS     = @INCLIST@ $(LIBXML2_CFLAGS)
-
+AGexe           = $(top_builddir)/agen5/autogen
+CLexe           = $(top_builddir)/columns/columns
 BOOTENV     = top_srcdir="$(top_srcdir)" top_builddir="$(top_builddir)" \
 	PATH=`cd ../columns;pwd`:"$$PATH" CLexe="$(CLexe)"
 if AMDEP
-AGDEPS      = -MF$(DEPDIR)/$@ -MT$@
+AGDEPS      = -MF$(DEPDIR)/$@.d -MT$@ -MP
 else
 AGDEPS      =
 endif
 RUNAG       = $(BOOTENV) $(AGexe) $(AGDEPS) \
 	-L$(top_srcdir)/autoopts/tpl -L$(top_builddir)/autoopts/tpl \
 	--definition=$(srcdir)/xmlopts.def
+DOC_TIMEOUT     = -DLEVEL=section --timeout=`expr $(AG_TIMEOUT) '*' 3`
+CLEAN_RULES = \
+	clean-stamp-opts clean-stamp-texi clean-stamp-man clean-stamp-fork
+
+@AMDEP_TRUE@clean-local : $(CLEAN_RULES)
 
 all 	    : gen
 gen 	    : $(gsrcs) $(DOCFILES)
@@ -63,22 +69,22 @@ x.c 	    : $(gsrcs) $(csrcs)
 $(getdefs_OBJECTS) xmlopts.c xmlopts.h : stamp-opts
 stamp-opts  : xmlopts.def $(CLexe)
 	$(RUNAG)
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stamp-opts@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stamp-opts.d@am__quote@
 
 fork.c      : stamp-fork
 stamp-fork  : fork.tpl xmlopts.def $(CLexe)
 	$(RUNAG) -L$(srcdir) -Tfork.tpl
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stamp-fork@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stamp-fork.d@am__quote@
 
 $(TARG).texi $(TARG).menu : stamp-texi
 stamp-texi  : xmlopts.def $(TARG)$(EXEEXT) ../columns/columns$(EXEEXT)
 	$(RUNAG) -Tagtexi-cmd -DLEVEL=section
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stamp-texi@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stamp-texi.d@am__quote@
 
 $(TARG).1   : stamp-man
 stamp-man   : xmlopts.def $(TARG)$(EXEEXT) ../columns/columns$(EXEEXT)
 	$(RUNAG) -Tagman-cmd -b$(TARG)
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stamp-man@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stamp-man.d@am__quote@
 
 $(CLexe)    :
 	cd ../columns ; $(MAKE) $(CLnam)

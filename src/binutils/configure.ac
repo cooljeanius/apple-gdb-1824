@@ -3,14 +3,14 @@ dnl# Process this file with autoconf to produce a configure script.
 dnl#
 
 AC_PREREQ([2.57])
-dnl# keep version number synced with the one in ../bfd
+dnl# keep version number synced with the one in '../bfd':
 AC_INIT([binutils],[2.16.91],[jmolenda@apple.com])
 dnl# bug report address is email address of last person to touch this
 dnl# directory, according to the Changelog-Apple in this directory.
 AC_CONFIG_SRCDIR([ar.c])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([..])
-AC_REQUIRE_AUX_FILE([mkinstalldirs])
+AC_REQUIRE_AUX_FILE([mkinstalldirs])dnl
 
 # target stuff:
 AC_CANONICAL_TARGET
@@ -51,6 +51,8 @@ LT_INIT([disable-fast-install disable-shared dlopen static win32-dll])dnl
 LT_LANG([C])dnl
 LT_LANG([C++])dnl
 LT_LANG([Windows Resource])dnl
+dnl# temporarily set this while I update everything libtool-related:
+LT_PREREQ([2.4.4])dnl
 
 AC_ARG_ENABLE([targets],
 [AS_HELP_STRING([--enable-targets],
@@ -257,12 +259,13 @@ AC_CHECK_LIB([gcc],[main])
 AC_CHECK_LIB([curses],[main])
 # FIXME: Replace `main' with a function in `-lhistory':
 AC_CHECK_LIB([history],[main])
-# FIXME: Replace `main' with a function in `-lreadline':
-AC_CHECK_LIB([readline],[main])
-# FIXME: Replace `main' with a function in `-liberty':
-AC_CHECK_LIB([iberty],[main])
-# FIXME: Replace `main' with a function in `-lgnu':
-AC_CHECK_LIB([gnu],[main])
+AC_CHECK_LIB([readline],[rl_initialize])
+AC_CHECK_LIB([iberty],[xmalloc],[],[
+  AC_CHECK_LIB([iberty],[main])dnl
+])dnl
+AC_CHECK_LIB([gnu],[gl_dummy_symbol],[],[
+  AC_CHECK_LIB([gnu],[main],[],[])dnl
+])dnl
 
 # Checks for header files.
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it

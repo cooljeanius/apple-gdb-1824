@@ -2350,7 +2350,7 @@ test -n "$target_alias" &&
 # the alternative search directory is invoked by --with-tclconfig
 #
 
-if test x"${no_tcl}" = x ; then
+if test x"${no_tcl}" = x""; then
   # we reset no_tcl in case something fails here
   no_tcl=true
 
@@ -2443,16 +2443,9 @@ $as_echo "$as_me: sourcing ${TCLCONFIG}" >&6;}
       fi
     fi
 
-
-
-# Tcl defines TCL_SHLIB_SUFFIX but TCL_SHARED_LIB_SUFFIX then looks for it
-# as just SHLIB_SUFFIX. How bizarre.
-    SHLIB_SUFFIX=${TCL_SHLIB_SUFFIX}
-
-
-
-
-
+            # Tcl defines TCL_SHLIB_SUFFIX but TCL_SHARED_LIB_SUFFIX then looks
+    # for it as just SHLIB_SUFFIX. How bizarre.
+    SHLIB_SUFFIX="${TCL_SHLIB_SUFFIX}"
 
 MY_CC=${TCL_CC}
 
@@ -3778,8 +3771,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 		# Check to make sure compiler actually works
 		# If we cannot compile and link a trivial program, we cannot expect
 # anything to work
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the compiler ($CC) actually works" >&5
-$as_echo_n "checking whether the compiler ($CC) actually works... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the compiler (${CC}) actually works" >&5
+$as_echo_n "checking whether the compiler (${CC}) actually works... " >&6; }
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -3805,12 +3798,12 @@ fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 
-if test x"${c_compiles}" = x"no" ; then
+if test x"${c_compiles}" = x"no"; then
   # error out
   as_fn_error $? "the native compiler is broken and will NOT compile." "$LINENO" 5
 fi
 
-if test x"${c_links}" = x"no" ; then
+if test x"${c_links}" = x"no"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
 $as_echo " " >&6; }
   # Might fail even if it actually works, so just warn
@@ -3848,10 +3841,7 @@ done
 # -mposix is for the new gcc (at least 2.5.8)
 # This modifies the value of $CC to have the POSIX flag added
 # so it will configure correctly
-
-
-
-# Do actual checking for LynxOS now
+# Do the actual checking for LynxOS now:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking if running LynxOS" >&5
 $as_echo_n "checking if running LynxOS... " >&6; }
 if ${ac_cv_os_lynx+:} false; then :
@@ -4157,12 +4147,9 @@ $as_echo "found in ${ac_cv_c_tclh}" >&6; }
     # in it.
     TCLHDIR="${ac_cv_c_tclh}"
     TCLHDIRDASHI="-I${ac_cv_c_tclh}"
-    TCL_LIBRARY=`echo $TCLHDIR | sed -e 's/generic//'`library
+    TCL_LIBRARY=`echo ${TCLHDIR} | sed -e 's/generic//'`library
   fi
 fi
-
-
-
 
 
 

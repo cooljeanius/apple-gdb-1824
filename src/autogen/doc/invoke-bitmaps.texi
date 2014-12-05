@@ -1,0 +1,348 @@
+@ignore
+
+This file is part of AutoGen.
+AutoGen is free software.
+AutoGen is Copyright (C) 1992-2013 by Bruce Korb - all rights reserved
+
+AutoGen is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+AutoGen is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along
+with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+This file has the following md5sum:
+
+43b91e8ca915626ed3818ffb1b71248b COPYING.gplv3
+
+@end ignore
+@node Bit Maps
+@section Bit Maps and Enumerations
+
+AutoGen provides two templates for managing enumerations and bit maps
+(flag words).  They produce an enumeration of the enum or @code{#define}s
+for the bit maps, plus conversion functions for converting a string into
+one of these values or converting one of these values into a human readable
+string.  Finally, for enumerations, you may specify one or more sets of
+dispatching functions that will be selected by identifying a keyword
+prefix of a string (@pxref{enum-code, the @i{dispatch} attribute in
+Strings to Enums and Back}).
+
+There is a separate project that produces a GDB add-on that
+will add these capabilities into GDB for bit masks.  (GDB does just fine
+with enumerations.)
+
+@menu
+* enums::           Enumerations
+* enum-code::       Strings to Enums and Back
+* masks::           Bit Maps and Masks
+@end menu
+
+@node enums
+@subsection Enumerations
+
+@file{str2enum.tpl}
+
+Produce an enumeration for a list of input ``cmd''s (names).
+Optionally, produce functions to:
+
+@itemize @bullet
+@item
+convert a string to an enumeration
+@item
+convert an enumeration value into a string
+@item
+invoke a function based on the first token name found in a string
+@end itemize
+
+The header file produced will contain the enumeration and declarations
+for the optional procedures.  The code (@file{.c}) file will contain
+these optional procedures, but can be omitted if the @code{no-code}
+attribute is specified.
+
+The following attributes are recognized with the @code{str2enum} template:
+
+@table @samp
+@item cmd
+You must provide a series of these attributes: they specify the list of
+names used in the enumeration.  Specific values for the names may be
+specified by specifying a numeric index for these attributes.
+e.g. @code{cmd[5] = mumble;} will cause
+@example
+FOO_CMD_MUMBLE = 5
+@end example
+@noindent
+to be inserted into the enumeration.
+Do not specify a value of ``@t{invalid}'', unless you specify the
+@code{invalid-name} attribute.  (In that case, do not specify a
+@code{cmd} value that matches the @code{invalid-name} value.)
+
+@item prefix
+This specifies the first segment of each enumeration name.
+If not specified, the first segment of the enumeration definition file name
+will be used.  e.g. @file{foo-bar.def} will default to a @code{FOO} prefix.
+
+@item type
+Normally, there is a second constant segment following the prefix.  If not
+specified, it will be @code{CMD}, so if both @code{prefix} and @code{type}
+were to default from @file{foo-bar.def}, you will have enumeration values
+prefixed with @code{FOO_CMD_}.  If specified as the empty string, there will
+be no ``type'' component to the name and the default constant prefix will
+thus be @code{FOO_}.
+
+@item base-name
+This specifies the base name of the output files, enumeration type and the
+translation functions.  The default is to use the @code{basename(3)} of
+the definition file.  e.g. @file{foo-bar.def} results in a @code{base-name}
+of @code{foo-bar}.
+
+@item invalid-val
+The default invalid value is zero.  Sometimes, it is useful for zero to be
+valid.  If so, you can specify @t{~0} or the empty string to be invalid.
+The empty string will cause the enumeration count (maximum value plus 1) to
+be the invalid value.
+
+@item invalid-name
+By default, the invalid value is emitted into the enumeration as
+@code{FOO_INVALID_CMD}.  Specifying this attribute will replace
+@code{INVALID} with whatever you place in this attribute.
+
+@item add-on-text
+Additional text to insert into the code or header file.
+
+@table @samp
+@item ao-file
+Which file to insert the text into.  There are four choices,
+only two of which are relevant for the @file{str2enum} template:
+``@t{enum-header}'', ``@t{enum-code}'', ``@t{mask-header}'' or ``@t{mask-code}''.
+
+@item ao-text
+The text to insert.
+@end table
+@end table
+
+@c
+@c * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+@c
+@node enum-code
+@subsection Strings to Enums and Back
+
+A continuation of the attributes for the @file{str2enum.tpl} template.
+
+@table @samp
+@item no-code
+Do not emit any string to enumeration or enumeration to string code at all.
+If this is specified, the remainder of the attributes have no effect.
+
+@item no-name
+Do not emit the enumeration to name function.
+
+@item no-case
+When looking up a string, the case of the input string is ignored.
+
+@item alias
+A single punctuation character can be interpreted as a command.  The first
+character of this attribute is the aliased character and the remainder the
+aliased-to command.  e.g. ``@t{#comment}'' makes '@t{#}' an alias for the
+@command{comment} command.  ``@t{#comment}'' must still be listed in the
+@code{cmd} attributes.
+
+@item length
+Specify how lengths are to be handled.  Under the covers, @command{gperf(1)}
+is used to map a string to an enumeration value.  The code it produces
+requires the string length to be passed in.  You may pass in the length
+yourself, or the generated code may figure it out, or you may ask for that
+length to be returned back after being figured out.
+
+You have four choices with the @code{length} attribute:
+
+@itemize @bullet
+@item
+Do not specify it.  You will need to provide the length.
+@item
+Specify ``@t{provided}''.  You will need to provide the length.
+@item
+Specify ``@t{returned}''.  You must pass a pointer to a @t{size_t} object.
+If the name is found, the length will be put there.
+@item
+Specify an empty string.  The generated code will compute the length and
+that computed length will not be returned.  The length parameter may be
+omitted.  If the input strings contain only enumeration names, then this
+would be sufficient.
+@item
+Specifying anything else is undefined.
+@end itemize
+
+@item partial
+Normally, a name must fully match to be found successfully.  This attribute
+causes the generated code to look for partial matches if the full match
+@command{gperf} function fails.  Partial matches must be at least two
+characters long.
+
+@item undef-str
+by default, the display string for an undefined value is
+``@t{* UNDEFINED *}''.  Use this to change that.
+
+@item equate
+A series of punctuation characters considered equivalent.
+Typically, ``@t{-_}'' but sometimes (Tandem) ``@t{-_^}''.
+Do not use '@t{#}' in the list of characters.
+
+@item dispatch
+A lookup procedure will call a dispatch function for the procedure named
+after the keyword identified at the start of a string.  Other than as
+specially noted below, for every named ``cmd'', must have a handling
+function, plus another function to handle errors, with ``invalid'' (or the
+@code{invalid-name} value) as the @code{cmd} name.  Multiple @code{dispatch}
+definitions will produce multiple dispatching functions, each with
+(potentially) unique argument lists and return types.
+
+You may also use @code{add-on-text} to ``@t{#define}'' one function to
+another, thus allowing one function to handle multiple keywords or commands.
+The @code{d-nam} and @code{d-ret} attributes are required.  The @code{d-arg},
+@code{d-omit} and @code{d-only} attributes are optional:
+
+@table @samp
+@item d-nam
+This must be a printf format string with one formatting element: @code{%s}.
+The @code{%s} will be replaced by each @code{cmd} name.  The @code{%s} will
+be stripped and the result will be combined with the base name to construct
+the dispatch procedure name.
+
+@item d-ret
+The return type of the dispatched function, even if ``@t{void}''.
+
+@item d-arg
+If there are additional arguments that are to be passed through to the
+dispatched function, specify this as though it were part of the procedure
+header.  (It will be glued into the dispatching function as is and sedded
+into what is needed for the dispatched function.)
+
+@item d-omit
+Instead of providing handling functions for all of the @code{cmd} names,
+the invalid function will be called for omitted command codes.
+
+@item d-only
+You need only provide functions for the names listed by @code{d-only}, plus
+the ``invalid'' name.  All other command values will trigger calls to
+the invalid handling function.  Note that the invalid call can distinguish
+from a command that could not be found by examining the value of its
+first (@code{id}) argument.
+@end table
+
+The handler functions will have the command enumeration as its first first
+argument, a pointer to a constant string that will be the character
+@i{after} the parsed command (keyword) name, plus any @code{d-arg} arguments
+that follow that.
+
+@noindent
+As an example, a file @file{samp-chk.def} containing this:
+@example
+AutoGen Definitions str2enum;
+cmd = one, two; invalid-name = oops;
+dispatch = @{ d-nam = 'hdl_%s_cmd'; d-ret = void; @};
+@end example
+@noindent
+will produce a header containing:
+@example
+typedef enum @{
+    SAMP_OOPS_CMD = 0,
+    SAMP_CMD_ONE      = 1,
+    SAMP_CMD_TWO      = 2,
+    SAMP_COUNT_CMD
+@} samp_chk_enum_t;
+
+extern samp_chk_enum_t
+find_samp_chk_cmd(char const * str, size_t len);
+
+typedef void(samp_chk_handler_t)(
+    samp_chk_enum_t id, char const * str);
+
+samp_chk_handler_t
+        hdl_oops_cmd, hdl_one_cmd,  hdl_two_cmd;
+
+extern void
+disp_samp_chk(char * str, size_t len);
+
+extern char const *
+samp_chk_name(samp_chk_enum_t id);
+@end example
+
+@itemize @bullet
+@item
+@code{find_samp_chk_cmd} will look up a @code{len} byte @code{str} and
+return the corresponding @code{samp_chk_enum_t} value.  That value is
+@code{SAMP_OOPS_CMD} if the string is not ``one'' or ``two''.
+@item
+@code{samp_chk_handler_t} is the type of the callback procedures.
+Three must be provided for the dispatching function to call:
+@code{hdl_oops_cmd}, @code{hdl_one_cmd} and @code{hdl_two_cmd}.
+@code{hdl_oops_cmd} will receive calls when the string does not match.
+@item
+@code{disp_samp_chk} this function will call the handler function
+and return whatever the handler returns.  In this case, it is void.
+@item
+@code{samp_chk_name} will return a string corresponding to the enumeration
+value argument.  If the value is not valid, ``* UNDEFINED *'' (or the
+value of @code{undef-str}) is used.
+@end itemize
+@end table
+
+@c
+@c * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+@c
+@node masks
+@subsection Bit Maps and Masks
+
+@file{str2mask.tpl}
+
+This template leverages highly off of enumerations (@pxref{enums}).  It will
+produce a header file with bit masks defined for each bit specified with a
+@code{cmd} attribute.  63 is the highest legal bit number because this
+template has not been extended to cope with multiple word masks.  (Patches
+would be welcome.)
+
+There are a few constraints on the names allowed:
+
+@itemize @bullet
+@item
+names are constrained to alphanumerics and the underscore
+@item
+aliases are not allowed
+@item
+dispatch procedures are not allowed
+@end itemize
+
+@code{no-code} and @code{no-name} are honored.  @code{dispatch} is not.  The
+lookup function will examine each token in an input string, determine which
+bit is specified and add it into a result.  The names may be prefixed with a
+hyphen (@t{-}) or tilde (@t{~}) to remove the bit(s) from the cumulative
+result.  If the string begins with a plus (@t{+}), hyphen or tilde, a ``base
+value'' parameter is used for the starting mask, otherwise the conversion
+starts with zero.
+
+Beyond the enumeration attributes that are used (or ignored), the
+@file{str2mask} template accepts a @code{mask} attribute.  It takes a few
+``subattributes'':
+
+@table @samp
+@item m-name
+a special name for a sub-collection of the mask bits
+
+@item m-bit
+The name of each previously defined bit(s).  If the desired previously
+defined value is a mask, that @code{m-name} must be suffixed with ``@t{-mask}''.
+
+@item m-invert
+When all done collecting the bits, x-or the value with the mask
+of all the bits in the collection.
+@end table
+
+@noindent
+A mask of all bits in the collection is always generated.

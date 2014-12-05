@@ -1,28 +1,21 @@
-/* fnmatch-loop.c
- * Copyright (C) 1991-1993, 1996-2006, 2009-2012 Free Software Foundation, Inc.
- * This file is part of the GNU C Library.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, see <http://www.gnu.org/licenses/>.
- */
+/* Copyright (C) 1991-1993, 1996-2006, 2009-2014 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses/>.  */
 
 /* Match STRING against the file name pattern PATTERN, returning zero if
- * it matches, nonzero if not.  */
-
-#ifndef _STRING_H_
-# include <string.h>
-#endif /* !_STRING_H_ */
-
+   it matches, nonzero if not.  */
 static int EXT (INT opt, const CHAR *pattern, const CHAR *string,
                 const CHAR *string_end, bool no_leading_period, int flags)
      internal_function;
@@ -42,8 +35,8 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 # else
   const UCHAR *collseq = (const UCHAR *)
     _NL_CURRENT(LC_COLLATE, _NL_COLLATE_COLLSEQMB);
-# endif /* WIDE_CHAR_VERSION */
-#endif /* _LIBC */
+# endif
+#endif
 
   while ((c = *p++) != L_('\0'))
     {
@@ -136,17 +129,18 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                this means it cannot match, unless the FNM_LEADING_DIR
                flag is set.  */
             {
-              int result = (((flags & FNM_FILE_NAME) == 0) ? 0 : FNM_NOMATCH);
+              int result = (flags & FNM_FILE_NAME) == 0 ? 0 : FNM_NOMATCH;
 
-              if (flags & FNM_FILE_NAME) {
-                  if (flags & FNM_LEADING_DIR) {
+              if (flags & FNM_FILE_NAME)
+                {
+                  if (flags & FNM_LEADING_DIR)
                     result = 0;
-                  } else {
-                      if (MEMCHR(n, L_('/'), (size_t)(string_end - n)) == NULL) {
-						  result = 0;
-					  }
-				  }
-			  }
+                  else
+                    {
+                      if (MEMCHR (n, L_('/'), string_end - n) == NULL)
+                        result = 0;
+                    }
+                }
 
               return result;
             }
@@ -154,8 +148,8 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
             {
               const CHAR *endp;
 
-              endp = MEMCHR(n, ((flags & FNM_FILE_NAME) ? L_('/') : L_('\0')),
-							(size_t)(string_end - n));
+              endp = MEMCHR (n, (flags & FNM_FILE_NAME) ? L_('/') : L_('\0'),
+                             string_end - n);
               if (endp == NULL)
                 endp = string_end;
 
@@ -233,6 +227,8 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
             c = *p++;
             for (;;)
               {
+		bool is_range = false;
+
                 if (!(flags & FNM_NOESCAPE) && c == L_('\\'))
                   {
                     if (*p == L_('\0'))
@@ -249,7 +245,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                     size_t c1 = 0;
 #if defined _LIBC || WIDE_CHAR_SUPPORT
                     wctype_t wt;
-#endif /* _LIBC || WIDE_CHAR_SUPPORT */
+#endif
                     const CHAR *startp = p;
 
                     for (;;)
@@ -292,7 +288,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 # else
                     if (ISWCTYPE (BTOWC ((UCHAR) *n), wt))
                       goto matched;
-# endif /* _LIBC && !WIDE_CHAR_VERSION */
+# endif
 #else
                     if ((STREQ (str, L_("alnum")) && isalnum ((UCHAR) *n))
                         || (STREQ (str, L_("alpha")) && isalpha ((UCHAR) *n))
@@ -307,7 +303,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                         || (STREQ (str, L_("upper")) && isupper ((UCHAR) *n))
                         || (STREQ (str, L_("xdigit")) && isxdigit ((UCHAR) *n)))
                       goto matched;
-#endif /* _LIBC || WIDE_CHAR_SUPPORT */
+#endif
                     c = *p++;
                   }
 #ifdef _LIBC
@@ -350,7 +346,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 # else
                         const unsigned char *weights;
                         const unsigned char *extra;
-# endif /* WIDE_CHAR_VERSION */
+# endif
                         const int32_t *indirect;
                         int32_t idx;
                         const UCHAR *cp = (const UCHAR *) str;
@@ -360,7 +356,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 #  include <locale/weightwc.h>
 # else
 #  include <locale/weight.h>
-# endif /* WIDE_CHAR_VERSION */
+# endif
 
 # if WIDE_CHAR_VERSION
                         table = (const int32_t *)
@@ -380,14 +376,14 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                           _NL_CURRENT (LC_COLLATE, _NL_COLLATE_EXTRAMB);
                         indirect = (const int32_t *)
                           _NL_CURRENT (LC_COLLATE, _NL_COLLATE_INDIRECTMB);
-# endif /* WIDE_CHAR_VERSION */
+# endif
 
                         idx = findidx (&cp);
                         if (idx != 0)
                           {
-                            /* We found a table entry. Now see whether the
-                             * character we are currently at has the same
-                             * equivalence class value.  */
+                            /* We found a table entry.  Now see whether the
+                               character we are currently at has the same
+                               equivalence class value.  */
                             int len = weights[idx & 0xffffff];
                             int32_t idx2;
                             const UCHAR *np = (const UCHAR *) n;
@@ -415,7 +411,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 
                     c = *p++;
                   }
-#endif /* _LIBC */
+#endif
                 else if (c == L_('\0'))
                   {
                     /* [ unterminated, treat as normal character.  */
@@ -426,8 +422,6 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                   }
                 else
                   {
-                    bool is_range = false;
-
 #ifdef _LIBC
                     bool is_seqval = false;
 
@@ -479,7 +473,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                             size_t strcnt;
 # else
 #  define str (startp + 1)
-# endif /* WIDE_CHAR_VERSION */
+# endif
                             const unsigned char *extra;
                             int32_t idx;
                             int32_t elem;
@@ -488,12 +482,12 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 
 # ifdef WIDE_CHAR_VERSION
                             /* We have to convert the name to a single-byte
-                             * string. This is possible since the names
-                             * consist of ASCII characters and the internal
-                             * representation is UCS4.  */
+                               string.  This is possible since the names
+                               consist of ASCII characters and the internal
+                               representation is UCS4.  */
                             for (strcnt = 0; strcnt < c1; ++strcnt)
                               str[strcnt] = startp[1 + strcnt];
-# endif /* WIDE_CHAR_VERSION */
+# endif
 
                             table_size =
                               _NL_CURRENT_WORD (LC_COLLATE,
@@ -509,25 +503,33 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                             hash = elem_hash (str, c1);
 
                             idx = 0;
-                            elem = (hash % table_size);
-                            if (symb_table[(2 * elem)] != 0) {
-                                second = (hash % (table_size - 2) + 1);
+                            elem = hash % table_size;
+                            if (symb_table[2 * elem] != 0)
+                              {
+                                second = hash % (table_size - 2) + 1;
 
-                                do {
-                                    /* First compare the hashing value: */
-                                    if ((symb_table[(2 * elem)] == hash)
-                                        && (c1 == extra[symb_table[(2 * elem + 1)]])
-                                        && (memcmp(str, &extra[(symb_table[(2 * elem + 1)] + 1)], c1) == 0)) {
-                                        /* Yep, this is the entry: */
-                                        idx = symb_table[(2 * elem + 1)];
-                                        idx += (1 + extra[idx]);
+                                do
+                                  {
+                                    /* First compare the hashing value.  */
+                                    if (symb_table[2 * elem] == hash
+                                        && (c1
+                                            == extra[symb_table[2 * elem + 1]])
+                                        && memcmp (str,
+                                                   &extra[symb_table[2 * elem
+                                                                     + 1]
+                                                          + 1], c1) == 0)
+                                      {
+                                        /* Yep, this is the entry.  */
+                                        idx = symb_table[2 * elem + 1];
+                                        idx += 1 + extra[idx];
                                         break;
-									}
+                                      }
 
                                     /* Next entry.  */
                                     elem += second;
-								} while (symb_table[2 * elem] != 0);
-							}
+                                  }
+                                while (symb_table[2 * elem] != 0);
+                              }
 
                             if (symb_table[2 * elem] != 0)
                               {
@@ -541,7 +543,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                                 idx = (idx + 3) & ~3;
 
                                 wextra = (int32_t *) &extra[idx + 4];
-# endif /* WIDE_CHAR_VERSION */
+# endif
 
                                 if (! is_range)
                                   {
@@ -561,7 +563,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 
                                     if (c1 == extra[idx])
                                       goto matched;
-# endif /* WIDE_CHAR_VERSION */
+# endif
                                   }
 
                                 /* Get the collation sequence value.  */
@@ -573,7 +575,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                                 idx += 1 + extra[idx];
                                 idx = (idx + 3) & ~4;
                                 cold = *((int32_t *) &extra[idx]);
-# endif /* WIDE_CHAR_VERSION */
+# endif
 
                                 c = *p++;
                               }
@@ -593,7 +595,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                       }
                     else
 # undef str
-#endif /* _LIBC */
+#endif
                       {
                         c = FOLD (c);
                       normal_bracket:
@@ -607,11 +609,11 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                         if (!is_range && c == fn)
                           goto matched;
 
-#if defined(_LIBC) && _LIBC
+#if _LIBC
                         /* This is needed if we goto normal_bracket; from
-                         * outside of is_seqval's scope.  */
+                           outside of is_seqval's scope.  */
                         is_seqval = false;
-#endif /* _LIBC */
+#endif
 
                         cold = c;
                         c = *p++;
@@ -619,7 +621,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 
                     if (c == L_('-') && *p != L_(']'))
                       {
-#if defined(_LIBC) && _LIBC
+#if _LIBC
                         /* We have to find the collation sequence
                            value for C.  Collation sequence is nothing
                            we can regularly access.  The sequence
@@ -648,7 +650,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 # else
                         fcollseq = collseq[fn];
                         lcollseq = is_seqval ? cold : collseq[(UCHAR) cold];
-# endif /* WIDE_CHAR_VERSION */
+# endif
 
                         is_seqval = false;
                         if (cend == L_('[') && *p == L_('.'))
@@ -692,7 +694,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                                 size_t strcnt;
 # else
 #  define str (startp + 1)
-# endif /* WIDE_CHAR_VERSION */
+# endif
                                 const unsigned char *extra;
                                 int32_t idx;
                                 int32_t elem;
@@ -701,12 +703,12 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
 
 # ifdef WIDE_CHAR_VERSION
                                 /* We have to convert the name to a single-byte
-                                 * string. This is possible since the names
-                                 * consist of ASCII characters and the internal
-                                 * representation is UCS4.  */
+                                   string.  This is possible since the names
+                                   consist of ASCII characters and the internal
+                                   representation is UCS4.  */
                                 for (strcnt = 0; strcnt < c1; ++strcnt)
                                   str[strcnt] = startp[1 + strcnt];
-# endif /* WIDE_CHAR_VERSION */
+# endif
 
                                 table_size =
                                   _NL_CURRENT_WORD (LC_COLLATE,
@@ -762,7 +764,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                                     idx = (idx + 3) & ~4;
 
                                     wextra = (int32_t *) &extra[idx + 4];
-# endif /* WIDE_CHAR_VERSION */
+# endif
                                     /* Get the collation sequence value.  */
                                     is_seqval = true;
 # ifdef WIDE_CHAR_VERSION
@@ -772,7 +774,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                                     idx += 1 + extra[idx];
                                     idx = (idx + 3) & ~4;
                                     cend = *((int32_t *) &extra[idx]);
-# endif /* WIDE_CHAR_VERSION */
+# endif
                                   }
                                 else if (symb_table[2 * elem] != 0 && c1 == 1)
                                   {
@@ -794,12 +796,12 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                           }
 
                         /* XXX It is not entirely clear to me how to handle
-                         * characters which are not mentioned in the
-                         * collation specification.  */
+                           characters which are not mentioned in the
+                           collation specification.  */
                         if (
 # ifdef WIDE_CHAR_VERSION
                             lcollseq == 0xffffffff ||
-# endif /* WIDE_CHAR_VERSION */
+# endif
                             lcollseq <= fcollseq)
                           {
                             /* We have to look at the upper bound.  */
@@ -824,7 +826,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                                   }
 # else
                                 hcollseq = collseq[cend];
-# endif /* WIDE_CHAR_VERSION */
+# endif
                               }
 
                             if (lcollseq <= hcollseq && fcollseq <= hcollseq)
@@ -832,12 +834,12 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                           }
 # ifdef WIDE_CHAR_VERSION
                       range_not_matched:
-# endif /* WIDE_CHAR_VERSION */
+# endif
 #else
                         /* We use a boring value comparison of the character
-                         * values. This is better than comparing using
-                         * 'strcoll' since the latter would have surprising
-                         * and sometimes fatal consequences.  */
+                           values.  This is better than comparing using
+                           'strcoll' since the latter would have surprising
+                           and sometimes fatal consequences.  */
                         UCHAR cend = *p++;
 
                         if (!(flags & FNM_NOESCAPE) && cend == L_('\\'))
@@ -848,7 +850,7 @@ FCT (const CHAR *pattern, const CHAR *string, const CHAR *string_end,
                         /* It is a range.  */
                         if (cold <= fn && fn <= cend)
                           goto matched;
-#endif /* _LIBC */
+#endif
 
                         c = *p++;
                       }
@@ -1045,9 +1047,9 @@ EXT (INT opt, const CHAR *pattern, const CHAR *string, const CHAR *string_end,
       return -1;
     else if (*p == L_('['))
       {
-        /* Handle brackets special: */
+        /* Handle brackets special.  */
         if (posixly_correct == 0)
-          posixly_correct = getenv("POSIXLY_CORRECT") != NULL ? 1 : -1;
+          posixly_correct = getenv ("POSIXLY_CORRECT") != NULL ? 1 : -1;
 
         /* Skip the not sign.  We have to recognize it because of a possibly
            following ']'.  */
@@ -1068,7 +1070,8 @@ EXT (INT opt, const CHAR *pattern, const CHAR *string, const CHAR *string_end,
       ++level;
     else if (*p == L_(')'))
       {
-        if (level-- == 0) {
+        if (level-- == 0)
+          {
             /* This means we found the end of the pattern.  */
 #define NEW_PATTERN \
             struct patternlist *newp;                                         \
@@ -1076,23 +1079,23 @@ EXT (INT opt, const CHAR *pattern, const CHAR *string, const CHAR *string_end,
             size_t plensize;                                                  \
             size_t newpsize;                                                  \
                                                                               \
-            plen = ((opt == L_('?')) || (opt == L_('@'))                      \
+            plen = (opt == L_('?') || opt == L_('@')                          \
                     ? pattern_len                                             \
-                    : (p - startp + 1UL));                                    \
-            plensize = (plen * sizeof(CHAR));                                 \
-            newpsize = (offsetof(struct patternlist, str) + plensize);        \
-            if ((((size_t)-1 / sizeof(CHAR)) < plen)                          \
-                || (newpsize < offsetof(struct patternlist, str))             \
-                || (ALLOCA_LIMIT <= newpsize))                                \
+                    : p - startp + 1UL);                                      \
+            plensize = plen * sizeof (CHAR);                                  \
+            newpsize = offsetof (struct patternlist, str) + plensize;         \
+            if ((size_t) -1 / sizeof (CHAR) < plen                            \
+                || newpsize < offsetof (struct patternlist, str)              \
+                || ALLOCA_LIMIT <= newpsize)                                  \
               return -1;                                                      \
-            newp = (struct patternlist *)alloca(newpsize);                    \
-            *((CHAR *)MEMPCPY(newp->str, startp, (size_t)(p - startp))) = L_('\0'); \
+            newp = (struct patternlist *) alloca (newpsize);                  \
+            *((CHAR *) MEMPCPY (newp->str, startp, p - startp)) = L_('\0');    \
             newp->next = NULL;                                                \
             *lastp = newp;                                                    \
             lastp = &newp->next
             NEW_PATTERN;
             break;
-		}
+          }
       }
     else if (*p == L_('|'))
       {

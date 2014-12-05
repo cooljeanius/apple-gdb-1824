@@ -61,8 +61,11 @@ TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
 
 AR =		@AR@
 AR_FLAGS =	qv
+CC =            @CC@
 C_ARCHFLAGS =	-arch $(HOST_ARCHITECTURE)
-CFLAGS =	-ggdb -Wall -Wimplicit $(C_ARCHFLAGS)
+C_NOWARNFLAGS = -Wno-unused -Wno-unused-parameter
+C_WARNFLAGS =   -Wall -Wextra -Wimplicit -Wc++-compat -Wundef
+CFLAGS =	-ggdb $(C_WARNFLAGS) $(C_NOWARNFLAGS) $(C_ARCHFLAGS)
 FGREP = 	@FGREP@
 LN_S = 		@LN_S@
 MAKEINFO =	makeinfo
@@ -299,11 +302,13 @@ distclean:	clean
 		rm -f config.cache config.log config.status
 		rm -f Makefile depend
 		rm -frv autom4te.cache || rmdir autom4te.cache
+		-rm -f .DS_Store
 
 maintainer-clean realclean: distclean clean
 		@echo "This command is intended for maintainers to use;"
 		@echo "it deletes files that need special tools to regen"
 		rm -f mmalloc.info
+		rm -f autoscan.log
 
 force:
 

@@ -30,22 +30,35 @@
 
 # The list of gnulib modules we are importing in GDB.
 IMPORTED_GNULIB_MODULES="\
-    alloca alloca-opt \
+    absolute-header alignof alloca alloca-opt autobuild \
     configmake \
-    dirfd dirent \
-    float fnmatch fnmatch-gnu fpucw frexp frexpl \
-    inttypes inttypes-incomplete isnand-nolibm isnanl-nolibm iswctype \
-    link-warning localcharset \
-    math mbrtowc mbsinit mbsrtowcs memchr memcmp memmem memmem-simple mempcpy \
+    dirent dirfd dosname double-slash-root \
+    errno exitfail extensions extern-inline \
+    float fnmatch fnmatch-gnu fpieee fpucw frexp frexpl \
+    gettext-h gettimeofday git-version-gen gitlog-to-changelog gnu-make \
+    havelib host-cpu-c-abi host-os \
+    include_next inline inttypes inttypes-incomplete isnand-nolibm isnanl-nolibm \
+    iswctype \
+    largefile ldd localcharset \
+    manywarnings math mbrtowc mbsinit mbsrtowcs memchr memcmp memmem memmem-simple \
+    mempcpy multiarch \
+    nextafter no-c++ nocrash \
+    obstack openmp \
     pathmax \
-    snippet/arg-nonnull snippet/c++defs snippet/warn-on-use \
-    stdbool stddef stdint streq string strnlen1 strstr strstr-simple sys_stat sys_types \
+    snippet/_Noreturn snippet/arg-nonnull snippet/c++defs snippet/link-warning \
+    snippet/warn-on-use \
+    ssize_t stdbool stddef stdint stdlib streq string strnlen1 strstr strstr-simple \
+    sys_stat sys_time sys_types \
+    time \
     unistd update-copyright \
-    verify \
-    wchar wctype-h"
+    vc-list-files verify \
+    warnings wchar wcsncasecmp wctype-h"
+# (might want to check to see if any of the libiberty/gettext duplicates cause
+# any conflicts...)
 
 # The gnulib commit ID to use for the update.
-GNULIB_COMMIT_SHA1="8d5bd1402003bd0153984b138735adf537d960b0"
+GNULIB_COMMIT_SHA1="e9dd4906da30642172e6bb1ff2703e8e2c912fcb"
+# (feel free to update if you know that your version works and is newer)
 
 # The expected version number for the various auto tools we will
 # use after the import.
@@ -79,10 +92,25 @@ if [ "${gnulib_head_sha1}" != "${GNULIB_COMMIT_SHA1}" ]; then
    exit 1
 fi
 
-# Verify that we are in the gdb/ subdirectory.
+# Verify that we are in the gdb/gnulib/ subdirectory.
 if [ ! -f ../main.c -o ! -d import ]; then
    echo "Error: This script should be called from the gdb/gnulib subdirectory."
    echo "Aborting."
+   exit 1
+fi
+
+# (autotools checks moved to after the import; auto-regenerating with this
+# script is not strictly necessary)
+
+# Update our gnulib import.
+${gnulib_prefix}/gnulib-tool --import --dir=. --lib=libgnu \
+  --source-base=import --m4-base=import/m4 --doc-base=doc \
+  --tests-base=tests --aux-dir=import/extra \
+  --no-conditional-dependencies --no-libtool --macro-prefix=gl \
+  --no-vc-files \
+  ${IMPORTED_GNULIB_MODULES}
+if [ $? -ne 0 ]; then
+   echo "Error: gnulib import failed.  Aborting."
    exit 1
 fi
 
@@ -105,18 +133,6 @@ fi
 ver=`aclocal --version 2>&1 | head -1 | sed 's/.*) //'`
 if [ "${ver}" != "${ACLOCAL_VERSION}" ]; then
    echo "Error: Wrong aclocal version: ${ver}. Aborting."
-   exit 1
-fi
-
-# Update our gnulib import.
-${gnulib_prefix}/gnulib-tool --import --dir=. --lib=libgnu \
-  --source-base=import --m4-base=import/m4 --doc-base=doc \
-  --tests-base=tests --aux-dir=import/extra \
-  --no-conditional-dependencies --no-libtool --macro-prefix=gl \
-  --no-vc-files \
-  ${IMPORTED_GNULIB_MODULES}
-if [ $? -ne 0 ]; then
-   echo "Error: gnulib import failed.  Aborting."
    exit 1
 fi
 

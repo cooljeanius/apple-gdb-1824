@@ -765,8 +765,10 @@ stamp-ofiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	$(RUN_MOVEIFCHANGE) tofiles ofiles
 	touch stamp-ofiles
 
-lofiles: stamp-lofiles ; @echo "this target, '$@', just makes its dependency, '$<'"
-ofiles: stamp-ofiles ; @echo "this target, '$@', just makes its dep, '$<'"
+lofiles: stamp-lofiles
+	@echo "this target, '$@', just makes its dependency, '$<'"
+ofiles: stamp-ofiles
+	@echo "this target, '$@', just makes its dep, '$<'"
 
 # list all sources in EXTRA_libbfd_la_SOURCES so the
 # dependency tracking fragments are picked up in the Makefile.
@@ -816,11 +818,13 @@ stamp-staticlib: stamp-ofiles
 # stamp-staticlib just makes the OFILES that libbfd.a depends upon, need
 # to make the 'stamp-lib' target instead to actually make the static
 # library:
-libbfd_static_library: stamp-lib ; @echo "this target, '$@', just makes its dependency, '$<'"
+libbfd_static_library: stamp-lib
+	@echo "this target, '$@', just makes its dependency, '$<'"
 .PHONY: libbfd_static_library
 
 # hmmm...
-libbfd_la: libbfd.la ; @echo "this target, '$@', just makes its dep, '$<'"
+libbfd_la: libbfd.la
+	@echo "this target, '$@', just makes its dep, '$<'"
 .PHONY: libbfd_la
 
 # This file holds an array associating configuration triplets and
@@ -1044,7 +1048,7 @@ FRAMEWORK_OFILES = `echo $(libbfd_la_OBJECTS) | $(SED) -e 's/\.lo/\.o/g'` `(cat 
 FRAMEWORK_LIB = -F../libiberty -framework liberty -F../mmalloc -framework mmalloc $(SYSTEM_FRAMEWORK) $(LDFLAGS)
 
 stamp-framework-headers: bfd.h headers
-	$(RM) -fv stamp-framework stamp-framework-headers
+	$(RM) -f stamp-framework stamp-framework-headers
 	$(RM) -rfv $(FRAMEWORK).framework
 	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Headers
 	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/PrivateHeaders
@@ -1058,7 +1062,7 @@ stamp-framework-headers: bfd.h headers
 
 stamp-framework: $(libbfd_la_OBJECTS) $(libbfd_la_DEPENDENCIES) 
 	$(MAKE) $(FRAMEWORK_OFILES)
-	$(RM) -fv stamp-framework-headers
+	$(RM) -f stamp-framework-headers
 	$(MAKE) stamp-framework-headers
 	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
 	$(LN_S) -v Versions/Current/Resources $(FRAMEWORK).framework/Resources

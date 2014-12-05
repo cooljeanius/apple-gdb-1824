@@ -13,15 +13,15 @@
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+# Foundation, 51 Franklin Street, 5th Floor, Boston, MA 02110-1301, USA.
 #
 
 # This Makefile contains release scripts for gdb, binutils, and other
-# packages which live in src.  It used to be part of the top level Makefile,
+# packages which live in src. It used to be part of the top level Makefile,
 # but that turned out to be very messy and hard to maintain.
 
 # This stuff really ought to be cleaned up and turned into something other
-# than a Makefile.  As it is it's heavily recursive.
+# than a Makefile.  As it is, it is heavily recursive.
 
 # This is the name of this script (!).  Needed due to horrible recursion.
 SELF = src-release

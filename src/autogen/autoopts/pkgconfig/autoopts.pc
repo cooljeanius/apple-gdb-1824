@@ -8,13 +8,13 @@ includedir="/usr/local/include"
 exec_prefix="/usr/local"
 bindir="/usr/local/bin"
 libdir="/usr/local/lib"
-ldopts="-R"
+ldopts=""
 exeext=""
 version="36:3:11"
 dotver="36.3.11"
 pkgdatadir="/usr/local/share/autogen"
 autogen="/usr/local/bin/autogen"
-libs="-R/usr/local/lib -L/usr/local/lib -lopts"
+libs="-L/usr/local/lib -lopts"
 libsrc="/usr/local/share/autogen/libopts-36.3.11.tar.gz"
 static_libs="/usr/local/lib/libopts.a"
 
@@ -22,5 +22,5 @@ Name:           AutoOpts
 Description:    A semi-automated generated/library option parser
 URL:            http://www.gnu.org/software/autogen
 Version:        36.3.11
-Libs:           -R/usr/local/lib -L/usr/local/lib -lopts
+Libs:           -L/usr/local/lib -lopts
 Cflags:         -I/usr/local/include

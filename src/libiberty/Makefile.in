@@ -563,6 +563,7 @@ distclean: distclean-subdir
 	-rm -f config.log
 	-rmdir testsuite 2>/dev/null || echo "refusing to remove testsuite"
 	-rm -rfv autom4te.cache || rmdir autom4te.cache
+	-rm -f .DS_Store
 maintainer-clean realclean: maintainer-clean-subdir
 	$(MAKE) SUBDIRS="" distclean
 

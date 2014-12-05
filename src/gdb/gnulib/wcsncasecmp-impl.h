@@ -1,0 +1,1 @@
+import/wcsncasecmp-impl.h

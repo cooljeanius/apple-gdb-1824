@@ -21,6 +21,7 @@ d30v-dis.c
 d30v-opc.c
 dis-buf.c
 dis-init.c
+disassemble.c
 dlx-dis.c
 fr30-asm.c
 fr30-desc.c
@@ -43,6 +44,8 @@ hppa-dis.c
 i370-dis.c
 i370-opc.c
 i386-dis.c
+i386-opc.c
+i386-opc.h
 i860-dis.c
 i960-dis.c
 ia64-asmtab.c

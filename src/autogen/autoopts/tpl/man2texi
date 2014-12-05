@@ -1,4 +1,4 @@
-#! /sw/bin/bash
+#! /opt/local/bin/bash
 
 ## man2texi.sh -- script to convert man page isms to texi-isms
 ##

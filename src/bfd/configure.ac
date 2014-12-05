@@ -8,7 +8,7 @@ dnl# bug report address is email address of last person to touch this
 dnl# directory, according to the Changelog-Apple in this directory.
 AC_CONFIG_SRCDIR([libbfd.c])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_HEADERS([config.h])dnl
 
 # target stuff:
 AC_CANONICAL_TARGET
@@ -79,7 +79,7 @@ if test -n "${SANDBOX_EXEC}" -a -n "${MAKE}"; then
   fi
   if test -n "${sb_build_profile}" -a -n "${sb_dummy_Makefile}"; then
     AC_MSG_CHECKING([if ${MAKE} can be run by ${SANDBOX_EXEC} with profile ${sb_build_profile}])
-    if (${SANDBOX_EXEC} -f ${sb_build_profile} ${MAKE} -f ${sb_dummy_Makefile} nothing); then
+    if (${SANDBOX_EXEC} -f ${sb_build_profile} ${MAKE} --quiet --no-print-directory -f ${sb_dummy_Makefile} nothing); then
       AC_MSG_RESULT([yes])
       # this does not actually work yet, so hide it in a dummy condition
       # to prevent it from actually being done:
@@ -103,8 +103,11 @@ AC_DISABLE_SHARED
 AC_PROG_CXX
 AC_MSG_CHECKING([libtool things])
 AC_MSG_RESULT([ ])
-LT_INIT([disable-fast-install disable-shared dlopen static win32-dll])
-LT_LANG([C])
+LT_INIT([disable-fast-install disable-shared dlopen static win32-dll])dnl
+LT_LANG([C])dnl
+dnl# temporarily set this while I update everything libtool-related:
+LT_PREREQ([2.4.4])dnl
+
 if test -z "${lt_cv_objdir}"; then
   AC_MSG_WARN([lt_cv_objdir somehow was left unset, setting to default])
   export lt_cv_objdir=.libs
@@ -2000,4 +2003,5 @@ AC_SUBST([docdir])dnl
 AC_SUBST([htmldir])dnl
 AC_SUBST([pdfdir])dnl
 
+# Output happens for real now.
 AC_OUTPUT

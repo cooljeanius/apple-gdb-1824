@@ -4968,7 +4968,10 @@ This warning includes uses of the assignment operator within an
 @code{if} statement.
 
 @item -Wdeclaration-after-statement
-Kind of pedantic.
+Kind of pedantic, but less so than @option{-pedantic}.
+
+@item -Wc++-compat
+In case gdb transitions to c++ some day.
 
 @item -Wpointer-arith
 Pointer arithmetic can be tricky.

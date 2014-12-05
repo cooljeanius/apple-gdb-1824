@@ -798,7 +798,7 @@ clean:
 
 distclean: clean
 	if test -e src/Makefile; then unset CPP && $(MAKE) -i -C src distclean; fi
-	$(RM) configure
+	$(RM) configure config.log
 .PHONY: distclean
 
 check-args:

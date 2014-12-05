@@ -1,18 +1,69 @@
+## -*-makefile-*-
+## Darwin-specific setup (Darwin started off as the Mac OS X developer
+## preview, the successor to Rhapsody, a.k.a. Mac OS X Server)
+## Some portions taken from ICU, Copyright (c) 1999-2012, IBM Corporation &
+## others. All Rights Reserved.
+
 # The -mdynamic-no-pic ensures the compiler executable is built without
 # position-independent-code -- the usual default on Darwin. This fix speeds
 # compiles by 3-5%.
 BOOT_CFLAGS += \
 `case ${host} in i?86-*-darwin* | powerpc-*-darwin*) \
-                 echo -mdynamic-no-pic ;; esac;`
+                 echo "-mdynamic-no-pic" ;; esac;`
 
 # ld on Darwin versions >= 10.7 defaults to PIE executables. Disable for
 # gcc components, since it is incompatible with our pch implementation.
 BOOT_LDFLAGS += \
-`case ${host} in *-*-darwin[1][1-9]*) echo -Wl,-no_pie ;; esac;`
+`case ${host} in *-*-darwin[1][1-9]*) echo "-Wl,-no_pie" ;; esac;`
 
 # Similarly, for cross-compilation.
 STAGE1_CFLAGS += \
 `case ${host} in i?86-*-darwin* | powerpc-*-darwin*)\
-                 echo -mdynamic-no-pic ;; esac;`
+                 echo "-mdynamic-no-pic" ;; esac;`
 STAGE1_LDFLAGS += \
-`case ${host} in *-*-darwin[1][1-9]*) echo -Wl,-no_pie ;; esac;`
+`case ${host} in *-*-darwin[1][1-9]*) echo "-Wl,-no_pie" ;; esac;`
+
+## Flags for position independent code:
+SHAREDLIBCFLAGS = -dynamic
+SHAREDLIBCXXFLAGS = -dynamic
+SHAREDLIBCPPFLAGS =
+
+# Do not export internal methods by default for release:
+RELEASE_LIBCFLAGS = -fvisibility=hidden
+RELEASE_LIBCXXFLAGS = -fvisibility=hidden
+## ('=' might need to be switched to '+=')
+
+# Pad out the paths to the maximum possible length:
+LD_FLAGS = -headerpad_max_install_names
+## (again, '=' might need to be switched to '+=', but note the underscore)
+
+# Uncomment if you do not want  to see the stderr message saying the
+# archive was made:
+#ARFLAGS = -c
+## (again, '=' might need to be switched to '+=')
+
+## Compiler switch to embed a runtime search path:
+LD_RPATH=
+LD_RPATH_PRE= -Wl,-rpath,
+
+## Environment variable to set a runtime search path:
+LDLIBRARYPATH_ENVVAR = DYLD_LIBRARY_PATH
+
+GENCCODE_ASSEMBLY=-a gcc-darwin
+
+## Shared object suffix:
+SO=		dylib
+## Non-shared intermediate object suffix:
+STATIC_O = ao
+
+# tzcode(?) option:
+TZORIG_EXTRA_CFLAGS=-DSTD_INSPIRED
+
+# genren(?) opts:
+GENREN_PL_OPTS=-x Mach-O -n '-g' -p '| c++filt'
+
+## Remove shared library 's':
+STATIC_PREFIX_WHEN_USED = 
+STATIC_PREFIX = 
+
+## End Darwin-specific setup

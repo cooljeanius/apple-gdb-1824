@@ -187,7 +187,7 @@ RUNTESTLOCAL = ` \
   else echo "ERROR: runtest not found" ; exit 1; fi`
 
 AM_CXXFLAGS = -I$(top_srcdir) -ggdb -Wall
-AM_CFLAGS = -Wall -DHAVE_CONFIG_H
+AM_CFLAGS = -Wall -Wc++-compat -DHAVE_CONFIG_H
 
 OFILES = testglue.o stub-loader.o
 

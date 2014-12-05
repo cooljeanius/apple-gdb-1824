@@ -79,11 +79,11 @@ static char prev_arch[20];
 /*----------------------------------------------------------*
  | check_all_sets - check all SET operations for SET PROMPT |
  *----------------------------------------------------------*
- 
+
  This is a generic SET command filter to see if a SET PROMPT was done.  If it was we
  change the gdb prompt string to the same prompt but prefixed with the cursor positioning
  needed to place it where we want it on the macsbug screen in the command line area.
- 
+
  We also check for SET unmangle and refresh the pc area of the macsbug screen so that
  any C++ symbols that happen to be showing there reflect the current unmangle setting.
  We can't do anything however about the history area.  It is after all, history!
@@ -95,7 +95,7 @@ static void check_all_sets(char *theSetting, Gdb_Set_Type type, void *value, int
     if (macsbug_screen && theSetting) {
 	if (!doing_set_prompt && gdb_strcmpl(theSetting, "prompt") && type == Set_String)
 	    update_macsbug_prompt();
-	
+
 	if (gdb_strcmpl(theSetting, "unmangle"))
 	    force_pc_area_update();
     }
@@ -106,14 +106,14 @@ static void check_all_sets(char *theSetting, Gdb_Set_Type type, void *value, int
 /*------------------------------------------*
  | macsbug_set - handle MacsBug SET options |
  *------------------------------------------*
- 
+
  Common routine used by both mset() and all macsbug options that accept settings of the
  form:
-  
+
    [m]set setting [on | off | now | show]
-    
+
  The parameters to this function are:
-   
+
    cmd		      "set" | "mset" | "dx"
    arg		      "" | on | off | now | show
    value	      pointer to int switch to be set according to option
@@ -122,7 +122,7 @@ static void check_all_sets(char *theSetting, Gdb_Set_Type type, void *value, int
    additional_stuff   NULL or function to call to do additional stuff when state changes
    		      The prototype for this function is:
    		      	additiona_stuff(int state, int confirm);
-    
+
  As a standard gdb SET command the setting's arguments are handled as a arbitrary string
  to allow us to handle the case when no options are specified.  I'd like to use the enum
  form but that requires a argument.
@@ -134,9 +134,9 @@ static void macsbug_set(char *cmd, char **arg, int *value, char *meaning, int co
     char *argv[4], tmpCmdLine[1024];
 
     static char *options[] = {"ON", "OFF", "NOW", "SHOW", NULL};
-    
+
     gdb_setup_argv(safe_strcpy(tmpCmdLine, *arg), cmd, &argc, argv, 3);
-    
+
     if (argc == 1) {
 	if (*value) {
 	    *value = 0;
@@ -187,9 +187,9 @@ static void macsbug_set(char *cmd, char **arg, int *value, char *meaning, int co
 	}
     } else
 	err = 1;
-    
+
     gdb_set_int("$__lastcmd__", 40);
-    
+
     if (*value)
     	if (*arg)
 	    *arg = strcpy((char *)gdb_realloc(*arg, 3), "on");
@@ -199,11 +199,11 @@ static void macsbug_set(char *cmd, char **arg, int *value, char *meaning, int co
 	*arg = strcpy((char *)gdb_realloc(*arg, 4), "off");
     else
 	*arg = strcpy((char *)gdb_malloc(4), "off");
-	
+
     if (err)
     	gdb_error("\"on\", \"off\", \"now\", or \"show\" expected.");
 }
- 
+
 /*--------------------------------------------------------------------------------------*/
 
 /*------------------------------------------------------------------*
@@ -213,7 +213,7 @@ static void macsbug_set(char *cmd, char **arg, int *value, char *meaning, int co
 static void update_pc_area(int state, int confirm)
 {
     GDB_ADDRESS pc;
-    
+
     gdb_get_register("$pc", &pc);
     fix_pc_area_if_necessary(pc);
 }
@@ -222,7 +222,7 @@ static void update_pc_area(int state, int confirm)
 /*--------------------------------------------------------------*
  | set_gdb_demangle - "additional stuff" to do for SET UNMANGLE |
  *--------------------------------------------------------------*
- 
+
  We need to tell gdb what's going on too.
 */
 
@@ -235,7 +235,7 @@ static void set_gdb_demangle(int state, int confirm)
 	gdb_execute_command("set print demangle off");
 	gdb_execute_command("set print asm-demangle off");
     }
-    
+
     update_pc_area(state, confirm);
 }
 
@@ -243,7 +243,7 @@ static void set_gdb_demangle(int state, int confirm)
 /*------------------------------------------------------------------------------------*
  | mset args - MacsBug's SET commands retained for compatablity with older gdb script |
  *------------------------------------------------------------------------------------*
- 
+
  In the non-plugin version of the MacsBug commands MSET was created to allow setting of
  MacsBug-compatible options since we couldn't call it SET which is what MacsBug uses.
  So we'll continue to support MSET for compatibility with the older script.  But we are
@@ -254,11 +254,11 @@ static void mset(char *arg, int from_tty)
 {
     int  argc;
     char *set_args, *p, *argv[5], tmpCmdLine[1024];
-    
+
     static char *macsbug_set_keywords[] = {"DITTO", "UNMANGLE", NULL};
-    
+
     gdb_setup_argv(safe_strcpy(tmpCmdLine, arg), "mset", &argc, argv, 4);
-    
+
     if (argc > 1) {
         if (argc == 2)
 	    p = "";
@@ -266,7 +266,7 @@ static void mset(char *arg, int from_tty)
 	    p = argv[2];
 	else
 	    p = NULL;
-	
+
 	if (p) {
 	    if (gdb_strcmpl(argv[1], "ditto")) {
 		if (ditto_args)
@@ -283,7 +283,7 @@ static void mset(char *arg, int from_tty)
 	} else
     	    gdb_error("usage: MSET DITTO | UNMANGLE [ON | OFF | NOW | SHOW] (invalid arguments)");
     }
-    
+
     gdb_set_int("$__lastcmd__", 40);
 }
 
@@ -315,7 +315,7 @@ static void mset(char *arg, int from_tty)
 /*-------------------------------------------------------------*
  | control_breakpoints - "additional stuff" to do for (SET) DX |
  *-------------------------------------------------------------*
- 
+
  We need to tell gdb what's going on too.
 */
 
@@ -336,14 +336,14 @@ static void dx(char *arg, int confirm)
 {
     if (dx_args)
     	gdb_free(dx_args);
-    
+
     if (arg)
     	dx_args = strcpy((char *)gdb_malloc(strlen(arg)+1), arg);
     else
     	dx_args = strcpy((char *)gdb_malloc(1), "");
-    
+
     macsbug_set("dx", &dx_args, &dx_state, "Breakpoints", confirm, control_breakpoints);
-    
+
     gdb_set_int("$__lastcmd__", 39);
 }
 
@@ -358,10 +358,10 @@ static void dx(char *arg, int confirm)
 /*-----------------------------------------------*
  | set_XXXXX - SET XXXXX [on | off | now | show] |
  *-----------------------------------------------*
- 
+
  All options of this form are functions defined by the macro below.  The macro parameters have
  the following meanings:
-   
+
    funct_name		the name of the function we are to define
    sw_name		the global switch to be set (an int)
    sw_value		the string value (on | off | now | show)
@@ -369,14 +369,14 @@ static void dx(char *arg, int confirm)
    confirm	        1 if SET/SHOW is entered from terminal and SET confirm on
    additional_stuff	NULL or a function to be called when the switch state changes
 */
- 
+
 #define SET_ON_OFF_NOW(funct_name, sw_name, sw_value, help, additional_stuff) 		\
 static void funct_name(char *theSetting, Gdb_Set_Type type, void *value, int show,	\
 		       int confirm)							\
 {											\
     macsbug_set("set", &sw_value, &sw_name, help, confirm, additional_stuff);		\
 }
-   
+
 SET_ON_OFF_NOW(set_ditto,        ditto,          ditto_args, 	"Ditto-display in memory dumps",    NULL);
 SET_ON_OFF_NOW(set_unmangle,     unmangle,       unmangle_args, "Unmangling of symbols",            set_gdb_demangle);
 SET_ON_OFF_NOW(set_echo,         echo_commands,  echo_args, 	"Echoing command lines to history", NULL);
@@ -521,7 +521,7 @@ static void set_hexdump_group(char *theSetting, Gdb_Set_Type type, void *value, 
 static void set_arch(char *theSetting, Gdb_Set_Type type, void *value, int show, int confirm)
 {
     static int len = sizeof(DEFAULT_TARGET_ARCH) + 1;
-    
+
     if (new_arch && *new_arch)
     	if (strcmp(new_arch, "32") == 0) {
     	    target_arch = force_arch = 4;
@@ -576,7 +576,7 @@ static void set_mb_testing(char *theSetting, Gdb_Set_Type type, void *value, int
     	case 0:
 	    mb_testing = 0;
 	    break;
-	
+
 	default:
 	    gdb_error("Invalid value.");
 	    break;
@@ -597,11 +597,11 @@ void init_macsbug_set(void)
     gdb_define_cmd("mset", mset, Gdb_Support, MSET_HELP);
 
     gdb_define_set_generic(check_all_sets);
-    
+
     gdb_define_set("ditto",           set_ditto,        Set_String, &ditto_args,         0, DITTO_DESCRIPTION);
     gdb_define_set("unmangle",        set_unmangle,     Set_String, &unmangle_args,      0, UNMANGLE_DESCRIPTION);
     gdb_define_set("dx",              set_dx,     	Set_String, &dx_args,            0, DX_DESCRIPTION);
-    
+
     gdb_define_set("mb-ditto",        set_ditto,        Set_String, &ditto_args,         0, DITTO_DESCRIPTION);
     gdb_define_set("mb-unmangle",     set_unmangle,     Set_String, &unmangle_args,      0, UNMANGLE_DESCRIPTION);
     gdb_define_set("mb-echo",         set_echo,         Set_String, &echo_args,          0, ECHO_DESCRIPTION);
@@ -609,32 +609,34 @@ void init_macsbug_set(void)
     gdb_define_set("mb-so-si-source", set_so_si_source, Set_String, &sosi_args,          0, SOSI_DESCRIPTION);
     gdb_define_set("mb-dx",  	      set_dx,           Set_String, &dx_args,            0, DX_DESCRIPTION);
     gdb_define_set("mb-sidebar",      set_sidebar,      Set_String, &sidebar_args,       0, SIDEBAR_DESCRIPTION);
-    
+
     gdb_define_set("mb-objc-selectors",set_objc_selectors,Set_String, &selector_args,    0, SELECTOR_DESCRIPTION);
     #ifndef not_ready_for_prime_time_but_keep_enabled_for_private_testing
     gdb_define_set("mb-comment-insns" ,set_comment_insns, Set_String, &insns_args,       0, INSNS_DESCRIPTION);
     #endif
-    
+
     gdb_define_set("mb-tab",          set_tab,          Set_Int,    &new_tab_value,      0, TAB_DESCRIPTION);
     gdb_define_set("mb-pc-area",      set_pc_area,      Set_Int,    &new_pc_area_lines,  0, PC_AREA_DESCRIPTION);
     gdb_define_set("mb-cmd-area",     set_cmd_area,     Set_Int,    &new_cmd_area_lines, 0, CMD_AREA_DESCRIPTION);
     gdb_define_set("mb-history",      set_history_size, Set_Int,    &new_max_history,    0, HISTORY_DESCRIPTION);
-   
+
     gdb_define_set("mb-hexdump-width",set_hexdump_width,Set_Int,    &new_hexdump_width,  0, HEXDUMP_WIDTH_DESCRIPTION);
     gdb_define_set("mb-hexdump-group",set_hexdump_group,Set_Int,    &new_hexdump_group,  0, HEXDUMP_GROUP_DESCRIPTION);
-    
+
     gdb_define_set("mb-arch",         set_arch,         Set_String, &new_arch,           0, SET_ARCH_DESCRIPTION);
-    
-    //gdb_define_set("mb-testing",    set_mb_testing,   Set_Int,    &new_testing,        0, TESTING_DESCRIPTION);
-    
+
+    #if 0
+    gdb_define_set("mb-testing",      set_mb_testing,   Set_Int,    &new_testing,        0, TESTING_DESCRIPTION);
+    #endif /* 0 */
+
     /* Init the string values for the SHOW command. It has to be malloc'ed space. From	*/
     /* this point on we'll maintain them as the values changed.				*/
-    
+
     #define INIT_ENABLED_DISABLED(x, y) if (y)						\
 					    x = strcpy((char *)gdb_malloc(3), "on");	\
     					else						\
 					    x = strcpy((char *)gdb_malloc(4), "off");
-    
+
     INIT_ENABLED_DISABLED(ditto_args, 	 ditto);
     INIT_ENABLED_DISABLED(unmangle_args, unmangle);
     INIT_ENABLED_DISABLED(echo_args, 	 echo_commands);
@@ -644,7 +646,7 @@ void init_macsbug_set(void)
     INIT_ENABLED_DISABLED(sidebar_args,  sidebar_state);
     INIT_ENABLED_DISABLED(selector_args, show_selectors);
     INIT_ENABLED_DISABLED(insns_args,    comment_insns);
-    
+
     new_arch = strcpy((char *)gdb_malloc(sizeof(DEFAULT_TARGET_ARCH) + 1), DEFAULT_TARGET_ARCH);
     strcpy(prev_arch, new_arch);
 }

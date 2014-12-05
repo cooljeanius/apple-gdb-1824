@@ -6,37 +6,51 @@ dnl#
 dnl# Process this file with autoconf to produce a configure script.
 AC_REVISION([for Readline 4.3, version 2.45, from autoconf version] AC_ACVERSION)
 
-AC_INIT([readline],[4.3],[bug-readline@gnu.org])
+AC_INIT([readline],[4.3],[bug-readline@gnu.org])dnl
 
 dnl# make sure we are using a "recent" autoconf version
-AC_PREREQ([2.61])
+AC_PREREQ([2.61])dnl
 
-AC_CONFIG_SRCDIR([readline.h])
-AC_CONFIG_AUX_DIR([support])
-AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_SRCDIR([readline.h])dnl
+AC_CONFIG_AUX_DIR([support])dnl
+AC_CONFIG_MACRO_DIR([m4])dnl
+AC_CONFIG_HEADERS([config.h])dnl
 
 dnl# update the value of RL_READLINE_VERSION in readline.h when this
-dnl# changes
+dnl# changes:
 LIBVERSION=4.3
 
 AC_CANONICAL_TARGET
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  AC_SUBST([HOST_ARCHITECTURE])
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+  AC_SUBST([TARGET_ARCHITECTURE])
+fi
 
-dnl# configure defaults
+dnl# configure defaults:
 opt_curses=no
 
-dnl# arguments to configure
-AC_ARG_WITH([curses],[AS_HELP_STRING([--with-curses],[use the curses library instead of the termcap library])],[opt_curses=${withval}])
+dnl# arguments to configure:
+AC_ARG_WITH([curses],
+            [AS_HELP_STRING([--with-curses],
+                [use the curses library instead of the termcap library])],
+            [opt_curses=${withval}])dnl
 
 if test "${opt_curses}" = "yes"; then
 	prefer_curses=yes
 fi
 
-dnl# option parsing for optional features
+dnl# option parsing for optional features:
 opt_static_libs=yes
 opt_shared_libs=no
 
-AC_ARG_ENABLE([static],[AS_HELP_STRING([--enable-static],[build static libraries [[default=YES]]])],[opt_static_libs=${enableval}])
+AC_ARG_ENABLE([static],
+              [AS_HELP_STRING([--enable-static],
+                              [build static libraries [[default=YES]]])],
+              [opt_static_libs=${enableval}])dnl
 
 echo ""
 echo "Beginning configuration for readline-$LIBVERSION for ${host_cpu}-${host_vendor}-${host_os}"
@@ -92,9 +106,9 @@ fi
 if test "x${cross_compiling}" = "xyes"; then
   CROSS_COMPILING_FLAG=-DCROSS_COMPILING
 else
-  CROSS_COMPILING_FLAG=
+  CROSS_COMPILING_FLAG=""
 fi
-AC_SUBST([CROSS_COMPILING_FLAG])
+AC_SUBST([CROSS_COMPILING_FLAG])dnl
  
 if test -z "${CC_FOR_BUILD}"; then
     if test "x${cross_compiling}" = "xno"; then
@@ -103,7 +117,7 @@ if test -z "${CC_FOR_BUILD}"; then
         CC_FOR_BUILD=gcc
     fi
 fi
-AC_SUBST([CC_FOR_BUILD])
+AC_SUBST([CC_FOR_BUILD])dnl
  
 dnl# END changes for CYGNUS cross-building for Cygwin
 
@@ -116,11 +130,18 @@ AC_MSG_CHECKING([programs])
 AC_MSG_RESULT([ ])
 AC_PROG_AWK
 AC_PROG_GCC_TRADITIONAL
+AC_DEFUN([AC_REQUIRE_GREPS],[
+  AC_REQUIRE([AC_PROG_GREP])dnl
+  AC_REQUIRE([AC_PROG_EGREP])dnl
+  AC_REQUIRE([AC_PROG_FGREP])dnl
+])dnl
+AC_REQUIRE_GREPS
 AC_PROG_INSTALL
 AM_PROG_INSTALL_STRIP
-AC_SUBST([INSTALLdir])
-AC_SUBST([INSTALLEDdir])
+AC_SUBST([INSTALLdir])dnl
+AC_SUBST([INSTALLEDdir])dnl
 AC_PROG_LN_S
+AC_PROG_MKDIR_P
 AC_CHECK_PROG([AR],[ar],[],[ar])
 dnl# Set default for ARFLAGS, since autoconf does not have a macro for it.
 dnl# This allows people to set it when running configure or make
@@ -137,7 +158,11 @@ if test "x${RANLIB}" = "x"; then
 else
   test ! -z "${RANLIB}"
 fi
-AC_PATH_PROG([TEX_BINARY],[tex])
+AC_DEFUN([AC_REQUIRE_PROG_SED],[
+  AC_REQUIRE([AC_PROG_SED])dnl
+])dnl
+AC_REQUIRE_PROG_SED
+AC_PATH_PROG([TEX_BINARY],[tex])dnl
 
 # Checks for libraries.
 AC_MSG_CHECKING([libraries])
@@ -149,11 +174,12 @@ AC_CHECK_LIB([curses],[main])
 AC_CHECK_LIB([history],[main])
 # FIXME: Replace `main' with a function in `-lreadline':
 AC_CHECK_LIB([readline],[main])
-# FIXME: Replace `main' with a function in `-liberty':
-AC_CHECK_LIB([iberty],[main])
+AC_CHECK_LIB([iberty],[xmalloc],[],[
+  AC_CHECK_LIB([iberty],[main])dnl
+])dnl
 
 MAKE_SHELL=/bin/sh
-AC_SUBST([MAKE_SHELL])
+AC_SUBST([MAKE_SHELL])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_MSG_CHECKING([typedefs, structures, and compiler characteristics])
@@ -176,9 +202,9 @@ AC_DEFINE_UNQUOTED([RETSIGTYPE],[${ac_cv_type_signal}],[Define as the return typ
 dnl# End what used to be AC\_TYPE\_SIGNAL
 AC_TYPE_UID_T
 AC_TYPE_PID_T
-AC_CHECK_TYPES([ptrdiff_t])
+AC_CHECK_TYPES([ptrdiff_t])dnl
 AC_TYPE_SIZE_T
-AC_CHECK_TYPE([ssize_t],[int])
+AC_CHECK_TYPE([ssize_t],[int])dnl
 
 # Checks for library functions.
 AC_MSG_CHECKING([functions])
@@ -198,13 +224,13 @@ AC_FUNC_STRCOLL
 AC_FUNC_STRNLEN
 AC_FUNC_STRTOD
 AC_DEFUN([gl__ALLOC_CHECKS],[
-  AC_REQUIRE([gl_EEALLOC])
-  AC_REQUIRE([gl_FUNC_MALLOC_GNU])
-  AC_REQUIRE([gl_FUNC_MALLOC_POSIX])
-  AC_REQUIRE([gl_FUNC_REALLOC_GNU])
-  AC_REQUIRE([gl_FUNC_REALLOC_POSIX])
-  AC_REQUIRE([gl_MALLOCA])
-  AC_REQUIRE([gl_XALLOC])
+  AC_REQUIRE([gl_EEALLOC])dnl
+  AC_REQUIRE([gl_FUNC_MALLOC_GNU])dnl
+  AC_REQUIRE([gl_FUNC_MALLOC_POSIX])dnl
+  AC_REQUIRE([gl_FUNC_REALLOC_GNU])dnl
+  AC_REQUIRE([gl_FUNC_REALLOC_POSIX])dnl
+  AC_REQUIRE([gl_MALLOCA])dnl
+  AC_REQUIRE([gl_XALLOC])dnl
 ])dnl# end gl__ALLOC_CHECKS
 dnl# now actually call it:
 gl__ALLOC_CHECKS
@@ -216,19 +242,19 @@ AC_CHECK_FUNCS([atoi ctime dup2 endpwent exit fcntl fprintf free \
                 isascii isxdigit kill lstat mbrlen memmove memset \
                 munmap putenv select setenv setlocale strcasecmp \
                 strchr strcpy strdup strerror strlen strncpy strpbrk \
-                strrchr system tcgetattr vsnprintf wcwidth xrealloc])
-AC_REPLACE_FUNCS([xmalloc])
-AC_SEARCH_LIBS([xmalloc],[iberty c gnu])
-AC_SEARCH_LIBS([xrealloc],[iberty c gnu])
-AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu])
-AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu])
-AC_REPLACE_FUNCS([rpl_malloc])
-AC_REPLACE_FUNCS([rpl_realloc])
-AC_CHECK_DECL([exit])
-AC_CHECK_DECL([free])
-AC_CHECK_DECL([strcpy])
-AC_CHECK_DECL([strlen])
-AC_CHECK_DECL([strncpy])
+                strrchr system tcgetattr vsnprintf wcwidth xrealloc])dnl
+AC_REPLACE_FUNCS([xmalloc])dnl
+AC_SEARCH_LIBS([xmalloc],[iberty c gnu])dnl
+AC_SEARCH_LIBS([xrealloc],[iberty c gnu])dnl
+AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu])dnl
+AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu])dnl
+AC_REPLACE_FUNCS([rpl_malloc])dnl
+AC_REPLACE_FUNCS([rpl_realloc])dnl
+AC_CHECK_DECL([exit])dnl
+AC_CHECK_DECL([free])dnl
+AC_CHECK_DECL([strcpy])dnl
+AC_CHECK_DECL([strlen])dnl
+AC_CHECK_DECL([strncpy])dnl
 
 # Checks for header files.
 AC_MSG_CHECKING([headers])
@@ -244,7 +270,7 @@ AC_CHECK_HEADERS([arpa/inet.h errno.h fcntl.h features.h limits.h \
                   signal.h stdarg.h stddef.h stdio.h sys/file.h \
                   sys/ioctl.h sys/pte.h sys/ptem.h sys/select.h \
                   sys/socket.h sys/stream.h sys/time.h termcap.h \
-                  termio.h termios.h varargs.h wchar.h wctype.h])
+                  termio.h termios.h varargs.h wchar.h wctype.h])dnl
 
 # Checks using macros from Bash's configure script
 AC_MSG_NOTICE([running checks stolen from Bash's configure script])
@@ -291,7 +317,7 @@ case "${host_os}" in
 isc*)	LOCAL_CFLAGS=-Disc386 ;;
 esac
 
-# Automake
+# Automake:
 AC_MSG_CHECKING([automake-related things])
 AC_MSG_RESULT([ ])
 if test -f ${srcdir}/config.status; then
@@ -300,6 +326,10 @@ if test -f ${srcdir}/config.status; then
 fi
 AM_INIT_AUTOMAKE([dejagnu gnits -Wall])
 AM_MAINTAINER_MODE
+m4_ifdef([AC_REQUIRE_AUX_FILE],[
+AC_REQUIRE_AUX_FILE([compile])dnl
+AC_REQUIRE_AUX_FILE([missing])dnl
+])dnl
 
 # shared library configuration section
 #
@@ -309,18 +339,18 @@ AM_MAINTAINER_MODE
 if test -f ${srcdir}/support/shobj-conf; then
         AC_MSG_CHECKING([configuration for building shared libraries])
         eval `${CONFIG_SHELL-/bin/sh} ${srcdir}/support/shobj-conf -C "${CC}" -c ${host_cpu} -o ${host_os} -v ${host_vendor}`
-        AC_SUBST([SHOBJ_CC])
-        AC_SUBST([SHOBJ_CFLAGS])
-        AC_SUBST([SHOBJ_LD])
-        AC_SUBST([SHOBJ_LDFLAGS])
-	AC_SUBST([SHOBJ_XLDFLAGS])
-        AC_SUBST([SHOBJ_LIBS])
-        AC_SUBST([SHOBJ_STATUS])
-	AC_SUBST([SHLIB_STATUS])
-	AC_SUBST([SHLIB_XLDFLAGS])
-	AC_SUBST([SHLIB_LIBSUFF])
-	AC_SUBST([SHLIB_LIBVERSION])
-	AC_SUBST([SHLIB_LIBS])
+        AC_SUBST([SHOBJ_CC])dnl
+        AC_SUBST([SHOBJ_CFLAGS])dnl
+        AC_SUBST([SHOBJ_LD])dnl
+        AC_SUBST([SHOBJ_LDFLAGS])dnl
+	AC_SUBST([SHOBJ_XLDFLAGS])dnl
+        AC_SUBST([SHOBJ_LIBS])dnl
+        AC_SUBST([SHOBJ_STATUS])dnl
+	AC_SUBST([SHLIB_STATUS])dnl
+	AC_SUBST([SHLIB_XLDFLAGS])dnl
+	AC_SUBST([SHLIB_LIBSUFF])dnl
+	AC_SUBST([SHLIB_LIBVERSION])dnl
+	AC_SUBST([SHLIB_LIBS])dnl
         AC_MSG_RESULT([${SHLIB_STATUS}])
 
 	# SHLIB_STATUS is either `supported' or `unsupported'. If it is
@@ -333,8 +363,9 @@ if test -f ${srcdir}/support/shobj-conf; then
 	# quoted for m4 so I can use character classes
 	SHLIB_MAJOR=[`expr "${LIBVERSION}" : '\([0-9]\)\..*'`]
 	SHLIB_MINOR=[`expr "${LIBVERSION}" : '[0-9]\.\([0-9]\).*'`]
-	AC_SUBST([SHLIB_MAJOR])
-	AC_SUBST([SHLIB_MINOR])
+	AC_SUBST([SHLIB_MAJOR])dnl
+	AC_SUBST([SHLIB_MINOR])dnl
+	## done with shobj-conf
 fi
 
 if test "x${opt_static_libs}" = "xyes"; then
@@ -346,43 +377,45 @@ if test "x${opt_shared_libs}" = "xyes"; then
   SHARED_INSTALL_TARGET=install-shared
 fi
 
-# Libtool
+# Libtool:
 AC_MSG_CHECKING([libtool-related things])
 AC_MSG_RESULT([ ])
-LT_INIT([static disable-shared])
-LT_LANG([C])
+LT_INIT([static disable-shared])dnl
+LT_LANG([C])dnl
+dnl# temporarily set this while I update everything libtool-related:
+LT_PREREQ([2.4.4])dnl
 
-# Some final things
+# Some final things:
 AC_MSG_NOTICE([finishing up...])
 XORG_CHANGELOG
 
-AC_SUBST([STATIC_TARGET])
-AC_SUBST([SHARED_TARGET])
-AC_SUBST([STATIC_INSTALL_TARGET])
-AC_SUBST([SHARED_INSTALL_TARGET])
+AC_SUBST([STATIC_TARGET])dnl
+AC_SUBST([SHARED_TARGET])dnl
+AC_SUBST([STATIC_INSTALL_TARGET])dnl
+AC_SUBST([SHARED_INSTALL_TARGET])dnl
 
 case "${host_os}" in
 msdosdjgpp*)	BUILD_DIR=`pwd.exe` ;;	# to prevent //d/path/file
 *)		BUILD_DIR=`pwd` ;;
 esac
 
-AC_SUBST([BUILD_DIR])
+AC_SUBST([BUILD_DIR])dnl
 
-AC_SUBST([CFLAGS])
-AC_SUBST([LOCAL_CFLAGS])
-AC_SUBST([LOCAL_LDFLAGS])
-AC_SUBST([LOCAL_DEFS])
+AC_SUBST([CFLAGS])dnl
+AC_SUBST([LOCAL_CFLAGS])dnl
+AC_SUBST([LOCAL_LDFLAGS])dnl
+AC_SUBST([LOCAL_DEFS])dnl
 
-AC_SUBST([AR])
-AC_SUBST([ARFLAGS])
+AC_SUBST([AR])dnl
+AC_SUBST([ARFLAGS])dnl
 
-AC_SUBST([host_cpu])
-AC_SUBST([host_os])
+AC_SUBST([host_cpu])dnl
+AC_SUBST([host_os])dnl
 
 RL_LIB_READLINE_VERSION
-AC_SUBST([LIBVERSION])
+AC_SUBST([LIBVERSION])dnl
 
-AC_SUBST([TERMCAP_LIB])
+AC_SUBST([TERMCAP_LIB])dnl
 
 AC_CONFIG_FILES([Makefile \
                  Makefile.orig \
@@ -397,7 +430,7 @@ AC_CONFIG_COMMANDS([default],[
 # Makefile uses this timestamp file to record whether config.h is up to
 # date.
 echo "" > stamp-h
-],[])
+],[])dnl
 
 AC_CONFIG_COMMANDS([config_status_vpath_build_fix],[
 if test "${srcdir}" != "."; then
@@ -407,6 +440,6 @@ if test "${srcdir}" != "."; then
     cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
   fi
 fi
-],[])
+],[])dnl
 
 AC_OUTPUT

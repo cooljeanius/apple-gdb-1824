@@ -1,20 +1,19 @@
 /* A substitute for ISO C99 <wchar.h>, for platforms that have issues.
- *
- * Copyright (C) 2007-2012 Free Software Foundation, Inc.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3, or (at your option)
- * any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, see <http://www.gnu.org/licenses/>.
- */
+
+   Copyright (C) 2007-2014 Free Software Foundation, Inc.
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, see <http://www.gnu.org/licenses/>.  */
 
 /* Written by Eric Blake.  */
 
@@ -28,60 +27,56 @@
 
 #if __GNUC__ >= 3
 @PRAGMA_SYSTEM_HEADER@
-#endif /* gcc 3+ */
+#endif
 @PRAGMA_COLUMNS@
 
 #if defined __need_mbstate_t || defined __need_wint_t || (defined __hpux && ((defined _INTTYPES_INCLUDED && !defined strtoimax) || defined _GL_JUST_INCLUDE_SYSTEM_WCHAR_H)) || defined _GL_ALREADY_INCLUDING_WCHAR_H
 /* Special invocation convention:
- * - Inside glibc and uClibc header files.
- * - On HP-UX 11.00 we have a sequence of nested includes
- *   <wchar.h> -> <stdlib.h> -> <stdint.h>, and the latter includes <wchar.h>,
- *   once indirectly <stdint.h> -> <sys/types.h> -> <inttypes.h> -> <wchar.h>
- *   and once directly.  In both situations 'wint_t' is not yet defined,
- *   therefore we cannot provide the function overrides; instead include only
- *   the system's <wchar.h>.
- * - On IRIX 6.5, similarly, we have an include <wchar.h> -> <wctype.h>, and
- *   the latter includes <wchar.h>.  But here, we have no way to detect whether
- *   <wctype.h> is completely included or is still being included.
- */
+   - Inside glibc and uClibc header files.
+   - On HP-UX 11.00 we have a sequence of nested includes
+     <wchar.h> -> <stdlib.h> -> <stdint.h>, and the latter includes <wchar.h>,
+     once indirectly <stdint.h> -> <sys/types.h> -> <inttypes.h> -> <wchar.h>
+     and once directly.  In both situations 'wint_t' is not yet defined,
+     therefore we cannot provide the function overrides; instead include only
+     the system's <wchar.h>.
+   - On IRIX 6.5, similarly, we have an include <wchar.h> -> <wctype.h>, and
+     the latter includes <wchar.h>.  But here, we have no way to detect whether
+     <wctype.h> is completely included or is still being included.  */
+
 #@INCLUDE_NEXT@ @NEXT_WCHAR_H@
 
 #else
-/* Normal invocation convention: */
+/* Normal invocation convention.  */
+
 #ifndef _@GUARD_PREFIX@_WCHAR_H
 
 #define _GL_ALREADY_INCLUDING_WCHAR_H
 
 #if @HAVE_FEATURES_H@
 # include <features.h> /* for __GLIBC__ */
-#endif /* @HAVE_FEATURES_H@ */
+#endif
 
 /* Tru64 with Desktop Toolkit C has a bug: <stdio.h> must be included before
- * <wchar.h>.
- * BSD/OS 4.0.1 has a bug: <stddef.h>, <stdio.h> and <time.h> must be
- * included before <wchar.h>.
- * In some builds of uClibc, <wchar.h> is nonexistent and wchar_t is defined
- * by <stddef.h>.
- * But avoid namespace pollution on glibc systems. */
+   <wchar.h>.
+   BSD/OS 4.0.1 has a bug: <stddef.h>, <stdio.h> and <time.h> must be
+   included before <wchar.h>.
+   In some builds of uClibc, <wchar.h> is nonexistent and wchar_t is defined
+   by <stddef.h>.
+   But avoid namespace pollution on glibc systems.  */
 #if !(defined __GLIBC__ && !defined __UCLIBC__)
 # include <stddef.h>
-#endif /* !(__GLIBC__ && !__UCLIBC__) */
+#endif
 #ifndef __GLIBC__
 # include <stdio.h>
 # include <time.h>
-#endif /* !__GLIBC__ */
-
-/* hack to allow original wchar.h to define its own mbstate_t properly: */
-#ifdef mbstate_t
-# undef mbstate_t
-#endif /* mbstate_t */
+#endif
 
 /* Include the original <wchar.h> if it exists.
- * Some builds of uClibc lack it. */
-/* The include_next requires a split double-inclusion guard. */
+   Some builds of uClibc lack it.  */
+/* The include_next requires a split double-inclusion guard.  */
 #if @HAVE_WCHAR_H@
 # @INCLUDE_NEXT@ @NEXT_WCHAR_H@
-#endif /* @HAVE_WCHAR_H@ */
+#endif
 
 #undef _GL_ALREADY_INCLUDING_WCHAR_H
 
@@ -89,12 +84,12 @@
 #define _@GUARD_PREFIX@_WCHAR_H
 
 /* The __attribute__ feature is available in gcc versions 2.5 and later.
- * The attribute __pure__ was added in gcc 2.96.  */
-#if (__GNUC__ > 2) || ((__GNUC__ == 2) && (__GNUC_MINOR__ >= 96))
+   The attribute __pure__ was added in gcc 2.96.  */
+#if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 96)
 # define _GL_ATTRIBUTE_PURE __attribute__ ((__pure__))
 #else
 # define _GL_ATTRIBUTE_PURE /* empty */
-#endif /* gcc 2.96+ */
+#endif
 
 /* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
 
@@ -120,28 +115,25 @@ typedef unsigned int rpl_wint_t;
 #   undef wint_t
 #   define wint_t rpl_wint_t
 #   define GNULIB_defined_wint_t 1
-#  endif /* !GNULIB_defined_wint_t */
-# endif /* _MSC_VER */
+#  endif
+# endif
 # ifndef WEOF
-#  define WEOF ((wint_t)-1)
-# endif /* !WEOF */
-#endif /* !@HAVE_WINT_T@ && !wint_t */
+#  define WEOF ((wint_t) -1)
+# endif
+#endif
 
-#if defined(_WCHAR_H_) && defined(_MBSTATE_T) && \
-    !defined(GNULIB_defined_mbstate_t)
-# define GNULIB_defined_mbstate_t 1
-#endif /* _WCHAR_H_ && _MBSTATE_T */
+
 /* Override mbstate_t if it is too small.
- * On IRIX 6.5, sizeof(mbstate_t) == 1, which is not sufficient for
- * implementing mbrtowc for encodings like UTF-8.  */
+   On IRIX 6.5, sizeof (mbstate_t) == 1, which is not sufficient for
+   implementing mbrtowc for encodings like UTF-8.  */
 #if !(@HAVE_MBSINIT@ && @HAVE_MBRTOWC@) || @REPLACE_MBSTATE_T@
 # if !GNULIB_defined_mbstate_t
 typedef int rpl_mbstate_t;
 #  undef mbstate_t
 #  define mbstate_t rpl_mbstate_t
 #  define GNULIB_defined_mbstate_t 1
-# endif /* !GNULIB_defined_mbstate_t */
-#endif /* !(@HAVE_MBSINIT@ && @HAVE_MBRTOWC@) || @REPLACE_MBSTATE_T@ */
+# endif
+#endif
 
 
 /* Convert a single-byte character to a wide character.  */
@@ -202,15 +194,15 @@ _GL_WARN_ON_USE (wctob, "wctob is unportable - "
 #   undef mbsinit
 #   define mbsinit rpl_mbsinit
 #  endif
-_GL_FUNCDECL_RPL(mbsinit, int, (const mbstate_t *ps));
-_GL_CXXALIAS_RPL(mbsinit, int, (const mbstate_t *ps));
+_GL_FUNCDECL_RPL (mbsinit, int, (const mbstate_t *ps));
+_GL_CXXALIAS_RPL (mbsinit, int, (const mbstate_t *ps));
 # else
 #  if !@HAVE_MBSINIT@
-_GL_FUNCDECL_SYS(mbsinit, int, (const mbstate_t *ps));
+_GL_FUNCDECL_SYS (mbsinit, int, (const mbstate_t *ps));
 #  endif
-_GL_CXXALIAS_SYS(mbsinit, int, (const mbstate_t *ps));
+_GL_CXXALIAS_SYS (mbsinit, int, (const mbstate_t *ps));
 # endif
-_GL_CXXALIASWARN(mbsinit);
+_GL_CXXALIASWARN (mbsinit);
 #elif defined GNULIB_POSIXCHECK
 # undef mbsinit
 # if HAVE_RAW_DECL_MBSINIT
@@ -1034,5 +1026,3 @@ _GL_WARN_ON_USE (wcswidth, "wcswidth is unportable - "
 #endif /* _@GUARD_PREFIX@_WCHAR_H */
 #endif /* _@GUARD_PREFIX@_WCHAR_H */
 #endif
-
-/* EOF */

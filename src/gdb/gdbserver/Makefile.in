@@ -438,10 +438,11 @@ clean:
 
 # Do NOT remove GNULIB_BUILDDIR here, because we are defining it to be the
 # actual source directory for gnulib here, unlike FSF gdb, which creates
-# a separate build directory for it
+# a separate build directory for it.
 maintainer-clean realclean distclean: clean
 	rm -f nm.h tm.h xm.h config.status config.h stamp-h config.log
 	rm -f Makefile
+	-rm -f .DS_Store
 
 STAGESTUFF=${OBS} ${TSOBS} ${NTSOBS} ${ADD_FILES} init.c init.o version.c gdb
 

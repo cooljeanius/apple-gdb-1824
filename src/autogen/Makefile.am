@@ -4,7 +4,7 @@
 ## Time-stamp:      "2011-05-05 10:04:15 bkorb"
 ##
 ## This file is part of AutoGen.
-## AutoGen Copyright (c) 1992-2012 by Bruce Korb - all rights reserved
+## AutoGen Copyright (c) 1992-2013 by Bruce Korb - all rights reserved
 ##
 ## AutoGen is free software: you can redistribute it and/or modify it
 ## under the terms of the GNU General Public License as published by the
@@ -36,6 +36,8 @@ else
 ##
 if  HAVE_XML_LIB
 SUBDIRS       += xml2ag
+else
+SUBDIRS       += po
 endif
 endif
 
@@ -50,9 +52,12 @@ misc_extra     = \
     autoopts/parse-duration.h doc/gendocs.sh \
     doc/gendocs_template
 EXTRA_DIST     = $(misc_extra) $(pkgdata_DATA)
-DISTCLEANFILES = stamp-h *~
+DISTCLEANFILES = stamp-h *~ config/*~ po/*~ autoscan.log .DS_Store
 
-distcleancheck_listfiles_local = \
+distclean-local:
+	rm -rfv autom4te.cache || rmdir autom4te.cache
+
+my_distcleancheck_listfiles_local = \
      find -type f -exec 'test -f $(srcdir)/{} || echo {} ;'
 
 configure   : VERSION
@@ -66,9 +71,17 @@ gnudoc      : gnudocs
 gnudocs     :
 	cd doc && $(MAKE) gnudocs
 
+doxydocs    :
+	test -f Doxyfile || cp ~/.Doxyfile ./Doxyfile ; \
+	doxygen
+
 usage-txt.po: gettext
 gettext     :
 	cd autoopts && $(MAKE) usage-txt.po
+
+all         : config/shdefs
+config/shdefs: config/mk-shdefs
+	$(SHELL) $< $@
 
 if HAVE_XML_LIB
 release     : distcheck

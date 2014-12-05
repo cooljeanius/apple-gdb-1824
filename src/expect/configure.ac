@@ -10,7 +10,7 @@ dnl# END CYGNUS LOCAL
 
 AC_PREREQ([2.69])
 AC_INIT([expect],[5.26],[libes@nist.gov])
-AC_CONFIG_SRCDIR([expect.h])
+AC_CONFIG_SRCDIR([expect.h])dnl
 
 dnl# CYGNUS LOCAL: find aux files in ..
 AC_CONFIG_AUX_DIR([..])
@@ -36,7 +36,7 @@ AC_CANONICAL_TARGET
 AC_USE_SYSTEM_EXTENSIONS
 AC_EXEEXT
 
-AC_CONFIG_HEADERS([expect_cf.h])
+AC_CONFIG_HEADERS([expect_cf.h])dnl
 
 AC_PROG_SED
 
@@ -306,7 +306,7 @@ else
   AC_MSG_RESULT([no])
 fi
 
-# Check for a regex library
+# Check for a regex library:
 AC_SEARCH_LIBS([regcomp],[iberty regex gregex gnuregex rx grx gnurx gnu c])
 AC_SEARCH_LIBS([regexec],[iberty regex gregex gnuregex rx grx gnurx gnu c])
 
@@ -335,7 +335,7 @@ fi
 # Ok, let us find the tcl source trees so we can use the headers
 #
 CY_AC_PATH_TCLH
-if test x"$no_tcl" = x"true" ; then
+if test x"${no_tcl}" = x"true" ; then
     echo "	ERROR: Cannot find Tcl headers or library."
     echo "	See README for information on how to obtain Tcl."
     echo "	If Tcl is installed, see INSTALL on how to tell"
@@ -347,9 +347,10 @@ CY_AC_PATH_ITCLH
 # have to whether we are generating shared libs before configuring debugger
 AC_MSG_CHECKING([if generating shared or nonshared library])
 AC_ARG_ENABLE([shared],
-	[AS_HELP_STRING([--enable-shared],[build libexpect as a shared library])],
+	[AS_HELP_STRING([--enable-shared],
+                        [build libexpect as a shared library])],
 	[enable_shared=${enableval}],[enable_shared=no])
-if test "$enable_shared" = "yes" && test "x${TCL_SHLIB_SUFFIX}" != "x" ; then
+if test "x${enable_shared}" = "xyes" && test "x${TCL_SHLIB_SUFFIX}" != "x"; then
   AC_MSG_RESULT([both shared and unshared])
 else
   AC_MSG_RESULT([unshared])
@@ -592,7 +593,8 @@ case "${host}" in
 	  # we only need to define OPENPTY once, but since we override
 	  # the default behavior, we must also handle augment LIBS too.
 	  # This need NOT be done in the 2nd and 3rd tests.
-	  AC_DEFINE([HAVE_OPENPTY],[1],[Define to 1 if you have the openpty function.])
+	  AC_DEFINE([HAVE_OPENPTY],[1],
+                    [Define to 1 if you have the openpty function.])
 	  LIBS="${LIBS} -lutil"
     ],[
 	  AC_CHECK_LIB([util],[main])
@@ -606,8 +608,9 @@ case "${host}" in
   if test $openpty -eq 0 ; then
     unset ac_cv_lib_util_openpty
     AC_CHECK_LIB([util],[openpty],[
-        AC_DEFINE([HAVE_OPENPTY],[1],[Define to 1 if you have the openpty function.])
-        LIBS="$LIBS -lutil"
+        AC_DEFINE([HAVE_OPENPTY],[1],
+                  [Define to 1 if you have the openpty function.])
+        LIBS="${LIBS} -lutil"
     ],[
 	  AC_CHECK_LIB([util],[main])
     ])
@@ -641,20 +644,21 @@ esac
 # Look for various header files
 #
 AC_HEADER_MAJOR
-unset ac_cv_header_sys_wait_h
-AC_HEADER_SYS_WAIT
+dnl# AC_HEADER_SYS_WAIT dnl# (already done above)
 AC_CHECK_HEADERS([sys/sysmacros.h],[
-  AC_DEFINE([HAVE_SYSMACROS_H],[1],[Define to 1 if you have the sys/sysmacros.h header file.])
+  AC_DEFINE([HAVE_SYSMACROS_H],[1],
+            [Define to 1 if you have the sys/sysmacros.h header file.])dnl
 ],[])
 unset ac_cv_header_stdlib_h
 AC_CHECK_HEADERS([stdlib.h],[],[
-  AC_DEFINE([NO_STDLIB_H],[1],[Define to 1 if there is no stdlib.h header file.])
-])
+  AC_DEFINE([NO_STDLIB_H],[1],
+            [Define to 1 if there is no stdlib.h header file.])dnl
+])dnl
 
 AC_CHECK_HEADERS([ctype.h errno.h fcntl.h malloc.h malloc/malloc.h math.h \
                   mem/memory.h poll.h setjmp.h sgtty.h signal.h stdarg.h \
                   stdio.h sys/file.h sys/ioctl.h sys/poll.h sys/time.h \
-                  termio.h termios.h time.h utmp.h varargs/varargs.h])
+                  termio.h termios.h time.h utmp.h varargs/varargs.h])dnl
 
 #
 # Look for inttypes.h. Sometimes there are data type conflicts
@@ -668,7 +672,7 @@ AC_C_PROTOTYPES
 
 AC_CHECK_HEADERS([sys/fcntl.h sys/ptem.h sys/ptyio.h sys/select.h \
                   sys/stropts.h sys/strpty.h sys/strredir.h \
-                  sys/sysconfig.h sys/vty.h varargs.h])
+                  sys/sysconfig.h sys/vty.h varargs.h])dnl
 
 AC_MSG_CHECKING([for sys/bsdtypes.h])
 if test "ISC_${ISC}" = "ISC_1"; then
@@ -681,23 +685,29 @@ fi
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
-AC_CHECK_TYPES([caddr_t])
-AC_CHECK_TYPES([mblk_t])
-AC_CHECK_MEMBERS([struct stat.st_rdev])
+AC_CHECK_TYPES([caddr_t])dnl
+AC_CHECK_TYPES([mblk_t])dnl
+AC_CHECK_MEMBERS([struct stat.st_rdev])dnl
 
 #
 # Look for functions that may be missing
 #
 AC_FUNC_CHOWN
 AC_FUNC_FORK
+AC_FUNC_GETPGRP
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
+AC_FUNC_SELECT_ARGTYPES
+AC_FUNC_SETPGRP
+AC_FUNC_STAT
+AC_FUNC_STRFTIME
+AC_FUNC_VPRINTF
 unset ac_cv_func_gethostname
 unset ac_cv_func_select
 AC_CHECK_FUNCS([dup2 exit gethostname gettimeofday ioctl isascii isspace \
                 log memmove memset pow re_comp regcomp regexec select \
-                strchr strcpy strcspn strftime strlen strrchr strstr \
-                sysconf system time timezone])
+                strchr strcpy strcspn strlen strrchr strstr \
+                sysconf system time timezone])dnl
 
 dnl# check for memcpy by hand
 # because Unixware 2.0 handles it specially and refuses to compile
@@ -709,7 +719,7 @@ memcpy(s1,s2,0);
 ]])],[AC_MSG_RESULT([yes])
 	AC_DEFINE([HAVE_MEMCPY],[1],[Define to 1 if we have memcpy])
 	],[AC_MSG_RESULT([no])
-])
+])dnl
 
 # Some systems only define WNOHANG if _POSIX_SOURCE is defined
 # The following merely tests that sys/wait.h can be included
@@ -718,7 +728,7 @@ memcpy(s1,s2,0);
 AC_MSG_CHECKING([if WNOHANG requires _POSIX_SOURCE])
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <sys/wait.h>
-main() {
+int main(void) {
 #ifndef WNOHANG
 	return 0;
 #else
@@ -731,14 +741,14 @@ main() {
 	 *-*-cygwin*) AC_MSG_RESULT([no]) ;;
 	 *) AC_MSG_ERROR([Expect cannot be cross compiled]) ;;
 	 esac
-])
+])dnl
 
 AC_MSG_CHECKING([if any value exists for WNOHANG])
 rm -rf wnohang
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <stdio.h>
 #include <sys/wait.h>
-main() {
+int main(void) {
 #ifdef WNOHANG
 	FILE *fp = fopen("wnohang","w");
 	fprintf(fp,"%d",WNOHANG);
@@ -746,18 +756,19 @@ main() {
 	return 0;
 #else
 	return 1;
-#endif
+#endif /* WNOHANG */
 }]])],[AC_MSG_RESULT([yes])
 	AC_DEFINE_UNQUOTED([WNOHANG_BACKUP_VALUE],[`cat wnohang`],[The backup value for WNOHANG])
 	rm -f wnohang
 ],[AC_MSG_RESULT([no])
-	AC_DEFINE([WNOHANG_BACKUP_VALUE],[1],[The backup value for WNOHANG])
+	AC_DEFINE([WNOHANG_BACKUP_VALUE],[1],
+	          [The backup value for WNOHANG])
 ],[case "${host}" in
 	 *-*-cygwin*) AC_MSG_RESULT([yes])
 			AC_DEFINE([WNOHANG_BACKUP_VALUE],[1],[The backup value for WNOHANG]) ;;
 	 *) AC_MSG_ERROR([Expect cannot be cross compiled]) ;;
 	 esac
-])
+])dnl
 
 #
 # check how signals work
@@ -768,11 +779,12 @@ main() {
 # proceeds to ignore it and use int.
 # Pattern matching on int could be loosened.
 # Cannot use ac_header_egrep since that does NOT see prototypes with
-# K&R cpp.
+# K&R cpp (although that is really old by now).
 AC_MSG_CHECKING([mask type of select])
 if egrep "select\(size_t, int" /usr/include/sys/time.h >/dev/null 2>&1; then
   AC_MSG_RESULT([int])
-  AC_DEFINE([SELECT_MASK_TYPE],[int],[Define to int if it is the mask type for select])
+  AC_DEFINE([SELECT_MASK_TYPE],[int],
+            [Define to int if it is the mask type for select])
 else
   AC_MSG_RESULT([none])
 fi
@@ -798,7 +810,7 @@ int n;
 signal_rearms++;
 }
 
-main()
+int main(void)
 {
 	signal(SIGINT,parent_sigint_handler);
 
@@ -815,13 +827,14 @@ main()
 		exit(signal_rearms);
 	}
 }]])],[AC_MSG_RESULT([yes])
-	AC_DEFINE([REARM_SIG],[1],[Define to 1 if signals need to be rearmed.])
+	AC_DEFINE([REARM_SIG],[1],
+                  [Define to 1 if signals need to be rearmed.])
 ],[AC_MSG_RESULT([no])
 ],[case "${host}" in
 	 *-*-cygwin*) AC_MSG_RESULT([no]) ;;
 	 *) AC_MSG_WARN([Expect cannot be cross compiled]) ;;
 	 esac
-])
+])dnl
 
 # HPUX7 has trouble with the big cat so split it
 # Owen Rees <rtor@ansa.co.uk> 29Mar93 
@@ -850,9 +863,9 @@ fi
 EXP_LDFLAGS=
 
 AC_MSG_CHECKING([if on NeXT])
-if test -r /NextApps -a "${cross_compiling}" != "yes" ; then
+if test -r /NextApps -a "x${cross_compiling}" != "xyes"; then
   AC_MSG_RESULT([yes])
-  # "-m" flag suppresses complaints about multiple strtod
+  # "-m" flag suppresses complaints about multiple strtod:
   EXP_LDFLAGS="${EXP_LDFLAGS} -m"
 else
   AC_MSG_RESULT([no])
@@ -888,7 +901,7 @@ AC_MSG_RESULT([${DEFAULT_STTY_ARG}])
 AC_MSG_CHECKING([for HP style pty allocation])
 # following test fails on DECstations and other things that do NOT grok -c
 # but that is ok, since they do NOT have PTYMs anyway
-if test -r /dev/ptym/ptyp0 2>/dev/null -a "$cross_compiling" != "yes" ; then
+if test -r /dev/ptym/ptyp0 2>/dev/null -a "x${cross_compiling}" != "xyes"; then
     AC_MSG_RESULT([yes])
     AC_DEFINE([HAVE_PTYM],[1],[Define to 1 for HP style pty allocation])
 else
@@ -897,22 +910,25 @@ fi
 
 AC_MSG_CHECKING([for HP style pty trapping])
 AC_EGREP_HEADER([struct.*request_info],[sys/ptyio.h],[AC_MSG_RESULT([yes])
-	AC_DEFINE([HAVE_PTYTRAP],[1],[Define to 1 for HP style pty trapping])
+	AC_DEFINE([HAVE_PTYTRAP],[1],
+                  [Define to 1 for HP style pty trapping])
 ],[AC_MSG_RESULT([no])
-])
+])dnl
 
 AC_MSG_CHECKING([for AIX new-style pty allocation])
-if test -r /dev/ptc -a -r /dev/pts -a "${cross_compiling}" != "yes" ; then
+if test -r /dev/ptc -a -r /dev/pts -a "x${cross_compiling}" != "xyes"; then
     AC_MSG_RESULT([yes])
-    AC_DEFINE([HAVE_PTC_PTS],[1],[Define to 1 for AIX new-style pty allocation])
+    AC_DEFINE([HAVE_PTC_PTS],[1],
+              [Define to 1 for AIX new-style pty allocation])
 else
     AC_MSG_RESULT([no])
 fi
 
 AC_MSG_CHECKING([for SGI old-style pty allocation])
-if test -r /dev/ptc -a ! -r /dev/pts -a "${cross_compiling}" != "yes" ; then
+if test -r /dev/ptc -a ! -r /dev/pts -a "x${cross_compiling}" != "xyes"; then
     AC_MSG_RESULT(yes)
-    AC_DEFINE([HAVE_PTC],[1],[Define to 1 for SGI old-style pty allocation])
+    AC_DEFINE([HAVE_PTC],[1],
+              [Define to 1 for SGI old-style pty allocation])
 else
     AC_MSG_RESULT([no])
 fi
@@ -929,15 +945,16 @@ case "${host}" in
   *-sco3.2v[[45]]*)	sco_clist_ptys=1 svr4_ptys_broken=1;;
 esac
 
-if test x"${sco_clist_ptys}" != x"" ; then
+if test x"${sco_clist_ptys}" != x""; then
   AC_MSG_RESULT([yes])
-  AC_DEFINE([HAVE_SCO_CLIST_PTYS],[1],[Define to 1 for SCO-style pty allocation])
+  AC_DEFINE([HAVE_SCO_CLIST_PTYS],[1],
+            [Define to 1 for SCO-style pty allocation])
 else
   AC_MSG_RESULT([no])
 fi
 
 AC_MSG_CHECKING([for SVR4 style pty allocation])
-if test -r /dev/ptmx -a "x$svr4_ptys_broken" = x -a "$cross_compiling" != "yes" ; then
+if test -r /dev/ptmx -a "x${svr4_ptys_broken}" = "x" -a "x${cross_compiling}" != "xyes"; then
   AC_MSG_RESULT([yes])
   AC_DEFINE([HAVE_PTMX],[1],[Define to 1 if we have ptmx])
   # aargg. Some systems need libpt.a to use /dev/ptmx
@@ -959,7 +976,8 @@ if test -r /dev/ptmx -a "x$svr4_ptys_broken" = x -a "$cross_compiling" != "yes" 
 #ifndef NSIG
 # define NSIG _NSIG
 #endif /* !NSIG */
-char junk[NSIG];]],[[]])],[AC_DEFINE([_XOPEN_SOURCE],[1],[Some systems need this to be defined])
+char junk[NSIG];]],[[]])],[AC_DEFINE([_XOPEN_SOURCE],[1],
+                                     [Some systems need this defined])
 	AC_MSG_RESULT([yes])
     ],[AC_MSG_RESULT([no])
     ])
@@ -997,19 +1015,20 @@ fi
 AC_MSG_CHECKING([for struct sgttyb])
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 #include <sgtty.h>
-main()
+int main(void)
 {
   struct sgttyb tmp;
   exit(0);
 }]])],[AC_MSG_RESULT([yes])
-        AC_DEFINE([HAVE_SGTTYB],[1],[Define to 1 if you have the struct sgttyb])
+        AC_DEFINE([HAVE_SGTTYB],[1],
+                  [Define to 1 if you have the struct sgttyb])
         PTY_TYPE=sgttyb
 ],[AC_MSG_RESULT([no])
 ],[case "${host}" in
 	 *-*-cygwin*) AC_MSG_RESULT([no]) ;;
 	 *) AC_MSG_ERROR([Expect cannot be cross compiled]) ;;
 	 esac
-])
+])dnl
 
 AC_SYS_POSIX_TERMIOS
 
@@ -1023,11 +1042,12 @@ if test ${mach} -eq 0 ; then
   # pty_termios.c is set up to handle pty_termio.
   AC_MSG_CHECKING([for struct termio])
   AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <termio.h>
-  main()
+  int main(void)
   {
     struct termio tmp;
     exit(0);
-  }]])],[AC_DEFINE([HAVE_TERMIO],[1],[Define to 1 if you have the struct termio])
+  }]])],[AC_DEFINE([HAVE_TERMIO],[1],
+                   [Define to 1 if you have the struct termio])
         PTY_TYPE=termios
         AC_MSG_RESULT([yes])
 ],[AC_MSG_RESULT([no])
@@ -1035,7 +1055,7 @@ if test ${mach} -eq 0 ; then
 	 *-*-cygwin*) AC_MSG_RESULT([no]) ;;
 	 *) AC_MSG_ERROR([Expect cannot be cross compiled]) ;;
 	 esac
-])
+])dnl
 
   # now check for the new style ttys (not yet posix)
   AC_MSG_CHECKING([for struct termios])
@@ -1043,10 +1063,12 @@ if test ${mach} -eq 0 ; then
 # ifdef HAVE_INTTYPES_H
 #  include <inttypes.h>
 # else
-#  warning this conftest expects <inttypes.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "this conftest expects <inttypes.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_INTTYPES_H */
 #  include <termios.h>
-  main()
+  int main(void)
   {
     struct termios tmp;
     exit(0);
@@ -1065,14 +1087,16 @@ fi
 
 AC_MSG_CHECKING([if TCGETS or TCGETA is in termios.h])
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
-/* including termios.h on Solaris 5.6 fails unless inttypes.h included */
+/* including termios.h on Solaris 5.6 fails unless inttypes.h included: */
 #ifdef HAVE_INTTYPES_H
 # include <inttypes.h>
 #else
-# warning this conftest expects <inttypes.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "this conftest expects <inttypes.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_INTTYPES_H */
 #include <termios.h>
-main() {
+int main(void) {
 #if defined(TCGETS) || defined(TCGETA)
 	return 0;
 #else
@@ -1086,17 +1110,19 @@ main() {
 			AC_MSG_RESULT([yes]) ;;
 	 *) AC_MSG_ERROR([Expect cannot be cross compiled]) ;;
 	 esac
-])
+])dnl
 
 AC_HEADER_TIOCGWINSZ
 
 AC_MSG_CHECKING([if TIOCGWINSZ is in termios.h])
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
-/* including termios.h on Solaris 5.6 fails unless inttypes.h included */
+/* including termios.h on Solaris 5.6 fails unless inttypes.h included: */
 #ifdef HAVE_INTTYPES_H
 # include <inttypes.h>
 #else
-# warning this conftest expects <inttypes.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "this conftest expects <inttypes.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_INTTYPES_H */
 #include <termios.h>
 main() {
@@ -1113,13 +1139,13 @@ main() {
 			AC_MSG_RESULT([yes]) ;;
 	 *) AC_MSG_ERROR([Expect cannot be cross compiled]) ;;
 	 esac
-])
+])dnl
 
 # finally check for Cray style ttys
 AC_MSG_CHECKING([for Cray-style ptys])
 SETUID=":"
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
-main(){
+int main(void) {
 #ifdef CRAY
 	return 0;
 #else
@@ -1134,7 +1160,7 @@ main(){
 	 *-*-cygwin*) AC_MSG_RESULT([no]) ;;
 	 *) AC_MSG_ERROR([Expect cannot be cross compiled]) ;;
 	 esac
-])
+])dnl
 
 #
 # Check for select and/or poll. If both exist, we prefer select.
@@ -1161,8 +1187,8 @@ else
   AC_DEFINE([SIMPLE_EVENT],[1],[Define to 1 if event handling is simple])
 fi
 
-AC_CHECK_FUNCS([_getpty])
-AC_CHECK_FUNCS([getpty])
+AC_CHECK_FUNCS([_getpty])dnl
+AC_CHECK_FUNCS([getpty])dnl
 
 #
 # check for timezones
@@ -1171,30 +1197,34 @@ AC_MSG_CHECKING([for SV-style timezone])
 AC_RUN_IFELSE([AC_LANG_SOURCE([[
 extern char *tzname[2];
 extern int daylight;
-main()
+int main(void)
 {
   int *x = &daylight;
   char **y = tzname;
 
   exit(0);
-}]])],[AC_DEFINE([HAVE_SV_TIMEZONE],[1],[Define to 1 for an SV-style timezone])
+}]])],[AC_DEFINE([HAVE_SV_TIMEZONE],[1],
+                 [Define to 1 for an SV-style timezone])
 	AC_MSG_RESULT([yes])],[AC_MSG_RESULT([no])
 ],[case "${host}" in
 	 *-*-cygwin*) AC_MSG_RESULT([no]) ;;
 	 *) AC_MSG_ERROR([Expect cannot be cross compiled]) ;;
 	 esac
-])
+])dnl
 
-# only look for Tk stuff if we have X11 and user does NOT say not to
+dnl# compare with the autoconf pre-written one:
+AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
+
+# only look for Tk stuff if we have X11 and user does NOT say not to do so:
 AC_ARG_WITH([x],[AS_HELP_STRING([--with-x],[whether or not to use X (default yes)])],[],[with_x=yes])
-if test "${with_x}" = "no"; then
+if test "x${with_x}" = "xno"; then
    no_tk=true
 else
    CY_AC_PATH_TKH
    _AC_PATH_X_XMKMF
 fi
-if test x"${no_tk}" != x"true" ; then
-# libexpectk no longer exists
+if test x"${no_tk}" != x"true"; then
+# (libexpectk no longer exists)
   X_PROGS=expectk
 # should really generate following symbol, but I am hitting configure's
 # limit on substs...
@@ -1213,11 +1243,11 @@ fi
 # the same command as Tcl's configure
 AC_ARG_ENABLE([load],
 	[AS_HELP_STRING([--disable-load],[disallow dynamic loading])],
-	[disable_dl=${enableval}],[disable_dl=no])
+	[disable_dl=${enableval}],[disable_dl=no])dnl
 
 AC_ARG_ENABLE([gcc],
 	[AS_HELP_STRING([--enable-gcc],[allow use of gcc if available])],
-	[enable_gcc=${enableval}],[enable_gcc=no])
+	[enable_gcc=${enableval}],[enable_gcc=no])dnl
 
 
 # Following comment stolen from Tcl's configure.ac:
@@ -1239,7 +1269,7 @@ fi
 # (are there really systems which support shared libs and restrict
 # filename lengths!?)
 AC_SYS_LONG_FILE_NAMES
-if test ${ac_cv_sys_long_file_names} = no; then
+if test "x${ac_cv_sys_long_file_names}" = "xno"; then
     EXP_LIB_VERSION=${EXP_VERSION_NODOTS}
 fi
 
@@ -1249,14 +1279,14 @@ EXP_UNSHARED_LIB_FILE=libexpect${EXP_LIB_VERSION}.a
 EXP_BUILD_LIB_SPEC=${EXP_UNSHARED_LIB_FILE}
 
 AC_MSG_CHECKING([for type of library to build])
-if test "${enable_shared}" = "yes" && test "x${TCL_SHLIB_SUFFIX}" != "x" ; then
+if test "${enable_shared}" = "yes" && test "x${TCL_SHLIB_SUFFIX}" != "x"; then
   EXP_SHLIB_CFLAGS=${TCL_SHLIB_CFLAGS}
   eval "EXP_SHARED_LIB_FILE=libexpect${TCL_SHARED_LIB_SUFFIX}"
   EXP_LIB_FILE=${EXP_SHARED_LIB_FILE}
   EXP_LIB_FILES="${EXP_SHARED_LIB_FILE} ${EXP_UNSHARED_LIB_FILE}"
   AC_MSG_RESULT([both shared and unshared])
 else
-  EXP_SHLIB_CFLAGS=
+  EXP_SHLIB_CFLAGS=""
   EXP_SHARED_LIB_FILE="reconfigure_Tcl_for_shared_library"
   EXP_LIB_FILE=${EXP_UNSHARED_LIB_FILE}
   EXP_LIB_FILES="${EXP_UNSHARED_LIB_FILE}"
@@ -1273,22 +1303,22 @@ EXP_AND_TK_LIBS="${EXP_AND_TK_LIBS} ${TCL_LD_SEARCH_FLAGS}"
 # to hitting config's max symbols, pack everything together here and
 # do test ourselves. Ugh.  
 #
-if test "x${TCL_SHLIB_LD_LIBS}" = "x" ; then
-	EXP_SHLIB_LD_LIBS=""
+if test "x${TCL_SHLIB_LD_LIBS}" = "x"; then
+  EXP_SHLIB_LD_LIBS=""
 else
-	# seems a little strange to build in Tcl's build-lib, but
-	# that is what Tk does.
-	EXP_SHLIB_LD_LIBS="${TCL_BUILD_LIB_SPEC} ${TCL_DL_LIBS} ${LIBS} -lc"
+  # It seems a little strange to build in Tcl's build-lib, but
+  # that is what Tk does:
+  EXP_SHLIB_LD_LIBS="${TCL_BUILD_LIB_SPEC} ${TCL_DL_LIBS} ${LIBS} -lc"
 fi
 
 dnl# CYGNUS LOCAL
-dnl# check for win32 dependencies
+dnl# check for win32 dependencies:
 CY_AC_CYGWIN
 CY_AC_EXEEXT
 
-dnl# other
+dnl# other:
 AC_C_CONST
-AC_CHECK_DECLS([I_PUSH])
+AC_CHECK_DECLS([I_PUSH])dnl
 
 #--------------------------------------------------------------------
 # This section is based on analogous thing in Tk installation. - DEL
@@ -1327,35 +1357,35 @@ else
   EXP_LD_SEARCH_FLAGS=`echo ${EXP_CC_SEARCH_FLAGS} |sed -e "s|-Wl,||g" -e "s|,| |g"`
 fi
 
-#
-# Set up makefile substitutions
-#
-AC_SUBST([EXP_MAJOR_VERSION])
-AC_SUBST([EXP_MINOR_VERSION])
-AC_SUBST([EXP_MICRO_VERSION])
-AC_SUBST([EXP_VERSION_FULL])
-AC_SUBST([EXP_VERSION])
-AC_SUBST([EXP_CONFIG_SHELL])
-AC_SUBST([EXP_SHARED_LIB_FILE])
-AC_SUBST([EXP_UNSHARED_LIB_FILE])
-AC_SUBST([EXP_SHLIB_CFLAGS])
-AC_SUBST([EXP_LIB_FILE])
-AC_SUBST([EXP_LIB_FILES])
-AC_SUBST([EXP_BUILD_LIB_SPEC])
-AC_SUBST([EXP_LIB_SPEC])
-AC_SUBST([EXP_CFLAGS])
-AC_SUBST([EXP_LDFLAGS])
-AC_SUBST([EXP_LD_SEARCH_FLAGS])
-AC_SUBST([EXP_AND_TCL_LIBS])
-AC_SUBST([EXP_AND_TK_LIBS])
-AC_SUBST([EXP_SHLIB_LD_LIBS])
-AC_SUBST([X_PROGS])
-AC_SUBST([PTY_TYPE])
-AC_SUBST([EVENT_TYPE])
-AC_SUBST([EVENT_ABLE])
-AC_SUBST([SETUID])
-AC_SUBST([UNSHARED_RANLIB])
-AC_SUBST([DEFAULT_STTY_ARGS])
+dnl#
+dnl# Set up makefile substitutions (at the m4 level)
+dnl#
+AC_SUBST([EXP_MAJOR_VERSION])dnl
+AC_SUBST([EXP_MINOR_VERSION])dnl
+AC_SUBST([EXP_MICRO_VERSION])dnl
+AC_SUBST([EXP_VERSION_FULL])dnl
+AC_SUBST([EXP_VERSION])dnl
+AC_SUBST([EXP_CONFIG_SHELL])dnl
+AC_SUBST([EXP_SHARED_LIB_FILE])dnl
+AC_SUBST([EXP_UNSHARED_LIB_FILE])dnl
+AC_SUBST([EXP_SHLIB_CFLAGS])dnl
+AC_SUBST([EXP_LIB_FILE])dnl
+AC_SUBST([EXP_LIB_FILES])dnl
+AC_SUBST([EXP_BUILD_LIB_SPEC])dnl
+AC_SUBST([EXP_LIB_SPEC])dnl
+AC_SUBST([EXP_CFLAGS])dnl
+AC_SUBST([EXP_LDFLAGS])dnl
+AC_SUBST([EXP_LD_SEARCH_FLAGS])dnl
+AC_SUBST([EXP_AND_TCL_LIBS])dnl
+AC_SUBST([EXP_AND_TK_LIBS])dnl
+AC_SUBST([EXP_SHLIB_LD_LIBS])dnl
+AC_SUBST([X_PROGS])dnl
+AC_SUBST([PTY_TYPE])dnl
+AC_SUBST([EVENT_TYPE])dnl
+AC_SUBST([EVENT_ABLE])dnl
+AC_SUBST([SETUID])dnl
+AC_SUBST([UNSHARED_RANLIB])dnl
+AC_SUBST([DEFAULT_STTY_ARGS])dnl
 AC_CONFIG_FILES([Makefile \
 	pkgIndex])
 AC_CONFIG_COMMANDS([default],[chmod +x ${srcdir}/install-sh ${srcdir}/mkinstalldirs],[])

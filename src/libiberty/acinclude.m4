@@ -81,7 +81,7 @@ rm -f core core.* *.core])
 if test "x${ac_cv_func_strncmp_works}" = "xno"; then
   AC_LIBOBJ([strncmp])
 fi
-])
+])dnl
 
 dnl# See if errno must be declared even when <errno.h> is included.
 AC_DEFUN([libiberty_AC_DECLARE_ERRNO],
@@ -98,7 +98,7 @@ if test "x${libiberty_cv_declare_errno}" = "xyes"; then
   AC_DEFINE([NEED_DECLARATION_ERRNO],[1],
     [Define if errno must be declared even when <errno.h> is included.])
 fi
-])
+])dnl
 
 dnl# See whether we need a declaration for a function.
 AC_DEFUN([libiberty_NEED_DECLARATION],
@@ -192,7 +192,7 @@ AC_DEFINE_UNQUOTED([STACK_DIRECTION],[${ac_cv_c_stack_direction}],
         STACK_DIRECTION > 0 => grows toward higher addresses
         STACK_DIRECTION < 0 => grows toward lower addresses
         STACK_DIRECTION = 0 => direction of growth unknown])
-])
+])dnl
 
 # AC_LANG_FUNC_LINK_TRY(C)(FUNCTION)
 # ----------------------------------
@@ -242,5 +242,5 @@ char (*f)() = $1;
 #endif /* __cplusplus */
 ]],[[
 return f != $1;
-]])])
+]])])dnl
 

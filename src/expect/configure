@@ -2372,7 +2372,6 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-
 ac_aux_dir=
 for ac_dir in .. "$srcdir"/..; do
   if test -f "$ac_dir/install-sh"; then
@@ -3781,7 +3780,6 @@ $as_echo "$ac_cv_safe_to_define___extensions__" >&6; }
 
 ac_config_headers="$ac_config_headers expect_cf.h"
 
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
 $as_echo_n "checking for a sed that does not truncate output... " >&6; }
 if ${ac_cv_path_SED+:} false; then :
@@ -4106,7 +4104,7 @@ MAKEFLAGS=""
 # the alternative search directory is invoked by --with-tclconfig
 #
 
-if test x"${no_tcl}" = x ; then
+if test x"${no_tcl}" = x""; then
   # we reset no_tcl in case something fails here
   no_tcl=true
 
@@ -4199,16 +4197,9 @@ $as_echo "$as_me: sourcing ${TCLCONFIG}" >&6;}
       fi
     fi
 
-
-
-# Tcl defines TCL_SHLIB_SUFFIX but TCL_SHARED_LIB_SUFFIX then looks for it
-# as just SHLIB_SUFFIX. How bizarre.
-    SHLIB_SUFFIX=${TCL_SHLIB_SUFFIX}
-
-
-
-
-
+            # Tcl defines TCL_SHLIB_SUFFIX but TCL_SHARED_LIB_SUFFIX then looks
+    # for it as just SHLIB_SUFFIX. How bizarre.
+    SHLIB_SUFFIX="${TCL_SHLIB_SUFFIX}"
 
 EXP_AND_TCL_LIBS="${EXP_AND_TCL_LIBS} ${TCL_LIBS}"
 
@@ -4218,8 +4209,8 @@ EXP_AND_TCL_LIBS="${EXP_AND_TCL_LIBS} ${TCL_LIBS}"
 # the alternative search directory is invoked by --with-tkconfig
 #
 
-if test x"${no_tk}" = x ; then
-  # we reset no_tk in case something fails here
+if test x"${no_tk}" = x""; then
+  # we reset no_tk in case something fails here:
   no_tk=true
 
 # Check whether --with-tkconfig was given.
@@ -4301,18 +4292,12 @@ fi
 
 
     if test ! -z "${TKCONFIG}"; then
-      if test -f "${TKCONFIG}" ; then
+      if test -f "${TKCONFIG}"; then
         { $as_echo "$as_me:${as_lineno-$LINENO}: sourcing ${TKCONFIG}" >&5
 $as_echo "$as_me: sourcing ${TKCONFIG}" >&6;}
         . ${TKCONFIG}
       fi
     fi
-
-
-
-
-
-
 
 
 EXP_AND_TK_LIBS="${EXP_AND_TK_LIBS} ${TK_LIBS}"
@@ -5086,8 +5071,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 	# If we cannot compile and link a trivial program, we cannot expect
 # anything to work
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the compiler ($CC) actually works" >&5
-$as_echo_n "checking whether the compiler ($CC) actually works... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the compiler (${CC}) actually works" >&5
+$as_echo_n "checking whether the compiler (${CC}) actually works... " >&6; }
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -5113,12 +5098,12 @@ fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 
-if test x"${c_compiles}" = x"no" ; then
+if test x"${c_compiles}" = x"no"; then
   # error out
   as_fn_error $? "the native compiler is broken and will NOT compile." "$LINENO" 5
 fi
 
-if test x"${c_links}" = x"no" ; then
+if test x"${c_links}" = x"no"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
 $as_echo " " >&6; }
   # Might fail even if it actually works, so just warn
@@ -5755,10 +5740,7 @@ fi
 # -mposix is for the new gcc (at least 2.5.8)
 # This modifies the value of $CC to have the POSIX flag added
 # so it will configure correctly.
-
-
-
-# Do actual checking for LynxOS now
+# Do the actual checking for LynxOS now:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking if running LynxOS" >&5
 $as_echo_n "checking if running LynxOS... " >&6; }
 if ${ac_cv_os_lynx+:} false; then :
@@ -6089,7 +6071,7 @@ else
 $as_echo "no" >&6; }
 fi
 
-# Check for a regex library
+# Check for a regex library:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing regcomp" >&5
 $as_echo_n "checking for library containing regcomp... " >&6; }
 if ${ac_cv_search_regcomp+:} false; then :
@@ -6400,15 +6382,12 @@ $as_echo "found in ${ac_cv_c_tclh}" >&6; }
     # in it.
     TCLHDIR="${ac_cv_c_tclh}"
     TCLHDIRDASHI="-I${ac_cv_c_tclh}"
-    TCL_LIBRARY=`echo $TCLHDIR | sed -e 's/generic//'`library
+    TCL_LIBRARY=`echo ${TCLHDIR} | sed -e 's/generic//'`library
   fi
 fi
 
 
-
-
-
-if test x"$no_tcl" = x"true" ; then
+if test x"${no_tcl}" = x"true" ; then
     echo "	ERROR: Cannot find Tcl headers or library."
     echo "	See README for information on how to obtain Tcl."
     echo "	If Tcl is installed, see INSTALL on how to tell"
@@ -6418,7 +6397,7 @@ fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Itcl private headers, while using \"${srcdir}\" as srcdir" >&5
 $as_echo_n "checking for Itcl private headers, while using \"${srcdir}\" as srcdir... " >&6; }
-if test x"${ac_cv_c_itclh}" = x ; then
+if test x"${ac_cv_c_itclh}" = x""; then
   for i in ${srcdir}/../itcl ${srcdir}/../../itcl ${srcdir}/../../../itcl ; do
     if test -f ${i}/itcl/generic/itcl.h ; then
       ac_cv_c_itclh=`(cd ${i}/itcl/generic; pwd)`
@@ -6442,8 +6421,6 @@ fi
 
 
 
-
-
 # have to whether we are generating shared libs before configuring debugger
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking if generating shared or nonshared library" >&5
 $as_echo_n "checking if generating shared or nonshared library... " >&6; }
@@ -6454,7 +6431,7 @@ else
   enable_shared=no
 fi
 
-if test "$enable_shared" = "yes" && test "x${TCL_SHLIB_SUFFIX}" != "x" ; then
+if test "x${enable_shared}" = "xyes" && test "x${TCL_SHLIB_SUFFIX}" != "x"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: both shared and unshared" >&5
 $as_echo "both shared and unshared" >&6; }
 else
@@ -8118,7 +8095,7 @@ if test "x$ac_cv_lib_util_openpty" = xyes; then :
 
 $as_echo "#define HAVE_OPENPTY 1" >>confdefs.h
 
-        LIBS="$LIBS -lutil"
+        LIBS="${LIBS} -lutil"
 
 else
 
@@ -8329,48 +8306,6 @@ fi
   fi
 fi
 
-unset ac_cv_header_sys_wait_h
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for sys/wait.h that is POSIX.1 compatible" >&5
-$as_echo_n "checking for sys/wait.h that is POSIX.1 compatible... " >&6; }
-if ${ac_cv_header_sys_wait_h+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <sys/types.h>
-#include <sys/wait.h>
-#ifndef WEXITSTATUS
-# define WEXITSTATUS(stat_val) ((unsigned int) (stat_val) >> 8)
-#endif
-#ifndef WIFEXITED
-# define WIFEXITED(stat_val) (((stat_val) & 255) == 0)
-#endif
-
-int
-main ()
-{
-  int s;
-  wait (&s);
-  s = WIFEXITED (s) ? WEXITSTATUS (s) : 1;
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  ac_cv_header_sys_wait_h=yes
-else
-  ac_cv_header_sys_wait_h=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_header_sys_wait_h" >&5
-$as_echo "$ac_cv_header_sys_wait_h" >&6; }
-if test $ac_cv_header_sys_wait_h = yes; then
-
-$as_echo "#define HAVE_SYS_WAIT_H 1" >>confdefs.h
-
-fi
-
 for ac_header in sys/sysmacros.h
 do :
   ac_fn_c_check_header_mongrel "$LINENO" "sys/sysmacros.h" "ac_cv_header_sys_sysmacros_h" "$ac_includes_default"
@@ -8381,7 +8316,6 @@ _ACEOF
 
 
 $as_echo "#define HAVE_SYSMACROS_H 1" >>confdefs.h
-
 
 fi
 
@@ -8401,11 +8335,9 @@ else
 
 $as_echo "#define NO_STDLIB_H 1" >>confdefs.h
 
-
 fi
 
 done
-
 
 for ac_header in ctype.h errno.h fcntl.h malloc.h malloc/malloc.h math.h \
                   mem/memory.h poll.h setjmp.h sgtty.h signal.h stdarg.h \
@@ -8422,7 +8354,6 @@ _ACEOF
 fi
 
 done
-
 
 #
 # Look for inttypes.h. Sometimes there are data type conflicts
@@ -8490,7 +8421,6 @@ fi
 
 done
 
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for sys/bsdtypes.h" >&5
 $as_echo_n "checking for sys/bsdtypes.h... " >&6; }
 if test "ISC_${ISC}" = "ISC_1"; then
@@ -8535,7 +8465,6 @@ _ACEOF
 
 
 fi
-
 ac_fn_c_check_type "$LINENO" "mblk_t" "ac_cv_type_mblk_t" "$ac_includes_default"
 if test "x$ac_cv_type_mblk_t" = xyes; then :
 
@@ -8545,7 +8474,6 @@ _ACEOF
 
 
 fi
-
 ac_fn_c_check_member "$LINENO" "struct stat" "st_rdev" "ac_cv_member_struct_stat_st_rdev" "$ac_includes_default"
 if test "x$ac_cv_member_struct_stat_st_rdev" = xyes; then :
 
@@ -8555,7 +8483,6 @@ _ACEOF
 
 
 fi
-
 
 #
 # Look for functions that may be missing
@@ -8868,6 +8795,39 @@ $as_echo "#define HAVE_WORKING_FORK 1" >>confdefs.h
 
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether getpgrp requires zero arguments" >&5
+$as_echo_n "checking whether getpgrp requires zero arguments... " >&6; }
+if ${ac_cv_func_getpgrp_void+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  # Use it with a single arg.
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+getpgrp (0);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_func_getpgrp_void=no
+else
+  ac_cv_func_getpgrp_void=yes
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_getpgrp_void" >&5
+$as_echo "$ac_cv_func_getpgrp_void" >&6; }
+if test $ac_cv_func_getpgrp_void = yes; then
+
+$as_echo "#define GETPGRP_VOID 1" >>confdefs.h
+
+fi
+
 for ac_header in stdlib.h
 do :
   ac_fn_c_check_header_mongrel "$LINENO" "stdlib.h" "ac_cv_header_stdlib_h" "$ac_includes_default"
@@ -9002,11 +8962,308 @@ $as_echo "#define realloc rpl_realloc" >>confdefs.h
 fi
 
 
+for ac_header in sys/select.h sys/socket.h
+do :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+
+done
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking types of arguments for select" >&5
+$as_echo_n "checking types of arguments for select... " >&6; }
+if ${ac_cv_func_select_args+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  for ac_arg234 in 'fd_set *' 'int *' 'void *'; do
+ for ac_arg1 in 'int' 'size_t' 'unsigned long int' 'unsigned int'; do
+  for ac_arg5 in 'struct timeval *' 'const struct timeval *'; do
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+#ifdef HAVE_SYS_SELECT_H
+# include <sys/select.h>
+#endif
+#ifdef HAVE_SYS_SOCKET_H
+# include <sys/socket.h>
+#endif
+
+int
+main ()
+{
+extern int select ($ac_arg1,
+					    $ac_arg234, $ac_arg234, $ac_arg234,
+					    $ac_arg5);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_func_select_args="$ac_arg1,$ac_arg234,$ac_arg5"; break 3
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  done
+ done
+done
+# Provide a safe default value.
+: "${ac_cv_func_select_args=int,int *,struct timeval *}"
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_select_args" >&5
+$as_echo "$ac_cv_func_select_args" >&6; }
+ac_save_IFS=$IFS; IFS=','
+set dummy `echo "$ac_cv_func_select_args" | sed 's/\*/\*/g'`
+IFS=$ac_save_IFS
+shift
+
+cat >>confdefs.h <<_ACEOF
+#define SELECT_TYPE_ARG1 $1
+_ACEOF
+
+
+cat >>confdefs.h <<_ACEOF
+#define SELECT_TYPE_ARG234 ($2)
+_ACEOF
+
+
+cat >>confdefs.h <<_ACEOF
+#define SELECT_TYPE_ARG5 ($3)
+_ACEOF
+
+rm -f conftest*
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether setpgrp takes no argument" >&5
+$as_echo_n "checking whether setpgrp takes no argument... " >&6; }
+if ${ac_cv_func_setpgrp_void+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  as_fn_error $? "cannot check setpgrp when cross compiling" "$LINENO" 5
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+/* If this system has a BSD-style setpgrp which takes arguments,
+  setpgrp(1, 1) will fail with ESRCH and return -1, in that case
+  exit successfully. */
+  return setpgrp (1,1) != -1;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_setpgrp_void=no
+else
+  ac_cv_func_setpgrp_void=yes
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_setpgrp_void" >&5
+$as_echo "$ac_cv_func_setpgrp_void" >&6; }
+if test $ac_cv_func_setpgrp_void = yes; then
+
+$as_echo "#define SETPGRP_VOID 1" >>confdefs.h
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether lstat correctly handles trailing slash" >&5
+$as_echo_n "checking whether lstat correctly handles trailing slash... " >&6; }
+if ${ac_cv_func_lstat_dereferences_slashed_symlink+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  rm -f conftest.sym conftest.file
+echo >conftest.file
+if test "$as_ln_s" = "ln -s" && ln -s conftest.file conftest.sym; then
+  if test "$cross_compiling" = yes; then :
+  ac_cv_func_lstat_dereferences_slashed_symlink=no
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+struct stat sbuf;
+     /* Linux will dereference the symlink and fail, as required by POSIX.
+	That is better in the sense that it means we will not
+	have to compile and use the lstat wrapper.  */
+     return lstat ("conftest.sym/", &sbuf) == 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_lstat_dereferences_slashed_symlink=yes
+else
+  ac_cv_func_lstat_dereferences_slashed_symlink=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+else
+  # If the `ln -s' command failed, then we probably don't even
+  # have an lstat function.
+  ac_cv_func_lstat_dereferences_slashed_symlink=no
+fi
+rm -f conftest.sym conftest.file
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_lstat_dereferences_slashed_symlink" >&5
+$as_echo "$ac_cv_func_lstat_dereferences_slashed_symlink" >&6; }
+
+test $ac_cv_func_lstat_dereferences_slashed_symlink = yes &&
+
+cat >>confdefs.h <<_ACEOF
+#define LSTAT_FOLLOWS_SLASHED_SYMLINK 1
+_ACEOF
+
+
+if test "x$ac_cv_func_lstat_dereferences_slashed_symlink" = xno; then
+  case " $LIBOBJS " in
+  *" lstat.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS lstat.$ac_objext"
+ ;;
+esac
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether stat accepts an empty string" >&5
+$as_echo_n "checking whether stat accepts an empty string... " >&6; }
+if ${ac_cv_func_stat_empty_string_bug+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  ac_cv_func_stat_empty_string_bug=yes
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+struct stat sbuf;
+  return stat ("", &sbuf) == 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_stat_empty_string_bug=no
+else
+  ac_cv_func_stat_empty_string_bug=yes
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_stat_empty_string_bug" >&5
+$as_echo "$ac_cv_func_stat_empty_string_bug" >&6; }
+if test $ac_cv_func_stat_empty_string_bug = yes; then
+  case " $LIBOBJS " in
+  *" stat.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS stat.$ac_objext"
+ ;;
+esac
+
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_STAT_EMPTY_STRING_BUG 1
+_ACEOF
+
+fi
+
+for ac_func in strftime
+do :
+  ac_fn_c_check_func "$LINENO" "strftime" "ac_cv_func_strftime"
+if test "x$ac_cv_func_strftime" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_STRFTIME 1
+_ACEOF
+
+else
+  # strftime is in -lintl on SCO UNIX.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for strftime in -lintl" >&5
+$as_echo_n "checking for strftime in -lintl... " >&6; }
+if ${ac_cv_lib_intl_strftime+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lintl  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char strftime ();
+int
+main ()
+{
+return strftime ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_intl_strftime=yes
+else
+  ac_cv_lib_intl_strftime=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_intl_strftime" >&5
+$as_echo "$ac_cv_lib_intl_strftime" >&6; }
+if test "x$ac_cv_lib_intl_strftime" = xyes; then :
+  $as_echo "#define HAVE_STRFTIME 1" >>confdefs.h
+
+LIBS="-lintl $LIBS"
+fi
+
+fi
+done
+
+for ac_func in vprintf
+do :
+  ac_fn_c_check_func "$LINENO" "vprintf" "ac_cv_func_vprintf"
+if test "x$ac_cv_func_vprintf" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_VPRINTF 1
+_ACEOF
+
+ac_fn_c_check_func "$LINENO" "_doprnt" "ac_cv_func__doprnt"
+if test "x$ac_cv_func__doprnt" = xyes; then :
+
+$as_echo "#define HAVE_DOPRNT 1" >>confdefs.h
+
+fi
+
+fi
+done
+
+
 unset ac_cv_func_gethostname
 unset ac_cv_func_select
 for ac_func in dup2 exit gethostname gettimeofday ioctl isascii isspace \
                 log memmove memset pow re_comp regcomp regexec select \
-                strchr strcpy strcspn strftime strlen strrchr strstr \
+                strchr strcpy strcspn strlen strrchr strstr \
                 sysconf system time timezone
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
@@ -9018,7 +9275,6 @@ _ACEOF
 
 fi
 done
-
 
 # because Unixware 2.0 handles it specially and refuses to compile
 # autoconf's automatic test that is a call with no arguments
@@ -9052,7 +9308,6 @@ $as_echo "no" >&6; }
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
-
 # Some systems only define WNOHANG if _POSIX_SOURCE is defined
 # The following merely tests that sys/wait.h can be included
 # and if so that WNOHANG is not defined.  The only place I've
@@ -9071,7 +9326,7 @@ else
 /* end confdefs.h.  */
 
 #include <sys/wait.h>
-main() {
+int main(void) {
 #ifndef WNOHANG
 	return 0;
 #else
@@ -9095,7 +9350,6 @@ rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
 
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking if any value exists for WNOHANG" >&5
 $as_echo_n "checking if any value exists for WNOHANG... " >&6; }
 rm -rf wnohang
@@ -9115,7 +9369,7 @@ else
 
 #include <stdio.h>
 #include <sys/wait.h>
-main() {
+int main(void) {
 #ifdef WNOHANG
 	FILE *fp = fopen("wnohang","w");
 	fprintf(fp,"%d",WNOHANG);
@@ -9123,7 +9377,7 @@ main() {
 	return 0;
 #else
 	return 1;
-#endif
+#endif /* WNOHANG */
 }
 _ACEOF
 if ac_fn_c_try_run "$LINENO"; then :
@@ -9148,7 +9402,6 @@ rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
 
-
 #
 # check how signals work
 #
@@ -9158,7 +9411,7 @@ fi
 # proceeds to ignore it and use int.
 # Pattern matching on int could be loosened.
 # Cannot use ac_header_egrep since that does NOT see prototypes with
-# K&R cpp.
+# K&R cpp (although that is really old by now).
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking mask type of select" >&5
 $as_echo_n "checking mask type of select... " >&6; }
 if egrep "select\(size_t, int" /usr/include/sys/time.h >/dev/null 2>&1; then
@@ -9215,7 +9468,7 @@ int n;
 signal_rearms++;
 }
 
-main()
+int main(void)
 {
 	signal(SIGINT,parent_sigint_handler);
 
@@ -9248,7 +9501,6 @@ fi
 rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
-
 
 # HPUX7 has trouble with the big cat so split it
 # Owen Rees <rtor@ansa.co.uk> 29Mar93
@@ -9283,10 +9535,10 @@ EXP_LDFLAGS=
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking if on NeXT" >&5
 $as_echo_n "checking if on NeXT... " >&6; }
-if test -r /NextApps -a "${cross_compiling}" != "yes" ; then
+if test -r /NextApps -a "x${cross_compiling}" != "xyes"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
-  # "-m" flag suppresses complaints about multiple strtod
+  # "-m" flag suppresses complaints about multiple strtod:
   EXP_LDFLAGS="${EXP_LDFLAGS} -m"
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
@@ -9329,7 +9581,7 @@ $as_echo "${DEFAULT_STTY_ARG}" >&6; }
 $as_echo_n "checking for HP style pty allocation... " >&6; }
 # following test fails on DECstations and other things that do NOT grok -c
 # but that is ok, since they do NOT have PTYMs anyway
-if test -r /dev/ptym/ptyp0 2>/dev/null -a "$cross_compiling" != "yes" ; then
+if test -r /dev/ptym/ptyp0 2>/dev/null -a "x${cross_compiling}" != "xyes"; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 
@@ -9362,10 +9614,9 @@ $as_echo "no" >&6; }
 fi
 rm -f conftest*
 
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for AIX new-style pty allocation" >&5
 $as_echo_n "checking for AIX new-style pty allocation... " >&6; }
-if test -r /dev/ptc -a -r /dev/pts -a "${cross_compiling}" != "yes" ; then
+if test -r /dev/ptc -a -r /dev/pts -a "x${cross_compiling}" != "xyes"; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 
@@ -9378,7 +9629,7 @@ fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SGI old-style pty allocation" >&5
 $as_echo_n "checking for SGI old-style pty allocation... " >&6; }
-if test -r /dev/ptc -a ! -r /dev/pts -a "${cross_compiling}" != "yes" ; then
+if test -r /dev/ptc -a ! -r /dev/pts -a "x${cross_compiling}" != "xyes"; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 
@@ -9402,7 +9653,7 @@ case "${host}" in
   *-sco3.2v[45]*)	sco_clist_ptys=1 svr4_ptys_broken=1;;
 esac
 
-if test x"${sco_clist_ptys}" != x"" ; then
+if test x"${sco_clist_ptys}" != x""; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 
@@ -9415,7 +9666,7 @@ fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SVR4 style pty allocation" >&5
 $as_echo_n "checking for SVR4 style pty allocation... " >&6; }
-if test -r /dev/ptmx -a "x$svr4_ptys_broken" = x -a "$cross_compiling" != "yes" ; then
+if test -r /dev/ptmx -a "x${svr4_ptys_broken}" = "x" -a "x${cross_compiling}" != "xyes"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
 
@@ -9548,7 +9799,7 @@ else
 /* end confdefs.h.  */
 
 #include <sgtty.h>
-main()
+int main(void)
 {
   struct sgttyb tmp;
   exit(0);
@@ -9570,7 +9821,6 @@ fi
 rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
-
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking POSIX termios" >&5
 $as_echo_n "checking POSIX termios... " >&6; }
@@ -9625,7 +9875,7 @@ else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 #include <termio.h>
-  main()
+  int main(void)
   {
     struct termio tmp;
     exit(0);
@@ -9648,7 +9898,6 @@ rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
 
-
   # now check for the new style ttys (not yet posix)
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for struct termios" >&5
 $as_echo_n "checking for struct termios... " >&6; }
@@ -9670,10 +9919,12 @@ else
 # ifdef HAVE_INTTYPES_H
 #  include <inttypes.h>
 # else
-#  warning this conftest expects <inttypes.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "this conftest expects <inttypes.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_INTTYPES_H */
 #  include <termios.h>
-  main()
+  int main(void)
   {
     struct termios tmp;
     exit(0);
@@ -9714,14 +9965,16 @@ else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-/* including termios.h on Solaris 5.6 fails unless inttypes.h included */
+/* including termios.h on Solaris 5.6 fails unless inttypes.h included: */
 #ifdef HAVE_INTTYPES_H
 # include <inttypes.h>
 #else
-# warning this conftest expects <inttypes.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "this conftest expects <inttypes.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_INTTYPES_H */
 #include <termios.h>
-main() {
+int main(void) {
 #if defined(TCGETS) || defined(TCGETA)
 	return 0;
 #else
@@ -9744,7 +9997,6 @@ fi
 rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
-
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether termios.h defines TIOCGWINSZ" >&5
 $as_echo_n "checking whether termios.h defines TIOCGWINSZ... " >&6; }
@@ -9823,11 +10075,13 @@ else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-/* including termios.h on Solaris 5.6 fails unless inttypes.h included */
+/* including termios.h on Solaris 5.6 fails unless inttypes.h included: */
 #ifdef HAVE_INTTYPES_H
 # include <inttypes.h>
 #else
-# warning this conftest expects <inttypes.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "this conftest expects <inttypes.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_INTTYPES_H */
 #include <termios.h>
 main() {
@@ -9854,7 +10108,6 @@ rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
 
-
 # finally check for Cray style ttys
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Cray-style ptys" >&5
 $as_echo_n "checking for Cray-style ptys... " >&6; }
@@ -9870,7 +10123,7 @@ else
   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-main(){
+int main(void) {
 #ifdef CRAY
 	return 0;
 #else
@@ -9893,7 +10146,6 @@ fi
 rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
-
 
 #
 # Check for select and/or poll. If both exist, we prefer select.
@@ -9944,7 +10196,6 @@ _ACEOF
 
 fi
 done
-
 for ac_func in getpty
 do :
   ac_fn_c_check_func "$LINENO" "getpty" "ac_cv_func_getpty"
@@ -9955,7 +10206,6 @@ _ACEOF
 
 fi
 done
-
 
 #
 # check for timezones
@@ -9975,7 +10225,7 @@ else
 
 extern char *tzname[2];
 extern int daylight;
-main()
+int main(void)
 {
   int *x = &daylight;
   char **y = tzname;
@@ -9998,8 +10248,109 @@ rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
   conftest.$ac_objext conftest.beam conftest.$ac_ext
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether struct tm is in sys/time.h or time.h" >&5
+$as_echo_n "checking whether struct tm is in sys/time.h or time.h... " >&6; }
+if ${ac_cv_struct_tm+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+#include <time.h>
 
-# only look for Tk stuff if we have X11 and user does NOT say not to
+int
+main ()
+{
+struct tm tm;
+				     int *p = &tm.tm_sec;
+				     return !p;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_struct_tm=time.h
+else
+  ac_cv_struct_tm=sys/time.h
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_struct_tm" >&5
+$as_echo "$ac_cv_struct_tm" >&6; }
+if test $ac_cv_struct_tm = sys/time.h; then
+
+$as_echo "#define TM_IN_SYS_TIME 1" >>confdefs.h
+
+fi
+
+ac_fn_c_check_member "$LINENO" "struct tm" "tm_zone" "ac_cv_member_struct_tm_tm_zone" "#include <sys/types.h>
+#include <$ac_cv_struct_tm>
+
+"
+if test "x$ac_cv_member_struct_tm_tm_zone" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_STRUCT_TM_TM_ZONE 1
+_ACEOF
+
+
+fi
+
+if test "$ac_cv_member_struct_tm_tm_zone" = yes; then
+
+$as_echo "#define HAVE_TM_ZONE 1" >>confdefs.h
+
+else
+  ac_fn_c_check_decl "$LINENO" "tzname" "ac_cv_have_decl_tzname" "#include <time.h>
+"
+if test "x$ac_cv_have_decl_tzname" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_TZNAME $ac_have_decl
+_ACEOF
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for tzname" >&5
+$as_echo_n "checking for tzname... " >&6; }
+if ${ac_cv_var_tzname+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <time.h>
+#if !HAVE_DECL_TZNAME
+extern char *tzname[];
+#endif
+
+int
+main ()
+{
+return tzname[0][0];
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_var_tzname=yes
+else
+  ac_cv_var_tzname=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_var_tzname" >&5
+$as_echo "$ac_cv_var_tzname" >&6; }
+  if test $ac_cv_var_tzname = yes; then
+
+$as_echo "#define HAVE_TZNAME 1" >>confdefs.h
+
+  fi
+fi
+
+# only look for Tk stuff if we have X11 and user does NOT say not to do so:
 
 # Check whether --with-x was given.
 if test "${with_x+set}" = set; then :
@@ -10008,7 +10359,7 @@ else
   with_x=yes
 fi
 
-if test "${with_x}" = "no"; then
+if test "x${with_x}" = "xno"; then
    no_tk=true
 else
 
@@ -10135,7 +10486,6 @@ $as_echo "$as_me: WARNING: Cannot find Tk private headers" >&2;}
 fi
 
 
-
    rm -f -r conftest.dir
 if mkdir conftest.dir; then
   cd conftest.dir
@@ -10176,8 +10526,8 @@ _ACEOF
 fi
 
 fi
-if test x"${no_tk}" != x"true" ; then
-# libexpectk no longer exists
+if test x"${no_tk}" != x"true"; then
+# (libexpectk no longer exists)
   X_PROGS=expectk
 # should really generate following symbol, but I am hitting configure's
 # limit on substs...
@@ -10202,14 +10552,12 @@ else
   disable_dl=no
 fi
 
-
 # Check whether --enable-gcc was given.
 if test "${enable_gcc+set}" = set; then :
   enableval=$enable_gcc; enable_gcc=${enableval}
 else
   enable_gcc=no
 fi
-
 
 
 # Following comment stolen from Tcl's configure.ac:
@@ -10270,7 +10618,7 @@ $as_echo "#define HAVE_LONG_FILE_NAMES 1" >>confdefs.h
 
 fi
 
-if test ${ac_cv_sys_long_file_names} = no; then
+if test "x${ac_cv_sys_long_file_names}" = "xno"; then
     EXP_LIB_VERSION=${EXP_VERSION_NODOTS}
 fi
 
@@ -10281,7 +10629,7 @@ EXP_BUILD_LIB_SPEC=${EXP_UNSHARED_LIB_FILE}
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for type of library to build" >&5
 $as_echo_n "checking for type of library to build... " >&6; }
-if test "${enable_shared}" = "yes" && test "x${TCL_SHLIB_SUFFIX}" != "x" ; then
+if test "${enable_shared}" = "yes" && test "x${TCL_SHLIB_SUFFIX}" != "x"; then
   EXP_SHLIB_CFLAGS=${TCL_SHLIB_CFLAGS}
   eval "EXP_SHARED_LIB_FILE=libexpect${TCL_SHARED_LIB_SUFFIX}"
   EXP_LIB_FILE=${EXP_SHARED_LIB_FILE}
@@ -10289,7 +10637,7 @@ if test "${enable_shared}" = "yes" && test "x${TCL_SHLIB_SUFFIX}" != "x" ; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: both shared and unshared" >&5
 $as_echo "both shared and unshared" >&6; }
 else
-  EXP_SHLIB_CFLAGS=
+  EXP_SHLIB_CFLAGS=""
   EXP_SHARED_LIB_FILE="reconfigure_Tcl_for_shared_library"
   EXP_LIB_FILE=${EXP_UNSHARED_LIB_FILE}
   EXP_LIB_FILES="${EXP_UNSHARED_LIB_FILE}"
@@ -10307,15 +10655,15 @@ EXP_AND_TK_LIBS="${EXP_AND_TK_LIBS} ${TCL_LD_SEARCH_FLAGS}"
 # to hitting config's max symbols, pack everything together here and
 # do test ourselves. Ugh.
 #
-if test "x${TCL_SHLIB_LD_LIBS}" = "x" ; then
-	EXP_SHLIB_LD_LIBS=""
+if test "x${TCL_SHLIB_LD_LIBS}" = "x"; then
+  EXP_SHLIB_LD_LIBS=""
 else
-	# seems a little strange to build in Tcl's build-lib, but
-	# that is what Tk does.
-	EXP_SHLIB_LD_LIBS="${TCL_BUILD_LIB_SPEC} ${TCL_DL_LIBS} ${LIBS} -lc"
+  # It seems a little strange to build in Tcl's build-lib, but
+  # that is what Tk does:
+  EXP_SHLIB_LD_LIBS="${TCL_BUILD_LIB_SPEC} ${TCL_DL_LIBS} ${LIBS} -lc"
 fi
 
-# Check for Cygwin
+# Check for Cygwin:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for Cygwin32 environment" >&5
 $as_echo_n "checking for Cygwin32 environment... " >&6; }
 if ${ac_cv_cygwin32+:} false; then :
@@ -10335,19 +10683,12 @@ rm -f conftest*
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_cygwin32" >&5
 $as_echo "$ac_cv_cygwin32" >&6; }
-CYGWIN=
+CYGWIN=""
 test "${ac_cv_cygwin32}" = yes && CYGWIN=yes
 # done with Cygwin test
 
 
-
-
-
-
-
-
-
-# Do actual checking now
+# Do the actual checking now:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for executable suffix" >&5
 $as_echo_n "checking for executable suffix... " >&6; }
 if ${ac_cv_exeext+:} false; then :
@@ -10383,7 +10724,6 @@ EXEEXT=""
 test x"${ac_cv_exeext}" != xno && EXEEXT=${ac_cv_exeext}
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${ac_cv_exeext}" >&5
 $as_echo "${ac_cv_exeext}" >&6; }
-
 # Done with exeext check
 
 
@@ -10479,7 +10819,6 @@ cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_I_PUSH $ac_have_decl
 _ACEOF
 
-
 #--------------------------------------------------------------------
 # This section is based on analogous thing in Tk installation. - DEL
 #       Various manipulations on the search path used at runtime to
@@ -10516,35 +10855,6 @@ if test "${GCC}" = yes; then
 else
   EXP_LD_SEARCH_FLAGS=`echo ${EXP_CC_SEARCH_FLAGS} |sed -e "s|-Wl,||g" -e "s|,| |g"`
 fi
-
-#
-# Set up makefile substitutions
-#
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ac_config_files="$ac_config_files Makefile pkgIndex"
 

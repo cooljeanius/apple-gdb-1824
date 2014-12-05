@@ -137,7 +137,7 @@ macosx_inferior_destroy (macosx_inferior_status *s)
 
   /* We may have destroyed the signal thread before we reaped the
      child.  Make sure we do that here or we'll pile up children till
-     we exit.  
+     we exit.
 
      Note, we sometimes get called before we've set up a child in
      which case s->pid will be zero.  Don't wait on that...  */
@@ -146,7 +146,7 @@ macosx_inferior_destroy (macosx_inferior_status *s)
     {
       int retval;
       int stat;
-      
+
       retval = waitpid (s->pid, &stat, 0);
 
       if (retval == -1)
@@ -216,6 +216,7 @@ macosx_inferior_suspend_mach (macosx_inferior_status *s)
   kern_return_t kret;
 
   CHECK (s != NULL);
+  /* FIXME: this next assertion has failed on me when debugging CodeBlocks.app */
   CHECK (macosx_task_valid (s->task));
 
   if (s->suspend_count == 0)

@@ -51,8 +51,8 @@ cfg_vals()
   esac
 
   set -a
-  SED="/sw/bin/sed"
-  AG_TIMEOUT=35
+  SED="/opt/local/bin/gsed"
+  AG_TIMEOUT=39
 
   progname=`echo "$1" | ${SED} 's,^.*/,,'`
   testname=`echo "$progname" | ${SED} 's,\..*$,,'`
@@ -66,23 +66,23 @@ cfg_vals()
   test -z "$top_builddir" && exit 1
   top_builddir=`cd $top_builddir >/dev/null && pwd`
   GUILE_VERSION="108008"
-  LIBGUILE_PATH="/sw/lib"
+  LIBGUILE_PATH="/opt/local/lib"
   AG_VERSION="5.15"
-  GREP="/sw/bin/grep"
-  EGREP="/sw/bin/grep -E"
-  FGREP="/sw/bin/grep -F"
-  SHELL="/sw/bin/bash"
-  AGexe="/Users/localadmin/apple-gdb-1824/src/autogen/agen5/autogen"
-  CLexe="/Users/localadmin/apple-gdb-1824/src/autogen/columns/columns"
-  GDexe="/Users/localadmin/apple-gdb-1824/src/autogen/getdefs/getdefs"
-  INC="-I/sw/include -I/sw/include -D_THREAD_SAFE "
-  LIB='-R -L/sw/lib -I/sw/include -D_THREAD_SAFE  -L/sw/lib -lguile -lltdl -L/sw/lib -lgmp -lm -lltdl'
+  GREP="/opt/local/bin/grep"
+  EGREP="/opt/local/bin/grep -E"
+  FGREP="/opt/local/bin/grep -F"
+  SHELL="/opt/local/bin/bash"
+  AGexe="/Users/ericgallager/apple-gdb-1824/src/autogen/agen5/autogen"
+  CLexe="/Users/ericgallager/apple-gdb-1824/src/autogen/columns/columns"
+  GDexe="/Users/ericgallager/apple-gdb-1824/src/autogen/getdefs/getdefs"
+  INC="-I/opt/local/include -I/opt/local/include -D_THREAD_SAFE "
+  LIB='  -I/opt/local/include -D_THREAD_SAFE  -L/opt/local/lib -lguile -lltdl -L/opt/local/lib -lgmp -lm -lltdl'
   DEBUG_ENABLED=''
   ( exec 2>/dev/null; ulimit -c unlimited ) && \
     ulimit -c unlimited
 
-  test -z "${CFLAGS}"     && CFLAGS='-DHAVE_CONFIG_H -arch i386 -m32'
-  test -z "${CPPFLAGS}"   && CPPFLAGS='-I/sw/include'
+  test -z "${CFLAGS}"     && CFLAGS='-DHAVE_CONFIG_H -g -O2'
+  test -z "${CPPFLAGS}"   && CPPFLAGS=''
   test -z "${testsubdir}" && testsubdir='@testsubdir@'
   test -z "${CC}"         && CC='gcc -std=gnu99'
   test -z "${CC}"         && echo "No CC configured" && exit 1

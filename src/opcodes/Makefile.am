@@ -1,3 +1,4 @@
+## automake Makefile for libopcodes source
 ## Process this file with automake to generate Makefile.in
 
 # APPLE MERGE ??
@@ -6,27 +7,34 @@ AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 
 ACLOCAL_AMFLAGS = -I m4 --install
 
+# APPLE LOCAL: dynamiclib building method:
+NSLIBTOOL = cc -dynamiclib
+
 SUBDIRS = po
 
 INCDIR = $(srcdir)/../include
 BFDDIR = $(srcdir)/../bfd
 MKDEP = gcc -MM
 
-# APPLE LOCAL WARN_CFLAGS not handled by automake?
+PATH_TO_MOVEIFCHANGE = $(srcdir)/../move-if-change
+RUN_MOVEIFCHANGE = $(SHELL) $(PATH_TO_MOVEIFCHANGE)
+
+# APPLE LOCAL: WARN_CFLAGS not handled by automake?
 WARN_CFLAGS = -Wall
 NO_WERROR = @NO_WERROR@
 AM_CFLAGS = $(WARN_CFLAGS)
 AM_WARNFLAGS = $(WARN_CFLAGS)
+AM_LIBTOOLFLAGS = --no-silent --verbose @MAINT@ --debug
 
 bfdlibdir = @bfdlibdir@
 bfdincludedir = @bfdincludedir@
 
 bfdlib_LTLIBRARIES = libopcodes.la
 
-# This is where bfd.h lives.
+# This is where bfd.h lives:
 BFD_H = ../bfd/bfd.h
 
-# This is where libiberty lives.
+# This is where libiberty lives:
 LIBIBERTY = ../libiberty/libiberty.a
 
 AM_LDFLAGS = -L../libiberty -L../bfd -L../intl -L../mmalloc
@@ -343,21 +351,31 @@ libopcodes_la_LDFLAGS = -release $(VERSION) @WIN32LDFLAGS@
 
 noinst_LIBRARIES = libopcodes.a
 
-stamp-lib: libopcodes.la config.status
-	libtooldir=`$(LIBTOOL) --config | sed -n -e 's/^objdir=//p'`; \
-	if [ -f $$libtooldir/libopcodes.a ]; then \
-	  cp $$libtooldir/libopcodes.a libopcodes.tmp; \
+stamp-lib: libopcodes.la @MAINT@ config.status $(PATH_TO_MOVEIFCHANGE)
+	libtooldir=`$(LIBTOOL) --config | $(SED) -n -e 's/^objdir=//p'`; \
+	if test -z "$${libtooldir}"; then \
+	  echo "" && echo "error: libtooldir is unset" >&2 && exit 1; \
+	else \
+	  echo "libtooldir is $${libtooldir}"; \
+	fi; \
+	if [ -f $${libtooldir}/libopcodes.a ]; then \
+	  cp -v $${libtooldir}/libopcodes.a libopcodes.tmp; \
 	  $(RANLIB) libopcodes.tmp; \
-	  $(SHELL) $(srcdir)/../move-if-change libopcodes.tmp libopcodes.a; \
-	else true; fi
+	  $(RUN_MOVEIFCHANGE) libopcodes.tmp libopcodes.a; \
+	else echo "no need to check in $${libtooldir} for libopcodes.a"; fi
 	touch stamp-lib
 
 libopcodes.a: stamp-lib
 
-nonlibtool_libopcodes.a: stamp-lib ; @true
+nonlibtool_libopcodes.a: stamp-lib
+	@echo "target for $@ only calls its dependency, $<"
 .PHONY: nonlibtool_libopcodes.a
 
-# APPLE LOCAL begin framework building
+$(BFD_H): ../bfd/Makefile
+	(cd ../bfd && $(MAKE) bfd.h)
+	test -e $(BFD_H)
+
+# APPLE LOCAL: begin framework building:
 SYSTEM_FRAMEWORK = -framework System @SYSTEM_FRAMEWORK_LIBS@
 
 FRAMEWORK = opcodes
@@ -366,45 +384,48 @@ FRAMEWORK_PREFIX =
 FRAMEWORK_SUFFIX =
 FRAMEWORK_VERSION_SUFFIX =
 FRAMEWORK_VERSION = A
-FRAMEWORK_OFILES = `echo $(libopcodes_la_OBJECTS) $(libopcodes_la_LIBADD) | sed -e 's/\.lo/\.o/g'`
+FRAMEWORK_OFILES = `echo $(libopcodes_la_OBJECTS) $(libopcodes_la_LIBADD) | $(SED) -e 's/\.lo/\.o/g'`
 FRAMEWORK_LIB = -F../bfd -L../bfd -framework bfd -F../libiberty -L../libiberty -framework liberty -F../mmalloc -L../mmalloc -framework mmalloc -L../intl -lintl $(SYSTEM_FRAMEWORK) $(LDFLAGS)
 
 stamp-framework-headers:
 	$(RM) -f stamp-framework stamp-framework-headers
-	$(RM) -rf $(FRAMEWORK).framework
-	mkdir -p $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Headers
-	mkdir -p $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/PrivateHeaders
-	ln -s Versions/Current/Headers $(FRAMEWORK).framework/Headers
-	ln -s Versions/Current/PrivateHeaders $(FRAMEWORK).framework/PrivateHeaders
-	ln -s A $(FRAMEWORK).framework/Versions/Current
-	cp -p $(srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/
-	cp -p *.h $(FRAMEWORK).framework/Versions/Current/Headers/
+	$(RM) -rfv $(FRAMEWORK).framework
+	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Headers
+	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/PrivateHeaders
+	$(LN_S) -v Versions/Current/Headers $(FRAMEWORK).framework/Headers
+	$(LN_S) -v Versions/Current/PrivateHeaders $(FRAMEWORK).framework/PrivateHeaders
+	$(LN_S) -v A $(FRAMEWORK).framework/Versions/Current
+	cp -pv $(srcdir)/*.h $(FRAMEWORK).framework/Versions/Current/Headers/
+	cp -pv *.h $(FRAMEWORK).framework/Versions/Current/Headers/
 	touch stamp-framework-headers
 
 stamp-framework: $(libopcodes_la_OBJECTS) $(libopcodes_la_DEPENDENCIES)
 	$(MAKE) $(FRAMEWORK_OFILES)
 	$(RM) -f stamp-framework-headers
 	$(MAKE) stamp-framework-headers
-	mkdir -p $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
-	ln -s Versions/Current/Resources $(FRAMEWORK).framework/Resources
-	mkdir -p $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
+	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
+	$(LN_S) -v Versions/Current/Resources $(FRAMEWORK).framework/Resources
+	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/Current/Resources/English.lproj
 
-	set -e; if [ "$(FRAMEWORK_SUFFIX)" != "" ]; then \
-		$(CC) -dynamiclib -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
-		ln -s $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
-		ln -s Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX); \
-		ln -s Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
-		ln -s $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK); \
+	set -ex; \
+	if [ "x$(FRAMEWORK_SUFFIX)" != "x" ]; then \
+	    test -n "$(FRAMEWORK_SUFFIX)" && echo "$(FRAMEWORK_SUFFIX)"; \
+	   $(NSLIBTOOL) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
+	    $(LN_S) -v $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
+	    $(LN_S) -v Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_VERSION_SUFFIX); \
+	    $(LN_S) -v Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX); \
+	    $(LN_S) -v $(FRAMEWORK_PREFIX)$(FRAMEWORK)$(FRAMEWORK_SUFFIX) $(FRAMEWORK).framework/$(FRAMEWORK); \
 	else \
-		$(CC) -dynamiclib -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
-		ln -s Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK); \
+	    echo "making un-suffixed framework"; \
+	    $(NSLIBTOOL) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/$(FRAMEWORK_PREFIX)$(FRAMEWORK) -o $(FRAMEWORK).framework/Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK_OFILES) $(FRAMEWORK_LIB); \
+	    $(LN_S) -v Versions/Current/$(FRAMEWORK_PREFIX)$(FRAMEWORK) $(FRAMEWORK).framework/$(FRAMEWORK_PREFIX)$(FRAMEWORK); \
 	fi
 	touch stamp-framework
-# APPLE LOCAL end framework building
+# APPLE LOCAL: end framework building
 
 POTFILES = $(HFILES) $(CFILES)
 po/POTFILES.in: @MAINT@ Makefile
-	for f in $(POTFILES); do echo $$f; done | LC_COLLATE= sort > tmp \
+	for f in $(POTFILES); do echo $${f}; done | LC_COLLATE="" sort > tmp \
 	  && mv tmp $(srcdir)/po/POTFILES.in
 
 install-bfdlibLTLIBRARIES: @INSTALL_LIBBFD_TRUE@install_libopcodes
@@ -417,17 +438,17 @@ uninstall-bfdlibLTLIBRARIES: @INSTALL_LIBBFD_TRUE@uninstall_libopcodes
 install_libopcodes: $(bfdlib_LTLIBRARIES)
 	$(mkinstalldirs) $(DESTDIR)$(bfdlibdir)
 	$(mkinstalldirs) $(DESTDIR)$(bfdincludedir)
-	@list='$(bfdlib_LTLIBRARIES)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    echo "$(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(bfdlibdir)/$$p"; \
-	    $(LIBTOOL)  --mode=install $(INSTALL) $$p $(DESTDIR)$(bfdlibdir)/$$p; \
-	  else :; fi; \
+	@list='$(bfdlib_LTLIBRARIES)'; for p in $${list}; do \
+	  if test -f $${p}; then \
+	    echo "$(LIBTOOL) --mode=install $(INSTALL) $${p} $(DESTDIR)$(bfdlibdir)/$${p}"; \
+	    $(LIBTOOL) --mode=install $(INSTALL) $${p} $(DESTDIR)$(bfdlibdir)/$${p}; \
+	  else echo "$${p} does not exist to install"; fi; \
 	done
 	$(INSTALL_DATA) $(INCDIR)/dis-asm.h $(DESTDIR)$(bfdincludedir)/dis-asm.h
 
 uninstall_libopcodes:
-	list='$(bfdlib_LTLIBRARIES)'; for p in $$list; do \
-	  $(LIBTOOL)  --mode=uninstall rm -f $(DESTDIR)$(bfdlibdir)/$$p; \
+	list='$(bfdlib_LTLIBRARIES)'; for p in $${list}; do \
+	  $(LIBTOOL) --mode=uninstall rm -f $(DESTDIR)$(bfdlibdir)/$${p}; \
 	done
 	rm -f $(DESTDIR)$(bfdincludedir)/dis-asm.h
 
@@ -436,11 +457,11 @@ CLEANFILES = \
 	stamp-openrisc stamp-iq2000 stamp-ms1 stamp-xstormy16 \
 	libopcodes.a stamp-lib dep.sed DEP DEPA DEP1 DEP2
 
-DISTCLEANFILES = stamp-lib
+DISTCLEANFILES = stamp-lib .DS_Store *~
 
 CGENDIR = @cgendir@
 CPUDIR = $(CGENDIR)/cpu
-CGEN = "`if test -f ../guile/libguile/guile ; then echo ../guile/libguile/guile; else echo guile ; fi` -l ${cgendir}/guile.scm -s"
+CGEN = "`if test -f ../guile/libguile/guile; then echo ../guile/libguile/guile; else echo guile; fi` -l ${cgendir}/guile.scm -s"
 CGENFLAGS = -v
 
 CGENDEPS = \
@@ -483,25 +504,25 @@ run-cgen: config.status
 
 # Maintainer utility rule to regenerate all cgen files.
 run-cgen-all: config.status
-	for c in $(CGEN_CPUS) ; \
+	for c in $(CGEN_CPUS); \
 	do \
-		$(MAKE) stamp-$$c || exit 1 ; \
+		$(MAKE) stamp-$${c} || exit 1; \
 	done
 .PHONY: run-cgen-all
 
 # For now, require developers to configure with --enable-cgen-maint.
 $(srcdir)/ip2k-desc.h $(srcdir)/ip2k-desc.c $(srcdir)/ip2k-opc.h $(srcdir)/ip2k-opc.c $(srcdir)/ip2k-ibld.c $(srcdir)/ip2k-asm.c $(srcdir)/ip2k-dis.c: $(IP2K_DEPS)
-	@true
+	@echo "ensuring $@ is up-to-date"
 stamp-ip2k: $(CGENDEPS) $(CPUDIR)/ip2k.cpu $(CPUDIR)/ip2k.opc
-	$(MAKE) run-cgen arch=ip2k prefix=ip2k options= \
-		archfile=$(CPUDIR)/ip2k.cpu opcfile=$(CPUDIR)/ip2k.opc extrafiles=
+	$(MAKE) run-cgen arch=ip2k prefix=ip2k options="" \
+		archfile=$(CPUDIR)/ip2k.cpu opcfile=$(CPUDIR)/ip2k.opc extrafiles=""
 
 $(srcdir)/m32c-desc.h $(srcdir)/m32c-desc.c $(srcdir)/m32c-opc.h $(srcdir)/m32c-opc.c $(srcdir)/m32c-ibld.c $(srcdir)/m32c-asm.c $(srcdir)/m32c-dis.c: $(M32C_DEPS)
-#	@true
+	@echo "ensuring $@ is up-to-date" || true
 stamp-m32c: $(CGENDEPS) $(srcdir)/../cpu/m32c.cpu $(srcdir)/../cpu/m32c.opc
-	$(MAKE) run-cgen arch=m32c prefix=m32c options= \
+	$(MAKE) run-cgen arch=m32c prefix=m32c options="" \
 		archfile=$(srcdir)/../cpu/m32c.cpu \
-		opcfile=$(srcdir)/../cpu/m32c.opc extrafiles=
+		opcfile=$(srcdir)/../cpu/m32c.opc extrafiles=""
 m32c_opc_h = m32c-opc.h cgen-types.h cgen-ops.h
 m32c-asm.lo: m32c-asm.c sysdep.h config.h $(BFD_H) \
   $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h m32c-desc.h \
@@ -522,51 +543,51 @@ m32c-opc.lo: m32c-opc.c sysdep.h config.h $(BFD_H) \
   $(INCDIR)/opcode/cgen.h $(m32c_opc_h)
 
 $(srcdir)/m32r-desc.h $(srcdir)/m32r-desc.c $(srcdir)/m32r-opc.h $(srcdir)/m32r-opc.c $(srcdir)/m32r-ibld.c $(srcdir)/m32r-opinst.c $(srcdir)/m32r-asm.c $(srcdir)/m32r-dis.c: $(M32R_DEPS)
-	@true
+	@echo "ensuring $@ is up-to-date"
 stamp-m32r: $(CGENDEPS) $(srcdir)/../cpu/m32r.cpu $(srcdir)/../cpu/m32r.opc
 	$(MAKE) run-cgen arch=m32r prefix=m32r options=opinst \
 		archfile=$(srcdir)/../cpu/m32r.cpu \
 		opcfile=$(srcdir)/../cpu/m32r.opc extrafiles=opinst
 
 $(srcdir)/fr30-desc.h $(srcdir)/fr30-desc.c $(srcdir)/fr30-opc.h $(srcdir)/fr30-opc.c $(srcdir)/fr30-ibld.c $(srcdir)/fr30-asm.c $(srcdir)/fr30-dis.c: $(FR30_DEPS)
-	@true
+	@echo "ensuring $@ is up-to-date"
 stamp-fr30: $(CGENDEPS) $(CPUDIR)/fr30.cpu $(CPUDIR)/fr30.opc
-	$(MAKE) run-cgen arch=fr30 prefix=fr30 options= \
-		archfile=$(CPUDIR)/fr30.cpu opcfile=$(CPUDIR)/fr30.opc extrafiles=
+	$(MAKE) run-cgen arch=fr30 prefix=fr30 options="" \
+		archfile=$(CPUDIR)/fr30.cpu opcfile=$(CPUDIR)/fr30.opc extrafiles=""
 
 $(srcdir)/frv-desc.h $(srcdir)/frv-desc.c $(srcdir)/frv-opc.h $(srcdir)/frv-opc.c $(srcdir)/frv-ibld.c $(srcdir)/frv-asm.c $(srcdir)/frv-dis.c: $(FRV_DEPS)
-	@true
+	@echo "ensuring $@ is up-to-date"
 stamp-frv: $(CGENDEPS) $(srcdir)/../cpu/frv.cpu $(srcdir)/../cpu/frv.opc
-	$(MAKE) run-cgen arch=frv prefix=frv options= \
-		archfile=$(srcdir)/../cpu/frv.cpu opcfile=$(srcdir)/../cpu/frv.opc extrafiles=
+	$(MAKE) run-cgen arch=frv prefix=frv options="" \
+		archfile=$(srcdir)/../cpu/frv.cpu opcfile=$(srcdir)/../cpu/frv.opc extrafiles=""
 
 $(srcdir)/ms1-desc.h $(srcdir)/ms1-desc.c $(srcdir)/ms1-opc.h $(srcdir)/ms1-opc.c $(srcdir)/ms1-ibld.c $(srcdir)/ms1-asm.c $(srcdir)/ms1-dis.c: $(MS1_DEPS)
-	@true
+	@echo "ensuring $@ is up-to-date"
 stamp-ms1: $(CGENDEPS) $(srcdir)/../cpu/ms1.cpu $(srcdir)/../cpu/ms1.opc
-	$(MAKE) run-cgen arch=ms1 prefix=ms1 options= \
+	$(MAKE) run-cgen arch=ms1 prefix=ms1 options="" \
 		archfile=$(srcdir)/../cpu/ms1.cpu \
-		opcfile=$(srcdir)/../cpu/ms1.opc extrafiles=
+		opcfile=$(srcdir)/../cpu/ms1.opc extrafiles=""
 
 $(srcdir)/openrisc-desc.h $(srcdir)/openrisc-desc.c $(srcdir)/openrisc-opc.h $(srcdir)/openrisc-opc.c $(srcdir)/openrisc-ibld.c $(srcdir)/openrisc-asm.c $(srcdir)/openrisc-dis.c: $(OPENRISC_DEPS)
-	@true
+	@echo "ensuring $@ is up-to-date"
 stamp-openrisc: $(CGENDEPS) $(CPUDIR)/openrisc.cpu $(CPUDIR)/openrisc.opc
-	$(MAKE) run-cgen arch=openrisc prefix=openrisc options= \
-		archfile=$(CPUDIR)/openrisc.cpu opcfile=$(CPUDIR)/openrisc.opc extrafiles=
+	$(MAKE) run-cgen arch=openrisc prefix=openrisc options="" \
+		archfile=$(CPUDIR)/openrisc.cpu opcfile=$(CPUDIR)/openrisc.opc extrafiles=""
 
 $(srcdir)/iq2000-desc.h $(srcdir)/iq2000-desc.c $(srcdir)/iq2000-opc.h $(srcdir)/iq2000-opc.c $(srcdir)/iq2000-ibld.c $(srcdir)/iq2000-asm.c $(srcdir)/iq2000-dis.c: $(IQ2000_DEPS)
-	@true
+	@echo "ensuring $@ is up-to-date"
 stamp-iq2000: $(CGENDEPS) $(srcdir)/../cpu/iq2000.cpu \
 		$(srcdir)/../cpu/iq2000.opc $(srcdir)/../cpu/iq2000m.cpu \
 		$(srcdir)/../cpu/iq10.cpu
-	$(MAKE) run-cgen arch=iq2000 prefix=iq2000 options= \
+	$(MAKE) run-cgen arch=iq2000 prefix=iq2000 options="" \
 		archfile=$(srcdir)/../cpu/iq2000.cpu \
-		opcfile=$(srcdir)/../cpu/iq2000.opc extrafiles=
+		opcfile=$(srcdir)/../cpu/iq2000.opc extrafiles=""
 
 $(srcdir)/xstormy16-desc.h $(srcdir)/xstormy16-desc.c $(srcdir)/xstormy16-opc.h $(srcdir)/xstormy16-opc.c $(srcdir)/xstormy16-ibld.c $(srcdir)/xstormy16-asm.c $(srcdir)/xstormy16-dis.c: $(XSTORMY16_DEPS)
-	@true
+	@echo "ensuring $@ is up-to-date"
 stamp-xstormy16: $(CGENDEPS) $(CPUDIR)/xstormy16.cpu $(CPUDIR)/xstormy16.opc
-	$(MAKE) run-cgen arch=xstormy16 prefix=xstormy16 options= \
-		archfile=$(CPUDIR)/xstormy16.cpu opcfile=$(CPUDIR)/xstormy16.opc extrafiles=
+	$(MAKE) run-cgen arch=xstormy16 prefix=xstormy16 options="" \
+		archfile=$(CPUDIR)/xstormy16.cpu opcfile=$(CPUDIR)/xstormy16.opc extrafiles=""
 
 i386-gen: i386-gen.o
 	$(LINK) i386-gen.o $(LIBIBERTY)
@@ -599,49 +620,65 @@ sh-dis.lo: sh-dis.c
 
 # This dependency stuff is copied from BFD.
 
+# Have to get rid of any pre-existing DEP1 here, so that "$?" later
+# includes all of $(CFILES).
 DEP: dep.sed $(CFILES) $(HFILES) config.h
 	rm -f DEP1
 	$(MAKE) MKDEP="$(MKDEP)" DEP1
-	sed -f dep.sed < DEP1 > DEPA
+	$(SED) -f dep.sed < DEP1 > DEPA
 	echo '# IF YOU PUT ANYTHING HERE IT WILL GO AWAY' >> DEPA
-	if grep ' /' DEPA > /dev/null 2> /dev/null; then \
+	if $(GREP) ' /' DEPA > /dev/null 2> /dev/null; then \
 	  echo 'make DEP failed!'; exit 1; \
 	else \
-	  mv -f DEPA $@; \
+	  mv -fv DEPA $@; \
 	fi
 
+# Not sure if AM_CPPFLAGS works perfectly as a 1-for-1 replacement
+# for INCLUDES here in this next one:
 DEP1: $(CFILES)
 	echo '# DO NOT DELETE THIS LINE -- mkdep uses it.' > DEP2
 	echo '# DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.' >> DEP2
-	$(MKDEP) $(AM_CPPFLAGS) $(CFLAGS) $? >> DEP2 # Not sure if AM_CPPFLAGS works perfectly as a 1-for-1 replacement for INCLUDES here...
-	mv -f DEP2 $@
+	$(MKDEP) $(AM_CPPFLAGS) $(CFLAGS) $? | tee -a DEP2
+	mv -fv DEP2 $@
+	touch $@
 
-dep.sed: dep-in.sed config.status
-	sed <$(srcdir)/dep-in.sed >dep.sed	\
-		-e 's!@BFD_H@!$(BFD_H)!'	\
-		-e 's!@INCDIR@!$(INCDIR)!'	\
-		-e 's!@BFDDIR@!$(BFDDIR)!'	\
-		-e 's!@SRCDIR@!$(srcdir)!'	\
-		-e 's!@TOPDIR@!'`echo $(srcdir) | sed -e s,/opcodes$$,,`'!'
+#FIXME: the bfd version of this sed script is broken and hack-ish; assuming
+# that this one is as well:
+dep.sed: dep-in.sed @MAINT@ config.status
+	$(SED) <$(srcdir)/dep-in.sed >dep.sed	\
+	  -e 's!@BFD_H@!$(BFD_H)!'	\
+	  -e 's!@INCDIR@!$(INCDIR)!'	\
+	  -e 's!@BFDDIR@!$(BFDDIR)!'	\
+	  -e 's!@SRCDIR@!$(srcdir)!'	\
+	  -e 's!@TOPDIR@!'`echo $(srcdir) | $(SED) -e s,/opcodes$$,,`'!'
 
-dep: DEP
-	sed -e '/^..DO NOT DELETE THIS LINE/,$$d' < Makefile > tmp-Makefile
+#FIXME: this target relies on dep.sed, which is probably broken (see above)
+dep: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+	$(SED) -e '/^..DO NOT DELETE THIS LINE/,$$d' < Makefile > tmp-Makefile
 	cat DEP >> tmp-Makefile
-	$(srcdir)/../move-if-change tmp-Makefile Makefile
+	$(RUN_MOVEIFCHANGE) tmp-Makefile Makefile
+	touch Makefile
 
-dep-in: DEP
-	sed -e '/^..DO NOT DELETE THIS LINE/,$$d' < $(srcdir)/Makefile.in > tmp-Makefile.in
+#FIXME: this target relies on dep.sed, which is probably broken (see above)
+dep-in: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+	$(SED) -e '/^..DO NOT DELETE THIS LINE/,$$d' < $(srcdir)/Makefile.in > tmp-Makefile.in
 	cat DEP >> tmp-Makefile.in
-	$(srcdir)/../move-if-change tmp-Makefile.in $(srcdir)/Makefile.in
+	$(RUN_MOVEIFCHANGE) tmp-Makefile.in $(srcdir)/Makefile.in
+	touch $(srcdir)/Makefile.in
 
-dep-am: DEP
-	sed -e '/^..DO NOT DELETE THIS LINE/,$$d' < $(srcdir)/Makefile.am > tmp-Makefile.am
+#FIXME: this target relies on dep.sed, which is probably broken (see above)
+dep-am: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+	@echo "this target is broken/dangerous; not letting you use it" >&2
+	exit 1
+	$(SED) -e '/^..DO NOT DELETE THIS LINE/,$$d' < $(srcdir)/Makefile.am > tmp-Makefile.am
 	cat DEP >> tmp-Makefile.am
-	$(srcdir)/../move-if-change tmp-Makefile.am $(srcdir)/Makefile.am
+	$(RUN_MOVEIFCHANGE) tmp-Makefile.am $(srcdir)/Makefile.am
+	touch $(srcdir)/Makefile.am
 
 .PHONY: dep dep-in dep-am
 
 # What appears below is generated by a hacked mkdep using gcc -MM.
+# Can edit manually until the sed script is fixed (?)
 
 # DO NOT DELETE THIS LINE -- mkdep uses it.
 # DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.

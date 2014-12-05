@@ -53,10 +53,13 @@ CC = @CC@
 LIBTOOL = @LIBTOOL@
 RANLIB = @RANLIB@
 
+# architecture flags:
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+
 DEFS = -DLOCALEDIR=\"$(localedir)\" -DGNULOCALEDIR=\"$(gnulocaledir)\" \
 -DLOCALE_ALIAS_PATH=\"$(aliaspath)\" -DLIBDIR="\"$(libdir)\"" -DINSTALLDIR="\"$(libdir)\"" @DEFS@
 CPPFLAGS = @CPPFLAGS@
-CFLAGS = @CFLAGS@
+CFLAGS = @CFLAGS@ $(C_ARCHFLAGS)
 LDFLAGS = @LDFLAGS@
 
 AM_CPPFLAGS = -I. -I$(srcdir)
@@ -264,6 +267,7 @@ distclean-local: clean-local @MAINT@ config.status
 	rm -f Makefile ID TAGS
 	rm -fv *.status *.output Makefile*orig *~ m4/*~ po/*~
 	rm -rfv autom4te.cache || rmdir autom4te.cache
+	-rm -f .DS_Store
 .PHONY: distclean-local
 
 maintainer-clean-local: distclean-local @MAINT@ config.status

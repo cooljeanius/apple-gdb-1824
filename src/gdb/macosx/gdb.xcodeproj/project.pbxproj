@@ -375,6 +375,11 @@
 		61D221BF192D61C300FA979E /* xtensa-modules.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609D00C0E82C408008125DE /* xtensa-modules.c */; };
 		61D81872192FE3BF00E440C0 /* chew.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEEF0E82C407008125DE /* chew.c */; settings = {COMPILER_FLAGS = "-Wtraditional"; }; };
 		61D81AE7193186DC00E440C0 /* aout-encap.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE5B0E82C407008125DE /* aout-encap.c */; settings = {COMPILER_FLAGS = "-Wno-strict-prototypes -Wno-missing-prototypes"; }; };
+		A589CB5B1A30F16700E717B9 /* cpcg.c in Sources */ = {isa = PBXBuildFile; fileRef = A589CB4F1A30EF6400E717B9 /* cpcg.c */; };
+		A589CB5C1A30F16700E717B9 /* cpfork.c in Sources */ = {isa = PBXBuildFile; fileRef = A589CB501A30EF6400E717B9 /* cpfork.c */; };
+		A589CB681A30F23F00E717B9 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A589CB671A30F23F00E717B9 /* ApplicationServices.framework */; };
+		A589D5C81A311DF100E717B9 /* cptest.c in Sources */ = {isa = PBXBuildFile; fileRef = A589D5C01A311DA800E717B9 /* cptest.c */; };
+		A589D5C91A311DF700E717B9 /* libcheckpoint.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A589CB581A30F15100E717B9 /* libcheckpoint.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -391,6 +396,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 61D221C9192D63C200FA979E;
 			remoteInfo = configure;
+		};
+		A589D5CA1A311DFF00E717B9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A589CB571A30F15100E717B9 /* libcheckpoint */;
+			remoteInfo = libcheckpoint;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -3584,6 +3596,343 @@
 		A5558E9A1992ADDB00A45587 /* relocatable.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = relocatable.c; path = "/Users/ericgallager/apple-gdb-1824/src/intl/relocatable.c"; sourceTree = "<absolute>"; };
 		A5558E9B1992ADDB00A45587 /* relocatable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = relocatable.h; path = "/Users/ericgallager/apple-gdb-1824/src/intl/relocatable.h"; sourceTree = "<absolute>"; };
 		A5558E9E1992B76300A45587 /* acconfig_obsolete.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = acconfig_obsolete.h; path = "/Users/ericgallager/apple-gdb-1824/src/intl/acconfig_obsolete.h"; sourceTree = "<absolute>"; };
+		A589C8DC1A30EC3100E717B9 /* .profile_generic */ = {isa = PBXFileReference; explicitFileType = text.script.sh; fileEncoding = 4; name = .profile_generic; path = "/Users/ericgallager/apple-gdb-1824/.profile_generic"; sourceTree = "<absolute>"; };
+		A589C8DD1A30EC3100E717B9 /* .profile_leopard */ = {isa = PBXFileReference; explicitFileType = text.script.sh; fileEncoding = 4; name = .profile_leopard; path = "/Users/ericgallager/apple-gdb-1824/.profile_leopard"; sourceTree = "<absolute>"; };
+		A589C8DE1A30EC3100E717B9 /* .profile_leopard_universal */ = {isa = PBXFileReference; explicitFileType = text.script.sh; fileEncoding = 4; name = .profile_leopard_universal; path = "/Users/ericgallager/apple-gdb-1824/.profile_leopard_universal"; sourceTree = "<absolute>"; };
+		A589C8DF1A30EC3100E717B9 /* .profile_snowleopard */ = {isa = PBXFileReference; explicitFileType = text.script.sh; fileEncoding = 4; name = .profile_snowleopard; path = "/Users/ericgallager/apple-gdb-1824/.profile_snowleopard"; sourceTree = "<absolute>"; };
+		A589C8E21A30EC7500E717B9 /* build.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = build.xml; path = "/Users/ericgallager/apple-gdb-1824/build.xml"; sourceTree = "<absolute>"; };
+		A589C8E31A30EC8600E717B9 /* cache-symfiles.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "cache-symfiles.sh"; path = "/Users/ericgallager/apple-gdb-1824/cache-symfiles.sh"; sourceTree = "<absolute>"; };
+		A589C8E41A30ED2200E717B9 /* ChangeLog_just_me.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ChangeLog_just_me.txt; path = "/Users/ericgallager/apple-gdb-1824/ChangeLog_just_me.txt"; sourceTree = "<absolute>"; };
+		A589C8EB1A30ED5F00E717B9 /* binutils.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = binutils.html; path = "/Users/ericgallager/apple-gdb-1824/doc/binutils.html/binutils.html"; sourceTree = "<absolute>"; };
+		A589C8EC1A30ED5F00E717B9 /* binutils_toc.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = binutils_toc.html; path = "/Users/ericgallager/apple-gdb-1824/doc/binutils.html/binutils_toc.html"; sourceTree = "<absolute>"; };
+		A589C8ED1A30ED5F00E717B9 /* binutils.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = binutils.pdf; path = "/Users/ericgallager/apple-gdb-1824/doc/binutils.pdf"; sourceTree = "<absolute>"; };
+		A589C8EF1A30ED5F00E717B9 /* book.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = book.xml; path = "/Users/ericgallager/apple-gdb-1824/doc/book.xml"; sourceTree = "<absolute>"; };
+		A589C8F21A30ED5F00E717B9 /* gdb.gutenberg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = gdb.gutenberg; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.gutenberg"; sourceTree = "<absolute>"; };
+		A589C8F41A30ED5F00E717B9 /* gdb_1.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_1.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_1.html"; sourceTree = "<absolute>"; };
+		A589C8F51A30ED5F00E717B9 /* gdb_10.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_10.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_10.html"; sourceTree = "<absolute>"; };
+		A589C8F61A30ED5F00E717B9 /* gdb_11.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_11.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_11.html"; sourceTree = "<absolute>"; };
+		A589C8F71A30ED5F00E717B9 /* gdb_12.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_12.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_12.html"; sourceTree = "<absolute>"; };
+		A589C8F81A30ED5F00E717B9 /* gdb_13.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_13.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_13.html"; sourceTree = "<absolute>"; };
+		A589C8F91A30ED5F00E717B9 /* gdb_14.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_14.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_14.html"; sourceTree = "<absolute>"; };
+		A589C8FA1A30ED5F00E717B9 /* gdb_15.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_15.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_15.html"; sourceTree = "<absolute>"; };
+		A589C8FB1A30ED5F00E717B9 /* gdb_16.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_16.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_16.html"; sourceTree = "<absolute>"; };
+		A589C8FC1A30ED5F00E717B9 /* gdb_17.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_17.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_17.html"; sourceTree = "<absolute>"; };
+		A589C8FD1A30ED5F00E717B9 /* gdb_18.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_18.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_18.html"; sourceTree = "<absolute>"; };
+		A589C8FE1A30ED5F00E717B9 /* gdb_19.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_19.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_19.html"; sourceTree = "<absolute>"; };
+		A589C8FF1A30ED5F00E717B9 /* gdb_2.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_2.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_2.html"; sourceTree = "<absolute>"; };
+		A589C9001A30ED5F00E717B9 /* gdb_20.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_20.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_20.html"; sourceTree = "<absolute>"; };
+		A589C9011A30ED5F00E717B9 /* gdb_21.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_21.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_21.html"; sourceTree = "<absolute>"; };
+		A589C9021A30ED5F00E717B9 /* gdb_3.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_3.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_3.html"; sourceTree = "<absolute>"; };
+		A589C9031A30ED5F00E717B9 /* gdb_4.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_4.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_4.html"; sourceTree = "<absolute>"; };
+		A589C9041A30ED5F00E717B9 /* gdb_5.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_5.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_5.html"; sourceTree = "<absolute>"; };
+		A589C9051A30ED5F00E717B9 /* gdb_6.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_6.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_6.html"; sourceTree = "<absolute>"; };
+		A589C9061A30ED5F00E717B9 /* gdb_7.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_7.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_7.html"; sourceTree = "<absolute>"; };
+		A589C9071A30ED5F00E717B9 /* gdb_8.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_8.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_8.html"; sourceTree = "<absolute>"; };
+		A589C9081A30ED5F00E717B9 /* gdb_9.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_9.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_9.html"; sourceTree = "<absolute>"; };
+		A589C9091A30ED5F00E717B9 /* gdb_foot.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_foot.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_foot.html"; sourceTree = "<absolute>"; };
+		A589C90A1A30ED5F00E717B9 /* gdb_toc.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdb_toc.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html/gdb_toc.html"; sourceTree = "<absolute>"; };
+		A589C90B1A30ED5F00E717B9 /* gdb.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = gdb.pdf; path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.pdf"; sourceTree = "<absolute>"; };
+		A589C90F1A30ED5F00E717B9 /* gdbint_1.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdbint_1.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdbint.html/gdbint_1.html"; sourceTree = "<absolute>"; };
+		A589C9101A30ED5F00E717B9 /* gdbint_10.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdbint_10.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdbint.html/gdbint_10.html"; sourceTree = "<absolute>"; };
+		A589C9111A30ED5F00E717B9 /* gdbint_11.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdbint_11.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdbint.html/gdbint_11.html"; sourceTree = "<absolute>"; };
+		A589C9121A30ED5F00E717B9 /* gdbint_12.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdbint_12.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdbint.html/gdbint_12.html"; sourceTree = "<absolute>"; };
+		A589C9131A30ED5F00E717B9 /* gdbint_13.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdbint_13.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdbint.html/gdbint_13.html"; sourceTree = "<absolute>"; };
+		A589C9141A30ED5F00E717B9 /* gdbint_14.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdbint_14.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdbint.html/gdbint_14.html"; sourceTree = "<absolute>"; };
+		A589C9151A30ED5F00E717B9 /* gdbint_15.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdbint_15.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdbint.html/gdbint_15.html"; sourceTree = "<absolute>"; };
+		A589C9161A30ED5F00E717B9 /* gdbint_16.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdbint_16.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdbint.html/gdbint_16.html"; sourceTree = "<absolute>"; };
+		A589C9171A30ED5F00E717B9 /* gdbint_2.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdbint_2.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdbint.html/gdbint_2.html"; sourceTree = "<absolute>"; };
+		A589C9181A30ED5F00E717B9 /* gdbint_3.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdbint_3.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdbint.html/gdbint_3.html"; sourceTree = "<absolute>"; };
+		A589C9191A30ED5F00E717B9 /* gdbint_4.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdbint_4.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdbint.html/gdbint_4.html"; sourceTree = "<absolute>"; };
+		A589C91A1A30ED5F00E717B9 /* gdbint_5.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdbint_5.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdbint.html/gdbint_5.html"; sourceTree = "<absolute>"; };
+		A589C91B1A30ED5F00E717B9 /* gdbint_6.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdbint_6.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdbint.html/gdbint_6.html"; sourceTree = "<absolute>"; };
+		A589C91C1A30ED5F00E717B9 /* gdbint_7.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdbint_7.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdbint.html/gdbint_7.html"; sourceTree = "<absolute>"; };
+		A589C91D1A30ED5F00E717B9 /* gdbint_8.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdbint_8.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdbint.html/gdbint_8.html"; sourceTree = "<absolute>"; };
+		A589C91E1A30ED5F00E717B9 /* gdbint_9.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdbint_9.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdbint.html/gdbint_9.html"; sourceTree = "<absolute>"; };
+		A589C91F1A30ED5F00E717B9 /* gdbint_toc.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdbint_toc.html; path = "/Users/ericgallager/apple-gdb-1824/doc/gdbint.html/gdbint_toc.html"; sourceTree = "<absolute>"; };
+		A589C9201A30ED5F00E717B9 /* gdbint.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = gdbint.pdf; path = "/Users/ericgallager/apple-gdb-1824/doc/gdbint.pdf"; sourceTree = "<absolute>"; };
+		A589C9221A30ED5F00E717B9 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README; path = "/Users/ericgallager/apple-gdb-1824/doc/README"; sourceTree = "<absolute>"; };
+		A589C9231A30ED5F00E717B9 /* README-relnotes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "README-relnotes.txt"; path = "/Users/ericgallager/apple-gdb-1824/doc/README-relnotes.txt"; sourceTree = "<absolute>"; };
+		A589C9241A30ED5F00E717B9 /* refcard.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = refcard.pdf; path = "/Users/ericgallager/apple-gdb-1824/doc/refcard.pdf"; sourceTree = "<absolute>"; };
+		A589C9261A30ED5F00E717B9 /* ReleaseNotes.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = ReleaseNotes.xml; path = "/Users/ericgallager/apple-gdb-1824/doc/ReleaseNotes.xml"; sourceTree = "<absolute>"; };
+		A589C9291A30ED5F00E717B9 /* stabs_1.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = stabs_1.html; path = "/Users/ericgallager/apple-gdb-1824/doc/stabs.html/stabs_1.html"; sourceTree = "<absolute>"; };
+		A589C92A1A30ED5F00E717B9 /* stabs_10.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = stabs_10.html; path = "/Users/ericgallager/apple-gdb-1824/doc/stabs.html/stabs_10.html"; sourceTree = "<absolute>"; };
+		A589C92B1A30ED5F00E717B9 /* stabs_11.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = stabs_11.html; path = "/Users/ericgallager/apple-gdb-1824/doc/stabs.html/stabs_11.html"; sourceTree = "<absolute>"; };
+		A589C92C1A30ED5F00E717B9 /* stabs_12.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = stabs_12.html; path = "/Users/ericgallager/apple-gdb-1824/doc/stabs.html/stabs_12.html"; sourceTree = "<absolute>"; };
+		A589C92D1A30ED5F00E717B9 /* stabs_13.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = stabs_13.html; path = "/Users/ericgallager/apple-gdb-1824/doc/stabs.html/stabs_13.html"; sourceTree = "<absolute>"; };
+		A589C92E1A30ED5F00E717B9 /* stabs_14.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = stabs_14.html; path = "/Users/ericgallager/apple-gdb-1824/doc/stabs.html/stabs_14.html"; sourceTree = "<absolute>"; };
+		A589C92F1A30ED5F00E717B9 /* stabs_2.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = stabs_2.html; path = "/Users/ericgallager/apple-gdb-1824/doc/stabs.html/stabs_2.html"; sourceTree = "<absolute>"; };
+		A589C9301A30ED5F00E717B9 /* stabs_3.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = stabs_3.html; path = "/Users/ericgallager/apple-gdb-1824/doc/stabs.html/stabs_3.html"; sourceTree = "<absolute>"; };
+		A589C9311A30ED5F00E717B9 /* stabs_4.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = stabs_4.html; path = "/Users/ericgallager/apple-gdb-1824/doc/stabs.html/stabs_4.html"; sourceTree = "<absolute>"; };
+		A589C9321A30ED5F00E717B9 /* stabs_5.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = stabs_5.html; path = "/Users/ericgallager/apple-gdb-1824/doc/stabs.html/stabs_5.html"; sourceTree = "<absolute>"; };
+		A589C9331A30ED5F00E717B9 /* stabs_6.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = stabs_6.html; path = "/Users/ericgallager/apple-gdb-1824/doc/stabs.html/stabs_6.html"; sourceTree = "<absolute>"; };
+		A589C9341A30ED5F00E717B9 /* stabs_7.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = stabs_7.html; path = "/Users/ericgallager/apple-gdb-1824/doc/stabs.html/stabs_7.html"; sourceTree = "<absolute>"; };
+		A589C9351A30ED5F00E717B9 /* stabs_8.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = stabs_8.html; path = "/Users/ericgallager/apple-gdb-1824/doc/stabs.html/stabs_8.html"; sourceTree = "<absolute>"; };
+		A589C9361A30ED5F00E717B9 /* stabs_9.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = stabs_9.html; path = "/Users/ericgallager/apple-gdb-1824/doc/stabs.html/stabs_9.html"; sourceTree = "<absolute>"; };
+		A589C9371A30ED5F00E717B9 /* stabs_toc.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = stabs_toc.html; path = "/Users/ericgallager/apple-gdb-1824/doc/stabs.html/stabs_toc.html"; sourceTree = "<absolute>"; };
+		A589C9381A30ED5F00E717B9 /* stabs.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = stabs.pdf; path = "/Users/ericgallager/apple-gdb-1824/doc/stabs.pdf"; sourceTree = "<absolute>"; };
+		A589C93B1A30EDF400E717B9 /* gdb.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = gdb.plist; path = "/Users/ericgallager/apple-gdb-1824/gdb.plist"; sourceTree = "<absolute>"; };
+		A589C93D1A30EDF400E717B9 /* gdb.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = gdb.txt; path = "/Users/ericgallager/apple-gdb-1824/gdb.txt"; sourceTree = "<absolute>"; };
+		A589C9441A30EE1400E717B9 /* do-all-snapshots */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "do-all-snapshots"; path = "/Users/ericgallager/apple-gdb-1824/gdbadmin/ss/do-all-snapshots"; sourceTree = "<absolute>"; };
+		A589C9451A30EE1400E717B9 /* do-scp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "do-scp"; path = "/Users/ericgallager/apple-gdb-1824/gdbadmin/ss/do-scp"; sourceTree = "<absolute>"; };
+		A589C9461A30EE1400E717B9 /* do-snapshot */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "do-snapshot"; path = "/Users/ericgallager/apple-gdb-1824/gdbadmin/ss/do-snapshot"; sourceTree = "<absolute>"; };
+		A589C9471A30EE1400E717B9 /* do-ss */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "do-ss"; path = "/Users/ericgallager/apple-gdb-1824/gdbadmin/ss/do-ss"; sourceTree = "<absolute>"; };
+		A589C9481A30EE1400E717B9 /* gdb_ari.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = gdb_ari.sh; path = "/Users/ericgallager/apple-gdb-1824/gdbadmin/ss/gdb_ari.sh"; sourceTree = "<absolute>"; };
+		A589C9491A30EE1400E717B9 /* gdb_find.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = gdb_find.sh; path = "/Users/ericgallager/apple-gdb-1824/gdbadmin/ss/gdb_find.sh"; sourceTree = "<absolute>"; };
+		A589C94A1A30EE1400E717B9 /* HOWTO */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = HOWTO; path = "/Users/ericgallager/apple-gdb-1824/gdbadmin/ss/HOWTO"; sourceTree = "<absolute>"; };
+		A589C94B1A30EE1400E717B9 /* make-snapshot */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "make-snapshot"; path = "/Users/ericgallager/apple-gdb-1824/gdbadmin/ss/make-snapshot"; sourceTree = "<absolute>"; };
+		A589C94C1A30EE1400E717B9 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README; path = "/Users/ericgallager/apple-gdb-1824/gdbadmin/ss/README"; sourceTree = "<absolute>"; };
+		A589C94D1A30EE1400E717B9 /* schedule */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = schedule; path = "/Users/ericgallager/apple-gdb-1824/gdbadmin/ss/schedule"; sourceTree = "<absolute>"; };
+		A589C94E1A30EE1400E717B9 /* update-git-version */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "update-git-version"; path = "/Users/ericgallager/apple-gdb-1824/gdbadmin/ss/update-git-version"; sourceTree = "<absolute>"; };
+		A589C94F1A30EE1400E717B9 /* update-snapshot */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "update-snapshot"; path = "/Users/ericgallager/apple-gdb-1824/gdbadmin/ss/update-snapshot"; sourceTree = "<absolute>"; };
+		A589C9501A30EE1400E717B9 /* update-web-ari */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "update-web-ari"; path = "/Users/ericgallager/apple-gdb-1824/gdbadmin/ss/update-web-ari"; sourceTree = "<absolute>"; };
+		A589C9511A30EE1400E717B9 /* update-web-docs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "update-web-docs"; path = "/Users/ericgallager/apple-gdb-1824/gdbadmin/ss/update-web-docs"; sourceTree = "<absolute>"; };
+		A589C9531A30EE3D00E717B9 /* commit-msg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "commit-msg"; path = "/Users/ericgallager/apple-gdb-1824/git_hooks/commit-msg"; sourceTree = "<absolute>"; };
+		A589C9541A30EE3D00E717B9 /* git-version-gen */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "git-version-gen"; path = "/Users/ericgallager/apple-gdb-1824/git_hooks/git-version-gen"; sourceTree = "<absolute>"; };
+		A589C9551A30EE3D00E717B9 /* gitlog-to-changelog */ = {isa = PBXFileReference; explicitFileType = text.script.perl; fileEncoding = 4; name = "gitlog-to-changelog"; path = "/Users/ericgallager/apple-gdb-1824/git_hooks/gitlog-to-changelog"; sourceTree = "<absolute>"; };
+		A589C9561A30EE3D00E717B9 /* gitlog2changelog.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; name = gitlog2changelog.py; path = "/Users/ericgallager/apple-gdb-1824/git_hooks/gitlog2changelog.py"; sourceTree = "<absolute>"; };
+		A589C9571A30EE3D00E717B9 /* pre-commit */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "pre-commit"; path = "/Users/ericgallager/apple-gdb-1824/git_hooks/pre-commit"; sourceTree = "<absolute>"; };
+		A589C9581A30EE3D00E717B9 /* prepare-commit-msg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "prepare-commit-msg"; path = "/Users/ericgallager/apple-gdb-1824/git_hooks/prepare-commit-msg"; sourceTree = "<absolute>"; };
+		A589C95A1A30EE3D00E717B9 /* update.pl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.perl; name = update.pl; path = "/Users/ericgallager/apple-gdb-1824/git_hooks/update.pl"; sourceTree = "<absolute>"; };
+		A589C95B1A30EE6300E717B9 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README.md; path = "/Users/ericgallager/apple-gdb-1824/git_hooks/README.md"; sourceTree = "<absolute>"; };
+		A589C95F1A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/bugs/index.html"; sourceTree = "<absolute>"; };
+		A589C9611A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/committee/index.html"; sourceTree = "<absolute>"; };
+		A589C9621A30EE7100E717B9 /* release-manager.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = "release-manager.html"; path = "/Users/ericgallager/apple-gdb-1824/htdocs/committee/release-manager.html"; sourceTree = "<absolute>"; };
+		A589C9641A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/contribute/index.html"; sourceTree = "<absolute>"; };
+		A589C9661A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/current/index.html"; sourceTree = "<absolute>"; };
+		A589C9681A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html.documentation; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/documentation/index.html"; sourceTree = "<absolute>"; };
+		A589C96A1A30EE7100E717B9 /* ANNOUNCEMENT */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ANNOUNCEMENT; path = "/Users/ericgallager/apple-gdb-1824/htdocs/download/ANNOUNCEMENT"; sourceTree = "<absolute>"; };
+		A589C96B1A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/download/index.html"; sourceTree = "<absolute>"; };
+		A589C96C1A30EE7100E717B9 /* gdb-memory-map.dtd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = "gdb-memory-map.dtd"; path = "/Users/ericgallager/apple-gdb-1824/htdocs/gdb-memory-map.dtd"; sourceTree = "<absolute>"; };
+		A589C96E1A30EE7100E717B9 /* archer-fish.ico */ = {isa = PBXFileReference; lastKnownFileType = image.ico; name = "archer-fish.ico"; path = "/Users/ericgallager/apple-gdb-1824/htdocs/images/archer-fish.ico"; sourceTree = "<absolute>"; };
+		A589C9711A30EE7100E717B9 /* archer.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = archer.jpg; path = "/Users/ericgallager/apple-gdb-1824/htdocs/images/archer.jpg"; sourceTree = "<absolute>"; };
+		A589C9721A30EE7100E717B9 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/images/icon.png"; sourceTree = "<absolute>"; };
+		A589C9731A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/index.html"; sourceTree = "<absolute>"; };
+		A589C9741A30EE7100E717B9 /* index.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = index.sh; path = "/Users/ericgallager/apple-gdb-1824/htdocs/index.sh"; sourceTree = "<absolute>"; };
+		A589C9761A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/irc/index.html"; sourceTree = "<absolute>"; };
+		A589C9781A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/links/index.html"; sourceTree = "<absolute>"; };
+		A589C97A1A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/mailing-lists/index.html"; sourceTree = "<absolute>"; };
+		A589C97C1A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/mascot/index.html"; sourceTree = "<absolute>"; };
+		A589C97E1A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/news/index.html"; sourceTree = "<absolute>"; };
+		A589C97F1A30EE7100E717B9 /* reversible.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = reversible.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/news/reversible.html"; sourceTree = "<absolute>"; };
+		A589C9811A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/index.html"; sourceTree = "<absolute>"; };
+		A589C9831A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb/index.html"; sourceTree = "<absolute>"; };
+		A589C9841A30EE7100E717B9 /* libgdb.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb/libgdb.html"; sourceTree = "<absolute>"; };
+		A589C9851A30EE7100E717B9 /* libgdb_1.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_1.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb/libgdb_1.html"; sourceTree = "<absolute>"; };
+		A589C9861A30EE7100E717B9 /* libgdb_10.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_10.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb/libgdb_10.html"; sourceTree = "<absolute>"; };
+		A589C9871A30EE7100E717B9 /* libgdb_11.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_11.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb/libgdb_11.html"; sourceTree = "<absolute>"; };
+		A589C9881A30EE7100E717B9 /* libgdb_12.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_12.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb/libgdb_12.html"; sourceTree = "<absolute>"; };
+		A589C9891A30EE7100E717B9 /* libgdb_13.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_13.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb/libgdb_13.html"; sourceTree = "<absolute>"; };
+		A589C98A1A30EE7100E717B9 /* libgdb_2.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_2.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb/libgdb_2.html"; sourceTree = "<absolute>"; };
+		A589C98B1A30EE7100E717B9 /* libgdb_3.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_3.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb/libgdb_3.html"; sourceTree = "<absolute>"; };
+		A589C98C1A30EE7100E717B9 /* libgdb_4.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_4.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb/libgdb_4.html"; sourceTree = "<absolute>"; };
+		A589C98D1A30EE7100E717B9 /* libgdb_5.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_5.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb/libgdb_5.html"; sourceTree = "<absolute>"; };
+		A589C98E1A30EE7100E717B9 /* libgdb_6.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_6.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb/libgdb_6.html"; sourceTree = "<absolute>"; };
+		A589C98F1A30EE7100E717B9 /* libgdb_7.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_7.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb/libgdb_7.html"; sourceTree = "<absolute>"; };
+		A589C9901A30EE7100E717B9 /* libgdb_8.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_8.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb/libgdb_8.html"; sourceTree = "<absolute>"; };
+		A589C9911A30EE7100E717B9 /* libgdb_9.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_9.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb/libgdb_9.html"; sourceTree = "<absolute>"; };
+		A589C9921A30EE7100E717B9 /* libgdb_stoc.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_stoc.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb/libgdb_stoc.html"; sourceTree = "<absolute>"; };
+		A589C9931A30EE7100E717B9 /* libgdb_toc.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_toc.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb/libgdb_toc.html"; sourceTree = "<absolute>"; };
+		A589C9951A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/index.html"; sourceTree = "<absolute>"; };
+		A589C9961A30EE7100E717B9 /* libgdb.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/libgdb.html"; sourceTree = "<absolute>"; };
+		A589C9971A30EE7100E717B9 /* libgdb.info */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = libgdb.info; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/libgdb.info"; sourceTree = "<absolute>"; };
+		A589C9981A30EE7100E717B9 /* libgdb.texi */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = libgdb.texi; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/libgdb.texi"; sourceTree = "<absolute>"; };
+		A589C9991A30EE7100E717B9 /* libgdb_1.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_1.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/libgdb_1.html"; sourceTree = "<absolute>"; };
+		A589C99A1A30EE7100E717B9 /* libgdb_2.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_2.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/libgdb_2.html"; sourceTree = "<absolute>"; };
+		A589C99B1A30EE7100E717B9 /* libgdb_3.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_3.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/libgdb_3.html"; sourceTree = "<absolute>"; };
+		A589C99C1A30EE7100E717B9 /* libgdb_4.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_4.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/libgdb_4.html"; sourceTree = "<absolute>"; };
+		A589C99D1A30EE7100E717B9 /* libgdb_5.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_5.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/libgdb_5.html"; sourceTree = "<absolute>"; };
+		A589C99E1A30EE7100E717B9 /* libgdb_6.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_6.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/libgdb_6.html"; sourceTree = "<absolute>"; };
+		A589C99F1A30EE7100E717B9 /* libgdb_stoc.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_stoc.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/libgdb_stoc.html"; sourceTree = "<absolute>"; };
+		A589C9A01A30EE7100E717B9 /* libgdb_toc.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = libgdb_toc.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/libgdb_toc.html"; sourceTree = "<absolute>"; };
+		A589C9A11A30EE7100E717B9 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/Makefile"; sourceTree = "<absolute>"; };
+		A589C9A31A30EE7100E717B9 /* adapter.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = adapter.jpg; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/wp/adapter.jpg"; sourceTree = "<absolute>"; };
+		A589C9A41A30EE7100E717B9 /* architectures.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = architectures.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/wp/architectures.html"; sourceTree = "<absolute>"; };
+		A589C9A51A30EE7100E717B9 /* gdbtk.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = gdbtk.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/wp/gdbtk.html"; sourceTree = "<absolute>"; };
+		A589C9A61A30EE7100E717B9 /* gdbtk.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = gdbtk.jpg; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/wp/gdbtk.jpg"; sourceTree = "<absolute>"; };
+		A589C9A71A30EE7100E717B9 /* gdbtk2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = gdbtk2.jpg; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/wp/gdbtk2.jpg"; sourceTree = "<absolute>"; };
+		A589C9A81A30EE7100E717B9 /* server.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = server.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/wp/server.html"; sourceTree = "<absolute>"; };
+		A589C9A91A30EE7100E717B9 /* server.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = server.jpg; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/wp/server.jpg"; sourceTree = "<absolute>"; };
+		A589C9AA1A30EE7100E717B9 /* server2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = server2.jpg; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/wp/server2.jpg"; sourceTree = "<absolute>"; };
+		A589C9AB1A30EE7100E717B9 /* stream.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = stream.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/wp/stream.html"; sourceTree = "<absolute>"; };
+		A589C9AC1A30EE7100E717B9 /* stream.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = stream.jpg; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/wp/stream.jpg"; sourceTree = "<absolute>"; };
+		A589C9AD1A30EE7100E717B9 /* stream2.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = stream2.jpg; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/wp/stream2.jpg"; sourceTree = "<absolute>"; };
+		A589C9AF1A30EE7100E717B9 /* i386-includes.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "i386-includes.png"; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/linux/i386-includes.png"; sourceTree = "<absolute>"; };
+		A589C9B01A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/linux/index.html"; sourceTree = "<absolute>"; };
+		A589C9B41A30EE7100E717B9 /* linux-sse.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = "linux-sse.html"; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/linux/linux-sse.html"; sourceTree = "<absolute>"; };
+		A589C9B61A30EE7100E717B9 /* howto.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = howto.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/howto.html"; sourceTree = "<absolute>"; };
+		A589C9B71A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/index.html"; sourceTree = "<absolute>"; };
+		A589C9B91A30EE7100E717B9 /* arch.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = arch.jpg; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/real-multi-arch/arch.jpg"; sourceTree = "<absolute>"; };
+		A589C9BA1A30EE7100E717B9 /* away.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = away.jpg; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/real-multi-arch/away.jpg"; sourceTree = "<absolute>"; };
+		A589C9BB1A30EE7100E717B9 /* foo.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = foo.jpg; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/real-multi-arch/foo.jpg"; sourceTree = "<absolute>"; };
+		A589C9BC1A30EE7100E717B9 /* functions-for-thread-3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "functions-for-thread-3.jpg"; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/real-multi-arch/functions-for-thread-3.jpg"; sourceTree = "<absolute>"; };
+		A589C9BD1A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/real-multi-arch/index.html"; sourceTree = "<absolute>"; };
+		A589C9BE1A30EE7100E717B9 /* insight-frame.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "insight-frame.jpg"; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/real-multi-arch/insight-frame.jpg"; sourceTree = "<absolute>"; };
+		A589C9BF1A30EE7100E717B9 /* insight-thread.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "insight-thread.jpg"; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/real-multi-arch/insight-thread.jpg"; sourceTree = "<absolute>"; };
+		A589C9C01A30EE7100E717B9 /* memory-for-thread-3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "memory-for-thread-3.jpg"; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/real-multi-arch/memory-for-thread-3.jpg"; sourceTree = "<absolute>"; };
+		A589C9C11A30EE7100E717B9 /* multi.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = multi.jpg; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/real-multi-arch/multi.jpg"; sourceTree = "<absolute>"; };
+		A589C9C21A30EE7100E717B9 /* path.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = path.jpg; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/real-multi-arch/path.jpg"; sourceTree = "<absolute>"; };
+		A589C9C31A30EE7100E717B9 /* registers-for-thread-3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "registers-for-thread-3.jpg"; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/real-multi-arch/registers-for-thread-3.jpg"; sourceTree = "<absolute>"; };
+		A589C9C41A30EE7100E717B9 /* source-for-thread-3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "source-for-thread-3.jpg"; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/real-multi-arch/source-for-thread-3.jpg"; sourceTree = "<absolute>"; };
+		A589C9C51A30EE7100E717B9 /* stack-buttons-3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "stack-buttons-3.jpg"; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/real-multi-arch/stack-buttons-3.jpg"; sourceTree = "<absolute>"; };
+		A589C9C61A30EE7100E717B9 /* stack-for-thread-3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "stack-for-thread-3.jpg"; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/real-multi-arch/stack-for-thread-3.jpg"; sourceTree = "<absolute>"; };
+		A589C9C71A30EE7100E717B9 /* thread-x-frame.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "thread-x-frame.jpg"; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/real-multi-arch/thread-x-frame.jpg"; sourceTree = "<absolute>"; };
+		A589C9C81A30EE7100E717B9 /* threads-for-thread-3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "threads-for-thread-3.jpg"; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/real-multi-arch/threads-for-thread-3.jpg"; sourceTree = "<absolute>"; };
+		A589C9C91A30EE7100E717B9 /* var-with-struct-open.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "var-with-struct-open.jpg"; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/real-multi-arch/var-with-struct-open.jpg"; sourceTree = "<absolute>"; };
+		A589C9CA1A30EE7100E717B9 /* xform-frame.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "xform-frame.jpg"; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/real-multi-arch/xform-frame.jpg"; sourceTree = "<absolute>"; };
+		A589C9CB1A30EE7100E717B9 /* xform-thread.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "xform-thread.jpg"; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/real-multi-arch/xform-thread.jpg"; sourceTree = "<absolute>"; };
+		A589C9CC1A30EE7100E717B9 /* xform.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = xform.jpg; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/real-multi-arch/xform.jpg"; sourceTree = "<absolute>"; };
+		A589C9CD1A30EE7100E717B9 /* whatis.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = whatis.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/whatis.html"; sourceTree = "<absolute>"; };
+		A589C9CE1A30EE7100E717B9 /* unwind.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = unwind.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/unwind.html"; sourceTree = "<absolute>"; };
+		A589C9D01A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/schedule/index.html"; sourceTree = "<absolute>"; };
+		A589C9D21A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/song/index.html"; sourceTree = "<absolute>"; };
+		A589C9D51A30EE7100E717B9 /* agentexpr.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = agentexpr.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/agentexpr.html"; sourceTree = "<absolute>"; };
+		A589C9D61A30EE7100E717B9 /* agentexpr_toc.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = agentexpr_toc.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/agentexpr_toc.html"; sourceTree = "<absolute>"; };
+		A589C9D71A30EE7100E717B9 /* commands.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = commands.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/commands.html"; sourceTree = "<absolute>"; };
+		A589C9D81A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/index.html"; sourceTree = "<absolute>"; };
+		A589C9D91A30EE7100E717B9 /* INTROSPECT.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = INTROSPECT.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/INTROSPECT.html"; sourceTree = "<absolute>"; };
+		A589C9DA1A30EE7100E717B9 /* paper.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = paper.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/paper.html"; sourceTree = "<absolute>"; };
+		A589C9DC1A30EE7100E717B9 /* paper.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = paper.pdf; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/paper.pdf"; sourceTree = "<absolute>"; };
+		A589C9DD1A30EE7100E717B9 /* protocol.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = protocol.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/protocol.html"; sourceTree = "<absolute>"; };
+		A589C9DE1A30EE7100E717B9 /* sample.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = sample.txt; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/sample.txt"; sourceTree = "<absolute>"; };
+		A589C9E01A30EE7100E717B9 /* img001.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img001.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img001.png"; sourceTree = "<absolute>"; };
+		A589C9E11A30EE7100E717B9 /* img002.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img002.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img002.png"; sourceTree = "<absolute>"; };
+		A589C9E21A30EE7100E717B9 /* img003.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img003.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img003.png"; sourceTree = "<absolute>"; };
+		A589C9E31A30EE7100E717B9 /* img004.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img004.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img004.png"; sourceTree = "<absolute>"; };
+		A589C9E41A30EE7100E717B9 /* img005.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img005.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img005.png"; sourceTree = "<absolute>"; };
+		A589C9E51A30EE7100E717B9 /* img006.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img006.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img006.png"; sourceTree = "<absolute>"; };
+		A589C9E61A30EE7100E717B9 /* img007.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img007.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img007.png"; sourceTree = "<absolute>"; };
+		A589C9E71A30EE7100E717B9 /* img008.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img008.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img008.png"; sourceTree = "<absolute>"; };
+		A589C9E81A30EE7100E717B9 /* img009.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img009.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img009.png"; sourceTree = "<absolute>"; };
+		A589C9E91A30EE7100E717B9 /* img010.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img010.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img010.png"; sourceTree = "<absolute>"; };
+		A589C9EA1A30EE7100E717B9 /* img011.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img011.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img011.png"; sourceTree = "<absolute>"; };
+		A589C9EB1A30EE7100E717B9 /* img012.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img012.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img012.png"; sourceTree = "<absolute>"; };
+		A589C9EC1A30EE7100E717B9 /* img013.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img013.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img013.png"; sourceTree = "<absolute>"; };
+		A589C9ED1A30EE7100E717B9 /* img014.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img014.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img014.png"; sourceTree = "<absolute>"; };
+		A589C9EE1A30EE7100E717B9 /* img015.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img015.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img015.png"; sourceTree = "<absolute>"; };
+		A589C9EF1A30EE7100E717B9 /* img016.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img016.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img016.png"; sourceTree = "<absolute>"; };
+		A589C9F01A30EE7100E717B9 /* img017.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img017.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img017.png"; sourceTree = "<absolute>"; };
+		A589C9F11A30EE7100E717B9 /* img018.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img018.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img018.png"; sourceTree = "<absolute>"; };
+		A589C9F21A30EE7100E717B9 /* img019.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img019.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img019.png"; sourceTree = "<absolute>"; };
+		A589C9F31A30EE7100E717B9 /* img020.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img020.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img020.png"; sourceTree = "<absolute>"; };
+		A589C9F41A30EE7100E717B9 /* img021.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img021.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img021.png"; sourceTree = "<absolute>"; };
+		A589C9F51A30EE7100E717B9 /* img022.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img022.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img022.png"; sourceTree = "<absolute>"; };
+		A589C9F61A30EE7100E717B9 /* img023.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img023.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img023.png"; sourceTree = "<absolute>"; };
+		A589C9F71A30EE7100E717B9 /* img024.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img024.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img024.png"; sourceTree = "<absolute>"; };
+		A589C9F81A30EE7100E717B9 /* img025.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img025.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img025.png"; sourceTree = "<absolute>"; };
+		A589C9F91A30EE7100E717B9 /* img026.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img026.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img026.png"; sourceTree = "<absolute>"; };
+		A589C9FA1A30EE7100E717B9 /* img027.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img027.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img027.png"; sourceTree = "<absolute>"; };
+		A589C9FB1A30EE7100E717B9 /* img028.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img028.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img028.png"; sourceTree = "<absolute>"; };
+		A589C9FC1A30EE7100E717B9 /* img029.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = img029.png; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/img029.png"; sourceTree = "<absolute>"; };
+		A589C9FD1A30EE7100E717B9 /* index.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/index.htm"; sourceTree = "<absolute>"; };
+		A589C9FE1A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/index.html"; sourceTree = "<absolute>"; };
+		A589C9FF1A30EE7100E717B9 /* sld001.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld001.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld001.htm"; sourceTree = "<absolute>"; };
+		A589CA001A30EE7100E717B9 /* sld002.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld002.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld002.htm"; sourceTree = "<absolute>"; };
+		A589CA011A30EE7100E717B9 /* sld003.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld003.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld003.htm"; sourceTree = "<absolute>"; };
+		A589CA021A30EE7100E717B9 /* sld004.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld004.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld004.htm"; sourceTree = "<absolute>"; };
+		A589CA031A30EE7100E717B9 /* sld005.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld005.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld005.htm"; sourceTree = "<absolute>"; };
+		A589CA041A30EE7100E717B9 /* sld006.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld006.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld006.htm"; sourceTree = "<absolute>"; };
+		A589CA051A30EE7100E717B9 /* sld007.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld007.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld007.htm"; sourceTree = "<absolute>"; };
+		A589CA061A30EE7100E717B9 /* sld008.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld008.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld008.htm"; sourceTree = "<absolute>"; };
+		A589CA071A30EE7100E717B9 /* sld009.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld009.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld009.htm"; sourceTree = "<absolute>"; };
+		A589CA081A30EE7100E717B9 /* sld010.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld010.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld010.htm"; sourceTree = "<absolute>"; };
+		A589CA091A30EE7100E717B9 /* sld011.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld011.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld011.htm"; sourceTree = "<absolute>"; };
+		A589CA0A1A30EE7100E717B9 /* sld012.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld012.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld012.htm"; sourceTree = "<absolute>"; };
+		A589CA0B1A30EE7100E717B9 /* sld013.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld013.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld013.htm"; sourceTree = "<absolute>"; };
+		A589CA0C1A30EE7100E717B9 /* sld014.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld014.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld014.htm"; sourceTree = "<absolute>"; };
+		A589CA0D1A30EE7100E717B9 /* sld015.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld015.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld015.htm"; sourceTree = "<absolute>"; };
+		A589CA0E1A30EE7100E717B9 /* sld016.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld016.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld016.htm"; sourceTree = "<absolute>"; };
+		A589CA0F1A30EE7100E717B9 /* sld017.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld017.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld017.htm"; sourceTree = "<absolute>"; };
+		A589CA101A30EE7100E717B9 /* sld018.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld018.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld018.htm"; sourceTree = "<absolute>"; };
+		A589CA111A30EE7100E717B9 /* sld019.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld019.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld019.htm"; sourceTree = "<absolute>"; };
+		A589CA121A30EE7100E717B9 /* sld020.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld020.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld020.htm"; sourceTree = "<absolute>"; };
+		A589CA131A30EE7100E717B9 /* sld021.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld021.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld021.htm"; sourceTree = "<absolute>"; };
+		A589CA141A30EE7100E717B9 /* sld022.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld022.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld022.htm"; sourceTree = "<absolute>"; };
+		A589CA151A30EE7100E717B9 /* sld023.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld023.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld023.htm"; sourceTree = "<absolute>"; };
+		A589CA161A30EE7100E717B9 /* sld024.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld024.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld024.htm"; sourceTree = "<absolute>"; };
+		A589CA171A30EE7100E717B9 /* sld025.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld025.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld025.htm"; sourceTree = "<absolute>"; };
+		A589CA181A30EE7100E717B9 /* sld026.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld026.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld026.htm"; sourceTree = "<absolute>"; };
+		A589CA191A30EE7100E717B9 /* sld027.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld027.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld027.htm"; sourceTree = "<absolute>"; };
+		A589CA1A1A30EE7100E717B9 /* sld028.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld028.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld028.htm"; sourceTree = "<absolute>"; };
+		A589CA1B1A30EE7100E717B9 /* sld029.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = sld029.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/sld029.htm"; sourceTree = "<absolute>"; };
+		A589CA1C1A30EE7100E717B9 /* tsld001.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld001.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld001.htm"; sourceTree = "<absolute>"; };
+		A589CA1D1A30EE7100E717B9 /* tsld002.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld002.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld002.htm"; sourceTree = "<absolute>"; };
+		A589CA1E1A30EE7100E717B9 /* tsld003.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld003.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld003.htm"; sourceTree = "<absolute>"; };
+		A589CA1F1A30EE7100E717B9 /* tsld004.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld004.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld004.htm"; sourceTree = "<absolute>"; };
+		A589CA201A30EE7100E717B9 /* tsld005.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld005.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld005.htm"; sourceTree = "<absolute>"; };
+		A589CA211A30EE7100E717B9 /* tsld006.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld006.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld006.htm"; sourceTree = "<absolute>"; };
+		A589CA221A30EE7100E717B9 /* tsld007.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld007.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld007.htm"; sourceTree = "<absolute>"; };
+		A589CA231A30EE7100E717B9 /* tsld008.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld008.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld008.htm"; sourceTree = "<absolute>"; };
+		A589CA241A30EE7100E717B9 /* tsld009.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld009.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld009.htm"; sourceTree = "<absolute>"; };
+		A589CA251A30EE7100E717B9 /* tsld010.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld010.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld010.htm"; sourceTree = "<absolute>"; };
+		A589CA261A30EE7100E717B9 /* tsld011.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld011.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld011.htm"; sourceTree = "<absolute>"; };
+		A589CA271A30EE7100E717B9 /* tsld012.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld012.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld012.htm"; sourceTree = "<absolute>"; };
+		A589CA281A30EE7100E717B9 /* tsld013.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld013.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld013.htm"; sourceTree = "<absolute>"; };
+		A589CA291A30EE7100E717B9 /* tsld014.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld014.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld014.htm"; sourceTree = "<absolute>"; };
+		A589CA2A1A30EE7100E717B9 /* tsld015.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld015.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld015.htm"; sourceTree = "<absolute>"; };
+		A589CA2B1A30EE7100E717B9 /* tsld016.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld016.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld016.htm"; sourceTree = "<absolute>"; };
+		A589CA2C1A30EE7100E717B9 /* tsld017.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld017.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld017.htm"; sourceTree = "<absolute>"; };
+		A589CA2D1A30EE7100E717B9 /* tsld018.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld018.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld018.htm"; sourceTree = "<absolute>"; };
+		A589CA2E1A30EE7100E717B9 /* tsld019.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld019.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld019.htm"; sourceTree = "<absolute>"; };
+		A589CA2F1A30EE7100E717B9 /* tsld020.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld020.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld020.htm"; sourceTree = "<absolute>"; };
+		A589CA301A30EE7100E717B9 /* tsld021.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld021.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld021.htm"; sourceTree = "<absolute>"; };
+		A589CA311A30EE7100E717B9 /* tsld022.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld022.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld022.htm"; sourceTree = "<absolute>"; };
+		A589CA321A30EE7100E717B9 /* tsld023.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld023.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld023.htm"; sourceTree = "<absolute>"; };
+		A589CA331A30EE7100E717B9 /* tsld024.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld024.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld024.htm"; sourceTree = "<absolute>"; };
+		A589CA341A30EE7100E717B9 /* tsld025.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld025.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld025.htm"; sourceTree = "<absolute>"; };
+		A589CA351A30EE7100E717B9 /* tsld026.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld026.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld026.htm"; sourceTree = "<absolute>"; };
+		A589CA361A30EE7100E717B9 /* tsld027.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld027.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld027.htm"; sourceTree = "<absolute>"; };
+		A589CA371A30EE7100E717B9 /* tsld028.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld028.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld028.htm"; sourceTree = "<absolute>"; };
+		A589CA381A30EE7100E717B9 /* tsld029.htm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = tsld029.htm; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides/tsld029.htm"; sourceTree = "<absolute>"; };
+		A589CA3A1A30EE7100E717B9 /* slides.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = slides.pdf; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides.pdf"; sourceTree = "<absolute>"; };
+		A589CA3B1A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/index.html"; sourceTree = "<absolute>"; };
+		A589CA3D1A30EE7100E717B9 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "/Users/ericgallager/apple-gdb-1824/htdocs/testing/index.html"; sourceTree = "<absolute>"; };
+		A589CA3E1A30EF3B00E717B9 /* Info-macos.template */ = {isa = PBXFileReference; explicitFileType = text.plist.info; fileEncoding = 4; name = "Info-macos.template"; path = "/Users/ericgallager/apple-gdb-1824/Info-macos.template"; sourceTree = "<absolute>"; };
+		A589CB4F1A30EF6400E717B9 /* cpcg.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.c; name = cpcg.c; path = "/Users/ericgallager/apple-gdb-1824/libcheckpoint/cpcg.c"; sourceTree = "<absolute>"; tabWidth = 8; };
+		A589CB501A30EF6400E717B9 /* cpfork.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.c.c; name = cpfork.c; path = "/Users/ericgallager/apple-gdb-1824/libcheckpoint/cpfork.c"; sourceTree = "<absolute>"; tabWidth = 8; };
+		A589CB511A30EF6400E717B9 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = "/Users/ericgallager/apple-gdb-1824/libcheckpoint/Makefile"; sourceTree = "<absolute>"; };
+		A589CB531A30EF6400E717B9 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = README; path = "/Users/ericgallager/apple-gdb-1824/libcheckpoint/README"; sourceTree = "<absolute>"; };
+		A589CB581A30F15100E717B9 /* libcheckpoint.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libcheckpoint.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		A589CB671A30F23F00E717B9 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
+		A589CC321A30F38700E717B9 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		A589CCED1A30F39C00E717B9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		A589CD6F1A30F3CF00E717B9 /* System.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = System.framework; path = /System/Library/Frameworks/System.framework; sourceTree = "<absolute>"; };
+		A589CFC21A30F41100E717B9 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		A589D07E1A30F43700E717B9 /* DebugSymbols.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DebugSymbols.framework; path = /System/Library/PrivateFrameworks/DebugSymbols.framework; sourceTree = "<absolute>"; };
+		A589D0801A30F48B00E717B9 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
+		A589D0C21A30F4B800E717B9 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		A589D0C71A30F4C700E717B9 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = /System/Library/Frameworks/IOKit.framework; sourceTree = "<absolute>"; };
+		A589D1CD1A31125B00E717B9 /* Tcl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Tcl.framework; path = /System/Library/Frameworks/Tcl.framework; sourceTree = "<absolute>"; };
+		A589D2DA1A31126B00E717B9 /* Tk.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Tk.framework; path = /System/Library/Frameworks/Tk.framework; sourceTree = "<absolute>"; };
+		A589D3D01A3112D700E717B9 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
+		A589D5C01A311DA800E717B9 /* cptest.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = cptest.c; path = "/Users/ericgallager/apple-gdb-1824/libcheckpoint/cptest.c"; sourceTree = "<absolute>"; };
+		A589D5C41A311DE300E717B9 /* checkpoint_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = checkpoint_test; sourceTree = BUILT_PRODUCTS_DIR; };
+		A589D7801A31386400E717B9 /* cp_macsbug */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = cp_macsbug; path = "/Users/ericgallager/apple-gdb-1824/macsbug/cp_macsbug"; sourceTree = "<absolute>"; };
+		A589D7841A31386400E717B9 /* gdb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gdb.c; path = "/Users/ericgallager/apple-gdb-1824/macsbug/gdb_plugin_support/gdb.c"; sourceTree = "<absolute>"; };
+		A589D7851A31386400E717B9 /* gdb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gdb.h; path = "/Users/ericgallager/apple-gdb-1824/macsbug/gdb_plugin_support/gdb.h"; sourceTree = "<absolute>"; };
+		A589D7861A31386400E717B9 /* gdb_complete.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gdb_complete.c; path = "/Users/ericgallager/apple-gdb-1824/macsbug/gdb_plugin_support/gdb_complete.c"; sourceTree = "<absolute>"; };
+		A589D7871A31386400E717B9 /* gdb_io_redirection.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gdb_io_redirection.c; path = "/Users/ericgallager/apple-gdb-1824/macsbug/gdb_plugin_support/gdb_io_redirection.c"; sourceTree = "<absolute>"; };
+		A589D7881A31386400E717B9 /* gdb_private_interfaces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gdb_private_interfaces.h; path = "/Users/ericgallager/apple-gdb-1824/macsbug/gdb_plugin_support/gdb_private_interfaces.h"; sourceTree = "<absolute>"; tabWidth = 8; };
+		A589D7891A31386400E717B9 /* gdb_set.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gdb_set.c; path = "/Users/ericgallager/apple-gdb-1824/macsbug/gdb_plugin_support/gdb_set.c"; sourceTree = "<absolute>"; };
+		A589D78A1A31386400E717B9 /* gdb_special_events.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gdb_special_events.c; path = "/Users/ericgallager/apple-gdb-1824/macsbug/gdb_plugin_support/gdb_special_events.c"; sourceTree = "<absolute>"; };
+		A589D78B1A31386400E717B9 /* gdb_testing.i */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c.preprocessed; name = gdb_testing.i; path = "/Users/ericgallager/apple-gdb-1824/macsbug/gdb_plugin_support/gdb_testing.i"; sourceTree = "<absolute>"; tabWidth = 8; };
+		A589D78C1A31386400E717B9 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = "/Users/ericgallager/apple-gdb-1824/macsbug/gdb_plugin_support/Makefile"; sourceTree = "<absolute>"; };
+		A589D78F1A31386400E717B9 /* MacsBug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MacsBug.h; path = "/Users/ericgallager/apple-gdb-1824/macsbug/MacsBug.h"; sourceTree = "<absolute>"; };
+		A589D7901A31386400E717B9 /* MacsBug_cmdline.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = MacsBug_cmdline.c; path = "/Users/ericgallager/apple-gdb-1824/macsbug/MacsBug_cmdline.c"; sourceTree = "<absolute>"; };
+		A589D7911A31386400E717B9 /* MacsBug_display.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = MacsBug_display.c; path = "/Users/ericgallager/apple-gdb-1824/macsbug/MacsBug_display.c"; sourceTree = "<absolute>"; tabWidth = 8; };
+		A589D7921A31386400E717B9 /* MacsBug_patches.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = MacsBug_patches.c; path = "/Users/ericgallager/apple-gdb-1824/macsbug/MacsBug_patches.c"; sourceTree = "<absolute>"; tabWidth = 8; };
+		A589D7931A31386400E717B9 /* MacsBug_plugins.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = MacsBug_plugins.c; path = "/Users/ericgallager/apple-gdb-1824/macsbug/MacsBug_plugins.c"; sourceTree = "<absolute>"; tabWidth = 8; };
+		A589D7941A31386400E717B9 /* MacsBug_screen.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = MacsBug_screen.c; path = "/Users/ericgallager/apple-gdb-1824/macsbug/MacsBug_screen.c"; sourceTree = "<absolute>"; tabWidth = 8; };
+		A589D7951A31386400E717B9 /* MacsBug_set.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = MacsBug_set.c; path = "/Users/ericgallager/apple-gdb-1824/macsbug/MacsBug_set.c"; sourceTree = "<absolute>"; tabWidth = 8; };
+		A589D7961A31386400E717B9 /* MacsBug_testing.i */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c.preprocessed; name = MacsBug_testing.i; path = "/Users/ericgallager/apple-gdb-1824/macsbug/MacsBug_testing.i"; sourceTree = "<absolute>"; };
+		A589D7971A31386400E717B9 /* MacsBug_utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = MacsBug_utils.c; path = "/Users/ericgallager/apple-gdb-1824/macsbug/MacsBug_utils.c"; sourceTree = "<absolute>"; tabWidth = 8; };
+		A589D7981A31386400E717B9 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = "/Users/ericgallager/apple-gdb-1824/macsbug/Makefile"; sourceTree = "<absolute>"; };
+		A589D7991A31386400E717B9 /* README.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = README.html; path = "/Users/ericgallager/apple-gdb-1824/macsbug/README.html"; sourceTree = "<absolute>"; };
+		A589D79B1A313A5E00E717B9 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = "/Users/ericgallager/apple-gdb-1824/Makefile"; sourceTree = "<absolute>"; };
+		A589D79C1A313A5E00E717B9 /* ntbuild.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = ntbuild.sh; path = "/Users/ericgallager/apple-gdb-1824/ntbuild.sh"; sourceTree = "<absolute>"; };
+		A589D79D1A313A5E00E717B9 /* ntconfig.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = ntconfig.sh; path = "/Users/ericgallager/apple-gdb-1824/ntconfig.sh"; sourceTree = "<absolute>"; };
+		A589D79E1A313AA000E717B9 /* template.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = template.h; path = "/Users/ericgallager/apple-gdb-1824/template.h"; sourceTree = "<absolute>"; };
+		A589D79F1A313AAF00E717B9 /* Special_Versions */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Special_Versions; path = "/Users/ericgallager/apple-gdb-1824/Special_Versions"; sourceTree = "<absolute>"; };
+		A589D7A01A313AB900E717B9 /* texi2html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.perl; name = texi2html; path = "/Users/ericgallager/apple-gdb-1824/texi2html"; sourceTree = "<absolute>"; };
 		A5965978198732D100404B03 /* djcheck.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = djcheck.sh; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/djgpp/djcheck.sh"; sourceTree = "<absolute>"; };
 		A5965979198732D100404B03 /* djconfig.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = djconfig.sh; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/djgpp/djconfig.sh"; sourceTree = "<absolute>"; };
 		A596597B198732D100404B03 /* langinfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = langinfo.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/config/djgpp/langinfo.h"; sourceTree = "<absolute>"; };
@@ -4001,16 +4350,34 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A589CB561A30F15100E717B9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A589CB681A30F23F00E717B9 /* ApplicationServices.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A589D5C21A311DE300E717B9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A589D5C91A311DF700E717B9 /* libcheckpoint.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		08FB7794FE84155DC02AAC07 /* gdb */ = {
 			isa = PBXGroup;
 			children = (
+				A589C8CF1A30EBDC00E717B9 /* top_level */,
 				2633ABCC101A22EC00337952 /* Makefile */,
 				2609CE510E82C407008125DE /* src */,
 				2609CE300E82C406008125DE /* gdb.sh */,
 				61D22059192D60D100FA979E /* Products */,
+				A589CB5D1A30F16D00E717B9 /* Linked Frameworks */,
 			);
 			name = gdb;
 			sourceTree = "<group>";
@@ -6940,6 +7307,8 @@
 			children = (
 				61D22058192D60D100FA979E /* libbfd-shared.dylib */,
 				61D8186E192FE3AB00E440C0 /* chew */,
+				A589CB581A30F15100E717B9 /* libcheckpoint.dylib */,
+				A589D5C41A311DE300E717B9 /* checkpoint_test */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -8471,6 +8840,688 @@
 			path = "/Users/ericgallager/apple-gdb-1824/src/gdb/mi/XcodePlugin/Resources/PBGDBIntrospectionSupport_debug";
 			sourceTree = "<absolute>";
 		};
+		A589C8CF1A30EBDC00E717B9 /* top_level */ = {
+			isa = PBXGroup;
+			children = (
+				A589C8DC1A30EC3100E717B9 /* .profile_generic */,
+				A589C8DD1A30EC3100E717B9 /* .profile_leopard */,
+				A589C8DE1A30EC3100E717B9 /* .profile_leopard_universal */,
+				A589C8DF1A30EC3100E717B9 /* .profile_snowleopard */,
+				A589C8E21A30EC7500E717B9 /* build.xml */,
+				A589C8E31A30EC8600E717B9 /* cache-symfiles.sh */,
+				A589C8E41A30ED2200E717B9 /* ChangeLog_just_me.txt */,
+				A589C8E81A30ED5F00E717B9 /* doc */,
+				A589C93B1A30EDF400E717B9 /* gdb.plist */,
+				A589C93D1A30EDF400E717B9 /* gdb.txt */,
+				A589C93E1A30EE1400E717B9 /* gdbadmin */,
+				A589C9521A30EE3D00E717B9 /* git_hooks */,
+				A589C95C1A30EE7100E717B9 /* htdocs */,
+				A589CA3E1A30EF3B00E717B9 /* Info-macos.template */,
+				A589CB4C1A30EF6400E717B9 /* libcheckpoint */,
+				A589D77D1A31386400E717B9 /* macsbug */,
+				A589D79B1A313A5E00E717B9 /* Makefile */,
+				A589D79C1A313A5E00E717B9 /* ntbuild.sh */,
+				A589D79D1A313A5E00E717B9 /* ntconfig.sh */,
+				A589D79F1A313AAF00E717B9 /* Special_Versions */,
+				A589D79E1A313AA000E717B9 /* template.h */,
+				A589D7A01A313AB900E717B9 /* texi2html */,
+			);
+			name = top_level;
+			sourceTree = "<group>";
+		};
+		A589C8E81A30ED5F00E717B9 /* doc */ = {
+			isa = PBXGroup;
+			children = (
+				A589C8EA1A30ED5F00E717B9 /* binutils.html */,
+				A589C8ED1A30ED5F00E717B9 /* binutils.pdf */,
+				A589C8EF1A30ED5F00E717B9 /* book.xml */,
+				A589C8F21A30ED5F00E717B9 /* gdb.gutenberg */,
+				A589C8F31A30ED5F00E717B9 /* gdb.html */,
+				A589C90B1A30ED5F00E717B9 /* gdb.pdf */,
+				A589C90E1A30ED5F00E717B9 /* gdbint.html */,
+				A589C9201A30ED5F00E717B9 /* gdbint.pdf */,
+				A589C9221A30ED5F00E717B9 /* README */,
+				A589C9231A30ED5F00E717B9 /* README-relnotes.txt */,
+				A589C9241A30ED5F00E717B9 /* refcard.pdf */,
+				A589C9261A30ED5F00E717B9 /* ReleaseNotes.xml */,
+				A589C9281A30ED5F00E717B9 /* stabs.html */,
+				A589C9381A30ED5F00E717B9 /* stabs.pdf */,
+			);
+			name = doc;
+			path = "/Users/ericgallager/apple-gdb-1824/doc";
+			sourceTree = "<absolute>";
+		};
+		A589C8EA1A30ED5F00E717B9 /* binutils.html */ = {
+			isa = PBXGroup;
+			children = (
+				A589C8EB1A30ED5F00E717B9 /* binutils.html */,
+				A589C8EC1A30ED5F00E717B9 /* binutils_toc.html */,
+			);
+			name = binutils.html;
+			path = "/Users/ericgallager/apple-gdb-1824/doc/binutils.html";
+			sourceTree = "<absolute>";
+		};
+		A589C8F31A30ED5F00E717B9 /* gdb.html */ = {
+			isa = PBXGroup;
+			children = (
+				A589C8F41A30ED5F00E717B9 /* gdb_1.html */,
+				A589C8F51A30ED5F00E717B9 /* gdb_10.html */,
+				A589C8F61A30ED5F00E717B9 /* gdb_11.html */,
+				A589C8F71A30ED5F00E717B9 /* gdb_12.html */,
+				A589C8F81A30ED5F00E717B9 /* gdb_13.html */,
+				A589C8F91A30ED5F00E717B9 /* gdb_14.html */,
+				A589C8FA1A30ED5F00E717B9 /* gdb_15.html */,
+				A589C8FB1A30ED5F00E717B9 /* gdb_16.html */,
+				A589C8FC1A30ED5F00E717B9 /* gdb_17.html */,
+				A589C8FD1A30ED5F00E717B9 /* gdb_18.html */,
+				A589C8FE1A30ED5F00E717B9 /* gdb_19.html */,
+				A589C8FF1A30ED5F00E717B9 /* gdb_2.html */,
+				A589C9001A30ED5F00E717B9 /* gdb_20.html */,
+				A589C9011A30ED5F00E717B9 /* gdb_21.html */,
+				A589C9021A30ED5F00E717B9 /* gdb_3.html */,
+				A589C9031A30ED5F00E717B9 /* gdb_4.html */,
+				A589C9041A30ED5F00E717B9 /* gdb_5.html */,
+				A589C9051A30ED5F00E717B9 /* gdb_6.html */,
+				A589C9061A30ED5F00E717B9 /* gdb_7.html */,
+				A589C9071A30ED5F00E717B9 /* gdb_8.html */,
+				A589C9081A30ED5F00E717B9 /* gdb_9.html */,
+				A589C9091A30ED5F00E717B9 /* gdb_foot.html */,
+				A589C90A1A30ED5F00E717B9 /* gdb_toc.html */,
+			);
+			name = gdb.html;
+			path = "/Users/ericgallager/apple-gdb-1824/doc/gdb.html";
+			sourceTree = "<absolute>";
+		};
+		A589C90E1A30ED5F00E717B9 /* gdbint.html */ = {
+			isa = PBXGroup;
+			children = (
+				A589C90F1A30ED5F00E717B9 /* gdbint_1.html */,
+				A589C9101A30ED5F00E717B9 /* gdbint_10.html */,
+				A589C9111A30ED5F00E717B9 /* gdbint_11.html */,
+				A589C9121A30ED5F00E717B9 /* gdbint_12.html */,
+				A589C9131A30ED5F00E717B9 /* gdbint_13.html */,
+				A589C9141A30ED5F00E717B9 /* gdbint_14.html */,
+				A589C9151A30ED5F00E717B9 /* gdbint_15.html */,
+				A589C9161A30ED5F00E717B9 /* gdbint_16.html */,
+				A589C9171A30ED5F00E717B9 /* gdbint_2.html */,
+				A589C9181A30ED5F00E717B9 /* gdbint_3.html */,
+				A589C9191A30ED5F00E717B9 /* gdbint_4.html */,
+				A589C91A1A30ED5F00E717B9 /* gdbint_5.html */,
+				A589C91B1A30ED5F00E717B9 /* gdbint_6.html */,
+				A589C91C1A30ED5F00E717B9 /* gdbint_7.html */,
+				A589C91D1A30ED5F00E717B9 /* gdbint_8.html */,
+				A589C91E1A30ED5F00E717B9 /* gdbint_9.html */,
+				A589C91F1A30ED5F00E717B9 /* gdbint_toc.html */,
+			);
+			name = gdbint.html;
+			path = "/Users/ericgallager/apple-gdb-1824/doc/gdbint.html";
+			sourceTree = "<absolute>";
+		};
+		A589C9281A30ED5F00E717B9 /* stabs.html */ = {
+			isa = PBXGroup;
+			children = (
+				A589C9291A30ED5F00E717B9 /* stabs_1.html */,
+				A589C92A1A30ED5F00E717B9 /* stabs_10.html */,
+				A589C92B1A30ED5F00E717B9 /* stabs_11.html */,
+				A589C92C1A30ED5F00E717B9 /* stabs_12.html */,
+				A589C92D1A30ED5F00E717B9 /* stabs_13.html */,
+				A589C92E1A30ED5F00E717B9 /* stabs_14.html */,
+				A589C92F1A30ED5F00E717B9 /* stabs_2.html */,
+				A589C9301A30ED5F00E717B9 /* stabs_3.html */,
+				A589C9311A30ED5F00E717B9 /* stabs_4.html */,
+				A589C9321A30ED5F00E717B9 /* stabs_5.html */,
+				A589C9331A30ED5F00E717B9 /* stabs_6.html */,
+				A589C9341A30ED5F00E717B9 /* stabs_7.html */,
+				A589C9351A30ED5F00E717B9 /* stabs_8.html */,
+				A589C9361A30ED5F00E717B9 /* stabs_9.html */,
+				A589C9371A30ED5F00E717B9 /* stabs_toc.html */,
+			);
+			name = stabs.html;
+			path = "/Users/ericgallager/apple-gdb-1824/doc/stabs.html";
+			sourceTree = "<absolute>";
+		};
+		A589C93E1A30EE1400E717B9 /* gdbadmin */ = {
+			isa = PBXGroup;
+			children = (
+				A589C9431A30EE1400E717B9 /* ss */,
+			);
+			name = gdbadmin;
+			path = "/Users/ericgallager/apple-gdb-1824/gdbadmin";
+			sourceTree = "<absolute>";
+		};
+		A589C9431A30EE1400E717B9 /* ss */ = {
+			isa = PBXGroup;
+			children = (
+				A589C9441A30EE1400E717B9 /* do-all-snapshots */,
+				A589C9451A30EE1400E717B9 /* do-scp */,
+				A589C9461A30EE1400E717B9 /* do-snapshot */,
+				A589C9471A30EE1400E717B9 /* do-ss */,
+				A589C9481A30EE1400E717B9 /* gdb_ari.sh */,
+				A589C9491A30EE1400E717B9 /* gdb_find.sh */,
+				A589C94A1A30EE1400E717B9 /* HOWTO */,
+				A589C94B1A30EE1400E717B9 /* make-snapshot */,
+				A589C94C1A30EE1400E717B9 /* README */,
+				A589C94D1A30EE1400E717B9 /* schedule */,
+				A589C94E1A30EE1400E717B9 /* update-git-version */,
+				A589C94F1A30EE1400E717B9 /* update-snapshot */,
+				A589C9501A30EE1400E717B9 /* update-web-ari */,
+				A589C9511A30EE1400E717B9 /* update-web-docs */,
+			);
+			name = ss;
+			path = "/Users/ericgallager/apple-gdb-1824/gdbadmin/ss";
+			sourceTree = "<absolute>";
+		};
+		A589C9521A30EE3D00E717B9 /* git_hooks */ = {
+			isa = PBXGroup;
+			children = (
+				A589C9531A30EE3D00E717B9 /* commit-msg */,
+				A589C9541A30EE3D00E717B9 /* git-version-gen */,
+				A589C9551A30EE3D00E717B9 /* gitlog-to-changelog */,
+				A589C9561A30EE3D00E717B9 /* gitlog2changelog.py */,
+				A589C9571A30EE3D00E717B9 /* pre-commit */,
+				A589C9581A30EE3D00E717B9 /* prepare-commit-msg */,
+				A589C95B1A30EE6300E717B9 /* README.md */,
+				A589C95A1A30EE3D00E717B9 /* update.pl */,
+			);
+			name = git_hooks;
+			path = "/Users/ericgallager/apple-gdb-1824/git_hooks";
+			sourceTree = "<absolute>";
+		};
+		A589C95C1A30EE7100E717B9 /* htdocs */ = {
+			isa = PBXGroup;
+			children = (
+				A589C95E1A30EE7100E717B9 /* bugs */,
+				A589C9601A30EE7100E717B9 /* committee */,
+				A589C9631A30EE7100E717B9 /* contribute */,
+				A589C9651A30EE7100E717B9 /* current */,
+				A589C9671A30EE7100E717B9 /* documentation */,
+				A589C9691A30EE7100E717B9 /* download */,
+				A589C96C1A30EE7100E717B9 /* gdb-memory-map.dtd */,
+				A589C96D1A30EE7100E717B9 /* images */,
+				A589C9731A30EE7100E717B9 /* index.html */,
+				A589C9741A30EE7100E717B9 /* index.sh */,
+				A589C9751A30EE7100E717B9 /* irc */,
+				A589C9771A30EE7100E717B9 /* links */,
+				A589C9791A30EE7100E717B9 /* mailing-lists */,
+				A589C97B1A30EE7100E717B9 /* mascot */,
+				A589C97D1A30EE7100E717B9 /* news */,
+				A589C9801A30EE7100E717B9 /* papers */,
+				A589C9CF1A30EE7100E717B9 /* schedule */,
+				A589C9D11A30EE7100E717B9 /* song */,
+				A589C9D31A30EE7100E717B9 /* talks */,
+				A589CA3C1A30EE7100E717B9 /* testing */,
+			);
+			name = htdocs;
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs";
+			sourceTree = "<absolute>";
+		};
+		A589C95E1A30EE7100E717B9 /* bugs */ = {
+			isa = PBXGroup;
+			children = (
+				A589C95F1A30EE7100E717B9 /* index.html */,
+			);
+			name = bugs;
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/bugs";
+			sourceTree = "<absolute>";
+		};
+		A589C9601A30EE7100E717B9 /* committee */ = {
+			isa = PBXGroup;
+			children = (
+				A589C9611A30EE7100E717B9 /* index.html */,
+				A589C9621A30EE7100E717B9 /* release-manager.html */,
+			);
+			name = committee;
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/committee";
+			sourceTree = "<absolute>";
+		};
+		A589C9631A30EE7100E717B9 /* contribute */ = {
+			isa = PBXGroup;
+			children = (
+				A589C9641A30EE7100E717B9 /* index.html */,
+			);
+			name = contribute;
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/contribute";
+			sourceTree = "<absolute>";
+		};
+		A589C9651A30EE7100E717B9 /* current */ = {
+			isa = PBXGroup;
+			children = (
+				A589C9661A30EE7100E717B9 /* index.html */,
+			);
+			name = current;
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/current";
+			sourceTree = "<absolute>";
+		};
+		A589C9671A30EE7100E717B9 /* documentation */ = {
+			isa = PBXGroup;
+			children = (
+				A589C9681A30EE7100E717B9 /* index.html */,
+			);
+			name = documentation;
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/documentation";
+			sourceTree = "<absolute>";
+		};
+		A589C9691A30EE7100E717B9 /* download */ = {
+			isa = PBXGroup;
+			children = (
+				A589C96A1A30EE7100E717B9 /* ANNOUNCEMENT */,
+				A589C96B1A30EE7100E717B9 /* index.html */,
+			);
+			name = download;
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/download";
+			sourceTree = "<absolute>";
+		};
+		A589C96D1A30EE7100E717B9 /* images */ = {
+			isa = PBXGroup;
+			children = (
+				A589C96E1A30EE7100E717B9 /* archer-fish.ico */,
+				A589C9711A30EE7100E717B9 /* archer.jpg */,
+				A589C9721A30EE7100E717B9 /* icon.png */,
+			);
+			name = images;
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/images";
+			sourceTree = "<absolute>";
+		};
+		A589C9751A30EE7100E717B9 /* irc */ = {
+			isa = PBXGroup;
+			children = (
+				A589C9761A30EE7100E717B9 /* index.html */,
+			);
+			name = irc;
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/irc";
+			sourceTree = "<absolute>";
+		};
+		A589C9771A30EE7100E717B9 /* links */ = {
+			isa = PBXGroup;
+			children = (
+				A589C9781A30EE7100E717B9 /* index.html */,
+			);
+			name = links;
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/links";
+			sourceTree = "<absolute>";
+		};
+		A589C9791A30EE7100E717B9 /* mailing-lists */ = {
+			isa = PBXGroup;
+			children = (
+				A589C97A1A30EE7100E717B9 /* index.html */,
+			);
+			name = "mailing-lists";
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/mailing-lists";
+			sourceTree = "<absolute>";
+		};
+		A589C97B1A30EE7100E717B9 /* mascot */ = {
+			isa = PBXGroup;
+			children = (
+				A589C97C1A30EE7100E717B9 /* index.html */,
+			);
+			name = mascot;
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/mascot";
+			sourceTree = "<absolute>";
+		};
+		A589C97D1A30EE7100E717B9 /* news */ = {
+			isa = PBXGroup;
+			children = (
+				A589C97E1A30EE7100E717B9 /* index.html */,
+				A589C97F1A30EE7100E717B9 /* reversible.html */,
+			);
+			name = news;
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/news";
+			sourceTree = "<absolute>";
+		};
+		A589C9801A30EE7100E717B9 /* papers */ = {
+			isa = PBXGroup;
+			children = (
+				A589C9811A30EE7100E717B9 /* index.html */,
+				A589C9821A30EE7100E717B9 /* libgdb */,
+				A589C9941A30EE7100E717B9 /* libgdb2 */,
+				A589C9AE1A30EE7100E717B9 /* linux */,
+				A589C9B51A30EE7100E717B9 /* multi-arch */,
+				A589C9CE1A30EE7100E717B9 /* unwind.html */,
+			);
+			name = papers;
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers";
+			sourceTree = "<absolute>";
+		};
+		A589C9821A30EE7100E717B9 /* libgdb */ = {
+			isa = PBXGroup;
+			children = (
+				A589C9831A30EE7100E717B9 /* index.html */,
+				A589C9841A30EE7100E717B9 /* libgdb.html */,
+				A589C9851A30EE7100E717B9 /* libgdb_1.html */,
+				A589C9861A30EE7100E717B9 /* libgdb_10.html */,
+				A589C9871A30EE7100E717B9 /* libgdb_11.html */,
+				A589C9881A30EE7100E717B9 /* libgdb_12.html */,
+				A589C9891A30EE7100E717B9 /* libgdb_13.html */,
+				A589C98A1A30EE7100E717B9 /* libgdb_2.html */,
+				A589C98B1A30EE7100E717B9 /* libgdb_3.html */,
+				A589C98C1A30EE7100E717B9 /* libgdb_4.html */,
+				A589C98D1A30EE7100E717B9 /* libgdb_5.html */,
+				A589C98E1A30EE7100E717B9 /* libgdb_6.html */,
+				A589C98F1A30EE7100E717B9 /* libgdb_7.html */,
+				A589C9901A30EE7100E717B9 /* libgdb_8.html */,
+				A589C9911A30EE7100E717B9 /* libgdb_9.html */,
+				A589C9921A30EE7100E717B9 /* libgdb_stoc.html */,
+				A589C9931A30EE7100E717B9 /* libgdb_toc.html */,
+			);
+			name = libgdb;
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb";
+			sourceTree = "<absolute>";
+		};
+		A589C9941A30EE7100E717B9 /* libgdb2 */ = {
+			isa = PBXGroup;
+			children = (
+				A589C9951A30EE7100E717B9 /* index.html */,
+				A589C9961A30EE7100E717B9 /* libgdb.html */,
+				A589C9971A30EE7100E717B9 /* libgdb.info */,
+				A589C9981A30EE7100E717B9 /* libgdb.texi */,
+				A589C9991A30EE7100E717B9 /* libgdb_1.html */,
+				A589C99A1A30EE7100E717B9 /* libgdb_2.html */,
+				A589C99B1A30EE7100E717B9 /* libgdb_3.html */,
+				A589C99C1A30EE7100E717B9 /* libgdb_4.html */,
+				A589C99D1A30EE7100E717B9 /* libgdb_5.html */,
+				A589C99E1A30EE7100E717B9 /* libgdb_6.html */,
+				A589C99F1A30EE7100E717B9 /* libgdb_stoc.html */,
+				A589C9A01A30EE7100E717B9 /* libgdb_toc.html */,
+				A589C9A11A30EE7100E717B9 /* Makefile */,
+				A589C9A21A30EE7100E717B9 /* wp */,
+			);
+			name = libgdb2;
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2";
+			sourceTree = "<absolute>";
+		};
+		A589C9A21A30EE7100E717B9 /* wp */ = {
+			isa = PBXGroup;
+			children = (
+				A589C9A31A30EE7100E717B9 /* adapter.jpg */,
+				A589C9A41A30EE7100E717B9 /* architectures.html */,
+				A589C9A51A30EE7100E717B9 /* gdbtk.html */,
+				A589C9A61A30EE7100E717B9 /* gdbtk.jpg */,
+				A589C9A71A30EE7100E717B9 /* gdbtk2.jpg */,
+				A589C9A81A30EE7100E717B9 /* server.html */,
+				A589C9A91A30EE7100E717B9 /* server.jpg */,
+				A589C9AA1A30EE7100E717B9 /* server2.jpg */,
+				A589C9AB1A30EE7100E717B9 /* stream.html */,
+				A589C9AC1A30EE7100E717B9 /* stream.jpg */,
+				A589C9AD1A30EE7100E717B9 /* stream2.jpg */,
+			);
+			name = wp;
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/libgdb2/wp";
+			sourceTree = "<absolute>";
+		};
+		A589C9AE1A30EE7100E717B9 /* linux */ = {
+			isa = PBXGroup;
+			children = (
+				A589C9AF1A30EE7100E717B9 /* i386-includes.png */,
+				A589C9B01A30EE7100E717B9 /* index.html */,
+				A589C9B41A30EE7100E717B9 /* linux-sse.html */,
+			);
+			name = linux;
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/linux";
+			sourceTree = "<absolute>";
+		};
+		A589C9B51A30EE7100E717B9 /* multi-arch */ = {
+			isa = PBXGroup;
+			children = (
+				A589C9B61A30EE7100E717B9 /* howto.html */,
+				A589C9B71A30EE7100E717B9 /* index.html */,
+				A589C9B81A30EE7100E717B9 /* real-multi-arch */,
+				A589C9CD1A30EE7100E717B9 /* whatis.html */,
+			);
+			name = "multi-arch";
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch";
+			sourceTree = "<absolute>";
+		};
+		A589C9B81A30EE7100E717B9 /* real-multi-arch */ = {
+			isa = PBXGroup;
+			children = (
+				A589C9B91A30EE7100E717B9 /* arch.jpg */,
+				A589C9BA1A30EE7100E717B9 /* away.jpg */,
+				A589C9BB1A30EE7100E717B9 /* foo.jpg */,
+				A589C9BC1A30EE7100E717B9 /* functions-for-thread-3.jpg */,
+				A589C9BD1A30EE7100E717B9 /* index.html */,
+				A589C9BE1A30EE7100E717B9 /* insight-frame.jpg */,
+				A589C9BF1A30EE7100E717B9 /* insight-thread.jpg */,
+				A589C9C01A30EE7100E717B9 /* memory-for-thread-3.jpg */,
+				A589C9C11A30EE7100E717B9 /* multi.jpg */,
+				A589C9C21A30EE7100E717B9 /* path.jpg */,
+				A589C9C31A30EE7100E717B9 /* registers-for-thread-3.jpg */,
+				A589C9C41A30EE7100E717B9 /* source-for-thread-3.jpg */,
+				A589C9C51A30EE7100E717B9 /* stack-buttons-3.jpg */,
+				A589C9C61A30EE7100E717B9 /* stack-for-thread-3.jpg */,
+				A589C9C71A30EE7100E717B9 /* thread-x-frame.jpg */,
+				A589C9C81A30EE7100E717B9 /* threads-for-thread-3.jpg */,
+				A589C9C91A30EE7100E717B9 /* var-with-struct-open.jpg */,
+				A589C9CA1A30EE7100E717B9 /* xform-frame.jpg */,
+				A589C9CB1A30EE7100E717B9 /* xform-thread.jpg */,
+				A589C9CC1A30EE7100E717B9 /* xform.jpg */,
+			);
+			name = "real-multi-arch";
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/papers/multi-arch/real-multi-arch";
+			sourceTree = "<absolute>";
+		};
+		A589C9CF1A30EE7100E717B9 /* schedule */ = {
+			isa = PBXGroup;
+			children = (
+				A589C9D01A30EE7100E717B9 /* index.html */,
+			);
+			name = schedule;
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/schedule";
+			sourceTree = "<absolute>";
+		};
+		A589C9D11A30EE7100E717B9 /* song */ = {
+			isa = PBXGroup;
+			children = (
+				A589C9D21A30EE7100E717B9 /* index.html */,
+			);
+			name = song;
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/song";
+			sourceTree = "<absolute>";
+		};
+		A589C9D31A30EE7100E717B9 /* talks */ = {
+			isa = PBXGroup;
+			children = (
+				A589C9D41A30EE7100E717B9 /* esc-west-1999 */,
+				A589CA3B1A30EE7100E717B9 /* index.html */,
+			);
+			name = talks;
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks";
+			sourceTree = "<absolute>";
+		};
+		A589C9D41A30EE7100E717B9 /* esc-west-1999 */ = {
+			isa = PBXGroup;
+			children = (
+				A589C9D51A30EE7100E717B9 /* agentexpr.html */,
+				A589C9D61A30EE7100E717B9 /* agentexpr_toc.html */,
+				A589C9D71A30EE7100E717B9 /* commands.html */,
+				A589C9D81A30EE7100E717B9 /* index.html */,
+				A589C9D91A30EE7100E717B9 /* INTROSPECT.html */,
+				A589C9DA1A30EE7100E717B9 /* paper.html */,
+				A589C9DC1A30EE7100E717B9 /* paper.pdf */,
+				A589C9DD1A30EE7100E717B9 /* protocol.html */,
+				A589C9DE1A30EE7100E717B9 /* sample.txt */,
+				A589C9DF1A30EE7100E717B9 /* slides */,
+				A589CA3A1A30EE7100E717B9 /* slides.pdf */,
+			);
+			name = "esc-west-1999";
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999";
+			sourceTree = "<absolute>";
+		};
+		A589C9DF1A30EE7100E717B9 /* slides */ = {
+			isa = PBXGroup;
+			children = (
+				A589C9E01A30EE7100E717B9 /* img001.png */,
+				A589C9E11A30EE7100E717B9 /* img002.png */,
+				A589C9E21A30EE7100E717B9 /* img003.png */,
+				A589C9E31A30EE7100E717B9 /* img004.png */,
+				A589C9E41A30EE7100E717B9 /* img005.png */,
+				A589C9E51A30EE7100E717B9 /* img006.png */,
+				A589C9E61A30EE7100E717B9 /* img007.png */,
+				A589C9E71A30EE7100E717B9 /* img008.png */,
+				A589C9E81A30EE7100E717B9 /* img009.png */,
+				A589C9E91A30EE7100E717B9 /* img010.png */,
+				A589C9EA1A30EE7100E717B9 /* img011.png */,
+				A589C9EB1A30EE7100E717B9 /* img012.png */,
+				A589C9EC1A30EE7100E717B9 /* img013.png */,
+				A589C9ED1A30EE7100E717B9 /* img014.png */,
+				A589C9EE1A30EE7100E717B9 /* img015.png */,
+				A589C9EF1A30EE7100E717B9 /* img016.png */,
+				A589C9F01A30EE7100E717B9 /* img017.png */,
+				A589C9F11A30EE7100E717B9 /* img018.png */,
+				A589C9F21A30EE7100E717B9 /* img019.png */,
+				A589C9F31A30EE7100E717B9 /* img020.png */,
+				A589C9F41A30EE7100E717B9 /* img021.png */,
+				A589C9F51A30EE7100E717B9 /* img022.png */,
+				A589C9F61A30EE7100E717B9 /* img023.png */,
+				A589C9F71A30EE7100E717B9 /* img024.png */,
+				A589C9F81A30EE7100E717B9 /* img025.png */,
+				A589C9F91A30EE7100E717B9 /* img026.png */,
+				A589C9FA1A30EE7100E717B9 /* img027.png */,
+				A589C9FB1A30EE7100E717B9 /* img028.png */,
+				A589C9FC1A30EE7100E717B9 /* img029.png */,
+				A589C9FD1A30EE7100E717B9 /* index.htm */,
+				A589C9FE1A30EE7100E717B9 /* index.html */,
+				A589C9FF1A30EE7100E717B9 /* sld001.htm */,
+				A589CA001A30EE7100E717B9 /* sld002.htm */,
+				A589CA011A30EE7100E717B9 /* sld003.htm */,
+				A589CA021A30EE7100E717B9 /* sld004.htm */,
+				A589CA031A30EE7100E717B9 /* sld005.htm */,
+				A589CA041A30EE7100E717B9 /* sld006.htm */,
+				A589CA051A30EE7100E717B9 /* sld007.htm */,
+				A589CA061A30EE7100E717B9 /* sld008.htm */,
+				A589CA071A30EE7100E717B9 /* sld009.htm */,
+				A589CA081A30EE7100E717B9 /* sld010.htm */,
+				A589CA091A30EE7100E717B9 /* sld011.htm */,
+				A589CA0A1A30EE7100E717B9 /* sld012.htm */,
+				A589CA0B1A30EE7100E717B9 /* sld013.htm */,
+				A589CA0C1A30EE7100E717B9 /* sld014.htm */,
+				A589CA0D1A30EE7100E717B9 /* sld015.htm */,
+				A589CA0E1A30EE7100E717B9 /* sld016.htm */,
+				A589CA0F1A30EE7100E717B9 /* sld017.htm */,
+				A589CA101A30EE7100E717B9 /* sld018.htm */,
+				A589CA111A30EE7100E717B9 /* sld019.htm */,
+				A589CA121A30EE7100E717B9 /* sld020.htm */,
+				A589CA131A30EE7100E717B9 /* sld021.htm */,
+				A589CA141A30EE7100E717B9 /* sld022.htm */,
+				A589CA151A30EE7100E717B9 /* sld023.htm */,
+				A589CA161A30EE7100E717B9 /* sld024.htm */,
+				A589CA171A30EE7100E717B9 /* sld025.htm */,
+				A589CA181A30EE7100E717B9 /* sld026.htm */,
+				A589CA191A30EE7100E717B9 /* sld027.htm */,
+				A589CA1A1A30EE7100E717B9 /* sld028.htm */,
+				A589CA1B1A30EE7100E717B9 /* sld029.htm */,
+				A589CA1C1A30EE7100E717B9 /* tsld001.htm */,
+				A589CA1D1A30EE7100E717B9 /* tsld002.htm */,
+				A589CA1E1A30EE7100E717B9 /* tsld003.htm */,
+				A589CA1F1A30EE7100E717B9 /* tsld004.htm */,
+				A589CA201A30EE7100E717B9 /* tsld005.htm */,
+				A589CA211A30EE7100E717B9 /* tsld006.htm */,
+				A589CA221A30EE7100E717B9 /* tsld007.htm */,
+				A589CA231A30EE7100E717B9 /* tsld008.htm */,
+				A589CA241A30EE7100E717B9 /* tsld009.htm */,
+				A589CA251A30EE7100E717B9 /* tsld010.htm */,
+				A589CA261A30EE7100E717B9 /* tsld011.htm */,
+				A589CA271A30EE7100E717B9 /* tsld012.htm */,
+				A589CA281A30EE7100E717B9 /* tsld013.htm */,
+				A589CA291A30EE7100E717B9 /* tsld014.htm */,
+				A589CA2A1A30EE7100E717B9 /* tsld015.htm */,
+				A589CA2B1A30EE7100E717B9 /* tsld016.htm */,
+				A589CA2C1A30EE7100E717B9 /* tsld017.htm */,
+				A589CA2D1A30EE7100E717B9 /* tsld018.htm */,
+				A589CA2E1A30EE7100E717B9 /* tsld019.htm */,
+				A589CA2F1A30EE7100E717B9 /* tsld020.htm */,
+				A589CA301A30EE7100E717B9 /* tsld021.htm */,
+				A589CA311A30EE7100E717B9 /* tsld022.htm */,
+				A589CA321A30EE7100E717B9 /* tsld023.htm */,
+				A589CA331A30EE7100E717B9 /* tsld024.htm */,
+				A589CA341A30EE7100E717B9 /* tsld025.htm */,
+				A589CA351A30EE7100E717B9 /* tsld026.htm */,
+				A589CA361A30EE7100E717B9 /* tsld027.htm */,
+				A589CA371A30EE7100E717B9 /* tsld028.htm */,
+				A589CA381A30EE7100E717B9 /* tsld029.htm */,
+			);
+			name = slides;
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/talks/esc-west-1999/slides";
+			sourceTree = "<absolute>";
+		};
+		A589CA3C1A30EE7100E717B9 /* testing */ = {
+			isa = PBXGroup;
+			children = (
+				A589CA3D1A30EE7100E717B9 /* index.html */,
+			);
+			name = testing;
+			path = "/Users/ericgallager/apple-gdb-1824/htdocs/testing";
+			sourceTree = "<absolute>";
+		};
+		A589CB4C1A30EF6400E717B9 /* libcheckpoint */ = {
+			isa = PBXGroup;
+			children = (
+				A589CB4F1A30EF6400E717B9 /* cpcg.c */,
+				A589CB501A30EF6400E717B9 /* cpfork.c */,
+				A589D5C01A311DA800E717B9 /* cptest.c */,
+				A589CB511A30EF6400E717B9 /* Makefile */,
+				A589CB531A30EF6400E717B9 /* README */,
+			);
+			name = libcheckpoint;
+			path = "/Users/ericgallager/apple-gdb-1824/libcheckpoint";
+			sourceTree = "<absolute>";
+		};
+		A589CB5D1A30F16D00E717B9 /* Linked Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A589CC321A30F38700E717B9 /* AppKit.framework */,
+				A589CB671A30F23F00E717B9 /* ApplicationServices.framework */,
+				A589CFC21A30F41100E717B9 /* Carbon.framework */,
+				A589D0C21A30F4B800E717B9 /* Cocoa.framework */,
+				A589D0801A30F48B00E717B9 /* CoreFoundation.framework */,
+				A589D07E1A30F43700E717B9 /* DebugSymbols.framework */,
+				A589CCED1A30F39C00E717B9 /* Foundation.framework */,
+				A589D0C71A30F4C700E717B9 /* IOKit.framework */,
+				A589D3D01A3112D700E717B9 /* Security.framework */,
+				A589CD6F1A30F3CF00E717B9 /* System.framework */,
+				A589D1CD1A31125B00E717B9 /* Tcl.framework */,
+				A589D2DA1A31126B00E717B9 /* Tk.framework */,
+			);
+			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+		A589D77D1A31386400E717B9 /* macsbug */ = {
+			isa = PBXGroup;
+			children = (
+				A589D7801A31386400E717B9 /* cp_macsbug */,
+				A589D7811A31386400E717B9 /* gdb_plugin_support */,
+				A589D78F1A31386400E717B9 /* MacsBug.h */,
+				A589D7901A31386400E717B9 /* MacsBug_cmdline.c */,
+				A589D7911A31386400E717B9 /* MacsBug_display.c */,
+				A589D7921A31386400E717B9 /* MacsBug_patches.c */,
+				A589D7931A31386400E717B9 /* MacsBug_plugins.c */,
+				A589D7941A31386400E717B9 /* MacsBug_screen.c */,
+				A589D7951A31386400E717B9 /* MacsBug_set.c */,
+				A589D7961A31386400E717B9 /* MacsBug_testing.i */,
+				A589D7971A31386400E717B9 /* MacsBug_utils.c */,
+				A589D7981A31386400E717B9 /* Makefile */,
+				A589D7991A31386400E717B9 /* README.html */,
+			);
+			name = macsbug;
+			path = "/Users/ericgallager/apple-gdb-1824/macsbug";
+			sourceTree = "<absolute>";
+		};
+		A589D7811A31386400E717B9 /* gdb_plugin_support */ = {
+			isa = PBXGroup;
+			children = (
+				A589D7841A31386400E717B9 /* gdb.c */,
+				A589D7851A31386400E717B9 /* gdb.h */,
+				A589D7861A31386400E717B9 /* gdb_complete.c */,
+				A589D7871A31386400E717B9 /* gdb_io_redirection.c */,
+				A589D7881A31386400E717B9 /* gdb_private_interfaces.h */,
+				A589D7891A31386400E717B9 /* gdb_set.c */,
+				A589D78A1A31386400E717B9 /* gdb_special_events.c */,
+				A589D78B1A31386400E717B9 /* gdb_testing.i */,
+				A589D78C1A31386400E717B9 /* Makefile */,
+			);
+			name = gdb_plugin_support;
+			path = "/Users/ericgallager/apple-gdb-1824/macsbug/gdb_plugin_support";
+			sourceTree = "<absolute>";
+		};
 		A59659A2198733AD00404B03 /* arc */ = {
 			isa = PBXGroup;
 			children = (
@@ -8784,6 +9835,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A589CB541A30F15100E717B9 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXLegacyTarget section */
@@ -8896,6 +9954,40 @@
 			productReference = 61D8186E192FE3AB00E440C0 /* chew */;
 			productType = "com.apple.product-type.tool";
 		};
+		A589CB571A30F15100E717B9 /* libcheckpoint */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A589CB5E1A30F16E00E717B9 /* Build configuration list for PBXNativeTarget "libcheckpoint" */;
+			buildPhases = (
+				A589CB541A30F15100E717B9 /* Headers */,
+				A589CB551A30F15100E717B9 /* Sources */,
+				A589CB561A30F15100E717B9 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = libcheckpoint;
+			productName = libcheckpoint;
+			productReference = A589CB581A30F15100E717B9 /* libcheckpoint.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		A589D5C31A311DE300E717B9 /* checkpoint_test */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A589D5CC1A311E1E00E717B9 /* Build configuration list for PBXNativeTarget "checkpoint_test" */;
+			buildPhases = (
+				A589D5C11A311DE300E717B9 /* Sources */,
+				A589D5C21A311DE300E717B9 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A589D5CB1A311DFF00E717B9 /* PBXTargetDependency */,
+			);
+			name = checkpoint_test;
+			productName = checkpoint_test;
+			productReference = A589D5C41A311DE300E717B9 /* checkpoint_test */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -8924,6 +10016,8 @@
 				61D2221A192D6E0E00FA979E /* Top-level_Makefile */,
 				61D22221192D6E3A00FA979E /* Src-level_Makefile */,
 				61D8186D192FE3AB00E440C0 /* chew */,
+				A589CB571A30F15100E717B9 /* libcheckpoint */,
+				A589D5C31A311DE300E717B9 /* checkpoint_test */,
 			);
 		};
 /* End PBXProject section */
@@ -9270,6 +10364,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A589CB551A30F15100E717B9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A589CB5B1A30F16700E717B9 /* cpcg.c in Sources */,
+				A589CB5C1A30F16700E717B9 /* cpfork.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A589D5C11A311DE300E717B9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A589D5C81A311DF100E717B9 /* cptest.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -9282,6 +10393,11 @@
 			isa = PBXTargetDependency;
 			target = 61D221C9192D63C200FA979E /* configure */;
 			targetProxy = 61D2221D192D6E2800FA979E /* PBXContainerItemProxy */;
+		};
+		A589D5CB1A311DFF00E717B9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A589CB571A30F15100E717B9 /* libcheckpoint */;
+			targetProxy = A589D5CA1A311DFF00E717B9 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -9820,6 +10936,248 @@
 			};
 			name = Release;
 		};
+		A589CB591A30F15200E717B9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				"ARCHS[sdk=macosx10.5]" = (
+					ppc,
+					i386,
+				);
+				"ARCHS[sdk=macosx10.6]" = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"_FORTIFY_SOURCE=2",
+					I_WANT_TO_ADD_COLORFUL_STRIPES,
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_PEDANTIC = YES;
+				GCC_WARN_PROTOTYPE_CONVERSION = YES;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_PARAMETER = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
+				INSTALL_PATH = /usr/local/libexec/gdb;
+				OTHER_CFLAGS = (
+					"-ggdb3",
+					"-gfull",
+					"-ftrapping-math",
+					"-fsignaling-nans",
+					"-fbounds-check",
+					"-fstack-check",
+					"-ftrapv",
+					"-funwind-tables",
+					"-fasynchronous-unwind-tables",
+				);
+				"OTHER_CFLAGS[arch=i386]" = (
+					"-ggdb3",
+					"-gfull",
+					"-mstackrealign",
+					"-ftrapping-math",
+					"-fsignaling-nans",
+					"-fbounds-check",
+					"-fstack-check",
+					"-ftrapv",
+					"-funwind-tables",
+					"-fasynchronous-unwind-tables",
+				);
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+					"-headerpad_max_install_names",
+					"-warn_compact_unwind",
+					"-warn_stabs",
+					"-warn_commons",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = libcheckpoint;
+				VALID_ARCHS = "i386 ppc ppc7400 ppc970";
+				VERSIONING_SYSTEM = "apple-generic";
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Wextra",
+					"-Wimplicit-int",
+					"-Wpointer-arith",
+					"-Wcast-align",
+					"-Wwrite-strings",
+					"-Wundef",
+					"-Wmissing-noreturn",
+					"-Wformat=2",
+					"-Winline",
+					"-Wswitch-default",
+					"-Wswitch-enum",
+					"-Wdeclaration-after-statement",
+					"-Wstrict-prototypes",
+					"-Wold-style-definition",
+					"-Wc++-compat",
+					"-Wmissing-declarations",
+				);
+			};
+			name = Debug;
+		};
+		A589CB5A1A30F15200E717B9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				INSTALL_PATH = /usr/local/libexec/gdb;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = libcheckpoint;
+				VALID_ARCHS = "i386 ppc ppc7400 ppc970";
+				VERSIONING_SYSTEM = "apple-generic";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		A589D5C61A311DE400E717B9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				"ARCHS[sdk=macosx10.5]" = (
+					ppc,
+					i386,
+				);
+				"ARCHS[sdk=macosx10.6]" = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DEBUGGING_SYMBOLS = full;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_EXCEPTIONS = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"_FORTIFY_SOURCE=2",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_FIELD_INITIALIZERS = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_PEDANTIC = YES;
+				GCC_WARN_PROTOTYPE_CONVERSION = YES;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_PARAMETER = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
+				INSTALL_PATH = /usr/local/bin;
+				MACH_O_TYPE = mh_execute;
+				OTHER_CFLAGS = (
+					"-ggdb3",
+					"-gfull",
+					"-ftrapping-math",
+					"-fsignaling-nans",
+					"-fbounds-check",
+					"-fstack-check",
+					"-ftrapv",
+					"-funwind-tables",
+					"-fasynchronous-unwind-tables",
+				);
+				"OTHER_CFLAGS[arch=i386]" = (
+					"-ggdb3",
+					"-gfull",
+					"-mstackrealign",
+					"-ftrapping-math",
+					"-fsignaling-nans",
+					"-fbounds-check",
+					"-fstack-check",
+					"-ftrapv",
+					"-funwind-tables",
+					"-fasynchronous-unwind-tables",
+				);
+				OTHER_LDFLAGS = (
+					"-headerpad_max_install_names",
+					"-warn_compact_unwind",
+					"-warn_stabs",
+					"-warn_commons",
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = checkpoint_test;
+				VALID_ARCHS = "i386 ppc ppc7400 ppc970";
+				VERSIONING_SYSTEM = "apple-generic";
+				WARNING_CFLAGS = (
+					"-Wall",
+					"-Wextra",
+					"-Wimplicit",
+					"-Wpointer-arith",
+					"-Wcast-align",
+					"-Wwrite-strings",
+					"-Wundef",
+					"-Wmissing-noreturn",
+					"-Wformat=2",
+					"-Winline",
+					"-Wswitch-default",
+					"-Wswitch-enum",
+					"-Wdeclaration-after-statement",
+					"-Wstrict-prototypes",
+					"-Wold-style-definition",
+					"-Wc++-compat",
+					"-Wmissing-declarations",
+					"-Wnested-externs",
+				);
+			};
+			name = Debug;
+		};
+		A589D5C71A311DE400E717B9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				INSTALL_PATH = /usr/local/bin;
+				MACH_O_TYPE = mh_execute;
+				PREBINDING = NO;
+				PRODUCT_NAME = checkpoint_test;
+				VALID_ARCHS = "i386 ppc ppc7400 ppc970";
+				VERSIONING_SYSTEM = "apple-generic";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -9900,6 +11258,24 @@
 			buildConfigurations = (
 				61D81870192FE3AC00E440C0 /* Debug */,
 				61D81871192FE3AC00E440C0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A589CB5E1A30F16E00E717B9 /* Build configuration list for PBXNativeTarget "libcheckpoint" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A589CB591A30F15200E717B9 /* Debug */,
+				A589CB5A1A30F15200E717B9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A589D5CC1A311E1E00E717B9 /* Build configuration list for PBXNativeTarget "checkpoint_test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A589D5C61A311DE400E717B9 /* Debug */,
+				A589D5C71A311DE400E717B9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

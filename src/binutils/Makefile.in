@@ -112,15 +112,13 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/iconv.m4 \
 	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/lib-ld.m4 \
 	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
-	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/acinclude.m4 \
-	$(top_srcdir)/../bfd/acinclude.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/acinclude.m4 $(top_srcdir)/../bfd/acinclude.m4 \
 	$(top_srcdir)/../config/acx.m4 $(top_srcdir)/../bfd/bfd.m4 \
 	$(top_srcdir)/../bfd/warning.m4 \
-	$(top_srcdir)/../config/zlib.m4 \
-	$(top_srcdir)/../libtool-old.m4 $(top_srcdir)/../gettext.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/../config/zlib.m4 $(top_srcdir)/../libtool.m4 \
+	$(top_srcdir)/../gettext.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
@@ -837,7 +835,7 @@ CONFIG_STATUS_DEPENDENCIES = $(BFDDIR)/configure.ac \
 	$(BFDDIR)/development.sh
 
 DISTCLEANFILES = sysinfo sysroff.c sysroff.h \
-	site.exp site.bak embedspu
+	site.exp site.bak embedspu *~ .DS_Store
 
 
 # APPLE LOCAL begin framework building
@@ -1673,7 +1671,7 @@ distclean: distclean-recursive
 	-rm -f Makefile
 distclean-am: clean-am distclean-DEJAGNU distclean-compile \
 	distclean-generic distclean-hdr distclean-libtool \
-	distclean-tags
+	distclean-local distclean-tags
 
 dvi: dvi-recursive
 
@@ -1749,14 +1747,14 @@ uninstall-am: uninstall-binPROGRAMS uninstall-binSCRIPTS
 	dist-all dist-bzip2 dist-gzip dist-lzip dist-shar dist-tarZ \
 	dist-xz dist-zip distcheck distclean distclean-DEJAGNU \
 	distclean-compile distclean-generic distclean-hdr \
-	distclean-libtool distclean-tags distcleancheck distdir \
-	distuninstallcheck dvi dvi-am html html-am info info-am \
-	install install-am install-binPROGRAMS install-binSCRIPTS \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-exec-local install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am \
+	distclean-libtool distclean-local distclean-tags \
+	distcleancheck distdir distuninstallcheck dvi dvi-am html \
+	html-am info info-am install install-am install-binPROGRAMS \
+	install-binSCRIPTS install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-exec-local \
+	install-html install-html-am install-info install-info-am \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
 	installcheck-binPROGRAMS installcheck-binSCRIPTS \
 	installcheck-local installdirs installdirs-am maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
@@ -1967,7 +1965,12 @@ nlmconv.@OBJEXT@: nlmconv.c $(INCDIR)/coff/sym.h $(INCDIR)/coff/ecoff.h
 diststuff: $(EXTRA_DIST) info
 all: info
 
+distclean-local:
+	rm -rf autom4te.cache || rmdir autom4te.cache
+.PHONY: distclean-local
+
 Makefile_depends: $(BFDDIR)/configure.ac config.status
+.PHONY: Makefile_depends
 
 # Targets to rebuild dependencies in this Makefile.
 # Have to get rid of any pre-existing DEP1 here, so that "$?" later

@@ -15,6 +15,15 @@ m4_ifdef([AC_REQUIRE_AUX_FILE],[
 ])dnl
 
 AC_CANONICAL_TARGET
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  AC_SUBST([HOST_ARCHITECTURE])
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+  AC_SUBST([TARGET_ARCHITECTURE])
+fi
+
 AC_OBJEXT
 AC_EXEEXT
 AC_USE_SYSTEM_EXTENSIONS
@@ -50,13 +59,22 @@ AC_SYS_LONG_FILE_NAMES
 # Checks for programs.
 AM_PROG_AR
 AC_PROG_CXX
+AC_DEFUN([AC_REQUIRE_GREPS],[
+  AC_REQUIRE([AC_PROG_GREP])dnl
+  AC_REQUIRE([AC_PROG_EGREP])dnl
+  AC_REQUIRE([AC_PROG_FGREP])dnl
+])dnl
+AC_REQUIRE_GREPS
 AC_DISABLE_SHARED
 LT_INIT([shared static win32-dll])dnl
 LT_LANG([C])dnl
+dnl# temporarily set this while I update everything libtool-related:
+LT_PREREQ([2.4.4])dnl
 AM_PROG_INSTALL_STRIP
 AC_PROG_INSTALL
 AC_SUBST([INSTALLdir])dnl
 AC_PROG_LN_S
+AC_PROG_MKDIR_P
 if test "x${RANLIB}" = "x"; then
   test -z "${RANLIB}"
   AC_PROG_RANLIB

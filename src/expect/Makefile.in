@@ -41,17 +41,17 @@ TCLLIB_INSTALLED = @TCL_LIB_SPEC@
 
 # The following definitions are only necessary if you want to use Tk with
 # Expect.
-# Tk include files
+# Tk include files:
 TKHDIR = @TKHDIR@
 TKHDIRDASHI = @TKHDIRDASHI@
 
-# Tk library
+# Tk library:
 TKLIB = @TK_BUILD_LIB_SPEC@
 TKLIB_INSTALLED = @TK_LIB_SPEC@
 
-# X11 include files and other flags to compiler
+# X11 include files and other flags to compiler:
 X11_CFLAGS = @TK_XINCLUDES@
-# X library
+# X library:
 X11_LD_FLAGS =
 
 # Flags to pass to both cc and ld
@@ -223,7 +223,7 @@ FLAGS_TO_PASS = \
 # Following defines are for DejaGnu
 #
 
-# These let the DejaGnu test suite run when DejaGnu isn't 
+# These let the DejaGnu test suite run when DejaGnu is NOT
 # installed yet, so run it from the srcdir and objdir.
 EXPECT = ` \
   if [ -f $${rootme}/expect$(EXEEXT) ] ; then \
@@ -324,10 +324,10 @@ LIB_RUNTIME_DIR = $(tcl_libdir)
 
 .c.o:
 	$(CC) -c $(CFLAGS_INT) $(STTY) $(HDEFS) $<
-	if [ "@EXP_SHLIB_CFLAGS@" != "x" ] ; then \
-	   if [ ! -d shared ] ; then \
+	if [ "@EXP_SHLIB_CFLAGS@" != "x" ]; then \
+	   if [ ! -d shared ]; then \
                 mkdir shared ; \
-           else true; fi ; \
+           else echo "skipping making new shared subdir for $@"; fi; \
            $(CC) -c $(CFLAGS_INT) @EXP_SHLIB_CFLAGS@ $(STTY) $(HDEFS) $< -o shared/$@ ; \
         fi
 
@@ -373,16 +373,16 @@ expecti$(EXEEXT): exp_main_exp.c $(EXP_UNSHARED_LIB_FILE)
 #   is too long for some filesystems, sigh.
 install_shared_lib: $(EXP_LIB_FILES)
 	${srcdir}/mkinstalldirs $(libdir)
-	if [ -s $(EXP_UNSHARED_LIB_FILE) ] ; then \
+	if [ -s $(EXP_UNSHARED_LIB_FILE) ]; then \
 	  $(INSTALL_DATA) $(EXP_UNSHARED_LIB_FILE) $(libdir)/$(EXP_UNSHARED_LIB_FILE) ; \
 	$(UNSHARED_RANLIB) $(libdir)/$(EXP_UNSHARED_LIB_FILE) ; \
 	$(INSTALL_DATA) $(EXP_UNSHARED_LIB_FILE) $(tcl_libdir)/$(EXP_UNSHARED_LIB_FILE) ; \
 	$(UNSHARED_RANLIB) $(tcl_libdir)/$(EXP_UNSHARED_LIB_FILE) ; \
-	else true; fi
-	if [ -s $(EXP_SHARED_LIB_FILE) ] ; then \
+	else echo "never mind"; fi
+	if [ -s $(EXP_SHARED_LIB_FILE) ]; then \
 	  $(INSTALL_PROGRAM) $(EXP_SHARED_LIB_FILE) $(tcl_libdir)/$(EXP_SHARED_LIB_FILE) ; \
 	  $(INSTALL_PROGRAM) pkgIndex $(libdir)/pkgIndex.tcl ; \
-	else true; fi
+	else echo "never mind"; fi
 
 expect_installed$(EXEEXT): exp_main_exp.o $(EXP_LIB_FILE) install_shared_lib
 	$(CC) $(XCFLAGS) @EXP_SHLIB_CFLAGS@ @TCL_LD_FLAGS@ -o expect_installed$(EXEEXT) exp_main_exp.o @EXP_LIB_SPEC@ $(TCLLIB_INSTALLED) $(EXP_AND_TCL_LIBS)
@@ -446,7 +446,7 @@ install: expect$(EXEEXT) expect_installed$(EXEEXT) ${X11_PROGS_INSTALLED} pkgInd
 	-if [ -s expectk_installed$(EXEEXT) ] ; then \
 	  $(INSTALL_PROGRAM) expectk_installed$(EXEEXT) $(bindir)/expectk$(EXEEXT) ; \
 	  $(INSTALL_DATA) $(srcdir)/expectk.man $(man1dir)/expectk.1 ; \
-	else true; fi
+	else echo "never mind"; fi
 # install Expect man page
 	$(INSTALL_DATA) $(srcdir)/expect.man $(man1dir)/expect.1
 # install man page for Expect and Expectk libraries
@@ -467,25 +467,25 @@ install-scripts: $(SCRIPTS)
 	   export TCL_LIBRARY ; \
 	   if $(LOCAL_EXPECT) $(srcdir)/fixcat ; then \
 	      $(INSTALL_DATA) $(srcdir)/fixcat $(EXECSCRIPTDIR)/cat-buffers ; \
-	   else true; fi
+	   else echo "never mind"; fi
 # install standalone scripts and their man pages, if requested
 	${srcdir}/mkinstalldirs $(bindir_arch_indep) $(man1dir) $(SCRIPTDIR) $(EXECSCRIPTDIR)
 	-for i in $(SCRIPT_LIST) ; do \
-	  if [ -f $$i ] ; then \
-	    $(INSTALL_PROGRAM) $$i $(bindir_arch_indep)/$$i ; \
-	    rm -f $$i ; \
-	  else true; fi ; \
+	  if [ -f $${i} ] ; then \
+	    $(INSTALL_PROGRAM) $${i} $(bindir_arch_indep)/$${i} ; \
+	    rm -f $${i} ; \
+	  else echo "skipping $${i}"; fi ; \
 	done
 	-for i in $(SCRIPT_MANPAGE_LIST) ; do \
 	  if [ -f $(srcdir)/example/$$i.man ] ; then \
 	    $(INSTALL_DATA) $(srcdir)/example/$$i.man $(man1dir)/$$i.1 ; \
-	  else true; fi ; \
+	  else echo "skipping manpage edition of $${i}"; fi; \
 	done
 	$(INSTALL_DATA) pkgIndex.tcl $(SCRIPTDIR)
 
 $(SCRIPT_LIST):
-	TCL_LIBRARY=$(TCL_LIBRARY) ; \
-	export TCL_LIBRARY ; \
+	TCL_LIBRARY=$(TCL_LIBRARY); \
+	export TCL_LIBRARY; \
 	$(LOCAL_EXPECT) $(srcdir)/fixline1 $(SHORT_BINDIR) < $(srcdir)/example/$@ > $@
 
 # Delete all the installed files that the `install' target creates
@@ -528,7 +528,7 @@ configure:
 	@echo "Rebuilding configure..."
 	if [ x"${srcdir}" = x"@srcdir@" ] ; then \
 	  srcdir=. ; export srcdir ; \
-	else true ; fi ; \
+	else echo "nothing to do about the srcdir variable"; fi ; \
 	(cd $${srcdir}; autoconf)
 
 config.status: $(srcdir)/configure
@@ -538,16 +538,16 @@ config.status: $(srcdir)/configure
 check:
 	@if [ -f testsuite/Makefile ]; then \
 	   cd testsuite && $(MAKE) $(FLAGS_TO_PASS) check; \
-	else true; fi
+	else echo "skipping testsuite"; fi
 
 # Original Dbgconfig.in comes from the NIST Tcl debugger distribution.
 # CYGNUS LOCAL: Do NOT have dependancies, because people get upset
 # when autoconf gets run automatically.
 Dbgconfigure:
 	@echo "Rebuilding Dbgconfigure..."
-	@if [ x"${srcdir}" = x"@srcdir@" ] ; then \
+	@if [ x"${srcdir}" = x"@srcdir@" ]; then \
 	  srcdir=. ; export srcdir ; \
-	else true ; fi ; \
+	else echo "nothing to do about srcdir variable"; fi ; \
 	(cd $${srcdir}; rm -fr Dbgconfigure ; \
 	 autoconf Dbgconfig.in > Dbgconfigure ; \
 	 chmod a+x Dbgconfigure)
@@ -620,14 +620,16 @@ hudson:
 	unset CC ; \
 	configure --verbose --prefix=/granta/home/nist/libes/ibm --exec-prefix=/granta /home/nist/libes/ibm/arch
 
-# report globals that should NOT be public but are
+# report globals that should NOT be public, but are anyways:
 bad_globals:
 	nm $(EXP_UNSHARED_LIB_FILE) | egrep -v " [a-zU] | _exp| _Exp| _Dbg"
 
+#FIXME: might want to make the linter configurable:
+LINTER = lint
 LINTFLAGS = -h -q -x 
 
 lint:
-	lint $(LINTFLAGS) $(CPPFLAGS) $(STTY) $(CFILES) exp_main_exp.c $(TCLLINTLIB) | tee expect.lint
+	$(LINTER) $(LINTFLAGS) $(CPPFLAGS) $(STTY) $(CFILES) exp_main_exp.c $(TCLLINTLIB) | tee expect.lint
 
 # after copying source directory, reestablish all links
 symlink:
@@ -774,13 +776,13 @@ install-html:	FAQ.html homepage.html
 subdir_do: force
 	@for i in $(SUBDIRS); do \
 	   echo "Making $(DO) in $${i}..." ; \
-	   if [ -d ./$$i ] ; then \
+	   if [ -d ./$${i} ] ; then \
 	     if (rootme=`pwd`/ ; export rootme ; \
 	       rootsrc=`cd $(srcdir); pwd`/ ; export rootsrc ; \
 	       cd ./$$i; \
 	       $(MAKE) $(FLAGS_TO_PASS) $(DO)) ; then true ; \
 	     else exit 1 ; fi ; \
-	   else true ; fi ; \
+	   else echo "never mind about $${i}..."; fi ; \
 	done
 force:
 

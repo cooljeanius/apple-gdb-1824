@@ -24,7 +24,8 @@ sinclude([../config/zlib.m4])
 
 dnl# See whether we need to use fopen-bin.h rather than fopen-same.h.
 AC_DEFUN([BFD_BINARY_FOPEN],
-[AC_REQUIRE([AC_CANONICAL_TARGET])
+[AC_REQUIRE([AC_CANONICAL_TARGET])dnl
+# Assume based on system.
 case "${host}" in
 changequote(,)dnl
 *-*-msdos* | *-*-go32* | *-*-mingw32* | *-*-cygwin* | *-*-windows*)
@@ -36,7 +37,8 @@ esac])dnl
 dnl# Get a default for CC_FOR_BUILD to put into Makefile.
 AC_DEFUN([BFD_CC_FOR_BUILD],
 [# Put a plausible default for CC_FOR_BUILD in Makefile.
-AC_REQUIRE([AC_PROG_CC])
+AC_REQUIRE([AC_PROG_CC])dnl
+# gcc is only conditionally a default.
 if test -z "${CC_FOR_BUILD}"; then
   if test "x${cross_compiling}" = "xno"; then
     CC_FOR_BUILD='$(CC)'
@@ -44,9 +46,10 @@ if test -z "${CC_FOR_BUILD}"; then
     CC_FOR_BUILD=gcc
   fi
 fi
-AC_SUBST([CC_FOR_BUILD])
+AC_SUBST([CC_FOR_BUILD])dnl
 # Also set EXEEXT_FOR_BUILD.
-AC_REQUIRE([AC_EXEEXT])
+AC_REQUIRE([AC_EXEEXT])dnl
+# Behave differently when cross-compiling.
 if test "x${cross_compiling}" = "xno"; then
   EXEEXT_FOR_BUILD='$(EXEEXT)'
 else
@@ -65,26 +68,30 @@ else
      rm -f conftest* || rm -rfv conftest* || rmdir conftest*
      test x"${bfd_cv_build_exeext}" = x"" && bfd_cv_build_exeext=no])
   EXEEXT_FOR_BUILD=""
-  test x"${bfd_cv_build_exeext}" != xno && EXEEXT_FOR_BUILD=${bfd_cv_build_exeext}
+  test x"${bfd_cv_build_exeext}" != x"no" && EXEEXT_FOR_BUILD=${bfd_cv_build_exeext}
 fi
-AC_SUBST([EXEEXT_FOR_BUILD])])dnl
+AC_SUBST([EXEEXT_FOR_BUILD])dnl
+])dnl
 
-sinclude(../libtool-old.m4)
+dnl#FIXME: possibly the wrong one?
+sinclude(../libtool.m4)  
 dnl# The lines below arrange for aclocal not to bring libtool.m4
 dnl# AM_PROG_LIBTOOL into aclocal.m4, while still arranging for automake
 dnl# to add a definition of LIBTOOL to Makefile.in.
 dnl# (is this really a good idea?)
 ifelse([yes],[no],[
-AC_DEFUN([AM_PROG_LIBTOOL],[])
-AC_DEFUN([AM_DISABLE_SHARED],[])
-AC_SUBST([LIBTOOL])
-])
+AC_DEFUN([AM_PROG_LIBTOOL],
+         [echo "old version of libtool initialization macro called"])dnl
+AC_DEFUN([AM_DISABLE_SHARED],
+         [echo "old version of libtool macro to disable shared called"])dnl
+AC_SUBST([LIBTOOL])dnl
+])dnl
 
 sinclude(../gettext.m4)
 ifelse([yes],[no],[
-AC_DEFUN([CY_WITH_NLS],[])
-AC_SUBST([INTLLIBS])
-])
+AC_DEFUN([CY_WITH_NLS],[])dnl
+AC_SUBST([INTLLIBS])dnl
+])dnl
 
 AC_DEFUN([AM_INSTALL_LIBBFD],
 [AC_MSG_CHECKING([whether to install libbfd])
@@ -100,9 +107,9 @@ AC_DEFUN([AM_INSTALL_LIBBFD],
   AC_MSG_RESULT([${install_libbfd_p}])
   AM_CONDITIONAL([INSTALL_LIBBFD],[test "x${install_libbfd_p}" = "xyes"])
   # Need _noncanonical variables for this.
-  AC_REQUIRE([ACX_NONCANONICAL_HOST])
-  AC_REQUIRE([ACX_NONCANONICAL_TARGET])
-  # libbfd.a is a host library containing target dependent code
+  AC_REQUIRE([ACX_NONCANONICAL_HOST])dnl
+  AC_REQUIRE([ACX_NONCANONICAL_TARGET])dnl
+  # libbfd.a is a host library containing target dependent code.
   bfdlibdir='$(libdir)'
   bfdincludedir='$(includedir)'
   if test "x${host}" != "x${target}"; then
@@ -112,8 +119,8 @@ AC_DEFUN([AM_INSTALL_LIBBFD],
     bfdlibdir='$(libdir)'
     bfdincludedir='$(includedir)'
   fi
-  AC_SUBST([bfdlibdir])
-  AM_SUBST_NOTMAKE([bfdlibdir])
-  AC_SUBST([bfdincludedir])
-  AM_SUBST_NOTMAKE([bfdincludedir])
-])
+  AC_SUBST([bfdlibdir])dnl
+  AM_SUBST_NOTMAKE([bfdlibdir])dnl
+  AC_SUBST([bfdincludedir])dnl
+  AM_SUBST_NOTMAKE([bfdincludedir])dnl
+])dnl

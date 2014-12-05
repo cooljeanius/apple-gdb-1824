@@ -1,5 +1,5 @@
 dnl#                                               -*- Autoconf -*-
-dnl# Autoconf configure script for GDB, the GNU debugger.
+dnl# Autoconf configure script for gnulib for GDB, the GNU debugger.
 dnl# Copyright (C) 1995-2014 Free Software Foundation, Inc.
 dnl#
 dnl# This file is part of GDB.
@@ -74,8 +74,8 @@ fi
 m4_ifdef([AM_PROG_AR],[
 AM_PROG_AR
 ],[
-AC_CHECK_TOOL([AR],[ar])
-])
+AC_CHECK_TOOL([AR],[ar])dnl
+])dnl
 
 # Check for the 'make' the user wants to use:
 AC_CHECK_PROGS([MAKE],[make])
@@ -86,16 +86,16 @@ case "`${MAKE} --version 2>&1 | sed 1q`" in
     MAKE_IS_GNU=yes
     ;;
 esac
-AC_SUBST([MAKE_IS_GNU])
+AC_SUBST([MAKE_IS_GNU])dnl
 
 # ---------------------- #
 # Checks for libraries.  #
 # ---------------------- #
-AC_CHECK_LIB([c],[printf])
+AC_CHECK_LIB([c],[printf])dnl
 
 # Checks for header files:
 gl_STDINT_H
-AC_SUBST([STDINT_H])
+AC_SUBST([STDINT_H])dnl
 gl_HEADER_STRING_H
 AC_HEADER_ASSERT
 AC_CHECK_HEADERS([OS.h crtdefs.h ctype.h errno.h fcntl.h float.h \
@@ -152,7 +152,7 @@ case x${CONFIG_HEADERS} in
 xconfig.h:config.in)
 echo > stamp-h ;;
 esac
-],[])
+],[])dnl
 
 AC_CONFIG_COMMANDS([config_status_vpath_build_fix],[
 if test "${srcdir}" != "."; then
@@ -162,7 +162,7 @@ if test "${srcdir}" != "."; then
     cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
   fi
 fi
-],[])
+],[])dnl
 
 AC_OUTPUT
 

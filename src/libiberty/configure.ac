@@ -5,7 +5,7 @@ AC_PREREQ([2.59])
 AC_INIT([libiberty],[1.0],[jmolenda@apple.com])
 dnl# bug report address is email address of last person to touch this
 dnl# directory, according to the Changelog-Apple in this directory
-AC_CONFIG_SRCDIR([xmalloc.c])
+AC_CONFIG_SRCDIR([xmalloc.c])dnl
 
 # This works around the fact that libtool configuration may change LD
 # for this particular configuration, but some shells, instead of
@@ -24,7 +24,7 @@ AC_ARG_WITH([cross-host],
 [AS_HELP_STRING([--with-cross-host=HOST],
                 [Flag for configuring with a cross compiler])])
 AC_ARG_WITH([newlib],
-[AS_HELP_STRING([--with-newlib],[Flag for configuring with newlib])])
+[AS_HELP_STRING([--with-newlib],[Flag for configuring with newlib])])dnl
 
 if test "x${srcdir}" = "x."; then
   if test -n "${with_build_subdir}"; then
@@ -42,10 +42,10 @@ if test "x${srcdir}" = "x."; then
 else
   libiberty_topdir="${srcdir}/.."
 fi
-AC_SUBST([libiberty_topdir])
-AC_CONFIG_AUX_DIR([config])
-AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_LIBOBJ_DIR([.])
+AC_SUBST([libiberty_topdir])dnl
+AC_CONFIG_AUX_DIR([config])dnl
+AC_CONFIG_MACRO_DIR([m4])dnl
+AC_CONFIG_LIBOBJ_DIR([.])dnl
 
 dnl# Very limited version of automake's enable-maintainer-mode:
 AC_MSG_CHECKING([whether to enable maintainer-specific portions of Makefiles])
@@ -54,9 +54,9 @@ AC_MSG_CHECKING([whether to enable maintainer-specific portions of Makefiles])
 [AS_HELP_STRING([--enable-maintainer-mode],
                 [enable make rules and dependencies not useful (and sometimes confusing) to the casual installer])],
       [maintainer_mode=${enableval}],
-      [maintainer_mode=no])
+      [maintainer_mode=no])dnl
 
-AC_MSG_RESULT([${maintainer_mode}])
+AC_MSG_RESULT([${maintainer_mode}])dnl
 
 if test "x${maintainer_mode}" = "xyes"; then
   MAINT=''
@@ -95,8 +95,8 @@ else
 	;;
     esac
 fi
-AC_SUBST([MAKEINFO])
-AC_SUBST([BUILD_INFO])
+AC_SUBST([MAKEINFO])dnl
+AC_SUBST([BUILD_INFO])dnl
 
 AC_CHECK_PROG([PERL],[perl],[perl],[])
 if test x"${PERL}" = x""; then
@@ -104,7 +104,7 @@ if test x"${PERL}" = x""; then
 else
   HAVE_PERL=''
 fi
-AC_SUBST([HAVE_PERL])
+AC_SUBST([HAVE_PERL])dnl
 
 # architectures:
 AC_CANONICAL_TARGET
@@ -117,9 +117,14 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   AC_SUBST([TARGET_ARCHITECTURE])
 fi
 
-dnl# When we start using automake with a legit Makefile.am:
-dnl#AM_INIT_AUTOMAKE([gnu dejagnu -Wno-obsolete])
-AM_MISSING_PROG([AUTOCONF],[autoconf])
+dnl# When we start using automake with a legit Makefile.am; un-comment and
+dnl# un-escape this:
+dnl#AM\_INIT\_AUTOMAKE\(\[gnu\ dejagnu\ \-Wno\-obsolete\]\)
+AM_MISSING_PROG([AUTOCONF],[autoconf])dnl
+m4_ifdef([AC_REQUIRE_AUX_FILE],[
+AC_REQUIRE_AUX_FILE([compile])dnl
+AC_REQUIRE_AUX_FILE([missing])dnl
+])dnl
 
 dnl# These must be called before LT_INIT, because it may want
 dnl# to call AC_CHECK_PROG.
@@ -129,8 +134,8 @@ AC_USE_SYSTEM_EXTENSIONS
 m4_ifdef([AM_PROG_AR],[
 AM_PROG_AR
 ],[
-AC_CHECK_TOOL([AR],[ar])
-])
+AC_CHECK_TOOL([AR],[ar])dnl
+])dnl
 m4_ifdef([AC_PROG_RANLIB],[
 if test "x${RANLIB}" = "x"; then
   test -z "${RANLIB}"
@@ -141,7 +146,7 @@ if test "x${ac_cv_prog_ac_ct_RANLIB}" = "x"; then
   test -z "${ac_cv_prog_ac_ct_RANLIB}"
   AC_CHECK_TOOL([RANLIB],[ranlib],[:])
 fi
-])
+])dnl
 
 dnl# When switching to automake, replace the following block with
 dnl# the AM_ENABLE_MULTILIB macro:
@@ -155,7 +160,7 @@ AC_ARG_ENABLE([multilib],
   no)  multilib=no ;;
   *)   AC_MSG_ERROR([bad value ${enableval} for multilib option]) ;;
  esac],
-	      [multilib=yes])
+	      [multilib=yes])dnl
 
 # Even if the default multilib is not a cross compilation,
 # it may be that some of the other multilibs are.
@@ -175,12 +180,12 @@ AC_PROG_MKDIR_P
 
 AC_MSG_CHECKING([warning flags to use])
 if test "x${GCC}" = "xyes"; then
-  ac_libiberty_warn_cflags='-W -Wall -pedantic -Wwrite-strings -Wc++-compat -Wstrict-prototypes'
+  ac_libiberty_warn_cflags='-Wall -Wextra -pedantic -Wwrite-strings -Wc++-compat -Wstrict-prototypes'
 else
   ac_libiberty_warn_cflags=''
 fi
 AC_MSG_RESULT([${ac_libiberty_warn_cflags}])
-AC_SUBST([ac_libiberty_warn_cflags])
+AC_SUBST([ac_libiberty_warn_cflags])dnl
 
 AC_PROG_CC_C_O
 # autoconf is lame and does not give us any substitution variable for this:
@@ -189,8 +194,8 @@ if eval "test \"`echo '$ac_cv_prog_cc_'${ac_cc}_c_o`\" = no"; then
 else
   OUTPUT_OPTION='-o $@'
 fi
-AC_SUBST([NO_MINUS_C_MINUS_O])
-AC_SUBST([OUTPUT_OPTION])
+AC_SUBST([NO_MINUS_C_MINUS_O])dnl
+AC_SUBST([OUTPUT_OPTION])dnl
 
 # C compiler characteristics:
 AC_C_CONST
@@ -206,16 +211,17 @@ AC_DISABLE_SHARED
 
 dnl# When we start using libtool:
 AC_DEFUN([AC_EXTRA_THINGS_LIBTOOL_WANTS],[
-  AC_REQUIRE([AC_PROG_AWK])
-  AC_REQUIRE([AC_PROG_CC])
-  AC_REQUIRE([AC_PROG_CPP])
-  AC_REQUIRE([AC_PROG_CXX])
-  AC_REQUIRE([AC_PROG_MAKE_SET])
-])
+  AC_REQUIRE([AC_PROG_AWK])dnl
+  AC_REQUIRE([AC_PROG_CC])dnl
+  AC_REQUIRE([AC_PROG_CPP])dnl
+  AC_REQUIRE([AC_PROG_CXX])dnl
+  AC_REQUIRE([AC_PROG_MAKE_SET])dnl
+])dnl
 AC_EXTRA_THINGS_LIBTOOL_WANTS
-LT_INIT([disable-shared pic-only])
+LT_INIT([disable-shared pic-only])dnl
+LT_PREREQ([2.4.4])dnl
 
-AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_HEADERS([config.h])dnl
 
 dnl# When we start using automake:
 AM_MAINTAINER_MODE
@@ -260,7 +266,7 @@ m4_ifdef([GCC_PICFLAG],[
 GCC_PICFLAG
 ],[
 test -z "${PICFLAG}" && PICFLAG=""
-])
+])dnl
 
 # If they did NOT specify --enable-shared, do NOT generate shared libs.
 case "${enable_shared}" in
@@ -294,13 +300,13 @@ if [[ "x${shared}" = "xyes" ]]; then
 elif [[ "${shared}" != "yes" ]]; then
   PICFLAG=""
 fi
-AC_SUBST([PICFLAG])
+AC_SUBST([PICFLAG])dnl
 
 NOASANFLAG=""
 case " ${CFLAGS} " in
   *\ -fsanitize=address\ *) NOASANFLAG=-fno-sanitize=address ;;
 esac
-AC_SUBST([NOASANFLAG])
+AC_SUBST([NOASANFLAG])dnl
 
 AC_MSG_CHECKING([if we need to modify your Makefile fragment at all])
 AC_MSG_RESULT([ ])
@@ -325,7 +331,7 @@ frag=xhost-mkfrag
 ${CONFIG_SHELL-/bin/sh} ${libiberty_topdir}/move-if-change temp-frag xhost-mkfrag
 
 host_makefile_frag=${frag}
-AC_SUBST_FILE([host_makefile_frag])
+AC_SUBST_FILE([host_makefile_frag])dnl
 
 # It is OK to check for header files. Although the compiler may not be
 # able to link anything, it had better be able to at least
@@ -333,8 +339,8 @@ AC_SUBST_FILE([host_makefile_frag])
 AC_MSG_CHECKING([headers])
 AC_MSG_RESULT([ ])
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
-  AC_REQUIRE([AC_HEADER_STDC])
-])
+  AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE_HEADER_STDC
 AC_HEADER_STAT
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
@@ -348,7 +354,7 @@ AC_CHECK_HEADERS([alloca.h assert.h ctype.h fcntl.h float.h \
   sys/file.h sys/mman.h sys/param.h sys/prctl.h sys/pstat.h \
   sys/resource.h sys/sysctl.h sys/sysinfo.h sys/sysmp.h sys/systemcfg.h \
   sys/table.h sys/time.h \
-  time.h wchar.h wctype.h])
+  time.h wchar.h wctype.h])dnl
 AC_HEADER_SYS_WAIT
 AC_HEADER_TIME
 
@@ -356,11 +362,11 @@ libiberty_AC_DECLARE_ERRNO
 
 # It is also okay to check for types.
 AC_MSG_CHECKING([types])
-AC_MSG_RESULT([ ])
+AC_MSG_RESULT([ ])dnl
 
 # Determine the size of an int for struct fibnode.
-AC_CHECK_SIZEOF([int])
-AC_CHECK_ALIGNOF([int])
+AC_CHECK_SIZEOF([int])dnl
+AC_CHECK_ALIGNOF([int])dnl
 
 # Look for a 64-bit type.
 AC_MSG_CHECKING([for a 64-bit type])
@@ -408,8 +414,8 @@ AC_TYPE_INTPTR_T
 m4_ifdef([AC_TYPE_UINTPTR_T],[
 AC_TYPE_UINTPTR_T
 ],[
-AC_CHECK_TYPE([uintptr_t],[unsigned long])
-])
+AC_CHECK_TYPE([uintptr_t],[unsigned long])dnl
+])dnl
 
 # Given the above check, we always have uintptr_t or a fallback
 # definition. So define HAVE_UINTPTR_T in case any imported code
@@ -419,7 +425,7 @@ AC_DEFINE([HAVE_UINTPTR_T],[1],[Define if you have the \`uintptr_t' type.])
 # other types and structs:
 AC_TYPE_OFF_T
 AC_TYPE_PID_T
-AC_CHECK_TYPES([ptrdiff_t])
+AC_CHECK_TYPES([ptrdiff_t])dnl
 AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
 AC_TYPE_INT32_T
@@ -431,12 +437,12 @@ AC_CHECK_TYPES([regex_t],[],[],[
 #ifdef HAVE_REGEX_H
 # include <regex.h>
 #endif /* HAVE_REGEX_H */
-])
+])dnl
 AC_CHECK_TYPES([regmatch_t],[],[],[
 #ifdef HAVE_REGEX_H
 # include <regex.h>
 #endif /* HAVE_REGEX_H */
-])
+])dnl
 AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
 
 # This is the list of functions which libiberty will provide if they
@@ -537,15 +543,16 @@ if test "x" = "Y0"; then
     strdup strerror strlen strncasecmp strndup strnlen strpbrk strrchr \
     strsignal strspn strstr strtod strtol strtoul strverscmp \
     sysconf sysctl sysmp system table times tmpnam utime \
-    vasprintf vfprintf vprintf vsnprintf vsprintf wait3 wait4 waitpid])
+    vasprintf vfprintf vprintf vsnprintf vsprintf wait3 wait4 waitpid])dnl
   AC_CHECK_DECLS([basename, ffs, asprintf, vasprintf, snprintf, vsnprintf])
-  AC_CHECK_DECLS([sys_siglist])
+  AC_CHECK_DECLS([sys_siglist])dnl
   AC_DEFINE([HAVE_SYS_ERRLIST],[1],
-            [Define if you have the sys_errlist variable.])
+            [Define if you have the sys_errlist variable.])dnl
   AC_DEFINE([HAVE_SYS_NERR],[1],
-            [Define if you have the sys_nerr variable.])
+            [Define if you have the sys_nerr variable.])dnl
   AC_DEFINE([HAVE_SYS_SIGLIST],[1],
-            [Define if you have the sys_siglist variable.])
+            [Define if you have the sys_siglist variable.])dnl
+  ## that should be enough for now...
 fi
 
 # For each of these functions, if the host does not provide the
@@ -566,12 +573,12 @@ if test -n "${with_target_subdir}"; then
   # newlib provide and which ones we will be expected to provide.
 
   if test "x${with_newlib}" = "xyes"; then
-    AC_LIBOBJ([asprintf])
-    AC_LIBOBJ([basename])
-    AC_LIBOBJ([insque])
-    AC_LIBOBJ([random])
-    AC_LIBOBJ([strdup])
-    AC_LIBOBJ([vasprintf])
+    AC_LIBOBJ([asprintf])dnl
+    AC_LIBOBJ([basename])dnl
+    AC_LIBOBJ([insque])dnl
+    AC_LIBOBJ([random])dnl
+    AC_LIBOBJ([strdup])dnl
+    AC_LIBOBJ([vasprintf])dnl
 
     for f in ${funcs}; do
       case "${f}" in
@@ -598,28 +605,28 @@ if test -n "${with_target_subdir}"; then
 
   case "${host}" in
   *-*-mingw*)
-    AC_LIBOBJ([asprintf])
-    AC_LIBOBJ([basename])
-    AC_LIBOBJ([bcmp])
-    AC_LIBOBJ([bcopy])
-    AC_LIBOBJ([bzero])
-    AC_LIBOBJ([clock])
-    AC_LIBOBJ([ffs])
-    AC_LIBOBJ([getpagesize])
-    AC_LIBOBJ([index])
-    AC_LIBOBJ([insque])
-    AC_LIBOBJ([mempcpy])
-    AC_LIBOBJ([mkstemps])
-    AC_LIBOBJ([random])
-    AC_LIBOBJ([rindex])
-    AC_LIBOBJ([sigsetmask])
-    AC_LIBOBJ([stpcpy])
-    AC_LIBOBJ([stpncpy])
-    AC_LIBOBJ([strndup])
-    AC_LIBOBJ([strnlen])
-    AC_LIBOBJ([strverscmp])
-    AC_LIBOBJ([vasprintf])
-    AC_LIBOBJ([waitpid])
+    AC_LIBOBJ([asprintf])dnl
+    AC_LIBOBJ([basename])dnl
+    AC_LIBOBJ([bcmp])dnl
+    AC_LIBOBJ([bcopy])dnl
+    AC_LIBOBJ([bzero])dnl
+    AC_LIBOBJ([clock])dnl
+    AC_LIBOBJ([ffs])dnl
+    AC_LIBOBJ([getpagesize])dnl
+    AC_LIBOBJ([index])dnl
+    AC_LIBOBJ([insque])dnl
+    AC_LIBOBJ([mempcpy])dnl
+    AC_LIBOBJ([mkstemps])dnl
+    AC_LIBOBJ([random])dnl
+    AC_LIBOBJ([rindex])dnl
+    AC_LIBOBJ([sigsetmask])dnl
+    AC_LIBOBJ([stpcpy])dnl
+    AC_LIBOBJ([stpncpy])dnl
+    AC_LIBOBJ([strndup])dnl
+    AC_LIBOBJ([strnlen])dnl
+    AC_LIBOBJ([strverscmp])dnl
+    AC_LIBOBJ([vasprintf])dnl
+    AC_LIBOBJ([waitpid])dnl
 
     for f in ${funcs}; do
       case "${f}" in
@@ -642,10 +649,10 @@ if test -n "${with_target_subdir}"; then
     ;;
 
   *-*-msdosdjgpp)
-    AC_LIBOBJ([vasprintf])
-    AC_LIBOBJ([vsnprintf])
-    AC_LIBOBJ([snprintf])
-    AC_LIBOBJ([asprintf])
+    AC_LIBOBJ([vasprintf])dnl
+    AC_LIBOBJ([vsnprintf])dnl
+    AC_LIBOBJ([snprintf])dnl
+    AC_LIBOBJ([asprintf])dnl
 
     for f in atexit basename bcmp bcopy bsearch bzero calloc clock ffs \
              getcwd getpagesize getrusage gettimeofday \
@@ -666,14 +673,14 @@ if test -n "${with_target_subdir}"; then
 
   esac
 
-  # We may wish to install the target headers somewhere.
+  # We may wish to install the target headers somewhere:
   AC_ARG_ENABLE([install-libiberty],
   [AS_HELP_STRING([--enable-install-libiberty],
                   [Install headers for end users])],
   [enable_install_libiberty=${enableval}],
   [enable_install_libiberty=no])dnl
   
-  # Option parsed, now set things appropriately.
+  # Option parsed, now set things appropriately:
   case x"${enable_install_libiberty}" in
     xyes|x)
       target_header_dir=libiberty
@@ -686,21 +693,21 @@ if test -n "${with_target_subdir}"; then
       target_header_dir="${enable_install_libiberty}"
       ;;
   esac
-
 else
-   # Not a target library, so we set things up to run the test suite.
+   # Not a target library, so we set things up to run the test suite:
    CHECK=really-check
 fi
 
-AC_SUBST([CHECK])
-AC_SUBST([target_header_dir])
+AC_SUBST([CHECK])dnl
+AC_SUBST([target_header_dir])dnl
 
 case "${host}" in
   *-*-cygwin* | *-*-mingw*)
     AC_DEFINE([HAVE_SYS_ERRLIST],[1],
-              [Define if you have the sys_errlist variable.])
+              [Define if you have the sys_errlist variable.])dnl
     AC_DEFINE([HAVE_SYS_NERR],[1],
-              [Define if you have the sys_nerr variable.])
+              [Define if you have the sys_nerr variable.])dnl
+    ## hope those assumptions stay correct...
     ;;
 esac
 
@@ -710,16 +717,17 @@ if test -z "${setobjs}"; then
       # Handle VxWorks configuration specially, since on VxWorks the
       # libraries are actually on the target board, not in the file
       # system.
-      AC_LIBOBJ([basename])
-      AC_LIBOBJ([getpagesize])
-      AC_LIBOBJ([insque])
-      AC_LIBOBJ([random])
-      AC_LIBOBJ([strcasecmp])
-      AC_LIBOBJ([strncasecmp])
-      AC_LIBOBJ([strdup])
-      AC_LIBOBJ([vfork])
-      AC_LIBOBJ([waitpid])
-      AC_LIBOBJ([vasprintf])
+      AC_LIBOBJ([basename])dnl
+      AC_LIBOBJ([getpagesize])dnl
+      AC_LIBOBJ([insque])dnl
+      AC_LIBOBJ([random])dnl
+      AC_LIBOBJ([strcasecmp])dnl
+      AC_LIBOBJ([strncasecmp])dnl
+      AC_LIBOBJ([strdup])dnl
+      AC_LIBOBJ([vfork])dnl
+      AC_LIBOBJ([waitpid])dnl
+      AC_LIBOBJ([vasprintf])dnl
+
       for f in ${funcs}; do
         case "${f}" in
 	      basename | getpagesize | insque | random | strcasecmp)
@@ -738,7 +746,7 @@ if test -z "${setobjs}"; then
       # do NOT have to check them here.
 
       # Of the functions in ${checkfuncs}, VxWorks only has strerror.
-      AC_DEFINE([HAVE_STRERROR],[1],[Define to 1 if we have strerror])
+      AC_DEFINE([HAVE_STRERROR],[1],[Define to 1 if we have strerror])dnl
 
       setobjs=yes
       ;;
@@ -870,12 +878,12 @@ double x = _system_configuration.physmem;
     [AC_MSG_RESULT([yes])
      AC_DEFINE([HAVE__SYSTEM_CONFIGURATION],[1],
 	       [Define if you have the _system_configuration variable.])],
-    [AC_MSG_RESULT([no])])
+    [AC_MSG_RESULT([no])])dnl
 
   # More function checks:
   AC_MSG_CHECKING([for functions that only need to be checked and not necessarily replaced])
   AC_MSG_RESULT([ ])
-  AC_CHECK_FUNCS([${checkfuncs}])
+  AC_CHECK_FUNCS([${checkfuncs}])dnl
 
   # (more) declaration checks:
   AC_MSG_CHECKING([declarations])
@@ -884,10 +892,10 @@ double x = _system_configuration.physmem;
 #ifdef HAVE_LIBGEN_H
 # include <libgen.h>
 #endif /* HAVE_LIBGEN_H */
-  ])
-  AC_CHECK_DECLS([ffs, asprintf, vasprintf, snprintf, vsnprintf])
-  AC_CHECK_DECLS([calloc, getenv, getopt, malloc, realloc, sbrk])
-  AC_CHECK_DECLS([strverscmp])
+  ])dnl
+  AC_CHECK_DECLS([ffs, asprintf, vasprintf, snprintf, vsnprintf])dnl
+  AC_CHECK_DECLS([calloc, getenv, getopt, malloc, realloc, sbrk])dnl
+  AC_CHECK_DECLS([strverscmp])dnl
   libiberty_NEED_DECLARATION([canonicalize_file_name])
 fi
 
@@ -899,7 +907,7 @@ case "${host}" in
      *-*-msdos*)		pexecute=pex-msdos  ;;
      *)				pexecute=pex-unix   ;;
 esac
-AC_SUBST([pexecute])
+AC_SUBST([pexecute])dnl
 
 libiberty_AC_FUNC_STRNCMP
 
@@ -910,7 +918,7 @@ if test -z "${with_cross_host}"; then
 else
   INSTALL_DEST=tooldir
 fi
-AC_SUBST([INSTALL_DEST])
+AC_SUBST([INSTALL_DEST])dnl
 
 m4_pattern_allow([LIBOBJS])
 L=""
@@ -923,18 +931,18 @@ done
 LIBOBJS="${L}"
 
 AC_ARG_VAR([PICFLAG],
-           [If you know what flags to set for compiling with PIC, you can try setting them with this variable (unsupported)])
-AC_SUBST([PICFLAG])
+           [If you know what flags to set for compiling with PIC, you can try setting them with this variable (unsupported)])dnl
+AC_SUBST([PICFLAG])dnl# (did we not already subst this once?)
 
 dnl# Required by html and install-html:
-AC_SUBST([datarootdir])
-AC_SUBST([docdir])
-AC_SUBST([htmldir])
+AC_SUBST([datarootdir])dnl
+AC_SUBST([docdir])dnl
+AC_SUBST([htmldir])dnl
 
 MMALLOC_CFLAGS=""
 MMALLOC=""
-AC_SUBST([MMALLOC_CFLAGS])
-AC_SUBST([MMALLOC])
+AC_SUBST([MMALLOC_CFLAGS])dnl
+AC_SUBST([MMALLOC])dnl
 
 AC_ARG_WITH([mmalloc],
 [AS_HELP_STRING([--with-mmalloc],[Use memory mapped malloc package])],
@@ -973,5 +981,5 @@ ac_configure_args="--enable-multilib ${ac_configure_args}"
 CONFIG_SHELL=${CONFIG_SHELL-/bin/sh}
 ORIGINAL_LD_FOR_MULTILIBS="${ORIGINAL_LD_FOR_MULTILIBS}"
 libiberty_topdir=${libiberty_topdir}
-]])
+]])dnl
 AC_OUTPUT

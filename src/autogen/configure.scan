@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.69])
 AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
-AC_CONFIG_SRCDIR([config.h])
+AC_CONFIG_SRCDIR([add-on/autofsm/callout-looping-fsm.c])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
@@ -19,7 +19,7 @@ AC_PROG_RANLIB
 # Checks for libraries.
 
 # Checks for header files.
-AC_CHECK_HEADERS([fcntl.h float.h inttypes.h limits.h memory.h netinet/in.h stddef.h stdint.h stdlib.h string.h strings.h sys/ioctl.h sys/param.h sys/socket.h sys/systeminfo.h sys/time.h unistd.h utime.h values.h wchar.h])
+AC_CHECK_HEADERS([fcntl.h float.h inttypes.h libintl.h limits.h locale.h memory.h netinet/in.h stddef.h stdint.h stdlib.h string.h strings.h sys/ioctl.h sys/param.h sys/socket.h sys/systeminfo.h sys/time.h unistd.h utime.h values.h wchar.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -40,6 +40,7 @@ AC_TYPE_UINT8_T
 AC_CHECK_TYPES([ptrdiff_t])
 
 # Checks for library functions.
+AM_GNU_GETTEXT
 AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_MKTIME

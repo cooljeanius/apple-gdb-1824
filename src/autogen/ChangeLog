@@ -1,3 +1,13 @@
+2014-08-08  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* config/gettext.m4: Upgrade to gettext-0.19.2.
+	* config/iconv.m4: Upgrade to gettext-0.19.2.
+	* config/lib-ld.m4: Upgrade to gettext-0.19.2.
+	* config/lib-link.m4: Upgrade to gettext-0.19.2.
+	* config/lib-prefix.m4: Upgrade to gettext-0.19.2.
+	* config/nls.m4: Upgrade to gettext-0.19.2.
+	* config/progtest.m4: Upgrade to gettext-0.19.2.
+
 2012-02-25  Bruce Korb  <bkorb@gnu.org>
 
 	* autoopts/tpl/optcode.tlib: make sure config header is included

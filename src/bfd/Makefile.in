@@ -96,16 +96,15 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps =  \
 	$(top_srcdir)/m4/ax_maintainer_mode_auto_silent.m4 \
 	$(top_srcdir)/m4/ax_patch_libtool_changing_cmds_ifs.m4 \
-	$(top_srcdir)/m4/gettext-sister.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/gettext-sister.m4 \
 	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
 	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
 	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/plugins.m4 \
 	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/stdint.m4 \
 	$(top_srcdir)/acinclude.m4 $(top_srcdir)/../config/acx.m4 \
 	$(top_srcdir)/../bfd/bfd.m4 $(top_srcdir)/../bfd/warning.m4 \
-	$(top_srcdir)/../config/zlib.m4 \
-	$(top_srcdir)/../libtool-old.m4 $(top_srcdir)/../gettext.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/../config/zlib.m4 $(top_srcdir)/../libtool.m4 \
+	$(top_srcdir)/../gettext.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
@@ -2244,8 +2243,10 @@ stamp-ofiles: Makefile @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	$(RUN_MOVEIFCHANGE) tofiles ofiles
 	touch stamp-ofiles
 
-lofiles: stamp-lofiles ; @echo "this target, '$@', just makes its dependency, '$<'"
-ofiles: stamp-ofiles ; @echo "this target, '$@', just makes its dep, '$<'"
+lofiles: stamp-lofiles
+	@echo "this target, '$@', just makes its dependency, '$<'"
+ofiles: stamp-ofiles
+	@echo "this target, '$@', just makes its dep, '$<'"
 
 # FIXME: Even the hack fails now... (does it still?)
 stamp-lib: libbfd.la @MAINT@ ofiles $(PATH_TO_MOVEIFCHANGE) ltmain.sh
@@ -2273,11 +2274,13 @@ stamp-staticlib: stamp-ofiles
 # stamp-staticlib just makes the OFILES that libbfd.a depends upon, need
 # to make the 'stamp-lib' target instead to actually make the static
 # library:
-libbfd_static_library: stamp-lib ; @echo "this target, '$@', just makes its dependency, '$<'"
+libbfd_static_library: stamp-lib
+	@echo "this target, '$@', just makes its dependency, '$<'"
 .PHONY: libbfd_static_library
 
 # hmmm...
-libbfd_la: libbfd.la ; @echo "this target, '$@', just makes its dep, '$<'"
+libbfd_la: libbfd.la
+	@echo "this target, '$@', just makes its dep, '$<'"
 .PHONY: libbfd_la
 
 # This file holds an array associating configuration triplets and
@@ -2477,7 +2480,7 @@ stmp-bfd-h: bfd-in3.h @MAINT@ headers $(PATH_TO_MOVEIFCHANGE)
 	touch $@
 
 stamp-framework-headers: bfd.h headers
-	$(RM) -fv stamp-framework stamp-framework-headers
+	$(RM) -f stamp-framework stamp-framework-headers
 	$(RM) -rfv $(FRAMEWORK).framework
 	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Headers
 	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/PrivateHeaders
@@ -2491,7 +2494,7 @@ stamp-framework-headers: bfd.h headers
 
 stamp-framework: $(libbfd_la_OBJECTS) $(libbfd_la_DEPENDENCIES) 
 	$(MAKE) $(FRAMEWORK_OFILES)
-	$(RM) -fv stamp-framework-headers
+	$(RM) -f stamp-framework-headers
 	$(MAKE) stamp-framework-headers
 	$(MKDIR_P) -v $(FRAMEWORK).framework/Versions/$(FRAMEWORK_VERSION)/Resources
 	$(LN_S) -v Versions/Current/Resources $(FRAMEWORK).framework/Resources

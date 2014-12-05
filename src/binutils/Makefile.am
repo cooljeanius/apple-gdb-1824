@@ -586,9 +586,14 @@ CONFIG_STATUS_DEPENDENCIES = $(BFDDIR)/configure.ac \
 	$(BFDDIR)/development.sh
 
 DISTCLEANFILES = sysinfo sysroff.c sysroff.h \
-	site.exp site.bak embedspu
+	site.exp site.bak embedspu *~ .DS_Store
+
+distclean-local:
+	rm -rf autom4te.cache || rmdir autom4te.cache
+.PHONY: distclean-local
 
 Makefile_depends: $(BFDDIR)/configure.ac config.status
+.PHONY: Makefile_depends
 
 # Targets to rebuild dependencies in this Makefile.
 # Have to get rid of any pre-existing DEP1 here, so that "$?" later

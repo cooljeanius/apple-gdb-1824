@@ -1,5 +1,5 @@
 /* Convert multibyte character to wide character.
-   Copyright (C) 1999-2002, 2005-2012 Free Software Foundation, Inc.
+   Copyright (C) 1999-2002, 2005-2014 Free Software Foundation, Inc.
    Written by Bruno Haible <bruno@clisp.org>, 2008.
 
    This program is free software: you can redistribute it and/or modify
@@ -92,7 +92,7 @@ mbrtowc (wchar_t *pwc, const char *s, size_t n, mbstate_t *ps)
 
     /* Here m > 0.  */
 
-# if (defined(__GLIBC__) && __GLIBC__) || defined __UCLIBC__
+# if __GLIBC__ || defined __UCLIBC__
     /* Work around bug <http://sourceware.org/bugzilla/show_bug.cgi?id=9674> */
     mbtowc (NULL, NULL, 0);
 # endif
@@ -122,7 +122,7 @@ mbrtowc (wchar_t *pwc, const char *s, size_t n, mbstate_t *ps)
            - EUC-JP, EUC-KR, GB2312, EUC-TW, BIG5, GB18030, SJIS,
            - UTF-8.
          Use specialized code for each.  */
-      if ((m >= 4) || (m >= MB_CUR_MAX))
+      if (m >= 4 || m >= MB_CUR_MAX)
         goto invalid;
       /* Here MB_CUR_MAX > 1 and 0 < m < 4.  */
       {
@@ -328,13 +328,18 @@ mbrtowc (wchar_t *pwc, const char *s, size_t n, mbstate_t *ps)
 size_t
 rpl_mbrtowc (wchar_t *pwc, const char *s, size_t n, mbstate_t *ps)
 {
-# if MBRTOWC_NULL_ARG2_BUG || MBRTOWC_RETVAL_BUG
+# if MBRTOWC_NULL_ARG2_BUG || MBRTOWC_RETVAL_BUG || MBRTOWC_EMPTY_INPUT_BUG
   if (s == NULL)
     {
       pwc = NULL;
       s = "";
       n = 1;
     }
+# endif
+
+# if MBRTOWC_EMPTY_INPUT_BUG
+  if (n == 0)
+    return (size_t) -2;
 # endif
 
 # if MBRTOWC_RETVAL_BUG

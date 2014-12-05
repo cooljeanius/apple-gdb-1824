@@ -32,16 +32,16 @@ rm -rf *.dSYM
 AM_PROG_AS
 rm -rf *.dSYM
 if test "x${CC}" = "x"; then
-	test -z "${CC}"
-	AC_PROG_CC
+  test -z "${CC}"
+  AC_PROG_CC
 else
-	test ! -z "${CC}"
+  test ! -z "${CC}"
 fi
 rm -rf *.dSYM
 AC_PROG_CXX
-CXXFLAGSOLD=${CXXFLAGS}
+CXXFLAGSOLD="${CXXFLAGS}"
 AC_PROG_CXX_OLD
-CXXFLAGS=${CXXFLAGSOLD}
+CXXFLAGS="${CXXFLAGSOLD}"
 AC_PROG_CXXCPP
 AC_PROG_CXX_C_O
 AC_PROG_INSTALL
@@ -59,43 +59,44 @@ if test -z "${CVS_RSH}"; then
     export CVS_RSH="`which ssh`"
   fi
 fi
-AC_SUBST([CVS_RSH])
-AC_PATH_PROG([TELNET_PROG],[telnet])
+AC_SUBST([CVS_RSH])dnl
+AC_PATH_PROG([TELNET_PROG],[telnet])dnl
 
-# xorg-util-macros checks
+# xorg-util-macros checks:
 XORG_PROG_RAWCPP
 XORG_LD_WRAP
 XORG_CHANGELOG
 XORG_ENABLE_INTEGRATION_TESTS
 
 # Checks for libraries.
-AC_LANG([C])
-AC_CHECK_LIB([c],[printf])
-AC_CHECK_LIB([io],[main])
+AC_LANG([C])dnl
+AC_CHECK_LIB([c],[printf])dnl
+AC_CHECK_LIB([io],[main])dnl
 
 # Checks for header files.
-AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
+AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_HEADER_SYS_WAIT
-AC_CHECK_DECLS([wait])
-AC_CHECK_HEADERS([regex.h stdio.h])
+AC_CHECK_DECLS([wait])dnl
+AC_CHECK_HEADERS([regex.h stdio.h])dnl
 AC_CHECK_HEADERS([dejagnu.h],[],[],[
 #ifdef HAVE_DECL_WAIT
 # undef HAVE_STDLIB_H
 # undef HAVE_SYS_WAIT_H
 #endif /* HAVE_DECL_WAIT */
-])
+])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
+AC_C_CONST
 AC_C_INLINE
 AC_C_PROTOTYPES
 
 # Checks for library functions.
-AC_CHECK_FUNCS([abort atexit exit regcomp strncmp])
-AC_CHECK_DECLS([strncmp])
+AC_CHECK_FUNCS([abort atexit exit regcomp strncmp])dnl
+AC_CHECK_DECLS([strncmp])dnl
 
-dnl# check STL version
-AC_LANG([C++])
+dnl# check STL version:
+AC_LANG([C++])dnl
 DJ_AC_STL
 
 dnl# we need the path to Docbook so we can build packages.
@@ -117,11 +118,12 @@ fi
 
 dnl# Level of indirection for automake macro (baseboards:boards_DATA)
 BOARDS='$(boards)'
-AC_SUBST([BOARDS])
 CONFIG='$(config)'
-AC_SUBST([CONFIG])
+AC_SUBST([BOARDS])dnl
+AC_SUBST([CONFIG])dnl
 
-AC_CONFIG_SUBDIRS([doc example/calc])
+# Output.
+AC_CONFIG_SUBDIRS([doc example/calc])dnl
 
 if test -d contrib/bluegnu2.0.3; then
   test -e contrib/bluegnu2.0.3/configure
@@ -132,6 +134,7 @@ AC_CONFIG_FILES([Makefile \
                  doc/Makefile \
                  testsuite/Makefile \
                  example/Makefile \
-                 testsuite/libdejagnu/Makefile])
+                 testsuite/libdejagnu/Makefile])dnl
+# Output for real now.
 AC_OUTPUT
 

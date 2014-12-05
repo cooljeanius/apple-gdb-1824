@@ -1,4 +1,4 @@
-# Copyright (C) 2002-2012 Free Software Foundation, Inc.
+# Copyright (C) 2002-2014 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,18 +27,94 @@
 
 
 # Specification in the form of a command-line invocation:
-#   gnulib-tool --import --dir=. --lib=libgnu --source-base=import --m4-base=import/m4 --doc-base=doc --tests-base=tests --aux-dir=import/extra --no-conditional-dependencies --no-libtool --macro-prefix=gl --no-vc-files fnmatch-gnu frexpl inttypes memmem pathmax unistd update-copyright
+#   gnulib-tool --import --dir=. --lib=libgnu --source-base=import --m4-base=import/m4 --doc-base=doc --tests-base=tests --aux-dir=import/extra --no-conditional-dependencies --no-libtool --macro-prefix=gl --no-vc-files absolute-header alignof alloca alloca-opt autobuild configmake dirent dirfd dosname double-slash-root errno exitfail extensions extern-inline float fnmatch fnmatch-gnu fpieee fpucw frexp frexpl gettext-h gettimeofday git-version-gen gitlog-to-changelog gnu-make havelib host-cpu-c-abi host-os include_next inline inttypes inttypes-incomplete isnand-nolibm isnanl-nolibm iswctype largefile ldd localcharset manywarnings math mbrtowc mbsinit mbsrtowcs memchr memcmp memmem memmem-simple mempcpy multiarch nextafter no-c++ nocrash obstack openmp pathmax snippet/_Noreturn snippet/arg-nonnull snippet/c++defs snippet/link-warning snippet/warn-on-use ssize_t stdbool stddef stdint stdlib streq string strnlen1 strstr strstr-simple sys_stat sys_time sys_types time unistd update-copyright vc-list-files verify warnings wchar wcsncasecmp wctype-h
 
 # Specification in the form of a few gnulib-tool.m4 macro invocations:
 gl_LOCAL_DIR([])
 gl_MODULES([
+  absolute-header
+  alignof
+  alloca
+  alloca-opt
+  autobuild
+  configmake
+  dirent
+  dirfd
+  dosname
+  double-slash-root
+  errno
+  exitfail
+  extensions
+  extern-inline
+  float
+  fnmatch
   fnmatch-gnu
+  fpieee
+  fpucw
+  frexp
   frexpl
+  gettext-h
+  gettimeofday
+  git-version-gen
+  gitlog-to-changelog
+  gnu-make
+  havelib
+  host-cpu-c-abi
+  host-os
+  include_next
+  inline
   inttypes
+  inttypes-incomplete
+  isnand-nolibm
+  isnanl-nolibm
+  iswctype
+  largefile
+  ldd
+  localcharset
+  manywarnings
+  math
+  mbrtowc
+  mbsinit
+  mbsrtowcs
+  memchr
+  memcmp
   memmem
+  memmem-simple
+  mempcpy
+  multiarch
+  nextafter
+  no-c++
+  nocrash
+  obstack
+  openmp
   pathmax
+  snippet/_Noreturn
+  snippet/arg-nonnull
+  snippet/c++defs
+  snippet/link-warning
+  snippet/warn-on-use
+  ssize_t
+  stdbool
+  stddef
+  stdint
+  stdlib
+  streq
+  string
+  strnlen1
+  strstr
+  strstr-simple
+  sys_stat
+  sys_time
+  sys_types
+  time
   unistd
   update-copyright
+  vc-list-files
+  verify
+  warnings
+  wchar
+  wcsncasecmp
+  wctype-h
 ])
 gl_AVOID([])
 gl_SOURCE_BASE([import])

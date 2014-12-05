@@ -684,6 +684,8 @@ AC_MSG_CHECKING([libtool things])
 AC_MSG_RESULT([ ])
 LT_INIT([disable-fast-install dlopen])dnl
 LT_LANG([C])dnl
+dnl# temporarily set this while I update everything libtool-related:
+LT_PREREQ([2.4.4])dnl
 dnl# even though gdb is written only in C, it has tests written
 dnl# for debugging the following languages, so check them, too:
 LT_LANG([C++])dnl
@@ -879,7 +881,7 @@ AC_SEARCH_LIBS([gethostbyname],[nsl])dnl
 AC_SEARCH_LIBS([socketpair],[socket])dnl
 
 # On HP/UX we may need libxpdl for dlgetmodinfo (used by solib-pa64.c).
-AC_SEARCH_LIBS([dlgetmodinfo],[dl xpdl dlcompat dyld])dnl
+AC_SEARCH_LIBS([dlgetmodinfo],[dl xpdl dlcompat dyld ltdl])dnl
 
 # For the TUI, we need enhanced curses functionality.
 #
@@ -1697,7 +1699,7 @@ esac
 
 case "${host}" in
   *-apple-darwin* | *-apple-macos*)
-    AC_ARG_ENABLE(carbon-framework,
+    AC_ARG_ENABLE([carbon-framework],
     [AS_HELP_STRING([--disable-carbon-framework],
                     [disable Carbon framework use even when available])],
     [case ${enableval} in
@@ -2348,8 +2350,8 @@ AC_SUBST([TARGET_SYSTEM_ROOT_DEFINE])dnl
 # NOTE: If you add to this list, remember to update
 # gdb/doc/gdbint.texinfo.
 build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
--Wparentheses -Wdeclaration-after-statement -Wpointer-arith \
--Wpointer-sign \
+-Wparentheses -Wdeclaration-after-statement -Wc++-compat \
+-Wpointer-arith -Wpointer-sign \
 -Wno-unused -Wunused-value -Wunused-label -Wunused-function \
 -Wunused-macros -Wundef \
 -Wempty-body -Wmissing-paramater-type -Wmissing-declarations \
@@ -2391,7 +2393,7 @@ fi
 #  * -Wtraditional (yeah right)
 #  * -Wshadow (usually easy enough to fix, if you are using an IDE)
 #  * -Wcast-qual (casting can silence other warnings, so this can conflict)
-#  * -Wcast-align (same as with -Wcast-align)
+#  * -Wcast-align (same as with -Wcast-qual, and also makes clang noisy)
 #  * -Wwrite-strings (would require a lot of const-ifying)
 #  * -Wconversion (would require a lot of casting)
 #  * -Wstrict-prototypes (already include some parts of it)

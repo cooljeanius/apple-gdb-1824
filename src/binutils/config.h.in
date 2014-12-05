@@ -2,7 +2,7 @@
 
 
 #ifndef HAVE_CONFIG_H
-# define HAVE_CONFIG_H
+# define HAVE_CONFIG_H 1
 #endif /* !HAVE_CONFIG_H */
 
 
@@ -10,7 +10,7 @@
 /* Check that config.h is #included before system headers
  * (this works only for glibc, but that should be enough).  */
 #if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
-#  error config.h must be #included before system headers
+#  error "config.h must be #included before system headers"
 #endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ */
 #define __CONFIG_H__ 1
 
@@ -515,8 +515,7 @@
    slash. */
 #undef LSTAT_FOLLOWS_SLASHED_SYMLINK
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
 #undef LT_OBJDIR
 
 /* Name of package */

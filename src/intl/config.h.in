@@ -363,8 +363,7 @@
 /* Define because this is a library. */
 #undef IN_LIBRARY
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
 #undef LT_OBJDIR
 
 /* Define if there is no xmalloc. */

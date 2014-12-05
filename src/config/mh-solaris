@@ -1,2 +1,33 @@
-# Makefile changes for Suns running Solaris 2
+## -*-makefile-*-
+## Solaris-specific setup using Sun's compilers
+## Some portions taken from ICU, Copyright (c) 1999-2010, IBM Corporation &
+## others. All Rights Reserved.
+
+# Makefile changes for Suns running Solaris 2:
 X11_EXTRA_LIBS = -lnsl -lsocket
+
+## Flags for position independent code:
+SHAREDLIBCFLAGS = -KPIC
+SHAREDLIBCXXFLAGS = -KPIC
+SHAREDLIBCPPFLAGS = -DPIC
+
+# -mt means 'compiles and links a multithreaded program':
+THREADSCFLAGS = -mt
+THREADSCXXFLAGS = -mt
+## ('=' might need to be switched to '+=')
+
+## Compiler switch to embed a runtime search path:
+LD_RPATH_PRE=   -R
+
+COMMENTED_OUT_LIBRARY_PATH_PREFIX=/usr/lib/lwp:
+
+## Shared object suffix:
+SO=		so
+## Non-shared intermediate object suffix:
+STATIC_O = o
+
+## Remove shared library 's':
+STATIC_PREFIX_WHEN_USED = 
+STATIC_PREFIX = 
+
+## End Solaris-specific setup

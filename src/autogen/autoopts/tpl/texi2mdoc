@@ -1,4 +1,4 @@
-#! /sw/bin/bash
+#! /opt/local/bin/bash
 
 ## texi2mdoc.sh -- script to convert texi-isms to mdoc-isms
 ##

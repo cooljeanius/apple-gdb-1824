@@ -1,4 +1,4 @@
-#! /sw/bin/bash
+#! /opt/local/bin/bash
 
 ## mdoc2man.sh -- script to convert mdoc-isms to man-isms
 ##

@@ -1,17 +1,17 @@
 dnl#                                               -*- Autoconf -*-
 dnl# Process this file with autoconf to produce a configure script.
-dnl#
+dnl# (this one is for libopcodes)
 
 AC_PREREQ([2.61])
-dnl# keep version number synced with the one in ../bfd
+dnl# keep the version number synced with the one in '../bfd':
 AC_INIT([opcodes],[2.16.91],[jmolenda@apple.com])
 dnl# bug report address is email address of last person to touch this
 dnl# directory, according to the Changelog-Apple in this directory
 AC_CONFIG_SRCDIR([z8k-dis.c])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_HEADERS([config.h])dnl
 
-# PR 14072
+dnl# PR 14072:
 AH_VERBATIM([00_CONFIG_H_CHECK],[
 /* Check that config.h is #included before system headers
  * (this works only for glibc, but that should be enough).  */
@@ -21,16 +21,19 @@ AH_VERBATIM([00_CONFIG_H_CHECK],[
 #define __CONFIG_H__ 1])
 
 AC_CANONICAL_TARGET
-AC_SEARCH_LIBS([strerror],[cposix])
+AC_SEARCH_LIBS([strerror],[cposix])dnl# what used to be AC\_ISC\_POSIX
 
+# Automake hack:
 if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.10 gnits dejagnu])
+AM_INIT_AUTOMAKE([1.10 gnits dejagnu])dnl
+dnl# (maintainer mode macro is called farther below)
+  ## whitespace...
 
 dnl# These must be called before AM_PROG_LIBTOOL, because it may want
-dnl# to call AC_CHECK_PROG.
+dnl# to call AC_CHECK_PROG or similar:
 AM_PROG_AR
 if test "x${AR}" = "x"; then
   test -z "${AR}"
@@ -49,29 +52,103 @@ else
 fi
 AM_PROG_AS
 
+AC_DEFUN([AC_REQUIRE_SED],[
+  AC_REQUIRE([AC_PROG_SED])dnl
+])dnl
+AC_REQUIRE_SED
+AC_DEFUN([AC_REQUIRE_GREPS],[
+  AC_REQUIRE([AC_PROG_GREP])dnl
+  AC_REQUIRE([AC_PROG_EGREP])dnl
+  AC_REQUIRE([AC_PROG_FGREP])dnl
+])dnl
+AC_REQUIRE_GREPS
+
 dnl# Default to a non shared library. This may be overridden by the
 dnl# configure option --enable-shared.
 AC_DISABLE_SHARED
 
 # Libtool checks:
 AC_PROG_CXX
-LT_INIT([disable-fast-install disable-shared dlopen static win32-dll])
-LT_LANG([C])
+LT_INIT([disable-fast-install disable-shared dlopen static win32-dll])dnl
+LT_LANG([C])dnl
+dnl# temporarily set this while I update everything libtool-related:
+LT_PREREQ([2.4.4])dnl
+
+if test -z "${lt_cv_objdir}"; then
+  AC_MSG_WARN([lt_cv_objdir somehow was left unset, setting to default])
+  export lt_cv_objdir=.libs
+  AC_SUBST([lt_cv_objdir])
+  if test -z "${objdir}"; then
+    export objdir=.libs
+    AC_SUBST([objdir])
+  fi
+  if test -z "${libtooldir}"; then
+    export libtooldir=.libs
+    AC_SUBST([libtooldir])
+  fi
+elif test "x${lt_cv_objdir}" = "x.."; then
+  AC_MSG_WARN([lt_cv_objdir is one level too high, reassigning])
+  export lt_cv_objdir=.
+  if test -z "${objdir}" -o "x${objdir}" = "x.."; then
+    export objdir=.
+  fi
+  if test -z "${libtooldir}" -o "x${libtooldir}" = "x.."; then
+    export libtooldir=.
+  fi
+elif test "x${lt_cv_objdir}" = "x../.libs"; then
+  AC_MSG_WARN([lt_cv_objdir is in one level too high, reassigning])
+  export lt_cv_objdir=./.libs
+  export objdir=.
+  if test -z "${objdir}" -o "x${objdir}" = "x../.libs"; then
+    export objdir=./.libs
+  fi
+  if test -z "${libtooldir}" -o "x${libtooldir}" = "x../.libs"; then
+    export libtooldir=./.libs
+  fi
+elif test -n "${lt_cv_objdir}"; then
+  if test -z "${objdir}"; then
+    export objdir="${lt_cv_objdir}"
+  fi
+  if test -z "${libtooldir}"; then
+    export libtooldir="${lt_cv_objdir}"
+  fi
+# This last one should not be reached; the previous cases should have
+# covered all the possibilities, but just in case they failed to do so:
+elif test -n "${objdir}"; then
+  if test -z "${libtooldir}"; then
+    AC_MSG_WARN([setting libtooldir to "${objdir}" should be unnecessary])
+    export libtooldir="${objdir}"
+  fi
+fi
+if test "x${lt_sysroot}" = "x" -a "x${prefix}" != "x"; then
+  test -z "${lt_sysroot}" && test -n "${prefix}"
+  AC_MSG_NOTICE([trying to set lt_sysroot to prefix])
+  lt_sysroot="${prefix}"
+fi
+if test -x ${srcdir}/libtool; then
+  test -r libtool
+  if test "x${USE_MAINTAINER_MODE}" = "xyes"; then
+    test ! -z "${USE_MAINTAINER_MODE}"
+    ## (bfd puts fixes here, but leave them out in this version for now)
+  fi
+fi
 
 AC_ARG_ENABLE([targets],
 [AS_HELP_STRING([--enable-targets],[alternative target configurations])],
 [case "${enableval}" in
   yes | "") AC_MSG_ERROR([enable-targets option must specify target names or 'all'])
             ;;
-  no)       enable_targets= ;;
+  no)       enable_targets="" ;;
   *)        enable_targets=${enableval} ;;
 esac])dnl
 AC_ARG_ENABLE([commonbfdlib],
-[AS_HELP_STRING([--enable-commonbfdlib],[build shared BFD/opcodes/libiberty library])],
+[AS_HELP_STRING([--enable-commonbfdlib],
+                [build shared BFD/opcodes/libiberty library])],
 [case "${enableval}" in
   yes) commonbfdlib=true ;;
   no)  commonbfdlib=false ;;
-  *)   AC_MSG_ERROR([bad value ${enableval} for opcodes commonbfdlib option]) ;;
+  *) AC_MSG_ERROR([bad value ${enableval} for opcodes commonbfdlib flag])
+     ;;
 esac])dnl
 
 dnl# APPLE LOCAL change is to omit the following:
@@ -88,7 +165,6 @@ AC_OBJEXT
 AC_EXEEXT
 
 # host-specific stuff:
-
 if test "x${CC}" = "x"; then
   test -z "${CC}"
   AC_PROG_CC
@@ -105,7 +181,7 @@ case "${host}" in
   ;;
 esac
 
-# gettext
+# gettext:
 AC_MSG_NOTICE([doing gettext checks])
 if test -d ../intl; then
   if test -z "${LDFLAGS}"; then
@@ -124,8 +200,8 @@ ALL_LINGUAS="fr sv tr es da de id it pt_BR ro nl fi uk vi ga zh_CN"
 CY_GNU_GETTEXT
 ZW_GNU_GETTEXT_SISTER_DIR
 if test "x${GETTEXT_MACRO_VERSION}" = "x"; then
-	test -z "${GETTEXT_MACRO_VERSION}"
-	AM_PO_SUBDIRS
+  test -z "${GETTEXT_MACRO_VERSION}"
+  AM_PO_SUBDIRS
 fi
 
 AC_MSG_NOTICE([sourcing ../bfd/configure.host])
@@ -133,7 +209,7 @@ AC_MSG_NOTICE([sourcing ../bfd/configure.host])
 
 BFD_CC_FOR_BUILD
 
-AC_SUBST([HDEFINES])
+AC_SUBST([HDEFINES])dnl
 AC_PROG_INSTALL
 AM_PROG_INSTALL_STRIP
 AC_PROG_LN_S
@@ -154,14 +230,14 @@ AC_CHECK_LIB([System],[main],
 if test -z "${SYSTEM_FRAMEWORK_LIBS}"; then
   AC_MSG_ERROR([Missing some required system libraries.])
 fi
-AC_SUBST([SYSTEM_FRAMEWORK_LIBS])
+AC_SUBST([SYSTEM_FRAMEWORK_LIBS])dnl
 AC_CHECK_LIB([c],[printf])
 # ../intl is added to LDFLAGS above
 AC_SEARCH_LIBS([dcgettext],[intl])
 AC_CHECK_LIB([intl],[gettext],[],[
   AC_CHECK_LIB([intl],[main])
-])
-AC_CHECK_LIB([iconv],[iconv])
+])dnl
+AC_CHECK_LIB([iconv],[iconv])dnl
 
 # Checks for header files.
 AC_HEADER_STDBOOL dnl# calls AC_CHECK_HEADER_STDBOOL
@@ -182,11 +258,14 @@ unset ac_cv_header_libintl_h
 unset ac_cv_header_malloc_h
 unset ac_cv_header_stdlib_h
 AC_CHECK_HEADERS([errno.h gettext.h libintl.h malloc.h malloc/malloc.h \
-                  setjmp.h stddef.h stdio.h stdio_ext.h])
+                  setjmp.h stddef.h stdio.h stdio_ext.h])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
-AC_C_CONST
+if test "x${ac_cv_c_const}" = "x"; then
+  test -z "${ac_cv_c_const}"
+  AC_C_CONST
+fi
 AC_C_PROTOTYPES
 AC_TYPE_INT8_T
 AC_TYPE_INT16_T
@@ -196,15 +275,18 @@ AC_TYPE_UINT8_T
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
+AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
 
 # Checks for library functions.
 AC_FUNC_FORK
 AC_FUNC_MALLOC
+AC_FUNC_MEMCMP
 AC_FUNC_REALLOC
+AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([memmove memset regcomp strdup strerror strncasecmp strstr \
                 strtol strtoul strtoull])
 AC_CHECK_DECLS([basename])
-AC_CHECK_DECLS([stpcpy])
+AC_CHECK_DECLS([stpcpy])dnl
 
 cgen_maint=no
 cgendir='$(srcdir)/../cgen'
@@ -223,7 +305,7 @@ AC_ARG_ENABLE([cgen-maint],
 	;;
 esac])dnl
 AM_CONDITIONAL([CGEN_MAINT],[test x${cgen_maint} = xyes])
-AC_SUBST([cgendir])
+AC_SUBST([cgendir])dnl
 
 using_cgen=no
 
@@ -233,7 +315,7 @@ AC_CACHE_CHECK([linker --as-needed support],[bfd_cv_ld_as_needed],
 	if ${LD} --help 2>/dev/null | grep as-needed > /dev/null; then
 		bfd_cv_ld_as_needed=yes
 	fi
-	])
+	])dnl
 
 LT_LIB_M
 
@@ -250,8 +332,8 @@ fi
 BUILD_LIBS="${BUILD_LIBS} ${LIBINTL}"
 BUILD_LIB_DEPS="${BUILD_LIB_DEPS} ${LIBINTL_DEP}"
 
-AC_SUBST([BUILD_LIBS])
-AC_SUBST([BUILD_LIB_DEPS])
+AC_SUBST([BUILD_LIBS])dnl
+AC_SUBST([BUILD_LIB_DEPS])dnl
 
 # Horrible hacks to build DLLs on Windows.
 WIN32LDFLAGS=""
@@ -264,13 +346,13 @@ case "${host}" in
   fi
   ;;
 esac
-AC_SUBST([WIN32LDFLAGS])
-AC_SUBST([WIN32LIBADD])
+AC_SUBST([WIN32LDFLAGS])dnl
+AC_SUBST([WIN32LIBADD])dnl
 
 # target-specific stuff:
 
 # Canonicalize the secondary target names.
-if test -n "${enable_targets}" ; then
+if test -n "${enable_targets}"; then
     for targ in `echo ${enable_targets} | sed 's/,/ /g'`
     do
 	result=`${ac_config_sub} ${targ} 2>/dev/null`
@@ -284,122 +366,130 @@ if test -n "${enable_targets}" ; then
 fi
 
 all_targets=false
-selarchs=
+selarchs=""
 for targ in ${target} ${canon_targets}
 do
-    if test "x${targ}" = "xall" ; then
+    if test "x${targ}" = "xall"; then
         all_targets=true
     else
 	AC_MSG_NOTICE([sourcing ../bfd/config.bfd])
-	. $srcdir/../bfd/config.bfd
+	. ${srcdir}/../bfd/config.bfd
 	selarchs="${selarchs} ${targ_archs}"
     fi
 done	
 
-# Utility var, documents generic cgen support files.
-
+# Utility var, documents generic cgen support files:
 cgen_files="cgen-opc.lo cgen-asm.lo cgen-dis.lo"
 
-# We do NOT do any links based on the target system, just makefile config.
-
-if test x${all_targets} = xfalse ; then
-
-    # Target architecture .o files.
-    ta=
+# We do NOT do any links based on the target system, just makefile config:
+if test "x${all_targets}" = "xfalse"; then
+    # Target architecture .o files:
+    ta=""
 
     for arch in ${selarchs}
     do
 	ad=`echo ${arch} | sed -e s/bfd_//g -e s/_arch//g`
 	archdefs="${archdefs} -DARCH_${ad}"
 	case "${arch}" in
-	bfd_a29k_arch)		ta="${ta} a29k-dis.lo" ;;
-	bfd_alliant_arch)	;;
-	bfd_alpha_arch)		ta="${ta} alpha-dis.lo alpha-opc.lo" ;;
-	bfd_arc_arch)		ta="${ta} arc-dis.lo arc-opc.lo arc-ext.lo" ;;
-	bfd_arm_arch)		ta="${ta} arm-dis.lo" ;;
-	bfd_avr_arch)		ta="${ta} avr-dis.lo" ;;
-	bfd_convex_arch)	;;
-	bfd_cris_arch)		ta="${ta} cris-dis.lo cris-opc.lo" ;;
-	bfd_crx_arch)    	ta="${ta} crx-dis.lo crx-opc.lo" ;;
-	bfd_d10v_arch)		ta="${ta} d10v-dis.lo d10v-opc.lo" ;;
-	bfd_d30v_arch)		ta="${ta} d30v-dis.lo d30v-opc.lo" ;;
-	bfd_dlx_arch)		ta="${ta} dlx-dis.lo" ;;
-	bfd_fr30_arch)          ta="${ta} fr30-asm.lo fr30-desc.lo fr30-dis.lo fr30-ibld.lo fr30-opc.lo" using_cgen=yes ;;
-	bfd_frv_arch)           ta="${ta} frv-asm.lo frv-desc.lo frv-dis.lo frv-ibld.lo frv-opc.lo" using_cgen=yes ;;
-	bfd_h8300_arch)		ta="${ta} h8300-dis.lo" ;;
-	bfd_h8500_arch)		ta="${ta} h8500-dis.lo" ;;
-	bfd_hppa_arch)		ta="${ta} hppa-dis.lo" ;;
-	bfd_i370_arch)		ta="${ta} i370-dis.lo i370-opc.lo" ;;
-	bfd_i386_arch)		ta="${ta} i386-dis.lo i386-opc.lo" ;;
-	bfd_i860_arch)		ta="${ta} i860-dis.lo" ;;
-	bfd_i960_arch)		ta="${ta} i960-dis.lo" ;;
-	bfd_ia64_arch)		ta="${ta} ia64-dis.lo ia64-opc.lo" ;;
-	bfd_ip2k_arch)		ta="${ta} ip2k-asm.lo ip2k-desc.lo ip2k-dis.lo ip2k-ibld.lo ip2k-opc.lo" using_cgen=yes ;;
-        bfd_iq2000_arch)        ta="${ta} iq2000-asm.lo iq2000-desc.lo iq2000-dis.lo iq2000-ibld.lo iq2000-opc.lo" using_cgen=yes ;;
-	bfd_m32c_arch)		ta="${ta} m32c-asm.lo m32c-desc.lo m32c-dis.lo m32c-ibld.lo m32c-opc.lo" using_cgen=yes ;;
-	bfd_m32r_arch)		ta="${ta} m32r-asm.lo m32r-desc.lo m32r-dis.lo m32r-ibld.lo m32r-opc.lo m32r-opinst.lo" using_cgen=yes ;;
-	bfd_m68hc11_arch)	ta="${ta} m68hc11-dis.lo m68hc11-opc.lo" ;;
-	bfd_m68hc12_arch)	ta="${ta} m68hc11-dis.lo m68hc11-opc.lo" ;;
-	bfd_m68k_arch)		ta="${ta} m68k-dis.lo m68k-opc.lo" ;;
-	bfd_m88k_arch)		ta="${ta} m88k-dis.lo" ;;
-	bfd_maxq_arch)		ta="${ta} maxq-dis.lo" ;;
-	bfd_mcore_arch)		ta="${ta} mcore-dis.lo" ;;
-	bfd_mips_arch)		ta="${ta} mips-dis.lo mips-opc.lo mips16-opc.lo" ;;
-	bfd_mmix_arch)		ta="${ta} mmix-dis.lo mmix-opc.lo" ;;
-	bfd_mn10200_arch)	ta="${ta} m10200-dis.lo m10200-opc.lo" ;;
-	bfd_mn10300_arch)	ta="${ta} m10300-dis.lo m10300-opc.lo" ;;
-	bfd_ms1_arch)		ta="${ta} ms1-asm.lo ms1-desc.lo ms1-dis.lo ms1-ibld.lo ms1-opc.lo" using_cgen=yes ;;
-	bfd_msp430_arch)	ta="${ta} msp430-dis.lo" ;;
-	bfd_ns32k_arch)		ta="${ta} ns32k-dis.lo" ;;
-	bfd_openrisc_arch)	ta="${ta} openrisc-asm.lo openrisc-desc.lo openrisc-dis.lo openrisc-ibld.lo openrisc-opc.lo" using_cgen=yes ;;
-	bfd_or32_arch)		ta="${ta} or32-dis.lo or32-opc.lo" using_cgen=yes ;;
-	bfd_pdp11_arch)		ta="${ta} pdp11-dis.lo pdp11-opc.lo" ;;
-	bfd_pj_arch)	        ta="${ta} pj-dis.lo pj-opc.lo" ;;
-	bfd_powerpc_arch)	ta="${ta} ppc-dis.lo ppc-opc.lo" ;;
-	bfd_powerpc_64_arch)	ta="${ta} ppc-dis.lo ppc-opc.lo" ;;
-	bfd_pyramid_arch)	;;
-	bfd_romp_arch)		;;
-	bfd_rs6000_arch)	ta="${ta} ppc-dis.lo ppc-opc.lo" ;;
-	bfd_s390_arch)		ta="${ta} s390-dis.lo s390-opc.lo" ;;
+	bfd_a29k_arch)	     ta="${ta} a29k-dis.lo" ;;
+	bfd_alliant_arch)    ;;
+	bfd_alpha_arch)	     ta="${ta} alpha-dis.lo alpha-opc.lo" ;;
+	bfd_arc_arch)	     ta="${ta} arc-dis.lo arc-opc.lo arc-ext.lo" ;;
+	bfd_arm_arch)	     ta="${ta} arm-dis.lo" ;;
+	bfd_avr_arch)	     ta="${ta} avr-dis.lo" ;;
+	bfd_convex_arch)     ;;
+	bfd_cris_arch)	     ta="${ta} cris-dis.lo cris-opc.lo" ;;
+	bfd_crx_arch)        ta="${ta} crx-dis.lo crx-opc.lo" ;;
+	bfd_d10v_arch)	     ta="${ta} d10v-dis.lo d10v-opc.lo" ;;
+	bfd_d30v_arch)	     ta="${ta} d30v-dis.lo d30v-opc.lo" ;;
+	bfd_dlx_arch)	     ta="${ta} dlx-dis.lo" ;;
+	bfd_fr30_arch)       ta="${ta} fr30-asm.lo fr30-desc.lo fr30-dis.lo fr30-ibld.lo fr30-opc.lo"
+                             using_cgen=yes ;;
+	bfd_frv_arch)        ta="${ta} frv-asm.lo frv-desc.lo frv-dis.lo frv-ibld.lo frv-opc.lo"
+                             using_cgen=yes ;;
+	bfd_h8300_arch)	     ta="${ta} h8300-dis.lo" ;;
+	bfd_h8500_arch)	     ta="${ta} h8500-dis.lo" ;;
+	bfd_hppa_arch)	     ta="${ta} hppa-dis.lo" ;;
+	bfd_i370_arch)	     ta="${ta} i370-dis.lo i370-opc.lo" ;;
+	bfd_i386_arch)	     ta="${ta} i386-dis.lo i386-opc.lo" ;;
+	bfd_i860_arch)	     ta="${ta} i860-dis.lo" ;;
+	bfd_i960_arch)	     ta="${ta} i960-dis.lo" ;;
+	bfd_ia64_arch)	     ta="${ta} ia64-dis.lo ia64-opc.lo" ;;
+	bfd_ip2k_arch)	     ta="${ta} ip2k-asm.lo ip2k-desc.lo ip2k-dis.lo ip2k-ibld.lo ip2k-opc.lo"
+                             using_cgen=yes ;;
+        bfd_iq2000_arch)     ta="${ta} iq2000-asm.lo iq2000-desc.lo iq2000-dis.lo iq2000-ibld.lo iq2000-opc.lo"
+                             using_cgen=yes ;;
+	bfd_m32c_arch)	     ta="${ta} m32c-asm.lo m32c-desc.lo m32c-dis.lo m32c-ibld.lo m32c-opc.lo"
+                             using_cgen=yes ;;
+	bfd_m32r_arch)	     ta="${ta} m32r-asm.lo m32r-desc.lo m32r-dis.lo m32r-ibld.lo m32r-opc.lo m32r-opinst.lo"
+                             using_cgen=yes ;;
+	bfd_m68hc11_arch)    ta="${ta} m68hc11-dis.lo m68hc11-opc.lo" ;;
+	bfd_m68hc12_arch)    ta="${ta} m68hc11-dis.lo m68hc11-opc.lo" ;;
+	bfd_m68k_arch)	     ta="${ta} m68k-dis.lo m68k-opc.lo" ;;
+	bfd_m88k_arch)	     ta="${ta} m88k-dis.lo" ;;
+	bfd_maxq_arch)	     ta="${ta} maxq-dis.lo" ;;
+	bfd_mcore_arch)	     ta="${ta} mcore-dis.lo" ;;
+	bfd_mips_arch)	     ta="${ta} mips-dis.lo mips-opc.lo mips16-opc.lo" ;;
+	bfd_mmix_arch)	     ta="${ta} mmix-dis.lo mmix-opc.lo" ;;
+	bfd_mn10200_arch)    ta="${ta} m10200-dis.lo m10200-opc.lo" ;;
+	bfd_mn10300_arch)    ta="${ta} m10300-dis.lo m10300-opc.lo" ;;
+	bfd_ms1_arch)	     ta="${ta} ms1-asm.lo ms1-desc.lo ms1-dis.lo ms1-ibld.lo ms1-opc.lo"
+                             using_cgen=yes ;;
+	bfd_msp430_arch)     ta="${ta} msp430-dis.lo" ;;
+	bfd_ns32k_arch)	     ta="${ta} ns32k-dis.lo" ;;
+	bfd_openrisc_arch)   ta="${ta} openrisc-asm.lo openrisc-desc.lo openrisc-dis.lo openrisc-ibld.lo openrisc-opc.lo"
+                             using_cgen=yes ;;
+	bfd_or32_arch)	     ta="${ta} or32-dis.lo or32-opc.lo"
+                             using_cgen=yes ;;
+	bfd_pdp11_arch)	     ta="${ta} pdp11-dis.lo pdp11-opc.lo" ;;
+	bfd_pj_arch)	     ta="${ta} pj-dis.lo pj-opc.lo" ;;
+	bfd_powerpc_arch)    ta="${ta} ppc-dis.lo ppc-opc.lo" ;;
+	bfd_powerpc_64_arch) ta="${ta} ppc-dis.lo ppc-opc.lo" ;;
+	bfd_pyramid_arch)    ;;
+	bfd_romp_arch)	     ;;
+	bfd_rs6000_arch)     ta="${ta} ppc-dis.lo ppc-opc.lo" ;;
+	bfd_s390_arch)	     ta="${ta} s390-dis.lo s390-opc.lo" ;;
 	bfd_sh_arch)
 	  # We cannot decide what we want just from the CPU family.
 	  # We want SH5 support unless a specific version of sh is
 	  # specified, as in sh3-elf, sh3b-linux-gnu, etc.
 	  # Include it just for ELF targets, since the SH5 bfd:s are ELF
 	  # only.
-	  for t in $target $canon_targets; do
-	    case $t in
+	  for t in ${target} ${canon_targets}; do
+	    case ${t} in
 	      all |  sh5*-* | sh64*-* | sh-*-*elf* | shl*-*-*elf* | \
 	      sh-*-linux* | shl-*-linux*)
-				ta="${ta} sh64-dis.lo sh64-opc.lo"
-				archdefs="${archdefs} -DINCLUDE_SHMEDIA"
-				break;;
+	        ta="${ta} sh64-dis.lo sh64-opc.lo"
+	        archdefs="${archdefs} -DINCLUDE_SHMEDIA"
+	        break;;
 	    esac;
 	  done
-				ta="${ta} sh-dis.lo" ;;
-	bfd_sparc_arch)		ta="${ta} sparc-dis.lo sparc-opc.lo" ;;
-	bfd_tahoe_arch)		;;
-	bfd_tic30_arch)		ta="${ta} tic30-dis.lo" ;;
-        bfd_tic4x_arch)         ta="${ta} tic4x-dis.lo" ;;
-	bfd_tic54x_arch)	ta="${ta} tic54x-dis.lo tic54x-opc.lo" ;;
-	bfd_tic80_arch)		ta="${ta} tic80-dis.lo tic80-opc.lo" ;;
-	bfd_v850_arch)		ta="${ta} v850-opc.lo v850-dis.lo" ;;
-	bfd_v850e_arch)		ta="${ta} v850-opc.lo v850-dis.lo" ;;
-	bfd_v850ea_arch)	ta="${ta} v850-opc.lo v850-dis.lo" ;;
-	bfd_vax_arch)		ta="${ta} vax-dis.lo" ;;
-	bfd_w65_arch)		ta="${ta} w65-dis.lo" ;;
-	bfd_we32k_arch)		;;
-	bfd_x86_64_arch)	ta="${ta} i386-dis.lo i386-opc.lo" ;;
-	bfd_xstormy16_arch)	ta="${ta} xstormy16-asm.lo xstormy16-desc.lo xstormy16-dis.lo xstormy16-ibld.lo xstormy16-opc.lo" using_cgen=yes ;;
-	bfd_xtensa_arch)	ta="${ta} xtensa-dis.lo" ;;
-	bfd_z8k_arch)		ta="${ta} z8k-dis.lo" ;;
+	  ta="${ta} sh-dis.lo" ;;
+	bfd_sparc_arch)	    ta="${ta} sparc-dis.lo sparc-opc.lo" ;;
+	bfd_tahoe_arch)	    ;;
+	bfd_tic30_arch)	    ta="${ta} tic30-dis.lo" ;;
+        bfd_tic4x_arch)     ta="${ta} tic4x-dis.lo" ;;
+	bfd_tic54x_arch)    ta="${ta} tic54x-dis.lo tic54x-opc.lo" ;;
+	bfd_tic80_arch)	    ta="${ta} tic80-dis.lo tic80-opc.lo" ;;
+	bfd_v850_arch)	    ta="${ta} v850-opc.lo v850-dis.lo" ;;
+	bfd_v850e_arch)	    ta="${ta} v850-opc.lo v850-dis.lo" ;;
+	bfd_v850ea_arch)    ta="${ta} v850-opc.lo v850-dis.lo" ;;
+	bfd_vax_arch)	    ta="${ta} vax-dis.lo" ;;
+	bfd_w65_arch)	    ta="${ta} w65-dis.lo" ;;
+	bfd_we32k_arch)	    ;;
+	bfd_x86_64_arch)    ta="${ta} i386-dis.lo i386-opc.lo" ;;
+	bfd_xstormy16_arch) ta="${ta} xstormy16-asm.lo xstormy16-desc.lo xstormy16-dis.lo xstormy16-ibld.lo xstormy16-opc.lo" using_cgen=yes ;;
+	bfd_xtensa_arch)    ta="${ta} xtensa-dis.lo" ;;
+	bfd_z8k_arch)	    ta="${ta} z8k-dis.lo" ;;
 
-	"")			;;
-	*)		AC_MSG_ERROR([*** unknown target architecture ${arch}]) ;;
+	"")		    ;;
+	*)
+          AC_MSG_ERROR([*** unknown target architecture ${arch}])
+          ;;
 	esac
     done
 
-    if test ${using_cgen} = yes ; then
+    if test "x${using_cgen}" = "xyes"; then
 	ta="${ta} ${cgen_files}"
     fi
 
@@ -425,19 +515,19 @@ if test x${all_targets} = xfalse ; then
     archdefs="${f}"
 
     BFD_MACHINES="${ta}"
-
-else	# all_targets is true
+else
+    # all_targets is true:
     archdefs=-DARCH_all
     BFD_MACHINES='$(ALL_MACHINES)'
 fi
 
-AC_SUBST([archdefs])
-AC_SUBST([BFD_MACHINES])
+AC_SUBST([archdefs])dnl
+AC_SUBST([BFD_MACHINES])dnl
 
 AC_CONFIG_FILES([Makefile \
-                 po/Makefile.in:po/Make-in])
+                 po/Makefile.in:po/Make-in])dnl
 
-AC_CONFIG_COMMANDS([default],[[sed -e '/POTFILES =/r po/POTFILES' po/Makefile.in > po/Makefile]],[[]])
+AC_CONFIG_COMMANDS([default],[[sed -e '/POTFILES =/r po/POTFILES' po/Makefile.in > po/Makefile]],[[]])dnl
 
 AC_CONFIG_COMMANDS([config_status_vpath_build_fix],[
 if test "${srcdir}" != "."; then
@@ -447,8 +537,9 @@ if test "${srcdir}" != "."; then
     cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
   fi
 fi
-],[])
+],[])dnl
 
+dnl# order of these first 2 libtool hacks is reversed from '../bfd':
 AC_CONFIG_COMMANDS([libtool_lengthening_hack_fix1],[
 # Hack in case libtool is too short:
 changequote(,)
@@ -475,10 +566,10 @@ changequote([,])
     echo "unable to do so: ../ltconfig is missing and/or unusable"
   fi
 fi
-],[])
+],[])dnl
 
 AC_CONFIG_COMMANDS([libtool_lengthening_hack_fix2],[
-# Also try the hack from ../bfd here as well:
+# Also try the first hack from ../bfd here as well:
 if test -e libtool -a -e libtool.old; then
   stat libtool > /dev/null
   stat libtool.old > /dev/null
@@ -505,6 +596,57 @@ elif test ! -e libtool -a ! -e libtool.old; then
 else
   echo "this should not happen"
 fi
-],[])
+],[])dnl
+
+dnl# ...and the 3rd one:
+AC_CONFIG_COMMANDS([broken_libtool_hack_fix3],[
+  if test -z "${our_libtool_script}"; then
+    if test -x ./libtool; then
+      our_libtool_script="./libtool"
+    elif test -n "${srcdir}" -a -x ${srcdir}/libtool; then
+      our_libtool_script="${srcdir}/libtool"
+    else
+      our_libtool_script=libtool
+    fi
+  fi
+  if test -z "${LIBTOOL}"; then
+    if test -n "${SHELL}"; then
+      LIBTOOL="${SHELL} ${our_libtool_script}"
+    elif test -x /bin/sh; then
+      LIBTOOL="/bin/sh ${our_libtool_script}"
+    else
+      LIBTOOL="${our_libtool_script}"
+    fi
+  fi  
+  if (${LIBTOOL} --config | ${GREP} "objdir="); then
+    my_libtooldir=`${LIBTOOL} --config | ${SED} -n -e 's/^objdir=//p'`
+    if test -n "${my_libtooldir}"; then
+      echo "${our_libtool_script} already defines objdir: '${my_libtooldir}'"
+    else
+      echo "error: my_libtooldir should be defined if ${our_libtool_script} already defines objdir" >&2
+      exit 1
+    fi
+  else
+    echo "" >> ${our_libtool_script}
+    if test -n "${lt_cv_objdir}"; then
+      echo "using lt_cv_objdir ('${lt_cv_objdir}') to define objdir in ${our_libtool_script}"
+      echo "objdir=${lt_cv_objdir}" >> ${our_libtool_script}
+    elif test -n "${objdir}"; then
+      echo "using objdir ('${objdir}') to define objdir in ${our_libtool_script}"
+      echo "objdir=${objdir}" >> ${our_libtool_script}
+    elif test -n "${libtooldir}"; then
+      echo "using libtooldir ('${libtooldir}') to define objdir in ${our_libtool_script}"
+      echo "objdir=${libtooldir}" >> ${our_libtool_script}
+    elif test -d .libs; then
+      echo "using .libs to define objdir in ${our_libtool_script}"
+      echo "objdir=.libs" >> ${our_libtool_script}
+    elif test -n "${srcdir}" -a -d ${srcdir}/.libs; then
+      echo "using ${srcdir}/.libs to define objdir in ${our_libtool_script}"
+      echo "objdir=${srcdir}/.libs" >> ${our_libtool_script}
+    else
+      echo "warning: need to define objdir in ${our_libtool_script}, but cannot figure out how to do so"
+    fi
+  fi
+],[])dnl
 
 AC_OUTPUT

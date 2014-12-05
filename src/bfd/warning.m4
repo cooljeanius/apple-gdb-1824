@@ -1,7 +1,8 @@
 dnl# Common configure.ac fragment
 
 AC_DEFUN([AM_BINUTILS_WARNINGS],[
-WARN_CFLAGS="-W -Wall -Wstrict-prototypes -Wmissing-prototypes -Wimplicit -Wparentheses -Wextra"
+# "-W" and "-Wextra" are redundant.
+WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes -Wimplicit -Wparentheses -Wextra -Wc++-compat"
 
 case "${host}" in
   *-apple-darwin* | *-apple-macos*)
@@ -28,7 +29,7 @@ AC_ARG_ENABLE([werror],
      yes | y) ERROR_ON_WARNING="yes" ;;
      no | n)  ERROR_ON_WARNING="no" ;;
      *) AC_MSG_ERROR([bad value ${enableval} for --enable-werror]) ;;
-   esac])
+   esac])dnl
 
 AC_ARG_ENABLE([pedantic],
   [AS_HELP_STRING([--enable-pedantic],[enable pedantic warnings])],
@@ -38,9 +39,9 @@ AC_ARG_ENABLE([pedantic],
      *) AC_MSG_ERROR([bad value ${enableval} for --enable-werror]) ;;
    esac])dnl
 
-AC_REQUIRE([AC_PROG_CC])
-# Enable -Werror by default when using gcc
-if test "${GCC}" = yes -a -z "${ERROR_ON_WARNING}" ; then
+AC_REQUIRE([AC_PROG_CC])dnl
+# Enable -Werror by default when using gcc:
+if test "${GCC}" = yes -a -z "${ERROR_ON_WARNING}"; then
     ERROR_ON_WARNING=yes
 fi
 
@@ -50,12 +51,13 @@ if test "x${ERROR_ON_WARNING}" = "xyes"; then
     NO_WERROR="-Wno-error"
 fi
 
-if test "x${PEDANTIC_WARNINGS}" = "xyes" ; then
-    WARN_CFLAGS="${WARN_CFLAGS} -pedantic"
+if test "x${PEDANTIC_WARNINGS}" = "xyes"; then
+    WARN_CFLAGS="${WARN_CFLAGS} -pedantic -Wdeclaration-after-statement"
 fi
 		   
 AC_ARG_ENABLE([build-warnings],
-[AS_HELP_STRING([--enable-build-warnings],[Enable build-time compiler warnings])],
+[AS_HELP_STRING([--enable-build-warnings],
+                [Enable build-time compiler warnings])],
 [case "${enableval}" in
   yes)	;;
   no)	WARN_CFLAGS="-w";;
@@ -71,7 +73,7 @@ then
     AC_MSG_CHECKING([compiler warning flags])
     for w in ${WARN_CFLAGS}; do
 	case ${w} in
-	*) # Check that GCC accepts it
+	*) # Check that GCC accepts it:
 	    saved_CFLAGS="${CFLAGS}"
 	    CFLAGS="${CFLAGS} ${w}"
 	    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],[MY_WARN_CFLAGS="${MY_WARN_CFLAGS} ${w}"],[])
@@ -87,6 +89,6 @@ if test x"${silent}" != x"yes" && test x"${WARN_CFLAGS}" != x""; then
   echo "Setting warning flags = ${WARN_CFLAGS}" 6>&1
 fi
 
-AC_SUBST([WARN_CFLAGS])
-AC_SUBST([NO_WERROR])
-])
+AC_SUBST([WARN_CFLAGS])dnl
+AC_SUBST([NO_WERROR])dnl
+])dnl

@@ -1,6 +1,67 @@
+## -*-makefile-*-
+## Cygwin/MinGW specific setup
+## Some portions taken from ICU, Copyright (c) 2001-2013, IBM Corporation &
+## others. All Rights Reserved.
+
+# TODO: Finish the rest of this port. This platform port is incomplete.
+
+# This file is similar to mh-mingw32
+# Any changes made here may also need to be made in mh-mingw32
+
 # Add -D__USE_MINGW_ACCESS to enable the built compiler to work on Windows
 # Vista (see PR33281 for details).
 BOOT_CFLAGS += -D__USE_MINGW_ACCESS -Wno-pedantic-ms-format
 CFLAGS += -D__USE_MINGW_ACCESS
 # Increase stack limit to same as Linux default.
 LDFLAGS += -Wl,--stack,8388608
+
+# We install sbin tools into the same bin directory because
+# pkgdata needs some of the tools in sbin, and we can't always depend on
+# icu-config working on Windows.
+sbindir=$(bindir)
+
+## Flags for position independent code:
+SHAREDLIBCFLAGS = 
+SHAREDLIBCXXFLAGS = 
+SHAREDLIBCPPFLAGS = -DPIC
+
+## Additional flags when building libraries and with threads:
+THREADSCFLAGS = -mthreads
+THREADSCXXFLAGS = -mthreads
+LIBCPPFLAGS =
+
+## Shared library options:
+LD_SOOPTIONS= -Wl,-Bsymbolic
+
+## Compiler switch to embed a runtime search path:
+LD_RPATH=	
+LD_RPATH_PRE=	-Wl,-rpath,
+
+## Compiler switch to embed a library name:
+LD_SONAME = 
+
+## Shared object suffix:
+SO = dll
+## Non-shared intermediate object suffix:
+STATIC_O = ao
+
+# Static library prefix and file extension:
+A = a
+
+## An import library is needed for z/OS and MSVC:
+IMPORT_LIB_EXT = .dll.a
+
+LIBPREFIX=
+
+# Change the stubnames so that poorly working FAT disks & installation
+# programs can work. This is also for backwards compatibility.
+DATA_STUBNAME = dt
+I18N_STUBNAME = in
+
+# Environment variable to set a runtime search path:
+LDLIBRARYPATH_ENVVAR = PATH
+
+# The type of assembly to write for generating an object file:
+GENCCODE_ASSEMBLY=-a gcc-cygwin
+
+## End Cygwin/MinGW specific setup
