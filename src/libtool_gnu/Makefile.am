@@ -23,7 +23,9 @@
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #####
 
-ACLOCAL_AMFLAGS  	= -I libltdl/m4 --install
+## cannot use '--install'; that will trash our local (newer) copies of
+## libtool.m4 and friends:
+ACLOCAL_AMFLAGS  	= -I libltdl/m4
 AUTOMAKE_OPTIONS 	= 1.11.1 gnits subdir-objects dist-xz color-tests parallel-tests
 
 AM_CPPFLAGS		=
@@ -36,7 +38,7 @@ BUILT_SOURCES		= libtool libtoolize
 
 CLEANFILES		=
 MOSTLYCLEANFILES	=
-DISTCLEANFILES		=
+DISTCLEANFILES		= *~ .DS_Store autoscan.log
 MAINTAINERCLEANFILES	=
 
 include_HEADERS		=
@@ -575,10 +577,10 @@ testsuite_deps = tests/atconfig $(srcdir)/$(TESTSUITE)
 testsuite_deps_uninstalled = $(testsuite_deps) libltdl/libltdlc.la \
 			     $(bin_SCRIPTS) $(LTDL_BOOTSTRAP_DEPS)
 
-# Hook the test suite into the check rule
+# Hook the test suite into the check rule:
 check-local: $(testsuite_deps_uninstalled)
 	$(CD_TESTDIR); \
-	CONFIG_SHELL="$(SHELL)" $(SHELL) $$abs_srcdir/$(TESTSUITE) \
+	CONFIG_SHELL="$(SHELL)" $(SHELL) $${abs_srcdir}/$(TESTSUITE) \
 	  $(TESTS_ENVIRONMENT) $(BUILDCHECK_ENVIRONMENT) $(TESTSUITEFLAGS)
 
 # Run the test suite on the *installed* tree.
@@ -612,11 +614,11 @@ check-interactive-new: $(testsuite_deps_uninstalled)
 check-interactive: check-interactive-old check-interactive-new
 check-noninteractive: check-noninteractive-old check-noninteractive-new
 
-# We need to remove any file droppings left behind by testsuite
+# We need to remove any file droppings left behind by testsuite:
 clean-local: clean-local-legacy
 	-$(CD_TESTDIR); \
-	test -f $$abs_srcdir/$(TESTSUITE) && \
-	    $(SHELL) $$abs_srcdir/$(TESTSUITE) --clean
+	test -f $${abs_srcdir}/$(TESTSUITE) && \
+	    $(SHELL) $${abs_srcdir}/$(TESTSUITE) --clean
 
 
 ## ------------- ##
@@ -922,7 +924,7 @@ clean-local-legacy:
 	-for dir in $(CONF_SUBDIRS); do \
 	  if test -f $$dir/Makefile; then \
 	    (cd $$dir && $(MAKE) $(AM_MAKEFLAGS) distclean); \
-	  else :; fi; \
+	  else echo "sorry"; fi; \
 	done
 	rm -rf _inst _inst-*
 
@@ -937,8 +939,11 @@ fake-distclean-legacy:
 	  if test ! -f $$dir/Makefile; then \
 	    $(mkinstalldirs) $$dir; \
 	    echo 'distclean: ; rm -f Makefile' > $$dir/Makefile; \
-	  else :; fi; \
+	  else echo "not applicable"; fi; \
 	done
 
 $(TESTS): tests/defs
 DISTCLEANFILES += tests/defs
+
+distclean-local:
+	rm -rf autom4te.cache || rmdir autom4te.cache

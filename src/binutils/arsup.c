@@ -25,6 +25,10 @@
    This file looks after requests from arparse.y, to provide the MRI
    style librarian command syntax + 1 word LIST.  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "bfd.h"
 #include "arsup.h"
 #include "libiberty.h"
@@ -124,11 +128,11 @@ ar_directory (char *ar_name, struct list *list, char *output)
    fclose (outfile);
 }
 
+extern int interactive;
+
 void
 prompt (void)
 {
-  extern int interactive;
-
   if (interactive)
     {
       printf ("AR >");
@@ -468,7 +472,7 @@ ar_extract (struct list *list)
 	  if (!found)
 	    {
 	      bfd_openr (list->name, 0);
-	      fprintf (stderr, _("%s: can't find module file %s\n"),
+	      fprintf (stderr, _("%s: cannot find module file %s\n"),
 		       program_name, list->name);
 	    }
 
@@ -476,3 +480,5 @@ ar_extract (struct list *list)
 	}
     }
 }
+
+/* EOF */

@@ -703,7 +703,6 @@ CFLAGS_DEBUG
 PLAT_OBJS
 DL_OBJS
 DL_LIBS
-SED
 AR
 RANLIB
 MATH_LIBS
@@ -717,6 +716,7 @@ DDD_BIN
 GDB_BIN
 YFLAGS
 YACC
+SED
 LN_S
 EGREP
 GREP
@@ -775,6 +775,9 @@ INSTALL_PROGRAM
 MAINT
 MAINTAINER_MODE_FALSE
 MAINTAINER_MODE_TRUE
+TARGET_ARCHITECTURE
+HOST_ARCHITECTURE
+BUILD_ARCHITECTURE
 target_os
 target_vendor
 target_cpu
@@ -2899,6 +2902,18 @@ test -n "$target_alias" &&
   test "$program_prefix$program_suffix$program_transform_name" = \
     NONENONEs,x,x, &&
   program_prefix=${target_alias}-
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+
+fi
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+
+fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether build environment is sane" >&5
 $as_echo_n "checking whether build environment is sane... " >&6; }
 # Reject unsafe characters in $srcdir or the absolute working directory
@@ -2990,12 +3005,12 @@ fi
 
 
 
-if test -f ${srcdir}/config.status; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: config.status is already present, removing it." >&5
+  if test -f ${srcdir}/config.status; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: config.status is already present, removing it." >&5
 $as_echo "$as_me: config.status is already present, removing it." >&6;}
-  rm -f ${srcdir}/config.status
-fi
-am__api_version='1.14'
+    rm -f ${srcdir}/config.status
+  fi
+  am__api_version='1.14'
 
 # Find a good install program.  We prefer a C program (faster),
 # so one script is as good as another.  But avoid the broken or
@@ -3506,14 +3521,13 @@ END
     as_fn_error $? "Your 'rm' program is bad, sorry." "$LINENO" 5
   fi
 fi
-ac_config_commands="$ac_config_commands automake_post_configure"
+  ac_config_commands="$ac_config_commands automake_post_configure"
 
 
 if test -z "${datarootdir}"; then
   export datarootdir=${prefix}/share
 
 fi
-
 
 
 TCL_VERSION=8.4
@@ -5425,8 +5439,7 @@ done
 
 
 
-
-# Some more programs
+# Some more programs:
 
 # Installed binaries are usually stripped using 'strip' when the user
 # run "make install-strip".  However 'strip' might not be the right
@@ -5548,6 +5561,75 @@ else
 $as_echo "no, using $LN_S" >&6; }
 fi
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
+$as_echo_n "checking for a sed that does not truncate output... " >&6; }
+if ${ac_cv_path_SED+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+            ac_script=s/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/
+     for ac_i in 1 2 3 4 5 6 7; do
+       ac_script="$ac_script$as_nl$ac_script"
+     done
+     echo "$ac_script" 2>/dev/null | sed 99q >conftest.sed
+     { ac_script=; unset ac_script;}
+     if test -z "$SED"; then
+  ac_path_SED_found=false
+  # Loop through the user's path and test for each of PROGNAME-LIST
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_prog in sed gsed; do
+    for ac_exec_ext in '' $ac_executable_extensions; do
+      ac_path_SED="$as_dir/$ac_prog$ac_exec_ext"
+      as_fn_executable_p "$ac_path_SED" || continue
+# Check for GNU ac_path_SED and select it if it is found.
+  # Check for GNU $ac_path_SED
+case `"$ac_path_SED" --version 2>&1` in
+*GNU*)
+  ac_cv_path_SED="$ac_path_SED" ac_path_SED_found=:;;
+*)
+  ac_count=0
+  $as_echo_n 0123456789 >"conftest.in"
+  while :
+  do
+    cat "conftest.in" "conftest.in" >"conftest.tmp"
+    mv "conftest.tmp" "conftest.in"
+    cp "conftest.in" "conftest.nl"
+    $as_echo '' >> "conftest.nl"
+    "$ac_path_SED" -f conftest.sed < "conftest.nl" >"conftest.out" 2>/dev/null || break
+    diff "conftest.out" "conftest.nl" >/dev/null 2>&1 || break
+    as_fn_arith $ac_count + 1 && ac_count=$as_val
+    if test $ac_count -gt ${ac_path_SED_max-0}; then
+      # Best one so far, save it but keep looking for a better one
+      ac_cv_path_SED="$ac_path_SED"
+      ac_path_SED_max=$ac_count
+    fi
+    # 10*(2^10) chars as input seems more than enough
+    test $ac_count -gt 10 && break
+  done
+  rm -f conftest.in conftest.tmp conftest.nl conftest.out;;
+esac
+
+      $ac_path_SED_found && break 3
+    done
+  done
+  done
+IFS=$as_save_IFS
+  if test -z "$ac_cv_path_SED"; then
+    as_fn_error $? "no acceptable sed could be found in \$PATH" "$LINENO" 5
+  fi
+else
+  ac_cv_path_SED=$SED
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_SED" >&5
+$as_echo "$ac_cv_path_SED" >&6; }
+ SED="$ac_cv_path_SED"
+  rm -f conftest.sed
+
 for ac_prog in 'bison -y' byacc
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
@@ -5630,7 +5712,6 @@ else
 $as_echo "no" >&6; }
 fi
 
-
 # Extract the first word of "ddd", so it can be a program name with args.
 set dummy ddd; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -5669,7 +5750,6 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 fi
-
 
 
 #------------------------------------------------------------------------
@@ -6018,9 +6098,7 @@ fi
 
 $as_echo "#define TCL_TOMMATH 1" >>confdefs.h
 
-
 $as_echo "#define MP_PREC 4" >>confdefs.h
-
 
 #--------------------------------------------------------------------
 #	Detect what compiler flags to set for 64-bit support.
@@ -6520,7 +6598,6 @@ $as_echo "#define USEGETWD 1" >>confdefs.h
 
 fi
 done
-
 # Nb: if getcwd uses popen and pwd(1) (like SunOS 4) we should really
 # define USEGETWD even if the posix getcwd exists. Add a test?
 
@@ -6549,7 +6626,6 @@ else
 esac
 
 fi
-
 
 
 ac_fn_c_check_func "$LINENO" "strtol" "ac_cv_func_strtol"
@@ -6632,7 +6708,6 @@ $as_echo "#define NO_STRERROR 1" >>confdefs.h
 
 fi
 done
-
 for ac_func in getwd
 do :
   ac_fn_c_check_func "$LINENO" "getwd" "ac_cv_func_getwd"
@@ -6647,7 +6722,6 @@ $as_echo "#define NO_GETWD 1" >>confdefs.h
 
 fi
 done
-
 for ac_func in wait3
 do :
   ac_fn_c_check_func "$LINENO" "wait3" "ac_cv_func_wait3"
@@ -6662,7 +6736,6 @@ $as_echo "#define NO_WAIT3 1" >>confdefs.h
 
 fi
 done
-
 for ac_func in uname
 do :
   ac_fn_c_check_func "$LINENO" "uname" "ac_cv_func_uname"
@@ -6677,7 +6750,6 @@ $as_echo "#define NO_UNAME 1" >>confdefs.h
 
 fi
 done
-
 
 if test "`uname -s`" = "Darwin" && test "${TCL_THREADS}" = 1 && \
 	test "`uname -r | awk -F. '{print $1}'`" -lt 7; then
@@ -6700,8 +6772,7 @@ $as_echo "#define NO_REALPATH 1" >>confdefs.h
 fi
 done
 
-
-# Some more functions
+# Some more functions:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for uid_t in sys/types.h" >&5
 $as_echo_n "checking for uid_t in sys/types.h... " >&6; }
 if ${ac_cv_type_uid_t+:} false; then :
@@ -7103,7 +7174,6 @@ _ACEOF
 fi
 done
 
-
 for ac_func in execl execle execlp
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
@@ -7115,7 +7185,6 @@ _ACEOF
 
 fi
 done
-
 
 #--------------------------------------------------------------------
 #	Supply substitutes for missing POSIX header files. Special
@@ -7362,7 +7431,7 @@ done
 
 
 
-# More headers
+# More headers:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for stdbool.h that conforms to C99" >&5
 $as_echo_n "checking for stdbool.h that conforms to C99... " >&6; }
 if ${ac_cv_header_stdbool_h+:} false; then :
@@ -7469,7 +7538,6 @@ _ACEOF
 fi
 
 done
-
 
 #--------------------------------------------------------------------------
 #	Determine which interface to use to talk to the serial port.
@@ -8251,10 +8319,6 @@ $as_echo "#define HAVE_TIMEZONE_VAR 1" >>confdefs.h
 
 
 
-
-
-
-
 #--------------------------------------------------------------------
 #	Some systems (e.g., IRIX 4.0.5) lack the st_blksize field
 #	in struct stat.  But we might be able to use fstatfs instead.
@@ -8271,7 +8335,6 @@ $as_echo "#define HAVE_ST_BLKSIZE 1" >>confdefs.h
 
 fi
 
-
 for ac_func in fstatfs
 do :
   ac_fn_c_check_func "$LINENO" "fstatfs" "ac_cv_func_fstatfs"
@@ -8287,8 +8350,7 @@ $as_echo "#define NO_FSTATFS 1" >>confdefs.h
 fi
 done
 
-
-# Another member check
+# Another member check:
 ac_fn_c_check_member "$LINENO" "struct stat" "st_rdev" "ac_cv_member_struct_stat_st_rdev" "$ac_includes_default"
 if test "x$ac_cv_member_struct_stat_st_rdev" = xyes; then :
 
@@ -8298,7 +8360,6 @@ _ACEOF
 
 
 fi
-
 
 #--------------------------------------------------------------------
 #       Some system have no memcmp or it does not work with 8 bit
@@ -8385,13 +8446,10 @@ else
 
 $as_echo "#define NO_MEMMOVE 1" >>confdefs.h
 
-
 $as_echo "#define NO_STRING_H 1" >>confdefs.h
-
 
 fi
 done
-
 
 #--------------------------------------------------------------------
 #	On some systems strstr is broken: it returns a pointer even
@@ -9054,7 +9112,6 @@ cat >>confdefs.h <<_ACEOF
 #define SIZEOF_INT $ac_cv_sizeof_int
 _ACEOF
 
-
 # The cast to long int works around a bug in the HP C Compiler,
 # see AC_CHECK_SIZEOF for more information.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking alignment of int" >&5
@@ -9089,7 +9146,6 @@ cat >>confdefs.h <<_ACEOF
 #define ALIGNOF_INT $ac_cv_alignof_int
 _ACEOF
 
-
 # The cast to long int works around a bug in the HP C Compiler
 # version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
 # declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
@@ -9121,7 +9177,6 @@ $as_echo "$ac_cv_sizeof_double" >&6; }
 cat >>confdefs.h <<_ACEOF
 #define SIZEOF_DOUBLE $ac_cv_sizeof_double
 _ACEOF
-
 
 # The cast to long int works around a bug in the HP C Compiler,
 # see AC_CHECK_SIZEOF for more information.
@@ -9157,7 +9212,6 @@ cat >>confdefs.h <<_ACEOF
 #define ALIGNOF_DOUBLE $ac_cv_alignof_double
 _ACEOF
 
-
 # The cast to long int works around a bug in the HP C Compiler
 # version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
 # declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
@@ -9189,7 +9243,6 @@ $as_echo "$ac_cv_sizeof_char" >&6; }
 cat >>confdefs.h <<_ACEOF
 #define SIZEOF_CHAR $ac_cv_sizeof_char
 _ACEOF
-
 
 # The cast to long int works around a bug in the HP C Compiler,
 # see AC_CHECK_SIZEOF for more information.
@@ -9225,7 +9278,6 @@ cat >>confdefs.h <<_ACEOF
 #define ALIGNOF_CHAR $ac_cv_alignof_char
 _ACEOF
 
-
 ac_fn_c_check_type "$LINENO" "regoff_t" "ac_cv_type_regoff_t" "$ac_includes_default"
 if test "x$ac_cv_type_regoff_t" = xyes; then :
 
@@ -9235,7 +9287,6 @@ _ACEOF
 
 
 fi
-
 
 #--------------------------------------------------------------------
 #	If a system does NOT have an opendir function (man, is that old!)
@@ -9257,10 +9308,8 @@ else
 
 $as_echo "#define USE_DIRENT2_H 2" >>confdefs.h
 
-
 fi
 done
-
 
 #--------------------------------------------------------------------
 #	The check below checks whether <sys/wait.h> defines the type
@@ -9483,8 +9532,7 @@ _ACEOF
 $as_echo "#define HAVE_BSDGETTIMEOFDAY 1" >>confdefs.h
 
 else
-
-    for ac_func in gettimeofday
+  for ac_func in gettimeofday
 do :
   ac_fn_c_check_func "$LINENO" "gettimeofday" "ac_cv_func_gettimeofday"
 if test "x$ac_cv_func_gettimeofday" = xyes; then :
@@ -9499,10 +9547,8 @@ $as_echo "#define NO_GETTOD 1" >>confdefs.h
 fi
 done
 
-
 fi
 done
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gettimeofday declaration" >&5
 $as_echo_n "checking for gettimeofday declaration... " >&6; }
 if ${tcl_cv_grep_gettimeofday+:} false; then :
@@ -10422,75 +10468,6 @@ esac
 else
   RANLIB="$ac_cv_prog_RANLIB"
 fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
-$as_echo_n "checking for a sed that does not truncate output... " >&6; }
-if ${ac_cv_path_SED+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-            ac_script=s/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/
-     for ac_i in 1 2 3 4 5 6 7; do
-       ac_script="$ac_script$as_nl$ac_script"
-     done
-     echo "$ac_script" 2>/dev/null | sed 99q >conftest.sed
-     { ac_script=; unset ac_script;}
-     if test -z "$SED"; then
-  ac_path_SED_found=false
-  # Loop through the user's path and test for each of PROGNAME-LIST
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_prog in sed gsed; do
-    for ac_exec_ext in '' $ac_executable_extensions; do
-      ac_path_SED="$as_dir/$ac_prog$ac_exec_ext"
-      as_fn_executable_p "$ac_path_SED" || continue
-# Check for GNU ac_path_SED and select it if it is found.
-  # Check for GNU $ac_path_SED
-case `"$ac_path_SED" --version 2>&1` in
-*GNU*)
-  ac_cv_path_SED="$ac_path_SED" ac_path_SED_found=:;;
-*)
-  ac_count=0
-  $as_echo_n 0123456789 >"conftest.in"
-  while :
-  do
-    cat "conftest.in" "conftest.in" >"conftest.tmp"
-    mv "conftest.tmp" "conftest.in"
-    cp "conftest.in" "conftest.nl"
-    $as_echo '' >> "conftest.nl"
-    "$ac_path_SED" -f conftest.sed < "conftest.nl" >"conftest.out" 2>/dev/null || break
-    diff "conftest.out" "conftest.nl" >/dev/null 2>&1 || break
-    as_fn_arith $ac_count + 1 && ac_count=$as_val
-    if test $ac_count -gt ${ac_path_SED_max-0}; then
-      # Best one so far, save it but keep looking for a better one
-      ac_cv_path_SED="$ac_path_SED"
-      ac_path_SED_max=$ac_count
-    fi
-    # 10*(2^10) chars as input seems more than enough
-    test $ac_count -gt 10 && break
-  done
-  rm -f conftest.in conftest.tmp conftest.nl conftest.out;;
-esac
-
-      $ac_path_SED_found && break 3
-    done
-  done
-  done
-IFS=$as_save_IFS
-  if test -z "$ac_cv_path_SED"; then
-    as_fn_error $? "no acceptable sed could be found in \$PATH" "$LINENO" 5
-  fi
-else
-  ac_cv_path_SED=$SED
-fi
-
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_SED" >&5
-$as_echo "$ac_cv_path_SED" >&6; }
- SED="$ac_cv_path_SED"
-  rm -f conftest.sed
 
 
 
@@ -12003,7 +11980,6 @@ if test "${with_tzdata+set}" = set; then :
 else
   tcl_ok=auto
 fi
-
 #
 # Any directories that get added here must also be added to the
 # search path in ::tcl::clock::Initialize (library/clock.tcl).
@@ -12142,7 +12118,6 @@ $as_echo "#define USE_DTRACE 1" >>confdefs.h
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${tcl_ok}" >&5
 $as_echo "${tcl_ok}" >&6; }
-
 #--------------------------------------------------------------------
 #  Does the C stack grow upwards or downwards? Or cross-compiling?
 #--------------------------------------------------------------------
@@ -12212,7 +12187,7 @@ eval "TCL_LIB_FILE=${TCL_LIB_FILE}"
 # AIX remembers this path and will attempt to use it at run-time to look
 # up the Tcl library.
 
-if test "`uname -s`" = "Darwin" ; then
+if test "`uname -s`" = "Darwin"; then
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking how to package libraries" >&5
 $as_echo_n "checking how to package libraries... " >&6; }
@@ -12257,7 +12232,7 @@ $as_echo "standard shared library" >&6; }
     TCL_YEAR="`date +%Y`"
 fi
 
-if test "${FRAMEWORK_BUILD}" = "1" ; then
+if test "${FRAMEWORK_BUILD}" = "1"; then
 
 $as_echo "#define TCL_FRAMEWORK 1" >>confdefs.h
 
@@ -12327,7 +12302,7 @@ VERSION=${TCL_VERSION}
 #	another for platform-independent scripts.
 #--------------------------------------------------------------------
 
-if test "${FRAMEWORK_BUILD}" = "1" ; then
+if test "${FRAMEWORK_BUILD}" = "1"; then
     TCL_PACKAGE_PATH="${libdir}/Resources/Scripts"
 elif test "${prefix}" != "${exec_prefix}"; then
     TCL_PACKAGE_PATH="${libdir} ${prefix}/lib"
@@ -12365,7 +12340,7 @@ eval "TCL_INCLUDE_SPEC=\"-I${includedir}\""
 
 TCL_SHARED_BUILD="${SHARED_BUILD}"
 if test "${TCL_SHARED_BUILD}" = "1"; then
-	test ! -z "${TCL_SHARED_BUILD}"
+  test ! -z "${TCL_SHARED_BUILD}"
 
 
 subdirs="$subdirs dltest"
@@ -12386,59 +12361,7 @@ fi
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ac_config_files="$ac_config_files Makefile:../unix/Makefile.in dltest/Makefile:../unix/dltest/Makefile.in tclConfig.sh:../unix/tclConfig.sh.in"
-
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -13763,14 +13686,14 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
 
   case $ac_file$ac_mode in
     "automake_post_configure":C)
-if test "${srcdir}" != "."; then
-  if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
-    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
-  elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
-    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+  if test "${srcdir}" != "."; then
+    if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
+      cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+    elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
+      cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+    fi
   fi
-fi
- ;;
+   ;;
     "depfiles":C) test x"$AMDEP_TRUE" != x"" || {
   # Older Autoconf quotes --file arguments for eval, but not when files
   # are listed without --file.  Let's play safe and only enable the eval

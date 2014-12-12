@@ -373,8 +373,9 @@
 		61D221BD192D61C300FA979E /* xsym.h in Headers */ = {isa = PBXBuildFile; fileRef = 2609D00A0E82C408008125DE /* xsym.h */; };
 		61D221BE192D61C300FA979E /* xtensa-isa.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609D00B0E82C408008125DE /* xtensa-isa.c */; };
 		61D221BF192D61C300FA979E /* xtensa-modules.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609D00C0E82C408008125DE /* xtensa-modules.c */; };
-		61D81872192FE3BF00E440C0 /* chew.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEEF0E82C407008125DE /* chew.c */; settings = {COMPILER_FLAGS = "-Wtraditional"; }; };
+		61D81872192FE3BF00E440C0 /* chew.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEEF0E82C407008125DE /* chew.c */; };
 		61D81AE7193186DC00E440C0 /* aout-encap.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE5B0E82C407008125DE /* aout-encap.c */; settings = {COMPILER_FLAGS = "-Wno-strict-prototypes -Wno-missing-prototypes"; }; };
+		A53ABD8D1A38C88F002F20B2 /* link.h in Headers */ = {isa = PBXBuildFile; fileRef = A53ABD8C1A38C88F002F20B2 /* link.h */; };
 		A589CB5B1A30F16700E717B9 /* cpcg.c in Sources */ = {isa = PBXBuildFile; fileRef = A589CB4F1A30EF6400E717B9 /* cpcg.c */; };
 		A589CB5C1A30F16700E717B9 /* cpfork.c in Sources */ = {isa = PBXBuildFile; fileRef = A589CB501A30EF6400E717B9 /* cpfork.c */; };
 		A589CB681A30F23F00E717B9 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A589CB671A30F23F00E717B9 /* ApplicationServices.framework */; };
@@ -401,7 +402,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 08FB7793FE84155DC02AAC07 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = A589CB571A30F15100E717B9 /* libcheckpoint */;
+			remoteGlobalIDString = A589CB571A30F15100E717B9;
 			remoteInfo = libcheckpoint;
 		};
 /* End PBXContainerItemProxy section */
@@ -2977,6 +2978,59 @@
 		A5159C96198718A90079DD4F /* xdr_regs_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = xdr_regs_old.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/vx-share/xdr_regs_old.c"; sourceTree = "<absolute>"; };
 		A5159C97198718A90079DD4F /* xdr_regs_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xdr_regs_old.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/vx-share/xdr_regs_old.h"; sourceTree = "<absolute>"; };
 		A53353F5182F0DDC004811EE /* mac-gdb.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; name = "mac-gdb.r"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/mac-gdb.r"; sourceTree = "<absolute>"; };
+		A53ABD8C1A38C88F002F20B2 /* link.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = link.h; path = "/Users/ericgallager/apple-gdb-1824/src/bfd/link.h"; sourceTree = "<absolute>"; };
+		A53ABDB71A38E84F002F20B2 /* objdump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = objdump.h; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/objdump.h"; sourceTree = "<absolute>"; };
+		A53ABDB91A39069C002F20B2 /* arlex.l */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.lex; name = arlex.l; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/arlex.l"; sourceTree = "<absolute>"; };
+		A53ABDBC1A39069C002F20B2 /* arparse.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; name = arparse.y; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/arparse.y"; sourceTree = "<absolute>"; };
+		A53ABDBD1A3906CD002F20B2 /* bfdtest1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bfdtest1.c; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/bfdtest1.c"; sourceTree = "<absolute>"; };
+		A53ABDBE1A3906CD002F20B2 /* bfdtest2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bfdtest2.c; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/bfdtest2.c"; sourceTree = "<absolute>"; };
+		A53ABDBF1A3906CD002F20B2 /* bin2c.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bin2c.c; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/bin2c.c"; sourceTree = "<absolute>"; };
+		A53ABDC11A3906F8002F20B2 /* deflex.l */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.lex; name = deflex.l; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/deflex.l"; sourceTree = "<absolute>"; };
+		A53ABDC41A3906F8002F20B2 /* defparse.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; name = defparse.y; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/defparse.y"; sourceTree = "<absolute>"; };
+		A53ABDC51A390717002F20B2 /* dwarf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dwarf.c; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/dwarf.c"; sourceTree = "<absolute>"; };
+		A53ABDC61A390717002F20B2 /* dwarf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dwarf.h; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/dwarf.h"; sourceTree = "<absolute>"; };
+		A53ABDC71A390743002F20B2 /* elfcomm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = elfcomm.c; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/elfcomm.c"; sourceTree = "<absolute>"; };
+		A53ABDC81A390743002F20B2 /* elfcomm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = elfcomm.h; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/elfcomm.h"; sourceTree = "<absolute>"; };
+		A53ABDC91A390743002F20B2 /* elfedit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = elfedit.c; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/elfedit.c"; sourceTree = "<absolute>"; };
+		A53ABDCA1A390743002F20B2 /* embedspu.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = embedspu.sh; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/embedspu.sh"; sourceTree = "<absolute>"; };
+		A53ABDCB1A39075E002F20B2 /* mclex.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mclex.c; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/mclex.c"; sourceTree = "<absolute>"; };
+		A53ABDCE1A39075E002F20B2 /* mcparse.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; name = mcparse.y; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/mcparse.y"; sourceTree = "<absolute>"; };
+		A53ABDD11A390782002F20B2 /* nlmheader.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; name = nlmheader.y; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/nlmheader.y"; sourceTree = "<absolute>"; };
+		A53ABDD21A3907AE002F20B2 /* od-macho.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "od-macho.c"; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/od-macho.c"; sourceTree = "<absolute>"; };
+		A53ABDD31A3907AE002F20B2 /* od-xcoff.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "od-xcoff.c"; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/od-xcoff.c"; sourceTree = "<absolute>"; };
+		A53ABDD41A3907C1002F20B2 /* ranlib.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = ranlib.sh; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/ranlib.sh"; sourceTree = "<absolute>"; };
+		A53ABDD61A3907F8002F20B2 /* rclex.l */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.lex; name = rclex.l; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/rclex.l"; sourceTree = "<absolute>"; };
+		A53ABDD91A3907F8002F20B2 /* rcparse.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; name = rcparse.y; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/rcparse.y"; sourceTree = "<absolute>"; };
+		A53ABDDA1A390828002F20B2 /* sanity.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = sanity.sh; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/sanity.sh"; sourceTree = "<absolute>"; };
+		A53ABDDB1A390839002F20B2 /* sysdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sysdep.h; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/sysdep.h"; sourceTree = "<absolute>"; };
+		A53ABDDE1A39084B002F20B2 /* sysinfo.y */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.yacc; name = sysinfo.y; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/sysinfo.y"; sourceTree = "<absolute>"; };
+		A53ABDDF1A39084B002F20B2 /* syslex_wrap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = syslex_wrap.c; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/syslex_wrap.c"; sourceTree = "<absolute>"; };
+		A53ABDE11A39084B002F20B2 /* syslex.l */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.lex; name = syslex.l; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/syslex.l"; sourceTree = "<absolute>"; };
+		A53ABDE21A3908B0002F20B2 /* windint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = windint.h; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/windint.h"; sourceTree = "<absolute>"; };
+		A53ABDE31A3908B0002F20B2 /* windmc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = windmc.c; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/windmc.c"; sourceTree = "<absolute>"; };
+		A53ABDE41A3908B0002F20B2 /* windmc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = windmc.h; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/windmc.h"; sourceTree = "<absolute>"; };
+		A53ABF221A395BD7002F20B2 /* binary-io.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "binary-io.h"; path = "/Users/ericgallager/apple-gdb-1824/src/include/binary-io.h"; sourceTree = "<absolute>"; };
+		A53AC04D1A3A8CBE002F20B2 /* attach.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = attach.c; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/attach.c"; sourceTree = "<absolute>"; };
+		A53AC0511A3A8CBE002F20B2 /* check-sup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "check-sup.c"; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/check-sup.c"; sourceTree = "<absolute>"; };
+		A53AC05D1A3A8CBE002F20B2 /* detach.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = detach.c; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/detach.c"; sourceTree = "<absolute>"; };
+		A53AC05E1A3A8CBE002F20B2 /* keys.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = keys.c; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/keys.c"; sourceTree = "<absolute>"; };
+		A53AC0611A3A8CBE002F20B2 /* malloc-sup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "malloc-sup.c"; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/malloc-sup.c"; sourceTree = "<absolute>"; };
+		A53AC0621A3A8CBE002F20B2 /* mcalloc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mcalloc.c; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/mcalloc.c"; sourceTree = "<absolute>"; };
+		A53AC0631A3A8CBE002F20B2 /* mfree.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mfree.c; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/mfree.c"; sourceTree = "<absolute>"; };
+		A53AC0641A3A8CBE002F20B2 /* mm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mm.c; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/mm.c"; sourceTree = "<absolute>"; };
+		A53AC0661A3A8CBE002F20B2 /* mmalloc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mmalloc.c; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/mmalloc.c"; sourceTree = "<absolute>"; };
+		A53AC0671A3A8CBE002F20B2 /* mmallocplusplus.cp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mmallocplusplus.cp; sourceTree = "<group>"; };
+		A53AC06B1A3A8CBE002F20B2 /* mmalloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mmalloc.h; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/mmalloc.h"; sourceTree = "<absolute>"; };
+		A53AC0731A3A8CBE002F20B2 /* mmap-sup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "mmap-sup.c"; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/mmap-sup.c"; sourceTree = "<absolute>"; };
+		A53AC0741A3A8CBE002F20B2 /* mmcheck.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mmcheck.c; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/mmcheck.c"; sourceTree = "<absolute>"; };
+		A53AC0751A3A8CBE002F20B2 /* mmemalign.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mmemalign.c; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/mmemalign.c"; sourceTree = "<absolute>"; };
+		A53AC0761A3A8CBE002F20B2 /* mmprivate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = mmprivate.h; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/mmprivate.h"; sourceTree = "<absolute>"; };
+		A53AC0771A3A8CBE002F20B2 /* mmstats.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mmstats.c; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/mmstats.c"; sourceTree = "<absolute>"; };
+		A53AC0791A3A8CBE002F20B2 /* mmtrace.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mmtrace.c; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/mmtrace.c"; sourceTree = "<absolute>"; };
+		A53AC07A1A3A8CBE002F20B2 /* mrealloc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mrealloc.c; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/mrealloc.c"; sourceTree = "<absolute>"; };
+		A53AC07B1A3A8CBE002F20B2 /* mvalloc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mvalloc.c; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/mvalloc.c"; sourceTree = "<absolute>"; };
+		A53AC07C1A3A8CBE002F20B2 /* pagecheck-sup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "pagecheck-sup.c"; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/pagecheck-sup.c"; sourceTree = "<absolute>"; };
+		A53AC07D1A3A8CBE002F20B2 /* sbrk-sup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "sbrk-sup.c"; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/sbrk-sup.c"; sourceTree = "<absolute>"; };
 		A548D49A1836C60900FD4E8A /* DebuggerGDB_disasm.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = DebuggerGDB_disasm.s; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/XcodePlugins/DebuggerGDB/DebuggerGDB_disasm.s"; sourceTree = "<absolute>"; };
 		A548D49B1836C60900FD4E8A /* DebuggerGDB_symbols.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = DebuggerGDB_symbols.csv; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/XcodePlugins/DebuggerGDB/DebuggerGDB_symbols.csv"; sourceTree = "<absolute>"; };
 		A548D49C1836C60900FD4E8A /* DebuggerGDB_symbols.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = DebuggerGDB_symbols.xml; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/XcodePlugins/DebuggerGDB/DebuggerGDB_symbols.xml"; sourceTree = "<absolute>"; };
@@ -3917,7 +3971,7 @@
 		A589D78B1A31386400E717B9 /* gdb_testing.i */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c.preprocessed; name = gdb_testing.i; path = "/Users/ericgallager/apple-gdb-1824/macsbug/gdb_plugin_support/gdb_testing.i"; sourceTree = "<absolute>"; tabWidth = 8; };
 		A589D78C1A31386400E717B9 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; name = Makefile; path = "/Users/ericgallager/apple-gdb-1824/macsbug/gdb_plugin_support/Makefile"; sourceTree = "<absolute>"; };
 		A589D78F1A31386400E717B9 /* MacsBug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MacsBug.h; path = "/Users/ericgallager/apple-gdb-1824/macsbug/MacsBug.h"; sourceTree = "<absolute>"; };
-		A589D7901A31386400E717B9 /* MacsBug_cmdline.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = MacsBug_cmdline.c; path = "/Users/ericgallager/apple-gdb-1824/macsbug/MacsBug_cmdline.c"; sourceTree = "<absolute>"; };
+		A589D7901A31386400E717B9 /* MacsBug_cmdline.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = MacsBug_cmdline.c; path = "/Users/ericgallager/apple-gdb-1824/macsbug/MacsBug_cmdline.c"; sourceTree = "<absolute>"; tabWidth = 8; };
 		A589D7911A31386400E717B9 /* MacsBug_display.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = MacsBug_display.c; path = "/Users/ericgallager/apple-gdb-1824/macsbug/MacsBug_display.c"; sourceTree = "<absolute>"; tabWidth = 8; };
 		A589D7921A31386400E717B9 /* MacsBug_patches.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = MacsBug_patches.c; path = "/Users/ericgallager/apple-gdb-1824/macsbug/MacsBug_patches.c"; sourceTree = "<absolute>"; tabWidth = 8; };
 		A589D7931A31386400E717B9 /* MacsBug_plugins.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = MacsBug_plugins.c; path = "/Users/ericgallager/apple-gdb-1824/macsbug/MacsBug_plugins.c"; sourceTree = "<absolute>"; tabWidth = 8; };
@@ -4391,6 +4445,7 @@
 				2609DCE80E82C410008125DE /* include */,
 				2609DDCD0E82C410008125DE /* intl */,
 				2609DDEC0E82C411008125DE /* libiberty */,
+				A53AC0491A3A8CBE002F20B2 /* mmalloc */,
 				2609DE860E82C411008125DE /* opcodes */,
 				2609DF5B0E82C412008125DE /* readline */,
 			);
@@ -4670,6 +4725,7 @@
 				2609CF960E82C408008125DE /* libpei.h */,
 				2609CF970E82C408008125DE /* libxcoff.h */,
 				2609CF980E82C408008125DE /* linker.c */,
+				A53ABD8C1A38C88F002F20B2 /* link.h */,
 				2609CF990E82C408008125DE /* lynx-core.c */,
 				2609CF9A0E82C408008125DE /* m68k4knetbsd.c */,
 				2609CF9B0E82C408008125DE /* m68klinux.c */,
@@ -4809,8 +4865,13 @@
 			children = (
 				2609D0100E82C408008125DE /* addr2line.c */,
 				2609D0110E82C408008125DE /* ar.c */,
+				A53ABDB91A39069C002F20B2 /* arlex.l */,
+				A53ABDBC1A39069C002F20B2 /* arparse.y */,
 				2609D0140E82C408008125DE /* arsup.c */,
 				2609D0150E82C408008125DE /* arsup.h */,
+				A53ABDBD1A3906CD002F20B2 /* bfdtest1.c */,
+				A53ABDBE1A3906CD002F20B2 /* bfdtest2.c */,
+				A53ABDBF1A3906CD002F20B2 /* bin2c.c */,
 				2609D0160E82C408008125DE /* binemul.c */,
 				2609D0170E82C408008125DE /* binemul.h */,
 				2609D0190E82C408008125DE /* bucomm.c */,
@@ -4824,9 +4885,17 @@
 				2609D02C0E82C408008125DE /* cxxfilt.c */,
 				2609D02D0E82C408008125DE /* debug.c */,
 				2609D02E0E82C408008125DE /* debug.h */,
+				A53ABDC11A3906F8002F20B2 /* deflex.l */,
+				A53ABDC41A3906F8002F20B2 /* defparse.y */,
 				2609D0320E82C408008125DE /* dlltool.c */,
 				2609D0330E82C408008125DE /* dlltool.h */,
 				2609D0340E82C408008125DE /* dllwrap.c */,
+				A53ABDC51A390717002F20B2 /* dwarf.c */,
+				A53ABDC61A390717002F20B2 /* dwarf.h */,
+				A53ABDC71A390743002F20B2 /* elfcomm.c */,
+				A53ABDC81A390743002F20B2 /* elfcomm.h */,
+				A53ABDC91A390743002F20B2 /* elfedit.c */,
+				A53ABDCA1A390743002F20B2 /* embedspu.sh */,
 				2609D03A0E82C408008125DE /* emul_aix.c */,
 				2609D03B0E82C408008125DE /* emul_vanilla.c */,
 				2609D03C0E82C408008125DE /* filemode.c */,
@@ -4835,14 +4904,23 @@
 				2609D03F0E82C408008125DE /* is-strip.c */,
 				2609D0440E82C408008125DE /* maybe-ranlib.c */,
 				2609D0450E82C408008125DE /* maybe-strip.c */,
+				A53ABDCB1A39075E002F20B2 /* mclex.c */,
+				A53ABDCE1A39075E002F20B2 /* mcparse.y */,
 				2609D0470E82C408008125DE /* nlmconv.c */,
 				2609D0480E82C408008125DE /* nlmconv.h */,
+				A53ABDD11A390782002F20B2 /* nlmheader.y */,
 				2609D04A0E82C408008125DE /* nm.c */,
 				2609D04B0E82C408008125DE /* not-ranlib.c */,
 				2609D04C0E82C408008125DE /* not-strip.c */,
 				2609D04D0E82C408008125DE /* objcopy.c */,
 				2609D04E0E82C408008125DE /* objdump.c */,
+				A53ABDB71A38E84F002F20B2 /* objdump.h */,
+				A53ABDD21A3907AE002F20B2 /* od-macho.c */,
+				A53ABDD31A3907AE002F20B2 /* od-xcoff.c */,
 				2609D05F0E82C408008125DE /* prdbg.c */,
+				A53ABDD41A3907C1002F20B2 /* ranlib.sh */,
+				A53ABDD61A3907F8002F20B2 /* rclex.l */,
+				A53ABDD91A3907F8002F20B2 /* rcparse.y */,
 				2609D0630E82C408008125DE /* rdcoff.c */,
 				2609D0640E82C408008125DE /* rddbg.c */,
 				2609D0650E82C408008125DE /* readelf.c */,
@@ -4851,15 +4929,23 @@
 				2609D0690E82C408008125DE /* rescoff.c */,
 				2609D06A0E82C408008125DE /* resrc.c */,
 				2609D06B0E82C408008125DE /* resres.c */,
+				A53ABDDA1A390828002F20B2 /* sanity.sh */,
 				2609D06D0E82C408008125DE /* size.c */,
 				2609D06E0E82C408008125DE /* srconv.c */,
 				2609D06F0E82C408008125DE /* stabs.c */,
 				2609D0710E82C408008125DE /* strings.c */,
+				A53ABDDB1A390839002F20B2 /* sysdep.h */,
 				2609D0720E82C408008125DE /* sysdump.c */,
+				A53ABDDE1A39084B002F20B2 /* sysinfo.y */,
+				A53ABDDF1A39084B002F20B2 /* syslex_wrap.c */,
+				A53ABDE11A39084B002F20B2 /* syslex.l */,
 				2609D0760E82C408008125DE /* testsuite */,
 				2609D0CB0E82C408008125DE /* unwind-ia64.c */,
 				2609D0CC0E82C408008125DE /* unwind-ia64.h */,
 				2609D0CD0E82C408008125DE /* version.c */,
+				A53ABDE21A3908B0002F20B2 /* windint.h */,
+				A53ABDE31A3908B0002F20B2 /* windmc.c */,
+				A53ABDE41A3908B0002F20B2 /* windmc.h */,
 				2609D0CE0E82C408008125DE /* windres.c */,
 				2609D0CF0E82C408008125DE /* windres.h */,
 				2609D0D00E82C408008125DE /* winduni.c */,
@@ -6619,6 +6705,7 @@
 				2609DCEB0E82C410008125DE /* aout */,
 				2609DCFC0E82C410008125DE /* bfdlink.h */,
 				2609DCFD0E82C410008125DE /* bin-bugs.h */,
+				A53ABF221A395BD7002F20B2 /* binary-io.h */,
 				2609DCFE0E82C410008125DE /* bout.h */,
 				2609DD020E82C410008125DE /* coff */,
 				2609DD2D0E82C410008125DE /* demangle.h */,
@@ -8146,6 +8233,35 @@
 			);
 			name = "vx-share";
 			path = "/Users/ericgallager/apple-gdb-1824/src/gdb/vx-share";
+			sourceTree = "<absolute>";
+		};
+		A53AC0491A3A8CBE002F20B2 /* mmalloc */ = {
+			isa = PBXGroup;
+			children = (
+				A53AC04D1A3A8CBE002F20B2 /* attach.c */,
+				A53AC0511A3A8CBE002F20B2 /* check-sup.c */,
+				A53AC05D1A3A8CBE002F20B2 /* detach.c */,
+				A53AC05E1A3A8CBE002F20B2 /* keys.c */,
+				A53AC0611A3A8CBE002F20B2 /* malloc-sup.c */,
+				A53AC0621A3A8CBE002F20B2 /* mcalloc.c */,
+				A53AC0631A3A8CBE002F20B2 /* mfree.c */,
+				A53AC0641A3A8CBE002F20B2 /* mm.c */,
+				A53AC0661A3A8CBE002F20B2 /* mmalloc.c */,
+				A53AC0671A3A8CBE002F20B2 /* mmallocplusplus.cp */,
+				A53AC06B1A3A8CBE002F20B2 /* mmalloc.h */,
+				A53AC0731A3A8CBE002F20B2 /* mmap-sup.c */,
+				A53AC0741A3A8CBE002F20B2 /* mmcheck.c */,
+				A53AC0751A3A8CBE002F20B2 /* mmemalign.c */,
+				A53AC0761A3A8CBE002F20B2 /* mmprivate.h */,
+				A53AC0771A3A8CBE002F20B2 /* mmstats.c */,
+				A53AC0791A3A8CBE002F20B2 /* mmtrace.c */,
+				A53AC07A1A3A8CBE002F20B2 /* mrealloc.c */,
+				A53AC07B1A3A8CBE002F20B2 /* mvalloc.c */,
+				A53AC07C1A3A8CBE002F20B2 /* pagecheck-sup.c */,
+				A53AC07D1A3A8CBE002F20B2 /* sbrk-sup.c */,
+			);
+			name = mmalloc;
+			path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc";
 			sourceTree = "<absolute>";
 		};
 		A548D4981836C60900FD4E8A /* XcodePlugins */ = {
@@ -9832,6 +9948,7 @@
 				61D221B9192D61C300FA979E /* vms.h in Headers */,
 				61D221BA192D61C300FA979E /* xcoff-target.h in Headers */,
 				61D221BD192D61C300FA979E /* xsym.h in Headers */,
+				A53ABD8D1A38C88F002F20B2 /* link.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10790,7 +10907,7 @@
 		61D81870192FE3AC00E440C0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = (
 					ppc,
 					ppc64,
@@ -10800,6 +10917,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				"GCC_ALTIVEC_EXTENSIONS[arch=ppc64]" = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -10841,7 +10959,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = chew;
-				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
+				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = NO;
 				SDKROOT = macosx10.5;
 				STRIP_STYLE = "non-global";
 				VALIDATE_PRODUCT = YES;
@@ -10871,7 +10989,9 @@
 					"-Wpadded",
 					"-Wunreachable-code",
 					"-Wpointer-arith",
+					"-Wold-style-definition",
 					"-Woverlength-strings",
+					"-Wstrict-prototypes",
 					"-Wswitch-enum",
 					"-Wswitch-default",
 				);
@@ -10881,7 +11001,7 @@
 		61D81871192FE3AC00E440C0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = (
 					ppc,
 					ppc64,
@@ -10917,7 +11037,6 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = chew;
-				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
 				SDKROOT = macosx10.5;
 				STRIP_INSTALLED_PRODUCT = YES;
 				VALIDATE_PRODUCT = YES;
@@ -10925,10 +11044,12 @@
 				WARNING_CFLAGS = (
 					"-Wunsafe-loop-optimizations",
 					"-Wdisabled-optimization",
+					"-Wformat",
 					"-Wformat-security",
 					"-Winit-self",
 					"-Wstrict-aliasing=2",
 					"-Wstrict-overflow=5",
+					"-Wstrict-prototypes",
 					"-Wvolatile-register-var",
 					"-Wstack-protector",
 				);
@@ -11012,6 +11133,7 @@
 					"-warn_commons",
 				);
 				PREBINDING = NO;
+				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_NAME = libcheckpoint;
 				VALID_ARCHS = "i386 ppc ppc7400 ppc970";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -11042,13 +11164,30 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = stabs;
+				DEPLOYMENT_POSTPROCESSING = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
+				GCC_AUTO_VECTORIZATION = YES;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_ENABLE_SSE41_EXTENSIONS = YES;
+				GCC_ENABLE_SSE42_EXTENSIONS = YES;
+				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_STRICT_ALIASING = YES;
+				GCC_UNROLL_LOOPS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INSTALL_PATH = /usr/local/libexec/gdb;
+				LD_GENERATE_MAP_FILE = YES;
+				OTHER_CFLAGS = (
+					"-fstrict-overflow",
+					"-fstack-protector",
+				);
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -11057,8 +11196,23 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = libcheckpoint;
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SEPARATE_STRIP = YES;
+				STRIP_INSTALLED_PRODUCT = YES;
+				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "i386 ppc ppc7400 ppc970";
 				VERSIONING_SYSTEM = "apple-generic";
+				WARNING_CFLAGS = (
+					"-Wdisabled-optimization",
+					"-Wformat",
+					"-Wformat-security",
+					"-Winit-self",
+					"-Wstrict-aliasing",
+					"-Wstrict-overflow",
+					"-Wstrict-prototypes",
+					"-Wvolatile-register-var",
+					"-Wstack-protector",
+				);
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -11134,6 +11288,7 @@
 					"-warn_commons",
 				);
 				PREBINDING = NO;
+				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_NAME = checkpoint_test;
 				VALID_ARCHS = "i386 ppc ppc7400 ppc970";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -11165,15 +11320,48 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEPLOYMENT_POSTPROCESSING = YES;
+				GCC_AUTO_VECTORIZATION = YES;
+				GCC_ENABLE_EXCEPTIONS = YES;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_SSE3_EXTENSIONS = YES;
+				GCC_ENABLE_SSE41_EXTENSIONS = YES;
+				GCC_ENABLE_SSE42_EXTENSIONS = YES;
+				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
 				GCC_MODEL_TUNING = G5;
+				GCC_STRICT_ALIASING = YES;
+				GCC_UNROLL_LOOPS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INSTALL_PATH = /usr/local/bin;
+				LD_GENERATE_MAP_FILE = YES;
 				MACH_O_TYPE = mh_execute;
+				OTHER_CFLAGS = (
+					"-fstrict-overflow",
+					"-fstack-protector",
+				);
 				PREBINDING = NO;
 				PRODUCT_NAME = checkpoint_test;
+				RUN_CLANG_STATIC_ANALYZER = YES;
+				SEPARATE_STRIP = YES;
+				STRIP_INSTALLED_PRODUCT = YES;
+				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "i386 ppc ppc7400 ppc970";
 				VERSIONING_SYSTEM = "apple-generic";
+				WARNING_CFLAGS = (
+					"-Wdisabled-optimization",
+					"-Wformat",
+					"-Wformat-security",
+					"-Winit-self",
+					"-Wstrict-aliasing",
+					"-Wstrict-overflow",
+					"-Wstrict-prototypes",
+					"-Wvolatile-register-var",
+					"-Wstack-protector",
+				);
 				ZERO_LINK = NO;
 			};
 			name = Release;

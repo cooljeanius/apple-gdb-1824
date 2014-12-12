@@ -1,11 +1,25 @@
 /* IBM RS/6000 "XCOFF" file definitions for BFD.
-   Copyright (C) 1990, 1991, 2001 Free Software Foundation, Inc.
-   FIXME: Can someone provide a transliteration of this name into ASCII?
-   Using the following chars caused a compiler warning on HIUX (so I replaced
-   them with octal escapes), and isn't useful without an understanding of what
-   character set it is.
-   Written by Mimi Ph\373\364ng-Th\345o V\365 of IBM
-   and John Gilmore of Cygnus Support.  */
+   Copyright (C) 1990, 1991, 2001, 2014 Free Software Foundation, Inc.
+   Written by Mimi Phuong-Thao Vo of IBM
+   and John Gilmore of Cygnus Support.
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
+   MA 02110-1301, USA.  */
+
+#ifndef COFF_RS6000_H
+#define COFF_RS6000_H 1
 
 /********************** FILE HEADER **********************/
 
@@ -35,7 +49,7 @@ struct external_filehdr {
 /********************** AOUT "OPTIONAL HEADER" **********************/
 
 
-typedef struct 
+typedef struct
 {
   unsigned char	magic[2];	/* type of file			*/
   unsigned char	vstamp[2];	/* version stamp		*/
@@ -111,7 +125,7 @@ struct external_lineno {
 #define E_FILNMLEN	14	/* # characters in a file name		*/
 #define E_DIMNUM	4	/* # array dimensions in auxiliary entry */
 
-struct external_syment 
+struct external_syment
 {
   union {
     char e_name[E_SYMNMLEN];
@@ -133,7 +147,7 @@ struct external_syment
 #define N_TMASK		(060)
 #define N_BTSHFT	(4)
 #define N_TSHIFT	(2)
-  
+
 
 union external_auxent {
 	struct {
@@ -190,7 +204,7 @@ union external_auxent {
 };
 
 #define	SYMENT	struct external_syment
-#define	SYMESZ	18	
+#define	SYMESZ	18
 #define	AUXENT	union external_auxent
 #define	AUXESZ	18
 #define DBXMASK 0x80		/* for dbx storage mask */
@@ -265,3 +279,82 @@ struct external_ldrel
 };
 
 #define LDRELSZ (2 * 4 + 2 * 2)
+
+struct external_exceptab
+{
+  union {
+    bfd_byte e_symndx[4];
+    bfd_byte e_paddr[4];
+  } e_addr;
+  bfd_byte e_lang[1];
+  bfd_byte e_reason[1];
+};
+
+#define EXCEPTSZ (4 + 2)
+
+/******************** Core files *************************/
+
+struct external_core_dumpx
+{
+  unsigned char c_signo[1];
+  unsigned char c_flag[1];
+  unsigned char c_entries[2];
+
+  unsigned char c_version[4];
+
+  unsigned char c_fdsinfox[8];
+  unsigned char c_loader[8];
+  unsigned char c_lsize[8];
+
+  unsigned char c_n_thr[4];
+  unsigned char c_reserved0[4];
+  unsigned char c_thr[8];
+
+  unsigned char c_segs[8];
+  unsigned char c_segregion[8];
+
+  unsigned char c_stack[8];
+  unsigned char c_stackorg[8];
+  unsigned char c_size[8];
+
+  unsigned char c_data[8];
+  unsigned char c_dataorg[8];
+  unsigned char c_datasize[8];
+  unsigned char c_sdorg[8];
+  unsigned char c_sdsize[8];
+
+  unsigned char c_vmmregions[8];
+  unsigned char c_vmm[8];
+
+  unsigned char c_impl[4];
+  unsigned char c_pad[4];
+  unsigned char c_cprs[8];
+  unsigned char c_reserved[7 * 8];
+
+  /* Followed by:
+     - context of the faulting thread.
+     - user structure.  */
+};
+
+/* Core file verion: */
+#ifndef CORE_DUMPX_VERSION
+# define CORE_DUMPX_VERSION 0x0feeddb1
+#endif /* !CORE_DUMPX_VERSION */
+#ifndef CORE_DUMPXX_VERSION
+# define CORE_DUMPXX_VERSION 0x0feeddb2
+#endif /* !CORE_DUMPXX_VERSION */
+
+struct external_ld_info32
+{
+  unsigned char ldinfo_next[4];
+  unsigned char core_offset[4];
+  unsigned char ldinfo_textorg[4];
+  unsigned char ldinfo_textsize[4];
+  unsigned char ldinfo_dataorg[4];
+  unsigned char ldinfo_datasize[4];
+  unsigned char ldinfo_filename[2];
+};
+
+#endif /* !COFF_RS6000_H */
+
+/* EOF */

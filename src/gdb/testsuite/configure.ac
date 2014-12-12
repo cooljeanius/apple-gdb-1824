@@ -1,5 +1,5 @@
-#                                                       -*- Autoconf -*-
-# Process this file with autoconf to produce a configure script.
+dnl#                                                       -*- Autoconf -*-
+dnl# Process this file with autoconf to produce a configure script.
 
 # Copyright 2002, 2003, 2004, 2005
 # Free Software Foundation, Inc.
@@ -23,13 +23,27 @@ sinclude(../../config/acx.m4)
 
 AC_PREREQ([2.61])
 AC_INIT([gdb-testsuite],[1824],[bug-gdb@gnu.org])
-AC_CONFIG_SRCDIR([gdb.base])
+AC_CONFIG_SRCDIR([gdb.base])dnl
 
+# Architecture stuff:
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
 ACX_NONCANONICAL_TARGET
+
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+  AC_SUBST([BUILD_ARCHITECTURE])
+fi
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  AC_SUBST([HOST_ARCHITECTURE])
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+  AC_SUBST([TARGET_ARCHITECTURE])
+fi
 
 # Add HP-specific tests when appropriate.
 case ${target} in
@@ -57,18 +71,44 @@ case ${target} in
     with_stabs=yes ;;
  *)
     with_stabs=no ;;
-esac])
+esac])dnl
 
 # Add stabs tests when appropriate.
 if test "x${with_stabs}" = "xyes"; then
    AC_CONFIG_SUBDIRS([gdb.stabs])
 fi
 
+# Check for 'sed' before doing the rest of this script:
+AC_DEFUN([AC_REQUIRE_PROG_SED],[
+  AC_REQUIRE([AC_PROG_SED])dnl
+])dnl
+AC_REQUIRE_PROG_SED
+
+# Hack:
+if test -e ./config.cache; then
+  sed -i "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" ./config.cache
+  sed -i "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" ./config.cache
+elif test -e ../config.cache; then
+  sed -i "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" ../config.cache
+  sed -i "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" ../config.cache
+fi
+
+# Check for the 'make' the user wants to use.
+AC_CHECK_PROGS([MAKE],[make])
+MAKE_IS_GNU=""
+case "`${MAKE} --version 2>&1 | sed 1q`" in
+  *GNU*)
+    MAKE_IS_GNU=yes
+    ;;
+esac
+AM_CONDITIONAL([GMAKE],[test "x${MAKE_IS_GNU}" = "xyes"])
+AC_PROG_MAKE_SET
+
 # Enable gdbtk.
 AC_ARG_ENABLE([gdbtk],
-[AS_HELP_STRING([--enable-gtk],
+[AS_HELP_STRING([--enable-gdbtk],
                 [enable gdbtk graphical user interface (GUI)])],[],
-  [if test -d ${srcdir}/gdb.gdbtk; then
+  [if test -d ${srcdir}/../gdbtk && test -d ${srcdir}/gdb.gdbtk; then
     enable_gdbtk=yes
   else
     enable_gdbtk=no
@@ -93,7 +133,7 @@ fi
 AC_ARG_ENABLE([shared],
 [AS_HELP_STRING([--enable-shared],
                 [build shared libraries [deault=yes]])],
-[],[enable_shared=yes])
+[],[enable_shared=yes])dnl
 
 # If we have shared libraries, try to set RPATH_ENVVAR reasonably,
 # such that we can find the shared libraries in the build tree.
@@ -116,19 +156,19 @@ else
       RPATH_ENVVAR=SHLIB_PATH ;;
   esac
 fi
-AC_SUBST([RPATH_ENVVAR])
+AC_SUBST([RPATH_ENVVAR])dnl
 
 # Checks for programs.
 AC_PROG_AWK
 AC_DEFUN([AC_REQUIRE_COMPILER],[
-  AC_REQUIRE([AC_PROG_CC])
-  AC_REQUIRE([AC_PROG_CPP])
-  AC_REQUIRE([AC_PROG_CXX])
-  AC_REQUIRE([AC_PROG_GCC_TRADITIONAL])
-])
+  AC_REQUIRE([AC_PROG_CC])dnl
+  AC_REQUIRE([AC_PROG_CPP])dnl
+  AC_REQUIRE([AC_PROG_CXX])dnl
+  AC_REQUIRE([AC_PROG_GCC_TRADITIONAL])dnl
+])dnl
 AC_REQUIRE_COMPILER
 AC_PROG_INSTALL
-AC_PROG_SED
+dnl# ('sed' is now checked above)
 
 # Checks for header files.
 AC_HEADER_DIRENT
@@ -136,8 +176,8 @@ AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_HEADER_SYS_WAIT
 AC_HEADER_TIME
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h stddef.h stdio.h \
-                  sys/socket.h sys/time.h wchar.h])
-AC_CHECK_HEADERS([pthread.h])
+                  sys/socket.h sys/time.h wchar.h])dnl
+AC_CHECK_HEADERS([pthread.h])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -181,11 +221,27 @@ AC_FUNC_SELECT_ARGTYPES
 AC_FUNC_STAT
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([atexit alarm clock_gettime gettimeofday memset munmap \
-                select socket strchr strerror strstr strtol strtoul])
+                select socket strchr strerror strstr strtol strtoul])dnl
 
 # Other:
 AC_EXEEXT
 AC_OBJEXT
+
+m4_ifdef([AM_MAINTAINER_MODE],[
+  AM_MAINTAINER_MODE
+],[
+  MAINT='#'
+  AC_SUBST([MAINT])dnl
+])dnl
+
+if test "x${build}" = "x${host}" && test "x${host}" = "x${target}"; then
+   case "${host}" in
+     *gnu*)
+       EXTRA_RULES=read1
+       ;;
+   esac
+fi
+AC_SUBST([EXTRA_RULES])dnl
 
 # Output:
 case "${target}" in
@@ -206,7 +262,7 @@ if test -z "${host_alias}"; then
     export host_alias="${host}"
   fi
 fi
-AC_SUBST([host_alias])
+AC_SUBST([host_alias])dnl
 
 if test -z "${target_alias}"; then
   if test ! -z "${target_canonical}"; then
@@ -215,17 +271,17 @@ if test -z "${target_alias}"; then
     export target_alias="${target}"
   fi
 fi
-AC_SUBST([target_alias])
+AC_SUBST([target_alias])dnl
 
 if test -z "${gdb_target_cpu}"; then
   if test ! -z "${target_cpu}"; then
     export gdb_target_cpu="${target_cpu}"
   fi
 fi
-AC_SUBST([gdb_target_cpu])
+AC_SUBST([gdb_target_cpu])dnl
 
-AC_CONFIG_SUBDIRS([gdb.cell])
-AC_CONFIG_SUBDIRS([gdb.chill])
+AC_CONFIG_SUBDIRS([gdb.cell])dnl
+AC_CONFIG_SUBDIRS([gdb.chill])dnl
 AC_CONFIG_FILES([Makefile \
   gdb.ada/Makefile \
   gdb.arch/Makefile \
@@ -253,5 +309,5 @@ AC_CONFIG_FILES([Makefile \
   gdb.server/Makefile \
   gdb.threads/Makefile \
   gdb.trace/Makefile \
-  gdb.xml/Makefile])
+  gdb.xml/Makefile])dnl
 AC_OUTPUT

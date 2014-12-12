@@ -139,18 +139,19 @@ get_encoded_value (unsigned char *data,
   return val;
 }
 
-#if __STDC_VERSION__ >= 199901L || (defined(__GNUC__) && __GNUC__ >= 2)
-#ifndef __MINGW32__
-#define  DWARF_VMA_FMT       "ll"
-#define  DWARF_VMA_FMT_LONG  "%16.16llx"
+#if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || \
+    (defined(__GNUC__) && (__GNUC__ >= 2))
+# ifndef __MINGW32__
+#  define  DWARF_VMA_FMT       "ll"
+#  define  DWARF_VMA_FMT_LONG  "%16.16llx"
+# else
+#  define  DWARF_VMA_FMT       "I64"
+#  define  DWARF_VMA_FMT_LONG  "%016I64x"
+# endif /* !__MINGW32__ */
 #else
-#define  DWARF_VMA_FMT       "I64"
-#define  DWARF_VMA_FMT_LONG  "%016I64x"
-#endif
-#else
-#define  DWARF_VMA_FMT       "l"
-#define  DWARF_VMA_FMT_LONG  "%16.16lx"
-#endif
+# define  DWARF_VMA_FMT       "l"
+# define  DWARF_VMA_FMT_LONG  "%16.16lx"
+#endif /* c99 || gcc 2+ */
 
 /* Convert a dwarf vma value into a string.  Returns a pointer to a static
    buffer containing the converted VALUE.  The value is converted according

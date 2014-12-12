@@ -1,8 +1,8 @@
-/* Initialization for access to a mmap'd malloc managed region.
-   Copyright 1992, 2000 Free Software Foundation, Inc.
-
-   Contributed by Fred Fish at Cygnus Support.   fnf@cygnus.com
-
+/* attach.c: Initialization for access to a mmap'd malloc managed region.
+ * Copyright 1992, 2000 Free Software Foundation, Inc.
+ *
+ * Contributed by Fred Fish at Cygnus Support.   <fnf@cygnus.com>  */
+/*
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -22,7 +22,7 @@ Boston, MA 02111-1307, USA.  */
 
 #include "mmprivate.h"
 
-#define MAP_PRIVATE_OR_SHARED(MDP) (((MDP) -> flags & MMALLOC_SHARED) \
+#define MAP_PRIVATE_OR_SHARED(MDP) (((MDP)->flags & MMALLOC_SHARED) \
                                     ? MAP_PRIVATE \
                                     : MAP_SHARED)
 
@@ -34,7 +34,9 @@ Boston, MA 02111-1307, USA.  */
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>	/* Prototypes for lseek */
 #else
-# warning attach.c needs <unistd.h> for lseek().
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "attach.c needs <unistd.h> for lseek()."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
 
 #include <sys/mman.h>
@@ -48,10 +50,8 @@ Boston, MA 02111-1307, USA.  */
 #endif /* !MAP_ANONYMOUS && MAP_ANON */
 
 #if defined(HAVE_MMAP)
-
-/* Forward declarations/prototypes for local functions */
-
-static struct mdesc *reuse PARAMS ((int, PTR, int));
+/* Forward declarations/prototypes for local functions: */
+static struct mdesc *reuse PARAMS((int, PTR, int));
 
 /* Initialize access to a mmalloc managed region.
 
@@ -85,10 +85,7 @@ static struct mdesc *reuse PARAMS ((int, PTR, int));
    On failure returns NULL. */
 
 PTR
-mmalloc_attach (fd, baseaddr, flags)
-  int fd;
-  PTR baseaddr;
-  int flags;
+mmalloc_attach(int fd, PTR baseaddr, int flags)
 {
   struct mdesc mtemp;
   struct mdesc *mdp;
@@ -110,7 +107,7 @@ mmalloc_attach (fd, baseaddr, flags)
 	}
       else if (sbuf.st_size > 0)
 	{
-	  return ((PTR) reuse (fd, baseaddr, flags));
+	  return ((PTR)reuse(fd, baseaddr, flags));
 	}
     }
 
@@ -125,59 +122,61 @@ mmalloc_attach (fd, baseaddr, flags)
      then initialize the fields that we know values for. */
 
   mdp = &mtemp;
-  memset ((char *) mdp, 0, sizeof (mtemp));
-  strncpy (mdp -> magic, MMALLOC_MAGIC, MMALLOC_MAGIC_SIZE);
-  mdp -> headersize = sizeof (mtemp);
-  mdp -> version = MMALLOC_VERSION;
-  mdp -> morecore = __mmalloc_mmap_morecore;
-  mdp -> fd = fd;
-  mdp -> base = mdp -> breakval = mdp -> top = baseaddr;
+  memset((char *)mdp, 0, sizeof(mtemp));
+  strncpy(mdp->magic, MMALLOC_MAGIC, MMALLOC_MAGIC_SIZE);
+  mdp->headersize = sizeof(mtemp);
+  mdp->version = MMALLOC_VERSION;
+  mdp->morecore = __mmalloc_mmap_morecore;
+  mdp->fd = fd;
+  mdp->base = mdp->breakval = mdp->top = (char *)baseaddr;
 
   /* If we have not been passed a valid open file descriptor for the file
      to map to, then open /dev/zero and use that to map to. */
 
-  if (mdp -> fd < 0)
+  if (mdp->fd < 0)
     {
-#ifdef MAP_ANONYMOUS
-      mdp -> fd = -1;
-#else
-      if ((mdp -> fd = open ("/dev/zero", O_RDWR)) < 0)
+# ifdef MAP_ANONYMOUS
+      mdp->fd = -1;
+# else
+      if ((mdp->fd = open("/dev/zero", O_RDWR)) < 0)
 	{
 	  return (NULL);
 	}
       else
 	{
-	  mdp -> flags |= MMALLOC_DEVZERO;
-	  mdp -> flags |= MMALLOC_SHARED;
+	  mdp->flags |= MMALLOC_DEVZERO;
+	  mdp->flags |= MMALLOC_SHARED;
 	}
-#endif /* MAP_ANONYMOUS */
+# endif /* MAP_ANONYMOUS */
     }
 
   if (flags & MMALLOC_SHARED)
-    mdp -> flags |= MMALLOC_SHARED;
+    {
+      mdp->flags |= MMALLOC_SHARED;
+    }
 
   /*  Now try to map in the first page, copy the malloc descriptor structure
       there, and arrange to return a pointer to this new copy.  If the mapping
       fails, then close the file descriptor if it was opened by us, and arrange
       to return a NULL. */
 
-  if ((mbase = mdp -> morecore (mdp, sizeof (mtemp))) != NULL)
+  if ((mbase = mdp->morecore(mdp, sizeof(mtemp))) != NULL)
     {
-      memcpy (mbase, mdp, sizeof (mtemp));
-      mdp = (struct mdesc *) mbase;
+      memcpy(mbase, mdp, sizeof(mtemp));
+      mdp = (struct mdesc *)mbase;
       if (flags & MMALLOC_SHARED)
-	mdp -> flags |= MMALLOC_SHARED;
+	mdp->flags |= MMALLOC_SHARED;
     }
   else
     {
-      if (mdp -> flags & MMALLOC_DEVZERO)
+      if (mdp->flags & MMALLOC_DEVZERO)
 	{
-	  close (mdp -> fd);
+	  close(mdp->fd);
 	}
       mdp = NULL;
     }
 
-  return ((PTR) mdp);
+  return ((PTR)mdp);
 }
 
 /* Given an valid file descriptor on an open file, test to see if that file
@@ -187,7 +186,7 @@ mmalloc_attach (fd, baseaddr, flags)
    Note that we have to update the file descriptor number in the malloc-
    descriptor read from the file to match the current valid one, before
    trying to map the file in, and again after a successful mapping and
-   after we have switched over to using the mapped in malloc descriptor 
+   after we have switched over to using the mapped in malloc descriptor
    rather than the temporary one on the stack.
 
    Once we have switched over to using the mapped in malloc descriptor, we
@@ -204,57 +203,58 @@ mmalloc_attach (fd, baseaddr, flags)
    unsuccessful for some reason. */
 
 static struct mdesc *
-reuse (fd, baseaddr, flags)
-  int fd;
-  PTR baseaddr;
-  int flags;
+reuse(int fd, PTR baseaddr, int flags)
 {
   struct mdesc mtemp;
   struct mdesc *mdp = NULL;
   caddr_t base;
+#if !defined(__clang_analyzer__) && !defined(__STRICT_ANSI__)
   unsigned int i;
-  i = 0;
+  i = 0U;
+#endif /* !__clang_analyzer__ && !__STRICT_ANSI__ */
 
-	if (lseek (fd, 0L, SEEK_SET) != 0) {
-		return NULL;
-	}
-	if (read (fd, (char *) &mtemp, sizeof (mtemp)) != sizeof (mtemp)) {
-		return NULL;
-	}
-	if (mtemp.headersize != sizeof (mtemp)) {
-		return NULL;
-	}
-	if (strcmp (mtemp.magic, MMALLOC_MAGIC) != 0) {
-		return NULL;
-	}
-	if (mtemp.version > MMALLOC_VERSION) {
-		return NULL;
-	}
+  if (lseek(fd, (off_t)0L, SEEK_SET) != 0) {
+    return NULL;
+  }
+  if (read(fd, (char *)&mtemp, sizeof(mtemp)) != sizeof(mtemp)) {
+    return NULL;
+  }
+  if (mtemp.headersize != sizeof(mtemp)) {
+    return NULL;
+  }
+  if (strcmp(mtemp.magic, MMALLOC_MAGIC) != 0) {
+    return NULL;
+  }
+  if (mtemp.version > MMALLOC_VERSION) {
+    return NULL;
+  }
 
   mtemp.fd = fd;
-	if (flags & MMALLOC_SHARED) {
-		mtemp.flags |= MMALLOC_SHARED;
-	}
+  if (flags & MMALLOC_SHARED) {
+    mtemp.flags |= MMALLOC_SHARED;
+  }
 
-	if (baseaddr == NULL) {
-		baseaddr = mmalloc_findbase (mtemp.top - mtemp.base, mtemp.base);
-	}
+  if (baseaddr == NULL) {
+    baseaddr = mmalloc_findbase((size_t)(mtemp.top - mtemp.base),
+                                mtemp.base);
+  }
 
-  base = mmap (baseaddr, mtemp.top - mtemp.base,
-	       PROT_READ | PROT_WRITE, MAP_PRIVATE_OR_SHARED (&mtemp) | MAP_FIXED,
-	       mtemp.fd, 0);
-  
+  base = (caddr_t)mmap(baseaddr, (size_t)(mtemp.top - mtemp.base),
+                       (PROT_READ | PROT_WRITE),
+                       (MAP_PRIVATE_OR_SHARED(&mtemp) | MAP_FIXED),
+                       mtemp.fd, (off_t)0L);
+
   if (base != baseaddr)
     {
-      /* need to deallocate */
+      /* need to deallocate: */
       return NULL;
     }
 
-  mdp = (struct mdesc *) base;
+  mdp = (struct mdesc *)base;
   mdp->top += (base - mdp->base);
   mdp->breakval += (base - mdp->base);
   mdp->base = base;
-  
+
   mdp->fd = fd;
   mdp->morecore = __mmalloc_mmap_morecore;
   if (flags & MMALLOC_SHARED)
@@ -263,18 +263,15 @@ reuse (fd, baseaddr, flags)
   return (mdp);
 }
 
-#else	/* !defined (HAVE_MMAP) */
+#else	/* !defined(HAVE_MMAP): */
 
 /* For systems without mmap, the library still supplies an entry point
-   to link to, but trying to initialize access to an mmap'd managed region
-   always fails. */
+ * to link to, but trying to initialize access to an mmap'd managed region
+ * always fails. */
 
 /* ARGSUSED */
 PTR
-mmalloc_attach (fd, baseaddr, flags)
-  int fd;
-  PTR baseaddr;
-  int flags;
+mmalloc_attach(int fd, PTR baseaddr, int flags)
 {
    return (NULL);
 }

@@ -358,7 +358,7 @@ DESCRIPTION
 .#define bfd_mach_msp13          13
 .#define bfd_mach_msp14          14
 .#define bfd_mach_msp15          15
-.#define bfd_mach_msp16          16  
+.#define bfd_mach_msp16          16
 .#define bfd_mach_msp21          21
 .#define bfd_mach_msp31          31
 .#define bfd_mach_msp32          32
@@ -618,8 +618,8 @@ bfd_arch_list (void)
 	}
     }
 
-  amt = (vec_length + 1) * sizeof (char **);
-  name_list = bfd_malloc (amt);
+  amt = (vec_length + 1) * sizeof(char **);
+  name_list = (const char **)bfd_malloc(amt);
   if (name_list == NULL)
     return NULL;
 

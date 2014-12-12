@@ -2006,7 +2006,7 @@ enum bfd_architecture
 #define bfd_mach_msp13          13
 #define bfd_mach_msp14          14
 #define bfd_mach_msp15          15
-#define bfd_mach_msp16          16  
+#define bfd_mach_msp16          16
 #define bfd_mach_msp21          21
 #define bfd_mach_msp31          31
 #define bfd_mach_msp32          32
@@ -4971,6 +4971,11 @@ bfd_boolean bfd_set_default_target (const char *name);
 
 const bfd_target *bfd_find_target (const char *target_name, bfd *abfd);
 
+const bfd_target *bfd_get_target_info(const char *target_name,
+    bfd *abfd,
+    bfd_boolean *is_bigendian,
+    int *underscoring,
+    const char **def_target_arch);
 const char ** bfd_target_list (void);
 
 const bfd_target *bfd_search_for_target

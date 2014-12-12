@@ -132,7 +132,7 @@ struct loaded_domain
 #ifdef _LIBC
   __gconv_t conv;
 #else
-# if HAVE_ICONV
+# if defined(HAVE_ICONV) && HAVE_ICONV
   iconv_t conv;
 # endif /* HAVE_ICONV */
 #endif /* _LIBC */

@@ -30,7 +30,9 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning opncls.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning opncls.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_MALLOC_H
@@ -39,17 +41,21 @@
 # ifdef HAVE_MALLOC_MALLOC_H
 #  include <malloc/malloc.h>
 # else
-#  warning opncls.c expects a malloc-related header to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "opncls.c expects a malloc-related header to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_MALLOC_MALLOC_H */
 #endif /* HAVE_MALLOC_H */
 
-#if USE_MMAP
+#if defined(USE_MMAP) && USE_MMAP
 
 # if HAVE_MMAP || HAVE_MPROTECT || HAVE_MADVISE
 #  include <sys/types.h>
 #  include <sys/mman.h>
 # else
-#  warning not including mmap-related headers.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "not including mmap-related headers."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_MMAP || HAVE_MPROTECT || HAVE_MADVISE */
 
 /* Why is this done a second time? */
@@ -57,7 +63,9 @@
 #  include <sys/types.h>
 #  include <sys/mman.h>
 # else
-#  warning not including mmap-related headers.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "not including mmap-related headers."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_MMAP || HAVE_MPROTECT || HAVE_MADVISE */
 
 # undef MAP_SHARED
@@ -86,14 +94,13 @@ static unsigned int _bfd_id_counter = 0;
 /* fdopen is a loser -- we should use stdio exclusively. Unfortunately
    if we do that, then we cannot use fcntl.  */
 
-/* Return a new BFD. All BFD's are allocated through this routine.  */
-
+/* Return a new BFD. All BFD's are allocated through this routine: */
 bfd *
-_bfd_new_bfd (void)
+_bfd_new_bfd(void)
 {
   bfd *nbfd;
 
-  nbfd = bfd_zmalloc (sizeof (bfd));
+  nbfd = (bfd *)bfd_zmalloc(sizeof(bfd));
   if (nbfd == NULL)
     return NULL;
 
@@ -134,14 +141,13 @@ _bfd_new_bfd (void)
   return nbfd;
 }
 
-/* Allocate a new BFD as a member of archive OBFD.  */
-
+/* Allocate a new BFD as a member of archive OBFD: */
 bfd *
-_bfd_new_bfd_contained_in (bfd *obfd)
+_bfd_new_bfd_contained_in(bfd *obfd)
 {
   bfd *nbfd;
 
-  nbfd = _bfd_new_bfd ();
+  nbfd = _bfd_new_bfd();
   if (nbfd == NULL)
     return NULL;
   nbfd->xvec = obfd->xvec;
@@ -152,15 +158,14 @@ _bfd_new_bfd_contained_in (bfd *obfd)
   return nbfd;
 }
 
-/* Delete a BFD.  */
-
+/* Delete a BFD: */
 void
-_bfd_delete_bfd (bfd *abfd)
+_bfd_delete_bfd(bfd *abfd)
 {
-  bfd_hash_table_free (&abfd->section_htab);
-  objalloc_free ((struct objalloc *) abfd->memory);
-  memset (abfd, '\0', sizeof (bfd));
-  free (abfd);
+  bfd_hash_table_free(&abfd->section_htab);
+  objalloc_free((struct objalloc *)abfd->memory);
+  memset(abfd, '\0', sizeof(bfd));
+  free(abfd);
 }
 
 /*
@@ -195,19 +200,19 @@ DESCRIPTION
 */
 
 bfd *
-bfd_fopen (const char *filename, const char *target, const char *mode, int fd)
+bfd_fopen(const char *filename, const char *target, const char *mode, int fd)
 {
   bfd *nbfd;
   const bfd_target *target_vec;
 
-  nbfd = _bfd_new_bfd ();
+  nbfd = _bfd_new_bfd();
 #ifdef BFD_TRACK_OPEN_CLOSE
-    printf ("Opening bfd 0x%lx: \"%s\"\n", (unsigned long) nbfd, filename);
+    printf("Opening bfd 0x%lx: \"%s\"\n", (unsigned long)nbfd, filename);
 #endif /* BFD_TRACK_OPEN_CLOSE */
   if (nbfd == NULL)
     return NULL;
 
-  target_vec = bfd_find_target (target, nbfd);
+  target_vec = bfd_find_target(target, nbfd);
   if (target_vec == NULL)
     {
       _bfd_delete_bfd (nbfd);
@@ -216,19 +221,19 @@ bfd_fopen (const char *filename, const char *target, const char *mode, int fd)
 
 #ifdef HAVE_FDOPEN
   if (fd != -1)
-    nbfd->iostream = fdopen (fd, mode);
+    nbfd->iostream = fdopen(fd, mode);
   else
 #endif /* HAVE_FDOPEN */
-    nbfd->iostream = fopen (filename, mode);
+    nbfd->iostream = fopen(filename, mode);
   if (nbfd->iostream == NULL)
     {
-      bfd_set_error (bfd_error_system_call);
-      _bfd_delete_bfd (nbfd);
+      bfd_set_error(bfd_error_system_call);
+      _bfd_delete_bfd(nbfd);
       return NULL;
     }
 
-  /* APPLE LOCAL: Do NOT let this fd get inherited when we exec a child proc.  */
-  fcntl (fileno (nbfd->iostream), F_SETFD, 1);
+  /* APPLE LOCAL: Do NOT let this fd be inherited on exec of child proc: */
+  fcntl(fileno((FILE *)nbfd->iostream), F_SETFD, 1);
 
   /* OK, put everything where it belongs.  */
   nbfd->filename = filename;
@@ -270,11 +275,10 @@ DESCRIPTION
 	Cause future file accesses to be done via mmap rather than via read/write.
 */
 
-bfd_boolean bfd_mmap_file (abfd, addr)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     void *addr ATTRIBUTE_UNUSED;
+bfd_boolean bfd_mmap_file(bfd *abfd ATTRIBUTE_UNUSED,
+                          void *addr ATTRIBUTE_UNUSED)
 {
-#if USE_MMAP
+#if defined(USE_MMAP) && USE_MMAP
   struct bfd_in_memory *mem;
   struct stat statbuf;
   FILE *fp;
@@ -311,11 +315,11 @@ bfd_boolean bfd_mmap_file (abfd, addr)
     break;
   case write_direction:
   case both_direction:
-    prot = PROT_READ | PROT_WRITE;
-    flags = MAP_FILE | MAP_SHARED;
+    prot = (PROT_READ | PROT_WRITE);
+    flags = (MAP_FILE | MAP_SHARED);
     break;
   default:
-    abort ();
+    abort();
   }
 
   if (addr != ((void *) -1)) {
@@ -324,8 +328,8 @@ bfd_boolean bfd_mmap_file (abfd, addr)
     addr = NULL;
   }
 
-  mem->buffer = mmap (addr, mem->size, prot, flags, fd, 0);
-  if ((caddr_t) mem->buffer == (caddr_t) -1) {
+  mem->buffer = (bfd_byte *)mmap(addr, mem->size, prot, flags, fd, 0);
+  if ((caddr_t)mem->buffer == (caddr_t)-1) {
     bfd_set_error (bfd_error_system_call);
     return FALSE;
   }
@@ -337,7 +341,7 @@ bfd_boolean bfd_mmap_file (abfd, addr)
 
   return TRUE;
 
-#else /* ! USE_MMAP */
+#else /* !USE_MMAP: */
   bfd_set_error (bfd_error_system_call);
   return FALSE;
 #endif /* USE_MMAP */
@@ -363,11 +367,8 @@ DESCRIPTION
 */
 
 bfd *
-bfd_memopenr (filename, target, addr, len)
-     const char *filename;
-     const char *target;
-     unsigned char *addr;
-     bfd_size_type len;
+bfd_memopenr(const char *filename, const char *target, unsigned char *addr,
+             bfd_size_type len)
 {
   bfd *nbfd;
   const bfd_target *target_vec;
@@ -507,9 +508,9 @@ DESCRIPTION
 */
 
 bfd *
-bfd_openstreamr (const char *filename, const char *target, void *streamarg)
+bfd_openstreamr(const char *filename, const char *target, void *streamarg)
 {
-  FILE *stream = streamarg;
+  FILE *stream = (FILE *)streamarg;
   bfd *nbfd;
   const bfd_target *target_vec;
 
@@ -1369,7 +1370,7 @@ find_separate_debug_file (bfd *abfd, const char *debug_file_directory)
   unsigned long crc32;
   int i;
 
-  BFD_ASSERT (abfd);
+  BFD_ASSERT(abfd);
   if (debug_file_directory == NULL)
     debug_file_directory = ".";
 
@@ -1377,37 +1378,35 @@ find_separate_debug_file (bfd *abfd, const char *debug_file_directory)
   if (! abfd->filename)
     return NULL;
 
-  basename = get_debug_link_info (abfd, & crc32);
+  basename = get_debug_link_info(abfd, & crc32);
   if (basename == NULL)
     return NULL;
 
-  if (strlen (basename) < 1)
+  if (strlen(basename) < 1)
     {
-      free (basename);
+      free(basename);
       return NULL;
     }
 
-  dir = strdup (abfd->filename);
+  dir = strdup(abfd->filename);
   if (dir == NULL)
     {
-      free (basename);
+      free(basename);
       return NULL;
     }
-  BFD_ASSERT (strlen (dir) != 0);
+  BFD_ASSERT(strlen(dir) != 0);
 
   /* Strip off filename part.  */
-  for (i = strlen (dir) - 1; i >= 0; i--)
-    if (IS_DIR_SEPARATOR (dir[i]))
+  for (i = (strlen(dir) - 1); i >= 0; i--)
+    if (IS_DIR_SEPARATOR(dir[i]))
       break;
 
   dir[i + 1] = '\0';
-  BFD_ASSERT (dir[i] == '/' || dir[0] == '\0');
+  BFD_ASSERT((dir[i] == '/') || (dir[0] == '\0'));
 
-  debugfile = malloc (strlen (debug_file_directory) + 1
-		      + strlen (dir)
-		      + strlen (".debug/")
-		      + strlen (basename)
-		      + 1);
+  debugfile = (char *)malloc((strlen(debug_file_directory) + 1)
+                             + strlen(dir) + strlen(".debug/")
+                             + strlen(basename) + 1);
   if (debugfile == NULL)
     {
       free (basename);
@@ -1611,20 +1610,20 @@ bfd_fill_in_gnu_debuglink_section (bfd *abfd,
     }
 
   crc32 = 0;
-  while ((count = fread (buffer, 1, sizeof buffer, handle)) > 0)
-    crc32 = bfd_calc_gnu_debuglink_crc32 (crc32, buffer, count);
+  while ((count = fread(buffer, 1, sizeof(buffer), handle)) > 0)
+    crc32 = bfd_calc_gnu_debuglink_crc32(crc32, buffer, count);
   fclose (handle);
 
   /* Strip off any path components in filename,
      now that we no longer need them.  */
-  filename = lbasename (filename);
+  filename = lbasename(filename);
 
-  debuglink_size = strlen (filename) + 1;
+  debuglink_size = (strlen(filename) + 1);
   debuglink_size += 3;
   debuglink_size &= ~3;
   debuglink_size += 4;
 
-  contents = malloc (debuglink_size);
+  contents = (char *)malloc(debuglink_size);
   if (contents == NULL)
     {
       /* XXX Should we delete the section from the bfd ?  */

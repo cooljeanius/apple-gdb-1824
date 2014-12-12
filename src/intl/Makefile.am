@@ -55,11 +55,15 @@ RANLIB = @RANLIB@
 
 # architecture flags:
 C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+XC_ARCHFLAGS = -arch $(TARGET_ARCHITECTURE)
+## (the variables should be automatically subst-ed by autoconf/automake)
 
 DEFS = -DLOCALEDIR=\"$(localedir)\" -DGNULOCALEDIR=\"$(gnulocaledir)\" \
 -DLOCALE_ALIAS_PATH=\"$(aliaspath)\" -DLIBDIR="\"$(libdir)\"" -DINSTALLDIR="\"$(libdir)\"" @DEFS@
 CPPFLAGS = @CPPFLAGS@
-CFLAGS = @CFLAGS@ $(C_ARCHFLAGS)
+CFLAGS = @CFLAGS@ 
+LIBCFLAGS = $(CFLAGS) $(C_ARCHFLAGS)
+XCFLAGS = -DXCOMPILING @MAINT@ $(CFLAGS) $(XC_ARCHFLAGS)
 LDFLAGS = @LDFLAGS@
 
 AM_CPPFLAGS = -I. -I$(srcdir)
@@ -71,9 +75,9 @@ AM_ANSIFICATION_FLAGS = -Wstrict-prototypes -Wmissing-prototypes -Wconversion -W
 ## (should really check which warning flags are supported when configuring)
 AM_WARNFLAGS = -Wall @MAINT@ $(AM_ANSIFICATION_FLAGS)
 AM_LDFLAGS = -framework CoreFoundation
-AM_YFLAGS = -Wall -Wyacc -d
+AM_YFLAGS = -d -t -v @MAINT@@EXTRA_YFLAGS_SEP@ -k -Wall -Wyacc
 
-COMPILE = $(CC) -c $(DEFS) $(AM_CPPFLAGS) $(AM_WARNFLAGS) $(CPPFLAGS) $(CFLAGS) $(XCFLAGS) @MAINT@ $(INCLUDES)
+COMPILE = $(CC) -c $(DEFS) $(AM_CPPFLAGS) $(AM_WARNFLAGS) $(CPPFLAGS) $(CFLAGS) $(C_ARCHFLAGS) $(XCFLAGS) @MAINT@ $(INCLUDES)
 .PHONY: -c -m 644 
 ## The above `.PHONY:` is a hack; `-c` and `-m` and `644` should not even
 ## have been treated as targets in the first place...
@@ -225,8 +229,13 @@ bindtextdom.lo finddomain.lo loadmsgcat.lo: gettextP.h gettext.h loadinfo.h
 dcgettext.o: gettextP.h gettext.h hash-string.h loadinfo.h
 dcgettext.lo: gettextP.h gettext.h hash-string.h loadinfo.h
 
-dcigettext.o: hash-string.h plural-exp.h eval-plural.h
-dcigettext.lo: hash-string.h plural-exp.h eval-plural.h
+dcigettext.o: gettextP.h plural-exp.h hash-string.h libgnuintl.h \
+  eval-plural.h
+dcigettext.lo: gettextP.h plural-exp.h hash-string.h libgnuintl.h \
+  eval-plural.h
+
+dcngettext.o dngettext.o ngettext.o: gettextP.h libgnuintl.h
+dcngettext.lo dngettext.lo ngettext.lo: gettextP.h libgnuintl.h
 
 explodename.o l10nflist.o: loadinfo.h
 explodename.lo l10nflist.lo: loadinfo.h
@@ -236,6 +245,9 @@ localcharset.lo: localcharset.h
 
 localealias.o relocatable.o: relocatable.h
 localealias.lo relocatable.lo: relocatable.h
+
+plural-exp.o: plural-exp.h
+plural-exp.lo: plural-exp.h
 
 plural.c: plural.y @MAINT@ Makefile
 

@@ -35,14 +35,14 @@ valid until at least the next call.
 #include "ansidecl.h"
 #include "libiberty.h"
 
-#if VMS
-#include <stdlib.h>
-#include <unixlib.h>
+#if defined(VMS) && VMS
+# include <stdlib.h>
+# include <unixlib.h>
 #else
 /* For systems with larger pointers than ints, these must be declared.  */
 extern PTR malloc (size_t);
 extern void free (PTR);
-#endif
+#endif /* VMS */
 
 const char *
 spaces (int count)

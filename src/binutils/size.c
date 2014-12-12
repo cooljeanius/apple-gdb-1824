@@ -39,11 +39,9 @@
 
 /* Program options.  */
 
-enum
-  {
+enum {
     decimal, octal, hex
-  }
-radix = decimal;
+} radix = decimal;
 
 /* 0 means use AT&T-style output.  */
 static int berkeley_format = BSD_DEFAULT;

@@ -14,7 +14,12 @@ m4_ifdef([AC_REQUIRE_AUX_FILE],[
   AC_REQUIRE_AUX_FILE([ylwrap])dnl
 ])dnl
 
+# architectures:
 AC_CANONICAL_TARGET
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+  AC_SUBST([BUILD_ARCHITECTURE])
+fi
 if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
   export HOST_ARCHITECTURE="${host_cpu}"
   AC_SUBST([HOST_ARCHITECTURE])
@@ -88,6 +93,13 @@ AC_REQUIRE_PROG_SED
 AC_PATH_PROG([ICONV_BIN],[iconv])dnl
 AC_SUBST([ICONV_BIN])dnl
 AC_PROG_YACC
+AX_PROG_BISON([
+  # (might want to check the bison version first)
+  EXTRA_YFLAGS_SEP=''
+],[
+  EXTRA_YFLAGS_SEP='#'
+])dnl##end bison conditional
+AC_SUBST([EXTRA_YFLAGS_SEP])dnl
 AM_PROG_LEX
 
 # Checks for libraries.
@@ -125,7 +137,7 @@ AC_CHECK_TYPES([iconv_t])dnl
 
 # Checks for library functions.
 AM_GNU_GETTEXT([external])dnl
-AM_GNU_GETTEXT_VERSION([0.19.2])dnl
+AM_GNU_GETTEXT_VERSION([0.19.3])dnl
 AC_SUBST([GT_YES],['#'])dnl
 AC_SUBST([GT_NO])dnl
 AC_DEFUN([AC_GETTEXT_SUBCHECKS],[

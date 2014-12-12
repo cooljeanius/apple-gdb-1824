@@ -29,10 +29,14 @@
 
    * The wmc program, written by Bertho A. Stultiens (BS). */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "sysdep.h"
 #include <assert.h>
 #include <time.h>
-#include "bfd.h"
+#include "../bfd/bfd.h"
 #include "getopt.h"
 #include "bucomm.h"
 #include "libiberty.h"
@@ -159,45 +163,46 @@ static const struct option long_options[] =
 };
 
 
-/* Initialize the resource building obstack.  */
+/* Initialize the resource building obstack: */
 static void
-res_init (void)
+res_init(void)
 {
-  obstack_init (&res_obstack);
+  obstack_init(&res_obstack);
 }
 
-/* Allocate space on the resource building obstack.  */
+/* Allocate space on the resource building obstack: */
 void *
-res_alloc (rc_uint_type bytes)
+res_alloc(rc_uint_type bytes)
 {
-  return obstack_alloc (&res_obstack, (size_t) bytes);
+  return obstack_alloc(&res_obstack, (size_t)bytes);
 }
 
 static FILE *
-mc_create_path_text_file (const char *path, const char *ext)
+mc_create_path_text_file(const char *path, const char *ext)
 {
   FILE *ret;
   size_t len = 1;
   char *hsz;
 
-  len += (path != NULL ? strlen (path) : 0);
+  len += ((path != NULL) ? strlen(path) : 0);
   len += strlen (mcset_mc_basename);
-  len += (ext != NULL ? strlen (ext) : 0);
-  hsz = xmalloc (len);
-  sprintf (hsz, "%s%s%s", (path != NULL ? path : ""), mcset_mc_basename,
-    (ext != NULL ? ext : ""));
-  if ((ret = fopen (hsz, "wb")) == NULL)
-    fatal (_("can't create %s file `%s' for output.\n"), (ext ? ext : "text"), hsz);
-  free (hsz);
+  len += ((ext != NULL) ? strlen(ext) : 0);
+  hsz = (char *)xmalloc(len);
+  sprintf(hsz, "%s%s%s", ((path != NULL) ? path : ""), mcset_mc_basename,
+          ((ext != NULL) ? ext : ""));
+  if ((ret = fopen(hsz, "wb")) == NULL)
+    fatal(_("cannot create %s file `%s' for output.\n"),
+          (ext ? ext : "text"), hsz);
+  free(hsz);
   return ret;
 }
 
 static void
-usage (FILE *stream, int status)
+usage(FILE *stream, int status)
 {
-  fprintf (stream, _("Usage: %s [option(s)] [input-file]\n"),
-	   program_name);
-  fprintf (stream, _(" The options are:\n\
+  fprintf(stream, _("Usage: %s [option(s)] [input-file]\n"),
+	  program_name);
+  fprintf(stream, _(" The options are:\n\
   -a --ascii_in                Read input file as ASCII file\n\
   -A --ascii_out               Write binary messages as ASCII\n\
   -b --binprefix               .bin filename is prefixed by .mc filename_ for uniqueness.\n\
@@ -217,7 +222,7 @@ usage (FILE *stream, int status)
   -x --xdbg=<directory>        Where to create the .dbg C include file\n\
                                that maps message ID's to their symbolic name.\n\
 "));
-  fprintf (stream, _("\
+  fprintf(stream, _("\
   -H --help                    Print this help message\n\
   -v --verbose                 Verbose - tells you what it's doing\n\
   -V --version                 Print version information\n"));
@@ -225,66 +230,86 @@ usage (FILE *stream, int status)
   list_supported_targets (program_name, stream);
 
   if (REPORT_BUGS_TO[0] && status == 0)
-    fprintf (stream, _("Report bugs to %s\n"), REPORT_BUGS_TO);
+    fprintf(stream, _("Report bugs to %s\n"), REPORT_BUGS_TO);
 
-  exit (status);
+  exit(status);
 }
 
 static void
-set_endianness (bfd *abfd, const char *target)
+set_endianness(bfd *abfd, const char *target)
 {
   const bfd_target *target_vec;
 
   def_target_arch = NULL;
-  target_vec = bfd_get_target_info (target, abfd, &target_is_bigendian, NULL,
-				   &def_target_arch);
+  target_vec = bfd_get_target_info(target, abfd, &target_is_bigendian,
+                                   NULL, &def_target_arch);
   if (! target_vec)
-    fatal ("Can't detect target endianness and architecture.");
+    fatal("Cannot detect target endianness and architecture.");
   if (! def_target_arch)
-    fatal ("Can't detect architecture.");
+    fatal("Cannot detect architecture.");
 }
 
 static int
-probe_codepage (rc_uint_type *cp, int *is_uni, const char *pswitch, int defmode)
+probe_codepage(rc_uint_type *cp, int *is_uni, const char *pswitch,int defmode)
 {
   if (*is_uni == -1)
     {
-      if (*cp != CP_UTF16)
+#ifdef CP_UTF16
+      if (*cp != CP_UTF16) {
 	*is_uni = defmode;
-      else
-	*is_uni = 1;
+      } else
+#else
+      if (defmode == 1) {
+        *is_uni = defmode;
+      } else
+#endif /* CP_UTF16 */
+        *is_uni = 1;
     }
   if (*is_uni)
     {
-      if (*cp != 0 && *cp != CP_UTF16)
+#ifdef CP_UTF16
+      if ((*cp != 0) && (*cp != CP_UTF16))
 	{
-	  fprintf (stderr, _("%s: warning: "), program_name);
-	  fprintf (stderr, _("A codepage was specified switch `%s' and UTF16.\n"), pswitch);
-	  fprintf (stderr, _("\tcodepage settings are ignored.\n"));
+	  fprintf(stderr, _("%s: warning: "), program_name);
+	  fprintf(stderr,
+                  _("A codepage was specified switch `%s' and UTF16.\n"),
+                  pswitch);
+	  fprintf(stderr, _("\tcodepage settings are ignored.\n"));
 	}
       *cp = CP_UTF16;
+#else
+      if (*cp != 0)
+        {
+          fprintf(stderr, _("%s: warning: "), program_name);
+          fprintf(stderr,
+                  _("A codepage was specified switch `%s'.\n"),
+                  pswitch);
+        }
+#endif /* CP_UTF16 */
       return 1;
     }
+#ifdef CP_UTF16
   if (*cp == CP_UTF16)
     {
       *is_uni = 1;
       return 1;
     }
+#endif /* CP_UTF16 */
   if (*cp == 0)
     *cp = 1252;
-  if (! unicode_is_valid_codepage (*cp))
-	fatal ("Code page 0x%x is unknown.", (unsigned int) *cp);
+  if (! unicode_is_valid_codepage(*cp))
+    fatal("Code page 0x%x is unknown.", (unsigned int)*cp);
   *is_uni = 0;
   return 1;
 }
 
 mc_node *
-mc_add_node (void)
+mc_add_node(void)
 {
   mc_node *ret;
 
-  ret = res_alloc (sizeof (mc_node));
-  memset (ret, 0, sizeof (mc_node));
+  ret = (mc_node *)res_alloc(sizeof(mc_node));
+  memset(ret, 0, sizeof(mc_node));
   if (! mc_nodes)
     mc_nodes = ret;
   else
@@ -299,14 +324,14 @@ mc_add_node (void)
 }
 
 mc_node_lang *
-mc_add_node_lang (mc_node *root, const mc_keyword *lang, rc_uint_type vid)
+mc_add_node_lang(mc_node *root, const mc_keyword *lang, rc_uint_type vid)
 {
   mc_node_lang *ret, *h, *p;
 
   if (! lang || ! root)
-    fatal (_("try to add a ill language."));
-  ret = res_alloc (sizeof (mc_node_lang));
-  memset (ret, 0, sizeof (mc_node_lang));
+    fatal(_("try to add a ill language."));
+  ret = (mc_node_lang *)res_alloc(sizeof(mc_node_lang));
+  memset(ret, 0, sizeof(mc_node_lang));
   ret->lang = lang;
   ret->vid = vid;
   if ((h = root->sub) == NULL)
@@ -323,7 +348,7 @@ mc_add_node_lang (mc_node *root, const mc_keyword *lang, rc_uint_type vid)
 	      if (h->vid > vid)
 		break;
 	      if (h->vid == vid)
-		fatal ("double defined message id %ld.\n", (long) vid);
+		fatal("double defined message id %ld.\n", (long)vid);
 	    }
 	  h = (p = h)->next;
 	}
@@ -337,69 +362,81 @@ mc_add_node_lang (mc_node *root, const mc_keyword *lang, rc_uint_type vid)
 }
 
 static char *
-convert_unicode_to_ACP (const unichar *usz)
+convert_unicode_to_ACP(const unichar *usz)
 {
   char *s;
   rc_uint_type l;
 
   if (! usz)
     return NULL;
-  codepage_from_unicode (&l, usz, &s, mcset_codepage_out);
+  codepage_from_unicode(&l, usz, &s, mcset_codepage_out);
   if (! s)
-    fatal ("unicode string not mappable to ASCII codepage 0x%lx.\n",
-	   (unsigned long) mcset_codepage_out);
+    fatal("unicode string not mappable to ASCII codepage 0x%lx.\n",
+          (unsigned long)mcset_codepage_out);
   return s;
 }
 
 static void
-write_dbg_define (FILE *fp, const unichar *sym_name, const unichar *typecast)
+write_dbg_define(FILE *fp, const unichar *sym_name,
+                 const unichar *typecast)
 {
   char *sym;
 
-  if (!sym_name || sym_name[0] == 0)
+  if (!sym_name || (sym_name[0] == 0))
     return;
-  sym = convert_unicode_to_ACP (sym_name);
-  fprintf (fp, "  {(");
+  sym = convert_unicode_to_ACP(sym_name);
+  fprintf(fp, "  {(");
   if (typecast)
-    unicode_print (fp, typecast, unichar_len (typecast));
+    unicode_print(fp, typecast, unichar_len(typecast));
   else
-    fprintf (fp, "DWORD");
-  fprintf (fp, ") %s, \"%s\" },\n", sym, sym);
+    fprintf(fp, "DWORD");
+  fprintf(fp, ") %s, \"%s\" },\n", sym, sym);
 }
 
 static void
-write_header_define (FILE *fp, const unichar *sym_name, rc_uint_type vid, const unichar *typecast, mc_node_lang *nl)
+write_header_define(FILE *fp, const unichar *sym_name, rc_uint_type vid,
+                    const unichar *typecast, mc_node_lang *nl)
 {
   char *sym;
   char *tdef = NULL;
 
-  if (!sym_name || sym_name[0] == 0)
+  if (!sym_name || (sym_name[0] == 0))
     {
       if (nl != NULL)
 	{
 	  if (mcset_out_values_are_decimal)
-	    fprintf (fp, "//\n// MessageId: 0x%lu\n//\n", (unsigned long) vid);
+            {
+              fprintf(fp, "//\n// MessageId: 0x%lu\n//\n",
+                      (unsigned long)vid);
+            }
 	  else
-	    fprintf (fp, "//\n// MessageId: 0x%lx\n//\n", (unsigned long) vid);
+            {
+              fprintf(fp, "//\n// MessageId: 0x%lx\n//\n",
+                      (unsigned long)vid);
+            }
 	}
       return;
     }
-  sym = convert_unicode_to_ACP (sym_name);
-  if (typecast && typecast[0] != 0)
-    tdef = convert_unicode_to_ACP (typecast);
-  fprintf (fp, "//\n// MessageId: %s\n//\n", sym);
+  sym = convert_unicode_to_ACP(sym_name);
+  if (typecast && (typecast[0] != 0))
+    tdef = convert_unicode_to_ACP(typecast);
+  fprintf(fp, "//\n// MessageId: %s\n//\n", sym);
   if (! mcset_out_values_are_decimal)
-    fprintf (fp, "#define %s %s%s%s 0x%lx\n\n", sym,
-      (tdef ? "(" : ""), (tdef ? tdef : ""), (tdef ? ")" : ""),
-    (unsigned long) vid);
+    {
+      fprintf(fp, "#define %s %s%s%s 0x%lx\n\n", sym,
+              (tdef ? "(" : ""), (tdef ? tdef : ""), (tdef ? ")" : ""),
+              (unsigned long)vid);
+    }
   else
-    fprintf (fp, "#define %s %s%s%s 0x%lu\n\n", sym,
-      (tdef ? "(" : ""), (tdef ? tdef : ""), (tdef ? ")" : ""),
-    (unsigned long) vid);
+    {
+      fprintf (fp, "#define %s %s%s%s 0x%lu\n\n", sym,
+               (tdef ? "(" : ""), (tdef ? tdef : ""), (tdef ? ")" : ""),
+               (unsigned long)vid);
+    }
 }
 
 static int
-sort_mc_node_lang (const void *l, const void *r)
+sort_mc_node_lang(const void *l, const void *r)
 {
   const mc_node_lang *l1 = *((const mc_node_lang **)l);
   const mc_node_lang *r1 = *((const mc_node_lang **)r);
@@ -420,7 +457,7 @@ sort_mc_node_lang (const void *l, const void *r)
 }
 
 static int
-sort_keyword_by_nval (const void *l, const void *r)
+sort_keyword_by_nval(const void *l, const void *r)
 {
   const mc_keyword *l1 = *((const mc_keyword **)l);
   const mc_keyword *r1 = *((const mc_keyword **)r);
@@ -435,12 +472,12 @@ sort_keyword_by_nval (const void *l, const void *r)
 	return -1;
       return 1;
     }
-  len1 = unichar_len (l1->usz);
-  len2 = unichar_len (r1->usz);
+  len1 = unichar_len(l1->usz);
+  len2 = unichar_len(r1->usz);
   if (len1 <= len2)
-    e = memcmp (l1->usz, r1->usz, sizeof (unichar) * len1);
+    e = memcmp(l1->usz, r1->usz, (sizeof(unichar) * len1));
   else
-    e = memcmp (l1->usz, r1->usz, sizeof (unichar) * len2);
+    e = memcmp(l1->usz, r1->usz, (sizeof(unichar) * len2));
   if (e)
     return e;
   if (len1 < len2)
@@ -451,14 +488,14 @@ sort_keyword_by_nval (const void *l, const void *r)
 }
 
 static void
-do_sorts (void)
+do_sorts(void)
 {
   mc_node *h;
   mc_node_lang *n;
   const mc_keyword *k;
   int i;
 
-  /* Sort message by their language and id ascending.  */
+  /* Sort message by their language and id ascending: */
   mc_nodes_lang_count = 0;
 
   h = mc_nodes;
@@ -477,7 +514,7 @@ do_sorts (void)
     {
       h = mc_nodes;
       i = 0;
-      mc_nodes_lang = xmalloc (sizeof (mc_node_lang *) * mc_nodes_lang_count);
+      mc_nodes_lang = (mc_node_lang **)xmalloc(sizeof(mc_node_lang *) * mc_nodes_lang_count);
 
       while (h != NULL)
 	{
@@ -489,39 +526,42 @@ do_sorts (void)
 	    }
 	  h = h->next;
 	}
-      qsort (mc_nodes_lang, (size_t) mc_nodes_lang_count, sizeof (mc_node_lang *), sort_mc_node_lang);
+      qsort(mc_nodes_lang, (size_t)mc_nodes_lang_count,
+            sizeof(mc_node_lang *), sort_mc_node_lang);
     }
-  /* Sort facility code definitions by there id ascending.  */
+  /* Sort facility code definitions by there id ascending: */
   i = 0;
-  while ((k = enum_facility (i)) != NULL)
+  while ((k = enum_facility(i)) != NULL)
     ++i;
   mc_facility_codes_count = i;
   if (i != 0)
     {
-      mc_facility_codes = xmalloc (sizeof (mc_keyword *) * i);
+      mc_facility_codes = (mc_keyword **)xmalloc(sizeof(mc_keyword *) * i);
       i = 0;
-      while ((k = enum_facility (i)) != NULL)
-	mc_facility_codes[i++] = (mc_keyword *) k;
-      qsort (mc_facility_codes, (size_t) mc_facility_codes_count, sizeof (mc_keyword *), sort_keyword_by_nval);
+      while ((k = enum_facility(i)) != NULL)
+	mc_facility_codes[i++] = (mc_keyword *)k;
+      qsort(mc_facility_codes, (size_t)mc_facility_codes_count,
+            sizeof(mc_keyword *), sort_keyword_by_nval);
     }
 
-  /* Sort severity code definitions by there id ascending.  */
+  /* Sort severity code definitions by there id ascending: */
   i = 0;
   while ((k = enum_severity (i)) != NULL)
     ++i;
   mc_severity_codes_count = i;
   if (i != 0)
     {
-      mc_severity_codes = xmalloc (sizeof (mc_keyword *) * i);
+      mc_severity_codes = (mc_keyword **)xmalloc(sizeof(mc_keyword *) * i);
       i = 0;
-      while ((k = enum_severity (i)) != NULL)
-	mc_severity_codes[i++] = (mc_keyword *) k;
-      qsort (mc_severity_codes, (size_t) mc_severity_codes_count, sizeof (mc_keyword *), sort_keyword_by_nval);
+      while ((k = enum_severity(i)) != NULL)
+	mc_severity_codes[i++] = (mc_keyword *)k;
+      qsort(mc_severity_codes, (size_t)mc_severity_codes_count,
+            sizeof(mc_keyword *), sort_keyword_by_nval);
     }
 }
 
 static int
-mc_get_block_count (mc_node_lang **nl, int elems)
+mc_get_block_count(mc_node_lang **nl, int elems)
 {
   rc_uint_type exid;
   int i, ret;
@@ -541,41 +581,41 @@ mc_get_block_count (mc_node_lang **nl, int elems)
 }
 
 static bfd *
-windmc_open_as_binary (const char *filename)
+windmc_open_as_binary(const char *filename)
 {
   bfd *abfd;
 
-  abfd = bfd_openw (filename, "binary");
+  abfd = bfd_openw(filename, "binary");
   if (! abfd)
-    fatal ("can't open `%s' for output", filename);
+    fatal("cannot open `%s' for output", filename);
 
   return abfd;
 }
 
 static void
-target_put_16 (void *p, rc_uint_type value)
+target_put_16(void *p, rc_uint_type value)
 {
-  assert (!! p);
+  assert(!! p);
 
   if (target_is_bigendian)
-    bfd_putb16 (value, p);
+    bfd_putb16(value, p);
   else
-    bfd_putl16 (value, p);
+    bfd_putl16(value, p);
 }
 
 static void
-target_put_32 (void *p, rc_uint_type value)
+target_put_32(void *p, rc_uint_type value)
 {
-  assert (!! p);
+  assert(!! p);
 
   if (target_is_bigendian)
-    bfd_putb32 (value, p);
+    bfd_putb32(value, p);
   else
-    bfd_putl32 (value, p);
+    bfd_putl32(value, p);
 }
 
 static struct bin_messagetable_item *
-mc_generate_bin_item (mc_node_lang *n, rc_uint_type *res_len)
+mc_generate_bin_item(mc_node_lang *n, rc_uint_type *res_len)
 {
   struct bin_messagetable_item *ret = NULL;
   rc_uint_type len;
@@ -587,21 +627,21 @@ mc_generate_bin_item (mc_node_lang *n, rc_uint_type *res_len)
       rc_uint_type txt_len;
 
       txt_len = unichar_len (n->message);
-      if (mcset_automatic_null_termination && txt_len != 0)
+      if (mcset_automatic_null_termination && (txt_len != 0))
 	{
-	  while (txt_len > 0 && ht[txt_len - 1] > 0 && ht[txt_len - 1] < 0x20)
+	  while ((txt_len > 0) && (ht[txt_len - 1] > 0) && (ht[txt_len - 1] < 0x20))
 	    ht[--txt_len] = 0;
 	}
-      txt_len *= sizeof (unichar);
-      len = BIN_MESSAGETABLE_ITEM_SIZE + txt_len + sizeof (unichar);
-      ret = res_alloc ((len + 3) & ~3);
-      memset (ret, 0, (len + 3) & ~3);
-      target_put_16 (ret->length, (len + 3) & ~3);
-      target_put_16 (ret->flags, MESSAGE_RESOURCE_UNICODE);
+      txt_len *= sizeof(unichar);
+      len = (BIN_MESSAGETABLE_ITEM_SIZE + txt_len + sizeof(unichar));
+      ret = (struct bin_messagetable_item *)res_alloc((len + 3) & ~3);
+      memset(ret, 0, (len + 3) & ~3);
+      target_put_16(ret->length, (len + 3) & ~3);
+      target_put_16(ret->flags, MESSAGE_RESOURCE_UNICODE);
       txt_len = 0;
       while (*ht != 0)
 	{
-	  target_put_16 (ret->data + txt_len, *ht++);
+	  target_put_16(ret->data + txt_len, *ht++);
 	  txt_len += 2;
 	}
     }
@@ -610,28 +650,30 @@ mc_generate_bin_item (mc_node_lang *n, rc_uint_type *res_len)
       rc_uint_type txt_len, l;
       char *cvt_txt;
 
-      codepage_from_unicode( &l, n->message, &cvt_txt, n->lang->lang_info.wincp);
+      codepage_from_unicode(&l, n->message, &cvt_txt,
+                            n->lang->lang_info.wincp);
       if (! cvt_txt)
-	fatal ("Failed to convert message to language codepage.\n");
-      txt_len = strlen (cvt_txt);
-      if (mcset_automatic_null_termination && txt_len > 0)
+	fatal("Failed to convert message to language codepage.\n");
+      txt_len = strlen(cvt_txt);
+      if (mcset_automatic_null_termination && (txt_len > 0))
 	{
-	  while (txt_len > 0 && cvt_txt[txt_len - 1] > 0 && cvt_txt[txt_len - 1] < 0x20)
+	  while ((txt_len > 0) && (cvt_txt[txt_len - 1] > 0) && (cvt_txt[txt_len - 1] < 0x20))
 	    cvt_txt[--txt_len] = 0;
 	}
-      len = BIN_MESSAGETABLE_ITEM_SIZE + txt_len + 1;
-      ret = res_alloc ((len + 3) & ~3);
-      memset (ret, 0, (len + 3) & ~3);
-      target_put_16 (ret->length, (len + 3) & ~3);
-      target_put_16 (ret->flags, 0);
-      strcpy ((char *) ret->data, cvt_txt);
+      len = (BIN_MESSAGETABLE_ITEM_SIZE + txt_len + 1);
+      ret = (struct bin_messagetable_item *)res_alloc((len + 3) & ~3);
+      memset(ret, 0, (len + 3) & ~3);
+      target_put_16(ret->length, (len + 3) & ~3);
+      target_put_16(ret->flags, 0);
+      strcpy((char *)ret->data, cvt_txt);
     }
-  *res_len = (len + 3) & ~3;
+  *res_len = ((len + 3) & ~3);
   return ret;
 }
 
 static void
-mc_write_blocks (struct bin_messagetable *mtbl, mc_node_lang **nl, mc_msg_item *ml, int elems)
+mc_write_blocks(struct bin_messagetable *mtbl, mc_node_lang **nl,
+                mc_msg_item *ml, int elems)
 {
   int i, idx = 0;
   rc_uint_type exid;
@@ -641,13 +683,13 @@ mc_write_blocks (struct bin_messagetable *mtbl, mc_node_lang **nl, mc_msg_item *
   i = 0;
   while (i < elems)
     {
-      target_put_32 (mtbl->items[idx].lowid, nl[i]->vid);
-      target_put_32 (mtbl->items[idx].highid, nl[i]->vid);
-      target_put_32 (mtbl->items[idx].offset, ml[i].res_off);
+      target_put_32(mtbl->items[idx].lowid, nl[i]->vid);
+      target_put_32(mtbl->items[idx].highid, nl[i]->vid);
+      target_put_32(mtbl->items[idx].offset, ml[i].res_off);
       exid = nl[i++]->vid;
-      while (i < elems && nl[i]->vid == exid + 1)
+      while ((i < elems) && (nl[i]->vid == (exid + 1)))
 	{
-	  target_put_32 (mtbl->items[idx].highid, nl[i]->vid);
+	  target_put_32(mtbl->items[idx].highid, nl[i]->vid);
 	  exid = nl[i++]->vid;
 	}
       ++idx;
@@ -655,14 +697,15 @@ mc_write_blocks (struct bin_messagetable *mtbl, mc_node_lang **nl, mc_msg_item *
 }
 
 static void
-set_windmc_bfd_content (const void *data, rc_uint_type off, rc_uint_type length)
+set_windmc_bfd_content(const void *data, rc_uint_type off,
+                       rc_uint_type length)
 {
-  if (! bfd_set_section_contents (mc_bfd.abfd, mc_bfd.sec, data, off, length))
-    bfd_fatal ("bfd_set_section_contents");
+  if (! bfd_set_section_contents(mc_bfd.abfd, mc_bfd.sec, data, off, length))
+    bfd_fatal("bfd_set_section_contents");
 }
 
 static void
-windmc_write_bin (const char *filename, mc_node_lang **nl, int elems)
+windmc_write_bin(const char *filename, mc_node_lang **nl, int elems)
 {
   unsigned long sec_length = 1;
   int block_count, i;
@@ -672,50 +715,50 @@ windmc_write_bin (const char *filename, mc_node_lang **nl, int elems)
 
   if (elems <= 0)
     return;
-  mc_bfd.abfd = windmc_open_as_binary (filename);
-  mc_bfd.sec = bfd_make_section_with_flags (mc_bfd.abfd, ".data",
-					    (SEC_HAS_CONTENTS | SEC_ALLOC
-					     | SEC_LOAD | SEC_DATA));
+  mc_bfd.abfd = windmc_open_as_binary(filename);
+  mc_bfd.sec = bfd_make_section_with_flags(mc_bfd.abfd, ".data",
+                                           (SEC_HAS_CONTENTS | SEC_ALLOC
+                                            | SEC_LOAD | SEC_DATA));
   if (mc_bfd.sec == NULL)
-    bfd_fatal ("bfd_make_section");
-  /* Requiring this is probably a bug in BFD.  */
+    bfd_fatal("bfd_make_section");
+  /* Requiring this is probably a bug in BFD: */
   mc_bfd.sec->output_section = mc_bfd.sec;
 
-  block_count = mc_get_block_count (nl, elems);
+  block_count = mc_get_block_count(nl, elems);
 
-  dta_off = (rc_uint_type) ((BIN_MESSAGETABLE_BLOCK_SIZE * block_count) + BIN_MESSAGETABLE_SIZE - 4);
-  dta_start = dta_off = (dta_off + 3) & ~3;
-  mi = xmalloc (sizeof (mc_msg_item) * elems);
-  mtbl = xmalloc (dta_start);
+  dta_off = (rc_uint_type)((BIN_MESSAGETABLE_BLOCK_SIZE * block_count) + BIN_MESSAGETABLE_SIZE - 4);
+  dta_start = dta_off = ((dta_off + 3) & ~3);
+  mi = (mc_msg_item *)xmalloc(sizeof(mc_msg_item) * elems);
+  mtbl = (struct bin_messagetable *)xmalloc(dta_start);
 
-  /* Clear header region.  */
-  memset (mtbl, 0, dta_start);
+  /* Clear header region: */
+  memset(mtbl, 0, dta_start);
   target_put_32 (mtbl->cblocks, block_count);
-  /* Prepare items section for output.  */
+  /* Prepare items section for output: */
   for (i = 0; i < elems; i++)
     {
       mi[i].res_off = dta_off;
-      mi[i].res = mc_generate_bin_item (nl[i], &mi[i].res_len);
+      mi[i].res = mc_generate_bin_item(nl[i], &mi[i].res_len);
       dta_off += mi[i].res_len;
     }
-  sec_length = (dta_off + 3) & ~3;
-  if (! bfd_set_section_size (mc_bfd.abfd, mc_bfd.sec, sec_length))
-    bfd_fatal ("bfd_set_section_size");
-  /* Make sure we write the complete block.  */
-  set_windmc_bfd_content ("\0", sec_length - 1, 1);
+  sec_length = ((dta_off + 3) & ~3);
+  if (! bfd_set_section_size(mc_bfd.abfd, mc_bfd.sec, sec_length))
+    bfd_fatal("bfd_set_section_size");
+  /* Make sure we write the complete block: */
+  set_windmc_bfd_content("\0", sec_length - 1, 1);
 
-  /* Write block information.  */
-  mc_write_blocks (mtbl, nl, mi, elems);
+  /* Write block information: */
+  mc_write_blocks(mtbl, nl, mi, elems);
 
   set_windmc_bfd_content (mtbl, 0, dta_start);
 
-  /* Write items.  */
+  /* Write items: */
   for (i = 0; i < elems; i++)
-    set_windmc_bfd_content (mi[i].res, mi[i].res_off, mi[i].res_len);
+    set_windmc_bfd_content(mi[i].res, mi[i].res_off, mi[i].res_len);
 
-  free (mtbl);
-  free (mi);
-  bfd_close (mc_bfd.abfd);
+  free(mtbl);
+  free(mi);
+  bfd_close(mc_bfd.abfd);
   mc_bfd.abfd = NULL;
   mc_bfd.sec = NULL;
 }
@@ -746,74 +789,81 @@ write_bin (void)
 	c++;
       nd = convert_unicode_to_ACP (n->lang->sval);
 
-      /* Prepare filename for binary output.  */
-      filename = xmalloc (strlen (nd) + 4 + 1 + strlen (mcset_mc_basename) + 1 + strlen (mcset_rc_dir));
-      strcpy (filename, mcset_rc_dir);
+      /* Prepare filename for binary output: */
+      filename = (char *)xmalloc(strlen(nd) + 4 + 1
+                                 + strlen(mcset_mc_basename) + 1
+                                 + strlen(mcset_rc_dir));
+      strcpy(filename, mcset_rc_dir);
       if (mcset_prefix_bin)
-	sprintf (filename + strlen (filename), "%s_", mcset_mc_basename);
-      strcat (filename, nd);
-      strcat (filename, ".bin");
+	sprintf(filename + strlen(filename), "%s_", mcset_mc_basename);
+      strcat(filename, nd);
+      strcat(filename, ".bin");
 
-      /* Write message file.  */
-      windmc_write_bin (filename, &mc_nodes_lang[i], (c - i));
+      /* Write message file: */
+      windmc_write_bin(filename, &mc_nodes_lang[i], (c - i));
 
-      free (filename);
+      free(filename);
       i = c;
     }
 }
 
 static void
-write_rc (FILE *fp)
+write_rc(FILE *fp)
 {
   mc_node_lang *n;
   int i, l;
 
-  fprintf (fp,
-	   "/* Do not edit this file manually.\n"
-	   "   This file is autogenerated by windmc.  */\n\n");
+  fprintf(fp,
+          "/* Do not edit this file manually.\n"
+          "   This file is autogenerated by windmc.  */\n\n");
   if (! mc_nodes_lang_count)
     return;
   n = NULL;
   i = 0;
   for (l = 0; l < mc_nodes_lang_count; l++)
     {
-      if (n && n->lang == mc_nodes_lang[l]->lang)
+      if (n && (n->lang == mc_nodes_lang[l]->lang))
 	continue;
       ++i;
       n = mc_nodes_lang[l];
-      fprintf (fp, "\n// Country: %s\n// Language: %s\n#pragma code_page(%u)\n",
-	       n->lang->lang_info.country, n->lang->lang_info.name,
-	       (unsigned) n->lang->lang_info.wincp);
-      fprintf (fp, "LANGUAGE 0x%lx, 0x%lx\n",
-	       (unsigned long) (n->lang->nval & 0x3ff),
-	       (unsigned long) ((n->lang->nval & 0xffff) >> 10));
-      fprintf (fp, "1 MESSAGETABLE \"");
+      fprintf(fp, "\n// Country: %s\n// Language: %s\n#pragma code_page(%u)\n",
+	      n->lang->lang_info.country, n->lang->lang_info.name,
+	      (unsigned)n->lang->lang_info.wincp);
+      fprintf(fp, "LANGUAGE 0x%lx, 0x%lx\n",
+	      (unsigned long)(n->lang->nval & 0x3ff),
+	      (unsigned long)((n->lang->nval & 0xffff) >> 10));
+      fprintf(fp, "1 MESSAGETABLE \"");
       if (mcset_prefix_bin)
-	fprintf (fp, "%s_", mcset_mc_basename);
-      unicode_print (fp, n->lang->sval, unichar_len (n->lang->sval));
-      fprintf (fp, ".bin\"\n");
+	fprintf(fp, "%s_", mcset_mc_basename);
+      unicode_print(fp, n->lang->sval, unichar_len(n->lang->sval));
+      fprintf(fp, ".bin\"\n");
     }
 }
 
 static void
-write_dbg (FILE *fp)
+write_dbg(FILE *fp)
 {
   mc_node *h;
 
-  fprintf (fp,
+  fprintf(fp,
     "/* Do not edit this file manually.\n"
     "   This file is autogenerated by windmc.\n\n"
     "   This file maps each message ID value in to a text string that contains\n"
     "   the symbolic name used for it.  */\n\n");
 
-  fprintf (fp,
+  fprintf(fp,
     "struct %sSymbolicName\n"
     "{\n  ", mcset_mc_basename);
   if (mcset_msg_id_typedef)
-    unicode_print (fp, mcset_msg_id_typedef, unichar_len (mcset_msg_id_typedef));
+    {
+      unicode_print(fp, mcset_msg_id_typedef,
+                    unichar_len(mcset_msg_id_typedef));
+    }
   else
-    fprintf (fp, "DWORD");
-  fprintf (fp,
+    {
+      fprintf(fp, "DWORD");
+    }
+  fprintf(fp,
     " MessageId;\n"
     "  char *SymbolicName;\n"
     "} %sSymbolicNames[] =\n"
@@ -822,28 +872,33 @@ write_dbg (FILE *fp)
   while (h != NULL)
     {
       if (h->symbol)
-	write_dbg_define (fp, h->symbol, mcset_msg_id_typedef);
+	write_dbg_define(fp, h->symbol, mcset_msg_id_typedef);
       h = h->next;
     }
-  fprintf (fp, "  { (");
+  fprintf(fp, "  { (");
   if (mcset_msg_id_typedef)
-    unicode_print (fp, mcset_msg_id_typedef, unichar_len (mcset_msg_id_typedef));
+    {
+      unicode_print(fp, mcset_msg_id_typedef,
+                    unichar_len(mcset_msg_id_typedef));
+    }
   else
-    fprintf (fp, "DWORD");
-  fprintf (fp,
+    {
+      fprintf(fp, "DWORD");
+    }
+  fprintf(fp,
     ") 0xffffffff, NULL }\n"
     "};\n");
 }
 
 static void
-write_header (FILE *fp)
+write_header(FILE *fp)
 {
   char *s;
   int i;
   const mc_keyword *key;
   mc_node *h;
 
-  fprintf (fp,
+  fprintf(fp,
     "/* Do not edit this file manually.\n"
     "   This file is autogenerated by windmc.  */\n\n"
     "//\n//  The values are 32 bit layed out as follows:\n//\n"
@@ -859,114 +914,131 @@ write_header (FILE *fp)
 
   h = mc_nodes;
 
-  fprintf (fp, "//      Sev  - is the severity code\n//\n");
+  fprintf(fp, "//      Sev  - is the severity code\n//\n");
   if (mc_severity_codes_count != 0)
     {
       for (i = 0; i < mc_severity_codes_count; i++)
 	{
 	  key = mc_severity_codes[i];
-	  fprintf (fp, "//           %s - %02lx\n", convert_unicode_to_ACP (key->usz),
-		   (unsigned long) key->nval);
-	  if (key->sval && key->sval[0] != 0)
+	  fprintf(fp, "//           %s - %02lx\n",
+                  convert_unicode_to_ACP(key->usz),
+                  (unsigned long)key->nval);
+	  if (key->sval && (key->sval[0] != 0))
 	    {
 	      if (! mcset_out_values_are_decimal)
-		fprintf (fp, "#define %s 0x%lx\n", convert_unicode_to_ACP (key->sval),
-			 (unsigned long) key->nval);
+                {
+		fprintf(fp, "#define %s 0x%lx\n",
+                        convert_unicode_to_ACP(key->sval),
+                        (unsigned long)key->nval);
+                }
 	      else
-		fprintf (fp, "#define %s 0x%lu\n", convert_unicode_to_ACP (key->sval),
-			 (unsigned long) key->nval);
+                {
+		fprintf(fp, "#define %s 0x%lu\n",
+                        convert_unicode_to_ACP(key->sval),
+                        (unsigned long)key->nval);
+                }
 	    }
 	}
-      fprintf (fp, "//\n");
+      fprintf(fp, "//\n");
     }
-  fprintf (fp, "//      Facility - is the facility code\n//\n");
+  fprintf(fp, "//      Facility - is the facility code\n//\n");
   if (mc_facility_codes_count != 0)
     {
       for (i = 0; i < mc_facility_codes_count; i++)
 	{
 	  key = mc_facility_codes[i];
-	  fprintf (fp, "//           %s - %04lx\n", convert_unicode_to_ACP (key->usz),
-		   (unsigned long) key->nval);
+	  fprintf(fp, "//           %s - %04lx\n",
+                  convert_unicode_to_ACP(key->usz),
+                  (unsigned long)key->nval);
 	  if (key->sval && key->sval[0] != 0)
 	    {
 	      if (! mcset_out_values_are_decimal)
-		fprintf (fp, "#define %s 0x%lx\n", convert_unicode_to_ACP (key->sval),
-			 (unsigned long) key->nval);
+                {
+                  fprintf(fp, "#define %s 0x%lx\n",
+                          convert_unicode_to_ACP(key->sval),
+                          (unsigned long)key->nval);
+                }
 	      else
-		fprintf (fp, "#define %s 0x%lu\n", convert_unicode_to_ACP (key->sval),
-			 (unsigned long) key->nval);
+                {
+                  fprintf(fp, "#define %s 0x%lu\n",
+                          convert_unicode_to_ACP(key->sval),
+                          (unsigned long)key->nval);
+                }
 	    }
 	}
-      fprintf (fp, "//\n");
+      fprintf(fp, "//\n");
     }
-  fprintf (fp, "\n");
+  fprintf(fp, "\n");
   while (h != NULL)
     {
       if (h->user_text)
 	{
-	  s = convert_unicode_to_ACP (h->user_text);
+	  s = convert_unicode_to_ACP(h->user_text);
 	  if (s)
-	    fprintf (fp, "%s", s);
+	    fprintf(fp, "%s", s);
 	}
       if (h->symbol)
-	write_header_define (fp, h->symbol, h->vid, mcset_msg_id_typedef, h->sub);
+        {
+          write_header_define(fp, h->symbol, h->vid, mcset_msg_id_typedef,
+                              h->sub);
+        }
       h = h->next;
     }
 }
 
 static const char *
-mc_unify_path (const char *path)
+mc_unify_path(const char *path)
 {
   char *end;
   char *hsz;
 
-  if (! path || *path == 0)
+  if (! path || (*path == 0))
     return "./";
-  hsz = xmalloc (strlen (path) + 2);
-  strcpy (hsz, path);
-  end = hsz + strlen (hsz);
-  if (hsz[-1] != '/' && hsz[-1] != '\\')
-    strcpy (end, "/");
-  while ((end = strchr (hsz, '\\')) != NULL)
+  hsz = (char *)xmalloc(strlen(path) + 2);
+  strcpy(hsz, path);
+  end = (hsz + strlen(hsz));
+  if ((hsz[-1] != '/') && (hsz[-1] != '\\'))
+    strcpy(end, "/");
+  while ((end = strchr(hsz, '\\')) != NULL)
     *end = '/';
   return hsz;
 }
 
-int main (int, char **);
+int main(int, char **);
 
 int
-main (int argc, char **argv)
+main(int argc, char **argv)
 {
   FILE *h_fp;
   int c;
   char *target, *input_filename;
   int verbose;
 
-#if defined (HAVE_SETLOCALE) && defined (HAVE_LC_MESSAGES)
-  setlocale (LC_MESSAGES, "");
-#endif
-#if defined (HAVE_SETLOCALE)
-  setlocale (LC_CTYPE, "");
-#endif
-  bindtextdomain (PACKAGE, LOCALEDIR);
-  textdomain (PACKAGE);
+#if defined(HAVE_SETLOCALE) && defined(HAVE_LC_MESSAGES)
+  setlocale(LC_MESSAGES, "");
+#endif /* HAVE_SETLOCALE && HAVE_LC_MESSAGES */
+#if defined(HAVE_SETLOCALE)
+  setlocale(LC_CTYPE, "");
+#endif /* HAVE_SETLOCALE */
+  bindtextdomain(PACKAGE, LOCALEDIR);
+  textdomain(PACKAGE);
 
   program_name = argv[0];
-  xmalloc_set_program_name (program_name);
+  xmalloc_set_program_name(program_name);
 
-  expandargv (&argc, &argv);
+  expandargv(&argc, &argv);
 
-  bfd_init ();
-  set_default_bfd_target ();
+  bfd_init();
+  set_default_bfd_target();
 
   target = NULL;
   verbose = 0;
   input_filename = NULL;
 
-  res_init ();
+  res_init();
 
-  while ((c = getopt_long (argc, argv, "C:F:O:h:e:m:r:x:aAbcdHunoUvV", long_options,
-			   (int *) 0)) != EOF)
+  while ((c = getopt_long(argc, argv, "C:F:O:h:e:m:r:x:aAbcdHunoUvV",
+                          long_options, (int *)0)) != EOF)
     {
       switch (c)
 	{
@@ -976,27 +1048,27 @@ main (int argc, char **argv)
 	case 'e':
 	  {
 	    mcset_header_ext = optarg;
-	    if (mcset_header_ext[0] != '.' && mcset_header_ext[0] != 0)
+	    if ((mcset_header_ext[0] != '.') && (mcset_header_ext[0] != 0))
 	      {
-		char *hsz = xmalloc (strlen (mcset_header_ext) + 2);
+		char *hsz = (char *)xmalloc(strlen(mcset_header_ext) + 2);
 
-		sprintf (hsz, ".%s", mcset_header_ext);
+		sprintf(hsz, ".%s", mcset_header_ext);
 		mcset_header_ext = hsz;
 	      }
 	  }
 	  break;
 	case 'h':
-	  mcset_header_dir = mc_unify_path (optarg);
+	  mcset_header_dir = mc_unify_path(optarg);
 	  break;
 	case 'r':
-	  mcset_rc_dir = mc_unify_path (optarg);
+	  mcset_rc_dir = mc_unify_path(optarg);
 	  break;
 	case 'a':
 	  mcset_text_in_is_unicode = 0;
 	  break;
 	case 'x':
 	  if (*optarg != 0)
-	    mcset_dbg_dir = mc_unify_path (optarg);
+	    mcset_dbg_dir = mc_unify_path(optarg);
 	  break;
 	case 'A':
 	  mcset_bin_out_is_unicode = 0;
@@ -1018,7 +1090,7 @@ main (int argc, char **argv)
 	  break;
 	case 'o':
 	  mcset_use_hresult = 1;
-	  fatal ("option -o is not implemented until yet.\n");
+	  fatal("option -o is not implemented until yet.\n");
 	  break;
 	case 'F':
 	  target = optarg;
@@ -1027,80 +1099,82 @@ main (int argc, char **argv)
 	  verbose ++;
 	  break;
 	case 'm':
-	  mcset_max_message_length = strtol (optarg, (char **) NULL, 10);
+	  mcset_max_message_length = strtol(optarg, (char **)NULL, 10);
 	  break;
 	case 'C':
-	  mcset_codepage_in = strtol (optarg, (char **) NULL, 10);
+	  mcset_codepage_in = strtol(optarg, (char **)NULL, 10);
 	  break;
 	case 'O':
-	  mcset_codepage_out = strtol (optarg, (char **) NULL, 10);
+	  mcset_codepage_out = strtol(optarg, (char **)NULL, 10);
 	  break;
 	case '?':
 	case 'H':
-	  usage (stdout, 0);
+	  usage(stdout, 0);
 	  break;
 	case 'V':
-	  print_version ("windmc");
+	  print_version("windmc");
 	  break;
 
 	default:
-	  usage (stderr, 1);
+	  usage(stderr, 1);
 	  break;
 	}
     }
-  if (input_filename == NULL && optind < argc)
+  if ((input_filename == NULL) && (optind < argc))
     {
       input_filename = argv[optind];
       ++optind;
     }
 
-  set_endianness (NULL, target);
+  set_endianness(NULL, target);
 
   if (input_filename == NULL)
     {
-      fprintf (stderr, "Error: No input file was specified.\n");
-      usage (stderr, 1);
+      fprintf(stderr, "Error: No input file was specified.\n");
+      usage(stderr, 1);
     }
-  mc_set_inputfile (input_filename);
+  mc_set_inputfile(input_filename);
 
-  if (!probe_codepage (&mcset_codepage_in, &mcset_text_in_is_unicode, "codepage_in", 0))
-    usage (stderr, 1);
+  if (!probe_codepage(&mcset_codepage_in, &mcset_text_in_is_unicode, "codepage_in", 0))
+    usage(stderr, 1);
   if (mcset_codepage_out == 0)
     mcset_codepage_out = 1252;
-  if (! unicode_is_valid_codepage (mcset_codepage_out))
-    fatal ("Code page 0x%x is unknown.", (unsigned int) mcset_codepage_out);
+  if (! unicode_is_valid_codepage(mcset_codepage_out))
+    fatal("Code page 0x%x is unknown.", (unsigned int)mcset_codepage_out);
+#ifdef CP_UTF16
   if (mcset_codepage_out == CP_UTF16)
-    fatal ("UTF16 is no valid text output code page.");
+    fatal("UTF16 is no valid text output code page.");
+#endif /* CP_UTF16 */
   if (verbose)
     {
-      fprintf (stderr, "// Default target is %s and it is %s endian.\n",
-	def_target_arch, (target_is_bigendian ? "big" : "little"));
-      fprintf (stderr, "// Input codepage: 0x%x\n", (unsigned int) mcset_codepage_in);
-      fprintf (stderr, "// Output codepage: 0x%x\n", (unsigned int) mcset_codepage_out);
+      fprintf(stderr, "// Default target is %s and it is %s endian.\n",
+              def_target_arch, (target_is_bigendian ? "big" : "little"));
+      fprintf(stderr, "// Input codepage: 0x%x\n", (unsigned int)mcset_codepage_in);
+      fprintf(stderr, "// Output codepage: 0x%x\n", (unsigned int)mcset_codepage_out);
     }
 
   if (argc != optind)
-    usage (stderr, 1);
+    usage(stderr, 1);
 
-  /* Initialize mcset_mc_basename.  */
+  /* Initialize mcset_mc_basename: */
   {
     const char *bn, *bn2;
     char *hsz;
 
-    bn = strrchr (input_filename, '/');
-    bn2 = strrchr (input_filename, '\\');
+    bn = strrchr(input_filename, '/');
+    bn2 = strrchr(input_filename, '\\');
     if (! bn)
       bn = bn2;
-    if (bn && bn2 && bn < bn2)
+    if (bn && bn2 && (bn < bn2))
       bn = bn2;
     if (! bn)
       bn = input_filename;
     else
       bn++;
-    mcset_mc_basename = hsz = xstrdup (bn);
+    mcset_mc_basename = hsz = xstrdup(bn);
 
-    /* Cut of right-hand extension.  */
-    if ((hsz = strrchr (hsz, '.')) != NULL)
+    /* Cut of right-hand extension: */
+    if ((hsz = strrchr(hsz, '.')) != NULL)
       *hsz = 0;
   }
 
@@ -1110,63 +1184,65 @@ main (int argc, char **argv)
     rc_uint_type ul;
     char *buff;
     bfd_size_type flen;
-    FILE *fp = fopen (input_filename, "rb");
+    FILE *fp = fopen(input_filename, "rb");
 
     if (!fp)
-      fatal (_("unable to open file `%s' for input.\n"), input_filename);
+      fatal(_("unable to open file `%s' for input.\n"), input_filename);
 
-    fseek (fp, 0, SEEK_END);
-    flen = ftell (fp);
-    fseek (fp, 0, SEEK_SET);
-    buff = malloc (flen + 3);
-    memset (buff, 0, flen + 3);
-    if (fread (buff, 1, flen, fp) < flen)
-      fatal (_("unable to read contents of %s"), input_filename);
-    fclose (fp);
+    fseek(fp, 0, SEEK_END);
+    flen = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+    buff = (char *)malloc(flen + 3);
+    memset(buff, 0, (flen + 3));
+    if (fread(buff, 1, flen, fp) < flen)
+      fatal(_("unable to read contents of %s"), input_filename);
+    fclose(fp);
     if (mcset_text_in_is_unicode != 1)
       {
-	unicode_from_codepage (&ul, &u, buff, mcset_codepage_in);
+	unicode_from_codepage(&ul, &u, buff, mcset_codepage_in);
 	if (! u)
-	  fatal ("Failed to convert input to UFT16\n");
-	mc_set_content (u);
+	  fatal("Failed to convert input to UFT16\n");
+	mc_set_content(u);
       }
     else
       {
 	if ((flen & 1) != 0)
-	  fatal (_("input file does not seems to be UFT16.\n"));
-	mc_set_content ((unichar *) buff);
+	  fatal(_("input file does not seems to be UFT16.\n"));
+	mc_set_content((unichar *)buff);
       }
-    free (buff);
+    free(buff);
   }
 
-  while (yyparse ())
+  while (yyparse())
     ;
 
-  do_sorts ();
+  do_sorts();
 
-  h_fp = mc_create_path_text_file (mcset_header_dir, mcset_header_ext);
-  write_header (h_fp);
-  fclose (h_fp);
+  h_fp = mc_create_path_text_file(mcset_header_dir, mcset_header_ext);
+  write_header(h_fp);
+  fclose(h_fp);
 
-  h_fp = mc_create_path_text_file (mcset_rc_dir, ".rc");
-  write_rc (h_fp);
-  fclose (h_fp);
+  h_fp = mc_create_path_text_file(mcset_rc_dir, ".rc");
+  write_rc(h_fp);
+  fclose(h_fp);
 
   if (mcset_dbg_dir != NULL)
     {
-      h_fp = mc_create_path_text_file (mcset_dbg_dir, ".dbg");
-      write_dbg (h_fp);
-      fclose (h_fp);
+      h_fp = mc_create_path_text_file(mcset_dbg_dir, ".dbg");
+      write_dbg(h_fp);
+      fclose(h_fp);
     }
-  write_bin ();
+  write_bin();
 
   if (mc_nodes_lang)
-    free (mc_nodes_lang);
+    free(mc_nodes_lang);
   if (mc_severity_codes)
-    free (mc_severity_codes);
+    free(mc_severity_codes);
   if (mc_facility_codes)
-    free (mc_facility_codes);
+    free(mc_facility_codes);
 
   xexit (0);
   return 0;
 }
+
+/* EOF */

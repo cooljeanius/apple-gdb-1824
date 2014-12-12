@@ -65,6 +65,10 @@
 /* Line 371 of yacc.c  */
 #line 20 "sysinfo.y"
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -75,14 +79,14 @@ static char * repeat;
 static char *oldrepeat;
 static char *name;
 static int rdepth;
-static char *names[] = {" ","[n]","[n][m]"};
-static char *pnames[]= {"","*","**"};
+static char *names[] = { " ", "[n]", "[n][m]" };
+static char *pnames[] = { "", "*", "**" };
 
-static int yyerror (char *s);
-extern int yylex (void);
+static int yyerror(char *s);
+extern int yylex(void);
 
 /* Line 371 of yacc.c  */
-#line 86 "sysinfo.c"
+#line 90 "sysinfo.c"
 
 # ifndef YY_NULL
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -106,7 +110,7 @@ extern int yylex (void);
 # define YY_YY_SYSINFO_H_INCLUDED
 /* Enabling traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -126,28 +130,20 @@ extern int yydebug;
      UNIT = 263
    };
 #endif
-/* Tokens.  */
-#define COND 258
-#define REPEAT 259
-#define TYPE 260
-#define NAME 261
-#define NUMBER 262
-#define UNIT 263
-
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
 {
 /* Line 387 of yacc.c  */
-#line 39 "sysinfo.y"
+#line 43 "sysinfo.y"
 
  int i;
  char *s;
 
 
 /* Line 387 of yacc.c  */
-#line 151 "sysinfo.c"
+#line 147 "sysinfo.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -175,7 +171,7 @@ int yyparse ();
 /* Copy the second part of user declarations.  */
 
 /* Line 390 of yacc.c  */
-#line 179 "sysinfo.c"
+#line 175 "sysinfo.c"
 
 #ifdef short
 # undef short
@@ -481,13 +477,13 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    53,    53,    53,    91,    92,    97,    96,   174,   175,
-     176,   177,   181,   180,   228,   227,   255,   254,   362,   363,
-     367,   372,   378,   379,   382,   383,   385,   387
+       0,    57,    57,    57,    95,    96,   101,   100,   174,   175,
+     176,   177,   181,   180,   227,   226,   254,   253,   340,   341,
+     345,   350,   356,   357,   360,   361,   363,   365
 };
 #endif
 
-#if YYDEBUG || YYERROR_VERBOSE || 0
+#if YYDEBUG || YYERROR_VERBOSE || 1
 /* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
@@ -1394,16 +1390,16 @@ yyreduce:
     {
         case 2:
 /* Line 1787 of yacc.c  */
-#line 53 "sysinfo.y"
+#line 57 "sysinfo.y"
     {
   switch (writecode)
     {
     case 'i':
       printf("#ifdef SYSROFF_SWAP_IN\n");
-      break; 
+      break;
     case 'p':
       printf("#ifdef SYSROFF_p\n");
-      break; 
+      break;
     case 'd':
       break;
     case 'g':
@@ -1411,9 +1407,9 @@ yyreduce:
       break;
     case 'c':
       printf("#ifdef SYSROFF_PRINT\n");
-      printf("#include <stdio.h>\n");
-      printf("#include <stdlib.h>\n");
-      printf("#include <ansidecl.h>\n");
+      printf("# include <stdio.h>\n");
+      printf("# include <stdlib.h>\n");
+      printf("# include <ansidecl.h>\n");
       break;
     }
  }
@@ -1421,7 +1417,7 @@ yyreduce:
 
   case 3:
 /* Line 1787 of yacc.c  */
-#line 75 "sysinfo.y"
+#line 79 "sysinfo.y"
     {
   switch (writecode) {
   case 'i':
@@ -1429,7 +1425,7 @@ yyreduce:
   case 'g':
   case 'c':
     printf("#endif\n");
-    break; 
+    break;
   case 'd':
     break;
   }
@@ -1438,10 +1434,10 @@ yyreduce:
 
   case 6:
 /* Line 1787 of yacc.c  */
-#line 97 "sysinfo.y"
+#line 101 "sysinfo.y"
     {
 	it = (yyvsp[(2) - (3)].s); code = (yyvsp[(3) - (3)].i);
-	switch (writecode) 
+	switch (writecode)
 	  {
 	  case 'd':
 	    printf("\n\n\n#define IT_%s_CODE 0x%x\n", it,code);
@@ -1455,20 +1451,18 @@ yyreduce:
 	    printf("struct IT_%s { \n", it);
 	    break;
 	  case 'i':
-	    printf("void sysroff_swap_%s_in(ptr)\n",(yyvsp[(2) - (3)].s));
-	    printf("struct IT_%s *ptr;\n", it);
+	    printf("void sysroff_swap_%s_in(struct IT_%s *ptr)\n", (yyvsp[(2) - (3)].s), it);
 	    printf("{\n");
-	    printf("unsigned char raw[255];\n");
-	    printf("\tint idx = 0 ;\n");
+	    printf("\tunsigned char raw[255];\n");
+	    printf("\tint idx = 0;\n");
 	    printf("\tint size;\n");
-	    printf("memset(raw,0,255);\n");	
-	    printf("memset(ptr,0,sizeof(*ptr));\n");
-	    printf("size = fillup(raw);\n");
+	    printf("\tmemset(raw, 0, 255);\n");
+	    printf("\tmemset(ptr, 0, sizeof(*ptr));\n");
+	    printf("\tsize = fillup(raw);\n");
 	    break;
 	  case 'g':
-	    printf("void sysroff_swap_%s_out(file,ptr)\n",(yyvsp[(2) - (3)].s));
-	    printf("FILE * file;\n");
-	    printf("struct IT_%s *ptr;\n", it);
+	    printf("void sysroff_swap_%s_out(FILE *file, struct IT_%s *ptr)\n",
+                   (yyvsp[(2) - (3)].s), it);
 	    printf("{\n");
 	    printf("\tunsigned char raw[255];\n");
 	    printf("\tint idx = 16 ;\n");
@@ -1476,23 +1470,21 @@ yyreduce:
 	    printf("\tcode = IT_%s_CODE;\n", it);
 	    break;
 	  case 'o':
-	    printf("void sysroff_swap_%s_out(abfd,ptr)\n",(yyvsp[(2) - (3)].s));
-	    printf("bfd * abfd;\n");
-	    printf("struct IT_%s *ptr;\n",it);
+	    printf("void sysroff_swap_%s_out(bfd * abfd, struct IT_%s *ptr)\n",
+                   (yyvsp[(2) - (3)].s), it);
 	    printf("{\n");
-	    printf("int idx = 0 ;\n");
+	    printf("\tint idx = 0;\n");
 	    break;
 	  case 'c':
-	    printf("void sysroff_print_%s_out(ptr)\n",(yyvsp[(2) - (3)].s));
-	    printf("struct IT_%s *ptr;\n", it);
+	    printf("void sysroff_print_%s_out(struct IT_%s *ptr)\n",
+                   (yyvsp[(2) - (3)].s), it);
 	    printf("{\n");
-	    printf("itheader(\"%s\", IT_%s_CODE);\n",(yyvsp[(2) - (3)].s),(yyvsp[(2) - (3)].s));
+	    printf("\titheader(\"%s\", IT_%s_CODE);\n", (yyvsp[(2) - (3)].s), (yyvsp[(2) - (3)].s));
 	    break;
 
 	  case 't':
 	    break;
 	  }
-
       }
     break;
 
@@ -1501,12 +1493,12 @@ yyreduce:
 #line 154 "sysinfo.y"
     {
   switch (writecode) {
-  case 'd': 
+  case 'd':
     printf("};\n");
     break;
   case 'g':
-    printf("\tchecksum(file,raw, idx, IT_%s_CODE);\n", it);
-    
+    printf("\tchecksum(file, raw, idx, IT_%s_CODE);\n", it);
+
   case 'i':
 
   case 'o':
@@ -1521,24 +1513,23 @@ yyreduce:
 #line 181 "sysinfo.y"
     {
 	  rdepth++;
-	  switch (writecode) 
+	  switch (writecode)
 	    {
 	    case 'c':
-	      if (rdepth==1)
-	      printf("\tprintf(\"repeat %%d\\n\", %s);\n",(yyvsp[(3) - (3)].s));
-	      if (rdepth==2)
-	      printf("\tprintf(\"repeat %%d\\n\", %s[n]);\n",(yyvsp[(3) - (3)].s));
+	      if (rdepth == 1)
+                printf("\tprintf(\"repeat %%d\\n\", %s);\n", (yyvsp[(3) - (3)].s));
+	      if (rdepth == 2)
+                printf("\tprintf(\"repeat %%d\\n\", %s[n]);\n", (yyvsp[(3) - (3)].s));
 	    case 'i':
 	    case 'g':
 	    case 'o':
-
-	      if (rdepth==1) 
+	      if (rdepth == 1)
 		{
-	      printf("\t{ int n; for (n = 0; n < %s; n++) {\n",    (yyvsp[(3) - (3)].s));
-	    }
+                  printf("\t{ int n; for (n = 0; n < %s; n++) {\n",    (yyvsp[(3) - (3)].s));
+                }
 	      if (rdepth == 2) {
-	      printf("\t{ int m; for (m = 0; m < %s[n]; m++) {\n",    (yyvsp[(3) - (3)].s));
-	    }		
+                printf("\t{ int m; for (m = 0; m < %s[n]; m++) {\n",   (yyvsp[(3) - (3)].s));
+              }
 
 	      break;
 	    }
@@ -1550,7 +1541,7 @@ yyreduce:
 
   case 13:
 /* Line 1787 of yacc.c  */
-#line 211 "sysinfo.y"
+#line 210 "sysinfo.y"
     {
 	  repeat = oldrepeat;
 	  oldrepeat =0;
@@ -1561,16 +1552,16 @@ yyreduce:
 	    case 'g':
 	    case 'o':
 	    case 'c':
-	  printf("\t}}\n");
-	}
+              printf("\t}\n\t}\n");
+            }
 	}
     break;
 
   case 14:
 /* Line 1787 of yacc.c  */
-#line 228 "sysinfo.y"
+#line 227 "sysinfo.y"
     {
-	  switch (writecode) 
+	  switch (writecode)
 	    {
 	    case 'i':
 	    case 'g':
@@ -1584,7 +1575,7 @@ yyreduce:
 
   case 15:
 /* Line 1787 of yacc.c  */
-#line 241 "sysinfo.y"
+#line 240 "sysinfo.y"
     {
 	  switch (writecode)
 	    {
@@ -1592,176 +1583,156 @@ yyreduce:
 	    case 'g':
 	    case 'o':
 	    case 'c':
-	  printf("\t}\n");
-	}
+              printf("\t}\n");
+            }
 	}
     break;
 
   case 16:
 /* Line 1787 of yacc.c  */
-#line 255 "sysinfo.y"
+#line 254 "sysinfo.y"
     {name = (yyvsp[(7) - (7)].s); }
     break;
 
   case 17:
 /* Line 1787 of yacc.c  */
-#line 257 "sysinfo.y"
+#line 256 "sysinfo.y"
     {
 	  char *desc = (yyvsp[(2) - (10)].s);
 	  char *type = (yyvsp[(4) - (10)].s);
 	  int size = (yyvsp[(5) - (10)].i);
 	  char *id = (yyvsp[(7) - (10)].s);
-char *p = names[rdepth];
-char *ptr = pnames[rdepth];
-	  switch (writecode) 
+          char *p = names[rdepth];
+          char *ptr = pnames[rdepth];
+	  switch (writecode)
 	    {
 	    case 'g':
-	      if (size % 8) 
+	      if (size % 8)
 		{
-		  
-		  printf("\twriteBITS(ptr->%s%s,raw,&idx,%d);\n",
-			 id,
-			 names[rdepth], size);
-
+		  printf("\twriteBITS(ptr->%s%s, raw, &idx, %d);\n",
+			 id, names[rdepth], size);
 		}
-	      else {
-		printf("\twrite%s(ptr->%s%s,raw,&idx,%d,file);\n",
-		       type,
-		       id,
-		       names[rdepth],size/8);
+	      else
+                {
+                  printf("\twrite%s(ptr->%s%s, raw, &idx, %d, file);\n",
+                         type, id, names[rdepth], (size / 8));
 		}
-	      break;	      
+	      break;
 	    case 'i':
 	      {
-
 		if (rdepth >= 1)
-
 		  {
-		    printf("if (!ptr->%s) ptr->%s = (%s*)xcalloc(%s, sizeof(ptr->%s[0]));\n", 
-			   id, 
-			   id,
-			   type,
-			   repeat,
-			   id);
+		    printf("\tif (!ptr->%s) ptr->%s = (%s*)xcalloc(%s, sizeof(ptr->%s[0]));\n",
+			   id, id, type, repeat, id);
 		  }
 
 		if (rdepth == 2)
 		  {
-		    printf("if (!ptr->%s[n]) ptr->%s[n] = (%s**)xcalloc(%s[n], sizeof(ptr->%s[n][0]));\n", 
-			   id, 
-			   id,
-			   type,
-			   repeat,
-			   id);
+		    printf("\tif (!ptr->%s[n]) ptr->%s[n] = (%s**)xcalloc(%s[n], sizeof(ptr->%s[n][0]));\n",
+			   id, id, type, repeat, id);
 		  }
-
 	      }
 
-	      if (size % 8) 
+	      if (size % 8)
 		{
-		  printf("\tptr->%s%s = getBITS(raw,&idx, %d,size);\n",
-			 id,
-			 names[rdepth], 
-			 size);
+		  printf("\tptr->%s%s = getBITS(raw, &idx, %d, size);\n",
+			 id, names[rdepth], size);
 		}
-	      else {
-		printf("\tptr->%s%s = get%s(raw,&idx, %d,size);\n",
-		       id,
-		       names[rdepth],
-		       type,
-		       size/8);
+	      else
+                {
+                  printf("\tptr->%s%s = get%s(raw, &idx, %d, size);\n",
+                         id, names[rdepth], type, (size / 8));
 		}
 	      break;
 	    case 'o':
-	      printf("\tput%s(raw,%d,%d,&idx,ptr->%s%s);\n", type,size/8,size%8,id,names[rdepth]);
+	      printf("\tput%s(raw, %d, %d, &idx, ptr->%s%s);\n",
+                     type, (size / 8), (size % 8), id, names[rdepth]);
 	      break;
 	    case 'd':
-	      if (repeat) 
+	      if (repeat)
 		printf("\t/* repeat %s */\n", repeat);
 
-		  if (type[0] == 'I') {
-		  printf("\tint %s%s; \t/* %s */\n",ptr,id, desc);
-		}
-		  else if (type[0] =='C') {
-		  printf("\tchar %s*%s;\t /* %s */\n",ptr,id, desc);
-		}
-	      else {
-		printf("\tbarray %s%s;\t /* %s */\n",ptr,id, desc);
-	      }
-		  break;
-		case 'c':
-	      printf("tabout();\n");
-		  printf("\tprintf(\"/*%-30s*/ ptr->%s = \");\n", desc, id);
+              if (type[0] == 'I') {
+                printf("\tint %s%s; \t/* %s */\n", ptr, id, desc);
+              } else if (type[0] =='C') {
+                printf("\tchar %s*%s;\t /* %s */\n", ptr, id, desc);
+              } else {
+                printf("\tbarray %s%s;\t /* %s */\n", ptr, id, desc);
+              }
+              break;
+            case 'c':
+              printf("\ttabout();\n");
+              printf("\tprintf(\"/*%-30s*/ ptr->%s = \");\n", desc, id);
 
-		  if (type[0] == 'I')
-		  printf("\tprintf(\"%%d\\n\",ptr->%s%s);\n", id,p);
-		  else   if (type[0] == 'C')
-		  printf("\tprintf(\"%%s\\n\",ptr->%s%s);\n", id,p);
-
-		  else   if (type[0] == 'B') 
-		    {
-		  printf("\tpbarray(&ptr->%s%s);\n", id,p);
-		}
-	      else abort();
-		  break;
-		}
+              if (type[0] == 'I') {
+                printf("\tprintf(\"%%d\\n\", ptr->%s%s);\n", id, p);
+              } else if (type[0] == 'C') {
+                printf("\tprintf(\"%%s\\n\", ptr->%s%s);\n", id, p);
+              } else if (type[0] == 'B') {
+                printf("\tpbarray(&ptr->%s%s);\n", id,p);
+              } else {
+                abort();
+              }
+              break;
+            }
 	}
     break;
 
   case 18:
 /* Line 1787 of yacc.c  */
-#line 362 "sysinfo.y"
+#line 340 "sysinfo.y"
     { (yyval.s) = (yyvsp[(1) - (1)].s); }
     break;
 
   case 19:
 /* Line 1787 of yacc.c  */
-#line 363 "sysinfo.y"
+#line 341 "sysinfo.y"
     { (yyval.s) = "INT";}
     break;
 
   case 20:
 /* Line 1787 of yacc.c  */
-#line 368 "sysinfo.y"
+#line 346 "sysinfo.y"
     { (yyval.s) = (yyvsp[(2) - (3)].s); }
     break;
 
   case 21:
 /* Line 1787 of yacc.c  */
-#line 373 "sysinfo.y"
+#line 351 "sysinfo.y"
     { (yyval.i) = (yyvsp[(1) - (2)].i) * (yyvsp[(2) - (2)].i); }
     break;
 
   case 22:
 /* Line 1787 of yacc.c  */
-#line 378 "sysinfo.y"
+#line 356 "sysinfo.y"
     { (yyval.s) = (yyvsp[(2) - (3)].s); }
     break;
 
   case 23:
 /* Line 1787 of yacc.c  */
-#line 379 "sysinfo.y"
+#line 357 "sysinfo.y"
     { (yyval.s) = "dummy";}
     break;
 
   case 27:
 /* Line 1787 of yacc.c  */
-#line 387 "sysinfo.y"
-    { 
-	  switch (writecode) 
+#line 365 "sysinfo.y"
+    {
+	  switch (writecode)
 	    {
 	    case 'd':
-	      printf("#define %s %s\n", (yyvsp[(3) - (5)].s),(yyvsp[(4) - (5)].s));
+	      printf("#define %s %s\n", (yyvsp[(3) - (5)].s), (yyvsp[(4) - (5)].s));
 	      break;
 	    case 'c':
-		printf("if (ptr->%s%s == %s) { tabout(); printf(\"%s\\n\");}\n", name, names[rdepth],(yyvsp[(4) - (5)].s),(yyvsp[(3) - (5)].s));
+              printf("\tif (ptr->%s%s == %s) { tabout(); printf(\"%s\\n\");}\n",
+                     name, names[rdepth], (yyvsp[(4) - (5)].s), (yyvsp[(3) - (5)].s));
 	    }
 	}
     break;
 
 
 /* Line 1787 of yacc.c  */
-#line 1765 "sysinfo.c"
+#line 1736 "sysinfo.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1993,7 +1964,7 @@ yyreturn:
 
 
 /* Line 2050 of yacc.c  */
-#line 402 "sysinfo.y"
+#line 381 "sysinfo.y"
 
 /* four modes
 
@@ -2002,28 +1973,31 @@ yyreturn:
    -o write functions to swap into sysroff format out
    -c write code to print info in human form */
 
+#ifndef __cplusplus
 int yydebug;
+#endif /* !__cplusplus */
 
-int 
-main (int ac, char **av)
+int
+main(int ac, char **av)
 {
-  yydebug=0;
+  yydebug = 0;
   if (ac > 1)
     writecode = av[1][1];
-if (writecode == 'd')
-  {
-    printf("typedef struct { unsigned char *data; int len; } barray; \n");
-    printf("typedef  int INT;\n");
-    printf("typedef  char * CHARS;\n");
-
-  }
+  if (writecode == 'd')
+    {
+      printf("typedef struct { unsigned char *data; int len; } barray; \n");
+      printf("typedef  int INT;\n");
+      printf("typedef  char * CHARS;\n");
+    }
   yyparse();
-return 0;
+  return 0;
 }
 
 static int
-yyerror (char *s)
+yyerror(char *s)
 {
-  fprintf(stderr, "%s\n" , s);
+  fprintf(stderr, "%s\n", s);
   return 0;
 }
+
+/* EOF */

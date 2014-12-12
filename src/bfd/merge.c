@@ -295,7 +295,7 @@ sec_merge_emit (bfd *abfd, struct sec_merge_hash_entry *entry)
 
   if (alignment_power)
     {
-      pad = bfd_zmalloc ((bfd_size_type) 1 << alignment_power);
+      pad = (char *)bfd_zmalloc((bfd_size_type)1 << alignment_power);
       if (pad == NULL)
 	return FALSE;
     }
@@ -392,7 +392,7 @@ _bfd_add_merge_section (bfd *abfd, void **psinfo, asection *sec,
   if (sinfo == NULL)
     {
       /* Initialize the information we need to keep track of.  */
-      sinfo = bfd_alloc (abfd, sizeof (struct sec_merge_info));
+      sinfo = bfd_alloc(abfd, sizeof(struct sec_merge_info));
       if (sinfo == NULL)
 	goto error_return;
       sinfo->next = (struct sec_merge_info *) *psinfo;

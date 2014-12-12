@@ -824,6 +824,7 @@ enable_shared
 enable_static
 with_pic
 enable_fast_install
+with_aix_soname
 with_gnu_ld
 with_sysroot
 enable_libtool_lock
@@ -1485,6 +1486,9 @@ Optional Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-pic[=PKGS]       try to use only PIC/non-PIC objects [default=use
                           both]
+  --with-aix-soname=aix|svr4|both
+                          shared library versioning (aka "SONAME") variant to
+                          provide on AIX, [default=aix].
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-sysroot=DIR Search for dependent libraries within DIR
                         (or the compiler's sysroot if not specified).
@@ -2632,17 +2636,13 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
 
-
 ## ------------------------ ##
-## Autotest initialisation. ##
+## Autotest initialization. ##
 ## ------------------------ ##
 
 ac_config_commands="$ac_config_commands tests/atconfig"
-
 AUTOM4TE=${AUTOM4TE=autom4te}
-
 AUTOTEST='$(AUTOM4TE) --language=autotest'
-
 
 
 ## ---------------------------------------- ##
@@ -2660,15 +2660,15 @@ lt_minor=`echo "2.4.2" | sed 's,^[0-9]*\.\([0-9]*\).*$,\1,'`
 lt_micro=`echo "2.4.2" | sed 's,^[0-9]*\.[0-9]*\(\.[0-9]*\).*$,\1,'`
 lt_alpha=`echo "2.4.2" | sed 's,^[0-9.]*,,'`
 
-test "$lt_minor" = "2.4.2" && lt_minor=0
-test "$lt_micro" = "2.4.2" && lt_micro=""
+test "x${lt_minor}" = "2.4.2" && lt_minor=0
+test "x${lt_micro}" = "2.4.2" && lt_micro=""
 
 # Then we try to work out what the release before this one would have been
 # numbered. The only time we come unstuck is when this is the 1st release
 # from a stable branch (lt_micro=lt_alpha=""), so LASTRELEASE is the last
 # release from the old stable branch, and we don't know what version that
 # was, so leave it unset so that the Makefile can complain.
-case $lt_alpha in
+case ${lt_alpha} in
   [ab])
     case ${lt_micro} in
       .[01])
@@ -2696,7 +2696,6 @@ case $lt_alpha in
     ;;
 esac
 
-
 # This is a sanity check so we can see which ver. is used in bug reports.
 # It is assumed that we only want to see the date extension for cvs libtool
 # versions (i.e. "odd" letters) and not actual alpha releases.
@@ -2704,20 +2703,18 @@ TIMESTAMP=`${CONFIG_SHELL} ${ac_aux_dir}/mkstamp ${srcdir}`
 package_revision=`( set ${TIMESTAMP}; echo $1; )`
 case ${lt_alpha} in
   ""|[bdfhjlnprtvxz])
-    TIMESTAMP=
+    TIMESTAMP=""
     ;;
 esac
 timestamp_string="${TIMESTAMP:+ (Build:$TIMESTAMP)}"
 sed 'h;s/./-/g;s/^.../## /;s/...$/ ##/;p;x;p;x' <<_ASBOX
 ## Configuring libtool${timestamp_string} 2.4.2 ##
 _ASBOX
-echo
-
-
+echo ""
 
 
 ## ------------------------ ##
-## Automake Initialisation. ##
+## Automake Initialization. ##
 ## ------------------------ ##
 
 am__api_version='1.14'
@@ -3437,12 +3434,9 @@ $as_echo "$as_me: autobuild timestamp... $date" >&6;}
   fi
 
 
-
 M4SH='$(AUTOM4TE) --language=m4sh'
 
-
 CONFIG_STATUS_DEPENDENCIES='$(top_srcdir)/ChangeLog'
-
 
 
 ## ------------------------------- ##
@@ -3450,30 +3444,26 @@ CONFIG_STATUS_DEPENDENCIES='$(top_srcdir)/ChangeLog'
 ## ------------------------------- ##
 
 aclocaldir="\${datadir}/aclocal"
-
-pkgdatadir="\${datadir}/$PACKAGE"
-
+pkgdatadir="\${datadir}/${PACKAGE}"
 
 # Check whether --enable-ltdl-install was given.
 if test "${enable_ltdl_install+set}" = set; then :
   enableval=$enable_ltdl_install;
 fi
 
-if test x"${enable_ltdl_install+set}" != xset; then
+if test x"${enable_ltdl_install+set}" != x"set"; then
   enable_ltdl_install=yes
 fi
 
 # All subdirectories that are configured on demand, but that must be
 # included in the distribution.
-CONF_SUBDIRS="tests/cdemo tests/demo tests/depdemo tests/f77demo tests/fcdemo \
-	tests/mdemo tests/mdemo2 tests/pdemo tests/tagdemo"
+CONF_SUBDIRS="tests/cdemo tests/demo tests/depdemo tests/f77demo  \
+	tests/fcdemo tests/mdemo tests/mdemo2 tests/pdemo tests/tagdemo"
 
-
-DIST_MAKEFILE_LIST=
+DIST_MAKEFILE_LIST=""
 for dir in ${CONF_SUBDIRS}; do
-  DIST_MAKEFILE_LIST="${DIST_MAKEFILE_LIST}$dir/Makefile "
+  DIST_MAKEFILE_LIST="${DIST_MAKEFILE_LIST}${dir}/Makefile "
 done
-
 
 
 ## ---------------- ##
@@ -7846,7 +7836,7 @@ _LT_EOF
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_ld_force_load" >&5
 $as_echo "$lt_cv_ld_force_load" >&6; }
-    case $host_os in
+    case ${host_os} in
     rhapsody* | darwin1.[012])
       _lt_dar_allow_undefined='${wl}-undefined ${wl}suppress' ;;
     darwin1.*)
@@ -7854,11 +7844,11 @@ $as_echo "$lt_cv_ld_force_load" >&6; }
     darwin*) # darwin 5.x on
       # if running on 10.5 or later, the deployment target defaults
       # to the OS version, if on x86, and 10.4, the deployment
-      # target defaults to 10.4. Don't you love it?
+      # target defaults to 10.4. Do you not love it?
       case ${MACOSX_DEPLOYMENT_TARGET-10.0},$host in
 	10.0,*86*-darwin8*|10.0,*-darwin[91]*)
 	  _lt_dar_allow_undefined='${wl}-undefined ${wl}dynamic_lookup' ;;
-	10.[012]*)
+	10.[012][,.]*)
 	  _lt_dar_allow_undefined='${wl}-flat_namespace ${wl}-undefined ${wl}suppress' ;;
 	10.*)
 	  _lt_dar_allow_undefined='${wl}-undefined ${wl}dynamic_lookup' ;;
@@ -8344,14 +8334,14 @@ if test "${enable_shared+set}" = set; then :
     *)
       enable_shared=no
       # Look at the argument we got.  We use all the common list separators.
-      lt_save_ifs="$IFS"; IFS="${IFS}$PATH_SEPARATOR,"
+      lt_save_ifs=$IFS; IFS=$IFS$PATH_SEPARATOR,
       for pkg in $enableval; do
-	IFS="$lt_save_ifs"
+	IFS=$lt_save_ifs
 	if test "X$pkg" = "X$p"; then
 	  enable_shared=yes
 	fi
       done
-      IFS="$lt_save_ifs"
+      IFS=$lt_save_ifs
       ;;
     esac
 else
@@ -8375,14 +8365,14 @@ if test "${enable_static+set}" = set; then :
     *)
      enable_static=no
       # Look at the argument we got.  We use all the common list separators.
-      lt_save_ifs="$IFS"; IFS="${IFS}$PATH_SEPARATOR,"
+      lt_save_ifs=$IFS; IFS=$IFS$PATH_SEPARATOR,
       for pkg in $enableval; do
-	IFS="$lt_save_ifs"
+	IFS=$lt_save_ifs
 	if test "X$pkg" = "X$p"; then
 	  enable_static=yes
 	fi
       done
-      IFS="$lt_save_ifs"
+      IFS=$lt_save_ifs
       ;;
     esac
 else
@@ -8406,22 +8396,20 @@ if test "${with_pic+set}" = set; then :
     *)
       pic_mode=default
       # Look at the argument we got.  We use all the common list separators.
-      lt_save_ifs="$IFS"; IFS="${IFS}$PATH_SEPARATOR,"
+      lt_save_ifs=$IFS; IFS=$IFS$PATH_SEPARATOR,
       for lt_pkg in $withval; do
-	IFS="$lt_save_ifs"
+	IFS=$lt_save_ifs
 	if test "X$lt_pkg" = "X$lt_p"; then
 	  pic_mode=yes
 	fi
       done
-      IFS="$lt_save_ifs"
+      IFS=$lt_save_ifs
       ;;
     esac
 else
   pic_mode=default
 fi
 
-
-test -z "$pic_mode" && pic_mode=default
 
 
 
@@ -8438,20 +8426,72 @@ if test "${enable_fast_install+set}" = set; then :
     *)
       enable_fast_install=no
       # Look at the argument we got.  We use all the common list separators.
-      lt_save_ifs="$IFS"; IFS="${IFS}$PATH_SEPARATOR,"
+      lt_save_ifs=$IFS; IFS=$IFS$PATH_SEPARATOR,
       for pkg in $enableval; do
-	IFS="$lt_save_ifs"
+	IFS=$lt_save_ifs
 	if test "X$pkg" = "X$p"; then
 	  enable_fast_install=yes
 	fi
       done
-      IFS="$lt_save_ifs"
+      IFS=$lt_save_ifs
       ;;
     esac
 else
   enable_fast_install=yes
 fi
 
+
+
+
+
+
+
+
+  shared_archive_member_spec=
+case $host,$enable_shared in
+power*-*-aix[5-9]*,yes)
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking which variant of shared library versioning to provide" >&5
+$as_echo_n "checking which variant of shared library versioning to provide... " >&6; }
+
+# Check whether --with-aix-soname was given.
+if test "${with_aix_soname+set}" = set; then :
+  withval=$with_aix_soname; case $withval in
+    aix|svr4|both)
+      ;;
+    *)
+      as_fn_error $? "Unknown argument to --with-aix-soname" "$LINENO" 5
+      ;;
+    esac
+    lt_cv_with_aix_soname=$with_aix_soname
+else
+  if ${lt_cv_with_aix_soname+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  lt_cv_with_aix_soname=aix
+fi
+
+    with_aix_soname=$lt_cv_with_aix_soname
+fi
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_aix_soname" >&5
+$as_echo "$with_aix_soname" >&6; }
+  if test aix != "$with_aix_soname"; then
+    # For the AIX way of multilib, we name the shared archive member
+    # based on the bitwidth used, traditionally 'shr.o' or 'shr_64.o',
+    # and 'shr.imp' or 'shr_64.imp', respectively, for the Import File.
+    # Even when GNU compilers ignore OBJECT_MODE but need '-maix64' flag,
+    # the AIX toolchain works better with OBJECT_MODE set (default 32).
+    if test 64 = "${OBJECT_MODE-32}"; then
+      shared_archive_member_spec=shr_64
+    else
+      shared_archive_member_spec=shr
+    fi
+  fi
+  ;;
+*)
+  with_aix_soname=aix
+  ;;
+esac
 
 
 
@@ -13233,8 +13273,7 @@ eval "LTDLOPEN=\"$libname_spec\""
 
 
 
-# Enable all the language support we can
-
+# Enable all the language support we can:
 ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -16819,7 +16858,6 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-
 ac_ext=f
 ac_compile='$F77 -c $FFLAGS conftest.$ac_ext >&5'
 ac_link='$F77 -o conftest$ac_exeext $FFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
@@ -19747,7 +19785,6 @@ ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
 
 ac_ext=${ac_fc_srcext-f}
 ac_compile='$FC -c $FCFLAGS $ac_fcflags_srcext conftest.$ac_ext >&5'
@@ -22825,7 +22862,6 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
-
 if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}gccgo", so it can be a program name with args.
 set dummy ${ac_tool_prefix}gccgo; ac_word=$2
@@ -24921,7 +24957,6 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 GCC=$lt_save_GCC
 CC=$lt_save_CC
 CFLAGS=$lt_save_CFLAGS
-
 if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}gcj", so it can be a program name with args.
 set dummy ${ac_tool_prefix}gcj; ac_word=$2
@@ -27018,7 +27053,6 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 GCC=$lt_save_GCC
 CC=$lt_save_CC
 CFLAGS=$lt_save_CFLAGS
-
 if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}windres", so it can be a program name with args.
 set dummy ${ac_tool_prefix}windres; ac_word=$2
@@ -27196,7 +27230,6 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 CC=$lt_save_CC
 CFLAGS=$lt_save_CFLAGS
 
-
 # Ensure the correct file name (and path) conversion function
 # is available to the test suite.
 
@@ -27210,7 +27243,6 @@ else
   HAVE_CXX_TRUE='#'
   HAVE_CXX_FALSE=
 fi
-
  if test -n "$compiler_F77"; then
   HAVE_F77_TRUE=
   HAVE_F77_FALSE='#'
@@ -27218,7 +27250,6 @@ else
   HAVE_F77_TRUE='#'
   HAVE_F77_FALSE=
 fi
-
  if test -n "$compiler_FC"; then
   HAVE_FC_TRUE=
   HAVE_FC_FALSE='#'
@@ -27226,7 +27257,6 @@ else
   HAVE_FC_TRUE='#'
   HAVE_FC_FALSE=
 fi
-
  if test -n "$compiler_GCJ"; then
   HAVE_GCJ_TRUE=
   HAVE_GCJ_FALSE='#'
@@ -27234,7 +27264,6 @@ else
   HAVE_GCJ_TRUE='#'
   HAVE_GCJ_FALSE=
 fi
-
  if test -n "$compiler_RC"; then
   HAVE_RC_TRUE=
   HAVE_RC_FALSE='#'
@@ -27242,7 +27271,6 @@ else
   HAVE_RC_TRUE='#'
   HAVE_RC_FALSE=
 fi
-
 
 ## Whether `make' supports order-only prerequisites.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ${MAKE-make} supports order-only prerequisites" >&5
@@ -27271,12 +27299,11 @@ END
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_make_order_only" >&5
 $as_echo "$lt_cv_make_order_only" >&6; }
-if test ${lt_cv_make_order_only} = yes; then
+if test "x${lt_cv_make_order_only}" = "xyes"; then
   ORDER='|'
 else
   ORDER=''
 fi
-
 
 ## ------------- ##
 ## Documentation ##
@@ -27284,12 +27311,10 @@ fi
 
 HELP2MAN=${HELP2MAN-"${am_missing_run}help2man"}
 
-
 ## -------- ##
 ## Outputs. ##
 ## -------- ##
 ac_config_files="$ac_config_files Makefile"
-
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -28064,6 +28089,7 @@ enable_shared='`$ECHO "$enable_shared" | $SED "$delay_single_quote_subst"`'
 enable_static='`$ECHO "$enable_static" | $SED "$delay_single_quote_subst"`'
 pic_mode='`$ECHO "$pic_mode" | $SED "$delay_single_quote_subst"`'
 enable_fast_install='`$ECHO "$enable_fast_install" | $SED "$delay_single_quote_subst"`'
+shared_archive_member_spec='`$ECHO "$shared_archive_member_spec" | $SED "$delay_single_quote_subst"`'
 SHELL='`$ECHO "$SHELL" | $SED "$delay_single_quote_subst"`'
 ECHO='`$ECHO "$ECHO" | $SED "$delay_single_quote_subst"`'
 PATH_SEPARATOR='`$ECHO "$PATH_SEPARATOR" | $SED "$delay_single_quote_subst"`'
@@ -29656,6 +29682,9 @@ pic_mode=$pic_mode
 
 # Whether or not to optimize for fast installation.
 fast_install=$enable_fast_install
+
+# Shared archive member basename,for filename based shared library versioning on AIX.
+shared_archive_member_spec=$shared_archive_member_spec
 
 # Shell to use when invoking shell scripts.
 SHELL=$lt_SHELL

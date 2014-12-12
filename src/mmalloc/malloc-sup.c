@@ -1,4 +1,4 @@
-/* Support for mmalloc using system malloc()
+/* malloc-sup.c: Support for mmalloc using system malloc()
 
 This file is part of the GNU C Library.
 
@@ -14,7 +14,7 @@ Library General Public License for more details.
 
 You should have received a copy of the GNU Library General Public
 License along with the GNU C Library; see the file COPYING.LIB.  If
-not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+not, write to the Free Software Foundation, Inc., 59 Temple Pl., Suite 330,
 Boston, MA 02111-1307, USA.  */
 
 #include <stdlib.h>
@@ -23,45 +23,48 @@ Boston, MA 02111-1307, USA.  */
 #include "mmprivate.h"
 
 static PTR
-morecore_malloc (mdp, size)
-  struct mdesc *mdp;
-  int size;
+morecore_malloc(struct mdesc *mdp, int size)
 {
-  abort ();
+#if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
+# pragma unused (mdp, size)
+#endif /* (__APPLE__ && __APPLE_CC__) || __MWERKS__ */
+  abort();
 }
 
 static void
-mfree_malloc (md, ptr)
-  PTR md;
-  PTR ptr;
+mfree_malloc(PTR md, PTR ptr)
 {
-  free (ptr);
+#if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
+# pragma unused (md)
+#endif /* (__APPLE__ && __APPLE_CC__) || __MWERKS__ */
+  free(ptr);
 }
 
 static PTR
-mmalloc_malloc (md, size)
-  PTR md;
-  size_t size;
+mmalloc_malloc(PTR md, size_t size)
 {
-  return malloc (size);
+#if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
+# pragma unused (md)
+#endif /* (__APPLE__ && __APPLE_CC__) || __MWERKS__ */
+  return malloc(size);
 }
 
 static PTR
-mrealloc_malloc (md, ptr, size)
-  PTR md;
-  PTR ptr;
-  size_t size;
+mrealloc_malloc(PTR md, PTR ptr, size_t size)
 {
-  return realloc (ptr, size);
+#if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
+# pragma unused (md)
+#endif /* (__APPLE__ && __APPLE_CC__) || __MWERKS__ */
+  return realloc(ptr, size);
 }
 
 struct mdesc *
-mmalloc_malloc_create ()
+mmalloc_malloc_create(void)
 {
   struct mdesc *ret = NULL;
 
-  ret = (struct mdesc *) malloc (sizeof (struct mdesc));
-  memset ((char *) ret, 0, sizeof (struct mdesc));
+  ret = (struct mdesc *)malloc(sizeof(struct mdesc));
+  memset((char *)ret, 0, sizeof(struct mdesc));
 
   ret->child = NULL;
   ret->fd = -1;
@@ -74,3 +77,5 @@ mmalloc_malloc_create ()
 
   return ret;
 }
+
+/* EOF */

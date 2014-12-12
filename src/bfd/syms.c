@@ -455,7 +455,7 @@ DESCRIPTION
 void
 bfd_print_symbol_vandf (bfd *abfd, void *arg, asymbol *symbol)
 {
-  FILE *file = arg;
+  FILE *file = (FILE *)arg;
 
   flagword type = symbol->flags;
 
@@ -516,13 +516,13 @@ DESCRIPTION
 */
 
 asymbol *
-_bfd_generic_make_empty_symbol (bfd *abfd)
+_bfd_generic_make_empty_symbol(bfd *abfd)
 {
-  bfd_size_type amt = sizeof (asymbol);
-  asymbol *new = bfd_zalloc (abfd, amt);
-  if (new)
-    new->the_bfd = abfd;
-  return new;
+  bfd_size_type amt = sizeof(asymbol);
+  asymbol *newsym = (asymbol *)bfd_zalloc(abfd, amt);
+  if (newsym)
+    newsym->the_bfd = abfd;
+  return newsym;
 }
 
 /*
@@ -993,8 +993,8 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
 		 ? info->strsec->rawsize
 		 : info->strsec->size);
 
-      info->stabs = bfd_alloc (abfd, stabsize);
-      info->strs = bfd_alloc (abfd, strsize);
+      info->stabs = (bfd_byte *)bfd_alloc(abfd, stabsize);
+      info->strs = (bfd_byte *)bfd_alloc(abfd, strsize);
       if (info->stabs == NULL || info->strs == NULL)
 	return FALSE;
 
@@ -1361,13 +1361,13 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
 	  size_t len;
 
 	  if (info->filename != NULL)
-	    free (info->filename);
-	  len = strlen (file_name) + 1;
-	  info->filename = bfd_malloc (dirlen + len);
+	    free(info->filename);
+	  len = (strlen(file_name) + 1);
+	  info->filename = (char *)bfd_malloc(dirlen + len);
 	  if (info->filename == NULL)
 	    return FALSE;
-	  memcpy (info->filename, directory_name, dirlen);
-	  memcpy (info->filename + dirlen, file_name, len);
+	  memcpy(info->filename, directory_name, dirlen);
+	  memcpy(info->filename + dirlen, file_name, len);
 	}
 
       *pfilename = info->filename;

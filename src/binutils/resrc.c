@@ -33,57 +33,55 @@
 #include <errno.h>
 #include <sys/stat.h>
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+# include <unistd.h>
+#endif /* HAVE_UNISTD_H */
 
 #ifdef HAVE_SYS_WAIT_H
-#include <sys/wait.h>
+# include <sys/wait.h>
 #else /* ! HAVE_SYS_WAIT_H */
-#if ! defined (_WIN32) || defined (__CYGWIN__)
-#ifndef WIFEXITED
-#define WIFEXITED(w)	(((w)&0377) == 0)
-#endif
-#ifndef WIFSIGNALED
-#define WIFSIGNALED(w)	(((w)&0377) != 0177 && ((w)&~0377) == 0)
-#endif
-#ifndef WTERMSIG
-#define WTERMSIG(w)	((w) & 0177)
-#endif
-#ifndef WEXITSTATUS
-#define WEXITSTATUS(w)	(((w) >> 8) & 0377)
-#endif
-#else /* defined (_WIN32) && ! defined (__CYGWIN__) */
-#ifndef WIFEXITED
-#define WIFEXITED(w)	(((w) & 0xff) == 0)
-#endif
-#ifndef WIFSIGNALED
-#define WIFSIGNALED(w)	(((w) & 0xff) != 0 && ((w) & 0xff) != 0x7f)
-#endif
-#ifndef WTERMSIG
-#define WTERMSIG(w)	((w) & 0x7f)
-#endif
-#ifndef WEXITSTATUS
-#define WEXITSTATUS(w)	(((w) & 0xff00) >> 8)
-#endif
-#endif /* defined (_WIN32) && ! defined (__CYGWIN__) */
-#endif /* ! HAVE_SYS_WAIT_H */
+# if !defined(_WIN32) || defined(__CYGWIN__)
+#  ifndef WIFEXITED
+#   define WIFEXITED(w)	(((w)&0377) == 0)
+#  endif /* !WIFEXITED */
+#  ifndef WIFSIGNALED
+#   define WIFSIGNALED(w) (((w)&0377) != 0177 && ((w)&~0377) == 0)
+#  endif /* !WIFSIGNALED */
+#  ifndef WTERMSIG
+#   define WTERMSIG(w)	((w) & 0177)
+#  endif /* !WTERMSIG */
+#  ifndef WEXITSTATUS
+#   define WEXITSTATUS(w) (((w) >> 8) & 0377)
+#  endif /* !WEXITSTATUS */
+# else /* (defined(_WIN32) && !defined(__CYGWIN__)): */
+#  ifndef WIFEXITED
+#   define WIFEXITED(w)	(((w) & 0xff) == 0)
+#  endif /* !WIFEXITED */
+#  ifndef WIFSIGNALED
+#   define WIFSIGNALED(w) (((w) & 0xff) != 0 && ((w) & 0xff) != 0x7f)
+#  endif /* !WIFSIGNALED */
+#  ifndef WTERMSIG
+#   define WTERMSIG(w)	((w) & 0x7f)
+#  endif /* !WTERMSIG */
+#  ifndef WEXITSTATUS
+#   define WEXITSTATUS(w) (((w) & 0xff00) >> 8)
+#  endif /* !WEXITSTATUS */
+# endif /* defined(_WIN32) && !defined(__CYGWIN__) */
+#endif /* !HAVE_SYS_WAIT_H */
 
 #ifndef STDOUT_FILENO
-#define STDOUT_FILENO 1
-#endif
+# define STDOUT_FILENO 1
+#endif /* !STDOUT_FILENO */
 
-#if defined (_WIN32) && ! defined (__CYGWIN__)
-#define popen _popen
-#define pclose _pclose
-#endif
+#if defined(_WIN32) && !defined(__CYGWIN__)
+# define popen _popen
+# define pclose _pclose
+#endif /* _WIN32 && !__CYGWIN__ */
 
-/* The default preprocessor.  */
-
+/* The default preprocessor: */
 #define DEFAULT_PREPROCESSOR "gcc -E -xc -DRC_INVOKED"
 
 /* We read the directory entries in a cursor or icon file into
    instances of this structure.  */
-
 struct icondir
 {
   /* Width of image.  */
@@ -115,81 +113,68 @@ struct icondir
   unsigned long offset;
 };
 
-/* The name of the rc file we are reading.  */
-
+/* The name of the rc file we are reading: */
 char *rc_filename;
 
-/* The line number in the rc file.  */
-
+/* The line number in the rc file: */
 int rc_lineno;
 
-/* The pipe we are reading from, so that we can close it if we exit.  */
-
+/* The pipe we are reading from, so that we can close it if we exit: */
 static FILE *cpp_pipe;
 
-/* The temporary file used if we're not using popen, so we can delete it
+/* The temporary file used if we are not using popen, so we can delete it
    if we exit.  */
-
 static char *cpp_temp_file;
 
-/* Input stream is either a file or a pipe.  */
-
+/* Input stream is either a file or a pipe: */
 static enum {ISTREAM_PIPE, ISTREAM_FILE} istream_type;
 
-/* As we read the rc file, we attach information to this structure.  */
-
+/* As we read the rc file, we attach information to this structure: */
 static struct res_directory *resources;
 
-/* The number of cursor resources we have written out.  */
-
+/* The number of cursor resources we have written out: */
 static int cursors;
 
-/* The number of font resources we have written out.  */
-
+/* The number of font resources we have written out: */
 static int fonts;
 
-/* Font directory information.  */
-
+/* Font directory information: */
 struct fontdir *fontdirs;
 
-/* Resource info to use for fontdirs.  */
-
+/* Resource info to use for fontdirs: */
 struct res_res_info fontdirs_resinfo;
 
-/* The number of icon resources we have written out.  */
-
+/* The number of icon resources we have written out: */
 static int icons;
 
-/* Local functions.  */
-
-static int run_cmd (char *, const char *);
-static FILE *open_input_stream (char *);
-static FILE *look_for_default
-  (char *, const char *, int, const char *, const char *);
-static void close_input_stream (void);
-static void unexpected_eof (const char *);
-static int get_word (FILE *, const char *);
-static unsigned long get_long (FILE *, const char *);
-static void get_data (FILE *, unsigned char *, unsigned long, const char *);
-static void define_fontdirs (void);
+/* Local function prototypes: */
+static int run_cmd(char *, const char *);
+static FILE *open_input_stream(char *);
+static FILE *look_for_default(char *, const char *, int, const char *,
+                              const char *);
+static void close_input_stream(void);
+static void unexpected_eof(const char *);
+static int get_word(FILE *, const char *);
+static unsigned long get_long(FILE *, const char *);
+static void get_data(FILE *, unsigned char *, unsigned long, const char *);
+static void define_fontdirs(void);
 
-/* Run `cmd' and redirect the output to `redir'.  */
-
+/* Run `cmd' and redirect the output to `redir': */
 static int
-run_cmd (char *cmd, const char *redir)
+run_cmd(char *cmd, const char *redir)
 {
   char *s;
   int pid, wait_status, retcode;
   int i;
   const char **argv;
   char *errmsg_fmt, *errmsg_arg;
-  char *temp_base = choose_temp_base ();
+  char *temp_base = choose_temp_base();
   int in_quote;
   char sep;
   int redir_handle = -1;
   int stdout_save = -1;
 
-  /* Count the args.  */
+  /* Count the args: */
   i = 0;
 
   for (s = cmd; *s; s++)
@@ -197,23 +182,23 @@ run_cmd (char *cmd, const char *redir)
       i++;
 
   i++;
-  argv = alloca (sizeof (char *) * (i + 3));
+  argv = (const char **)alloca(sizeof(char *) * (i + 3));
   i = 0;
   s = cmd;
 
   while (1)
     {
-      while (*s == ' ' && *s != 0)
+      while ((*s == ' ') && (*s != 0))
 	s++;
 
       if (*s == 0)
 	break;
 
-      in_quote = (*s == '\'' || *s == '"');
-      sep = (in_quote) ? *s++ : ' ';
+      in_quote = ((*s == '\'') || (*s == '"'));
+      sep = ((in_quote) ? *s++ : ' ');
       argv[i++] = s;
 
-      while (*s != sep && *s != 0)
+      while ((*s != sep) && (*s != 0))
 	s++;
 
       if (*s == 0)
@@ -226,60 +211,60 @@ run_cmd (char *cmd, const char *redir)
     }
   argv[i++] = NULL;
 
-  /* Setup the redirection.  We can't use the usual fork/exec and redirect
+  /* Setup the redirection.  We cannot use the usual fork/exec and redirect
      since we may be running on non-POSIX Windows host.  */
+  fflush(stdout);
+  fflush(stderr);
 
-  fflush (stdout);
-  fflush (stderr);
-
-  /* Open temporary output file.  */
-  redir_handle = open (redir, O_WRONLY | O_TRUNC | O_CREAT, 0666);
+  /* Open temporary output file: */
+  redir_handle = open(redir, (O_WRONLY | O_TRUNC | O_CREAT), 0666);
   if (redir_handle == -1)
-    fatal (_("can't open temporary file `%s': %s"), redir,
-	   strerror (errno));
+    fatal(_("cannot open temporary file `%s': %s"), redir,
+          strerror(errno));
 
-  /* Duplicate the stdout file handle so it can be restored later.  */
-  stdout_save = dup (STDOUT_FILENO);
+  /* Duplicate the stdout file handle so it can be restored later: */
+  stdout_save = dup(STDOUT_FILENO);
   if (stdout_save == -1)
-    fatal (_("can't redirect stdout: `%s': %s"), redir, strerror (errno));
+    fatal(_("cannot redirect stdout: `%s': %s"), redir, strerror(errno));
 
-  /* Redirect stdout to our output file.  */
-  dup2 (redir_handle, STDOUT_FILENO);
+  /* Redirect stdout to our output file: */
+  dup2(redir_handle, STDOUT_FILENO);
 
-  pid = pexecute (argv[0], (char * const *) argv, program_name, temp_base,
-		  &errmsg_fmt, &errmsg_arg, PEXECUTE_ONE | PEXECUTE_SEARCH);
+  pid = pexecute(argv[0], (char * const *)argv, program_name, temp_base,
+                 &errmsg_fmt, &errmsg_arg,
+                 (PEXECUTE_ONE | PEXECUTE_SEARCH));
 
-  /* Restore stdout to its previous setting.  */
-  dup2 (stdout_save, STDOUT_FILENO);
+  /* Restore stdout to its previous setting: */
+  dup2(stdout_save, STDOUT_FILENO);
 
-  /* Close response file.  */
-  close (redir_handle);
+  /* Close response file: */
+  close(redir_handle);
 
   if (pid == -1)
     {
-      fatal (_("%s %s: %s"), errmsg_fmt, errmsg_arg, strerror (errno));
+      fatal(_("%s %s: %s"), errmsg_fmt, errmsg_arg, strerror(errno));
       return 1;
     }
 
   retcode = 0;
-  pid = pwait (pid, &wait_status, 0);
+  pid = pwait(pid, &wait_status, 0);
 
   if (pid == -1)
     {
-      fatal (_("wait: %s"), strerror (errno));
+      fatal(_("wait: %s"), strerror(errno));
       retcode = 1;
     }
-  else if (WIFSIGNALED (wait_status))
+  else if (WIFSIGNALED(wait_status))
     {
-      fatal (_("subprocess got fatal signal %d"), WTERMSIG (wait_status));
+      fatal(_("subprocess got fatal signal %d"), WTERMSIG(wait_status));
       retcode = 1;
     }
-  else if (WIFEXITED (wait_status))
+  else if (WIFEXITED(wait_status))
     {
-      if (WEXITSTATUS (wait_status) != 0)
+      if (WEXITSTATUS(wait_status) != 0)
 	{
-	  fatal (_("%s exited with status %d"), cmd,
-	         WEXITSTATUS (wait_status));
+	  fatal(_("%s exited with status %d"), cmd,
+                WEXITSTATUS(wait_status));
 	  retcode = 1;
 	}
     }
@@ -337,23 +322,23 @@ look_for_default (char *cmd, const char *prefix, int end_prefix,
   int found;
   struct stat s;
 
-  strcpy (cmd, prefix);
+  strcpy(cmd, prefix);
 
-  sprintf (cmd + end_prefix, "%s", DEFAULT_PREPROCESSOR);
-  space = strchr (cmd + end_prefix, ' ');
+  sprintf(cmd + end_prefix, "%s", DEFAULT_PREPROCESSOR);
+  space = strchr(cmd + end_prefix, ' ');
   if (space)
     *space = 0;
 
   if (
-#if defined (__DJGPP__) || defined (__CYGWIN__) || defined (_WIN32)
-      strchr (cmd, '\\') ||
-#endif
-      strchr (cmd, '/'))
+#if defined(__DJGPP__) || defined(__CYGWIN__) || defined(_WIN32)
+      strchr(cmd, '\\') ||
+#endif /* __DJGPP__ || __CYGWIN__ || _WIN32 */
+      strchr(cmd, '/'))
     {
-      found = (stat (cmd, &s) == 0
+      found = ((stat(cmd, &s) == 0)
 #ifdef HAVE_EXECUTABLE_SUFFIX
-	       || stat (strcat (cmd, EXECUTABLE_SUFFIX), &s) == 0
-#endif
+	       || (stat(strcat(cmd, EXECUTABLE_SUFFIX), &s) == 0)
+#endif /* HAVE_EXECUTABLE_SUFFIX */
 	       );
 
       if (! found)
@@ -393,13 +378,11 @@ read_rc_file (const char *filename, const char *preprocessor,
 
   if (preprocessor)
     {
-      cmd = xmalloc (strlen (preprocessor)
-		     + strlen (preprocargs)
-		     + strlen (filename)
-		     + 10);
-      sprintf (cmd, "%s %s %s", preprocessor, preprocargs, filename);
+      cmd = (char *)xmalloc(strlen(preprocessor) + strlen(preprocargs)
+                            + strlen(filename) + 10);
+      sprintf(cmd, "%s %s %s", preprocessor, preprocargs, filename);
 
-      cpp_pipe = open_input_stream (cmd);
+      cpp_pipe = open_input_stream(cmd);
     }
   else
     {
@@ -407,14 +390,12 @@ read_rc_file (const char *filename, const char *preprocessor,
 
       preprocessor = DEFAULT_PREPROCESSOR;
 
-      cmd = xmalloc (strlen (program_name)
-		     + strlen (preprocessor)
-		     + strlen (preprocargs)
-		     + strlen (filename)
+      cmd = (char *)xmalloc(strlen(program_name) + strlen(preprocessor)
+                            + strlen(preprocargs) + strlen(filename)
 #ifdef HAVE_EXECUTABLE_SUFFIX
-		     + strlen (EXECUTABLE_SUFFIX)
-#endif
-		     + 10);
+                            + strlen(EXECUTABLE_SUFFIX)
+#endif /* HAVE_EXECUTABLE_SUFFIX */
+                            + 10);
 
 
       dash = slash = 0;
@@ -423,10 +404,10 @@ read_rc_file (const char *filename, const char *preprocessor,
 	  if (*cp == '-')
 	    dash = cp;
 	  if (
-#if defined (__DJGPP__) || defined (__CYGWIN__) || defined(_WIN32)
-	      *cp == ':' || *cp == '\\' ||
-#endif
-	      *cp == '/')
+#if defined(__DJGPP__) || defined(__CYGWIN__) || defined(_WIN32)
+	      (*cp == ':') || (*cp == '\\') ||
+#endif /* __DJGPP__ || __CYGWIN__ || _WIN32 */
+	      (*cp == '/'))
 	    {
 	      slash = cp;
 	      dash = 0;
@@ -440,157 +421,149 @@ read_rc_file (const char *filename, const char *preprocessor,
 	  /* First, try looking for a prefixed gcc in the windres
 	     directory, with the same prefix as windres */
 
-	  cpp_pipe = look_for_default (cmd, program_name, dash-program_name+1,
-				       preprocargs, filename);
+	  cpp_pipe = look_for_default(cmd, program_name,
+                                      (dash - program_name + 1),
+                                      preprocargs, filename);
 	}
 
       if (slash && !cpp_pipe)
 	{
 	  /* Next, try looking for a gcc in the same directory as
              that windres */
-
-	  cpp_pipe = look_for_default (cmd, program_name, slash-program_name+1,
-				       preprocargs, filename);
+	  cpp_pipe = look_for_default(cmd, program_name,
+                                      (slash - program_name + 1),
+                                      preprocargs, filename);
 	}
 
       if (!cpp_pipe)
 	{
-	  /* Sigh, try the default */
-
-	  cpp_pipe = look_for_default (cmd, "", 0, preprocargs, filename);
+	  /* Sigh, try the default: */
+	  cpp_pipe = look_for_default(cmd, "", 0, preprocargs, filename);
 	}
 
     }
 
-  free (cmd);
+  free(cmd);
 
-  rc_filename = xstrdup (filename);
+  rc_filename = xstrdup(filename);
   rc_lineno = 1;
   if (language != -1)
-    rcparse_set_language (language);
+    rcparse_set_language(language);
   yyin = cpp_pipe;
-  yyparse ();
-  rcparse_discard_strings ();
+  yyparse();
+  rcparse_discard_strings();
 
-  close_input_stream ();
+  close_input_stream();
 
   if (fontdirs != NULL)
-    define_fontdirs ();
+    define_fontdirs();
 
-  free (rc_filename);
+  free(rc_filename);
   rc_filename = NULL;
 
   return resources;
 }
 
-/* Close the input stream if it is open.  */
-
+/* Close the input stream if it is open: */
 static void
-close_input_stream (void)
+close_input_stream(void)
 {
   if (istream_type == ISTREAM_FILE)
     {
       if (cpp_pipe != NULL)
-	fclose (cpp_pipe);
+	fclose(cpp_pipe);
 
       if (cpp_temp_file != NULL)
 	{
 	  int errno_save = errno;
 
-	  unlink (cpp_temp_file);
+	  unlink(cpp_temp_file);
 	  errno = errno_save;
-	  free (cpp_temp_file);
+	  free(cpp_temp_file);
 	}
     }
   else
     {
       if (cpp_pipe != NULL)
-	pclose (cpp_pipe);
+	pclose(cpp_pipe);
     }
 
-  /* Since this is also run via xatexit, safeguard.  */
+  /* Since this is also run via xatexit, safeguard: */
   cpp_pipe = NULL;
   cpp_temp_file = NULL;
 }
 
-/* Report an error while reading an rc file.  */
-
+/* Report an error while reading an rc file: */
 void
-yyerror (const char *msg)
+yyerror(const char *msg)
 {
-  fatal ("%s:%d: %s", rc_filename, rc_lineno, msg);
+  fatal("%s:%d: %s", rc_filename, rc_lineno, msg);
 }
 
-/* Issue a warning while reading an rc file.  */
-
+/* Issue a warning while reading an rc file: */
 void
-rcparse_warning (const char *msg)
+rcparse_warning(const char *msg)
 {
-  fprintf (stderr, _("%s:%d: %s\n"), rc_filename, rc_lineno, msg);
+  fprintf(stderr, _("%s:%d: %s\n"), rc_filename, rc_lineno, msg);
 }
 
-/* Die if we get an unexpected end of file.  */
-
+/* Die if we get an unexpected end of file: */
 static void
-unexpected_eof (const char *msg)
+unexpected_eof(const char *msg)
 {
-  fatal (_("%s: unexpected EOF"), msg);
+  fatal(_("%s: unexpected EOF"), msg);
 }
 
 /* Read a 16 bit word from a file.  The data is assumed to be little
    endian.  */
-
 static int
-get_word (FILE *e, const char *msg)
+get_word(FILE *e, const char *msg)
 {
   int b1, b2;
 
-  b1 = getc (e);
-  b2 = getc (e);
-  if (feof (e))
-    unexpected_eof (msg);
-  return ((b2 & 0xff) << 8) | (b1 & 0xff);
+  b1 = getc(e);
+  b2 = getc(e);
+  if (feof(e))
+    unexpected_eof(msg);
+  return (((b2 & 0xff) << 8) | (b1 & 0xff));
 }
 
 /* Read a 32 bit word from a file.  The data is assumed to be little
    endian.  */
-
 static unsigned long
-get_long (FILE *e, const char *msg)
+get_long(FILE *e, const char *msg)
 {
   int b1, b2, b3, b4;
 
-  b1 = getc (e);
-  b2 = getc (e);
-  b3 = getc (e);
-  b4 = getc (e);
-  if (feof (e))
-    unexpected_eof (msg);
+  b1 = getc(e);
+  b2 = getc(e);
+  b3 = getc(e);
+  b4 = getc(e);
+  if (feof(e))
+    unexpected_eof(msg);
   return (((((((b4 & 0xff) << 8)
 	      | (b3 & 0xff)) << 8)
 	    | (b2 & 0xff)) << 8)
 	  | (b1 & 0xff));
 }
 
-/* Read data from a file.  This is a wrapper to do error checking.  */
-
+/* Read data from a file.  This is a wrapper to do error checking: */
 static void
-get_data (FILE *e, unsigned char *p, unsigned long c, const char *msg)
+get_data(FILE *e, unsigned char *p, unsigned long c, const char *msg)
 {
   unsigned long got;
 
-  got = fread (p, 1, c, e);
+  got = fread(p, 1, c, e);
   if (got == c)
     return;
 
-  fatal (_("%s: read of %lu returned %lu"), msg, c, got);
+  fatal(_("%s: read of %lu returned %lu"), msg, c, got);
 }
 
-/* Define an accelerator resource.  */
-
+/* Define an accelerator resource: */
 void
-define_accelerator (struct res_id id, const struct res_res_info *resinfo,
-		    struct accelerator *data)
+define_accelerator(struct res_id id, const struct res_res_info *resinfo,
+                   struct accelerator *data)
 {
   struct res_resource *r;
 
@@ -604,12 +577,11 @@ define_accelerator (struct res_id id, const struct res_res_info *resinfo,
 /* Define a bitmap resource.  Bitmap data is stored in a file.  The
    first 14 bytes of the file are a standard header, which is not
    included in the resource data.  */
-
 #define BITMAP_SKIP (14)
 
 void
-define_bitmap (struct res_id id, const struct res_res_info *resinfo,
-	       const char *filename)
+define_bitmap(struct res_id id, const struct res_res_info *resinfo,
+              const char *filename)
 {
   FILE *e;
   char *real_filename;
@@ -618,27 +590,27 @@ define_bitmap (struct res_id id, const struct res_res_info *resinfo,
   int i;
   struct res_resource *r;
 
-  e = open_file_search (filename, FOPEN_RB, "bitmap file", &real_filename);
+  e = open_file_search(filename, FOPEN_RB, "bitmap file", &real_filename);
 
-  if (stat (real_filename, &s) < 0)
-    fatal (_("stat failed on bitmap file `%s': %s"), real_filename,
-	   strerror (errno));
+  if (stat(real_filename, &s) < 0)
+    fatal(_("stat failed on bitmap file `%s': %s"), real_filename,
+          strerror(errno));
 
-  data = (unsigned char *) res_alloc (s.st_size - BITMAP_SKIP);
+  data = (unsigned char *)res_alloc(s.st_size - BITMAP_SKIP);
 
   for (i = 0; i < BITMAP_SKIP; i++)
-    getc (e);
+    getc(e);
 
-  get_data (e, data, s.st_size - BITMAP_SKIP, real_filename);
+  get_data(e, data, (s.st_size - BITMAP_SKIP), real_filename);
 
-  fclose (e);
-  free (real_filename);
+  fclose(e);
+  free(real_filename);
 
-  r = define_standard_resource (&resources, RT_BITMAP, id,
-				resinfo->language, 0);
+  r = define_standard_resource(&resources, RT_BITMAP, id,
+                               resinfo->language, 0);
 
   r->type = RES_TYPE_BITMAP;
-  r->u.data.length = s.st_size - BITMAP_SKIP;
+  r->u.data.length = (s.st_size - BITMAP_SKIP);
   r->u.data.data = data;
   r->res_info = *resinfo;
 }
@@ -1101,7 +1073,7 @@ define_menuitem (const char *text, int menuid, unsigned long type,
 {
   struct menuitem *mi;
 
-  mi = (struct menuitem *) res_alloc (sizeof *mi);
+  mi = (struct menuitem *)res_alloc(sizeof *mi);
   mi->next = NULL;
   mi->type = type;
   mi->state = state;
@@ -1109,17 +1081,16 @@ define_menuitem (const char *text, int menuid, unsigned long type,
   if (text == NULL)
     mi->text = NULL;
   else
-    unicode_from_ascii ((int *) NULL, &mi->text, text);
+    unicode_from_ascii_old((int *)NULL, &mi->text, text);
   mi->help = help;
   mi->popup = menuitems;
   return mi;
 }
 
-/* Define a messagetable resource.  */
-
+/* Define a messagetable resource: */
 void
-define_messagetable (struct res_id id, const struct res_res_info *resinfo,
-		     const char *filename)
+define_messagetable(struct res_id id, const struct res_res_info *resinfo,
+                    const char *filename)
 {
   FILE *e;
   char *real_filename;
@@ -1203,16 +1174,16 @@ define_rcdata_number (unsigned long val, int dword)
    which appears in a STRINGTABLE statement.  */
 
 void
-define_stringtable (const struct res_res_info *resinfo,
-		    unsigned long stringid, const char *string)
+define_stringtable(const struct res_res_info *resinfo,
+                   unsigned long stringid, const char *string)
 {
   struct res_id id;
   struct res_resource *r;
 
   id.named = 0;
-  id.u.id = (stringid >> 4) + 1;
-  r = define_standard_resource (&resources, RT_STRING, id,
-				resinfo->language, 1);
+  id.u.id = ((stringid >> 4) + 1);
+  r = define_standard_resource(&resources, RT_STRING, id,
+                               resinfo->language, 1);
 
   if (r->type == RES_TYPE_UNINITIALIZED)
     {
@@ -1220,7 +1191,7 @@ define_stringtable (const struct res_res_info *resinfo,
 
       r->type = RES_TYPE_STRINGTABLE;
       r->u.stringtable = ((struct stringtable *)
-			  res_alloc (sizeof (struct stringtable)));
+			  res_alloc(sizeof(struct stringtable)));
       for (i = 0; i < 16; i++)
 	{
 	  r->u.stringtable->strings[i].length = 0;
@@ -1230,17 +1201,16 @@ define_stringtable (const struct res_res_info *resinfo,
       r->res_info = *resinfo;
     }
 
-  unicode_from_ascii (&r->u.stringtable->strings[stringid & 0xf].length,
-		      &r->u.stringtable->strings[stringid & 0xf].string,
-		      string);
+  unicode_from_ascii_old(&r->u.stringtable->strings[stringid & 0xf].length,
+                         &r->u.stringtable->strings[stringid & 0xf].string,
+                         string);
 }
 
-/* Define a user data resource where the data is in the rc file.  */
-
+/* Define a user data resource where the data is in the rc file: */
 void
-define_user_data (struct res_id id, struct res_id type,
-		  const struct res_res_info *resinfo,
-		  struct rcdata_item *data)
+define_user_data(struct res_id id, struct res_id type,
+                 const struct res_res_info *resinfo,
+                 struct rcdata_item *data)
 {
   struct res_id ids[3];
   struct res_resource *r;
@@ -1250,7 +1220,7 @@ define_user_data (struct res_id id, struct res_id type,
   ids[2].named = 0;
   ids[2].u.id = resinfo->language;
 
-  r = define_resource (& resources, 3, ids, 0);
+  r = define_resource(& resources, 3, ids, 0);
   r->type = RES_TYPE_USERDATA;
   r->u.userdata = data;
   r->res_info = *resinfo;
@@ -1352,15 +1322,15 @@ define_versioninfo (struct res_id id, int language,
 /* Add string version info to a list of version information.  */
 
 struct ver_info *
-append_ver_stringfileinfo (struct ver_info *verinfo, const char *language,
-			   struct ver_stringinfo *strings)
+append_ver_stringfileinfo(struct ver_info *verinfo, const char *language,
+                          struct ver_stringinfo *strings)
 {
   struct ver_info *vi, **pp;
 
-  vi = (struct ver_info *) res_alloc (sizeof *vi);
+  vi = (struct ver_info *)res_alloc(sizeof *vi);
   vi->next = NULL;
   vi->type = VERINFO_STRING;
-  unicode_from_ascii ((int *) NULL, &vi->u.string.language, language);
+  unicode_from_ascii_old((int *)NULL, &vi->u.string.language, language);
   vi->u.string.strings = strings;
 
   for (pp = &verinfo; *pp != NULL; pp = &(*pp)->next)
@@ -1373,15 +1343,15 @@ append_ver_stringfileinfo (struct ver_info *verinfo, const char *language,
 /* Add variable version info to a list of version information.  */
 
 struct ver_info *
-append_ver_varfileinfo (struct ver_info *verinfo, const char *key,
-			struct ver_varinfo *var)
+append_ver_varfileinfo(struct ver_info *verinfo, const char *key,
+                       struct ver_varinfo *var)
 {
   struct ver_info *vi, **pp;
 
-  vi = (struct ver_info *) res_alloc (sizeof *vi);
+  vi = (struct ver_info *)res_alloc(sizeof *vi);
   vi->next = NULL;
   vi->type = VERINFO_VAR;
-  unicode_from_ascii ((int *) NULL, &vi->u.var.key, key);
+  unicode_from_ascii_old((int *)NULL, &vi->u.var.key, key);
   vi->u.var.var = var;
 
   for (pp = &verinfo; *pp != NULL; pp = &(*pp)->next)
@@ -1391,18 +1361,17 @@ append_ver_varfileinfo (struct ver_info *verinfo, const char *key,
   return verinfo;
 }
 
-/* Append version string information to a list.  */
-
+/* Append version string information to a list: */
 struct ver_stringinfo *
-append_verval (struct ver_stringinfo *strings, const char *key,
-	       const char *value)
+append_verval(struct ver_stringinfo *strings, const char *key,
+              const char *value)
 {
   struct ver_stringinfo *vs, **pp;
 
-  vs = (struct ver_stringinfo *) res_alloc (sizeof *vs);
+  vs = (struct ver_stringinfo *)res_alloc(sizeof *vs);
   vs->next = NULL;
-  unicode_from_ascii ((int *) NULL, &vs->key, key);
-  unicode_from_ascii ((int *) NULL, &vs->value, value);
+  unicode_from_ascii_old((int *)NULL, &vs->key, key);
+  unicode_from_ascii_old((int *)NULL, &vs->value, value);
 
   for (pp = &strings; *pp != NULL; pp = &(*pp)->next)
     ;
@@ -2594,3 +2563,5 @@ write_rc_filedata (FILE *e, unsigned long length, const unsigned char *data)
       fprintf (e, "\n");
     }
 }
+
+/* EOF */

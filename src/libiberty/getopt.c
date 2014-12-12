@@ -83,7 +83,8 @@
 #ifndef _
 /* This is for other GNU distributions with internationalized messages.
    When compiling libc, the _ macro is predefined.  */
-# if (HAVE_LIBINTL_H && ENABLE_NLS) || defined _LIBC
+# if (HAVE_LIBINTL_H && (defined(ENABLE_NLS) && ENABLE_NLS)) \
+     || defined _LIBC
 #  include <libintl.h>
 #  define _(msgid)	gettext (msgid)
 # else

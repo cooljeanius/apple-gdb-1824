@@ -68,7 +68,7 @@ unit_to_type (ia64_insn opcode, enum ia64_unit unit)
 int
 print_insn_ia64 (bfd_vma memaddr, struct disassemble_info *info)
 {
-  ia64_insn t0, t1, slot[3], template, s_bit, insn;
+  ia64_insn t0, t1, slot[3], our_template, s_bit, insn;
   int slotnum, j, status, need_comma, retval, slot_multiplier;
   const struct ia64_operand *odesc;
   const struct ia64_opcode *idesc;
@@ -100,20 +100,20 @@ print_insn_ia64 (bfd_vma memaddr, struct disassemble_info *info)
   t0 = bfd_getl64 (bundle);
   t1 = bfd_getl64 (bundle + 8);
   s_bit = t0 & 1;
-  template = (t0 >> 1) & 0xf;
+  our_template = (t0 >> 1) & 0xf;
   slot[0] = (t0 >>  5) & 0x1ffffffffffLL;
   slot[1] = ((t0 >> 46) & 0x3ffff) | ((t1 & 0x7fffff) << 18);
   slot[2] = (t1 >> 23) & 0x1ffffffffffLL;
 
-  tname = ia64_templ_desc[template].name;
+  tname = ia64_templ_desc[our_template].name;
   if (slotnum == 0)
     (*info->fprintf_func) (info->stream, "[%s] ", tname);
   else
     (*info->fprintf_func) (info->stream, "      ");
 
-  unit = ia64_templ_desc[template].exec_unit[slotnum];
+  unit = ia64_templ_desc[our_template].exec_unit[slotnum];
 
-  if (template == 2 && slotnum == 1)
+  if (our_template == 2 && slotnum == 1)
     {
       /* skip L slot in MLI template: */
       slotnum = 2;
@@ -130,42 +130,40 @@ print_insn_ia64 (bfd_vma memaddr, struct disassemble_info *info)
     goto decoding_failed;
 
   /* print predicate, if any: */
-
   if ((idesc->flags & IA64_OPCODE_NO_PRED)
       || (insn & 0x3f) == 0)
-    (*info->fprintf_func) (info->stream, "      ");
+    (*info->fprintf_func)(info->stream, "      ");
   else
-    (*info->fprintf_func) (info->stream, "(p%02d) ", (int)(insn & 0x3f));
+    (*info->fprintf_func)(info->stream, "(p%02d) ", (int)(insn & 0x3f));
 
   /* now the actual instruction: */
-
-  (*info->fprintf_func) (info->stream, "%s", idesc->name);
+  (*info->fprintf_func)(info->stream, "%s", idesc->name);
   if (idesc->operands[0])
-    (*info->fprintf_func) (info->stream, " ");
+    (*info->fprintf_func)(info->stream, " ");
 
   need_comma = 0;
-  for (j = 0; j < NELEMS (idesc->operands) && idesc->operands[j]; ++j)
+  for (j = 0; j < NELEMS(idesc->operands) && idesc->operands[j]; ++j)
     {
       odesc = elf64_ia64_operands + idesc->operands[j];
 
       if (need_comma)
-	(*info->fprintf_func) (info->stream, ",");
+	(*info->fprintf_func)(info->stream, ",");
 
-      if (odesc - elf64_ia64_operands == IA64_OPND_IMMU64)
+      if ((odesc - elf64_ia64_operands) == IA64_OPND_IMMU64)
 	{
 	  /* special case of 64 bit immediate load: */
 	  value = ((insn >> 13) & 0x7f) | (((insn >> 27) & 0x1ff) << 7)
 	    | (((insn >> 22) & 0x1f) << 16) | (((insn >> 21) & 0x1) << 21)
 	    | (slot[1] << 22) | (((insn >> 36) & 0x1) << 63);
 	}
-      else if (odesc - elf64_ia64_operands == IA64_OPND_IMMU62)
+      else if ((odesc - elf64_ia64_operands) == IA64_OPND_IMMU62)
         {
           /* 62-bit immediate for nop.x/break.x */
           value = ((slot[1] & 0x1ffffffffffLL) << 21)
             | (((insn >> 36) & 0x1) << 20)
             | ((insn >> 6) & 0xfffff);
         }
-      else if (odesc - elf64_ia64_operands == IA64_OPND_TGT64)
+      else if ((odesc - elf64_ia64_operands) == IA64_OPND_TGT64)
 	{
 	  /* 60-bit immediate for long branches. */
 	  value = (((insn >> 13) & 0xfffff)
@@ -189,7 +187,7 @@ print_insn_ia64 (bfd_vma memaddr, struct disassemble_info *info)
 	    break;
 
 	  case IA64_OPND_CLASS_REG:
-	    if (odesc->str[0] == 'a' && odesc->str[1] == 'r')
+	    if ((odesc->str[0] == 'a') && (odesc->str[1] == 'r'))
 	      {
 		switch (value)
 		  {
@@ -250,13 +248,13 @@ print_insn_ia64 (bfd_vma memaddr, struct disassemble_info *info)
 	  }
 
       need_comma = 1;
-      if (j + 1 == idesc->num_outputs)
+      if ((j + 1) == idesc->num_outputs)
 	{
 	  (*info->fprintf_func) (info->stream, "=");
 	  need_comma = 0;
 	}
     }
-  if (slotnum + 1 == ia64_templ_desc[template].group_boundary 
+  if (slotnum + 1 == ia64_templ_desc[our_template].group_boundary
       || ((slotnum == 2) && s_bit))
     (*info->fprintf_func) (info->stream, ";;");
 
@@ -264,7 +262,7 @@ print_insn_ia64 (bfd_vma memaddr, struct disassemble_info *info)
   ia64_free_opcode ((struct ia64_opcode *)idesc);
  failed:
   if (slotnum == 2)
-    retval += 16 - 3*slot_multiplier;
+    retval += (16 - (3 * slot_multiplier));
   return retval;
 
  decoding_failed:

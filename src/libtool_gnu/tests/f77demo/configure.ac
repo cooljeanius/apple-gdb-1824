@@ -1,4 +1,4 @@
-# Process this file with autoconf to create configure. -*- autoconf -*-
+dnl# Process this file with autoconf to create configure. -*- autoconf -*-
 #
 #   Copyright (C) 2001, 2003, 2005, 2007 Free Software Foundation, Inc.
 #
@@ -21,21 +21,22 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 ####
 
-AC_PREREQ([2.54])
+AC_PREREQ([2.54])dnl
 
 ## ------------------------ ##
-## Autoconf initialisation. ##
+## Autoconf initialization. ##
 ## ------------------------ ##
 AC_INIT([f77demo],[1.0],[bug-libtool@gnu.org])
 AC_CONFIG_HEADERS([config.h:config-h.in])
 AC_CONFIG_SRCDIR([foof.f])
-AC_CONFIG_AUX_DIR([../../libltdl/config])
+AC_CONFIG_AUX_DIR([../../libltdl/config])dnl
 
-AC_ARG_WITH([dist],[AS_HELP_STRING([--with-dist],
-				   [ignore errors not affecting `make dist'])])
+AC_ARG_WITH([dist],
+            [AS_HELP_STRING([--with-dist],
+			    [ignore errors not affecting `make dist'])])dnl
 
 ## ------------------------ ##
-## Automake Initialisation. ##
+## Automake Initialization. ##
 ## ------------------------ ##
 AM_INIT_AUTOMAKE([foreign])
 AM_MAINTAINER_MODE
@@ -53,21 +54,21 @@ AC_PROG_F77
 dnl# When configuring for `make dist' purposes, skip checks that may
 dnl# yield fatal errors when there is no working F77 compiler.
 if test -z "${with_dist}"; then
-  dnl# Check the flags needed to link f77 programs with ld (i.e. cc)
+  dnl# Check the flags needed to link f77 programs with ld (i.e. cc):
   AC_F77_LIBRARY_LDFLAGS
-  dnl# Check for underscoring of external names
+  dnl# Check for underscoring of external names:
   AC_F77_WRAPPERS
 fi
 
 ## ----------------------- ##
-## Libtool initialisation. ##
+## Libtool initialization. ##
 ## ----------------------- ##
 LT_INIT([dlopen win32-dll])
-LT_LANG([Fortran 77])
-AC_SUBST([LIBTOOL_DEPS])
+LT_LANG([Fortran 77])dnl
+AC_SUBST([LIBTOOL_DEPS])dnl
 
 ## -------- ##
 ## Outputs. ##
 ## -------- ##
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile])dnl
 AC_OUTPUT

@@ -114,7 +114,7 @@
 # define YY_YY_DEFPARSE_H_INCLUDED
 /* Enabling traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -156,36 +156,6 @@ extern int yydebug;
      NUMBER = 285
    };
 #endif
-/* Tokens.  */
-#define NAME 258
-#define LIBRARY 259
-#define DESCRIPTION 260
-#define STACKSIZE 261
-#define HEAPSIZE 262
-#define CODE 263
-#define DATA 264
-#define SECTIONS 265
-#define EXPORTS 266
-#define IMPORTS 267
-#define VERSIONK 268
-#define BASE 269
-#define CONSTANT 270
-#define READ 271
-#define WRITE 272
-#define EXECUTE 273
-#define SHARED 274
-#define NONSHARED 275
-#define NONAME 276
-#define PRIVATE 277
-#define SINGLE 278
-#define MULTIPLE 279
-#define INITINSTANCE 280
-#define INITGLOBAL 281
-#define TERMINSTANCE 282
-#define TERMGLOBAL 283
-#define ID 284
-#define NUMBER 285
-
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -199,7 +169,7 @@ typedef union YYSTYPE
 
 
 /* Line 387 of yacc.c  */
-#line 203 "defparse.c"
+#line 173 "defparse.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -227,7 +197,7 @@ int yyparse ();
 /* Copy the second part of user declarations.  */
 
 /* Line 390 of yacc.c  */
-#line 231 "defparse.c"
+#line 201 "defparse.c"
 
 #ifdef short
 # undef short
@@ -561,7 +531,7 @@ static const yytype_uint8 yyrline[] =
 };
 #endif
 
-#if YYDEBUG || YYERROR_VERBOSE || 0
+#if YYDEBUG || YYERROR_VERBOSE || 1
 /* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
@@ -1736,9 +1706,9 @@ yyreduce:
   case 54:
 /* Line 1787 of yacc.c  */
 #line 143 "defparse.y"
-    { 
-	    char *name = xmalloc (strlen ((yyvsp[(1) - (3)].id)) + 1 + strlen ((yyvsp[(3) - (3)].id)) + 1);
-	    sprintf (name, "%s.%s", (yyvsp[(1) - (3)].id), (yyvsp[(3) - (3)].id));
+    {
+	    char *name = (char *)xmalloc(strlen((yyvsp[(1) - (3)].id)) + 1 + strlen((yyvsp[(3) - (3)].id)) + 1);
+	    sprintf(name, "%s.%s", (yyvsp[(1) - (3)].id), (yyvsp[(3) - (3)].id));
 	    (yyval.id) = name;
 	  }
     break;
@@ -1770,9 +1740,9 @@ yyreduce:
   case 59:
 /* Line 1787 of yacc.c  */
 #line 159 "defparse.y"
-    { 
-	    char *name = xmalloc (strlen ((yyvsp[(2) - (4)].id)) + 1 + strlen ((yyvsp[(4) - (4)].id)) + 1);
-	    sprintf (name, "%s.%s", (yyvsp[(2) - (4)].id), (yyvsp[(4) - (4)].id));
+    {
+	    char *name = (char *)xmalloc(strlen((yyvsp[(2) - (4)].id)) + 1 + strlen((yyvsp[(4) - (4)].id)) + 1);
+	    sprintf(name, "%s.%s", (yyvsp[(2) - (4)].id), (yyvsp[(4) - (4)].id));
 	    (yyval.id) = name;
 	  }
     break;
@@ -1797,7 +1767,7 @@ yyreduce:
 
 
 /* Line 1787 of yacc.c  */
-#line 1801 "defparse.c"
+#line 1771 "defparse.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires

@@ -28,7 +28,9 @@
 ## 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 #####
 
-ACLOCAL_AMFLAGS = -I m4 --install
+## cannot use '--install'; that will trash our local (newer) copies of
+## libtool.m4 and friends:
+ACLOCAL_AMFLAGS = -I m4
 AUTOMAKE_OPTIONS = foreign subdir-objects
 AM_CPPFLAGS =
 AM_LDFLAGS =

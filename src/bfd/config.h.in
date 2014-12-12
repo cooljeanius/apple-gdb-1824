@@ -1,13 +1,25 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+
+#ifndef HAVE_CONFIG_H
+# define HAVE_CONFIG_H 1
+#endif /* !HAVE_CONFIG_H */
+
+
+
 /* Check that config.h is #included before system headers
-  * (this works only for glibc, but that should be enough).  */
+ * (this works only for glibc, but that should be enough).  */
 #if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
 #  warning "config.h should be #included before system headers"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ */
-#define __CONFIG_H__ 1
+#ifndef __CONFIG_H__
+# define __CONFIG_H__ 1
+# ifndef __BFD_CONFIG_H__
+#  define __BFD_CONFIG_H__ 1
+# endif /* __BFD_CONFIG_H__ */
+
 
 /* Define if building universal (internal helper macro) */
 #undef AC_APPLE_UNIVERSAL_BUILD
@@ -233,7 +245,7 @@
 /* Define to 1 if you have the `isupper' function. */
 #undef HAVE_ISUPPER
 
-/* Define if your locale.h file contains LC_MESSAGES. */
+/* Define if your <locale.h> file defines LC_MESSAGES. */
 #undef HAVE_LC_MESSAGES
 
 /* Define to 1 if you have the `c' library (-lc). */
@@ -873,3 +885,7 @@
 /* Define to empty if the keyword `volatile' does not work. Warning: valid
    code using `volatile' can become incorrect without. Disable with care. */
 #undef volatile
+
+
+#endif /* __CONFIG_H__ */
+

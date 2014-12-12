@@ -1,7 +1,7 @@
 /* bdfwin.c: Support for memory-mapped windows into a BFD.
-   Copyright 1995, 1996, 2001, 2002, 2003 Free Software Foundation, Inc.
-   Written by Cygnus Support.
-
+ * Copyright 1995, 1996, 2001, 2002, 2003 Free Software Foundation, Inc.
+ * Written by Cygnus Support.  */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,8 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA
+*/
 
 #include "sysdep.h"
 
@@ -26,20 +27,20 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #undef HAVE_MPROTECT
 
 #if HAVE_MMAP || HAVE_MPROTECT || HAVE_MADVISE
-#include <sys/types.h>
-#include <sys/mman.h>
-#endif
+# include <sys/types.h>
+# include <sys/mman.h>
+#endif /* HAVE_MMAP || HAVE_MPROTECT || HAVE_MADVISE */
 
 #undef MAP_SHARED
 #define MAP_SHARED MAP_PRIVATE
 
 #ifndef MAP_FILE
-#define MAP_FILE 0
-#endif
+# define MAP_FILE 0
+#endif /* !MAP_FILE */
 
 #ifndef HAVE_GETPAGESIZE
-#define getpagesize() 2048
-#endif
+# define getpagesize() 2048
+#endif /* !HAVE_GETPAGESIZE */
 
 static bfd_boolean _bfd_get_file_window_mmap
 PARAMS ((bfd *abfd, ufile_ptr offset, bfd_size_type size,
@@ -73,7 +74,7 @@ INTERNAL_DEFINITION
 */
 
 void
-bfd_init_window (bfd_window *windowp)
+bfd_init_window(bfd_window *windowp)
 {
   windowp->data = 0;
   windowp->i = 0;
@@ -81,7 +82,7 @@ bfd_init_window (bfd_window *windowp)
 }
 
 /* Currently, if USE_MMAP is undefined, none if the window stuff is
-   used.  Okay, so it's mis-named.  At least the command-line option
+   used.  Okay, so it is mis-named.  At least the command-line option
    "--without-mmap" is more obvious than "--without-windows" or some
    such.  */
 
@@ -139,33 +140,29 @@ static int ok_to_map = 1;
 
 #if HAVE_MMAP
 static bfd_boolean
-_bfd_get_file_window_mmap (abfd, offset, size, windowp, i, writable)
-     bfd *abfd;
-     ufile_ptr offset;
-     bfd_size_type size;
-     bfd_window *windowp;
-     bfd_window_internal *i;
-     bfd_boolean writable;
+_bfd_get_file_window_mmap(bfd *abfd, ufile_ptr offset, bfd_size_type size,
+                          bfd_window *windowp, bfd_window_internal *i,
+                          bfd_boolean writable)
 {
   static size_t pagesize;
   bfd_size_type size_to_alloc = size;
 
   if (debug_windows)
-    fprintf (stderr, "bfd_get_file_window (%p, %6ld, %6ld, %p<%p,%lx,%p>, %d)",
-	     abfd, (long) offset, (long) size,
-	     windowp, windowp->data, (unsigned long) windowp->size,
-	     windowp->i, writable);
+    fprintf(stderr,
+            "bfd_get_file_window (%p, %6ld, %6ld, %p<%p,%lx,%p>, %d)",
+            abfd, (long)offset, (long)size, windowp, windowp->data,
+            (unsigned long)windowp->size, windowp->i, writable);
 
-  /* Make sure we know the page size, so we can be friendly to mmap.  */
+  /* Make sure we know the page size, so we can be friendly to mmap: */
   if (pagesize == 0)
-    pagesize = getpagesize ();
+    pagesize = getpagesize();
   if (pagesize == 0)
-    abort ();
+    abort();
 
-#ifdef HAVE_MMAP
+# ifdef HAVE_MMAP
   if (ok_to_map
-      && (i->data == 0 || i->mapped == 1)
-      && (abfd->flags & BFD_IN_MEMORY) == 0)
+      && ((i->data == 0) || (i->mapped == 1))
+      && ((abfd->flags & BFD_IN_MEMORY) == 0))
     {
       file_ptr file_offset, offset2;
       size_t real_size;
@@ -190,7 +187,7 @@ _bfd_get_file_window_mmap (abfd, offset, size, windowp, i, writable)
       real_size = real_size + pagesize - 1;
       real_size -= real_size % pagesize;
 
-      /* If we're re-using a memory region, make sure it's big enough.  */
+      /* If we are re-using a memory region, make sure it is big enough: */
       if (i->data && i->size < size)
 	{
 	  munmap (i->data, i->size);
@@ -230,20 +227,20 @@ _bfd_get_file_window_mmap (abfd, offset, size, windowp, i, writable)
       else
 	fprintf (stderr, _("not mapping: env var not set\n"));
     }
-#else
+# else
   ok_to_map = 0;
-#endif
+# endif /* HAVE_MMAP */
 
-#ifdef HAVE_MPROTECT
+# ifdef HAVE_MPROTECT
   if (!writable)
     {
-      size_to_alloc += pagesize - 1;
-      size_to_alloc -= size_to_alloc % pagesize;
+      size_to_alloc += (pagesize - 1);
+      size_to_alloc -= (size_to_alloc % pagesize);
     }
-#endif
+# endif /* HAVE_MPROTECT */
   if (debug_windows)
-    fprintf (stderr, "\n\t%s(%6ld)",
-	     i->data ? "realloc" : " malloc", (long) size_to_alloc);
+    fprintf(stderr, "\n\t%s(%6ld)",
+            (i->data ? "realloc" : " malloc"), (long)size_to_alloc);
   i->data = bfd_realloc (i->data, size_to_alloc);
   if (debug_windows)
     fprintf (stderr, "\t-> %p\n", i->data);
@@ -254,21 +251,21 @@ _bfd_get_file_window_mmap (abfd, offset, size, windowp, i, writable)
 	return TRUE;
       return FALSE;
     }
-  if (bfd_seek (abfd, offset, SEEK_SET) != 0)
+  if (bfd_seek(abfd, offset, SEEK_SET) != 0)
     return FALSE;
-  i->size = bfd_bread (i->data, size, abfd);
+  i->size = bfd_bread(i->data, size, abfd);
   if (i->size != size)
     return FALSE;
   i->mapped = 0;
-#ifdef HAVE_MPROTECT
+# ifdef HAVE_MPROTECT
   if (!writable)
     {
       if (debug_windows)
-	fprintf (stderr, "\tmprotect (%p, %ld, PROT_READ)\n", i->data,
-		 (long) i->size);
-      mprotect (i->data, i->size, PROT_READ);
+	fprintf(stderr, "\tmprotect (%p, %ld, PROT_READ)\n", i->data,
+                (long)i->size);
+      mprotect(i->data, i->size, PROT_READ);
     }
-#endif
+# endif /* HAVE_MPROTECT */
   windowp->data = i->data;
   windowp->size = i->size;
   return TRUE;
@@ -277,61 +274,58 @@ _bfd_get_file_window_mmap (abfd, offset, size, windowp, i, writable)
 
 #if ! HAVE_MMAP
 static bfd_boolean
-_bfd_get_file_window_malloc (abfd, offset, size, windowp, i, writable)
-     bfd *abfd;
-     ufile_ptr offset;
-     bfd_size_type size;
-     bfd_window *windowp;
-     bfd_window_internal *i;
-     bfd_boolean writable ATTRIBUTE_UNUSED;
+_bfd_get_file_window_malloc(bfd *abfd, ufile_ptr offset,
+                            bfd_size_type size, bfd_window *windowp,
+                            bfd_window_internal *i,
+                            bfd_boolean writable ATTRIBUTE_UNUSED)
 {
   static size_t pagesize;
   size_t size_to_alloc = size;
 
-  /* Make sure we know the page size, so we can be friendly to mmap.  */
+  /* Make sure we know the page size, so we can be friendly to mmap: */
   if (pagesize == 0)
-    pagesize = getpagesize ();
+    pagesize = getpagesize();
   if (pagesize == 0)
-    abort ();
+    abort();
 
-#if HAVE_MPROTECT
+# if HAVE_MPROTECT
   if (!writable)
     {
-      size_to_alloc += pagesize - 1;
-      size_to_alloc -= size_to_alloc % pagesize;
+      size_to_alloc += (pagesize - 1);
+      size_to_alloc -= (size_to_alloc % pagesize);
     }
-#endif
+# endif /* HAVE_MPROTECT */
 
   if (debug_windows)
-    fprintf (stderr, "\n\t%s(%6ld)",
-	     i->data ? "realloc" : " malloc", (long) size_to_alloc);
-  i->data = (PTR) bfd_realloc (i->data, size_to_alloc);
+    fprintf(stderr, "\n\t%s(%6ld)",
+            (i->data ? "realloc" : " malloc"), (long)size_to_alloc);
+  i->data = (PTR)bfd_realloc(i->data, size_to_alloc);
   if (debug_windows)
-    fprintf (stderr, "\t-> %p\n", i->data);
+    fprintf(stderr, "\t-> %p\n", i->data);
   i->refcount = 1;
   if (i->data == NULL)
     {
       if (size_to_alloc == 0)
 	return TRUE;
-      bfd_set_error (bfd_error_no_memory);
+      bfd_set_error(bfd_error_no_memory);
       return FALSE;
     }
-  if (bfd_seek (abfd, offset, SEEK_SET) != 0)
+  if (bfd_seek(abfd, offset, SEEK_SET) != 0)
     return FALSE;
-  i->size = bfd_bread (i->data, size, abfd);
+  i->size = bfd_bread(i->data, size, abfd);
   if (i->size != size)
     return FALSE;
   i->mapped = 0;
 
-#if HAVE_MPROTECT
+# if HAVE_MPROTECT
   if (!writable)
     {
       if (debug_windows)
-	fprintf (stderr, "\tmprotect (%p, %ld, PROT_READ)\n", i->data,
-		 (long) i->size);
-      mprotect (i->data, i->size, PROT_READ);
+	fprintf(stderr, "\tmprotect (%p, %ld, PROT_READ)\n", i->data,
+                (long)i->size);
+      mprotect(i->data, i->size, PROT_READ);
     }
-#endif
+# endif /* HAVE_MPROTECT */
 
   windowp->data = i->data;
   windowp->size = i->size;
@@ -340,26 +334,22 @@ _bfd_get_file_window_malloc (abfd, offset, size, windowp, i, writable)
 #endif /* ! HAVE_MMAP */
 
 bfd_boolean
-bfd_get_file_window (abfd, offset, size, windowp, writable)
-     bfd *abfd;
-     ufile_ptr offset;
-     bfd_size_type size;
-     bfd_window *windowp;
-     bfd_boolean writable;
+bfd_get_file_window(bfd *abfd, ufile_ptr offset, bfd_size_type size,
+                    bfd_window *windowp, bfd_boolean writable)
 {
   bfd_window_internal *i = windowp->i;
 
   if (debug_windows)
-    fprintf (stderr, "bfd_get_file_window (%p, %6ld, %6ld, %p<%p,%lx,%p>, %d)",
-	     abfd, (long) offset, (long) size,
-	     windowp, windowp->data, (unsigned long) windowp->size,
-	     windowp->i, writable);
+    fprintf(stderr,
+            "bfd_get_file_window (%p, %6ld, %6ld, %p<%p,%lx,%p>, %d)",
+            abfd, (long)offset, (long)size, windowp, windowp->data,
+            (unsigned long)windowp->size, windowp->i, writable);
 
-  BFD_ASSERT (i == NULL);
+  BFD_ASSERT(i == NULL);
 
   if (i == NULL)
     {
-      windowp->i = i = (bfd_window_internal *) bfd_zmalloc (sizeof (bfd_window_internal));
+      windowp->i = i = (bfd_window_internal *)bfd_zmalloc(sizeof(bfd_window_internal));
       if (i == 0)
 	return FALSE;
       i->data = 0;
@@ -367,17 +357,17 @@ bfd_get_file_window (abfd, offset, size, windowp, writable)
 
   if ((abfd->flags & BFD_IN_MEMORY) != 0)
     {
-      struct bfd_in_memory *bim = (struct bfd_in_memory *) abfd->iostream;
-      BFD_ASSERT (bim != NULL);
+      struct bfd_in_memory *bim = (struct bfd_in_memory *)abfd->iostream;
+      BFD_ASSERT(bim != NULL);
 
       if ((offset > bim->size) || ((bim->size - offset) < size))
 	{
-	  bfd_set_error (bfd_error_file_truncated);
+	  bfd_set_error(bfd_error_file_truncated);
 	  return FALSE;
 	}
 
       i->next = NULL;
-      i->data = bim->buffer + offset;
+      i->data = (bim->buffer + offset);
       i->size = size;
       i->refcount = 1;
       i->mapped = 2;

@@ -26,6 +26,10 @@
    when name truncated. No way to specify pos_end. Error messages should be
    more consistent.  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "bfd.h"
 #include "libiberty.h"
 #include "progress.h"
@@ -37,17 +41,17 @@
 #include "binemul.h"
 #include <sys/stat.h>
 
-#ifdef __GO32___
-#define EXT_NAME_LEN 3		/* bufflen of addition to name if it's MS-DOS */
+#ifdef __GO32__
+# define EXT_NAME_LEN 3	 /* bufflen of addition to name if it is MS-DOS */
 #else
-#define EXT_NAME_LEN 6		/* ditto for *NIX */
-#endif
+# define EXT_NAME_LEN 6	 /* ditto for *NIX */
+#endif /* __GO32__ */
 
 /* We need to open files in binary modes on system where that makes a
    difference.  */
 #ifndef O_BINARY
-#define O_BINARY 0
-#endif
+# define O_BINARY 0
+#endif /* !O_BINARY */
 
 /* Kludge declaration from BFD!  This is ugly!  FIXME!  XXX */
 
@@ -216,41 +220,41 @@ usage (int help)
   if (! is_ranlib)
     {
       /* xgettext:c-format */
-      fprintf (s, _("Usage: %s [emulation options] [-]{dmpqrstx}[abcfilNoPsSuvV] [member-name] [count] archive-file file...\n"),
-	       program_name);
+      fprintf(s, _("Usage: %s [emulation options] [-]{dmpqrstx}[abcfilNoPsSuvV] [member-name] [count] archive-file file...\n"),
+              program_name);
       /* xgettext:c-format */
-      fprintf (s, _("       %s -M [<mri-script]\n"), program_name);
-      fprintf (s, _(" commands:\n"));
-      fprintf (s, _("  d            - delete file(s) from the archive\n"));
-      fprintf (s, _("  m[ab]        - move file(s) in the archive\n"));
-      fprintf (s, _("  p            - print file(s) found in the archive\n"));
-      fprintf (s, _("  q[f]         - quick append file(s) to the archive\n"));
-      fprintf (s, _("  r[ab][f][u]  - replace existing or insert new file(s) into the archive\n"));
-      fprintf (s, _("  t            - display contents of archive\n"));
-      fprintf (s, _("  x[o]         - extract file(s) from the archive\n"));
-      fprintf (s, _(" command specific modifiers:\n"));
-      fprintf (s, _("  [a]          - put file(s) after [member-name]\n"));
-      fprintf (s, _("  [b]          - put file(s) before [member-name] (same as [i])\n"));
-      fprintf (s, _("  [N]          - use instance [count] of name\n"));
-      fprintf (s, _("  [f]          - truncate inserted file names\n"));
-      fprintf (s, _("  [P]          - use full path names when matching\n"));
-      fprintf (s, _("  [o]          - preserve original dates\n"));
-      fprintf (s, _("  [u]          - only replace files that are newer than current archive contents\n"));
-      fprintf (s, _(" generic modifiers:\n"));
-      fprintf (s, _("  [c]          - do not warn if the library had to be created\n"));
-      fprintf (s, _("  [s]          - create an archive index (cf. ranlib)\n"));
-      fprintf (s, _("  [S]          - do not build a symbol table\n"));
-      fprintf (s, _("  [v]          - be verbose\n"));
-      fprintf (s, _("  [V]          - display the version number\n"));
+      fprintf(s, _("       %s -M [<mri-script]\n"), program_name);
+      fprintf(s, _(" commands:\n"));
+      fprintf(s, _("  d            - delete file(s) from the archive\n"));
+      fprintf(s, _("  m[ab]        - move file(s) in the archive\n"));
+      fprintf(s, _("  p            - print file(s) found in the archive\n"));
+      fprintf(s, _("  q[f]         - quick append file(s) to the archive\n"));
+      fprintf(s, _("  r[ab][f][u]  - replace existing or insert new file(s) into the archive\n"));
+      fprintf(s, _("  t            - display contents of archive\n"));
+      fprintf(s, _("  x[o]         - extract file(s) from the archive\n"));
+      fprintf(s, _(" command specific modifiers:\n"));
+      fprintf(s, _("  [a]          - put file(s) after [member-name]\n"));
+      fprintf(s, _("  [b]          - put file(s) before [member-name] (same as [i])\n"));
+      fprintf(s, _("  [N]          - use instance [count] of name\n"));
+      fprintf(s, _("  [f]          - truncate inserted file names\n"));
+      fprintf(s, _("  [P]          - use full path names when matching\n"));
+      fprintf(s, _("  [o]          - preserve original dates\n"));
+      fprintf(s, _("  [u]          - only replace files that are newer than current archive contents\n"));
+      fprintf(s, _(" generic modifiers:\n"));
+      fprintf(s, _("  [c]          - do not warn if the library had to be created\n"));
+      fprintf(s, _("  [s]          - create an archive index (cf. ranlib)\n"));
+      fprintf(s, _("  [S]          - do not build a symbol table\n"));
+      fprintf(s, _("  [v]          - be verbose\n"));
+      fprintf(s, _("  [V]          - display the version number\n"));
 
-      ar_emul_usage (s);
+      ar_emul_usage(s);
     }
   else
     {
       /* xgettext:c-format */
-      fprintf (s, _("Usage: %s [options] archive\n"), program_name);
-      fprintf (s, _(" Generate an index to speed access to archives\n"));
-      fprintf (s, _(" The options are:\n\
+      fprintf(s, _("Usage: %s [options] archive\n"), program_name);
+      fprintf(s, _(" Generate an index to speed access to archives\n"));
+      fprintf(s, _(" The options are:\n\
   -h --help                    Print this help message\n\
   -V --version                 Print version information\n"));
     }
@@ -258,9 +262,9 @@ usage (int help)
   list_supported_targets (program_name, stderr);
 
   if (help)
-    fprintf (s, _("Report bugs to %s\n"), REPORT_BUGS_TO);
+    fprintf(s, _("Report bugs to %s\n"), REPORT_BUGS_TO);
 
-  xexit (help ? 0 : 1);
+  xexit(help ? 0 : 1);
 }
 
 /* Normalize a file name specified on the command line into a file
@@ -284,7 +288,7 @@ normalize (const char *file, bfd *abfd)
     if (filename == NULL && file[0] != '\0' && file[1] == ':')
       filename = file + 1;
   }
-#endif
+#endif /* HAVE_DOS_BASED_FILE_SYSTEM */
   if (filename != (char *) NULL)
     filename++;
   else
@@ -335,11 +339,16 @@ main (int argc, char **argv)
 {
   char *arg_ptr;
   char c;
-  enum
-    {
-      none = 0, delete, replace, print_table,
-      print_files, extract, move, quick_append
-    } operation = none;
+  enum {
+    none = 0,
+    delete_it,
+    replace,
+    print_table,
+    print_files,
+    extract,
+    move,
+    quick_append
+  } operation = none;
   int arg_index;
   char **files;
   int file_count;
@@ -350,10 +359,10 @@ main (int argc, char **argv)
 
 #if defined (HAVE_SETLOCALE) && defined (HAVE_LC_MESSAGES)
   setlocale (LC_MESSAGES, "");
-#endif
+#endif /* HAVE_SETLOCALE && HAVE_LC_MESSAGES */
 #if defined (HAVE_SETLOCALE)
   setlocale (LC_CTYPE, "");
-#endif
+#endif /* HAVE_SETLOCALE */
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
@@ -374,7 +383,7 @@ main (int argc, char **argv)
 	if (temp == NULL && program_name[0] != '\0' && program_name[1] == ':')
 	  temp = program_name + 1;
       }
-#endif
+#endif /* HAVE_DOS_BASED_FILE_SYSTEM */
       if (temp == NULL)
 	temp = program_name;
       else
@@ -482,7 +491,7 @@ main (int argc, char **argv)
 	      switch (c)
 		{
 		case 'd':
-		  operation = delete;
+		  operation = delete_it;
 		  operation_alters_arch = TRUE;
 		  break;
 		case 'm':
@@ -609,7 +618,7 @@ main (int argc, char **argv)
 
       if (counted_name_mode)
 	{
-	  if (operation != extract && operation != delete)
+	  if (operation != extract && operation != delete_it)
 	     fatal (_("`N' is only meaningful with the `x' and `d' options."));
 	  counted_name_counter = atoi (argv[arg_index++]);
 	  if (counted_name_counter <= 0)
@@ -638,7 +647,7 @@ main (int argc, char **argv)
 	  map_over_members (arch, extract_file, files, file_count);
 	  break;
 
-	case delete:
+	case delete_it:
 	  if (files != NULL)
 	    delete_members (arch, files);
 	  else
@@ -660,7 +669,7 @@ main (int argc, char **argv)
 	    output_filename = NULL;
 	  break;
 
-	  /* Shouldn't happen! */
+	  /* Should never happen! */
 	default:
 	  /* xgettext:c-format */
 	  fatal (_("internal error -- this option not implemented"));
@@ -691,7 +700,7 @@ open_inarch (const char *archive_filename, const char *file)
     {
 #if !defined(__GO32__) || defined(__DJGPP__)
 
-      /* FIXME: I don't understand why this fragment was ifndef'ed
+      /* FIXME: I do NOT understand why this fragment was ifndef'ed
 	 away for __GO32__; perhaps it was in the days of DJGPP v1.x.
 	 stat() works just fine in v2.x, so I think this should be
 	 removed.  For now, I enable it for DJGPP v2. -- EZ.  */
@@ -700,7 +709,7 @@ open_inarch (const char *archive_filename, const char *file)
    stat() is wrong ... think it's buried in GO32's IDT - Jax */
       if (errno != ENOENT)
 	bfd_fatal (archive_filename);
-#endif
+#endif /* !__GO32__ || __DJGPP__ */
 
       if (!operation_alters_arch)
 	{
@@ -776,7 +785,7 @@ static void
 print_contents (bfd *abfd)
 {
   int ncopied = 0;
-  char *cbuf = xmalloc (BUFSIZE);
+  char *cbuf = (char *)xmalloc(BUFSIZE);
   struct stat buf;
   long size;
   if (bfd_stat_arch_elt (abfd, &buf) != 0)
@@ -823,7 +832,7 @@ void
 extract_file (bfd *abfd)
 {
   FILE *ostream;
-  char *cbuf = xmalloc (BUFSIZE);
+  char *cbuf = (char *)xmalloc(BUFSIZE);
   int nread, tocopy;
   long ncopied = 0;
   long size;
@@ -910,22 +919,22 @@ extract_file (bfd *abfd)
 }
 
 static void
-write_archive (bfd *iarch)
+write_archive(bfd *iarch)
 {
   bfd *obfd;
   char *old_name, *new_name;
   bfd *contents_head = iarch->next;
 
-  old_name = xmalloc (strlen (bfd_get_filename (iarch)) + 1);
-  strcpy (old_name, bfd_get_filename (iarch));
-  new_name = make_tempname (old_name);
+  old_name = (char *)xmalloc(strlen(bfd_get_filename(iarch)) + 1);
+  strcpy(old_name, bfd_get_filename(iarch));
+  new_name = make_tempname(old_name);
 
   output_filename = new_name;
 
-  obfd = bfd_openw (new_name, bfd_get_target (iarch));
+  obfd = bfd_openw(new_name, bfd_get_target(iarch));
 
   if (obfd == NULL)
-    bfd_fatal (old_name);
+    bfd_fatal(old_name);
 
   output_bfd = obfd;
 
@@ -1209,7 +1218,7 @@ static void
 ranlib_touch (const char *archname)
 {
 #ifdef __GO32__
-  /* I don't think updating works on go32.  */
+  /* I do NOT think that updating works on go32.  */
   ranlib_only (archname);
 #else
   int f;

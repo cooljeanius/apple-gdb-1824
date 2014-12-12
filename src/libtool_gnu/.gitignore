@@ -15,3 +15,11 @@ libltdl/so_locations
 *libs/*
 libltdl/*libs/*
 libltdl/loaders/*libs/*
+tests/atconfig
+_inst-*demo/*
+test-suite.log
+tests/*.trs
+*.dylib
+tests/testsuite.dir
+tests/defs
+tests/testsuite.log

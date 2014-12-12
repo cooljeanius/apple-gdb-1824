@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-04 23:04-0500\n"
+"POT-Creation-Date: 2014-12-11 18:01-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -54,15 +54,15 @@ msgstr ""
 msgid "%s: relocatable link from %s to %s not supported"
 msgstr ""
 
-#: archive.c:1815
+#: archive.c:1817
 msgid "Warning: writing archive was slow: rewriting timestamp\n"
 msgstr ""
 
-#: archive.c:2074
+#: archive.c:2076
 msgid "Reading archive file mod timestamp"
 msgstr ""
 
-#: archive.c:2098
+#: archive.c:2100
 msgid "Writing updated armap timestamp"
 msgstr ""
 
@@ -165,17 +165,17 @@ msgstr ""
 msgid "Please report this bug.\n"
 msgstr ""
 
-#: bfdwin.c:228
+#: bfdwin.c:225
 #, c-format
 msgid "not mapping: data=%lx mapped=%d\n"
 msgstr ""
 
-#: bfdwin.c:231
+#: bfdwin.c:228
 #, c-format
 msgid "not mapping: env var not set\n"
 msgstr ""
 
-#: binary.c:285
+#: binary.c:284
 #, c-format
 msgid "Warning: Writing section `%s' to huge (ie negative) file offset 0x%lx."
 msgstr ""
@@ -479,7 +479,7 @@ msgstr ""
 msgid "%B: illegal relocation type %d at address 0x%lx"
 msgstr ""
 
-#: coffgen.c:1511
+#: coffgen.c:1514
 msgid "%B: bad string table size %lu"
 msgstr ""
 
@@ -511,7 +511,7 @@ msgid "warning: unable to update contents of %s section in %s"
 msgstr ""
 
 #: dwarf2.c:315
-msgid "Dwarf Error: Can't find .debug_str section."
+msgid "Dwarf Error: Cannot find .debug_str section."
 msgstr ""
 
 #: dwarf2.c:333
@@ -2462,15 +2462,15 @@ msgstr ""
 msgid "%B:%u: unrecognized ihex type %u in Intel Hex file"
 msgstr ""
 
-#: ihex.c:578
+#: ihex.c:577
 msgid "%B: internal error in ihex_read_section"
 msgstr ""
 
-#: ihex.c:612
+#: ihex.c:611
 msgid "%B: bad section length in ihex_read_section"
 msgstr ""
 
-#: ihex.c:824
+#: ihex.c:821
 #, c-format
 msgid "%s: address 0x%s out of range for Intel Hex file"
 msgstr ""
@@ -2489,16 +2489,16 @@ msgstr ""
 msgid "%B: indirect symbol `%s' to `%s' is a loop"
 msgstr ""
 
-#: linker.c:2743
+#: linker.c:2742
 #, c-format
 msgid "Attempt to do relocatable link with %s input and %s output"
 msgstr ""
 
-#: linker.c:3040
+#: linker.c:3039
 msgid "%B: warning: ignoring duplicate section `%A'\n"
 msgstr ""
 
-#: linker.c:3054
+#: linker.c:3053
 msgid "%B: warning: duplicate section `%A' has different size\n"
 msgstr ""
 

@@ -60,7 +60,7 @@ static int input_elf_class = -1;
 static int
 update_elf_header (const char *file_name, FILE *file)
 {
-  int class, machine, type, status, osabi;
+  int class_of_elf, machine, type, status, osabi;
 
   if (elf_header.e_ident[EI_MAG0] != ELFMAG0
       || elf_header.e_ident[EI_MAG1] != ELFMAG1
@@ -83,18 +83,18 @@ update_elf_header (const char *file_name, FILE *file)
     }
 
   /* Return if e_machine is the same as output_elf_machine.  */
-	if (output_elf_machine == elf_header.e_machine) {
-		return 1;
-	}
+  if (output_elf_machine == elf_header.e_machine) {
+    return 1;
+  }
 
-  class = elf_header.e_ident[EI_CLASS];
+  class_of_elf = elf_header.e_ident[EI_CLASS];
 
   /* Skip if class does NOT match. */
-  if (input_elf_class != -1 && class != input_elf_class)
+  if (input_elf_class != -1 && class_of_elf != input_elf_class)
     {
       error
 	(_("%s: Unmatched EI_CLASS: %d is not %d\n"),
-	 file_name, class, input_elf_class);
+	 file_name, class_of_elf, input_elf_class);
       return 0;
     }
 
@@ -132,7 +132,7 @@ update_elf_header (const char *file_name, FILE *file)
     }
 
   /* Update e_machine, e_type and EI_OSABI.  */
-  switch (class)
+  switch (class_of_elf)
     {
     default:
       /* We should never get here.  */

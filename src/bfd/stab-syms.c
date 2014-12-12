@@ -44,8 +44,7 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
   __define_name (N_INDR, "INDR") \
   __define_name (N_WARNING, "WARNING")
 
-const char *bfd_get_stab_name(code)
-     int code;
+const char *bfd_get_stab_name(int code)
 {
   switch (code) {
 #define __define_name(val, str) case val: return str;

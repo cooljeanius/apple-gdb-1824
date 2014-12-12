@@ -1,4 +1,4 @@
-# Process this file with autoconf to create configure. -*- autoconf -*-
+dnl# Process this file with autoconf to create configure. -*- autoconf -*-
 #
 #   Copyright (C) 2001, 2003, 2005, 2007 Free Software Foundation, Inc.
 #
@@ -24,18 +24,19 @@
 AC_PREREQ([2.54])
 
 ## ------------------------ ##
-## Autoconf initialisation. ##
+## Autoconf initialization. ##
 ## ------------------------ ##
 AC_INIT([fcdemo],[1.0],[bug-libtool@gnu.org])
 AC_CONFIG_HEADERS([config.h:config-h.in])
 AC_CONFIG_SRCDIR([foof.f90])
-AC_CONFIG_AUX_DIR([../../libltdl/config])
+AC_CONFIG_AUX_DIR([../../libltdl/config])dnl
 
-AC_ARG_WITH([dist],[AS_HELP_STRING([--with-dist],
-				   [ignore errors not affecting `make dist'])])
+AC_ARG_WITH([dist],
+            [AS_HELP_STRING([--with-dist],
+			    [ignore errors not affecting `make dist'])])dnl
 
 ## ------------------------ ##
-## Automake Initialisation. ##
+## Automake Initialization. ##
 ## ------------------------ ##
 AM_INIT_AUTOMAKE([foreign])
 AM_MAINTAINER_MODE
@@ -54,9 +55,9 @@ AC_PROG_FC
 dnl# When configuring for `make dist' purposes, skip checks that may
 dnl# yield fatal errors when there is no working F90 compiler.
 if test -z "${with_dist}"; then
-  dnl# Check the flags needed to link fc programs with ld (i.e. cc)
+  dnl# Check the flags needed to link fc programs with ld (i.e. cc):
   AC_FC_LIBRARY_LDFLAGS
-  dnl# Check for underscoring of external names
+  dnl# Check for underscoring of external names:
   AC_FC_WRAPPERS
   dnl# We need to use .f90 and not .f to enable Automake FC support
   dnl# Some Intel ifc/ifort do not understand .f95.  :-/
@@ -67,14 +68,14 @@ fi
 AC_LANG_POP
 
 ## ----------------------- ##
-## Libtool initialisation. ##
+## Libtool initialization. ##
 ## ----------------------- ##
 LT_INIT([dlopen win32-dll])
-LT_LANG([Fortran])
-AC_SUBST([LIBTOOL_DEPS])
+LT_LANG([Fortran])dnl
+AC_SUBST([LIBTOOL_DEPS])dnl
 
 ## -------- ##
 ## Outputs. ##
 ## -------- ##
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile])dnl
 AC_OUTPUT

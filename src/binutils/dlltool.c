@@ -243,6 +243,11 @@
 
 #define PAGE_SIZE 4096
 #define PAGE_MASK (-PAGE_SIZE)
+
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "bfd.h"
 #include "libiberty.h"
 #include "bucomm.h"
@@ -258,9 +263,9 @@
 #include <assert.h>
 
 #ifdef DLLTOOL_ARM
-#include "coff/arm.h"
-#include "coff/internal.h"
-#endif
+# include "coff/arm.h"
+# include "coff/internal.h"
+#endif /* DLLTOOL_ARM */
 
 /* Forward references.  */
 static char *look_for_prog (const char *, const char *, int);
@@ -384,32 +389,32 @@ static FILE *output_def;
 static FILE *base_file;
 
 #ifdef DLLTOOL_ARM
-#ifdef DLLTOOL_ARM_EPOC
+# ifdef DLLTOOL_ARM_EPOC
 static const char *mname = "arm-epoc";
-#else
+# else
 static const char *mname = "arm";
-#endif
-#endif
+# endif /* DLLTOOL_ARM_EPOC */
+#endif /* DLLTOOL_ARM */
 
 #ifdef DLLTOOL_I386
 static const char *mname = "i386";
-#endif
+#endif /* DLLTOOL_I386 */
 
 #ifdef DLLTOOL_PPC
 static const char *mname = "ppc";
-#endif
+#endif /* DLLTOOL_PPC */
 
 #ifdef DLLTOOL_SH
 static const char *mname = "sh";
-#endif
+#endif /* DLLTOOL_SH */
 
 #ifdef DLLTOOL_MIPS
 static const char *mname = "mips";
-#endif
+#endif /* DLLTOOL_MIPS */
 
 #ifdef DLLTOOL_MCORE
 static const char * mname = "mcore-le";
-#endif
+#endif /* DLLTOOL_MCORE */
 
 #ifdef DLLTOOL_MCORE_ELF
 static const char * mname = "mcore-elf";
@@ -417,15 +422,21 @@ static char * mcore_elf_out_file = NULL;
 static char * mcore_elf_linker   = NULL;
 static char * mcore_elf_linker_flags = NULL;
 
-#define DRECTVE_SECTION_NAME ((machine == MMCORE_ELF || machine == MMCORE_ELF_LE) ? ".exports" : ".drectve")
-#endif
+# define DRECTVE_SECTION_NAME (((machine == MMCORE_ELF) || (machine == MMCORE_ELF_LE)) ? ".exports" : ".drectve")
+#endif /* DLLTOOL_MCORE_ELF */
+
+#if !defined(DLLTOOL_ARM) && !defined(DLLTOOL_I386) && !defined(DLLTOOL_PPC) && \
+    !defined(DLLTOOL_SH) && !defined(DLLTOOL_MIPS) && !defined(DLLTOOL_MCORE) && \
+    !defined(DLLTOOL_MCORE_ELF)
+static const char * mname = "unknown";
+#endif /* none of the above */
 
 #ifndef DRECTVE_SECTION_NAME
-#define DRECTVE_SECTION_NAME ".drectve"
-#endif
+# define DRECTVE_SECTION_NAME ".drectve"
+#endif /* !DRECTVE_SECTION_NAME */
 
-/* What's the right name for this ?  */
-#define PATHMAX 250		
+/* What is the right name for this ?  */
+#define PATHMAX 250
 
 /* External name alias numbering starts here.  */
 #define PREFIX_ALIAS_BASE	20000
@@ -638,19 +649,19 @@ typedef struct dlist
 }
 dlist_type;
 
-typedef struct export
+typedef struct export_struct
   {
     const char *name;
     const char *internal_name;
     const char *import_name;
     int ordinal;
     int constant;
-    int noname;		/* Don't put name in image file.  */
-    int private;	/* Don't put reference in import lib.  */
+    int noname;		/* Do NOT put name in image file.  */
+    int private;	/* Do NOT put reference in import lib.  */
     int data;
     int hint;
     int forward;	/* Number of forward label, 0 means no forward.  */
-    struct export *next;
+    struct export_struct *next;
   }
 export_type;
 
@@ -720,12 +731,12 @@ prefix_encode (char *start, unsigned code)
 }
 
 static char *
-dlltmp (char **buf, const char *fmt)
+dlltmp(char **buf, const char *fmt)
 {
   if (!*buf)
     {
-      *buf = malloc (strlen (tmp_prefix) + 64);
-      sprintf (*buf, fmt, tmp_prefix);
+      *buf = (char *)malloc(strlen(tmp_prefix) + 64);
+      sprintf(*buf, fmt, tmp_prefix);
     }
   return *buf;
 }
@@ -893,7 +904,7 @@ void
 def_exports (const char *name, const char *internal_name, int ordinal,
 	     int noname, int constant, int data, int private)
 {
-  struct export *p = (struct export *) xmalloc (sizeof (*p));
+  struct export_struct *p = (struct export_struct *) xmalloc (sizeof (*p));
 
   p->name = name;
   p->internal_name = internal_name ? internal_name : name;
@@ -3260,18 +3271,18 @@ main (int ac, char **av)
     {
       /* If we are inferring dll_name from exp_name,
          strip off any path components, without emitting
-         a warning.  */  
-      const char* exp_basename = lbasename (exp_name); 
-      const int len = strlen (exp_basename) + 5;
-      dll_name = xmalloc (len);
-      strcpy (dll_name, exp_basename);
-      strcat (dll_name, ".dll");
+         a warning.  */
+      const char* exp_basename = lbasename(exp_name);
+      const int len = strlen(exp_basename) + 5;
+      dll_name = (char *)xmalloc(len);
+      strcpy(dll_name, exp_basename);
+      strcat(dll_name, ".dll");
     }
 
   if (as_name == NULL)
-    as_name = deduce_name ("as");
+    as_name = deduce_name("as");
 
-  /* Don't use the default exclude list if we're reading only the
+  /* Do NOT use the default exclude list if we are reading only the
      symbols in the .drectve section.  The default excludes are meant
      to avoid exporting DLL entry point and Cygwin32 impure_ptr.  */
   if (! export_all_symbols)
@@ -3333,12 +3344,12 @@ look_for_prog (const char *prog_name, const char *prefix, int end_prefix)
   struct stat s;
   char *cmd;
 
-  cmd = xmalloc (strlen (prefix)
-		 + strlen (prog_name)
+  cmd = (char *)xmalloc(strlen(prefix)
+                        + strlen(prog_name)
 #ifdef HAVE_EXECUTABLE_SUFFIX
-		 + strlen (EXECUTABLE_SUFFIX)
-#endif
-		 + 10);
+                        + strlen(EXECUTABLE_SUFFIX)
+#endif /* HAVE_EXECUTABLE_SUFFIX */
+                        + 10);
   strcpy (cmd, prefix);
 
   sprintf (cmd + end_prefix, "%s", prog_name);

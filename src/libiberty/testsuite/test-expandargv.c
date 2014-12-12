@@ -25,29 +25,33 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
+   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 #include "libiberty.h"
 #include <stdio.h>
 #include <errno.h>
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
 #ifdef HAVE_STRING_H
-#include <string.h>
-#endif
+# include <string.h>
+#endif /* HAVE_STRING_H */
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h> /* for unlink() */
+#endif /* HAVE_UNISTD_H */
 
 #ifndef EXIT_SUCCESS
-#define EXIT_SUCCESS 0
-#endif
+# define EXIT_SUCCESS 0
+#endif /* !EXIT_SUCCESS */
 
 #ifndef EXIT_FAILURE
-#define EXIT_FAILURE 1
-#endif
+# define EXIT_FAILURE 1
+#endif /* !EXIT_FAILURE */
 
 static void fatal_error (int, const char *, int) ATTRIBUTE_NORETURN;
 void writeout_test (int, const char *);
@@ -57,13 +61,13 @@ int run_tests (const char **);
 void erase_test (int);
 
 /* Test input data, argv before, and argv after:
- 
+
    The \n is an important part of test_data since expandargv
    may have to work in environments where \n is translated
-   as \r\n. Thus \n is included in the test data for the file. 
+   as \r\n. Thus \n is included in the test data for the file.
 
    We use \b to indicate that the test data is the null character.
-   This is because we use \0 normally to represent the end of the 
+   This is because we use \0 normally to represent the end of the
    file data, so we need something else for this. */
 
 #define FILENAME_PATTERN "test-expandargv-%d.lst"
@@ -130,7 +134,7 @@ fatal_error (int line, const char *errmsg, int err)
 void
 hook_char_replace (char *string, size_t len, char replacethis, char withthis)
 {
-  int i = 0;
+  size_t i = 0;
   for (i = 0; i < len; i++)
     if (string[i] == replacethis)
       string[i] = withthis;
@@ -168,10 +172,10 @@ writeout_test (int test, const char * test_data)
 
   /* Generate RW copy of data for replaces */
   len = strlen (test_data);
-  parse = malloc (sizeof (char) * (len + 1));
+  parse = (char *)malloc(sizeof(char) * (len + 1));
   if (parse == NULL)
     fatal_error (__LINE__, "Failed to malloc parse.", errno);
-      
+
   memcpy (parse, test_data, sizeof (char) * len);
   /* Run all possible replaces */
   run_replaces (parse);
@@ -184,10 +188,10 @@ writeout_test (int test, const char * test_data)
 /* erase_test:
      Erase the test file */
 
-void 
+void
 erase_test (int test)
 {
-  char filename[256]; 
+  char filename[256];
   sprintf (filename, FILENAME_PATTERN, test);
   if (unlink (filename) != 0)
     fatal_error (__LINE__, "Failed to erase test file.", errno);
@@ -269,10 +273,10 @@ run_tests (const char **test_data)
 }
 
 /* main:
-    Run tests. 
+    Run tests.
     Check result and exit with appropriate code. */
 
-int 
+int
 main(int argc, char **argv)
 {
   int fails;
@@ -284,7 +288,7 @@ main(int argc, char **argv)
      - Run expandargv.
      - Compare output of expandargv argv to after argv.
        - If they compare the same then test passes
-         else the test fails. 
+         else the test fails.
      - Erase test file. */
 
   fails = run_tests (test_data);

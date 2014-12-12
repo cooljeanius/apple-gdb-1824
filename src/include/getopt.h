@@ -25,7 +25,7 @@
 
 #ifdef	__cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 /* For communication from `getopt' to the caller.
    When `getopt' finds an option that takes an argument,
@@ -85,8 +85,8 @@ struct option
   const char *name;
 #else
   char *name;
-#endif
-  /* has_arg can't be an enum because some compilers complain about
+#endif /* __STDC__ */
+  /* has_arg cannot be an enum because some compilers complain about
      type mismatches in all the code that assumes it is an int.  */
   int has_arg;
   int *flag;
@@ -99,24 +99,25 @@ struct option
 #define required_argument	1
 #define optional_argument	2
 
-#if defined (__STDC__) && __STDC__
+#if defined(__STDC__) && __STDC__
 /* HAVE_DECL_* is a three-state macro: undefined, 0 or 1.  If it is
    undefined, we haven't run the autoconf check so provide the
    declaration without arguments.  If it is 0, we checked and failed
    to find the declaration so provide a fully prototyped one.  If it
    is 1, we found it so don't provide any declaration at all.  */
-#if !HAVE_DECL_GETOPT
-#if defined (__GNU_LIBRARY__) || defined (HAVE_DECL_GETOPT)
+# if !HAVE_DECL_GETOPT
+#  if defined(__GNU_LIBRARY__) || defined(HAVE_DECL_GETOPT) || \
+      (!defined(_UNISTD_H_) && (defined(PROTOTYPES) || defined(__PROTOTYPES)))
 /* Many other libraries have conflicting prototypes for getopt, with
    differences in the consts, in unistd.h.  To avoid compilation
    errors, only prototype getopt for the GNU C library.  */
 extern int getopt (int argc, char *const *argv, const char *shortopts);
-#else
-#ifndef __cplusplus
+#  else
+#   ifndef __cplusplus
 extern int getopt ();
-#endif /* __cplusplus */
-#endif
-#endif /* !HAVE_DECL_GETOPT */
+#   endif /* __cplusplus */
+#  endif /* __GNU_LIBRARY__ || HAVE_DECL_GETOPT || (!_UNISTD_H_ && (have protos)) */
+# endif /* !HAVE_DECL_GETOPT */
 
 extern int getopt_long (int argc, char *const *argv, const char *shortopts,
 		        const struct option *longopts, int *longind);
@@ -139,6 +140,6 @@ extern int _getopt_internal ();
 
 #ifdef	__cplusplus
 }
-#endif
+#endif /* __cplusplus */
 
 #endif /* getopt.h */

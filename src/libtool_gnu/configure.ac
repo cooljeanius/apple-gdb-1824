@@ -1,4 +1,4 @@
-# Process this file with autoconf to create configure. -*- autoconf -*-
+dnl# Process this file with autoconf to create configure. -*- autoconf -*-
 
 #   Copyright (C) 2001, 2004, 2005, 2008, 2010 Free Software Foundation,
 #   Inc.
@@ -39,16 +39,16 @@ AC_CONFIG_SRCDIR([libtoolize.in])
 LT_CONFIG_LTDL_DIR([libltdl],[nonrecursive])
 AC_CONFIG_AUX_DIR([libltdl/config])
 AC_CONFIG_MACRO_DIR([libltdl/m4])
-AC_CONFIG_LIBOBJ_DIR([libltdl])
+AC_CONFIG_LIBOBJ_DIR([libltdl])dnl
 
 
 ## ------------------------ ##
-## Autotest initialisation. ##
+## Autotest initialization. ##
 ## ------------------------ ##
 
-AC_CONFIG_TESTDIR([tests])
-AC_SUBST([AUTOM4TE],[${AUTOM4TE=autom4te}])
-AC_SUBST([AUTOTEST],['$(AUTOM4TE) --language=autotest'])
+AC_CONFIG_TESTDIR([tests])dnl
+AC_SUBST([AUTOM4TE],[${AUTOM4TE=autom4te}])dnl
+AC_SUBST([AUTOTEST],['$(AUTOM4TE) --language=autotest'])dnl
 
 
 ## ---------------------------------------- ##
@@ -66,15 +66,15 @@ lt_minor=`echo "AC_PACKAGE_VERSION" | sed ['s,^[0-9]*\.\([0-9]*\).*$,\1,']`
 lt_micro=`echo "AC_PACKAGE_VERSION" | sed ['s,^[0-9]*\.[0-9]*\(\.[0-9]*\).*$,\1,']`
 lt_alpha=`echo "AC_PACKAGE_VERSION" | sed ['s,^[0-9.]*,,']`
 
-test "$lt_minor" = "AC_PACKAGE_VERSION" && lt_minor=0
-test "$lt_micro" = "AC_PACKAGE_VERSION" && lt_micro=""
+test "x${lt_minor}" = "AC_PACKAGE_VERSION" && lt_minor=0
+test "x${lt_micro}" = "AC_PACKAGE_VERSION" && lt_micro=""
 
 # Then we try to work out what the release before this one would have been
 # numbered. The only time we come unstuck is when this is the 1st release
 # from a stable branch (lt_micro=lt_alpha=""), so LASTRELEASE is the last
 # release from the old stable branch, and we don't know what version that
 # was, so leave it unset so that the Makefile can complain.
-case $lt_alpha in
+case ${lt_alpha} in
   [[ab]])
     case ${lt_micro} in
       [.[01]])
@@ -101,7 +101,7 @@ case $lt_alpha in
     esac
     ;;
 esac
-AC_SUBST([LASTRELEASE])
+AC_SUBST([LASTRELEASE])dnl
 
 # This is a sanity check so we can see which ver. is used in bug reports.
 # It is assumed that we only want to see the date extension for cvs libtool
@@ -110,18 +110,18 @@ TIMESTAMP=`${CONFIG_SHELL} ${ac_aux_dir}/mkstamp ${srcdir}`
 package_revision=`( set ${TIMESTAMP}; echo $1; )`
 case ${lt_alpha} in
   ""|[[bdfhjlnprtvxz]])
-    TIMESTAMP=
+    TIMESTAMP=""
     ;;
 esac
 timestamp_string="${TIMESTAMP:+ (Build:$TIMESTAMP)}"
 AS_BOX([Configuring AC_PACKAGE_TARNAME${timestamp_string} AC_PACKAGE_VERSION])
-echo
-AC_SUBST([TIMESTAMP])
-AC_SUBST([package_revision])
+echo ""
+AC_SUBST([TIMESTAMP])dnl
+AC_SUBST([package_revision])dnl
 
 
 ## ------------------------ ##
-## Automake Initialisation. ##
+## Automake Initialization. ##
 ## ------------------------ ##
 
 dnl# These are bootstrap requirements! Once built, libtool may work with
@@ -139,40 +139,40 @@ AM_MAINTAINER_MODE
 # string for this build.
 : ${autobuild_mode=default}
 AB_VERSION="AC_PACKAGE_VERSION (${TIMESTAMP})"
-AB_INIT([${autobuild_mode}])
+AB_INIT([${autobuild_mode}])dnl
 
 
 dnl# We abuse m4sh to generate libtool's portable shell scripts
-AC_SUBST([M4SH],['$(AUTOM4TE) --language=m4sh'])
+AC_SUBST([M4SH],['$(AUTOM4TE) --language=m4sh'])dnl
 
 dnl# Make sure config.status is regenerated when the ver. timestamp changes
-AC_SUBST([CONFIG_STATUS_DEPENDENCIES],['$(top_srcdir)/ChangeLog'])
+AC_SUBST([CONFIG_STATUS_DEPENDENCIES],['$(top_srcdir)/ChangeLog'])dnl
 
 
 ## ------------------------------- ##
 ## Libtool specific configuration. ##
 ## ------------------------------- ##
 
-AC_SUBST([aclocaldir],["\${datadir}/aclocal"])
-AC_SUBST([pkgdatadir],["\${datadir}/$PACKAGE"])
+AC_SUBST([aclocaldir],["\${datadir}/aclocal"])dnl
+AC_SUBST([pkgdatadir],["\${datadir}/${PACKAGE}"])dnl
 
 AC_ARG_ENABLE([ltdl-install],
     [AS_HELP_STRING([--disable-ltdl-install],[do not install libltdl])])
-if test x"${enable_ltdl_install+set}" != xset; then
+if test x"${enable_ltdl_install+set}" != x"set"; then
   enable_ltdl_install=yes
 fi
 
 # All subdirectories that are configured on demand, but that must be
 # included in the distribution.
-CONF_SUBDIRS="tests/cdemo tests/demo tests/depdemo tests/f77demo tests/fcdemo \
-	tests/mdemo tests/mdemo2 tests/pdemo tests/tagdemo"
-AC_SUBST([CONF_SUBDIRS])
+CONF_SUBDIRS="tests/cdemo tests/demo tests/depdemo tests/f77demo  \
+	tests/fcdemo tests/mdemo tests/mdemo2 tests/pdemo tests/tagdemo"
+AC_SUBST([CONF_SUBDIRS])dnl
 
-DIST_MAKEFILE_LIST=
+DIST_MAKEFILE_LIST=""
 for dir in ${CONF_SUBDIRS}; do
-  DIST_MAKEFILE_LIST="${DIST_MAKEFILE_LIST}$dir/Makefile "
+  DIST_MAKEFILE_LIST="${DIST_MAKEFILE_LIST}${dir}/Makefile "
 done
-AC_SUBST([DIST_MAKEFILE_LIST])
+AC_SUBST([DIST_MAKEFILE_LIST])dnl
 
 
 ## ---------------- ##
@@ -193,14 +193,14 @@ LT_INIT([dlopen win32-dll])
 _LT_SET_OPTION([LTDL_INIT],[nonrecursive])
 _LTDL_SETUP
 
-# Enable all the language support we can
-LT_LANG([C])
-LT_LANG([C++])
-LT_LANG([Fortran 77])
-LT_LANG([Fortran])
-LT_LANG([Go])
-LT_LANG([Java])
-LT_LANG([Windows Resource])
+# Enable all the language support we can:
+LT_LANG([C])dnl
+LT_LANG([C++])dnl
+LT_LANG([Fortran 77])dnl
+LT_LANG([Fortran])dnl
+LT_LANG([Go])dnl
+LT_LANG([Java])dnl
+LT_LANG([Windows Resource])dnl
 
 # Ensure the correct file name (and path) conversion function
 # is available to the test suite.
@@ -210,11 +210,11 @@ AC_SUBST([to_tool_file_cmd])dnl
 ## --------------------------- ##
 ## Work out which tests to run ##
 ## --------------------------- ##
-AM_CONDITIONAL([HAVE_CXX],[test -n "[$]_LT_TAGVAR(compiler, CXX)"])
-AM_CONDITIONAL([HAVE_F77],[test -n "[$]_LT_TAGVAR(compiler, F77)"])
-AM_CONDITIONAL([HAVE_FC],[test -n "[$]_LT_TAGVAR(compiler, FC)"])
-AM_CONDITIONAL([HAVE_GCJ],[test -n "[$]_LT_TAGVAR(compiler, GCJ)"])
-AM_CONDITIONAL([HAVE_RC],[test -n "[$]_LT_TAGVAR(compiler, RC)"])
+AM_CONDITIONAL([HAVE_CXX],[test -n "[$]_LT_TAGVAR(compiler, CXX)"])dnl
+AM_CONDITIONAL([HAVE_F77],[test -n "[$]_LT_TAGVAR(compiler, F77)"])dnl
+AM_CONDITIONAL([HAVE_FC],[test -n "[$]_LT_TAGVAR(compiler, FC)"])dnl
+AM_CONDITIONAL([HAVE_GCJ],[test -n "[$]_LT_TAGVAR(compiler, GCJ)"])dnl
+AM_CONDITIONAL([HAVE_RC],[test -n "[$]_LT_TAGVAR(compiler, RC)"])dnl
 
 ## Whether `make' supports order-only prerequisites.
 AC_CACHE_CHECK([whether ${MAKE-make} supports order-only prerequisites],
@@ -237,20 +237,20 @@ END
    cd ..
    rm -rf conftest.dir
 ])
-if test ${lt_cv_make_order_only} = yes; then
+if test "x${lt_cv_make_order_only}" = "xyes"; then
   ORDER='|'
 else
   ORDER=''
 fi
-AC_SUBST([ORDER])
+AC_SUBST([ORDER])dnl
 
 ## ------------- ##
 ## Documentation ##
 ## ------------- ##
-AM_MISSING_PROG([HELP2MAN],[help2man])
+AM_MISSING_PROG([HELP2MAN],[help2man])dnl
 
 ## -------- ##
 ## Outputs. ##
 ## -------- ##
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile])dnl
 AC_OUTPUT

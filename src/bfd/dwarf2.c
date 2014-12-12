@@ -308,23 +308,23 @@ read_indirect_string (struct comp_unit* unit,
       bfd *abfd = unit->abfd;
       bfd_size_type sz;
 
-      msec = bfd_get_section_by_name (abfd, ".debug_str");
+      msec = bfd_get_section_by_name(abfd, ".debug_str");
       if (! msec)
 	{
 	  (*_bfd_error_handler)
-	    (_("Dwarf Error: Can't find .debug_str section."));
-	  bfd_set_error (bfd_error_bad_value);
+	    (_("Dwarf Error: Cannot find .debug_str section."));
+	  bfd_set_error(bfd_error_bad_value);
 	  return NULL;
 	}
 
-      sz = msec->rawsize ? msec->rawsize : msec->size;
+      sz = (msec->rawsize ? msec->rawsize : msec->size);
       stash->dwarf_str_size = sz;
-      stash->dwarf_str_buffer = bfd_alloc (abfd, sz);
+      stash->dwarf_str_buffer = (bfd_byte *)bfd_alloc(abfd, sz);
       if (! stash->dwarf_str_buffer)
 	return NULL;
 
-      if (! bfd_get_section_contents (abfd, msec, stash->dwarf_str_buffer,
-				      0, sz))
+      if (! bfd_get_section_contents(abfd, msec, stash->dwarf_str_buffer,
+                                     0, sz))
 	return NULL;
     }
 
@@ -834,9 +834,9 @@ add_line_info (struct line_info_table *table,
 
   if (filename && filename[0])
     {
-      info->filename = bfd_alloc (table->abfd, strlen (filename) + 1);
+      info->filename = (char *)bfd_alloc(table->abfd, (strlen(filename) + 1));
       if (info->filename)
-	strcpy (info->filename, filename);
+	strcpy(info->filename, filename);
     }
   else
     info->filename = NULL;
@@ -870,12 +870,12 @@ concat_filename (struct line_info_table *table, unsigned int file)
 	 The best we can do is return the filename part.  */
       if (dirname != NULL)
 	{
-	  unsigned int len = strlen (dirname) + strlen (filename) + 2;
+	  unsigned int len = (strlen(dirname) + strlen(filename) + 2);
 	  char * name;
 
-	  name = bfd_malloc (len);
+	  name = (char *)bfd_malloc(len);
 	  if (name)
-	    sprintf (name, "%s/%s", dirname, filename);
+	    sprintf(name, "%s/%s", dirname, filename);
 	  return name;
 	}
     }
@@ -933,7 +933,7 @@ decode_line_info (struct comp_unit *unit, struct dwarf2_debug *stash)
   bfd_byte *line_ptr;
   bfd_byte *line_end;
   struct line_head lh;
-  unsigned int i, bytes_read, offset_size;
+  unsigned int u_i, bytes_read, offset_size;
   char *cur_file, *cur_dir;
   unsigned char op_code, extended_op, adj_opcode;
   bfd_size_type amt;
@@ -959,7 +959,7 @@ decode_line_info (struct comp_unit *unit, struct dwarf2_debug *stash)
     }
 
   /* It is possible to get a bad value for the line_offset.  Validate
-     it here so that we won't get a segfault below.  */
+     it here so that we will NOT get a segfault below.  */
   if (unit->line_offset >= stash->dwarf_line_size)
     {
       (*_bfd_error_handler) (_("Dwarf Error: Line offset (%lu) greater than or equal to .debug_line size (%lu)."),
@@ -1020,19 +1020,19 @@ decode_line_info (struct comp_unit *unit, struct dwarf2_debug *stash)
   line_ptr += 1;
   lh.opcode_base = read_1_byte (abfd, line_ptr);
   line_ptr += 1;
-  amt = lh.opcode_base * sizeof (unsigned char);
-  lh.standard_opcode_lengths = bfd_alloc (abfd, amt);
+  amt = (lh.opcode_base * sizeof(unsigned char));
+  lh.standard_opcode_lengths = (unsigned char *)bfd_alloc(abfd, amt);
 
   lh.standard_opcode_lengths[0] = 1;
 
-  for (i = 1; i < lh.opcode_base; ++i)
+  for (u_i = 1; u_i < lh.opcode_base; ++u_i)
     {
-      lh.standard_opcode_lengths[i] = read_1_byte (abfd, line_ptr);
+      lh.standard_opcode_lengths[u_i] = read_1_byte(abfd, line_ptr);
       line_ptr += 1;
     }
 
   /* Read directory table.  */
-  while ((cur_dir = read_string (abfd, line_ptr, &bytes_read)) != NULL)
+  while ((cur_dir = read_string(abfd, line_ptr, &bytes_read)) != NULL)
     {
       line_ptr += bytes_read;
 
@@ -1040,10 +1040,10 @@ decode_line_info (struct comp_unit *unit, struct dwarf2_debug *stash)
 	{
 	  char **tmp;
 
-	  amt = table->num_dirs + DIR_ALLOC_CHUNK;
-	  amt *= sizeof (char *);
+	  amt = (table->num_dirs + DIR_ALLOC_CHUNK);
+	  amt *= sizeof(char *);
 
-	  tmp = bfd_realloc (table->dirs, amt);
+	  tmp = (char **)bfd_realloc(table->dirs, amt);
 	  if (tmp == NULL)
 	    {
 	      free (table->dirs);
@@ -1058,7 +1058,7 @@ decode_line_info (struct comp_unit *unit, struct dwarf2_debug *stash)
   line_ptr += bytes_read;
 
   /* Read file name table.  */
-  while ((cur_file = read_string (abfd, line_ptr, &bytes_read)) != NULL)
+  while ((cur_file = read_string(abfd, line_ptr, &bytes_read)) != NULL)
     {
       line_ptr += bytes_read;
 
@@ -1248,12 +1248,12 @@ decode_line_info (struct comp_unit *unit, struct dwarf2_debug *stash)
 	      break;
 	    default:
 	      {
-		int i;
+		int s_i;
 
-		/* Unknown standard opcode, ignore it.  */
-		for (i = 0; i < lh.standard_opcode_lengths[op_code]; i++)
+		/* Unknown standard opcode, ignore it: */
+		for (s_i = 0; s_i < lh.standard_opcode_lengths[op_code]; s_i++)
 		  {
-		    (void) read_unsigned_leb128 (abfd, line_ptr, &bytes_read);
+		    (void)read_unsigned_leb128(abfd, line_ptr, &bytes_read);
 		    line_ptr += bytes_read;
 		  }
 	      }
@@ -1600,7 +1600,7 @@ read_rangelist (struct comp_unit *unit, struct arange *arange, bfd_uint64_t offs
 	return;
     }
   ranges_ptr = unit->stash->dwarf_ranges_buffer + offset;
-    
+
   for (;;)
     {
       bfd_vma low_pc;
@@ -1795,7 +1795,7 @@ scan_unit_for_symbols (struct comp_unit *unit)
 						 attr.u.blk->data + 1);
 			}
 		      break;
-		    
+
 		    default:
 		      break;
 		    }
@@ -2224,15 +2224,15 @@ _bfd_dwarf2_find_nearest_line (bfd *abfd,
       for (total_size = 0; msec; msec = find_debug_info (abfd, msec))
 	total_size += msec->size;
 
-      stash->info_ptr = bfd_alloc (abfd, total_size);
+      stash->info_ptr = (bfd_byte *)bfd_alloc(abfd, total_size);
       if (stash->info_ptr == NULL)
 	return FALSE;
 
       stash->info_ptr_end = stash->info_ptr;
 
-      for (msec = find_debug_info (abfd, NULL);
+      for (msec = find_debug_info(abfd, NULL);
 	   msec;
-	   msec = find_debug_info (abfd, msec))
+	   msec = find_debug_info(abfd, msec))
 	{
 	  bfd_size_type size;
 	  bfd_size_type start;
@@ -2428,15 +2428,15 @@ _bfd_dwarf2_find_line (bfd *abfd,
       for (total_size = 0; msec; msec = find_debug_info (abfd, msec))
 	total_size += msec->size;
 
-      stash->info_ptr = bfd_alloc (abfd, total_size);
+      stash->info_ptr = (bfd_byte *)bfd_alloc(abfd, total_size);
       if (stash->info_ptr == NULL)
 	return FALSE;
 
       stash->info_ptr_end = stash->info_ptr;
 
-      for (msec = find_debug_info (abfd, NULL);
+      for (msec = find_debug_info(abfd, NULL);
 	   msec;
-	   msec = find_debug_info (abfd, msec))
+	   msec = find_debug_info(abfd, msec))
 	{
 	  bfd_size_type size;
 	  bfd_size_type start;

@@ -30,9 +30,9 @@
 #include <stddef.h>
 #include <string.h>
 
-#if USE_UNLOCKED_IO
+#if defined(USE_UNLOCKED_IO) && USE_UNLOCKED_IO
 # include "unlocked-io.h"
-#endif
+#endif /* USE_UNLOCKED_IO */
 
 #ifdef WORDS_BIGENDIAN
 # define SWAP(n) (n)

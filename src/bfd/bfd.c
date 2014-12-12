@@ -1,4 +1,4 @@
-/* Generic BFD library interface and support routines.
+/* bfd.c: Generic BFD library interface and support routines.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
    2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
@@ -1289,12 +1289,12 @@ bfd_record_phdr (bfd *abfd,
   struct elf_segment_map *m, **pm;
   bfd_size_type amt;
 
-  if (bfd_get_flavour (abfd) != bfd_target_elf_flavour)
+  if (bfd_get_flavour(abfd) != bfd_target_elf_flavour)
     return TRUE;
 
-  amt = sizeof (struct elf_segment_map);
-  amt += ((bfd_size_type) count - 1) * sizeof (asection *);
-  m = bfd_alloc (abfd, amt);
+  amt = sizeof(struct elf_segment_map);
+  amt += (((bfd_size_type)count - 1) * sizeof(asection *));
+  m = (struct elf_segment_map *)bfd_alloc(abfd, amt);
   if (m == NULL)
     return FALSE;
 
@@ -1520,7 +1520,7 @@ SYNOPSIS
 			      bfd_boolean);
 
 DESCRIPTION
-	This function hides a symbol so that it won't be exported. 
+	This function hides a symbol so that it won't be exported.
 
 */
 

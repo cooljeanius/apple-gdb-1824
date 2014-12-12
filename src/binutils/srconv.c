@@ -91,18 +91,17 @@ static void prescan (struct coff_ofile *);
 static void show_usage (FILE *, int);
 extern int main (int, char **);
 
-static FILE *file;
 static bfd *abfd;
 static int debug = 0;
 static int quick = 0;
 static int noprescan = 0;
 static struct coff_ofile *tree;
-/* Obsolete ??
-   static int absolute_p;
- */
+/* Obsolete?? */
+#ifdef OBSOLETE_YES
+static int absolute_p;
+#endif /* OBSOLETE_YES */
 
 static int segmented_p;
-static int code;
 
 static int ids1[20000];
 static int ids2[20000];
@@ -129,8 +128,9 @@ get_ordinary_id (int x)
   ids1[x] = base1++;
   return ids1[x];
 }
+
 static char *
-section_translate (char *n)
+section_translate(char *n)
 {
   if (strcmp (n, ".text") == 0)
     return "P";
@@ -145,7 +145,7 @@ section_translate (char *n)
 
 static
 char *
-strip_suffix (char *name)
+strip_suffix(char *name)
 {
   int i;
   char *res;
@@ -176,11 +176,14 @@ checksum (FILE *file, unsigned char *ptr, int size, int code)
   for (j = 0; j < bytes; j++)
     sum += ptr[j];
 
-  /* Glue on a checksum too.  */
+  /* Glue on a checksum too: */
   ptr[bytes] = ~sum;
-  fwrite (ptr, bytes + 1, 1, file);
+  fwrite(ptr, bytes + 1, 1, file);
 }
 
+#if !defined(code)
+static int code;
+#endif /* !code */
 
 static void
 writeINT (int n, unsigned char *ptr, int *idx, int size, FILE *file)
@@ -194,8 +197,8 @@ writeINT (int n, unsigned char *ptr, int *idx, int size, FILE *file)
 
   if (byte > 240)
     {
-      /* Lets write out that record and do another one.  */
-      checksum (file, ptr, *idx, code | 0x1000);
+      /* Let us write out that record and do another one: */
+      checksum (file, ptr, *idx, (code | 0x1000));
       *idx = 16;
       byte = *idx / 8;
     }
@@ -290,18 +293,22 @@ static char *rname_h8300[] =
   "ER0", "ER1", "ER2", "ER3", "ER4", "ER5", "ER6", "ER7", "PC", "CCR"
 };
 
-static void
-wr_tr (void)
-{
-  /* The TR block is not normal - it does NOT have any contents. */
+/* Avoid declaring this as a global until we absolutely need to: */
+#if !defined(file)
+static FILE *file;
+#endif /* !file */
 
+static void
+wr_tr(void)
+{
+  /* The TR block is not normal - it does NOT have any contents: */
   static char b[] =
     {
-      0xff,			/* IT */
-      0x03,			/* RL */
-      0xfd,			/* CS */
+      0xff,		/* IT */
+      0x03,		/* RL */
+      0xfd,		/* CS */
     };
-  fwrite (b, 1, sizeof (b), file);
+  fwrite(b, 1, sizeof(b), file);
 }
 
 static void
@@ -343,16 +350,16 @@ wr_un (struct coff_ofile *ptr, struct coff_sfile *sfile, int first,
   un.linker = "L_GX00";
   un.lcd = DATE;
   un.name = sfile->name;
-  sysroff_swap_un_out (file, &un);
+  sysroff_swap_un_out(file, &un);
 }
 
 static void
-wr_hd (struct coff_ofile *p)
+wr_hd(struct coff_ofile *p)
 {
   struct IT_hd hd;
 
   hd.spare1 = 0;
-  if (bfd_get_file_flags (abfd) & EXEC_P)
+  if (bfd_get_file_flags(abfd) & EXEC_P)
     hd.mt = MTYPE_ABS_LM;
   else
     hd.mt = MTYPE_OMS_OR_LMS;
@@ -363,7 +370,7 @@ wr_hd (struct coff_ofile *p)
   hd.code = 0;			/* Always ASCII */
   hd.ver = "0200";		/* Version 2.00 */
 
-  switch (bfd_get_arch (abfd))
+  switch (bfd_get_arch(abfd))
     {
     case bfd_arch_h8300:
       hd.au = 8;
@@ -371,7 +378,7 @@ wr_hd (struct coff_ofile *p)
       hd.spcsz = 32;
       hd.segsz = 0;
       hd.segsh = 0;
-      switch (bfd_get_mach (abfd))
+      switch (bfd_get_mach(abfd))
 	{
 	case bfd_mach_h8300:
 	  hd.cpu = "H8300";
@@ -433,7 +440,7 @@ wr_hd (struct coff_ofile *p)
 
 
 static void
-wr_sh (struct coff_ofile *p ATTRIBUTE_UNUSED, struct coff_section *sec)
+wr_sh(struct coff_ofile *p ATTRIBUTE_UNUSED, struct coff_section *sec)
 {
   struct IT_sh sh;
   sh.unit = 0;
@@ -1821,12 +1828,11 @@ main (int ac, char **av)
   if (!output_file)
     {
       /* Take a .o off the input file and stick on a .obj.
-       * If it does NOT end in .o, then stick a .obj on anyway. */
+       * If it does NOT end in .o, then stick a .obj on anyway: */
+      int len = strlen(input_file);
 
-      int len = strlen (input_file);
-
-      output_file = xmalloc (len + 5);
-      strcpy (output_file, input_file);
+      output_file = (char *)xmalloc(len + 5);
+      strcpy(output_file, input_file);
 
       if (len > 3
 	  && output_file[len - 2] == '.'

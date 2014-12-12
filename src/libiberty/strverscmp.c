@@ -18,10 +18,14 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
    02111-1307 USA.  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "libiberty.h"
 #include "safe-ctype.h"
 
-/* 
+/*
 @deftypefun int strverscmp (const char *@var{s1}, const char *@var{s2})
 The @code{strverscmp} function compares the string @var{s1} against
 @var{s2}, considering them as holding indices/version numbers.  Return
@@ -143,14 +147,14 @@ strverscmp (const char *s1, const char *s2)
     {
     case CMP:
       return diff;
-      
+
     case LEN:
       while (ISDIGIT (*p1++))
 	if (!ISDIGIT (*p2++))
 	  return 1;
-      
+
       return ISDIGIT (*p2) ? -1 : diff;
-      
+
     default:
       return state;
     }

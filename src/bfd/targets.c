@@ -26,7 +26,7 @@
 #include "fnmatch.h"
 
 /*
-   It's okay to see some:
+   It is okay to see some:
 #if 0
    directives in this source file, as targets.c uses them to exclude
    certain BFD vectors.  This comment is specially formatted to catch
@@ -521,10 +521,10 @@ to find an alternative output format that is suitable.
 .
 */
 
-/* All known xvecs (even those that don't compile on all systems).
+/* All known xvecs (even those that do NOT compile on all systems).
    Alphabetized for easy reference.
    They are listed a second time below, since
-   we can't intermix extern's and initializers.  */
+   we cannot intermix extern's and initializers.  */
 extern const bfd_target a29kcoff_big_vec;
 extern const bfd_target a_out_adobe_vec;
 extern const bfd_target aix5coff64_vec;
@@ -804,18 +804,18 @@ static const bfd_target * const _bfd_target_vector[] = {
 
 #ifdef DEFAULT_VECTOR
 	&DEFAULT_VECTOR,
-#endif
+#endif /* DEFAULT_VECTOR */
 	/* This list is alphabetized to make it easy to compare
 	   with other vector lists -- the decls above and
 	   the case statement in configure.in.
-	   Vectors that don't compile on all systems, or aren't finished,
+	   Vectors that do NOT compile on all systems, or aren't finished,
 	   should have an entry here with #if 0 around it, to show that
-	   it wasn't omitted by mistake.  */
+	   it was NOT omitted by mistake.  */
 	&a29kcoff_big_vec,
 	&a_out_adobe_vec,
 #ifdef BFD64
 	&aix5coff64_vec,
-#endif
+#endif /* BFD64 */
 	&aout0_big_vec,
 #if 0
 	/* We have no way of distinguishing these from other a.out variants.  */
@@ -823,11 +823,11 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&aout_arm_little_vec,
 	/* No one seems to use this.  */
 	&aout_mips_big_vec,
-#endif
+#endif /* 0 */
 	&aout_mips_little_vec,
 #if 0
 	&apollocoff_vec,
-#endif
+#endif /* 0 */
 	&arm_epoc_pe_big_vec,
 	&arm_epoc_pe_little_vec,
 	&arm_epoc_pei_big_vec,
@@ -844,7 +844,7 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&bfd_efi_app_ia32_vec,
 #ifdef BFD64
 	&bfd_efi_app_ia64_vec,
-#endif
+#endif /* BFD64 */
 	&bfd_elf32_avr_vec,
 
 	/* This, and other vectors, may not be used in any *.mt configuration.
@@ -879,10 +879,10 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&bfd_elf32_i960_vec,
 #if 0
 	&bfd_elf32_ia64_big_vec,
-#endif
+#endif /* 0 */
 #ifdef BFD64
 	&bfd_elf32_ia64_hpux_big_vec,
-#endif
+#endif /* BFD64 */
 	&bfd_elf32_ip2k_vec,
 	&bfd_elf32_iq2000_vec,
 	&bfd_elf32_little_generic_vec,
@@ -911,7 +911,7 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&bfd_elf32_nlittlemips_vec,
 	&bfd_elf32_ntradbigmips_vec,
 	&bfd_elf32_ntradlittlemips_vec,
-#endif
+#endif /* BFD64 */
 	&bfd_elf32_openrisc_vec,
 	&bfd_elf32_or32_big_vec,
 	&bfd_elf32_pj_vec,
@@ -934,7 +934,7 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&bfd_elf32_sh64nbsd_vec,
 	&bfd_elf32_sh64lin_vec,
 	&bfd_elf32_sh64blin_vec,
-#endif
+#endif /* BFD64 */
 	&bfd_elf32_sparc_vec,
 	&bfd_elf32_tradbigmips_vec,
 	&bfd_elf32_tradlittlemips_vec,
@@ -971,7 +971,7 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&bfd_elf64_tradlittlemips_vec,
 	&bfd_elf64_x86_64_vec,
 	&bfd_mmo_vec,
-#endif
+#endif /* BFD64 */
 	&bfd_powerpc_pe_vec,
 	&bfd_powerpc_pei_vec,
 	&bfd_powerpcle_pe_vec,
@@ -979,13 +979,13 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&cris_aout_vec,
 #ifdef BFD64
 	&demo_64_vec,	/* Only compiled if host has long-long support.  */
-#endif
+#endif /* BFD64 */
 	&ecoff_big_vec,
 	&ecoff_biglittle_vec,
 	&ecoff_little_vec,
 #ifdef BFD64
 	&ecoffalpha_little_vec,
-#endif
+#endif /* BFD64 */
 	&go32coff_vec,
 	&go32stubbedcoff_vec,
 	&h8300coff_vec,
@@ -996,26 +996,26 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&host_aout_vec,
 	/* Clashes with sunos_big_vec magic no.  */
 	&hp300bsd_vec,
-#endif
+#endif /* 0 */
 	&hp300hpux_vec,
 	&i386aout_vec,
 	&i386bsd_vec,
 	&i386coff_vec,
 #if 0
 	&i386dynix_vec,
-#endif
+#endif /* 0 */
 	&i386freebsd_vec,
 #if 0
 	/* Since a.out files lack decent magic numbers, no way to recognize
 	   which kind of a.out file it is.  */
 	&i386linux_vec,
-#endif
+#endif /* 0 */
 	&i386lynx_aout_vec,
 	&i386lynx_coff_vec,
 #if 0
 	/* No distinguishing features for Mach 3 executables.  */
 	&i386mach3_vec,
-#endif
+#endif /* 0 */
 	&i386msdos_vec,
 	&i386netbsd_vec,
 	&i386os9k_vec,
@@ -1028,14 +1028,14 @@ static const bfd_target * const _bfd_target_vector[] = {
 #if 0
 	&m68k4knetbsd_vec,
 	&m68kaux_coff_vec,
-#endif
+#endif /* 0 */
 	&m68kcoff_vec,
 	&m68kcoffun_vec,
 #if 0
 	/* Since a.out files lack decent magic numbers, no way to recognize
 	   which kind of a.out file it is.  */
 	&m68klinux_vec,
-#endif
+#endif /* 0 */
 	&m68knetbsd_vec,
 	&m68ksysvcoff_vec,
 	&m88kbcs_vec,
@@ -1054,18 +1054,18 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&newsos3_vec,
 #ifdef BFD64
 	&nlm32_alpha_vec,
-#endif
+#endif /* BFD64 */
 	&nlm32_i386_vec,
 	&nlm32_powerpc_vec,
 	&nlm32_sparc_vec,
 #if 0
-	/* We have no oasys tools anymore, so we can't test any of this
+	/* We have no oasys tools anymore, so we cannot test any of this
 	   anymore. If you want to test the stuff yourself, go ahead...
 	   steve@cygnus.com
 	   Worse, since there is no magic number for archives, there
 	   can be annoying target mis-matches.  */
 	&oasys_vec,
-#endif
+#endif /* 0 */
 	/* Entry for the OpenRISC family.  */
 	&or32coff_big_vec,
 
@@ -1077,15 +1077,15 @@ static const bfd_target * const _bfd_target_vector[] = {
 #if 0
 	/* This has the same magic number as RS/6000.  */
 	&pmac_xcoff_vec,
-#endif
+#endif /* 0 */
 	&ppcboot_vec,
 #if 0
 	/* We have no way of distinguishing these from other a.out variants.  */
 	&riscix_vec,
-#endif
+#endif /* 0 */
 #ifdef BFD64
 	&rs6000coff64_vec,
-#endif
+#endif /* BFD64 */
 	&rs6000coff_vec,
 	&shcoff_small_vec,
 	&shcoff_vec,
@@ -1093,9 +1093,9 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&shlcoff_vec,
 	&shlpe_vec,
 	&shlpei_vec,
-#if defined (HOST_HPPAHPUX) || defined (HOST_HPPABSD) || defined (HOST_HPPAOSF)
+#if defined(HOST_HPPAHPUX) || defined(HOST_HPPABSD) || defined(HOST_HPPAOSF)
 	&som_vec,
-#endif
+#endif /* HOST_HPPAHPUX || HOST_HPPABSD || HOST_HPPAOSF */
 	&sparccoff_vec,
 	&sparcle_aout_vec,
 	&sparclinux_vec,
@@ -1119,7 +1119,7 @@ static const bfd_target * const _bfd_target_vector[] = {
 	&versados_vec,
 #ifdef BFD64
 	&vms_alpha_vec,
-#endif
+#endif /* BFD64 */
 	&vms_vax_vec,
 	&w65_vec,
 	&we32kcoff_vec,
@@ -1141,60 +1141,58 @@ static const bfd_target * const _bfd_target_vector[] = {
 
 #ifdef AIX386_CORE
 	&aix386_core_vec,
-#endif
+#endif /* AIX386_CORE */
 #if 0
-	/* We don't include cisco_core_*_vec.  Although it has a magic number,
-	   the magic number isn't at the beginning of the file, and thus
+	/* We do NOT include cisco_core_*_vec.  Although it has a magic number,
+	   the magic number is NOT at the beginning of the file, and thus
 	   might spuriously match other kinds of files.  */
 	&cisco_core_big_vec,
 	&cisco_core_little_vec,
-#endif
+#endif /* 0 */
 #ifdef HPPABSD_CORE
 	&hppabsd_core_vec,
-#endif
+#endif /* HPPABSD_CORE */
 #ifdef HPUX_CORE
 	&hpux_core_vec,
-#endif
+#endif /* HPUX_CORE */
 #ifdef IRIX_CORE
 	&irix_core_vec,
-#endif
+#endif /* IRIX_CORE */
 #ifdef NETBSD_CORE
 	&netbsd_core_vec,
-#endif
+#endif /* NETBSD_CORE */
 #ifdef OSF_CORE
 	&osf_core_vec,
-#endif
+#endif /* OSF_CORE */
 #ifdef PTRACE_CORE
 	&ptrace_core_vec,
-#endif
+#endif /* PTRACE_CORE */
 #ifdef SCO5_CORE
 	&sco5_core_vec,
-#endif
+#endif /* SCO5_CORE */
 #ifdef TRAD_CORE
 	&trad_core_vec,
-#endif
+#endif /* TRAD_CORE */
 
 	NULL /* end of list marker */
 };
 const bfd_target * const *bfd_target_vector = _bfd_target_vector;
 
 /* bfd_default_vector[0] contains either the address of the default vector,
-   if there is one, or zero if there isn't.  */
-
+   if there is one, or zero if there is NOT.  */
 const bfd_target *bfd_default_vector[] = {
 #ifdef DEFAULT_VECTOR
 	&DEFAULT_VECTOR,
-#endif
+#endif /* DEFAULT_VECTOR */
 	NULL
 };
 
 /* bfd_associated_vector[] contains the associated target vectors used
    to reduce the ambiguity in bfd_check_format_matches.  */
-
 static const bfd_target *_bfd_associated_vector[] = {
 #ifdef ASSOCIATED_VECS
 	ASSOCIATED_VECS,
-#endif
+#endif /* ASSOCIATED_VECS */
 	NULL
 };
 const bfd_target * const *bfd_associated_vector = _bfd_associated_vector;
@@ -1205,7 +1203,6 @@ const bfd_target * const *bfd_associated_vector = _bfd_associated_vector;
 const size_t _bfd_target_vector_entries = sizeof (_bfd_target_vector)/sizeof (*_bfd_target_vector);
 
 /* This array maps configuration triplets onto BFD vectors.  */
-
 struct targmatch
 {
   /* The configuration triplet.  */
@@ -1222,8 +1219,7 @@ static const struct targmatch bfd_target_match[] = {
   { NULL, NULL }
 };
 
-/* Find a target vector, given a name or configuration triplet.  */
-
+/* Find a target vector, given a name or configuration triplet: */
 static const bfd_target *
 find_target (const char *name)
 {
@@ -1333,6 +1329,124 @@ bfd_find_target (const char *target_name, bfd *abfd)
   return target;
 }
 
+/* Helper function for bfd_get_target_info to determine the target's
+   architecture.  This method handles bfd internal target names as
+   tuples and triplets.  */
+static bfd_boolean
+_bfd_find_arch_match(const char *tname, const char **arch,
+                    const char **def_target_arch)
+{
+  if (!arch)
+    return FALSE;
+
+  while (*arch != NULL)
+    {
+      const char *in_a = strstr (*arch, tname);
+      char end_ch = (in_a ? in_a[strlen (tname)] : 0);
+
+      if (in_a && (in_a == *arch || in_a[-1] == ':')
+          && end_ch == 0)
+        {
+          *def_target_arch = *arch;
+          return TRUE;
+        }
+      arch++;
+    }
+  return FALSE;
+}
+
+/*
+FUNCTION
+	bfd_get_target_info
+
+SYNOPSIS
+	const bfd_target *bfd_get_target_info(const char *target_name,
+                                              bfd *abfd,
+                                              bfd_boolean *is_bigendian,
+                                              int *underscoring,
+                                              const char **def_target_arch);
+DESCRIPTION
+	Return a pointer to the transfer vector for the object target
+	named @var{target_name}.  If @var{target_name} is <<NULL>>,
+	choose the one in the environment variable <<GNUTARGET>>; if
+	that is null or not defined, then choose the first entry in the
+	target list.  Passing in the string "default" or setting the
+	environment variable to "default" will cause the first entry in
+	the target list to be returned, and "target_defaulted" will be
+	set in the BFD if @var{abfd} is not <<NULL>>.  This causes
+	<<bfd_check_format>> to loop over all the targets to find the
+	one that matches the file being read.
+	If @var{is_bigendian} is not <<NULL>>, then set this value to target's
+	endian mode. True for big-endian, FALSE for little-endian or for
+	invalid target.
+	If @var{underscoring} is not <<NULL>>, then set this value to target's
+	underscoring mode. Zero for none-underscoring, -1 for invalid target,
+	else the value of target vector's symbol underscoring.
+	If @var{def_target_arch} is not <<NULL>>, then set it to the architecture
+	string specified by the target_name.
+*/
+
+const bfd_target *
+bfd_get_target_info(const char *target_name, bfd *abfd,
+                    bfd_boolean *is_bigendian,
+                    int *underscoring, const char **def_target_arch)
+{
+  const bfd_target *target_vec;
+
+  if (is_bigendian)
+    *is_bigendian = FALSE;
+  if (underscoring)
+    *underscoring = -1;
+  if (def_target_arch)
+    *def_target_arch = NULL;
+  target_vec = bfd_find_target(target_name, abfd);
+  if (! target_vec)
+    return NULL;
+  if (is_bigendian)
+    *is_bigendian = ((target_vec->byteorder == BFD_ENDIAN_BIG) ? TRUE
+                     : FALSE);
+  if (underscoring)
+    *underscoring = (((int)target_vec->symbol_leading_char) & 0xff);
+
+  if (def_target_arch)
+    {
+      const char *tname = target_vec->name;
+      const char **arches = bfd_arch_list();
+
+      if (arches && tname)
+        {
+          char *hyp = strchr(tname, '-');
+
+          if (hyp != NULL)
+            {
+              tname = ++hyp;
+
+              /* Make sure we detect architecture names
+                 for triplets like "pe-arm-wince-little".  */
+              if (!_bfd_find_arch_match(tname, arches, def_target_arch))
+                {
+                  char new_tname[50];
+
+                  strcpy(new_tname, hyp);
+                  while ((hyp = strrchr(new_tname, '-')) != NULL)
+                    {
+                      *hyp = 0;
+                      if (_bfd_find_arch_match(new_tname, arches,
+                                               def_target_arch))
+                        break;
+                    }
+                }
+            }
+          else
+            _bfd_find_arch_match(tname, arches, def_target_arch);
+        }
+
+      if (arches)
+        free(arches);
+    }
+  return target_vec;
+}
+
 /*
 FUNCTION
 	bfd_target_list
@@ -1348,23 +1462,23 @@ DESCRIPTION
 */
 
 const char **
-bfd_target_list (void)
+bfd_target_list(void)
 {
   int vec_length = 0;
   bfd_size_type amt;
-#if defined (HOST_HPPAHPUX) && ! defined (__STDC__)
+#if defined(HOST_HPPAHPUX) && !defined(__STDC__)
   /* The native compiler on the HP9000/700 has a bug which causes it
      to loop endlessly when compiling this file.  This avoids it.  */
   volatile
-#endif
+#endif /* HOST_HPPAHPUX && !__STDC__ */
   const bfd_target * const *target;
   const  char **name_list, **name_ptr;
 
   for (target = &bfd_target_vector[0]; *target != NULL; target++)
     vec_length++;
 
-  amt = (vec_length + 1) * sizeof (char **);
-  name_ptr = name_list = bfd_malloc (amt);
+  amt = ((vec_length + 1) * sizeof(char **));
+  name_ptr = name_list = (const char **)bfd_malloc(amt);
 
   if (name_list == NULL)
     return NULL;

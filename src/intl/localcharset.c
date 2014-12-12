@@ -46,12 +46,12 @@
 #if defined _WIN32 || defined __WIN32__
 # undef WIN32   /* avoid warning on mingw32 */
 # define WIN32
-#endif
+#endif /* _WIN32 || __WIN32__ */
 
 #if defined __EMX__
 /* Assume EMX program runs on OS/2, even if compiled under DOS.  */
 # define OS2
-#endif
+#endif /* __EMX__ */
 
 #if !defined WIN32
 # if HAVE_LANGINFO_CODESET
@@ -59,8 +59,8 @@
 # else
 #  if HAVE_SETLOCALE
 #   include <locale.h>
-#  endif
-# endif
+#  endif /* HAVE_SETLOCALE */
+# endif /* HAVE_LANGINFO_CODESET */
 #elif defined WIN32
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>
@@ -68,13 +68,13 @@
 #if defined OS2
 # define INCL_DOS
 # include <os2.h>
-#endif
+#endif /* OS2 */
 
 #if ENABLE_RELOCATABLE
 # include "relocatable.h"
 #else
 # define relocate(pathname) (pathname)
-#endif
+#endif /* ENABLE_RELOCATABLE */
 
 #if defined _WIN32 || defined __WIN32__ || defined __EMX__ || defined __DJGPP__
   /* Win32, OS/2, DOS */
@@ -83,16 +83,16 @@
 
 #ifndef DIRECTORY_SEPARATOR
 # define DIRECTORY_SEPARATOR '/'
-#endif
+#endif /* !DIRECTORY_SEPARATOR */
 
 #ifndef ISSLASH
 # define ISSLASH(C) ((C) == DIRECTORY_SEPARATOR)
-#endif
+#endif /* !ISSLASH */
 
 #ifdef HAVE_GETC_UNLOCKED
 # undef getc
 # define getc getc_unlocked
-#endif
+#endif /* HAVE_GETC_UNLOCKED */
 
 /* The following static variable is declared 'volatile' to avoid a
    possible multithread problem in the function get_charset_aliases. If we
@@ -230,7 +230,7 @@ static const char *get_charset_aliases(void)
 	   "DECHANZI" "\0" "GB2312" "\0"
 	   /* Korean */
 	   "DECKOREAN" "\0" "EUC-KR" "\0";
-# endif
+# endif /* VMS */
 
 # if defined WIN32
       /* To avoid the troubles of installing a separate file in the same

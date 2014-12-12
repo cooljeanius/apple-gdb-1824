@@ -545,8 +545,8 @@ bfd_wrapped_link_hash_lookup (bfd *abfd,
 	  /* This symbol is being wrapped.  We want to replace all
              references to SYM with references to __wrap_SYM.  */
 
-	  amt = strlen (l) + sizeof WRAP + 1;
-	  n = bfd_malloc (amt);
+	  amt = strlen(l) + sizeof WRAP + 1;
+	  n = (char *)bfd_malloc(amt);
 	  if (n == NULL)
 	    return NULL;
 
@@ -576,8 +576,8 @@ bfd_wrapped_link_hash_lookup (bfd *abfd,
              wrapped.  We want to replace all references to __real_SYM
              with references to SYM.  */
 
-	  amt = strlen (l + sizeof REAL - 1) + 2;
-	  n = bfd_malloc (amt);
+	  amt = strlen(l + sizeof REAL - 1) + 2;
+	  n = (char *)bfd_malloc(amt);
 	  if (n == NULL)
 	    return NULL;
 
@@ -1041,12 +1041,12 @@ _bfd_generic_link_add_archive_symbols
       arh = archive_hash_lookup (&arsym_hash, h->root.string, FALSE, FALSE);
       if (arh == NULL)
 	{
-	  /* If we haven't found the exact symbol we're looking for,
-	     let's look for its import thunk */
+	  /* If we have NOT found the exact symbol we are looking for,
+	     then let us look for its import thunk: */
 	  if (info->pei386_auto_import)
 	    {
-	      bfd_size_type amt = strlen (h->root.string) + 10;
-	      char *buf = bfd_malloc (amt);
+	      bfd_size_type amt = (strlen(h->root.string) + 10);
+	      char *buf = (char *)bfd_malloc(amt);
 	      if (buf == NULL)
 		return FALSE;
 
@@ -1969,12 +1969,12 @@ _bfd_generic_link_add_one_symbol (struct bfd_link_info *info,
 	    else
 	      {
 		char *w;
-		size_t len = strlen (string) + 1;
+		size_t len = (strlen(string) + 1);
 
-		w = bfd_hash_allocate (&info->hash->table, len);
+		w = (char *)bfd_hash_allocate(&info->hash->table, len);
 		if (w == NULL)
 		  return FALSE;
-		memcpy (w, string, len);
+		memcpy(w, string, len);
 		sub->u.i.warning = w;
 	      }
 
@@ -2557,13 +2557,13 @@ _bfd_generic_reloc_link_order (bfd *abfd,
       bfd_boolean ok;
       file_ptr loc;
 
-      size = bfd_get_reloc_size (r->howto);
-      buf = bfd_zmalloc (size);
+      size = bfd_get_reloc_size(r->howto);
+      buf = (bfd_byte *)bfd_zmalloc(size);
       if (buf == NULL)
 	return FALSE;
-      rstat = _bfd_relocate_contents (r->howto, abfd,
-				      (bfd_vma) link_order->u.reloc.p->addend,
-				      buf);
+      rstat = _bfd_relocate_contents(r->howto, abfd,
+                                     (bfd_vma)link_order->u.reloc.p->addend,
+                                     buf);
       switch (rstat)
 	{
 	case bfd_reloc_ok:
@@ -2600,27 +2600,26 @@ _bfd_generic_reloc_link_order (bfd *abfd,
   return TRUE;
 }
 
-/* Allocate a new link_order for a section.  */
-
+/* Allocate a new link_order for a section: */
 struct bfd_link_order *
-bfd_new_link_order (bfd *abfd, asection *section)
+bfd_new_link_order(bfd *abfd, asection *section)
 {
-  bfd_size_type amt = sizeof (struct bfd_link_order);
-  struct bfd_link_order *new;
+  bfd_size_type amt = sizeof(struct bfd_link_order);
+  struct bfd_link_order *newsym;
 
-  new = bfd_zalloc (abfd, amt);
-  if (!new)
+  newsym = (struct bfd_link_order *)bfd_zalloc(abfd, amt);
+  if (!newsym)
     return NULL;
 
-  new->type = bfd_undefined_link_order;
+  newsym->type = bfd_undefined_link_order;
 
   if (section->map_tail.link_order != NULL)
-    section->map_tail.link_order->next = new;
+    section->map_tail.link_order->next = newsym;
   else
-    section->map_head.link_order = new;
-  section->map_tail.link_order = new;
+    section->map_head.link_order = newsym;
+  section->map_tail.link_order = newsym;
 
-  return new;
+  return newsym;
 }
 
 /* Default link order processing routine.  Note that we can not handle
@@ -2670,15 +2669,15 @@ default_data_link_order (bfd *abfd,
 
   fill = link_order->u.data.contents;
   fill_size = link_order->u.data.size;
-  if (fill_size != 0 && fill_size < size)
+  if ((fill_size != 0) && (fill_size < size))
     {
       bfd_byte *p;
-      fill = bfd_malloc (size);
+      fill = (bfd_byte *)bfd_malloc(size);
       if (fill == NULL)
 	return FALSE;
       p = fill;
       if (fill_size == 1)
-	memset (p, (int) link_order->u.data.contents[0], (size_t) size);
+	memset(p, (int)link_order->u.data.contents[0], (size_t)size);
       else
 	{
 	  do
@@ -2794,21 +2793,21 @@ default_indirect_link_order (bfd *output_bfd,
 					  bfd_asymbol_name (sym),
 					  FALSE, FALSE, TRUE);
 	      if (h != NULL)
-		set_symbol_from_hash (sym, h);
+		set_symbol_from_hash(sym, h);
 	    }
 	}
     }
 
-  /* Get and relocate the section contents.  */
-  sec_size = (input_section->rawsize > input_section->size
+  /* Get and relocate the section contents: */
+  sec_size = ((input_section->rawsize > input_section->size)
 	      ? input_section->rawsize
 	      : input_section->size);
-  contents = bfd_malloc (sec_size);
-  if (contents == NULL && sec_size != 0)
+  contents = (bfd_byte *)bfd_malloc(sec_size);
+  if ((contents == NULL) && (sec_size != 0))
     goto error_return;
   new_contents = (bfd_get_relocated_section_contents
 		  (output_bfd, info, link_order, contents, info->relocatable,
-		   _bfd_generic_link_get_symbols (input_bfd)));
+		   _bfd_generic_link_get_symbols(input_bfd)));
   if (!new_contents)
     goto error_return;
 

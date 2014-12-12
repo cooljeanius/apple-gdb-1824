@@ -9,7 +9,7 @@ AC_PREREQ([2.5])
 AC_INIT([gdb.apple-testsuite],[1824],[opensource@apple.com])
 AC_CONFIG_SRCDIR([cfm.c])
 AC_CONFIG_AUX_DIR([../../..])
-AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_HEADERS([config.h])dnl
 
 if test "x${subdirs}" = "x"; then
   test -z "${subdirs}" && subdirs=""
@@ -17,10 +17,26 @@ if test "x${subdirs}" = "x"; then
 fi
 
 MY_CC=${CC-cc}
-AC_SUBST([MY_CC])
+AC_SUBST([MY_CC])dnl
+
+# architecture stuff:
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
+
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+  AC_SUBST([BUILD_ARCHITECTURE])
+fi
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  AC_SUBST([HOST_ARCHITECTURE])
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+  AC_SUBST([TARGET_ARCHITECTURE])
+fi
+
 AC_OBJEXT
 AC_EXEEXT
 
@@ -60,17 +76,17 @@ dnl# End what used to be AC\_TYPE\_SIGNAL
 
 # Checks for header files.
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
-AC_CHECK_HEADERS([limits.h stdio.h])
+AC_CHECK_HEADERS([limits.h stdio.h])dnl
 
 # Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_STAT
-AC_CHECK_FUNCS([alarm getcwd sqrt])
+AC_CHECK_FUNCS([alarm getcwd sqrt])dnl
 
 # Output:
 AC_CONFIG_FILES([Makefile \
   debug-in-ofile/Makefile \
   gused/Makefile \
   ld-r/Makefile \
-  xcode/Makefile])
+  xcode/Makefile])dnl
 AC_OUTPUT

@@ -34,7 +34,7 @@
 # define YY_YY_DEFPARSE_H_INCLUDED
 /* Enabling traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -76,36 +76,6 @@ extern int yydebug;
      NUMBER = 285
    };
 #endif
-/* Tokens.  */
-#define NAME 258
-#define LIBRARY 259
-#define DESCRIPTION 260
-#define STACKSIZE 261
-#define HEAPSIZE 262
-#define CODE 263
-#define DATA 264
-#define SECTIONS 265
-#define EXPORTS 266
-#define IMPORTS 267
-#define VERSIONK 268
-#define BASE 269
-#define CONSTANT 270
-#define READ 271
-#define WRITE 272
-#define EXECUTE 273
-#define SHARED 274
-#define NONSHARED 275
-#define NONAME 276
-#define PRIVATE 277
-#define SINGLE 278
-#define MULTIPLE 279
-#define INITINSTANCE 280
-#define INITGLOBAL 281
-#define TERMINSTANCE 282
-#define TERMGLOBAL 283
-#define ID 284
-#define NUMBER 285
-
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -119,7 +89,7 @@ typedef union YYSTYPE
 
 
 /* Line 2053 of yacc.c  */
-#line 123 "defparse.h"
+#line 93 "defparse.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

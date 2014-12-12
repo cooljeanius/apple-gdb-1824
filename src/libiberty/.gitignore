@@ -1,5 +1,8 @@
+testsuite/demangler-fuzzer
 testsuite/test-demangle
+testsuite/test-expandargv
 testsuite/test-pexecute
+testsuite/test-strtol
 testsuite/Makefile
 Makefile
 *.o

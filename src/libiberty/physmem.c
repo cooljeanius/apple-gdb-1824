@@ -17,42 +17,43 @@
 
 /* Written by Paul Eggert.  */
 
-#if HAVE_CONFIG_H
+#if defined(HAVE_CONFIG_H) && HAVE_CONFIG_H
 # include <config.h>
 #endif
 
-#if HAVE_UNISTD_H
+#if defined(HAVE_UNISTD_H) && HAVE_UNISTD_H
 # include <unistd.h>
 #endif
 
-#if HAVE_SYS_PSTAT_H
+#if defined(HAVE_SYS_PSTAT_H) && HAVE_SYS_PSTAT_H
 # include <sys/pstat.h>
 #endif
 
-#if HAVE_SYS_SYSMP_H
+#if defined(HAVE_SYS_SYSMP_H) && HAVE_SYS_SYSMP_H
 # include <sys/sysmp.h>
 #endif
 
-#if HAVE_SYS_SYSINFO_H && HAVE_MACHINE_HAL_SYSINFO_H
+#if (defined(HAVE_SYS_SYSINFO_H) && HAVE_SYS_SYSINFO_H) && \
+    (defined(HAVE_MACHINE_HAL_SYSINFO_H) && HAVE_MACHINE_HAL_SYSINFO_H)
 # include <sys/sysinfo.h>
 # include <machine/hal_sysinfo.h>
 #endif
 
-#if HAVE_SYS_TABLE_H
+#if defined(HAVE_SYS_TABLE_H) && HAVE_SYS_TABLE_H
 # include <sys/table.h>
 #endif
 
 #include <sys/types.h>
 
-#if HAVE_SYS_PARAM_H
+#if defined(HAVE_SYS_PARAM_H) && HAVE_SYS_PARAM_H
 # include <sys/param.h>
 #endif
 
-#if HAVE_SYS_SYSCTL_H
+#if defined(HAVE_SYS_SYSCTL_H) && HAVE_SYS_SYSCTL_H
 # include <sys/sysctl.h>
 #endif
 
-#if HAVE_SYS_SYSTEMCFG_H
+#if defined(HAVE_SYS_SYSTEMCFG_H) && HAVE_SYS_SYSTEMCFG_H
 # include <sys/systemcfg.h>
 #endif
 
@@ -91,7 +92,7 @@ physmem_total (void)
   }
 #endif
 
-#if HAVE_PSTAT_GETSTATIC
+#if defined(HAVE_PSTAT_GETSTATIC) && HAVE_PSTAT_GETSTATIC
   { /* This works on hpux11.  */
     struct pst_static pss;
     if (0 <= pstat_getstatic (&pss, sizeof pss, 1, 0))
@@ -104,7 +105,8 @@ physmem_total (void)
   }
 #endif
 
-#if HAVE_SYSMP && defined MP_SAGET && defined MPSA_RMINFO && defined _SC_PAGESIZE
+#if (defined(HAVE_SYSMP) && HAVE_SYSMP) && defined(MP_SAGET) && \
+    defined(MPSA_RMINFO) && defined(_SC_PAGESIZE)
   { /* This works on irix6. */
     struct rminfo realmem;
     if (sysmp (MP_SAGET, MPSA_RMINFO, &realmem, sizeof realmem) == 0)
@@ -117,7 +119,7 @@ physmem_total (void)
   }
 #endif
 
-#if HAVE_GETSYSINFO && defined GSI_PHYSMEM
+#if (defined(HAVE_GETSYSINFO) && HAVE_GETSYSINFO) && defined(GSI_PHYSMEM)
   { /* This works on Tru64 UNIX V4/5.  */
     int physmem;
 
@@ -132,7 +134,7 @@ physmem_total (void)
   }
 #endif
 
-#if HAVE_SYSCTL && defined HW_PHYSMEM
+#if (defined(HAVE_SYSCTL) && HAVE_SYSCTL) && defined(HW_PHYSMEM)
   { /* This works on *bsd and darwin.  */
     unsigned int physmem;
     size_t len = sizeof physmem;
@@ -144,7 +146,7 @@ physmem_total (void)
   }
 #endif
 
-#if HAVE__SYSTEM_CONFIGURATION
+#if defined(HAVE__SYSTEM_CONFIGURATION) && HAVE__SYSTEM_CONFIGURATION
   /* This works on AIX 4.3.3+.  */
   return _system_configuration.physmem;
 #endif
@@ -195,7 +197,8 @@ physmem_available (void)
   }
 #endif
 
-#if HAVE_PSTAT_GETSTATIC && HAVE_PSTAT_GETDYNAMIC
+#if (defined(HAVE_PSTAT_GETSTATIC) && HAVE_PSTAT_GETSTATIC) && \
+    (defined(HAVE_PSTAT_GETDYNAMIC) && HAVE_PSTAT_GETDYNAMIC)
   { /* This works on hpux11.  */
     struct pst_static pss;
     struct pst_dynamic psd;
@@ -210,7 +213,8 @@ physmem_available (void)
   }
 #endif
 
-#if HAVE_SYSMP && defined MP_SAGET && defined MPSA_RMINFO && defined _SC_PAGESIZE
+#if (defined(HAVE_SYSMP) && HAVE_SYSMP) && defined(MP_SAGET) && \
+    defined(MPSA_RMINFO) && defined(_SC_PAGESIZE)
   { /* This works on irix6. */
     struct rminfo realmem;
     if (sysmp (MP_SAGET, MPSA_RMINFO, &realmem, sizeof realmem) == 0)
@@ -223,7 +227,7 @@ physmem_available (void)
   }
 #endif
 
-#if HAVE_TABLE && defined TBL_VMSTATS
+#if (defined(HAVE_TABLE) && HAVE_TABLE) && defined(TBL_VMSTATS)
   { /* This works on Tru64 UNIX V4/5.  */
     struct tbl_vmstats vmstats;
 
@@ -238,7 +242,7 @@ physmem_available (void)
   }
 #endif
 
-#if HAVE_SYSCTL && defined HW_USERMEM
+#if (defined(HAVE_SYSCTL) && HAVE_SYSCTL) && defined(HW_USERMEM)
   { /* This works on *bsd and darwin.  */
     unsigned int usermem;
     size_t len = sizeof usermem;
@@ -284,7 +288,7 @@ physmem_available (void)
 }
 
 
-#if DEBUG
+#if defined(DEBUG) && DEBUG
 
 # include <stdio.h>
 # include <stdlib.h>

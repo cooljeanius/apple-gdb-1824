@@ -20,21 +20,21 @@ Software Foundation, 51 Franklin Street - Fifth Floor, Boston, MA
 
 #include "config.h"
 #ifdef HAVE_STRING_H
-#include <string.h>
+# include <string.h>
 #else
-#ifdef HAVE_STRINGS_H
-#include <strings.h>
-#endif
-#endif
+# ifdef HAVE_STRINGS_H
+#  include <strings.h>
+# endif /* HAVE_STRINGS_H */
+#endif /* HAVE_STRING_H */
 #include "sysinfo.h"
 
 #define YY_NO_UNPUT
 
 #ifndef yywrap
-static int yywrap (void) { return 1; }
-#endif
+static int yywrap(void) { return 1; }
+#endif /* !yywrap */
 
-extern int yylex (void);
+extern int yylex(void);
 %}
 %%
 "(" { return '(';}
@@ -42,18 +42,18 @@ extern int yylex (void);
 "[" { return '[';}
 "]" { return ']';}
 " " { ; }
-";".* { ; } 
+";".* { ; }
 "\t" { ; }
 "\n" { ; }
 "\""[^\"]*"\"" {
-	yylval.s = malloc (yyleng - 1);
-	memcpy (yylval.s, yytext + 1, yyleng - 2);
+	yylval.s = (char *)malloc(yyleng - 1);
+	memcpy(yylval.s, yytext + 1, yyleng - 2);
 	yylval.s[yyleng - 2] = '\0';
         return NAME;
 	}
 
 0x[0-9a-f]+ {
-        yylval.i = strtol(yytext,0,16);
+        yylval.i = strtol(yytext, 0, 16);
 	return  NUMBER;
 	}
 

@@ -9,13 +9,29 @@ AC_PREREQ([2.59])
 AC_INIT([gdb.hp.base-hp],[1824],[sje@cup.hp.com])
 dnl# bug report address is an HP email address that I was able to find
 dnl# in MAINTAINERS a few levels up
-AC_CONFIG_SRCDIR([dollar.exp])
+AC_CONFIG_SRCDIR([dollar.exp])dnl
 
 MY_CC=${CC-cc}
-AC_SUBST([MY_CC])
-AC_CONFIG_AUX_DIR([../../../..])
+AC_SUBST([MY_CC])dnl
+AC_CONFIG_AUX_DIR([../../../..])dnl
+
+# architecture stuff:
 AC_CANONICAL_TARGET
 
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+  AC_SUBST([BUILD_ARCHITECTURE])
+fi
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  AC_SUBST([HOST_ARCHITECTURE])
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+  AC_SUBST([TARGET_ARCHITECTURE])
+fi
+
+# Programs.
 if test "x${CC}" = "x"; then
   test -z "${CC}"
   AC_PROG_CC
@@ -26,8 +42,9 @@ fi
 AC_PROG_CPP
 AC_PROG_MAKE_SET
 
-AC_CHECK_HEADERS([stdio.h])
+# Header(s).
+AC_CHECK_HEADERS([stdio.h])dnl
 
 # Output:
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile])dnl
 AC_OUTPUT

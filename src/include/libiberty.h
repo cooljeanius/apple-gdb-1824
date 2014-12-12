@@ -109,7 +109,10 @@ extern int countargv (char**);
    is 1, we found it so don't provide any declaration at all.  */
 #if !HAVE_DECL_BASENAME
   /* APPLE LOCAL basename */
-#if defined (__GNU_LIBRARY__ ) || defined (__linux__) || defined (__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__) || defined (__APPLE__) || defined (__CYGWIN__) || defined (__CYGWIN32__) || defined (__MINGW32__) || defined (HAVE_DECL_BASENAME)
+#if defined (__GNU_LIBRARY__ ) || defined (__linux__) \
+  || defined (__FreeBSD__) || defined (__OpenBSD__) || defined(__NetBSD__) \
+  || defined (__APPLE__) || defined (__CYGWIN__) || defined (__CYGWIN32__) \
+  || defined (__MINGW32__) || defined (__DragonFly__) || defined (HAVE_DECL_BASENAME)
 extern char *basename (char *);
 #else
 /* Do not allow basename to be used if there is no prototype seen.  We
@@ -266,10 +269,11 @@ extern int signo_max (void);
 
 /* Return a signal message string for a signal number
    (e.g., strsignal (SIGHUP) returns something like "Hangup").  */
-/* This is commented out as it can conflict with one in system headers.
+/* This is ifdef-ed out as it can conflict with one in system headers.
    We still document its existence though.  */
-
-/*extern const char *strsignal (int);*/
+#ifdef CONFLICT_WITH_SYSTEM_HEADERS_RESOLVED
+extern const char *strsignal (int);
+#endif /* CONFLICT_WITH_SYSTEM_HEADERS_RESOLVED */
 
 /* Return the name of a signal number (e.g., strsigno (SIGHUP) returns
    "SIGHUP").  */
@@ -457,6 +461,15 @@ extern struct pex_obj *pex_init (int flags, const char *pname,
  * on Unix.  */
 #define PEX_BINARY_ERROR	0x80
 
+#ifndef PEX_STDOUT_APPEND
+/* Append stdout to existing file instead of truncating it: */
+# define PEX_STDOUT_APPEND	0x100
+#endif /* !PEX_STDOUT_APPEND */
+
+#ifndef PEX_STDERR_APPEND
+/* Thes same as PEX_STDOUT_APPEND, but for STDERR: */
+# define PEX_STDERR_APPEND	0x200
+#endif /* !PEX_STDERR_APPEND */
 
 /* Execute one program.  Returns NULL on success.  On error returns an
    error string (typically just the name of a system call); the error
@@ -639,6 +652,10 @@ extern int snprintf (char *, size_t, const char *, ...) ATTRIBUTE_PRINTF_3;
 extern int vsnprintf (char *, size_t, const char *, va_list) ATTRIBUTE_PRINTF(3,0);
 #endif
 
+#if defined (HAVE_DECL_STRNLEN) && !HAVE_DECL_STRNLEN
+extern size_t strnlen (const char *, size_t);
+#endif
+
 #if defined(HAVE_DECL_STRVERSCMP) && !HAVE_DECL_STRVERSCMP
 /* Compare version strings.  */
 extern int strverscmp (const char *, const char *);
@@ -658,7 +675,7 @@ extern void stack_limit_increase(unsigned long);
    USE_C_ALLOCA yourself.  The canonical autoconf macro C_ALLOCA is
    also set/unset as it is often used to indicate whether code needs
    to call alloca(0).  */
-extern void *C_alloca (size_t)ATTRIBUTE_MALLOC;
+extern void *C_alloca (size_t) ATTRIBUTE_MALLOC;
 #undef alloca
 #if (GCC_VERSION >= 2000) && !defined USE_C_ALLOCA
 # define alloca(x) __builtin_alloca(x)

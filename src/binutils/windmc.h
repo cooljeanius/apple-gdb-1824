@@ -27,6 +27,8 @@
 
 #include "winduni.h"
 
+#include "windint.h"
+
 #ifndef WINDMC_HXX
 #define WINDMC_HXX
 

@@ -595,6 +595,11 @@ char *yytext;
 /* Contributed by Steve Chamberlain: sac@cygnus.com  */
 
 #define DONTDECLARE_MALLOC
+
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "libiberty.h"
 #include "defparse.h"
 #include "dlltool.h"
@@ -603,7 +608,7 @@ char *yytext;
 
 int linenumber;
 
-#line 607 "deflex.c"
+#line 612 "deflex.c"
 
 #define INITIAL 0
 
@@ -785,9 +790,9 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 35 "deflex.l"
+#line 40 "deflex.l"
 
-#line 791 "deflex.c"
+#line 796 "deflex.c"
 
 	if ( !(yy_init) )
 		{
@@ -872,144 +877,144 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 36 "deflex.l"
+#line 41 "deflex.l"
 { return NAME;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 37 "deflex.l"
+#line 42 "deflex.l"
 { return LIBRARY;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 38 "deflex.l"
+#line 43 "deflex.l"
 { return DESCRIPTION;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 39 "deflex.l"
+#line 44 "deflex.l"
 { return STACKSIZE;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 40 "deflex.l"
+#line 45 "deflex.l"
 { return HEAPSIZE;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 41 "deflex.l"
+#line 46 "deflex.l"
 { return CODE;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 42 "deflex.l"
+#line 47 "deflex.l"
 { return DATA;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 43 "deflex.l"
+#line 48 "deflex.l"
 { return SECTIONS;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 44 "deflex.l"
+#line 49 "deflex.l"
 { return EXPORTS;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 45 "deflex.l"
+#line 50 "deflex.l"
 { return IMPORTS;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 46 "deflex.l"
+#line 51 "deflex.l"
 { return VERSIONK;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 47 "deflex.l"
+#line 52 "deflex.l"
 { return BASE;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 48 "deflex.l"
+#line 53 "deflex.l"
 { return CONSTANT; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 49 "deflex.l"
+#line 54 "deflex.l"
 { return NONAME; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 50 "deflex.l"
+#line 55 "deflex.l"
 { return PRIVATE; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 51 "deflex.l"
+#line 56 "deflex.l"
 { return READ;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 52 "deflex.l"
+#line 57 "deflex.l"
 { return WRITE;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 53 "deflex.l"
+#line 58 "deflex.l"
 { return EXECUTE;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 54 "deflex.l"
+#line 59 "deflex.l"
 { return SHARED;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 55 "deflex.l"
+#line 60 "deflex.l"
 { return NONSHARED;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 56 "deflex.l"
+#line 61 "deflex.l"
 { return SINGLE;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 57 "deflex.l"
+#line 62 "deflex.l"
 { return MULTIPLE;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 58 "deflex.l"
+#line 63 "deflex.l"
 { return INITINSTANCE;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 59 "deflex.l"
+#line 64 "deflex.l"
 { return INITGLOBAL;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 60 "deflex.l"
+#line 65 "deflex.l"
 { return TERMINSTANCE;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 61 "deflex.l"
+#line 66 "deflex.l"
 { return TERMGLOBAL;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 63 "deflex.l"
-{ yylval.number = strtol (yytext,0,0); 
+#line 68 "deflex.l"
+{ yylval.number = strtol (yytext,0,0);
 		return NUMBER; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 66 "deflex.l"
-{ 	
+#line 71 "deflex.l"
+{
 		yylval.id =  xstrdup (yytext);
 		return ID;
 		}
@@ -1017,7 +1022,7 @@ YY_RULE_SETUP
 case 29:
 /* rule 29 can match eol */
 YY_RULE_SETUP
-#line 71 "deflex.l"
+#line 76 "deflex.l"
 {
 		yylval.id = xstrdup (yytext+1);
 		yylval.id[yyleng-2] = 0;
@@ -1027,7 +1032,7 @@ YY_RULE_SETUP
 case 30:
 /* rule 30 can match eol */
 YY_RULE_SETUP
-#line 77 "deflex.l"
+#line 82 "deflex.l"
 {
 		yylval.id = xstrdup (yytext+1);
 		yylval.id[yyleng-2] = 0;
@@ -1036,61 +1041,61 @@ YY_RULE_SETUP
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 82 "deflex.l"
+#line 87 "deflex.l"
 { }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 83 "deflex.l"
+#line 88 "deflex.l"
 { }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 84 "deflex.l"
+#line 89 "deflex.l"
 { }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 85 "deflex.l"
+#line 90 "deflex.l"
 { }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 86 "deflex.l"
+#line 91 "deflex.l"
 { }
 	YY_BREAK
 case 36:
 /* rule 36 can match eol */
 YY_RULE_SETUP
-#line 87 "deflex.l"
+#line 92 "deflex.l"
 { linenumber ++ ;}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 88 "deflex.l"
+#line 93 "deflex.l"
 { return '=';}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 89 "deflex.l"
+#line 94 "deflex.l"
 { return '.';}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 90 "deflex.l"
+#line 95 "deflex.l"
 { return '@';}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 91 "deflex.l"
+#line 96 "deflex.l"
 { return ',';}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 92 "deflex.l"
+#line 97 "deflex.l"
 ECHO;
 	YY_BREAK
-#line 1094 "deflex.c"
+#line 1099 "deflex.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2084,11 +2089,13 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 92 "deflex.l"
+#line 97 "deflex.l"
 
 
+
+/* `dummy comment' // (fixes syntax highlighting) */
 #ifndef yywrap
 /* Needed for lex, though not flex. */
 int yywrap(void) { return 1; }
-#endif
+#endif /* !yywrap */
 

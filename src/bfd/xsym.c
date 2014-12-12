@@ -67,8 +67,8 @@ pstrcmp (const char *as, const char *bs)
   unsigned char clen;
   int ret;
 
-  clen = (a[0] > b[0]) ? b[0] : a[0];
-  ret = memcmp (a + 1, b + 1, clen);
+  clen = ((a[0] > b[0]) ? b[0] : a[0]);
+  ret = memcmp((a + 1), (b + 1), clen);
   if (ret != 0)
     return ret;
 
@@ -109,10 +109,10 @@ bfd_sym_print_symbol (bfd *abfd ATTRIBUTE_UNUSED,
 bfd_boolean
 bfd_sym_valid (bfd *abfd)
 {
-  if (abfd == NULL || abfd->xvec == NULL)
+  if ((abfd == NULL) || (abfd->xvec == NULL))
     return 0;
 
-  return abfd->xvec == &sym_vec;
+  return (abfd->xvec == &sym_vec);
 }
 
 unsigned char *
@@ -120,16 +120,16 @@ bfd_sym_read_name_table (bfd *abfd, bfd_sym_header_block *dshb)
 {
   unsigned char *rstr;
   long ret;
-  size_t table_size = dshb->dshb_nte.dti_page_count * dshb->dshb_page_size;
-  size_t table_offset = dshb->dshb_nte.dti_first_page * dshb->dshb_page_size;
+  size_t table_size = (dshb->dshb_nte.dti_page_count * dshb->dshb_page_size);
+  size_t table_offset = (dshb->dshb_nte.dti_first_page * dshb->dshb_page_size);
 
-  rstr = bfd_alloc (abfd, table_size);
+  rstr = (unsigned char *)bfd_alloc(abfd, table_size);
   if (rstr == NULL)
     return rstr;
 
-  bfd_seek (abfd, table_offset, SEEK_SET);
-  ret = bfd_bread (rstr, table_size, abfd);
-  if (ret < 0 || (unsigned long) ret != table_size)
+  bfd_seek(abfd, table_offset, SEEK_SET);
+  ret = bfd_bread(rstr, table_size, abfd);
+  if ((ret < 0) || ((unsigned long)ret != table_size))
     {
       bfd_release (abfd, rstr);
       return NULL;
@@ -139,27 +139,23 @@ bfd_sym_read_name_table (bfd *abfd, bfd_sym_header_block *dshb)
 }
 
 void
-bfd_sym_parse_file_reference_v33r0 (buf, len, entry)
-     unsigned char *buf;
-     size_t len;
-     bfd_sym_file_reference *entry;
+bfd_sym_parse_file_reference_v33r0(unsigned char *buf, size_t len,
+                                   bfd_sym_file_reference *entry)
 {
-  BFD_ASSERT (len == 8);
+  BFD_ASSERT(len == 8);
 
   entry->fref_frte_index = bfd_getb32 (buf);
   entry->fref_offset = bfd_getb32 (buf + 4);
 }
 
 void
-bfd_sym_parse_file_reference_v32 (buf, len, entry)
-     unsigned char *buf;
-     size_t len;
-     bfd_sym_file_reference *entry;
+bfd_sym_parse_file_reference_v32(unsigned char *buf, size_t len,
+                                 bfd_sym_file_reference *entry)
 {
-  BFD_ASSERT (len == 6);
+  BFD_ASSERT(len == 6);
 
-  entry->fref_frte_index = bfd_getb16 (buf);
-  entry->fref_offset = bfd_getb32 (buf + 2);
+  entry->fref_frte_index = bfd_getb16(buf);
+  entry->fref_offset = bfd_getb32(buf + 2);
 }
 
 void
@@ -167,11 +163,11 @@ bfd_sym_parse_disk_table_v32 (unsigned char *buf,
 			      size_t len,
 			      bfd_sym_table_info *table)
 {
-  BFD_ASSERT (len == 8);
+  BFD_ASSERT(len == 8);
 
-  table->dti_first_page = bfd_getb16 (buf);
-  table->dti_page_count = bfd_getb16 (buf + 2);
-  table->dti_object_count = bfd_getb32 (buf + 4);
+  table->dti_first_page = bfd_getb16(buf);
+  table->dti_page_count = bfd_getb16(buf + 2);
+  table->dti_object_count = bfd_getb32(buf + 4);
 }
 
 void
@@ -179,30 +175,30 @@ bfd_sym_parse_header_v32 (unsigned char *buf,
 			  size_t len,
 			  bfd_sym_header_block *header)
 {
-  BFD_ASSERT (len == 154);
+  BFD_ASSERT(len == 154);
 
-  memcpy (header->dshb_id, buf, 32);
-  header->dshb_page_size = bfd_getb16 (buf + 32);
-  header->dshb_hash_page = bfd_getb16 (buf + 34);
-  header->dshb_root_mte = bfd_getb16 (buf + 36);
-  header->dshb_mod_date = bfd_getb32 (buf + 38);
+  memcpy(header->dshb_id, buf, 32);
+  header->dshb_page_size = bfd_getb16(buf + 32);
+  header->dshb_hash_page = bfd_getb16(buf + 34);
+  header->dshb_root_mte = bfd_getb16(buf + 36);
+  header->dshb_mod_date = bfd_getb32(buf + 38);
 
-  bfd_sym_parse_disk_table_v32 (buf + 42, 8, &header->dshb_frte);
-  bfd_sym_parse_disk_table_v32 (buf + 50, 8, &header->dshb_rte);
-  bfd_sym_parse_disk_table_v32 (buf + 58, 8, &header->dshb_mte);
-  bfd_sym_parse_disk_table_v32 (buf + 66, 8, &header->dshb_cmte);
-  bfd_sym_parse_disk_table_v32 (buf + 74, 8, &header->dshb_cvte);
-  bfd_sym_parse_disk_table_v32 (buf + 82, 8, &header->dshb_csnte);
-  bfd_sym_parse_disk_table_v32 (buf + 90, 8, &header->dshb_clte);
-  bfd_sym_parse_disk_table_v32 (buf + 98, 8, &header->dshb_ctte);
-  bfd_sym_parse_disk_table_v32 (buf + 106, 8, &header->dshb_tte);
-  bfd_sym_parse_disk_table_v32 (buf + 114, 8, &header->dshb_nte);
-  bfd_sym_parse_disk_table_v32 (buf + 122, 8, &header->dshb_tinfo);
-  bfd_sym_parse_disk_table_v32 (buf + 130, 8, &header->dshb_fite);
-  bfd_sym_parse_disk_table_v32 (buf + 138, 8, &header->dshb_const);
+  bfd_sym_parse_disk_table_v32(buf + 42, 8, &header->dshb_frte);
+  bfd_sym_parse_disk_table_v32(buf + 50, 8, &header->dshb_rte);
+  bfd_sym_parse_disk_table_v32(buf + 58, 8, &header->dshb_mte);
+  bfd_sym_parse_disk_table_v32(buf + 66, 8, &header->dshb_cmte);
+  bfd_sym_parse_disk_table_v32(buf + 74, 8, &header->dshb_cvte);
+  bfd_sym_parse_disk_table_v32(buf + 82, 8, &header->dshb_csnte);
+  bfd_sym_parse_disk_table_v32(buf + 90, 8, &header->dshb_clte);
+  bfd_sym_parse_disk_table_v32(buf + 98, 8, &header->dshb_ctte);
+  bfd_sym_parse_disk_table_v32(buf + 106, 8, &header->dshb_tte);
+  bfd_sym_parse_disk_table_v32(buf + 114, 8, &header->dshb_nte);
+  bfd_sym_parse_disk_table_v32(buf + 122, 8, &header->dshb_tinfo);
+  bfd_sym_parse_disk_table_v32(buf + 130, 8, &header->dshb_fite);
+  bfd_sym_parse_disk_table_v32(buf + 138, 8, &header->dshb_const);
 
-  memcpy (&header->dshb_file_creator, buf + 146, 4);
-  memcpy (&header->dshb_file_type, buf + 150, 4);
+  memcpy(&header->dshb_file_creator, buf + 146, 4);
+  memcpy(&header->dshb_file_type, buf + 150, 4);
 }
 
 int
@@ -224,7 +220,7 @@ int
 bfd_sym_read_header_v34 (bfd *abfd ATTRIBUTE_UNUSED,
 			 bfd_sym_header_block *header ATTRIBUTE_UNUSED)
 {
-  abort ();
+  abort();
 }
 
 int
@@ -248,7 +244,7 @@ bfd_sym_read_header (bfd *abfd,
 }
 
 int
-bfd_sym_read_version (bfd *abfd, bfd_sym_version *version)
+bfd_sym_read_version(bfd *abfd, bfd_sym_version *version)
 {
   char version_string[32];
   long ret;
@@ -290,51 +286,49 @@ bfd_sym_display_table_summary (FILE *f,
 void
 bfd_sym_display_header (FILE *f, bfd_sym_header_block *dshb)
 {
-  fprintf (f, "            Version: %.*s\n", dshb->dshb_id[0], dshb->dshb_id + 1);
-  fprintf (f, "          Page Size: 0x%x\n", dshb->dshb_page_size);
-  fprintf (f, "          Hash Page: %lu\n", dshb->dshb_hash_page);
-  fprintf (f, "           Root MTE: %lu\n", dshb->dshb_root_mte);
-  fprintf (f, "  Modification Date: ");
-  fprintf (f, "[unimplemented]");
-  fprintf (f, " (0x%lx)\n", dshb->dshb_mod_date);
+  fprintf(f, "            Version: %.*s\n", dshb->dshb_id[0], dshb->dshb_id + 1);
+  fprintf(f, "          Page Size: 0x%x\n", dshb->dshb_page_size);
+  fprintf(f, "          Hash Page: %lu\n", dshb->dshb_hash_page);
+  fprintf(f, "           Root MTE: %lu\n", dshb->dshb_root_mte);
+  fprintf(f, "  Modification Date: ");
+  fprintf(f, "[unimplemented]");
+  fprintf(f, " (0x%lx)\n", dshb->dshb_mod_date);
 
-  fprintf (f, "       File Creator:  %.4s  Type: %.4s\n\n",
-	   dshb->dshb_file_creator, dshb->dshb_file_type);
+  fprintf(f, "       File Creator:  %.4s  Type: %.4s\n\n",
+	  dshb->dshb_file_creator, dshb->dshb_file_type);
 
-  fprintf (f, "Table Name   First Page    Page Count   Object Count\n");
-  fprintf (f, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
+  fprintf(f, "Table Name   First Page    Page Count   Object Count\n");
+  fprintf(f, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 
-  bfd_sym_display_table_summary (f, &dshb->dshb_nte, "NTE");
-  bfd_sym_display_table_summary (f, &dshb->dshb_rte, "RTE");
-  bfd_sym_display_table_summary (f, &dshb->dshb_mte, "MTE");
-  bfd_sym_display_table_summary (f, &dshb->dshb_frte, "FRTE");
-  bfd_sym_display_table_summary (f, &dshb->dshb_cmte, "CMTE");
-  bfd_sym_display_table_summary (f, &dshb->dshb_cvte, "CVTE");
-  bfd_sym_display_table_summary (f, &dshb->dshb_csnte, "CSNTE");
-  bfd_sym_display_table_summary (f, &dshb->dshb_clte, "CLTE");
-  bfd_sym_display_table_summary (f, &dshb->dshb_ctte, "CTTE");
-  bfd_sym_display_table_summary (f, &dshb->dshb_tte, "TTE");
-  bfd_sym_display_table_summary (f, &dshb->dshb_tinfo, "TINFO");
-  bfd_sym_display_table_summary (f, &dshb->dshb_fite, "FITE");
-  bfd_sym_display_table_summary (f, &dshb->dshb_const, "CONST");
+  bfd_sym_display_table_summary(f, &dshb->dshb_nte, "NTE");
+  bfd_sym_display_table_summary(f, &dshb->dshb_rte, "RTE");
+  bfd_sym_display_table_summary(f, &dshb->dshb_mte, "MTE");
+  bfd_sym_display_table_summary(f, &dshb->dshb_frte, "FRTE");
+  bfd_sym_display_table_summary(f, &dshb->dshb_cmte, "CMTE");
+  bfd_sym_display_table_summary(f, &dshb->dshb_cvte, "CVTE");
+  bfd_sym_display_table_summary(f, &dshb->dshb_csnte, "CSNTE");
+  bfd_sym_display_table_summary(f, &dshb->dshb_clte, "CLTE");
+  bfd_sym_display_table_summary(f, &dshb->dshb_ctte, "CTTE");
+  bfd_sym_display_table_summary(f, &dshb->dshb_tte, "TTE");
+  bfd_sym_display_table_summary(f, &dshb->dshb_tinfo, "TINFO");
+  bfd_sym_display_table_summary(f, &dshb->dshb_fite, "FITE");
+  bfd_sym_display_table_summary(f, &dshb->dshb_const, "CONST");
 
-  fprintf (f, "\n");
+  fprintf(f, "\n");
 }
 
 void
-bfd_sym_parse_resources_table_entry_v33r0 (buf, len, entry)
-     unsigned char *buf;
-     size_t len;
-     bfd_sym_resources_table_entry *entry;
+bfd_sym_parse_resources_table_entry_v33r0(unsigned char *buf, size_t len,
+                                          bfd_sym_resources_table_entry *entry)
 {
-  BFD_ASSERT (len == 22);
+  BFD_ASSERT(len == 22);
 
-  memcpy (&entry->rte_res_type, buf, 4);
-  entry->rte_res_number = bfd_getb16 (buf + 4);
-  entry->rte_nte_index = bfd_getb32 (buf + 6);
-  entry->rte_mte_first = bfd_getb32 (buf + 10);
-  entry->rte_mte_last = bfd_getb32 (buf + 14);
-  entry->rte_res_size = bfd_getb32 (buf + 18);
+  memcpy(&entry->rte_res_type, buf, 4);
+  entry->rte_res_number = bfd_getb16(buf + 4);
+  entry->rte_nte_index = bfd_getb32(buf + 6);
+  entry->rte_mte_first = bfd_getb32(buf + 10);
+  entry->rte_mte_last = bfd_getb32(buf + 14);
+  entry->rte_res_size = bfd_getb32(buf + 18);
 }
 
 void
@@ -342,39 +336,37 @@ bfd_sym_parse_resources_table_entry_v32 (unsigned char *buf,
 					 size_t len,
 					 bfd_sym_resources_table_entry *entry)
 {
-  BFD_ASSERT (len == 18);
+  BFD_ASSERT(len == 18);
 
-  memcpy (&entry->rte_res_type, buf, 4);
-  entry->rte_res_number = bfd_getb16 (buf + 4);
-  entry->rte_nte_index = bfd_getb32 (buf + 6);
-  entry->rte_mte_first = bfd_getb16 (buf + 10);
-  entry->rte_mte_last = bfd_getb16 (buf + 12);
-  entry->rte_res_size = bfd_getb32 (buf + 14);
+  memcpy(&entry->rte_res_type, buf, 4);
+  entry->rte_res_number = bfd_getb16(buf + 4);
+  entry->rte_nte_index = bfd_getb32(buf + 6);
+  entry->rte_mte_first = bfd_getb16(buf + 10);
+  entry->rte_mte_last = bfd_getb16(buf + 12);
+  entry->rte_res_size = bfd_getb32(buf + 14);
 }
 
 void
-bfd_sym_parse_modules_table_entry_v33r0 (buf, len, entry)
-     unsigned char *buf;
-     size_t len;
-     bfd_sym_modules_table_entry *entry;
+bfd_sym_parse_modules_table_entry_v33r0(unsigned char *buf, size_t len,
+                                        bfd_sym_modules_table_entry *entry)
 {
-  BFD_ASSERT (len == 56);
+  BFD_ASSERT(len == 56);
 
-  entry->mte_rte_index = bfd_getb16 (buf);
-  entry->mte_res_offset = bfd_getb32 (buf + 2);
-  entry->mte_size = bfd_getb32 (buf + 6);
+  entry->mte_rte_index = bfd_getb16(buf);
+  entry->mte_res_offset = bfd_getb32(buf + 2);
+  entry->mte_size = bfd_getb32(buf + 6);
   entry->mte_kind = buf[10];
   entry->mte_scope = buf[11];
-  entry->mte_parent = bfd_getb32 (buf + 12);
-  bfd_sym_parse_file_reference_v33r0 (buf + 16, 8, &entry->mte_imp_fref);
-  entry->mte_imp_end = bfd_getb32 (buf + 24);
-  entry->mte_nte_index = bfd_getb32 (buf + 28);
-  entry->mte_cmte_index = bfd_getb32 (buf + 32);
-  entry->mte_cvte_index = bfd_getb32 (buf + 36);
-  entry->mte_clte_index = bfd_getb32 (buf + 40);
-  entry->mte_ctte_index = bfd_getb32 (buf + 44);
-  entry->mte_csnte_idx_1 = bfd_getb32 (buf + 48);
-  entry->mte_csnte_idx_2 = bfd_getb32 (buf + 52);
+  entry->mte_parent = bfd_getb32(buf + 12);
+  bfd_sym_parse_file_reference_v33r0(buf + 16, 8, &entry->mte_imp_fref);
+  entry->mte_imp_end = bfd_getb32(buf + 24);
+  entry->mte_nte_index = bfd_getb32(buf + 28);
+  entry->mte_cmte_index = bfd_getb32(buf + 32);
+  entry->mte_cvte_index = bfd_getb32(buf + 36);
+  entry->mte_clte_index = bfd_getb32(buf + 40);
+  entry->mte_ctte_index = bfd_getb32(buf + 44);
+  entry->mte_csnte_idx_1 = bfd_getb32(buf + 48);
+  entry->mte_csnte_idx_2 = bfd_getb32(buf + 52);
 }
 
 void
@@ -382,30 +374,29 @@ bfd_sym_parse_modules_table_entry_v33 (unsigned char *buf,
 				       size_t len,
 				       bfd_sym_modules_table_entry *entry)
 {
-  BFD_ASSERT (len == 46);
+  BFD_ASSERT(len == 46);
 
-  entry->mte_rte_index = bfd_getb16 (buf);
-  entry->mte_res_offset = bfd_getb32 (buf + 2);
-  entry->mte_size = bfd_getb32 (buf + 6);
+  entry->mte_rte_index = bfd_getb16(buf);
+  entry->mte_res_offset = bfd_getb32(buf + 2);
+  entry->mte_size = bfd_getb32(buf + 6);
   entry->mte_kind = buf[10];
   entry->mte_scope = buf[11];
-  entry->mte_parent = bfd_getb16 (buf + 12);
-  bfd_sym_parse_file_reference_v32 (buf + 14, 6, &entry->mte_imp_fref);
-  entry->mte_imp_end = bfd_getb32 (buf + 20);
-  entry->mte_nte_index = bfd_getb32 (buf + 24);
-  entry->mte_cmte_index = bfd_getb16 (buf + 28);
-  entry->mte_cvte_index = bfd_getb32 (buf + 30);
-  entry->mte_clte_index = bfd_getb16 (buf + 34);
-  entry->mte_ctte_index = bfd_getb16 (buf + 36);
-  entry->mte_csnte_idx_1 = bfd_getb32 (buf + 38);
-  entry->mte_csnte_idx_2 = bfd_getb32 (buf + 42);
+  entry->mte_parent = bfd_getb16(buf + 12);
+  bfd_sym_parse_file_reference_v32(buf + 14, 6, &entry->mte_imp_fref);
+  entry->mte_imp_end = bfd_getb32(buf + 20);
+  entry->mte_nte_index = bfd_getb32(buf + 24);
+  entry->mte_cmte_index = bfd_getb16(buf + 28);
+  entry->mte_cvte_index = bfd_getb32(buf + 30);
+  entry->mte_clte_index = bfd_getb16(buf + 34);
+  entry->mte_ctte_index = bfd_getb16(buf + 36);
+  entry->mte_csnte_idx_1 = bfd_getb32(buf + 38);
+  entry->mte_csnte_idx_2 = bfd_getb32(buf + 42);
 }
 
 void
-bfd_sym_parse_file_references_table_entry_v33r0 (buf, len, entry)
-     unsigned char *buf;
-     size_t len;
-     bfd_sym_file_references_table_entry *entry;
+bfd_sym_parse_file_references_table_entry_v33r0(unsigned char *buf,
+                                                size_t len,
+                                                bfd_sym_file_references_table_entry *entry)
 {
   unsigned int type;
 
@@ -433,17 +424,16 @@ bfd_sym_parse_file_references_table_entry_v33r0 (buf, len, entry)
 }
 
 void
-bfd_sym_parse_file_references_table_entry_v32 (buf, len, entry)
-     unsigned char *buf;
-     size_t len;
-     bfd_sym_file_references_table_entry *entry;
+bfd_sym_parse_file_references_table_entry_v32(unsigned char *buf,
+                                              size_t len,
+                                              bfd_sym_file_references_table_entry *entry)
 {
   unsigned int type;
 
-  BFD_ASSERT (len == 10);
+  BFD_ASSERT(len == 10);
 
-  memset (entry, 0, sizeof (bfd_sym_file_references_table_entry));
-  type = bfd_getb16 (buf);
+  memset(entry, 0, sizeof(bfd_sym_file_references_table_entry));
+  type = bfd_getb16(buf);
 
   switch (type)
     {
@@ -464,17 +454,16 @@ bfd_sym_parse_file_references_table_entry_v32 (buf, len, entry)
 }
 
 void
-bfd_sym_parse_contained_modules_table_entry_v33r0 (buf, len, entry)
-     unsigned char *buf;
-     size_t len;
-     bfd_sym_contained_modules_table_entry *entry;
+bfd_sym_parse_contained_modules_table_entry_v33r0(unsigned char *buf,
+                                                  size_t len,
+                                                  bfd_sym_contained_modules_table_entry *entry)
 {
   unsigned int type;
 
-  BFD_ASSERT (len == 8);
+  BFD_ASSERT(len == 8);
 
-  memset (entry, 0, sizeof (bfd_sym_contained_modules_table_entry));
-  type = bfd_getb32 (buf);
+  memset(entry, 0, sizeof(bfd_sym_contained_modules_table_entry));
+  type = bfd_getb32(buf);
 
   switch (type)
     {
@@ -515,17 +504,16 @@ bfd_sym_parse_contained_modules_table_entry_v32 (unsigned char *buf,
 }
 
 void
-bfd_sym_parse_contained_variables_table_entry_v33r0 (buf, len, entry)
-     unsigned char *buf;
-     size_t len;
-     bfd_sym_contained_variables_table_entry *entry;
+bfd_sym_parse_contained_variables_table_entry_v33r0(unsigned char *buf,
+                                                    size_t len,
+                                                    bfd_sym_contained_variables_table_entry *entry)
 {
   unsigned int type;
 
-  BFD_ASSERT (len == 30);
+  BFD_ASSERT(len == 30);
 
-  memset (entry, 0, sizeof (bfd_sym_contained_variables_table_entry));
-  type = bfd_getb32 (buf);
+  memset(entry, 0, sizeof(bfd_sym_contained_variables_table_entry));
+  type = bfd_getb32(buf);
 
   switch (type)
     {
@@ -535,13 +523,13 @@ bfd_sym_parse_contained_variables_table_entry_v33r0 (buf, len, entry)
 
     case BFD_SYM_SOURCE_FILE_CHANGE_3_3R0:
       entry->file.type = BFD_SYM_SOURCE_FILE_CHANGE;
-      bfd_sym_parse_file_reference_v33r0 (buf + 4, 8, &entry->file.fref);
+      bfd_sym_parse_file_reference_v33r0(buf + 4, 8, &entry->file.fref);
       break;
 
     default:
       entry->entry.tte_index = type;
-      entry->entry.nte_index = bfd_getb32 (buf + 4);
-      entry->entry.file_delta = bfd_getb16 (buf + 8);
+      entry->entry.nte_index = bfd_getb32(buf + 4);
+      entry->entry.file_delta = bfd_getb16(buf + 8);
       entry->entry.scope = buf[10];
       entry->entry.la_size = buf[11];
 
@@ -549,16 +537,16 @@ bfd_sym_parse_contained_variables_table_entry_v33r0 (buf, len, entry)
 	{
 	  entry->entry.address.scstruct.sca_kind = buf[12];
 	  entry->entry.address.scstruct.sca_class = buf[13];
-	  entry->entry.address.scstruct.sca_offset = bfd_getb32 (buf + 14);
+	  entry->entry.address.scstruct.sca_offset = bfd_getb32(buf + 14);
 	}
       else if (entry->entry.la_size <= BFD_SYM_CVTE_SCA)
 	{
-	  memcpy (&entry->entry.address.lastruct.la, buf + 12, BFD_SYM_CVTE_SCA);
+	  memcpy(&entry->entry.address.lastruct.la, buf + 12, BFD_SYM_CVTE_SCA);
 	  entry->entry.address.lastruct.la_kind = buf[25];
 	}
       else if (entry->entry.la_size == BFD_SYM_CVTE_BIG_LA)
 	{
-	  entry->entry.address.biglastruct.big_la = bfd_getb32 (buf + 12);
+	  entry->entry.address.biglastruct.big_la = bfd_getb32(buf + 12);
 	  entry->entry.address.biglastruct.big_la_kind = buf[16];
 	}
     }
@@ -617,17 +605,16 @@ bfd_sym_parse_contained_variables_table_entry_v32 (unsigned char *buf,
 }
 
 void
-bfd_sym_parse_contained_statements_table_entry_v33r0 (buf, len, entry)
-     unsigned char *buf;
-     size_t len;
-     bfd_sym_contained_statements_table_entry *entry;
+bfd_sym_parse_contained_statements_table_entry_v33r0(unsigned char *buf,
+                                                     size_t len,
+                                                     bfd_sym_contained_statements_table_entry *entry)
 {
   unsigned int type;
 
-  BFD_ASSERT (len == 12);
+  BFD_ASSERT(len == 12);
 
-  memset (entry, 0, sizeof (bfd_sym_contained_statements_table_entry));
-  type = bfd_getb32 (buf);
+  memset(entry, 0, sizeof(bfd_sym_contained_statements_table_entry));
+  type = bfd_getb32(buf);
 
   switch (type)
     {
@@ -637,13 +624,13 @@ bfd_sym_parse_contained_statements_table_entry_v33r0 (buf, len, entry)
 
     case BFD_SYM_SOURCE_FILE_CHANGE_3_3R0:
       entry->file.type = BFD_SYM_SOURCE_FILE_CHANGE;
-      bfd_sym_parse_file_reference_v33r0 (buf + 4, 8, &entry->file.fref);
+      bfd_sym_parse_file_reference_v33r0(buf + 4, 8, &entry->file.fref);
       break;
 
     default:
       entry->entry.mte_index = type;
-      entry->entry.file_delta = bfd_getb32 (buf + 4);
-      entry->entry.mte_offset = bfd_getb32 (buf + 8);
+      entry->entry.file_delta = bfd_getb32(buf + 4);
+      entry->entry.mte_offset = bfd_getb32(buf + 8);
       break;
     }
 }
@@ -1344,38 +1331,38 @@ bfd_sym_fetch_type_information_table_entry (bfd *abfd,
   unsigned char buf[4];
   bfd_sym_data_struct *sdata = NULL;
 
-  BFD_ASSERT (bfd_sym_valid (abfd));
+  BFD_ASSERT(bfd_sym_valid(abfd));
   sdata = abfd->tdata.sym_data;
 
   if (offset == 0)
     return -1;
 
-  if (bfd_seek (abfd, offset, SEEK_SET) < 0)
+  if (bfd_seek(abfd, offset, SEEK_SET) < 0)
     return -1;
 
-  if (bfd_bread (buf, 4, abfd) != 4)
+  if (bfd_bread(buf, 4, abfd) != 4)
     return -1;
-  entry->nte_index = bfd_getb32 (buf);
+  entry->nte_index = bfd_getb32(buf);
 
-  if (bfd_bread (buf, 2, abfd) != 2)
+  if (bfd_bread(buf, 2, abfd) != 2)
     return -1;
   entry->physical_size = bfd_getb16 (buf);
 
   if (entry->physical_size & 0x8000)
     {
-      if (bfd_bread (buf, 4, abfd) != 4)
+      if (bfd_bread(buf, 4, abfd) != 4)
 	return -1;
       entry->physical_size &= 0x7fff;
-      entry->logical_size = bfd_getb32 (buf);
+      entry->logical_size = bfd_getb32(buf);
       entry->offset = offset + 10;
     }
   else
     {
-      if (bfd_bread (buf, 2, abfd) != 2)
+      if (bfd_bread(buf, 2, abfd) != 2)
 	return -1;
       entry->physical_size &= 0x7fff;
-      entry->logical_size = bfd_getb16 (buf);
-      entry->offset = offset + 8;
+      entry->logical_size = bfd_getb16(buf);
+      entry->offset = (offset + 8);
     }
 
   return 0;
@@ -2518,35 +2505,35 @@ bfd_sym_object_p (bfd *abfd)
   bfd_sym_version version = -1;
 
   preserve.marker = NULL;
-  bfd_seek (abfd, 0, SEEK_SET);
-  if (bfd_sym_read_version (abfd, &version) != 0)
+  bfd_seek(abfd, 0, SEEK_SET);
+  if (bfd_sym_read_version(abfd, &version) != 0)
     goto wrong;
 
-  preserve.marker = bfd_alloc (abfd, sizeof (bfd_sym_data_struct));
-  if (preserve.marker == NULL
-      || ! bfd_preserve_save (abfd, &preserve))
+  preserve.marker = bfd_alloc(abfd, sizeof(bfd_sym_data_struct));
+  if ((preserve.marker == NULL)
+      || ! bfd_preserve_save(abfd, &preserve))
     goto fail;
 
-  if (bfd_sym_scan (abfd, version,
-		    (bfd_sym_data_struct *) preserve.marker) != 0)
+  if (bfd_sym_scan(abfd, version,
+                   (bfd_sym_data_struct *)preserve.marker) != 0)
     goto wrong;
 
-  bfd_preserve_finish (abfd, &preserve);
+  bfd_preserve_finish(abfd, &preserve);
   return abfd->xvec;
 
  wrong:
-  bfd_set_error (bfd_error_wrong_format);
+  bfd_set_error(bfd_error_wrong_format);
 
  fail:
   if (preserve.marker != NULL)
-    bfd_preserve_restore (abfd, &preserve);
+    bfd_preserve_restore(abfd, &preserve);
   return NULL;
 }
 
 asymbol *
 bfd_sym_make_empty_symbol(bfd *abfd)
 {
-  return (struct asymbol *)bfd_alloc(abfd, sizeof(asymbol));
+  return (asymbol *)bfd_alloc(abfd, sizeof(asymbol));
 }
 
 void bfd_sym_get_symbol_info(bfd *abfd ATTRIBUTE_UNUSED, asymbol *symbol,

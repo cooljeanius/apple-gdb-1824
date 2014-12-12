@@ -9,7 +9,14 @@ SUBDIRS = $(CONFIGDIR) $(CONFIGDIR2)
 
 VPATH = @srcdir@
 SHELL = @SHELL@
+SED = @SED@
 SRC_DIR = @srcdir@
+
+BUILD_ARCHITECTURE = @BUILD_ARCHITECTURE@
+HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
+TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+CFLAGS = @CFLAGS@ $(C_ARCHFLAGS)
 
 @SET_MAKE@
 
@@ -23,8 +30,8 @@ install test install-binaries install-libraries install-minimal:
 
 mostlyclean-recursive clean-recursive distclean-recursive \
 maintainer-clean-recursive:
-	@cd $(CONFIGDIR) && $(MAKE) `echo $@ | sed 's/-recursive//'`
-	@test x"$(CONFIGDIR2)" = x"" || (cd "$(CONFIGDIR2)" && $(MAKE) `echo $@ | sed 's/-recursive'`)
+	@cd $(CONFIGDIR) && $(MAKE) `echo $@ | $(SED) 's/-recursive//'`
+	@test x"$(CONFIGDIR2)" = x"" || (cd "$(CONFIGDIR2)" && $(MAKE) `echo $@ | $(SED) 's/-recursive'`)
 
 configure:
 	cd $(SRC_DIR) && autoconf
@@ -35,6 +42,8 @@ clean: clean-recursive
 
 distclean-local:
 	rm -f Makefile config.status config.cache config.log
+	rm -f autoscan.log *~
+	rm -rf autom4te.cache || rmdir autom4te.cache
 
 distclean: distclean-recursive distclean-local
 
@@ -69,7 +78,7 @@ check:
 install-info info installcheck:
 
 Makefile: Makefile.in config.status
-	CONFIG_FILES=Makefile CONFIG_HEADERS= $(SHELL) ./config.status
+	CONFIG_FILES=Makefile CONFIG_HEADERS="" $(SHELL) ./config.status
 
 config.status: configure
 	$(SHELL) config.status --recheck

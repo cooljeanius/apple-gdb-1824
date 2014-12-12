@@ -39,7 +39,7 @@ m4_define([_GCC_AUTOCONF_VERSION],[2.69])
 dnl# OK, now that we have that out of the way, we can actually get started:
 AC_INIT([apple-gdb-src],[1824],[gclayton@apple.com])
 dnl# bug report address is email address of last person to touch this
-dnl# directory, according to the Changelog-Apple in this directory
+dnl# directory, according to the Changelog-Apple in this directory.
 AC_CONFIG_SRCDIR([move-if-change])
 AC_DISABLE_OPTION_CHECKING
 AC_CONFIG_AUX_DIR([config])
@@ -51,6 +51,10 @@ AC_CANONICAL_TARGET
 ACX_NONCANONICAL_BUILD
 ACX_NONCANONICAL_HOST
 ACX_NONCANONICAL_TARGET
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+  AC_SUBST([BUILD_ARCHITECTURE])
+fi
 if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
   export HOST_ARCHITECTURE="${host_cpu}"
   AC_SUBST([HOST_ARCHITECTURE])
@@ -119,9 +123,9 @@ progname=${0}
 # if PWD already has a value, it is probably wrong.
 if test -n "${PWD}"; then PWD=`${PWDCMD-pwd}`; fi
 
-# Test for sed
+# Test for sed:
 AC_PROG_SED
-# ...and for grep
+# ...and for grep:
 if test "x${GREP}" = "x"; then
   test -z "${GREP}"
   AC_PROG_GREP
@@ -154,6 +158,22 @@ AC_SUBST([TEMPLATEdir])dnl
 
 # Check Make, the prog and var:
 AC_PROG_MAKE_SET
+
+# Check Make features:
+m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])dnl
+
+dnl########################################################################
+dnl# Port to Automake 1.11.
+dnl# This section can be removed once we assume Automake 1.14 or later.
+: ${AM_DEFAULT_VERBOSITY=1}
+: ${AM_V=${AM_DEFAULT_VERBOSITY}}
+: ${AM_DEFAULT_V=${AM_DEFAULT_VERBOSITY}}
+dnl# now subst:
+AC_SUBST([AM_V])dnl
+AM_SUBST_NOTMAKE([AM_V])dnl
+AC_SUBST([AM_DEFAULT_V])dnl
+AM_SUBST_NOTMAKE([AM_DEFAULT_V])dnl
+AC_SUBST([AM_DEFAULT_VERBOSITY])dnl
 
 # Set srcdir to "." if that is what it is.
 # This is important for multilib support.
@@ -416,7 +436,7 @@ case "${ENABLE_GOLD}" in
       # Check for target supported by gold.
       case "${target}" in
         i?86-*-* | x86_64-*-* | sparc*-*-* | powerpc*-*-* | arm*-*-* \
-        | tilegx*-*-*)
+        | aarch64*-*-* | tilegx*-*-*)
 	  configdirs="${configdirs} gold"
 	  if test "x${ENABLE_GOLD}" = "xdefault"; then
 	    default_ld=gold
@@ -538,7 +558,7 @@ fi
 
 AC_ARG_ENABLE([libssp],
 [AS_HELP_STRING([--enable-libssp],[Builds libssp directory])],
-[ENABLE_LIBSSP=$enableval],
+[ENABLE_LIBSSP=${enableval}],
 [ENABLE_LIBSSP=yes])
 if test "x${ENABLE_LIBSSP}" != "xyes"; then
   noconfigdirs="${noconfigdirs} target-libssp"
@@ -606,6 +626,54 @@ if test "x${enable_libgomp}" = "x"; then
     esac
 fi
 
+# Disable libatomic on unsupported systems.
+if test -d ${srcdir}/libatomic; then
+    if test "x${enable_libatomic}" = "x"; then
+	AC_MSG_CHECKING([for libatomic support])
+	if (srcdir=${srcdir}/libatomic; \
+		. ${srcdir}/configure.tgt; \
+		test -n "${UNSUPPORTED}")
+	then
+	    AC_MSG_RESULT([no])
+	    noconfigdirs="${noconfigdirs} target-libatomic"
+	else
+	    AC_MSG_RESULT([yes])
+	fi
+    fi
+fi
+
+# Disable libcilkrts on unsupported systems.
+if test -d ${srcdir}/libcilkrts; then
+    if test "x${enable_libcilkrts}" = "x"; then
+	AC_MSG_CHECKING([for libcilkrts support])
+	if (srcdir=${srcdir}/libcilkrts; \
+		. ${srcdir}/configure.tgt; \
+		test -n "${UNSUPPORTED}")
+	then
+	    AC_MSG_RESULT([no])
+	    noconfigdirs="${noconfigdirs} target-libcilkrts"
+	else
+	    AC_MSG_RESULT([yes])
+	fi
+    fi
+fi
+
+# Disable libitm on unsupported systems.
+if test -d ${srcdir}/libitm; then
+    if test "x${enable_libitm}" = "x"; then
+	AC_MSG_CHECKING([for libitm support])
+	if (srcdir=${srcdir}/libitm; \
+		. ${srcdir}/configure.tgt; \
+		test -n "${UNSUPPORTED}")
+	then
+	    AC_MSG_RESULT([no])
+	    noconfigdirs="${noconfigdirs} target-libitm"
+	else
+	    AC_MSG_RESULT([yes])
+	fi
+    fi
+fi
+
 # Allow --disable-libmudflap to exclude target-libmudflap like this:
 case ${enable_libmudflap} in
 yes)
@@ -626,6 +694,93 @@ no)
 	noconfigdirs="${noconfigdirs} target-libmudflap"
 	;;
     esac
+esac
+
+# Disable libsanitizer on unsupported systems.
+if test -d ${srcdir}/libsanitizer; then
+    if test "x${enable_libsanitizer}" = "x"; then
+	AC_MSG_CHECKING([for libsanitizer support])
+	if (srcdir=${srcdir}/libsanitizer; \
+		. ${srcdir}/configure.tgt; \
+		test -n "${UNSUPPORTED}")
+	then
+	    AC_MSG_RESULT([no])
+	    noconfigdirs="${noconfigdirs} target-libsanitizer"
+	else
+	    AC_MSG_RESULT([yes])
+	fi
+    fi
+fi
+
+# Disable libvtv on unsupported systems.
+if test -d ${srcdir}/libvtv; then
+    if test "x${enable_libvtv}" = "x"; then
+	AC_MSG_CHECKING([for libvtv support])
+	if (srcdir=${srcdir}/libvtv; \
+		. ${srcdir}/configure.tgt; \
+		test "x${VTV_SUPPORTED}" != "xyes")
+	then
+	    AC_MSG_RESULT([no])
+	    noconfigdirs="${noconfigdirs} target-libvtv"
+	else
+	    AC_MSG_RESULT([yes])
+	fi
+    fi
+fi
+
+# Disable libquadmath for some systems.
+case "${target}" in
+  avr-*-*)
+    noconfigdirs="${noconfigdirs} target-libquadmath"
+    ;;
+  # libquadmath is unused on AIX and libquadmath build process use of
+  # LD_LIBRARY_PATH can break AIX bootstrap.
+  powerpc-*-aix* | rs6000-*-aix*)
+    noconfigdirs="${noconfigdirs} target-libquadmath"
+    ;;
+esac
+
+# Disable libssp for some systems.
+case "${target}" in
+  avr-*-*)
+    # No hosted I/O support.
+    noconfigdirs="${noconfigdirs} target-libssp"
+    ;;
+  powerpc-*-aix* | rs6000-*-aix*)
+    noconfigdirs="${noconfigdirs} target-libssp"
+    ;;
+  rl78-*-*)
+    # libssp uses a misaligned load to trigger a fault, but the RL78
+    # does NOT fault for those - instead, it gives a build-time error
+    # for explicit misaligned loads.
+    noconfigdirs="${noconfigdirs} target-libssp"
+    ;;
+esac
+
+# Disable libstdc++-v3 for some systems.
+# Allow user to override this if they use the --enable-libstdc++-v3 flag:
+if test "x${ENABLE_LIBSTDCXX}" = "xdefault"; then
+  case "${target}" in
+    *-*-vxworks*)
+      # VxWorks uses the Dinkumware C++ library.
+      noconfigdirs="${noconfigdirs} target-libstdc++-v3"
+      ;;
+    arm*-wince-pe*)
+      # the C++ libraries do NOT build on top of CE's C libraries:
+      noconfigdirs="${noconfigdirs} target-libstdc++-v3"
+      ;;
+    avr-*-*)
+      noconfigdirs="${noconfigdirs} target-libstdc++-v3"
+      ;;
+  esac
+fi
+
+# Disable Fortran for some systems.
+case "${target}" in
+  mmix-*-*)
+    # See <http://gcc.gnu.org/ml/gcc-patches/2004-11/msg00572.html>.
+    unsupported_languages="${unsupported_languages} fortran"
+    ;;
 esac
 
 AC_ARG_ENABLE([64-bit-bfd],
@@ -798,6 +953,10 @@ case "${target}" in
     ;;
   *-*-rtems*)
     noconfigdirs="${noconfigdirs} target-libgloss ${libgcj}"
+    # this is not caught below because this stanza matches earlier
+    case ${target} in
+      or1k*-*-*) noconfigdirs="${noconfigdirs} gdb" ;;
+    esac
     ;;
     # The tpf target does NOT support gdb yet.
   *-*-tpf*)
@@ -1053,7 +1212,7 @@ case "${target}" in
     ;;
   mmix-*-*)
     noconfigdirs="${noconfigdirs} target-libffi target-boehm-gc gdb libgloss"
-    unsupported_languages="$unsupported_languages f95 java"
+    unsupported_languages="${unsupported_languages} f95 java"
     ;;
   mn10200-*-*)
     noconfigdirs="${noconfigdirs} ${libgcj}"
@@ -1126,6 +1285,12 @@ case "${target}" in
   mips*-*-*)
     noconfigdirs="${noconfigdirs} gprof ${libgcj}"
     ;;
+  nds32*-*-*)
+    noconfigdirs="${noconfigdirs} gdb"
+    ;;
+  or1k*-*-*)
+    noconfigdirs="${noconfigdirs} gdb"
+    ;;
   romp-*-*)
     noconfigdirs="${noconfigdirs} bfd binutils ld gas opcodes target-libgloss ${libgcj}"
     ;;
@@ -1136,7 +1301,12 @@ case "${target}" in
       i[[3456789]]86-*-msdosdjgpp*) ;; # do NOT add gprof back in
       *) skipdirs=`echo " ${skipdirs} " | sed -e 's/ gprof / /'` ;;
     esac
-    noconfigdirs="${noconfigdirs} target-libgloss ${libgcj}"
+    case "${target}" in
+      sh*-*-elf)
+         ;;
+      *)
+         noconfigdirs="${noconfigdirs} target-libgloss ${libgcj}"
+    esac
     ;;
   sparc-*-elf*)
     noconfigdirs="${noconfigdirs} ${libgcj}"
@@ -1214,7 +1384,7 @@ case "${host}" in
   m68k-hp-hpux*)
     # Avoid "too much defining" errors from HPUX compiler.
     tentative_cc="cc -Wp,-H256000"
-    # If "ar" in $PATH is GNU ar, the symbol table may need rebuilding.
+    # If "ar" in ${PATH} is GNU ar, the symbol table may need rebuilding.
     # If it is HP/UX ar, this should be harmless.
     RANLIB="ar ts"
     ;;
@@ -1325,11 +1495,14 @@ case "${host}" in
     ;;
   *-mingw32*)
     ;;
+  *-mingw*)
+    host_makefile_frag="config/mh-mingw"
+    ;;
   *-interix*)
     host_makefile_frag="config/mh-interix"
     ;;
   vax-*-ultrix2*)
-    # The old BSD pcc is NOT up to compiling parts of gdb so use gcc
+    # The old BSD pcc is NOT up to compiling parts of gdb, so use gcc:
     tentative_cc=gcc
     ;;
   *-*-solaris2*)
@@ -1339,6 +1512,15 @@ case "${host}" in
     # Sun's C compiler needs the -J flag to be able to compile cp-parse.c
     # without overflowing the jump tables (-J says to use a 32 bit table)
     tentative_cc="cc -J"
+    ;;
+  hppa*-hp-hpux10*)
+    host_makefile_frag="config/mh-pa-hpux10"
+    ;;
+  hppa*-hp-hpux*)
+    host_makefile_frag="config/mh-pa"
+    ;;
+  hppa*-*)	
+    host_makefile_frag="config/mh-pa"
     ;;
   *-hp-hpux*)
     tentative_cc="cc -Wp,-H256000"
@@ -1360,6 +1542,12 @@ case "${host}" in
   # Not actually a real system, but it does have a makefile_frag:
   *-*-darwinpic*)
     host_makefile_frag="config/mh-darwinpic"
+    ;;
+  powerpc-*-aix*)
+    host_makefile_frag="config/mh-ppc-aix"
+    ;;
+  rs6000-*-aix*)
+    host_makefile_frag="config/mh-ppc-aix"
     ;;
   *-*-lynxos*)
     # /bin/cc is less than useful for our purposes. Always use GCC
@@ -1436,7 +1624,7 @@ else
   # correct operation of libtool. If LD is not defined and we are using
   # gcc, try to set the LD default to the ld used by gcc.
   if test -z "${LD}"; then
-    if test "${GCC}" = yes; then
+    if test "${GCC}" = "yes"; then
       case ${build} in
         *-*-mingw*)
 	      gcc_prog_ld=`${CC} -print-prog-name=ld 2>&1 | tr -d '\015'`
@@ -1499,7 +1687,7 @@ fi
 if test "x${with_mpc_lib}" != "x"; then
   gmplibs="-L${with_mpc_lib} ${gmplibs}"
 fi
-if test "x${with_mpc}${with_mpc_include}${with_mpc_lib}" = x && test -d ${srcdir}/mpc; then
+if test "x${with_mpc}${with_mpc_include}${with_mpc_lib}" = "x" && test -d ${srcdir}/mpc; then
   gmplibs='-L$$r/$(HOST_SUBDIR)/mpc/src/'"${lt_cv_objdir} ${gmplibs}"
   gmpinc='-I$$s/mpc/src '"${gmpinc}"
   # Do not test the mpc version. Assume that it is sufficient, since
@@ -1528,7 +1716,7 @@ AC_ARG_WITH([mpfr],
                             [Specify directory for installed MPFR library])
 ])dnl
 
-if test "x${with_mpfr}" != x; then
+if test "x${with_mpfr}" != "x"; then
   gmplibs="-L${with_mpfr}/lib ${gmplibs}"
   gmpinc="-I${with_mpfr}/include"
 fi
@@ -1566,7 +1754,9 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include "gmp.h"]],[[
 #if __GNU_MP_VERSION < 3
 choke me
 #endif /* __GNU_MP_VERSION < 3 */
-]])],[AC_MSG_RESULT([yes])],[AC_MSG_RESULT([no]); have_gmp=no])
+]])],[AC_MSG_RESULT([yes])],
+     [AC_MSG_RESULT([no]);
+      have_gmp=no])dnl
 
 if test x"${have_gmp}" = x"yes"; then
   AC_CHECK_HEADERS_ONCE([mpfr.h])
@@ -1676,6 +1866,7 @@ AC_CHECK_FUNCS([atexit floor getcwd gethostbyaddr gethostbyname \
                 select setlocale socket sqrt strcasecmp strchr strcspn \
                 strerror strncasecmp strpbrk strrchr strspn strstr \
                 strtol strtoul strverscmp system utime])dnl
+AC_CHECK_DECLS_ONCE([basename])dnl
 
 # Checks for tcl-related functions.
 AC_DEFUN([SC_TCL_NEW_MACROS],[
@@ -1795,7 +1986,7 @@ ACX_ELF_TARGET_IFELSE([# ELF platforms build the lto-plugin always.
     *-cygwin* | *-mingw*) build_lto_plugin=${enable_lto} ;;
     *) ;;
   esac
-])
+])dnl
 
 
 # By default, C and C++ are the only stage 1 languages.
@@ -2011,7 +2202,7 @@ if test -d ${srcdir}/gcc; then
   if test "x${missing_languages}" != "x"; then
     AC_MSG_ERROR([
 The following requested languages could not be built: ${missing_languages}
-Recognised languages are: ${potential_languages}])
+Recognized languages are: ${potential_languages}])
   fi
 
   if test "x${new_enable_languages}" != "x${enable_languages}"; then
@@ -2021,16 +2212,28 @@ Recognised languages are: ${potential_languages}])
   ac_configure_args=`echo " ${ac_configure_args}" | sed -e 's/ --enable-languages=[[^ ]]*//' -e 's/$/ --enable-languages='"${enable_languages}"/ `
 fi
 
+AC_PATH_PROGS([UNIQ_BIN],[uniq guniq],[])
+# uniq the value of ${noconfigdirs}.
+f=""
+for i in ${noconfigdirs}; do
+    case " ${f} " in
+    *" ${i} "*) ;;
+    *) f="${f} ${i}" ;;
+    esac
+done
+noconfigdirs="${f}"
+unset f
+
 # Remove the entries in ${skipdirs} and ${noconfigdirs} from ${configdirs},
 # ${build_configdirs} and ${target_configdirs}.
 # If we have source for ${noconfigdirs} entries, add them to ${notsupp}.
 
 notsupp=""
-for dir in . ${skipdirs} ${noconfigdirs} ; do
+for dir in . ${skipdirs} ${noconfigdirs}; do
   my_dirname=`echo ${dir} | sed -e s/target-//g -e s/build-//g`
   if test ${dir} != .  && echo " ${configdirs} " | grep " ${dir} " >/dev/null 2>&1; then
     configdirs=`echo " ${configdirs} " | sed -e "s/ ${dir} / /"`
-    if test -r ${srcdir}/${my_dirname}/configure ; then
+    if test -r ${srcdir}/${my_dirname}/configure; then
       if echo " ${skipdirs} " | grep " ${dir} " >/dev/null 2>&1; then
 	true
       else
@@ -2040,7 +2243,7 @@ for dir in . ${skipdirs} ${noconfigdirs} ; do
   fi
   if test ${dir} != .  && echo " ${build_configdirs} " | grep " ${dir} " >/dev/null 2>&1; then
     build_configdirs=`echo " ${build_configdirs} " | sed -e "s/ ${dir} / /"`
-    if test -r ${srcdir}/${my_dirname}/configure ; then
+    if test -r ${srcdir}/${my_dirname}/configure; then
       if echo " ${skipdirs} " | grep " ${dir} " >/dev/null 2>&1; then
 	true
       else
@@ -2050,7 +2253,7 @@ for dir in . ${skipdirs} ${noconfigdirs} ; do
   fi
   if test ${dir} != . && echo " ${target_configdirs} " | grep " ${dir} " >/dev/null 2>&1; then
     target_configdirs=`echo " ${target_configdirs} " | sed -e "s/ ${dir} / /"`
-    if test -r ${srcdir}/${my_dirname}/configure ; then
+    if test -r ${srcdir}/${my_dirname}/configure; then
       if echo " ${skipdirs} " | grep " ${dir} " >/dev/null 2>&1; then
 	true
       else
@@ -2082,9 +2285,9 @@ fi
 # autoconfiscated, which is now the case.
 build_configdirs_all="${build_configdirs}"
 build_configdirs=""
-for i in ${build_configdirs_all} ; do
+for i in ${build_configdirs_all}; do
   j=`echo ${i} | sed -e s/build-//g` 
-  if test -f ${srcdir}/${j}/configure ; then
+  if test -f ${srcdir}/${j}/configure; then
     build_configdirs="${build_configdirs} ${i}"
   fi
 done
@@ -2116,9 +2319,9 @@ if test -n "${notsupp}" && test -z "${norecursion}"; then
   # be configured, or we error out. (E.g., if the gas release supports a
   # specified target in some subdirs but not the gas subdir, we should NOT
   # pretend that all is well.)
-  if test -n "$appdirs" ; then
-    for dir in $appdirs ; do
-      if test -r $dir/Makefile.in ; then
+  if test -n "${appdirs}"; then
+    for dir in ${appdirs}; do
+      if test -r ${dir}/Makefile.in; then
 	if echo " ${configdirs} " | grep " ${dir} " >/dev/null 2>&1; then
 	  appdirs=""
 	  break
@@ -2230,10 +2433,25 @@ extra_nmflags_for_target=""
 extra_ranlibflags_for_target=""
 target_makefile_frag=/dev/null
 case "${target}" in
+  spu-*-*)
+    target_makefile_frag="config/mt-spu"
+    ;;
+  mips*-sde-elf* | mips*-mti-elf* | mips*-img-elf*)
+    target_makefile_frag="config/mt-sde"
+    ;;
+  mipsisa*-*-elfoabi*)
+    target_makefile_frag="config/mt-mips-elfoabi"
+    ;;
+  mips*-*-*linux* | mips*-*-gnu*)
+    target_makefile_frag="config/mt-mips-gnu"
+    ;;
+  nios2-*-elf*)
+    target_makefile_frag="config/mt-nios2-elf"
+    ;;
   *-*-netware*)
     target_makefile_frag="config/mt-netware"
     ;;
-  *-*-linux* | *-*-gnu* | *-*-k*bsd*-gnu)
+  *-*-linux* | *-*-gnu* | *-*-k*bsd*-gnu | *-*-kopensolaris*-gnu)
     target_makefile_frag="config/mt-gnu"
     ;;
   *-*-linux*)
@@ -2354,7 +2572,7 @@ AC_CHECK_PROGS([CONFIGURED_YACC],['bison -y' byacc yacc],
 AC_CHECK_PROGS([CONFIGURED_M4],[gm4 gnum4 m4],[${MISSING} m4])
 AC_CHECK_PROGS([CONFIGURED_FLEX],[flex],[${MISSING} flex])
 AC_CHECK_PROGS([CONFIGURED_LEX],[flex lex],[${MISSING} flex])
-AC_CHECK_PROGS([CONFIGURED_MAKEINFO],[makeinfo],[${MISSING} makeinfo])
+AC_CHECK_PROGS([CONFIGURED_MAKEINFO],[makeinfo],[${MISSING} makeinfo])dnl
 
 AM_PROG_LEX
 AC_PROG_YACC
@@ -3047,19 +3265,19 @@ case " ${configdirs} " in
 esac
 
 # Host tools:
-NCN_STRICT_CHECK_TOOLS([AR],[ar])dnl
-NCN_STRICT_CHECK_TOOLS([AS],[as])dnl
-NCN_STRICT_CHECK_TOOLS([DLLTOOL],[dlltool])dnl
-NCN_STRICT_CHECK_TOOLS([LD],[ld])dnl
+NCN_STRICT_CHECK_TOOLS([AR],[ar gar])dnl
+NCN_STRICT_CHECK_TOOLS([AS],[as gas])dnl
+NCN_STRICT_CHECK_TOOLS([DLLTOOL],[dlltool gdlltool])dnl
+NCN_STRICT_CHECK_TOOLS([LD],[ld gld ld.bfd ld.gold gold ld64 ld_classic])
 NCN_STRICT_CHECK_TOOLS([LIPO],[lipo])dnl
-NCN_STRICT_CHECK_TOOLS([NM],[nm])dnl
-NCN_STRICT_CHECK_TOOLS([RANLIB],[ranlib],[:])dnl
-NCN_STRICT_CHECK_TOOLS([STRIP],[strip],[true])dnl
-NCN_STRICT_CHECK_TOOLS([WINDRES],[windres])dnl
-NCN_STRICT_CHECK_TOOLS([WINDMC],[windmc])dnl
-NCN_STRICT_CHECK_TOOLS([OBJCOPY],[objcopy])dnl
-NCN_STRICT_CHECK_TOOLS([OBJDUMP],[objdump])dnl
-NCN_STRICT_CHECK_TOOLS([READELF],[readelf])dnl
+NCN_STRICT_CHECK_TOOLS([NM],[nm gnm])dnl
+NCN_STRICT_CHECK_TOOLS([RANLIB],[ranlib granlib],[:])dnl
+NCN_STRICT_CHECK_TOOLS([STRIP],[strip gstrip],[true])dnl
+NCN_STRICT_CHECK_TOOLS([WINDRES],[windres gwindres])dnl
+NCN_STRICT_CHECK_TOOLS([WINDMC],[windmc gwindmc])dnl
+NCN_STRICT_CHECK_TOOLS([OBJCOPY],[objcopy gobjcopy])dnl
+NCN_STRICT_CHECK_TOOLS([OBJDUMP],[objdump gobjdump])dnl
+NCN_STRICT_CHECK_TOOLS([READELF],[readelf greadelf])dnl
 
 AM_PROG_AR
 AM_PROG_AS
@@ -3081,7 +3299,7 @@ if test -x ${srcdir}/libtool -a ! -d ${srcdir}/libtool; then
   fi
   dnl# temporarily set this to 2.4.4 while I update everything:
   LT_PREREQ([2.4.4])
-  dnl#TODO: update the libtool_gnu subdir as well...
+  dnl#TODO: finish updating the libtool_gnu subdir as well...
 else
   test -e libtool
   AC_CHECK_HEADERS_ONCE([dlfcn.h])
@@ -3108,19 +3326,20 @@ AC_ARG_WITH([build-time-tools],
 
 # Target tools. Do the tests using the names they may have passed in
 # the environment, then move it to CONFIGURED_*_FOR_TARGET.
-NCN_STRICT_CHECK_TARGET_TOOLS([AR_FOR_TARGET],[ar])
-NCN_STRICT_CHECK_TARGET_TOOLS([AS_FOR_TARGET],[as])
+NCN_STRICT_CHECK_TARGET_TOOLS([AR_FOR_TARGET],[ar gar])
+NCN_STRICT_CHECK_TARGET_TOOLS([AS_FOR_TARGET],[as gas])
 NCN_STRICT_CHECK_TARGET_TOOLS([CC_FOR_TARGET],[cc gcc])
 NCN_STRICT_CHECK_TARGET_TOOLS([CXX_FOR_TARGET],[c++ g++ cxx gxx])
-NCN_STRICT_CHECK_TARGET_TOOLS([DLLTOOL_FOR_TARGET],[dlltool])
+NCN_STRICT_CHECK_TARGET_TOOLS([DLLTOOL_FOR_TARGET],[dlltool gdlltool])
 NCN_STRICT_CHECK_TARGET_TOOLS([GCC_FOR_TARGET],[gcc],[${CC_FOR_TARGET}])
 NCN_STRICT_CHECK_TARGET_TOOLS([GCJ_FOR_TARGET],[gcj])
 NCN_STRICT_CHECK_TARGET_TOOLS([GFORTRAN_FOR_TARGET],[gfortran])
 NCN_STRICT_CHECK_TARGET_TOOLS([GOC_FOR_TARGET],[gccgo])
-NCN_STRICT_CHECK_TARGET_TOOLS([LD_FOR_TARGET],[ld])
-NCN_STRICT_CHECK_TARGET_TOOLS([NM_FOR_TARGET],[nm])
-NCN_STRICT_CHECK_TARGET_TOOLS([RANLIB_FOR_TARGET],[ranlib],[:])
-NCN_STRICT_CHECK_TARGET_TOOLS([WINDRES_FOR_TARGET],[windres])
+NCN_STRICT_CHECK_TARGET_TOOLS([LD_FOR_TARGET],
+                              [ld gld ld.bfd ld.gold gold ld64 ld_classic])
+NCN_STRICT_CHECK_TARGET_TOOLS([NM_FOR_TARGET],[nm gnm])
+NCN_STRICT_CHECK_TARGET_TOOLS([RANLIB_FOR_TARGET],[ranlib granlib],[:])
+NCN_STRICT_CHECK_TARGET_TOOLS([WINDRES_FOR_TARGET],[windres gwindres])dnl
 
 CONFIGURED_AR_FOR_TARGET="${AR_FOR_TARGET}"
 CONFIGURED_AS_FOR_TARGET="${AS_FOR_TARGET}" # might need to be commented out for confusing autoconf
@@ -3151,7 +3370,7 @@ AC_SUBST([CONFIGURED_WINDRES_FOR_TARGET])dnl
 AC_SUBST([FLAGS_FOR_TARGET])dnl
 
 # Fix up target tools.
-if test "x${build}" = "x${host}" ; then
+if test "x${build}" = "x${host}"; then
   # In this case, the newly built tools can and should be used,
   # so we override the results of the autoconf tests.
   # This should really only happen when the tools are actually being built,
@@ -3231,12 +3450,12 @@ else
   MAINTAINER_MODE_TRUE='#'
   MAINTAINER_MODE_FALSE=""
 fi	
-MAINT=${MAINTAINER_MODE_TRUE}
+MAINT="${MAINTAINER_MODE_TRUE}"
 AC_SUBST([MAINT])dnl
 
-# ---------------------
-# GCC bootstrap support
-# ---------------------
+# --------------------- #
+# GCC bootstrap support #
+# --------------------- #
 
 # Stage specific cflags for build.
 stage1_cflags="-ggdb"
@@ -3325,6 +3544,19 @@ case "${target}" in
   powerpc*-ibm-aix*) compare_exclusions="gcc/cc*-checksum\$(objext) | gcc/ada/*tools/* | *libgomp*\$(objext)" ;;
 esac
 AC_SUBST([compare_exclusions])dnl
+
+# Output.
+AH_TOP([
+#ifndef HAVE_CONFIG_H
+# define HAVE_CONFIG_H 1
+#endif /* !HAVE_CONFIG_H */
+
+#ifndef _APPLE_GDB_TOP_SRC_CONFIG_H
+# define _APPLE_GDB_TOP_SRC_CONFIG_H 1
+])dnl
+AH_BOTTOM([
+#endif /* !_APPLE_GDB_TOP_SRC_CONFIG_H */
+])dnl
 
 AC_CONFIG_FILES([Makefile \
                  Makefile_orig])dnl

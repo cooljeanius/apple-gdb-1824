@@ -2,7 +2,9 @@ dnl# Common configure.ac fragment
 
 AC_DEFUN([AM_BINUTILS_WARNINGS],[
 # "-W" and "-Wextra" are redundant.
-WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes -Wimplicit -Wparentheses -Wextra -Wc++-compat"
+WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wimplicit -Wparentheses -Wextra -Wc++-compat -Wundef -Wold-style-definition -Wnested-externs -Wshadow"
+
+AC_REQUIRE([AC_CANONICAL_HOST])dnl
 
 case "${host}" in
   *-apple-darwin* | *-apple-macos*)
@@ -16,11 +18,11 @@ if test x${CFLAGS+set} = xset; then
   case "${CFLAGS}" in
     *"-O0"* ) ;;
     *"-O"* )
-      WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized"
+      WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Winit-self"
     ;;
   esac
 else
-  WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized"
+  WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Winit-self"
 fi
 
 AC_ARG_ENABLE([werror],
@@ -66,7 +68,7 @@ AC_ARG_ENABLE([build-warnings],
   *,)   t=`echo "${enableval}" | sed -e "s/,/ /g"`
         WARN_CFLAGS="${t} ${WARN_CFLAGS}";;
   *)    WARN_CFLAGS=`echo "${enableval}" | sed -e "s/,/ /g"`;;
-esac])
+esac])dnl
 
 if test "x${WARN_CFLAGS}" != "x" -a "x${GCC}" = "xyes"
 then

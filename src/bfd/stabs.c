@@ -333,8 +333,8 @@ _bfd_link_section_stabs (bfd *abfd,
 		    {
 		      if (num_chars >= buf_len)
 			{
-			  buf_len += 32 * 1024;
-			  symb = bfd_realloc (symb, buf_len);
+			  buf_len += (32 * 1024);
+			  symb = (char *)bfd_realloc(symb, buf_len);
 			  if (symb == NULL)
 			    goto error_return;
 			  symb_rover = symb + num_chars;
@@ -385,12 +385,13 @@ _bfd_link_section_stabs (bfd *abfd,
 	    {
 	      /* This is the first time we have seen this header file
 		 with this set of stabs strings.  */
-	      t = bfd_hash_allocate (&sinfo->includes, sizeof *t);
+	      t = bfd_hash_allocate(&sinfo->includes, sizeof *t);
 	      if (t == NULL)
 		goto error_return;
 	      t->sum_chars = sum_chars;
 	      t->num_chars = num_chars;
-	      t->symb = bfd_realloc (symb, num_chars); /* Trim data down.  */
+              /* Trim down the data: */
+	      t->symb = (const char *)bfd_realloc(symb, num_chars);
 	      t->next = incl_entry->totals;
 	      incl_entry->totals = t;
 	    }
@@ -430,7 +431,7 @@ _bfd_link_section_stabs (bfd *abfd,
 		    ++nest;
 		  else if (incl_type == (int) N_EXCL)
 		    /* Keep existing exclusion marks.  */
-		    continue;   
+		    continue;
 		  else if (nest == 0)
 		    {
 		      *incl_pstridx = (bfd_size_type) -1;
@@ -467,8 +468,8 @@ _bfd_link_section_stabs (bfd *abfd,
       bfd_size_type i, offset;
       bfd_size_type *pskips;
 
-      amt = count * sizeof (bfd_size_type);
-      secinfo->cumulative_skips = bfd_alloc (abfd, amt);
+      amt = (count * sizeof(bfd_size_type));
+      secinfo->cumulative_skips = (bfd_size_type *)bfd_alloc(abfd, amt);
       if (secinfo->cumulative_skips == NULL)
 	goto error_return;
 
@@ -620,8 +621,8 @@ _bfd_discard_section_stabs (bfd *abfd,
 
       if (secinfo->cumulative_skips == NULL)
 	{
-	  amt = count * sizeof (bfd_size_type);
-	  secinfo->cumulative_skips = bfd_alloc (abfd, amt);
+	  amt = (count * sizeof(bfd_size_type));
+	  secinfo->cumulative_skips = (bfd_size_type *)bfd_alloc(abfd, amt);
 	  if (secinfo->cumulative_skips == NULL)
 	    goto error_return;
 	}

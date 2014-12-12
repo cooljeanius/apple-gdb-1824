@@ -108,6 +108,10 @@ AC_SUBST([HAVE_PERL])dnl
 
 # architectures:
 AC_CANONICAL_TARGET
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+  AC_SUBST([BUILD_ARCHITECTURE])
+fi
 if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
   export HOST_ARCHITECTURE="${host_cpu}"
   AC_SUBST([HOST_ARCHITECTURE])
@@ -117,13 +121,74 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   AC_SUBST([TARGET_ARCHITECTURE])
 fi
 
+# libtoolize will delete this, because we do not actually use automake:
+if test "x${ac_aux_dir}" != "x"; then
+  test -n "${ac_aux_dir}" && test -d "${ac_aux_dir}"
+  if test ! -e ${ac_aux_dir}/missing && test -w "${ac_aux_dir}"; then
+    if test -e ./missing && test "x${ac_aux_dir}" != "x."; then
+      cp ./missing ${ac_aux_dir}
+    elif test -e ../missing && test "x${ac_aux_dir}" != "x.."; then
+      cp ../missing ${ac_aux_dir}
+    elif test -e ../config/missing && test "x${ac_aux_dir}" != "x../config"; then
+      cp ../config/missing ${ac_aux_dir}
+    fi
+  fi
+else
+  test -z "${ac_aux_dir}"
+fi
+
 dnl# When we start using automake with a legit Makefile.am; un-comment and
 dnl# un-escape this:
 dnl#AM\_INIT\_AUTOMAKE\(\[gnu\ dejagnu\ \-Wno\-obsolete\]\)
 AM_MISSING_PROG([AUTOCONF],[autoconf])dnl
+
+dnl# until then, though, use this as a substitute:
+AC_DEFUN([AM_INIT_MY_AUTOMAKE_LITE],[
+  AC_PREREQ([2.65])dnl
+  dnl# Autoconf wants to disallow AM_ names. We explicitly allow
+  dnl# the ones we care about.
+  m4_pattern_allow([^AM_[A-Z]+FLAGS$])dnl
+  AC_REQUIRE([AM_SET_CURRENT_AUTOMAKE_VERSION])dnl
+  AC_REQUIRE([AC_PROG_SED])dnl
+
+  # test whether we have cygpath:
+  if test -z "${CYGPATH_W}"; then
+    if (cygpath --version) >/dev/null 2>/dev/null; then
+      CYGPATH_W='cygpath -w'
+    else
+      CYGPATH_W=echo
+    fi
+  fi
+  AC_SUBST([CYGPATH_W])dnl
+
+  # Some tools Automake needs.
+  AC_REQUIRE([AM_SANITY_CHECK])dnl
+  AC_REQUIRE([AC_ARG_PROGRAM])dnl
+  AC_REQUIRE([AM_MISSING_HAS_RUN])dnl
+  AM_MISSING_PROG([AUTOHEADER],[autoheader])dnl
+  AC_REQUIRE([AM_PROG_INSTALL_SH])dnl
+  dnl# For better backward compatibility. To be removed once Automake 1.9.x
+  dnl# dies out for good.
+  AC_SUBST([mkdir_p],['$(MKDIR_P)'])dnl
+  dnl# We need awk for the "check" target. The system "awk" is bad on
+  dnl# some platforms.
+  AC_REQUIRE([AM_SET_LEADING_DOT])dnl
+  AC_REQUIRE([AM_SILENT_RULES])dnl
+  AC_REQUIRE([AC_PROG_GREP])dnl
+  AC_REQUIRE([AM_SET_DEPDIR])dnl
+  AC_REQUIRE([AM_OUTPUT_DEPENDENCY_COMMANDS])dnl
+  AC_REQUIRE([AM_MAKE_INCLUDE])dnl
+  AC_REQUIRE([AM_DEP_TRACK])dnl
+])dnl
+AM_INIT_MY_AUTOMAKE_LITE
+
+if test -e ./config.cache; then
+  sed -i "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
+fi
+
 m4_ifdef([AC_REQUIRE_AUX_FILE],[
-AC_REQUIRE_AUX_FILE([compile])dnl
-AC_REQUIRE_AUX_FILE([missing])dnl
+  AC_REQUIRE_AUX_FILE([compile])dnl
+  AC_REQUIRE_AUX_FILE([missing])dnl
 ])dnl
 
 dnl# These must be called before LT_INIT, because it may want
@@ -132,9 +197,9 @@ GCC_NO_EXECUTABLES
 AC_PROG_GCC_TRADITIONAL
 AC_USE_SYSTEM_EXTENSIONS
 m4_ifdef([AM_PROG_AR],[
-AM_PROG_AR
+  AM_PROG_AR
 ],[
-AC_CHECK_TOOL([AR],[ar])dnl
+  AC_CHECK_TOOL([AR],[ar])dnl
 ])dnl
 m4_ifdef([AC_PROG_RANLIB],[
 if test "x${RANLIB}" = "x"; then
@@ -180,7 +245,7 @@ AC_PROG_MKDIR_P
 
 AC_MSG_CHECKING([warning flags to use])
 if test "x${GCC}" = "xyes"; then
-  ac_libiberty_warn_cflags='-Wall -Wextra -pedantic -Wwrite-strings -Wc++-compat -Wstrict-prototypes'
+  ac_libiberty_warn_cflags='-Wall -Wextra -pedantic -Wwrite-strings -Wc++-compat -Wstrict-prototypes -Wundef'
 else
   ac_libiberty_warn_cflags=''
 fi
@@ -364,9 +429,19 @@ libiberty_AC_DECLARE_ERRNO
 AC_MSG_CHECKING([types])
 AC_MSG_RESULT([ ])dnl
 
-# Determine the size of an int for struct fibnode.
+# Determine sizes of some types.
 AC_CHECK_SIZEOF([int])dnl
 AC_CHECK_ALIGNOF([int])dnl
+AC_CHECK_SIZEOF([long])dnl
+AC_CHECK_ALIGNOF([long])dnl
+
+# Check for presense of long long
+AC_CHECK_TYPE([long long],
+  [AC_DEFINE([HAVE_LONG_LONG],[1],
+             [Define if you have the `long long' type.])dnl
+   AC_CHECK_SIZEOF([long long])dnl
+   AC_CHECK_ALIGNOF([long long])dnl
+  ],[])dnl
 
 # Look for a 64-bit type.
 AC_MSG_CHECKING([for a 64-bit type])
@@ -412,9 +487,9 @@ fi
 
 AC_TYPE_INTPTR_T
 m4_ifdef([AC_TYPE_UINTPTR_T],[
-AC_TYPE_UINTPTR_T
+  AC_TYPE_UINTPTR_T
 ],[
-AC_CHECK_TYPE([uintptr_t],[unsigned long])dnl
+  AC_CHECK_TYPE([uintptr_t],[unsigned long])dnl
 ])dnl
 
 # Given the above check, we always have uintptr_t or a fallback
@@ -489,7 +564,9 @@ funcs="${funcs} strrchr"
 funcs="${funcs} strstr"
 funcs="${funcs} strtod"
 funcs="${funcs} strtol"
+funcs="${funcs} strtoll"
 funcs="${funcs} strtoul"
+funcs="${funcs} strtoull"
 funcs="${funcs} strverscmp"
 funcs="${funcs} tmpnam"
 funcs="${funcs} vasprintf"
@@ -541,9 +618,11 @@ if test "x" = "Y0"; then
     sbrk setenv setproctitle setrlimit sigsetmask snprintf \
     spawnve spawnvpe stpcpy stpncpy strcasecmp strchr strcspn \
     strdup strerror strlen strncasecmp strndup strnlen strpbrk strrchr \
-    strsignal strspn strstr strtod strtol strtoul strverscmp \
-    sysconf sysctl sysmp system table times tmpnam utime \
+    strsignal strspn strstr strtod strtol strtoll strtoul strtoull \
+    strverscmp sysconf sysctl sysmp system \
+    table times tmpnam unlink utime \
     vasprintf vfprintf vprintf vsnprintf vsprintf wait3 wait4 waitpid])dnl
+  AC_CHECK_DECLS([basename(char *), strtol, strtoul, strtoll, strtoull])dnl
   AC_CHECK_DECLS([basename, ffs, asprintf, vasprintf, snprintf, vsnprintf])
   AC_CHECK_DECLS([sys_siglist])dnl
   AC_DEFINE([HAVE_SYS_ERRLIST],[1],
@@ -957,7 +1036,11 @@ if test "x${want_mmalloc}" = "xtrue"; then
    AC_DEFINE([USE_MMALLOC],[1],[Define to 1 to use mmalloc])
    MMALLOC_CFLAGS="-I${srcdir}/../mmalloc"
    MMALLOC='../mmalloc/libmmalloc.a'
+   MMALLOC_OK=''
+else
+   MMALLOC_OK='#'
 fi
+AC_SUBST([MMALLOC_OK])dnl
 
 # We need multilib support, but only if configuring for the target.
 AC_CONFIG_FILES([Makefile testsuite/Makefile])

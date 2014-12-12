@@ -299,21 +299,21 @@ ihex_scan (bfd *abfd)
 		}
 	    }
 
-	  len = HEX2 (hdr);
-	  addr = HEX4 (hdr + 2);
-	  type = HEX2 (hdr + 6);
+	  len = HEX2(hdr);
+	  addr = HEX4(hdr + 2);
+	  type = HEX2(hdr + 6);
 
-	  /* Read the data bytes.  */
-	  chars = len * 2 + 2;
+	  /* Read the data bytes: */
+	  chars = (len * 2 + 2);
 	  if (chars >= bufsize)
 	    {
-	      buf = bfd_realloc (buf, (bfd_size_type) chars);
+	      buf = (bfd_byte *)bfd_realloc(buf, (bfd_size_type)chars);
 	      if (buf == NULL)
 		goto error_return;
 	      bufsize = chars;
 	    }
 
-	  if (bfd_bread (buf, (bfd_size_type) chars, abfd) != chars)
+	  if (bfd_bread(buf, (bfd_size_type)chars, abfd) != chars)
 	    goto error_return;
 
 	  for (i = 0; i < chars; i++)
@@ -356,18 +356,18 @@ ihex_scan (bfd *abfd)
 		  char *secname;
 		  bfd_size_type amt;
 
-		  sprintf (secbuf, ".sec%d", bfd_count_sections (abfd) + 1);
-		  amt = strlen (secbuf) + 1;
-		  secname = bfd_alloc (abfd, amt);
+		  sprintf(secbuf, ".sec%d", (bfd_count_sections(abfd) + 1));
+		  amt = (strlen(secbuf) + 1);
+		  secname = (char *)bfd_alloc(abfd, amt);
 		  if (secname == NULL)
 		    goto error_return;
 		  strcpy (secname, secbuf);
 		  sec = bfd_make_section (abfd, secname);
 		  if (sec == NULL)
 		    goto error_return;
-		  sec->flags = SEC_HAS_CONTENTS | SEC_LOAD | SEC_ALLOC;
-		  sec->vma = extbase + segbase + addr;
-		  sec->lma = extbase + segbase + addr;
+		  sec->flags = (SEC_HAS_CONTENTS | SEC_LOAD | SEC_ALLOC);
+		  sec->vma = (extbase + segbase + addr);
+		  sec->lma = (extbase + segbase + addr);
 		  sec->size = len;
 		  sec->filepos = pos;
 		}
@@ -532,24 +532,23 @@ ihex_object_p (bfd *abfd)
   return abfd->xvec;
 }
 
-/* Read the contents of a section in an Intel Hex file.  */
-
+/* Read the contents of a section in an Intel Hex file: */
 static bfd_boolean
-ihex_read_section (bfd *abfd, asection *section, bfd_byte *contents)
+ihex_read_section(bfd *abfd, asection *section, bfd_byte *contents)
 {
   int c;
   bfd_byte *p;
-  bfd_byte *buf = NULL;
+  bfd_byte *buf = (bfd_byte *)NULL;
   size_t bufsize;
   bfd_boolean error;
 
-  if (bfd_seek (abfd, section->filepos, SEEK_SET) != 0)
+  if (bfd_seek(abfd, section->filepos, SEEK_SET) != 0)
     goto error_return;
 
   p = contents;
   bufsize = 0;
   error = FALSE;
-  while ((c = ihex_get_byte (abfd, &error)) != EOF)
+  while ((c = ihex_get_byte(abfd, &error)) != EOF)
     {
       char hdr[8];
       unsigned int len;
@@ -557,71 +556,71 @@ ihex_read_section (bfd *abfd, asection *section, bfd_byte *contents)
       unsigned int type;
       unsigned int i;
 
-      if (c == '\r' || c == '\n')
+      if ((c == '\r') || (c == '\n'))
 	continue;
 
       /* This is called after ihex_scan has succeeded, so we ought to
          know the exact format.  */
       BFD_ASSERT (c == ':');
 
-      if (bfd_bread (hdr, (bfd_size_type) 8, abfd) != 8)
+      if (bfd_bread(hdr, (bfd_size_type)8, abfd) != 8)
 	goto error_return;
 
-      len = HEX2 (hdr);
-      addr = HEX4 (hdr + 2);
-      type = HEX2 (hdr + 6);
+      len = HEX2(hdr);
+      addr = HEX4(hdr + 2);
+      type = HEX2(hdr + 6);
 
-      /* We should only see type 0 records here.  */
+      /* We should only see type 0 records here: */
       if (type != 0)
 	{
 	  (*_bfd_error_handler)
 	    (_("%B: internal error in ihex_read_section"), abfd);
-	  bfd_set_error (bfd_error_bad_value);
+	  bfd_set_error(bfd_error_bad_value);
 	  goto error_return;
 	}
 
-      if (len * 2 > bufsize)
+      if ((len * 2) > bufsize)
 	{
-	  buf = bfd_realloc (buf, (bfd_size_type) len * 2);
+	  buf = (bfd_byte *)bfd_realloc(buf, (bfd_size_type)len * 2);
 	  if (buf == NULL)
 	    goto error_return;
-	  bufsize = len * 2;
+	  bufsize = (len * 2);
 	}
 
-      if (bfd_bread (buf, (bfd_size_type) len * 2, abfd) != len * 2)
+      if (bfd_bread(buf, (bfd_size_type)len * 2, abfd) != (len * 2))
 	goto error_return;
 
       for (i = 0; i < len; i++)
-	*p++ = HEX2 (buf + 2 * i);
-      if ((bfd_size_type) (p - contents) >= section->size)
+	*p++ = HEX2(buf + 2 * i);
+      if ((bfd_size_type)(p - contents) >= section->size)
 	{
-	  /* We've read everything in the section.  */
+	  /* We have read everything in the section: */
 	  if (buf != NULL)
-	    free (buf);
+	    free(buf);
 	  return TRUE;
 	}
 
-      /* Skip the checksum.  */
-      if (bfd_bread (buf, (bfd_size_type) 2, abfd) != 2)
+      /* Skip the checksum: */
+      if (bfd_bread(buf, (bfd_size_type)2, abfd) != 2)
 	goto error_return;
     }
 
-  if ((bfd_size_type) (p - contents) < section->size)
+  if ((bfd_size_type)(p - contents) < section->size)
     {
       (*_bfd_error_handler)
 	(_("%B: bad section length in ihex_read_section"), abfd);
-      bfd_set_error (bfd_error_bad_value);
+      bfd_set_error(bfd_error_bad_value);
       goto error_return;
     }
 
   if (buf != NULL)
-    free (buf);
+    free(buf);
 
   return TRUE;
 
  error_return:
   if (buf != NULL)
-    free (buf);
+    free(buf);
   return FALSE;
 }
 
@@ -639,52 +638,50 @@ ihex_get_section_contents (bfd *abfd,
       section->used_by_bfd = bfd_alloc (abfd, section->size);
       if (section->used_by_bfd == NULL)
 	return FALSE;
-      if (! ihex_read_section (abfd, section, section->used_by_bfd))
+      if (! ihex_read_section(abfd, section,
+                              (bfd_byte *)section->used_by_bfd))
 	return FALSE;
     }
 
-  memcpy (location, (bfd_byte *) section->used_by_bfd + offset,
-	  (size_t) count);
+  memcpy(location, ((bfd_byte *)section->used_by_bfd + offset),
+         (size_t)count);
 
   return TRUE;
 }
 
-/* Set the contents of a section in an Intel Hex file.  */
-
+/* Set the contents of a section in an Intel Hex file: */
 static bfd_boolean
-ihex_set_section_contents (bfd *abfd,
-			   asection *section,
-			   const void * location,
-			   file_ptr offset,
-			   bfd_size_type count)
+ihex_set_section_contents(bfd *abfd, asection *section,
+                          const void * location, file_ptr offset,
+                          bfd_size_type count)
 {
   struct ihex_data_list *n;
   bfd_byte *data;
   struct ihex_data_struct *tdata;
 
-  if (count == 0
-      || (section->flags & SEC_ALLOC) == 0
-      || (section->flags & SEC_LOAD) == 0)
+  if ((count == 0)
+      || ((section->flags & SEC_ALLOC) == 0)
+      || ((section->flags & SEC_LOAD) == 0))
     return TRUE;
 
-  n = bfd_alloc (abfd, sizeof (* n));
+  n = (struct ihex_data_list *)bfd_alloc(abfd, sizeof(* n));
   if (n == NULL)
     return FALSE;
 
-  data = bfd_alloc (abfd, count);
+  data = (bfd_byte *)bfd_alloc(abfd, count);
   if (data == NULL)
     return FALSE;
-  memcpy (data, location, (size_t) count);
+  memcpy (data, location, (size_t)count);
 
   n->data = data;
-  n->where = section->lma + offset;
+  n->where = (section->lma + offset);
   n->size = count;
 
   /* Sort the records by address.  Optimize for the common case of
      adding a record to the end of the list.  */
   tdata = abfd->tdata.ihex_data;
-  if (tdata->tail != NULL
-      && n->where >= tdata->tail->where)
+  if ((tdata->tail != NULL)
+      && (n->where >= tdata->tail->where))
     {
       tdata->tail->next = n;
       n->next = NULL;
@@ -695,7 +692,7 @@ ihex_set_section_contents (bfd *abfd,
       struct ihex_data_list **pp;
 
       for (pp = &tdata->head;
-	   *pp != NULL && (*pp)->where < n->where;
+	   (*pp != NULL) && ((*pp)->where < n->where);
 	   pp = &(*pp)->next)
 	;
       n->next = *pp;

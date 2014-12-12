@@ -1,4 +1,4 @@
-/* BFD library -- caching of file descriptors.
+/* cache.c: BFD library -- caching of file descriptors.
 
    Copyright 1990, 1991, 1992, 1993, 1994, 1996, 2000, 2001, 2002,
    2003, 2004 Free Software Foundation, Inc.
@@ -179,8 +179,7 @@ DESCRIPTION
 */
 
 void
-bfd_set_cache_max_open (nmax)
-     unsigned int nmax;
+bfd_set_cache_max_open(unsigned int nmax)
 {
   bfd_cache_max_open = nmax;
 }
@@ -209,7 +208,7 @@ DESCRIPTION
 	looked up. If so, then it can use the stream in the BFD with
 	impunity, since it can't have changed since the last lookup;
 	otherwise, it has to perform the complicated lookup function.
- 
+
 .#define bfd_cache_lookup_null(x) \
 .    ((x) == bfd_last_cache ? \
 .      (FILE *) (bfd_last_cache->iostream) : \
@@ -325,7 +324,7 @@ bfd_cache_init (bfd *abfd)
 {
   BFD_ASSERT (abfd->iostream != NULL);
   BFD_ASSERT ((abfd->flags & BFD_IN_MEMORY) == 0);
-  
+
   while (open_files >= bfd_cache_max_open)
     {
       if (! close_one ())
@@ -383,7 +382,7 @@ RETURNS
 */
 
 bfd_boolean
-bfd_cache_close_all ()
+bfd_cache_close_all(void)
 {
   bfd_boolean ret = TRUE;
 
@@ -495,7 +494,7 @@ DESCRIPTION
 FILE *
 bfd_cache_lookup_worker (bfd *abfd)
 {
-  while (abfd->my_archive) 
+  while (abfd->my_archive)
     abfd = abfd->my_archive;
 
   BFD_ASSERT ((abfd->flags & BFD_IN_MEMORY) == 0);

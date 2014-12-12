@@ -55,3 +55,6 @@ peigen.c
 pepigen.c
 pex64igen.c
 targmatch.h
+# not sure why I never gitignored these generated headers before:
+elf32-target.h
+elf64-target.h

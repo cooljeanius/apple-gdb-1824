@@ -469,9 +469,9 @@ symbol:
 	      $$ = $1;
 	    else
 	      {
-		$$ = xmalloc (strlen (symbol_prefix) + strlen ($1) + 2);
-		sprintf ($$, "%s@%s", symbol_prefix, $1);
-		free ($1);
+		$$ = (char *)xmalloc(strlen(symbol_prefix) + strlen($1) + 2);
+		sprintf($$, "%s@%s", symbol_prefix, $1);
+		free($1);
 	      }
 	  }
 	;
@@ -549,7 +549,7 @@ nlmlex_file_push (const char *name)
 {
   struct input *push;
 
-  push = (struct input *) xmalloc (sizeof (struct input));
+  push = (struct input *)xmalloc(sizeof(struct input));
   *push = current;
   if (nlmlex_file_open (name))
     current.next = push;
@@ -639,7 +639,7 @@ static int
 nlmlex_buf_init (void)
 {
   lex_size = 10;
-  lex_buf = xmalloc (lex_size + 1);
+  lex_buf = (char *)xmalloc(lex_size + 1);
   lex_pos = 0;
   return 0;
 }
@@ -659,7 +659,7 @@ nlmlex_buf_add (int c)
   if (lex_pos >= lex_size)
     {
       lex_size *= 2;
-      lex_buf = xrealloc (lex_buf, lex_size + 1);
+      lex_buf = (char *)xrealloc(lex_buf, (lex_size + 1));
     }
 
   return lex_buf[lex_pos++] = c;
@@ -909,7 +909,7 @@ string_list_cons (char *s, struct string_list *l)
 {
   struct string_list *ret;
 
-  ret = (struct string_list *) xmalloc (sizeof (struct string_list));
+  ret = (struct string_list *)xmalloc(sizeof(struct string_list));
   ret->next = l;
   ret->string = s;
   return ret;
@@ -936,7 +936,7 @@ string_list_append1 (struct string_list *l, char *s)
   struct string_list *n;
   register struct string_list **pp;
 
-  n = (struct string_list *) xmalloc (sizeof (struct string_list));
+  n = (struct string_list *)xmalloc(sizeof(struct string_list));
   n->next = NULL;
   n->string = s;
   for (pp = &l; *pp != NULL; pp = &(*pp)->next)
@@ -954,7 +954,7 @@ xstrdup (const char *s)
   char *ret;
 
   len = strlen (s);
-  ret = xmalloc (len + 1);
+  ret = (char *)xmalloc(len + 1);
   strcpy (ret, s);
   return ret;
 }

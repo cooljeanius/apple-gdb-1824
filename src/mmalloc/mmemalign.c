@@ -1,4 +1,4 @@
-/* Copyright (C) 1991, 1992 Free Software Foundation, Inc.
+/* mmemalign.c: Copyright (C) 1991, 1992 Free Software Foundation, Inc.
 This file is part of the GNU C Library.
 
 The GNU C Library is free software; you can redistribute it and/or
@@ -13,16 +13,13 @@ Library General Public License for more details.
 
 You should have received a copy of the GNU Library General Public
 License along with the GNU C Library; see the file COPYING.LIB.  If
-not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+not, write to the Free Software Foundation, Inc., 59 Temple Pl., Suite 330,
 Boston, MA 02111-1307, USA.  */
 
 #include "mmprivate.h"
 
 PTR
-mmemalign (md, alignment, size)
-  PTR md;
-  size_t alignment;
-  size_t size;
+mmemalign(PTR md, size_t alignment, size_t size)
 {
   PTR result;
   unsigned long int adj;
@@ -35,28 +32,30 @@ mmemalign (md, alignment, size)
       if (adj != 0)
 	{
 	  mdp = MD_TO_MDP (md);
-	  for (l = mdp -> aligned_blocks; l != NULL; l = l -> next)
+	  for (l = mdp->aligned_blocks; l != NULL; l = l->next)
 	    {
-	      if (l -> aligned == NULL)
+	      if (l->aligned == NULL)
 		{
-		  /* This slot is free.  Use it.  */
+		  /* This slot is free, so use it: */
 		  break;
 		}
 	    }
 	  if (l == NULL)
 	    {
-	      l = (struct alignlist *) mmalloc (md, sizeof (struct alignlist));
+	      l = (struct alignlist *)mmalloc(md, sizeof(struct alignlist));
 	      if (l == NULL)
 		{
-		  mfree (md, result);
+		  mfree(md, result);
 		  return (NULL);
 		}
-	      l -> next = mdp -> aligned_blocks;
-	      mdp -> aligned_blocks = l;
+	      l->next = mdp->aligned_blocks;
+	      mdp->aligned_blocks = l;
 	    }
-	  l -> exact = result;
-	  result = l -> aligned = (char *) result + alignment - adj;
+	  l->exact = result;
+	  result = l->aligned = ((char *)result + alignment - adj);
 	}
     }
   return (result);
 }
+
+/* EOF */

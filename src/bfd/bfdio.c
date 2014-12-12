@@ -141,7 +141,7 @@ bfd_bread (void *ptr, bfd_size_type size, bfd *abfd)
 }
 
 bfd_size_type
-bfd_bwrite (const void *ptr, bfd_size_type size, bfd *abfd)
+bfd_bwrite(const void *ptr, bfd_size_type size, bfd *abfd)
 {
   size_t nwrote;
 
@@ -152,18 +152,18 @@ bfd_bwrite (const void *ptr, bfd_size_type size, bfd *abfd)
     {
       struct bfd_in_memory *bim = abfd->iostream;
 
-      size = (size_t) size;
-      if (abfd->where + size > bim->size)
+      size = (size_t)size;
+      if ((abfd->where + size) > bim->size)
 	{
 	  bfd_size_type newsize, oldsize;
 
-	  oldsize = (bim->size + 127) & ~(bfd_size_type) 127;
-	  bim->size = abfd->where + size;
-	  /* Round up to cut down on memory fragmentation */
-	  newsize = (bim->size + 127) & ~127;
+	  oldsize = ((bim->size + 127) & ~(bfd_size_type)127);
+	  bim->size = (abfd->where + size);
+	  /* Round up to cut down on memory fragmentation: */
+	  newsize = ((bim->size + 127) & ~127);
 	  if (newsize > oldsize)
 	    {
-	      bim->buffer = bfd_realloc (bim->buffer, newsize);
+	      bim->buffer = (bfd_byte *)bfd_realloc(bim->buffer, newsize);
 	      if (bim->buffer == 0)
 		{
 		  bim->size = 0;
@@ -171,24 +171,24 @@ bfd_bwrite (const void *ptr, bfd_size_type size, bfd *abfd)
 		}
 	    }
 	}
-      memcpy (bim->buffer + abfd->where, ptr, (size_t) size);
+      memcpy((bim->buffer + abfd->where), ptr, (size_t)size);
       abfd->where += size;
       return size;
     }
 
   if (abfd->iovec)
-    nwrote = abfd->iovec->bwrite (abfd, ptr, size);
+    nwrote = abfd->iovec->bwrite(abfd, ptr, size);
   else
     nwrote = 0;
 
-  if (nwrote != (size_t) -1)
+  if (nwrote != (size_t)-1)
     abfd->where += nwrote;
   if (nwrote != size)
     {
 #ifdef ENOSPC
-	errno = ENOSPC;
-#endif
-      bfd_set_error (bfd_error_system_call);
+      errno = ENOSPC;
+#endif /* ENOSPC */
+      bfd_set_error(bfd_error_system_call);
     }
   return nwrote;
 }
@@ -305,11 +305,12 @@ bfd_seek (bfd *abfd, file_ptr position, int direction)
 
 	      oldsize = (bim->size + 127) & ~(bfd_size_type) 127;
 	      bim->size = abfd->where;
-	      /* Round up to cut down on memory fragmentation */
-	      newsize = (bim->size + 127) & ~(bfd_size_type) 127;
+	      /* Round up to cut down on memory fragmentation: */
+	      newsize = ((bim->size + 127) & ~(bfd_size_type)127);
 	      if (newsize > oldsize)
 	        {
-		  bim->buffer = bfd_realloc (bim->buffer, newsize);
+		  bim->buffer = (bfd_byte *)bfd_realloc(bim->buffer,
+                                                        newsize);
 		  if (bim->buffer == 0)
 		    {
 		      bim->size = 0;
@@ -320,7 +321,7 @@ bfd_seek (bfd *abfd, file_ptr position, int direction)
 	  else
 	    {
 	      abfd->where = bim->size;
-	      bfd_set_error (bfd_error_file_truncated);
+	      bfd_set_error(bfd_error_file_truncated);
 	      return -1;
 	    }
 	}

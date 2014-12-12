@@ -691,10 +691,12 @@ nls_cv_use_gnu_gettext
 nls_cv_force_use_gnu_gettext
 USE_NLS
 ALLOCA
+CONFIGURED_POD2MAN
 ICONV_BIN
 LEXLIB
 LEX_OUTPUT_ROOT
 LEX
+EXTRA_YFLAGS_SEP
 YFLAGS
 YACC
 am__fastdepCCAS_FALSE
@@ -769,6 +771,9 @@ am__isrc
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
+LDFLAGS_FOR_BUILD
+CXXFLAGS_FOR_BUILD
+CFLAGS_FOR_BUILD
 EGREP
 GREP
 CPP
@@ -847,6 +852,7 @@ enable_libtool_lock
 enable_targets
 enable_commonbfdlib
 enable_deterministic_archives
+enable_default_strings_all
 enable_werror
 enable_pedantic
 enable_build_warnings
@@ -1513,6 +1519,8 @@ Optional Features:
   --enable-commonbfdlib   build shared BFD/opcodes/libiberty library
   --enable-deterministic-archives
                           ar and ranlib default to -D behavior
+  --disable-default-strings-all
+                          strings defaults to --data behavior
   --enable-werror         treat compile warnings as errors
   --enable-pedantic       enable pedantic warnings
   --enable-build-warnings Enable build-time compiler warnings
@@ -4282,6 +4290,17 @@ $as_echo "$ac_cv_safe_to_define___extensions__" >&6; }
   $as_echo "#define _TANDEM_SOURCE 1" >>confdefs.h
 
 
+
+# Allow the user to override the flags for our build compiler if desired:
+if test x"${build}" = x"${host}"; then
+  CFLAGS_FOR_BUILD=${CFLAGS_FOR_BUILD-${CFLAGS}}
+  CXXFLAGS_FOR_BUILD=${CXXFLAGS_FOR_BUILD-${CXXFLAGS}}
+  LDFLAGS_FOR_BUILD=${LDFLAGS_FOR_BUILD-${LDFLAGS}}
+else
+  test -n "${CFLAGS_FOR_BUILD}"
+  test -n "${CXXFLAGS_FOR_BUILD}"
+  test -n "${LDFLAGS_FOR_BUILD}"
+fi
 
 # Automake:
 if test -f ${srcdir}/config.status; then
@@ -8784,22 +8803,22 @@ _LT_EOF
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_ld_force_load" >&5
 $as_echo "$lt_cv_ld_force_load" >&6; }
-    case $host_os in
+    case ${host_os} in
     rhapsody* | darwin1.[012])
-      _lt_dar_allow_undefined='$wl-undefined ${wl}suppress' ;;
+      _lt_dar_allow_undefined='${wl}-undefined ${wl}suppress' ;;
     darwin1.*)
-      _lt_dar_allow_undefined='$wl-flat_namespace $wl-undefined ${wl}suppress' ;;
+      _lt_dar_allow_undefined='${wl}-flat_namespace ${wl}-undefined ${wl}suppress' ;;
     darwin*) # darwin 5.x on
       # if running on 10.5 or later, the deployment target defaults
       # to the OS version, if on x86, and 10.4, the deployment
-      # target defaults to 10.4. Don't you love it?
+      # target defaults to 10.4. Do you not love it?
       case ${MACOSX_DEPLOYMENT_TARGET-10.0},$host in
 	10.0,*86*-darwin8*|10.0,*-darwin[91]*)
-	  _lt_dar_allow_undefined='$wl-undefined ${wl}dynamic_lookup' ;;
+	  _lt_dar_allow_undefined='${wl}-undefined ${wl}dynamic_lookup' ;;
 	10.[012][,.]*)
-	  _lt_dar_allow_undefined='$wl-flat_namespace $wl-undefined ${wl}suppress' ;;
+	  _lt_dar_allow_undefined='${wl}-flat_namespace ${wl}-undefined ${wl}suppress' ;;
 	10.*)
-	  _lt_dar_allow_undefined='$wl-undefined ${wl}dynamic_lookup' ;;
+	  _lt_dar_allow_undefined='${wl}-undefined ${wl}dynamic_lookup' ;;
       esac
     ;;
   esac
@@ -16931,6 +16950,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 CC=$lt_save_CC
 CFLAGS=$lt_save_CFLAGS
 
+# flags:
 # Check whether --enable-targets was given.
 if test "${enable_targets+set}" = set; then :
   enableval=$enable_targets; case "${enableval}" in
@@ -16968,9 +16988,27 @@ cat >>confdefs.h <<_ACEOF
 #define DEFAULT_AR_DETERMINISTIC ${default_ar_deterministic}
 _ACEOF
 
+# Check whether --enable-default-strings-all was given.
+if test "${enable_default_strings_all+set}" = set; then :
+  enableval=$enable_default_strings_all;
+if test "x${enableval}" = "xno"; then
+  default_strings_all=0
+else
+  default_strings_all=1
+fi
+else
+  default_strings_all=1
+fi
+
+
+cat >>confdefs.h <<_ACEOF
+#define DEFAULT_STRINGS_ALL ${default_strings_all}
+_ACEOF
+
 
 # "-W" and "-Wextra" are redundant.
-WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes -Wimplicit -Wparentheses -Wextra -Wc++-compat"
+WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wimplicit -Wparentheses -Wextra -Wc++-compat -Wundef -Wold-style-definition -Wnested-externs -Wshadow"
+
 
 case "${host}" in
   *-apple-darwin* | *-apple-macos*)
@@ -16984,11 +17022,11 @@ if test x${CFLAGS+set} = xset; then
   case "${CFLAGS}" in
     *"-O0"* ) ;;
     *"-O"* )
-      WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized"
+      WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Winit-self"
     ;;
   esac
 else
-  WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized"
+  WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Winit-self"
 fi
 
 # Check whether --enable-werror was given.
@@ -17036,7 +17074,6 @@ if test "${enable_build_warnings+set}" = set; then :
   *)    WARN_CFLAGS=`echo "${enableval}" | sed -e "s/,/ /g"`;;
 esac
 fi
-
 
 if test "x${WARN_CFLAGS}" != "x" -a "x${GCC}" = "xyes"
 then
@@ -17106,6 +17143,7 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sys_interpreter" >&5
 $as_echo "$ac_cv_sys_interpreter" >&6; }
 interpval=$ac_cv_sys_interpreter
+
 
 # Check whether --enable-largefile was given.
 if test "${enable_largefile+set}" = set; then :
@@ -18131,6 +18169,38 @@ fi
 done
 test -n "$YACC" || YACC="yacc"
 
+
+
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking if bison is the parser generator" >&5
+$as_echo_n "checking if bison is the parser generator... " >&6; }
+if ${ax_cv_prog_bison+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+    if $YACC --version 2>/dev/null | $EGREP -q '^bison '; then :
+  ax_cv_prog_bison=yes
+else
+  ax_cv_prog_bison=no
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_prog_bison" >&5
+$as_echo "$ax_cv_prog_bison" >&6; }
+  if test "$ax_cv_prog_bison" = "yes"; then :
+
+                              YACC="${YACC% -y} -o y.tab.c"
+
+  # (might want to check the bison version first)
+  EXTRA_YFLAGS_SEP=''
+
+else
+
+  EXTRA_YFLAGS_SEP='#'
+
+
+fi
 for ac_prog in flex lex
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
@@ -18337,6 +18407,44 @@ fi
 
   test -n "$ICONV_BIN" && break
 done
+# Extract the first word of "pod2man", so it can be a program name with args.
+set dummy pod2man; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_CONFIGURED_POD2MAN+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $CONFIGURED_POD2MAN in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_CONFIGURED_POD2MAN="$CONFIGURED_POD2MAN" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_CONFIGURED_POD2MAN="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+CONFIGURED_POD2MAN=$ac_cv_path_CONFIGURED_POD2MAN
+if test -n "$CONFIGURED_POD2MAN"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CONFIGURED_POD2MAN" >&5
+$as_echo "$CONFIGURED_POD2MAN" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
 
 
 # Gettext:
@@ -18354,7 +18462,7 @@ elif test -d ../libintl; then
   fi
 fi
 # keep alphabetical:
-ALL_LINGUAS="bg da es fi fr hr id it ja ro ru rw sk sv tr uk vi zh_CN zh_TW"
+ALL_LINGUAS="bg da es fi fr hr id it ja ro ru rw sk sr sv tr uk vi zh_CN zh_TW"
 
 if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
@@ -18994,8 +19102,8 @@ rm -f conftest.mmap conftest.txt
 
 
 
-if test $ac_cv_header_locale_h = yes; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LC_MESSAGES" >&5
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LC_MESSAGES" >&5
 $as_echo_n "checking for LC_MESSAGES... " >&6; }
 if ${am_cv_val_LC_MESSAGES+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -19014,30 +19122,27 @@ rm -f core conftest.err conftest.$ac_objext \
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $am_cv_val_LC_MESSAGES" >&5
 $as_echo "$am_cv_val_LC_MESSAGES" >&6; }
-    if test $am_cv_val_LC_MESSAGES = yes; then
+  if test "x${am_cv_val_LC_MESSAGES}" = "xyes"; then
 
 $as_echo "#define HAVE_LC_MESSAGES 1" >>confdefs.h
 
-    fi
   fi
-
 
    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether NLS is requested" >&5
 $as_echo_n "checking whether NLS is requested... " >&6; }
 
         # Check whether --enable-nls was given.
 if test "${enable_nls+set}" = set; then :
-  enableval=$enable_nls; USE_NLS=$enableval
+  enableval=$enable_nls; USE_NLS=${enableval}
 else
   USE_NLS=yes
 fi
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $USE_NLS" >&5
-$as_echo "$USE_NLS" >&6; }
-
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${USE_NLS}" >&5
+$as_echo "${USE_NLS}" >&6; }
 
     USE_INCLUDED_LIBINTL=yes
 
-        if test "$USE_NLS" = "yes"; then
+        if test "x${USE_NLS}" = "xyes"; then
 
 $as_echo "#define ENABLE_NLS 1" >>confdefs.h
 
@@ -19046,20 +19151,19 @@ $as_echo_n "checking whether included gettext is requested... " >&6; }
 
 # Check whether --with-included-gettext was given.
 if test "${with_included_gettext+set}" = set; then :
-  withval=$with_included_gettext; nls_cv_force_use_gnu_gettext=$withval
+  withval=$with_included_gettext; nls_cv_force_use_gnu_gettext=${withval}
 else
   nls_cv_force_use_gnu_gettext=no
 fi
 
-      { $as_echo "$as_me:${as_lineno-$LINENO}: result: $nls_cv_force_use_gnu_gettext" >&5
-$as_echo "$nls_cv_force_use_gnu_gettext" >&6; }
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${nls_cv_force_use_gnu_gettext}" >&5
+$as_echo "${nls_cv_force_use_gnu_gettext}" >&6; }
 
+      nls_cv_use_gnu_gettext="${nls_cv_force_use_gnu_gettext}"
 
-      nls_cv_use_gnu_gettext="$nls_cv_force_use_gnu_gettext"
-
-      if test "$nls_cv_force_use_gnu_gettext" != "yes"; then
-                                	nls_cv_header_intl=
-	nls_cv_header_libgt=
+      if test "x${nls_cv_force_use_gnu_gettext}" != "xyes"; then
+                                	nls_cv_header_intl=""
+	nls_cv_header_libgt=""
 	CATOBJEXT=NONE
 
 	ac_fn_c_check_header_mongrel "$LINENO" "libintl.h" "ac_cv_header_libintl_h" "$ac_includes_default"
@@ -19083,7 +19187,7 @@ rm -f core conftest.err conftest.$ac_objext \
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gt_cv_func_gettext_libc" >&5
 $as_echo "$gt_cv_func_gettext_libc" >&6; }
-	   if test "$gt_cv_func_gettext_libc" != "yes"; then
+	   if test "x${gt_cv_func_gettext_libc}" != "xyes"; then
 	     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for bindtextdomain in -lintl" >&5
 $as_echo_n "checking for bindtextdomain in -lintl... " >&6; }
 if ${ac_cv_lib_intl_bindtextdomain+:} false; then :
@@ -19142,12 +19246,40 @@ fi
 $as_echo "$gt_cv_func_gettext_libintl" >&6; }
 fi
 	   fi
-	   if test "$gt_cv_func_gettext_libc" = "yes" \
-	      || test "$gt_cv_func_gettext_libintl" = "yes"; then
+	   if test "x${gt_cv_func_gettext_libc}" = "xyes" \
+	      || test "x${gt_cv_func_gettext_libintl}" = "xyes"; then
 
 $as_echo "#define HAVE_GETTEXT 1" >>confdefs.h
 
-	      # Extract the first word of "msgfmt", so it can be a program name with args.
+
+# Prepare PATH_SEPARATOR.
+# The user is always right.
+if test "${PATH_SEPARATOR+set}" != set; then
+  # Determine PATH_SEPARATOR by trying to find /bin/sh in a PATH which
+  # contains only /bin. Note that ksh looks also at the FPATH variable,
+  # so we have to set that as well for the test.
+  PATH_SEPARATOR=:
+  (PATH='/bin;/bin'; FPATH=$PATH; sh -c :) >/dev/null 2>&1 \
+    && { (PATH='/bin:/bin'; FPATH=$PATH; sh -c :) >/dev/null 2>&1 \
+           || PATH_SEPARATOR=';'
+       }
+fi
+
+# Find out how to test for executable files. Don't use a zero-byte file,
+# as systems may use methods other than mode bits to determine executability.
+cat >conf$$.file <<_ASEOF
+#! /bin/sh
+exit 0
+_ASEOF
+chmod +x conf$$.file
+if test -x conf$$.file >/dev/null 2>&1; then
+  ac_executable_p="test -x"
+else
+  ac_executable_p="test -f"
+fi
+rm -f conf$$.file
+
+# Extract the first word of "msgfmt", so it can be a program name with args.
 set dummy msgfmt; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
@@ -19155,27 +19287,31 @@ if ${ac_cv_path_MSGFMT+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   case "$MSGFMT" in
-  /*)
-  ac_cv_path_MSGFMT="$MSGFMT" # Let the user override the test with a path.
-  ;;
+  [\\/]* | ?:[\\/]*)
+    ac_cv_path_MSGFMT="$MSGFMT" # Let the user override the test with a path.
+    ;;
   *)
-  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
-  for ac_dir in $PATH; do
-    test -z "$ac_dir" && ac_dir=.
-    if test -f $ac_dir/$ac_word; then
-      if test -z "`$ac_dir/$ac_word -h 2>&1 | grep 'dv '`"; then
-	ac_cv_path_MSGFMT="$ac_dir/$ac_word"
-	break
-      fi
-    fi
-  done
-  IFS="$ac_save_ifs"
-test -z "$ac_cv_path_MSGFMT" && ac_cv_path_MSGFMT=":"
-  ;;
+    ac_save_IFS="$IFS"; IFS=$PATH_SEPARATOR
+    for ac_dir in $PATH; do
+      IFS="$ac_save_IFS"
+      test -z "$ac_dir" && ac_dir=.
+      for ac_exec_ext in '' $ac_executable_extensions; do
+        if $ac_executable_p "$ac_dir/$ac_word$ac_exec_ext"; then
+          echo "$as_me: trying $ac_dir/$ac_word..." >&5
+          if test -z "`$ac_dir/$ac_word -h 2>&1 | grep 'dv '`"; then
+            ac_cv_path_MSGFMT="$ac_dir/$ac_word$ac_exec_ext"
+            break 2
+          fi
+        fi
+      done
+    done
+    IFS="$ac_save_IFS"
+  test -z "$ac_cv_path_MSGFMT" && ac_cv_path_MSGFMT=":"
+    ;;
 esac
 fi
 MSGFMT="$ac_cv_path_MSGFMT"
-if test -n "$MSGFMT"; then
+if test "$MSGFMT" != ":"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $MSGFMT" >&5
 $as_echo "$MSGFMT" >&6; }
 else
@@ -19235,7 +19371,35 @@ $as_echo "no" >&6; }
 fi
 
 
-		# Extract the first word of "xgettext", so it can be a program name with args.
+
+# Prepare PATH_SEPARATOR.
+# The user is always right.
+if test "${PATH_SEPARATOR+set}" != set; then
+  # Determine PATH_SEPARATOR by trying to find /bin/sh in a PATH which
+  # contains only /bin. Note that ksh looks also at the FPATH variable,
+  # so we have to set that as well for the test.
+  PATH_SEPARATOR=:
+  (PATH='/bin;/bin'; FPATH=$PATH; sh -c :) >/dev/null 2>&1 \
+    && { (PATH='/bin:/bin'; FPATH=$PATH; sh -c :) >/dev/null 2>&1 \
+           || PATH_SEPARATOR=';'
+       }
+fi
+
+# Find out how to test for executable files. Don't use a zero-byte file,
+# as systems may use methods other than mode bits to determine executability.
+cat >conf$$.file <<_ASEOF
+#! /bin/sh
+exit 0
+_ASEOF
+chmod +x conf$$.file
+if test -x conf$$.file >/dev/null 2>&1; then
+  ac_executable_p="test -x"
+else
+  ac_executable_p="test -f"
+fi
+rm -f conf$$.file
+
+# Extract the first word of "xgettext", so it can be a program name with args.
 set dummy xgettext; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
@@ -19243,27 +19407,31 @@ if ${ac_cv_path_XGETTEXT+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   case "$XGETTEXT" in
-  /*)
-  ac_cv_path_XGETTEXT="$XGETTEXT" # Let the user override the test with a path.
-  ;;
+  [\\/]* | ?:[\\/]*)
+    ac_cv_path_XGETTEXT="$XGETTEXT" # Let the user override the test with a path.
+    ;;
   *)
-  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
-  for ac_dir in $PATH; do
-    test -z "$ac_dir" && ac_dir=.
-    if test -f $ac_dir/$ac_word; then
-      if test -z "`$ac_dir/$ac_word -h 2>&1 | grep '(HELP)'`"; then
-	ac_cv_path_XGETTEXT="$ac_dir/$ac_word"
-	break
-      fi
-    fi
-  done
-  IFS="$ac_save_ifs"
-test -z "$ac_cv_path_XGETTEXT" && ac_cv_path_XGETTEXT=":"
-  ;;
+    ac_save_IFS="$IFS"; IFS=$PATH_SEPARATOR
+    for ac_dir in $PATH; do
+      IFS="$ac_save_IFS"
+      test -z "$ac_dir" && ac_dir=.
+      for ac_exec_ext in '' $ac_executable_extensions; do
+        if $ac_executable_p "$ac_dir/$ac_word$ac_exec_ext"; then
+          echo "$as_me: trying $ac_dir/$ac_word..." >&5
+          if test -z "`${ac_dir}/${ac_word} -h 2>&1 | grep '(HELP)'`"; then
+            ac_cv_path_XGETTEXT="$ac_dir/$ac_word$ac_exec_ext"
+            break 2
+          fi
+        fi
+      done
+    done
+    IFS="$ac_save_IFS"
+  test -z "$ac_cv_path_XGETTEXT" && ac_cv_path_XGETTEXT=":"
+    ;;
 esac
 fi
 XGETTEXT="$ac_cv_path_XGETTEXT"
-if test -n "$XGETTEXT"; then
+if test "$XGETTEXT" != ":"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $XGETTEXT" >&5
 $as_echo "$XGETTEXT" >&6; }
 else
@@ -19290,13 +19458,41 @@ fi
 
 
 
-        if test "$CATOBJEXT" = "NONE"; then
+        if test "x${CATOBJEXT}" = "xNONE"; then
 	  	  	  nls_cv_use_gnu_gettext=yes
 
         fi       fi
-      if test "$nls_cv_use_gnu_gettext" = "yes"; then
+      if test "x${nls_cv_use_gnu_gettext}" = "xyes"; then
                 INTLOBJS="\$(GETTOBJS)"
-        # Extract the first word of "msgfmt", so it can be a program name with args.
+
+# Prepare PATH_SEPARATOR.
+# The user is always right.
+if test "${PATH_SEPARATOR+set}" != set; then
+  # Determine PATH_SEPARATOR by trying to find /bin/sh in a PATH which
+  # contains only /bin. Note that ksh looks also at the FPATH variable,
+  # so we have to set that as well for the test.
+  PATH_SEPARATOR=:
+  (PATH='/bin;/bin'; FPATH=$PATH; sh -c :) >/dev/null 2>&1 \
+    && { (PATH='/bin:/bin'; FPATH=$PATH; sh -c :) >/dev/null 2>&1 \
+           || PATH_SEPARATOR=';'
+       }
+fi
+
+# Find out how to test for executable files. Don't use a zero-byte file,
+# as systems may use methods other than mode bits to determine executability.
+cat >conf$$.file <<_ASEOF
+#! /bin/sh
+exit 0
+_ASEOF
+chmod +x conf$$.file
+if test -x conf$$.file >/dev/null 2>&1; then
+  ac_executable_p="test -x"
+else
+  ac_executable_p="test -f"
+fi
+rm -f conf$$.file
+
+# Extract the first word of "msgfmt", so it can be a program name with args.
 set dummy msgfmt; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
@@ -19304,27 +19500,31 @@ if ${ac_cv_path_MSGFMT+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   case "$MSGFMT" in
-  /*)
-  ac_cv_path_MSGFMT="$MSGFMT" # Let the user override the test with a path.
-  ;;
+  [\\/]* | ?:[\\/]*)
+    ac_cv_path_MSGFMT="$MSGFMT" # Let the user override the test with a path.
+    ;;
   *)
-  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
-  for ac_dir in $PATH; do
-    test -z "$ac_dir" && ac_dir=.
-    if test -f $ac_dir/$ac_word; then
-      if test -z "`$ac_dir/$ac_word -h 2>&1 | grep 'dv '`"; then
-	ac_cv_path_MSGFMT="$ac_dir/$ac_word"
-	break
-      fi
-    fi
-  done
-  IFS="$ac_save_ifs"
-test -z "$ac_cv_path_MSGFMT" && ac_cv_path_MSGFMT=":"
-  ;;
+    ac_save_IFS="$IFS"; IFS=$PATH_SEPARATOR
+    for ac_dir in $PATH; do
+      IFS="$ac_save_IFS"
+      test -z "$ac_dir" && ac_dir=.
+      for ac_exec_ext in '' $ac_executable_extensions; do
+        if $ac_executable_p "$ac_dir/$ac_word$ac_exec_ext"; then
+          echo "$as_me: trying $ac_dir/$ac_word..." >&5
+          if test -z "`${ac_dir}/${ac_word} -h 2>&1 | grep 'dv '`"; then
+            ac_cv_path_MSGFMT="$ac_dir/$ac_word$ac_exec_ext"
+            break 2
+          fi
+        fi
+      done
+    done
+    IFS="$ac_save_IFS"
+  test -z "$ac_cv_path_MSGFMT" && ac_cv_path_MSGFMT=":"
+    ;;
 esac
 fi
 MSGFMT="$ac_cv_path_MSGFMT"
-if test -n "$MSGFMT"; then
+if test "$MSGFMT" != ":"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $MSGFMT" >&5
 $as_echo "$MSGFMT" >&6; }
 else
@@ -19373,7 +19573,35 @@ $as_echo "no" >&6; }
 fi
 
 
-        # Extract the first word of "xgettext", so it can be a program name with args.
+
+# Prepare PATH_SEPARATOR.
+# The user is always right.
+if test "${PATH_SEPARATOR+set}" != set; then
+  # Determine PATH_SEPARATOR by trying to find /bin/sh in a PATH which
+  # contains only /bin. Note that ksh looks also at the FPATH variable,
+  # so we have to set that as well for the test.
+  PATH_SEPARATOR=:
+  (PATH='/bin;/bin'; FPATH=$PATH; sh -c :) >/dev/null 2>&1 \
+    && { (PATH='/bin:/bin'; FPATH=$PATH; sh -c :) >/dev/null 2>&1 \
+           || PATH_SEPARATOR=';'
+       }
+fi
+
+# Find out how to test for executable files. Don't use a zero-byte file,
+# as systems may use methods other than mode bits to determine executability.
+cat >conf$$.file <<_ASEOF
+#! /bin/sh
+exit 0
+_ASEOF
+chmod +x conf$$.file
+if test -x conf$$.file >/dev/null 2>&1; then
+  ac_executable_p="test -x"
+else
+  ac_executable_p="test -f"
+fi
+rm -f conf$$.file
+
+# Extract the first word of "xgettext", so it can be a program name with args.
 set dummy xgettext; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
@@ -19381,27 +19609,31 @@ if ${ac_cv_path_XGETTEXT+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   case "$XGETTEXT" in
-  /*)
-  ac_cv_path_XGETTEXT="$XGETTEXT" # Let the user override the test with a path.
-  ;;
+  [\\/]* | ?:[\\/]*)
+    ac_cv_path_XGETTEXT="$XGETTEXT" # Let the user override the test with a path.
+    ;;
   *)
-  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
-  for ac_dir in $PATH; do
-    test -z "$ac_dir" && ac_dir=.
-    if test -f $ac_dir/$ac_word; then
-      if test -z "`$ac_dir/$ac_word -h 2>&1 | grep '(HELP)'`"; then
-	ac_cv_path_XGETTEXT="$ac_dir/$ac_word"
-	break
-      fi
-    fi
-  done
-  IFS="$ac_save_ifs"
-test -z "$ac_cv_path_XGETTEXT" && ac_cv_path_XGETTEXT=":"
-  ;;
+    ac_save_IFS="$IFS"; IFS=$PATH_SEPARATOR
+    for ac_dir in $PATH; do
+      IFS="$ac_save_IFS"
+      test -z "$ac_dir" && ac_dir=.
+      for ac_exec_ext in '' $ac_executable_extensions; do
+        if $ac_executable_p "$ac_dir/$ac_word$ac_exec_ext"; then
+          echo "$as_me: trying $ac_dir/$ac_word..." >&5
+          if test -z "`${ac_dir}/${ac_word} -h 2>&1 | grep '(HELP)'`"; then
+            ac_cv_path_XGETTEXT="$ac_dir/$ac_word$ac_exec_ext"
+            break 2
+          fi
+        fi
+      done
+    done
+    IFS="$ac_save_IFS"
+  test -z "$ac_cv_path_XGETTEXT" && ac_cv_path_XGETTEXT=":"
+    ;;
 esac
 fi
 XGETTEXT="$ac_cv_path_XGETTEXT"
-if test -n "$XGETTEXT"; then
+if test "$XGETTEXT" != ":"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $XGETTEXT" >&5
 $as_echo "$XGETTEXT" >&6; }
 else
@@ -19417,12 +19649,12 @@ fi
 # APPLE LOCAL: Link directly to the .a file.
 	INTLDEPS='$(top_builddir)/../intl/.libs/libintl.a'
 	INTLLIBS=$INTLDEPS
-	LIBS=`echo $LIBS | sed -e 's/-lintl//'`
+	LIBS=`echo ${LIBS} | sed -e 's/-lintl//'`
         nls_cv_header_intl=libintl.h
         nls_cv_header_libgt=libgettext.h
       fi
-            if test "$XGETTEXT" != ":"; then
-            	if $XGETTEXT --omit-header /dev/null 2> /dev/null; then
+            if test "x${XGETTEXT}" != "x:"; then
+            	if ${XGETTEXT} --omit-header /dev/null 2> /dev/null; then
 	  : ;
 	else
 	  { $as_echo "$as_me:${as_lineno-$LINENO}: result: found xgettext programs is not GNU xgettext; ignore it" >&5
@@ -19438,25 +19670,14 @@ $as_echo "found xgettext programs is not GNU xgettext; ignore it" >&6; }
     fi
     # If this is used in GNU gettext we have to set USE_NLS to `yes'
     # because some of the sources are only built for this goal.
-    if test "$PACKAGE" = gettext; then
+    if test "x${PACKAGE}" = "xgettext"; then
       USE_NLS=yes
       USE_INCLUDED_LIBINTL=yes
     fi
-                for lang in $ALL_LINGUAS; do
-      GMOFILES="$GMOFILES $lang.gmo"
-      POFILES="$POFILES $lang.po"
+                for lang in ${ALL_LINGUAS}; do
+      GMOFILES="${GMOFILES} ${lang}.gmo"
+      POFILES="${POFILES} ${lang}.po"
     done
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -19494,40 +19715,39 @@ $as_echo "#define HAVE_STPCPY 1" >>confdefs.h
    fi
 
 
-
-
-   if test "x$CATOBJEXT" != "x"; then
-     if test "x$ALL_LINGUAS" = "x"; then
-       LINGUAS=
+   if test "x${CATOBJEXT}" != "x"; then
+     if test "x${ALL_LINGUAS}" = "x"; then
+       LINGUAS=""
      else
        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for catalogs to be installed" >&5
 $as_echo_n "checking for catalogs to be installed... " >&6; }
-       NEW_LINGUAS=
-       for lang in ${LINGUAS=$ALL_LINGUAS}; do
-         case "$ALL_LINGUAS" in
-          *$lang*) NEW_LINGUAS="$NEW_LINGUAS $lang" ;;
+       NEW_LINGUAS=""
+       for lang in ${LINGUAS=${ALL_LINGUAS}}; do
+         case "${ALL_LINGUAS}" in
+          *${lang}*) NEW_LINGUAS="${NEW_LINGUAS} ${lang}" ;;
          esac
        done
-       LINGUAS=$NEW_LINGUAS
-       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $LINGUAS" >&5
-$as_echo "$LINGUAS" >&6; }
+       LINGUAS=${NEW_LINGUAS}
+       { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${LINGUAS}" >&5
+$as_echo "${LINGUAS}" >&6; }
      fi
 
-          if test -n "$LINGUAS"; then
-       for lang in $LINGUAS; do CATALOGS="$CATALOGS $lang$CATOBJEXT"; done
+          if test -n "${LINGUAS}"; then
+       for lang in ${LINGUAS}; do
+         CATALOGS="${CATALOGS} ${lang}${CATOBJEXT}"
+       done
      fi
    fi
 
-            if test $ac_cv_header_locale_h = yes; then
+            if test "x${ac_cv_header_locale_h}" = "xyes"; then
      INCLUDE_LOCALE_H="#include <locale.h>"
    else
      INCLUDE_LOCALE_H="\
 /* The system does not provide the header <locale.h>. Take care yourself.  */"
    fi
 
-
-            if test -f $srcdir/po2tbl.sed.in; then
-      if test "$CATOBJEXT" = ".cat"; then
+            if test -f ${srcdir}/po2tbl.sed.in; then
+      if test "x${CATOBJEXT}" = "x.cat"; then
 	 ac_fn_c_check_header_mongrel "$LINENO" "linux/version.h" "ac_cv_header_linux_version_h" "$ac_includes_default"
 if test "x$ac_cv_header_linux_version_h" = xyes; then :
   msgformat=linux
@@ -19536,43 +19756,38 @@ else
 fi
 
 
-
-	 	 	 sed -e '/^#/d' $srcdir/$msgformat-msg.sed > po2msg.sed
+	 	 	 sed -e '/^#/d' ${srcdir}/${msgformat}-msg.sed > po2msg.sed
       fi
             sed -e '/^#.*[^\\]$/d' -e '/^#$/d' \
-	 $srcdir/po2tbl.sed.in > po2tbl.sed
+	 ${srcdir}/po2tbl.sed.in > po2tbl.sed
    fi
 
-            if test "$PACKAGE" = "gettext"; then
+            if test "x${PACKAGE}" = "xgettext"; then
      GT_NO="#NO#"
-     GT_YES=
+     GT_YES=""
    else
-     GT_NO=
+     GT_NO=""
      GT_YES="#YES#"
    fi
 
-
-
    MKINSTALLDIRS="\$(srcdir)/../../mkinstalldirs"
-
 
       l=l
 
-
-            if test -f $srcdir/po/POTFILES.in; then
+            if test -f ${srcdir}/po/POTFILES.in; then
       test -d po || mkdir po
-      if test "x$srcdir" != "x."; then
-	 if test "x`echo $srcdir | sed 's@/.*@@'`" = "x"; then
-	    posrcprefix="$srcdir/"
+      if test "x${srcdir}" != "x."; then
+	 if test "x`echo ${srcdir} | sed 's@/.*@@'`" = "x"; then
+	    posrcprefix="${srcdir}/"
 	 else
-	    posrcprefix="../$srcdir/"
+	    posrcprefix="../${srcdir}/"
 	 fi
       else
 	 posrcprefix="../"
       fi
       rm -f po/POTFILES
       sed -e "/^#/d" -e "/^\$/d" -e "s,.*,	$posrcprefix& \\\\," -e "\$s/\(.*\) \\\\/\1/" \
-	 < $srcdir/po/POTFILES.in > po/POTFILES
+	 < ${srcdir}/po/POTFILES.in > po/POTFILES
    fi
 
 
@@ -19618,9 +19833,7 @@ cat >>confdefs.h <<_ACEOF
 #define EXECUTABLE_SUFFIX "${EXEEXT}"
 _ACEOF
 
-
 # host-specific stuff:
-
 HDEFINES=""
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: sourcing ../bfd/configure.host" >&5
@@ -20024,7 +20237,7 @@ fi
 esac
 
 
-# ../intl is added to LDFLAGS above
+# ('../intl' is added to LDFLAGS above)
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing dcgettext" >&5
 $as_echo_n "checking for library containing dcgettext... " >&6; }
 if ${ac_cv_search_dcgettext+:} false; then :
@@ -21352,8 +21565,8 @@ _ACEOF
 
 
 
-  test -z "${am_cv_val_LC_MESSAGES}"
-      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for iconv in -liconv" >&5
+    test -z "${am_cv_val_LC_MESSAGES}"
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for iconv in -liconv" >&5
 $as_echo_n "checking for iconv in -liconv... " >&6; }
 if ${ac_cv_lib_iconv_iconv+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -22031,9 +22244,10 @@ unset ac_cv_header_unistd_h
 unset ac_cv_header_utime_h
 for ac_header in assert.h binary-io.h errno.h fcntl.h gettext.h iconv.h \
                   langinfo.h libgettext.h libintl.h limits.h locale.h \
-                  mach/mach.h mach-o/loader.h malloc.h malloc/malloc.h \
-                  stdarg.h stddef.h stdio.h sys/file.h sys/param.h \
-                  sys/time.h utime.h varargs.h wchar.h wctype.h
+                  mach/i386/thread_status.h mach/mach.h mach-o/loader.h \
+                  malloc.h malloc/malloc.h stdarg.h stddef.h stdio.h \
+                  sys/file.h sys/param.h sys/time.h utime.h varargs.h \
+                  wchar.h wctype.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -23532,7 +23746,7 @@ _ACEOF
 fi
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for working strcoll" >&5
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for working strcoll" >&5
 $as_echo_n "checking for working strcoll... " >&6; }
 if ${ac_cv_func_strcoll_works+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -24197,6 +24411,16 @@ fi
 
 # checks for declarations (keep alphabetized please):
 unset ac_cv_have_decl_getenv
+ac_fn_c_check_decl "$LINENO" "basename" "ac_cv_have_decl_basename" "$ac_includes_default"
+if test "x$ac_cv_have_decl_basename" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_BASENAME $ac_have_decl
+_ACEOF
 ac_fn_c_check_decl "$LINENO" "environ" "ac_cv_have_decl_environ" "$ac_includes_default"
 if test "x$ac_cv_have_decl_environ" = xyes; then :
   ac_have_decl=1
@@ -24606,6 +24830,9 @@ do
 
 	# Add objdump private vectors.
 	case ${targ} in
+        avr-*-*)
+          od_vectors="${od_vectors} objdump_private_desc_elf32_avr"
+          ;;
 	powerpc-*-aix*)
 	  od_vectors="${od_vectors} objdump_private_desc_xcoff"
 	  ;;
@@ -24671,6 +24898,8 @@ for i in ${od_vectors} ; do
 	f="${f} ${i}"
 	OBJDUMP_PRIVATE_VECTORS="${OBJDUMP_PRIVATE_VECTORS} &${i},"
 	case ${i} in
+        objdump_private_desc_elf32_avr)
+            od_files="$od_files od-elf32_avr" ;;
 	objdump_private_desc_xcoff)
 	    od_files="${od_files} od-xcoff" ;;
 	objdump_private_desc_mach_o)

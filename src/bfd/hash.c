@@ -397,16 +397,17 @@ bfd_hash_lookup (struct bfd_hash_table *table,
     return NULL;
   if (copy)
     {
-      char *new;
+      char *newstring;
 
-      new = objalloc_alloc ((struct objalloc *) table->memory, len + 1);
-      if (!new)
+      newstring = (char *)objalloc_alloc((struct objalloc *)table->memory,
+                                         (len + 1));
+      if (!newstring)
 	{
-	  bfd_set_error (bfd_error_no_memory);
+	  bfd_set_error(bfd_error_no_memory);
 	  return NULL;
 	}
-      memcpy (new, string, len + 1);
-      string = new;
+      memcpy(newstring, string, (len + 1));
+      string = newstring;
     }
   hashp->string = string;
   hashp->hash = hash;
@@ -645,25 +646,25 @@ _bfd_stringtab_add (struct bfd_strtab_hash *tab,
     {
       entry = strtab_hash_lookup (tab, str, TRUE, copy);
       if (entry == NULL)
-	return (bfd_size_type) -1;
+	return (bfd_size_type)-1;
     }
   else
     {
-      entry = bfd_hash_allocate (&tab->table, sizeof (* entry));
+      entry = bfd_hash_allocate(&tab->table, sizeof(* entry));
       if (entry == NULL)
-	return (bfd_size_type) -1;
+	return (bfd_size_type)-1;
       if (! copy)
 	entry->root.string = str;
       else
 	{
 	  char *n;
 
-	  n = bfd_hash_allocate (&tab->table, strlen (str) + 1);
+	  n = (char *)bfd_hash_allocate(&tab->table, (strlen(str) + 1));
 	  if (n == NULL)
-	    return (bfd_size_type) -1;
+	    return (bfd_size_type)-1;
 	  entry->root.string = n;
 	}
-      entry->index = (bfd_size_type) -1;
+      entry->index = (bfd_size_type)-1;
       entry->next = NULL;
     }
 

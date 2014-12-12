@@ -295,7 +295,7 @@ getsym (char *dstp, char **srcp, unsigned int *lenp)
   char *src = *srcp;
   unsigned int i;
   unsigned int len;
-  
+
   if (!ISHEX (*src))
     return FALSE;
 
@@ -381,7 +381,7 @@ first_phase (bfd *abfd, int type, char *src)
       section = bfd_get_section_by_name (abfd, sym);
       if (section == NULL)
 	{
-	  char *n = bfd_alloc (abfd, (bfd_size_type) len + 1);
+	  char *n = (char *)bfd_alloc(abfd, ((bfd_size_type)len + 1));
 
 	  if (!n)
 	    return FALSE;
@@ -411,38 +411,38 @@ first_phase (bfd *abfd, int type, char *src)
 	      /* Symbols, add to section.  */
 	      {
 		bfd_size_type amt = sizeof (tekhex_symbol_type);
-		tekhex_symbol_type *new = bfd_alloc (abfd, amt);
+		tekhex_symbol_type *newsym = bfd_alloc (abfd, amt);
 		char stype = (*src);
 
-		if (!new)
+		if (!newsym)
 		  return FALSE;
-		new->symbol.the_bfd = abfd;
+		newsym->symbol.the_bfd = abfd;
 		src++;
 		abfd->symcount++;
 		abfd->flags |= HAS_SYMS;
-		new->prev = abfd->tdata.tekhex_data->symbols;
-		abfd->tdata.tekhex_data->symbols = new;
+		newsym->prev = abfd->tdata.tekhex_data->symbols;
+		abfd->tdata.tekhex_data->symbols = newsym;
 		if (!getsym (sym, &src, &len))
 		  return FALSE;
                 /* APPLE LOCAL: Allocate this space to a char * local var
-                   which we'll copy the contents into and then point 
+                   which we will copy the contents into and then point
                    new->symbol.name at instead of casting away the cosntness
                    of new->symbol.name and poking at the great compiler warning
                    beastie.  */
-                char *newname = bfd_alloc (abfd, (bfd_size_type) len + 1);
-                new->symbol.name = NULL;
+                char *newname = (char *)bfd_alloc(abfd, ((bfd_size_type)len + 1));
+                newsym->symbol.name = NULL;
 		if (!newname)
 		  return FALSE;
-		memcpy (newname, sym, len + 1);
-                new->symbol.name = newname;
-		new->symbol.section = section;
+		memcpy(newname, sym, len + 1);
+                newsym->symbol.name = newname;
+		newsym->symbol.section = section;
 		if (stype <= '4')
-		  new->symbol.flags = (BSF_GLOBAL | BSF_EXPORT);
+		  newsym->symbol.flags = (BSF_GLOBAL | BSF_EXPORT);
 		else
-		  new->symbol.flags = BSF_LOCAL;
-		if (!getvalue (&src, &val))
+		  newsym->symbol.flags = BSF_LOCAL;
+		if (!getvalue(&src, &val))
 		  return FALSE;
-		new->symbol.value = val - section->vma;
+		newsym->symbol.value = val - section->vma;
 	      }
 	    default:
 	      return FALSE;
@@ -881,16 +881,16 @@ tekhex_sizeof_headers (bfd *abfd ATTRIBUTE_UNUSED,
 }
 
 static asymbol *
-tekhex_make_empty_symbol (bfd *abfd)
+tekhex_make_empty_symbol(bfd *abfd)
 {
-  bfd_size_type amt = sizeof (struct tekhex_symbol_struct);
-  tekhex_symbol_type *new = bfd_zalloc (abfd, amt);
+  bfd_size_type amt = sizeof(struct tekhex_symbol_struct);
+  tekhex_symbol_type *newsym = (tekhex_symbol_type *)bfd_zalloc(abfd, amt);
 
-  if (!new)
+  if (!newsym)
     return NULL;
-  new->symbol.the_bfd = abfd;
-  new->prev =  NULL;
-  return &(new->symbol);
+  newsym->symbol.the_bfd = abfd;
+  newsym->prev =  NULL;
+  return &(newsym->symbol);
 }
 
 static void

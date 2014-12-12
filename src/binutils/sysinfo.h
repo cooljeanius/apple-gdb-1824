@@ -34,7 +34,7 @@
 # define YY_YY_SYSINFO_H_INCLUDED
 /* Enabling traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -54,28 +54,20 @@ extern int yydebug;
      UNIT = 263
    };
 #endif
-/* Tokens.  */
-#define COND 258
-#define REPEAT 259
-#define TYPE 260
-#define NAME 261
-#define NUMBER 262
-#define UNIT 263
-
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
 {
 /* Line 2053 of yacc.c  */
-#line 39 "sysinfo.y"
+#line 43 "sysinfo.y"
 
  int i;
  char *s;
 
 
 /* Line 2053 of yacc.c  */
-#line 79 "sysinfo.h"
+#line 71 "sysinfo.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

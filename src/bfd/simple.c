@@ -161,18 +161,18 @@ bfd_simple_get_relocated_section_contents (bfd *abfd,
   int storage_needed;
   void *saved_offsets;
 
-  if (! (sec->flags & SEC_RELOC))
+  if (!(sec->flags & SEC_RELOC))
     {
-      bfd_size_type amt = sec->rawsize > sec->size ? sec->rawsize : sec->size;
-      bfd_size_type size = sec->rawsize ? sec->rawsize : sec->size;
+      bfd_size_type amt = ((sec->rawsize > sec->size) ? sec->rawsize : sec->size);
+      bfd_size_type size = (sec->rawsize ? sec->rawsize : sec->size);
 
       if (outbuf == NULL)
-	contents = bfd_malloc (amt);
+	contents = (bfd_byte *)bfd_malloc(amt);
       else
 	contents = outbuf;
 
       if (contents)
-	bfd_get_section_contents (abfd, sec, contents, 0, size);
+	bfd_get_section_contents(abfd, sec, contents, 0, size);
 
       return contents;
     }
@@ -194,7 +194,7 @@ bfd_simple_get_relocated_section_contents (bfd *abfd,
   callbacks.multiple_definition = simple_dummy_multiple_definition;
   callbacks.einfo = simple_dummy_einfo;
 
-  memset (&link_order, 0, sizeof (link_order));
+  memset(&link_order, 0, sizeof(link_order));
   link_order.next = NULL;
   link_order.type = bfd_indirect_link_order;
   link_order.offset = 0;
@@ -204,7 +204,7 @@ bfd_simple_get_relocated_section_contents (bfd *abfd,
   data = NULL;
   if (outbuf == NULL)
     {
-      data = bfd_malloc (sec->size);
+      data = (bfd_byte *)bfd_malloc(sec->size);
       if (data == NULL)
 	return NULL;
       outbuf = data;

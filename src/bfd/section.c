@@ -922,8 +922,8 @@ bfd_get_unique_section_name (bfd *abfd, const char *templat, int *count)
   unsigned int len;
   char *sname;
 
-  len = strlen (templat);
-  sname = bfd_malloc (len + 8);
+  len = strlen(templat);
+  sname = (char *)bfd_malloc(len + 8);
   if (sname == NULL)
     return NULL;
   memcpy (sname, templat, len);
@@ -1461,17 +1461,12 @@ DESCRIPTION
 	<<SEC_HAS_CONTENTS>> flag set, then the @var{location} is filled
 	with zeroes. If no errors occur, <<true>> is returned, else
 	<<false>>.
-
-
-
 */
+
 bfd_boolean
-bfd_get_section_contents_in_window (abfd, section, w, offset, count)
-     bfd *abfd;
-     sec_ptr section;
-     bfd_window *w;
-     file_ptr offset;
-     bfd_size_type count;
+bfd_get_section_contents_in_window(bfd *abfd, sec_ptr section,
+                                   bfd_window *w, file_ptr offset,
+                                   bfd_size_type count)
 {
   return BFD_SEND (abfd, _bfd_get_section_contents_in_window,
 		   (abfd, section, w, offset, count));
@@ -1499,18 +1494,14 @@ DESCRIPTION
 	<<SEC_HAS_CONTENTS>> flag set, then the @var{location} is filled
 	with zeroes. If no errors occur, <<true>> is returned, else
 	<<false>>.
-
-
-
 */
+
 bfd_boolean
-bfd_get_section_contents_in_window_with_mode (abfd, section, w, offset, count, mode)
-     bfd *abfd;
-     sec_ptr section;
-     bfd_window *w;
-     file_ptr offset;
-     bfd_size_type count;
-     bfd_boolean mode;
+bfd_get_section_contents_in_window_with_mode(bfd *abfd, sec_ptr section,
+                                             bfd_window *w,
+                                             file_ptr offset,
+                                             bfd_size_type count,
+                                             bfd_boolean mode)
 {
   return BFD_SEND (abfd, _bfd_get_section_contents_in_window_with_mode,
 		   (abfd, section, w, offset, count, mode));
@@ -1532,19 +1523,19 @@ DESCRIPTION
 bfd_boolean
 bfd_malloc_and_get_section (bfd *abfd, sec_ptr sec, bfd_byte **buf)
 {
-  bfd_size_type sz = sec->rawsize ? sec->rawsize : sec->size;
-  bfd_byte *p = NULL;
+  bfd_size_type sz = (sec->rawsize ? sec->rawsize : sec->size);
+  bfd_byte *p = (bfd_byte *)NULL;
 
   *buf = p;
   if (sz == 0)
     return TRUE;
 
-  p = bfd_malloc (sec->rawsize > sec->size ? sec->rawsize : sec->size);
+  p = (bfd_byte *)bfd_malloc((sec->rawsize > sec->size) ? sec->rawsize : sec->size);
   if (p == NULL)
     return FALSE;
   *buf = p;
 
-  return bfd_get_section_contents (abfd, sec, p, 0, sz);
+  return bfd_get_section_contents(abfd, sec, p, 0, sz);
 }
 /*
 FUNCTION

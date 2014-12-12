@@ -19,6 +19,10 @@
    Foundation, 51 Franklin Street - Fifth Floor, Boston,
    MA 02110-1301, USA.  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "sysdep.h"
 #include <stddef.h>
 #include <time.h>
@@ -27,10 +31,10 @@
 #include "objdump.h"
 #include "bucomm.h"
 #include "bfdlink.h"
-/* Force the support of weak symbols.  */
+/* Force the support of weak symbols: */
 #ifndef AIX_WEAK_SUPPORT
-#define AIX_WEAK_SUPPORT 1
-#endif
+# define AIX_WEAK_SUPPORT 1
+#endif /* !AIX_WEAK_SUPPORT */
 #include "coff/internal.h"
 #include "coff/rs6000.h"
 #include "coff/xcoff.h"
@@ -69,12 +73,11 @@ static struct objdump_private_option options[] =
     { NULL, 0 }
   };
 
-/* Display help.  */
-
+/* Display help: */
 static void
-xcoff_help (FILE *stream)
+xcoff_help(FILE *stream)
 {
-  fprintf (stream, _("\
+  fprintf(stream, _("\
 For XCOFF files:\n\
   header      Display the file header\n\
   aout        Display the auxiliary header\n\
@@ -91,16 +94,14 @@ For XCOFF files:\n\
 "));
 }
 
-/* Return TRUE if ABFD is handled.  */
-
+/* Return TRUE if ABFD is handled: */
 static int
-xcoff_filter (bfd *abfd)
+xcoff_filter(bfd *abfd)
 {
-  return bfd_get_flavour (abfd) == bfd_target_xcoff_flavour;
+  return (bfd_get_flavour(abfd) == bfd_target_xcoff_flavour);
 }
 
 /* Translation entry type.  The last entry must be {0, NULL}.  */
-
 struct xlat_table {
   unsigned int val;
   const char *name;
@@ -108,9 +109,8 @@ struct xlat_table {
 
 /* Display the list of name (from TABLE) for FLAGS, using comma to separate
    them.  A name is displayed if FLAGS & VAL is not 0.  */
-
 static void
-dump_flags (const struct xlat_table *table, unsigned int flags)
+dump_flags(const struct xlat_table *table, unsigned int flags)
 {
   unsigned int r = flags;
   int first = 1;
@@ -124,37 +124,36 @@ dump_flags (const struct xlat_table *table, unsigned int flags)
         if (first)
           first = 0;
         else
-          putchar (',');
-        fputs (t->name, stdout);
+          putchar(',');
+        fputs(t->name, stdout);
       }
 
-  /* Not decoded flags.  */
+  /* Not decoded flags: */
   if (r != 0)
     {
       if (!first)
-        putchar (',');
-      printf ("0x%x", r);
+        putchar(',');
+      printf("0x%x", r);
     }
 }
 
 /* Display the name corresponding to VAL from TABLE, using at most
    MAXLEN char (possibly passed with spaces).  */
-
 static void
-dump_value (const struct xlat_table *table, unsigned int val, int maxlen)
+dump_value(const struct xlat_table *table, unsigned int val, int maxlen)
 {
   const struct xlat_table *t;
 
   for (t = table; t->name; t++)
     if (t->val == val)
       {
-        printf ("%-*s", maxlen, t->name);
+        printf("%-*s", maxlen, t->name);
         return;
       }
-  printf ("(%*x)", maxlen - 2, val);
+  printf("(%*x)", maxlen - 2, val);
 }
 
-/* Names of f_flags.  */
+/* Names of f_flags: */
 static const struct xlat_table f_flag_xlat[] =
   {
     { F_RELFLG,    "no-rel" },
@@ -175,7 +174,7 @@ static const struct xlat_table f_flag_xlat[] =
     { 0, NULL }
   };
 
-/* Names of s_flags.  */
+/* Names of s_flags: */
 static const struct xlat_table s_flag_xlat[] =
   {
     { STYP_PAD,    "pad" },
@@ -196,7 +195,7 @@ static const struct xlat_table s_flag_xlat[] =
     { 0, NULL }
   };
 
-/* Names of storage class.  */
+/* Names of storage class: */
 static const struct xlat_table sc_xlat[] =
   {
 #define SC_ENTRY(X) { C_##X, #X }
@@ -254,7 +253,7 @@ static const struct xlat_table sc_xlat[] =
 #undef SC_ENTRY
   };
 
-/* Names for symbol type.  */
+/* Names for symbol type: */
 static const struct xlat_table smtyp_xlat[] =
   {
     { XTY_ER, "ER" },
@@ -266,7 +265,7 @@ static const struct xlat_table smtyp_xlat[] =
     { 0, NULL }
   };
 
-/* Names for storage-mapping class.  */
+/* Names for storage-mapping class: */
 static const struct xlat_table smclas_xlat[] =
   {
 #define SMCLAS_ENTRY(X) { XMC_##X, #X }
@@ -292,7 +291,7 @@ static const struct xlat_table smclas_xlat[] =
 #undef SMCLAS_ENTRY
   };
 
-/* Names for relocation type.  */
+/* Names for relocation type: */
 static const struct xlat_table rtype_xlat[] =
   {
 #define RTYPE_ENTRY(X) { R_##X, #X }
@@ -329,7 +328,7 @@ static const struct xlat_table rtype_xlat[] =
     { 0, NULL }
   };
 
-/* Simplified section header.  */
+/* Simplified section header: */
 struct xcoff32_section
 {
   /* NUL terminated name.  */
@@ -348,8 +347,7 @@ struct xcoff32_section
   unsigned int nlnno;
 };
 
-/* Simplified symbol.  */
-
+/* Simplified symbol: */
 union xcoff32_symbol
 {
   union external_auxent aux;
@@ -394,8 +392,7 @@ struct xcoff_dump
   unsigned int strings_size;
 };
 
-/* Print a symbol (if possible).  */
-
+/* Print a symbol (if possible): */
 static void
 xcoff32_print_symbol (struct xcoff_dump *data, unsigned int symndx)
 {
@@ -434,8 +431,7 @@ dump_xcoff32_file_header (bfd *abfd, struct external_filehdr *fhdr,
   putchar ('\n');
 }
 
-/* Dump the a.out header.  */
-
+/* Dump the a.out header: */
 static void
 dump_xcoff32_aout_header (bfd *abfd, struct xcoff_dump *data)
 {
@@ -462,7 +458,7 @@ dump_xcoff32_aout_header (bfd *abfd, struct xcoff_dump *data)
     }
 
   magic = bfd_h_get_16 (abfd, auxhdr.magic);
-  /* We don't translate these strings as they are fields name.  */
+  /* We do NOT translate these strings as they are fields name: */
   printf ("  o_mflag (magic): 0x%04x 0%04o\n", magic, magic);
   printf ("  o_vstamp:        0x%04x\n",
           (unsigned short)bfd_h_get_16 (abfd, auxhdr.vstamp));
@@ -577,58 +573,60 @@ dump_xcoff32_sections_header (bfd *abfd, struct xcoff_dump *data)
     }
 }
 
-/* Read section table.  */
-
+/* Read section table: */
 static void
-xcoff32_read_sections (bfd *abfd, struct xcoff_dump *data)
+xcoff32_read_sections(bfd *abfd, struct xcoff_dump *data)
 {
   int i;
 
-  if (bfd_seek (abfd, sizeof (struct external_filehdr) + data->opthdr,
-                SEEK_SET) != 0)
+  if (bfd_seek(abfd, (sizeof(struct external_filehdr) + data->opthdr),
+               SEEK_SET) != 0)
     {
-      non_fatal (_("cannot read section headers"));
+      non_fatal(_("cannot read section headers"));
       return;
     }
 
-  data->sects = xmalloc (data->nscns * sizeof (struct xcoff32_section));
+  data->sects = (struct xcoff32_section *)xmalloc(data->nscns * sizeof(struct xcoff32_section));
   for (i = 0; i < data->nscns; i++)
     {
       struct external_scnhdr scn;
       struct xcoff32_section *s = &data->sects[i];
 
-      if (bfd_bread (&scn, sizeof (scn), abfd) != sizeof (scn))
+      if (bfd_bread(&scn, sizeof(scn), abfd) != sizeof(scn))
         {
-          non_fatal (_("cannot read section header"));
-          free (data->sects);
+          non_fatal(_("cannot read section header"));
+          free(data->sects);
           data->sects = NULL;
           return;
         }
-      memcpy (s->name, scn.s_name, 8);
+      memcpy(s->name, scn.s_name, 8);
       s->name[8] = 0;
-      s->flags = bfd_h_get_32 (abfd, scn.s_flags);
+      s->flags = bfd_h_get_32(abfd, scn.s_flags);
 
-      s->scnptr = bfd_h_get_32 (abfd, scn.s_scnptr);
-      s->relptr = bfd_h_get_32 (abfd, scn.s_relptr);
-      s->lnnoptr = bfd_h_get_32 (abfd, scn.s_lnnoptr);
+      s->scnptr = bfd_h_get_32(abfd, scn.s_scnptr);
+      s->relptr = bfd_h_get_32(abfd, scn.s_relptr);
+      s->lnnoptr = bfd_h_get_32(abfd, scn.s_lnnoptr);
 
-      s->nreloc = bfd_h_get_16 (abfd, scn.s_nreloc);
-      s->nlnno = bfd_h_get_16 (abfd, scn.s_nlnno);
+      s->nreloc = bfd_h_get_16(abfd, scn.s_nreloc);
+      s->nlnno = bfd_h_get_16(abfd, scn.s_nlnno);
 
       if (s->flags == STYP_OVRFLO)
         {
-          if (s->nreloc > 0 && s->nreloc <= data->nscns)
-            data->sects[s->nreloc - 1].nreloc =
-              bfd_h_get_32 (abfd, scn.s_paddr);
-          if (s->nlnno > 0 && s->nlnno <= data->nscns)
-            data->sects[s->nlnno - 1].nlnno =
-              bfd_h_get_32 (abfd, scn.s_vaddr);
+          if ((s->nreloc > 0) && (s->nreloc <= data->nscns))
+            {
+              data->sects[s->nreloc - 1].nreloc = bfd_h_get_32(abfd,
+                                                               scn.s_paddr);
+            }
+          if ((s->nlnno > 0) && (s->nlnno <= data->nscns))
+            {
+              data->sects[s->nlnno - 1].nlnno = bfd_h_get_32(abfd,
+                                                             scn.s_vaddr);
+            }
         }
     }
 }
 
-/* Read symbols.  */
-
+/* Read symbols: */
 static void
 xcoff32_read_symbols (bfd *abfd, struct xcoff_dump *data)
 {
@@ -639,24 +637,24 @@ xcoff32_read_symbols (bfd *abfd, struct xcoff_dump *data)
   if (data->nsyms == 0)
     return;
 
-  stptr = data->symptr
-    + data->nsyms * (unsigned)sizeof (struct external_syment);
+  stptr = (data->symptr
+           + data->nsyms * (unsigned)sizeof(struct external_syment));
 
-  /* Read string table.  */
-  if (bfd_seek (abfd, stptr, SEEK_SET) != 0
-      || bfd_bread (&stsz_arr, sizeof (stsz_arr), abfd) != sizeof (stsz_arr))
+  /* Read string table: */
+  if ((bfd_seek(abfd, stptr, SEEK_SET) != 0)
+      || (bfd_bread(&stsz_arr, sizeof(stsz_arr), abfd) != sizeof(stsz_arr)))
     {
-      non_fatal (_("cannot read strings table length"));
+      non_fatal(_("cannot read strings table length"));
       data->strings_size = 0;
     }
   else
     {
-      data->strings_size = bfd_h_get_32 (abfd, stsz_arr);
-      if (data->strings_size > sizeof (stsz_arr))
+      data->strings_size = bfd_h_get_32(abfd, stsz_arr);
+      if (data->strings_size > sizeof(stsz_arr))
         {
-          unsigned int remsz = data->strings_size - sizeof (stsz_arr);
+          unsigned int remsz = (data->strings_size - sizeof(stsz_arr));
 
-          data->strings = xmalloc (data->strings_size);
+          data->strings = (char *)xmalloc(data->strings_size);
 
           memcpy (data->strings, stsz_arr, sizeof (stsz_arr));
           if (bfd_bread (data->strings + sizeof (stsz_arr), remsz, abfd)
@@ -1623,13 +1621,12 @@ dump_xcoff32 (bfd *abfd, struct external_filehdr *fhdr)
   if (options[OPT_TOC].selected)
     dump_xcoff32_toc (abfd, &data);
 
-  free (data.sects);
-  free (data.strings);
-  free (data.syms);
+  free(data.sects);
+  free(data.strings);
+  free(data.syms);
 }
 
 /* Dump ABFD (according to the options[] array).  */
-
 static void
 xcoff_dump_obj (bfd *abfd)
 {
@@ -1673,56 +1670,55 @@ xcoff_dump_obj (bfd *abfd)
     printf (_("  Unhandled magic\n"));
 }
 
-/* Handle an AIX dumpx core file.  */
-
+/* Handle an AIX dumpx core file: */
 static void
 dump_dumpx_core (bfd *abfd, struct external_core_dumpx *hdr)
 {
   if (options[OPT_FILE_HEADER].selected)
     {
-      printf ("  signal:     %u\n", bfd_h_get_8 (abfd, hdr->c_signo));
-      printf ("  flags:      0x%02x\n", bfd_h_get_8 (abfd, hdr->c_flag));
-      printf ("  entries:    %u\n",
-	      (unsigned) bfd_h_get_16 (abfd, hdr->c_entries));
+      printf("  signal:     %u\n", bfd_h_get_8 (abfd, hdr->c_signo));
+      printf("  flags:      0x%02x\n", bfd_h_get_8 (abfd, hdr->c_flag));
+      printf("  entries:    %u\n",
+	     (unsigned) bfd_h_get_16 (abfd, hdr->c_entries));
 #ifdef BFD64
-      printf ("  fdsinfox:   offset: 0x%08" BFD_VMA_FMT "x\n",
-	      bfd_h_get_64 (abfd, hdr->c_fdsinfox));
-      printf ("  loader:     offset: 0x%08" BFD_VMA_FMT "x, "
-	      "size: 0x%" BFD_VMA_FMT"x\n",
-	      bfd_h_get_64 (abfd, hdr->c_loader),
-	      bfd_h_get_64 (abfd, hdr->c_lsize));
-      printf ("  thr:        offset: 0x%08" BFD_VMA_FMT "x, nbr: %u\n",
-	      bfd_h_get_64 (abfd, hdr->c_thr),
-	      (unsigned) bfd_h_get_32 (abfd, hdr->c_n_thr));
-      printf ("  segregions: offset: 0x%08" BFD_VMA_FMT "x, "
-	      "nbr: %" BFD_VMA_FMT "u\n",
-	      bfd_h_get_64 (abfd, hdr->c_segregion),
-	      bfd_h_get_64 (abfd, hdr->c_segs));
-      printf ("  stack:      offset: 0x%08" BFD_VMA_FMT "x, "
-	      "org: 0x%" BFD_VMA_FMT"x, "
-	      "size: 0x%" BFD_VMA_FMT"x\n",
-	      bfd_h_get_64 (abfd, hdr->c_stack),
-	      bfd_h_get_64 (abfd, hdr->c_stackorg),
-	      bfd_h_get_64 (abfd, hdr->c_size));
-      printf ("  data:       offset: 0x%08" BFD_VMA_FMT "x, "
-	      "org: 0x%" BFD_VMA_FMT"x, "
-	      "size: 0x%" BFD_VMA_FMT"x\n",
-	      bfd_h_get_64 (abfd, hdr->c_data),
-	      bfd_h_get_64 (abfd, hdr->c_dataorg),
-	      bfd_h_get_64 (abfd, hdr->c_datasize));
-      printf ("  sdata:         org: 0x%" BFD_VMA_FMT"x, "
-	      "size: 0x%" BFD_VMA_FMT"x\n",
-	      bfd_h_get_64 (abfd, hdr->c_sdorg),
-	      bfd_h_get_64 (abfd, hdr->c_sdsize));
-      printf ("  vmmregions: offset: 0x%" BFD_VMA_FMT"x, "
-	      "num: 0x%" BFD_VMA_FMT"x\n",
-	      bfd_h_get_64 (abfd, hdr->c_vmm),
-	      bfd_h_get_64 (abfd, hdr->c_vmmregions));
-      printf ("  impl:       0x%08x\n",
-	      (unsigned) bfd_h_get_32 (abfd, hdr->c_impl));
-      printf ("  cprs:       0x%" BFD_VMA_FMT "x\n",
-	      bfd_h_get_64 (abfd, hdr->c_cprs));
-#endif
+      printf("  fdsinfox:   offset: 0x%08" BFD_VMA_FMT "x\n",
+	     bfd_h_get_64 (abfd, hdr->c_fdsinfox));
+      printf("  loader:     offset: 0x%08" BFD_VMA_FMT "x, "
+	     "size: 0x%" BFD_VMA_FMT"x\n",
+	     bfd_h_get_64 (abfd, hdr->c_loader),
+	     bfd_h_get_64 (abfd, hdr->c_lsize));
+      printf("  thr:        offset: 0x%08" BFD_VMA_FMT "x, nbr: %u\n",
+	     bfd_h_get_64 (abfd, hdr->c_thr),
+	     (unsigned) bfd_h_get_32 (abfd, hdr->c_n_thr));
+      printf("  segregions: offset: 0x%08" BFD_VMA_FMT "x, "
+	     "nbr: %" BFD_VMA_FMT "u\n",
+	     bfd_h_get_64 (abfd, hdr->c_segregion),
+	     bfd_h_get_64 (abfd, hdr->c_segs));
+      printf("  stack:      offset: 0x%08" BFD_VMA_FMT "x, "
+	     "org: 0x%" BFD_VMA_FMT"x, "
+	     "size: 0x%" BFD_VMA_FMT"x\n",
+	     bfd_h_get_64 (abfd, hdr->c_stack),
+	     bfd_h_get_64 (abfd, hdr->c_stackorg),
+	     bfd_h_get_64 (abfd, hdr->c_size));
+      printf("  data:       offset: 0x%08" BFD_VMA_FMT "x, "
+	     "org: 0x%" BFD_VMA_FMT"x, "
+	     "size: 0x%" BFD_VMA_FMT"x\n",
+	     bfd_h_get_64 (abfd, hdr->c_data),
+	     bfd_h_get_64 (abfd, hdr->c_dataorg),
+	     bfd_h_get_64 (abfd, hdr->c_datasize));
+      printf("  sdata:         org: 0x%" BFD_VMA_FMT"x, "
+	     "size: 0x%" BFD_VMA_FMT"x\n",
+	     bfd_h_get_64 (abfd, hdr->c_sdorg),
+	     bfd_h_get_64 (abfd, hdr->c_sdsize));
+      printf("  vmmregions: offset: 0x%" BFD_VMA_FMT"x, "
+	     "num: 0x%" BFD_VMA_FMT"x\n",
+	     bfd_h_get_64 (abfd, hdr->c_vmm),
+	     bfd_h_get_64 (abfd, hdr->c_vmmregions));
+      printf("  impl:       0x%08x\n",
+	     (unsigned) bfd_h_get_32 (abfd, hdr->c_impl));
+      printf("  cprs:       0x%" BFD_VMA_FMT "x\n",
+	     bfd_h_get_64 (abfd, hdr->c_cprs));
+#endif /* BFD64 */
     }
   if (options[OPT_LDINFO].selected)
     {
@@ -1731,10 +1727,10 @@ dump_dumpx_core (bfd *abfd, struct external_core_dumpx *hdr)
       bfd_size_type len = (bfd_size_type) bfd_h_get_64 (abfd, hdr->c_lsize);
       char *ldr;
 
-      ldr = xmalloc (len);
-      if (bfd_seek (abfd, off, SEEK_SET) != 0
-	  || bfd_bread (ldr, len, abfd) != len)
-	non_fatal (_("cannot read loader info table"));
+      ldr = (char *)xmalloc(len);
+      if ((bfd_seek(abfd, off, SEEK_SET) != 0)
+	  || (bfd_bread(ldr, len, abfd) != len))
+	non_fatal(_("cannot read loader info table"));
       else
 	{
 	  char *p;
@@ -1768,12 +1764,11 @@ dump_dumpx_core (bfd *abfd, struct external_core_dumpx *hdr)
 #else
       printf (_("\n"
 		"ldinfo dump not supported in 32 bits environments\n"));
-#endif
+#endif /* BFD64 */
     }
 }
 
-/* Dump a core file.  */
-
+/* Dump a core file: */
 static void
 xcoff_dump_core (bfd *abfd)
 {
@@ -1813,26 +1808,24 @@ xcoff_dump_core (bfd *abfd)
     printf (_("  Unhandled magic\n"));
 }
 
-/* Dump an XCOFF file.  */
-
+/* Dump an XCOFF file: */
 static void
-xcoff_dump (bfd *abfd)
+xcoff_dump(bfd *abfd)
 {
   /* We rely on BFD to decide if the file is a core file.  Note that core
      files are only supported on native environment by BFD.  */
-  switch (bfd_get_format (abfd))
+  switch (bfd_get_format(abfd))
     {
     case bfd_core:
-      xcoff_dump_core (abfd);
+      xcoff_dump_core(abfd);
       break;
     default:
-      xcoff_dump_obj (abfd);
+      xcoff_dump_obj(abfd);
       break;
     }
 }
 
-/* Vector for xcoff.  */
-
+/* Vector for xcoff: */
 const struct objdump_private_desc objdump_private_desc_xcoff =
   {
     xcoff_help,
@@ -1840,3 +1833,5 @@ const struct objdump_private_desc objdump_private_desc_xcoff =
     xcoff_dump,
     options
   };
+
+/* EOF */

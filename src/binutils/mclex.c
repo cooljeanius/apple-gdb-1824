@@ -34,12 +34,12 @@
 
 #include <assert.h>
 
-/* Exported globals.  */
+/* Exported globals: */
 bfd_boolean mclex_want_nl = FALSE;
 bfd_boolean mclex_want_line = FALSE;
 bfd_boolean mclex_want_filename = FALSE;
 
-/* Local globals.  */
+/* Local globals: */
 static unichar *input_stream = NULL;
 static unichar *input_stream_pos = NULL;
 static int input_line = 1;
@@ -56,12 +56,12 @@ mc_set_content (const unichar *src)
 void
 mc_set_inputfile (const char *name)
 {
-  if (! name || *name == 0)
+  if (! name || (*name == 0))
     input_filename = "-";
   else
     {
-      const char *s1 = strrchr (name, '/');
-      const char *s2 = strrchr (name, '\\');
+      const char *s1 = strrchr(name, '/');
+      const char *s2 = strrchr(name, '\\');
 
       if (! s1)
 	s1 = s2;
@@ -218,10 +218,11 @@ mc_add_keyword_ascii (const char *sz, int rid, const char *grp, rc_uint_type nv,
 }
 
 void
-mc_add_keyword (unichar *usz, int rid, const char *grp, rc_uint_type nv, unichar *sv)
+mc_add_keyword(unichar *usz, int rid, const char *grp, rc_uint_type nv,
+               unichar *sv)
 {
   mc_keyword *p, *c, *n;
-  size_t len = unichar_len (usz);
+  size_t len = unichar_len(usz);
 
   c = keyword_top;
   p = NULL;
@@ -231,44 +232,44 @@ mc_add_keyword (unichar *usz, int rid, const char *grp, rc_uint_type nv, unichar
 	break;
       if (c->len == len)
 	{
-	  int e = memcmp (usz, c->usz, len * sizeof (unichar));
+	  int e = memcmp(usz, c->usz, len * sizeof(unichar));
 
 	  if (e < 0)
 	    break;
 	  if (! e)
 	    {
-	      if (! strcmp (grp, "keyword") || strcmp (c->group_name, grp) != 0)
-		fatal (_("Duplicate symbol entered into keyword list."));
+	      if (! strcmp(grp, "keyword") || strcmp(c->group_name, grp) != 0)
+		fatal(_("Duplicate symbol entered into keyword list."));
 	      c->rid = rid;
 	      c->nval = nv;
-	      c->sval = (!sv ? NULL : unichar_dup (sv));
-	      if (! strcmp (grp, "language"))
+	      c->sval = (!sv ? NULL : unichar_dup(sv));
+	      if (! strcmp(grp, "language"))
 		{
-		  const wind_language_t *lag = wind_find_language_by_id ((unsigned) nv);
+		  const wind_language_t *lag = wind_find_language_by_id((unsigned)nv);
 
 		  if (lag == NULL)
-		    fatal ("Language ident 0x%lx is not resolvable.\n", (long) nv);
-		  memcpy (&c->lang_info, lag, sizeof (*lag));
+		    fatal("Language ident 0x%lx is not resolvable.\n", (long)nv);
+		  memcpy(&c->lang_info, lag, sizeof(*lag));
 		}
 	      return;
 	    }
 	}
       c = (p = c)->next;
     }
-  n = xmalloc (sizeof (mc_keyword));
+  n = (mc_keyword *)xmalloc(sizeof(mc_keyword));
   n->next = c;
   n->len = len;
   n->group_name = grp;
   n->usz = usz;
   n->rid = rid;
   n->nval = nv;
-  n->sval = (!sv ? NULL : unichar_dup (sv));
-  if (! strcmp (grp, "language"))
+  n->sval = (!sv ? NULL : unichar_dup(sv));
+  if (! strcmp(grp, "language"))
     {
-      const wind_language_t *lag = wind_find_language_by_id ((unsigned) nv);
+      const wind_language_t *lag = wind_find_language_by_id((unsigned)nv);
       if (lag == NULL)
-	fatal ("Language ident 0x%lx is not resolvable.\n", (long) nv);
-      memcpy (&n->lang_info, lag, sizeof (*lag));
+	fatal("Language ident 0x%lx is not resolvable.\n", (long)nv);
+      memcpy(&n->lang_info, lag, sizeof(*lag));
     }
   if (! p)
     keyword_top = n;
@@ -439,3 +440,5 @@ yylex (void)
   }
   return -1;
 }
+
+/* EOF */

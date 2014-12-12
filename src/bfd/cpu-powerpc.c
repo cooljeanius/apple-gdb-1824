@@ -29,17 +29,16 @@ static const bfd_arch_info_type *powerpc_compatible
   PARAMS ((const bfd_arch_info_type *, const bfd_arch_info_type *));
 
 static const bfd_arch_info_type *
-powerpc_compatible (a,b)
-     const bfd_arch_info_type *a;
-     const bfd_arch_info_type *b;
+powerpc_compatible(const bfd_arch_info_type *a,
+                   const bfd_arch_info_type *b)
 {
-  BFD_ASSERT (a->arch == bfd_arch_powerpc);
+  BFD_ASSERT(a->arch == bfd_arch_powerpc);
   switch (b->arch)
     {
     default:
       return NULL;
     case bfd_arch_powerpc:
-      return bfd_default_compatible (a, b);
+      return bfd_default_compatible(a, b);
     case bfd_arch_rs6000:
       if (b->mach == bfd_mach_rs6k)
 	return a;

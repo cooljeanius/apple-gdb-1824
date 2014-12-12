@@ -70,7 +70,7 @@ typedef enum bfd_mach_o_i386_thread_flavour
     BFD_MACH_O_x86_THREAD_STATE = 7,
     BFD_MACH_O_x86_FLOAT_STATE = 8,
     BFD_MACH_O_x86_EXCEPTION_STATE = 9,
-    BFD_MACH_O_i386_THREAD_STATE_NONE = 10,
+    BFD_MACH_O_i386_THREAD_STATE_NONE = 10/*,*/
     /* APPLE LOCAL end x86_64 */
 }
 bfd_mach_o_i386_thread_flavour;
@@ -138,7 +138,7 @@ typedef enum bfd_mach_o_load_command_type
   BFD_MACH_O_LC_MAIN = (0x28 | BFD_MACH_O_LC_REQ_DYLD),    /* replacement for LC_UNIXTHREAD */
   BFD_MACH_O_LC_DATA_IN_CODE = 0x29,         /* table of non-instructions in __text */
   BFD_MACH_O_LC_SOURCE_VERSION = 0x2a,       /* source version used to build binary */
-  BFD_MACH_O_LC_DYLIB_CODE_SIGN_DRS = 0x2b,  /* Code signing DRs copied from linked dylibs */
+  BFD_MACH_O_LC_DYLIB_CODE_SIGN_DRS = 0x2b/*,*/ /* Code signing DRs copied from linked dylibs */
 }
 bfd_mach_o_load_command_type;
 #endif /* !_ENUM_BFD_MACH_O_LOAD_COMMAND_TYPE_DEFINED */
@@ -200,6 +200,9 @@ typedef enum bfd_mach_o_filetype
   BFD_MACH_O_MH_DYLIB_STUB = 9,
   BFD_MACH_O_MH_DSYM = 10,
   BFD_MACH_O_MH_BUNDLE_KEXT = 11
+# if !defined(BFD_MACH_O_MH_KEXT_BUNDLE) && !defined(_MACH_O_LOADER_H)
+#  define BFD_MACH_O_MH_KEXT_BUNDLE BFD_MACH_O_MH_BUNDLE_KEXT
+# endif /* !BFD_MACH_O_MH_KEXT_BUNDLE && !_MACH_O_LOADER_H */
 }
 bfd_mach_o_filetype;
 #endif /* !_ENUM_BFD_MACH_O_FILETYPE_DEFINED */
@@ -293,7 +296,7 @@ typedef enum bfd_mach_o_section_type
   /* zero fill on demand section (that can be larger than 4 gigabytes) */
   BFD_MACH_O_S_GB_ZEROFILL = 0xd,
   /* a debug section. */
-  BFD_MACH_O_S_ATTR_DEBUG = 0x02000000,
+  BFD_MACH_O_S_ATTR_DEBUG = 0x02000000/*,*/
   /* APPLE LOCAL end Mach-O */
 }
 bfd_mach_o_section_type;
@@ -351,6 +354,17 @@ typedef struct bfd_mach_o_segment_command
 }
 bfd_mach_o_segment_command;
 
+/* Protection flags: */
+#ifndef BFD_MACH_O_PROT_READ
+# define BFD_MACH_O_PROT_READ 0x01
+#endif /* !BFD_MACH_O_PROT_READ */
+#ifndef BFD_MACH_O_PROT_WRITE
+# define BFD_MACH_O_PROT_WRITE 0x02
+#endif /* !BFD_MACH_O_PROT_WRITE */
+#ifndef BFD_MACH_O_PROT_EXECUTE
+# define BFD_MACH_O_PROT_EXECUTE 0x04
+#endif /* !BFD_MACH_O_PROT_EXECUTE */
+
 typedef struct bfd_mach_o_symtab_command
 {
   unsigned long symoff;
@@ -363,6 +377,10 @@ typedef struct bfd_mach_o_symtab_command
   asection *stabstr_segment;
 }
 bfd_mach_o_symtab_command;
+
+#ifndef BFD_MACH_O_REFERENCE_SIZE
+# define BFD_MACH_O_REFERENCE_SIZE 4
+#endif /* !BFD_MACH_O_REFERENCE_SIZE */
 
 /* This is the second set of the symbolic information which is used to support
    the data structures for the dynamically link editor.
@@ -511,7 +529,24 @@ bfd_mach_o_dysymtab_command;
    symbol was also absolute INDIRECT_SYMBOL_ABS is or'ed with that.  */
 
 #define INDIRECT_SYMBOL_LOCAL 0x80000000
-#define INDIRECT_SYMBOL_ABS   0x40000000
+#define INDIRECT_SYMBOL_ABS 0x40000000
+#ifndef BFD_MACH_O_INDIRECT_SYMBOL_LOCAL
+# ifdef INDIRECT_SYMBOL_LOCAL
+#  define BFD_MACH_O_INDIRECT_SYMBOL_LOCAL INDIRECT_SYMBOL_LOCAL
+# else
+#  define BFD_MACH_O_INDIRECT_SYMBOL_LOCAL 0x80000000
+# endif /* INDIRECT_SYMBOL_LOCAL */
+#endif /* !BFD_MACH_O_INDIRECT_SYMBOL_LOCAL */
+#ifndef BFD_MACH_O_INDIRECT_SYMBOL_ABS
+# ifdef INDIRECT_SYMBOL_ABS
+#  define BFD_MACH_O_INDIRECT_SYMBOL_ABS INDIRECT_SYMBOL_ABS
+# else
+#  define BFD_MACH_O_INDIRECT_SYMBOL_ABS 0x40000000
+# endif /* INDIRECT_SYMBOL_ABS */
+#endif /* !BFD_MACH_O_INDIRECT_SYMBOL_ABS */
+#ifndef BFD_MACH_O_INDIRECT_SYMBOL_SIZE
+# define BFD_MACH_O_INDIRECT_SYMBOL_SIZE 4
+#endif /* !BFD_MACH_O_INDIRECT_SYMBOL_SIZE */
 
 typedef struct bfd_mach_o_thread_flavour
 {
@@ -615,6 +650,11 @@ typedef struct bfd_mach_o_xlat_name
 }
 bfd_mach_o_xlat_name;
 
+/* Target specific routines: */
+#ifndef bfd_mach_o_get_data
+# define bfd_mach_o_get_data(abfd) ((abfd)->tdata.mach_o_data)
+#endif /* !bfd_mach_o_get_data */
+
 /* APPLE LOCAL  Mach-O */
 unsigned int bfd_mach_o_version (bfd *);
 int bfd_mach_o_stub_library (bfd *);
@@ -651,6 +691,10 @@ extern const bfd_target mach_o_be_vec;
 extern const bfd_target mach_o_le_vec;
 extern const bfd_target mach_o_fat_vec;
 
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "mach-o.h already included once"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* _BFD_MACH_O_H_ */
 
 /* EOF */

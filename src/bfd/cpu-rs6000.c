@@ -35,9 +35,7 @@ static const bfd_arch_info_type *rs6000_compatible
   PARAMS ((const bfd_arch_info_type *, const bfd_arch_info_type *));
 
 static const bfd_arch_info_type *
-rs6000_compatible (a,b)
-     const bfd_arch_info_type *a;
-     const bfd_arch_info_type *b;
+rs6000_compatible(const bfd_arch_info_type *a, const bfd_arch_info_type *b)
 {
   BFD_ASSERT (a->arch == bfd_arch_rs6000);
   switch (b->arch)

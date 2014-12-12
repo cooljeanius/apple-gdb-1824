@@ -28,7 +28,14 @@ dnl# bug report address is email address of last person to touch this
 dnl# directory, according to the Changelog-Apple in this directory
 AC_CONFIG_SRCDIR([mmalloc.c])
 AC_CONFIG_AUX_DIR([..])
+AC_CONFIG_MACRO_DIR([m4])dnl
+
+# architecture stuff:
 AC_CANONICAL_TARGET
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+  AC_SUBST([BUILD_ARCHITECTURE])
+fi
 if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
   export HOST_ARCHITECTURE="${host_cpu}"
   AC_SUBST([HOST_ARCHITECTURE])
@@ -37,21 +44,42 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   export TARGET_ARCHITECTURE="${target_cpu}"
   AC_SUBST([TARGET_ARCHITECTURE])
 fi
+
+# pieces of automake that make sense here:
+AM_MAINTAINER_MODE
 AM_SANITY_CHECK
 
+# Checks for programs.
 AC_PROG_AWK
 AC_PROG_CC
 AC_PROG_CPP
+AC_PROG_CXX
+AC_PROG_CXXCPP
+gl_PROG_ANSI_CXX([CXX],[ANSICXX])dnl
+gt_NO_CXX
+AC_ARG_VAR([CLANG_ANALYZER],[Path to the clang static analyzer])dnl
+AC_CACHE_CHECK([for the clang static analyzer],[ac_cv_path_CLANG_ANALYZER],
+  [AC_PATH_PROGS_FEATURE_CHECK([CLANG_ANALYZER],
+    [clang clang++ clang-mp-3.5 clang-mp-3.4 clang-mp-3.3 clang-mp-3.2],
+    [[${ac_path_CLANG_ANALYZER} --analyze /dev/null > /dev/null 2>&1 && \
+      ac_cv_path_CLANG_ANALYZER=${ac_path_CLANG_ANALYZER}
+      ac_path_CLANG_ANALYZER_found=:]],
+    [AC_MSG_WARN([we will not be able to do static analysis with clang])],
+    [${PATH}])dnl# end program check
+  ])dnl# end cache check
+  ## (need this extra line here)
+AC_SUBST([CLANG_ANALYZER],[${ac_cv_path_CLANG_ANALYZER}])dnl
 AC_PROG_FGREP
 AC_PROG_INSTALL
 AC_PROG_LN_S
-AM_MISSING_PROG([MAKEINFO],[makeinfo])
+AM_MISSING_PROG([MAKEINFO],[makeinfo])dnl
+AC_PATH_PROG([CONFIGURED_TEX],[tex])dnl
 AC_PROG_MKDIR_P
 m4_ifdef([AM_PROG_AR],[
-AM_PROG_AR
+  AM_PROG_AR
 ],[
-AC_CHECK_TOOL([AR],[ar])
-])
+  AC_CHECK_TOOL([AR],[ar])dnl
+])dnl
 AC_CHECK_TOOL([RANLIB],[ranlib],[:])
 if test "x${RANLIB}" = "x"; then
   test -z "${RANLIB}"
@@ -62,14 +90,18 @@ else
 fi
 
 # Checks for libraries.
-AC_CHECK_LIB([c],[printf])
-AC_SEARCH_LIBS([vm_region],[System c kern mach gnumach])
+AC_CHECK_LIB([c],[printf])dnl
+AC_SEARCH_LIBS([vm_region],[System c kern mach gnumach])dnl
 
 # Checks for header files.
+AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
+  AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
+AC_REQUIRE_HEADER_STDC
 AC_CHECK_HEADERS([AvailabilityMacros.h db.h errno.h fcntl.h \
                   ipc/ipc_types.h limits.h mach/mach.h \
                   mach/mach_port.h mach/mach_vm.h mach/port.h \
-                  mach/vm_region.h stddef.h stdio.h sys/mman.h])
+                  mach/vm_region.h stddef.h stdio.h sys/mman.h])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
@@ -144,10 +176,11 @@ AC_FUNC_MMAP
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([close lseek mach_vm_region memmove memset msync munmap \
-                sbrk strerror vm_region])
+                sbrk strerror vm_region])dnl
+AC_CHECK_DECLS_ONCE([getenv])dnl
 
-BFD_NEED_DECLARATION([sbrk])
-BFD_NEED_DECLARATION([getpagesize])
+BFD_NEED_DECLARATION([sbrk])dnl
+BFD_NEED_DECLARATION([getpagesize])dnl
 
 AC_MSG_CHECKING([for page-protection malloc support])
 case "${host}" in
@@ -156,14 +189,15 @@ case "${host}" in
 	PAGECHECK_OBJ=pagecheck-sup.o
 	;;
 *)
-	PAGECHECK_SRC=
-	PAGECHECK_OBJ=
+	PAGECHECK_SRC=""
+	PAGECHECK_OBJ=""
 	;;
 esac
-AC_SUBST([PAGECHECK_SRC])
-AC_SUBST([PAGECHECK_OBJ])
-AC_MSG_RESULT([${PAGECHECK_SRC}])
+AC_SUBST([PAGECHECK_SRC])dnl
+AC_SUBST([PAGECHECK_OBJ])dnl
+AC_MSG_RESULT([${PAGECHECK_SRC}])dnl
 
-AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile])
+# Output.
+AC_CONFIG_HEADERS([config.h])dnl
+AC_CONFIG_FILES([Makefile])dnl
 AC_OUTPUT

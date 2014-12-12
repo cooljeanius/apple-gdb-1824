@@ -23,6 +23,7 @@ VPATH = @srcdir@
 srcdir = @srcdir@
 prefix = @prefix@
 exec_prefix = @exec_prefix@
+abs_builddir = @abs_builddir@
 
 host_alias = @host_alias@
 target_alias = @target_alias@
@@ -31,6 +32,11 @@ build_canonical = @build@
 host_canonical = @host@
 target_canonical = @target@
 target_cpu = @gdb_target_cpu@
+
+BUILD_ARCHITECTURE = @BUILD_ARCHITECTURE@
+HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
+TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 
 SHELL = @SHELL@
 SED = @SED@
@@ -50,6 +56,8 @@ EXPECT = `if test -f $${rootme}/../../expect/expect; then \
 RUNTEST = $(RUNTEST_FOR_TARGET)
 
 RUNTESTFLAGS =
+
+FORCE_PARALLEL =
 
 RUNTEST_FOR_TARGET = `\
   if test -f $${srcdir}/../../dejagnu/runtest; then \
@@ -86,7 +94,7 @@ TARGET_FLAGS_TO_PASS = \
         "RUNTEST=$(RUNTEST)" \
         "RUNTESTFLAGS=$(RUNTESTFLAGS)"
 
-all:
+all: @MAINT@ $(EXTRA_RULES)
 	@echo "Nothing to be done for all..."
 
 .NOEXPORT:
@@ -128,6 +136,9 @@ site.exp: ./config.status Makefile
 installcheck:
 
 check: site.exp all just-check
+
+check-read1:
+	$(MAKE) READ1="1" check
 
 just-check:
 	rootme=`pwd`; export rootme; \
@@ -174,6 +185,11 @@ subdirs:
 # 'rm -f' gets the '-v' flag here when the files that it removes can vary:
 clean mostlyclean:
 	-rm -fv *~ core *.o a.out xgdb *.x *.grt
+	-rm -f bigcore.corefile .gdb_history zzz-gdbscript
+	-rm -fv core.* *.tf *.cl *.py tracecommandsscript copy1.txt
+	-rm -fv *.dwo *.dwp
+	-rm -rfv outputs temp cache
+	-rm -f read1.so expect-read1
 	if [ x"${ALL_SUBDIRS}" != x"" ]; then \
 	    for dir in ${ALL_SUBDIRS}; \
 	    do \
@@ -204,3 +220,32 @@ Makefile : Makefile.in config.status $(host_makefile_frag) $(target_makefile_fra
 
 config.status: configure
 	$(SHELL) config.status --recheck
+
+TAGS: force
+	find $(srcdir) -name '*.exp' -print | \
+	    etags --regex='/proc[ \t]+\([^ \t]+\)/\1/' -
+
+# Build the expect wrapper script that preloads the read1.so library.
+expect-read1:
+	@echo "Making expect-read1"
+	@rm -f expect-read1-tmp
+	@touch expect-read1-tmp
+	@echo "# THIS FILE IS GENERATED -*- buffer-read-only: t -*- \n" >>expect-read1-tmp
+	@echo "# vi:set ro: */\n\n" >>expect-read1-tmp
+	@echo "# To regenerate this file, run:\n" >>expect-read1-tmp
+	@echo "#      make clean; make/\n" >>expect-read1-tmp
+	@echo "export LD_PRELOAD=`pwd`/read1.so" >>expect-read1-tmp
+	@echo 'exec expect "$$@"' >>expect-read1-tmp
+	@chmod +x expect-read1-tmp
+	@mv expect-read1-tmp expect-read1
+
+# Build the read1.so preload library.  This overrides the `read'
+# function, making it read one byte at a time.  Running the testsuite
+# with this catches racy tests.
+read1.so: lib/read1.c
+	$(CC) -o $@ ${srcdir}/lib/read1.c -Wall -ggdb -shared -fPIC \
+	  $(CFLAGS) $(C_ARCHFLAGS)
+
+# Build the read1 machinery:
+.PHONY: read1
+read1: read1.so expect-read1

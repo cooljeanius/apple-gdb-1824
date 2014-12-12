@@ -23,13 +23,25 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #define BFD_SYSDEP_H
 
 #ifdef HAVE_CONFIG_H
-# ifndef __CONFIG_H__
+# if !defined(__CONFIG_H__) || !defined(__BFD_CONFIG_H__)
 #  include "config.h"
 # else
-#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#   warning config.h might have already been included and it might have been a different one.
-#  endif /* __GNUC__ && !__STRICT_ANSI__ */
-# endif /* !__CONFIG_H__ */
+#  ifdef _INCLUDING_CONFIG_H
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "the config.h from ../intl might have already been included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
+#  else
+#   ifdef _APPLE_GDB_TOP_SRC_CONFIG_H
+#    if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#     warning "the config.h from our parent directory might have already been included."
+#    endif /* __GNUC__ && !__STRICT_ANSI__ */
+#   else
+#    if defined(__GNUC__) && !defined(__STRICT_ANSI__) && !defined(__BFD_CONFIG_H__)
+#     warning "config.h might have already been included and it might have been a different one."
+#    endif /* __GNUC__ && !__STRICT_ANSI__ && !__BFD_CONFIG_H__ */
+#   endif /* _APPLE_GDB_TOP_SRC_CONFIG_H */
+#  endif /* _INCLUDING_CONFIG_H */
+# endif /* !__CONFIG_H__ || !__BFD_CONFIG_H__ */
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
 #  warning sysdep.h expects "config.h" to be included.
@@ -42,7 +54,7 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 # include <stddef.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning sysdep.h expects <stddef.h> to be included.
+#  warning "sysdep.h expects <stddef.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDDEF_H */
 
@@ -50,21 +62,21 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 # include <stdio.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning sysdep.h expects <stdio.h> to be included.
+#  warning "sysdep.h expects <stdio.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDIO_H */
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning sysdep.h expects <sys/types.h> to be included.
+#  warning "sysdep.h expects <sys/types.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_TYPES_H */
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning sysdep.h expects <sys/stat.h> to be included.
+#  warning "sysdep.h expects <sys/stat.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_STAT_H */
 
@@ -72,7 +84,7 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 # include <errno.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning sysdep.h expects <errno.h> to be included.
+#  warning "sysdep.h expects <errno.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_ERRNO_H */
 #if !(defined(errno) || defined(_MSC_VER) && defined(_INC_ERRNO))
@@ -99,7 +111,7 @@ extern char *strrchr();
 # include <stdlib.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning sysdep.h expects <stdlib.h> to be included.
+#  warning "sysdep.h expects <stdlib.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDLIB_H */
 
@@ -110,7 +122,7 @@ extern char *strrchr();
 #  include <malloc/malloc.h>
 # else
 #  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#   warning sysdep.h expects a malloc-related header to be included.
+#   warning "sysdep.h expects a malloc-related header to be included."
 #  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_MALLOC_MALLOC_H */
 #endif /* HAVE_MALLOC_H */
@@ -126,7 +138,7 @@ extern char *strrchr();
 #   include <time.h>
 #  else
 #   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#     warning sysdep.h expects a time-related header to be included.
+#     warning "sysdep.h expects a time-related header to be included."
 #   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_TIME_H */
 # endif /* HAVE_SYS_TIME_H */
@@ -136,7 +148,7 @@ extern char *strrchr();
 # include <unistd.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning sysdep.h expects <unistd.h> to be included.
+#  warning "sysdep.h expects <unistd.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
 
@@ -153,7 +165,7 @@ extern char *strrchr();
 #  include <sys/file.h>
 # else
 #  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#   warning sysdep.h expects a file-related header to be included.
+#   warning "sysdep.h expects a file-related header to be included."
 #  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_SYS_FILE_H */
 #endif /* HAVE_FCNTL_H */

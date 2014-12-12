@@ -1,6 +1,6 @@
 /* memory allocation routines with error checking.
    Copyright 1989, 90, 91, 92, 93, 94 Free Software Foundation, Inc.
-   
+
 This file is part of the libiberty library.
 Libiberty is free software; you can redistribute it and/or
 modify it under the terms of the GNU Library General Public
@@ -79,9 +79,9 @@ function will be called to print an error message and terminate execution.
 
 #include <stddef.h>
 
-#if VMS
-#include <stdlib.h>
-#include <unixlib.h>
+#if defined(VMS) && VMS
+# include <stdlib.h>
+# include <unixlib.h>
 #else
 /* For systems with larger pointers than ints, these must be declared.  */
 #  if HAVE_STDLIB_H && HAVE_UNISTD_H && HAVE_DECL_MALLOC \
@@ -166,7 +166,7 @@ xmalloc_failed (size_t size)
 	   (unsigned long) size);
 #endif /* HAVE_SBRK */
   xexit (1);
-}  
+}
 
 PTR
 xmalloc (size_t size)

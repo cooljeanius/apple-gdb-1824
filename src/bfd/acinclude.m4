@@ -73,7 +73,10 @@ fi
 AC_SUBST([EXEEXT_FOR_BUILD])dnl
 ])dnl
 
-dnl#FIXME: possibly the wrong one?
+dnl# make sure the libtool.m4 included here is the same version as the
+dnl# one in the ./m4 directory; if they differ, it can lead to strange
+dnl# build failures due to missing variables introduced in the newer of
+dnl# the two versions:
 sinclude(../libtool.m4)  
 dnl# The lines below arrange for aclocal not to bring libtool.m4
 dnl# AM_PROG_LIBTOOL into aclocal.m4, while still arranging for automake

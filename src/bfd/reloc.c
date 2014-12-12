@@ -4622,15 +4622,15 @@ bfd_generic_get_relocated_section_contents (bfd *abfd,
   asection *input_section = link_order->u.indirect.section;
 
   long reloc_size = bfd_get_reloc_upper_bound (input_bfd, input_section);
-  arelent **reloc_vector = NULL;
+  arelent **reloc_vector = (arelent **)NULL;
   long reloc_count;
   bfd_size_type sz;
 
   if (reloc_size < 0)
     goto error_return;
 
-  reloc_vector = bfd_malloc (reloc_size);
-  if (reloc_vector == NULL && reloc_size != 0)
+  reloc_vector = (arelent **)bfd_malloc(reloc_size);
+  if ((reloc_vector == NULL) && (reloc_size != 0))
     goto error_return;
 
   /* Read in the section.  */

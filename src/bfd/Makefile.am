@@ -34,12 +34,20 @@ libbfdincludedir = @bfdincludedir@
 my_bfdlib_LIBTOOL_ARCHIVE = libbfd.la
 libbfd_LTLIBRARIES = libbfd.la
 
+## also needed:
+HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
+## not strictly necessary, but goes with the previous:
+TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
+## use the host one, because that is the one that matters:
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+
 WARN_CFLAGS = @WARN_CFLAGS@
 NO_WERROR = @NO_WERROR@
-AM_CFLAGS = $(WARN_CFLAGS)
+AM_CFLAGS = $(WARN_CFLAGS) $(C_ARCHFLAGS)
 MY_AM_CPPFLAGS_EXTRA = -DBINDIR='"$(bindir)"'
 AM_WARNFLAGS = $(WARN_CFLAGS)
-AM_LIBTOOLFLAGS = --no-silent --verbose @MAINT@ --debug
+AM_LIBTOOLFLAGS = --no-silent --verbose
+AM_LIBTOOL_DEBUG_FLAGS = @MAINT@ --debug
 
 # bfd.h goes here, for now:
 BFD_H = bfd.h
@@ -1007,7 +1015,8 @@ dep-am: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 
 # Some manually-specified dependencies:
 host-aout.lo: Makefile
-mach-o.lo: $(BFD_H) bfd.h bfd-in3.h mach-o-target.c @MAINT@ headers
+mach-o.lo: $(BFD_H) bfd.h bfd-in2.h bfd-in3.h mach-o-target.c \
+  @MAINT@ headers
 
 # The following program can be used to generate a simple config file
 # which can be folded into an h-XXX file for a new host, with some editing.
@@ -1109,7 +1118,8 @@ headers: $(docdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH_
 # We only rebuild the header files automatically if we have been
 # configured with --enable-maintainer-mode.
 
-$(srcdir)/bfd-in2.h: @MAINT@ stmp-bin2-h ; @echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
+$(srcdir)/bfd-in2.h: @MAINT@ stmp-bin2-h
+	@echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
 stmp-bin2-h: $(BFD_H_FILES) $(BFD64_H_FILES) $(PATH_TO_MOVEIFCHANGE)
 	(cd $(docdir); $(MAKE) $(FLAGS_TO_PASS) bfd.h)
 	if test $(srcdir) != "."; then \
@@ -1120,7 +1130,8 @@ stmp-bin2-h: $(BFD_H_FILES) $(BFD64_H_FILES) $(PATH_TO_MOVEIFCHANGE)
 	touch $(srcdir)/bfd-in2.h
 	touch $@
 
-$(srcdir)/libbfd.h: @MAINT@ stmp-lbfd-h ; @echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
+$(srcdir)/libbfd.h: @MAINT@ stmp-lbfd-h
+	@echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
 stmp-lbfd-h: $(LIBBFD_H_FILES) $(PATH_TO_MOVEIFCHANGE)
 	(cd $(docdir); $(MAKE) $(FLAGS_TO_PASS) libbfd.h)
 	if test $(srcdir) != "."; then \
@@ -1131,7 +1142,8 @@ stmp-lbfd-h: $(LIBBFD_H_FILES) $(PATH_TO_MOVEIFCHANGE)
 	touch $(srcdir)/libbfd.h
 	touch $@
 
-$(srcdir)/libcoff.h: @MAINT@ stmp-lcoff-h ; @echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
+$(srcdir)/libcoff.h: @MAINT@ stmp-lcoff-h
+	@echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
 stmp-lcoff-h: $(LIBCOFF_H_FILES) $(PATH_TO_MOVEIFCHANGE)
 	(cd $(docdir); $(MAKE) $(FLAGS_TO_PASS) libcoff.h)
 	if test $(srcdir) != "."; then \

@@ -18,9 +18,18 @@ AH_VERBATIM([00_CONFIG_H_CHECK],[
 #if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
 #  error config.h must be #included before system headers
 #endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ */
-#define __CONFIG_H__ 1])
+#define __CONFIG_H__ 1])dnl
 
+# host/target stuff:
 AC_CANONICAL_TARGET
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  AC_SUBST([HOST_ARCHITECTURE])
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+  AC_SUBST([TARGET_ARCHITECTURE])
+fi
 AC_SEARCH_LIBS([strerror],[cposix])dnl# what used to be AC\_ISC\_POSIX
 
 # Automake hack:

@@ -81,12 +81,20 @@ enum bfd_pef_imported_library_options
     BFD_PEF_INIT_LIB_BEFORE = 0x80
   };
 
+#ifdef	__cplusplus
+extern "C" {
+#endif /* __cplusplus */
+
 struct bfd_pef_imported_symbol
 {
   unsigned char class;
   unsigned long name;
 };
 typedef struct bfd_pef_imported_symbol bfd_pef_imported_symbol;
+
+#ifdef	__cplusplus
+}
+#endif /* __cplusplus */
 
 enum bfd_pef_imported_symbol_class
   {

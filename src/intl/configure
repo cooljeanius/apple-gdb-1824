@@ -674,6 +674,7 @@ USE_NLS
 LEXLIB
 LEX_OUTPUT_ROOT
 LEX
+EXTRA_YFLAGS_SEP
 YFLAGS
 YACC
 ICONV_BIN
@@ -757,6 +758,7 @@ CFLAGS
 CC
 TARGET_ARCHITECTURE
 HOST_ARCHITECTURE
+BUILD_ARCHITECTURE
 target_os
 target_vendor
 target_cpu
@@ -2720,6 +2722,7 @@ ac_config_headers="$ac_config_headers config.h"
 
 
 
+# architectures:
 ac_aux_dir=
 for ac_dir in "$srcdir" "$srcdir/.." "$srcdir/../.."; do
   if test -f "$ac_dir/install-sh"; then
@@ -2859,6 +2862,10 @@ test -n "$target_alias" &&
   test "$program_prefix$program_suffix$program_transform_name" = \
     NONENONEs,x,x, &&
   program_prefix=${target_alias}-
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+
+fi
 if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
   export HOST_ARCHITECTURE="${host_cpu}"
 
@@ -17352,6 +17359,38 @@ fi
 done
 test -n "$YACC" || YACC="yacc"
 
+
+
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking if bison is the parser generator" >&5
+$as_echo_n "checking if bison is the parser generator... " >&6; }
+if ${ax_cv_prog_bison+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+    if $YACC --version 2>/dev/null | $EGREP -q '^bison '; then :
+  ax_cv_prog_bison=yes
+else
+  ax_cv_prog_bison=no
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ax_cv_prog_bison" >&5
+$as_echo "$ax_cv_prog_bison" >&6; }
+  if test "$ax_cv_prog_bison" = "yes"; then :
+
+                              YACC="${YACC% -y} -o y.tab.c"
+
+  # (might want to check the bison version first)
+  EXTRA_YFLAGS_SEP=''
+
+else
+
+  EXTRA_YFLAGS_SEP='#'
+
+
+fi
 for ac_prog in flex lex
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
@@ -20986,7 +21025,7 @@ rm -f core conftest.err conftest.$ac_objext \
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gt_cv_val_LC_MESSAGES" >&5
 $as_echo "$gt_cv_val_LC_MESSAGES" >&6; }
-  if test $gt_cv_val_LC_MESSAGES = yes; then
+  if test "x${gt_cv_val_LC_MESSAGES}" = "xyes"; then
 
 $as_echo "#define HAVE_LC_MESSAGES 1" >>confdefs.h
 

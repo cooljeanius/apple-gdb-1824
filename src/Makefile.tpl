@@ -71,6 +71,20 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_DATA = @INSTALL_DATA@
 LN = @LN@
 LN_S = @LN_S@
+MKDIR_P = @MKDIR_P@
+SED = @SED@
+
+# --------------------------------
+# automake-style verbosity control
+# --------------------------------
+
+AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
+V_VAR = @AM_V@
+
+AM_V_at = $(am__v_at_@AM_V@)
+am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
+am__v_at_0 = @
+am__v_at_1 = 
 
 # -------------------------------------------------
 # Miscellaneous non-standard autoconf-set variables
@@ -83,6 +97,22 @@ tooldir = @tooldir@
 build_tooldir = @build_tooldir@
 
 GDB_NLM_DEPS = 
+
+## list all three archs, starting with build:
+BUILD_ARCHITECTURE = @BUILD_ARCHITECTURE@
+## now host:
+HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
+## finally target:
+TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
+## now transform them into archflags, starting with build:
+C_BUILD_ARCHFLAGS = -arch $(BUILD_ARCHITECTURE)
+CXX_BUILD_ARCHFLAGS = $(C_BUILD_ARCHFLAGS)
+## and host:
+C_HOST_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+CXX_HOST_ARCHFLAGS = $(C_HOST_ARCHFLAGS)
+## and finally target:
+C_TARG_ARCHFLAGS = -arch $(TARGET_ARCHITECTURE)
+CXX_TARG_ARCHFLAGS = $(C_TARG_ARCHFLAGS)
 
 # This is the name of the environment variable used for the path to
 # the libraries.
@@ -115,10 +145,10 @@ BUILD_EXPORTS = \
 	AR="$(AR_FOR_BUILD)"; export AR; \
 	AS="$(AS_FOR_BUILD)"; export AS; \
 	CC="$(CC_FOR_BUILD)"; export CC; \
-	CFLAGS="$(CFLAGS_FOR_BUILD)"; export CFLAGS; \
+	CFLAGS="$(CFLAGS_FOR_BUILD) $(C_BUILD_ARCHFLAGS)"; export CFLAGS; \
 	CONFIG_SHELL="$(SHELL)"; export CONFIG_SHELL; \
 	CXX="$(CXX_FOR_BUILD)"; export CXX; \
-	CXXFLAGS="$(CXXFLAGS_FOR_BUILD)"; export CXXFLAGS; \
+	CXXFLAGS="$(CXXFLAGS_FOR_BUILD) $(CXX_BUILD_ARCHFLAGS)"; export CXXFLAGS; \
 	GCJ="$(GCJ_FOR_BUILD)"; export GCJ; \
 	GFORTRAN="$(GFORTRAN_FOR_BUILD)"; export GFORTRAN; \
 	DLLTOOL="$(DLLTOOL_FOR_BUILD)"; export DLLTOOL; \
@@ -141,10 +171,10 @@ HOST_SUBDIR = @host_subdir@
 HOST_EXPORTS = \
 	$(BASE_EXPORTS) \
 	CC="$(CC)"; export CC; \
-	CFLAGS="$(CFLAGS)"; export CFLAGS; \
+	CFLAGS="$(CFLAGS) $(C_HOST_ARCHFLAGS)"; export CFLAGS; \
 	CONFIG_SHELL="$(SHELL)"; export CONFIG_SHELL; \
 	CXX="$(CXX)"; export CXX; \
-	CXXFLAGS="$(CXXFLAGS)"; export CXXFLAGS; \
+	CXXFLAGS="$(CXXFLAGS) $(CXX_HOST_ARCHFLAGS)"; export CXXFLAGS; \
 	AR="$(AR)"; export AR; \
 	AS="$(AS)"; export AS; \
 	CC_FOR_BUILD="$(CC_FOR_BUILD)"; export CC_FOR_BUILD; \
@@ -159,11 +189,11 @@ HOST_EXPORTS = \
 	TOPLEVEL_CONFIGURE_ARGUMENTS="$(TOPLEVEL_CONFIGURE_ARGUMENTS)"; export TOPLEVEL_CONFIGURE_ARGUMENTS; \
 	GMPLIBS="$(HOST_GMPLIBS)"; export GMPLIBS; \
 	GMPINC="$(HOST_GMPINC)"; export GMPINC; \
-	$(RPATH_ENVVAR)=`echo "$(HOST_LIB_PATH)$$$(RPATH_ENVVAR)" | sed 's,::*,:,g;s,^:*,,;s,:*$$,,'`; export $(RPATH_ENVVAR);
+	$(RPATH_ENVVAR)=`echo "$(HOST_LIB_PATH)$$$(RPATH_ENVVAR)" | $(SED) 's,::*,:,g;s,^:*,,;s,:*$$,,'`; export $(RPATH_ENVVAR);
 
 # Similar, for later GCC stages.
 POSTSTAGE1_HOST_EXPORTS = \
-	$(RPATH_ENVVAR)=`echo "$(TARGET_LIB_PATH)$$$(RPATH_ENVVAR)" | sed 's,::*,:,g;s,^:*,,;s,:*$$,,'`; export $(RPATH_ENVVAR); \
+	$(RPATH_ENVVAR)=`echo "$(TARGET_LIB_PATH)$$$(RPATH_ENVVAR)" | $(SED) 's,::*,:,g;s,^:*,,;s,:*$$,,'`; export $(RPATH_ENVVAR); \
 	$(HOST_EXPORTS) \
 	CC="$(STAGE_CC_WRAPPER) $$r/$(HOST_SUBDIR)/prev-gcc/xgcc$(exeext) \
 	  -B$$r/$(HOST_SUBDIR)/prev-gcc/ -B$(build_tooldir)/bin/"; export CC; \
@@ -187,10 +217,10 @@ BASE_TARGET_EXPORTS = \
 	AR="$(AR_FOR_TARGET)"; export AR; \
 	AS="$(AS_FOR_TARGET)"; export AS; \
 	CC="$(CC_FOR_TARGET)"; export CC; \
-	CFLAGS="$(CFLAGS_FOR_TARGET)"; export CFLAGS; \
+	CFLAGS="$(CFLAGS_FOR_TARGET) $(C_TARG_ARCHFLAGS)"; export CFLAGS; \
 	CONFIG_SHELL="$(SHELL)"; export CONFIG_SHELL; \
 	CPPFLAGS="$(CPPFLAGS_FOR_TARGET)"; export CPPFLAGS; \
-	CXXFLAGS="$(CXXFLAGS_FOR_TARGET)"; export CXXFLAGS; \
+	CXXFLAGS="$(CXXFLAGS_FOR_TARGET) $(CXX_TARG_ARCHFLAGS)"; export CXXFLAGS; \
 	GCJ="$(GCJ_FOR_TARGET)"; export GCJ; \
 	GFORTRAN="$(GFORTRAN_FOR_TARGET)"; export GFORTRAN; \
 	DLLTOOL="$(DLLTOOL_FOR_TARGET)"; export DLLTOOL; \
@@ -199,7 +229,7 @@ BASE_TARGET_EXPORTS = \
 	NM="$(NM_FOR_TARGET)"; export NM; \
 	RANLIB="$(RANLIB_FOR_TARGET)"; export RANLIB; \
 	WINDRES="$(WINDRES_FOR_TARGET)"; export WINDRES; \
-	$(RPATH_ENVVAR)=`echo "$(HOST_LIB_PATH)$(TARGET_LIB_PATH)$$$(RPATH_ENVVAR)" | sed 's,::*,:,g;s,^:*,,;s,:*$$,,'`; export $(RPATH_ENVVAR);
+	$(RPATH_ENVVAR)=`echo "$(HOST_LIB_PATH)$(TARGET_LIB_PATH)$$$(RPATH_ENVVAR)" | $(SED) 's,::*,:,g;s,^:*,,;s,:*$$,,'`; export $(RPATH_ENVVAR);
 
 RAW_CXX_TARGET_EXPORTS = \
 	$(BASE_TARGET_EXPORTS) \
@@ -232,6 +262,7 @@ PWD_COMMAND = $${PWDCMD-pwd}
 # environment.
 CC_FOR_BUILD = @CC_FOR_BUILD@
 CFLAGS_FOR_BUILD = @CFLAGS_FOR_BUILD@
+LIBCFLAGS_FOR_BUILD = $(CFLAGS_FOR_BUILD) $(C_BUILD_ARCHFLAGS)
 
 CXX_FOR_BUILD = $(CXX)
 
@@ -242,7 +273,7 @@ BUILD_PREFIX_1 = @BUILD_PREFIX_1@
 
 # Flags to pass to stage2 and later makes. They are defined
 # here so that they can be overridden by Makefile fragments.
-BOOT_CFLAGS= -ggdb -O
+BOOT_CFLAGS= -ggdb -O1
 
 CONFIGURED_BISON = @CONFIGURED_BISON@
 BISON = `if [ -f $$r/$(BUILD_SUBDIR)/bison/tests/bison ] ; then \
@@ -312,11 +343,11 @@ AR_FLAGS = rc
 
 CC = @CC@
 CFLAGS = @CFLAGS@
-LIBCFLAGS = $(CFLAGS)
+LIBCFLAGS = $(CFLAGS) $(C_HOST_ARCHFLAGS)
 
 CXX = @CXX@
 CXXFLAGS = @CXXFLAGS@
-LIBCXXFLAGS = $(CXXFLAGS) -fno-implicit-templates
+LIBCXXFLAGS = $(CXXFLAGS) $(CXX_HOST_ARCHFLAGS) -fno-implicit-templates
 
 DLLTOOL = @DLLTOOL@
 
@@ -351,7 +382,7 @@ USUAL_AR_FOR_TARGET = ` \
   fi`
 
 # APPLE LOCAL: autoconf 2.57 barfs if use use the name "AS_FOR_TARGET".
-#AS_FOR_TARGET=@GAS_FOR_TARGET@
+BAD_AS_TO_USE_FOR_OUR_TARGET=@GAS_FOR_TARGET@
 AS_FOR_TARGET=@AS_FOR_TARGET@
 CONFIGURED_AS_FOR_TARGET=@CONFIGURED_AS_FOR_TARGET@
 USUAL_AS_FOR_TARGET = ` \
@@ -383,8 +414,8 @@ USUAL_CC_FOR_TARGET = ` \
 # During gcc bootstrap, if we use some random cc for stage1 then
 # CFLAGS will be just -g. We want to ensure that TARGET libraries
 # (which we know are built with gcc) are built with optimizations so
-# prepend -O2 when setting CFLAGS_FOR_TARGET.
-CFLAGS_FOR_TARGET = -O $(CFLAGS) $(SYSROOT_CFLAGS_FOR_TARGET)
+# prepend -O1 when setting CFLAGS_FOR_TARGET.
+CFLAGS_FOR_TARGET = -O1 $(CFLAGS) $(SYSROOT_CFLAGS_FOR_TARGET)
 SYSROOT_CFLAGS_FOR_TARGET = @SYSROOT_CFLAGS_FOR_TARGET@
 
 # If GCC_FOR_TARGET is not overriden on the command line, then this
@@ -395,7 +426,7 @@ GCC_FOR_TARGET=@GCC_FOR_TARGET@
 CONFIGURED_GCC_FOR_TARGET=@CONFIGURED_GCC_FOR_TARGET@
 USUAL_GCC_FOR_TARGET = $(STAGE_CC_WRAPPER) \
   $$r/$(HOST_SUBDIR)/gcc/xgcc -B$$r/$(HOST_SUBDIR)/gcc/ $(FLAGS_FOR_TARGET)
-LIBCFLAGS_FOR_TARGET = $(CFLAGS_FOR_TARGET)
+LIBCFLAGS_FOR_TARGET = $(CFLAGS_FOR_TARGET) $(C_TARG_ARCHFLAGS)
 
 CXX_FOR_TARGET=$(STAGE_CC_WRAPPER) @CXX_FOR_TARGET@ $(FLAGS_FOR_TARGET)
 CONFIGURED_CXX_FOR_TARGET=@CONFIGURED_CXX_FOR_TARGET@
@@ -425,7 +456,7 @@ USUAL_RAW_CXX_FOR_TARGET = ` \
   fi`
 
 CXXFLAGS_FOR_TARGET = $(CXXFLAGS) $(SYSROOT_CFLAGS_FOR_TARGET)
-LIBCXXFLAGS_FOR_TARGET = $(CXXFLAGS_FOR_TARGET) -fno-implicit-templates
+LIBCXXFLAGS_FOR_TARGET = $(CXXFLAGS_FOR_TARGET) $(CXX_TARG_ARCHFLAGS) -fno-implicit-templates
 
 GCJ_FOR_TARGET=$(STAGE_CC_WRAPPER) @GCJ_FOR_TARGET@ $(FLAGS_FOR_TARGET)
 CONFIGURED_GCJ_FOR_TARGET=@CONFIGURED_GCJ_FOR_TARGET@
@@ -506,7 +537,7 @@ USUAL_RANLIB_FOR_TARGET = ` \
     echo $$r/$(HOST_SUBDIR)/binutils/ranlib ; \
   else \
     if [ '$(host)' = '$(target)' ] ; then \
-      if [ x'$(RANLIB)' != x ]; then \
+      if [ x'$(RANLIB)' != x'' ]; then \
          echo $(RANLIB); \
       else \
          echo ranlib; \
@@ -620,9 +651,9 @@ EXTRA_TARGET_FLAGS = \
 	'AR=$$(AR_FOR_TARGET)' \
 	'AS=$$(AS_FOR_TARGET)' \
 	'CC=$$(CC_FOR_TARGET)' \
-	'CFLAGS=$$(CFLAGS_FOR_TARGET)' \
+	'CFLAGS=$$(CFLAGS_FOR_TARGET) $$(C_TARG_ARCHFLAGS)' \
 	'CXX=$$(CXX_FOR_TARGET)' \
-	'CXXFLAGS=$$(CXXFLAGS_FOR_TARGET)' \
+	'CXXFLAGS=$$(CXXFLAGS_FOR_TARGET) $$(CXX_TARG_ARCHFLAGS)' \
 	'DLLTOOL=$$(DLLTOOL_FOR_TARGET)' \
 	'LD=$$(LD_FOR_TARGET)' \
 	'LDFLAGS=$$(LDFLAGS_FOR_TARGET)' \
@@ -644,15 +675,15 @@ EXTRA_GCC_FLAGS = \
 	'BUILD_PREFIX=$(BUILD_PREFIX)' \
 	'BUILD_PREFIX_1=$(BUILD_PREFIX_1)' \
 	"GCC_FOR_TARGET=$(GCC_FOR_TARGET)" \
-	"`echo 'LANGUAGES=$(LANGUAGES)' | sed -e s'/[^=][^=]*=$$/XFOO=/'`" \
-	"`echo 'STMP_FIXPROTO=$(STMP_FIXPROTO)' | sed -e s'/[^=][^=]*=$$/XFOO=/'`" \
-	"`echo 'LIMITS_H_TEST=$(LIMITS_H_TEST)' | sed -e s'/[^=][^=]*=$$/XFOO=/'`" \
-	"`echo 'LIBGCC2_CFLAGS=$(LIBGCC2_CFLAGS)' | sed -e s'/[^=][^=]*=$$/XFOO=/'`" \
-	"`echo 'LIBGCC2_DEBUG_CFLAGS=$(LIBGCC2_DEBUG_CFLAGS)' | sed -e s'/[^=][^=]*=$$/XFOO=/'`" \
-	"`echo 'LIBGCC2_INCLUDES=$(LIBGCC2_INCLUDES)' | sed -e s'/[^=][^=]*=$$/XFOO=/'`" \
-	"`echo 'STAGE1_CFLAGS=$(STAGE1_CFLAGS)' | sed -e s'/[^=][^=]*=$$/XFOO=/'`" \
-	"`echo 'BOOT_CFLAGS=$(BOOT_CFLAGS)' | sed -e s'/[^=][^=]*=$$/XFOO=/'`" \
-	"`echo 'BOOT_ADAFLAGS=$(BOOT_ADAFLAGS)' | sed -e s'/[^=][^=]*=$$/XFOO=/'`"
+	"`echo 'LANGUAGES=$(LANGUAGES)' | $(SED) -e s'/[^=][^=]*=$$/XFOO=/'`" \
+	"`echo 'STMP_FIXPROTO=$(STMP_FIXPROTO)' | $(SED) -e s'/[^=][^=]*=$$/XFOO=/'`" \
+	"`echo 'LIMITS_H_TEST=$(LIMITS_H_TEST)' | $(SED) -e s'/[^=][^=]*=$$/XFOO=/'`" \
+	"`echo 'LIBGCC2_CFLAGS=$(LIBGCC2_CFLAGS)' | $(SED) -e s'/[^=][^=]*=$$/XFOO=/'`" \
+	"`echo 'LIBGCC2_DEBUG_CFLAGS=$(LIBGCC2_DEBUG_CFLAGS)' | $(SED) -e s'/[^=][^=]*=$$/XFOO=/'`" \
+	"`echo 'LIBGCC2_INCLUDES=$(LIBGCC2_INCLUDES)' | $(SED) -e s'/[^=][^=]*=$$/XFOO=/'`" \
+	"`echo 'STAGE1_CFLAGS=$(STAGE1_CFLAGS)' | $(SED) -e s'/[^=][^=]*=$$/XFOO=/'`" \
+	"`echo 'BOOT_CFLAGS=$(BOOT_CFLAGS)' | $(SED) -e s'/[^=][^=]*=$$/XFOO=/'`" \
+	"`echo 'BOOT_ADAFLAGS=$(BOOT_ADAFLAGS)' | $(SED) -e s'/[^=][^=]*=$$/XFOO=/'`"
 
 GCC_FLAGS_TO_PASS = $(BASE_FLAGS_TO_PASS) $(EXTRA_HOST_FLAGS) $(EXTRA_GCC_FLAGS)
 
@@ -726,30 +757,35 @@ install-info: do-install-info dir.info
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	if [ -f dir.info ] ; then \
 	  $(INSTALL_DATA) dir.info $(DESTDIR)$(infodir)/dir.info ; \
-	else true ; fi
+	else echo "dir.info is missing, so skipping installing it"; fi
 
 local-clean:
 	-rm -f *.a TEMP errs core *.o *~ \#* TAGS *.E *.log
 
 local-distclean:
-	-rm -f Makefile config.status config.cache mh-frag mt-frag
+	-rm -f Makefile Makefile*orig
+	-rm -f config.status config.cache
+	-rm -f mh-frag mt-frag
 	-rm -f multilib.out multilib.tmp maybedep.tmp serdep.tmp
 	-if [ "$(TARGET_SUBDIR)" != "." ]; then \
 	  rm -rf $(TARGET_SUBDIR); \
-	else true; fi
+	else echo "vpath is irrelevant"; fi
 	-rm -rf $(BUILD_SUBDIR)
 	-if [ "$(HOST_SUBDIR)" != "." ]; then \
 	  rm -rf $(HOST_SUBDIR); \
-	else true; fi
+	else echo "vpath is irrelevant"; fi
 	-rm -f texinfo/po/Makefile texinfo/po/Makefile.in texinfo/info/Makefile
 	-rm -f texinfo/doc/Makefile texinfo/po/POTFILES
 	-rmdir texinfo/doc texinfo/info texinfo/intl texinfo/lib 2>/dev/null
 	-rmdir texinfo/makeinfo texinfo/po texinfo/util 2>/dev/null
 	-rmdir fastjar gcc libiberty texinfo zlib 2>/dev/null
+	-rm -rf autom4te.cache || rmdir autom4te.cache
+	-rm -f .DS_Store
 
 local-maintainer-clean:
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
+	-rm -f configure.scan
 
 clean: do-clean local-clean
 mostlyclean: do-mostlyclean local-clean
@@ -763,7 +799,7 @@ clean-target: clean-target-libgcc
 clean-target-libgcc:
 	test ! -d gcc/libgcc || \
 	(cd gcc/libgcc && find . -type d -print) | \
-	while read d; do rm -f gcc/$$d/libgcc.a || : ; done
+	while read d; do rm -f gcc/$${d}/libgcc.a || echo "nope"; done
 	-rm -rf gcc/libgcc
 	-rm -f gcc/stmp-dirs
 
@@ -858,7 +894,7 @@ dir.info: do-install-info
 	if [ -f $(srcdir)/texinfo/gen-info-dir ] ; then \
 	  $(srcdir)/texinfo/gen-info-dir $(DESTDIR)$(infodir) $(srcdir)/texinfo/dir.info-template > dir.info.new ; \
 	  mv -f dir.info.new dir.info ; \
-	else true ; \
+	else echo "missing script to generate texinfo info dir"; \
 	fi
 
 dist_target:
@@ -886,7 +922,7 @@ maybe-configure-[+prefix+][+module+]:
 @if [+prefix+][+module+]
 maybe-configure-[+prefix+][+module+]: configure-[+prefix+][+module+]
 configure-[+prefix+][+module+]: [+deps+]
-	@[+ IF bootstrap +]test -f stage_last && exit 0; \
+	$(AM_V_at)[+ IF bootstrap +]test -f stage_last && exit 0; \
 	[+ ENDIF bootstrap +]test ! -f [+subdir+]/[+module+]/Makefile || exit 0; \
 	$(SHELL) $(srcdir)/mkinstalldirs [+subdir+]/[+module+] ; \
 	r=`${PWD_COMMAND}`; export r; \
@@ -897,11 +933,11 @@ configure-[+prefix+][+module+]: [+deps+]
 	case $(srcdir) in \
 	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
 	  *) topdir=`echo [+subdir+]/[+module+]/ | \
-		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+		$(SED) -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
 	esac; \
 	srcdiroption="--srcdir=$${topdir}/[+module+]"; \
 	libsrcdir="$$s/[+module+]"; \
-	[+ IF no-config-site +]rm -f no-such-file || : ; \
+	[+ IF no-config-site +]rm -f no-such-file || echo "ok"; \
 	CONFIG_SITE=no-such-file [+ ENDIF +]$(SHELL) $${libsrcdir}/configure \
 	  [+args+] $${srcdiroption} [+extra_configure_flags+] \
 	  || exit 1
@@ -914,8 +950,8 @@ maybe-configure-stage[+id+]-[+prefix+][+module+]:
 @if [+module+]-bootstrap
 maybe-configure-stage[+id+]-[+prefix+][+module+]: configure-stage[+id+]-[+prefix+][+module+]
 configure-stage[+id+]-[+prefix+][+module+]: [+deps+]
-	@$(MAKE) stage[+id+]-start
-	@[ -f [+subdir+]/[+module+]/Makefile ] && exit 0 || : ; \
+	$(AM_V_at)$(MAKE) stage[+id+]-start
+	$(AM_V_at)[ -f [+subdir+]/[+module+]/Makefile ] && exit 0 || echo "nvm"; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	[+exports+][+ IF prev +] \
@@ -925,7 +961,7 @@ configure-stage[+id+]-[+prefix+][+module+]: [+deps+]
 	case $(srcdir) in \
 	  /* | [A-Za-z]:[\\/]*) topdir=$(srcdir) ;; \
 	  *) topdir=`echo [+subdir+]/[+module+]/ | \
-		sed -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
+		$(SED) -e 's,\./,,g' -e 's,[^/]*/,../,g' `$(srcdir) ;; \
 	esac; \
 	srcdiroption="--srcdir=$${topdir}/[+module+]"; \
 	libsrcdir="$$s/[+module+]"; \
@@ -945,7 +981,7 @@ TARGET-[+prefix+][+module+]=[+
   IF target +][+target+][+ ELSE +]all[+ ENDIF target +]
 maybe-all-[+prefix+][+module+]: all-[+prefix+][+module+]
 all-[+prefix+][+module+]: configure-[+prefix+][+module+]
-	@[+ IF bootstrap +]test -f stage_last && exit 0; \
+	$(AM_V_at)[+ IF bootstrap +]test -f stage_last && exit 0; \
 	[+ ENDIF bootstrap +]r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	[+exports+] \
@@ -963,8 +999,8 @@ maybe-clean-stage[+id+]-[+prefix+][+module+]:
 maybe-all-stage[+id+]-[+prefix+][+module+]: all-stage[+id+]-[+prefix+][+module+]
 all-stage[+id+]: all-stage[+id+]-[+prefix+][+module+]
 all-stage[+id+]-[+prefix+][+module+]: configure-stage[+id+]-[+prefix+][+module+]
-	@$(MAKE) stage[+id+]-start
-	@r=`${PWD_COMMAND}`; export r; \
+	$(AM_V_at)$(MAKE) stage[+id+]-start
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	[+exports+][+ IF prev +] \
 	[+poststage1_exports+][+ ENDIF prev +] \
@@ -976,7 +1012,7 @@ all-stage[+id+]-[+prefix+][+module+]: configure-stage[+id+]-[+prefix+][+module+]
 maybe-clean-stage[+id+]-[+prefix+][+module+]: clean-stage[+id+]-[+prefix+][+module+]
 clean-stage[+id+]: clean-stage[+id+]-[+prefix+][+module+]
 clean-stage[+id+]-[+prefix+][+module+]:
-	@[ -f [+subdir+]/[+module+]/Makefile ] || [ -f [+subdir+]/stage[+id+]-[+module+]/Makefile ] \
+	$(AM_V_at)[ -f [+subdir+]/[+module+]/Makefile ] || [ -f [+subdir+]/stage[+id+]-[+module+]/Makefile ] \
 	  || exit 0 ; \
 	[ -f [+subdir+]/[+module+]/Makefile ] || $(MAKE) stage[+id+]-start ; \
 	cd [+subdir+]/[+module+] && \
@@ -1023,7 +1059,7 @@ check-[+module+]:
 [+ ELIF no_check_cross +]
 # This module is only tested in a native toolchain.
 check-[+module+]:
-	@if [ '$(host)' = '$(target)' ] ; then \
+	$(AM_V_at)if [ '$(host)' = '$(target)' ] ; then \
 	  r=`${PWD_COMMAND}`; export r; \
 	  s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	  $(HOST_EXPORTS) \
@@ -1032,7 +1068,7 @@ check-[+module+]:
 	fi
 [+ ELSE check +]
 check-[+module+]:
-	@r=`${PWD_COMMAND}`; export r; \
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(HOST_EXPORTS) \
 	(cd $(HOST_SUBDIR)/[+module+] && \
@@ -1048,7 +1084,7 @@ maybe-install-[+module+]: install-[+module+]
 install-[+module+]:
 [+ ELSE install +]
 install-[+module+]: installdirs
-	@r=`${PWD_COMMAND}`; export r; \
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(HOST_EXPORTS) \
 	(cd $(HOST_SUBDIR)/[+module+] && \
@@ -1070,12 +1106,12 @@ maybe-[+make_target+]-[+module+]: [+make_target+]-[+module+]
   FOR depend +]\
     [+depend+]-[+module+] [+
   ENDFOR depend +]
-	@[ -f ./[+module+]/Makefile ] || exit 0; \
+	$(AM_V_at)[ -f ./[+module+]/Makefile ] || exit 0; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(HOST_EXPORTS) \
 	for flag in $(EXTRA_HOST_FLAGS) [+extra_make_flags+]; do \
-	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
 	echo "Doing [+make_target+] in [+module+]" ; \
 	(cd $(HOST_SUBDIR)/[+module+] && \
@@ -1099,7 +1135,7 @@ maybe-[+make_target+]-[+module+]: [+make_target+]-[+module+]
 @if target-[+module+]
 $(TARGET_SUBDIR)/[+module+]/multilib.out: multilib.out
 	$(SHELL) $(srcdir)/mkinstalldirs $(TARGET_SUBDIR)/[+module+] ; \
-	rm -f $(TARGET_SUBDIR)/[+module+]/Makefile || : ; \
+	rm -f $(TARGET_SUBDIR)/[+module+]/Makefile || echo "fine"; \
 	cp multilib.out $(TARGET_SUBDIR)/[+module+]/multilib.out
 @endif target-[+module+]
 
@@ -1132,7 +1168,7 @@ maybe-check-target-[+module+]: check-target-[+module+]
 check-target-[+module+]:
 [+ ELSE check +]
 check-target-[+module+]:
-	@r=`${PWD_COMMAND}`; export r; \
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \[+
 IF raw_cxx +]
 	$(RAW_CXX_TARGET_EXPORTS) \[+
@@ -1157,7 +1193,7 @@ maybe-install-target-[+module+]: install-target-[+module+]
 install-target-[+module+]:
 [+ ELSE install +]
 install-target-[+module+]: installdirs
-	@r=`${PWD_COMMAND}`; export r; \
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \[+
 IF raw_cxx +]
 	$(RAW_CXX_TARGET_EXPORTS) \[+
@@ -1183,7 +1219,7 @@ maybe-[+make_target+]-target-[+module+]: [+make_target+]-target-[+module+]
   FOR depend +]\
     [+depend+]-target-[+module+] [+
   ENDFOR depend +]
-	@[ -f $(TARGET_SUBDIR)/[+module+]/Makefile ] || exit 0 ; \
+	$(AM_V_at)[ -f $(TARGET_SUBDIR)/[+module+]/Makefile ] || exit 0 ; \
 	r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \[+
 IF raw_cxx +]
@@ -1193,7 +1229,7 @@ ELSE normal_cxx +]
 ENDIF raw_cxx +]
 	echo "Doing [+make_target+] in $(TARGET_SUBDIR)/[+module+]" ; \
 	for flag in $(EXTRA_TARGET_FLAGS); do \
-	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
+	  eval `echo "$${flag}" | $(SED) -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 	done; \
 	(cd $(TARGET_SUBDIR)/[+module+] && \
 	  $(MAKE) $(BASE_FLAGS_TO_PASS) "AR=$${AR}" "AS=$${AS}" \
@@ -1219,13 +1255,13 @@ ENDIF raw_cxx +]
 GCC_STRAP_TARGETS = bootstrap bootstrap-lean bootstrap2 bootstrap2-lean bootstrap3 bootstrap3-lean bootstrap4 bootstrap4-lean bubblestrap quickstrap cleanstrap restrap
 .PHONY: $(GCC_STRAP_TARGETS)
 $(GCC_STRAP_TARGETS): all-prebootstrap configure-gcc
-	@r=`${PWD_COMMAND}`; export r; \
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(HOST_EXPORTS) \
 	echo "Bootstrapping the compiler"; \
-	$(RPATH_ENVVAR)=`echo "$(TARGET_LIB_PATH)$$$(RPATH_ENVVAR)" | sed 's,:[ :]*,:,g;s,^[ :]*,,;s,:*$$,,'`; export $(RPATH_ENVVAR); \
+	$(RPATH_ENVVAR)=`echo "$(TARGET_LIB_PATH)$$$(RPATH_ENVVAR)" | $(SED) 's,:[ :]*,:,g;s,^[ :]*,,;s,:*$$,,'`; export $(RPATH_ENVVAR); \
 	cd gcc && $(MAKE) $(GCC_FLAGS_TO_PASS) $@
-	@r=`${PWD_COMMAND}`; export r; \
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	case "$@" in \
 	  *bootstrap4-lean ) \
@@ -1244,36 +1280,36 @@ $(GCC_STRAP_TARGETS): all-prebootstrap configure-gcc
 	$(HOST_EXPORTS) \
 	echo "$$msg"; \
 	cd gcc && $(MAKE) $(GCC_FLAGS_TO_PASS) $$compare
-	@r=`${PWD_COMMAND}`; export r; \
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}` ; export s; \
 	echo "Building runtime libraries"; \
 	$(MAKE) $(RECURSE_FLAGS_TO_PASS) all
 
 profiledbootstrap: all-prebootstrap configure-gcc
-	@r=`${PWD_COMMAND}`; export r; \
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(HOST_EXPORTS) \
-	$(RPATH_ENVVAR)=`echo "$(TARGET_LIB_PATH)$$$(RPATH_ENVVAR)" | sed 's,:[ :]*,:,g;s,^[ :]*,,;s,:*$$,,'`; export $(RPATH_ENVVAR); \
+	$(RPATH_ENVVAR)=`echo "$(TARGET_LIB_PATH)$$$(RPATH_ENVVAR)" | $(SED) 's,:[ :]*,:,g;s,^[ :]*,,;s,:*$$,,'`; export $(RPATH_ENVVAR); \
 	echo "Bootstrapping training compiler"; \
 	cd gcc && $(MAKE) $(GCC_FLAGS_TO_PASS) stageprofile_build
-	@r=`${PWD_COMMAND}`; export r; \
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(HOST_EXPORTS) \
 	echo "Building feedback based compiler"; \
 	cd gcc && $(MAKE) $(GCC_FLAGS_TO_PASS) stagefeedback_build
-	@r=`${PWD_COMMAND}`; export r; \
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}` ; export s; \
 	echo "Building runtime libraries"; \
 	$(MAKE) $(RECURSE_FLAGS_TO_PASS) all
 
 .PHONY: cross
 cross: all-build all-gas all-ld
-	@r=`${PWD_COMMAND}`; export r; \
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	$(HOST_EXPORTS) \
 	echo "Building the C and C++ compiler"; \
 	cd gcc && $(MAKE) $(GCC_FLAGS_TO_PASS) LANGUAGES="c c++"
-	@r=`${PWD_COMMAND}`; export r; \
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}` ; export s; \
 	echo "Building runtime libraries"; \
 	$(MAKE) $(RECURSE_FLAGS_TO_PASS) LANGUAGES="c c++" all
@@ -1282,13 +1318,13 @@ cross: all-build all-gas all-ld
 @if gcc
 .PHONY: check-gcc-c++
 check-gcc-c++:
-	@if [ -f ./gcc/Makefile ] ; then \
+	$(AM_V_at)if [ -f ./gcc/Makefile ] ; then \
 	  r=`${PWD_COMMAND}`; export r; \
 	  s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	  $(HOST_EXPORTS) \
 	  (cd gcc && $(MAKE) $(GCC_FLAGS_TO_PASS) check-c++); \
 	else \
-	  true; \
+	  echo "gcc Makefile is missing, so skipping checking it"; \
 	fi
 
 .PHONY: check-c++
@@ -1313,7 +1349,7 @@ gcc-no-fixedincludes:
 	   $(MAKE) $(GCC_FLAGS_TO_PASS) install); \
 	  rm -rf gcc/include; \
 	  mv gcc/tmp-include gcc/include 2>/dev/null; \
-	else true; fi
+	else echo "gcc Makefile is missing, so skipping it"; fi
 @endif gcc
 
 # ---------------------
@@ -1327,13 +1363,13 @@ gcc-no-fixedincludes:
 .PHONY: unstage
 unstage:
 @if gcc-bootstrap
-	@[ -f stage_current ] || $(MAKE) `cat stage_last`-start
+	$(AM_V_at)[ -f stage_current ] || $(MAKE) `cat stage_last`-start
 @endif gcc-bootstrap
 
 .PHONY: stage
 stage:
 @if gcc-bootstrap
-	@$(MAKE) `cat stage_current`-end
+	$(AM_V_at)$(MAKE) `cat stage_current`-end
 @endif gcc-bootstrap
 
 # We name the build directories for the various stages "stage1-gcc",
@@ -1395,13 +1431,13 @@ POSTSTAGE1_FLAGS_TO_PASS = \
 .PHONY: stage[+id+]-start stage[+id+]-end
 
 stage[+id+]-start::
-	@[ -f stage_current ] && $(MAKE) `cat stage_current`-end || : ; \
+	$(AM_V_at)[ -f stage_current ] && $(MAKE) `cat stage_current`-end || echo "nope"; \
 	echo stage[+id+] > stage_current ; \
 	echo stage[+id+] > stage_last; \
 	$(SHELL) $(srcdir)/mkinstalldirs $(HOST_SUBDIR) $(TARGET_SUBDIR)[+
    FOR host_modules +][+ IF bootstrap +]
 @if [+ module +]
-	@cd $(HOST_SUBDIR); [ -d stage[+id+]-[+module+] ] || \
+	$(AM_V_at)cd $(HOST_SUBDIR); [ -d stage[+id+]-[+module+] ] || \
 	  mkdir stage[+id+]-[+module+]; \
 	set stage[+id+]-[+module+] [+module+] ; \
 	@CREATE_LINK_TO_DIR@ [+ IF prev +] ; \
@@ -1410,7 +1446,7 @@ stage[+id+]-start::
 @endif [+ module +][+ ENDIF bootstrap +][+ ENDFOR host_modules +][+
    FOR target_modules +][+ IF bootstrap +]
 @if target-[+ module +]
-	@cd $(TARGET_SUBDIR); [ -d stage[+id+]-[+module+] ] || \
+	$(AM_V_at)cd $(TARGET_SUBDIR); [ -d stage[+id+]-[+module+] ] || \
 	  mkdir stage[+id+]-[+module+]; \
 	set stage[+id+]-[+module+] [+module+] ; \
 	@CREATE_LINK_TO_DIR@ [+ IF prev +] ; \
@@ -1419,16 +1455,16 @@ stage[+id+]-start::
 @endif target-[+ module +][+ ENDIF bootstrap +][+ ENDFOR target_modules +]
 
 stage[+id+]-end::
-	@rm -f stage_current[+ FOR host_modules +][+ IF bootstrap +]
+	$(AM_V_at)rm -f stage_current[+ FOR host_modules +][+ IF bootstrap +]
 @if [+ module +]
-	@cd $(HOST_SUBDIR); set [+module+] stage[+id+]-[+module+] ; \
+	$(AM_V_at)cd $(HOST_SUBDIR); set [+module+] stage[+id+]-[+module+] ; \
 	@UNDO_LINK_TO_DIR@ [+ IF prev +] ; \
 	set prev-[+module+] stage[+prev+]-[+module+] ; \
 	@UNDO_LINK_TO_DIR@ [+ ENDIF prev +]
 @endif [+ module +][+ ENDIF bootstrap +][+ ENDFOR host_modules +][+
    FOR target_modules +][+ IF bootstrap +]
 @if target-[+ module +]
-	@cd $(HOST_SUBDIR); set [+module+] stage[+id+]-[+module+] ; \
+	$(AM_V_at)cd $(HOST_SUBDIR); set [+module+] stage[+id+]-[+module+] ; \
 	@UNDO_LINK_TO_DIR@ [+ IF prev +] ; \
 	set prev-[+module+] stage[+prev+]-[+module+] ; \
 	@UNDO_LINK_TO_DIR@ [+ ENDIF prev +]
@@ -1440,7 +1476,7 @@ stage[+id+]-end::
 .PHONY: stage[+id+]-bubble
 stage[+id+]-bubble:: [+ IF prev +]stage[+prev+]-bubble[+ ENDIF +][+IF lean +]
 	@bootstrap_lean@-rm -rf stage[+lean+]-* ; $(STAMP) stage[+lean+]-lean[+ ENDIF lean +]
-	@if test -f stage[+id+]-lean [+
+	$(AM_V_at)if test -f stage[+id+]-lean [+
 	  IF prev +]|| test -f stage[+prev+]-lean [+ ENDIF prev +] ; then \
 	  echo Skipping rebuild of stage[+id+] ; \
 	else \
@@ -1455,12 +1491,12 @@ do-clean: clean-stage[+id+]
 @if gcc-bootstrap
 [+ IF compare-target +]
 [+compare-target+]:
-	@if test -f stage[+prev+]-lean; then \
+	$(AM_V_at)if test -f stage[+prev+]-lean; then \
 	  echo Cannot compare object files as stage [+prev+] was deleted. ; \
 	  exit 0 ; \
 	fi; \
-	[ -f stage_current ] && $(MAKE) `cat stage_current`-end || : ; \
-	@r=`${PWD_COMMAND}`; export r; \
+	[ -f stage_current ] && $(MAKE) `cat stage_current`-end || echo "whatever"; \
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	rm -f .bad_compare ; \
 	cd stage[+id+]-gcc; \
@@ -1491,7 +1527,7 @@ do-clean: clean-stage[+id+]
 [+ IF prev +]distclean-stage[+prev+]:: distclean-stage[+id+] [+ ENDIF prev +]
 .PHONY: distclean-stage[+id+]
 distclean-stage[+id+]::
-	[ -f stage_current ] && $(MAKE) `cat stage_current`-end || :
+	[ -f stage_current ] && $(MAKE) `cat stage_current`-end || echo "k"
 	rm -rf stage[+id+]-* [+
 	  IF compare-target +][+compare-target+] [+ ENDIF compare-target +]
 
@@ -1507,13 +1543,13 @@ stageprofile-end::
 	$(MAKE) distclean-stagefeedback
 
 stagefeedback-start::
-	@r=`${PWD_COMMAND}`; export r; \
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
 	s=`cd $(srcdir); ${PWD_COMMAND}`; export s; \
 	for i in prev-*; do \
-	  j=`echo $$i | sed s/^prev-//` ; \
-	  cd $$r/$$i && \
-	  { find . -type d | sort | sed 's,.*,$(SHELL) '"$$s"'/mkinstalldirs "../'$$j'/&",' | $(SHELL) ; } && \
-	  { find . -name '*.*da' | sed 's,.*,$(LN) -f "&" "../'$$j'/&",' | $(SHELL) ; } ; \
+	  j=`echo $${i} | $(SED) s/^prev-//` ; \
+	  cd $${r}/$${i} && \
+	  { find . -type d | sort | $(SED) 's,.*,$(SHELL) '"$$s"'/mkinstalldirs "../'$$j'/&",' | $(SHELL) ; } && \
+	  { find . -name '*.*da' | $(SED) 's,.*,$(LN) -f "&" "../'$$j'/&",' | $(SHELL) ; } ; \
 	done
 
 @if gcc-bootstrap
@@ -1664,7 +1700,7 @@ all-gdb: $(gdbnlmrequirements) $(GDB_TK)
 # We use move-if-change so that it is only considered updated when it
 # actually changes, because it has to depend on a phony target.
 multilib.out: maybe-all-gcc
-	@r=`${PWD_COMMAND}`; export r; \
+	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
 	echo "Checking multilib configuration..."; \
 	$(CC_FOR_TARGET) --print-multi-lib > multilib.tmp 2> /dev/null ; \
 	$(SHELL) $(srcdir)/move-if-change multilib.tmp multilib.out ; \
@@ -1715,33 +1751,34 @@ BINUTILS_LIB = $(SYSTEM_FRAMEWORK)
 
 stamp-framework-headers-binutils:
 	$(RM) -f stamp-framework-binutils stamp-framework-headers-binutils
-	$(RM) -rf $(BINUTILS).framework
-	mkdir -p $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/Headers
-	mkdir -p $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/PrivateHeaders
-	ln -s Versions/Current/Headers $(BINUTILS).framework/Headers
-	ln -s Versions/Current/PrivateHeaders $(BINUTILS).framework/PrivateHeaders
-	ln -s A $(BINUTILS).framework/Versions/Current
-	cp -rp $(srcdir)/include/* $(BINUTILS).framework/Versions/Current/Headers/
-	cp -rp $(srcdir)/intl/*.h $(BINUTILS).framework/Versions/Current/Headers/
-	cp -rp intl/*.h $(BINUTILS).framework/Versions/Current/Headers/
+	$(RM) -rfv $(BINUTILS).framework
+	$(MKDIR_P) -v $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/Headers
+	$(MKDIR_P) -v $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/PrivateHeaders
+	$(LN_S) -v Versions/Current/Headers $(BINUTILS).framework/Headers
+	$(LN_S) -v Versions/Current/PrivateHeaders $(BINUTILS).framework/PrivateHeaders
+	$(LN_S) -v A $(BINUTILS).framework/Versions/Current
+	cp -rpv $(srcdir)/include/* $(BINUTILS).framework/Versions/Current/Headers/
+	cp -rpv $(srcdir)/intl/*.h $(BINUTILS).framework/Versions/Current/Headers/
+	cp -rpv intl/*.h $(BINUTILS).framework/Versions/Current/Headers/
 	touch stamp-framework-headers-binutils
 
 stamp-framework-binutils: $(BINUTILS_OFILES)
 	$(RM) -f stamp-framework-headers-binutils
 	$(MAKE) stamp-framework-headers-binutils
-	mkdir -p $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/Resources
-	ln -s Versions/Current/Resources $(BINUTILS).framework/Resources
-	mkdir -p $(BINUTILS).framework/Versions/Current/Resources/English.lproj
+	$(MKDIR_P) -v $(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/Resources
+	$(LN_S) -v Versions/Current/Resources $(BINUTILS).framework/Resources
+	$(MKDIR_P) -v $(BINUTILS).framework/Versions/Current/Resources/English.lproj
 
-	set -e; if [ "$(BINUTILS_SUFFIX)" != "" ]; then \
-		$(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(BINUTILS_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) -o $(BINUTILS).framework/Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS_OFILES) $(BINUTILS_LIB); \
-		ln -s $(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS).framework/Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX); \
-		ln -s Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX); \
-		ln -s Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX); \
-		ln -s $(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX) $(BINUTILS).framework/$(BINUTILS); \
+	set -ex; \
+	if [ "x$(BINUTILS_SUFFIX)" != "x" ]; then \
+	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(BINUTILS_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) -o $(BINUTILS).framework/Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS_OFILES) $(BINUTILS_LIB); \
+	    $(LN_S) -v $(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS).framework/Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX); \
+	    $(LN_S) -v Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_VERSION_SUFFIX); \
+	    $(LN_S) -v Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX); \
+	    $(LN_S) -v $(BINUTILS_PREFIX)$(BINUTILS)$(BINUTILS_SUFFIX) $(BINUTILS).framework/$(BINUTILS); \
 	else \
-		$(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(BINUTILS_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/$(BINUTILS_PREFIX)$(BINUTILS) -o $(BINUTILS).framework/Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS) $(BINUTILS_OFILES) $(BINUTILS_LIB); \
-		ln -s Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS); \
+	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(BINUTILS_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(BINUTILS).framework/Versions/$(BINUTILS_VERSION)/$(BINUTILS_PREFIX)$(BINUTILS) -o $(BINUTILS).framework/Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS) $(BINUTILS_OFILES) $(BINUTILS_LIB); \
+	    $(LN_S) -v Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS); \
 	fi
 	touch stamp-framework-binutils
 
@@ -1759,44 +1796,46 @@ TEMPLATEdir = @TEMPLATEdir@
 
 stamp-framework-headers-gdb:
 	$(RM) -f stamp-framework-gdb stamp-framework-headers-gdb
-	$(RM) -rf $(GDB).framework
-	mkdir -p $(GDB).framework/Versions/$(GDB_VERSION)/Headers
-	mkdir -p $(GDB).framework/Versions/$(GDB_VERSION)/PrivateHeaders
-	ln -s Versions/Current/Headers $(GDB).framework/Headers
-	ln -s Versions/Current/PrivateHeaders $(GDB).framework/PrivateHeaders
-	ln -s A $(GDB).framework/Versions/Current
-	cp -p $(srcdir)/gdb/*.h $(GDB).framework/Versions/Current/Headers/
-	cp -p $(srcdir)/gdb/macosx/*.h $(GDB).framework/Versions/Current/Headers/
-	mkdir -p $(GDB).framework/Versions/Current/Headers/tui
-	cp -p $(srcdir)/gdb/tui/*.h $(GDB).framework/Versions/Current/Headers/tui
-	mkdir -p $(GDB).framework/Versions/Current/Headers/cli
-	cp -p $(srcdir)/gdb/cli/*.h $(GDB).framework/Versions/Current/Headers/cli
-	mkdir -p $(GDB).framework/Versions/Current/Headers/mi
-	cp -p $(srcdir)/gdb/mi/*.h $(GDB).framework/Versions/Current/Headers/mi
-	mkdir -p $(GDB).framework/Versions/Current/Headers/machine
-	cp -p gdb/*.h $(GDB).framework/Versions/Current/Headers/machine/
-	cp -rp $(srcdir)/gdb/config $(GDB).framework/Versions/Current/Headers/config
-	set -e; for h in $(TEMPLATE_HEADERS); do \
-		rm -f $(GDB).framework/Versions/A/Headers/$${h}; \
-		ln -s machine/$${h} $(GDB).framework/Versions/A/Headers/$${h}; \
+	$(RM) -rfv $(GDB).framework
+	$(MKDIR_P) -v $(GDB).framework/Versions/$(GDB_VERSION)/Headers
+	$(MKDIR_P) -v $(GDB).framework/Versions/$(GDB_VERSION)/PrivateHeaders
+	$(LN_S) -v Versions/Current/Headers $(GDB).framework/Headers
+	$(LN_S) -v Versions/Current/PrivateHeaders $(GDB).framework/PrivateHeaders
+	$(LN_S) -v A $(GDB).framework/Versions/Current
+	cp -pv $(srcdir)/gdb/*.h $(GDB).framework/Versions/Current/Headers/
+	cp -pv $(srcdir)/gdb/macosx/*.h $(GDB).framework/Versions/Current/Headers/
+	$(MKDIR_P) -v $(GDB).framework/Versions/Current/Headers/tui
+	cp -pv $(srcdir)/gdb/tui/*.h $(GDB).framework/Versions/Current/Headers/tui
+	$(MKDIR_P) -v $(GDB).framework/Versions/Current/Headers/cli
+	cp -pv $(srcdir)/gdb/cli/*.h $(GDB).framework/Versions/Current/Headers/cli
+	$(MKDIR_P) -v $(GDB).framework/Versions/Current/Headers/mi
+	cp -pv $(srcdir)/gdb/mi/*.h $(GDB).framework/Versions/Current/Headers/mi
+	$(MKDIR_P) -v $(GDB).framework/Versions/Current/Headers/machine
+	cp -pv gdb/*.h $(GDB).framework/Versions/Current/Headers/machine/
+	cp -rpv $(srcdir)/gdb/config $(GDB).framework/Versions/Current/Headers/config
+	set -ex; \
+	for h in $(TEMPLATE_HEADERS); do \
+	    rm -fv $(GDB).framework/Versions/A/Headers/$${h}; \
+	    $(LN_S) -v machine/$${h} $(GDB).framework/Versions/A/Headers/$${h}; \
 	done
 	touch stamp-framework-headers-gdb
 
 stamp-framework-gdb: $(GDB_OFILES)
 	$(RM) -f stamp-framework-headers-gdb
 	$(MAKE) stamp-framework-headers-gdb
-	mkdir -p $(GDB).framework/Versions/$(GDB_VERSION)/Resources
-	ln -s Versions/Current/Resources $(GDB).framework/Resources
-	mkdir -p $(GDB).framework/Versions/Current/Resources/English.lproj
+	$(MKDIR_P) -v $(GDB).framework/Versions/$(GDB_VERSION)/Resources
+	$(LN_S) -v Versions/Current/Resources $(GDB).framework/Resources
+	$(MKDIR_P) -v $(GDB).framework/Versions/Current/Resources/English.lproj
 
-	set -e; if [ "$(GDB_SUFFIX)" != "" ]; then \
-		$(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(GDB_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(GDB).framework/Versions/$(GDB_VERSION)/$(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) -o $(GDB).framework/Versions/Current/$(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) $(GDB_OFILES) $(GDB_LIB); \
-		ln -s $(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) $(GDB).framework/Versions/Current/$(GDB_PREFIX)$(GDB)$(GDB_SUFFIX); \
-		ln -s Versions/Current/$(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) $(GDB).framework/$(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX); \
-		ln -s Versions/Current/$(GDB_PREFIX)$(GDB)$(GDB_SUFFIX) $(GDB).framework/$(GDB_PREFIX)$(GDB)$(GDB_SUFFIX); \
-		ln -s $(GDB_PREFIX)$(GDB)$(GDB_SUFFIX) $(GDB).framework/$(GDB); \
+	set -ex; \
+	if [ "x$(GDB_SUFFIX)" != x"" ]; then \
+	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(GDB_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(GDB).framework/Versions/$(GDB_VERSION)/$(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) -o $(GDB).framework/Versions/Current/$(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) $(GDB_OFILES) $(GDB_LIB); \
+	    $(LN_S) -v $(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) $(GDB).framework/Versions/Current/$(GDB_PREFIX)$(GDB)$(GDB_SUFFIX); \
+	    $(LN_S) -v Versions/Current/$(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX) $(GDB).framework/$(GDB_PREFIX)$(GDB)$(GDB_VERSION_SUFFIX); \
+	    $(LN_S) -v Versions/Current/$(GDB_PREFIX)$(GDB)$(GDB_SUFFIX) $(GDB).framework/$(GDB_PREFIX)$(GDB)$(GDB_SUFFIX); \
+	    $(LN_S) -v $(GDB_PREFIX)$(GDB)$(GDB_SUFFIX) $(GDB).framework/$(GDB); \
 	else \
-		$(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(GDB_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(GDB).framework/Versions/$(GDB_VERSION)/$(GDB_PREFIX)$(GDB) -o $(GDB).framework/Versions/Current/$(GDB_PREFIX)$(GDB) $(GDB_OFILES) $(GDB_LIB); \
-		ln -s Versions/Current/$(GDB_PREFIX)$(GDB) $(GDB).framework/$(GDB_PREFIX)$(GDB); \
+	    $(NSLIBTOOL) -arch $(HOST_ARCHITECTURE) -seg1addr $(GDB_ADDRESS) -compatibility_version 1 -current_version 1 -install_name /System/Library/PrivateFrameworks/$(GDB).framework/Versions/$(GDB_VERSION)/$(GDB_PREFIX)$(GDB) -o $(GDB).framework/Versions/Current/$(GDB_PREFIX)$(GDB) $(GDB_OFILES) $(GDB_LIB); \
+	    $(LN_S) -v Versions/Current/$(GDB_PREFIX)$(GDB) $(GDB).framework/$(GDB_PREFIX)$(GDB); \
 	fi
 	touch stamp-framework-gdb

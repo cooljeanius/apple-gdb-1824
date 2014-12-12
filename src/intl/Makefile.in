@@ -103,12 +103,13 @@ DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog THANKS \
 	$(include_HEADERS) COPYING ar-lib compile config.guess \
 	config.rpath config.sub install-sh missing ylwrap ltmain.sh
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/codeset.m4 \
-	$(top_srcdir)/m4/extern-inline.m4 $(top_srcdir)/m4/fcntl-o.m4 \
-	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/glibc2.m4 \
-	$(top_srcdir)/m4/glibc21.m4 $(top_srcdir)/m4/iconv.m4 \
-	$(top_srcdir)/m4/intdiv0.m4 $(top_srcdir)/m4/intlmacosx.m4 \
-	$(top_srcdir)/m4/intmax.m4 $(top_srcdir)/m4/inttypes-pri.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_bison.m4 \
+	$(top_srcdir)/m4/codeset.m4 $(top_srcdir)/m4/extern-inline.m4 \
+	$(top_srcdir)/m4/fcntl-o.m4 $(top_srcdir)/m4/gettext.m4 \
+	$(top_srcdir)/m4/glibc2.m4 $(top_srcdir)/m4/glibc21.m4 \
+	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/intdiv0.m4 \
+	$(top_srcdir)/m4/intlmacosx.m4 $(top_srcdir)/m4/intmax.m4 \
+	$(top_srcdir)/m4/inttypes-pri.m4 \
 	$(top_srcdir)/m4/inttypes_h.m4 $(top_srcdir)/m4/lcmessage.m4 \
 	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
 	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
@@ -273,9 +274,10 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BUILD_ARCHITECTURE = @BUILD_ARCHITECTURE@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
-CFLAGS = @CFLAGS@ $(C_ARCHFLAGS)
+CFLAGS = @CFLAGS@ 
 CFLAG_VISIBILITY = @CFLAG_VISIBILITY@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
@@ -297,6 +299,7 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+EXTRA_YFLAGS_SEP = @EXTRA_YFLAGS_SEP@
 FGREP = @FGREP@
 GETTEXT_MACRO_VERSION = @GETTEXT_MACRO_VERSION@
 GLIBC2 = @GLIBC2@
@@ -440,12 +443,15 @@ subdir = intl
 
 # architecture flags:
 C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+XC_ARCHFLAGS = -arch $(TARGET_ARCHITECTURE)
+LIBCFLAGS = $(CFLAGS) $(C_ARCHFLAGS)
+XCFLAGS = -DXCOMPILING @MAINT@ $(CFLAGS) $(XC_ARCHFLAGS)
 AM_CPPFLAGS = -I. -I$(srcdir)
 AM_ANSIFICATION_FLAGS = -Wstrict-prototypes -Wmissing-prototypes -Wconversion -Wold-style-definition -Wshadow -Wundef -Wextra -Wno-unused @MAINT@ -ansi -pedantic
 AM_WARNFLAGS = -Wall @MAINT@ $(AM_ANSIFICATION_FLAGS)
 AM_LDFLAGS = -framework CoreFoundation
-AM_YFLAGS = -Wall -Wyacc -d
-COMPILE = $(CC) -c $(DEFS) $(AM_CPPFLAGS) $(AM_WARNFLAGS) $(CPPFLAGS) $(CFLAGS) $(XCFLAGS) @MAINT@ $(INCLUDES)
+AM_YFLAGS = -d -t -v @MAINT@@EXTRA_YFLAGS_SEP@ -k -Wall -Wyacc
+COMPILE = $(CC) -c $(DEFS) $(AM_CPPFLAGS) $(AM_WARNFLAGS) $(CPPFLAGS) $(CFLAGS) $(C_ARCHFLAGS) $(XCFLAGS) @MAINT@ $(INCLUDES)
 include_HEADERS = $(COMHDRS) gmo.h libgettext.h loadinfo.h plural-exp.h \
 eval-plural.h localcharset.h relocatable.h libgnuintl.h
 
@@ -1188,8 +1194,13 @@ bindtextdom.lo finddomain.lo loadmsgcat.lo: gettextP.h gettext.h loadinfo.h
 dcgettext.o: gettextP.h gettext.h hash-string.h loadinfo.h
 dcgettext.lo: gettextP.h gettext.h hash-string.h loadinfo.h
 
-dcigettext.o: hash-string.h plural-exp.h eval-plural.h
-dcigettext.lo: hash-string.h plural-exp.h eval-plural.h
+dcigettext.o: gettextP.h plural-exp.h hash-string.h libgnuintl.h \
+  eval-plural.h
+dcigettext.lo: gettextP.h plural-exp.h hash-string.h libgnuintl.h \
+  eval-plural.h
+
+dcngettext.o dngettext.o ngettext.o: gettextP.h libgnuintl.h
+dcngettext.lo dngettext.lo ngettext.lo: gettextP.h libgnuintl.h
 
 explodename.o l10nflist.o: loadinfo.h
 explodename.lo l10nflist.lo: loadinfo.h
@@ -1199,6 +1210,9 @@ localcharset.lo: localcharset.h
 
 localealias.o relocatable.o: relocatable.h
 localealias.lo relocatable.lo: relocatable.h
+
+plural-exp.o: plural-exp.h
+plural-exp.lo: plural-exp.h
 
 plural.c: plural.y @MAINT@ Makefile
 

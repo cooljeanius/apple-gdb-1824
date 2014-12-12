@@ -2,7 +2,8 @@ dnl#                                               -*- Autoconf -*-
 dnl# Process this file with autoconf to produce a configure script.
 dnl#
 
-AC_PREREQ([2.57])
+AC_PREREQ([2.59])
+m4_include([../bfd/version.m4])
 dnl# keep version number synced with the one in '../bfd':
 AC_INIT([binutils],[2.16.91],[jmolenda@apple.com])
 dnl# bug report address is email address of last person to touch this
@@ -24,6 +25,20 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
 fi
 AC_SEARCH_LIBS([strerror],[cposix]) dnl# used to be AC\_ISC\_POSIX
 AC_USE_SYSTEM_EXTENSIONS
+
+# Allow the user to override the flags for our build compiler if desired:
+if test x"${build}" = x"${host}"; then
+  CFLAGS_FOR_BUILD=${CFLAGS_FOR_BUILD-${CFLAGS}}
+  CXXFLAGS_FOR_BUILD=${CXXFLAGS_FOR_BUILD-${CXXFLAGS}}
+  LDFLAGS_FOR_BUILD=${LDFLAGS_FOR_BUILD-${LDFLAGS}}
+else
+  test -n "${CFLAGS_FOR_BUILD}"
+  test -n "${CXXFLAGS_FOR_BUILD}"
+  test -n "${LDFLAGS_FOR_BUILD}"
+fi
+AC_SUBST([CFLAGS_FOR_BUILD])dnl
+AC_SUBST([CXXFLAGS_FOR_BUILD])dnl
+AC_SUBST([LDFLAGS_FOR_BUILD])dnl
 
 # Automake:
 if test -f ${srcdir}/config.status; then
@@ -53,7 +68,9 @@ LT_LANG([C++])dnl
 LT_LANG([Windows Resource])dnl
 dnl# temporarily set this while I update everything libtool-related:
 LT_PREREQ([2.4.4])dnl
+dnl# (largefile check is done farther below)
 
+# flags:
 AC_ARG_ENABLE([targets],
 [AS_HELP_STRING([--enable-targets],
                 [A comma-delimited list of alternate target configurations.
@@ -89,6 +106,18 @@ AC_DEFINE_UNQUOTED([DEFAULT_AR_DETERMINISTIC],
                    [${default_ar_deterministic}],
 		   [Should ar and ranlib use -D behavior by default?])dnl
 
+AC_ARG_ENABLE([default-strings-all],
+[AS_HELP_STRING([--disable-default-strings-all],
+		[strings defaults to --data behavior])],[
+if test "x${enableval}" = "xno"; then
+  default_strings_all=0
+else
+  default_strings_all=1
+fi],[default_strings_all=1])dnl
+
+AC_DEFINE_UNQUOTED([DEFAULT_STRINGS_ALL],[${default_strings_all}],
+		   [Should strings use -a behavior by default?])dnl
+
 AM_BINUTILS_WARNINGS
 		   
 AC_CONFIG_HEADERS([config.h])dnl
@@ -113,7 +142,11 @@ if test -z "${host}"; then
   AC_MSG_ERROR([Unrecognized host system type; please check config.sub.])
 fi
 AC_SYS_INTERPRETER
+m4_ifdef([ACX_LARGEFILE],[
+ACX_LARGEFILE
+],[
 AC_SYS_LARGEFILE
+])dnl
 
 # Checks for programs.
 AM_PROG_AS
@@ -126,10 +159,17 @@ else
 fi
 
 AC_PROG_YACC
+AX_PROG_BISON([
+  # (might want to check the bison version first)
+  EXTRA_YFLAGS_SEP=''
+],[
+  EXTRA_YFLAGS_SEP='#'
+])dnl##end bison conditional
+AC_SUBST([EXTRA_YFLAGS_SEP])dnl
 AM_PROG_LEX
 AC_PATH_PROGS([ICONV_BIN],[iconv giconv])dnl
 AC_SUBST([ICONV_BIN])dnl
-
+AC_PATH_PROG([CONFIGURED_POD2MAN],[pod2man])dnl
 
 # Gettext:
 if test -d ../intl; then
@@ -146,16 +186,20 @@ elif test -d ../libintl; then
   fi
 fi
 # keep alphabetical:
-ALL_LINGUAS="bg da es fi fr hr id it ja ro ru rw sk sv tr uk vi zh_CN zh_TW"
+ALL_LINGUAS="bg da es fi fr hr id it ja ro ru rw sk sr sv tr uk vi zh_CN zh_TW"
 m4_ifdef([CY_GNU_GETTEXT],[
 CY_GNU_GETTEXT
 ],[
   m4_ifdef([ZW_GNU_GETTEXT_SISTER_DIR],[
-  ZW_GNU_GETTEXT_SISTER_DIR
-  ],[:])
+    ZW_GNU_GETTEXT_SISTER_DIR
+  ],[
+    AC_MSG_NOTICE([skipping some gettext checks])
+  ])dnl
   m4_ifdef([AM_PO_SUBDIRS],[
-  AM_PO_SUBDIRS
-  ],[:])
+    AM_PO_SUBDIRS
+  ],[
+    AC_MSG_WARN([po subdir might remain unconfigured])
+  ])dnl
 ])dnl
 
 AM_MAINTAINER_MODE
@@ -169,10 +213,9 @@ if test -n "${EXEEXT}"; then
 	    [Does the platform use an executable suffix?])
 fi
 AC_DEFINE_UNQUOTED([EXECUTABLE_SUFFIX],["${EXEEXT}"],
-		   [Suffix used for executables, if any.])
+		   [Suffix used for executables, if any.])dnl
 
 # host-specific stuff:
-
 HDEFINES=""
 
 AC_MSG_NOTICE([sourcing ../bfd/configure.host])
@@ -226,7 +269,7 @@ AC_SUBST([DEMANGLER_NAME])dnl
 
 # Checks for libraries.
 LT_LIB_M
-# ../intl is added to LDFLAGS above
+# ('../intl' is added to LDFLAGS above)
 AC_SEARCH_LIBS([dcgettext],[intl])dnl
 AC_SEARCH_LIBS([bindtextdomain],[intl])dnl
 AC_SEARCH_LIBS([textdomain],[intl])dnl
@@ -238,9 +281,16 @@ AC_DEFUN([AC_GETTEXT_SUBCHECKS],[
   AC_REQUIRE([AM_ICONV])dnl
   dnl# this next bit used to be lower below:
   m4_ifdef([AM_LC_MESSAGES],[
-  test -z "${am_cv_val_LC_MESSAGES}"
-  AC_REQUIRE([AM_LC_MESSAGES])dnl
-  ],[:])dnl
+    test -z "${am_cv_val_LC_MESSAGES}"
+    AC_REQUIRE([AM_LC_MESSAGES])dnl
+  ],[
+    if test "x${am_cv_val_LC_MESSAGES}" = "x"; then
+      test -z "${am_cv_val_LC_MESSAGES}"
+      AC_MSG_WARN([might have skipped check for LC_MESSAGES])
+    elif test "x${am_cv_val_LC_MESSAGES}" != "xyes"; then
+      AC_MSG_WARN([we might be missing support for LC_MESSAGES])
+    fi
+  ])dnl
   AC_CHECK_LIB([iconv],[iconv],[],[
     AC_CHECK_LIB([iconv],[libiconv],[],[
       AC_CHECK_LIB([iconv],[main],[],[])dnl
@@ -300,16 +350,24 @@ unset ac_cv_header_unistd_h
 unset ac_cv_header_utime_h
 AC_CHECK_HEADERS([assert.h binary-io.h errno.h fcntl.h gettext.h iconv.h \
                   langinfo.h libgettext.h libintl.h limits.h locale.h \
-                  mach/mach.h mach-o/loader.h malloc.h malloc/malloc.h \
-                  stdarg.h stddef.h stdio.h sys/file.h sys/param.h \
-                  sys/time.h utime.h varargs.h wchar.h wctype.h])dnl
+                  mach/i386/thread_status.h mach/mach.h mach-o/loader.h \
+                  malloc.h malloc/malloc.h stdarg.h stddef.h stdio.h \
+                  sys/file.h sys/param.h sys/time.h utime.h varargs.h \
+                  wchar.h wctype.h])dnl
 AC_CHECK_HEADERS_ONCE([time.h])dnl
 AC_HEADER_SYS_WAIT
 AC_HEADER_STAT
 AC_HEADER_TIME
 m4_ifdef([ACX_HEADER_STRING],[
-ACX_HEADER_STRING
-],[:])dnl
+  ACX_HEADER_STRING
+],[
+  if test "x${ac_cv_header_string_h}" = "x" && test "x${ac_cv_header_strings_h}" = "x"; then
+    test -z "${ac_cv_header_string_h}" && test -z "${ac_cv_header_strings_h}"
+    AC_MSG_WARN([looks like we skipped some checks for string headers])
+  elif test "x${ac_cv_header_string_h}" != "xyes" && test "x${ac_cv_header_strings_h}" != "xyes"; then
+    AC_MSG_WARN([we might be missing some string headers])
+  fi
+])dnl
 
 dnl# if we are using internal include paths, see if renaming has occurred:
 AC_CHECK_HEADERS([mach-o/codesign.h],[],[
@@ -361,9 +419,9 @@ AC_FUNC_OBSTACK
 AC_FUNC_REALLOC
 AC_FUNC_STAT
 m4_ifdef([AC_FUNC_STRCOLL],[
-AC_FUNC_STRCOLL
+  AC_FUNC_STRCOLL
 ],[
-AC_CHECK_FUNCS([strcoll])dnl
+  AC_CHECK_FUNCS([strcoll])dnl
 ])dnl
 AC_FUNC_STRNLEN
 AC_FUNC_UTIME_NULL
@@ -518,22 +576,22 @@ fi
 
 # checks for declarations (keep alphabetized please):
 unset ac_cv_have_decl_getenv
-AC_CHECK_DECLS([environ, fprintf, getc_unlocked, getenv,
+AC_CHECK_DECLS([basename, environ, fprintf, getc_unlocked, getenv,
 		sbrk, snprintf, stpcpy, strnlen, strstr, vsnprintf])dnl
 
 # Link in zlib if we can. This allows us to read compressed debug
 # sections. This is used only by readelf.c (objdump uses bfd for
 # reading compressed sections).
 m4_ifdef([AM_ZLIB],[
-AM_ZLIB
+  AM_ZLIB
 ],[
-AC_CHECK_LIB([z],[zlibVersion],[
-  AC_CHECK_HEADERS([zlib.h])dnl
-],[
-  AC_CHECK_LIB([z],[main],[
+  AC_CHECK_LIB([z],[zlibVersion],[
     AC_CHECK_HEADERS([zlib.h])dnl
+  ],[
+    AC_CHECK_LIB([z],[main],[
+      AC_CHECK_HEADERS([zlib.h])dnl
+    ])dnl
   ])dnl
-])dnl
 ])dnl
 
 BFD_BINARY_FOPEN
@@ -759,6 +817,9 @@ changequote([,])dnl
 
 	# Add objdump private vectors.
 	case ${targ} in
+        avr-*-*)
+          od_vectors="${od_vectors} objdump_private_desc_elf32_avr"
+          ;;
 	powerpc-*-aix*)
 	  od_vectors="${od_vectors} objdump_private_desc_xcoff"
 	  ;;
@@ -781,6 +842,8 @@ for i in ${od_vectors} ; do
 	f="${f} ${i}"
 	OBJDUMP_PRIVATE_VECTORS="${OBJDUMP_PRIVATE_VECTORS} &${i},"
 	case ${i} in
+        objdump_private_desc_elf32_avr)
+            od_files="$od_files od-elf32_avr" ;;
 	objdump_private_desc_xcoff)
 	    od_files="${od_files} od-xcoff" ;;
 	objdump_private_desc_mach_o)

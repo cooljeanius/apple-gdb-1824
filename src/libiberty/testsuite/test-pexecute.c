@@ -16,66 +16,66 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. 
+   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 #include "ansidecl.h"
 #include "libiberty.h"
 #include <stdio.h>
 #include <signal.h>
 #include <errno.h>
 #ifdef HAVE_STRING_H
-#include <string.h>
-#endif
+# include <string.h>
+#endif /* HAVE_STRING_H */
 #include <sys/types.h>
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+# include <unistd.h>
+#endif /* HAVE_UNISTD_H */
 #ifdef HAVE_SYS_WAIT_H
-#include <sys/wait.h>
-#endif
+# include <sys/wait.h>
+#endif /* HAVE_SYS_WAIT_H */
 #ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-#endif
+# include <sys/time.h>
+#endif /* HAVE_SYS_TIME_H */
 #ifdef HAVE_SYS_RESOURCE_H
-#include <sys/resource.h>
-#endif
+# include <sys/resource.h>
+#endif /* HAVE_SYS_RESOURCE_H */
 
 #ifndef WIFSIGNALED
-#define WIFSIGNALED(S) (((S) & 0xff) != 0 && ((S) & 0xff) != 0x7f)
-#endif
+# define WIFSIGNALED(S) (((S) & 0xff) != 0 && ((S) & 0xff) != 0x7f)
+#endif /* !WIFSIGNALED */
 #ifndef WTERMSIG
-#define WTERMSIG(S) ((S) & 0x7f)
-#endif
+# define WTERMSIG(S) ((S) & 0x7f)
+#endif /* !WTERMSIG */
 #ifndef WIFEXITED
-#define WIFEXITED(S) (((S) & 0xff) == 0)
-#endif
+# define WIFEXITED(S) (((S) & 0xff) == 0)
+#endif /* !WIFEXITED */
 #ifndef WEXITSTATUS
-#define WEXITSTATUS(S) (((S) & 0xff00) >> 8)
-#endif
+# define WEXITSTATUS(S) (((S) & 0xff00) >> 8)
+#endif /* !WEXITSTATUS */
 #ifndef WSTOPSIG
-#define WSTOPSIG WEXITSTATUS
-#endif
+# define WSTOPSIG WEXITSTATUS
+#endif /* !WSTOPSIG */
 #ifndef WCOREDUMP
-#define WCOREDUMP(S) ((S) & WCOREFLG)
-#endif
+# define WCOREDUMP(S) ((S) & WCOREFLG)
+#endif /* !WCOREDUMP */
 #ifndef WCOREFLG
-#define WCOREFLG 0200
-#endif
+# define WCOREFLG 0200
+#endif /* !WCOREFLG */
 
 #ifndef EXIT_SUCCESS
-#define EXIT_SUCCESS 0
-#endif
+# define EXIT_SUCCESS 0
+#endif /* !EXIT_SUCCESS */
 
 #ifndef EXIT_FAILURE
-#define EXIT_FAILURE 1
-#endif
+# define EXIT_FAILURE 1
+#endif /* !EXIT_FAILURE */
 
 /* When this program is run with no arguments, it runs some tests of
    the libiberty pexecute functions.  As a test program, it simply
@@ -188,7 +188,7 @@ main (int argc, char **argv)
   int statuses[10];
 
   trace = 0;
-  if (argc > 1 && strcmp (argv[1], "-t") == 0)
+  if ((argc > 1) && (strcmp(argv[1], "-t") == 0))
     {
       trace = 1;
       --argc;
@@ -242,20 +242,20 @@ main (int argc, char **argv)
 
   memset (subargv, 0, sizeof subargv);
 
-  subargv[0] = "./test-pexecute";
+  subargv[0] = (char *)"./test-pexecute";
 
-  pex1 = TEST_PEX_INIT (PEX_USE_PIPES, NULL);
-  subargv[1] = "exit";
-  subargv[2] = NULL;
+  pex1 = (struct pex_obj *)TEST_PEX_INIT(PEX_USE_PIPES, NULL);
+  subargv[1] = (char *)"exit";
+  subargv[2] = (char *)NULL;
   TEST_PEX_RUN (pex1, PEX_LAST, "./test-pexecute", subargv, NULL, NULL);
   status = TEST_PEX_GET_STATUS_1 (pex1);
   if (!WIFEXITED (status) || WEXITSTATUS (status) != EXIT_SUCCESS)
     ERROR ("exit failed");
   pex_free (pex1);
 
-  pex1 = TEST_PEX_INIT (PEX_USE_PIPES, NULL);
-  subargv[1] = "error";
-  subargv[2] = NULL;
+  pex1 = (struct pex_obj *)TEST_PEX_INIT(PEX_USE_PIPES, NULL);
+  subargv[1] = (char *)"error";
+  subargv[2] = (char *)NULL;
   TEST_PEX_RUN (pex1, PEX_LAST, "./test-pexecute", subargv, NULL, NULL);
   status = TEST_PEX_GET_STATUS_1 (pex1);
   if (!WIFEXITED (status) || WEXITSTATUS (status) != EXIT_FAILURE)
@@ -264,9 +264,9 @@ main (int argc, char **argv)
 
   /* We redirect stderr to a file to avoid an error message which is
      printed on mingw32 when the child calls abort.  */
-  pex1 = TEST_PEX_INIT (PEX_USE_PIPES, NULL);
-  subargv[1] = "abort";
-  subargv[2] = NULL;
+  pex1 = (struct pex_obj *)TEST_PEX_INIT(PEX_USE_PIPES, NULL);
+  subargv[1] = (char *)"abort";
+  subargv[2] = (char *)NULL;
   TEST_PEX_RUN (pex1, PEX_LAST, "./test-pexecute", subargv, NULL, "temp.z");
   status = TEST_PEX_GET_STATUS_1 (pex1);
   if (!WIFSIGNALED (status) || WTERMSIG (status) != SIGABRT)
@@ -274,26 +274,26 @@ main (int argc, char **argv)
   pex_free (pex1);
   remove ("temp.z");
 
-  pex1 = TEST_PEX_INIT (PEX_USE_PIPES, "temp");
-  subargv[1] = "echo";
-  subargv[2] = "foo";
-  subargv[3] = NULL;
+  pex1 = (struct pex_obj *)TEST_PEX_INIT(PEX_USE_PIPES, "temp");
+  subargv[1] = (char *)"echo";
+  subargv[2] = (char *)"foo";
+  subargv[3] = (char *)NULL;
   TEST_PEX_RUN (pex1, 0, "./test-pexecute", subargv, NULL, NULL);
-  e = TEST_PEX_READ_OUTPUT (pex1);
+  e = (FILE *)TEST_PEX_READ_OUTPUT(pex1);
   CHECK_LINE (e, "foo");
   if (TEST_PEX_GET_STATUS_1 (pex1) != 0)
     ERROR ("echo exit status failed");
   pex_free (pex1);
 
-  pex1 = TEST_PEX_INIT (PEX_USE_PIPES, "temp");
-  subargv[1] = "echo";
-  subargv[2] = "bar";
-  subargv[3] = NULL;
+  pex1 = (struct pex_obj *)TEST_PEX_INIT(PEX_USE_PIPES, "temp");
+  subargv[1] = (char *)"echo";
+  subargv[2] = (char *)"bar";
+  subargv[3] = (char *)NULL;
   TEST_PEX_RUN (pex1, PEX_SUFFIX, "./test-pexecute", subargv, ".x", NULL);
-  subargv[1] = "copy";
-  subargv[2] = NULL;
+  subargv[1] = (char *)"copy";
+  subargv[2] = (char *)NULL;
   TEST_PEX_RUN (pex1, PEX_SUFFIX, "./test-pexecute", subargv, ".y", NULL);
-  e = TEST_PEX_READ_OUTPUT (pex1);
+  e = (FILE *)TEST_PEX_READ_OUTPUT(pex1);
   CHECK_LINE (e, "bar");
   TEST_PEX_GET_STATUS (pex1, 2, statuses);
   if (!WIFEXITED (statuses[0]) || WEXITSTATUS (statuses[0]) != EXIT_SUCCESS
@@ -303,15 +303,15 @@ main (int argc, char **argv)
   if (fopen ("temp.x", "r") != NULL || fopen ("temp.y", "r") != NULL)
     ERROR ("temporary files exist");
 
-  pex1 = TEST_PEX_INIT (0, "temp");
-  subargv[1] = "echo";
-  subargv[2] = "bar";
-  subargv[3] = NULL;
+  pex1 = (struct pex_obj *)TEST_PEX_INIT(0, "temp");
+  subargv[1] = (char *)"echo";
+  subargv[2] = (char *)"bar";
+  subargv[3] = (char *)NULL;
   TEST_PEX_RUN (pex1, PEX_SUFFIX, "./test-pexecute", subargv, ".x", NULL);
-  subargv[1] = "copy";
-  subargv[2] = NULL;
+  subargv[1] = (char *)"copy";
+  subargv[2] = (char *)NULL;
   TEST_PEX_RUN (pex1, PEX_SUFFIX, "./test-pexecute", subargv, ".y", NULL);
-  e = TEST_PEX_READ_OUTPUT (pex1);
+  e = (FILE *)TEST_PEX_READ_OUTPUT(pex1);
   CHECK_LINE (e, "bar");
   TEST_PEX_GET_STATUS (pex1, 2, statuses);
   if (!WIFEXITED (statuses[0]) || WEXITSTATUS (statuses[0]) != EXIT_SUCCESS
@@ -321,15 +321,15 @@ main (int argc, char **argv)
   if (fopen ("temp.x", "r") != NULL || fopen ("temp.y", "r") != NULL)
     ERROR ("temporary files exist");
 
-  pex1 = TEST_PEX_INIT (PEX_SAVE_TEMPS, "temp");
-  subargv[1] = "echo";
-  subargv[2] = "quux";
-  subargv[3] = NULL;
+  pex1 = (struct pex_obj *)TEST_PEX_INIT(PEX_SAVE_TEMPS, "temp");
+  subargv[1] = (char *)"echo";
+  subargv[2] = (char *)"quux";
+  subargv[3] = (char *)NULL;
   TEST_PEX_RUN (pex1, PEX_SUFFIX, "./test-pexecute", subargv, ".x", NULL);
-  subargv[1] = "copy";
-  subargv[2] = NULL;
+  subargv[1] = (char *)"copy";
+  subargv[2] = (char *)NULL;
   TEST_PEX_RUN (pex1, PEX_SUFFIX, "./test-pexecute", subargv, ".y", NULL);
-  e = TEST_PEX_READ_OUTPUT (pex1);
+  e = (FILE *)TEST_PEX_READ_OUTPUT(pex1);
   CHECK_LINE (e, "quux");
   TEST_PEX_GET_STATUS (pex1, 2, statuses);
   if (!WIFEXITED (statuses[0]) || WEXITSTATUS (statuses[0]) != EXIT_SUCCESS
@@ -349,15 +349,15 @@ main (int argc, char **argv)
   remove ("temp.x");
   remove ("temp.y");
 
-  pex1 = TEST_PEX_INIT (PEX_USE_PIPES, "temp");
-  subargv[1] = "echoerr";
-  subargv[2] = "one";
-  subargv[3] = "two";
-  subargv[4] = NULL;
+  pex1 = (struct pex_obj *)TEST_PEX_INIT(PEX_USE_PIPES, "temp");
+  subargv[1] = (char *)"echoerr";
+  subargv[2] = (char *)"one";
+  subargv[3] = (char *)"two";
+  subargv[4] = (char *)NULL;
   TEST_PEX_RUN (pex1, PEX_SUFFIX, "./test-pexecute", subargv, ".x", "temp2.x");
-  subargv[1] = "write";
-  subargv[2] = "temp2.y";
-  subargv[3] = NULL;
+  subargv[1] = (char *)"write";
+  subargv[2] = (char *)"temp2.y";
+  subargv[3] = (char *)NULL;
   TEST_PEX_RUN (pex1, PEX_SUFFIX, "./test-pexecute", subargv, ".y", NULL);
   TEST_PEX_GET_STATUS (pex1, 2, statuses);
   if (!WIFEXITED (statuses[0]) || WEXITSTATUS (statuses[0]) != EXIT_SUCCESS
@@ -387,9 +387,9 @@ main (int argc, char **argv)
     char errbuf1[1000];
     char errbuf2[1000];
 
-    subargv[1] = "echo";
-    subargv[2] = "oldpexecute";
-    subargv[3] = NULL;
+    subargv[1] = (char *)"echo";
+    subargv[2] = (char *)"oldpexecute";
+    subargv[3] = (char *)NULL;
     pid1 = pexecute ("./test-pexecute", subargv, "test-pexecute", "temp",
 		     &errmsg_fmt, &errmsg_arg, PEXECUTE_FIRST);
     if (pid1 < 0)
@@ -399,9 +399,9 @@ main (int argc, char **argv)
 	FATAL_ERROR (errbuf2, 0);
       }
 
-    subargv[1] = "write";
-    subargv[2] = "temp.y";
-    subargv[3] = NULL;
+    subargv[1] = (char *)"write";
+    subargv[2] = (char *)"temp.y";
+    subargv[3] = (char *)NULL;
     pid2 = pexecute ("./test-pexecute", subargv, "test-pexecute", "temp",
 		     &errmsg_fmt, &errmsg_arg, PEXECUTE_LAST);
     if (pid2 < 0)
@@ -452,7 +452,7 @@ do_cmd (int argc, char **argv)
    r.rlim_max = 0;
    setrlimit (RLIMIT_CORE, &r);
  }
-#endif
+#endif /* RLIMIT_CORE */
 
   s = argv[1];
   if (strcmp (s, "exit") == 0)
@@ -520,3 +520,5 @@ do_cmd (int argc, char **argv)
 
   exit (EXIT_FAILURE);
 }
+
+/* EOF */

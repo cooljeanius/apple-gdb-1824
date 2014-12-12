@@ -1,5 +1,14 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+
+#ifndef HAVE_CONFIG_H
+# define HAVE_CONFIG_H 1
+#endif /* !HAVE_CONFIG_H */
+
+#ifndef _APPLE_GDB_TOP_SRC_CONFIG_H
+# define _APPLE_GDB_TOP_SRC_CONFIG_H 1
+
+
 /* Define if building universal (internal helper macro) */
 #undef AC_APPLE_UNIVERSAL_BUILD
 
@@ -33,6 +42,10 @@
 
 /* Define to 1 if you have the `btowc' function. */
 #undef HAVE_BTOWC
+
+/* Define to 1 if you have the declaration of `basename', and to 0 if you
+   don't. */
+#undef HAVE_DECL_BASENAME
 
 /* Define to 1 if you have the declaration of `getenv', and to 0 if you don't.
    */
@@ -627,3 +640,7 @@
 /* Define to the type of an unsigned integer type of width exactly 8 bits if
    such a type exists and the standard includes do not define it. */
 #undef uint8_t
+
+
+#endif /* !_APPLE_GDB_TOP_SRC_CONFIG_H */
+

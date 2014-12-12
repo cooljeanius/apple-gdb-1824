@@ -3727,7 +3727,6 @@ else
   RC="$ac_cv_prog_RC"
 fi
 
-
 if test "${GCC}" = "yes" ; then
     if test "x${AR}" = "x"; then
         test -z "${AR}"
@@ -4731,7 +4730,6 @@ fi
 
 done
 
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SEH support in compiler" >&5
 $as_echo_n "checking for SEH support in compiler... " >&6; }
 if ${tcl_cv_seh+:} false; then :
@@ -4772,7 +4770,7 @@ fi
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $tcl_cv_seh" >&5
 $as_echo "$tcl_cv_seh" >&6; }
-if test "$tcl_cv_seh" = "no" ; then
+if test "x${tcl_cv_seh}" = "xno"; then
 
 $as_echo "#define HAVE_NO_SEH 1" >>confdefs.h
 
@@ -5313,8 +5311,6 @@ fi
 
 done
 
-
-
 #------------------------------------------------------------------------
 # tclConfig.sh refers to this by a different name
 #------------------------------------------------------------------------
@@ -5466,7 +5462,6 @@ fi
 
 done
 
-
 # Checks for declarations.
 ac_fn_c_check_decl "$LINENO" "LC_TIME" "ac_cv_have_decl_LC_TIME" "$ac_includes_default"
 if test "x$ac_cv_have_decl_LC_TIME" = xyes; then :
@@ -5478,7 +5473,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_LC_TIME $ac_have_decl
 _ACEOF
-
 ac_fn_c_check_decl "$LINENO" "__try" "ac_cv_have_decl___try" "$ac_includes_default"
 if test "x$ac_cv_have_decl___try" = xyes; then :
   ac_have_decl=1
@@ -5489,7 +5483,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL___TRY $ac_have_decl
 _ACEOF
-
 
 # Checks for typedefs, structures, and compiler characteristics.
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether byte ordering is bigendian" >&5
@@ -5805,7 +5798,6 @@ _ACEOF
 
 
 fi
-
 ac_fn_c_check_member "$LINENO" "TclWinProcs" "createHardLinkProc" "ac_cv_member_TclWinProcs_createHardLinkProc" "$ac_includes_default"
 if test "x$ac_cv_member_TclWinProcs_createHardLinkProc" = xyes; then :
 
@@ -5815,7 +5807,6 @@ _ACEOF
 
 
 fi
-
 ac_fn_c_check_member "$LINENO" "TclWinProcs" "getFileAttributesExProc" "ac_cv_member_TclWinProcs_getFileAttributesExProc" "$ac_includes_default"
 if test "x$ac_cv_member_TclWinProcs_getFileAttributesExProc" = xyes; then :
 
@@ -5825,7 +5816,6 @@ _ACEOF
 
 
 fi
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether struct tm is in sys/time.h or time.h" >&5
 $as_echo_n "checking whether struct tm is in sys/time.h or time.h... " >&6; }
 if ${ac_cv_struct_tm+:} false; then :
@@ -5959,7 +5949,6 @@ cat >>confdefs.h <<_ACEOF
 #define SIZEOF_INT $ac_cv_sizeof_int
 _ACEOF
 
-
 # The cast to long int works around a bug in the HP C Compiler,
 # see AC_CHECK_SIZEOF for more information.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking alignment of int" >&5
@@ -5994,7 +5983,6 @@ cat >>confdefs.h <<_ACEOF
 #define ALIGNOF_INT $ac_cv_alignof_int
 _ACEOF
 
-
 # The cast to long int works around a bug in the HP C Compiler
 # version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
 # declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
@@ -6026,7 +6014,6 @@ $as_echo "$ac_cv_sizeof_char" >&6; }
 cat >>confdefs.h <<_ACEOF
 #define SIZEOF_CHAR $ac_cv_sizeof_char
 _ACEOF
-
 
 # The cast to long int works around a bug in the HP C Compiler,
 # see AC_CHECK_SIZEOF for more information.
@@ -6061,7 +6048,6 @@ $as_echo "$ac_cv_alignof_char" >&6; }
 cat >>confdefs.h <<_ACEOF
 #define ALIGNOF_CHAR $ac_cv_alignof_char
 _ACEOF
-
 
 
 # Checks for library functions.
@@ -6661,7 +6647,6 @@ _ACEOF
 fi
 done
 
-
 #--------------------------------------------------------------------
 # Perform final evaluations of variables with possible substitutions.
 #--------------------------------------------------------------------
@@ -6730,91 +6715,11 @@ fi
 
 
 
-# empty on win
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# win/tcl.m4 does NOT set (CFLAGS)
-
-
-
-
-
-
-
-# win/tcl.m4 does NOT set (LDFLAGS)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# empty on win, but needs sub'ing
-
-
-
-
-
-
-
-
-
-
-# win only
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Output.
 ac_config_files="$ac_config_files Makefile tclConfig.sh tcl.hpj"
-
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure

@@ -15,6 +15,10 @@
 /* Define to 1 if you have the <db.h> header file. */
 #undef HAVE_DB_H
 
+/* Define to 1 if you have the declaration of `getenv', and to 0 if you don't.
+   */
+#undef HAVE_DECL_GETENV
+
 /* Define to 1 if you have the <errno.h> header file. */
 #undef HAVE_ERRNO_H
 

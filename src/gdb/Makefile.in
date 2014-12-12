@@ -174,8 +174,10 @@ READLINE_CFLAGS = -I$(READLINE_SRC)/..
 
 WARN_CFLAGS = @WARN_CFLAGS@
 WERROR_CFLAGS = @WERROR_CFLAGS@
+WARN_LDFLAGS = @WARN_LDFLAGS@
 GDB_WARN_CFLAGS = $(WARN_CFLAGS)
 GDB_WERROR_CFLAGS = $(WERROR_CFLAGS)
+GDB_WARN_LDFLAGS = $(WARN_LDFLAGS)
 
 # Where is the INTL library? Typically in ../intl.
 INTL_DIR = ../intl
@@ -414,18 +416,18 @@ C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 
 # CFLAGS is specifically reserved for setting from the command line
 # when running make.  I.E.  "make CFLAGS=-Wmissing-prototypes".
-CFLAGS = @CFLAGS@ $(C_ARCHFLAGS)
+CFLAGS = @CFLAGS@
 
 # Need to pass this to testsuite for "make check". Probably should be
 # consistent with top-level Makefile.in and gdb/testsuite/Makefile.in
 # so "make check" has the same result no matter where it is run.
-CXXFLAGS = -ggdb -O
+CXXFLAGS = -ggdb -O1
 
 CONFIGURED_CXXFLAGS = @CXXFLAGS@
 
 # INTERNAL_CFLAGS is the aggregate of all other *CFLAGS macros.
 INTERNAL_WARN_CFLAGS = \
-	$(CFLAGS) $(GLOBAL_CFLAGS) $(PROFILE_CFLAGS) \
+	$(CFLAGS) $(C_ARCHFLAGS) $(GLOBAL_CFLAGS) $(PROFILE_CFLAGS) \
 	$(GDB_CFLAGS) $(OPCODES_CFLAGS) $(READLINE_CFLAGS) \
 	$(BFD_CFLAGS) $(INCLUDE_CFLAGS) \
 	$(MMALLOC_CFLAGS) \
@@ -444,7 +446,7 @@ LIBSQLITE3 = -lsqlite3
 # I think it is perfectly reasonable for a user to set -pg in CFLAGS
 # and have it work; that is why CFLAGS is here.
 # PROFILE_CFLAGS is _not_ included, however, because we use monstartup.
-INTERNAL_LDFLAGS = $(CFLAGS) $(GLOBAL_CFLAGS) $(MH_LDFLAGS) $(LDFLAGS) $(CONFIG_LDFLAGS) $(INTL_LDFLAGS)
+INTERNAL_LDFLAGS = $(CFLAGS) $(C_ARCHFLAGS) $(GLOBAL_CFLAGS) $(MH_LDFLAGS) $(LDFLAGS) $(CONFIG_LDFLAGS) $(INTL_LDFLAGS) $(GDB_WARN_LDFLAGS)
 
 # If your system is missing alloca(), or, more likely, it is there but
 # it does NOT work, then refer to libiberty.
@@ -524,7 +526,7 @@ FLAGS_TO_PASS = \
 	"AR=$(AR)" \
 	"AR_FLAGS=$(AR_FLAGS)" \
 	"CC=$(CC)" \
-	"CFLAGS=$(CFLAGS)" \
+	"CFLAGS=$(CFLAGS) $(C_ARCHFLAGS)" \
 	"CXX=$(CXX)" \
 	"CXXFLAGS=$(CXXFLAGS)" \
 	"DLLTOOL=$(DLLTOOL)" \
@@ -583,7 +585,7 @@ TARGET_FLAGS_TO_PASS = \
 	"against=$(against)" \
 	'CC=$$(CC_FOR_TARGET)' \
 	"CC_FOR_TARGET=$(CC_FOR_TARGET)" \
-	"CFLAGS=$(CFLAGS)" \
+	"CFLAGS=$(CFLAGS) $(C_ARCHFLAGS)" \
 	'CXX=$$(CXX_FOR_TARGET)' \
 	"CXX_FOR_TARGET=$(CXX_FOR_TARGET)" \
 	"CXXFLAGS=$(CXXFLAGS)" \
@@ -1421,6 +1423,7 @@ distclean: clean
 	rm -f config.log config.cache
 	rm -f Makefile
 	-rm -f .DS_Store autoscan.log
+	-rm -rf autom4te.cache || rmdir autom4te.cache
 
 maintainer-clean: local-maintainer-clean do-maintainer-clean distclean
 realclean: maintainer-clean

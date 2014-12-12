@@ -46,10 +46,11 @@
 #  include "xmalloc.h"
 # endif /* NO_XMALLOC */
 
-# if (defined(DEPENDS_ON_LIBCHARSET) && DEPENDS_ON_LIBCHARSET) || defined(HAVE_LIBCHARSET_H)
+# if (defined(DEPENDS_ON_LIBCHARSET) && DEPENDS_ON_LIBCHARSET) || \
+     defined(HAVE_LIBCHARSET_H)
 #  include <libcharset.h>
 # endif /* DEPENDS_ON_LIBCHARSET || HAVE_LIBCHARSET_H */
-# if DEPENDS_ON_LIBICONV && HAVE_ICONV
+# if DEPENDS_ON_LIBICONV && (defined(HAVE_ICONV) && HAVE_ICONV)
 #  include <iconv.h>
 # endif /* DEPENDS_ON_LIBICONV && HAVE_ICONV */
 # if (defined(DEPENDS_ON_LIBINTL) && DEPENDS_ON_LIBINTL) && ENABLE_NLS
@@ -145,7 +146,8 @@ void set_relocation_prefix(const char *orig_prefix_arg,
 # if defined(DEPENDS_ON_LIBCHARSET) && DEPENDS_ON_LIBCHARSET
   libcharset_set_relocation_prefix(orig_prefix_arg, curr_prefix_arg);
 # endif /* DEPENDS_ON_LIBCHARSET */
-# if DEPENDS_ON_LIBICONV && HAVE_ICONV && (_LIBICONV_VERSION >= 0x0109)
+# if DEPENDS_ON_LIBICONV && (defined(HAVE_ICONV) && HAVE_ICONV) && \
+     (_LIBICONV_VERSION >= 0x0109)
   libiconv_set_relocation_prefix(orig_prefix_arg, curr_prefix_arg);
 # endif /* DEPENDS_ON_LIBICONV && HAVE_ICONV && (version) */
 # if (defined(DEPENDS_ON_LIBINTL) && DEPENDS_ON_LIBINTL) && ENABLE_NLS && \

@@ -142,7 +142,7 @@ enum ia64_dependency_mode
 {
   IA64_DV_RAW,
   IA64_DV_WAW,
-  IA64_DV_WAR,
+  IA64_DV_WAR/*,*/
 };
 
 enum ia64_dependency_semantics
@@ -154,7 +154,7 @@ enum ia64_dependency_semantics
   IA64_DVS_INSTR,
   IA64_DVS_SPECIFIC,
   IA64_DVS_STOP,
-  IA64_DVS_OTHER,
+  IA64_DVS_OTHER/*,*/
 };
 
 enum ia64_resource_specifier
@@ -190,7 +190,7 @@ enum ia64_resource_specifier
   IA64_RS_CRX, /* CRs not in RS_CR */
   IA64_RS_PSR, /* PSR bits */
   IA64_RS_RSE, /* implementation-specific RSE resources */
-  IA64_RS_AR_FPSR,
+  IA64_RS_AR_FPSR/*,*/
 };
 
 enum ia64_rse_resource
@@ -202,7 +202,7 @@ enum ia64_rse_resource
   IA64_RSE_BSPLOAD,
   IA64_RSE_RNATBITINDEX,
   IA64_RSE_CFLE,
-  IA64_RSE_NDIRTY,
+  IA64_RSE_NDIRTY/*,*/
 };
 
 /* Information about a given resource dependency */
@@ -315,11 +315,14 @@ enum ia64_operand_class
     IA64_OPND_CLASS_REG,	/* register */
     IA64_OPND_CLASS_IND,	/* indirect register */
     IA64_OPND_CLASS_ABS,	/* absolute value */
-    IA64_OPND_CLASS_REL,	/* IP-relative value */
+    IA64_OPND_CLASS_REL/*,*/	/* IP-relative value */
   };
 
-/* The operands table is an array of struct ia64_operand.  */
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
+/* The operands table is an array of struct ia64_operand: */
 struct ia64_operand
 {
   enum ia64_operand_class class;
@@ -388,5 +391,9 @@ extern const struct ia64_dependency *ia64_find_dependency (int index);
 /* To avoid circular library dependencies, this array is implemented
    in bfd/cpu-ia64-opc.c: */
 extern const struct ia64_operand elf64_ia64_operands[IA64_OPND_COUNT];
+
+#ifdef	__cplusplus
+}
+#endif /* __cplusplus */
 
 #endif /* opcode_ia64_h */

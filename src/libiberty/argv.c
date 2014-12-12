@@ -27,14 +27,18 @@ Boston, MA 02110-1301, USA.  */
 #endif
 #include "ansidecl.h"
 #include "libiberty.h"
+#include "safe-ctype.h"
 
-#define ISBLANK(ch) ((ch) == ' ' || (ch) == '\t')
+#ifndef ISBLANK
+# define ISBLANK(ch) ((ch) == ' ' || (ch) == '\t')
+#endif /* !ISBLANK */
 
 /*  Routines imported from standard C runtime libraries. */
 
 #include <stddef.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #ifndef NULL
 #define NULL 0
@@ -66,16 +70,16 @@ dupargv (char **argv)
 {
   int argc;
   char **copy;
-  
+
   if (argv == NULL)
     return NULL;
-  
+
   /* the vector */
   for (argc = 0; argv[argc] != NULL; argc++);
   copy = (char **) malloc ((argc + 1) * sizeof (char *));
   if (copy == NULL)
     return NULL;
-  
+
   /* the strings */
   for (argc = 0; argv[argc] != NULL; argc++)
     {
@@ -117,6 +121,24 @@ void freeargv (char **vector)
 	}
       free (vector);
     }
+}
+
+static void
+consume_whitespace (const char **input)
+{
+  while (ISSPACE (**input))
+  {
+    (*input)++;
+  }
+}
+
+static int
+only_whitespace (const char* input)
+{
+  while (*input != EOS && ISSPACE (*input))
+    input++;
+
+  return (*input == EOS);
 }
 
 /*
@@ -288,6 +310,213 @@ char **buildargv (const char *input)
   return (argv);
 }
 
+/*
+
+@deftypefn Extension int writeargv (const char **@var{argv}, FILE *@var{file})
+
+Write each member of ARGV, handling all necessary quoting, to the file
+named by FILE, separated by whitespace.  Return 0 on success, non-zero
+if an error occurred while writing to FILE.
+
+@end deftypefn
+
+*/
+
+int
+writeargv (char **argv, FILE *f)
+{
+  int status = 0;
+
+  if (f == NULL)
+    return 1;
+
+  while (*argv != NULL)
+    {
+      const char *arg = *argv;
+
+      while (*arg != EOS)
+        {
+          char c = *arg;
+
+          if (ISSPACE(c) || c == '\\' || c == '\'' || c == '"')
+            if (EOF == fputc ('\\', f))
+              {
+                status = 1;
+                goto done;
+              }
+
+          if (EOF == fputc (c, f))
+            {
+              status = 1;
+              goto done;
+            }
+          arg++;
+        }
+
+      if (EOF == fputc ('\n', f))
+        {
+          status = 1;
+          goto done;
+        }
+      argv++;
+    }
+
+ done:
+  return status;
+}
+
+/*
+
+ @deftypefn Extension void expandargv (int *@var{argcp}, char ***@var{argvp})
+
+ The @var{argcp} and @code{argvp} arguments are pointers to the usual
+ @code{argc} and @code{argv} arguments to @code{main}.  This function
+ looks for arguments that begin with the character @samp{@@}.  Any such
+ arguments are interpreted as ``response files''.  The contents of the
+ response file are interpreted as additional command line options.  In
+ particular, the file is separated into whitespace-separated strings;
+ each such string is taken as a command-line option.  The new options
+ are inserted in place of the option naming the response file, and
+ @code{*argcp} and @code{*argvp} will be updated.  If the value of
+ @code{*argvp} is modified by this function, then the new value has
+ been dynamically allocated and can be deallocated by the caller with
+ @code{freeargv}.  However, most callers will simply call
+ @code{expandargv} near the beginning of @code{main} and allow the
+ operating system to free the memory when the program exits.
+
+ @end deftypefn
+
+ */
+
+void
+expandargv (int *argcp, char ***argvp)
+{
+  /* The argument we are currently processing.  */
+  int i = 0;
+  /* Non-zero if ***argvp has been dynamically allocated.  */
+  int argv_dynamic = 0;
+  /* Limit the number of response files that we parse in order
+   to prevent infinite recursion.  */
+  unsigned int iteration_limit = 2000;
+  /* Loop over the arguments, handling response files.  We always skip
+   ARGVP[0], as that is the name of the program being run.  */
+  while (++i < *argcp)
+    {
+      /* The name of the response file.  */
+      const char *filename;
+      /* The response file.  */
+      FILE *f;
+      /* An upper bound on the number of characters in the response
+         file.  */
+      long pos;
+      /* The number of characters in the response file, when actually
+         read.  */
+      size_t len;
+      /* A dynamically allocated buffer used to hold options read from a
+         response file.  */
+      char *buffer;
+      /* Dynamically allocated storage for the options read from the
+         response file.  */
+      char **file_argv;
+      /* The number of options read from the response file, if any.  */
+      size_t file_argc;
+      /* We are only interested in options of the form "@file".  */
+      filename = (*argvp)[i];
+      if (filename[0] != '@')
+        continue;
+      /* If we have iterated too many times then stop.  */
+      if (-- iteration_limit == 0)
+        {
+          fprintf (stderr, "%s: error: too many @-files encountered\n", (*argvp)[0]);
+          xexit (1);
+        }
+      /* Read the contents of the file.  */
+      f = fopen (++filename, "r");
+      if (!f)
+        continue;
+      if (fseek (f, 0L, SEEK_END) == -1)
+        goto error;
+      pos = ftell (f);
+      if (pos == -1)
+        goto error;
+      if (fseek (f, 0L, SEEK_SET) == -1)
+        goto error;
+      buffer = (char *) xmalloc (pos * sizeof (char) + 1);
+      len = fread (buffer, sizeof (char), pos, f);
+      if (len != (size_t) pos
+          /* On Windows, fread may return a value smaller than POS,
+             due to CR/LF->CR translation when reading text files.
+             That does not in-and-of itself indicate failure.  */
+          && ferror (f))
+        goto error;
+      /* Add a NUL terminator.  */
+      buffer[len] = '\0';
+      /* If the file is empty or contains only whitespace, buildargv would
+         return a single empty argument.  In this context we want no arguments,
+         instead.  */
+      if (only_whitespace (buffer))
+        {
+          file_argv = (char **) xmalloc (sizeof (char *));
+          file_argv[0] = NULL;
+        }
+      else
+        /* Parse the string.  */
+        file_argv = buildargv (buffer);
+      /* If *ARGVP is not already dynamically allocated, copy it.  */
+      if (!argv_dynamic)
+        *argvp = dupargv (*argvp);
+      /* Count the number of arguments.  */
+      file_argc = 0;
+      while (file_argv[file_argc])
+        ++file_argc;
+      /* Now, insert FILE_ARGV into ARGV.  The "+1" below handles the
+         NULL terminator at the end of ARGV.  */
+      *argvp = ((char **)
+                xrealloc (*argvp,
+                          (*argcp + file_argc + 1) * sizeof (char *)));
+      memmove (*argvp + i + file_argc, *argvp + i + 1,
+               (*argcp - i) * sizeof (char *));
+      memcpy (*argvp + i, file_argv, file_argc * sizeof (char *));
+      /* The original option has been replaced by all the new
+         options.  */
+      *argcp += file_argc - 1;
+      /* Free up memory allocated to process the response file.  We do
+         not use freeargv because the individual options in FILE_ARGV
+         are now in the main ARGV.  */
+      free (file_argv);
+      free (buffer);
+      /* Rescan all of the arguments just read to support response
+         files that include other response files.  */
+      --i;
+    error:
+      /* We're all done with the file now.  */
+      fclose (f);
+    }
+}
+
+/*
+
+@deftypefn Extension int countargv (char **@var{argv})
+
+Return the number of elements in @var{argv}.
+Returns zero if @var{argv} is NULL.
+
+@end deftypefn
+
+*/
+
+int
+countargv (char **argv)
+{
+  int argc;
+
+  if (argv == NULL)
+    return 0;
+  for (argc = 0; argv[argc] != NULL; argc++)
+    continue;
+  return argc;
+}
+
 #ifdef MAIN
 
 /* Simple little test driver. */
@@ -301,7 +530,7 @@ static const char *const tests[] =
   "arg 'Jack said \\'hi\\'' has single quotes",
   "arg 'Jack said \\\"hi\\\"' has double quotes",
   "a b c d e f g h i j k l m n o p q r s t u v w x y z 1 2 3 4 5 6 7 8 9",
-  
+
   /* This should be expanded into only one argument.  */
   "trailing-whitespace ",
 

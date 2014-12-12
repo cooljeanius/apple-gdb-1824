@@ -131,63 +131,62 @@ binary_get_symtab_upper_bound (bfd *abfd ATTRIBUTE_UNUSED)
 /* Create a symbol name based on the bfd's filename.  */
 
 static char *
-mangle_name (bfd *abfd, char *suffix)
+mangle_name(bfd *abfd, char *suffix)
 {
   bfd_size_type size;
   char *buf;
   char *p;
 
-  size = (strlen (bfd_get_filename (abfd))
-	  + strlen (suffix)
-	  + sizeof "_binary__");
+  size = (strlen(bfd_get_filename(abfd))
+	  + strlen(suffix)
+	  + sizeof("_binary__"));
 
-  buf = bfd_alloc (abfd, size);
+  buf = (char *)bfd_alloc(abfd, size);
   if (buf == NULL)
     return "";
 
-  sprintf (buf, "_binary_%s_%s", bfd_get_filename (abfd), suffix);
+  sprintf(buf, "_binary_%s_%s", bfd_get_filename(abfd), suffix);
 
-  /* Change any non-alphanumeric characters to underscores.  */
+  /* Change any non-alphanumeric characters to underscores: */
   for (p = buf; *p; p++)
-    if (! ISALNUM (*p))
+    if (! ISALNUM(*p))
       *p = '_';
 
   return buf;
 }
 
-/* Return the symbol table.  */
-
+/* Return the symbol table: */
 static long
-binary_canonicalize_symtab (bfd *abfd, asymbol **alocation)
+binary_canonicalize_symtab(bfd *abfd, asymbol **alocation)
 {
-  asection *sec = (asection *) abfd->tdata.any;
+  asection *sec = (asection *)abfd->tdata.any;
   asymbol *syms;
   unsigned int i;
-  bfd_size_type amt = BIN_SYMS * sizeof (asymbol);
+  bfd_size_type amt = (BIN_SYMS * sizeof(asymbol));
 
-  syms = bfd_alloc (abfd, amt);
+  syms = (asymbol *)bfd_alloc(abfd, amt);
   if (syms == NULL)
     return 0;
 
-  /* Start symbol.  */
+  /* Start symbol: */
   syms[0].the_bfd = abfd;
-  syms[0].name = mangle_name (abfd, "start");
+  syms[0].name = mangle_name(abfd, "start");
   syms[0].value = 0;
   syms[0].flags = BSF_GLOBAL;
   syms[0].section = sec;
   syms[0].udata.p = NULL;
 
-  /* End symbol.  */
+  /* End symbol: */
   syms[1].the_bfd = abfd;
-  syms[1].name = mangle_name (abfd, "end");
+  syms[1].name = mangle_name(abfd, "end");
   syms[1].value = sec->size;
   syms[1].flags = BSF_GLOBAL;
   syms[1].section = sec;
   syms[1].udata.p = NULL;
 
-  /* Size symbol.  */
+  /* Size symbol: */
   syms[2].the_bfd = abfd;
-  syms[2].name = mangle_name (abfd, "size");
+  syms[2].name = mangle_name(abfd, "size");
   syms[2].value = sec->size;
   syms[2].flags = BSF_GLOBAL;
   syms[2].section = bfd_abs_section_ptr;

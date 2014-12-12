@@ -32,8 +32,7 @@
 .gdbinit
 .gdb_history
 Makefile
-Makefile.orig
-Makefile_orig
+Makefile*orig
 TAGS
 TAGS.sub
 TEMP

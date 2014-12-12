@@ -856,7 +856,7 @@ _nl_find_msg(struct loaded_l10nfile *domain_file,
       resultlen = domain->trans_sysdep_tab[(act - nstrings)].length;
   }
 
-#if defined _LIBC || HAVE_ICONV
+#if defined(_LIBC) || (defined(HAVE_ICONV) && HAVE_ICONV)
   if (domain->codeset_cntr
       != ((domainbinding != NULL) ? domainbinding->codeset_cntr : 0)) {
       /* The domain's codeset has changed through bind_textdomain_codeset()

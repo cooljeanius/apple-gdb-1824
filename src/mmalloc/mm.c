@@ -1,11 +1,11 @@
-/* Build the entire mmalloc library as a single object module. This
-   avoids having clients pick up part of their allocation routines
-   from mmalloc and part from libc, which results in undefined
-   behavior.  It should also still be possible to build the library
-   as a standard library with multiple objects.
-
-   Copyright 1996, 2000 Free Software Foundation
-
+/* mm.c: Build the entire mmalloc library as a single object module. This
+ * avoids having clients pick up part of their allocation routines
+ * from mmalloc and part from libc, which results in undefined
+ * behavior.  It should also still be possible to build the library
+ * as a standard library with multiple objects.
+ *
+ * Copyright 1996, 2000 Free Software Foundation  */
+/*
 The GNU C Library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Library General Public License as
 published by the Free Software Foundation; either version 2 of the
@@ -41,3 +41,5 @@ Boston, MA 02111-1307, USA. */
 #include "malloc-sup.c"
 #include "pagecheck-sup.c"
 #include "check-sup.c"
+
+/* EOF */

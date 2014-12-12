@@ -199,7 +199,7 @@ static char *xstrdup (const char *);
 # define YY_YY_NLMHEADER_H_INCLUDED
 /* Enabling traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -248,43 +248,6 @@ extern int yydebug;
      QUOTED_STRING = 292
    };
 #endif
-/* Tokens.  */
-#define CHECK 258
-#define CODESTART 259
-#define COPYRIGHT 260
-#define CUSTOM 261
-#define DATE 262
-#define DEBUG 263
-#define DESCRIPTION 264
-#define EXIT 265
-#define EXPORT 266
-#define FLAG_ON 267
-#define FLAG_OFF 268
-#define FULLMAP 269
-#define HELP 270
-#define IMPORT 271
-#define INPUT 272
-#define MAP 273
-#define MESSAGES 274
-#define MODULE 275
-#define MULTIPLE 276
-#define OS_DOMAIN 277
-#define OUTPUT 278
-#define PSEUDOPREEMPTION 279
-#define REENTRANT 280
-#define SCREENNAME 281
-#define SHARELIB 282
-#define STACK 283
-#define START 284
-#define SYNCHRONIZE 285
-#define THREADNAME 286
-#define TYPE 287
-#define VERBOSE 288
-#define VERSIONK 289
-#define XDCDATA 290
-#define STRING 291
-#define QUOTED_STRING 292
-
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -298,7 +261,7 @@ typedef union YYSTYPE
 
 
 /* Line 387 of yacc.c  */
-#line 302 "nlmheader.c"
+#line 265 "nlmheader.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -326,7 +289,7 @@ int yyparse ();
 /* Copy the second part of user declarations.  */
 
 /* Line 390 of yacc.c  */
-#line 330 "nlmheader.c"
+#line 293 "nlmheader.c"
 
 #ifdef short
 # undef short
@@ -652,7 +615,7 @@ static const yytype_uint16 yyrline[] =
 };
 #endif
 
-#if YYDEBUG || YYERROR_VERBOSE || 0
+#if YYDEBUG || YYERROR_VERBOSE || 1
 /* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
@@ -2061,9 +2024,9 @@ yyreduce:
 	      (yyval.string) = (yyvsp[(1) - (1)].string);
 	    else
 	      {
-		(yyval.string) = xmalloc (strlen (symbol_prefix) + strlen ((yyvsp[(1) - (1)].string)) + 2);
-		sprintf ((yyval.string), "%s@%s", symbol_prefix, (yyvsp[(1) - (1)].string));
-		free ((yyvsp[(1) - (1)].string));
+		(yyval.string) = (char *)xmalloc(strlen(symbol_prefix) + strlen((yyvsp[(1) - (1)].string)) + 2);
+		sprintf((yyval.string), "%s@%s", symbol_prefix, (yyvsp[(1) - (1)].string));
+		free((yyvsp[(1) - (1)].string));
 	      }
 	  }
     break;
@@ -2086,7 +2049,7 @@ yyreduce:
 
 
 /* Line 1787 of yacc.c  */
-#line 2090 "nlmheader.c"
+#line 2053 "nlmheader.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2379,7 +2342,7 @@ nlmlex_file_push (const char *name)
 {
   struct input *push;
 
-  push = (struct input *) xmalloc (sizeof (struct input));
+  push = (struct input *)xmalloc(sizeof(struct input));
   *push = current;
   if (nlmlex_file_open (name))
     current.next = push;
@@ -2469,7 +2432,7 @@ static int
 nlmlex_buf_init (void)
 {
   lex_size = 10;
-  lex_buf = xmalloc (lex_size + 1);
+  lex_buf = (char *)xmalloc(lex_size + 1);
   lex_pos = 0;
   return 0;
 }
@@ -2489,7 +2452,7 @@ nlmlex_buf_add (int c)
   if (lex_pos >= lex_size)
     {
       lex_size *= 2;
-      lex_buf = xrealloc (lex_buf, lex_size + 1);
+      lex_buf = (char *)xrealloc(lex_buf, (lex_size + 1));
     }
 
   return lex_buf[lex_pos++] = c;
@@ -2739,7 +2702,7 @@ string_list_cons (char *s, struct string_list *l)
 {
   struct string_list *ret;
 
-  ret = (struct string_list *) xmalloc (sizeof (struct string_list));
+  ret = (struct string_list *)xmalloc(sizeof(struct string_list));
   ret->next = l;
   ret->string = s;
   return ret;
@@ -2766,7 +2729,7 @@ string_list_append1 (struct string_list *l, char *s)
   struct string_list *n;
   register struct string_list **pp;
 
-  n = (struct string_list *) xmalloc (sizeof (struct string_list));
+  n = (struct string_list *)xmalloc(sizeof(struct string_list));
   n->next = NULL;
   n->string = s;
   for (pp = &l; *pp != NULL; pp = &(*pp)->next)
@@ -2784,7 +2747,7 @@ xstrdup (const char *s)
   char *ret;
 
   len = strlen (s);
-  ret = xmalloc (len + 1);
+  ret = (char *)xmalloc(len + 1);
   strcpy (ret, s);
   return ret;
 }

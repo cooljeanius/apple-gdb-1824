@@ -10,13 +10,29 @@ AC_INIT([gdb.hp-testsuite],[1824],[guo@cup.hp.com])
 dnl# bug report address is listed as a "past maintainer" for gdb.hp in
 dnl# MAINTAINERS a few levels up, but there is no current one, so a past
 dnl# one will have to do...
-AC_CONFIG_SRCDIR([gdb.aCC])
+AC_CONFIG_SRCDIR([gdb.aCC])dnl
 
 MY_CC=${CC-cc}
-AC_SUBST([MY_CC])
-AC_CONFIG_AUX_DIR([../../..])
+AC_SUBST([MY_CC])dnl
+AC_CONFIG_AUX_DIR([../../..])dnl
+
+# architecture stuff:
 AC_CANONICAL_TARGET
 
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+  AC_SUBST([BUILD_ARCHITECTURE])
+fi
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  AC_SUBST([HOST_ARCHITECTURE])
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+  AC_SUBST([TARGET_ARCHITECTURE])
+fi
+
+# Programs.
 if test "x${CC}" = "x"; then
   test -z "${CC}"
   AC_PROG_CC
@@ -26,9 +42,10 @@ else
 fi
 AC_PROG_CPP
 
-AC_CHECK_HEADERS([stdio.h])
+# Header(s).
+AC_CHECK_HEADERS([stdio.h])dnl
 
 # Output:
 AC_CONFIG_SUBDIRS([gdb.aCC gdb.base-hp gdb.compat gdb.defects gdb.objdbg])
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile])dnl
 AC_OUTPUT

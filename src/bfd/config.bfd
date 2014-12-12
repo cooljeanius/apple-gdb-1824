@@ -1563,7 +1563,7 @@ case "${targ}" in
     want64=true
     ;;
 
-#if HAVE_host_aout_vec
+#if defined(HAVE_host_aout_vec) && HAVE_host_aout_vec
   tahoe-*-*)
     targ_defvec=host_aout_vec
     targ_underscore=yes

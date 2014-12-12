@@ -46,12 +46,15 @@ static file_ptr iovec_read (struct bfd *nbfd ATTRIBUTE_UNUSED,
   return fread (buf, 1, nbytes, file);
 }
 
+/* can un-ifdef once bfd_openr_iovec() takes a 7th argument: */
+#if 0
 static int
-iovec_stat (struct bfd *abfd ATTRIBUTE_UNUSED, 
+iovec_stat (struct bfd *abfd ATTRIBUTE_UNUSED,
 	    void *stream, struct stat *sb)
 {
-  return fstat (fileno ((FILE*) stream), sb);
+  return fstat(fileno((FILE*)stream), sb);
 }
+#endif /* 0 */
 
 static bfd_boolean
 check_format_any (struct bfd *abfd, bfd_format format)
@@ -85,7 +88,11 @@ main (int argc, const char** argv)
     die ("file not found");
 
   abfd = bfd_openr_iovec (argv[1], 0, iovec_open, file,
-			  iovec_read, NULL, iovec_stat);
+			  iovec_read, NULL
+#if 0
+                          , iovec_stat
+#endif /* 0 */
+                          );
   if (!abfd)
     die ("error opening file");
 

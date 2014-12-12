@@ -1,7 +1,7 @@
 /* coffgrok.c
-   Copyright 1994, 1995, 1997, 1998, 2000, 2001, 2002, 2003, 2004
-   Free Software Foundation, Inc.
-
+ * Copyright 1994, 1995, 1997, 1998, 2000, 2001, 2002, 2003, 2004
+ * Free Software Foundation, Inc.  */
+/*
 This file is part of GNU Binutils.
 
 This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,10 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
    coff->sysroff converter.  It can be tested with coffdump.c.
 
 */
+
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 
 #include "bfd.h"
 #include "libiberty.h"

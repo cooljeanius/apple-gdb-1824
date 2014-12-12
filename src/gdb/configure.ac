@@ -173,7 +173,7 @@ case "${host}" in
 int foo = POSIX_SPAWN_SETEXEC;
     ]])],[gdb_cv_posix_spawn=yes],
          [gdb_cv_posix_spawn=no])
-    AC_MSG_RESULT([${gdb_cv_posix_spawn}])
+    AC_MSG_RESULT([${gdb_cv_posix_spawn}])dnl
 
     if test "x${gdb_cv_posix_spawn}" = "xyes"; then
       AC_DEFINE([USE_POSIX_SPAWN],[1],
@@ -227,7 +227,7 @@ __mach_stack_logging_enumerate_records();
       AC_DEFINE([HAVE_64_BIT_STACK_LOGGING],[1],
                 [Define to 1 to use 64 bit stack logging functions.])
     fi
-    AC_MSG_RESULT([${gdb_cv_stack_logging_64}])
+    AC_MSG_RESULT([${gdb_cv_stack_logging_64}])dnl
 
     if test "x${gdb_cv_stack_logging_64}" = "xno"; then
         AC_CHECK_FUNCS([stack_logging_enumerate_records])
@@ -287,7 +287,7 @@ if test "x${host_vendor}" = "xapple" || test "x${host_cpu}" = "xppc"; then
                         [:])
 fi
 
-AC_MSG_NOTICE([done with first batch of APPLE_LOCAL checks])
+AC_MSG_NOTICE([done with first batch of APPLE_LOCAL checks])dnl
 
 dnl# Set up for gettext. PACKAGE is used when we call bindtextdomain.
 AC_MSG_CHECKING([gettext-related things (Cygnus-style)])
@@ -346,7 +346,7 @@ if test "x${POSUB}" != "x"; then
     fi
   done
   LINGUAS="${XLINGUAS}"
-  AC_MSG_RESULT([${LINGUAS}])
+  AC_MSG_RESULT([${LINGUAS}])dnl
 
   CONFIG_ALL="${CONFIG_ALL} all-po"
   CONFIG_CLEAN="${CONFIG_CLEAN} clean-po"		   
@@ -378,7 +378,7 @@ PACKAGE=gdb
 AC_DEFINE_UNQUOTED([PACKAGE],["${PACKAGE}"],[Name of this package. ])dnl
 AC_SUBST([PACKAGE])dnl
 
-AC_MSG_NOTICE([done with Cygnus gettext checks])
+AC_MSG_NOTICE([done with Cygnus gettext checks])dnl
 
 # We never need to detect it in this sub-configure.
 # But preserve it for config.status --recheck.
@@ -465,10 +465,10 @@ AC_ARG_PROGRAM
 
 # Some system checks.
 m4_ifdef([ACX_LARGEFILE],[
-ACX_LARGEFILE
+  ACX_LARGEFILE
 ],[
-AC_SYS_LARGEFILE
-])
+  AC_SYS_LARGEFILE
+])dnl
 AC_SYS_LONG_FILE_NAMES
 AC_OBJEXT
 
@@ -528,7 +528,7 @@ AC_ARG_ENABLE([tui],
       ;;
     *)
       AC_MSG_ERROR([bad value ${enableval} for --enable-tui]) ;;
-  esac],[enable_tui=no])
+  esac],[enable_tui=no])dnl
 
 # Enable gdbtk.
 AC_ARG_ENABLE([gdbtk],
@@ -624,7 +624,7 @@ if test "${enable_profiling}" = yes ; then
   AC_CACHE_CHECK([whether ${CC} supports -pg],[ac_cv_cc_supports_pg],
     [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[int x;]])],
                        [ac_cv_cc_supports_pg=yes],
-                       [ac_cv_cc_supports_pg=no])])
+                       [ac_cv_cc_supports_pg=no])])dnl
 
   if test "x${ac_cv_cc_supports_pg}" = "xno"; then
    AC_MSG_ERROR([--enable-profiling needs a ${CC} supporting the -pg flag])
@@ -652,7 +652,7 @@ if test "x${REPORT_BUGS_TO}" != "x"; then
 fi
 ],[
 test -z "${REPORT_BUGS_TO}"
-])
+])dnl
 
 # --------------------- #
 # Checks for programs.  #
@@ -748,17 +748,19 @@ AC_PATH_PROG([CODESIGN],[codesign])dnl
 AM_PROG_VALAC([],[],[])
 AC_PROG_YACC
 AX_PROG_BISON([
+  # (might want to check the bison version first before warning)
   AC_MSG_WARN([Actually using bison broke stuff one time when I tried it])
 ],[
+  # (might want to be more specific with this warning message)
   AC_MSG_WARN([Using something other than bison is untested.])
-])
+])dnl##end bison conditional
 
 AC_CHECK_TOOL([DLLTOOL],[dlltool])dnl
 AC_CHECK_TOOL([WINDRES],[windres])dnl
 
 # Needed for GNU/Hurd.
 # (and for separate but similar reasons for OS X)
-AC_CHECK_TOOL([MIG],[mig])
+AC_CHECK_TOOL([MIG],[mig])dnl
 
 # Tools for docs:
 AC_PATH_PROGS([ROFF],[nroff groff troff roff])dnl
@@ -769,15 +771,14 @@ dnl# added it above since then), but we might still need some of its
 dnl# checks separately, so define this lite version of the macro
 dnl# (only the AC\_REQUIRE'd parts, to prevent duplication):
 AC_DEFUN([AM_INIT_MY_AUTOMAKE_LITE],[
-  AC_PREREQ([2.65])
+  AC_PREREQ([2.65])dnl
   dnl# Autoconf wants to disallow AM_ names. We explicitly allow
   dnl# the ones we care about.
   m4_pattern_allow([^AM_[A-Z]+FLAGS$])dnl
   AC_REQUIRE([AM_SET_CURRENT_AUTOMAKE_VERSION])dnl
-  AC_REQUIRE([AC_PROG_INSTALL])dnl
   AC_REQUIRE([AC_PROG_SED])dnl
 
-  # test whether we have cygpath
+  # test whether we have cygpath:
   if test -z "${CYGPATH_W}"; then
     if (cygpath --version) >/dev/null 2>/dev/null; then
       CYGPATH_W='cygpath -w'
@@ -787,16 +788,13 @@ AC_DEFUN([AM_INIT_MY_AUTOMAKE_LITE],[
   fi
   AC_SUBST([CYGPATH_W])dnl
 
-  # Some tools Automake needs.
+  # Some tools that Automake needs:
   AC_REQUIRE([AM_SANITY_CHECK])dnl
-  AC_REQUIRE([AC_ARG_PROGRAM])dnl
   AC_REQUIRE([AM_MISSING_HAS_RUN])dnl
   AM_MISSING_PROG([AUTOCONF],[autoconf])dnl
   AM_MISSING_PROG([AUTOHEADER],[autoheader])dnl
   AM_MISSING_PROG([MAKEINFO],[makeinfo])dnl
   AC_REQUIRE([AM_PROG_INSTALL_SH])dnl
-  AC_REQUIRE([AM_PROG_INSTALL_STRIP])dnl
-  AC_REQUIRE([AC_PROG_MKDIR_P])dnl
   dnl# For better backward compatibility. To be removed once Automake 1.9.x
   dnl# dies out for good.
   AC_SUBST([mkdir_p],['$(MKDIR_P)'])dnl
@@ -806,9 +804,7 @@ AC_DEFUN([AM_INIT_MY_AUTOMAKE_LITE],[
   AC_REQUIRE([AC_PROG_MAKE_SET])dnl
   AC_REQUIRE([AM_SET_LEADING_DOT])dnl
   AC_REQUIRE([AM_SILENT_RULES])dnl
-  AC_REQUIRE([AM_MAINTAINER_MODE])dnl
   AC_REQUIRE([AC_PROG_GREP])dnl
-  AC_REQUIRE([AM_PROG_CC_STDC])dnl
   AC_REQUIRE([AM_SET_DEPDIR])dnl
   AC_REQUIRE([AM_OUTPUT_DEPENDENCY_COMMANDS])dnl
   AC_REQUIRE([AM_MAKE_INCLUDE])dnl
@@ -821,7 +817,7 @@ AM_INIT_MY_AUTOMAKE_LITE
 # ---------------------- #
 
 AC_MSG_CHECKING([libraries])
-AC_MSG_RESULT([ ])
+AC_MSG_RESULT([ ])dnl
 
 # We might need to link with -lm; most simulators need it.
 LT_LIB_M
@@ -979,7 +975,7 @@ AC_CHECK_LIB([z],[gzread])dnl
 # ------------------------- #
 
 AC_MSG_CHECKING([headers])
-AC_MSG_RESULT([ ])
+AC_MSG_RESULT([ ])dnl
 
 AC_HEADER_DIRENT
 AC_HEADER_STAT
@@ -1154,7 +1150,7 @@ gl_HEADER_STRING_H
 # ------------------------- #
 
 AC_MSG_CHECKING([declarations])
-AC_MSG_RESULT([ ])
+AC_MSG_RESULT([ ])dnl
 
 dnl# just skip the first one, getting different results from the two
 dnl# conftests can lead to warnings:
@@ -1211,9 +1207,16 @@ AC_CHECK_DECLS([UNW_SLT_REG],[],[],[
 #endif /* HAVE_LIBUNWIND_H */
 ])dnl
 m4_ifdef([AM_LC_MESSAGES],[
-unset am_cv_val_LC_MESSAGES
-AM_LC_MESSAGES
-],[:])
+  unset am_cv_val_LC_MESSAGES
+  AM_LC_MESSAGES
+],[
+  if test "x${am_cv_val_LC_MESSAGES}" = "x"; then
+    test -z "${am_cv_val_LC_MESSAGES}"
+    AC_MSG_WARN([might have skipped check for LC_MESSAGES])
+  elif test "x${am_cv_val_LC_MESSAGES}" != "xyes"; then
+    AC_MSG_WARN([we might be missing support for LC_MESSAGES])
+  fi
+])dnl
 AC_CHECK_DECLS([basename],[],[],[
 #ifdef HAVE_LIBGEN_H
 # include <libgen.h>
@@ -1234,7 +1237,7 @@ AC_CHECK_DECLS([name_server_port],[],[],[
 # ----------------------- #
 
 AC_MSG_CHECKING([structures])
-AC_MSG_RESULT([ ])
+AC_MSG_RESULT([ ])dnl
 
 AC_STRUCT_ST_BLOCKS
 AC_CHECK_MEMBERS([struct stat.st_blksize])dnl
@@ -1246,7 +1249,7 @@ AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
 # ------------------ #
 
 AC_MSG_CHECKING([types])
-AC_MSG_RESULT([ ])
+AC_MSG_RESULT([ ])dnl
 
 dnl# Begin what used to be AC\_TYPE\_SIGNAL
 AC_CACHE_CHECK([return type of signal handlers],[ac_cv_type_signal],[
@@ -1385,7 +1388,7 @@ dnl# section below.
 # ------------------------------------- #
 
 AC_MSG_CHECKING([compiler characteristics])
-AC_MSG_RESULT([ ])
+AC_MSG_RESULT([ ])dnl
 
 AC_PROG_GCC_TRADITIONAL
 AC_C_BIGENDIAN([
@@ -1416,7 +1419,7 @@ AX_CHECK_COMPILE_FLAG([-fpascal-strings],
 # ------------------------------ #
 
 AC_MSG_CHECKING([functions])
-AC_MSG_RESULT([ ])
+AC_MSG_RESULT([ ])dnl
 
 if test -f Makefile.in; then
   if test ! -z "`grep -i alloca Makefile.in`"; then
@@ -1470,10 +1473,10 @@ AC_CHECK_FUNCS([posix_madvise])dnl
 AC_CHECK_FUNCS([waitpid])dnl
 AC_CHECK_FUNCS([ptrace ptrace64])dnl
 m4_ifdef([AM_LANGINFO_CODESET],[
-AM_LANGINFO_CODESET
+  AM_LANGINFO_CODESET
 ],[
-AC_CHECK_FUNCS([langinfo codeset])dnl
-])
+  AC_CHECK_FUNCS([langinfo codeset])dnl
+])dnl
 
 # Other functions (that autoscan complains about missing):
 unset ac_cv_func_getcwd
@@ -1495,7 +1498,7 @@ AC_CHECK_FUNCS([alarm assert atexit bzero dup2 exit fflush fgets fprintf \
 # ----- #
 
 AC_MSG_CHECKING([miscellaneous things that require custom checks])
-AC_MSG_RESULT([ ])
+AC_MSG_RESULT([ ])dnl
 
 dnl# moved to a separate macro file, so subdirs can use it:
 GDB_CHECK_PTRACE
@@ -1781,7 +1784,7 @@ AC_CHECK_TYPES([x86_debug_state32_t],[],[],
 AC_CHECK_TYPES([thread_identifier_info_data_t],[],[],
                [#include <mach/thread_info.h>])dnl
 
-AC_MSG_NOTICE([done with second batch of APPLE_LOCAL checks])
+AC_MSG_NOTICE([done with second batch of APPLE_LOCAL checks])dnl
 
 AC_CHECK_FUNCS([pthread_setname_np])dnl
 
@@ -2357,6 +2360,7 @@ build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
 -Wempty-body -Wmissing-paramater-type -Wmissing-declarations \
 -Wno-format-security -Wno-format \
 -Wold-style-declaration -Wold-style-definition"
+link_warnings=""
 
 # If compiler does NOT support the long long data type, see if it can
 # at least warn about it:
@@ -2364,11 +2368,22 @@ if test "x${gdb_cv_c_long_long}" != "xyes"; then
   build_warnings="${build_warnings} -Wlong-long"
 fi
 
+if test "x${acl_cv_wl}" = "x"; then
+  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
+AC_SUBST([acl_cv_wl])dnl
+
 case "${host}" in
   *-apple-darwin* | *-apple-macos*)
     # -Wmost is APPLE_LOCAL, as are -Wextra-tokens and -Wnewline-eof
     # (-Wmost might have to be removed for the same reason as -Wall)
     build_warnings="${build_warnings} -Wmost -Wformat-nonliteral -Wextra-tokens -Wnewline-eof -std=gnu99"
+    link_warnings="${link_warnings} ${acl_cv_wl}-warn_compact_unwind ${acl_cv_wl}-warn_weak_exports ${acl_cv_wl}-warn_stabs ${acl_cv_wl}-warn_commons"
+  ;;
+  *-gnu*-* | gnu*-*-* | *-*-gnu*)
+    #FIXME: these flags are untested, and are only based on my
+    # my reading of the GNU ld manpage:
+    link_warnings="${link_warnings} ${acl_cv_wl}--warn-alternate-em ${acl_cv_wl}--warn-common ${acl_cv_wl}--warn-constructors ${acl_cv_wl}--warn-multiple-gp ${acl_cv_wl}--warn-section-align"
   ;;
 esac
 
@@ -2462,6 +2477,25 @@ then
 fi
 AC_SUBST([WARN_CFLAGS])dnl
 AC_SUBST([WERROR_CFLAGS])dnl
+
+WARN_LDFLAGS=""
+if test "x${link_warnings}" != "x" -a "x${GCC}" = "xyes"
+then
+    AC_MSG_CHECKING([linker warning flags])
+    # Leave in -Werror just for these conftests.
+    for w in ${link_warnings}; do
+	case ${w} in
+	*) # Check that the compiler successfully passes it to the linker.
+	    saved_LDFLAGS="${LDFLAGS}"
+	    LDFLAGS="${LDFLAGS} ${w} -Werror"
+	    AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
+                           [WARN_LDFLAGS="${WARN_LDFLAGS} ${w}"],[])
+	    LDFLAGS="${saved_LDFLAGS}"
+	esac
+    done
+    AC_MSG_RESULT([${WARN_LDFLAGS}])
+fi
+AC_SUBST([WARN_LDFLAGS])dnl
 
 MMALLOC_CFLAGS=""
 MMALLOC=""

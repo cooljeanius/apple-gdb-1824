@@ -19,6 +19,10 @@
    Free Software Foundation, 51 Franklin Street - Fifth Floor, Boston, MA
    02110-1301, USA.  */
 
+/* this file is included like a header, so treat it like one: */
+#ifndef _IA64_OPC_I_C
+#define _IA64_OPC_I_C 1
+
 #include "ia64-opc.h"
 
 #define I0	IA64_TYPE_I, 0
@@ -308,3 +312,5 @@ struct ia64_opcode ia64_opcodes_i[] =
 #undef OpX3XbIhWh
 #undef OpX3XbIhWhTag13
 #undef EMPTY
+
+#endif /* !_IA64_OPC_I_C */

@@ -32,9 +32,9 @@ failure.  If you use @code{xatexit} to register functions, you must use
 
 #include <stddef.h>
 
-#if VMS
-#include <stdlib.h>
-#include <unixlib.h>
+#if defined(VMS) && VMS
+# include <stdlib.h>
+# include <unixlib.h>
 #else
 /* For systems with larger pointers than ints, this must be declared.  */
 PTR malloc (size_t);

@@ -30,340 +30,340 @@
 #if defined _WIN32 || defined __WIN32__
 # undef WIN32   /* avoid warning on mingw32 */
 # define WIN32
-#endif
+#endif /* _WIN32 || __WIN32__ */
 
 #ifdef WIN32
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>
 /* Mingw headers do NOT have latest language and sublanguage codes: */
 # ifndef LANG_AFRIKAANS
-# define LANG_AFRIKAANS 0x36
+#  define LANG_AFRIKAANS 0x36
 # endif
 # ifndef LANG_ALBANIAN
-# define LANG_ALBANIAN 0x1c
+#  define LANG_ALBANIAN 0x1c
 # endif
 # ifndef LANG_ARABIC
-# define LANG_ARABIC 0x01
+#  define LANG_ARABIC 0x01
 # endif
 # ifndef LANG_ARMENIAN
-# define LANG_ARMENIAN 0x2b
+#  define LANG_ARMENIAN 0x2b
 # endif
 # ifndef LANG_ASSAMESE
-# define LANG_ASSAMESE 0x4d
+#  define LANG_ASSAMESE 0x4d
 # endif
 # ifndef LANG_AZERI
-# define LANG_AZERI 0x2c
+#  define LANG_AZERI 0x2c
 # endif
 # ifndef LANG_BASQUE
-# define LANG_BASQUE 0x2d
+#  define LANG_BASQUE 0x2d
 # endif
 # ifndef LANG_BELARUSIAN
-# define LANG_BELARUSIAN 0x23
+#  define LANG_BELARUSIAN 0x23
 # endif
 # ifndef LANG_BENGALI
-# define LANG_BENGALI 0x45
+#  define LANG_BENGALI 0x45
 # endif
 # ifndef LANG_CATALAN
-# define LANG_CATALAN 0x03
+#  define LANG_CATALAN 0x03
 # endif
 # ifndef LANG_DIVEHI
-# define LANG_DIVEHI 0x65
+#  define LANG_DIVEHI 0x65
 # endif
 # ifndef LANG_ESTONIAN
-# define LANG_ESTONIAN 0x25
+#  define LANG_ESTONIAN 0x25
 # endif
 # ifndef LANG_FAEROESE
-# define LANG_FAEROESE 0x38
+#  define LANG_FAEROESE 0x38
 # endif
 # ifndef LANG_FARSI
-# define LANG_FARSI 0x29
+#  define LANG_FARSI 0x29
 # endif
 # ifndef LANG_GALICIAN
-# define LANG_GALICIAN 0x56
+#  define LANG_GALICIAN 0x56
 # endif
 # ifndef LANG_GEORGIAN
-# define LANG_GEORGIAN 0x37
+#  define LANG_GEORGIAN 0x37
 # endif
 # ifndef LANG_GUJARATI
-# define LANG_GUJARATI 0x47
+#  define LANG_GUJARATI 0x47
 # endif
 # ifndef LANG_HEBREW
-# define LANG_HEBREW 0x0d
+#  define LANG_HEBREW 0x0d
 # endif
 # ifndef LANG_HINDI
-# define LANG_HINDI 0x39
+#  define LANG_HINDI 0x39
 # endif
 # ifndef LANG_INDONESIAN
-# define LANG_INDONESIAN 0x21
+#  define LANG_INDONESIAN 0x21
 # endif
 # ifndef LANG_KANNADA
-# define LANG_KANNADA 0x4b
+#  define LANG_KANNADA 0x4b
 # endif
 # ifndef LANG_KASHMIRI
-# define LANG_KASHMIRI 0x60
+#  define LANG_KASHMIRI 0x60
 # endif
 # ifndef LANG_KAZAK
-# define LANG_KAZAK 0x3f
+#  define LANG_KAZAK 0x3f
 # endif
 # ifndef LANG_KONKANI
-# define LANG_KONKANI 0x57
+#  define LANG_KONKANI 0x57
 # endif
 # ifndef LANG_KYRGYZ
-# define LANG_KYRGYZ 0x40
+#  define LANG_KYRGYZ 0x40
 # endif
 # ifndef LANG_LATVIAN
-# define LANG_LATVIAN 0x26
+#  define LANG_LATVIAN 0x26
 # endif
 # ifndef LANG_LITHUANIAN
-# define LANG_LITHUANIAN 0x27
+#  define LANG_LITHUANIAN 0x27
 # endif
 # ifndef LANG_MACEDONIAN
-# define LANG_MACEDONIAN 0x2f
+#  define LANG_MACEDONIAN 0x2f
 # endif
 # ifndef LANG_MALAY
-# define LANG_MALAY 0x3e
+#  define LANG_MALAY 0x3e
 # endif
 # ifndef LANG_MALAYALAM
-# define LANG_MALAYALAM 0x4c
+#  define LANG_MALAYALAM 0x4c
 # endif
 # ifndef LANG_MANIPURI
-# define LANG_MANIPURI 0x58
+#  define LANG_MANIPURI 0x58
 # endif
 # ifndef LANG_MARATHI
-# define LANG_MARATHI 0x4e
+#  define LANG_MARATHI 0x4e
 # endif
 # ifndef LANG_MONGOLIAN
-# define LANG_MONGOLIAN 0x50
+#  define LANG_MONGOLIAN 0x50
 # endif
 # ifndef LANG_NEPALI
-# define LANG_NEPALI 0x61
+#  define LANG_NEPALI 0x61
 # endif
 # ifndef LANG_ORIYA
-# define LANG_ORIYA 0x48
+#  define LANG_ORIYA 0x48
 # endif
 # ifndef LANG_PUNJABI
-# define LANG_PUNJABI 0x46
+#  define LANG_PUNJABI 0x46
 # endif
 # ifndef LANG_SANSKRIT
-# define LANG_SANSKRIT 0x4f
+#  define LANG_SANSKRIT 0x4f
 # endif
 # ifndef LANG_SERBIAN
-# define LANG_SERBIAN 0x1a
+#  define LANG_SERBIAN 0x1a
 # endif
 # ifndef LANG_SINDHI
-# define LANG_SINDHI 0x59
+#  define LANG_SINDHI 0x59
 # endif
 # ifndef LANG_SLOVAK
-# define LANG_SLOVAK 0x1b
+#  define LANG_SLOVAK 0x1b
 # endif
 # ifndef LANG_SORBIAN
-# define LANG_SORBIAN 0x2e
+#  define LANG_SORBIAN 0x2e
 # endif
 # ifndef LANG_SWAHILI
-# define LANG_SWAHILI 0x41
+#  define LANG_SWAHILI 0x41
 # endif
 # ifndef LANG_SYRIAC
-# define LANG_SYRIAC 0x5a
+#  define LANG_SYRIAC 0x5a
 # endif
 # ifndef LANG_TAMIL
-# define LANG_TAMIL 0x49
+#  define LANG_TAMIL 0x49
 # endif
 # ifndef LANG_TATAR
-# define LANG_TATAR 0x44
+#  define LANG_TATAR 0x44
 # endif
 # ifndef LANG_TELUGU
-# define LANG_TELUGU 0x4a
+#  define LANG_TELUGU 0x4a
 # endif
 # ifndef LANG_THAI
-# define LANG_THAI 0x1e
+#  define LANG_THAI 0x1e
 # endif
 # ifndef LANG_UKRAINIAN
-# define LANG_UKRAINIAN 0x22
+#  define LANG_UKRAINIAN 0x22
 # endif
 # ifndef LANG_URDU
-# define LANG_URDU 0x20
+#  define LANG_URDU 0x20
 # endif
 # ifndef LANG_UZBEK
-# define LANG_UZBEK 0x43
+#  define LANG_UZBEK 0x43
 # endif
 # ifndef LANG_VIETNAMESE
-# define LANG_VIETNAMESE 0x2a
+#  define LANG_VIETNAMESE 0x2a
 # endif
 # ifndef SUBLANG_ARABIC_SAUDI_ARABIA
-# define SUBLANG_ARABIC_SAUDI_ARABIA 0x01
+#  define SUBLANG_ARABIC_SAUDI_ARABIA 0x01
 # endif
 # ifndef SUBLANG_ARABIC_IRAQ
-# define SUBLANG_ARABIC_IRAQ 0x02
+#  define SUBLANG_ARABIC_IRAQ 0x02
 # endif
 # ifndef SUBLANG_ARABIC_EGYPT
-# define SUBLANG_ARABIC_EGYPT 0x03
+#  define SUBLANG_ARABIC_EGYPT 0x03
 # endif
 # ifndef SUBLANG_ARABIC_LIBYA
-# define SUBLANG_ARABIC_LIBYA 0x04
+#  define SUBLANG_ARABIC_LIBYA 0x04
 # endif
 # ifndef SUBLANG_ARABIC_ALGERIA
-# define SUBLANG_ARABIC_ALGERIA 0x05
+#  define SUBLANG_ARABIC_ALGERIA 0x05
 # endif
 # ifndef SUBLANG_ARABIC_MOROCCO
-# define SUBLANG_ARABIC_MOROCCO 0x06
+#  define SUBLANG_ARABIC_MOROCCO 0x06
 # endif
 # ifndef SUBLANG_ARABIC_TUNISIA
-# define SUBLANG_ARABIC_TUNISIA 0x07
+#  define SUBLANG_ARABIC_TUNISIA 0x07
 # endif
 # ifndef SUBLANG_ARABIC_OMAN
-# define SUBLANG_ARABIC_OMAN 0x08
+#  define SUBLANG_ARABIC_OMAN 0x08
 # endif
 # ifndef SUBLANG_ARABIC_YEMEN
-# define SUBLANG_ARABIC_YEMEN 0x09
+#  define SUBLANG_ARABIC_YEMEN 0x09
 # endif
 # ifndef SUBLANG_ARABIC_SYRIA
-# define SUBLANG_ARABIC_SYRIA 0x0a
+#  define SUBLANG_ARABIC_SYRIA 0x0a
 # endif
 # ifndef SUBLANG_ARABIC_JORDAN
-# define SUBLANG_ARABIC_JORDAN 0x0b
+#  define SUBLANG_ARABIC_JORDAN 0x0b
 # endif
 # ifndef SUBLANG_ARABIC_LEBANON
-# define SUBLANG_ARABIC_LEBANON 0x0c
+#  define SUBLANG_ARABIC_LEBANON 0x0c
 # endif
 # ifndef SUBLANG_ARABIC_KUWAIT
-# define SUBLANG_ARABIC_KUWAIT 0x0d
+#  define SUBLANG_ARABIC_KUWAIT 0x0d
 # endif
 # ifndef SUBLANG_ARABIC_UAE
-# define SUBLANG_ARABIC_UAE 0x0e
+#  define SUBLANG_ARABIC_UAE 0x0e
 # endif
 # ifndef SUBLANG_ARABIC_BAHRAIN
-# define SUBLANG_ARABIC_BAHRAIN 0x0f
+#  define SUBLANG_ARABIC_BAHRAIN 0x0f
 # endif
 # ifndef SUBLANG_ARABIC_QATAR
-# define SUBLANG_ARABIC_QATAR 0x10
+#  define SUBLANG_ARABIC_QATAR 0x10
 # endif
 # ifndef SUBLANG_AZERI_LATIN
-# define SUBLANG_AZERI_LATIN 0x01
+#  define SUBLANG_AZERI_LATIN 0x01
 # endif
 # ifndef SUBLANG_AZERI_CYRILLIC
-# define SUBLANG_AZERI_CYRILLIC 0x02
+#  define SUBLANG_AZERI_CYRILLIC 0x02
 # endif
 # ifndef SUBLANG_CHINESE_MACAU
-# define SUBLANG_CHINESE_MACAU 0x05
+#  define SUBLANG_CHINESE_MACAU 0x05
 # endif
 # ifndef SUBLANG_ENGLISH_SOUTH_AFRICA
-# define SUBLANG_ENGLISH_SOUTH_AFRICA 0x07
+#  define SUBLANG_ENGLISH_SOUTH_AFRICA 0x07
 # endif
 # ifndef SUBLANG_ENGLISH_JAMAICA
-# define SUBLANG_ENGLISH_JAMAICA 0x08
+#  define SUBLANG_ENGLISH_JAMAICA 0x08
 # endif
 # ifndef SUBLANG_ENGLISH_CARIBBEAN
-# define SUBLANG_ENGLISH_CARIBBEAN 0x09
+#  define SUBLANG_ENGLISH_CARIBBEAN 0x09
 # endif
 # ifndef SUBLANG_ENGLISH_BELIZE
-# define SUBLANG_ENGLISH_BELIZE 0x0a
+#  define SUBLANG_ENGLISH_BELIZE 0x0a
 # endif
 # ifndef SUBLANG_ENGLISH_TRINIDAD
-# define SUBLANG_ENGLISH_TRINIDAD 0x0b
+#  define SUBLANG_ENGLISH_TRINIDAD 0x0b
 # endif
 # ifndef SUBLANG_ENGLISH_ZIMBABWE
-# define SUBLANG_ENGLISH_ZIMBABWE 0x0c
+#  define SUBLANG_ENGLISH_ZIMBABWE 0x0c
 # endif
 # ifndef SUBLANG_ENGLISH_PHILIPPINES
-# define SUBLANG_ENGLISH_PHILIPPINES 0x0d
+#  define SUBLANG_ENGLISH_PHILIPPINES 0x0d
 # endif
 # ifndef SUBLANG_FRENCH_LUXEMBOURG
-# define SUBLANG_FRENCH_LUXEMBOURG 0x05
+#  define SUBLANG_FRENCH_LUXEMBOURG 0x05
 # endif
 # ifndef SUBLANG_FRENCH_MONACO
-# define SUBLANG_FRENCH_MONACO 0x06
+#  define SUBLANG_FRENCH_MONACO 0x06
 # endif
 # ifndef SUBLANG_GERMAN_LUXEMBOURG
-# define SUBLANG_GERMAN_LUXEMBOURG 0x04
+#  define SUBLANG_GERMAN_LUXEMBOURG 0x04
 # endif
 # ifndef SUBLANG_GERMAN_LIECHTENSTEIN
-# define SUBLANG_GERMAN_LIECHTENSTEIN 0x05
+#  define SUBLANG_GERMAN_LIECHTENSTEIN 0x05
 # endif
 # ifndef SUBLANG_KASHMIRI_INDIA
-# define SUBLANG_KASHMIRI_INDIA 0x02
+#  define SUBLANG_KASHMIRI_INDIA 0x02
 # endif
 # ifndef SUBLANG_MALAY_MALAYSIA
-# define SUBLANG_MALAY_MALAYSIA 0x01
+#  define SUBLANG_MALAY_MALAYSIA 0x01
 # endif
 # ifndef SUBLANG_MALAY_BRUNEI_DARUSSALAM
-# define SUBLANG_MALAY_BRUNEI_DARUSSALAM 0x02
+#  define SUBLANG_MALAY_BRUNEI_DARUSSALAM 0x02
 # endif
 # ifndef SUBLANG_NEPALI_INDIA
-# define SUBLANG_NEPALI_INDIA 0x02
+#  define SUBLANG_NEPALI_INDIA 0x02
 # endif
 # ifndef SUBLANG_SERBIAN_LATIN
-# define SUBLANG_SERBIAN_LATIN 0x02
+#  define SUBLANG_SERBIAN_LATIN 0x02
 # endif
 # ifndef SUBLANG_SERBIAN_CYRILLIC
-# define SUBLANG_SERBIAN_CYRILLIC 0x03
+#  define SUBLANG_SERBIAN_CYRILLIC 0x03
 # endif
 # ifndef SUBLANG_SPANISH_GUATEMALA
-# define SUBLANG_SPANISH_GUATEMALA 0x04
+#  define SUBLANG_SPANISH_GUATEMALA 0x04
 # endif
 # ifndef SUBLANG_SPANISH_COSTA_RICA
-# define SUBLANG_SPANISH_COSTA_RICA 0x05
+#  define SUBLANG_SPANISH_COSTA_RICA 0x05
 # endif
 # ifndef SUBLANG_SPANISH_PANAMA
-# define SUBLANG_SPANISH_PANAMA 0x06
+#  define SUBLANG_SPANISH_PANAMA 0x06
 # endif
 # ifndef SUBLANG_SPANISH_DOMINICAN_REPUBLIC
-# define SUBLANG_SPANISH_DOMINICAN_REPUBLIC 0x07
+#  define SUBLANG_SPANISH_DOMINICAN_REPUBLIC 0x07
 # endif
 # ifndef SUBLANG_SPANISH_VENEZUELA
-# define SUBLANG_SPANISH_VENEZUELA 0x08
+#  define SUBLANG_SPANISH_VENEZUELA 0x08
 # endif
 # ifndef SUBLANG_SPANISH_COLOMBIA
-# define SUBLANG_SPANISH_COLOMBIA 0x09
+#  define SUBLANG_SPANISH_COLOMBIA 0x09
 # endif
 # ifndef SUBLANG_SPANISH_PERU
-# define SUBLANG_SPANISH_PERU 0x0a
+#  define SUBLANG_SPANISH_PERU 0x0a
 # endif
 # ifndef SUBLANG_SPANISH_ARGENTINA
-# define SUBLANG_SPANISH_ARGENTINA 0x0b
+#  define SUBLANG_SPANISH_ARGENTINA 0x0b
 # endif
 # ifndef SUBLANG_SPANISH_ECUADOR
-# define SUBLANG_SPANISH_ECUADOR 0x0c
+#  define SUBLANG_SPANISH_ECUADOR 0x0c
 # endif
 # ifndef SUBLANG_SPANISH_CHILE
-# define SUBLANG_SPANISH_CHILE 0x0d
+#  define SUBLANG_SPANISH_CHILE 0x0d
 # endif
 # ifndef SUBLANG_SPANISH_URUGUAY
-# define SUBLANG_SPANISH_URUGUAY 0x0e
+#  define SUBLANG_SPANISH_URUGUAY 0x0e
 # endif
 # ifndef SUBLANG_SPANISH_PARAGUAY
-# define SUBLANG_SPANISH_PARAGUAY 0x0f
+#  define SUBLANG_SPANISH_PARAGUAY 0x0f
 # endif
 # ifndef SUBLANG_SPANISH_BOLIVIA
-# define SUBLANG_SPANISH_BOLIVIA 0x10
+#  define SUBLANG_SPANISH_BOLIVIA 0x10
 # endif
 # ifndef SUBLANG_SPANISH_EL_SALVADOR
-# define SUBLANG_SPANISH_EL_SALVADOR 0x11
+#  define SUBLANG_SPANISH_EL_SALVADOR 0x11
 # endif
 # ifndef SUBLANG_SPANISH_HONDURAS
-# define SUBLANG_SPANISH_HONDURAS 0x12
+#  define SUBLANG_SPANISH_HONDURAS 0x12
 # endif
 # ifndef SUBLANG_SPANISH_NICARAGUA
-# define SUBLANG_SPANISH_NICARAGUA 0x13
+#  define SUBLANG_SPANISH_NICARAGUA 0x13
 # endif
 # ifndef SUBLANG_SPANISH_PUERTO_RICO
-# define SUBLANG_SPANISH_PUERTO_RICO 0x14
+#  define SUBLANG_SPANISH_PUERTO_RICO 0x14
 # endif
 # ifndef SUBLANG_SWEDISH_FINLAND
-# define SUBLANG_SWEDISH_FINLAND 0x02
+#  define SUBLANG_SWEDISH_FINLAND 0x02
 # endif
 # ifndef SUBLANG_URDU_PAKISTAN
-# define SUBLANG_URDU_PAKISTAN 0x01
+#  define SUBLANG_URDU_PAKISTAN 0x01
 # endif
 # ifndef SUBLANG_URDU_INDIA
-# define SUBLANG_URDU_INDIA 0x02
+#  define SUBLANG_URDU_INDIA 0x02
 # endif
 # ifndef SUBLANG_UZBEK_LATIN
-# define SUBLANG_UZBEK_LATIN 0x01
+#  define SUBLANG_UZBEK_LATIN 0x01
 # endif
 # ifndef SUBLANG_UZBEK_CYRILLIC
-# define SUBLANG_UZBEK_CYRILLIC 0x02
+#  define SUBLANG_UZBEK_CYRILLIC 0x02
 # endif
-#endif
+#endif /* WIN32 */
 
 /* XPG3 defines the result of 'setlocale (category, NULL)' as:
    "Directs 'setlocale()' to query 'category' and return the current

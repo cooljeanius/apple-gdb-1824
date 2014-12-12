@@ -24,6 +24,11 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 /* Contributed by Steve Chamberlain <sac@cygnus.com>.  */
 
 #define DONTDECLARE_MALLOC
+
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "ansidecl.h"
 #include "libiberty.h"
 #include "arparse.h"
@@ -74,17 +79,19 @@ int linenumber;
 "("             { return '('; }
 ")"             { return ')'; }
 ","             { return ','; }
-[A-Za-z0-9/\\$:.\-\_]+  { 	
+[A-Za-z0-9/\\$:.\-\_]+  {
 		yylval.name =  xstrdup (yytext);
 		return FILENAME;
 		}
 "*".* 		{ }
 ";".* 		{ }
 " "		{ }
-"\n"	 	 { linenumber ++; return NEWLINE; }	
+"\n"	 	 { linenumber ++; return NEWLINE; }
 
 %%
 #ifndef yywrap
 /* Needed for lex, though not flex. */
 int yywrap(void) { return 1; }
-#endif
+#endif /* !yywrap */
+
+/* EOF */

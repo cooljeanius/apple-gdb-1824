@@ -1,4 +1,4 @@
-# Process this file with autoconf to create configure. -*- autoconf -*-
+dnl# Process this file with autoconf to create configure. -*- autoconf -*-
 #
 # Copyright (C) 2001, 2003, 2004, 2005, 2007 Free Software Foundation, Inc.
 #
@@ -21,18 +21,18 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 ####
 
-AC_PREREQ([2.54])
+AC_PREREQ([2.54])dnl
 
 ## ------------------------ ##
-## Autoconf initialisation. ##
+## Autoconf initialization. ##
 ## ------------------------ ##
 AC_INIT([cdemo],[1.0],[bug-libtool@gnu.org])
 AC_CONFIG_SRCDIR([main.c])
-AC_CONFIG_AUX_DIR([../../libltdl/config])
+AC_CONFIG_AUX_DIR([../../libltdl/config])dnl
 
 
 ## ------------------------ ##
-## Automake Initialisation. ##
+## Automake Initialization. ##
 ## ------------------------ ##
 AM_INIT_AUTOMAKE([foreign])
 AM_MAINTAINER_MODE
@@ -45,11 +45,11 @@ AC_PROG_CC
 
 
 ## ----------------------- ##
-## Libtool initialisation. ##
+## Libtool initialization. ##
 ## ----------------------- ##
 LT_INIT([dlopen win32-dll])
-LT_LANG([C])
-AC_SUBST([LIBTOOL_DEPS])
+LT_LANG([C])dnl
+AC_SUBST([LIBTOOL_DEPS])dnl
 
 
 ## ---------------------------- ##
@@ -61,5 +61,5 @@ LT_LIB_M
 ## -------- ##
 ## Outputs. ##
 ## -------- ##
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile])dnl
 AC_OUTPUT

@@ -641,6 +641,9 @@ CPPFLAGS
 LDFLAGS
 CFLAGS
 CC
+TARGET_ARCHITECTURE
+HOST_ARCHITECTURE
+BUILD_ARCHITECTURE
 target_os
 target_vendor
 target_cpu
@@ -2335,7 +2338,6 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 ac_config_headers="$ac_config_headers config.h"
 
-
 if test "x${subdirs}" = "x"; then
   test -z "${subdirs}" && subdirs=""
 
@@ -2343,6 +2345,7 @@ fi
 
 MY_CC=${CC-cc}
 
+# architecture stuff:
 # Make sure we can run config.sub.
 $SHELL "$ac_aux_dir/config.sub" sun4 >/dev/null 2>&1 ||
   as_fn_error $? "cannot run $SHELL $ac_aux_dir/config.sub" "$LINENO" 5
@@ -2453,6 +2456,20 @@ test -n "$target_alias" &&
   test "$program_prefix$program_suffix$program_transform_name" = \
     NONENONEs,x,x, &&
   program_prefix=${target_alias}-
+
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+
+fi
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+
+fi
+
 
 
 
@@ -4973,7 +4990,6 @@ fi
 
 done
 
-
 # Checks for library functions.
 for ac_header in stdlib.h
 do :
@@ -5162,10 +5178,8 @@ _ACEOF
 fi
 done
 
-
 # Output:
 ac_config_files="$ac_config_files Makefile debug-in-ofile/Makefile gused/Makefile ld-r/Makefile xcode/Makefile"
-
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure

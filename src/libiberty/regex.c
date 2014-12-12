@@ -52,14 +52,18 @@
 #  ifdef HAVE_STDDEF_H
 #   include <stddef.h>
 #  else
-#   warning regex.c expects <stddef.h> to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "regex.c expects <stddef.h> to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_STDDEF_H */
 # else
 #  ifdef HAVE_SYS_TYPES_H
 /* We need this for `regex.h', and perhaps for the Emacs include files.  */
 #   include <sys/types.h>
 #  else
-#   warning regex.c expects <sys/types.h> to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "regex.c expects <sys/types.h> to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_SYS_TYPES_H */
 # endif /* STDC_HEADERS && !emacs */
 
@@ -72,12 +76,16 @@
 #  ifdef HAVE_WCHAR_H
 #   include <wchar.h>
 #  else
-#   warning regex.c expects <wchar.h> to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "regex.c expects <wchar.h> to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_WCHAR_H */
 #  ifdef HAVE_WCTYPE_H
 #   include <wctype.h>
 #  else
-#   warning regex.c expects <wctype.h> to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "regex.c expects <wctype.h> to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_WCTYPE_H */
 # endif /* _LIBC || WIDE_CHAR_SUPPORT */
 
@@ -109,27 +117,35 @@
 #  ifdef HAVE_LOCALE_LOCALEINFO_H
 #   include <locale/localeinfo.h>
 #  else
-#   warning regex.c expects <locale/localeinfo.h> to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "regex.c expects <locale/localeinfo.h> to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_LOCALE_LOCALEINFO_H */
 #  ifdef HAVE_LOCALE_ELEM_HASH_H
 #   include <locale/elem-hash.h>
 #  else
-#   warning regex.c expects <locale/elem-hash.h> to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "regex.c expects <locale/elem-hash.h> to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_LOCALE_ELEM_HASH_H */
 #  ifdef HAVE_LANGINFO_H
 #   include <langinfo.h>
 #  else
-#   warning regex.c expects <langinfo.h> to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "regex.c expects <langinfo.h> to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_LANGINFO_H */
 #  ifdef HAVE_LOCALE_COLL_LOOKUP_H
 #   include <locale/coll-lookup.h>
 #  else
-#   warning regex.c expects <locale/coll-lookup.h> to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "regex.c expects <locale/coll-lookup.h> to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_LOCALE_COLL_LOOKUP_H */
 # endif /* _LIBC */
 
-/* This is for other GNU distributions with internationalized messages.  */
-# if (HAVE_LIBINTL_H && ENABLE_NLS) || defined _LIBC
+/* This is for other GNU distributions with internationalized messages: */
+# if (HAVE_LIBINTL_H && (defined(ENABLE_NLS) && ENABLE_NLS)) || defined _LIBC
 #  include <libintl.h>
 #  ifdef _LIBC
 #   undef gettext
@@ -220,7 +236,9 @@ char *realloc ();
 # if defined _LIBC || HAVE_LIMITS_H
 #  include <limits.h>
 # else
-#  warning regex.c expects <limits.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning regex.c expects <limits.h> to be included.
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* _LIBC || HAVE_LIMITS_H */
 
 # ifndef MB_LEN_MAX
@@ -234,7 +252,9 @@ char *realloc ();
 # if defined(HAVE_CTYPE_H) || defined(STDC_HEADERS) || defined(__STDC__) || defined(_LIBC)
 #  include <ctype.h>
 # else
-#  warning regex.c expects <ctype.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#   warning "regex.c expects <ctype.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_CTYPE_H || STDC_HEADERS || __STDC__ || _LIBC */
 
 /* Jim Meyering writes:
@@ -373,7 +393,9 @@ typedef unsigned long int uintptr_t;
 #    if HAVE_ALLOCA_H
 #     include <alloca.h>
 #    else
-#     warning regex.c expects <alloca.h> to be included.
+#     if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#      warning "regex.c expects <alloca.h> to be included."
+#     endif /* __GNUC__ && !__STRICT_ANSI__ */
 #    endif /* HAVE_ALLOCA_H */
 #   endif /* not __GNUC__ */
 
@@ -794,14 +816,18 @@ PREFIX(extract_number_and_incr) (int *destination, UCHAR_T **source)
 #   ifdef HAVE_STDIO_H
 #    include <stdio.h>
 #   else
-#    warning regex.c expects <stdio.h> to be included.
+#    if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#     warning "regex.c expects <stdio.h> to be included."
+#    endif /* __GNUC__ && !__STRICT_ANSI__ */
 #   endif /* HAVE_STDIO_H */
 
 /* It is useful to test things that ``must'' be true when debugging.  */
 #   ifdef HAVE_ASSERT_H
 #    include <assert.h>
 #   else
-#    warning regex.c expects <assert.h> to be included.
+#    if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#     warning "regex.c expects <assert.h> to be included."
+#    endif /* __GNUC__ && !__STRICT_ANSI__ */
 #   endif /* HAVE_ASSERT_H */
 
 static int debug;
@@ -2061,7 +2087,7 @@ static reg_errcode_t byte_compile_range (unsigned int range_start,
    reset the pointers that pointed into the old block to point to the
    correct places in the new one.  If extending the buffer results in it
    being larger than MAX_BUF_SIZE, then flag memory exhausted.  */
-#  if __BOUNDED_POINTERS__
+#  if defined(__BOUNDED_POINTERS__) && __BOUNDED_POINTERS__
 #   define SET_HIGH_BOUND(P) (__ptrhigh (P) = __ptrlow (P) + bufp->allocated)
 #   define MOVE_BUFFER_POINTER(P) \
   (__ptrlow (P) += incr, SET_HIGH_BOUND (P), __ptrvalue (P) += incr)
@@ -2970,10 +2996,12 @@ PREFIX(regex_compile) (const char *ARG_PREFIX(pattern),
 #  ifdef HAVE_LOCALE_WEIGHTWC_H
 #   include <locale/weightwc.h>
 #  else
-#   warning regex.c expects <locale/weightwc.h> to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "regex.c expects <locale/weightwc.h> to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_LOCALE_WEIGHTWC_H */
 
-			    if(delim == '=')
+			    if (delim == '=')
 			      {
 				/* We push the index for equivalence class.  */
 				cp = (wint_t*)str;
@@ -3432,7 +3460,9 @@ PREFIX(regex_compile) (const char *ARG_PREFIX(pattern),
 #  ifdef HAVE_LOCALE_WEIGHT_H
 #   include <locale/weight.h>
 #  else
-#   warning regex.c expects <locale/weight.h> to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "regex.c expects <locale/weight.h> to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_LOCALE_WEIGHT_H */
 
 			    table = (const int32_t *)
@@ -4506,7 +4536,7 @@ byte_compile_range (unsigned int range_start_char, const char **p_ptr,
   unsigned this_char;
   const char *p = *p_ptr;
   reg_errcode_t ret;
-#  if _LIBC
+#  if defined(_LIBC) && _LIBC
   const unsigned char *collseq;
   unsigned int start_colseq;
   unsigned int end_colseq;
@@ -4524,7 +4554,7 @@ byte_compile_range (unsigned int range_start_char, const char **p_ptr,
   /* Report an error if the range is empty and the syntax prohibits this.  */
   ret = syntax & RE_NO_EMPTY_RANGES ? REG_ERANGE : REG_NOERROR;
 
-#  if _LIBC
+#  if defined(_LIBC) && _LIBC
   collseq = (const unsigned char *) _NL_CURRENT (LC_COLLATE,
 						 _NL_COLLATE_COLLSEQMB);
 
@@ -6391,7 +6421,9 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
 #  ifdef HAVE_LOCALE_WEIGHTWC_H
 #   include <locale/weightwc.h>
 #  else
-#   warning regex.c expects <locale/weightwc.h> to be included.
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "regex.c expects <locale/weightwc.h> to be included."
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* HAVE_LOCALE_WEIGHTWC_H */
 
 		table = (const int32_t *)

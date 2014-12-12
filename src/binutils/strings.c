@@ -22,7 +22,10 @@
    Options:
    --all
    -a
-   -		Do not scan only the initialized data section of object files.
+   -		Scan each file in its entirety.
+
+   --data
+   -d           Scan only the initialized data section(s) of object files.
 
    --print-file-name
    -f		Print the name of the file before each string.
@@ -58,8 +61,8 @@
    and David MacKenzie <djm@gnu.ai.mit.edu>.  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 #include "bfd.h"
 #include <stdio.h>
 #include "getopt.h"
@@ -72,46 +75,52 @@
 /* Some platforms need to put stdin into binary mode, to read
     binary files.  */
 #ifdef HAVE_SETMODE
-#ifndef O_BINARY
-#ifdef _O_BINARY
-#define O_BINARY _O_BINARY
-#define setmode _setmode
-#else
-#define O_BINARY 0
-#endif
-#endif
-#if O_BINARY
-#include <io.h>
-#define SET_BINARY(f) do { if (!isatty (f)) setmode (f,O_BINARY); } while (0)
-#endif
-#endif
+# ifndef O_BINARY
+#  ifdef _O_BINARY
+#   define O_BINARY _O_BINARY
+#   define setmode _setmode
+#  else
+#   define O_BINARY 0
+#  endif /* _O_BINARY */
+# endif
+# if O_BINARY
+#  include <io.h>
+#  define SET_BINARY(f) do { if (!isatty(f)) setmode(f, O_BINARY); } while (0)
+# endif /* O_BINARY */
+#endif /* HAVE_SETMODE */
 
+/* in case we missed the configure check for this somehow: */
+#ifndef DEFAULT_STRINGS_ALL
+# define DEFAULT_STRINGS_ALL 1
+#endif /* !DEFAULT_STRINGS_ALL */
+
+/* how to tell if a string is "grapic" or not: */
 #define STRING_ISGRAPHIC(c) \
-      (   (c) >= 0 \
-       && (c) <= 255 \
-       && ((c) == '\t' || ISPRINT (c) || (encoding == 'S' && (c) > 127)))
+      (   ((c) >= 0) \
+       && ((c) <= 255) \
+       && (((c) == '\t') || ISPRINT(c) || ((encoding == 'S') && ((c) > 127))))
 
 #ifndef errno
 extern int errno;
-#endif
+#endif /* !errno */
 
-/* The BFD section flags that identify an initialized data section.  */
+/* The BFD section flags that identify an initialized data section: */
 #define DATA_FLAGS (SEC_ALLOC | SEC_LOAD | SEC_HAS_CONTENTS)
 
 #ifdef HAVE_FOPEN64
 typedef off64_t file_off;
-#define file_open(s,m) fopen64(s, m)
+# define file_open(s,m) fopen64(s, m)
 #else
 typedef off_t file_off;
-#define file_open(s,m) fopen(s, m)
-#endif
+# define file_open(s,m) fopen(s, m)
+#endif /* HAVE_FOPEN64 */
 #ifdef HAVE_STAT64
 typedef struct stat64 statbuf;
-#define file_stat(f,s) stat64(f, s)
+# define file_stat(f,s) stat64(f, s)
 #else
 typedef struct stat statbuf;
-#define file_stat(f,s) stat(f, s)
-#endif
+# define file_stat(f,s) stat(f, s)
+#endif /* HAVE_STAT64 */
 
 /* Radix for printing addresses (must be 8, 10 or 16).  */
 static int address_radix;
@@ -141,6 +150,7 @@ static int encoding_bytes;
 static struct option long_options[] =
 {
   {"all", no_argument, NULL, 'a'},
+  {"data", no_argument, NULL, 'd'},
   {"print-file-name", no_argument, NULL, 'f'},
   {"bytes", required_argument, NULL, 'n'},
   {"radix", required_argument, NULL, 't'},
@@ -162,7 +172,7 @@ typedef struct
 
 static void strings_a_section (bfd *, asection *, void *);
 static bfd_boolean strings_object_file (const char *);
-static bfd_boolean strings_file (char *file);
+static bfd_boolean strings_file (char *);
 static int integer_arg (char *s);
 static void print_strings (const char *, FILE *, file_off, int, int, char *);
 static void usage (FILE *, int);
@@ -179,7 +189,7 @@ main (int argc, char **argv)
 
 #if defined (HAVE_SETLOCALE)
   setlocale (LC_ALL, "");
-#endif
+#endif /* HAVE_SETLOCALE */
   bindtextdomain (PACKAGE, LOCALEDIR);
   textdomain (PACKAGE);
 
@@ -188,11 +198,14 @@ main (int argc, char **argv)
   string_min = -1;
   print_addresses = FALSE;
   print_filenames = FALSE;
-  datasection_only = TRUE;
+  if (DEFAULT_STRINGS_ALL)
+    datasection_only = FALSE;
+  else
+    datasection_only = TRUE;
   target = NULL;
   encoding = 's';
 
-  while ((optc = getopt_long (argc, argv, "afhHn:ot:e:Vv0123456789",
+  while ((optc = getopt_long (argc, argv, "adfhHn:wot:e:T:Vv0123456789",
 			      long_options, (int *) 0)) != EOF)
     {
       switch (optc)
@@ -200,6 +213,10 @@ main (int argc, char **argv)
 	case 'a':
 	  datasection_only = FALSE;
 	  break;
+
+        case 'd':
+          datasection_only = TRUE;
+          break;
 
 	case 'f':
 	  print_filenames = TRUE;
@@ -299,7 +316,7 @@ main (int argc, char **argv)
       datasection_only = FALSE;
 #ifdef SET_BINARY
       SET_BINARY (fileno (stdin));
-#endif
+#endif /* SET_BINARY */
       print_strings ("{standard input}", stdin, 0, 0, 0, (char *) NULL);
       files_given = TRUE;
     }
@@ -338,12 +355,12 @@ strings_a_section (bfd *abfd, asection *sect, void *arg)
   bfd_size_type *filesizep;
   bfd_size_type sectsize;
   void *mem;
-     
+
   if ((sect->flags & DATA_FLAGS) != DATA_FLAGS)
     return;
 
   sectsize = bfd_get_section_size (sect);
-     
+
   if (sectsize <= 0)
     return;
 
@@ -354,7 +371,7 @@ strings_a_section (bfd *abfd, asection *sect, void *arg)
   if (*filesizep == 0)
     {
       struct stat st;
-      
+
       if (bfd_stat (abfd, &st))
 	return;
 
@@ -429,25 +446,25 @@ strings_file (char *file)
 {
   statbuf st;
 
-  if (file_stat (file, &st) < 0)
+  if (file_stat(file, &st) < 0)
     {
       if (errno == ENOENT)
-	non_fatal (_("'%s': No such file"), file);
+	non_fatal(_("'%s': No such file"), file);
       else
-	non_fatal (_("Warning: could not locate '%s'.  reason: %s"),
-		   file, strerror (errno));
+	non_fatal(_("Warning: failed to locate '%s'.  reason: %s"),
+                  file, strerror(errno));
       return FALSE;
     }
 
-  /* If we weren't told to scan the whole file,
+  /* If we were NOT told to scan the whole file,
      try to open it as an object file and only look at
      initialized data sections.  If that fails, fall back to the
      whole file.  */
-  if (!datasection_only || !strings_object_file (file))
+  if (!datasection_only || !strings_object_file(file))
     {
       FILE *stream;
 
-      stream = file_open (file, FOPEN_RB);
+      stream = file_open(file, FOPEN_RB);
       if (stream == NULL)
 	{
 	  fprintf (stderr, "%s: ", program_name);
@@ -455,9 +472,9 @@ strings_file (char *file)
 	  return FALSE;
 	}
 
-      print_strings (file, stream, (file_off) 0, 0, 0, (char *) 0);
+      print_strings(file, stream, (file_off)0, 0, 0, (char *)0);
 
-      if (fclose (stream) == EOF)
+      if (fclose(stream) == EOF)
 	{
 	  fprintf (stderr, "%s: ", program_name);
 	  perror (file);
@@ -505,7 +522,7 @@ get_char (FILE *stream, file_off *address, int *magiccount, char **magic)
 	  c = getc_unlocked (stream);
 #else
 	  c = getc (stream);
-#endif
+#endif /* HAVE_GETC_UNLOCKED && HAVE_DECL_GETC_UNLOCKED */
 	  if (c == EOF)
 	    return EOF;
 	}
@@ -558,7 +575,7 @@ static void
 print_strings (const char *filename, FILE *stream, file_off address,
 	       int stop_point, int magiccount, char *magic)
 {
-  char *buf = (char *) xmalloc (sizeof (char) * (string_min + 1));
+  char *buf = (char *)xmalloc(sizeof(char) * (string_min + 1));
 
   while (1)
     {
@@ -586,54 +603,57 @@ print_strings (const char *filename, FILE *stream, file_off address,
 	 to the next non-graphic character.  */
 
       if (print_filenames)
-	printf ("%s: ", filename);
+	printf("%s: ", filename);
       if (print_addresses)
 	switch (address_radix)
 	  {
 	  case 8:
-#if __STDC_VERSION__ >= 199901L || (defined(__GNUC__) && __GNUC__ >= 2)
-	    if (sizeof (start) > sizeof (long))
-	      printf ("%7Lo ", (unsigned long long) start);
+#if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || \
+    (defined(__GNUC__) && (__GNUC__ >= 2))
+	    if (sizeof(start) > sizeof(long))
+	      printf("%7Lo ", (unsigned long long)start);
 	    else
 #else
 # if !BFD_HOST_64BIT_LONG
-	    if (start != (unsigned long) start)
-	      printf ("++%7lo ", (unsigned long) start);
+	    if (start != (unsigned long)start)
+	      printf("++%7lo ", (unsigned long)start);
 	    else
-# endif
-#endif
-	      printf ("%7lo ", (unsigned long) start);
+# endif /* !BFD_HOST_64BIT_LONG */
+#endif /* C99 || gcc 2+ */
+	      printf("%7lo ", (unsigned long)start);
 	    break;
 
 	  case 10:
-#if __STDC_VERSION__ >= 199901L || (defined(__GNUC__) && __GNUC__ >= 2)
-	    if (sizeof (start) > sizeof (long))
-	      printf ("%7Ld ", (unsigned long long) start);
+#if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || \
+    (defined(__GNUC__) && (__GNUC__ >= 2))
+	    if (sizeof(start) > sizeof(long))
+	      printf("%7Ld ", (unsigned long long)start);
 	    else
 #else
 # if !BFD_HOST_64BIT_LONG
-	    if (start != (unsigned long) start)
-	      printf ("++%7ld ", (unsigned long) start);
+	    if (start != (unsigned long)start)
+	      printf("++%7ld ", (unsigned long)start);
 	    else
-# endif
-#endif
-	      printf ("%7ld ", (long) start);
+# endif /* !BFD_HOST_64BIT_LONG */
+#endif /* C99 || gcc 2+ */
+	      printf("%7ld ", (long)start);
 	    break;
 
 	  case 16:
-#if __STDC_VERSION__ >= 199901L || (defined(__GNUC__) && __GNUC__ >= 2)
-	    if (sizeof (start) > sizeof (long))
-	      printf ("%7Lx ", (unsigned long long) start);
+#if (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) || \
+    (defined(__GNUC__) && (__GNUC__ >= 2))
+	    if (sizeof(start) > sizeof(long))
+	      printf("%7Lx ", (unsigned long long)start);
 	    else
 #else
 # if !BFD_HOST_64BIT_LONG
-	    if (start != (unsigned long) start)
-	      printf ("%lx%8.8lx ", (unsigned long) (start >> 32),
-		      (unsigned long) (start & 0xffffffff));
+	    if (start != (unsigned long)start)
+	      printf("%lx%8.8lx ", (unsigned long)(start >> 32),
+                     (unsigned long)(start & 0xffffffff));
 	    else
-# endif
-#endif
-	      printf ("%7lx ", (unsigned long) start);
+# endif /* !BFD_HOST_64BIT_LONG */
+#endif /* C99 || gcc 2+ */
+	      printf("%7lx ", (unsigned long)start);
 	    break;
 	  }
 
@@ -704,8 +724,18 @@ usage (FILE *stream, int status)
 {
   fprintf (stream, _("Usage: %s [option(s)] [file(s)]\n"), program_name);
   fprintf (stream, _(" Display printable strings in [file(s)] (stdin by default)\n"));
-  fprintf (stream, _(" The options are:\n\
+  fprintf (stream, _(" The options are:\n"));
+
+  if (DEFAULT_STRINGS_ALL)
+    fprintf (stream, _("\
+  -a - --all                Scan the entire file, not just the data section [default]\n\
+  -d --data                 Only scan the data sections in the file\n"));
+  else
+    fprintf (stream, _("\
   -a - --all                Scan the entire file, not just the data section\n\
+  -d --data                 Only scan the data sections in the file [default]\n"));
+
+  fprintf (stream, _("\
   -f --print-file-name      Print the name of the file before each string\n\
   -n --bytes=[number]       Locate & print any NUL-terminated sequence of at\n\
   -<number>                 least [number] characters (default 4).\n\

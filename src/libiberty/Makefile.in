@@ -29,6 +29,7 @@
 #
 
 ACLOCAL_AMFLAGS = -I./m4 --install
+noinst_SCRIPTS = run_autoreconf.sh
 
 libiberty_topdir = @libiberty_topdir@
 srcdir = @srcdir@
@@ -65,13 +66,14 @@ OUTPUT_OPTION = @OUTPUT_OPTION@
 AR = @AR@
 AR_FLAGS = rc
 
+BUILD_ARCHITECTURE = @BUILD_ARCHITECTURE@
 HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
 TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
 
 CC = @CC@
 C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
-CFLAGS = @CFLAGS@ $(C_ARCHFLAGS)
-LIBCFLAGS = $(CFLAGS)
+CFLAGS = @CFLAGS@
+LIBCFLAGS = $(CFLAGS) $(C_ARCHFLAGS)
 CPPFLAGS = @CPPFLAGS@
 RANLIB = @RANLIB@
 SED = @SED@
@@ -100,7 +102,7 @@ FLAGS_TO_PASS = \
 	"AR=$(AR)" \
 	"AR_FLAGS=$(AR_FLAGS)" \
 	"CC=$(CC)" \
-	"CFLAGS=$(CFLAGS)" \
+	"CFLAGS=$(CFLAGS) $(C_ARCHFLAGS)" \
 	"CPPFLAGS=$(CPPFLAGS)" \
 	"DESTDIR=$(DESTDIR)" \
 	"LIBCFLAGS=$(LIBCFLAGS)" \
@@ -176,7 +178,7 @@ CFILES = alloca.c argv.c asprintf.c atexit.c				\
 	 stack-limit.c stpcpy.c stpncpy.c 				\
 	 strcasecmp.c strchr.c strdup.c	strerror.c strncasecmp.c 	\
 	 strncmp.c strndup.c strnlen.c strrchr.c strsignal.c strstr.c 	\
-	 strtod.c strtol.c strtoul.c strverscmp.c			\
+	 strtod.c strtol.c strtoll.c strtoul.c strtoull.c strverscmp.c	\
 	ternary.c timeval-utils.c tmpnam.c				\
 	unlink-if-ordinary.c						\
 	vasprintf.c vfork.c vfprintf.c vprintf.c vsnprintf.c vsprintf.c	\
@@ -243,7 +245,8 @@ CONFIGURED_OFILES = ./asprintf.$(objext) ./atexit.$(objext)		\
 	 ./strchr.$(objext) ./strdup.$(objext) ./strncasecmp.$(objext)	\
 	 ./strncmp.$(objext) ./strndup.$(objext) ./strrchr.$(objext) 	\
 	 ./strstr.$(objext) ./strtod.$(objext) ./strtol.$(objext) 	\
-	 ./strtoul.$(objext) ./strverscmp.$(objext)			\
+	 ./strtoll.$(objext) ./strtoul.$(objext) ./strtoull.$(objext)	\
+	 ./strverscmp.$(objext)						\
 	./tmpnam.$(objext)						\
 	./vasprintf.$(objext) ./vfork.$(objext) ./vfprintf.$(objext) 	\
 	 ./vprintf.$(objext) ./vsnprintf.$(objext) ./vsprintf.$(objext)	\
@@ -438,7 +441,7 @@ install-strip: install
 # multilib-specific flags, it is overridden by FLAGS_TO_PASS from the
 # default multilib, so we have to take CFLAGS into account as well,
 # since it will be passed the multilib flags.
-MULTIOSDIR = `$(CC) $(CFLAGS) -print-multi-os-directory`
+MULTIOSDIR = `$(CC) $(CFLAGS) $(C_ARCHFLAGS) -print-multi-os-directory`
 install_to_libdir: all
 	if test -n "${target_header_dir}"; then \
 	  echo "using new install rules for '$@'"
@@ -516,8 +519,9 @@ TAGS: $(CFILES)
 demangle:
 	@echo "The standalone demangler, now named c++filt, is now"
 	@echo "a part of binutils."
-	$(CC) @DEFS@ $(CFLAGS) $(CPPFLAGS) -I. -I$(INCDIR) $(HDEFINES) \
-	  $(srcdir)/cp-demangle.c -DSTANDALONE_DEMANGLER $(TARGETLIB) -o $@
+	$(CC) @DEFS@ $(CFLAGS) $(C_ARCHFLAGS) $(CPPFLAGS) -I. -I$(INCDIR) \
+	  $(HDEFINES) $(srcdir)/cp-demangle.c -DSTANDALONE_DEMANGLER \
+	  $(TARGETLIB) -o $@
 
 ls:
 	@echo Makefile $(CFILES)
@@ -743,6 +747,14 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
 	else echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/crc32.c $(OUTPUT_OPTION)
 
+./d-demangle.$(objext): $(srcdir)/d-demangle.c config.h \
+	$(INCDIR)/ansidecl.h $(INCDIR)/demangle.h $(INCDIR)/libiberty.h \
+	$(INCDIR)/safe-ctype.h
+	if [ x"$(PICFLAG)" != x"" ]; then \
+	  $(COMPILE.c) $(PICFLAG) $(srcdir)/d-demangle.c -o pic/$@; \
+	else echo "only doing non-PIC build for $@"; fi
+	$(COMPILE.c) $(srcdir)/d-demangle.c $(OUTPUT_OPTION)
+
 ./dwarfnames.$(objext): $(srcdir)/dwarfnames.c $(INCDIR)/dwarf2.def \
 	$(INCDIR)/dwarf2.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
@@ -777,9 +789,9 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
 	else echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/fibheap.c $(OUTPUT_OPTION)
 
-./filename_cmp.$(objext): $(srcdir)/filename_cmp.c config.h $(INCDIR)/ansidecl.h \
-	$(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
-	$(INCDIR)/safe-ctype.h
+./filename_cmp.$(objext): $(srcdir)/filename_cmp.c config.h \
+	$(INCDIR)/ansidecl.h $(INCDIR)/filenames.h $(INCDIR)/hashtab.h \
+	$(INCDIR)/safe-ctype.h $(INCDIR)/libiberty.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/filename_cmp.c -o pic/$@; \
 	else echo "only doing non-PIC build for $@"; fi
@@ -1271,12 +1283,25 @@ $(CONFIGURED_OFILES): stamp-picdir stamp-noasandir
 	else echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/strtol.c $(OUTPUT_OPTION)
 
+./strtoll.$(objext): $(srcdir)/strtoll.c config.h $(INCDIR)/safe-ctype.h
+	if [ x"$(PICFLAG)" != x"" ]; then \
+	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strtoll.c -o pic/$@; \
+	else echo "only doing non-PIC build for $@"; fi
+	$(COMPILE.c) $(srcdir)/strtoll.c $(OUTPUT_OPTION)
+
 ./strtoul.$(objext): $(srcdir)/strtoul.c config.h $(INCDIR)/ansidecl.h \
 	$(INCDIR)/safe-ctype.h
 	if [ x"$(PICFLAG)" != x"" ]; then \
 	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strtoul.c -o pic/$@; \
 	else echo "only doing non-PIC build for $@"; fi
 	$(COMPILE.c) $(srcdir)/strtoul.c $(OUTPUT_OPTION)
+
+./strtoull.$(objext): $(srcdir)/strtoull.c config.h $(INCDIR)/ansidecl.h \
+	$(INCDIR)/safe-ctype.h
+	if [ x"$(PICFLAG)" != x"" ]; then \
+	  $(COMPILE.c) $(PICFLAG) $(srcdir)/strtoull.c -o pic/$@; \
+	else echo "only doing non-PIC build for $@"; fi
+	$(COMPILE.c) $(srcdir)/strtoull.c $(OUTPUT_OPTION)
 
 ./strverscmp.$(objext): $(srcdir)/strverscmp.c  $(INCDIR)/ansidecl.h \
 	$(INCDIR)/libiberty.h $(INCDIR)/safe-ctype.h

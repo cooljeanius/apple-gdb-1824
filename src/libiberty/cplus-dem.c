@@ -62,7 +62,10 @@ char * realloc ();
 
 #include "libiberty.h"
 
-static char *ada_demangle (const char *, int);
+#ifndef DEMANGLE_H
+static
+#endif /* !DEMANGLE_H */
+char *ada_demangle (const char *, int);
 
 #define min(X,Y) (((X) < (Y)) ? (X) : (Y))
 
@@ -904,7 +907,10 @@ grow_vect(char **old_vect, size_t *size, size_t min_size, int element_size)
  *  4. Remove everything after first ___ if it is followed by 'X'.
  *  5. Put symbols that should be suppressed in <...> brackets.
  * The resulting string is valid until the next call of ada_demangle. */
-static char *
+#ifndef DEMANGLE_H
+static
+#endif /* !DEMANGLE_H */
+char *
 ada_demangle (const char *mangled, int option ATTRIBUTE_UNUSED)
 {
   int i, j;

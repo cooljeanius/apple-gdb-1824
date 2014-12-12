@@ -102,7 +102,9 @@
 #endif /* !NULL */
 
 #ifndef PARAMS
-# if __STDC__ || defined __GNUC__ || defined __SUNPRO_C || defined __cplusplus || __PROTOTYPES
+# if (defined(__STDC__) && __STDC__) || defined(__GNUC__) || \
+     defined(__SUNPRO_C) || defined(__cplusplus) || defined(PROTOTYPES) \
+     (defined(__PROTOTYPES) && __PROTOTYPES)
 #  define PARAMS(args) args
 # else
 #  define PARAMS(args) ()

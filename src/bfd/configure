@@ -1559,6 +1559,7 @@ Optional Features:
   --enable-install-libbfd controls installation of libbfd and related headers
   --disable-nls           do not use Native Language Support
   --disable-largefile     omit support for large files
+  --disable-nls           do not use Native Language Support
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -10445,22 +10446,22 @@ _LT_EOF
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_cv_ld_force_load" >&5
 $as_echo "$lt_cv_ld_force_load" >&6; }
-    case $host_os in
+    case ${host_os} in
     rhapsody* | darwin1.[012])
-      _lt_dar_allow_undefined='$wl-undefined ${wl}suppress' ;;
+      _lt_dar_allow_undefined='${wl}-undefined ${wl}suppress' ;;
     darwin1.*)
-      _lt_dar_allow_undefined='$wl-flat_namespace $wl-undefined ${wl}suppress' ;;
+      _lt_dar_allow_undefined='${wl}-flat_namespace ${wl}-undefined ${wl}suppress' ;;
     darwin*) # darwin 5.x on
       # if running on 10.5 or later, the deployment target defaults
       # to the OS version, if on x86, and 10.4, the deployment
-      # target defaults to 10.4. Don't you love it?
+      # target defaults to 10.4. Do you not love it?
       case ${MACOSX_DEPLOYMENT_TARGET-10.0},$host in
 	10.0,*86*-darwin8*|10.0,*-darwin[91]*)
-	  _lt_dar_allow_undefined='$wl-undefined ${wl}dynamic_lookup' ;;
+	  _lt_dar_allow_undefined='${wl}-undefined ${wl}dynamic_lookup' ;;
 	10.[012][,.]*)
-	  _lt_dar_allow_undefined='$wl-flat_namespace $wl-undefined ${wl}suppress' ;;
+	  _lt_dar_allow_undefined='${wl}-flat_namespace ${wl}-undefined ${wl}suppress' ;;
 	10.*)
-	  _lt_dar_allow_undefined='$wl-undefined ${wl}dynamic_lookup' ;;
+	  _lt_dar_allow_undefined='${wl}-undefined ${wl}dynamic_lookup' ;;
       esac
     ;;
   esac
@@ -18655,7 +18656,8 @@ fi
 
 
 # "-W" and "-Wextra" are redundant.
-WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes -Wimplicit -Wparentheses -Wextra -Wc++-compat"
+WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations -Wimplicit -Wparentheses -Wextra -Wc++-compat -Wundef -Wold-style-definition -Wnested-externs -Wshadow"
+
 
 case "${host}" in
   *-apple-darwin* | *-apple-macos*)
@@ -18669,11 +18671,11 @@ if test x${CFLAGS+set} = xset; then
   case "${CFLAGS}" in
     *"-O0"* ) ;;
     *"-O"* )
-      WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized"
+      WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Winit-self"
     ;;
   esac
 else
-  WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized"
+  WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Winit-self"
 fi
 
 # Check whether --enable-werror was given.
@@ -18722,7 +18724,6 @@ if test "${enable_build_warnings+set}" = set; then :
 esac
 fi
 
-
 if test "x${WARN_CFLAGS}" != "x" -a "x${GCC}" = "xyes"
 then
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking compiler warning flags" >&5
@@ -18759,6 +18760,7 @@ fi
 if test x"${silent}" != x"yes" && test x"${WARN_CFLAGS}" != x""; then
   echo "Setting warning flags = ${WARN_CFLAGS}" 6>&1
 fi
+
 
 
 
@@ -19409,8 +19411,8 @@ rm -f conftest.mmap conftest.txt
 
 
 
-if test $ac_cv_header_locale_h = yes; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LC_MESSAGES" >&5
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LC_MESSAGES" >&5
 $as_echo_n "checking for LC_MESSAGES... " >&6; }
 if ${am_cv_val_LC_MESSAGES+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -19429,30 +19431,27 @@ rm -f core conftest.err conftest.$ac_objext \
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $am_cv_val_LC_MESSAGES" >&5
 $as_echo "$am_cv_val_LC_MESSAGES" >&6; }
-    if test $am_cv_val_LC_MESSAGES = yes; then
+  if test "x${am_cv_val_LC_MESSAGES}" = "xyes"; then
 
 $as_echo "#define HAVE_LC_MESSAGES 1" >>confdefs.h
 
-    fi
   fi
-
 
    { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether NLS is requested" >&5
 $as_echo_n "checking whether NLS is requested... " >&6; }
 
         # Check whether --enable-nls was given.
 if test "${enable_nls+set}" = set; then :
-  enableval=$enable_nls; USE_NLS=$enableval
+  enableval=$enable_nls; USE_NLS=${enableval}
 else
   USE_NLS=yes
 fi
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $USE_NLS" >&5
-$as_echo "$USE_NLS" >&6; }
-
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${USE_NLS}" >&5
+$as_echo "${USE_NLS}" >&6; }
 
     USE_INCLUDED_LIBINTL=yes
 
-        if test "$USE_NLS" = "yes"; then
+        if test "x${USE_NLS}" = "xyes"; then
 
 $as_echo "#define ENABLE_NLS 1" >>confdefs.h
 
@@ -19461,20 +19460,19 @@ $as_echo_n "checking whether included gettext is requested... " >&6; }
 
 # Check whether --with-included-gettext was given.
 if test "${with_included_gettext+set}" = set; then :
-  withval=$with_included_gettext; nls_cv_force_use_gnu_gettext=$withval
+  withval=$with_included_gettext; nls_cv_force_use_gnu_gettext=${withval}
 else
   nls_cv_force_use_gnu_gettext=no
 fi
 
-      { $as_echo "$as_me:${as_lineno-$LINENO}: result: $nls_cv_force_use_gnu_gettext" >&5
-$as_echo "$nls_cv_force_use_gnu_gettext" >&6; }
+      { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${nls_cv_force_use_gnu_gettext}" >&5
+$as_echo "${nls_cv_force_use_gnu_gettext}" >&6; }
 
+      nls_cv_use_gnu_gettext="${nls_cv_force_use_gnu_gettext}"
 
-      nls_cv_use_gnu_gettext="$nls_cv_force_use_gnu_gettext"
-
-      if test "$nls_cv_force_use_gnu_gettext" != "yes"; then
-                                	nls_cv_header_intl=
-	nls_cv_header_libgt=
+      if test "x${nls_cv_force_use_gnu_gettext}" != "xyes"; then
+                                	nls_cv_header_intl=""
+	nls_cv_header_libgt=""
 	CATOBJEXT=NONE
 
 	ac_fn_c_check_header_mongrel "$LINENO" "libintl.h" "ac_cv_header_libintl_h" "$ac_includes_default"
@@ -19498,7 +19496,7 @@ rm -f core conftest.err conftest.$ac_objext \
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gt_cv_func_gettext_libc" >&5
 $as_echo "$gt_cv_func_gettext_libc" >&6; }
-	   if test "$gt_cv_func_gettext_libc" != "yes"; then
+	   if test "x${gt_cv_func_gettext_libc}" != "xyes"; then
 	     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for bindtextdomain in -lintl" >&5
 $as_echo_n "checking for bindtextdomain in -lintl... " >&6; }
 if ${ac_cv_lib_intl_bindtextdomain+:} false; then :
@@ -19557,12 +19555,40 @@ fi
 $as_echo "$gt_cv_func_gettext_libintl" >&6; }
 fi
 	   fi
-	   if test "$gt_cv_func_gettext_libc" = "yes" \
-	      || test "$gt_cv_func_gettext_libintl" = "yes"; then
+	   if test "x${gt_cv_func_gettext_libc}" = "xyes" \
+	      || test "x${gt_cv_func_gettext_libintl}" = "xyes"; then
 
 $as_echo "#define HAVE_GETTEXT 1" >>confdefs.h
 
-	      # Extract the first word of "msgfmt", so it can be a program name with args.
+
+# Prepare PATH_SEPARATOR.
+# The user is always right.
+if test "${PATH_SEPARATOR+set}" != set; then
+  # Determine PATH_SEPARATOR by trying to find /bin/sh in a PATH which
+  # contains only /bin. Note that ksh looks also at the FPATH variable,
+  # so we have to set that as well for the test.
+  PATH_SEPARATOR=:
+  (PATH='/bin;/bin'; FPATH=$PATH; sh -c :) >/dev/null 2>&1 \
+    && { (PATH='/bin:/bin'; FPATH=$PATH; sh -c :) >/dev/null 2>&1 \
+           || PATH_SEPARATOR=';'
+       }
+fi
+
+# Find out how to test for executable files. Don't use a zero-byte file,
+# as systems may use methods other than mode bits to determine executability.
+cat >conf$$.file <<_ASEOF
+#! /bin/sh
+exit 0
+_ASEOF
+chmod +x conf$$.file
+if test -x conf$$.file >/dev/null 2>&1; then
+  ac_executable_p="test -x"
+else
+  ac_executable_p="test -f"
+fi
+rm -f conf$$.file
+
+# Extract the first word of "msgfmt", so it can be a program name with args.
 set dummy msgfmt; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
@@ -19570,27 +19596,31 @@ if ${ac_cv_path_MSGFMT+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   case "$MSGFMT" in
-  /*)
-  ac_cv_path_MSGFMT="$MSGFMT" # Let the user override the test with a path.
-  ;;
+  [\\/]* | ?:[\\/]*)
+    ac_cv_path_MSGFMT="$MSGFMT" # Let the user override the test with a path.
+    ;;
   *)
-  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
-  for ac_dir in $PATH; do
-    test -z "$ac_dir" && ac_dir=.
-    if test -f $ac_dir/$ac_word; then
-      if test -z "`$ac_dir/$ac_word -h 2>&1 | grep 'dv '`"; then
-	ac_cv_path_MSGFMT="$ac_dir/$ac_word"
-	break
-      fi
-    fi
-  done
-  IFS="$ac_save_ifs"
-test -z "$ac_cv_path_MSGFMT" && ac_cv_path_MSGFMT=":"
-  ;;
+    ac_save_IFS="$IFS"; IFS=$PATH_SEPARATOR
+    for ac_dir in $PATH; do
+      IFS="$ac_save_IFS"
+      test -z "$ac_dir" && ac_dir=.
+      for ac_exec_ext in '' $ac_executable_extensions; do
+        if $ac_executable_p "$ac_dir/$ac_word$ac_exec_ext"; then
+          echo "$as_me: trying $ac_dir/$ac_word..." >&5
+          if test -z "`$ac_dir/$ac_word -h 2>&1 | grep 'dv '`"; then
+            ac_cv_path_MSGFMT="$ac_dir/$ac_word$ac_exec_ext"
+            break 2
+          fi
+        fi
+      done
+    done
+    IFS="$ac_save_IFS"
+  test -z "$ac_cv_path_MSGFMT" && ac_cv_path_MSGFMT=":"
+    ;;
 esac
 fi
 MSGFMT="$ac_cv_path_MSGFMT"
-if test -n "$MSGFMT"; then
+if test "$MSGFMT" != ":"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $MSGFMT" >&5
 $as_echo "$MSGFMT" >&6; }
 else
@@ -19650,7 +19680,35 @@ $as_echo "no" >&6; }
 fi
 
 
-		# Extract the first word of "xgettext", so it can be a program name with args.
+
+# Prepare PATH_SEPARATOR.
+# The user is always right.
+if test "${PATH_SEPARATOR+set}" != set; then
+  # Determine PATH_SEPARATOR by trying to find /bin/sh in a PATH which
+  # contains only /bin. Note that ksh looks also at the FPATH variable,
+  # so we have to set that as well for the test.
+  PATH_SEPARATOR=:
+  (PATH='/bin;/bin'; FPATH=$PATH; sh -c :) >/dev/null 2>&1 \
+    && { (PATH='/bin:/bin'; FPATH=$PATH; sh -c :) >/dev/null 2>&1 \
+           || PATH_SEPARATOR=';'
+       }
+fi
+
+# Find out how to test for executable files. Don't use a zero-byte file,
+# as systems may use methods other than mode bits to determine executability.
+cat >conf$$.file <<_ASEOF
+#! /bin/sh
+exit 0
+_ASEOF
+chmod +x conf$$.file
+if test -x conf$$.file >/dev/null 2>&1; then
+  ac_executable_p="test -x"
+else
+  ac_executable_p="test -f"
+fi
+rm -f conf$$.file
+
+# Extract the first word of "xgettext", so it can be a program name with args.
 set dummy xgettext; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
@@ -19658,27 +19716,31 @@ if ${ac_cv_path_XGETTEXT+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   case "$XGETTEXT" in
-  /*)
-  ac_cv_path_XGETTEXT="$XGETTEXT" # Let the user override the test with a path.
-  ;;
+  [\\/]* | ?:[\\/]*)
+    ac_cv_path_XGETTEXT="$XGETTEXT" # Let the user override the test with a path.
+    ;;
   *)
-  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
-  for ac_dir in $PATH; do
-    test -z "$ac_dir" && ac_dir=.
-    if test -f $ac_dir/$ac_word; then
-      if test -z "`$ac_dir/$ac_word -h 2>&1 | grep '(HELP)'`"; then
-	ac_cv_path_XGETTEXT="$ac_dir/$ac_word"
-	break
-      fi
-    fi
-  done
-  IFS="$ac_save_ifs"
-test -z "$ac_cv_path_XGETTEXT" && ac_cv_path_XGETTEXT=":"
-  ;;
+    ac_save_IFS="$IFS"; IFS=$PATH_SEPARATOR
+    for ac_dir in $PATH; do
+      IFS="$ac_save_IFS"
+      test -z "$ac_dir" && ac_dir=.
+      for ac_exec_ext in '' $ac_executable_extensions; do
+        if $ac_executable_p "$ac_dir/$ac_word$ac_exec_ext"; then
+          echo "$as_me: trying $ac_dir/$ac_word..." >&5
+          if test -z "`${ac_dir}/${ac_word} -h 2>&1 | grep '(HELP)'`"; then
+            ac_cv_path_XGETTEXT="$ac_dir/$ac_word$ac_exec_ext"
+            break 2
+          fi
+        fi
+      done
+    done
+    IFS="$ac_save_IFS"
+  test -z "$ac_cv_path_XGETTEXT" && ac_cv_path_XGETTEXT=":"
+    ;;
 esac
 fi
 XGETTEXT="$ac_cv_path_XGETTEXT"
-if test -n "$XGETTEXT"; then
+if test "$XGETTEXT" != ":"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $XGETTEXT" >&5
 $as_echo "$XGETTEXT" >&6; }
 else
@@ -19705,13 +19767,41 @@ fi
 
 
 
-        if test "$CATOBJEXT" = "NONE"; then
+        if test "x${CATOBJEXT}" = "xNONE"; then
 	  	  	  nls_cv_use_gnu_gettext=yes
 
         fi       fi
-      if test "$nls_cv_use_gnu_gettext" = "yes"; then
+      if test "x${nls_cv_use_gnu_gettext}" = "xyes"; then
                 INTLOBJS="\$(GETTOBJS)"
-        # Extract the first word of "msgfmt", so it can be a program name with args.
+
+# Prepare PATH_SEPARATOR.
+# The user is always right.
+if test "${PATH_SEPARATOR+set}" != set; then
+  # Determine PATH_SEPARATOR by trying to find /bin/sh in a PATH which
+  # contains only /bin. Note that ksh looks also at the FPATH variable,
+  # so we have to set that as well for the test.
+  PATH_SEPARATOR=:
+  (PATH='/bin;/bin'; FPATH=$PATH; sh -c :) >/dev/null 2>&1 \
+    && { (PATH='/bin:/bin'; FPATH=$PATH; sh -c :) >/dev/null 2>&1 \
+           || PATH_SEPARATOR=';'
+       }
+fi
+
+# Find out how to test for executable files. Don't use a zero-byte file,
+# as systems may use methods other than mode bits to determine executability.
+cat >conf$$.file <<_ASEOF
+#! /bin/sh
+exit 0
+_ASEOF
+chmod +x conf$$.file
+if test -x conf$$.file >/dev/null 2>&1; then
+  ac_executable_p="test -x"
+else
+  ac_executable_p="test -f"
+fi
+rm -f conf$$.file
+
+# Extract the first word of "msgfmt", so it can be a program name with args.
 set dummy msgfmt; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
@@ -19719,27 +19809,31 @@ if ${ac_cv_path_MSGFMT+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   case "$MSGFMT" in
-  /*)
-  ac_cv_path_MSGFMT="$MSGFMT" # Let the user override the test with a path.
-  ;;
+  [\\/]* | ?:[\\/]*)
+    ac_cv_path_MSGFMT="$MSGFMT" # Let the user override the test with a path.
+    ;;
   *)
-  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
-  for ac_dir in $PATH; do
-    test -z "$ac_dir" && ac_dir=.
-    if test -f $ac_dir/$ac_word; then
-      if test -z "`$ac_dir/$ac_word -h 2>&1 | grep 'dv '`"; then
-	ac_cv_path_MSGFMT="$ac_dir/$ac_word"
-	break
-      fi
-    fi
-  done
-  IFS="$ac_save_ifs"
-test -z "$ac_cv_path_MSGFMT" && ac_cv_path_MSGFMT=":"
-  ;;
+    ac_save_IFS="$IFS"; IFS=$PATH_SEPARATOR
+    for ac_dir in $PATH; do
+      IFS="$ac_save_IFS"
+      test -z "$ac_dir" && ac_dir=.
+      for ac_exec_ext in '' $ac_executable_extensions; do
+        if $ac_executable_p "$ac_dir/$ac_word$ac_exec_ext"; then
+          echo "$as_me: trying $ac_dir/$ac_word..." >&5
+          if test -z "`${ac_dir}/${ac_word} -h 2>&1 | grep 'dv '`"; then
+            ac_cv_path_MSGFMT="$ac_dir/$ac_word$ac_exec_ext"
+            break 2
+          fi
+        fi
+      done
+    done
+    IFS="$ac_save_IFS"
+  test -z "$ac_cv_path_MSGFMT" && ac_cv_path_MSGFMT=":"
+    ;;
 esac
 fi
 MSGFMT="$ac_cv_path_MSGFMT"
-if test -n "$MSGFMT"; then
+if test "$MSGFMT" != ":"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $MSGFMT" >&5
 $as_echo "$MSGFMT" >&6; }
 else
@@ -19788,7 +19882,35 @@ $as_echo "no" >&6; }
 fi
 
 
-        # Extract the first word of "xgettext", so it can be a program name with args.
+
+# Prepare PATH_SEPARATOR.
+# The user is always right.
+if test "${PATH_SEPARATOR+set}" != set; then
+  # Determine PATH_SEPARATOR by trying to find /bin/sh in a PATH which
+  # contains only /bin. Note that ksh looks also at the FPATH variable,
+  # so we have to set that as well for the test.
+  PATH_SEPARATOR=:
+  (PATH='/bin;/bin'; FPATH=$PATH; sh -c :) >/dev/null 2>&1 \
+    && { (PATH='/bin:/bin'; FPATH=$PATH; sh -c :) >/dev/null 2>&1 \
+           || PATH_SEPARATOR=';'
+       }
+fi
+
+# Find out how to test for executable files. Don't use a zero-byte file,
+# as systems may use methods other than mode bits to determine executability.
+cat >conf$$.file <<_ASEOF
+#! /bin/sh
+exit 0
+_ASEOF
+chmod +x conf$$.file
+if test -x conf$$.file >/dev/null 2>&1; then
+  ac_executable_p="test -x"
+else
+  ac_executable_p="test -f"
+fi
+rm -f conf$$.file
+
+# Extract the first word of "xgettext", so it can be a program name with args.
 set dummy xgettext; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
@@ -19796,27 +19918,31 @@ if ${ac_cv_path_XGETTEXT+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   case "$XGETTEXT" in
-  /*)
-  ac_cv_path_XGETTEXT="$XGETTEXT" # Let the user override the test with a path.
-  ;;
+  [\\/]* | ?:[\\/]*)
+    ac_cv_path_XGETTEXT="$XGETTEXT" # Let the user override the test with a path.
+    ;;
   *)
-  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
-  for ac_dir in $PATH; do
-    test -z "$ac_dir" && ac_dir=.
-    if test -f $ac_dir/$ac_word; then
-      if test -z "`$ac_dir/$ac_word -h 2>&1 | grep '(HELP)'`"; then
-	ac_cv_path_XGETTEXT="$ac_dir/$ac_word"
-	break
-      fi
-    fi
-  done
-  IFS="$ac_save_ifs"
-test -z "$ac_cv_path_XGETTEXT" && ac_cv_path_XGETTEXT=":"
-  ;;
+    ac_save_IFS="$IFS"; IFS=$PATH_SEPARATOR
+    for ac_dir in $PATH; do
+      IFS="$ac_save_IFS"
+      test -z "$ac_dir" && ac_dir=.
+      for ac_exec_ext in '' $ac_executable_extensions; do
+        if $ac_executable_p "$ac_dir/$ac_word$ac_exec_ext"; then
+          echo "$as_me: trying $ac_dir/$ac_word..." >&5
+          if test -z "`${ac_dir}/${ac_word} -h 2>&1 | grep '(HELP)'`"; then
+            ac_cv_path_XGETTEXT="$ac_dir/$ac_word$ac_exec_ext"
+            break 2
+          fi
+        fi
+      done
+    done
+    IFS="$ac_save_IFS"
+  test -z "$ac_cv_path_XGETTEXT" && ac_cv_path_XGETTEXT=":"
+    ;;
 esac
 fi
 XGETTEXT="$ac_cv_path_XGETTEXT"
-if test -n "$XGETTEXT"; then
+if test "$XGETTEXT" != ":"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $XGETTEXT" >&5
 $as_echo "$XGETTEXT" >&6; }
 else
@@ -19832,12 +19958,12 @@ fi
 # APPLE LOCAL: Link directly to the .a file.
 	INTLDEPS='$(top_builddir)/../intl/.libs/libintl.a'
 	INTLLIBS=$INTLDEPS
-	LIBS=`echo $LIBS | sed -e 's/-lintl//'`
+	LIBS=`echo ${LIBS} | sed -e 's/-lintl//'`
         nls_cv_header_intl=libintl.h
         nls_cv_header_libgt=libgettext.h
       fi
-            if test "$XGETTEXT" != ":"; then
-            	if $XGETTEXT --omit-header /dev/null 2> /dev/null; then
+            if test "x${XGETTEXT}" != "x:"; then
+            	if ${XGETTEXT} --omit-header /dev/null 2> /dev/null; then
 	  : ;
 	else
 	  { $as_echo "$as_me:${as_lineno-$LINENO}: result: found xgettext programs is not GNU xgettext; ignore it" >&5
@@ -19853,25 +19979,14 @@ $as_echo "found xgettext programs is not GNU xgettext; ignore it" >&6; }
     fi
     # If this is used in GNU gettext we have to set USE_NLS to `yes'
     # because some of the sources are only built for this goal.
-    if test "$PACKAGE" = gettext; then
+    if test "x${PACKAGE}" = "xgettext"; then
       USE_NLS=yes
       USE_INCLUDED_LIBINTL=yes
     fi
-                for lang in $ALL_LINGUAS; do
-      GMOFILES="$GMOFILES $lang.gmo"
-      POFILES="$POFILES $lang.po"
+                for lang in ${ALL_LINGUAS}; do
+      GMOFILES="${GMOFILES} ${lang}.gmo"
+      POFILES="${POFILES} ${lang}.po"
     done
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -19909,40 +20024,39 @@ $as_echo "#define HAVE_STPCPY 1" >>confdefs.h
    fi
 
 
-
-
-   if test "x$CATOBJEXT" != "x"; then
-     if test "x$ALL_LINGUAS" = "x"; then
-       LINGUAS=
+   if test "x${CATOBJEXT}" != "x"; then
+     if test "x${ALL_LINGUAS}" = "x"; then
+       LINGUAS=""
      else
        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for catalogs to be installed" >&5
 $as_echo_n "checking for catalogs to be installed... " >&6; }
-       NEW_LINGUAS=
-       for lang in ${LINGUAS=$ALL_LINGUAS}; do
-         case "$ALL_LINGUAS" in
-          *$lang*) NEW_LINGUAS="$NEW_LINGUAS $lang" ;;
+       NEW_LINGUAS=""
+       for lang in ${LINGUAS=${ALL_LINGUAS}}; do
+         case "${ALL_LINGUAS}" in
+          *${lang}*) NEW_LINGUAS="${NEW_LINGUAS} ${lang}" ;;
          esac
        done
-       LINGUAS=$NEW_LINGUAS
-       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $LINGUAS" >&5
-$as_echo "$LINGUAS" >&6; }
+       LINGUAS=${NEW_LINGUAS}
+       { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${LINGUAS}" >&5
+$as_echo "${LINGUAS}" >&6; }
      fi
 
-          if test -n "$LINGUAS"; then
-       for lang in $LINGUAS; do CATALOGS="$CATALOGS $lang$CATOBJEXT"; done
+          if test -n "${LINGUAS}"; then
+       for lang in ${LINGUAS}; do
+         CATALOGS="${CATALOGS} ${lang}${CATOBJEXT}"
+       done
      fi
    fi
 
-            if test $ac_cv_header_locale_h = yes; then
+            if test "x${ac_cv_header_locale_h}" = "xyes"; then
      INCLUDE_LOCALE_H="#include <locale.h>"
    else
      INCLUDE_LOCALE_H="\
 /* The system does not provide the header <locale.h>. Take care yourself.  */"
    fi
 
-
-            if test -f $srcdir/po2tbl.sed.in; then
-      if test "$CATOBJEXT" = ".cat"; then
+            if test -f ${srcdir}/po2tbl.sed.in; then
+      if test "x${CATOBJEXT}" = "x.cat"; then
 	 ac_fn_c_check_header_mongrel "$LINENO" "linux/version.h" "ac_cv_header_linux_version_h" "$ac_includes_default"
 if test "x$ac_cv_header_linux_version_h" = xyes; then :
   msgformat=linux
@@ -19951,43 +20065,38 @@ else
 fi
 
 
-
-	 	 	 sed -e '/^#/d' $srcdir/$msgformat-msg.sed > po2msg.sed
+	 	 	 sed -e '/^#/d' ${srcdir}/${msgformat}-msg.sed > po2msg.sed
       fi
             sed -e '/^#.*[^\\]$/d' -e '/^#$/d' \
-	 $srcdir/po2tbl.sed.in > po2tbl.sed
+	 ${srcdir}/po2tbl.sed.in > po2tbl.sed
    fi
 
-            if test "$PACKAGE" = "gettext"; then
+            if test "x${PACKAGE}" = "xgettext"; then
      GT_NO="#NO#"
-     GT_YES=
+     GT_YES=""
    else
-     GT_NO=
+     GT_NO=""
      GT_YES="#YES#"
    fi
 
-
-
    MKINSTALLDIRS="\$(srcdir)/../../mkinstalldirs"
-
 
       l=l
 
-
-            if test -f $srcdir/po/POTFILES.in; then
+            if test -f ${srcdir}/po/POTFILES.in; then
       test -d po || mkdir po
-      if test "x$srcdir" != "x."; then
-	 if test "x`echo $srcdir | sed 's@/.*@@'`" = "x"; then
-	    posrcprefix="$srcdir/"
+      if test "x${srcdir}" != "x."; then
+	 if test "x`echo ${srcdir} | sed 's@/.*@@'`" = "x"; then
+	    posrcprefix="${srcdir}/"
 	 else
-	    posrcprefix="../$srcdir/"
+	    posrcprefix="../${srcdir}/"
 	 fi
       else
 	 posrcprefix="../"
       fi
       rm -f po/POTFILES
       sed -e "/^#/d" -e "/^\$/d" -e "s,.*,	$posrcprefix& \\\\," -e "\$s/\(.*\) \\\\/\1/" \
-	 < $srcdir/po/POTFILES.in > po/POTFILES
+	 < ${srcdir}/po/POTFILES.in > po/POTFILES
    fi
 
 
@@ -23627,7 +23736,35 @@ $as_echo "$USE_NLS" >&6; }
 
 
 
-        # Extract the first word of "msgfmt", so it can be a program name with args.
+
+# Prepare PATH_SEPARATOR.
+# The user is always right.
+if test "${PATH_SEPARATOR+set}" != set; then
+  # Determine PATH_SEPARATOR by trying to find /bin/sh in a PATH which
+  # contains only /bin. Note that ksh looks also at the FPATH variable,
+  # so we have to set that as well for the test.
+  PATH_SEPARATOR=:
+  (PATH='/bin;/bin'; FPATH=$PATH; sh -c :) >/dev/null 2>&1 \
+    && { (PATH='/bin:/bin'; FPATH=$PATH; sh -c :) >/dev/null 2>&1 \
+           || PATH_SEPARATOR=';'
+       }
+fi
+
+# Find out how to test for executable files. Don't use a zero-byte file,
+# as systems may use methods other than mode bits to determine executability.
+cat >conf$$.file <<_ASEOF
+#! /bin/sh
+exit 0
+_ASEOF
+chmod +x conf$$.file
+if test -x conf$$.file >/dev/null 2>&1; then
+  ac_executable_p="test -x"
+else
+  ac_executable_p="test -f"
+fi
+rm -f conf$$.file
+
+# Extract the first word of "msgfmt", so it can be a program name with args.
 set dummy msgfmt; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
@@ -23635,28 +23772,32 @@ if ${ac_cv_path_MSGFMT+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   case "$MSGFMT" in
-  /*)
-  ac_cv_path_MSGFMT="$MSGFMT" # Let the user override the test with a path.
-  ;;
+  [\\/]* | ?:[\\/]*)
+    ac_cv_path_MSGFMT="$MSGFMT" # Let the user override the test with a path.
+    ;;
   *)
-  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
-  for ac_dir in $PATH; do
-    test -z "$ac_dir" && ac_dir=.
-    if test -f $ac_dir/$ac_word; then
-      if $ac_dir/$ac_word --statistics /dev/null >&5 2>&1 &&
+    ac_save_IFS="$IFS"; IFS=$PATH_SEPARATOR
+    for ac_dir in $PATH; do
+      IFS="$ac_save_IFS"
+      test -z "$ac_dir" && ac_dir=.
+      for ac_exec_ext in '' $ac_executable_extensions; do
+        if $ac_executable_p "$ac_dir/$ac_word$ac_exec_ext"; then
+          echo "$as_me: trying $ac_dir/$ac_word..." >&5
+          if $ac_dir/$ac_word --statistics /dev/null >&5 2>&1 &&
      (if $ac_dir/$ac_word --statistics /dev/null 2>&1 >/dev/null | grep usage >/dev/null; then exit 1; else exit 0; fi); then
-	ac_cv_path_MSGFMT="$ac_dir/$ac_word"
-	break
-      fi
-    fi
-  done
-  IFS="$ac_save_ifs"
-test -z "$ac_cv_path_MSGFMT" && ac_cv_path_MSGFMT=":"
-  ;;
+            ac_cv_path_MSGFMT="$ac_dir/$ac_word$ac_exec_ext"
+            break 2
+          fi
+        fi
+      done
+    done
+    IFS="$ac_save_IFS"
+  test -z "$ac_cv_path_MSGFMT" && ac_cv_path_MSGFMT=":"
+    ;;
 esac
 fi
 MSGFMT="$ac_cv_path_MSGFMT"
-if test -n "$MSGFMT"; then
+if test "$MSGFMT" != ":"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $MSGFMT" >&5
 $as_echo "$MSGFMT" >&6; }
 else
@@ -23717,7 +23858,35 @@ fi
   esac
 
 
-        # Extract the first word of "xgettext", so it can be a program name with args.
+
+# Prepare PATH_SEPARATOR.
+# The user is always right.
+if test "${PATH_SEPARATOR+set}" != set; then
+  # Determine PATH_SEPARATOR by trying to find /bin/sh in a PATH which
+  # contains only /bin. Note that ksh looks also at the FPATH variable,
+  # so we have to set that as well for the test.
+  PATH_SEPARATOR=:
+  (PATH='/bin;/bin'; FPATH=$PATH; sh -c :) >/dev/null 2>&1 \
+    && { (PATH='/bin:/bin'; FPATH=$PATH; sh -c :) >/dev/null 2>&1 \
+           || PATH_SEPARATOR=';'
+       }
+fi
+
+# Find out how to test for executable files. Don't use a zero-byte file,
+# as systems may use methods other than mode bits to determine executability.
+cat >conf$$.file <<_ASEOF
+#! /bin/sh
+exit 0
+_ASEOF
+chmod +x conf$$.file
+if test -x conf$$.file >/dev/null 2>&1; then
+  ac_executable_p="test -x"
+else
+  ac_executable_p="test -f"
+fi
+rm -f conf$$.file
+
+# Extract the first word of "xgettext", so it can be a program name with args.
 set dummy xgettext; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
@@ -23725,28 +23894,32 @@ if ${ac_cv_path_XGETTEXT+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   case "$XGETTEXT" in
-  /*)
-  ac_cv_path_XGETTEXT="$XGETTEXT" # Let the user override the test with a path.
-  ;;
+  [\\/]* | ?:[\\/]*)
+    ac_cv_path_XGETTEXT="$XGETTEXT" # Let the user override the test with a path.
+    ;;
   *)
-  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
-  for ac_dir in $PATH; do
-    test -z "$ac_dir" && ac_dir=.
-    if test -f $ac_dir/$ac_word; then
-      if $ac_dir/$ac_word --omit-header --copyright-holder= --msgid-bugs-address= /dev/null >&5 2>&1 &&
+    ac_save_IFS="$IFS"; IFS=$PATH_SEPARATOR
+    for ac_dir in $PATH; do
+      IFS="$ac_save_IFS"
+      test -z "$ac_dir" && ac_dir=.
+      for ac_exec_ext in '' $ac_executable_extensions; do
+        if $ac_executable_p "$ac_dir/$ac_word$ac_exec_ext"; then
+          echo "$as_me: trying $ac_dir/$ac_word..." >&5
+          if $ac_dir/$ac_word --omit-header --copyright-holder= --msgid-bugs-address= /dev/null >&5 2>&1 &&
      (if $ac_dir/$ac_word --omit-header --copyright-holder= --msgid-bugs-address= /dev/null 2>&1 >/dev/null | grep usage >/dev/null; then exit 1; else exit 0; fi); then
-	ac_cv_path_XGETTEXT="$ac_dir/$ac_word"
-	break
-      fi
-    fi
-  done
-  IFS="$ac_save_ifs"
-test -z "$ac_cv_path_XGETTEXT" && ac_cv_path_XGETTEXT=":"
-  ;;
+            ac_cv_path_XGETTEXT="$ac_dir/$ac_word$ac_exec_ext"
+            break 2
+          fi
+        fi
+      done
+    done
+    IFS="$ac_save_IFS"
+  test -z "$ac_cv_path_XGETTEXT" && ac_cv_path_XGETTEXT=":"
+    ;;
 esac
 fi
 XGETTEXT="$ac_cv_path_XGETTEXT"
-if test -n "$XGETTEXT"; then
+if test "$XGETTEXT" != ":"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $XGETTEXT" >&5
 $as_echo "$XGETTEXT" >&6; }
 else
@@ -23762,7 +23935,35 @@ fi
   esac
 
 
-    # Extract the first word of "msgmerge", so it can be a program name with args.
+
+# Prepare PATH_SEPARATOR.
+# The user is always right.
+if test "${PATH_SEPARATOR+set}" != set; then
+  # Determine PATH_SEPARATOR by trying to find /bin/sh in a PATH which
+  # contains only /bin. Note that ksh looks also at the FPATH variable,
+  # so we have to set that as well for the test.
+  PATH_SEPARATOR=:
+  (PATH='/bin;/bin'; FPATH=$PATH; sh -c :) >/dev/null 2>&1 \
+    && { (PATH='/bin:/bin'; FPATH=$PATH; sh -c :) >/dev/null 2>&1 \
+           || PATH_SEPARATOR=';'
+       }
+fi
+
+# Find out how to test for executable files. Don't use a zero-byte file,
+# as systems may use methods other than mode bits to determine executability.
+cat >conf$$.file <<_ASEOF
+#! /bin/sh
+exit 0
+_ASEOF
+chmod +x conf$$.file
+if test -x conf$$.file >/dev/null 2>&1; then
+  ac_executable_p="test -x"
+else
+  ac_executable_p="test -f"
+fi
+rm -f conf$$.file
+
+# Extract the first word of "msgmerge", so it can be a program name with args.
 set dummy msgmerge; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
@@ -23770,27 +23971,31 @@ if ${ac_cv_path_MSGMERGE+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   case "$MSGMERGE" in
-  /*)
-  ac_cv_path_MSGMERGE="$MSGMERGE" # Let the user override the test with a path.
-  ;;
+  [\\/]* | ?:[\\/]*)
+    ac_cv_path_MSGMERGE="$MSGMERGE" # Let the user override the test with a path.
+    ;;
   *)
-  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
-  for ac_dir in $PATH; do
-    test -z "$ac_dir" && ac_dir=.
-    if test -f $ac_dir/$ac_word; then
-      if $ac_dir/$ac_word --update -q /dev/null /dev/null >&5 2>&1; then
-	ac_cv_path_MSGMERGE="$ac_dir/$ac_word"
-	break
-      fi
-    fi
-  done
-  IFS="$ac_save_ifs"
-test -z "$ac_cv_path_MSGMERGE" && ac_cv_path_MSGMERGE=":"
-  ;;
+    ac_save_IFS="$IFS"; IFS=$PATH_SEPARATOR
+    for ac_dir in $PATH; do
+      IFS="$ac_save_IFS"
+      test -z "$ac_dir" && ac_dir=.
+      for ac_exec_ext in '' $ac_executable_extensions; do
+        if $ac_executable_p "$ac_dir/$ac_word$ac_exec_ext"; then
+          echo "$as_me: trying $ac_dir/$ac_word..." >&5
+          if $ac_dir/$ac_word --update -q /dev/null /dev/null >&5 2>&1; then
+            ac_cv_path_MSGMERGE="$ac_dir/$ac_word$ac_exec_ext"
+            break 2
+          fi
+        fi
+      done
+    done
+    IFS="$ac_save_IFS"
+  test -z "$ac_cv_path_MSGMERGE" && ac_cv_path_MSGMERGE=":"
+    ;;
 esac
 fi
 MSGMERGE="$ac_cv_path_MSGMERGE"
-if test -n "$MSGMERGE"; then
+if test "$MSGMERGE" != ":"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $MSGMERGE" >&5
 $as_echo "$MSGMERGE" >&6; }
 else
@@ -25989,6 +26194,12 @@ rm -f conftest*
     all_backends='$(BFD32_BACKENDS)'
     ;;
 esac
+
+if test "x${wordsize}" = "x"; then
+  test -z "${wordsize}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: wordsize never got set" >&5
+$as_echo "$as_me: WARNING: wordsize never got set" >&2;}
+fi
 
 
 if test "x${plugins}" = "xyes"; then

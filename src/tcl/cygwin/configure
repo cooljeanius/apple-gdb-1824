@@ -2973,7 +2973,6 @@ fi
 # itself.
 
 
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for grep that handles long lines and -e" >&5
 $as_echo_n "checking for grep that handles long lines and -e... " >&6; }
 if ${ac_cv_path_GREP+:} false; then :
@@ -4615,8 +4614,6 @@ unknown)
   ;;
 esac
 
-
-
 if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ranlib; ac_word=$2
@@ -5125,7 +5122,6 @@ _ACEOF
 fi
 
 done
-
 ac_fn_c_check_decl "$LINENO" "LC_TIME" "ac_cv_have_decl_LC_TIME" "$ac_includes_default"
 if test "x$ac_cv_have_decl_LC_TIME" = xyes; then :
   ac_have_decl=1
@@ -5136,7 +5132,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_LC_TIME $ac_have_decl
 _ACEOF
-
 
 #--------------------------------------------------------------------
 # The statements below define the symbol TCL_PACKAGE_PATH, which
@@ -5159,8 +5154,6 @@ $as_echo "$as_me: sourcing ${cross_cache}" >&6;}
 . ${cross_cache}
 
 
-
-
 # These variables are needed to get expect working with
 # the tclConfig.sh script in the cygwin directory.
 LD_FLAGS=""
@@ -5176,8 +5169,8 @@ SHLIB_LD='${CC} -shared ${CFLAGS}'
 TCL_BUILD_LIB_SPEC=`pwd`/libtcl_cygwin.a
 
 
+# Output.
 ac_config_files="$ac_config_files Makefile tclConfig.sh"
-
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure

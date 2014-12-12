@@ -80,11 +80,11 @@ eval `cat configure.ac 2>/dev/null | $SED "$my_sed_traces"`
 # Upgrade caveat:
 cat <<'EOF'
 WARNING: If bootstrapping with this script fails, it may be due to an
-WARNING: incompatible installed `libtool.m4' being pulled in to
-WARNING: `aclocal.m4'.  The best way to work around such a problem is to
+WARNING: incompatible installed 'libtool.m4' being pulled into
+WARNING: 'aclocal.m4'.  The best way to work around such a problem is to
 WARNING: uninstall your system libtool files, or failing that, overwrite
 WARNING: them with all m4 file as shipped with this distribution (except
-WARNING: `lt~obsolete.m4').  After that, retry this bootstrap.
+WARNING: 'lt~obsolete.m4').  After that, retry this bootstrap.
 EOF
 
 find . -depth \( -name autom4te.cache -o -name libtool \) -print \
@@ -184,7 +184,9 @@ for macro in LT_INIT AC_PROG_LIBTOOL AM_PROG_LIBTOOL; do
   if grep ${macro} aclocal.m4 libltdl/aclocal.m4; then
     echo "Bogus ${macro} macro contents in an aclocal.m4 file." >&2
     exit 1
-  else :; fi
+  else
+    echo "Check for ${macro} in aclocal.m4 files turned out okay."
+  fi
 done
 
 exit 0

@@ -1,6 +1,6 @@
 #
 # Makefile
-#   Copyright (C) 1999, 2002
+#   Copyright (C) 1999, 2002, 2006
 #   Free Software Foundation
 #
 # This file is part of the libiberty library.
@@ -31,46 +31,89 @@ VPATH = @srcdir@
 
 SHELL = @SHELL@
 
+HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
+TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
+
 CC = @CC@
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 CFLAGS = @CFLAGS@
-LIBCFLAGS = $(CFLAGS)
+LIBCFLAGS = $(CFLAGS) $(C_ARCHFLAGS)
+CPPFLAGS = @CPPFLAGS@
 
 # Multilib support variables.
 MULTISRCTOP =
 
+@host_makefile_frag@
+
 INCDIR=$(srcdir)/../$(MULTISRCTOP)../include
+
+COMPILE.c = $(CC) -c @DEFS@ $(LIBCFLAGS) $(CPPFLAGS) -I. -I$(INCDIR) $(HDEFINES) @ac_libiberty_warn_cflags@
 
 all:
 
 # CHECK is set to "really_check" or the empty string by configure.
 check: @CHECK@
 
-really-check: check-cplus-dem check-pexecute
+really-check: check-cplus-dem check-d-demangle check-pexecute \
+		check-expandargv check-strtol
 
 # Run some tests of the demangler.
 check-cplus-dem: test-demangle $(srcdir)/demangle-expected
 	./test-demangle < $(srcdir)/demangle-expected
 
+check-d-demangle: test-demangle $(srcdir)/d-demangle-expected
+	./test-demangle < $(srcdir)/d-demangle-expected
+
 # Check the pexecute code.
 check-pexecute: test-pexecute
 	./test-pexecute
 
-TEST_COMPILE = $(CC) @DEFS@ $(LIBCFLAGS) -I.. -I$(INCDIR) $(HDEFINES)
-test-demangle: $(srcdir)/test-demangle.c ../libiberty.a
+# Check the expandargv functionality:
+check-expandargv: test-expandargv
+	./test-expandargv
+
+# Check the strtol functionality:
+check-strtol: test-strtol
+	./test-strtol
+
+# Run the demangler fuzzer:
+fuzz-demangler: demangler-fuzzer
+	./demangler-fuzzer
+
+TEST_COMPILE = $(CC) @DEFS@ $(LIBCFLAGS) $(CPPFLAGS) -I.. -I$(INCDIR) $(HDEFINES) @ac_libiberty_warn_cflags@
+COND_MMALLOC = @MMALLOC_OK@ ../$(MMALLOC)
+test-demangle: $(srcdir)/test-demangle.c ../libiberty.a $(COND_MMALLOC) 
 	$(TEST_COMPILE) -o test-demangle \
-		$(srcdir)/test-demangle.c ../libiberty.a ../../mmalloc/libmmalloc.a
+	  	$(srcdir)/test-demangle.c ../libiberty.a $(COND_MMALLOC)
 
 test-pexecute: $(srcdir)/test-pexecute.c ../libiberty.a
 	$(TEST_COMPILE) -DHAVE_CONFIG_H -I.. -o test-pexecute \
 		$(srcdir)/test-pexecute.c ../libiberty.a
 
+test-expandargv: $(srcdir)/test-expandargv.c ../libiberty.a
+	$(TEST_COMPILE) -DHAVE_CONFIG_H -I.. -o test-expandargv \
+		$(srcdir)/test-expandargv.c ../libiberty.a
+
+test-strtol: $(srcdir)/test-strtol.c ../libiberty.a
+	$(TEST_COMPILE) -std=gnu99 -DHAVE_CONFIG_H -I.. -o test-strtol \
+		$(srcdir)/test-strtol.c ../libiberty.a
+
+demangler-fuzzer: $(srcdir)/demangler-fuzzer.c ../libiberty.a
+	$(TEST_COMPILE) -o demangler-fuzzer \
+		$(srcdir)/demangler-fuzzer.c ../libiberty.a
+
 # Standard (either GNU or Cygnus) rules we do NOT use.
-info install-info clean-info dvi install etags tags installcheck:
+html install-html info install-info clean-info dvi pdf install-pdf \
+install etags tags installcheck:
 
 # The standard clean rules.
 mostlyclean:
 	rm -f test-demangle
 	rm -f test-pexecute
+	rm -f test-expandargv
+	rm -f test-strtol
+	rm -f demangler-fuzzer
+	rm -f core
 	rm -rf *.dSYM
 clean: mostlyclean
 distclean: clean
@@ -78,5 +121,5 @@ distclean: clean
 maintainer-clean realclean: distclean
 
 Makefile: $(srcdir)/Makefile.in ../config.status
-	CONFIG_FILES=testsuite/Makefile CONFIG_HEADERS= \
+	CONFIG_FILES=testsuite/Makefile CONFIG_HEADERS="" \
 	  cd .. && $(SHELL) ./config.status

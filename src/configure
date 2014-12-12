@@ -745,6 +745,7 @@ CONFIGURED_M4
 CONFIGURED_YACC
 CONFIGURED_BISON
 SYSROOT_CFLAGS_FOR_TARGET
+UNIQ_BIN
 extra_host_libiberty_configure_flags
 bootstrap_target_libs
 stage1_languages
@@ -778,6 +779,10 @@ target_subdir
 host_subdir
 build_subdir
 AWK
+AM_BACKSLASH
+AM_DEFAULT_VERBOSITY
+AM_DEFAULT_V
+AM_V
 SET_MAKE
 TEMPLATEdir
 INSTALLdir
@@ -808,6 +813,7 @@ CFLAGS
 CC
 TARGET_ARCHITECTURE
 HOST_ARCHITECTURE
+BUILD_ARCHITECTURE
 target_noncanonical
 host_noncanonical
 build_noncanonical
@@ -871,6 +877,7 @@ enable_option_checking
 with_opts_prefix
 with_opts_exec_prefix
 enable_opts_test
+enable_silent_rules
 with_x
 enable_gold
 enable_ld
@@ -1562,6 +1569,8 @@ Optional Features:
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --disable-opts-test     Do not try to run a test AutoOpts program
 
+  --enable-silent-rules   less verbose build output (undo: "make V=1")
+  --disable-silent-rules  verbose build output (undo: "make V=0")
   --enable-gold[=ARG]     build gold [ARG={default,yes,no}]
   --enable-ld[=ARG]       build ld [ARG={default,yes,no}]
   --disable-libquadmath   do not build libquadmath directory
@@ -3023,6 +3032,10 @@ esac
 
 
 
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+
+fi
 if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
   export HOST_ARCHITECTURE="${host_cpu}"
 
@@ -4981,7 +4994,7 @@ progname=${0}
 # if PWD already has a value, it is probably wrong.
 if test -n "${PWD}"; then PWD=`${PWDCMD-pwd}`; fi
 
-# Test for sed
+# Test for sed:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
 $as_echo_n "checking for a sed that does not truncate output... " >&6; }
 if ${ac_cv_path_SED+:} false; then :
@@ -5051,7 +5064,7 @@ $as_echo "$ac_cv_path_SED" >&6; }
  SED="$ac_cv_path_SED"
   rm -f conftest.sed
 
-# ...and for grep
+# ...and for grep:
 if test "x${GREP}" = "x"; then
   test -z "${GREP}"
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for grep that handles long lines and -e" >&5
@@ -5173,6 +5186,50 @@ $as_echo "no" >&6; }
   SET_MAKE="MAKE=${MAKE-make}"
 fi
 
+
+# Check Make features:
+# Check whether --enable-silent-rules was given.
+if test "${enable_silent_rules+set}" = set; then :
+  enableval=$enable_silent_rules;
+fi
+
+case $enable_silent_rules in # (((
+  yes) AM_DEFAULT_VERBOSITY=0;;
+   no) AM_DEFAULT_VERBOSITY=1;;
+    *) AM_DEFAULT_VERBOSITY=0;;
+esac
+am_make=${MAKE-make}
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $am_make supports nested variables" >&5
+$as_echo_n "checking whether $am_make supports nested variables... " >&6; }
+if ${am_cv_make_support_nested_variables+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if $as_echo 'TRUE=$(BAR$(V))
+BAR0=false
+BAR1=true
+V=1
+am__doit:
+	@$(TRUE)
+.PHONY: am__doit' | $am_make -f - >/dev/null 2>&1; then
+  am_cv_make_support_nested_variables=yes
+else
+  am_cv_make_support_nested_variables=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $am_cv_make_support_nested_variables" >&5
+$as_echo "$am_cv_make_support_nested_variables" >&6; }
+if test $am_cv_make_support_nested_variables = yes; then
+    AM_V='$(V)'
+  AM_DEFAULT_V='$(AM_DEFAULT_VERBOSITY)'
+else
+  AM_V=$AM_DEFAULT_VERBOSITY
+  AM_DEFAULT_V=$AM_DEFAULT_VERBOSITY
+fi
+AM_BACKSLASH='\'
+
+: ${AM_DEFAULT_VERBOSITY=1}
+: ${AM_V=${AM_DEFAULT_VERBOSITY}}
+: ${AM_DEFAULT_V=${AM_DEFAULT_VERBOSITY}}
 
 # Set srcdir to "." if that is what it is.
 # This is important for multilib support.
@@ -6164,7 +6221,7 @@ case "${ENABLE_GOLD}" in
       # Check for target supported by gold.
       case "${target}" in
         i?86-*-* | x86_64-*-* | sparc*-*-* | powerpc*-*-* | arm*-*-* \
-        | tilegx*-*-*)
+        | aarch64*-*-* | tilegx*-*-*)
 	  configdirs="${configdirs} gold"
 	  if test "x${ENABLE_GOLD}" = "xdefault"; then
 	    default_ld=gold
@@ -6296,7 +6353,7 @@ fi
 
 # Check whether --enable-libssp was given.
 if test "${enable_libssp+set}" = set; then :
-  enableval=$enable_libssp; ENABLE_LIBSSP=$enableval
+  enableval=$enable_libssp; ENABLE_LIBSSP=${enableval}
 else
   ENABLE_LIBSSP=yes
 fi
@@ -6370,6 +6427,63 @@ if test "x${enable_libgomp}" = "x"; then
     esac
 fi
 
+# Disable libatomic on unsupported systems.
+if test -d ${srcdir}/libatomic; then
+    if test "x${enable_libatomic}" = "x"; then
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libatomic support" >&5
+$as_echo_n "checking for libatomic support... " >&6; }
+	if (srcdir=${srcdir}/libatomic; \
+		. ${srcdir}/configure.tgt; \
+		test -n "${UNSUPPORTED}")
+	then
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	    noconfigdirs="${noconfigdirs} target-libatomic"
+	else
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	fi
+    fi
+fi
+
+# Disable libcilkrts on unsupported systems.
+if test -d ${srcdir}/libcilkrts; then
+    if test "x${enable_libcilkrts}" = "x"; then
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libcilkrts support" >&5
+$as_echo_n "checking for libcilkrts support... " >&6; }
+	if (srcdir=${srcdir}/libcilkrts; \
+		. ${srcdir}/configure.tgt; \
+		test -n "${UNSUPPORTED}")
+	then
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	    noconfigdirs="${noconfigdirs} target-libcilkrts"
+	else
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	fi
+    fi
+fi
+
+# Disable libitm on unsupported systems.
+if test -d ${srcdir}/libitm; then
+    if test "x${enable_libitm}" = "x"; then
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libitm support" >&5
+$as_echo_n "checking for libitm support... " >&6; }
+	if (srcdir=${srcdir}/libitm; \
+		. ${srcdir}/configure.tgt; \
+		test -n "${UNSUPPORTED}")
+	then
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	    noconfigdirs="${noconfigdirs} target-libitm"
+	else
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	fi
+    fi
+fi
+
 # Allow --disable-libmudflap to exclude target-libmudflap like this:
 case ${enable_libmudflap} in
 yes)
@@ -6390,6 +6504,99 @@ no)
 	noconfigdirs="${noconfigdirs} target-libmudflap"
 	;;
     esac
+esac
+
+# Disable libsanitizer on unsupported systems.
+if test -d ${srcdir}/libsanitizer; then
+    if test "x${enable_libsanitizer}" = "x"; then
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libsanitizer support" >&5
+$as_echo_n "checking for libsanitizer support... " >&6; }
+	if (srcdir=${srcdir}/libsanitizer; \
+		. ${srcdir}/configure.tgt; \
+		test -n "${UNSUPPORTED}")
+	then
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	    noconfigdirs="${noconfigdirs} target-libsanitizer"
+	else
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	fi
+    fi
+fi
+
+# Disable libvtv on unsupported systems.
+if test -d ${srcdir}/libvtv; then
+    if test "x${enable_libvtv}" = "x"; then
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libvtv support" >&5
+$as_echo_n "checking for libvtv support... " >&6; }
+	if (srcdir=${srcdir}/libvtv; \
+		. ${srcdir}/configure.tgt; \
+		test "x${VTV_SUPPORTED}" != "xyes")
+	then
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	    noconfigdirs="${noconfigdirs} target-libvtv"
+	else
+	    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	fi
+    fi
+fi
+
+# Disable libquadmath for some systems.
+case "${target}" in
+  avr-*-*)
+    noconfigdirs="${noconfigdirs} target-libquadmath"
+    ;;
+  # libquadmath is unused on AIX and libquadmath build process use of
+  # LD_LIBRARY_PATH can break AIX bootstrap.
+  powerpc-*-aix* | rs6000-*-aix*)
+    noconfigdirs="${noconfigdirs} target-libquadmath"
+    ;;
+esac
+
+# Disable libssp for some systems.
+case "${target}" in
+  avr-*-*)
+    # No hosted I/O support.
+    noconfigdirs="${noconfigdirs} target-libssp"
+    ;;
+  powerpc-*-aix* | rs6000-*-aix*)
+    noconfigdirs="${noconfigdirs} target-libssp"
+    ;;
+  rl78-*-*)
+    # libssp uses a misaligned load to trigger a fault, but the RL78
+    # does NOT fault for those - instead, it gives a build-time error
+    # for explicit misaligned loads.
+    noconfigdirs="${noconfigdirs} target-libssp"
+    ;;
+esac
+
+# Disable libstdc++-v3 for some systems.
+# Allow user to override this if they use the --enable-libstdc++-v3 flag:
+if test "x${ENABLE_LIBSTDCXX}" = "xdefault"; then
+  case "${target}" in
+    *-*-vxworks*)
+      # VxWorks uses the Dinkumware C++ library.
+      noconfigdirs="${noconfigdirs} target-libstdc++-v3"
+      ;;
+    arm*-wince-pe*)
+      # the C++ libraries do NOT build on top of CE's C libraries:
+      noconfigdirs="${noconfigdirs} target-libstdc++-v3"
+      ;;
+    avr-*-*)
+      noconfigdirs="${noconfigdirs} target-libstdc++-v3"
+      ;;
+  esac
+fi
+
+# Disable Fortran for some systems.
+case "${target}" in
+  mmix-*-*)
+    # See <http://gcc.gnu.org/ml/gcc-patches/2004-11/msg00572.html>.
+    unsupported_languages="${unsupported_languages} fortran"
+    ;;
 esac
 
 # Check whether --enable-64-bit-bfd was given.
@@ -6565,6 +6772,10 @@ fi
     ;;
   *-*-rtems*)
     noconfigdirs="${noconfigdirs} target-libgloss ${libgcj}"
+    # this is not caught below because this stanza matches earlier
+    case ${target} in
+      or1k*-*-*) noconfigdirs="${noconfigdirs} gdb" ;;
+    esac
     ;;
     # The tpf target does NOT support gdb yet.
   *-*-tpf*)
@@ -6820,7 +7031,7 @@ fi
     ;;
   mmix-*-*)
     noconfigdirs="${noconfigdirs} target-libffi target-boehm-gc gdb libgloss"
-    unsupported_languages="$unsupported_languages f95 java"
+    unsupported_languages="${unsupported_languages} f95 java"
     ;;
   mn10200-*-*)
     noconfigdirs="${noconfigdirs} ${libgcj}"
@@ -6893,6 +7104,12 @@ fi
   mips*-*-*)
     noconfigdirs="${noconfigdirs} gprof ${libgcj}"
     ;;
+  nds32*-*-*)
+    noconfigdirs="${noconfigdirs} gdb"
+    ;;
+  or1k*-*-*)
+    noconfigdirs="${noconfigdirs} gdb"
+    ;;
   romp-*-*)
     noconfigdirs="${noconfigdirs} bfd binutils ld gas opcodes target-libgloss ${libgcj}"
     ;;
@@ -6903,7 +7120,12 @@ fi
       i[3456789]86-*-msdosdjgpp*) ;; # do NOT add gprof back in
       *) skipdirs=`echo " ${skipdirs} " | sed -e 's/ gprof / /'` ;;
     esac
-    noconfigdirs="${noconfigdirs} target-libgloss ${libgcj}"
+    case "${target}" in
+      sh*-*-elf)
+         ;;
+      *)
+         noconfigdirs="${noconfigdirs} target-libgloss ${libgcj}"
+    esac
     ;;
   sparc-*-elf*)
     noconfigdirs="${noconfigdirs} ${libgcj}"
@@ -6981,7 +7203,7 @@ case "${host}" in
   m68k-hp-hpux*)
     # Avoid "too much defining" errors from HPUX compiler.
     tentative_cc="cc -Wp,-H256000"
-    # If "ar" in $PATH is GNU ar, the symbol table may need rebuilding.
+    # If "ar" in ${PATH} is GNU ar, the symbol table may need rebuilding.
     # If it is HP/UX ar, this should be harmless.
     RANLIB="ar ts"
     ;;
@@ -7191,11 +7413,14 @@ fi
     ;;
   *-mingw32*)
     ;;
+  *-mingw*)
+    host_makefile_frag="config/mh-mingw"
+    ;;
   *-interix*)
     host_makefile_frag="config/mh-interix"
     ;;
   vax-*-ultrix2*)
-    # The old BSD pcc is NOT up to compiling parts of gdb so use gcc
+    # The old BSD pcc is NOT up to compiling parts of gdb, so use gcc:
     tentative_cc=gcc
     ;;
   *-*-solaris2*)
@@ -7205,6 +7430,15 @@ fi
     # Sun's C compiler needs the -J flag to be able to compile cp-parse.c
     # without overflowing the jump tables (-J says to use a 32 bit table)
     tentative_cc="cc -J"
+    ;;
+  hppa*-hp-hpux10*)
+    host_makefile_frag="config/mh-pa-hpux10"
+    ;;
+  hppa*-hp-hpux*)
+    host_makefile_frag="config/mh-pa"
+    ;;
+  hppa*-*)
+    host_makefile_frag="config/mh-pa"
     ;;
   *-hp-hpux*)
     tentative_cc="cc -Wp,-H256000"
@@ -7226,6 +7460,12 @@ fi
   # Not actually a real system, but it does have a makefile_frag:
   *-*-darwinpic*)
     host_makefile_frag="config/mh-darwinpic"
+    ;;
+  powerpc-*-aix*)
+    host_makefile_frag="config/mh-ppc-aix"
+    ;;
+  rs6000-*-aix*)
+    host_makefile_frag="config/mh-ppc-aix"
     ;;
   *-*-lynxos*)
     # /bin/cc is less than useful for our purposes. Always use GCC
@@ -8655,7 +8895,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
   # correct operation of libtool. If LD is not defined and we are using
   # gcc, try to set the LD default to the ld used by gcc.
   if test -z "${LD}"; then
-    if test "${GCC}" = yes; then
+    if test "${GCC}" = "yes"; then
       case ${build} in
         *-*-mingw*)
 	      gcc_prog_ld=`${CC} -print-prog-name=ld 2>&1 | tr -d '\015'`
@@ -8913,7 +9153,7 @@ fi
 if test "x${with_mpc_lib}" != "x"; then
   gmplibs="-L${with_mpc_lib} ${gmplibs}"
 fi
-if test "x${with_mpc}${with_mpc_include}${with_mpc_lib}" = x && test -d ${srcdir}/mpc; then
+if test "x${with_mpc}${with_mpc_include}${with_mpc_lib}" = "x" && test -d ${srcdir}/mpc; then
   gmplibs='-L$$r/$(HOST_SUBDIR)/mpc/src/'"${lt_cv_objdir} ${gmplibs}"
   gmpinc='-I$$s/mpc/src '"${gmpinc}"
   # Do not test the mpc version. Assume that it is sufficient, since
@@ -8944,7 +9184,7 @@ if test "${with_mpfr+set}" = set; then :
   withval=$with_mpfr;
 fi
 
-if test "x${with_mpfr}" != x; then
+if test "x${with_mpfr}" != "x"; then
   gmplibs="-L${with_mpfr}/lib ${gmplibs}"
   gmpinc="-I${with_mpfr}/include"
 fi
@@ -9024,10 +9264,10 @@ if ac_fn_c_try_compile "$LINENO"; then :
 $as_echo "yes" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }; have_gmp=no
+$as_echo "no" >&6; };
+      have_gmp=no
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-
 if test x"${have_gmp}" = x"yes"; then
 
 
@@ -11657,6 +11897,17 @@ _ACEOF
 
 fi
 done
+ac_fn_c_check_decl "$LINENO" "basename" "ac_cv_have_decl_basename" "$ac_includes_default"
+if test "x$ac_cv_have_decl_basename" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_BASENAME $ac_have_decl
+_ACEOF
+
 
 # Checks for tcl-related functions.
 
@@ -12375,7 +12626,6 @@ else
 fi
 
 
-
 # By default, C and C++ are the only stage 1 languages.
 stage1_languages=c
 
@@ -12588,7 +12838,7 @@ $as_echo "$as_me: sourcing ${lang_frag}" >&6;}
   if test "x${missing_languages}" != "x"; then
     as_fn_error $? "
 The following requested languages could not be built: ${missing_languages}
-Recognised languages are: ${potential_languages}" "$LINENO" 5
+Recognized languages are: ${potential_languages}" "$LINENO" 5
   fi
 
   if test "x${new_enable_languages}" != "x${enable_languages}"; then
@@ -12598,16 +12848,72 @@ Recognised languages are: ${potential_languages}" "$LINENO" 5
   ac_configure_args=`echo " ${ac_configure_args}" | sed -e 's/ --enable-languages=[^ ]*//' -e 's/$/ --enable-languages='"${enable_languages}"/ `
 fi
 
+for ac_prog in uniq guniq
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_UNIQ_BIN+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $UNIQ_BIN in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_UNIQ_BIN="$UNIQ_BIN" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_UNIQ_BIN="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+UNIQ_BIN=$ac_cv_path_UNIQ_BIN
+if test -n "$UNIQ_BIN"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $UNIQ_BIN" >&5
+$as_echo "$UNIQ_BIN" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$UNIQ_BIN" && break
+done
+
+# uniq the value of ${noconfigdirs}.
+f=""
+for i in ${noconfigdirs}; do
+    case " ${f} " in
+    *" ${i} "*) ;;
+    *) f="${f} ${i}" ;;
+    esac
+done
+noconfigdirs="${f}"
+unset f
+
 # Remove the entries in ${skipdirs} and ${noconfigdirs} from ${configdirs},
 # ${build_configdirs} and ${target_configdirs}.
 # If we have source for ${noconfigdirs} entries, add them to ${notsupp}.
 
 notsupp=""
-for dir in . ${skipdirs} ${noconfigdirs} ; do
+for dir in . ${skipdirs} ${noconfigdirs}; do
   my_dirname=`echo ${dir} | sed -e s/target-//g -e s/build-//g`
   if test ${dir} != .  && echo " ${configdirs} " | grep " ${dir} " >/dev/null 2>&1; then
     configdirs=`echo " ${configdirs} " | sed -e "s/ ${dir} / /"`
-    if test -r ${srcdir}/${my_dirname}/configure ; then
+    if test -r ${srcdir}/${my_dirname}/configure; then
       if echo " ${skipdirs} " | grep " ${dir} " >/dev/null 2>&1; then
 	true
       else
@@ -12617,7 +12923,7 @@ for dir in . ${skipdirs} ${noconfigdirs} ; do
   fi
   if test ${dir} != .  && echo " ${build_configdirs} " | grep " ${dir} " >/dev/null 2>&1; then
     build_configdirs=`echo " ${build_configdirs} " | sed -e "s/ ${dir} / /"`
-    if test -r ${srcdir}/${my_dirname}/configure ; then
+    if test -r ${srcdir}/${my_dirname}/configure; then
       if echo " ${skipdirs} " | grep " ${dir} " >/dev/null 2>&1; then
 	true
       else
@@ -12627,7 +12933,7 @@ for dir in . ${skipdirs} ${noconfigdirs} ; do
   fi
   if test ${dir} != . && echo " ${target_configdirs} " | grep " ${dir} " >/dev/null 2>&1; then
     target_configdirs=`echo " ${target_configdirs} " | sed -e "s/ ${dir} / /"`
-    if test -r ${srcdir}/${my_dirname}/configure ; then
+    if test -r ${srcdir}/${my_dirname}/configure; then
       if echo " ${skipdirs} " | grep " ${dir} " >/dev/null 2>&1; then
 	true
       else
@@ -12659,9 +12965,9 @@ fi
 # autoconfiscated, which is now the case.
 build_configdirs_all="${build_configdirs}"
 build_configdirs=""
-for i in ${build_configdirs_all} ; do
+for i in ${build_configdirs_all}; do
   j=`echo ${i} | sed -e s/build-//g`
-  if test -f ${srcdir}/${j}/configure ; then
+  if test -f ${srcdir}/${j}/configure; then
     build_configdirs="${build_configdirs} ${i}"
   fi
 done
@@ -12693,9 +12999,9 @@ if test -n "${notsupp}" && test -z "${norecursion}"; then
   # be configured, or we error out. (E.g., if the gas release supports a
   # specified target in some subdirs but not the gas subdir, we should NOT
   # pretend that all is well.)
-  if test -n "$appdirs" ; then
-    for dir in $appdirs ; do
-      if test -r $dir/Makefile.in ; then
+  if test -n "${appdirs}"; then
+    for dir in ${appdirs}; do
+      if test -r ${dir}/Makefile.in; then
 	if echo " ${configdirs} " | grep " ${dir} " >/dev/null 2>&1; then
 	  appdirs=""
 	  break
@@ -12809,10 +13115,25 @@ extra_nmflags_for_target=""
 extra_ranlibflags_for_target=""
 target_makefile_frag=/dev/null
 case "${target}" in
+  spu-*-*)
+    target_makefile_frag="config/mt-spu"
+    ;;
+  mips*-sde-elf* | mips*-mti-elf* | mips*-img-elf*)
+    target_makefile_frag="config/mt-sde"
+    ;;
+  mipsisa*-*-elfoabi*)
+    target_makefile_frag="config/mt-mips-elfoabi"
+    ;;
+  mips*-*-*linux* | mips*-*-gnu*)
+    target_makefile_frag="config/mt-mips-gnu"
+    ;;
+  nios2-*-elf*)
+    target_makefile_frag="config/mt-nios2-elf"
+    ;;
   *-*-netware*)
     target_makefile_frag="config/mt-netware"
     ;;
-  *-*-linux* | *-*-gnu* | *-*-k*bsd*-gnu)
+  *-*-linux* | *-*-gnu* | *-*-k*bsd*-gnu | *-*-kopensolaris*-gnu)
     target_makefile_frag="config/mt-gnu"
     ;;
   *-*-linux*)
@@ -13184,7 +13505,6 @@ fi
   test -n "$CONFIGURED_MAKEINFO" && break
 done
 test -n "$CONFIGURED_MAKEINFO" || CONFIGURED_MAKEINFO="${MISSING} makeinfo"
-
 
 if test x"${MISSING+set}" != xset; then
   case $am_aux_dir in
@@ -14392,7 +14712,7 @@ test -n "${host_alias}" && ncn_tool_prefix="${host_alias}-"
 ncn_target_tool_prefix=""
 test -n "${target_alias}" && ncn_target_tool_prefix="${target_alias}-"
 
- for ncn_progname in ar; do
+ for ncn_progname in ar gar; do
   if test -n "${ncn_tool_prefix}"; then
     # Extract the first word of "${ncn_tool_prefix}${ncn_progname}", so it can be a program name with args.
 set dummy ${ncn_tool_prefix}${ncn_progname}; ac_word=$2
@@ -14475,14 +14795,14 @@ fi
 done
 
 if test -z "$ac_cv_prog_AR" ; then
-  set dummy ar
+  set dummy ar gar
   if test "x${build}" = "x${host}"; then
     AR="$2"
   else
     AR="${ncn_tool_prefix}$2"
   fi
 fi
- for ncn_progname in as; do
+ for ncn_progname in as gas; do
   if test -n "${ncn_tool_prefix}"; then
     # Extract the first word of "${ncn_tool_prefix}${ncn_progname}", so it can be a program name with args.
 set dummy ${ncn_tool_prefix}${ncn_progname}; ac_word=$2
@@ -14565,14 +14885,14 @@ fi
 done
 
 if test -z "$ac_cv_prog_AS" ; then
-  set dummy as
+  set dummy as gas
   if test "x${build}" = "x${host}"; then
     AS="$2"
   else
     AS="${ncn_tool_prefix}$2"
   fi
 fi
- for ncn_progname in dlltool; do
+ for ncn_progname in dlltool gdlltool; do
   if test -n "${ncn_tool_prefix}"; then
     # Extract the first word of "${ncn_tool_prefix}${ncn_progname}", so it can be a program name with args.
 set dummy ${ncn_tool_prefix}${ncn_progname}; ac_word=$2
@@ -14655,14 +14975,14 @@ fi
 done
 
 if test -z "$ac_cv_prog_DLLTOOL" ; then
-  set dummy dlltool
+  set dummy dlltool gdlltool
   if test "x${build}" = "x${host}"; then
     DLLTOOL="$2"
   else
     DLLTOOL="${ncn_tool_prefix}$2"
   fi
 fi
- for ncn_progname in ld; do
+ for ncn_progname in ld gld ld.bfd ld.gold gold ld64 ld_classic; do
   if test -n "${ncn_tool_prefix}"; then
     # Extract the first word of "${ncn_tool_prefix}${ncn_progname}", so it can be a program name with args.
 set dummy ${ncn_tool_prefix}${ncn_progname}; ac_word=$2
@@ -14745,13 +15065,14 @@ fi
 done
 
 if test -z "$ac_cv_prog_LD" ; then
-  set dummy ld
+  set dummy ld gld ld.bfd ld.gold gold ld64 ld_classic
   if test "x${build}" = "x${host}"; then
     LD="$2"
   else
     LD="${ncn_tool_prefix}$2"
   fi
 fi
+
  for ncn_progname in lipo; do
   if test -n "${ncn_tool_prefix}"; then
     # Extract the first word of "${ncn_tool_prefix}${ncn_progname}", so it can be a program name with args.
@@ -14842,7 +15163,7 @@ if test -z "$ac_cv_prog_LIPO" ; then
     LIPO="${ncn_tool_prefix}$2"
   fi
 fi
- for ncn_progname in nm; do
+ for ncn_progname in nm gnm; do
   if test -n "${ncn_tool_prefix}"; then
     # Extract the first word of "${ncn_tool_prefix}${ncn_progname}", so it can be a program name with args.
 set dummy ${ncn_tool_prefix}${ncn_progname}; ac_word=$2
@@ -14925,14 +15246,14 @@ fi
 done
 
 if test -z "$ac_cv_prog_NM" ; then
-  set dummy nm
+  set dummy nm gnm
   if test "x${build}" = "x${host}"; then
     NM="$2"
   else
     NM="${ncn_tool_prefix}$2"
   fi
 fi
- for ncn_progname in ranlib; do
+ for ncn_progname in ranlib granlib; do
   if test -n "${ncn_tool_prefix}"; then
     # Extract the first word of "${ncn_tool_prefix}${ncn_progname}", so it can be a program name with args.
 set dummy ${ncn_tool_prefix}${ncn_progname}; ac_word=$2
@@ -15017,7 +15338,7 @@ done
 if test -z "$ac_cv_prog_RANLIB" ; then
   RANLIB=":"
 fi
- for ncn_progname in strip; do
+ for ncn_progname in strip gstrip; do
   if test -n "${ncn_tool_prefix}"; then
     # Extract the first word of "${ncn_tool_prefix}${ncn_progname}", so it can be a program name with args.
 set dummy ${ncn_tool_prefix}${ncn_progname}; ac_word=$2
@@ -15102,7 +15423,7 @@ done
 if test -z "$ac_cv_prog_STRIP" ; then
   STRIP="true"
 fi
- for ncn_progname in windres; do
+ for ncn_progname in windres gwindres; do
   if test -n "${ncn_tool_prefix}"; then
     # Extract the first word of "${ncn_tool_prefix}${ncn_progname}", so it can be a program name with args.
 set dummy ${ncn_tool_prefix}${ncn_progname}; ac_word=$2
@@ -15185,14 +15506,14 @@ fi
 done
 
 if test -z "$ac_cv_prog_WINDRES" ; then
-  set dummy windres
+  set dummy windres gwindres
   if test "x${build}" = "x${host}"; then
     WINDRES="$2"
   else
     WINDRES="${ncn_tool_prefix}$2"
   fi
 fi
- for ncn_progname in windmc; do
+ for ncn_progname in windmc gwindmc; do
   if test -n "${ncn_tool_prefix}"; then
     # Extract the first word of "${ncn_tool_prefix}${ncn_progname}", so it can be a program name with args.
 set dummy ${ncn_tool_prefix}${ncn_progname}; ac_word=$2
@@ -15275,14 +15596,14 @@ fi
 done
 
 if test -z "$ac_cv_prog_WINDMC" ; then
-  set dummy windmc
+  set dummy windmc gwindmc
   if test "x${build}" = "x${host}"; then
     WINDMC="$2"
   else
     WINDMC="${ncn_tool_prefix}$2"
   fi
 fi
- for ncn_progname in objcopy; do
+ for ncn_progname in objcopy gobjcopy; do
   if test -n "${ncn_tool_prefix}"; then
     # Extract the first word of "${ncn_tool_prefix}${ncn_progname}", so it can be a program name with args.
 set dummy ${ncn_tool_prefix}${ncn_progname}; ac_word=$2
@@ -15365,14 +15686,14 @@ fi
 done
 
 if test -z "$ac_cv_prog_OBJCOPY" ; then
-  set dummy objcopy
+  set dummy objcopy gobjcopy
   if test "x${build}" = "x${host}"; then
     OBJCOPY="$2"
   else
     OBJCOPY="${ncn_tool_prefix}$2"
   fi
 fi
- for ncn_progname in objdump; do
+ for ncn_progname in objdump gobjdump; do
   if test -n "${ncn_tool_prefix}"; then
     # Extract the first word of "${ncn_tool_prefix}${ncn_progname}", so it can be a program name with args.
 set dummy ${ncn_tool_prefix}${ncn_progname}; ac_word=$2
@@ -15455,14 +15776,14 @@ fi
 done
 
 if test -z "$ac_cv_prog_OBJDUMP" ; then
-  set dummy objdump
+  set dummy objdump gobjdump
   if test "x${build}" = "x${host}"; then
     OBJDUMP="$2"
   else
     OBJDUMP="${ncn_tool_prefix}$2"
   fi
 fi
- for ncn_progname in readelf; do
+ for ncn_progname in readelf greadelf; do
   if test -n "${ncn_tool_prefix}"; then
     # Extract the first word of "${ncn_tool_prefix}${ncn_progname}", so it can be a program name with args.
 set dummy ${ncn_tool_prefix}${ncn_progname}; ac_word=$2
@@ -15545,7 +15866,7 @@ fi
 done
 
 if test -z "$ac_cv_prog_READELF" ; then
-  set dummy readelf
+  set dummy readelf greadelf
   if test "x${build}" = "x${host}"; then
     READELF="$2"
   else
@@ -16105,7 +16426,7 @@ fi
 
 # Target tools. Do the tests using the names they may have passed in
 # the environment, then move it to CONFIGURED_*_FOR_TARGET.
- for ncn_progname in ar; do
+ for ncn_progname in ar gar; do
   if test -n "${ncn_target_tool_prefix}"; then
     # Extract the first word of "${ncn_target_tool_prefix}${ncn_progname}", so it can be a program name with args.
 set dummy ${ncn_target_tool_prefix}${ncn_progname}; ac_word=$2
@@ -16188,7 +16509,7 @@ fi
 done
 
 if test -z "$ac_cv_prog_AR_FOR_TARGET" ; then
-  set dummy ar
+  set dummy ar gar
   if test $build = $target ; then
     AR_FOR_TARGET="$2"
   else
@@ -16196,7 +16517,7 @@ if test -z "$ac_cv_prog_AR_FOR_TARGET" ; then
   fi
 fi
 
- for ncn_progname in as; do
+ for ncn_progname in as gas; do
   if test -n "${ncn_target_tool_prefix}"; then
     # Extract the first word of "${ncn_target_tool_prefix}${ncn_progname}", so it can be a program name with args.
 set dummy ${ncn_target_tool_prefix}${ncn_progname}; ac_word=$2
@@ -16279,7 +16600,7 @@ fi
 done
 
 if test -z "$ac_cv_prog_AS_FOR_TARGET" ; then
-  set dummy as
+  set dummy as gas
   if test $build = $target ; then
     AS_FOR_TARGET="$2"
   else
@@ -16469,7 +16790,7 @@ if test -z "$ac_cv_prog_CXX_FOR_TARGET" ; then
   fi
 fi
 
- for ncn_progname in dlltool; do
+ for ncn_progname in dlltool gdlltool; do
   if test -n "${ncn_target_tool_prefix}"; then
     # Extract the first word of "${ncn_target_tool_prefix}${ncn_progname}", so it can be a program name with args.
 set dummy ${ncn_target_tool_prefix}${ncn_progname}; ac_word=$2
@@ -16552,7 +16873,7 @@ fi
 done
 
 if test -z "$ac_cv_prog_DLLTOOL_FOR_TARGET" ; then
-  set dummy dlltool
+  set dummy dlltool gdlltool
   if test $build = $target ; then
     DLLTOOL_FOR_TARGET="$2"
   else
@@ -16919,7 +17240,7 @@ if test -z "$ac_cv_prog_GOC_FOR_TARGET" ; then
   fi
 fi
 
- for ncn_progname in ld; do
+ for ncn_progname in ld gld ld.bfd ld.gold gold ld64 ld_classic; do
   if test -n "${ncn_target_tool_prefix}"; then
     # Extract the first word of "${ncn_target_tool_prefix}${ncn_progname}", so it can be a program name with args.
 set dummy ${ncn_target_tool_prefix}${ncn_progname}; ac_word=$2
@@ -17002,7 +17323,7 @@ fi
 done
 
 if test -z "$ac_cv_prog_LD_FOR_TARGET" ; then
-  set dummy ld
+  set dummy ld gld ld.bfd ld.gold gold ld64 ld_classic
   if test $build = $target ; then
     LD_FOR_TARGET="$2"
   else
@@ -17010,7 +17331,7 @@ if test -z "$ac_cv_prog_LD_FOR_TARGET" ; then
   fi
 fi
 
- for ncn_progname in nm; do
+ for ncn_progname in nm gnm; do
   if test -n "${ncn_target_tool_prefix}"; then
     # Extract the first word of "${ncn_target_tool_prefix}${ncn_progname}", so it can be a program name with args.
 set dummy ${ncn_target_tool_prefix}${ncn_progname}; ac_word=$2
@@ -17093,7 +17414,7 @@ fi
 done
 
 if test -z "$ac_cv_prog_NM_FOR_TARGET" ; then
-  set dummy nm
+  set dummy nm gnm
   if test $build = $target ; then
     NM_FOR_TARGET="$2"
   else
@@ -17101,7 +17422,7 @@ if test -z "$ac_cv_prog_NM_FOR_TARGET" ; then
   fi
 fi
 
- for ncn_progname in ranlib; do
+ for ncn_progname in ranlib granlib; do
   if test -n "${ncn_target_tool_prefix}"; then
     # Extract the first word of "${ncn_target_tool_prefix}${ncn_progname}", so it can be a program name with args.
 set dummy ${ncn_target_tool_prefix}${ncn_progname}; ac_word=$2
@@ -17187,7 +17508,7 @@ if test -z "$ac_cv_prog_RANLIB_FOR_TARGET" ; then
   RANLIB_FOR_TARGET=":"
 fi
 
- for ncn_progname in windres; do
+ for ncn_progname in windres gwindres; do
   if test -n "${ncn_target_tool_prefix}"; then
     # Extract the first word of "${ncn_target_tool_prefix}${ncn_progname}", so it can be a program name with args.
 set dummy ${ncn_target_tool_prefix}${ncn_progname}; ac_word=$2
@@ -17270,14 +17591,13 @@ fi
 done
 
 if test -z "$ac_cv_prog_WINDRES_FOR_TARGET" ; then
-  set dummy windres
+  set dummy windres gwindres
   if test $build = $target ; then
     WINDRES_FOR_TARGET="$2"
   else
     WINDRES_FOR_TARGET="${ncn_target_tool_prefix}$2"
   fi
 fi
-
 
 CONFIGURED_AR_FOR_TARGET="${AR_FOR_TARGET}"
 CONFIGURED_AS_FOR_TARGET="${AS_FOR_TARGET}" # might need to be commented out for confusing autoconf
@@ -17295,7 +17615,7 @@ CONFIGURED_WINDRES_FOR_TARGET="${WINDRES_FOR_TARGET}"
 
 
 # Fix up target tools.
-if test "x${build}" = "x${host}" ; then
+if test "x${build}" = "x${host}"; then
   # In this case, the newly built tools can and should be used,
   # so we override the results of the autoconf tests.
   # This should really only happen when the tools are actually being built,
@@ -17374,11 +17694,11 @@ else
   MAINTAINER_MODE_TRUE='#'
   MAINTAINER_MODE_FALSE=""
 fi
-MAINT=${MAINTAINER_MODE_TRUE}
+MAINT="${MAINTAINER_MODE_TRUE}"
 
-# ---------------------
-# GCC bootstrap support
-# ---------------------
+# --------------------- #
+# GCC bootstrap support #
+# --------------------- #
 
 # Stage specific cflags for build.
 stage1_cflags="-ggdb"
@@ -17473,6 +17793,8 @@ case "${target}" in
   hppa*-*-hpux*) compare_exclusions="gcc/cc*-checksum\$(objext) | */libgcc/lib2funcs* | gcc/ada/*tools/*" ;;
   powerpc*-ibm-aix*) compare_exclusions="gcc/cc*-checksum\$(objext) | gcc/ada/*tools/* | *libgomp*\$(objext)" ;;
 esac
+
+# Output.
 
 ac_config_files="$ac_config_files Makefile Makefile_orig"
 cat >confcache <<\_ACEOF

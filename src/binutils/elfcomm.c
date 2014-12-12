@@ -51,7 +51,7 @@ warn (const char *message, ...)
 
   /* Try to keep warning messages in sync with the program's normal output.  */
   fflush (stdout);
-  
+
   va_start (args, message);
   fprintf (stderr, _("%s: Warning: "), program_name);
   vfprintf (stderr, message, args);
@@ -468,7 +468,7 @@ process_archive_index_and_symbols (struct archive_info *  arch,
       unsigned char * index_buffer;
 
       assert (sizeof_ar_index <= sizeof integer_buffer);
-  
+
       /* Check the size of the archive index.  */
       if (size < sizeof_ar_index)
 	{
@@ -713,7 +713,7 @@ get_archive_member_name (struct archive_info *arch,
 	  error (_("Archive member uses long names, but no longname table found\n"));
 	  return NULL;
 	}
-      
+
       arch->nested_member_origin = 0;
       k = j = strtoul (arch->arhdr.ar_name + 1, &endp, 10);
       if (arch->is_thin_archive && endp != NULL && * endp == ':')
@@ -760,12 +760,12 @@ get_archive_member_name (struct archive_info *arch,
 	return arch->arhdr.ar_name;
       }
 
-  /* The full ar_name field is used.  Don't rely on ar_date starting
+  /* The full ar_name field is used.  Do NOT rely on ar_date starting
      with a zero byte.  */
   {
-    char *name = xmalloc (sizeof (arch->arhdr.ar_name) + 1);
-    memcpy (name, arch->arhdr.ar_name, sizeof (arch->arhdr.ar_name));
-    name[sizeof (arch->arhdr.ar_name)] = '\0';
+    char *name = (char *)xmalloc(sizeof(arch->arhdr.ar_name) + 1);
+    memcpy(name, arch->arhdr.ar_name, sizeof(arch->arhdr.ar_name));
+    name[sizeof(arch->arhdr.ar_name)] = '\0';
     return name;
   }
 }
@@ -842,7 +842,7 @@ make_qualified_name (struct archive_info * arch,
 		  nested_arch->file_name, member_name);
       else
 	snprintf (name, len, "%s[%s(%s)]", arch->file_name,
-		  error_name, member_name);	
+		  error_name, member_name);
     }
   else if (arch->is_thin_archive)
     snprintf (name, len, "%s[%s]", arch->file_name, member_name);

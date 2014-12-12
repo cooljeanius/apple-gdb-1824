@@ -403,7 +403,7 @@ _obstack_memory_used (struct obstack *h)
 
 /* Define the error handler.  */
 #ifndef _
-# if (HAVE_LIBINTL_H && ENABLE_NLS) || defined _LIBC
+# if (HAVE_LIBINTL_H && (defined(ENABLE_NLS) && ENABLE_NLS)) || defined _LIBC
 #  include <libintl.h>
 #  ifndef _
 #   define _(Str) gettext (Str)

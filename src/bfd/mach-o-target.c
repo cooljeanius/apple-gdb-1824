@@ -19,29 +19,33 @@
  * Foundation, Inc., 51 Franklin St. - 5th Floor, Boston, MA 02110-1301, USA.
  */
 
+/* this file is actually okay to include multiple times (and, in fact, it
+ * is actually necessary to do so), so limit the header guard to just
+ * the top of the file: */
 #ifndef __BFD_MACH_O_TARGET_C__
-#define __BFD_MACH_O_TARGET_C__ 1
+# define __BFD_MACH_O_TARGET_C__ 1
+#endif /* !__BFD_MACH_O_TARGET_C__ */
 
 #ifdef __BFD_MACH_O_C__
 
 #ifndef TARGET_NAME
-# error TARGET_NAME must be defined
+# error "TARGET_NAME must be defined"
 #endif /* TARGET_NAME */
 
 #ifndef TARGET_STRING
-# error TARGET_STRING must be defined
+# error "TARGET_STRING must be defined"
 #endif /* TARGET_STRING */
 
 #ifndef TARGET_BIG_ENDIAN
-# error TARGET_BIG_ENDIAN must be defined
+# error "TARGET_BIG_ENDIAN must be defined"
 #endif /* TARGET_BIG_ENDIAN */
 
 #ifndef TARGET_ARCHIVE
-# error TARGET_ARCHIVE must be defined
+# error "TARGET_ARCHIVE must be defined"
 #endif /* TARGET_ARCHIVE */
 
 #if ((TARGET_ARCHIVE) && (! TARGET_BIG_ENDIAN))
-# error Mach-O fat files must always be big-endian.
+# error "Mach-O fat files must always be big-endian."
 #endif /* ((TARGET_ARCHIVE) && (! TARGET_BIG_ENDIAN)) */
 
 const bfd_target TARGET_NAME =
@@ -127,11 +131,10 @@ const bfd_target TARGET_NAME =
 
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning mach-o-target.c should only be compiled when being included from mach-o.c
+#  warning "mach-o-target.c should only be compiled when being included from mach-o.c"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 /* so the file will not be empty: */
 typedef int mach_o_target_c_dummy_t;
 #endif /* __BFD_MACH_O_C__ */
-#endif /* !__BFD_MACH_O_TARGET_C__ */
 
 /* EOF */

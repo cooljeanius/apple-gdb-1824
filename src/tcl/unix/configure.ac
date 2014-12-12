@@ -12,27 +12,44 @@ AC_PREREQ([2.59])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h:../unix/config.h.in])
 AC_CANONICAL_TARGET
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+  AC_SUBST([BUILD_ARCHITECTURE])
+fi
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  AC_SUBST([HOST_ARCHITECTURE])
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+  AC_SUBST([TARGET_ARCHITECTURE])
+fi
 AM_SANITY_CHECK
 AM_MAINTAINER_MODE
 m4_ifdef([AM_INIT_AUTOMAKE],[
-if test -f ${srcdir}/config.status; then
-  AC_MSG_NOTICE([config.status is already present, removing it.])
-  rm -f ${srcdir}/config.status
-fi
-AM_INIT_AUTOMAKE([gnits dejagnu])
-AC_CONFIG_COMMANDS([automake_post_configure],[
-if test "${srcdir}" != "."; then
-  if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
-    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
-  elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
-    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+  if test -f ${srcdir}/config.status; then
+    AC_MSG_NOTICE([config.status is already present, removing it.])
+    rm -f ${srcdir}/config.status
   fi
-fi
-],[])
+  AM_INIT_AUTOMAKE([gnits dejagnu])
+  AC_CONFIG_COMMANDS([automake_post_configure],[
+  if test "${srcdir}" != "."; then
+    if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
+      cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+    elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
+      cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+    fi
+  fi
+  ],[])dnl
 ],[
-AC_PROG_AWK
-AC_PROG_MAKE_SET
-])
+  AC_PROG_AWK
+  AC_PROG_MAKE_SET
+])dnl
+m4_ifdef([AC_REQUIRE_AUX_FILE],[
+  AC_REQUIRE_AUX_FILE([compile])dnl
+  AC_REQUIRE_AUX_FILE([missing])dnl
+])dnl
+
 if test -z "${datarootdir}"; then
   export datarootdir=${prefix}/share
   AC_SUBST([datarootdir])
@@ -52,7 +69,7 @@ m4_ifdef([SC_USE_CONFIG_HEADERS],[
     /* override */ #undef PACKAGE_STRING
     /* override */ #undef PACKAGE_TARNAME
     #endif /* _TCLCONFIG */])
-])
+])dnl
 
 TCL_VERSION=8.4
 TCL_MAJOR_VERSION=8
@@ -91,16 +108,17 @@ fi
 
 AC_PROG_CC
 AC_PROG_CXX
-AC_CHECK_HEADERS_ONCE([float.h limits.h unistd.h])
+AC_CHECK_HEADERS_ONCE([float.h limits.h unistd.h])dnl
 
-# Some more programs
+# Some more programs:
 AC_PROG_INSTALL
 AM_PROG_INSTALL_STRIP
 AM_PROG_INSTALL_SH
 AC_PROG_LN_S
+AC_PROG_SED
 AC_PROG_YACC
-AC_PATH_PROG([GDB_BIN],[gdb])
-AC_PATH_PROG([DDD_BIN],[ddd])
+AC_PATH_PROG([GDB_BIN],[gdb])dnl
+AC_PATH_PROG([DDD_BIN],[ddd])dnl
 
 #------------------------------------------------------------------------
 # Threads support
@@ -128,8 +146,8 @@ dnl#
 #--------------------------------------------------------------------
 # The statements below define some defines.
 #--------------------------------------------------------------------
-AC_DEFINE([TCL_TOMMATH],[1],[Build libtommath?])
-AC_DEFINE([MP_PREC],[4],[Default libtommath precision.])
+AC_DEFINE([TCL_TOMMATH],[1],[Build libtommath?])dnl
+AC_DEFINE([MP_PREC],[4],[Default libtommath precision.])dnl
 
 dnl#
 #--------------------------------------------------------------------
@@ -153,17 +171,27 @@ AC_C_BIGENDIAN
 #--------------------------------------------------------------------
 
 # Check if Posix compliant getcwd exists, if not we will use getwd.
-AC_CHECK_FUNCS([getcwd],[],[AC_DEFINE([USEGETWD],[1],[Define to 1 if getcwd is missing and we have to use getwd as a fallback])])
+AC_CHECK_FUNCS([getcwd],[],
+               [AC_DEFINE([USEGETWD],[1],
+                          [Define to 1 if getcwd is missing and we have to use getwd as a fallback])])dnl
 # Nb: if getcwd uses popen and pwd(1) (like SunOS 4) we should really
 # define USEGETWD even if the posix getcwd exists. Add a test?
 
-AC_REPLACE_FUNCS([opendir strstr])
+AC_REPLACE_FUNCS([opendir strstr])dnl
 
 AC_REPLACE_FUNCS([strtol strtoll strtoull tmpnam waitpid])
-AC_CHECK_FUNCS([strerror],[],[AC_DEFINE([NO_STRERROR],[1],[Define to 1 if we are missing strerror])])
-AC_CHECK_FUNCS([getwd],[],[AC_DEFINE([NO_GETWD],[1],[Define to 1 if we are missing getwd])])
-AC_CHECK_FUNCS([wait3],[],[AC_DEFINE([NO_WAIT3],[1],[Define to 1 if we are missing wait3])])
-AC_CHECK_FUNCS([uname],[],[AC_DEFINE([NO_UNAME],[1],[Define to 1 if we are missing uname])])
+AC_CHECK_FUNCS([strerror],[],
+               [AC_DEFINE([NO_STRERROR],[1],
+                          [Define to 1 if we are missing strerror])])dnl
+AC_CHECK_FUNCS([getwd],[],
+               [AC_DEFINE([NO_GETWD],[1],
+                          [Define to 1 if we are missing getwd])])dnl
+AC_CHECK_FUNCS([wait3],[],
+               [AC_DEFINE([NO_WAIT3],[1],
+                          [Define to 1 if we are missing wait3])])dnl
+AC_CHECK_FUNCS([uname],[],
+               [AC_DEFINE([NO_UNAME],[1],
+                          [Define to 1 if we are missing uname])])dnl
 
 if test "`uname -s`" = "Darwin" && test "${TCL_THREADS}" = 1 && \
 	test "`uname -r | awk -F. '{print [$]1}'`" -lt 7; then
@@ -171,18 +199,20 @@ if test "`uname -s`" = "Darwin" && test "${TCL_THREADS}" = 1 && \
     # use it when threads are enabled, c.f. bug # 711232
     export ac_cv_func_realpath=no
 fi
-AC_CHECK_FUNCS([realpath],[],[AC_DEFINE([NO_REALPATH],[1],[Define to 1 if we are missing realpath])])
+AC_CHECK_FUNCS([realpath],[],
+               [AC_DEFINE([NO_REALPATH],[1],
+                          [Define to 1 if we are missing realpath])])dnl
 
-# Some more functions
+# Some more functions:
 AC_FUNC_CHOWN
 AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([alarm atexit bzero dup2 endgrent endpwent gethostbyaddr \
                 gethostname inet_ntoa isxdigit memset mkdir mkfifo \
                 nl_langinfo rmdir select setlocale socket strcasecmp \
-                strchr strrchr strstr strtol strtoull tzset utime])
+                strchr strrchr strstr strtol strtoull tzset utime])dnl
 
-AC_CHECK_FUNCS([execl execle execlp])
+AC_CHECK_FUNCS([execl execle execlp])dnl
 
 #--------------------------------------------------------------------
 #	Supply substitutes for missing POSIX header files. Special
@@ -195,11 +225,11 @@ AC_CHECK_FUNCS([execl execle execlp])
 
 SC_MISSING_POSIX_HEADERS
 
-# More headers
+# More headers:
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h locale.h math.h \
                   netdb.h netinet/in.h sgtty.h stdarg.h sys/file.h \
-                  sys/socket.h sys/statfs.h termio.h termios.h utime.h])
+                  sys/socket.h sys/statfs.h termio.h termios.h utime.h])dnl
 
 #--------------------------------------------------------------------------
 #	Determine which interface to use to talk to the serial port.
@@ -227,10 +257,11 @@ tk_ok=${tcl_cv_type_fd_set}
 if test ${tcl_cv_type_fd_set} = no; then
     AC_MSG_CHECKING([for fd_mask in sys/select])
     AC_CACHE_VAL([tcl_cv_grep_fd_mask],
-	AC_EGREP_HEADER([fd_mask],[sys/select.h],[tcl_cv_grep_fd_mask=present],[tcl_cv_grep_fd_mask=missing]))
+	[AC_EGREP_HEADER([fd_mask],[sys/select.h],[tcl_cv_grep_fd_mask=present],[tcl_cv_grep_fd_mask=missing])])
     AC_MSG_RESULT([${tcl_cv_grep_fd_mask}])
     if test ${tcl_cv_grep_fd_mask} = present; then
-	AC_DEFINE([HAVE_SYS_SELECT_H],[1],[Define to 1 if we have a working sys/select.h])
+	AC_DEFINE([HAVE_SYS_SELECT_H],[1],
+                  [Define to 1 if we have a working sys/select.h])
 	tk_ok=yes
     fi
 fi
@@ -244,10 +275,10 @@ fi
 
 SC_TIME_HANDLER
 AC_DEFUN([AC_REQUIRE_TIME_CHECKS],[
-  AC_REQUIRE([AC_HEADER_TIME])
-  AC_REQUIRE([AC_STRUCT_TM])
-  AC_REQUIRE([AC_STRUCT_TIMEZONE])
-])
+  AC_REQUIRE([AC_HEADER_TIME])dnl
+  AC_REQUIRE([AC_STRUCT_TM])dnl
+  AC_REQUIRE([AC_STRUCT_TIMEZONE])dnl
+])dnl
 AC_REQUIRE_TIME_CHECKS
 
 #--------------------------------------------------------------------
@@ -257,12 +288,14 @@ AC_REQUIRE_TIME_CHECKS
 AC_CHECK_MEMBERS([struct stat.st_blksize],[AC_DEFINE([HAVE_ST_BLKSIZE],[1],
 			    [Define to 1 if your `struct stat' has
 			     `st_blksize'. Deprecated, use
-			     `HAVE_STRUCT_STAT_ST_BLKSIZE' instead.])])
+			     `HAVE_STRUCT_STAT_ST_BLKSIZE' instead.])])dnl
 
-AC_CHECK_FUNCS([fstatfs],[],[AC_DEFINE([NO_FSTATFS],[1],[Define to 1 if there is no fstatfs])])
+AC_CHECK_FUNCS([fstatfs],[],
+               [AC_DEFINE([NO_FSTATFS],[1],
+                          [Define to 1 if there is no fstatfs])])dnl
 
-# Another member check
-AC_CHECK_MEMBERS([struct stat.st_rdev])
+# Another member check:
+AC_CHECK_MEMBERS([struct stat.st_rdev])dnl
 
 #--------------------------------------------------------------------
 #       Some system have no memcmp or it does not work with 8 bit
@@ -276,9 +309,10 @@ AC_FUNC_MEMCMP
 #       {The replacement define is in compat/string.h}
 #--------------------------------------------------------------------
 AC_CHECK_FUNCS([memmove],[],[
-  AC_DEFINE([NO_MEMMOVE],[1],[Define to 1 if there is no memmove])
-  AC_DEFINE([NO_STRING_H],[1],[Define to 1 if there is no working string.h])
-])
+  AC_DEFINE([NO_MEMMOVE],[1],[Define to 1 if there is no memmove])dnl
+  AC_DEFINE([NO_STRING_H],[1],
+            [Define to 1 if there is no working string.h])dnl
+])dnl
 
 #--------------------------------------------------------------------
 #	On some systems strstr is broken: it returns a pointer even
@@ -392,13 +426,13 @@ fi
 
 AC_TYPE_INTMAX_T
 AC_TYPE_UINTMAX_T
-AC_CHECK_SIZEOF([int])
-AC_CHECK_ALIGNOF([int])
-AC_CHECK_SIZEOF([double])
-AC_CHECK_ALIGNOF([double])
-AC_CHECK_SIZEOF([char])
-AC_CHECK_ALIGNOF([char])
-AC_CHECK_TYPES([regoff_t])
+AC_CHECK_SIZEOF([int])dnl
+AC_CHECK_ALIGNOF([int])dnl
+AC_CHECK_SIZEOF([double])dnl
+AC_CHECK_ALIGNOF([double])dnl
+AC_CHECK_SIZEOF([char])dnl
+AC_CHECK_ALIGNOF([char])dnl
+AC_CHECK_TYPES([regoff_t])dnl
 
 #--------------------------------------------------------------------
 #	If a system does NOT have an opendir function (man, is that old!)
@@ -408,8 +442,9 @@ AC_CHECK_TYPES([regoff_t])
 #--------------------------------------------------------------------
 
 AC_CHECK_FUNCS([opendir],[],[
-  AC_DEFINE([USE_DIRENT2_H],[2],[Define to 2 to use a different version of dirent.h])
-])
+  AC_DEFINE([USE_DIRENT2_H],[2],
+            [Define to 2 to use a different version of dirent.h])dnl
+])dnl
 
 #--------------------------------------------------------------------
 #	The check below checks whether <sys/wait.h> defines the type
@@ -463,16 +498,21 @@ fi
 #--------------------------------------------------------------------
 
 AC_CHECK_FUNCS([BSDgettimeofday],
-    [AC_DEFINE([HAVE_BSDGETTIMEOFDAY],[1],[Define to 1 if we have the BSDgettimeofday function])],[
-    AC_CHECK_FUNCS([gettimeofday],[],[AC_DEFINE([NO_GETTOD],[1],[Define to 1 if there is no gettimeofday function])])
-])
+    [AC_DEFINE([HAVE_BSDGETTIMEOFDAY],[1],
+               [Define to 1 if we have the BSDgettimeofday function])],
+    [AC_CHECK_FUNCS([gettimeofday],[],
+                [AC_DEFINE([NO_GETTOD],[1],
+                    [Define to 1 if there is no gettimeofday function])dnl
+    ])dnl
+])dnl
 AC_MSG_CHECKING([for gettimeofday declaration])
 AC_CACHE_VAL([tcl_cv_grep_gettimeofday],
     [AC_EGREP_HEADER([gettimeofday],[sys/time.h],
 	[tcl_cv_grep_gettimeofday=present], [tcl_cv_grep_gettimeofday=missing])])
 AC_MSG_RESULT([${tcl_cv_grep_gettimeofday}])
 if test ${tcl_cv_grep_gettimeofday} = missing ; then
-    AC_DEFINE([GETTOD_NOT_DECLARED],[1],[Define to 1 if gettimeofday is not declared])
+    AC_DEFINE([GETTOD_NOT_DECLARED],[1],
+              [Define to 1 if gettimeofday is not declared])
 fi
 
 #---------------------------------------------------------------------
@@ -490,7 +530,8 @@ AC_CACHE_VAL([tcl_cv_char_signed],
 	]])],[tcl_cv_char_signed=yes],[tcl_cv_char_signed=no]))
 AC_MSG_RESULT([${tcl_cv_char_signed}])
 if test ${tcl_cv_char_signed} = yes; then
-    AC_DEFINE([HAVE_SIGNED_CHAR],[1],[Define to 1 if we have a signed char declaration])
+    AC_DEFINE([HAVE_SIGNED_CHAR],[1],
+              [Define to 1 if we have a signed char declaration])
 fi
 
 #--------------------------------------------------------------------
@@ -521,7 +562,8 @@ AC_CACHE_VAL([tcl_cv_putenv_copy],
 ])
 AC_MSG_RESULT([${tcl_cv_putenv_copy}])
 if test ${tcl_cv_putenv_copy} = yes; then
-    AC_DEFINE([HAVE_PUTENV_THAT_COPIES],[1],[Define to 1 if we have a putenv that copies])
+    AC_DEFINE([HAVE_PUTENV_THAT_COPIES],[1],
+              [Define to 1 if we have a putenv that copies])
 fi
 
 dnl#
@@ -559,7 +601,9 @@ if test "`uname -s`" = "Darwin" ; then
     AC_CHECK_HEADERS([copyfile.h])
     AC_CHECK_FUNCS([copyfile])
     if test "x${tcl_corefoundation}" = "xyes"; then
-        AC_ARG_VAR([tcl_corefoundation],[Set to try to build CoreFoundation support in Tcl (might not work)])
+        AC_ARG_VAR([tcl_corefoundation],
+                   [Set to try to build CoreFoundation support in Tcl
+                    (might not work)])
 	AC_CHECK_HEADERS([CoreFoundation/CoreFoundation.h \
                           libkern/OSAtomic.h])
 	AC_CHECK_FUNCS([OSSpinLockLock])
@@ -613,7 +657,7 @@ if test "`uname -s`" = "Darwin" ; then
 	    CFLAGS=${hold_cflags}])
 	if test ${tcl_cv_cc_darwin_c_source} = yes; then
 	    AC_DEFINE([_DARWIN_C_SOURCE],[1],
-		    [Are Darwin SUSv3 extensions available?])
+		      [Are Darwin SUSv3 extensions available?])
 	fi
     fi
     # Build .bundle dltest binaries in addition to .dylib
@@ -685,7 +729,8 @@ AC_ARG_ENABLE([dll-unloading],
 	[enable the 'unload' command (default: on)])],
     [tcl_ok=${enableval}],[tcl_ok=yes])
 if test ${tcl_ok} = yes; then
-    AC_DEFINE([TCL_UNLOAD_DLLS],[1],[Do we allow unloading of shared libraries?])
+    AC_DEFINE([TCL_UNLOAD_DLLS],[1],
+              [Do we allow unloading of shared libraries?])
 fi
 AC_MSG_RESULT([${tcl_ok}])
 
@@ -699,7 +744,7 @@ AC_MSG_CHECKING([for timezone data])
 AC_ARG_WITH([tzdata],
     [AS_HELP_STRING([--with-tzdata],
 	[install timezone data (default: autodetect)])],
-    [tcl_ok=${withval}],[tcl_ok=auto])
+    [tcl_ok=${withval}],[tcl_ok=auto])dnl
 #
 # Any directories that get added here must also be added to the
 # search path in ::tcl::clock::Initialize (library/clock.tcl).
@@ -775,7 +820,7 @@ if test ${tcl_ok} = yes; then
 	fi
     fi
 fi
-AC_MSG_RESULT([${tcl_ok}])
+AC_MSG_RESULT([${tcl_ok}])dnl
 
 #--------------------------------------------------------------------
 #  Does the C stack grow upwards or downwards? Or cross-compiling?
@@ -796,7 +841,8 @@ AC_CACHE_CHECK([if the C stack grows upwards in memory],[tcl_cv_stack_grows_up],
 if test ${tcl_cv_stack_grows_up} = unknown; then
     AC_DEFINE([TCL_CROSS_COMPILE],[1],[Are we cross-compiling?])
 elif test ${tcl_cv_stack_grows_up} = yes; then
-    AC_DEFINE([TCL_STACK_GROWS_UP],[1],[The C stack grows upwards in memory.])
+    AC_DEFINE([TCL_STACK_GROWS_UP],[1],
+              [The C stack grows upwards in memory.])
 fi
 
 #--------------------------------------------------------------------
@@ -820,7 +866,7 @@ eval "TCL_LIB_FILE=${TCL_LIB_FILE}"
 # AIX remembers this path and will attempt to use it at run-time to look
 # up the Tcl library.
 
-if test "`uname -s`" = "Darwin" ; then
+if test "`uname -s`" = "Darwin"; then
     SC_ENABLE_FRAMEWORK
     TCL_SHLIB_LD_EXTRAS="-compatibility_version ${TCL_VERSION} -current_version ${TCL_VERSION}`echo ${TCL_PATCH_LEVEL} | awk ['{match($0, "\\\.[0-9]+"); print substr($0,RSTART,RLENGTH)}']`"
     TCL_SHLIB_LD_EXTRAS="${TCL_SHLIB_LD_EXTRAS}"' -install_name "${DYLIB_INSTALL_DIR}"/${TCL_LIB_FILE}'
@@ -832,7 +878,7 @@ if test "`uname -s`" = "Darwin" ; then
     TCL_YEAR="`date +%Y`"
 fi
 
-if test "${FRAMEWORK_BUILD}" = "1" ; then
+if test "${FRAMEWORK_BUILD}" = "1"; then
     AC_DEFINE([TCL_FRAMEWORK],[1],[Is Tcl built as a framework?])
     # Construct a fake local framework structure to make linking with
     # '-framework Tcl' and running of tcltest work
@@ -905,7 +951,7 @@ VERSION=${TCL_VERSION}
 #	another for platform-independent scripts.
 #--------------------------------------------------------------------
 
-if test "${FRAMEWORK_BUILD}" = "1" ; then
+if test "${FRAMEWORK_BUILD}" = "1"; then
     TCL_PACKAGE_PATH="${libdir}/Resources/Scripts"
 elif test "${prefix}" != "${exec_prefix}"; then
     TCL_PACKAGE_PATH="${libdir} ${prefix}/lib"
@@ -943,73 +989,73 @@ eval "TCL_INCLUDE_SPEC=\"-I${includedir}\""
 
 TCL_SHARED_BUILD="${SHARED_BUILD}"
 if test "${TCL_SHARED_BUILD}" = "1"; then
-	test ! -z "${TCL_SHARED_BUILD}"
-	AC_CONFIG_SUBDIRS([dltest])
+  test ! -z "${TCL_SHARED_BUILD}"
+  AC_CONFIG_SUBDIRS([dltest])
 fi
 
-AC_SUBST([ACLOCAL])
-AC_SUBST([TCL_VERSION])
-AC_SUBST([TCL_MAJOR_VERSION])
-AC_SUBST([TCL_MINOR_VERSION])
-AC_SUBST([TCL_PATCH_LEVEL])
-AC_SUBST([TCL_YEAR])
+AC_SUBST([ACLOCAL])dnl
+AC_SUBST([TCL_VERSION])dnl
+AC_SUBST([TCL_MAJOR_VERSION])dnl
+AC_SUBST([TCL_MINOR_VERSION])dnl
+AC_SUBST([TCL_PATCH_LEVEL])dnl
+AC_SUBST([TCL_YEAR])dnl
 
-AC_SUBST([TCL_LIB_FILE])
-AC_SUBST([TCL_LIB_FLAG])
-AC_SUBST([TCL_LIB_SPEC])
-AC_SUBST([TCL_STUB_LIB_FILE])
-AC_SUBST([TCL_STUB_LIB_FLAG])
-AC_SUBST([TCL_STUB_LIB_SPEC])
-AC_SUBST([TCL_STUB_LIB_PATH])
-AC_SUBST([TCL_INCLUDE_SPEC])
-AC_SUBST([TCL_BUILD_STUB_LIB_SPEC])
-AC_SUBST([TCL_BUILD_STUB_LIB_PATH])
+AC_SUBST([TCL_LIB_FILE])dnl
+AC_SUBST([TCL_LIB_FLAG])dnl
+AC_SUBST([TCL_LIB_SPEC])dnl
+AC_SUBST([TCL_STUB_LIB_FILE])dnl
+AC_SUBST([TCL_STUB_LIB_FLAG])dnl
+AC_SUBST([TCL_STUB_LIB_SPEC])dnl
+AC_SUBST([TCL_STUB_LIB_PATH])dnl
+AC_SUBST([TCL_INCLUDE_SPEC])dnl
+AC_SUBST([TCL_BUILD_STUB_LIB_SPEC])dnl
+AC_SUBST([TCL_BUILD_STUB_LIB_PATH])dnl
 
-AC_SUBST([TCL_SRC_DIR])
-AC_SUBST([TCL_DBGX])
-AC_SUBST([CFG_TCL_SHARED_LIB_SUFFIX])
-AC_SUBST([CFG_TCL_UNSHARED_LIB_SUFFIX])
-AC_SUBST([CFG_TCL_EXPORT_FILE_SUFFIX])
+AC_SUBST([TCL_SRC_DIR])dnl
+AC_SUBST([TCL_DBGX])dnl
+AC_SUBST([CFG_TCL_SHARED_LIB_SUFFIX])dnl
+AC_SUBST([CFG_TCL_UNSHARED_LIB_SUFFIX])dnl
+AC_SUBST([CFG_TCL_EXPORT_FILE_SUFFIX])dnl
 
-AC_SUBST([TCL_SHARED_BUILD])
-AC_SUBST([LD_LIBRARY_PATH_VAR])
+AC_SUBST([TCL_SHARED_BUILD])dnl
+AC_SUBST([LD_LIBRARY_PATH_VAR])dnl
 
-AC_SUBST([TCL_BUILD_LIB_SPEC])
-AC_SUBST([TCL_NEEDS_EXP_FILE])
-AC_SUBST([TCL_BUILD_EXP_FILE])
-AC_SUBST([TCL_EXP_FILE])
+AC_SUBST([TCL_BUILD_LIB_SPEC])dnl
+AC_SUBST([TCL_NEEDS_EXP_FILE])dnl
+AC_SUBST([TCL_BUILD_EXP_FILE])dnl
+AC_SUBST([TCL_EXP_FILE])dnl
 
-AC_SUBST([TCL_LIB_VERSIONS_OK])
-AC_SUBST([TCL_SHARED_LIB_SUFFIX])
-AC_SUBST([TCL_UNSHARED_LIB_SUFFIX])
+AC_SUBST([TCL_LIB_VERSIONS_OK])dnl
+AC_SUBST([TCL_SHARED_LIB_SUFFIX])dnl
+AC_SUBST([TCL_UNSHARED_LIB_SUFFIX])dnl
 
-AC_SUBST([TCL_HAS_LONGLONG])
+AC_SUBST([TCL_HAS_LONGLONG])dnl
 
-AC_SUBST([INSTALL_TZDATA])
+AC_SUBST([INSTALL_TZDATA])dnl
 
-AC_SUBST([DTRACE_SRC])
-AC_SUBST([DTRACE_HDR])
-AC_SUBST([DTRACE_OBJ])
-AC_SUBST([MAKEFILE_SHELL])
+AC_SUBST([DTRACE_SRC])dnl
+AC_SUBST([DTRACE_HDR])dnl
+AC_SUBST([DTRACE_OBJ])dnl
+AC_SUBST([MAKEFILE_SHELL])dnl
 
-AC_SUBST([BUILD_DLTEST])
-AC_SUBST([TCL_PACKAGE_PATH])
-AC_SUBST([TCL_MODULE_PATH])
+AC_SUBST([BUILD_DLTEST])dnl
+AC_SUBST([TCL_PACKAGE_PATH])dnl
+AC_SUBST([TCL_MODULE_PATH])dnl
 
-AC_SUBST([TCL_LIBRARY])
-AC_SUBST([PRIVATE_INCLUDE_DIR])
-AC_SUBST([HTML_DIR])
+AC_SUBST([TCL_LIBRARY])dnl
+AC_SUBST([PRIVATE_INCLUDE_DIR])dnl
+AC_SUBST([HTML_DIR])dnl
 
-AC_SUBST([EXTRA_CFLAGS])
-AC_SUBST([EXTRA_CC_SWITCHES])
-AC_SUBST([EXTRA_APP_CC_SWITCHES])
-AC_SUBST([EXTRA_INSTALL])
-AC_SUBST([EXTRA_INSTALL_BINARIES])
-AC_SUBST([EXTRA_BUILD_HTML])
-AC_SUBST([EXTRA_TCLSH_LIBS])
+AC_SUBST([EXTRA_CFLAGS])dnl
+AC_SUBST([EXTRA_CC_SWITCHES])dnl
+AC_SUBST([EXTRA_APP_CC_SWITCHES])dnl
+AC_SUBST([EXTRA_INSTALL])dnl
+AC_SUBST([EXTRA_INSTALL_BINARIES])dnl
+AC_SUBST([EXTRA_BUILD_HTML])dnl
+AC_SUBST([EXTRA_TCLSH_LIBS])dnl
 
-AC_SUBST([DLTEST_LD])
-AC_SUBST([DLTEST_SUFFIX])
+AC_SUBST([DLTEST_LD])dnl
+AC_SUBST([DLTEST_SUFFIX])dnl
 
 dnl# Disable the automake-friendly normalization of LIBOBJS
 dnl# performed by autoconf 2.53 and later. It is not correct for us.
@@ -1018,6 +1064,6 @@ AC_CONFIG_FILES([
     Makefile:../unix/Makefile.in
     dltest/Makefile:../unix/dltest/Makefile.in
     tclConfig.sh:../unix/tclConfig.sh.in
-])
+])dnl
 AC_OUTPUT
 

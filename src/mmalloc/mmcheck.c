@@ -1,9 +1,9 @@
-/* Standard debugging hooks for `mmalloc'.
-   Copyright 1990, 1991, 1992 Free Software Foundation
-
-   Written May 1989 by Mike Haertel.
-   Heavily modified Mar 1992 by Fred Fish (fnf@cygnus.com)
-
+/* mmcheck.c: Standard debugging hooks for `mmalloc'.
+ * Copyright 1990, 1991, 1992 Free Software Foundation
+ *
+ * Written May 1989 by Mike Haertel.
+ * Heavily modified Mar 1992 by Fred Fish <fnf@cygnus.com>  */
+/*
 The GNU C Library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Library General Public License as
 published by the Free Software Foundation; either version 2 of the
@@ -16,24 +16,22 @@ Library General Public License for more details.
 
 You should have received a copy of the GNU Library General Public
 License along with the GNU C Library; see the file COPYING.LIB.  If
-not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
-Boston, MA 02111-1307, USA.
-
- The author may be reached (Email) at the address mike@ai.mit.edu,
- or (US mail) as Mike Haertel c/o Free Software Foundation. */
+not, write to the Free Software Foundation, Inc., 59 Temple Pl., Suite 330,
+Boston, MA 02111-1307, USA.  */
+/*
+ * The author may be reached (Email) at the address <mike@ai.mit.edu>,
+ * or (US mail) as Mike Haertel c/o Free Software Foundation. */
 
 #include "mmprivate.h"
 
 /* Default function to call when something awful happens.  The application
    can specify an alternate function to be called instead (and probably will
    want to). */
+extern void abort PARAMS((void));
 
-extern void abort PARAMS ((void));
-
-/* Arbitrary magical numbers.  */
-
-#define MAGICWORD	(unsigned int) 0xfedabeeb	/* Active chunk */
-#define MAGICWORDFREE	(unsigned int) 0xdeadbeef	/* Inactive chunk */
+/* Arbitrary magical numbers: */
+#define MAGICWORD	(unsigned int) 0xfedabeeb    /* Active chunk */
+#define MAGICWORDFREE	(unsigned int) 0xdeadbeef    /* Inactive chunk */
 #define MAGICBYTE	((char) 0xd7)
 
 /* Each memory allocation is bounded by a header structure and a trailer
@@ -47,95 +45,86 @@ extern void abort PARAMS ((void));
 
 struct hdr
   {
-    size_t size;		/* Exact size requested by user.  */
-    unsigned long int magic;	/* Magic number to check header integrity.  */
+    size_t size;	      /* Exact size requested by user.  */
+    unsigned long int magic;  /* Magic number to check header integrity. */
   };
 
-static void checkhdr PARAMS ((struct mdesc *, CONST struct hdr *));
-static void mfree_check PARAMS ((PTR, PTR));
-static PTR mmalloc_check PARAMS ((PTR, size_t));
-static PTR mrealloc_check PARAMS ((PTR, PTR, size_t));
+static void checkhdr PARAMS((struct mdesc *, CONST struct hdr *));
+static void mfree_check PARAMS((PTR, PTR));
+static PTR mmalloc_check PARAMS((PTR, size_t));
+static PTR mrealloc_check PARAMS((PTR, PTR, size_t));
 
 /* Check the magicword and magicbyte, and if either is corrupted then
    call the emergency abort function specified for the heap in use. */
 
 static void
-checkhdr (mdp, hdr)
-  struct mdesc *mdp;
-  CONST struct hdr *hdr;
+checkhdr(struct mdesc *mdp, CONST struct hdr *hdr)
 {
-  if (hdr -> magic != MAGICWORD ||
-      ((char *) &hdr[1])[hdr -> size] != MAGICBYTE)
+  if ((hdr->magic != MAGICWORD) ||
+      (((char *)&hdr[1])[hdr->size] != MAGICBYTE))
     {
-      (*mdp -> abortfunc)();
+      (*mdp->abortfunc)();
     }
 }
 
 static void
-mfree_check (md, ptr)
-  PTR md;
-  PTR ptr;
+mfree_check(PTR md, PTR ptr)
 {
-  struct hdr *hdr = ((struct hdr *) ptr) - 1;
+  struct hdr *hdr = (((struct hdr *)ptr) - 1);
   struct mdesc *mdp;
 
-  mdp = MD_TO_MDP (md);
-  checkhdr (mdp, hdr);
-  hdr -> magic = MAGICWORDFREE;
-  mdp -> mfree_hook = NULL;
-  mfree (md, (PTR)hdr);
-  mdp -> mfree_hook = mfree_check;
+  mdp = MD_TO_MDP(md);
+  checkhdr(mdp, hdr);
+  hdr->magic = MAGICWORDFREE;
+  mdp->mfree_hook = NULL;
+  mfree(md, (PTR)hdr);
+  mdp->mfree_hook = mfree_check;
 }
 
 static PTR
-mmalloc_check (md, size)
-  PTR md;
-  size_t size;
+mmalloc_check(PTR md, size_t size)
 {
   struct hdr *hdr;
   struct mdesc *mdp;
   size_t nbytes;
 
-  mdp = MD_TO_MDP (md);
-  mdp -> mmalloc_hook = NULL;
-  nbytes = sizeof (struct hdr) + size + 1;
-  hdr = (struct hdr *) mmalloc (md, nbytes);
-  mdp -> mmalloc_hook = mmalloc_check;
+  mdp = MD_TO_MDP(md);
+  mdp->mmalloc_hook = NULL;
+  nbytes = (sizeof(struct hdr) + size + 1);
+  hdr = (struct hdr *)mmalloc(md, nbytes);
+  mdp->mmalloc_hook = mmalloc_check;
   if (hdr != NULL)
     {
-      hdr -> size = size;
-      hdr -> magic = MAGICWORD;
+      hdr->size = size;
+      hdr->magic = MAGICWORD;
       hdr++;
-      *((char *) hdr + size) = MAGICBYTE;
+      *((char *)hdr + size) = MAGICBYTE;
     }
-  return ((PTR) hdr);
+  return ((PTR)hdr);
 }
 
 static PTR
-mrealloc_check (md, ptr, size)
-  PTR md;
-  PTR ptr;
-  size_t size;
+mrealloc_check(PTR md, PTR ptr, size_t size)
 {
-  struct hdr *hdr = ((struct hdr *) ptr) - 1;
+  struct hdr *hdr = (((struct hdr *)ptr) - 1);
   struct mdesc *mdp;
   size_t nbytes;
 
-  mdp = MD_TO_MDP (md);
-  checkhdr (mdp, hdr);
-  mdp -> mfree_hook = NULL;
-  mdp -> mmalloc_hook = NULL;
-  mdp -> mrealloc_hook = NULL;
-  nbytes = sizeof (struct hdr) + size + 1;
-  hdr = (struct hdr *) mrealloc (md, (PTR) hdr, nbytes);
-  mdp -> mfree_hook = mfree_check;
-  mdp -> mmalloc_hook = mmalloc_check;
-  mdp -> mrealloc_hook = mrealloc_check;
+  mdp = MD_TO_MDP(md);
+  checkhdr(mdp, hdr);
+  mdp->mfree_hook = NULL;
+  mdp->mmalloc_hook = NULL;
+  mdp->mrealloc_hook = NULL;
+  nbytes = (sizeof(struct hdr) + size + 1);
+  hdr = (struct hdr *)mrealloc(md, (PTR)hdr, nbytes);
+  mdp->mfree_hook = mfree_check;
+  mdp->mmalloc_hook = mmalloc_check;
+  mdp->mrealloc_hook = mrealloc_check;
   if (hdr != NULL)
     {
-      hdr -> size = size;
+      hdr->size = size;
       hdr++;
-      *((char *) hdr + size) = MAGICBYTE;
+      *((char *)hdr + size) = MAGICBYTE;
     }
   return ((PTR) hdr);
 }
@@ -171,35 +160,30 @@ mrealloc_check (md, ptr, size)
    Returns non-zero if checking is successfully enabled, zero otherwise. */
 
 int
-mmcheckf (md, func, force)
-  PTR md;
-  void (*func) PARAMS ((void));
-  int force;
+mmcheckf(PTR md, void (*func)PARAMS((void)), int force)
 {
   struct mdesc *mdp;
   int rtnval;
 
-  abort ();
+  abort();
 
-  mdp = MD_TO_MDP (md);
+  mdp = MD_TO_MDP(md);
 
   /* We can safely set or update the abort function at any time, regardless
-     of whether or not we successfully do anything else. */
+   * of whether or not we successfully do anything else: */
+  mdp->abortfunc = ((func != NULL) ? func : abort);
 
-  mdp -> abortfunc = (func != NULL ? func : abort);
-
-  /* If we haven't yet called mmalloc the first time for this heap, or if we
-     have hooks that were previously installed, then allow the hooks to be
-     initialized or updated. */
-
+  /* If we have NOT yet called mmalloc the first time for this heap,
+   * or if we have hooks that were previously installed, then allow
+   * the hooks to be initialized or updated: */
   if (force ||
-      !(mdp -> flags & MMALLOC_INITIALIZED) ||
-      (mdp -> mfree_hook != NULL))
+      !(mdp->flags & MMALLOC_INITIALIZED) ||
+      (mdp->mfree_hook != NULL))
     {
-      mdp -> mfree_hook = mfree_check;
-      mdp -> mmalloc_hook = mmalloc_check;
-      mdp -> mrealloc_hook = mrealloc_check;
-      mdp -> flags |= MMALLOC_MMCHECK_USED;
+      mdp->mfree_hook = mfree_check;
+      mdp->mmalloc_hook = mmalloc_check;
+      mdp->mrealloc_hook = mrealloc_check;
+      mdp->flags |= MMALLOC_MMCHECK_USED;
       rtnval = 1;
     }
   else
@@ -211,17 +195,16 @@ mmcheckf (md, func, force)
 }
 
 /* This routine is for backwards compatibility only, in case there are
-   still callers to the original mmcheck function. */
-
+ * still callers to the original mmcheck function: */
 int
-mmcheck (md, func)
-  PTR md;
-  void (*func) PARAMS ((void));
+mmcheck(PTR md, void (*func)PARAMS((void)))
 {
   int rtnval;
 
-  abort ();
+  abort();
 
-  rtnval = mmcheckf (md, func, 0);
+  rtnval = mmcheckf(md, func, 0);
   return (rtnval);
 }
+
+/* EOF */

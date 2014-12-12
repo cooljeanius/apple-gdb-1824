@@ -1,6 +1,6 @@
 /* Internal format of COFF object file data structures, for GNU BFD.
    This file is part of BFD, the Binary File Descriptor library.
-   
+
    Copyright 1999, 2000, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
 
@@ -8,12 +8,12 @@
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2 of the License, or
    (at your option) any later version.
-   
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
@@ -55,8 +55,12 @@ struct internal_extra_pe_filehdr
   unsigned short e_res2[10];	/* Reserved words, all 0x0 */
   bfd_vma  e_lfanew;		/* File address of new exe header, 0x80 */
   unsigned long dos_message[16]; /* text which always follows dos header */
-  bfd_vma  nt_signature;   	/* required NT signature, 0x4550 */ 
+  bfd_vma  nt_signature;   	/* required NT signature, 0x4550 */
 };
+
+#ifndef GO32_STUBSIZE
+# define GO32_STUBSIZE 2048
+#endif /* !GO32_STUBSIZE */
 
 struct internal_filehdr
 {
@@ -84,7 +88,8 @@ struct internal_filehdr
  	F_AR32W		file is 32-bit big-endian
  	F_DYNLOAD	rs/6000 aix: dynamically loadable w/imports & exports
  	F_SHROBJ	rs/6000 aix: file is a shared object
-        F_DLL           PE format DLL.  */
+  	F_DLL           PE format DLL.
+  	F_GO32STUB      Field go32stub contains valid data.  */
 
 #define	F_RELFLG	(0x0001)
 #define	F_EXEC		(0x0002)
@@ -96,9 +101,12 @@ struct internal_filehdr
 #define	F_DYNLOAD	(0x1000)
 #define	F_SHROBJ	(0x2000)
 #define F_DLL           (0x2000)
+#ifndef F_GO32STUB
+# define F_GO32STUB     (0x4000)
+#endif /* !F_GO32STUB */
 
 /* Extra structure which is used in the optional header.  */
-typedef struct _IMAGE_DATA_DIRECTORY 
+typedef struct _IMAGE_DATA_DIRECTORY
 {
   bfd_vma VirtualAddress;
   long    Size;
@@ -120,7 +128,7 @@ typedef struct _IMAGE_DATA_DIRECTORY
 # define PE_DEF_FILE_ALIGNMENT 0x200
 #endif
 
-struct internal_extra_pe_aouthdr 
+struct internal_extra_pe_aouthdr
 {
   /* PE stuff  */
   bfd_vma ImageBase;		/* address of specific location in memory that
@@ -131,14 +139,14 @@ struct internal_extra_pe_aouthdr
   short   MajorOperatingSystemVersion; /* minimum version of the operating */
   short   MinorOperatingSystemVersion; /* system req'd for exe, default to 1*/
   short   MajorImageVersion;	/* user defineable field to store version of */
-  short   MinorImageVersion;	/* exe or dll being created, default to 0 */ 
+  short   MinorImageVersion;	/* exe or dll being created, default to 0 */
   short   MajorSubsystemVersion; /* minimum subsystem version required to */
   short   MinorSubsystemVersion; /* run exe; default to 3.1 */
   long    Reserved1;		/* seems to be 0 */
   long    SizeOfImage;		/* size of memory to allocate for prog */
   long    SizeOfHeaders;	/* size of PE header and section table */
   long    CheckSum;		/* set to 0 */
-  short   Subsystem;	
+  short   Subsystem;
 
   /* type of subsystem exe uses for user interface,
      possible values:
@@ -149,7 +157,7 @@ struct internal_extra_pe_aouthdr
      7 - POSIX_CUI runs in Posix character subsystem */
   short   DllCharacteristics;	/* flags for DLL init, use 0 */
   bfd_vma SizeOfStackReserve;	/* amount of memory to reserve  */
-  bfd_vma SizeOfStackCommit;	/* amount of memory initially committed for 
+  bfd_vma SizeOfStackCommit;	/* amount of memory initially committed for
 				   initial thread's stack, default is 0x1000 */
   bfd_vma SizeOfHeapReserve;	/* amount of virtual memory to reserve and */
   bfd_vma SizeOfHeapCommit;	/* commit, don't know what to defaut it to */

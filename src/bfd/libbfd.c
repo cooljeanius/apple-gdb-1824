@@ -516,66 +516,66 @@ DESCRIPTION
   (((bfd_int64_t) (x) ^ EIGHT_GAZILLION) - EIGHT_GAZILLION)
 
 bfd_vma
-bfd_getb16 (const void *p)
+bfd_getb16(const void *p)
 {
-  const bfd_byte *addr = p;
-  return (addr[0] << 8) | addr[1];
+  const bfd_byte *addr = (const bfd_byte *)p;
+  return ((addr[0] << 8) | addr[1]);
 }
 
 bfd_vma
-bfd_getl16 (const void *p)
+bfd_getl16(const void *p)
 {
-  const bfd_byte *addr = p;
-  return (addr[1] << 8) | addr[0];
+  const bfd_byte *addr = (const bfd_byte *)p;
+  return ((addr[1] << 8) | addr[0]);
 }
 
 bfd_signed_vma
-bfd_getb_signed_16 (const void *p)
+bfd_getb_signed_16(const void *p)
 {
-  const bfd_byte *addr = p;
-  return COERCE16 ((addr[0] << 8) | addr[1]);
+  const bfd_byte *addr = (const bfd_byte *)p;
+  return COERCE16((addr[0] << 8) | addr[1]);
 }
 
 bfd_signed_vma
-bfd_getl_signed_16 (const void *p)
+bfd_getl_signed_16(const void *p)
 {
-  const bfd_byte *addr = p;
+  const bfd_byte *addr = (const bfd_byte *)p;
   return COERCE16 ((addr[1] << 8) | addr[0]);
 }
 
 void
-bfd_putb16 (bfd_vma data, void *p)
+bfd_putb16(bfd_vma data, void *p)
 {
-  bfd_byte *addr = p;
-  addr[0] = (data >> 8) & 0xff;
-  addr[1] = data & 0xff;
+  bfd_byte *addr = (bfd_byte *)p;
+  addr[0] = ((data >> 8) & 0xff);
+  addr[1] = (data & 0xff);
 }
 
 void
-bfd_putl16 (bfd_vma data, void *p)
+bfd_putl16(bfd_vma data, void *p)
 {
-  bfd_byte *addr = p;
-  addr[0] = data & 0xff;
-  addr[1] = (data >> 8) & 0xff;
+  bfd_byte *addr = (bfd_byte *)p;
+  addr[0] = (data & 0xff);
+  addr[1] = ((data >> 8) & 0xff);
 }
 
 bfd_vma
 bfd_getb32 (const void *p)
 {
-  const bfd_byte *addr = p;
+  const bfd_byte *addr = (const bfd_byte *)p;
   unsigned long v;
 
-  v = (unsigned long) addr[0] << 24;
-  v |= (unsigned long) addr[1] << 16;
-  v |= (unsigned long) addr[2] << 8;
-  v |= (unsigned long) addr[3];
+  v = ((unsigned long)addr[0] << 24);
+  v |= ((unsigned long)addr[1] << 16);
+  v |= ((unsigned long)addr[2] << 8);
+  v |= (unsigned long)addr[3];
   return v;
 }
 
 bfd_vma
-bfd_getl32 (const void *p)
+bfd_getl32(const void *p)
 {
-  const bfd_byte *addr = p;
+  const bfd_byte *addr = (const bfd_byte *)p;
   unsigned long v;
 
   v = (unsigned long) addr[0];
@@ -588,7 +588,7 @@ bfd_getl32 (const void *p)
 bfd_signed_vma
 bfd_getb_signed_32 (const void *p)
 {
-  const bfd_byte *addr = p;
+  const bfd_byte *addr = (const bfd_byte *)p;
   unsigned long v;
 
   v = (unsigned long) addr[0] << 24;
@@ -601,7 +601,7 @@ bfd_getb_signed_32 (const void *p)
 bfd_signed_vma
 bfd_getl_signed_32 (const void *p)
 {
-  const bfd_byte *addr = p;
+  const bfd_byte *addr = (const bfd_byte *)p;
   unsigned long v;
 
   v = (unsigned long) addr[0];
@@ -615,7 +615,7 @@ bfd_uint64_t
 bfd_getb64 (const void *p ATTRIBUTE_UNUSED)
 {
 #ifdef BFD_HOST_64_BIT
-  const bfd_byte *addr = p;
+  const bfd_byte *addr = (const bfd_byte *)p;
   bfd_uint64_t v;
 
   v  = addr[0]; v <<= 8;
@@ -638,7 +638,7 @@ bfd_uint64_t
 bfd_getl64 (const void *p ATTRIBUTE_UNUSED)
 {
 #ifdef BFD_HOST_64_BIT
-  const bfd_byte *addr = p;
+  const bfd_byte *addr = (const bfd_byte *)p;
   bfd_uint64_t v;
 
   v  = addr[7]; v <<= 8;
@@ -662,7 +662,7 @@ bfd_int64_t
 bfd_getb_signed_64 (const void *p ATTRIBUTE_UNUSED)
 {
 #ifdef BFD_HOST_64_BIT
-  const bfd_byte *addr = p;
+  const bfd_byte *addr = (const bfd_byte *)p;
   bfd_uint64_t v;
 
   v  = addr[0]; v <<= 8;
@@ -685,7 +685,7 @@ bfd_int64_t
 bfd_getl_signed_64 (const void *p ATTRIBUTE_UNUSED)
 {
 #ifdef BFD_HOST_64_BIT
-  const bfd_byte *addr = p;
+  const bfd_byte *addr = (const bfd_byte *)p;
   bfd_uint64_t v;
 
   v  = addr[7]; v <<= 8;
@@ -707,7 +707,7 @@ bfd_getl_signed_64 (const void *p ATTRIBUTE_UNUSED)
 void
 bfd_putb32 (bfd_vma data, void *p)
 {
-  bfd_byte *addr = p;
+  bfd_byte *addr = (bfd_byte *)p;
   addr[0] = (data >> 24) & 0xff;
   addr[1] = (data >> 16) & 0xff;
   addr[2] = (data >>  8) & 0xff;
@@ -717,7 +717,7 @@ bfd_putb32 (bfd_vma data, void *p)
 void
 bfd_putl32 (bfd_vma data, void *p)
 {
-  bfd_byte *addr = p;
+  bfd_byte *addr = (bfd_byte *)p;
   addr[0] = data & 0xff;
   addr[1] = (data >>  8) & 0xff;
   addr[2] = (data >> 16) & 0xff;
@@ -728,7 +728,7 @@ void
 bfd_putb64 (bfd_uint64_t data ATTRIBUTE_UNUSED, void *p ATTRIBUTE_UNUSED)
 {
 #ifdef BFD_HOST_64_BIT
-  bfd_byte *addr = p;
+  bfd_byte *addr = (bfd_byte *)p;
   addr[0] = (data >> (7*8)) & 0xff;
   addr[1] = (data >> (6*8)) & 0xff;
   addr[2] = (data >> (5*8)) & 0xff;
@@ -746,7 +746,7 @@ void
 bfd_putl64 (bfd_uint64_t data ATTRIBUTE_UNUSED, void *p ATTRIBUTE_UNUSED)
 {
 #ifdef BFD_HOST_64_BIT
-  bfd_byte *addr = p;
+  bfd_byte *addr = (bfd_byte *)p;
   addr[7] = (data >> (7*8)) & 0xff;
   addr[6] = (data >> (6*8)) & 0xff;
   addr[5] = (data >> (5*8)) & 0xff;
@@ -763,7 +763,7 @@ bfd_putl64 (bfd_uint64_t data ATTRIBUTE_UNUSED, void *p ATTRIBUTE_UNUSED)
 void
 bfd_put_bits (bfd_uint64_t data, void *p, int bits, bfd_boolean big_p)
 {
-  bfd_byte *addr = p;
+  bfd_byte *addr = (bfd_byte *)p;
   int i;
   int bytes;
 
@@ -783,7 +783,7 @@ bfd_put_bits (bfd_uint64_t data, void *p, int bits, bfd_boolean big_p)
 bfd_uint64_t
 bfd_get_bits (const void *p, int bits, bfd_boolean big_p)
 {
-  const bfd_byte *addr = p;
+  const bfd_byte *addr = (const bfd_byte *)p;
   bfd_uint64_t data;
   int i;
   int bytes;

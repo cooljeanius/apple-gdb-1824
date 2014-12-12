@@ -28,6 +28,9 @@
 /* Should ar and ranlib use -D behavior by default? */
 #undef DEFAULT_AR_DETERMINISTIC
 
+/* Should strings use -a behavior by default? */
+#undef DEFAULT_STRINGS_ALL
+
 /* Define to 1 if NLS is requested */
 #undef ENABLE_NLS
 
@@ -69,6 +72,10 @@
 
 /* Define to 1 if you have the `dcgettext' function. */
 #undef HAVE_DCGETTEXT
+
+/* Define to 1 if you have the declaration of `basename', and to 0 if you
+   don't. */
+#undef HAVE_DECL_BASENAME
 
 /* Define to 1 if you have the declaration of `environ', and to 0 if you
    don't. */
@@ -201,7 +208,7 @@
 /* Define to 1 if you have the <langinfo.h> header file. */
 #undef HAVE_LANGINFO_H
 
-/* Define if your locale.h file contains LC_MESSAGES. */
+/* Define if your <locale.h> file defines LC_MESSAGES. */
 #undef HAVE_LC_MESSAGES
 
 /* Define to 1 if you have the `c' library (-lc). */
@@ -249,6 +256,9 @@
 /* Define to 1 if `lstat' has the bug that it succeeds when given the
    zero-length file name argument. */
 #undef HAVE_LSTAT_EMPTY_STRING_BUG
+
+/* Define to 1 if you have the <mach/i386/thread_status.h> header file. */
+#undef HAVE_MACH_I386_THREAD_STATUS_H
 
 /* Define to 1 if you have the <mach/mach.h> header file. */
 #undef HAVE_MACH_MACH_H

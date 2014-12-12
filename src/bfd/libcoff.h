@@ -46,8 +46,11 @@
 #define obj_coff_strings_written(bfd) (coff_data (bfd)->strings_written)
 #define obj_coff_local_toc_table(bfd) (coff_data (bfd)->local_toc_sym_map)
 
-/* `Tdata' information kept for COFF files.  */
+#ifdef	__cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
+/* `Tdata' information kept for COFF files: */
 typedef struct coff_tdata
 {
   struct coff_symbol_struct *symbols;	/* Symtab for input bfd.  */
@@ -126,8 +129,7 @@ typedef struct pe_tdata
 
 #define pe_data(bfd)		((bfd)->tdata.pe_obj_data)
 
-/* Tdata for XCOFF files.  */
-
+/* Tdata for XCOFF files: */
 struct xcoff_tdata
 {
   /* Basic COFF information.  */
@@ -208,8 +210,7 @@ struct coff_section_tdata
 #define coff_section_data(abfd, sec) \
   ((struct coff_section_tdata *) (sec)->used_by_bfd)
 
-/* Tdata for sections in XCOFF files.  This is used by the linker.  */
-
+/* Tdata for sections in XCOFF files.  This is used by the linker: */
 struct xcoff_section_tdata
 {
   /* Used for XCOFF csects created by the linker; points to the real
@@ -224,12 +225,11 @@ struct xcoff_section_tdata
   unsigned long last_symndx;
 };
 
-/* An accessor macro the xcoff_section_tdata structure.  */
+/* An accessor macro the xcoff_section_tdata structure: */
 #define xcoff_section_data(abfd, sec) \
   ((struct xcoff_section_tdata *) coff_section_data ((abfd), (sec))->tdata)
 
-/* Tdata for sections in PE files.  */
-
+/* Tdata for sections in PE files: */
 struct pei_section_tdata
 {
   /* The virtual size of the section.  */
@@ -242,8 +242,7 @@ struct pei_section_tdata
 #define pei_section_data(abfd, sec) \
   ((struct pei_section_tdata *) coff_section_data ((abfd), (sec))->tdata)
 
-/* COFF linker hash table entries.  */
-
+/* COFF linker hash table entries: */
 struct coff_link_hash_entry
 {
   struct bfd_link_hash_entry root;
@@ -273,8 +272,7 @@ struct coff_link_hash_entry
 #define COFF_LINK_HASH_PE_SECTION_SYMBOL (01)
 };
 
-/* COFF linker hash table.  */
-
+/* COFF linker hash table: */
 struct coff_link_hash_table
 {
   struct bfd_link_hash_table root;
@@ -282,30 +280,25 @@ struct coff_link_hash_table
   struct stab_info stab_info;
 };
 
-/* Look up an entry in a COFF linker hash table.  */
-
+/* Look up an entry in a COFF linker hash table: */
 #define coff_link_hash_lookup(table, string, create, copy, follow)	\
   ((struct coff_link_hash_entry *)					\
    bfd_link_hash_lookup (&(table)->root, (string), (create),		\
 			 (copy), (follow)))
 
-/* Traverse a COFF linker hash table.  */
-
+/* Traverse a COFF linker hash table: */
 #define coff_link_hash_traverse(table, func, info)			\
   (bfd_link_hash_traverse						\
    (&(table)->root,							\
     (bfd_boolean (*) (struct bfd_link_hash_entry *, void *)) (func), \
     (info)))
 
-/* Get the COFF linker hash table from a link_info structure.  */
-
+/* Get the COFF linker hash table from a link_info structure: */
 #define coff_hash_table(p) ((struct coff_link_hash_table *) ((p)->hash))
 
-/* Functions in coffgen.c.  */
-extern const bfd_target *coff_object_p
-  (bfd *);
-extern struct bfd_section *coff_section_from_bfd_index
-  (bfd *, int);
+/* Functions in coffgen.c: */
+extern const bfd_target *coff_object_p(bfd *);
+extern struct bfd_section *coff_section_from_bfd_index(bfd *, int);
 extern long coff_get_symtab_upper_bound
   (bfd *);
 extern long coff_canonicalize_symtab
@@ -363,8 +356,7 @@ extern bfd_vma bfd_coff_reloc16_get_value
 extern void bfd_perform_slip
   (bfd *, unsigned int, asection *, bfd_vma);
 
-/* Functions and types in cofflink.c.  */
-
+/* Functions and types in cofflink.c: */
 #define STRING_SIZE_SIZE 4
 
 /* We use a hash table to merge identical enum, struct, and union
@@ -388,8 +380,7 @@ struct coff_debug_merge_element
   long tagndx;
 };
 
-/* A linked list of debug merge entries for a given name.  */
-
+/* A linked list of debug merge entries for a given name: */
 struct coff_debug_merge_type
 {
   /* Next type with the same name.  */
@@ -405,8 +396,7 @@ struct coff_debug_merge_type
   struct coff_debug_merge_element *elements;
 };
 
-/* Information we store in the debug merge hash table.  */
-
+/* Information we store in the debug merge hash table: */
 struct coff_debug_merge_hash_entry
 {
   struct bfd_hash_entry root;
@@ -415,25 +405,21 @@ struct coff_debug_merge_hash_entry
   struct coff_debug_merge_type *types;
 };
 
-/* The debug merge hash table.  */
-
+/* The debug merge hash table: */
 struct coff_debug_merge_hash_table
 {
   struct bfd_hash_table root;
 };
 
-/* Initialize a COFF debug merge hash table.  */
-
+/* Initialize a COFF debug merge hash table: */
 #define coff_debug_merge_hash_table_init(table) \
   (bfd_hash_table_init (&(table)->root, _bfd_coff_debug_merge_hash_newfunc))
 
-/* Free a COFF debug merge hash table.  */
-
+/* Free a COFF debug merge hash table: */
 #define coff_debug_merge_hash_table_free(table) \
   (bfd_hash_table_free (&(table)->root))
 
-/* Look up an entry in a COFF debug merge hash table.  */
-
+/* Look up an entry in a COFF debug merge hash table: */
 #define coff_debug_merge_hash_lookup(table, string, create, copy) \
   ((struct coff_debug_merge_hash_entry *) \
    bfd_hash_lookup (&(table)->root, (string), (create), (copy)))
@@ -450,8 +436,7 @@ struct coff_link_section_info
   struct coff_link_hash_entry **rel_hashes;
 };
 
-/* Information that we pass around while doing the final link step.  */
-
+/* Information that we pass around while doing the final link step: */
 struct coff_final_link_info
 {
   /* General link information.  */
@@ -503,7 +488,6 @@ struct coff_final_link_info
 /* Most COFF variants have no way to record the alignment of a
    section.  This struct is used to set a specific alignment based on
    the name of the section.  */
-
 struct coff_section_alignment_entry
 {
   /* The section name.  */
@@ -542,14 +526,12 @@ extern bfd_boolean _bfd_coff_link_hash_table_init
    struct bfd_hash_entry *(*) (struct bfd_hash_entry *,
 			       struct bfd_hash_table *,
 			       const char *));
-extern struct bfd_link_hash_table *_bfd_coff_link_hash_table_create
-  (bfd *);
+extern struct bfd_link_hash_table *_bfd_coff_link_hash_table_create(bfd *);
 extern const char *_bfd_coff_internal_syment_name
   (bfd *, const struct internal_syment *, char *);
 extern bfd_boolean _bfd_coff_link_add_symbols
   (bfd *, struct bfd_link_info *);
-extern bfd_boolean _bfd_coff_final_link
-  (bfd *, struct bfd_link_info *);
+extern bfd_boolean _bfd_coff_final_link(bfd *, struct bfd_link_info *);
 extern struct internal_reloc *_bfd_coff_read_internal_relocs
   (bfd *, asection *, bfd_boolean, bfd_byte *, bfd_boolean,
    struct internal_reloc *);
@@ -574,12 +556,9 @@ extern bfd_boolean _bfd_coff_reloc_link_order
 
 /* Functions in xcofflink.c.  */
 
-extern long _bfd_xcoff_get_dynamic_symtab_upper_bound
-  (bfd *);
-extern long _bfd_xcoff_canonicalize_dynamic_symtab
-  (bfd *, asymbol **);
-extern long _bfd_xcoff_get_dynamic_reloc_upper_bound
-  (bfd *);
+extern long _bfd_xcoff_get_dynamic_symtab_upper_bound(bfd *);
+extern long _bfd_xcoff_canonicalize_dynamic_symtab(bfd *, asymbol **);
+extern long _bfd_xcoff_get_dynamic_reloc_upper_bound(bfd *);
 extern long _bfd_xcoff_canonicalize_dynamic_reloc
   (bfd *, arelent **, asymbol **);
 extern struct bfd_link_hash_table *_bfd_xcoff_bfd_link_hash_table_create
@@ -596,12 +575,13 @@ extern bfd_boolean _bfd_ppc_xcoff_relocate_section
 
 /* Functions in coff-ppc.c.  FIXME: These are called be pe.em in the
    linker, and so should start with bfd and be declared in bfd.h.  */
-
-extern bfd_boolean ppc_allocate_toc_section
-  (struct bfd_link_info *);
+extern bfd_boolean ppc_allocate_toc_section(struct bfd_link_info *);
 extern bfd_boolean ppc_process_before_allocation
   (bfd *, struct bfd_link_info *);
 
+#ifdef	__cplusplus
+}
+#endif /* __cplusplus */
 /* Extracted from coffcode.h.  */
 typedef struct coff_ptr_struct
 {

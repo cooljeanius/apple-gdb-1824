@@ -289,13 +289,12 @@ res_ids_print (FILE *stream, int cids, const struct res_id *ids)
     }
 }
 
-/* Convert an ASCII string to a resource ID.  */
-
+/* Convert an ASCII string to a resource ID: */
 void
-res_string_to_id (struct res_id *res_id, const char *string)
+res_string_to_id(struct res_id *res_id, const char *string)
 {
   res_id->named = 1;
-  unicode_from_ascii (&res_id->u.n.length, &res_id->u.n.name, string);
+  unicode_from_ascii_old(&res_id->u.n.length, &res_id->u.n.name, string);
 }
 
 /* Define a resource.  The arguments are the resource tree, RESOURCES,
@@ -705,8 +704,7 @@ quot (const char *string)
 
 /* Long options.  */
 
-/* 150 isn't special; it's just an arbitrary non-ASCII char value.  */
-
+/* 150 is NOT special; it is just an arbitrary non-ASCII char value: */
 #define OPTION_PREPROCESSOR	150
 #define OPTION_USE_TEMP_FILE	(OPTION_PREPROCESSOR + 1)
 #define OPTION_NO_USE_TEMP_FILE	(OPTION_USE_TEMP_FILE + 1)
@@ -733,13 +731,13 @@ static const struct option long_options[] =
   {0, no_argument, 0, 0}
 };
 
-/* This keeps gcc happy when using -Wmissing-prototypes -Wstrict-prototypes.  */
-int main (int, char **);
+/* This keeps gcc happy when using the '-Wmissing-prototypes -Wstrict-prototypes'
+ * flags: */
+int main(int, char **);
 
-/* The main function.  */
-
+/* The main function: */
 int
-main (int argc, char **argv)
+main(int argc, char **argv)
 {
   int c;
   char *input_filename;
@@ -755,22 +753,22 @@ main (int argc, char **argv)
   struct res_directory *resources;
   int use_temp_file;
 
-#if defined (HAVE_SETLOCALE) && defined (HAVE_LC_MESSAGES)
-  setlocale (LC_MESSAGES, "");
-#endif
-#if defined (HAVE_SETLOCALE)
-  setlocale (LC_CTYPE, "");
-#endif
-  bindtextdomain (PACKAGE, LOCALEDIR);
-  textdomain (PACKAGE);
+#if defined(HAVE_SETLOCALE) && defined(HAVE_LC_MESSAGES)
+  setlocale(LC_MESSAGES, "");
+#endif /* HAVE_SETLOCALE && HAVE_LC_MESSAGES */
+#if defined(HAVE_SETLOCALE)
+  setlocale(LC_CTYPE, "");
+#endif /* HAVE_SETLOCALE */
+  bindtextdomain(PACKAGE, LOCALEDIR);
+  textdomain(PACKAGE);
 
   program_name = argv[0];
-  xmalloc_set_program_name (program_name);
+  xmalloc_set_program_name(program_name);
 
-  bfd_init ();
-  set_default_bfd_target ();
+  bfd_init();
+  set_default_bfd_target();
 
-  res_init ();
+  res_init();
 
   input_filename = NULL;
   output_filename = NULL;
@@ -782,8 +780,8 @@ main (int argc, char **argv)
   language = 0x409;   /* LANG_ENGLISH, SUBLANG_ENGLISH_US.  */
   use_temp_file = 0;
 
-  while ((c = getopt_long (argc, argv, "f:i:l:o:I:J:O:F:D:U:rhHvV", long_options,
-			   (int *) 0)) != EOF)
+  while ((c = getopt_long(argc, argv, "f:i:l:o:I:J:O:F:D:U:rhHvV",
+                          long_options, (int *)0)) != EOF)
     {
       switch (c)
 	{
@@ -797,13 +795,13 @@ main (int argc, char **argv)
 	     though, as we do not want users to use non-GNU like command
 	     line switches.  */
 	  if (*optarg != 'o')
-	    fatal (_("invalid option -f\n"));
+	    fatal(_("invalid option -f\n"));
 	  optarg++;
 	  if (* optarg == 0)
 	    {
 	      if (optind == argc)
-		fatal (_("No filename following the -fo option.\n"));
-	      optarg = argv [optind++];
+		fatal(_("No filename following the -fo option.\n"));
+	      optarg = argv[optind++];
 	    }
 	  /* Fall through.  */
 
@@ -812,11 +810,11 @@ main (int argc, char **argv)
 	  break;
 
 	case 'J':
-	  input_format = format_from_name (optarg, 1);
+	  input_format = format_from_name(optarg, 1);
 	  break;
 
 	case 'O':
-	  output_format = format_from_name (optarg, 1);
+	  output_format = format_from_name(optarg, 1);
 	  break;
 
 	case 'F':
@@ -831,18 +829,18 @@ main (int argc, char **argv)
 	case 'U':
 	  if (preprocargs == NULL)
 	    {
-	      quotedarg = quot (optarg);
-	      preprocargs = xmalloc (strlen (quotedarg) + 3);
-	      sprintf (preprocargs, "-%c%s", c, quotedarg);
+	      quotedarg = quot(optarg);
+	      preprocargs = (char *)xmalloc(strlen (quotedarg) + 3);
+	      sprintf(preprocargs, "-%c%s", c, quotedarg);
 	    }
 	  else
 	    {
 	      char *n;
 
-	      quotedarg = quot (optarg);
-	      n = xmalloc (strlen (preprocargs) + strlen (quotedarg) + 4);
-	      sprintf (n, "%s -%c%s", preprocargs, c, quotedarg);
-	      free (preprocargs);
+	      quotedarg = quot(optarg);
+	      n = (char *)xmalloc(strlen(preprocargs) + strlen(quotedarg) + 4);
+	      sprintf(n, "%s -%c%s", preprocargs, c, quotedarg);
+	      free(preprocargs);
 	      preprocargs = n;
 	    }
 	  break;
@@ -856,36 +854,37 @@ main (int argc, char **argv)
 	  break;
 
 	case 'I':
-	  /* For backward compatibility, should be removed in the future.  */
-	  input_format_tmp = format_from_name (optarg, 0);
+	  /* For backward compatibility; to be removed in the future: */
+	  input_format_tmp = format_from_name(optarg, 0);
 	  if (input_format_tmp != RES_FORMAT_UNKNOWN)
 	    {
-	      fprintf (stderr, _("Option -I is deprecated for setting the input format, please use -J instead.\n"));
+	      fprintf(stderr,
+                      _("Option -I is deprecated for setting the input format, please use -J instead.\n"));
 	      input_format = input_format_tmp;
 	      break;
 	    }
 
 	  if (preprocargs == NULL)
 	    {
-	      quotedarg = quot (optarg);
-	      preprocargs = xmalloc (strlen (quotedarg) + 3);
-	      sprintf (preprocargs, "-I%s", quotedarg);
+	      quotedarg = quot(optarg);
+	      preprocargs = (char *)xmalloc(strlen(quotedarg) + 3);
+	      sprintf(preprocargs, "-I%s", quotedarg);
 	    }
 	  else
 	    {
 	      char *n;
 
-	      quotedarg = quot (optarg);
-	      n = xmalloc (strlen (preprocargs) + strlen (quotedarg) + 4);
-	      sprintf (n, "%s -I%s", preprocargs, quotedarg);
-	      free (preprocargs);
+	      quotedarg = quot(optarg);
+	      n = (char *)xmalloc(strlen(preprocargs) + strlen(quotedarg) + 4);
+	      sprintf(n, "%s -I%s", preprocargs, quotedarg);
+	      free(preprocargs);
 	      preprocargs = n;
 	    }
 
 	  {
 	    struct include_dir *n, **pp;
 
-	    n = (struct include_dir *) xmalloc (sizeof *n);
+	    n = (struct include_dir *)xmalloc(sizeof *n);
 	    n->next = NULL;
 	    n->dir = optarg;
 
@@ -897,7 +896,7 @@ main (int argc, char **argv)
 	  break;
 
 	case 'l':
-	  language = strtol (optarg, (char **) NULL, 16);
+	  language = strtol(optarg, (char **)NULL, 16);
 	  break;
 
 	case OPTION_USE_TEMP_FILE:
@@ -912,30 +911,30 @@ main (int argc, char **argv)
 	case OPTION_YYDEBUG:
 	  yydebug = 1;
 	  break;
-#endif
+#endif /* YYDEBUG */
 
 	case 'h':
 	case 'H':
-	  usage (stdout, 0);
+	  usage(stdout, 0);
 	  break;
 
 	case 'V':
-	  print_version ("windres");
+	  print_version("windres");
 	  break;
 
 	default:
-	  usage (stderr, 1);
+	  usage(stderr, 1);
 	  break;
 	}
     }
 
-  if (input_filename == NULL && optind < argc)
+  if ((input_filename == NULL) && (optind < argc))
     {
       input_filename = argv[optind];
       ++optind;
     }
 
-  if (output_filename == NULL && optind < argc)
+  if ((output_filename == NULL) && (optind < argc))
     {
       output_filename = argv[optind];
       ++optind;
@@ -949,7 +948,7 @@ main (int argc, char **argv)
       if (input_filename == NULL)
 	input_format = RES_FORMAT_RC;
       else
-	input_format = format_from_filename (input_filename, 1);
+	input_format = format_from_filename(input_filename, 1);
     }
 
   if (output_format == RES_FORMAT_UNKNOWN)
@@ -957,51 +956,53 @@ main (int argc, char **argv)
       if (output_filename == NULL)
 	output_format = RES_FORMAT_RC;
       else
-	output_format = format_from_filename (output_filename, 0);
+	output_format = format_from_filename(output_filename, 0);
     }
 
-  /* Read the input file.  */
+  /* Read the input file: */
   switch (input_format)
     {
     default:
-      abort ();
+      abort();
     case RES_FORMAT_RC:
-      resources = read_rc_file (input_filename, preprocessor, preprocargs,
-				language, use_temp_file);
+      resources = read_rc_file(input_filename, preprocessor, preprocargs,
+                               language, use_temp_file);
       break;
     case RES_FORMAT_RES:
-      resources = read_res_file (input_filename);
+      resources = read_res_file(input_filename);
       break;
     case RES_FORMAT_COFF:
-      resources = read_coff_rsrc (input_filename, target);
+      resources = read_coff_rsrc(input_filename, target);
       break;
     }
 
   if (resources == NULL)
-    fatal (_("no resources"));
+    fatal(_("no resources"));
 
   /* Sort the resources.  This is required for COFF, convenient for
      rc, and unimportant for res.  */
-  resources = sort_resources (resources);
+  resources = sort_resources(resources);
 
-  /* Write the output file.  */
-  reswr_init ();
+  /* Write the output file: */
+  reswr_init();
 
   switch (output_format)
     {
     default:
-      abort ();
+      abort();
     case RES_FORMAT_RC:
-      write_rc_file (output_filename, resources);
+      write_rc_file(output_filename, resources);
       break;
     case RES_FORMAT_RES:
-      write_res_file (output_filename, resources);
+      write_res_file(output_filename, resources);
       break;
     case RES_FORMAT_COFF:
-      write_coff_file (output_filename, target, resources);
+      write_coff_file(output_filename, target, resources);
       break;
     }
 
-  xexit (0);
+  xexit(0);
   return 0;
 }
+
+/* EOF */

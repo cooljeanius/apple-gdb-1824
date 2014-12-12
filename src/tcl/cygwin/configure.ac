@@ -1,8 +1,9 @@
 dnl#                                               -*- Autoconf -*-
 dnl# Process this file with autoconf to produce a configure script.
 
-AC_PREREQ([2.13])
+AC_PREREQ([2.13])dnl
 
+# initialize autoconf stuff:
 AC_INIT([libtcl_cygwin],[8.4],[tromey@cygnus.com])
 AC_CONFIG_SRCDIR([Makefile.in])
 AC_CONFIG_HEADERS([config.h])
@@ -44,7 +45,7 @@ dnl# normal versions of a library), tasteless as that idea is.
 else
   GCC=""
 fi
-])
+])dnl
 
 LIB_AC_PROG_CC
 
@@ -63,18 +64,18 @@ esac
 
 AM_PROG_AS
 m4_ifdef([AM_PROG_AR],[
-AM_PROG_AR
+  AM_PROG_AR
 ],[
-AC_CHECK_TOOL([AR],[ar],[ar])
-AC_SUBST([AR])
-])
-AC_SUBST([EXTRA_CFLAGS])
+  AC_CHECK_TOOL([AR],[ar],[ar])dnl
+  AC_SUBST([AR])dnl
+])dnl
+AC_SUBST([EXTRA_CFLAGS])dnl
 AC_PROG_RANLIB
 AC_PROG_INSTALL
 AC_HEADER_TIME
 AC_STRUCT_TIMEZONE dnl# calls AC\_STRUCT\_TM
-AC_CHECK_HEADERS([locale.h sys/param.h sys/select.h])
-AC_CHECK_DECLS([LC_TIME])
+AC_CHECK_HEADERS([locale.h sys/param.h sys/select.h])dnl
+AC_CHECK_DECLS([LC_TIME])dnl
 
 #--------------------------------------------------------------------
 # The statements below define the symbol TCL_PACKAGE_PATH, which
@@ -95,15 +96,15 @@ cross_cache=${srcdir}/cygwin-cache
 AC_MSG_NOTICE([sourcing ${cross_cache}])
 . ${cross_cache}
 
-AC_SUBST([TCL_PACKAGE_PATH])
-AC_SUBST([TCL_LIBRARY])
+AC_SUBST([TCL_PACKAGE_PATH])dnl
+AC_SUBST([TCL_LIBRARY])dnl
 
 # These variables are needed to get expect working with
 # the tclConfig.sh script in the cygwin directory.
 LD_FLAGS=""
 AC_SUBST([LD_FLAGS])
 TCL_LD_SEARCH_FLAGS=""
-AC_SUBST(TCL_LD_SEARCH_FLAGS)
+AC_SUBST([TCL_LD_SEARCH_FLAGS])
 DL_LIBS=""
 AC_SUBST([DL_LIBS])
 MATH_LIBS=""
@@ -113,5 +114,6 @@ AC_SUBST([SHLIB_LD])
 TCL_BUILD_LIB_SPEC=`pwd`/libtcl_cygwin.a
 AC_SUBST([TCL_BUILD_LIB_SPEC])
 
-AC_CONFIG_FILES([Makefile tclConfig.sh])
+# Output.
+AC_CONFIG_FILES([Makefile tclConfig.sh])dnl
 AC_OUTPUT
