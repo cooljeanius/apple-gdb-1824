@@ -53,10 +53,10 @@ struct macosx_thread_info
 
 struct macosx_target_ops
 {
-  void (*low_fetch_registers) (int regno);
-  void (*low_store_registers) (int regno);
-  void (*low_single_step_thread) (thread_t thread, int on);
-  int (*low_clear_single_step) (thread_t thread);
+  void (*low_fetch_registers)(int regno);
+  void (*low_store_registers)(int regno);
+  void (*low_single_step_thread)(thread_t thread, int on);
+  int (*low_clear_single_step)(thread_t thread);
 };
 
 /* Use this accessor to get the process info from a thread.  */

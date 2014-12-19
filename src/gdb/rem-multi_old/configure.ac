@@ -43,6 +43,14 @@ AH_BOTTOM([
 
 # Set up automake.
 AC_CANONICAL_TARGET
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  AC_SUBST([HOST_ARCHITECTURE])
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+  AC_SUBST([TARGET_ARCHITECTURE])
+fi
 AM_INIT_AUTOMAKE([foreign dejagnu])dnl
 AM_MAINTAINER_MODE
 
@@ -59,12 +67,23 @@ AC_PROG_RANLIB
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
   AC_REQUIRE([AC_HEADER_STDC])dnl
 ])dnl
+AC_REQUIRE_HEADER_STDC
 AC_HEADER_DIRENT
 AC_HEADER_SYS_WAIT
+unset ac_cv_header_sys_types_h
 AC_CHECK_HEADERS([a.out.h errno.h fcntl.h limits.h locale.h machine/reg.h \
                   sgtty.h signal.h stdarg.h stddef.h stdio.h sys/dir.h \
                   sys/file.h sys/ioctl.h sys/param.h sys/ptrace.h \
-                  sys/user.h varargs.h])dnl
+                  sys/types.h sys/user.h varargs.h])dnl
+  ## for "../config.h":
+EXTRA_DEFS=""
+if test "x${ac_cv_header_sys_types_h}" = "xyes"; then
+  # this has to go separate from the configure header, because we check
+  # for it to be defined at the top of it (for caddr_t for ptrace):
+  export DEFS="${DEFS} -DHAVE_SYS_TYPES_H"
+  export EXTRA_DEFS="-DHAVE_SYS_TYPES_H"
+fi
+AC_SUBST([EXTRA_DEFS])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN([

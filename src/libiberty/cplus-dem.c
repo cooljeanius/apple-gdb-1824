@@ -1,6 +1,6 @@
 /* Demangler for GNU C++
    Copyright 1989, 1991, 1994, 1995, 1996, 1997, 1998, 1999,
-   2000, 2001, 2002, 2003, 2004 Free Software Foundation, Inc.
+   2000, 2001, 2002, 2003, 2004, 2010 Free Software Foundation, Inc.
    Written by James Clark (jjc@jclark.uucp)
    Rewritten by Fred Fish (fnf@cygnus.com) for ARM and Lucid demangling
    Modified by Satish Pai (pai@apollo.hp.com) for HP demangling
@@ -52,8 +52,8 @@ Boston, MA 02110-1301, USA.  */
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #else
-char * malloc ();
-char * realloc ();
+void * malloc ();
+void * realloc ();
 #endif
 
 #include <demangle.h>
@@ -311,6 +311,12 @@ const struct demangler_engine libiberty_demanglers[] =
   }
   ,
   {
+    DLANG_DEMANGLING_STYLE_STRING,
+    dlang_demangling,
+    "DLANG style demangling"
+  }
+  ,
+  {
     NULL, unknown_demangling, NULL
   }
 };
@@ -417,7 +423,7 @@ static int do_type (struct work_stuff *, const char **, string *);
 
 static int do_arg (struct work_stuff *, const char **, string *);
 
-static void
+static int
 demangle_function_name (struct work_stuff *, const char **, string *,
                         const char *);
 
@@ -879,6 +885,12 @@ cplus_demangle(const char *mangled, int options)
       return ada_demangle(mangled,options);
   }
 
+  if (DLANG_DEMANGLING) {
+    ret = dlang_demangle(mangled, options);
+    if (ret)
+      return ret;
+  }
+
   ret = internal_cplus_demangle(work, mangled);
   squangle_mop_up(work);
   return (ret);
@@ -1043,6 +1055,11 @@ internal_cplus_demangle (struct work_stuff *work, const char *mangled)
       if ((AUTO_DEMANGLING || GNU_DEMANGLING))
 	{
 	  success = gnu_special (work, &mangled, &decl);
+          if (!success)
+            {
+              delete_work_stuff (work);
+              string_delete (&decl);
+            }
 	}
       if (!success)
 	{
@@ -1086,10 +1103,12 @@ squangle_mop_up (struct work_stuff *work)
   if (work -> btypevec != NULL)
     {
       free ((char *) work -> btypevec);
+      work->btypevec = NULL;
     }
   if (work -> ktypevec != NULL)
     {
       free ((char *) work -> ktypevec);
+      work->ktypevec = NULL;
     }
 }
 
@@ -2499,10 +2518,7 @@ iterate_demangle_function (struct work_stuff *work, const char **mangled,
      "__"-sequence.  This is the normal case.  */
   if (ARM_DEMANGLING || LUCID_DEMANGLING || HP_DEMANGLING || EDG_DEMANGLING
       || strstr (scan + 2, "__") == NULL)
-    {
-      demangle_function_name (work, mangled, declp, scan);
-      return 1;
-    }
+      return demangle_function_name (work, mangled, declp, scan);
 
   /* Save state so we can restart if the guess at the correct "__" was
      wrong.  */
@@ -2519,10 +2535,12 @@ iterate_demangle_function (struct work_stuff *work, const char **mangled,
 
   while (scan[2])
     {
-      demangle_function_name (work, mangled, declp, scan);
-      success = demangle_signature (work, mangled, declp);
-      if (success)
-	break;
+      if (demangle_function_name (work, mangled, declp, scan))
+        {
+          success = demangle_signature (work, mangled, declp);
+          if (success)
+            break;
+        }
 
       /* Reset demangle state for the next round.  */
       *mangled = mangle_init;
@@ -3526,7 +3544,10 @@ do_type (struct work_stuff *work, const char **mangled, string *result)
 		    string_delete (&temp);
 		  }
 		else
-		  break;
+                  {
+                    string_delete (&temp);
+                    break;
+                  }
 	      }
 	    else if (**mangled == 'Q')
 	      {
@@ -4427,7 +4448,8 @@ demangle_nested_args (struct work_stuff *work, const char **mangled,
   return result;
 }
 
-static void
+/* Returns 1 if a valid function name was found or 0 otherwise.  */
+static int
 demangle_function_name (struct work_stuff *work, const char **mangled,
                         string *declp, const char *scan)
 {
@@ -4467,13 +4489,13 @@ demangle_function_name (struct work_stuff *work, const char **mangled,
 	{
 	  work -> constructor += 1;
 	  string_clear (declp);
-	  return;
+	  return 1;
 	}
       else if (strcmp (declp -> b, "__dt") == 0)
 	{
 	  work -> destructor += 1;
 	  string_clear (declp);
-	  return;
+	  return 1;
 	}
     }
 
@@ -4581,6 +4603,14 @@ demangle_function_name (struct work_stuff *work, const char **mangled,
 	    }
 	}
     }
+
+
+  /* If a function name was obtained but it was not valid, then we were
+   * unsuccessful: */
+  if ((LEN_STRING(declp) == 1) && (declp->b[0] == '.'))
+    return 0;
+  else
+    return 1;
 }
 
 /* a mini string-handling package */

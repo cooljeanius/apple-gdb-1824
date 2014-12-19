@@ -15,6 +15,8 @@ AC_REQUIRE([AC_FUNC_ALLOCA])dnl
 AC_REQUIRE([AC_FUNC_MEMCMP])dnl
 dnl# from gnulib module alloca-opt:
 AC_REQUIRE([gl_FUNC_ALLOCA])dnl
+dnl# from gnulib module autobuild:
+AC_REQUIRE([AB_INIT])dnl
 dnl# from gnulib module configmake:
 AC_REQUIRE([gl_CONFIGMAKE_PREP])dnl
 dnl# from gnulib module dirent:
@@ -26,8 +28,27 @@ if test "x${ac_cv_func_dirfd}" = "xno" && test "x${gl_cv_func_dirfd_macro}" = "x
   gl_PREREQ_DIRFD
 fi
 gl_DIRENT_MODULE_INDICATOR([dirfd])dnl
+dnl# from gnulib module double-slash-root:
+AC_REQUIRE([gl_DOUBLE_SLASH_ROOT])dnl
 dnl# from gnulib module errno:
 AC_REQUIRE([gl_HEADER_ERRNO_H])dnl
+dnl# from gnulib module error:
+AC_REQUIRE([gl_ERROR])
+if test "x${ac_cv_lib_error_at_line}" = "xno"; then
+  AC_LIBOBJ([error])dnl
+  gl_PREREQ_ERROR
+fi
+dnl# (skip the pointless gettext stuff for it)
+dnl# from gnulib module extensions:
+AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])dnl
+dnl# from gnulib module extern-inline:
+AC_REQUIRE([gl_EXTERN_INLINE])dnl
+dnl# from gnulib module fileblocks:
+AC_REQUIRE([gl_FILEBLOCKS])
+if test "x${ac_cv_member_struct_stat_st_blocks}" = "xno"; then
+  AC_LIBOBJ([fileblocks])dnl
+  gl_PREREQ_FILEBLOCKS
+fi
 dnl# from gnulib module float:
 AC_REQUIRE([gl_FLOAT_H])
 if test ${REPLACE_FLOAT_LDBL} = 1; then
@@ -39,15 +60,17 @@ fi
 dnl# from gnulib module fnmatch:
 AC_REQUIRE([gl_FUNC_FNMATCH_POSIX])
 if test -n "${FNMATCH_H}"; then
-  AC_LIBOBJ([fnmatch])
+  AC_LIBOBJ([fnmatch])dnl
   gl_PREREQ_FNMATCH
 fi
 dnl# from gnulib module fnmatch-gnu:
 AC_REQUIRE([gl_FUNC_FNMATCH_GNU])
 if test -n "${FNMATCH_H}"; then
-  AC_LIBOBJ([fnmatch])
+  AC_LIBOBJ([fnmatch])dnl
   gl_PREREQ_FNMATCH
 fi
+dnl# from gnulib module fpieee:
+AC_REQUIRE([gl_FP_IEEE])dnl
 dnl# from gnulib module frexp:
 AC_REQUIRE([gl_FUNC_FREXP])
 if test "x${gl_func_frexp}" != "xyes"; then
@@ -60,6 +83,24 @@ if test ${HAVE_DECL_FREXPL} = 0 || test "x${gl_func_frexpl}" = "xno"; then
   AC_LIBOBJ([frexpl])
 fi
 gl_MATH_MODULE_INDICATOR([frexpl])dnl
+dnl# from gnulib module gettext-h:
+AC_SUBST([LIBINTL])dnl
+AC_SUBST([LTLIBINTL])dnl
+dnl# from gnulib module gettimeofday:
+AC_REQUIRE([gl_FUNC_GETTIMEOFDAY])
+if test ${HAVE_GETTIMEOFDAY} = 0 || test ${REPLACE_GETTIMEOFDAY} = 1; then
+  AC_LIBOBJ([gettimeofday])dnl
+  gl_PREREQ_GETTIMEOFDAY
+fi
+gl_SYS_TIME_MODULE_INDICATOR([gettimeofday])dnl
+dnl# from gnulib module gnu-make:
+AC_REQUIRE([gl_GNU_MAKE])dnl
+dnl# from gnulib module host-cpu-c-abl:
+AC_REQUIRE([gl_HOST_CPU_C_ABI])dnl
+dnl# from gnulib module host-os:
+AC_REQUIRE([gl_HOST_OS])dnl
+dnl# from gnulib module inline:
+AC_REQUIRE([gl_INLINE])dnl
 dnl# from gnulib module inttypes:
 AC_REQUIRE([gl_INTTYPES_H])dnl
 dnl# from gnulib module inttypes-incomplete:
@@ -82,6 +123,11 @@ if test ${HAVE_WCTYPE_T} = 0; then
   AC_LIBOBJ([iswctype])
 fi
 gl_WCTYPE_MODULE_INDICATOR([iswctype])dnl
+dnl# from gnulib module largefile:
+AC_REQUIRE([AC_SYS_LARGEFILE])dnl
+AC_REQUIRE([gl_LARGEFILE])dnl
+dnl# from gnulib module ldd:
+AC_REQUIRE([gl_LDD])dnl
 dnl# from gnulib module link-warning:
 AC_REQUIRE([gl_FEATURES_H])dnl
 dnl# from gnulib module localcharset:
@@ -94,6 +140,23 @@ if test "x${LOCALCHARSET_TESTS_ENVIRONMENT}" = "x"; then
   fi
 fi
 AC_SUBST([LOCALCHARSET_TESTS_ENVIRONMENT])dnl
+dnl# from gnulib module lstat:
+AC_REQUIRE([gl_FUNC_LSTAT])
+if test ${REPLACE_LSTAT} = 1; then
+  AC_LIBOBJ([lstat])dnl
+  gl_PREREQ_LSTAT
+fi
+gl_SYS_STAT_MODULE_INDICATOR([lstat])dnl
+dnl# from gnulib module malloc-gnu:
+AC_REQUIRE([gl_FUNC_MALLOC_GNU])
+if test ${REPLACE_MALLOC} = 1; then
+  AC_LIBOBJ([malloc])
+fi
+gl_MODULE_INDICATOR([malloc-gnu])dnl
+dnl# from gnulib module malloc-posix:
+AC_REQUIRE([gl_FUNC_MALLOC_POSIX])dnl
+dnl# (libobj is already set above)
+gl_STDLIB_MODULE_INDICATOR([malloc-posix])dnl
 dnl# from gnulib module math:
 AC_REQUIRE([gl_MATH_H])dnl
 dnl# from gnulib module mbrtowc:
@@ -143,20 +206,82 @@ gl_STRING_MODULE_INDICATOR([memmem])dnl
 dnl# from gnulib module mempcpy:
 AC_REQUIRE([gl_FUNC_MEMPCPY])
 if test ${HAVE_MEMPCPY} = 0; then
-  AC_LIBOBJ([mempcpy])
+  AC_LIBOBJ([mempcpy])dnl
   gl_PREREQ_MEMPCPY
 fi
 gl_STRING_MODULE_INDICATOR([mempcpy])dnl
+dnl# from gnulib module multiarch:
+AC_REQUIRE([gl_MULTIARCH])dnl
+dnl# from gnulib module no-c++:
+AC_REQUIRE([gt_NO_CXX])dnl
+dnl# from gnulib module obstack:
+AC_REQUIRE([AC_FUNC_OBSTACK])dnl
+dnl# from gnulib module openmp:
+AC_REQUIRE([AC_OPENMP])dnl
 dnl# from gnulib module pathmax:
 AC_REQUIRE([gl_PATHMAX])dnl
+dnl# from gnulib module realloc-gnu:
+AC_REQUIRE([gl_FUNC_REALLOC_GNU])
+if test ${REPLACE_REALLOC} = 1; then
+  AC_LIBOBJ([realloc])
+fi
+gl_MODULE_INDICATOR([realloc-gnu])dnl
+dnl# from gnulib module realloc-posix:
+AC_REQUIRE([gl_FUNC_REALLOC_POSIX])dnl
+dnl# (libobj is already set above)
+gl_STDLIB_MODULE_INDICATOR([realloc-posix])dnl
+dnl# from gnulib module snippet/link-warning:
+AC_REQUIRE([gl_FEATURES_H])dnl
+dnl# from gnulib module ssize_t:
+AC_REQUIRE([gt_TYPE_SSIZE_T])dnl
+dnl# from gnulib module stat:
+AC_REQUIRE([gl_FUNC_STAT])
+if test ${REPLACE_STAT} = 1; then
+  AC_LIBOBJ([stat])dnl
+  gl_PREREQ_STAT
+fi
+gl_SYS_STAT_MODULE_INDICATOR([stat])dnl
+dnl# from gnulib module stat-size:
+AC_REQUIRE([gl_STAT_SIZE])dnl
+dnl# from gnulib module stat-time:
+AC_REQUIRE([gl_STAT_TIME])dnl
+AC_REQUIRE([gl_STAT_BIRTHTIME])dnl
 dnl# from gnulib module stdbool:
 AC_REQUIRE([AM_STDBOOL_H])dnl
 dnl# from gnulib module stddef:
 AC_REQUIRE([gl_STDDEF_H])dnl
 dnl# from gnulib module stdint:
 AC_REQUIRE([gl_STDINT_H])dnl
+dnl# from gnulib module strerror:
+AC_REQUIRE([gl_FUNC_STRERROR])
+if test ${REPLACE_STRERROR} = 1; then
+  AC_LIBOBJ([strerror])
+fi
+gl_MODULE_INDICATOR([strerror])dnl
+gl_STRING_MODULE_INDICATOR([strerror])dnl
+dnl# from gnulib module strerror_r-posix:
+AC_REQUIRE([gl_FUNC_STRERROR_R])
+if test ${HAVE_DECL_STRERROR_R} = 0 || test ${REPLACE_STRERROR_R} = 1; then
+  AC_LIBOBJ([strerror_r])dnl
+  gl_PREREQ_STRERROR_R
+fi
+gl_STRING_MODULE_INDICATOR([strerror_r])dnl
+dnl# from gnulib module strerror-override:
+AC_REQUIRE([gl_HEADER_ERRNO_H])dnl
+AC_REQUIRE([gl_FUNC_STRERROR_0])
+if test -n "${ERRNO_H}" || test ${REPLACE_STRERROR_0} = 1; then
+  AC_LIBOBJ([strerror-override])dnl
+  gl_PREREQ_SYS_H_WINSOCK2
+fi
 dnl# from gnulib module string:
 AC_REQUIRE([gl_HEADER_STRING_H])dnl
+dnl# from gnulib module strnlen:
+AC_REQUIRE([gl_FUNC_STRNLEN])
+if test ${HAVE_DECL_STRNLEN} = 0 || test ${REPLACE_STRNLEN} = 1; then
+  AC_LIBOBJ([strnlen])dnl
+  gl_PREREQ_STRNLEN
+fi
+gl_STRING_MODULE_INDICATOR([strnlen])dnl
 dnl# from gnulib module strstr:
 AC_REQUIRE([gl_FUNC_STRSTR])
 if test ${REPLACE_STRSTR} = 1; then
@@ -169,6 +294,8 @@ gl_STRING_MODULE_INDICATOR([strstr])dnl
 dnl# from gnulib module sys_stat:
 AC_REQUIRE([gl_HEADER_SYS_STAT_H])dnl
 AC_REQUIRE([AC_PROG_MKDIR_P])dnl
+dnl# from gnulib module sys_time:
+AC_REQUIRE([gl_HEADER_SYS_TIME_H])dnl
 dnl# from gnulib module sys_types:
 AC_REQUIRE([gl_SYS_TYPES_H])dnl
 dnl# from gnulib module time:
@@ -191,4 +318,11 @@ AC_REQUIRE([gl_WCTYPE_H_DEFAULTS])dnl
 AC_REQUIRE([gl_FUNC_TOWCTRANS])dnl
 AC_REQUIRE([gl_FUNC_WCTRANS])dnl
 AC_REQUIRE([gl_FUNC_WCTYPE])dnl
+dnl# other:
+if test "x${gl_LIBOBJS}" = "x"; then
+  if test "x${LIBOBJS}" != "x"; then
+    test -z "${gl_LIBOBJS}" && test -n "${LIBOBJS}" && export gl_LIBOBJS="${LIBOBJS}"
+  fi
+fi
+AC_SUBST([gl_LIBOBJS])dnl
 ])dnl

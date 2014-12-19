@@ -23,12 +23,14 @@ dnl# Process this file with autoconf to produce a configure script.
 # file.
 
 sinclude(config/acx.m4)
+m4_include(config/proginstall.m4)
 m4_include(config/elf.m4)
 m4_include([libtool.m4])
 m4_include([ltoptions.m4])
 m4_include([ltsugar.m4])
 m4_include([ltversion.m4])
 m4_include([lt~obsolete.m4])
+m4_include([config/isl.m4])
 
 AC_PREREQ([2.69])
 dnl# This is a hack because autoconf finds the AC\_INIT from
@@ -525,7 +527,7 @@ case "${host}" in
     ;;
 esac
 
-
+dnl# flags for various libraries:
 AC_ARG_ENABLE([libquadmath],
 [AS_HELP_STRING([--disable-libquadmath],
   [do not build libquadmath directory])],
@@ -534,7 +536,6 @@ AC_ARG_ENABLE([libquadmath],
 if test "x${ENABLE_LIBQUADMATH}" = "xno"; then
   noconfigdirs="${noconfigdirs} target-libquadmath"
 fi
-
 
 AC_ARG_ENABLE([libquadmath-support],
 [AS_HELP_STRING([--disable-libquadmath-support],
@@ -545,7 +546,6 @@ enable_libquadmath_support=""
 if test "x${ENABLE_LIBQUADMATH_SUPPORT}" = "xno"; then
   enable_libquadmath_support=no
 fi
-
 
 AC_ARG_ENABLE([libada],
 [AS_HELP_STRING([--enable-libada],[Builds libada directory])],
@@ -1720,10 +1720,37 @@ if test "x${with_mpfr}" != "x"; then
   gmplibs="-L${with_mpfr}/lib ${gmplibs}"
   gmpinc="-I${with_mpfr}/include"
 fi
+if test "x${with_mpfr_include}" != "x"; then
+  gmpinc="-I${with_mpfr_include} ${gmpinc}"
+fi
+if test "x${with_mpfr_lib}" != "x"; then
+  gmplibs="-L${with_mpfr_lib} ${gmplibs}"
+fi
+if test "x${with_mpfr}${with_mpfr_include}${with_mpfr_lib}" = "x" && test -d ${srcdir}/mpfr; then
+  # MPFR v3.1.0 moved the sources into a src sub-directory.
+  if test -d ${srcdir}/mpfr/src; then
+    gmplibs='-L$$r/$(HOST_SUBDIR)/mpfr/src/'"${lt_cv_objdir} ${gmplibs}"
+    gmpinc='-I$$r/$(HOST_SUBDIR)/mpfr/src -I$$s/mpfr/src '"${gmpinc}"
+    extra_mpc_mpfr_configure_flags='--with-mpfr-include=$$s/mpfr/src --with-mpfr-lib=$$r/$(HOST_SUBDIR)/mpfr/src/'"${lt_cv_objdir}"
+  else
+    gmplibs='-L$$r/$(HOST_SUBDIR)/mpfr/'"${lt_cv_objdir} ${gmplibs}"
+    gmpinc='-I$$r/$(HOST_SUBDIR)/mpfr -I$$s/mpfr '"${gmpinc}"
+    extra_mpc_mpfr_configure_flags='--with-mpfr-include=$$s/mpfr --with-mpfr-lib=$$r/$(HOST_SUBDIR)/mpfr/'"${lt_cv_objdir}"
+  fi
+  # Do not test the mpfr version.  Assume that it is sufficient, since
+  # it is in the source tree, and the library has not been built yet
+  # but it would be included on the link line in the version check below
+  # hence making the test fail.
+  have_gmp=yes
+fi
 
 # Specify a location for gmp:
-AC_ARG_WITH([gmp-dir],[AS_HELP_STRING([--with-gmp-dir=PATH],
-                      [Specify source directory for GMP library])])dnl
+AC_ARG_WITH([gmp-dir],
+            [AS_HELP_STRING([--with-gmp-dir=PATH],
+                            [This option has been REMOVED.])],
+            [AC_MSG_WARN([The --with-gmp-dir=PATH option has been removed.
+Use --with-gmp=PATH or --with-gmp-include=PATH plus --with-gmp-lib=PATH instead.])
+])dnl
 
 if test "x${with_gmp_dir}" != "x"; then
   gmpinc="${gmpinc} -I${with_gmp_dir}"
@@ -1737,12 +1764,43 @@ else
   gmplibs="${gmplibs} -lgmp"
 fi
 
-AC_ARG_WITH([gmp],[AS_HELP_STRING([--with-gmp=PATH],
-                  [Specify directory for installed GMP library])])dnl
+AC_ARG_WITH([gmp],
+            [AS_HELP_STRING([--with-gmp=PATH],
+                            [Specify directory for installed GMP package.
+		             Equivalent to --with-gmp-include=PATH/include
+		             plus --with-gmp-lib=PATH/lib])dnl
+])dnl
+
+AC_ARG_WITH([gmp-include],
+             [AS_HELP_STRING([--with-gmp-include=PATH],
+		             [Specify path to installed GMP includes])dnl
+])dnl
+AC_ARG_WITH([gmp-lib],
+            [AS_HELP_STRING([--with-gmp-lib=PATH],
+		            [Specify path to installed GMP library])dnl
+])dnl
 
 if test "x${with_gmp}" != "x"; then
   gmplibs="-L${with_gmp}/lib ${gmplibs}"
   gmpinc="-I${with_gmp}/include ${gmpinc}"
+fi
+if test "x${with_gmp_include}" != "x"; then
+  gmpinc="-I${with_gmp_include} ${gmpinc}"
+fi
+if test "x${with_gmp_lib}" != "x"; then
+  gmplibs="-L$with_gmp_lib $gmplibs"
+fi
+if test "x${with_gmp}${with_gmp_include}${with_gmp_lib}" = "x" && test -d ${srcdir}/gmp; then
+  gmplibs='-L$$r/$(HOST_SUBDIR)/gmp/'"${lt_cv_objdir} ${gmplibs}"
+  gmpinc='-I$$r/$(HOST_SUBDIR)/gmp -I$$s/gmp '"${gmpinc}"
+  extra_mpfr_configure_flags='--with-gmp-include=$$r/$(HOST_SUBDIR)/gmp --with-gmp-lib=$$r/$(HOST_SUBDIR)/gmp/'"${lt_cv_objdir}"
+  extra_mpc_gmp_configure_flags='--with-gmp-include=$$r/$(HOST_SUBDIR)/gmp --with-gmp-lib=$$r/$(HOST_SUBDIR)/gmp/'"${lt_cv_objdir}"
+  extra_isl_gmp_configure_flags='--with-gmp-builddir=$$r/$(HOST_SUBDIR)/gmp'
+  # Do not test the gmp version.  Assume that it is sufficient, since
+  # it is in the source tree, and the library has not been built yet
+  # but it would be included on the link line in the version check below
+  # hence making the test fail.
+  have_gmp=yes
 fi
 
 saved_CFLAGS="${CFLAGS}"
@@ -1773,6 +1831,10 @@ fi
 # Flags needed for both GMP, MPFR and/or MPC.
 AC_SUBST([gmplibs])dnl
 AC_SUBST([gmpinc])dnl
+AC_SUBST([extra_mpfr_configure_flags])dnl
+AC_SUBST([extra_mpc_gmp_configure_flags])dnl
+AC_SUBST([extra_mpc_mpfr_configure_flags])dnl
+AC_SUBST([extra_isl_gmp_configure_flags])dnl
 
 # Checks for header files.
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
@@ -1951,6 +2013,45 @@ AC_ARG_WITH([boot-ldflags],
  fi])
 AC_SUBST([poststage1_ldflags])dnl
 
+# GCC GRAPHITE dependency ISL.
+# Basic setup is inlined here, actual checks are in config/isl.m4
+
+AC_ARG_WITH([isl],
+  [AS_HELP_STRING(
+   [--with-isl=PATH],
+   [Specify prefix directory for the installed ISL package.
+    Equivalent to --with-isl-include=PATH/include
+    plus --with-isl-lib=PATH/lib])])dnl
+
+# Treat --without-isl as a request to disable
+# GRAPHITE support and skip all following checks.
+if test "x${with_isl}" != "xno"; then
+  # Check for ISL:
+  dnl# Provide configure switches and initialize islinc & isllibs
+  dnl# with user input.
+  ISL_INIT_FLAGS
+  dnl# The versions of ISL that work for Graphite:
+  ISL_CHECK_VERSION()
+  dnl# Only execute fail-action, if ISL has been requested.
+  ISL_IF_FAILED([
+    AC_MSG_ERROR([Unable to find a usable ISL.  See config.log for details.])])
+fi
+
+# If the ISL check failed, disable builds of in-tree variant of ISL
+if test "x${with_isl}" = "xno" ||
+   test "x${gcc_cv_isl}" = "xno"; then
+  noconfigdirs="${noconfigdirs} isl"
+  islinc=""
+fi
+
+AC_SUBST([isllibs])dnl
+AC_SUBST([islinc])dnl
+
+dnl# not sure where these are supposed to come from, but make sure they
+dnl# get subst-ed:
+AC_SUBST([libelflibs])dnl
+AC_SUBST([libelfinc])dnl
+
 # Check for LTO support.
 AC_ARG_ENABLE([lto],
 [AS_HELP_STRING([--enable-lto],
@@ -1988,6 +2089,18 @@ ACX_ELF_TARGET_IFELSE([# ELF platforms build the lto-plugin always.
   esac
 ])dnl
 
+AC_ARG_ENABLE([linker-plugin-configure-flags],
+  [AS_HELP_STRING([[--enable-linker-plugin-configure-flags=FLAGS]],
+    [additional flags for configuring linker plugins @<:@none@:>@])],
+  [extra_linker_plugin_configure_flags=${enableval}],
+  [extra_linker_plugin_configure_flags=""])
+AC_SUBST([extra_linker_plugin_configure_flags])dnl
+AC_ARG_ENABLE([linker-plugin-flags],
+  [AS_HELP_STRING([[--enable-linker-plugin-flags=FLAGS]],
+    [additional flags for configuring and building linker plugins @<:@none@:>@])],
+  [extra_linker_plugin_flags=${enableval}],
+  [extra_linker_plugin_flags=""])
+AC_SUBST([extra_linker_plugin_flags])dnl
 
 # By default, C and C++ are the only stage 1 languages.
 stage1_languages=c
@@ -2212,6 +2325,48 @@ Recognized languages are: ${potential_languages}])
   ac_configure_args=`echo " ${ac_configure_args}" | sed -e 's/ --enable-languages=[[^ ]]*//' -e 's/$/ --enable-languages='"${enable_languages}"/ `
 fi
 
+# Check for Boehm's garbage collector:
+AC_ARG_ENABLE([objc-gc],
+[AS_HELP_STRING([--enable-objc-gc],
+		[enable use of Boehm's garbage collector with the
+		 GNU Objective-C runtime])],
+[case ,${enable_languages},:${enable_objc_gc}:${noconfigdirs} in
+  *,objc,*:*:yes:*target-boehm-gc*)
+    AC_MSG_ERROR([Boehm's garbage collector was requested yet not supported in this configuration])
+    ;;
+esac])dnl
+
+# Make sure we only build Boehm's garbage collector if required.
+case ,${enable_languages},:${enable_objc_gc} in
+  *,objc,*:yes)
+    # Keep target-boehm-gc if requested for Objective-C.
+    ;;
+  *)
+    # Otherwise remove target-boehm-gc depending on target-libjava.
+    if echo " ${noconfigdirs} " | grep "target-libjava" >/dev/null 2>&1; then
+      noconfigdirs="${noconfigdirs} target-boehm-gc"
+    fi
+    ;;
+esac
+
+# Disable libcilkrts, libitm, libsanitizer, libvtv, and liboffloadmic if we
+# are not building C++:
+case ,${enable_languages}, in
+  *,c++,*)
+    # Disable libcilkrts, libitm, libsanitizer if we are not building
+    # libstdc++:
+    case "${noconfigdirs}" in
+      *target-libstdc++-v3*)
+        noconfigdirs="${noconfigdirs} target-libcilkrts target-libitm target-libsanitizer"
+        ;;
+      *) ;;
+    esac
+    ;;
+  *)
+    noconfigdirs="${noconfigdirs} target-libcilkrts target-liboffloadmic target-libitm target-libsanitizer target-libvtv"
+    ;;
+esac
+
 AC_PATH_PROGS([UNIQ_BIN],[uniq guniq],[])
 # uniq the value of ${noconfigdirs}.
 f=""
@@ -2309,6 +2464,33 @@ for i in ${target_configdirs_all}; do
   fi
 done
 
+# libiberty-linker-plugin is special: it does NOT have its own source
+# directory, so we have to add it after the preceding checks.
+if test x"${extra_linker_plugin_flags}${extra_linker_plugin_configure_flags}" != "x"
+then
+  case " ${configdirs} " in
+    *" libiberty "*)
+      # If we can build libiberty, then we can also build
+      # libiberty-linker-plugin.
+      configdirs="${configdirs} libiberty-linker-plugin"
+      extra_linker_plugin_configure_flags="${extra_linker_plugin_configure_flags} \
+        --with-libiberty=../libiberty-linker-plugin";;
+    *)
+      AC_MSG_ERROR([libiberty missing]);;
+  esac
+fi
+
+# Sometimes we have special requirements for the host libiberty.
+extra_host_libiberty_configure_flags=""
+case " ${configdirs} " in
+  *" lto-plugin "* | *" libcc1 "*)
+    # When these are to be built as shared libraries, the same applies to
+    # libiberty.
+    extra_host_libiberty_configure_flags=--enable-shared
+    ;;
+esac
+AC_SUBST([extra_host_libiberty_configure_flags])dnl
+
 # Produce a warning message for the subdirs we cannot configure.
 # This is NOT especially interesting in the Cygnus tree, but in the
 # individual FSF releases, it is important to let people know when their
@@ -2349,6 +2531,11 @@ case "${host}" in
     enable_gdbtk=no ;;
 esac
 
+m4_ifdef([ACX_TOOL_DIRS],[
+# To find our prefix, in gcc_cv_tool_prefix.
+ACX_TOOL_DIRS
+])dnl
+
 copy_dirs=""
 
 AC_ARG_WITH([build-sysroot], 
@@ -2359,6 +2546,52 @@ AC_ARG_WITH([build-sysroot],
    fi],
   [SYSROOT_CFLAGS_FOR_TARGET=""])
 AC_SUBST([SYSROOT_CFLAGS_FOR_TARGET])dnl
+
+AC_ARG_WITH([debug-prefix-map],
+  [AS_HELP_STRING([--with-debug-prefix-map='A=B C=D ...'],
+		  [map A to B, C to D ... in debug information])],
+  [if test x"${withval}" != x""; then
+     DEBUG_PREFIX_CFLAGS_FOR_TARGET=""
+     for debug_map in ${withval}; do
+       DEBUG_PREFIX_CFLAGS_FOR_TARGET="${DEBUG_PREFIX_CFLAGS_FOR_TARGET} -fdebug-prefix-map=${debug_map}"
+     done
+   fi],
+  [DEBUG_PREFIX_CFLAGS_FOR_TARGET=""])
+AC_SUBST([DEBUG_PREFIX_CFLAGS_FOR_TARGET])dnl
+
+# During gcc bootstrap, if we use some random cc for stage1 then CFLAGS
+# might be empty or "-g".  We do NOT require a C++ compiler, so CXXFLAGS
+# might also be empty (or "-g", if a non-GCC C++ compiler is in the path).
+# We want to ensure that TARGET libraries (which we know are built with
+# gcc) are built with optimization and debugging flags, so include those
+# options when setting CFLAGS_FOR_TARGET and CXXFLAGS_FOR_TARGET.
+if test "x${CFLAGS_FOR_TARGET}" = "x"; then
+  CFLAGS_FOR_TARGET="${CFLAGS}"
+  case " ${CFLAGS} " in
+    *" -O2 "* | *" -O1 "* | *" -Os "*) ;;
+    *) CFLAGS_FOR_TARGET="-O1 ${CFLAGS_FOR_TARGET}" ;;
+  esac
+  case " ${CFLAGS} " in
+    *" -g "* | *" -g3 "* | *" -ggdb "* | *" -ggdb3 "*) ;;
+    *) CFLAGS_FOR_TARGET="-ggdb ${CFLAGS_FOR_TARGET}" ;;
+  esac
+fi
+AC_SUBST([CFLAGS_FOR_TARGET])dnl
+
+if test "x${CXXFLAGS_FOR_TARGET}" = "x"; then
+  CXXFLAGS_FOR_TARGET="${CXXFLAGS}"
+  case " ${CXXFLAGS} " in
+    *" -O2 "* | *" -O1 "* | *" -Os "*) ;;
+    *) CXXFLAGS_FOR_TARGET="-O1 ${CXXFLAGS_FOR_TARGET}" ;;
+  esac
+  case " ${CXXFLAGS} " in
+    *" -g "* | *" -g3 "* | *" -ggdb "* | *" -ggdb3 "*) ;;
+    *) CXXFLAGS_FOR_TARGET="-ggdb ${CXXFLAGS_FOR_TARGET}" ;;
+  esac
+fi
+AC_SUBST([CXXFLAGS_FOR_TARGET])dnl
+
+AC_SUBST([LDFLAGS_FOR_TARGET])dnl
 
 # Handle --with-headers=XXX. If the value is not "yes", the contents of
 # the named directory are copied to $(tooldir)/sys-include.
@@ -2427,6 +2660,21 @@ while test $# != 0 ; do
   fi
   shift; shift
 done
+
+# Determine a target-dependent exec_prefix that the installed
+# gcc will search in.  Keep this list sorted by triplet, with
+# the *-*-osname triplets last.
+md_exec_prefix=""
+case "${target}" in
+  i[[34567]]86-pc-msdosdjgpp*)
+    md_exec_prefix=/dev/env/DJDIR/bin
+    ;;
+  *-*-hpux* | \
+  *-*-nto-qnx* | \
+  *-*-solaris2*)
+    md_exec_prefix=/usr/ccs/bin
+    ;;
+esac
 
 extra_arflags_for_target=""
 extra_nmflags_for_target=""
@@ -2766,6 +3014,13 @@ case "${have_compiler}:${host}:${target}:${enable_bootstrap}" in
     ;;
 esac
 
+case "${enable_bootstrap}:${ENABLE_GOLD}: ${configdirs} :,${stage1_languages}," in
+  yes:yes:*\ gold\ *:*,c++,*) ;;
+  yes:yes:*\ gold\ *:*)
+    AC_MSG_ERROR([in a combined tree, bootstrapping with --enable-gold requires c++ in stage1_languages])
+    ;;
+esac
+
 # Adjust the toplevel makefile according to whether bootstrap was selected.
 case "${enable_bootstrap}" in
   yes)
@@ -2783,6 +3038,7 @@ esac
 AC_SUBST([bootstrap_lean])dnl
 AC_SUBST([default_target])dnl
 
+extrasub_build=""
 for module in ${build_configdirs}; do
   if test -z "${no_recursion}" \
      && test -f ${build_subdir}/${module}/Makefile; then
@@ -3328,6 +3584,7 @@ AC_ARG_WITH([build-time-tools],
 # the environment, then move it to CONFIGURED_*_FOR_TARGET.
 NCN_STRICT_CHECK_TARGET_TOOLS([AR_FOR_TARGET],[ar gar])
 NCN_STRICT_CHECK_TARGET_TOOLS([AS_FOR_TARGET],[as gas])
+NCN_STRICT_CHECK_TARGET_TOOLS([GAS_FOR_TARGET],[gas])
 NCN_STRICT_CHECK_TARGET_TOOLS([CC_FOR_TARGET],[cc gcc])
 NCN_STRICT_CHECK_TARGET_TOOLS([CXX_FOR_TARGET],[c++ g++ cxx gxx])
 NCN_STRICT_CHECK_TARGET_TOOLS([DLLTOOL_FOR_TARGET],[dlltool gdlltool])
@@ -3337,12 +3594,37 @@ NCN_STRICT_CHECK_TARGET_TOOLS([GFORTRAN_FOR_TARGET],[gfortran])
 NCN_STRICT_CHECK_TARGET_TOOLS([GOC_FOR_TARGET],[gccgo])
 NCN_STRICT_CHECK_TARGET_TOOLS([LD_FOR_TARGET],
                               [ld gld ld.bfd ld.gold gold ld64 ld_classic])
+NCN_STRICT_CHECK_TARGET_TOOLS([LIPO_FOR_TARGET],[lipo])
 NCN_STRICT_CHECK_TARGET_TOOLS([NM_FOR_TARGET],[nm gnm])
+NCN_STRICT_CHECK_TARGET_TOOLS([OBJDUMP_FOR_TARGET],[objdump gobjdump])
 NCN_STRICT_CHECK_TARGET_TOOLS([RANLIB_FOR_TARGET],[ranlib granlib],[:])
-NCN_STRICT_CHECK_TARGET_TOOLS([WINDRES_FOR_TARGET],[windres gwindres])dnl
+NCN_STRICT_CHECK_TARGET_TOOLS([READELF_FOR_TARGET],[readelf greadelf])
+NCN_STRICT_CHECK_TARGET_TOOLS([WINDRES_FOR_TARGET],[windres gwindres])
+NCN_STRICT_CHECK_TARGET_TOOLS([WINDMC_FOR_TARGET],[windmc gwindmc])dnl
 
+RAW_CXX_FOR_TARGET="${CXX_FOR_TARGET}"
+
+m4_ifdef([GCC_TARGET_TOOL],[
+dnl# only do the ones from binutils for this part fo now:
+GCC_TARGET_TOOL([ar],[AR_FOR_TARGET],[AR],[binutils/ar])dnl
+GCC_TARGET_TOOL([dlltool],[DLLTOOL_FOR_TARGET],[DLLTOOL],
+                [binutils/dlltool])dnl
+GCC_TARGET_TOOL([nm],[NM_FOR_TARGET],[NM],[binutils/nm-new])dnl
+GCC_TARGET_TOOL([objdump],[OBJDUMP_FOR_TARGET],[OBJDUMP],
+                [binutils/objdump])dnl
+GCC_TARGET_TOOL([ranlib],[RANLIB_FOR_TARGET],[RANLIB],[binutils/ranlib])dnl
+GCC_TARGET_TOOL([readelf],[READELF_FOR_TARGET],[READELF],
+                [binutils/readelf])dnl
+GCC_TARGET_TOOL([strip],[STRIP_FOR_TARGET],[STRIP],[binutils/strip-new])dnl
+GCC_TARGET_TOOL([windres],[WINDRES_FOR_TARGET],[WINDRES],
+                [binutils/windres])dnl
+GCC_TARGET_TOOL([windmc],[WINDMC_FOR_TARGET],[WINDMC],[binutils/windmc])dnl
+])dnl
+
+# extra aliases for variables:
 CONFIGURED_AR_FOR_TARGET="${AR_FOR_TARGET}"
 CONFIGURED_AS_FOR_TARGET="${AS_FOR_TARGET}" # might need to be commented out for confusing autoconf
+CONFIGURED_GAS_FOR_TARGET="${GAS_FOR_TARGET}"
 CONFIGURED_CC_FOR_TARGET="${CC_FOR_TARGET}"
 CONFIGURED_CXX_FOR_TARGET="${CXX_FOR_TARGET}"
 CONFIGURED_DLLTOOL_FOR_TARGET="${DLLTOOL_FOR_TARGET}"
@@ -3356,6 +3638,7 @@ CONFIGURED_WINDRES_FOR_TARGET="${WINDRES_FOR_TARGET}"
 
 AC_SUBST([CONFIGURED_AR_FOR_TARGET])dnl
 AC_SUBST([CONFIGURED_AS_FOR_TARGET])dnl
+AC_SUBST([CONFIGURED_GAS_FOR_TARGET])dnl
 AC_SUBST([CONFIGURED_CC_FOR_TARGET])dnl
 AC_SUBST([CONFIGURED_CXX_FOR_TARGET])dnl
 AC_SUBST([CONFIGURED_DLLTOOL_FOR_TARGET])dnl
@@ -3379,6 +3662,7 @@ if test "x${build}" = "x${host}"; then
   # should also eliminate all of this cleanly.
   AR_FOR_TARGET="\$(USUAL_AR_FOR_TARGET)"
   AS_FOR_TARGET="\$(USUAL_AS_FOR_TARGET)" # might need to be commented out for confusing autoconf
+  test -z "${GAS_FOR_TARGET}"
   CC_FOR_TARGET="\$(USUAL_CC_FOR_TARGET)"
   CXX_FOR_TARGET="\$(USUAL_CXX_FOR_TARGET)"
   RAW_CXX_FOR_TARGET="\$(USUAL_RAW_CXX_FOR_TARGET)"
@@ -3394,6 +3678,7 @@ else
   # Just use the ones we found:
   AR_FOR_TARGET="\$(CONFIGURED_AR_FOR_TARGET)"
   AS_FOR_TARGET="\$(CONFIGURED_AS_FOR_TARGET)" # might need to be commented out for confusing autoconf
+  test -z "${GAS_FOR_TARGET}"
   CC_FOR_TARGET="\$(CONFIGURED_CC_FOR_TARGET)"
   CXX_FOR_TARGET="\$(CONFIGURED_CXX_FOR_TARGET)"
   RAW_CXX_FOR_TARGET="\$(CONFIGURED_CXX_FOR_TARGET)"

@@ -81,7 +81,7 @@ struct objfile_data;
    process startup code.  Since we have no guarantee that the linked
    in startup modules have any debugging information that gdb can use,
    we need to avoid following frame pointers back into frames that might
-   have been built in the startup code, as we might get hopelessly 
+   have been built in the startup code, as we might get hopelessly
    confused.  However, we almost always have debugging information
    available for main().
 
@@ -113,7 +113,7 @@ struct entry_info
 
     CORE_ADDR entry_point;
 
-    /* APPLE LOCAL: Start (inclusive) and end (exclusive) of the user code 
+    /* APPLE LOCAL: Start (inclusive) and end (exclusive) of the user code
        main() function. */
 
     CORE_ADDR main_func_lowpc;
@@ -285,7 +285,7 @@ struct objfile
     /* Obstack to hold objects that should be freed when we load a new symbol
        table from this object file. */
 
-    struct obstack objfile_obstack; 
+    struct obstack objfile_obstack;
 
     /* A byte cache where we can stash arbitrary "chunks" of bytes that
        will not change. */
@@ -456,7 +456,7 @@ struct objfile
     /* If this is a separate debug object, this is used as a link to the
        actual executable objfile. */
     struct objfile *separate_debug_objfile_backlink;
-    
+
     /* Place to stash various statistics about this objfile */
       OBJSTATS;
 
@@ -478,7 +478,7 @@ struct objfile
        shared library.  */
     int check_for_equivalence;
 
-    /* This is the actual table.  It isn't exposed outside of symmisc.c, so 
+    /* This is the actual table.  It isn't exposed outside of symmisc.c, so
        we leave it a void * here.  */
     void *equivalence_table;
 
@@ -490,21 +490,21 @@ struct objfile
 
     /* APPLE LOCAL: If objfile_is_kext is true then this will be the name
        of the original kext, i.e. the file that was output by ld -r and
-       dsymutil was run on but NOT the output of kextload -s or kextload -a.  
+       dsymutil was run on but NOT the output of kextload -s or kextload -a.
        We'll need this and the kextload'ed kext image to create the
        address translation table when reading the DWARF.  */
     const char *not_loaded_kext_filename;
 
-    /* APPLE LOCAL: Mark struct objfile's as to whether they are 
+    /* APPLE LOCAL: Mark struct objfile's as to whether they are
        symbol files or if they represent file images that contain actual
-       code that is, or will be, loaded into memory.  
+       code that is, or will be, loaded into memory.
        When a user add-symbol-file's a debug version of a dylib, breakpoints
        will end up in this symboled objfile, but they're actually inserted
        into the original stripped objfile.  So we need to short-circuit the
        "is this objfile resident in memory" check and assume that, in the case
        of a breakpoint in a hand-added symbol file, it's always resident.  */
     int syms_only_objfile;
-    
+
     /* APPLE LOCAL begin dwarf repository  */
     int uses_sql_repository;
     /* APPLE LOCAL end dwarf repository  */
@@ -621,7 +621,7 @@ extern struct objfile *object_files;
 extern struct objfile *allocate_objfile (bfd *, int, int symflags, CORE_ADDR mapaddr, const char *prefix);
 
 /* APPLE LOCAL: for use with clear_objfile.  */
-extern struct objfile *allocate_objfile_using_objfile (struct objfile *, bfd *, int, int symflags, 
+extern struct objfile *allocate_objfile_using_objfile (struct objfile *, bfd *, int, int symflags,
 						      CORE_ADDR mapaddr, const char *prefix);
 
 extern void init_entry_point_info (struct objfile *);
@@ -699,11 +699,11 @@ struct objfile_list {
 
 extern struct objfile_list *objfile_list;
 
-struct objfile *objfile_get_first ();
+struct objfile *objfile_get_first (void);
 struct objfile *objfile_get_next (struct objfile *);
 int objfile_restrict_search (int);
 void objfile_add_to_restrict_list (struct objfile *objfile);
-void objfile_clear_restrict_list ();
+void objfile_clear_restrict_list (void);
 
 enum objfile_matches_name_return
   {
@@ -722,9 +722,9 @@ struct cleanup *make_cleanup_restrict_to_shlib (char *shlib);
    array.  */
 void objfile_add_to_ordered_sections (struct objfile *objfile);
 void objfile_delete_from_ordered_sections (struct objfile *objfile);
-struct obj_section *find_pc_sect_in_ordered_sections (CORE_ADDR addr, 
+struct obj_section *find_pc_sect_in_ordered_sections (CORE_ADDR addr,
 					      struct bfd_section *bfd_section);
-/* APPLE LOCAL: These set the load state for the debug info based on the 
+/* APPLE LOCAL: These set the load state for the debug info based on the
    pc or by objfile.  */
 
 int objfile_set_load_state (struct objfile *, int, int);
@@ -859,18 +859,18 @@ CORE_ADDR objfile_bss_section_offset (struct objfile *objfile);
 
 /* APPLE LOCAL END: Use EXECUTABLE_OBJFILE.  */
 
-struct objfile *find_libobjc_objfile ();
+struct objfile *find_libobjc_objfile(void);
 
 /* APPLE LOCAL: recording which objfiles get hit in symbol lookup.  */
 struct objfile_hitlist;
 struct objfile_hitlist *objfile_detach_hitlist(void);
 int objfile_on_hitlist_p (struct objfile_hitlist *, struct objfile *);
-struct cleanup *make_cleanup_objfile_init_clear_hitlist ();
+struct cleanup *make_cleanup_objfile_init_clear_hitlist(void);
 void objfile_add_to_hitlist (struct objfile *);
 
 
 /* APPLE LOCAL begin differentiate arm & thumb msymbols */
-extern char *partial_symbol_special_info (struct objfile *objfile, 
+extern char *partial_symbol_special_info (struct objfile *objfile,
                                           struct partial_symbol *psym);
 
 void sort_objfile_thumb_psyms (struct objfile *objfile);

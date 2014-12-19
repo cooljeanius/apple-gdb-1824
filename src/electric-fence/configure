@@ -626,6 +626,9 @@ ac_includes_default="\
 ac_subst_vars='LTLIBOBJS
 PAGEFILE
 LIBOBJS
+TARGET_ARCHITECTURE
+HOST_ARCHITECTURE
+BUILD_ARCHITECTURE
 target_os
 target_vendor
 target_cpu
@@ -640,16 +643,20 @@ build_cpu
 build
 EGREP
 GREP
-CPP
 SHAR_PROG
 NROFF_PROG
 RANLIB
 ac_ct_AR
 AR
+MKDIR_P
+CONFIGURED_TEX
+MAKEINFO
 LN_S
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
+CLANG_ANALYZER
+CPP
 OBJEXT
 EXEEXT
 ac_ct_CC
@@ -657,6 +664,9 @@ CPPFLAGS
 LDFLAGS
 CFLAGS
 CC
+MAINT
+MAINTAINER_MODE_FALSE
+MAINTAINER_MODE_TRUE
 target_alias
 host_alias
 build_alias
@@ -698,6 +708,7 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
+enable_maintainer_mode
 enable_largefile
 '
       ac_precious_vars='build_alias
@@ -708,7 +719,8 @@ CFLAGS
 LDFLAGS
 LIBS
 CPPFLAGS
-CPP'
+CPP
+CLANG_ANALYZER'
 
 
 # Initialize some variables set by options.
@@ -1328,6 +1340,9 @@ Optional Features:
   --disable-option-checking  ignore unrecognized --enable/--with options
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+  --enable-maintainer-mode
+                          enable make rules and dependencies not useful (and
+                          sometimes confusing) to the casual installer
   --disable-largefile     omit support for large files
 
 Some influential environment variables:
@@ -1339,6 +1354,8 @@ Some influential environment variables:
   CPPFLAGS    (Objective) C/C++ preprocessor flags, e.g. -I<include dir> if
               you have headers in a nonstandard directory <include dir>
   CPP         C preprocessor
+  CLANG_ANALYZER
+              Path to the clang static analyzer
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -1458,6 +1475,43 @@ fi
 
 } # ac_fn_c_try_compile
 
+# ac_fn_c_try_cpp LINENO
+# ----------------------
+# Try to preprocess conftest.$ac_ext, and return whether this succeeded.
+ac_fn_c_try_cpp ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  if { { ac_try="$ac_cpp conftest.$ac_ext"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:${as_lineno-$LINENO}: $ac_try_echo\""
+$as_echo "$ac_try_echo"; } >&5
+  (eval "$ac_cpp conftest.$ac_ext") 2>conftest.err
+  ac_status=$?
+  if test -s conftest.err; then
+    grep -v '^ *+' conftest.err >conftest.er1
+    cat conftest.er1 >&5
+    mv -f conftest.er1 conftest.err
+  fi
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } > conftest.i && {
+	 test -z "$ac_c_preproc_warn_flag$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       }; then :
+  ac_retval=0
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+    ac_retval=1
+fi
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+  as_fn_set_status $ac_retval
+
+} # ac_fn_c_try_cpp
+
 # ac_fn_c_try_link LINENO
 # -----------------------
 # Try to link conftest.$ac_ext, and return whether this succeeded.
@@ -1534,43 +1588,6 @@ $as_echo "$ac_res" >&6; }
   eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
 
 } # ac_fn_c_check_header_compile
-
-# ac_fn_c_try_cpp LINENO
-# ----------------------
-# Try to preprocess conftest.$ac_ext, and return whether this succeeded.
-ac_fn_c_try_cpp ()
-{
-  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
-  if { { ac_try="$ac_cpp conftest.$ac_ext"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:${as_lineno-$LINENO}: $ac_try_echo\""
-$as_echo "$ac_try_echo"; } >&5
-  (eval "$ac_cpp conftest.$ac_ext") 2>conftest.err
-  ac_status=$?
-  if test -s conftest.err; then
-    grep -v '^ *+' conftest.err >conftest.er1
-    cat conftest.er1 >&5
-    mv -f conftest.er1 conftest.err
-  fi
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; } > conftest.i && {
-	 test -z "$ac_c_preproc_warn_flag$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       }; then :
-  ac_retval=0
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-    ac_retval=1
-fi
-  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
-  as_fn_set_status $ac_retval
-
-} # ac_fn_c_try_cpp
 
 # ac_fn_c_try_run LINENO
 # ----------------------
@@ -1871,6 +1888,189 @@ $as_echo "$ac_res" >&6; }
   eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
 
 } # ac_fn_c_check_type
+
+# ac_fn_c_compute_int LINENO EXPR VAR INCLUDES
+# --------------------------------------------
+# Tries to find the compile-time value of EXPR in a program that includes
+# INCLUDES, setting VAR accordingly. Returns whether the value could be
+# computed
+ac_fn_c_compute_int ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  if test "$cross_compiling" = yes; then
+    # Depending upon the size, compute the lo and hi bounds.
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$4
+int
+main ()
+{
+static int test_array [1 - 2 * !(($2) >= 0)];
+test_array [0] = 0;
+return test_array [0];
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_lo=0 ac_mid=0
+  while :; do
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$4
+int
+main ()
+{
+static int test_array [1 - 2 * !(($2) <= $ac_mid)];
+test_array [0] = 0;
+return test_array [0];
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_hi=$ac_mid; break
+else
+  as_fn_arith $ac_mid + 1 && ac_lo=$as_val
+			if test $ac_lo -le $ac_mid; then
+			  ac_lo= ac_hi=
+			  break
+			fi
+			as_fn_arith 2 '*' $ac_mid + 1 && ac_mid=$as_val
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  done
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$4
+int
+main ()
+{
+static int test_array [1 - 2 * !(($2) < 0)];
+test_array [0] = 0;
+return test_array [0];
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_hi=-1 ac_mid=-1
+  while :; do
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$4
+int
+main ()
+{
+static int test_array [1 - 2 * !(($2) >= $ac_mid)];
+test_array [0] = 0;
+return test_array [0];
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_lo=$ac_mid; break
+else
+  as_fn_arith '(' $ac_mid ')' - 1 && ac_hi=$as_val
+			if test $ac_mid -le $ac_hi; then
+			  ac_lo= ac_hi=
+			  break
+			fi
+			as_fn_arith 2 '*' $ac_mid && ac_mid=$as_val
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  done
+else
+  ac_lo= ac_hi=
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+# Binary search between lo and hi bounds.
+while test "x$ac_lo" != "x$ac_hi"; do
+  as_fn_arith '(' $ac_hi - $ac_lo ')' / 2 + $ac_lo && ac_mid=$as_val
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$4
+int
+main ()
+{
+static int test_array [1 - 2 * !(($2) <= $ac_mid)];
+test_array [0] = 0;
+return test_array [0];
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_hi=$ac_mid
+else
+  as_fn_arith '(' $ac_mid ')' + 1 && ac_lo=$as_val
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+done
+case $ac_lo in #((
+?*) eval "$3=\$ac_lo"; ac_retval=0 ;;
+'') ac_retval=1 ;;
+esac
+  else
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$4
+static long int longval () { return $2; }
+static unsigned long int ulongval () { return $2; }
+#include <stdio.h>
+#include <stdlib.h>
+int
+main ()
+{
+
+  FILE *f = fopen ("conftest.val", "w");
+  if (! f)
+    return 1;
+  if (($2) < 0)
+    {
+      long int i = longval ();
+      if (i != ($2))
+	return 1;
+      fprintf (f, "%ld", i);
+    }
+  else
+    {
+      unsigned long int i = ulongval ();
+      if (i != ($2))
+	return 1;
+      fprintf (f, "%lu", i);
+    }
+  /* Do not output a trailing newline, as this causes \r\n confusion
+     on some platforms.  */
+  return ferror (f) || fclose (f) != 0;
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  echo >>conftest.val; read $3 <conftest.val; ac_retval=0
+else
+  ac_retval=1
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+rm -f conftest.val
+
+  fi
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+  as_fn_set_status $ac_retval
+
+} # ac_fn_c_compute_int
 cat >config.log <<_ACEOF
 This file contains any messages produced by compilers while
 running configure, to aid debugging if configure makes a mistake.
@@ -2226,8 +2426,98 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-
 ac_config_headers="$ac_config_headers config.h"
+
+# pieces of automake that make sense here:
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable maintainer-specific portions of Makefiles" >&5
+$as_echo_n "checking whether to enable maintainer-specific portions of Makefiles... " >&6; }
+    # Check whether --enable-maintainer-mode was given.
+if test "${enable_maintainer_mode+set}" = set; then :
+  enableval=$enable_maintainer_mode; USE_MAINTAINER_MODE=$enableval
+else
+  USE_MAINTAINER_MODE=no
+fi
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $USE_MAINTAINER_MODE" >&5
+$as_echo "$USE_MAINTAINER_MODE" >&6; }
+   if test $USE_MAINTAINER_MODE = yes; then
+  MAINTAINER_MODE_TRUE=
+  MAINTAINER_MODE_FALSE='#'
+else
+  MAINTAINER_MODE_TRUE='#'
+  MAINTAINER_MODE_FALSE=
+fi
+
+  MAINT=$MAINTAINER_MODE_TRUE
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether build environment is sane" >&5
+$as_echo_n "checking whether build environment is sane... " >&6; }
+# Reject unsafe characters in $srcdir or the absolute working directory
+# name.  Accept space and tab only in the latter.
+am_lf='
+'
+case `pwd` in
+  *[\\\"\#\$\&\'\`$am_lf]*)
+    as_fn_error $? "unsafe absolute working directory name" "$LINENO" 5;;
+esac
+case $srcdir in
+  *[\\\"\#\$\&\'\`$am_lf\ \	]*)
+    as_fn_error $? "unsafe srcdir value: '$srcdir'" "$LINENO" 5;;
+esac
+
+# Do 'set' in a subshell so we don't clobber the current shell's
+# arguments.  Must try -L first in case configure is actually a
+# symlink; some systems play weird games with the mod time of symlinks
+# (eg FreeBSD returns the mod time of the symlink's containing
+# directory).
+if (
+   am_has_slept=no
+   for am_try in 1 2; do
+     echo "timestamp, slept: $am_has_slept" > conftest.file
+     set X `ls -Lt "$srcdir/configure" conftest.file 2> /dev/null`
+     if test "$*" = "X"; then
+	# -L didn't work.
+	set X `ls -t "$srcdir/configure" conftest.file`
+     fi
+     if test "$*" != "X $srcdir/configure conftest.file" \
+	&& test "$*" != "X conftest.file $srcdir/configure"; then
+
+	# If neither matched, then we have a broken ls.  This can happen
+	# if, for instance, CONFIG_SHELL is bash and it inherits a
+	# broken ls alias from the environment.  This has actually
+	# happened.  Such a system could not be considered "sane".
+	as_fn_error $? "ls -t appears to fail.  Make sure there is not a broken
+  alias in your environment" "$LINENO" 5
+     fi
+     if test "$2" = conftest.file || test $am_try -eq 2; then
+       break
+     fi
+     # Just in case.
+     sleep 1
+     am_has_slept=yes
+   done
+   test "$2" = conftest.file
+   )
+then
+   # Ok.
+   :
+else
+   as_fn_error $? "newly created file is older than distributed files!
+Check your system clock" "$LINENO" 5
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+# If we didn't sleep, we still need to ensure time stamps of config.status and
+# generated files are strictly newer.
+am_sleep_pid=
+if grep 'slept: no' conftest.file >/dev/null 2>&1; then
+  ( sleep 1 ) &
+  am_sleep_pid=$!
+fi
+
+rm -f conftest.file
 
 
 # Checks for programs.
@@ -3020,6 +3310,180 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking how to run the C preprocessor" >&5
+$as_echo_n "checking how to run the C preprocessor... " >&6; }
+# On Suns, sometimes $CPP names a directory.
+if test -n "$CPP" && test -d "$CPP"; then
+  CPP=
+fi
+if test -z "$CPP"; then
+  if ${ac_cv_prog_CPP+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+      # Double quotes because CPP needs to be expanded
+    for CPP in "$CC -E" "$CC -E -traditional-cpp" "/lib/cpp"
+    do
+      ac_preproc_ok=false
+for ac_c_preproc_warn_flag in '' yes
+do
+  # Use a header file that comes with gcc, so configuring glibc
+  # with a fresh cross-compiler works.
+  # Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
+  # <limits.h> exists even on freestanding compilers.
+  # On the NeXT, cc -E runs the code through the compiler's parser,
+  # not just through cpp. "Syntax error" is here to catch this case.
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#ifdef __STDC__
+# include <limits.h>
+#else
+# include <assert.h>
+#endif
+		     Syntax error
+_ACEOF
+if ac_fn_c_try_cpp "$LINENO"; then :
+
+else
+  # Broken: fails on valid input.
+continue
+fi
+rm -f conftest.err conftest.i conftest.$ac_ext
+
+  # OK, works on sane cases.  Now check whether nonexistent headers
+  # can be detected and how.
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <ac_nonexistent.h>
+_ACEOF
+if ac_fn_c_try_cpp "$LINENO"; then :
+  # Broken: success on invalid input.
+continue
+else
+  # Passes both tests.
+ac_preproc_ok=:
+break
+fi
+rm -f conftest.err conftest.i conftest.$ac_ext
+
+done
+# Because of `break', _AC_PREPROC_IFELSE's cleaning code was skipped.
+rm -f conftest.i conftest.err conftest.$ac_ext
+if $ac_preproc_ok; then :
+  break
+fi
+
+    done
+    ac_cv_prog_CPP=$CPP
+
+fi
+  CPP=$ac_cv_prog_CPP
+else
+  ac_cv_prog_CPP=$CPP
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $CPP" >&5
+$as_echo "$CPP" >&6; }
+ac_preproc_ok=false
+for ac_c_preproc_warn_flag in '' yes
+do
+  # Use a header file that comes with gcc, so configuring glibc
+  # with a fresh cross-compiler works.
+  # Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
+  # <limits.h> exists even on freestanding compilers.
+  # On the NeXT, cc -E runs the code through the compiler's parser,
+  # not just through cpp. "Syntax error" is here to catch this case.
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#ifdef __STDC__
+# include <limits.h>
+#else
+# include <assert.h>
+#endif
+		     Syntax error
+_ACEOF
+if ac_fn_c_try_cpp "$LINENO"; then :
+
+else
+  # Broken: fails on valid input.
+continue
+fi
+rm -f conftest.err conftest.i conftest.$ac_ext
+
+  # OK, works on sane cases.  Now check whether nonexistent headers
+  # can be detected and how.
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <ac_nonexistent.h>
+_ACEOF
+if ac_fn_c_try_cpp "$LINENO"; then :
+  # Broken: success on invalid input.
+continue
+else
+  # Passes both tests.
+ac_preproc_ok=:
+break
+fi
+rm -f conftest.err conftest.i conftest.$ac_ext
+
+done
+# Because of `break', _AC_PREPROC_IFELSE's cleaning code was skipped.
+rm -f conftest.i conftest.err conftest.$ac_ext
+if $ac_preproc_ok; then :
+
+else
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error $? "C preprocessor \"$CPP\" fails sanity check
+See \`config.log' for more details" "$LINENO" 5; }
+fi
+
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for the clang static analyzer" >&5
+$as_echo_n "checking for the clang static analyzer... " >&6; }
+if ${ac_cv_path_CLANG_ANALYZER+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -z "$CLANG_ANALYZER"; then
+  ac_path_CLANG_ANALYZER_found=false
+  # Loop through the user's path and test for each of PROGNAME-LIST
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in ${PATH}
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_prog in clang clang++ clang-mp-3.5 clang-mp-3.4 clang-mp-3.3 clang-mp-3.2; do
+    for ac_exec_ext in '' $ac_executable_extensions; do
+      ac_path_CLANG_ANALYZER="$as_dir/$ac_prog$ac_exec_ext"
+      as_fn_executable_p "$ac_path_CLANG_ANALYZER" || continue
+${ac_path_CLANG_ANALYZER} --analyze /dev/null > /dev/null 2>&1 && \
+      ac_cv_path_CLANG_ANALYZER=${ac_path_CLANG_ANALYZER}
+      ac_path_CLANG_ANALYZER_found=:
+      $ac_path_CLANG_ANALYZER_found && break 3
+    done
+  done
+  done
+IFS=$as_save_IFS
+  if test -z "$ac_cv_path_CLANG_ANALYZER"; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: we will not be able to do static analysis with clang" >&5
+$as_echo "$as_me: WARNING: we will not be able to do static analysis with clang" >&2;}
+  fi
+else
+  ac_cv_path_CLANG_ANALYZER=$CLANG_ANALYZER
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_path_CLANG_ANALYZER" >&5
+$as_echo "$ac_cv_path_CLANG_ANALYZER" >&6; }  ## (need this extra line here)
+CLANG_ANALYZER=${ac_cv_path_CLANG_ANALYZER}
 ac_aux_dir=
 for ac_dir in "$srcdir" "$srcdir/.." "$srcdir/../.."; do
   if test -f "$ac_dir/install-sh"; then
@@ -3153,9 +3617,109 @@ else
 $as_echo "no, using $LN_S" >&6; }
 fi
 
-
 # expand $ac_aux_dir to an absolute path
 am_aux_dir=`cd $ac_aux_dir && pwd`
+
+if test x"${MISSING+set}" != xset; then
+  case $am_aux_dir in
+  *\ * | *\	*)
+    MISSING="\${SHELL} \"$am_aux_dir/missing\"" ;;
+  *)
+    MISSING="\${SHELL} $am_aux_dir/missing" ;;
+  esac
+fi
+# Use eval to expand $SHELL
+if eval "$MISSING --is-lightweight"; then
+  am_missing_run="$MISSING "
+else
+  am_missing_run=
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: 'missing' script is too old or missing" >&5
+$as_echo "$as_me: WARNING: 'missing' script is too old or missing" >&2;}
+fi
+
+
+MAKEINFO=${MAKEINFO-"${am_missing_run}makeinfo"}
+# Extract the first word of "tex", so it can be a program name with args.
+set dummy tex; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_CONFIGURED_TEX+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $CONFIGURED_TEX in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_CONFIGURED_TEX="$CONFIGURED_TEX" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_CONFIGURED_TEX="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+CONFIGURED_TEX=$ac_cv_path_CONFIGURED_TEX
+if test -n "$CONFIGURED_TEX"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CONFIGURED_TEX" >&5
+$as_echo "$CONFIGURED_TEX" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for a thread-safe mkdir -p" >&5
+$as_echo_n "checking for a thread-safe mkdir -p... " >&6; }
+if test -z "$MKDIR_P"; then
+  if ${ac_cv_path_mkdir+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH$PATH_SEPARATOR/opt/sfw/bin
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_prog in mkdir gmkdir; do
+	 for ac_exec_ext in '' $ac_executable_extensions; do
+	   as_fn_executable_p "$as_dir/$ac_prog$ac_exec_ext" || continue
+	   case `"$as_dir/$ac_prog$ac_exec_ext" --version 2>&1` in #(
+	     'mkdir (GNU coreutils) '* | \
+	     'mkdir (coreutils) '* | \
+	     'mkdir (fileutils) '4.1*)
+	       ac_cv_path_mkdir=$as_dir/$ac_prog$ac_exec_ext
+	       break 3;;
+	   esac
+	 done
+       done
+  done
+IFS=$as_save_IFS
+
+fi
+
+  test -d ./--version && rmdir ./--version
+  if test "${ac_cv_path_mkdir+set}" = set; then
+    MKDIR_P="$ac_cv_path_mkdir -p"
+  else
+    # As a last resort, use the slow shell script.  Don't cache a
+    # value for MKDIR_P within a source directory, because that will
+    # break other packages using the cache if that directory is
+    # removed, or if the value is a relative name.
+    MKDIR_P="$ac_install_sh -d"
+  fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $MKDIR_P" >&5
+$as_echo "$MKDIR_P" >&6; }
+
 
 
 if test -n "$ac_tool_prefix"; then
@@ -3330,8 +3894,7 @@ unknown)
 esac
 
 
-
-if test -n "$ac_tool_prefix"; then
+  if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ranlib; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -3423,7 +3986,6 @@ else
   RANLIB="$ac_cv_prog_RANLIB"
 fi
 
-
 # Extract the first word of "nroff", so it can be a program name with args.
 set dummy nroff; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -3463,7 +4025,6 @@ else
 $as_echo "no" >&6; }
 fi
 
-
 # Extract the first word of "shar", so it can be a program name with args.
 set dummy shar; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -3502,7 +4063,6 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 fi
-
 
 
 # Checks for libraries.
@@ -3551,145 +4111,7 @@ _ACEOF
 
 fi
 
-
 # Checks for library functions.
-ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking how to run the C preprocessor" >&5
-$as_echo_n "checking how to run the C preprocessor... " >&6; }
-# On Suns, sometimes $CPP names a directory.
-if test -n "$CPP" && test -d "$CPP"; then
-  CPP=
-fi
-if test -z "$CPP"; then
-  if ${ac_cv_prog_CPP+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-      # Double quotes because CPP needs to be expanded
-    for CPP in "$CC -E" "$CC -E -traditional-cpp" "/lib/cpp"
-    do
-      ac_preproc_ok=false
-for ac_c_preproc_warn_flag in '' yes
-do
-  # Use a header file that comes with gcc, so configuring glibc
-  # with a fresh cross-compiler works.
-  # Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
-  # <limits.h> exists even on freestanding compilers.
-  # On the NeXT, cc -E runs the code through the compiler's parser,
-  # not just through cpp. "Syntax error" is here to catch this case.
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#ifdef __STDC__
-# include <limits.h>
-#else
-# include <assert.h>
-#endif
-		     Syntax error
-_ACEOF
-if ac_fn_c_try_cpp "$LINENO"; then :
-
-else
-  # Broken: fails on valid input.
-continue
-fi
-rm -f conftest.err conftest.i conftest.$ac_ext
-
-  # OK, works on sane cases.  Now check whether nonexistent headers
-  # can be detected and how.
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <ac_nonexistent.h>
-_ACEOF
-if ac_fn_c_try_cpp "$LINENO"; then :
-  # Broken: success on invalid input.
-continue
-else
-  # Passes both tests.
-ac_preproc_ok=:
-break
-fi
-rm -f conftest.err conftest.i conftest.$ac_ext
-
-done
-# Because of `break', _AC_PREPROC_IFELSE's cleaning code was skipped.
-rm -f conftest.i conftest.err conftest.$ac_ext
-if $ac_preproc_ok; then :
-  break
-fi
-
-    done
-    ac_cv_prog_CPP=$CPP
-
-fi
-  CPP=$ac_cv_prog_CPP
-else
-  ac_cv_prog_CPP=$CPP
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $CPP" >&5
-$as_echo "$CPP" >&6; }
-ac_preproc_ok=false
-for ac_c_preproc_warn_flag in '' yes
-do
-  # Use a header file that comes with gcc, so configuring glibc
-  # with a fresh cross-compiler works.
-  # Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
-  # <limits.h> exists even on freestanding compilers.
-  # On the NeXT, cc -E runs the code through the compiler's parser,
-  # not just through cpp. "Syntax error" is here to catch this case.
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#ifdef __STDC__
-# include <limits.h>
-#else
-# include <assert.h>
-#endif
-		     Syntax error
-_ACEOF
-if ac_fn_c_try_cpp "$LINENO"; then :
-
-else
-  # Broken: fails on valid input.
-continue
-fi
-rm -f conftest.err conftest.i conftest.$ac_ext
-
-  # OK, works on sane cases.  Now check whether nonexistent headers
-  # can be detected and how.
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#include <ac_nonexistent.h>
-_ACEOF
-if ac_fn_c_try_cpp "$LINENO"; then :
-  # Broken: success on invalid input.
-continue
-else
-  # Passes both tests.
-ac_preproc_ok=:
-break
-fi
-rm -f conftest.err conftest.i conftest.$ac_ext
-
-done
-# Because of `break', _AC_PREPROC_IFELSE's cleaning code was skipped.
-rm -f conftest.i conftest.err conftest.$ac_ext
-if $ac_preproc_ok; then :
-
-else
-  { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
-$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
-as_fn_error $? "C preprocessor \"$CPP\" fails sanity check
-See \`config.log' for more details" "$LINENO" 5; }
-fi
-
-ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for grep that handles long lines and -e" >&5
 $as_echo_n "checking for grep that handles long lines and -e... " >&6; }
@@ -4153,6 +4575,8 @@ rm -f conftest.mmap conftest.txt
 
 
 # Checks for header files.
+
+
 for ac_header in errno.h fcntl.h limits.h mach/mach.h malloc.h \
                   malloc/malloc.h math.h pthread.h setjmp.h signal.h \
                   stddef.h stdio.h
@@ -4168,7 +4592,6 @@ fi
 
 done
 
-
 # Checks for declarations.
 ac_fn_c_check_decl "$LINENO" "sys_nerr" "ac_cv_have_decl_sys_nerr" "$ac_includes_default"
 if test "x$ac_cv_have_decl_sys_nerr" = xyes; then :
@@ -4180,7 +4603,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_SYS_NERR $ac_have_decl
 _ACEOF
-
 ac_fn_c_check_decl "$LINENO" "sys_errlist" "ac_cv_have_decl_sys_errlist" "$ac_includes_default"
 if test "x$ac_cv_have_decl_sys_errlist" = xyes; then :
   ac_have_decl=1
@@ -4192,7 +4614,7 @@ cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_SYS_ERRLIST $ac_have_decl
 _ACEOF
 
-
+# architecture stuff:
 # Make sure we can run config.sub.
 $SHELL "$ac_aux_dir/config.sub" sun4 >/dev/null 2>&1 ||
   as_fn_error $? "cannot run $SHELL $ac_aux_dir/config.sub" "$LINENO" 5
@@ -4303,6 +4725,18 @@ test -n "$target_alias" &&
   test "$program_prefix$program_suffix$program_transform_name" = \
     NONENONEs,x,x, &&
   program_prefix=${target_alias}-
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+
+fi
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+
+fi
 test "$program_prefix" != NONE &&
   program_transform_name="s&^&$program_prefix&;$program_transform_name"
 # Use a double $ so make ignores it.
@@ -4312,7 +4746,6 @@ test "$program_suffix" != NONE &&
 # By default was `s,x,x', remove it if useless.
 ac_script='s/[\\$]/&&/g;s/;s,x,x,$//'
 program_transform_name=`$as_echo "$program_transform_name" | sed "$ac_script"`
-
 
 
 
@@ -4747,6 +5180,87 @@ $as_echo "#define AC_APPLE_UNIVERSAL_BUILD 1" >>confdefs.h
  presetting ac_cv_c_bigendian=no (or yes) will help" "$LINENO" 5 ;;
  esac
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for an ANSI C-conforming const" >&5
+$as_echo_n "checking for an ANSI C-conforming const... " >&6; }
+if ${ac_cv_c_const+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+#ifndef __cplusplus
+  /* Ultrix mips cc rejects this sort of thing.  */
+  typedef int charset[2];
+  const charset cs = { 0, 0 };
+  /* SunOS 4.1.1 cc rejects this.  */
+  char const *const *pcpcc;
+  char **ppc;
+  /* NEC SVR4.0.2 mips cc rejects this.  */
+  struct point {int x, y;};
+  static struct point const zero = {0,0};
+  /* AIX XL C 1.02.0.0 rejects this.
+     It does not let you subtract one const X* pointer from another in
+     an arm of an if-expression whose if-part is not a constant
+     expression */
+  const char *g = "string";
+  pcpcc = &g + (g ? g-g : 0);
+  /* HPUX 7.0 cc rejects these. */
+  ++pcpcc;
+  ppc = (char**) pcpcc;
+  pcpcc = (char const *const *) ppc;
+  { /* SCO 3.2v4 cc rejects this sort of thing.  */
+    char tx;
+    char *t = &tx;
+    char const *s = 0 ? (char *) 0 : (char const *) 0;
+
+    *t++ = 0;
+    if (s) return 0;
+  }
+  { /* Someone thinks the Sun supposedly-ANSI compiler will reject this.  */
+    int x[] = {25, 17};
+    const int *foo = &x[0];
+    ++foo;
+  }
+  { /* Sun SC1.0 ANSI compiler rejects this -- but not the above. */
+    typedef const int *iptr;
+    iptr p = 0;
+    ++p;
+  }
+  { /* AIX XL C 1.02.0.0 rejects this sort of thing, saying
+       "k.c", line 2.27: 1506-025 (S) Operand must be a modifiable lvalue. */
+    struct s { int j; const int *ap[3]; } bx;
+    struct s *b = &bx; b->j = 5;
+  }
+  { /* ULTRIX-32 V3.1 (Rev 9) vcc rejects this */
+    const int foo = 10;
+    if (!foo) return 0;
+  }
+  return !cs[0] && !zero.x;
+#endif
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_c_const=yes
+else
+  ac_cv_c_const=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_c_const" >&5
+$as_echo "$ac_cv_c_const" >&6; }
+if test $ac_cv_c_const = no; then
+
+$as_echo "#define const /**/" >>confdefs.h
+
+fi
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for function prototypes" >&5
 $as_echo_n "checking for function prototypes... " >&6; }
 if test "$ac_cv_prog_cc_c89" != no; then
@@ -4794,7 +5308,6 @@ _ACEOF
 
 
 fi
-
 ac_fn_c_check_type "$LINENO" "kern_return_t" "ac_cv_type_kern_return_t" "$ac_includes_default"
 if test "x$ac_cv_type_kern_return_t" = xyes; then :
 
@@ -4804,7 +5317,326 @@ _ACEOF
 
 
 fi
+ac_fn_c_check_type "$LINENO" "long long" "ac_cv_type_long_long" "$ac_includes_default"
+if test "x$ac_cv_type_long_long" = xyes; then :
 
+cat >>confdefs.h <<_ACEOF
+#define HAVE_LONG_LONG 1
+_ACEOF
+
+if test "x${ac_cv_sizeof_long_long}" = "x"; then
+                  test -z "${ac_cv_sizeof_long_long}"
+                  # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking size of long long" >&5
+$as_echo_n "checking size of long long... " >&6; }
+if ${ac_cv_sizeof_long_long+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (long long))" "ac_cv_sizeof_long_long"        "$ac_includes_default"; then :
+
+else
+  if test "$ac_cv_type_long_long" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (long long)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof_long_long=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof_long_long" >&5
+$as_echo "$ac_cv_sizeof_long_long" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define SIZEOF_LONG_LONG $ac_cv_sizeof_long_long
+_ACEOF
+
+
+                fi
+                if test "x${ac_cv_alignof_long_long}" = "x"; then
+                  test -z "${ac_cv_alignof_long_long}"
+                  # The cast to long int works around a bug in the HP C Compiler,
+# see AC_CHECK_SIZEOF for more information.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking alignment of long long" >&5
+$as_echo_n "checking alignment of long long... " >&6; }
+if ${ac_cv_alignof_long_long+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) offsetof (ac__type_alignof_, y)" "ac_cv_alignof_long_long"        "$ac_includes_default
+#ifndef offsetof
+# define offsetof(type, member) ((char *) &((type *) 0)->member - (char *) 0)
+#endif
+typedef struct { char x; long long y; } ac__type_alignof_;"; then :
+
+else
+  if test "$ac_cv_type_long_long" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute alignment of long long
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_alignof_long_long=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_alignof_long_long" >&5
+$as_echo "$ac_cv_alignof_long_long" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define ALIGNOF_LONG_LONG $ac_cv_alignof_long_long
+_ACEOF
+
+
+                fi
+                if test "x${ac_cv_sizeof_unsigned_long_long}" = "x"; then
+                  test -z "${ac_cv_sizeof_unsigned_long_long}"
+                  # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking size of unsigned long long" >&5
+$as_echo_n "checking size of unsigned long long... " >&6; }
+if ${ac_cv_sizeof_unsigned_long_long+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (unsigned long long))" "ac_cv_sizeof_unsigned_long_long"        "$ac_includes_default"; then :
+
+else
+  if test "$ac_cv_type_unsigned_long_long" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (unsigned long long)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof_unsigned_long_long=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof_unsigned_long_long" >&5
+$as_echo "$ac_cv_sizeof_unsigned_long_long" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define SIZEOF_UNSIGNED_LONG_LONG $ac_cv_sizeof_unsigned_long_long
+_ACEOF
+
+
+                fi
+                if test "x${ac_cv_alignof_unsigned_long_long}" = "x"; then
+                  test -z "${ac_cv_alignof_unsigned_long_long}"
+                  # The cast to long int works around a bug in the HP C Compiler,
+# see AC_CHECK_SIZEOF for more information.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking alignment of unsigned long long" >&5
+$as_echo_n "checking alignment of unsigned long long... " >&6; }
+if ${ac_cv_alignof_unsigned_long_long+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) offsetof (ac__type_alignof_, y)" "ac_cv_alignof_unsigned_long_long"        "$ac_includes_default
+#ifndef offsetof
+# define offsetof(type, member) ((char *) &((type *) 0)->member - (char *) 0)
+#endif
+typedef struct { char x; unsigned long long y; } ac__type_alignof_;"; then :
+
+else
+  if test "$ac_cv_type_unsigned_long_long" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute alignment of unsigned long long
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_alignof_unsigned_long_long=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_alignof_unsigned_long_long" >&5
+$as_echo "$ac_cv_alignof_unsigned_long_long" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define ALIGNOF_UNSIGNED_LONG_LONG $ac_cv_alignof_unsigned_long_long
+_ACEOF
+
+
+                fi
+
+$as_echo "#define USE_LONG_LONG 1" >>confdefs.h
+
+                export DEFS="${DEFS} -DUSE_LONG_LONG"
+fi
+ac_fn_c_check_type "$LINENO" "unsigned long long" "ac_cv_type_unsigned_long_long" "$ac_includes_default"
+if test "x$ac_cv_type_unsigned_long_long" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_UNSIGNED_LONG_LONG 1
+_ACEOF
+
+if test "x${ac_cv_sizeof_long_long}" = "x"; then
+                  test -z "${ac_cv_sizeof_long_long}"
+                  # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking size of long long" >&5
+$as_echo_n "checking size of long long... " >&6; }
+if ${ac_cv_sizeof_long_long+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (long long))" "ac_cv_sizeof_long_long"        "$ac_includes_default"; then :
+
+else
+  if test "$ac_cv_type_long_long" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (long long)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof_long_long=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof_long_long" >&5
+$as_echo "$ac_cv_sizeof_long_long" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define SIZEOF_LONG_LONG $ac_cv_sizeof_long_long
+_ACEOF
+
+
+                fi
+                if test "x${ac_cv_alignof_long_long}" = "x"; then
+                  test -z "${ac_cv_alignof_long_long}"
+                  # The cast to long int works around a bug in the HP C Compiler,
+# see AC_CHECK_SIZEOF for more information.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking alignment of long long" >&5
+$as_echo_n "checking alignment of long long... " >&6; }
+if ${ac_cv_alignof_long_long+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) offsetof (ac__type_alignof_, y)" "ac_cv_alignof_long_long"        "$ac_includes_default
+#ifndef offsetof
+# define offsetof(type, member) ((char *) &((type *) 0)->member - (char *) 0)
+#endif
+typedef struct { char x; long long y; } ac__type_alignof_;"; then :
+
+else
+  if test "$ac_cv_type_long_long" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute alignment of long long
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_alignof_long_long=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_alignof_long_long" >&5
+$as_echo "$ac_cv_alignof_long_long" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define ALIGNOF_LONG_LONG $ac_cv_alignof_long_long
+_ACEOF
+
+
+                fi
+                if test "x${ac_cv_sizeof_unsigned_long_long}" = "x"; then
+                  test -z "${ac_cv_sizeof_unsigned_long_long}"
+                  # The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking size of unsigned long long" >&5
+$as_echo_n "checking size of unsigned long long... " >&6; }
+if ${ac_cv_sizeof_unsigned_long_long+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) (sizeof (unsigned long long))" "ac_cv_sizeof_unsigned_long_long"        "$ac_includes_default"; then :
+
+else
+  if test "$ac_cv_type_unsigned_long_long" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute sizeof (unsigned long long)
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_sizeof_unsigned_long_long=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sizeof_unsigned_long_long" >&5
+$as_echo "$ac_cv_sizeof_unsigned_long_long" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define SIZEOF_UNSIGNED_LONG_LONG $ac_cv_sizeof_unsigned_long_long
+_ACEOF
+
+
+                fi
+                if test "x${ac_cv_alignof_unsigned_long_long}" = "x"; then
+                  test -z "${ac_cv_alignof_unsigned_long_long}"
+                  # The cast to long int works around a bug in the HP C Compiler,
+# see AC_CHECK_SIZEOF for more information.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking alignment of unsigned long long" >&5
+$as_echo_n "checking alignment of unsigned long long... " >&6; }
+if ${ac_cv_alignof_unsigned_long_long+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if ac_fn_c_compute_int "$LINENO" "(long int) offsetof (ac__type_alignof_, y)" "ac_cv_alignof_unsigned_long_long"        "$ac_includes_default
+#ifndef offsetof
+# define offsetof(type, member) ((char *) &((type *) 0)->member - (char *) 0)
+#endif
+typedef struct { char x; unsigned long long y; } ac__type_alignof_;"; then :
+
+else
+  if test "$ac_cv_type_unsigned_long_long" = yes; then
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+as_fn_error 77 "cannot compute alignment of unsigned long long
+See \`config.log' for more details" "$LINENO" 5; }
+   else
+     ac_cv_alignof_unsigned_long_long=0
+   fi
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_alignof_unsigned_long_long" >&5
+$as_echo "$ac_cv_alignof_unsigned_long_long" >&6; }
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define ALIGNOF_UNSIGNED_LONG_LONG $ac_cv_alignof_unsigned_long_long
+_ACEOF
+
+
+                fi
+
+$as_echo "#define USE_LONG_LONG 1" >>confdefs.h
+
+                export DEFS="${DEFS} -DUSE_LONG_LONG"
+fi
 
 # Checks for library functions not checked above.
 unset ac_cv_header_stdlib_h
@@ -4889,11 +5721,8 @@ _ACEOF
 fi
 done
 
-
-
-
+# Output.
 ac_config_files="$ac_config_files Makefile"
-
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -5003,6 +5832,18 @@ LIBOBJS=$ac_libobjs
 LTLIBOBJS=$ac_ltlibobjs
 
 
+if test -z "${MAINTAINER_MODE_TRUE}" && test -z "${MAINTAINER_MODE_FALSE}"; then
+  as_fn_error $? "conditional \"MAINTAINER_MODE\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking that generated files are newer than configure" >&5
+$as_echo_n "checking that generated files are newer than configure... " >&6; }
+   if test -n "$am_sleep_pid"; then
+     # Hide warnings about reused PIDs.
+     wait $am_sleep_pid 2>/dev/null
+   fi
+   { $as_echo "$as_me:${as_lineno-$LINENO}: result: done" >&5
+$as_echo "done" >&6; }
 
 
 : "${CONFIG_STATUS=./config.status}"
@@ -5474,6 +6315,7 @@ gives unlimited permission to copy, distribute and modify it."
 ac_pwd='$ac_pwd'
 srcdir='$srcdir'
 INSTALL='$INSTALL'
+MKDIR_P='$MKDIR_P'
 test -n "\$AWK" || AWK=awk
 _ACEOF
 
@@ -6034,6 +6876,11 @@ ac_abs_srcdir=$ac_abs_top_srcdir$ac_dir_suffix
   [\\/$]* | ?:[\\/]* ) ac_INSTALL=$INSTALL ;;
   *) ac_INSTALL=$ac_top_build_prefix$INSTALL ;;
   esac
+  ac_MKDIR_P=$MKDIR_P
+  case $MKDIR_P in
+  [\\/$]* | ?:[\\/]* ) ;;
+  */*) ac_MKDIR_P=$ac_top_build_prefix$MKDIR_P ;;
+  esac
 _ACEOF
 
 cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
@@ -6088,6 +6935,7 @@ s&@builddir@&$ac_builddir&;t t
 s&@abs_builddir@&$ac_abs_builddir&;t t
 s&@abs_top_builddir@&$ac_abs_top_builddir&;t t
 s&@INSTALL@&$ac_INSTALL&;t t
+s&@MKDIR_P@&$ac_MKDIR_P&;t t
 $ac_datarootdir_hack
 "
 eval sed \"\$ac_sed_extra\" "$ac_file_inputs" | $AWK -f "$ac_tmp/subs.awk" \

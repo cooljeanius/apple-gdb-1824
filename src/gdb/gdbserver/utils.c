@@ -31,7 +31,7 @@
    Then return to command level.  */
 
 void
-perror_with_name (char *string)
+perror_with_name(char *string)
 {
 #ifndef STDC_HEADERS
   extern int errno;
@@ -39,26 +39,28 @@ perror_with_name (char *string)
   const char *err;
   char *combined;
 
-  err = strerror (errno);
+/* in case a macro has re-defined this function: */
+#undef strerror
+  err = strerror(errno);
   if (err == NULL)
     err = "unknown error";
 
-  combined = (char *) alloca (strlen (err) + strlen (string) + 3);
-  strcpy (combined, string);
-  strcat (combined, ": ");
-  strcat (combined, err);
+  combined = (char *)alloca(strlen(err) + strlen(string) + 3);
+  strcpy(combined, string);
+  strcat(combined, ": ");
+  strcat(combined, err);
 
-  error ("%s.", combined);
+  error("%s.", combined);
 }
 
-/* Print an error message and return to command level.
-   STRING is the error message, used as a fprintf string,
-   and ARG is passed as an argument to it.  */
+extern jmp_buf toplevel;
 
+/* Print an error message and return to command level.
+ * STRING is the error message, used as a fprintf string,
+ * and ARG is passed as an argument to it.  */
 void
-error (const char *string,...)
+error(const char *string,...)
 {
-  extern jmp_buf toplevel;
   va_list args;
   va_start (args, string);
   fflush (stdout);

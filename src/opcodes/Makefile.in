@@ -92,9 +92,10 @@ DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog THANKS \
 	$(top_srcdir)/../missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/gettext-sister.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
+	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/m4/nls.m4 \
+	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
 	$(top_srcdir)/acinclude.m4 $(top_srcdir)/../bfd/acinclude.m4 \
 	$(top_srcdir)/../config/acx.m4 $(top_srcdir)/../bfd/bfd.m4 \
 	$(top_srcdir)/../bfd/warning.m4 \
@@ -1456,6 +1457,7 @@ uninstall-am: uninstall-bfdlibLTLIBRARIES
 
 disassemble.lo: disassemble.c $(INCDIR)/dis-asm.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c @archdefs@ $(srcdir)/disassemble.c
+disassemle.o: disassemble.lo
 
 stamp-lib: libopcodes.la @MAINT@ config.status $(PATH_TO_MOVEIFCHANGE)
 	libtooldir=`$(LIBTOOL) --config | $(SED) -n -e 's/^objdir=//p'`; \
@@ -1577,20 +1579,25 @@ stamp-m32c: $(CGENDEPS) $(srcdir)/../cpu/m32c.cpu $(srcdir)/../cpu/m32c.opc
 m32c-asm.lo: m32c-asm.c sysdep.h config.h $(BFD_H) \
   $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h m32c-desc.h \
   $(INCDIR)/opcode/cgen.h $(m32c_opc_h) opintl.h
+m32c-asm.o: m32c-asm.lo
 m32c-desc.lo: m32c-desc.c sysdep.h config.h $(BFD_H) \
   $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h m32c-desc.h \
   $(INCDIR)/opcode/cgen.h $(m32c_opc_h) opintl.h
+m32c-desc.o: m32c-desc.lo
 m32c-dis.lo: m32c-dis.c sysdep.h config.h $(INCDIR)/dis-asm.h \
   $(BFD_H) $(INCDIR)/ansidecl.h \
   $(INCDIR)/symcat.h m32c-desc.h $(INCDIR)/opcode/cgen.h \
   $(m32c_opc_h) opintl.h
+m32c-dis.o: m32c-dis.lo
 m32c-ibld.lo: m32c-ibld.c sysdep.h config.h $(INCDIR)/dis-asm.h \
   $(BFD_H) $(INCDIR)/ansidecl.h \
   $(INCDIR)/symcat.h m32c-desc.h $(INCDIR)/opcode/cgen.h \
   $(m32c_opc_h) opintl.h
+m32c-ibld.o: m32c-ibld.lo
 m32c-opc.lo: m32c-opc.c sysdep.h config.h $(BFD_H) \
   $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h m32c-desc.h \
   $(INCDIR)/opcode/cgen.h $(m32c_opc_h)
+m32c-opc.o: m32c-opc.lo
 
 $(srcdir)/m32r-desc.h $(srcdir)/m32r-desc.c $(srcdir)/m32r-opc.h $(srcdir)/m32r-opc.c $(srcdir)/m32r-ibld.c $(srcdir)/m32r-opinst.c $(srcdir)/m32r-asm.c $(srcdir)/m32r-dis.c: $(M32R_DEPS)
 	@echo "ensuring $@ is up-to-date"
@@ -1654,7 +1661,6 @@ i386-opc.lo: i386-opc.c i386-opc.h sysdep.h config.h $(INCDIR)/ansidecl.h \
   $(INCDIR)/libiberty.h $(INCDIR)/opcode/i386.h
 
 ia64-gen: ia64-gen.o @MAINT@ $(LIBIBERTY) @MAINT@ ia64-gen.lo
-	$(MAKE) ia64-gen.o ia64-gen.lo
 	$(LINK) ia64-gen.o $(LIBIBERTY)
 
 ia64-gen.o: ia64-gen.c $(INCDIR)/ansidecl.h $(INCDIR)/libiberty.h \
@@ -1674,6 +1680,7 @@ s390-opc.tab: s390-mkopc s390-opc.txt
 
 sh-dis.lo: sh-dis.c sh-opc.h sysdep.h config.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c @archdefs@ $<
+sh-dis.o: sh-dis.lo
 
 # This dependency stuff is copied from BFD.
 

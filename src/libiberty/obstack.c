@@ -508,3 +508,5 @@ POINTER (obstack_copy0) (struct obstack *obstack, POINTER pointer, int length)
 #endif /* 0 */
 
 #endif	/* !ELIDE_CODE */
+
+/* EOF */

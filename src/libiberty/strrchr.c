@@ -1,4 +1,4 @@
-/* Portable version of strrchr().
+/* strrchr.c: Portable version of strrchr().
    This function is in the public domain. */
 
 /*
@@ -16,13 +16,15 @@ null character, the results are undefined.
 #include <ansidecl.h>
 
 char *
-strrchr (register const char *s, int c)
+strrchr(register const char *s, int c)
 {
   char *rtnval = 0;
 
   do {
     if (*s == c)
-      rtnval = (char*) s;
+      rtnval = (char *)s;
   } while (*s++);
   return (rtnval);
 }
+
+/* EOF */

@@ -21,10 +21,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #include <errno.h>
 #include <stdarg.h>
 #include <stdio.h>
+#if defined(HAVE_STDLIB_H) || defined(STDC_HEADERS) || defined(__STDC__)
+# include <stdlib.h> /* for exit() */
+#endif /* HAVE_STDLIB_H || STDC_HEADERS || __STDC__ */
 #include <string.h>
 
 #include "defs.h"
 #include "server.h"
+
+#if !defined(_SYS_ERRNO_H_) && !defined(errno)
+extern int errno;
+#endif /* !_SYS_ERRNO_H_ && !errno */
 
 extern int target_byte_order;
 
@@ -35,7 +42,6 @@ extern int target_byte_order;
  * Then return to command level. */
 void perror_with_name(const char *string)
 {
-  extern int errno;
   char *err;
   char *combined;
 
@@ -47,6 +53,8 @@ void perror_with_name(const char *string)
   strcat(combined, err);
 
   output_error("%s.\n", combined);
+
+  exit(1);
 }
 
 
@@ -56,7 +64,6 @@ void perror_with_name(const char *string)
  * This converts an array of N bytes in FROM to a null-terminated ascii hex
  * representation in TO.  If SWAP is 1 the bytes are swapped.
  */
-
 void convert_bytes_to_ascii(char *from, char * to, int n, int swap)
 {
   int nib;

@@ -29,10 +29,19 @@ in
 VPATH=@srcdir@
 
 build_alias=@build_alias@
+build_noncanonical=@build_noncanonical@
+build_vendor=@build_vendor@
+build_os=@build_os@
 build=@build@
 host_alias=@host_alias@
+host_noncanonical=@host_noncanonical@
+host_vendor=@host_vendor@
+host_os=@host_os@
 host=@host@
 target_alias=@target_alias@
+target_noncanonical=@target_noncanonical@
+target_vendor=@target_vendor@
+target_os=@target_os@
 target=@target@
 
 program_transform_name = @program_transform_name@
@@ -53,6 +62,10 @@ libdir = @libdir@
 includedir = @includedir@
 oldincludedir = @oldincludedir@
 infodir = @infodir@
+datarootdir = @datarootdir@
+docdir = @docdir@
+pdfdir = @pdfdir@
+htmldir = @htmldir@
 mandir = @mandir@
 man1dir = $(mandir)/man1
 man2dir = $(mandir)/man2
@@ -63,7 +76,6 @@ man6dir = $(mandir)/man6
 man7dir = $(mandir)/man7
 man8dir = $(mandir)/man8
 man9dir = $(mandir)/man9
-datarootdir = @datarootdir@
 
 INSTALL = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -73,6 +85,13 @@ LN = @LN@
 LN_S = @LN_S@
 MKDIR_P = @MKDIR_P@
 SED = @SED@
+
+# ------------------------------
+# automake-style maintainer mode
+# ------------------------------
+MAINT = @MAINT@
+MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
+MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 
 # --------------------------------
 # automake-style verbosity control
@@ -126,6 +145,19 @@ BUILD_SUBDIR = @build_subdir@
 # directories built for the build system.
 BUILD_CONFIGARGS = @build_configargs@ --with-build-subdir="$(BUILD_SUBDIR)"
 
+# Linker flags to use on the host, for stage1 or when not
+# bootstrapping.
+STAGE1_LDFLAGS = @stage1_ldflags@
+
+# Libraries to use on the host, for stage1 or when not bootstrapping.
+STAGE1_LIBS = @stage1_libs@
+
+# Linker flags to use for stage2 and later.
+POSTSTAGE1_LDFLAGS = @poststage1_ldflags@
+
+# Libraries to use for stage2 and later.
+POSTSTAGE1_LIBS = @poststage1_libs@
+
 # This is the list of variables to export in the environment when
 # configuring any subdirectory.  It must also be exported whenever
 # recursing into a build directory in case that directory's Makefile
@@ -151,12 +183,21 @@ BUILD_EXPORTS = \
 	CXXFLAGS="$(CXXFLAGS_FOR_BUILD) $(CXX_BUILD_ARCHFLAGS)"; export CXXFLAGS; \
 	GCJ="$(GCJ_FOR_BUILD)"; export GCJ; \
 	GFORTRAN="$(GFORTRAN_FOR_BUILD)"; export GFORTRAN; \
+	GOC="$(GOC_FOR_BUILD)"; export GOC; \
+	GOCFLAGS="$(GOCFLAGS_FOR_BUILD)"; export GOCFLAGS; \
 	DLLTOOL="$(DLLTOOL_FOR_BUILD)"; export DLLTOOL; \
 	LD="$(LD_FOR_BUILD)"; export LD; \
 	LDFLAGS="$(LDFLAGS_FOR_BUILD)"; export LDFLAGS; \
 	NM="$(NM_FOR_BUILD)"; export NM; \
 	RANLIB="$(RANLIB_FOR_BUILD)"; export RANLIB; \
-	WINDRES="$(WINDRES_FOR_BUILD)"; export WINDRES;
+	WINDRES="$(WINDRES_FOR_BUILD)"; export WINDRES; \
+	WINDMC="$(WINDMC_FOR_BUILD)"; export WINDMC;
+
+# These variables must be set on the make command line for directories
+# built for the build system to override those in BASE_FLAGS_TO_PASS.
+EXTRA_BUILD_FLAGS = \
+	CFLAGS="$(CFLAGS_FOR_BUILD)" \
+	LDFLAGS="$(LDFLAGS_FOR_BUILD)"
 
 # This is the list of directories to built for the host system.
 SUBDIRS = @configdirs@
@@ -171,10 +212,14 @@ HOST_SUBDIR = @host_subdir@
 HOST_EXPORTS = \
 	$(BASE_EXPORTS) \
 	CC="$(CC)"; export CC; \
+	ADA_CFLAGS="$(ADA_CFLAGS)"; export ADA_CFLAGS; \
 	CFLAGS="$(CFLAGS) $(C_HOST_ARCHFLAGS)"; export CFLAGS; \
 	CONFIG_SHELL="$(SHELL)"; export CONFIG_SHELL; \
 	CXX="$(CXX)"; export CXX; \
 	CXXFLAGS="$(CXXFLAGS) $(CXX_HOST_ARCHFLAGS)"; export CXXFLAGS; \
+	GCJ="$(GCJ)"; export GCJ; \
+	GFORTRAN="$(GFORTRAN)"; export GFORTRAN; \
+	GOC="$(GOC)"; export GOC; \
 	AR="$(AR)"; export AR; \
 	AS="$(AS)"; export AS; \
 	CC_FOR_BUILD="$(CC_FOR_BUILD)"; export CC_FOR_BUILD; \
@@ -184,12 +229,31 @@ HOST_EXPORTS = \
 	NM="$(NM)"; export NM; \
 	RANLIB="$(RANLIB)"; export RANLIB; \
 	WINDRES="$(WINDRES)"; export WINDRES; \
+	WINDMC="$(WINDMC)"; export WINDMC; \
 	OBJCOPY="$(OBJCOPY)"; export OBJCOPY; \
 	OBJDUMP="$(OBJDUMP)"; export OBJDUMP; \
+	READELF="$(READELF)"; export READELF; \
+	AR_FOR_TARGET="$(AR_FOR_TARGET)"; export AR_FOR_TARGET; \
+	AS_FOR_TARGET="$(AS_FOR_TARGET)"; export AS_FOR_TARGET; \
+	GCC_FOR_TARGET="$(GCC_FOR_TARGET)"; export GCC_FOR_TARGET; \
+	LD_FOR_TARGET="$(LD_FOR_TARGET)"; export LD_FOR_TARGET; \
+	NM_FOR_TARGET="$(NM_FOR_TARGET)"; export NM_FOR_TARGET; \
+	OBJDUMP_FOR_TARGET="$(OBJDUMP_FOR_TARGET)"; export OBJDUMP_FOR_TARGET; \
+	RANLIB_FOR_TARGET="$(RANLIB_FOR_TARGET)"; export RANLIB_FOR_TARGET; \
+	READELF_FOR_TARGET="$(READELF_FOR_TARGET)"; export READELF_FOR_TARGET; \
 	TOPLEVEL_CONFIGURE_ARGUMENTS="$(TOPLEVEL_CONFIGURE_ARGUMENTS)"; export TOPLEVEL_CONFIGURE_ARGUMENTS; \
+	HOST_LIBS="$(STAGE1_LIBS)"; export HOST_LIBS; \
 	GMPLIBS="$(HOST_GMPLIBS)"; export GMPLIBS; \
 	GMPINC="$(HOST_GMPINC)"; export GMPINC; \
+	ISLLIBS="$(HOST_ISLLIBS)"; export ISLLIBS; \
+	ISLINC="$(HOST_ISLINC)"; export ISLINC; \
+	LIBELFLIBS="$(HOST_LIBELFLIBS)" ; export LIBELFLIBS; \
+	LIBELFINC="$(HOST_LIBELFINC)" ; export LIBELFINC; \
 	$(RPATH_ENVVAR)=`echo "$(HOST_LIB_PATH)$$$(RPATH_ENVVAR)" | $(SED) 's,::*,:,g;s,^:*,,;s,:*$$,,'`; export $(RPATH_ENVVAR);
+
+POSTSTAGE1_CXX_EXPORT = \
+	CXX='$(CXX)'; export CXX; \
+	CXX_FOR_BUILD='$(CXX_FOR_BUILD)'; export CXX_FOR_BUILD;
 
 # Similar, for later GCC stages.
 POSTSTAGE1_HOST_EXPORTS = \
@@ -200,7 +264,10 @@ POSTSTAGE1_HOST_EXPORTS = \
 	CC_FOR_BUILD="$(STAGE_CC_WRAPPER) \
 	  $$r/$(HOST_SUBDIR)/prev-gcc/xgcc$(exeext) \
 	  -B$$r/$(HOST_SUBDIR)/prev-gcc/ \
-	  -B$(build_tooldir)/bin/"; export CC_FOR_BUILD;
+	  -B$(build_tooldir)/bin/"; export CC_FOR_BUILD; \
+	$(POSTSTAGE1_CXX_EXPORT) \
+	LDFLAGS="$(POSTSTAGE1_LDFLAGS) $(BOOT_LDFLAGS)"; export LDFLAGS; \
+	HOST_LIBS="$(POSTSTAGE1_LIBS)"; export HOST_LIBS;
 
 # This is set by the configure script to the list of directories which
 # should be built using the target tools.
@@ -223,12 +290,18 @@ BASE_TARGET_EXPORTS = \
 	CXXFLAGS="$(CXXFLAGS_FOR_TARGET) $(CXX_TARG_ARCHFLAGS)"; export CXXFLAGS; \
 	GCJ="$(GCJ_FOR_TARGET)"; export GCJ; \
 	GFORTRAN="$(GFORTRAN_FOR_TARGET)"; export GFORTRAN; \
+	GOC="$(GOC_FOR_TARGET) $(XGCC_FLAGS_FOR_TARGET) $$TFLAGS"; export GOC; \
 	DLLTOOL="$(DLLTOOL_FOR_TARGET)"; export DLLTOOL; \
 	LD="$(LD_FOR_TARGET)"; export LD; \
 	LDFLAGS="$(LDFLAGS_FOR_TARGET)"; export LDFLAGS; \
+	LIPO="$(LIPO_FOR_TARGET)"; export LIPO; \
 	NM="$(NM_FOR_TARGET)"; export NM; \
+	OBJDUMP="$(OBJDUMP_FOR_TARGET)"; export OBJDUMP; \
 	RANLIB="$(RANLIB_FOR_TARGET)"; export RANLIB; \
+	READELF="$(READELF_FOR_TARGET)"; export READELF; \
+	STRIP="$(STRIP_FOR_TARGET)"; export STRIP; \
 	WINDRES="$(WINDRES_FOR_TARGET)"; export WINDRES; \
+	WINDMC="$(WINDMC_FOR_TARGET)"; export WINDMC; \
 	$(RPATH_ENVVAR)=`echo "$(HOST_LIB_PATH)$(TARGET_LIB_PATH)$$$(RPATH_ENVVAR)" | $(SED) 's,::*,:,g;s,^:*,,;s,:*$$,,'`; export $(RPATH_ENVVAR);
 
 RAW_CXX_TARGET_EXPORTS = \
@@ -243,6 +316,16 @@ NORMAL_TARGET_EXPORTS = \
 # Where to find GMP
 HOST_GMPLIBS = @gmplibs@
 HOST_GMPINC = @gmpinc@
+
+# Where to find ISL
+HOST_ISLLIBS = @isllibs@
+HOST_ISLINC = @islinc@
+
+# Where to find libelf
+HOST_LIBELFLIBS = @libelflibs@
+HOST_LIBELFINC = @libelfinc@
+
+EXTRA_CONFIGARGS_LIBJAVA = @EXTRA_CONFIGARGS_LIBJAVA@
 
 # ----------------------------------------------
 # Programs producing files for the BUILD machine
@@ -260,11 +343,27 @@ PWD_COMMAND = $${PWDCMD-pwd}
 
 # compilers to use to create programs which must be run in the build
 # environment.
+AR_FOR_BUILD = @AR_FOR_BUILD@
+AS_FOR_BUILD = @AS_FOR_BUILD@
 CC_FOR_BUILD = @CC_FOR_BUILD@
 CFLAGS_FOR_BUILD = @CFLAGS_FOR_BUILD@
 LIBCFLAGS_FOR_BUILD = $(CFLAGS_FOR_BUILD) $(C_BUILD_ARCHFLAGS)
 
 CXX_FOR_BUILD = $(CXX)
+CXXFLAGS_FOR_BUILD = @CXXFLAGS_FOR_BUILD@
+LIBCXXFLAGS_FOR_BUILD = $(CXXFLAGS_FOR_BUILD) $(CXX_BUILD_ARCHFLAGS)
+
+# ...continued:
+DLLTOOL_FOR_BUILD = @DLLTOOL_FOR_BUILD@
+GCJ_FOR_BUILD = @GCJ_FOR_BUILD@
+GFORTRAN_FOR_BUILD = @GFORTRAN_FOR_BUILD@
+GOC_FOR_BUILD = @GOC_FOR_BUILD@
+LDFLAGS_FOR_BUILD = @LDFLAGS_FOR_BUILD@
+LD_FOR_BUILD = @LD_FOR_BUILD@
+NM_FOR_BUILD = @NM_FOR_BUILD@
+RANLIB_FOR_BUILD = @RANLIB_FOR_BUILD@
+WINDMC_FOR_BUILD = @WINDMC_FOR_BUILD@
+WINDRES_FOR_BUILD = @WINDRES_FOR_BUILD@
 
 # Special variables passed down in EXTRA_GCC_FLAGS. They are defined
 # here so that they can be overridden by Makefile fragments.
@@ -274,6 +373,10 @@ BUILD_PREFIX_1 = @BUILD_PREFIX_1@
 # Flags to pass to stage2 and later makes. They are defined
 # here so that they can be overridden by Makefile fragments.
 BOOT_CFLAGS= -ggdb -O1
+BOOT_LDFLAGS=
+BOOT_ADAFLAGS= -gnatpg
+
+AWK = @AWK@
 
 CONFIGURED_BISON = @CONFIGURED_BISON@
 BISON = `if [ -f $$r/$(BUILD_SUBDIR)/bison/tests/bison ] ; then \
@@ -344,6 +447,7 @@ AR_FLAGS = rc
 CC = @CC@
 CFLAGS = @CFLAGS@
 LIBCFLAGS = $(CFLAGS) $(C_HOST_ARCHFLAGS)
+GOCFLAGS = $(CFLAGS)
 
 CXX = @CXX@
 CXXFLAGS = @CXXFLAGS@
@@ -355,12 +459,36 @@ NM = @NM@
 
 LD = @LD@
 LDFLAGS = 
+CONFIGURED_LDFLAGS = @LDFLAGS@
 
+LIPO = @LIPO@
+OBJDUMP = @OBJDUMP@
 RANLIB = @RANLIB@
+READELF = @READELF@
+STRIP = @STRIP@
 
 WINDRES = @WINDRES@
+WINDMC = @WINDMC@
+
+GNATBIND = @GNATBIND@
+GNATMAKE = @GNATMAKE@
 
 PICFLAG = 
+
+TFLAGS =
+
+# Only build the C compiler for stage1, because that is the only one that
+# we can guarantee will build with the native compiler, and also it is the
+# only thing useful for building stage2. STAGE1_CFLAGS (via CFLAGS),
+# MAKEINFO and MAKEINFOFLAGS are explicitly passed here to make them
+# overrideable (for a bootstrap build stage1 also builds gcc.info).
+
+STAGE1_CFLAGS = @stage1_cflags@
+STAGE1_CHECKING = @stage1_checking@
+STAGE1_LANGUAGES = @stage1_languages@
+
+do-compare = @do_compare@
+do-compare3 = $(do-compare)
 
 # -----------------------------------------------
 # Programs producing files for the TARGET machine
@@ -404,10 +532,10 @@ USUAL_CC_FOR_TARGET = ` \
   if [ -f $$r/$(HOST_SUBDIR)/gcc/xgcc ] ; then \
     echo $$r/$(HOST_SUBDIR)/gcc/xgcc -B$$r/$(HOST_SUBDIR)/gcc ; \
   else \
-    if [ '$(host)' = '$(target)' ] ; then \
+    if [ 'x$(host)' = 'x$(target)' ]; then \
       echo $(CC); \
     else \
-      echo $(CONFIGURED_CC_FOR_TARGET) ; \
+      echo $(CONFIGURED_CC_FOR_TARGET); \
     fi; \
   fi`
 
@@ -484,6 +612,7 @@ USUAL_GFORTRAN_FOR_TARGET = ` \
     fi; \
   fi`
 
+GOC_FOR_TARGET=$(STAGE_CC_WRAPPER) @GOC_FOR_TARGET@
 
 DLLTOOL_FOR_TARGET=@DLLTOOL_FOR_TARGET@
 CONFIGURED_DLLTOOL_FOR_TARGET=@CONFIGURED_DLLTOOL_FOR_TARGET@
@@ -501,12 +630,12 @@ USUAL_DLLTOOL_FOR_TARGET = ` \
 LD_FOR_TARGET=@LD_FOR_TARGET@
 CONFIGURED_LD_FOR_TARGET=@CONFIGURED_LD_FOR_TARGET@
 USUAL_LD_FOR_TARGET = ` \
-  if [ -f $$r/$(HOST_SUBDIR)/ld/ld-new ] ; then \
+  if [ -f $$r/$(HOST_SUBDIR)/ld/ld-new ]; then \
     echo $$r/$(HOST_SUBDIR)/ld/ld-new ; \
   elif [ -f $$r/$(HOST_SUBDIR)/gcc/collect-ld ]; then \
     echo $$r/$(HOST_SUBDIR)/gcc/collect-ld ; \
   else \
-    if [ '$(host)' = '$(target)' ] ; then \
+    if [ 'x$(host)' = 'x$(target)' ]; then \
       echo $(LD); \
     else \
       echo $(CONFIGURED_LD_FOR_TARGET) ; \
@@ -514,51 +643,66 @@ USUAL_LD_FOR_TARGET = ` \
   fi`
 
 LDFLAGS_FOR_TARGET = 
+CONFIGURED_LDFLAGS_FOR_TARGET = @LDFLAGS_FOR_TARGET@
+
+LIPO_FOR_TARGET=@LIPO_FOR_TARGET@
 
 NM_FOR_TARGET=@NM_FOR_TARGET@
 CONFIGURED_NM_FOR_TARGET=@CONFIGURED_NM_FOR_TARGET@
 USUAL_NM_FOR_TARGET = ` \
-  if [ -f $$r/$(HOST_SUBDIR)/binutils/nm-new ] ; then \
+  if [ -f $$r/$(HOST_SUBDIR)/binutils/nm-new ]; then \
     echo $$r/$(HOST_SUBDIR)/binutils/nm-new ; \
   elif [ -f $$r/$(HOST_SUBDIR)/gcc/nm ]; then \
     echo $$r/$(HOST_SUBDIR)/gcc/nm ; \
   else \
-    if [ '$(host)' = '$(target)' ] ; then \
+    if [ 'x$(host)' = 'x$(target)' ]; then \
       echo $(NM); \
     else \
-      echo $(CONFIGURED_NM_FOR_TARGET) ; \
+      echo $(CONFIGURED_NM_FOR_TARGET); \
     fi; \
   fi`
+
+OBJDUMP_FOR_TARGET=@OBJDUMP_FOR_TARGET@
 
 RANLIB_FOR_TARGET=@RANLIB_FOR_TARGET@
 CONFIGURED_RANLIB_FOR_TARGET=@CONFIGURED_RANLIB_FOR_TARGET@
 USUAL_RANLIB_FOR_TARGET = ` \
-  if [ -f $$r/$(HOST_SUBDIR)/binutils/ranlib ] ; then \
+  if [ -f $$r/$(HOST_SUBDIR)/binutils/ranlib ]; then \
     echo $$r/$(HOST_SUBDIR)/binutils/ranlib ; \
   else \
-    if [ '$(host)' = '$(target)' ] ; then \
+    if [ 'x$(host)' = 'x$(target)' ]; then \
       if [ x'$(RANLIB)' != x'' ]; then \
          echo $(RANLIB); \
       else \
          echo ranlib; \
       fi; \
     else \
-      echo $(CONFIGURED_RANLIB_FOR_TARGET) ; \
+      echo $(CONFIGURED_RANLIB_FOR_TARGET); \
     fi; \
   fi`
+
+READELF_FOR_TARGET=@READELF_FOR_TARGET@
 
 WINDRES_FOR_TARGET=@WINDRES_FOR_TARGET@
 CONFIGURED_WINDRES_FOR_TARGET=@CONFIGURED_WINDRES_FOR_TARGET@
 USUAL_WINDRES_FOR_TARGET = ` \
-  if [ -f $$r/$(HOST_SUBDIR)/binutils/windres ] ; then \
+  if [ -f $$r/$(HOST_SUBDIR)/binutils/windres ]; then \
     echo $$r/$(HOST_SUBDIR)/binutils/windres ; \
   else \
-    if [ '$(host)' = '$(target)' ] ; then \
+    if [ 'x$(host)' = 'x$(target)' ]; then \
       echo $(WINDRES); \
     else \
-      echo $(CONFIGURED_WINDRES_FOR_TARGET) ; \
+      echo $(CONFIGURED_WINDRES_FOR_TARGET); \
     fi; \
   fi`
+
+WINDMC_FOR_TARGET=@WINDMC_FOR_TARGET@
+
+COMPILER_AS_FOR_TARGET=@COMPILER_AS_FOR_TARGET@
+COMPILER_LD_FOR_TARGET=@COMPILER_LD_FOR_TARGET@
+COMPILER_NM_FOR_TARGET=@COMPILER_NM_FOR_TARGET@
+
+GOCFLAGS_FOR_TARGET = -O1 -ggdb
 
 PICFLAG_FOR_TARGET = 
 
@@ -625,10 +769,18 @@ EXTRA_HOST_FLAGS = \
 	'CC=$(CC)' \
 	'CXX=$(CXX)' \
 	'DLLTOOL=$(DLLTOOL)' \
+	'GCJ=$(GCJ)' \
+	'GFORTRAN=$(GFORTRAN)' \
+	'GOC=$(GOC)' \
 	'LD=$(LD)' \
+	'LIPO=$(LIPO)' \
 	'NM=$(NM)' \
+	'OBJDUMP=$(OBJDUMP)' \
 	'RANLIB=$(RANLIB)' \
-	'WINDRES=$(WINDRES)'
+	'READELF=$(READELF)' \
+	'STRIP=$(STRIP)' \
+	'WINDRES=$(WINDRES)' \
+	'WINDMC=$(WINDMC)'
 
 FLAGS_TO_PASS = $(BASE_FLAGS_TO_PASS) $(EXTRA_HOST_FLAGS)
 
@@ -655,13 +807,20 @@ EXTRA_TARGET_FLAGS = \
 	'CXX=$$(CXX_FOR_TARGET)' \
 	'CXXFLAGS=$$(CXXFLAGS_FOR_TARGET) $$(CXX_TARG_ARCHFLAGS)' \
 	'DLLTOOL=$$(DLLTOOL_FOR_TARGET)' \
+	'GCJ=$$(GCJ_FOR_TARGET) $$(XGCC_FLAGS_FOR_TARGET) $$(TFLAGS)' \
+	'GFORTRAN=$$(GFORTRAN_FOR_TARGET) $$(XGCC_FLAGS_FOR_TARGET) $$(TFLAGS)' \
+	'GOC=$$(GOC_FOR_TARGET) $$(XGCC_FLAGS_FOR_TARGET) $$(TFLAGS)' \
+	'GOCFLAGS=$$(GOCFLAGS_FOR_TARGET)' \
 	'LD=$$(LD_FOR_TARGET)' \
 	'LDFLAGS=$$(LDFLAGS_FOR_TARGET)' \
 	'LIBCFLAGS=$$(LIBCFLAGS_FOR_TARGET)' \
 	'LIBCXXFLAGS=$$(LIBCXXFLAGS_FOR_TARGET)' \
 	'NM=$$(NM_FOR_TARGET)' \
+	'OBJDUMP=$$(OBJDUMP_FOR_TARGET)' \
 	'RANLIB=$$(RANLIB_FOR_TARGET)' \
-	'WINDRES=$$(WINDRES_FOR_TARGET)'
+	'READELF=$$(READELF_FOR_TARGET)' \
+	'WINDRES=$$(WINDRES_FOR_TARGET)' \
+	'WINDMC=$$(WINDMC_FOR_TARGET)'
 
 TARGET_FLAGS_TO_PASS = $(BASE_FLAGS_TO_PASS) $(EXTRA_TARGET_FLAGS)
 
@@ -741,12 +900,14 @@ do-[+make_target+]: unstage [+make_target+]-host [+make_target+]-target stage
 
 # Here are the targets which correspond to the do-X targets.
 
-.PHONY: info installcheck dvi html install-info
+.PHONY: info installcheck dvi pdf html
+.PHONY: install-info install-pdf install-html
 .PHONY: clean distclean mostlyclean maintainer-clean realclean
 .PHONY: local-clean local-distclean local-maintainer-clean
 info: do-info
 installcheck: do-installcheck
 dvi: do-dvi
+pdf: do-pdf
 html: do-html
 
 # Make sure makeinfo is built before we do a `make info', if we're
@@ -758,6 +919,10 @@ install-info: do-install-info dir.info
 	if [ -f dir.info ] ; then \
 	  $(INSTALL_DATA) dir.info $(DESTDIR)$(infodir)/dir.info ; \
 	else echo "dir.info is missing, so skipping installing it"; fi
+
+install-pdf: do-install-pdf
+
+install-html: do-install-html
 
 local-clean:
 	-rm -f *.a TEMP errs core *.o *~ \#* TAGS *.E *.log
@@ -779,6 +944,7 @@ local-distclean:
 	-rmdir texinfo/doc texinfo/info texinfo/intl texinfo/lib 2>/dev/null
 	-rmdir texinfo/makeinfo texinfo/po texinfo/util 2>/dev/null
 	-rmdir fastjar gcc libiberty texinfo zlib 2>/dev/null
+	-find . -name config.cache -exec rm -f {} \; \; 2>/dev/null
 	-rm -rf autom4te.cache || rmdir autom4te.cache
 	-rm -f .DS_Store
 
@@ -837,6 +1003,18 @@ mail-report-with-warnings.log: warning.log
 	$(srcdir)/contrib/test_summary -t -i warning.log >$@
 	chmod +x $@
 	echo If you really want to send e-mail, run ./$@ now
+
+# Local Vim config
+
+$(srcdir)/.local.vimrc: $(srcdir)/contrib/vimrc
+	$(LN_S) -fv $(srcdir)/contrib/vimrc $@
+
+$(srcdir)/.lvimrc: $(srcdir)/contrib/vimrc
+	$(LN_S) -fv $(srcdir)/contrib/vimrc $@
+
+vimrc: $(srcdir)/.local.vimrc $(srcdir)/.lvimrc
+
+.PHONY: vimrc
 
 # Installation targets.
 
@@ -1682,8 +1860,12 @@ all-prebootstrap: maybe-all-[+module+][+
 ENDFOR host_modules +]
 @endif gcc-no-bootstrap
 
+CONFIGURE_GDB_TK = @CONFIGURE_GDB_TK@
 GDB_TK = @GDB_TK@
+INSTALL_GDB_TK = @INSTALL_GDB_TK@
+configure-gdb: $(CONFIGURE_GDB_TK)
 all-gdb: $(gdbnlmrequirements) $(GDB_TK)
+install-gdb: $(INSTALL_GDB_TK)
 
 # Serialization dependencies. Host configures do NOT work well in parallel to
 # each other, due to contention over config.cache. Target configures and 
@@ -1722,7 +1904,8 @@ config.status_target: configure
 
 # Rebuilding configure.
 AUTOCONF = autoconf
-$(srcdir)/configure: @MAINT@ $(srcdir)/configure.in $(srcdir)/config/acx.m4
+$(srcdir)/configure: @MAINT@ $(srcdir)/configure.ac $(srcdir)/config/acx.m4 \
+	$(srcdir)/config/override.m4 $(srcdir)/config/proginstall.m4
 	cd $(srcdir) && $(AUTOCONF)
 .PHONY: $(srcdir)/configure
 
@@ -1839,3 +2022,5 @@ stamp-framework-gdb: $(GDB_OFILES)
 	    $(LN_S) -v Versions/Current/$(GDB_PREFIX)$(GDB) $(GDB).framework/$(GDB_PREFIX)$(GDB); \
 	fi
 	touch stamp-framework-gdb
+
+# real end of Makefile.in and Makefile.tpl

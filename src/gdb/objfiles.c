@@ -1,4 +1,4 @@
-/* GDB routines for manipulating objfiles.
+/* objfiles.c: GDB routines for manipulating objfiles.
 
    Copyright 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000,
    2001, 2002, 2003, 2004 Free Software Foundation, Inc.
@@ -1672,10 +1672,9 @@ objfile_remove_from_restrict_list (struct objfile *objfile)
     }
 }
 
-/* Clear the restricted objfile search list.  */
-
+/* Clear the restricted objfile search list: */
 void
-objfile_clear_restrict_list ()
+objfile_clear_restrict_list(void)
 {
   while (objfile_list != NULL)
     {
@@ -1958,7 +1957,7 @@ make_cleanup_restrict_to_shlib (char *requested_shlib)
    it starts from the object_files. */
 
 struct objfile *
-objfile_get_first ()
+objfile_get_first(void)
 {
   if (!restrict_search || objfile_list == NULL)
     return object_files;
@@ -2479,10 +2478,10 @@ objfile_clear_hitlist (void *notused)
    cleanup will do nothing.  */
 
 struct cleanup *
-make_cleanup_objfile_init_clear_hitlist ()
+make_cleanup_objfile_init_clear_hitlist(void)
 {
-  objfile_init_hitlist ();
-  return make_cleanup (objfile_clear_hitlist, NULL);
+  objfile_init_hitlist();
+  return make_cleanup(objfile_clear_hitlist, NULL);
 }
 
 int

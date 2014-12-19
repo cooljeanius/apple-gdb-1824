@@ -31,6 +31,8 @@ CLEANFILES =
 DISTCLEANFILES = .DS_Store *~ m4/*~
 MAINTAINERCLEANFILES =
 
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+AM_CFLAGS = $(C_ARCHFLAGS)
 AM_CPPFLAGS = -Iimport -I$(top_srcdir)/import
 
 noinst_LIBRARIES += libgnu.a
@@ -64,7 +66,7 @@ link-warning.h: $(top_srcdir)/build-aux/snippet/link-warning.h
 	mv $@-t $@
 MOSTLYCLEANFILES += link-warning.h link-warning.h-t
 
-## end   gnulib module link-warning
+## end gnulib module link-warning
 
 ## begin gnulib module memchr:
 
@@ -72,7 +74,7 @@ EXTRA_DIST += memchr.c
 
 EXTRA_libgnu_a_SOURCES += memchr.c
 
-## end   gnulib module memchr
+## end gnulib module memchr
 
 ## begin gnulib module memcmp:
 
@@ -80,7 +82,7 @@ EXTRA_DIST += memcmp.c
 
 EXTRA_libgnu_a_SOURCES += memcmp.c
 
-## end   gnulib module memcmp
+## end gnulib module memcmp
 
 ## begin gnulib module memmem-simple:
 
@@ -88,7 +90,7 @@ EXTRA_DIST += memmem.c str-two-way.h
 
 EXTRA_libgnu_a_SOURCES += memmem.c
 
-## end   gnulib module memmem-simple
+## end gnulib module memmem-simple
 
 ## begin gnulib module stdint
 
@@ -138,9 +140,9 @@ MOSTLYCLEANFILES += stdint.h stdint.h-t
 
 EXTRA_DIST += stdint.in.h
 
-## end   gnulib module stdint
+## end gnulib module stdint
 
-## begin gnulib module string
+## begin gnulib module string:
 
 BUILT_SOURCES += string.h
 
@@ -238,9 +240,9 @@ MOSTLYCLEANFILES += string.h string.h-t
 
 EXTRA_DIST += string.in.h
 
-## end   gnulib module string
+## end gnulib module string
 
-## begin gnulib module wchar
+## begin gnulib module wchar:
 
 BUILT_SOURCES += $(WCHAR_H)
 
@@ -359,13 +361,13 @@ MOSTLYCLEANFILES += wchar.h wchar.h-t
 
 EXTRA_DIST += wchar.in.h
 
-## end   gnulib module wchar
+## end gnulib module wchar
 
-## begin gnulib module dummy
+## begin gnulib module dummy:
 
 libgnu_a_SOURCES += dummy.c
 
-## end   gnulib module dummy
+## end gnulib module dummy
 
 alignof.h: import/alignof.h
 	if test ! -e $@; then $(LN_S) $< $@; fi
@@ -376,6 +378,11 @@ dosname.h: import/dosname.h
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += dosname.h
+
+error.c: import/error.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+BUILT_SOURCES += error.c
 
 exitfail.h: import/exitfail.h
 	if test ! -e $@; then $(LN_S) $< $@; fi
@@ -420,6 +427,11 @@ iswctype.c: import/iswctype.c
 
 BUILT_SOURCES += isnan.c isnanl.c iswctype.c
 
+lstat.c: import/lstat.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+BUILT_SOURCES += lstat.c
+
 mbrtowc.c: import/mbrtowc.c
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
@@ -446,6 +458,20 @@ obstack.h: import/obstack.h
 	if test ! -e $@; then $(LN_S) $< $@; fi
 
 BUILT_SOURCES += obstack.c obstack.h
+
+stat.c: import/stat.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+strerror.c: import/strerror.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+strerror_r.c: import/strerror_r.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+strerror-override.c: import/strerror-override.c
+	if test ! -e $@; then $(LN_S) $< $@; fi
+
+BUILT_SOURCES += stat.c strerror.c strerror_r.c strerror-override.c
 
 strnlen.c: import/strnlen.c
 	if test ! -e $@; then $(LN_S) $< $@; fi

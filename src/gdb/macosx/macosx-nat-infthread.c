@@ -65,7 +65,7 @@ struct ptid_list
 };
 
 void
-macosx_setup_registers_before_hand_call()
+macosx_setup_registers_before_hand_call(void)
 {
   thread_t current_thread = ptid_get_tid(inferior_ptid);
 
@@ -434,11 +434,13 @@ prepare_threads_before_run(struct macosx_inferior_status *inferior,
 
   for ((i = 0); (i < nthreads); i++) {
 
-      /* Do NOT need to do this either, since it is already done in prepare_threads_after_stop
-       *  kret = clear_trace_bit (thread_list[i]);
-       *
-       * MACH_CHECK_ERROR (kret);
-       */
+      /* Do NOT need to do this either, since it is already done in
+       * prepare_threads_after_stop:  */
+#if 0
+      kret = clear_trace_bit(thread_list[i]);
+
+      MACH_CHECK_ERROR(kret);
+#endif /* 0 */
 
       if ((stop_others) && (thread_list[i] != current)) {
 
@@ -571,6 +573,8 @@ struct dispatch_offsets_info {
   ULONGEST flags_size;           /* dqo_flags_size */
 };
 
+/* FIXME: '-Wl,-warn_commons' says it is using the common symbol of this
+ * from /usr/lib/libc.dylib and ignoring our defintion here: */
 #if !defined(dispatch_queue_offsets_s) && !defined(dispatch_queue_offsets) && \
     !defined(__DISPATCH_QUEUE_PRIVATE__)
 const struct dispatch_queue_offsets_s {
@@ -595,7 +599,7 @@ const struct dispatch_queue_offsets_s {
  * structure. */
 /* (copied it above...) */
 static struct dispatch_offsets_info *
-read_dispatch_offsets()
+read_dispatch_offsets(void)
 {
   struct minimal_symbol *dispatch_queue_offsets;
   static struct dispatch_offsets_info *dispatch_offsets = NULL;
@@ -814,14 +818,14 @@ print_thread_info (thread_t tid, int *gdb_thread_id)
       uint32_t queue_flags;
       if (get_dispatch_queue_flags (tident.dispatch_qaddr, &queue_flags))
         {
-                printf_filtered ("\tdispatch queue flags: 0x%x", queue_flags);
-                /* Constants defined in libdispatch's src/private.h,
-                   dispatch_queue_flags_t */
-                if (queue_flags & 0x1)
-                  printf_filtered (" (concurrent)");
-                if (queue_flags & 0x4)
-                  printf_filtered (" (always locked)");
-                printf_filtered ("\n");
+          printf_filtered ("\tdispatch queue flags: 0x%x", queue_flags);
+          /* Constants defined in libdispatch's src/private.h,
+             dispatch_queue_flags_t */
+          if (queue_flags & 0x1)
+            printf_filtered (" (concurrent)");
+          if (queue_flags & 0x4)
+            printf_filtered (" (always locked)");
+          printf_filtered ("\n");
         }
     }
 
@@ -1124,10 +1128,9 @@ macosx_prune_threads(thread_array_t thread_list, unsigned int nthreads)
   prune_threads ();
 }
 
-/* Print the details about a thread, intended for an MI-like interface.  */
-
+/* Print the details about a thread, intended for an MI-like interface: */
 void
-macosx_print_thread_details (struct ui_out *uiout, ptid_t ptid)
+macosx_print_thread_details(struct ui_out *uiout, ptid_t ptid)
 {
   thread_t tid = ptid_get_tid (ptid);
   struct thread_basic_info info;

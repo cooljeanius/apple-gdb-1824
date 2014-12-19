@@ -1,4 +1,4 @@
-/* An expandable hash tables datatype.  
+/* An expandable hash tables datatype.
    Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
    Contributed by Vladimir Makarov (vmakarov@cygnus.com).
@@ -85,41 +85,52 @@ htab_eq htab_eq_pointer = eq_pointer;
    code to divide by a constant, we want to be able to use the same algorithm
    all the time.  All of these inverses (are implied to) have bit 32 set.
 
-   For the record, here's the function that computed the table; it's a 
+   For the record, here is the function that computed the table; it is a
    vastly simplified version of the function of the same name from gcc.  */
 
-#if 0
+#if (defined(__GNUC__) || defined(HAVE_UNSIGNED_LONG_LONG)) && \
+    (defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)) && \
+    !defined(__STRICT_ANSI__)
+# if !defined(__MATH__)
+#  if defined(HAVE_MATH_H)
+#   include <math.h> /* for ldexp() */
+#  endif /* HAVE_MATH_H */
+# endif /* !__MATH__ */
+
 unsigned int
-ceil_log2 (unsigned int x)
+ceil_log2(unsigned int x)
 {
   int i;
   for (i = 31; i >= 0 ; --i)
     if (x > (1u << i))
-      return i+1;
-  abort ();
+      return (i + 1);
+  abort();
 }
 
 unsigned int
-choose_multiplier (unsigned int d, unsigned int *mlp, unsigned char *shiftp)
+choose_multiplier(unsigned int d, unsigned int *mlp, unsigned char *shiftp)
 {
   unsigned long long mhigh;
   double nx;
-  int lgup, post_shift;
+  int lgup;
+# ifdef ALLOW_UNUSED_VARIABLES
+  int post_shift;
+# endif /* ALLOW_UNUSED_VARIABLES */
   int pow, pow2;
   int n = 32, precision = 32;
 
-  lgup = ceil_log2 (d);
-  pow = n + lgup;
-  pow2 = n + lgup - precision;
+  lgup = ceil_log2(d);
+  pow = (n + lgup);
+  pow2 = (n + lgup - precision);
 
-  nx = ldexp (1.0, pow) + ldexp (1.0, pow2);
-  mhigh = nx / d;
+  nx = (ldexp(1.0, pow) + ldexp(1.0, pow2));
+  mhigh = (nx / d);
 
-  *shiftp = lgup - 1;
+  *shiftp = (lgup - 1);
   *mlp = mhigh;
-  return mhigh >> 32;
+  return (mhigh >> 32);
 }
-#endif
+#endif /* (gcc || HAVE_UNSIGNED_LONG_LONG) && c99+ && !__STRICT_ANSI__ */
 
 struct prime_ent
 {
@@ -635,7 +646,7 @@ htab_find_slot_with_hash (htab_t htab, const PTR element,
     first_deleted_slot = &htab->entries[index];
   else if ((*htab->eq_f) (entry, element))
     return &htab->entries[index];
-      
+
   hash2 = htab_mod_m2 (hash, htab);
   for (;;)
     {
@@ -643,7 +654,7 @@ htab_find_slot_with_hash (htab_t htab, const PTR element,
       index += hash2;
       if (index >= size)
 	index -= size;
-      
+
       entry = htab->entries[index];
       if (entry == HTAB_EMPTY_ENTRY)
 	goto empty_entry;
@@ -740,7 +751,7 @@ htab_traverse_noresize (htab_t htab, htab_trav callback, PTR info)
 {
   PTR *slot;
   PTR *limit;
-  
+
   slot = htab->entries;
   limit = slot + htab_size (htab);
 
@@ -795,10 +806,10 @@ htab_collisions (htab_t htab)
    prime numbers or the appropriate identity.  This was the best one.
    I don't remember exactly what constituted "best", except I was
    looking at bucket-length distributions mostly.
-   
+
    So it should be very good at hashing identifiers, but might not be
    as good at arbitrary strings.
-   
+
    I'll add that it thoroughly trounces the hash functions recommended
    for this use at http://burtleburtle.net/bob/hash/index.html, both
    on speed and bucket distribution.  I haven't tried it against the
@@ -836,16 +847,16 @@ For every delta with one or two bit set, and the deltas of all three
   have at least 1/4 probability of changing.
 * If mix() is run forward, every bit of c will change between 1/3 and
   2/3 of the time.  (Well, 22/100 and 78/100 for some 2-bit deltas.)
-mix() was built out of 36 single-cycle latency instructions in a 
+mix() was built out of 36 single-cycle latency instructions in a
   structure that could supported 2x parallelism, like so:
-      a -= b; 
+      a -= b;
       a -= c; x = (c>>13);
       b -= c; a ^= x;
       b -= a; x = (a<<8);
       c -= a; b ^= x;
       c -= b; x = (b>>13);
       ...
-  Unfortunately, superscalar Pentiums and Sparcs can't take advantage 
+  Unfortunately, superscalar Pentiums and Sparcs can't take advantage
   of that parallelism.  They've also turned some of those single-cycle
   latency instructions into multi-cycle latency instructions.  Still,
   this is the fastest good hash I could find.  There were about 2^^68
@@ -955,3 +966,5 @@ iterative_hash (const PTR k_in /* the key */,
   /*-------------------------------------------- report the result */
   return c;
 }
+
+/* EOF */

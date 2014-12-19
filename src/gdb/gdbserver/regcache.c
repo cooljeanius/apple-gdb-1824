@@ -84,19 +84,19 @@ regcache_invalidate_one (struct inferior_list_entry *entry)
 }
 
 void
-regcache_invalidate ()
+regcache_invalidate(void)
 {
-  for_each_inferior (&all_threads, regcache_invalidate_one);
+  for_each_inferior(&all_threads, regcache_invalidate_one);
 }
 
 int
-registers_length (void)
+registers_length(void)
 {
-  return 2 * register_bytes;
+  return (2 * register_bytes);
 }
 
 void *
-new_register_cache (void)
+new_register_cache(void)
 {
   struct inferior_regcache_data *regcache;
 
@@ -166,7 +166,7 @@ registers_from_string (char *buf)
 }
 
 struct reg *
-find_register_by_name (const char *name)
+find_register_by_name(const char *name)
 {
   int i;
 
@@ -178,7 +178,7 @@ find_register_by_name (const char *name)
 }
 
 int
-find_regno (const char *name)
+find_regno(const char *name)
 {
   int i;
 
@@ -190,15 +190,15 @@ find_regno (const char *name)
 }
 
 struct reg *
-find_register_by_number (int n)
+find_register_by_number(int n)
 {
   return &reg_defs[n];
 }
 
 int
-register_size (int n)
+register_size(int n)
 {
-  return reg_defs[n].size / 8;
+  return (reg_defs[n].size / 8);
 }
 
 static unsigned char *

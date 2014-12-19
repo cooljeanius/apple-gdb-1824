@@ -97,7 +97,8 @@ $(srcdir)/$(PACKAGE).pot: $(POTFILES)
 		mv -v $(PACKAGE).po $(srcdir)/$(PACKAGE).pot; \
 	fi
 
-$(srcdir)/cat-id-tbl.c: stamp-cat-id; @:
+$(srcdir)/cat-id-tbl.c: stamp-cat-id
+	@echo "this target, '$@', just makes its dependency, '$<'"
 $(srcdir)/stamp-cat-id: $(PACKAGE).pot
 	rm -f cat-id-tbl.tmp
 	$(SED) -f ../intl/po2tbl.sed $(srcdir)/$(PACKAGE).pot \
@@ -110,7 +111,7 @@ $(srcdir)/stamp-cat-id: $(PACKAGE).pot
 	  mv cat-id-tbl.tmp $(srcdir)/cat-id-tbl.c; \
 	fi
 	cd $(srcdir) && rm -f stamp-cat-id && \
-	  echo "timestamp: `date`"" > stamp-cat-id
+	  echo "timestamp: `date`" > stamp-cat-id
 
 
 install: install-exec install-data

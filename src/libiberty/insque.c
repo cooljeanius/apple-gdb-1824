@@ -48,3 +48,5 @@ remque (struct qelem *elem)
   elem -> q_forw -> q_back = elem -> q_back;
   elem -> q_back -> q_forw = elem -> q_forw;
 }
+
+/* EOF */

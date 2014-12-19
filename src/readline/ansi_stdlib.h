@@ -51,6 +51,6 @@ extern void exit();
 extern char *getenv();
 extern void qsort();
 
-#endif /* _STDLIB_H  */
+#endif /* _STDLIB_H_  */
 
 /* EOF */

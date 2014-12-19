@@ -500,9 +500,9 @@ struct target_ops
     /* APPLE LOCAL: Added support for target specific information to be
        stored in the thread specific inferior_status to allow targets to
        save/restore thread specific data between context switches.  */
-    void * (*to_save_thread_inferior_status) ();
-    void (*to_restore_thread_inferior_status) (void *);
-    void (*to_free_thread_inferior_status) (void *);
+    void *(*to_save_thread_inferior_status)(void);
+    void (*to_restore_thread_inferior_status)(void *);
+    void (*to_free_thread_inferior_status)(void *);
 
     int to_magic;
     /* Need sub-structure for target machine related rather than comm related?
@@ -1401,7 +1401,7 @@ extern struct target_ops deprecated_child_ops;
 
 /* APPLE LOCAL: Override trust-readonly-sections.  */
 extern int set_trust_readonly(int);
-void set_trust_readonly_cleanup(void *new);
+void set_trust_readonly_cleanup(void *);
 /* END APPLE LOCAL */
 
 /* APPLE LOCAL */

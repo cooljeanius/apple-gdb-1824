@@ -651,11 +651,17 @@ CONFIGURED_GCC_FOR_TARGET
 CONFIGURED_DLLTOOL_FOR_TARGET
 CONFIGURED_CXX_FOR_TARGET
 CONFIGURED_CC_FOR_TARGET
+CONFIGURED_GAS_FOR_TARGET
 CONFIGURED_AS_FOR_TARGET
 CONFIGURED_AR_FOR_TARGET
+STRIP_FOR_TARGET
+WINDMC_FOR_TARGET
 WINDRES_FOR_TARGET
+READELF_FOR_TARGET
 RANLIB_FOR_TARGET
+OBJDUMP_FOR_TARGET
 NM_FOR_TARGET
+LIPO_FOR_TARGET
 LD_FOR_TARGET
 GOC_FOR_TARGET
 GFORTRAN_FOR_TARGET
@@ -664,6 +670,7 @@ GCC_FOR_TARGET
 DLLTOOL_FOR_TARGET
 CXX_FOR_TARGET
 CC_FOR_TARGET
+GAS_FOR_TARGET
 AS_FOR_TARGET
 AR_FOR_TARGET
 MKDIR_P
@@ -744,11 +751,21 @@ CONFIGURED_FLEX
 CONFIGURED_M4
 CONFIGURED_YACC
 CONFIGURED_BISON
+LDFLAGS_FOR_TARGET
+CXXFLAGS_FOR_TARGET
+CFLAGS_FOR_TARGET
+DEBUG_PREFIX_CFLAGS_FOR_TARGET
 SYSROOT_CFLAGS_FOR_TARGET
 UNIQ_BIN
 extra_host_libiberty_configure_flags
 bootstrap_target_libs
 stage1_languages
+extra_linker_plugin_flags
+extra_linker_plugin_configure_flags
+libelfinc
+libelflibs
+islinc
+isllibs
 poststage1_ldflags
 poststage1_libs
 stage1_ldflags
@@ -757,9 +774,14 @@ TCLSH_PROG
 POW_LIB
 ALLOCA
 LIBOBJS
+extra_isl_gmp_configure_flags
+extra_mpc_mpfr_configure_flags
+extra_mpc_gmp_configure_flags
+extra_mpfr_configure_flags
 gmpinc
 gmplibs
 do_compare
+GNATMAKE
 GNATBIND
 OBJCPP
 ac_ct_OBJC
@@ -898,13 +920,23 @@ with_mpfr_dir
 with_mpfr
 with_gmp_dir
 with_gmp
+with_gmp_include
+with_gmp_lib
 with_host_libstdcxx
 with_stage1_libs
 with_stage1_ldflags
 with_boot_libs
 with_boot_ldflags
+with_isl
+with_isl_include
+with_isl_lib
+enable_isl_version_check
 enable_lto
+enable_linker_plugin_configure_flags
+enable_linker_plugin_flags
+enable_objc_gc
 with_build_sysroot
+with_debug_prefix_map
 enable_bootstrap
 enable_serial_configure
 enable_dependency_tracking
@@ -1589,7 +1621,17 @@ Optional Features:
                           disable DebugSymbols framework use even when
                           available
   --disable-arch-for-exec disable use of arch for exec
+  --disable-isl-version-check
+                          disable check for ISL version
   --enable-lto            enable (building) link time optimization support
+  --enable-linker-plugin-configure-flags=FLAGS
+                          additional flags for configuring linker plugins
+                          [none]
+  --enable-linker-plugin-flags=FLAGS
+                          additional flags for configuring and building linker
+                          plugins [none]
+  --enable-objc-gc        enable use of Boehm's garbage collector with the GNU
+                          Objective-C runtime
   --enable-bootstrap=lean Enable bootstrapping [no]
   --enable-serial-{host,target,build}-configure
                           Force sequential configuration of sub-packages for
@@ -1624,8 +1666,12 @@ Optional Packages:
   --with-mpfr-dir=PATH    Specify source directory for MPFR library
   --with-mpfr=PATH        Specify directory for installed MPFR library
 
-  --with-gmp-dir=PATH     Specify source directory for GMP library
-  --with-gmp=PATH         Specify directory for installed GMP library
+  --with-gmp-dir=PATH     This option has been REMOVED.
+  --with-gmp=PATH         Specify directory for installed GMP package.
+                          Equivalent to --with-gmp-include=PATH/include plus
+                          --with-gmp-lib=PATH/lib
+  --with-gmp-include=PATH Specify path to installed GMP includes
+  --with-gmp-lib=PATH     Specify path to installed GMP library
   --with-host-libstdcxx=L use linker arguments L to link with libstdc++ when
                           linking with PPL
   --with-stage1-libs=LIBS libraries for stage1
@@ -1634,8 +1680,16 @@ Optional Packages:
   --with-boot-libs=LIBS   libraries for stage2 and later
   --with-boot-ldflags=FLAGS
                           linker flags for stage2 and later
+  --with-isl=PATH         Specify prefix directory for the installed ISL
+                          package. Equivalent to
+                          --with-isl-include=PATH/include plus
+                          --with-isl-lib=PATH/lib
+  --with-isl-include=PATH Specify directory for installed ISL include files
+  --with-isl-lib=PATH     Specify the directory for the installed ISL library
   --with-build-sysroot=sysroot
                           use sysroot as the system root during the build
+  --with-debug-prefix-map='A=B C=D ...'
+                          map A to B, C to D ... in debug information
   --with-build-time-tools=PATH
                           use given path to find target tools during the build
 
@@ -6313,7 +6367,6 @@ case "${host}" in
     ;;
 esac
 
-
 # Check whether --enable-libquadmath was given.
 if test "${enable_libquadmath+set}" = set; then :
   enableval=$enable_libquadmath; ENABLE_LIBQUADMATH=${enableval}
@@ -6324,7 +6377,6 @@ fi
 if test "x${ENABLE_LIBQUADMATH}" = "xno"; then
   noconfigdirs="${noconfigdirs} target-libquadmath"
 fi
-
 
 # Check whether --enable-libquadmath-support was given.
 if test "${enable_libquadmath_support+set}" = set; then :
@@ -6337,7 +6389,6 @@ enable_libquadmath_support=""
 if test "x${ENABLE_LIBQUADMATH_SUPPORT}" = "xno"; then
   enable_libquadmath_support=no
 fi
-
 
 # Check whether --enable-libada was given.
 if test "${enable_libada+set}" = set; then :
@@ -9021,6 +9072,98 @@ else
   GNATBIND="$ac_cv_prog_GNATBIND"
 fi
 
+if test -n "$ac_tool_prefix"; then
+  # Extract the first word of "${ac_tool_prefix}gnatmake", so it can be a program name with args.
+set dummy ${ac_tool_prefix}gnatmake; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_GNATMAKE+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$GNATMAKE"; then
+  ac_cv_prog_GNATMAKE="$GNATMAKE" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_GNATMAKE="${ac_tool_prefix}gnatmake"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+GNATMAKE=$ac_cv_prog_GNATMAKE
+if test -n "$GNATMAKE"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GNATMAKE" >&5
+$as_echo "$GNATMAKE" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+fi
+if test -z "$ac_cv_prog_GNATMAKE"; then
+  ac_ct_GNATMAKE=$GNATMAKE
+  # Extract the first word of "gnatmake", so it can be a program name with args.
+set dummy gnatmake; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_ac_ct_GNATMAKE+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$ac_ct_GNATMAKE"; then
+  ac_cv_prog_ac_ct_GNATMAKE="$ac_ct_GNATMAKE" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_ac_ct_GNATMAKE="gnatmake"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+ac_ct_GNATMAKE=$ac_cv_prog_ac_ct_GNATMAKE
+if test -n "$ac_ct_GNATMAKE"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_GNATMAKE" >&5
+$as_echo "$ac_ct_GNATMAKE" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+  if test "x$ac_ct_GNATMAKE" = x; then
+    GNATMAKE="no"
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    GNATMAKE=$ac_ct_GNATMAKE
+  fi
+else
+  GNATMAKE="$ac_cv_prog_GNATMAKE"
+fi
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether compiler driver understands Ada" >&5
 $as_echo_n "checking whether compiler driver understands Ada... " >&6; }
 if ${acx_cv_cc_gcc_supports_ada+:} false; then :
@@ -9053,6 +9196,7 @@ else
   have_gnat=no
 fi
 
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking how to compare bootstrapped objects" >&5
 $as_echo_n "checking how to compare bootstrapped objects... " >&6; }
 if ${gcc_cv_prog_cmp_skip+:} false; then :
@@ -9081,7 +9225,6 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gcc_cv_prog_cmp_skip" >&5
 $as_echo "$gcc_cv_prog_cmp_skip" >&6; }
 do_compare="${gcc_cv_prog_cmp_skip}"
-
 
 
 # Used for setting ${lt_cv_objdir}
@@ -9188,12 +9331,39 @@ if test "x${with_mpfr}" != "x"; then
   gmplibs="-L${with_mpfr}/lib ${gmplibs}"
   gmpinc="-I${with_mpfr}/include"
 fi
+if test "x${with_mpfr_include}" != "x"; then
+  gmpinc="-I${with_mpfr_include} ${gmpinc}"
+fi
+if test "x${with_mpfr_lib}" != "x"; then
+  gmplibs="-L${with_mpfr_lib} ${gmplibs}"
+fi
+if test "x${with_mpfr}${with_mpfr_include}${with_mpfr_lib}" = "x" && test -d ${srcdir}/mpfr; then
+  # MPFR v3.1.0 moved the sources into a src sub-directory.
+  if test -d ${srcdir}/mpfr/src; then
+    gmplibs='-L$$r/$(HOST_SUBDIR)/mpfr/src/'"${lt_cv_objdir} ${gmplibs}"
+    gmpinc='-I$$r/$(HOST_SUBDIR)/mpfr/src -I$$s/mpfr/src '"${gmpinc}"
+    extra_mpc_mpfr_configure_flags='--with-mpfr-include=$$s/mpfr/src --with-mpfr-lib=$$r/$(HOST_SUBDIR)/mpfr/src/'"${lt_cv_objdir}"
+  else
+    gmplibs='-L$$r/$(HOST_SUBDIR)/mpfr/'"${lt_cv_objdir} ${gmplibs}"
+    gmpinc='-I$$r/$(HOST_SUBDIR)/mpfr -I$$s/mpfr '"${gmpinc}"
+    extra_mpc_mpfr_configure_flags='--with-mpfr-include=$$s/mpfr --with-mpfr-lib=$$r/$(HOST_SUBDIR)/mpfr/'"${lt_cv_objdir}"
+  fi
+  # Do not test the mpfr version.  Assume that it is sufficient, since
+  # it is in the source tree, and the library has not been built yet
+  # but it would be included on the link line in the version check below
+  # hence making the test fail.
+  have_gmp=yes
+fi
 
 # Specify a location for gmp:
 
 # Check whether --with-gmp-dir was given.
 if test "${with_gmp_dir+set}" = set; then :
-  withval=$with_gmp_dir;
+  withval=$with_gmp_dir; { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: The --with-gmp-dir=PATH option has been removed.
+Use --with-gmp=PATH or --with-gmp-include=PATH plus --with-gmp-lib=PATH instead." >&5
+$as_echo "$as_me: WARNING: The --with-gmp-dir=PATH option has been removed.
+Use --with-gmp=PATH or --with-gmp-include=PATH plus --with-gmp-lib=PATH instead." >&2;}
+
 fi
 
 if test "x${with_gmp_dir}" != "x"; then
@@ -9214,9 +9384,38 @@ if test "${with_gmp+set}" = set; then :
   withval=$with_gmp;
 fi
 
+
+# Check whether --with-gmp-include was given.
+if test "${with_gmp_include+set}" = set; then :
+  withval=$with_gmp_include;
+fi
+
+# Check whether --with-gmp-lib was given.
+if test "${with_gmp_lib+set}" = set; then :
+  withval=$with_gmp_lib;
+fi
+
 if test "x${with_gmp}" != "x"; then
   gmplibs="-L${with_gmp}/lib ${gmplibs}"
   gmpinc="-I${with_gmp}/include ${gmpinc}"
+fi
+if test "x${with_gmp_include}" != "x"; then
+  gmpinc="-I${with_gmp_include} ${gmpinc}"
+fi
+if test "x${with_gmp_lib}" != "x"; then
+  gmplibs="-L$with_gmp_lib $gmplibs"
+fi
+if test "x${with_gmp}${with_gmp_include}${with_gmp_lib}" = "x" && test -d ${srcdir}/gmp; then
+  gmplibs='-L$$r/$(HOST_SUBDIR)/gmp/'"${lt_cv_objdir} ${gmplibs}"
+  gmpinc='-I$$r/$(HOST_SUBDIR)/gmp -I$$s/gmp '"${gmpinc}"
+  extra_mpfr_configure_flags='--with-gmp-include=$$r/$(HOST_SUBDIR)/gmp --with-gmp-lib=$$r/$(HOST_SUBDIR)/gmp/'"${lt_cv_objdir}"
+  extra_mpc_gmp_configure_flags='--with-gmp-include=$$r/$(HOST_SUBDIR)/gmp --with-gmp-lib=$$r/$(HOST_SUBDIR)/gmp/'"${lt_cv_objdir}"
+  extra_isl_gmp_configure_flags='--with-gmp-builddir=$$r/$(HOST_SUBDIR)/gmp'
+  # Do not test the gmp version.  Assume that it is sufficient, since
+  # it is in the source tree, and the library has not been built yet
+  # but it would be included on the link line in the version check below
+  # hence making the test fail.
+  have_gmp=yes
 fi
 
 saved_CFLAGS="${CFLAGS}"
@@ -12568,6 +12767,154 @@ else
 fi
 
 
+# GCC GRAPHITE dependency ISL.
+# Basic setup is inlined here, actual checks are in config/isl.m4
+
+
+# Check whether --with-isl was given.
+if test "${with_isl+set}" = set; then :
+  withval=$with_isl;
+fi
+
+# Treat --without-isl as a request to disable
+# GRAPHITE support and skip all following checks.
+if test "x${with_isl}" != "xno"; then
+  # Check for ISL:
+
+
+# Check whether --with-isl-include was given.
+if test "${with_isl_include+set}" = set; then :
+  withval=$with_isl_include;
+fi
+
+
+# Check whether --with-isl-lib was given.
+if test "${with_isl_lib+set}" = set; then :
+  withval=$with_isl_lib;
+fi
+
+
+  # Check whether --enable-isl-version-check was given.
+if test "${enable_isl_version_check+set}" = set; then :
+  enableval=$enable_isl_version_check; ENABLE_ISL_CHECK=$enableval
+else
+  ENABLE_ISL_CHECK=yes
+fi
+
+
+  # Initialize isllibs and islinc.
+  case $with_isl in
+    no)
+      isllibs=
+      islinc=
+      ;;
+    "" | yes)
+      ;;
+    *)
+      isllibs="-L$with_isl/lib"
+      islinc="-I$with_isl/include"
+      ;;
+  esac
+  if test "x${with_isl_include}" != x ; then
+    islinc="-I$with_isl_include"
+  fi
+  if test "x${with_isl_lib}" != x; then
+    isllibs="-L$with_isl_lib"
+  fi
+        if test "x${islinc}" = x && test "x${isllibs}" = x \
+     && test -d ${srcdir}/isl; then
+    isllibs='-L$$r/$(HOST_SUBDIR)/isl/'"$lt_cv_objdir"' '
+    islinc='-I$$r/$(HOST_SUBDIR)/isl/include -I$$s/isl/include'
+    ENABLE_ISL_CHECK=no
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using in-tree ISL, disabling version check" >&5
+$as_echo "$as_me: WARNING: using in-tree ISL, disabling version check" >&2;}
+  fi
+
+
+  if test "${ENABLE_ISL_CHECK}" = yes ; then
+    _isl_saved_CFLAGS=$CFLAGS
+    _isl_saved_LDFLAGS=$LDFLAGS
+    _isl_saved_LIBS=$LIBS
+
+    CFLAGS="${_isl_saved_CFLAGS} ${islinc} ${gmpinc}"
+    LDFLAGS="${_isl_saved_LDFLAGS} ${isllibs}"
+    LIBS="${_isl_saved_LIBS} -lisl"
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for version . of ISL" >&5
+$as_echo_n "checking for version . of ISL... " >&6; }
+    if test "$cross_compiling" = yes; then :
+  gcc_cv_isl=yes
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <isl/version.h>
+   #include <string.h>
+int
+main ()
+{
+if (strncmp (isl_version (), "isl-.", strlen ("isl-.")) != 0)
+     return 1;
+
+  ;
+  return 0;
+}
+
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  gcc_cv_isl=yes
+else
+  gcc_cv_isl=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $gcc_cv_isl" >&5
+$as_echo "$gcc_cv_isl" >&6; }
+
+    CFLAGS=$_isl_saved_CFLAGS
+    LDFLAGS=$_isl_saved_LDFLAGS
+    LIBS=$_isl_saved_LIBS
+  fi
+
+
+
+
+
+  if test "x${with_isl}" = xno; then
+    graphite_requested=no
+  elif test "x${with_isl}" != x \
+    || test "x${with_isl_include}" != x \
+    || test "x${with_isl_lib}" != x ; then
+    graphite_requested=yes
+  else
+    graphite_requested=no
+  fi
+
+
+  if test "${gcc_cv_isl}" = no ; then
+    isllibs=
+    islinc=
+  fi
+
+  if test "${graphite_requested}" = yes \
+    && test "x${isllibs}" = x \
+    && test "x${islinc}" = x ; then
+
+    as_fn_error $? "Unable to find a usable ISL.  See config.log for details." "$LINENO" 5
+  fi
+
+fi
+
+# If the ISL check failed, disable builds of in-tree variant of ISL
+if test "x${with_isl}" = "xno" ||
+   test "x${gcc_cv_isl}" = "xno"; then
+  noconfigdirs="${noconfigdirs} isl"
+  islinc=""
+fi
+
+
+
 # Check for LTO support.
 # Check whether --enable-lto was given.
 if test "${enable_lto+set}" = set; then :
@@ -12623,6 +12970,20 @@ else
     *) ;;
   esac
 
+fi
+
+# Check whether --enable-linker-plugin-configure-flags was given.
+if test "${enable_linker_plugin_configure_flags+set}" = set; then :
+  enableval=$enable_linker_plugin_configure_flags; extra_linker_plugin_configure_flags=${enableval}
+else
+  extra_linker_plugin_configure_flags=""
+fi
+
+# Check whether --enable-linker-plugin-flags was given.
+if test "${enable_linker_plugin_flags+set}" = set; then :
+  enableval=$enable_linker_plugin_flags; extra_linker_plugin_flags=${enableval}
+else
+  extra_linker_plugin_flags=""
 fi
 
 
@@ -12848,6 +13209,47 @@ Recognized languages are: ${potential_languages}" "$LINENO" 5
   ac_configure_args=`echo " ${ac_configure_args}" | sed -e 's/ --enable-languages=[^ ]*//' -e 's/$/ --enable-languages='"${enable_languages}"/ `
 fi
 
+# Check for Boehm's garbage collector:
+# Check whether --enable-objc-gc was given.
+if test "${enable_objc_gc+set}" = set; then :
+  enableval=$enable_objc_gc; case ,${enable_languages},:${enable_objc_gc}:${noconfigdirs} in
+  *,objc,*:*:yes:*target-boehm-gc*)
+    as_fn_error $? "Boehm's garbage collector was requested yet not supported in this configuration" "$LINENO" 5
+    ;;
+esac
+fi
+
+# Make sure we only build Boehm's garbage collector if required.
+case ,${enable_languages},:${enable_objc_gc} in
+  *,objc,*:yes)
+    # Keep target-boehm-gc if requested for Objective-C.
+    ;;
+  *)
+    # Otherwise remove target-boehm-gc depending on target-libjava.
+    if echo " ${noconfigdirs} " | grep "target-libjava" >/dev/null 2>&1; then
+      noconfigdirs="${noconfigdirs} target-boehm-gc"
+    fi
+    ;;
+esac
+
+# Disable libcilkrts, libitm, libsanitizer, libvtv, and liboffloadmic if we
+# are not building C++:
+case ,${enable_languages}, in
+  *,c++,*)
+    # Disable libcilkrts, libitm, libsanitizer if we are not building
+    # libstdc++:
+    case "${noconfigdirs}" in
+      *target-libstdc++-v3*)
+        noconfigdirs="${noconfigdirs} target-libcilkrts target-libitm target-libsanitizer"
+        ;;
+      *) ;;
+    esac
+    ;;
+  *)
+    noconfigdirs="${noconfigdirs} target-libcilkrts target-liboffloadmic target-libitm target-libsanitizer target-libvtv"
+    ;;
+esac
+
 for ac_prog in uniq guniq
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
@@ -12989,6 +13391,32 @@ for i in ${target_configdirs_all}; do
   fi
 done
 
+# libiberty-linker-plugin is special: it does NOT have its own source
+# directory, so we have to add it after the preceding checks.
+if test x"${extra_linker_plugin_flags}${extra_linker_plugin_configure_flags}" != "x"
+then
+  case " ${configdirs} " in
+    *" libiberty "*)
+      # If we can build libiberty, then we can also build
+      # libiberty-linker-plugin.
+      configdirs="${configdirs} libiberty-linker-plugin"
+      extra_linker_plugin_configure_flags="${extra_linker_plugin_configure_flags} \
+        --with-libiberty=../libiberty-linker-plugin";;
+    *)
+      as_fn_error $? "libiberty missing" "$LINENO" 5;;
+  esac
+fi
+
+# Sometimes we have special requirements for the host libiberty.
+extra_host_libiberty_configure_flags=""
+case " ${configdirs} " in
+  *" lto-plugin "* | *" libcc1 "*)
+    # When these are to be built as shared libraries, the same applies to
+    # libiberty.
+    extra_host_libiberty_configure_flags=--enable-shared
+    ;;
+esac
+
 # Produce a warning message for the subdirs we cannot configure.
 # This is NOT especially interesting in the Cygnus tree, but in the
 # individual FSF releases, it is important to let people know when their
@@ -13029,6 +13457,51 @@ case "${host}" in
     enable_gdbtk=no ;;
 esac
 
+
+# To find our prefix, in gcc_cv_tool_prefix.
+
+# The user is always right.
+if test "${PATH_SEPARATOR+set}" != set; then
+  echo "#! /bin/sh" >conf$$.sh
+  echo  "exit 0"   >>conf$$.sh
+  chmod +x conf$$.sh
+  if (PATH="/nonexistent;."; conf$$.sh) >/dev/null 2>&1; then
+    PATH_SEPARATOR=';'
+  else
+    PATH_SEPARATOR=:
+  fi
+  rm -f conf$$.sh
+fi
+
+
+
+if test "x${exec_prefix}" = "xNONE"; then
+  if test "x${prefix}" = "xNONE"; then
+    gcc_cv_tool_prefix=${ac_default_prefix}
+  else
+    gcc_cv_tool_prefix=${prefix}
+  fi
+else
+  gcc_cv_tool_prefix=${exec_prefix}
+fi
+
+if test "x${host}" = "x${build}" && test -f ${srcdir}/gcc/BASE-VER; then
+  gcc_version=`cat ${srcdir}/gcc/BASE-VER`
+  gcc_cv_tool_dirs="${gcc_cv_tool_prefix}/libexec/gcc/${target_noncanonical}/${gcc_version}${PATH_SEPARATOR}"
+  gcc_cv_tool_dirs="${gcc_cv_tool_dirs}${gcc_cv_tool_prefix}/libexec/gcc/${target_noncanonical}${PATH_SEPARATOR}"
+  gcc_cv_tool_dirs="${gcc_cv_tool_dirs}/usr/lib/gcc/${target_noncanonical}/${gcc_version}${PATH_SEPARATOR}"
+  gcc_cv_tool_dirs="${gcc_cv_tool_dirs}/usr/lib/gcc/${target_noncanonical}${PATH_SEPARATOR}"
+  gcc_cv_tool_dirs="${gcc_cv_tool_dirs}${gcc_cv_tool_prefix}/${target_noncanonical}/bin/${target_noncanonical}/${gcc_version}${PATH_SEPARATOR}"
+  gcc_cv_tool_dirs="${gcc_cv_tool_dirs}${gcc_cv_tool_prefix}/${target_noncanonical}/bin${PATH_SEPARATOR}"
+else
+  gcc_cv_tool_dirs=""
+fi
+
+if test "x${build}" = "x${target}" && test -n "${md_exec_prefix}"; then
+  gcc_cv_tool_dirs="${gcc_cv_tool_dirs}${md_exec_prefix}${PATH_SEPARATOR}"
+fi
+
+
 copy_dirs=""
 
 
@@ -13039,6 +13512,51 @@ if test "${with_build_sysroot+set}" = set; then :
    fi
 else
   SYSROOT_CFLAGS_FOR_TARGET=""
+fi
+
+
+
+# Check whether --with-debug-prefix-map was given.
+if test "${with_debug_prefix_map+set}" = set; then :
+  withval=$with_debug_prefix_map; if test x"${withval}" != x""; then
+     DEBUG_PREFIX_CFLAGS_FOR_TARGET=""
+     for debug_map in ${withval}; do
+       DEBUG_PREFIX_CFLAGS_FOR_TARGET="${DEBUG_PREFIX_CFLAGS_FOR_TARGET} -fdebug-prefix-map=${debug_map}"
+     done
+   fi
+else
+  DEBUG_PREFIX_CFLAGS_FOR_TARGET=""
+fi
+
+
+# During gcc bootstrap, if we use some random cc for stage1 then CFLAGS
+# might be empty or "-g".  We do NOT require a C++ compiler, so CXXFLAGS
+# might also be empty (or "-g", if a non-GCC C++ compiler is in the path).
+# We want to ensure that TARGET libraries (which we know are built with
+# gcc) are built with optimization and debugging flags, so include those
+# options when setting CFLAGS_FOR_TARGET and CXXFLAGS_FOR_TARGET.
+if test "x${CFLAGS_FOR_TARGET}" = "x"; then
+  CFLAGS_FOR_TARGET="${CFLAGS}"
+  case " ${CFLAGS} " in
+    *" -O2 "* | *" -O1 "* | *" -Os "*) ;;
+    *) CFLAGS_FOR_TARGET="-O1 ${CFLAGS_FOR_TARGET}" ;;
+  esac
+  case " ${CFLAGS} " in
+    *" -g "* | *" -g3 "* | *" -ggdb "* | *" -ggdb3 "*) ;;
+    *) CFLAGS_FOR_TARGET="-ggdb ${CFLAGS_FOR_TARGET}" ;;
+  esac
+fi
+
+if test "x${CXXFLAGS_FOR_TARGET}" = "x"; then
+  CXXFLAGS_FOR_TARGET="${CXXFLAGS}"
+  case " ${CXXFLAGS} " in
+    *" -O2 "* | *" -O1 "* | *" -Os "*) ;;
+    *) CXXFLAGS_FOR_TARGET="-O1 ${CXXFLAGS_FOR_TARGET}" ;;
+  esac
+  case " ${CXXFLAGS} " in
+    *" -g "* | *" -g3 "* | *" -ggdb "* | *" -ggdb3 "*) ;;
+    *) CXXFLAGS_FOR_TARGET="-ggdb ${CXXFLAGS_FOR_TARGET}" ;;
+  esac
 fi
 
 
@@ -13109,6 +13627,21 @@ while test $# != 0 ; do
   fi
   shift; shift
 done
+
+# Determine a target-dependent exec_prefix that the installed
+# gcc will search in.  Keep this list sorted by triplet, with
+# the *-*-osname triplets last.
+md_exec_prefix=""
+case "${target}" in
+  i[34567]86-pc-msdosdjgpp*)
+    md_exec_prefix=/dev/env/DJDIR/bin
+    ;;
+  *-*-hpux* | \
+  *-*-nto-qnx* | \
+  *-*-solaris2*)
+    md_exec_prefix=/usr/ccs/bin
+    ;;
+esac
 
 extra_arflags_for_target=""
 extra_nmflags_for_target=""
@@ -13920,6 +14453,13 @@ $as_echo "$as_me: WARNING: trying to bootstrap a cross compiler" >&2;}
     ;;
 esac
 
+case "${enable_bootstrap}:${ENABLE_GOLD}: ${configdirs} :,${stage1_languages}," in
+  yes:yes:*\ gold\ *:*,c++,*) ;;
+  yes:yes:*\ gold\ *:*)
+    as_fn_error $? "in a combined tree, bootstrapping with --enable-gold requires c++ in stage1_languages" "$LINENO" 5
+    ;;
+esac
+
 # Adjust the toplevel makefile according to whether bootstrap was selected.
 case "${enable_bootstrap}" in
   yes)
@@ -13935,6 +14475,7 @@ case "${enable_bootstrap}" in
     bootstrap_suffix=no-bootstrap ;;
 esac
 
+extrasub_build=""
 for module in ${build_configdirs}; do
   if test -z "${no_recursion}" \
      && test -f ${build_subdir}/${module}/Makefile; then
@@ -16608,6 +17149,97 @@ if test -z "$ac_cv_prog_AS_FOR_TARGET" ; then
   fi
 fi
 
+ for ncn_progname in gas; do
+  if test -n "${ncn_target_tool_prefix}"; then
+    # Extract the first word of "${ncn_target_tool_prefix}${ncn_progname}", so it can be a program name with args.
+set dummy ${ncn_target_tool_prefix}${ncn_progname}; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_GAS_FOR_TARGET+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$GAS_FOR_TARGET"; then
+  ac_cv_prog_GAS_FOR_TARGET="$GAS_FOR_TARGET" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_GAS_FOR_TARGET="${ncn_target_tool_prefix}${ncn_progname}"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+GAS_FOR_TARGET=$ac_cv_prog_GAS_FOR_TARGET
+if test -n "$GAS_FOR_TARGET"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GAS_FOR_TARGET" >&5
+$as_echo "$GAS_FOR_TARGET" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  fi
+  if test -z "$ac_cv_prog_GAS_FOR_TARGET" && test ${build} = ${target} ; then
+    # Extract the first word of "${ncn_progname}", so it can be a program name with args.
+set dummy ${ncn_progname}; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_GAS_FOR_TARGET+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$GAS_FOR_TARGET"; then
+  ac_cv_prog_GAS_FOR_TARGET="$GAS_FOR_TARGET" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_GAS_FOR_TARGET="${ncn_progname}"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+GAS_FOR_TARGET=$ac_cv_prog_GAS_FOR_TARGET
+if test -n "$GAS_FOR_TARGET"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GAS_FOR_TARGET" >&5
+$as_echo "$GAS_FOR_TARGET" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  fi
+  test -n "$ac_cv_prog_GAS_FOR_TARGET" && break
+done
+
+if test -z "$ac_cv_prog_GAS_FOR_TARGET" ; then
+  set dummy gas
+  if test $build = $target ; then
+    GAS_FOR_TARGET="$2"
+  else
+    GAS_FOR_TARGET="${ncn_target_tool_prefix}$2"
+  fi
+fi
+
  for ncn_progname in cc gcc; do
   if test -n "${ncn_target_tool_prefix}"; then
     # Extract the first word of "${ncn_target_tool_prefix}${ncn_progname}", so it can be a program name with args.
@@ -17331,6 +17963,97 @@ if test -z "$ac_cv_prog_LD_FOR_TARGET" ; then
   fi
 fi
 
+ for ncn_progname in lipo; do
+  if test -n "${ncn_target_tool_prefix}"; then
+    # Extract the first word of "${ncn_target_tool_prefix}${ncn_progname}", so it can be a program name with args.
+set dummy ${ncn_target_tool_prefix}${ncn_progname}; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_LIPO_FOR_TARGET+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$LIPO_FOR_TARGET"; then
+  ac_cv_prog_LIPO_FOR_TARGET="$LIPO_FOR_TARGET" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_LIPO_FOR_TARGET="${ncn_target_tool_prefix}${ncn_progname}"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+LIPO_FOR_TARGET=$ac_cv_prog_LIPO_FOR_TARGET
+if test -n "$LIPO_FOR_TARGET"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $LIPO_FOR_TARGET" >&5
+$as_echo "$LIPO_FOR_TARGET" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  fi
+  if test -z "$ac_cv_prog_LIPO_FOR_TARGET" && test ${build} = ${target} ; then
+    # Extract the first word of "${ncn_progname}", so it can be a program name with args.
+set dummy ${ncn_progname}; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_LIPO_FOR_TARGET+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$LIPO_FOR_TARGET"; then
+  ac_cv_prog_LIPO_FOR_TARGET="$LIPO_FOR_TARGET" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_LIPO_FOR_TARGET="${ncn_progname}"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+LIPO_FOR_TARGET=$ac_cv_prog_LIPO_FOR_TARGET
+if test -n "$LIPO_FOR_TARGET"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $LIPO_FOR_TARGET" >&5
+$as_echo "$LIPO_FOR_TARGET" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  fi
+  test -n "$ac_cv_prog_LIPO_FOR_TARGET" && break
+done
+
+if test -z "$ac_cv_prog_LIPO_FOR_TARGET" ; then
+  set dummy lipo
+  if test $build = $target ; then
+    LIPO_FOR_TARGET="$2"
+  else
+    LIPO_FOR_TARGET="${ncn_target_tool_prefix}$2"
+  fi
+fi
+
  for ncn_progname in nm gnm; do
   if test -n "${ncn_target_tool_prefix}"; then
     # Extract the first word of "${ncn_target_tool_prefix}${ncn_progname}", so it can be a program name with args.
@@ -17422,6 +18145,97 @@ if test -z "$ac_cv_prog_NM_FOR_TARGET" ; then
   fi
 fi
 
+ for ncn_progname in objdump gobjdump; do
+  if test -n "${ncn_target_tool_prefix}"; then
+    # Extract the first word of "${ncn_target_tool_prefix}${ncn_progname}", so it can be a program name with args.
+set dummy ${ncn_target_tool_prefix}${ncn_progname}; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_OBJDUMP_FOR_TARGET+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$OBJDUMP_FOR_TARGET"; then
+  ac_cv_prog_OBJDUMP_FOR_TARGET="$OBJDUMP_FOR_TARGET" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_OBJDUMP_FOR_TARGET="${ncn_target_tool_prefix}${ncn_progname}"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+OBJDUMP_FOR_TARGET=$ac_cv_prog_OBJDUMP_FOR_TARGET
+if test -n "$OBJDUMP_FOR_TARGET"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $OBJDUMP_FOR_TARGET" >&5
+$as_echo "$OBJDUMP_FOR_TARGET" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  fi
+  if test -z "$ac_cv_prog_OBJDUMP_FOR_TARGET" && test ${build} = ${target} ; then
+    # Extract the first word of "${ncn_progname}", so it can be a program name with args.
+set dummy ${ncn_progname}; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_OBJDUMP_FOR_TARGET+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$OBJDUMP_FOR_TARGET"; then
+  ac_cv_prog_OBJDUMP_FOR_TARGET="$OBJDUMP_FOR_TARGET" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_OBJDUMP_FOR_TARGET="${ncn_progname}"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+OBJDUMP_FOR_TARGET=$ac_cv_prog_OBJDUMP_FOR_TARGET
+if test -n "$OBJDUMP_FOR_TARGET"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $OBJDUMP_FOR_TARGET" >&5
+$as_echo "$OBJDUMP_FOR_TARGET" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  fi
+  test -n "$ac_cv_prog_OBJDUMP_FOR_TARGET" && break
+done
+
+if test -z "$ac_cv_prog_OBJDUMP_FOR_TARGET" ; then
+  set dummy objdump gobjdump
+  if test $build = $target ; then
+    OBJDUMP_FOR_TARGET="$2"
+  else
+    OBJDUMP_FOR_TARGET="${ncn_target_tool_prefix}$2"
+  fi
+fi
+
  for ncn_progname in ranlib granlib; do
   if test -n "${ncn_target_tool_prefix}"; then
     # Extract the first word of "${ncn_target_tool_prefix}${ncn_progname}", so it can be a program name with args.
@@ -17506,6 +18320,97 @@ done
 
 if test -z "$ac_cv_prog_RANLIB_FOR_TARGET" ; then
   RANLIB_FOR_TARGET=":"
+fi
+
+ for ncn_progname in readelf greadelf; do
+  if test -n "${ncn_target_tool_prefix}"; then
+    # Extract the first word of "${ncn_target_tool_prefix}${ncn_progname}", so it can be a program name with args.
+set dummy ${ncn_target_tool_prefix}${ncn_progname}; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_READELF_FOR_TARGET+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$READELF_FOR_TARGET"; then
+  ac_cv_prog_READELF_FOR_TARGET="$READELF_FOR_TARGET" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_READELF_FOR_TARGET="${ncn_target_tool_prefix}${ncn_progname}"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+READELF_FOR_TARGET=$ac_cv_prog_READELF_FOR_TARGET
+if test -n "$READELF_FOR_TARGET"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $READELF_FOR_TARGET" >&5
+$as_echo "$READELF_FOR_TARGET" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  fi
+  if test -z "$ac_cv_prog_READELF_FOR_TARGET" && test ${build} = ${target} ; then
+    # Extract the first word of "${ncn_progname}", so it can be a program name with args.
+set dummy ${ncn_progname}; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_READELF_FOR_TARGET+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$READELF_FOR_TARGET"; then
+  ac_cv_prog_READELF_FOR_TARGET="$READELF_FOR_TARGET" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_READELF_FOR_TARGET="${ncn_progname}"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+READELF_FOR_TARGET=$ac_cv_prog_READELF_FOR_TARGET
+if test -n "$READELF_FOR_TARGET"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $READELF_FOR_TARGET" >&5
+$as_echo "$READELF_FOR_TARGET" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  fi
+  test -n "$ac_cv_prog_READELF_FOR_TARGET" && break
+done
+
+if test -z "$ac_cv_prog_READELF_FOR_TARGET" ; then
+  set dummy readelf greadelf
+  if test $build = $target ; then
+    READELF_FOR_TARGET="$2"
+  else
+    READELF_FOR_TARGET="${ncn_target_tool_prefix}$2"
+  fi
 fi
 
  for ncn_progname in windres gwindres; do
@@ -17599,8 +18504,483 @@ if test -z "$ac_cv_prog_WINDRES_FOR_TARGET" ; then
   fi
 fi
 
+ for ncn_progname in windmc gwindmc; do
+  if test -n "${ncn_target_tool_prefix}"; then
+    # Extract the first word of "${ncn_target_tool_prefix}${ncn_progname}", so it can be a program name with args.
+set dummy ${ncn_target_tool_prefix}${ncn_progname}; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_WINDMC_FOR_TARGET+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$WINDMC_FOR_TARGET"; then
+  ac_cv_prog_WINDMC_FOR_TARGET="$WINDMC_FOR_TARGET" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_WINDMC_FOR_TARGET="${ncn_target_tool_prefix}${ncn_progname}"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+WINDMC_FOR_TARGET=$ac_cv_prog_WINDMC_FOR_TARGET
+if test -n "$WINDMC_FOR_TARGET"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $WINDMC_FOR_TARGET" >&5
+$as_echo "$WINDMC_FOR_TARGET" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  fi
+  if test -z "$ac_cv_prog_WINDMC_FOR_TARGET" && test ${build} = ${target} ; then
+    # Extract the first word of "${ncn_progname}", so it can be a program name with args.
+set dummy ${ncn_progname}; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_WINDMC_FOR_TARGET+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$WINDMC_FOR_TARGET"; then
+  ac_cv_prog_WINDMC_FOR_TARGET="$WINDMC_FOR_TARGET" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_WINDMC_FOR_TARGET="${ncn_progname}"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+WINDMC_FOR_TARGET=$ac_cv_prog_WINDMC_FOR_TARGET
+if test -n "$WINDMC_FOR_TARGET"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $WINDMC_FOR_TARGET" >&5
+$as_echo "$WINDMC_FOR_TARGET" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  fi
+  test -n "$ac_cv_prog_WINDMC_FOR_TARGET" && break
+done
+
+if test -z "$ac_cv_prog_WINDMC_FOR_TARGET" ; then
+  set dummy windmc gwindmc
+  if test $build = $target ; then
+    WINDMC_FOR_TARGET="$2"
+  else
+    WINDMC_FOR_TARGET="${ncn_target_tool_prefix}$2"
+  fi
+fi
+
+RAW_CXX_FOR_TARGET="${CXX_FOR_TARGET}"
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking where to find the target ar" >&5
+$as_echo_n "checking where to find the target ar... " >&6; }
+if test "x${build}" != "x${host}"; then
+  if expr "x$AR_FOR_TARGET" : "x/" > /dev/null; then
+    # We already found the complete path
+    ac_dir=`dirname $AR_FOR_TARGET`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed in ${ac_dir}" >&5
+$as_echo "pre-installed in ${ac_dir}" >&6; }
+  else
+    # Canadian cross, just use what we found:
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed" >&5
+$as_echo "pre-installed" >&6; }
+  fi
+else
+  ok=yes
+  case " ${configdirs} " in
+    *" binutils "*) ;;
+    *) ok=no ;;
+  esac
+
+  if test "x${ok}" = "xyes"; then
+    # An in-tree tool is available and we can use it
+    AR_FOR_TARGET='$$r/$(HOST_SUBDIR)/binutils/ar'
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: just compiled" >&5
+$as_echo "just compiled" >&6; }
+  elif expr "x$AR_FOR_TARGET" : "x/" > /dev/null; then
+    # We already found the complete path
+    ac_dir=`dirname $AR_FOR_TARGET`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed in ${ac_dir}" >&5
+$as_echo "pre-installed in ${ac_dir}" >&6; }
+  elif test "x${target}" = "x${host}"; then
+    # We can use an host tool:
+    AR_FOR_TARGET='$(AR)'
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: host tool" >&5
+$as_echo "host tool" >&6; }
+  else
+    # We need a cross tool:
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed" >&5
+$as_echo "pre-installed" >&6; }
+  fi
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking where to find the target dlltool" >&5
+$as_echo_n "checking where to find the target dlltool... " >&6; }
+if test "x${build}" != "x${host}"; then
+  if expr "x$DLLTOOL_FOR_TARGET" : "x/" > /dev/null; then
+    # We already found the complete path
+    ac_dir=`dirname $DLLTOOL_FOR_TARGET`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed in ${ac_dir}" >&5
+$as_echo "pre-installed in ${ac_dir}" >&6; }
+  else
+    # Canadian cross, just use what we found:
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed" >&5
+$as_echo "pre-installed" >&6; }
+  fi
+else
+  ok=yes
+  case " ${configdirs} " in
+    *" binutils "*) ;;
+    *) ok=no ;;
+  esac
+
+  if test "x${ok}" = "xyes"; then
+    # An in-tree tool is available and we can use it
+    DLLTOOL_FOR_TARGET='$$r/$(HOST_SUBDIR)/binutils/dlltool'
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: just compiled" >&5
+$as_echo "just compiled" >&6; }
+  elif expr "x$DLLTOOL_FOR_TARGET" : "x/" > /dev/null; then
+    # We already found the complete path
+    ac_dir=`dirname $DLLTOOL_FOR_TARGET`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed in ${ac_dir}" >&5
+$as_echo "pre-installed in ${ac_dir}" >&6; }
+  elif test "x${target}" = "x${host}"; then
+    # We can use an host tool:
+    DLLTOOL_FOR_TARGET='$(DLLTOOL)'
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: host tool" >&5
+$as_echo "host tool" >&6; }
+  else
+    # We need a cross tool:
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed" >&5
+$as_echo "pre-installed" >&6; }
+  fi
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking where to find the target nm" >&5
+$as_echo_n "checking where to find the target nm... " >&6; }
+if test "x${build}" != "x${host}"; then
+  if expr "x$NM_FOR_TARGET" : "x/" > /dev/null; then
+    # We already found the complete path
+    ac_dir=`dirname $NM_FOR_TARGET`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed in ${ac_dir}" >&5
+$as_echo "pre-installed in ${ac_dir}" >&6; }
+  else
+    # Canadian cross, just use what we found:
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed" >&5
+$as_echo "pre-installed" >&6; }
+  fi
+else
+  ok=yes
+  case " ${configdirs} " in
+    *" binutils "*) ;;
+    *) ok=no ;;
+  esac
+
+  if test "x${ok}" = "xyes"; then
+    # An in-tree tool is available and we can use it
+    NM_FOR_TARGET='$$r/$(HOST_SUBDIR)/binutils/nm-new'
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: just compiled" >&5
+$as_echo "just compiled" >&6; }
+  elif expr "x$NM_FOR_TARGET" : "x/" > /dev/null; then
+    # We already found the complete path
+    ac_dir=`dirname $NM_FOR_TARGET`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed in ${ac_dir}" >&5
+$as_echo "pre-installed in ${ac_dir}" >&6; }
+  elif test "x${target}" = "x${host}"; then
+    # We can use an host tool:
+    NM_FOR_TARGET='$(NM)'
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: host tool" >&5
+$as_echo "host tool" >&6; }
+  else
+    # We need a cross tool:
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed" >&5
+$as_echo "pre-installed" >&6; }
+  fi
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking where to find the target objdump" >&5
+$as_echo_n "checking where to find the target objdump... " >&6; }
+if test "x${build}" != "x${host}"; then
+  if expr "x$OBJDUMP_FOR_TARGET" : "x/" > /dev/null; then
+    # We already found the complete path
+    ac_dir=`dirname $OBJDUMP_FOR_TARGET`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed in ${ac_dir}" >&5
+$as_echo "pre-installed in ${ac_dir}" >&6; }
+  else
+    # Canadian cross, just use what we found:
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed" >&5
+$as_echo "pre-installed" >&6; }
+  fi
+else
+  ok=yes
+  case " ${configdirs} " in
+    *" binutils "*) ;;
+    *) ok=no ;;
+  esac
+
+  if test "x${ok}" = "xyes"; then
+    # An in-tree tool is available and we can use it
+    OBJDUMP_FOR_TARGET='$$r/$(HOST_SUBDIR)/binutils/objdump'
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: just compiled" >&5
+$as_echo "just compiled" >&6; }
+  elif expr "x$OBJDUMP_FOR_TARGET" : "x/" > /dev/null; then
+    # We already found the complete path
+    ac_dir=`dirname $OBJDUMP_FOR_TARGET`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed in ${ac_dir}" >&5
+$as_echo "pre-installed in ${ac_dir}" >&6; }
+  elif test "x${target}" = "x${host}"; then
+    # We can use an host tool:
+    OBJDUMP_FOR_TARGET='$(OBJDUMP)'
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: host tool" >&5
+$as_echo "host tool" >&6; }
+  else
+    # We need a cross tool:
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed" >&5
+$as_echo "pre-installed" >&6; }
+  fi
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking where to find the target ranlib" >&5
+$as_echo_n "checking where to find the target ranlib... " >&6; }
+if test "x${build}" != "x${host}"; then
+  if expr "x$RANLIB_FOR_TARGET" : "x/" > /dev/null; then
+    # We already found the complete path
+    ac_dir=`dirname $RANLIB_FOR_TARGET`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed in ${ac_dir}" >&5
+$as_echo "pre-installed in ${ac_dir}" >&6; }
+  else
+    # Canadian cross, just use what we found:
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed" >&5
+$as_echo "pre-installed" >&6; }
+  fi
+else
+  ok=yes
+  case " ${configdirs} " in
+    *" binutils "*) ;;
+    *) ok=no ;;
+  esac
+
+  if test "x${ok}" = "xyes"; then
+    # An in-tree tool is available and we can use it
+    RANLIB_FOR_TARGET='$$r/$(HOST_SUBDIR)/binutils/ranlib'
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: just compiled" >&5
+$as_echo "just compiled" >&6; }
+  elif expr "x$RANLIB_FOR_TARGET" : "x/" > /dev/null; then
+    # We already found the complete path
+    ac_dir=`dirname $RANLIB_FOR_TARGET`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed in ${ac_dir}" >&5
+$as_echo "pre-installed in ${ac_dir}" >&6; }
+  elif test "x${target}" = "x${host}"; then
+    # We can use an host tool:
+    RANLIB_FOR_TARGET='$(RANLIB)'
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: host tool" >&5
+$as_echo "host tool" >&6; }
+  else
+    # We need a cross tool:
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed" >&5
+$as_echo "pre-installed" >&6; }
+  fi
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking where to find the target readelf" >&5
+$as_echo_n "checking where to find the target readelf... " >&6; }
+if test "x${build}" != "x${host}"; then
+  if expr "x$READELF_FOR_TARGET" : "x/" > /dev/null; then
+    # We already found the complete path
+    ac_dir=`dirname $READELF_FOR_TARGET`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed in ${ac_dir}" >&5
+$as_echo "pre-installed in ${ac_dir}" >&6; }
+  else
+    # Canadian cross, just use what we found:
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed" >&5
+$as_echo "pre-installed" >&6; }
+  fi
+else
+  ok=yes
+  case " ${configdirs} " in
+    *" binutils "*) ;;
+    *) ok=no ;;
+  esac
+
+  if test "x${ok}" = "xyes"; then
+    # An in-tree tool is available and we can use it
+    READELF_FOR_TARGET='$$r/$(HOST_SUBDIR)/binutils/readelf'
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: just compiled" >&5
+$as_echo "just compiled" >&6; }
+  elif expr "x$READELF_FOR_TARGET" : "x/" > /dev/null; then
+    # We already found the complete path
+    ac_dir=`dirname $READELF_FOR_TARGET`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed in ${ac_dir}" >&5
+$as_echo "pre-installed in ${ac_dir}" >&6; }
+  elif test "x${target}" = "x${host}"; then
+    # We can use an host tool:
+    READELF_FOR_TARGET='$(READELF)'
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: host tool" >&5
+$as_echo "host tool" >&6; }
+  else
+    # We need a cross tool:
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed" >&5
+$as_echo "pre-installed" >&6; }
+  fi
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking where to find the target strip" >&5
+$as_echo_n "checking where to find the target strip... " >&6; }
+if test "x${build}" != "x${host}"; then
+  if expr "x$STRIP_FOR_TARGET" : "x/" > /dev/null; then
+    # We already found the complete path
+    ac_dir=`dirname $STRIP_FOR_TARGET`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed in ${ac_dir}" >&5
+$as_echo "pre-installed in ${ac_dir}" >&6; }
+  else
+    # Canadian cross, just use what we found:
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed" >&5
+$as_echo "pre-installed" >&6; }
+  fi
+else
+  ok=yes
+  case " ${configdirs} " in
+    *" binutils "*) ;;
+    *) ok=no ;;
+  esac
+
+  if test "x${ok}" = "xyes"; then
+    # An in-tree tool is available and we can use it
+    STRIP_FOR_TARGET='$$r/$(HOST_SUBDIR)/binutils/strip-new'
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: just compiled" >&5
+$as_echo "just compiled" >&6; }
+  elif expr "x$STRIP_FOR_TARGET" : "x/" > /dev/null; then
+    # We already found the complete path
+    ac_dir=`dirname $STRIP_FOR_TARGET`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed in ${ac_dir}" >&5
+$as_echo "pre-installed in ${ac_dir}" >&6; }
+  elif test "x${target}" = "x${host}"; then
+    # We can use an host tool:
+    STRIP_FOR_TARGET='$(STRIP)'
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: host tool" >&5
+$as_echo "host tool" >&6; }
+  else
+    # We need a cross tool:
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed" >&5
+$as_echo "pre-installed" >&6; }
+  fi
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking where to find the target windres" >&5
+$as_echo_n "checking where to find the target windres... " >&6; }
+if test "x${build}" != "x${host}"; then
+  if expr "x$WINDRES_FOR_TARGET" : "x/" > /dev/null; then
+    # We already found the complete path
+    ac_dir=`dirname $WINDRES_FOR_TARGET`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed in ${ac_dir}" >&5
+$as_echo "pre-installed in ${ac_dir}" >&6; }
+  else
+    # Canadian cross, just use what we found:
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed" >&5
+$as_echo "pre-installed" >&6; }
+  fi
+else
+  ok=yes
+  case " ${configdirs} " in
+    *" binutils "*) ;;
+    *) ok=no ;;
+  esac
+
+  if test "x${ok}" = "xyes"; then
+    # An in-tree tool is available and we can use it
+    WINDRES_FOR_TARGET='$$r/$(HOST_SUBDIR)/binutils/windres'
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: just compiled" >&5
+$as_echo "just compiled" >&6; }
+  elif expr "x$WINDRES_FOR_TARGET" : "x/" > /dev/null; then
+    # We already found the complete path
+    ac_dir=`dirname $WINDRES_FOR_TARGET`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed in ${ac_dir}" >&5
+$as_echo "pre-installed in ${ac_dir}" >&6; }
+  elif test "x${target}" = "x${host}"; then
+    # We can use an host tool:
+    WINDRES_FOR_TARGET='$(WINDRES)'
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: host tool" >&5
+$as_echo "host tool" >&6; }
+  else
+    # We need a cross tool:
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed" >&5
+$as_echo "pre-installed" >&6; }
+  fi
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking where to find the target windmc" >&5
+$as_echo_n "checking where to find the target windmc... " >&6; }
+if test "x${build}" != "x${host}"; then
+  if expr "x$WINDMC_FOR_TARGET" : "x/" > /dev/null; then
+    # We already found the complete path
+    ac_dir=`dirname $WINDMC_FOR_TARGET`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed in ${ac_dir}" >&5
+$as_echo "pre-installed in ${ac_dir}" >&6; }
+  else
+    # Canadian cross, just use what we found:
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed" >&5
+$as_echo "pre-installed" >&6; }
+  fi
+else
+  ok=yes
+  case " ${configdirs} " in
+    *" binutils "*) ;;
+    *) ok=no ;;
+  esac
+
+  if test "x${ok}" = "xyes"; then
+    # An in-tree tool is available and we can use it
+    WINDMC_FOR_TARGET='$$r/$(HOST_SUBDIR)/binutils/windmc'
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: just compiled" >&5
+$as_echo "just compiled" >&6; }
+  elif expr "x$WINDMC_FOR_TARGET" : "x/" > /dev/null; then
+    # We already found the complete path
+    ac_dir=`dirname $WINDMC_FOR_TARGET`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed in ${ac_dir}" >&5
+$as_echo "pre-installed in ${ac_dir}" >&6; }
+  elif test "x${target}" = "x${host}"; then
+    # We can use an host tool:
+    WINDMC_FOR_TARGET='$(WINDMC)'
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: host tool" >&5
+$as_echo "host tool" >&6; }
+  else
+    # We need a cross tool:
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: pre-installed" >&5
+$as_echo "pre-installed" >&6; }
+  fi
+fi
+
+
+# extra aliases for variables:
 CONFIGURED_AR_FOR_TARGET="${AR_FOR_TARGET}"
 CONFIGURED_AS_FOR_TARGET="${AS_FOR_TARGET}" # might need to be commented out for confusing autoconf
+CONFIGURED_GAS_FOR_TARGET="${GAS_FOR_TARGET}"
 CONFIGURED_CC_FOR_TARGET="${CC_FOR_TARGET}"
 CONFIGURED_CXX_FOR_TARGET="${CXX_FOR_TARGET}"
 CONFIGURED_DLLTOOL_FOR_TARGET="${DLLTOOL_FOR_TARGET}"
@@ -17624,6 +19004,7 @@ if test "x${build}" = "x${host}"; then
   # should also eliminate all of this cleanly.
   AR_FOR_TARGET="\$(USUAL_AR_FOR_TARGET)"
   AS_FOR_TARGET="\$(USUAL_AS_FOR_TARGET)" # might need to be commented out for confusing autoconf
+  test -z "${GAS_FOR_TARGET}"
   CC_FOR_TARGET="\$(USUAL_CC_FOR_TARGET)"
   CXX_FOR_TARGET="\$(USUAL_CXX_FOR_TARGET)"
   RAW_CXX_FOR_TARGET="\$(USUAL_RAW_CXX_FOR_TARGET)"
@@ -17639,6 +19020,7 @@ else
   # Just use the ones we found:
   AR_FOR_TARGET="\$(CONFIGURED_AR_FOR_TARGET)"
   AS_FOR_TARGET="\$(CONFIGURED_AS_FOR_TARGET)" # might need to be commented out for confusing autoconf
+  test -z "${GAS_FOR_TARGET}"
   CC_FOR_TARGET="\$(CONFIGURED_CC_FOR_TARGET)"
   CXX_FOR_TARGET="\$(CONFIGURED_CXX_FOR_TARGET)"
   RAW_CXX_FOR_TARGET="\$(CONFIGURED_CXX_FOR_TARGET)"

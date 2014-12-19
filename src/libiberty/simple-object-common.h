@@ -175,7 +175,7 @@ simple_object_internal_write (int descriptor, off_t offset,
 __extension__ typedef UNSIGNED_64BIT_TYPE ulong_type;
 #else
 typedef unsigned long ulong_type;
-#endif
+#endif /* UNSIGNED_64BIT_TYPE */
 
 /* Fetch a big-endian 16-bit value.  */
 
@@ -263,7 +263,7 @@ simple_object_fetch_little_64 (const unsigned char *buf)
 	  | (ulong_type) buf[0]);
 }
 
-#endif
+#endif /* UNSIGNED_64BIT_TYPE */
 
 /* Store a big-endian 16-bit value.  */
 
@@ -353,4 +353,6 @@ simple_object_set_little_64 (unsigned char *buf, ulong_type val)
   buf[0] = val & 0xff;
 }
 
-#endif
+#endif /* UNSIGNED_64BIT_TYPE */
+
+/* EOF */

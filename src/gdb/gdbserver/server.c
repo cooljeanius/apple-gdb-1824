@@ -350,8 +350,11 @@ gdbserver_usage (void)
 	 "HOST:PORT to listen for a TCP connection.\n");
 }
 
+extern int low_debuglevel;
+extern int excthread_debugflag;
+
 int
-main (int argc, char *argv[])
+main(volatile int argc, char *argv[])
 {
   char ch, status, *own_buf;
   unsigned char mem_buf[2000];
@@ -363,17 +366,15 @@ main (int argc, char *argv[])
   int pid;
   char *arg_end;
 
-  if (setjmp (toplevel))
+  if (setjmp(toplevel))
     {
-      fprintf (stderr, "Exiting\n");
-      exit (1);
+      fprintf(stderr, "Exiting\n");
+      exit(1);
     }
 
   /* APPLE LOCAL BEGIN: Add a way to turn on and off verbose debugging. */
-  if (argc > 1 && strcmp (argv[1], "--debug") == 0)
+  if ((argc > 1) && (strcmp(argv[1], "--debug") == 0))
     {
-      extern int low_debuglevel;
-      extern int excthread_debugflag;
       int i;
       low_debuglevel = 6;
       excthread_debugflag = 6;
@@ -388,11 +389,11 @@ main (int argc, char *argv[])
   bad_attach = 0;
   pid = 0;
   attached = 0;
-  if (argc >= 3 && strcmp (argv[2], "--attach") == 0)
+  if ((argc >= 3) && (strcmp(argv[2], "--attach") == 0))
     {
       if (argc == 4
 	  && argv[3] != '\0'
-	  && (pid = strtoul (argv[3], &arg_end, 10)) != 0
+	  && (pid = strtoul(argv[3], &arg_end, 10)) != 0
 	  && *arg_end == '\0')
 	{
 	  ;
@@ -454,8 +455,6 @@ main (int argc, char *argv[])
 	    case 'd':
 	      /* APPLE LOCAL: Handle all the debug flags here. */
 	      {
-		extern int low_debuglevel;
-		extern int excthread_debugflag;
 		if (!low_debuglevel)
 		  low_debuglevel = 6;
 		else
@@ -748,14 +747,14 @@ main (int argc, char *argv[])
 		  fprintf (stderr, "GDBserver restarting\n");
 
 		  /* Wait till we are at 1st instruction in prog.  */
-		  signal = start_inferior (&argv[2], &status);
+		  signal = start_inferior(&argv[2], &status);
 		  goto restart;
 		  break;
 		}
 	      else
 		{
-		  fprintf (stderr, "GDBserver exiting\n");
-		  exit (0);
+		  fprintf(stderr, "GDBserver exiting\n");
+		  exit(0);
 		}
 	    }
 	}
@@ -769,14 +768,14 @@ main (int argc, char *argv[])
          and re-open it at the top of the loop.  */
       if (extended_protocol)
 	{
-	  remote_close ();
-	  exit (0);
+	  remote_close();
+	  exit(0);
 	}
       else
 	{
-	  fprintf (stderr, "Remote side has terminated connection.  "
-			   "GDBserver will reopen the connection.\n");
-	  remote_close ();
+	  fprintf(stderr, "Remote side has terminated connection.  "
+                          "GDBserver will reopen the connection.\n");
+	  remote_close();
 	}
     }
 }

@@ -1,4 +1,4 @@
-/* Execute a program and wait for a result.
+/* pex-one.c: Execute a program and wait for a result.
    Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of the libiberty library.
@@ -39,5 +39,7 @@ pex_one (int flags, const char *executable, char * const *argv,
 	}
     }
   pex_free (obj);
-  return errmsg;  
+  return errmsg;
 }
+
+/* EOF */

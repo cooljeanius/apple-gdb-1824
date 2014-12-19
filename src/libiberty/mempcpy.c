@@ -1,4 +1,4 @@
-/* Implement the mempcpy function.
+/* mempcpy.c: Implement the mempcpy function.
    Copyright (C) 2003, 2004, 2005 Free Software Foundation, Inc.
    Written by Kaveh R. Ghazi <ghazi@caip.rutgers.edu>.
 
@@ -32,10 +32,12 @@ Copies @var{length} bytes from memory region @var{in} to region
 #include <ansidecl.h>
 #include <stddef.h>
 
-extern PTR memcpy (PTR, const PTR, size_t);
+extern PTR memcpy(PTR, const PTR, size_t);
 
 PTR
-mempcpy (PTR dst, const PTR src, size_t len)
+mempcpy(PTR dst, const PTR src, size_t len)
 {
-  return (char *) memcpy (dst, src, len) + len;
+  return (char *)memcpy(dst, src, len) + len;
 }
+
+/* EOF */

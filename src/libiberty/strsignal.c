@@ -1,4 +1,4 @@
-/* Extended support for using signal values.
+/* strsignal.c: Extended support for using signal values.
    Written by Fred Fish.  fnf@cygnus.com
    This file is in the public domain.  */
 
@@ -435,7 +435,7 @@ strsignal (int signo)
       /* In range, and a valid message.  Just return the message. */
       msg = (const char *) sys_siglist[signo];
     }
-  
+
   return (msg);
 }
 
@@ -547,46 +547,41 @@ followed by a newline.
 */
 
 #ifndef HAVE_PSIGNAL
-
 void
-psignal (unsigned signo, char *message)
+psignal(unsigned signo, char *message)
 {
   if (signal_names == NULL)
     {
-      init_signal_tables ();
+      init_signal_tables();
     }
   if ((signo <= 0) || (signo >= sys_nsig))
     {
-      fprintf (stderr, "%s: unknown signal\n", message);
+      fprintf(stderr, "%s: unknown signal\n", message);
     }
   else
     {
-      fprintf (stderr, "%s: %s\n", message, sys_siglist[signo]);
+      fprintf(stderr, "%s: %s\n", message, sys_siglist[signo]);
     }
 }
+#endif /* !HAVE_PSIGNAL */
 
-#endif	/* ! HAVE_PSIGNAL */
 
-
-/* A simple little main that does nothing but print all the signal translations
-   if MAIN is defined and this file is compiled and linked. */
-
+/* A simple little main that does nothing but print all the signal
+ * translations if MAIN is defined and this file is compiled and linked: */
 #ifdef MAIN
-
-#include <stdio.h>
-
+# include <stdio.h>
 int
-main (void)
+main(void)
 {
   int signo;
   int maxsigno;
   const char *name;
   const char *msg;
 
-  maxsigno = signo_max ();
-  printf ("%d entries in names table.\n", num_signal_names);
-  printf ("%d entries in messages table.\n", sys_nsig);
-  printf ("%d is max useful index.\n", maxsigno);
+  maxsigno = signo_max();
+  printf("%d entries in names table.\n", num_signal_names);
+  printf("%d entries in messages table.\n", sys_nsig);
+  printf("%d is max useful index.\n", maxsigno);
 
   /* Keep printing values until we get to the end of *both* tables, not
      *either* table.  Note that knowing the maximum useful index does *not*
@@ -595,14 +590,15 @@ main (void)
 
   for (signo = 0; signo <= maxsigno; signo++)
     {
-      name = strsigno (signo);
-      name = (name == NULL) ? "<NULL>" : name;
-      msg = strsignal (signo);
-      msg = (msg == NULL) ? "<NULL>" : msg;
-      printf ("%-4d%-18s%s\n", signo, name, msg);
+      name = strsigno(signo);
+      name = ((name == NULL) ? "<NULL>" : name);
+      msg = strsignal(signo);
+      msg = ((msg == NULL) ? "<NULL>" : msg);
+      printf("%-4d%-18s%s\n", signo, name, msg);
     }
 
   return 0;
 }
+#endif /* MAIN */
 
-#endif
+/* EOF */

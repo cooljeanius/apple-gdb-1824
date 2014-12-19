@@ -1,23 +1,25 @@
-/* Resource (Rez) file for MacGDB. */
+/* mac-gdb.r: Resource (Rez) file for MacGDB. */
 
 /* These first two can be found in /Developer/Headers/FlatCarbon with
- * Xcode 3, but I have vendored in local copies just in case.
- */
+ * Xcode 3, but I have vendored in local copies just in case: */
 #include "SysTypes.r"
 #include "Types.r"
 
-/* Local file */
+/* Local file: */
 #include "mac-defs.h"
 
-/* Version resources. */
+#ifndef VERSION_STRING
+# define VERSION_STRING "6.3.50-20050815 (Apple version gdb-1824)"
+#endif /* !VERSION_STRING */
 
+/* Version resources. */
 resource 'vers' (1) {
 	0,
 	0,
 	0,
 	0,
 	verUS,
-	VERSION_STRING, /* ### rez - Expected string, but got identifier (VERSION_STRING) */
+	VERSION_STRING,
 	VERSION_STRING  " (C) 1986-95 FSF, Inc."
 };
 
@@ -27,16 +29,14 @@ resource 'vers' (2, purgeable)  {
 	0,
 	0,
 	verUs,
-	VERSION_STRING, /* ### rez - Expected string, but got identifier (VERSION_STRING) */
+	VERSION_STRING,
 	"GDB " VERSION_STRING " for MPW"
 };
 
 #ifdef WANT_CFRG
-
 /* Again, originally in /Developer/Headers/FlatCarbon, but copied
- * here as a back up
- */
-#include "CodeFragmentTypes.r"
+ * here as a back up: */
+# include "CodeFragmentTypes.r"
 
 resource 'cfrg' (0) {
 	{
@@ -115,6 +115,7 @@ resource 'MENU' (mDebug, preload) {
 	}
 };
 
+# ifdef OLD_Macgdb
 resource 'ALRT' (128) {
 	{40, 40, 180, 420},
 	128,
@@ -129,6 +130,7 @@ resource 'ALRT' (128) {
 		OK, visible, sound1
 	}
 };
+# endif /* OLD_Macgdb */
 
 resource 'DITL' (128) {
 	{	/* array DITLarray: 2 elements */
@@ -148,6 +150,7 @@ resource 'DITL' (128) {
 	}
 };
 
+# ifdef OLD_Macgdb
 resource 'WIND' (wConsole, preload, purgeable) {
 	{40, 40, 310, 572},
 	zoomDocProc,
@@ -156,6 +159,7 @@ resource 'WIND' (wConsole, preload, purgeable) {
 	0x0,
 	"GDB Console"
 };
+# endif /* OLD_Macgdb */
 
 resource 'SIZE' (-1) {
 	reserved,
@@ -178,6 +182,7 @@ resource 'SIZE' (-1) {
 	2000*1024
 };
 
+# ifdef OLD_Macgdb
 resource 'DLOG' (128) {
 	{40, 40, 240, 280},
 	documentProc,
@@ -187,5 +192,8 @@ resource 'DLOG' (128) {
 	128,
 	""
 };
+# endif /* OLD_Macgdb */
 
 #endif /* Macgdb */
+
+/* EOF */

@@ -120,6 +120,31 @@ AC_SUBST([TIMESTAMP])dnl
 AC_SUBST([package_revision])dnl
 
 
+## -------------------- ##
+## architecture checks. ##
+## -------------------- ##
+
+AC_CANONICAL_TARGET
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+  AC_SUBST([BUILD_ARCHITECTURE])
+fi
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  AC_SUBST([HOST_ARCHITECTURE])
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+  AC_SUBST([TARGET_ARCHITECTURE])
+fi
+
+export C_ARCHFLAGS="-arch ${HOST_ARCHITECTURE}"
+if test "x${CFLAGS}" = "x"; then
+  test -z "${CFLAGS}" && export CFLAGS="${C_ARCHFLAGS}"
+else
+  test -n "${CFLAGS}" && export CFLAGS="${CFLAGS} ${C_ARCHFLAGS}"
+fi
+
 ## ------------------------ ##
 ## Automake Initialization. ##
 ## ------------------------ ##
@@ -132,7 +157,7 @@ AM_MAINTAINER_MODE
 
 
 ## ------------------------- ##
-## Autobuild initialisation. ##
+## Autobuild initialization. ##
 ## ------------------------- ##
 
 # You can set autobuild_mode at configure time to specify a "unique"
@@ -142,7 +167,7 @@ AB_VERSION="AC_PACKAGE_VERSION (${TIMESTAMP})"
 AB_INIT([${autobuild_mode}])dnl
 
 
-dnl# We abuse m4sh to generate libtool's portable shell scripts
+dnl# We abuse m4sh to generate libtool's portable shell scripts:
 AC_SUBST([M4SH],['$(AUTOM4TE) --language=m4sh'])dnl
 
 dnl# Make sure config.status is regenerated when the ver. timestamp changes
@@ -174,7 +199,6 @@ for dir in ${CONF_SUBDIRS}; do
 done
 AC_SUBST([DIST_MAKEFILE_LIST])dnl
 
-
 ## ---------------- ##
 ## compiler checks. ##
 ## ---------------- ##
@@ -185,9 +209,11 @@ AC_SUBST([DIST_MAKEFILE_LIST])dnl
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_PROG_CPP
+AC_PROG_CXX
+AC_PROG_CXXCPP
 
 ## ----------------------- ##
-## Libtool initialisation. ##
+## Libtool initialization. ##
 ## ----------------------- ##
 LT_INIT([dlopen win32-dll])
 _LT_SET_OPTION([LTDL_INIT],[nonrecursive])

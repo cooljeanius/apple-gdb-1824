@@ -344,6 +344,7 @@ AM_CPPFLAGS = -D_GNU_SOURCE -I. -I$(srcdir) -I../bfd -I$(INCDIR) -I$(BFDDIR) @HD
 
 disassemble.lo: disassemble.c $(INCDIR)/dis-asm.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c @archdefs@ $(srcdir)/disassemble.c
+disassemle.o: disassemble.lo
 
 libopcodes_la_SOURCES =  dis-buf.c disassemble.c dis-init.c i386-opc.c
 # It is desirable to list ../bfd/libbfd.la in DEPENDENCIES and LIBADD.
@@ -541,20 +542,25 @@ m32c_opc_h = m32c-opc.h cgen-types.h cgen-ops.h
 m32c-asm.lo: m32c-asm.c sysdep.h config.h $(BFD_H) \
   $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h m32c-desc.h \
   $(INCDIR)/opcode/cgen.h $(m32c_opc_h) opintl.h
+m32c-asm.o: m32c-asm.lo
 m32c-desc.lo: m32c-desc.c sysdep.h config.h $(BFD_H) \
   $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h m32c-desc.h \
   $(INCDIR)/opcode/cgen.h $(m32c_opc_h) opintl.h
+m32c-desc.o: m32c-desc.lo
 m32c-dis.lo: m32c-dis.c sysdep.h config.h $(INCDIR)/dis-asm.h \
   $(BFD_H) $(INCDIR)/ansidecl.h \
   $(INCDIR)/symcat.h m32c-desc.h $(INCDIR)/opcode/cgen.h \
   $(m32c_opc_h) opintl.h
+m32c-dis.o: m32c-dis.lo
 m32c-ibld.lo: m32c-ibld.c sysdep.h config.h $(INCDIR)/dis-asm.h \
   $(BFD_H) $(INCDIR)/ansidecl.h \
   $(INCDIR)/symcat.h m32c-desc.h $(INCDIR)/opcode/cgen.h \
   $(m32c_opc_h) opintl.h
+m32c-ibld.o: m32c-ibld.lo
 m32c-opc.lo: m32c-opc.c sysdep.h config.h $(BFD_H) \
   $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h m32c-desc.h \
   $(INCDIR)/opcode/cgen.h $(m32c_opc_h)
+m32c-opc.o: m32c-opc.lo
 
 $(srcdir)/m32r-desc.h $(srcdir)/m32r-desc.c $(srcdir)/m32r-opc.h $(srcdir)/m32r-opc.c $(srcdir)/m32r-ibld.c $(srcdir)/m32r-opinst.c $(srcdir)/m32r-asm.c $(srcdir)/m32r-dis.c: $(M32R_DEPS)
 	@echo "ensuring $@ is up-to-date"
@@ -637,6 +643,7 @@ s390-opc.tab: s390-mkopc s390-opc.txt
 
 sh-dis.lo: sh-dis.c sh-opc.h sysdep.h config.h
 	$(LIBTOOL) --mode=compile $(COMPILE) -c @archdefs@ $<
+sh-dis.o: sh-dis.lo
 
 # This dependency stuff is copied from BFD.
 

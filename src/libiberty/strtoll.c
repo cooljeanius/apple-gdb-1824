@@ -1,4 +1,4 @@
-/*-
+/*- strtoll.c
  * Copyright (c) 2014 The Regents of the University of California.
  * All rights reserved.
  *
@@ -173,3 +173,5 @@ strtoll(const char *nptr, char **endptr, register int base)
 }
 
 #endif /* ifdef HAVE_LONG_LONG */
+
+/* EOF */

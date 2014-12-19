@@ -142,8 +142,12 @@ char buf2[MAX_REGISTER_RAW_SIZE];
 
 /* global variables: */
 extern char **environ;
+#if !defined(_SYS_ERRNO_H_) && !defined(errno)
 extern int errno;
+#endif /* !_SYS_ERRNO_H_ && !errno */
 extern int inferior_pid;
+extern const int sys_nerr;
+extern const char *const sys_errlist[];
 
 /* prototypes: */
 extern NORETURN void error(const char *fmt, ...) ATTR_NORETURN ATTR_FORMAT(printf, 1, 2);
@@ -161,16 +165,12 @@ int write_inferior_memory(CORE_ADDR memaddr, char *myaddr, int len);
 /* Nonzero if we are debugging an attached outside process
  * rather than an inferior. */
 
-
 /* Start an inferior process and returns its pid.
  * ALLARGS is a vector of program-name and args.
  * ENV is the environment vector to pass.  */
 int create_inferior (char ** allargs, char ** env)
 {
   int pid;
-  extern const int sys_nerr;
-  extern const char *const sys_errlist[];
-  extern int errno;
 
   /* exec is said to fail if the executable is open. */
   /****************close_exec_file ();*****************/
@@ -377,7 +377,6 @@ int write_inferior_memory(CORE_ADDR memaddr, char *myaddr, int len)
   register CORE_ADDR addr;
   register int count;
   register int *buffer;
-  extern int errno;
 
   /* Round starting address down to longword boundary: */
   addr = (memaddr & - sizeof(int));
@@ -414,7 +413,6 @@ void try_writing_regs_command(void)
 {
   register int i;
   register int value;
-  extern int errno;
 
   if (inferior_pid == 0) {
     error("There is no inferior process now.");

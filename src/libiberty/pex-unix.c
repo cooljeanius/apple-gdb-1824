@@ -496,18 +496,22 @@ pex_unix_fdopenr (struct pex_obj *obj ATTRIBUTE_UNUSED, int fd,
 }
 
 static void
-pex_unix_cleanup (struct pex_obj *obj ATTRIBUTE_UNUSED)
+pex_unix_cleanup(struct pex_obj *obj ATTRIBUTE_UNUSED)
 {
-#if !defined (HAVE_WAIT4) && !defined (HAVE_WAITPID)
+#if !defined(HAVE_WAIT4) && !defined(HAVE_WAITPID)
   while (obj->sysdep != NULL)
     {
       struct status_list *this;
       struct status_list *next;
 
-      this = (struct status_list *) obj->sysdep;
+      this = (struct status_list *)obj->sysdep;
       next = this->next;
-      free (this);
-      obj->sysdep = (void *) next;
+      free(this);
+      obj->sysdep = (void *)next;
     }
-#endif
+#else
+  return;
+#endif /* !HAVE_WAIT4 && !HAVE_WAITPID */
 }
+
+/* EOF */

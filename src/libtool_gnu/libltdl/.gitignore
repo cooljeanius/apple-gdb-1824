@@ -1,4 +1,5 @@
 *.cache
+*.dirstamp
 *.lo
 *.log
 *.o

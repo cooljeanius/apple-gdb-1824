@@ -68,6 +68,9 @@
 /* Define to 1 if you have the `clock' function. */
 #undef HAVE_CLOCK
 
+/* Define to 1 if the system has the type `clock_t'. */
+#undef HAVE_CLOCK_T
+
 /* Define to 1 if you have the <ctype.h> header file. */
 #undef HAVE_CTYPE_H
 
@@ -78,6 +81,14 @@
 /* Define to 1 if you have the declaration of `basename', and to 0 if you
    don't. */
 #undef HAVE_DECL_BASENAME
+
+/* Define to 1 if you have the declaration of `btowc', and to 0 if you don't.
+   */
+#undef HAVE_DECL_BTOWC
+
+/* Define to 1 if you have the declaration of `bzero', and to 0 if you don't.
+   */
+#undef HAVE_DECL_BZERO
 
 /* Define to 1 if you have the declaration of `calloc', and to 0 if you don't.
    */
@@ -300,6 +311,12 @@
 
 /* Define to 1 if you have the `mkstemps' function. */
 #undef HAVE_MKSTEMPS
+
+/* Define to 1 if you have the `mmap' function. */
+#undef HAVE_MMAP
+
+/* Define to 1 if you have the `munmap' function. */
+#undef HAVE_MUNMAP
 
 /* Define to 1 if libc includes obstacks. */
 #undef HAVE_OBSTACK

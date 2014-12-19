@@ -28,13 +28,14 @@
 ACLOCAL_AMFLAGS  	= -I libltdl/m4
 AUTOMAKE_OPTIONS 	= 1.11.1 gnits subdir-objects dist-xz color-tests parallel-tests
 
+AM_CFLAGS		=
 AM_CPPFLAGS		=
 AM_LDFLAGS		=
 
 DIST_SUBDIRS		= .
 EXTRA_DIST		=
 
-BUILT_SOURCES		= libtool libtoolize
+BUILT_SOURCES		= libtool libtoolize config.h
 
 CLEANFILES		=
 MOSTLYCLEANFILES	=
@@ -48,6 +49,22 @@ EXTRA_LTLIBRARIES	=
 
 auxdir			= libltdl/config
 m4dir			= libltdl/m4
+
+BUILD_ARCHITECTURE = @BUILD_ARCHITECTURE@
+HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
+TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
+## use the host one, because that is the one that matters:
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+
+AM_CFLAGS += $(C_ARCHFLAGS)
+
+symtab_cflags = $(AM_CFLAGS)
+
+LTCFLAGS = $(AM_CFLAGS)
+
+AM_LDFLAGS += $(C_ARCHFLAGS)
+
+AM_LIBTOOL_DEBUG_FLAGS = @MAINT@ --debug
 
 # Using `cd' in backquotes may print the directory name, use this instead:
 lt__cd		= CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
@@ -109,18 +126,18 @@ bootstrap_edit  = sed \
 EXTRA_DIST += $(m4dir)/ltversion.in $(srcdir)/$(m4dir)/ltversion.m4
 $(srcdir)/$(m4dir)/ltversion.m4: $(m4dir)/ltversion.in configure.ac ChangeLog
 	@target='$(srcdir)/$(m4dir)/ltversion.m4'; $(rebuild); \
-	if test -f "$$target"; then \
-	  set dummy `sed -n '/^# serial /p' "$$target"`; shift; \
+	if test -f "$${target}"; then \
+	  set dummy `sed -n '/^# serial /p' "$${target}"`; shift; \
 	  actualver=1.$$3; \
-	  test "$$actualver" = "$$correctver" && rebuild=false; \
+	  test "$${actualver}" = "$${correctver}" && rebuild=false; \
 	fi; \
 	for prereq in $?; do \
-	  case $$prereq in *ChangeLog | *configure.ac);; *) rebuild=:;; esac; \
+	  case $${prereq} in *ChangeLog | *configure.ac);; *) rebuild=:;; esac; \
 	done; \
-	if $$rebuild; then \
+	if $${rebuild}; then \
 	  cd $(srcdir); \
 	  rm -f $(m4dir)/ltversion.tmp; \
-	  serial=`echo "$$correctver" | sed 's,^1[.],,g'`; \
+	  serial=`echo "$${correctver}" | sed 's,^1[.],,g'`; \
 	  echo $(bootstrap_edit) \
 	    $(srcdir)/$(m4dir)/ltversion.in \> $(srcdir)/$(m4dir)/ltversion.m4; \
 	  $(bootstrap_edit) \
@@ -142,15 +159,15 @@ $(srcdir)/$(m4dir)/ltversion.m4: $(m4dir)/ltversion.in configure.ac ChangeLog
 EXTRA_DIST += $(srcdir)/$(auxdir)/ltmain.sh
 $(srcdir)/$(auxdir)/ltmain.sh: $(sh_files) $(auxdir)/ltmain.m4sh configure.ac ChangeLog
 	@target='$(srcdir)/$(auxdir)/ltmain.sh'; $(rebuild); \
-	if test -f "$$target"; then \
-	  eval `sed -n '/^package_revision=/p' "$$target"`; \
-	  actualver=$$package_revision; \
-	  test "$$actualver" = "$$correctver" && rebuild=false; \
+	if test -f "$${target}"; then \
+	  eval `sed -n '/^package_revision=/p' "$${target}"`; \
+	  actualver=$${package_revision}; \
+	  test "$${actualver}" = "$${correctver}" && rebuild=false; \
 	fi; \
 	for prereq in $?; do \
-	  case $$prereq in *ChangeLog);; *) rebuild=:;; esac; \
+	  case $${prereq} in *ChangeLog);; *) rebuild=:;; esac; \
 	done; \
-	if $$rebuild; then \
+	if $${rebuild}; then \
 	  cd $(srcdir); \
 	  rm -f $(auxdir)/ltmain.in $(auxdir)/ltmain.tmp \
 	    $(auxdir)/ltmain.sh; \
@@ -159,7 +176,7 @@ $(srcdir)/$(auxdir)/ltmain.sh: $(sh_files) $(auxdir)/ltmain.m4sh configure.ac Ch
 	  $(M4SH) -B $(auxdir) $(auxdir)/ltmain.m4sh \
 	    > $(auxdir)/ltmain.in; \
 	  echo $(bootstrap_edit) \
-	    $(srcdir)/$(auxdir)/ltmain.in "> $$target"; \
+	    $(srcdir)/$(auxdir)/ltmain.in "> $${target}"; \
 	  $(bootstrap_edit) -e '/^: \$${.*="@.*@"}$$/d' \
 	    $(auxdir)/ltmain.in > $(auxdir)/ltmain.tmp; \
 	  rm -f $(auxdir)/ltmain.in; \
@@ -180,8 +197,8 @@ $(srcdir)/libtoolize.in: $(sh_files) libtoolize.m4sh Makefile.am
 $(srcdir)/libltdl/Makefile.am: $(srcdir)/libltdl/Makefile.inc
 	cd $(srcdir); \
 	in=libltdl/Makefile.inc; out=libltdl/Makefile.am; \
-	rm -f $$out; \
-	( $(SED) -n '1,/^.. DO NOT REMOVE THIS LINE -- /p' $$in; \
+	rm -f $${out}; \
+	( $(SED) -n '1,/^.. DO NOT REMOVE THIS LINE -- /p' $${in}; \
 	{ echo 'ACLOCAL_AMFLAGS = -I m4 --install'; \
 	  echo 'AUTOMAKE_OPTIONS = foreign'; \
 	  echo 'AM_CPPFLAGS ='; \
@@ -195,12 +212,12 @@ $(srcdir)/libltdl/Makefile.am: $(srcdir)/libltdl/Makefile.inc
 	  echo 'CLEANFILES ='; \
 	  echo 'MOSTLYCLEANFILES ='; \
 	}; \
-	$(SED) -n '/^.. DO NOT REMOVE THIS LINE -- /,$$p' $$in | \
+	$(SED) -n '/^.. DO NOT REMOVE THIS LINE -- /,$$p' $${in} | \
 	$(SED) -e 's,libltdl_,,; s,libltdl/,,; s,: libltdl/,: ,' \
 	       -e 's,\$$(libltdl_,$$(,' \
 	) | \
 	$(SED) -e '/^.. DO NOT REMOVE THIS LINE -- /d' \
-	       -e '1s,^\(.. Makefile.\)inc.*,\1am -- Process this file with automake to produce Makefile.in,' > $$out;
+	       -e '1s,^\(.. Makefile.\)inc.*,\1am -- Process this file with automake to produce Makefile.in,' > $${out};
 	chmod a-w $(srcdir)/libltdl/Makefile.am
 
 
@@ -249,25 +266,25 @@ libtoolize: $(srcdir)/libtoolize.in $(top_builddir)/config.status
 # check the version numbers from the build rule when necessary.
 libtool: $(top_builddir)/config.status $(srcdir)/$(auxdir)/ltmain.sh ChangeLog
 	@target=libtool; $(rebuild); \
-	if test -f "$$target"; then \
-	  set dummy `./$$target --version | sed 1q`; actualver="$$5"; \
-	  test "$$actualver" = "$$correctver" && rebuild=false; \
+	if test -f "$${target}"; then \
+	  set dummy `./$${target} --version | sed 1q`; actualver="$$5"; \
+	  test "$${actualver}" = "$${correctver}" && rebuild=false; \
 	fi; \
 	for prereq in $?; do \
-	  case $$prereq in *ChangeLog);; *) rebuild=:;; esac; \
+	  case $${prereq} in *ChangeLog);; *) rebuild=:;; esac; \
 	done; \
-	if $$rebuild; then \
-	  echo $(SHELL) ./config.status $$target; \
-	  cd $(top_builddir) && $(SHELL) ./config.status $$target; \
+	if $${rebuild}; then \
+	  echo $(SHELL) ./config.status $${target}; \
+	  cd $(top_builddir) && $(SHELL) ./config.status $${target}; \
 	fi
 
 .PHONY: configure-subdirs
 configure-subdirs distdir: $(DIST_MAKEFILE_LIST)
 @DIST_MAKEFILE_LIST@:
 	dir=`echo $@ | sed 's,^[^/]*$$,.,;s,/[^/]*$$,,'`; \
-	test -d $$dir || mkdir $$dir || exit 1; \
+	test -d $${dir} || mkdir $${dir} || exit 1; \
 	abs_srcdir=`$(lt__cd) $(srcdir) && pwd`; \
-	(cd $$dir && $$abs_srcdir/$$dir/configure --with-dist) || exit 1
+	(cd $${dir} && $${abs_srcdir}/$${dir}/configure --with-dist) || exit 1
 
 
 ## -------- ##
@@ -333,7 +350,7 @@ $(srcdir)/doc/notes.txt: $(srcdir)/doc/notes.texi
 dist_man1_MANS		= $(srcdir)/doc/libtool.1 $(srcdir)/doc/libtoolize.1
 MAINTAINERCLEANFILES	+= $(dist_man1_MANS)
 update_mans = \
-  PATH=".$(PATH_SEPARATOR)$$PATH"; export PATH; \
+  PATH=".$(PATH_SEPARATOR)$${PATH}"; export PATH; \
   $(HELP2MAN) --output=$@
 $(srcdir)/doc/libtool.1: $(srcdir)/$(auxdir)/ltmain.sh
 	$(update_mans) --help-option=--help-all libtool
@@ -388,26 +405,26 @@ install-data-local: libltdl/Makefile.in
 ## with libtoolize, we have to install them in the correct order:
 ## First, put a copy of the libtool m4 macros in the aclocal dir
 	$(mkinstalldirs) $(DESTDIR)$(aclocaldir)
-	@list='$(aclocalfiles)'; for p in $$list; do \
-	  f=`echo "$$p" | sed 's|^.*/||'`; \
-	  echo " $(INSTALL_DATA) '$(srcdir)/$(m4dir)/$$f' '$(DESTDIR)$(aclocaldir)/$$f'"; \
-	  $(INSTALL_DATA) "$(srcdir)/$(m4dir)/$$f" "$(DESTDIR)$(aclocaldir)/$$f"; \
+	@list='$(aclocalfiles)'; for p in $${list}; do \
+	  f=`echo "$${p}" | sed 's|^.*/||'`; \
+	  echo " $(INSTALL_DATA) '$(srcdir)/$(m4dir)/$${f}' '$(DESTDIR)$(aclocaldir)/$${f}'"; \
+	  $(INSTALL_DATA) "$(srcdir)/$(m4dir)/$${f}" "$(DESTDIR)$(aclocaldir)/$${f}"; \
 	done
 ## install the helper scripts
 	$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)
 	$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/config
-	@list='$(auxexefiles)' && for p in $$list; do \
-	  echo " $(INSTALL_SCRIPT) '$(srcdir)/libltdl/$$p' '$(DESTDIR)$(pkgdatadir)/$$p'"; \
-	  $(INSTALL_SCRIPT) "$(srcdir)/libltdl/$$p" "$(DESTDIR)$(pkgdatadir)/$$p"; \
+	@list='$(auxexefiles)' && for p in $${list}; do \
+	  echo " $(INSTALL_SCRIPT) '$(srcdir)/libltdl/$${p}' '$(DESTDIR)$(pkgdatadir)/$${p}'"; \
+	  $(INSTALL_SCRIPT) "$(srcdir)/libltdl/$${p}" "$(DESTDIR)$(pkgdatadir)/$${p}"; \
 	done
 	$(INSTALL_DATA) "$(srcdir)/libltdl/config/ltmain.sh" "$(DESTDIR)$(pkgdatadir)/config/ltmain.sh" 
 ## install the libltdl files
 	$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/libltdl
 	$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/libltdl/libltdl
 	$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/libltdl/loaders
-	@list='$(ltdldatafiles)' && for p in $$list; do \
-	  echo " $(INSTALL_DATA) '$(srcdir)/$$p' '$(DESTDIR)$(pkgdatadir)/$$p'"; \
-	  $(INSTALL_DATA) "$(srcdir)/$$p" "$(DESTDIR)$(pkgdatadir)/$$p"; \
+	@list='$(ltdldatafiles)' && for p in $${list}; do \
+	  echo " $(INSTALL_DATA) '$(srcdir)/$${p}' '$(DESTDIR)$(pkgdatadir)/$${p}'"; \
+	  $(INSTALL_DATA) "$(srcdir)/$${p}" "$(DESTDIR)$(pkgdatadir)/$${p}"; \
 	done
 	-chmod a+x $(DESTDIR)$(pkgdatadir)/libltdl/configure
 
@@ -422,14 +439,14 @@ EXTRA_DIST += $(edit_readme_alpha)
 
 uninstall-hook:
 	@$(NORMAL_UNINSTALL)
-	@list='$(ltdldatafiles) $(auxfiles)'; for f in $$list; do \
-	  echo " rm -f '$(DESTDIR)$(pkgdatadir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(pkgdatadir)/$$f"; \
+	@list='$(ltdldatafiles) $(auxfiles)'; for f in $${list}; do \
+	  echo " rm -f '$(DESTDIR)$(pkgdatadir)/$${f}'"; \
+	  rm -f "$(DESTDIR)$(pkgdatadir)/$${f}"; \
 	done
 	@for p in $(aclocalfiles); do \
-	  f=`echo "$$p" | sed 's|^.*/||'`; \
-	  echo " rm -f '$(DESTDIR)$(aclocaldir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(aclocaldir)/$$f"; \
+	  f=`echo "$${p}" | sed 's|^.*/||'`; \
+	  echo " rm -f '$(DESTDIR)$(aclocaldir)/$${f}'"; \
+	  rm -f "$(DESTDIR)$(aclocaldir)/$${f}"; \
 	done
 
 dist-hook:
@@ -439,10 +456,10 @@ dist-hook:
 	esac
 ## Ensure aclocal has not wrongly picked up old macro definitions.
 	for macro in LT_INIT AC_PROG_LIBTOOL AM_PROG_LIBTOOL; do \
-	  if grep $$macro $(srcdir)/aclocal.m4 $(srcdir)/libltdl/aclocal.m4; then \
-	    echo "Bogus $$macro macro contents in an aclocal.m4 file." >&2; \
+	  if grep $${macro} $(srcdir)/aclocal.m4 $(srcdir)/libltdl/aclocal.m4; then \
+	    echo "Bogus $${macro} macro contents in an aclocal.m4 file." >&2; \
 	    exit 1; \
-	  else :; fi; \
+	  else echo "Check for $${macro} in aclocal.m4 files OK."; fi; \
 	done
 
 
@@ -586,7 +603,7 @@ check-local: $(testsuite_deps_uninstalled)
 # Run the test suite on the *installed* tree.
 installcheck-local: $(testsuite_deps)
 	$(CD_TESTDIR); \
-	CONFIG_SHELL="$(SHELL)" $(SHELL) $$abs_srcdir/$(TESTSUITE) \
+	CONFIG_SHELL="$(SHELL)" $(SHELL) $${abs_srcdir}/$(TESTSUITE) \
 	  $(TESTS_ENVIRONMENT) $(INSTALLCHECK_ENVIRONMENT) $(TESTSUITEFLAGS) \
 	  AUTOTEST_PATH="$(exec_prefix)/bin"
 
@@ -598,7 +615,7 @@ check-interactive-old:
 # Run only noninteractive parts of the new testsuite.
 check-noninteractive-new: $(testsuite_deps_uninstalled)
 	$(CD_TESTDIR); \
-	CONFIG_SHELL="$(SHELL)" $(SHELL) $$abs_srcdir/$(TESTSUITE) \
+	CONFIG_SHELL="$(SHELL)" $(SHELL) $${abs_srcdir}/$(TESTSUITE) \
 	  $(TESTS_ENVIRONMENT) $(BUILDCHECK_ENVIRONMENT) \
 	  -k !interactive INNER_TESTSUITEFLAGS=",!interactive" \
 	  $(TESTSUITEFLAGS)
@@ -606,7 +623,7 @@ check-noninteractive-new: $(testsuite_deps_uninstalled)
 # Run only interactive parts of the new testsuite.
 check-interactive-new: $(testsuite_deps_uninstalled)
 	$(CD_TESTDIR); \
-	CONFIG_SHELL="$(SHELL)" $(SHELL) $$abs_srcdir/$(TESTSUITE) \
+	CONFIG_SHELL="$(SHELL)" $(SHELL) $${abs_srcdir}/$(TESTSUITE) \
 	  $(TESTS_ENVIRONMENT) $(BUILDCHECK_ENVIRONMENT) \
 	  -k interactive -k recursive INNER_TESTSUITEFLAGS=",interactive" \
 	  $(TESTSUITEFLAGS)
@@ -922,8 +939,8 @@ $(srcdir)/tests/defs.in: $(auxdir)/general.m4sh tests/defs.m4sh Makefile.am
 # We need to remove any files that the above tests created.
 clean-local-legacy:
 	-for dir in $(CONF_SUBDIRS); do \
-	  if test -f $$dir/Makefile; then \
-	    (cd $$dir && $(MAKE) $(AM_MAKEFLAGS) distclean); \
+	  if test -f $${dir}/Makefile; then \
+	    (cd $${dir} && $(MAKE) $(AM_MAKEFLAGS) distclean); \
 	  else echo "sorry"; fi; \
 	done
 	rm -rf _inst _inst-*
@@ -936,9 +953,9 @@ $(distclean_recursive): fake-distclean-legacy
 .PHONY: fake-distclean-legacy
 fake-distclean-legacy:
 	-for dir in $(CONF_SUBDIRS); do \
-	  if test ! -f $$dir/Makefile; then \
-	    $(mkinstalldirs) $$dir; \
-	    echo 'distclean: ; rm -f Makefile' > $$dir/Makefile; \
+	  if test ! -f $${dir}/Makefile; then \
+	    $(mkinstalldirs) $${dir}; \
+	    echo 'distclean: ; rm -f Makefile' > $${dir}/Makefile; \
 	  else echo "not applicable"; fi; \
 	done
 

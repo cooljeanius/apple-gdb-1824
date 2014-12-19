@@ -1,4 +1,4 @@
-/* Extended support for using errno values.
+/* strerror.c: Extended support for using errno values.
    Written by Fred Fish.  fnf@cygnus.com
    This file is in the public domain.  --Per Bothner.  */
 
@@ -658,7 +658,7 @@ strerror (int errnoval)
       /* In range, and a valid message.  Just return the message. */
       msg = (char *) sys_errlist[errnoval];
     }
-  
+
   return (msg);
 }
 
@@ -768,26 +768,23 @@ strtoerrno (const char *name)
 }
 
 
-/* A simple little main that does nothing but print all the errno translations
-   if MAIN is defined and this file is compiled and linked. */
-
+/* A simple little main that does nothing but print all the errno
+ * translations if MAIN is defined and this file is compiled and linked: */
 #ifdef MAIN
-
-#include <stdio.h>
-
+# include <stdio.h>
 int
-main (void)
+main(void)
 {
   int errn;
   int errnmax;
   const char *name;
   const char *msg;
-  char *strerror ();
+  char *strerror();
 
-  errnmax = errno_max ();
-  printf ("%d entries in names table.\n", num_error_names);
-  printf ("%d entries in messages table.\n", sys_nerr);
-  printf ("%d is max useful index.\n", errnmax);
+  errnmax = errno_max();
+  printf("%d entries in names table.\n", num_error_names);
+  printf("%d entries in messages table.\n", sys_nerr);
+  printf("%d is max useful index.\n", errnmax);
 
   /* Keep printing values until we get to the end of *both* tables, not
      *either* table.  Note that knowing the maximum useful index does *not*
@@ -796,14 +793,15 @@ main (void)
 
   for (errn = 0; errn <= errnmax; errn++)
     {
-      name = strerrno (errn);
-      name = (name == NULL) ? "<NULL>" : name;
-      msg = strerror (errn);
-      msg = (msg == NULL) ? "<NULL>" : msg;
-      printf ("%-4d%-18s%s\n", errn, name, msg);
+      name = strerrno(errn);
+      name = ((name == NULL) ? "<NULL>" : name);
+      msg = strerror(errn);
+      msg = ((msg == NULL) ? "<NULL>" : msg);
+      printf("%-4d%-18s%s\n", errn, name, msg);
     }
 
   return 0;
 }
+#endif /* MAIN */
 
-#endif
+/* EOF */

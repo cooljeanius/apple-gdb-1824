@@ -24,7 +24,7 @@ AC_PREREQ([2.64])dnl
 AC_INIT([libgnu],[2013.11.14],[bug-gnulib@gnu.org])
 AC_CONFIG_SRCDIR([import/memmem.c])
 AC_CONFIG_LIBOBJ_DIR([import])
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADER([config.h])dnl
 
 # Some initial checks:
 AM_MAINTAINER_MODE
@@ -43,12 +43,20 @@ am_cv_prog_cc_stdc="${ac_cv_prog_cc_stdc}"
 AC_CONFIG_AUX_DIR([../..])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_TARGET
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  AC_SUBST([HOST_ARCHITECTURE])
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+  AC_SUBST([TARGET_ARCHITECTURE])
+fi
 
 AC_MSG_NOTICE([initializing gnulib for real now])
 gl_INIT
 AC_MSG_NOTICE([doing some extra gnulib initialization checks])
 gl_INIT_MANUALLY
-AC_MSG_NOTICE([done with gnulib initialization checks])
+AC_MSG_NOTICE([done with gnulib initialization checks])dnl
 
 # We do NOT use automake, but gnulib does (well, actually, we _are_ in
 # gnulib here, and we _are_ using automake here, but this comment still
@@ -58,7 +66,13 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.11.1 gnits no-define subdir-objects])
+AM_INIT_AUTOMAKE([1.11.1 gnits no-define subdir-objects])dnl
+  ## do this part again, to set a default:
+if test "x${am_cv_make_support_nested_variables}" = "x"; then
+  test -z "${am_cv_make_support_nested_variables}"
+  m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])dnl
+  ## (might want to pass it the flag anyways, just in case)
+fi
 
 # --------------------- #
 # Checks for programs.  #
@@ -72,9 +86,9 @@ if test "x${ac_cv_prog_ac_ct_RANLIB}" = "x" -a "x${RANLIB}" = "x"; then
 fi
 
 m4_ifdef([AM_PROG_AR],[
-AM_PROG_AR
+  AM_PROG_AR
 ],[
-AC_CHECK_TOOL([AR],[ar])dnl
+  AC_CHECK_TOOLS([AR],[ar gar])dnl
 ])dnl
 
 # Check for the 'make' the user wants to use:
@@ -98,12 +112,32 @@ gl_STDINT_H
 AC_SUBST([STDINT_H])dnl
 gl_HEADER_STRING_H
 AC_HEADER_ASSERT
+AC_HEADER_DIRENT
+if test "x${ac_cv_header_stat_broken}" = "x"; then
+  test -z "${ac_cv_header_stat_broken}"
+  AC_HEADER_STAT
+fi
+if test "x${ac_cv_header_stdbool_h}" = "x"; then
+  test -z "${ac_cv_header_stdbool_h}"
+  AC_HEADER_STDBOOL dnl# also "_CHECK"s it
+fi
+AC_HEADER_SYS_WAIT
+if test "x${ac_cv_header_time}" = "x"; then
+  test -z "${ac_cv_header_time}"
+  AC_HEADER_TIME
+fi
 AC_CHECK_HEADERS([OS.h crtdefs.h ctype.h errno.h fcntl.h float.h \
-                  langinfo.h limits.h locale.h malloc.h malloc/malloc.h \
-                  netdb.h shlib-compat.h stddef.h stdio.h time.h])
+                  langinfo.h libintl.h limits.h locale.h \
+                  malloc.h malloc/malloc.h netdb.h nl_types.h \
+                  shlib-compat.h stddef.h stdio.h time.h])dnl
+  ## dummies to keep autoscan happy:
 if test "x${ac_cv_header_sys_param_h}" = "x"; then
   test -z "${ac_cv_header_sys_param_h}"
   AC_CHECK_HEADERS([sys/param.h])
+fi
+if test "x${ac_cv_header_sys_time_h}" = "x"; then
+  test -z "${ac_cv_header_sys_time_h}"
+  AC_CHECK_HEADERS([sys/time.h])
 fi
 if test "x${ac_cv_header_wchar_h}" = "x"; then
   test -z "${ac_cv_header_wchar_h}"
@@ -115,26 +149,89 @@ if test "x${ac_cv_header_wctype_h}" = "x"; then
 fi
 
 # Checks for typedefs, structures, and compiler characteristics:
-AC_C_INLINE
+if test "x${ac_cv_c_bigendian}" = "x"; then
+  test -z "${ac_cv_c_bigendian}"
+  AC_C_BIGENDIAN
+fi
+if test "x${ac_cv_c_const}" = "x"; then
+  test -z "${ac_cv_c_const}"
+  AC_C_CONST
+fi
+if test "x${ac_cv_c_inline}" = "x"; then
+  test -z "${ac_cv_c_inline}"
+  AC_C_INLINE
+fi
 AC_C_PROTOTYPES
 AC_C_VOLATILE
 AC_TYPE_INT32_T
+if test "x${ac_cv_type_mode_t}" = "x"; then
+  test -z "${ac_cv_type_mode_t}"
+  AC_TYPE_MODE_T
+fi
 AC_TYPE_OFF_T
+AC_CHECK_TYPES([ptrdiff_t])dnl
 AC_TYPE_SSIZE_T
 AC_TYPE_UID_T
 AC_TYPE_UINT32_T
+AC_CHECK_MEMBERS([struct stat.st_blksize])dnl
+ ## check cache value for this:
+if test "x${ac_cv_member_struct_stat_st_blocks}" = "x"; then
+  test -z "${ac_cv_member_struct_stat_st_blocks}"
+  AC_STRUCT_ST_BLOCKS
+fi
+AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
 
 # Checks for library functions:
-AC_FUNC_MALLOC
+if test "x${ac_cv_lib_error_at_line}" = "x"; then
+  test -z "${ac_cv_lib_error_at_line}"
+  AC_FUNC_ERROR_AT_LINE dnl# (might create libobj)
+fi
+AC_FUNC_FNMATCH dnl# (avoid replacing it here though)
+  ## also checks whether it "_FOLLOWS_SLASHED_SYMLINK":
+if test "x${ac_cv_func_lstat}" = "x"; then
+  test -z "${ac_cv_func_lstat}"
+  AC_FUNC_LSTAT dnl# (might create libobj)
+fi
+if test "x${ac_cv_func_malloc_0_nonnull}" = "x"; then
+  test -z "${ac_cv_func_malloc_0_nonnull}"
+  AC_FUNC_MALLOC dnl# (might create libobj)
+fi
+if test "x${ac_cv_func_memcmp_working}" = "x"; then
+  test -z "${ac_cv_func_memcmp_working}"
+  AC_FUNC_MEMCMP dnl# (might create libobj)
+fi
 if test "x${ac_cv_func_mbrtowc}" = "x"; then
   test -z "${ac_cv_func_mbrtowc}"
   AC_FUNC_MBRTOWC
 fi
-AC_FUNC_REALLOC
-AC_FUNC_STRNLEN
-AC_CHECK_FUNCS([getpagesize memchr memset nl_langinfo setlocale \
-                stpcpy strchr strcmp strcspn strdup strerror strndup \
-                strpbrk strrchr strspn strstr wcwidth])
+if test "x${ac_cv_func_obstack}" = "x"; then
+  test -z "${ac_cv_func_obstack}"
+  AC_FUNC_OBSTACK dnl# (might create libobj)
+fi
+if test "x${ac_cv_func_realloc_0_nonnull}" = "x"; then
+  test -z "${ac_cv_func_realloc_0_nonnull}"
+  AC_FUNC_REALLOC dnl# (might create libobj)
+fi
+AC_FUNC_STAT dnl# (might create libobj)
+  ## two cache values to check for this one:
+if test "x${ac_cv_func_strerror_r}" = "x" && test "x${ac_cv_func_strerror_r_char_p}" = "x"; then
+  test -z "${ac_cv_func_strerror_r}" && test -z "${ac_cv_func_strerror_r_char_p}"
+  AC_FUNC_STRERROR_R
+fi
+AC_FUNC_STRNLEN dnl# (might create libobj)
+AC_FUNC_VPRINTF
+AC_CHECK_FUNCS([getpagesize memset nl_langinfo setlocale stpcpy strchr \
+                strcmp strcspn strdup strerror strndup strpbrk strrchr \
+                strspn strstr tzset wcwidth])dnl
+  ## dummies to keep autoscan happy:
+if test "x${ac_cv_func_gettimeofday}" = "x"; then
+  test -z "${gettimeofday}"
+  AC_CHECK_FUNCS([gettimeofday])
+fi
+if test "x${ac_cv_func_memchr}" = "x"; then
+  test -z "${ac_cv_func_memchr}"
+  AC_CHECK_FUNCS([memchr])
+fi
 if test "x${ac_cv_func_mempcpy}" = "x"; then
   test -z "${ac_cv_func_mempcpy}"
   AC_CHECK_FUNCS([mempcpy])
@@ -146,11 +243,11 @@ if test "x${NEXT_STRING_H}" = "x"; then
 fi
 
 # Output:
-AC_CONFIG_FILES([Makefile Makefile.orig import/Makefile])
+AC_CONFIG_FILES([Makefile Makefile_orig import/Makefile])dnl
 AC_CONFIG_COMMANDS([default],[
 case x${CONFIG_HEADERS} in
 xconfig.h:config.in)
-echo > stamp-h ;;
+echo "" > stamp-h ;;
 esac
 ],[])dnl
 

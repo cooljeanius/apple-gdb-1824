@@ -1,4 +1,4 @@
-/* Very simple "bfd" target, for GDB, the GNU debugger.
+/* bfd-target.c: Very simple "bfd" target, for GDB, the GNU debugger.
 
    Copyright 2003, 2005 Free Software Foundation, Inc.
 
@@ -37,7 +37,7 @@ static void
 add_to_section_table (struct bfd *abfd, struct bfd_section *asect,
 		      void *closure)
 {
-  struct section_closure *pp = closure;
+  struct section_closure *pp = (struct section_closure *)closure;
   flagword aflag;
 
   /* NOTE: cagney/2003-10-22: Is this pruning useful?  */
@@ -101,7 +101,7 @@ target_bfd_xfer_partial (struct target_ops *ops,
 	    && !bfd_set_section_contents (s->bfd, s->the_bfd_section,
 					  writebuf, offset - s->addr, len))
 	  return -1;
-#endif
+#endif /* 1 */
 	return len;
       }
     default:
@@ -112,9 +112,9 @@ target_bfd_xfer_partial (struct target_ops *ops,
 void
 target_bfd_xclose (struct target_ops *t, int quitting)
 {
-  bfd_close (t->to_data);
-  xfree (t->to_sections);
-  xfree (t);
+  bfd_close((bfd *)t->to_data);
+  xfree(t->to_sections);
+  xfree(t);
 }
 
 struct target_ops *

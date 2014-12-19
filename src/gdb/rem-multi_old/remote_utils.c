@@ -167,13 +167,14 @@ static int readchar(void)
   return (buf[0] & 0x7f);
 }
 
+extern int kiodebug;
+
 /* Read a packet from the remote machine, with error checking,
  * and store it in BUF: */
 void getpkt(char *buf)
 {
   char *bp;
   unsigned char csum, c, c1, c2;
-  extern int kiodebug;
 
   while (1) {
       csum = 0;

@@ -1,4 +1,4 @@
-/* List lines of source files for GDB, the GNU debugger.
+/* source.h: List lines of source files for GDB, the GNU debugger.
    Copyright 1999 Free Software Foundation, Inc.
 
    This file is part of GDB.
@@ -72,5 +72,7 @@ extern void clear_current_source_symtab_and_line (void);
 /* APPLE LOCAL huh? */
 void convert_sal (struct symtab_and_line *sal);
 
-void add_one_pathname_substitution (const char *old, const char *new);
-#endif
+void add_one_pathname_substitution (const char *old, const char *);
+#endif /* !SOURCE_H */
+
+/* EOF */

@@ -22,9 +22,10 @@ GSYMS
 GPATH
 tags
 Makefile
-Makefile.orig
+Makefile*orig
 cscope*.out
 cscope.files
 config*.lineno
 *.tar.gz
 libgnu-*.*.*/*
+link-warning.h

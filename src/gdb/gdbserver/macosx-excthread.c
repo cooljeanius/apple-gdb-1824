@@ -22,6 +22,10 @@
    Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -439,18 +443,17 @@ macosx_exception_thread_destroy (macosx_exception_thread_status *s)
 static void
 macosx_exception_thread (void *arg)
 {
-  macosx_exception_thread_status *s = (macosx_exception_thread_status *) arg;
-  FILE *transmit_from_file;
-  CHECK_FATAL (s != NULL);
-
   int next_msg_ctr;
+  macosx_exception_thread_status *s = (macosx_exception_thread_status *)arg;
+  FILE *transmit_from_file;
+  CHECK_FATAL(s != NULL);
 
 #if 0
-  close (s->transmit_to_fd);
+  close(s->transmit_to_fd);
   s->transmit_to_fd = 0;
-  close (s->error_receive_fd);
+  close(s->error_receive_fd);
   s->error_receive_fd = 0;
-  close (s->receive_from_fd);
+  close(s->receive_from_fd);
   s->receive_from_fd = 0;
 #endif /* 0 */
 

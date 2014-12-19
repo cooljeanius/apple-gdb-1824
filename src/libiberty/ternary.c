@@ -18,43 +18,42 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301,
    USA.  */
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
 
 #include <stdio.h>
 
 #include "libiberty.h"
 #include "ternary.h"
 
-/* Non-recursive so we don't waste stack space/time on large
-   insertions. */
-
+/* Non-recursive so we do NOT waste stack space/time on large
+ * insertions: */
 PTR
-ternary_insert (ternary_tree *root, const char *s, PTR data, int replace)
+ternary_insert(ternary_tree *root, const char *s, PTR data, int replace)
 {
   int diff;
   ternary_tree curr, *pcurr;
 
   /* Start at the root. */
   pcurr = root;
-  /* Loop until we find the right position */
+  /* Loop until we find the right position: */
   while ((curr = *pcurr))
     {
-      /* Calculate the difference */
+      /* Calculate the difference: */
       diff = *s - curr->splitchar;
-      /* Handle current char equal to node splitchar */
+      /* Handle current char equal to node splitchar: */
       if (diff == 0)
 	{
-	  /* Handle the case of a string we already have */
+	  /* Handle the case of a string we already have: */
 	  if (*s++ == 0)
 	    {
 	      if (replace)
-		curr->eqkid = (ternary_tree) data;
-	      return (PTR) curr->eqkid;
+		curr->eqkid = (ternary_tree)data;
+	      return (PTR)curr->eqkid;
 	    }
 	  pcurr = &(curr->eqkid);
 	}
@@ -69,52 +68,51 @@ ternary_insert (ternary_tree *root, const char *s, PTR data, int replace)
 	  pcurr = &(curr->hikid);
 	}
     }
-  /* It's not a duplicate string, and we should insert what's left of
+  /* It is not a duplicate string, and we should insert what is left of
      the string, into the tree rooted at curr */
   for (;;)
     {
       /* Allocate the memory for the node, and fill it in */
-      *pcurr = XNEW (ternary_node);
+      *pcurr = XNEW(ternary_node);
       curr = *pcurr;
       curr->splitchar = *s;
       curr->lokid = curr->hikid = curr->eqkid = 0;
 
       /* Place nodes until we hit the end of the string.
-         When we hit it, place the data in the right place, and
-         return.
+       * When we hit it, place the data in the right place, and return.
        */
       if (*s++ == 0)
 	{
-	  curr->eqkid = (ternary_tree) data;
+	  curr->eqkid = (ternary_tree)data;
 	  return data;
 	}
       pcurr = &(curr->eqkid);
     }
 }
 
-/* Free the ternary search tree rooted at p. */
+/* Free the ternary search tree rooted at p: */
 void
-ternary_cleanup (ternary_tree p)
+ternary_cleanup(ternary_tree p)
 {
   if (p)
     {
-      ternary_cleanup (p->lokid);
+      ternary_cleanup(p->lokid);
       if (p->splitchar)
-	ternary_cleanup (p->eqkid);
-      ternary_cleanup (p->hikid);
-      free (p);
+	ternary_cleanup(p->eqkid);
+      ternary_cleanup(p->hikid);
+      free(p);
     }
 }
 
-/* Non-recursive find of a string in the ternary tree */
+/* Non-recursive find of a string in the ternary tree: */
 PTR
-ternary_search (const ternary_node *p, const char *s)
+ternary_search(const ternary_node *p, const char *s)
 {
   const ternary_node *curr;
   int diff, spchar;
   spchar = *s;
   curr = p;
-  /* Loop while we haven't hit a NULL node or returned */
+  /* Loop while we have NOT hit a NULL node or returned: */
   while (curr)
     {
       /* Calculate the difference */
@@ -127,10 +125,10 @@ ternary_search (const ternary_node *p, const char *s)
 	  spchar = *++s;
 	  curr = curr->eqkid;
 	}
-      /* Handle the less than case */
+      /* Handle the less than case: */
       else if (diff < 0)
 	curr = curr->lokid;
-      /* All that's left is greater than */
+      /* All that is left is greater than: */
       else
 	curr = curr->hikid;
     }
@@ -138,20 +136,24 @@ ternary_search (const ternary_node *p, const char *s)
 }
 
 /* For those who care, the recursive version of the search. Useful if
-   you want a starting point for pmsearch or nearsearch. */
+ * you want a starting point for pmsearch or nearsearch. */
+#ifdef I_CARE
 static PTR
-ternary_recursivesearch (const ternary_node *p, const char *s)
+ternary_recursivesearch(const ternary_node *p, const char *s)
 {
   if (!p)
     return 0;
   if (*s < p->splitchar)
-    return ternary_recursivesearch (p->lokid, s);
+    return ternary_recursivesearch(p->lokid, s);
   else if (*s > p->splitchar)
-    return ternary_recursivesearch (p->hikid, s);
+    return ternary_recursivesearch(p->hikid, s);
   else
     {
       if (*s == 0)
-	return (PTR) p->eqkid;
-      return ternary_recursivesearch (p->eqkid, ++s);
+	return (PTR)p->eqkid;
+      return ternary_recursivesearch(p->eqkid, ++s);
     }
 }
+#endif /* I_CARE */
+
+/* EOF */

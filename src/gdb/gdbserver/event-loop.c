@@ -22,7 +22,9 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning not including autoheader-generated config header
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "not including autoheader-generated config header"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 # define EVENT_LOOP_C_NON_AUTOTOOLS_BUILD 1
 #endif /* HAVE_CONFIG_H */
 
@@ -46,9 +48,9 @@
 #ifdef HAVE_ERRNO_H
 # include <errno.h>
 #else
-# ifdef __GNUC__
-#  warning event-loop.c expects <errno.h> to be included.
-# endif /* __GNUC__ */
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "event-loop.c expects <errno.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif
 
 #include <unistd.h>
@@ -336,27 +338,27 @@ create_file_handler (gdb_fildes_t fd, int mask, handler_func *proc,
       file_ptr->next_file = gdb_notifier.first_file_handler;
       gdb_notifier.first_file_handler = file_ptr;
 
-		if (mask & GDB_READABLE) {
-			FD_SET (fd, &gdb_notifier.check_masks[0]);
-		} else {
-			FD_CLR (fd, &gdb_notifier.check_masks[0]);
-		}
+	if (mask & GDB_READABLE) {
+		FD_SET (fd, &gdb_notifier.check_masks[0]);
+	} else {
+		FD_CLR (fd, &gdb_notifier.check_masks[0]);
+	}
 
-		if (mask & GDB_WRITABLE) {
-			FD_SET (fd, &gdb_notifier.check_masks[1]);
-		} else {
-			FD_CLR (fd, &gdb_notifier.check_masks[1]);
-		}
+	if (mask & GDB_WRITABLE) {
+		FD_SET (fd, &gdb_notifier.check_masks[1]);
+	} else {
+		FD_CLR (fd, &gdb_notifier.check_masks[1]);
+	}
 
-		if (mask & GDB_EXCEPTION) {
-			FD_SET (fd, &gdb_notifier.check_masks[2]);
-		} else {
-			FD_CLR (fd, &gdb_notifier.check_masks[2]);
-		}
+	if (mask & GDB_EXCEPTION) {
+		FD_SET (fd, &gdb_notifier.check_masks[2]);
+	} else {
+		FD_CLR (fd, &gdb_notifier.check_masks[2]);
+	}
 
-		if (gdb_notifier.num_fds <= fd) {
-			gdb_notifier.num_fds = fd + 1;
-		}
+	if (gdb_notifier.num_fds <= fd) {
+		gdb_notifier.num_fds = fd + 1;
+	}
     }
 
   file_ptr->proc = proc;
@@ -370,7 +372,7 @@ void
 add_file_handler (gdb_fildes_t fd,
 		  handler_func *proc, gdb_client_data client_data)
 {
-  create_file_handler (fd, GDB_READABLE | GDB_EXCEPTION, proc, client_data);
+  create_file_handler(fd, GDB_READABLE | GDB_EXCEPTION, proc, client_data);
 }
 
 /* Remove the file descriptor FD from the list of monitored fd's:
@@ -382,29 +384,28 @@ delete_file_handler (gdb_fildes_t fd)
   file_handler *file_ptr, *prev_ptr = NULL;
   int i;
 
-  /* Find the entry for the given file. */
-
+  /* Find the entry for the given file: */
   for (file_ptr = gdb_notifier.first_file_handler;
        file_ptr != NULL;
        file_ptr = file_ptr->next_file) {
-		if (file_ptr->fd == fd) {
-			break;
-		}
+      if (file_ptr->fd == fd) {
+        break;
+      }
   }
 
-	if (file_ptr == NULL) {
-		return;
-	}
+  if (file_ptr == NULL) {
+    return;
+  }
 
-	if (file_ptr->mask & GDB_READABLE) {
-		FD_CLR (fd, &gdb_notifier.check_masks[0]);
-	}
-	if (file_ptr->mask & GDB_WRITABLE) {
-		FD_CLR (fd, &gdb_notifier.check_masks[1]);
-	}
-	if (file_ptr->mask & GDB_EXCEPTION) {
-		FD_CLR (fd, &gdb_notifier.check_masks[2]);
-	}
+  if (file_ptr->mask & GDB_READABLE) {
+    FD_CLR(fd, &gdb_notifier.check_masks[0]);
+  }
+  if (file_ptr->mask & GDB_WRITABLE) {
+    FD_CLR(fd, &gdb_notifier.check_masks[1]);
+  }
+  if (file_ptr->mask & GDB_EXCEPTION) {
+    FD_CLR(fd, &gdb_notifier.check_masks[2]);
+  }
 
   /* Find current max fd.  */
 
@@ -416,7 +417,7 @@ delete_file_handler (gdb_fildes_t fd)
 	  if (FD_ISSET (i - 1, &gdb_notifier.check_masks[0])
 	      || FD_ISSET (i - 1, &gdb_notifier.check_masks[1])
 	      || FD_ISSET (i - 1, &gdb_notifier.check_masks[2])) {
-		  break;
+              break;
 	  }
 	}
       gdb_notifier.num_fds = i;
@@ -468,8 +469,8 @@ handle_file_event (gdb_fildes_t event_file_desc)
 		       pfildes (file_ptr->fd));
 	      file_ptr->error = 1;
 	    } else {
-			file_ptr->error = 0;
-		}
+              file_ptr->error = 0;
+            }
 	  mask = file_ptr->ready_mask & file_ptr->mask;
 
 	  /* Clear the received events for next time around.  */
@@ -478,10 +479,10 @@ handle_file_event (gdb_fildes_t event_file_desc)
 	  /* If there was a match, then call the handler.  */
 	  if (mask != 0)
 	    {
-	      if ((*file_ptr->proc) (file_ptr->error,
-								 file_ptr->client_data) < 0) {
-			  return -1;
-		  }
+	      if ((*file_ptr->proc)(file_ptr->error,
+                                    file_ptr->client_data) < 0) {
+                  return -1;
+              }
 	    }
 	  break;
 	}
@@ -518,13 +519,13 @@ wait_for_event (void)
   file_handler *file_ptr;
   int num_found = 0;
 
-  /* Make sure all output is done before getting another event.  */
-  fflush (stdout);
-  fflush (stderr);
+  /* Make sure all output is done before getting another event: */
+  fflush(stdout);
+  fflush(stderr);
 
-	if (gdb_notifier.num_fds == 0) {
-		return -1;
-	}
+  if (gdb_notifier.num_fds == 0) {
+    return -1;
+  }
 
   gdb_notifier.ready_masks[0] = gdb_notifier.check_masks[0];
   gdb_notifier.ready_masks[1] = gdb_notifier.check_masks[1];
@@ -542,11 +543,10 @@ wait_for_event (void)
       FD_ZERO (&gdb_notifier.ready_masks[1]);
       FD_ZERO (&gdb_notifier.ready_masks[2]);
 #ifdef EINTR
-      /* Do NOT print anything if we got a signal, let gdb handle
-	   * it.  */
-		if (errno != EINTR) {
-			perror_with_name ("select");
-		}
+      /* Do NOT print anything if we got a signal, let gdb handle it: */
+      if (errno != EINTR) {
+        perror_with_name("select");
+      }
 #endif /* EINTR */
     }
 
@@ -565,15 +565,13 @@ wait_for_event (void)
       if (FD_ISSET (file_ptr->fd, &gdb_notifier.ready_masks[2]))
 	mask |= GDB_EXCEPTION;
 
-		if (!mask) {
-			continue;
-		} else {
-			num_found--;
-		}
+      if (!mask) {
+        continue;
+      } else {
+        num_found--;
+      }
 
-      /* Enqueue an event only if this is still a new event for this
-	   * fd.  */
-
+      /* Enqueue an event only if this is still a new event for this fd: */
       if (file_ptr->ready_mask == 0)
 	{
 	  gdb_event *file_event_ptr = create_file_event (file_ptr->fd);
@@ -600,37 +598,37 @@ start_event_loop (void)
   while (1)
     {
       /* Any events already waiting in the queue?  */
-      int res = process_event ();
+      int res = process_event();
 
       /* Did the event handler want the event loop to stop?  */
-		if (res == -1) {
-			return;
-		}
+      if (res == -1) {
+        return;
+      }
 
-		if (res) {
-			continue;
-		}
+      if (res) {
+        continue;
+      }
 
-      /* Process any queued callbacks before we go to sleep.  */
-      res = process_callback ();
+      /* Process any queued callbacks before we go to sleep: */
+      res = process_callback();
 
       /* Did the callback want the event loop to stop?  */
-		if (res == -1) {
-			return;
-		}
+      if (res == -1) {
+        return;
+      }
 
-		if (res) {
-			continue;
-		}
+      if (res) {
+        continue;
+      }
 
       /* Wait for a new event. If wait_for_event returns -1, we
        * should get out because this means that there are no event
        * sources left. This will make the event loop stop, and the
        * application exit.  */
 
-		if (wait_for_event () < 0) {
-			return;
-		}
+      if (wait_for_event() < 0) {
+        return;
+      }
     }
 
   /* We are done with the event loop.  There are no more event sources

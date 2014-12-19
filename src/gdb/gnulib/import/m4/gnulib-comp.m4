@@ -50,10 +50,12 @@ AC_DEFUN([gl_EARLY],
   # Code from module dosname:
   # Code from module double-slash-root:
   # Code from module errno:
+  # Code from module error:
   # Code from module exitfail:
   # Code from module extensions:
   AC_REQUIRE([gl_USE_SYSTEM_EXTENSIONS])
   # Code from module extern-inline:
+  # Code from module fileblocks:
   # Code from module float:
   # Code from module fnmatch:
   # Code from module fnmatch-gnu:
@@ -72,6 +74,7 @@ AC_DEFUN([gl_EARLY],
   # Code from module host-os:
   # Code from module include_next:
   # Code from module inline:
+  # Code from module intprops:
   # Code from module inttypes:
   # Code from module inttypes-incomplete:
   # Code from module isnand-nolibm:
@@ -81,12 +84,16 @@ AC_DEFUN([gl_EARLY],
   AC_REQUIRE([AC_SYS_LARGEFILE])
   # Code from module ldd:
   # Code from module localcharset:
+  # Code from module lstat:
+  # Code from module malloc-gnu:
+  # Code from module malloc-posix:
   # Code from module manywarnings:
   # Code from module math:
   # Code from module mbrtowc:
   # Code from module mbsinit:
   # Code from module mbsrtowcs:
   # Code from module memchr:
+  # Code from module memchr-obsolete:
   # Code from module memcmp:
   # Code from module memmem:
   # Code from module memmem-simple:
@@ -98,18 +105,29 @@ AC_DEFUN([gl_EARLY],
   # Code from module obstack:
   # Code from module openmp:
   # Code from module pathmax:
+  # Code from module realloc-gnu:
+  # Code from module realloc-posix:
   # Code from module snippet/_Noreturn:
   # Code from module snippet/arg-nonnull:
   # Code from module snippet/c++defs:
   # Code from module snippet/link-warning:
   # Code from module snippet/warn-on-use:
   # Code from module ssize_t:
+  # Code from module stat:
+  # Code from module stat-macros:
+  # Code from module stat-size:
+  # Code from module stat-time:
   # Code from module stdbool:
   # Code from module stddef:
   # Code from module stdint:
+  # Code from module stdio:
   # Code from module stdlib:
   # Code from module streq:
+  # Code from module strerror:
+  # Code from module strerror-override:
+  # Code from module strerror_r-posix:
   # Code from module string:
+  # Code from module strnlen:
   # Code from module strnlen1:
   # Code from module strstr:
   # Code from module strstr-simple:
@@ -154,7 +172,20 @@ AC_DEFUN([gl_INIT],
   gl_DIRENT_MODULE_INDICATOR([dirfd])
   gl_DOUBLE_SLASH_ROOT
   gl_HEADER_ERRNO_H
+  gl_ERROR
+  if test $ac_cv_lib_error_at_line = no; then
+    AC_LIBOBJ([error])
+    gl_PREREQ_ERROR
+  fi
+  m4_ifdef([AM_XGETTEXT_OPTION],
+    [AM_][XGETTEXT_OPTION([--flag=error:3:c-format])
+     AM_][XGETTEXT_OPTION([--flag=error_at_line:5:c-format])])
   AC_REQUIRE([gl_EXTERN_INLINE])
+  gl_FILEBLOCKS
+  if test $ac_cv_member_struct_stat_st_blocks = no; then
+    AC_LIBOBJ([fileblocks])
+    gl_PREREQ_FILEBLOCKS
+  fi
   gl_FLOAT_H
   if test $REPLACE_FLOAT_LDBL = 1; then
     AC_LIBOBJ([float])
@@ -217,6 +248,22 @@ AC_DEFUN([gl_INIT],
   gl_LOCALCHARSET
   LOCALCHARSET_TESTS_ENVIRONMENT="CHARSETALIASDIR=\"\$(abs_top_builddir)/$gl_source_base\""
   AC_SUBST([LOCALCHARSET_TESTS_ENVIRONMENT])
+  gl_FUNC_LSTAT
+  if test $REPLACE_LSTAT = 1; then
+    AC_LIBOBJ([lstat])
+    gl_PREREQ_LSTAT
+  fi
+  gl_SYS_STAT_MODULE_INDICATOR([lstat])
+  gl_FUNC_MALLOC_GNU
+  if test $REPLACE_MALLOC = 1; then
+    AC_LIBOBJ([malloc])
+  fi
+  gl_MODULE_INDICATOR([malloc-gnu])
+  gl_FUNC_MALLOC_POSIX
+  if test $REPLACE_MALLOC = 1; then
+    AC_LIBOBJ([malloc])
+  fi
+  gl_STDLIB_MODULE_INDICATOR([malloc-posix])
   gl_MATH_H
   gl_FUNC_MBRTOWC
   if test $HAVE_MBRTOWC = 0 || test $REPLACE_MBRTOWC = 1; then
@@ -243,6 +290,7 @@ AC_DEFUN([gl_INIT],
     gl_PREREQ_MEMCHR
   fi
   gl_STRING_MODULE_INDICATOR([memchr])
+  gl_FUNC_MEMCHR_OBSOLETE
   gl_FUNC_MEMCMP
   if test $gl_func_memcmp = no; then
     AC_LIBOBJ([memcmp])
@@ -270,13 +318,57 @@ AC_DEFUN([gl_INIT],
   dnl Note: AC_FUNC_OBSTACK does AC_LIBSOURCES([obstack.h, obstack.c]).
   AC_OPENMP
   gl_PATHMAX
+  gl_FUNC_REALLOC_GNU
+  if test $REPLACE_REALLOC = 1; then
+    AC_LIBOBJ([realloc])
+  fi
+  gl_MODULE_INDICATOR([realloc-gnu])
+  gl_FUNC_REALLOC_POSIX
+  if test $REPLACE_REALLOC = 1; then
+    AC_LIBOBJ([realloc])
+  fi
+  gl_STDLIB_MODULE_INDICATOR([realloc-posix])
   AC_REQUIRE([gl_FEATURES_H])
   gt_TYPE_SSIZE_T
+  gl_FUNC_STAT
+  if test $REPLACE_STAT = 1; then
+    AC_LIBOBJ([stat])
+    gl_PREREQ_STAT
+  fi
+  gl_SYS_STAT_MODULE_INDICATOR([stat])
+  gl_STAT_SIZE
+  gl_STAT_TIME
+  gl_STAT_BIRTHTIME
   AM_STDBOOL_H
   gl_STDDEF_H
   gl_STDINT_H
+  gl_STDIO_H
   gl_STDLIB_H
+  gl_FUNC_STRERROR
+  if test $REPLACE_STRERROR = 1; then
+    AC_LIBOBJ([strerror])
+  fi
+  gl_MODULE_INDICATOR([strerror])
+  gl_STRING_MODULE_INDICATOR([strerror])
+  AC_REQUIRE([gl_HEADER_ERRNO_H])
+  AC_REQUIRE([gl_FUNC_STRERROR_0])
+  if test -n "$ERRNO_H" || test $REPLACE_STRERROR_0 = 1; then
+    AC_LIBOBJ([strerror-override])
+    gl_PREREQ_SYS_H_WINSOCK2
+  fi
+  gl_FUNC_STRERROR_R
+  if test $HAVE_DECL_STRERROR_R = 0 || test $REPLACE_STRERROR_R = 1; then
+    AC_LIBOBJ([strerror_r])
+    gl_PREREQ_STRERROR_R
+  fi
+  gl_STRING_MODULE_INDICATOR([strerror_r])
   gl_HEADER_STRING_H
+  gl_FUNC_STRNLEN
+  if test $HAVE_DECL_STRNLEN = 0 || test $REPLACE_STRNLEN = 1; then
+    AC_LIBOBJ([strnlen])
+    gl_PREREQ_STRNLEN
+  fi
+  gl_STRING_MODULE_INDICATOR([strnlen])
   gl_FUNC_STRSTR
   if test $REPLACE_STRSTR = 1; then
     AC_LIBOBJ([strstr])
@@ -461,8 +553,11 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/dirfd.c
   lib/dosname.h
   lib/errno.in.h
+  lib/error.c
+  lib/error.h
   lib/exitfail.c
   lib/exitfail.h
+  lib/fileblocks.c
   lib/float+.h
   lib/float.c
   lib/float.in.h
@@ -474,6 +569,7 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/frexpl.c
   lib/gettext.h
   lib/gettimeofday.c
+  lib/intprops.h
   lib/inttypes.in.h
   lib/isnan.c
   lib/isnand-nolibm.h
@@ -485,6 +581,8 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/itold.c
   lib/localcharset.c
   lib/localcharset.h
+  lib/lstat.c
+  lib/malloc.c
   lib/math.c
   lib/math.in.h
   lib/mbrtowc.c
@@ -500,15 +598,27 @@ AC_DEFUN([gl_FILE_LIST], [
   lib/obstack.c
   lib/obstack.h
   lib/pathmax.h
+  lib/realloc.c
   lib/ref-add.sin
   lib/ref-del.sin
+  lib/stat-macros.h
+  lib/stat-size.h
+  lib/stat-time.c
+  lib/stat-time.h
+  lib/stat.c
   lib/stdbool.in.h
   lib/stddef.in.h
   lib/stdint.in.h
+  lib/stdio.in.h
   lib/stdlib.in.h
   lib/str-two-way.h
   lib/streq.h
+  lib/strerror-override.c
+  lib/strerror-override.h
+  lib/strerror.c
+  lib/strerror_r.c
   lib/string.in.h
+  lib/strnlen.c
   lib/strnlen1.c
   lib/strnlen1.h
   lib/strstr.c
@@ -534,11 +644,13 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/dirfd.m4
   m4/double-slash-root.m4
   m4/errno_h.m4
+  m4/error.m4
   m4/exponentd.m4
   m4/exponentl.m4
   m4/extensions.m4
   m4/extern-inline.m4
   m4/fcntl-o.m4
+  m4/fileblocks.m4
   m4/float_h.m4
   m4/fnmatch.m4
   m4/fpieee.m4
@@ -567,6 +679,8 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/locale-ja.m4
   m4/locale-zh.m4
   m4/longlong.m4
+  m4/lstat.m4
+  m4/malloc.m4
   m4/manywarnings.m4
   m4/math_h.m4
   m4/mathfunc.m4
@@ -574,6 +688,7 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/mbsinit.m4
   m4/mbsrtowcs.m4
   m4/mbstate_t.m4
+  m4/memchr-obsolete.m4
   m4/memchr.m4
   m4/memcmp.m4
   m4/memmem.m4
@@ -586,12 +701,20 @@ AC_DEFUN([gl_FILE_LIST], [
   m4/off_t.m4
   m4/openmp.m4
   m4/pathmax.m4
+  m4/realloc.m4
   m4/ssize_t.m4
+  m4/stat-size.m4
+  m4/stat-time.m4
+  m4/stat.m4
   m4/stdbool.m4
   m4/stddef_h.m4
   m4/stdint.m4
+  m4/stdio_h.m4
   m4/stdlib_h.m4
+  m4/strerror.m4
+  m4/strerror_r.m4
   m4/string_h.m4
+  m4/strnlen.m4
   m4/strstr.m4
   m4/sys_socket_h.m4
   m4/sys_stat_h.m4

@@ -3,17 +3,17 @@ dnl# Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.13])
 AC_INIT([Dbg-expect],[1.7.0],[libes@nist.gov])
-AC_CONFIG_SRCDIR([Dbg.h])
+AC_CONFIG_SRCDIR([Dbg.h])dnl
 
 DBG_MAJOR_VERSION=1
 DBG_MINOR_VERSION=7
 DBG_MICRO_VERSION=0
 DBG_VERSION=${DBG_MAJOR_VERSION}.${DBG_MINOR_VERSION}
 DBG_VERSION_FULL=${DBG_VERSION}.${DBG_MICRO_VERSION}
-# Tcl's handling of shared_lib_suffix requires this symbol exist
+# Tcl's handling of shared_lib_suffix requires this symbol exist:
 VERSION=${DBG_MAJOR_VERSION}.${DBG_MINOR_VERSION}
 
-AC_CONFIG_HEADERS([Dbg_cf.h])
+AC_CONFIG_HEADERS([Dbg_cf.h])dnl
 
 CY_AC_PATH_TCLCONFIG
 CY_AC_LOAD_TCLCONFIG
@@ -23,7 +23,7 @@ CY_AC_C_WORKS
 AC_PROG_CXX
 AC_PROG_LN_S
 
-# this will use a BSD compatible install or our included install-sh
+# This will use a BSD compatible install or our included install-sh script:
 AC_PROG_INSTALL
 
 # Tcl sets TCL_RANLIB appropriately for shared library if --enable-shared
@@ -39,9 +39,9 @@ UNSHARED_RANLIB=${RANLIB}
 # so it will configure correctly
 CY_AC_TCL_LYNX_POSIX
 
-# we really only need the header files
+# we really only need the header files:
 CY_AC_PATH_TCLH
-if test x"${no_tcl}" = x"true" ; then
+if test x"${no_tcl}" = x"true"; then
     echo "      ERROR: Cannot find Tcl directory"
     echo "      See README for information on how to obtain Tcl."
     echo "      If Tcl is installed, see INSTALL on how to tell"
@@ -63,28 +63,34 @@ else
 fi
 
 # Checks for libraries.
-AC_CHECK_LIB([m],[sqrt])
+AC_CHECK_LIB([m],[sqrt])dnl
 
 #
 # Look for functions that may be missing
 #
-AC_CHECK_FUNCS([strchr],[AC_DEFINE([HAVE_STRCHR],[1],[Define to 1 if you have the strchr function.])])
+AC_CHECK_FUNCS([strchr],
+               [AC_DEFINE([HAVE_STRCHR],[1],
+                          [Define to 1 if you have the strchr function.])])
 AC_FUNC_CHOWN
 AC_FUNC_FORK
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([alarm dup2 gethostname gettimeofday index isascii \
-                memmove memset pow select strcspn strrchr strstr])
+                memmove memset pow select strcspn strrchr strstr])dnl
 
 #
 # Look for various header files
 #
 unset ac_cv_header_stdlib_h
-AC_CHECK_HEADERS([stdlib.h],[],[AC_DEFINE([NO_STDLIB_H],[1],[Define to 1 if you have no <stdlib.h> header.])])
+AC_CHECK_HEADERS([stdlib.h],[],
+                 [AC_DEFINE([NO_STDLIB_H],[1],
+                            [Define to 1 if you have no <stdlib.h> header])
+])dnl
 AC_HEADER_MAJOR
 AC_CHECK_HEADERS([fcntl.h sgtty.h stdio.h sys/file.h sys/ioctl.h \
-                  sys/time.h termio.h termios.h utmp.h])
-# Modify autoheader-created header
+                  sys/time.h termio.h termios.h utmp.h])dnl
+
+# Modify the autoheader-created header:
 AH_TOP([
 /* This file is only to be included by the Debugger itself. */
 /* Applications should only include Dbg.h. */
@@ -108,13 +114,13 @@ AH_BOTTOM([
 #endif /* !HAVE_STRCHR */
 
 #endif	/* __NIST_DBG_CF_H__ */
-])
+])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
 AC_C_PROTOTYPES
 AC_TYPE_SIZE_T
-AC_CHECK_MEMBERS([struct stat.st_rdev])
+AC_CHECK_MEMBERS([struct stat.st_rdev])dnl
 
 # consume these flags so that user can invoke tcl-debug's configure with
 # the same command as Tcl's configure
@@ -130,7 +136,8 @@ DBG_UNSHARED_LIB_FILE=libtcldbg.a
 
 AC_MSG_CHECKING([type of library to build])
 AC_ARG_ENABLE([shared],
-	[AS_HELP_STRING([--enable-shared],[build libtcldbg as a shared library])],
+	[AS_HELP_STRING([--enable-shared],
+                        [build libtcldbg as a shared library])],
 	[enable_shared=yes],[enable_shared=no])
 if test "${enable_shared}" = "yes" -a "x${TCL_SHLIB_SUFFIX}" != "x" ; then
   DBG_SHLIB_CFLAGS=${TCL_SHLIB_CFLAGS}
@@ -147,22 +154,24 @@ else
   AC_MSG_RESULT([unshared])
 fi
 
-#
-# Set up makefile substitutions
-#
-AC_SUBST([DBG_MAJOR_VERSION])
-AC_SUBST([DBG_MINOR_VERSION])
-AC_SUBST([DBG_MICRO_VERSION])
-AC_SUBST([DBG_VERSION_FULL])
-AC_SUBST([DBG_VERSION])
-AC_SUBST([CC])
-AC_SUBST([DBG_SHARED_LIB_FILE])
-AC_SUBST([DBG_UNSHARED_LIB_FILE])
-AC_SUBST([DBG_SHLIB_CFLAGS])
-AC_SUBST([DBG_LIB_FILE])
-AC_SUBST([DBG_LIB_FILES])
-AC_SUBST([DBG_CFLAGS])
-AC_SUBST([UNSHARED_RANLIB])
-AC_CONFIG_FILES([Makefile DbgMkfl])
+dnl#
+dnl# Set up makefile substitutions:
+dnl#
+AC_SUBST([DBG_MAJOR_VERSION])dnl
+AC_SUBST([DBG_MINOR_VERSION])dnl
+AC_SUBST([DBG_MICRO_VERSION])dnl
+AC_SUBST([DBG_VERSION_FULL])dnl
+AC_SUBST([DBG_VERSION])dnl
+AC_SUBST([CC])dnl
+AC_SUBST([DBG_SHARED_LIB_FILE])dnl
+AC_SUBST([DBG_UNSHARED_LIB_FILE])dnl
+AC_SUBST([DBG_SHLIB_CFLAGS])dnl
+AC_SUBST([DBG_LIB_FILE])dnl
+AC_SUBST([DBG_LIB_FILES])dnl
+AC_SUBST([DBG_CFLAGS])dnl
+AC_SUBST([UNSHARED_RANLIB])dnl
+
+# Output.
+AC_CONFIG_FILES([Makefile DbgMkfl])dnl
 AC_OUTPUT
 

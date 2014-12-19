@@ -1,4 +1,4 @@
-/* Output generating routines for GDB.
+/* ui-out.h: Output generating routines for GDB.
 
    Copyright 1999, 2000, 2001, 2002, 2003, 2005
    Free Software Foundation, Inc.
@@ -113,7 +113,7 @@ extern void ui_out_field_int (struct ui_out *uiout, const char *fldname,
 			      int value);
 
 extern void ui_out_field_fmt_int (struct ui_out *uiout, int width,
-				  enum ui_align align, const char *fldname, 
+				  enum ui_align align, const char *fldname,
 		 		  int value);
 
 extern void ui_out_field_core_addr (struct ui_out *uiout, const char *fldname,
@@ -164,28 +164,27 @@ extern int ui_out_test_flags (struct ui_out *uiout, int mask);
 extern void ui_out_cleanup_after_error (struct ui_out *uiout);
 
 struct cleanup *
-make_cleanup_ui_out_notify_begin_end (struct ui_out *uiout,
-				      char *class);
+make_cleanup_ui_out_notify_begin_end (struct ui_out *uiout, char *);
 
 #if 0
-extern void ui_out_result_begin (struct ui_out *uiout, char *class);
+extern void ui_out_result_begin (struct ui_out *uiout, char *);
 
 extern void ui_out_result_end (struct ui_out *uiout);
 
-extern void ui_out_info_begin (struct ui_out *uiout, char *class);
+extern void ui_out_info_begin (struct ui_out *uiout, char *);
 
 extern void ui_out_info_end (struct ui_out *uiout);
 
-extern void ui_out_error_begin (struct ui_out *uiout, char *class);
+extern void ui_out_error_begin (struct ui_out *uiout, char *);
 
 extern void ui_out_error_end (struct ui_out *uiout);
-#endif
+#endif /* 0 */
 
 #if 0
 extern void gdb_error (struct ui_out *uiout, int severity, char *format, ...);
 
 extern void gdb_query (struct ui_out *uiout, int qflags, char *qprompt);
-#endif
+#endif /* 0 */
 
 /* HACK: Code in GDB is currently checking to see the type of ui_out
    builder when determining which output to produce.  This function is
@@ -249,7 +248,7 @@ typedef void (wrap_hint_ftype) (struct ui_out * uiout, const char *identstring);
 typedef void (flush_ftype) (struct ui_out * uiout);
 typedef int (redirect_ftype) (struct ui_out * uiout,
 			      struct ui_file * outstream);
-typedef void (notify_begin_ftype) (struct ui_out *uiout, char *class);
+typedef void (notify_begin_ftype) (struct ui_out *uiout, char *);
 typedef void (notify_end_ftype) (struct ui_out *uiout);
 
 /* ui-out-impl */

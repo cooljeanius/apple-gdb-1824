@@ -198,26 +198,26 @@ child_attach (char *args, int from_tty)
   /* Some targets don't set errno on errors, grrr! */
   if ((pid == 0) && (args == dummy))
       error (_("Illegal process-id: %s."), args);
-  
+
   if (pid == getpid ())	/* Trying to masturbate? */
     error (_("I refuse to debug myself!"));
-  
+
   if (from_tty)
     {
       exec_file = (char *) get_exec_file (0);
-      
+
       if (exec_file)
 	printf_unfiltered (_("Attaching to program: %s, %s\n"), exec_file,
 			   target_pid_to_str (pid_to_ptid (pid)));
       else
 	printf_unfiltered (_("Attaching to %s\n"),
 			   target_pid_to_str (pid_to_ptid (pid)));
-      
+
       gdb_flush (gdb_stdout);
     }
 
   attach (pid);
-  
+
   inferior_ptid = pid_to_ptid (pid);
   push_target (&deprecated_child_ops);
 
@@ -248,7 +248,7 @@ child_detach (char *args, int from_tty)
 {
   int siggnal = 0;
   int pid = PIDGET (inferior_ptid);
-  
+
   if (from_tty)
     {
       char *exec_file = get_exec_file (0);
@@ -260,9 +260,9 @@ child_detach (char *args, int from_tty)
     }
   if (args)
     siggnal = atoi (args);
-  
+
   detach (siggnal);
-  
+
   inferior_ptid = null_ptid;
   unpush_target (&deprecated_child_ops);
 }
@@ -310,25 +310,22 @@ ptrace_me (void)
    the child process.  */
 
 static void
-ptrace_him (int pid)
+ptrace_him(int pid)
 {
-  push_target (&deprecated_child_ops);
+  push_target(&deprecated_child_ops);
 
   /* On some targets, there must be some explicit synchronization
      between the parent and child processes after the debugger
      forks, and before the child execs the debuggee program.  This
-     call basically gives permission for the child to exec.
-   */
+     call basically gives permission for the child to exec.  */
+  target_acknowledge_created_inferior(pid);
 
-  target_acknowledge_created_inferior (pid);
-
-  /* APPLE LOCAL startup with shell */
-  startup_inferior ();
+  /* APPLE LOCAL startup with shell: */
+  startup_inferior(0); /* FIXME: '0' is a dummy value */
 
   /* On some targets, there must be some explicit actions taken after
-     the inferior has been started up.
-   */
-  target_post_startup_inferior (pid_to_ptid (pid));
+     the inferior has been started up.  */
+  target_post_startup_inferior(pid_to_ptid(pid));
 }
 
 /* Start an inferior Unix child process and sets inferior_ptid to its pid.
@@ -498,13 +495,13 @@ child_stop (void)
 #if !defined(CHILD_ENABLE_EXCEPTION_CALLBACK)
 /* APPLE LOCAL begin exception catchpoints */
 struct symtabs_and_lines *
-child_find_exception_catchpoints (enum exception_event_kind kind, 
+child_find_exception_catchpoints (enum exception_event_kind kind,
 				  struct objfile *objfile)
 {
   return (struct symtabs_and_lines *) NULL;
 }
 /* APPLE LOCAL end exception catchpoints */
-  
+
 int
 child_enable_exception_callback (enum exception_event_kind kind, int enable)
 {
@@ -653,20 +650,23 @@ _initialize_inftarg (void)
   char procname[32];
   int fd;
 
-  /* If we have an optional /proc filesystem (e.g. under OSF/1),
-     don't add ptrace support if we can access the running GDB via /proc.  */
-#ifndef PROC_NAME_FMT
-#define PROC_NAME_FMT "/proc/%05d"
-#endif
-  sprintf (procname, PROC_NAME_FMT, getpid ());
-  fd = open (procname, O_RDONLY);
+  /* If we have an optional /proc filesystem (e.g. under OSF/1), then
+   * avoid adding ptrace support if we can access the running GDB
+   * via /proc: */
+# ifndef PROC_NAME_FMT
+#  define PROC_NAME_FMT "/proc/%05d"
+# endif /* !PROC_NAME_FMT */
+  sprintf(procname, PROC_NAME_FMT, getpid ());
+  fd = open(procname, O_RDONLY);
   if (fd >= 0)
     {
-      close (fd);
+      close(fd);
       return;
     }
-#endif
+#endif /* HAVE_OPTIONAL_PROC_FS */
 
-  init_child_ops ();
-  add_target (&deprecated_child_ops);
+  init_child_ops();
+  add_target(&deprecated_child_ops);
 }
+
+/* EOF */

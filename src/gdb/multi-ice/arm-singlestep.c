@@ -2,7 +2,7 @@
  * for the Multi-ICE gdb server.
  * Copyright (C) 1999
  * Free Software Foundation, Inc. */
-/*
+/* arm-singlestep.c
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -532,9 +532,9 @@ CORE_ADDR server_arm_get_next_pc(CORE_ADDR pc, unsigned short *is_thumb)
 	    case 0xb:           /* branch & link */
 	    case 0xa:           /* branch */
 	      {
-		nextpc = BranchDest (pc, this_instr);
+		nextpc = BranchDest(pc, this_instr);
 
-		nextpc = ADDR_BITS_REMOVE (nextpc);
+		nextpc = ADDR_BITS_REMOVE(nextpc);
 		if (nextpc == pc) {
 		    output_error("Infinite loop detected");
 		    return 0;
@@ -548,7 +548,7 @@ CORE_ADDR server_arm_get_next_pc(CORE_ADDR pc, unsigned short *is_thumb)
 	      break;
 
 	    default:
-	      output_error ("Bad bit-field extraction\n");
+	      output_error("Bad bit-field extraction\n");
 	      return (pc);
 	    }
 	}
@@ -560,7 +560,7 @@ CORE_ADDR server_arm_get_next_pc(CORE_ADDR pc, unsigned short *is_thumb)
 /* These wrappers are just to reduce diffs... */
 unsigned long read_aregister(int regno)
 {
-    return restore_register (regno);
+    return restore_register(regno);
 }
 
 LONGEST read_memory_integer(CORE_ADDR memaddr, int len)
@@ -574,5 +574,15 @@ LONGEST read_memory_integer(CORE_ADDR memaddr, int len)
   low_read_memory_raw(memaddr, &rawmem, &len);
   return rawmem;
 }
+
+#ifdef IS_THUMB_ADDR
+# undef IS_THUMB_ADDR
+#endif /* IS_THUMB_ADDR */
+#ifdef MAKE_THUMB_ADDR
+# undef MAKE_THUMB_ADDR
+#endif /* MAKE_THUMB_ADDR */
+#ifdef UNMAKE_THUMB_ADDR
+# undef UNMAKE_THUMB_ADDR
+#endif /* UNMAKE_THUMB_ADDR */
 
 /* EOF */

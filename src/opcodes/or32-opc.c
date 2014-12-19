@@ -1,7 +1,7 @@
-/* Table of opcodes for the OpenRISC 1000 ISA.
+/* or32-opc.c: Table of opcodes for the OpenRISC 1000 ISA.
    Copyright 2002, 2004, 2005 Free Software Foundation, Inc.
    Contributed by Damjan Lampret (lampret@opencores.org).
-   
+
    This file is part of gen_or1k_isa, or1k, GDB and GAS.
 
    This program is free software; you can redistribute it and/or modify
@@ -175,7 +175,7 @@ const struct or32_opcode or32_opcodes[] =
   { "lv.cust2",  "",	       "00 0xA  ----- ----- ---- ---- 0xD ----", EFI, 0 },
   { "lv.cust3",  "",	       "00 0xA  ----- ----- ---- ---- 0xE ----", EFI, 0 },
   { "lv.cust4",  "",	       "00 0xA  ----- ----- ---- ---- 0xF ----", EFI, 0 },
-  
+
   { "lf.add.s",   "rD,rA,rB",    "00 0xB  DDDDD AAAAA BBBB B--- 0x1 0x0", EFI, 0 },
   { "lf.sub.s",   "rD,rA,rB",    "00 0xB  DDDDD AAAAA BBBB B--- 0x1 0x1", EFI, 0 },
   { "lf.mul.s",   "rD,rA,rB",    "00 0xB  DDDDD AAAAA BBBB B--- 0x1 0x2", EFI, 0 },
@@ -260,7 +260,7 @@ const struct or32_opcode or32_opcodes[] =
   { "l.sw",      "I(rA),rB",     "11 0x5  IIIII AAAAA BBBB BIII IIII IIII", EF(l_sw), 0 },
   { "l.sb",      "I(rA),rB",     "11 0x6  IIIII AAAAA BBBB BIII IIII IIII", EF(l_sb), 0 },
   { "l.sh",      "I(rA),rB",     "11 0x7  IIIII AAAAA BBBB BIII IIII IIII", EF(l_sh), 0 },
-    
+
   { "l.add",     "rD,rA,rB",     "11 0x8  DDDDD AAAAA BBBB B-00 ---- 0x0", EF(l_add), 0 },
   { "l.addc",    "rD,rA,rB",     "11 0x8  DDDDD AAAAA BBBB B-00 ---- 0x1", EFI, 0 },
   { "l.sub",     "rD,rA,rB",     "11 0x8  DDDDD AAAAA BBBB B-00 ---- 0x2", EF(l_sub), 0 },
@@ -329,7 +329,7 @@ const struct or32_opcode or32_opcodes[] =
 
 #undef EFI
 #undef EFN
-#undef EF 
+#undef EF
 
 /* Define dummy, if debug is not defined.  */
 
@@ -356,11 +356,11 @@ int
 letter_signed (char l)
 {
   const struct or32_letter *pletter;
-  
+
   for (pletter = or32_letters; pletter->letter != '\0'; pletter++)
     if (pletter->letter == l)
       return pletter->sign;
-  
+
   printf ("letter_signed(%c): Unknown letter.\n", l);
   return 0;
 }
@@ -373,7 +373,7 @@ letter_range (char l)
   const struct or32_opcode *pinsn;
   char *enc;
   int range = 0;
-  
+
   for (pinsn = or32_opcodes; strlen (pinsn->name); pinsn ++)
     {
       if (strchr (pinsn->encoding,l))
@@ -434,7 +434,7 @@ insn_extract (char param_ch, char *enc_initial)
   unsigned opc_pos = 32;
 
   for (enc = enc_initial; *enc != '\0'; )
-    if ((*enc == '0') && (*(enc + 1) == 'x')) 
+    if ((*enc == '0') && (*(enc + 1) == 'x'))
       {
 	unsigned long tmp = strtol (enc+2, NULL, 16);
 
@@ -501,7 +501,7 @@ cover_insn (unsigned long * cur, int pass, unsigned int mask)
 	ninstr++;
 	last_match = i;
       }
-  
+
   debug (8, "%08X %08lX\n", mask, cur_mask);
 
   if (ninstr == 0)
@@ -552,7 +552,7 @@ cover_insn (unsigned long * cur, int pass, unsigned int mask)
 	  for (i = 0; i < or32_num_opcodes; i++)
 	    if (ti[i].in_pass == pass)
 	      fprintf (stderr, "%s ", or32_opcodes[i].name);
-	  
+
 	  fprintf (stderr, "\n");
 	  exit (1);
 	}
@@ -564,12 +564,12 @@ cover_insn (unsigned long * cur, int pass, unsigned int mask)
       cur++;
       *cur = (1 << best_len) - 1;
       cur++;
-      next = cur;    
+      next = cur;
 
       /* Allocate space for pointers.  */
       cur += 1 << best_len;
       cur_mask = (1 << (unsigned long) best_len) - 1;
-      
+
       for (i = 0; i < ((unsigned) 1 << best_len); i++)
 	{
 	  unsigned int j;
@@ -588,9 +588,9 @@ cover_insn (unsigned long * cur, int pass, unsigned int mask)
 	    {
 	      debug (8, "%li> #%X -> %lu\n", (long)(next - automata), i, (long)(cur - automata));
 	      *next = cur - automata;
-	      cur = c;	 
+	      cur = c;
 	    }
-	  else 
+	  else
 	    {
 	      debug (8, "%li> N/A\n", (long)(next - automata));
 	      *next = 0;
@@ -626,7 +626,7 @@ parse_params (const struct or32_opcode * opcode,
 {
   char *args = opcode->args;
   int i, type;
-  
+
   i = 0;
   type = 0;
   /* In case we don't have any parameters, we add dummy read from r0.  */
@@ -639,9 +639,9 @@ parse_params (const struct or32_opcode * opcode,
       cur++;
       return cur;
   }
-  
+
   while (*args != '\0')
-    {     
+    {
       if (*args == 'r')
 	{
 	  args++;
@@ -740,7 +740,7 @@ build_automata (void)
   unsigned int i;
   unsigned long *end;
   struct insn_op_struct *cur;
-  
+
   automata = malloc (MAX_AUTOMATA_SIZE * sizeof (unsigned long));
   ti = malloc (sizeof (struct temp_insn_struct) * or32_num_opcodes);
 
@@ -762,7 +762,7 @@ build_automata (void)
       /*debug(9, "%s: %s %08X %08X\n", or32_opcodes[i].name,
 	or32_opcodes[i].encoding, ti[i].insn_mask, ti[i].insn);*/
     }
-  
+
   /* Until all are covered search for best criteria to separate them.  */
   end = cover_insn (automata, curpass, 0xFFFFFFFF);
 
@@ -835,7 +835,7 @@ insn_decode (unsigned int insn)
   /* Final check - do we have direct match?
      (based on or32_opcodes this should be the only possibility,
      but in case of invalid/missing instruction we must perform a check)  */
-  if ((ti[i].insn_mask & insn) == ti[i].insn) 
+  if ((ti[i].insn_mask & insn) == ti[i].insn)
     return i;
   else
     return -1;
@@ -847,19 +847,19 @@ char *disassembled = &disassembled_str[0];
 /* Automagically does zero- or sign- extension and also finds correct
    sign bit position if sign extension is correct extension. Which extension
    is proper is figured out from letter description.  */
-   
+
 static unsigned long
 extend_imm (unsigned long imm, char l)
 {
   unsigned long mask;
   int letter_bits;
-  
+
   /* First truncate all bits above valid range for this letter
      in case it is zero extend.  */
   letter_bits = letter_range (l);
   mask = (1 << letter_bits) - 1;
   imm &= mask;
-  
+
   /* Do sign extend if this is the right one.  */
   if (letter_signed(l) && (imm >> (letter_bits - 1)))
     imm |= (~mask);
@@ -884,53 +884,53 @@ or32_extract (char param_ch, char *enc_initial, unsigned long insn)
           param_pos++;
       }
 
-#if DEBUG
+#if defined(DEBUG) && DEBUG
   printf ("or32_extract: %x ", param_pos);
-#endif
+#endif /* DEBUG */
   opc_pos = 32;
 
   for (enc = enc_initial; *enc != '\0'; )
-    if ((*enc == '0') && (*(enc + 1) == 'x')) 
+    if ((*enc == '0') && (*(enc + 1) == 'x'))
       {
         opc_pos -= 4;
-        if ((param_ch == '0') || (param_ch == '1')) 
+        if ((param_ch == '0') || (param_ch == '1'))
           {
             unsigned long tmp = strtol (enc, NULL, 16);
-#if DEBUG
+#if defined(DEBUG) && DEBUG
             printf (" enc=%s, tmp=%x ", enc, tmp);
-#endif
+#endif /* DEBUG */
             if (param_ch == '0')
               tmp = 15 - tmp;
             ret |= tmp << opc_pos;
           }
         enc += 3;
       }
-    else if ((*enc == '0') || (*enc == '1')) 
+    else if ((*enc == '0') || (*enc == '1'))
       {
         opc_pos--;
         if (param_ch == *enc)
           ret |= 1 << opc_pos;
         enc++;
       }
-    else if (*enc == param_ch) 
+    else if (*enc == param_ch)
       {
         opc_pos--;
         param_pos--;
-#if DEBUG
+#if defined(DEBUG) && DEBUG
         printf ("\n  ret=%x opc_pos=%x, param_pos=%x\n", ret, opc_pos, param_pos);
-#endif  
+#endif /* DEBUG */
         if (ISLOWER (param_ch))
           ret -= ((insn >> opc_pos) & 0x1) << param_pos;
         else
           ret += ((insn >> opc_pos) & 0x1) << param_pos;
         enc++;
       }
-    else if (ISALPHA (*enc)) 
+    else if (ISALPHA (*enc))
       {
         opc_pos--;
         enc++;
       }
-    else if (*enc == '-') 
+    else if (*enc == '-')
       {
         opc_pos--;
         enc++;
@@ -938,9 +938,9 @@ or32_extract (char param_ch, char *enc_initial, unsigned long insn)
     else
       enc++;
 
-#if DEBUG
+#if defined(DEBUG) && DEBUG
   printf ("ret=%x\n", ret);
-#endif
+#endif /* DEBUG */
   return ret;
 }
 
@@ -950,7 +950,7 @@ static void
 or32_print_register (char param_ch, char *encoding, unsigned long insn)
 {
   int regnum = or32_extract(param_ch, encoding, insn);
-  
+
   sprintf (disassembled, "%sr%d", disassembled, regnum);
 }
 
@@ -962,7 +962,7 @@ or32_print_immediate (char param_ch, char *encoding, unsigned long insn)
   int imm = or32_extract (param_ch, encoding, insn);
 
   imm = extend_imm (imm, param_ch);
-  
+
   if (letter_signed (param_ch))
     {
       if (imm < 0)
@@ -995,11 +995,11 @@ disassemble_insn (unsigned long insn)
             {
             case '\0':
               return 4;
-  
+
             case 'r':
               or32_print_register (*++s, opcode->encoding, insn);
               break;
-  
+
             default:
               if (strchr (opcode->encoding, *s))
                 or32_print_immediate (*s, opcode->encoding, insn);

@@ -2171,8 +2171,8 @@
 		2609DE5A0E82C411008125DE /* strsignal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = strsignal.c; sourceTree = "<group>"; };
 		2609DE5B0E82C411008125DE /* strstr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = strstr.c; sourceTree = "<group>"; };
 		2609DE5C0E82C411008125DE /* strtod.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = strtod.c; sourceTree = "<group>"; };
-		2609DE5D0E82C411008125DE /* strtol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = strtol.c; sourceTree = "<group>"; };
-		2609DE5E0E82C411008125DE /* strtoul.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = strtoul.c; sourceTree = "<group>"; };
+		2609DE5D0E82C411008125DE /* strtol.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; path = strtol.c; sourceTree = "<group>"; tabWidth = 4; };
+		2609DE5E0E82C411008125DE /* strtoul.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; path = strtoul.c; sourceTree = "<group>"; tabWidth = 4; };
 		2609DE5F0E82C411008125DE /* strverscmp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = strverscmp.c; sourceTree = "<group>"; };
 		2609DE600E82C411008125DE /* ternary.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ternary.c; sourceTree = "<group>"; };
 		2609DE640E82C411008125DE /* test-demangle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "test-demangle.c"; sourceTree = "<group>"; };
@@ -3031,6 +3031,105 @@
 		A53AC07B1A3A8CBE002F20B2 /* mvalloc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mvalloc.c; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/mvalloc.c"; sourceTree = "<absolute>"; };
 		A53AC07C1A3A8CBE002F20B2 /* pagecheck-sup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "pagecheck-sup.c"; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/pagecheck-sup.c"; sourceTree = "<absolute>"; };
 		A53AC07D1A3A8CBE002F20B2 /* sbrk-sup.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "sbrk-sup.c"; path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc/sbrk-sup.c"; sourceTree = "<absolute>"; };
+		A53AC17E1A3F430A002F20B2 /* vprintf-support.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "vprintf-support.c"; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/vprintf-support.c"; sourceTree = "<absolute>"; };
+		A53AC17F1A3F44CF002F20B2 /* vprintf-support.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "vprintf-support.h"; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/vprintf-support.h"; sourceTree = "<absolute>"; };
+		A53AC1801A3F4517002F20B2 /* xvasprintf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = xvasprintf.c; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/xvasprintf.c"; sourceTree = "<absolute>"; };
+		A53AC1A01A3F7EFE002F20B2 /* efence.3 */ = {isa = PBXFileReference; explicitFileType = text.man; fileEncoding = 4; name = efence.3; path = "/Users/ericgallager/apple-gdb-1824/src/electric-fence/efence.3"; sourceTree = "<absolute>"; };
+		A53AC1A11A3F7EFE002F20B2 /* efence.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; name = efence.c; path = "/Users/ericgallager/apple-gdb-1824/src/electric-fence/efence.c"; sourceTree = "<absolute>"; tabWidth = 4; };
+		A53AC1A21A3F7EFE002F20B2 /* efence.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.h; name = efence.h; path = "/Users/ericgallager/apple-gdb-1824/src/electric-fence/efence.h"; sourceTree = "<absolute>"; tabWidth = 4; };
+		A53AC1A31A3F7EFE002F20B2 /* eftest.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = eftest.c; path = "/Users/ericgallager/apple-gdb-1824/src/electric-fence/eftest.c"; sourceTree = "<absolute>"; };
+		A53AC1A41A3F7EFE002F20B2 /* libefence.3 */ = {isa = PBXFileReference; explicitFileType = text.man; fileEncoding = 4; name = libefence.3; path = "/Users/ericgallager/apple-gdb-1824/src/electric-fence/libefence.3"; sourceTree = "<absolute>"; };
+		A53AC1A61A3F7EFE002F20B2 /* Makefile_2dot1 */ = {isa = PBXFileReference; explicitFileType = sourcecode.make; fileEncoding = 4; name = Makefile_2dot1; path = "/Users/ericgallager/apple-gdb-1824/src/electric-fence/Makefile_2dot1"; sourceTree = "<absolute>"; };
+		A53AC1A71A3F7EFE002F20B2 /* nspage.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = nspage.c; path = "/Users/ericgallager/apple-gdb-1824/src/electric-fence/nspage.c"; sourceTree = "<absolute>"; };
+		A53AC1A81A3F7EFE002F20B2 /* ntpage.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ntpage.c; path = "/Users/ericgallager/apple-gdb-1824/src/electric-fence/ntpage.c"; sourceTree = "<absolute>"; };
+		A53AC1A91A3F7EFE002F20B2 /* page.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; name = page.c; path = "/Users/ericgallager/apple-gdb-1824/src/electric-fence/page.c"; sourceTree = "<absolute>"; tabWidth = 4; };
+		A53AC1AA1A3F7EFE002F20B2 /* print.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; name = print.c; path = "/Users/ericgallager/apple-gdb-1824/src/electric-fence/print.c"; sourceTree = "<absolute>"; tabWidth = 4; };
+		A53AC1AC1A3F7EFE002F20B2 /* tstheap.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; name = tstheap.c; path = "/Users/ericgallager/apple-gdb-1824/src/electric-fence/tstheap.c"; sourceTree = "<absolute>"; tabWidth = 4; };
+		A53AC23F1A40B3F0002F20B2 /* crc32.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = crc32.c; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/crc32.c"; sourceTree = "<absolute>"; };
+		A53AC2401A40B3F6002F20B2 /* d-demangle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "d-demangle.c"; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/d-demangle.c"; sourceTree = "<absolute>"; };
+		A53AC2411A40B400002F20B2 /* dwarfnames.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dwarfnames.c; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/dwarfnames.c"; sourceTree = "<absolute>"; };
+		A53AC2421A40B44D002F20B2 /* filename_cmp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = filename_cmp.c; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/filename_cmp.c"; sourceTree = "<absolute>"; };
+		A53AC2D51A40F312002F20B2 /* malloca.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = malloca.c; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/malloca.c"; sourceTree = "<absolute>"; };
+		A53AC2D61A40F312002F20B2 /* malloca.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = malloca.h; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/malloca.h"; sourceTree = "<absolute>"; };
+		A53AC3361A4107D7002F20B2 /* setproctitle.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = setproctitle.c; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/setproctitle.c"; sourceTree = "<absolute>"; };
+		A53AC3371A4107D7002F20B2 /* sha1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sha1.c; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/sha1.c"; sourceTree = "<absolute>"; };
+		A53AC3381A4108C9002F20B2 /* simple-object-coff.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "simple-object-coff.c"; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/simple-object-coff.c"; sourceTree = "<absolute>"; };
+		A53AC3391A4108C9002F20B2 /* simple-object-common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "simple-object-common.h"; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/simple-object-common.h"; sourceTree = "<absolute>"; };
+		A53AC33A1A4108C9002F20B2 /* simple-object-elf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "simple-object-elf.c"; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/simple-object-elf.c"; sourceTree = "<absolute>"; };
+		A53AC33B1A4108C9002F20B2 /* simple-object-mach-o.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "simple-object-mach-o.c"; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/simple-object-mach-o.c"; sourceTree = "<absolute>"; };
+		A53AC33C1A4108C9002F20B2 /* simple-object-xcoff.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "simple-object-xcoff.c"; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/simple-object-xcoff.c"; sourceTree = "<absolute>"; };
+		A53AC33D1A4108C9002F20B2 /* simple-object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "simple-object.c"; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/simple-object.c"; sourceTree = "<absolute>"; };
+		A53AC33E1A410A35002F20B2 /* stack-limit.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "stack-limit.c"; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/stack-limit.c"; sourceTree = "<absolute>"; };
+		A53AC33F1A410A4C002F20B2 /* strnlen.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = strnlen.c; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/strnlen.c"; sourceTree = "<absolute>"; };
+		A53AC3401A410A5A002F20B2 /* strtoll.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; name = strtoll.c; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/strtoll.c"; sourceTree = "<absolute>"; tabWidth = 4; };
+		A53AC3411A410A61002F20B2 /* strtoull.c */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.c; name = strtoull.c; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/strtoull.c"; sourceTree = "<absolute>"; tabWidth = 4; };
+		A53AC3421A410A6E002F20B2 /* demangler-fuzzer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "demangler-fuzzer.c"; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/testsuite/demangler-fuzzer.c"; sourceTree = "<absolute>"; };
+		A53AC3431A410A84002F20B2 /* test-expandargv.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "test-expandargv.c"; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/testsuite/test-expandargv.c"; sourceTree = "<absolute>"; };
+		A53AC3441A410A8B002F20B2 /* test-strtol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "test-strtol.c"; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/testsuite/test-strtol.c"; sourceTree = "<absolute>"; };
+		A53AC3451A410AB0002F20B2 /* timeval-utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "timeval-utils.c"; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/timeval-utils.c"; sourceTree = "<absolute>"; };
+		A53AC3461A410AD6002F20B2 /* xmalloca.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = xmalloca.c; path = "/Users/ericgallager/apple-gdb-1824/src/libiberty/xmalloca.c"; sourceTree = "<absolute>"; };
+		A53AC4491A43A340002F20B2 /* windows-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "windows-nat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/windows-nat.c"; sourceTree = "<absolute>"; };
+		A53AC44A1A43A340002F20B2 /* windows-nat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "windows-nat.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/windows-nat.h"; sourceTree = "<absolute>"; };
+		A53AC44B1A43A340002F20B2 /* windows-tdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "windows-tdep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/windows-tdep.c"; sourceTree = "<absolute>"; };
+		A53AC44C1A43A340002F20B2 /* windows-tdep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "windows-tdep.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/windows-tdep.h"; sourceTree = "<absolute>"; };
+		A53AC44D1A43A340002F20B2 /* windows-termcap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "windows-termcap.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/windows-termcap.c"; sourceTree = "<absolute>"; };
+		A53AC44E1A43DDB0002F20B2 /* ax.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ax.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/ax.c"; sourceTree = "<absolute>"; };
+		A53AC44F1A43DDB0002F20B2 /* ax.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ax.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/ax.h"; sourceTree = "<absolute>"; };
+		A53AC4501A43DDC7002F20B2 /* debug.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = debug.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/debug.c"; sourceTree = "<absolute>"; };
+		A53AC4511A43DDC7002F20B2 /* debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = debug.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/debug.h"; sourceTree = "<absolute>"; };
+		A53AC4521A43DDC7002F20B2 /* dll.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dll.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/dll.c"; sourceTree = "<absolute>"; };
+		A53AC4531A43DDC7002F20B2 /* dll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = dll.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/dll.h"; sourceTree = "<absolute>"; };
+		A53AC4541A43DDC7002F20B2 /* event-loop.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "event-loop.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/event-loop.c"; sourceTree = "<absolute>"; };
+		A53AC4551A43DDC7002F20B2 /* event-loop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "event-loop.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/event-loop.h"; sourceTree = "<absolute>"; };
+		A53AC4561A43DDC7002F20B2 /* gdb_proc_service.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gdb_proc_service.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/gdb_proc_service.h"; sourceTree = "<absolute>"; };
+		A53AC4571A43DDD3002F20B2 /* gdbserver.1 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.man; name = gdbserver.1; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/gdbserver.1"; sourceTree = "<absolute>"; };
+		A53AC4581A43DE0C002F20B2 /* gdbthread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gdbthread.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/gdbthread.h"; sourceTree = "<absolute>"; };
+		A53AC4591A43DE0C002F20B2 /* hostio-errno.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "hostio-errno.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/hostio-errno.c"; sourceTree = "<absolute>"; };
+		A53AC45A1A43DE0C002F20B2 /* hostio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = hostio.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/hostio.c"; sourceTree = "<absolute>"; };
+		A53AC45B1A43DE0C002F20B2 /* hostio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hostio.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/hostio.h"; sourceTree = "<absolute>"; };
+		A53AC45C1A43DE0C002F20B2 /* i386-low.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "i386-low.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/i386-low.c"; sourceTree = "<absolute>"; };
+		A53AC45D1A43DE0C002F20B2 /* i386-low.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "i386-low.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/i386-low.h"; sourceTree = "<absolute>"; };
+		A53AC45E1A43DE50002F20B2 /* linux-aarch64-low.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "linux-aarch64-low.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/linux-aarch64-low.c"; sourceTree = "<absolute>"; };
+		A53AC45F1A43DE50002F20B2 /* linux-amd64-ipa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "linux-amd64-ipa.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/linux-amd64-ipa.c"; sourceTree = "<absolute>"; };
+		A53AC4601A43DE5A002F20B2 /* linux-bfin-low.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "linux-bfin-low.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/linux-bfin-low.c"; sourceTree = "<absolute>"; };
+		A53AC4611A43DE65002F20B2 /* linux-i386-ipa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "linux-i386-ipa.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/linux-i386-ipa.c"; sourceTree = "<absolute>"; };
+		A53AC4621A43DE78002F20B2 /* linux-nios2-low.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "linux-nios2-low.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/linux-nios2-low.c"; sourceTree = "<absolute>"; };
+		A53AC4631A43DE8E002F20B2 /* linux-sparc-low.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "linux-sparc-low.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/linux-sparc-low.c"; sourceTree = "<absolute>"; };
+		A53AC4641A43DE8E002F20B2 /* linux-tic6x-low.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "linux-tic6x-low.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/linux-tic6x-low.c"; sourceTree = "<absolute>"; };
+		A53AC4651A43DE8E002F20B2 /* linux-tile-low.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "linux-tile-low.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/linux-tile-low.c"; sourceTree = "<absolute>"; };
+		A53AC4661A43DEA1002F20B2 /* linux-x86-low.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "linux-x86-low.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/linux-x86-low.c"; sourceTree = "<absolute>"; };
+		A53AC4671A43DEA1002F20B2 /* linux-xtensa-low.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "linux-xtensa-low.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/linux-xtensa-low.c"; sourceTree = "<absolute>"; };
+		A53AC4681A43DEA1002F20B2 /* low-hppabsd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "low-hppabsd.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/low-hppabsd.c"; sourceTree = "<absolute>"; };
+		A53AC4691A43DEA1002F20B2 /* low-lynx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "low-lynx.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/low-lynx.c"; sourceTree = "<absolute>"; };
+		A53AC46A1A43DEA1002F20B2 /* low-nbsd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "low-nbsd.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/low-nbsd.c"; sourceTree = "<absolute>"; };
+		A53AC46B1A43DEA1002F20B2 /* low-sim.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "low-sim.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/low-sim.c"; sourceTree = "<absolute>"; };
+		A53AC46C1A43DEA1002F20B2 /* low-sparc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "low-sparc.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/low-sparc.c"; sourceTree = "<absolute>"; };
+		A53AC46D1A43DEA1002F20B2 /* low-sun3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "low-sun3.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/low-sun3.c"; sourceTree = "<absolute>"; };
+		A53AC46E1A43DEA1002F20B2 /* lynx-i386-low.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "lynx-i386-low.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/lynx-i386-low.c"; sourceTree = "<absolute>"; };
+		A53AC46F1A43DEA1002F20B2 /* lynx-low.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "lynx-low.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/lynx-low.c"; sourceTree = "<absolute>"; };
+		A53AC4701A43DEA1002F20B2 /* lynx-low.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "lynx-low.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/lynx-low.h"; sourceTree = "<absolute>"; };
+		A53AC4711A43DEA1002F20B2 /* lynx-ppc-low.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "lynx-ppc-low.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/lynx-ppc-low.c"; sourceTree = "<absolute>"; };
+		A53AC4721A43DEC8002F20B2 /* notif.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = notif.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/notif.c"; sourceTree = "<absolute>"; };
+		A53AC4731A43DEC8002F20B2 /* notif.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = notif.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/notif.h"; sourceTree = "<absolute>"; };
+		A53AC4741A43DEC8002F20B2 /* nto-low.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nto-low.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/nto-low.c"; sourceTree = "<absolute>"; };
+		A53AC4751A43DEC8002F20B2 /* nto-low.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "nto-low.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/nto-low.h"; sourceTree = "<absolute>"; };
+		A53AC4761A43DEC8002F20B2 /* nto-x86-low.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "nto-x86-low.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/nto-x86-low.c"; sourceTree = "<absolute>"; };
+		A53AC4771A43DED5002F20B2 /* remote-utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "remote-utils.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/remote-utils.h"; sourceTree = "<absolute>"; };
+		A53AC4781A43DEF3002F20B2 /* spu-low.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "spu-low.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/spu-low.c"; sourceTree = "<absolute>"; };
+		A53AC4791A43DEF3002F20B2 /* symbol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = symbol.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/symbol.c"; sourceTree = "<absolute>"; };
+		A53AC47A1A43DF00002F20B2 /* tdesc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tdesc.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/tdesc.c"; sourceTree = "<absolute>"; };
+		A53AC47B1A43DF00002F20B2 /* tdesc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tdesc.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/tdesc.h"; sourceTree = "<absolute>"; };
+		A53AC47C1A43DF0B002F20B2 /* tracepoint.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tracepoint.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/tracepoint.c"; sourceTree = "<absolute>"; };
+		A53AC47D1A43DF0B002F20B2 /* tracepoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tracepoint.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/tracepoint.h"; sourceTree = "<absolute>"; };
+		A53AC47E1A43DF17002F20B2 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = utils.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/utils.h"; sourceTree = "<absolute>"; };
+		A53AC47F1A43DF17002F20B2 /* win32-arm-low.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "win32-arm-low.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/win32-arm-low.c"; sourceTree = "<absolute>"; };
+		A53AC4801A43DF17002F20B2 /* win32-i386-low.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "win32-i386-low.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/win32-i386-low.c"; sourceTree = "<absolute>"; };
+		A53AC4811A43DF17002F20B2 /* win32-low.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "win32-low.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/win32-low.c"; sourceTree = "<absolute>"; };
+		A53AC4821A43DF17002F20B2 /* win32-low.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "win32-low.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/win32-low.h"; sourceTree = "<absolute>"; };
+		A53AC4831A43DF17002F20B2 /* wincecompat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = wincecompat.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/wincecompat.c"; sourceTree = "<absolute>"; };
+		A53AC4841A43DF17002F20B2 /* wincecompat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wincecompat.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/wincecompat.h"; sourceTree = "<absolute>"; };
+		A53AC4851A43DF17002F20B2 /* xtensa-xtregs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "xtensa-xtregs.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/xtensa-xtregs.c"; sourceTree = "<absolute>"; };
+		A53AC4861A43F55D002F20B2 /* inferiors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = inferiors.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/inferiors.h"; sourceTree = "<absolute>"; };
 		A548D49A1836C60900FD4E8A /* DebuggerGDB_disasm.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = DebuggerGDB_disasm.s; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/XcodePlugins/DebuggerGDB/DebuggerGDB_disasm.s"; sourceTree = "<absolute>"; };
 		A548D49B1836C60900FD4E8A /* DebuggerGDB_symbols.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = DebuggerGDB_symbols.csv; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/XcodePlugins/DebuggerGDB/DebuggerGDB_symbols.csv"; sourceTree = "<absolute>"; };
 		A548D49C1836C60900FD4E8A /* DebuggerGDB_symbols.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = DebuggerGDB_symbols.xml; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/XcodePlugins/DebuggerGDB/DebuggerGDB_symbols.xml"; sourceTree = "<absolute>"; };
@@ -4441,6 +4540,7 @@
 			children = (
 				2609CE530E82C407008125DE /* bfd */,
 				2609D00D0E82C408008125DE /* binutils */,
+				A53AC1811A3F7EFE002F20B2 /* electric-fence */,
 				2609D2AC0E82C409008125DE /* gdb */,
 				2609DCE80E82C410008125DE /* include */,
 				2609DDCD0E82C410008125DE /* intl */,
@@ -5530,6 +5630,11 @@
 				2609DCDE0E82C410008125DE /* wince-stub.c */,
 				2609DCDF0E82C410008125DE /* wince-stub.h */,
 				2609DCE00E82C410008125DE /* wince.c */,
+				A53AC4491A43A340002F20B2 /* windows-nat.c */,
+				A53AC44A1A43A340002F20B2 /* windows-nat.h */,
+				A53AC44B1A43A340002F20B2 /* windows-tdep.c */,
+				A53AC44C1A43A340002F20B2 /* windows-tdep.h */,
+				A53AC44D1A43A340002F20B2 /* windows-termcap.c */,
 				2609DCE10E82C410008125DE /* wrapper.c */,
 				2609DCE20E82C410008125DE /* wrapper.h */,
 				2609DCE30E82C410008125DE /* xcoffread.c */,
@@ -6375,13 +6480,34 @@
 			isa = PBXGroup;
 			children = (
 				2609D4CC0E82C40B008125DE /* arm-regnums.h */,
+				A53AC44E1A43DDB0002F20B2 /* ax.c */,
+				A53AC44F1A43DDB0002F20B2 /* ax.h */,
+				A53AC4501A43DDC7002F20B2 /* debug.c */,
+				A53AC4511A43DDC7002F20B2 /* debug.h */,
+				A53AC4521A43DDC7002F20B2 /* dll.c */,
+				A53AC4531A43DDC7002F20B2 /* dll.h */,
+				A53AC4541A43DDC7002F20B2 /* event-loop.c */,
+				A53AC4551A43DDC7002F20B2 /* event-loop.h */,
+				A53AC4561A43DDC7002F20B2 /* gdb_proc_service.h */,
 				2609D4D30E82C40B008125DE /* gdbreplay.c */,
+				A53AC4571A43DDD3002F20B2 /* gdbserver.1 */,
+				A53AC4581A43DE0C002F20B2 /* gdbthread.h */,
+				A53AC4591A43DE0C002F20B2 /* hostio-errno.c */,
+				A53AC45A1A43DE0C002F20B2 /* hostio.c */,
+				A53AC45B1A43DE0C002F20B2 /* hostio.h */,
+				A53AC45C1A43DE0C002F20B2 /* i386-low.c */,
+				A53AC45D1A43DE0C002F20B2 /* i386-low.h */,
 				2609D4D50E82C40B008125DE /* i387-fp.c */,
 				2609D4D60E82C40B008125DE /* i387-fp.h */,
 				2609D4D70E82C40B008125DE /* inferiors.c */,
+				A53AC4861A43F55D002F20B2 /* inferiors.h */,
+				A53AC45E1A43DE50002F20B2 /* linux-aarch64-low.c */,
+				A53AC45F1A43DE50002F20B2 /* linux-amd64-ipa.c */,
 				2609D4D80E82C40B008125DE /* linux-arm-low.c */,
+				A53AC4601A43DE5A002F20B2 /* linux-bfin-low.c */,
 				2609D4D90E82C40B008125DE /* linux-cris-low.c */,
 				2609D4DA0E82C40B008125DE /* linux-crisv32-low.c */,
+				A53AC4611A43DE65002F20B2 /* linux-i386-ipa.c */,
 				2609D4DB0E82C40B008125DE /* linux-i386-low.c */,
 				2609D4DC0E82C40B008125DE /* linux-ia64-low.c */,
 				2609D4DD0E82C40B008125DE /* linux-low.c */,
@@ -6389,11 +6515,27 @@
 				2609D4DF0E82C40B008125DE /* linux-m32r-low.c */,
 				2609D4E00E82C40B008125DE /* linux-m68k-low.c */,
 				2609D4E10E82C40B008125DE /* linux-mips-low.c */,
+				A53AC4621A43DE78002F20B2 /* linux-nios2-low.c */,
 				2609D4E20E82C40B008125DE /* linux-ppc-low.c */,
 				2609D4E30E82C40B008125DE /* linux-ppc64-low.c */,
 				2609D4E40E82C40B008125DE /* linux-s390-low.c */,
 				2609D4E50E82C40B008125DE /* linux-sh-low.c */,
+				A53AC4631A43DE8E002F20B2 /* linux-sparc-low.c */,
+				A53AC4641A43DE8E002F20B2 /* linux-tic6x-low.c */,
+				A53AC4651A43DE8E002F20B2 /* linux-tile-low.c */,
 				2609D4E60E82C40B008125DE /* linux-x86-64-low.c */,
+				A53AC4661A43DEA1002F20B2 /* linux-x86-low.c */,
+				A53AC4671A43DEA1002F20B2 /* linux-xtensa-low.c */,
+				A53AC4681A43DEA1002F20B2 /* low-hppabsd.c */,
+				A53AC4691A43DEA1002F20B2 /* low-lynx.c */,
+				A53AC46A1A43DEA1002F20B2 /* low-nbsd.c */,
+				A53AC46B1A43DEA1002F20B2 /* low-sim.c */,
+				A53AC46C1A43DEA1002F20B2 /* low-sparc.c */,
+				A53AC46D1A43DEA1002F20B2 /* low-sun3.c */,
+				A53AC46E1A43DEA1002F20B2 /* lynx-i386-low.c */,
+				A53AC46F1A43DEA1002F20B2 /* lynx-low.c */,
+				A53AC4701A43DEA1002F20B2 /* lynx-low.h */,
+				A53AC4711A43DEA1002F20B2 /* lynx-ppc-low.c */,
 				2609D4E70E82C40B008125DE /* macosx-arm-low.c */,
 				2609D4E80E82C40B008125DE /* macosx-excthread.c */,
 				2609D4E90E82C40B008125DE /* macosx-excthread.h */,
@@ -6407,17 +6549,37 @@
 				2609D4F10E82C40B008125DE /* macosx-threads.h */,
 				2609D4F40E82C40B008125DE /* mem-break.c */,
 				2609D4F50E82C40B008125DE /* mem-break.h */,
+				A53AC4721A43DEC8002F20B2 /* notif.c */,
+				A53AC4731A43DEC8002F20B2 /* notif.h */,
+				A53AC4741A43DEC8002F20B2 /* nto-low.c */,
+				A53AC4751A43DEC8002F20B2 /* nto-low.h */,
+				A53AC4761A43DEC8002F20B2 /* nto-x86-low.c */,
 				2609D4F60E82C40B008125DE /* proc-service.c */,
 				2609D4F80E82C40B008125DE /* regcache.c */,
 				2609D4F90E82C40B008125DE /* regcache.h */,
 				2609D4FA0E82C40B008125DE /* remote-utils.c */,
+				A53AC4771A43DED5002F20B2 /* remote-utils.h */,
 				2609D4FB0E82C40B008125DE /* server.c */,
 				2609D4FC0E82C40B008125DE /* server.h */,
+				A53AC4781A43DEF3002F20B2 /* spu-low.c */,
+				A53AC4791A43DEF3002F20B2 /* symbol.c */,
 				2609D4FD0E82C40B008125DE /* target.c */,
 				2609D4FE0E82C40B008125DE /* target.h */,
+				A53AC47A1A43DF00002F20B2 /* tdesc.c */,
+				A53AC47B1A43DF00002F20B2 /* tdesc.h */,
 				2609D4FF0E82C40B008125DE /* terminal.h */,
 				2609D5000E82C40B008125DE /* thread-db.c */,
+				A53AC47C1A43DF0B002F20B2 /* tracepoint.c */,
+				A53AC47D1A43DF0B002F20B2 /* tracepoint.h */,
 				2609D5010E82C40B008125DE /* utils.c */,
+				A53AC47E1A43DF17002F20B2 /* utils.h */,
+				A53AC47F1A43DF17002F20B2 /* win32-arm-low.c */,
+				A53AC4801A43DF17002F20B2 /* win32-i386-low.c */,
+				A53AC4811A43DF17002F20B2 /* win32-low.c */,
+				A53AC4821A43DF17002F20B2 /* win32-low.h */,
+				A53AC4831A43DF17002F20B2 /* wincecompat.c */,
+				A53AC4841A43DF17002F20B2 /* wincecompat.h */,
+				A53AC4851A43DF17002F20B2 /* xtensa-xtregs.c */,
 			);
 			path = gdbserver;
 			sourceTree = "<group>";
@@ -7021,10 +7183,14 @@
 				2609DE0C0E82C411008125DE /* cp-demangle.h */,
 				2609DE0D0E82C411008125DE /* cp-demint.c */,
 				2609DE0E0E82C411008125DE /* cplus-dem.c */,
+				A53AC23F1A40B3F0002F20B2 /* crc32.c */,
+				A53AC2401A40B3F6002F20B2 /* d-demangle.c */,
+				A53AC2411A40B400002F20B2 /* dwarfnames.c */,
 				2609DE0F0E82C411008125DE /* dyn-string.c */,
 				2609DE100E82C411008125DE /* fdmatch.c */,
 				2609DE110E82C411008125DE /* ffs.c */,
 				2609DE120E82C411008125DE /* fibheap.c */,
+				A53AC2421A40B44D002F20B2 /* filename_cmp.c */,
 				2609DE130E82C411008125DE /* floatformat.c */,
 				2609DE140E82C411008125DE /* fnmatch.c */,
 				2609DE160E82C411008125DE /* fopen_unlocked.c */,
@@ -7043,6 +7209,8 @@
 				2609DE260E82C411008125DE /* lrealpath.c */,
 				2609DE280E82C411008125DE /* make-relative-prefix.c */,
 				2609DE290E82C411008125DE /* make-temp-file.c */,
+				A53AC2D51A40F312002F20B2 /* malloca.c */,
+				A53AC2D61A40F312002F20B2 /* malloca.h */,
 				2609DE2C0E82C411008125DE /* md5.c */,
 				2609DE2D0E82C411008125DE /* memchr.c */,
 				2609DE2E0E82C411008125DE /* memcmp.c */,
@@ -7071,11 +7239,20 @@
 				2609DE480E82C411008125DE /* rindex.c */,
 				2609DE490E82C411008125DE /* safe-ctype.c */,
 				2609DE4A0E82C411008125DE /* setenv.c */,
+				A53AC3361A4107D7002F20B2 /* setproctitle.c */,
+				A53AC3371A4107D7002F20B2 /* sha1.c */,
 				2609DE4B0E82C411008125DE /* sigsetmask.c */,
+				A53AC3381A4108C9002F20B2 /* simple-object-coff.c */,
+				A53AC3391A4108C9002F20B2 /* simple-object-common.h */,
+				A53AC33A1A4108C9002F20B2 /* simple-object-elf.c */,
+				A53AC33B1A4108C9002F20B2 /* simple-object-mach-o.c */,
+				A53AC33C1A4108C9002F20B2 /* simple-object-xcoff.c */,
+				A53AC33D1A4108C9002F20B2 /* simple-object.c */,
 				2609DE4C0E82C411008125DE /* snprintf.c */,
 				2609DE4D0E82C411008125DE /* sort.c */,
 				2609DE4E0E82C411008125DE /* spaces.c */,
 				2609DE4F0E82C411008125DE /* splay-tree.c */,
+				A53AC33E1A410A35002F20B2 /* stack-limit.c */,
 				2609DE500E82C411008125DE /* stpcpy.c */,
 				2609DE510E82C411008125DE /* stpncpy.c */,
 				2609DE520E82C411008125DE /* strcasecmp.c */,
@@ -7085,20 +7262,26 @@
 				2609DE560E82C411008125DE /* strncasecmp.c */,
 				2609DE570E82C411008125DE /* strncmp.c */,
 				2609DE580E82C411008125DE /* strndup.c */,
+				A53AC33F1A410A4C002F20B2 /* strnlen.c */,
 				2609DE590E82C411008125DE /* strrchr.c */,
 				2609DE5A0E82C411008125DE /* strsignal.c */,
 				2609DE5B0E82C411008125DE /* strstr.c */,
 				2609DE5C0E82C411008125DE /* strtod.c */,
 				2609DE5D0E82C411008125DE /* strtol.c */,
+				A53AC3401A410A5A002F20B2 /* strtoll.c */,
 				2609DE5E0E82C411008125DE /* strtoul.c */,
+				A53AC3411A410A61002F20B2 /* strtoull.c */,
 				2609DE5F0E82C411008125DE /* strverscmp.c */,
 				2609DE600E82C411008125DE /* ternary.c */,
 				2609DE610E82C411008125DE /* testsuite */,
+				A53AC3451A410AB0002F20B2 /* timeval-utils.c */,
 				2609DE660E82C411008125DE /* tmpnam.c */,
 				2609DE670E82C411008125DE /* unlink-if-ordinary.c */,
 				2609DE680E82C411008125DE /* vasprintf.c */,
 				2609DE690E82C411008125DE /* vfork.c */,
 				2609DE6A0E82C411008125DE /* vfprintf.c */,
+				A53AC17E1A3F430A002F20B2 /* vprintf-support.c */,
+				A53AC17F1A3F44CF002F20B2 /* vprintf-support.h */,
 				2609DE6C0E82C411008125DE /* vprintf.c */,
 				2609DE6D0E82C411008125DE /* vsnprintf.c */,
 				2609DE6E0E82C411008125DE /* vsprintf.c */,
@@ -7106,10 +7289,12 @@
 				2609DE700E82C411008125DE /* xatexit.c */,
 				2609DE710E82C411008125DE /* xexit.c */,
 				2609DE720E82C411008125DE /* xmalloc.c */,
+				A53AC3461A410AD6002F20B2 /* xmalloca.c */,
 				2609DE730E82C411008125DE /* xmemdup.c */,
 				2609DE740E82C411008125DE /* xstrdup.c */,
 				2609DE750E82C411008125DE /* xstrerror.c */,
 				2609DE760E82C411008125DE /* xstrndup.c */,
+				A53AC1801A3F4517002F20B2 /* xvasprintf.c */,
 			);
 			path = libiberty;
 			sourceTree = "<group>";
@@ -7117,8 +7302,11 @@
 		2609DE610E82C411008125DE /* testsuite */ = {
 			isa = PBXGroup;
 			children = (
+				A53AC3421A410A6E002F20B2 /* demangler-fuzzer.c */,
 				2609DE640E82C411008125DE /* test-demangle.c */,
+				A53AC3431A410A84002F20B2 /* test-expandargv.c */,
 				2609DE650E82C411008125DE /* test-pexecute.c */,
+				A53AC3441A410A8B002F20B2 /* test-strtol.c */,
 			);
 			path = testsuite;
 			sourceTree = "<group>";
@@ -8262,6 +8450,25 @@
 			);
 			name = mmalloc;
 			path = "/Users/ericgallager/apple-gdb-1824/src/mmalloc";
+			sourceTree = "<absolute>";
+		};
+		A53AC1811A3F7EFE002F20B2 /* electric-fence */ = {
+			isa = PBXGroup;
+			children = (
+				A53AC1A01A3F7EFE002F20B2 /* efence.3 */,
+				A53AC1A11A3F7EFE002F20B2 /* efence.c */,
+				A53AC1A21A3F7EFE002F20B2 /* efence.h */,
+				A53AC1A31A3F7EFE002F20B2 /* eftest.c */,
+				A53AC1A41A3F7EFE002F20B2 /* libefence.3 */,
+				A53AC1A61A3F7EFE002F20B2 /* Makefile_2dot1 */,
+				A53AC1A71A3F7EFE002F20B2 /* nspage.c */,
+				A53AC1A81A3F7EFE002F20B2 /* ntpage.c */,
+				A53AC1A91A3F7EFE002F20B2 /* page.c */,
+				A53AC1AA1A3F7EFE002F20B2 /* print.c */,
+				A53AC1AC1A3F7EFE002F20B2 /* tstheap.c */,
+			);
+			name = "electric-fence";
+			path = "/Users/ericgallager/apple-gdb-1824/src/electric-fence";
 			sourceTree = "<absolute>";
 		};
 		A548D4981836C60900FD4E8A /* XcodePlugins */ = {

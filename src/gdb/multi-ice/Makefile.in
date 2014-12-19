@@ -212,15 +212,17 @@ CXX = @CXX@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
-DEFS = @DEFS@
+DEFS = @DEFS@ @EXTRA_DEFS@
 DEPDIR = @DEPDIR@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+EXTRA_DEFS = @EXTRA_DEFS@
 FGREP = @FGREP@
 GREP = @GREP@
+HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -237,6 +239,7 @@ MKDIR_P = @MKDIR_P@
 MULTI_ICE_INCLUDES = @MULTI_ICE_INCLUDES@
 MULTI_ICE_LIBS = @MULTI_ICE_LIBS@
 MULTI_ICE_PLATFORM_SOURCE = @MULTI_ICE_PLATFORM_SOURCE@
+M_I_INCLUDE_DIR = @M_I_INCLUDE_DIR@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -251,6 +254,7 @@ RANLIB = @RANLIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
 VERSION = @VERSION@
 WARN_CFLAGS = @WARN_CFLAGS@
 WERROR_CFLAGS = @WERROR_CFLAGS@
@@ -316,11 +320,13 @@ top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign dejagnu
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
 ACLOCAL_AMFLAGS = -I../m4 --install
-AM_CFLAGS = $(WARN_CFLAGS)
-AM_CPPFLAGS = -I./.. -I$(srcdir)/../../include \
-         -I$(srcdir)/.. -I$(srcdir)/../config -I../../bfd \
-         -I$(srcdir)/../macosx \
-         $(MULTI_ICE_INCLUDES) @MAINT@ -I$(srcdir)/../rdi-share
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+AM_CFLAGS = $(WARN_CFLAGS) $(C_ARCHFLAGS)
+upsrcdir = $(srcdir)/..
+AM_CPPFLAGS = -I./.. -I$(upsrcdir)/../include \
+         -I$(upsrcdir) -I$(upsrcdir)/config -I../../bfd \
+         -I$(upsrcdir)/macosx \
+         $(MULTI_ICE_INCLUDES) @MAINT@ -I$(upsrcdir)/rdi-share
 
 INCLUDES_PLUS_OLD_INCLUDES = $(AM_CPPFLAGS) $(INCLUDES)
 multi_ice_gdb_server_SOURCES = server-main.c rdi150-low.c low.h \
@@ -874,7 +880,7 @@ uninstall-am: uninstall-binPROGRAMS
 
 
 MICE-gdbserverres.o: MICE-gdbserver.rc
-	$(WINDRES) --include $(srcdir) $(srcdir)/MICE-gdbserver.rc MICE-gdbserverres.o
+	$(WINDRES) --include $(srcdir) $(srcdir)/MICE-gdbserver.rc $@
 
 distclean-local:
 	rm -rfv autom4te.cache || rmdir autom4te.cache

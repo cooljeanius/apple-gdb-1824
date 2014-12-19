@@ -691,6 +691,9 @@ CPPFLAGS
 LDFLAGS
 CFLAGS
 CC
+TARGET_ARCHITECTURE
+HOST_ARCHITECTURE
+BUILD_ARCHITECTURE
 target_os
 target_vendor
 target_cpu
@@ -2418,6 +2421,7 @@ VERSION="${EXP_MAJOR_VERSION}.${EXP_MINOR_VERSION}"
 # This forced identification should reduce my pain significantly.
 echo "configuring Expect ${EXP_MAJOR_VERSION}.${EXP_MINOR_VERSION}.${EXP_MICRO_VERSION}"
 
+# architecture stuff:
 # Make sure we can run config.sub.
 $SHELL "$ac_aux_dir/config.sub" sun4 >/dev/null 2>&1 ||
   as_fn_error $? "cannot run $SHELL $ac_aux_dir/config.sub" "$LINENO" 5
@@ -2528,6 +2532,19 @@ test -n "$target_alias" &&
   test "$program_prefix$program_suffix$program_transform_name" = \
     NONENONEs,x,x, &&
   program_prefix=${target_alias}-
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+
+fi
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+
+fi
+
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -4175,12 +4192,12 @@ else
 
 fi
 
-  if test x"${ac_cv_c_tclconfig}" = x ; then
+  if test x"${ac_cv_c_tclconfig}" = x""; then
     TCLCONFIG="# no Tcl configs found"
     { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Cannot find Tcl configuration definitions" >&5
 $as_echo "$as_me: WARNING: Cannot find Tcl configuration definitions" >&2;}
   else
-    no_tcl=
+    no_tcl=""
     TCLCONFIG=${ac_cv_c_tclconfig}/tclConfig.sh
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: found ${TCLCONFIG}" >&5
 $as_echo "found ${TCLCONFIG}" >&6; }
@@ -4226,7 +4243,7 @@ else
 
 
   # First check to see if --with-tkconfig was specified.
-  if test x"${with_tkconfig}" != x ; then
+  if test x"${with_tkconfig}" != x""; then
     if test -f "${with_tkconfig}/tkConfig.sh" ; then
       ac_cv_c_tkconfig=`(cd ${with_tkconfig}; pwd)`
     else
@@ -4281,13 +4298,12 @@ fi
     { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Cannot find Tk configuration definitions" >&5
 $as_echo "$as_me: WARNING: Cannot find Tk configuration definitions" >&2;}
   else
-    no_tk=
+    no_tk=""
     TKCONFIG=${ac_cv_c_tkconfig}/tkConfig.sh
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: found $TKCONFIG" >&5
 $as_echo "found $TKCONFIG" >&6; }
   fi
 fi
-
 
 
 
@@ -5083,12 +5099,23 @@ else
   c_compiles=no
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-# Now do linking test
+# Now do the linking test:
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
 #include <stdio.h>
 
+int
+main ()
+{
+
+int main(void) {
+    return 0;
+}
+
+  ;
+  return 0;
+}
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
   c_links=yes
@@ -5097,7 +5124,6 @@ else
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
-
 if test x"${c_compiles}" = x"no"; then
   # error out
   as_fn_error $? "the native compiler is broken and will NOT compile." "$LINENO" 5
@@ -5106,9 +5132,10 @@ fi
 if test x"${c_links}" = x"no"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
 $as_echo " " >&6; }
-  # Might fail even if it actually works, so just warn
+  # Might fail even if it actually works, so just warn instead of erroring:
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the native linker might be broken." >&5
 $as_echo "$as_me: WARNING: the native linker might be broken." >&2;}
+  # (although I hope I have fixed it...)
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
@@ -6289,7 +6316,7 @@ if ${ac_cv_c_tclh+:} false; then :
 else
 
 # first check to see if --with-tclinclude was specified
-if test x"${with_tclinclude}" != x ; then
+if test x"${with_tclinclude}" != x""; then
   if test -f ${with_tclinclude}/tclInt.h ; then
     ac_cv_c_tclh=`(cd ${with_tclinclude}; pwd)`
   elif test -f ${with_tclinclude}/generic/tclInt.h ; then
@@ -6405,7 +6432,7 @@ if test x"${ac_cv_c_itclh}" = x""; then
     fi
   done
 fi
-if test x"${ac_cv_c_itclh}" = x ; then
+if test x"${ac_cv_c_itclh}" = x""; then
   ITCLHDIR="# no Itcl private headers found"
   ITCLLIB="# no Itcl private headers found"
   { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
@@ -6464,16 +6491,16 @@ fi
 # This is required because the debugger src is at a different level in
 # the filesystem than Expect src (where we are presently), thereby
 # making the relative pathnames incorrect.
-if test "x${with_tclconfig}" != "x" ; then
+if test "x${with_tclconfig}" != "x"; then
   dbg_config_flags="${dbg_config_flags} --with-tclconfig=`(cd ${with_tclconfig}; pwd)`"
 fi
-if test "x${with_tcllibdir}" != "x" ; then
+if test "x${with_tcllibdir}" != "x"; then
   dbg_config_flags="${dbg_config_flags} --with-tcllibdir=`(cd ${with_tcllibdir}; pwd)`"
 fi
-if test "x${with_tcllib}" != "x" ; then
+if test "x${with_tcllib}" != "x"; then
   dbg_config_flags="${dbg_config_flags} --with-tcllib=`(cd ${with_tcllib}; pwd)`"
 fi
-if test "x${with_tclinclude}" != "x" ; then
+if test "x${with_tclinclude}" != "x"; then
   dbg_config_flags="${dbg_config_flags} --with-tclinclude=`(cd ${with_tclinclude}; pwd)`"
 fi
 case "$cache_file" in
@@ -6485,12 +6512,13 @@ case "$cache_file" in
     ;;
 esac
 
-cp ${srcdir}/Dbgconfigure ${srcdir}/Dbgconfigure.sh ${srcdir}/Dbg.h ${srcdir}/Dbg_cf.h.in ${srcdir}/install-sh ${tmpdir}
-cp ${srcdir}/DbgMkfl.in ${tmpdir}/Makefile.in
-cp ${srcdir}/DbgMkfl.in ${tmpdir}
-cp ${srcdir}/DbgpkgInd.in ${tmpdir}
+cp -v ${srcdir}/Dbgconfigure ${srcdir}/Dbgconfigure.sh ${srcdir}/Dbg.h ${srcdir}/Dbg_cf.h.in ${srcdir}/install-sh ${tmpdir}
+cp -v ${srcdir}/DbgMkfl.in ${tmpdir}/Makefile.in
+cp -v ${srcdir}/DbgMkfl.in ${tmpdir}
+cp -v ${srcdir}/DbgpkgInd.in ${tmpdir}
 OLD_CPP="${CPP}"
 unset CPP
+test -n "${verbose}" && echo "(cd ${tmpdir}; ${CONFIG_SHELL-/bin/sh} Dbgconfigure --with-tclinclude=`echo ${TCLHDIR} | sed -e 's/-I//'` ${dbg_config_flags})"
   (cd ${tmpdir}; ${CONFIG_SHELL-/bin/sh} Dbgconfigure --with-tclinclude=`echo ${TCLHDIR} | sed -e 's/-I//'` ${dbg_config_flags})
 CPP="${OLD_CPP}"
 test -e ${tmpdir}/config.status && cp -v ${tmpdir}/config.status ./Dbgconfig.status
@@ -10391,8 +10419,8 @@ if ${ac_cv_c_tkh+:} false; then :
   $as_echo_n "(cached) " >&6
 else
 
-# first check to see if --with-tkinclude was specified
-if test x"${with_tkinclude}" != x ; then
+# first check to see if --with-tkinclude was specified:
+if test x"${with_tkinclude}" != x""; then
   if test -f ${with_tkinclude}/tk.h ; then
     ac_cv_c_tkh=`(cd ${with_tkinclude}; pwd)`
   elif test -f ${with_tkinclude}/generic/tk.h ; then

@@ -117,5 +117,7 @@ pwait (int pid, int *status, int flags ATTRIBUTE_UNUSED)
       idx = 0;
     }
 
-  return pid + 1;
+  return (pid + 1);
 }
+
+/* EOF */

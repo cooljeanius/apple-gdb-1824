@@ -49,13 +49,16 @@ INCDIR=$(srcdir)/../$(MULTISRCTOP)../include
 
 COMPILE.c = $(CC) -c @DEFS@ $(LIBCFLAGS) $(CPPFLAGS) -I. -I$(INCDIR) $(HDEFINES) @ac_libiberty_warn_cflags@
 
-all:
+all: ../libiberty.a
+
+../libiberty.a: ../Makefile
+	cd .. && $(MAKE) ./libiberty.a
 
 # CHECK is set to "really_check" or the empty string by configure.
 check: @CHECK@
 
-really-check: check-cplus-dem check-d-demangle check-pexecute \
-		check-expandargv check-strtol
+really-check: check-cplus-dem check-strtol \
+	all @MAINT@ check-expandargv check-d-demangle check-pexecute
 
 # Run some tests of the demangler.
 check-cplus-dem: test-demangle $(srcdir)/demangle-expected
@@ -91,12 +94,12 @@ test-pexecute: $(srcdir)/test-pexecute.c ../libiberty.a
 		$(srcdir)/test-pexecute.c ../libiberty.a
 
 test-expandargv: $(srcdir)/test-expandargv.c ../libiberty.a
-	$(TEST_COMPILE) -DHAVE_CONFIG_H -I.. -o test-expandargv \
+	$(TEST_COMPILE) -DHAVE_CONFIG_H -DDEBUG -I.. -o test-expandargv \
 		$(srcdir)/test-expandargv.c ../libiberty.a
 
 test-strtol: $(srcdir)/test-strtol.c ../libiberty.a
 	$(TEST_COMPILE) -std=gnu99 -DHAVE_CONFIG_H -I.. -o test-strtol \
-		$(srcdir)/test-strtol.c ../libiberty.a
+		-DDEBUG $(srcdir)/test-strtol.c ../libiberty.a
 
 demangler-fuzzer: $(srcdir)/demangler-fuzzer.c ../libiberty.a
 	$(TEST_COMPILE) -o demangler-fuzzer \
@@ -116,6 +119,7 @@ mostlyclean:
 	rm -f core
 	rm -rf *.dSYM
 clean: mostlyclean
+	rm -f *.o
 distclean: clean
 	rm -f Makefile
 maintainer-clean realclean: distclean

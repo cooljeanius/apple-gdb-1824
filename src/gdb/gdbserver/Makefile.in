@@ -213,7 +213,8 @@ SFILES=	$(srcdir)/gdbreplay.c $(srcdir)/inferiors.c $(srcdir)/dll.c \
 	$(srcdir)/common/linux-osdata.c $(srcdir)/common/ptid.c \
 	$(srcdir)/common/buffer.c $(srcdir)/common/linux-btrace.c \
 	$(srcdir)/common/filestuff.c $(srcdir)/target/waitstatus.c \
-	$(srcdir)/common/mips-linux-watch.c $(srcdir)/common/print-utils.c \
+	$(srcdir)/common/mips-linux-watch.c \
+	$(srcdir)/common/print-utils.c \
 	$(srcdir)/common/rsp-low.c \
  	$(srcdir)/macosx-low.c $(srcdir)/macosx-excthread.c \
  	$(srcdir)/macosx-ppc-low.c $(srcdir)/macosx-threads.c \
@@ -233,16 +234,16 @@ ORIG_OBS = inferiors.o regcache.o remote-utils.o server.o signals.o \
 	mem-break.o \
 	$(DEPFILES)
 # a newer set of objects:
-OBS = inferiors.o regcache.o remote-utils.o server.o \
+NON_CIRCULAR_OBS = inferiors.o regcache.o remote-utils.o server.o \
 	signals.o target.o \
 	utils.o debug.o version.o \
 	mem-break.o xml-utils.o \
 	ptid.o buffer.o format.o dll.o \
 	rsp-low.o tdesc.o \
-	init_all_my_registers.o \
 	$(XML_BUILTIN) \
 	$(DEPFILES) \
 	$(LIBOBJS)
+OBS = $(NON_CIRCULAR_OBS) init_all_my_registers.o
 # objects that would be part of OBS, but fail to compile, and as such have
 # been removed because they were not part of ORIG_OBS:
 BROKEN_OBS = agent.o ax.o waitstatus.o hostio.o event-loop.o tracepoint.o \
@@ -351,8 +352,8 @@ clean-info: force
 
 gdbserver$(EXEEXT): $(OBS) ${ADD_DEPS} ${CDEPS}
 	rm -fv gdbserver$(EXEEXT)
-	${CC-LD} $(GLOBAL_CFLAGS) $(INTERNAL_LDFLAGS) -o gdbserver$(EXEEXT) $(OBS) \
-	  $(GDBSERVER_LIBS) $(XM_CLIBS)
+	${CC-LD} $(GLOBAL_CFLAGS) $(INTERNAL_LDFLAGS) \
+	  -o gdbserver$(EXEEXT) $(OBS) $(GDBSERVER_LIBS) $(XM_CLIBS)
 
 $(LIBGNU) $(GNULIB_H): all-lib
 all-lib: $(GNULIB_BUILDDIR)/Makefile
@@ -365,10 +366,14 @@ all-lib: $(GNULIB_BUILDDIR)/Makefile
 # for linking against
 gdbreplay$(EXEEXT): $(GDBREPLAY_OBS) $(LIBGNU)
 	rm -fv gdbreplay$(EXEEXT)
-	${CC-LD} $(GLOBAL_CFLAGS) $(INTERNAL_LDFLAGS) -o gdbreplay$(EXEEXT) $(GDBREPLAY_OBS) \
-	  $(XM_CLIBS)
+	${CC-LD} $(GLOBAL_CFLAGS) $(INTERNAL_LDFLAGS) \
+	  -o gdbreplay$(EXEEXT) $(GDBREPLAY_OBS) $(XM_CLIBS)
 
-IPA_OBJS=ax-ipa.o tracepoint-ipa.o format-ipa.o utils-ipa.o regcache-ipa.o remote-utils-ipa.o common-utils-ipa.o tdesc-ipa.o print-utils-ipa.o rsp-low-ipa.o ${IPA_DEPFILES}
+gdbreplay.o: gdbreplay.c config.h
+
+IPA_OBJS=ax-ipa.o tracepoint-ipa.o format-ipa.o utils-ipa.o \
+  regcache-ipa.o remote-utils-ipa.o common-utils-ipa.o tdesc-ipa.o \
+  print-utils-ipa.o rsp-low-ipa.o ${IPA_DEPFILES}
 
 IPA_LIB=libinproctrace.so
 
@@ -393,7 +398,9 @@ TAGS:	${TAGFILES}
 tags: TAGS
 
 # 'rm -f' gets the '-v' flag here when the files that it removes can vary:
-clean:
+mostlyclean:
+	rm -fv $(ORIG_OBS) $(GDBREPLAY_OBS)
+clean: mostlyclean
 	rm -fv *.o ${ADD_FILES} *~
 	rm -f version.c
 	rm -fv gdbserver$(EXEEXT) gdbreplay$(EXEEXT) core make.log
@@ -444,10 +451,12 @@ maintainer-clean realclean distclean: clean
 	rm -f Makefile
 	-rm -f .DS_Store
 
-STAGESTUFF=${OBS} ${TSOBS} ${NTSOBS} ${ADD_FILES} init.c init.o version.c gdb
+STAGESTUFF=${OBS} ${TSOBS} ${NTSOBS} ${ADD_FILES} init.c init.o version.c \
+  gdb
 
-config.h: stamp-h ; @echo "this target, '$@', just makes its dep, '$<'"
-stamp-h: config.in config.status
+config.h: stamp-h
+	@echo "this target, '$@', just makes its dep, '$<'"
+stamp-h: config.h.in config.status
 	CONFIG_FILES="" CONFIG_HEADERS=config.h $(SHELL) ./config.status
 
 Makefile: Makefile.in config.status
@@ -467,7 +476,8 @@ am--refresh:
 
 force:
 
-version.c: Makefile $(srcdir)/../version.in $(srcdir)/../../bfd/version.h $(srcdir)/../common/create-version.sh
+version.c: Makefile $(srcdir)/../version.in $(srcdir)/../../bfd/version.h \
+  $(srcdir)/../common/create-version.sh
 	if [ -f $(srcdir)/../common/create-version.sh ]; then \
 	  echo "using new rules to make $@"; \
 	  $(SHELL) $(srcdir)/../common/create-version.sh $(srcdir)/.. \
@@ -477,7 +487,8 @@ version.c: Makefile $(srcdir)/../version.in $(srcdir)/../../bfd/version.h $(srcd
 	  echo 'char *version = "$(VERSION)";' | tee version.c; \
 	fi
 
-xml-builtin.c: stamp-xml; @echo "this target '$@' just makes its dep '$<'"
+xml-builtin.c: stamp-xml
+	@echo "this target '$@' just makes its dep '$<'"
 stamp-xml: $(XML_DIR)/feature_to_c.sh Makefile $(XML_FILES)
 	rm -fv xml-builtin.tmp
 	$(SHELL) $(XML_DIR)/feature_to_c.sh xml-builtin.tmp $(XML_FILES)
@@ -561,19 +572,47 @@ rsp-low-ipa.o: ../common/rsp-low.c
 
 # end ipa rules
 
-inferiors.o: inferiors.c $(server_h)
-mem-break.o: mem-break.c $(server_h)
-proc-service.o: proc-service.c $(server_h) $(gdb_proc_service_h)
-regcache.o: regcache.c $(server_h) $(regdef_h)
-remote-utils.o: remote-utils.c terminal.h $(server_h)
-server.o: server.c $(server_h)
-target.o: target.c $(server_h)
-thread-db.o: thread-db.c $(server_h) $(gdb_proc_service_h)
-utils.o: utils.c $(server_h)
+linux_low_h = $(srcdir)/linux-low.h
+dll_h = $(srcdir)/dll.h
+i386_low_h = $(srcdir)/i386-low.h
+inferiors_h = $(srcdir)/inferiors.h
+notif_h = $(srcdir)/notif.h $(server_h)
+remote_utils_h = $(srcdir)/remote-utils.h config.h
+tdesc_h = $(srcdir)/tdesc.h
 
-ax.o: ax.c
+debug.o: debug.c $(server_h)
+dll.o: dll.c $(server_h) $(dll_h)
+event-loop.o: event-loop.c event-loop.h $(server_h)
+hostio-errno.o: hostio-errno.c $(server_h)
+hostio.o: hostio.c $(server_h)
+i386-low.o: i386-low.c $(server_h) $(i386_low_h)
+inferiors.o: inferiors.c $(inferiors_h) $(server_h) $(dll_h)
+mem-break.o: mem-break.c $(server_h)
+notif.o: notif.c $(notif_h) $(remote_utils_h)
+proc-service.o: proc-service.c $(server_h) $(linux_low_h) \
+  $(gdb_proc_service_h)
+regcache.o: regcache.c $(server_h) $(regdef_h)
+remote-utils.o: remote-utils.c config.h terminal.h $(server_h)
+server.o: server.c $(server_h)
+symbol.o: symbol.c $(server_h)
+target.o: target.c $(server_h)
+tdesc.o: tdesc.c $(server_h) $(tdesc_h) $(regdef_h) $(inferiors_h)
+thread-db.o: thread-db.c $(server_h) $(linux_low_h) $(gdb_proc_service_h)
+utils.o: utils.c $(server_h)
+wincecompat.o: wincecompat.c $(server_h)
+xtensa-xtregs.o: xtensa-xtregs.c
+
+ax_h = $(srcdir)/ax.h $(server_h) $(regcache_h)
+tracepoint_h = $(srcdir)/tracepoint.h
+
+ax.o: ax.c $(server_h) $(ax_h) $(tracepoint_h)
 	$(COMPILE) $(WARN_CFLAGS_NO_FORMAT) $<
 	$(POSTCOMPILE)
+
+gdbthread_h = $(srcdir)/gdbthread.h $(server_h) $(inferiors_h)
+
+tracepoint.o: tracepoint.c $(server_h) $(tracepoint_h) $(gdbthread_h) \
+  $(ax_h) $(tdesc_h)
 
 # objects whose sources are from ../signals:
 signals.o: ../signals/signals.c $(server_h)
@@ -656,35 +695,98 @@ lbasename.o: $(srcdir)/../../libiberty/lbasename.c
 	$(COMPILE) $<
 	$(POSTCOMPILE)
 
-i387-fp.o: i387-fp.c $(server_h)
+i387_fp_h = $(srcdir)/i387-fp.h
 
-linux_low_h = $(srcdir)/linux-low.h
+i387-fp.o: i387-fp.c $(i387_fp_h) $(server_h)
 
-linux-low.o: linux-low.c $(linux_low_h) $(server_h)
+inlining_h = $(srcdir)/../inlining.h
+
+linux-low.o: linux-low.c $(linux_low_h) $(server_h) $(inlining_h)
 	$(CC) -c $(CPPFLAGS) $(INTERNAL_CFLAGS) $< @USE_THREAD_DB@
 
+linux-aarch64-low.o: linux-aarch64-low.c $(server_h) $(linux_low_h) \
+  $(gdb_proc_service_h)
+linux-amd64-ipa.o: linux-amd64-ipa.c $(server_h) $(tracepoint_h)
 linux-arm-low.o: linux-arm-low.c $(linux_low_h) $(server_h)
+linux-bfin-low.o: linux-bfin-low.c $(server_h) $(linux_low_h)
 linux-cris-low.o: linux-cris-low.c $(linux_low_h) $(server_h)
 linux-crisv32-low.o: linux-crisv32-low.c $(linux_low_h) $(server_h)
-linux-i386-low.o: linux-i386-low.c $(linux_low_h) $(server_h)
+linux-i386-ipa.o: linux-i386-ipa.c $(server_h) $(tracepoint_h)
+linux-i386-low.o: linux-i386-low.c $(linux_low_h) $(server_h) \
+  $(i387_fp_h) $(gdb_proc_service_h)
 linux-ia64-low.o: linux-ia64-low.c $(linux_low_h) $(server_h)
 linux-m32r-low.o: linux-m32r-low.c $(linux_low_h) $(server_h)
+linux-m68k-low.o: linux-m68k-low.c $(server_h) $(linux_low_h)
 linux-mips-low.o: linux-mips-low.c $(linux_low_h) $(server_h)
+linux-nios2-low.o: linux-nios2-low.c $(server_h) $(linux_low_h) \
+  $(gdb_proc_service_h)
 linux-ppc-low.o: linux-ppc-low.c $(linux_low_h) $(server_h)
 linux-ppc64-low.o: linux-ppc64-low.c $(linux_low_h) $(server_h)
 linux-s390-low.o: linux-s390-low.c $(linux_low_h) $(server_h)
 linux-sh-low.o: linux-sh-low.c $(linux_low_h) $(server_h)
-linux-x86-64-low.o: linux-x86-64-low.c $(linux_low_h) $(server_h)
+linux-sparc-low.o: linux-sparc-low.c $(server_h) $(linux_low_h) \
+  $(gdb_proc_service_h)
+linux-tic6x-low.o: linux-tic6x-low.c $(server_h) $(linux_low_h) \
+  $(gdb_proc_service_h)
+linux-tile-low.o: linux-tile-low.c $(server_h) $(linux_low_h)
+linux-x86-64-low.o: linux-x86-64-low.c $(linux_low_h) $(server_h) \
+  $(i387_fp_h) $(gdb_proc_service_h)
+linux-x86-low.o: linux-x86-low.c $(server_h) $(linux_low_h) $(i387_fp_h) \
+  $(i386_low_h) $(gdb_proc_service_h) $(tdesc_h) $(tracepoint_h) $(ax_h)
+linux-xtensa-low.o: linux-xtensa-low.c $(server_h) $(linux_low_h) \
+  xtensa-xtregs.c
+
+low-hppabsd.o: low-hppabsd.c $(server_h)
+low-lynx.o: low-lynx.c $(server_h)
+low-nbsd.o: low-nbsd.c $(server_h)
+low-sim.o: low-sim.c $(server_h)
+low-sparc.o: low-sparc.c $(server_h)
+low-sun3.o: low-sun3.c $(server_h)
+
+lynx_low_h = $(srcdir)/lynx-low.h $(server_h)
+
+lynx-i386-low.o: lynx-i386-low.c $(server_h) $(lynx_low_h)
+lynx-low.o: lynx-low.c $(server_h) $(lynx_low_h)
+lynx-ppc-low.o: lynx-ppc-low.c $(server_h) $(lynx_low_h)
 
 macosx_low_h = $(srcdir)/macosx-low.h
 macosx_excthread_h = $(srcdir)/macosx-excthread.h
+macosx_mutils_h = $(srcdir)/macosx-mutils.h
 macosx_threads_h = $(srcdir)/macosx-threads.h
 
-macosx-low.o: macosx-low.c $(macosx_low_h) $(macosx_excthread_h) $(macosx_threads_h)
-macosx-excthread.o: macosx-excthread.c $(macosx_low_h) $(macosx_excthread_h) $(macosx_threads_h)
-macosx-ppc-low.o: macosx-ppc-low.c $(macosx_low_h) $(macosx_excthread_h) $(macosx_threads_h)
-macosx-threads.o: macosx-threads.c $(macosx_low_h) $(macosx_excthread_h) $(macosx_threads_h)
-macosx-mutils.o: macosx-mutils.c $(srcdir)/macosx-mutils.h
+macosx_dir = $(srcdir)/../macosx
+arm_macosx_regnums_h = $(macosx_dir)/arm-macosx-regnums.h
+arm_macosx_thread_status_h = $(macosx_dir)/arm-macosx-thread-status.h
+ppc_macosx_regnums_h = $(macosx_dir)/ppc-macosx-regnums.h
+ppc_macosx_thread_status_h = $(macosx_dir)/ppc-macosx-thread-status.h
+
+macosx-low.o: macosx-low.c config.h $(macosx_low_h) $(macosx_excthread_h) \
+  $(macosx_threads_h) $(macosx_mutils_h)
+macosx-excthread.o: macosx-excthread.c config.h $(macosx_low_h) \
+  $(macosx_excthread_h) $(macosx_threads_h)
+macosx-arm-low.o: macosx-arm-low.c $(macosx_low_h) arm-regnums.h \
+  $(arm_macosx_regnums_h) $(arm_macosx_thread_status_h)
+macosx-i386-low.o: macosx-i386-low.c config.h $(macosx_low_h) $(server_h) \
+  $(i387_fp_h) $(gdb_proc_service_h) $(linux_low_h)
+macosx-ppc-low.o: macosx-ppc-low.c $(macosx_low_h) $(macosx_excthread_h) \
+  $(macosx_threads_h) $(ppc_macosx_regnums_h) $(ppc_macosx_thread_status_h)
+macosx-threads.o: macosx-threads.c $(macosx_low_h) $(macosx_excthread_h) \
+  $(macosx_threads_h) config.h
+macosx-mutils.o: macosx-mutils.c config.h $(server_h) $(macosx_low_h) \
+  $(macosx_mutils_h)
+
+nto_low_h = $(srcdir)/nto-low.h
+
+nto-low.o: nto-low.c $(server_h) $(gdbthread_h) $(nto_low_h) hostio.h
+nto-x86-low.o: nto-x86-low.c $(nto_low_h) $(regdef_h) $(regcache_h)
+
+spu-low.o: spu-low.c $(server_h)
+
+win32_low_h = $(srcdir)/win32-low.h
+
+win32-arm-low.o: win32-arm-low.c $(server_h) $(win32_low_h)
+win32-i386-low.o: win32-i386-low.c $(server_h) $(win32_low_h) $(i386_low_h)
+win32-low.o: win32-low.c $(server_h) $(regcache_h) $(win32_low_h)
 
 # files prefixed with "reg-" are generally older than those without
 # that prefix, so put the prefixed ones before the un-prefixed ones
@@ -855,33 +957,41 @@ reg-sparc64.c : $(regformat_dir)/reg-sparc64.dat $(regdat_sh)
 reg-spu.c : $(regformat_dir)/reg-spu.dat $(regdat_sh)
 	$(run_regdat_sh) $(regformat_dir)/reg-spu.dat reg-spu.c
 # Yes, the underscore does change into a hyphen for x64_64 here...
-reg-x86-64.o : reg-x86-64.c $(regdef_h)
+reg-x86-64.o : reg-x86-64.c $(server_h) $(regdef_h) $(regcache_h) \
+  $(tdesc_h)
 reg-x86-64.c : $(regformat_dir)/reg-x86-64.dat $(regdat_sh)
 	$(run_regdat_sh) $(regformat_dir)/reg-x86-64.dat reg-x86-64.c
+amd64.o : amd64.c $(server_h) $(tdesc_h)
 amd64.c : $(regformat_dir)/i386/amd64.dat $(regdat_sh)
 	$(run_regdat_sh) $(regformat_dir)/i386/amd64.dat amd64.c
 amd64-linux.c : $(regformat_dir)/i386/amd64-linux.dat $(regdat_sh)
 	$(run_regdat_sh) $(regformat_dir)/i386/amd64-linux.dat amd64-linux.c
+amd64-avx.o : amd64-avx.c $(server_h) $(tdesc_h)
 amd64-avx.c : $(regformat_dir)/i386/amd64-avx.dat $(regdat_sh)
 	$(run_regdat_sh) $(regformat_dir)/i386/amd64-avx.dat amd64-avx.c
 amd64-avx-linux.c : $(regformat_dir)/i386/amd64-avx-linux.dat $(regdat_sh)
 	$(run_regdat_sh) $(regformat_dir)/i386/amd64-avx-linux.dat amd64-avx-linux.c
+amd64-avx512.o : amd64-avx512.c $(server_h) $(tdesc_h)
 amd64-avx512.c : $(regformat_dir)/i386/amd64-avx512.dat $(regdat_sh)
 	$(run_regdat_sh) $(regformat_dir)/i386/amd64-avx512.dat amd64-avx512.c
 amd64-avx512-linux.c : $(regformat_dir)/i386/amd64-avx512-linux.dat $(regdat_sh)
 	$(run_regdat_sh) $(regformat_dir)/i386/amd64-avx512-linux.dat amd64-avx512-linux.c
+amd64-mpx.o : amd64-mpx.c $(server_h) $(tdesc_h)
 amd64-mpx.c : $(regformat_dir)/i386/amd64-mpx.dat $(regdat_sh)
 	$(run_regdat_sh) $(regformat_dir)/i386/amd64-mpx.dat amd64-mpx.c
 amd64-mpx-linux.c : $(regformat_dir)/i386/amd64-mpx-linux.dat $(regdat_sh)
 	$(run_regdat_sh) $(regformat_dir)/i386/amd64-mpx-linux.dat amd64-mpx-linux.c
+x32.o : x32.c $(server_h) $(regdef_h) $(tdesc_h)
 x32.c : $(regformat_dir)/i386/x32.dat $(regdat_sh)
 	$(run_regdat_sh) $(regformat_dir)/i386/x32.dat x32.c
 x32-linux.c : $(regformat_dir)/i386/x32-linux.dat $(regdat_sh)
 	$(run_regdat_sh) $(regformat_dir)/i386/x32-linux.dat x32-linux.c
+x32-avx.o : x32-avx.c $(server_h) $(regdef_h) $(tdesc_h)
 x32-avx.c : $(regformat_dir)/i386/x32-avx.dat $(regdat_sh)
 	$(run_regdat_sh) $(regformat_dir)/i386/x32-avx.dat x32-avx.c
 x32-avx-linux.c : $(regformat_dir)/i386/x32-avx-linux.dat $(regdat_sh)
 	$(run_regdat_sh) $(regformat_dir)/i386/x32-avx-linux.dat x32-avx-linux.c
+x32-avx512.o : x32-avx512.c $(server_h) $(regdef_h) $(tdesc_h)
 x32-avx512.c : $(regformat_dir)/i386/x32-avx512.dat $(regdat_sh)
 	$(run_regdat_sh) $(regformat_dir)/i386/x32-avx512.dat x32-avx512.c
 x32-avx512-linux.c : $(regformat_dir)/i386/x32-avx512-linux.dat $(regdat_sh)
@@ -890,8 +1000,12 @@ reg-xtensa.o : reg-xtensa.c $(regdef_h)
 reg-xtensa.c : $(regformat_dir)/reg-xtensa.dat $(regdat_sh)
 	$(run_regdat_sh) $(regformat_dir)/reg-xtensa.dat reg-xtensa.c
 
+# other objects from generated sources:
+version.o: version.c
+xml-builtin.o: xml-builtin.c
+
 # for compatibility with the old "init_registers" function:
-init_all_my_registers.c : $(OBS)
+init_all_my_registers.c : $(NON_CIRCULAR_OBS)
 # For some reason the sed commands work when run manually, but error out
 # when run through this make rule...
 # commenting out until I fix it
@@ -904,12 +1018,12 @@ init_all_my_registers.c : $(OBS)
 #	echo '#include "tdesc.h"' >>$@
 #	echo "" >>$@
 #	echo "/* prototypes: */" >>$@
-#	$(NM) $(OBS) | $(PARSE_NM_OUTPUT_CMD_ONE) | $(GREP) "init_registers_" | $(PARSE_NM_OUTPUT_CMD_TWO) | $(SED) "s|extern int|extern void|g" | tee -a $@
+#	$(NM) $(NON_CIRCULAR_OBS) | $(PARSE_NM_OUTPUT_CMD_ONE) | $(GREP) "init_registers_" | $(PARSE_NM_OUTPUT_CMD_TWO) | $(SED) "s|extern int|extern void|g" | tee -a $@
 #	echo "" >>$@
 #	echo '#ifndef _INIT_REGISTERS_DECLARED' >>$@
 #	echo '# define _INIT_REGISTERS_DECLARED 1' >>$@
 #	echo 'void init_registers(void) {' >>$@
-#	$(NM) $(OBS) | $(PARSE_NM_OUTPUT_CMD_ONE) | $(GREP) "init_registers_" | $(PARSE_NM_OUTPUT_CMD_TWO) | cut -d\  -f3 | tee -a $@
+#	$(NM) $(NON_CIRCULAR_OBS) | $(PARSE_NM_OUTPUT_CMD_ONE) | $(GREP) "init_registers_" | $(PARSE_NM_OUTPUT_CMD_TWO) | cut -d\  -f3 | tee -a $@
 #	echo '}' >>$@
 #	echo '#endif /* !_INIT_REGISTERS_DECLARED */' >>$@
 #	echo "" >>$@

@@ -1,4 +1,4 @@
-/* Implement the stpncpy function.
+/* stpncpy.c: Implement the stpncpy function.
    Copyright (C) 2003 Free Software Foundation, Inc.
    Written by Kaveh R. Ghazi <ghazi@caip.rutgers.edu>.
 
@@ -34,14 +34,16 @@ strlen(@var{src}).
 #include <ansidecl.h>
 #include <stddef.h>
 
-extern size_t strlen (const char *);
-extern char *strncpy (char *, const char *, size_t);
+extern size_t strlen(const char *);
+extern char *strncpy(char *, const char *, size_t);
 
 char *
-stpncpy (char *dst, const char *src, size_t len)
+stpncpy(char *dst, const char *src, size_t len)
 {
-  size_t n = strlen (src);
+  size_t n = strlen(src);
   if (n > len)
     n = len;
-  return strncpy (dst, src, len) + n;
+  return strncpy(dst, src, len) + n;
 }
+
+/* EOF */

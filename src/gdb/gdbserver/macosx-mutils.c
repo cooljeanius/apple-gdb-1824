@@ -181,7 +181,7 @@ static void mutils_debug(const char *fmt, ...)
   va_list ap;
 
   if (mutils_stderr == NULL) {
-	  mutils_stderr = fdopen(fileno(stderr), "w");
+    mutils_stderr = fdopen(fileno(stderr), "w");
   }
 
   va_start(ap, fmt);
@@ -193,7 +193,7 @@ static void mutils_debug(const char *fmt, ...)
 #endif /* DEBUG_MACOSX_MUTILS */
 
 #define CHECK_FATAL(expression) \
-  ((void) ((expression) ? 0 : fatal("on %s:%d - assert: %s", __FILE__, __LINE__, #expression)))
+  ((void)((expression) ? (void)0 : fatal("on %s:%d - assert: %s", __FILE__, __LINE__, #expression)))
 
 /* macosx-mutils.h has child_get_pagesize as being of type unsigned int */
 vm_size_t child_get_pagesize(void)
@@ -203,13 +203,13 @@ vm_size_t child_get_pagesize(void)
 
   if (g_cached_child_page_size == -1)
     {
-      status = host_page_size (mach_host_self (), &g_cached_child_page_size);
+      status = host_page_size(mach_host_self(), &g_cached_child_page_size);
       /* This is probably being over-careful, since if we
          cannot call host_page_size on ourselves, we probably
          are not going to get much further.  */
-		if (status != KERN_SUCCESS) {
-			g_cached_child_page_size = 0;
-		}
+      if (status != KERN_SUCCESS) {
+        g_cached_child_page_size = 0;
+      }
       MACH_CHECK_ERROR (status);
     }
 
@@ -223,9 +223,8 @@ vm_size_t child_get_pagesize(void)
    Returns the length copied. */
 
 static int
-mach_xfer_memory_remainder (CORE_ADDR memaddr, char *myaddr,
-                            int len, int write,
-                            task_t task)
+mach_xfer_memory_remainder(CORE_ADDR memaddr, char *myaddr,
+                           int len, int write, task_t task)
 {
   vm_size_t pagesize = child_get_pagesize ();
 
@@ -274,12 +273,12 @@ mach_xfer_memory_remainder (CORE_ADDR memaddr, char *myaddr,
 
       memcpy (myaddr, ((unsigned char *) 0) + mempointer
               + (memaddr - pageaddr), len);
-      kret = vm_deallocate (mach_task_self (), mempointer, memcopied);
+      kret = vm_deallocate(mach_task_self(), mempointer, memcopied);
       if (kret != KERN_SUCCESS)
 	{
 	  warning
 	    ("Unable to deallocate memory used to read from inferior: %s (0x%ulx)",
-	     MACH_ERROR_STRING (kret), kret);
+	     MACH_ERROR_STRING(kret), kret);
 	  return 0;
 	}
     }
@@ -303,26 +302,26 @@ mach_xfer_memory_remainder (CORE_ADDR memaddr, char *myaddr,
       /* This vm_machine_attribute only works on PPC, so no reason
 	 to keep failing on x86... */
 
-      kret = vm_machine_attribute (mach_task_self (), mempointer,
-                                   pagesize, MATTR_CACHE, &flush);
+      kret = vm_machine_attribute(mach_task_self(), mempointer,
+                                  pagesize, MATTR_CACHE, &flush);
 # ifdef DEBUG_MACOSX_MUTILS
       if (kret != KERN_SUCCESS)
         {
           mutils_debug
             ("Unable to flush GDB's address space after memcpy prior to vm_write: %s (0x%lx)\n",
-             MACH_ERROR_STRING (kret), kret);
+             MACH_ERROR_STRING(kret), kret);
         }
 # endif /* DEBUG_MACOSX_MUTILS */
 #endif /* TARGET_POWERPC */
       kret =
-        mach_vm_write (task, memaddr, (pointer_t) myaddr, len);
+        mach_vm_write(task, memaddr, (pointer_t)myaddr, len);
       if (kret != KERN_SUCCESS)
         {
 #ifdef DEBUG_MACOSX_MUTILS
           mutils_debug
             ("Unable to write region at 0x%8.8llx with length %lu to inferior: %s (0x%lx)\n",
-             (uint64_t) memaddr, (unsigned long) len,
-             MACH_ERROR_STRING (kret), kret);
+             (uint64_t)memaddr, (unsigned long)len,
+             MACH_ERROR_STRING(kret), kret);
 #endif /* DEBUG_MACOSX_MUTILS */
           return 0;
         }
@@ -419,12 +418,13 @@ mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr,
 #else /* #if defined (VM_REGION_SUBMAP_SHORT_INFO_COUNT_64)  */
 
 /* We need to build Salt on Tiger, but we want to try to run it on Leopard.
-   On Leopard, there is both the SHORT and regular versions of the mach_vm_region_recurse
-   call.  BUT the latter is MUCH slower on Leopard than on Tiger, whereas the short form
-   is pretty much the same speed.  Sadly, the defines for the short version
-   are missing on Tiger.  So in that case, I supply the defines here, copied
-   over.  Then we try the call, and if we get KERN_INVALID_ARGUMENT, we know
-   that we are on Tiger, and switch over to the long form.  */
+ * On Leopard, there is both the SHORT and regular versions of the
+ * mach_vm_region_recurse call.  BUT the latter is MUCH slower on Leopard
+ * than on Tiger, whereas the short form is pretty much the same speed.
+ * Sadly, the defines for the short version are missing on Tiger.
+ * So in that case, I supply the defines here, copied over.  Then we try
+ * the call, and if we get KERN_INVALID_ARGUMENT, we know that we are on
+ * Tiger, and switch over to the long form.  */
 
   struct vm_region_submap_short_info_64 {
     vm_prot_t		protection;     /* present access protection */
@@ -445,8 +445,8 @@ mach_xfer_memory_block (CORE_ADDR memaddr, char *myaddr,
   typedef struct vm_region_submap_short_info_64	*vm_region_submap_short_info_64_t;
   typedef struct vm_region_submap_short_info_64	 vm_region_submap_short_info_data_64_t;
 
-#define VM_REGION_SUBMAP_SHORT_INFO_COUNT_64	((mach_msg_type_number_t) \
-						 (sizeof(vm_region_submap_short_info_data_64_t)/sizeof(int)))
+#define VM_REGION_SUBMAP_SHORT_INFO_COUNT_64 ((mach_msg_type_number_t) \
+                                              (sizeof(vm_region_submap_short_info_data_64_t) / sizeof(int)))
 
 /* We probably have a Tiger-based build since
    VM_REGION_SUBMAP_SHORT_INFO_COUNT_64 was not defined, so we will assign
@@ -679,8 +679,8 @@ macosx_get_region_info_both (task_t task,
 
 
 int
-mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
-		  task_t task)
+mach_xfer_memory(CORE_ADDR memaddr, const char *myaddr, int len, int write,
+                 task_t task)
 {
   mach_vm_address_t r_start = 0;
   mach_vm_address_t r_end = 0;
@@ -693,7 +693,7 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
   char *cur_myaddr;
   int cur_len;
 
-  vm_size_t pagesize = child_get_pagesize ();
+  vm_size_t pagesize = child_get_pagesize();
   kern_return_t kret;
   int ret;
 
@@ -710,13 +710,14 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
       return 0;
     }
 
-  CHECK_FATAL (myaddr != NULL);
+  CHECK_FATAL(myaddr != NULL);
   errno = 0;
 
-  /* check for case where memory available only at address greater than address specified */
+  /* check for case where memory available only at address greater than
+   * address specified: */
   {
-    kret = macosx_get_region_info (task, memaddr, &r_start, &r_size,
-				   &orig_protection, &max_orig_protection);
+    kret = macosx_get_region_info(task, memaddr, &r_start, &r_size,
+                                  &orig_protection, &max_orig_protection);
     if (kret != KERN_SUCCESS)
       {
         return 0;
@@ -729,16 +730,16 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
 #ifdef DEBUG_MACOSX_MUTILS
             mutils_debug
               ("First available address near 0x%8.8llx is at 0x%8.8llx; returning\n",
-               (uint64_t) memaddr, (uint64_t) r_start);
+               (uint64_t)memaddr, (uint64_t)r_start);
 #endif /* DEBUG_MACOSX_MUTILS */
             return -(r_start - memaddr);
           }
         else
           {
 #ifdef DEBUG_MACOSX_MUTILS
-            mutils_debug ("First available address near 0x%8.8llx is at 0x%8.8llx"
-                          "(too far; returning 0)\n",
-                          (uint64_t) memaddr, (uint64_t) r_start);
+            mutils_debug("First available address near 0x%8.8llx is at 0x%8.8llx"
+                         "(too far; returning 0)\n",
+                         (uint64_t)memaddr, (uint64_t)r_start);
 #endif /* DEBUG_MACOSX_MUTILS */
             return 0;
           }
@@ -746,7 +747,7 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
   }
 
   cur_memaddr = memaddr;
-  cur_myaddr = myaddr;
+  cur_myaddr = (char *)myaddr;
   cur_len = len;
 
   while (cur_len > 0)
@@ -763,49 +764,49 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
 #ifdef DEBUG_MACOSX_MUTILS
           mutils_debug
             ("Next available region for address at 0x%8.8llx is 0x%8.8llx\n",
-             (uint64_t) cur_memaddr, (uint64_t) r_start);
+             (uint64_t)cur_memaddr, (uint64_t)r_start);
 #endif /* DEBUG_MACOSX_MUTILS */
           break;
         }
 
       if (write)
         {
-	  /* Keep the execute permission if we modify protections.  */
-	  vm_prot_t new_prot = VM_PROT_READ | VM_PROT_WRITE;
+	  /* Keep the execute permission if we modify protections: */
+	  vm_prot_t new_prot = (VM_PROT_READ | VM_PROT_WRITE);
 
 	  /* Do we need to modify our protections?  */
 	  if (orig_protection & VM_PROT_WRITE)
 	    {
-	      /* We don't need to modify our protections.  */
+	      /* We do NOT need to modify our protections.  */
 	      kret = KERN_SUCCESS;
 #ifdef DEBUG_MACOSX_MUTILS
-	      mutils_debug ("We already have write access to the region "
-			    "containing: 0x%8.8llx, skipping permission modification.\n",
-			    (uint64_t) cur_memaddr);
+	      mutils_debug("We already have write access to the region "
+                           "containing: 0x%8.8llx, skipping permission modification.\n",
+                           (uint64_t)cur_memaddr);
 #endif /* DEBUG_MACOSX_MUTILS */
 	    }
 	  else
 	    {
+              mach_vm_size_t prot_size;
 	      changed_protections = 1;
-	      mach_vm_size_t prot_size;
 
-	      if (cur_len < r_size - (cur_memaddr - r_start))
+	      if (cur_len < (r_size - (cur_memaddr - r_start)))
 		prot_size = cur_len;
 	      else
-		prot_size = cur_memaddr - r_start;
+		prot_size = (cur_memaddr - r_start);
 
-	      kret = macosx_vm_protect (task, r_start, r_size,
-					cur_memaddr, prot_size, new_prot, 0);
+	      kret = macosx_vm_protect(task, r_start, r_size,
+                                       cur_memaddr, prot_size, new_prot, 0);
 
 	      if (kret != KERN_SUCCESS)
 		{
 #ifdef DEBUG_MACOSX_MUTILS
-		  mutils_debug ("Without COPY failed: %s (0x%lx)\n",
-				MACH_ERROR_STRING (kret), kret);
+		  mutils_debug("Without COPY failed: %s (0x%lx)\n",
+                               MACH_ERROR_STRING(kret), kret);
 #endif /* DEBUG_MACOSX_MUTILS */
-		  kret = macosx_vm_protect (task, r_start, r_size,
-					    cur_memaddr, prot_size,
-					    VM_PROT_COPY | new_prot, 0);
+		  kret = macosx_vm_protect(task, r_start, r_size,
+                                           cur_memaddr, prot_size,
+                                           (VM_PROT_COPY | new_prot), 0);
 		}
 
 	      if (kret != KERN_SUCCESS)
@@ -813,20 +814,20 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
 #ifdef DEBUG_MACOSX_MUTILS
 		  mutils_debug
 		    ("Unable to add write access to region at 0x8.8llx: %s (0x%lx)\n",
-		     (uint64_t) r_start, MACH_ERROR_STRING (kret), kret);
+		     (uint64_t)r_start, MACH_ERROR_STRING(kret), kret);
 #endif /* DEBUG_MACOSX_MUTILS */
 		  break;
 		}
 	    }
         }
 
-      r_end = r_start + r_size;
+      r_end = (r_start + r_size);
 
-      CHECK_FATAL (r_start <= cur_memaddr);
-      CHECK_FATAL (r_end >= cur_memaddr);
-      CHECK_FATAL ((r_start % pagesize) == 0);
-      CHECK_FATAL ((r_end % pagesize) == 0);
-      CHECK_FATAL (r_end >= (r_start + pagesize));
+      CHECK_FATAL(r_start <= cur_memaddr);
+      CHECK_FATAL(r_end >= cur_memaddr);
+      CHECK_FATAL((r_start % pagesize) == 0);
+      CHECK_FATAL((r_end % pagesize) == 0);
+      CHECK_FATAL(r_end >= (r_start + pagesize));
 
       if ((cur_memaddr % pagesize) != 0)
         {
@@ -836,31 +837,31 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
             {
               op_len = max_len;
             }
-          ret = mach_xfer_memory_remainder (cur_memaddr, cur_myaddr, op_len,
-                                            write, task);
+          ret = mach_xfer_memory_remainder(cur_memaddr, cur_myaddr, op_len,
+                                           write, task);
         }
       else if (cur_len >= pagesize)
         {
-          int max_len = r_end - cur_memaddr;
+          int max_len = (r_end - cur_memaddr);
           int op_len = cur_len;
           if (op_len > max_len)
             {
               op_len = max_len;
             }
           op_len -= (op_len % pagesize);
-          ret = mach_xfer_memory_block (cur_memaddr, cur_myaddr, op_len,
+          ret = mach_xfer_memory_block(cur_memaddr, cur_myaddr, op_len,
                                         write, task);
         }
       else
         {
-          ret = mach_xfer_memory_remainder (cur_memaddr, cur_myaddr, cur_len,
-                                            write, task);
+          ret = mach_xfer_memory_remainder(cur_memaddr, cur_myaddr, cur_len,
+                                           write, task);
         }
 
       if (write)
         {
 	  /* This vm_machine_attribute is NOT supported on i386,
-	     so we will not try.  */
+	   * so we will not try: */
 #if defined (TARGET_POWERPC)
 	  vm_machine_attribute_val_t flush = MATTR_VAL_CACHE_FLUSH;
           kret = vm_machine_attribute (task, r_start, r_size,
@@ -888,19 +889,19 @@ mach_xfer_memory (CORE_ADDR memaddr, char *myaddr, int len, int write,
 	  if (changed_protections)
 	    {
 	      mach_vm_size_t prot_size;
-	      if (cur_len < r_size - (cur_memaddr - r_start))
+	      if (cur_len < (r_size - (cur_memaddr - r_start)))
 		prot_size = cur_len;
 	      else
-		prot_size = cur_memaddr - r_start;
+		prot_size = (cur_memaddr - r_start);
 
-	      kret = macosx_vm_protect (task, r_start, r_size,
-					cur_memaddr, prot_size,
-					orig_protection, 0);
+	      kret = macosx_vm_protect(task, r_start, r_size,
+                                       cur_memaddr, prot_size,
+                                       orig_protection, 0);
 	      if (kret != KERN_SUCCESS)
 		{
 		  warning
 		    ("Unable to restore original permissions for region at 0x%8.8llx",
-		     (uint64_t) r_start);
+		     (uint64_t)r_start);
 		}
 	    }
         }
@@ -944,7 +945,7 @@ int macosx_thread_valid(task_t task, thread_t thread)
   for ((i = 0); (i < thread_count); i++) {
       if (thread_list[i] == thread) {
           found = 1;
-	  }
+      }
   }
 
   kret = vm_deallocate(mach_task_self(), (vm_address_t)thread_list,
@@ -954,7 +955,7 @@ int macosx_thread_valid(task_t task, thread_t thread)
 #ifdef DEBUG_MACOSX_MUTILS
   if (!found) {
       mutils_debug("thread 0x%lx no longer valid for task 0x%lx\n",
-				   (unsigned long)thread, (unsigned long)task);
+                   (unsigned long)thread, (unsigned long)task);
   }
 #endif /* DEBUG_MACOSX_MUTILS */
   return found;

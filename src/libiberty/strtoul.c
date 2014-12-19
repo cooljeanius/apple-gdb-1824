@@ -1,4 +1,4 @@
-/*
+/* strtoul.c
  * Copyright (c) 1990 Regents of the University of California.
  * All rights reserved.
  *
@@ -113,3 +113,5 @@ strtoul(const char *nptr, char **endptr, register int base)
 		*endptr = (char *) (any ? s - 1 : nptr);
 	return (acc);
 }
+
+/* EOF */

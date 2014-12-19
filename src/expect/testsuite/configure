@@ -2421,12 +2421,12 @@ else
 
 fi
 
-  if test x"${ac_cv_c_tclconfig}" = x ; then
+  if test x"${ac_cv_c_tclconfig}" = x""; then
     TCLCONFIG="# no Tcl configs found"
     { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Cannot find Tcl configuration definitions" >&5
 $as_echo "$as_me: WARNING: Cannot find Tcl configuration definitions" >&2;}
   else
-    no_tcl=
+    no_tcl=""
     TCLCONFIG=${ac_cv_c_tclconfig}/tclConfig.sh
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: found ${TCLCONFIG}" >&5
 $as_echo "found ${TCLCONFIG}" >&6; }
@@ -3783,12 +3783,23 @@ else
   c_compiles=no
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-# Now do linking test
+# Now do the linking test:
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
 #include <stdio.h>
 
+int
+main ()
+{
+
+int main(void) {
+    return 0;
+}
+
+  ;
+  return 0;
+}
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
   c_links=yes
@@ -3797,7 +3808,6 @@ else
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
-
 if test x"${c_compiles}" = x"no"; then
   # error out
   as_fn_error $? "the native compiler is broken and will NOT compile." "$LINENO" 5
@@ -3806,9 +3816,10 @@ fi
 if test x"${c_links}" = x"no"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
 $as_echo " " >&6; }
-  # Might fail even if it actually works, so just warn
+  # Might fail even if it actually works, so just warn instead of erroring:
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the native linker might be broken." >&5
 $as_echo "$as_me: WARNING: the native linker might be broken." >&2;}
+  # (although I hope I have fixed it...)
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
@@ -4054,7 +4065,7 @@ if ${ac_cv_c_tclh+:} false; then :
 else
 
 # first check to see if --with-tclinclude was specified
-if test x"${with_tclinclude}" != x ; then
+if test x"${with_tclinclude}" != x""; then
   if test -f ${with_tclinclude}/tclInt.h ; then
     ac_cv_c_tclh=`(cd ${with_tclinclude}; pwd)`
   elif test -f ${with_tclinclude}/generic/tclInt.h ; then

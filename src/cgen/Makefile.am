@@ -1,4 +1,5 @@
-# Process this file with automake to generate Makefile.in
+## automake Makefile for cgen
+## Process this file with automake to generate Makefile.in
 
 AUTOMAKE_OPTIONS = 1.9 gnits
 AUTOMAKE_DEPRECATED_OPTIONS = cygnus
@@ -10,14 +11,18 @@ CGENFLAGS = -v
 CPU_ARCH = @cpu_arch@
 ARCHFILE = $(srcroot)/cpu/$(CPU_ARCH).cpu
 
-# for various utility rules
+dist_noinst_SCRIPTS = gen-all-doc gen-all-opcodes gen-all-sid gen-all-sim
+
+# for various utility rules:
 MACHS = all
 ISAS = all
 
-# for the html rule
+# for the html rule:
 INSN_FILE_NAME = $(CPU_ARCH)-insn.html
 
 srcroot = $(srcdir)/..
+PATH_TO_MOVEIFCHANGE = $(srcroot)/move-if-change
+RUN_MOVEIFCHANGE = $(SHELL) $(PATH_TO_MOVEIFCHANGE)
 
 # Applications depend on stamp-cgen to tell them when .scm files have
 # been changed (so files need to be regenerated).
@@ -29,7 +34,9 @@ all-local: stamp-cgen
 
 stamp-cgen: $(CGENFILES)
 	rm -f stamp-cgen
-	echo timestamp > stamp-cgen
+	echo "timestamp" > stamp-cgen
+
+all: @MAINT@ all-local
 
 # Phony targets to run each of the applications,
 # though most of these are for development purposes only.
@@ -44,8 +51,8 @@ stamp-cgen: $(CGENFILES)
 # Usage: make desc [ARCHFILE=<arch-file>] OPTIONS="<option list>"
 
 .PHONY: desc
-# FIXME: needs more dependencies
-desc: desc.scm
+# FIXME: needs more dependencies:
+desc: desc.scm $(srcdir)/cgen-opc.scm @MAINT@ $(ARCHFILE)
 	rm -f tmp-desc.h tmp-desc.c tmp-opinst.c
 	$(GUILE) $(srcdir)/cgen-opc.scm \
 		-s $(srcdir) \
@@ -59,7 +66,7 @@ desc: desc.scm
 # Build the machine generated cpu documentation.
 # Usage: make html-local [CPU_ARCH=<cpu_arch>] [ARCHFILE=<arch-file>]
 .PHONY: html-local
-html-local: desc.scm html.scm cgen-doc.scm
+html-local: desc.scm html.scm cgen-doc.scm @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	rm -f tmp-doc.html
 	$(GUILE) $(srcdir)/cgen-doc.scm \
 		-s $(srcdir) \
@@ -71,16 +78,16 @@ html-local: desc.scm html.scm cgen-doc.scm
 		-N $(INSN_FILE_NAME) \
 		-H tmp.html \
 		-I tmp-insn.html
-	$(SHELL) $(srcroot)/move-if-change tmp.html $(CPU_ARCH).html
-	$(SHELL) $(srcroot)/move-if-change tmp-insn.html $(CPU_ARCH)-insn.html
+	$(RUN_MOVEIFCHANGE) tmp.html $(CPU_ARCH).html
+	$(RUN_MOVEIFCHANGE) tmp-insn.html $(CPU_ARCH)-insn.html
 
 # Build the opcodes files.
 # We just stuff them in tmp-* files.
 # Usage: make opcodes [ARCHFILE=<arch-file>] OPTIONS="<option list>"
 
 .PHONY: opcodes
-# FIXME: needs more dependencies
-opcodes: opcodes.scm
+# FIXME: needs more dependencies:
+opcodes: opcodes.scm $(srcdir)/cgen-opc.scm @MAINT@ $(ARCHFILE)
 	rm -f tmp-opc.h tmp-itab.c
 	rm -f tmp-asm.in tmp-dis.in tmp-ibld.h tmp-ibld.in
 	$(GUILE) $(srcdir)/cgen-opc.scm \
@@ -97,12 +104,12 @@ opcodes: opcodes.scm
 # Build the simulator files.
 # We just stuff them in tmp-* files.
 # Usage: make sim-arch [ARCHFILE=<arch-file>] OPTIONS="<option list>"
-#        make sim-cpu [ARCHFILE=<arch-file>] ISAS="<isa>" MACHS="<mach list>" \
-#          OPTIONS="<option list>"
+#    make sim-cpu [ARCHFILE=<arch-file>] ISAS="<isa>" MACHS="<mach list>" \
+#      OPTIONS="<option list>"
 
 .PHONY: sim-arch sim-cpu
-# FIXME: needs more dependencies
-sim-arch: sim.scm
+# FIXME: needs more dependencies:
+sim-arch: sim.scm $(srcdir)/cgen-sim.scm @MAINT@ $(ARCHFILE)
 	rm -f tmp-arch.h tmp-arch.c tmp-cpuall.h
 	$(GUILE) $(srcdir)/cgen-sim.scm \
 		-s $(srcdir) \
@@ -112,7 +119,7 @@ sim-arch: sim.scm
 		-i "$(ISAS)" \
 		-m "$(MACHS)" \
 		-A tmp-arch.h -B tmp-arch.c -N tmp-cpuall.h
-sim-cpu: sim.scm
+sim-cpu: sim.scm $(srcdir)/cgen-sim.scm @MAINT@ $(ARCHFILE)
 	rm -f tmp-cpu.h tmp-cpu.c tmp-decode.h tmp-decode.c
 	rm -f tmp-model.c tmp-sem.c tmp-sem-switch.c
 	$(GUILE) $(srcdir)/cgen-sim.scm \
@@ -131,10 +138,10 @@ sim-cpu: sim.scm
 # Usage: make gas-test [ARCHFILE=<arch-file>]
 
 .PHONY: gas-test
-gas-test: gas-test.scm cgen-gas.scm
-	@if test -z "$(ISAS)" ; then \
-	  echo "ISAS not specified!" ;\
-	  exit 1 ;\
+gas-test: gas-test.scm cgen-gas.scm @MAINT@ $(ARCHFILE)
+	@if test -z "$(ISAS)"; then \
+	  echo "ISAS not specified!" >&2;\
+	  exit 1;\
 	fi
 	$(GUILE) $(srcdir)/cgen-gas.scm \
 		-s $(srcdir) \
@@ -149,10 +156,10 @@ gas-test: gas-test.scm cgen-gas.scm
 # Usage: make sim-test [ARCHFILE=<arch-file>]
 
 .PHONY: sim-test
-sim-test: sim-test.scm cgen-stest.scm
-	@if test -z "$(ISAS)" ; then \
-	  echo "ISAS not specified!" ;\
-	  exit 1 ;\
+sim-test: sim-test.scm cgen-stest.scm @MAINT@ $(ARCHFILE)
+	@if test -z "$(ISAS)"; then \
+	  echo "ISAS not specified!" >&2;\
+	  exit 1;\
 	fi
 	$(GUILE) $(srcdir)/cgen-stest.scm \
 		-s $(srcdir) \
@@ -165,3 +172,5 @@ sim-test: sim-test.scm cgen-stest.scm
 
 CLEANFILES = tmp-*
 DISTCLEANFILES = stamp-cgen
+
+## is that all?

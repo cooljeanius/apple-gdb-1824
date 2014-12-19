@@ -299,8 +299,8 @@ LIPO = @LIPO@
 LN_S = @LN_S@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
-MAKE = @MAKE@
 MAKEINFO = @MAKEINFO@
+MAKE_BIN = @MAKE_BIN@
 MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
 MKINSTALLDIRS = @MKINSTALLDIRS@
@@ -322,9 +322,12 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PKGVERSION = @PKGVERSION@
 POFILES = @POFILES@
 POSUB = @POSUB@
 RANLIB = @RANLIB@
+REPORT_BUGS_TEXI = @REPORT_BUGS_TEXI@
+REPORT_BUGS_TO = @REPORT_BUGS_TO@
 SANDBOX_EXEC = @SANDBOX_EXEC@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
@@ -1335,7 +1338,7 @@ bfd.h: $(BFD_H_DEP) @MAINT@ $(src_MKDOC)
 	echo "#endif /* __cplusplus */" >> $@
 	echo "#endif" >> $@
 
-bfdver.texi: $(srcdir)/Makefile.in
+bfdver.texi: @MAINT@ $(srcdir)/Makefile.in
 	@echo "creating $@"; \
 	echo "@set VERSION $(VERSION)" | tee bfdver.texi; \
 	if [ -n "$(PKGVERSION)" ]; then \
@@ -1346,8 +1349,11 @@ bfdver.texi: $(srcdir)/Makefile.in
 	  echo "@set BUGURL $(REPORT_BUGS_TEXI)" | tee -a bfdver.texi; \
 	fi
 
+.PHONY: info info-am
+
 apple-clean:
 	rm -rfv *.dSYM || rmdir *.dSYM
+.PHONY: apple-clean
 
 # We want install to imply install-info as per GNU standards, despite the
 # (deprecated) cygnus option, hence this (renamed) target:

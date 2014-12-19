@@ -1,4 +1,4 @@
-/* Demangler for the D programming language
+/* d-demangle.c: Demangler for the D programming language
    Copyright 2014 Free Software Foundation, Inc.
    Written by Iain Buclaw (ibuclaw@gdcproject.org)
 

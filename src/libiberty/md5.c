@@ -223,14 +223,14 @@ md5_process_bytes (const void *buffer, size_t len, struct md5_ctx *ctx)
   /* Process available complete blocks.  */
   if (len > 64)
     {
-#if !_STRING_ARCH_unaligned
+#if !defined(_STRING_ARCH_unaligned) || !_STRING_ARCH_unaligned
 /* To check alignment gcc has an appropriate operator.  Other
-   compilers don't.  */
-# if __GNUC__ >= 2
-#  define UNALIGNED_P(p) (((md5_uintptr) p) % __alignof__ (md5_uint32) != 0)
+   compilers do NOT have one.  */
+# if defined(__GNUC__) && (__GNUC__ >= 2)
+#  define UNALIGNED_P(p) (((md5_uintptr)p) % __alignof__(md5_uint32) != 0)
 # else
-#  define UNALIGNED_P(p) (((md5_uintptr) p) % sizeof (md5_uint32) != 0)
-# endif
+#  define UNALIGNED_P(p) (((md5_uintptr)p) % sizeof(md5_uint32) != 0)
+# endif /* !_STRING_ARCH_unaligned */
       if (UNALIGNED_P (buffer))
         while (len > 64)
           {
@@ -257,8 +257,11 @@ md5_process_bytes (const void *buffer, size_t len, struct md5_ctx *ctx)
 /* These are the four functions used in the four steps of the MD5 algorithm
    and defined in the RFC 1321.  The first function is a little bit optimized
    (as found in Colin Plumbs public domain implementation).  */
-/* #define FF(b, c, d) ((b & c) | (~b & d)) */
-#define FF(b, c, d) (d ^ (b & (c ^ d)))
+#if defined(USE_UNOPTIMIZED_VERSION) && USE_UNOPTIMIZED_VERSION
+# define FF(b, c, d) ((b & c) | (~b & d))
+#else
+# define FF(b, c, d) (d ^ (b & (c ^ d)))
+#endif /* USE_UNOPTIMIZED_VERSION */
 #define FG(b, c, d) FF (d, b, c)
 #define FH(b, c, d) (b ^ c ^ d)
 #define FI(b, c, d) (c ^ (b | ~d))
@@ -428,3 +431,5 @@ md5_process_block (const void *buffer, size_t len, struct md5_ctx *ctx)
   ctx->C = C;
   ctx->D = D;
 }
+
+/* EOF */

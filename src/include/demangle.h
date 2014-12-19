@@ -539,6 +539,12 @@ struct demangle_component
       long number;
     } s_number;
 
+    /* For DEMANGLE_COMPONENT_CHARACTER.  */
+    struct
+    {
+      int character;
+    } s_character;
+
     /* For other types.  */
     struct
     {

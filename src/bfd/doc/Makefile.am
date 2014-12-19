@@ -383,7 +383,7 @@ bfd.h: $(BFD_H_DEP) @MAINT@ $(src_MKDOC)
 	echo "#endif /* __cplusplus */" >> $@
 	echo "#endif" >> $@
 
-bfdver.texi: $(srcdir)/Makefile.in
+bfdver.texi: @MAINT@ $(srcdir)/Makefile.in
 	@echo "creating $@"; \
 	echo "@set VERSION $(VERSION)" | tee bfdver.texi; \
 	if [ -n "$(PKGVERSION)" ]; then \
@@ -396,12 +396,15 @@ bfdver.texi: $(srcdir)/Makefile.in
 
 noinst_TEXINFOS = bfdint.texi
 
+.PHONY: info info-am
+
 MOSTLYCLEANFILES = $(MKDOC) *.o
 
 CLEANFILES = *.p *.ip *.dSYM
 
 apple-clean:
 	rm -rfv *.dSYM || rmdir *.dSYM
+.PHONY: apple-clean
 
 DISTCLEANFILES = bfd.?? bfd.??? bfd.h libbfd.h libcoff.h texput.log
 

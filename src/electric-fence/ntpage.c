@@ -45,14 +45,17 @@ void *Page_Create (size_t size)
 
 void Page_AllowAccess (void *address, size_t size)
 {
+  return;
 }
 
 void Page_DenyAccess (void *address, size_t size)
 {
+  return;
 }
 
 void Page_Delete (void *address, size_t size)
 {
+  return;
 }
 
 size_t Page_Size (void)

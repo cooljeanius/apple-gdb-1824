@@ -458,8 +458,16 @@ d_dump(struct demangle_component *dc, int indent)
     case DEMANGLE_COMPONENT_NAME:
       printf("name '%.*s'\n", dc->u.s_name.len, dc->u.s_name.s);
       return;
+    case DEMANGLE_COMPONENT_TAGGED_NAME:
+      printf("tagged name\n");
+      d_dump(dc->u.s_binary.left, (indent + 2));
+      d_dump(dc->u.s_binary.right, (indent + 2));
+      return;
     case DEMANGLE_COMPONENT_TEMPLATE_PARAM:
       printf("template parameter %ld\n", dc->u.s_number.number);
+      return;
+    case DEMANGLE_COMPONENT_FUNCTION_PARAM:
+      printf("function parameter %ld\n", dc->u.s_number.number);
       return;
     case DEMANGLE_COMPONENT_CTOR:
       printf("constructor %d\n", (int) dc->u.s_ctor.kind);
@@ -535,6 +543,12 @@ d_dump(struct demangle_component *dc, int indent)
     case DEMANGLE_COMPONENT_HIDDEN_ALIAS:
       printf("hidden alias\n");
       break;
+    case DEMANGLE_COMPONENT_TRANSACTION_CLONE:
+      printf("transaction clone\n");
+      break;
+    case DEMANGLE_COMPONENT_NONTRANSACTION_CLONE:
+      printf("non-transaction clone\n");
+      break;
     case DEMANGLE_COMPONENT_RESTRICT:
       printf("restrict\n");
       break;
@@ -553,6 +567,12 @@ d_dump(struct demangle_component *dc, int indent)
     case DEMANGLE_COMPONENT_CONST_THIS:
       printf("const this\n");
       break;
+    case DEMANGLE_COMPONENT_REFERENCE_THIS:
+      printf("reference this\n");
+      break;
+    case DEMANGLE_COMPONENT_RVALUE_REFERENCE_THIS:
+      printf("rvalue reference this\n");
+      break;
     case DEMANGLE_COMPONENT_VENDOR_TYPE_QUAL:
       printf("vendor type qualifier\n");
       break;
@@ -561,6 +581,9 @@ d_dump(struct demangle_component *dc, int indent)
       break;
     case DEMANGLE_COMPONENT_REFERENCE:
       printf("reference\n");
+      break;
+    case DEMANGLE_COMPONENT_RVALUE_REFERENCE:
+      printf("rvalue reference\n");
       break;
     case DEMANGLE_COMPONENT_COMPLEX:
       printf("complex\n");
@@ -580,14 +603,25 @@ d_dump(struct demangle_component *dc, int indent)
     case DEMANGLE_COMPONENT_PTRMEM_TYPE:
       printf("pointer to member type\n");
       break;
+    case DEMANGLE_COMPONENT_FIXED_TYPE:
+      printf("fixed-point type, accum? %d, sat? %d\n",
+             dc->u.s_fixed.accum, dc->u.s_fixed.sat);
+      d_dump(dc->u.s_fixed.length, (indent + 2));
+      break;
     case DEMANGLE_COMPONENT_ARGLIST:
       printf("argument list\n");
       break;
     case DEMANGLE_COMPONENT_TEMPLATE_ARGLIST:
       printf("template argument list\n");
       break;
+    case DEMANGLE_COMPONENT_INITIALIZER_LIST:
+      printf("initializer list\n");
+      break;
     case DEMANGLE_COMPONENT_CAST:
       printf("cast\n");
+      break;
+    case DEMANGLE_COMPONENT_NULLARY:
+      printf("nullary operator\n");
       break;
     case DEMANGLE_COMPONENT_UNARY:
       printf("unary operator\n");
@@ -612,6 +646,41 @@ d_dump(struct demangle_component *dc, int indent)
       break;
     case DEMANGLE_COMPONENT_LITERAL_NEG:
       printf("negative literal\n");
+      break;
+    case DEMANGLE_COMPONENT_JAVA_RESOURCE:
+      printf("java resource\n");
+      break;
+    case DEMANGLE_COMPONENT_COMPOUND_NAME:
+      printf("compound name\n");
+      break;
+    case DEMANGLE_COMPONENT_CHARACTER:
+      printf("character '%c'\n",  dc->u.s_character.character);
+      return;
+    case DEMANGLE_COMPONENT_NUMBER:
+      printf("number %ld\n", dc->u.s_number.number);
+      return;
+    case DEMANGLE_COMPONENT_DECLTYPE:
+      printf("decltype\n");
+      break;
+    case DEMANGLE_COMPONENT_PACK_EXPANSION:
+      printf("pack expansion\n");
+      break;
+    case DEMANGLE_COMPONENT_TLS_INIT:
+      printf("tls init function\n");
+      break;
+    case DEMANGLE_COMPONENT_TLS_WRAPPER:
+      printf("tls wrapper function\n");
+      break;
+    case DEMANGLE_COMPONENT_DEFAULT_ARG:
+      printf("default argument %d\n", dc->u.s_unary_num.num);
+      d_dump(dc->u.s_unary_num.sub, (indent + 2));
+      return;
+    case DEMANGLE_COMPONENT_LAMBDA:
+      printf("lambda %d\n", dc->u.s_unary_num.num);
+      d_dump(dc->u.s_unary_num.sub, (indent + 2));
+      return;
+    default:
+      fprintf(stderr, "warning: unhandled demangle_component type.\n");
       break;
   }
 
@@ -4165,17 +4234,17 @@ int main(int argc, char *argv[])
 	case '?':  /* Unrecognized option. */
 	  print_usage(stderr, 1);
 	  break;
-
 	case 'h':
 	  print_usage(stdout, 0);
 	  break;
-
 	case 'p':
 	  options &= ~ DMGL_PARAMS;
 	  break;
-
 	case 'v':
 	  options |= DMGL_VERBOSE;
+	  break;
+        default:  /* Unrecognized option. */
+	  print_usage(stderr, 1);
 	  break;
       }
   } while (opt_char != -1);

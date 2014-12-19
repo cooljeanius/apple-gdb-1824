@@ -20,11 +20,14 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ACLOCAL_AMFLAGS = -I../m4 --install
-AM_CPPFLAGS = -I. -I.. -I${srcdir}/.. -I${srcdir}/../.. -I${srcdir}/../common -I${srcdir}/../config -I${srcdir}/../macosx -I${srcdir}/../signals -I${srcdir}/../../config -I${srcdir}/../../include -I${srcdir}/../../bfd -I${srcdir}/../../intl
-DEFS = @DEFS@
-AM_CFLAGS = -ggdb -fno-strict-aliasing -std=gnu99 -Wall -Wextra -Wold-style-definition -Wtrampolines -Wwrite-strings -Wformat=2 -Wmissing-include-dirs @MAINT@ -Wstrict-prototypes -Wnested-externs
+upsrcdir = ${srcdir}/..
+upupsrcdir = ${upsrcdir}/..
+AM_CPPFLAGS = -I. -I.. -I${upsrcdir} -I${upupsrcdir} -I${upsrcdir}/common -I${upsrcdir}/config -I${upsrcdir}/macosx -I${upsrcdir}/signals -I${upupsrcdir}/config -I${upupsrcdir}/include -I${upupsrcdir}/bfd -I${upupsrcdir}/intl
+DEFS = @DEFS@ @EXTRA_DEFS@
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+AM_CFLAGS = $(C_ARCHFLAGS) -ggdb -fno-strict-aliasing -std=gnu99 -Wall -Wextra -Wold-style-definition -Wtrampolines -Wwrite-strings -Wformat=2 -Wmissing-include-dirs @MAINT@ -Wstrict-prototypes -Wnested-externs
 REMOTE_CFLAGS_COMBINED = ${AM_CPPFLAGS} ${DEFS} ${AM_CFLAGS}
-AM_LDFLAGS = -L. -L..
+AM_LDFLAGS = -L. -L.. $(C_ARCHFLAGS)
 CC = @CC@
 
 bin_PROGRAMS = serve

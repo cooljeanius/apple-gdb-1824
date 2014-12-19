@@ -40,18 +40,18 @@ extern int find_objc_msgcall (CORE_ADDR pc, CORE_ADDR *new_pc);
 
 void tell_objc_msgsend_cacher_objfile_changed (struct objfile *);
 
-void objc_clear_caches ();
+void objc_clear_caches (void);
 
 CORE_ADDR find_implementation (CORE_ADDR object, CORE_ADDR sel, int stret);
 
 extern char *parse_selector (char *method, char **selector);
 
-extern char *parse_method (char *method, char *type, 
-			   char **class, char **category, 
+extern char *parse_method (char *method, char *type,
+			   char **, char **category,
 			   char **selector);
 
 extern char *find_imps (struct symtab *symtab, struct block *block,
-			char *method, struct symbol **syms, 
+			char *method, struct symbol **syms,
 			unsigned int *nsym, unsigned int *ndebug);
 
 extern struct value *value_nsstring (char *ptr, int len);
@@ -62,7 +62,7 @@ extern struct type *objc_target_type_from_object (CORE_ADDR isa_addr,
 						  char **class_name);
 
 extern struct type *value_objc_target_type (struct value *, struct block *, char **);
-int should_lookup_objc_class ();
+int should_lookup_objc_class (void);
 
 /* for parsing Objective C */
 extern void start_msglist (void);
@@ -107,12 +107,14 @@ enum objc_handcall_fail_reasons
 
 enum objc_handcall_fail_reasons objc_pc_at_fail_point (CORE_ADDR pc);
 struct cleanup *make_cleanup_init_objc_exception_catcher (void);
-void reinitialize_objc ();
-int objc_runtime_check_enabled_p ();
+void reinitialize_objc (void);
+int objc_runtime_check_enabled_p (void);
 
 /* Are we using the ObjC 2.0 runtime?  */
-int new_objc_runtime_internals ();
+int new_objc_runtime_internals (void);
 
 /* This it the ObjC "make printing safe for ObjC" method. */
 int objc_setup_safe_print (struct cleanup **);
 #endif
+
+/* EOF */

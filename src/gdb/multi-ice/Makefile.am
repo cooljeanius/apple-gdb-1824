@@ -9,11 +9,14 @@ MULTI_ICE_LIBS = @MULTI_ICE_LIBS@
 MULTI_ICE_PLATFORM_SOURCE = @MULTI_ICE_PLATFORM_SOURCE@
 
 WARN_CFLAGS = @WARN_CFLAGS@
-AM_CFLAGS = $(WARN_CFLAGS)
-AM_CPPFLAGS = -I./.. -I$(srcdir)/../../include \
-         -I$(srcdir)/.. -I$(srcdir)/../config -I../../bfd \
-         -I$(srcdir)/../macosx \
-         $(MULTI_ICE_INCLUDES) @MAINT@ -I$(srcdir)/../rdi-share
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+AM_CFLAGS = $(WARN_CFLAGS) $(C_ARCHFLAGS)
+DEFS = @DEFS@ @EXTRA_DEFS@
+upsrcdir = $(srcdir)/..
+AM_CPPFLAGS = -I./.. -I$(upsrcdir)/../include \
+         -I$(upsrcdir) -I$(upsrcdir)/config -I../../bfd \
+         -I$(upsrcdir)/macosx \
+         $(MULTI_ICE_INCLUDES) @MAINT@ -I$(upsrcdir)/rdi-share
 
 INCLUDES_PLUS_OLD_INCLUDES = $(AM_CPPFLAGS) $(INCLUDES)
 
@@ -38,7 +41,7 @@ multi_ice_gdb_server_DEPENDENCIES = $(WIN32RES)
 multi_ice_gdb_server_LDADD = $(WIN32RES)
 
 MICE-gdbserverres.o: MICE-gdbserver.rc
-	$(WINDRES) --include $(srcdir) $(srcdir)/MICE-gdbserver.rc MICE-gdbserverres.o
+	$(WINDRES) --include $(srcdir) $(srcdir)/MICE-gdbserver.rc $@
 
 MOSTLYCLEANFILES = config.h.in~
 

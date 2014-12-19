@@ -1115,8 +1115,10 @@ extern void *xzalloc (size_t);
 /* Like asprintf/vasprintf but get an internal_error if the call
    fails. */
 extern void xasprintf (char **ret, const char *format, ...) ATTR_FORMAT (printf, 2, 3);
+#ifndef LIBIBERTY_H
 extern void xvasprintf (char **ret, const char *format, va_list ap)
      ATTR_FORMAT (printf, 2, 0);
+#endif /* !LIBIBERTY_H */
 
 /* Like asprintf and vasprintf, but return the string, throw an error
    if no memory.  */

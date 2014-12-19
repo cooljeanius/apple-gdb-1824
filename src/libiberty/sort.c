@@ -1,9 +1,9 @@
-/* Sorting algorithms.
+/* sort.c: Sorting algorithms.
    Copyright (C) 2000 Free Software Foundation, Inc.
    Contributed by Mark Mitchell <mark@codesourcery.com>.
 
 This file is part of GNU CC.
-   
+
 GNU CC is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
@@ -20,34 +20,34 @@ the Free Software Foundation, 51 Franklin Street - Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 #include "libiberty.h"
 #include "sort.h"
 #ifdef HAVE_LIMITS_H
-#include <limits.h>
-#endif
+# include <limits.h>
+#endif /* HAVE_LIMITS_H */
 #ifdef HAVE_SYS_PARAM_H
-#include <sys/param.h>
-#endif
+# include <sys/param.h>
+#endif /* HAVE_SYS_PARAM_H */
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
 #ifdef HAVE_STRING_H
-#include <string.h>
-#endif
+# include <string.h>
+#endif /* HAVE_STRING_H */
 
 #ifndef UCHAR_MAX
-#define UCHAR_MAX ((unsigned char)(-1))
-#endif
+# define UCHAR_MAX ((unsigned char)(-1))
+#endif /* !UCHAR_MAX */
 
 /* POINTERS and WORK are both arrays of N pointers.  When this
    function returns POINTERS will be sorted in ascending order.  */
 
-void sort_pointers (size_t n, void **pointers, void **work)
+void sort_pointers(size_t n, void **pointers, void **work)
 {
   /* The type of a single digit.  This can be any unsigned integral
-     type.  When changing this, DIGIT_MAX should be changed as 
+     type.  When changing this, DIGIT_MAX should be changed as
      well.  */
   typedef unsigned char digit_t;
 
@@ -67,11 +67,11 @@ void sort_pointers (size_t n, void **pointers, void **work)
 
   /* The algorithm here depends on being able to swap the two arrays
      an even number of times.  */
-  if ((sizeof (void *) / sizeof (digit_t)) % 2 != 0)
-    abort ();
+  if ((sizeof(void *) / sizeof(digit_t)) % 2 != 0)
+    abort();
 
   /* Figure out the endianness of the machine.  */
-  for (i = 0, j = 0; i < sizeof (size_t); ++i)
+  for (i = 0, j = 0; i < sizeof(size_t); ++i)
     {
       j *= (UCHAR_MAX + 1);
       j += i;
@@ -80,7 +80,7 @@ void sort_pointers (size_t n, void **pointers, void **work)
 
   /* Move through the pointer values from least significant to most
      significant digits.  */
-  for (i = 0; i < sizeof (void *) / sizeof (digit_t); ++i)
+  for (i = 0; i < sizeof(void *) / sizeof(digit_t); ++i)
     {
       digit_t *digit;
       digit_t *bias;
@@ -91,26 +91,25 @@ void sort_pointers (size_t n, void **pointers, void **work)
       /* The offset from the start of the pointer will depend on the
 	 endianness of the machine.  */
       if (big_endian_p)
-	j = sizeof (void *) / sizeof (digit_t) - i;
+	j = sizeof(void *) / sizeof(digit_t) - i;
       else
 	j = i;
-	
+
       /* Now, perform a stable sort on this digit.  We use counting
 	 sort.  */
-      memset (count, 0, DIGIT_MAX * sizeof (unsigned int));
+      memset(count, 0, DIGIT_MAX * sizeof(unsigned int));
 
       /* Compute the address of the appropriate digit in the first and
 	 one-past-the-end elements of the array.  On a little-endian
 	 machine, the least-significant digit is closest to the front.  */
-      bias = ((digit_t *) pointers) + j;
-      top = ((digit_t *) (pointers + n)) + j;
+      bias = ((digit_t *)pointers) + j;
+      top = ((digit_t *)(pointers + n)) + j;
 
       /* Count how many there are of each value.  At the end of this
 	 loop, COUNT[K] will contain the number of pointers whose Ith
 	 digit is K.  */
-      for (digit = bias; 
-	   digit < top; 
-	   digit += sizeof (void *) / sizeof (digit_t))
+      for (digit = bias; digit < top;
+	   digit += sizeof(void *) / sizeof(digit_t))
 	++count[*digit];
 
       /* Now, make COUNT[K] contain the number of pointers whose Ith
@@ -134,15 +133,14 @@ void sort_pointers (size_t n, void **pointers, void **work)
    file.  */
 
 #ifdef UNIT_TEST
+# include <stdio.h>
 
-#include <stdio.h>
-
-void *xmalloc (size_t n)
+void *xmalloc(size_t n)
 {
-  return malloc (n);
+  return malloc(n);
 }
 
-int main (int argc, char **argv)
+int main(int argc, char **argv)
 {
   int k;
   int result;
@@ -151,36 +149,37 @@ int main (int argc, char **argv)
   void **work;
 
   if (argc > 1)
-    k = atoi (argv[1]);
+    k = atoi(argv[1]);
   else
     k = 10;
 
-  pointers = XNEWVEC (void*, k);
-  work = XNEWVEC (void*, k);
+  pointers = XNEWVEC(void*, k);
+  work = XNEWVEC(void*, k);
 
   for (i = 0; i < k; ++i)
     {
-      pointers[i] = (void *) random ();
-      printf ("%x\n", pointers[i]);
+      pointers[i] = (void *)random();
+      printf("%x\n", pointers[i]);
     }
 
-  sort_pointers (k, pointers, work);
+  sort_pointers(k, pointers, work);
 
-  printf ("\nSorted\n\n");
+  printf("\nSorted:\n\n");
 
   result = 0;
 
   for (i = 0; i < k; ++i)
     {
-      printf ("%x\n", pointers[i]);
-      if (i > 0 && (char*) pointers[i] < (char*) pointers[i - 1])
+      printf("%x\n", pointers[i]);
+      if ((i > 0) && ((char*)pointers[i] < (char*)pointers[i - 1]))
 	result = 1;
     }
 
-  free (pointers);
-  free (work);
+  free(pointers);
+  free(work);
 
   return result;
 }
+#endif /* UNIT_TEST */
 
-#endif
+/* EOF */

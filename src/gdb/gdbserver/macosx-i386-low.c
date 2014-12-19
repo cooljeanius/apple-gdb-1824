@@ -103,8 +103,8 @@
 # endif /* MACOSX_I386_LOW_C_LENGTH_C_DEFINE */
 
 # ifndef HAVE_ELF_FPREGSET_T
-  /* Make sure we have said types. Not all platforms bring in <linux/elf.h>
-   * via <sys/procfs.h>.  */
+/* Make sure we have said types. Not all platforms bring in <linux/elf.h>
+ * via <sys/procfs.h>.  */
 #  ifdef HAVE_LINUX_ELF_H
 #   include <linux/elf.h>
 #   include "linux-low.h"
@@ -134,7 +134,7 @@
 #  define GDB_FPREGSET_T elf_fpregset_t
 # endif /* GDB_FPREGSET_T */
 
-/* This definition comes from prctl.h, but some kernels may not have it.  */
+/* This definition comes from prctl.h, but some kernels may not have it: */
 # ifndef PTRACE_ARCH_PRCTL
 #  define PTRACE_ARCH_PRCTL 30
 # endif /* !PTRACE_ARCH_PRCTL */
@@ -165,43 +165,44 @@ static int x86_64_regmap[] = {
  * declaration of x86_64_regmap[] is inside of. */
 static void x86_64_fill_gregset(void *buf)
 {
-	int i;
+  int i;
 
-	for ((i = 0); (i < X86_64_NUM_GREGS); i++) {
-		collect_register(i, (((char *)buf) + x86_64_regmap[i]));
-	}
+  for ((i = 0); (i < X86_64_NUM_GREGS); i++) {
+    collect_register(i, (((char *)buf) + x86_64_regmap[i]));
+  }
 }
 
 static void x86_64_store_gregset(const void *buf)
 {
-	int i;
+  int i;
 
-	for ((i = 0); (i < X86_64_NUM_GREGS); i++) {
-		supply_register(i, (((char *)buf) + x86_64_regmap[i]));
-	}
+  for ((i = 0); (i < X86_64_NUM_GREGS); i++) {
+    supply_register(i, (((char *)buf) + x86_64_regmap[i]));
+  }
 }
 # endif /* HAVE_LINUX_USRREGS && HAVE_LINUX_REGSETS */
 
 #if defined (TARGET_X86_64) || defined (HOST_X86_64) || defined (__x86_64__)
 static void x86_64_fill_fpregset(void *buf)
 {
-	i387_cache_to_fxsave(buf);
+  i387_cache_to_fxsave(buf);
 } /* unused */
 #endif /* x86_64 */
 
 #if defined (TARGET_X86_64) || defined (HOST_X86_64) || defined (__x86_64__)
 static void x86_64_store_fpregset(const void *buf)
 {
-	i387_fxsave_to_cache(buf);
+  i387_fxsave_to_cache(buf);
 } /* unused */
 #endif /* x86_64 */
 
 struct macosx_target_ops the_low_target = {
-	-1,
-	NULL,
-	NULL,
-	NULL,
-}; /* copied and pasted from linux-x86-64-low.c, not sure if that will work for OSX... */
+  -1,
+  NULL,
+  NULL,
+  NULL,
+}; /* copied and pasted from linux-x86-64-low.c; not sure if that will
+    * work for OSX... */
 
 #endif /* !_MACOSX_INTEL_LOW_C */
 

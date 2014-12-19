@@ -165,7 +165,9 @@ AC_DEFUN([AM_INIT_MY_AUTOMAKE_LITE],[
   AC_REQUIRE([AM_SANITY_CHECK])dnl
   AC_REQUIRE([AC_ARG_PROGRAM])dnl
   AC_REQUIRE([AM_MISSING_HAS_RUN])dnl
+  AM_MISSING_PROG([ACLOCAL],[aclocal])dnl
   AM_MISSING_PROG([AUTOHEADER],[autoheader])dnl
+  AM_MISSING_PROG([AUTOMAKE],[automake])dnl
   AC_REQUIRE([AM_PROG_INSTALL_SH])dnl
   dnl# For better backward compatibility. To be removed once Automake 1.9.x
   dnl# dies out for good.
@@ -243,9 +245,10 @@ AC_SYS_LARGEFILE
 AC_PROG_CPP_WERROR
 AC_PROG_MKDIR_P
 
+dnl# FIXME: actually check whether these are supported:
 AC_MSG_CHECKING([warning flags to use])
 if test "x${GCC}" = "xyes"; then
-  ac_libiberty_warn_cflags='-Wall -Wextra -pedantic -Wwrite-strings -Wc++-compat -Wstrict-prototypes -Wundef'
+  ac_libiberty_warn_cflags='-Wall -Wextra -pedantic -Wwrite-strings -Wc++-compat -Wstrict-prototypes -Wold-style-definition -Wundef'
 else
   ac_libiberty_warn_cflags=''
 fi
@@ -322,7 +325,7 @@ case "${host}" in
 esac
 
 if [[ -n "${frag}" ]]; then
-  frags=${libiberty_topdir}/libiberty/config/$frag
+  frags=${libiberty_topdir}/libiberty/config/${frag}
 else
   frags=""
 fi
@@ -330,7 +333,9 @@ fi
 m4_ifdef([GCC_PICFLAG],[
 GCC_PICFLAG
 ],[
-test -z "${PICFLAG}" && PICFLAG=""
+if test "x${PICFLAG}" = "x"; then
+  test -z "${PICFLAG}" && PICFLAG=""
+fi
 ])dnl
 
 # If they did NOT specify --enable-shared, do NOT generate shared libs.
@@ -350,6 +355,7 @@ if [[ "x${shared}" = "xyes" ]]; then
     *-*-cygwin*)	;;
     alpha*-*-linux*)	frag=mh-elfalphapic ;;
     arm*-*-*)		frag=mh-armpic ;;
+    *-apple-darwin*)    frag=mh-darwinpic ;;
     hppa*-*-*)		frag=mh-papic ;;
     i[[34567]]86-*-* | x86_64-*-*)
 			frag=mh-x86pic ;;
@@ -362,7 +368,11 @@ if [[ "x${shared}" = "xyes" ]]; then
   if [[ -n "${frag}" ]]; then
     frags="${frags} ${libiberty_topdir}/config/${frag}"
   fi
-elif [[ "${shared}" != "yes" ]]; then
+elif [[ "x${shared}" != "xyes" ]]; then
+  if test "x${PICFLAG}" != "x"; then
+    test -n "${PICFLAG}"
+    AC_MSG_WARN([libraries are unshared; overriding user-supplied PICFLAG])
+  fi
   PICFLAG=""
 fi
 AC_SUBST([PICFLAG])dnl
@@ -498,6 +508,7 @@ m4_ifdef([AC_TYPE_UINTPTR_T],[
 AC_DEFINE([HAVE_UINTPTR_T],[1],[Define if you have the \`uintptr_t' type.])
 
 # other types and structs:
+AC_CHECK_TYPES([clock_t])dnl
 AC_TYPE_OFF_T
 AC_TYPE_PID_T
 AC_CHECK_TYPES([ptrdiff_t])dnl
@@ -581,15 +592,16 @@ funcs="${funcs} setproctitle"
 
 vars="sys_errlist sys_nerr sys_siglist"
 
-checkfuncs="__fsetlocking canonicalize_file_name dup3 getrlimit getrusage"
-checkfuncs="${checkfuncs} getsysinfo gettimeofday on_exit psignal"
-checkfuncs="${checkfuncs} pstat_getdynamic pstat_getstatic realpath"
-checkfuncs="${checkfuncs} setrlimit sbrk spawnve spawnvpe strerror"
-checkfuncs="${checkfuncs} strsignal sysconf sysctl sysmp table times"
-checkfuncs="${checkfuncs} wait3 wait4"
+checkfuncs="__fsetlocking btowc bzero canonicalize_file_name dup3"
+checkfuncs="${checkfuncs} getrlimit getrusage getsysinfo gettimeofday"
+checkfuncs="${checkfuncs} on_exit psignal pstat_getdynamic pstat_getstatic"
+checkfuncs="${checkfuncs} realpath setrlimit sbrk spawnve spawnvpe"
+checkfuncs="${checkfuncs} strerror strsignal sysconf sysctl sysmp table"
+checkfuncs="${checkfuncs} times wait3 wait4"
 
 # These are neither executed nor required, but they help keep
 # autoheader happy without adding a bunch of text to acconfig.h.
+# They also keep autoscan happy as well.
 if test "x" = "Y0"; then
   AC_MSG_WARN([this condition should not actually be reached])
   AC_FUNC_ALLOCA
@@ -599,6 +611,8 @@ if test "x" = "Y0"; then
   AC_FUNC_MALLOC
   AC_FUNC_MEMCMP
   AC_FUNC_MBRTOWC
+  AC_DEFUN([AC_FUNC_MMAP],[AC_CHECK_FUNCS([mmap])])dnl
+  AC_FUNC_MMAP
   AC_FUNC_OBSTACK
   AC_FUNC_REALLOC
   AC_FUNC_STAT
@@ -611,8 +625,8 @@ if test "x" = "Y0"; then
     basename bcmp bcopy bsearch btowc bzero \
     calloc canonicalize_file_name clock dup2 dup3 ffs __fsetlocking \
     getcwd getpagesize getrlimit getrusage getsysinfo \
-    gettext gettimeofday getwd index insque \
-    memchr memcmp memcpy memmem memmove mempcpy memset mkdir mkstemps \
+    gettext gettimeofday getwd index insque memchr memcmp memcpy memmem \
+    memmove mempcpy memset mkdir mkstemps munmap \
     on_exit pathconf psignal pstat_getdynamic pstat_getstatic putenv \
     random realpath re_comp regcomp rename rindex rmdir \
     sbrk setenv setproctitle setrlimit sigsetmask snprintf \
@@ -962,6 +976,8 @@ double x = _system_configuration.physmem;
   # More function checks:
   AC_MSG_CHECKING([for functions that only need to be checked and not necessarily replaced])
   AC_MSG_RESULT([ ])
+  unset ac_cv_func_bzero
+  unset ac_cv_func_gettimeofday
   AC_CHECK_FUNCS([${checkfuncs}])dnl
 
   # (more) declaration checks:
@@ -974,7 +990,7 @@ double x = _system_configuration.physmem;
   ])dnl
   AC_CHECK_DECLS([ffs, asprintf, vasprintf, snprintf, vsnprintf])dnl
   AC_CHECK_DECLS([calloc, getenv, getopt, malloc, realloc, sbrk])dnl
-  AC_CHECK_DECLS([strverscmp])dnl
+  AC_CHECK_DECLS([strverscmp, btowc, bzero])dnl
   libiberty_NEED_DECLARATION([canonicalize_file_name])
 fi
 

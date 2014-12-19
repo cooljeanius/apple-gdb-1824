@@ -951,3 +951,5 @@ const struct simple_object_functions simple_object_elf_functions =
   simple_object_elf_write_to_file,
   simple_object_elf_release_write
 };
+
+/* EOF */

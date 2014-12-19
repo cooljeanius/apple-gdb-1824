@@ -1,4 +1,4 @@
-/* Create and destroy argument vectors (argv's)
+/* argv.c: Create and destroy argument vectors (argv's)
    Copyright (C) 1992, 2001 Free Software Foundation, Inc.
    Written by Fred Fish @ Cygnus Support
 
@@ -23,8 +23,8 @@ Boston, MA 02110-1301, USA.  */
     array of string pointers, terminated by a NULL pointer. */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 #include "ansidecl.h"
 #include "libiberty.h"
 #include "safe-ctype.h"
@@ -41,14 +41,14 @@ Boston, MA 02110-1301, USA.  */
 #include <stdio.h>
 
 #ifndef NULL
-#define NULL 0
-#endif
+# define NULL 0
+#endif /* !NULL */
 
 #ifndef EOS
-#define EOS '\0'
-#endif
+# define EOS '\0'
+#endif /* !EOS */
 
-#define INITIAL_MAXARGC 8	/* Number of args + NULL in initial argv */
+#define INITIAL_MAXARGC 8    /* Number of args + NULL in initial argv */
 
 
 /*
@@ -66,7 +66,7 @@ argument vector.
 */
 
 char **
-dupargv (char **argv)
+dupargv(char **argv)
 {
   int argc;
   char **copy;
@@ -76,21 +76,21 @@ dupargv (char **argv)
 
   /* the vector */
   for (argc = 0; argv[argc] != NULL; argc++);
-  copy = (char **) malloc ((argc + 1) * sizeof (char *));
+  copy = (char **)malloc((argc + 1) * sizeof(char *));
   if (copy == NULL)
     return NULL;
 
   /* the strings */
   for (argc = 0; argv[argc] != NULL; argc++)
     {
-      int len = strlen (argv[argc]);
-      copy[argc] = (char *) malloc (len + 1);
+      int len = strlen(argv[argc]);
+      copy[argc] = (char *)malloc(len + 1);
       if (copy[argc] == NULL)
 	{
-	  freeargv (copy);
+	  freeargv(copy);
 	  return NULL;
 	}
-      strcpy (copy[argc], argv[argc]);
+      strcpy(copy[argc], argv[argc]);
     }
   copy[argc] = NULL;
   return copy;
@@ -109,7 +109,7 @@ itself.
 
 */
 
-void freeargv (char **vector)
+void freeargv(char **vector)
 {
   register char **scan;
 
@@ -117,25 +117,29 @@ void freeargv (char **vector)
     {
       for (scan = vector; *scan != NULL; scan++)
 	{
-	  free (*scan);
+	  free(*scan);
 	}
-      free (vector);
+      free(vector);
     }
 }
 
+/* so far this one is only used in the test driver; feel free to un-ifdef
+ * when that changes: */
+#ifdef MAIN
 static void
-consume_whitespace (const char **input)
+consume_whitespace(const char **input)
 {
-  while (ISSPACE (**input))
-  {
-    (*input)++;
-  }
+  while (ISSPACE(**input))
+    {
+      (*input)++;
+    }
 }
+#endif /* MAIN */
 
 static int
-only_whitespace (const char* input)
+only_whitespace(const char* input)
 {
-  while (*input != EOS && ISSPACE (*input))
+  while ((*input != EOS) && ISSPACE(*input))
     input++;
 
   return (*input == EOS);
@@ -181,7 +185,7 @@ returned, as appropriate.
 
 */
 
-char **buildargv (const char *input)
+char **buildargv(const char *input)
 {
   char *arg;
   char *copybuf;
@@ -195,7 +199,7 @@ char **buildargv (const char *input)
 
   if (input != NULL)
     {
-      copybuf = (char *) alloca (strlen (input) + 1);
+      copybuf = (char *)alloca(strlen(input) + 1);
       /* Is a do{}while to always execute the loop once.  Always return an
 	 argv, even for null strings.  See NOTES above, test case below. */
       do
@@ -207,22 +211,22 @@ char **buildargv (const char *input)
 	    }
 	  if ((maxargc == 0) || (argc >= (maxargc - 1)))
 	    {
-	      /* argv needs initialization, or expansion */
+	      /* argv needs initialization, or expansion: */
 	      if (argv == NULL)
 		{
 		  maxargc = INITIAL_MAXARGC;
-		  nargv = (char **) malloc (maxargc * sizeof (char *));
+		  nargv = (char **)malloc(maxargc * sizeof(char *));
 		}
 	      else
 		{
 		  maxargc *= 2;
-		  nargv = (char **) realloc (argv, maxargc * sizeof (char *));
+		  nargv = (char **)realloc(argv, maxargc * sizeof(char *));
 		}
 	      if (nargv == NULL)
 		{
 		  if (argv != NULL)
 		    {
-		      freeargv (argv);
+		      freeargv(argv);
 		      argv = NULL;
 		    }
 		  break;
@@ -230,11 +234,11 @@ char **buildargv (const char *input)
 	      argv = nargv;
 	      argv[argc] = NULL;
 	    }
-	  /* Begin scanning arg */
+	  /* Begin scanning arg: */
 	  arg = copybuf;
 	  while (*input != EOS)
 	    {
-	      if (ISBLANK (*input) && !squote && !dquote && !bsquote)
+	      if (ISBLANK(*input) && !squote && !dquote && !bsquote)
 		{
 		  break;
 		}
@@ -290,17 +294,17 @@ char **buildargv (const char *input)
 		}
 	    }
 	  *arg = EOS;
-	  argv[argc] = strdup (copybuf);
+	  argv[argc] = strdup(copybuf);
 	  if (argv[argc] == NULL)
 	    {
-	      freeargv (argv);
+	      freeargv(argv);
 	      argv = NULL;
 	      break;
 	    }
 	  argc++;
 	  argv[argc] = NULL;
 
-	  while (ISBLANK (*input))
+	  while (ISBLANK(*input))
 	    {
 	      input++;
 	    }
@@ -339,13 +343,13 @@ writeargv (char **argv, FILE *f)
           char c = *arg;
 
           if (ISSPACE(c) || c == '\\' || c == '\'' || c == '"')
-            if (EOF == fputc ('\\', f))
+            if (EOF == fputc('\\', f))
               {
                 status = 1;
                 goto done;
               }
 
-          if (EOF == fputc (c, f))
+          if (EOF == fputc(c, f))
             {
               status = 1;
               goto done;
@@ -353,7 +357,7 @@ writeargv (char **argv, FILE *f)
           arg++;
         }
 
-      if (EOF == fputc ('\n', f))
+      if (EOF == fputc('\n', f))
         {
           status = 1;
           goto done;
@@ -367,39 +371,39 @@ writeargv (char **argv, FILE *f)
 
 /*
 
- @deftypefn Extension void expandargv (int *@var{argcp}, char ***@var{argvp})
+@deftypefn Extension void expandargv (int *@var{argcp}, char ***@var{argvp})
 
- The @var{argcp} and @code{argvp} arguments are pointers to the usual
- @code{argc} and @code{argv} arguments to @code{main}.  This function
- looks for arguments that begin with the character @samp{@@}.  Any such
- arguments are interpreted as ``response files''.  The contents of the
- response file are interpreted as additional command line options.  In
- particular, the file is separated into whitespace-separated strings;
- each such string is taken as a command-line option.  The new options
- are inserted in place of the option naming the response file, and
- @code{*argcp} and @code{*argvp} will be updated.  If the value of
- @code{*argvp} is modified by this function, then the new value has
- been dynamically allocated and can be deallocated by the caller with
- @code{freeargv}.  However, most callers will simply call
- @code{expandargv} near the beginning of @code{main} and allow the
- operating system to free the memory when the program exits.
+The @var{argcp} and @code{argvp} arguments are pointers to the usual
+@code{argc} and @code{argv} arguments to @code{main}.  This function
+looks for arguments that begin with the character @samp{@@}.  Any such
+arguments are interpreted as ``response files''.  The contents of the
+response file are interpreted as additional command line options.  In
+particular, the file is separated into whitespace-separated strings;
+each such string is taken as a command-line option.  The new options
+are inserted in place of the option naming the response file, and
+@code{*argcp} and @code{*argvp} will be updated.  If the value of
+@code{*argvp} is modified by this function, then the new value has
+been dynamically allocated and can be deallocated by the caller with
+@code{freeargv}.  However, most callers will simply call
+@code{expandargv} near the beginning of @code{main} and allow the
+operating system to free the memory when the program exits.
 
- @end deftypefn
+@end deftypefn
 
- */
+*/
 
 void
-expandargv (int *argcp, char ***argvp)
+expandargv(int *argcp, char ***argvp)
 {
   /* The argument we are currently processing.  */
   int i = 0;
   /* Non-zero if ***argvp has been dynamically allocated.  */
   int argv_dynamic = 0;
   /* Limit the number of response files that we parse in order
-   to prevent infinite recursion.  */
+   * to prevent infinite recursion.  */
   unsigned int iteration_limit = 2000;
   /* Loop over the arguments, handling response files.  We always skip
-   ARGVP[0], as that is the name of the program being run.  */
+   * ARGVP[0], as that is the name of the program being run.  */
   while (++i < *argcp)
     {
       /* The name of the response file.  */
@@ -489,8 +493,8 @@ expandargv (int *argcp, char ***argvp)
          files that include other response files.  */
       --i;
     error:
-      /* We're all done with the file now.  */
-      fclose (f);
+      /* We are all done with the file now.  */
+      fclose(f);
     }
 }
 
@@ -506,7 +510,7 @@ Returns zero if @var{argv} is NULL.
 */
 
 int
-countargv (char **argv)
+countargv(char **argv)
 {
   int argc;
 
@@ -518,9 +522,7 @@ countargv (char **argv)
 }
 
 #ifdef MAIN
-
-/* Simple little test driver. */
-
+/* Simple little test driver: */
 static const char *const tests[] =
 {
   "a simple command line",
@@ -531,7 +533,7 @@ static const char *const tests[] =
   "arg 'Jack said \\\"hi\\\"' has double quotes",
   "a b c d e f g h i j k l m n o p q r s t u v w x y z 1 2 3 4 5 6 7 8 9",
 
-  /* This should be expanded into only one argument.  */
+  /* This should be expanded into only one argument: */
   "trailing-whitespace ",
 
   "",
@@ -539,7 +541,7 @@ static const char *const tests[] =
 };
 
 int
-main (void)
+main(void)
 {
   char **argv;
   const char *const *test;
@@ -547,23 +549,28 @@ main (void)
 
   for (test = tests; *test != NULL; test++)
     {
-      printf ("buildargv(\"%s\")\n", *test);
-      if ((argv = buildargv (*test)) == NULL)
+      printf("buildargv(\"%s\")\n", *test);
+      if ((argv = buildargv(*test)) == NULL)
 	{
-	  printf ("failed!\n\n");
+	  printf("failed!\n\n");
 	}
       else
 	{
 	  for (targs = argv; *targs != NULL; targs++)
 	    {
-	      printf ("\t\"%s\"\n", *targs);
+	      printf("\t\"%s\"\n", *targs);
 	    }
-	  printf ("\n");
+	  printf("\n");
 	}
-      freeargv (argv);
+# if defined(__STRICT_ANSI__) || defined(lint) || defined(__clang__) || \
+     defined(DEBUG) || defined(TEST) || defined(MAIN)
+      consume_whitespace((const char **)argv);
+# endif /* __STRICT_ANSI__ || lint || __clang__ || DEBUG || TEST || MAIN */
+      freeargv(argv);
     }
 
   return 0;
 }
-
 #endif	/* MAIN */
+
+/* EOF */

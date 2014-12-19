@@ -1,4 +1,4 @@
-/*
+/* strncasecmp.c
  * Copyright (c) 1987 Regents of the University of California.
  * All rights reserved.
  *
@@ -11,7 +11,7 @@
  */
 
 /*
-  
+
 @deftypefn Supplemental int strncasecmp (const char *@var{s1}, const char *@var{s2})
 
 A case-insensitive @code{strncmp}.
@@ -84,3 +84,5 @@ strncasecmp(const char *s1, const char *s2, register size_t n)
     }
     return 0;
 }
+
+/* EOF */

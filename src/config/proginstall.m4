@@ -1,9 +1,9 @@
-# AC_PROG_INSTALL
-# ---------------
-#
-# This macro is stolen from Autoconf 2.61a-341.
-# It requires `install' to be able to install multiple files at once.
-# This file will be obsolete when GCC moves to Autoconf 2.62.
+dnl# AC_PROG_INSTALL
+dnl# ---------------
+dnl#
+dnl# This macro is stolen from Autoconf 2.61a-341.
+dnl# It requires `install' to be able to install multiple files at once.
+dnl# This file will be obsolete when GCC moves to Autoconf 2.62.
 
 m4_version_prereq([2.62],[],
 [
@@ -82,7 +82,7 @@ rm -rf conftest.one conftest.two conftest.dir
 fi
 dnl# Do special magic for INSTALL instead of AC_SUBST, to get
 dnl# relative names right.
-AC_MSG_RESULT([$INSTALL])
+AC_MSG_RESULT([${INSTALL}])dnl
 
 # Use test -z because SunOS4 sh mishandles braces in ${var-val}.
 # It thinks the first close brace ends the variable substitution.
@@ -95,4 +95,4 @@ AC_SUBST([INSTALL_SCRIPT])dnl
 test -z "$INSTALL_DATA" && INSTALL_DATA='${INSTALL} -m 644'
 AC_SUBST([INSTALL_DATA])dnl
 ])dnl# AC_PROG_INSTALL
-])
+])dnl

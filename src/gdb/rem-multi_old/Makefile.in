@@ -228,14 +228,16 @@ CXX = @CXX@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
-DEFS = @DEFS@
+DEFS = @DEFS@ @EXTRA_DEFS@
 DEPDIR = @DEPDIR@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+EXTRA_DEFS = @EXTRA_DEFS@
 GREP = @GREP@
+HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -262,6 +264,7 @@ RANLIB = @RANLIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
 VERSION = @VERSION@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -319,10 +322,13 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 ACLOCAL_AMFLAGS = -I../m4 --install
-AM_CPPFLAGS = -I. -I.. -I${srcdir}/.. -I${srcdir}/../.. -I${srcdir}/../common -I${srcdir}/../config -I${srcdir}/../macosx -I${srcdir}/../signals -I${srcdir}/../../config -I${srcdir}/../../include -I${srcdir}/../../bfd -I${srcdir}/../../intl
-AM_CFLAGS = -ggdb -fno-strict-aliasing -std=gnu99 -Wall -Wextra -Wold-style-definition -Wtrampolines -Wwrite-strings -Wformat=2 -Wmissing-include-dirs @MAINT@ -Wstrict-prototypes -Wnested-externs
+upsrcdir = ${srcdir}/..
+upupsrcdir = ${upsrcdir}/..
+AM_CPPFLAGS = -I. -I.. -I${upsrcdir} -I${upupsrcdir} -I${upsrcdir}/common -I${upsrcdir}/config -I${upsrcdir}/macosx -I${upsrcdir}/signals -I${upupsrcdir}/config -I${upupsrcdir}/include -I${upupsrcdir}/bfd -I${upupsrcdir}/intl
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+AM_CFLAGS = $(C_ARCHFLAGS) -ggdb -fno-strict-aliasing -std=gnu99 -Wall -Wextra -Wold-style-definition -Wtrampolines -Wwrite-strings -Wformat=2 -Wmissing-include-dirs @MAINT@ -Wstrict-prototypes -Wnested-externs
 REMOTE_CFLAGS_COMBINED = ${AM_CPPFLAGS} ${DEFS} ${AM_CFLAGS}
-AM_LDFLAGS = -L. -L..
+AM_LDFLAGS = -L. -L.. $(C_ARCHFLAGS)
 serve_SOURCES = remote_server.c \
 		remote_inflow.c \
 		remote_utils.c \

@@ -18,9 +18,13 @@ SUBDIRS = @subdirs@
 
 EXEEXT = @EXEEXT@
 
-######################################################################
-# The following lines are things you may want to change
-######################################################################
+BUILD_ARCHITECTURE = @BUILD_ARCHITECTURE@
+HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
+TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
+
+###########################################################################
+# The following lines are things you (or configure) may want to change
+###########################################################################
 
 # Tcl include files. (If you have NOT installed Tcl yet, read the README
 # file).
@@ -74,8 +78,9 @@ X11_LD_FLAGS =
 # computed by configure. Do this at your own risk - it obviously goes
 # against the idea of configure's interface, however this is established
 # tradition at some sites (e.g., Cygnus)!
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 CFLAGS = @CFLAGS@
-XCFLAGS = @CFLAGS@ @EXP_CFLAGS@
+XCFLAGS = @CFLAGS@ @EXP_CFLAGS@ $(C_ARCHFLAGS)
 
 # Flags to pass only to linker (after .o files but before libraries)
 LDFLAGS = @EXP_LDFLAGS@

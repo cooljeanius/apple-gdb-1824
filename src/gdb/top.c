@@ -1,4 +1,4 @@
-/* Top level stuff for GDB, the GNU debugger.
+/* top.c: Top level stuff for GDB, the GNU debugger.
 
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994,
    1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
@@ -89,10 +89,10 @@
 char gdbinit[PATH_MAX + 1] = GDBINIT_FILENAME;
 
 /* APPLE LOCAL begin global gdbinit */
-#ifndef GDBINIT_GLOBAL 
-#define GDBINIT_GLOBAL          "/etc/gdb.conf" 
-#endif 
-char gdbinit_global[] = GDBINIT_GLOBAL; 
+#ifndef GDBINIT_GLOBAL
+#define GDBINIT_GLOBAL          "/etc/gdb.conf"
+#endif
+char gdbinit_global[] = GDBINIT_GLOBAL;
 /* APPLE LOCAL end global gdbinit */
 
 int inhibit_gdbinit = 0;
@@ -161,22 +161,22 @@ int baud_rate = -1;
 
 /* Timeout limit for response from target. */
 
-/* The default value has been changed many times over the years.  It 
-   was originally 5 seconds.  But that was thought to be a long time 
+/* The default value has been changed many times over the years.  It
+   was originally 5 seconds.  But that was thought to be a long time
    to sit and wait, so it was changed to 2 seconds.  That was thought
-   to be plenty unless the connection was going through some terminal 
+   to be plenty unless the connection was going through some terminal
    server or multiplexer or other form of hairy serial connection.
 
-   In mid-1996, remote_timeout was moved from remote.c to top.c and 
+   In mid-1996, remote_timeout was moved from remote.c to top.c and
    it began being used in other remote-* targets.  It appears that the
    default was changed to 20 seconds at that time, perhaps because the
    Renesas E7000 ICE didn't always respond in a timely manner.
 
    But if 5 seconds is a long time to sit and wait for retransmissions,
-   20 seconds is far worse.  This demonstrates the difficulty of using 
+   20 seconds is far worse.  This demonstrates the difficulty of using
    a single variable for all protocol timeouts.
 
-   As remote.c is used much more than remote-e7000.c, it was changed 
+   As remote.c is used much more than remote-e7000.c, it was changed
    back to 2 seconds in 1999. */
 
 int remote_timeout = 2;
@@ -240,11 +240,11 @@ void (*deprecated_command_loop_hook) (void);
 void (*deprecated_print_frame_info_listing_hook) (struct symtab * s, int line,
 						  int stopline, int noerror);
 /* APPLE LOCAL begin hooks */
-void (*print_frame_more_info_hook) (struct ui_out *uiout, 
-                                    struct symtab_and_line *sal,  
-                                    struct frame_info *fi); 
+void (*print_frame_more_info_hook) (struct ui_out *uiout,
+                                    struct symtab_and_line *sal,
+                                    struct frame_info *fi);
 /* APPLE LOCAL end hooks */
-                                     
+
 /* Replaces most of query.  */
 
 int (*deprecated_query_hook) (const char *, va_list);
@@ -334,7 +334,7 @@ void (*frame_changed_hook) (int new_frame_number);
 /* called when the stack changes (i.e. a new frame is added) */
 
 void (*stack_changed_hook) (void);
- 
+
 /* called when command line input is needed */
 
 char *(*command_line_input_hook) (char *, int, char *);
@@ -349,14 +349,14 @@ void (*deprecated_context_hook) (int id);
 void (*deprecated_error_hook) (void);
 
 
-/* called when a stepping command (step, next, stepi, nexti) is issued */ 
-void (*stepping_command_hook) (void); 
- 
-/* called when the continue command is issued */ 
-void (*continue_command_hook) (void); 
- 
-/* called when the run command is issued; return 1 means do the run; 0 means do not */ 
-int (*run_command_hook) (void); 
+/* called when a stepping command (step, next, stepi, nexti) is issued */
+void (*stepping_command_hook) (void);
+
+/* called when the continue command is issued */
+void (*continue_command_hook) (void);
+
+/* called when the run command is issued; return 1 means do the run; 0 means do not */
+int (*run_command_hook) (void);
 
 /* called when we call a function by hand.  */
 void (*hand_call_function_hook) (void);
@@ -393,10 +393,10 @@ quit_cover (void *s)
    user-defined command).  */
 
 void
-do_restore_instream_cleanup (void *stream)
+do_restore_instream_cleanup(void *stream)
 {
   /* Restore the previous input stream.  */
-  instream = stream;
+  instream = (FILE *)stream;
 }
 
 /* Read commands from STREAM.  */
@@ -420,30 +420,33 @@ read_command_file (FILE *stream)
      won't work correctly.  So for command files, we temporarily force
      the target to run synchronously.  */
 
-  if (target_can_async_p ()) 
-    { 
-      gdb_set_async_override ((void *) 1); 
-      make_cleanup (gdb_set_async_override, (void *) 0); 
-    } 
+  if (target_can_async_p ())
+    {
+      gdb_set_async_override ((void *) 1);
+      make_cleanup (gdb_set_async_override, (void *) 0);
+    }
   /* APPLE LOCAL end async */
   command_loop ();
   do_cleanups (cleanups);
 }
 
-void (*pre_init_ui_hook) (void);
+void (*pre_init_ui_hook)(void);
 
 #ifdef __MSDOS__
 void
-do_chdir_cleanup (void *old_dir)
+do_chdir_cleanup(void *old_dir)
 {
-  chdir (old_dir);
-  xfree (old_dir);
+  chdir(old_dir);
+  xfree(old_dir);
 }
-#endif
+#endif /* __MSDOS__ */
+
+/* need to put this prototype here, because cli/cli-logging.c has no header
+ * to go with it: */
+extern void log_command(char *);
 
 /* Execute the line P as a command.
-   Pass FROM_TTY as second argument to the defining function.  */
-
+ * Pass FROM_TTY as second argument to the defining function.  */
 void
 execute_command (char *p, int from_tty)
 {
@@ -466,7 +469,6 @@ execute_command (char *p, int from_tty)
     return;
 
   serial_log_command (p);
-  extern void log_command (char *);
   log_command (p);
 
   while (*p == ' ' || *p == '\t')
@@ -944,13 +946,13 @@ command_line_input (char *prompt_arg, int repeat, char *annotation_suffix)
   /* APPLE LOCAL: run this to give a UI driving gdb to field
      command input while we wait for the result.  */
 
-  if (command_line_input_hook && (instream == stdin)) 
-    { 
-      char *ret_val; 
-      ret_val = command_line_input_hook (prompt_arg, repeat, annotation_suffix); 
-      return ret_val; 
-    } 
- 
+  if (command_line_input_hook && (instream == stdin))
+    {
+      char *ret_val;
+      ret_val = command_line_input_hook (prompt_arg, repeat, annotation_suffix);
+      return ret_val;
+    }
+
   if (annotation_level > 1 && instream == stdin)
     {
       local_prompt = alloca ((prompt_arg == NULL ? 0 : strlen (prompt_arg))
@@ -1148,7 +1150,7 @@ print_gdb_version (struct ui_file *stream)
      number, which starts after last space. */
 
   /* APPLE LOCAL build date */
-  fprintf_filtered (stream, "GNU gdb %s (%s)\n", version, build_date); 
+  fprintf_filtered (stream, "GNU gdb %s (%s)\n", version, build_date);
 
   /* Second line is a copyright notice. */
 
@@ -1258,8 +1260,8 @@ quit_target (void *arg)
     write_history (history_filename);
 
   /* APPLE LOCAL */
-  if (state_change_hook) 
-    state_change_hook (STATE_NOT_ACTIVE); 
+  if (state_change_hook)
+    state_change_hook (STATE_NOT_ACTIVE);
 
   do_final_cleanups (ALL_CLEANUPS);	/* Do any final cleanups before exiting */
 
@@ -1279,7 +1281,7 @@ quit_force (char *args, int from_tty)
   gdb_quitting = 1;
   /* APPLE LOCAL end gdb_quitting */
 
-  /* An optional expression may be used to cause gdb to terminate with the 
+  /* An optional expression may be used to cause gdb to terminate with the
      value of that expression. */
   if (args)
     {
@@ -1481,9 +1483,9 @@ init_history (void)
 #endif
     }
   /* APPLE LOCAL begin history read error */
-  ret = read_history (history_filename); 
+  ret = read_history (history_filename);
   if ((ret != 0) && (ret != ENOENT))
-    warning ("unable to read history from \"%s\": %s", history_filename, strerror (ret)); 
+    warning ("unable to read history from \"%s\": %s", history_filename, strerror (ret));
   /* APPLE LOCAL end history read error */
 }
 

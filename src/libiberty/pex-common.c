@@ -1,4 +1,4 @@
-/* Common code for executing a program in a sub-process.
+/* pex-common.c: Common code for executing a program in a sub-process.
    Copyright (C) 2005 Free Software Foundation, Inc.
    Written by Ian Lance Taylor <ian@airs.com>.
 
@@ -470,3 +470,5 @@ pex_free (struct pex_obj *obj)
 
   free (obj);
 }
+
+/* EOF */

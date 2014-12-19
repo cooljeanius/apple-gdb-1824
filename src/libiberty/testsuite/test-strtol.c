@@ -1,4 +1,4 @@
-/* Test program for strtol family of funtions,
+/* test-strtol.c: Test program for strtol family of funtions,
    Copyright (C) 2014 Free Software Foundation, Inc.
    Written by Yury Gribov <y.gribov@samsung.com>
 
@@ -179,7 +179,18 @@ int
 main(int argc, char **argv)
 {
   int fails;
-  fails = run_tests (test_data, sizeof (test_data) / sizeof (test_data[0]));
-  exit (fails ? EXIT_FAILURE : EXIT_SUCCESS);
+
+#ifdef DEBUG
+  printf("argc for main() is '%i', and its argv[0] is '%s'.\n",
+         argc, argv[0]);
+#else
+# if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
+#  pragma unused (argc, argv)
+# endif /* (__APPLE__ && __APPLE_CC__) || __MWERKS__ */
+#endif /* DEBUG */
+
+  fails = run_tests(test_data, sizeof(test_data) / sizeof(test_data[0]));
+  exit(fails ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
+/* EOF */

@@ -84,15 +84,15 @@ static int tflags_ours;
    {our,inferior}_ttystate.  */
 PROCESS_GROUP_TYPE our_process_group;
 PROCESS_GROUP_TYPE inferior_process_group;
-#endif
+#endif /* PROCESS_GROUP_TYPE */
 
 /* While the inferior is running, we want SIGINT and SIGQUIT to go to the
    inferior only.  If we have job control, that takes care of it.  If not,
    we save our handlers in these two variables and set SIGINT and SIGQUIT
    to SIG_IGN.  */
 
-static void (*sigint_ours) ();
-static void (*sigquit_ours) ();
+static void (*sigint_ours)();
+static void (*sigquit_ours)();
 
 /* The name of the tty (from the `tty' command) that we gave to the inferior
    when it was last started.  */
@@ -100,16 +100,13 @@ static void (*sigquit_ours) ();
 static const char *inferior_thisrun_terminal;
 
 /* Nonzero if our terminal settings are in effect.  Zero if the
-   inferior's settings are in effect.  Ignored if !gdb_has_a_terminal
-   ().  */
+   inferior's settings are in effect.  Ignored if !gdb_has_a_terminal() */
 
 int terminal_is_ours;
 
-enum
-  {
+enum {
     yes, no, have_not_checked
-  }
-gdb_has_a_terminal_flag = have_not_checked;
+} gdb_has_a_terminal_flag = have_not_checked;
 
 /* Does GDB have a terminal (on stdin)?  */
 int
@@ -355,7 +352,7 @@ terminal_ours_1 (int output_only)
 	 erroneously swap the PID that you got from the process with
 	 the process group for gdb.  This will cause interrupting the
 	 process to fail later on.  So we will just NOT do this when
-	 we are attaching...  
+	 we are attaching...
 	 In the long run, we should just not use this terminal code for
          MacOS X, since it is broken in a bunch of ways... */
 
@@ -600,7 +597,7 @@ kill_command (char *arg, int from_tty)
   if (ptid_equal (inferior_ptid, null_ptid))
     error (_("The program is not being run."));
   /* APPLE LOCAL begin don't query if we're an MI command */
-  if (!ui_out_is_mi_like_p (uiout) 
+  if (!ui_out_is_mi_like_p (uiout)
       && !query ("Kill the program being debugged? "))
     /* APPLE LOCAL end don't query if we're an MI command */
     error (_("Not confirmed."));
@@ -743,7 +740,7 @@ gdb_setpgid (void)
       retval = setpgid (getpid (), getpid ());
 #else
 #ifdef HAVE_SETPGRP
-#ifdef SETPGRP_VOID 
+#ifdef SETPGRP_VOID
       retval = setpgrp ();
 #else
       retval = setpgrp (getpid (), getpid ());

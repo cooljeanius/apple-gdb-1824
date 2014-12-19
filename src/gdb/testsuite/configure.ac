@@ -91,10 +91,13 @@ if test -e ./config.cache; then
 elif test -e ../config.cache; then
   sed -i "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" ../config.cache
   sed -i "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" ../config.cache
+elif test -r .././config.cache -a -w .././config.cache; then
+  sed -i "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" .././config.cache
+  sed -i "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" .././config.cache
 fi
 
 # Check for the 'make' the user wants to use.
-AC_CHECK_PROGS([MAKE],[make])
+AC_CHECK_PROGS([MAKE],[make gmake gnumake remake])
 MAKE_IS_GNU=""
 case "`${MAKE} --version 2>&1 | sed 1q`" in
   *GNU*)

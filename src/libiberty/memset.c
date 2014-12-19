@@ -1,4 +1,4 @@
-/* memset
+/* memset.c
    This implementation is in the public domain.  */
 
 /*
@@ -23,3 +23,5 @@ memset (PTR dest, register int val, register size_t len)
     *ptr++ = val;
   return dest;
 }
+
+/* EOF */

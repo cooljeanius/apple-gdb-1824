@@ -31,8 +31,12 @@
 .libs
 .gdbinit
 .gdb_history
+.local.vimrc
+.lvimrc
+LAST_UPDATED
 Makefile
 Makefile*orig
+REVISION
 TAGS
 TAGS.sub
 TEMP
@@ -84,3 +88,4 @@ mh-frag
 mt-frag
 update.out
 update.sourceware
+x86_64-apple-darwin10.8.0/*

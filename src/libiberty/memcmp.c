@@ -1,4 +1,4 @@
-/* memcmp -- compare two memory regions.
+/* memcmp.c -- compare two memory regions.
    This function is in the public domain.  */
 
 /*
@@ -32,3 +32,4 @@ memcmp (const PTR str1, const PTR str2, size_t count)
   return 0;
 }
 
+/* EOF */

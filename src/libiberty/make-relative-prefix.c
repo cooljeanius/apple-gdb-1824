@@ -1,4 +1,4 @@
-/* Relative (relocatable) prefix support.
+/* make-relative-prefix.c: Relative (relocatable) prefix support.
    Copyright (C) 1987, 1989, 1992, 1993, 1994, 1995, 1996, 1997, 1998,
    1999, 2000, 2001, 2002 Free Software Foundation, Inc.
 
@@ -78,7 +78,7 @@ relative prefix can be found, return @code{NULL}.
 #  define HAVE_DOS_BASED_FILE_SYSTEM
 #  define HAVE_HOST_EXECUTABLE_SUFFIX
 #  define HOST_EXECUTABLE_SUFFIX ".exe"
-#  ifndef DIR_SEPARATOR_2 
+#  ifndef DIR_SEPARATOR_2
 #    define DIR_SEPARATOR_2 '\\'
 #  endif
 #  define PATH_SEPARATOR ';'
@@ -387,3 +387,5 @@ make_relative_prefix (const char *progname,
 
   return ret;
 }
+
+/* EOF */

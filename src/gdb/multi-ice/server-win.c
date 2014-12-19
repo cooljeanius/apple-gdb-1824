@@ -59,20 +59,20 @@ int platform_init(void)
     return 0;
   }
 
-  app_instance = GetModuleHandle((LPCTSTR)NULL);
+  app_instance = (HINSTANCE)GetModuleHandle((LPCTSTR)NULL);
 
   wc.lpszClassName  = program_class;
   wc.hInstance 	    = app_instance;
   wc.lpfnWndProc    = window_proc;
 #ifdef IDC_ARROW
-  wc.hCursor	    = LoadCursor((HINSTANCE)NULL, IDC_ARROW);
+  wc.hCursor	    = (HCURSOR)LoadCursor((HINSTANCE)NULL, IDC_ARROW);
 #else
-  wc.hCursor	    = LoadCursor((HINSTANCE)NULL, NULL);
+  wc.hCursor	    = (HCURSOR)LoadCursor((HINSTANCE)NULL, NULL);
 #endif /* IDC_ARROW */
 #ifdef IDI_APPLICATION
-  wc.hIcon	    = LoadIcon((HINSTANCE)NULL, IDI_APPLICATION);
+  wc.hIcon	    = (HICON)LoadIcon((HINSTANCE)NULL, IDI_APPLICATION);
 #else
-  wc.hIcon	    = LoadIcon((HINSTANCE)NULL, NULL);
+  wc.hIcon	    = (HICON)LoadIcon((HINSTANCE)NULL, NULL);
 #endif /* IDI_APPLICATION */
   wc.lpszMenuName   = (char *)NULL;
 #ifdef WHITE_BRUSH
@@ -89,17 +89,17 @@ int platform_init(void)
   }
 
 
-  main_window = CreateWindow(program_class,
-                             "Multi-Ice Gdbserver",
-                             WS_OVERLAPPEDWINDOW,
-                             CW_USEDEFAULT,
-                             CW_USEDEFAULT,
-                             CW_USEDEFAULT,
-                             CW_USEDEFAULT,
-                             (HWND)NULL,
-                             (HMENU)NULL,
-                             (HINSTANCE)app_instance,
-                             (void *)NULL);
+  main_window = (HWND)CreateWindow(program_class,
+                                   "Multi-Ice Gdbserver",
+                                   WS_OVERLAPPEDWINDOW,
+                                   CW_USEDEFAULT,
+                                   CW_USEDEFAULT,
+                                   CW_USEDEFAULT,
+                                   CW_USEDEFAULT,
+                                   (HWND)NULL,
+                                   (HMENU)NULL,
+                                   (HINSTANCE)app_instance,
+                                   (void *)NULL);
 
   SetConsoleCtrlHandler((PHANDLER_ROUTINE)console_control_handler, TRUE);
 

@@ -1,3 +1,5 @@
+/* tmpnam.c */
+
 /*
 
 @deftypefn Supplemental char* tmpnam (char *@var{s})
@@ -50,3 +52,5 @@ tmpnam (char *s)
 
   return s;
 }
+
+/* EOF */

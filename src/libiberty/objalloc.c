@@ -286,6 +286,8 @@ objalloc_free_block (struct objalloc *o, PTR block)
 	p = p->next;
 
       o->current_ptr = current_ptr;
-      o->current_space = ((char *) p + CHUNK_SIZE) - current_ptr;
+      o->current_space = (((char *)p + CHUNK_SIZE) - current_ptr);
     }
 }
+
+/* EOF */

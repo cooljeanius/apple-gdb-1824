@@ -31,8 +31,8 @@
   #pragma alloca
 #endif /* _AIX && !__GNUC__ && !REGEX_MALLOC */
 
-#undef	_GNU_SOURCE
-#define _GNU_SOURCE
+#undef _GNU_SOURCE
+#define _GNU_SOURCE 1
 
 #ifndef INSIDE_RECURSION
 # ifdef HAVE_CONFIG_H
@@ -58,7 +58,7 @@
 #  endif /* HAVE_STDDEF_H */
 # else
 #  ifdef HAVE_SYS_TYPES_H
-/* We need this for `regex.h', and perhaps for the Emacs include files.  */
+/* We need this for `regex.h', and perhaps for the Emacs include files: */
 #   include <sys/types.h>
 #  else
 #   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
@@ -67,7 +67,9 @@
 #  endif /* HAVE_SYS_TYPES_H */
 # endif /* STDC_HEADERS && !emacs */
 
-# define WIDE_CHAR_SUPPORT (HAVE_WCTYPE_H && HAVE_WCHAR_H && HAVE_BTOWC)
+# ifndef WIDE_CHAR_SUPPORT
+#  define WIDE_CHAR_SUPPORT (HAVE_WCTYPE_H && HAVE_WCHAR_H && HAVE_BTOWC)
+# endif /* !WIDE_CHAR_SUPPORT */
 
 /* For platform which support the ISO C amendement 1 functionality we
    support user defined character classes.  */
@@ -159,7 +161,7 @@
 /* This define is so xgettext can find the internationalizable
    strings.  */
 #  define gettext_noop(String) String
-# endif
+# endif /* !gettext_noop */
 
 /* The `emacs' switch turns on certain matching commands
    that make sense only in Emacs. */
@@ -199,13 +201,13 @@ char *realloc ();
 #  ifndef INHIBIT_STRING_HEADER
 #   if defined HAVE_STRING_H || defined STDC_HEADERS || defined _LIBC
 #    include <string.h>
-#    ifndef bzero
+#    if !defined(bzero) && (!defined(HAVE_BZERO) || !defined(HAVE_DECL_BZERO))
 #     ifndef _LIBC
 #      define bzero(s, n)	(memset (s, '\0', n), (s))
 #     else
 #      define bzero(s, n)	__bzero (s, n)
 #     endif /* !_LIBC */
-#    endif /* !bzero */
+#    endif /* !bzero && (!HAVE_BZERO || !HAVE_DECL_BZERO) */
 #   else
 #    include <strings.h>
 #    ifndef memcmp
@@ -237,7 +239,7 @@ char *realloc ();
 #  include <limits.h>
 # else
 #  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#   warning regex.c expects <limits.h> to be included.
+#   warning "regex.c expects <limits.h> to be included."
 #  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* _LIBC || HAVE_LIMITS_H */
 
@@ -698,7 +700,7 @@ typedef enum
 #   define INSIDE_RECURSION
 #   include "regex.c"
 #   undef INSIDE_RECURSION
-#  endif
+#  endif /* MBS_SUPPORT */
 #  define BYTE
 #  define INSIDE_RECURSION
 #  include "regex.c"
@@ -763,7 +765,7 @@ PREFIX(extract_number) (int *dest, UCHAR_T *source)
 #  else /* BYTE */
   int temp = SIGN_EXTEND_CHAR (*(source + 1));
   *dest = *source & 0377;
-  *dest += temp << 8;
+  *dest += (temp << 8);
 #  endif /* WCHAR */
 }
 
@@ -1753,7 +1755,7 @@ typedef struct
 #   define NUM_NONREG_ITEMS 5 /* Includes failure point id.  */
 #  else
 #   define NUM_NONREG_ITEMS 4
-#  endif
+#  endif /* DEBUG */
 
 /* We push at most this many items on the stack.  */
 /* We used to use (num_regs - 1), which is the number of registers
@@ -2253,13 +2255,13 @@ typedef struct
 /* This should NOT happen but some implementation might still have this
    problem. Use a reasonable default value.  */
 #    define CHAR_CLASS_MAX_LENGTH 256
-#   endif
+#   endif /* CHARCLASS_NAME_MAX */
 
 #   ifdef _LIBC
 #    define IS_CHAR_CLASS(string) __wctype (string)
 #   else
 #    define IS_CHAR_CLASS(string) wctype (string)
-#   endif
+#   endif /* _LIBC */
 #  else
 #   define CHAR_CLASS_MAX_LENGTH  6 /* Namely, `xdigit'.  */
 
@@ -2270,7 +2272,7 @@ typedef struct
     || STREQ (string, "space") || STREQ (string, "print")		\
     || STREQ (string, "punct") || STREQ (string, "graph")		\
     || STREQ (string, "cntrl") || STREQ (string, "blank"))
-#  endif
+#  endif /* _LIBC || WIDE_CHAR_SUPPORT */
 # endif /* DEFINED_ONCE */
 
 # ifndef MATCH_MAY_ALLOCATE
@@ -4253,9 +4255,9 @@ PREFIX(regex_compile) (const char *ARG_PREFIX(pattern),
 
   /* We have succeeded; set the length of the buffer.  */
 #ifdef WCHAR
-  bufp->used = (uintptr_t) b - (uintptr_t) COMPILED_BUFFER_VAR;
+  bufp->used = ((uintptr_t)b - (uintptr_t)COMPILED_BUFFER_VAR);
 #else
-  bufp->used = b - bufp->buffer;
+  bufp->used = (b - bufp->buffer);
 #endif /* WCHAR */
 
 #ifdef DEBUG
@@ -5066,27 +5068,27 @@ weak_alias (__re_search_2, re_search_2)
 # define MAX_ALLOCA_SIZE	2000
 
 # define FREE_WCS_BUFFERS() \
-  do {									      \
-    if (size1 > MAX_ALLOCA_SIZE)					      \
-      {									      \
-	free (wcs_string1);						      \
-	free (mbs_offset1);						      \
-      }									      \
-    else								      \
-      {									      \
-	FREE_VAR (wcs_string1);						      \
-	FREE_VAR (mbs_offset1);						      \
-      }									      \
-    if (size2 > MAX_ALLOCA_SIZE) 					      \
-      {									      \
-	free (wcs_string2);						      \
-	free (mbs_offset2);						      \
-      }									      \
-    else								      \
-      {									      \
-	FREE_VAR (wcs_string2);						      \
-	FREE_VAR (mbs_offset2);						      \
-      }									      \
+  do {									  \
+    if (size1 > MAX_ALLOCA_SIZE)					  \
+      {									  \
+	free (wcs_string1);						  \
+	free (mbs_offset1);						  \
+      }									  \
+    else								  \
+      {									  \
+	FREE_VAR (wcs_string1);						  \
+	FREE_VAR (mbs_offset1);						  \
+      }									  \
+    if (size2 > MAX_ALLOCA_SIZE) 					  \
+      {									  \
+	free (wcs_string2);						  \
+	free (mbs_offset2);						  \
+      }									  \
+    else								  \
+      {									  \
+	FREE_VAR (wcs_string2);						  \
+	FREE_VAR (mbs_offset2);						  \
+      }									  \
   } while (0)
 
 #endif /* WCHAR */
@@ -5809,9 +5811,9 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
 
   /* The starting position is bogus.  */
 #ifdef WCHAR
-  if (pos < 0 || pos > csize1 + csize2)
+  if ((pos < 0) || (pos > (csize1 + csize2)))
 #else /* BYTE */
-  if (pos < 0 || pos > size1 + size2)
+  if ((pos < 0) || (pos > (size1 + size2)))
 #endif
     {
       FREE_VARIABLES ();
@@ -5898,8 +5900,8 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
       csize1 = 0;
 #endif /* WCHAR */
     }
-  end1 = string1 + size1;
-  end2 = string2 + size2;
+  end1 = (string1 + size1);
+  end2 = (string2 + size2);
 
   /* Compute where to stop matching, within the two strings.  */
 #ifdef WCHAR
@@ -5925,13 +5927,13 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
 #else
   if (stop <= size1)
     {
-      end_match_1 = string1 + stop;
+      end_match_1 = (string1 + stop);
       end_match_2 = string2;
     }
   else
     {
       end_match_1 = end1;
-      end_match_2 = string2 + stop - size1;
+      end_match_2 = (string2 + stop - size1);
     }
 #endif /* WCHAR */
 
@@ -5961,14 +5963,14 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
       return -1;
     }
 #else
-  if (size1 > 0 && pos <= size1)
+  if ((size1 > 0) && (pos <= size1))
     {
-      d = string1 + pos;
+      d = (string1 + pos);
       dend = end_match_1;
     }
   else
     {
-      d = string2 + pos - size1;
+      d = (string2 + pos - size1);
       dend = end_match_2;
     }
 #endif /* WCHAR */
@@ -6653,7 +6655,7 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
 	    p += 1 + *p;
 
 	    if (!negate) goto fail;
-#undef WORK_BUFFER_SIZE
+# undef WORK_BUFFER_SIZE
 #endif /* WCHAR */
 	    SET_REGS_MATCHED ();
             d++;
@@ -7233,8 +7235,8 @@ byte_re_match_2_internal (struct re_pattern_buffer *bufp,
                register from the stack, since lowest will == highest in
                `pop_failure_point'.  */
             active_reg_t dummy_low_reg, dummy_high_reg;
-            UCHAR_T *pdummy = NULL;
-            const CHAR_T *sdummy = NULL;
+            UCHAR_T *pdummy = (UCHAR_T *)NULL;
+            const CHAR_T *sdummy = (const CHAR_T *)pdummy;
 
             DEBUG_PRINT1 ("EXECUTING pop_failure_jump.\n");
             POP_FAILURE_POINT (sdummy, pdummy,
@@ -8053,7 +8055,7 @@ regcomp (regex_t *preg, const char *pattern, int cflags)
   if (MB_CUR_MAX != 1)
     ret = wcs_regex_compile (pattern, strlen (pattern), syntax, preg);
   else
-# endif
+# endif /* MBS_SUPPORT */
     ret = byte_regex_compile (pattern, strlen (pattern), syntax, preg);
 
   /* POSIX does NOT distinguish between an unmatched open-group and an
@@ -8272,28 +8274,28 @@ weak_alias (__regfree, regfree)
 #undef GET_UNSIGNED_NUMBER
 #undef FREE_STACK_RETURN
 
-# undef POINTER_TO_OFFSET
-# undef MATCHING_IN_FRST_STRING
-# undef PREFETCH
-# undef AT_STRINGS_BEG
-# undef AT_STRINGS_END
-# undef WORDCHAR_P
-# undef FREE_VAR
-# undef FREE_VARIABLES
-# undef NO_HIGHEST_ACTIVE_REG
-# undef NO_LOWEST_ACTIVE_REG
+#undef POINTER_TO_OFFSET
+#undef MATCHING_IN_FRST_STRING
+#undef PREFETCH
+#undef AT_STRINGS_BEG
+#undef AT_STRINGS_END
+#undef WORDCHAR_P
+#undef FREE_VAR
+#undef FREE_VARIABLES
+#undef NO_HIGHEST_ACTIVE_REG
+#undef NO_LOWEST_ACTIVE_REG
 
-# undef CHAR_T
-# undef UCHAR_T
-# undef COMPILED_BUFFER_VAR
-# undef OFFSET_ADDRESS_SIZE
-# undef CHAR_CLASS_SIZE
-# undef PREFIX
-# undef ARG_PREFIX
-# undef PUT_CHAR
-# undef BYTE
-# undef WCHAR
+#undef CHAR_T
+#undef UCHAR_T
+#undef COMPILED_BUFFER_VAR
+#undef OFFSET_ADDRESS_SIZE
+#undef CHAR_CLASS_SIZE
+#undef PREFIX
+#undef ARG_PREFIX
+#undef PUT_CHAR
+#undef BYTE
+#undef WCHAR
 
-# define DEFINED_ONCE
+#define DEFINED_ONCE
 
 /* EOF */

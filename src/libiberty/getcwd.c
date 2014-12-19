@@ -24,23 +24,40 @@ then @code{getcwd} will obtain @var{len} bytes of space using
 #ifdef HAVE_SYS_PARAM_H
 # include <sys/param.h>
 #else
-# warning "getcwd.c expects <sys/param.h> to be included."
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "getcwd.c expects <sys/param.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_PARAM_H */
 #include <errno.h>
 #ifdef HAVE_STRING_H
 # include <string.h>
 #else
-# warning "getcwd.c expects <string.h> to be included."
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "getcwd.c expects <string.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STRING_H */
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #else
-# warning "getcwd.c expects <stdlib.h> to be included."
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "getcwd.c expects <stdlib.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDLIB_H */
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "getcwd.c expects <unistd.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* HAVE_UNISTD_H */
 
 /* prototypes: */
-extern char *getwd(char *buf, size_t len);
+#if !defined(_UNISTD_H_)
+extern char *getcwd(char *buf, size_t len);
+#endif /* !_UNISTD_H_ */
+#if !defined(_SYS_ERRNO_H_) && !defined(errno)
 extern int errno;
+#endif /* !_SYS_ERRNO_H_ && !errno */
 
 /* defines */
 #ifndef MAXPATHLEN
@@ -53,9 +70,9 @@ char *getcwd(char *buf, size_t len)
   char ourbuf[MAXPATHLEN];
   char *result;
 
-  result = getwd (ourbuf);
+  result = getwd(ourbuf);
   if (result) {
-    if (strlen (ourbuf) >= len) {
+    if (strlen(ourbuf) >= len) {
       errno = ERANGE;
       return 0;
     }
@@ -66,7 +83,7 @@ char *getcwd(char *buf, size_t len)
 	   return 0;
        }
     }
-    strcpy (buf, ourbuf);
+    strcpy(buf, ourbuf);
   }
   return buf;
 }

@@ -2288,17 +2288,15 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-
 DBG_MAJOR_VERSION=1
 DBG_MINOR_VERSION=7
 DBG_MICRO_VERSION=0
 DBG_VERSION=${DBG_MAJOR_VERSION}.${DBG_MINOR_VERSION}
 DBG_VERSION_FULL=${DBG_VERSION}.${DBG_MICRO_VERSION}
-# Tcl's handling of shared_lib_suffix requires this symbol exist
+# Tcl's handling of shared_lib_suffix requires this symbol exist:
 VERSION=${DBG_MAJOR_VERSION}.${DBG_MINOR_VERSION}
 
 ac_config_headers="$ac_config_headers Dbg_cf.h"
-
 
 
 #
@@ -2307,7 +2305,7 @@ ac_config_headers="$ac_config_headers Dbg_cf.h"
 # the alternative search directory is invoked by --with-tclconfig
 #
 
-if test x"${no_tcl}" = x ; then
+if test x"${no_tcl}" = x""; then
   # we reset no_tcl in case something fails here
   no_tcl=true
 
@@ -2378,12 +2376,12 @@ else
 
 fi
 
-  if test x"${ac_cv_c_tclconfig}" = x ; then
+  if test x"${ac_cv_c_tclconfig}" = x""; then
     TCLCONFIG="# no Tcl configs found"
     { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Cannot find Tcl configuration definitions" >&5
 $as_echo "$as_me: WARNING: Cannot find Tcl configuration definitions" >&2;}
   else
-    no_tcl=
+    no_tcl=""
     TCLCONFIG=${ac_cv_c_tclconfig}/tclConfig.sh
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: found ${TCLCONFIG}" >&5
 $as_echo "found ${TCLCONFIG}" >&6; }
@@ -2400,16 +2398,9 @@ $as_echo "$as_me: sourcing ${TCLCONFIG}" >&6;}
       fi
     fi
 
-
-
-# Tcl defines TCL_SHLIB_SUFFIX but TCL_SHARED_LIB_SUFFIX then looks for it
-# as just SHLIB_SUFFIX. How bizarre.
-    SHLIB_SUFFIX=${TCL_SHLIB_SUFFIX}
-
-
-
-
-
+            # Tcl defines TCL_SHLIB_SUFFIX but TCL_SHARED_LIB_SUFFIX then looks
+    # for it as just SHLIB_SUFFIX. How bizarre.
+    SHLIB_SUFFIX="${TCL_SHLIB_SUFFIX}"
 
 CC=${TCL_CC}
 ac_ext=c
@@ -3204,8 +3195,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 # If we cannot compile and link a trivial program, we cannot expect
 # anything to work
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the compiler ($CC) actually works" >&5
-$as_echo_n "checking whether the compiler ($CC) actually works... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the compiler (${CC}) actually works" >&5
+$as_echo_n "checking whether the compiler (${CC}) actually works... " >&6; }
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -3216,12 +3207,23 @@ else
   c_compiles=no
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-# Now do linking test
+# Now do the linking test:
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
 #include <stdio.h>
 
+int
+main ()
+{
+
+int main(void) {
+    return 0;
+}
+
+  ;
+  return 0;
+}
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
   c_links=yes
@@ -3230,18 +3232,18 @@ else
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
-
-if test x"${c_compiles}" = x"no" ; then
+if test x"${c_compiles}" = x"no"; then
   # error out
   as_fn_error $? "the native compiler is broken and will NOT compile." "$LINENO" 5
 fi
 
-if test x"${c_links}" = x"no" ; then
+if test x"${c_links}" = x"no"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
 $as_echo " " >&6; }
-  # Might fail even if it actually works, so just warn
+  # Might fail even if it actually works, so just warn instead of erroring:
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: the native linker might be broken." >&5
 $as_echo "$as_me: WARNING: the native linker might be broken." >&2;}
+  # (although I hope I have fixed it...)
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
@@ -3516,7 +3518,7 @@ $as_echo "no, using $LN_S" >&6; }
 fi
 
 
-# this will use a BSD compatible install or our included install-sh
+# This will use a BSD compatible install or our included install-sh script:
 ac_aux_dir=
 for ac_dir in "$srcdir" "$srcdir/.." "$srcdir/../.."; do
   if test -f "$ac_dir/install-sh"; then
@@ -4010,10 +4012,7 @@ $as_echo "$ac_cv_path_EGREP" >&6; }
 
 
 
-
-
-
-# Do actual checking for LynxOS now
+# Do the actual checking for LynxOS now:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking if running LynxOS" >&5
 $as_echo_n "checking if running LynxOS... " >&6; }
 if ${ac_cv_os_lynx+:} false; then :
@@ -4072,7 +4071,7 @@ $as_echo "no" >&6; }
 fi
 
 
-# we really only need the header files
+# we really only need the header files:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ANSI C header files" >&5
 $as_echo_n "checking for ANSI C header files... " >&6; }
 if ${ac_cv_header_stdc+:} false; then :
@@ -4226,7 +4225,7 @@ if ${ac_cv_c_tclh+:} false; then :
 else
 
 # first check to see if --with-tclinclude was specified
-if test x"${with_tclinclude}" != x ; then
+if test x"${with_tclinclude}" != x""; then
   if test -f ${with_tclinclude}/tclInt.h ; then
     ac_cv_c_tclh=`(cd ${with_tclinclude}; pwd)`
   elif test -f ${with_tclinclude}/generic/tclInt.h ; then
@@ -4319,15 +4318,12 @@ $as_echo "found in ${ac_cv_c_tclh}" >&6; }
     # in it.
     TCLHDIR="${ac_cv_c_tclh}"
     TCLHDIRDASHI="-I${ac_cv_c_tclh}"
-    TCL_LIBRARY=`echo $TCLHDIR | sed -e 's/generic//'`library
+    TCL_LIBRARY=`echo ${TCLHDIR} | sed -e 's/generic//'`library
   fi
 fi
 
 
-
-
-
-if test x"${no_tcl}" = x"true" ; then
+if test x"${no_tcl}" = x"true"; then
     echo "      ERROR: Cannot find Tcl directory"
     echo "      See README for information on how to obtain Tcl."
     echo "      If Tcl is installed, see INSTALL on how to tell"
@@ -4396,7 +4392,6 @@ _ACEOF
   LIBS="-lm $LIBS"
 
 fi
-
 
 #
 # Look for functions that may be missing
@@ -4880,7 +4875,6 @@ _ACEOF
 fi
 done
 
-
 #
 # Look for various header files
 #
@@ -4897,10 +4891,10 @@ else
 
 $as_echo "#define NO_STDLIB_H 1" >>confdefs.h
 
+
 fi
 
 done
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether sys/types.h defines makedev" >&5
 $as_echo_n "checking whether sys/types.h defines makedev... " >&6; }
 if ${ac_cv_header_sys_types_h_makedev+:} false; then :
@@ -4965,8 +4959,7 @@ fi
 
 done
 
-# Modify autoheader-created header
-
+# Modify the autoheader-created header:
 
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -5231,7 +5224,6 @@ _ACEOF
 
 fi
 
-
 # consume these flags so that user can invoke tcl-debug's configure with
 # the same command as Tcl's configure
 # Check whether --enable-load was given.
@@ -5278,24 +5270,9 @@ else
 $as_echo "unshared" >&6; }
 fi
 
-#
-# Set up makefile substitutions
-#
 
-
-
-
-
-
-
-
-
-
-
-
-
+# Output.
 ac_config_files="$ac_config_files Makefile DbgMkfl"
-
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure

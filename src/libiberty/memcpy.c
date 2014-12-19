@@ -1,4 +1,4 @@
-/* memcpy (the standard C function)
+/* memcpy.c: file for memcpy (the standard C function)
    This function is in the public domain.  */
 
 /*
@@ -23,3 +23,5 @@ memcpy (PTR out, const PTR in, size_t length)
     bcopy(in, out, length);
     return out;
 }
+
+/* EOF */

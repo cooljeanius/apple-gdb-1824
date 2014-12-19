@@ -1,4 +1,4 @@
-/* User Interface Events.
+/* gdb-events.h: User Interface Events.
 
    Copyright 1999, 2001, 2002 Free Software Foundation, Inc.
 
@@ -94,4 +94,6 @@ extern void gdb_events_deliver (struct gdb_events *vector);
 /* Clear event handlers.  */
 extern void clear_gdb_event_hooks (void);
 
-#endif
+#endif /* !GDB_EVENTS_H */
+
+/* EOF */

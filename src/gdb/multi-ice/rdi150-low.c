@@ -270,6 +270,9 @@ static int yield_arg;
 static int yield_count;
 #define YIELD_PERIOD 10
 
+/* FIXME: find a header for this prototype: */
+extern void yield_func(WinRDI_YieldArg *);
+
 void yield_func(WinRDI_YieldArg *arg)
 {
     ARMword empty;
@@ -311,8 +314,7 @@ int low_open_target(char *target_port, char *byte_sex, int query)
    * First, we will open the Multi-ICE DLL and dig all the procs
    * that we need out of it.
    */
-
-  handle = LoadLibrary ("Multi-ICE.dll");
+  handle = (HINSTANCE)LoadLibrary("Multi-ICE.dll");
   if (handle == NULL)
     {
       output_error ("Could not load the Multi-ICE DLL\n");
@@ -739,9 +741,9 @@ int low_open_target(char *target_port, char *byte_sex, int query)
       output ("No other modules found on debug target.\n");
     }
 
-  output ("\n");
+  output("\n");
 
-  if ( !aregisters )
+  if (!aregisters)
       aregisters = malloc( REGISTER_BYTES );
 
   return 1;
@@ -751,18 +753,16 @@ int low_open_target(char *target_port, char *byte_sex, int query)
  * low_close_target - Closes all the open modules in the target, and
  * closes the agent connection.
  */
-
 int
-low_close_target()
+low_close_target(void)
 {
-
   unsigned i;
   int result;
   ARMword dummy1, dummy2;
 
-  /* If we haven't allocated the processor description array yet,
-     then we have probably not gotten anywhere yet, so just exit.
-  */
+  /* If we have NOT allocated the processor description array yet,
+   * then we have probably not gotten anywhere yet, so just exit.
+   */
 
   if (proc_desc_array == NULL)
     return 1;
@@ -804,11 +804,9 @@ low_close_target()
    would indicate all threads.
 
    Returns 1 for success, 0 for error.
-
 */
-
 int
-low_set_thread_for_resume (long thread_id)
+low_set_thread_for_resume(long thread_id)
 {
   return 1;
 }
@@ -818,11 +816,9 @@ low_set_thread_for_resume (long thread_id)
    This sets the target for all query operations.
 
    Returns 1 for success, 0 for error.
-
 */
-
 int
-low_set_thread_for_query (char *input_buffer)
+low_set_thread_for_query(char *input_buffer)
 {
     /* Need to notify target as well */
     return low_thread_op(input_buffer, NULL);
@@ -831,11 +827,9 @@ low_set_thread_for_query (char *input_buffer)
 /* low_is_thread_alive:
 
    Returns 1 if thread THREAD_ID is alive, 0 otherwise.
-
 */
-
 int
-low_is_thread_alive (char *input_buffer)
+low_is_thread_alive(char *input_buffer)
 {
     return low_thread_op(input_buffer, NULL);
 }
@@ -845,11 +839,9 @@ low_is_thread_alive (char *input_buffer)
    Sets THREAD_ID to the current thread id.  Returns 1 if it can do
    this, and 0 if for some reason it cannot (like the fact that this
    is not supported in RDI1.5.0.
-
 */
-
 int
-low_get_current_thread (long *thread_id)
+low_get_current_thread(long *thread_id)
 {
   return 0;
 }
@@ -859,16 +851,14 @@ low_get_current_thread (long *thread_id)
    Fills TEXT, DATA and BSS with the program offsets.  Returns 1 for
    success, and 0 if the packet is not supported.  For now, I just
    return 1 since it is not that important to answer this one.
-
 */
-
 int
-low_get_offsets (CORE_ADDR *text, CORE_ADDR *data, CORE_ADDR *bss)
+low_get_offsets(CORE_ADDR *text, CORE_ADDR *data, CORE_ADDR *bss)
 {
   /*
-   * The RDI doesn't really know this information, I think,
+   * The RDI does NOT really know this information, I think,
    * since it has nothing really to do with loading the executible.
-   * So I just pretend I don't understand the query.
+   * So I just pretend I do NOT understand the query.
    */
 
   return 0;
@@ -881,12 +871,14 @@ low_get_offsets (CORE_ADDR *text, CORE_ADDR *data, CORE_ADDR *bss)
    Returns 1 on success, and 0 if it cannot return the information.
 
 */
-
 enum target_signal
-low_query_last_signal ()
+low_query_last_signal(void)
 {
-  /* return TARGET_SIGNAL_TRAP; */
+#if defined(TARGET_SIGNAL_TRAP) && (TARGET_SIGNAL_TRAP == 0)
+  return TARGET_SIGNAL_TRAP;
+#else
   return 0;
+#endif /* TARGET_SIGNAL_TRAP */
 }
 
 /*
@@ -894,10 +886,8 @@ low_query_last_signal ()
  *
  * Fetches the register values from the board, and updates the registers
  * array with the current values for all the registers.
- *
  */
-
-int low_update_registers()
+int low_update_registers(void)
 {
   int result, rdi_regmask, regno;
   ARMword rawreg, rawregs[32];
@@ -917,19 +907,17 @@ int low_update_registers()
 
   for (regno = 0; regno < 15; regno++)
     {
-
-      record_register (regno, rawregs[regno]);
+      record_register(regno, rawregs[regno]);
     }
 
-/* Note: this is very strange.  It seems that only R15 will return the PS,
- * but RDIReg_CPSR must be used to set it!  Looks like an ARM server bug.
- */
-  record_register (PS_REGNUM, rawregs[15]);
+  /* Note: this is very strange.  It seems that only R15 will return the
+   * PS, but RDIReg_CPSR must be used to set it!  Looks like an ARM server
+   * bug.  */
+  record_register(PS_REGNUM, rawregs[15]);
 
   /*
    * Now get the PC register...
    */
-
   rdi_regmask = RDIReg_PC;
 
   result = rdi_proc_vec->CPUread (target_arm_module,
@@ -952,9 +940,8 @@ int low_update_registers()
  *
  * Writes the registers in the register array down to the board
  */
-
 int
-low_write_registers ()
+low_write_registers(void)
 {
   ARMword rawregs[32], rawreg;
   unsigned int write_mask;
@@ -968,10 +955,10 @@ low_write_registers ()
   write_mask = 0;
   for (regno = 0; regno < 15; regno++)
     {
-      rawregs[regno] = restore_register (regno);
+      rawregs[regno] = restore_register(regno);
       write_mask |= (1 << regno);
     }
-  rawregs[15] = restore_register (PS_REGNUM);
+  rawregs[15] = restore_register(PS_REGNUM);
   write_mask |= (1 << 15);
 
   rdi_proc_vec->CPUwrite (target_arm_module, RDIMode_Curr,
@@ -990,11 +977,11 @@ low_write_registers ()
   registers_are_dirty = 0;
 
   return 1;
-
 }
 
+/* */
 int
-low_read_memory_raw (CORE_ADDR start, void *buffer, unsigned int *nbytes)
+low_read_memory_raw(CORE_ADDR start, void *buffer, unsigned int *nbytes)
 {
   int result;
 
@@ -1041,7 +1028,7 @@ low_read_memory (char *buffer, CORE_ADDR start, unsigned int nbytes)
 }
 
 int
-low_write_memory (char *data, CORE_ADDR start_addr, unsigned int nbytes)
+low_write_memory(char *data, CORE_ADDR start_addr, unsigned int nbytes)
 {
   int result, i;
   char buff[1024];
@@ -1365,14 +1352,14 @@ low_delete_watchpoint (CORE_ADDR watch_addr, int size, enum watch_type type)
       prev_ptr->next = point_ptr->next;
     }
 
-  free (point_ptr);
+  free(point_ptr);
 
   if (debug_on)
     {
       struct rdi_points *iter;
       output ("After Deleting 0x%x, Current watchpoint list:\n", watch_addr);
       for (iter = watchpoint_list; iter != NULL; iter = iter->next)
-	output ("\t-- 0x%x\n", iter->addr);
+	output("\t-- 0x%x\n", iter->addr);
     }
 
   return 1;
@@ -1383,11 +1370,10 @@ low_resume (enum resume_mode mode, int signo)
 {
   RDI_PointHandle ret_point;
   RDI_ModuleHandle target_module = target_arm_module;
-  int result;
+  int result = 0;
 
   /* Make sure any changes to the registers are flushed before
      proceeding */
-
   low_write_registers();
 
 
@@ -1645,7 +1631,7 @@ int my_IO_write(RDI_Hif_HostosArg *arg, char const *buffer, int len)
 
 char *my_IO_gets(RDI_Hif_HostosArg *arg, char *buffer, int len)
 {
-	return buffer;
+    return buffer;
 }
 
 
@@ -1773,14 +1759,15 @@ static int _low_thread_op(char *input_buffer, char *result, int result_len)
         output("Not a good handler!\n");
         return 0;
     }
-    /* Copy input buffer so board can see it */
-    low_write_memory(input_buffer, (int)handler.inbuf, strlen(input_buffer)+1);
-    /* Make sure output buffer is initialized */
+    /* Copy input buffer so board can see it: */
+    low_write_memory(input_buffer, (int)handler.inbuf,
+                     (strlen(input_buffer) + 1));
+    /* Make sure output buffer is initialized: */
     result[0] = '\0';
     low_write_memory(result, (int)handler.outbuf, 1);
     /* Save current registers */
     low_update_registers();
-    memcpy(hold_registers, aregisters, sizeof(aregisters));
+    memcpy(hold_registers, aregisters, (sizeof(aregisters) + 1));
     /* Set up to call the thread support function: */
     record_register(SP_REGNUM, ((int)handler.stack + handler.stack_size));
 #ifdef LR_REGNUM
@@ -1794,7 +1781,7 @@ static int _low_thread_op(char *input_buffer, char *result, int result_len)
     /* Restore registers to original state */
     registers_are_dirty = 1;
     registers_up_to_date = 1;
-    memcpy(aregisters, hold_registers, sizeof(aregisters));
+    memcpy(aregisters, hold_registers, (sizeof(aregisters) - 1));
     low_delete_breakpoint(ICE_THREAD_VECTOR, 4);
     /* Return results */
     if (res == TARGET_SIGNAL_TRAP) {

@@ -1,4 +1,4 @@
-/* simple-object-coff.c -- routines to manipulate XCOFF object files.
+/* simple-object-xcoff.c -- routines to manipulate XCOFF object files.
    Copyright 2013 Free Software Foundation, Inc.
    Written by Ian Lance Taylor, Google and David Edelsohn, IBM.
 
@@ -896,3 +896,5 @@ const struct simple_object_functions simple_object_xcoff_functions =
   simple_object_xcoff_write_to_file,
   simple_object_xcoff_release_write
 };
+
+/* EOF */

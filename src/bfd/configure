@@ -717,6 +717,9 @@ INSTALL_LIBBFD_FALSE
 INSTALL_LIBBFD_TRUE
 NO_WERROR
 WARN_CFLAGS
+REPORT_BUGS_TEXI
+REPORT_BUGS_TO
+PKGVERSION
 DEBUGDIR
 PLUGINS_FALSE
 PLUGINS_TRUE
@@ -749,7 +752,7 @@ CXXFLAGS
 CXX
 CAN_BUILD_IN_SANDBOX
 sb_build_profile
-MAKE
+MAKE_BIN
 SANDBOX_EXEC
 RANLIB
 ac_ct_AR
@@ -884,6 +887,8 @@ with_mmap
 enable_secureplt
 with_separate_debug_dir
 enable_elf_stt_common
+with_pkgversion
+with_bugurl
 enable_werror
 enable_pedantic
 enable_build_warnings
@@ -1576,6 +1581,9 @@ Optional Packages:
   --with-separate-debug-dir=DIR
                           Look for global separate debug info in DIR
                           [[default=LIBDIR/debug]]
+  --with-pkgversion=PKG   Use PKG in the version string in place of "GNU
+                          Binutils"
+  --with-bugurl=URL       Direct users to URL to report a bug
   --with-included-gettext use the GNU gettext library included here
   --with-dmalloc          use dmalloc, as in http://www.dmalloc.com
   --with-zlib             include zlib support (auto/yes/no) [default=auto]
@@ -6756,12 +6764,12 @@ do
 set dummy $ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_path_MAKE+:} false; then :
+if ${ac_cv_path_MAKE_BIN+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  case $MAKE in
+  case $MAKE_BIN in
   [\\/]* | ?:[\\/]*)
-  ac_cv_path_MAKE="$MAKE" # Let the user override the test with a path.
+  ac_cv_path_MAKE_BIN="$MAKE_BIN" # Let the user override the test with a path.
   ;;
   *)
   as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
@@ -6771,7 +6779,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_MAKE="$as_dir/$ac_word$ac_exec_ext"
+    ac_cv_path_MAKE_BIN="$as_dir/$ac_word$ac_exec_ext"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -6782,20 +6790,20 @@ IFS=$as_save_IFS
   ;;
 esac
 fi
-MAKE=$ac_cv_path_MAKE
-if test -n "$MAKE"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $MAKE" >&5
-$as_echo "$MAKE" >&6; }
+MAKE_BIN=$ac_cv_path_MAKE_BIN
+if test -n "$MAKE_BIN"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $MAKE_BIN" >&5
+$as_echo "$MAKE_BIN" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 fi
 
 
-  test -n "$MAKE" && break
+  test -n "$MAKE_BIN" && break
 done
 
-if test -n "${SANDBOX_EXEC}" -a -n "${MAKE}"; then
+if test -n "${SANDBOX_EXEC}" -a -n "${MAKE_BIN}"; then
   if test -e `pwd`/sandbox/build-libbfd.sb; then
     sb_build_profile=`pwd`/sandbox/build-libbfd.sb
   elif test -e ${srcdir}/sandbox/build-libbfd.sb; then
@@ -6808,15 +6816,15 @@ if test -n "${SANDBOX_EXEC}" -a -n "${MAKE}"; then
     sb_dummy_Makefile=${srcdir}/sandbox/dummy-Makefile
   fi
   if test -n "${sb_build_profile}" -a -n "${sb_dummy_Makefile}"; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking if ${MAKE} can be run by ${SANDBOX_EXEC} with profile ${sb_build_profile}" >&5
-$as_echo_n "checking if ${MAKE} can be run by ${SANDBOX_EXEC} with profile ${sb_build_profile}... " >&6; }
-    if (${SANDBOX_EXEC} -f ${sb_build_profile} ${MAKE} --quiet --no-print-directory -f ${sb_dummy_Makefile} nothing); then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking if ${MAKE_BIN} can be run by ${SANDBOX_EXEC} with profile ${sb_build_profile}" >&5
+$as_echo_n "checking if ${MAKE_BIN} can be run by ${SANDBOX_EXEC} with profile ${sb_build_profile}... " >&6; }
+    if (${SANDBOX_EXEC} -f ${sb_build_profile} ${MAKE_BIN} --quiet --no-print-directory -f ${sb_dummy_Makefile} nothing); then
       { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
       # this does not actually work yet, so hide it in a dummy condition
       # to prevent it from actually being done:
       if test "x" = "Y0"; then
-        export MAKE="${SANDBOX_EXEC} -f ${sb_build_profile} ${MAKE}"
+        export MAKE_BIN="${SANDBOX_EXEC} -f ${sb_build_profile} ${MAKE_BIN}"
 
       fi
       export CAN_BUILD_IN_SANDBOX=1
@@ -18470,7 +18478,7 @@ if test "x${lt_sysroot}" = "x" -a "x${prefix}" != "x"; then
 $as_echo "$as_me: trying to set lt_sysroot to prefix" >&6;}
   lt_sysroot="${prefix}"
 fi
-
+  ## this libtool hack is probably unnecessary now:
 if test -x ${srcdir}/libtool; then
   test -r libtool
   if test "x${USE_MAINTAINER_MODE}" = "xyes"; then
@@ -18511,13 +18519,14 @@ $as_echo "no" >&6; }
 fi
 
 
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: changing how libtool works" >&5
-$as_echo "$as_me: WARNING: changing how libtool works" >&2;}
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: possibly changing how libtool works" >&5
+$as_echo "$as_me: WARNING: possibly changing how libtool works" >&2;}
+
+
 
   fi
 fi
 
-# AC_PLUGINS (setting "${plugins}") is called by ACX_LARGEFILE:
 
 
 # Check whether --enable-plugins was given.
@@ -18651,8 +18660,46 @@ $as_echo "#define USE_STT_COMMON 1" >>confdefs.h
 
 fi
 
-:
-:
+
+
+
+# Check whether --with-pkgversion was given.
+if test "${with_pkgversion+set}" = set; then :
+  withval=$with_pkgversion; case "${withval}" in
+      yes) as_fn_error $? "package version not specified" "$LINENO" 5 ;;
+      no)  PKGVERSION="" ;;
+      *)   PKGVERSION="($withval) " ;;
+     esac
+else
+  PKGVERSION="(GNU Binutils) "
+fi
+
+
+
+# Check whether --with-bugurl was given.
+if test "${with_bugurl+set}" = set; then :
+  withval=$with_bugurl; case "${withval}" in
+      yes) as_fn_error $? "bug URL not specified" "$LINENO" 5 ;;
+      no)  BUGURL=""
+	   ;;
+      *)   BUGURL="${withval}"
+	   ;;
+     esac
+else
+  BUGURL="http://www.sourceware.org/bugzilla/"
+fi
+
+  case ${BUGURL} in
+  "")
+    REPORT_BUGS_TO=""
+    REPORT_BUGS_TEXI=""
+    ;;
+  *)
+
+    REPORT_BUGS_TO="<${BUGURL}>"
+    REPORT_BUGS_TEXI=@uref{`echo "${BUGURL}" | sed 's/@/@@/g'`}
+    ;;
+  esac;
 
 
 # "-W" and "-Wextra" are redundant.

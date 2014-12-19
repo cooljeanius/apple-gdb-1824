@@ -37,36 +37,38 @@ number of seconds used.
 #include "config.h"
 
 #ifdef HAVE_GETRUSAGE
-#include <sys/time.h>
-#include <sys/resource.h>
-#endif
+# include <sys/time.h>
+# include <sys/resource.h>
+#endif /* HAVE_GETRUSAGE */
 
 #ifdef HAVE_TIMES
-#ifdef HAVE_SYS_PARAM_H
-#include <sys/param.h>
-#endif
-#include <sys/times.h>
-#endif
+# ifdef HAVE_SYS_PARAM_H
+#  include <sys/param.h>
+# endif /* HAVE_SYS_PARAM_H */
+# include <sys/times.h>
+#endif /* HAVE_TIMES */
 
 #ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+# include <unistd.h>
+#endif /* HAVE_UNISTD_H */
 
 #ifdef _SC_CLK_TCK
-#define GNU_HZ  sysconf(_SC_CLK_TCK)
+# define GNU_HZ sysconf(_SC_CLK_TCK)
 #else
-#ifdef HZ
-#define GNU_HZ  HZ
+# ifdef HZ
+#  define GNU_HZ HZ
+# else
+#  ifdef CLOCKS_PER_SEC
+#   define GNU_HZ CLOCKS_PER_SEC
+#  endif /* CLOCKS_PER_SEC */
+# endif /* HZ */
+#endif /* _SC_CLK_TCK */
+
+#if defined(HAVE_CLOCK_T) || defined(_CLOCK_T)
+clock_t
 #else
-#ifdef CLOCKS_PER_SEC
-#define GNU_HZ  CLOCKS_PER_SEC
-#endif
-#endif
-#endif
-
-/* FIXME: should be able to declare as clock_t. */
-
 long
+#endif /* HAVE_CLOCK_T || _CLOCK_T */
 clock (void)
 {
 #ifdef HAVE_GETRUSAGE
@@ -76,13 +78,13 @@ clock (void)
   return (rusage.ru_utime.tv_sec * 1000000 + rusage.ru_utime.tv_usec
 	  + rusage.ru_stime.tv_sec * 1000000 + rusage.ru_stime.tv_usec);
 #else
-#ifdef HAVE_TIMES
+# ifdef HAVE_TIMES
   struct tms tms;
 
   times (&tms);
   return (tms.tms_utime + tms.tms_stime) * (1000000 / GNU_HZ);
-#else
-#ifdef VMS
+# else
+#  ifdef VMS
   struct
     {
       int proc_user_time;
@@ -93,11 +95,12 @@ clock (void)
 
   times (&vms_times);
   return (vms_times.proc_user_time + vms_times.proc_system_time) * 10000;
-#else
+#  else
   /* A fallback, if nothing else available. */
-  return 0;
-#endif /* VMS */
-#endif /* HAVE_TIMES */
+  return 0L;
+#  endif /* VMS */
+# endif /* HAVE_TIMES */
 #endif /* HAVE_GETRUSAGE */
 }
 
+/* EOF */

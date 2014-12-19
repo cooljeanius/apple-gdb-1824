@@ -2,21 +2,32 @@ dnl#                                               -*- Autoconf -*-
 dnl# Process this file with autoconf to produce a configure script.
 
 dnl# original value, in case autoupdate changes it: 2.13
-AC_PREREQ([2.13])
+AC_PREREQ([2.13])dnl
 
 dnl# I found this dir via eCos, and their bug list is read-only, so use the
 dnl# next best thing:
 AC_INIT([multi-ice-server],[1.0],[ecos-devel@ecos.sourceware.org])
 AC_CONFIG_SRCDIR([server-main.c])
 AC_CONFIG_AUX_DIR([..]) dnl# (maybe one level further up?)
-AC_CONFIG_MACRO_DIR([../m4])
+AC_CONFIG_MACRO_DIR([../m4])dnl
 
+# architecture stuff:
 AC_CANONICAL_TARGET
 case ${host_os} in
   *cygwin* ) CYGWIN=yes;;
 	 * ) CYGWIN=no;;
 esac
 
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  AC_SUBST([HOST_ARCHITECTURE])
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+  AC_SUBST([TARGET_ARCHITECTURE])
+fi
+
+# Automake:
 AM_INIT_AUTOMAKE([foreign dejagnu])
 AM_MAINTAINER_MODE
 
@@ -99,7 +110,9 @@ AC_SUBST([MULTI_ICE_INCLUDES])dnl
 AC_SUBST([MULTI_ICE_LIBS])dnl
 
 # This is where I am putting them:
-MULTI_ICE_INCLUDES="${MULTI_ICE_INCLUDES} -I${srcdir}/include/arm/multi-ice"
+M_I_INCLUDE_DIR="${srcdir}/include/arm/multi-ice"
+MULTI_ICE_INCLUDES="${MULTI_ICE_INCLUDES} -I${M_I_INCLUDE_DIR}"
+AC_SUBST([M_I_INCLUDE_DIR])dnl
 
 AM_CONDITIONAL([WINDOWS],[test "x${multi_ice_cv_os_cygwin32}" = "xyes"])dnl
 
@@ -128,13 +141,23 @@ AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_HEADER_TIME
 AC_HEADER_TIOCGWINSZ
 AC_SYS_POSIX_TERMIOS
+unset ac_cv_header_sys_types_h
 AC_CHECK_HEADERS([arpa/inet.h basetsd.h errno.h fcntl.h getopt.h \
                   intsafe.h limits.h locale.h \
                   netdb.h netinet/in.h netinet/tcp.h \
                   signal.h stdarg.h stddef.h stdio.h \
                   sys/file.h sys/ioctl.h sys/signal.h sys/time.h \
-                  termios.h termio.h unix.h \
+                  sys/types.h termios.h termio.h unix.h \
                   wincon.h windef.h windows.h winnt.h])dnl
+  ## for "../config.h":
+EXTRA_DEFS=""
+if test "x${ac_cv_header_sys_types_h}" = "xyes"; then
+  # this has to go separate from the configure header, because we check
+  # for it to be defined at the top of it (for caddr_t for ptrace):
+  export DEFS="${DEFS} -DHAVE_SYS_TYPES_H"
+  export EXTRA_DEFS="-DHAVE_SYS_TYPES_H"
+fi
+AC_SUBST([EXTRA_DEFS])dnl
 
 dnl# Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
@@ -189,12 +212,21 @@ AC_CHECK_DECLS([basename, getopt, strerror, strstr])dnl
 dnl# for some signal things:
 AC_CHECK_DECLS([SIGINT, SIGTERM, SIGQUIT])dnl
 
-dnl# Checks for compiler warning flags
+dnl# Checks for compiler warning flags:
 build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
 -Wparentheses -Wdeclaration-after-statement \
 -Wpointer-arith -Wpointer-sign \
--Wno-unused -Wunused-macros -Wundef \
--Wempty-body -Wmissing-declarations \
+-Wno-unused -Wunused-label -Wunused-macros -Wswitch \
+-Wempty-body -Wmissing-parameter-type -Wmissing-declarations \
+-Wold-style-declaration -Wold-style-definition -Wstrict-prototypes \
+-Wabi -Wmissing-noreturn -Waddress -Warray-bounds -Wattributes \
+-Wswitch -Wclobbered -Wcoverage-mismatch -Wdiv-by-zero \
+-Wdouble-promotion -Wenum-compare -Wfree-nonheap-object \
+-Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
+-Wmissing-include-dirs -Woverflow -Woverlength-strings -Woverride-init \
+-Wpragmas -Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
+-Wtrampolines -Wunknown-pragmas -Wnormalized=nfc \
+-Wunsuffixed-float-constants -Wstrict-overflow -Wjump-misses-init \
 -Wno-format-security -Wno-format"
 
 case "${host}" in
@@ -234,7 +266,7 @@ then
 	    CFLAGS="${saved_CFLAGS}"
 	esac
     done
-    AC_MSG_RESULT([${WARN_CFLAGS}${WERROR_CFLAGS}])
+    AC_MSG_RESULT([using: ${WARN_CFLAGS}${WERROR_CFLAGS}])
 fi
 AC_SUBST([WARN_CFLAGS])dnl
 AC_SUBST([WERROR_CFLAGS])dnl

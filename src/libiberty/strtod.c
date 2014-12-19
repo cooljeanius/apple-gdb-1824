@@ -1,4 +1,4 @@
-/* Implementation of strtod for systems with atof.
+/* strtod.c: Implementation of strtod for systems with atof.
    Copyright (C) 1991, 1995, 2002 Free Software Foundation, Inc.
 
 This file is part of the libiberty library.  This library is free
@@ -40,25 +40,25 @@ the location referenced by @var{endptr}.
 #include "ansidecl.h"
 #include "safe-ctype.h"
 
-extern double atof (const char *);
+extern double atof(const char *);
 
 /* Disclaimer: this is currently just used by CHILL in GDB and therefore
    has not been tested well.  It may have been tested for nothing except
    that it compiles.  */
 
 double
-strtod (char *str, char **ptr)
+strtod(char *str, char **ptr)
 {
   char *p;
 
   if (ptr == (char **)0)
-    return atof (str);
-  
+    return atof(str);
+
   p = str;
-  
-  while (ISSPACE (*p))
+
+  while (ISSPACE(*p))
     ++p;
-  
+
   if (*p == '+' || *p == '-')
     ++p;
 
@@ -74,12 +74,12 @@ strtod (char *str, char **ptr)
 	  && (p[7] == 'y' || p[7] == 'Y'))
 	{
 	  *ptr = p + 8;
-	  return atof (str);
+	  return atof(str);
 	}
       else
 	{
 	  *ptr = p + 3;
-	  return atof (str);
+	  return atof(str);
 	}
     }
 
@@ -98,14 +98,14 @@ strtod (char *str, char **ptr)
 	    ++p;
 	}
       *ptr = p;
-      return atof (str);
+      return atof(str);
     }
 
   /* digits, with 0 or 1 periods in it.  */
-  if (ISDIGIT (*p) || *p == '.')
+  if (ISDIGIT(*p) || *p == '.')
     {
       int got_dot = 0;
-      while (ISDIGIT (*p) || (!got_dot && *p == '.'))
+      while (ISDIGIT(*p) || (!got_dot && *p == '.'))
 	{
 	  if (*p == '.')
 	    got_dot = 1;
@@ -119,18 +119,20 @@ strtod (char *str, char **ptr)
 	  i = 1;
 	  if (p[i] == '+' || p[i] == '-')
 	    ++i;
-	  if (ISDIGIT (p[i]))
+	  if (ISDIGIT(p[i]))
 	    {
-	      while (ISDIGIT (p[i]))
+	      while (ISDIGIT(p[i]))
 		++i;
 	      *ptr = p + i;
-	      return atof (str);
+	      return atof(str);
 	    }
 	}
       *ptr = p;
-      return atof (str);
+      return atof(str);
     }
-  /* Didn't find any digits.  Doesn't look like a number.  */
+  /* Did NOT find any digits.  Does NOT look like a number.  */
   *ptr = str;
   return 0.0;
 }
+
+/* EOF */

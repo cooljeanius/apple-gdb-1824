@@ -32,10 +32,12 @@
 ## libtool.m4 and friends:
 ACLOCAL_AMFLAGS = -I m4
 AUTOMAKE_OPTIONS = foreign subdir-objects
+AM_CFLAGS =
 AM_CPPFLAGS =
 AM_LDFLAGS =
 BUILT_SOURCES =
 include_HEADERS =
+noinst_HEADERS =
 noinst_LTLIBRARIES =
 lib_LTLIBRARIES =
 EXTRA_LTLIBRARIES =
@@ -43,13 +45,27 @@ EXTRA_DIST =
 CLEANFILES = *.o .DS_Store
 MOSTLYCLEANFILES = *~
 
+BUILD_ARCHITECTURE = @BUILD_ARCHITECTURE@
+HOST_ARCHITECTURE = @HOST_ARCHITECTURE@
+TARGET_ARCHITECTURE = @TARGET_ARCHITECTURE@
+## use the host one, because that is the one that matters:
+C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
+
+AM_CFLAGS += $(C_ARCHFLAGS)
+
+symtab_cflags = $(AM_CFLAGS)
+
+LTCFLAGS = $(AM_CFLAGS)
+
 # -I$(srcdir) is needed for user that built libltdl with a sub-Automake
 # (not as a sub-package!) using 'nostdinc':
 AM_CPPFLAGS	       += -DLT_CONFIG_H='<$(LT_CONFIG_H)>' \
 			  -DLTDL -I. -I$(srcdir) -Ilibltdl \
 			  -I$(srcdir)/libltdl -I$(srcdir)/libltdl
-AM_LDFLAGS	       += -no-undefined
+AM_LDFLAGS	       += -no-undefined $(C_ARCHFLAGS)
 LTDL_VERSION_INFO	= -version-info 10:0:3
+
+AM_LIBTOOL_DEBUG_FLAGS = @MAINT@ --debug
 
 noinst_LTLIBRARIES	+= $(LT_DLLOADERS)
 
@@ -60,7 +76,19 @@ ltdlinclude_HEADERS	= libltdl/lt_system.h \
 			  libltdl/lt_dlloader.h
 include_HEADERS	       += ltdl.h
 lib_LTLIBRARIES	       += libltdl.la
+else
+noinst_HEADERS	       += libltdl/lt_system.h \
+			  libltdl/lt_error.h \
+			  libltdl/lt_dlloader.h \
+			  ltdl.h
 endif
+
+noinst_HEADERS	       += libltdl/lt__alloc.h \
+			  libltdl/lt__dirent.h \
+			  libltdl/lt__glibc.h \
+			  libltdl/lt__private.h \
+			  libltdl/lt__strl.h \
+			  libltdl/slist.h
 
 if CONVENIENCE_LTDL
 noinst_LTLIBRARIES     += libltdlc.la
@@ -146,6 +174,8 @@ EXTRA_DIST	       += COPYING.LIB \
 			  configure \
 			  config-h.in \
 			  README
+
+BUILT_SOURCES	+= config.h
 
 ## --------------------------- ##
 ## Gnulib Makefile.am snippets ##

@@ -1,4 +1,4 @@
-# Process this file with autoconf to create configure. -*- autoconf -*-
+dnl# Process this file with autoconf to create configure. -*- autoconf -*-
 #
 #    Copyright (C) 2004, 2005, 2007, 2008 Free Software Foundation, Inc.
 #    Written by Gary V. Vaughan, 2004
@@ -45,16 +45,46 @@ AC_CONFIG_HEADERS([config.h:config-h.in])
 AC_CONFIG_SRCDIR([ltdl.c])
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_MACRO_DIR([m4])
-LT_CONFIG_LTDL_DIR([.]) # I am me!
+LT_CONFIG_LTDL_DIR([.])dnl# I am me!
 
+## -------------------- ##
+## architecture checks. ##
+## -------------------- ##
+
+AC_CANONICAL_TARGET
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+  AC_SUBST([BUILD_ARCHITECTURE])
+fi
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  AC_SUBST([HOST_ARCHITECTURE])
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+  AC_SUBST([TARGET_ARCHITECTURE])
+fi
+
+export C_ARCHFLAGS="-arch ${HOST_ARCHITECTURE}"
+if test "x${CFLAGS}" = "x"; then
+  test -z "${CFLAGS}" && export CFLAGS="${C_ARCHFLAGS}"
+else
+  test -n "${CFLAGS}" && export CFLAGS="${CFLAGS} ${C_ARCHFLAGS}"
+fi
 
 ## ------------------------ ##
-## Automake Initialisation. ##
+## Automake Initialization. ##
 ## ------------------------ ##
 
 AM_INIT_AUTOMAKE([foreign subdir-objects])
 AM_MAINTAINER_MODE
 
+# Checks for programs.
+AM_PROG_AS
+AC_LANG([C])dnl
+AC_PROG_CXX
+AC_PROG_INSTALL
+AC_PROG_LN_S
 
 ## ------------------------------- ##
 ## Libtool specific configuration. ##
@@ -63,14 +93,44 @@ pkgdatadir='${datadir}'"/${PACKAGE}"
 
 
 ## ----------------------- ##
-## Libtool initialisation. ##
+## Libtool initialization. ##
 ## ----------------------- ##
 LT_INIT([dlopen win32-dll])
 _LTDL_SETUP
+LT_LANG([C])dnl
 
+# Checks for libraries.
+AC_SEARCH_LIBS([dlsym],[dl dlcompat dyld dld svld])dnl
+AC_CHECK_LIB([dld],[dld_unlink_by_file],[],[
+  AC_CHECK_LIB([dld],[dld_get_func])dnl
+])dnl
+
+# Checks for header files.
+AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
+  AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
+AC_REQUIRE_HEADER_STDC
+AC_HEADER_DIRENT
+AC_CHECK_HEADERS([stddef.h stdio.h])dnl
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_C_BIGENDIAN
+AC_C_CONST
+AC_C_PROTOTYPES
+AC_TYPE_SIZE_T
+
+# Checks for library functions.
+AC_FUNC_CLOSEDIR_VOID
+AC_CHECK_FUNCS([memmove memset strchr strrchr])dnl
+
+# Override function checks that would require libobjs:
+AC_DEFUN([AC_FUNC_MALLOC],[AC_CHECK_FUNCS([malloc])])dnl
+AC_FUNC_MALLOC
+AC_DEFUN([AC_FUNC_REALLOC],[AC_CHECK_FUNCS([realloc])])dnl
+AC_FUNC_REALLOC
 
 ## -------- ##
 ## Outputs. ##
 ## -------- ##
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile])dnl
 AC_OUTPUT

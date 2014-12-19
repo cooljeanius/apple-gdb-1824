@@ -1,4 +1,4 @@
-/* strncmp -- compare two strings, stop after n bytes.
+/* strncmp.c -- compare two strings, stop after n bytes.
    This function is in the public domain.  */
 
 /*
@@ -31,3 +31,5 @@ strncmp(const char *s1, const char *s2, register size_t n)
     }
   return 0;
 }
+
+/* EOF */

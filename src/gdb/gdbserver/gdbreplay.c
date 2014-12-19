@@ -36,23 +36,23 @@
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #else
-# ifdef __GNUC__
-#  warning gdbreplay.c expects <stdlib.h> to be included.
-# endif /* __GNUC__ */
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "gdbreplay.c expects <stdlib.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STRING_H */
 #ifdef HAVE_STRING_H
 # include <string.h>
 #else
-# ifdef __GNUC__
-#  warning gdbreplay.c expects <string.h> to be included.
-# endif /* __GNUC__ */
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "gdbreplay.c expects <string.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STRING_H */
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #else
-# ifdef __GNUC__
-#  warning gdbreplay.c expects <unistd.h> to be included.
-# endif /* __GNUC__ */
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "gdbreplay.c expects <unistd.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
 
 #ifndef HAVE_SOCKLEN_T
@@ -69,7 +69,7 @@ static int remote_desc;
    Then return to command level.  */
 
 static void
-perror_with_name (char *string)
+perror_with_name(char *string)
 {
 #ifndef STDC_HEADERS
   extern int errno;
@@ -77,17 +77,19 @@ perror_with_name (char *string)
   const char *err;
   char *combined;
 
-  err = strerror (errno);
+/* in case a macro has re-defined this function: */
+#undef strerror
+  err = strerror(errno);
   if (err == NULL)
     err = "unknown error";
 
-  combined = (char *) alloca (strlen (err) + strlen (string) + 3);
-  strcpy (combined, string);
-  strcat (combined, ": ");
-  strcat (combined, err);
-  fprintf (stderr, "\n%s.\n", combined);
-  fflush (stderr);
-  exit (1);
+  combined = (char *)alloca(strlen(err) + strlen(string) + 3);
+  strcpy(combined, string);
+  strcat(combined, ": ");
+  strcat(combined, err);
+  fprintf(stderr, "\n%s.\n", combined);
+  fflush(stderr);
+  exit(1);
 }
 
 static void

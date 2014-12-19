@@ -138,11 +138,11 @@ setenv (const char *name, const char *value, int replace)
     }
   else if (replace)
     {
-      size_t len = strlen (*ep);
-      if (len + 1 < namelen + 1 + vallen)
+      size_t len = strlen(*ep);
+      if ((len + 1) < (namelen + 1 + vallen))
 	{
-	  /* The existing string is too short; malloc a new one.  */
-	  char *new_string = (char *) malloc (namelen + 1 + vallen);
+	  /* The existing string is too short; malloc a new one: */
+	  char *new_string = (char *)malloc(namelen + 1 + vallen);
 	  if (new_string == NULL)
 	    {
 	      UNLOCK;
@@ -150,9 +150,9 @@ setenv (const char *name, const char *value, int replace)
 	    }
 	  *ep = new_string;
 	}
-      memcpy (*ep, name, namelen);
+      memcpy(*ep, name, namelen);
       (*ep)[namelen] = '=';
-      memcpy (&(*ep)[namelen + 1], value, vallen);
+      memcpy(&(*ep)[namelen + 1], value, vallen);
     }
 
   UNLOCK;
@@ -163,21 +163,23 @@ setenv (const char *name, const char *value, int replace)
 void
 unsetenv (const char *name)
 {
-  const size_t len = strlen (name);
+  const size_t len = strlen(name);
   char **ep;
 
   LOCK;
 
   for (ep = __environ; *ep; ++ep)
-    if (!strncmp (*ep, name, len) && (*ep)[len] == '=')
+    if (!strncmp(*ep, name, len) && (*ep)[len] == '=')
       {
 	/* Found it.  Remove this pointer by moving later ones back.  */
 	char **dp = ep;
-	do
+	do {
 	  dp[0] = dp[1];
-	while (*dp++);
+	} while (*dp++);
 	/* Continue the loop in case NAME appears again.  */
       }
 
   UNLOCK;
 }
+
+/* EOF */

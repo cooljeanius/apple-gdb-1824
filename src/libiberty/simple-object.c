@@ -421,3 +421,5 @@ simple_object_release_write (simple_object_write *sobj)
   sobj->functions->release_write (sobj->data);
   XDELETE (sobj);
 }
+
+/* EOF */

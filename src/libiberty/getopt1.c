@@ -21,16 +21,16 @@
    USA.  */
 
 #ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
+# include <config.h>
+#endif /* HAVE_CONFIG_H */
 
 #if !defined __STDC__ || !__STDC__
 /* This is a separate conditional since some stdc systems
    reject `defined (const)'.  */
-#ifndef const
-#define const
-#endif
-#endif
+# ifndef const
+#  define const
+# endif /* !const */
+#endif /* !__STDC__ */
 
 #include <stdio.h>
 
@@ -46,10 +46,10 @@
 
 #define GETOPT_INTERFACE_VERSION 2
 #if !defined _LIBC && defined __GLIBC__ && __GLIBC__ >= 2
-#include <gnu-versions.h>
-#if _GNU_GETOPT_INTERFACE_VERSION == GETOPT_INTERFACE_VERSION
-#define ELIDE_CODE
-#endif
+# include <gnu-versions.h>
+# if _GNU_GETOPT_INTERFACE_VERSION == GETOPT_INTERFACE_VERSION
+#  define ELIDE_CODE
+# endif
 #endif
 
 #ifndef ELIDE_CODE
@@ -57,13 +57,13 @@
 
 /* This needs to come after some library #include
    to get __GNU_LIBRARY__ defined.  */
-#ifdef __GNU_LIBRARY__
-#include <stdlib.h>
-#endif
+# ifdef __GNU_LIBRARY__
+#  include <stdlib.h>
+# endif /* __GNU_LIBRARY__ */
 
-#ifndef	NULL
-#define NULL 0
-#endif
+# ifndef NULL
+#  define NULL 0
+# endif /* !NULL */
 
 int
 getopt_long (int argc,  char *const *argv,  const char *options,
@@ -88,8 +88,12 @@ getopt_long_only (int argc, char *const *argv, const char *options,
 #endif	/* Not ELIDE_CODE.  */
 
 #ifdef TEST
-
-#include <stdio.h>
+# include <stdio.h>
+# if !defined(_STDLIB_H_)
+#  if defined(HAVE_STDLIB_H) || defined(STDC_HEADERS) || defined(__STDC__)
+#   include <stdlib.h> /* for exit() */
+#  endif /* HAVE_STDLIB_H || STDC_HEADERS || __STDC__ */
+# endif /* !_STDLIB_H_ */
 
 int
 main (int argc, char **argv)
@@ -178,3 +182,5 @@ main (int argc, char **argv)
 }
 
 #endif /* TEST */
+
+/* EOF */

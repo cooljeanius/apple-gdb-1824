@@ -39,7 +39,7 @@
 #else
 # define SWAP(n) \
     (((n) << 24) | (((n) & 0xff00) << 8) | (((n) >> 8) & 0xff00) | ((n) >> 24))
-#endif
+#endif /* WORDS_BIGENDIAN */
 
 #define BLOCKSIZE 4096
 #if BLOCKSIZE % 64 != 0
@@ -216,7 +216,7 @@ sha1_process_bytes (const void *buffer, size_t len, struct sha1_ctx *ctx)
 	  sha1_process_block (ctx->buffer, ctx->buflen & ~63, ctx);
 
 	  ctx->buflen &= 63;
-	  /* The regions in the following copy operation cannot overlap.  */
+	  /* The regions in the following copy operation cannot overlap: */
 	  memcpy (ctx->buffer,
 		  &((char *) ctx->buffer)[(left_over + add) & ~63],
 		  ctx->buflen);
@@ -229,18 +229,18 @@ sha1_process_bytes (const void *buffer, size_t len, struct sha1_ctx *ctx)
   /* Process available complete blocks.  */
   if (len >= 64)
     {
-#if !_STRING_ARCH_unaligned
-# define alignof(type) offsetof (struct { char c; type x; }, x)
-# define UNALIGNED_P(p) (((size_t) p) % alignof (sha1_uint32) != 0)
+#if !defined(_STRING_ARCH_unaligned) || !_STRING_ARCH_unaligned
+# define alignof(type) offsetof(struct { char c; type x; }, x)
+# define UNALIGNED_P(p) (((size_t)p) % alignof(sha1_uint32) != 0)
       if (UNALIGNED_P (buffer))
 	while (len > 64)
 	  {
-	    sha1_process_block (memcpy (ctx->buffer, buffer, 64), 64, ctx);
-	    buffer = (const char *) buffer + 64;
+	    sha1_process_block(memcpy(ctx->buffer, buffer, 64), 64, ctx);
+	    buffer = (const char *)buffer + 64;
 	    len -= 64;
 	  }
       else
-#endif
+#endif /* !_STRING_ARCH_unaligned */
 	{
 	  sha1_process_block (buffer, len & ~63, ctx);
 	  buffer = (const char *) buffer + (len & ~63);
@@ -413,3 +413,5 @@ sha1_process_block (const void *buffer, size_t len, struct sha1_ctx *ctx)
       e = ctx->E += e;
     }
 }
+
+/* EOF */

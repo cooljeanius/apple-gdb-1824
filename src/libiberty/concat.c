@@ -210,11 +210,11 @@ reconcat (char *optr, const char *first, ...)
 }
 
 #ifdef MAIN
-#define NULLP (char *)0
+# define NULLP (char *)0
 
 /* Simple little test driver. */
 
-#include <stdio.h>
+# include <stdio.h>
 
 int
 main (void)
@@ -229,4 +229,6 @@ main (void)
   return 0;
 }
 
-#endif
+#endif /* MAIN */
+
+/* EOF */

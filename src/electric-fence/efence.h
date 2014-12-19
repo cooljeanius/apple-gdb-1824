@@ -22,35 +22,36 @@ typedef unsigned long		ef_number;
  * <sys/param.h> .
  */
 #ifndef	NBBY
-# define	NBBY	8
+# define NBBY 8
 #endif /* !NBBY */
 
 /*
  * This is used to declare functions with "C" linkage if we are compiling
  * with C++ .
  */
-#ifdef	__cplusplus
-# define	C_LINKAGE	"C"
+#ifdef __cplusplus
+# define C_LINKAGE "C"
 #else
-# define	C_LINKAGE
+# define C_LINKAGE
 #endif /* __cplusplus */
 
-extern C_LINKAGE void *efence_realloc (void * oldBuffer, size_t newSize);
-extern C_LINKAGE void *efence_malloc (size_t size);
-extern C_LINKAGE void *efence_calloc (size_t nelem, size_t elsize);
-extern C_LINKAGE void efence_free (void * address);
-extern C_LINKAGE void *efence_valloc (size_t size);
+extern C_LINKAGE void *efence_realloc(void * oldBuffer, size_t newSize);
+extern C_LINKAGE void *efence_malloc(size_t size);
+extern C_LINKAGE void *efence_calloc(size_t nelem, size_t elsize);
+extern C_LINKAGE void efence_free(void * address);
+extern C_LINKAGE void *efence_valloc(size_t size);
+extern C_LINKAGE void *efence_memalign(size_t alignment, size_t userSize);
 
-void			Page_AllowAccess(void * address, size_t size);
-void *			Page_Create(size_t size);
-void			Page_Delete(void * address, size_t size);
-void			Page_DenyAccess(void * address, size_t size);
-size_t			Page_Size(void);
+void Page_AllowAccess(void * address, size_t size);
+void *Page_Create(size_t size);
+void Page_Delete(void * address, size_t size);
+void Page_DenyAccess(void * address, size_t size);
+size_t Page_Size(void);
 
-void			EF_Abort(const char * message, ...);
-void			EF_Exit(const char * message, ...);
-void			EF_Print(const char * message, ...);
-void			EF_Lock();
-void			EF_UnLock();
+void EF_Abort(const char * message, ...);
+void EF_Exit(const char * message, ...);
+void EF_Print(const char * message, ...);
+void EF_Lock(void);
+void EF_UnLock(void);
 
 /* EOF */

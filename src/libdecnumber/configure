@@ -1471,6 +1471,48 @@ fi
 
 } # ac_fn_c_try_cpp
 
+# ac_fn_c_try_run LINENO
+# ----------------------
+# Try to link conftest.$ac_ext, and return whether this succeeded. Assumes
+# that executables *can* be run.
+ac_fn_c_try_run ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  if { { ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:${as_lineno-$LINENO}: $ac_try_echo\""
+$as_echo "$ac_try_echo"; } >&5
+  (eval "$ac_link") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } && { ac_try='./conftest$ac_exeext'
+  { { case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:${as_lineno-$LINENO}: $ac_try_echo\""
+$as_echo "$ac_try_echo"; } >&5
+  (eval "$ac_try") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; }; then :
+  ac_retval=0
+else
+  $as_echo "$as_me: program exited with status $ac_status" >&5
+       $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+       ac_retval=$ac_status
+fi
+  rm -rf conftest.dSYM conftest_ipa8_conftest.oo
+  eval $as_lineno_stack; test "x$as_lineno_stack" = x && { as_lineno=; unset as_lineno;}
+  return $ac_retval
+
+} # ac_fn_c_try_run
+
 # ac_fn_c_check_header_mongrel LINENO HEADER VAR INCLUDES
 # -------------------------------------------------------
 # Tests whether HEADER exists, giving a warning if it cannot be compiled using
@@ -1563,48 +1605,6 @@ fi
   eval $as_lineno_stack; test "x$as_lineno_stack" = x && { as_lineno=; unset as_lineno;}
 
 } # ac_fn_c_check_header_mongrel
-
-# ac_fn_c_try_run LINENO
-# ----------------------
-# Try to link conftest.$ac_ext, and return whether this succeeded. Assumes
-# that executables *can* be run.
-ac_fn_c_try_run ()
-{
-  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
-  if { { ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:${as_lineno-$LINENO}: $ac_try_echo\""
-$as_echo "$ac_try_echo"; } >&5
-  (eval "$ac_link") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; } && { ac_try='./conftest$ac_exeext'
-  { { case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:${as_lineno-$LINENO}: $ac_try_echo\""
-$as_echo "$ac_try_echo"; } >&5
-  (eval "$ac_try") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; }; then :
-  ac_retval=0
-else
-  $as_echo "$as_me: program exited with status $ac_status" >&5
-       $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-       ac_retval=$ac_status
-fi
-  rm -rf conftest.dSYM conftest_ipa8_conftest.oo
-  eval $as_lineno_stack; test "x$as_lineno_stack" = x && { as_lineno=; unset as_lineno;}
-  return $ac_retval
-
-} # ac_fn_c_try_run
 
 # ac_fn_c_check_header_compile LINENO HEADER VAR INCLUDES
 # -------------------------------------------------------
@@ -2453,8 +2453,6 @@ ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
-
 
 
 
@@ -3597,15 +3595,15 @@ fi
 done
 test -n "$AUTOHEADER" || AUTOHEADER="${MISSING} autoheader"
 
-
 # Figure out what compiler warnings we can enable.
-# See config/warnings.m4 for details.
+# See ../config/warnings.m4 for details.
 
 
 WARN_CFLAGS=
 save_CFLAGS="$CFLAGS"
-for option in -W -Wall -Wwrite-strings -Wstrict-prototypes \
-			  -Wmissing-prototypes -Wold-style-definition \
+for option in -Wall -Wextra -Wwrite-strings \
+			  -Wstrict-prototypes -Wmissing-prototypes \
+			  -Wold-style-definition -Wc++-compat \
 			  -Wmissing-format-attribute -Wcast-qual; do
   as_acx_Woption=`$as_echo "acx_cv_prog_cc_warning_$option" | $as_tr_sh`
 
@@ -3679,7 +3677,6 @@ fi
 
 fi
 
-
 # Only enable with --enable-werror-always until existing warnings are
 # corrected.
 WERROR=
@@ -3693,7 +3690,6 @@ fi
 if test $enable_werror_always = yes; then :
   WERROR=-Werror
 fi
-
 
 # Checks for header files.
 ac_ext=c
@@ -4076,7 +4072,8 @@ $as_echo "#define STDC_HEADERS 1" >>confdefs.h
 
 fi
 
-# On IRIX 5.3, sys/types and inttypes.h are conflicting.
+
+     # On IRIX 5.3, sys/types and inttypes.h are conflicting.
 for ac_header in sys/types.h sys/stat.h stdlib.h string.h memory.h strings.h \
 		  inttypes.h stdint.h unistd.h
 do :
@@ -4107,7 +4104,6 @@ _ACEOF
 fi
 
 done
-
 
 
 inttype_headers=`echo inttypes.h sys/inttypes.h  | sed -e 's/,/ /g'`
@@ -4518,7 +4514,6 @@ ac_config_commands="$ac_config_commands gstdint.h"
 
 
 
-
 # Checks for typedefs, structures, and compiler characteristics.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for an ANSI C-conforming const" >&5
 $as_echo_n "checking for an ANSI C-conforming const... " >&6; }
@@ -4720,7 +4715,6 @@ cat >>confdefs.h <<_ACEOF
 #define SIZEOF_INT $ac_cv_sizeof_int
 _ACEOF
 
-
 # The cast to long int works around a bug in the HP C Compiler,
 # see AC_CHECK_SIZEOF for more information.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking alignment of int" >&5
@@ -4756,7 +4750,6 @@ cat >>confdefs.h <<_ACEOF
 #define ALIGNOF_INT $ac_cv_alignof_int
 _ACEOF
 
-
 # The cast to long int works around a bug in the HP C Compiler
 # version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
 # declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
@@ -4789,7 +4782,6 @@ $as_echo "$ac_cv_sizeof_long" >&6; }
 cat >>confdefs.h <<_ACEOF
 #define SIZEOF_LONG $ac_cv_sizeof_long
 _ACEOF
-
 
 # The cast to long int works around a bug in the HP C Compiler,
 # see AC_CHECK_SIZEOF for more information.
@@ -4827,13 +4819,7 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
-
 # Checks for library functions.
-
-
-
-
-
 for ac_header in stdlib.h
 do :
   ac_fn_c_check_header_mongrel "$LINENO" "stdlib.h" "ac_cv_header_stdlib_h" "$ac_includes_default"
@@ -4901,6 +4887,68 @@ $as_echo "#define malloc rpl_malloc" >>confdefs.h
 fi
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for working memcmp" >&5
+$as_echo_n "checking for working memcmp... " >&6; }
+if test "${ac_cv_func_memcmp_working+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test "$cross_compiling" = yes; then :
+  ac_cv_func_memcmp_working=no
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$ac_includes_default
+int
+main ()
+{
+
+  /* Some versions of memcmp are not 8-bit clean.  */
+  char c0 = '\100', c1 = '\200', c2 = '\201';
+  if (memcmp(&c0, &c2, 1) >= 0 || memcmp(&c1, &c2, 1) >= 0)
+    return 1;
+
+  /* The Next x86 OpenStep bug shows up only when comparing 16 bytes
+     or more and with at least one buffer not starting on a 4-byte boundary.
+     William Lewis provided this test program.   */
+  {
+    char foo[21];
+    char bar[21];
+    int i;
+    for (i = 0; i < 4; i++)
+      {
+	char *a = foo + i;
+	char *b = bar + i;
+	strcpy (a, "--------01111111");
+	strcpy (b, "--------10000000");
+	if (memcmp (a, b, 16) >= 0)
+	  return 1;
+      }
+    return 0;
+  }
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+  ac_cv_func_memcmp_working=yes
+else
+  ac_cv_func_memcmp_working=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_func_memcmp_working" >&5
+$as_echo "$ac_cv_func_memcmp_working" >&6; }
+test $ac_cv_func_memcmp_working = no && case " $LIBOBJS " in
+  *" memcmp.$ac_objext "* ) ;;
+  *) LIBOBJS="$LIBOBJS memcmp.$ac_objext"
+ ;;
+esac
+
+
 for ac_func in memset
 do :
   ac_fn_c_check_func "$LINENO" "memset" "ac_cv_func_memset"
@@ -4912,7 +4960,6 @@ _ACEOF
 fi
 done
 
-
 # Check whether --enable-maintainer-mode was given.
 if test "${enable_maintainer_mode+set}" = set; then :
   enableval=$enable_maintainer_mode;
@@ -4920,13 +4967,11 @@ else
   enable_maintainer_mode=no
 fi
 
-
-if test "x${enable_maintainer_mode}" = xno; then
+if test "x${enable_maintainer_mode}" = "xno"; then
   MAINT='#'
 else
-  MAINT=
+  MAINT=""
 fi
-
 
 # Make sure we can run config.sub.
 $SHELL "$ac_aux_dir/config.sub" sun4 >/dev/null 2>&1 ||
@@ -5066,11 +5111,10 @@ else
 
 fi
 
-
 # x86's use BID format instead of DPD
 # In theory --enable-decimal-float=no should not compile anything
 # For the sake of simplicity, just use the default format in this directory
-if test x${enable_decimal_float} = xyes -o x${enable_decimal_float} = xno; then
+if test "x${enable_decimal_float}" = "xyes" || test "x${enable_decimal_float}" = "xno"; then
   case ${target} in
     i?86*-*-linux* | x86_64*-*-linux*)
       enable_decimal_float=bid
@@ -5081,8 +5125,8 @@ if test x${enable_decimal_float} = xyes -o x${enable_decimal_float} = xno; then
   esac
 fi
 
-# If BID is being used, additional objects should be linked in.
-if test x${enable_decimal_float} = xbid; then
+# If BID is being used, then additional objects should be linked in.
+if test "x${enable_decimal_float}" = "xbid"; then
   ADDITIONAL_OBJS="${ADDITIONAL_OBJS} \$(bid_OBJS)"
 else
   ADDITIONAL_OBJS=""
@@ -5090,8 +5134,6 @@ fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${enable_decimal_float}" >&5
 $as_echo "${enable_decimal_float}" >&6; }
-
-
 
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether byte ordering is bigendian" >&5
 $as_echo_n "checking whether byte ordering is bigendian... " >&6; }
@@ -5319,11 +5361,8 @@ $as_echo "#define AC_APPLE_UNIVERSAL_BUILD 1" >>confdefs.h
 
 
 # Output.
-
 ac_config_headers="$ac_config_headers config.h"
-
 ac_config_files="$ac_config_files Makefile"
-
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure

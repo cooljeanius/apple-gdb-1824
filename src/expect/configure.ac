@@ -32,7 +32,21 @@ VERSION="${EXP_MAJOR_VERSION}.${EXP_MINOR_VERSION}"
 # This forced identification should reduce my pain significantly.
 echo "configuring Expect ${EXP_MAJOR_VERSION}.${EXP_MINOR_VERSION}.${EXP_MICRO_VERSION}"
 
+# architecture stuff:
 AC_CANONICAL_TARGET
+if test -z "${BUILD_ARCHITECTURE}" -a -n "${build_cpu}"; then
+  export BUILD_ARCHITECTURE="${build_cpu}"
+  AC_SUBST([BUILD_ARCHITECTURE])
+fi
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+  AC_SUBST([HOST_ARCHITECTURE])
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+  AC_SUBST([TARGET_ARCHITECTURE])
+fi
+
 AC_USE_SYSTEM_EXTENSIONS
 AC_EXEEXT
 
@@ -381,16 +395,16 @@ fi
 # This is required because the debugger src is at a different level in
 # the filesystem than Expect src (where we are presently), thereby
 # making the relative pathnames incorrect.
-if test "x${with_tclconfig}" != "x" ; then
+if test "x${with_tclconfig}" != "x"; then
   dbg_config_flags="${dbg_config_flags} --with-tclconfig=`(cd ${with_tclconfig}; pwd)`"
 fi
-if test "x${with_tcllibdir}" != "x" ; then
+if test "x${with_tcllibdir}" != "x"; then
   dbg_config_flags="${dbg_config_flags} --with-tcllibdir=`(cd ${with_tcllibdir}; pwd)`"
 fi
-if test "x${with_tcllib}" != "x" ; then
+if test "x${with_tcllib}" != "x"; then
   dbg_config_flags="${dbg_config_flags} --with-tcllib=`(cd ${with_tcllib}; pwd)`"
 fi
-if test "x${with_tclinclude}" != "x" ; then
+if test "x${with_tclinclude}" != "x"; then
   dbg_config_flags="${dbg_config_flags} --with-tclinclude=`(cd ${with_tclinclude}; pwd)`"
 fi
 case "$cache_file" in
@@ -402,12 +416,13 @@ case "$cache_file" in
     ;;
 esac
 
-cp ${srcdir}/Dbgconfigure ${srcdir}/Dbgconfigure.sh ${srcdir}/Dbg.h ${srcdir}/Dbg_cf.h.in ${srcdir}/install-sh ${tmpdir}
-cp ${srcdir}/DbgMkfl.in ${tmpdir}/Makefile.in
-cp ${srcdir}/DbgMkfl.in ${tmpdir}
-cp ${srcdir}/DbgpkgInd.in ${tmpdir}
+cp -v ${srcdir}/Dbgconfigure ${srcdir}/Dbgconfigure.sh ${srcdir}/Dbg.h ${srcdir}/Dbg_cf.h.in ${srcdir}/install-sh ${tmpdir}
+cp -v ${srcdir}/DbgMkfl.in ${tmpdir}/Makefile.in
+cp -v ${srcdir}/DbgMkfl.in ${tmpdir}
+cp -v ${srcdir}/DbgpkgInd.in ${tmpdir}
 OLD_CPP="${CPP}"
 unset CPP
+test -n "${verbose}" && echo "(cd ${tmpdir}; ${CONFIG_SHELL-/bin/sh} Dbgconfigure --with-tclinclude=`echo ${TCLHDIR} | sed -e 's/-I//'` ${dbg_config_flags})"
   (cd ${tmpdir}; ${CONFIG_SHELL-/bin/sh} Dbgconfigure --with-tclinclude=`echo ${TCLHDIR} | sed -e 's/-I//'` ${dbg_config_flags})
 CPP="${OLD_CPP}"
 test -e ${tmpdir}/config.status && cp -v ${tmpdir}/config.status ./Dbgconfig.status

@@ -1,4 +1,4 @@
-/* Pexecute test program,
+/* test-pexecute.c: Pexecute test program,
    Copyright (C) 2005 Free Software Foundation, Inc.
    Written by Ian Lance Taylor <ian@airs.com>.
 
@@ -484,15 +484,15 @@ do_cmd (int argc, char **argv)
       putc ('\n', stderr);
       exit (EXIT_SUCCESS);
     }
-  else if (strcmp (s, "error") == 0)
-    exit (EXIT_FAILURE);
-  else if (strcmp (s, "abort") == 0)
-    abort ();
-  else if (strcmp (s, "copy") == 0)
+  else if (strcmp(s, "error") == 0)
+    exit(EXIT_FAILURE);
+  else if (strcmp(s, "abort") == 0)
+    abort(); /* FIXME: triggers OS X Crash Reporter */
+  else if (strcmp(s, "copy") == 0)
     {
       int c;
 
-      while ((c = getchar ()) != EOF)
+      while ((c = getchar()) != EOF)
 	putchar (c);
       exit (EXIT_SUCCESS);
     }

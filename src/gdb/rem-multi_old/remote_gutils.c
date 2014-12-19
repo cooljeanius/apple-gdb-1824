@@ -146,14 +146,17 @@ char *xrealloc(char *ptr, long size)
   return val;
 }
 
+extern const int sys_nerr;
+extern const char *const sys_errlist[];
+#if !defined(_SYS_ERRNO_H_) && !defined(errno)
+extern int errno;
+#endif /* !_SYS_ERRNO_H_ && !errno */
+
 /* Print the system error message for errno, and also mention STRING
  * as the file name for which the error was encountered.
  * Then return to command level.  */
 void perror_with_name(char *string)
 {
-  extern const int sys_nerr;
-  extern const char *const sys_errlist[];
-  extern int errno;
   const char *err;
   char *combined;
 
@@ -177,8 +180,6 @@ void perror_with_name(char *string)
  * as the file name for which the error was encountered.  */
 void print_sys_errmsg(char *string, int errcode)
 {
-  extern const int sys_nerr;
-  extern const char *const sys_errlist[];
   const char *err;
   char *combined;
 

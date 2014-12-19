@@ -16,19 +16,19 @@
  */
 
 #ifndef	PAGE_PROTECTION_VIOLATED_SIGNAL
-# define	PAGE_PROTECTION_VIOLATED_SIGNAL	SIGSEGV
+# define PAGE_PROTECTION_VIOLATED_SIGNAL SIGSEGV
 #endif /* !PAGE_PROTECTION_VIOLATED_SIGNAL */
 
 struct diagnostic {
-	int		(*test)(void);
-	int		expectedStatus;
-	const char *	explanation;
+	int	(*test)(void);
+	int	expectedStatus;
+	const char *explanation;
 };
 
-extern int	EF_PROTECT_BELOW;
-extern int	EF_ALIGNMENT;
+extern int EF_PROTECT_BELOW;
+extern int EF_ALIGNMENT;
 
-static jmp_buf	env;
+static jmp_buf env;
 
 /*
  * There is still too little standardization of the arguments and return
@@ -38,11 +38,14 @@ static
 void
 segmentationFaultHandler(
 int signalNumber
-#if ( defined(_AIX) )
+#if defined(_AIX)
 , ...
 #endif /* _AIX */
 )
- {
+{
+#if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
+# pragma unused (signalNumber)
+#endif /* Apple compiler || __MWERKS__ */
 	signal(PAGE_PROTECTION_VIOLATED_SIGNAL, SIG_DFL);
 	longjmp(env, 1);
 }
@@ -50,23 +53,21 @@ int signalNumber
 static int
 gotSegmentationFault(int (*test)(void))
 {
-	if ( setjmp(env) == 0 ) {
-		int			status;
+	if (setjmp(env) == 0) {
+		int status;
 
-		signal(PAGE_PROTECTION_VIOLATED_SIGNAL
-		,segmentationFaultHandler);
+		signal(PAGE_PROTECTION_VIOLATED_SIGNAL, segmentationFaultHandler);
 		status = (*test)();
 		signal(PAGE_PROTECTION_VIOLATED_SIGNAL, SIG_DFL);
 		return status;
-	}
-	else {
+	} else {
 		return 1;
 	}
 }
 
-static char *	allocation;
+static char *allocation;
 /* c is global so that assignments to it will NOT be optimized out. */
-char	c;
+char c;
 
 static int
 testSizes(void)
@@ -76,7 +77,7 @@ testSizes(void)
 	 * add -DUSE_ LONG_LONG to the compiler flags so that ef_number will be
 	 * declared as "unsigned long long" instead of "unsigned long".
 	 */
-	return ( sizeof(ef_number) < sizeof(void *) );
+	return (sizeof(ef_number) < sizeof(void *));
 }
 
 static int
@@ -84,7 +85,7 @@ allocateMemory(void)
 {
 	allocation = (char *)malloc(1);
 
-	if ( allocation != 0 ) {
+	if (allocation != 0) {
 		return 0;
 	} else {
 		return 1;
@@ -190,24 +191,26 @@ static struct diagnostic diagnostics[] = {
 	}
 };
 
-static const char	failedTest[]
+static const char failedTest[]
  = "Electric Fence confidence test failed.\n";
 
-static const char	newline = '\n';
+static const char newline = '\n';
 
 int
-main(int argc, char * * argv)
+main(int argc, char **argv)
 {
-	static const struct diagnostic *	diag = diagnostics;
-
+#if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
+# pragma unused (argc, argv)
+#endif /* Apple compiler || __MWERKS__ */
+	static const struct diagnostic *diag = diagnostics;
 
 	EF_PROTECT_BELOW = 0;
 	EF_ALIGNMENT = 0;
 
-	while ( diag->explanation != 0 ) {
+	while (diag->explanation != 0) {
 		int	status = gotSegmentationFault(diag->test);
 
-		if ( status != diag->expectedStatus ) {
+		if (status != diag->expectedStatus) {
 			/*
 			 * Do NOT use stdio to print here, because stdio
 			 * uses malloc() and we have just proven that malloc()

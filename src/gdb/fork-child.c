@@ -134,7 +134,7 @@ fork_inferior (char *exec_file_arg, char *allargs, char **env,
   /* Multiplying the length of exec_file by 4 is to account for the
      fact that it may expand when quoted; it is a worst-case number
      based on every character being '.  */
-  /* APPLE LOCAL 5 = "exec ", but we have "exec /usr/bin/arch -arch x86_64 " 
+  /* APPLE LOCAL 5 = "exec ", but we have "exec /usr/bin/arch -arch x86_64 "
      at most.  so 5->33.  */
 #ifdef USE_ARCH_FOR_EXEC
   len = 33;
@@ -279,7 +279,7 @@ fork_inferior (char *exec_file_arg, char *allargs, char **env,
       /* APPLE LOCAL: There's no reason to use execlp for the shell
 	 case, and execve for the non-shell case.  Lets just build up
 	 an appropriate argv array and use it for both.  */
-      
+
       argv = (char **) xmalloc (4 * sizeof (char *));
       argv[0] = shell_file;
       argv[1] = "-c";
@@ -598,13 +598,13 @@ startup_inferior (int ntraps)
      have stopped one instruction after execing the shell.  Here we
      must get it up to actual execution of the real program.  */
 
-  clear_proceed_status ();
+  clear_proceed_status();
 
-  init_wait_for_inferior ();
+  init_wait_for_inferior();
 
   inferior_ignoring_startup_exec_events = pending_execs;
   inferior_ignoring_leading_exec_events =
-    target_reported_exec_events_per_exec_call () - 1;
+    (target_reported_exec_events_per_exec_call() - 1);
 
   while (1)
     {
@@ -619,7 +619,7 @@ startup_inferior (int ntraps)
            happen when you have "start-with-shell" non-zero, and
            the shell crashes.  */
 #ifdef NM_NEXTSTEP
-        if (stop_signal == TARGET_EXC_BAD_ACCESS 
+        if (stop_signal == TARGET_EXC_BAD_ACCESS
           || stop_signal == TARGET_EXC_BAD_INSTRUCTION)
           {
             warning ("The target crashed on startup, maybe the shell is crashing.\n"

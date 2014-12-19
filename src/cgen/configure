@@ -2453,10 +2453,8 @@ fi
 
 
 
-
-# Set target cpu.
+# Set target cpu, and various things that depend upon it:
 cpu_arch=${target_cpu}
-
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable maintainer-specific portions of Makefiles" >&5
@@ -2491,9 +2489,8 @@ else
   GENINSRC_NEVER_FALSE=
 fi
 
-
+# Output.
 ac_config_files="$ac_config_files Makefile doc/Makefile"
-
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure

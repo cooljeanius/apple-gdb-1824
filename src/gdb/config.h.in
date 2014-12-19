@@ -390,8 +390,11 @@
 /* Define to 1 if you have the <langinfo.h> header file. */
 #undef HAVE_LANGINFO_H
 
-/* Define if your <locale.h> file defines LC_MESSAGES. */
+/* Define if your locale.h file contains LC_MESSAGES. */
 #undef HAVE_LC_MESSAGES
+
+/* Define if you have the libbabeltrace library. */
+#undef HAVE_LIBBABELTRACE
 
 /* Define to 1 if you have the `bfd' library (-lbfd). */
 #undef HAVE_LIBBFD
@@ -422,6 +425,9 @@
 
 /* Define to 1 if you have the <libintl.h> header file. */
 #undef HAVE_LIBINTL_H
+
+/* Define if you have the liblzma library. */
+#undef HAVE_LIBLZMA
 
 /* Define to 1 if you have the `m' library (-lm). */
 #undef HAVE_LIBM
@@ -1193,6 +1199,9 @@
 /* Define to 1 if the system has the type `x86_debug_state32_t'. */
 #undef HAVE_X86_DEBUG_STATE32_T
 
+/* Define to 1 if you have the <zlib.h> header file. */
+#undef HAVE_ZLIB_H
+
 /* Define to 1 if the system has the type `_Bool'. */
 #undef HAVE__BOOL
 
@@ -1231,7 +1240,7 @@
 /* Define to the sub-directory where libtool stores uninstalled libraries. */
 #undef LT_OBJDIR
 
-/* Force mmcheck */
+/* Define to 1 to force mmcheck */
 #undef MMCHECK_FORCE
 
 /* Define to 1 if assertions should be disabled. */
@@ -1364,7 +1373,7 @@
 /* Define to 1 if the regex included in libiberty should be used. */
 #undef USE_INCLUDED_REGEX
 
-/* Use mmalloc */
+/* Define to 1 to use mmalloc */
 #undef USE_MMALLOC
 
 /* Define to 1 to use posix_spawn instead of execvp. */

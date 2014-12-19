@@ -1,4 +1,4 @@
-/* General utility routines for GDB, the GNU debugger.
+/* utils.c: General utility routines for GDB, the GNU debugger.
 
    Copyright 1986, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995,
    1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005 Free
@@ -83,24 +83,23 @@
 #include "mach-o.h"
 
 #if !HAVE_DECL_MALLOC
-extern PTR malloc ();		/* OK: PTR */
+extern PTR malloc();		/* OK: PTR */
 #endif /* !HAVE_DECL_MALLOC */
 #if !HAVE_DECL_REALLOC
-extern PTR realloc ();		/* OK: PTR */
+extern PTR realloc();		/* OK: PTR */
 #endif /* !HAVE_DECL_REALLOC */
 #if !HAVE_DECL_FREE
-extern void free ();
+extern void free();
 #endif /* !HAVE_DECL_FREE */
 
-/* readline defines this.  */
+/* readline defines this: */
 #undef savestring
 
-void (*deprecated_error_begin_hook) (void);
+void (*deprecated_error_begin_hook)(void);
 
-/* Prototypes for local functions */
-
-static void vfprintf_maybe_filtered (struct ui_file *, const char *,
-				     va_list, int) ATTR_FORMAT (printf, 2, 0);
+/* Prototypes for local functions: */
+static void vfprintf_maybe_filtered(struct ui_file *, const char *,
+                                    va_list, int) ATTR_FORMAT(printf, 2, 0);
 
 static void fputs_maybe_filtered (const char *, struct ui_file *, int);
 
@@ -153,16 +152,14 @@ static struct cleanup *exec_error_cleanup_chain;
 struct continuation *cmd_continuation;
 struct continuation *intermediate_continuation;
 
-/* APPLE LOCAL: Used to clean up the ObjC "debugger mode" when we go back to
-   ordinary execution.  */
+/* APPLE LOCAL: Used to clean up the ObjC "debugger mode" when we go back
+ * to ordinary execution: */
 static struct cleanup *hand_call_cleanup_chain;
 
-/* Nonzero if we have job control. */
-
+/* Nonzero if we have job control: */
 int job_control;
 
-/* Nonzero means a quit has been requested.  */
-
+/* Nonzero means a quit has been requested: */
 int quit_flag;
 
 /* Nonzero means quit immediately if Control-C is typed now, rather
@@ -219,16 +216,13 @@ Printing of 8-bit characters in strings as \\nnn is %s.\n"),
 		    value);
 }
 
-/* String to be printed before error messages, if any.  */
-
+/* String to be printed before error messages, if any: */
 char *error_pre_print;
 
-/* String to be printed before quit messages, if any.  */
-
+/* String to be printed before quit messages, if any: */
 char *quit_pre_print;
 
-/* String to be printed before warning messages, if any.  */
-
+/* String to be printed before warning messages, if any: */
 char *warning_pre_print = "\nwarning: ";
 
 int pagination_enabled = 1;
@@ -295,68 +289,68 @@ make_cleanup_freeargv (char **arg)
 }
 
 static void
-do_bfd_close_cleanup (void *arg)
+do_bfd_close_cleanup(void *arg)
 {
-  bfd_close (arg);
+  bfd_close((bfd *)arg);
 }
 
 struct cleanup *
-make_cleanup_bfd_close (bfd *abfd)
+make_cleanup_bfd_close(bfd *abfd)
 {
-  return make_cleanup (do_bfd_close_cleanup, abfd);
+  return make_cleanup(do_bfd_close_cleanup, abfd);
 }
 
 static void
-do_close_cleanup (void *arg)
+do_close_cleanup(void *arg)
 {
-  int *fd = arg;
-  close (*fd);
-  xfree (fd);
+  int *fd = (int *)arg;
+  close(*fd);
+  xfree(fd);
 }
 
 struct cleanup *
 make_cleanup_close (int fd)
 {
-  int *saved_fd = xmalloc (sizeof (fd));
+  int *saved_fd = (int *)xmalloc(sizeof(fd));
   *saved_fd = fd;
-  return make_cleanup (do_close_cleanup, saved_fd);
+  return make_cleanup(do_close_cleanup, saved_fd);
 }
 
 static void
-do_ui_file_delete (void *arg)
+do_ui_file_delete(void *arg)
 {
-  ui_file_delete (arg);
+  ui_file_delete((struct ui_file *)arg);
 }
 
 struct cleanup *
 make_cleanup_ui_file_delete (struct ui_file *arg)
 {
-  return make_my_cleanup (&cleanup_chain, do_ui_file_delete, arg);
+  return make_my_cleanup(&cleanup_chain, do_ui_file_delete, arg);
 }
 
 static void
-do_ui_out_delete (void *arg)
+do_ui_out_delete(void *arg)
 {
-  ui_out_delete (arg);
+  ui_out_delete((struct ui_out *)arg);
 }
 
 struct cleanup *
-make_cleanup_ui_out_delete (struct ui_out *arg)
+make_cleanup_ui_out_delete(struct ui_out *arg)
 {
-  return make_my_cleanup (&cleanup_chain, do_ui_out_delete, arg);
+  return make_my_cleanup(&cleanup_chain, do_ui_out_delete, arg);
 }
 
 static void
-do_restore_uiout_cleanup (void *arg)
+do_restore_uiout_cleanup(void *arg)
 {
-  uiout = (struct ui_out *) arg;
+  uiout = (struct ui_out *)arg;
 }
 
 static void
 do_restore_output (void *data)
 {
   ui_file_rewind (gdb_null);
-  uiout = (struct ui_out *) data;
+  uiout = (struct ui_out *)data;
 }
 
 /* Use this call if you want to suppress output.  It does this by
@@ -364,45 +358,45 @@ do_restore_output (void *data)
    dump later.  Then just call the cleanup returned to turn the
    output back on again.  */
 struct cleanup *
-make_cleanup_ui_out_suppress_output (struct ui_out *cur_uiout)
+make_cleanup_ui_out_suppress_output(struct ui_out *cur_uiout)
 {
   struct ui_out *stored_uiout;
   static struct ui_out *null_uiout = NULL;
   if (null_uiout == NULL)
-    null_uiout = cli_out_new (gdb_null);
+    null_uiout = cli_out_new(gdb_null);
   if (null_uiout == NULL)
-    error ("Unable to open null uiout in utils.c.");
+    error("Unable to open null uiout in utils.c.");
   stored_uiout = uiout;
   uiout = null_uiout;
 
-  return make_cleanup (do_restore_output, stored_uiout);
+  return make_cleanup(do_restore_output, stored_uiout);
 }
 
 static void
-do_free_section_addr_info (void *arg)
+do_free_section_addr_info(void *arg)
 {
-  free_section_addr_info (arg);
+  free_section_addr_info((struct section_addr_info *)arg);
 }
 
 struct cleanup *
-make_cleanup_restore_uiout (struct ui_out *old_uiout)
+make_cleanup_restore_uiout(struct ui_out *old_uiout)
 {
-  return make_my_cleanup (&cleanup_chain, do_restore_uiout_cleanup, old_uiout);
+  return make_my_cleanup(&cleanup_chain, do_restore_uiout_cleanup, old_uiout);
 }
 
 
 static void
-do_set_schedlock_mode (void *in_mode)
+do_set_schedlock_mode(void *in_mode)
 {
-  enum scheduler_locking_mode mode = (enum scheduler_locking_mode) in_mode;
-  set_scheduler_locking_mode (mode);
+  enum scheduler_locking_mode mode = (enum scheduler_locking_mode)in_mode;
+  set_scheduler_locking_mode(mode);
 }
 
 struct cleanup *
-make_cleanup_set_restore_scheduler_locking_mode (enum scheduler_locking_mode new_mode)
+make_cleanup_set_restore_scheduler_locking_mode(enum scheduler_locking_mode new_mode)
 {
-  enum scheduler_locking_mode old_mode = set_scheduler_locking_mode (new_mode);
-  return make_my_cleanup (&cleanup_chain, do_set_schedlock_mode, (void *) old_mode);
+  enum scheduler_locking_mode old_mode = set_scheduler_locking_mode(new_mode);
+  return make_my_cleanup(&cleanup_chain, do_set_schedlock_mode, (void *)old_mode);
 }
 
 struct cleanup *
@@ -416,19 +410,19 @@ struct cleanup *
 make_my_cleanup (struct cleanup **pmy_chain, make_cleanup_ftype *function,
 		 void *arg)
 {
-  struct cleanup *new;
+  struct cleanup *newcleanup;
   struct cleanup *old_chain = *pmy_chain;
 
   if (!function)
-    internal_error (__FILE__, __LINE__,
-		    "Someone tried to put a null function on the cleanup chain!");
+    internal_error(__FILE__, __LINE__,
+                   "Someone tried to put a null function on the cleanup chain!");
 
-  new = (struct cleanup *) xmalloc (sizeof (struct cleanup));
+  newcleanup = (struct cleanup *)xmalloc(sizeof(struct cleanup));
 
-  new->next = *pmy_chain;
-  new->function = function;
-  new->arg = arg;
-  *pmy_chain = new;
+  newcleanup->next = *pmy_chain;
+  newcleanup->function = function;
+  newcleanup->arg = arg;
+  *pmy_chain = newcleanup;
 
   return old_chain;
 }
@@ -457,7 +451,7 @@ do_run_cleanups (struct cleanup *old_chain)
 void
 do_exec_cleanups (struct cleanup *old_chain)
 {
-  /* APPLE LOCAL: We can't assume that the exec_cleanup_chain has been
+  /* APPLE LOCAL: We cannot assume that the exec_cleanup_chain has been
      preserved across catch_exceptions calls, so we need to check
      whether it is NULL before we pass it into do_my_cleanups.
 
@@ -593,7 +587,7 @@ restore_my_cleanups (struct cleanup **pmy_chain, struct cleanup *chain)
 void
 free_current_contents (void *ptr)
 {
-  void **location = ptr;
+  void **location = (void **)ptr;
   if (location == NULL)
     internal_error (__FILE__, __LINE__,
 		    _("free_current_contents: NULL pointer"));
@@ -1108,112 +1102,111 @@ quit (void)
 #endif
 }
 
-/* Control C comes here */
+/* Control C comes here: */
 void
-request_quit (int signo)
+request_quit(int signo)
 {
   quit_flag = 1;
   /* Restore the signal handler.  Harmless with BSD-style signals,
      needed for System V-style signals.  */
-  signal (signo, request_quit);
+  signal(signo, request_quit);
 
   if (immediate_quit)
-    quit ();
+    quit();
 }
 
-/* Memory management stuff (malloc friends).  */
-
-#if !defined (USE_MMALLOC)
-
+/* Memory management stuff (malloc friends): */
+#if !defined(USE_MMALLOC) || !USE_MMALLOC
 static void *
-mmalloc (void *md, size_t size)
+mmalloc(void *md, size_t size)
 {
-  return malloc (size);		/* NOTE: GDB's only call to malloc() */
+  return malloc(size);		/* NOTE: GDB's only call to malloc() */
 }
 
 static void *
-mrealloc (void *md, void *ptr, size_t size)
+mrealloc(void *md, void *ptr, size_t size)
 {
   if (ptr == 0)			/* Guard against old realloc's */
-    return mmalloc (md, size);
+    return mmalloc(md, size);
   else
-    return realloc (ptr, size);	/* NOTE: GDB's only call to ralloc() */
+    return realloc(ptr, size);	/* NOTE: GDB's only call to ralloc() */
 }
 
 static void *
-mcalloc (void *md, size_t number, size_t size)
+mcalloc(void *md, size_t number, size_t size)
 {
-  return calloc (number, size);	/* NOTE: GDB's only call to calloc() */
+  return calloc(number, size);	/* NOTE: GDB's only call to calloc() */
 }
 
 static void
-mfree (void *md, void *ptr)
+mfree(void *md, void *ptr)
 {
-  free (ptr);			/* NOTE: GDB's only call to free() */
+  free(ptr);			/* NOTE: GDB's only call to free() */
 }
-
 #endif /* USE_MMALLOC */
 
-#if !defined (USE_MMALLOC)
-
+#if !defined(USE_MMALLOC) || !USE_MMALLOC
 void *
-init_malloc (void *md)
+init_malloc(void *md)
 {
   return md;
 }
 
-#else /* Have mmalloc and want corruption checking */
+#else /* Have mmalloc and want corruption checking: */
 
 void *
-init_malloc (void *md)
+init_malloc(void *md)
 {
-  return mmalloc_check_create (md);
+  return mmalloc_check_create((struct mdesc *)md);
 }
 
 void
-init_mmalloc_default_pool (void *md)
+init_mmalloc_default_pool(void *md)
 {
   char *s;
 
-  /* xmalloc_set_malloc_hooks (gxmalloc, gxcalloc, gxrealloc, gxfree); */
+# if 0
+  xmalloc_set_malloc_hooks(gxmalloc, gxcalloc, gxrealloc, gxfree);
+# endif /* 0 */
 
-  s = getenv ("GDB_ENABLE_PAGECHECK");
+  s = getenv("GDB_ENABLE_PAGECHECK");
   if (s != NULL)
-    md = mmalloc_pagecheck_create ();
+    md = mmalloc_pagecheck_create();
   else
-    md = mmalloc_malloc_create ();
+    md = mmalloc_malloc_create();
 
   if (md == NULL)
-    internal_error (__FILE__, __LINE__, "unable to create default mmalloc allocator");
+    internal_error(__FILE__, __LINE__,
+                   "unable to create default mmalloc allocator");
 
-  s = getenv ("GDB_ENABLE_MMALLOC_CHECK");
+  s = getenv("GDB_ENABLE_MMALLOC_CHECK");
   if (s != NULL)
     {
-      md = mmalloc_check_create (md);
+      md = mmalloc_check_create((struct mdesc *)md);
       if (md == NULL)
-	internal_error (__FILE__, __LINE__, "unable to add error-checking to default mmalloc allocator");
+	internal_error(__FILE__, __LINE__,
+                       "unable to add error-checking to default mmalloc allocator");
     }
 
-  mmalloc_set_default_allocator (md);
+  mmalloc_set_default_allocator(md);
 }
-
 #endif /* Have mmalloc and want corruption checking  */
 
 /* Called when a memory allocation fails, with the number of bytes of
    memory requested in SIZE. */
 
 NORETURN void
-nomem (long size)
+nomem(long size)
 {
   if (size > 0)
     {
-      internal_error (__FILE__, __LINE__,
-		      _("virtual memory exhausted: can't allocate %ld bytes."),
-		      size);
+      internal_error(__FILE__, __LINE__,
+                     _("virtual memory exhausted: cannot allocate %ld bytes."),
+                     size);
     }
   else
     {
-      internal_error (__FILE__, __LINE__, _("virtual memory exhausted."));
+      internal_error(__FILE__, __LINE__, _("virtual memory exhausted."));
     }
 }
 
@@ -1229,7 +1222,7 @@ nomem (long size)
    All these routines are implemented using the mmalloc() family. */
 
 void *
-xmmalloc (void *md, size_t size)
+xmmalloc(void *md, size_t size)
 {
   void *val;
 
@@ -1238,58 +1231,58 @@ xmmalloc (void *md, size_t size)
   if (size == 0)
     size = 1;
 
-  val = mmalloc (md, size);
+  val = mmalloc(md, size);
   if (val == NULL)
-    nomem (size);
+    nomem(size);
 
   return (val);
 }
 
 void *
-xmrealloc (void *md, void *ptr, size_t size)
+xmrealloc(void *md, void *ptr, size_t size)
 {
   void *val;
 
-  /* See libiberty/xmalloc.c.  This function need's to match that's
+  /* See libiberty/xmalloc.c.  This function needs to match that one's
      semantics.  It never returns NULL.  */
   if (size == 0)
     size = 1;
 
   if (ptr != NULL)
-    val = mrealloc (md, ptr, size);
+    val = mrealloc(md, ptr, size);
   else
-    val = mmalloc (md, size);
+    val = mmalloc(md, size);
   if (val == NULL)
-    nomem (size);
+    nomem(size);
 
   return (val);
 }
 
 void *
-xmcalloc (void *md, size_t number, size_t size)
+xmcalloc(void *md, size_t number, size_t size)
 {
   void *mem;
 
-  /* See libiberty/xmalloc.c.  This function need's to match that's
+  /* See libiberty/xmalloc.c.  This function needs to match that one's
      semantics.  It never returns NULL.  */
-  if (number == 0 || size == 0)
+  if ((number == 0) || (size == 0))
     {
       number = 1;
       size = 1;
     }
 
-  mem = mcalloc (md, number, size);
+  mem = mcalloc(md, number, size);
   if (mem == NULL)
-    nomem (number * size);
+    nomem(number * size);
 
   return mem;
 }
 
 void
-xmfree (void *md, void *ptr)
+xmfree(void *md, void *ptr)
 {
   if (ptr != NULL)
-    mfree (md, ptr);
+    mfree(md, ptr);
 }
 /* APPLE LOCAL end malloc */
 
@@ -1303,30 +1296,30 @@ xmfree (void *md, void *ptr)
    "libiberty.h".  xfree() is GDB local.  */
 
 PTR				/* OK: PTR */
-xmalloc (size_t size)
+xmalloc(size_t size)
 {
   void *val;
 
-  /* See libiberty/xmalloc.c.  This function need's to match that's
+  /* See libiberty/xmalloc.c.  This function needs to match that one's
      semantics.  It never returns NULL.  */
   if (size == 0)
     size = 1;
 
-  val = malloc (size);		/* OK: malloc */
+  val = malloc(size);		/* OK: malloc */
   if (val == NULL)
-    nomem (size);
+    nomem(size);
 
   return (val);
 }
 
 void *
-xzalloc (size_t size)
+xzalloc(size_t size)
 {
-  return xcalloc (1, size);
+  return xcalloc(1, size);
 }
 
 PTR				/* OK: PTR */
-xrealloc (PTR ptr, size_t size)	/* OK: PTR */
+xrealloc(PTR ptr, size_t size)	/* OK: PTR */
 {
   void *val;
 
@@ -1336,40 +1329,40 @@ xrealloc (PTR ptr, size_t size)	/* OK: PTR */
     size = 1;
 
   if (ptr != NULL)
-    val = realloc (ptr, size);	/* OK: realloc */
+    val = realloc(ptr, size);	/* OK: realloc */
   else
-    val = malloc (size);		/* OK: malloc */
+    val = malloc(size);		/* OK: malloc */
   if (val == NULL)
-    nomem (size);
+    nomem(size);
 
   return (val);
 }
 
 PTR				/* OK: PTR */
-xcalloc (size_t number, size_t size)
+xcalloc(size_t number, size_t size)
 {
   void *mem;
 
   /* See libiberty/xmalloc.c.  This function need's to match that's
      semantics.  It never returns NULL.  */
-  if (number == 0 || size == 0)
+  if ((number == 0) || (size == 0))
     {
       number = 1;
       size = 1;
     }
 
-  mem = calloc (number, size);		/* OK: xcalloc */
+  mem = calloc(number, size);		/* OK: xcalloc */
   if (mem == NULL)
-    nomem (number * size);
+    nomem(number * size);
 
   return mem;
 }
 
 void
-xfree (void *ptr)
+xfree(void *ptr)
 {
   if (ptr != NULL)
-    free (ptr);		/* OK: free */
+    free(ptr);		/* OK: free */
 }
 
 /* The xmalloc() (libiberty.h) family of memory management routines.
@@ -1383,28 +1376,34 @@ xfree (void *ptr)
 /* NOTE: These are declared using PTR to ensure consistency with
    "libiberty.h".  xfree() is GDB local.  */
 
+/* forward declarations first: */
+extern PTR gmalloc PARAMS((size_t));
+extern PTR grealloc PARAMS((PTR, size_t));
+extern PTR gcalloc PARAMS((size_t, size_t));
+extern void gfree PARAMS((void *));
+
 PTR				/* OK: PTR */
-gmalloc (size_t size)
+gmalloc(size_t size)
 {
-  return xmmalloc (NULL, size);
+  return xmmalloc(NULL, size);
 }
 
 PTR				/* OK: PTR */
-grealloc (PTR ptr, size_t size)	/* OK: PTR */
+grealloc(PTR ptr, size_t size)	/* OK: PTR */
 {
-  return xmrealloc (NULL, ptr, size);
+  return xmrealloc(NULL, ptr, size);
 }
 
 PTR				/* OK: PTR */
-gcalloc (size_t number, size_t size)
+gcalloc(size_t number, size_t size)
 {
-  return xmcalloc (NULL, number, size);
+  return xmcalloc(NULL, number, size);
 }
 
 void
-gfree (void *ptr)
+gfree(void *ptr)
 {
-  xmfree (NULL, ptr);
+  xmfree(NULL, ptr);
 }
 
 
@@ -1412,64 +1411,66 @@ gfree (void *ptr)
    fails. */
 
 char *
-xstrprintf (const char *format, ...)
+xstrprintf(const char *format, ...)
 {
   char *ret;
   va_list args;
-  va_start (args, format);
-  ret = xstrvprintf (format, args);
-  va_end (args);
+  va_start(args, format);
+  ret = xstrvprintf(format, args);
+  va_end(args);
   return ret;
 }
 
 void
-xasprintf (char **ret, const char *format, ...)
+xasprintf(char **ret, const char *format, ...)
 {
   va_list args;
-  va_start (args, format);
-  (*ret) = xstrvprintf (format, args);
-  va_end (args);
+  va_start(args, format);
+  (*ret) = xstrvprintf(format, args);
+  va_end(args);
 }
 
+#ifndef LIBIBERTY_H
 void
-xvasprintf (char **ret, const char *format, va_list ap)
+xvasprintf(char **ret, const char *format, va_list ap)
 {
   /* NULL could be returned due to a memory allocation problem; a
      badly format string; or something else. */
   if ((*ret) == NULL)
-    internal_error (__FILE__, __LINE__,
-		    "vasprintf returned NULL buffer (errno %d)", errno);
+    internal_error(__FILE__, __LINE__,
+                   "vasprintf returned NULL buffer (errno %d)", errno);
   /* A negative status with a non-NULL buffer shouldn't never
      happen. But to be sure. */
-  (*ret) = xstrvprintf (format, ap);
+  (*ret) = xstrvprintf(format, ap);
 }
+#endif /* !LIBIBERTY_H  */
 
 char *
-xstrvprintf (const char *format, va_list ap)
+xstrvprintf(const char *format, va_list ap)
 {
   char *ret = NULL;
-  int status = vasprintf (&ret, format, ap);
-  /* NULL is returned when there was a memory allocation problem.  */
+  int status = vasprintf(&ret, format, ap);
+  /* NULL is returned when there was a memory allocation problem: */
   if (ret == NULL)
-    nomem (0);
+    nomem(0);
   /* A negative status (the printed length) with a non-NULL buffer
      should never happen, but just to be sure.  */
   if (status < 0)
-    internal_error (__FILE__, __LINE__,
-		    _("vasprintf call failed (errno %d)"), errno);
+    internal_error(__FILE__, __LINE__,
+                   _("vasprintf call failed (errno %d)"), errno);
   return ret;
 }
 
 int
-xsnprintf (char *str, size_t size, const char *format, ...)
+xsnprintf(char *str, size_t size, const char *format, ...)
 {
   va_list args;
   int ret;
 
-  va_start (args, format);
-  ret = vsnprintf (str, size, format, args);
-  gdb_assert (ret < size);
-  va_end (args);
+  va_start(args, format);
+  ret = vsnprintf(str, size, format, args);
+  gdb_assert(ret < size);
+  va_end(args);
 
   return ret;
 }
@@ -2032,15 +2033,15 @@ init_page_info (void)
       chars_per_line = cols;
 #else
       /* Make sure Readline has initialized its terminal settings.  */
-      rl_reset_terminal (NULL);
+      rl_reset_terminal(NULL);
 
       /* Get the screen size from Readline.  */
-      rl_get_screen_size (&rows, &cols);
+      rl_get_screen_size(&rows, &cols);
       lines_per_page = rows;
       chars_per_line = cols;
 
       /* Readline should have fetched the termcap entry for us.  */
-      if (tgetnum ("li") < 0 || getenv ("EMACS"))
+      if ((tgetnum("li") < 0) || getenv("EMACS"))
         {
           /* The number of lines per page is not mentioned in the
              terminal description.  This probably means that paging is
@@ -2049,14 +2050,14 @@ init_page_info (void)
         }
 
       /* FIXME: Get rid of this junk.  */
-#if defined(SIGWINCH) && defined(SIGWINCH_HANDLER)
-      SIGWINCH_HANDLER (SIGWINCH);
-#endif
+# if defined(SIGWINCH) && defined(SIGWINCH_HANDLER)
+      SIGWINCH_HANDLER((void *)SIGWINCH);
+# endif /* SIGWINCH && SIGWINCH_HANDLER */
 
-      /* If the output is not a terminal, don't paginate it.  */
-      if (!ui_file_isatty (gdb_stdout))
+      /* If the output is not a terminal, do NOT paginate it.  */
+      if (!ui_file_isatty(gdb_stdout))
         lines_per_page = UINT_MAX;
-#endif
+#endif /* __GO32__ */
     }
 
   set_screen_size ();
@@ -2254,34 +2255,34 @@ puts_filtered_tabular (char *string, int width, int right)
   int stringlen;
   char *spacebuf;
 
-  gdb_assert (chars_per_line > 0);
+  gdb_assert(chars_per_line > 0);
   if (chars_per_line == UINT_MAX)
     {
-      fputs_filtered (string, gdb_stdout);
-      fputs_filtered ("\n", gdb_stdout);
+      fputs_filtered(string, gdb_stdout);
+      fputs_filtered("\n", gdb_stdout);
       return;
     }
 
-  if (((chars_printed - 1) / width + 2) * width >= chars_per_line)
-    fputs_filtered ("\n", gdb_stdout);
+  if ((((chars_printed - 1) / width + 2) * width) >= chars_per_line)
+    fputs_filtered("\n", gdb_stdout);
 
   if (width >= chars_per_line)
-    width = chars_per_line - 1;
+    width = (chars_per_line - 1);
 
-  stringlen = strlen (string);
+  stringlen = strlen(string);
 
   if (chars_printed > 0)
-    spaces = width - (chars_printed - 1) % width - 1;
+    spaces = (width - (chars_printed - 1) % width - 1);
   if (right)
-    spaces += width - stringlen;
+    spaces += (width - stringlen);
 
-  spacebuf = alloca (spaces + 1);
+  spacebuf = (char *)alloca(spaces + 1);
   spacebuf[spaces] = '\0';
   while (spaces--)
     spacebuf[spaces] = ' ';
 
-  fputs_filtered (spacebuf, gdb_stdout);
-  fputs_filtered (string, gdb_stdout);
+  fputs_filtered(spacebuf, gdb_stdout);
+  fputs_filtered(string, gdb_stdout);
 }
 
 
@@ -2969,11 +2970,10 @@ Show demangling of C++/ObjC names in disassembly listings."), NULL,
 			   &setprintlist, &showprintlist);
 }
 
-/* Machine specific function to handle SIGWINCH signal. */
-
-#ifdef  SIGWINCH_HANDLER_BODY
+/* Machine specific function to handle SIGWINCH signal: */
+#ifdef SIGWINCH_HANDLER_BODY
 SIGWINCH_HANDLER_BODY
-#endif
+#endif /* SIGWINCH_HANDLER_BODY */
 /* print routines to handle variable size regs, etc. */
 /* temporary storage using circular buffer */
 #define NUMCELLS 16
@@ -3427,7 +3427,7 @@ xfullpath (const char *filename)
   if (base_name == filename)
     return xstrdup (filename);
 
-  dir_name = alloca ((size_t) (base_name - filename + 2));
+  dir_name = (char *)alloca((size_t)(base_name - filename + 2));
   /* Allocate enough space to store the dir_name + plus one extra
      character sometimes needed under Windows (see below), and
      then the closing \000 character */
@@ -3699,92 +3699,90 @@ bundle_basename (const char *filepath)
 {
   const char *i, *j;
   const char *bundle_name_start = NULL;
-  const char *bundle_name_end = NULL;  /* points to '/' after bundle name */
+  const char *bundle_name_end = NULL; /* points to '/' after bundle name */
   int deep_bundle = 0;
   int have_bundle = 0;
+  const char *dot;
 
-  /* A file in a bundle must have multiple file path parts.  */
-  if (filepath == NULL || strchr (filepath, '/') == NULL)
+  /* A file in a bundle must have multiple file path parts: */
+  if ((filepath == NULL) || (strchr(filepath, '/') == NULL))
     return NULL;
 
   /* Look for: foo.definition/Contents/Resources/whatev */
-
-  if (bundle_name_start == NULL
-      && (i = strrstr (filepath, "Contents")) != NULL
-      && i > filepath + 2)
+  if ((bundle_name_start == NULL)
+      && ((i = strrstr(filepath, "Contents")) != NULL)
+      && (i > (filepath + 2)))
     {
-      j = strrchr_bounded (filepath, i - 2, '/');
-      if (j == filepath || j == NULL)
+      j = strrchr_bounded(filepath, i - 2, '/');
+      if ((j == filepath) || (j == NULL))
         {
           if (*filepath == '/')
-            bundle_name_start = filepath + 1;
+            bundle_name_start = (filepath + 1);
           else
             bundle_name_start = filepath;
-          bundle_name_end = i - 1;
+          bundle_name_end = (i - 1);
           deep_bundle = 1;
           have_bundle = 1;
         }
       else if (*j == '/')
         {
-          bundle_name_start = j + 1;
-          bundle_name_end = i - 1;
+          bundle_name_start = (j + 1);
+          bundle_name_end = (i - 1);
           deep_bundle = 1;
           have_bundle = 1;
         }
     }
 
   /* Look for: foo.framework/Versions/Current/whatev */
-
-  if (have_bundle == 0
-      && (i = strrstr (filepath, "Versions")) != NULL
-      && i > filepath + 2)
+  if ((have_bundle == 0)
+      && ((i = strrstr (filepath, "Versions")) != NULL)
+      && (i > (filepath + 2)))
     {
-      j = strrchr_bounded (filepath, i - 2, '/');
-      if (j == filepath || j == NULL)
+      j = strrchr_bounded(filepath, i - 2, '/');
+      if ((j == filepath) || (j == NULL))
         {
           if (*filepath == '/')
-            bundle_name_start = filepath + 1;
+            bundle_name_start = (filepath + 1);
           else
             bundle_name_start = filepath;
-          bundle_name_end = i - 1;
+          bundle_name_end = (i - 1);
           deep_bundle = 1;
           have_bundle = 1;
         }
-      else if (*j == '/' && j + 1 > bundle_name_start)
+      else if ((*j == '/') && ((j + 1) > bundle_name_start))
         {
-          bundle_name_start = j + 1;
-          bundle_name_end = i - 1;
+          bundle_name_start = (j + 1);
+          bundle_name_end = (i - 1);
           deep_bundle = 1;
           have_bundle = 1;
         }
     }
 
   /* Look for: QTMPEG.component/Contents/Resources/Dutch.lproj/Localized.rsrc
-     Should return Dutch.lproj here, or a shallow bundle on the
-     iPhone platform  */
-
-  if (have_bundle == 0
-      && (i = strrchr (filepath, '/')) != NULL)
+   * Should return Dutch.lproj here, or a shallow bundle on the
+   * iPhone platform  */
+  if ((have_bundle == 0)
+      && ((i = strrchr(filepath, '/')) != NULL))
     {
       /* if there is no preceding pathname component before I */
-      if (i < filepath + 2)
+      if (i < (filepath + 2))
         return NULL;
 
-      j = strrchr_bounded (filepath, i - 1, '/');
-      if (j == filepath || j == NULL)
+      j = strrchr_bounded(filepath, i - 1, '/');
+      if ((j == filepath) || (j == NULL))
         {
-          if (strrchr_bounded (filepath, i, '.') != NULL)
+          if (strrchr_bounded(filepath, i, '.') != NULL)
             {
               bundle_name_start = filepath;
               bundle_name_end = i;
               have_bundle = 1;
             }
         }
-      else if (*j == '/' && j + 1 > bundle_name_start)
+      else if ((*j == '/') && ((j + 1) > bundle_name_start))
         {
-          if (strrchr_bounded (j + 1, i, '.') != NULL)
+          if (strrchr_bounded(j + 1, i, '.') != NULL)
             {
-              bundle_name_start = j + 1;
+              bundle_name_start = (j + 1);
               bundle_name_end = i;
               have_bundle = 1;
             }
@@ -3793,32 +3791,31 @@ bundle_basename (const char *filepath)
 
   if (have_bundle == 0)
     return NULL;
-  if (bundle_name_start == NULL || bundle_name_end == NULL)
+  if ((bundle_name_start == NULL) || (bundle_name_end == NULL))
     return NULL;
-  if (bundle_name_start < filepath || bundle_name_end < filepath)
+  if ((bundle_name_start < filepath) || (bundle_name_end < filepath))
     return NULL;
   if (bundle_name_start == bundle_name_end)
     return NULL;
-  if (bundle_name_start + 1 == bundle_name_end)
+  if ((bundle_name_start + 1) == bundle_name_end)
     return NULL;
 
-  /* Now inspect the characters between bundle_name_start and bundle_name_end
-     to see if it looks like <chars> <dot> <alpha-chars>.  */
-
-  const char *dot = strrchr_bounded (bundle_name_start, bundle_name_end, '.');
+  /* Now inspect the characters between bundle_name_start and
+   * bundle_name_end to see if it looks like <chars><dot><alpha-chars>: */
+  dot = strrchr_bounded (bundle_name_start, bundle_name_end, '.');
 
   if (dot == bundle_name_start)
     return NULL;
-  if (dot + 1 == bundle_name_end)
+  if ((dot + 1) == bundle_name_end)
     return NULL;
-  /* this should not happen -- we did something wrong if we did NOT find
-     a dot in the bundle name -- but guard against it so we do NOT crash.  */
+  /* this should not happen - we did something wrong if we did NOT find
+   * a dot in the bundle name - but guard against it so we do NOT crash: */
   if (dot == NULL)
     return NULL;
 
-  for (i = dot + 1; i < bundle_name_end; i++)
+  for (i = (dot + 1); i < bundle_name_end; i++)
     {
-      if (!isalpha (*i))
+      if (!isalpha(*i))
         return NULL;
     }
 
@@ -3835,20 +3832,26 @@ bundle_basename (const char *filepath)
 uint8_t **
 get_binary_file_uuids (const char *filename)
 {
-  if (filename == NULL || !file_exists_p (filename))
-    return NULL;
-
-  // pre allocate 8 slots plus one for the terminating NULL pointer
+  /* pre-allocate 8 slots plus one for the terminating NULL pointer: */
   uint8_t uuid[16];
-  int current_uuids_slot = 0;
-  int uuids_size = 8;
-  uint8_t **uuids = (uint8_t**) xmalloc (sizeof (uint8_t *) * uuids_size + 1);
-  bfd *abfd = NULL;
+  int current_uuids_slot;
+  int uuids_size;
+  uint8_t **uuids;
+  bfd *abfd;
   struct gdb_exception e;
 
-  TRY_CATCH (e, RETURN_MASK_ERROR)
+  if ((filename == NULL) || !file_exists_p(filename)) {
+    return NULL;
+  }
+
+  current_uuids_slot = 0;
+  uuids_size = 8;
+  uuids = (uint8_t**)xmalloc(sizeof(uint8_t *) * uuids_size + 1);
+  abfd = (bfd *)NULL;
+
+  TRY_CATCH(e, RETURN_MASK_ERROR)
   {
-    abfd = symfile_bfd_open (filename, 0, GDB_OSABI_UNKNOWN);
+    abfd = symfile_bfd_open(filename, 0, GDB_OSABI_UNKNOWN);
   }
 
   if (abfd == NULL || e.reason == RETURN_ERROR)

@@ -25,7 +25,7 @@ SUBDIRS = doc po
 
 bfddocdir = doc
 
-docdir = $(srcdir)/doc
+sdocdir = $(srcdir)/doc
 bfdlibdir = @bfdlibdir@
 bfdincludedir = @bfdincludedir@
 libbfddir = @bfdlibdir@
@@ -729,11 +729,13 @@ po/BLD-POTFILES.in: @MAINT@ Makefile $(BLD_POTFILES)
 	  && mv -v tmp.bld $(srcdir)/po/BLD-POTFILES.in
 
 all: info @MAINT@ config.status
+.PHONY: all info info-am
 
 diststuff: info @MAINT@ config.status
+.PHONY: diststuff
 
-# dummy target that does nothing; for potential future use by the
-# configure script:
+# dummy target that does nothing, not even an "echo"; for potential future
+# use by the configure script:
 nothing:
 	@true
 .PHONY: nothing
@@ -818,7 +820,7 @@ stamp-lib: libbfd.la @MAINT@ ofiles $(PATH_TO_MOVEIFCHANGE) ltmain.sh
 
 # since OFILES no longer works as a dependency, have to make it explicitly
 # as part of a rule instead:
-stamp-staticlib: stamp-ofiles
+stamp-staticlib: stamp-ofiles @MAINT@ bfd.h
 	$(RM) -fv stamp-staticlib
 	$(MAKE) $(OFILES)
 	touch stamp-staticlib
@@ -838,7 +840,7 @@ libbfd_la: libbfd.la
 # This file holds an array associating configuration triplets and
 # vector names. It is built from config.bfd. It is not compiled by
 # itself, but is included by targets.c.
-targmatch.h: config.bfd config.status targmatch.sed
+targmatch.h: config.bfd $(srcdir)/targmatch.sed @MAINT@ config.status
 	rm -fv targmatch.h
 	echo "/* $@ is generated from multiple files */" > targmatch.new
 	$(SED) -f $(srcdir)/targmatch.sed < $(srcdir)/config.bfd >> targmatch.new
@@ -849,9 +851,11 @@ targmatch.h: config.bfd config.status targmatch.sed
 
 targets.lo: targets.c @MAINT@ Makefile ltmain.sh
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $(TDEFAULTS) $(srcdir)/targets.c
+targets.o: targets.lo
 
 archures.lo: archures.c @MAINT@ Makefile ltmain.sh
 	$(LIBTOOL) --mode=compile $(COMPILE) -c $(TDEFAULTS) $(srcdir)/archures.c
+archures.o: archures.lo
 
 elf32-target.h : elfxx-target.h
 	rm -fv $@
@@ -916,7 +920,7 @@ COMMON_BFD_DEPS = $(BFD_H) $(BFD_H_DEPS) $(LOCAL_H_DEPS)
 $(BFD32_LIBS): $(COMMON_BFD_DEPS)
 $(BFD64_LIBS): $(COMMON_BFD_DEPS)
 $(ALL_MACHINES): $(COMMON_BFD_DEPS)
-#FIXME: BFD32_BACKENDS is currently broken because of libtool
+##FIXME: BFD32_BACKENDS might still be broken because of libtool(?)
 $(BFD32_BACKENDS): $(COMMON_BFD_DEPS)
 $(BFD64_BACKENDS): $(COMMON_BFD_DEPS)
 $(OPTIONAL_BACKENDS): $(COMMON_BFD_DEPS)
@@ -1015,8 +1019,15 @@ dep-am: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 
 # Some manually-specified dependencies:
 host-aout.lo: Makefile
+host-aout.o: host-aout.lo
 mach-o.lo: $(BFD_H) bfd.h bfd-in2.h bfd-in3.h mach-o-target.c \
-  @MAINT@ headers
+  bfd_stdint.h @MAINT@ headers
+mach-o.o: mach-o.lo
+pef.o: pef.lo
+xsym.o: xsym.lo
+cpu-i386.o: cpu-i386.lo
+cpu-powerpc.o: cpu-powerpc.lo
+cpu-rs6000.o: cpu-rs6000.lo
 
 # The following program can be used to generate a simple config file
 # which can be folded into an h-XXX file for a new host, with some editing.
@@ -1028,7 +1039,7 @@ gen-aout: $(srcdir)/gen-aout.c @MAINT@ Makefile
 $(BFD_H): stmp-bfd-h $(srcdir)/bfd-in2.h $(srcdir)/libbfd.h $(srcdir)/libcoff.h
 	(cd $(srcdir) && $(MAKE) headers $(FLAGS_TO_PASS))
 
-stmp-bfd-h: bfd-in3.h @MAINT@ headers $(PATH_TO_MOVEIFCHANGE)
+stmp-bfd-h: bfd-in3.h @MAINT@ headers @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 	rm -fv bfd-tmp.h
 	cp -v bfd-in3.h bfd-tmp.h
 	$(RUN_MOVEIFCHANGE) bfd-tmp.h $(BFD_H)
@@ -1094,23 +1105,23 @@ stamp-framework: $(libbfd_la_OBJECTS) $(libbfd_la_DEPENDENCIES)
 # APPLE LOCAL end framework building.
 
 # Could really use a "copy-if-change"...
-headers: $(docdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH_TO_MOVEIFCHANGE)
-	(cd $(docdir); $(MAKE) protos $(FLAGS_TO_PASS))
-	(cd $(docdir); $(MAKE) libbfd.h $(FLAGS_TO_PASS))
-	(cd $(docdir); $(MAKE) libcoff.h $(FLAGS_TO_PASS))
-	(cd $(docdir); $(MAKE) bfd.h $(FLAGS_TO_PASS))
+headers: $(sdocdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+	(cd $(sdocdir); $(MAKE) protos $(FLAGS_TO_PASS))
+	(cd $(sdocdir); $(MAKE) libbfd.h $(FLAGS_TO_PASS))
+	(cd $(sdocdir); $(MAKE) libcoff.h $(FLAGS_TO_PASS))
+	(cd $(sdocdir); $(MAKE) bfd.h $(FLAGS_TO_PASS))
 	if test $(srcdir) != "."; then \
-	  (cd $(docdir); $(MAKE) $(srcdir)/libbfd.h $(FLAGS_TO_PASS)); \
-	  (cd $(docdir); $(MAKE) $(srcdir)/libcoff.h $(FLAGS_TO_PASS)); \
-	  (cd $(docdir); $(MAKE) $(srcdir)/bfd.h $(FLAGS_TO_PASS)); \
+	  (cd $(sdocdir); $(MAKE) $(srcdir)/libbfd.h $(FLAGS_TO_PASS)); \
+	  (cd $(sdocdir); $(MAKE) $(srcdir)/libcoff.h $(FLAGS_TO_PASS)); \
+	  (cd $(sdocdir); $(MAKE) $(srcdir)/bfd.h $(FLAGS_TO_PASS)); \
 	fi
-	cp -v $(docdir)/bfd.h bfd-in2.h-new
+	cp -v $(sdocdir)/bfd.h bfd-in2.h-new
 	$(RUN_MOVEIFCHANGE) bfd-in2.h-new $(srcdir)/bfd-in2.h
 	touch $(srcdir)/bfd-in2.h
-	cp -v $(docdir)/libbfd.h libbfd.h-new
+	cp -v $(sdocdir)/libbfd.h libbfd.h-new
 	$(RUN_MOVEIFCHANGE) libbfd.h-new $(srcdir)/libbfd.h
 	touch $(srcdir)/libbfd.h
-	cp -v $(docdir)/libcoff.h libcoff.h-new
+	cp -v $(sdocdir)/libcoff.h libcoff.h-new
 	$(RUN_MOVEIFCHANGE) libcoff.h-new $(srcdir)/libcoff.h
 	touch $(srcdir)/libcoff.h
 .PHONY: headers
@@ -1120,36 +1131,36 @@ headers: $(docdir)/Makefile stmp-bin2-h stmp-lbfd-h stmp-lcoff-h @MAINT@ $(PATH_
 
 $(srcdir)/bfd-in2.h: @MAINT@ stmp-bin2-h
 	@echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
-stmp-bin2-h: $(BFD_H_FILES) $(BFD64_H_FILES) $(PATH_TO_MOVEIFCHANGE)
-	(cd $(docdir); $(MAKE) $(FLAGS_TO_PASS) bfd.h)
+stmp-bin2-h: $(sdocdir)/Makefile $(BFD_H_FILES) $(BFD64_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+	(cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) bfd.h)
 	if test $(srcdir) != "."; then \
-		(cd $(docdir); $(MAKE) $(FLAGS_TO_PASS) $(srcdir)/bfd.h); \
+	  (cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) $(srcdir)/bfd.h); \
 	fi
-	cp -v $(docdir)/bfd.h bfd-in2.h-new
+	cp -v $(sdocdir)/bfd.h bfd-in2.h-new
 	$(RUN_MOVEIFCHANGE) bfd-in2.h-new $(srcdir)/bfd-in2.h
 	touch $(srcdir)/bfd-in2.h
 	touch $@
 
 $(srcdir)/libbfd.h: @MAINT@ stmp-lbfd-h
 	@echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
-stmp-lbfd-h: $(LIBBFD_H_FILES) $(PATH_TO_MOVEIFCHANGE)
-	(cd $(docdir); $(MAKE) $(FLAGS_TO_PASS) libbfd.h)
+stmp-lbfd-h: $(LIBBFD_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+	(cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) libbfd.h)
 	if test $(srcdir) != "."; then \
-	  (cd $(docdir); $(MAKE) $(FLAGS_TO_PASS) $(srcdir)/libbfd.h); \
+	  (cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) $(srcdir)/libbfd.h); \
 	fi
-	cp -v $(docdir)/libbfd.h libbfd.h-new
+	cp -v $(sdocdir)/libbfd.h libbfd.h-new
 	$(RUN_MOVEIFCHANGE) libbfd.h-new $(srcdir)/libbfd.h
 	touch $(srcdir)/libbfd.h
 	touch $@
 
 $(srcdir)/libcoff.h: @MAINT@ stmp-lcoff-h
 	@echo "this target, '$@', just makes its dependency, '$<', when in maintainer mode"
-stmp-lcoff-h: $(LIBCOFF_H_FILES) $(PATH_TO_MOVEIFCHANGE)
-	(cd $(docdir); $(MAKE) $(FLAGS_TO_PASS) libcoff.h)
+stmp-lcoff-h: $(LIBCOFF_H_FILES) @MAINT@ $(PATH_TO_MOVEIFCHANGE)
+	(cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) libcoff.h)
 	if test $(srcdir) != "."; then \
-	  (cd $(docdir); $(MAKE) $(FLAGS_TO_PASS) $(srcdir)/libcoff.h); \
+	  (cd $(sdocdir); $(MAKE) $(FLAGS_TO_PASS) $(srcdir)/libcoff.h); \
 	fi
-	cp -v $(docdir)/libcoff.h libcoff.h-new
+	cp -v $(sdocdir)/libcoff.h libcoff.h-new
 	$(RUN_MOVEIFCHANGE) libcoff.h-new $(srcdir)/libcoff.h
 	touch $(srcdir)/libcoff.h
 	touch $@
@@ -1161,22 +1172,22 @@ CLEANFILES = bfd.h dep.sed stmp-bfd-h DEP DEPA DEP1 DEP2 libbfd.a \
 
 DISTCLEANFILES = $(BUILD_CFILES) $(BUILD_HFILES) libtool-soversion *~
 
-apple-clean:
-	(cd $(docdir); $(MAKE) apple-clean $(FLAGS_TO_PASS))
+apple-clean: @MAINT@ mostlyclean
+	(cd $(sdocdir); $(MAKE) apple-clean $(FLAGS_TO_PASS))
 	rm -rfv $(FRAMEWORK).framework || rmdir $(FRAMEWORK).framework
 .PHONY: apple-clean
 
 distclean-local:
 	rm -rfv autom4te.cache || rmdir autom4te.cache
 
-bfdver.h: $(srcdir)/version.h $(srcdir)/Makefile.in
+bfdver.h: $(srcdir)/version.h @MAINT@ $(srcdir)/Makefile.in
 	@echo "creating $@"
-	@bfd_version=`echo "$(VERSION)" | $(SED) -e 's/\([^\.]*\)\.*\([^\.]*\)\.*\([^\.]*\)\.*\([^\.]*\)\.*\([^\.]*\).*/\1.00\2.00\3.00\4.00\5/' -e 's/\([^\.]*\)\..*\(..\)\..*\(..\)\..*\(..\)\..*\(..\)$$/\1\2\3\4\5/'`;\
-	bfd_version_string="\"$(VERSION)\"" ;\
+	@bfd_version=`echo "$(VERSION)" | $(SED) -e 's/\([^\.]*\)\.*\([^\.]*\)\.*\([^\.]*\)\.*\([^\.]*\)\.*\([^\.]*\).*/\1.00\2.00\3.00\4.00\5/' -e 's/\([^\.]*\)\..*\(..\)\..*\(..\)\..*\(..\)\..*\(..\)$$/\1\2\3\4\5/'`; \
+	bfd_version_string="\"$(VERSION)\""; \
 	if test "x$(RELEASE)" = "x"; then \
-	  bfd_version_date=`$(SED) -n -e 's/.*DATE //p' < $(srcdir)/version.h`;\
-	  bfd_version_string="\"$(VERSION) $${bfd_version_date}\"";\
-	fi;\
+	  bfd_version_date=`$(SED) -n -e 's/.*DATE //p' < $(srcdir)/version.h`; \
+	  bfd_version_string="\"$(VERSION) $${bfd_version_date}\""; \
+	fi; \
 	$(SED) -e "s/@bfd_version@/$${bfd_version}/" -e "s/@bfd_version_string@/$${bfd_version_string}/" < $(srcdir)/version.h | tee $@
 
 # What appears below is generated by a hacked mkdep using gcc -MM.

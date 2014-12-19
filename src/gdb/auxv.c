@@ -1,4 +1,4 @@
-/* Auxiliary vector support for GDB, the GNU debugger.
+/* auxv.c: Auxiliary vector support for GDB, the GNU debugger.
 
    Copyright 2004 Free Software Foundation, Inc.
 
@@ -84,7 +84,7 @@ LONGEST
 target_auxv_read (struct target_ops *ops, gdb_byte **data)
 {
   size_t auxv_alloc = 512, auxv_pos = 0;
-  gdb_byte *auxv = xmalloc (auxv_alloc);
+  gdb_byte *auxv = (gdb_byte *)xmalloc(auxv_alloc);
   int n;
 
   while (1)
@@ -99,7 +99,7 @@ target_auxv_read (struct target_ops *ops, gdb_byte **data)
 	break;
       gdb_assert (auxv_pos == auxv_alloc);
       auxv_alloc *= 2;
-      auxv = xrealloc (auxv, auxv_alloc);
+      auxv = (gdb_byte *)xrealloc(auxv, auxv_alloc);
     }
 
   if (auxv_pos == 0)

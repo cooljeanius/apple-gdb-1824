@@ -1,4 +1,4 @@
-/* <ctype.h> replacement macros.
+/* safe-ctype.c: <ctype.h> replacement macros.
 
    Copyright (C) 2000, 2001, 2002, 2003, 2004,
    2005 Free Software Foundation, Inc.
@@ -64,7 +64,7 @@ others.  However, there are two differences between these macros and
 those provided by @file{ctype.h}:
 
 @itemize @bullet
-@item These macros are guaranteed to have well-defined behavior for all 
+@item These macros are guaranteed to have well-defined behavior for all
 values representable by @code{signed char} and @code{unsigned char}, and
 for @code{EOF}.
 
@@ -253,3 +253,5 @@ const unsigned char _sch_toupper[256] =
   #error "Unrecognized host character set"
 # endif
 #endif
+
+/* EOF */

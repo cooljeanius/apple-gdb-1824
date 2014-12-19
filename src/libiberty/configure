@@ -713,7 +713,9 @@ AM_V
 am__leading_dot
 mkdir_p
 install_sh
+AUTOMAKE
 AUTOHEADER
+ACLOCAL
 CYGPATH_W
 SED
 AUTOCONF
@@ -3616,7 +3618,11 @@ fi
 
   # Some tools Automake needs.
 
+ACLOCAL=${ACLOCAL-"${am_missing_run}aclocal"}
+
 AUTOHEADER=${AUTOHEADER-"${am_missing_run}autoheader"}
+
+AUTOMAKE=${AUTOMAKE-"${am_missing_run}automake"}
         mkdir_p='$(MKDIR_P)'
 
 
@@ -5616,7 +5622,7 @@ $as_echo "$MKDIR_P" >&6; }
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking warning flags to use" >&5
 $as_echo_n "checking warning flags to use... " >&6; }
 if test "x${GCC}" = "xyes"; then
-  ac_libiberty_warn_cflags='-Wall -Wextra -pedantic -Wwrite-strings -Wc++-compat -Wstrict-prototypes -Wundef'
+  ac_libiberty_warn_cflags='-Wall -Wextra -pedantic -Wwrite-strings -Wc++-compat -Wstrict-prototypes -Wold-style-definition -Wundef'
 else
   ac_libiberty_warn_cflags=''
 fi
@@ -17673,13 +17679,15 @@ case "${host}" in
 esac
 
 if [ -n "${frag}" ]; then
-  frags=${libiberty_topdir}/libiberty/config/$frag
+  frags=${libiberty_topdir}/libiberty/config/${frag}
 else
   frags=""
 fi
 
 
-test -z "${PICFLAG}" && PICFLAG=""
+if test "x${PICFLAG}" = "x"; then
+  test -z "${PICFLAG}" && PICFLAG=""
+fi
 
 # If they did NOT specify --enable-shared, do NOT generate shared libs.
 case "${enable_shared}" in
@@ -17698,6 +17706,7 @@ if [ "x${shared}" = "xyes" ]; then
     *-*-cygwin*)	;;
     alpha*-*-linux*)	frag=mh-elfalphapic ;;
     arm*-*-*)		frag=mh-armpic ;;
+    *-apple-darwin*)    frag=mh-darwinpic ;;
     hppa*-*-*)		frag=mh-papic ;;
     i[34567]86-*-* | x86_64-*-*)
 			frag=mh-x86pic ;;
@@ -17710,7 +17719,12 @@ if [ "x${shared}" = "xyes" ]; then
   if [ -n "${frag}" ]; then
     frags="${frags} ${libiberty_topdir}/config/${frag}"
   fi
-elif [ "${shared}" != "yes" ]; then
+elif [ "x${shared}" != "xyes" ]; then
+  if test "x${PICFLAG}" != "x"; then
+    test -n "${PICFLAG}"
+    { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: libraries are unshared; overriding user-supplied PICFLAG" >&5
+$as_echo "$as_me: WARNING: libraries are unshared; overriding user-supplied PICFLAG" >&2;}
+  fi
   PICFLAG=""
 fi
 
@@ -18387,6 +18401,15 @@ $as_echo "#define HAVE_UINTPTR_T 1" >>confdefs.h
 
 
 # other types and structs:
+ac_fn_c_check_type "$LINENO" "clock_t" "ac_cv_type_clock_t" "$ac_includes_default"
+if test "x$ac_cv_type_clock_t" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_CLOCK_T 1
+_ACEOF
+
+
+fi
 ac_fn_c_check_type "$LINENO" "off_t" "ac_cv_type_off_t" "$ac_includes_default"
 if test "x$ac_cv_type_off_t" = xyes; then :
 
@@ -18715,15 +18738,16 @@ funcs="${funcs} setproctitle"
 
 vars="sys_errlist sys_nerr sys_siglist"
 
-checkfuncs="__fsetlocking canonicalize_file_name dup3 getrlimit getrusage"
-checkfuncs="${checkfuncs} getsysinfo gettimeofday on_exit psignal"
-checkfuncs="${checkfuncs} pstat_getdynamic pstat_getstatic realpath"
-checkfuncs="${checkfuncs} setrlimit sbrk spawnve spawnvpe strerror"
-checkfuncs="${checkfuncs} strsignal sysconf sysctl sysmp table times"
-checkfuncs="${checkfuncs} wait3 wait4"
+checkfuncs="__fsetlocking btowc bzero canonicalize_file_name dup3"
+checkfuncs="${checkfuncs} getrlimit getrusage getsysinfo gettimeofday"
+checkfuncs="${checkfuncs} on_exit psignal pstat_getdynamic pstat_getstatic"
+checkfuncs="${checkfuncs} realpath setrlimit sbrk spawnve spawnvpe"
+checkfuncs="${checkfuncs} strerror strsignal sysconf sysctl sysmp table"
+checkfuncs="${checkfuncs} times wait3 wait4"
 
 # These are neither executed nor required, but they help keep
 # autoheader happy without adding a bunch of text to acconfig.h.
+# They also keep autoscan happy as well.
 if test "x" = "Y0"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: this condition should not actually be reached" >&5
 $as_echo "$as_me: WARNING: this condition should not actually be reached" >&2;}
@@ -19296,6 +19320,17 @@ $as_echo "#define HAVE_MBRTOWC 1" >>confdefs.h
 
   fi
 
+    for ac_func in mmap
+do :
+  ac_fn_c_check_func "$LINENO" "mmap" "ac_cv_func_mmap"
+if test "x$ac_cv_func_mmap" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_MMAP 1
+_ACEOF
+
+fi
+done
+
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for obstacks" >&5
 $as_echo_n "checking for obstacks... " >&6; }
 if ${ac_cv_func_obstack+:} false; then :
@@ -19851,8 +19886,8 @@ fi
     basename bcmp bcopy bsearch btowc bzero \
     calloc canonicalize_file_name clock dup2 dup3 ffs __fsetlocking \
     getcwd getpagesize getrlimit getrusage getsysinfo \
-    gettext gettimeofday getwd index insque \
-    memchr memcmp memcpy memmem memmove mempcpy memset mkdir mkstemps \
+    gettext gettimeofday getwd index insque memchr memcmp memcpy memmem \
+    memmove mempcpy memset mkdir mkstemps munmap \
     on_exit pathconf psignal pstat_getdynamic pstat_getstatic putenv \
     random realpath re_comp regcomp rename rindex rmdir \
     sbrk setenv setproctitle setrlimit sigsetmask snprintf \
@@ -21044,6 +21079,8 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 $as_echo_n "checking for functions that only need to be checked and not necessarily replaced... " >&6; }
   { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
 $as_echo " " >&6; }
+  unset ac_cv_func_bzero
+  unset ac_cv_func_gettimeofday
   for ac_func in ${checkfuncs}
 do :
   as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
@@ -21195,6 +21232,26 @@ fi
 
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_STRVERSCMP $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "btowc" "ac_cv_have_decl_btowc" "$ac_includes_default"
+if test "x$ac_cv_have_decl_btowc" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_BTOWC $ac_have_decl
+_ACEOF
+ac_fn_c_check_decl "$LINENO" "bzero" "ac_cv_have_decl_bzero" "$ac_includes_default"
+if test "x$ac_cv_have_decl_bzero" = xyes; then :
+  ac_have_decl=1
+else
+  ac_have_decl=0
+fi
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_DECL_BZERO $ac_have_decl
 _ACEOF
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether canonicalize_file_name must be declared" >&5
 $as_echo_n "checking whether canonicalize_file_name must be declared... " >&6; }

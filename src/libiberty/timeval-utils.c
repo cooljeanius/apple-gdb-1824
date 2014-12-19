@@ -1,4 +1,4 @@
-/* Basic struct timeval utilities.
+/* timeval-utils.c: Basic struct timeval utilities.
    Copyright (C) 2011 Free Software Foundation, Inc.
 
 This file is part of the libiberty library.
@@ -38,7 +38,7 @@ Boston, MA 02110-1301, USA.  */
 
 #include "timeval-utils.h"
 
-/* 
+/*
 
 @deftypefn Extension void timeval_add (struct timeval *@var{a}, @
   struct timeval *@var{b}, struct timeval *@var{result})
@@ -47,7 +47,7 @@ Adds @var{a} to @var{b} and stores the result in @var{result}.
 
 @end deftypefn
 
-*/ 
+*/
 
 void
 timeval_add (struct timeval *result,
@@ -62,7 +62,7 @@ timeval_add (struct timeval *result,
     }
 }
 
-/* 
+/*
 
 @deftypefn Extension void timeval_sub (struct timeval *@var{a}, @
   struct timeval *@var{b}, struct timeval *@var{result})
@@ -71,7 +71,7 @@ Subtracts @var{b} from @var{a} and stores the result in @var{result}.
 
 @end deftypefn
 
-*/ 
+*/
 
 void
 timeval_sub (struct timeval *result,
@@ -85,3 +85,5 @@ timeval_sub (struct timeval *result,
       result->tv_usec += 1000000;
     }
 }
+
+/* EOF */

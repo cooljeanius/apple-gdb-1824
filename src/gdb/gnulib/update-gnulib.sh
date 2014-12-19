@@ -33,22 +33,25 @@ IMPORTED_GNULIB_MODULES="\
     absolute-header alignof alloca alloca-opt autobuild \
     configmake \
     dirent dirfd dosname double-slash-root \
-    errno exitfail extensions extern-inline \
-    float fnmatch fnmatch-gnu fpieee fpucw frexp frexpl \
+    errno error exitfail extensions extern-inline \
+    fileblocks float fnmatch fnmatch-gnu fpieee fpucw frexp frexpl \
     gettext-h gettimeofday git-version-gen gitlog-to-changelog gnu-make \
     havelib host-cpu-c-abi host-os \
-    include_next inline inttypes inttypes-incomplete isnand-nolibm isnanl-nolibm \
-    iswctype \
-    largefile ldd localcharset \
-    manywarnings math mbrtowc mbsinit mbsrtowcs memchr memcmp memmem memmem-simple \
+    include_next inline intprops inttypes inttypes-incomplete \
+    isnand-nolibm isnanl-nolibm iswctype \
+    largefile ldd localcharset lstat \
+    malloc-gnu malloc-posix manywarnings math mbrtowc mbsinit mbsrtowcs \
+    memchr memcmp memmem memmem-simple \
     mempcpy multiarch \
     nextafter no-c++ nocrash \
     obstack openmp \
     pathmax \
+    realloc-gnu realloc-posix \
     snippet/_Noreturn snippet/arg-nonnull snippet/c++defs snippet/link-warning \
     snippet/warn-on-use \
-    ssize_t stdbool stddef stdint stdlib streq string strnlen1 strstr strstr-simple \
-    sys_stat sys_time sys_types \
+    ssize_t stat stat-macros stat-size stat-time stdbool stddef stdint stdlib \
+    streq strerror strerror_r-posix strerror-override string strnlen strnlen1 \
+    strstr strstr-simple sys_stat sys_time sys_types \
     time \
     unistd update-copyright \
     vc-list-files verify \
@@ -106,8 +109,9 @@ fi
 ${gnulib_prefix}/gnulib-tool --import --dir=. --lib=libgnu \
   --source-base=import --m4-base=import/m4 --doc-base=doc \
   --tests-base=tests --aux-dir=import/extra \
+  --avoid=lock --avoid=msvc-nothrow --avoid=threadlib \
   --no-conditional-dependencies --no-libtool --macro-prefix=gl \
-  --no-vc-files \
+  --no-vc-files --with-obsolete \
   ${IMPORTED_GNULIB_MODULES}
 if [ $? -ne 0 ]; then
    echo "Error: gnulib import failed.  Aborting."

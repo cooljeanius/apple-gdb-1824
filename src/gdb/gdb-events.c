@@ -1,4 +1,4 @@
-/* User Interface Events.
+/* gdb-events.c: User Interface Events.
 
    Copyright 1999, 2001, 2002, 2004, 2005 Free Software Foundation,
    Inc.
@@ -321,40 +321,35 @@ gdb_events_deliver (struct gdb_events *vector)
       switch (event->type)
 	{
 	case breakpoint_create:
-	  vector->breakpoint_create
-	    (event->data.breakpoint_create.b);
+	  vector->breakpoint_create(event->data.breakpoint_create.b);
 	  break;
 	case breakpoint_delete:
-	  vector->breakpoint_delete
-	    (event->data.breakpoint_delete.b);
+	  vector->breakpoint_delete(event->data.breakpoint_delete.b);
 	  break;
 	case breakpoint_modify:
-	  vector->breakpoint_modify
-	    (event->data.breakpoint_modify.b);
+	  vector->breakpoint_modify(event->data.breakpoint_modify.b);
 	  break;
 	case breakpoint_resolve:
-	  vector->breakpoint_resolve
-	    (event->data.breakpoint_resolve.b,
-	       event->data.breakpoint_resolve.new_b);
+	  vector->breakpoint_resolve(event->data.breakpoint_resolve.b,
+                                     event->data.breakpoint_resolve.new_b);
 	  break;
 	case tracepoint_create:
-	  vector->tracepoint_create
-	    (event->data.tracepoint_create.number);
+	  vector->tracepoint_create(event->data.tracepoint_create.number);
 	  break;
 	case tracepoint_delete:
-	  vector->tracepoint_delete
-	    (event->data.tracepoint_delete.number);
+	  vector->tracepoint_delete(event->data.tracepoint_delete.number);
 	  break;
 	case tracepoint_modify:
-	  vector->tracepoint_modify
-	    (event->data.tracepoint_modify.number);
+	  vector->tracepoint_modify(event->data.tracepoint_modify.number);
 	  break;
 	case architecture_changed:
-	  vector->architecture_changed ();
+	  vector->architecture_changed();
 	  break;
+        default:
+          break;
 	}
       delivering_events = event->next;
-      xfree (event);
+      xfree(event);
     }
 }
 

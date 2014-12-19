@@ -1,4 +1,4 @@
-/* Set the title of a process.
+/* setproctitle.c: Set the title of a process.
    Copyright (C) 2010, 2011 Free Software Foundation, Inc.
 
 This file is part of the libiberty library.
@@ -18,12 +18,12 @@ write to the Free Software Foundation, Inc., 51 Franklin Street - Fifth Floor,
 Boston, MA 02110-1301, USA.  */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 #ifdef HAVE_SYS_PRCTL_H
-#include <sys/types.h>
-#include <sys/prctl.h>
-#endif
+# include <sys/types.h>
+# include <sys/prctl.h>
+#endif /* HAVE_SYS_PRCTL_H */
 #include "ansidecl.h"
 
 /*
@@ -31,18 +31,22 @@ Boston, MA 02110-1301, USA.  */
 @deftypefn Supplemental void setproctitle (const char *@var{fmt}, ...)
 
 Set the title of a process to @var{fmt}. va args not supported for now,
-but defined for compatibility with BSD. 
+but defined for compatibility with BSD.
 
 @end deftypefn
 
 */
 
 void
-setproctitle (const char *name ATTRIBUTE_UNUSED, ...)
+setproctitle(const char *name ATTRIBUTE_UNUSED, ...)
 {
 #ifdef PR_SET_NAME
   /* On GNU/Linux this sets the top visible "comm", but not
      necessarily the name visible in ps. */
-  prctl (PR_SET_NAME, name);
-#endif
+  prctl(PR_SET_NAME, name);
+#else
+  return;
+#endif /* PR_SET_NAME */
 }
+
+/* EOF */

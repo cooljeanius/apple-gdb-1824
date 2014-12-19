@@ -2,6 +2,10 @@
  * macosx-low.c
  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include <fcntl.h>
 #include <mach/mach.h>
 #include <signal.h>
@@ -74,7 +78,7 @@ void mach_check_error(kern_return_t ret, const char *file,
   }
 
   error("error on line %u of \"%s\" in function \"%s\": %s (0x%lx)\n",
-		line, file, func, MACH_ERROR_STRING(ret), (unsigned long)ret);
+        line, file, func, MACH_ERROR_STRING(ret), (unsigned long)ret);
 }
 
 void
@@ -96,13 +100,12 @@ mach_warn_error (kern_return_t ret, const char *file,
 
 static struct macosx_process_info *create_process (pid_t pid);
 
-/*
-   The gdbserver code is a bit opaque because it (probably intentionally)
+/* The gdbserver code is a bit opaque because it (probably intentionally)
    makes a fuzzy distinction between threads and processes. But on
    Mac OS X, threads are NOT process-like. We spawn ONE process, and it
    has a bunch of threads. That is all. So I will store the information
    for the current process in the macosx_thread_status. Then
-   every thread will get a pointer to the status for the current process.  */
+   each thread will get a pointer to the status for the current process. */
 
 struct macosx_process_info current_macosx_process;
 
@@ -251,13 +254,15 @@ static int macosx_create_inferior(char *program, char **allargs)
       setpgid (0, 0);
 
       /* I am not sure why I need to sleep a bit here...
-	   * But if I do not do so, then the gdbserver goes comatose, and
-	   * actually locks up the terminal...  */
-      sleep (1);
-      execv (program, allargs);
+       * But if I do not do so, then the gdbserver goes comatose, and
+       * actually locks up the terminal...  */
+      sleep(1);
+      execv(program, allargs);
 
-      error ("Cannot exec %s: %s.\n", program,
-	       strerror (errno));
+/* in case a macro has re-defined this function: */
+#undef strerror
+      error("Cannot exec %s: %s.\n", program,
+            strerror(errno));
     }
 
 
@@ -286,9 +291,9 @@ macosx_attach (unsigned long pid)
   /* Attach to running process with signals as exceptions.  */
   if (ptrace (PT_ATTACHEXC, pid, 0, 0) != 0)
     {
-      fprintf (stderr, "Cannot attach to process %d: %s (%d)\n", pid,
-	       strerror (errno), errno);
-      fflush (stderr);
+      fprintf(stderr, "Cannot attach to process %lud: %s (%d)\n", pid,
+              strerror(errno), errno);
+      fflush(stderr);
 
       return -1;
     }
@@ -433,10 +438,10 @@ macosx_resume (struct thread_resume *resume_info)
 	{
 	  if (process->stepping == 1)
 	    {
-	      warning ("Can only step one thread at a time.  "
-		       "Currently stepping %d, asked to step %d\n",
-		       process->thread_to_step,
-		       resume_info[index].thread);
+	      warning("Can only step one thread at a time.  "
+                      "Currently stepping %ud, asked to step %lud\n",
+                      process->thread_to_step,
+                      resume_info[index].thread);
 	    }
 	  else
 	    {
@@ -572,18 +577,18 @@ struct macosx_event
   struct macosx_event *prev;
 };
 
-static struct macosx_event *macosx_add_to_events (struct macosx_process_info *inferior,
-						  enum macosx_event_source source,
-						  char *data);
-static void macosx_clear_events ();
+static struct macosx_event *
+macosx_add_to_events(struct macosx_process_info *inferior,
+                     enum macosx_event_source source, char *data);
+static void macosx_clear_events(struct macosx_process_info *inferior);
 
 
 /* These two variables hold the head & tail of the static event chain.  */
 static struct macosx_event *macosx_event_chain, *macosx_event_tail;
 
 static enum macosx_event_type
-macosx_exception_event_type (struct macosx_process_info *inferior,
-			     macosx_exception_thread_message *mssg)
+macosx_exception_event_type(struct macosx_process_info *inferior,
+                            macosx_exception_thread_message *mssg)
 {
   if (inferior->stepping
       && (mssg->exception_type == EXC_BREAKPOINT)
@@ -703,27 +708,31 @@ macosx_service_event (struct macosx_process_info *inferior,
     error ("Message of unknown source: %d passed to macosx_service_event.\n",
 	   event->source);
 
-  return (unsigned char) 0;
+  return (unsigned char)0;
 
 }
 
 static void
-macosx_free_event (struct macosx_event *event_ptr)
+macosx_free_event(struct macosx_event *event_ptr)
 {
-  if (event_ptr->source == MACOSX_SOURCE_EXCEPTION)
-    free (event_ptr->data);
-  free (event_ptr);
+  if (event_ptr->source == MACOSX_SOURCE_EXCEPTION) {
+    free(event_ptr->data);
+  }
+  free(event_ptr);
 }
 
 static void
-macosx_clear_events ()
+macosx_clear_events(struct macosx_process_info *inferior)
 {
+#if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
+# pragma unused (inferior)
+#endif /* (__APPLE__ && __APPLE_CC__) || __MWERKS__ */
   struct macosx_event *event_ptr = macosx_event_chain;
 
   while (event_ptr != NULL)
     {
       macosx_event_chain = event_ptr->next;
-      macosx_free_event (event_ptr);
+      macosx_free_event(event_ptr);
       event_ptr = macosx_event_chain;
     }
 }
@@ -746,14 +755,14 @@ macosx_backup_threads_before_break (struct macosx_event *event_ptr)
 static int got_sigchld;
 
 static void
-sigchld_handler (int signo)
+sigchld_handler(int signo)
 {
   macosx_low_debug (6, "Called sigchld_handler (%d)\n", signo);
   got_sigchld = 1;
 }
 
 static int
-check_for_sigchld ()
+check_for_sigchld(void)
 {
   int retval = got_sigchld;
   got_sigchld = 0;
@@ -767,10 +776,8 @@ check_for_sigchld ()
    then the exit code or signal is written in RETVAL.  */
 
 enum macosx_event_source
-macosx_fetch_event (struct macosx_process_info *inferior,
-		     int timeout,
-		     char *buf,
-		     int *retval)
+macosx_fetch_event(struct macosx_process_info *inferior,
+                   int timeout, char *buf, int *retval)
 {
   fd_set fds;
   int fd, ret;
@@ -780,17 +787,18 @@ macosx_fetch_event (struct macosx_process_info *inferior,
   int bypass_select = 0;
   int select_errno = 0;
   unsigned char check_for_exc_signal = 0;
-  static macosx_exception_thread_message saved_msg = {0};
+  static macosx_exception_thread_message saved_msg = { 0 };
   *retval = 0;
-  macosx_low_debug (6, "macosx_fetch_event called with timeout %d.\n", timeout);
+  macosx_low_debug(6, "macosx_fetch_event called with timeout %d.\n",
+                   timeout);
 
   /* Check if we have a saved mach exception after a previous call to this
      function had select interrupted by a signal that did NOT have a
      matching exception posted to the exception thread.  */
   if (saved_msg.task_port != MACH_PORT_NULL)
     {
-      macosx_low_debug (6, "Getting mach exception event from cache.\n");
-      memcpy (buf, &saved_msg, sizeof (saved_msg));
+      macosx_low_debug(6, "Getting mach exception event from cache.\n");
+      memcpy(buf, &saved_msg, sizeof(saved_msg));
       /* Invalidate the task port so that this cached exception does NOT get
          used again.  */
       saved_msg.task_port = MACH_PORT_NULL;
@@ -809,26 +817,27 @@ macosx_fetch_event (struct macosx_process_info *inferior,
 
   for (;;)
     {
-      macosx_add_to_port_set (inferior->status, &fds);
+      macosx_add_to_port_set(inferior->status, &fds);
       select_errno = 0;
 
-      if (check_for_sigchld ())
+      if (check_for_sigchld())
 	{
-	  macosx_low_debug (6, "sigchild handler got a hit before"
-			    " entering select\n");
+	  macosx_low_debug(6, "sigchild handler got a hit before"
+                           " entering select\n");
 	  bypass_select = 1;
+          ret = 0;
 	}
       else
         {
-          ret = select (FD_SETSIZE, &fds, NULL, NULL, tv_ptr);
+          ret = select(FD_SETSIZE, &fds, NULL, NULL, tv_ptr);
 	  /* Save errno from our select call in case any other system
-	     functions mess with it before we use it.  */
+	   * functions mess with it before we use it.  */
 	  if (ret < 0)
 	    select_errno = errno;
         }
 
-      macosx_low_debug (6, "Woke up from select: bypass: %d ret: %d errno %d.\n",
-			bypass_select, ret, select_errno);
+      macosx_low_debug(6, "Woke up from select: bypass: %d ret: %d errno %d.\n",
+                       bypass_select, ret, select_errno);
 
       /* If we did NOT call select, or if select was interrupted, we need to
          check for other special reasons we may have stopped.  */
@@ -994,7 +1003,7 @@ macosx_wait_for_event (struct thread_info *child,
 
   inferior = get_thread_process (current_inferior);
 
-  macosx_clear_events (inferior);
+  macosx_clear_events(inferior);
 
   /* N.B. event_count is not necessarily the number of events that
      actually get added.  For instance, we sometimes break out of
@@ -1148,7 +1157,7 @@ macosx_wait_for_event (struct thread_info *child,
 	    nevents++;
 	}
 
-      random_selector = (int) ((nevents * (double) rand ()) / (RAND_MAX + 1.0));
+      random_selector = (int)((nevents * (double)rand()) / (double)(RAND_MAX + 1.0f));
       for (event_ptr = macosx_event_chain; event_ptr != NULL;
 	   event_ptr = event_ptr->next)
 	{
@@ -1163,7 +1172,7 @@ macosx_wait_for_event (struct thread_info *child,
       *status = 'T';
     }
 
-  macosx_clear_events();
+  macosx_clear_events(inferior);
   return retval;
 }
 
@@ -1175,11 +1184,11 @@ static unsigned char macosx_wait (char *status)
   unsigned char w;
   struct thread_info *child = NULL;
 
-  enable_async_io ();
-  unblock_async_io ();
+  enable_async_io();
+  unblock_async_io();
   w = macosx_wait_for_event (child, status, -1);
-  disable_async_io ();
-  terminal_ours ();
+  disable_async_io();
+  terminal_ours();
 
 
   macosx_low_debug (6, "Called macosx_wait\n");
@@ -1212,7 +1221,8 @@ macosx_read_memory(CORE_ADDR memaddr, unsigned char *myaddr, int len)
 
   inferior = get_thread_process (current_inferior);
 
-  result = mach_xfer_memory(memaddr, myaddr, len, 0, inferior->status->task);
+  result = mach_xfer_memory(memaddr, (const char *)myaddr, len, 0,
+                            inferior->status->task);
 
   macosx_low_debug(6, "Called macosx_read_memory\n");
   if (result > 0)
@@ -1230,9 +1240,10 @@ macosx_write_memory(CORE_ADDR memaddr, const unsigned char *myaddr, int len)
 
   inferior = get_thread_process(current_inferior);
 
-  result = mach_xfer_memory(memaddr, myaddr, len, 1, inferior->status->task);
+  result = mach_xfer_memory(memaddr, (const char *)myaddr, len, 1,
+                            inferior->status->task);
 
-  macosx_low_debug (6, "Called macosx_write_memory\n");
+  macosx_low_debug(6, "Called macosx_write_memory\n");
   if (result > 0)
     return 0;
   else
@@ -1359,44 +1370,45 @@ static void terminal_inferior(void)
 
 static void terminal_ours(void)
 {
-  if (gdbserver_has_a_terminal () == 0) {
-	  return;
+  if (gdbserver_has_a_terminal() == 0) {
+    return;
   }
 
   if (terminal_is_ours == 0) {
-      /* Ignore this signal since it will happen when we try to set the pgrp: */
-      void (*osigttou)() = NULL;
+      /* Ignore this signal since it will happen when we try to set
+       * the pgrp: */
+      void (*osigttou)(int) = NULL;
       int result;
 
       terminal_is_ours = 1;
 
-      osigttou = (void (*)())signal(SIGTTOU, SIG_IGN);
+      osigttou = (void (*)(int))signal(SIGTTOU, SIG_IGN);
 
       inferior_ttystate_err = tcgetattr(STDIN_FILENO, &inferior_ttystate);
 
       /* FIXME: For MacOS X: if you are attaching then the most common
-	   * case is that the process you are attaching to is NOT running
-	   * from the same terminal.  In this case, the code below will
-	   * erroneously swap the PID that you got from the process with
-	   * the process group for gdb.  This will cause interrupting the
-	   * process to fail later on.  So we will just NOT do this when
-	   * we are attaching...
-	   * In the long run, we should just not use this terminal code for
+       * case is that the process you are attaching to is NOT running
+       * from the same terminal.  In this case, the code below will
+       * erroneously swap the PID that you got from the process with
+       * the process group for gdb.  This will cause interrupting the
+       * process to fail later on.  So we will just NOT do this when
+       * we are attaching...
+       * In the long run, we should just not use this terminal code for
        * MacOS X, since it is broken in a bunch of ways... */
 
-	  if (attached_to_process) {
-		  inferior_process_group = -1;
+      if (attached_to_process) {
+        inferior_process_group = -1;
       } else {
-		  inferior_process_group = tcgetpgrp(0);
-	  }
+        inferior_process_group = tcgetpgrp(0);
+      }
 
       inferior_tflags = fcntl(STDIN_FILENO, F_GETFL, 0);
 
       result = tcsetattr(STDIN_FILENO, TCSANOW, &our_ttystate);
 
-	  if (our_process_group >= 0) {
-		  result = tcsetpgrp(STDIN_FILENO, our_process_group);
-	  }
+      if (our_process_group >= 0) {
+        result = tcsetpgrp(STDIN_FILENO, our_process_group);
+      }
 
       /* Is there a reason this is being done twice? It happens both
        * places we use F_SETFL, so I am inclined to think perhaps there
@@ -1405,7 +1417,6 @@ static void terminal_ours(void)
 
       /* Restore the previous signal handler. */
       signal(SIGTTOU, osigttou);
-
   }
 }
 

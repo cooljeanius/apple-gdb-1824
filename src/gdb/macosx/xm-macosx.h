@@ -49,7 +49,7 @@ extern void macosx_resize_window(int *width, int *height);
 #define	SIGWINCH_HANDLER_BODY \
 void macosx_resize_window_handler(void *d) \
 { \
-  macosx_resize_window(&lines_per_page, &chars_per_line); \
+  macosx_resize_window((int *)&lines_per_page, (int *)&chars_per_line); \
 }
 
 char *strchr(const char *s, int c);

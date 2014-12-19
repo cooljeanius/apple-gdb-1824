@@ -1,4 +1,4 @@
-/* expandargv test program,
+/* test-expandargv.c: expandargv test program,
    Copyright (C) 2006 Free Software Foundation, Inc.
    Written by Carlos O'Donell <carlos@codesourcery.com>
 
@@ -280,6 +280,15 @@ int
 main(int argc, char **argv)
 {
   int fails;
+
+#ifdef DEBUG
+  printf("argc for main() is '%i', and its argv[0] is '%s'.\n",
+         argc, argv[0]);
+#else
+# if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
+#  pragma unused (argc, argv)
+# endif /* (__APPLE__ && __APPLE_CC__) || __MWERKS__ */
+#endif /* DEBUG */
   /* Repeat for all the tests:
      - Parse data array and write into file.
        - Run replace hooks before writing to file.
@@ -291,10 +300,10 @@ main(int argc, char **argv)
          else the test fails.
      - Erase test file. */
 
-  fails = run_tests (test_data);
+  fails = run_tests(test_data);
   if (!fails)
-    exit (EXIT_SUCCESS);
+    exit(EXIT_SUCCESS);
   else
-    exit (EXIT_FAILURE);
+    exit(EXIT_FAILURE);
 }
 

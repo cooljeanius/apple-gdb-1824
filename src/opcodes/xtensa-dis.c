@@ -19,6 +19,10 @@
    Software Foundation, 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301,
    USA.  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -80,7 +84,7 @@ print_xtensa_operand (bfd_vma memaddr,
 {
   xtensa_isa isa = xtensa_default_isa;
   int signed_operand_val;
-    
+
   if (show_raw_fields)
     {
       if (operand_val < 0xa)
@@ -124,7 +128,7 @@ print_xtensa_operand (bfd_vma memaddr,
 				 xtensa_regfile_shortname (isa, opnd_rf),
 				 operand_val);
 	  i++;
-	} 
+	}
     }
 }
 

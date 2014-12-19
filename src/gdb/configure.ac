@@ -23,6 +23,7 @@ dnl#  Boston, MA 02111-1307, USA
 
 dnl# Process this file with autoconf to produce a configure script.
 
+dnl# in case autoupdate changes this, the number is supposed to be "2.61":
 AC_PREREQ([2.61])dnl
 AC_INIT([gdb],[1824],[jmolenda@apple.com])
 dnl# bug report address is email address of last person to touch this
@@ -77,7 +78,7 @@ if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
 fi
 
 # Check for the 'make' the user wants to use:
-AC_CHECK_PROGS([MAKE],[make])dnl
+AC_CHECK_PROGS([MAKE],[make gmake gnumake remake])dnl
 AC_SUBST([MAKE])
 MAKE_IS_GNU=""
 case "`${MAKE} --version 2>&1 | sed 1q`" in
@@ -189,7 +190,7 @@ int foo = POSIX_SPAWN_SETEXEC;
             AC_MSG_ERROR([bad value '${enableval}' for --disable-arch-for-exec])
             ;;
       	esac],
-      	[enable_arch_exec=yes])
+      	[enable_arch_exec=yes])dnl
   
       AC_MSG_CHECKING([whether we should use arch for exec])
       if test x"${enable_arch_exec}" = x"yes"; then
@@ -308,6 +309,28 @@ fi
 ALL_LINGUAS=""
 CY_GNU_GETTEXT
 AC_CHECK_FUNCS([gettext _gettext])dnl
+
+# Solaris requires -lintl if you want strerror (which calls dgettext)
+# to return localized messages.
+if test "x${ac_cv_func_strerror}" = "xyes" || test "x${ac_cv_search_strerror}" != "x"; then
+  test -n "${ac_cv_func_strerror}" || test -n "${ac_cv_search_strerror}"
+  AC_CHECK_LIB([intl],[dgettext],[:],[
+    AC_CHECK_LIB([intl],[libintl_dgettext])
+  ])
+fi
+unset ac_cv_lib_intl_gettext
+# Also check for -lintl anyways, but with different functions:
+AC_CHECK_LIB([intl],[gettext],[:],[
+  AC_CHECK_LIB([intl],[libintl_gettext],[:],[
+    unset ac_cv_lib_intl_main
+    ## neither worked:
+    AC_CHECK_LIB([intl],[main])dnl
+  ])dnl#end case where symbols are prefixed with "libintl_"
+])dnl#end case where symbols are unprefixed
+  ## just in case:
+AC_SEARCH_LIBS([libintl_dgettext],[intl asprintf gettextlib gettextpo \
+                                   gettextsrc gettext libintl lintl \
+                                   gnu c iberty iconv])dnl
 
 localedir='${datadir}/locale'
 AC_SUBST([localedir])dnl
@@ -574,8 +597,8 @@ esac],[
   if test x"${ac_cv_header_libunwind_h}" = x"yes" -a x"${ac_cv_header_libunwind_ia64_h}" = x"yes"; then
     enable_libunwind=yes;
   fi
-])
-   
+])dnl
+   ## now actually do the libunwind checks:
 if test x"${enable_libunwind}" = x"yes"; then
   AC_CHECK_HEADERS([libunwind.h])
   AC_CHECK_HEADERS([libunwind-ia64.h])
@@ -671,6 +694,8 @@ else
 fi
 if test -e ./config.cache; then
   sed -i "s|ac_cv_env_CFLAGS_value|bad_CFLAGS|g" ./config.cache
+  sed -i "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" ./config.cache
+  sed -i "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" ./config.cache
   sed -i "s|ac_cv_env_CXXFLAGS_value|bad_CXXFLAGS|g" ./config.cache
   sed -i "s|ac_cv_exeext|bad_exeext|g" ./config.cache
 fi
@@ -749,18 +774,35 @@ AM_PROG_VALAC([],[],[])
 AC_PROG_YACC
 AX_PROG_BISON([
   # (might want to check the bison version first before warning)
-  AC_MSG_WARN([Actually using bison broke stuff one time when I tried it])
+  AC_MSG_NOTICE([Actually using bison in this case.])
+  EXTRA_YFLAGS_SEP=''
 ],[
   # (might want to be more specific with this warning message)
   AC_MSG_WARN([Using something other than bison is untested.])
+  EXTRA_YFLAGS_SEP='#'
 ])dnl##end bison conditional
+AC_SUBST([EXTRA_YFLAGS_SEP])dnl
 
-AC_CHECK_TOOL([DLLTOOL],[dlltool])dnl
-AC_CHECK_TOOL([WINDRES],[windres])dnl
+AC_CHECK_TOOLS([DLLTOOL],[dlltool gdlltool])
+if test "x${ac_ct_DLLTOOL}" = "x" && test "x${ac_cv_prog_DLLTOOL}" = "x" && test "x${ac_cv_prog_ac_ct_DLLTOOL}" = "x" && test "x${DLLTOOL}" = "x"; then
+  test -z "${ac_ct_DLLTOOL}" && test -z "${ac_cv_prog_DLLTOOL}" && test -z "${ac_cv_prog_ac_ct_DLLTOOL}" && test -z "${DLLTOOL}"
+  dnl# in case the differences introduced by the pluralized version of the
+  dnl# macro caused this check to get skipped:
+  AC_CHECK_TOOL([DLLTOOL],[dlltool])
+fi
+AC_CHECK_TOOLS([WINDRES],[windres gwindres])dnl
 
-# Needed for GNU/Hurd.
+# Needed for GNU/Hurd hosts.
 # (and for separate but similar reasons for OS X)
 AC_CHECK_TOOL([MIG],[mig])dnl
+
+case ${host_os} in
+  gnu*)
+    if test x"${MIG}" = x""; then
+      AC_MSG_ERROR([MIG not found but required for ${host} hosts])
+    fi
+    ;;
+esac
 
 # Tools for docs:
 AC_PATH_PROGS([ROFF],[nroff groff troff roff])dnl
@@ -771,6 +813,7 @@ dnl# added it above since then), but we might still need some of its
 dnl# checks separately, so define this lite version of the macro
 dnl# (only the AC\_REQUIRE'd parts, to prevent duplication):
 AC_DEFUN([AM_INIT_MY_AUTOMAKE_LITE],[
+  dnl# in case autoupdate changes this, the value is supposed to be "2.65":
   AC_PREREQ([2.65])dnl
   dnl# Autoconf wants to disallow AM_ names. We explicitly allow
   dnl# the ones we care about.
@@ -875,6 +918,21 @@ AC_SEARCH_LIBS([gethostbyname],[nsl])dnl
 
 # Some systems (e.g. Solaris) have `socketpair' in libsocket.
 AC_SEARCH_LIBS([socketpair],[socket])dnl
+
+# Link in zlib if we can. This allows us to read compressed debug sections:
+m4_ifdef([AM_ZLIB],[
+  AM_ZLIB
+],[
+AC_MSG_CHECKING([if there is a zlib sister directory in this source tree])
+if test -d ../zlib -o -d ${srcdir}/../zlib; then
+  export HAVE_ZLIB_SOURCE=1
+  AC_SUBST([HAVE_ZLIB_SOURCE])
+  AC_MSG_RESULT([yes])
+else
+  AC_MSG_RESULT([no])
+fi
+AC_SEARCH_LIBS([zlibVersion],[z],[AC_CHECK_HEADERS([zlib.h])])dnl
+])dnl
 
 # On HP/UX we may need libxpdl for dlgetmodinfo (used by solib-pa64.c).
 AC_SEARCH_LIBS([dlgetmodinfo],[dl xpdl dlcompat dyld ltdl])dnl
@@ -1158,8 +1216,8 @@ if test "x${ac_cv_have_decl_sys_siglist}" = "x" && test "x" = "Y0"; then
   test -z "${ac_cv_have_decl_sys_siglist}"
   AC_CHECK_DECLS([sys_siglist])
 fi
-# just a plain check for sys_syglist might be wrong, so redo it
-dnl# using the autoupdated version of AC\_DECL\_SYS\_SIGLIST
+# just a plain check for sys_syglist might be wrong, so redo it:
+dnl# using the autoupdated version of AC\_DECL\_SYS\_SIGLIST here:
 if test "x${ac_cv_have_decl_sys_siglist}" != "xyes"; then
   unset ac_cv_have_decl_sys_siglist
   AC_CHECK_DECLS([sys_siglist],[],[],[
@@ -2353,13 +2411,21 @@ AC_SUBST([TARGET_SYSTEM_ROOT_DEFINE])dnl
 # NOTE: If you add to this list, remember to update
 # gdb/doc/gdbint.texinfo.
 build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
--Wparentheses -Wdeclaration-after-statement -Wc++-compat \
+-Wparentheses -Wdeclaration-after-statement \
 -Wpointer-arith -Wpointer-sign \
 -Wno-unused -Wunused-value -Wunused-label -Wunused-function \
--Wunused-macros -Wundef \
--Wempty-body -Wmissing-paramater-type -Wmissing-declarations \
+-Wunused-local-typedefs -Wunused-result \
+-Wempty-body -Wmissing-parameter-type -Wmissing-declarations \
 -Wno-format-security -Wno-format \
--Wold-style-declaration -Wold-style-definition"
+-Wold-style-declaration -Wold-style-definition -Wstrict-prototypes \
+-Wabi -Wmissing-noreturn -Waddress -Warray-bounds -Wattributes \
+-Wswitch -Wclobbered -Wcoverage-mismatch -Wdiv-by-zero \
+-Wdouble-promotion -Wenum-compare -Wfree-nonheap-object \
+-Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
+-Wmissing-include-dirs -Woverflow -Woverlength-strings -Woverride-init \
+-Wpragmas -Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
+-Wtrampolines -Wunknown-pragmas -Wnormalized=nfc \
+-Wunsuffixed-float-constants -Wstrict-overflow -Wjump-misses-init"
 link_warnings=""
 
 # If compiler does NOT support the long long data type, see if it can
@@ -2377,51 +2443,83 @@ case "${host}" in
   *-apple-darwin* | *-apple-macos*)
     # -Wmost is APPLE_LOCAL, as are -Wextra-tokens and -Wnewline-eof
     # (-Wmost might have to be removed for the same reason as -Wall)
-    build_warnings="${build_warnings} -Wmost -Wformat-nonliteral -Wextra-tokens -Wnewline-eof -std=gnu99"
+    # -Wnonportable-cfstrings is actually a flag for newer versions of the
+    # FSF gcc, but it only makes sense on Apple platforms.
+    build_warnings="${build_warnings} -Wmost -Wformat-nonliteral -Wextra-tokens -Wnewline-eof -std=gnu99 -Wnonportable-cfstrings -Wendif-labels"
     link_warnings="${link_warnings} ${acl_cv_wl}-warn_compact_unwind ${acl_cv_wl}-warn_weak_exports ${acl_cv_wl}-warn_stabs ${acl_cv_wl}-warn_commons"
+    # also consider: "${acl_cv_wl}-why_load"
   ;;
   *-gnu*-* | gnu*-*-* | *-*-gnu*)
     #FIXME: these flags are untested, and are only based on my
     # my reading of the GNU ld manpage:
     link_warnings="${link_warnings} ${acl_cv_wl}--warn-alternate-em ${acl_cv_wl}--warn-common ${acl_cv_wl}--warn-constructors ${acl_cv_wl}--warn-multiple-gp ${acl_cv_wl}--warn-section-align"
   ;;
+  *-*-mingw32*)
+    # Enable -Wno-format by default when using gcc on mingw since many
+    # GCC versions complain about %I64:
+    build_warnings="${build_warnings} -Wno-format"
+  ;;
+  *)
+    build_warnings="${build_warnings} -Wformat -Wformat-nonliteral"
+  ;;
 esac
 
 # GCC supports -Wuninitialized only with -O or -On, n != 0.
 # and also -Winit-self only with -Wuninitialized
+# others in this section are technically supported at other optimization
+# levels, but really only make sense with it on.
+opt_warnings="-Wuninitialized -Winit-self -Wvolatile-register-var \
+-Wdisabled-optimization -Waggressive-loop-optimizations \
+-Wvector-operation-performance -Wmaybe-uninitialized \
+-Wunsafe-loop-optimizations"
 if test x${CFLAGS+set} = xset; then
   case "${CFLAGS}" in
     *"-O0"* ) ;;
     *"-O"* )
-      build_warnings="${build_warnings} -Wuninitialized -Winit-self"
+      build_warnings="${build_warnings} ${opt_warnings}"
     ;;
   esac
 else
-  build_warnings="${build_warnings} -Wuninitialized -Winit-self"
+  build_warnings="${build_warnings} ${opt_warnings}"
 fi
 
 # Up for debate (i.e. for debating adding to existing flags): 
-#  * -Wswitch (I like this one)
 #  * -trigraphs (only assuming we leave -Wtrigraphs in, see below)
 #  * -Wunused-variable (to go with -Wunused-value)
-#  * -Wchar-subscripts
 #  * -Wtraditional (yeah right)
 #  * -Wshadow (usually easy enough to fix, if you are using an IDE)
 #  * -Wcast-qual (casting can silence other warnings, so this can conflict)
 #  * -Wcast-align (same as with -Wcast-qual, and also makes clang noisy)
 #  * -Wwrite-strings (would require a lot of const-ifying)
 #  * -Wconversion (would require a lot of casting)
-#  * -Wstrict-prototypes (already include some parts of it)
-#  * -Wmissing-prototypes (I like this one)
+#  * -Wmissing-prototypes (I like this one, but redundant with other flag)
 #  * -Wredundant-decls (I like redundant declarations & dislike this flag)
 #  * -Woverloaded-virtual (If we ever switch to c++)
 #  * -Winline (I can never tell if the compiler is right or not with this)
 #  * -Wformat (currently we explicitly disable this)
+#  * -Wundef (only if we can figure out how to fix the issue with caddr_t)
+#  * -Wunused-macros (if we also add back -Wundef as per above)
+#  * -Wnested-externs (can be redundant with -Wimplicit)
+#  * -Wc++-compat (had added, but got too noisy in some headers)
+#  * -Wchar-subscripts (upstream FSF gdb explicitly disables this)
+# Once gcc 5 is relesaed, the following might be worth consideration:
+#  * -Wbool-compare
+#  * -Wlogical-not-parentheses
+#  * -Wsizeof-array-argument
+#  * -Wswitch-bool
+#  * -Wshift-count-negative
+#  * -Wshift-count-overflow
+#  * -Wbitfield-conversion
 # Up for debate (i.e. for debating removing from existing flags):
 #  * -Wcomment (if we just switch to -Wall instead)
 #  * -Wtrigraphs (might need -trigraphs to be added to stay in, see above)
 #  * -Wunused-function (hard to fix)
 #  * -Wunused-value (dummy workaround method for this is dumb)
+#  * -Wstrict-prototypes (would already do similar checks anyways)
+#  * -Wabi (might only make sense for c++)
+#  * -Wmissing-noreturn (might want to use the newer version instead)
+#  * -Wvolatile-register-var (kinda pointless)
+#  * -Wswitch (I like this one, but others might not)
 # NOT actually up for debate:
 #  * -Werror (never add this)
 #  * -pedantic-errors (likewise, never add this)
@@ -2438,7 +2536,7 @@ AC_ARG_ENABLE([build-warnings],
   *)    build_warnings=`echo "${enableval}" | sed -e "s/,/ /g"`;;
 esac
 if test x"${silent}" != x"yes" && test x"${build_warnings}" != x""; then
-  echo "Setting compiler warning flags = ${build_warnings}" 6>&1
+  echo "Setting compiler warning flags to attempt to use = ${build_warnings}" 6>&1
 fi])dnl
 AC_ARG_ENABLE([gdb-build-warnings],
 [AS_HELP_STRING([--enable-gdb-build-warnings],
@@ -2453,9 +2551,10 @@ AC_ARG_ENABLE([gdb-build-warnings],
   *)    build_warnings=`echo "${enableval}" | sed -e "s/,/ /g"`;;
 esac
 if test x"${silent}" != x"yes" && test x"${build_warnings}" != x""; then
-  echo "Setting GDB specific compiler warning flags = ${build_warnings}" 6>&1
+  echo "Setting GDB specific compiler warning flags to try to use = ${build_warnings}" 6>&1
 fi])
 WARN_CFLAGS=""
+BAD_WARN_CFLAGS=""
 WERROR_CFLAGS=""
 if test "x${build_warnings}" != "x" -a "x${GCC}" = "xyes"
 then
@@ -2465,15 +2564,31 @@ then
     # Do need to use it for these conftests though.
     for w in ${build_warnings}; do
 	case ${w} in
-	*) # Check that GCC accepts it
+          -Wold-style-definition|-Wstrict-prototypes)
+	    saved_CFLAGS="${CFLAGS}"
+	    CFLAGS="${CFLAGS} ${w} -Werror"
+            dnl# Use "_SOURCE" instead of "_PROGRAM" here to keep us from
+            dnl# having a bad "main()" function:
+	    AC_COMPILE_IFELSE([AC_LANG_SOURCE([[]])],
+                              [WARN_CFLAGS="${WARN_CFLAGS} ${w}"],
+                              [BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"])
+	    CFLAGS="${saved_CFLAGS}"
+            ;;
+	  *) # Check that GCC accepts it:
 	    saved_CFLAGS="${CFLAGS}"
 	    CFLAGS="${CFLAGS} ${w} -Werror"
 	    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
-                              [WARN_CFLAGS="${WARN_CFLAGS} ${w}"],[])
+                              [WARN_CFLAGS="${WARN_CFLAGS} ${w}"],
+                              [BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"])
 	    CFLAGS="${saved_CFLAGS}"
+            ;;
 	esac
     done
-    AC_MSG_RESULT([${WARN_CFLAGS}${WERROR_CFLAGS}])
+    AC_MSG_RESULT([using: ${WARN_CFLAGS}${WERROR_CFLAGS}])
+    if test "x${BAD_WARN_CFLAGS}" != "x"; then
+      test -n "${BAD_WARN_CFLAGS}"
+      AC_MSG_WARN([compiler failed to accept: ${BAD_WARN_CFLAGS}])
+    fi
 fi
 AC_SUBST([WARN_CFLAGS])dnl
 AC_SUBST([WERROR_CFLAGS])dnl
@@ -2505,7 +2620,7 @@ AC_SUBST([MMALLOC])dnl
 # APPLE LOCAL: We (used to) need to use mmalloc all the time on our
 # platform.
 case "${host}" in
-  *-apple-darwin* | *-apple-macos*)
+  *-apple-darwin[[0156789]][[,.]]* | *-apple-macos*)
     mmalloc_default_value="true" ;;
   *)
     mmalloc_default_value="false" ;;
@@ -2519,19 +2634,23 @@ AC_ARG_WITH([mmalloc],
   *)    AC_MSG_ERROR([bad value ${withval} for GDB with-mmalloc option]) ;;
 esac],[want_mmalloc=${mmalloc_default_value}])dnl
 
-if test "x${want_mmalloc}" = "xtrue"; then
-   AC_DEFINE([USE_MMALLOC],[1],[Use mmalloc])
-   AC_DEFINE([MMCHECK_FORCE],[1],[Force mmcheck])
+if test "x${want_mmalloc}" = "xtrue" && test -d ../mmalloc; then
+   AC_DEFINE([USE_MMALLOC],[1],[Define to 1 to use mmalloc])
+   AC_DEFINE([MMCHECK_FORCE],[1],[Define to 1 to force mmcheck])
    MMALLOC_CFLAGS="-I${srcdir}/../mmalloc -I../mmalloc"
    MMALLOC='../mmalloc/libmmalloc.a'
+   if test ! -e ${MMALLOC}; then
+     AC_MSG_WARN([${MMALLOC} is wanted, but missing])
+   fi
 fi
 
 # In the Cygwin environment, we need some additional flags.
 AC_CACHE_CHECK([for cygwin],[gdb_cv_os_cygwin],
 [AC_EGREP_CPP([you_lose],[
-#if defined (__CYGWIN__) || defined (__CYGWIN32__)
+#if defined(__CYGWIN__) || defined(__CYGWIN32__)
 you_lose
-#endif],[gdb_cv_os_cygwin=yes],[gdb_cv_os_cygwin=no])])dnl
+#endif /* __CYGWIN__ || __CYGWIN32__ */
+],[gdb_cv_os_cygwin=yes],[gdb_cv_os_cygwin=no])])dnl
 
 dnl# Figure out which of the many generic ser-*.c files the _host_
 dnl# supports.
@@ -2566,9 +2685,63 @@ case ${host} in
 esac	    
 AC_SUBST([WIN32LIBS])dnl
 
+m4_ifdef([GDB_AC_CHECK_BFD],[
+  # Add ELF support to GDB, but only if BFD includes ELF support.
+  GDB_AC_CHECK_BFD([for ELF support in BFD],[gdb_cv_var_elf],
+                   [bfd_get_elf_phdr_upper_bound (NULL)],[elf-bfd.h])
+  if test "x${gdb_cv_var_elf}" = "xyes"; then
+    CONFIG_OBS="${CONFIG_OBS} elfread.o stap-probe.o"
+    AC_DEFINE([HAVE_ELF],[1],
+  	      [Define if ELF support should be included.])
+    # -ldl is provided by bfd/Makfile.am (LIBDL) <PLUGINS>.
+    if test "x${plugins}" = "xyes" && test "x${ac_cv_search_dlopen}" = "x"; then
+      test -z "${ac_cv_search_dlopen}"
+      AC_SEARCH_LIBS([dlopen],[dl])
+    fi
+  fi
+
+  # Add macho support to GDB, but only if BFD includes it.
+  GDB_AC_CHECK_BFD([for Mach-O support in BFD],[gdb_cv_var_macho],
+                   [bfd_mach_o_lookup_command (NULL, 0, NULL)],[mach-o.h])
+  if test "x${gdb_cv_var_macho}" = "xyes"; then
+    CONFIG_OBS="${CONFIG_OBS} machoread.o"
+  fi
+
+  # Add SOM support to GDB, but only if BFD includes it.
+  GDB_AC_CHECK_BFD([for SOM support in BFD],[gdb_cv_var_som],
+                   [bfd_som_attach_aux_hdr(NULL, 0, NULL)],[som.h])
+  if test "x${gdb_cv_var_som}" = "xyes"; then
+    CONFIG_OBS="${CONFIG_OBS} somread.o"
+  fi
+])dnl##end ifdef
+
 if test "x${gdb_host_obs}" != "x"; then
   # Add any host-specific objects to GDB.
   test -n "${gdb_host_obs}" && export CONFIG_OBS="${CONFIG_OBS} ${gdb_host_obs}"
+fi
+
+# If building on ELF, look for lzma support for embedded compressed debug
+# info:
+if test "x${gdb_cv_var_elf}" = "xyes"; then
+  AC_ARG_WITH([lzma],
+    [AS_HELP_STRING([--with-lzma],
+                    [support lzma compression (auto/yes/no)])],
+    [],[with_lzma=auto])
+  AC_MSG_CHECKING([whether to use lzma])
+  AC_MSG_RESULT([${with_lzma}])dnl
+
+  if test "x${with_lzma}" != "xno"; then
+    dnl# C source code is only singly-m4-quoted in args to this macro:
+    AC_LIB_HAVE_LINKFLAGS([lzma],[],[#include "lzma.h"],
+			  [lzma_index_iter iter;
+			   lzma_index_iter_init(&iter, 0);
+			   lzma_mf_is_supported(LZMA_MF_HC3);])
+    if test "x${HAVE_LIBLZMA}" != "xyes"; then
+      if test "x${with_lzma}" = "xyes"; then
+        AC_MSG_ERROR([missing liblzma for --with-lzma])
+      fi
+    fi
+  fi
 fi
 
 LIBGUI="../libgui/src/libgui.a"
@@ -2659,7 +2832,7 @@ if test "x${enable_gdbtk}" = "xyes"; then
 	   CONFIG_INSTALL="${CONFIG_INSTALL} install-gdbtk"
 	   CONFIG_UNINSTALL="${CONFIG_UNINSTALL} uninstall-gdbtk"
 
-	   if test x$gdb_cv_os_cygwin = xyes; then
+	   if test "x${gdb_cv_os_cygwin}" = "xyes"; then
 	      WIN32LIBS="${WIN32LIBS} -lshell32 -lgdi32 -lcomdlg32 -ladvapi32"
 	      WIN32LDAPP="-Wl,--subsystem,console"
 	      CONFIG_OBS="${CONFIG_OBS} gdbres.o"
@@ -2726,7 +2899,10 @@ AC_ARG_ENABLE([sim],
  esac],
 [ignore_sim=false])dnl
 
-if test ! -d "${srcdir}/../sim"; then
+if test ! -d "${srcdir}/../sim" || test ! -d "${srcdir}/../sim/${target_cpu}"; then
+  if test "x${ignore_sim}" = "xfalse"; then
+    AC_MSG_WARN([disabling simulator support])
+  fi
   ignore_sim=true
 fi
 
@@ -2734,12 +2910,16 @@ if test "x${ignore_sim}" = "xtrue"; then
     IGNORE_SIM="SIM="
     IGNORE_SIM_OBS="SIM_OBS="
 else
+    if test x"${gdb_sim}" != x""; then
+      GDB_SIM="${gdb_sim}"
+    fi
     DEFAULT_SIM_OB="remote-sim.o"
     AC_SUBST([DEFAULT_SIM_OB])
     IGNORE_SIM=""
     IGNORE_SIM_OBS=""
     AC_DEFINE([WITH_SIM],[1],[Define if the simulator is being linked in.])
 fi
+AC_SUBST([GDB_SIM])dnl
 AC_SUBST([IGNORE_SIM])dnl
 AC_SUBST([IGNORE_SIM_OBS])dnl
 
@@ -2833,12 +3013,18 @@ if test "x${enable_multi_ice}" = "xyes"; then
    else
      AC_MSG_WARN([multi-ice is requested but the subdir for it is missing])
    fi
+else
+   if test -d multi-ice; then
+     AC_MSG_NOTICE([multi-ice subdir present, but we are not using it.])
+   fi
 fi
 
 if test "x${enable_multi_ice}" != "xno"; then
    if test -d rem-multi_old; then
      AC_CONFIG_SUBDIRS([rem-multi_old])
      :
+   elif test -d rem-multi; then
+     AC_MSG_WARN([rem-multi remains un-renamed])
    fi
 fi
 
@@ -2854,6 +3040,77 @@ if test "x${target}" = "x${host}"; then
   else
     AC_MSG_RESULT([no])
   fi
+else
+  if test -d gdbserver; then
+    AC_MSG_NOTICE([gdbserver subdir present, but we are not using it.])
+  fi
+fi
+
+# If the user explicitly request the gdbserver to be built, verify that
+# we were in fact able to enable it.
+if test "x${enable_gdbserver}" = "xyes" -a "x${gdbserver_build_enabled}" != "yes"; then
+  AC_MSG_WARN([Automatic gdbserver build is not supported for this configuration])
+fi
+
+# Check for babeltrace and babeltrace-ctf:
+AC_ARG_WITH([babeltrace],
+  [AS_HELP_STRING([--with-babeltrace],
+                  [include babeltrace support (auto/yes/no)])],
+  [],[with_babeltrace=auto])
+AC_MSG_CHECKING([whether to use babeltrace])
+AC_MSG_RESULT([${with_babeltrace}])dnl
+
+if test "x${with_babeltrace}" = "xno"; then
+  # Upstream libbabeltrace is hosted on a Linux-specific website:
+  case "${host}" in
+    *-*-linux*)
+      AC_MSG_WARN([babeltrace support disabled; GDB is unable to read CTF data.])
+      ;;
+    *)
+      AC_MSG_WARN([babeltrace support disabled; please port libbabeltrace to your platform (${host}).])
+      ;;
+  esac
+else
+  # Append -Werror to CFLAGS so that configure can catch the warning
+  # "assignment from incompatible pointer type", which is related to
+  # the babeltrace change from 1.0.3 to 1.1.0.  Babeltrace 1.1.0 works
+  # in GDB, while babeltrace 1.0.3 is broken.
+  # AC_LIB_HAVE_LINKFLAGS may modify CPPFLAGS in it, so it should be
+  # safe to save and restore CFLAGS here.
+  saved_CFLAGS="${CFLAGS}"
+  CFLAGS="${CFLAGS} -Werror"
+  dnl# C source code is only singly-m4-quoted in args to this macro:
+  AC_LIB_HAVE_LINKFLAGS([babeltrace],[babeltrace-ctf],[
+#include <babeltrace/babeltrace.h>
+#include <babeltrace/ctf/events.h>
+#include <babeltrace/ctf/iterator.h>
+  ],[
+struct bt_iter_pos *pos = bt_iter_get_pos(bt_ctf_get_iter(NULL));
+struct bt_ctf_event *event = NULL;
+const struct bt_definition *scope;
+
+bt_iter_set_pos(bt_ctf_get_iter(NULL), pos);
+scope = bt_ctf_get_top_level_scope(event,
+			      	   BT_STREAM_EVENT_HEADER);
+bt_ctf_get_uint64(bt_ctf_get_field(event, scope, "id"));
+  ])dnl
+  ## restore:
+  CFLAGS="${saved_CFLAGS}"
+
+  if test "x${HAVE_LIBBABELTRACE}" != "xyes"; then
+     if test "x${with_babeltrace}" = "xyes"; then
+       AC_MSG_ERROR([babeltrace requested, but it is missing or unusable])
+     else
+       case "${host}" in
+         *-*-linux*)
+           AC_MSG_WARN([babeltrace is missing or unusable; GDB is unable to read CTF data.])
+           ;;
+         *)
+           AC_MSG_WARN([babeltrace is unavailable; please port libbabeltrace to your platform (${host}).])
+           ;;
+       esac
+     fi
+  fi
 fi
 
 # We build rdi-share on ARM-based targets, as instructed by configure.tgt.
@@ -2862,6 +3119,10 @@ if test "x${build_rdi_share}" = "xyes" -o "x${target_cpu}" = "xarm"; then
              [Try to override decision to build the rdi-share subdirectory
               (unsupported, might not work)])
   AC_CONFIG_SUBDIRS([rdi-share])
+else
+  if test -d rdi-share; then
+    AC_MSG_NOTICE([rdi-share subdir present, but we are not using it])
+  fi
 fi
 
 # We configure the nlm subdirectory on netware targets, as instructed
@@ -2871,6 +3132,10 @@ if test "x${build_nlm}" = "xyes"; then
              [Try to override the decision to build in the nlm subdirectory
               (unsupported, might not work)])
   AC_CONFIG_SUBDIRS([nlm])
+else
+  if test -d nlm; then
+    AC_MSG_NOTICE([nlm subdir present but we are not using it])
+  fi
 fi
 
 # If hostfile (XM_FILE) and/or targetfile (DEPRECATED_TM_FILE) and/or
@@ -2882,7 +3147,8 @@ links=""
 
 rm -f xm.h
 xm_h=""
-if test "${hostfile}" != ""; then
+if test "x${hostfile}" != "x"; then
+    test -n "${hostfile}"
     xm_h=xm.h
     case "${hostfile}" in
       xm-*.h ) GDB_XM_FILE="config/${gdb_host_cpu}/${hostfile}" ;;
@@ -2891,12 +3157,16 @@ if test "${hostfile}" != ""; then
     files="${files} ${GDB_XM_FILE}"
     links="${links} xm.h"
     AC_DEFINE_UNQUOTED([GDB_XM_FILE],["${GDB_XM_FILE}"],[hostfile])
+else
+    test -z "${hostfile}"
+    AC_MSG_WARN([unsure what to use for hostfile])
 fi
 AC_SUBST([xm_h])dnl
 
 rm -f tm.h
 tm_h=""
-if test "${targetfile}" != ""; then
+if test "x${targetfile}" != "x"; then
+    test -n "${targetfile}"
     tm_h=tm.h
     case "${targetfile}" in
       tm-*.h ) GDB_TM_FILE="config/${gdb_target_cpu}/${targetfile}" ;;
@@ -2905,12 +3175,16 @@ if test "${targetfile}" != ""; then
     files="${files} ${GDB_TM_FILE}"
     links="${links} tm.h"
     AC_DEFINE_UNQUOTED([GDB_TM_FILE],["${GDB_TM_FILE}"],[targetfile])
+else
+    test -z "${targetfile}"
+    AC_MSG_WARN([unsure what to use for targetfile])
 fi
 AC_SUBST([tm_h])dnl
 
 rm -f nm.h
 nm_h=""
-if test "${nativefile}" != ""; then
+if test "x${nativefile}" != "x"; then
+    test -n "${nativefile}"
     nm_h=nm.h
     case "${nativefile}" in
       nm-*.h ) GDB_NM_FILE="config/${gdb_host_cpu}/${nativefile}" ;;
@@ -2919,6 +3193,9 @@ if test "${nativefile}" != ""; then
     files="${files} ${GDB_NM_FILE}"
     links="${links} nm.h"
     AC_DEFINE_UNQUOTED([GDB_NM_FILE],["${GDB_NM_FILE}"],[nativefile])
+else
+    test -z "${nativefile}"
+    AC_MSG_WARN([unsure what to use for nativefile])
 fi
 AC_SUBST([nm_h])dnl
 
@@ -2964,7 +3241,10 @@ dnl#  superset of ASCII containing the characters needed for French,
 dnl#  German, Spanish, Italian, and possibly others), but if were
 dnl#  *were* to support any host character sets other than ISO-8859-1,
 dnl#  here is where we would detect it.
+dnl#  Newer versions of gdb have switched to UTF-8.
 
+AH_TEMPLATE([GDB_DEFAULT_HOST_CHARSET],
+            [Define to be a string naming the default host character set.])
 case "${host}" in
   *-apple-darwin* | *-apple-macos*)
   ;;
@@ -2976,6 +3256,7 @@ esac
 
 AM_ICONV
 
+# Undo the ${ec_script} escaping suitable for Makefile:
 transform=`echo "${program_transform_name}" | sed -e 's/[\\$][\\$]/\\$/g'`
 GDB_TRANSFORM_NAME=`echo gdb | sed -e "${transform}"`
 if test "x${GDB_TRANSFORM_NAME}" = "x"; then

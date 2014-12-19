@@ -1,4 +1,4 @@
-/* Utility to pick a temporary filename prefix.
+/* make-temp-file.c: Utility to pick a temporary filename prefix.
    Copyright (C) 1996, 1997, 1998, 2001 Free Software Foundation, Inc.
 
 This file is part of the libiberty library.
@@ -175,3 +175,5 @@ make_temp_file (const char *suffix)
     abort ();
   return temp_filename;
 }
+
+/* EOF */

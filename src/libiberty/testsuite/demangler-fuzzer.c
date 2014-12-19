@@ -1,4 +1,4 @@
-/* Demangler fuzzer.
+/* demangler-fuzzer.c: Demangler fuzzer.
 
    Copyright (C) 2014 Free Software Foundation, Inc.
 
@@ -110,3 +110,5 @@ main (int argc, char *argv[])
   printf ("%s: successfully demangled %d symbols\n", program_name, count);
   exit (0);
 }
+
+/* EOF */

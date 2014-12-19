@@ -124,7 +124,7 @@ char *help_strings[] =
 #  define ARGSIGTYPE int unused_arg
 # endif /* !ARGSIGTYPE */
 #endif /* 0 */
-void exit_handler();
+void exit_handler(int unused_arg);
 int run_test(char *input_buffer);
 
 /* ------------------------------------------------------------
@@ -1073,26 +1073,26 @@ handle_general_set (char *input_buffer)
  */
 
 int
-handle_breakpoint (enum bp_action_type action, char *input_buffer)
+handle_breakpoint(enum bp_action_type action, char *input_buffer)
 {
   char ch;
   char *p;
   CORE_ADDR bp_addr;
-  int result;
+  int result = 0;
   int size = 0;
 
-  if ((p = (char *) strchr(input_buffer, ',')) != NULL)
+  if ((p = (char *)strchr(input_buffer, ',')) != NULL)
     {
       *p = '\0';
       p++;
-      sscanf (p, "%d", &size);
+      sscanf(p, "%d", &size);
     }
 
   bp_addr = 0;
   while ((ch = *(input_buffer++)) != '\0')
     {
-      bp_addr = bp_addr << 4;
-      bp_addr |= fromhex (ch) & 0x0f;
+      bp_addr = (bp_addr << 4);
+      bp_addr |= (fromhex(ch) & 0x0f);
     }
 
   switch (action)
@@ -1100,26 +1100,26 @@ handle_breakpoint (enum bp_action_type action, char *input_buffer)
     case BREAKPOINT_SET:
       if (debug_on)
 	{
-	  output ("Setting breakpoint at %x of length %d\n", bp_addr, size);
+	  output("Setting breakpoint at %x of length %d\n", bp_addr, size);
 	}
-      result = low_set_breakpoint (bp_addr, size);
+      result = low_set_breakpoint(bp_addr, size);
       break;
     case BREAKPOINT_DELETE:
       if (debug_on)
 	{
-	  output ("Removing breakpoint at %x of length %d\n", bp_addr, size);
+	  output("Removing breakpoint at %x of length %d\n", bp_addr, size);
 	}
-      result = low_delete_breakpoint (bp_addr, size);
+      result = low_delete_breakpoint(bp_addr, size);
       break;
     }
 
   if (result)
     {
-      putpkt ("OK");
+      putpkt("OK");
     }
   else
     {
-      putpkt ("ENN");
+      putpkt("ENN");
     }
 
   return result;
@@ -1129,9 +1129,8 @@ handle_breakpoint (enum bp_action_type action, char *input_buffer)
  * handle_watchpoint
  *
  * This would handle watchpoint requests.  These are not yet wired into
- * the target vector, however, so I don't think that gdb can send them...
+ * the target vector, however, so I do NOT think that gdb can send them...
  */
-
 int handle_watchpoint (enum bp_action_type action,
 		       enum watch_type type,
 		       char *input_buffer)
@@ -1139,21 +1138,21 @@ int handle_watchpoint (enum bp_action_type action,
   char ch;
   char *p;
   CORE_ADDR watch_addr;
-  int result;
+  int result = 0;
   int size = 0;
 
-  if ((p = (char *) strchr(input_buffer, ',')) != NULL)
+  if ((p = (char *)strchr(input_buffer, ',')) != NULL)
     {
       *p = '\0';
       p++;
-      sscanf (p, "%d", &size);
+      sscanf(p, "%d", &size);
     }
 
   watch_addr = 0;
   while ((ch = *(input_buffer++)) != '\0')
     {
-      watch_addr = watch_addr << 4;
-      watch_addr |= fromhex (ch) & 0x0f;
+      watch_addr = (watch_addr << 4);
+      watch_addr |= (fromhex(ch) & 0x0f);
     }
 
   switch (action)
@@ -1161,26 +1160,26 @@ int handle_watchpoint (enum bp_action_type action,
     case BREAKPOINT_SET:
       if (debug_on)
 	{
-	  output ("Setting watchpoint at %x of length %d\n", watch_addr, size);
+	  output("Setting watchpoint at %x of length %d\n", watch_addr, size);
 	}
-      result = low_set_watchpoint (watch_addr, size, type);
+      result = low_set_watchpoint(watch_addr, size, type);
       break;
     case BREAKPOINT_DELETE:
       if (debug_on)
 	{
-	  output ("Removing watchpoint at %x of length %d\n", watch_addr, size);
+	  output("Removing watchpoint at %x of length %d\n", watch_addr, size);
 	}
-      result = low_delete_watchpoint (watch_addr, size, type);
+      result = low_delete_watchpoint(watch_addr, size, type);
       break;
     }
 
   if (result)
     {
-      putpkt ("OK");
+      putpkt("OK");
     }
   else
     {
-      putpkt ("ENN");
+      putpkt("ENN");
     }
 
   return result;
@@ -1202,8 +1201,11 @@ void enable_extended_ops(void)
  *
  * Flag the main loop to exit.
  */
-void exit_handler()
+void exit_handler(int unused_arg)
 {
+#if (defined(__APPLE__) && defined(__APPLE_CC__)) || defined(__MWERKS__)
+# pragma unused (unused_arg)
+#endif /* (__APPLE__ && __APPLE_CC__) || __MWERKS__ */
   exit_now = 1;
   close_connection_now = 1;
 }
@@ -1220,7 +1222,7 @@ extern ARMword restore_register(int regno);
  */
 int run_test(char *input_buffer)
 {
-  return low_test (input_buffer);
+  return low_test(input_buffer);
 }
 
 /* EOF */

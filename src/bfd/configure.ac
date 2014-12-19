@@ -64,8 +64,8 @@ else
   test ! -z "${RANLIB}"
 fi
 AC_PATH_PROG([SANDBOX_EXEC],[sandbox-exec],[],[/usr/bin])
-AC_PATH_PROGS([MAKE],[make gmake gnumake remake "xcrun make"])
-if test -n "${SANDBOX_EXEC}" -a -n "${MAKE}"; then
+AC_PATH_PROGS([MAKE_BIN],[make gmake gnumake remake "xcrun make"])
+if test -n "${SANDBOX_EXEC}" -a -n "${MAKE_BIN}"; then
   if test -e `pwd`/sandbox/build-libbfd.sb; then
     sb_build_profile=`pwd`/sandbox/build-libbfd.sb
   elif test -e ${srcdir}/sandbox/build-libbfd.sb; then
@@ -78,14 +78,14 @@ if test -n "${SANDBOX_EXEC}" -a -n "${MAKE}"; then
     sb_dummy_Makefile=${srcdir}/sandbox/dummy-Makefile
   fi
   if test -n "${sb_build_profile}" -a -n "${sb_dummy_Makefile}"; then
-    AC_MSG_CHECKING([if ${MAKE} can be run by ${SANDBOX_EXEC} with profile ${sb_build_profile}])
-    if (${SANDBOX_EXEC} -f ${sb_build_profile} ${MAKE} --quiet --no-print-directory -f ${sb_dummy_Makefile} nothing); then
+    AC_MSG_CHECKING([if ${MAKE_BIN} can be run by ${SANDBOX_EXEC} with profile ${sb_build_profile}])
+    if (${SANDBOX_EXEC} -f ${sb_build_profile} ${MAKE_BIN} --quiet --no-print-directory -f ${sb_dummy_Makefile} nothing); then
       AC_MSG_RESULT([yes])
       # this does not actually work yet, so hide it in a dummy condition
       # to prevent it from actually being done:
       if test "x" = "Y0"; then
-        export MAKE="${SANDBOX_EXEC} -f ${sb_build_profile} ${MAKE}"
-        AC_SUBST([MAKE])
+        export MAKE_BIN="${SANDBOX_EXEC} -f ${sb_build_profile} ${MAKE_BIN}"
+        AC_SUBST([MAKE_BIN])
       fi
       export CAN_BUILD_IN_SANDBOX=1
       AC_SUBST([CAN_BUILD_IN_SANDBOX])
@@ -160,10 +160,15 @@ if test "x${lt_sysroot}" = "x" -a "x${prefix}" != "x"; then
   lt_sysroot="${prefix}"
 fi
 AC_DEFUN([AX_LIBTOOL_FIXES],[
-  AC_MSG_WARN([changing how libtool works])
-  AC_REQUIRE([AX_PATCH_LIBTOOL_CHANGING_CMDS_IFS])dnl
-  AC_REQUIRE([AX_MAINTAINER_MODE_AUTO_SILENT])dnl
-])
+  AC_MSG_WARN([possibly changing how libtool works])
+  m4_ifdef([AX_PATCH_LIBTOOL_CHANGING_CMDS_IFS],[
+    AC_REQUIRE([AX_PATCH_LIBTOOL_CHANGING_CMDS_IFS])dnl
+  ])dnl
+  m4_ifdef([AX_MAINTAINER_MODE_AUTO_SILENT],[
+    AC_REQUIRE([AX_MAINTAINER_MODE_AUTO_SILENT])dnl
+  ])dnl
+])dnl
+  ## this libtool hack is probably unnecessary now:
 if test -x ${srcdir}/libtool; then
   test -r libtool
   if test "x${USE_MAINTAINER_MODE}" = "xyes"; then
@@ -172,11 +177,11 @@ if test -x ${srcdir}/libtool; then
   fi
 fi
 
-# AC_PLUGINS (setting "${plugins}") is called by ACX_LARGEFILE:
+dnl# AC_PLUGINS (setting "${plugins}") is called by ACX_LARGEFILE:
 m4_ifdef([ACX_LARGEFILE],[
-ACX_LARGEFILE
+  ACX_LARGEFILE
 ],[
-AC_PLUGINS
+  AC_PLUGINS
 ])dnl
 
 AM_CONDITIONAL([PLUGINS],[test "x${plugins}" = "xyes"])dnl
@@ -280,11 +285,15 @@ if test "x${want_elf_stt_common}" = "xtrue"; then
 fi
 
 m4_ifdef([ACX_PKGVERSION],[
-ACX_PKGVERSION([GNU Binutils])
-],[:])
+  ACX_PKGVERSION([GNU Binutils])dnl
+],[
+  echo "Package: GNU Binutils"
+])dnl
 m4_ifdef([ACX_BUGURL],[
-ACX_BUGURL([http://www.sourceware.org/bugzilla/])
-],[:])
+  ACX_BUGURL([http://www.sourceware.org/bugzilla/])dnl
+],[
+  echo "Bug report URL: http://www.sourceware.org/bugzilla/"
+])dnl
 
 AM_BINUTILS_WARNINGS
 
@@ -603,7 +612,7 @@ AC_CHECK_DECLS([strnlen])dnl
 AC_MSG_CHECKING([zlib])
 AC_MSG_RESULT([ ])
 m4_ifdef([AM_ZLIB],[
-AM_ZLIB
+  AM_ZLIB
 ],[
 AC_MSG_CHECKING([if there is a zlib sister directory in this source tree])
 if test -d ../zlib -o -d ${srcdir}/../zlib; then

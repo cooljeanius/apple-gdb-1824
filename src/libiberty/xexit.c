@@ -30,23 +30,25 @@ Termination is handled via the system's normal @code{exit} call.
 */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 #include <stdio.h>
 #ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
+# include <stdlib.h>
+#endif /* HAVE_STDLIB_H */
 #include "libiberty.h"
 
 
 /* This variable is set by xatexit if it is called.  This way, xmalloc
-   doesn't drag xatexit into the link.  */
-void (*_xexit_cleanup) (void);
+ * does NOT drag xatexit into the link.  */
+void (*_xexit_cleanup)(void);
 
 void
-xexit (int code)
+xexit(int code)
 {
   if (_xexit_cleanup != NULL)
-    (*_xexit_cleanup) ();
-  exit (code);
+    (*_xexit_cleanup)();
+  exit(code);
 }
+
+/* EOF */

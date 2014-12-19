@@ -1,5 +1,5 @@
-# configure.ac for libdecnumber			-*- Autoconf -*-
-# Process this file with autoconf264 to generate a configuration script.
+dnl# configure.ac for libdecnumber			-*- Autoconf -*-
+dnl# Process this file with autoconf264 to generate a configuration script.
 
 # Copyright 2005, 2006, 2009 Free Software Foundation, Inc.
 
@@ -22,8 +22,8 @@
 AC_PREREQ([2.64])
 dnl# override.m4 is annoying
 AC_INIT([libdecnumber],[0.0.1],[gcc-bugs@gcc.gnu.org],[libdecnumber])
-AC_CONFIG_SRCDIR([decNumber.h])
-AC_CONFIG_MACRO_DIR([../config])
+AC_CONFIG_SRCDIR([decNumber.h])dnl
+AC_CONFIG_MACRO_DIR([../config])dnl
 
 # Checks for programs.
 AC_PROG_MAKE_SET
@@ -34,25 +34,33 @@ AC_PROG_RANLIB
 MISSING=`cd ${ac_aux_dir} && ${PWDCMD-pwd}`/missing
 AC_CHECK_PROGS([ACLOCAL],[aclocal],[${MISSING} aclocal])
 AC_CHECK_PROGS([AUTOCONF],[autoconf],[${MISSING} autoconf])
-AC_CHECK_PROGS([AUTOHEADER],[autoheader],[${MISSING} autoheader])
+AC_CHECK_PROGS([AUTOHEADER],[autoheader],[${MISSING} autoheader])dnl
 
 # Figure out what compiler warnings we can enable.
-# See config/warnings.m4 for details.
+# See ../config/warnings.m4 for details.
 
-ACX_PROG_CC_WARNING_OPTS([-W -Wall -Wwrite-strings -Wstrict-prototypes \
-			  -Wmissing-prototypes -Wold-style-definition \
+dnl# '-W' is redundant with '-Wextra'
+ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wwrite-strings \
+			  -Wstrict-prototypes -Wmissing-prototypes \
+			  -Wold-style-definition -Wc++-compat \
 			  -Wmissing-format-attribute -Wcast-qual])
-ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([-Wno-long-long])
+ACX_PROG_CC_WARNING_ALMOST_PEDANTIC([-Wno-long-long])dnl
 
 # Only enable with --enable-werror-always until existing warnings are
 # corrected.
-ACX_PROG_CC_WARNINGS_ARE_ERRORS([manual])
+ACX_PROG_CC_WARNINGS_ARE_ERRORS([manual])dnl
 
 # Checks for header files.
-AC_CHECK_HEADERS([ctype.h fenv.h stddef.h string/string.h stdio.h])
-GCC_HEADER_STDINT([gstdint.h])
+AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
+  AC_REQUIRE([AC_PROG_CPP])dnl
+  AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
+AC_REQUIRE_HEADER_STDC dnl# just in case
+AC_CHECK_HEADERS([ctype.h fenv.h stddef.h string/string.h stdio.h])dnl
+GCC_HEADER_STDINT([gstdint.h])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
+dnl# (endianness check is done near the bottom)
 AC_C_CONST
 AC_TYPE_INT32_T
 AC_TYPE_OFF_T
@@ -61,30 +69,27 @@ AC_TYPE_UINT8_T
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
-AC_CHECK_SIZEOF([int])
-AC_CHECK_ALIGNOF([int])
-AC_CHECK_SIZEOF([long])
-AC_CHECK_ALIGNOF([long])
+AC_CHECK_SIZEOF([int])dnl
+AC_CHECK_ALIGNOF([int])dnl
+AC_CHECK_SIZEOF([long])dnl
+AC_CHECK_ALIGNOF([long])dnl
 
 # Checks for library functions.
-AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
-  AC_REQUIRE([AC_PROG_CPP])
-  AC_REQUIRE([AC_HEADER_STDC])
-])
-AC_REQUIRE_HEADER_STDC
 AC_FUNC_MALLOC
-AC_CHECK_FUNCS([memset])
+AC_FUNC_MEMCMP
+AC_CHECK_FUNCS([memset])dnl
 
 AC_ARG_ENABLE([maintainer-mode],
-[AS_HELP_STRING([--enable-maintainer-mode],[enable rules only needed by maintainers])],[],
-[enable_maintainer_mode=no])
+[AS_HELP_STRING([--enable-maintainer-mode],
+                [enable rules only needed by maintainers])],[],
+[enable_maintainer_mode=no])dnl
 
-if test "x${enable_maintainer_mode}" = xno; then
+if test "x${enable_maintainer_mode}" = "xno"; then
   MAINT='#'
 else
-  MAINT=
+  MAINT=""
 fi
-AC_SUBST([MAINT])
+AC_SUBST([MAINT])dnl
 
 AC_CANONICAL_TARGET
 
@@ -113,12 +118,12 @@ Valid choices are 'yes', 'bid', 'dpd', and 'no'.]) ;;
       enable_decimal_float=no
       ;;
   esac
-])
+])dnl
 
 # x86's use BID format instead of DPD
 # In theory --enable-decimal-float=no should not compile anything
 # For the sake of simplicity, just use the default format in this directory
-if test x${enable_decimal_float} = xyes -o x${enable_decimal_float} = xno; then
+if test "x${enable_decimal_float}" = "xyes" || test "x${enable_decimal_float}" = "xno"; then
   case ${target} in
     i?86*-*-linux* | x86_64*-*-linux*)
       enable_decimal_float=bid
@@ -129,21 +134,20 @@ if test x${enable_decimal_float} = xyes -o x${enable_decimal_float} = xno; then
   esac
 fi
 
-# If BID is being used, additional objects should be linked in.
-if test x${enable_decimal_float} = xbid; then
+# If BID is being used, then additional objects should be linked in.
+if test "x${enable_decimal_float}" = "xbid"; then
   ADDITIONAL_OBJS="${ADDITIONAL_OBJS} \$(bid_OBJS)"
 else
   ADDITIONAL_OBJS=""
 fi
 
 AC_MSG_RESULT([${enable_decimal_float}])
-AC_SUBST([enable_decimal_float])
-AC_SUBST([ADDITIONAL_OBJS])
+AC_SUBST([enable_decimal_float])dnl
+AC_SUBST([ADDITIONAL_OBJS])dnl
 
 AC_C_BIGENDIAN
 
 # Output.
-
-AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_HEADERS([config.h])dnl
+AC_CONFIG_FILES([Makefile])dnl
 AC_OUTPUT

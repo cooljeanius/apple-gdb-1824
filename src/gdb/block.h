@@ -203,7 +203,7 @@ extern void block_set_scope (struct block *block, const char *scope,
 extern struct using_direct *block_using (const struct block *block);
 
 extern void block_set_using (struct block *block,
-			     struct using_direct *using,
+			     struct using_direct *,
 			     struct obstack *obstack);
 
 extern const struct block *block_static_block (const struct block *block);

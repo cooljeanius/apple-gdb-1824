@@ -65,7 +65,7 @@ extern char *canonicalize_file_name (const char *);
 #  endif
 # endif
 #else
-  /* cygwin has realpath, so it won't get here.  */ 
+  /* cygwin has realpath, so it won't get here.  */
 # if defined (_WIN32)
 #  define WIN32_LEAN_AND_MEAN
 #  include <windows.h> /* for GetFullPathName */
@@ -155,3 +155,5 @@ lrealpath (const char *filename)
   /* This system is a lost cause, just duplicate the filename.  */
   return strdup (filename);
 }
+
+/* EOF */

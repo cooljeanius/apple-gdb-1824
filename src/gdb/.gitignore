@@ -43,6 +43,7 @@ gcore
 gdb-gdb.gdb
 conf*/*.awk
 *libs/*
+*.rsrc
 
 # For some reason the perl directory has to be forced to show:
 !perl

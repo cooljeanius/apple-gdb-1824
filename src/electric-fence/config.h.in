@@ -3,6 +3,12 @@
 /* Define if building universal (internal helper macro) */
 #undef AC_APPLE_UNIVERSAL_BUILD
 
+/* The normal alignment of `long long', in bytes. */
+#undef ALIGNOF_LONG_LONG
+
+/* The normal alignment of `unsigned long long', in bytes. */
+#undef ALIGNOF_UNSIGNED_LONG_LONG
+
 /* Define to 1 if you have the `atoi' function. */
 #undef HAVE_ATOI
 
@@ -49,6 +55,9 @@
 
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
+
+/* Define to 1 if the system has the type `long long'. */
+#undef HAVE_LONG_LONG
 
 /* Define to 1 if you have the <mach/mach.h> header file. */
 #undef HAVE_MACH_MACH_H
@@ -123,6 +132,9 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
+/* Define to 1 if the system has the type `unsigned long long'. */
+#undef HAVE_UNSIGNED_LONG_LONG
+
 /* Define to 1 if you have the `write' function. */
 #undef HAVE_WRITE
 
@@ -150,8 +162,17 @@
 /* Define to 1 if the C compiler supports function prototypes. */
 #undef PROTOTYPES
 
+/* The size of `long long', as computed by sizeof. */
+#undef SIZEOF_LONG_LONG
+
+/* The size of `unsigned long long', as computed by sizeof. */
+#undef SIZEOF_UNSIGNED_LONG_LONG
+
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
+
+/* Define to 1 on 64-bit systems */
+#undef USE_LONG_LONG
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
@@ -178,6 +199,9 @@
 
 /* Define like PROTOTYPES; this can be used by system headers. */
 #undef __PROTOTYPES
+
+/* Define to empty if `const' does not conform to ANSI C. */
+#undef const
 
 /* Define to rpl_malloc if the replacement function should be used. */
 #undef malloc

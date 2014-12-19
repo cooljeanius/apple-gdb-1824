@@ -158,6 +158,133 @@ if test -z "$ac_cv_prog_$1" ; then
 fi
 ]) []dnl # NCN_STRICT_CHECK_TARGET_TOOLS
 
+
+# Backported from Autoconf 2.5x; can go away when and if
+# we switch.  Put the OS path separator in ${PATH_SEPARATOR}.
+AC_DEFUN([ACX_PATH_SEP],[
+# The user is always right.
+if test "${PATH_SEPARATOR+set}" != set; then
+  echo "#! /bin/sh" >conf$$.sh
+  echo  "exit 0"   >>conf$$.sh
+  chmod +x conf$$.sh
+  if (PATH="/nonexistent;."; conf$$.sh) >/dev/null 2>&1; then
+    PATH_SEPARATOR=';'
+  else
+    PATH_SEPARATOR=: 
+  fi
+  rm -f conf$$.sh
+fi
+])dnl
+
+
+AC_DEFUN([ACX_TOOL_DIRS],[
+AC_REQUIRE([ACX_PATH_SEP])dnl
+
+if test "x${exec_prefix}" = "xNONE"; then
+  if test "x${prefix}" = "xNONE"; then
+    gcc_cv_tool_prefix=${ac_default_prefix}
+  else
+    gcc_cv_tool_prefix=${prefix}
+  fi
+else
+  gcc_cv_tool_prefix=${exec_prefix}
+fi
+
+dnl# If there is no compiler in the tree, use the PATH only.  In any
+dnl# case, if there is no compiler in the tree nobody should use
+dnl# AS_FOR_TARGET and LD_FOR_TARGET.
+if test "x${host}" = "x${build}" && test -f ${srcdir}/gcc/BASE-VER; then
+  gcc_version=`cat ${srcdir}/gcc/BASE-VER`
+  gcc_cv_tool_dirs="${gcc_cv_tool_prefix}/libexec/gcc/${target_noncanonical}/${gcc_version}${PATH_SEPARATOR}"
+  gcc_cv_tool_dirs="${gcc_cv_tool_dirs}${gcc_cv_tool_prefix}/libexec/gcc/${target_noncanonical}${PATH_SEPARATOR}"
+  gcc_cv_tool_dirs="${gcc_cv_tool_dirs}/usr/lib/gcc/${target_noncanonical}/${gcc_version}${PATH_SEPARATOR}"
+  gcc_cv_tool_dirs="${gcc_cv_tool_dirs}/usr/lib/gcc/${target_noncanonical}${PATH_SEPARATOR}"
+  gcc_cv_tool_dirs="${gcc_cv_tool_dirs}${gcc_cv_tool_prefix}/${target_noncanonical}/bin/${target_noncanonical}/${gcc_version}${PATH_SEPARATOR}"
+  gcc_cv_tool_dirs="${gcc_cv_tool_dirs}${gcc_cv_tool_prefix}/${target_noncanonical}/bin${PATH_SEPARATOR}"
+else
+  gcc_cv_tool_dirs=""
+fi
+
+if test "x${build}" = "x${target}" && test -n "${md_exec_prefix}"; then
+  gcc_cv_tool_dirs="${gcc_cv_tool_dirs}${md_exec_prefix}${PATH_SEPARATOR}"
+fi
+]) []dnl # ACX_TOOL_DIRS
+
+dnl# ACX_HAVE_GCC_FOR_TARGET
+dnl# Check if the variable GCC_FOR_TARGET really points to a GCC binary.
+AC_DEFUN([ACX_HAVE_GCC_FOR_TARGET], [
+cat > conftest.c << \EOF
+#ifdef __GNUC__
+  gcc_yay;
+#endif /* __GNUC__ */
+EOF
+if (${GCC_FOR_TARGET} -E conftest.c | grep gcc_yay) > /dev/null 2>&1; then
+  have_gcc_for_target=yes
+else
+  GCC_FOR_TARGET=${ncn_target_tool_prefix}gcc
+  have_gcc_for_target=no
+fi
+rm conftest.c
+])dnl
+
+dnl# ACX_CHECK_INSTALLED_TARGET_TOOL([VAR],[PROG])
+dnl# Searching for installed target binutils.  We need to take extra care,
+dnl# else we may find the wrong assembler, linker, etc., and lose.
+dnl#
+dnl# First try --with-build-time-tools, if specified.
+dnl#
+dnl# For build != host, we ask the installed GCC for the name of the tool
+dnl# it uses, and accept it if it is an absolute path.  This is because the
+dnl# only good choice for a compiler is the same GCC version that is being
+dnl# installed (or we failed to make target libraries), and we assume that
+dnl# on the host system we will have not only the same GCC version, but
+dnl# also the same binutils version.
+dnl#
+dnl# For build == host, search the same directories that the installed
+dnl# compiler will search.  We used to do this for the assembler, linker,
+dnl# and nm only; for simplicity of configuration, however, we extend this
+dnl# criterion to tools (such as ar and ranlib) that are never invoked by
+dnl# the compiler, to avoid mismatches.
+dnl#
+dnl# Also note we have to check MD_EXEC_PREFIX before checking the user's
+dnl# path if build == target.  This makes the most sense only when
+dnl# bootstrapping, but we also do so when build != host.  In this case, we
+dnl# hope that the build and host systems will have similar contents of
+dnl# MD_EXEC_PREFIX.
+dnl#
+dnl# If we do not find a suitable binary, then try the user's path.
+
+AC_DEFUN([ACX_CHECK_INSTALLED_TARGET_TOOL],[
+AC_REQUIRE([ACX_TOOL_DIRS])dnl
+AC_REQUIRE([ACX_HAVE_GCC_FOR_TARGET])dnl
+AC_REQUIRE([AC_CANONICAL_TARGET])dnl
+
+if test -z "$ac_cv_path_$1"; then
+  if test -n "${with_build_time_tools}"; then
+    AC_MSG_CHECKING([for $2 in ${with_build_time_tools}])
+    if test -x ${with_build_time_tools}/$2; then
+      $1=`cd ${with_build_time_tools} && pwd`/$2
+      ac_cv_path_$1=[$]$1
+      AC_MSG_RESULT([$ac_cv_path_$1])
+    else
+      AC_MSG_RESULT([no])
+    fi
+  elif test "x${build}" != "x${host}" && test "x${have_gcc_for_target}" = "xyes"; then
+    $1=`${GCC_FOR_TARGET} --print-prog-name=$2`
+    test [$]$1 = $2 && $1=""
+    test -n "[$]$1" && ac_cv_path_$1=[$]$1
+  fi
+fi
+if test -z "$ac_cv_path_$1" && test -n "${gcc_cv_tool_dirs}"; then
+  AC_PATH_PROG([$1],[$2],[],[$gcc_cv_tool_dirs])
+fi
+if test -z "$ac_cv_path_$1"; then
+  NCN_STRICT_CHECK_TARGET_TOOLS([$1],[$2])
+else
+  $1=$ac_cv_path_$1
+fi
+]) []dnl # ACX_CHECK_INSTALLED_TARGET_TOOL
+
 ###
 # AC_PROG_CPP_WERROR
 # Used for autoconf 2.5x to force AC_PREPROC_IFELSE to reject code which
@@ -184,7 +311,7 @@ if test "x${ac_tool_prefix}" = "x"; then
     ac_tool_prefix=""
   fi
 fi
-])
+])dnl
 
 # Test for GNAT.
 # We require the gnatbind program, and a compiler driver that
@@ -196,6 +323,7 @@ AC_DEFUN([ACX_PROG_GNAT],
 [AC_REQUIRE([AC_CHECK_TOOL_PREFIX])
 AC_REQUIRE([AC_PROG_CC])
 AC_CHECK_TOOL([GNATBIND],[gnatbind],[no])
+AC_CHECK_TOOL([GNATMAKE],[gnatmake],[no])
 AC_CACHE_CHECK([whether compiler driver understands Ada],
 		 [acx_cv_cc_gcc_supports_ada],
 [cat >conftest.adb <<EOF
@@ -221,7 +349,9 @@ if test x${GNATBIND} != xno && test x${acx_cv_cc_gcc_supports_ada} != xno; then
 else
   have_gnat=no
 fi
-])
+
+AC_SUBST([GNATMAKE])dnl
+])dnl
 
 dnl# 'make compare' can be significantly faster, if cmp itself can
 dnl# skip bytes instead of using tail.  The test being performed is
@@ -251,8 +381,8 @@ AC_DEFUN([ACX_PROG_CMP_IGNORE_INITIAL],
   rm t1 t2
 ])
 do_compare="${gcc_cv_prog_cmp_skip}"
-AC_SUBST([do_compare])
-])
+AC_SUBST([do_compare])dnl
+])dnl
 
 dnl# See whether we can include both string.h and strings.h.
 AC_DEFUN([ACX_HEADER_STRING],
@@ -267,7 +397,7 @@ if test "x${gcc_cv_header_string}" = "xyes"; then
   AC_DEFINE([STRING_WITH_STRINGS],[1],
        [Define if you can safely include both <string.h> and <strings.h>.])
 fi
-])
+])dnl
 
 dnl# See if stdbool.h properly defines bool and true/false.
 dnl# Check whether _Bool is built-in.
@@ -294,7 +424,7 @@ AC_CACHE_CHECK([for built-in _Bool],[gcc_cv_c__bool],
 if test "x${gcc_cv_c__bool}" = "xyes"; then
   AC_DEFINE([HAVE__BOOL],[1],[Define if the \`_Bool' type is built-in.])
 fi
-])
+])dnl
 
 dnl# See if hard links work and if not, try to substitute $1 or simple
 dnl# copy.
@@ -319,7 +449,125 @@ else
   AC_MSG_RESULT([yes])
 fi
 AC_SUBST([LN])dnl
-])
+])dnl
+
+dnl# GCC_TARGET_TOOL([PROGRAM],[TARGET-VAR],[HOST-VAR],[IN-TREE-TOOL],
+dnl#                 [LANGUAGE])
+AC_DEFUN([GCC_TARGET_TOOL],
+[AC_MSG_CHECKING([where to find the target $1])
+if test "x${build}" != "x${host}"; then
+  if expr "x[$]$2" : "x/" > /dev/null; then
+    # We already found the complete path
+    ac_dir=`dirname [$]$2`
+    AC_MSG_RESULT([pre-installed in ${ac_dir}])
+  else
+    # Canadian cross, just use what we found:
+    AC_MSG_RESULT([pre-installed])
+  fi
+else
+  ifelse([$4],[],[],
+  [ok=yes
+  case " ${configdirs} " in
+    *" patsubst([$4],[/.*],[]) "*) ;;
+    *) ok=no ;;
+  esac
+  ifelse([$5],[],[], 
+  [case ,${enable_languages}, in
+    *,$5,*) ;;
+    *) ok=no ;;
+  esac])
+  if test "x${ok}" = "xyes"; then
+    # An in-tree tool is available and we can use it
+    $2='$$r/$(HOST_SUBDIR)/$4'
+    AC_MSG_RESULT([just compiled])
+  el])if expr "x[$]$2" : "x/" > /dev/null; then
+    # We already found the complete path
+    ac_dir=`dirname [$]$2`
+    AC_MSG_RESULT([pre-installed in ${ac_dir}])
+  elif test "x${target}" = "x${host}"; then
+    # We can use an host tool:
+    $2='$($3)'
+    AC_MSG_RESULT([host tool])
+  else
+    # We need a cross tool:
+    AC_MSG_RESULT([pre-installed])
+  fi
+fi
+AC_SUBST($2)
+])dnl
+
+
+dnl# Locate a program and check that its version is acceptable.
+dnl# ACX_PROG_CHECK_VER([var],[name],[version-switch],
+dnl#                    [version-extract-regexp],[version-glob])
+AC_DEFUN([ACX_CHECK_PROG_VER],[
+  AC_REQUIRE([AC_PROG_SED])dnl
+
+  AC_CHECK_PROG([$1],[$2],[$2])
+  if test -n "[$]$1"; then
+    # Found it, now check the version.
+    AC_CACHE_CHECK([for modern $2],
+                   [gcc_cv_prog_$2_modern],
+                   [ac_prog_version=`eval [$]$1 $3 2>&1 |
+                                     sed -n 's/^.*patsubst([[$4]],/,\/).*$/\1/p'`
+
+                    [case $ac_prog_version in
+                      '')  gcc_cv_prog_$2_modern=no;;
+                      $5)  gcc_cv_prog_$2_modern=yes;;
+                      *)   gcc_cv_prog_$2_modern=no;;
+                    esac]
+                   ])
+  else
+    gcc_cv_prog_$2_modern=no
+  fi
+  if test $gcc_cv_prog_$2_modern = no; then
+    $1="${CONFIG_SHELL-/bin/sh} ${ac_aux_dir}/missing $2"
+  fi
+])dnl
+
+dnl# Support the --with-pkgversion configure option.
+dnl# ACX_PKGVERSION([default-pkgversion])
+AC_DEFUN([ACX_PKGVERSION],[
+  AC_ARG_WITH([pkgversion],
+    [AS_HELP_STRING([--with-pkgversion=PKG],
+                    [Use PKG in the version string in place of "$1"])],
+    [case "${withval}" in
+      yes) AC_MSG_ERROR([package version not specified]) ;;
+      no)  PKGVERSION="" ;;
+      *)   PKGVERSION="($withval) " ;;
+     esac],
+    [PKGVERSION="($1) "])dnl
+  AC_SUBST([PKGVERSION])dnl
+])dnl
+
+dnl# Support the --with-bugurl configure option.
+dnl# ACX_BUGURL([default-bugurl])
+AC_DEFUN([ACX_BUGURL],[
+  AC_ARG_WITH([bugurl],
+    [AS_HELP_STRING([--with-bugurl=URL],
+                    [Direct users to URL to report a bug])],
+    [case "${withval}" in
+      yes) AC_MSG_ERROR([bug URL not specified]) ;;
+      no)  BUGURL=""
+	   ;;
+      *)   BUGURL="${withval}"
+	   ;;
+     esac],
+    [BUGURL="$1"])
+  case ${BUGURL} in
+  "")
+    REPORT_BUGS_TO=""
+    REPORT_BUGS_TEXI=""
+    ;;
+  *)
+    AC_REQUIRE([AC_PROG_SED])
+    REPORT_BUGS_TO="<${BUGURL}>"
+    REPORT_BUGS_TEXI=@uref{`echo "${BUGURL}" | sed 's/@/@@/g'`}
+    ;;
+  esac;
+  AC_SUBST([REPORT_BUGS_TO])dnl
+  AC_SUBST([REPORT_BUGS_TEXI])dnl
+])dnl
 
 dnl ####
 dnl # ACX_CHECK_CYGWIN_CAT_WORKS
@@ -342,4 +590,4 @@ set -o igncr
 export SHELLOPTS 
   ])
 fi
-])
+])dnl

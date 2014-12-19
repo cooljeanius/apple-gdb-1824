@@ -43,3 +43,19 @@ libiberty.info*
 libiberty.html
 *.framework
 libtoolT
+
+# Besides being built as objects, certain files can also be built as
+# standalone programs, so gitignore the built programs as well:
+demangle
+_doprnt
+argv
+concat
+floatformat
+getopt
+getopt1
+physmem
+sorttest
+strerror
+strsignal
+vasprintf
+vsnprintf

@@ -630,6 +630,7 @@ WARN_CFLAGS
 POW_LIB
 LIBOBJS
 ALLOCA
+EXTRA_DEFS
 RANLIB
 LN_S
 am__fastdepCXX_FALSE
@@ -640,6 +641,7 @@ CXXFLAGS
 CXX
 WINDOWS_FALSE
 WINDOWS_TRUE
+M_I_INCLUDE_DIR
 MULTI_ICE_LIBS
 MULTI_ICE_INCLUDES
 MULTI_ICE_PLATFORM_SOURCE
@@ -698,6 +700,8 @@ am__isrc
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
+TARGET_ARCHITECTURE
+HOST_ARCHITECTURE
 target_os
 target_vendor
 target_cpu
@@ -2436,7 +2440,7 @@ ac_config_sub="$SHELL $ac_aux_dir/config.sub"  # Please don't use this var.
 ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
-
+# architecture stuff:
 # Make sure we can run config.sub.
 $SHELL "$ac_aux_dir/config.sub" sun4 >/dev/null 2>&1 ||
   as_fn_error $? "cannot run $SHELL $ac_aux_dir/config.sub" "$LINENO" 5
@@ -2552,6 +2556,16 @@ case ${host_os} in
 	 * ) CYGWIN=no;;
 esac
 
+if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
+  export HOST_ARCHITECTURE="${host_cpu}"
+
+fi
+if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
+  export TARGET_ARCHITECTURE="${target_cpu}"
+
+fi
+
+# Automake:
 am__api_version='1.14'
 
 # Find a good install program.  We prefer a C program (faster),
@@ -4584,7 +4598,8 @@ MULTI_ICE_INCLUDES="-I/home/jingham/arm/multi-ice"
 MULTI_ICE_LIBS="-L/home/jingham/arm/multi-ice -ltoolconf"
 
 # This is where I am putting them:
-MULTI_ICE_INCLUDES="${MULTI_ICE_INCLUDES} -I${srcdir}/include/arm/multi-ice"
+M_I_INCLUDE_DIR="${srcdir}/include/arm/multi-ice"
+MULTI_ICE_INCLUDES="${MULTI_ICE_INCLUDES} -I${M_I_INCLUDE_DIR}"
 
  if test "x${multi_ice_cv_os_cygwin32}" = "xyes"; then
   WINDOWS_TRUE=
@@ -5519,12 +5534,13 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sys_posix_termios" >&5
 $as_echo "$ac_cv_sys_posix_termios" >&6; }
 
+unset ac_cv_header_sys_types_h
 for ac_header in arpa/inet.h basetsd.h errno.h fcntl.h getopt.h \
                   intsafe.h limits.h locale.h \
                   netdb.h netinet/in.h netinet/tcp.h \
                   signal.h stdarg.h stddef.h stdio.h \
                   sys/file.h sys/ioctl.h sys/signal.h sys/time.h \
-                  termios.h termio.h unix.h \
+                  sys/types.h termios.h termio.h unix.h \
                   wincon.h windef.h windows.h winnt.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
@@ -5537,6 +5553,14 @@ _ACEOF
 fi
 
 done
+  ## for "../config.h":
+EXTRA_DEFS=""
+if test "x${ac_cv_header_sys_types_h}" = "xyes"; then
+  # this has to go separate from the configure header, because we check
+  # for it to be defined at the top of it (for caddr_t for ptrace):
+  export DEFS="${DEFS} -DHAVE_SYS_TYPES_H"
+  export EXTRA_DEFS="-DHAVE_SYS_TYPES_H"
+fi
 
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether byte ordering is bigendian" >&5
 $as_echo_n "checking whether byte ordering is bigendian... " >&6; }
@@ -6862,8 +6886,17 @@ _ACEOF
 build_warnings="-Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
 -Wparentheses -Wdeclaration-after-statement \
 -Wpointer-arith -Wpointer-sign \
--Wno-unused -Wunused-macros -Wundef \
--Wempty-body -Wmissing-declarations \
+-Wno-unused -Wunused-label -Wunused-macros -Wswitch \
+-Wempty-body -Wmissing-parameter-type -Wmissing-declarations \
+-Wold-style-declaration -Wold-style-definition -Wstrict-prototypes \
+-Wabi -Wmissing-noreturn -Waddress -Warray-bounds -Wattributes \
+-Wswitch -Wclobbered -Wcoverage-mismatch -Wdiv-by-zero \
+-Wdouble-promotion -Wenum-compare -Wfree-nonheap-object \
+-Winvalid-memory-model -Winvalid-pch -Wmain -Wmissing-braces \
+-Wmissing-include-dirs -Woverflow -Woverlength-strings -Woverride-init \
+-Wpragmas -Wreturn-local-addr -Wsequence-point -Wsizeof-pointer-memaccess \
+-Wtrampolines -Wunknown-pragmas -Wnormalized=nfc \
+-Wunsuffixed-float-constants -Wstrict-overflow -Wjump-misses-init \
 -Wno-format-security -Wno-format"
 
 case "${host}" in
@@ -6917,8 +6950,8 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 	    CFLAGS="${saved_CFLAGS}"
 	esac
     done
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${WARN_CFLAGS}${WERROR_CFLAGS}" >&5
-$as_echo "${WARN_CFLAGS}${WERROR_CFLAGS}" >&6; }
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: using: ${WARN_CFLAGS}${WERROR_CFLAGS}" >&5
+$as_echo "using: ${WARN_CFLAGS}${WERROR_CFLAGS}" >&6; }
 fi
 
 ac_config_files="$ac_config_files Makefile"

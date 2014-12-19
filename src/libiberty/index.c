@@ -1,4 +1,4 @@
-/* Stub implementation of (obsolete) index(). */
+/* index.c: Stub implementation of (obsolete) index(). */
 
 /*
 
@@ -19,3 +19,5 @@ index (const char *s, int c)
 {
   return strchr (s, c);
 }
+
+/* EOF */

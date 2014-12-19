@@ -16,23 +16,25 @@ allocated, the remaining memory is zeroed.
 */
 
 #ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 #include "ansidecl.h"
 #include "libiberty.h"
 
 #include <sys/types.h> /* For size_t. */
 #ifdef HAVE_STRING_H
-#include <string.h>
+# include <string.h>
 #else
 # ifdef HAVE_STRINGS_H
 #  include <strings.h>
-# endif
-#endif
+# endif /* HAVE_STRINGS_H */
+#endif /* HAVE_STRING_H */
 
 PTR
-xmemdup (const PTR input, size_t copy_size, size_t alloc_size)
+xmemdup(const PTR input, size_t copy_size, size_t alloc_size)
 {
-  PTR output = xcalloc (1, alloc_size);
-  return (PTR) memcpy (output, input, copy_size);
+  PTR output = xcalloc(1, alloc_size);
+  return (PTR)memcpy(output, input, copy_size);
 }
+
+/* EOF */

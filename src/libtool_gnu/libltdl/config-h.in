@@ -1,5 +1,11 @@
 /* config-h.in.  Generated from configure.ac by autoheader.  */
 
+/* Define if building universal (internal helper macro) */
+#undef AC_APPLE_UNIVERSAL_BUILD
+
+/* Define to 1 if the `closedir' function returns void instead of `int'. */
+#undef CLOSEDIR_VOID
+
 /* Define to 1 if you have the `argz_add' function. */
 #undef HAVE_ARGZ_ADD
 
@@ -31,7 +37,8 @@
    you don't. */
 #undef HAVE_DECL_CYGWIN_CONV_PATH
 
-/* Define to 1 if you have the <dirent.h> header file. */
+/* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
+   */
 #undef HAVE_DIRENT_H
 
 /* Define if you have the GNU dld library. */
@@ -61,14 +68,29 @@
 /* Define if you have the libdl library or equivalent. */
 #undef HAVE_LIBDL
 
+/* Define to 1 if you have the `dld' library (-ldld). */
+#undef HAVE_LIBDLD
+
 /* Define if libdlloader will be built on this platform */
 #undef HAVE_LIBDLLOADER
 
 /* Define to 1 if you have the <mach-o/dyld.h> header file. */
 #undef HAVE_MACH_O_DYLD_H
 
+/* Define to 1 if you have the `malloc' function. */
+#undef HAVE_MALLOC
+
+/* Define to 1 if you have the `memmove' function. */
+#undef HAVE_MEMMOVE
+
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the `memset' function. */
+#undef HAVE_MEMSET
+
+/* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
+#undef HAVE_NDIR_H
 
 /* Define to 1 if you have the `opendir' function. */
 #undef HAVE_OPENDIR
@@ -79,14 +101,26 @@
 /* Define to 1 if you have the `readdir' function. */
 #undef HAVE_READDIR
 
+/* Define to 1 if you have the `realloc' function. */
+#undef HAVE_REALLOC
+
 /* Define if you have the shl_load function. */
 #undef HAVE_SHL_LOAD
+
+/* Define to 1 if you have the <stddef.h> header file. */
+#undef HAVE_STDDEF_H
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
 
+/* Define to 1 if you have the <stdio.h> header file. */
+#undef HAVE_STDIO_H
+
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the `strchr' function. */
+#undef HAVE_STRCHR
 
 /* Define to 1 if you have the <strings.h> header file. */
 #undef HAVE_STRINGS_H
@@ -100,8 +134,19 @@
 /* Define to 1 if you have the `strlcpy' function. */
 #undef HAVE_STRLCPY
 
+/* Define to 1 if you have the `strrchr' function. */
+#undef HAVE_STRRCHR
+
+/* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
+   */
+#undef HAVE_SYS_DIR_H
+
 /* Define to 1 if you have the <sys/dl.h> header file. */
 #undef HAVE_SYS_DL_H
+
+/* Define to 1 if you have the <sys/ndir.h> header file, and it defines `DIR'.
+   */
+#undef HAVE_SYS_NDIR_H
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #undef HAVE_SYS_STAT_H
@@ -165,14 +210,38 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
+/* Define to 1 if the C compiler supports function prototypes. */
+#undef PROTOTYPES
+
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
 /* Version number of package */
 #undef VERSION
 
+/* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
+   significant byte first (like Motorola and SPARC, unlike Intel). */
+#if defined AC_APPLE_UNIVERSAL_BUILD
+# if defined __BIG_ENDIAN__
+#  define WORDS_BIGENDIAN 1
+# endif
+#else
+# ifndef WORDS_BIGENDIAN
+#  undef WORDS_BIGENDIAN
+# endif
+#endif
+
+/* Define like PROTOTYPES; this can be used by system headers. */
+#undef __PROTOTYPES
+
 /* Define so that glibc/gnulib argp.h does not typedef error_t. */
 #undef __error_t_defined
 
+/* Define to empty if `const' does not conform to ANSI C. */
+#undef const
+
 /* Define to a type to use for `error_t' if it is not otherwise available. */
 #undef error_t
+
+/* Define to `unsigned int' if <sys/types.h> does not define. */
+#undef size_t

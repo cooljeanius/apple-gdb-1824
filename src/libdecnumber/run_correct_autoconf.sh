@@ -1,4 +1,5 @@
 #!/bin/sh
+# for libdecnumber
 
 echo "This script assumes that your copy of autoconf264 has suffixed its commands with \"264\" like the MacPorts autoconf264 package does."
 echo "If your autoconf264 is not like this, then this script will probably fail."
