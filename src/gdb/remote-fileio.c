@@ -1,4 +1,4 @@
-/* Remote File-I/O communications
+/* remote-fileio.c: Remote File-I/O communications
 
    Copyright 2003, 2005 Free Software Foundation, Inc.
 
@@ -570,11 +570,14 @@ remote_fileio_return_success (int retcode)
    write only one packet, regardless of the requested number of bytes to
    transfer.  This wrapper calls remote_write_bytes() as often as needed. */
 static int
-remote_fileio_write_bytes (CORE_ADDR memaddr, char *myaddr, int len)
+remote_fileio_write_bytes(CORE_ADDR memaddr, char *myaddr, int len)
 {
   int ret = 0, written;
 
-  while (len > 0 && (written = remote_write_bytes (memaddr, myaddr, len)) > 0)
+  while ((len > 0)
+         && ((written = remote_write_bytes(memaddr,
+                                           (const gdb_byte *)myaddr,
+                                           len)) > 0))
     {
       len -= written;
       memaddr += written;
@@ -585,7 +588,7 @@ remote_fileio_write_bytes (CORE_ADDR memaddr, char *myaddr, int len)
 }
 
 static void
-remote_fileio_func_open (char *buf)
+remote_fileio_func_open(char *buf)
 {
   CORE_ADDR ptrval;
   int length, retlength;
@@ -835,7 +838,7 @@ remote_fileio_func_write (char *buf)
       return;
     }
   length = (size_t) num;
-    
+
   buffer = (char *) xmalloc (length);
   retlength = remote_read_bytes (ptrval, buffer, length);
   if (retlength != length)
@@ -916,7 +919,7 @@ remote_fileio_func_lseek (char *buf)
       remote_fileio_reply (-1, FILEIO_EINVAL);
       return;
     }
-  
+
   remote_fio_no_longjmp = 1;
   ret = lseek (fd, offset, flag);
 
@@ -963,7 +966,7 @@ remote_fileio_func_rename (char *buf)
       remote_fileio_ioerror ();
       return;
     }
-  
+
   /* Only operate on regular files and directories */
   of = stat (oldpath, &ost);
   nf = stat (newpath, &nst);
@@ -1109,7 +1112,7 @@ remote_fileio_func_stat (char *buf)
     {
       remote_fileio_to_fio_stat (&st, &fst);
       remote_fileio_to_fio_uint (0, fst.fst_dev);
-      
+
       retlength = remote_fileio_write_bytes (ptrval, (char *) &fst, sizeof fst);
       if (retlength != sizeof fst)
 	{

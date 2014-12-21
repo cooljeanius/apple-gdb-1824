@@ -20606,7 +20606,7 @@ $as_echo "#define HAVE_MBRTOWC 1" >>confdefs.h
 
 
 
-
+   ## set up libobj if needed:
 if test "x${ac_cv_func_dirfd}" = "xno" && test "x${gl_cv_func_dirfd_macro}" = "xno"; then
   case " $LIBOBJS " in
   *" dirfd.$ac_objext "* ) ;;
@@ -20677,7 +20677,7 @@ fi
 $as_echo "#define GNULIB_TEST_DIRFD 1" >>confdefs.h
 
 
-
+  ## set up libobj if needed:
 if test "x${ac_cv_lib_error_at_line}" = "xno"; then
   case " $LIBOBJS " in
   *" error.$ac_objext "* ) ;;
@@ -20689,7 +20689,7 @@ esac
   :
 
 fi
-
+  ## set up libobj if needed:
 if test "x${ac_cv_member_struct_stat_st_blocks}" = "xno"; then
   case " $LIBOBJS " in
   *" fileblocks.$ac_objext "* ) ;;
@@ -20707,14 +20707,14 @@ esac
   :
 
 fi
-
+  ## set up libobjs if needed:
 if test ${REPLACE_FLOAT_LDBL} = 1; then
   case " $LIBOBJS " in
   *" float.$ac_objext "* ) ;;
   *) LIBOBJS="$LIBOBJS float.$ac_objext"
  ;;
 esac
-
+  ## end first libobj from "float"
 fi
 if test ${REPLACE_ITOLD} = 1; then
   case " $LIBOBJS " in
@@ -20722,7 +20722,7 @@ if test ${REPLACE_ITOLD} = 1; then
   *) LIBOBJS="$LIBOBJS itold.$ac_objext"
  ;;
 esac
-
+  ## end second libobj from "float"
 fi
 
 if test -n "${FNMATCH_H}"; then
@@ -20787,7 +20787,7 @@ _ACEOF
 
 
 fi
-
+  ## set up libobj if needed:
 if test -n "${FNMATCH_H}"; then
   case " $LIBOBJS " in
   *" fnmatch.$ac_objext "* ) ;;
@@ -20850,14 +20850,14 @@ _ACEOF
 
 
 fi
-
+  ## set up libobj if needed:
 if test "x${gl_func_frexp}" != "xyes"; then
   case " $LIBOBJS " in
   *" frexp.$ac_objext "* ) ;;
   *) LIBOBJS="$LIBOBJS frexp.$ac_objext"
  ;;
 esac
-
+  ## end libobj
 fi
 
 
@@ -20873,14 +20873,14 @@ fi
 $as_echo "#define GNULIB_TEST_FREXP 1" >>confdefs.h
 
 
-
+  ## set up libobj if needed:
 if test ${HAVE_DECL_FREXPL} = 0 || test "x${gl_func_frexpl}" = "xno"; then
   case " $LIBOBJS " in
   *" frexpl.$ac_objext "* ) ;;
   *) LIBOBJS="$LIBOBJS frexpl.$ac_objext"
  ;;
 esac
-
+  ## end libobj
 fi
 
 
@@ -20943,7 +20943,7 @@ fi
 $as_echo "#define GNULIB_TEST_GETTIMEOFDAY 1" >>confdefs.h
 
 
-
+  ## set up libobj if needed:
 if test "x${gl_func_isnand_no_libm}" != "xyes"; then
   case " $LIBOBJS " in
   *" isnand.$ac_objext "* ) ;;
@@ -20954,7 +20954,7 @@ esac
 
 
 fi
-
+  ## set up libobj if needed:
 if test "x${gl_func_isnanl_no_libm}" != "xyes"; then
   case " $LIBOBJS " in
   *" isnanl.$ac_objext "* ) ;;
@@ -21078,14 +21078,14 @@ _ACEOF
 
 
 fi
-
+  ## set up libobj if needed:
 if test ${HAVE_WCTYPE_T} = 0; then
   case " $LIBOBJS " in
   *" iswctype.$ac_objext "* ) ;;
   *) LIBOBJS="$LIBOBJS iswctype.$ac_objext"
  ;;
 esac
-
+  ## end libobj
 fi
 
 
@@ -21101,7 +21101,7 @@ fi
 $as_echo "#define GNULIB_TEST_ISWCTYPE 1" >>confdefs.h
 
 
-
+  ## set up envvar if needed:
 if test "x${LOCALCHARSET_TESTS_ENVIRONMENT}" = "x"; then
   if test -n "${gl_source_base}"; then
     test -z "${LOCALCHARSET_TESTS_ENVIRONMENT}" && export LOCALCHARSET_TESTS_ENVIRONMENT="CHARSETALIASDIR=\"\$(abs_top_builddir)/${gl_source_base}\""
@@ -21109,7 +21109,7 @@ if test "x${LOCALCHARSET_TESTS_ENVIRONMENT}" = "x"; then
     test -z "${LOCALCHARSET_TESTS_ENVIRONMENT}" && export LOCALCHARSET_TESTS_ENVIRONMENT="CHARSETALIASDIR=\"\$(abs_top_builddir)\""
   fi
 fi
-
+  ## set up libobj if needed:
 if test ${REPLACE_LSTAT} = 1; then
   case " $LIBOBJS " in
   *" lstat.$ac_objext "* ) ;;
@@ -21132,14 +21132,14 @@ fi
 $as_echo "#define GNULIB_TEST_LSTAT 1" >>confdefs.h
 
 
-
+  ## set up libobj if needed:
 if test ${REPLACE_MALLOC} = 1; then
   case " $LIBOBJS " in
   *" malloc.$ac_objext "* ) ;;
   *) LIBOBJS="$LIBOBJS malloc.$ac_objext"
  ;;
 esac
-
+  ## end libobj
 fi
 
 
@@ -21161,7 +21161,7 @@ _ACEOF
 $as_echo "#define GNULIB_TEST_MALLOC_POSIX 1" >>confdefs.h
 
 
-
+  ## set up libobj if needed:
 if test ${HAVE_MBRTOWC} = 0 || test ${REPLACE_MBRTOWC} = 1; then
   case " $LIBOBJS " in
   *" mbrtowc.$ac_objext "* ) ;;
@@ -21186,7 +21186,7 @@ fi
 $as_echo "#define GNULIB_TEST_MBRTOWC 1" >>confdefs.h
 
 
-
+  ## set up libobj if needed:
 if test ${HAVE_MBSINIT} = 0 || test ${REPLACE_MBSINIT} = 1; then
   case " $LIBOBJS " in
   *" mbsinit.$ac_objext "* ) ;;
@@ -21211,7 +21211,7 @@ fi
 $as_echo "#define GNULIB_TEST_MBSINIT 1" >>confdefs.h
 
 
-
+  ## set up libobj if needed:
 if test ${HAVE_MBSRTOWCS} = 0 || test ${REPLACE_MBSRTOWCS} = 1; then
   case " $LIBOBJS " in
   *" mbsrtowcs.$ac_objext "* ) ;;
@@ -21241,7 +21241,7 @@ fi
 $as_echo "#define GNULIB_TEST_MBSRTOWCS 1" >>confdefs.h
 
 
-
+  ## set up libobj if needed:
 if test ${HAVE_MEMCHR} = 0 || test ${REPLACE_MEMCHR} = 1; then
   case " $LIBOBJS " in
   *" memchr.$ac_objext "* ) ;;
@@ -21277,7 +21277,7 @@ fi
 $as_echo "#define GNULIB_TEST_MEMCHR 1" >>confdefs.h
 
 
-
+  ## set up libobj if needed:
 if test "x${gl_func_memcmp}" = "xno"; then
   case " $LIBOBJS " in
   *" memcmp.$ac_objext "* ) ;;
@@ -21286,14 +21286,14 @@ if test "x${gl_func_memcmp}" = "xno"; then
 esac
   :
 fi
-
+  ## set up libobj if needed:
 if test ${HAVE_MEMMEM} = 0 || test ${REPLACE_MEMMEM} = 1; then
   case " $LIBOBJS " in
   *" memmem.$ac_objext "* ) ;;
   *) LIBOBJS="$LIBOBJS memmem.$ac_objext"
  ;;
 esac
-
+  ## end libobj
 fi
 
 
@@ -21309,7 +21309,7 @@ fi
 $as_echo "#define GNULIB_TEST_MEMMEM 1" >>confdefs.h
 
 
-
+  ## set up libobj if needed:
 if test ${HAVE_MEMPCPY} = 0; then
   case " $LIBOBJS " in
   *" mempcpy.$ac_objext "* ) ;;
@@ -21334,14 +21334,14 @@ fi
 $as_echo "#define GNULIB_TEST_MEMPCPY 1" >>confdefs.h
 
 
-
+  ## set up libobj if needed:
 if test ${REPLACE_REALLOC} = 1; then
   case " $LIBOBJS " in
   *" realloc.$ac_objext "* ) ;;
   *) LIBOBJS="$LIBOBJS realloc.$ac_objext"
  ;;
 esac
-
+  ## end libobj
 fi
 
 
@@ -21363,7 +21363,7 @@ _ACEOF
 $as_echo "#define GNULIB_TEST_REALLOC_POSIX 1" >>confdefs.h
 
 
-
+  ## set up libobj if needed:
 if test ${REPLACE_STAT} = 1; then
   case " $LIBOBJS " in
   *" stat.$ac_objext "* ) ;;
@@ -21386,14 +21386,14 @@ fi
 $as_echo "#define GNULIB_TEST_STAT 1" >>confdefs.h
 
 
-
+  ## set up libobj if needed:
 if test ${REPLACE_STRERROR} = 1; then
   case " $LIBOBJS " in
   *" strerror.$ac_objext "* ) ;;
   *) LIBOBJS="$LIBOBJS strerror.$ac_objext"
  ;;
 esac
-
+  ## end libobj
 fi
 
 
@@ -21415,7 +21415,7 @@ _ACEOF
 $as_echo "#define GNULIB_TEST_STRERROR 1" >>confdefs.h
 
 
-
+  ## set up libobj if needed:
 if test ${HAVE_DECL_STRERROR_R} = 0 || test ${REPLACE_STRERROR_R} = 1; then
   case " $LIBOBJS " in
   *" strerror_r.$ac_objext "* ) ;;
@@ -21460,7 +21460,7 @@ fi
 $as_echo "#define GNULIB_TEST_STRERROR_R 1" >>confdefs.h
 
 
-
+  ## set up libobj if needed:
 if test -n "${ERRNO_H}" || test ${REPLACE_STRERROR_0} = 1; then
   case " $LIBOBJS " in
   *" strerror-override.$ac_objext "* ) ;;
@@ -21501,7 +21501,7 @@ done
 
 
 fi
-
+  ## set up libobj if needed:
 if test ${HAVE_DECL_STRNLEN} = 0 || test ${REPLACE_STRNLEN} = 1; then
   case " $LIBOBJS " in
   *" strnlen.$ac_objext "* ) ;;
@@ -21524,14 +21524,14 @@ fi
 $as_echo "#define GNULIB_TEST_STRNLEN 1" >>confdefs.h
 
 
-
+  ## set up libobj if needed:
 if test ${REPLACE_STRSTR} = 1; then
   case " $LIBOBJS " in
   *" strstr.$ac_objext "* ) ;;
   *) LIBOBJS="$LIBOBJS strstr.$ac_objext"
  ;;
 esac
-
+  ## end libobj
 fi
 
 
@@ -21547,14 +21547,14 @@ fi
 $as_echo "#define GNULIB_TEST_STRSTR 1" >>confdefs.h
 
 
-
+  ## set up libobj if needed:
 if test ${HAVE_WCSNCASECMP} = 0; then
   case " $LIBOBJS " in
   *" wcsncasecmp.$ac_objext "* ) ;;
   *) LIBOBJS="$LIBOBJS wcsncasecmp.$ac_objext"
  ;;
 esac
-
+  ## end libobj
 fi
 
 
@@ -22631,7 +22631,7 @@ esac
 
 
 # Check for the 'make' the user wants to use:
-for ac_prog in make
+for ac_prog in make gmake gnumake remake
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2

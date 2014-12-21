@@ -16900,7 +16900,7 @@ esac
 
 backtrace_supported=yes
 
-if test -n "${with_target_subdir}"; then
+if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
   # We are compiling a GCC library.  We can assume that the unwind
   # library exists.
   # Default to --enable-multilib
@@ -16959,7 +16959,7 @@ fi
 fi
 
 EXTRA_FLAGS=""
-if test -n "${with_target_subdir}"; then
+if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
   EXTRA_FLAGS="-funwind-tables -frandom-seed=\$@"
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for -funwind-tables option" >&5
@@ -17154,14 +17154,14 @@ if test "x${WARN_FLAGS}" = "x" && test "x${WARN_CFLAGS}" != "x"; then
   test -z "${WARN_FLAGS}" && test -n "${WARN_CFLAGS}" && export WARN_FLAGS="${WARN_CFLAGS}"
 fi
 
-if test -n "${with_target_subdir}"; then
+if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: adding -Werror to WARN_FLAGS" >&5
 $as_echo "$as_me: WARNING: adding -Werror to WARN_FLAGS" >&2;}
   WARN_FLAGS="${WARN_FLAGS} -Werror"
 fi
 
 
-if test -n "${with_target_subdir}"; then
+if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
 
 
 # Check whether --with-system-libunwind was given.
@@ -17237,7 +17237,7 @@ fi
 # this in.  We do NOT want to provide another shared library to
 # complicate dependencies.  Instead, we just compile with -fPIC.
 PIC_FLAG=""
-if test -n "${with_target_subdir}"; then
+if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
   PIC_FLAG=-fPIC
 fi
 # Similarly, use -fPIC with --enable-host-shared:
@@ -17253,9 +17253,10 @@ $as_echo_n "checking __sync extensions... " >&6; }
 if test "${libbacktrace_cv_sys_sync+set}" = set; then :
   $as_echo_n "(cached) " >&6
 else
-  if test -n "${with_target_subdir}"; then
+
+if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
    libbacktrace_cv_sys_sync=yes
- else
+else
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 int i;
@@ -17276,7 +17277,7 @@ else
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
- fi
+fi
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $libbacktrace_cv_sys_sync" >&5
 $as_echo "$libbacktrace_cv_sys_sync" >&6; }
@@ -17294,9 +17295,10 @@ $as_echo_n "checking __atomic extensions... " >&6; }
 if test "${libbacktrace_cv_sys_atomic+set}" = set; then :
   $as_echo_n "(cached) " >&6
 else
-  if test -n "${with_target_subdir}"; then
+
+if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
    libbacktrace_cv_sys_atomic=yes
- else
+else
    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 int i;
@@ -17316,7 +17318,7 @@ else
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
- fi
+fi
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $libbacktrace_cv_sys_atomic" >&5
 $as_echo "$libbacktrace_cv_sys_atomic" >&6; }
@@ -18217,7 +18219,7 @@ done
 if test "x${ac_cv_header_sys_mman_h}" = "xno"; then
   have_mmap=no
 else
-  if test -n "${with_target_subdir}"; then
+  if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
     # When built as a GCC target library, we cannot do a link test.  We
     # simply assume that if we have mman.h, we have mmap.
     have_mmap=yes
@@ -18727,7 +18729,7 @@ $as_echo "#define HAVE_DL_ITERATE_PHDR 1" >>confdefs.h
 fi
 
 # Check for the fcntl function.
-if test -n "${with_target_subdir}"; then
+if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
    case "${host}" in
    *-*-mingw*) have_fcntl=no ;;
    *) have_fcntl=yes ;;
@@ -18839,7 +18841,7 @@ fi
 done
 
 # Check for getexecname function.
-if test -n "${with_target_subdir}"; then
+if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
    case "${host}" in
    *-*-solaris2*) have_getexecname=yes ;;
    *) have_getexecname=no ;;
@@ -21613,7 +21615,7 @@ fi
 
  ;;
     "default":C) if test -n "${CONFIG_FILES}"; then
-   if test -n "${with_target_subdir}"; then
+   if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
      # Multilibs need MULTISUBDIR defined correctly in certain makefiles so
      # that multilib installs will end up installed in the correct place.
      # The testsuite needs it for multilib-aware ABI baseline files.
@@ -21630,9 +21632,9 @@ _EOF
       case ${CONFIG_FILES} in
        *${i}/Makefile*)
 	 echo "Adding MULTISUBDIR to ${i}/Makefile"
-	 sed -f vpsed ${i}/Makefile > tmp
-	 grep '^MULTISUBDIR =' Makefile >> tmp
-	 mv tmp ${i}/Makefile
+	 sed -f vpsed ${i}/Makefile | tee tmp
+	 grep '^MULTISUBDIR =' Makefile | tee -a tmp
+	 mv -v tmp ${i}/Makefile
 	 ;;
       esac
      done

@@ -370,11 +370,11 @@ extern int rl_clear_message PARAMS((void));
 extern int rl_reset_line_state PARAMS((void));
 extern int rl_crlf PARAMS((void));
 
-#if (defined (__STDC__) || defined (__cplusplus)) && defined (USE_VARARGS) && defined(PREFER_STDARG)
+#if (defined(__STDC__) || defined(__cplusplus)) && defined(USE_VARARGS) && defined(PREFER_STDARG)
 extern int rl_message(const char *, ...)  __attribute__((__format__ (printf, 1, 2)));
 #else
-extern int rl_message();
-#endif
+extern int rl_message PARAMS((void));
+#endif /* (__STDC__ || __cplusplus) && USE_VARARGS && PREFER_STDARG */
 
 extern int rl_show_char PARAMS((int));
 
@@ -486,7 +486,7 @@ extern int rl_insert_mode;
 extern const char *rl_readline_name;
 
 /* The prompt readline uses.  This is set from the argument to
-   readline (), and should not be assigned to directly. */
+   readline(), and should not be assigned to directly. */
 extern char *rl_prompt;
 
 /* The line buffer that is in use. */
@@ -529,11 +529,11 @@ extern FILE *rl_instream;
 extern FILE *rl_outstream;
 
 /* If non-zero, then this is the address of a function to call just
-   before readline_internal () prints the first prompt. */
+   before readline_internal() prints the first prompt. */
 extern rl_hook_func_t *rl_startup_hook;
 
 /* If non-zero, this is the address of a function to call just before
-   readline_internal_setup () returns and readline_internal starts
+   readline_internal_setup() returns and readline_internal starts
    reading input characters. */
 extern rl_hook_func_t *rl_pre_input_hook;
 
@@ -585,8 +585,8 @@ extern int rl_catch_signals;
 extern int rl_catch_sigwinch;
 
 /* Completion variables. */
-/* Pointer to the generator function for completion_matches ().
-   NULL means to use rl_filename_completion_function (), the default
+/* Pointer to the generator function for completion_matches().
+   NULL means to use rl_filename_completion_function(), the default
    filename completer. */
 extern rl_compentry_func_t *rl_completion_entry_function;
 

@@ -3802,12 +3802,14 @@ bundle_basename (const char *filepath)
 
   /* Now inspect the characters between bundle_name_start and
    * bundle_name_end to see if it looks like <chars><dot><alpha-chars>: */
-  dot = strrchr_bounded (bundle_name_start, bundle_name_end, '.');
+  dot = strrchr_bounded(bundle_name_start, bundle_name_end, '.');
 
-  if (dot == bundle_name_start)
+  if (dot == bundle_name_start) {
     return NULL;
-  if ((dot + 1) == bundle_name_end)
+  }
+  if ((dot + 1) == bundle_name_end) {
     return NULL;
+  }
   /* this should not happen - we did something wrong if we did NOT find
    * a dot in the bundle name - but guard against it so we do NOT crash: */
   if (dot == NULL)
@@ -3815,8 +3817,9 @@ bundle_basename (const char *filepath)
 
   for (i = (dot + 1); i < bundle_name_end; i++)
     {
-      if (!isalpha(*i))
+      if (!isalpha(*i)) {
         return NULL;
+      }
     }
 
   return bundle_name_start;
@@ -3828,14 +3831,13 @@ bundle_basename (const char *filepath)
    If the file is absent or is not a binary, NULL is returned.
    Freeing of the returned array is the responsibility of the caller;
    use the free_uuids_array() utility function to do it.  */
-
 uint8_t **
-get_binary_file_uuids (const char *filename)
+get_binary_file_uuids(const char *filename)
 {
   /* pre-allocate 8 slots plus one for the terminating NULL pointer: */
   uint8_t uuid[16];
-  int current_uuids_slot;
-  int uuids_size;
+  volatile int current_uuids_slot;
+  volatile int uuids_size;
   uint8_t **uuids;
   bfd *abfd;
   struct gdb_exception e;
@@ -3857,77 +3859,85 @@ get_binary_file_uuids (const char *filename)
   if (abfd == NULL || e.reason == RETURN_ERROR)
     return NULL;
 
-  if (bfd_check_format (abfd, bfd_archive)
-      && strcmp (bfd_get_target (abfd), "mach-o-fat") == 0)
+  if (bfd_check_format(abfd, bfd_archive)
+      && (strcmp(bfd_get_target(abfd), "mach-o-fat") == 0))
     {
       bfd *nbfd = NULL;
       for (;;)
         {
-          nbfd = bfd_openr_next_archived_file (abfd, nbfd);
-          if (nbfd == NULL)
+          nbfd = bfd_openr_next_archived_file(abfd, nbfd);
+          if (nbfd == NULL) {
             break;
-          if (!bfd_check_format (nbfd, bfd_object)
-              && !bfd_check_format (nbfd, bfd_archive))
+          }
+          if (!bfd_check_format(nbfd, bfd_object)
+              && !bfd_check_format(nbfd, bfd_archive)) {
             continue;
+          }
 
-          if (!bfd_mach_o_get_uuid (nbfd, uuid, sizeof (uuid)))
+          if (!bfd_mach_o_get_uuid(nbfd, uuid, sizeof(uuid))) {
             return NULL;
+          }
 
           if (current_uuids_slot >= uuids_size)
             {
               uuids_size += 8;
-              uuids = (uint8_t**) xrealloc (uuids, sizeof (uint8_t*) * uuids_size + 1);
-              if (uuids == NULL)
+              uuids = (uint8_t **)xrealloc(uuids,
+                                           (sizeof(uint8_t*) * uuids_size + 1));
+              if (uuids == NULL) {
                 return NULL;
+              }
             }
-          uuids[current_uuids_slot] = (uint8_t *) xmalloc (sizeof (uuid));
-          memcpy (uuids[current_uuids_slot], uuid, sizeof (uuid));
+          uuids[current_uuids_slot] = (uint8_t *)xmalloc(sizeof(uuid));
+          memcpy(uuids[current_uuids_slot], uuid, sizeof(uuid));
           current_uuids_slot++;
         }
-      bfd_free_cached_info (abfd);
+      bfd_free_cached_info(abfd);
     }
   else
     {
-      if (!bfd_mach_o_get_uuid (abfd, uuid, sizeof (uuid)))
+      if (!bfd_mach_o_get_uuid (abfd, uuid, sizeof(uuid))) {
         return NULL;
+      }
 
-      uuids[0] = (uint8_t *) xmalloc (sizeof (uuid));
-      memcpy (uuids[current_uuids_slot++], uuid, sizeof (uuid));
+      uuids[0] = (uint8_t *)xmalloc(sizeof(uuid));
+      memcpy(uuids[current_uuids_slot++], uuid, sizeof(uuid));
     }
   uuids[current_uuids_slot] = NULL;
   bfd_close (abfd);
   return uuids;
 }
 
-/* Free the array allocated and returned by get_binary_file_uuids() */
-
+/* Free the array allocated and returned by get_binary_file_uuids(): */
 void
-free_uuids_array (uint8_t **uuids)
+free_uuids_array(uint8_t **uuids)
 {
   int i;
-  if (uuids == NULL)
+  if (uuids == NULL) {
     return;
-  for (i = 0; uuids[i] != NULL; i++)
-    xfree (uuids[i]);
-  xfree (uuids);
+  }
+  for (i = 0; uuids[i] != NULL; i++) {
+    xfree(uuids[i]);
+  }
+  xfree(uuids);
 }
 
 char *
-puuid (uint8_t *uuid)
+puuid(uint8_t *uuid)
 {
-  char *str = get_cell ();
-  uuid_unparse_upper (uuid, str);
+  char *str = get_cell();
+  uuid_unparse_upper(uuid, str);
   return str;
 }
 
 static int orig_file_rlimit;
 
 void
-restore_file_rlimit ()
+restore_file_rlimit(void)
 {
   struct rlimit limit;
-  if (orig_file_rlimit == 0)
+  if (orig_file_rlimit == 0) {
     return;
+  }
 
   getrlimit (RLIMIT_NOFILE, &limit);
   limit.rlim_cur = orig_file_rlimit;
@@ -3935,56 +3945,53 @@ restore_file_rlimit ()
 }
 
 void
-unlimit_file_rlimit ()
+unlimit_file_rlimit(void)
 {
   struct rlimit limit;
   rlim_t reserve;
   int ret;
 
-  getrlimit (RLIMIT_NOFILE, &limit);
+  getrlimit(RLIMIT_NOFILE, &limit);
   orig_file_rlimit = limit.rlim_cur;
   limit.rlim_cur = limit.rlim_max;
-  ret = setrlimit (RLIMIT_NOFILE, &limit);
+  ret = setrlimit(RLIMIT_NOFILE, &limit);
   if (ret != 0)
     {
-      /* Okay, that didn't work, let's try something that's at least
-         reasonably big: */
+      /* Okay, that didn't work, let us try something that is at least
+       * reasonably big: */
       limit.rlim_cur = 10000;
-      ret = setrlimit (RLIMIT_NOFILE, &limit);
+      ret = setrlimit(RLIMIT_NOFILE, &limit);
     }
-  /* rlim_max is set to RLIM_INFINITY on X, at least on Leopard &
-     SnowLeopard.  so it's better to see what we really got and use
-     cur, not max below...  */
-  getrlimit (RLIMIT_NOFILE, &limit);
+  /* rlim_max is set to RLIM_INFINITY on X, at least on Leopard  and
+   * SnowLeopard.  So it is better to see what we really got and use
+   * cur, not max below...  */
+  getrlimit(RLIMIT_NOFILE, &limit);
 
   /* Reserve 10% of file descriptors for non-BFD uses, or 5, whichever
-     is greater.  Allocate at least one file descriptor for use by
-     BFD. */
-
-  reserve = limit.rlim_cur * 0.1;
-  reserve = (reserve > 5) ? reserve : 5;
+   * is greater.  Allocate at least one file descriptor for use by BFD: */
+  reserve = (limit.rlim_cur * 0.1f);
+  reserve = ((reserve > 5) ? reserve : 5);
   if (reserve >= limit.rlim_cur)
     {
-      bfd_set_cache_max_open (1);
+      bfd_set_cache_max_open(1);
     }
   else
     {
-      bfd_set_cache_max_open (limit.rlim_cur - reserve);
+      bfd_set_cache_max_open(limit.rlim_cur - reserve);
     }
 }
 
-// Not even a little bit thread safe
+/* Not even a little bit thread safe: */
 static regex_t rebuf;
 static int rebuf_needs_freeing = 0;
 
 static int regex_fmt = REG_BASIC;
 
-// newflags is a bitmask of
-// REG_EXTENDED, REG_BASIC, REG_NOSPEC, REG_ICASE, REG_NOSUB, REG_NEWLINE,
-// REG_PEND used for subsequent re_comp's
-
+/* newflags is a bitmask of:
+ * REG_EXTENDED, REG_BASIC, REG_NOSPEC, REG_ICASE, REG_NOSUB, REG_NEWLINE,
+ * REG_PEND used for subsequent re_comp's */
 int
-re_set_syntax (int newflags)
+re_set_syntax(int newflags)
 {
   int oldflags = regex_fmt;
   regex_fmt = newflags;
@@ -3992,58 +3999,63 @@ re_set_syntax (int newflags)
 }
 
 const char *
-re_comp (const char *str)
+re_comp(const char *str)
 {
   if (str == NULL && rebuf_needs_freeing)
     {
-      // reuse the current compiled regex
+      /* reuse the current compiled regex: */
       return NULL;
     }
 
-  if (str == NULL)
+  if (str == NULL) {
     return "No previous regular expression";
+  }
 
   if (rebuf_needs_freeing)
     {
-      regfree (&rebuf);
-      memset (&rebuf, 0, sizeof (regex_t));
+      regfree(&rebuf);
+      memset(&rebuf, 0, sizeof(regex_t));
       rebuf_needs_freeing = 0;
     }
 
-  if (regcomp (&rebuf, str, regex_fmt) != 0)
+  if (regcomp(&rebuf, str, regex_fmt) != 0) {
     return "re_comp failed on given pattern";
+  }
 
   rebuf_needs_freeing = 1;
   return NULL;
 }
 
 int
-re_exec (const char *str)
+re_exec(const char *str)
 {
   regmatch_t matches[10];
-  memset (matches, 0, sizeof (regmatch_t) * 10);
-  if (regexec (&rebuf, str, 10, matches, 0) != 0)
+  memset(matches, 0, (sizeof(regmatch_t) * 10));
+  if (regexec(&rebuf, str, 10, matches, 0) != 0) {
     return 0;
-  if (matches[0].rm_so == matches[0].rm_eo)
+  }
+  if (matches[0].rm_so == matches[0].rm_eo) {
     return 0;
+  }
   return 1;
 }
 
 /* Some people use re_search() as a simpler way to call regexec() without
-   really needing the "find a match, now find the next match, etc" behavior
-   that re_search() really provides.
-   This is a one-shot re_search impl.  */
-
+ * really needing the "find a match, now find the next match, etc" behavior
+ * that re_search() really provides.
+ * This is a one-shot re_search impl.  */
 int
-re_search_oneshot (regex_t *patbuf, const char *str, int size, int start,
-                   int range, void *regs)
+re_search_oneshot(regex_t *patbuf, const char *str, int size, int start,
+                  int range, void *regs)
 {
   regmatch_t matches[10];
-  memset (matches, 0, sizeof (regmatch_t) * 10);
-  if (regexec (patbuf, str, 10, matches, 0) != 0)
+  memset(matches, 0, (sizeof(regmatch_t) * 10));
+  if (regexec(patbuf, str, 10, matches, 0) != 0) {
     return -2;
-  if (matches[0].rm_so == matches[0].rm_eo)
+  }
+  if (matches[0].rm_so == matches[0].rm_eo) {
     return -1;
+  }
   return matches[0].rm_so;
 }
 

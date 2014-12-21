@@ -971,7 +971,7 @@ value_as_double (struct value *val)
     error (_("Invalid floating value found in program."));
   return foo;
 }
-/* Extract a value as a C pointer. Does not deallocate the value.  
+/* Extract a value as a C pointer. Does not deallocate the value.
    Note that val's type may not actually be a pointer; value_as_long
    handles all the cases.  */
 CORE_ADDR
@@ -1173,7 +1173,7 @@ unpack_double (struct type *type, const gdb_byte *valaddr, int *invp)
       if (!floatformat_is_valid (floatformat_from_type (type), valaddr))
 	{
 	  *invp = 1;
-	  return 0.0;
+	  return 0.0f;
 	}
 
       return extract_typed_floating (valaddr, type);
@@ -1259,16 +1259,16 @@ value_static_field (struct type *type, int fieldno)
   return retval;
 }
 
-/* Change the enclosing type of a value object VAL to NEW_ENCL_TYPE.  
-   You have to be careful here, since the size of the data area for the value 
-   is set by the length of the enclosing type.  So if NEW_ENCL_TYPE is bigger 
-   than the old enclosing type, you have to allocate more space for the data.  
+/* Change the enclosing type of a value object VAL to NEW_ENCL_TYPE.
+   You have to be careful here, since the size of the data area for the value
+   is set by the length of the enclosing type.  So if NEW_ENCL_TYPE is bigger
+   than the old enclosing type, you have to allocate more space for the data.
    The return value is a pointer to the new version of this value structure. */
 
 struct value *
 value_change_enclosing_type (struct value *val, struct type *new_encl_type)
 {
-  if (TYPE_LENGTH (new_encl_type) <= TYPE_LENGTH (value_enclosing_type (val))) 
+  if (TYPE_LENGTH (new_encl_type) <= TYPE_LENGTH (value_enclosing_type (val)))
     {
       val->enclosing_type = new_encl_type;
       return val;
@@ -1277,28 +1277,28 @@ value_change_enclosing_type (struct value *val, struct type *new_encl_type)
     {
       struct value *new_val;
       struct value *prev;
-      
+
       new_val = (struct value *) xrealloc (val, sizeof (struct value) + TYPE_LENGTH (new_encl_type));
 
       new_val->enclosing_type = new_encl_type;
- 
+
       /* We have to make sure this ends up in the same place in the value
-	 chain as the original copy, so it's clean-up behavior is the same. 
+	 chain as the original copy, so it's clean-up behavior is the same.
 	 If the value has been released, this is a waste of time, but there
 	 is no way to tell that in advance, so... */
-      
-      if (val != all_values) 
+
+      if (val != all_values)
 	{
 	  for (prev = all_values; prev != NULL; prev = prev->next)
 	    {
-	      if (prev->next == val) 
+	      if (prev->next == val)
 		{
 		  prev->next = new_val;
 		  break;
 		}
 	    }
 	}
-      
+
       return new_val;
     }
 }
@@ -1501,7 +1501,7 @@ unpack_field_as_long (struct type *type, const gdb_byte *valaddr, int fieldno)
 /* Modify the value of a bitfield.  ADDR points to a block of memory in
    target byte order; the bitfield starts in the byte pointed to.  FIELDVAL
    is the desired value of the field, in host byte order.  BITPOS and BITSIZE
-   indicate which bits (in target bit order) comprise the bitfield.  
+   indicate which bits (in target bit order) comprise the bitfield.
    Requires 0 < BITSIZE <= lbits, 0 <= BITPOS+BITSIZE <= lbits, and
    0 <= BITPOS, where lbits is the size of a LONGEST in bits.  */
 
@@ -1672,7 +1672,7 @@ coerce_ref (struct value *arg)
   struct type *value_type_arg_tmp = check_typedef (value_type (arg));
   if (TYPE_CODE (value_type_arg_tmp) == TYPE_CODE_REF)
     arg = value_at_lazy (TYPE_TARGET_TYPE (value_type_arg_tmp),
-			 unpack_pointer (value_type (arg),		
+			 unpack_pointer (value_type (arg),
 					 value_contents (arg)));
   return arg;
 }

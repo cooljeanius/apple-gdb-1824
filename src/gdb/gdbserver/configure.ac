@@ -251,7 +251,7 @@ AC_C_BIGENDIAN
 AC_C_CHAR_UNSIGNED
 AC_C_CONST
 AC_C_INLINE
-gl_EXTERN_INLINE
+gl_EXTERN_INLINE dnl# ensures config.h is okay for use with gnulib includes
 AC_C_PROTOTYPES
 AC_C_VOLATILE
 AC_MSG_CHECKING([types])

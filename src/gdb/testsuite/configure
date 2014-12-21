@@ -2486,8 +2486,11 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-
 # Architecture stuff:
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking architecture stuff" >&5
+$as_echo_n "checking architecture stuff... " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
+$as_echo " " >&6; }
 ac_aux_dir=
 for ac_dir in "$srcdir" "$srcdir/.." "$srcdir/../.."; do
   if test -f "$ac_dir/install-sh"; then
@@ -2696,7 +2699,7 @@ fi
 # Add stabs tests when appropriate.
 if test "x${with_stabs}" = "xyes"; then
    subdirs="$subdirs gdb.stabs"
-
+   ## 3...
 fi
 
 # Check for 'sed' before doing the rest of this script:
@@ -2774,12 +2777,15 @@ $as_echo "$ac_cv_path_SED" >&6; }
 
 # Hack:
 if test -e ./config.cache; then
+  echo "hacking CPPFLAGS out of ./config.cache"
   sed -i "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" ./config.cache
   sed -i "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" ./config.cache
 elif test -e ../config.cache; then
+  echo "hacking CPPFLAGS out of ../config.cache"
   sed -i "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" ../config.cache
   sed -i "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" ../config.cache
 elif test -r .././config.cache -a -w .././config.cache; then
+  echo "hacking CPPFLAGS out of .././config.cache"
   sed -i "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" .././config.cache
   sed -i "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" .././config.cache
 fi
@@ -5627,15 +5633,13 @@ else
   ac_cv_type_signal=void
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_type_signal" >&5
-$as_echo "$ac_cv_type_signal" >&6; }
+$as_echo "$ac_cv_type_signal" >&6; }  ## define:
 
 cat >>confdefs.h <<_ACEOF
 #define RETSIGTYPE ${ac_cv_type_signal}
 _ACEOF
-
 
 # Checks for library functions.
 # The Ultrix 4.2 mips builtin alloca declared by alloca.h only works
@@ -6780,6 +6784,7 @@ if test -z "${gdb_target_cpu}"; then
   fi
 fi
 
+# The rest of the output:
 subdirs="$subdirs gdb.cell"
 subdirs="$subdirs gdb.chill"
 ac_config_files="$ac_config_files Makefile gdb.ada/Makefile gdb.arch/Makefile gdb.asm/Makefile gdb.base/Makefile gdb.btrace/Makefile gdb.cp/Makefile gdb.disasm/Makefile gdb.dlang/Makefile gdb.dwarf2/Makefile gdb.fortran/Makefile gdb.gdb/Makefile gdb.go/Makefile gdb.guile/Makefile gdb.java/Makefile gdb.linespec/Makefile gdb.mi/Makefile gdb.modula2/Makefile gdb.multi/Makefile gdb.opencl/Makefile gdb.opt/Makefile gdb.pascal/Makefile gdb.perf/Makefile gdb.reverse/Makefile gdb.server/Makefile gdb.threads/Makefile gdb.trace/Makefile gdb.xml/Makefile"

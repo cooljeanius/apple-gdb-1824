@@ -6,12 +6,12 @@ AC_INIT([gdbserve-nlm],[4.12],[martin@hinner.info])
 dnl# bug report address is from the pdf in nlm-doc
 AC_CONFIG_SRCDIR([gdbserve.c])
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_AUX_DIR([../..])
+AC_CONFIG_AUX_DIR([../..])dnl
 
 dnl# get target/host set up:
 AC_CANONICAL_TARGET
 m4_ifdef([ACX_NONCANONICAL_TARGET],[
-ACX_NONCANONICAL_TARGET
+  ACX_NONCANONICAL_TARGET
 ],[
 if test "x${target_alias}" = "x"; then
   test -z "${target_alias}"
@@ -21,10 +21,10 @@ if test "x${target_alias}" = "x"; then
     test -n "${target}" && export target_alias="${target}"
   fi
 fi
-AC_SUBST([target_alias])
-])
+AC_SUBST([target_alias])dnl
+])dnl
 m4_ifdef([ACX_NONCANONICAL_HOST],[
-ACX_NONCANONICAL_HOST
+  ACX_NONCANONICAL_HOST
 ],[
 if test "x${host_alias}" = "x"; then
   test -z "${host_alias}"
@@ -34,8 +34,8 @@ if test "x${host_alias}" = "x"; then
     test -n "${host}" && export host_alias="${host}"
   fi
 fi
-AC_SUBST([host_alias])
-])
+AC_SUBST([host_alias])dnl
+])dnl
 
 # some checks stolen from automake:
 AC_ARG_PROGRAM
@@ -47,20 +47,20 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_DEFUN([AC_REQUIRE_PROG_SED],[
-  AC_REQUIRE([AC_PROG_SED])
-])
+  AC_REQUIRE([AC_PROG_SED])dnl
+])dnl
 AC_REQUIRE_PROG_SED
 
 # Checks for header files.
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
-  AC_REQUIRE([AC_HEADER_STDC])
-])
+  AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE_HEADER_STDC
 AC_HEADER_TIME
 AC_CHECK_HEADERS_ONCE([advanced.h aio.h conio.h debugapi.h dfs.h \
                        nwadv.h nwconio.h nwdbgapi.h nwdfs.h nwpre.h \
-                       nwthread.h nwtypes.h process.h])
-AC_CHECK_HEADERS([ctype.h errno.h stddef.h stdio.h time.h])
+                       nwthread.h nwtypes.h process.h])dnl
+AC_CHECK_HEADERS([ctype.h errno.h stddef.h stdio.h time.h])dnl
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
@@ -102,7 +102,7 @@ x86_64)		gdb_target_cpu=i386 ;;
 esac
 changequote([,])dnl
 
-AC_SUBST([gdb_target_cpu])
+AC_SUBST([gdb_target_cpu])dnl
 
 target_makefile_frag=${srcdir}/../config/${gdb_target_cpu}/gdbserve.mt
 if test ! -f "${target_makefile_frag}"; then
@@ -115,8 +115,7 @@ fi
 dnl# We have to assign the same value to other variables because autoconf
 dnl# does NOT provide a mechanism to substitute a replacement keyword with
 dnl# arbitrary data or pathnames.
-dnl#
-
+  ## begin complicatedness:
 if test "x${target_makefile_frag}" != "x"; then
   target_makefile_frag_path=${target_makefile_frag}
   AC_SUBST([target_makefile_frag_path])
@@ -193,8 +192,11 @@ while test -n "${ac_sources}"; do
   ac_config_links_1="${ac_config_links_1} ${ac_dest}:${ac_source}"
 done
 AC_CONFIG_LINKS([${ac_config_links_1}])
-AC_SUBST([ac_config_links1])
+AC_SUBST([ac_config_links1])dnl
+  ## print to verify the result is correct:
 echo "symlinks to be made should be \"${ac_config_links1}\""
-AC_CONFIG_FILES([Makefile])
+
+# Output:
+AC_CONFIG_FILES([Makefile])dnl
 AC_OUTPUT
 

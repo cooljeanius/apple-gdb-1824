@@ -1,4 +1,4 @@
-/* List lines of source files for GDB, the GNU debugger.
+/* source.c: List lines of source files for GDB, the GNU debugger.
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994,
    1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
@@ -144,7 +144,7 @@ get_lines_to_list (void)
 
 /* Return the current source file for listing and next line to list.
    NOTE: The returned sal pc and end fields are not valid. */
-   
+
 struct symtab_and_line
 get_current_source_symtab_and_line (void)
 {
@@ -154,7 +154,7 @@ get_current_source_symtab_and_line (void)
   cursal.line = current_source_line;
   cursal.pc = 0;
   cursal.end = 0;
-  
+
   return cursal;
 }
 
@@ -165,7 +165,7 @@ get_current_source_symtab_and_line (void)
    process of determining a new default may call the caller!
    Use get_current_source_symtab_and_line only to get whatever
    we have without erroring out or trying to get a default. */
-   
+
 void
 set_default_source_symtab_and_line (void)
 {
@@ -181,12 +181,12 @@ set_default_source_symtab_and_line (void)
    (the returned sal pc and end fields are not valid.)
    and set the current default to whatever is in SAL.
    NOTE: The returned sal pc and end fields are not valid. */
-   
+
 struct symtab_and_line
 set_current_source_symtab_and_line (const struct symtab_and_line *sal)
 {
   struct symtab_and_line cursal = { };
-  
+
   cursal.symtab = current_source_symtab;
   cursal.line = current_source_line;
 
@@ -194,7 +194,7 @@ set_current_source_symtab_and_line (const struct symtab_and_line *sal)
   current_source_line = sal->line;
   cursal.pc = 0;
   cursal.end = 0;
-  
+
   return cursal;
 }
 
@@ -442,7 +442,7 @@ add_path (char *dirname, char **which_path, int parse_separators)
 
 	    while (*p != '\0')
 	      {
-		if (p[0] == '"' && p[-1] != '\\') 
+		if (p[0] == '"' && p[-1] != '\\')
 		  {
 		    dirname = p + 1;
 		    name += 1;
@@ -585,7 +585,7 @@ add_path (char *dirname, char **which_path, int parse_separators)
 	    tinybuf[0] = DIRNAME_SEPARATOR;
 	    tinybuf[1] = '\0';
 
-	    /* If we have already tacked on a name(s) in this command, be sure they stay 
+	    /* If we have already tacked on a name(s) in this command, be sure they stay
 	       on the front as we tack on some more.  */
 	    if (prefix)
 	      {
@@ -678,7 +678,7 @@ is_regular_file (const char *name)
    the actual file opened (this string will always start with a "/").  We
    have to take special pains to avoid doubling the "/" between the directory
    and the file, sigh!  Emacs gets confuzzed by this when we print the
-   source file name!!! 
+   source file name!!!
 
    If a file is found, return the descriptor.
    Otherwise, return -1, with errno set for the last name we tried to open.  */
@@ -850,7 +850,7 @@ source_full_path_of (char *filename, char **full_pathname)
 
 /* APPLE LOCAL begin set pathname-substitutions */
 int
-open_source_file_fullpath (const char *dirname, const char *filename, 
+open_source_file_fullpath (const char *dirname, const char *filename,
                            char **fullname)
 {
   char *path = NULL;
@@ -875,7 +875,7 @@ open_source_file_fullpath (const char *dirname, const char *filename,
   else
     sprintf (path, "%s/%s", dirname, filename);
 
-  for (;;) 
+  for (;;)
     {
       ss = strstr (path, "//");
       if (ss == NULL)
@@ -883,7 +883,7 @@ open_source_file_fullpath (const char *dirname, const char *filename,
       memmove (ss, ss + 1, strlen (ss + 1) + 1);
     }
 
-  for (;;) 
+  for (;;)
     {
       ss = strstr (path, "/./");
       if (ss == NULL)
@@ -901,18 +901,18 @@ open_source_file_fullpath (const char *dirname, const char *filename,
     error ("unable to parse pathname-substitutions");
   nsubs /= 2;
 
-  for (csub = 0; csub < nsubs; csub++) 
+  for (csub = 0; csub < nsubs; csub++)
     {
       char *from = psubs[csub * 2];
       char *to = psubs[(csub * 2) + 1];
 
-      if (strncmp (path, from, strlen (from)) == 0) 
+      if (strncmp (path, from, strlen (from)) == 0)
         {
           char *remainder = path + strlen (from);
           char *npath = (char *) alloca (strlen (to) + strlen (remainder) + 1);
-      
+
           sprintf (npath, "%s%s", to, remainder);
-      
+
           result = openp ("", 0, npath, OPEN_MODE, 0, fullname);
 
           if (result >= 0)
@@ -923,17 +923,18 @@ open_source_file_fullpath (const char *dirname, const char *filename,
   return -1;
 }
 
-/* Set the pairs of pathname substitutions to use when loading source 
+/* Set the pairs of pathname substitutions to use when loading source
    files. We parse this option list into PATHNAME_SUBSTITUTIONS_ARGV once
    and then re-use it in open_source_file_fullpath ().  */
 
-static void 
+static void
 set_pathname_substitution (char *args, int from_tty, struct cmd_list_element * c)
 {
-  forget_cached_source_info ();
+  int success;
+  forget_cached_source_info();
   last_source_error = 0;
-  int success = 0;
-  
+  success = 0;
+
   /* Free our old path array if we had one.  */
   if (pathname_substitutions_argv != NULL)
     {
@@ -956,7 +957,7 @@ set_pathname_substitution (char *args, int from_tty, struct cmd_list_element * c
 	      success = pathname_substitutions_argv[i+1] != NULL;
 	    }
 	}
-	
+
       if (!success)
 	{
 	  warning ("An even number of paths must be given, surround paths "
@@ -971,7 +972,7 @@ void
 add_one_pathname_substitution (const char *old, const char *new)
 {
   int arrsize = 0;
-  
+
  if (pathname_substitutions_argv == NULL)
    {
      pathname_substitutions_argv = (char **) xmalloc (sizeof (char *) * 3);
@@ -981,7 +982,7 @@ add_one_pathname_substitution (const char *old, const char *new)
      return;
    }
 
-  while (pathname_substitutions_argv[arrsize] != NULL) 
+  while (pathname_substitutions_argv[arrsize] != NULL)
     {
       if (arrsize % 2 == 0)
         if (strcmp (pathname_substitutions_argv[arrsize], old) == 0)
@@ -990,8 +991,8 @@ add_one_pathname_substitution (const char *old, const char *new)
     }
   arrsize++;
 
-  pathname_substitutions_argv = (char **) xrealloc 
-                                          (pathname_substitutions_argv, 
+  pathname_substitutions_argv = (char **) xrealloc
+                                          (pathname_substitutions_argv,
                                           sizeof (char *) * (arrsize + 2));
 
   pathname_substitutions_argv[arrsize - 1] = xstrdup (old);
@@ -1001,7 +1002,7 @@ add_one_pathname_substitution (const char *old, const char *new)
 
 static void
 show_pathname_substitutions (struct ui_file *file, int from_tty,
-			     struct cmd_list_element *c, 
+			     struct cmd_list_element *c,
 			     const char *value)
 {
   char *from;
@@ -1023,7 +1024,7 @@ show_pathname_substitutions (struct ui_file *file, int from_tty,
 
   if (pathname_substitutions)
     fprintf_filtered (file, _("\nLast source pathname substition command was:\n"
-			      "set pathname-substitutions%s%s\n"), 
+			      "set pathname-substitutions%s%s\n"),
 		      pathname_substitutions[0] ? " " : "",
 		      pathname_substitutions);
 }
@@ -1031,22 +1032,22 @@ show_pathname_substitutions (struct ui_file *file, int from_tty,
 /* APPLE LOCAL end open source file fullpath */
 
 /* This function is capable of finding the absolute path to a
-   source file, and opening it, provided you give it an 
+   source file, and opening it, provided you give it an
    OBJFILE and FILENAME. Both the DIRNAME and FULLNAME are only
-   added suggestions on where to find the file. 
+   added suggestions on where to find the file.
 
-   OBJFILE should be the objfile associated with a psymtab or symtab. 
+   OBJFILE should be the objfile associated with a psymtab or symtab.
    FILENAME should be the filename to open.
    DIRNAME is the compilation directory of a particular source file.
            Only some debug formats provide this info.
    FULLNAME can be the last known absolute path to the file in question.
 
-   On Success 
+   On Success
      A valid file descriptor is returned. ( the return value is positive )
      FULLNAME is set to the absolute path to the file just opened.
 
    On Failure
-     A non valid file descriptor is returned. ( the return value is negitive ) 
+     A non valid file descriptor is returned. ( the return value is negitive )
      FULLNAME is set to NULL.  */
 int
 find_and_open_source (struct objfile *objfile,
@@ -1117,8 +1118,8 @@ find_and_open_source (struct objfile *objfile,
 }
 
 /* Open a source file given a symtab S.  Returns a file descriptor or
-   negative number for error.  
-   
+   negative number for error.
+
    This function is a convience function to find_and_open_source. */
 
 int
@@ -1127,7 +1128,7 @@ open_source_file (struct symtab *s)
   if (!s)
     return -1;
 
-  return find_and_open_source (s->objfile, s->filename, s->dirname, 
+  return find_and_open_source (s->objfile, s->filename, s->dirname,
 			       &s->fullname);
 }
 
@@ -1152,7 +1153,7 @@ symtab_to_fullname (struct symtab *s)
   if (s->fullname)
     return s->fullname;
 
-  /* Don't check s->fullname here, the file could have been 
+  /* Don't check s->fullname here, the file could have been
      deleted/moved/..., look for it again */
   r = find_and_open_source (s->objfile, s->filename, s->dirname,
 			    &s->fullname);
@@ -1181,7 +1182,7 @@ psymtab_to_fullname (struct partial_symtab *ps)
   if (!ps)
     return NULL;
 
-  /* APPLE LOCAL: If we found fullname once before, just re-use the same 
+  /* APPLE LOCAL: If we found fullname once before, just re-use the same
      value.  Bob Rossi removed this shortcut from the FSF gdb sources on
      2004-06-10; it's a very expensive choice and of dubious correctness.  */
   if (ps->fullname)
@@ -1192,7 +1193,7 @@ psymtab_to_fullname (struct partial_symtab *ps)
   r = find_and_open_source (ps->objfile, ps->filename, ps->dirname,
 			    &ps->fullname);
 
-  if (r) 
+  if (r)
     {
       close (r);
       return ps->fullname;
@@ -1265,7 +1266,7 @@ find_source_lines (struct symtab *s, int desc)
     char oldc;
     register char *data, *p, *end;
 
-    /* st_size might be a large type, but we only support source files whose 
+    /* st_size might be a large type, but we only support source files whose
        size fits in an int.  */
     size = (int) st.st_size;
 
@@ -1554,7 +1555,7 @@ print_source_lines_base (struct symtab *s, int line, int nlines, int noerror)
           if (c == EOF)
             break;
         }
-      
+
       ui_out_text (uiout, "\n");
     }
 
@@ -1693,7 +1694,7 @@ void convert_sal (struct symtab_and_line *sal)
 
   if (! linetable->lines_are_chars)
     return;
-  
+
   if (symtab->line_charpos == 0)
     {
       fd = open_source_file (symtab);
@@ -1990,7 +1991,7 @@ string can be surrounded by quotes if a path contains spaces.\n\
 \n\
 Example:\n\
 pathname-substitutions /path1/from /new/path1/to '/path2/with space/from' /path2/to"),
-			  set_pathname_substitution, 
+			  set_pathname_substitution,
 			  show_pathname_substitutions,
 			  &setlist, &showlist);
   /* APPLE LOCAL end pathname substitution */

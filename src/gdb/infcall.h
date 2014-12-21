@@ -1,4 +1,4 @@
-/* Perform an inferior function call, for GDB, the GNU debugger.
+/* infcall.h: Perform an inferior function call, for GDB, the GNU debugger.
 
    Copyright 2003 Free Software Foundation, Inc.
 
@@ -25,7 +25,7 @@
 struct value;
 struct type;
 
-extern CORE_ADDR find_function_addr (struct value *function, 
+extern CORE_ADDR find_function_addr (struct value *function,
 				     struct type **retval_type);
 
 /* Perform a function call in the inferior.
@@ -43,6 +43,8 @@ extern struct value *call_function_by_hand (struct value *function, int nargs,
 /* APPLE LOCAL */
 extern int inferior_function_calls_disabled_p;
 int set_hand_function_call_timeout (int newval);
-int hand_function_call_timeout_p ();
+int hand_function_call_timeout_p (void);
 
-#endif
+#endif /* !INFCALL_H */
+
+/* EOF */

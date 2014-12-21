@@ -1,4 +1,4 @@
-/* Perform an inferior function call, for GDB, the GNU debugger.
+/* infcall.c: Perform an inferior function call, for GDB, the GNU debugger.
 
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994,
    1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
@@ -65,25 +65,25 @@ int objc_exceptions_interrupt_hand_call = 1;
    If we get more than one exception while calling a function, prefer the
    one that we were hand-calling a function on.  */
 ptid_t hand_call_ptid;
-ptid_t get_hand_call_ptid ()
+ptid_t get_hand_call_ptid(void)
 {
   return hand_call_ptid;
 }
 
 static void
-do_reset_hand_call_ptid ()
+do_reset_hand_call_ptid(void)
 {
   hand_call_ptid = minus_one_ptid;
 }
 
 static void
-do_unset_proceed_from_hand_call (void *unused)
+do_unset_proceed_from_hand_call(void *unused)
 {
   proceed_from_hand_call = 0;
 }
 /* END APPLE LOCAL  */
 
-/* NOTE: cagney/2003-04-16: What's the future of this code?
+/* NOTE: cagney/2003-04-16: What is the future of this code?
 
    GDB needs an asynchronous expression evaluator, that means an
    asynchronous inferior function call implementation, and that in
@@ -383,16 +383,16 @@ set_hand_function_call_timeout (int newval)
 }
 
 int
-hand_function_call_timeout_p ()
+hand_function_call_timeout_p(void)
 {
   return timer_fired;
 }
 
 static void
-handle_alarm_while_calling (int signo)
+handle_alarm_while_calling(int signo)
 {
   timer_fired = 1;
-  target_stop ();
+  target_stop();
 }
 
 /* All this stuff with a dummy frame may seem unnecessarily complicated
@@ -423,7 +423,7 @@ hand_function_call (struct value *function, struct type *expect_type,
   struct type *values_type;
   struct type *orig_return_type = NULL;
   unsigned char struct_return;
-  CORE_ADDR struct_addr = 0;
+  volatile CORE_ADDR struct_addr = 0;
   struct regcache *retbuf;
   struct cleanup *retbuf_cleanup;
   struct cleanup *runtime_cleanup;
@@ -440,7 +440,7 @@ hand_function_call (struct value *function, struct type *expect_type,
   int runtime_check_level;
 
   if (!target_has_execution)
-    noprocess ();
+    noprocess();
 
   /* APPLE LOCAL begin */
   /* Make sure we have a viable return type for the function being called. */
@@ -484,7 +484,7 @@ hand_function_call (struct value *function, struct type *expect_type,
      the runtime, we added a gdb mode where hand_function_call ALWAYS checks
      whether the runtime is going to be a problem.  */
 
-  runtime_check_level = objc_runtime_check_enabled_p ();
+  runtime_check_level = objc_runtime_check_enabled_p();
   if (runtime_check_level)
     {
       enum objc_debugger_mode_result retval;
@@ -521,14 +521,15 @@ hand_function_call (struct value *function, struct type *expect_type,
 
   /* APPLE LOCAL: Always arrange to stop on ObjC exceptions thrown while in
      a hand-called function: */
-  if (objc_exceptions_interrupt_hand_call)
-    make_cleanup_init_objc_exception_catcher ();
+  if (objc_exceptions_interrupt_hand_call) {
+    make_cleanup_init_objc_exception_catcher();
+  }
 
   /* APPLE LOCAL begin inferior function call */
 #if defined(NM_NEXTSTEP)
-  macosx_setup_registers_before_hand_call ();
+  macosx_setup_registers_before_hand_call();
+#endif /* NM_NEXTSTEP */
 
-#endif
   /* FIXME: This really needs to go in the target vector....  */
   if (inferior_function_calls_disabled_p)
     error ("Function calls from gdb are not supported on this target.");
@@ -545,13 +546,13 @@ hand_function_call (struct value *function, struct type *expect_type,
      callee returns.  To allow nested calls the registers are (further
      down) pushed onto a dummy frame stack.  Include a cleanup (which
      is tossed once the regcache has been pushed).  */
-  caller_regcache = frame_save_as_regcache (get_current_frame ());
-  caller_regcache_cleanup = make_cleanup_regcache_xfree (caller_regcache);
+  caller_regcache = frame_save_as_regcache(get_current_frame());
+  caller_regcache_cleanup = make_cleanup_regcache_xfree(caller_regcache);
 
   /* Ensure that the initial SP is correctly aligned.  */
   {
-    CORE_ADDR old_sp = read_sp ();
-    if (gdbarch_frame_align_p (current_gdbarch))
+    CORE_ADDR old_sp = read_sp();
+    if (gdbarch_frame_align_p(current_gdbarch))
       {
 	sp = gdbarch_frame_align (current_gdbarch, old_sp);
 	/* NOTE: cagney/2003-08-13: Skip the "red zone".  For some
@@ -658,7 +659,7 @@ hand_function_call (struct value *function, struct type *expect_type,
       break;
     case AT_ENTRY_POINT:
       real_pc = funaddr;
-      dummy_addr = entry_point_address ();
+      dummy_addr = entry_point_address();
       /* Make certain that the address points at real code, and not a
          function descriptor.  */
       dummy_addr = gdbarch_convert_from_func_ptr_addr (current_gdbarch,
@@ -679,9 +680,9 @@ hand_function_call (struct value *function, struct type *expect_type,
 	sym = lookup_minimal_symbol ("__CALL_DUMMY_ADDRESS", NULL, NULL);
 	real_pc = funaddr;
 	if (sym)
-	  dummy_addr = SYMBOL_VALUE_ADDRESS (sym);
+	  dummy_addr = SYMBOL_VALUE_ADDRESS(sym);
 	else
-	  dummy_addr = entry_point_address ();
+	  dummy_addr = entry_point_address();
 	/* Make certain that the address points at real code, and not
 	   a function descriptor.  */
 	dummy_addr = gdbarch_convert_from_func_ptr_addr (current_gdbarch,
@@ -769,7 +770,7 @@ You must use a pointer to function type variable. Command ignored."), arg_name);
       }
   }
 
-  if (DEPRECATED_REG_STRUCT_HAS_ADDR_P ())
+  if (DEPRECATED_REG_STRUCT_HAS_ADDR_P())
     {
       int i;
       /* This is a machine like the sparc, where we may need to pass a
@@ -862,7 +863,7 @@ You must use a pointer to function type variable. Command ignored."), arg_name);
     sp = gdbarch_push_dummy_call (current_gdbarch, function, current_regcache,
 				  bp_addr, nargs, args, sp, struct_return,
 				  struct_addr);
-  else  if (DEPRECATED_PUSH_ARGUMENTS_P ())
+  else  if (DEPRECATED_PUSH_ARGUMENTS_P())
     /* Keep old targets working.  */
     sp = DEPRECATED_PUSH_ARGUMENTS (nargs, args, sp, struct_return,
 				    struct_addr);
@@ -901,11 +902,11 @@ You must use a pointer to function type variable. Command ignored."), arg_name);
   discard_cleanups (caller_regcache_cleanup);
 
   /* - SNIP - SNIP - SNIP - SNIP - SNIP - SNIP - SNIP - SNIP - SNIP -
-     If you're looking to implement asynchronous dummy-frames, then
-     just below is the place to chop this function in two..  */
+     If you are looking to implement asynchronous dummy-frames, then
+     just below is the place to chop this function in two...  */
 
   /* Now proceed, having reached the desired place.  */
-  clear_proceed_status ();
+  clear_proceed_status();
 
   /* Execute a "stack dummy", a piece of code stored in the stack by
      the debugger to be executed in the inferior.
@@ -925,27 +926,27 @@ You must use a pointer to function type variable. Command ignored."), arg_name);
   {
     struct cleanup *old_cleanups = make_cleanup (null_cleanup, 0);
     int saved_async = 0;
+    static int hand_call_function_timer = -1;
 
     /* If all error()s out of proceed ended up calling normal_stop
        (and perhaps they should; it already does in the special case
        of error out of resume()), then we wouldn't need this.  */
     make_cleanup (breakpoint_auto_delete_contents, &stop_bpstat);
 
-    disable_watchpoints_before_interactive_call_start ();
+    disable_watchpoints_before_interactive_call_start();
     /* APPLE LOCAL checkpointing */
-    begin_inferior_call_checkpoints ();
+    begin_inferior_call_checkpoints();
     proceed_to_finish = 1;	/* We want stop_registers, please... */
     proceed_from_hand_call = 1;
     make_cleanup (do_unset_proceed_from_hand_call, NULL);
 
     if (hand_call_function_hook != NULL)
-      hand_call_function_hook ();
+      hand_call_function_hook();
 
-    static int hand_call_function_timer = -1;
     struct cleanup *hand_call_cleanup =
-      start_timer (&hand_call_function_timer, "hand-call", "Starting hand-call");
+      start_timer(&hand_call_function_timer, "hand-call", "Starting hand-call");
 
-    if (target_can_async_p ())
+    if (target_can_async_p())
       saved_async = target_async_mask (0);
 
     /* APPLE LOCAL: Make the current ptid available to the
@@ -993,35 +994,35 @@ You must use a pointer to function type variable. Command ignored."), arg_name);
     hand_call_ptid = minus_one_ptid;
 
     if (saved_async)
-      target_async_mask (saved_async);
+      target_async_mask(saved_async);
 
     /* APPLE LOCAL checkpointing */
-    end_inferior_call_checkpoints ();
-    enable_watchpoints_after_interactive_call_stop ();
+    end_inferior_call_checkpoints();
+    enable_watchpoints_after_interactive_call_stop();
 
-    discard_cleanups (old_cleanups);
+    discard_cleanups(old_cleanups);
     proceed_from_hand_call = 0;
   }
 
   if (timer_fired)
     {
-      frame_pop (get_current_frame ());
-      error ("User called function timer expired.  Aborting call.");
+      frame_pop(get_current_frame());
+      error("User called function timer expired.  Aborting call.");
     }
 
-  if (stopped_by_random_signal
-      || !stop_stack_dummy)
+  if (stopped_by_random_signal || !stop_stack_dummy)
     {
-      /* Find the name of the function we're about to complain about.  */
+      /* Find the name of the function about which we are
+       * about to complain:  */
       const char *name = NULL;
       {
-	struct symbol *symbol = find_pc_function (funaddr);
+	struct symbol *symbol = find_pc_function(funaddr);
 	if (symbol)
-	  name = SYMBOL_PRINT_NAME (symbol);
+	  name = SYMBOL_PRINT_NAME(symbol);
 	else
 	  {
 	    /* Try the minimal symbols.  */
-	    struct minimal_symbol *msymbol = lookup_minimal_symbol_by_pc (funaddr);
+	    struct minimal_symbol *msymbol = lookup_minimal_symbol_by_pc(funaddr);
 	    if (msymbol)
 	      name = SYMBOL_PRINT_NAME (msymbol);
 	  }
@@ -1064,10 +1065,10 @@ set objc-exceptions-interrupt-hand-call-fns to off.";
 
 	      /* We must get back to the frame we were before the
 		 dummy call. */
-	      frame_pop (get_current_frame ());
+	      frame_pop(get_current_frame());
 
 	      /* FIXME: Insert a bunch of wrap_here; name can be very
-		 long if it's a C++ name with arguments and stuff.  */
+		 long if it is a C++ name with arguments and stuff.  */
 	      error (_("\
 %s\n\
 GDB has restored the context to what it was before the call.\n\
@@ -1135,7 +1136,7 @@ the function call)."), name);
      leave the RETBUF alone.  */
   do_cleanups (inf_status_cleanup);
   /* APPLE LOCAL begin subroutine inlining  */
-  inlined_subroutine_restore_after_dummy_call ();
+  inlined_subroutine_restore_after_dummy_call();
   /* APPLE LOCAL end subroutine inlining  */
 
   /* Figure out the value returned by the function, return that.  */

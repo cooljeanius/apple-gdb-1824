@@ -509,3 +509,16 @@ dist-hook:
 	@test -d .. && echo "avoid making distributions in subdirs" >&2
 	@exit 1 || false
 .PHONY: dist-hook
+
+## automake will only generate this rule depending on the directory from
+## which it was run:
+am--refresh:
+	@if test "x$(subdir) != xgnulib"; then \
+	  echo "warning: autoreconf screwed up..." >&2; \
+	else \
+	  echo "making '$@'"; \
+	fi
+.PHONY: am--refresh
+## (a case study in "recursive automake considered harmful")
+
+# end of the gnulib Makefile

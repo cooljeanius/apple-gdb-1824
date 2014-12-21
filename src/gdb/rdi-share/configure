@@ -4209,8 +4209,6 @@ _ACEOF
 
 fi
 
-
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ANSI C header files" >&5
 $as_echo_n "checking for ANSI C header files... " >&6; }
 if ${ac_cv_header_stdc+:} false; then :
@@ -4322,7 +4320,6 @@ if test $ac_cv_header_stdc = yes; then
 $as_echo "#define STDC_HEADERS 1" >>confdefs.h
 
 fi
-
 
 
 
@@ -4519,7 +4516,6 @@ _ACEOF
 fi
 
 done
-
 
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether byte ordering is bigendian" >&5
 $as_echo_n "checking whether byte ordering is bigendian... " >&6; }
@@ -4932,7 +4928,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_SYS_NERR $ac_have_decl
 _ACEOF
-
 ac_fn_c_check_decl "$LINENO" "sys_errlist" "ac_cv_have_decl_sys_errlist" "$ac_includes_default"
 if test "x$ac_cv_have_decl_sys_errlist" = xyes; then :
   ac_have_decl=1
@@ -4943,7 +4938,6 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_SYS_ERRLIST $ac_have_decl
 _ACEOF
-
 ac_fn_c_check_type "$LINENO" "size_t" "ac_cv_type_size_t" "$ac_includes_default"
 if test "x$ac_cv_type_size_t" = xyes; then :
 
@@ -4976,7 +4970,6 @@ _ACEOF
 
 
 fi
-
 ac_fn_c_check_type "$LINENO" "unsigned int" "ac_cv_type_unsigned_int" "$ac_includes_default"
 if test "x$ac_cv_type_unsigned_int" = xyes; then :
 
@@ -4986,7 +4979,6 @@ _ACEOF
 
 
 fi
-
 ac_fn_c_check_type "$LINENO" "long unsigned int" "ac_cv_type_long_unsigned_int" "$ac_includes_default"
 if test "x$ac_cv_type_long_unsigned_int" = xyes; then :
 
@@ -4996,7 +4988,6 @@ _ACEOF
 
 
 fi
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking return type of signal handlers" >&5
 $as_echo_n "checking return type of signal handlers... " >&6; }
 if ${ac_cv_type_signal+:} false; then :
@@ -5025,15 +5016,13 @@ else
   ac_cv_type_signal=void
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_type_signal" >&5
-$as_echo "$ac_cv_type_signal" >&6; }
+$as_echo "$ac_cv_type_signal" >&6; }  ## define:
 
 cat >>confdefs.h <<_ACEOF
 #define RETSIGTYPE ${ac_cv_type_signal}
 _ACEOF
-
 ac_fn_c_check_type "$LINENO" "socklen_t" "ac_cv_type_socklen_t" "
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
@@ -5059,7 +5048,6 @@ _ACEOF
 
 
 fi
-
 
 for ac_header in stdlib.h
 do :
@@ -5352,7 +5340,6 @@ _ACEOF
 
 fi
 done
-
 
 # Automake:
 if test -f ${srcdir}/config.status; then
@@ -6155,10 +6142,9 @@ fi
 
 
 
+# Output.
 ac_config_files="$ac_config_files Makefile"
-
 ac_config_commands="$ac_config_commands config_status_vpath_build_fix"
-
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -7633,4 +7619,4 @@ $as_echo "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
 
 
-
+echo "done configuring rdi-share"

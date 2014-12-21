@@ -2218,7 +2218,6 @@ ac_config_sub="$SHELL $ac_aux_dir/config.sub"  # Please don't use this var.
 ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
-
 # Make sure we can run config.sub.
 $SHELL "$ac_aux_dir/config.sub" sun4 >/dev/null 2>&1 ||
   as_fn_error $? "cannot run $SHELL $ac_aux_dir/config.sub" "$LINENO" 5
@@ -2339,8 +2338,6 @@ if test "x${target_alias}" = "x"; then
   fi
 fi
 
-
-
 if test "x${host_alias}" = "x"; then
   test -z "${host_alias}"
   if test "x${host_noncanonical}" != "x"; then
@@ -2349,8 +2346,6 @@ if test "x${host_alias}" = "x"; then
     test -n "${host}" && export host_alias="${host}"
   fi
 fi
-
-
 
 # some checks stolen from automake:
 test "$program_prefix" != NONE &&
@@ -3348,7 +3343,6 @@ else
 $as_echo "no, using $LN_S" >&6; }
 fi
 
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for a sed that does not truncate output" >&5
 $as_echo_n "checking for a sed that does not truncate output... " >&6; }
 if ${ac_cv_path_SED+:} false; then :
@@ -3421,9 +3415,7 @@ $as_echo "$ac_cv_path_SED" >&6; }
 
 
 
-
 # Checks for header files.
-
 
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
@@ -3807,7 +3799,6 @@ fi
 
 
 
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether time.h and sys/time.h may both be included" >&5
 $as_echo_n "checking whether time.h and sys/time.h may both be included... " >&6; }
 if ${ac_cv_header_time+:} false; then :
@@ -3903,7 +3894,6 @@ done
 
 
 
-
 for ac_header in ctype.h errno.h stddef.h stdio.h time.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
@@ -3916,7 +3906,6 @@ _ACEOF
 fi
 
 done
-
 
 # Checks for typedefs, structures, and compiler characteristics.
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether byte ordering is bigendian" >&5
@@ -4440,7 +4429,6 @@ x86_64)		gdb_target_cpu=i386 ;;
 esac
 
 
-
 target_makefile_frag=${srcdir}/../config/${gdb_target_cpu}/gdbserve.mt
 if test ! -f "${target_makefile_frag}"; then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: *** GDBSERVE does not support target ${target}. This should be a hard error, but we are ignoring it to facilitate work on this configure script." >&5
@@ -4451,7 +4439,7 @@ else
 $as_echo "$as_me: using '${target_makefile_frag}' for your Makefile frag" >&6;}
 fi
 
-
+  ## begin complicatedness:
 if test "x${target_makefile_frag}" != "x"; then
   target_makefile_frag_path=${target_makefile_frag}
 
@@ -4529,10 +4517,11 @@ while test -n "${ac_sources}"; do
 done
 ac_config_links="$ac_config_links ${ac_config_links_1}"
 
-
+  ## print to verify the result is correct:
 echo "symlinks to be made should be \"${ac_config_links1}\""
-ac_config_files="$ac_config_files Makefile"
 
+# Output:
+ac_config_files="$ac_config_files Makefile"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure

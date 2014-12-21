@@ -56,7 +56,7 @@ extern void remote_cisco_objfile_relocate (bfd_signed_vma text_off,
 
 extern void async_remote_interrupt_twice (void *arg);
 
-extern int remote_write_bytes (CORE_ADDR memaddr, const gdb_byte *myaddr, 
+extern int remote_write_bytes (CORE_ADDR memaddr, const gdb_byte *myaddr,
 			       int len);
 
 extern int remote_read_bytes (CORE_ADDR memaddr, char *myaddr, int len);
@@ -66,7 +66,7 @@ extern void (*deprecated_target_wait_loop_hook) (void);
 
 void dump_packets_command (char *unused, int fromtty);
 
-CORE_ADDR remote_macosx_get_all_image_infos_addr ();
+CORE_ADDR remote_macosx_get_all_image_infos_addr(void);
 
 
 /* APPLE LOCAL

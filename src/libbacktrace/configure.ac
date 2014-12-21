@@ -104,7 +104,7 @@ AC_C_INLINE
 
 backtrace_supported=yes
 
-if test -n "${with_target_subdir}"; then
+if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
   # We are compiling a GCC library.  We can assume that the unwind
   # library exists.
   AM_ENABLE_MULTILIB([],[..])
@@ -121,7 +121,7 @@ fi
 AC_SUBST([BACKTRACE_FILE])dnl
 
 EXTRA_FLAGS=""
-if test -n "${with_target_subdir}"; then
+if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
   EXTRA_FLAGS="-funwind-tables -frandom-seed=\$@"
 else
   AC_CACHE_CHECK([for -funwind-tables option],
@@ -166,14 +166,14 @@ if test "x${WARN_FLAGS}" = "x" && test "x${WARN_CFLAGS}" != "x"; then
   test -z "${WARN_FLAGS}" && test -n "${WARN_CFLAGS}" && export WARN_FLAGS="${WARN_CFLAGS}"
 fi
 
-if test -n "${with_target_subdir}"; then
+if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
   AC_MSG_WARN([adding -Werror to WARN_FLAGS])
   WARN_FLAGS="${WARN_FLAGS} -Werror"
 fi
 
 AC_SUBST([WARN_FLAGS])dnl
 
-if test -n "${with_target_subdir}"; then
+if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
   GCC_CHECK_UNWIND_GETIPINFO
 else
   ac_save_CFFLAGS="${CFLAGS}"
@@ -198,7 +198,7 @@ fi
 # this in.  We do NOT want to provide another shared library to
 # complicate dependencies.  Instead, we just compile with -fPIC.
 PIC_FLAG=""
-if test -n "${with_target_subdir}"; then
+if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
   PIC_FLAG=-fPIC
 fi
 # Similarly, use -fPIC with --enable-host-shared:
@@ -210,10 +210,10 @@ AC_SUBST([PIC_FLAG])dnl
 
 # Test for __sync support.
 AC_CACHE_CHECK([__sync extensions],
-[libbacktrace_cv_sys_sync],
-[if test -n "${with_target_subdir}"; then
+[libbacktrace_cv_sys_sync],[
+if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
    libbacktrace_cv_sys_sync=yes
- else
+else
    AC_LINK_IFELSE(
      [AC_LANG_PROGRAM([[int i;]],
                       [[__sync_bool_compare_and_swap (&i, i, i);
@@ -221,7 +221,7 @@ AC_CACHE_CHECK([__sync extensions],
                         __sync_lock_release (&i);]])],
      [libbacktrace_cv_sys_sync=yes],
      [libbacktrace_cv_sys_sync=no])
- fi])
+fi])
 BACKTRACE_SUPPORTS_THREADS=0
 if test "x${libbacktrace_cv_sys_sync}" = "xyes"; then
   BACKTRACE_SUPPORTS_THREADS=1
@@ -232,17 +232,17 @@ AC_SUBST([BACKTRACE_SUPPORTS_THREADS])dnl
 
 # Test for __atomic support.
 AC_CACHE_CHECK([__atomic extensions],
-[libbacktrace_cv_sys_atomic],
-[if test -n "${with_target_subdir}"; then
+[libbacktrace_cv_sys_atomic],[
+if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
    libbacktrace_cv_sys_atomic=yes
- else
+else
    AC_LINK_IFELSE(
      [AC_LANG_PROGRAM([[int i;]],
      		      [[__atomic_load_n (&i, __ATOMIC_ACQUIRE);
 		        __atomic_store_n (&i, 1, __ATOMIC_RELEASE);]])],
      [libbacktrace_cv_sys_atomic=yes],
      [libbacktrace_cv_sys_atomic=no])
- fi])
+fi])
 if test "x${libbacktrace_cv_sys_atomic}" = "xyes"; then
   AC_DEFINE([HAVE_ATOMIC_FUNCTIONS],[1],
 	    [Define to 1 if you have the __atomic functions])
@@ -315,7 +315,7 @@ AC_CHECK_HEADERS([sys/mman.h])
 if test "x${ac_cv_header_sys_mman_h}" = "xno"; then
   have_mmap=no
 else
-  if test -n "${with_target_subdir}"; then
+  if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
     # When built as a GCC target library, we cannot do a link test.  We
     # simply assume that if we have mman.h, we have mmap.
     have_mmap=yes
@@ -392,7 +392,7 @@ if test "x${have_dl_iterate_phdr}" = "xyes"; then
 fi
 
 # Check for the fcntl function.
-if test -n "${with_target_subdir}"; then
+if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
    case "${host}" in
    *-*-mingw*) have_fcntl=no ;;
    *) have_fcntl=yes ;;
@@ -414,7 +414,7 @@ AC_CHECK_DECLS([strnlen])dnl
 AC_CHECK_FUNCS([strdup strerror])dnl
 
 # Check for getexecname function.
-if test -n "${with_target_subdir}"; then
+if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
    case "${host}" in
    *-*-solaris2*) have_getexecname=yes ;;
    *) have_getexecname=no ;;
@@ -446,7 +446,7 @@ AC_CONFIG_FILES([Makefile backtrace-supported.h])dnl
 # We need multilib support, but only if configuring for the target.
 AC_CONFIG_COMMANDS([default],
 [if test -n "${CONFIG_FILES}"; then
-   if test -n "${with_target_subdir}"; then
+   if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
      # Multilibs need MULTISUBDIR defined correctly in certain makefiles so
      # that multilib installs will end up installed in the correct place.
      # The testsuite needs it for multilib-aware ABI baseline files.
@@ -463,9 +463,9 @@ _EOF
       case ${CONFIG_FILES} in
        *${i}/Makefile*)
 	 echo "Adding MULTISUBDIR to ${i}/Makefile"
-	 sed -f vpsed ${i}/Makefile > tmp
-	 grep '^MULTISUBDIR =' Makefile >> tmp
-	 mv tmp ${i}/Makefile
+	 sed -f vpsed ${i}/Makefile | tee tmp
+	 grep '^MULTISUBDIR =' Makefile | tee -a tmp
+	 mv -v tmp ${i}/Makefile
 	 ;;
       esac
      done

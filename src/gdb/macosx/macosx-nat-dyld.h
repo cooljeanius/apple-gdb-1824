@@ -10,7 +10,7 @@
 #include "macosx-nat-threads.h"
 
 #include <mach/machine.h>       /* cpu_type_t, cpu_subtype_t */
-#include <mach-o/loader.h>      /* struct mach_header, struct load_command */
+#include <mach-o/loader.h>   /* struct mach_header, struct load_command */
 
 struct objfile;
 struct target_waitstatus;
@@ -105,7 +105,7 @@ void dyld_debug (const char *fmt, ...); /* ...duplicate symbol(?) */
 void dyld_print_status_info (macosx_dyld_thread_status *s, unsigned int mask,
                              char *args);
 int dyld_objfile_set_load_state (struct objfile *o, int load_state);
-void macosx_clear_start_breakpoint ();
+void macosx_clear_start_breakpoint (void);
 void macosx_set_start_breakpoint (macosx_dyld_thread_status *s,
                                   bfd *exec_bfd);
 void macosx_init_addresses (macosx_dyld_thread_status *s);
@@ -113,8 +113,8 @@ int macosx_dyld_init (macosx_dyld_thread_status *s, bfd *exec_bfd);
 int macosx_solib_add (const char *filename, int from_tty,
                       struct target_ops *targ, int loadsyms);
 void macosx_dyld_thread_init (macosx_dyld_thread_status *s);
-void macosx_add_shared_symbol_files ();
-void macosx_init_dyld_from_core ();
+void macosx_add_shared_symbol_files (void);
+void macosx_init_dyld_from_core (void);
 void macosx_dyld_create_inferior_hook (CORE_ADDR all_image_info_addr);
 
 void macosx_init_dyld (struct macosx_dyld_thread_status *s,
@@ -123,12 +123,12 @@ void macosx_init_dyld_symfile (struct objfile *o, bfd *abfd);
 enum gdb_osabi macosx_get_osabi_from_dyld_entry (bfd *abfd);
 void macosx_dyld_mourn_inferior (void);
 
-int target_is_remote ();
-int target_is_kdp_remote ();
+int target_is_remote (void);
+int target_is_kdp_remote (void);
 int macosx_dyld_update (int dyldonly);
 int dyld_lookup_and_bind_function (char *name);
 void update_section_tables_dyld (struct dyld_objfile_info *s);
-void update_section_tables ();
+void update_section_tables (void);
 char *dyld_fix_path (const char *path);
 
 void macosx_set_malloc_inited (int new_val);
@@ -146,3 +146,5 @@ extern struct cmd_list_element *setshliblist;
 extern struct cmd_list_element *showshliblist;
 
 #endif /* __GDB_MACOSX_NAT_DYLD_H__ */
+
+/* EOF */

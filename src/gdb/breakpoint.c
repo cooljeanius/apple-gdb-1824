@@ -1,4 +1,4 @@
-/* Everything about breakpoints, for GDB.
+/* breakpoint.c: Everything about breakpoints, for GDB.
 
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994,
    1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
@@ -105,7 +105,7 @@ static void ignore_command (char *, int);
 static int breakpoint_re_set_one (void *);
 
 /* APPLE LOCAL breakpoints */
-static void breakpoint_re_set_all ();
+static void breakpoint_re_set_all (void);
 
 static void clear_command (char *, int);
 
@@ -963,28 +963,27 @@ deprecated_read_memory_nobpt (CORE_ADDR memaddr, gdb_byte *myaddr,
 static void
 insert_catchpoint (struct ui_out *uo, void *args)
 {
-  struct breakpoint *b = (struct breakpoint *) args;
+  struct breakpoint *b = (struct breakpoint *)args;
   /* APPLE LOCAL remove unused local */
 
   switch (b->type)
     {
     case bp_catch_fork:
-      target_insert_fork_catchpoint (PIDGET (inferior_ptid));
+      target_insert_fork_catchpoint(PIDGET(inferior_ptid));
       break;
     case bp_catch_vfork:
-      target_insert_vfork_catchpoint (PIDGET (inferior_ptid));
+      target_insert_vfork_catchpoint(PIDGET(inferior_ptid));
       break;
     case bp_catch_exec:
-      target_insert_exec_catchpoint (PIDGET (inferior_ptid));
+      target_insert_exec_catchpoint(PIDGET(inferior_ptid));
       break;
     default:
-      internal_error (__FILE__, __LINE__, _("unknown breakpoint type"));
+      internal_error(__FILE__, __LINE__, _("unknown breakpoint type"));
       break;
     }
 }
 
-/* Helper routine: free the value chain for a breakpoint (watchpoint).  */
-
+/* Helper routine: free the value chain for a breakpoint (watchpoint): */
 static void free_valchain (struct bp_location *b)
 {
   struct value *v;
@@ -7417,8 +7416,7 @@ stopat_command (char *arg, int from_tty)
 		hw_access: watch access (read or write) */
 /* APPLE LOCAL: BY_LOCATION - if set, just watch the memory location
    pointed to by the expression in ARG, not all the locations leading
-   up to it.  Also, don't tie the watch to the current scope.  */
-
+   up to it.  Also, do NOT tie the watch to the current scope.  */
 static void
 watch_command_1 (char *arg, int accessflag, int by_location, int from_tty)
 {
@@ -8344,12 +8342,12 @@ static void
 print_mention_exception_catchpoint (struct breakpoint *b)
 {
   if (strstr (b->addr_string, "throw") != NULL)
-    printf_filtered (_("Catchpoint %d (throw)"), b->number);
+    printf_filtered(_("Catchpoint %d (throw)"), b->number);
   else
-    printf_filtered (_("Catchpoint %d (catch)"), b->number);
+    printf_filtered(_("Catchpoint %d (catch)"), b->number);
 }
 
-/* APPLE LOCAL: The gnu_v3_exception handling code in gdb couldn't
+/* APPLE LOCAL: The gnu_v3_exception handling code in gdb could NOT
    deal with the possibility that there was more than one copy of
    the __cxa_throw/__cxa_begin_catch symbols in the running process.
    It also didn't handle the possibility that there might be no
@@ -8558,51 +8556,54 @@ update_exception_catchpoints (enum exception_event_kind ex_event,
 }
 
 /* APPLE LOCAL: Figure out whether the current exception object is one we
-   want to stop for.  Returns 1 if yes, and 0 if no. */
-
+ * want to stop for.  Returns 1 if yes, and 0 if no. */
 static int
-current_exception_should_stop (void)
+current_exception_should_stop(void)
 {
   char *obj_type = CURRENT_EXCEPTION_TYPE;
   char *exception_type_regexp;
   char *msg;
 
-  /* If we can't figure out the object type, always stop. */
-  if (!obj_type)
+  /* If we cannot figure out the object type, then always stop: */
+  if (!obj_type) {
     return 1;
+  }
 
-  if (CURRENT_EXCEPTION_KIND == EX_EVENT_THROW)
+  if (CURRENT_EXCEPTION_KIND == EX_EVENT_THROW) {
     exception_type_regexp = exception_throw_type_regexp;
-  else
+  } else {
     exception_type_regexp = exception_catch_type_regexp;
+  }
 
   if (exception_type_regexp)
     {
+      int old_syntax;
       /* Xcode sets the regexp to just "$" when it means match anything.
-         That doesn't work with the way re_exec works, since that demands
+         That does NOT work with the way re_exec works, since that demands
          that the match have content.  So just shortcut the two cases of
          empty string and just "$"... */
 
-      if (*exception_type_regexp == '\0' || strcmp (exception_type_regexp, "$") == 0)
+      if ((*exception_type_regexp == '\0')
+          || (strcmp(exception_type_regexp, "$") == 0)) {
         return 1;
+      }
 
-      int old_syntax = re_set_syntax (REG_EXTENDED);
-      msg = (char *) re_comp (exception_type_regexp);
+      old_syntax = re_set_syntax(REG_EXTENDED);
+      msg = (char *)re_comp(exception_type_regexp);
       re_set_syntax(old_syntax);
 
       if (msg)
 	{
-	  warning ("Error compiling exception type regexp: %s", msg);
+	  warning("Error compiling exception type regexp: %s", msg);
 	  return 1;
 	}
-      return re_exec (obj_type);
+      return re_exec(obj_type);
     }
   else
     return 1;
 }
 
 /* Deal with "catch catch" and "catch throw" commands */
-
 static void
 catch_exception_command_1 (enum exception_event_kind ex_event, char *arg,
 			   int tempflag, int from_tty)
@@ -8838,8 +8839,7 @@ tcatch_command (char *arg, int from_tty)
   catch_command_1 (arg, 1, from_tty);
 }
 
-/* Delete breakpoints by address or line.  */
-
+/* Delete breakpoints by address or line: */
 static void
 clear_command (char *arg, int from_tty)
 {
@@ -8992,7 +8992,6 @@ breakpoint_auto_delete (bpstat bs)
 
 /* Delete a breakpoint and clean up all traces of it in the data
    structures. */
-
 void
 delete_breakpoint (struct breakpoint *bpt)
 {
@@ -9758,15 +9757,13 @@ restrict_search_cleanup (void *ignored)
   objfile_clear_restrict_list ();
 }
 
-/* APPLE LOCAL: Call breakpoint_update to sync breakpoints with the
-   new symbol environment.  */
-
+/* APPLE LOCAL: Call breakpoint_update to sync breakpoints with the new
+ * symbol environment: */
 void
-breakpoint_update ()
+breakpoint_update(void)
 {
   if (breakpoint_generation != symbol_generation)
     {
-
       struct cleanup *old_cleanups;
 
       old_cleanups = make_cleanup (restrict_search_cleanup, NULL);
@@ -9824,7 +9821,6 @@ breakpoint_update ()
 	make_cleanup (xfree, message);
 	catch_errors (breakpoint_re_set_one, b, message, RETURN_MASK_ALL);
 	do_cleanups (restrict_cleanups);
-
       }
     }
 }
@@ -9844,7 +9840,6 @@ breakpoint_update ()
    new function, breakpoint_re_set_all, which gets called from
    breakpoint_update.  Then we have to put in calls to breakpoint_update
    at the points where we really want to sync up the breakpoints.  */
-
 void
 breakpoint_re_set (struct objfile *objfile)
 {
@@ -9855,8 +9850,7 @@ breakpoint_re_set (struct objfile *objfile)
   symbol_generation++;
 }
 
-/* Re-set all breakpoints after symbols have been re-loaded.  */
-
+/* Re-set all breakpoints after symbols have been re-loaded: */
 static void
 breakpoint_re_set_all (void)
 {
@@ -9868,25 +9862,25 @@ breakpoint_re_set_all (void)
   save_input_radix = input_radix;
   ALL_BREAKPOINTS_SAFE (b, temp)
   {
-    /* Format possible error msg */
-    /* APPLE LOCAL: Don't complain about not being able to reset
-       internal breakpoints.  */
-    char *message;
-    if (user_settable_breakpoint (b))
-      message = xstrprintf ("Error in re-setting breakpoint %d:\n",
-				  b->number);
-    else
-      message = NULL;
-
     struct cleanup *cleanups;
+    /* Format possible error msg */
+    /* APPLE LOCAL: Do NOT complain about not being able to reset
+     * internal breakpoints.  */
+    char *message;
+    if (user_settable_breakpoint(b)) {
+      message = xstrprintf("Error in re-setting breakpoint %d:\n",
+                           b->number);
+    } else {
+      message = NULL;
+    }
 
     /* APPLE LOCAL: we are going to unconditionally remake the longjmp
        breakpoint for every shared library load.  At least delete the
        extant ones before remaking them...  */
 
-    if (b->type == bp_longjmp_resume || b->type == bp_longjmp)
+    if ((b->type == bp_longjmp_resume) || (b->type == bp_longjmp))
       {
-	delete_breakpoint (b);
+	delete_breakpoint(b);
 	continue;
       }
 
@@ -10323,13 +10317,15 @@ enable_delete_command (char *args, int from_tty)
 }
 
 static void
-set_breakpoint_cmd (char *args, int from_tty)
+set_breakpoint_cmd(char *args, int from_tty)
 {
+  return;
 }
 
 static void
-show_breakpoint_cmd (char *args, int from_tty)
+show_breakpoint_cmd(char *args, int from_tty)
 {
+  return;
 }
 
 /* APPLE LOCAL begin save-breakpoints command */
@@ -10347,9 +10343,8 @@ show_breakpoint_cmd (char *args, int from_tty)
    In addition "set input-radix <r>" may precede the above sequence but
    that is generated by save_breakpoints_command() which is this
    function's caller.  */
-
 static void
-write_one_breakpoint (struct breakpoint *b, struct ui_file *stream, struct ui_out *uiout)
+write_one_breakpoint(struct breakpoint *b, struct ui_file *stream, struct ui_out *uiout)
 {
   register struct command_line *l;
 
@@ -10557,58 +10552,58 @@ save_breakpoints_command (char *arg, int from_tty)
 
       skip = (b->commands || b->ignore_count || b->enable_state == bp_disabled);
       if (skip)
-        fputc_unfiltered ('\n', stream);
+        fputc_unfiltered('\n', stream);
 
       if (b->input_radix != current_radix)
         {
           current_radix = b->input_radix;
-          fprintf_unfiltered (stream, "set input-radix 0%o\n", current_radix);
+          fprintf_unfiltered(stream, "set input-radix 0%o\n",
+                             current_radix);
         }
 
-      write_one_breakpoint (b, stream, uiout);
+      write_one_breakpoint(b, stream, uiout);
 
       if (skip && b->next)
-        fputc_unfiltered ('\n', stream);
+        fputc_unfiltered('\n', stream);
     }
 
   if (! found_a_breakpoint)
-    printf_filtered ("No breakpoints or watchpoints to save.\n");
+    printf_filtered("No breakpoints or watchpoints to save.\n");
   else
     {
-      fputs_unfiltered ("\n", stream);
+      fputs_unfiltered("\n", stream);
       if (current_radix != 10)
-        fputs_unfiltered ("set input-radix 012\n", stream);
-      fputs_unfiltered ("set input-radix $current_radix\n", stream);
+        fputs_unfiltered("set input-radix 012\n", stream);
+      fputs_unfiltered("set input-radix $current_radix\n", stream);
       if (from_tty)
-        printf_filtered ("Breakpoints saved to file '%s'.\n", pathname);
+        printf_filtered("Breakpoints saved to file '%s'.\n", pathname);
     }
 
   do_cleanups (cleanups);
 }
 /* APPLE LOCAL end save-breakpoints command */
 
-/* Use default_breakpoint_'s, or nothing if they aren't valid.  */
-
+/* Use default_breakpoint_'s, or nothing if they are NOT valid: */
 struct symtabs_and_lines
-decode_line_spec_1 (char *string, int funfirstline)
+decode_line_spec_1(char *string, int funfirstline)
 {
   struct symtabs_and_lines sals;
   if (string == 0)
-    error (_("Empty line specification."));
+    error(_("Empty line specification."));
   if (default_breakpoint_valid)
     /* APPLE LOCAL begin return multiple symbols */
     sals = decode_line_1 (&string, funfirstline,
 			  default_breakpoint_symtab,
 			  default_breakpoint_line,
-			  (char ***) NULL, NULL, 0);
+			  (char ***)NULL, NULL, 0);
     /* APPLE LOCAL end return multiple symbols */
   else
     /* APPLE LOCAL begin return multiple symbols */
     sals = decode_line_1 (&string, funfirstline,
-			  (struct symtab *) NULL, 0, (char ***) NULL, NULL, 0);
+			  (struct symtab *)NULL, 0, (char ***) NULL, NULL, 0);
     /* APPLE LOCAL end return multiple symbols */
   if (*string)
-    error (_("Junk at end of line specification: %s"), string);
+    error(_("Junk at end of line specification: %s"), string);
   return sals;
 }
 
@@ -10720,10 +10715,8 @@ tell_breakpoints_objfile_changed_internal (struct objfile *objfile,
   breakpoint_generation--;
 }
 
-/* This one sets the breakpoint as unset, but doesn't mark
-   it as pending.  That way breakpoint_re_set_all will re-set
-   it.  */
-
+/* This one sets the breakpoint as unset, but does NOT mark it as pending.
+ * That way breakpoint_re_set_all will re-set it: */
 void
 tell_breakpoints_objfile_changed (struct objfile *objfile)
 {
@@ -10731,19 +10724,18 @@ tell_breakpoints_objfile_changed (struct objfile *objfile)
 }
 
 void
-breakpoints_relocate (struct objfile *objfile, struct section_offsets *delta)
+breakpoints_relocate(struct objfile *objfile, struct section_offsets *delta)
 {
   struct breakpoint *b;
 
-  ALL_BREAKPOINTS (b)
+  ALL_BREAKPOINTS(b)
   {
     if (b->bp_objfile == objfile)
       {
-	b->loc->address += ANOFFSET (delta, SECT_OFF_TEXT (objfile));
-	b->loc->requested_address += ANOFFSET (delta, SECT_OFF_TEXT (objfile));
+	b->loc->address += ANOFFSET(delta, SECT_OFF_TEXT(objfile));
+	b->loc->requested_address += ANOFFSET(delta, SECT_OFF_TEXT(objfile));
       }
   }
-
 }
 
 /* Use this one if the the shared library has been unloaded.  We mark it
@@ -11120,7 +11112,6 @@ is watched."));
   add_info ("watchpoints", breakpoints_info,
 	    _("Synonym for ``info breakpoints''."));
 
-
   /* XXX: cagney/2005-02-23: This should be a boolean, and should
      respond to changes - contrary to the description.  */
   add_setshow_zinteger_cmd ("can-use-hw-watchpoints", class_support,
@@ -11186,3 +11177,5 @@ user-query to see if a pending breakpoint should be created."),
 
   pending_break_support = AUTO_BOOLEAN_AUTO;
 }
+
+/* EOF */

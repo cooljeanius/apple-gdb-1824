@@ -77,8 +77,8 @@ struct symbol *lookup_struct_typedef (char *name, struct block *block,
 extern int lookup_objc_class_p;
 
 extern int objc_handle_update (CORE_ADDR stop_addr);
-void objc_init_trampoline_observer ();
-void objc_init_runtime_version ();
+void objc_init_trampoline_observer (void);
+void objc_init_runtime_version (void);
 int pc_in_objc_trampoline_p (CORE_ADDR pc, uint32_t *flags);
 
 void objc_invalidate_objc_class (struct type *type);

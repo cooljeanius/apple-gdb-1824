@@ -1,4 +1,4 @@
-/* Top level stuff for GDB, the GNU debugger.
+/* top.h: Top level stuff for GDB, the GNU debugger.
 
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994,
    1996, 1997, 1998, 1999, 2000, 2005 Free Software Foundation, Inc.
@@ -54,7 +54,7 @@ extern void simplified_command_loop (char *(*read_input_func) (char *),
 				     void (*execute_command_func) (char *,
 								   int));
 extern int quit_confirm (void);
-extern void quit_force (char *, int);
+extern NORETURN void quit_force (char *, int);
 extern void quit_command (char *, int);
 extern int quit_cover (void *);
 extern void execute_command (char *, int);

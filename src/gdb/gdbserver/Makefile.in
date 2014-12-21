@@ -114,6 +114,12 @@ BFD = $(BFD_DIR)/libbfd.a
 BFD_SRC = $(srcdir)/$(BFD_DIR)
 BFD_CFLAGS = -I$(BFD_DIR) -I$(BFD_SRC)
 
+# Where is the "-liberty" library?  Typically in ../libiberty.
+LIBIBERTY_DIR = $(srcdir)/../../libiberty
+LIBIBERTY_DEP = $(LIBIBERTY_DIR)/libiberty.a
+LIBIBERTY = -L$(LIBIBERTY_DIR) -liberty
+LIBIBERTY_CFLAGS = -I$(LIBIBERTY_DIR)
+
 # Where is the srcdir for the READLINE library? Traditionally in .. or .
 # (For the binary library built from it, we use ${READLINE_DIR}${subdir}.)
 READLINE_DIR = ${srcdir}/../readline
@@ -174,8 +180,8 @@ INTERNAL_CFLAGS = ${INTERNAL_WARN_CFLAGS} ${BFD_CFLAGS} $(INTERNAL_DEFS)
 
 # LDFLAGS is specifically reserved for setting from the command line
 # when running make.
-LDFLAGS = @LDFLAGS@ $(C_ARCHFLAGS)
-INTERNAL_LDFLAGS = $(LDFLAGS) @RDYNAMIC@
+LDFLAGS = @LDFLAGS@
+INTERNAL_LDFLAGS = $(LDFLAGS) @RDYNAMIC@ $(C_ARCHFLAGS)
 
 # Perhaps should come from parent Makefile
 VERSION = gdbserver-4.12.3
@@ -254,7 +260,7 @@ NONLINK_OBS = common-utils.o vec.o gdb_vecs.o print-utils.o
 # objects for gdbreplay:
 GDBREPLAY_OBS = gdbreplay.o version.o
 GDBSERVER_LIBS = @GDBSERVER_LIBS@
-XM_CLIBS = @LIBS@
+XM_CLIBS = @LIBS@ $(LIBIBERTY)
 CDEPS = $(srcdir)/proc-service.list
 
 # XML files to compile in to gdbserver, if any.
@@ -285,11 +291,11 @@ FLAGS_TO_PASS = \
 	"AR=$(AR)" \
 	"AR_FLAGS=$(AR_FLAGS)" \
 	"CC=$(CC)" \
-	"CFLAGS=$(CFLAGS)" \
+	"CFLAGS=$(CFLAGS) $(C_ARCHFLAGS)" \
 	"CXX=$(CXX)" \
 	"CXXFLAGS=$(CXXFLAGS)" \
 	"DLLTOOL=$(DLLTOOL)" \
-	"LDFLAGS=$(LDFLAGS)" \
+	"LDFLAGS=$(LDFLAGS) $(C_ARCHFLAGS)" \
 	"RANLIB=$(RANLIB)" \
 	"MAKEINFO=$(MAKEINFO)" \
 	"MAKEHTML=$(MAKEHTML)" \
@@ -682,16 +688,16 @@ waitstatus.o: ../target/waitstatus.c
 # include our config.h file.  Otherwise, some system headers do not get
 # included, and the compiler emits a warning about implicitly defined
 # functions (missing declaration).
-vasprintf.o: $(srcdir)/../../libiberty/vasprintf.c
+vasprintf.o: $(LIBIBERTY_DIR)/vasprintf.c
 	$(COMPILE) $< -DHAVE_CONFIG_H
 	$(POSTCOMPILE)
-vsnprintf.o: $(srcdir)/../../libiberty/vsnprintf.c
+vsnprintf.o: $(LIBIBERTY_DIR)/vsnprintf.c
 	$(COMPILE) $<
 	$(POSTCOMPILE)
-safe-ctype.o: $(srcdir)/../../libiberty/safe-ctype.c
+safe-ctype.o: $(LIBIBERTY_DIR)/safe-ctype.c
 	$(COMPILE) $<
 	$(POSTCOMPILE)
-lbasename.o: $(srcdir)/../../libiberty/lbasename.c
+lbasename.o: $(LIBIBERTY_DIR)/lbasename.c
 	$(COMPILE) $<
 	$(POSTCOMPILE)
 

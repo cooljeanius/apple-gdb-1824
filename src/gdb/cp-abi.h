@@ -73,7 +73,7 @@ enum dtor_kinds {
   /* A destructor which finalizes a subobject of some larger object.  */
   base_object_dtor
 };
-  
+
 /* Return non-zero iff NAME is the mangled name of a destructor.
    Actually, return an `enum dtor_kind' value describing what *kind*
    of destructor it is.  */
@@ -146,14 +146,14 @@ extern struct type *value_rtti_type (struct value *value,
 
 extern int baseclass_offset (struct type *type, int index,
 			     const bfd_byte *valaddr, CORE_ADDR address);
-                  
+
 struct cp_abi_ops
 {
   const char *shortname;
   /* APPLE LOCAL begin C++ auto abi */
   /* These two can't be const, because we need to change the name for
-     the auto abi. */   
-  char *longname; 
+     the auto abi. */
+  char *longname;
   char *doc;
   /* APPLE LOCAL end C++ auto abi */
 
@@ -174,7 +174,8 @@ struct cp_abi_ops
 extern int register_cp_abi (struct cp_abi_ops *abi);
 extern void set_cp_abi_as_auto_default (const char *short_name);
 /* APPLE LOCAL C++ auto abi */
-extern int cp_abi_is_auto_p ();
+extern int cp_abi_is_auto_p (void);
 
-#endif
+#endif /* !CP_ABI_H_ */
 
+/* EOF */

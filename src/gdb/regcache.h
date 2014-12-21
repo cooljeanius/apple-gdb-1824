@@ -128,7 +128,7 @@ extern struct type *register_type (struct gdbarch *gdbarch, int regnum);
 
 /* Return the size of register REGNUM.  All registers should have only
    one size.  */
-   
+
 extern int register_size (struct gdbarch *gdbarch, int regnum);
 
 
@@ -175,6 +175,10 @@ extern void regcache_cpy_no_passthrough (struct regcache *dest, struct regcache 
    method, there should already be a non-deprecated variant that is
    parameterized with FRAME or REGCACHE.  */
 
+#ifndef _PREPEND_DEPRECATED_TO_REGCACHE_FUNCTIONS
+# define _PREPEND_DEPRECATED_TO_REGCACHE_FUNCTIONS 1
+#endif /* !_PREPEND_DEPRECATED_TO_REGCACHE_FUNCTIONS */
+
 extern gdb_byte *deprecated_grub_regcache_for_registers (struct regcache *);
 extern void deprecated_read_register_gen (int regnum, gdb_byte *myaddr);
 extern void deprecated_write_register_gen (int regnum, gdb_byte *myaddr);
@@ -205,3 +209,5 @@ extern void write_register (int regnum, LONGEST val);
 extern void write_register_pid (int regnum, CORE_ADDR val, ptid_t ptid);
 
 #endif /* REGCACHE_H */
+
+/* EOF */

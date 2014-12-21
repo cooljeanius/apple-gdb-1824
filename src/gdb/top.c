@@ -195,23 +195,23 @@ int target_executing = 0;
 /* Non-zero means gdb is quitting - some parts of gdb, for instance
    generic_mourn_inferior want to re-read the exec file when shutting
    down, which is annoying.  Use this flag to decide whether to do things
-   that you don't need to do when gdb is going away. */
+   that you do NOT need to do when gdb is going away. */
 int gdb_quitting = 0;
 /* APPLE LOCAL end gdb_quitting */
 
 /* Sbrk location on entry to main.  Used for statistics only.  */
 #ifdef HAVE_SBRK
 char *lim_at_start;
-#endif
+#endif /* HAVE_SBRK */
 
 /* Signal to catch ^Z typed while reading a command: SIGTSTP or SIGCONT.  */
 
 #ifndef STOP_SIGNAL
-#ifdef SIGTSTP
-#define STOP_SIGNAL SIGTSTP
+# ifdef SIGTSTP
+#  define STOP_SIGNAL SIGTSTP
 static void stop_sig (int);
-#endif
-#endif
+# endif /* SIGTSTP */
+#endif /* !STOP_SIGNAL */
 
 /* Hooks for alternate command interfaces.  */
 
@@ -1228,8 +1228,7 @@ quit_confirm (void)
   return 1;
 }
 
-/* Helper routine for quit_force that requires error handling.  */
-
+/* Helper routine for quit_force that requires error handling: */
 struct qt_args
 {
   char *args;
@@ -1237,7 +1236,7 @@ struct qt_args
 };
 
 static int
-quit_target (void *arg)
+quit_target(void *arg)
 {
   struct qt_args *qt = (struct qt_args *)arg;
 
@@ -1256,22 +1255,24 @@ quit_target (void *arg)
   target_close (&current_target, 1);
 
   /* Save the history information if it is appropriate to do so.  */
-  if (write_history_p && history_filename)
-    write_history (history_filename);
+  if (write_history_p && history_filename) {
+    write_history(history_filename);
+  }
 
   /* APPLE LOCAL */
-  if (state_change_hook)
-    state_change_hook (STATE_NOT_ACTIVE);
+  if (state_change_hook) {
+    state_change_hook(STATE_NOT_ACTIVE);
+  }
 
-  do_final_cleanups (ALL_CLEANUPS);	/* Do any final cleanups before exiting */
+  /* Do any final cleanups before exiting: */
+  do_final_cleanups(ALL_CLEANUPS);
 
   return 0;
 }
 
-/* Quit without asking for confirmation.  */
-
-void
-quit_force (char *args, int from_tty)
+/* Quit without asking for confirmation: */
+NORETURN void
+quit_force(char *args, int from_tty)
 {
   int exit_code = 0;
   struct qt_args qt;
@@ -1285,35 +1286,34 @@ quit_force (char *args, int from_tty)
      value of that expression. */
   if (args)
     {
-      struct value *val = parse_and_eval (args);
+      struct value *val = parse_and_eval(args);
 
-      exit_code = (int) value_as_long (val);
+      exit_code = (int)value_as_long(val);
     }
 
   qt.args = args;
   qt.from_tty = from_tty;
 
-  /* We want to handle any quit errors and exit regardless.  */
-  catch_errors (quit_target, &qt,
-	        "Quitting: ", RETURN_MASK_ALL);
+  /* We want to handle any quit errors and exit regardless: */
+  catch_errors(quit_target, &qt,
+               "Quitting: ", RETURN_MASK_ALL);
 
-  exit (exit_code);
+  exit(exit_code);
 }
 
 /* Returns whether GDB is running on a terminal and whether the user
-   desires that questions be asked of them on that terminal.  */
-
+ * desires that questions be asked of them on that terminal.  */
 int
-input_from_terminal_p (void)
+input_from_terminal_p(void)
 {
-  return gdb_has_a_terminal () && (instream == stdin) & caution;
+  return (gdb_has_a_terminal() && (instream == stdin) & caution);
 }
 
 static void
 dont_repeat_command (char *ignored, int from_tty)
 {
-  *line = 0;			/* Can't call dont_repeat here because we're not
-				   necessarily reading from stdin.  */
+  *line = 0;	/* Cannot call dont_repeat here, because we are not
+		 * necessarily reading from stdin.  */
 }
 
 /* Functions to manipulate command line editing control variables.  */

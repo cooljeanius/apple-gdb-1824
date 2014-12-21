@@ -484,10 +484,10 @@ The target architecture is assumed to be %s\n"), arch);
 int
 set_architecture_from_string (char *new_arch)
 {
-  set_architecture_string = xstrdup (new_arch);
   struct gdbarch_info info;
-  gdbarch_info_init (&info);
-  info.bfd_arch_info = bfd_scan_arch (set_architecture_string);
+  set_architecture_string = xstrdup(new_arch);
+  gdbarch_info_init(&info);
+  info.bfd_arch_info = bfd_scan_arch(set_architecture_string);
   if (info.bfd_arch_info == NULL)
     internal_error (__FILE__, __LINE__,
 		    _("set_architecture: bfd_scan_arch failed"));

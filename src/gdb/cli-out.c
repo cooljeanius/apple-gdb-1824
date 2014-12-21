@@ -1,4 +1,4 @@
-/* Output generating routines for GDB CLI.
+/* cli-out.c: Output generating routines for GDB CLI.
 
    Copyright 1999, 2000, 2002, 2003, 2005
    Free Software Foundation, Inc.
@@ -219,15 +219,11 @@ cli_field_skip (struct ui_out *uiout, int fldno, int width,
 }
 
 /* other specific cli_field_* end up here so alignment and field
-   separators are both handled by cli_field_string */
-
+ * separators are both handled by cli_field_string */
 void
-cli_field_string (struct ui_out *uiout,
-		  int fldno,
-		  int width,
-		  enum ui_align align,
-		  const char *fldname,
-		  const char *string)
+cli_field_string(struct ui_out *uiout, int fldno, int width,
+                 enum ui_align align, const char *fldname,
+                 const char *string)
 {
   int before = 0;
   int after = 0;
@@ -270,14 +266,11 @@ cli_field_string (struct ui_out *uiout,
     field_separator ();
 }
 
-/* This is the only field function that does not align.  */
-
+/* This is the only field function that does not align: */
 void
-cli_field_fmt (struct ui_out *uiout, int fldno,
-	       int width, enum ui_align align,
-	       const char *fldname,
-	       const char *format,
-	       va_list args)
+cli_field_fmt(struct ui_out *uiout, int fldno, int width,
+              enum ui_align align, const char *fldname, const char *format,
+              va_list args)
 {
   cli_out_data *data = ui_out_data (uiout);
   if (data->suppress_output)

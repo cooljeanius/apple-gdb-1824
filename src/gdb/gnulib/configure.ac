@@ -92,7 +92,7 @@ m4_ifdef([AM_PROG_AR],[
 ])dnl
 
 # Check for the 'make' the user wants to use:
-AC_CHECK_PROGS([MAKE],[make])
+AC_CHECK_PROGS([MAKE],[make gmake gnumake remake])
 AC_SUBST([MAKE])
 MAKE_IS_GNU=""
 case "`${MAKE} --version 2>&1 | sed 1q`" in

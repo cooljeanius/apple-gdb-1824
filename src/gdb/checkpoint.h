@@ -1,5 +1,5 @@
 /* APPLE LOCAL file checkpoints */
-/* Checkpoints for GDB.
+/* checkpoint.h Checkpoints for GDB.
    Copyright 2005
    Free Software Foundation, Inc.
 
@@ -87,7 +87,8 @@ extern struct checkpoint *find_checkpoint (int num);
 extern void rollback_to_checkpoint (struct checkpoint *cp);
 extern void print_checkpoint_info (struct checkpoint *cp);
 extern int checkpoint_compare (struct checkpoint *cp1, struct checkpoint *cp2);
-extern void checkpoint_clear_inferior ();
+extern void checkpoint_clear_inferior (void);
 
 extern int auto_checkpointing;
 
+/* EOF */

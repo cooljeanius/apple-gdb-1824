@@ -626,18 +626,22 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
-plugin_builddir
 make_subdirs
 am__fastdepCCAS_FALSE
 am__fastdepCCAS_TRUE
 CCASDEPMODE
 CCASFLAGS
 CCAS
+ac_ct_DLLTOOL
 DLLTOOL
 LIBCYGWIN_A
+ac_ct_LD
 LD
+ac_ct_AS
 AS
+ac_ct_NM
 NM
+plugin_builddir
 TCL_SHLIB_SUFFIX
 TCL_DBGX
 TKHDIR
@@ -4685,7 +4689,6 @@ fi
 
 
 
-
 # Make sure TCL_SHLIB_SUFFIX is set:
 if test "x${TCL_SHLIB_SUFFIX}" = "x"; then
   case "${host}" in
@@ -4695,11 +4698,9 @@ if test "x${TCL_SHLIB_SUFFIX}" = "x"; then
   esac
 fi
 
-
-# Since we are not(?) using autoconf > 2.1x, we cannot use AC_CONFIG_FILES.
 make_subdirs=""
 
-# See if -mwin32 works for cygwin
+# See if -mwin32 works for cygwin:
 case "${host}" in
   *cygwin*)
     ocflags=${CFLAGS}
@@ -4725,16 +4726,16 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
   *) ;;
 esac
 
-# note toplevel plugin build directory
+# Note the toplevel plugin build directory:
 plugin_builddir=`pwd`
 
-#
-# Plugins
-#
+#############
+## Plugins ##
+#############
 
-# Supported hosts
+# Check the supported hosts.
 
-# Only supported/tested on linux, solaris, cygwin
+# Only supported/tested on linux, solaris, cygwin:
 supported=yes
 case "${host}" in
   *cygwin*) ;;
@@ -4743,12 +4744,14 @@ case "${host}" in
   *) supported=no ;;
 esac
 
-# Host-specific configury
+# Host-specific configury:
 case "${host}" in
   *cygwin*)
     if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}nm", so it can be a program name with args.
-set dummy ${ac_tool_prefix}nm; ac_word=$2
+  for ac_prog in nm gnm
+  do
+    # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
+set dummy $ac_tool_prefix$ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
 if ${ac_cv_prog_NM+:} false; then :
@@ -4764,7 +4767,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_NM="${ac_tool_prefix}nm"
+    ac_cv_prog_NM="$ac_tool_prefix$ac_prog"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -4784,11 +4787,15 @@ $as_echo "no" >&6; }
 fi
 
 
+    test -n "$NM" && break
+  done
 fi
-if test -z "$ac_cv_prog_NM"; then
+if test -z "$NM"; then
   ac_ct_NM=$NM
-  # Extract the first word of "nm", so it can be a program name with args.
-set dummy nm; ac_word=$2
+  for ac_prog in nm gnm
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
 if ${ac_cv_prog_ac_ct_NM+:} false; then :
@@ -4804,7 +4811,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_ac_ct_NM="nm"
+    ac_cv_prog_ac_ct_NM="$ac_prog"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -4823,6 +4830,10 @@ else
 $as_echo "no" >&6; }
 fi
 
+
+  test -n "$ac_ct_NM" && break
+done
+
   if test "x$ac_ct_NM" = x; then
     NM="nm"
   else
@@ -4834,13 +4845,13 @@ ac_tool_warned=yes ;;
 esac
     NM=$ac_ct_NM
   fi
-else
-  NM="$ac_cv_prog_NM"
 fi
 
     if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}as", so it can be a program name with args.
-set dummy ${ac_tool_prefix}as; ac_word=$2
+  for ac_prog in as gas
+  do
+    # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
+set dummy $ac_tool_prefix$ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
 if ${ac_cv_prog_AS+:} false; then :
@@ -4856,7 +4867,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_AS="${ac_tool_prefix}as"
+    ac_cv_prog_AS="$ac_tool_prefix$ac_prog"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -4876,11 +4887,15 @@ $as_echo "no" >&6; }
 fi
 
 
+    test -n "$AS" && break
+  done
 fi
-if test -z "$ac_cv_prog_AS"; then
+if test -z "$AS"; then
   ac_ct_AS=$AS
-  # Extract the first word of "as", so it can be a program name with args.
-set dummy as; ac_word=$2
+  for ac_prog in as gas
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
 if ${ac_cv_prog_ac_ct_AS+:} false; then :
@@ -4896,7 +4911,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_ac_ct_AS="as"
+    ac_cv_prog_ac_ct_AS="$ac_prog"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -4915,6 +4930,10 @@ else
 $as_echo "no" >&6; }
 fi
 
+
+  test -n "$ac_ct_AS" && break
+done
+
   if test "x$ac_ct_AS" = x; then
     AS="as"
   else
@@ -4926,13 +4945,13 @@ ac_tool_warned=yes ;;
 esac
     AS=$ac_ct_AS
   fi
-else
-  AS="$ac_cv_prog_AS"
 fi
 
     if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}ld", so it can be a program name with args.
-set dummy ${ac_tool_prefix}ld; ac_word=$2
+  for ac_prog in ld gld ld.bfd ld.gold gold
+  do
+    # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
+set dummy $ac_tool_prefix$ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
 if ${ac_cv_prog_LD+:} false; then :
@@ -4948,7 +4967,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_LD="${ac_tool_prefix}ld"
+    ac_cv_prog_LD="$ac_tool_prefix$ac_prog"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -4968,11 +4987,15 @@ $as_echo "no" >&6; }
 fi
 
 
+    test -n "$LD" && break
+  done
 fi
-if test -z "$ac_cv_prog_LD"; then
+if test -z "$LD"; then
   ac_ct_LD=$LD
-  # Extract the first word of "ld", so it can be a program name with args.
-set dummy ld; ac_word=$2
+  for ac_prog in ld gld ld.bfd ld.gold gold
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
 if ${ac_cv_prog_ac_ct_LD+:} false; then :
@@ -4988,7 +5011,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_ac_ct_LD="ld"
+    ac_cv_prog_ac_ct_LD="$ac_prog"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -5007,6 +5030,10 @@ else
 $as_echo "no" >&6; }
 fi
 
+
+  test -n "$ac_ct_LD" && break
+done
+
   if test "x$ac_ct_LD" = x; then
     LD="ld"
   else
@@ -5018,8 +5045,6 @@ ac_tool_warned=yes ;;
 esac
     LD=$ac_ct_LD
   fi
-else
-  LD="$ac_cv_prog_LD"
 fi
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking \"for libcygwin.a\"" >&5
@@ -5027,10 +5052,11 @@ $as_echo_n "checking \"for libcygwin.a\"... " >&6; }
     LIBCYGWIN_A=`${CC} -print-file-name=libcygwin.a`
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${LIBCYGWIN_A}" >&5
 $as_echo "${LIBCYGWIN_A}" >&6; }
-
-    if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}dlltool", so it can be a program name with args.
-set dummy ${ac_tool_prefix}dlltool; ac_word=$2
+        if test -n "$ac_tool_prefix"; then
+  for ac_prog in dlltool gdlltool
+  do
+    # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
+set dummy $ac_tool_prefix$ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
 if ${ac_cv_prog_DLLTOOL+:} false; then :
@@ -5046,7 +5072,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_DLLTOOL="${ac_tool_prefix}dlltool"
+    ac_cv_prog_DLLTOOL="$ac_tool_prefix$ac_prog"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -5066,11 +5092,15 @@ $as_echo "no" >&6; }
 fi
 
 
+    test -n "$DLLTOOL" && break
+  done
 fi
-if test -z "$ac_cv_prog_DLLTOOL"; then
+if test -z "$DLLTOOL"; then
   ac_ct_DLLTOOL=$DLLTOOL
-  # Extract the first word of "dlltool", so it can be a program name with args.
-set dummy dlltool; ac_word=$2
+  for ac_prog in dlltool gdlltool
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
 if ${ac_cv_prog_ac_ct_DLLTOOL+:} false; then :
@@ -5086,7 +5116,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_ac_ct_DLLTOOL="dlltool"
+    ac_cv_prog_ac_ct_DLLTOOL="$ac_prog"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -5105,6 +5135,10 @@ else
 $as_echo "no" >&6; }
 fi
 
+
+  test -n "$ac_ct_DLLTOOL" && break
+done
+
   if test "x$ac_ct_DLLTOOL" = x; then
     DLLTOOL=""
   else
@@ -5116,8 +5150,6 @@ ac_tool_warned=yes ;;
 esac
     DLLTOOL=$ac_ct_DLLTOOL
   fi
-else
-  DLLTOOL="$ac_cv_prog_DLLTOOL"
 fi
 
     ;;
@@ -5258,7 +5290,7 @@ fi
     ;;
 esac
 
-# Plugins supported by this configuration
+# Plugins supported by this configuration:
 if test "x${supported}" = "xyes"; then
   plugins="rhabout"
   case "${target}" in
@@ -5274,11 +5306,8 @@ if test "x${supported}" = "xyes"; then
   done
 fi
 
-
-
-
+# Output:
 ac_config_files="$ac_config_files Makefile rhabout/Makefile:rhabout/Makefile.in:Make-rules rhabout/rhabout.tcl intel-pentium/Makefile:intel-pentium/Makefile.in:Make-rules intel-pentium/intel-pentium.tcl"
-
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure

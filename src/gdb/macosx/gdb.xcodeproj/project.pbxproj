@@ -3130,6 +3130,9 @@
 		A53AC4841A43DF17002F20B2 /* wincecompat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wincecompat.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/wincecompat.h"; sourceTree = "<absolute>"; };
 		A53AC4851A43DF17002F20B2 /* xtensa-xtregs.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "xtensa-xtregs.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/xtensa-xtregs.c"; sourceTree = "<absolute>"; };
 		A53AC4861A43F55D002F20B2 /* inferiors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = inferiors.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/gdbserver/inferiors.h"; sourceTree = "<absolute>"; };
+		A53AC52B1A462248002F20B2 /* mac-defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "mac-defs.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/mac-defs.h"; sourceTree = "<absolute>"; };
+		A53AC52C1A462263002F20B2 /* mac-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "mac-nat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/mac-nat.c"; sourceTree = "<absolute>"; };
+		A53AC52D1A462263002F20B2 /* mac-xdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "mac-xdep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/mac-xdep.c"; sourceTree = "<absolute>"; };
 		A548D49A1836C60900FD4E8A /* DebuggerGDB_disasm.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = DebuggerGDB_disasm.s; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/XcodePlugins/DebuggerGDB/DebuggerGDB_disasm.s"; sourceTree = "<absolute>"; };
 		A548D49B1836C60900FD4E8A /* DebuggerGDB_symbols.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = DebuggerGDB_symbols.csv; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/XcodePlugins/DebuggerGDB/DebuggerGDB_symbols.csv"; sourceTree = "<absolute>"; };
 		A548D49C1836C60900FD4E8A /* DebuggerGDB_symbols.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = DebuggerGDB_symbols.xml; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/XcodePlugins/DebuggerGDB/DebuggerGDB_symbols.xml"; sourceTree = "<absolute>"; };
@@ -5076,7 +5079,6 @@
 			isa = PBXGroup;
 			children = (
 				A548D4981836C60900FD4E8A /* XcodePlugins */,
-				A53353F5182F0DDC004811EE /* mac-gdb.r */,
 				A51599F319870F240079DD4F /* 29k-share */,
 				2609D30D0E82C40A008125DE /* cli */,
 				A5159A0119870F560079DD4F /* common */,
@@ -5403,6 +5405,10 @@
 				2609D6920E82C40B008125DE /* m88k-tdep.c */,
 				2609D6930E82C40B008125DE /* m88k-tdep.h */,
 				2609D6940E82C40B008125DE /* m88kbsd-nat.c */,
+				A53AC52B1A462248002F20B2 /* mac-defs.h */,
+				A53353F5182F0DDC004811EE /* mac-gdb.r */,
+				A53AC52C1A462263002F20B2 /* mac-nat.c */,
+				A53AC52D1A462263002F20B2 /* mac-xdep.c */,
 				2609D6EB0E82C40C008125DE /* macrocmd.c */,
 				2609D6EC0E82C40C008125DE /* macroexp.c */,
 				2609D6ED0E82C40C008125DE /* macroexp.h */,

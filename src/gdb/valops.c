@@ -623,27 +623,28 @@ value_fetch_lazy (struct value *val)
 
 
 /* Store the contents of FROMVAL into the location of TOVAL.
-   Return a new value with the location of TOVAL and contents of FROMVAL.  */
-
+ * Return a new value w/the location of TOVAL and contents of FROMVAL: */
 struct value *
-value_assign (struct value *toval, struct value *fromval)
+value_assign(struct value *toval, struct value *fromval)
 {
   struct type *type;
   struct value *val;
   struct frame_id old_frame;
   int old_frame_level;
 
-  if (!deprecated_value_modifiable (toval))
-    error (_("Left operand of assignment is not a modifiable lvalue."));
+  volatile struct value *vol_fromval = (volatile struct value *)fromval;
 
-  toval = coerce_ref (toval);
+  if (!deprecated_value_modifiable(toval))
+    error(_("Left operand of assignment is not a modifiable lvalue."));
 
-  type = value_type (toval);
-  if (VALUE_LVAL (toval) != lval_internalvar)
-    fromval = value_cast (type, fromval);
+  toval = coerce_ref(toval);
+
+  type = value_type(toval);
+  if (VALUE_LVAL(toval) != lval_internalvar)
+    fromval = value_cast(type, fromval);
   else
-    fromval = coerce_array (fromval);
-  CHECK_TYPEDEF (type);
+    fromval = coerce_array(fromval);
+  CHECK_TYPEDEF(type);
 
   /* Since modifying a register can trash the frame chain, and modifying memory
      can trash the frame cache, we save the old frame and then restore the new
@@ -1224,11 +1225,10 @@ allocate_string_in_inferior (char *str, int len)
   return ptr->addr;
 }
 
-/* This clears out the string pool, and the strings we've allocated on
-   the gdb side.  */
-
+/* This clears out the string pool, and the strings we have allocated on
+ * the gdb side.  */
 void
-value_clear_inferior_string_pool ()
+value_clear_inferior_string_pool(void)
 {
   struct string_in_child *free_me, *ptr;
   int i;

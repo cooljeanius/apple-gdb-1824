@@ -202,7 +202,7 @@ static void update_packet_config (struct packet_config *config);
 
 void _initialize_remote (void);
 
-static int remote_macosx_query_qenvironment_hex_packet_supported ();
+static int remote_macosx_query_qenvironment_hex_packet_supported (void);
 
 /* APPLE LOCAL */
 static void start_remote_timer (void);
@@ -1149,10 +1149,9 @@ show_remote_protocol_Z_packet_cmd (struct ui_file *file, int from_tty,
 
 /* APPLE LOCAL */
 
-/* Ask the remote stub to start communicating without ACK packets. */
-
+/* Ask the remote stub to start communicating without ACK packets: */
 static void
-start_no_ack_mode ()
+start_no_ack_mode(void)
 {
   char buf[256];
   putpkt ("QStartNoAckMode");

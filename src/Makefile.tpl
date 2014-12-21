@@ -215,6 +215,7 @@ HOST_EXPORTS = \
 	ADA_CFLAGS="$(ADA_CFLAGS)"; export ADA_CFLAGS; \
 	CFLAGS="$(CFLAGS) $(C_HOST_ARCHFLAGS)"; export CFLAGS; \
 	CONFIG_SHELL="$(SHELL)"; export CONFIG_SHELL; \
+	CPPFLAGS="$(CPPFLAGS)"; export CPPFLAGS; \
 	CXX="$(CXX)"; export CXX; \
 	CXXFLAGS="$(CXXFLAGS) $(CXX_HOST_ARCHFLAGS)"; export CXXFLAGS; \
 	GCJ="$(GCJ)"; export GCJ; \
@@ -529,13 +530,13 @@ USUAL_AS_FOR_TARGET = ` \
 CC_FOR_TARGET=$(STAGE_CC_WRAPPER) @CC_FOR_TARGET@ $(FLAGS_FOR_TARGET)
 CONFIGURED_CC_FOR_TARGET=@CONFIGURED_CC_FOR_TARGET@
 USUAL_CC_FOR_TARGET = ` \
-  if [ -f $$r/$(HOST_SUBDIR)/gcc/xgcc ] ; then \
-    echo $$r/$(HOST_SUBDIR)/gcc/xgcc -B$$r/$(HOST_SUBDIR)/gcc ; \
+  if [ -f $${r}/$(HOST_SUBDIR)/gcc/xgcc ]; then \
+    echo "$${r}/$(HOST_SUBDIR)/gcc/xgcc -B$${r}/$(HOST_SUBDIR)/gcc"; \
   else \
     if [ 'x$(host)' = 'x$(target)' ]; then \
-      echo $(CC); \
+      echo "$(CC)"; \
     else \
-      echo $(CONFIGURED_CC_FOR_TARGET); \
+      echo "$(CONFIGURED_CC_FOR_TARGET)"; \
     fi; \
   fi`
 

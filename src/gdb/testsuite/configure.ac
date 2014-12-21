@@ -19,13 +19,22 @@ dnl# Process this file with autoconf to produce a configure script.
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 
+echo "this message should be the first one printed from this subdir"
+
 sinclude(../../config/acx.m4)
 
-AC_PREREQ([2.61])
-AC_INIT([gdb-testsuite],[1824],[bug-gdb@gnu.org])
+echo "CPPFLAGS are '${CPPFLAGS}'"
+
+AC_PREREQ([2.61])dnl
+
+echo "initializing autoconf stuff for the testsuite..."
+
+AC_INIT([gdb-testsuite],[1824],[bug-gdb@gnu.org])dnl
 AC_CONFIG_SRCDIR([gdb.base])dnl
 
 # Architecture stuff:
+AC_MSG_CHECKING([architecture stuff])
+AC_MSG_RESULT([ ])
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
@@ -75,7 +84,8 @@ esac])dnl
 
 # Add stabs tests when appropriate.
 if test "x${with_stabs}" = "xyes"; then
-   AC_CONFIG_SUBDIRS([gdb.stabs])
+   AC_CONFIG_SUBDIRS([gdb.stabs])dnl
+   ## 3...
 fi
 
 # Check for 'sed' before doing the rest of this script:
@@ -86,12 +96,15 @@ AC_REQUIRE_PROG_SED
 
 # Hack:
 if test -e ./config.cache; then
+  echo "hacking CPPFLAGS out of ./config.cache"
   sed -i "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" ./config.cache
   sed -i "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" ./config.cache
 elif test -e ../config.cache; then
+  echo "hacking CPPFLAGS out of ../config.cache"
   sed -i "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" ../config.cache
   sed -i "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" ../config.cache
 elif test -r .././config.cache -a -w .././config.cache; then
+  echo "hacking CPPFLAGS out of .././config.cache"
   sed -i "s|ac_cv_env_CPPFLAGS_set|bad_CPPFLAGS_status|g" .././config.cache
   sed -i "s|ac_cv_env_CPPFLAGS_value|bad_CPPFLAGS|g" .././config.cache
 fi
@@ -207,9 +220,12 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <signal.h>
 ]],[[
 return *(signal (0, 0)) (0) == 1;
-]])],[ac_cv_type_signal=int],[ac_cv_type_signal=void])
-])
-AC_DEFINE_UNQUOTED([RETSIGTYPE],[${ac_cv_type_signal}],[Define as the return type of signal handlers (`int' or `void').])
+]])],[ac_cv_type_signal=int],[ac_cv_type_signal=void])dnl
+])dnl
+  ## define:
+AC_DEFINE_UNQUOTED([RETSIGTYPE],[${ac_cv_type_signal}],
+                   [Define as the return type of signal handlers
+                    (`int' or `void').])dnl
 dnl# End what used to be AC\_TYPE\_SIGNAL
 
 # Checks for library functions.
@@ -283,6 +299,7 @@ if test -z "${gdb_target_cpu}"; then
 fi
 AC_SUBST([gdb_target_cpu])dnl
 
+# The rest of the output:
 AC_CONFIG_SUBDIRS([gdb.cell])dnl
 AC_CONFIG_SUBDIRS([gdb.chill])dnl
 AC_CONFIG_FILES([Makefile \

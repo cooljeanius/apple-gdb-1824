@@ -23,12 +23,12 @@ AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 
 dnl# Checks for libraries.
-AC_CHECK_LIB([c],[printf])
+AC_CHECK_LIB([c],[printf])dnl
 
 dnl# Checks for header files.
 AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
-  AC_REQUIRE([AC_HEADER_STDC])
-])
+  AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
 AC_REQUIRE_HEADER_STDC
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_HEADER_TIME
@@ -39,7 +39,7 @@ AC_CHECK_HEADERS([arpa/inet.h ctype.h errno.h fcntl.h io.h ioctl.h \
                   sys/bpp_io.h sys/filio.h sys/ioccom.h sys/ioctl.h \
                   sys/socket.h sys/time.h sys/ttydev.h \
                   term.h termio.h termios.h varargs.h \
-                  windows.h wingdi.h winsock.h])
+                  windows.h wingdi.h winsock.h])dnl
 
 dnl# Checks for typedefs, structures, and compiler characteristics.
 AC_C_BIGENDIAN
@@ -47,23 +47,26 @@ AC_C_CONST
 AC_C_PROTOTYPES
 AC_C_RESTRICT
 AC_C_VOLATILE
-AC_CHECK_DECLS([sys_nerr])
-AC_CHECK_DECLS([sys_errlist])
+AC_CHECK_DECLS([sys_nerr])dnl
+AC_CHECK_DECLS([sys_errlist])dnl
 AC_TYPE_SIZE_T
 AC_TYPE_UINT16_T
-AC_CHECK_TYPES([caddr_t])
-AC_CHECK_TYPES([unsigned int])
-AC_CHECK_TYPES([long unsigned int])
-dnl# Begin what used to be AC\_TYPE\_SIGNAL
+AC_CHECK_TYPES([caddr_t])dnl
+AC_CHECK_TYPES([unsigned int])dnl
+AC_CHECK_TYPES([long unsigned int])dnl
+dnl# Begin what used to be AC\_TYPE\_SIGNAL here:
 AC_CACHE_CHECK([return type of signal handlers],[ac_cv_type_signal],[
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <sys/types.h>
 #include <signal.h>
 ]],[[
 return *(signal (0, 0)) (0) == 1;
-]])],[ac_cv_type_signal=int],[ac_cv_type_signal=void])
-])
-AC_DEFINE_UNQUOTED([RETSIGTYPE],[${ac_cv_type_signal}],[Define as the return type of signal handlers (`int' or `void').])
+]])],[ac_cv_type_signal=int],[ac_cv_type_signal=void])dnl
+])dnl
+  ## define:
+AC_DEFINE_UNQUOTED([RETSIGTYPE],[${ac_cv_type_signal}],
+                   [Define as the return type of signal handlers
+                    (`int' or `void').])dnl
 dnl# End what used to be AC\_TYPE\_SIGNAL
 AC_CHECK_TYPES([socklen_t],[],[],[
 #ifdef HAVE_SYS_TYPES_H
@@ -80,7 +83,7 @@ AC_CHECK_TYPES([socklen_t],[],[],[
 #  warning "This conftest for socklen_t wants to include <sys/socket.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_SOCKET_H */
-])
+])dnl
 
 dnl# Checks for library functions.
 AC_FUNC_MALLOC
@@ -93,7 +96,7 @@ AC_CHECK_FUNCS([asctime bind close escape \
                 localtime memcpy memmove memset panic perror putchar \
                 read recv recvfrom \
                 select sendto setmode setvbuf socket strcmp strdup \
-                strerror strncpy strtol strtoul time tolower write])
+                strerror strncpy strtol strtoul time tolower write])dnl
 
 # Automake:
 if test -f ${srcdir}/config.status; then
@@ -104,7 +107,8 @@ AM_INIT_AUTOMAKE([gnits dejagnu -Wall])
 AM_MAINTAINER_MODE
 AC_EXEEXT
 
-AC_CONFIG_FILES([Makefile])
+# Output.
+AC_CONFIG_FILES([Makefile])dnl
 AC_CONFIG_COMMANDS([config_status_vpath_build_fix],[
 if test "${srcdir}" != "."; then
   if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
@@ -113,7 +117,7 @@ if test "${srcdir}" != "."; then
     cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
   fi
 fi
-],[])
+],[])dnl
 AC_OUTPUT
 
-
+echo "done configuring rdi-share"

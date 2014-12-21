@@ -1,4 +1,4 @@
-/* Definitions for values of C expressions, for GDB.
+/* value.h: Definitions for values of C expressions, for GDB.
 
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994,
    1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
@@ -32,7 +32,7 @@
 /* APPLE LOCAL begin variable opt states.  */
 /* These are the various states of a variable whose value may be currently
    unavailable.  */
-enum opt_state 
+enum opt_state
 {
   opt_okay = 0, /* Variable's value is currently available.                    */
   opt_away,     /* Variable was completely optimized away by the compiler.     */
@@ -482,7 +482,7 @@ extern int unop_user_defined_p (enum exp_opcode op, struct value *arg1);
 
 extern int destructor_name_p (const char *name, const struct type *type);
 
-/* APPLE LOCAL: Replace the #define with a real function so we can 
+/* APPLE LOCAL: Replace the #define with a real function so we can
    use it in cleanups.  */
 extern void value_free (struct value *);
 
@@ -617,7 +617,7 @@ enum check_which_threads
     CHECK_ALL_THREADS
   };
 
-extern int check_safe_call (regex_t unsafe[], 
+extern int check_safe_call (regex_t unsafe[],
 			    int npatterns,
 			    int stack_depth,
 			    enum check_which_threads which_thread);

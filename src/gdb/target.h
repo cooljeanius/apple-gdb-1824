@@ -1251,8 +1251,8 @@ extern int target_stopped_data_address_p (struct target_ops *);
    well.  To prevent the parent from running spontaneously, such targets should
    define this to a function that prevents that from happening.  */
 #if !defined(ENSURE_VFORKING_PARENT_REMAINS_STOPPED)
-#define ENSURE_VFORKING_PARENT_REMAINS_STOPPED(PID) (0)
-#endif
+# define ENSURE_VFORKING_PARENT_REMAINS_STOPPED(PID) ((void)0)
+#endif /* !ENSURE_VFORKING_PARENT_REMAINS_STOPPED */
 
 /* This will only be defined by a target that supports catching vfork events,
    such as HP-UX.
@@ -1262,8 +1262,8 @@ extern int target_stopped_data_address_p (struct target_ops *);
    vfork event will be delivered to us.  */
 
 #if !defined(RESUME_EXECD_VFORKING_CHILD_TO_GET_PARENT_VFORK)
-#define RESUME_EXECD_VFORKING_CHILD_TO_GET_PARENT_VFORK() (0)
-#endif
+# define RESUME_EXECD_VFORKING_CHILD_TO_GET_PARENT_VFORK() ((void)0)
+#endif /* !RESUME_EXECD_VFORKING_CHILD_TO_GET_PARENT_VFORK */
 
 /* Routines for maintenance of the target structures...
 

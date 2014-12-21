@@ -3183,60 +3183,67 @@ find_kext_files_by_bundle (const char *filename,
   xfree ((char *) bundle_identifier_name_from_plist);
 }
 
-/* This is used in a kernel debug session where the user
-   is adding the symbol file and/or debug info for one of
-   the loaded kexts.  It looks in the kernel memory at the
-   list of currently loaded kexts, get the load addresses of
-   each section and fills in a section_addr_info structure.
-
-   It is the responsibility of the caller to free the
-   section_addr_info structure.  free_section_addr_info()
-   is the best way to do this.
-
-   An error will be thrown if there are any problems finding
-   the kext load addresses in the kernel's memory.
-*/
-
+/* This is used in a kernel debug session where the user is adding the
+ * symbol file and/or debug info for one of the loaded kexts.  It looks in
+ * the kernel memory at the list of currently loaded kexts, gets the load
+ * addresses of each section, and then fills in a section_addr_info
+ * structure.
+ *
+ * It is the responsibility of the caller to free the section_addr_info
+ * structure.  free_section_addr_info() is the best way to do this.
+ *
+ * An error will be thrown if there are any problems finding the kext load
+ * addresses in the kernel's memory.  */
 static struct section_addr_info *
-find_kext_loadaddrs_from_kernel (const char *filename,
-                                 char **kext_bundle_executable_filename)
+find_kext_loadaddrs_from_kernel(const char *filename,
+                                char **kext_bundle_executable_filename)
 {
   const char *bundle_identifier_name_from_plist;
   const char *kext_bundle_filename;
 
-  get_kext_bundle_ident_and_binary_path (filename, &kext_bundle_filename,
-         kext_bundle_executable_filename, &bundle_identifier_name_from_plist);
+  uint8_t **kext_uuids;
+  struct cleanup *clean;
+  int i;
+  struct section_addr_info *sect_addrs;
 
-  if (bundle_identifier_name_from_plist)
-    make_cleanup (xfree, bundle_identifier_name_from_plist);
-  if (kext_bundle_filename)
-    make_cleanup (xfree, kext_bundle_filename);
+  get_kext_bundle_ident_and_binary_path(filename, &kext_bundle_filename,
+                                        kext_bundle_executable_filename,
+                                        &bundle_identifier_name_from_plist);
 
-  // kext_bundle_filename now holds the path to the kext executable binary
+  if (bundle_identifier_name_from_plist) {
+    make_cleanup(xfree, bundle_identifier_name_from_plist);
+  }
+  if (kext_bundle_filename) {
+    make_cleanup(xfree, kext_bundle_filename);
+  }
 
-  uint8_t **kext_uuids = get_binary_file_uuids (*kext_bundle_executable_filename);
-  if (kext_uuids == NULL)
-    error ("Unable to find Mach-O LC_UUID load command in file '%s'",
-                                      *kext_bundle_executable_filename);
-  struct cleanup *clean = make_cleanup (free_uuids_array, kext_uuids);
+  /* kext_bundle_filename now holds the path to the kext executable
+   * binary: */
+  kext_uuids = get_binary_file_uuids(*kext_bundle_executable_filename);
+  if (kext_uuids == NULL) {
+    error("Unable to find Mach-O LC_UUID load command in file '%s'",
+          *kext_bundle_executable_filename);
+  }
+  clean = make_cleanup(free_uuids_array, kext_uuids);
 
-  int i = 0;
+  i = 0;
   while (kext_uuids[i] != NULL)
     {
-      if (find_objfile_by_uuid (kext_uuids[i]))
-        error ("%s has already been added.", filename);
+      if (find_objfile_by_uuid (kext_uuids[i])) {
+        error("%s has already been added.", filename);
+      }
       i++;
     }
 
-  struct section_addr_info *sect_addrs;
-  sect_addrs = macosx_get_kext_sect_addrs_from_kernel
-                                   (*kext_bundle_executable_filename,
-                                    kext_uuids,
-                                    bundle_identifier_name_from_plist);
-  if (sect_addrs == NULL)
-    error ("Unable to find the kext '%s' loaded in this kernel.", filename);
+  sect_addrs
+    = macosx_get_kext_sect_addrs_from_kernel(*kext_bundle_executable_filename,
+                                             kext_uuids,
+                                             bundle_identifier_name_from_plist);
+  if (sect_addrs == NULL) {
+    error("Unable to find the kext '%s' loaded in this kernel.", filename);
+  }
 
-  do_cleanups (clean);
+  do_cleanups(clean);
 
   return sect_addrs;
 }
@@ -3259,28 +3266,31 @@ find_kext_files_by_symfile (const char *filename,
    *   5) Proceed as add-kext does.
    */
 
-  abfd = symfile_bfd_open (filename, 0, GDB_OSABI_UNKNOWN);
+  abfd = symfile_bfd_open(filename, 0, GDB_OSABI_UNKNOWN);
   if (abfd == NULL)
-    error ("Cannot open kext sym file");
+    error("Cannot open kext sym file");
 
-  *kext_bundle_executable_filename = macosx_locate_kext_executable_by_symfile (abfd);
+  *kext_bundle_executable_filename = macosx_locate_kext_executable_by_symfile(abfd);
   if (*kext_bundle_executable_filename == NULL)
     {
-      // Try to print just the basename here if we have a uuid
-      const char *bname = strrchr (filename, '/');
-      if (bname && *bname == '/' && *(bname + 1) != '\0')
-        bname++;
-      else
-        bname = filename;
-
       uint8_t uuid[16];
-      if (bfd_mach_o_get_uuid (abfd, uuid, sizeof (uuid)))
-        warning ("Cannot find .kext bundle for %s (%s)", bname, puuid (uuid));
-      else
-        warning ("Cannot find .kext bundle for %s", filename);
+      /* Try to print just the basename here if we have a uuid: */
+      const char *bname = strrchr(filename, '/');
+      if (bname && (*bname == '/') && (*(bname + 1) != '\0')) {
+        bname++;
+      } else {
+        bname = filename;
+      }
+
+      if (bfd_mach_o_get_uuid(abfd, uuid, sizeof(uuid))) {
+        warning("Cannot find .kext bundle for %s (%s)", bname,
+                puuid(uuid));
+      } else {
+        warning("Cannot find .kext bundle for %s", filename);
+      }
     }
 
-  bfd_close (abfd);
+  bfd_close(abfd);
 }
 
 /* APPLE LOCAL: This command adds the space-separated list of dSYMs
@@ -3298,7 +3308,7 @@ add_dsym_command (char *args, int from_tty)
   struct cleanup *argv_cleanup;
   struct stat stat_buf;
   char **arg_array;
-  int i;
+  volatile int i;
 
   if (args == NULL || *args == '\0')
     error ("Wrong number of args, should be \"add-dsym <DSYM PATH>\".");
@@ -3833,9 +3843,7 @@ find_objfile (const char *name)
 }
 
 static void
-remove_symbol_file_command (args, from_tty)
-     char *args;
-     int from_tty;
+remove_symbol_file_command(char *args, int from_tty)
 {
   char *name = NULL;
   struct objfile *objfile = NULL;
@@ -5670,10 +5678,13 @@ convert_sect_addrs_to_offsets_via_on_disk_file (struct section_addr_info *sect_a
   CORE_ADDR slide = INVALID_ADDRESS;
 
   struct cleanup *cleanup;
-  if (sect_addrs == NULL || file == NULL || !file_exists_p (file))
+  bfd *abfd;
+  int i, cur_section;
+
+  if ((sect_addrs == NULL) || (file == NULL) || !file_exists_p(file))
     return NULL;
 
-  bfd *abfd = symfile_bfd_open_safe (file, 0, gdbarch_osabi (current_gdbarch));
+  abfd = symfile_bfd_open_safe(file, 0, gdbarch_osabi(current_gdbarch));
   if (abfd == NULL)
     return NULL;
   cleanup = make_cleanup_bfd_close (abfd);
@@ -5681,7 +5692,6 @@ convert_sect_addrs_to_offsets_via_on_disk_file (struct section_addr_info *sect_a
   sect_offsets = (struct section_offsets *)
     xmalloc (SIZEOF_N_SECTION_OFFSETS (abfd->section_count));
 
-  int i, cur_section;
   for (i = 0; i < abfd->section_count; i++)
     sect_offsets->offsets[i] = INVALID_ADDRESS;
 
