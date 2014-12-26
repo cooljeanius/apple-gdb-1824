@@ -131,7 +131,7 @@ static mc_node *cur_node = NULL;
 # define YY_YY_MCPARSE_H_INCLUDED
 /* Enabling traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -163,26 +163,6 @@ extern int yydebug;
      MCNUMBER = 275
    };
 #endif
-/* Tokens.  */
-#define NL 258
-#define MCIDENT 259
-#define MCFILENAME 260
-#define MCLINE 261
-#define MCCOMMENT 262
-#define MCTOKEN 263
-#define MCENDLINE 264
-#define MCLANGUAGENAMES 265
-#define MCFACILITYNAMES 266
-#define MCSEVERITYNAMES 267
-#define MCOUTPUTBASE 268
-#define MCMESSAGEIDTYPEDEF 269
-#define MCLANGUAGE 270
-#define MCMESSAGEID 271
-#define MCSEVERITY 272
-#define MCFACILITY 273
-#define MCSYMBOLICNAME 274
-#define MCNUMBER 275
-
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -198,7 +178,7 @@ typedef union YYSTYPE
 
 
 /* Line 387 of yacc.c  */
-#line 202 "mcparse.c"
+#line 182 "mcparse.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -226,7 +206,7 @@ int yyparse ();
 /* Copy the second part of user declarations.  */
 
 /* Line 390 of yacc.c  */
-#line 230 "mcparse.c"
+#line 210 "mcparse.c"
 
 #ifdef short
 # undef short
@@ -570,7 +550,7 @@ static const yytype_uint16 yyrline[] =
 };
 #endif
 
-#if YYDEBUG || YYERROR_VERBOSE || 0
+#if YYDEBUG || YYERROR_VERBOSE || 1
 /* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
@@ -2026,7 +2006,7 @@ yyreduce:
 
 
 /* Line 1787 of yacc.c  */
-#line 2030 "mcparse.c"
+#line 2010 "mcparse.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
