@@ -735,6 +735,7 @@ BUILD_PREFIX_1
 BUILD_PREFIX
 GCC_SHLIB_SUBDIR
 RPATH_ENVVAR
+multi_basedir
 target_configargs
 host_configargs
 build_configargs
@@ -939,6 +940,7 @@ with_build_sysroot
 with_debug_prefix_map
 enable_bootstrap
 enable_serial_configure
+enable_multilib
 enable_dependency_tracking
 with_build_time_tools
 enable_maintainer_mode
@@ -1637,6 +1639,7 @@ Optional Features:
                           Force sequential configuration of sub-packages for
                           the host, target or build machine, or all
                           sub-packages
+  --enable-multilib       build many library versions (default off)
   --enable-dependency-tracking
                           do not reject slow dependency extractors
   --disable-dependency-tracking
@@ -14625,6 +14628,42 @@ tbaseargs="${tbaseargs} --disable-option-checking"
 
 # Record and document user additions to sub configure arguments.
 
+
+  # Default to --enable-multilib
+# Check whether --enable-multilib was given.
+if test "${enable_multilib+set}" = set; then :
+  enableval=$enable_multilib; case "${enableval}" in
+  yes) multilib=yes ;;
+  no)  multilib=no ;;
+  *)   as_fn_error $? "bad value ${enableval} for multilib option" "$LINENO" 5 ;;
+ esac
+else
+  multilib=no
+fi
+
+# We may get other options which we leave undocumented:
+# --with-target-subdir, --with-multisrctop, --with-multisubdir
+# See config-ml.in if you want the gory details.
+
+if test "${srcdir}" = "."; then
+  if test -n "${with_target_subdir}" && test "${with_target_subdir}" != "."; then
+    multi_basedir="${srcdir}/${with_multisrctop}../."
+  else
+    multi_basedir="${srcdir}/${with_multisrctop}."
+  fi
+else
+  multi_basedir="${srcdir}/."
+fi
+
+# Even if the default multilib is not a cross compilation,
+# it may be that some of the other multilibs are.
+if test "x${cross_compiling}" = "xno" && test "x${multilib}" = "xyes" \
+   && test "x${with_multisubdir}" != "x"; then
+   cross_compiling=maybe
+fi
+
+ac_config_commands="$ac_config_commands multilib-default-1"
+
 # For the build-side libraries, we just need to pretend we are native,
 # and not use the same cache file.  Multilibs are neither needed nor
 # desired.
@@ -14679,9 +14718,9 @@ case "${target}:${have_compiler}:${host}:${target}:${enable_multilib}" in
     ;;
 esac
 
-# Default to --enable-multilib.
+# Default to --disable-multilib.
 if test "x${enable_multilib}" = "x"; then
-  target_configargs="--enable-multilib ${target_configargs}"
+  target_configargs="--disable-multilib ${target_configargs}"
 fi
 
 # Pass --with-newlib if appropriate. Note that target_configdirs has
@@ -19891,6 +19930,20 @@ cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
 #
 # INIT-COMMANDS
 #
+
+srcdir="${srcdir}"
+host="${host}"
+target="${target}"
+with_multisubdir="${with_multisubdir}"
+with_multisrctop="${with_multisrctop}"
+with_target_subdir="${with_target_subdir}"
+ac_configure_args="${multilib_arg} ${ac_configure_args}"
+multi_basedir="${multi_basedir}"
+CONFIG_SHELL=${CONFIG_SHELL-/bin/sh}
+CC="${CC}"
+CXX="${CXX}"
+GFORTRAN="${GFORTRAN}"
+GCJ="${GCJ}"
 AMDEP_TRUE="$AMDEP_TRUE" ac_aux_dir="$ac_aux_dir"
 
 _ACEOF
@@ -19903,6 +19956,7 @@ do
   case $ac_config_target in
     "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
     "$ac_config_libobj_dir/fnmatch.h") CONFIG_LINKS="$CONFIG_LINKS $ac_config_libobj_dir/fnmatch.h:$ac_config_libobj_dir/fnmatch_.h" ;;
+    "multilib-default-1") CONFIG_COMMANDS="$CONFIG_COMMANDS multilib-default-1" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "Makefile_orig") CONFIG_FILES="$CONFIG_FILES Makefile_orig" ;;
@@ -20538,6 +20592,15 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
 
 
   case $ac_file$ac_mode in
+    "multilib-default-1":C)
+# Only add multilib support code if we just rebuilt the top-level
+# Makefile.
+case " ${CONFIG_FILES} " in
+ *" Makefile "*)
+   echo "Sourcing ${multi_basedir}/config-ml.in"
+   ac_file=Makefile . ${multi_basedir}/config-ml.in
+   ;;
+esac ;;
     "depfiles":C) test x"$AMDEP_TRUE" != x"" || {
   # Older Autoconf quotes --file arguments for eval, but not when files
   # are listed without --file.  Let's play safe and only enable the eval

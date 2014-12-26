@@ -3195,6 +3195,20 @@ AC_ARG_VAR([host_configargs],
 AC_ARG_VAR([target_configargs],
            [additional configure arguments for target directories])dnl
 
+m4_ifdef([AM_ENABLE_MULTILIB],[
+  AM_ENABLE_MULTILIB([],[.])dnl
+],[
+AC_ARG_ENABLE([multilib],
+[AS_HELP_STRING([--enable-multilib],
+                [build many library versions (default off)])],
+[case "${enableval}" in
+  yes) multilib=yes ;;
+  no)  multilib=no ;;
+  *)   AC_MSG_ERROR([bad value ${enableval} for multilib option]) ;;
+ esac],
+	      [multilib=no])dnl
+])dnl
+
 # For the build-side libraries, we just need to pretend we are native,
 # and not use the same cache file.  Multilibs are neither needed nor
 # desired.
@@ -3249,9 +3263,9 @@ case "${target}:${have_compiler}:${host}:${target}:${enable_multilib}" in
     ;;
 esac
 
-# Default to --enable-multilib.
+# Default to --disable-multilib.
 if test "x${enable_multilib}" = "x"; then
-  target_configargs="--enable-multilib ${target_configargs}"
+  target_configargs="--disable-multilib ${target_configargs}"
 fi
 
 # Pass --with-newlib if appropriate. Note that target_configdirs has

@@ -24,53 +24,52 @@
 #include <sys/stat.h>
 
 #ifdef HAVE_GOOD_UTIME_H
-#include <utime.h>
+# include <utime.h>
 #else /* ! HAVE_GOOD_UTIME_H */
-#ifdef HAVE_UTIMES
-#include <sys/time.h>
-#endif /* HAVE_UTIMES */
+# ifdef HAVE_UTIMES
+#  include <sys/time.h>
+# endif /* HAVE_UTIMES */
 #endif /* ! HAVE_GOOD_UTIME_H */
 
 /* We need to open the file in binary modes on system where that makes
    a difference.  */
 #ifndef O_BINARY
-#define O_BINARY 0
-#endif
+# define O_BINARY 0
+#endif /* !O_BINARY */
 
 #if ! defined (_WIN32) || defined (__CYGWIN32__)
 static int simple_copy (const char *, const char *);
 
 /* The number of bytes to copy at once.  */
-#define COPY_BUF 8192
+# define COPY_BUF 8192
 
 /* Copy file FROM to file TO, performing no translations.
-   Return 0 if ok, -1 if error.  */
-
+ * Return 0 if ok, -1 if error.  */
 static int
-simple_copy (const char *from, const char *to)
+simple_copy(const char *from, const char *to)
 {
   int fromfd, tofd, nread;
   int saved;
   char buf[COPY_BUF];
 
-  fromfd = open (from, O_RDONLY | O_BINARY);
+  fromfd = open(from, O_RDONLY | O_BINARY);
   if (fromfd < 0)
     return -1;
-#ifdef O_CREAT
-  tofd = open (to, O_CREAT | O_WRONLY | O_TRUNC | O_BINARY, 0777);
-#else
-  tofd = creat (to, 0777);
-#endif
+# ifdef O_CREAT
+  tofd = open(to, (O_CREAT | O_WRONLY | O_TRUNC | O_BINARY), 0777);
+# else
+  tofd = creat(to, 0777);
+# endif /* O_CREAT */
   if (tofd < 0)
     {
       saved = errno;
-      close (fromfd);
+      close(fromfd);
       errno = saved;
       return -1;
     }
-  while ((nread = read (fromfd, buf, sizeof buf)) > 0)
+  while ((nread = read(fromfd, buf, sizeof(buf))) > 0)
     {
-      if (write (tofd, buf, nread) != nread)
+      if (write(tofd, buf, (size_t)nread) != nread)
 	{
 	  saved = errno;
 	  close (fromfd);
@@ -107,13 +106,13 @@ set_times (const char *destination, const struct stat *statbuf)
     tb.modtime = statbuf->st_mtime;
     result = utime (destination, &tb);
 #else /* ! HAVE_GOOD_UTIME_H */
-#ifndef HAVE_UTIMES
+# ifndef HAVE_UTIMES
     long tb[2];
 
     tb[0] = statbuf->st_atime;
     tb[1] = statbuf->st_mtime;
     result = utime (destination, tb);
-#else /* HAVE_UTIMES */
+# else /* HAVE_UTIMES */
     struct timeval tv[2];
 
     tv[0].tv_sec = statbuf->st_atime;
@@ -121,7 +120,7 @@ set_times (const char *destination, const struct stat *statbuf)
     tv[1].tv_sec = statbuf->st_mtime;
     tv[1].tv_usec = 0;
     result = utimes (destination, tv);
-#endif /* HAVE_UTIMES */
+# endif /* HAVE_UTIMES */
 #endif /* ! HAVE_GOOD_UTIME_H */
   }
 
@@ -130,48 +129,52 @@ set_times (const char *destination, const struct stat *statbuf)
 }
 
 #ifndef S_ISLNK
-#ifdef S_IFLNK
-#define S_ISLNK(m) (((m) & S_IFMT) == S_IFLNK)
-#else
-#define S_ISLNK(m) 0
-#define lstat stat
-#endif
-#endif
+# ifdef S_IFLNK
+#  define S_ISLNK(m) (((m) & S_IFMT) == S_IFLNK)
+# else
+#  define S_ISLNK(m) 0
+#  define lstat stat
+# endif /* S_IFLNK */
+#endif /* !S_ISLNK */
 
 /* Rename FROM to TO, copying if TO is a link.
    Return 0 if ok, -1 if error.  */
 
 int
-smart_rename (const char *from, const char *to, int preserve_dates ATTRIBUTE_UNUSED)
+smart_rename(const char *from, const char *to, int preserve_dates)
 {
   bfd_boolean exists;
   struct stat s;
   int ret = 0;
 
-  exists = lstat (to, &s) == 0;
+  exists = (lstat(to, &s) == 0);
 
 #if defined (_WIN32) && !defined (__CYGWIN32__)
   /* Win32, unlike unix, will not erase `to' in `rename(from, to)' but
      fail instead.  Also, chown is not present.  */
 
   if (exists)
-    remove (to);
+    remove(to);
 
-  ret = rename (from, to);
+  ret = rename(from, to);
   if (ret != 0)
     {
-      /* We have to clean up here.  */
-      non_fatal (_("unable to rename '%s' reason: %s"), to, strerror (errno));
-      unlink (from);
+      /* We have to clean up here: */
+      non_fatal(_("unable to rename '%s' reason: %s"), to, strerror(errno));
+      unlink(from);
     }
+
+  if (preserve_dates) {
+    ;
+  }
 #else
   /* Use rename only if TO is not a symbolic link and has
      only one hard link, and we have permission to write to it.  */
   if (! exists
-      || (!S_ISLNK (s.st_mode)
-	  && S_ISREG (s.st_mode)
+      || (!S_ISLNK(s.st_mode)
+	  && S_ISREG(s.st_mode)
 	  && (s.st_mode & S_IWUSR)
-	  && s.st_nlink == 1)
+	  && (s.st_nlink == 1))
       )
     {
       ret = rename (from, to);
@@ -191,29 +194,31 @@ smart_rename (const char *from, const char *to, int preserve_dates ATTRIBUTE_UNU
 		 setuid bit if the chown succeeds, because we don't
 		 want to introduce an unexpected setuid file owned by
 		 the user running objcopy.  */
-	      chmod (to, s.st_mode & 0777);
-	      if (chown (to, s.st_uid, s.st_gid) >= 0)
-		chmod (to, s.st_mode & 07777);
+	      chmod(to, s.st_mode & 0777);
+	      if (chown(to, s.st_uid, s.st_gid) >= 0)
+		chmod(to, s.st_mode & 07777);
 	    }
 	}
       else
 	{
-	  /* We have to clean up here.  */
-	  non_fatal (_("unable to rename '%s' reason: %s"), to, strerror (errno));
-	  unlink (from);
+	  /* We have to clean up here: */
+	  non_fatal(_("unable to rename '%s' reason: %s"), to, strerror(errno));
+	  unlink(from);
 	}
     }
   else
     {
-      ret = simple_copy (from, to);
+      ret = simple_copy(from, to);
       if (ret != 0)
-	non_fatal (_("unable to copy file '%s' reason: %s"), to, strerror (errno));
+	non_fatal(_("unable to copy file '%s' reason: %s"), to, strerror(errno));
 
       if (preserve_dates)
-	set_times (to, &s);
-      unlink (from);
+	set_times(to, &s);
+      unlink(from);
     }
 #endif /* _WIN32 && !__CYGWIN32__ */
 
   return ret;
 }
+
+/* EOF */

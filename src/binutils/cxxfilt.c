@@ -93,16 +93,17 @@ Usage: %s [-_] [-n] [--strip-underscores] [--no-strip-underscores]\n\
 
 static char mbuffer[32767];
 
+extern int strip_underscore;
 int strip_underscore = 0;
 
 static const struct option long_options[] = {
-  {"strip-underscores", no_argument, 0, '_'},
-  {"format", required_argument, 0, 's'},
-  {"help", no_argument, 0, 'h'},
-  {"no-params", no_argument, 0, 'p'},
-  {"no-strip-underscores", no_argument, 0, 'n'},
-  {"version", no_argument, 0, 'v'},
-  {0, no_argument, 0, 0}
+  { "strip-underscores", no_argument, 0, '_' },
+  { "format", required_argument, 0, 's' },
+  { "help", no_argument, 0, 'h' },
+  { "no-params", no_argument, 0, 'p' },
+  { "no-strip-underscores", no_argument, 0, 'n' },
+  { "version", no_argument, 0, 'v' },
+  { 0, no_argument, 0, 0 }
 };
 
 static const char *standard_symbol_characters(void);
@@ -173,110 +174,117 @@ main(int argc, char **argv)
 
   while ((c = getopt_long(argc, argv, "_nps:", long_options, (int *)0)) != EOF) {
       switch (c) {
-		  case '?':
-			  usage (stderr, 1);
-			  break;
-		  case 'h':
-			  usage (stdout, 0);
-		  case 'n':
-			  strip_underscore = 0;
-			  break;
-		  case 'p':
-			  flags &= ~ DMGL_PARAMS;
-			  break;
-		  case 'v':
-			  print_version ("c++filt");
-			  return (0);
-		  case '_':
-			  strip_underscore = 1;
-			  break;
-		  case 's':
-		  {
-			  style = cplus_demangle_name_to_style (optarg);
-			  if (style == unknown_demangling) {
-				  fprintf(stderr, "%s: unknown demangling style `%s'\n",
-						  program_name, optarg);
-				  return (1);
-			  } else {
-				  cplus_demangle_set_style(style);
-			  }
-		  }
-			  break;
-	  } /* end "switch (c)" */
+        case '?':
+          usage(stderr, 1);
+#if !defined(__clang__)
+          break;
+#endif /* !__clang__ */
+        case 'h':
+          usage(stdout, 0);
+        case 'n':
+          strip_underscore = 0;
+          break;
+        case 'p':
+          flags &= ~ DMGL_PARAMS;
+          break;
+        case 'v':
+          print_version("c++filt");
+          return (0);
+        case '_':
+          strip_underscore = 1;
+          break;
+        case 's':
+          {
+            style = cplus_demangle_name_to_style (optarg);
+            if (style == unknown_demangling) {
+              fprintf(stderr, "%s: unknown demangling style `%s'\n",
+                      program_name, optarg);
+              return (1);
+            } else {
+              cplus_demangle_set_style(style);
+            }
+          }
+          break;
+      } /* end "switch (c)" */
   } /* end while-loop */
 
   if (optind < argc) {
       for (; (optind < argc); optind++) {
-		  demangle_it(argv[optind]);
-	  }
+        demangle_it(argv[optind]);
+      }
   } else {
       switch (current_demangling_style) {
-		  case gnu_demangling:
-		  case lucid_demangling:
-		  case arm_demangling:
-		  case java_demangling:
-		  case edg_demangling:
-		  case gnat_demangling:
-		  case gnu_v3_demangling:
-		  case auto_demangling:
-			  valid_symbols = standard_symbol_characters();
-			  break;
-		  case hp_demangling:
-			  valid_symbols = hp_symbol_characters();
-			  break;
-		  default:
-			  /* Folks should explicitly indicate the appropriate alphabet for
-			   * each demangling. Providing a default would allow the
-			   * question to go unconsidered. */
-			  fatal("Internal error: no symbol alphabet for current style");
-	  } /* end "switch (current_demangling_style)" */
+        case gnu_demangling:
+        case lucid_demangling:
+        case arm_demangling:
+        case java_demangling:
+        case edg_demangling:
+        case gnat_demangling:
+        case gnu_v3_demangling:
+        case dlang_demangling:
+        case auto_demangling:
+          valid_symbols = standard_symbol_characters();
+          break;
+        case hp_demangling:
+          valid_symbols = hp_symbol_characters();
+          break;
+        case no_demangling:
+          valid_symbols = NULL; /* FIXME: is this correct? */
+          break;
+        case unknown_demangling: /* fall through */
+        default:
+          /* Folks should explicitly indicate the appropriate alphabet for
+           * each demangling. Providing a default would allow the
+           * question to go unconsidered. */
+          fatal("Internal error: no symbol alphabet for current style");
+      } /* end "switch (current_demangling_style)" */
 
       for (;;) {
-		  unsigned i = 0;
-		  c = getchar();
-		  /* Try to read a label.  */
-		  while ((c != EOF) && (ISALNUM(c) || strchr(valid_symbols, c))) {
-			  if (i >= sizeof(mbuffer) - 1) {
-				  break;
-			  }
-			  mbuffer[i++] = c;
-			  c = getchar();
-		  }
-		  if (i > 0) {
-			  unsigned skip_first = 0;
+        unsigned i = 0U;
+        c = getchar();
+        /* Try to read a label: */
+        while ((c != EOF) && (ISALNUM(c) || strchr(valid_symbols, c))) {
+          if (i >= (sizeof(mbuffer) - 1)) {
+            break;
+          }
+          mbuffer[i++] = (char)c;
+          c = getchar();
+        }
+        if (i > 0) {
+          unsigned skip_first = 0;
 
-			  mbuffer[i] = 0;
-			  if ((mbuffer[0] == '.') || (mbuffer[0] == '$')) {
-				  ++skip_first;
-			  }
-			  if (strip_underscore && (mbuffer[skip_first] == '_')) {
-				  ++skip_first;
-			  }
+          mbuffer[i] = 0;
+          if ((mbuffer[0] == '.') || (mbuffer[0] == '$')) {
+            ++skip_first;
+          }
+          if (strip_underscore && (mbuffer[skip_first] == '_')) {
+            ++skip_first;
+          }
 
-			  if (skip_first > i) {
-				  skip_first = i;
-			  }
+          if (skip_first > i) {
+            skip_first = i;
+          }
 
-			  flags |= (int)style;
-			  result = cplus_demangle((mbuffer + skip_first), flags);
-			  if (result) {
-				  if (mbuffer[0] == '.') {
-					  putc('.', stdout);
-				  }
-				  fputs(result, stdout);
-				  free(result);
-			  } else {
-				  fputs(mbuffer, stdout);
-			  }
+          flags |= (int)style;
+          result = cplus_demangle((mbuffer + skip_first), flags);
+          if (result) {
+            if (mbuffer[0] == '.') {
+              putc('.', stdout);
+            }
+            fputs(result, stdout);
+            free(result);
+          } else {
+            fputs(mbuffer, stdout);
+          }
 
-			  fflush(stdout);
-		  }
-		  if (c == EOF) {
-			  break;
-		  }
-		  putchar(c);
-		  fflush(stdout);
-	  } /* end for-loop */
+          fflush(stdout);
+        }
+        if (c == EOF) {
+          break;
+        }
+        putchar(c);
+        fflush(stdout);
+      } /* end for-loop */
   }
 
   return(0);

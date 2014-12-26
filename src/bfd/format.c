@@ -386,23 +386,26 @@ DESCRIPTION
 */
 
 bfd_boolean
-bfd_set_format (bfd *abfd, bfd_format format)
+bfd_set_format(bfd *abfd, bfd_format format)
 {
-  if (bfd_read_p (abfd) ||
-      ((int) abfd->format < (int) bfd_unknown) ||
-      ((int) abfd->format >= (int) bfd_type_end))
+  if (bfd_read_p(abfd) ||
+#if 0
+      ((int)abfd->format < (int)bfd_unknown) ||
+#endif /* 0 */
+      ((unsigned int)abfd->format >= (unsigned int)bfd_type_end))
     {
-      bfd_set_error (bfd_error_invalid_operation);
+      bfd_set_error(bfd_error_invalid_operation);
       return FALSE;
     }
 
-  if (abfd->format != bfd_unknown)
-    return abfd->format == format;
+  if (abfd->format != bfd_unknown) {
+    return (abfd->format == format);
+  }
 
-  /* Presume the answer is yes.  */
+  /* Presume the answer is yes: */
   abfd->format = format;
 
-  if (!BFD_SEND_FMT (abfd, _bfd_set_format, (abfd)))
+  if (!BFD_SEND_FMT(abfd, _bfd_set_format, (abfd)))
     {
       abfd->format = bfd_unknown;
       return FALSE;

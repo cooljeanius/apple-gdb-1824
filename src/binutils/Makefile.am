@@ -32,6 +32,7 @@ LDFLAGS_FOR_BUILD = @LDFLAGS_FOR_BUILD@
 YACC = `if [ -f ../bison/bison ]; then echo ../bison/bison -y -L$(srcdir)/../bison/; else echo @YACC@; fi`
 AM_YFLAGS = -d -t -v @MAINT@@EXTRA_YFLAGS_SEP@ -k -Wall -Wyacc
 LEX = `if [ -f ../flex/flex ]; then echo ../flex/flex; else echo @LEX@; fi`
+AM_LFLAGS = -d
 
 # Automake 1.10+ disables lex and yacc output file regeneration if
 # maintainer mode is disabled.  Avoid this.
@@ -48,7 +49,8 @@ C_ARCHFLAGS = -arch $(HOST_ARCHITECTURE)
 WARN_CFLAGS = @WARN_CFLAGS@
 NO_WERROR = @NO_WERROR@
 AM_CFLAGS = $(WARN_CFLAGS) $(C_ARCHFLAGS)
-AM_LDFLAGS = -framework CoreFoundation -L../readline -L../intl -L../libiberty -L../bfd -L../opcodes
+AM_LDFLAGS = -framework CoreFoundation -L../readline -L../intl \
+  -L../libiberty -L../bfd -L../opcodes
 
 # these two are almost the same program (really?):
 AR_PROG=ar
@@ -83,9 +85,16 @@ DLLWRAP_PROG=dllwrap
 
 SRCONV_PROG=srconv$(EXEEXT) sysdump$(EXEEXT) coffdump$(EXEEXT) 
 
-PROGS = $(SIZE_PROG) $(OBJDUMP_PROG) $(NM_PROG) $(AR_PROG) $(STRINGS_PROG) $(STRIP_PROG) $(RANLIB_PROG) $(DEMANGLER_PROG) $(OBJCOPY_PROG) @BUILD_NLMCONV@ @BUILD_SRCONV@ @BUILD_DLLTOOL@ @BUILD_WINDRES@ $(ADDR2LINE_PROG) $(READELF_PROG) @BUILD_DLLWRAP@ @BUILD_MISC@
+PROGS = $(SIZE_PROG) $(OBJDUMP_PROG) $(NM_PROG) $(AR_PROG) \
+  $(STRINGS_PROG) $(STRIP_PROG) $(RANLIB_PROG) $(DEMANGLER_PROG) \
+  $(OBJCOPY_PROG) @BUILD_NLMCONV@ @BUILD_SRCONV@ @BUILD_DLLTOOL@ \
+  @BUILD_WINDRES@ $(ADDR2LINE_PROG) $(READELF_PROG) @BUILD_DLLWRAP@ \
+  @BUILD_MISC@
 
-bin_PROGRAMS = $(SIZE_PROG) $(OBJDUMP_PROG) $(AR_PROG) $(STRINGS_PROG) $(RANLIB_PROG) $(OBJCOPY_PROG) @BUILD_NLMCONV@ @BUILD_SRCONV@ @BUILD_DLLTOOL@ @BUILD_WINDRES@ @BUILD_WINDMC@ $(ADDR2LINE_PROG) $(READELF_PROG) $(ELFEDIT_PROG) @BUILD_DLLWRAP@ @BUILD_MISC@
+bin_PROGRAMS = $(SIZE_PROG) $(OBJDUMP_PROG) $(AR_PROG) $(STRINGS_PROG) \
+  $(RANLIB_PROG) $(OBJCOPY_PROG) @BUILD_NLMCONV@ @BUILD_SRCONV@ \
+  @BUILD_DLLTOOL@ @BUILD_WINDRES@ @BUILD_WINDMC@ $(ADDR2LINE_PROG) \
+  $(READELF_PROG) $(ELFEDIT_PROG) @BUILD_DLLWRAP@ @BUILD_MISC@
 
 bin_SCRIPTS = @BUILD_INSTALL_MISC@
 EXTRA_SCRIPTS = embedspu
@@ -103,7 +112,11 @@ noinst_PROGRAMS = $(RENAMED_PROGS)
 check_PROGRAMS = $(TEST_PROGS)
 ## (@BUILD_MISC@ has been moved above to bin_PROGRAMS)
 
-EXTRA_PROGRAMS = $(NLMCONV_PROG) srconv sysdump coffdump $(DLLTOOL_PROG) $(WINDRES_PROG) $(WINDMC_PROG) $(DLLWRAP_PROG)
+## needs to be adjusted to work as proper tests:
+TESTS = @MAINT@ # $(check_PROGRAMS)
+
+EXTRA_PROGRAMS = $(NLMCONV_PROG) srconv sysdump coffdump $(DLLTOOL_PROG) \
+  $(WINDRES_PROG) $(WINDMC_PROG) $(DLLWRAP_PROG)
 
 # Stuff that goes in tooldir/ if appropriate.
 TOOL_PROGS = nm-new strip-new ar ranlib dlltool objdump objcopy
@@ -135,7 +148,8 @@ HFILES = \
 	objdump.h sysdep.h unwind-ia64.h windres.h winduni.h windint.h \
 	windmc.h
 
-GENERATED_HFILES = arparse.h sysroff.h sysinfo.h defparse.h rcparse.h mcparse.h
+GENERATED_HFILES = arparse.h sysroff.h sysinfo.h defparse.h rcparse.h \
+	mcparse.h nlmheader.h
 BUILT_SOURCES = $(GENERATED_HFILES)
 
 CFILES = \
@@ -153,9 +167,48 @@ CFILES = \
 	syslex_wrap.c unwind-ia64.c elfedit.c version.c \
 	windres.c winduni.c wrstabs.c windmc.c mclex.c
 
+PREPROC_CFILES = \
+	addr2line.i ar.i arsup.i bin2c.i binemul.i bucomm.i budemang.i \
+	coffdump.i coffgrok.i cxxfilt.i \
+	dwarf.i debug.i dlltool.i dllwrap.i \
+	elfcomm.i emul_aix.i emul_vanilla.i filemode.i \
+	ieee.i is-ranlib.i is-strip.i maybe-ranlib.i maybe-strip.i \
+	nlmconv.i nm.i not-ranlib.i not-strip.i \
+	objcopy.i objdump.i prdbg.i \
+	od-xcoff.i od-macho.i \
+	rclex.i rdcoff.i rddbg.i readelf.i rename.i \
+	resbin.i rescoff.i resrc.i resres.i \
+	size.i srconv.i stabs.i strings.i sysdump.i \
+	syslex_wrap.i unwind-ia64.i elfedit.i version.i \
+	windres.i winduni.i wrstabs.i windmc.i mclex.i
+
+ASM_OF_CFILES = \
+	addr2line.s ar.s arsup.s bin2c.s binemul.s bucomm.s budemang.s \
+	coffdump.s coffgrok.s cxxfilt.s \
+	dwarf.s debug.s dlltool.s dllwrap.s \
+	elfcomm.s emul_aix.s emul_vanilla.s filemode.s \
+	ieee.s is-ranlib.s is-strip.s maybe-ranlib.s maybe-strip.s \
+	nlmconv.s nm.s not-ranlib.s not-strip.s \
+	objcopy.s objdump.s prdbg.s \
+	od-xcoff.s od-macho.s \
+	rclex.s rdcoff.s rddbg.s readelf.s rename.s \
+	resbin.s rescoff.s resrc.s resres.s \
+	size.s srconv.s stabs.s strings.s sysdump.s \
+	syslex_wrap.s unwind-ia64.s elfedit.s version.s \
+	windres.s winduni.s wrstabs.s windmc.s mclex.s
+
 GENERATED_CFILES = \
 	arparse.c arlex.c sysroff.c sysinfo.c syslex.c \
 	defparse.c deflex.c nlmheader.c rcparse.c rclex.c mcparse.c
+BUILT_SOURCES += $(GENERATED_CFILES)
+
+PREPROC_GENERATED_CFILES = \
+	arparse.i arlex.i sysroff.i sysinfo.i syslex.i \
+	defparse.i deflex.i nlmheader.i rcparse.i rclex.i mcparse.i
+
+ASM_OF_GENERATED_CFILES = \
+	arparse.s arlex.s sysroff.s sysinfo.s syslex.s \
+	defparse.s deflex.s nlmheader.s rcparse.s rclex.s mcparse.s
 
 OFILES = \
 	addr2line.o ar.o arsup.o binemul.o bucomm.o budemang.o \
@@ -293,7 +346,8 @@ nm_new_DEPENDENCIES = $(BFD_DEP) $(LIBIBERTY_DEP) $(INTLDEP)
 
 objdump_SOURCES = objdump.c budemang.c prdbg.c $(DEBUG_SRCS) $(BULIBS)
 objdump_LDADD = $(OPCODES) $(BFD) $(LIBIBERTY) $(INTLLIBS)
-objdump_DEPENDENCIES = $(OPCODES_DEP) $(BFD_DEP) $(LIBIBERTY_DEP) $(INTLDEP)
+objdump_DEPENDENCIES = $(OPCODES_DEP) $(BFD_DEP) $(LIBIBERTY_DEP) \
+  $(INTLDEP)
 
 objdump.@OBJEXT@:objdump.c
 if am__fastdepCC
@@ -341,7 +395,9 @@ ar_and_ranlib_SHARED_OFILES = arparse.o arlex.o ar.o arsup.o rename.o \
 # (That is, after 'make install', replace the installed ranlib by a link to
 # ar.) Alternatively, you can install ranlib.sh as ranlib.
 ar_with_ranlib_uncommented: $(ADDL_DEPS) $(ar_and_ranlib_SHARED_OFILES)
-	$(HLDENV) $(CC) $(HLDFLAGS) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $(AR_PROG) $(ar_and_ranlib_SHARED_OFILES) $(ADDL_LIBS) $(EXTRALIBS)
+	$(HLDENV) $(CC) $(HLDFLAGS) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) \
+	  $(AM_LDFLAGS) -o $(AR_PROG) $(ar_and_ranlib_SHARED_OFILES) \
+	  $(ADDL_LIBS) $(EXTRALIBS)
 	-rm -fv $(RANLIB_PROG)
 	-ln -v $(AR_PROG) $(RANLIB_PROG)
 .PHONY: ar_with_ranlib_uncommented
@@ -352,7 +408,9 @@ objcopy_strip_SHARED_OFILES = objcopy.o rename.o maybe-strip.o \
 # Similarly to the previous, we also have a target that builds an
 # objcopy and a strip in one binary that uses argv[0] to decide its action:
 objcopy_with_strip_uncommented: $(ADDL_DEPS) $(objcopy_strip_SHARED_OFILES)
-	$(HLDENV) $(CC) $(HLDFLAGS) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) $(AM_LDFLAGS) -o $(OBJCOPY_PROG) $(objcopy_strip_SHARED_OFILES) $(ADDL_LIBS) $(EXTRALIBS)
+	$(HLDENV) $(CC) $(HLDFLAGS) $(CFLAGS) $(C_ARCHFLAGS) $(LDFLAGS) \
+	  $(AM_LDFLAGS) -o $(OBJCOPY_PROG) $(objcopy_strip_SHARED_OFILES) \
+	  $(ADDL_LIBS) $(EXTRALIBS)
 	-rm -fv $(STRIP_PROG)
 	-ln -v $(OBJCOPY_PROG) $(STRIP_PROG)
 .PHONY: objcopy_with_strip_uncommented
@@ -371,7 +429,7 @@ sysroff.h: sysinfo$(EXEEXT_FOR_BUILD) sysroff.info
 	./sysinfo$(EXEEXT_FOR_BUILD) -d <$(srcdir)/sysroff.info >>$@
 	echo "/* end section generated by '-d' flag to sysinfo$(EXEEXT_FOR_BUILD) */" >>$@
 
-sysinfo$(EXEEXT_FOR_BUILD): sysinfo.@OBJEXT@ syslex_wrap.@OBJEXT@
+sysinfo$(EXEEXT_FOR_BUILD): sysinfo.@OBJEXT@ syslex_wrap.@OBJEXT@ sysinfo.h
 	$(CC_FOR_BUILD) $(CFLAGS_FOR_BUILD) $(C_ARCHFLAGS) $(LDFLAGS_FOR_BUILD) -o $@ sysinfo.@OBJEXT@ syslex_wrap.@OBJEXT@
 
 syslex.@OBJEXT@: config.h syslex.c sysinfo.h
@@ -382,9 +440,11 @@ syslex.@OBJEXT@: config.h syslex.c sysinfo.h
 	fi
 
 syslex_wrap.@OBJEXT@: syslex_wrap.c syslex.c sysinfo.h config.h
-	$(CC_FOR_BUILD) -c -I. -I$(srcdir) $(AM_CFLAGS) $(CFLAGS_FOR_BUILD) $(NO_WERROR) $(srcdir)/syslex_wrap.c -Wno-error
+	$(CC_FOR_BUILD) -c -I. -I$(srcdir) $(AM_CFLAGS) \
+	  $(CFLAGS_FOR_BUILD) $(NO_WERROR) $(srcdir)/syslex_wrap.c \
+	  -Wno-error
 
-sysinfo.@OBJEXT@: sysinfo.c
+sysinfo.@OBJEXT@: sysinfo.c @MAINT@ sysinfo.h
 	if [ -r sysinfo.c ]; then \
 	  $(CC_FOR_BUILD) -c -I. $(AM_CFLAGS) $(CFLAGS_FOR_BUILD) $(NO_WERROR) sysinfo.c; \
 	else \
@@ -392,7 +452,8 @@ sysinfo.@OBJEXT@: sysinfo.c
 	fi
 
 bin2c$(EXEEXT_FOR_BUILD): bin2c.c $(INCDIR)/binary-io.h
-	$(CC_FOR_BUILD) -o $@ $(AM_CPPFLAGS) $(AM_CFLAGS) $(CFLAGS_FOR_BUILD) $(LDFLAGS_FOR_BUILD) $(srcdir)/bin2c.c
+	$(CC_FOR_BUILD) -o $@ $(AM_CPPFLAGS) $(AM_CFLAGS) \
+	  $(CFLAGS_FOR_BUILD) $(LDFLAGS_FOR_BUILD) $(srcdir)/bin2c.c
 
 embedspu: embedspu.sh Makefile
 	$(AWK) '/^program_transform_name=/ {print "program_transform_name=\"$(program_transform_name)\""; next} {print}' < $< > $@
@@ -408,7 +469,8 @@ my_nlmheader.h: nlmheader.c
 .PHONY: my_nlmheader.h
 my_rcparse.h: rcparse.c
 .PHONY: my_rcparse.h
-sysinfo.h: sysinfo.c
+sysinfo.h: sysinfo.c sysinfo.y
+sysinfo.c: sysinfo.y
 
 # Disable -Werror, if it has been enabled, since old versions of bison/
 # yacc will produce working code which contain compile time warnings.
@@ -623,8 +685,17 @@ all: info
 CONFIG_STATUS_DEPENDENCIES = $(BFDDIR)/configure.ac \
 	$(BFDDIR)/development.sh
 
-DISTCLEANFILES = sysinfo sysroff.c sysroff.h \
-	site.exp site.bak embedspu *~ .DS_Store
+ALL_BISON_OUTPUT_FILES = \
+	arparse.output \
+	defparse.output \
+	mcparse.output \
+	nlmheader.output \
+	rcparse.output \
+	sysinfo.output
+
+DISTCLEANFILES = sysinfo sysroff.c sysroff.h lex.backup \
+	site.exp site.bak embedspu *~ .DS_Store *.log *.trs \
+	$(ALL_BISON_OUTPUT_FILES)
 
 distclean-local:
 	rm -rf autom4te.cache || rmdir autom4te.cache
@@ -666,11 +737,11 @@ DEP1: $(CFILES) $(GENERATED_CFILES)
 dep.sed: dep-in.sed @MAINT@ config.status
 	objdir=`pwd`; \
 	$(SED) <$(srcdir)/dep-in.sed >dep.sed	\
-		-e 's!@INCDIR@!$(INCDIR)!'	\
-		-e 's!@BFDDIR@!$(BFDDIR)!'	\
-		-e 's!@SRCDIR@!$(srcdir)!'	\
-		-e "s!@OBJDIR@!$${objdir}!"	\
-		-e 's!@TOPDIR@!'`echo $(srcdir) | $(SED) -e s,/binutils$$,,`'!'
+	  -e 's!@INCDIR@!$(INCDIR)!'	\
+	  -e 's!@BFDDIR@!$(BFDDIR)!'	\
+	  -e 's!@SRCDIR@!$(srcdir)!'	\
+	  -e "s!@OBJDIR@!$${objdir}!"	\
+	  -e 's!@TOPDIR@!'`echo $(srcdir) | $(SED) -e s,/binutils$$,,`'!'
 	touch $@
 
 #FIXME: this target relies on dep.sed, which is broken (see above)
@@ -698,8 +769,7 @@ dep-am: DEP @MAINT@ $(PATH_TO_MOVEIFCHANGE)
 
 .PHONY: dep dep-in dep-am
 
-# APPLE LOCAL begin framework building
-
+## APPLE LOCAL begin framework building:
 NSLIBTOOL = cc -dynamiclib
 
 SYSTEM_FRAMEWORK = -L../intl -lintl -framework System -framework CoreFoundation @SYSTEM_FRAMEWORK_LIBS@
@@ -756,8 +826,18 @@ stamp-framework-binutils: $(BINUTILS_OFILES)
 	    $(LN_S) -v Versions/Current/$(BINUTILS_PREFIX)$(BINUTILS) $(BINUTILS).framework/$(BINUTILS_PREFIX)$(BINUTILS); \
 	fi
 	touch stamp-framework-binutils
+## APPLE LOCAL end framework building
 
-# APPLE LOCAL end framework building
+## APPLE LOCAL old Classic/Carbon stuff:
+REZ = @REZ@
+
+# can add "-progress" for more verbose output:
+mac-binutils.rsrc: mac-binutils.r
+	$(REZ) -o $@ $(C_ARCHFLAGS) -i ../gdb \
+	  -d VERSION_STRING="\"$(PACKAGE) $(VERSION)\"" \
+	  mac-binutils.r 2>&1
+
+## APPLE LOCAL end old Classic/Carbon stuff
 
 ###
 
@@ -766,7 +846,18 @@ MOSTLYCLEANFILES = sysinfo$(EXEEXT_FOR_BUILD) bin2c$(EXEEXT_FOR_BUILD) \
 mostlyclean-local:
 	-rm -rf tmpdir
 
-CLEANFILES = dep.sed DEP DEPA DEP1 DEP2
+CLEANFILES = dep.sed DEP DEPA DEP1 DEP2 $(EXTRA_PROGRAMS) \
+  $(PREPROC_GENERATED_CFILES) $(ASM_OF_GENERATED_CFILES) @MAINT@ lib*.a
+clean-local:
+	-rm -fv *.rsrc
+	-rm -rfv *.dSYM
+
+## DISTCLEANFILES is already set above, but add these to it here:
+DISTCLEANFILES += $(PREPROC_CFILES) stamp-framework-binutils \
+  stamp-framework-headers-binutils $(ASM_OF_CFILES) @MAINT@ artest.a
+
+maintainer-clean-local:
+	-$(RM) -rfv $(BINUTILS).framework || rmdir $(BINUTILS).framework
 
 .PHONY: install-exec-local
 
@@ -804,11 +895,11 @@ addr2line.o: addr2line.c config.h ../bfd/bfd.h $(INCDIR)/ansidecl.h \
   $(INCDIR)/symcat.h $(INCDIR)/getopt.h $(INCDIR)/libiberty.h \
   $(INCDIR)/demangle.h bucomm.h $(INCDIR)/bin-bugs.h \
   $(INCDIR)/fopen-same.h budemang.h
-ar.o: ar.c ../bfd/bfd.h $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h \
+ar.o: ar.c sysdep.h ../bfd/bfd.h $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h \
   $(INCDIR)/libiberty.h $(INCDIR)/progress.h bucomm.h config.h \
-  $(INCDIR)/bin-bugs.h $(INCDIR)/fopen-same.h \
+  $(INCDIR)/bin-bugs.h $(INCDIR)/fopen-same.h $(INCDIR)/getopt.h \
   $(INCDIR)/aout/ar.h $(BFDDIR)/libbfd.h $(INCDIR)/hashtab.h \
-  arsup.h $(INCDIR)/filenames.h binemul.h
+  arsup.h $(INCDIR)/filenames.h binemul.h $(BFDDIR)/plugin.h
 arsup.o: arsup.c ../bfd/bfd.h $(INCDIR)/ansidecl.h \
   $(INCDIR)/symcat.h arsup.h $(INCDIR)/libiberty.h bucomm.h config.h \
   $(INCDIR)/bin-bugs.h $(INCDIR)/fopen-same.h \
@@ -824,7 +915,7 @@ bucomm.o: bucomm.c ../bfd/bfd.h $(INCDIR)/ansidecl.h \
 budemang.o: budemang.c config.h ../bfd/bfd.h $(INCDIR)/ansidecl.h \
   $(INCDIR)/symcat.h $(INCDIR)/libiberty.h $(INCDIR)/demangle.h \
   budemang.h
-coffdump.o: coffdump.c ../bfd/bfd.h $(INCDIR)/ansidecl.h \
+coffdump.o: coffdump.c config.h ../bfd/bfd.h $(INCDIR)/ansidecl.h \
   $(INCDIR)/symcat.h $(INCDIR)/libiberty.h coffgrok.h \
   bucomm.h config.h $(INCDIR)/bin-bugs.h $(INCDIR)/fopen-same.h \
   $(INCDIR)/getopt.h
@@ -1037,7 +1128,7 @@ mclex.o: mclex.c sysdep.h $(INCDIR)/alloca-conf.h config.h \
 arparse.o: arparse.c ../bfd/bfd.h $(INCDIR)/ansidecl.h \
   $(INCDIR)/symcat.h bucomm.h config.h $(INCDIR)/bin-bugs.h \
   $(INCDIR)/fopen-same.h arsup.h
-arlex.o: arlex.c $(INCDIR)/ansidecl.h $(INCDIR)/libiberty.h \
+arlex.o: arlex.c config.h $(INCDIR)/ansidecl.h $(INCDIR)/libiberty.h \
   arparse.h
 sysroff.o: sysroff.c
 sysinfo.o: sysinfo.c

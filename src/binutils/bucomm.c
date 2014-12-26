@@ -192,6 +192,7 @@ endian_string (enum bfd_endian endian)
     {
     case BFD_ENDIAN_BIG: return "big endian";
     case BFD_ENDIAN_LITTLE: return "little endian";
+    case BFD_ENDIAN_UNKNOWN: /* fall through */
     default: return "endianness unknown";
     }
 }
@@ -252,45 +253,45 @@ display_target_list (void)
    architectures down).  */
 
 static int
-display_info_table (int first, int last)
+display_info_table(int first, int last)
 {
   int t;
   int a;
   int ret = 1;
   char *dummy_name;
 
-  /* Print heading of target names.  */
-  printf ("\n%*s", (int) LONGEST_ARCH, " ");
+  /* Print heading of target names: */
+  printf("\n%*s", (int)LONGEST_ARCH, " ");
   for (t = first; t < last && bfd_target_vector[t]; t++)
-    printf ("%s ", bfd_target_vector[t]->name);
-  putchar ('\n');
+    printf("%s ", bfd_target_vector[t]->name);
+  putchar('\n');
 
-  dummy_name = make_temp_file (NULL);
-  for (a = (int) bfd_arch_obscure + 1; a < (int) bfd_arch_last; a++)
-    if (strcmp (bfd_printable_arch_mach (a, 0), "UNKNOWN!") != 0)
+  dummy_name = make_temp_file(NULL);
+  for (a = ((int)bfd_arch_obscure + 1); a < (int)bfd_arch_last; a++)
+    if (strcmp(bfd_printable_arch_mach((enum bfd_architecture)a, 0), "UNKNOWN!") != 0)
       {
-	printf ("%*s ", (int) LONGEST_ARCH - 1,
-		bfd_printable_arch_mach (a, 0));
+	printf("%*s ", ((int)LONGEST_ARCH - 1),
+               bfd_printable_arch_mach((enum bfd_architecture)a, 0));
 	for (t = first; t < last && bfd_target_vector[t]; t++)
 	  {
 	    const bfd_target *p = bfd_target_vector[t];
 	    bfd_boolean ok = TRUE;
-	    bfd *abfd = bfd_openw (dummy_name, p->name);
+	    bfd *abfd = bfd_openw(dummy_name, p->name);
 
 	    if (abfd == NULL)
 	      {
-		bfd_nonfatal (p->name);
+		bfd_nonfatal(p->name);
                 ret = 0;
 		ok = FALSE;
 	      }
 
 	    if (ok)
 	      {
-		if (! bfd_set_format (abfd, bfd_object))
+		if (! bfd_set_format(abfd, bfd_object))
 		  {
-		    if (bfd_get_error () != bfd_error_invalid_operation)
+		    if (bfd_get_error() != bfd_error_invalid_operation)
                       {
-		        bfd_nonfatal (p->name);
+		        bfd_nonfatal(p->name);
                         ret = 0;
                       }
 		    ok = FALSE;
@@ -299,35 +300,34 @@ display_info_table (int first, int last)
 
 	    if (ok)
 	      {
-		if (! bfd_set_arch_mach (abfd, a, 0))
+		if (! bfd_set_arch_mach(abfd, (enum bfd_architecture)a, 0))
 		  ok = FALSE;
 	      }
 
 	    if (ok)
-	      printf ("%s ", p->name);
+	      printf("%s ", p->name);
 	    else
 	      {
-		int l = strlen (p->name);
+		size_t l = strlen(p->name);
 		while (l--)
-		  putchar ('-');
-		putchar (' ');
+		  putchar('-');
+		putchar(' ');
 	      }
 	    if (abfd != NULL)
-	      bfd_close_all_done (abfd);
+	      bfd_close_all_done(abfd);
 	  }
-	putchar ('\n');
+	putchar('\n');
       }
-  unlink (dummy_name);
-  free (dummy_name);
+  unlink(dummy_name);
+  free(dummy_name);
 
   return ret;
 }
 
-/* Print tables of all the target-architecture combinations that
-   BFD has been configured to support.  */
-
+/* Print tables of all the target-architecture combinations that BFD has
+ * been configured to support: */
 static int
-display_target_tables (void)
+display_target_tables(void)
 {
   int t;
   int columns;
@@ -335,9 +335,9 @@ display_target_tables (void)
   char *colum;
 
   columns = 0;
-  colum = getenv ("COLUMNS");
+  colum = getenv("COLUMNS");
   if (colum != NULL)
-    columns = atoi (colum);
+    columns = atoi(colum);
   if (columns == 0)
     columns = 80;
 
@@ -346,13 +346,14 @@ display_target_tables (void)
     {
       int oldt = t, wid;
 
-      wid = LONGEST_ARCH + strlen (bfd_target_vector[t]->name) + 1;
+      wid = (int)(LONGEST_ARCH + strlen(bfd_target_vector[t]->name) + 1);
       ++t;
-      while (wid < columns && bfd_target_vector[t] != NULL)
+      while ((wid < columns) && (bfd_target_vector[t] != NULL))
 	{
 	  int newwid;
 
-	  newwid = wid + strlen (bfd_target_vector[t]->name) + 1;
+	  newwid = (int)((size_t)wid + strlen(bfd_target_vector[t]->name)
+                         + (size_t)1UL);
 	  if (newwid >= columns)
 	    break;
 	  wid = newwid;

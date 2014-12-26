@@ -7,13 +7,13 @@ modification, are permitted provided that the following conditions are
 met:
 
     (1) Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer. 
+    notice, this list of conditions and the following disclaimer.
 
     (2) Redistributions in binary form must reproduce the above copyright
     notice, this list of conditions and the following disclaimer in
     the documentation and/or other materials provided with the
-    distribution.  
-    
+    distribution.
+
     (3) The name of the author may not be used to
     endorse or promote products derived from this software without
     specific prior written permission.
@@ -44,11 +44,10 @@ POSSIBILITY OF SUCH DAMAGE.  */
 #include "backtrace-supported.h"
 
 /* Portable attribute syntax.  Actually some of these tests probably
-   won't work if the attributes are not recognized.  */
-
+ * will NOT work if the attributes are not recognized.  */
 #ifndef GCC_VERSION
 # define GCC_VERSION (__GNUC__ * 1000 + __GNUC_MINOR__)
-#endif
+#endif /* GCC_VERSION */
 
 #if (GCC_VERSION < 2007)
 # define __attribute__(x)
@@ -56,10 +55,9 @@ POSSIBILITY OF SUCH DAMAGE.  */
 
 #ifndef ATTRIBUTE_UNUSED
 # define ATTRIBUTE_UNUSED __attribute__ ((__unused__))
-#endif
+#endif /* !ATTRIBUTE_UNUSED */
 
-/* Used to collect backtrace info.  */
-
+/* Used to collect backtrace info: */
 struct info
 {
   char *filename;
@@ -67,8 +65,7 @@ struct info
   char *function;
 };
 
-/* Passed to backtrace callback function.  */
-
+/* Passed to backtrace callback function: */
 struct bdata
 {
   struct info *all;
@@ -77,8 +74,7 @@ struct bdata
   int failed;
 };
 
-/* Passed to backtrace_simple callback function.  */
-
+/* Passed to backtrace_simple callback function: */
 struct sdata
 {
   uintptr_t *addrs;
@@ -87,8 +83,7 @@ struct sdata
   int failed;
 };
 
-/* Passed to backtrace_syminfo callback function.  */
-
+/* Passed to backtrace_syminfo callback function: */
 struct symdata
 {
   const char *name;
@@ -96,18 +91,15 @@ struct symdata
   int failed;
 };
 
-/* The backtrace state.  */
-
+/* The backtrace state: */
 static void *state;
 
-/* The number of failures.  */
-
+/* The number of failures: */
 static int failures;
 
-/* Return the base name in a path.  */
-
+/* Return the base name in a path: */
 static const char *
-base (const char *p)
+base(const char *p)
 {
   const char *last;
   const char *s;
@@ -118,11 +110,10 @@ base (const char *p)
       if (IS_DIR_SEPARATOR (*s))
 	last = s + 1;
     }
-  return last != NULL ? last : p;
+  return ((last != NULL) ? last : p);
 }
 
-/* Check an entry in a struct info array.  */
-
+/* Check an entry in a struct info array: */
 static void
 check (const char *name, int index, const struct info *all, int want_lineno,
        const char *want_function, int *failed)
@@ -156,13 +147,12 @@ check (const char *name, int index, const struct info *all, int want_lineno,
     }
 }
 
-/* The backtrace callback function.  */
-
+/* The backtrace callback function: */
 static int
 callback_one (void *vdata, uintptr_t pc ATTRIBUTE_UNUSED,
 	      const char *filename, int lineno, const char *function)
 {
-  struct bdata *data = (struct bdata *) vdata;
+  struct bdata *data = (struct bdata *)vdata;
   struct info *p;
 
   if (data->index >= data->max)
@@ -309,7 +299,8 @@ f3 (int f1line, int f2line)
   data.failed = 0;
 
   f3line = __LINE__ + 1;
-  i = backtrace_full (state, 0, callback_one, error_callback_one, &data);
+  i = backtrace_full((struct backtrace_state *)state, 0, callback_one,
+                     error_callback_one, &data);
 
   if (i != 0)
     {
@@ -369,7 +360,8 @@ f13 (int f1line, int f2line)
   data.failed = 0;
 
   f3line = __LINE__ + 1;
-  i = backtrace_full (state, 0, callback_one, error_callback_one, &data);
+  i = backtrace_full((struct backtrace_state *)state, 0, callback_one,
+                     error_callback_one, &data);
 
   if (i != 0)
     {
@@ -421,7 +413,8 @@ f23 (int f1line, int f2line)
   data.failed = 0;
 
   f3line = __LINE__ + 1;
-  i = backtrace_simple (state, 0, callback_two, error_callback_two, &data);
+  i = backtrace_simple((struct backtrace_state *)state, 0, callback_two,
+                       error_callback_two, &data);
 
   if (i != 0)
     {
@@ -442,8 +435,8 @@ f23 (int f1line, int f2line)
 
       for (j = 0; j < 3; ++j)
 	{
-	  i = backtrace_pcinfo (state, addrs[j], callback_one,
-				error_callback_one, &bdata);
+	  i = backtrace_pcinfo((struct backtrace_state *)state, addrs[j],
+                               callback_one, error_callback_one, &bdata);
 	  if (i != 0)
 	    {
 	      fprintf (stderr,
@@ -460,7 +453,7 @@ f23 (int f1line, int f2line)
 		       (unsigned int) bdata.index, j + 1);
 	      bdata.failed = 1;
 	    }
-	}      
+	}
 
       check ("test3", 0, all, f3line, "f23", &bdata.failed);
       check ("test3", 1, all, f2line, "f22", &bdata.failed);
@@ -478,8 +471,9 @@ f23 (int f1line, int f2line)
 	  symdata.size = 0;
 	  symdata.failed = 0;
 
-	  i = backtrace_syminfo (state, addrs[j], callback_three,
-				 error_callback_three, &symdata);
+	  i = backtrace_syminfo((struct backtrace_state *)state, addrs[j],
+                                callback_three, error_callback_three,
+                                &symdata);
 	  if (i == 0)
 	    {
 	      fprintf (stderr,
@@ -571,7 +565,8 @@ f33 (int f1line, int f2line)
   data.failed = 0;
 
   f3line = __LINE__ + 1;
-  i = backtrace_simple (state, 0, callback_two, error_callback_two, &data);
+  i = backtrace_simple((struct backtrace_state *)state, 0, callback_two,
+                       error_callback_two, &data);
 
   if (i != 0)
     {
@@ -589,8 +584,8 @@ f33 (int f1line, int f2line)
       bdata.max = 20;
       bdata.failed = 0;
 
-      i = backtrace_pcinfo (state, addrs[0], callback_one, error_callback_one,
-			    &bdata);
+      i = backtrace_pcinfo((struct backtrace_state *)state, addrs[0],
+                           callback_one, error_callback_one, &bdata);
       if (i != 0)
 	{
 	  fprintf (stderr,
@@ -623,9 +618,9 @@ test5 (void)
 {
   struct symdata symdata;
   int i;
-  uintptr_t addr = (uintptr_t) &global;
+  uintptr_t addr = (uintptr_t)&global;
 
-  if (sizeof (global) > 1)
+  if (sizeof(global) > 1)
     addr += 1;
 
   symdata.name = NULL;
@@ -633,8 +628,8 @@ test5 (void)
   symdata.size = 0;
   symdata.failed = 0;
 
-  i = backtrace_syminfo (state, addr, callback_three,
-			 error_callback_three, &symdata);
+  i = backtrace_syminfo((struct backtrace_state *)state, addr,
+                        callback_three, error_callback_three, &symdata);
   if (i == 0)
     {
       fprintf (stderr,
@@ -709,7 +704,7 @@ main (int argc ATTRIBUTE_UNUSED, char **argv)
   test3 ();
   test4 ();
   test5 ();
-#endif
+#endif /* BACKTRACE_SUPPORTED */
 
   exit (failures ? EXIT_FAILURE : EXIT_SUCCESS);
 }

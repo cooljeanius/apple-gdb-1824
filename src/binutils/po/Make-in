@@ -105,7 +105,7 @@ $(srcdir)/stamp-cat-id: $(PACKAGE).pot
 	if cmp -s cat-id-tbl.tmp $(srcdir)/cat-id-tbl.c; then \
 	  rm cat-id-tbl.tmp; \
 	else \
-	  echo cat-id-tbl.c changed; \
+	  echo "cat-id-tbl.c changed"; \
 	  rm -f $(srcdir)/cat-id-tbl.c; \
 	  mv cat-id-tbl.tmp $(srcdir)/cat-id-tbl.c; \
 	fi

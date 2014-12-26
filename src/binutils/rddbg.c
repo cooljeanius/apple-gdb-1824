@@ -152,7 +152,7 @@ read_section_stabs_debugging_info (bfd *abfd, asymbol **syms, long symcount,
 
 	  stroff = 0;
 	  next_stroff = 0;
-	  for (stab = stabs; stab < stabs + stabsize; stab += 12)
+	  for (stab = stabs; stab < (stabs + stabsize); stab += 12)
 	    {
 	      unsigned int strx;
 	      int type;
@@ -160,13 +160,12 @@ read_section_stabs_debugging_info (bfd *abfd, asymbol **syms, long symcount,
 	      int desc;
 	      bfd_vma value;
 
-	      /* This code presumes 32 bit values.  */
-
-	      strx = bfd_get_32 (abfd, stab);
-	      type = bfd_get_8 (abfd, stab + 4);
-	      other = bfd_get_8 (abfd, stab + 5);
-	      desc = bfd_get_16 (abfd, stab + 6);
-	      value = bfd_get_32 (abfd, stab + 8);
+	      /* This code presumes 32 bit values: */
+	      strx = bfd_get_32(abfd, stab);
+	      type = bfd_get_8(abfd, stab + 4);
+	      other = bfd_get_8(abfd, stab + 5);
+	      desc = bfd_get_16(abfd, stab + 6);
+	      value = bfd_get_32(abfd, stab + 8);
 
 	      if (type == 0)
 		{
@@ -181,11 +180,13 @@ read_section_stabs_debugging_info (bfd *abfd, asymbol **syms, long symcount,
 
 		  f = NULL;
 
-		  if (stroff + strx > strsize)
+		  if ((stroff + strx) > strsize)
 		    {
-		      fprintf (stderr, "%s: %s: stab entry %ld is corrupt, strx = 0x%x, type = %d\n",
-			       bfd_get_filename (abfd), names[i].secname,
-			       (long) (stab - stabs) / 12, strx, type);
+		      fprintf(stderr,
+                              "%s: %s: stab entry %ld is corrupt, strx = 0x%x, type = %d, other = %d\n",
+                              bfd_get_filename(abfd), names[i].secname,
+                              (long)(stab - stabs) / 12, strx, type,
+                              other);
 		      continue;
 		    }
 

@@ -1981,8 +1981,9 @@ int
 main(int ac, char **av)
 {
   yydebug = 0;
-  if (ac > 1)
+  if (ac > 1) {
     writecode = av[1][1];
+  }
   if (writecode == 'd')
     {
       printf("typedef struct { unsigned char *data; int len; } barray; \n");

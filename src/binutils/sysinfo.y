@@ -1,4 +1,4 @@
-/* Copyright 2001, 2003, 2005 Free Software Foundation, Inc.
+/* sysinfo.y: Copyright 2001, 2003, 2005 Free Software Foundation, Inc.
  * Written by Steve Chamberlain of Cygnus Support (steve@cygnus.com).  */
 /*
 This file is part of GNU binutils.
@@ -15,7 +15,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 %{
 #ifdef HAVE_CONFIG_H
@@ -394,8 +394,9 @@ int
 main(int ac, char **av)
 {
   yydebug = 0;
-  if (ac > 1)
+  if (ac > 1) {
     writecode = av[1][1];
+  }
   if (writecode == 'd')
     {
       printf("typedef struct { unsigned char *data; int len; } barray; \n");

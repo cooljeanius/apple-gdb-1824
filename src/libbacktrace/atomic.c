@@ -7,13 +7,13 @@ modification, are permitted provided that the following conditions are
 met:
 
     (1) Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer. 
+    notice, this list of conditions and the following disclaimer.
 
     (2) Redistributions in binary form must reproduce the above copyright
     notice, this list of conditions and the following disclaimer in
     the documentation and/or other materials provided with the
-    distribution.  
-    
+    distribution.
+
     (3) The name of the author may not be used to
     endorse or promote products derived from this software without
     specific prior written permission.
@@ -109,5 +109,10 @@ backtrace_atomic_store_int (int *p, int v)
   while (!__sync_bool_compare_and_swap (p, old, v))
     old = *p;
 }
+#else
+/* prevent the file from being empty: */
+typedef int libbacktrace_atomic_c_dummy_t;
+extern libbacktrace_atomic_c_dummy_t libbacktrace_atomic_c_dummy_var;
+#endif /* !HAVE_ATOMIC_FUNCTIONS && HAVE_SYNC_FUNCTIONS */
 
-#endif
+/* EOF */

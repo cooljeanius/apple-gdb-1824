@@ -1,7 +1,7 @@
 %{
 /* arlex.l - Strange script language lexer */
 
-/* Copyright 1992, 1997, 2000, 2001, 2002, 2003, 2004
+/* Copyright 1992, 1997, 2000-2004
    Free Software Foundation, Inc.
 
 This file is part of GNU Binutils.
@@ -18,12 +18,14 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 
 /* Contributed by Steve Chamberlain <sac@cygnus.com>.  */
 
-#define DONTDECLARE_MALLOC
+#ifndef DONTDECLARE_MALLOC
+# define DONTDECLARE_MALLOC 1
+#endif /* !DONTDECLARE_MALLOC */
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -33,10 +35,15 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #include "libiberty.h"
 #include "arparse.h"
 
-#define YY_NO_UNPUT
+#ifndef YY_NO_UNPUT
+# define YY_NO_UNPUT 1
+#endif /* !YY_NO_UNPUT */
 
-extern int yylex (void);
+extern int yylex(void);
+extern int yyinunput(void);
 
+/* making this explicitly "extern" to pacify clang just causes linkage
+ * issues, so instead just ignore clang: */
 int linenumber;
 %}
 
@@ -80,7 +87,7 @@ int linenumber;
 ")"             { return ')'; }
 ","             { return ','; }
 [A-Za-z0-9/\\$:.\-\_]+  {
-		yylval.name =  xstrdup (yytext);
+		yylval.name =  xstrdup(yytext);
 		return FILENAME;
 		}
 "*".* 		{ }
@@ -90,8 +97,30 @@ int linenumber;
 
 %%
 #ifndef yywrap
-/* Needed for lex, though not flex. */
+/* Needed for lex, though not flex: */
 int yywrap(void) { return 1; }
 #endif /* !yywrap */
+
+/* use some unused functions: */
+#if defined(yyunput) || defined(input) || !defined(YY_NO_UNPUT) || \
+    defined(HAVE_CONFIG_H)
+extern int yyinunput(void)
+{
+# if defined(yyunput) || !defined(YY_NO_UNPUT)
+  yyunput(0, "");
+# endif /* yyunput || !YY_NO_UNPUT */
+
+# if defined(input) || defined(__STRICT_ANSI__) || defined(HAVE_CONFIG_H)
+  return input();
+# endif /* input || __STRICT_ANSI__ || HAVE_CONFIG_H */
+}
+#endif /* yyunput || input || !YY_NO_UNPUT || HAVE_CONFIG_H */
+
+#ifdef DONTDECLARE_MALLOC
+# undef DONTDECLARE_MALLOC
+#endif /* DONTDECLARE_MALLOC */
+#ifdef YY_NO_UNPUT
+# undef YY_NO_UNPUT
+#endif /* YY_NO_UNPUT */
 
 /* EOF */

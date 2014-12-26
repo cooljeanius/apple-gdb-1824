@@ -116,8 +116,7 @@ enum debug_parm_kind
   DEBUG_PARM_REF_REG
 };
 
-/* Different kinds of visibility.  */
-
+/* Different kinds of visibility: */
 enum debug_visibility
 {
   /* A public field (e.g., a field in a C struct).  */
@@ -130,41 +129,51 @@ enum debug_visibility
   DEBUG_VISIBILITY_IGNORE
 };
 
-/* A type.  */
+/* temporary, until I am ready to deal with all of the fallout that would
+ * result from fixing these warnings in this header: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wc++-compat"
+# endif /* gcc 4.6+ */
+#endif /* GCC */
 
+/* A type: */
 typedef struct debug_type *debug_type;
 
 #define DEBUG_TYPE_NULL ((debug_type) NULL)
 
-/* A field in a struct or union.  */
-
+/* A field in a struct or union: */
 typedef struct debug_field *debug_field;
 
 #define DEBUG_FIELD_NULL ((debug_field) NULL)
 
-/* A base class for an object.  */
-
+/* A base class for an object: */
 typedef struct debug_baseclass *debug_baseclass;
 
 #define DEBUG_BASECLASS_NULL ((debug_baseclass) NULL)
 
-/* A method of an object.  */
-
+/* A method of an object: */
 typedef struct debug_method *debug_method;
 
 #define DEBUG_METHOD_NULL ((debug_method) NULL)
 
 /* The arguments to a method function of an object.  These indicate
    which method to run.  */
-
 typedef struct debug_method_variant *debug_method_variant;
 
 #define DEBUG_METHOD_VARIANT_NULL ((debug_method_variant) NULL)
 
+/* keep condition the same as where we push: */
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+# if (__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ >= 6))
+#  pragma GCC diagnostic pop
+# endif /* gcc 4.6+ */
+#endif /* GCC */
+
 /* This structure is passed to debug_write.  It holds function
    pointers that debug_write will call based on the accumulated
    debugging information.  */
-
 struct debug_write_fns
 {
   /* This is called at the start of each new compilation unit with the

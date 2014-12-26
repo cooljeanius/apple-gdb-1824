@@ -72,6 +72,21 @@
 #include "safe-ctype.h"
 #include <sys/stat.h>
 
+#ifdef HAVE_AVAILABILITYMACROS_H
+# include <AvailabilityMacros.h>
+# if defined(MAC_OS_X_VERSION_MAX_ALLOWED) && \
+     defined(MAC_OS_X_VERSION_MIN_REQUIRED)
+#  if !((MAC_OS_X_VERSION_MAX_ALLOWED == 1050) || \
+        (MAC_OS_X_VERSION_MIN_REQUIRED == 1050))
+#   if defined(__GNUC__) || defined(__STRICT_ANSI__)
+#    if defined(HAVE_STAT64)
+#     undef HAVE_STAT64
+#    endif /* HAVE_STAT64 */
+#   endif /* __GNUC__ || __STRICT_ANSI__ */
+#  endif /* !10.5 */
+# endif /* MAC_OS_X_VERSION_MAX_ALLOWED && MAC_OS_X_VERSION_MIN_REQUIRED */
+#endif /* HAVE_AVAILABILITYMACROS_H */
+
 /* Some platforms need to put stdin into binary mode, to read
     binary files.  */
 #ifdef HAVE_SETMODE
@@ -341,42 +356,43 @@ main (int argc, char **argv)
 }
 
 /* Scan section SECT of the file ABFD, whose printable name is in
-   ARG->filename and whose size might be in ARG->filesize.  If it
-   contains initialized data set `got_a_section' and print the
-   strings in it.
-
-   FIXME: We ought to be able to return error codes/messages for
-   certain conditions.  */
-
+ * ARG->filename and whose size might be in ARG->filesize.  If it contains
+ * initialized data, then set `got_a_section' and print the strings in it.
+ *
+ * FIXME: We ought to be able to return error codes/messages for
+ * certain conditions.  */
 static void
-strings_a_section (bfd *abfd, asection *sect, void *arg)
+strings_a_section(bfd *abfd, asection *sect, void *arg)
 {
-  filename_and_size_t * filename_and_sizep;
+  filename_and_size_t *filename_and_sizep;
   bfd_size_type *filesizep;
   bfd_size_type sectsize;
   void *mem;
 
-  if ((sect->flags & DATA_FLAGS) != DATA_FLAGS)
+  if ((sect->flags & DATA_FLAGS) != DATA_FLAGS) {
     return;
+  }
 
-  sectsize = bfd_get_section_size (sect);
+  sectsize = bfd_get_section_size(sect);
 
-  if (sectsize <= 0)
+  if (sectsize <= 0) {
     return;
+  }
 
-  /* Get the size of the file.  This might have been cached for us.  */
-  filename_and_sizep = (filename_and_size_t *) arg;
+  /* Get the size of the file.  This might have been cached for us: */
+  filename_and_sizep = (filename_and_size_t *)arg;
   filesizep = & filename_and_sizep->filesize;
 
   if (*filesizep == 0)
     {
       struct stat st;
 
-      if (bfd_stat (abfd, &st))
+      if (bfd_stat (abfd, &st)) {
 	return;
+      }
 
-      /* Cache the result so that we do not repeatedly stat this file.  */
-      *filesizep = st.st_size;
+      /* Cache the result so that we do not repeatedly stat this file: */
+      *filesizep = (bfd_size_type)st.st_size;
     }
 
   /* Compare the size of the section against the size of the file.
@@ -385,17 +401,17 @@ strings_a_section (bfd *abfd, asection *sect, void *arg)
   if (sectsize >= *filesizep)
     return;
 
-  mem = xmalloc (sectsize);
+  mem = xmalloc((size_t)sectsize);
 
-  if (bfd_get_section_contents (abfd, sect, mem, (file_ptr) 0, sectsize))
+  if (bfd_get_section_contents(abfd, sect, mem, (file_ptr)0, sectsize))
     {
       got_a_section = TRUE;
 
-      print_strings (filename_and_sizep->filename, NULL, sect->filepos,
-		     0, sectsize, mem);
+      print_strings(filename_and_sizep->filename, NULL, sect->filepos,
+                    0, (int)sectsize, (char *)mem);
     }
 
-  free (mem);
+  free(mem);
 }
 
 /* Scan all of the sections in FILE, and print the strings
@@ -519,16 +535,16 @@ get_char (FILE *stream, file_off *address, int *magiccount, char **magic)
 	     should not use it.  */
 
 #if defined(HAVE_GETC_UNLOCKED) && HAVE_DECL_GETC_UNLOCKED
-	  c = getc_unlocked (stream);
+	  c = getc_unlocked(stream);
 #else
-	  c = getc (stream);
+	  c = getc(stream);
 #endif /* HAVE_GETC_UNLOCKED && HAVE_DECL_GETC_UNLOCKED */
 	  if (c == EOF)
 	    return EOF;
 	}
 
       (*address)++;
-      buf[i] = c;
+      buf[i] = (unsigned char)c;
     }
 
   switch (encoding)
@@ -560,22 +576,22 @@ get_char (FILE *stream, file_off *address, int *magiccount, char **magic)
 }
 
 /* Find the strings in file FILENAME, read from STREAM.
-   Assume that STREAM is positioned so that the next byte read
-   is at address ADDRESS in the file.
-   Stop reading at address STOP_POINT in the file, if nonzero.
-
-   If STREAM is NULL, do not read from it.
-   The caller can supply a buffer of characters
-   to be processed before the data in STREAM.
-   MAGIC is the address of the buffer and
-   MAGICCOUNT is how many characters are in it.
-   Those characters come at address ADDRESS and the data in STREAM follow.  */
-
+ * Assume that STREAM is positioned so that the next byte read is at
+ * address ADDRESS in the file.
+ * Stop reading at address STOP_POINT in the file, if nonzero.
+ *
+ * If STREAM is NULL, then do not read from it.
+ * The caller can supply a buffer of characters to be processed before
+ * the data in STREAM.
+ * MAGIC is the address of the buffer, and MAGICCOUNT is how many
+ * characters are in it.
+ * Those characters come at address ADDRESS, and the data in STREAM follow
+ * it: */
 static void
-print_strings (const char *filename, FILE *stream, file_off address,
-	       int stop_point, int magiccount, char *magic)
+print_strings(const char *filename, FILE *stream, file_off address,
+              int stop_point, int magiccount, char *magic)
 {
-  char *buf = (char *)xmalloc(sizeof(char) * (string_min + 1));
+  char *buf = (char *)xmalloc(sizeof(char) * ((size_t)string_min + 1UL));
 
   while (1)
     {
@@ -583,27 +599,29 @@ print_strings (const char *filename, FILE *stream, file_off address,
       int i;
       long c;
 
-      /* See if the next `string_min' chars are all graphic chars.  */
+      /* See if the next `string_min' chars are all graphic chars: */
     tryline:
       if (stop_point && address >= stop_point)
 	break;
       start = address;
       for (i = 0; i < string_min; i++)
 	{
-	  c = get_char (stream, &address, &magiccount, &magic);
-	  if (c == EOF)
+	  c = get_char(stream, &address, &magiccount, &magic);
+	  if (c == EOF) {
 	    return;
-	  if (! STRING_ISGRAPHIC (c))
-	    /* Found a non-graphic.  Try again starting with next char.  */
+          }
+	  if (! STRING_ISGRAPHIC (c)) {
+	    /* Found a non-graphic.  Try again starting with next char: */
 	    goto tryline;
-	  buf[i] = c;
+          }
+	  buf[i] = (char)c;
 	}
 
-      /* We found a run of `string_min' graphic characters.  Print up
-	 to the next non-graphic character.  */
-
-      if (print_filenames)
+      /* We found a run of `string_min' graphic characters.  Print up to
+       * the next non-graphic character: */
+      if (print_filenames) {
 	printf("%s: ", filename);
+      }
       if (print_addresses)
 	switch (address_radix)
 	  {
@@ -675,10 +693,9 @@ print_strings (const char *filename, FILE *stream, file_off address,
 }
 
 /* Parse string S as an integer, using decimal radix by default,
-   but allowing octal and hex numbers as in C.  */
-
+ * but allowing octal and hex numbers as in C: */
 static int
-integer_arg (char *s)
+integer_arg(char *s)
 {
   int value;
   int radix = 10;
@@ -714,28 +731,28 @@ integer_arg (char *s)
     p--;
 
   if (*p)
-    fatal (_("invalid integer argument %s"), s);
+    fatal(_("invalid integer argument %s"), s);
 
   return value;
 }
 
 static void
-usage (FILE *stream, int status)
+usage(FILE *stream, int status)
 {
-  fprintf (stream, _("Usage: %s [option(s)] [file(s)]\n"), program_name);
-  fprintf (stream, _(" Display printable strings in [file(s)] (stdin by default)\n"));
-  fprintf (stream, _(" The options are:\n"));
+  fprintf(stream, _("Usage: %s [option(s)] [file(s)]\n"), program_name);
+  fprintf(stream, _(" Display printable strings in [file(s)] (stdin by default)\n"));
+  fprintf(stream, _(" The options are:\n"));
 
   if (DEFAULT_STRINGS_ALL)
-    fprintf (stream, _("\
+    fprintf(stream, _("\
   -a - --all                Scan the entire file, not just the data section [default]\n\
   -d --data                 Only scan the data sections in the file\n"));
   else
-    fprintf (stream, _("\
+    fprintf(stream, _("\
   -a - --all                Scan the entire file, not just the data section\n\
   -d --data                 Only scan the data sections in the file [default]\n"));
 
-  fprintf (stream, _("\
+  fprintf(stream, _("\
   -f --print-file-name      Print the name of the file before each string\n\
   -n --bytes=[number]       Locate & print any NUL-terminated sequence of at\n\
   -<number>                 least [number] characters (default 4).\n\
@@ -746,8 +763,11 @@ usage (FILE *stream, int status)
                             s = 7-bit, S = 8-bit, {b,l} = 16-bit, {B,L} = 32-bit\n\
   -h --help                 Display this information\n\
   -v --version              Print the program's version number\n"));
-  list_supported_targets (program_name, stream);
-  if (status == 0)
-    fprintf (stream, _("Report bugs to %s\n"), REPORT_BUGS_TO);
-  exit (status);
+  list_supported_targets(program_name, stream);
+  if (status == 0) {
+    fprintf(stream, _("Report bugs to %s\n"), REPORT_BUGS_TO);
+  }
+  exit(status);
 }
+
+/* EOF */

@@ -15,20 +15,20 @@ AC_DEFUN([AM_ENABLE_MULTILIB],
 [# Default to --enable-multilib
 AC_ARG_ENABLE([multilib],
 [AS_HELP_STRING([--enable-multilib],
-                [build many library versions (default)])],
+                [build many library versions (default off)])],
 [case "${enableval}" in
   yes) multilib=yes ;;
   no)  multilib=no ;;
   *)   AC_MSG_ERROR([bad value ${enableval} for multilib option]) ;;
  esac],
-	      [multilib=yes])dnl
+	      [multilib=no])dnl
 
 # We may get other options which we leave undocumented:
 # --with-target-subdir, --with-multisrctop, --with-multisubdir
 # See config-ml.in if you want the gory details.
 
 if test "${srcdir}" = "."; then
-  if test "${with_target_subdir}" != "."; then
+  if test -n "${with_target_subdir}" && test "${with_target_subdir}" != "."; then
     multi_basedir="${srcdir}/${with_multisrctop}../$2"
   else
     multi_basedir="${srcdir}/${with_multisrctop}$2"
@@ -40,8 +40,8 @@ AC_SUBST([multi_basedir])dnl
 
 # Even if the default multilib is not a cross compilation,
 # it may be that some of the other multilibs are.
-if test $cross_compiling = no && test $multilib = yes \
-   && test "x${with_multisubdir}" != x ; then
+if test "x${cross_compiling}" = "xno" && test "x${multilib}" = "xyes" \
+   && test "x${with_multisubdir}" != "x"; then
    cross_compiling=maybe
 fi
 
@@ -50,6 +50,7 @@ AC_CONFIG_COMMANDS([multilib-default-1],[[
 # Makefile.
 case " ${CONFIG_FILES} " in
  *" ]m4_default([$1],Makefile)[ "*)
+   echo "Sourcing ${multi_basedir}/config-ml.in"
    ac_file=]m4_default([$1],Makefile)[ . ${multi_basedir}/config-ml.in
    ;;
 esac]],[[

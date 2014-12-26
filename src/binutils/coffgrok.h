@@ -1,6 +1,6 @@
-/* coffgrok.h
-   Copyright 2001, 2002, 2003 Free Software Foundation, Inc.
-
+/* coffgrok.h -*- C -*-
+ * Copyright 2001, 2002, 2003 Free Software Foundation, Inc.  */
+/*
 This file is part of GNU Binutils.
 
 This program is free software; you can redistribute it and/or modify
@@ -15,46 +15,71 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
-#define T_NULL		0
-#define T_VOID		1	/* function argument (only used by compiler) */
-#define T_CHAR		2	/* character		*/
-#define T_SHORT		3	/* short integer	*/
-#define T_INT		4	/* integer		*/
-#define T_LONG		5	/* long integer		*/
-#define T_FLOAT		6	/* floating point	*/
-#define T_DOUBLE	7	/* double word		*/
-#define T_STRUCT	8	/* structure 		*/
-#define T_UNION		9	/* union 		*/
-#define T_ENUM		10	/* enumeration 		*/
-#define T_MOE		11	/* member of enumeration*/
-#define T_UCHAR		12	/* unsigned character	*/
-#define T_USHORT	13	/* unsigned short	*/
-#define T_UINT		14	/* unsigned integer	*/
-#define T_ULONG		15	/* unsigned long	*/
-#define T_LNGDBL	16	/* long double		*/
+#ifndef BINUTILS_COFFGROK_H
+#define BINUTILS_COFFGROK_H 1
+
+#ifndef PARAMS
+# include <ansidecl.h>
+#endif /* !PARAMS */
+
+#define T_NULL 0
+#define T_VOID 1     /* function argument (only used by compiler) */
+#define T_CHAR 2     /* character		*/
+#define T_SHORT 3    /* short integer    	*/
+#define T_INT 4      /* integer   		*/
+#define T_LONG 5     /* long integer		*/
+#define T_FLOAT 6    /* floating point   	*/
+#define T_DOUBLE 7   /* double word		*/
+#define T_STRUCT 8   /* structure 		*/
+#define T_UNION 9    /* union    		*/
+#define T_ENUM 10    /* enumeration 		*/
+#define T_MOE 11     /* member of enumeration   */
+#define T_UCHAR	12   /* unsigned character	*/
+#define T_USHORT 13  /* unsigned short   	*/
+#define T_UINT 14    /* unsigned integer 	*/
+#define T_ULONG	15   /* unsigned long    	*/
+#define T_LNGDBL 16  /* long double		*/
 
 
- struct coff_reloc
- {
-   int offset;
-   struct coff_symbol *symbol;
-   int addend;
- };
+struct coff_reloc
+{
+#if defined(HAVE_OFF_T) || defined(off_t) || defined(__STDC__)
+  off_t offset;
+#else
+  int offset;
+#endif /* HAVE_OFF_T || off_t || __STDC__ */
+  struct coff_symbol *symbol;
+#ifdef __BFD_H_SEEN__
+  /* keep this the same type as the 'addend' field in 'struct arelent'
+   * in "../bfd/bfd.h": */
+  bfd_vma addend;
+#else
+  int addend;
+#endif /* __BFD_H_SEEN__ */
+};
 
- struct coff_section
- {
-   char *name;
-   int code;
-   int data;
-   int address;
-   int number;  /* 0..n, .text = 0 */
-   int nrelocs;
-   int size;
-   struct coff_reloc *relocs;
-   struct bfd_section *bfd_section;
- };
+struct coff_section
+{
+  char *name;
+  int code;
+  int data;
+  int address;
+  int number;  /* 0..n, .text = 0 */
+  int nrelocs;
+#ifdef __BFD_H_SEEN__
+  bfd_size_type size;
+#else
+# if defined(HAVE_SIZE_T) || defined(size_t)
+  size_t size;
+# else
+  int size;
+# endif /* HAVE_SIZE_T || size_t */
+#endif /* __BFD_H_SEEN__ */
+  struct coff_reloc *relocs;
+  struct bfd_section *bfd_section;
+};
 
 struct coff_ofile
 {
@@ -67,9 +92,15 @@ struct coff_ofile
   struct coff_symbol *symbol_list_tail;
 };
 
-struct coff_isection {
+struct coff_isection
+{
+#if defined(HAVE_OFF_T) || defined(off_t) || defined(__STDC__)
+  off_t low;
+  off_t high;
+#else
   int low;
   int high;
+#endif /* HAVE_OFF_T || off_t || __STDC__ */
   int init;
   struct coff_section *parent;
 };
@@ -80,36 +111,36 @@ struct coff_sfile
   struct coff_scope *scope;
   struct coff_sfile *next;
 
-  /* Vector which maps where in each output section
-     the input file has it's data */
+  /* Vector which maps where in each output section the input file has
+   * its data: */
   struct coff_isection *section;
-
 };
 
 
- struct coff_type
+struct coff_type
 {
   int size;
   enum
     {
-      coff_pointer_type, coff_function_type, coff_array_type, coff_structdef_type, coff_basic_type,
-      coff_structref_type, coff_enumref_type, coff_enumdef_type, coff_secdef_type
-      } type;
+      coff_pointer_type, coff_function_type, coff_array_type,
+      coff_structdef_type, coff_basic_type, coff_structref_type,
+      coff_enumref_type, coff_enumdef_type, coff_secdef_type
+    } type;
   union
     {
       struct
 	{
-	int address;
-	int size;
-      } asecdef;
+          int address;
+          int size;
+        } asecdef;
 
       struct
 	{
 	  int isstruct;
 	  struct coff_scope *elements;
 	  int idx;
-	}
-      astructdef;
+	} astructdef;
+
       struct
 	{
 	  struct coff_symbol *ref;
@@ -120,6 +151,7 @@ struct coff_sfile
 	  struct coff_scope *elements;
 	  int idx;
 	} aenumdef;
+
       struct
 	{
 	  struct coff_symbol *ref;
@@ -129,6 +161,7 @@ struct coff_sfile
 	{
 	  struct coff_type *points_to;
 	} pointer;
+
       struct
 	{
 	  int dim;
@@ -147,38 +180,47 @@ struct coff_sfile
 };
 
 
- struct coff_line
- {
-   int nlines;
-   int *lines;
-   int *addresses;
- };
+struct coff_line
+{
+  int nlines;
+  int *lines;
+#ifdef __BFD_H_SEEN__
+  bfd_vma *addresses;
+#else
+  int *addresses;
+#endif /* __BFD_H_SEEN__ */
+};
 
+struct coff_scope
+  {
+    struct coff_section *sec; /* What section */
+#if defined(HAVE_OFF_T) || defined(off_t) || defined(__STDC__)
+    off_t offset; /* where (used to be an int) */
+#else
+    int offset; /* where */
+#endif /* HAVE_OFF_T || off_t || __STDC__ */
+#if defined(HAVE_SIZE_T) || defined(size_t)
+    size_t size; /* How big (used to be an int) */
+#else
+    int size; /* How big */
+#endif /* HAVE_SIZE_T || size_t */
+    struct coff_scope *parent;	/* one up */
 
- struct coff_scope
-   {
-     struct coff_section *sec; /* What section */
-     int offset; /* where */
-     int size; /* How big */
-     struct coff_scope *parent;	/* one up */
+    struct coff_scope *next;	/*next along */
 
-     struct coff_scope *next;	/*next along */
+    int nvars;
 
-     int nvars;
+    struct coff_symbol *vars_head;	/* symbols */
+    struct coff_symbol *vars_tail;
 
-     struct coff_symbol *vars_head;	/* symbols */
-     struct coff_symbol *vars_tail;
+    struct coff_scope *list_head;	/* children */
+    struct coff_scope *list_tail;
+  };
 
-     struct coff_scope *list_head;	/* children */
-     struct coff_scope *list_tail;
-
-   };
-
-
- struct coff_visible
-   {
-     enum coff_vis_type
-       {
+struct coff_visible
+  {
+    enum coff_vis_type
+      {
 	 coff_vis_ext_def,
 	 coff_vis_ext_ref,
 	 coff_vis_int_def,
@@ -190,36 +232,43 @@ struct coff_sfile
 	 coff_vis_member_of_enum,
 	 coff_vis_autoparam,
 	 coff_vis_regparam,
-       } type;
-   };
-
- struct coff_where
-   {
-     enum
-       {
-	 coff_where_stack, coff_where_memory, coff_where_register, coff_where_unknown,
-	 coff_where_strtag, coff_where_member_of_struct,
-	 coff_where_member_of_enum, coff_where_entag, coff_where_typedef
-
-       } where;
-     int offset;
-     int bitoffset;
-     int bitsize;
-     struct coff_section *section;
-   };
-
- struct coff_symbol
-   {
-     char *name;
-     int tag;
-     struct coff_type *type;
-     struct coff_where *where;
-     struct coff_visible *visible;
-     struct coff_symbol *next;
-     struct coff_symbol *next_in_ofile_list; /* For the ofile list */
-     int number;
-     int er_number;
-     struct coff_sfile *sfile;
+      } type;
   };
 
+struct coff_where
+  {
+    enum
+      {
+        coff_where_stack, coff_where_memory, coff_where_register,
+        coff_where_unknown, coff_where_strtag, coff_where_member_of_struct,
+        coff_where_member_of_enum, coff_where_entag, coff_where_typedef
+      } where;
+#if defined(HAVE_OFF_T) || defined(off_t) || defined(__STDC__)
+    off_t offset;
+#else
+    int offset;
+#endif /* HAVE_OFF_T || off_t || __STDC__ */
+    int bitoffset;
+    int bitsize;
+    struct coff_section *section;
+  };
+
+struct coff_symbol
+  {
+    char *name;
+    int tag;
+    struct coff_type *type;
+    struct coff_where *where;
+    struct coff_visible *visible;
+    struct coff_symbol *next;
+    struct coff_symbol *next_in_ofile_list; /* For the ofile list */
+    int number;
+    int er_number;
+    struct coff_sfile *sfile;
+ };
+
 struct coff_ofile *coff_grok PARAMS ((bfd *));
+
+#endif /* !BINUTILS_COFFGROK_H */
+
+/* EOF */

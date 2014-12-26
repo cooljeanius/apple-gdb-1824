@@ -375,6 +375,8 @@
 		61D221BF192D61C300FA979E /* xtensa-modules.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609D00C0E82C408008125DE /* xtensa-modules.c */; };
 		61D81872192FE3BF00E440C0 /* chew.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CEEF0E82C407008125DE /* chew.c */; };
 		61D81AE7193186DC00E440C0 /* aout-encap.c in Sources */ = {isa = PBXBuildFile; fileRef = 2609CE5B0E82C407008125DE /* aout-encap.c */; settings = {COMPILER_FLAGS = "-Wno-strict-prototypes -Wno-missing-prototypes"; }; };
+		A51B3F191A493694002170CE /* plugin.c in Sources */ = {isa = PBXBuildFile; fileRef = A51B3F171A493694002170CE /* plugin.c */; };
+		A51B3F1A1A493694002170CE /* plugin.h in Headers */ = {isa = PBXBuildFile; fileRef = A51B3F181A493694002170CE /* plugin.h */; };
 		A53ABD8D1A38C88F002F20B2 /* link.h in Headers */ = {isa = PBXBuildFile; fileRef = A53ABD8C1A38C88F002F20B2 /* link.h */; };
 		A589CB5B1A30F16700E717B9 /* cpcg.c in Sources */ = {isa = PBXBuildFile; fileRef = A589CB4F1A30EF6400E717B9 /* cpcg.c */; };
 		A589CB5C1A30F16700E717B9 /* cpfork.c in Sources */ = {isa = PBXBuildFile; fileRef = A589CB501A30EF6400E717B9 /* cpfork.c */; };
@@ -2977,6 +2979,8 @@
 		A5159C95198718A90079DD4F /* xdr_rdb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xdr_rdb.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/vx-share/xdr_rdb.h"; sourceTree = "<absolute>"; };
 		A5159C96198718A90079DD4F /* xdr_regs_old.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = xdr_regs_old.c; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/vx-share/xdr_regs_old.c"; sourceTree = "<absolute>"; };
 		A5159C97198718A90079DD4F /* xdr_regs_old.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xdr_regs_old.h; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/vx-share/xdr_regs_old.h"; sourceTree = "<absolute>"; };
+		A51B3F171A493694002170CE /* plugin.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = plugin.c; path = "/Users/ericgallager/apple-gdb-1824/src/bfd/plugin.c"; sourceTree = "<absolute>"; };
+		A51B3F181A493694002170CE /* plugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = plugin.h; path = "/Users/ericgallager/apple-gdb-1824/src/bfd/plugin.h"; sourceTree = "<absolute>"; };
 		A53353F5182F0DDC004811EE /* mac-gdb.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; name = "mac-gdb.r"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/mac-gdb.r"; sourceTree = "<absolute>"; };
 		A53ABD8C1A38C88F002F20B2 /* link.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = link.h; path = "/Users/ericgallager/apple-gdb-1824/src/bfd/link.h"; sourceTree = "<absolute>"; };
 		A53ABDB71A38E84F002F20B2 /* objdump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = objdump.h; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/objdump.h"; sourceTree = "<absolute>"; };
@@ -3133,6 +3137,28 @@
 		A53AC52B1A462248002F20B2 /* mac-defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "mac-defs.h"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/mac-defs.h"; sourceTree = "<absolute>"; };
 		A53AC52C1A462263002F20B2 /* mac-nat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "mac-nat.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/mac-nat.c"; sourceTree = "<absolute>"; };
 		A53AC52D1A462263002F20B2 /* mac-xdep.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "mac-xdep.c"; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/mac-xdep.c"; sourceTree = "<absolute>"; };
+		A53AC5C21A4724BC002F20B2 /* alloc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = alloc.c; path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace/alloc.c"; sourceTree = "<absolute>"; };
+		A53AC5C31A4724BC002F20B2 /* atomic.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = atomic.c; path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace/atomic.c"; sourceTree = "<absolute>"; };
+		A53AC5C51A4724BC002F20B2 /* backtrace.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = backtrace.c; path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace/backtrace.c"; sourceTree = "<absolute>"; };
+		A53AC5C61A4724BC002F20B2 /* backtrace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = backtrace.h; path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace/backtrace.h"; sourceTree = "<absolute>"; };
+		A53AC5C71A4724BC002F20B2 /* btest.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = btest.c; path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace/btest.c"; sourceTree = "<absolute>"; tabWidth = 8; };
+		A53AC5CF1A4724BC002F20B2 /* dwarf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = dwarf.c; path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace/dwarf.c"; sourceTree = "<absolute>"; };
+		A53AC5D01A4724BC002F20B2 /* elf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = elf.c; path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace/elf.c"; sourceTree = "<absolute>"; };
+		A53AC5D11A4724BC002F20B2 /* fileline.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = fileline.c; path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace/fileline.c"; sourceTree = "<absolute>"; };
+		A53AC5D31A4724BC002F20B2 /* gstdint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gstdint.h; path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace/gstdint.h"; sourceTree = "<absolute>"; };
+		A53AC5D41A4724BC002F20B2 /* internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = internal.h; path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace/internal.h"; sourceTree = "<absolute>"; };
+		A53AC5D71A4724BC002F20B2 /* mmap.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mmap.c; path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace/mmap.c"; sourceTree = "<absolute>"; };
+		A53AC5D81A4724BC002F20B2 /* mmapio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mmapio.c; path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace/mmapio.c"; sourceTree = "<absolute>"; };
+		A53AC5D91A4724BC002F20B2 /* nounwind.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = nounwind.c; path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace/nounwind.c"; sourceTree = "<absolute>"; };
+		A53AC5DA1A4724BC002F20B2 /* posix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = posix.c; path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace/posix.c"; sourceTree = "<absolute>"; };
+		A53AC5DB1A4724BC002F20B2 /* print.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = print.c; path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace/print.c"; sourceTree = "<absolute>"; };
+		A53AC5DC1A4724BC002F20B2 /* read.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = read.c; path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace/read.c"; sourceTree = "<absolute>"; };
+		A53AC5DF1A4724BC002F20B2 /* simple.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = simple.c; path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace/simple.c"; sourceTree = "<absolute>"; };
+		A53AC5E01A4724BC002F20B2 /* sort.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sort.c; path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace/sort.c"; sourceTree = "<absolute>"; };
+		A53AC5E11A4724BC002F20B2 /* state.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = state.c; path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace/state.c"; sourceTree = "<absolute>"; };
+		A53AC5E21A4724BC002F20B2 /* stest.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = stest.c; path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace/stest.c"; sourceTree = "<absolute>"; };
+		A53AC5E31A4724BC002F20B2 /* unknown.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = unknown.c; path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace/unknown.c"; sourceTree = "<absolute>"; };
+		A53AC5F61A473934002F20B2 /* mac-binutils.r */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.rez; name = "mac-binutils.r"; path = "/Users/ericgallager/apple-gdb-1824/src/binutils/mac-binutils.r"; sourceTree = "<absolute>"; };
 		A548D49A1836C60900FD4E8A /* DebuggerGDB_disasm.s */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.asm; name = DebuggerGDB_disasm.s; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/XcodePlugins/DebuggerGDB/DebuggerGDB_disasm.s"; sourceTree = "<absolute>"; };
 		A548D49B1836C60900FD4E8A /* DebuggerGDB_symbols.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = DebuggerGDB_symbols.csv; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/XcodePlugins/DebuggerGDB/DebuggerGDB_symbols.csv"; sourceTree = "<absolute>"; };
 		A548D49C1836C60900FD4E8A /* DebuggerGDB_symbols.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = DebuggerGDB_symbols.xml; path = "/Users/ericgallager/apple-gdb-1824/src/gdb/XcodePlugins/DebuggerGDB/DebuggerGDB_symbols.xml"; sourceTree = "<absolute>"; };
@@ -4547,6 +4573,7 @@
 				2609D2AC0E82C409008125DE /* gdb */,
 				2609DCE80E82C410008125DE /* include */,
 				2609DDCD0E82C410008125DE /* intl */,
+				A53AC5BE1A4724BC002F20B2 /* libbacktrace */,
 				2609DDEC0E82C411008125DE /* libiberty */,
 				A53AC0491A3A8CBE002F20B2 /* mmalloc */,
 				2609DE860E82C411008125DE /* opcodes */,
@@ -4878,6 +4905,8 @@
 				2609CFCB0E82C408008125DE /* pei-sh.c */,
 				2609CFCC0E82C408008125DE /* peicode.h */,
 				2609CFCD0E82C408008125DE /* peXXigen.c */,
+				A51B3F171A493694002170CE /* plugin.c */,
+				A51B3F181A493694002170CE /* plugin.h */,
 				2609CFDF0E82C408008125DE /* ppcboot.c */,
 				2609CFE00E82C408008125DE /* ptrace-core.c */,
 				2609CFE20E82C408008125DE /* reloc.c */,
@@ -5005,6 +5034,7 @@
 				2609D03D0E82C408008125DE /* ieee.c */,
 				2609D03E0E82C408008125DE /* is-ranlib.c */,
 				2609D03F0E82C408008125DE /* is-strip.c */,
+				A53AC5F61A473934002F20B2 /* mac-binutils.r */,
 				2609D0440E82C408008125DE /* maybe-ranlib.c */,
 				2609D0450E82C408008125DE /* maybe-strip.c */,
 				A53ABDCB1A39075E002F20B2 /* mclex.c */,
@@ -8477,6 +8507,35 @@
 			path = "/Users/ericgallager/apple-gdb-1824/src/electric-fence";
 			sourceTree = "<absolute>";
 		};
+		A53AC5BE1A4724BC002F20B2 /* libbacktrace */ = {
+			isa = PBXGroup;
+			children = (
+				A53AC5C21A4724BC002F20B2 /* alloc.c */,
+				A53AC5C31A4724BC002F20B2 /* atomic.c */,
+				A53AC5C51A4724BC002F20B2 /* backtrace.c */,
+				A53AC5C61A4724BC002F20B2 /* backtrace.h */,
+				A53AC5C71A4724BC002F20B2 /* btest.c */,
+				A53AC5CF1A4724BC002F20B2 /* dwarf.c */,
+				A53AC5D01A4724BC002F20B2 /* elf.c */,
+				A53AC5D11A4724BC002F20B2 /* fileline.c */,
+				A53AC5D31A4724BC002F20B2 /* gstdint.h */,
+				A53AC5D41A4724BC002F20B2 /* internal.h */,
+				A53AC5D71A4724BC002F20B2 /* mmap.c */,
+				A53AC5D81A4724BC002F20B2 /* mmapio.c */,
+				A53AC5D91A4724BC002F20B2 /* nounwind.c */,
+				A53AC5DA1A4724BC002F20B2 /* posix.c */,
+				A53AC5DB1A4724BC002F20B2 /* print.c */,
+				A53AC5DC1A4724BC002F20B2 /* read.c */,
+				A53AC5DF1A4724BC002F20B2 /* simple.c */,
+				A53AC5E01A4724BC002F20B2 /* sort.c */,
+				A53AC5E11A4724BC002F20B2 /* state.c */,
+				A53AC5E21A4724BC002F20B2 /* stest.c */,
+				A53AC5E31A4724BC002F20B2 /* unknown.c */,
+			);
+			name = libbacktrace;
+			path = "/Users/ericgallager/apple-gdb-1824/src/libbacktrace";
+			sourceTree = "<absolute>";
+		};
 		A548D4981836C60900FD4E8A /* XcodePlugins */ = {
 			isa = PBXGroup;
 			children = (
@@ -10162,6 +10221,7 @@
 				61D221BA192D61C300FA979E /* xcoff-target.h in Headers */,
 				61D221BD192D61C300FA979E /* xsym.h in Headers */,
 				A53ABD8D1A38C88F002F20B2 /* link.h in Headers */,
+				A51B3F1A1A493694002170CE /* plugin.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -10683,6 +10743,7 @@
 				61D221BC192D61C300FA979E /* xsym.c in Sources */,
 				61D221BE192D61C300FA979E /* xtensa-isa.c in Sources */,
 				61D221BF192D61C300FA979E /* xtensa-modules.c in Sources */,
+				A51B3F191A493694002170CE /* plugin.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -107,6 +107,18 @@
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_TIME_H */
 
+#ifndef INFINITY
+# if defined(HAVE_MATH_H) || (defined(STDC_HEADERS) && defined(__STDC__))
+#  include <math.h>
+# else
+#  ifdef HUGE_VALF
+#   define INFINITY HUGE_VALF
+#  else
+#   define INFINITY 1e50f
+#  endif /* HUGE_VALF */
+# endif /* HAVE_MATH_H || (STDC_HEADERS && __STDC__) */
+#endif /* !INFINITY */
+
 #if defined(__GNUC__) && (__GNUC__ >= 2)
 /* Define BFD64 here, even if our default architecture is 32 bit ELF
  * as this will allow us to read in and parse 64bit and 32bit ELF files.
@@ -252,15 +264,23 @@ static struct group *section_groups;
 static struct group **section_headers_groups;
 
 /* A dynamic array of flags indicating for which sections a hex dump
-   has been requested (via the -x switch) and/or a disassembly dump
-   (via the -i switch).  */
+ * has been requested (via the -x switch) and/or a disassembly dump
+ * (via the -i switch).  */
+#ifdef __clang__
+extern char *cmdline_dump_sects;
+extern unsigned num_cmdline_dump_sects;
+#endif /* __clang__ */
 char *cmdline_dump_sects = NULL;
 unsigned num_cmdline_dump_sects = 0;
 
-/* A dynamic array of flags indicating for which sections a dump of
-   some kind has been requested. It is reset on a per-object file
-   basis and then initialised from the cmdline_dump_sects array and
-   the results of interpreting the -w switch.  */
+/* A dynamic array of flags indicating for which sections a dump of some
+ * kind has been requested. It is reset on a per-object file basis
+ * and then initialised from the cmdline_dump_sects array and the results
+ * of interpreting the -w switch: */
+#ifdef __clang__
+extern char *dump_sects;
+extern unsigned int num_dump_sects;
+#endif /* __clang__ */
 char *dump_sects = NULL;
 unsigned int num_dump_sects = 0;
 
@@ -268,7 +288,7 @@ unsigned int num_dump_sects = 0;
 #define DISASS_DUMP	(1 << 1)
 #define DEBUG_DUMP	(1 << 2)
 
-/* How to print a vma value.  */
+/* How to print a vma value: */
 typedef enum print_mode
 {
   HEX,
@@ -432,84 +452,84 @@ byte_get_little_endian (unsigned char *field, int size)
       return *field;
 
     case 2:
-      return  ((unsigned int) (field[0]))
-	|    (((unsigned int) (field[1])) << 8);
+      return (((unsigned int)(field[0]))
+              | (((unsigned int)(field[1])) << 8));
 
 #ifndef BFD64
     case 8:
-      /* We want to extract data from an 8 byte wide field and
-	 place it into a 4 byte wide field. Since this is a little
-	 endian source we can just use the 4 byte extraction code.  */
+      /* We want to extract data from an 8 byte wide field and place it
+       * into a 4 byte wide field. Since this is a little endian source,
+       * we can just use the 4 byte extraction code.  */
       /* Fall through.  */
 #endif /* !BFD64 */
     case 4:
-      return  ((unsigned long) (field[0]))
-	|    (((unsigned long) (field[1])) << 8)
-	|    (((unsigned long) (field[2])) << 16)
-	|    (((unsigned long) (field[3])) << 24);
+      return (((unsigned long) (field[0]))
+              | (((unsigned long) (field[1])) << 8)
+              | (((unsigned long) (field[2])) << 16)
+              | (((unsigned long) (field[3])) << 24));
 
 #ifdef BFD64
     case 8:
-      return  ((bfd_vma) (field[0]))
-	|    (((bfd_vma) (field[1])) << 8)
-	|    (((bfd_vma) (field[2])) << 16)
-	|    (((bfd_vma) (field[3])) << 24)
-	|    (((bfd_vma) (field[4])) << 32)
-	|    (((bfd_vma) (field[5])) << 40)
-	|    (((bfd_vma) (field[6])) << 48)
-	|    (((bfd_vma) (field[7])) << 56);
+      return (((bfd_vma) (field[0]))
+              | (((bfd_vma) (field[1])) << 8)
+              | (((bfd_vma) (field[2])) << 16)
+              | (((bfd_vma) (field[3])) << 24)
+              | (((bfd_vma) (field[4])) << 32)
+              | (((bfd_vma) (field[5])) << 40)
+              | (((bfd_vma) (field[6])) << 48)
+              | (((bfd_vma) (field[7])) << 56));
 #endif /* BFD64 */
     default:
-      error (_("Unhandled data length: %d\n"), size);
-      abort ();
+      error(_("Unhandled data length: %d\n"), size);
+      abort();
     }
 }
 
 static bfd_vma
-byte_get_signed (unsigned char *field, int size)
+byte_get_signed(unsigned char *field, int size)
 {
-  bfd_vma x = byte_get (field, size);
+  bfd_vma x = byte_get(field, size);
 
   switch (size)
     {
     case 1:
-      return (x ^ 0x80) - 0x80;
+      return ((x ^ 0x80) - 0x80);
     case 2:
-      return (x ^ 0x8000) - 0x8000;
+      return ((x ^ 0x8000) - 0x8000);
     case 4:
-      return (x ^ 0x80000000) - 0x80000000;
+      return ((x ^ 0x80000000) - 0x80000000);
     case 8:
       return x;
     default:
-      abort ();
+      abort();
     }
 }
 
 static void
-byte_put_little_endian (unsigned char *field, bfd_vma value, int size)
+byte_put_little_endian(unsigned char *field, bfd_vma value, int size)
 {
   switch (size)
     {
     case 8:
-      field[7] = (((value >> 24) >> 24) >> 8) & 0xff;
-      field[6] = ((value >> 24) >> 24) & 0xff;
-      field[5] = ((value >> 24) >> 16) & 0xff;
-      field[4] = ((value >> 24) >> 8) & 0xff;
+      field[7] = ((((value >> 24) >> 24) >> 8) & 0xff);
+      field[6] = (((value >> 24) >> 24) & 0xff);
+      field[5] = (((value >> 24) >> 16) & 0xff);
+      field[4] = (((value >> 24) >> 8) & 0xff);
       /* Fall through.  */
     case 4:
-      field[3] = (value >> 24) & 0xff;
-      field[2] = (value >> 16) & 0xff;
+      field[3] = ((value >> 24) & 0xff);
+      field[2] = ((value >> 16) & 0xff);
       /* Fall through.  */
     case 2:
-      field[1] = (value >> 8) & 0xff;
+      field[1] = ((value >> 8) & 0xff);
       /* Fall through.  */
     case 1:
-      field[0] = value & 0xff;
+      field[0] = (value & 0xff);
       break;
 
     default:
-      error (_("Unhandled data length: %d\n"), size);
-      abort ();
+      error(_("Unhandled data length: %d\n"), size);
+      abort();
     }
 }
 
@@ -565,7 +585,7 @@ print_hex_vma (bfd_vma vma)
 }
 #endif /* BFD64 && !BFD_HOST_64BIT_LONG */
 
-/* Print a VMA value.  */
+/* Print a VMA value: */
 static int
 print_vma (bfd_vma vma, print_mode mode)
 {
@@ -850,17 +870,15 @@ guess_is_rela (unsigned long e_machine)
     case EM_SVX:
     case EM_ST19:
     default:
-      warn (_("Do not know about relocations on this machine architecture\n"));
+      warn(_("Do not know about relocations on this machine architecture\n"));
       return FALSE;
     }
 }
 
 static int
-slurp_rela_relocs (FILE *file,
-		   unsigned long rel_offset,
-		   unsigned long rel_size,
-		   Elf_Internal_Rela **relasp,
-		   unsigned long *nrelasp)
+slurp_rela_relocs(FILE *file, unsigned long rel_offset,
+                  unsigned long rel_size, Elf_Internal_Rela **relasp,
+                  unsigned long *nrelasp)
 {
   Elf_Internal_Rela *relas;
   unsigned long nrelas;
@@ -870,57 +888,62 @@ slurp_rela_relocs (FILE *file,
     {
       Elf32_External_Rela *erelas;
 
-      erelas = get_data (NULL, file, rel_offset, 1, rel_size, _("relocs"));
-      if (!erelas)
+      erelas = (Elf32_External_Rela *)get_data(NULL, file, rel_offset, 1,
+                                               rel_size, _("relocs"));
+      if (!erelas) {
 	return 0;
+      }
 
-      nrelas = rel_size / sizeof (Elf32_External_Rela);
+      nrelas = (rel_size / sizeof(Elf32_External_Rela));
 
-      relas = cmalloc (nrelas, sizeof (Elf_Internal_Rela));
+      relas = (Elf_Internal_Rela *)cmalloc(nrelas,
+                                           sizeof(Elf_Internal_Rela));
 
       if (relas == NULL)
 	{
-	  free (erelas);
-	  error (_("out of memory parsing relocs"));
+	  free(erelas);
+	  error(_("out of memory parsing relocs"));
 	  return 0;
 	}
 
       for (i = 0; i < nrelas; i++)
 	{
-	  relas[i].r_offset = BYTE_GET (erelas[i].r_offset);
-	  relas[i].r_info   = BYTE_GET (erelas[i].r_info);
-	  relas[i].r_addend = BYTE_GET (erelas[i].r_addend);
+	  relas[i].r_offset = BYTE_GET(erelas[i].r_offset);
+	  relas[i].r_info = BYTE_GET(erelas[i].r_info);
+	  relas[i].r_addend = BYTE_GET(erelas[i].r_addend);
 	}
 
-      free (erelas);
+      free(erelas);
     }
   else
     {
       Elf64_External_Rela *erelas;
 
-      erelas = get_data (NULL, file, rel_offset, 1, rel_size, _("relocs"));
-      if (!erelas)
+      erelas = (Elf64_External_Rela *)get_data(NULL, file, rel_offset, 1,
+                                               rel_size, _("relocs"));
+      if (!erelas) {
 	return 0;
+      }
 
-      nrelas = rel_size / sizeof (Elf64_External_Rela);
+      nrelas = (rel_size / sizeof(Elf64_External_Rela));
 
-      relas = cmalloc (nrelas, sizeof (Elf_Internal_Rela));
+      relas = (Elf_Internal_Rela *)cmalloc(nrelas, sizeof(Elf_Internal_Rela));
 
       if (relas == NULL)
 	{
-	  free (erelas);
-	  error (_("out of memory parsing relocs"));
+	  free(erelas);
+	  error(_("out of memory parsing relocs"));
 	  return 0;
 	}
 
       for (i = 0; i < nrelas; i++)
 	{
-	  relas[i].r_offset = BYTE_GET (erelas[i].r_offset);
-	  relas[i].r_info   = BYTE_GET (erelas[i].r_info);
-	  relas[i].r_addend = BYTE_GET (erelas[i].r_addend);
+	  relas[i].r_offset = BYTE_GET(erelas[i].r_offset);
+	  relas[i].r_info = BYTE_GET(erelas[i].r_info);
+	  relas[i].r_addend = BYTE_GET(erelas[i].r_addend);
 	}
 
-      free (erelas);
+      free(erelas);
     }
   *relasp = relas;
   *nrelasp = nrelas;
@@ -928,11 +951,9 @@ slurp_rela_relocs (FILE *file,
 }
 
 static int
-slurp_rel_relocs (FILE *file,
-		  unsigned long rel_offset,
-		  unsigned long rel_size,
-		  Elf_Internal_Rela **relsp,
-		  unsigned long *nrelsp)
+slurp_rel_relocs(FILE *file, unsigned long rel_offset,
+                 unsigned long rel_size, Elf_Internal_Rela **relsp,
+                 unsigned long *nrelsp)
 {
   Elf_Internal_Rela *rels;
   unsigned long nrels;
@@ -942,91 +963,90 @@ slurp_rel_relocs (FILE *file,
     {
       Elf32_External_Rel *erels;
 
-      erels = get_data (NULL, file, rel_offset, 1, rel_size, _("relocs"));
-      if (!erels)
+      erels = (Elf32_External_Rel *)get_data(NULL, file, rel_offset, 1,
+                                             rel_size, _("relocs"));
+      if (!erels) {
 	return 0;
+      }
 
-      nrels = rel_size / sizeof (Elf32_External_Rel);
+      nrels = (rel_size / sizeof(Elf32_External_Rel));
 
-      rels = cmalloc (nrels, sizeof (Elf_Internal_Rela));
+      rels = (Elf_Internal_Rela *)cmalloc(nrels, sizeof(Elf_Internal_Rela));
 
       if (rels == NULL)
 	{
-	  free (erels);
-	  error (_("out of memory parsing relocs"));
+	  free(erels);
+	  error(_("out of memory parsing relocs"));
 	  return 0;
 	}
 
       for (i = 0; i < nrels; i++)
 	{
-	  rels[i].r_offset = BYTE_GET (erels[i].r_offset);
-	  rels[i].r_info   = BYTE_GET (erels[i].r_info);
+	  rels[i].r_offset = BYTE_GET(erels[i].r_offset);
+	  rels[i].r_info = BYTE_GET(erels[i].r_info);
 	  rels[i].r_addend = 0;
 	}
 
-      free (erels);
+      free(erels);
     }
   else
     {
       Elf64_External_Rel *erels;
 
-      erels = get_data (NULL, file, rel_offset, 1, rel_size, _("relocs"));
-      if (!erels)
+      erels = (Elf64_External_Rel *)get_data(NULL, file, rel_offset, 1,
+                                             rel_size, _("relocs"));
+      if (!erels) {
 	return 0;
+      }
 
-      nrels = rel_size / sizeof (Elf64_External_Rel);
+      nrels = (rel_size / sizeof(Elf64_External_Rel));
 
-      rels = cmalloc (nrels, sizeof (Elf_Internal_Rela));
+      rels = (Elf_Internal_Rela *)cmalloc(nrels,
+                                          sizeof(Elf_Internal_Rela));
 
       if (rels == NULL)
 	{
-	  free (erels);
-	  error (_("out of memory parsing relocs"));
+	  free(erels);
+	  error(_("out of memory parsing relocs"));
 	  return 0;
 	}
 
       for (i = 0; i < nrels; i++)
 	{
-	  rels[i].r_offset = BYTE_GET (erels[i].r_offset);
-	  rels[i].r_info   = BYTE_GET (erels[i].r_info);
+	  rels[i].r_offset = BYTE_GET(erels[i].r_offset);
+	  rels[i].r_info = BYTE_GET(erels[i].r_info);
 	  rels[i].r_addend = 0;
 	}
 
-      free (erels);
+      free(erels);
     }
   *relsp = rels;
   *nrelsp = nrels;
   return 1;
 }
 
-/* Display the contents of the relocation data found at the specified
-   offset.  */
-
+/* Display contents of relocation data found at the specified offset: */
 static int
-dump_relocations (FILE *file,
-		  unsigned long rel_offset,
-		  unsigned long rel_size,
-		  Elf_Internal_Sym *symtab,
-		  unsigned long nsyms,
-		  char *strtab,
-		  unsigned long strtablen,
-		  int is_rela)
+dump_relocations(FILE *file, unsigned long rel_offset,
+                 unsigned long rel_size, Elf_Internal_Sym *symtab,
+                 unsigned long nsyms, char *strtab,
+                 unsigned long strtablen, int is_rela)
 {
   unsigned int i;
   Elf_Internal_Rela *rels;
 
-
-  if (is_rela == UNKNOWN)
-    is_rela = guess_is_rela (elf_header.e_machine);
+  if (is_rela == UNKNOWN) {
+    is_rela = guess_is_rela(elf_header.e_machine);
+  }
 
   if (is_rela)
     {
-      if (!slurp_rela_relocs (file, rel_offset, rel_size, &rels, &rel_size))
+      if (!slurp_rela_relocs(file, rel_offset, rel_size, &rels, &rel_size))
 	return 0;
     }
   else
     {
-      if (!slurp_rel_relocs (file, rel_offset, rel_size, &rels, &rel_size))
+      if (!slurp_rel_relocs(file, rel_offset, rel_size, &rels, &rel_size))
 	return 0;
     }
 
@@ -2856,7 +2876,7 @@ request_dump (unsigned int section, int type)
     {
       char *new_dump_sects;
 
-      new_dump_sects = calloc (section + 1, 1);
+      new_dump_sects = (char *)calloc(section + 1, 1);
 
       if (new_dump_sects == NULL)
 	error (_("Out of memory allocating dump request table."));
@@ -3278,106 +3298,110 @@ process_file_header (void)
 
 
 static int
-get_32bit_program_headers (FILE *file, Elf_Internal_Phdr *program_headers)
+get_32bit_program_headers(FILE *file,
+                          Elf_Internal_Phdr *elf_program_headers)
 {
   Elf32_External_Phdr *phdrs;
   Elf32_External_Phdr *external;
   Elf_Internal_Phdr *internal;
   unsigned int i;
 
-  phdrs = get_data (NULL, file, elf_header.e_phoff,
-		    elf_header.e_phentsize, elf_header.e_phnum,
-		    _("program headers"));
-  if (!phdrs)
+  phdrs = (Elf32_External_Phdr *)get_data(NULL, file, elf_header.e_phoff,
+                                          elf_header.e_phentsize,
+                                          elf_header.e_phnum,
+                                          _("program headers"));
+  if (!phdrs) {
     return 0;
+  }
 
-  for (i = 0, internal = program_headers, external = phdrs;
+  for (i = 0, internal = elf_program_headers, external = phdrs;
        i < elf_header.e_phnum;
        i++, internal++, external++)
     {
-      internal->p_type   = BYTE_GET (external->p_type);
-      internal->p_offset = BYTE_GET (external->p_offset);
-      internal->p_vaddr  = BYTE_GET (external->p_vaddr);
-      internal->p_paddr  = BYTE_GET (external->p_paddr);
-      internal->p_filesz = BYTE_GET (external->p_filesz);
-      internal->p_memsz  = BYTE_GET (external->p_memsz);
-      internal->p_flags  = BYTE_GET (external->p_flags);
-      internal->p_align  = BYTE_GET (external->p_align);
+      internal->p_type = BYTE_GET(external->p_type);
+      internal->p_offset = BYTE_GET(external->p_offset);
+      internal->p_vaddr = BYTE_GET(external->p_vaddr);
+      internal->p_paddr = BYTE_GET(external->p_paddr);
+      internal->p_filesz = BYTE_GET(external->p_filesz);
+      internal->p_memsz = BYTE_GET(external->p_memsz);
+      internal->p_flags = BYTE_GET(external->p_flags);
+      internal->p_align = BYTE_GET(external->p_align);
     }
 
-  free (phdrs);
+  free(phdrs);
 
   return 1;
 }
 
 static int
-get_64bit_program_headers (FILE *file, Elf_Internal_Phdr *program_headers)
+get_64bit_program_headers(FILE *file, Elf_Internal_Phdr *myprogram_headers)
 {
   Elf64_External_Phdr *phdrs;
   Elf64_External_Phdr *external;
   Elf_Internal_Phdr *internal;
   unsigned int i;
 
-  phdrs = get_data (NULL, file, elf_header.e_phoff,
-		    elf_header.e_phentsize, elf_header.e_phnum,
-		    _("program headers"));
+  phdrs = (Elf64_External_Phdr *)get_data(NULL, file, elf_header.e_phoff,
+                                          elf_header.e_phentsize,
+                                          elf_header.e_phnum,
+                                          _("program headers"));
   if (!phdrs)
     return 0;
 
-  for (i = 0, internal = program_headers, external = phdrs;
+  for (i = 0, internal = myprogram_headers, external = phdrs;
        i < elf_header.e_phnum;
        i++, internal++, external++)
     {
-      internal->p_type   = BYTE_GET (external->p_type);
-      internal->p_flags  = BYTE_GET (external->p_flags);
-      internal->p_offset = BYTE_GET (external->p_offset);
-      internal->p_vaddr  = BYTE_GET (external->p_vaddr);
-      internal->p_paddr  = BYTE_GET (external->p_paddr);
-      internal->p_filesz = BYTE_GET (external->p_filesz);
-      internal->p_memsz  = BYTE_GET (external->p_memsz);
-      internal->p_align  = BYTE_GET (external->p_align);
+      internal->p_type = BYTE_GET(external->p_type);
+      internal->p_flags = BYTE_GET(external->p_flags);
+      internal->p_offset = BYTE_GET(external->p_offset);
+      internal->p_vaddr = BYTE_GET(external->p_vaddr);
+      internal->p_paddr = BYTE_GET(external->p_paddr);
+      internal->p_filesz = BYTE_GET(external->p_filesz);
+      internal->p_memsz = BYTE_GET(external->p_memsz);
+      internal->p_align = BYTE_GET(external->p_align);
     }
 
-  free (phdrs);
+  free(phdrs);
 
   return 1;
 }
 
-/* Returns 1 if the program headers were read into `program_headers'.  */
-
+/* Returns 1 if the program headers were read into `program_headers': */
 static int
-get_program_headers (FILE *file)
+get_program_headers(FILE *file)
 {
   Elf_Internal_Phdr *phdrs;
 
-  /* Check cache of prior read.  */
-  if (program_headers != NULL)
+  /* Check cache of prior read: */
+  if (program_headers != NULL) {
     return 1;
+  }
 
-  phdrs = cmalloc (elf_header.e_phnum, sizeof (Elf_Internal_Phdr));
+  phdrs = ( Elf_Internal_Phdr *)cmalloc(elf_header.e_phnum,
+                                        sizeof(Elf_Internal_Phdr));
 
   if (phdrs == NULL)
     {
-      error (_("Out of memory\n"));
+      error(_("Out of memory\n"));
       return 0;
     }
 
   if (is_32bit_elf
-      ? get_32bit_program_headers (file, phdrs)
-      : get_64bit_program_headers (file, phdrs))
+      ? get_32bit_program_headers(file, phdrs)
+      : get_64bit_program_headers(file, phdrs))
     {
       program_headers = phdrs;
       return 1;
     }
 
-  free (phdrs);
+  free(phdrs);
   return 0;
 }
 
-/* Returns 1 if the program headers were loaded.  */
-
+/* Returns 1 if the program headers were loaded: */
 static int
-process_program_headers (FILE *file)
+process_program_headers(FILE *file)
 {
   Elf_Internal_Phdr *segment;
   unsigned int i;
@@ -3636,28 +3660,30 @@ offset_from_vma (FILE *file, bfd_vma vma, bfd_size_type size)
     }
 
   warn (_("Virtual address 0x%lx not located in any PT_LOAD segment.\n"),
-	(long) vma);
-  return (long) vma;
+	(long)vma);
+  return (long)vma;
 }
 
 
 static int
-get_32bit_section_headers (FILE *file, unsigned int num)
+get_32bit_section_headers(FILE *file, unsigned int num)
 {
   Elf32_External_Shdr *shdrs;
   Elf_Internal_Shdr *internal;
   unsigned int i;
 
-  shdrs = get_data (NULL, file, elf_header.e_shoff,
-		    elf_header.e_shentsize, num, _("section headers"));
-  if (!shdrs)
+  shdrs = (Elf32_External_Shdr *)get_data(NULL, file, elf_header.e_shoff,
+                                          elf_header.e_shentsize, num,
+                                          _("section headers"));
+  if (!shdrs) {
     return 0;
+  }
 
-  section_headers = cmalloc (num, sizeof (Elf_Internal_Shdr));
+  section_headers = (Elf_Internal_Shdr *)cmalloc(num, sizeof(Elf_Internal_Shdr));
 
   if (section_headers == NULL)
     {
-      error (_("Out of memory\n"));
+      error(_("Out of memory\n"));
       return 0;
     }
 
@@ -3665,40 +3691,42 @@ get_32bit_section_headers (FILE *file, unsigned int num)
        i < num;
        i++, internal++)
     {
-      internal->sh_name      = BYTE_GET (shdrs[i].sh_name);
-      internal->sh_type      = BYTE_GET (shdrs[i].sh_type);
-      internal->sh_flags     = BYTE_GET (shdrs[i].sh_flags);
-      internal->sh_addr      = BYTE_GET (shdrs[i].sh_addr);
-      internal->sh_offset    = BYTE_GET (shdrs[i].sh_offset);
-      internal->sh_size      = BYTE_GET (shdrs[i].sh_size);
-      internal->sh_link      = BYTE_GET (shdrs[i].sh_link);
-      internal->sh_info      = BYTE_GET (shdrs[i].sh_info);
-      internal->sh_addralign = BYTE_GET (shdrs[i].sh_addralign);
-      internal->sh_entsize   = BYTE_GET (shdrs[i].sh_entsize);
+      internal->sh_name = BYTE_GET(shdrs[i].sh_name);
+      internal->sh_type = BYTE_GET(shdrs[i].sh_type);
+      internal->sh_flags = BYTE_GET(shdrs[i].sh_flags);
+      internal->sh_addr = BYTE_GET(shdrs[i].sh_addr);
+      internal->sh_offset = BYTE_GET(shdrs[i].sh_offset);
+      internal->sh_size  = BYTE_GET(shdrs[i].sh_size);
+      internal->sh_link = BYTE_GET(shdrs[i].sh_link);
+      internal->sh_info = BYTE_GET(shdrs[i].sh_info);
+      internal->sh_addralign = BYTE_GET(shdrs[i].sh_addralign);
+      internal->sh_entsize = BYTE_GET(shdrs[i].sh_entsize);
     }
 
-  free (shdrs);
+  free(shdrs);
 
   return 1;
 }
 
 static int
-get_64bit_section_headers (FILE *file, unsigned int num)
+get_64bit_section_headers(FILE *file, unsigned int num)
 {
   Elf64_External_Shdr *shdrs;
   Elf_Internal_Shdr *internal;
   unsigned int i;
 
-  shdrs = get_data (NULL, file, elf_header.e_shoff,
-		    elf_header.e_shentsize, num, _("section headers"));
-  if (!shdrs)
+  shdrs = (Elf64_External_Shdr *)get_data(NULL, file, elf_header.e_shoff,
+                                          elf_header.e_shentsize, num,
+                                          _("section headers"));
+  if (!shdrs) {
     return 0;
+  }
 
-  section_headers = cmalloc (num, sizeof (Elf_Internal_Shdr));
+  section_headers = (Elf_Internal_Shdr *)cmalloc(num, sizeof(Elf_Internal_Shdr));
 
   if (section_headers == NULL)
     {
-      error (_("Out of memory\n"));
+      error(_("Out of memory\n"));
       return 0;
     }
 
@@ -3706,25 +3734,25 @@ get_64bit_section_headers (FILE *file, unsigned int num)
        i < num;
        i++, internal++)
     {
-      internal->sh_name      = BYTE_GET (shdrs[i].sh_name);
-      internal->sh_type      = BYTE_GET (shdrs[i].sh_type);
-      internal->sh_flags     = BYTE_GET (shdrs[i].sh_flags);
-      internal->sh_addr      = BYTE_GET (shdrs[i].sh_addr);
-      internal->sh_size      = BYTE_GET (shdrs[i].sh_size);
-      internal->sh_entsize   = BYTE_GET (shdrs[i].sh_entsize);
-      internal->sh_link      = BYTE_GET (shdrs[i].sh_link);
-      internal->sh_info      = BYTE_GET (shdrs[i].sh_info);
-      internal->sh_offset    = BYTE_GET (shdrs[i].sh_offset);
-      internal->sh_addralign = BYTE_GET (shdrs[i].sh_addralign);
+      internal->sh_name = BYTE_GET(shdrs[i].sh_name);
+      internal->sh_type = BYTE_GET(shdrs[i].sh_type);
+      internal->sh_flags = BYTE_GET(shdrs[i].sh_flags);
+      internal->sh_addr = BYTE_GET(shdrs[i].sh_addr);
+      internal->sh_size = BYTE_GET(shdrs[i].sh_size);
+      internal->sh_entsize = BYTE_GET(shdrs[i].sh_entsize);
+      internal->sh_link = BYTE_GET(shdrs[i].sh_link);
+      internal->sh_info = BYTE_GET(shdrs[i].sh_info);
+      internal->sh_offset = BYTE_GET(shdrs[i].sh_offset);
+      internal->sh_addralign = BYTE_GET(shdrs[i].sh_addralign);
     }
 
-  free (shdrs);
+  free(shdrs);
 
   return 1;
 }
 
 static Elf_Internal_Sym *
-get_32bit_elf_symbols (FILE *file, Elf_Internal_Shdr *section)
+get_32bit_elf_symbols(FILE *file, Elf_Internal_Shdr *section)
 {
   unsigned long number;
   Elf32_External_Sym *esyms;
@@ -3733,34 +3761,38 @@ get_32bit_elf_symbols (FILE *file, Elf_Internal_Shdr *section)
   Elf_Internal_Sym *psym;
   unsigned int j;
 
-  esyms = get_data (NULL, file, section->sh_offset, 1, section->sh_size,
-		    _("symbols"));
-  if (!esyms)
+  esyms = (Elf32_External_Sym *)get_data(NULL, file, section->sh_offset, 1,
+                                         section->sh_size, _("symbols"));
+  if (!esyms) {
     return NULL;
+  }
 
-  shndx = NULL;
-  if (symtab_shndx_hdr != NULL
+  shndx = (Elf_External_Sym_Shndx *)NULL;
+  if ((symtab_shndx_hdr != NULL)
       && (symtab_shndx_hdr->sh_link
-	  == (unsigned long) SECTION_HEADER_NUM (section - section_headers)))
+	  == (unsigned long)SECTION_HEADER_NUM(section - section_headers)))
     {
-      shndx = get_data (NULL, file, symtab_shndx_hdr->sh_offset,
-			1, symtab_shndx_hdr->sh_size, _("symtab shndx"));
+      shndx = (Elf_External_Sym_Shndx *)get_data(NULL, file,
+                                                 symtab_shndx_hdr->sh_offset,
+                                                 1, symtab_shndx_hdr->sh_size,
+                                                 _("symtab shndx"));
       if (!shndx)
 	{
-	  free (esyms);
+	  free(esyms);
 	  return NULL;
 	}
     }
 
-  number = section->sh_size / section->sh_entsize;
-  isyms = cmalloc (number, sizeof (Elf_Internal_Sym));
+  number = (section->sh_size / section->sh_entsize);
+  isyms = (Elf_Internal_Sym *)cmalloc(number, sizeof(Elf_Internal_Sym));
 
   if (isyms == NULL)
     {
-      error (_("Out of memory\n"));
-      if (shndx)
-	free (shndx);
-      free (esyms);
+      error(_("Out of memory\n"));
+      if (shndx) {
+	free(shndx);
+      }
+      free(esyms);
       return NULL;
     }
 
@@ -3787,7 +3819,7 @@ get_32bit_elf_symbols (FILE *file, Elf_Internal_Shdr *section)
 }
 
 static Elf_Internal_Sym *
-get_64bit_elf_symbols (FILE *file, Elf_Internal_Shdr *section)
+get_64bit_elf_symbols(FILE *file, Elf_Internal_Shdr *section)
 {
   unsigned long number;
   Elf64_External_Sym *esyms;
@@ -3796,34 +3828,38 @@ get_64bit_elf_symbols (FILE *file, Elf_Internal_Shdr *section)
   Elf_Internal_Sym *psym;
   unsigned int j;
 
-  esyms = get_data (NULL, file, section->sh_offset, 1, section->sh_size,
-		    _("symbols"));
-  if (!esyms)
+  esyms = (Elf64_External_Sym *)get_data(NULL, file, section->sh_offset, 1,
+                                         section->sh_size, _("symbols"));
+  if (!esyms) {
     return NULL;
+  }
 
-  shndx = NULL;
-  if (symtab_shndx_hdr != NULL
+  shndx = (Elf_External_Sym_Shndx *)NULL;
+  if ((symtab_shndx_hdr != NULL)
       && (symtab_shndx_hdr->sh_link
-	  == (unsigned long) SECTION_HEADER_NUM (section - section_headers)))
+	  == (unsigned long)SECTION_HEADER_NUM(section - section_headers)))
     {
-      shndx = get_data (NULL, file, symtab_shndx_hdr->sh_offset,
-			1, symtab_shndx_hdr->sh_size, _("symtab shndx"));
+      shndx = (Elf_External_Sym_Shndx *)get_data(NULL, file,
+                                                 symtab_shndx_hdr->sh_offset,
+                                                 1, symtab_shndx_hdr->sh_size,
+                                                 _("symtab shndx"));
       if (!shndx)
 	{
-	  free (esyms);
+	  free(esyms);
 	  return NULL;
 	}
     }
 
-  number = section->sh_size / section->sh_entsize;
-  isyms = cmalloc (number, sizeof (Elf_Internal_Sym));
+  number = (section->sh_size / section->sh_entsize);
+  isyms = (Elf_Internal_Sym *)cmalloc(number, sizeof(Elf_Internal_Sym));
 
   if (isyms == NULL)
     {
-      error (_("Out of memory\n"));
-      if (shndx)
-	free (shndx);
-      free (esyms);
+      error(_("Out of memory\n"));
+      if (shndx) {
+	free(shndx);
+      }
+      free(esyms);
       return NULL;
     }
 
@@ -4010,16 +4046,17 @@ process_section_headers (FILE *file)
     return 0;
 
   /* Read in the string table, so that we have names to display.  */
-  if (SECTION_HEADER_INDEX (elf_header.e_shstrndx) < elf_header.e_shnum)
+  if (SECTION_HEADER_INDEX(elf_header.e_shstrndx) < elf_header.e_shnum)
     {
-      section = SECTION_HEADER (elf_header.e_shstrndx);
+      section = SECTION_HEADER(elf_header.e_shstrndx);
 
       if (section->sh_size != 0)
 	{
-	  string_table = get_data (NULL, file, section->sh_offset,
-				   1, section->sh_size, _("string table"));
+	  string_table = (char *)get_data(NULL, file, section->sh_offset,
+                                          1, section->sh_size,
+                                          _("string table"));
 
-	  string_table_length = string_table != NULL ? section->sh_size : 0;
+	  string_table_length = ((string_table != NULL) ? section->sh_size : 0);
 	}
     }
 
@@ -4093,8 +4130,10 @@ process_section_headers (FILE *file)
 	      continue;
 	    }
 
-	  dynamic_strings = get_data (NULL, file, section->sh_offset,
-				      1, section->sh_size, _("dynamic strings"));
+	  dynamic_strings = (char *)get_data(NULL, file,
+                                             section->sh_offset,
+                                             1, section->sh_size,
+                                             _("dynamic strings"));
 	  dynamic_strings_length = section->sh_size;
 	}
       else if (section->sh_type == SHT_SYMTAB_SHNDX)
@@ -4367,23 +4406,23 @@ process_section_groups (FILE *file)
   if (elf_header.e_shnum == 0)
     {
       if (do_section_groups)
-	printf (_("\nThere are no sections in this file.\n"));
+	printf(_("\nThere are no sections in this file.\n"));
 
       return 1;
     }
 
   if (section_headers == NULL)
     {
-      error (_("Section headers are not available!\n"));
-      abort ();
+      error(_("Section headers are not available!\n"));
+      abort();
     }
 
-  section_headers_groups = calloc (elf_header.e_shnum,
-				   sizeof (struct group *));
+  section_headers_groups = (struct group **)calloc(elf_header.e_shnum,
+                                                   sizeof(struct group *));
 
   if (section_headers_groups == NULL)
     {
-      error (_("Out of memory\n"));
+      error(_("Out of memory\n"));
       return 0;
     }
 
@@ -4398,16 +4437,17 @@ process_section_groups (FILE *file)
   if (group_count == 0)
     {
       if (do_section_groups)
-	printf (_("\nThere are no section groups in this file.\n"));
+	printf(_("\nThere are no section groups in this file.\n"));
 
       return 1;
     }
 
-  section_groups = calloc (group_count, sizeof (struct group));
+  section_groups = (struct group *)calloc(group_count,
+                                          sizeof(struct group));
 
   if (section_groups == NULL)
     {
-      error (_("Out of memory\n"));
+      error(_("Out of memory\n"));
       return 0;
     }
 
@@ -4477,34 +4517,36 @@ process_section_groups (FILE *file)
 		  strtab_size = 0;
 		}
 	      else if (strtab_sec
-		       != (sec = SECTION_HEADER (symtab_sec->sh_link)))
+		       != (sec = SECTION_HEADER(symtab_sec->sh_link)))
 		{
 		  strtab_sec = sec;
 		  if (strtab)
-		    free (strtab);
-		  strtab = get_data (NULL, file, strtab_sec->sh_offset,
-				     1, strtab_sec->sh_size,
-				     _("string table"));
-		  strtab_size = strtab != NULL ? strtab_sec->sh_size : 0;
+		    free(strtab);
+		  strtab = (char *)get_data(NULL, file,
+                                            strtab_sec->sh_offset, 1,
+                                            strtab_sec->sh_size,
+                                            _("string table"));
+		  strtab_size = ((strtab != NULL) ? strtab_sec->sh_size : 0);
 		}
-	      group_name = sym->st_name < strtab_size
-			   ? strtab + sym->st_name : "<corrupt>";
+	      group_name = ((sym->st_name < strtab_size)
+                            ? (strtab + sym->st_name) : "<corrupt>");
 	    }
 
-	  start = get_data (NULL, file, section->sh_offset,
-			    1, section->sh_size, _("section data"));
+	  start = (unsigned char *)get_data(NULL, file, section->sh_offset,
+                                            1, section->sh_size,
+                                            _("section data"));
 
 	  indices = start;
 	  size = (section->sh_size / section->sh_entsize) - 1;
-	  entry = byte_get (indices, 4);
+	  entry = byte_get(indices, 4);
 	  indices += 4;
 
 	  if (do_section_groups)
 	    {
-	      printf ("\n%s group section [%5u] `%s' [%s] contains %u sections:\n",
-		      get_group_flags (entry), i, name, group_name, size);
+	      printf("\n%s group section [%5u] `%s' [%s] contains %u sections:\n",
+                     get_group_flags(entry), i, name, group_name, size);
 
-	      printf (_("   [Index]    Name\n"));
+	      printf(_("   [Index]    Name\n"));
 	    }
 
 	  group->group_index = i;
@@ -4547,23 +4589,23 @@ process_section_groups (FILE *file)
 		      static int warned = 0;
 		      if (!warned)
 			{
-			  error (_("section 0 in group section [%5u]\n"),
-				 section_headers_groups [SECTION_HEADER_INDEX (entry)]->group_index);
+			  error(_("section 0 in group section [%5u]\n"),
+                                section_headers_groups[SECTION_HEADER_INDEX(entry)]->group_index);
 			  warned++;
 			}
 		    }
 		}
 
-	      section_headers_groups [SECTION_HEADER_INDEX (entry)]
+	      section_headers_groups[SECTION_HEADER_INDEX(entry)]
 		= group;
 
 	      if (do_section_groups)
 		{
-		  sec = SECTION_HEADER (entry);
-		  printf ("   [%5u]   %s\n", entry, SECTION_NAME (sec));
+		  sec = SECTION_HEADER(entry);
+		  printf("   [%5u]   %s\n", entry, SECTION_NAME(sec));
 		}
 
-	      g = xmalloc (sizeof (struct group_list));
+	      g = (struct group_list *)xmalloc(sizeof(struct group_list));
 	      g->section_index = entry;
 	      g->next = group->root;
 	      group->root = g;
@@ -4706,25 +4748,26 @@ process_relocs (FILE *file)
 		      && symsec->sh_type != SHT_DYNSYM)
                     continue;
 
-		  nsyms = symsec->sh_size / symsec->sh_entsize;
-		  symtab = GET_ELF_SYMBOLS (file, symsec);
+		  nsyms = (symsec->sh_size / symsec->sh_entsize);
+		  symtab = GET_ELF_SYMBOLS(file, symsec);
 
 		  if (symtab == NULL)
 		    continue;
 
-		  if (SECTION_HEADER_INDEX (symsec->sh_link)
+		  if (SECTION_HEADER_INDEX(symsec->sh_link)
 		      < elf_header.e_shnum)
 		    {
-		      strsec = SECTION_HEADER (symsec->sh_link);
+		      strsec = SECTION_HEADER(symsec->sh_link);
 
-		      strtab = get_data (NULL, file, strsec->sh_offset,
-					 1, strsec->sh_size,
-					 _("string table"));
-		      strtablen = strtab == NULL ? 0 : strsec->sh_size;
+		      strtab = (char *)get_data(NULL, file,
+                                                strsec->sh_offset, 1,
+                                                strsec->sh_size,
+                                                _("string table"));
+		      strtablen = ((strtab == NULL) ? 0 : strsec->sh_size);
 		    }
 
-		  dump_relocations (file, rel_offset, rel_size,
-				    symtab, nsyms, strtab, strtablen, is_rela);
+		  dump_relocations(file, rel_offset, rel_size, symtab,
+                                   nsyms, strtab, strtablen, is_rela);
 		  if (strtab)
 		    free (strtab);
 		  free (symtab);
@@ -4886,23 +4929,23 @@ slurp_ia64_unwind_table (FILE *file,
   Elf_Internal_Sym *sym;
   const char *relname;
 
-  /* First, find the starting address of the segment that includes
-     this section: */
-
+  /* 1st, find starting address of segment that includes this section: */
   if (elf_header.e_phnum)
     {
-      if (! get_program_headers (file))
-	  return 0;
+      if (! get_program_headers(file)) {
+        return 0;
+      }
 
       for (seg = program_headers;
-	   seg < program_headers + elf_header.e_phnum;
+	   seg < (program_headers + elf_header.e_phnum);
 	   ++seg)
 	{
-	  if (seg->p_type != PT_LOAD)
+	  if (seg->p_type != PT_LOAD) {
 	    continue;
+          }
 
-	  if (sec->sh_addr >= seg->p_vaddr
-	      && (sec->sh_addr + sec->sh_size <= seg->p_vaddr + seg->p_memsz))
+	  if ((sec->sh_addr >= seg->p_vaddr)
+	      && ((sec->sh_addr + sec->sh_size) <= (seg->p_vaddr + seg->p_memsz)))
 	    {
 	      aux->seg_base = seg->p_vaddr;
 	      break;
@@ -4910,24 +4953,27 @@ slurp_ia64_unwind_table (FILE *file,
 	}
     }
 
-  /* Second, build the unwind table from the contents of the unwind section:  */
+  /* 2nd, build unwind table from the contents of the unwind section: */
   size = sec->sh_size;
-  table = get_data (NULL, file, sec->sh_offset, 1, size, _("unwind table"));
-  if (!table)
+  table = (unsigned char *)get_data(NULL, file, sec->sh_offset, 1, size,
+                                    _("unwind table"));
+  if (!table) {
     return 0;
+  }
 
-  aux->table = xcmalloc (size / (3 * eh_addr_size), sizeof (aux->table[0]));
+  aux->table = (struct ia64_unw_table_entry *)xcmalloc(size / (3 * eh_addr_size),
+                                                       sizeof(aux->table[0]));
   tep = aux->table;
-  for (tp = table; tp < table + size; tp += 3 * eh_addr_size, ++tep)
+  for (tp = table; tp < (table + size); tp += 3 * eh_addr_size, ++tep)
     {
       tep->start.section = SHN_UNDEF;
-      tep->end.section   = SHN_UNDEF;
-      tep->info.section  = SHN_UNDEF;
+      tep->end.section = SHN_UNDEF;
+      tep->info.section = SHN_UNDEF;
       if (is_32bit_elf)
 	{
-	  tep->start.offset = byte_get ((unsigned char *) tp + 0, 4);
-	  tep->end.offset   = byte_get ((unsigned char *) tp + 4, 4);
-	  tep->info.offset  = byte_get ((unsigned char *) tp + 8, 4);
+	  tep->start.offset = byte_get((unsigned char *)tp + 0, 4);
+	  tep->end.offset = byte_get((unsigned char *)tp + 4, 4);
+	  tep->info.offset = byte_get((unsigned char *)tp + 8, 4);
 	}
       else
 	{
@@ -5014,16 +5060,17 @@ ia64_process_unwind (FILE *file)
 
   for (i = 0, sec = section_headers; i < elf_header.e_shnum; ++i, ++sec)
     {
-      if (sec->sh_type == SHT_SYMTAB
-	  && SECTION_HEADER_INDEX (sec->sh_link) < elf_header.e_shnum)
+      if ((sec->sh_type == SHT_SYMTAB)
+	  && (SECTION_HEADER_INDEX(sec->sh_link) < elf_header.e_shnum))
 	{
-	  aux.nsyms = sec->sh_size / sec->sh_entsize;
-	  aux.symtab = GET_ELF_SYMBOLS (file, sec);
+	  aux.nsyms = (sec->sh_size / sec->sh_entsize);
+	  aux.symtab = GET_ELF_SYMBOLS(file, sec);
 
-	  strsec = SECTION_HEADER (sec->sh_link);
-	  aux.strtab = get_data (NULL, file, strsec->sh_offset,
-				 1, strsec->sh_size, _("string table"));
-	  aux.strtab_size = aux.strtab != NULL ? strsec->sh_size : 0;
+	  strsec = SECTION_HEADER(sec->sh_link);
+	  aux.strtab = (char *)get_data(NULL, file, strsec->sh_offset,
+                                        1, strsec->sh_size,
+                                        _("string table"));
+	  aux.strtab_size = ((aux.strtab != NULL) ? strsec->sh_size : 0);
 	}
       else if (sec->sh_type == SHT_IA_64_UNWIND)
 	unwcount++;
@@ -5093,49 +5140,50 @@ ia64_process_unwind (FILE *file)
 
       if (i == elf_header.e_shnum)
 	{
-	  printf (_("\nCould not find unwind info section for "));
+	  printf(_("\nCould not find unwind info section for "));
 
 	  if (string_table == NULL)
-	    printf ("%d", unwsec->sh_name);
+	    printf("%d", unwsec->sh_name);
 	  else
-	    printf (_("'%s'"), SECTION_NAME (unwsec));
+	    printf(_("'%s'"), SECTION_NAME(unwsec));
 	}
       else
 	{
 	  aux.info_size = sec->sh_size;
 	  aux.info_addr = sec->sh_addr;
-	  aux.info = get_data (NULL, file, sec->sh_offset, 1, aux.info_size,
-			       _("unwind info"));
+	  aux.info = (unsigned char *)get_data (NULL, file, sec->sh_offset,
+                                                1, aux.info_size,
+                                                _("unwind info"));
 
-	  printf (_("\nUnwind section "));
+	  printf(_("\nUnwind section "));
 
 	  if (string_table == NULL)
-	    printf ("%d", unwsec->sh_name);
+	    printf("%d", unwsec->sh_name);
 	  else
-	    printf (_("'%s'"), SECTION_NAME (unwsec));
+	    printf(_("'%s'"), SECTION_NAME (unwsec));
 
-	  printf (_(" at offset 0x%lx contains %lu entries:\n"),
-		  (unsigned long) unwsec->sh_offset,
-		  (unsigned long) (unwsec->sh_size / (3 * eh_addr_size)));
+	  printf(_(" at offset 0x%lx contains %lu entries:\n"),
+                 (unsigned long)unwsec->sh_offset,
+                 (unsigned long)(unwsec->sh_size / (3 * eh_addr_size)));
 
-	  (void) slurp_ia64_unwind_table (file, & aux, unwsec);
+	  (void)slurp_ia64_unwind_table(file, & aux, unwsec);
 
 	  if (aux.table_len > 0)
 	    dump_ia64_unwind (& aux);
 
 	  if (aux.table)
-	    free ((char *) aux.table);
+	    free((char *)aux.table);
 	  if (aux.info)
-	    free ((char *) aux.info);
+	    free((char *)aux.info);
 	  aux.table = NULL;
 	  aux.info = NULL;
 	}
     }
 
   if (aux.symtab)
-    free (aux.symtab);
+    free(aux.symtab);
   if (aux.strtab)
-    free ((char *) aux.strtab);
+    free((char *)aux.strtab);
 
   return 1;
 }
@@ -5254,9 +5302,8 @@ dump_hppa_unwind (struct hppa_unw_aux_info *aux)
 }
 
 static int
-slurp_hppa_unwind_table (FILE *file,
-			 struct hppa_unw_aux_info *aux,
-			 Elf_Internal_Shdr *sec)
+slurp_hppa_unwind_table(FILE *file, struct hppa_unw_aux_info *aux,
+                        Elf_Internal_Shdr *sec)
 {
   unsigned long size, unw_ent_size, nentries, nrelas, i;
   Elf_Internal_Phdr *seg;
@@ -5267,23 +5314,23 @@ slurp_hppa_unwind_table (FILE *file,
   Elf_Internal_Sym *sym;
   const char *relname;
 
-  /* First, find the starting address of the segment that includes
-     this section.  */
-
+  /* 1st, find starting address of segment that includes this section: */
   if (elf_header.e_phnum)
     {
-      if (! get_program_headers (file))
+      if (! get_program_headers(file)) {
 	return 0;
+      }
 
       for (seg = program_headers;
-	   seg < program_headers + elf_header.e_phnum;
+	   seg < (program_headers + elf_header.e_phnum);
 	   ++seg)
 	{
-	  if (seg->p_type != PT_LOAD)
+	  if (seg->p_type != PT_LOAD) {
 	    continue;
+          }
 
-	  if (sec->sh_addr >= seg->p_vaddr
-	      && (sec->sh_addr + sec->sh_size <= seg->p_vaddr + seg->p_memsz))
+	  if ((sec->sh_addr >= seg->p_vaddr)
+	      && ((sec->sh_addr + sec->sh_size) <= (seg->p_vaddr + seg->p_memsz)))
 	    {
 	      aux->seg_base = seg->p_vaddr;
 	      break;
@@ -5291,20 +5338,22 @@ slurp_hppa_unwind_table (FILE *file,
 	}
     }
 
-  /* Second, build the unwind table from the contents of the unwind
-     section.  */
+  /* 2nd, build the unwind table from contents of the unwind section: */
   size = sec->sh_size;
-  table = get_data (NULL, file, sec->sh_offset, 1, size, _("unwind table"));
-  if (!table)
+  table = (unsigned char *)get_data(NULL, file, sec->sh_offset, 1, size,
+                                    _("unwind table"));
+  if (!table) {
     return 0;
+  }
 
   unw_ent_size = 16;
-  nentries = size / unw_ent_size;
-  size = unw_ent_size * nentries;
+  nentries = (size / unw_ent_size);
+  size = (unw_ent_size * nentries);
 
-  tep = aux->table = xcmalloc (nentries, sizeof (aux->table[0]));
+  tep = aux->table = (struct hppa_unw_table_entry *)xcmalloc(nentries,
+                                                             sizeof(aux->table[0]));
 
-  for (tp = table; tp < table + size; tp += unw_ent_size, ++tep)
+  for (tp = table; tp < (table + size); tp += unw_ent_size, ++tep)
     {
       unsigned int tmp1, tmp2;
 
@@ -5429,18 +5478,19 @@ hppa_process_unwind (FILE *file)
 
   for (i = 0, sec = section_headers; i < elf_header.e_shnum; ++i, ++sec)
     {
-      if (sec->sh_type == SHT_SYMTAB
-	  && SECTION_HEADER_INDEX (sec->sh_link) < elf_header.e_shnum)
+      if ((sec->sh_type == SHT_SYMTAB)
+	  && (SECTION_HEADER_INDEX(sec->sh_link) < elf_header.e_shnum))
 	{
-	  aux.nsyms = sec->sh_size / sec->sh_entsize;
-	  aux.symtab = GET_ELF_SYMBOLS (file, sec);
+	  aux.nsyms = (sec->sh_size / sec->sh_entsize);
+	  aux.symtab = GET_ELF_SYMBOLS(file, sec);
 
-	  strsec = SECTION_HEADER (sec->sh_link);
-	  aux.strtab = get_data (NULL, file, strsec->sh_offset,
-				 1, strsec->sh_size, _("string table"));
-	  aux.strtab_size = aux.strtab != NULL ? strsec->sh_size : 0;
+	  strsec = SECTION_HEADER(sec->sh_link);
+	  aux.strtab = (char *)get_data(NULL, file, strsec->sh_offset,
+                                        1, strsec->sh_size,
+                                        _("string table"));
+	  aux.strtab_size = ((aux.strtab != NULL) ? strsec->sh_size : 0);
 	}
-      else if (streq (SECTION_NAME (sec), ".PARISC.unwind"))
+      else if (streq(SECTION_NAME(sec), ".PARISC.unwind"))
 	unwsec = sec;
     }
 
@@ -5574,7 +5624,7 @@ dynamic_section_mips_val (Elf_Internal_Dyn *entry)
 
 
 static void
-dynamic_section_parisc_val (Elf_Internal_Dyn *entry)
+dynamic_section_parisc_val(Elf_Internal_Dyn *entry)
 {
   switch (entry->d_tag)
     {
@@ -5609,88 +5659,93 @@ dynamic_section_parisc_val (Elf_Internal_Dyn *entry)
 	size_t cnt;
 	bfd_vma val = entry->d_un.d_val;
 
-	for (cnt = 0; cnt < sizeof (flags) / sizeof (flags[0]); ++cnt)
+	for (cnt = 0; cnt < (sizeof(flags) / sizeof(flags[0])); ++cnt)
 	  if (val & flags[cnt].bit)
 	    {
-	      if (! first)
-		putchar (' ');
-	      fputs (flags[cnt].str, stdout);
+	      if (! first) {
+		putchar(' ');
+              }
+	      fputs(flags[cnt].str, stdout);
 	      first = 0;
 	      val ^= flags[cnt].bit;
 	    }
 
-	if (val != 0 || first)
+	if ((val != 0) || first)
 	  {
-	    if (! first)
-	      putchar (' ');
-	    print_vma (val, HEX);
+	    if (! first) {
+	      putchar(' ');
+            }
+	    print_vma(val, HEX);
 	  }
       }
       break;
 
     default:
-      print_vma (entry->d_un.d_ptr, PREFIX_HEX);
+      print_vma(entry->d_un.d_ptr, PREFIX_HEX);
       break;
     }
-  putchar ('\n');
+  putchar('\n');
 }
 
 static void
-dynamic_section_ia64_val (Elf_Internal_Dyn *entry)
+dynamic_section_ia64_val(Elf_Internal_Dyn *entry)
 {
   switch (entry->d_tag)
     {
     case DT_IA_64_PLT_RESERVE:
-      /* First 3 slots reserved.  */
-      print_vma (entry->d_un.d_ptr, PREFIX_HEX);
-      printf (" -- ");
-      print_vma (entry->d_un.d_ptr + (3 * 8), PREFIX_HEX);
+      /* First 3 slots reserved: */
+      print_vma(entry->d_un.d_ptr, PREFIX_HEX);
+      printf(" -- ");
+      print_vma(entry->d_un.d_ptr + (3 * 8), PREFIX_HEX);
       break;
-
     default:
-      print_vma (entry->d_un.d_ptr, PREFIX_HEX);
+      print_vma(entry->d_un.d_ptr, PREFIX_HEX);
       break;
     }
-  putchar ('\n');
+  putchar('\n');
 }
 
 static int
-get_32bit_dynamic_section (FILE *file)
+get_32bit_dynamic_section(FILE *file)
 {
   Elf32_External_Dyn *edyn, *ext;
   Elf_Internal_Dyn *entry;
 
-  edyn = get_data (NULL, file, dynamic_addr, 1, dynamic_size,
-		   _("dynamic section"));
-  if (!edyn)
+  edyn = (Elf32_External_Dyn *)get_data(NULL, file, dynamic_addr, 1,
+                                        dynamic_size,
+                                        _("dynamic section"));
+  if (!edyn) {
     return 0;
+  }
 
-/* SGI's ELF has more than one section in the DYNAMIC segment, and we
-   might not have the luxury of section headers. Look for the DT_NULL
-   terminator to determine the number of entries.  */
+  /* SGI's ELF has more than one section in the DYNAMIC segment, and we
+   * might not have the luxury of section headers.  Look for the DT_NULL
+   * terminator to determine the number of entries: */
   for (ext = edyn, dynamic_nent = 0;
-       (char *) ext < (char *) edyn + dynamic_size;
+       (char *)ext < ((char *)edyn + dynamic_size);
        ext++)
     {
       dynamic_nent++;
-      if (BYTE_GET (ext->d_tag) == DT_NULL)
+      if (BYTE_GET(ext->d_tag) == DT_NULL) {
 	break;
+      }
     }
 
-  dynamic_section = cmalloc (dynamic_nent, sizeof (*entry));
+  dynamic_section = (Elf_Internal_Dyn *)cmalloc(dynamic_nent,
+                                                sizeof(*entry));
   if (dynamic_section == NULL)
     {
-      error (_("Out of memory\n"));
-      free (edyn);
+      error(_("Out of memory\n"));
+      free(edyn);
       return 0;
     }
 
   for (ext = edyn, entry = dynamic_section;
-       entry < dynamic_section + dynamic_nent;
+       entry < (dynamic_section + dynamic_nent);
        ext++, entry++)
     {
-      entry->d_tag      = BYTE_GET (ext->d_tag);
-      entry->d_un.d_val = BYTE_GET (ext->d_un.d_val);
+      entry->d_tag = BYTE_GET(ext->d_tag);
+      entry->d_un.d_val = BYTE_GET(ext->d_un.d_val);
     }
 
   free (edyn);
@@ -5699,33 +5754,37 @@ get_32bit_dynamic_section (FILE *file)
 }
 
 static int
-get_64bit_dynamic_section (FILE *file)
+get_64bit_dynamic_section(FILE *file)
 {
   Elf64_External_Dyn *edyn, *ext;
   Elf_Internal_Dyn *entry;
 
-  edyn = get_data (NULL, file, dynamic_addr, 1, dynamic_size,
-		   _("dynamic section"));
-  if (!edyn)
+  edyn = (Elf64_External_Dyn *)get_data(NULL, file, dynamic_addr, 1,
+                                        dynamic_size,
+                                        _("dynamic section"));
+  if (!edyn) {
     return 0;
+  }
 
-/* SGI's ELF has more than one section in the DYNAMIC segment, and we
-   might not have the luxury of section headers. Look for the DT_NULL
-   terminator to determine the number of entries.  */
+  /* SGI's ELF has more than one section in the DYNAMIC segment, and we
+   * might not have the luxury of section headers.  Look for the DT_NULL
+   * terminator to determine the number of entries: */
   for (ext = edyn, dynamic_nent = 0;
-       (char *) ext < (char *) edyn + dynamic_size;
+       (char *)ext < ((char *)edyn + dynamic_size);
        ext++)
     {
       dynamic_nent++;
-      if (BYTE_GET (ext->d_tag) == DT_NULL)
+      if (BYTE_GET(ext->d_tag) == DT_NULL) {
 	break;
+      }
     }
 
-  dynamic_section = cmalloc (dynamic_nent, sizeof (*entry));
+  dynamic_section = (Elf_Internal_Dyn *)cmalloc(dynamic_nent,
+                                                sizeof(*entry));
   if (dynamic_section == NULL)
     {
-      error (_("Out of memory\n"));
-      free (edyn);
+      error(_("Out of memory\n"));
+      free(edyn);
       return 0;
     }
 
@@ -5879,14 +5938,15 @@ process_dynamic_section (FILE *file)
 	      continue;
 	    }
 
-	  dynamic_strings = get_data (NULL, file, offset, 1, str_tab_len,
-				      _("dynamic string table"));
+	  dynamic_strings = (char *)get_data(NULL, file, offset, 1,
+                                             str_tab_len,
+                                             _("dynamic string table"));
 	  dynamic_strings_length = str_tab_len;
 	  break;
 	}
     }
 
-  /* And find the syminfo section if available.  */
+  /* And find the syminfo section if available: */
   if (dynamic_syminfo == NULL)
     {
       unsigned long syminsz = 0;
@@ -5908,25 +5968,28 @@ process_dynamic_section (FILE *file)
 						      syminsz);
 	}
 
-      if (dynamic_syminfo_offset != 0 && syminsz != 0)
+      if ((dynamic_syminfo_offset != 0) && (syminsz != 0))
 	{
 	  Elf_External_Syminfo *extsyminfo, *extsym;
 	  Elf_Internal_Syminfo *syminfo;
 
-	  /* There is a syminfo section. Read the data.  */
-	  extsyminfo = get_data (NULL, file, dynamic_syminfo_offset, 1,
-				 syminsz, _("symbol information"));
-	  if (!extsyminfo)
+	  /* There is a syminfo section, so read the data: */
+	  extsyminfo = (Elf_External_Syminfo *)get_data(NULL, file,
+                                                        dynamic_syminfo_offset,
+                                                        1, syminsz,
+                                                        _("symbol information"));
+	  if (!extsyminfo) {
 	    return 0;
+          }
 
-	  dynamic_syminfo = malloc (syminsz);
+	  dynamic_syminfo = (Elf_Internal_Syminfo *)malloc(syminsz);
 	  if (dynamic_syminfo == NULL)
 	    {
-	      error (_("Out of memory\n"));
+	      error(_("Out of memory\n"));
 	      return 0;
 	    }
 
-	  dynamic_syminfo_nent = syminsz / sizeof (Elf_External_Syminfo);
+	  dynamic_syminfo_nent = (syminsz / sizeof(Elf_External_Syminfo));
 	  for (syminfo = dynamic_syminfo, extsym = extsyminfo;
 	       syminfo < dynamic_syminfo + dynamic_syminfo_nent;
 	       ++syminfo, ++extsym)
@@ -6383,24 +6446,25 @@ process_version_sections (FILE *file)
 
 	    found = 1;
 
-	    printf
-	      (_("\nVersion definition section '%s' contains %ld entries:\n"),
-	       SECTION_NAME (section), section->sh_info);
+	    printf(_("\nVersion definition section '%s' contains %ld entries:\n"),
+                   SECTION_NAME(section), section->sh_info);
 
-	    printf (_("  Addr: 0x"));
-	    printf_vma (section->sh_addr);
-	    printf (_("  Offset: %#08lx  Link: %lx (%s)\n"),
-		    (unsigned long) section->sh_offset, section->sh_link,
-		    SECTION_HEADER_INDEX (section->sh_link)
-		    < elf_header.e_shnum
-		    ? SECTION_NAME (SECTION_HEADER (section->sh_link))
-		    : "<corrupt>");
+	    printf(_("  Addr: 0x"));
+	    printf_vma(section->sh_addr);
+	    printf(_("  Offset: %#08lx  Link: %lx (%s)\n"),
+                   (unsigned long)section->sh_offset, section->sh_link,
+                   ((SECTION_HEADER_INDEX(section->sh_link)
+                     < elf_header.e_shnum)
+                    ? SECTION_NAME(SECTION_HEADER(section->sh_link))
+                    : "<corrupt>"));
 
-	    edefs = get_data (NULL, file, section->sh_offset, 1,
-			      section->sh_size,
-			      _("version definition section"));
-	    if (!edefs)
+	    edefs = (Elf_External_Verdef *)get_data(NULL, file,
+                                                    section->sh_offset, 1,
+                                                    section->sh_size,
+                                                    _("version definition section"));
+	    if (!edefs) {
 	      break;
+            }
 
 	    for (idx = cnt = 0; cnt < section->sh_info; ++cnt)
 	      {
@@ -6412,60 +6476,62 @@ process_version_sections (FILE *file)
 		int j;
 		int isum;
 
-		vstart = ((char *) edefs) + idx;
+		vstart = (((char *)edefs) + idx);
 
-		edef = (Elf_External_Verdef *) vstart;
+		edef = (Elf_External_Verdef *)vstart;
 
-		ent.vd_version = BYTE_GET (edef->vd_version);
-		ent.vd_flags   = BYTE_GET (edef->vd_flags);
-		ent.vd_ndx     = BYTE_GET (edef->vd_ndx);
-		ent.vd_cnt     = BYTE_GET (edef->vd_cnt);
-		ent.vd_hash    = BYTE_GET (edef->vd_hash);
-		ent.vd_aux     = BYTE_GET (edef->vd_aux);
-		ent.vd_next    = BYTE_GET (edef->vd_next);
+		ent.vd_version = BYTE_GET(edef->vd_version);
+		ent.vd_flags = BYTE_GET(edef->vd_flags);
+		ent.vd_ndx = BYTE_GET(edef->vd_ndx);
+		ent.vd_cnt = BYTE_GET(edef->vd_cnt);
+		ent.vd_hash = BYTE_GET(edef->vd_hash);
+		ent.vd_aux = BYTE_GET(edef->vd_aux);
+		ent.vd_next = BYTE_GET(edef->vd_next);
 
-		printf (_("  %#06x: Rev: %d  Flags: %s"),
-			idx, ent.vd_version, get_ver_flags (ent.vd_flags));
+		printf(_("  %#06x: Rev: %d  Flags: %s"),
+                       idx, ent.vd_version, get_ver_flags(ent.vd_flags));
 
-		printf (_("  Index: %d  Cnt: %d  "),
-			ent.vd_ndx, ent.vd_cnt);
+		printf(_("  Index: %d  Cnt: %d  "),
+                       ent.vd_ndx, ent.vd_cnt);
 
 		vstart += ent.vd_aux;
 
-		eaux = (Elf_External_Verdaux *) vstart;
+		eaux = (Elf_External_Verdaux *)vstart;
 
-		aux.vda_name = BYTE_GET (eaux->vda_name);
-		aux.vda_next = BYTE_GET (eaux->vda_next);
+		aux.vda_name = BYTE_GET(eaux->vda_name);
+		aux.vda_next = BYTE_GET(eaux->vda_next);
 
-		if (VALID_DYNAMIC_NAME (aux.vda_name))
-		  printf (_("Name: %s\n"), GET_DYNAMIC_NAME (aux.vda_name));
-		else
-		  printf (_("Name index: %ld\n"), aux.vda_name);
+		if (VALID_DYNAMIC_NAME(aux.vda_name)) {
+		  printf(_("Name: %s\n"), GET_DYNAMIC_NAME(aux.vda_name));
+		} else {
+		  printf(_("Name index: %ld\n"), aux.vda_name);
+                }
 
-		isum = idx + ent.vd_aux;
+		isum = (idx + ent.vd_aux);
 
 		for (j = 1; j < ent.vd_cnt; j++)
 		  {
-		    isum   += aux.vda_next;
+		    isum += aux.vda_next;
 		    vstart += aux.vda_next;
 
-		    eaux = (Elf_External_Verdaux *) vstart;
+		    eaux = (Elf_External_Verdaux *)vstart;
 
-		    aux.vda_name = BYTE_GET (eaux->vda_name);
-		    aux.vda_next = BYTE_GET (eaux->vda_next);
+		    aux.vda_name = BYTE_GET(eaux->vda_name);
+		    aux.vda_next = BYTE_GET(eaux->vda_next);
 
-		    if (VALID_DYNAMIC_NAME (aux.vda_name))
-		      printf (_("  %#06x: Parent %d: %s\n"),
-			      isum, j, GET_DYNAMIC_NAME (aux.vda_name));
-		    else
-		      printf (_("  %#06x: Parent %d, name index: %ld\n"),
-			      isum, j, aux.vda_name);
+		    if (VALID_DYNAMIC_NAME(aux.vda_name)) {
+		      printf(_("  %#06x: Parent %d: %s\n"),
+                             isum, j, GET_DYNAMIC_NAME(aux.vda_name));
+		    } else {
+		      printf(_("  %#06x: Parent %d, name index: %ld\n"),
+                             isum, j, aux.vda_name);
+                    }
 		  }
 
 		idx += ent.vd_next;
 	      }
 
-	    free (edefs);
+	    free(edefs);
 	  }
 	  break;
 
@@ -6477,23 +6543,25 @@ process_version_sections (FILE *file)
 
 	    found = 1;
 
-	    printf (_("\nVersion needs section '%s' contains %ld entries:\n"),
-		    SECTION_NAME (section), section->sh_info);
+	    printf(_("\nVersion needs section '%s' contains %ld entries:\n"),
+                   SECTION_NAME(section), section->sh_info);
 
-	    printf (_(" Addr: 0x"));
-	    printf_vma (section->sh_addr);
-	    printf (_("  Offset: %#08lx  Link to section: %ld (%s)\n"),
-		    (unsigned long) section->sh_offset, section->sh_link,
-		    SECTION_HEADER_INDEX (section->sh_link)
-		    < elf_header.e_shnum
-		    ? SECTION_NAME (SECTION_HEADER (section->sh_link))
-		    : "<corrupt>");
+	    printf(_(" Addr: 0x"));
+	    printf_vma(section->sh_addr);
+	    printf(_("  Offset: %#08lx  Link to section: %ld (%s)\n"),
+                   (unsigned long)section->sh_offset, section->sh_link,
+                   ((SECTION_HEADER_INDEX(section->sh_link)
+                     < elf_header.e_shnum)
+                    ? SECTION_NAME(SECTION_HEADER(section->sh_link))
+                    : "<corrupt>"));
 
-	    eneed = get_data (NULL, file, section->sh_offset, 1,
-			      section->sh_size,
-			      _("version need section"));
-	    if (!eneed)
+	    eneed = (Elf_External_Verneed *)get_data(NULL, file,
+                                                     section->sh_offset, 1,
+                                                     section->sh_size,
+                                                     _("version need section"));
+	    if (!eneed) {
 	      break;
+            }
 
 	    for (idx = cnt = 0; cnt < section->sh_info; ++cnt)
 	      {
@@ -6586,38 +6654,40 @@ process_version_sections (FILE *file)
 
 	    string_sec = SECTION_HEADER (link_section->sh_link);
 
-	    strtab = get_data (NULL, file, string_sec->sh_offset, 1,
-			       string_sec->sh_size, _("version string table"));
+	    strtab = (char *)get_data(NULL, file, string_sec->sh_offset, 1,
+                                      string_sec->sh_size,
+                                      _("version string table"));
 	    if (!strtab)
 	      break;
 
-	    printf (_("\nVersion symbols section '%s' contains %d entries:\n"),
-		    SECTION_NAME (section), total);
+	    printf(_("\nVersion symbols section '%s' contains %d entries:\n"),
+                   SECTION_NAME(section), total);
 
-	    printf (_(" Addr: "));
-	    printf_vma (section->sh_addr);
-	    printf (_("  Offset: %#08lx  Link: %lx (%s)\n"),
-		    (unsigned long) section->sh_offset, section->sh_link,
-		    SECTION_NAME (link_section));
+	    printf(_(" Addr: "));
+	    printf_vma(section->sh_addr);
+	    printf(_("  Offset: %#08lx  Link: %lx (%s)\n"),
+                   (unsigned long)section->sh_offset, section->sh_link,
+                   SECTION_NAME(link_section));
 
-	    off = offset_from_vma (file,
-				   version_info[DT_VERSIONTAGIDX (DT_VERSYM)],
-				   total * sizeof (short));
-	    edata = get_data (NULL, file, off, total, sizeof (short),
-			      _("version symbol data"));
+	    off = offset_from_vma(file,
+                                  version_info[DT_VERSIONTAGIDX(DT_VERSYM)],
+                                  total * sizeof(short));
+	    edata = (unsigned char *)get_data(NULL, file, off, total,
+                                              sizeof(short),
+                                              _("version symbol data"));
 	    if (!edata)
 	      {
-		free (strtab);
+		free(strtab);
 		break;
 	      }
 
-	    data = cmalloc (total, sizeof (short));
+	    data = (unsigned short *)cmalloc(total, sizeof(short));
 
 	    for (cnt = total; cnt --;)
-	      data[cnt] = byte_get (edata + cnt * sizeof (short),
-				    sizeof (short));
+	      data[cnt] = byte_get(edata + cnt * sizeof(short),
+                                   sizeof(short));
 
-	    free (edata);
+	    free(edata);
 
 	    for (cnt = 0; cnt < total; cnt += 4)
 	      {
@@ -6680,28 +6750,26 @@ process_version_sections (FILE *file)
 
 			      a_off = offset + ivn.vn_aux;
 
-			      do
-				{
-				  get_data (&evna, file, a_off, sizeof (evna),
-					    1, _("version need aux (2)"));
+			      do {
+				  get_data(&evna, file, a_off, sizeof(evna),
+                                           1, _("version need aux (2)"));
 
-				  ivna.vna_next  = BYTE_GET (evna.vna_next);
-				  ivna.vna_other = BYTE_GET (evna.vna_other);
+				  ivna.vna_next  = BYTE_GET(evna.vna_next);
+				  ivna.vna_other = BYTE_GET(evna.vna_other);
 
 				  a_off += ivna.vna_next;
-				}
-			      while (ivna.vna_other != data[cnt + j]
-				     && ivna.vna_next != 0);
+                              } while ((ivna.vna_other != data[cnt + j])
+                                       && (ivna.vna_next != 0));
 
 			      if (ivna.vna_other == data[cnt + j])
 				{
-				  ivna.vna_name = BYTE_GET (evna.vna_name);
+				  ivna.vna_name = BYTE_GET(evna.vna_name);
 
 				  name = strtab + ivna.vna_name;
-				  nn += printf ("(%s%-*s",
-						name,
-						12 - (int) strlen (name),
-						")");
+				  nn += printf("(%s%-*s",
+                                               name,
+                                               12 - (int)strlen(name),
+                                               ")");
 				  check_def = 0;
 				  break;
 				}
@@ -6711,29 +6779,28 @@ process_version_sections (FILE *file)
 			  while (ivn.vn_next);
 			}
 
-		      if (check_def && data[cnt + j] != 0x8001
-			  && version_info[DT_VERSIONTAGIDX (DT_VERDEF)])
+		      if (check_def && (data[cnt + j] != 0x8001)
+			  && version_info[DT_VERSIONTAGIDX(DT_VERDEF)])
 			{
 			  Elf_Internal_Verdef ivd;
 			  Elf_External_Verdef evd;
 			  unsigned long offset;
 
-			  offset = offset_from_vma
-			    (file, version_info[DT_VERSIONTAGIDX (DT_VERDEF)],
-			     sizeof evd);
+			  offset
+                            = offset_from_vma(file,
+                                              version_info[DT_VERSIONTAGIDX(DT_VERDEF)],
+                                              sizeof(evd));
 
-			  do
-			    {
-			      get_data (&evd, file, offset, sizeof (evd), 1,
+			  do {
+			      get_data (&evd, file, offset, sizeof(evd), 1,
 					_("version def"));
 
 			      ivd.vd_next = BYTE_GET (evd.vd_next);
 			      ivd.vd_ndx  = BYTE_GET (evd.vd_ndx);
 
 			      offset += ivd.vd_next;
-			    }
-			  while (ivd.vd_ndx != (data[cnt + j] & 0x7fff)
-				 && ivd.vd_next != 0);
+                          } while ((ivd.vd_ndx != (data[cnt + j] & 0x7fff))
+                                   && (ivd.vd_next != 0));
 
 			  if (ivd.vd_ndx == (data[cnt + j] & 0x7fff))
 			    {
@@ -6744,29 +6811,29 @@ process_version_sections (FILE *file)
 
 			      get_data (&evda, file,
 					offset - ivd.vd_next + ivd.vd_aux,
-					sizeof (evda), 1,
+					sizeof(evda), 1,
 					_("version def aux"));
 
-			      ivda.vda_name = BYTE_GET (evda.vda_name);
+			      ivda.vda_name = BYTE_GET(evda.vda_name);
 
-			      name = strtab + ivda.vda_name;
-			      nn += printf ("(%s%-*s",
-					    name,
-					    12 - (int) strlen (name),
-					    ")");
+			      name = (strtab + ivda.vda_name);
+			      nn += printf("(%s%-*s",
+                                           name,
+                                           12 - (int)strlen(name),
+                                           ")");
 			    }
 			}
 
 		      if (nn < 18)
-			printf ("%*c", 18 - nn, ' ');
+			printf("%*c", 18 - nn, ' ');
 		    }
 
-		putchar ('\n');
+		putchar('\n');
 	      }
 
-	    free (data);
-	    free (strtab);
-	    free (symbols);
+	    free(data);
+	    free(strtab);
+	    free(symbols);
 	  }
 	  break;
 
@@ -6776,13 +6843,13 @@ process_version_sections (FILE *file)
     }
 
   if (! found)
-    printf (_("\nNo version information found in this file.\n"));
+    printf(_("\nNo version information found in this file.\n"));
 
   return 1;
 }
 
 static const char *
-get_symbol_binding (unsigned int binding)
+get_symbol_binding(unsigned int binding)
 {
   static char buff[32];
 
@@ -6895,45 +6962,45 @@ get_symbol_index_type (unsigned int type)
 }
 
 static bfd_vma *
-get_dynamic_data (FILE *file, unsigned int number, unsigned int ent_size)
+get_dynamic_data(FILE *file, unsigned int number, unsigned int ent_size)
 {
   unsigned char *e_data;
   bfd_vma *i_data;
 
-  e_data = cmalloc (number, ent_size);
+  e_data = (unsigned char *)cmalloc(number, ent_size);
 
   if (e_data == NULL)
     {
-      error (_("Out of memory\n"));
+      error(_("Out of memory\n"));
       return NULL;
     }
 
-  if (fread (e_data, ent_size, number, file) != number)
+  if (fread(e_data, ent_size, number, file) != number)
     {
-      error (_("Unable to read in dynamic data\n"));
+      error(_("Unable to read in dynamic data\n"));
       return NULL;
     }
 
-  i_data = cmalloc (number, sizeof (*i_data));
+  i_data = (bfd_vma *)cmalloc(number, sizeof(*i_data));
 
   if (i_data == NULL)
     {
-      error (_("Out of memory\n"));
-      free (e_data);
+      error(_("Out of memory\n"));
+      free(e_data);
       return NULL;
     }
 
   while (number--)
-    i_data[number] = byte_get (e_data + number * ent_size, ent_size);
+    i_data[number] = byte_get(e_data + number * ent_size, ent_size);
 
-  free (e_data);
+  free(e_data);
 
   return i_data;
 }
 
-/* Dump the symbol table.  */
+/* Dump the symbol table: */
 static int
-process_symbol_table (FILE *file)
+process_symbol_table(FILE *file)
 {
   Elf_Internal_Shdr *section;
   bfd_vma nbuckets = 0;
@@ -6944,7 +7011,7 @@ process_symbol_table (FILE *file)
   if (! do_syms && !do_histogram)
     return 1;
 
-  if (dynamic_info[DT_HASH] && ((do_using_dynamic && dynamic_strings != NULL)
+  if (dynamic_info[DT_HASH] && ((do_using_dynamic && (dynamic_strings != NULL))
 				|| do_histogram))
     {
       unsigned char nb[8];
@@ -7069,58 +7136,60 @@ process_symbol_table (FILE *file)
 	      strtab = string_table;
 	      strtab_size = string_table_length;
 	    }
-	  else if (SECTION_HEADER_INDEX (section->sh_link) < elf_header.e_shnum)
+	  else if (SECTION_HEADER_INDEX(section->sh_link) < elf_header.e_shnum)
 	    {
 	      Elf_Internal_Shdr *string_sec;
 
-	      string_sec = SECTION_HEADER (section->sh_link);
+	      string_sec = SECTION_HEADER(section->sh_link);
 
-	      strtab = get_data (NULL, file, string_sec->sh_offset,
-				 1, string_sec->sh_size, _("string table"));
-	      strtab_size = strtab != NULL ? string_sec->sh_size : 0;
+	      strtab = (char *)get_data(NULL, file, string_sec->sh_offset,
+                                        1, string_sec->sh_size,
+                                        _("string table"));
+	      strtab_size = ((strtab != NULL) ? string_sec->sh_size : 0);
 	    }
 
 	  for (si = 0, psym = symtab;
-	       si < section->sh_size / section->sh_entsize;
+	       si < (section->sh_size / section->sh_entsize);
 	       si++, psym++)
 	    {
-	      printf ("%6d: ", si);
-	      print_vma (psym->st_value, LONG_HEX);
-	      putchar (' ');
-	      print_vma (psym->st_size, DEC_5);
-	      printf (" %-7s", get_symbol_type (ELF_ST_TYPE (psym->st_info)));
-	      printf (" %-6s", get_symbol_binding (ELF_ST_BIND (psym->st_info)));
-	      printf (" %-3s", get_symbol_visibility (ELF_ST_VISIBILITY (psym->st_other)));
-	      printf (" %4s ", get_symbol_index_type (psym->st_shndx));
-	      print_symbol (25, psym->st_name < strtab_size
-			    ? strtab + psym->st_name : "<corrupt>");
+	      printf("%6d: ", si);
+	      print_vma(psym->st_value, LONG_HEX);
+	      putchar(' ');
+	      print_vma(psym->st_size, DEC_5);
+	      printf(" %-7s", get_symbol_type(ELF_ST_TYPE(psym->st_info)));
+	      printf(" %-6s", get_symbol_binding(ELF_ST_BIND(psym->st_info)));
+	      printf(" %-3s", get_symbol_visibility(ELF_ST_VISIBILITY(psym->st_other)));
+	      printf(" %4s ", get_symbol_index_type(psym->st_shndx));
+	      print_symbol(25, ((psym->st_name < strtab_size)
+                                ? (strtab + psym->st_name) : "<corrupt>"));
 
-	      if (section->sh_type == SHT_DYNSYM &&
-		  version_info[DT_VERSIONTAGIDX (DT_VERSYM)] != 0)
+	      if ((section->sh_type == SHT_DYNSYM) &&
+		  version_info[DT_VERSIONTAGIDX(DT_VERSYM)] != 0)
 		{
 		  unsigned char data[2];
 		  unsigned short vers_data;
-		  unsigned long offset;
+		  unsigned long an_offset;
 		  int is_nobits;
 		  int check_def;
 
-		  offset = offset_from_vma
-		    (file, version_info[DT_VERSIONTAGIDX (DT_VERSYM)],
-		     sizeof data + si * sizeof (vers_data));
+		  an_offset
+                    = offset_from_vma(file,
+                                      version_info[DT_VERSIONTAGIDX(DT_VERSYM)],
+                                      sizeof(data) + si * sizeof(vers_data));
 
-		  get_data (&data, file, offset + si * sizeof (vers_data),
-			    sizeof (data), 1, _("version data"));
+		  get_data(&data, file, an_offset + si * sizeof(vers_data),
+                           sizeof(data), 1, _("version data"));
 
-		  vers_data = byte_get (data, 2);
+		  vers_data = byte_get(data, 2);
 
-		  is_nobits = (SECTION_HEADER_INDEX (psym->st_shndx)
-			       < elf_header.e_shnum
-			       && SECTION_HEADER (psym->st_shndx)->sh_type
-				  == SHT_NOBITS);
+		  is_nobits = ((SECTION_HEADER_INDEX(psym->st_shndx)
+                                < elf_header.e_shnum)
+			       && (SECTION_HEADER(psym->st_shndx)->sh_type
+                                   == SHT_NOBITS));
 
 		  check_def = (psym->st_shndx != SHN_UNDEF);
 
-		  if ((vers_data & 0x8000) || vers_data > 1)
+		  if ((vers_data & 0x8000) || (vers_data > 1))
 		    {
 		      if (version_info[DT_VERSIONTAGIDX (DT_VERNEED)]
 			  && (is_nobits || ! check_def))
@@ -7129,111 +7198,109 @@ process_symbol_table (FILE *file)
 			  Elf_Internal_Verneed ivn;
 			  Elf_Internal_Vernaux ivna;
 
-			  /* We must test both.  */
-			  offset = offset_from_vma
-			    (file, version_info[DT_VERSIONTAGIDX (DT_VERNEED)],
-			     sizeof evn);
+			  /* We must test both: */
+			  an_offset
+                            = offset_from_vma(file,
+                                              version_info[DT_VERSIONTAGIDX (DT_VERNEED)],
+                                              sizeof(evn));
 
-			  do
-			    {
+			  do {
 			      unsigned long vna_off;
 
-			      get_data (&evn, file, offset, sizeof (evn), 1,
-					_("version need"));
+			      get_data(&evn, file, an_offset, sizeof(evn),
+                                       1, _("version need"));
 
-			      ivn.vn_aux  = BYTE_GET (evn.vn_aux);
-			      ivn.vn_next = BYTE_GET (evn.vn_next);
+			      ivn.vn_aux = BYTE_GET(evn.vn_aux);
+			      ivn.vn_next = BYTE_GET(evn.vn_next);
 
-			      vna_off = offset + ivn.vn_aux;
+			      vna_off = (an_offset + ivn.vn_aux);
 
-			      do
-				{
+			      do {
 				  Elf_External_Vernaux evna;
 
 				  get_data (&evna, file, vna_off,
 					    sizeof (evna), 1,
 					    _("version need aux (3)"));
 
-				  ivna.vna_other = BYTE_GET (evna.vna_other);
-				  ivna.vna_next  = BYTE_GET (evna.vna_next);
-				  ivna.vna_name  = BYTE_GET (evna.vna_name);
+				  ivna.vna_other = BYTE_GET(evna.vna_other);
+				  ivna.vna_next = BYTE_GET(evna.vna_next);
+				  ivna.vna_name = BYTE_GET(evna.vna_name);
 
 				  vna_off += ivna.vna_next;
-				}
-			      while (ivna.vna_other != vers_data
-				     && ivna.vna_next != 0);
+                              } while ((ivna.vna_other != vers_data)
+                                       && (ivna.vna_next != 0));
 
 			      if (ivna.vna_other == vers_data)
 				break;
 
-			      offset += ivn.vn_next;
-			    }
-			  while (ivn.vn_next != 0);
+			      an_offset += ivn.vn_next;
+                          } while (ivn.vn_next != 0);
 
 			  if (ivna.vna_other == vers_data)
 			    {
-			      printf ("@%s (%d)",
-				      ivna.vna_name < strtab_size
-				      ? strtab + ivna.vna_name : "<corrupt>",
-				      ivna.vna_other);
+			      printf("@%s (%d)",
+                                     (ivna.vna_name < strtab_size)
+                                     ? (strtab + ivna.vna_name)
+                                     : "<corrupt>", ivna.vna_other);
 			      check_def = 0;
 			    }
 			  else if (! is_nobits)
-			    error (_("bad dynamic symbol"));
+			    error(_("bad dynamic symbol"));
 			  else
 			    check_def = 1;
 			}
 
 		      if (check_def)
 			{
-			  if (vers_data != 0x8001
-			      && version_info[DT_VERSIONTAGIDX (DT_VERDEF)])
+			  if ((vers_data != 0x8001)
+			      && version_info[DT_VERSIONTAGIDX(DT_VERDEF)])
 			    {
 			      Elf_Internal_Verdef ivd;
 			      Elf_Internal_Verdaux ivda;
 			      Elf_External_Verdaux evda;
-			      unsigned long offset;
+			      unsigned long offset_amt;
 
-			      offset = offset_from_vma
-				(file,
-				 version_info[DT_VERSIONTAGIDX (DT_VERDEF)],
-				 sizeof (Elf_External_Verdef));
+			      offset_amt
+                                = offset_from_vma(file,
+                                                  version_info[DT_VERSIONTAGIDX(DT_VERDEF)],
+                                                  sizeof(Elf_External_Verdef));
 
-			      do
-				{
+			      do {
 				  Elf_External_Verdef evd;
 
-				  get_data (&evd, file, offset, sizeof (evd),
-					    1, _("version def"));
+				  get_data(&evd, file, offset_amt, sizeof(evd),
+                                           1, _("version def"));
 
-				  ivd.vd_ndx = BYTE_GET (evd.vd_ndx);
-				  ivd.vd_aux = BYTE_GET (evd.vd_aux);
-				  ivd.vd_next = BYTE_GET (evd.vd_next);
+				  ivd.vd_ndx = BYTE_GET(evd.vd_ndx);
+				  ivd.vd_aux = BYTE_GET(evd.vd_aux);
+				  ivd.vd_next = BYTE_GET(evd.vd_next);
 
-				  offset += ivd.vd_next;
-				}
-			      while (ivd.vd_ndx != (vers_data & 0x7fff)
-				     && ivd.vd_next != 0);
+				  offset_amt += ivd.vd_next;
+                              } while ((ivd.vd_ndx != (vers_data & 0x7fff))
+                                       && (ivd.vd_next != 0));
 
-			      offset -= ivd.vd_next;
-			      offset += ivd.vd_aux;
+			      offset_amt -= ivd.vd_next;
+			      offset_amt += ivd.vd_aux;
 
-			      get_data (&evda, file, offset, sizeof (evda),
-					1, _("version def aux"));
+			      get_data(&evda, file, offset_amt,
+                                       sizeof(evda), 1,
+                                       _("version def aux"));
 
-			      ivda.vda_name = BYTE_GET (evda.vda_name);
+			      ivda.vda_name = BYTE_GET(evda.vda_name);
 
-			      if (psym->st_name != ivda.vda_name)
-				printf ((vers_data & 0x8000)
-					? "@%s" : "@@%s",
-					ivda.vda_name < strtab_size
-					? strtab + ivda.vda_name : "<corrupt>");
+			      if (psym->st_name != ivda.vda_name) {
+				printf((vers_data & 0x8000)
+                                       ? "@%s" : "@@%s",
+                                       (ivda.vda_name < strtab_size)
+                                       ? (strtab + ivda.vda_name)
+                                       : "<corrupt>");
+                              }
 			    }
 			}
 		    }
 		}
 
-	      putchar ('\n');
+	      putchar('\n');
 	    }
 
 	  free (symtab);
@@ -7255,19 +7322,19 @@ process_symbol_table (FILE *file)
       unsigned long nzero_counts = 0;
       unsigned long nsyms = 0;
 
-      printf (_("\nHistogram for bucket list length (total of %lu buckets):\n"),
-	      (unsigned long) nbuckets);
-      printf (_(" Length  Number     %% of total  Coverage\n"));
+      printf(_("\nHistogram for bucket list length (total of %lu buckets):\n"),
+             (unsigned long)nbuckets);
+      printf(_(" Length  Number     %% of total  Coverage\n"));
 
-      lengths = calloc (nbuckets, sizeof (*lengths));
+      lengths = (unsigned long *)calloc(nbuckets, sizeof(*lengths));
       if (lengths == NULL)
 	{
-	  error (_("Out of memory"));
+	  error(_("Out of memory"));
 	  return 0;
 	}
       for (hn = 0; hn < nbuckets; ++hn)
 	{
-	  for (si = buckets[hn]; si > 0 && si < nchains; si = chains[si])
+	  for (si = buckets[hn]; (si > 0) && (si < nchains); si = chains[si])
 	    {
 	      ++nsyms;
 	      if (maxlength < ++lengths[hn])
@@ -7275,10 +7342,10 @@ process_symbol_table (FILE *file)
 	    }
 	}
 
-      counts = calloc (maxlength + 1, sizeof (*counts));
+      counts = (unsigned long *)calloc(maxlength + 1, sizeof(*counts));
       if (counts == NULL)
 	{
-	  error (_("Out of memory"));
+	  error(_("Out of memory"));
 	  return 0;
 	}
 
@@ -7288,14 +7355,17 @@ process_symbol_table (FILE *file)
       if (nbuckets > 0)
 	{
 	  unsigned long i;
-	  printf ("      0  %-10lu (%5.1f%%)\n",
-		  counts[0], (counts[0] * 100.0) / nbuckets);
+	  printf("      0  %-10lu (%5.1f%%)\n",
+                 counts[0], (counts[0] * (double)100.0f) / nbuckets);
 	  for (i = 1; i <= maxlength; ++i)
 	    {
-	      nzero_counts += counts[i] * i;
-	      printf ("%7lu  %-10lu (%5.1f%%)    %5.1f%%\n",
-		      i, counts[i], (counts[i] * 100.0) / nbuckets,
-		      (nzero_counts * 100.0) / nsyms);
+	      nzero_counts += (counts[i] * i);
+	      printf("%7lu  %-10lu (%5.1f%%)    %5.1f%%\n",
+                     i, counts[i], (counts[i] * (double)100.0f) / nbuckets,
+                     (nzero_counts * (double)100.0f) / nsyms);
+              if (i == INFINITY) {
+                break; /* silence '-Wunsafe-loop-optimizations' */
+              }
 	    }
 	}
 
@@ -7412,8 +7482,8 @@ dump_section (Elf_Internal_Shdr *section, FILE *file)
 
   addr = section->sh_addr;
 
-  start = get_data (NULL, file, section->sh_offset, 1, bytes,
-		    _("section data"));
+  start = (unsigned char *)get_data(NULL, file, section->sh_offset, 1,
+                                    bytes, _("section data"));
   if (!start)
     return 0;
 
@@ -7605,23 +7675,24 @@ static const char *debug_str_contents;
 static bfd_vma debug_str_size;
 
 static void
-load_debug_str (FILE *file)
+load_debug_str(FILE *file)
 {
   Elf_Internal_Shdr *sec;
 
-  /* If it is already loaded, do nothing.  */
+  /* If it is already loaded, then do nothing: */
   if (debug_str_contents != NULL)
     return;
 
-  /* Locate the .debug_str section.  */
-  sec = find_section (".debug_str");
+  /* Locate the .debug_str section: */
+  sec = find_section(".debug_str");
   if (sec == NULL)
     return;
 
   debug_str_size = sec->sh_size;
 
-  debug_str_contents = get_data (NULL, file, sec->sh_offset, 1, sec->sh_size,
-				 _("debug_str section data"));
+  debug_str_contents = (const char *)get_data(NULL, file, sec->sh_offset,
+                                              1, sec->sh_size,
+                                              _("debug_str section data"));
 }
 
 static void
@@ -7654,57 +7725,59 @@ static const char *debug_loc_contents;
 static bfd_vma debug_loc_size;
 
 static void
-load_debug_loc (FILE *file)
+load_debug_loc(FILE *file)
 {
   Elf_Internal_Shdr *sec;
 
-  /* If it is already loaded, do nothing.  */
+  /* If it is already loaded, then do nothing: */
   if (debug_loc_contents != NULL)
     return;
 
-  /* Locate the .debug_loc section.  */
-  sec = find_section (".debug_loc");
+  /* Locate the .debug_loc section: */
+  sec = find_section(".debug_loc");
   if (sec == NULL)
     return;
 
   debug_loc_size = sec->sh_size;
 
-  debug_loc_contents = get_data (NULL, file, sec->sh_offset, 1, sec->sh_size,
-				 _("debug_loc section data"));
+  debug_loc_contents = (const char *)get_data(NULL, file, sec->sh_offset,
+                                              1, sec->sh_size,
+                                              _("debug_loc section data"));
 }
 
 static void
-free_debug_loc (void)
+free_debug_loc(void)
 {
   if (debug_loc_contents == NULL)
     return;
 
-  free ((char *) debug_loc_contents);
+  free((char *)debug_loc_contents);
   debug_loc_contents = NULL;
   debug_loc_size = 0;
 }
 
-static const char *   debug_range_contents;
-static unsigned long  debug_range_size;
+static const char *debug_range_contents;
+static unsigned long debug_range_size;
 
 static void
-load_debug_range (FILE *file)
+load_debug_range(FILE *file)
 {
   Elf_Internal_Shdr *sec;
 
-  /* If it is already loaded, do nothing.  */
+  /* If it is already loaded, then do nothing: */
   if (debug_range_contents != NULL)
     return;
 
-  /* Locate the .debug_ranges section.  */
-  sec = find_section (".debug_ranges");
+  /* Locate the .debug_ranges section: */
+  sec = find_section(".debug_ranges");
   if (sec == NULL)
     return;
 
   debug_range_size = sec->sh_size;
 
-  debug_range_contents = get_data (NULL, file, sec->sh_offset, 1, sec->sh_size,
-				   _("debug_range section data"));
+  debug_range_contents = (const char *)get_data(NULL, file, sec->sh_offset,
+                                                1, sec->sh_size,
+                                                _("debug_range section data"));
 }
 
 static void
@@ -7853,69 +7926,73 @@ free_abbrevs (void)
 
   for (abbrev = first_abbrev; abbrev;)
     {
-      abbrev_entry *next = abbrev->next;
+      abbrev_entry *next_entry = abbrev->next;
       abbrev_attr *attr;
 
       for (attr = abbrev->first_attr; attr;)
 	{
-	  abbrev_attr *next = attr->next;
+	  abbrev_attr *next_attr = attr->next;
 
-	  free (attr);
-	  attr = next;
+	  free(attr);
+	  attr = next_attr;
 	}
 
-      free (abbrev);
-      abbrev = next;
+      free(abbrev);
+      abbrev = next_entry;
     }
 
   last_abbrev = first_abbrev = NULL;
 }
 
 static void
-add_abbrev (unsigned long number, unsigned long tag, int children)
+add_abbrev(unsigned long number, unsigned long tag, int children)
 {
   abbrev_entry *entry;
 
-  entry = malloc (sizeof (*entry));
+  entry = (abbrev_entry *)malloc(sizeof(*entry));
 
-  if (entry == NULL)
-    /* ugg */
+  if (entry == NULL) {
+    /* ugg: */
     return;
+  }
 
-  entry->entry      = number;
-  entry->tag        = tag;
-  entry->children   = children;
+  entry->entry = number;
+  entry->tag = tag;
+  entry->children = children;
   entry->first_attr = NULL;
-  entry->last_attr  = NULL;
-  entry->next       = NULL;
+  entry->last_attr = NULL;
+  entry->next = NULL;
 
-  if (first_abbrev == NULL)
+  if (first_abbrev == NULL) {
     first_abbrev = entry;
-  else
+  } else {
     last_abbrev->next = entry;
+  }
 
   last_abbrev = entry;
 }
 
 static void
-add_abbrev_attr (unsigned long attribute, unsigned long form)
+add_abbrev_attr(unsigned long attribute, unsigned long form)
 {
   abbrev_attr *attr;
 
-  attr = malloc (sizeof (*attr));
+  attr = (abbrev_attr *)malloc(sizeof(*attr));
 
-  if (attr == NULL)
-    /* ugg */
+  if (attr == NULL) {
+    /* ugg: */
     return;
+  }
 
   attr->attribute = attribute;
-  attr->form      = form;
-  attr->next      = NULL;
+  attr->form = form;
+  attr->next = NULL;
 
-  if (last_abbrev->first_attr == NULL)
+  if (last_abbrev->first_attr == NULL) {
     last_abbrev->first_attr = attr;
-  else
+  } else {
     last_abbrev->last_attr->next = attr;
+  }
 
   last_abbrev->last_attr = attr;
 }
@@ -8685,11 +8762,11 @@ read_and_display_attr_value (unsigned long attribute,
 		{
 		  max += 1024;
 		  debug_info_p->loc_offsets
-		    = xcrealloc (debug_info_p->loc_offsets,
-				 max, sizeof (*debug_info_p->loc_offsets));
+		    = (unsigned long *)xcrealloc(debug_info_p->loc_offsets,
+                                                 max, sizeof(*debug_info_p->loc_offsets));
 		  debug_info_p->have_frame_base
-		    = xcrealloc (debug_info_p->have_frame_base,
-				 max, sizeof (*debug_info_p->have_frame_base));
+		    = (int *)xcrealloc(debug_info_p->have_frame_base,
+                                       max, sizeof(*debug_info_p->have_frame_base));
 		  debug_info_p->max_loc_offsets = max;
 		}
 	      debug_info_p->loc_offsets [num] = uvalue;
@@ -8706,16 +8783,16 @@ read_and_display_attr_value (unsigned long attribute,
 	case DW_AT_ranges:
 	  if (form == DW_FORM_data4 || form == DW_FORM_data8)
 	    {
-	      /* Process range list.  */
+	      /* Process range list: */
 	      unsigned int max = debug_info_p->max_range_lists;
 	      unsigned int num = debug_info_p->num_range_lists;
 
-	      if (max == 0 || num >= max)
+	      if ((max == 0) || (num >= max))
 		{
 		  max += 1024;
 		  debug_info_p->range_lists
-		    = xcrealloc (debug_info_p->range_lists,
-				 max, sizeof (*debug_info_p->range_lists));
+		    = (unsigned long *)xcrealloc(debug_info_p->range_lists,
+                                                 max, sizeof(*debug_info_p->range_lists));
 		  debug_info_p->max_range_lists = max;
 		}
 	      debug_info_p->range_lists [num] = uvalue;
@@ -9043,72 +9120,71 @@ read_and_display_attr (unsigned long attribute,
 				      dwarf_version, debug_info_p,
 				      do_loc);
   if (!do_loc)
-    printf ("\n");
+    printf("\n");
   return data;
 }
 
 
-/* Process the contents of a .debug_info section. If do_loc is non-zero
-   then we are scanning for location lists and we do not want to display
-   anything to the user. */
-
+/* Process the contents of a .debug_info section. If do_loc is non-zero,
+ * then we are scanning for location lists, and we do not want to display
+ * anything to the user: */
 static int
-process_debug_info (Elf_Internal_Shdr *section, unsigned char *start,
-		    FILE *file, int do_loc)
+process_debug_info(Elf_Internal_Shdr *section, unsigned char *start,
+                   FILE *file, int do_loc)
 {
-  unsigned char *end = start + section->sh_size;
+  unsigned char *end = (start + section->sh_size);
   unsigned char *section_begin;
   unsigned int unit;
   unsigned int num_units = 0;
 
   if ((do_loc || do_debug_loc || do_debug_ranges)
-      && num_debug_info_entries == 0)
+      && (num_debug_info_entries == 0))
     {
       unsigned long length;
 
-      /* First scan the section to get the number of comp units.  */
+      /* First scan the section to get the number of comp units: */
       for (section_begin = start, num_units = 0; section_begin < end;
-	   num_units ++)
+	   num_units++)
 	{
-	  /* Read the first 4 bytes. For a 32-bit DWARF section, this
-	     will be the length. For a 64-bit DWARF section, it will be
-	     the escape code 0xffffffff followed by an 8 byte length.  */
-	  length = byte_get (section_begin, 4);
+	  /* Read the first 4 bytes.  For a 32-bit DWARF section, this will
+           * be the length.  For a 64-bit DWARF section, it will be the
+           * escape code 0xffffffff followed by an 8 byte length: */
+	  length = byte_get(section_begin, 4);
 
 	  if (length == 0xffffffff)
 	    {
-	      length = byte_get (section_begin + 4, 8);
-	      section_begin += length + 12;
+	      length = byte_get(section_begin + 4, 8);
+	      section_begin += (length + 12);
 	    }
 	  else
-	    section_begin += length + 4;
+	    section_begin += (length + 4);
 	}
 
       if (num_units == 0)
 	{
-	  error (_("No comp units in .debug_info section ?"));
+	  error(_("No comp units in .debug_info section ?"));
 	  return 0;
 	}
 
-      /* Then allocate an array to hold the information.  */
-      debug_information = cmalloc (num_units,
-				   sizeof (* debug_information));
+      /* Then allocate an array to hold the information: */
+      debug_information = (debug_info *)cmalloc(num_units,
+                                                sizeof(* debug_information));
       if (debug_information == NULL)
 	{
-	  error (_("Not enough memory for a debug info array of %u entries"),
-		 num_units);
+	  error(_("Not enough memory for a debug info array of %u entries"),
+                num_units);
 	  return 0;
 	}
     }
 
   if (!do_loc)
     {
-      printf (_("The section %s contains:\n\n"),
-	      SECTION_NAME (section));
+      printf(_("The section %s contains:\n\n"),
+             SECTION_NAME(section));
 
-      load_debug_str (file);
-      load_debug_loc (file);
-      load_debug_range (file);
+      load_debug_str(file);
+      load_debug_loc(file);
+      load_debug_range(file);
     }
 
   for (section_begin = start, unit = 0; start < end; unit++)
@@ -9152,8 +9228,12 @@ process_debug_info (Elf_Internal_Shdr *section, unsigned char *start,
 	return 0;
 
       cu_abbrev_offset_ptr = hdrptr;
-      compunit.cu_abbrev_offset = byte_get (hdrptr, offset_size);
+      compunit.cu_abbrev_offset = byte_get(hdrptr, offset_size);
       hdrptr += offset_size;
+
+      if (cu_abbrev_offset_ptr != NULL) {
+        ;
+      }
 
       compunit.cu_pointer_size = byte_get (hdrptr, 1);
       hdrptr += 1;
@@ -9197,16 +9277,17 @@ process_debug_info (Elf_Internal_Shdr *section, unsigned char *start,
 	Elf_Internal_Shdr *sec;
 	unsigned char *begin;
 
-	/* Locate the .debug_abbrev section and process it.  */
-	sec = find_section (".debug_abbrev");
+	/* Locate the .debug_abbrev section and process it: */
+	sec = find_section(".debug_abbrev");
 	if (sec == NULL)
 	  {
-	    warn (_("Unable to locate .debug_abbrev section!\n"));
+	    warn(_("Unable to locate .debug_abbrev section!\n"));
 	    return 0;
 	  }
 
-	begin = get_data (NULL, file, sec->sh_offset, 1, sec->sh_size,
-			  _("debug_abbrev section data"));
+	begin = (unsigned char *)get_data(NULL, file, sec->sh_offset, 1,
+                                          sec->sh_size,
+                                          _("debug_abbrev section data"));
 	if (!begin)
 	  return 0;
 
@@ -9358,8 +9439,8 @@ static unsigned int
 get_debug_info (FILE * file)
 {
   Elf_Internal_Shdr * section;
-  unsigned char *     start;
-  int		      ret;
+  unsigned char *start;
+  int ret;
 
   /* Reset the last pointer size so that we can issue correct error
      messages if we are displaying the contents of more than one section.  */
@@ -9374,8 +9455,9 @@ get_debug_info (FILE * file)
   if (section == NULL)
     return 0;
 
-  start = get_data (NULL, file, section->sh_offset, 1, section->sh_size,
-		    _("extracting information from .debug_info section"));
+  start = (unsigned char *)get_data(NULL, file, section->sh_offset, 1,
+                                    section->sh_size,
+                                    _("extracting information from .debug_info section"));
   if (start == NULL)
     return 0;
 
@@ -10257,15 +10339,19 @@ display_debug_ranges (Elf_Internal_Shdr *section,
   unsigned char *next;
 
   bytes = section->sh_size;
-  section_end = start + bytes;
+  section_end = (start + bytes);
 
   if (bytes == 0)
     {
-      printf (_("\nThe .debug_ranges section is empty.\n"));
+      printf(_("\nThe .debug_ranges section is empty.\n"));
       return 0;
     }
 
-  get_debug_info (file);
+  if (section_end != NULL) {
+    ;
+  }
+
+  get_debug_info(file);
 
   /* Check the order of range list in .debug_info section. If
      offsets of range lists are in the ascending order, we can
@@ -10412,16 +10498,18 @@ Frame_Chunk;
 #define DW_CFA_unreferenced (-1)
 
 static void
-frame_need_space (Frame_Chunk *fc, int reg)
+frame_need_space(Frame_Chunk *fc, int reg)
 {
   int prev = fc->ncols;
 
   if (reg < fc->ncols)
     return;
 
-  fc->ncols = reg + 1;
-  fc->col_type = xcrealloc (fc->col_type, fc->ncols, sizeof (short int));
-  fc->col_offset = xcrealloc (fc->col_offset, fc->ncols, sizeof (int));
+  fc->ncols = (reg + 1);
+  fc->col_type = (short int *)xcrealloc(fc->col_type, fc->ncols,
+                                        sizeof(short int));
+  fc->col_offset = (int *)xcrealloc(fc->col_offset, fc->ncols,
+                                    sizeof(int));
 
   while (prev < fc->ncols)
     {
@@ -10589,29 +10677,29 @@ display_debug_frames (Elf_Internal_Shdr *section,
 	{
 	  int version;
 
-	  fc = xmalloc (sizeof (Frame_Chunk));
-	  memset (fc, 0, sizeof (Frame_Chunk));
+	  fc = (Frame_Chunk *)xmalloc(sizeof(Frame_Chunk));
+	  memset(fc, 0, sizeof(Frame_Chunk));
 
 	  fc->next = chunks;
 	  chunks = fc;
 	  fc->chunk_start = saved_start;
 	  fc->ncols = 0;
-	  fc->col_type = xmalloc (sizeof (short int));
-	  fc->col_offset = xmalloc (sizeof (int));
-	  frame_need_space (fc, max_regs-1);
+	  fc->col_type = (short int *)xmalloc(sizeof(short int));
+	  fc->col_offset = (int *)xmalloc(sizeof(int));
+	  frame_need_space(fc, (max_regs - 1));
 
 	  version = *start++;
 
-	  fc->augmentation = (char *) start;
-	  start = (unsigned char *) strchr ((char *) start, '\0') + 1;
+	  fc->augmentation = (char *)start;
+	  start = (unsigned char *)strchr((char *)start, '\0') + 1;
 
 	  if (fc->augmentation[0] == 'z')
 	    {
-	      fc->code_factor = LEB ();
-	      fc->data_factor = SLEB ();
+	      fc->code_factor = LEB();
+	      fc->data_factor = SLEB();
 	      if (version == 1)
 		{
-		  fc->ra = GET (1);
+		  fc->ra = GET(1);
 		}
 	      else
 		{
@@ -10717,13 +10805,13 @@ display_debug_frames (Elf_Internal_Shdr *section,
 
 	  if (!cie)
 	    {
-	      warn ("Invalid CIE pointer %08lx in FDE at %p\n",
-		    cie_id, saved_start);
+	      warn("Invalid CIE pointer %08lx in FDE at %p\n",
+                   cie_id, saved_start);
 	      start = block_end;
 	      fc->ncols = 0;
-	      fc->col_type = xmalloc (sizeof (short int));
-	      fc->col_offset = xmalloc (sizeof (int));
-	      frame_need_space (fc, max_regs - 1);
+	      fc->col_type = (short int *)xmalloc(sizeof(short int));
+	      fc->col_offset = (int *)xmalloc(sizeof(int));
+	      frame_need_space(fc, max_regs - 1);
 	      cie = fc;
 	      fc->augmentation = "";
 	      fc->fde_encoding = 0;
@@ -10731,10 +10819,13 @@ display_debug_frames (Elf_Internal_Shdr *section,
 	  else
 	    {
 	      fc->ncols = cie->ncols;
-	      fc->col_type = xcmalloc (fc->ncols, sizeof (short int));
-	      fc->col_offset = xcmalloc (fc->ncols, sizeof (int));
-	      memcpy (fc->col_type, cie->col_type, fc->ncols * sizeof (short int));
-	      memcpy (fc->col_offset, cie->col_offset, fc->ncols * sizeof (int));
+	      fc->col_type = (short int *)xcmalloc (fc->ncols,
+                                                    sizeof(short int));
+	      fc->col_offset = (int *)xcmalloc(fc->ncols, sizeof(int));
+	      memcpy(fc->col_type, cie->col_type,
+                     (fc->ncols * sizeof(short int)));
+	      memcpy(fc->col_offset, cie->col_offset,
+                     (fc->ncols * sizeof(int)));
 	      fc->augmentation = cie->augmentation;
 	      fc->code_factor = cie->code_factor;
 	      fc->data_factor = cie->data_factor;
@@ -10792,17 +10883,18 @@ display_debug_frames (Elf_Internal_Shdr *section,
 	{
 	  /* Start by making a pass over the chunk, allocating storage
 	     and taking note of what registers are used.  */
-	  unsigned char *tmp = start;
+	  unsigned char *tmp_string = start;
 
 	  while (start < block_end)
 	    {
 	      unsigned op, opa;
-	      unsigned long reg, tmp;
+	      unsigned long reg, tmp_l;
 
 	      op = *start++;
-	      opa = op & 0x3f;
-	      if (op & 0xc0)
+	      opa = (op & 0x3f);
+	      if (op & 0xc0) {
 		op &= 0xc0;
+              }
 
 	      /* Warning: if you add any more cases to this switch, be
 	       * sure to add them to the corresponding switch below.  */
@@ -10811,12 +10903,12 @@ display_debug_frames (Elf_Internal_Shdr *section,
 		case DW_CFA_advance_loc:
 		  break;
 		case DW_CFA_offset:
-		  LEB ();
-		  frame_need_space (fc, opa);
+		  LEB();
+		  frame_need_space(fc, opa);
 		  fc->col_type[opa] = DW_CFA_undefined;
 		  break;
 		case DW_CFA_restore:
-		  frame_need_space (fc, opa);
+		  frame_need_space(fc, opa);
 		  fc->col_type[opa] = DW_CFA_undefined;
 		  break;
 		case DW_CFA_set_loc:
@@ -10832,77 +10924,77 @@ display_debug_frames (Elf_Internal_Shdr *section,
 		  start += 4;
 		  break;
 		case DW_CFA_offset_extended:
-		  reg = LEB (); LEB ();
-		  frame_need_space (fc, reg);
+		  reg = LEB(); LEB();
+		  frame_need_space(fc, reg);
 		  fc->col_type[reg] = DW_CFA_undefined;
 		  break;
 		case DW_CFA_restore_extended:
-		  reg = LEB ();
-		  frame_need_space (fc, reg);
+		  reg = LEB();
+		  frame_need_space(fc, reg);
 		  fc->col_type[reg] = DW_CFA_undefined;
 		  break;
 		case DW_CFA_undefined:
-		  reg = LEB ();
-		  frame_need_space (fc, reg);
+		  reg = LEB();
+		  frame_need_space(fc, reg);
 		  fc->col_type[reg] = DW_CFA_undefined;
 		  break;
 		case DW_CFA_same_value:
-		  reg = LEB ();
-		  frame_need_space (fc, reg);
+		  reg = LEB();
+		  frame_need_space(fc, reg);
 		  fc->col_type[reg] = DW_CFA_undefined;
 		  break;
 		case DW_CFA_register:
-		  reg = LEB (); LEB ();
+		  reg = LEB(); LEB();
 		  frame_need_space (fc, reg);
 		  fc->col_type[reg] = DW_CFA_undefined;
 		  break;
 		case DW_CFA_def_cfa:
-		  LEB (); LEB ();
+		  LEB(); LEB();
 		  break;
 		case DW_CFA_def_cfa_register:
-		  LEB ();
+		  LEB();
 		  break;
 		case DW_CFA_def_cfa_offset:
-		  LEB ();
+		  LEB();
 		  break;
 		case DW_CFA_def_cfa_expression:
-		  tmp = LEB ();
-		  start += tmp;
+		  tmp_l = LEB();
+		  start += tmp_l;
 		  break;
 		case DW_CFA_expression:
-		  reg = LEB ();
-		  tmp = LEB ();
-		  start += tmp;
-		  frame_need_space (fc, reg);
+		  reg = LEB();
+		  tmp_l = LEB();
+		  start += tmp_l;
+		  frame_need_space(fc, reg);
 		  fc->col_type[reg] = DW_CFA_undefined;
 		  break;
 		case DW_CFA_offset_extended_sf:
-		  reg = LEB (); SLEB ();
-		  frame_need_space (fc, reg);
+		  reg = LEB(); SLEB();
+		  frame_need_space(fc, reg);
 		  fc->col_type[reg] = DW_CFA_undefined;
 		  break;
 		case DW_CFA_def_cfa_sf:
-		  LEB (); SLEB ();
+		  LEB(); SLEB();
 		  break;
 		case DW_CFA_def_cfa_offset_sf:
-		  SLEB ();
+		  SLEB();
 		  break;
 		case DW_CFA_MIPS_advance_loc8:
 		  start += 8;
 		  break;
 		case DW_CFA_GNU_args_size:
-		  LEB ();
+		  LEB();
 		  break;
 		case DW_CFA_GNU_negative_offset_extended:
-		  reg = LEB (); LEB ();
-		  frame_need_space (fc, reg);
+		  reg = LEB(); LEB();
+		  frame_need_space(fc, reg);
 		  fc->col_type[reg] = DW_CFA_undefined;
 
 		default:
 		  break;
 		}
 	    }
-	  start = tmp;
+	  start = tmp_string;
 	}
 
       /* Now we know what registers are used, make a second pass over
@@ -11015,7 +11107,7 @@ display_debug_frames (Elf_Internal_Shdr *section,
 	      break;
 
 	    case DW_CFA_undefined:
-	      reg = LEB ();
+	      reg = LEB();
 	      if (! do_debug_frames_interp)
 		printf ("  DW_CFA_undefined: r%ld\n", reg);
 	      fc->col_type[reg] = DW_CFA_undefined;
@@ -11023,7 +11115,7 @@ display_debug_frames (Elf_Internal_Shdr *section,
 	      break;
 
 	    case DW_CFA_same_value:
-	      reg = LEB ();
+	      reg = LEB();
 	      if (! do_debug_frames_interp)
 		printf ("  DW_CFA_same_value: r%ld\n", reg);
 	      fc->col_type[reg] = DW_CFA_same_value;
@@ -11031,23 +11123,25 @@ display_debug_frames (Elf_Internal_Shdr *section,
 	      break;
 
 	    case DW_CFA_register:
-	      reg = LEB ();
-	      roffs = LEB ();
+	      reg = LEB();
+	      roffs = LEB();
 	      if (! do_debug_frames_interp)
-		printf ("  DW_CFA_register: r%ld in r%ld\n", reg, roffs);
+		printf("  DW_CFA_register: r%ld in r%ld\n", reg, roffs);
 	      fc->col_type[reg] = DW_CFA_register;
 	      fc->col_offset[reg] = roffs;
 	      break;
 
 	    case DW_CFA_remember_state:
 	      if (! do_debug_frames_interp)
-		printf ("  DW_CFA_remember_state\n");
-	      rs = xmalloc (sizeof (Frame_Chunk));
+		printf("  DW_CFA_remember_state\n");
+	      rs = (Frame_Chunk *)xmalloc(sizeof(Frame_Chunk));
 	      rs->ncols = fc->ncols;
-	      rs->col_type = xcmalloc (rs->ncols, sizeof (short int));
-	      rs->col_offset = xcmalloc (rs->ncols, sizeof (int));
-	      memcpy (rs->col_type, fc->col_type, rs->ncols);
-	      memcpy (rs->col_offset, fc->col_offset, rs->ncols * sizeof (int));
+	      rs->col_type = (short int *)xcmalloc(rs->ncols,
+                                                   sizeof(short int));
+	      rs->col_offset = (int *)xcmalloc(rs->ncols, sizeof(int));
+	      memcpy(rs->col_type, fc->col_type, rs->ncols);
+	      memcpy(rs->col_offset, fc->col_offset,
+                     (rs->ncols * sizeof(int)));
 	      rs->next = remembered_state;
 	      remembered_state = rs;
 	      break;
@@ -11258,25 +11352,26 @@ display_debug_section (Elf_Internal_Shdr *section, FILE *file)
       return 0;
     }
 
-  if (strneq (name, ".gnu.linkonce.wi.", 17))
+  if (strneq(name, ".gnu.linkonce.wi.", 17))
     name = ".debug_info";
 
-  /* See if we know how to display the contents of this section.  */
-  for (i = NUM_ELEM (debug_displays); i--;)
-    if (streq (debug_displays[i].name, name))
+  /* See if we know how to display the contents of this section: */
+  for (i = NUM_ELEM(debug_displays); i--;)
+    if (streq(debug_displays[i].name, name))
       {
 	unsigned char *start;
 
-	start = get_data (NULL, file, section->sh_offset, 1, length,
-			  _("debug section data"));
+	start = (unsigned char *)get_data(NULL, file, section->sh_offset,
+                                          1, length,
+                                          _("debug section data"));
 	if (start == NULL)
 	  {
 	    result = 0;
 	    break;
 	  }
 
-	result &= debug_displays[i].display (section, start, file);
-	free (start);
+	result &= debug_displays[i].display(section, start, file);
+	free(start);
 
 	/* If we loaded in the abbrev section
 	   at some point, we must release it here.  */
@@ -11392,9 +11487,10 @@ process_mips_specific (FILE *file)
       Elf32_External_Lib *elib;
       size_t cnt;
 
-      elib = get_data (NULL, file, liblist_offset,
-		       liblistno, sizeof (Elf32_External_Lib),
-		       _("liblist"));
+      elib = (Elf32_External_Lib *)get_data(NULL, file, liblist_offset,
+                                            liblistno,
+                                            sizeof(Elf32_External_Lib),
+                                            _("liblist"));
       if (elib)
 	{
 	  printf ("\nSection '.liblist' contains %lu entries:\n",
@@ -11478,18 +11574,21 @@ process_mips_specific (FILE *file)
       size_t offset;
       int cnt;
 
-      /* Find the section header so that we get the size.  */
-      while (sect->sh_type != SHT_MIPS_OPTIONS)
+      /* Find the section header so that we get the size: */
+      while (sect->sh_type != SHT_MIPS_OPTIONS) {
 	++sect;
+      }
 
-      eopt = get_data (NULL, file, options_offset, 1, sect->sh_size,
-		       _("options"));
+      eopt = (Elf_External_Options *)get_data(NULL, file, options_offset,
+                                              1, sect->sh_size,
+                                              _("options"));
       if (eopt)
 	{
-	  iopt = cmalloc ((sect->sh_size / sizeof (eopt)), sizeof (*iopt));
+	  iopt = (Elf_Internal_Options *)cmalloc((sect->sh_size / sizeof(eopt)),
+                                                 sizeof(*iopt));
 	  if (iopt == NULL)
 	    {
-	      error (_("Out of memory"));
+	      error(_("Out of memory"));
 	      return 0;
 	    }
 
@@ -11667,21 +11766,21 @@ process_mips_specific (FILE *file)
 	}
     }
 
-  if (conflicts_offset != 0 && conflictsno != 0)
+  if ((conflicts_offset != 0) && (conflictsno != 0))
     {
       Elf32_Conflict *iconf;
       size_t cnt;
 
       if (dynamic_symbols == NULL)
 	{
-	  error (_("conflict list found without a dynamic symbol table"));
+	  error(_("conflict list found without a dynamic symbol table"));
 	  return 0;
 	}
 
-      iconf = cmalloc (conflictsno, sizeof (*iconf));
+      iconf = (Elf32_Conflict *)cmalloc(conflictsno, sizeof(*iconf));
       if (iconf == NULL)
 	{
-	  error (_("Out of memory"));
+	  error(_("Out of memory"));
 	  return 0;
 	}
 
@@ -11689,8 +11788,11 @@ process_mips_specific (FILE *file)
 	{
 	  Elf32_External_Conflict *econf32;
 
-	  econf32 = get_data (NULL, file, conflicts_offset,
-			      conflictsno, sizeof (*econf32), _("conflict"));
+	  econf32 = (Elf32_External_Conflict *)get_data(NULL, file,
+                                                        conflicts_offset,
+                                                        conflictsno,
+                                                        sizeof(*econf32),
+                                                        _("conflict"));
 	  if (!econf32)
 	    return 0;
 
@@ -11703,8 +11805,11 @@ process_mips_specific (FILE *file)
 	{
 	  Elf64_External_Conflict *econf64;
 
-	  econf64 = get_data (NULL, file, conflicts_offset,
-			      conflictsno, sizeof (*econf64), _("conflict"));
+	  econf64 = (Elf64_External_Conflict *)get_data(NULL, file,
+                                                        conflicts_offset,
+                                                        conflictsno, sizeof
+                                                        (*econf64),
+                                                        _("conflict"));
 	  if (!econf64)
 	    return 0;
 
@@ -11748,8 +11853,9 @@ process_gnu_liblist (FILE *file)
   size_t cnt;
   unsigned i;
 
-  if (! do_arch)
+  if (! do_arch) {
     return 0;
+  }
 
   for (i = 0, section = section_headers;
        i < elf_header.e_shnum;
@@ -11758,18 +11864,22 @@ process_gnu_liblist (FILE *file)
       switch (section->sh_type)
 	{
 	case SHT_GNU_LIBLIST:
-	  if (SECTION_HEADER_INDEX (section->sh_link) >= elf_header.e_shnum)
+	  if (SECTION_HEADER_INDEX(section->sh_link) >= elf_header.e_shnum)
 	    break;
 
-	  elib = get_data (NULL, file, section->sh_offset, 1, section->sh_size,
-			   _("liblist"));
+	  elib = (Elf32_External_Lib *)get_data(NULL, file,
+                                                section->sh_offset, 1,
+                                                section->sh_size,
+                                                _("liblist"));
 
-	  if (elib == NULL)
+          if (elib == NULL) {
 	    break;
-	  string_sec = SECTION_HEADER (section->sh_link);
+          }
+	  string_sec = SECTION_HEADER(section->sh_link);
 
-	  strtab = get_data (NULL, file, string_sec->sh_offset, 1,
-			     string_sec->sh_size, _("liblist string table"));
+	  strtab = (char *)get_data(NULL, file, string_sec->sh_offset, 1,
+                                    string_sec->sh_size,
+                                    _("liblist string table"));
 	  strtab_size = string_sec->sh_size;
 
 	  if (strtab == NULL
@@ -11967,24 +12077,27 @@ process_note (Elf_Internal_Note *pnote)
 
 
 static int
-process_corefile_note_segment (FILE *file, bfd_vma offset, bfd_vma length)
+process_corefile_note_segment(FILE *file, bfd_vma offset, bfd_vma length)
 {
   Elf_External_Note *pnotes;
   Elf_External_Note *external;
   int res = 1;
 
-  if (length <= 0)
+  if (length <= 0) {
     return 0;
+  }
 
-  pnotes = get_data (NULL, file, offset, 1, length, _("notes"));
-  if (!pnotes)
+  pnotes = (Elf_External_Note *)get_data(NULL, file, offset, 1, length,
+                                         _("notes"));
+  if (!pnotes) {
     return 0;
+  }
 
   external = pnotes;
 
-  printf (_("\nNotes at offset 0x%08lx with length 0x%08lx:\n"),
-	  (unsigned long) offset, (unsigned long) length);
-  printf (_("  Owner\t\tData size\tDescription\n"));
+  printf(_("\nNotes at offset 0x%08lx with length 0x%08lx:\n"),
+         (unsigned long)offset, (unsigned long)length);
+  printf(_("  Owner\t\tData size\tDescription\n"));
 
   while (external < (Elf_External_Note *)((char *) pnotes + length))
     {
@@ -11992,21 +12105,21 @@ process_corefile_note_segment (FILE *file, bfd_vma offset, bfd_vma length)
       Elf_Internal_Note inote;
       char *temp = NULL;
 
-      inote.type     = BYTE_GET (external->type);
-      inote.namesz   = BYTE_GET (external->namesz);
+      inote.type = BYTE_GET(external->type);
+      inote.namesz = BYTE_GET(external->namesz);
       inote.namedata = external->name;
-      inote.descsz   = BYTE_GET (external->descsz);
-      inote.descdata = inote.namedata + align_power (inote.namesz, 2);
-      inote.descpos  = offset + (inote.descdata - (char *) pnotes);
+      inote.descsz = BYTE_GET(external->descsz);
+      inote.descdata = inote.namedata + align_power(inote.namesz, 2);
+      inote.descpos = offset + (inote.descdata - (char *)pnotes);
 
       next = (Elf_External_Note *)(inote.descdata + align_power (inote.descsz, 2));
 
-      if (((char *) next) > (((char *) pnotes) + length))
+      if (((char *)next) > (((char *)pnotes) + length))
 	{
-	  warn (_("corrupt note found at offset %lx into core notes\n"),
-		(long)((char *)external - (char *)pnotes));
-	  warn (_(" type: %lx, namesize: %08lx, descsize: %08lx\n"),
-		inote.type, inote.namesz, inote.descsz);
+	  warn(_("corrupt note found at offset %lx into core notes\n"),
+               (long)((char *)external - (char *)pnotes));
+	  warn(_(" type: %lx, namesize: %08lx, descsize: %08lx\n"),
+               inote.type, inote.namesz, inote.descsz);
 	  break;
 	}
 
@@ -12018,19 +12131,21 @@ process_corefile_note_segment (FILE *file, bfd_vma offset, bfd_vma length)
        * namesz.  */
       if (inote.namedata[inote.namesz] != '\0')
 	{
-	  temp = malloc (inote.namesz + 1);
+	  temp = (char *)malloc(inote.namesz + 1);
 
 	  if (temp == NULL)
 	    {
-	      error (_("Out of memory\n"));
+	      error(_("Out of memory\n"));
 	      res = 0;
 	      break;
 	    }
 
-	  strncpy (temp, inote.namedata, inote.namesz);
+	  strncpy(temp, inote.namedata, inote.namesz);
 	  temp[inote.namesz] = 0;
 
-	  /* warn (_("'%s' NOTE name not properly null terminated\n"), temp);  */
+#ifdef DEBUG
+	  warn(_("'%s' NOTE name not properly null terminated\n"), temp);
+#endif /* DEBUG */
 	  inote.namedata = temp;
 	}
 
@@ -12219,110 +12334,117 @@ get_file_header (FILE *file)
 }
 
 /* Process one ELF object file according to the command line options.
-   This file may actually be stored in an archive. The file is
-   positioned at the start of the ELF object.  */
-
+ * This file may actually be stored in an archive.  The file is positioned
+ * at the start of the ELF object: */
 static int
-process_object (char *file_name, FILE *file)
+process_object(char *file_name, FILE *file)
 {
   unsigned int i;
 
-  if (! get_file_header (file))
+  if (! get_file_header(file))
     {
-      error (_("%s: Failed to read file header\n"), file_name);
+      error(_("%s: Failed to read file header\n"), file_name);
       return 1;
     }
 
-  /* Initialise per file variables.  */
-  for (i = NUM_ELEM (version_info); i--;)
+  /* Initialize per file variables: */
+  for (i = NUM_ELEM(version_info); i--;) {
     version_info[i] = 0;
+  }
 
-  for (i = NUM_ELEM (dynamic_info); i--;)
+  for (i = NUM_ELEM(dynamic_info); i--;) {
     dynamic_info[i] = 0;
+  }
 
-  /* Process the file.  */
-  if (show_name)
-    printf (_("\nFile: %s\n"), file_name);
+  /* Process the file: */
+  if (show_name) {
+    printf(_("\nFile: %s\n"), file_name);
+  }
 
-  /* Initialise the dump_sects array from the cmdline_dump_sects array.
-     Note we do this even if cmdline_dump_sects is empty because we
-     must make sure that the dump_sets array is zeroed out before each
-     object file is processed.  */
-  if (num_dump_sects > num_cmdline_dump_sects)
-    memset (dump_sects, 0, num_dump_sects);
+  /* Initialize the dump_sects array from the cmdline_dump_sects array.
+   * Note we do this even if cmdline_dump_sects is empty because we must
+   * make sure that the dump_sets array is zeroed out before each object
+   * file is processed: */
+  if (num_dump_sects > num_cmdline_dump_sects) {
+    memset(dump_sects, 0, num_dump_sects);
+  }
 
   if (num_cmdline_dump_sects > 0)
     {
-      if (num_dump_sects == 0)
-	/* A sneaky way of allocating the dump_sects array.  */
+      if (num_dump_sects == 0) {
+	/* A sneaky way of allocating the dump_sects array: */
 	request_dump (num_cmdline_dump_sects, 0);
+      }
 
-      assert (num_dump_sects >= num_cmdline_dump_sects);
-      memcpy (dump_sects, cmdline_dump_sects, num_cmdline_dump_sects);
+      assert(num_dump_sects >= num_cmdline_dump_sects);
+      memcpy(dump_sects, cmdline_dump_sects, num_cmdline_dump_sects);
     }
 
-  if (! process_file_header ())
+  if (! process_file_header()) {
     return 1;
+  }
 
-  if (! process_section_headers (file))
+  if (! process_section_headers(file))
     {
-      /* Without loaded section headers we cannot process lots of
-       * things.  */
+      /* Without loaded section headers, we cannot process lots of
+       * things: */
       do_unwind = do_version = do_dump = do_arch = 0;
 
-      if (! do_using_dynamic)
+      if (! do_using_dynamic) {
 	do_syms = do_reloc = 0;
+      }
     }
 
-  if (! process_section_groups (file))
+  if (! process_section_groups(file))
     {
-      /* Without loaded section groups we cannot process unwind.  */
+      /* Without loaded section groups, we cannot process unwind: */
       do_unwind = 0;
     }
 
-  if (process_program_headers (file))
-    process_dynamic_section (file);
+  if (process_program_headers(file)) {
+    process_dynamic_section(file);
+  }
 
-  process_relocs (file);
+  process_relocs(file);
 
-  process_unwind (file);
+  process_unwind(file);
 
-  process_symbol_table (file);
+  process_symbol_table(file);
 
-  process_syminfo (file);
+  process_syminfo(file);
 
-  process_version_sections (file);
+  process_version_sections(file);
 
-  process_section_contents (file);
+  process_section_contents(file);
 
-  process_notes (file);
+  process_notes(file);
 
-  process_gnu_liblist (file);
+  process_gnu_liblist(file);
 
-  process_arch_specific (file);
+  process_arch_specific(file);
 
   if (program_headers)
     {
-      free (program_headers);
+      free(program_headers);
       program_headers = NULL;
     }
 
   if (section_headers)
     {
-      free (section_headers);
+      free(section_headers);
       section_headers = NULL;
     }
 
   if (string_table)
     {
-      free (string_table);
+      free(string_table);
       string_table = NULL;
       string_table_length = 0;
     }
 
   if (dynamic_strings)
     {
-      free (dynamic_strings);
+      free(dynamic_strings);
       dynamic_strings = NULL;
       dynamic_strings_length = 0;
     }
@@ -12336,13 +12458,13 @@ process_object (char *file_name, FILE *file)
 
   if (dynamic_syminfo)
     {
-      free (dynamic_syminfo);
+      free(dynamic_syminfo);
       dynamic_syminfo = NULL;
     }
 
   if (section_headers_groups)
     {
-      free (section_headers_groups);
+      free(section_headers_groups);
       section_headers_groups = NULL;
     }
 
@@ -12352,14 +12474,14 @@ process_object (char *file_name, FILE *file)
 
       for (i = 0; i < group_count; i++)
 	{
-	  for (g = section_groups [i].root; g != NULL; g = next)
+	  for (g = section_groups[i].root; g != NULL; g = next)
 	    {
 	      next = g->next;
-	      free (g);
+	      free(g);
 	    }
 	}
 
-      free (section_groups);
+      free(section_groups);
       section_groups = NULL;
     }
 
@@ -12367,15 +12489,15 @@ process_object (char *file_name, FILE *file)
     {
       for (i = 0; i < num_debug_info_entries; i++)
 	{
-	  if (!debug_information [i].max_loc_offsets)
+	  if (!debug_information[i].max_loc_offsets)
 	    {
-	      free (debug_information [i].loc_offsets);
-	      free (debug_information [i].have_frame_base);
+	      free(debug_information[i].loc_offsets);
+	      free(debug_information[i].have_frame_base);
 	    }
-	  if (!debug_information [i].max_range_lists)
-	    free (debug_information [i].range_lists);
+	  if (!debug_information[i].max_range_lists)
+	    free(debug_information[i].range_lists);
 	}
-      free (debug_information);
+      free(debug_information);
       debug_information = NULL;
       num_debug_info_entries = 0;
     }
@@ -12385,9 +12507,8 @@ process_object (char *file_name, FILE *file)
 
 /* Process an ELF archive. The file is positioned just after the
  * ARMAG string.  */
-
 static int
-process_archive (char *file_name, FILE *file)
+process_archive(char *file_name, FILE *file)
 {
   struct ar_hdr arhdr;
   size_t got;
@@ -12399,71 +12520,72 @@ process_archive (char *file_name, FILE *file)
 
   show_name = 1;
 
-  got = fread (&arhdr, 1, sizeof arhdr, file);
-  if (got != sizeof arhdr)
+  got = fread(&arhdr, 1, sizeof(arhdr), file);
+  if (got != sizeof(arhdr))
     {
-      if (got == 0)
+      if (got == 0) {
 	return 0;
+      }
 
-      error (_("%s: failed to read archive header\n"), file_name);
+      error(_("%s: failed to read archive header\n"), file_name);
       return 1;
     }
 
-  if (memcmp (arhdr.ar_name, "/               ", 16) == 0)
+  if (memcmp(arhdr.ar_name, "/               ", 16) == 0)
     {
       /* This is the archive symbol table. Skip it.
        * FIXME: We should have an option to dump it.  */
-      size = strtoul (arhdr.ar_size, NULL, 10);
-      if (fseek (file, size + (size & 1), SEEK_CUR) != 0)
+      size = strtoul(arhdr.ar_size, NULL, 10);
+      if (fseek(file, size + (size & 1), SEEK_CUR) != 0)
 	{
-	  error (_("%s: failed to skip archive symbol table\n"), file_name);
+	  error(_("%s: failed to skip archive symbol table\n"), file_name);
 	  return 1;
 	}
 
-      got = fread (&arhdr, 1, sizeof arhdr, file);
-      if (got != sizeof arhdr)
+      got = fread(&arhdr, 1, sizeof(arhdr), file);
+      if (got != sizeof(arhdr))
 	{
-	  if (got == 0)
+	  if (got == 0) {
 	    return 0;
+          }
 
-	  error (_("%s: failed to read archive header\n"), file_name);
+	  error(_("%s: failed to read archive header\n"), file_name);
 	  return 1;
 	}
     }
 
-  if (memcmp (arhdr.ar_name, "//              ", 16) == 0)
+  if (memcmp(arhdr.ar_name, "//              ", 16) == 0)
     {
       /* This is the archive string table holding long member
-       * names.  */
+       * names: */
+      longnames_size = strtoul(arhdr.ar_size, NULL, 10);
 
-      longnames_size = strtoul (arhdr.ar_size, NULL, 10);
-
-      longnames = malloc (longnames_size);
+      longnames = (char *)malloc(longnames_size);
       if (longnames == NULL)
 	{
-	  error (_("Out of memory\n"));
+	  error(_("Out of memory\n"));
 	  return 1;
 	}
 
-      if (fread (longnames, longnames_size, 1, file) != 1)
+      if (fread(longnames, longnames_size, 1, file) != 1)
 	{
-	  free (longnames);
-	  error (_("%s: failed to read string table\n"), file_name);
+	  free(longnames);
+	  error(_("%s: failed to read string table\n"), file_name);
 	  return 1;
 	}
 
       if ((longnames_size & 1) != 0)
-	getc (file);
+	getc(file);
 
-      got = fread (&arhdr, 1, sizeof arhdr, file);
+      got = fread(&arhdr, 1, sizeof arhdr, file);
       if (got != sizeof arhdr)
 	{
-	  free (longnames);
+	  free(longnames);
 
 	  if (got == 0)
 	    return 0;
 
-	  error (_("%s: failed to read archive header\n"), file_name);
+	  error(_("%s: failed to read archive header\n"), file_name);
 	  return 1;
 	}
     }
@@ -12481,58 +12603,57 @@ process_archive (char *file_name, FILE *file)
 	{
 	  unsigned long off;
 
-	  off = strtoul (arhdr.ar_name + 1, NULL, 10);
+	  off = strtoul(arhdr.ar_name + 1, NULL, 10);
 	  if (off >= longnames_size)
 	    {
-	      error (_("%s: invalid archive string table offset %lu\n"), file_name, off);
+	      error(_("%s: invalid archive string table offset %lu\n"),
+                    file_name, off);
 	      ret = 1;
 	      break;
 	    }
 
-	  name = longnames + off;
-	  nameend = memchr (name, '/', longnames_size - off);
+	  name = (longnames + off);
+	  nameend = (char *)memchr(name, '/', longnames_size - off);
 	}
       else
 	{
 	  name = arhdr.ar_name;
-	  nameend = memchr (name, '/', 16);
+	  nameend = (char *)memchr(name, '/', 16);
 	}
 
       if (nameend == NULL)
 	{
-	  error (_("%s: bad archive file name\n"), file_name);
+	  error(_("%s: bad archive file name\n"), file_name);
 	  ret = 1;
 	  break;
 	}
 
-      namealc = malloc (file_name_size + (nameend - name) + 3);
+      namealc = (char *)malloc(file_name_size + (nameend - name) + 3);
       if (namealc == NULL)
 	{
-	  error (_("Out of memory\n"));
+	  error(_("Out of memory\n"));
 	  ret = 1;
 	  break;
 	}
 
-      memcpy (namealc, file_name, file_name_size);
+      memcpy(namealc, file_name, file_name_size);
       namealc[file_name_size] = '(';
-      memcpy (namealc + file_name_size + 1, name, nameend - name);
+      memcpy(namealc + file_name_size + 1, name, nameend - name);
       namealc[file_name_size + 1 + (nameend - name)] = ')';
       namealc[file_name_size + 2 + (nameend - name)] = '\0';
 
-      archive_file_offset = ftell (file);
-      archive_file_size = strtoul (arhdr.ar_size, NULL, 10);
+      archive_file_offset = ftell(file);
+      archive_file_size = strtoul(arhdr.ar_size, NULL, 10);
 
-      ret |= process_object (namealc, file);
+      ret |= process_object(namealc, file);
 
-      free (namealc);
+      free(namealc);
 
-      if (fseek (file,
-		 (archive_file_offset
-		  + archive_file_size
-		  + (archive_file_size & 1)),
-		 SEEK_SET) != 0)
+      if (fseek(file, (archive_file_offset + archive_file_size
+                       + (archive_file_size & 1)), SEEK_SET) != 0)
 	{
-	  error (_("%s: failed to seek to next archive header\n"), file_name);
+	  error(_("%s: failed to seek to next archive header\n"),
+                file_name);
 	  ret = 1;
 	  break;
 	}
@@ -12540,17 +12661,18 @@ process_archive (char *file_name, FILE *file)
       got = fread (&arhdr, 1, sizeof arhdr, file);
       if (got != sizeof arhdr)
 	{
-	  if (got == 0)
+	  if (got == 0) {
 	    break;
+          }
 
-	  error (_("%s: failed to read archive header\n"), file_name);
+	  error(_("%s: failed to read archive header\n"), file_name);
 	  ret = 1;
 	  break;
 	}
     }
 
   if (longnames != 0)
-    free (longnames);
+    free(longnames);
 
   return ret;
 }
@@ -12562,13 +12684,13 @@ static int process_file(char *file_name)
   char armag[SARMAG];
   int ret;
 
-  if (stat (file_name, &statbuf) < 0)
+  if (stat(file_name, &statbuf) < 0)
     {
       if (errno == ENOENT)
-	error (_("'%s': No such file\n"), file_name);
+	error(_("'%s': No such file\n"), file_name);
       else
-	error (_("Could not locate '%s'.  System error message: %s\n"),
-	       file_name, strerror (errno));
+	error(_("Could not locate '%s'.  System error message: %s\n"),
+              file_name, strerror(errno));
       return 1;
     }
 
@@ -12609,7 +12731,6 @@ static int process_file(char *file_name)
 /* Needed by the i386 disassembler. For extra credit, someone could
  * fix this so that we insert symbolic addresses here, esp. for GOT/PLT
  * symbols. */
-
 void print_address(unsigned int addr, FILE *outfile)
 {
   fprintf(outfile,"0x%8.8x", addr);
@@ -12645,11 +12766,11 @@ int main(int argc, char **argv)
 #endif /* !HAVE_TEXTDOMAIN && !textdomain */
   textdomain(PACKAGE);
 
-  parse_args (argc, argv);
+  parse_args(argc, argv);
 
   if (num_dump_sects > 0) {
       /* Make a copy of the dump_sects array.  */
-      cmdline_dump_sects = malloc(num_dump_sects);
+      cmdline_dump_sects = (char *)malloc(num_dump_sects);
       if (cmdline_dump_sects == NULL) {
 	  error(_("Out of memory allocating dump request table."));
       } else {
@@ -12675,6 +12796,14 @@ int main(int argc, char **argv)
 
   return err;
 }
+
+/* silence '-Wunused-macros': */
+#ifdef BFD64
+# undef BFD64
+#endif /* BFD64 */
+#ifdef DISASS_DUMP
+# undef DISASS_DUMP
+#endif /* DISASS_DUMP */
 
 /* (this file is way too long) */
 /* EOF */

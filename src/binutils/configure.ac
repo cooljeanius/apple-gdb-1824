@@ -143,9 +143,9 @@ if test -z "${host}"; then
 fi
 AC_SYS_INTERPRETER
 m4_ifdef([ACX_LARGEFILE],[
-ACX_LARGEFILE
+  ACX_LARGEFILE dnl# calls the one in the other half of the conditional
 ],[
-AC_SYS_LARGEFILE
+  AC_SYS_LARGEFILE
 ])dnl
 
 # Checks for programs.
@@ -166,10 +166,21 @@ AX_PROG_BISON([
   EXTRA_YFLAGS_SEP='#'
 ])dnl##end bison conditional
 AC_SUBST([EXTRA_YFLAGS_SEP])dnl
-AM_PROG_LEX
+AM_PROG_LEX dnl# is required by the next 1, but call it explicitly anyways
+AX_PROG_FLEX([
+  # (this is not currently used, but it could be)
+  EXTRA_LFLAGS_SEP=''
+],[
+  EXTRA_LFLAGS_SEP='#'
+])dnl##end flex conditional
+AC_SUBST([EXTRA_LFLAGS_SEP])dnl
 AC_PATH_PROGS([ICONV_BIN],[iconv giconv])dnl
 AC_SUBST([ICONV_BIN])dnl
 AC_PATH_PROG([CONFIGURED_POD2MAN],[pod2man])dnl
+
+dnl# for ResourceManager-related stuff:
+AC_PATH_PROG([REZ],[Rez],[],[],[${PATH}:/Developer/Tools])dnl
+AC_SUBST([REZ])dnl
 
 # Gettext:
 if test -d ../intl; then
@@ -188,15 +199,15 @@ fi
 # keep alphabetical:
 ALL_LINGUAS="bg da es fi fr hr id it ja ro ru rw sk sr sv tr uk vi zh_CN zh_TW"
 m4_ifdef([CY_GNU_GETTEXT],[
-CY_GNU_GETTEXT
+  CY_GNU_GETTEXT dnl# older version
 ],[
   m4_ifdef([ZW_GNU_GETTEXT_SISTER_DIR],[
-    ZW_GNU_GETTEXT_SISTER_DIR
+    ZW_GNU_GETTEXT_SISTER_DIR dnl# newer version
   ],[
     AC_MSG_NOTICE([skipping some gettext checks])
   ])dnl
   m4_ifdef([AM_PO_SUBDIRS],[
-    AM_PO_SUBDIRS
+    AM_PO_SUBDIRS dnl# kinda separate from the newer version
   ],[
     AC_MSG_WARN([po subdir might remain unconfigured])
   ])dnl
@@ -225,8 +236,9 @@ AC_SUBST([HDEFINES])dnl
 
 # More programs:
 AR=${AR-ar}
-AC_SUBST([AR])
+AC_SUBST([AR])dnl
 dnl# (skip actually checking for ar, because we build it here)
+  ## do check for ranlib if necessary though:
 if test "x${RANLIB}" = "x" && test "x${ac_cv_prog_ac_ct_RANLIB}" = "x"; then
   test -z "${RANLIB}" && test -z "${ac_cv_prog_ac_ct_RANLIB}"
   AC_PROG_RANLIB
@@ -327,7 +339,8 @@ if test -d ../intl; then
   fi
   if test -z "${INCINTL}"; then
     export INCINTL="-I../intl"
-    AC_SUBST([INCINTL])
+    AC_SUBST([INCINTL])dnl
+    ## ok
   fi
 elif test -d ../libintl; then
   if test -z "${CPPFLAGS}"; then
@@ -337,7 +350,8 @@ elif test -d ../libintl; then
   fi
   if test -z "${INCINTL}"; then
     export INCINTL="-I../libintl"
-    AC_SUBST([INCINTL])
+    AC_SUBST([INCINTL])dnl
+    ## similar to above
   fi
 fi
 unset ac_cv_header_libintl_h
@@ -346,13 +360,19 @@ unset ac_cv_header_locale_h
 unset ac_cv_header_malloc_h
 unset ac_cv_header_stdlib_h
 unset ac_cv_header_sys_param_h
+unset ac_cv_header_sys_time_h
 unset ac_cv_header_unistd_h
 unset ac_cv_header_utime_h
-AC_CHECK_HEADERS([assert.h binary-io.h errno.h fcntl.h gettext.h iconv.h \
-                  langinfo.h libgettext.h libintl.h limits.h locale.h \
-                  mach/i386/thread_status.h mach/mach.h mach-o/loader.h \
-                  malloc.h malloc/malloc.h stdarg.h stddef.h stdio.h \
-                  sys/file.h sys/param.h sys/time.h utime.h varargs.h \
+AC_DEFUN([AC_REQUIRE_HEADER_STDC],[
+  AC_REQUIRE([AC_HEADER_STDC])dnl
+])dnl
+AC_REQUIRE_HEADER_STDC dnl# should be called anyways, but whatever...
+AC_CHECK_HEADERS([AvailabilityMacros.h assert.h binary-io.h errno.h \
+                  fcntl.h gettext.h iconv.h langinfo.h libgettext.h \
+                  libintl.h limits.h locale.h mach/i386/thread_status.h \
+                  mach/mach.h mach-o/loader.h malloc.h malloc/malloc.h \
+                  math.h stdarg.h stddef.h stdio.h sys/file.h sys/ioctl.h \
+                  sys/param.h sys/time.h utime.h varargs.h \
                   wchar.h wctype.h])dnl
 AC_CHECK_HEADERS_ONCE([time.h])dnl
 AC_HEADER_SYS_WAIT
@@ -386,7 +406,96 @@ AC_CHECK_TYPES([FILE])dnl
 AC_TYPE_INT8_T
 AC_TYPE_INT16_T
 AC_TYPE_INT32_T
+AC_TYPE_INT64_T
+AC_DEFUN([AC_REQUIRE_LONG_LONG_TYPES],[
+  m4_ifdef([AC_TYPE_LONG_LONG_INT],[
+    AC_REQUIRE([AC_TYPE_LONG_LONG_INT])dnl
+  ],[
+    if test "x${ac_cv_type_long_long_int}" = "x"; then
+      test -z "${ac_cv_type_long_long_int}"
+      AC_MSG_WARN([looks like we skipped checking long long])
+    fi
+  ])dnl
+  m4_ifdef([AC_TYPE_UNSIGNED_LONG_LONG_INT],[
+    AC_REQUIRE([AC_TYPE_UNSIGNED_LONG_LONG_INT])dnl
+  ],[
+    if test "x${ac_cv_type_unsigned_long_long_int}" = "x"; then
+      test -z "${ac_cv_type_unsigned_long_long_int}"
+      AC_MSG_WARN([looks like we skipped checking unsigned long long])
+    fi
+  ])dnl
+])dnl
+AC_REQUIRE_LONG_LONG_TYPES dnl# used to compare against later
+if test "x${ac_cv_type_long_long}" = "xyes"; then
+  AC_CHECK_SIZEOF([long long])dnl
+  AC_CHECK_ALIGNOF([long long])dnl
+  ## ok
+fi
+if test "x${ac_cv_type_unsigned_long_long}" = "x"; then
+  test -z "${ac_cv_type_unsigned_long_long}" && ac_cv_type_unsigned_long_long="${ac_cv_type_unsigned_long_long_int}"
+fi
+if test "x${ac_cv_type_unsigned_long_long}" = "xyes"; then
+  AC_CHECK_SIZEOF([unsigned long long])dnl
+  AC_CHECK_ALIGNOF([unsigned long long])dnl
+  ## ok
+fi
+AC_TYPE_MODE_T
+if test "x${ac_cv_type_off_t}" = "x"; then
+  test -z "${ac_cv_type_off_t}"
+  AC_TYPE_OFF_T
+elif test "x${ac_cv_type_off_t}" = "xyes"; then
+  AC_DEFINE([HAVE_OFF_T],[1],
+            [Define to 1 if you have the off_t type])
+fi
+## keep separate from previous, as this value might have been updated:
+if test "x${ac_cv_type_off_t}" = "xyes"; then
+  AC_CHECK_SIZEOF([off_t])dnl
+  AC_CHECK_ALIGNOF([off_t])dnl
+  ## ok
+fi
+if test "x${ac_cv_sizeof_off_t}" != "x${ac_cv_sizeof_unsigned_long_long}"; then
+  AC_CHECK_TYPES([off64_t],[
+    test -z "${ac_cv_sizeof_off64_t}"
+    test -z "${ac_cv_alignof_off64_t}"
+    AC_CHECK_SIZEOF([off64_t])dnl
+    AC_CHECK_ALIGNOF([off64_t])dnl
+  ],[
+    unset ac_cv_type_off64_t
+    if test "x${ac_cv_type_off_t}" = "xyes"; then
+      _AC_CHECK_TYPE_OLD([off64_t],[off_t])dnl
+      ## hope that is okay...
+    elif test "x${ac_cv_type_unsigned_long_long}" = "x"; then
+      _AC_CHECK_TYPE_OLD([off64_t],[unsigned long long])dnl
+      ## not sure what else could work...
+    fi
+  ])dnl
+  ## maybe use it as a replacement, idk...
+elif test "x${ac_cv_sizeof_off_t}" = "x${ac_cv_sizeof_unsigned_long_long}";  then
+  AC_MSG_NOTICE([it seems that your off_t is already 64-bit; in that case, there is no need to check for an off64_t type...])
+else
+  test -z "${ac_cv_sizeof_off_t}"
+  test -z "${ac_cv_sizeof_unsigned_long_long}"
+  AC_MSG_WARN([unsure if off_t is 64-bit or not...])
+fi
+AC_CHECK_TYPES([ptrdiff_t])dnl
+AC_TYPE_SIGNAL dnl# (the copy in ./m4/signal.4 overrides the obsoleteness)
+if test "x${ac_cv_type_size_t}" = "x"; then
+  test -z "${ac_cv_type_size_t}"
+  AC_TYPE_SIZE_T
+elif test "x${ac_cv_type_size_t}" = "xyes"; then
+  AC_DEFINE([HAVE_SIZE_T],[1],
+            [Define to 1 if you have the size_t type])
+fi
+## keep separate from previous, as this value might have been updated:
+if test "x${ac_cv_type_size_t}" = "xyes"; then
+  AC_CHECK_SIZEOF([size_t])dnl
+  AC_CHECK_ALIGNOF([size_t])dnl
+  ## ok
+fi
 AC_TYPE_SSIZE_T
+AC_CHECK_MEMBERS([struct stat.st_blksize])dnl
+AC_STRUCT_ST_BLOCKS
+AC_CHECK_MEMBERS([struct stat.st_rdev])dnl
 AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
 AC_TYPE_UINT8_T
 AC_TYPE_UINT16_T
@@ -410,29 +519,40 @@ AC_DEFUN([AC_REQUIRE_ALLOCA],[
 ])dnl
 AC_REQUIRE_ALLOCA
 AC_FUNC_CHOWN
+AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_ERROR_AT_LINE
+AC_FUNC_FNMATCH dnl# avoid the "REPLACE" version of it though
 AC_FUNC_FORK
 AC_FUNC_LSTAT dnl# calls the _FOLLOWS_SLASHED_SYMLINK version of it
 AC_FUNC_MALLOC
-AC_FUNC_MEMCMP
+AC_FUNC_MEMCMP dnl# old
+AC_FUNC_MKTIME
 AC_FUNC_OBSTACK
 AC_FUNC_REALLOC
+m4_ifdef([AC_FUNC_SETVBUF_REVERSED],[
+  AC_FUNC_SETVBUF_REVERSED dnl# (the one in ./m4 overrides the obsoletion)
+],[
+  AC_CHECK_FUNCS([setvbuf])dnl
+])dnl
 AC_FUNC_STAT
 m4_ifdef([AC_FUNC_STRCOLL],[
-  AC_FUNC_STRCOLL
+  AC_FUNC_STRCOLL dnl# should be there, but just in case...
 ],[
   AC_CHECK_FUNCS([strcoll])dnl
 ])dnl
+AC_FUNC_STRFTIME
 AC_FUNC_STRNLEN
+AC_FUNC_STRTOD
 AC_FUNC_UTIME_NULL
 AC_FUNC_VPRINTF
 unset ac_cv_func_setlocale
-AC_CHECK_FUNCS([bindtextdomain ctime dcgettext dup2 expandargv \
-                fclose fopen fprintf fputs fread free getc_unlocked \
-                gettimeofday memchr memcmp memcpy memmove memset \
-                re_comp regcomp rmdir sbrk setlocale setmode \
-                strdup strerror strncasecmp strrchr strspn strstr \
-                strtol strtoul strverscmp textdomain utime utimes])dnl
+AC_CHECK_FUNCS([atexit bindtextdomain ctime dcgettext dup2 expandargv \
+                fclose floor fopen fprintf fputs fread free getc_unlocked \
+                gettimeofday isascii localeconv mblen memchr memcmp \
+                memcpy memmove memset modf pow re_comp regcomp rint rmdir \
+                sbrk setlocale setmode sqrt strcspn strdup strerror \
+                strncasecmp strpbrk strrchr strspn strstr strtol strtoul \
+                strverscmp textdomain utime utimes])dnl
 AC_SEARCH_LIBS([rpl_realloc],[iberty c gnu])dnl
 AC_SEARCH_LIBS([rpl_malloc],[iberty c gnu])dnl
 
@@ -461,18 +581,23 @@ FILE *f = fopen64("/tmp/foo","r");
       ]],[[
 FILE *f = fopen64("/tmp/foo","r");
       ]])],[bu_cv_have_fopen64="need -D_LARGEFILE64_SOURCE"],
-           [bu_cv_have_fopen64=no])
-      CPPFLAGS="${saved_CPPFLAGS}"])
-])
+           [bu_cv_have_fopen64=no])dnl
+      ## restore:
+      CPPFLAGS="${saved_CPPFLAGS}"])dnl
+])dnl
+  ## print:
 AC_MSG_RESULT([${bu_cv_have_fopen64}])
 if test "${bu_cv_have_fopen64}" != no; then
   AC_DEFINE([HAVE_FOPEN64],[1],
-	    [Is fopen64 available?])
+	    [Define to 1 if fopen64 is available])
 fi
 AC_MSG_CHECKING([for stat64])
 AC_CACHE_VAL([bu_cv_have_stat64],[
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <sys/stat.h>
+#ifdef HAVE_AVAILABILITYMACROS_H
+# include <AvailabilityMacros.h>
+#endif /* HAVE_AVAILABILITYMACROS_H */
 ]],[[
 struct stat64 st;
 stat64("/tmp/foo", &st);
@@ -485,18 +610,20 @@ stat64("/tmp/foo", &st);
 struct stat64 st;
 stat64("/tmp/foo", &st);
       ]])],[bu_cv_have_stat64="need -D_LARGEFILE64_SOURCE"],
-           [bu_cv_have_stat64=no])
-      CPPFLAGS="${saved_CPPFLAGS}"])
-])
+           [bu_cv_have_stat64=no])dnl
+      ## restore:
+      CPPFLAGS="${saved_CPPFLAGS}"])dnl
+])dnl
+  ## print:
 AC_MSG_RESULT([${bu_cv_have_stat64}])
 if test "x${bu_cv_have_stat64}" != "xno"; then
   AC_DEFINE([HAVE_STAT64],[1],
-	    [Is stat64 available?])
+	    [Define to 1 if stat64 is available])
 fi
 if test "${bu_cv_have_fopen64}" = "need -D_LARGEFILE64_SOURCE" \
    || test "${bu_cv_have_stat64}" = "need -D_LARGEFILE64_SOURCE"; then
   AC_DEFINE([_LARGEFILE64_SOURCE],[1],
-	    [Enable LFS])
+	    [Define to 1 to enable LFS])
   CPPFLAGS="${CPPFLAGS} -D_LARGEFILE64_SOURCE"
 fi
 
@@ -519,7 +646,8 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <time.h>
 ]],[[
 time_t i;
-]])],[bu_cv_decl_time_t_time_h=yes],[bu_cv_decl_time_t_time_h=no])])
+]])],[bu_cv_decl_time_t_time_h=yes],[bu_cv_decl_time_t_time_h=no])])dnl
+  ## print:
 AC_MSG_RESULT([${bu_cv_decl_time_t_time_h}])
 if test "x${bu_cv_decl_time_t_time_h}" = "xyes"; then
   AC_DEFINE([HAVE_TIME_T_IN_TIME_H],[1],
@@ -532,7 +660,8 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <sys/types.h>
 ]],[[
 time_t i;
-]])],[bu_cv_decl_time_t_types_h=yes],[bu_cv_decl_time_t_types_h=no])])
+]])],[bu_cv_decl_time_t_types_h=yes],[bu_cv_decl_time_t_types_h=no])])dnl
+  ## print:
 AC_MSG_RESULT([${bu_cv_decl_time_t_types_h}])
 if test "x${bu_cv_decl_time_t_types_h}" = "xyes"; then
   AC_DEFINE([HAVE_TIME_T_IN_TYPES_H],[1],
@@ -545,7 +674,8 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <unistd.h>
 ]],[[
 extern int getopt(int, char *const*, const char *);
-]])],[bu_cv_decl_getopt_unistd_h=yes],[bu_cv_decl_getopt_unistd_h=no])])
+]])],[bu_cv_decl_getopt_unistd_h=yes],[bu_cv_decl_getopt_unistd_h=no])])dnl
+  ## print:
 AC_MSG_RESULT([${bu_cv_decl_getopt_unistd_h}])
 if test "x${bu_cv_decl_getopt_unistd_h}" = "xyes"; then
   AC_DEFINE([HAVE_DECL_GETOPT],[1],
@@ -562,12 +692,15 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #ifdef HAVE_TIME_H
 # include <time.h>
 #else
-# warning "this conftest expects <time.h> to be included."
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "this conftest expects <time.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_TIME_H */
 #include <utime.h>
 ]],[[
 struct utimbuf s;
-]])],[bu_cv_header_utime_h=yes],[bu_cv_header_utime_h=no])])
+]])],[bu_cv_header_utime_h=yes],[bu_cv_header_utime_h=no])])dnl
+  ## print:
 AC_MSG_RESULT([${bu_cv_header_utime_h}])
 if test "x${bu_cv_header_utime_h}" = "xyes"; then
   AC_DEFINE([HAVE_GOOD_UTIME_H],[1],

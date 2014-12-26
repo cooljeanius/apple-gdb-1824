@@ -31,9 +31,15 @@ dnl# configure.ac -- Backtrace configure script.           -*- Autoconf -*-
 
 dnl# in case autoupdate changes this, this is supposed to say "2.64":
 AC_PREREQ([2.64])
-dnl# override.m4 is annoying
+dnl# This is a hack because autoconf finds the AC\_INIT from
+dnl# ../config/override.m4 first if it is present, which is annoying.
+dnl# Feel free to re-define to whichever version of autoconf
+dnl# that you are using:
+m4_define([_GCC_AUTOCONF_VERSION],[2.69])
 AC_INIT([libbacktrace],[version-unused],[],[libbacktrace])
 AC_CONFIG_SRCDIR([backtrace.h])dnl
+AC_CONFIG_AUX_DIR([..])dnl
+AC_CONFIG_MACRO_DIR([..])dnl
 AC_CONFIG_HEADER([config.h])dnl
 
 AC_CANONICAL_TARGET
@@ -47,8 +53,15 @@ AC_SUBST([libtool_VERSION])dnl
 
 # hack to do before automake is initialized:
 if test -f ${srcdir}/config.status; then
-  AC_MSG_NOTICE([config.status is already present, removing it.])
-  rm -f ${srcdir}/config.status
+  if test -w "${srcdir}"; then
+    AC_MSG_NOTICE([config.status is already present, moving it aside.])
+    mv -vf ${srcdir}/config.status ${srcdir}/config_status_backup.sh
+    if test -e ${srcdir}/config_status_backup.sh; then
+      chmod +x ${srcdir}/config_status_backup.sh
+    fi
+  else
+    AC_MSG_WARN([srcdir is unwritable])
+  fi
 fi
 # 1.11.1: Require that version of automake.
 # foreign: Do NOT require README, INSTALL, NEWS, etc.
@@ -59,7 +72,7 @@ fi
 # -Wall: Issue all automake warnings.
 AM_INIT_AUTOMAKE([1.11.1 foreign no-dist no-define no-dependencies -Wall])
 
-AM_MAINTAINER_MODE
+AM_MAINTAINER_MODE([disable])dnl
 
 AC_ARG_WITH([target-subdir],
 [AS_HELP_STRING([--with-target-subdir=SUBDIR],
@@ -82,8 +95,22 @@ AC_SUBST([CFLAGS])dnl
 
 AC_LANG([C])dnl
 
+m4_ifdef([AM_PROG_CC_C_O],[
+  AM_PROG_CC_C_O
+])dnl
+
+m4_ifdef([AC_REQUIRE_AUX_FILE],[
+  AC_REQUIRE_AUX_FILE([compile])dnl
+  AC_REQUIRE_AUX_FILE([depcomp])dnl
+  AC_REQUIRE_AUX_FILE([missing])dnl
+])dnl
+
 AC_PROG_CPP
 
+if test "x${AR}" = "x" && test "x${am_cv_ar_interface}" = "x"; then
+  test -z "${AR}" && test -z "${am_cv_ar_interface}"
+  AM_PROG_AR
+fi
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_RANLIB
@@ -107,6 +134,7 @@ backtrace_supported=yes
 if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
   # We are compiling a GCC library.  We can assume that the unwind
   # library exists.
+  AC_MSG_NOTICE([assuming unwind library exists])
   AM_ENABLE_MULTILIB([],[..])
   BACKTRACE_FILE="backtrace.lo simple.lo"
 else
@@ -122,6 +150,7 @@ AC_SUBST([BACKTRACE_FILE])dnl
 
 EXTRA_FLAGS=""
 if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
+  AC_MSG_NOTICE([assuming we have the -funwind-tables and -frandom-seed=string options])
   EXTRA_FLAGS="-funwind-tables -frandom-seed=\$@"
 else
   AC_CACHE_CHECK([for -funwind-tables option],
@@ -155,9 +184,9 @@ dnl# usability of 'const' could affect '-Wwrite-strings':
 AC_C_CONST
 
 dnl# '-W' is redundant with '-Wextra'
-ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wwrite-strings \
+ACX_PROG_CC_WARNING_OPTS([-Wall -Wextra -Wwrite-strings -Wnested-externs \
 			  -Wstrict-prototypes -Wmissing-prototypes \
-			  -Wold-style-definition -Wc++-compat \
+			  -Wold-style-definition -Wc++-compat -Wswitch \
 			  -Wmissing-format-attribute -Wcast-qual],
 			  [WARN_FLAGS])dnl
 
@@ -199,13 +228,20 @@ fi
 # complicate dependencies.  Instead, we just compile with -fPIC.
 PIC_FLAG=""
 if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
-  PIC_FLAG=-fPIC
+  case "${host}" in
+  *-apple-darwin*) PIC_FLAG="-fPIC -fno-common" ;;
+  *) PIC_FLAG=-fPIC ;;
+  esac
 fi
 # Similarly, use -fPIC with --enable-host-shared:
 AC_ARG_ENABLE([host-shared],
 [AS_HELP_STRING([--enable-host-shared],
-		[build host code as shared libraries])],
-[PIC_FLAG=-fPIC],[])
+		[build host code as shared libraries])],[
+case "${host}" in
+*-apple-darwin*) PIC_FLAG="-fPIC -fno-common" ;;
+*) PIC_FLAG=-fPIC ;;
+esac
+],[])dnl
 AC_SUBST([PIC_FLAG])dnl
 
 # Test for __sync support.
@@ -318,9 +354,11 @@ else
   if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
     # When built as a GCC target library, we cannot do a link test.  We
     # simply assume that if we have mman.h, we have mmap.
+    AC_MSG_NOTICE([assuming we have mmap based on presence of mman.h])
     have_mmap=yes
   else
-    AC_CHECK_FUNC([mmap],[have_mmap=yes],[have_mmap=no])
+    AC_CHECK_FUNC([mmap],[have_mmap=yes],[have_mmap=no])dnl
+    ## also related:
     AC_CHECK_FUNCS([munmap])
   fi
 fi
@@ -328,7 +366,8 @@ if test "x${have_mmap}" = "xno"; then
   VIEW_FILE=read.lo
   ALLOC_FILE=alloc.lo
 elif test "x${have_mmap}" = "x"; then
-  AC_FUNC_MMAP
+  AC_FUNC_MMAP dnl# calls some other things, as well...
+  ## odd cache value:
   if test "x${ac_cv_func_mmap_fixed_mapped}" = "xyes"; then
     have_mmap=yes
   else
@@ -338,12 +377,12 @@ fi
 
 if test "x${have_mmap}" = "xyes"; then
   VIEW_FILE=mmapio.lo
-  AC_PREPROC_IFELSE([
+  AC_PREPROC_IFELSE([AC_LANG_SOURCE([[
 #include <sys/mman.h>
 #if !defined(MAP_ANONYMOUS) && !defined(MAP_ANON)
   #error no MAP_ANONYMOUS
 #endif /* !MAP_ANONYMOUS && !MAP_ANON */
-],[ALLOC_FILE=mmap.lo],[ALLOC_FILE=alloc.lo])
+]])],[ALLOC_FILE=mmap.lo],[ALLOC_FILE=alloc.lo])
 fi
 AC_SUBST([VIEW_FILE])dnl
 AC_SUBST([ALLOC_FILE])dnl
@@ -398,7 +437,8 @@ if test -n "${with_target_subdir}" && test -d "${with_target_subdir}"; then
    *) have_fcntl=yes ;;
    esac
 else
-  AC_CHECK_HEADERS([fcntl.h])
+  AC_CHECK_HEADERS([fcntl.h])dnl
+  ## the function for real now:
   AC_CHECK_FUNC([fcntl],[have_fcntl=yes],[have_fcntl=no])
 fi
 if test "x${have_fcntl}" = "xyes"; then
@@ -432,8 +472,10 @@ AC_CACHE_CHECK([whether tests can run],
      [libbacktrace_cv_sys_native=yes],
      [libbacktrace_cv_sys_native=no],
      [libbacktrace_cv_sys_native=no])])
-AM_CONDITIONAL([NATIVE],[test "x${libbacktrace_cv_sys_native}" = "xyes"])
+AM_CONDITIONAL([NATIVE],
+               [test "x${libbacktrace_cv_sys_native}" = "xyes"])dnl
 
+## this multilib stuff is annoying; why do I have to put up with it?
 if test "x${multilib}" = "xyes"; then
   multilib_arg="--enable-multilib"
 else
@@ -470,7 +512,11 @@ _EOF
       esac
      done
      rm vpsed
+   else
+     echo "no target subdir, so no need to bother with MULTISUBDIR"
    fi
+ else
+   test -z "${CONFIG_FILES}" && echo "CONFIG_FILES is empty..."
  fi
 ],[
 # Variables needed in config.status (file generation) which are NOT already
@@ -480,10 +526,28 @@ SUBDIRS="${SUBDIRS}"
 
 AC_CONFIG_COMMANDS([config_status_vpath_build_fix],[
 if test "${srcdir}" != "."; then
-  if test -e ${srcdir}/config.status -a ! -e `pwd`/config.status; then
-    cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
-  elif test -e `pwd`/config.status -a ! -e ${srcdir}/config.status; then
-    cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+  if test -d "${srcdir}"; then
+    if test ! -e `pwd`/config.status; then
+      if test -e ${srcdir}/config.status; then
+        cp -v ${srcdir}/config.status `pwd`/config.status || echo ""
+      elif test -e ${srcdir}/config_status_backup.sh; then
+        cp -v ${srcdir}/config_status_backup.sh `pwd`/config.status || true
+      else
+        echo "`pwd`/config.status is missing" >&2
+      fi
+    elif test -w "${srcdir}" -a ! -e ${srcdir}/config.status; then
+      if test -e `pwd`/config.status; then
+        cp -v `pwd`/config.status ${srcdir}/config.status || echo ""
+      elif test -e `pwd`/config_status_backup.sh; then
+        cp -v `pwd`/config_status_backup.sh ${srcdir}/config.status || true
+      else
+        echo "${srcdir}/config.status is missing" >&2
+      fi
+    else
+      echo "config.status should be fine"
+    fi
+  else
+    echo "uh oh, something happened to srcdir (i.e. '${srcdir}')..." >&2
   fi
 fi
 ],[])dnl

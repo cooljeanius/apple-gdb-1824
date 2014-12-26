@@ -16,31 +16,31 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA.  */
 
 #include "unwind-ia64.h"
 #include <stdio.h>
 #include <string.h>
 
-#if __GNUC__ >= 2
+#if defined(__GNUC__) && (__GNUC__ >= 2)
 /* Define BFD64 here, even if our default architecture is 32 bit ELF
-   as this will allow us to read in and parse 64bit and 32bit ELF files.
-   Only do this if we believe that the compiler can support a 64 bit
-   data type.  For now we only rely on GCC being able to do this.  */
-#define BFD64
-#endif
+ * as this will allow us to read in and parse 64bit and 32bit ELF files.
+ * Only do this if we believe that the compiler can support a 64 bit
+ * data type.  For now we only rely on GCC being able to do this.  */
+# define BFD64
+#endif /* gcc 2+ */
 #include "bfd.h"
 
 static bfd_vma unw_rlen = 0;
 
-static void unw_print_brmask (char *, unsigned int);
-static void unw_print_grmask (char *, unsigned int);
-static void unw_print_frmask (char *, unsigned int);
-static void unw_print_abreg (char *, unsigned int);
-static void unw_print_xyreg (char *, unsigned int, unsigned int);
+static void unw_print_brmask(char *, unsigned int);
+static void unw_print_grmask(char *, unsigned int);
+static void unw_print_frmask(char *, unsigned int);
+static void unw_print_abreg(char *, unsigned int);
+static void unw_print_xyreg(char *, unsigned int, unsigned int);
 
 static void
-unw_print_brmask (char *cp, unsigned int mask)
+unw_print_brmask(char *cp, unsigned int mask)
 {
   int sep = 0;
   int i;
@@ -49,10 +49,11 @@ unw_print_brmask (char *cp, unsigned int mask)
     {
       if (mask & 1)
 	{
-	  if (sep)
+	  if (sep) {
 	    *cp++ = ',';
+          }
 	  *cp++ = 'b';
-	  *cp++ = i + 1 + '0';
+	  *cp++ = (char)(i + (char)1 + '0');
 	  sep = 1;
 	}
       mask >>= 1;
@@ -60,50 +61,53 @@ unw_print_brmask (char *cp, unsigned int mask)
   *cp = '\0';
 }
 
+/* 'unw_word' is not available yet, so just use 'unsigned int' for now: */
 static void
-unw_print_grmask (char *cp, unsigned int mask)
+unw_print_grmask(char *cp, unsigned int mask)
 {
   int sep = 0;
   int i;
 
   for (i = 0; i < 4; ++i)
     {
-      if (mask & 1)
+      if (mask & 1U)
 	{
-	  if (sep)
+	  if (sep) {
 	    *cp++ = ',';
+          }
 	  *cp++ = 'r';
-	  *cp++ = i + 4 + '0';
+	  *cp++ = (char)(i + 4 + '0');
 	  sep = 1;
 	}
-      mask >>= 1;
+      mask >>= 1U;
     }
   *cp = '\0';
 }
 
+/* as with the previous: */
 static void
-unw_print_frmask (char *cp, unsigned int mask)
+unw_print_frmask(char *cp, unsigned int mask)
 {
   int sep = 0;
   int i;
 
   for (i = 0; i < 20; ++i)
     {
-      if (mask & 1)
+      if (mask & 1U)
 	{
-	  if (sep)
+	  if (sep) {
 	    *cp++ = ',';
+          }
 	  *cp++ = 'f';
-	  if (i < 4)
-	    *cp++ = i + 2 + '0';
-	  else
-	    {
-	      *cp++ = (i + 2) / 10 + 1 + '0';
-	      *cp++ = (i + 2) % 10 + '0';
-	    }
+	  if (i < 4) {
+	    *cp++ = (char)(i + 2 + '0');
+	  } else {
+            *cp++ = (char)((i + 2) / 10 + 1 + '0');
+            *cp++ = (char)((i + 2) % 10 + '0');
+          }
 	  sep = 1;
 	}
-      mask >>= 1;
+      mask >>= 1U;
     }
   *cp = '\0';
 }
@@ -679,17 +683,17 @@ unw_decode_r1 (const unsigned char *dp, unsigned int code, void *arg)
 }
 
 static const unsigned char *
-unw_decode_r2 (const unsigned char *dp, unsigned int code, void *arg)
+unw_decode_r2(const unsigned char *dp, unsigned int code, void *arg)
 {
   unsigned char byte1, mask, grsave;
   unw_word rlen;
 
   byte1 = *dp++;
 
-  mask = ((code & 0x7) << 1) | ((byte1 >> 7) & 1);
+  mask = (unsigned char)((code & 0x7) << 1) | ((byte1 >> 7) & 1);
   grsave = (byte1 & 0x7f);
-  rlen = unw_decode_uleb128 (& dp);
-  UNW_DEC_PROLOGUE_GR ("R2", rlen, mask, grsave, arg);
+  rlen = unw_decode_uleb128(& dp);
+  UNW_DEC_PROLOGUE_GR("R2", rlen, mask, grsave, arg);
   return dp;
 }
 
@@ -698,14 +702,14 @@ unw_decode_r3 (const unsigned char *dp, unsigned int code, void *arg)
 {
   unw_word rlen;
 
-  rlen = unw_decode_uleb128 (& dp);
-  UNW_DEC_PROLOGUE ("R3", ((code & 0x3) == 1), rlen, arg);
+  rlen = unw_decode_uleb128(& dp);
+  UNW_DEC_PROLOGUE("R3", ((code & 0x3) == 1), rlen, arg);
   return dp;
 }
 
 static const unsigned char *
-unw_decode_p1 (const unsigned char *dp, unsigned int code,
-	       void *arg ATTRIBUTE_UNUSED)
+unw_decode_p1(const unsigned char *dp, unsigned int code,
+              void *arg ATTRIBUTE_UNUSED)
 {
   unsigned char brmask = (code & 0x1f);
 
@@ -728,7 +732,7 @@ unw_decode_p2_p5 (const unsigned char *dp, unsigned int code,
     {
       unsigned char byte1 = *dp++, r, dst;
 
-      r = ((code & 0x7) << 1) | ((byte1 >> 7) & 1);
+      r = (unsigned char)((code & 0x7) << 1) | ((byte1 >> 7) & 1);
       dst = (byte1 & 0x7f);
       switch (r)
 	{
@@ -774,7 +778,7 @@ unw_decode_p2_p5 (const unsigned char *dp, unsigned int code,
 	}
     }
   else if ((code & 0x7) == 0)
-    UNW_DEC_SPILL_MASK ("P4", dp, arg);
+    UNW_DEC_SPILL_MASK("P4", dp, arg);
   else if ((code & 0x7) == 1)
     {
       unw_word grmask, frmask, byte1, byte2, byte3;
@@ -783,11 +787,12 @@ unw_decode_p2_p5 (const unsigned char *dp, unsigned int code,
       byte2 = *dp++;
       byte3 = *dp++;
       grmask = ((byte1 >> 4) & 0xf);
-      frmask = ((byte1 & 0xf) << 16) | (byte2 << 8) | byte3;
-      UNW_DEC_FRGR_MEM ("P5", grmask, frmask, arg);
+      frmask = (((byte1 & 0xf) << 16) | (byte2 << 8) | byte3);
+      UNW_DEC_FRGR_MEM("P5", (unsigned int)grmask, (unsigned int)frmask,
+                       arg);
     }
   else
-    UNW_DEC_BAD_CODE (code);
+    UNW_DEC_BAD_CODE(code);
 
   return dp;
 }
@@ -1068,15 +1073,22 @@ static unw_decoder unw_decode_table[2][8] =
     }
   };
 
-/* Decode one descriptor and return address of next descriptor.  */
+/* Decode one descriptor and return address of next descriptor: */
 const unsigned char *
-unw_decode (const unsigned char *dp, int inside_body,
-	    void *ptr_inside_body)
+unw_decode(const unsigned char *dp, int inside_body,
+           void *ptr_inside_body)
 {
   unw_decoder decoder;
   unsigned char code;
 
   code = *dp++;
   decoder = unw_decode_table[inside_body][code >> 5];
-  return (*decoder) (dp, code, ptr_inside_body);
+  return (*decoder)(dp, code, ptr_inside_body);
 }
+
+/* try to silence '-Wunused-macros': */
+#ifdef BFD64
+# undef BFD64
+#endif /* BFD64 */
+
+/* EOF */

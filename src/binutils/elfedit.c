@@ -732,10 +732,16 @@ int main(int argc, char ** argv)
   }
 
   status = 0;
-  while (optind < argc)
+  while (optind < argc) {
     status |= process_file(argv[optind++]);
+  }
 
   return status;
 }
+
+/* silence '-Wunused-macros': */
+#ifdef BFD64
+# undef BFD64
+#endif /* BFD64 */
 
 /* EOF */

@@ -93,28 +93,29 @@ usage (FILE *stream, int status)
   exit (status);
 }
 
-/* Read in the symbol table.  */
-
+/* Read in the symbol table: */
 static void
-slurp_symtab (bfd *abfd)
+slurp_symtab(bfd *abfd)
 {
   long symcount;
   unsigned int size;
 
-  if ((bfd_get_file_flags (abfd) & HAS_SYMS) == 0)
+  if ((bfd_get_file_flags(abfd) & HAS_SYMS) == 0)
     return;
 
-  symcount = bfd_read_minisymbols (abfd, FALSE, (void *) &syms, &size);
-  if (symcount == 0)
-    symcount = bfd_read_minisymbols (abfd, TRUE /* dynamic */, (void *) &syms, &size);
+  symcount = bfd_read_minisymbols(abfd, FALSE, (void **)&syms, &size);
+  if (symcount == 0) {
+    symcount = bfd_read_minisymbols(abfd, TRUE /* dynamic */,
+                                    (void **)&syms, &size);
+  }
 
-  if (symcount < 0)
-    bfd_fatal (bfd_get_filename (abfd));
+  if (symcount < 0) {
+    bfd_fatal(bfd_get_filename(abfd));
+  }
 }
 
 /* These global variables are used to pass information between
    translate_addresses and find_address_in_section.  */
-
 static bfd_vma pc;
 static const char *filename;
 static const char *functionname;
@@ -123,7 +124,6 @@ static bfd_boolean found;
 
 /* Look for an address in a section.  This is called via
    bfd_map_over_sections.  */
-
 static void
 find_address_in_section (bfd *abfd, asection *section,
 			 void *data ATTRIBUTE_UNUSED)
@@ -134,26 +134,26 @@ find_address_in_section (bfd *abfd, asection *section,
   if (found)
     return;
 
-  if ((bfd_get_section_flags (abfd, section) & SEC_ALLOC) == 0)
+  if ((bfd_get_section_flags(abfd, section) & SEC_ALLOC) == 0)
     return;
 
-  vma = bfd_get_section_vma (abfd, section);
+  vma = bfd_get_section_vma(abfd, section);
   if (pc < vma)
     return;
 
-  size = bfd_get_section_size (section);
-  if (pc >= vma + size)
+  size = bfd_get_section_size(section);
+  if (pc >= (vma + size))
     return;
 
-  found = bfd_find_nearest_line (abfd, section, syms, pc - vma,
-				 &filename, &functionname, &line);
+  found = bfd_find_nearest_line(abfd, section, syms, (pc - vma),
+                                &filename, &functionname, &line);
 }
 
 /* Read hexadecimal addresses from stdin, translate into
    file_name:line_number and optionally function name.  */
 
 static void
-translate_addresses (bfd *abfd)
+translate_addresses(bfd *abfd)
 {
   int read_stdin = (naddr == 0);
 
@@ -163,26 +163,26 @@ translate_addresses (bfd *abfd)
 	{
 	  char addr_hex[100];
 
-	  if (fgets (addr_hex, sizeof addr_hex, stdin) == NULL)
+	  if (fgets(addr_hex, sizeof(addr_hex), stdin) == NULL)
 	    break;
-	  pc = bfd_scan_vma (addr_hex, NULL, 16);
+	  pc = bfd_scan_vma(addr_hex, NULL, 16);
 	}
       else
 	{
 	  if (naddr <= 0)
 	    break;
 	  --naddr;
-	  pc = bfd_scan_vma (*addr++, NULL, 16);
+	  pc = bfd_scan_vma(*addr++, NULL, 16);
 	}
 
       found = FALSE;
-      bfd_map_over_sections (abfd, find_address_in_section, NULL);
+      bfd_map_over_sections(abfd, find_address_in_section, NULL);
 
       if (! found)
 	{
 	  if (with_functions)
-	    printf ("??\n");
-	  printf ("??:0\n");
+	    printf("??\n");
+	  printf("??:0\n");
 	}
       else
 	{
@@ -193,34 +193,37 @@ translate_addresses (bfd *abfd)
 		char *alloc = NULL;
 
 		name = functionname;
-		if (name == NULL || *name == '\0')
+		if ((name == NULL) || (*name == '\0'))
 		  name = "??";
 		else if (do_demangle)
 		  {
-		    alloc = demangle (abfd, name);
+		    alloc = demangle(abfd, name);
 		    name = alloc;
 		  }
 
-		printf ("%s\n", name);
+		printf("%s\n", name);
 
 		if (alloc != NULL)
-		  free (alloc);
+		  free(alloc);
 	      }
 
-	    if (base_names && filename != NULL)
+	    if (base_names && (filename != NULL))
 	      {
 		char *h;
 
-		h = strrchr (filename, '/');
-		if (h != NULL)
-		  filename = h + 1;
+		h = strrchr(filename, '/');
+		if (h != NULL) {
+		  filename = (h + 1);
+                }
 	      }
 
-	    printf ("%s:%u\n", filename ? filename : "??", line);
-	    if (!unwind_inlines)
+	    printf("%s:%u\n", filename ? filename : "??", line);
+	    if (!unwind_inlines) {
 	      found = FALSE;
-	    else
-	      found = bfd_find_inliner_info (abfd, &filename, &functionname, &line);
+	    } else {
+	      found = bfd_find_inliner_info(abfd, &filename, &functionname,
+                                            &line);
+            }
 	  } while (found);
 
 	}
@@ -229,85 +232,84 @@ translate_addresses (bfd *abfd)
          child process that reads addresses from a pipe and responds
          with line number information, processing one address at a
          time.  */
-      fflush (stdout);
+      fflush(stdout);
     }
 }
 
-/* Process a file.  */
-
+/* Process a file: */
 static void
-process_file (const char *file_name, const char *target)
+process_file(const char *file_name, const char *target)
 {
   bfd *abfd;
   char **matching;
 
-  if (get_file_size (file_name) < 1)
+  if (get_file_size(file_name) < 1)
     return;
 
-  abfd = bfd_openr (file_name, target);
+  abfd = bfd_openr(file_name, target);
   if (abfd == NULL)
-    bfd_fatal (file_name);
+    bfd_fatal(file_name);
 
-  if (bfd_check_format (abfd, bfd_archive))
-    fatal (_("%s: can not get addresses from archive"), file_name);
+  if (bfd_check_format(abfd, bfd_archive))
+    fatal(_("%s: can not get addresses from archive"), file_name);
 
-  if (! bfd_check_format_matches (abfd, bfd_object, &matching))
+  if (! bfd_check_format_matches(abfd, bfd_object, &matching))
     {
-      bfd_nonfatal (bfd_get_filename (abfd));
-      if (bfd_get_error () == bfd_error_file_ambiguously_recognized)
+      bfd_nonfatal(bfd_get_filename(abfd));
+      if (bfd_get_error() == bfd_error_file_ambiguously_recognized)
 	{
-	  list_matching_formats (matching);
-	  free (matching);
+	  list_matching_formats(matching);
+	  free(matching);
 	}
-      xexit (1);
+      xexit(1);
     }
 
-  slurp_symtab (abfd);
+  slurp_symtab(abfd);
 
-  translate_addresses (abfd);
+  translate_addresses(abfd);
 
   if (syms != NULL)
     {
-      free (syms);
+      free(syms);
       syms = NULL;
     }
 
-  bfd_close (abfd);
+  bfd_close(abfd);
 }
 
-int main (int, char **);
+int main(int, char **);
 
 int
-main (int argc, char **argv)
+main(int argc, char **argv)
 {
   const char *file_name;
   char *target;
   int c;
 
-#if defined (HAVE_SETLOCALE) && defined (HAVE_LC_MESSAGES)
-  setlocale (LC_MESSAGES, "");
-#endif
-#if defined (HAVE_SETLOCALE)
-  setlocale (LC_CTYPE, "");
-#endif
-  bindtextdomain (PACKAGE, LOCALEDIR);
-  textdomain (PACKAGE);
+#if defined(HAVE_SETLOCALE) && defined(HAVE_LC_MESSAGES)
+  setlocale(LC_MESSAGES, "");
+#endif /* HAVE_SETLOCALE && HAVE_LC_MESSAGES */
+#if defined(HAVE_SETLOCALE)
+  setlocale(LC_CTYPE, "");
+#endif /* HAVE_SETLOCALE */
+  bindtextdomain(PACKAGE, LOCALEDIR);
+  textdomain(PACKAGE);
 
   program_name = *argv;
-  xmalloc_set_program_name (program_name);
+  xmalloc_set_program_name(program_name);
 
-  bfd_init ();
-  set_default_bfd_target ();
+  bfd_init();
+  set_default_bfd_target();
 
   file_name = NULL;
   target = NULL;
-  while ((c = getopt_long (argc, argv, "b:Ce:sfHhiVv", long_options, (int *) 0))
-	 != EOF)
+  while ((c = getopt_long(argc, argv, "b:Ce:sfHhiVv", long_options,
+                          (int *)0)) != EOF)
     {
       switch (c)
 	{
 	case 0:
-	  break;		/* We've been given a long option.  */
+	  break;	    /* We have been given a long option.  */
 	case 'b':
 	  target = optarg;
 	  break;
@@ -317,12 +319,13 @@ main (int argc, char **argv)
 	    {
 	      enum demangling_styles style;
 
-	      style = cplus_demangle_name_to_style (optarg);
-	      if (style == unknown_demangling)
-		fatal (_("unknown demangling style `%s'"),
-		       optarg);
+	      style = cplus_demangle_name_to_style(optarg);
+	      if (style == unknown_demangling) {
+		fatal(_("unknown demangling style `%s'"),
+                      optarg);
+              }
 
-	      cplus_demangle_set_style (style);
+	      cplus_demangle_set_style(style);
 	    }
 	  break;
 	case 'e':
@@ -336,28 +339,31 @@ main (int argc, char **argv)
 	  break;
 	case 'v':
 	case 'V':
-	  print_version ("addr2line");
+	  print_version("addr2line");
 	  break;
 	case 'h':
 	case 'H':
-	  usage (stdout, 0);
+	  usage(stdout, 0);
 	  break;
 	case 'i':
 	  unwind_inlines = TRUE;
 	  break;
 	default:
-	  usage (stderr, 1);
+	  usage(stderr, 1);
 	  break;
 	}
     }
 
-  if (file_name == NULL)
+  if (file_name == NULL) {
     file_name = "a.out";
+  }
 
-  addr = argv + optind;
-  naddr = argc - optind;
+  addr = (argv + optind);
+  naddr = (argc - optind);
 
-  process_file (file_name, target);
+  process_file(file_name, target);
 
   return 0;
 }
+
+/* EOF */

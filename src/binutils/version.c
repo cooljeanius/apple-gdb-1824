@@ -1,6 +1,5 @@
 /* version.c -- binutils version information
-   Copyright 1991, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005
-   Free Software Foundation, Inc.
+   Copyright 1991, 1996-2005 Free Software Foundation, Inc.
 
    This file is part of GNU Binutils.
 
@@ -21,30 +20,38 @@
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #else
-# warning version.c expects "config.h" to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning version.c expects "config.h" to be included.
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_CONFIG_H */
 
 #ifdef HAVE_STDIO_H
 # include <stdio.h>
 #else
-# warning version.c expects <stdio.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "version.c expects <stdio.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDIO_H */
 #include "bfd.h"
 #include "bfdver.h"
 #include "bucomm.h"
 
 /* Print the version number and copyright information, and exit.  This
-   implements the --version option for the various programs.  */
-
+ * implements the --version option for the various programs.
+ * FIXME: I want to mark this as NORETURN, but I am not sure where
+ * in binutils to put the NORETURN compatibility macros that ../gdb/defs.h
+ * defines... */
 void
-print_version (const char *name)
+print_version(const char *name)
 {
   /* This output is intended to follow the GNU standards document.  */
   /* xgettext:c-format */
-  printf ("GNU %s %s\n", name, BFD_VERSION_STRING);
-  printf (_("Copyright 2005 Free Software Foundation, Inc.\n"));
-  printf (_("\
+  printf("GNU %s %s\n", name, BFD_VERSION_STRING);
+  printf(_("Copyright 2005 Free Software Foundation, Inc.\n"));
+  printf(_("\
 This program is free software; you may redistribute it under the terms of\n\
 the GNU General Public License.  This program has absolutely no warranty.\n"));
-  exit (0);
+  exit(0);
 }
+
+/* EOF */

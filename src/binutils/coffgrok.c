@@ -57,7 +57,7 @@ static long symcount;
 #define N(x) ((x)->_n._n_nptr[1])
 
 static struct coff_ptr_struct *rawsyms;
-static int rawcount;
+static size_t rawcount;
 static bfd *abfd;
 
 #define PTR_SIZE	4
@@ -75,32 +75,34 @@ static void push_scope (int);
 static void pop_scope (void);
 static void do_sections_p1 (struct coff_ofile *);
 static void do_sections_p2 (struct coff_ofile *);
-static struct coff_where *do_where (int);
-static struct coff_line *do_lines (int, char *);
-static struct coff_type *do_type (int);
-static struct coff_visible *do_visible (int);
-static int do_define (int, struct coff_scope *);
+static struct coff_where *do_where (size_t);
+static struct coff_line *do_lines (size_t, char *);
+static struct coff_type *do_type (size_t);
+static struct coff_visible *do_visible (size_t);
+static size_t do_define (size_t, struct coff_scope *);
 static struct coff_ofile *doit (void);
 
 static struct coff_scope *
-empty_scope (void)
+empty_scope(void)
 {
   struct coff_scope *l;
-  l = (struct coff_scope *) (xcalloc (sizeof (struct coff_scope), 1));
+  l = (struct coff_scope *)(xcalloc(sizeof(struct coff_scope), 1));
   return l;
 }
 
 static struct coff_symbol *
 empty_symbol (void)
 {
-  return (struct coff_symbol *) (xcalloc (sizeof (struct coff_symbol), 1));
+  return (struct coff_symbol *)(xcalloc(sizeof(struct coff_symbol), 1));
 }
 
-/*int l;*/
+#if 0
+int l;
+#endif /* 0 */
 static void
-push_scope (int link)
+push_scope(int link)
 {
-  struct coff_scope *n = empty_scope ();
+  struct coff_scope *n = empty_scope();
   if (link)
     {
       if (top_scope)
@@ -122,19 +124,20 @@ push_scope (int link)
 }
 
 static void
-pop_scope (void)
+pop_scope(void)
 {
   top_scope = top_scope->parent;
 }
 
 static void
-do_sections_p1 (struct coff_ofile *head)
+do_sections_p1(struct coff_ofile *head)
 {
   asection *section;
   int idx;
-  struct coff_section *all = (struct coff_section *) (xcalloc (abfd->section_count + 1,
-					     sizeof (struct coff_section)));
-  head->nsections = abfd->section_count + 1;
+  struct coff_section *all =
+    (struct coff_section *)(xcalloc((abfd->section_count + 1),
+                                    sizeof(struct coff_section)));
+  head->nsections = (int)(abfd->section_count + 1);
   head->sections = all;
 
   for (idx = 0, section = abfd->sections; section; section = section->next, idx++)
@@ -144,28 +147,32 @@ do_sections_p1 (struct coff_ofile *head)
       arelent **relpp;
       long relcount;
 
-      relsize = bfd_get_reloc_upper_bound (abfd, section);
-      if (relsize < 0)
-	bfd_fatal (bfd_get_filename (abfd));
-      if (relsize == 0)
+      relsize = bfd_get_reloc_upper_bound(abfd, section);
+      if (relsize < 0) {
+	bfd_fatal(bfd_get_filename(abfd));
+      }
+      if (relsize == 0) {
 	continue;
-      relpp = (arelent **) xmalloc (relsize);
-      relcount = bfd_canonicalize_reloc (abfd, section, relpp, syms);
-      if (relcount < 0)
-	bfd_fatal (bfd_get_filename (abfd));
+      }
+      relpp = (arelent **)xmalloc((size_t)relsize);
+      relcount = bfd_canonicalize_reloc(abfd, section, relpp, syms);
+      if (relcount < 0) {
+	bfd_fatal(bfd_get_filename(abfd));
+      }
 
-      head->sections[i].name = (char *) (section->name);
-      head->sections[i].code = section->flags & SEC_CODE;
-      head->sections[i].data = section->flags & SEC_DATA;
-      if (strcmp (section->name, ".bss") == 0)
+      head->sections[i].name = (char *)(section->name);
+      head->sections[i].code = (section->flags & SEC_CODE);
+      head->sections[i].data = (section->flags & SEC_DATA);
+      if (strcmp(section->name, ".bss") == 0) {
 	head->sections[i].data = 1;
-      head->sections[i].address = section->lma;
-      head->sections[i].size = bfd_get_section_size (section);
+      }
+      head->sections[i].address = (int)section->lma;
+      head->sections[i].size = bfd_get_section_size(section);
       head->sections[i].number = idx;
-      head->sections[i].nrelocs = section->reloc_count;
+      head->sections[i].nrelocs = (int)section->reloc_count;
       head->sections[i].relocs =
-	(struct coff_reloc *) (xcalloc (section->reloc_count,
-					sizeof (struct coff_reloc)));
+	(struct coff_reloc *)(xcalloc(section->reloc_count,
+                                      sizeof(struct coff_reloc)));
       head->sections[i].bfd_section = section;
     }
   head->sections[0].name = "ABSOLUTE";
@@ -177,7 +184,7 @@ do_sections_p1 (struct coff_ofile *head)
 }
 
 static void
-do_sections_p2 (struct coff_ofile *head)
+do_sections_p2(struct coff_ofile *head)
 {
   asection *section;
   for (section = abfd->sections; section; section = section->next)
@@ -188,33 +195,42 @@ do_sections_p2 (struct coff_ofile *head)
 	{
 	  int idx;
 	  int i = section->target_index;
-	  struct coff_reloc *r = head->sections[i].relocs + j;
-	  arelent *sr = section->relocation + j;
-	  r->offset = sr->address;
+	  struct coff_reloc *r = (head->sections[i].relocs + j);
+	  arelent *sr = (section->relocation + j);
+#if defined(HAVE_OFF_T) || defined(off_t) || defined(__STDC__)
+	  r->offset = (off_t)sr->address;
+#else
+          r->offset = sr->address;
+#endif /* HAVE_OFF_T || off_t || __STDC__ */
 	  r->addend = sr->addend;
-	  idx = ((coff_symbol_type *) (sr->sym_ptr_ptr[0]))->native - rawsyms;
+	  idx = (((coff_symbol_type *)(sr->sym_ptr_ptr[0]))->native - rawsyms);
 	  r->symbol = tindex[idx];
 	}
     }
 }
 
 static struct coff_where *
-do_where (int i)
+do_where(size_t i)
 {
   struct internal_syment *sym = &rawsyms[i].u.syment;
   struct coff_where *where =
-    (struct coff_where *) (xmalloc (sizeof (struct coff_where)));
+    (struct coff_where *)(xmalloc(sizeof(struct coff_where)));
+#if defined(HAVE_OFF_T) || defined(off_t) || defined(__STDC__)
+  where->offset = (off_t)sym->n_value;
+#else
   where->offset = sym->n_value;
+#endif /* HAVE_OFF_T || off_t || __STDC__ */
 
-  if (sym->n_scnum == -1)
+  if (sym->n_scnum == -1) {
     sym->n_scnum = 0;
+  }
 
   switch (sym->n_sclass)
     {
     case C_FIELD:
       where->where = coff_where_member_of_struct;
-      where->offset = sym->n_value / 8;
-      where->bitoffset = sym->n_value % 8;
+      where->offset = (sym->n_value / 8);
+      where->bitoffset = (sym->n_value % 8);
       where->bitsize = rawsyms[i + 1].u.auxent.x_sym.x_misc.x_lnsz.x_size;
       break;
     case C_MOE:
@@ -250,49 +266,61 @@ do_where (int i)
       where->where = coff_where_typedef;
       break;
     default:
-      abort ();
+      abort();
+#if !defined(__clang__)
       break;
+#endif /* !__clang__ */
     }
   return where;
 }
 
 static
 struct coff_line *
-do_lines (int i, char *name ATTRIBUTE_UNUSED)
+do_lines(size_t i, char *name ATTRIBUTE_UNUSED)
 {
-  struct coff_line *res = (struct coff_line *) xcalloc (sizeof (struct coff_line), 1);
+  struct coff_line *res = (struct coff_line *)xcalloc(sizeof(struct coff_line), 1);
   asection *s;
   unsigned int l;
 
-  /* Find out if this function has any line numbers in the table */
+  /* Find out if this function has any line numbers in the table: */
   for (s = abfd->sections; s; s = s->next)
     {
       for (l = 0; l < s->lineno_count; l++)
 	{
 	  if (s->lineno[l].line_number == 0)
 	    {
-	      if (rawsyms + i == ((coff_symbol_type *) (&(s->lineno[l].u.sym[0])))->native)
+	      if ((rawsyms + i) == ((coff_symbol_type *)(&(s->lineno[l].u.sym[0])))->native)
 		{
-		  /* These lines are for this function - so count them and stick them on */
-		  int c = 0;
-		  /* Find the linenumber of the top of the function, since coff linenumbers
-		     are relative to the start of the function.  */
+		  /* These lines are for this function, so count them and
+                   * stick them on: */
+		  size_t c = 0UL;
+		  /* Find the linenumber of the top of the function, since
+                   * coff linenumbers are relative to the start of the
+                   * function: */
 		  int start_line = rawsyms[i + 3].u.auxent.x_sym.x_misc.x_lnsz.x_lnno;
 
 		  l++;
-		  for (c = 0; s->lineno[l + c + 1].line_number; c++)
-		    ;
+		  for (c = 0; s->lineno[l + c + 1].line_number; c++) {
+		    ; /* (do nothing) */
+                  }
 
-		  /* Add two extra records, one for the prologue and one for the epilogue */
+		  /* Add 2 extra records, 1 for the prologue and 1 for the
+                   * epilogue: */
 		  c += 1;
-		  res->nlines = c;
-		  res->lines = (int *) (xcalloc (sizeof (int), c));
-		  res->addresses = (int *) (xcalloc (sizeof (int), c));
+		  res->nlines = (int)c;
+		  res->lines = (int *)(xcalloc(sizeof(int), c));
+#ifdef __BFD_H_SEEN__
+                  res->addresses = (bfd_vma *)(xcalloc(sizeof(int), c));
+#else
+		  res->addresses = (int *)(xcalloc(sizeof(int), c));
+#endif /* __BFD_H_SEEN__ */
 		  res->lines[0] = start_line;
-		  res->addresses[0] = rawsyms[i].u.syment.n_value - s->vma;
+		  res->addresses[0] = (rawsyms[i].u.syment.n_value - s->vma);
 		  for (c = 0; s->lineno[l + c + 1].line_number; c++)
 		    {
-		      res->lines[c + 1] = s->lineno[l + c].line_number + start_line - 1;
+		      res->lines[c + 1] =
+                        (int)(s->lineno[l + c].line_number
+                              + (unsigned int)start_line - 1);
 		      res->addresses[c + 1] = s->lineno[l + c].u.offset;
 		    }
 		  return res;
@@ -305,26 +333,26 @@ do_lines (int i, char *name ATTRIBUTE_UNUSED)
 
 static
 struct coff_type *
-do_type (int i)
+do_type(size_t i)
 {
   struct internal_syment *sym = &rawsyms[i].u.syment;
   union internal_auxent *aux = &rawsyms[i + 1].u.auxent;
   struct coff_type *res =
-    (struct coff_type *) xmalloc (sizeof (struct coff_type));
+    (struct coff_type *)xmalloc(sizeof(struct coff_type));
   int type = sym->n_type;
   int which_dt = 0;
   int dimind = 0;
 
   res->type = coff_basic_type;
-  res->u.basic = type & 0xf;
+  res->u.basic = (type & 0xf);
 
   switch (type & 0xf)
     {
     case T_NULL:
     case T_VOID:
-      if (sym->n_numaux && sym->n_sclass == C_STAT)
+      if (sym->n_numaux && (sym->n_sclass == C_STAT))
 	{
-	  /* This is probably a section definition */
+	  /* This is probably a section definition: */
 	  res->type = coff_secdef_type;
 	  res->size = aux->x_scn.x_scnlen;
 	}
@@ -332,20 +360,18 @@ do_type (int i)
 	{
 	  if (type == 0)
 	    {
-	      /* Don't know what this is, let's make it a simple int */
+	      /* Do NOT know what this is; let us make it a simple int: */
 	      res->size = INT_SIZE;
 	      res->u.basic = T_UINT;
 	    }
 	  else
 	    {
-	      /* Else it could be a function or pointer to void */
+	      /* Else it could be a function or pointer to void: */
 	      res->size = 0;
 	    }
 	}
       break;
-
-
-      break;
+    /* there was an extra "break" here; are we missing a case? */
     case T_UCHAR:
     case T_CHAR:
       res->size = 1;
@@ -374,26 +400,26 @@ do_type (int i)
 	{
 	  if (aux->x_sym.x_tagndx.p)
 	    {
-	      /* Referring to a struct defined elsewhere */
+	      /* Referring to a struct defined elsewhere: */
 	      res->type = coff_structref_type;
 	      res->u.astructref.ref = tindex[INDEXOF (aux->x_sym.x_tagndx.p)];
-	      res->size = res->u.astructref.ref ?
-		res->u.astructref.ref->type->size : 0;
+	      res->size = (res->u.astructref.ref
+                           ? res->u.astructref.ref->type->size : 0);
 	    }
 	  else
 	    {
-	      /* A definition of a struct */
+	      /* A definition of a struct: */
 	      last_struct = res;
 	      res->type = coff_structdef_type;
-	      res->u.astructdef.elements = empty_scope ();
+	      res->u.astructdef.elements = empty_scope();
 	      res->u.astructdef.idx = 0;
-	      res->u.astructdef.isstruct = (type & 0xf) == T_STRUCT;
+	      res->u.astructdef.isstruct = ((type & 0xf) == T_STRUCT);
 	      res->size = aux->x_sym.x_misc.x_lnsz.x_size;
 	    }
 	}
       else
 	{
-	  /* No auxents - it's anonymous */
+	  /* No auxents - it is anonymous: */
 	  res->type = coff_structref_type;
 	  res->u.astructref.ref = 0;
 	  res->size = 0;
@@ -402,17 +428,17 @@ do_type (int i)
     case T_ENUM:
       if (aux->x_sym.x_tagndx.p)
 	{
-	  /* Referring to a enum defined elsewhere */
+	  /* Referring to a enum defined elsewhere: */
 	  res->type = coff_enumref_type;
-	  res->u.aenumref.ref = tindex[INDEXOF (aux->x_sym.x_tagndx.p)];
+	  res->u.aenumref.ref = tindex[INDEXOF(aux->x_sym.x_tagndx.p)];
 	  res->size = res->u.aenumref.ref->type->size;
 	}
       else
 	{
-	  /* A definition of an enum */
+	  /* A definition of an enum: */
 	  last_enum = res;
 	  res->type = coff_enumdef_type;
-	  res->u.aenumdef.elements = empty_scope ();
+	  res->u.aenumdef.elements = empty_scope();
 	  res->size = aux->x_sym.x_misc.x_lnsz.x_size;
 	}
       break;
@@ -429,13 +455,12 @@ do_type (int i)
 	case DT_ARY:
 	  {
 	    struct coff_type *ptr = ((struct coff_type *)
-				     xmalloc (sizeof (struct coff_type)));
-	    int els = (dimind < DIMNUM
-		       ? aux->x_sym.x_fcnary.x_ary.x_dimen[dimind]
-		       : 0);
+				     xmalloc(sizeof(struct coff_type)));
+	    int els = ((dimind < DIMNUM)
+		       ? aux->x_sym.x_fcnary.x_ary.x_dimen[dimind] : 0);
 	    ++dimind;
 	    ptr->type = coff_array_type;
-	    ptr->size = els * res->size;
+	    ptr->size = (els * res->size);
 	    ptr->u.array.dim = els;
 	    ptr->u.array.array_of = res;
 	    res = ptr;
@@ -444,7 +469,7 @@ do_type (int i)
 	case DT_PTR:
 	  {
 	    struct coff_type *ptr =
-	      (struct coff_type *) xmalloc (sizeof (struct coff_type));
+	      (struct coff_type *)xmalloc(sizeof(struct coff_type));
 	    ptr->size = PTR_SIZE;
 	    ptr->type = coff_pointer_type;
 	    ptr->u.pointer.points_to = res;
@@ -454,12 +479,12 @@ do_type (int i)
 	case DT_FCN:
 	  {
 	    struct coff_type *ptr
-	      = (struct coff_type *) xmalloc (sizeof (struct coff_type));
+	      = (struct coff_type *)xmalloc(sizeof(struct coff_type));
 	    ptr->size = 0;
 	    ptr->type = coff_function_type;
 	    ptr->u.function.function_returns = res;
-	    ptr->u.function.parameters = empty_scope ();
-	    ptr->u.function.lines = do_lines (i, sym->_n._n_nptr[1]);
+	    ptr->u.function.parameters = empty_scope();
+	    ptr->u.function.lines = do_lines(i, sym->_n._n_nptr[1]);
 	    ptr->u.function.code = 0;
 	    last_function_type = ptr;
 	    res = ptr;
@@ -471,11 +496,11 @@ do_type (int i)
 }
 
 static struct coff_visible *
-do_visible (int i)
+do_visible(size_t i)
 {
   struct internal_syment *sym = &rawsyms[i].u.syment;
   struct coff_visible *visible =
-    (struct coff_visible *) (xmalloc (sizeof (struct coff_visible)));
+    (struct coff_visible *)(xmalloc(sizeof(struct coff_visible)));
   enum coff_vis_type t;
   switch (sym->n_sclass)
     {
@@ -487,11 +512,9 @@ do_visible (int i)
     case C_MOE:
       t = coff_vis_member_of_enum;
       break;
-
     case C_REGPARM:
       t = coff_vis_regparam;
       break;
-
     case C_REG:
       t = coff_vis_register;
       break;
@@ -506,8 +529,6 @@ do_visible (int i)
       t = coff_vis_autoparam;
       break;
     case C_AUTO:
-
-
       t = coff_vis_auto;
       break;
     case C_LABEL:
@@ -517,100 +538,103 @@ do_visible (int i)
     case C_EXT:
       if (sym->n_scnum == N_UNDEF)
 	{
-	  if (sym->n_value)
+	  if (sym->n_value) {
 	    t = coff_vis_common;
-	  else
+	  } else {
 	    t = coff_vis_ext_ref;
+          }
 	}
       else
 	t = coff_vis_ext_def;
       break;
     default:
-      abort ();
+      abort();
+#if !defined(__clang__)
       break;
-
+#endif /* !__clang__ */
     }
   visible->type = t;
   return visible;
 }
 
-static int
-do_define (int i, struct coff_scope *b)
+static size_t
+do_define(size_t i, struct coff_scope *b)
 {
   static int symbol_index;
   struct internal_syment *sym = &rawsyms[i].u.syment;
 
-  /* Define a symbol and attach to block b */
-  struct coff_symbol *s = empty_symbol ();
+  /* Define a symbol and attach to block b: */
+  struct coff_symbol *s = empty_symbol();
 
   s->number = ++symbol_index;
   s->name = sym->_n._n_nptr[1];
   s->sfile = cur_sfile;
-  /* Glue onto the ofile list */
+  /* Glue onto the ofile list: */
   if (lofile >= 0)
     {
-      if (ofile->symbol_list_tail)
+      if (ofile->symbol_list_tail) {
 	ofile->symbol_list_tail->next_in_ofile_list = s;
-      else
+      } else {
 	ofile->symbol_list_head = s;
+      }
       ofile->symbol_list_tail = s;
-      /* And the block list */
+      /* And the block list... */
     }
-  if (b->vars_tail)
+  if (b->vars_tail) {
     b->vars_tail->next = s;
-  else
+  } else {
     b->vars_head = s;
+  }
 
   b->vars_tail = s;
   b->nvars++;
-  s->type = do_type (i);
-  s->where = do_where (i);
-  s->visible = do_visible (i);
+  s->type = do_type(i);
+  s->where = do_where(i);
+  s->visible = do_visible(i);
 
   tindex[i] = s;
 
-  /* We remember the lowest address in each section for each source file */
-
-  if (s->where->where == coff_where_memory
-      && s->type->type == coff_secdef_type)
+  /* Remember the lowest address in each section for each source file: */
+  if ((s->where->where == coff_where_memory)
+      && (s->type->type == coff_secdef_type))
     {
-      struct coff_isection *is = cur_sfile->section + s->where->section->number;
+      struct coff_isection *is = (cur_sfile->section + s->where->section->number);
 
       if (!is->init)
 	{
 	  is->low = s->where->offset;
-	  is->high = s->where->offset + s->type->size;
+	  is->high = (s->where->offset + s->type->size);
 	  is->init = 1;
 	  is->parent = s->where->section;
 	}
-
     }
 
-  if (s->type->type == coff_function_type)
+  if (s->type->type == coff_function_type) {
     last_function_symbol = s;
+  }
 
-  return i + sym->n_numaux + 1;
+  return (i + sym->n_numaux + 1);
 }
 
 
 static
 struct coff_ofile *
-doit (void)
+doit(void)
 {
-  int i;
+  size_t i;
   int infile = 0;
   struct coff_ofile *head =
-    (struct coff_ofile *) xmalloc (sizeof (struct coff_ofile));
+    (struct coff_ofile *)xmalloc(sizeof(struct coff_ofile));
   ofile = head;
   head->source_head = 0;
   head->source_tail = 0;
   head->nsources = 0;
   head->symbol_list_tail = 0;
   head->symbol_list_head = 0;
-  do_sections_p1 (head);
-  push_scope (1);
+  do_sections_p1(head);
+  push_scope(1);
 
-  for (i = 0; i < rawcount;)
+  for (i = (size_t)0UL; i < rawcount;)
     {
       struct internal_syment *sym = &rawsyms[i].u.syment;
       switch (sym->n_sclass)
@@ -619,27 +643,29 @@ doit (void)
 	  {
 	    /* new source file announced */
 	    struct coff_sfile *n =
-	      (struct coff_sfile *) xmalloc (sizeof (struct coff_sfile));
-	    n->section = (struct coff_isection *) xcalloc (sizeof (struct coff_isection), abfd->section_count + 1);
+	      (struct coff_sfile *)xmalloc(sizeof(struct coff_sfile));
+	    n->section = (struct coff_isection *)xcalloc(sizeof(struct coff_isection),
+                                                         (abfd->section_count + 1));
 	    cur_sfile = n;
 	    n->name = sym->_n._n_nptr[1];
 	    n->next = 0;
 
 	    if (infile)
 	      {
-		pop_scope ();
+		pop_scope();
 	      }
 	    infile = 1;
-	    push_scope (1);
+	    push_scope(1);
 	    file_scope = n->scope = top_scope;
 
-	    if (head->source_tail)
+	    if (head->source_tail) {
 	      head->source_tail->next = n;
-	    else
+	    } else {
 	      head->source_head = n;
+            }
 	    head->source_tail = n;
 	    head->nsources++;
-	    i += sym->n_numaux + 1;
+	    i += (sym->n_numaux + 1);
 	  }
 	  break;
 	case C_FCN:
@@ -647,19 +673,30 @@ doit (void)
 	    char *name = sym->_n._n_nptr[1];
 	    if (name[1] == 'b')
 	      {
-		/* Function start */
-		push_scope (0);
+		/* Function start: */
+		push_scope(0);
 		last_function_type->u.function.code = top_scope;
-		top_scope->sec = ofile->sections + sym->n_scnum;
+		top_scope->sec = (ofile->sections + sym->n_scnum);
+#if defined(HAVE_OFF_T) || defined(off_t) || defined(__STDC__)
+                top_scope->offset = (off_t)sym->n_value;
+#else
 		top_scope->offset = sym->n_value;
+#endif /* HAVE_OFF_T || off_t || __STDC__ */
 	      }
 	    else
 	      {
-		top_scope->size = sym->n_value - top_scope->offset + 1;
-		pop_scope ();
-
+#if defined(HAVE_SIZE_T) || defined(size_t)
+# if defined(GNU_COFF_INTERNAL_H) || defined(bfd_vma)
+		top_scope->size = (size_t)(sym->n_value - (bfd_vma)top_scope->offset + 1UL);
+# else
+                top_scope->size = (size_t)(sym->n_value - top_scope->offset + 1UL);
+# endif /* GNU_COFF_INTERNAL_H || bfd_vma */
+#else
+                top_scope->size = (sym->n_value - top_scope->offset + 1);
+#endif /* HAVE_SIZE_T || size_t */
+		pop_scope();
 	      }
-	    i += sym->n_numaux + 1;
+	    i += (sym->n_numaux + 1);
 	  }
 	  break;
 
@@ -668,78 +705,98 @@ doit (void)
 	    char *name = sym->_n._n_nptr[1];
 	    if (name[1] == 'b')
 	      {
-		/* Block start */
-		push_scope (1);
-		top_scope->sec = ofile->sections + sym->n_scnum;
+		/* Block start: */
+		push_scope(1);
+		top_scope->sec = (ofile->sections + sym->n_scnum);
+#if defined(HAVE_OFF_T) || defined(off_t) || defined(__STDC__)
+                top_scope->offset = (off_t)sym->n_value;
+#else
 		top_scope->offset = sym->n_value;
-
+#endif /* HAVE_OFF_T || off_t || __STDC__ */
 	      }
 	    else
 	      {
-		top_scope->size = sym->n_value - top_scope->offset + 1;
-		pop_scope ();
+#if defined(HAVE_SIZE_T) || defined(size_t)
+# if defined(GNU_COFF_INTERNAL_H) || defined(bfd_vma)
+		top_scope->size = (size_t)(sym->n_value - (bfd_vma)top_scope->offset + 1UL);
+# else
+                top_scope->size = (size_t)(sym->n_value - top_scope->offset + 1UL);
+# endif /* GNU_COFF_INTERNAL_H || bfd_vma */
+#else
+                top_scope->size = (sym->n_value - top_scope->offset + 1);
+#endif /* HAVE_SIZE_T || size_t */
+		pop_scope();
 	      }
-	    i += sym->n_numaux + 1;
+	    i += (sym->n_numaux + 1);
 	  }
 	  break;
 	case C_REGPARM:
 	case C_ARG:
-	  i = do_define (i, last_function_symbol->type->u.function.parameters);
+	  i = do_define(i, last_function_symbol->type->u.function.parameters);
 	  break;
 	case C_MOS:
 	case C_MOU:
 	case C_FIELD:
-	  i = do_define (i, last_struct->u.astructdef.elements);
+	  i = do_define(i, last_struct->u.astructdef.elements);
 	  break;
 	case C_MOE:
-	  i = do_define (i, last_enum->u.aenumdef.elements);
+	  i = do_define(i, last_enum->u.aenumdef.elements);
 	  break;
 	case C_STRTAG:
 	case C_ENTAG:
 	case C_UNTAG:
-	  /* Various definition */
-	  i = do_define (i, top_scope);
+	  /* Various definition: */
+	  i = do_define(i, top_scope);
 	  break;
 	case C_EXT:
 	case C_LABEL:
-	  i = do_define (i, file_scope);
+	  i = do_define(i, file_scope);
 	  break;
 	case C_STAT:
 	case C_TPDEF:
 	case C_AUTO:
 	case C_REG:
-	  i = do_define (i, top_scope);
+	  i = do_define(i, top_scope);
 	  break;
 	default:
-	  abort ();
+	  abort();
 	case C_EOS:
-	  i += sym->n_numaux + 1;
+	  i += (sym->n_numaux + 1);
 	  break;
 	}
     }
-  do_sections_p2 (head);
+  do_sections_p2(head);
   return head;
 }
 
 struct coff_ofile *
-coff_grok (bfd *inabfd)
+coff_grok(bfd *inabfd)
 {
   long storage;
   struct coff_ofile *p;
   abfd = inabfd;
-  storage = bfd_get_symtab_upper_bound (abfd);
+  storage = bfd_get_symtab_upper_bound(abfd);
 
-  if (storage < 0)
-    bfd_fatal (abfd->filename);
+  if (storage < 0) {
+    bfd_fatal(abfd->filename);
+  }
 
-  syms = (asymbol **) xmalloc (storage);
-  symcount = bfd_canonicalize_symtab (abfd, syms);
-  if (symcount < 0)
-    bfd_fatal (abfd->filename);
-  rawsyms = obj_raw_syments (abfd);
-  rawcount = obj_raw_syment_count (abfd);;
-  tindex = (struct coff_symbol **) (xcalloc (sizeof (struct coff_symbol *), rawcount));
+  syms = (asymbol **)xmalloc((size_t)storage);
+  symcount = bfd_canonicalize_symtab(abfd, syms);
+  if (symcount < 0) {
+    bfd_fatal(abfd->filename);
+  }
+  rawsyms = obj_raw_syments(abfd);
+  rawcount = obj_raw_syment_count(abfd);;
+  tindex = (struct coff_symbol **)(xcalloc(sizeof(struct coff_symbol *),
+                                           rawcount));
 
-  p = doit ();
+  p = doit();
   return p;
 }
+
+#ifdef N
+# undef N
+#endif /* N */
+
+/* EOF */

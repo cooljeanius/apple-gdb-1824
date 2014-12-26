@@ -304,7 +304,7 @@ print_debugging_info (FILE *f, void *dhandle, bfd *abfd, asymbol **syms,
   info.filename = NULL;
   info.abfd = abfd;
   info.syms = syms;
-  info.demangler = demangler;
+  info.demangler = (char * (*)(struct bfd *, const char *))demangler;
 
   if (as_tags)
     {
@@ -1299,7 +1299,7 @@ pr_class_static_member (void *p, const char *name, const char *physname,
 /* Add a base class to a class.  */
 
 static bfd_boolean
-pr_class_baseclass (void *p, bfd_vma bitpos, bfd_boolean virtual,
+pr_class_baseclass (void *p, bfd_vma bitpos, bfd_boolean is_virtual,
 		    enum debug_visibility visibility)
 {
   struct pr_handle *info = (struct pr_handle *) p;
@@ -1325,7 +1325,7 @@ pr_class_baseclass (void *p, bfd_vma bitpos, bfd_boolean virtual,
   if (! push_type (info, t))
     return FALSE;
 
-  if (virtual)
+  if (is_virtual)
     {
       if (! prepend_type (info, "virtual "))
 	return FALSE;
@@ -1914,44 +1914,46 @@ find_address_in_section (bfd *abfd, asection *section, void *data)
 }
 
 static void
-translate_addresses (bfd *abfd, char *addr_hex, FILE *f, asymbol **syms)
+translate_addresses(bfd *abfd, char *addr_hex, FILE *f, asymbol **syms)
 {
-  pc = bfd_scan_vma (addr_hex, NULL, 16);
+  pc = bfd_scan_vma(addr_hex, NULL, 16);
   found = FALSE;
-  bfd_map_over_sections (abfd, find_address_in_section, syms);
+  bfd_map_over_sections(abfd, find_address_in_section, syms);
 
   if (! found)
-    fprintf (f, "??");
+    fprintf(f, "??");
   else
-    fprintf (f, "%u", line);
+    fprintf(f, "%u", line);
 }
 
-/* Start a new compilation unit.  */
-
+/* Start a new compilation unit: */
 static bfd_boolean
-tg_start_compilation_unit (void * p, const char *filename ATTRIBUTE_UNUSED)
+tg_start_compilation_unit(void * p, const char *afilename ATTRIBUTE_UNUSED)
 {
-  struct pr_handle *info = (struct pr_handle *) p;
+  /* (assuming since "afilename" is marked as unused, all uses
+   * of "filename" in this function must refer to the global variable...
+   * That was my reasoning behind why I just renamed the paramater here,
+   * at least...) */
+  struct pr_handle *info = (struct pr_handle *)p;
 
-  fprintf (stderr, "New compilation unit: %s\n", filename);
+  fprintf(stderr, "New compilation unit: %s\n", filename);
 
-  free (info->filename);
+  free(info->filename);
   /* Should it be relative? best way to do it here?.  */
-  info->filename = strdup (filename);
+  info->filename = strdup(filename);
 
   return TRUE;
 }
 
-/* Start a source file within a compilation unit.  */
-
+/* Start a source file within a compilation unit: */
 static bfd_boolean
-tg_start_source (void *p, const char *filename)
+tg_start_source(void *p, const char *sfilename)
 {
-  struct pr_handle *info = (struct pr_handle *) p;
+  struct pr_handle *info = (struct pr_handle *)p;
 
-  free (info->filename);
+  free(info->filename);
   /* Should it be relative? best way to do it here?.  */
-  info->filename = strdup (filename);
+  info->filename = strdup(sfilename);
 
   return TRUE;
 }
@@ -2183,33 +2185,32 @@ tg_class_static_member (void *p, const char *name,
   return TRUE;
 }
 
-/* Add a base class to a class.  */
-
+/* Add a base class to a class: */
 static bfd_boolean
-tg_class_baseclass (void *p, bfd_vma bitpos ATTRIBUTE_UNUSED,
-		    bfd_boolean virtual, enum debug_visibility visibility)
+tg_class_baseclass(void *p, bfd_vma bitpos ATTRIBUTE_UNUSED,
+                   bfd_boolean isvirtual, enum debug_visibility visibility)
 {
-  struct pr_handle *info = (struct pr_handle *) p;
+  struct pr_handle *info = (struct pr_handle *)p;
   char *t;
   const char *prefix;
 
-  assert (info->stack != NULL && info->stack->next != NULL);
+  assert((info->stack != NULL) && (info->stack->next != NULL));
 
-  t = pop_type (info);
+  t = pop_type(info);
   if (t == NULL)
     return FALSE;
 
-  if (strncmp (t, "class ", sizeof "class " - 1) == 0)
-    t += sizeof "class " - 1;
+  if (strncmp(t, "class ", sizeof("class ") - 1) == 0)
+    t += (sizeof("class ") - 1);
 
   /* Push it back on to take advantage of the prepend_type and
      append_type routines.  */
-  if (! push_type (info, t))
+  if (! push_type(info, t))
     return FALSE;
 
-  if (virtual)
+  if (isvirtual)
     {
-      if (! prepend_type (info, "virtual "))
+      if (! prepend_type(info, "virtual "))
 	return FALSE;
     }
 
@@ -2229,21 +2230,21 @@ tg_class_baseclass (void *p, bfd_vma bitpos ATTRIBUTE_UNUSED,
       break;
     }
 
-  if (! prepend_type (info, prefix))
+  if (! prepend_type(info, prefix))
     return FALSE;
 
-  t = pop_type (info);
+  t = pop_type(info);
   if (t == NULL)
     return FALSE;
 
-  if (info->stack->num_parents && ! append_parent (info, ", "))
+  if (info->stack->num_parents && ! append_parent(info, ", "))
     return FALSE;
 
-  if (! append_parent (info, t))
+  if (! append_parent(info, t))
     return FALSE;
   info->stack->num_parents++;
 
-  free (t);
+  free(t);
 
   return TRUE;
 }
@@ -2748,12 +2749,11 @@ tg_start_block (void *p, bfd_vma addr)
   return TRUE;
 }
 
-/* Write out line number information.  */
-
+/* Write out line number information: */
 static bfd_boolean
-tg_lineno (void *p ATTRIBUTE_UNUSED, const char *filename ATTRIBUTE_UNUSED,
-	   unsigned long lineno ATTRIBUTE_UNUSED,
-	   bfd_vma addr ATTRIBUTE_UNUSED)
+tg_lineno(void *p ATTRIBUTE_UNUSED, const char *afilename ATTRIBUTE_UNUSED,
+          unsigned long lineno ATTRIBUTE_UNUSED,
+          bfd_vma addr ATTRIBUTE_UNUSED)
 {
   return TRUE;
 }

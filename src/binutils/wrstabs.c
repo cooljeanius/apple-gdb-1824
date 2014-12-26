@@ -1206,7 +1206,7 @@ stab_method_type (void *p, bfd_boolean domainp, int argcount,
   for (i = 0; i < argcount; i++)
     len += strlen (args[i]);
 
-  buf = (char *) xmalloc (len);
+  buf = (char *)xmalloc(len);
 
   sprintf (buf, "#%s,%s", domain, return_type);
   free (domain);
@@ -1544,7 +1544,7 @@ stab_class_static_member (void *p, const char *name, const char *physname,
 /* Add a base class to the class on the type stack.  */
 
 static bfd_boolean
-stab_class_baseclass (void *p, bfd_vma bitpos, bfd_boolean virtual,
+stab_class_baseclass (void *p, bfd_vma bitpos, bfd_boolean is_virtual,
 		      enum debug_visibility visibility)
 {
   struct stab_write_handle *info = (struct stab_write_handle *) p;
@@ -1560,7 +1560,7 @@ stab_class_baseclass (void *p, bfd_vma bitpos, bfd_boolean virtual,
   /* Build the base class specifier.  */
 
   buf = (char *) xmalloc (strlen (s) + 25);
-  buf[0] = virtual ? '1' : '0';
+  buf[0] = is_virtual ? '1' : '0';
   switch (visibility)
     {
     default:

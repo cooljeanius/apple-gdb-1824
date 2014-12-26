@@ -1,9 +1,12 @@
 # src/binutils/.gitignore
 
+*.trs
 *.dSYM
 *.framework
+*.i
 *.lo
 *.o
+*.s
 *deps/*.*o
 *libs/*
 DEP
@@ -33,8 +36,10 @@ dllwrap
 doc/Makefile
 elfedit
 embedspu
+lex.backup
 lex.yy.c
 libtool
+mcparse.output
 nlmconv
 nlmheader.output
 nm-new

@@ -1,5 +1,10 @@
 #!/bin/sh
 # for libbacktrace
+# using this script in this subdir should probably be deprecated...
+
+echo "This script is out-of-date; just run autoreconf normally instead."
+
+exit 0
 
 echo "This script assumes that your copy of autoconf264 has suffixed its commands with \"264\" like the MacPorts autoconf264 package does."
 echo "If your autoconf264 is not like this, then this script will probably fail."

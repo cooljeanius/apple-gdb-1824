@@ -20,7 +20,7 @@ in
 # 
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+# Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA.
 #
 
 # -------------------------------
@@ -1868,8 +1868,8 @@ configure-gdb: $(CONFIGURE_GDB_TK)
 all-gdb: $(gdbnlmrequirements) $(GDB_TK)
 install-gdb: $(INSTALL_GDB_TK)
 
-# Serialization dependencies. Host configures do NOT work well in parallel to
-# each other, due to contention over config.cache. Target configures and 
+# Serialization dependencies. Host configures do NOT work well in parallel
+# to each other, due to contention over config.cache. Target configures and 
 # build configures are similar.
 @serialization_dependencies@
 
@@ -1885,8 +1885,12 @@ install-gdb: $(INSTALL_GDB_TK)
 multilib.out: maybe-all-gcc
 	$(AM_V_at)r=`${PWD_COMMAND}`; export r; \
 	echo "Checking multilib configuration..."; \
-	$(CC_FOR_TARGET) --print-multi-lib > multilib.tmp 2> /dev/null ; \
-	$(SHELL) $(srcdir)/move-if-change multilib.tmp multilib.out ; \
+	if test ! -e multilib.out; then \
+	  touch multilib.out && echo "" > multilib.out; \
+	fi; \
+	$(CC_FOR_TARGET) --print-multi-lib > multilib.tmp 2>/dev/null; \
+	$(SHELL) $(srcdir)/move-if-change multilib.tmp multilib.out; \
+	cat multilib.out
 
 # Rebuilding Makefile.in, using autogen.
 AUTOGEN = `which autogen`
@@ -1905,8 +1909,10 @@ config.status_target: configure
 
 # Rebuilding configure.
 AUTOCONF = autoconf
-$(srcdir)/configure: @MAINT@ $(srcdir)/configure.ac $(srcdir)/config/acx.m4 \
-	$(srcdir)/config/override.m4 $(srcdir)/config/proginstall.m4
+M4CONFDIR = $(srcdir)/config
+MACRO_DEPS = $(M4CONFDIR)/acx.m4 $(M4CONFDIR)/override.m4 \
+  $(M4CONFDIR)/proginstall.m4
+$(srcdir)/configure: @MAINT@ $(srcdir)/configure.ac $(MACRO_DEPS)
 	cd $(srcdir) && $(AUTOCONF)
 .PHONY: $(srcdir)/configure
 

@@ -435,8 +435,10 @@ static const char * mname = "unknown";
 # define DRECTVE_SECTION_NAME ".drectve"
 #endif /* !DRECTVE_SECTION_NAME */
 
-/* What is the right name for this ?  */
-#define PATHMAX 250
+/* What is the right name for this?  */
+#ifndef PATHMAX
+# define PATHMAX 250
+#endif /* !PATHMAX */
 
 /* External name alias numbering starts here.  */
 #define PREFIX_ALIAS_BASE	20000
@@ -3551,24 +3553,44 @@ mcore_elf_gen_out_file (void)
 
   dyn_string_append_cstr (ds, "-shared ");
 
-  if (mcore_elf_linker_flags)
-    dyn_string_append_cstr (ds, mcore_elf_linker_flags);
+  if (mcore_elf_linker_flags) {
+    dyn_string_append_cstr(ds, mcore_elf_linker_flags);
+  }
 
-  dyn_string_append_cstr (ds, " ");
-  dyn_string_append_cstr (ds, MCORE_ELF_TMP_EXP);
-  dyn_string_append_cstr (ds, " ");
-  dyn_string_append_cstr (ds, MCORE_ELF_TMP_OBJ);
-  dyn_string_append_cstr (ds, " -o ");
-  dyn_string_append_cstr (ds, mcore_elf_out_file);
+  dyn_string_append_cstr(ds, " ");
+  dyn_string_append_cstr(ds, MCORE_ELF_TMP_EXP);
+  dyn_string_append_cstr(ds, " ");
+  dyn_string_append_cstr(ds, MCORE_ELF_TMP_OBJ);
+  dyn_string_append_cstr(ds, " -o ");
+  dyn_string_append_cstr(ds, mcore_elf_out_file);
 
-  run (mcore_elf_linker, ds->s);
+  run(mcore_elf_linker, ds->s);
 
-  dyn_string_delete (ds);
+  dyn_string_delete(ds);
 
-  if (dontdeltemps == 0)
-    unlink (MCORE_ELF_TMP_EXP);
+  if (dontdeltemps == 0) {
+    unlink(MCORE_ELF_TMP_EXP);
+  }
 
-  if (dontdeltemps < 2)
-    unlink (MCORE_ELF_TMP_OBJ);
+  if (dontdeltemps < 2) {
+    unlink(MCORE_ELF_TMP_OBJ);
+  }
 }
 #endif /* DLLTOOL_MCORE_ELF */
+
+/* silence '-Wunused-macros': */
+#ifdef ASM_ALIGN_SHORT
+# undef ASM_ALIGN_SHORT
+#endif /* ASM_ALIGN_SHORT */
+#ifdef ASM_JUMP
+# undef ASM_JUMP
+#endif /* ASM_JUMP */
+#ifdef ASM_SPACE
+# undef ASM_SPACE
+#endif /* ASM_SPACE */
+#ifdef PATHMAX
+# undef PATHMAX
+#endif /* PATHMAX */
+/* FIXME: actually use them for real instead of doing this hack... */
+
+/* EOF */

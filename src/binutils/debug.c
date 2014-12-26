@@ -300,8 +300,7 @@ struct debug_field
     } u;
 };
 
-/* A base class for an object.  */
-
+/* A base class for an object: */
 struct debug_baseclass
 {
   /* Type of the base class.  */
@@ -309,13 +308,12 @@ struct debug_baseclass
   /* Bit position of the base class in the object.  */
   unsigned int bitpos;
   /* Whether the base class is virtual.  */
-  bfd_boolean virtual;
+  bfd_boolean virtuality;
   /* Visibility of the base class.  */
   enum debug_visibility visibility;
 };
 
-/* A method of an object.  */
-
+/* A method of an object: */
 struct debug_method
 {
   /* The name of the method.  */
@@ -1681,17 +1679,17 @@ debug_make_undefined_tagged_type (void *handle, const char *name,
 
 debug_baseclass
 debug_make_baseclass (void *handle ATTRIBUTE_UNUSED, debug_type type,
-		      bfd_vma bitpos, bfd_boolean virtual,
+		      bfd_vma bitpos, bfd_boolean is_virtual,
 		      enum debug_visibility visibility)
 {
   struct debug_baseclass *b;
 
-  b = (struct debug_baseclass *) xmalloc (sizeof *b);
-  memset (b, 0, sizeof *b);
+  b = (struct debug_baseclass *)xmalloc(sizeof *b);
+  memset(b, 0, sizeof(*b));
 
   b->type = type;
   b->bitpos = bitpos;
-  b->virtual = virtual;
+  b->virtuality = is_virtual;
   b->visibility = visibility;
 
   return b;
@@ -2746,8 +2744,9 @@ debug_write_class_type (struct debug_handle *info,
 	      if (! debug_write_type (info, fns, fhandle, b->type,
 				      (struct debug_name *) NULL))
 		return FALSE;
-	      if (! (*fns->class_baseclass) (fhandle, b->bitpos, b->virtual,
-					     b->visibility))
+	      if (! (*fns->class_baseclass)(fhandle, b->bitpos,
+                                            b->virtuality,
+                                            b->visibility))
 		return FALSE;
 	    }
 	}
@@ -3307,10 +3306,10 @@ debug_class_type_samep (struct debug_handle *info, struct debug_type *t1,
 
 	  b1 = *pb1;
 	  b2 = *pb2;
-	  if (b1->bitpos != b2->bitpos
-	      || b1->virtual != b2->virtual
-	      || b1->visibility != b2->visibility
-	      || ! debug_type_samep (info, b1->type, b2->type))
+	  if ((b1->bitpos != b2->bitpos)
+	      || (b1->virtuality != b2->virtuality)
+	      || (b1->visibility != b2->visibility)
+	      || !debug_type_samep(info, b1->type, b2->type))
 	    return FALSE;
 	}
       if (*pb1 != NULL || *pb2 != NULL)

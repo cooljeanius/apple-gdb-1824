@@ -199,9 +199,15 @@ GCC_NO_EXECUTABLES
 AC_PROG_GCC_TRADITIONAL
 AC_USE_SYSTEM_EXTENSIONS
 m4_ifdef([AM_PROG_AR],[
-  AM_PROG_AR
+  if test "x${AR}" = "x" && test "x${am_cv_ar_interface}" = "x"; then
+    test -z "${AR}" && test -z "${am_cv_ar_interface}"
+    AM_PROG_AR
+  elif test "x${ac_ct_AR}" = "x" && test "x${ac_cv_prog_AR}" = "x"; then
+    test -z "${ac_ct_AR}" && test -z "${ac_cv_prog_AR}"
+    AC_CHECK_TOOLS([AR],[ar gar])
+  fi
 ],[
-  AC_CHECK_TOOL([AR],[ar])dnl
+  AC_CHECK_TOOLS([AR],[ar gar])dnl
 ])dnl
 m4_ifdef([AC_PROG_RANLIB],[
 if test "x${RANLIB}" = "x"; then
@@ -211,7 +217,7 @@ fi
 ],[
 if test "x${ac_cv_prog_ac_ct_RANLIB}" = "x"; then
   test -z "${ac_cv_prog_ac_ct_RANLIB}"
-  AC_CHECK_TOOL([RANLIB],[ranlib],[:])
+  AC_CHECK_TOOLS([RANLIB],[ranlib granlib],[:])
 fi
 ])dnl
 
@@ -221,13 +227,13 @@ dnl# the AM_ENABLE_MULTILIB macro:
 # Default to --enable-multilib
 AC_ARG_ENABLE([multilib],
 [AS_HELP_STRING([--enable-multilib],
-                [try to build many library versions (default)])],
+                [try to build many library versions (default off)])],
 [case "${enableval}" in
   yes) multilib=yes ;;
   no)  multilib=no ;;
   *)   AC_MSG_ERROR([bad value ${enableval} for multilib option]) ;;
  esac],
-	      [multilib=yes])dnl
+	      [multilib=no])dnl
 
 # Even if the default multilib is not a cross compilation,
 # it may be that some of the other multilibs are.
@@ -331,7 +337,7 @@ else
 fi
 
 m4_ifdef([GCC_PICFLAG],[
-GCC_PICFLAG
+  GCC_PICFLAG
 ],[
 if test "x${PICFLAG}" = "x"; then
   test -z "${PICFLAG}" && PICFLAG=""
@@ -685,7 +691,7 @@ if test -n "${with_target_subdir}"; then
       esac
     done
 
-    # newlib doesnt provide any of the variables in ${vars}, so we
+    # newlib does NOT provide any of the variables in ${vars}, so we
     # do not have to check them here.
 
     # Of the functions in ${checkfuncs}, newlib only has strerror.
@@ -1076,7 +1082,8 @@ host=${host}
 target=${target}
 with_target_subdir=${with_target_subdir}
 with_multisubdir=${with_multisubdir}
-ac_configure_args="--enable-multilib ${ac_configure_args}"
+ac_multi_configure_args="--enable-multilib ${ac_configure_args}"
+ac_configure_args="--disable-multilib ${ac_configure_args}"
 CONFIG_SHELL=${CONFIG_SHELL-/bin/sh}
 ORIGINAL_LD_FOR_MULTILIBS="${ORIGINAL_LD_FOR_MULTILIBS}"
 libiberty_topdir=${libiberty_topdir}
