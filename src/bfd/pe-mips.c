@@ -517,15 +517,18 @@ mips_swap_reloc_in (bfd * abfd, void * src, void * dst)
     break;
   case MIPS_R_PAIR:
     reloc_dst->r_offset = reloc_dst->r_symndx;
-    if (reloc_dst->r_offset & 0x8000)
+    if (reloc_dst->r_offset & 0x8000) {
       reloc_dst->r_offset -= 0x10000;
+    }
     reloc_dst->r_symndx = pair_prev.r_symndx;
+    break;
+  default:
     break;
   }
 }
 
 static unsigned int
-mips_swap_reloc_out (bfd * abfd, void * src, void * dst)
+mips_swap_reloc_out(bfd * abfd, void * src, void * dst)
 {
   static int prev_offset = 1;
   static bfd_vma prev_addr = 0;
@@ -545,18 +548,20 @@ mips_swap_reloc_out (bfd * abfd, void * src, void * dst)
 	     the same address as a REFHI, we assume this is the matching
 	     PAIR reloc and output it accordingly.  The symndx is really
 	     the low 16 bits of the addend */
-	  H_PUT_32 (abfd, reloc_src->r_vaddr, reloc_dst->r_vaddr);
-	  H_PUT_32 (abfd, reloc_src->r_symndx, reloc_dst->r_symndx);
-	  H_PUT_16 (abfd, MIPS_R_PAIR, reloc_dst->r_type);
+	  H_PUT_32(abfd, reloc_src->r_vaddr, reloc_dst->r_vaddr);
+	  H_PUT_32(abfd, reloc_src->r_symndx, reloc_dst->r_symndx);
+	  H_PUT_16(abfd, MIPS_R_PAIR, reloc_dst->r_type);
 	  return RELSZ;
 	}
       break;
+    default:
+      break;
     }
 
-  H_PUT_32 (abfd, reloc_src->r_vaddr, reloc_dst->r_vaddr);
-  H_PUT_32 (abfd, reloc_src->r_symndx, reloc_dst->r_symndx);
+  H_PUT_32(abfd, reloc_src->r_vaddr, reloc_dst->r_vaddr);
+  H_PUT_32(abfd, reloc_src->r_symndx, reloc_dst->r_symndx);
 
-  H_PUT_16 (abfd, reloc_src->r_type, reloc_dst->r_type);
+  H_PUT_16(abfd, reloc_src->r_type, reloc_dst->r_type);
   return RELSZ;
 }
 
@@ -565,14 +570,12 @@ mips_swap_reloc_out (bfd * abfd, void * src, void * dst)
 #define NO_COFF_RELOCS
 
 static bfd_boolean
-coff_pe_mips_relocate_section (bfd *output_bfd,
-			       struct bfd_link_info *info,
-			       bfd *input_bfd,
-			       asection *input_section,
-			       bfd_byte *contents,
-			       struct internal_reloc *relocs,
-			       struct internal_syment *syms,
-			       asection **sections)
+coff_pe_mips_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+                              bfd *input_bfd, asection *input_section,
+                              bfd_byte *contents,
+                              struct internal_reloc *relocs,
+                              struct internal_syment *syms,
+                              asection **sections)
 {
   bfd_vma gp;
   bfd_boolean gp_undefined;
@@ -586,19 +589,18 @@ coff_pe_mips_relocate_section (bfd *output_bfd,
     {
       (*_bfd_error_handler)
 	(_("%B: `ld -r' not supported with PE MIPS objects\n"), input_bfd);
-      bfd_set_error (bfd_error_bad_value);
+      bfd_set_error(bfd_error_bad_value);
       return FALSE;
     }
 
-  BFD_ASSERT (input_bfd->xvec->byteorder
-	      == output_bfd->xvec->byteorder);
+  BFD_ASSERT(input_bfd->xvec->byteorder == output_bfd->xvec->byteorder);
 
-  gp = _bfd_get_gp_value (output_bfd);
-  gp_undefined = (gp == 0) ? TRUE : FALSE;
+  gp = _bfd_get_gp_value(output_bfd);
+  gp_undefined = ((gp == 0) ? TRUE : FALSE);
   got_lo = FALSE;
   adjust = 0;
   rel = relocs;
-  rel_end = rel + input_section->reloc_count;
+  rel_end = (rel + input_section->reloc_count);
 
   for (i = 0; rel < rel_end; rel++, i++)
     {
@@ -608,7 +610,7 @@ coff_pe_mips_relocate_section (bfd *output_bfd,
       bfd_vma addend = 0;
       bfd_vma val, tmp, targ, src, low;
       reloc_howto_type *howto;
-      unsigned char *mem = contents + rel->r_vaddr;
+      unsigned char *mem = (contents + rel->r_vaddr);
 
       symndx = rel->r_symndx;
 
@@ -619,7 +621,7 @@ coff_pe_mips_relocate_section (bfd *output_bfd,
 	}
       else
 	{
-	  h = obj_coff_sym_hashes (input_bfd)[symndx];
+	  h = obj_coff_sym_hashes(input_bfd)[symndx];
 	  sym = syms + symndx;
 	}
 
@@ -628,13 +630,13 @@ coff_pe_mips_relocate_section (bfd *output_bfd,
          is not.  We assume that the size is not included, and force
          the rtype_to_howto function to adjust the addend as needed.  */
 
-      if (sym != NULL && sym->n_scnum != 0)
+      if ((sym != NULL) && (sym->n_scnum != 0))
 	addend = - sym->n_value;
       else
 	addend = 0;
 
-      howto = bfd_coff_rtype_to_howto (input_bfd, input_section, rel, h,
-				       sym, &addend);
+      howto = bfd_coff_rtype_to_howto(input_bfd, input_section, rel, h,
+                                      sym, &addend);
       if (howto == NULL)
 	return FALSE;
 
@@ -646,7 +648,7 @@ coff_pe_mips_relocate_section (bfd *output_bfd,
 	{
 	  if (info->relocatable)
 	    continue;
-	  if (sym != NULL && sym->n_scnum != 0)
+	  if ((sym != NULL) && (sym->n_scnum != 0))
 	    addend += sym->n_value;
 	}
 
@@ -664,41 +666,39 @@ coff_pe_mips_relocate_section (bfd *output_bfd,
 	  else
 	    {
 	      sec = sections[symndx];
-              val = (sec->output_section->vma
-		     + sec->output_offset
+              val = (sec->output_section->vma + sec->output_offset
 		     + sym->n_value);
-	      if (! obj_pe (input_bfd))
+	      if (! obj_pe(input_bfd))
 		val -= sec->vma;
 	    }
 	}
       else
 	{
-	  if (h->root.type == bfd_link_hash_defined
-	      || h->root.type == bfd_link_hash_defweak)
+	  if ((h->root.type == bfd_link_hash_defined)
+	      || (h->root.type == bfd_link_hash_defweak))
 	    {
 	      asection *sec;
 
 	      sec = h->root.u.def.section;
-	      val = (h->root.u.def.value
-		     + sec->output_section->vma
+	      val = (h->root.u.def.value + sec->output_section->vma
 		     + sec->output_offset);
 	      }
 
 	  else if (! info->relocatable)
 	    {
-	      if (! ((*info->callbacks->undefined_symbol)
-		     (info, h->root.root.string, input_bfd, input_section,
-		      rel->r_vaddr - input_section->vma, TRUE)))
+	      if (!((*info->callbacks->undefined_symbol)
+                    (info, h->root.root.string, input_bfd, input_section,
+                     (rel->r_vaddr - input_section->vma), TRUE)))
 		return FALSE;
 	    }
 	}
 
-      src = rel->r_vaddr + input_section->output_section->vma
-	+ input_section->output_offset;
+      src = (rel->r_vaddr + input_section->output_section->vma
+             + input_section->output_offset);
 
       /* OK, at this point the following variables are set up:
-	   src = VMA of the memory we're fixing up
-	   mem = pointer to memory we're fixing up
+	   src = VMA of the memory we are fixing up
+	   mem = pointer to memory we are fixing up
 	   val = VMA of what we need to refer to.  */
 
 #define UI(x) (*_bfd_error_handler) (_("%B: unimplemented %s\n"), \
@@ -708,15 +708,13 @@ coff_pe_mips_relocate_section (bfd *output_bfd,
       switch (rel->r_type)
 	{
 	case MIPS_R_ABSOLUTE:
-	  /* Ignore these.  */
+	  /* Ignore these: */
 	  break;
-
 	case MIPS_R_REFHALF:
-	  UI ("refhalf");
+	  UI("refhalf");
 	  break;
-
 	case MIPS_R_REFWORD:
-	  tmp = bfd_get_32 (input_bfd, mem);
+	  tmp = bfd_get_32(input_bfd, mem);
 	  /* printf ("refword: src=%08x targ=%08x+%08x\n", src, tmp, val); */
 	  tmp += val;
 	  bfd_put_32 (input_bfd, tmp, mem);
@@ -802,8 +800,10 @@ coff_pe_mips_relocate_section (bfd *output_bfd,
 	  break;
 
 	case MIPS_R_PAIR:
-	  /* ignore these */
+	  /* ignore these: */
 	  break;
+        default:
+          break;
 	}
     }
 
@@ -824,7 +824,7 @@ coff_mips_is_local_label_name (bfd *abfd, const char *name)
   if (name[0] == 'L')
     return TRUE;
 
-  return _bfd_coff_is_local_label_name (abfd, name);
+  return _bfd_coff_is_local_label_name(abfd, name);
 }
 
 #define coff_bfd_is_local_label_name coff_mips_is_local_label_name
@@ -840,13 +840,13 @@ const bfd_target
   TARGET_SYM =
 #else
   mipslpe_vec =
-#endif
+#endif /* TARGET_SYM */
 {
 #ifdef TARGET_NAME
-  TARGET_NAME,
+  (char *)TARGET_NAME,
 #else
-  "pe-mips",			/* Name.  */
-#endif
+  (char *)"pe-mips",			/* Name.  */
+#endif /* TARGET_NAME */
   bfd_target_coff_flavour,
   BFD_ENDIAN_LITTLE,		/* Data byte order is little.  */
   BFD_ENDIAN_LITTLE,		/* Header byte order is little.  */
@@ -901,3 +901,5 @@ const bfd_target
 
   COFF_SWAP_TABLE
 };
+
+/* EOF */

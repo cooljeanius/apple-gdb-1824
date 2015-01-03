@@ -1,4 +1,4 @@
-/* Support for HPPA 64-bit ELF
+/* elf64-hppa.c: Support for HPPA 64-bit ELF
    Copyright 1999, 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
 
@@ -16,11 +16,11 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA.  */
 
+#include "sysdep.h"
 #include "alloca-conf.h"
 #include "bfd.h"
-#include "sysdep.h"
 #include "libbfd.h"
 #include "elf-bfd.h"
 #include "elf/hppa.h"
@@ -457,22 +457,22 @@ get_dyn_name (abfd, h, rel, pbuf, plen)
   char *buf;
   size_t len;
 
-  if (h && rel->r_addend == 0)
+  if (h && (rel->r_addend == 0))
     return h->root.root.string;
 
   if (h)
-    nlen = strlen (h->root.root.string);
+    nlen = strlen(h->root.root.string);
   else
-    nlen = 8 + 1 + sizeof (rel->r_info) * 2 - 8;
-  tlen = nlen + 1 + sizeof (rel->r_addend) * 2 + 1;
+    nlen = 8 + 1 + sizeof(rel->r_info) * 2 - 8;
+  tlen = nlen + 1 + sizeof(rel->r_addend) * 2 + 1;
 
   len = *plen;
   buf = *pbuf;
   if (len < tlen)
     {
       if (buf)
-	free (buf);
-      *pbuf = buf = malloc (tlen);
+	free(buf);
+      *pbuf = buf = (char *)malloc(tlen);
       *plen = len = tlen;
       if (!buf)
 	return NULL;
@@ -1161,7 +1161,7 @@ allocate_global_data_opd (dyn_h, data)
 	      char *new_name;
 	      struct elf_link_hash_entry *nh;
 
-	      new_name = alloca (strlen (h->root.root.string) + 2);
+	      new_name = (char *)alloca(strlen(h->root.root.string) + 2);
 	      new_name[0] = '.';
 	      strcpy (new_name + 1, h->root.root.string);
 
@@ -2168,12 +2168,12 @@ elf64_hppa_finalize_opd (dyn_h, data)
 	  char *new_name;
 	  struct elf_link_hash_entry *nh;
 
-	  new_name = alloca (strlen (h->root.root.string) + 2);
+	  new_name = (char *)alloca(strlen (h->root.root.string) + 2);
 	  new_name[0] = '.';
-	  strcpy (new_name + 1, h->root.root.string);
+	  strcpy(new_name + 1, h->root.root.string);
 
-	  nh = elf_link_hash_lookup (elf_hash_table (info),
-				     new_name, FALSE, FALSE, FALSE);
+	  nh = elf_link_hash_lookup(elf_hash_table(info), new_name, FALSE,
+                                    FALSE, FALSE);
 
 	  /* All we really want from the new symbol is its dynamic
 	     symbol index.  */

@@ -1,4 +1,4 @@
-/* 32-bit ELF support for ARM new abi option.
+/* elfarm-nabi.c: 32-bit ELF support for ARM new abi option.
    Copyright 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
 
    This file is part of BFD, the Binary File Descriptor library.
@@ -15,7 +15,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307 */
 
 #include "elf/arm.h"
 #include "bfd.h"
@@ -24,8 +24,8 @@
 #include "elf-bfd.h"
 
 #ifndef NUM_ELEM
-#define NUM_ELEM(a)  (sizeof (a) / (sizeof (a)[0]))
-#endif
+# define NUM_ELEM(a)  (sizeof(a) / (sizeof(a)[0]))
+#endif /* !NUM_ELEM */
 
 #define USE_REL	1
 
@@ -41,16 +41,15 @@
 #define ARM_ELF_OS_ABI_VERSION		ELFOSABI_ARM
 
 static reloc_howto_type * elf32_arm_reloc_type_lookup
-  PARAMS ((bfd * abfd, bfd_reloc_code_real_type code));
+  PARAMS((bfd * abfd, bfd_reloc_code_real_type code));
 static bfd_boolean elf32_arm_nabi_grok_prstatus
-  PARAMS ((bfd *abfd, Elf_Internal_Note *note));
+  PARAMS((bfd *abfd, Elf_Internal_Note *note));
 static bfd_boolean elf32_arm_nabi_grok_psinfo
-  PARAMS ((bfd *abfd, Elf_Internal_Note *note));
+  PARAMS((bfd *abfd, Elf_Internal_Note *note));
 
 /* Note: code such as elf32_arm_reloc_type_lookup expect to use e.g.
    R_ARM_PC24 as an index into this, and find the R_ARM_PC24 HOWTO
    in that slot.  */
-
 static reloc_howto_type elf32_arm_howto_table[] =
 {
   /* No relocation */
@@ -720,9 +719,7 @@ elf32_arm_nabi_grok_prstatus (abfd, note)
 }
 
 static bfd_boolean
-elf32_arm_nabi_grok_psinfo (abfd, note)
-     bfd *abfd;
-     Elf_Internal_Note *note;
+elf32_arm_nabi_grok_psinfo(bfd *abfd, Elf_Internal_Note *note)
 {
   switch (note->descsz)
     {
@@ -755,3 +752,5 @@ elf32_arm_nabi_grok_psinfo (abfd, note)
 #define elf_backend_grok_psinfo		elf32_arm_nabi_grok_psinfo
 
 #include "elf32-arm.h"
+
+/* EOF */

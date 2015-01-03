@@ -446,13 +446,13 @@ struct internal_syment
 #define DTYPE(x)	(((x) & N_TMASK) >> N_BTSHFT)
 
 #define ISPTR(x) \
-  (((unsigned long) (x) & N_TMASK) == ((unsigned long) DT_PTR << N_BTSHFT))
+  (((unsigned long)(x) & N_TMASK) == ((unsigned long)DT_PTR << N_BTSHFT))
 #define ISFCN(x) \
-  (((unsigned long) (x) & N_TMASK) == ((unsigned long) DT_FCN << N_BTSHFT))
+  (((unsigned long)(x) & N_TMASK) == ((unsigned long)DT_FCN << N_BTSHFT))
 #define ISARY(x) \
-  (((unsigned long) (x) & N_TMASK) == ((unsigned long) DT_ARY << N_BTSHFT))
+  (((unsigned long)(x) & N_TMASK) == ((unsigned long)DT_ARY << N_BTSHFT))
 #define ISTAG(x) \
-  ((x) == C_STRTAG || (x) == C_UNTAG || (x) == C_ENTAG)
+  (((x) == C_STRTAG) || ((x) == C_UNTAG) || ((x) == C_ENTAG))
 #define DECREF(x) \
   ((((x) >> N_TSHIFT) & ~ N_BTMASK) | ((x) & N_BTMASK))
 

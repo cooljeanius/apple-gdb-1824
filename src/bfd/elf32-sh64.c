@@ -392,21 +392,21 @@ sh64_elf_add_symbol_hook (bfd *abfd, struct bfd_link_info *info,
 	 right, and tweak the name when it's output.  Otherwise, we make
 	 an indirect symbol of it.  */
       flagword flags
-	= info->relocatable || info->emitrelocations
-	? BSF_GLOBAL : BSF_GLOBAL | BSF_INDIRECT;
+	= ((info->relocatable || info->emitrelocations)
+           ? BSF_GLOBAL : (BSF_GLOBAL | BSF_INDIRECT));
 
       char *dl_name
-	= bfd_malloc (strlen (*namep) + sizeof (DATALABEL_SUFFIX));
-      struct elf_link_hash_entry ** sym_hash = elf_sym_hashes (abfd);
+	= (char *)bfd_malloc(strlen(*namep) + sizeof(DATALABEL_SUFFIX));
+      struct elf_link_hash_entry ** sym_hash = elf_sym_hashes(abfd);
 
-      BFD_ASSERT (sym_hash != NULL);
+      BFD_ASSERT(sym_hash != NULL);
 
-      /* Allocation may fail.  */
+      /* Allocation may fail: */
       if (dl_name == NULL)
 	return FALSE;
 
-      strcpy (dl_name, *namep);
-      strcat (dl_name, DATALABEL_SUFFIX);
+      strcpy(dl_name, *namep);
+      strcat(dl_name, DATALABEL_SUFFIX);
 
       h = (struct elf_link_hash_entry *)
 	bfd_link_hash_lookup (info->hash, dl_name, FALSE, FALSE, FALSE);

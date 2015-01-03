@@ -1,7 +1,7 @@
-/* BFD support for the Intel 386 architecture.
-   Copyright 1992, 1994, 1995, 1996, 1998, 2000, 2001, 2002, 2004
-   Free Software Foundation, Inc.
-
+/* cpu-i386.c: BFD support for the Intel 386 architecture.
+ * Copyright 1992, 1994, 1995, 1996, 1998, 2000, 2001, 2002, 2004
+ * Free Software Foundation, Inc.  */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -16,12 +16,15 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
 #include "libbfd.h"
 
+#ifdef __clang__
+extern const bfd_arch_info_type bfd_x86_64_arch_intel_syntax;
+#endif /* __clang__ */
 const bfd_arch_info_type bfd_x86_64_arch_intel_syntax =
 {
   64, /* 64 bits in a word */
@@ -38,6 +41,9 @@ const bfd_arch_info_type bfd_x86_64_arch_intel_syntax =
   0
 };
 
+#ifdef __clang__
+extern const bfd_arch_info_type bfd_i386_arch_intel_syntax;
+#endif /* __clang__ */
 const bfd_arch_info_type bfd_i386_arch_intel_syntax =
 {
   32,	/* 32 bits in a word */
@@ -54,6 +60,9 @@ const bfd_arch_info_type bfd_i386_arch_intel_syntax =
   &bfd_x86_64_arch_intel_syntax
 };
 
+#ifdef __clang__
+extern const bfd_arch_info_type i8086_arch;
+#endif /* __clang__ */
 const bfd_arch_info_type i8086_arch =
 {
   32,	/* 32 bits in a word */
@@ -70,6 +79,9 @@ const bfd_arch_info_type i8086_arch =
   &bfd_i386_arch_intel_syntax
 };
 
+#ifdef __clang__
+extern const bfd_arch_info_type bfd_x86_64_arch;
+#endif /* __clang__ */
 const bfd_arch_info_type bfd_x86_64_arch =
 {
   64, /* 32 bits in a word */
@@ -86,6 +98,9 @@ const bfd_arch_info_type bfd_x86_64_arch =
   &i8086_arch
 };
 
+#ifdef __clang__
+extern const bfd_arch_info_type bfd_i386_arch;
+#endif /* __clang__ */
 const bfd_arch_info_type bfd_i386_arch =
 {
   32,	/* 32 bits in a word */
@@ -101,3 +116,5 @@ const bfd_arch_info_type bfd_i386_arch =
   bfd_default_scan,
   &bfd_x86_64_arch
 };
+
+/* EOF */

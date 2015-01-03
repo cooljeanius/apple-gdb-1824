@@ -532,23 +532,20 @@ static const struct mn10300_reloc_map mn10300_reloc_map[] = {
   { BFD_RELOC_MN10300_RELATIVE, R_MN10300_RELATIVE },
 };
 
-/* Create the GOT section.  */
-
+/* Create the GOT section: */
 static bfd_boolean
-_bfd_mn10300_elf_create_got_section (abfd, info)
-     bfd * abfd;
-     struct bfd_link_info * info;
+_bfd_mn10300_elf_create_got_section(bfd *abfd, struct bfd_link_info *info)
 {
-  flagword   flags;
-  flagword   pltflags;
-  asection * s;
-  struct bfd_link_hash_entry * bh;
-  struct elf_link_hash_entry * h;
-  const struct elf_backend_data * bed = get_elf_backend_data (abfd);
+  flagword flags;
+  flagword pltflags;
+  asection *s;
+  struct bfd_link_hash_entry *bh;
+  struct elf_link_hash_entry *h;
+  const struct elf_backend_data *bed = get_elf_backend_data(abfd);
   int ptralign;
 
-  /* This function may be called more than once.  */
-  if (bfd_get_section_by_name (abfd, ".got") != NULL)
+  /* This function may be called more than once: */
+  if (bfd_get_section_by_name(abfd, ".got") != NULL)
     return TRUE;
 
   switch (bed->s->arch_size)
@@ -1797,8 +1794,8 @@ mn10300_elf_relax_section (abfd, sec, link_info, again)
 
 			  /* Tack on an ID so we can uniquely identify this
 			     local symbol in the global hash table.  */
-			  amt = strlen (sym_name) + 10;
-			  new_name = bfd_malloc (amt);
+			  amt = strlen(sym_name) + 10;
+			  new_name = (char *)bfd_malloc(amt);
 			  if (new_name == 0)
 			    goto error_return;
 
@@ -1902,8 +1899,8 @@ mn10300_elf_relax_section (abfd, sec, link_info, again)
 
 			  /* Tack on an ID so we can uniquely identify this
 			     local symbol in the global hash table.  */
-			  amt = strlen (sym_name) + 10;
-			  new_name = bfd_malloc (amt);
+			  amt = strlen(sym_name) + 10;
+			  new_name = (char *)bfd_malloc(amt);
 			  if (new_name == 0)
 			    goto error_return;
 
@@ -2074,8 +2071,8 @@ mn10300_elf_relax_section (abfd, sec, link_info, again)
 
 		  /* Tack on an ID so we can uniquely identify this
 		     local symbol in the global hash table.  */
-		  amt = strlen (sym_name) + 10;
-		  new_name = bfd_malloc (amt);
+		  amt = strlen(sym_name) + 10;
+		  new_name = (char *)bfd_malloc(amt);
 		  if (new_name == 0)
 		    goto error_return;
 		  sprintf (new_name, "%s_%08x", sym_name, sym_sec->id);
@@ -2327,7 +2324,7 @@ mn10300_elf_relax_section (abfd, sec, link_info, again)
 	    }
 	  /* Tack on an ID so we can uniquely identify this
 	     local symbol in the global hash table.  */
-	  new_name = bfd_malloc ((bfd_size_type) strlen (sym_name) + 10);
+	  new_name = (char *)bfd_malloc((bfd_size_type)strlen(sym_name) + 10);
 	  if (new_name == 0)
 	    goto error_return;
 	  sprintf (new_name, "%s_%08x", sym_name, sym_sec->id);

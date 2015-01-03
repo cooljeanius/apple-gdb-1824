@@ -50,20 +50,17 @@ static void reloc_processing
 #define SIGN_EXTEND_HWORD(HWORD) \
     (((HWORD) ^ 0x8000) - 0x8000)
 
-/* Provided the symbol, returns the value reffed.  */
-
+/* Provided the symbol, returns the value reffed: */
 static long
-get_symbol_value (symbol)
-     asymbol *symbol;
+get_symbol_value(asymbol *symbol)
 {
-  long relocation = 0;
+  long relocation = 0L;
 
-  if (bfd_is_com_section (symbol->section))
-    relocation = 0;
+  if (bfd_is_com_section(symbol->section))
+    relocation = 0L;
   else
-    relocation = symbol->value +
-      symbol->section->output_section->vma +
-      symbol->section->output_offset;
+    relocation = (symbol->value + symbol->section->output_section->vma
+                  + symbol->section->output_offset);
 
   return relocation;
 }
@@ -71,18 +68,11 @@ get_symbol_value (symbol)
 /* This function is in charge of performing all the 29k relocations.  */
 
 static bfd_reloc_status_type
-a29k_reloc (abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
-	    error_message)
-     bfd *abfd;
-     arelent *reloc_entry;
-     asymbol *symbol_in;
-     PTR data;
-     asection *input_section;
-     bfd *output_bfd;
-     char **error_message;
+a29k_reloc(bfd *abfd, arelent *reloc_entry, asymbol *symbol_in, PTR data,
+           asection *input_section, bfd *output_bfd, char **error_message)
 {
-  /* The consth relocation comes in two parts, we have to remember
-     the state between calls, in these variables.  */
+  /* The consth relocation comes in two parts, we have to remember the
+   * state between calls, in these variables: */
   static bfd_boolean part1_consth_active = FALSE;
   static unsigned long part1_consth_value;
   unsigned long insn;
@@ -90,8 +80,12 @@ a29k_reloc (abfd, reloc_entry, symbol_in, data, input_section, output_bfd,
   unsigned long unsigned_value;
   unsigned short r_type;
   long signed_value;
-  unsigned long addr = reloc_entry->address ; /*+ input_section->vma*/
-  bfd_byte  *hit_data =addr + (bfd_byte *) (data);
+  unsigned long addr = reloc_entry->address;
+  bfd_byte *hit_data = (addr + (bfd_byte *)(data));
+
+#if 0
+  addr = (addr + input_section->vma);
+#endif /* 0 */
 
   r_type = reloc_entry->howto->type;
 
@@ -260,17 +254,13 @@ static reloc_howto_type howto_table[] =
  reloc_processing(relent, reloc, symbols, abfd, section)
 
 static void
-reloc_processing (relent,reloc, symbols, abfd, section)
-     arelent *relent;
-     struct internal_reloc *reloc;
-     asymbol **symbols;
-     bfd *abfd;
-     asection *section;
+reloc_processing(arelent *relent, struct internal_reloc *reloc,
+                 asymbol **symbols, bfd *abfd, asection *section)
 {
-  static bfd_vma ihihalf_vaddr = (bfd_vma) -1;
+  static bfd_vma ihihalf_vaddr = (bfd_vma)-1;
 
   relent->address = reloc->r_vaddr;
-  relent->howto = howto_table + reloc->r_type;
+  relent->howto = (howto_table + reloc->r_type);
   if (reloc->r_type == R_IHCONST)
     {
       /* The address of an R_IHCONST should always be the address of
@@ -305,24 +295,19 @@ reloc_processing (relent,reloc, symbols, abfd, section)
       relent->address-= section->vma;
       if (reloc->r_type == R_IHIHALF)
 	ihihalf_vaddr = relent->address;
-      else if (ihihalf_vaddr != (bfd_vma) -1)
-	abort ();
+      else if (ihihalf_vaddr != (bfd_vma)-1)
+	abort();
     }
 }
 
-/* The reloc processing routine for the optimized COFF linker.  */
-
+/* The reloc processing routine for the optimized COFF linker: */
 static bfd_boolean
-coff_a29k_relocate_section (output_bfd, info, input_bfd, input_section,
-			    contents, relocs, syms, sections)
-     bfd *output_bfd ATTRIBUTE_UNUSED;
-     struct bfd_link_info *info;
-     bfd *input_bfd;
-     asection *input_section;
-     bfd_byte *contents;
-     struct internal_reloc *relocs;
-     struct internal_syment *syms;
-     asection **sections;
+coff_a29k_relocate_section(bfd *output_bfd ATTRIBUTE_UNUSED,
+                           struct bfd_link_info *info, bfd *input_bfd,
+                           asection *input_section, bfd_byte *contents,
+                           struct internal_reloc *relocs,
+                           struct internal_syment *syms,
+                           asection **sections)
 {
   struct internal_reloc *rel;
   struct internal_reloc *relend;
@@ -563,13 +548,12 @@ coff_a29k_relocate_section (output_bfd, info, input_bfd, input_section,
    is actually an addend, not a symbol index at all.  */
 
 static bfd_boolean
-coff_a29k_adjust_symndx (obfd, info, ibfd, sec, irel, adjustedp)
-     bfd *obfd ATTRIBUTE_UNUSED;
-     struct bfd_link_info *info ATTRIBUTE_UNUSED;
-     bfd *ibfd ATTRIBUTE_UNUSED;
-     asection *sec ATTRIBUTE_UNUSED;
-     struct internal_reloc *irel;
-     bfd_boolean *adjustedp;
+coff_a29k_adjust_symndx(bfd *obfd ATTRIBUTE_UNUSED,
+                        struct bfd_link_info *info ATTRIBUTE_UNUSED,
+                        bfd *ibfd ATTRIBUTE_UNUSED,
+                        asection *sec ATTRIBUTE_UNUSED,
+                        struct internal_reloc *irel,
+                        bfd_boolean *adjustedp)
 {
   if (irel->r_type == R_IHCONST)
     *adjustedp = TRUE;

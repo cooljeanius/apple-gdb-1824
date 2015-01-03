@@ -1081,15 +1081,15 @@ ecoff_add_string (ainfo, info, debug, fdr, string)
   bfd_size_type ret;
 
   symhdr = &debug->symbolic_header;
-  len = strlen (string);
+  len = strlen(string);
   if (info->relocatable)
     {
-      if (!add_memory_shuffle (ainfo, &ainfo->ss, &ainfo->ss_end, (PTR) string,
-			       len + 1))
+      if (!add_memory_shuffle(ainfo, &ainfo->ss, &ainfo->ss_end,
+                              (PTR)string, (len + 1)))
 	return -1;
       ret = symhdr->issMax;
-      symhdr->issMax += len + 1;
-      fdr->cbSs += len + 1;
+      symhdr->issMax += (len + 1);
+      fdr->cbSs += (len + 1);
     }
   else
     {
@@ -1202,18 +1202,18 @@ bfd_ecoff_debug_accumulate_other (handle, output_bfd, output_debug,
 					   output_swap->external_sym_size);
       if (!external_sym)
 	{
-	  bfd_set_error (bfd_error_no_memory);
+	  bfd_set_error(bfd_error_no_memory);
 	  return FALSE;
 	}
-      (*swap_sym_out) (output_bfd, &internal_sym, external_sym);
-      add_memory_shuffle (ainfo, &ainfo->sym, &ainfo->sym_end,
-			  external_sym,
-			  (unsigned long) output_swap->external_sym_size);
+      (*swap_sym_out)(output_bfd, &internal_sym, external_sym);
+      add_memory_shuffle(ainfo, &ainfo->sym, &ainfo->sym_end,
+                         external_sym,
+                         (unsigned long)output_swap->external_sym_size);
       ++fdr.csym;
       ++output_symhdr->isymMax;
     }
 
-  bfd_release (output_bfd, (PTR) symbols);
+  bfd_release(output_bfd, (PTR)symbols);
 
   /* Leave everything else in the FDR zeroed out.  This will cause
      the lang field to be langC.  The fBigendian field will
@@ -1226,10 +1226,10 @@ bfd_ecoff_debug_accumulate_other (handle, output_bfd, output_debug,
       bfd_set_error (bfd_error_no_memory);
       return FALSE;
     }
-  (*output_swap->swap_fdr_out) (output_bfd, &fdr, external_fdr);
-  add_memory_shuffle (ainfo, &ainfo->fdr, &ainfo->fdr_end,
-		      external_fdr,
-		      (unsigned long) output_swap->external_fdr_size);
+  (*output_swap->swap_fdr_out)(output_bfd, &fdr, external_fdr);
+  add_memory_shuffle(ainfo, &ainfo->fdr, &ainfo->fdr_end,
+                     external_fdr,
+                     (unsigned long)output_swap->external_fdr_size);
 
   ++output_symhdr->ifdMax;
 
@@ -1452,24 +1452,20 @@ bfd_ecoff_debug_size (abfd, debug, swap)
   return tot;
 }
 
-/* Write out the ECOFF symbolic header, given the file position it is
-   going to be placed at.  This assumes that the counts are set
-   correctly.  */
-
+/* Write out the ECOFF symbolic header, given the file position at which
+ * it is going to be placed.  This assumes that the counts are set
+ * correctly.  */
 static bfd_boolean
-ecoff_write_symhdr (abfd, debug, swap, where)
-     bfd *abfd;
-     struct ecoff_debug_info *debug;
-     const struct ecoff_debug_swap *swap;
-     file_ptr where;
+ecoff_write_symhdr(bfd *abfd, struct ecoff_debug_info *debug,
+                   const struct ecoff_debug_swap *swap, file_ptr where)
 {
   HDRR * const symhdr = &debug->symbolic_header;
   char *buff = NULL;
 
-  ecoff_align_debug (abfd, debug, swap);
+  ecoff_align_debug(abfd, debug, swap);
 
-  /* Go to the right location in the file.  */
-  if (bfd_seek (abfd, where, SEEK_SET) != 0)
+  /* Go to the right location in the file: */
+  if (bfd_seek(abfd, where, SEEK_SET) != 0)
     return FALSE;
 
   where += swap->external_hdr_size;
@@ -1483,37 +1479,37 @@ ecoff_write_symhdr (abfd, debug, swap, where)
   else \
     { \
       symhdr->offset = where; \
-      where += symhdr->count * size; \
+      where += (symhdr->count * size); \
     }
 
-  SET (cbLineOffset, cbLine, sizeof (unsigned char));
-  SET (cbDnOffset, idnMax, swap->external_dnr_size);
-  SET (cbPdOffset, ipdMax, swap->external_pdr_size);
-  SET (cbSymOffset, isymMax, swap->external_sym_size);
-  SET (cbOptOffset, ioptMax, swap->external_opt_size);
-  SET (cbAuxOffset, iauxMax, sizeof (union aux_ext));
-  SET (cbSsOffset, issMax, sizeof (char));
-  SET (cbSsExtOffset, issExtMax, sizeof (char));
-  SET (cbFdOffset, ifdMax, swap->external_fdr_size);
-  SET (cbRfdOffset, crfd, swap->external_rfd_size);
-  SET (cbExtOffset, iextMax, swap->external_ext_size);
+  SET(cbLineOffset, cbLine, sizeof(unsigned char));
+  SET(cbDnOffset, idnMax, swap->external_dnr_size);
+  SET(cbPdOffset, ipdMax, swap->external_pdr_size);
+  SET(cbSymOffset, isymMax, swap->external_sym_size);
+  SET(cbOptOffset, ioptMax, swap->external_opt_size);
+  SET(cbAuxOffset, iauxMax, sizeof(union aux_ext));
+  SET(cbSsOffset, issMax, sizeof(char));
+  SET(cbSsExtOffset, issExtMax, sizeof(char));
+  SET(cbFdOffset, ifdMax, swap->external_fdr_size);
+  SET(cbRfdOffset, crfd, swap->external_rfd_size);
+  SET(cbExtOffset, iextMax, swap->external_ext_size);
 #undef SET
 
-  buff = (PTR) bfd_malloc (swap->external_hdr_size);
-  if (buff == NULL && swap->external_hdr_size != 0)
+  buff = (char *)bfd_malloc(swap->external_hdr_size);
+  if ((buff == NULL) && (swap->external_hdr_size != 0))
     goto error_return;
 
-  (*swap->swap_hdr_out) (abfd, symhdr, buff);
-  if (bfd_bwrite (buff, swap->external_hdr_size, abfd)
+  (*swap->swap_hdr_out)(abfd, symhdr, buff);
+  if (bfd_bwrite(buff, swap->external_hdr_size, abfd)
       != swap->external_hdr_size)
     goto error_return;
 
   if (buff != NULL)
-    free (buff);
+    free(buff);
   return TRUE;
  error_return:
   if (buff != NULL)
-    free (buff);
+    free(buff);
   return FALSE;
 }
 
@@ -1841,7 +1837,7 @@ mk_fdrtab (abfd, debug_info, debug_swap, line_info)
 	     'lookup_line'.  */
 	  /* The address of the first PDR is the offset of that
 	     procedure relative to the beginning of file FDR.  */
-	  tab->base_addr = fdr_ptr->adr; 
+	  tab->base_addr = fdr_ptr->adr;
 	}
       else
 	{
@@ -1943,7 +1939,7 @@ lookup_line (abfd, debug_info, debug_swap, line_info)
   i = fdrtab_lookup (line_info, offset);
   if (i < 0)
     return FALSE;		/* no FDR, no fun...  */
-  
+
   /* eraxxon: 'fdrtab_lookup' doesn't give what we want, at least for Compaq's
      C++ compiler 6.2.  Consider three FDRs with starting addresses of x, y,
      and z, respectively, such that x < y < z.  Assume further that
@@ -2108,7 +2104,7 @@ lookup_line (abfd, debug_info, debug_swap, line_info)
 	 read stabs FDRs as ECOFF ones.  However, I don't think this will
 	 harm anything.  */
       i = 0;
-      
+
       /* Search FDR list starting at tab[i] for the PDR that best matches
          OFFSET.  Normally, the FDR list is only one entry long.  */
       best_fdr = NULL;
@@ -2153,7 +2149,7 @@ lookup_line (abfd, debug_info, debug_swap, line_info)
 
 	  if (!best_pdr || (min_dist >= 0 && min_dist < best_dist))
 	    {
-	      best_dist = (bfd_vma) min_dist;  
+	      best_dist = (bfd_vma) min_dist;
 	      best_fdr = fdr_ptr;
 	      best_pdr = pdr_hold;
 	    }
@@ -2291,38 +2287,38 @@ lookup_line (abfd, debug_info, debug_swap, line_info)
 
       sym_ptr = ((char *) debug_info->external_sym
 		 + (fdr_ptr->isymBase + 2) * external_sym_size);
-      sym_ptr_end = sym_ptr + (fdr_ptr->csym - 2) * external_sym_size;
+      sym_ptr_end = (sym_ptr + (fdr_ptr->csym - 2) * external_sym_size);
       for (;
-	   sym_ptr < sym_ptr_end && (! past_line || ! past_fn);
+	   (sym_ptr < sym_ptr_end) && (! past_line || ! past_fn);
 	   sym_ptr += external_sym_size)
 	{
 	  SYMR sym;
 
-	  (*debug_swap->swap_sym_in) (abfd, sym_ptr, &sym);
+	  (*debug_swap->swap_sym_in)(abfd, sym_ptr, &sym);
 
-	  if (ECOFF_IS_STAB (&sym))
+	  if (ECOFF_IS_STAB(&sym))
 	    {
-	      switch (ECOFF_UNMARK_STAB (sym.index))
+	      switch (ECOFF_UNMARK_STAB(sym.index))
 		{
 		case N_SO:
 		  main_file_name = current_file_name =
-		    debug_info->ss + fdr_ptr->issBase + sym.iss;
+		    (debug_info->ss + fdr_ptr->issBase + sym.iss);
 
 		  /* Check the next symbol to see if it is also an
                      N_SO symbol.  */
-		  if (sym_ptr + external_sym_size < sym_ptr_end)
+		  if ((sym_ptr + external_sym_size) < sym_ptr_end)
 		    {
 		      SYMR nextsym;
 
-		      (*debug_swap->swap_sym_in) (abfd,
-						  sym_ptr + external_sym_size,
-						  &nextsym);
-		      if (ECOFF_IS_STAB (&nextsym)
-			  && ECOFF_UNMARK_STAB (nextsym.index) == N_SO)
+		      (*debug_swap->swap_sym_in)(abfd,
+                                                 sym_ptr + external_sym_size,
+                                                 &nextsym);
+		      if (ECOFF_IS_STAB(&nextsym)
+			  && (ECOFF_UNMARK_STAB(nextsym.index) == N_SO))
 			{
  			  directory_name = current_file_name;
 			  main_file_name = current_file_name =
-			    debug_info->ss + fdr_ptr->issBase + nextsym.iss;
+			    (debug_info->ss + fdr_ptr->issBase + nextsym.iss);
 			  sym_ptr += external_sym_size;
 			}
 		    }
@@ -2330,7 +2326,7 @@ lookup_line (abfd, debug_info, debug_swap, line_info)
 
 		case N_SOL:
 		  current_file_name =
-		    debug_info->ss + fdr_ptr->issBase + sym.iss;
+		    (debug_info->ss + fdr_ptr->issBase + sym.iss);
 		  break;
 
 		case N_FUN:
@@ -2340,9 +2336,12 @@ lookup_line (abfd, debug_info, debug_swap, line_info)
 		    {
 		      low_func_vma = sym.value;
 		      function_name =
-			debug_info->ss + fdr_ptr->issBase + sym.iss;
+			(debug_info->ss + fdr_ptr->issBase + sym.iss);
 		    }
 		  break;
+
+                default:
+                  break;
 		}
 	    }
 	  else if (sym.st == stLabel && sym.index != indexNil)

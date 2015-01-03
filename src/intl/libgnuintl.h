@@ -1,4 +1,4 @@
-/* Message catalogs for internationalization.
+/* lib[gnu]intl.h: Message catalogs for internationalization.
    Copyright (C) 1995-1997, 2000-2003 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify it

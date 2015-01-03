@@ -112,7 +112,7 @@ bfd_pef_parse_traceback_table(bfd *abfd, asection *section,
   if ((pos + 8) > len) {
     return -1;
   }
-  memcpy(&table, (buf + pos), 8);
+  memcpy(&table, (buf + pos), (size_t)8UL);
 
   /* Calling code relies on returned symbols having a name and
      correct offset.  */
@@ -199,17 +199,18 @@ bfd_pef_parse_traceback_table(bfd *abfd, asection *section,
         return -1;
       }
 
-      namebuf = (char *)bfd_alloc(abfd, (name.name_len + 1));
+      namebuf = (char *)bfd_alloc(abfd,
+                                  (bfd_size_type)(name.name_len + 1UL));
       if (namebuf == NULL) {
         return -1;
       }
 
-      memcpy(namebuf, (buf + pos + offset), name.name_len);
+      memcpy(namebuf, (buf + pos + offset), (size_t)name.name_len);
       namebuf[name.name_len] = '\0';
 
       /* Strip leading period inserted by compiler: */
       if (namebuf[0] == '.') {
-        memmove(namebuf, (namebuf + 1), (name.name_len + 1));
+        memmove(namebuf, (namebuf + 1), (size_t)(name.name_len + 1UL));
       }
 
       sym->name = namebuf;
@@ -248,6 +249,8 @@ bfd_pef_print_symbol(bfd *abfd, void * afile, asymbol *symbol,
     case bfd_print_symbol_name:
       fprintf(file, "%s", symbol->name);
       break;
+    case bfd_print_symbol_more: /* Fall through: */
+    case bfd_print_symbol_all: /* Fall through: */
     default:
       bfd_print_symbol_vandf(abfd, (void *)file, symbol);
       fprintf(file, " %-5s %s", symbol->section->name, symbol->name);
@@ -258,9 +261,11 @@ bfd_pef_print_symbol(bfd *abfd, void * afile, asymbol *symbol,
 	  size_t len = symbol->udata.i;
 	  int ret;
 
-	  bfd_get_section_contents(abfd, symbol->section, buf, offset, len);
+	  bfd_get_section_contents(abfd, symbol->section, buf,
+                                   (file_ptr)offset, len);
 	  ret = bfd_pef_parse_traceback_table(abfd, symbol->section, buf,
-                                              len, 0, NULL, file);
+                                              len, (size_t)0UL, NULL,
+                                              file);
           if (ret < 0) {
             fprintf(file, " [ERROR]");
           }
@@ -414,8 +419,8 @@ bfd_pef_scan_section(bfd *abfd, bfd_pef_section *section)
 {
   unsigned char buf[28];
 
-  bfd_seek(abfd, section->header_offset, SEEK_SET);
-  if (bfd_bread((void *)buf, 28, abfd) != 28) {
+  bfd_seek(abfd, (file_ptr)section->header_offset, SEEK_SET);
+  if (bfd_bread((void *)buf, (bfd_size_type)28UL, abfd) != 28) {
     return -1;
   }
 
@@ -482,7 +487,7 @@ bfd_pef_print_loader_section(bfd *abfd, FILE *file)
   if ((bfd_seek(abfd, loadersec->filepos, SEEK_SET) < 0)
       || (bfd_bread((void *)loaderbuf, loaderlen, abfd) != loaderlen)
       || (loaderlen < 56)
-      || (bfd_pef_parse_loader_header(abfd, loaderbuf, 56, &header) < 0))
+      || (bfd_pef_parse_loader_header(abfd, loaderbuf, (size_t)56UL, &header) < 0))
     {
       free(loaderbuf);
       return -1;
@@ -520,7 +525,8 @@ bfd_pef_scan_start_address (bfd *abfd)
   if (loaderlen < 56) {
     goto error;
   }
-  ret = bfd_pef_parse_loader_header(abfd, loaderbuf, 56, &header);
+  ret = bfd_pef_parse_loader_header(abfd, loaderbuf, (size_t)56UL,
+                                    &header);
   if (ret < 0) {
     goto error;
   }
@@ -580,8 +586,8 @@ bfd_pef_scan(bfd *abfd, bfd_pef_header *header, bfd_pef_data_struct *mdata)
 
   if (header->section_count != 0)
     {
-      mdata->sections = bfd_alloc(abfd,
-                                  (header->section_count * sizeof(bfd_pef_section)));
+      mdata->sections = (bfd_pef_section *)bfd_alloc(abfd,
+                                                     (header->section_count * sizeof(bfd_pef_section)));
 
       if (mdata->sections == NULL) {
         return -1;
@@ -611,9 +617,9 @@ bfd_pef_read_header(bfd *abfd, bfd_pef_header *header)
 {
   unsigned char buf[40];
 
-  bfd_seek(abfd, 0, SEEK_SET);
+  bfd_seek(abfd, (file_ptr)0L, SEEK_SET);
 
-  if (bfd_bread((void *)buf, 40, abfd) != 40) {
+  if (bfd_bread((void *)buf, (bfd_size_type)40UL, abfd) != 40) {
     return -1;
   }
 
@@ -793,12 +799,12 @@ bfd_pef_parse_function_stubs(bfd *abfd, asection *codesec,
 {
   const char *const sprefix = "__stub_";
 
-  size_t codepos = 0;
-  unsigned long count = 0;
+  size_t codepos = 0UL;
+  unsigned long count = 0UL;
 
   bfd_pef_loader_header header;
-  bfd_pef_imported_library *libraries = NULL;
-  bfd_pef_imported_symbol *imports = NULL;
+  bfd_pef_imported_library *libraries = (bfd_pef_imported_library *)NULL;
+  bfd_pef_imported_symbol *imports = (bfd_pef_imported_symbol *)NULL;
 
   unsigned long i;
   int ret;
@@ -807,13 +813,14 @@ bfd_pef_parse_function_stubs(bfd *abfd, asection *codesec,
     goto error;
   }
 
-  ret = bfd_pef_parse_loader_header(abfd, loaderbuf, 56, &header);
+  ret = bfd_pef_parse_loader_header(abfd, loaderbuf, (size_t)56UL,
+                                    &header);
   if (ret < 0) {
     goto error;
   }
 
-  libraries = bfd_malloc(header.imported_library_count * sizeof(bfd_pef_imported_library));
-  imports = bfd_malloc(header.total_imported_symbol_count * sizeof(bfd_pef_imported_symbol));
+  libraries = (bfd_pef_imported_library *)bfd_malloc(header.imported_library_count * sizeof(bfd_pef_imported_library));
+  imports = (bfd_pef_imported_symbol *)bfd_malloc(header.total_imported_symbol_count * sizeof(bfd_pef_imported_symbol));
 
   if (loaderlen < (56 + (header.imported_library_count * 24))) {
     goto error;
@@ -822,7 +829,7 @@ bfd_pef_parse_function_stubs(bfd *abfd, asection *codesec,
     {
       ret = bfd_pef_parse_imported_library(abfd,
                                            (loaderbuf + 56 + (i * 24)),
-                                           24, &libraries[i]);
+                                           (size_t)24UL, &libraries[i]);
       if (ret < 0) {
         goto error;
       }
@@ -836,7 +843,7 @@ bfd_pef_parse_function_stubs(bfd *abfd, asection *codesec,
     {
       ret = (bfd_pef_parse_imported_symbol(abfd,
 	      (loaderbuf + 56 + (header.imported_library_count * 24) + (i * 4)),
-	      4, &imports[i]));
+	      (size_t)4UL, &imports[i]));
       if (ret < 0) {
         goto error;
       }
@@ -849,8 +856,10 @@ bfd_pef_parse_function_stubs(bfd *abfd, asection *codesec,
       asymbol sym;
       const char *symname;
       char *name;
-      unsigned long index;
+      unsigned long ulindex;
+#ifdef ALLOW_SHADOWING
       int ret;
+#endif /* ALLOW_SHADOWING */
 
       if (csym && (csym[count] == NULL)) {
         break;
@@ -861,7 +870,7 @@ bfd_pef_parse_function_stubs(bfd *abfd, asection *codesec,
 
       while ((codepos + 4) <= codelen)
 	{
-          if ((bfd_getb32 (codebuf + codepos) & 0xffff0000) == 0x81820000) {
+          if ((bfd_getb32(codebuf + codepos) & 0xffff0000) == 0x81820000) {
             break;
           }
 	  codepos += 4;
@@ -871,15 +880,15 @@ bfd_pef_parse_function_stubs(bfd *abfd, asection *codesec,
         break;
       }
 
-      ret = bfd_pef_parse_function_stub(abfd, (codebuf + codepos), 24,
-                                        &index);
+      ret = bfd_pef_parse_function_stub(abfd, (codebuf + codepos),
+                                        (size_t)24UL, &ulindex);
       if (ret < 0)
 	{
 	  codepos += 24;
 	  continue;
 	}
 
-      if (index >= header.total_imported_symbol_count)
+      if (ulindex >= header.total_imported_symbol_count)
 	{
 	  codepos += 24;
 	  continue;
@@ -889,13 +898,13 @@ bfd_pef_parse_function_stubs(bfd *abfd, asection *codesec,
 	size_t max, namelen;
 	const char *s;
 
-	if (loaderlen < (header.loader_strings_offset + imports[index].name)) {
+	if (loaderlen < (header.loader_strings_offset + imports[ulindex].name)) {
           goto error;
 	}
 
-	max = (loaderlen - (header.loader_strings_offset + imports[index].name));
+	max = (loaderlen - (header.loader_strings_offset + imports[ulindex].name));
 	symname = (char *)loaderbuf;
-	symname += (header.loader_strings_offset + imports[index].name);
+	symname += (header.loader_strings_offset + imports[ulindex].name);
 	namelen = 0;
 	for (s = symname; s < (symname + max); s++)
 	  {
@@ -1083,7 +1092,7 @@ bfd_pef_canonicalize_symtab(bfd *abfd, asymbol **alocation)
 static asymbol *
 bfd_pef_make_empty_symbol(bfd *abfd)
 {
-  return bfd_alloc(abfd, sizeof(asymbol));
+  return (asymbol *)bfd_alloc(abfd, sizeof(asymbol));
 }
 
 static void
@@ -1099,9 +1108,12 @@ bfd_pef_sizeof_headers(bfd *abfd ATTRIBUTE_UNUSED, bfd_boolean exec ATTRIBUTE_UN
   return 0;
 }
 
+#ifdef __clang__
+extern const bfd_target pef_vec;
+#endif /* __clang__ */
 const bfd_target pef_vec =
 {
-  "pef",			/* Name.  */
+  (char *)"pef",		/* Name.  */
   bfd_target_pef_flavour,	/* Flavour.  */
   BFD_ENDIAN_BIG,		/* Byteorder.  */
   BFD_ENDIAN_BIG,		/* Header_byteorder.  */
@@ -1167,9 +1179,9 @@ bfd_pef_xlib_read_header(bfd *abfd, bfd_pef_xlib_header *header)
 {
   unsigned char buf[76];
 
-  bfd_seek(abfd, 0, SEEK_SET);
+  bfd_seek(abfd, (file_ptr)0L, SEEK_SET);
 
-  if (bfd_bread((void *)buf, 76, abfd) != 76) {
+  if (bfd_bread((void *)buf, (bfd_size_type)76UL, abfd) != 76) {
     return -1;
   }
 
@@ -1198,11 +1210,11 @@ bfd_pef_xlib_read_header(bfd *abfd, bfd_pef_xlib_header *header)
 }
 
 static int
-bfd_pef_xlib_scan (bfd *abfd, bfd_pef_xlib_header *header)
+bfd_pef_xlib_scan(bfd *abfd, bfd_pef_xlib_header *header)
 {
-  bfd_pef_xlib_data_struct *mdata = NULL;
+  bfd_pef_xlib_data_struct *mdata = (bfd_pef_xlib_data_struct *)NULL;
 
-  mdata = bfd_alloc (abfd, sizeof (* mdata));
+  mdata = (bfd_pef_xlib_data_struct *)bfd_alloc(abfd, sizeof(* mdata));
   if (mdata == NULL) {
     return -1;
   }
@@ -1254,9 +1266,12 @@ bfd_pef_xlib_object_p(bfd *abfd)
   return abfd->xvec;
 }
 
+#ifdef __clang__
+extern const bfd_target pef_xlib_vec;
+#endif /* __clang__ */
 const bfd_target pef_xlib_vec =
 {
-  "pef-xlib",			/* Name.  */
+  (char *)"pef-xlib",		/* Name.  */
   bfd_target_pef_xlib_flavour,	/* Flavour.  */
   BFD_ENDIAN_BIG,		/* Byteorder */
   BFD_ENDIAN_BIG,		/* Header_byteorder.  */
@@ -1307,5 +1322,12 @@ const bfd_target pef_xlib_vec =
 
   NULL
 };
+
+#ifdef bfd_pef_xlib_set_section_contents
+# undef bfd_pef_xlib_set_section_contents
+#endif /* bfd_pef_xlib_set_section_contents */
+#ifdef bfd_pef_xlib_set_section_contents_in_window
+# undef bfd_pef_xlib_set_section_contents_in_window
+#endif /* bfd_pef_xlib_set_section_contents_in_window */
 
 /* EOF */

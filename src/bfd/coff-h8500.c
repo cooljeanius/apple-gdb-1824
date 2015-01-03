@@ -69,11 +69,9 @@ static reloc_howto_type r_high16 =
 HOWTO (R_H8500_HIGH16, 0, 1, 8, FALSE, 0,
        complain_overflow_dont, 0, "r_high16", TRUE, 0x000ffff, 0x0000ffff, FALSE);
 
-/* Turn a howto into a reloc number.  */
-
+/* Turn a howto into a reloc number: */
 static int
-coff_h8500_select_reloc (howto)
-     reloc_howto_type *howto;
+coff_h8500_select_reloc(reloc_howto_type *howto)
 {
   return howto->type;
 }
@@ -81,7 +79,9 @@ coff_h8500_select_reloc (howto)
 #define SELECT_RELOC(x,howto) x.r_type = coff_h8500_select_reloc(howto)
 
 #define BADMAG(x) H8500BADMAG(x)
-#define H8500 1			/* Customize coffcode.h */
+#ifndef H8500
+# define H8500 1		/* Customize coffcode.h */
+#endif /* !H8500 */
 
 #define __A_MAGIC_SET__
 
@@ -92,12 +92,9 @@ coff_h8500_select_reloc (howto)
   dst->r_stuff[0] = 'S'; \
   dst->r_stuff[1] = 'C';
 
-/* Code to turn a r_type into a howto ptr, uses the above howto table.  */
-
+/* Code to turn a r_type into a howto ptr, uses the above howto table: */
 static void
-rtype2howto (internal, dst)
-     arelent * internal;
-     struct internal_reloc *dst;
+rtype2howto(arelent *internal, struct internal_reloc *dst)
 {
   switch (dst->r_type)
     {
@@ -144,18 +141,15 @@ rtype2howto (internal, dst)
 #define RELOC_PROCESSING(relent,reloc,symbols,abfd,section) \
  reloc_processing(relent, reloc, symbols, abfd, section)
 
-static void reloc_processing (relent, reloc, symbols, abfd, section)
-     arelent * relent;
-     struct internal_reloc *reloc;
-     asymbol ** symbols;
-     bfd * abfd;
-     asection * section;
+static void reloc_processing(arelent *relent, struct internal_reloc *reloc,
+                             asymbol **symbols, bfd *abfd,
+                             asection *section)
 {
   relent->address = reloc->r_vaddr;
-  rtype2howto (relent, reloc);
+  rtype2howto(relent, reloc);
 
   if (reloc->r_symndx > 0)
-    relent->sym_ptr_ptr = symbols + obj_convert (abfd)[reloc->r_symndx];
+    relent->sym_ptr_ptr = (symbols + obj_convert(abfd)[reloc->r_symndx]);
   else
     relent->sym_ptr_ptr = bfd_abs_section_ptr->symbol_ptr_ptr;
 
@@ -164,24 +158,19 @@ static void reloc_processing (relent, reloc, symbols, abfd, section)
 }
 
 static void
-extra_case (in_abfd, link_info, link_order, reloc, data, src_ptr, dst_ptr)
-     bfd *in_abfd;
-     struct bfd_link_info *link_info;
-     struct bfd_link_order *link_order;
-     arelent *reloc;
-     bfd_byte *data;
-     unsigned int *src_ptr;
-     unsigned int *dst_ptr;
+extra_case(bfd *in_abfd, struct bfd_link_info *link_info,
+           struct bfd_link_order *link_order, arelent *reloc,
+           bfd_byte *data, unsigned int *src_ptr, unsigned int *dst_ptr)
 {
-  bfd_byte *d = data+*dst_ptr;
+  bfd_byte *d = (data + *dst_ptr);
   asection *input_section = link_order->u.indirect.section;
 
   switch (reloc->howto->type)
     {
     case R_H8500_IMM8:
-      bfd_put_8 (in_abfd,
-		 bfd_coff_reloc16_get_value (reloc, link_info, input_section),
-		 d);
+      bfd_put_8(in_abfd,
+                bfd_coff_reloc16_get_value(reloc, link_info,
+                                           input_section), d);
       (*dst_ptr) += 1;
       (*src_ptr) += 1;
       break;
@@ -299,10 +288,16 @@ extra_case (in_abfd, link_info, link_order, reloc, data, src_ptr, dst_ptr)
 
 #include "coffcode.h"
 
-#undef  coff_bfd_get_relocated_section_contents
+#undef coff_bfd_get_relocated_section_contents
 #undef coff_bfd_relax_section
 #define coff_bfd_get_relocated_section_contents \
   bfd_coff_reloc16_get_relocated_section_contents
 #define coff_bfd_relax_section bfd_coff_reloc16_relax_section
 
-CREATE_BIG_COFF_TARGET_VEC (h8500coff_vec, "coff-h8500", 0, 0, '_', NULL, COFF_SWAP_TABLE)
+CREATE_BIG_COFF_TARGET_VEC(h8500coff_vec, "coff-h8500", 0, 0, '_', NULL, COFF_SWAP_TABLE)
+
+#ifdef H8500
+# undef H8500
+#endif /* H8500 */
+
+/* EOF */

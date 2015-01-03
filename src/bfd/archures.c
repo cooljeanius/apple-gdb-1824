@@ -1,4 +1,4 @@
-/* BFD library support routines for architectures.
+/* archures.c: BFD library support routines for architectures.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
    2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
@@ -18,7 +18,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -607,7 +607,7 @@ bfd_arch_list (void)
   const bfd_arch_info_type * const *app;
   bfd_size_type amt;
 
-  /* Determine the number of architectures.  */
+  /* Determine the number of architectures: */
   vec_length = 0;
   for (app = bfd_archures_list; *app != NULL; app++)
     {
@@ -618,12 +618,12 @@ bfd_arch_list (void)
 	}
     }
 
-  amt = (vec_length + 1) * sizeof(char **);
+  amt = (bfd_size_type)((size_t)(vec_length + 1) * sizeof(char **));
   name_list = (const char **)bfd_malloc(amt);
   if (name_list == NULL)
     return NULL;
 
-  /* Point the list at each of the names.  */
+  /* Point the list at each of the names: */
   name_ptr = name_list;
   for (app = bfd_archures_list; *app != NULL; app++)
     {
@@ -797,9 +797,9 @@ DESCRIPTION
 */
 
 unsigned int
-bfd_arch_bits_per_byte (bfd *abfd)
+bfd_arch_bits_per_byte(bfd *abfd)
 {
-  return abfd->arch_info->bits_per_byte;
+  return (unsigned int)abfd->arch_info->bits_per_byte;
 }
 
 /*
@@ -815,9 +815,9 @@ DESCRIPTION
 */
 
 unsigned int
-bfd_arch_bits_per_address (bfd *abfd)
+bfd_arch_bits_per_address(bfd *abfd)
 {
-  return abfd->arch_info->bits_per_address;
+  return (unsigned int)abfd->arch_info->bits_per_address;
 }
 
 /*
@@ -875,32 +875,32 @@ bfd_default_scan (const bfd_arch_info_type *info, const char *string)
 
   /* Exact match of the architecture name (ARCH_NAME) and also the
      default architecture?  */
-  if (strcasecmp (string, info->arch_name) == 0
+  if ((strcasecmp(string, info->arch_name) == 0)
       && info->the_default)
     return TRUE;
 
   /* Exact match of the machine name (PRINTABLE_NAME)?  */
-  if (strcasecmp (string, info->printable_name) == 0)
+  if (strcasecmp(string, info->printable_name) == 0)
     return TRUE;
 
   /* Given that printable_name contains no colon, attempt to match:
      ARCH_NAME [ ":" ] PRINTABLE_NAME?  */
-  printable_name_colon = strchr (info->printable_name, ':');
+  printable_name_colon = strchr(info->printable_name, ':');
   if (printable_name_colon == NULL)
     {
-      size_t strlen_arch_name = strlen (info->arch_name);
-      if (strncasecmp (string, info->arch_name, strlen_arch_name) == 0)
+      size_t strlen_arch_name = strlen(info->arch_name);
+      if (strncasecmp(string, info->arch_name, strlen_arch_name) == 0)
 	{
 	  if (string[strlen_arch_name] == ':')
 	    {
-	      if (strcasecmp (string + strlen_arch_name + 1,
-			      info->printable_name) == 0)
+	      if (strcasecmp((string + strlen_arch_name + 1),
+                             info->printable_name) == 0)
 		return TRUE;
 	    }
 	  else
 	    {
-	      if (strcasecmp (string + strlen_arch_name,
-			      info->printable_name) == 0)
+	      if (strcasecmp((string + strlen_arch_name),
+                             info->printable_name) == 0)
 		return TRUE;
 	    }
 	}
@@ -910,10 +910,11 @@ bfd_default_scan (const bfd_arch_info_type *info, const char *string)
      Attempt to match: <arch> <mach>?  */
   if (printable_name_colon != NULL)
     {
-      size_t colon_index = printable_name_colon - info->printable_name;
-      if (strncasecmp (string, info->printable_name, colon_index) == 0
-	  && strcasecmp (string + colon_index,
-			 info->printable_name + colon_index + 1) == 0)
+      size_t colon_index;
+      colon_index = (size_t)(printable_name_colon - info->printable_name);
+      if ((strncasecmp(string, info->printable_name, colon_index) == 0)
+	  && (strcasecmp((string + colon_index),
+			 (info->printable_name + colon_index + 1)) == 0))
 	return TRUE;
     }
 
@@ -944,26 +945,24 @@ bfd_default_scan (const bfd_arch_info_type *info, const char *string)
   if (*ptr_src == 0)
     {
       /* Nothing more, then only keep this one if it is the default
-	 machine for this architecture.  */
+       * machine for this architecture: */
       return info->the_default;
     }
 
-  number = 0;
-  while (ISDIGIT (*ptr_src))
+  number = 0UL;
+  while (ISDIGIT(*ptr_src))
     {
-      number = number * 10 + *ptr_src - '0';
+      number = ((number * 10UL) + (unsigned long)*ptr_src - '0');
       ptr_src++;
     }
 
   /* NOTE: The below is retained for compatibility only.
-     PLEASE DO NOT ADD TO THIS CODE.  */
-
+   * PLEASE DO NOT ADD TO THIS CODE: */
   switch (number)
     {
       /* FIXME: These are needed to parse IEEE objects.  */
-      /* The following seven case's are here only for compatibility with
-	 older binutils (at least IEEE objects from binutils 2.9.1 require
-	 them).  */
+      /* The following 7 cases are here only for compatibility w/older
+       * binutils (at least IEEE objs from binutils 2.9.1 require them): */
     case bfd_mach_m68000:
     case bfd_mach_m68010:
     case bfd_mach_m68020:
@@ -1185,12 +1184,15 @@ DESCRIPTION
 */
 
 unsigned int
-bfd_arch_mach_octets_per_byte (enum bfd_architecture arch,
-			       unsigned long mach)
+bfd_arch_mach_octets_per_byte(enum bfd_architecture arch,
+                              unsigned long mach)
 {
-  const bfd_arch_info_type *ap = bfd_lookup_arch (arch, mach);
+  const bfd_arch_info_type *ap = bfd_lookup_arch(arch, mach);
 
-  if (ap)
-    return ap->bits_per_byte / 8;
-  return 1;
+  if (ap) {
+    return (unsigned int)((unsigned int)ap->bits_per_byte / 8U);
+  }
+  return 1U;
 }
+
+/* End of archures.c */

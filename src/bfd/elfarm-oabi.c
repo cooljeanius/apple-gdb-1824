@@ -1,4 +1,4 @@
-/* 32-bit ELF support for ARM old abi option.
+/* elfarm-oabi.c: 32-bit ELF support for ARM old abi option.
    Copyright 1999, 2000, 2001, 2002 Free Software Foundation, Inc.
 
    This file is part of BFD, the Binary File Descriptor library.
@@ -15,7 +15,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307  */
 
 #define OLD_ARM_ABI
 #define bfd_elf32_arm_allocate_interworking_sections \
@@ -407,20 +407,21 @@ static const struct elf32_arm_reloc_map elf32_arm_reloc_map[] =
   };
 
 static reloc_howto_type *
-elf32_arm_reloc_type_lookup (abfd, code)
-     bfd * abfd ATTRIBUTE_UNUSED;
-     bfd_reloc_code_real_type code;
+elf32_arm_reloc_type_lookup(bfd * abfd ATTRIBUTE_UNUSED,
+                            bfd_reloc_code_real_type code)
 {
   unsigned int i;
 
-  for (i = NUM_ELEM (elf32_arm_reloc_map); i--;)
+  for (i = NUM_ELEM(elf32_arm_reloc_map); i--;)
     if (elf32_arm_reloc_map[i].bfd_reloc_val == code)
-      return & elf32_arm_howto_table [elf32_arm_reloc_map[i].elf_reloc_val];
+      return &elf32_arm_howto_table[elf32_arm_reloc_map[i].elf_reloc_val];
 
   if (code == BFD_RELOC_ARM_PLT32)
-    return find_howto (R_ARM_PLT32);
+    return find_howto(R_ARM_PLT32);
 
   return NULL;
 }
 
 #include "elf32-arm.h"
+
+/* EOF */

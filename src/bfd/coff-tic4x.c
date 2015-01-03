@@ -33,25 +33,24 @@
 #define	F_LSYMS		F_LSYMS_TICOFF
 
 static bfd_boolean ticoff_bfd_is_local_label_name
-    PARAMS ((bfd *, const char *));
+    PARAMS((bfd *, const char *));
 static bfd_reloc_status_type tic4x_relocation
-    PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char ** ));
+    PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char ** ));
 static reloc_howto_type *tic4x_coff_reloc_type_lookup
-    PARAMS ((bfd *, bfd_reloc_code_real_type ));
+    PARAMS((bfd *, bfd_reloc_code_real_type ));
 static void tic4x_lookup_howto
-    PARAMS ((arelent *, struct internal_reloc * ));
+    PARAMS((arelent *, struct internal_reloc * ));
 static reloc_howto_type *coff_tic4x_rtype_to_howto
-    PARAMS ((bfd *, asection *, struct internal_reloc *, struct coff_link_hash_entry *, struct internal_syment *, bfd_vma * ));
+    PARAMS((bfd *, asection *, struct internal_reloc *, struct coff_link_hash_entry *, struct internal_syment *, bfd_vma * ));
 static void tic4x_reloc_processing
-    PARAMS ((arelent *, struct internal_reloc *, asymbol **, bfd *, asection * ));
+    PARAMS((arelent *, struct internal_reloc *, asymbol **, bfd *, asection * ));
 
 
-/* Replace the stock _bfd_coff_is_local_label_name to recognize TI COFF local
-   labels.  */
+/* Replace the stock _bfd_coff_is_local_label_name to recognize TI COFF
+ * local labels: */
 static bfd_boolean
-ticoff_bfd_is_local_label_name (abfd, name)
-  bfd *abfd ATTRIBUTE_UNUSED;
-  const char *name;
+ticoff_bfd_is_local_label_name(bfd *abfd ATTRIBUTE_UNUSED,
+                               const char *name)
 {
   if (TICOFF_LOCAL_LABEL_P(name))
     return TRUE;
@@ -60,8 +59,8 @@ ticoff_bfd_is_local_label_name (abfd, name)
 
 #define coff_bfd_is_local_label_name ticoff_bfd_is_local_label_name
 
-#define RELOC_PROCESSING(RELENT,RELOC,SYMS,ABFD,SECT)\
- tic4x_reloc_processing (RELENT,RELOC,SYMS,ABFD,SECT)
+#define RELOC_PROCESSING(RELENT,RELOC,SYMS,ABFD,SECT) \
+  tic4x_reloc_processing(RELENT,RELOC,SYMS,ABFD,SECT)
 
 /* Customize coffcode.h; the default coff_ functions are set up to use
    COFF2; coff_bad_format_hook uses BADMAG, so set that for COFF2.
@@ -75,8 +74,8 @@ ticoff_bfd_is_local_label_name (abfd, name)
 #include "coffcode.h"
 
 static bfd_reloc_status_type
-tic4x_relocation (abfd, reloc_entry, symbol, data, input_section,
-		  output_bfd, error_message)
+tic4x_relocation(abfd, reloc_entry, symbol, data, input_section,
+                 output_bfd, error_message)
   bfd *abfd ATTRIBUTE_UNUSED;
   arelent *reloc_entry;
   asymbol *symbol ATTRIBUTE_UNUSED;
@@ -85,7 +84,7 @@ tic4x_relocation (abfd, reloc_entry, symbol, data, input_section,
   bfd *output_bfd;
   char **error_message ATTRIBUTE_UNUSED;
 {
-  if (output_bfd != (bfd *) NULL)
+  if (output_bfd != (bfd *)NULL)
     {
       /* This is a partial relocation, and we want to apply the
  	 relocation to the reloc entry rather than the raw data.
@@ -122,9 +121,8 @@ reloc_howto_type tic4x_howto_table[] =
    bfd/reloc.c) to map to the howto table entries.  */
 
 static reloc_howto_type *
-tic4x_coff_reloc_type_lookup (abfd, code)
-    bfd *abfd ATTRIBUTE_UNUSED;
-    bfd_reloc_code_real_type code;
+tic4x_coff_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+                             bfd_reloc_code_real_type code)
 {
   unsigned int type;
   unsigned int i;
@@ -155,29 +153,27 @@ tic4x_coff_reloc_type_lookup (abfd, code)
    Called after some initial checking by the tic4x_rtype_to_howto fn
    below.  */
 static void
-tic4x_lookup_howto (internal, dst)
-     arelent *internal;
-     struct internal_reloc *dst;
+tic4x_lookup_howto(arelent *internal, struct internal_reloc *dst)
 {
   unsigned int i;
-  int bank = (dst->r_symndx == -1) ? HOWTO_BANK : 0;
+  int bank = ((dst->r_symndx == -1) ? HOWTO_BANK : 0);
 
   for (i = 0; i < HOWTO_SIZE; i++)
     {
       if (tic4x_howto_table[i].type == dst->r_type)
 	{
-	  internal->howto = tic4x_howto_table + i + bank;
+	  internal->howto = (tic4x_howto_table + i + bank);
 	  return;
 	}
     }
 
-  (*_bfd_error_handler) (_("Unrecognized reloc type 0x%x"),
-			 (unsigned int) dst->r_type);
+  (*_bfd_error_handler)(_("Unrecognized reloc type 0x%x"),
+                        (unsigned int)dst->r_type);
   abort();
 }
 
 static reloc_howto_type *
-coff_tic4x_rtype_to_howto (abfd, sec, rel, h, sym, addendp)
+coff_tic4x_rtype_to_howto(abfd, sec, rel, h, sym, addendp)
      bfd *abfd ATTRIBUTE_UNUSED;
      asection *sec;
      struct internal_reloc *rel;
@@ -187,7 +183,7 @@ coff_tic4x_rtype_to_howto (abfd, sec, rel, h, sym, addendp)
 {
   arelent genrel;
 
-  if (rel->r_symndx == -1 && addendp != NULL)
+  if ((rel->r_symndx == -1) && (addendp != NULL))
     /* This is a TI "internal relocation", which means that the relocation
        amount is the amount by which the current section is being relocated
        in the output section.  */
@@ -200,12 +196,8 @@ coff_tic4x_rtype_to_howto (abfd, sec, rel, h, sym, addendp)
 
 
 static void
-tic4x_reloc_processing (relent, reloc, symbols, abfd, section)
-     arelent *relent;
-     struct internal_reloc *reloc;
-     asymbol **symbols;
-     bfd *abfd;
-     asection *section;
+tic4x_reloc_processing(arelent *relent, struct internal_reloc *reloc,
+                       asymbol **symbols, bfd *abfd, asection *section)
 {
   asymbol *ptr;
 
@@ -213,18 +205,18 @@ tic4x_reloc_processing (relent, reloc, symbols, abfd, section)
 
   if (reloc->r_symndx != -1)
     {
-      if (reloc->r_symndx < 0 || reloc->r_symndx >= obj_conv_table_size (abfd))
+      if ((reloc->r_symndx < 0) || (reloc->r_symndx >= obj_conv_table_size(abfd)))
         {
           (*_bfd_error_handler)
             (_("%s: warning: illegal symbol index %ld in relocs"),
-             bfd_get_filename (abfd), reloc->r_symndx);
+             bfd_get_filename(abfd), reloc->r_symndx);
           relent->sym_ptr_ptr = bfd_abs_section_ptr->symbol_ptr_ptr;
           ptr = NULL;
         }
       else
         {
           relent->sym_ptr_ptr = (symbols
-                                 + obj_convert (abfd)[reloc->r_symndx]);
+                                 + obj_convert(abfd)[reloc->r_symndx]);
           ptr = *(relent->sym_ptr_ptr);
         }
     }
@@ -269,3 +261,5 @@ CREATE_LITTLE_COFF_TARGET_VEC(tic4x_coff2_vec, "coff2-tic4x", HAS_LOAD_PAGE, 0, 
 
 /* TI COFF v2, TI SPARC tools output (big-endian headers).  */
 CREATE_BIGHDR_COFF_TARGET_VEC(tic4x_coff2_beh_vec, "coff2-beh-tic4x", HAS_LOAD_PAGE, 0, '_', &tic4x_coff2_vec, COFF_SWAP_TABLE);
+
+/* EOF */

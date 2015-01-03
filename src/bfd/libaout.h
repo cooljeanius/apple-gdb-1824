@@ -107,8 +107,7 @@ struct external_nlist;
 struct reloc_ext_external;
 struct reloc_std_external;
 
-/* a.out backend linker hash table entries.  */
-
+/* a.out backend linker hash table entries: */
 struct aout_link_hash_entry
 {
   struct bfd_link_hash_entry root;
@@ -118,21 +117,18 @@ struct aout_link_hash_entry
   int indx;
 };
 
-/* a.out backend linker hash table.  */
-
+/* a.out backend linker hash table: */
 struct aout_link_hash_table
 {
   struct bfd_link_hash_table root;
 };
 
-/* Look up an entry in an a.out link hash table.  */
-
+/* Look up an entry in an a.out link hash table: */
 #define aout_link_hash_lookup(table, string, create, copy, follow) \
   ((struct aout_link_hash_entry *) \
-   bfd_link_hash_lookup (&(table)->root, (string), (create), (copy), (follow)))
+   bfd_link_hash_lookup(&(table)->root, (string), (create), (copy), (follow)))
 
-/* Traverse an a.out link hash table.  */
-
+/* Traverse an a.out link hash table: */
 #define aout_link_hash_traverse(table, func, info)			\
   (bfd_link_hash_traverse						\
    (&(table)->root,							\
@@ -476,158 +472,166 @@ struct aout_section_data_struct
 #define set_aout_section_data(s,v) \
   ((s)->used_by_bfd = (void *)&(v)->relocs)
 
-/* Prototype declarations for functions defined in aoutx.h.  */
-
-extern bfd_boolean NAME (aout, squirt_out_relocs)
+/* Prototype declarations for functions defined in aoutx.h: */
+extern bfd_boolean NAME(aout, squirt_out_relocs)
   (bfd *, asection *);
 
-extern bfd_boolean NAME (aout, make_sections)
+extern bfd_boolean NAME(aout, make_sections)
   (bfd *);
 
-extern const bfd_target * NAME (aout, some_aout_object_p)
+extern const bfd_target *NAME(aout, some_aout_object_p)
   (bfd *, struct internal_exec *, const bfd_target *(*) (bfd *));
 
-extern bfd_boolean NAME (aout, mkobject)
+extern bfd_boolean NAME(aout, mkobject)
   (bfd *);
 
-extern enum machine_type NAME (aout, machine_type)
+extern enum machine_type NAME(aout, machine_type)
   (enum bfd_architecture, unsigned long, bfd_boolean *);
 
-extern bfd_boolean NAME (aout, set_arch_mach)
+extern bfd_boolean NAME(aout, set_arch_mach)
   (bfd *, enum bfd_architecture, unsigned long);
 
-extern bfd_boolean NAME (aout, new_section_hook)
+extern bfd_boolean NAME(aout, new_section_hook)
   (bfd *, asection *);
 
-extern bfd_boolean NAME (aout, set_section_contents)
+extern bfd_boolean NAME(aout, set_section_contents)
   (bfd *, sec_ptr, const void *, file_ptr, bfd_size_type);
 
-extern asymbol * NAME (aout, make_empty_symbol)
+extern asymbol * NAME(aout, make_empty_symbol)
   (bfd *);
 
-extern bfd_boolean NAME (aout, translate_symbol_table)
+extern bfd_boolean NAME(aout, translate_symbol_table)
   (bfd *, aout_symbol_type *, struct external_nlist *, bfd_size_type,
-	   char *, bfd_size_type, bfd_boolean);
+   char *, bfd_size_type, bfd_boolean);
 
-extern bfd_boolean NAME (aout, slurp_symbol_table)
+extern bfd_boolean NAME(aout, slurp_symbol_table)
   (bfd *);
 
-extern bfd_boolean NAME (aout, write_syms)
+extern bfd_boolean NAME(aout, write_syms)
   (bfd *);
 
-extern void NAME (aout, reclaim_symbol_table)
+extern void NAME(aout, reclaim_symbol_table)
   (bfd *);
 
-extern long NAME (aout, get_symtab_upper_bound)
+extern long NAME(aout, get_symtab_upper_bound)
   (bfd *);
 
-extern long NAME (aout, canonicalize_symtab)
+extern long NAME(aout, canonicalize_symtab)
   (bfd *, asymbol **);
 
-extern void NAME (aout, swap_ext_reloc_in)
+extern void NAME(aout, swap_ext_reloc_in)
   (bfd *, struct reloc_ext_external *, arelent *, asymbol **,
    bfd_size_type);
 
-extern void NAME (aout, swap_std_reloc_in)
+extern void NAME(aout, swap_std_reloc_in)
   (bfd *, struct reloc_std_external *, arelent *, asymbol **,
    bfd_size_type);
 
-extern reloc_howto_type * NAME (aout, reloc_type_lookup)
+extern reloc_howto_type *NAME(aout, reloc_type_lookup)
   (bfd *, bfd_reloc_code_real_type);
 
-extern bfd_boolean NAME (aout, slurp_reloc_table)
+extern bfd_boolean NAME(aout, slurp_reloc_table)
   (bfd *, sec_ptr, asymbol **);
 
-extern long NAME (aout, canonicalize_reloc)
+extern long NAME(aout, canonicalize_reloc)
   (bfd *, sec_ptr, arelent **, asymbol **);
 
-extern long NAME (aout, get_reloc_upper_bound)
+extern long NAME(aout, get_reloc_upper_bound)
   (bfd *, sec_ptr);
 
-extern void NAME (aout, reclaim_reloc)
+extern void NAME(aout, reclaim_reloc)
   (bfd *, sec_ptr);
 
-extern alent * NAME (aout, get_lineno)
+extern alent *NAME(aout, get_lineno)
   (bfd *, asymbol *);
 
-extern void NAME (aout, print_symbol)
+extern void NAME(aout, print_symbol)
   (bfd *, void *, asymbol *, bfd_print_symbol_type);
 
-extern void NAME (aout, get_symbol_info)
+extern void NAME(aout, get_symbol_info)
   (bfd *, asymbol *, symbol_info *);
 
-extern bfd_boolean NAME (aout, find_nearest_line)
+extern bfd_boolean NAME(aout, find_nearest_line)
   (bfd *, asection *, asymbol **, bfd_vma, const char **,
    const char **, unsigned int *);
 
-extern long NAME (aout, read_minisymbols)
+extern long NAME(aout, read_minisymbols)
   (bfd *, bfd_boolean, void * *, unsigned int *);
 
-extern asymbol * NAME (aout, minisymbol_to_symbol)
+extern asymbol *NAME(aout, minisymbol_to_symbol)
   (bfd *, bfd_boolean, const void *, asymbol *);
 
-extern int NAME (aout, sizeof_headers)
+extern int NAME(aout, sizeof_headers)
   (bfd *, bfd_boolean);
 
-extern bfd_boolean NAME (aout, adjust_sizes_and_vmas)
+extern bfd_boolean NAME(aout, adjust_sizes_and_vmas)
   (bfd *, bfd_size_type *, file_ptr *);
 
-extern void NAME (aout, swap_exec_header_in)
+extern void NAME(aout, swap_exec_header_in)
   (bfd *, struct external_exec *, struct internal_exec *);
 
-extern void NAME (aout, swap_exec_header_out)
+extern void NAME(aout, swap_exec_header_out)
   (bfd *, struct internal_exec *, struct external_exec *);
 
-extern struct bfd_hash_entry * NAME (aout, link_hash_newfunc)
+extern struct bfd_hash_entry *NAME(aout, link_hash_newfunc)
   (struct bfd_hash_entry *, struct bfd_hash_table *, const char *);
 
-extern bfd_boolean NAME (aout, link_hash_table_init)
+extern bfd_boolean NAME(aout, link_hash_table_init)
   (struct aout_link_hash_table *, bfd *,
-   struct bfd_hash_entry *(*) (struct bfd_hash_entry *,
-			       struct bfd_hash_table *,
-			       const char *));
+   struct bfd_hash_entry *(*)(struct bfd_hash_entry *,
+                              struct bfd_hash_table *,
+                              const char *));
 
-extern struct bfd_link_hash_table * NAME (aout, link_hash_table_create)
+extern struct bfd_link_hash_table *NAME(aout, link_hash_table_create)
   (bfd *);
 
-extern bfd_boolean NAME (aout, link_add_symbols)
+extern bfd_boolean NAME(aout, link_add_symbols)
   (bfd *, struct bfd_link_info *);
 
-extern bfd_boolean NAME (aout, final_link)
+extern bfd_boolean NAME(aout, final_link)
   (bfd *, struct bfd_link_info *,
-   void (*) (bfd *, file_ptr *, file_ptr *, file_ptr *));
+   void (*)(bfd *, file_ptr *, file_ptr *, file_ptr *));
 
-extern bfd_boolean NAME (aout, bfd_free_cached_info)
+extern bfd_boolean NAME(aout, bfd_free_cached_info)
   (bfd *);
 
 #define aout_32_find_inliner_info	_bfd_nosymbols_find_inliner_info
 #if 0	/* Are these needed? */
-#define aout_16_find_inliner_info	_bfd_nosymbols_find_inliner_info
-#define aout_64_find_inliner_info	_bfd_nosymbols_find_inliner_info
-#endif
+# define aout_16_find_inliner_info	_bfd_nosymbols_find_inliner_info
+# define aout_64_find_inliner_info	_bfd_nosymbols_find_inliner_info
+#endif /* 0 */
 
 /* A.out uses the generic versions of these routines...  */
-
 #define	aout_16_get_section_contents	_bfd_generic_get_section_contents
 
 #define	aout_32_get_section_contents	_bfd_generic_get_section_contents
 
 #define	aout_64_get_section_contents	_bfd_generic_get_section_contents
 #ifndef NO_WRITE_HEADER_KLUDGE
-#define NO_WRITE_HEADER_KLUDGE 0
-#endif
+# define NO_WRITE_HEADER_KLUDGE 0
+#endif /* !NO_WRITE_HEADER_KLUDGE */
 
 #ifndef aout_32_bfd_is_local_label_name
-#define aout_32_bfd_is_local_label_name bfd_generic_is_local_label_name
-#endif
+# define aout_32_bfd_is_local_label_name bfd_generic_is_local_label_name
+#endif /* !aout_32_bfd_is_local_label_name */
 
 #ifndef aout_32_bfd_is_target_special_symbol
-#define aout_32_bfd_is_target_special_symbol \
-  ((bfd_boolean (*) (bfd *, asymbol *)) bfd_false)
-#endif
+# define aout_32_bfd_is_target_special_symbol \
+   ((bfd_boolean (*) (bfd *, asymbol *)) bfd_false)
+#endif /* !aout_32_bfd_is_target_special_symbol */
+
+/* other prototypes: */
+#if defined(__STDC__) && __STDC__
+# if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 199901L)
+#  if !defined(aout_32_some_aout_object_p)
+const bfd_target *aout_32_some_aout_object_p(bfd *, struct internal_exec *,
+                                             const bfd_target *(*)(bfd *));
+#  endif /* !aout_32_some_aout_object_p */
+# endif /* c99 */
+#endif /* __STDC__ */
 
 #ifndef WRITE_HEADERS
-#define WRITE_HEADERS(abfd, execp)					      \
+# define WRITE_HEADERS(abfd, execp)					      \
       {									      \
 	bfd_size_type text_size; /* Dummy vars.  */			      \
 	file_ptr text_end;						      \

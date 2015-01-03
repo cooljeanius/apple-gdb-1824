@@ -1,4 +1,4 @@
-/* BFD back-end for IBM RS/6000 "XCOFF64" files.
+/* coff64-rs6000.c: BFD back-end for IBM RS/6000 "XCOFF64" files.
    Copyright 2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
    Written Clinton Popetz.
@@ -83,106 +83,110 @@
 #define coff_SWAP_lineno_out _bfd_xcoff64_swap_lineno_out
 
 static void _bfd_xcoff64_swap_lineno_in
-  PARAMS ((bfd *, PTR, PTR));
+  PARAMS((bfd *, PTR, PTR));
 static unsigned int _bfd_xcoff64_swap_lineno_out
-  PARAMS ((bfd *, PTR, PTR));
+  PARAMS((bfd *, PTR, PTR));
 static bfd_boolean _bfd_xcoff64_put_symbol_name
-  PARAMS ((bfd *, struct bfd_strtab_hash *, struct internal_syment *,
-	   const char *));
+  PARAMS((bfd *, struct bfd_strtab_hash *, struct internal_syment *,
+          const char *));
 static bfd_boolean _bfd_xcoff64_put_ldsymbol_name
-  PARAMS ((bfd *, struct xcoff_loader_info *, struct internal_ldsym *,
-	   const char *));
+  PARAMS((bfd *, struct xcoff_loader_info *, struct internal_ldsym *,
+          const char *));
 static void _bfd_xcoff64_swap_sym_in
-  PARAMS ((bfd *, PTR, PTR));
+  PARAMS((bfd *, PTR, PTR));
 static unsigned int _bfd_xcoff64_swap_sym_out
-  PARAMS ((bfd *, PTR, PTR));
+  PARAMS((bfd *, PTR, PTR));
 static void _bfd_xcoff64_swap_aux_in
-  PARAMS ((bfd *, PTR, int, int, int, int, PTR));
+  PARAMS((bfd *, PTR, int, int, int, int, PTR));
 static unsigned int _bfd_xcoff64_swap_aux_out
-  PARAMS ((bfd *, PTR, int, int, int, int, PTR));
+  PARAMS((bfd *, PTR, int, int, int, int, PTR));
 static void xcoff64_swap_reloc_in
-  PARAMS ((bfd *, PTR, PTR));
+  PARAMS((bfd *, PTR, PTR));
 static unsigned int xcoff64_swap_reloc_out
-  PARAMS ((bfd *, PTR, PTR));
+  PARAMS((bfd *, PTR, PTR));
 extern bfd_boolean _bfd_xcoff_mkobject
-  PARAMS ((bfd *));
+  PARAMS((bfd *));
 extern bfd_boolean _bfd_xcoff_copy_private_bfd_data
-  PARAMS ((bfd *, bfd *));
+  PARAMS((bfd *, bfd *));
 extern bfd_boolean _bfd_xcoff_is_local_label_name
-  PARAMS ((bfd *, const char *));
+  PARAMS((bfd *, const char *));
 extern void xcoff64_rtype2howto
-  PARAMS ((arelent *, struct internal_reloc *));
+  PARAMS((arelent *, struct internal_reloc *));
 extern reloc_howto_type * xcoff64_reloc_type_lookup
-  PARAMS ((bfd *, bfd_reloc_code_real_type));
+  PARAMS((bfd *, bfd_reloc_code_real_type));
 extern bfd_boolean _bfd_xcoff_slurp_armap
-  PARAMS ((bfd *));
+  PARAMS((bfd *));
 extern PTR _bfd_xcoff_read_ar_hdr
-  PARAMS ((bfd *));
+  PARAMS((bfd *));
 extern bfd *_bfd_xcoff_openr_next_archived_file
-  PARAMS ((bfd *, bfd *));
+  PARAMS((bfd *, bfd *));
 extern int _bfd_xcoff_stat_arch_elt
-  PARAMS ((bfd *, struct stat *));
+  PARAMS((bfd *, struct stat *));
 extern bfd_boolean _bfd_xcoff_write_armap
-  PARAMS ((bfd *, unsigned int, struct orl *, unsigned int, int));
+  PARAMS((bfd *, unsigned int, struct orl *, unsigned int, int));
 extern bfd_boolean _bfd_xcoff_write_archive_contents
-  PARAMS ((bfd *));
+  PARAMS((bfd *));
 extern int _bfd_xcoff_sizeof_headers
-  PARAMS ((bfd *, bfd_boolean));
+  PARAMS((bfd *, bfd_boolean));
 extern void _bfd_xcoff_swap_sym_in
-  PARAMS ((bfd *, PTR, PTR));
+  PARAMS((bfd *, PTR, PTR));
 extern unsigned int _bfd_xcoff_swap_sym_out
-  PARAMS ((bfd *, PTR, PTR));
+  PARAMS((bfd *, PTR, PTR));
 extern void _bfd_xcoff_swap_aux_in
-  PARAMS ((bfd *, PTR, int, int, int, int, PTR));
+  PARAMS((bfd *, PTR, int, int, int, int, PTR));
 extern unsigned int _bfd_xcoff_swap_aux_out
-  PARAMS ((bfd *, PTR, int, int, int, int, PTR));
+  PARAMS((bfd *, PTR, int, int, int, int, PTR));
 static void xcoff64_swap_ldhdr_in
-  PARAMS ((bfd *, const PTR, struct internal_ldhdr *));
+  PARAMS((bfd *, const PTR, struct internal_ldhdr *));
 static void xcoff64_swap_ldhdr_out
-  PARAMS ((bfd *, const struct internal_ldhdr *, PTR d));
+  PARAMS((bfd *, const struct internal_ldhdr *, PTR d));
 static void xcoff64_swap_ldsym_in
-  PARAMS ((bfd *, const PTR, struct internal_ldsym *));
+  PARAMS((bfd *, const PTR, struct internal_ldsym *));
 static void xcoff64_swap_ldsym_out
-  PARAMS ((bfd *, const struct internal_ldsym *, PTR d));
+  PARAMS((bfd *, const struct internal_ldsym *, PTR d));
 static void xcoff64_swap_ldrel_in
-  PARAMS ((bfd *, const PTR, struct internal_ldrel *));
+  PARAMS((bfd *, const PTR, struct internal_ldrel *));
 static void xcoff64_swap_ldrel_out
-  PARAMS ((bfd *, const struct internal_ldrel *, PTR d));
+  PARAMS((bfd *, const struct internal_ldrel *, PTR d));
 static bfd_boolean xcoff64_write_object_contents
-  PARAMS ((bfd *));
+  PARAMS((bfd *));
 static bfd_boolean xcoff64_ppc_relocate_section
-  PARAMS ((bfd *, struct bfd_link_info *, bfd *, asection *, bfd_byte *,
-	   struct internal_reloc *, struct internal_syment *,
-	   asection **));
+  PARAMS((bfd *, struct bfd_link_info *, bfd *, asection *, bfd_byte *,
+          struct internal_reloc *, struct internal_syment *,
+          asection **));
 static bfd_boolean xcoff64_slurp_armap
-  PARAMS ((bfd *));
+  PARAMS((bfd *));
 static const bfd_target *xcoff64_archive_p
-  PARAMS ((bfd *));
+  PARAMS((bfd *));
 static bfd *xcoff64_openr_next_archived_file
-  PARAMS ((bfd *, bfd *));
+  PARAMS((bfd *, bfd *));
 static int xcoff64_sizeof_headers
-  PARAMS ((bfd *, bfd_boolean));
+  PARAMS((bfd *, bfd_boolean));
 static asection *xcoff64_create_csect_from_smclas
-  PARAMS ((bfd *, union internal_auxent *, const char *));
+  PARAMS((bfd *, union internal_auxent *, const char *));
 static bfd_boolean xcoff64_is_lineno_count_overflow
-  PARAMS ((bfd *, bfd_vma));
+  PARAMS((bfd *, bfd_vma));
 static bfd_boolean xcoff64_is_reloc_count_overflow
-  PARAMS ((bfd *, bfd_vma));
+  PARAMS((bfd *, bfd_vma));
 static bfd_vma xcoff64_loader_symbol_offset
-  PARAMS ((bfd *, struct internal_ldhdr *));
+  PARAMS((bfd *, struct internal_ldhdr *));
 static bfd_vma xcoff64_loader_reloc_offset
-  PARAMS ((bfd *, struct internal_ldhdr *));
+  PARAMS((bfd *, struct internal_ldhdr *));
 static bfd_boolean xcoff64_generate_rtinit
-  PARAMS ((bfd *, const char *, const char *, bfd_boolean));
+  PARAMS((bfd *, const char *, const char *, bfd_boolean));
 static bfd_boolean xcoff64_bad_format_hook
-  PARAMS ((bfd *, PTR ));
+  PARAMS((bfd *, PTR ));
 
-/* Relocation functions */
+/* Relocation functions: */
 static bfd_boolean xcoff64_reloc_type_br
-  PARAMS ((XCOFF_RELOC_FUNCTION_ARGS));
+  PARAMS((XCOFF_RELOC_FUNCTION_ARGS));
 
+#ifdef __clang__
+extern bfd_boolean (*xcoff64_calculate_relocation[XCOFF_MAX_CALCULATE_RELOCATION])
+  PARAMS((XCOFF_RELOC_FUNCTION_ARGS));
+#endif /* __clang__ */
 bfd_boolean (*xcoff64_calculate_relocation[XCOFF_MAX_CALCULATE_RELOCATION])
-  PARAMS ((XCOFF_RELOC_FUNCTION_ARGS)) =
+  PARAMS((XCOFF_RELOC_FUNCTION_ARGS)) =
 {
   xcoff_reloc_type_pos,	 /* R_POS   (0x00) */
   xcoff_reloc_type_neg,	 /* R_NEG   (0x01) */
@@ -275,19 +279,16 @@ extern int rs6000coff_core_file_failing_signal
 /* For XCOFF64, the effective width of symndx changes depending on
    whether we are the first entry.  Sigh.  */
 static void
-_bfd_xcoff64_swap_lineno_in (abfd, ext1, in1)
-     bfd *abfd;
-     PTR ext1;
-     PTR in1;
+_bfd_xcoff64_swap_lineno_in(bfd *abfd, PTR ext1, PTR in1)
 {
-  LINENO *ext = (LINENO *) ext1;
-  struct internal_lineno *in = (struct internal_lineno *) in1;
+  LINENO *ext = (LINENO *)ext1;
+  struct internal_lineno *in = (struct internal_lineno *)in1;
 
-  in->l_lnno = H_GET_32 (abfd, (ext->l_lnno));
+  in->l_lnno = H_GET_32(abfd, (ext->l_lnno));
   if (in->l_lnno == 0)
-    in->l_addr.l_symndx = H_GET_32 (abfd, ext->l_addr.l_symndx);
+    in->l_addr.l_symndx = H_GET_32(abfd, ext->l_addr.l_symndx);
   else
-    in->l_addr.l_paddr = H_GET_64 (abfd, ext->l_addr.l_paddr);
+    in->l_addr.l_paddr = H_GET_64(abfd, ext->l_addr.l_paddr);
 }
 
 static unsigned int
@@ -572,7 +573,7 @@ _bfd_xcoff64_put_ldsymbol_name (abfd, ldinfo, ldsym, name)
       while (ldinfo->string_size + len + 3 > newalc)
 	newalc *= 2;
 
-      newstrings = bfd_realloc (ldinfo->strings, newalc);
+      newstrings = (char *)bfd_realloc(ldinfo->strings, newalc);
       if (newstrings == NULL)
 	{
 	  ldinfo->failed = TRUE;
@@ -1051,45 +1052,45 @@ xcoff64_write_object_contents (abfd)
 	      abort ();
 	    }
 	}
-      internal_a.o_maxstack = xcoff_data (abfd)->maxstack;
-      internal_a.o_maxdata = xcoff_data (abfd)->maxdata;
+      internal_a.o_maxstack = xcoff_data(abfd)->maxstack;
+      internal_a.o_maxdata = xcoff_data(abfd)->maxdata;
     }
 
-  if (bfd_seek (abfd, (file_ptr) 0, 0) != 0)
+  if (bfd_seek(abfd, (file_ptr)0, 0) != 0)
     return FALSE;
 
   {
-    char * buff;
-    bfd_size_type amount = bfd_coff_filhsz (abfd);
+    char *buff;
+    bfd_size_type amount = bfd_coff_filhsz(abfd);
 
-    buff = bfd_malloc (amount);
+    buff = (char *)bfd_malloc(amount);
     if (buff == NULL)
       return FALSE;
 
-    bfd_coff_swap_filehdr_out (abfd, (PTR) &internal_f, (PTR) buff);
-    amount = bfd_bwrite ((PTR) buff, amount, abfd);
+    bfd_coff_swap_filehdr_out(abfd, (PTR)&internal_f, (PTR)buff);
+    amount = bfd_bwrite((PTR)buff, amount, abfd);
 
-    free (buff);
+    free(buff);
 
-    if (amount != bfd_coff_filhsz (abfd))
+    if (amount != bfd_coff_filhsz(abfd))
       return FALSE;
   }
 
   if (abfd->flags & EXEC_P)
     {
-      char * buff;
-      bfd_size_type amount = bfd_coff_aoutsz (abfd);
+      char *buff;
+      bfd_size_type amount = bfd_coff_aoutsz(abfd);
 
-      buff = bfd_malloc (amount);
+      buff = (char *)bfd_malloc(amount);
       if (buff == NULL)
 	return FALSE;
 
-      bfd_coff_swap_aouthdr_out (abfd, (PTR) &internal_a, (PTR) buff);
-      amount = bfd_bwrite ((PTR) buff, amount, abfd);
+      bfd_coff_swap_aouthdr_out(abfd, (PTR)&internal_a, (PTR)buff);
+      amount = bfd_bwrite((PTR)buff, amount, abfd);
 
       free (buff);
 
-      if (amount != bfd_coff_aoutsz (abfd))
+      if (amount != bfd_coff_aoutsz(abfd))
 	return FALSE;
     }
 
@@ -2613,7 +2614,10 @@ static const struct xcoff_backend_data_rec bfd_xcoff_backend_data =
     xcoff64_generate_rtinit,
   };
 
-/* The transfer vector that leads the outside world to all of the above.  */
+/* The transfer vector that leads the outside world to all of the above: */
+#ifdef __clang__
+extern const bfd_target rs6000coff64_vec;
+#endif /* __clang__ */
 const bfd_target rs6000coff64_vec =
   {
     "aixcoff64-rs6000",
@@ -2864,7 +2868,10 @@ static const struct xcoff_backend_data_rec bfd_xcoff_aix5_backend_data =
     xcoff64_generate_rtinit,
   };
 
-/* The transfer vector that leads the outside world to all of the above.  */
+/* The transfer vector that leads the outside world to all of the above: */
+#ifdef __clang__
+extern const bfd_target aix5coff64_vec;
+#endif /* __clang__ */
 const bfd_target aix5coff64_vec =
   {
     "aix5coff64-rs6000",

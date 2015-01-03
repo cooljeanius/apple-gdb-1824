@@ -1,6 +1,6 @@
-/* BFD back-end for Apple et al PowerPC Mac "XCOFF" files.
-   Copyright 1995, 2000, 2001 Free Software Foundation, Inc.
-
+/* coff-pmac.c: BFD back-end for Apple et al. PowerPC Mac "XCOFF" files.
+ * Copyright 1995, 2000, 2001 Free Software Foundation, Inc.  */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -15,11 +15,12 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
-/* Tweak coffcode.h based on this being a PowerMac instead of RS/6000.  */
-
-#define POWERMAC
+/* Tweak coffcode.h based on this being a PowerMac instead of RS/6000: */
+#ifndef POWERMAC
+# define POWERMAC
+#endif /* !POWERMAC */
 
 #define TARGET_SYM	pmac_xcoff_vec
 #define TARGET_NAME	"xcoff-powermac"
@@ -30,4 +31,11 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #include "coff/internal.h"
 #include "coff/rs6000.h"
 #include "libcoff.h"
+#include "libxcoff.h"
 #include "xcoff-target.h"
+
+#ifdef POWERMAC
+# undef POWERMAC
+#endif /* POWERMAC */
+
+/* EOF */

@@ -246,21 +246,18 @@ static reloc_howto_type mips_howto_table[] =
 };
 
 #define MIPS_HOWTO_COUNT \
-  (sizeof mips_howto_table / sizeof mips_howto_table[0])
+  (sizeof(mips_howto_table) / sizeof(mips_howto_table[0]))
 
-/* See whether the magic number matches.  */
-
+/* See whether the magic number matches: */
 static bfd_boolean
-mips_ecoff_bad_format_hook (abfd, filehdr)
-     bfd *abfd;
-     PTR filehdr;
+mips_ecoff_bad_format_hook(bfd *abfd, PTR filehdr)
 {
-  struct internal_filehdr *internal_f = (struct internal_filehdr *) filehdr;
+  struct internal_filehdr *internal_f = (struct internal_filehdr *)filehdr;
 
   switch (internal_f->f_magic)
     {
     case MIPS_MAGIC_1:
-      /* I don't know what endianness this implies.  */
+      /* I do NOT know what endianness this implies: */
       return TRUE;
 
     case MIPS_MAGIC_BIG:
@@ -1055,45 +1052,47 @@ mips_relocate_section (output_bfd, info, input_bfd, input_section,
 		  switch (name[1])
 		    {
 		    case 'b':
-		      if (strcmp (name, ".bss") == 0)
+		      if (strcmp(name, ".bss") == 0)
 			int_rel.r_symndx = RELOC_SECTION_BSS;
 		      break;
 		    case 'd':
-		      if (strcmp (name, ".data") == 0)
+		      if (strcmp(name, ".data") == 0)
 			int_rel.r_symndx = RELOC_SECTION_DATA;
 		      break;
 		    case 'f':
-		      if (strcmp (name, ".fini") == 0)
+		      if (strcmp(name, ".fini") == 0)
 			int_rel.r_symndx = RELOC_SECTION_FINI;
 		      break;
 		    case 'i':
-		      if (strcmp (name, ".init") == 0)
+		      if (strcmp(name, ".init") == 0)
 			int_rel.r_symndx = RELOC_SECTION_INIT;
 		      break;
 		    case 'l':
-		      if (strcmp (name, ".lit8") == 0)
+		      if (strcmp(name, ".lit8") == 0)
 			int_rel.r_symndx = RELOC_SECTION_LIT8;
-		      else if (strcmp (name, ".lit4") == 0)
+		      else if (strcmp(name, ".lit4") == 0)
 			int_rel.r_symndx = RELOC_SECTION_LIT4;
 		      break;
 		    case 'r':
-		      if (strcmp (name, ".rdata") == 0)
+		      if (strcmp(name, ".rdata") == 0)
 			int_rel.r_symndx = RELOC_SECTION_RDATA;
 		      break;
 		    case 's':
-		      if (strcmp (name, ".sdata") == 0)
+		      if (strcmp(name, ".sdata") == 0)
 			int_rel.r_symndx = RELOC_SECTION_SDATA;
-		      else if (strcmp (name, ".sbss") == 0)
+		      else if (strcmp(name, ".sbss") == 0)
 			int_rel.r_symndx = RELOC_SECTION_SBSS;
 		      break;
 		    case 't':
-		      if (strcmp (name, ".text") == 0)
+		      if (strcmp(name, ".text") == 0)
 			int_rel.r_symndx = RELOC_SECTION_TEXT;
 		      break;
+                    default:
+                      break;
 		    }
 
 		  if (int_rel.r_symndx == -1)
-		    abort ();
+		    abort();
 
 		  /* Add the section VMA and the symbol value.  */
 		  relocation = (h->root.u.def.value
@@ -1530,5 +1529,11 @@ const bfd_target ecoff_biglittle_vec =
 
   NULL,
 
-  (PTR) &mips_ecoff_backend_data
+  (PTR)&mips_ecoff_backend_data
 };
+
+
+#ifdef MIPS_HOWTO_COUNT
+# undef MIPS_HOWTO_COUNT
+#endif /* MIPS_HOWTO_COUNT */
+/* EOF */

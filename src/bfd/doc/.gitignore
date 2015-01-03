@@ -18,6 +18,8 @@ bfd.pdf
 bdf.ps
 bfd.html
 chew
+chew_am
+.dirstamp
 *.dSYM
 *.o
 *.lo

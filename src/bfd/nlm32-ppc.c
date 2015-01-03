@@ -617,38 +617,38 @@ nlm_powerpc_read_import (bfd * abfd, nlmNAME (symbol_type) * sym)
   unsigned char symlength;		/* Length of symbol name.  */
   char *name;
 
-  if (bfd_bread (& symlength, (bfd_size_type) sizeof (symlength), abfd)
-      != sizeof (symlength))
+  if (bfd_bread(& symlength, (bfd_size_type)sizeof(symlength), abfd)
+      != sizeof(symlength))
     return FALSE;
-  sym -> symbol.the_bfd = abfd;
-  name = bfd_alloc (abfd, (bfd_size_type) symlength + 1);
+  sym->symbol.the_bfd = abfd;
+  name = (char *)bfd_alloc(abfd, (bfd_size_type)symlength + 1);
   if (name == NULL)
     return FALSE;
-  if (bfd_bread (name, (bfd_size_type) symlength, abfd) != symlength)
+  if (bfd_bread(name, (bfd_size_type)symlength, abfd) != symlength)
     return FALSE;
   name[symlength] = '\0';
-  sym -> symbol.name = name;
-  sym -> symbol.flags = 0;
-  sym -> symbol.value = 0;
-  sym -> symbol.section = bfd_und_section_ptr;
-  if (bfd_bread (temp, (bfd_size_type) sizeof (temp), abfd)
-      != sizeof (temp))
+  sym->symbol.name = name;
+  sym->symbol.flags = 0;
+  sym->symbol.value = 0;
+  sym->symbol.section = bfd_und_section_ptr;
+  if (bfd_bread(temp, (bfd_size_type)sizeof(temp), abfd)
+      != sizeof(temp))
     return FALSE;
-  rcount = H_GET_32 (abfd, temp);
-  nlm_relocs = bfd_alloc (abfd, rcount * sizeof (struct nlm_relent));
+  rcount = H_GET_32(abfd, temp);
+  nlm_relocs = (struct nlm_relent *)bfd_alloc(abfd, rcount * sizeof(struct nlm_relent));
   if (nlm_relocs == NULL)
     return FALSE;
-  sym -> relocs = nlm_relocs;
-  sym -> rcnt = 0;
-  while (sym -> rcnt < rcount)
+  sym->relocs = nlm_relocs;
+  sym->rcnt = 0;
+  while (sym->rcnt < rcount)
     {
       asection *section;
 
-      if (! nlm_powerpc_read_reloc (abfd, sym, &section, &nlm_relocs -> reloc))
+      if (! nlm_powerpc_read_reloc(abfd, sym, &section, &nlm_relocs->reloc))
 	return FALSE;
-      nlm_relocs -> section = section;
+      nlm_relocs->section = section;
       nlm_relocs++;
-      sym -> rcnt++;
+      sym->rcnt++;
     }
   return TRUE;
 }

@@ -38,8 +38,7 @@
 
 #define SEC_MARK (SEC_ROM)
 
-/* The list of import files.  */
-
+/* The list of import files: */
 struct xcoff_import_file
 {
   /* The next entry in the list.  */
@@ -232,17 +231,17 @@ _bfd_xcoff_canonicalize_dynamic_symtab (bfd *abfd, asymbol **psyms)
     {
       struct internal_ldsym ldsym;
 
-      bfd_xcoff_swap_ldsym_in (abfd, elsym, &ldsym);
+      bfd_xcoff_swap_ldsym_in(abfd, elsym, &ldsym);
 
       symbuf->symbol.the_bfd = abfd;
 
       if (ldsym._l._l_l._l_zeroes == 0)
-	symbuf->symbol.name = strings + ldsym._l._l_l._l_offset;
+	symbuf->symbol.name = (strings + ldsym._l._l_l._l_offset);
       else
 	{
 	  char *c;
 
-	  c = bfd_alloc (abfd, (bfd_size_type) SYMNMLEN + 1);
+	  c = (char *)bfd_alloc(abfd, (bfd_size_type)SYMNMLEN + 1);
 	  if (c == NULL)
 	    return -1;
 	  memcpy (c, ldsym._l._l_name, SYMNMLEN);
@@ -317,24 +316,24 @@ _bfd_xcoff_canonicalize_dynamic_reloc (bfd *abfd,
 
   if ((abfd->flags & DYNAMIC) == 0)
     {
-      bfd_set_error (bfd_error_invalid_operation);
+      bfd_set_error(bfd_error_invalid_operation);
       return -1;
     }
 
-  lsec = bfd_get_section_by_name (abfd, ".loader");
+  lsec = bfd_get_section_by_name(abfd, ".loader");
   if (lsec == NULL)
     {
-      bfd_set_error (bfd_error_no_symbols);
+      bfd_set_error(bfd_error_no_symbols);
       return -1;
     }
 
-  if (! xcoff_get_section_contents (abfd, lsec))
+  if (! xcoff_get_section_contents(abfd, lsec))
     return -1;
-  contents = coff_section_data (abfd, lsec)->contents;
+  contents = coff_section_data(abfd, lsec)->contents;
 
-  bfd_xcoff_swap_ldhdr_in (abfd, contents, &ldhdr);
+  bfd_xcoff_swap_ldhdr_in(abfd, contents, &ldhdr);
 
-  relbuf = bfd_alloc (abfd, ldhdr.l_nreloc * sizeof (arelent));
+  relbuf = (arelent *)bfd_alloc(abfd, ldhdr.l_nreloc * sizeof(arelent));
   if (relbuf == NULL)
     return -1;
 
@@ -690,7 +689,7 @@ xcoff_link_add_dynamic_symbols (bfd *abfd, struct bfd_link_info *info)
 	    {
 	      char *dsnm;
 
-	      dsnm = bfd_malloc ((bfd_size_type) strlen (name) + 2);
+	      dsnm = (char *)bfd_malloc((bfd_size_type)strlen(name) + 2);
 	      if (dsnm == NULL)
 		return FALSE;
 	      dsnm[0] = '.';
@@ -965,27 +964,27 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
   } *reloc_info = NULL;
   bfd_size_type amt;
 
-  keep_syms = obj_coff_keep_syms (abfd);
+  keep_syms = obj_coff_keep_syms(abfd);
 
-  if ((abfd->flags & DYNAMIC) != 0
+  if (((abfd->flags & DYNAMIC) != 0)
       && ! info->static_link)
     {
-      if (! xcoff_link_add_dynamic_symbols (abfd, info))
+      if (! xcoff_link_add_dynamic_symbols(abfd, info))
 	return FALSE;
     }
 
-  /* Create the loader, toc, gl, ds and debug sections, if needed.  */
-  if (! xcoff_link_create_extra_sections (abfd, info))
+  /* Create the loader, toc, gl, ds and debug sections, if needed: */
+  if (! xcoff_link_create_extra_sections(abfd, info))
     goto error_return;
 
-  if ((abfd->flags & DYNAMIC) != 0
+  if (((abfd->flags & DYNAMIC) != 0)
       && ! info->static_link)
     return TRUE;
 
-  n_tmask = coff_data (abfd)->local_n_tmask;
-  n_btshft = coff_data (abfd)->local_n_btshft;
+  n_tmask = coff_data(abfd)->local_n_tmask;
+  n_btshft = coff_data(abfd)->local_n_btshft;
 
-  /* Define macros so that ISFCN, et. al., macros work correctly.  */
+  /* Define macros so that ISFCN, et. al., macros work correctly: */
 #define N_TMASK n_tmask
 #define N_BTSHFT n_btshft
 
@@ -994,21 +993,21 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
   else
     default_copy = TRUE;
 
-  symcount = obj_raw_syment_count (abfd);
+  symcount = obj_raw_syment_count(abfd);
 
   /* We keep a list of the linker hash table entries that correspond
      to each external symbol.  */
-  amt = symcount * sizeof (struct xcoff_link_hash_entry *);
-  sym_hash = bfd_zalloc (abfd, amt);
-  if (sym_hash == NULL && symcount != 0)
+  amt = symcount * sizeof(struct xcoff_link_hash_entry *);
+  sym_hash = (struct xcoff_link_hash_entry **)bfd_zalloc(abfd, amt);
+  if ((sym_hash == NULL) && (symcount != 0))
     goto error_return;
-  coff_data (abfd)->sym_hashes = (struct coff_link_hash_entry **) sym_hash;
+  coff_data(abfd)->sym_hashes = (struct coff_link_hash_entry **)sym_hash;
 
   /* Because of the weird stuff we are doing with XCOFF csects, we can
      not easily determine which section a symbol is in, so we store
      the information in the tdata for the input file.  */
-  amt = symcount * sizeof (asection *);
-  csect_cache = bfd_zalloc (abfd, amt);
+  amt = symcount * sizeof(asection *);
+  csect_cache = (asection **)bfd_zalloc(abfd, amt);
   if (csect_cache == NULL && symcount != 0)
     goto error_return;
   xcoff_data (abfd)->csects = csect_cache;
@@ -1034,23 +1033,25 @@ xcoff_link_add_symbols (bfd *abfd, struct bfd_link_info *info)
       if ((o->flags & SEC_RELOC) != 0)
 	{
 	  reloc_info[o->target_index].relocs =
-	    xcoff_read_internal_relocs (abfd, o, TRUE, NULL, FALSE, NULL);
+	    xcoff_read_internal_relocs(abfd, o, TRUE, NULL, FALSE, NULL);
 	  amt = o->reloc_count;
-	  amt *= sizeof (asection *);
-	  reloc_info[o->target_index].csects = bfd_zmalloc (amt);
-	  if (reloc_info[o->target_index].csects == NULL)
+	  amt *= sizeof(asection *);
+	  reloc_info[o->target_index].csects = (asection **)bfd_zmalloc(amt);
+	  if (reloc_info[o->target_index].csects == NULL) {
 	    goto error_return;
+          }
 	}
 
-      if ((info->strip == strip_none || info->strip == strip_some)
-	  && o->lineno_count > 0)
+      if (((info->strip == strip_none) || (info->strip == strip_some))
+	  && (o->lineno_count > 0))
 	{
 	  bfd_byte *linenos;
 
-	  amt = linesz * o->lineno_count;
-	  linenos = bfd_malloc (amt);
-	  if (linenos == NULL)
+	  amt = (linesz * o->lineno_count);
+	  linenos = (bfd_byte *)bfd_malloc(amt);
+	  if (linenos == NULL) {
 	    goto error_return;
+          }
 	  reloc_info[o->target_index].linenos = linenos;
 	  if (bfd_seek (abfd, o->line_filepos, SEEK_SET) != 0
 	      || bfd_bread (linenos, amt, abfd) != amt)
@@ -2578,9 +2579,9 @@ bfd_xcoff_export_symbol (bfd *output_bfd,
     {
       char *fnname;
       struct xcoff_link_hash_entry *hfn;
-      bfd_size_type amt = strlen (h->root.root.string) + 2;
+      bfd_size_type amt = (strlen(h->root.root.string) + 2);
 
-      fnname = bfd_malloc (amt);
+      fnname = (char *)bfd_malloc(amt);
       if (fnname == NULL)
 	return FALSE;
       fnname[0] = '.';
@@ -2679,13 +2680,13 @@ bfd_xcoff_record_link_assignment (bfd *output_bfd,
 static bfd_boolean
 xcoff_build_ldsyms (struct xcoff_link_hash_entry *h, void * p)
 {
-  struct xcoff_loader_info *ldinfo = (struct xcoff_loader_info *) p;
+  struct xcoff_loader_info *ldinfo = (struct xcoff_loader_info *)p;
   bfd_size_type amt;
 
   if (h->root.type == bfd_link_hash_warning)
-    h = (struct xcoff_link_hash_entry *) h->root.u.i.link;
+    h = (struct xcoff_link_hash_entry *)h->root.u.i.link;
 
-  /* __rtinit, this symbol has special handling. */
+  /* __rtinit, this symbol has special handling: */
   if (h->flags & XCOFF_RTINIT)
       return TRUE;
 
@@ -2694,20 +2695,20 @@ xcoff_build_ldsyms (struct xcoff_link_hash_entry *h, void * p)
      any dynamic object, then the linker will have allocated space for
      the symbol in a common section but the XCOFF_DEF_REGULAR flag
      will not have been set.  */
-  if (h->root.type == bfd_link_hash_defined
-      && (h->flags & XCOFF_DEF_REGULAR) == 0
-      && (h->flags & XCOFF_REF_REGULAR) != 0
-      && (h->flags & XCOFF_DEF_DYNAMIC) == 0
-      && (bfd_is_abs_section (h->root.u.def.section)
-	  || (h->root.u.def.section->owner->flags & DYNAMIC) == 0))
+  if ((h->root.type == bfd_link_hash_defined)
+      && ((h->flags & XCOFF_DEF_REGULAR) == 0)
+      && ((h->flags & XCOFF_REF_REGULAR) != 0)
+      && ((h->flags & XCOFF_DEF_DYNAMIC) == 0)
+      && (bfd_is_abs_section(h->root.u.def.section)
+	  || ((h->root.u.def.section->owner->flags & DYNAMIC) == 0)))
     h->flags |= XCOFF_DEF_REGULAR;
 
   /* If all defined symbols should be exported, mark them now.  We
-     don't want to export the actual functions, just the function
+     do NOT want to export the actual functions, just the function
      descriptors.  */
   if (ldinfo->export_defineds
-      && (h->flags & XCOFF_DEF_REGULAR) != 0
-      && h->root.root.string[0] != '.')
+      && ((h->flags & XCOFF_DEF_REGULAR) != 0)
+      && (h->root.root.string[0] != '.'))
     {
       bfd_boolean export;
 
@@ -2726,15 +2727,15 @@ xcoff_build_ldsyms (struct xcoff_link_hash_entry *h, void * p)
 	 a different approach.  Note that the symbols can, of course,
 	 be exported explicitly.  */
       export = TRUE;
-      if ((h->root.type == bfd_link_hash_defined
-	   || h->root.type == bfd_link_hash_defweak)
-	  && h->root.u.def.section->owner != NULL
-	  && h->root.u.def.section->owner->my_archive != NULL)
+      if (((h->root.type == bfd_link_hash_defined)
+	   || (h->root.type == bfd_link_hash_defweak))
+	  && (h->root.u.def.section->owner != NULL)
+	  && (h->root.u.def.section->owner->my_archive != NULL))
 	{
 	  bfd *arbfd, *member;
 
 	  arbfd = h->root.u.def.section->owner->my_archive;
-	  member = bfd_openr_next_archived_file (arbfd, NULL);
+	  member = bfd_openr_next_archived_file(arbfd, NULL);
 	  while (member != NULL)
 	    {
 	      if ((member->flags & DYNAMIC) != 0)
@@ -2742,7 +2743,7 @@ xcoff_build_ldsyms (struct xcoff_link_hash_entry *h, void * p)
 		  export = FALSE;
 		  break;
 		}
-	      member = bfd_openr_next_archived_file (arbfd, member);
+	      member = bfd_openr_next_archived_file(arbfd, member);
 	    }
 	}
 
@@ -2750,36 +2751,36 @@ xcoff_build_ldsyms (struct xcoff_link_hash_entry *h, void * p)
 	h->flags |= XCOFF_EXPORT;
     }
 
-  /* We don't want to garbage collect symbols which are not defined in
+  /* We do NOT want to garbage collect symbols which are not defined in
      XCOFF files.  This is a convenient place to mark them.  */
-  if (xcoff_hash_table (ldinfo->info)->gc
-      && (h->flags & XCOFF_MARK) == 0
-      && (h->root.type == bfd_link_hash_defined
-	  || h->root.type == bfd_link_hash_defweak)
-      && (h->root.u.def.section->owner == NULL
+  if (xcoff_hash_table(ldinfo->info)->gc
+      && ((h->flags & XCOFF_MARK) == 0)
+      && ((h->root.type == bfd_link_hash_defined)
+	  || (h->root.type == bfd_link_hash_defweak))
+      && ((h->root.u.def.section->owner == NULL)
 	  || (h->root.u.def.section->owner->xvec
 	      != ldinfo->info->hash->creator)))
     h->flags |= XCOFF_MARK;
 
   /* If this symbol is called and defined in a dynamic object, or it
      is imported, then we need to set up global linkage code for it.
-     (Unless we did garbage collection and we didn't need this
+     (Unless we did garbage collection and we did NOT need this
      symbol.)  */
-  if ((h->flags & XCOFF_CALLED) != 0
-      && (h->root.type == bfd_link_hash_undefined
-	  || h->root.type == bfd_link_hash_undefweak)
-      && h->root.root.string[0] == '.'
-      && h->descriptor != NULL
-      && ((h->descriptor->flags & XCOFF_DEF_DYNAMIC) != 0
-	  || ((h->descriptor->flags & XCOFF_IMPORT) != 0
-	      && (h->descriptor->flags & XCOFF_DEF_REGULAR) == 0))
-      && (! xcoff_hash_table (ldinfo->info)->gc
-	  || (h->flags & XCOFF_MARK) != 0))
+  if (((h->flags & XCOFF_CALLED) != 0)
+      && ((h->root.type == bfd_link_hash_undefined)
+	  || (h->root.type == bfd_link_hash_undefweak))
+      && (h->root.root.string[0] == '.')
+      && (h->descriptor != NULL)
+      && (((h->descriptor->flags & XCOFF_DEF_DYNAMIC) != 0)
+	  || (((h->descriptor->flags & XCOFF_IMPORT) != 0)
+	      && ((h->descriptor->flags & XCOFF_DEF_REGULAR) == 0)))
+      && (! xcoff_hash_table(ldinfo->info)->gc
+	  || ((h->flags & XCOFF_MARK) != 0)))
     {
       asection *sec;
       struct xcoff_link_hash_entry *hds;
 
-      sec = xcoff_hash_table (ldinfo->info)->linkage_section;
+      sec = xcoff_hash_table(ldinfo->info)->linkage_section;
       h->root.type = bfd_link_hash_defined;
       h->root.u.def.section = sec;
       h->root.u.def.value = sec->size;
@@ -2790,9 +2791,9 @@ xcoff_build_ldsyms (struct xcoff_link_hash_entry *h, void * p)
       /* The global linkage code requires a TOC entry for the
 	 descriptor.  */
       hds = h->descriptor;
-      BFD_ASSERT ((hds->root.type == bfd_link_hash_undefined
-		   || hds->root.type == bfd_link_hash_undefweak)
-		  && (hds->flags & XCOFF_DEF_REGULAR) == 0);
+      BFD_ASSERT(((hds->root.type == bfd_link_hash_undefined)
+                  || (hds->root.type == bfd_link_hash_undefweak))
+                 && ((hds->flags & XCOFF_DEF_REGULAR) == 0));
       hds->flags |= XCOFF_MARK;
       if (hds->toc_section == NULL)
 	{
@@ -2801,39 +2802,39 @@ xcoff_build_ldsyms (struct xcoff_link_hash_entry *h, void * p)
 	  /* 32 vs 64
 	     xcoff32 uses 4 bytes in the toc.
 	     xcoff64 uses 8 bytes in the toc.  */
-	  if (bfd_xcoff_is_xcoff64 (ldinfo->output_bfd))
+	  if (bfd_xcoff_is_xcoff64(ldinfo->output_bfd))
 	    byte_size = 8;
-	  else if (bfd_xcoff_is_xcoff32 (ldinfo->output_bfd))
+	  else if (bfd_xcoff_is_xcoff32(ldinfo->output_bfd))
 	    byte_size = 4;
 	  else
 	    return FALSE;
 
-	  hds->toc_section = xcoff_hash_table (ldinfo->info)->toc_section;
+	  hds->toc_section = xcoff_hash_table(ldinfo->info)->toc_section;
 	  hds->u.toc_offset = hds->toc_section->size;
 	  hds->toc_section->size += byte_size;
-	  ++xcoff_hash_table (ldinfo->info)->ldrel_count;
+	  ++xcoff_hash_table(ldinfo->info)->ldrel_count;
 	  ++hds->toc_section->reloc_count;
 	  hds->indx = -2;
-	  hds->flags |= XCOFF_SET_TOC | XCOFF_LDREL;
+	  hds->flags |= (XCOFF_SET_TOC | XCOFF_LDREL);
 
 	  /* We need to call xcoff_build_ldsyms recursively here,
 	     because we may already have passed hds on the traversal.  */
-	  xcoff_build_ldsyms (hds, p);
+	  xcoff_build_ldsyms(hds, p);
 	}
     }
 
-  /* If this symbol is exported, but not defined, we need to try to
-     define it.  */
-  if ((h->flags & XCOFF_EXPORT) != 0
-      && (h->flags & XCOFF_IMPORT) == 0
-      && (h->flags & XCOFF_DEF_REGULAR) == 0
-      && (h->flags & XCOFF_DEF_DYNAMIC) == 0
-      && (h->root.type == bfd_link_hash_undefined
-	  || h->root.type == bfd_link_hash_undefweak))
+  /* If this symbol is exported, but not defined, then we need to try to
+   * define it: */
+  if (((h->flags & XCOFF_EXPORT) != 0)
+      && ((h->flags & XCOFF_IMPORT) == 0)
+      && ((h->flags & XCOFF_DEF_REGULAR) == 0)
+      && ((h->flags & XCOFF_DEF_DYNAMIC) == 0)
+      && ((h->root.type == bfd_link_hash_undefined)
+	  || (h->root.type == bfd_link_hash_undefweak)))
     {
-      if ((h->flags & XCOFF_DESCRIPTOR) != 0
-	  && (h->descriptor->root.type == bfd_link_hash_defined
-	      || h->descriptor->root.type == bfd_link_hash_defweak))
+      if (((h->flags & XCOFF_DESCRIPTOR) != 0)
+	  && ((h->descriptor->root.type == bfd_link_hash_defined)
+	      || (h->descriptor->root.type == bfd_link_hash_defweak)))
 	{
 	  asection *sec;
 
@@ -3166,25 +3167,25 @@ bfd_xcoff_size_dynamic_sections (bfd *output_bfd,
      The swap out routine for 32 bit will ignore them.
      Nothing fancy, symbols come after the header and relocs come
      after symbols.  */
-  ldhdr->l_symoff = bfd_xcoff_ldhdrsz (output_bfd);
-  ldhdr->l_rldoff = (bfd_xcoff_ldhdrsz (output_bfd)
-		     + ldhdr->l_nsyms * bfd_xcoff_ldsymsz (output_bfd));
+  ldhdr->l_symoff = bfd_xcoff_ldhdrsz(output_bfd);
+  ldhdr->l_rldoff = (bfd_xcoff_ldhdrsz(output_bfd)
+		     + ldhdr->l_nsyms * bfd_xcoff_ldsymsz(output_bfd));
 
-  /* We now know the final size of the .loader section.  Allocate
-     space for it.  */
-  lsec = xcoff_hash_table (info)->loader_section;
-  lsec->size = stoff + ldhdr->l_stlen;
-  lsec->contents = bfd_zalloc (output_bfd, lsec->size);
+  /* We now know the final size of the .loader section.  Allocate space
+   * for it: */
+  lsec = xcoff_hash_table(info)->loader_section;
+  lsec->size = (stoff + ldhdr->l_stlen);
+  lsec->contents = (unsigned char *)bfd_zalloc(output_bfd, lsec->size);
   if (lsec->contents == NULL)
     goto error_return;
 
-  /* Set up the header.  */
-  bfd_xcoff_swap_ldhdr_out (output_bfd, ldhdr, lsec->contents);
+  /* Set up the header: */
+  bfd_xcoff_swap_ldhdr_out(output_bfd, ldhdr, lsec->contents);
 
-  /* Set up the import file names.  */
-  out = (char *) lsec->contents + ldhdr->l_impoff;
-  strcpy (out, libpath);
-  out += strlen (libpath) + 1;
+  /* Set up the import file names: */
+  out = ((char *)lsec->contents + ldhdr->l_impoff);
+  strcpy(out, libpath);
+  out += (strlen(libpath) + 1);
   *out++ = '\0';
   *out++ = '\0';
   for (fl = xcoff_hash_table (info)->imports; fl != NULL; fl = fl->next)
@@ -3220,25 +3221,25 @@ bfd_xcoff_size_dynamic_sections (bfd *output_bfd,
      when the corresponding normal relocs are handled in
      xcoff_link_input_bfd.  */
 
-  /* Allocate space for the magic sections.  */
-  sec = xcoff_hash_table (info)->linkage_section;
+  /* Allocate space for the magic sections: */
+  sec = xcoff_hash_table(info)->linkage_section;
   if (sec->size > 0)
     {
-      sec->contents = bfd_zalloc (output_bfd, sec->size);
+      sec->contents = (unsigned char *)bfd_zalloc(output_bfd, sec->size);
       if (sec->contents == NULL)
 	goto error_return;
     }
-  sec = xcoff_hash_table (info)->toc_section;
+  sec = xcoff_hash_table(info)->toc_section;
   if (sec->size > 0)
     {
-      sec->contents = bfd_zalloc (output_bfd, sec->size);
+      sec->contents = (unsigned char *)bfd_zalloc(output_bfd, sec->size);
       if (sec->contents == NULL)
 	goto error_return;
     }
-  sec = xcoff_hash_table (info)->descriptor_section;
+  sec = xcoff_hash_table(info)->descriptor_section;
   if (sec->size > 0)
     {
-      sec->contents = bfd_zalloc (output_bfd, sec->size);
+      sec->contents = (unsigned char *)bfd_zalloc(output_bfd, sec->size);
       if (sec->contents == NULL)
 	goto error_return;
     }
@@ -3258,26 +3259,26 @@ bfd_xcoff_size_dynamic_sections (bfd *output_bfd,
 
       if (sub->xvec != info->hash->creator)
 	continue;
-      subdeb = bfd_get_section_by_name (sub, ".debug");
-      if (subdeb == NULL || subdeb->size == 0)
+      subdeb = bfd_get_section_by_name(sub, ".debug");
+      if ((subdeb == NULL) || (subdeb->size == 0))
 	continue;
 
-      if (info->strip == strip_all
-	  || info->strip == strip_debugger
-	  || info->discard == discard_all)
+      if ((info->strip == strip_all)
+	  || (info->strip == strip_debugger)
+	  || (info->discard == discard_all))
 	{
 	  subdeb->size = 0;
 	  continue;
 	}
 
-      if (! _bfd_coff_get_external_symbols (sub))
+      if (! _bfd_coff_get_external_symbols(sub))
 	goto error_return;
 
-      symcount = obj_raw_syment_count (sub);
-      debug_index = bfd_zalloc (sub, symcount * sizeof (unsigned long));
+      symcount = obj_raw_syment_count(sub);
+      debug_index = (unsigned long *)bfd_zalloc(sub, (symcount * sizeof(unsigned long)));
       if (debug_index == NULL)
 	goto error_return;
-      xcoff_data (sub)->debug_indices = debug_index;
+      xcoff_data(sub)->debug_indices = debug_index;
 
       /* Grab the contents of the .debug section.  We use malloc and
 	 copy the names into the debug stringtab, rather than
@@ -4586,12 +4587,11 @@ xcoff_sort_relocs (const void * p1, const void * p2)
     return 0;
 }
 
-/* Write out a non-XCOFF global symbol.  */
-
+/* Write out a non-XCOFF global symbol: */
 static bfd_boolean
-xcoff_write_global_symbol (struct xcoff_link_hash_entry *h, void * inf)
+xcoff_write_global_symbol(struct xcoff_link_hash_entry *h, void * inf)
 {
-  struct xcoff_final_link_info *finfo = (struct xcoff_final_link_info *) inf;
+  struct xcoff_final_link_info *finfo = (struct xcoff_final_link_info *)inf;
   bfd *output_bfd;
   bfd_byte *outsym;
   struct internal_syment isym;
@@ -4610,12 +4610,12 @@ xcoff_write_global_symbol (struct xcoff_link_hash_entry *h, void * inf)
 	return TRUE;
     }
 
-  /* If this symbol was garbage collected, just skip it.  */
-  if (xcoff_hash_table (finfo->info)->gc
-      && (h->flags & XCOFF_MARK) == 0)
+  /* If this symbol was garbage collected, then just skip it: */
+  if (xcoff_hash_table(finfo->info)->gc
+      && ((h->flags & XCOFF_MARK) == 0))
     return TRUE;
 
-  /* If we need a .loader section entry, write it out.  */
+  /* If we need a .loader section entry, then write it out: */
   if (h->ldsym != NULL)
     {
       struct internal_ldsym *ldsym;
@@ -4623,18 +4623,17 @@ xcoff_write_global_symbol (struct xcoff_link_hash_entry *h, void * inf)
 
       ldsym = h->ldsym;
 
-      if (h->root.type == bfd_link_hash_undefined
-	  || h->root.type == bfd_link_hash_undefweak)
+      if ((h->root.type == bfd_link_hash_undefined)
+	  || (h->root.type == bfd_link_hash_undefweak))
 	{
 
 	  ldsym->l_value = 0;
 	  ldsym->l_scnum = N_UNDEF;
 	  ldsym->l_smtype = XTY_ER;
 	  impbfd = h->root.u.undef.abfd;
-
 	}
-      else if (h->root.type == bfd_link_hash_defined
-	       || h->root.type == bfd_link_hash_defweak)
+      else if ((h->root.type == bfd_link_hash_defined)
+	       || (h->root.type == bfd_link_hash_defweak))
 	{
 	  asection *sec;
 
@@ -4645,10 +4644,9 @@ xcoff_write_global_symbol (struct xcoff_link_hash_entry *h, void * inf)
 	  ldsym->l_scnum = sec->output_section->target_index;
 	  ldsym->l_smtype = XTY_SD;
 	  impbfd = sec->owner;
-
 	}
       else
-	abort ();
+	abort();
 
       if (((h->flags & XCOFF_DEF_REGULAR) == 0
 	   && (h->flags & XCOFF_DEF_DYNAMIC) != 0)
@@ -5201,9 +5199,7 @@ xcoff_reloc_link_order (bfd *output_bfd,
 
   addend = link_order->u.reloc.p->addend;
   if (hsec != NULL)
-    addend += (hsec->output_section->vma
-	       + hsec->output_offset
-	       + hval);
+    addend += (hsec->output_section->vma + hsec->output_offset + hval);
 
   if (addend != 0)
     {
@@ -5212,12 +5208,12 @@ xcoff_reloc_link_order (bfd *output_bfd,
       bfd_reloc_status_type rstat;
       bfd_boolean ok;
 
-      size = bfd_get_reloc_size (howto);
-      buf = bfd_zmalloc (size);
+      size = bfd_get_reloc_size(howto);
+      buf = (bfd_byte *)bfd_zmalloc(size);
       if (buf == NULL)
 	return FALSE;
 
-      rstat = _bfd_relocate_contents (howto, output_bfd, addend, buf);
+      rstat = _bfd_relocate_contents(howto, output_bfd, addend, buf);
       switch (rstat)
 	{
 	case bfd_reloc_ok:
@@ -5318,10 +5314,9 @@ xcoff_reloc_link_order (bfd *output_bfd,
   return TRUE;
 }
 
-/* Do the final link step.  */
-
+/* Do the final link step: */
 bfd_boolean
-_bfd_xcoff_bfd_final_link (bfd *abfd, struct bfd_link_info *info)
+_bfd_xcoff_bfd_final_link(bfd *abfd, struct bfd_link_info *info)
 {
   bfd_size_type symesz;
   struct xcoff_final_link_info finfo;
@@ -5580,15 +5575,17 @@ _bfd_xcoff_bfd_final_link (bfd *abfd, struct bfd_link_info *info)
 	     We could backpatch the file later, I suppose, although it
 	     would be slow.  */
 	  amt = o->reloc_count;
-	  amt *= sizeof (struct internal_reloc);
-	  finfo.section_info[o->target_index].relocs = bfd_malloc (amt);
+	  amt *= sizeof(struct internal_reloc);
+	  finfo.section_info[o->target_index].relocs =
+            (struct internal_reloc *)bfd_malloc(amt);
 
 	  amt = o->reloc_count;
-	  amt *= sizeof (struct xcoff_link_hash_entry *);
-	  finfo.section_info[o->target_index].rel_hashes = bfd_malloc (amt);
+	  amt *= sizeof(struct xcoff_link_hash_entry *);
+	  finfo.section_info[o->target_index].rel_hashes =
+            (struct xcoff_link_hash_entry **)bfd_malloc(amt);
 
-	  if (finfo.section_info[o->target_index].relocs == NULL
-	      || finfo.section_info[o->target_index].rel_hashes == NULL)
+	  if ((finfo.section_info[o->target_index].relocs == NULL)
+	      || (finfo.section_info[o->target_index].rel_hashes == NULL))
 	    goto error_return;
 
 	  if (o->reloc_count > max_output_reloc_count)
@@ -5634,24 +5631,24 @@ _bfd_xcoff_bfd_final_link (bfd *abfd, struct bfd_link_info *info)
 	max_sym_count = sz;
     }
 
-  /* Allocate some buffers used while linking.  */
-  amt = max_sym_count * sizeof (struct internal_syment);
-  finfo.internal_syms = bfd_malloc (amt);
+  /* Allocate some buffers used while linking: */
+  amt = (max_sym_count * sizeof(struct internal_syment));
+  finfo.internal_syms = (struct internal_syment *)bfd_malloc(amt);
 
-  amt = max_sym_count * sizeof (long);
-  finfo.sym_indices = bfd_malloc (amt);
+  amt = (max_sym_count * sizeof(long));
+  finfo.sym_indices = (long *)bfd_malloc(amt);
 
-  amt = (max_sym_count + 1) * symesz;
-  finfo.outsyms = bfd_malloc (amt);
+  amt = ((max_sym_count + 1) * symesz);
+  finfo.outsyms = (bfd_byte *)bfd_malloc(amt);
 
-  amt = max_lineno_count * bfd_coff_linesz (abfd);
-  finfo.linenos = bfd_malloc (amt);
+  amt = (max_lineno_count * bfd_coff_linesz(abfd));
+  finfo.linenos = (bfd_byte *)bfd_malloc(amt);
 
   amt = max_contents_size;
-  finfo.contents = bfd_malloc (amt);
+  finfo.contents = (bfd_byte *)bfd_malloc(amt);
 
   amt = max_reloc_count * relsz;
-  finfo.external_relocs = bfd_malloc (amt);
+  finfo.external_relocs = (bfd_byte *)bfd_malloc(amt);
 
   if ((finfo.internal_syms == NULL && max_sym_count > 0)
       || (finfo.sym_indices == NULL && max_sym_count > 0)
@@ -5751,11 +5748,11 @@ _bfd_xcoff_bfd_final_link (bfd *abfd, struct bfd_link_info *info)
     }
 
   /* Now that we have written out all the global symbols, we know the
-     symbol indices to use for relocs against them, and we can finally
-     write out the relocs.  */
-  amt = max_output_reloc_count * relsz;
-  external_relocs = bfd_malloc (amt);
-  if (external_relocs == NULL && max_output_reloc_count != 0)
+   * symbol indices to use for relocs against them, and we can finally
+   * write out the relocs: */
+  amt = (max_output_reloc_count * relsz);
+  external_relocs = (bfd_byte *)bfd_malloc(amt);
+  if ((external_relocs == NULL) && (max_output_reloc_count != 0))
     goto error_return;
 
   for (o = abfd->sections; o != NULL; o = o->next)
@@ -5876,53 +5873,53 @@ _bfd_xcoff_bfd_final_link (bfd *abfd, struct bfd_link_info *info)
 				     (file_ptr) o->output_offset,
 				     o->size))
     goto error_return;
-  o = xcoff_hash_table (info)->descriptor_section;
-  if (o->size > 0
-      && ! bfd_set_section_contents (abfd, o->output_section, o->contents,
-				     (file_ptr) o->output_offset,
-				     o->size))
+  o = xcoff_hash_table(info)->descriptor_section;
+  if ((o->size > 0)
+      && ! bfd_set_section_contents(abfd, o->output_section, o->contents,
+                                    (file_ptr)o->output_offset,
+                                    o->size))
     goto error_return;
 
-  /* Write out the string table.  */
-  pos = obj_sym_filepos (abfd) + obj_raw_syment_count (abfd) * symesz;
-  if (bfd_seek (abfd, pos, SEEK_SET) != 0)
+  /* Write out the string table: */
+  pos = (obj_sym_filepos(abfd) + obj_raw_syment_count(abfd) * symesz);
+  if (bfd_seek(abfd, pos, SEEK_SET) != 0)
     goto error_return;
-  H_PUT_32 (abfd,
-	    _bfd_stringtab_size (finfo.strtab) + STRING_SIZE_SIZE,
-	    strbuf);
+  H_PUT_32(abfd,
+           (_bfd_stringtab_size(finfo.strtab) + STRING_SIZE_SIZE),
+           strbuf);
   amt = STRING_SIZE_SIZE;
-  if (bfd_bwrite (strbuf, amt, abfd) != amt)
+  if (bfd_bwrite(strbuf, amt, abfd) != amt)
     goto error_return;
-  if (! _bfd_stringtab_emit (abfd, finfo.strtab))
+  if (! _bfd_stringtab_emit(abfd, finfo.strtab))
     goto error_return;
 
-  _bfd_stringtab_free (finfo.strtab);
+  _bfd_stringtab_free(finfo.strtab);
 
-  /* Write out the debugging string table.  */
-  o = xcoff_hash_table (info)->debug_section;
+  /* Write out the debugging string table: */
+  o = xcoff_hash_table(info)->debug_section;
   if (o != NULL)
     {
       struct bfd_strtab_hash *debug_strtab;
 
-      debug_strtab = xcoff_hash_table (info)->debug_strtab;
-      BFD_ASSERT (o->output_section->size - o->output_offset
-		  >= _bfd_stringtab_size (debug_strtab));
-      pos = o->output_section->filepos + o->output_offset;
-      if (bfd_seek (abfd, pos, SEEK_SET) != 0)
+      debug_strtab = xcoff_hash_table(info)->debug_strtab;
+      BFD_ASSERT((o->output_section->size - o->output_offset)
+                 >= _bfd_stringtab_size(debug_strtab));
+      pos = (o->output_section->filepos + o->output_offset);
+      if (bfd_seek(abfd, pos, SEEK_SET) != 0)
 	goto error_return;
-      if (! _bfd_stringtab_emit (abfd, debug_strtab))
+      if (! _bfd_stringtab_emit(abfd, debug_strtab))
 	goto error_return;
     }
 
   /* Setting bfd_get_symcount to 0 will cause write_object_contents to
-     not try to write out the symbols.  */
-  bfd_get_symcount (abfd) = 0;
+   * not try to write out the symbols: */
+  bfd_get_symcount(abfd) = 0;
 
   return TRUE;
 
  error_return:
   if (finfo.strtab != NULL)
-    _bfd_stringtab_free (finfo.strtab);
+    _bfd_stringtab_free(finfo.strtab);
 
   if (finfo.section_info != NULL)
     {
@@ -5931,26 +5928,28 @@ _bfd_xcoff_bfd_final_link (bfd *abfd, struct bfd_link_info *info)
       for (i = 0; i < abfd->section_count; i++)
 	{
 	  if (finfo.section_info[i].relocs != NULL)
-	    free (finfo.section_info[i].relocs);
+	    free(finfo.section_info[i].relocs);
 	  if (finfo.section_info[i].rel_hashes != NULL)
-	    free (finfo.section_info[i].rel_hashes);
+	    free(finfo.section_info[i].rel_hashes);
 	}
-      free (finfo.section_info);
+      free(finfo.section_info);
     }
 
   if (finfo.internal_syms != NULL)
-    free (finfo.internal_syms);
+    free(finfo.internal_syms);
   if (finfo.sym_indices != NULL)
-    free (finfo.sym_indices);
+    free(finfo.sym_indices);
   if (finfo.outsyms != NULL)
-    free (finfo.outsyms);
+    free(finfo.outsyms);
   if (finfo.linenos != NULL)
-    free (finfo.linenos);
+    free(finfo.linenos);
   if (finfo.contents != NULL)
-    free (finfo.contents);
+    free(finfo.contents);
   if (finfo.external_relocs != NULL)
-    free (finfo.external_relocs);
+    free(finfo.external_relocs);
   if (external_relocs != NULL)
-    free (external_relocs);
+    free(external_relocs);
   return FALSE;
 }
+
+/* EOF */

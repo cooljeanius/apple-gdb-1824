@@ -1,4 +1,4 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* macosx-nat-inferior.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002, 2004
    Free Software Foundation, Inc.
 
@@ -88,6 +88,11 @@
 #endif /* WITH_CFM */
 
 #include <mach/mach_vm.h>
+
+#if defined(LIBXML2_IS_USABLE) && LIBXML2_IS_USABLE
+# include <libxml/parser.h>
+# include <libxml/tree.h>
+#endif /* LIBXML2_IS_USABLE */
 
 #ifndef EXC_SOFT_SIGNAL
 # define EXC_SOFT_SIGNAL 0
@@ -206,8 +211,8 @@ static int macosx_process_events (struct macosx_inferior_status *ns,
                                   struct target_waitstatus *status,
                                   int timeout, int service_first_event);
 
-static struct macosx_pending_event * macosx_add_to_pending_events (enum macosx_source_type,
-                                          unsigned char *buf);
+static struct macosx_pending_event *
+macosx_add_to_pending_events (enum macosx_source_type, unsigned char *buf);
 
 static int macosx_post_pending_event (void);
 static void macosx_pending_event_handler (void *data);
@@ -215,7 +220,7 @@ static ptid_t macosx_process_pending_event (struct macosx_inferior_status *ns,
                                             struct target_waitstatus *status,
                                             gdb_client_data client_data);
 
-static void macosx_clear_pending_events ();
+static void macosx_clear_pending_events (void);
 
 static void macosx_child_stop (void);
 
@@ -226,7 +231,7 @@ static ptid_t macosx_child_wait (ptid_t ptid,
                                  struct target_waitstatus *status,
                                  gdb_client_data client_data);
 
-static void macosx_mourn_inferior ();
+static void macosx_mourn_inferior (void);
 
 static int macosx_lookup_task (char *args, task_t * ptask, int *ppid);
 
@@ -235,9 +240,9 @@ static void macosx_child_attach (char *args, int from_tty);
 static void macosx_child_detach (char *args, int from_tty);
 
 static int macosx_kill_inferior (void *);
-static void macosx_kill_inferior_safe ();
+static void macosx_kill_inferior_safe (void);
 
-static void macosx_ptrace_me ();
+static void macosx_ptrace_me (void);
 
 static void macosx_ptrace_him (int pid);
 
@@ -255,6 +260,12 @@ static int macosx_child_thread_alive (ptid_t tpid);
 static struct pid_list *find_existing_processes_by_name (const char *procname);
 static int pid_present_on_pidlist (pid_t pid, struct pid_list *proclist);
 
+static const char *get_bundle_executable_from_plist(const char *pathname);
+
+#if defined(LIBXML2_IS_USABLE) && LIBXML2_IS_USABLE
+static const char *find_executable_name_in_xml_tree(xmlNode * a_node);
+#endif /* LIBXML2_IS_USABLE */
+
 static void
 macosx_handle_signal (macosx_signal_thread_message *msg,
                       struct target_waitstatus *status)
@@ -265,7 +276,9 @@ macosx_handle_signal (macosx_signal_thread_message *msg,
 
   CHECK_FATAL (macosx_status->attached_in_ptrace);
   CHECK_FATAL (!macosx_status->stopped_in_ptrace);
-  /* CHECK_FATAL (! macosx_status->stopped_in_softexc); */
+#if 0
+  CHECK_FATAL (! macosx_status->stopped_in_softexc);
+#endif /* 0 */
 
   if (inferior_debug_flag)
     {
@@ -570,7 +583,7 @@ macosx_free_pending_event (struct macosx_pending_event *event_ptr)
 }
 
 static int
-macosx_count_pending_events ()
+macosx_count_pending_events (void)
 {
   int counter = 0;
   struct macosx_pending_event *event_ptr;
@@ -599,7 +612,7 @@ macosx_remove_pending_event (struct macosx_pending_event *event_ptr, int delete)
 }
 
 static void
-macosx_clear_pending_events ()
+macosx_clear_pending_events (void)
 {
   struct macosx_pending_event *event_ptr = pending_event_chain;
 
@@ -1383,7 +1396,7 @@ macosx_child_wait (ptid_t pid, struct target_waitstatus *status,
 }
 
 static void
-macosx_mourn_inferior ()
+macosx_mourn_inferior (void)
 {
   unpush_target (&macosx_child_ops);
   deprecated_child_ops.to_mourn_inferior ();
@@ -2170,7 +2183,7 @@ macosx_kill_inferior (void *arg)
 }
 
 static void
-macosx_kill_inferior_safe ()
+macosx_kill_inferior_safe (void)
 {
   kern_return_t kret;
   int ret;
@@ -2190,7 +2203,7 @@ macosx_kill_inferior_safe ()
 }
 
 static void
-macosx_ptrace_me ()
+macosx_ptrace_me (void)
 {
   restore_file_rlimit ();
 
@@ -3075,7 +3088,7 @@ direct_memcache_get (struct checkpoint *cp)
       else if (err)
 	{
 	  mach_error ("vm_region",err);
-	  break; // reached last region
+	  break; /* reached last region */
 	}
 
       if (info.protection & VM_PROT_WRITE)
@@ -3131,7 +3144,7 @@ fork_memcache_put (struct checkpoint *cp)
       else if (err)
 	{
 	  mach_error ("vm_region",err);
-	  break; // reached last region
+	  break; /* reached last region */
 	}
 
       if (info.protection & VM_PROT_WRITE)
@@ -3163,9 +3176,93 @@ fork_memcache_put (struct checkpoint *cp)
     }
 }
 
+/* Find an app bundle Info.plist XML file and use libxml2 to parse it. */
+/* The string returned (NULL if unsuccessful) has been malloc()'ed by
+ * libxml2, so free() it; do NOT xfree() or xmfree() it.  */
+static const char *
+get_bundle_executable_from_plist(const char *pathname)
+{
+#if !defined(LIBXML2_IS_USABLE) || !LIBXML2_IS_USABLE
+  return NULL;
+#else
+  xmlDoc *doc = NULL;
+  xmlNode *root_element = NULL;
+  char *info_plist_name;
+  const char *exe_name = NULL;
+  struct stat s;
+
+  LIBXML_TEST_VERSION
+  info_plist_name =
+  xmalloc(strlen(pathname) + strlen("/Info.plist") + 1);
+  strcpy(info_plist_name, pathname);
+  strcat(info_plist_name, "/Info.plist");
+
+  if (stat(info_plist_name, &s) != 0) {
+    return NULL;
+  }
+
+  doc = xmlParseFile(info_plist_name);
+
+  xfree(info_plist_name);
+  if (doc == NULL) {
+    return NULL;
+  }
+
+  root_element = xmlDocGetRootElement(doc);
+  if (root_element != NULL) {
+    exe_name = find_executable_name_in_xml_tree(root_element);
+  }
+
+  xmlFreeDoc(doc);
+  xmlCleanupParser();
+
+  return exe_name;
+#endif /* !LIBXML2_IS_USABLE */
+}
+
+/* Step through a libxml2 XML tree to find a CFBundleExecutable
+ * key/value pair indicating the name of the executable in an
+ * application bundle.  It would be nice if there were a higher
+ * level way of doing this, but I do NOT want to add any
+ * dependencies on Foundation-like things... */
+#if defined(LIBXML2_IS_USABLE) && LIBXML2_IS_USABLE
+static const char *
+find_executable_name_in_xml_tree(xmlNode * a_node)
+{
+  xmlNode *cur_node = NULL;
+  int just_saw_CFBundleExecutable = 0;
+  const char *ret;
+
+  for (cur_node = a_node; cur_node; cur_node = cur_node->next)
+    {
+      if ((cur_node->type == XML_ELEMENT_NODE) && cur_node->name)
+	{
+	  xmlChar *contents = xmlNodeGetContent (cur_node);
+	  if ((strcmp(cur_node->name, "key") == 0)
+	      && (strcmp(contents, "CFBundleExecutable") == 0))
+	    {
+	      just_saw_CFBundleExecutable = 1;
+	      continue;
+	    }
+	  if ((strcmp(cur_node->name, "string") == 0)
+	      && (just_saw_CFBundleExecutable == 1))
+	    {
+	      return (const char *)contents;
+	    }
+	  just_saw_CFBundleExecutable = 0;
+	}
+      ret = find_executable_name_in_xml_tree(cur_node->children);
+      if (ret != NULL) {
+	return ret;
+      }
+    }
+  return (NULL);
+}
+#endif /* LIBXML2_IS_USABLE */
+
 
 void
-_initialize_macosx_inferior ()
+_initialize_macosx_inferior(void)
 {
   CHECK_FATAL (macosx_status == NULL);
   macosx_status = (struct macosx_inferior_status *)
@@ -3300,3 +3397,5 @@ Show if GDB should attach to the subprocess using ptrace ()."), NULL,
 
   add_info ("fork", cpfork_info, "help");
 }
+
+/* EOF */

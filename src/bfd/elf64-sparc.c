@@ -16,7 +16,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -26,8 +26,8 @@
 #include "opcode/sparc.h"
 #include "elfxx-sparc.h"
 
-/* In case we're on a 32-bit machine, construct a 64-bit "-1" value.  */
-#define MINUS_ONE (~ (bfd_vma) 0)
+/* In case we are on a 32-bit machine, construct a 64-bit "-1" value: */
+#define MINUS_ONE (~(bfd_vma)0)
 
 /* Due to the way how we handle R_SPARC_OLO10, each entry in a SHT_RELA
    section can represent up to two relocs, we must tell the user to allocate
@@ -273,12 +273,11 @@ elf64_sparc_canonicalize_dynamic_reloc (bfd *abfd, arelent **storage,
   return ret;
 }
 
-/* Write out the relocs.  */
-
+/* Write out the relocs: */
 static void
-elf64_sparc_write_relocs (bfd *abfd, asection *sec, PTR data)
+elf64_sparc_write_relocs(bfd *abfd, asection *sec, PTR data)
 {
-  bfd_boolean *failedp = (bfd_boolean *) data;
+  bfd_boolean *failedp = (bfd_boolean *)data;
   Elf_Internal_Shdr *rela_hdr;
   bfd_vma addr_offset;
   Elf64_External_Rela *outbound_relocas, *src_rela;
@@ -286,7 +285,7 @@ elf64_sparc_write_relocs (bfd *abfd, asection *sec, PTR data)
   asymbol *last_sym = 0;
   int last_sym_idx = 0;
 
-  /* If we have already failed, don't do anything.  */
+  /* If we have already failed, do NOT do anything: */
   if (*failedp)
     return;
 
@@ -295,7 +294,7 @@ elf64_sparc_write_relocs (bfd *abfd, asection *sec, PTR data)
 
   /* The linker backend writes the relocs out itself, and sets the
      reloc_count field to zero to inhibit writing them here.  Also,
-     sometimes the SEC_RELOC flag gets set even when there aren't any
+     sometimes the SEC_RELOC flag gets set even when there are NOT any
      relocs.  */
   if (sec->reloc_count == 0)
     return;
@@ -311,23 +310,23 @@ elf64_sparc_write_relocs (bfd *abfd, asection *sec, PTR data)
       ++count;
 
       addr = sec->orelocation[idx]->address;
-      if (sec->orelocation[idx]->howto->type == R_SPARC_LO10
-	  && idx < sec->reloc_count - 1)
+      if ((sec->orelocation[idx]->howto->type == R_SPARC_LO10)
+	  && (idx < (sec->reloc_count - 1)))
 	{
 	  arelent *r = sec->orelocation[idx + 1];
 
-	  if (r->howto->type == R_SPARC_13
-	      && r->address == addr
-	      && bfd_is_abs_section ((*r->sym_ptr_ptr)->section)
-	      && (*r->sym_ptr_ptr)->value == 0)
+	  if ((r->howto->type == R_SPARC_13)
+	      && (r->address == addr)
+	      && bfd_is_abs_section((*r->sym_ptr_ptr)->section)
+	      && ((*r->sym_ptr_ptr)->value == 0))
 	    ++idx;
 	}
     }
 
-  rela_hdr = &elf_section_data (sec)->rel_hdr;
+  rela_hdr = &elf_section_data(sec)->rel_hdr;
 
-  rela_hdr->sh_size = rela_hdr->sh_entsize * count;
-  rela_hdr->contents = (PTR) bfd_alloc (abfd, rela_hdr->sh_size);
+  rela_hdr->sh_size = (rela_hdr->sh_entsize * count);
+  rela_hdr->contents = (unsigned char *)bfd_alloc(abfd, rela_hdr->sh_size);
   if (rela_hdr->contents == NULL)
     {
       *failedp = TRUE;
@@ -483,12 +482,12 @@ elf64_sparc_add_symbol_hook (bfd *abfd, struct bfd_link_info *info,
 		  return FALSE;
 		}
 
-	      p->name = bfd_hash_allocate (&info->hash->table,
-					   strlen (*namep) + 1);
+	      p->name = (char *)bfd_hash_allocate(&info->hash->table,
+                                                  strlen(*namep) + 1);
 	      if (!p->name)
 		return FALSE;
 
-	      strcpy (p->name, *namep);
+	      strcpy(p->name, *namep);
 	    }
 	  else
 	    p->name = "";
@@ -897,7 +896,13 @@ const struct elf_size_info elf64_sparc_size_info =
 #define elf_backend_got_header_size 8
 #define elf_backend_rela_normal 1
 
-/* Section 5.2.4 of the ABI specifies a 256-byte boundary for the table.  */
+/* Section 5.2.4 of the ABI specifies a 256-byte boundary for the table: */
 #define elf_backend_plt_alignment 8
 
 #include "elf64-target.h"
+
+#ifdef MINUS_ONE
+# undef MINUS_ONE
+#endif /* MINUS_ONE */
+
+/* EOF */

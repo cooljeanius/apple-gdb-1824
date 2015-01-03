@@ -653,8 +653,8 @@ extern const bfd_target TARGET_LITTLE_SYM;
 #ifdef TARGET_BIG_SYM
 const bfd_target TARGET_BIG_SYM =
 {
-  /* name: identify kind of target */
-  TARGET_BIG_NAME,
+  /* name: identify kind of target: */
+  (char *)TARGET_BIG_NAME,
 
   /* flavour: general indication about file */
   bfd_target_elf_flavour,
@@ -749,8 +749,8 @@ const bfd_target TARGET_BIG_SYM =
 #ifdef TARGET_LITTLE_SYM
 const bfd_target TARGET_LITTLE_SYM =
 {
-  /* name: identify kind of target */
-  TARGET_LITTLE_NAME,
+  /* name: identify kind of target: */
+  (char *)TARGET_LITTLE_NAME,
 
   /* flavour: general indication about file */
   bfd_target_elf_flavour,
@@ -841,3 +841,5 @@ const bfd_target TARGET_LITTLE_SYM =
   &elfNN_bed
 };
 #endif
+
+/* EOF */

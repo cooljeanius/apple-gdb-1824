@@ -3,6 +3,7 @@ dnl# Process this file with autoconf to produce a configure script.
 dnl#
 
 AC_PREREQ([2.59])
+m4_include([version.m4])
 AC_INIT([bfd],[2.16.91],[jingham@apple.com])
 dnl# bug report address is email address of last person to touch this
 dnl# directory, according to the Changelog-Apple in this directory.
@@ -15,7 +16,8 @@ AC_CANONICAL_TARGET
 AC_SEARCH_LIBS([strerror],[cposix]) dnl# used to be AC\_ISC\_POSIX
 if test -z "${TARGET_ARCHITECTURE}" -a -n "${target_cpu}"; then
   export TARGET_ARCHITECTURE="${target_cpu}"
-  AC_SUBST([TARGET_ARCHITECTURE])
+  AC_SUBST([TARGET_ARCHITECTURE])dnl
+  ## I guess target is first in this subdir because it is more important...
 fi
 
 # host stuff:
@@ -29,7 +31,8 @@ fi
 AC_USE_SYSTEM_EXTENSIONS
 if test -z "${HOST_ARCHITECTURE}" -a -n "${host_cpu}"; then
   export HOST_ARCHITECTURE="${host_cpu}"
-  AC_SUBST([HOST_ARCHITECTURE])
+  AC_SUBST([HOST_ARCHITECTURE])dnl
+  ## TODO: might also want to do likewise with the build arch...
 fi
 
 # Automake:
@@ -39,7 +42,8 @@ if test -f ${srcdir}/config.status; then
   AC_MSG_NOTICE([${srcdir}/config.status is already present, removing it.])
   rm -f ${srcdir}/config.status
 fi
-AM_INIT_AUTOMAKE([1.9.6 gnits dejagnu])
+AM_INIT_AUTOMAKE([1.9.6 gnits dejagnu -Wall -Wno-portability])dnl
+  ## maintainer mode is used kind of hackishly in the Makefiles here:
 AM_MAINTAINER_MODE
 AM_PROG_INSTALL_STRIP
 AM_SANITY_CHECK
@@ -52,18 +56,20 @@ AM_PROG_AS
 AM_PROG_AR
 if test "x${AR}" = "x"; then
   test -z "${AR}"
-  AC_CHECK_TOOL([AR],[ar])
+  AC_CHECK_TOOLS([AR],[ar gar])dnl
+  ## might want to switch around these checks...
 else
   test ! -z "${AR}"
 fi
-AC_CHECK_TOOL([RANLIB],[ranlib],[:])
+AC_CHECK_TOOL([RANLIB],[ranlib],[:])dnl
+  ## keep autoscan happy:
 if test "x${RANLIB}" = "x"; then
   test -z "${RANLIB}"
   AC_PROG_RANLIB
 else
   test ! -z "${RANLIB}"
 fi
-AC_PATH_PROG([SANDBOX_EXEC],[sandbox-exec],[],[/usr/bin])
+AC_PATH_PROG([SANDBOX_EXEC],[sandbox-exec],[],[/usr/bin])dnl
 AC_PATH_PROGS([MAKE_BIN],[make gmake gnumake remake "xcrun make"])
 if test -n "${SANDBOX_EXEC}" -a -n "${MAKE_BIN}"; then
   if test -e `pwd`/sandbox/build-libbfd.sb; then
@@ -71,7 +77,8 @@ if test -n "${SANDBOX_EXEC}" -a -n "${MAKE_BIN}"; then
   elif test -e ${srcdir}/sandbox/build-libbfd.sb; then
     sb_build_profile=${srcdir}/sandbox/build-libbfd.sb
   fi
-  AC_SUBST([sb_build_profile])
+  AC_SUBST([sb_build_profile])dnl
+  ## now see if it can be used with a Makefile:
   if test -e `pwd`/sandbox/dummy-Makefile; then
     sb_dummy_Makefile=`pwd`/sandbox/dummy-Makefile
   elif test -e ${srcdir}/sandbox/build-libbfd.sb; then
@@ -88,7 +95,8 @@ if test -n "${SANDBOX_EXEC}" -a -n "${MAKE_BIN}"; then
         AC_SUBST([MAKE_BIN])
       fi
       export CAN_BUILD_IN_SANDBOX=1
-      AC_SUBST([CAN_BUILD_IN_SANDBOX])
+      AC_SUBST([CAN_BUILD_IN_SANDBOX])dnl
+      ## might actually not even be necessary any more...
     else
       AC_MSG_RESULT([no])
     fi
@@ -105,13 +113,14 @@ AC_MSG_CHECKING([libtool things])
 AC_MSG_RESULT([ ])
 LT_INIT([disable-fast-install disable-shared dlopen static win32-dll])dnl
 LT_LANG([C])dnl
-dnl# temporarily set this while I update everything libtool-related:
+dnl# (temporarily) set this while I update everything libtool-related:
 LT_PREREQ([2.4.4])dnl
 
 if test -z "${lt_cv_objdir}"; then
   AC_MSG_WARN([lt_cv_objdir somehow was left unset, setting to default])
   export lt_cv_objdir=.libs
-  AC_SUBST([lt_cv_objdir])
+  AC_SUBST([lt_cv_objdir])dnl
+  ## other possible names for it:
   if test -z "${objdir}"; then
     export objdir=.libs
     AC_SUBST([objdir])
@@ -214,7 +223,8 @@ AC_ARG_ENABLE([targets],
   no) enable_targets="" ;;
   *)  enable_targets="${enableval}" ;;
 esac
-test -n "${enable_targets}"])
+test -n "${enable_targets}"])dnl
+  ## this flag could be dangerous:
 AC_ARG_ENABLE([obsolete],
 [AS_HELP_STRING([--enable-obsolete],
                 [allow building of obsolete target configurations])],
@@ -223,7 +233,8 @@ AC_ARG_ENABLE([obsolete],
   no)  export enable_obsolete="no" ;;
   *)   AC_MSG_ERROR([bad value '${enableval}' for obsolete flag]) ;;
 esac
-test -n "${enable_obsolete}"])
+test -n "${enable_obsolete}"])dnl
+  ## other subdirs share this flag, too:
 AC_ARG_ENABLE([commonbfdlib],
 [AS_HELP_STRING([--enable-commonbfdlib],
                 [build shared BFD/opcodes/libiberty library])],
@@ -251,10 +262,22 @@ AC_ARG_ENABLE([secureplt],
   no)   use_secureplt="false" ;;
   *)    AC_MSG_ERROR([bad value ${enableval} for secureplt option]) ;;
 esac],[use_secureplt="false"])dnl
+  ## corresponding define:
 if test "x${use_secureplt}" = "xtrue"; then
   AC_DEFINE([USE_SECUREPLT],[1],
     [Define if we should default to creating read-only plt entries])
 fi
+
+AC_ARG_ENABLE([leading-mingw64-underscores],
+  [AS_HELP_STRING([--enable-leading-mingw64-underscores],
+                  [Enable leading underscores on 64 bit mingw targets])],
+  [],[])dnl
+  ## corresponding define:
+AS_IF([test x"${enable_leading_mingw64_underscores}" = x"yes"],
+  [AC_DEFINE([USE_MINGW64_LEADING_UNDERSCORES],[1],
+    [Define to 1 if we should use leading underscore on 64 bit mingw
+     targets])dnl
+])dnl
 
 DEBUGDIR=${libdir}/debug
 AC_ARG_WITH([separate-debug-dir],
@@ -279,6 +302,7 @@ AC_ARG_ENABLE([elf-stt-common],
 # the loader does not support it. So by default we always choose to
 # disable this feature.
   want_elf_stt_common="false"])dnl
+  ## corresponding define:
 if test "x${want_elf_stt_common}" = "xtrue"; then
   AC_DEFINE([USE_STT_COMMON],[1],
     [Define if we may generate symbols with ELF's STT_COMMON type])
@@ -297,6 +321,7 @@ m4_ifdef([ACX_BUGURL],[
 
 AM_BINUTILS_WARNINGS
 
+dnl# add some insurance to our "config.h" header:
 AH_TOP([
 #ifndef HAVE_CONFIG_H
 # define HAVE_CONFIG_H 1
@@ -309,7 +334,7 @@ AH_VERBATIM([00_CONFIG_H_CHECK],[
  * (this works only for glibc, but that should be enough).  */
 #if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning "config.h should be #included before system headers"
+ #  warning "config.h should be #included before system headers"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ */
 #ifndef __CONFIG_H__
@@ -367,7 +392,7 @@ fi
 ALL_LINGUAS="fr tr ja es sv da zh_CN ro rw vi fi id ru uk"
 CY_GNU_GETTEXT
 
-# Permit host specific settings.
+# Permit host-specific settings:
 AC_MSG_NOTICE([sourcing ${srcdir}/configure.host])
 . ${srcdir}/configure.host
 
@@ -391,19 +416,23 @@ AC_CACHE_VAL([bfd_cv_has_long_long],
 ]],[[
 unsigned long long ll = 18446744073709551615ULL;
 ]])],[bfd_cv_has_long_long="yes"],
-     [bfd_cv_has_long_long="no"])
-])
+     [bfd_cv_has_long_long="no"])dnl
+])dnl
+  ## print:
 AC_MSG_RESULT([${bfd_cv_has_long_long}])
+  ## if so, further checks:
 if test "x${bfd_cv_has_long_long}" = "xyes"; then
   BFD_HOST_LONG_LONG=1
-  AC_CHECK_SIZEOF([long long])
-  AC_CHECK_ALIGNOF([long long])
+  AC_CHECK_SIZEOF([long long])dnl
+  AC_CHECK_ALIGNOF([long long])dnl
+  ## ok
 fi
 
 AC_CHECK_SIZEOF([void *])dnl
 AC_CHECK_ALIGNOF([void *])dnl
 AC_CHECK_SIZEOF([long])dnl
 AC_CHECK_ALIGNOF([long])dnl
+  ## use that to see if we are 64-bit:
 if test "x${ac_cv_sizeof_long}" = "x8"; then
   host64=true
   BFD_HOST_64BIT_LONG=1
@@ -437,18 +466,51 @@ BFD_CC_FOR_BUILD
 # Checks for libraries.
 AC_MSG_CHECKING([libraries])
 AC_MSG_RESULT([ ])
+AC_MSG_CHECKING([for linker flag to verify linked libraries have the correct architecture])
+# this is also done in warning.m4, but make sure it is done up here first:
+if test "x${acl_cv_wl}" = "x"; then
+  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
+pre_saved_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${acl_cv_wl}-arch_errors_fatal"
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
+               [LD_ARCHFLAGS="${acl_cv_wl}-arch_errors_fatal"],[])
+LDFLAGS="${pre_saved_LDFLAGS}"
+if test "x${LD_ARCHFLAGS}" != "x"; then
+  test -n "${LD_ARCHFLAGS}"
+  AC_MSG_RESULT([${LD_ARCHFLAGS}])
+  if test "x${ERROR_ON_WARNING}" = "xyes"; then
+    if test "x${WARN_LDFLAGS}" != "x"; then
+      test -n "${WARN_LDFLAGS}" && WARN_LDFLAGS="${WARN_LDFLAGS} ${LD_ARCHFLAGS}"
+    else
+      test -z "${WARN_LDFLAGS}" && WARN_LDFLAGS="${LD_ARCHFLAGS}"
+    fi
+  fi
+  AC_SUBST([LD_ARCHFLAGS])dnl
+  ## that should be all we need to do with them for now...
+else
+  test -z "${LD_ARCHFLAGS}"
+  AC_MSG_RESULT([none])
+fi
+# might need to check here:
 if test -d /usr/lib/gcc/darwin/2.95.2; then
   export LDFLAGS="${LDFLAGS} -L/usr/lib/gcc/darwin/2.95.2"
 fi
+# check arch when "main()" is the only function for which we check:
+ARCHLESS_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
 # FIXME: Replace `main' with a function in `-lcc_dynamic':
 AC_CHECK_LIB([cc_dynamic],[main],
            [SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lcc_dynamic"])
 # FIXME: Replace `main' with a function in `-lgcc':
 AC_CHECK_LIB([gcc],[main],
-             [SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lgcc"])
+             [SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lgcc"])dnl
 # FIXME: Replace `main' with a function in `-lSystem':
 AC_CHECK_LIB([System],[main],
-             [SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lSystem"])
+            [SYSTEM_FRAMEWORK_LIBS="${SYSTEM_FRAMEWORK_LIBS} -lSystem"])dnl
+  ## reset these:
+LDFLAGS="${ARCHLESS_LDFLAGS}"
+  ## TODO: might only want to make this an error depending on platform:
 if test -z "${SYSTEM_FRAMEWORK_LIBS}"; then
   AC_MSG_ERROR([Missing some required system libraries.])
 fi
@@ -459,12 +521,34 @@ dnl# symbol here:
 AC_CHECK_LIB([dl],[dlsym])dnl
 # ../intl is added to LDFLAGS above, so this should work:
 AC_CHECK_LIB([intl],[gettext],[],[
+  PRE_INTL_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   AC_CHECK_LIB([intl],[main],[],[])dnl
+  ## reset:
+  LDFLAGS="${PRE_INTL_LDFLAGS}"
 ])dnl
-# FIXME: Replace `main' with a function in `-liberty':
-AC_CHECK_LIB([iberty],[main])dnl
-# FIXME: Replace `main' with a function in `-lgnu':
-AC_CHECK_LIB([gnu],[main])dnl
+  ## TODO: might want to make sure the in-tree libiberty is found first:
+AC_CHECK_LIB([iberty],[rpl_malloc],[],[
+  AC_CHECK_LIB([iberty],[xmalloc],[],[
+    PRE_LIBERTY_LDFLAGS="${LDFLAGS}"
+    LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
+    AC_CHECK_LIB([iberty],[main])dnl
+    ## reset:
+    LDFLAGS="${PRE_LIBERTY_LDFLAGS}"
+  ])dnl
+])dnl
+  ## just in case:
+AC_CHECK_LIB([gnu],[rpl_malloc],[],[
+  AC_CHECK_LIB([gnu],[xmalloc],[],[
+    AC_CHECK_LIB([gnu],[gl_dummy_symbol],[],[
+      PRE_GNU_LDFLAGS="${LDFLAGS}"
+      LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
+      AC_CHECK_LIB([gnu],[main])dnl
+      ## reset:
+      LDFLAGS="${PRE_GNU_LDFLAGS}"
+    ])dnl
+  ])dnl
+])dnl
 
 # Checks for header files.
 AC_MSG_CHECKING([headers])
@@ -472,13 +556,13 @@ AC_MSG_RESULT([ ])
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 if test -d ../intl; then
   if test -z "${CPPFLAGS}"; then
-    export CPPFLAGS="-I../intl"
+    export CPPFLAGS="-I. -I../intl"
   else
     export CPPFLAGS="${CPPFLAGS} -I../intl"
   fi
 elif test -d ../libintl; then
   if test -z "${CPPFLAGS}"; then
-    export CPPFLAGS="-I../libintl"
+    export CPPFLAGS="-I. -I../libintl"
   else
     export CPPFLAGS="${CPPFLAGS} -I../libintl"
   fi
@@ -490,9 +574,10 @@ unset ac_cv_header_sys_param_h
 AC_CHECK_HEADERS([ctype.h errno.h fcntl.h gettext.h iconv.h libgettext.h \
                   libintl.h limits.h mach/mach.h mach-o/loader.h \
                   malloca.h malloc/malloc.h realloc.h stdarg.h stddef.h \
-                  stdio.h sys/file.h sys/param.h sys/resource.h \
-                  sys/socket.h sys/time.h time.h wchar.h wctype.h \
-                  windows.h])dnl
+                  stdio.h sys/acl.h sys/errno.h sys/file.h sys/paccess.h \
+                  sys/param.h sys/region.h sys/resource.h sys/socket.h \
+                  sys/time.h sys/user.h time.h wchar.h wctype.h \
+                  windef.h windows.h])dnl
 GCC_HEADER_STDINT([bfd_stdint.h],[stdint.h])dnl
 AC_HEADER_TIME
 AC_HEADER_DIRENT
@@ -512,25 +597,47 @@ AC_C_VOLATILE
 AC_MSG_CHECKING([other types that did not fit with the host ones above])
 AC_MSG_RESULT([ ])
 AC_TYPE_PID_T
-AC_CHECK_TYPES([ptrdiff_t])
+AC_CHECK_TYPES([ptrdiff_t])dnl
 AC_DEFUN([AC_TYPE_VARIOUS_INT_TYPES],[
   AC_REQUIRE([AC_TYPE_INT32_T])dnl
+  AC_REQUIRE([AC_TYPE_UINT16_T])dnl
   AC_REQUIRE([AC_TYPE_UINT32_T])dnl
   AC_REQUIRE([AC_TYPE_UINT64_T])dnl
 ])dnl
 AC_TYPE_VARIOUS_INT_TYPES
 AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
+AC_CHECK_MEMBERS([struct user.u_dsize, struct user.u_ssize],[],[],[
+#if defined(__USLC__) || defined(HAVE_SYS_USER_H)
+# include <sys/user.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "The conftest for members of 'struct user' wants <sys/user.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* __USLC__ || HAVE_SYS_USER_H */
+])dnl
+AC_CHECK_MEMBERS([struct user.u_comm],[],[
+  AC_DEFINE([NO_CORE_COMMAND],[1],
+            [Define to 1 if struct user has no u_comm member])dnl
+],[
+#if defined(__USLC__) || defined(HAVE_SYS_USER_H)
+# include <sys/user.h>
+#else
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#  warning "The conftest for a member of 'struct user' wants <sys/user.h>"
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
+#endif /* __USLC__ || HAVE_SYS_USER_H */
+])dnl
 
 # Checks for library functions.
 AC_MSG_CHECKING([functions])
 AC_MSG_RESULT([ ])
 AM_WITH_DMALLOC
-AC_CHECK_FUNCS([btowc exit fcntl fdopen feof ferror fileno fopen fprintf \
-                fread getgid getrlimit getuid islower isspace isupper \
-                mbsrtowcs memchr memmove mempcpy memset qsort \
-                rpl_malloc rpl_realloc setitimer strcmp strdup \
-                strncasecmp strrchr strspn strstr strtol strtoul strtoull \
-                sysconf system uname wmempcpy])dnl
+AC_CHECK_FUNCS([btowc close exit fcntl fdopen feof ferror fileno fopen \
+                fprintf fread getgid getrlimit getuid islower isspace \
+                isupper mbsrtowcs memchr memmove mempcpy memset open \
+                pread qsort rpl_malloc rpl_realloc setitimer strcmp \
+                strdup strncasecmp strrchr strspn strstr strtol strtoul \
+                strtoull sysconf system uname wmempcpy])dnl
 AC_CHECK_FUNCS_ONCE([lt_dlinit])dnl
 AC_FUNC_CLOSEDIR_VOID
 AC_FUNC_FNMATCH
@@ -576,12 +683,15 @@ AC_DEFUN([AC_POSSIBLE_DUPLICATE_CHECKS],
  AC_REQUIRE([AC_HEADER_SYS_WAIT])dnl
  AC_REQUIRE([AC_TYPE_MBSTATE_T])dnl
  AC_REQUIRE([GCC_STDINT_TYPES])dnl
- AC_REQUIRE([ZW_GNU_GETTEXT_SISTER_DIR])dnl
+ m4_ifdef([ZW_GNU_GETTEXT_SISTER_DIR],[
+   AC_REQUIRE([ZW_GNU_GETTEXT_SISTER_DIR])dnl
+ ])dnl
 
  dnl#FIXME: require does NOT work with conditionals like this:
  if test "x${GETTEXT_MACRO_VERSION}" = "x"; then
    test -z "${GETTEXT_MACRO_VERSION}"
-   AC_REQUIRE([AM_PO_SUBDIRS])
+   AC_REQUIRE([AM_PO_SUBDIRS])dnl
+   ## maybe handle differently?
  fi
 ])dnl
 AC_POSSIBLE_DUPLICATE_CHECKS
@@ -589,6 +699,7 @@ AC_POSSIBLE_DUPLICATE_CHECKS
 AC_MSG_CHECKING([declarations])
 AC_MSG_RESULT([ ])
 AC_CHECK_DECLS([basename])dnl
+AC_CHECK_DECLS([close])dnl
 AC_CHECK_DECLS([ftello])dnl
 AC_CHECK_DECLS([ftello64])dnl
 AC_CHECK_DECLS([fseeko])dnl
@@ -600,6 +711,8 @@ AC_CHECK_DECLS([ffs])dnl
 AC_CHECK_DECLS([free])dnl
 AC_CHECK_DECLS([getenv])dnl
 AC_CHECK_DECLS([malloc])dnl
+AC_CHECK_DECLS([open])dnl
+AC_CHECK_DECLS([pread])dnl
 AC_CHECK_DECLS([realloc])dnl
 AC_CHECK_DECLS([stpcpy])dnl
 AC_CHECK_DECLS([strstr])dnl
@@ -612,12 +725,13 @@ AC_CHECK_DECLS([strnlen])dnl
 AC_MSG_CHECKING([zlib])
 AC_MSG_RESULT([ ])
 m4_ifdef([AM_ZLIB],[
-  AM_ZLIB
+  AM_ZLIB dnl# from ../config/zlib.m4
 ],[
 AC_MSG_CHECKING([if there is a zlib sister directory in this source tree])
 if test -d ../zlib -o -d ${srcdir}/../zlib; then
   export HAVE_ZLIB_SOURCE=1
-  AC_SUBST([HAVE_ZLIB_SOURCE])
+  AC_SUBST([HAVE_ZLIB_SOURCE])dnl
+  ## print:
   AC_MSG_RESULT([yes])
 else
   AC_MSG_RESULT([no])
@@ -634,7 +748,7 @@ CORE_HEADER=""
 TRAD_HEADER=""
 if test "${target}" = "${host}"; then
   case "${host}" in
-  alpha*-*-freebsd* | alpha*-*-kfreebsd*-gnu)
+  alpha*-*-freebsd* | alpha*-*-kfreebsd*-gnu | alpha*-*-*vms*)
 	COREFILE=''
 	;;
   alpha*-*-linux-*)
@@ -647,7 +761,8 @@ if test "${target}" = "${host}"; then
   alpha*-*-*)		COREFILE=osf-core.lo ;;
   arm-*-freebsd* | arm-*-kfreebsd*-gnu)
 			COREFILE='' ;;
-  arm-*-netbsd*)	COREFILE=netbsd-core.lo ;;
+  arm-*-netbsd* | arm-*-openbsd*)
+			COREFILE=netbsd-core.lo ;;
   arm-*-riscix)		COREFILE=trad-core.lo ;;
   hppa*-*-hpux*)	COREFILE=hpux-core.lo ;;
   hppa*-*-hiux*)	COREFILE=hpux-core.lo ;;
@@ -808,9 +923,11 @@ changequote([,])dnl
   rs6000-*-lynx*)
   	COREFILE=lynx-core.lo
 	;;
-  rs6000-*-aix5.* | powerpc-*-aix5.*)
+changequote(,)dnl
+  rs6000-*-aix[5-9].* | powerpc-*-aix[5-9].*)
+changequote([,])dnl
         COREFILE=rs6000-core.lo
-	COREFLAG="$COREFLAG -DAIX_5_CORE -DAIX_CORE_DUMPX_CORE"
+	COREFLAG="${COREFLAG} -DAIX_5_CORE -DAIX_CORE_DUMPX_CORE"
 	;;
 changequote(,)dnl
   rs6000-*-aix4.[3-9]* | powerpc-*-aix4.[3-9]*)
@@ -893,29 +1010,35 @@ struct core_dumpx c; c.c_impl = 0;
   esac
 
   # ELF corefile support has several flavors, but all of
-  # them use something called <sys/procfs.h>
-  AC_CHECK_HEADERS([sys/procfs.h])
+  # them use something called <sys/procfs.h>, so check it:
+  unset ac_cv_header_sys_procfs_h
+  AC_CHECK_HEADERS([sys/procfs.h])dnl
+  ## these types depend on the header:
   if test "x${ac_cv_header_sys_procfs_h}" = "xyes"; then
-    BFD_HAVE_SYS_PROCFS_TYPE([prstatus_t])
-    BFD_HAVE_SYS_PROCFS_TYPE([prstatus32_t])
-    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER([prstatus_t],[pr_who])
-    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER([prstatus32_t],[pr_who])
-    BFD_HAVE_SYS_PROCFS_TYPE([pstatus_t])
-    BFD_HAVE_SYS_PROCFS_TYPE([pxstatus_t])
-    BFD_HAVE_SYS_PROCFS_TYPE([pstatus32_t])
-    BFD_HAVE_SYS_PROCFS_TYPE([prpsinfo_t])
-    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER([prpsinfo_t],[pr_pid])
-    BFD_HAVE_SYS_PROCFS_TYPE([prpsinfo32_t])
-    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER([prpsinfo32_t],[pr_pid])
-    BFD_HAVE_SYS_PROCFS_TYPE([psinfo_t])
-    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER([psinfo_t],[pr_pid])
-    BFD_HAVE_SYS_PROCFS_TYPE([psinfo32_t])
-    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER([psinfo32_t],[pr_pid])
-    BFD_HAVE_SYS_PROCFS_TYPE([lwpstatus_t])
-    BFD_HAVE_SYS_PROCFS_TYPE([lwpxstatus_t])
-    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER([lwpstatus_t],[pr_context])
-    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER([lwpstatus_t],[pr_reg])
-    BFD_HAVE_SYS_PROCFS_TYPE([win32_pstatus_t])
+    BFD_HAVE_SYS_PROCFS_TYPE([prstatus_t])dnl
+    BFD_HAVE_SYS_PROCFS_TYPE([prstatus32_t])dnl
+    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER([prstatus_t],[pr_who])dnl
+    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER([prstatus32_t],[pr_who])dnl
+    BFD_HAVE_SYS_PROCFS_TYPE([pstatus_t])dnl
+    BFD_HAVE_SYS_PROCFS_TYPE([pxstatus_t])dnl
+    BFD_HAVE_SYS_PROCFS_TYPE([pstatus32_t])dnl
+    BFD_HAVE_SYS_PROCFS_TYPE([prpsinfo_t])dnl
+    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER([prpsinfo_t],[pr_pid])dnl
+    BFD_HAVE_SYS_PROCFS_TYPE([prpsinfo32_t])dnl
+    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER([prpsinfo32_t],[pr_pid])dnl
+    BFD_HAVE_SYS_PROCFS_TYPE([psinfo_t])dnl
+    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER([psinfo_t],[pr_pid])dnl
+    BFD_HAVE_SYS_PROCFS_TYPE([psinfo32_t])dnl
+    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER([psinfo32_t],[pr_pid])dnl
+    BFD_HAVE_SYS_PROCFS_TYPE([lwpstatus_t])dnl
+    BFD_HAVE_SYS_PROCFS_TYPE([lwpxstatus_t])dnl
+    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER([lwpstatus_t],[pr_context])dnl
+    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER([lwpstatus_t],[pr_reg])dnl
+    BFD_HAVE_SYS_PROCFS_TYPE_MEMBER([lwpstatus_t],[pr_fpreg])dnl
+    BFD_HAVE_SYS_PROCFS_TYPE([win32_pstatus_t])dnl
+    ## that should be all of those for now...
+  else
+    AC_MSG_NOTICE([skipping checks for types in missing header])
   fi
 fi
 AC_SUBST([COREFILE])dnl
@@ -938,6 +1061,7 @@ AC_CACHE_CHECK([linker --as-needed support],[bfd_cv_ld_as_needed],
  fi
 ])dnl
 
+dnl# check for libm:
 LT_LIB_M
 
 # When building a shared libbfd, link against the pic version of libiberty
@@ -1078,8 +1202,8 @@ AC_SUBST([TDEFINES])dnl
 # requested, and no "--with-64-bit-bfd" option is given, even if
 # "--enable-targets=all" is used.
 
-AC_PATH_PROGS([UNIQ_BIN],[uniq guniq],[])
-# uniq the default and selected vectors in all the configured targets.
+AC_PATH_PROGS([UNIQ_BIN],[uniq guniq],[])dnl
+# uniq the default and selected vectors in all the configured targets:
 f=""
 for i in ${selvecs}; do
     case " ${f} " in
@@ -1089,7 +1213,7 @@ for i in ${selvecs}; do
 done
 selvecs="${f}"
 
-# uniq the associated vectors in all the configured targets.
+# uniq the associated vectors in all the configured targets:
 f=""
 for i in ${assocvecs}; do
     case " ${f} " in
@@ -1099,7 +1223,7 @@ for i in ${assocvecs}; do
 done
 assocvecs="${f}"
 
-# uniq the architectures in all the configured targets.
+# uniq the architectures in all the configured targets:
 f=""
 for i in ${selarchs}; do
     case " ${f} " in
@@ -1340,8 +1464,10 @@ do
     go32coff_vec) tb="${tb} coff-go32.lo cofflink.lo" ;;
     go32stubbedcoff_vec) tb="${tb} coff-stgo32.lo cofflink.lo" ;;
     h8300coff_vec) tb="${tb} coff-h8300.lo reloc16.lo" ;;
+    h8300_coff_vec) tb="${tb} coff-h8300.lo reloc16.lo" ;;
     h8300_elf32_vec) tb="${tb} elf32-h8300.lo elf32.lo ${elf}" ;;
     h8500coff_vec) tb="${tb} coff-h8500.lo reloc16.lo" ;;
+    h8500_coff_vec) tb="${tb} coff-h8500.lo reloc16.lo" ;;
     host_aout_vec) tb="${tb} host-aout.lo aout32.lo" ;;
     hp300bsd_vec) tb="${tb} hp300bsd.lo aout32.lo" ;;
     hp300hpux_vec) tb="${tb} hp300hpux.lo aout32.lo" ;;
@@ -1526,7 +1652,7 @@ do
     pj_elf32_vec) tb="${tb} elf32-pj.lo elf32.lo ${elf}" ;;
     pj_elf32_le_vec) tb="${tb} elf32-pj.lo elf32.lo ${elf}" ;;
     plugin_vec) tb="${tb} plugin.lo" ;;
-    pmac_xcoff_vec) tb="${tb} coff-rs6000.lo xcofflink.lo" ;;
+    pmac_xcoff_vec) tb="${tb} coff-pmac.lo coff-rs6000.lo xcofflink.lo" ;;
     powerpc_boot_vec) tb="${tb} ppcboot.lo" ;;
     powerpc_elf32_vec) tb="${tb} elf32-ppc.lo elf-vxworks.lo elf32.lo ${elf}" ;;
     powerpc_elf32_le_vec) tb="${tb} elf32-ppc.lo elf-vxworks.lo elf32.lo ${elf}" ;;
@@ -1639,6 +1765,7 @@ do
     tic6x_elf32_linux_be_vec) tb="${tb} elf32-tic6x.lo elf32.lo ${elf}" ;;
     tic6x_elf32_linux_le_vec) tb="${tb} elf32-tic6x.lo elf32.lo ${elf}" ;;
     tic80coff_vec) tb="${tb} coff-tic80.lo cofflink.lo" ;;
+    tic80_coff_vec) tb="${tb} coff-tic80.lo cofflink.lo" ;;
     tilegx_elf32_be_vec) tb="${tb} elf32-tilegx.lo elfxx-tilegx.lo elf32.lo ${elf}" ; target_size=32 ;;
     tilegx_elf32_le_vec) tb="${tb} elf32-tilegx.lo elfxx-tilegx.lo elf32.lo ${elf}" ; target_size=32 ;;
     tilegx_elf64_be_vec) tb="${tb} elf64-tilegx.lo elfxx-tilegx.lo elf64.lo ${elf}" ; target_size=64 ;;
@@ -1686,6 +1813,8 @@ do
     tekhex_vec) tb="${tb} tekhex.lo" ;;
     cisco_core_big_vec) tb="${tb} cisco-core.lo" ;;
     cisco_core_little_vec) tb="${tb} cisco-core.lo" ;;
+    core_cisco_be_vec) tb="${tb} cisco-core.lo" ;;
+    core_cisco_le_vec) tb="${tb} cisco-core.lo" ;;
 
     "")			;;
     *) AC_MSG_ERROR([*** unknown target vector ${vec}]) ;;
@@ -1704,7 +1833,7 @@ done
 # filesystems.
 ta=`echo ${selarchs} | sed -e s/bfd_/cpu-/g -e s/_arch/.lo/g -e s/mn10200/m10200/ -e s/mn10300/m10300/`
 
-# Weed out duplicate .o files.
+# Weed out duplicate .o files, first among the target backend ones:
 f=""
 for i in ${tb}; do
     case " ${f} " in
@@ -1714,6 +1843,7 @@ for i in ${tb}; do
 done
 tb="${f}"
 
+# Likewise with the duplicate .o file among the target architecture ones:
 f=""
 for i in ${ta}; do
     case " ${f} " in
@@ -1756,7 +1886,7 @@ case ${host64}-${target64}-${want64} in
       AC_MSG_WARN([You have requested a 64 bit BFD configuration, but])
       AC_MSG_WARN([your compiler may not have a 64 bit integral type])
     fi
-    if test -n "${GCC}" ; then
+    if test -n "${GCC}"; then
        bad_64bit_gcc="no";
        AC_MSG_CHECKING([for gcc version with buggy 64-bit support])
        # Add more tests for gcc versions with non-working 64-bit support
@@ -1803,10 +1933,12 @@ AC_SUBST([lt_cv_dlopen_libs])dnl
 # fseeko, long. This assumes that sizeof off_t is .ge. sizeof long.
 # Hopefully a reasonable assumption since fseeko et.al. should be
 # upward compatible.
-AC_CHECK_FUNCS([ftello ftello64 fseeko fseeko64 fopen64])
+AC_CHECK_FUNCS([ftello ftello64 fseeko fseeko64 fopen64])dnl
+  ## the types we check are based off of which functions we found:
 if test x"${ac_cv_func_ftello}" = xyes -a x"${ac_cv_func_fseeko}" = xyes; then
-    AC_CHECK_SIZEOF([off_t])
-    AC_CHECK_ALIGNOF([off_t])
+    AC_CHECK_SIZEOF([off_t])dnl
+    AC_CHECK_ALIGNOF([off_t])dnl
+    ## TODO: off64_t next?
 fi
 AC_MSG_CHECKING([file_ptr type])
 bfd_file_ptr="long"
@@ -1827,6 +1959,7 @@ test -n "${assocvecs}" && tdefaults="${tdefaults} -DASSOCIATED_VECS='${assocvecs
 test -n "${selarchs}" && tdefaults="${tdefaults} -DSELECT_ARCHITECTURES='${selarchs}'"
 test -n "${havevecs}" && tdefaults="${tdefaults} ${havevecs}"
 AC_SUBST([tdefaults])dnl
+AC_SUBST([havevecs])dnl
 
 # APPLE LOCAL:  mmap() always works right on Darwin.  Take our word for it.
 case "${host}" in
@@ -1834,29 +1967,37 @@ case "${host}" in
     ac_cv_func_mmap_fixed_mapped=yes
   ;;
 esac
-AC_CHECK_HEADERS_ONCE([sys/mman.h])
-AC_CHECK_FUNCS([madvise mprotect])
+AC_CHECK_HEADERS_ONCE([sys/mman.h])dnl
+AC_CHECK_FUNCS([madvise mprotect])dnl
+  ## define based on availability:
 case ${want_mmap}+${ac_cv_func_mmap_fixed_mapped} in
   true+yes )  AC_DEFINE([USE_MMAP],[1],[Use mmap if it is available?]) ;;
 esac
 
+## kinda like the vpath-related hack, but slightly different:
 if test -f doc/config.status; then
   AC_MSG_NOTICE([doc/config.status is already present, removing it.])
   rm -f doc/config.status
 fi
+## Output.
 AC_CONFIG_FILES([Makefile \
                  doc/Makefile \
                  bfd-in3.h:bfd-in2.h \
                  po/Makefile.in:po/Make-in])dnl
 
-AC_CONFIG_COMMANDS([default],[[sed -e '/SRC-POTFILES =/r po/SRC-POTFILES' -e '/BLD-POTFILES =/r po/BLD-POTFILES' po/Makefile.in > po/Makefile]],[[]])
+AC_CONFIG_COMMANDS([aaa_config_status_init],
+[[echo "config.status is working"]],[[]])dnl
 
-dnl# We need this duplication, even though we use AM_PO_SUBDIRS, because of
-dnl# our two separate POTFILES. Yuck.
+AC_CONFIG_COMMANDS([default],
+[[echo "dealing with our po-subdir"
+sed -e '/SRC-POTFILES =/r po/SRC-POTFILES' -e '/BLD-POTFILES =/r po/BLD-POTFILES' po/Makefile.in > po/Makefile]],[[]])dnl
+
+dnl# We need this duplication, even though we use the standard po-subdirs
+dnl# autoconf macro, because of our two separate POTFILES. Yuck.
 AC_CONFIG_COMMANDS([default-2],
-[[
+[[echo "dealing with our two separate POTFILES"
 case "${srcdir}" in
-  .) srcdirpre= ;;
+  .) srcdirpre='' ;;
   *) srcdirpre='$(srcdir)/' ;;
 esac
 POFILES=""
@@ -2031,5 +2172,13 @@ AC_SUBST([docdir])dnl
 AC_SUBST([htmldir])dnl
 AC_SUBST([pdfdir])dnl
 
+if test "x${no_create}" = "xyes"; then
+  if test "x${silent}" != "xyes" || test "x${silent}" = "xno"; then
+    echo "skipping re-creating configured files"
+  fi
+fi
+
 # Output happens for real now.
 AC_OUTPUT
+
+echo "Done configuring bfd."

@@ -29,8 +29,10 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #include "bfdlink.h"
 #include "libaout.h"
 
-#define MACHTYPE_OK(mtype) ((mtype) == M_SPARC || (mtype) == M_SPARCLET)
+#define MACHTYPE_OK(mtype) (((mtype) == M_SPARC) || ((mtype) == M_SPARCLET))
 
-/* Include the usual a.out support.  */
+/* Include the usual a.out support: */
 #define TARGET_IS_LITTLE_ENDIAN_P
 #include "aoutf1.h"
+
+/* EOF */

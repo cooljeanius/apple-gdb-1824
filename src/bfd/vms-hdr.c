@@ -227,21 +227,21 @@ _bfd_vms_write_hdr (bfd *abfd, int objtype)
       fptr = fout;
       while (*fptr != 0)
 	{
-	  *fptr = TOUPPER (*fptr);
+	  *fptr = TOUPPER(*fptr);
 	  fptr++;
 	  if ((*fptr == ';')
 	     || ((fptr - fout) > 31))
 	    *fptr = 0;
 	}
-      _bfd_vms_output_counted (abfd, fout);
+      _bfd_vms_output_counted(abfd, fout);
     }
   else
-    _bfd_vms_output_counted (abfd, "NONAME");
+    _bfd_vms_output_counted(abfd, (char *)"NONAME");
 
-  _bfd_vms_output_counted (abfd, BFD_VERSION_STRING);
-  _bfd_vms_output_dump (abfd, get_vms_time_string (), 17);
-  _bfd_vms_output_fill (abfd, 0, 17);
-  _bfd_vms_output_flush (abfd);
+  _bfd_vms_output_counted(abfd, (char *)BFD_VERSION_STRING);
+  _bfd_vms_output_dump(abfd, get_vms_time_string(), 17);
+  _bfd_vms_output_fill(abfd, 0, 17);
+  _bfd_vms_output_flush(abfd);
 
   /* LMN.  */
   _bfd_vms_output_begin (abfd, EOBJ_S_C_EMH, EMH_S_C_LNM);

@@ -21,6 +21,7 @@ DEP
 DEPA
 DEP1
 DEP2
+DEPM
 stamp-*
 stmp-bfd-h
 stmp-bin2-h

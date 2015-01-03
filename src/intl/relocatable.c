@@ -156,14 +156,17 @@ void set_relocation_prefix(const char *orig_prefix_arg,
 # endif /* DEPENDS_ON_LIBINTL && ENABLE_NLS && libintl_set_relocation_prefix */
 }
 
+/* keep this condition the same as where the enclosed function is actually
+ * used in this file: */
+# if defined(PIC) && defined(INSTALLDIR)
 /* Convenience function:
  * Computes the current installation prefix, based on the original
  * installation prefix, the original installation directory of a particular
  * file, & the current pathname of this file. Returns NULL upon failure: */
-# ifdef IN_LIBRARY
-#  define compute_curr_prefix local_compute_curr_prefix
+#  ifdef IN_LIBRARY
+#   define compute_curr_prefix local_compute_curr_prefix
 static
-# endif /* IN_LIBRARY */
+#  endif /* IN_LIBRARY */
 const char *compute_curr_prefix(const char *orig_installprefix,
                                 const char *orig_installdir,
                                 const char *curr_pathname)
@@ -199,11 +202,11 @@ const char *compute_curr_prefix(const char *orig_installprefix,
     }
 
     q = (char *)xmalloc((size_t)(p - curr_pathname + 1));
-# ifdef NO_XMALLOC
+#  ifdef NO_XMALLOC
     if (q == NULL) {
       return NULL;
     }
-# endif /* NO_XMALLOC */
+#  endif /* NO_XMALLOC */
     memcpy(q, curr_pathname, (size_t)(p - curr_pathname));
     q[(p - curr_pathname)] = '\0';
     curr_installdir = q;
@@ -231,18 +234,18 @@ const char *compute_curr_prefix(const char *orig_installprefix,
                 }
 		break;
             }
-# if defined(_WIN32) || defined(__WIN32__) || defined(__EMX__) || \
-     defined(__DJGPP__)
+#  if defined(_WIN32) || defined(__WIN32__) || defined(__EMX__) || \
+      defined(__DJGPP__)
 	    /* Win32, OS/2, DOS - case insignificant filesystem: */
 	    if (((*rpi >= 'a') && ((*rpi <= 'z') ? (*rpi - 'a' + 'A') : *rpi))
 		!= ((*cpi >= 'a') && ((*cpi <= 'z') ? (*cpi - 'a' + 'A') : *cpi))) {
 	      break;
             }
-# else
+#  else
 	    if (*rpi != *cpi) {
 	      break;
             }
-# endif /* Windows */
+#  endif /* Windows */
 	  }
 	if (!same) {
 	  break;
@@ -263,11 +266,11 @@ const char *compute_curr_prefix(const char *orig_installprefix,
       char *curr_prefix;
 
       curr_prefix = (char *)xmalloc(curr_prefix_len + 1);
-# ifdef NO_XMALLOC
+#  ifdef NO_XMALLOC
       if (curr_prefix == NULL) {
 	return NULL;
       }
-# endif /* NO_XMALLOC */
+#  endif /* NO_XMALLOC */
       memcpy(curr_prefix, curr_installdir, curr_prefix_len);
       curr_prefix[curr_prefix_len] = '\0';
 
@@ -275,7 +278,9 @@ const char *compute_curr_prefix(const char *orig_installprefix,
     }
   }
 }
+# endif /* PIC && INSTALLDIR */
 
+/* could probably join this condition with the previous: */
 # if defined(PIC) && defined(INSTALLDIR)
 /* Full pathname of shared library, or NULL: */
 static char *shared_library_fullname;

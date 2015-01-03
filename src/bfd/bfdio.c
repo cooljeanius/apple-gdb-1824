@@ -31,37 +31,37 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 #include <limits.h>
 
 #ifndef S_IXUSR
-#define S_IXUSR 0100    /* Execute by owner.  */
-#endif
+# define S_IXUSR 0100    /* Execute by owner.  */
+#endif /* !S_IXUSR */
 #ifndef S_IXGRP
-#define S_IXGRP 0010    /* Execute by group.  */
-#endif
+# define S_IXGRP 0010    /* Execute by group.  */
+#endif /* !S_IXGRP */
 #ifndef S_IXOTH
-#define S_IXOTH 0001    /* Execute by others.  */
-#endif
+# define S_IXOTH 0001    /* Execute by others.  */
+#endif /* !S_IXOTH */
 
 file_ptr
-real_ftell (FILE *file)
+real_ftell(FILE *file)
 {
-#if defined (HAVE_FTELLO64)
-  return ftello64 (file);
-#elif defined (HAVE_FTELLO)
-  return ftello (file);
+#if defined(HAVE_FTELLO64)
+  return ftello64(file);
+#elif defined(HAVE_FTELLO)
+  return ftello(file);
 #else
-  return ftell (file);
-#endif
+  return ftell(file);
+#endif /* HAVE_FTELLO64 || HAVE_FTELLO || HAVE_FTELL */
 }
 
 int
-real_fseek (FILE *file, file_ptr offset, int whence)
+real_fseek(FILE *file, file_ptr offset, int whence)
 {
-#if defined (HAVE_FSEEKO64)
-  return fseeko64 (file, offset, whence);
-#elif defined (HAVE_FSEEKO)
-  return fseeko (file, offset, whence);
+#if defined(HAVE_FSEEKO64)
+  return fseeko64(file, offset, whence);
+#elif defined(HAVE_FSEEKO)
+  return fseeko(file, offset, whence);
 #else
-  return fseek (file, offset, whence);
-#endif
+  return fseek(file, offset, whence);
+#endif /* HAVE_FSEEKO64 || HAVE_FSEEKO || HAVE_FSEEK */
 }
 
 /*
@@ -115,26 +115,26 @@ bfd_bread (void *ptr, bfd_size_type size, bfd *abfd)
       struct bfd_in_memory *bim;
       bfd_size_type get;
 
-      bim = abfd->iostream;
+      bim = (struct bfd_in_memory *)abfd->iostream;
       get = size;
-      if (abfd->where + get > bim->size)
+      if ((abfd->where + get) > bim->size)
         {
-          if (bim->size < (bfd_size_type) abfd->where)
+          if (bim->size < (bfd_size_type)abfd->where)
             get = 0;
           else
-            get = bim->size - abfd->where;
-          bfd_set_error (bfd_error_file_truncated);
+            get = (bim->size - abfd->where);
+          bfd_set_error(bfd_error_file_truncated);
         }
-      memcpy (ptr, bim->buffer + abfd->where, (size_t) get);
+      memcpy(ptr, (bim->buffer + abfd->where), (size_t)get);
       abfd->where += get;
       return get;
     }
 
   if (abfd->iovec)
-    nread = abfd->iovec->bread (abfd, ptr, size);
+    nread = abfd->iovec->bread(abfd, ptr, (file_ptr)size);
   else
     nread = 0;
-  if (nread != (size_t) -1)
+  if (nread != (size_t)-1)
     abfd->where += nread;
 
   return nread;
@@ -150,7 +150,7 @@ bfd_bwrite(const void *ptr, bfd_size_type size, bfd *abfd)
 
   if (abfd->flags & BFD_IN_MEMORY)
     {
-      struct bfd_in_memory *bim = abfd->iostream;
+      struct bfd_in_memory *bim = (struct bfd_in_memory *)abfd->iostream;
 
       size = (size_t)size;
       if ((abfd->where + size) > bim->size)
@@ -177,7 +177,7 @@ bfd_bwrite(const void *ptr, bfd_size_type size, bfd *abfd)
     }
 
   if (abfd->iovec)
-    nwrote = abfd->iovec->bwrite(abfd, ptr, size);
+    nwrote = abfd->iovec->bwrite(abfd, ptr, (file_ptr)size);
   else
     nwrote = 0;
 
@@ -289,7 +289,7 @@ bfd_seek (bfd *abfd, file_ptr position, int direction)
     {
       struct bfd_in_memory *bim;
 
-      bim = abfd->iostream;
+      bim = (struct bfd_in_memory *)abfd->iostream;
 
       if (direction == SEEK_SET)
 	abfd->where = position;
@@ -477,17 +477,17 @@ _bfd_io_close (bfd *abfd)
 #endif /* 0 */
 
       abfd->iostream = NULL;
-      BFD_ASSERT (ret == 0);
+      BFD_ASSERT(ret == 0);
 
       return TRUE;
     }
   else
     {
       bfd_boolean ret = TRUE;
-      ret = bfd_cache_close (abfd);
+      ret = bfd_cache_close(abfd);
 
       return (ret);
     }
 }
 
-/* EOF */
+/* End of bfdio.c */

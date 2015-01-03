@@ -1,7 +1,7 @@
-/* BFD back-end for CISCO crash dumps.
-   Copyright 1994, 1997, 1999, 2000, 2001, 2002, 2004
-   Free Software Foundation, Inc.
-
+/* cisco-core.c: BFD back-end for CISCO crash dumps.
+ * Copyright 1994, 1997, 1999, 2000, 2001, 2002, 2004
+ * Free Software Foundation, Inc.  */
+/*
 This file is part of BFD, the Binary File Descriptor library.
 
 This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -71,19 +71,16 @@ struct cisco_core_struct
   int sig;
 };
 
-static const bfd_target *cisco_core_file_validate PARAMS ((bfd *, int));
-static const bfd_target *cisco_core_file_p PARAMS ((bfd *));
-char *cisco_core_file_failing_command PARAMS ((bfd *));
-int cisco_core_file_failing_signal PARAMS ((bfd *));
-bfd_boolean cisco_core_file_matches_executable_p PARAMS ((bfd *, bfd *));
+static const bfd_target *cisco_core_file_validate PARAMS((bfd *, int));
+static const bfd_target *cisco_core_file_p PARAMS((bfd *));
+char *cisco_core_file_failing_command PARAMS((bfd *));
+int cisco_core_file_failing_signal PARAMS((bfd *));
+bfd_boolean cisco_core_file_matches_executable_p PARAMS((bfd *, bfd *));
 
 /* Examine the file for a crash info struct at the offset given by
-   CRASH_INFO_LOC.  */
-
+ * CRASH_INFO_LOC: */
 static const bfd_target *
-cisco_core_file_validate (abfd, crash_info_loc)
-     bfd *abfd;
-     int crash_info_loc;
+cisco_core_file_validate(bfd *abfd, int crash_info_loc)
 {
   char buf[4];
   unsigned int crashinfo_offset;
@@ -289,8 +286,7 @@ cisco_core_file_validate (abfd, crash_info_loc)
 }
 
 static const bfd_target *
-cisco_core_file_p (abfd)
-     bfd *abfd;
+cisco_core_file_p(bfd *abfd)
 {
   int *crash_info_locp;
   const bfd_target *target = NULL;
@@ -299,29 +295,26 @@ cisco_core_file_p (abfd)
        *crash_info_locp != -1  &&  target == NULL;
        crash_info_locp++)
     {
-      target = cisco_core_file_validate (abfd, *crash_info_locp);
+      target = cisco_core_file_validate(abfd, *crash_info_locp);
     }
   return (target);
 }
 
 char *
-cisco_core_file_failing_command (abfd)
-     bfd *abfd ATTRIBUTE_UNUSED;
+cisco_core_file_failing_command(bfd *abfd ATTRIBUTE_UNUSED)
 {
   return NULL;
 }
 
 int
-cisco_core_file_failing_signal (abfd)
-     bfd *abfd ATTRIBUTE_UNUSED;
+cisco_core_file_failing_signal(bfd *abfd ATTRIBUTE_UNUSED)
 {
   return abfd->tdata.cisco_core_data->sig;
 }
 
 bfd_boolean
-cisco_core_file_matches_executable_p (core_bfd, exec_bfd)
-     bfd *core_bfd ATTRIBUTE_UNUSED;
-     bfd *exec_bfd ATTRIBUTE_UNUSED;
+cisco_core_file_matches_executable_p(bfd *core_bfd ATTRIBUTE_UNUSED,
+                                     bfd *exec_bfd ATTRIBUTE_UNUSED)
 {
   return TRUE;
 }
@@ -427,3 +420,5 @@ const bfd_target cisco_core_little_vec =
 
     (PTR) 0			/* backend_data */
 };
+
+/* EOF */

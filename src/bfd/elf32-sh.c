@@ -4812,7 +4812,7 @@ sh_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	      ((*_bfd_error_handler)
 	       (_("%B: 0x%lx: fatal: unaligned %s relocation 0x%lx"),
 		input_section->owner,
-		(unsigned long) rel->r_offset, howto->name, 
+		(unsigned long) rel->r_offset, howto->name,
 		(unsigned long) relocation));
 	      bfd_set_error (bfd_error_bad_value);
 	      return FALSE;
@@ -4827,7 +4827,7 @@ sh_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 	      ((*_bfd_error_handler)
 	       (_("%B: 0x%lx: fatal: unaligned %s relocation 0x%lx"),
 		input_section->owner,
-		(unsigned long) rel->r_offset, howto->name, 
+		(unsigned long) rel->r_offset, howto->name,
 		(unsigned long) relocation));
 	      bfd_set_error (bfd_error_bad_value);
 	      return FALSE;
@@ -5326,7 +5326,7 @@ sh_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 		}
 	      else
 		{
-		  int index;
+		  int i_index;
 
 		  /* IE->LE transition:
 		     mov.l 1f,r0; stc gbr,rN; mov.l @(r0,r12),rM;
@@ -5348,12 +5348,12 @@ sh_elf_relocate_section (bfd *output_bfd, struct bfd_link_info *info,
 		    }
 
 		  BFD_ASSERT ((insn & 0xff00) == 0xd000);
-		  index = insn & 0x00ff;
+		  i_index = insn & 0x00ff;
 		  insn = bfd_get_16 (input_bfd, contents + offset + 2);
 		  BFD_ASSERT ((insn & 0xf0ff) == 0x0012);
 		  insn = bfd_get_16 (input_bfd, contents + offset + 4);
 		  BFD_ASSERT ((insn & 0xf0ff) == 0x00ce);
-		  insn = 0xd000 | (insn & 0x0f00) | index;
+		  insn = 0xd000 | (insn & 0x0f00) | i_index;
 		  bfd_put_16 (output_bfd, insn, contents + offset + 0);
 		  bfd_put_16 (output_bfd, 0x0009, contents + offset + 4);
 		}
@@ -6147,6 +6147,8 @@ sh_elf_optimized_tls_reloc (struct bfd_link_info *info, int r_type,
       return R_SH_TLS_IE_32;
     case R_SH_TLS_LD_32:
       return R_SH_TLS_LE_32;
+    default:
+      break;
     }
 
   return r_type;
@@ -6629,7 +6631,7 @@ sh_elf_set_mach_from_flags (bfd *abfd)
 
   if (sh_ef_bfd_table[flags] == 0)
     return FALSE;
-  
+
   bfd_default_set_arch_mach (abfd, bfd_arch_sh, sh_ef_bfd_table[flags]);
 
   return TRUE;
@@ -6645,11 +6647,11 @@ int
 sh_elf_get_flags_from_mach (unsigned long mach)
 {
   int i = ARRAY_SIZE (sh_ef_bfd_table);
-  
+
   for (; i>0; i--)
     if (sh_ef_bfd_table[i] == mach)
       return i;
-  
+
   /* shouldn't get here */
   BFD_FAIL();
 
@@ -6731,7 +6733,7 @@ sh_elf_merge_private_data (bfd *ibfd, bfd *obfd)
 
   elf_elfheader (obfd)->e_flags =
     sh_elf_get_flags_from_mach (bfd_get_mach (obfd));
-  
+
   return TRUE;
 }
 #endif /* not sh_elf_merge_private_data */
@@ -7270,7 +7272,7 @@ elf32_shlin_grok_psinfo (bfd *abfd, Elf_Internal_Note *note)
 }
 #endif /* not SH_TARGET_ALREADY_DEFINED */
 
- 
+
 /* Return address for Ith PLT stub in section PLT, for relocation REL
    or (bfd_vma) -1 if it should not be included.  */
 

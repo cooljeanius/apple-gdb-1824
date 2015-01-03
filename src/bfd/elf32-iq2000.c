@@ -289,7 +289,7 @@ iq2000_elf_relocate_hi16 (bfd *input_bfd,
   bfd_vma insn;
 
   insn = bfd_get_32 (input_bfd, contents + relhi->r_offset);
-  
+
   value += relhi->r_addend;
   value &= 0x7fffffff; /* Mask off top-bit which is Harvard mask bit.  */
 
@@ -298,7 +298,7 @@ iq2000_elf_relocate_hi16 (bfd *input_bfd,
   if (value & 0x8000)
     value += 0x10000;
 
-  value >>= 16; 
+  value >>= 16;
   insn = ((insn & ~0xFFFF) | value);
 
   bfd_put_32 (input_bfd, insn, contents + relhi->r_offset);
@@ -395,7 +395,7 @@ iq2000_info_to_howto_rela (bfd * abfd ATTRIBUTE_UNUSED,
 /* Look through the relocs for a section during the first phase.
    Since we don't do .gots or .plts, we just need to consider the
    virtual table relocs for gc.	 */
- 
+
 static bfd_boolean
 iq2000_elf_check_relocs (bfd *abfd,
 			 struct bfd_link_info *info,
@@ -407,22 +407,22 @@ iq2000_elf_check_relocs (bfd *abfd,
   const Elf_Internal_Rela *rel;
   const Elf_Internal_Rela *rel_end;
   bfd_boolean changed = FALSE;
-  
+
   if (info->relocatable)
     return TRUE;
-  
+
   symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
   sym_hashes = elf_sym_hashes (abfd);
   sym_hashes_end = sym_hashes + symtab_hdr->sh_size / sizeof (Elf32_External_Sym);
   if (!elf_bad_symtab (abfd))
     sym_hashes_end -= symtab_hdr->sh_info;
-  
+
   rel_end = relocs + sec->reloc_count;
   for (rel = relocs; rel < rel_end; rel++)
     {
       struct elf_link_hash_entry *h;
       unsigned long r_symndx;
-      
+
       r_symndx = ELF32_R_SYM (rel->r_info);
       if (r_symndx < symtab_hdr->sh_info)
 	h = NULL;
@@ -433,41 +433,45 @@ iq2000_elf_check_relocs (bfd *abfd,
 		 || h->root.type == bfd_link_hash_warning)
 	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
 	}
-      
+
       switch (ELF32_R_TYPE (rel->r_info))
 	{
 	  /* This relocation describes the C++ object vtable
 	     hierarchy.  Reconstruct it for later use during GC.  */
 	case R_IQ2000_GNU_VTINHERIT:
-	  if (!bfd_elf_gc_record_vtinherit (abfd, sec, h, rel->r_offset))
+	  if (!bfd_elf_gc_record_vtinherit(abfd, sec, h, rel->r_offset))
 	    return FALSE;
 	  break;
-	  
+
 	  /* This relocation describes which C++ vtable entries
 	     are actually used.  Record for later use during GC.  */
 	case R_IQ2000_GNU_VTENTRY:
-	  if (!bfd_elf_gc_record_vtentry (abfd, sec, h, rel->r_addend))
+	  if (!bfd_elf_gc_record_vtentry(abfd, sec, h, rel->r_addend))
 	    return FALSE;
 	  break;
 
 	case R_IQ2000_32:
-	  /* For debug section, change to special harvard-aware relocations.  */
-	  if (memcmp (sec->name, ".debug", 6) == 0
-	      || memcmp (sec->name, ".stab", 5) == 0
-	      || memcmp (sec->name, ".eh_frame", 9) == 0)
+	  /* For the debug section, change to special harvard-aware
+           * relocations: */
+	  if ((memcmp(sec->name, ".debug", 6) == 0)
+	      || (memcmp(sec->name, ".stab", 5) == 0)
+	      || (memcmp(sec->name, ".eh_frame", 9) == 0))
 	    {
-	      ((Elf_Internal_Rela *) rel)->r_info
-		= ELF32_R_INFO (ELF32_R_SYM (rel->r_info), R_IQ2000_32_DEBUG);
+	      ((Elf_Internal_Rela *)rel)->r_info
+		= ELF32_R_INFO(ELF32_R_SYM(rel->r_info), R_IQ2000_32_DEBUG);
 	      changed = TRUE;
 	    }
 	  break;
+
+        default:
+          break;
 	}
     }
 
   if (changed)
-    /* Note that we've changed relocs, otherwise if !info->keep_memory
-       we'll free the relocs and lose our changes.  */
-    elf_section_data (sec)->relocs = (Elf_Internal_Rela *) relocs;
+    /* Note that we have changed relocs, otherwise if !info->keep_memory
+       we will free the relocs and lose our changes.  */
+    elf_section_data(sec)->relocs = (Elf_Internal_Rela *)relocs;
 
   return TRUE;
 }
@@ -539,13 +543,13 @@ iq2000_elf_relocate_section (bfd *		     output_bfd ATTRIBUTE_UNUSED,
       bfd_reloc_status_type	   r;
       const char *		   name = NULL;
       int			   r_type;
-      
+
       r_type = ELF32_R_TYPE (rel->r_info);
-      
+
       if (   r_type == R_IQ2000_GNU_VTINHERIT
 	  || r_type == R_IQ2000_GNU_VTENTRY)
 	continue;
-      
+
       r_symndx = ELF32_R_SYM (rel->r_info);
 
       /* This is a final link.	*/
@@ -553,7 +557,7 @@ iq2000_elf_relocate_section (bfd *		     output_bfd ATTRIBUTE_UNUSED,
       h	     = NULL;
       sym    = NULL;
       sec    = NULL;
-      
+
       if (r_symndx < symtab_hdr->sh_info)
 	{
 	  sym = local_syms + r_symndx;
@@ -561,7 +565,7 @@ iq2000_elf_relocate_section (bfd *		     output_bfd ATTRIBUTE_UNUSED,
 	  relocation = (sec->output_section->vma
 			+ sec->output_offset
 			+ sym->st_value);
-	  
+
 	  name = bfd_elf_string_from_elf_section
 	    (input_bfd, symtab_hdr->sh_link, sym->st_name);
 	  name = (name == NULL) ? bfd_section_name (input_bfd, sec) : name;
@@ -606,12 +610,12 @@ iq2000_elf_relocate_section (bfd *		     output_bfd ATTRIBUTE_UNUSED,
 		(info, (h ? &h->root : NULL), name, howto->name,
 		 (bfd_vma) 0, input_bfd, input_section, rel->r_offset);
 	      break;
-	      
+
 	    case bfd_reloc_undefined:
 	      r = info->callbacks->undefined_symbol
 		(info, name, input_bfd, input_section, rel->r_offset, TRUE);
 	      break;
-	      
+
 	    case bfd_reloc_outofrange:
 	      msg = _("internal error: out of range error");
 	      break;
@@ -672,17 +676,17 @@ iq2000_elf_gc_mark_hook (asection *		      sec,
     case R_IQ2000_GNU_VTINHERIT:
     case R_IQ2000_GNU_VTENTRY:
       break;
-	  
+
     default:
       switch (h->root.type)
 	{
 	case bfd_link_hash_defined:
 	case bfd_link_hash_defweak:
 	  return h->root.u.def.section;
-	      
+
 	case bfd_link_hash_common:
 	  return h->root.u.c.p->section;
-	      
+
 	default:
 	  break;
 	}
@@ -792,7 +796,7 @@ iq2000_elf_merge_private_bfd_data (bfd *ibfd, bfd *obfd)
 	      break;
 	    }
 	}
-      
+
       /* Print out any mismatches from above.  */
       if (new_opt[0])
 	{

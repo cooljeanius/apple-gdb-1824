@@ -173,8 +173,8 @@ ext_imms_scaled (const struct ia64_operand *self, ia64_insn code,
       total += bits;
     }
   /* sign extend: */
-  sign = (BFD_HOST_64_BIT) 1 << (total - 1);
-  val = (val ^ sign) - sign;
+  sign = ((BFD_HOST_64_BIT)1 << (total - 1));
+  val = ((val ^ sign) - sign);
 
   *valuep = (val << scale);
   return 0;
@@ -270,18 +270,24 @@ ins_cimmu (const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
 }
 
 static const char*
-ext_cimmu (const struct ia64_operand *self, ia64_insn code, ia64_insn *valuep)
+ext_cimmu(const struct ia64_operand *self, ia64_insn code,
+          ia64_insn *valuep)
 {
   const char *result;
   ia64_insn mask;
 
-  mask = (((ia64_insn) 1) << self->field[0].bits) - 1;
-  result = ext_immu (self, code, valuep);
+  mask = ((((ia64_insn)1) << self->field[0].bits) - 1);
+  result = ext_immu(self, code, valuep);
   if (!result)
     {
       mask = (((ia64_insn) 1) << self->field[0].bits) - 1;
       *valuep ^= mask;
     }
+
+  if (mask != code) {
+    ;
+  }
+
   return result;
 }
 
@@ -339,17 +345,19 @@ ins_cnt2c (const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
 }
 
 static const char*
-ext_cnt2c (const struct ia64_operand *self, ia64_insn code, ia64_insn *valuep)
+ext_cnt2c(const struct ia64_operand *self, ia64_insn code,
+          ia64_insn *valuep)
 {
   ia64_insn value;
 
-  value = (code >> self->field[0].shift) & 0x3;
+  value = ((code >> self->field[0].shift) & 0x3);
   switch (value)
     {
-    case 0: value =  0; break;
-    case 1: value =  7; break;
+    case 0: value = 0; break;
+    case 1: value = 7; break;
     case 2: value = 15; break;
     case 3: value = 16; break;
+    default: break;
     }
   *valuep = value;
   return 0;
@@ -374,27 +382,30 @@ ins_inc3 (const struct ia64_operand *self, ia64_insn value, ia64_insn *code)
     case 16:	value = 0; break;
     default:	return "count must be +/- 1, 4, 8, or 16";
     }
-  *code |= (sign | value) << self->field[0].shift;
+  *code |= ((sign | value) << self->field[0].shift);
   return 0;
 }
 
 static const char*
-ext_inc3 (const struct ia64_operand *self, ia64_insn code, ia64_insn *valuep)
+ext_inc3(const struct ia64_operand *self, ia64_insn code,
+         ia64_insn *valuep)
 {
   BFD_HOST_64_BIT val;
   int negate;
 
-  val = (code >> self->field[0].shift) & 0x7;
-  negate = val & 0x4;
+  val = ((code >> self->field[0].shift) & 0x7);
+  negate = (int)(val & 0x4);
   switch (val & 0x3)
     {
     case 0: val = 16; break;
-    case 1: val =  8; break;
-    case 2: val =  4; break;
-    case 3: val =  1; break;
+    case 1: val = 8; break;
+    case 2: val = 4; break;
+    case 3: val = 1; break;
+    default: break;
     }
-  if (negate)
+  if (negate) {
     val = -val;
+  }
 
   *valuep = val;
   return 0;

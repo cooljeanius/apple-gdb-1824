@@ -6,7 +6,7 @@ AC_INIT([apple-gdb],[1824],[jmolenda@apple.com])
 AC_CONFIG_SRCDIR([template.h])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CONFIG_AUX_DIR([build-aux])
+AC_CONFIG_AUX_DIR([build-aux])dnl
 
 if test -x `which sw_vers`; then
   if test ! -z "$(sw_vers -productVersion | cut -d\. -f2 2>/dev/null)"; then
@@ -50,7 +50,7 @@ AM_SANITY_CHECK
 AM_PROG_INSTALL_SH
 AM_PROG_INSTALL_STRIP
 AM_MAKE_INCLUDE
-_AM_PROG_TAR([pax])
+_AM_PROG_TAR([pax])dnl
 
 # Checks for programs.
 AC_MSG_CHECKING([programs])
@@ -78,8 +78,8 @@ AC_PROG_OBJCXXCPP
 AC_PROG_RANLIB
 AC_PROG_SED
 AC_PROG_YACC
-AC_PATH_PROG([BUILDIT],[buildit])
-AC_SUBST([BUILDIT])
+AC_PATH_PROG([BUILDIT],[buildit])dnl
+AC_SUBST([BUILDIT])dnl
 
 # Checks for libraries.
 AC_MSG_CHECKING([libraries])
@@ -89,25 +89,29 @@ AC_CHECK_LIB([dl],[dlopen])
 # FIXME: Replace `main' with a function in `-lgmp':
 AC_CHECK_LIB([gmp],[main])
 AC_CHECK_LIB([iberty],[xmalloc],[],[
-  AC_CHECK_LIB([iberty],[main])
-])
+  AC_CHECK_LIB([iberty],[main])dnl
+])dnl
 AC_CHECK_LIB([iconv],[iconv],[],[
   AC_CHECK_LIB([iconv],[libiconv],[],[
-    AC_CHECK_LIB([iconv],[main])
-  ])
-])
+    AC_CHECK_LIB([iconv],[main])dnl
+  ])dnl
+])dnl
 AC_CHECK_LIB([intl],[gettext],[],[
-  AC_CHECK_LIB([intl],[main])
-])
+  AC_CHECK_LIB([intl],[main])dnl
+])dnl
 AC_CHECK_LIB([m],[sqrt])
 m4_ifdef([LT_LIB_M],[
-LT_LIB_M
-],[:])
+  LT_LIB_M
+],[
+  LIBM=""
+  AC_CHECK_LIB([m],[cos],[LIBM=-lm])
+  AC_SUBST([LIBM])dnl
+])dnl
 # FIXME: Replace `main' with a function in `-lmpfr':
 AC_CHECK_LIB([mpfr],[main])
 AC_CHECK_LIB([readline],[rl_initialize])
 AC_CHECK_LIB([sqlite3],[sqlite3_initialize])
-AC_CHECK_LIB([z],[gzopen])
+AC_CHECK_LIB([z],[gzopen])dnl
 
 # Checks for header files.
 AC_MSG_CHECKING([headers])
@@ -147,7 +151,7 @@ AC_TYPE_UINT8_T
 AC_TYPE_UINT16_T
 AC_TYPE_UINT32_T
 AC_TYPE_UINT64_T
-AC_CHECK_TYPES([ptrdiff_t])
+AC_CHECK_TYPES([ptrdiff_t])dnl
 AC_STRUCT_TIMEZONE dnl# also does the "_TM" one
 dnl# Begin what used to be AC\_TYPE\_SIGNAL
 AC_CACHE_CHECK([return type of signal handlers],[ac_cv_type_signal],[
@@ -182,16 +186,16 @@ AC_CHECK_FUNCS([__argz_count __argz_next __argz_stringify bzero \
                 memchr memmove mempcpy memset munmap nl_langinfo \
                 re_comp regcomp setenv setlocale stpcpy strcasecmp \
                 strchr strcspn strdup strerror strpbrk strrchr strstr \
-                strtol strtoul strtoull strverscmp])
+                strtol strtoul strtoull strverscmp])dnl
 
 # Gettext checks:
 AC_MSG_CHECKING([gettext])
 AC_MSG_RESULT([ ])
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.18.3])
+AM_GNU_GETTEXT_VERSION([0.19.3])dnl
 
 # Output:
-AC_CONFIG_SUBDIRS([src])
+AC_CONFIG_SUBDIRS([src])dnl
 AC_OUTPUT
 
 # The name "configure" is also a make target in Apple's

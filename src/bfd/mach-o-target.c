@@ -16,7 +16,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St. - 5th Floor, Boston, MA 02110-1301, USA.
+ * Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA
  */
 
 /* this file is actually okay to include multiple times (and, in fact, it
@@ -28,29 +28,115 @@
 
 #ifdef __BFD_MACH_O_C__
 
+/* Define generic entry points here so that we do NOT need to duplicate the
+ * defines in every target.  But define once as this file may be included
+ * several times.  */
+#ifndef MACH_O_TARGET_COMMON_DEFINED
+# define MACH_O_TARGET_COMMON_DEFINED 1
+
+# ifndef bfd_mach_o_bfd_free_cached_info
+#  define bfd_mach_o_bfd_free_cached_info _bfd_generic_bfd_free_cached_info
+# endif /* !bfd_mach_o_bfd_free_cached_info*/
+# define bfd_mach_o_get_section_contents_in_window _bfd_generic_get_section_contents_in_window
+# define bfd_mach_o_bfd_print_private_bfd_data _bfd_generic_bfd_print_private_bfd_data
+# ifndef bfd_mach_o_bfd_is_target_special_symbol
+#  define bfd_mach_o_bfd_is_target_special_symbol ((bfd_boolean (*)(bfd *, asymbol *))bfd_false)
+# endif /* !bfd_mach_o_bfd_is_target_special_symbol */
+# ifndef bfd_mach_o_bfd_is_local_label_name
+#  define bfd_mach_o_bfd_is_local_label_name bfd_generic_is_local_label_name
+# endif /* !bfd_mach_o_bfd_is_local_label_name */
+# define bfd_mach_o_get_lineno _bfd_nosymbols_get_lineno
+# define bfd_mach_o_find_inliner_info _bfd_nosymbols_find_inliner_info
+# define bfd_mach_o_get_symbol_version_string _bfd_nosymbols_get_symbol_version_string
+# define bfd_mach_o_bfd_make_debug_symbol _bfd_nosymbols_bfd_make_debug_symbol
+# define bfd_mach_o_read_minisymbols _bfd_generic_read_minisymbols
+# define bfd_mach_o_minisymbol_to_symbol _bfd_generic_minisymbol_to_symbol
+# define bfd_mach_o_bfd_get_relocated_section_contents bfd_generic_get_relocated_section_contents
+# define bfd_mach_o_bfd_relax_section bfd_generic_relax_section
+# define bfd_mach_o_bfd_link_hash_table_create _bfd_generic_link_hash_table_create
+# define bfd_mach_o_bfd_link_add_symbols _bfd_generic_link_add_symbols
+# define bfd_mach_o_bfd_link_just_syms _bfd_generic_link_just_syms
+# define bfd_mach_o_bfd_copy_link_hash_symbol_type \
+   _bfd_generic_copy_link_hash_symbol_type
+# define bfd_mach_o_bfd_final_link _bfd_generic_final_link
+# define bfd_mach_o_bfd_link_split_section _bfd_generic_link_split_section
+# define bfd_mach_o_bfd_merge_private_bfd_data _bfd_generic_bfd_merge_private_bfd_data
+# ifndef bfd_mach_o_bfd_set_private_flags
+#  define bfd_mach_o_bfd_set_private_flags bfd_mach_o_bfd_set_private_flags
+# endif /* !bfd_mach_o_bfd_set_private_flags */
+# define bfd_mach_o_get_section_contents _bfd_generic_get_section_contents
+# define bfd_mach_o_bfd_gc_sections bfd_generic_gc_sections
+# define bfd_mach_o_bfd_lookup_section_flags bfd_generic_lookup_section_flags
+# define bfd_mach_o_bfd_merge_sections bfd_generic_merge_sections
+# define bfd_mach_o_bfd_is_group_section bfd_generic_is_group_section
+# define bfd_mach_o_bfd_discard_group bfd_generic_discard_group
+# define bfd_mach_o_section_already_linked _bfd_generic_section_already_linked
+# define bfd_mach_o_bfd_define_common_symbol bfd_generic_define_common_symbol
+# if !defined(bfd_mach_o_bfd_copy_private_bfd_data) && \
+     defined(_bfd_generic_bfd_copy_private_bfd_data) && 0
+#  define bfd_mach_o_bfd_copy_private_bfd_data _bfd_generic_bfd_copy_private_bfd_data
+# endif /* !bfd_mach_o_bfd_copy_private_bfd_data && _bfd_generic_bfd_copy_private_bfd_data && 0 */
+# if !defined(bfd_mach_o_core_file_matches_executable_p) && \
+     defined(generic_core_file_matches_executable_p)
+#  define bfd_mach_o_core_file_matches_executable_p generic_core_file_matches_executable_p
+# endif /* !bfd_mach_o_core_file_matches_executable_p && generic_core_file_matches_executable_p */
+# define bfd_mach_o_core_file_pid _bfd_nocore_core_file_pid
+
+# define bfd_mach_o_get_dynamic_symtab_upper_bound bfd_mach_o_get_symtab_upper_bound
+# define bfd_mach_o_canonicalize_dynamic_symtab bfd_mach_o_canonicalize_symtab
+
+# define TARGET_NAME_BACKEND XCONCAT2(TARGET_NAME,_backend)
+
+#endif /* MACH_O_TARGET_COMMON_DEFINED */
+
 #ifndef TARGET_NAME
 # error "TARGET_NAME must be defined"
-#endif /* TARGET_NAME */
+#endif /* !TARGET_NAME */
 
 #ifndef TARGET_STRING
 # error "TARGET_STRING must be defined"
-#endif /* TARGET_STRING */
+#endif /* !TARGET_STRING */
+
+#ifndef TARGET_ARCHITECTURE
+# error "TARGET_ARCHITECTURE must be defined"
+#endif /* !TARGET_ARCHITECTURE */
 
 #ifndef TARGET_BIG_ENDIAN
 # error "TARGET_BIG_ENDIAN must be defined"
-#endif /* TARGET_BIG_ENDIAN */
+#endif /* !TARGET_BIG_ENDIAN */
 
 #ifndef TARGET_ARCHIVE
 # error "TARGET_ARCHIVE must be defined"
-#endif /* TARGET_ARCHIVE */
+#endif /* !TARGET_ARCHIVE */
+
+#ifndef TARGET_PAGESIZE
+# error "TARGET_PAGESIZE must be defined"
+#endif /* !TARGET_PAGESIZE */
+
+#ifndef TARGET_PRIORITY
+# warning "TARGET_PRIORITY should be defined"
+#endif /* !TARGET_PRIORITY */
 
 #if ((TARGET_ARCHIVE) && (! TARGET_BIG_ENDIAN))
 # error "Mach-O fat files must always be big-endian."
 #endif /* ((TARGET_ARCHIVE) && (! TARGET_BIG_ENDIAN)) */
 
+#if defined(TARGET_NAME_BACKEND) && defined(mach_o_be_vec_backend)
+static const bfd_mach_o_backend_data TARGET_NAME_BACKEND =
+{
+  TARGET_ARCHITECTURE,
+  TARGET_PAGESIZE,
+  bfd_mach_o_swap_reloc_in,
+  bfd_mach_o_swap_reloc_out,
+  bfd_mach_o_print_thread,
+  bfd_mach_o_tgt_seg_table,
+  bfd_mach_o_section_type_valid_for_tgt
+};
+#endif /* TARGET_NAME_BACKEND && mach_o_be_vec_backend */
+
 const bfd_target TARGET_NAME =
 {
-  TARGET_STRING,		/* Name.  */
+  (char *)TARGET_STRING,		/* Name.  */
   bfd_target_mach_o_flavour,
 #if TARGET_BIG_ENDIAN
   BFD_ENDIAN_BIG,		/* Target byte order.  */
@@ -67,6 +153,9 @@ const bfd_target TARGET_NAME =
   '_',				/* symbol_leading_char.  */
   ' ',				/* ar_pad_char.  */
   16,				/* ar_max_namelen.  */
+#if 0
+  TARGET_PRIORITY,	/* match priority.  */
+#endif /* 0 */
 
 #if TARGET_BIG_ENDIAN
   bfd_getb64, bfd_getb_signed_64, bfd_putb64,
@@ -124,9 +213,15 @@ const bfd_target TARGET_NAME =
   BFD_JUMP_TABLE_LINK(bfd_mach_o),
   BFD_JUMP_TABLE_DYNAMIC(_bfd_nodynamic),
 
+  /* Alternative endian target: */
   NULL,
 
+  /* Back-end data: */
+#if defined(TARGET_NAME_BACKEND) && defined(mach_o_be_vec_backend)
+  &TARGET_NAME_BACKEND
+#else
   NULL
+#endif /* TARGET_NAME_BACKEND && mach_o_be_vec_backend */
 };
 
 #else
@@ -135,6 +230,9 @@ const bfd_target TARGET_NAME =
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 /* so the file will not be empty: */
 typedef int mach_o_target_c_dummy_t;
+# ifdef __BFD_MACH_O_TARGET_C__
+#  undef __BFD_MACH_O_TARGET_C__
+# endif /* __BFD_MACH_O_TARGET_C__ */
 #endif /* __BFD_MACH_O_C__ */
 
 /* EOF */

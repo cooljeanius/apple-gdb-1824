@@ -31,6 +31,11 @@
 #include "elf/hppa.h"
 #include "libhppa.h"
 #include "elf32-hppa.h"
+#ifdef ARCH_SIZE
+# if (ARCH_SIZE != 32)
+#  undef ARCH_SIZE
+# endif
+#endif /* ARCH_SIZE */
 #define ARCH_SIZE		32
 #include "elf32-hppa.h"
 #include "elf-hppa.h"
@@ -120,20 +125,20 @@
    Structure/Variable         		Prefix
    elf_link_hash_table			"etab"
    elf_link_hash_entry			"eh"
-   
+
    elf32_hppa_link_hash_table		"htab"
    elf32_hppa_link_hash_entry		"hh"
 
    bfd_hash_table			"btab"
    bfd_hash_entry			"bh"
-   
+
    bfd_hash_table containing stubs	"bstab"
    elf32_hppa_stub_hash_entry		"hsh"
 
    elf32_hppa_dyn_reloc_entry		"hdh"
-   
+
    Always remember to use GNU Coding Style. */
-					  
+
 #define PLT_ENTRY_SIZE 8
 #define GOT_ENTRY_SIZE 4
 #define ELF_DYNAMIC_INTERPRETER "/lib/ld.so.1"
@@ -1893,7 +1898,7 @@ allocate_plt_static (struct elf_link_hash_entry *eh, void *inf)
 	     means that the plt entry is only used by a plabel.
 	     We'll be using a normal plt entry for this symbol, so
 	     clear the plabel indicator.  */
-	  
+
 	  hh->plabel = 0;
 	}
       else if (hh->plabel)
@@ -1941,7 +1946,7 @@ allocate_dynrelocs (struct elf_link_hash_entry *eh, void *inf)
   info = inf;
   htab = hppa_link_hash_table (info);
   hh = hppa_elf_hash_entry (eh);
-  
+
   if (htab->etab.dynamic_sections_created
       && eh->plt.offset != (bfd_vma) -1
       && !hh->plabel
@@ -2021,7 +2026,7 @@ allocate_dynrelocs (struct elf_link_hash_entry *eh, void *inf)
       /* For the non-shared case, discard space for relocs against
 	 symbols which turn out to need copy relocs or are not
 	 dynamic.  */
-      
+
       if (!eh->non_got_ref
 	  && ((ELIMINATE_COPY_RELOCS
 	       && eh->def_dynamic
@@ -2205,7 +2210,7 @@ elf32_hppa_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
 	    {
 	      *local_got = sec->size;
 	      sec->size += GOT_ENTRY_SIZE;
-	      if (info->shared) 
+	      if (info->shared)
 		srel->size += sizeof (Elf32_External_Rela);
 	    }
 	  else
@@ -3149,7 +3154,7 @@ final_link_relocate (asection *input_section,
   bfd_signed_vma addend = rela->r_addend;
   bfd_vma location;
   struct elf32_hppa_stub_hash_entry *hsh = NULL;
-  int val;  
+  int val;
 
   if (r_type == R_PARISC_NONE)
     return bfd_reloc_ok;
@@ -3796,7 +3801,7 @@ elf32_hppa_relocate_section (bfd *output_bfd,
 		      || outrel.r_offset == (bfd_vma) -2);
 	      outrel.r_offset += (input_section->output_offset
 				  + input_section->output_section->vma);
-	      	      
+
 	      if (skip)
 		{
 		  memset (&outrel, 0, sizeof (outrel));

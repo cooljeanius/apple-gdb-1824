@@ -261,100 +261,107 @@ aout_adobe_mkobject(bfd *abfd)
 static void aout_adobe_write_section(bfd *abfd ATTRIBUTE_UNUSED,
 				     sec_ptr sect ATTRIBUTE_UNUSED)
 {
-  /* FIXME: put something here. XXX. */ ;
+  /* FIXME: put something here besides the return statement. XXX. */
+  return;
 }
 
+/* FIXME: move these to a relevant header file: */
+extern bfd_boolean aout_32_write_syms
+  PARAMS((bfd *));
+extern int aout_32_squirt_out_relocs
+  PARAMS((bfd *, asection *));
+
 static bfd_boolean
-aout_adobe_write_object_contents (bfd *abfd)
+aout_adobe_write_object_contents(bfd *abfd)
 {
   struct external_exec swapped_hdr;
-  static struct external_segdesc sentinel[1];	/* Initialized to zero.  */
+  static struct external_segdesc sentinel[1];  /* Initialized to 0. */
   asection *sect;
   bfd_size_type amt;
 
-  exec_hdr (abfd)->a_info = ZMAGIC;
+  exec_hdr(abfd)->a_info = ZMAGIC;
 
   /* Calculate text size as total of text sections, etc.  */
-  exec_hdr (abfd)->a_text = 0;
-  exec_hdr (abfd)->a_data = 0;
-  exec_hdr (abfd)->a_bss  = 0;
-  exec_hdr (abfd)->a_trsize = 0;
-  exec_hdr (abfd)->a_drsize = 0;
+  exec_hdr(abfd)->a_text = 0;
+  exec_hdr(abfd)->a_data = 0;
+  exec_hdr(abfd)->a_bss  = 0;
+  exec_hdr(abfd)->a_trsize = 0;
+  exec_hdr(abfd)->a_drsize = 0;
 
   for (sect = abfd->sections; sect; sect = sect->next)
     {
       if (sect->flags & SEC_CODE)
 	{
-	  exec_hdr (abfd)->a_text += sect->size;
-	  exec_hdr (abfd)->a_trsize += sect->reloc_count *
-	    sizeof (struct reloc_std_external);
+	  exec_hdr(abfd)->a_text += sect->size;
+	  exec_hdr(abfd)->a_trsize += (sect->reloc_count *
+                                       sizeof(struct reloc_std_external));
 	}
       else if (sect->flags & SEC_DATA)
 	{
-	  exec_hdr (abfd)->a_data += sect->size;
-	  exec_hdr (abfd)->a_drsize += sect->reloc_count *
-	    sizeof (struct reloc_std_external);
+	  exec_hdr(abfd)->a_data += sect->size;
+	  exec_hdr(abfd)->a_drsize += (sect->reloc_count *
+                                       sizeof(struct reloc_std_external));
 	}
-      else if (sect->flags & SEC_ALLOC && !(sect->flags & SEC_LOAD))
-	exec_hdr (abfd)->a_bss += sect->size;
+      else if ((sect->flags & SEC_ALLOC) && !(sect->flags & SEC_LOAD))
+	exec_hdr(abfd)->a_bss += sect->size;
     }
 
-  exec_hdr (abfd)->a_syms = bfd_get_symcount (abfd)
-    * sizeof (struct external_nlist);
-  exec_hdr (abfd)->a_entry = bfd_get_start_address (abfd);
+  exec_hdr(abfd)->a_syms = (bfd_get_symcount(abfd)
+                            * sizeof(struct external_nlist));
+  exec_hdr(abfd)->a_entry = bfd_get_start_address(abfd);
 
-  aout_adobe_swap_exec_header_out (abfd, exec_hdr (abfd), &swapped_hdr);
+  aout_adobe_swap_exec_header_out(abfd, exec_hdr(abfd), &swapped_hdr);
 
   amt = EXEC_BYTES_SIZE;
-  if (bfd_seek (abfd, (file_ptr) 0, SEEK_SET) != 0
-      || bfd_bwrite (& swapped_hdr, amt, abfd) != amt)
+  if ((bfd_seek(abfd, (file_ptr)0, SEEK_SET) != 0)
+      || (bfd_bwrite(& swapped_hdr, amt, abfd) != amt))
     return FALSE;
 
   /* Now write out the section information.  Text first, data next, rest
      afterward.  */
   for (sect = abfd->sections; sect; sect = sect->next)
     if (sect->flags & SEC_CODE)
-      aout_adobe_write_section (abfd, sect);
+      aout_adobe_write_section(abfd, sect);
 
   for (sect = abfd->sections; sect; sect = sect->next)
     if (sect->flags & SEC_DATA)
-      aout_adobe_write_section (abfd, sect);
+      aout_adobe_write_section(abfd, sect);
 
   for (sect = abfd->sections; sect; sect = sect->next)
     if (!(sect->flags & (SEC_CODE | SEC_DATA)))
-      aout_adobe_write_section (abfd, sect);
+      aout_adobe_write_section(abfd, sect);
 
   /* Write final `sentinel` section header (with type of 0).  */
-  amt = sizeof (*sentinel);
-  if (bfd_bwrite (sentinel, amt, abfd) != amt)
+  amt = sizeof(*sentinel);
+  if (bfd_bwrite(sentinel, amt, abfd) != amt)
     return FALSE;
 
-  /* Now write out reloc info, followed by syms and strings.  */
-  if (bfd_get_symcount (abfd) != 0)
+  /* Now write out reloc info, followed by syms and strings: */
+  if (bfd_get_symcount(abfd) != 0)
     {
-      if (bfd_seek (abfd, (file_ptr) (N_SYMOFF (*exec_hdr (abfd))), SEEK_SET)
+      if (bfd_seek(abfd, (file_ptr)(N_SYMOFF(*exec_hdr(abfd))), SEEK_SET)
 	  != 0)
 	return FALSE;
 
-      if (! aout_32_write_syms (abfd))
+      if (! aout_32_write_syms(abfd))
 	return FALSE;
 
-      if (bfd_seek (abfd, (file_ptr) (N_TRELOFF (*exec_hdr (abfd))), SEEK_SET)
+      if (bfd_seek(abfd, (file_ptr)(N_TRELOFF(*exec_hdr(abfd))), SEEK_SET)
 	  != 0)
 	return FALSE;
 
       for (sect = abfd->sections; sect; sect = sect->next)
 	if (sect->flags & SEC_CODE)
-	  if (!aout_32_squirt_out_relocs (abfd, sect))
+	  if (!aout_32_squirt_out_relocs(abfd, sect))
 	    return FALSE;
 
-      if (bfd_seek (abfd, (file_ptr) (N_DRELOFF (*exec_hdr (abfd))), SEEK_SET)
+      if (bfd_seek(abfd, (file_ptr)(N_DRELOFF(*exec_hdr(abfd))), SEEK_SET)
 	  != 0)
 	return FALSE;
 
       for (sect = abfd->sections; sect; sect = sect->next)
 	if (sect->flags & SEC_DATA)
-	  if (!aout_32_squirt_out_relocs (abfd, sect))
+	  if (!aout_32_squirt_out_relocs(abfd, sect))
 	    return FALSE;
     }
 
@@ -498,15 +505,15 @@ const bfd_target a_out_adobe_vec =
   {bfd_false, aout_adobe_write_object_contents,/* bfd_write_contents.  */
    _bfd_write_archive_contents, bfd_false},
 
-  BFD_JUMP_TABLE_GENERIC (aout_32),
-  BFD_JUMP_TABLE_COPY (_bfd_generic),
-  BFD_JUMP_TABLE_CORE (_bfd_nocore),
-  BFD_JUMP_TABLE_ARCHIVE (_bfd_archive_bsd),
-  BFD_JUMP_TABLE_SYMBOLS (aout_32),
-  BFD_JUMP_TABLE_RELOCS (aout_32),
-  BFD_JUMP_TABLE_WRITE (aout_32),
-  BFD_JUMP_TABLE_LINK (aout_32),
-  BFD_JUMP_TABLE_DYNAMIC (_bfd_nodynamic),
+  BFD_JUMP_TABLE_GENERIC(aout_32),
+  BFD_JUMP_TABLE_COPY(_bfd_generic),
+  BFD_JUMP_TABLE_CORE(_bfd_nocore),
+  BFD_JUMP_TABLE_ARCHIVE(_bfd_archive_bsd),
+  BFD_JUMP_TABLE_SYMBOLS(aout_32),
+  BFD_JUMP_TABLE_RELOCS(aout_32),
+  BFD_JUMP_TABLE_WRITE(aout_32),
+  BFD_JUMP_TABLE_LINK(aout_32),
+  BFD_JUMP_TABLE_DYNAMIC(_bfd_nodynamic),
 
   NULL,
 

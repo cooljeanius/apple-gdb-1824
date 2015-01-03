@@ -1,4 +1,4 @@
-/* BFD back-end for MAXQ COFF binaries.
+/* coff-maxq.c: BFD back-end for MAXQ COFF binaries.
    Copyright 2004    Free Software Foundation, Inc.
 
    Contributed by Vineet Sharma (vineets@noida.hcltech.com) Inderpreet S.
@@ -9,17 +9,17 @@
    This file is part of BFD, the Binary File Descriptor library.
 
    This program is free software; you can redistribute it and/or modify it
-   under the terms of the GNU General Public License as published by the Free 
+   under the terms of the GNU General Public License as published by the Free
    Software Foundation; either version 2 of the License, or (at your option)
    any later version.
 
    This program is distributed in the hope that it will be useful, but
-   WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+   WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
    or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
    for more details.
 
    You should have received a copy of the GNU General Public License along
-   with this program; if not, write to the Free Software Foundation, Inc., 
+   with this program; if not, write to the Free Software Foundation, Inc.,
    51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
 #include "bfd.h"
@@ -31,8 +31,8 @@
 #include "libiberty.h"
 
 #ifndef MAXQ20
-#define MAXQ20 1
-#endif
+# define MAXQ20 1
+#endif /* !MAXQ20 */
 
 #define RTYPE2HOWTO(cache_ptr, dst)                                     \
   ((cache_ptr)->howto =                                                 \
@@ -101,7 +101,7 @@ coff_maxq20_reloc (bfd *      abfd,
       call_addr = call_addr - call_addr;
       call_addr = get_symbol_value (symbol_in);
 
-      /* Over here the value val stores the 8 bit/16 bit value. We will put a 
+      /* Over here the value val stores the 8 bit/16 bit value. We will put a
          check if we are moving a 16 bit immediate value into an 8 bit
          register. In that case we will generate a Upper bytes into PFX[0]
          and move the lower 8 bits as SRC.  */
@@ -140,7 +140,7 @@ coff_maxq20_reloc (bfd *      abfd,
 	case ABSOLUTE_ADDR_FOR_DATA:
 	case LONG_JUMP:
 	  /* BFD_RELOC_14 Handles intersegment or long jumps which might be
-	     from code to code or code to data segment jumps. Note: When this 
+	     from code to code or code to data segment jumps. Note: When this
 	     fucntion is called by gas the section flags somehow do not
 	     contain the info about the section type(CODE or DATA). Thus the
 	     user needs to evoke the linker after assembling the files
@@ -445,14 +445,19 @@ maxq_reloc_type_lookup (bfd * abfd ATTRIBUTE_UNUSED,
 #include "coffcode.h"
 
 #ifndef TARGET_UNDERSCORE
-#define TARGET_UNDERSCORE 1
-#endif
+# define TARGET_UNDERSCORE 1
+#endif /* !TARGET_UNDERSCORE */
 
 #ifndef EXTRA_S_FLAGS
-#define EXTRA_S_FLAGS 0
-#endif
+# define EXTRA_S_FLAGS 0
+#endif /* !EXTRA_S_FLAGS */
 
-/* Forward declaration for use initialising alternative_target field.  */
-CREATE_LITTLE_COFF_TARGET_VEC (maxqcoff_vec, "coff-maxq", 0, EXTRA_S_FLAGS,
-			       TARGET_UNDERSCORE, NULL, COFF_SWAP_TABLE);
+/* Forward declaration for use initialising alternative_target field: */
+CREATE_LITTLE_COFF_TARGET_VEC(maxqcoff_vec, "coff-maxq", 0, EXTRA_S_FLAGS,
+                              TARGET_UNDERSCORE, NULL, COFF_SWAP_TABLE);
 
+#ifdef MAXQ20
+# undef MAXQ20
+#endif /* MAXQ20 */
+
+/* EOF */

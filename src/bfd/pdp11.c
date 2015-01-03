@@ -1882,13 +1882,13 @@ NAME (aout, slurp_reloc_table) (bfd *abfd, sec_ptr asect, asymbol **symbols)
     count = real_count;
   }
 
-  reloc_cache = bfd_zmalloc (count * sizeof (arelent));
-  if (reloc_cache == NULL && count != 0)
+  reloc_cache = (arelent *)bfd_zmalloc(count * sizeof(arelent));
+  if ((reloc_cache == NULL) && (count != 0))
     return FALSE;
 
   cache_ptr = reloc_cache;
 
-  rptr = relocs;
+  rptr = (bfd_byte *)relocs;
   for (counter = 0;
        counter < count;
        counter++, rptr += RELOC_SIZE, cache_ptr++)
@@ -1896,21 +1896,21 @@ NAME (aout, slurp_reloc_table) (bfd *abfd, sec_ptr asect, asymbol **symbols)
       while (GET_WORD (abfd, (void *) rptr) == 0)
 	{
 	  rptr += RELOC_SIZE;
-	  if ((char *) rptr >= (char *) relocs + reloc_size)
+	  if ((char *)rptr >= (char *)relocs + reloc_size)
 	    goto done;
 	}
 
-      pdp11_aout_swap_reloc_in (abfd, rptr, cache_ptr,
-				(bfd_size_type) ((char *) rptr - (char *) relocs),
-				symbols,
-				(bfd_size_type) bfd_get_symcount (abfd));
+      pdp11_aout_swap_reloc_in(abfd, rptr, cache_ptr,
+                               (bfd_size_type)((char *)rptr - (char *)relocs),
+                               symbols,
+                               (bfd_size_type)bfd_get_symcount(abfd));
     }
  done:
   /* Just in case, if rptr >= relocs + reloc_size should happen
      too early.  */
-  BFD_ASSERT (counter == count);
+  BFD_ASSERT(counter == count);
 
-  free (relocs);
+  free(relocs);
 
   asect->relocation = reloc_cache;
   asect->reloc_count = cache_ptr - reloc_cache;
@@ -1918,10 +1918,9 @@ NAME (aout, slurp_reloc_table) (bfd *abfd, sec_ptr asect, asymbol **symbols)
   return TRUE;
 }
 
-/* Write out a relocation section into an object file.  */
-
+/* Write out a relocation section into an object file: */
 bfd_boolean
-NAME (aout, squirt_out_relocs) (bfd *abfd, asection *section)
+NAME(aout, squirt_out_relocs)(bfd *abfd, asection *section)
 {
   arelent **generic;
   unsigned char *native;
@@ -1929,7 +1928,7 @@ NAME (aout, squirt_out_relocs) (bfd *abfd, asection *section)
   bfd_size_type natsize;
 
   natsize = section->size;
-  native = bfd_zalloc (abfd, natsize);
+  native = (unsigned char *)bfd_zalloc(abfd, natsize);
   if (!native)
     return FALSE;
 
@@ -2326,16 +2325,16 @@ NAME (aout, find_nearest_line) (bfd *abfd,
   if (func == NULL)
     funclen = 0;
   else
-    funclen = strlen (bfd_asymbol_name (func));
+    funclen = strlen(bfd_asymbol_name(func));
 
-  if (adata (abfd).line_buf != NULL)
-    free (adata (abfd).line_buf);
+  if (adata(abfd).line_buf != NULL)
+    free(adata(abfd).line_buf);
   if (filelen + funclen == 0)
-    adata (abfd).line_buf = buf = NULL;
+    adata(abfd).line_buf = buf = NULL;
   else
     {
-      buf = bfd_malloc ((bfd_size_type) filelen + funclen + 3);
-      adata (abfd).line_buf = buf;
+      buf = (char *)bfd_malloc((bfd_size_type) filelen + funclen + 3);
+      adata(abfd).line_buf = buf;
       if (buf == NULL)
 	return FALSE;
     }
@@ -3129,19 +3128,18 @@ aout_link_reloc_link_order (struct aout_final_link_info *finfo,
       bfd_byte *buf;
       bfd_boolean ok;
 
-      size = bfd_get_reloc_size (howto);
-      buf = bfd_zmalloc (size);
+      size = bfd_get_reloc_size(howto);
+      buf = (bfd_byte *)bfd_zmalloc(size);
       if (buf == NULL)
 	return FALSE;
-      r = MY_relocate_contents (howto, finfo->output_bfd,
-				pr->addend, buf);
+      r = MY_relocate_contents(howto, finfo->output_bfd, pr->addend, buf);
       switch (r)
 	{
 	case bfd_reloc_ok:
 	  break;
 	default:
 	case bfd_reloc_outofrange:
-	  abort ();
+	  abort();
 	case bfd_reloc_overflow:
 	  if (! ((*finfo->info->callbacks->reloc_overflow)
 		 (finfo->info, NULL,
@@ -3758,24 +3756,24 @@ NAME (aout, final_link) (bfd *abfd,
   obj_datasec (abfd)->rel_filepos = aout_info.dreloff;
   obj_sym_filepos (abfd) = aout_info.symoff;
 
-  /* We keep a count of the symbols as we output them.  */
-  obj_aout_external_sym_count (abfd) = 0;
+  /* We keep a count of the symbols as we output them: */
+  obj_aout_external_sym_count(abfd) = 0;
 
-  /* We accumulate the string table as we write out the symbols.  */
-  aout_info.strtab = _bfd_stringtab_init ();
+  /* We accumulate the string table as we write out the symbols: */
+  aout_info.strtab = _bfd_stringtab_init();
   if (aout_info.strtab == NULL)
     goto error_return;
 
-  /* Allocate buffers to hold section contents and relocs.  */
-  aout_info.contents = bfd_malloc (max_contents_size);
-  aout_info.relocs = bfd_malloc (max_relocs_size);
-  aout_info.symbol_map = bfd_malloc (max_sym_count * sizeof (int *));
-  aout_info.output_syms = bfd_malloc ((max_sym_count + 1)
-				      * sizeof (struct external_nlist));
-  if ((aout_info.contents == NULL && max_contents_size != 0)
-      || (aout_info.relocs == NULL && max_relocs_size != 0)
-      || (aout_info.symbol_map == NULL && max_sym_count != 0)
-      || aout_info.output_syms == NULL)
+  /* Allocate buffers to hold section contents and relocs: */
+  aout_info.contents = (bfd_byte *)bfd_malloc(max_contents_size);
+  aout_info.relocs = bfd_malloc(max_relocs_size);
+  aout_info.symbol_map = (int *)bfd_malloc(max_sym_count * sizeof(int *));
+  aout_info.output_syms = bfd_malloc((max_sym_count + 1)
+                                     * sizeof(struct external_nlist));
+  if (((aout_info.contents == NULL) && (max_contents_size != 0))
+      || ((aout_info.relocs == NULL) && (max_relocs_size != 0))
+      || ((aout_info.symbol_map == NULL) && (max_sym_count != 0))
+      || (aout_info.output_syms == NULL))
     goto error_return;
 
   /* If we have a symbol named __DYNAMIC, force it out now.  This is
@@ -4445,51 +4443,49 @@ aout_link_write_symbols (struct aout_final_link_info *finfo, bfd *input_bfd)
   return TRUE;
 }
 
-/* Write out a symbol that was not associated with an a.out input
-   object.  */
-
+/* Write out a symbol that was unassociated with an a.out input object: */
 static bfd_vma
-bfd_getp32 (const void *p)
+bfd_getp32(const void *p)
 {
-  const bfd_byte *addr = p;
+  const bfd_byte *addr = (const bfd_byte *)p;
   unsigned long v;
 
-  v = (unsigned long) addr[1] << 24;
-  v |= (unsigned long) addr[0] << 16;
-  v |= (unsigned long) addr[3] << 8;
-  v |= (unsigned long) addr[2];
+  v = ((unsigned long)addr[1] << 24);
+  v |= ((unsigned long)addr[0] << 16);
+  v |= ((unsigned long)addr[3] << 8);
+  v |= (unsigned long)addr[2];
   return v;
 }
 
-#define COERCE32(x) (((bfd_signed_vma) (x) ^ 0x80000000) - 0x80000000)
+#define COERCE32(x) (((bfd_signed_vma)(x) ^ 0x80000000) - 0x80000000)
 
 static bfd_signed_vma
-bfd_getp_signed_32 (const void *p)
+bfd_getp_signed_32(const void *p)
 {
-  const bfd_byte *addr = p;
+  const bfd_byte *addr = (const bfd_byte *)p;
   unsigned long v;
 
-  v = (unsigned long) addr[1] << 24;
-  v |= (unsigned long) addr[0] << 16;
-  v |= (unsigned long) addr[3] << 8;
-  v |= (unsigned long) addr[2];
+  v = ((unsigned long)addr[1] << 24);
+  v |= ((unsigned long)addr[0] << 16);
+  v |= ((unsigned long)addr[3] << 8);
+  v |= (unsigned long)addr[2];
   return COERCE32 (v);
 }
 
 static void
-bfd_putp32 (bfd_vma data, void *p)
+bfd_putp32(bfd_vma data, void *p)
 {
-  bfd_byte *addr = p;
+  bfd_byte *addr = (bfd_byte *)p;
 
-  addr[0] = (data >> 16) & 0xff;
-  addr[1] = (data >> 24) & 0xff;
-  addr[2] = (data >> 0) & 0xff;
-  addr[3] = (data >> 8) & 0xff;
+  addr[0] = ((data >> 16) & 0xff);
+  addr[1] = ((data >> 24) & 0xff);
+  addr[2] = ((data >> 0) & 0xff);
+  addr[3] = ((data >> 8) & 0xff);
 }
 
-const bfd_target MY (vec) =
+const bfd_target MY(vec) =
 {
-  TARGETNAME,			/* Name.  */
+  (char *)TARGETNAME,			/* Name.  */
   bfd_target_aout_flavour,
   BFD_ENDIAN_LITTLE,		/* Target byte order (little).  */
   BFD_ENDIAN_LITTLE,		/* Target headers byte order (little).  */

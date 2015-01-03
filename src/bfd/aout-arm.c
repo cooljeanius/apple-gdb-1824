@@ -51,6 +51,21 @@
 
 #define MY_bfd_reloc_type_lookup aoutarm_bfd_reloc_type_lookup
 
+/* aoutx.h requires definitions for BMAGIC and QMAGIC: */
+#ifndef BMAGIC
+# define BMAGIC 0
+#endif /* !BMAGIC */
+#ifndef QMAGIC
+# define QMAGIC 0
+#endif /* !QMAGIC */
+
+/* this needs to go after the usage of the CONCAT* macro mentioned above,
+ * but before any other headers are included, or prototypes for functions
+ * are declared: */
+#if defined(__GNUC__) && (__GNUC__ >= 4)
+ # pragma GCC diagnostic ignored "-Wtraditional"
+#endif /* gcc 4+ */
+
 #include "libaout.h"
 #include "aout/aout64.h"
 
@@ -519,5 +534,7 @@ const bfd_target aout_arm_big_vec =
 
   & aout_arm_little_vec,
 
-  (void *) MY_backend_data,
+  (void *)MY_backend_data,
 };
+
+/* EOF */

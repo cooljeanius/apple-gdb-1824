@@ -15,7 +15,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #define N_HEADER_IN_TEXT(x) 0
 #define ENTRY_CAN_BE_ZERO
@@ -25,12 +25,19 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #define SEGMENT_SIZE TARGET_PAGE_SIZE
 #define DEFAULT_ARCH bfd_arch_vax
 
-/* Do not "beautify" the CONCAT* macro args.  Traditional C will not   
-   remove whitespace added here, and thus will fail to concatenate the 
+/* Do not "beautify" the CONCAT* macro args.  Traditional C will not
+   remove whitespace added here, and thus will fail to concatenate the
    tokens.  */
 #define MY(OP) CONCAT2 (vaxbsd_,OP)
 
 #define TARGETNAME "a.out-vax-bsd"
+
+/* this needs to go after the usage of the CONCAT* macro mentioned above,
+ * but before any other headers are included, or prototypes for functions
+ * are declared: */
+#if defined(__GNUC__) && (__GNUC__ >= 4)
+ # pragma GCC diagnostic ignored "-Wtraditional"
+#endif /* gcc 4+ */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -38,3 +45,5 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #include "libaout.h"
 
 #include "aout-target.h"
+
+/* EOF */

@@ -96,7 +96,9 @@ coff_i960_is_local_label_name (abfd, name)
   }
 #endif
 
-#define CALLS	 0x66003800	/* Template for 'calls' instruction	*/
+#ifndef CALLS
+# define CALLS	 0x66003800	/* Template for 'calls' instruction	*/
+#endif /* !CALLS */
 #define BAL	 0x0b000000	/* Template for 'bal' instruction	*/
 #define BAL_MASK 0x00ffffff
 
@@ -481,11 +483,11 @@ coff_i960_relocate_section (output_bfd, info, input_bfd, input_section,
 	      /* This symbol is apparently not from a COFF input file.
                  We warn, and then assume that it is not a leaf
                  function.  */
-	      if (! ((*info->callbacks->reloc_dangerous)
-		     (info,
-		      _("uncertain calling convention for non-COFF symbol"),
-		      input_bfd, input_section,
-		      rel->r_vaddr - input_section->vma)))
+	      if (!((*info->callbacks->reloc_dangerous)
+                    (info,
+                     _("uncertain calling convention for non-COFF symbol"),
+                     input_bfd, input_section,
+                     (rel->r_vaddr - input_section->vma))))
 		return FALSE;
 	      break;
 	    case C_LEAFSTAT:
@@ -498,7 +500,7 @@ coff_i960_relocate_section (output_bfd, info, input_bfd, input_section,
 
 		if (h != NULL)
 		  {
-		    BFD_ASSERT (h->numaux == 2);
+		    BFD_ASSERT(h->numaux == 2);
 		    olf = h->aux[1].x_bal.x_balntry;
 		  }
 		else
@@ -506,28 +508,30 @@ coff_i960_relocate_section (output_bfd, info, input_bfd, input_section,
 		    bfd_byte *esyms;
 		    union internal_auxent aux;
 
-		    BFD_ASSERT (sym->n_numaux == 2);
-		    esyms = (bfd_byte *) obj_coff_external_syms (input_bfd);
-		    esyms += (symndx + 2) * bfd_coff_symesz (input_bfd);
-		    bfd_coff_swap_aux_in (input_bfd, (PTR) esyms, sym->n_type,
-					  sym->n_sclass, 1, sym->n_numaux,
-					  (PTR) &aux);
+		    BFD_ASSERT(sym->n_numaux == 2);
+		    esyms = (bfd_byte *)obj_coff_external_syms(input_bfd);
+		    esyms += (symndx + 2) * bfd_coff_symesz(input_bfd);
+		    bfd_coff_swap_aux_in(input_bfd, (PTR)esyms,
+                                         sym->n_type, sym->n_sclass, 1,
+                                         sym->n_numaux, (PTR)&aux);
 		    olf = aux.x_bal.x_balntry;
 		  }
 
-		word = bfd_get_32 (input_bfd,
-				   (contents
-				    + (rel->r_vaddr - input_section->vma)));
-		word = ((word + olf - val) & BAL_MASK) | BAL;
-		bfd_put_32 (input_bfd,
-			    (bfd_vma) word,
-			    contents + (rel->r_vaddr - input_section->vma));
+		word = bfd_get_32(input_bfd,
+                                  (contents
+                                   + (rel->r_vaddr - input_section->vma)));
+		word = (((word + olf - val) & BAL_MASK) | BAL);
+		bfd_put_32(input_bfd,
+                           (bfd_vma)word,
+                           contents + (rel->r_vaddr - input_section->vma));
 		done = TRUE;
 	      }
 	      break;
 	    case C_SCALL:
-	      BFD_ASSERT (0);
+	      BFD_ASSERT(0);
 	      break;
+            default:
+              break;
 	    }
 	}
 
@@ -535,16 +539,16 @@ coff_i960_relocate_section (output_bfd, info, input_bfd, input_section,
 	{
 	  if (howto->pc_relative)
 	    addend += input_section->vma;
-	  rstat = _bfd_final_link_relocate (howto, input_bfd, input_section,
-					    contents,
-					    rel->r_vaddr - input_section->vma,
-					    val, addend);
+	  rstat = _bfd_final_link_relocate(howto, input_bfd, input_section,
+                                           contents,
+                                           (rel->r_vaddr - input_section->vma),
+                                           val, addend);
 	}
 
       switch (rstat)
 	{
 	default:
-	  abort ();
+	  abort();
 	case bfd_reloc_ok:
 	  break;
 	case bfd_reloc_overflow:
@@ -558,15 +562,15 @@ coff_i960_relocate_section (output_bfd, info, input_bfd, input_section,
 	      name = NULL;
 	    else
 	      {
-		name = _bfd_coff_internal_syment_name (input_bfd, sym, buf);
+		name = _bfd_coff_internal_syment_name(input_bfd, sym, buf);
 		if (name == NULL)
 		  return FALSE;
 	      }
 
-	    if (! ((*info->callbacks->reloc_overflow)
-		   (info, (h ? &h->root : NULL), name, howto->name,
-		    (bfd_vma) 0, input_bfd, input_section,
-		    rel->r_vaddr - input_section->vma)))
+	    if (!((*info->callbacks->reloc_overflow)
+                  (info, (h ? &h->root : NULL), name, howto->name,
+                   (bfd_vma)0, input_bfd, input_section,
+                   (rel->r_vaddr - input_section->vma))))
 	      return FALSE;
 	  }
 	}
@@ -576,9 +580,8 @@ coff_i960_relocate_section (output_bfd, info, input_bfd, input_section,
 }
 
 /* Adjust the symbol index of any reloc against a global symbol to
-   instead be a reloc against the internal symbol we created specially
-   for the section.  */
-
+ * instead be a reloc against the internal symbol we created specially
+ * for the section.  */
 static bfd_boolean
 coff_i960_adjust_symndx (obfd, info, ibfd, sec, irel, adjustedp)
      bfd *obfd ATTRIBUTE_UNUSED;
@@ -664,3 +667,9 @@ bfd_getb64, bfd_getb_signed_64, bfd_putb64,
 
   COFF_SWAP_TABLE
 };
+
+#ifdef CALLS
+# undef CALLS
+#endif /* CALLS */
+
+/* EOF */

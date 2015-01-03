@@ -1308,11 +1308,11 @@ mmix_elf_reloc (abfd, reloc_entry, symbol, data, input_section,
       return flag;
     }
 
-  return mmix_final_link_relocate (reloc_entry->howto, input_section,
-				   data, reloc_entry->address,
-				   reloc_entry->addend, relocation,
-				   bfd_asymbol_name (symbol),
-				   reloc_target_output_section);
+  return mmix_final_link_relocate(reloc_entry->howto, input_section,
+                                  data, reloc_entry->address,
+                                  reloc_entry->addend, relocation,
+                                  bfd_asymbol_name(symbol),
+                                  reloc_target_output_section);
 }
 
 /* Relocate an MMIX ELF section.  Modified from elf32-fr30.c; look to it

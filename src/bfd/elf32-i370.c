@@ -701,8 +701,8 @@ i370_elf_size_dynamic_sections (bfd *output_bfd,
       if ((s->flags & SEC_HAS_CONTENTS) == 0)
 	continue;
 
-      /* Allocate memory for the section contents.  */
-      s->contents = bfd_zalloc (dynobj, s->size);
+      /* Allocate memory for the section contents: */
+      s->contents = (unsigned char *)bfd_zalloc(dynobj, s->size);
       if (s->contents == NULL)
 	return FALSE;
     }

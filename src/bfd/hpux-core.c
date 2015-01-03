@@ -117,13 +117,9 @@ static void swap_abort
   PARAMS ((void));
 
 static asection *
-make_bfd_asection (abfd, name, flags, size, vma, alignment_power)
-     bfd *abfd;
-     const char *name;
-     flagword flags;
-     bfd_size_type size;
-     bfd_vma vma;
-     unsigned int alignment_power;
+make_bfd_asection(bfd *abfd, const char *name, flagword flags,
+                  bfd_size_type size, bfd_vma vma,
+                  unsigned int alignment_power)
 {
   asection *asect;
   char *newname;
@@ -132,9 +128,9 @@ make_bfd_asection (abfd, name, flags, size, vma, alignment_power)
   if (!newname)
     return NULL;
 
-  strcpy (newname, name);
+  strcpy(newname, name);
 
-  asect = bfd_make_section_anyway (abfd, newname);
+  asect = bfd_make_section_anyway(abfd, newname);
   if (!asect)
     return NULL;
 
@@ -168,23 +164,22 @@ thread_section_p (bfd *abfd ATTRIBUTE_UNUSED,
    (I am just guessing here!)
 */
 static const bfd_target *
-hpux_core_core_file_p (abfd)
-     bfd *abfd;
+hpux_core_core_file_p(bfd *abfd)
 {
-  int  good_sections = 0;
-  int  unknown_sections = 0;
+  int good_sections = 0;
+  int unknown_sections = 0;
 
-  core_hdr (abfd) = (struct hpux_core_struct *)
-    bfd_zalloc (abfd, (bfd_size_type) sizeof (struct hpux_core_struct));
-  if (!core_hdr (abfd))
+  core_hdr(abfd) = (struct hpux_core_struct *)
+    bfd_zalloc(abfd, (bfd_size_type)sizeof(struct hpux_core_struct));
+  if (!core_hdr(abfd))
     return NULL;
 
   while (1) {
       int val;
       struct corehead core_header;
 
-      val = bfd_bread ((void *) &core_header,
-		      (bfd_size_type) sizeof core_header, abfd);
+      val = bfd_bread((void *)&core_header,
+                      (bfd_size_type)sizeof(core_header), abfd);
       if (val <= 0)
 	break;
       switch (core_header.type)
@@ -360,32 +355,30 @@ hpux_core_core_file_p (abfd)
 }
 
 static char *
-hpux_core_core_file_failing_command (abfd)
-     bfd *abfd;
+hpux_core_core_file_failing_command(bfd *abfd)
 {
-  return core_command (abfd);
+  return core_command(abfd);
 }
 
 static int
-hpux_core_core_file_failing_signal (abfd)
-     bfd *abfd;
+hpux_core_core_file_failing_signal(bfd *abfd)
 {
-  return core_signal (abfd);
+  return core_signal(abfd);
 }
 
 static bfd_boolean
-hpux_core_core_file_matches_executable_p (core_bfd, exec_bfd)
-     bfd *core_bfd ATTRIBUTE_UNUSED;
-     bfd *exec_bfd ATTRIBUTE_UNUSED;
+hpux_core_core_file_matches_executable_p(bfd *core_bfd ATTRIBUTE_UNUSED,
+                                         bfd *exec_bfd ATTRIBUTE_UNUSED)
 {
-  return TRUE;			/* FIXME, We have no way of telling at this point */
+  return TRUE;	 /* FIXME, We have no way of telling at this point */
 }
 
-/* If somebody calls any byte-swapping routines, shoot them.  */
+/* If somebody calls any byte-swapping routines, then shoot them: */
 static void
-swap_abort ()
+swap_abort(void)
 {
-  abort(); /* This way doesn't require any declaration for ANSI to fuck up */
+  /* This way does NOT require any declaration for ANSI to mess up (?): */
+  abort();
 }
 
 #define	NO_GET ((bfd_vma (*) (const void *)) swap_abort)

@@ -358,73 +358,84 @@ process_otr (bfd *abfd, struct ext_otr *otr, int pass)
 {
   unsigned long shift;
   unsigned char *srcp = otr->data;
-  unsigned char *endp = (unsigned char *) otr + otr->size;
-  unsigned int bits = (otr->map[0] << 24)
-  | (otr->map[1] << 16)
-  | (otr->map[2] << 8)
-  | (otr->map[3] << 0);
+  unsigned char *endp = ((unsigned char *)otr + otr->size);
+  unsigned int bits = ((otr->map[0] << 24)
+                       | (otr->map[1] << 16)
+                       | (otr->map[2] << 8)
+                       | (otr->map[3] << 0));
 
-  struct esdid *esdid = &EDATA (abfd, otr->esdid - 1);
+  struct esdid *esdid = &EDATA(abfd, otr->esdid - 1);
   unsigned char *contents = esdid->contents;
   int need_contents = 0;
   unsigned int dst_idx = esdid->pc;
 
-  for (shift = ((unsigned long) 1 << 31); shift && srcp < endp; shift >>= 1)
+  for (shift = ((unsigned long)1UL << 31); shift && (srcp < endp); shift >>= 1)
     {
       if (bits & shift)
 	{
 	  int flag = *srcp++;
-	  int esdids = (flag >> 5) & 0x7;
-	  int sizeinwords = ((flag >> 3) & 1) ? 2 : 1;
-	  int offsetlen = flag & 0x7;
+	  int esdids = ((flag >> 5) & 0x7);
+	  int sizeinwords = (((flag >> 3) & 1) ? 2 : 1);
+	  int offsetlen = (flag & 0x7);
 	  int j;
 
 	  if (esdids == 0)
 	    {
-	      /* A zero esdid means the new pc is the offset given.  */
-	      dst_idx += get_offset (offsetlen, srcp);
+	      /* A zero esdid means the new pc is the offset given: */
+	      dst_idx += get_offset(offsetlen, srcp);
 	      srcp += offsetlen;
 	    }
 	  else
 	    {
-	      int val = get_offset (offsetlen, srcp + esdids);
+	      int val = get_offset(offsetlen, srcp + esdids);
+              int need_a_reloc = 0;
 
 	      if (pass == 1)
 		need_contents = 1;
 	      else
-		for (j = 0; j < sizeinwords * 2; j++)
-		  {
-		    contents[dst_idx + (sizeinwords * 2) - j - 1] = val;
-		    val >>= 8;
-		  }
+                {
+                  for (j = 0; j < sizeinwords * 2; j++)
+                    {
+                      contents[dst_idx + (sizeinwords * 2) - j - 1] = val;
+                      val >>= 8;
+                    }
+                }
 
 	      for (j = 0; j < esdids; j++)
 		{
-		  int esdid = *srcp++;
+		  int esdid_num = *srcp++;
 
-		  if (esdid)
+		  if (esdid_num)
 		    {
-		      int rn = EDATA (abfd, otr->esdid - 1).relocs++;
+		      int rn = EDATA(abfd, (otr->esdid - 1)).relocs++;
 
 		      if (pass == 1)
 			{
-			  /* This is the first pass over the data,
-			     just remember that we need a reloc.  */
+			  /* This is the first pass over the data;
+			   * just remember that we need a reloc.  */
+                          if (need_a_reloc < 1) {
+                            need_a_reloc = 1;
+                          }
 			}
 		      else
 			{
 			  arelent *n =
-			  EDATA (abfd, otr->esdid - 1).section->relocation + rn;
+			    (EDATA(abfd, otr->esdid - 1).section->relocation + rn);
 			  n->address = dst_idx;
 
-			  n->sym_ptr_ptr = (asymbol **) (size_t) esdid;
+                          /* wondering about this double-cast... should
+                           * this be the previously-shadowed esdid variable
+                           * instead? */
+			  n->sym_ptr_ptr = (asymbol **)(size_t)esdid_num;
 			  n->addend = 0;
-			  n->howto = versados_howto_table + ((j & 1) * 2) + (sizeinwords - 1);
+			  n->howto = (versados_howto_table + ((j & 1) * 2)
+                                      + (sizeinwords - 1));
 			}
 		    }
 		}
+              /* loop on 'j' is over now */
 	      srcp += offsetlen;
-	      dst_idx += sizeinwords * 2;
+	      dst_idx += (sizeinwords * 2);
 	    }
 	}
       else
@@ -433,7 +444,7 @@ process_otr (bfd *abfd, struct ext_otr *otr, int pass)
 	  if (dst_idx < esdid->section->size)
 	    if (pass == 2)
 	      {
-		/* Absolute code, comes in 16 bit lumps.  */
+		/* Absolute code, comes in 16 bit lumps: */
 		contents[dst_idx] = srcp[0];
 		contents[dst_idx + 1] = srcp[1];
 	      }
@@ -446,12 +457,12 @@ process_otr (bfd *abfd, struct ext_otr *otr, int pass)
   if (!contents && need_contents)
     {
       bfd_size_type size = esdid->section->size;
-      esdid->contents = bfd_alloc (abfd, size);
+      esdid->contents = (unsigned char *)bfd_alloc(abfd, size);
     }
 }
 
 static bfd_boolean
-versados_scan (bfd *abfd)
+versados_scan(bfd *abfd)
 {
   int loop = 1;
   int i;
@@ -459,18 +470,18 @@ versados_scan (bfd *abfd)
   int nsecs = 0;
   bfd_size_type amt;
 
-  VDATA (abfd)->stringlen = 0;
-  VDATA (abfd)->nrefs = 0;
-  VDATA (abfd)->ndefs = 0;
-  VDATA (abfd)->ref_idx = 0;
-  VDATA (abfd)->def_idx = 0;
-  VDATA (abfd)->pass_2_done = 0;
+  VDATA(abfd)->stringlen = 0;
+  VDATA(abfd)->nrefs = 0;
+  VDATA(abfd)->ndefs = 0;
+  VDATA(abfd)->ref_idx = 0;
+  VDATA(abfd)->def_idx = 0;
+  VDATA(abfd)->pass_2_done = 0;
 
   while (loop)
     {
       union ext_any any;
 
-      if (!get_record (abfd, &any))
+      if (!get_record(abfd, &any))
 	return TRUE;
       switch (any.header.type)
 	{
@@ -480,30 +491,32 @@ versados_scan (bfd *abfd)
 	  loop = 0;
 	  break;
 	case VESTDEF:
-	  process_esd (abfd, &any.esd, 1);
+	  process_esd(abfd, &any.esd, 1);
 	  break;
 	case VOTR:
-	  process_otr (abfd, &any.otr, 1);
+	  process_otr(abfd, &any.otr, 1);
 	  break;
+        default:
+          break;
 	}
     }
 
-  /* Now allocate space for the relocs and sections.  */
-  VDATA (abfd)->nrefs = VDATA (abfd)->ref_idx;
-  VDATA (abfd)->ndefs = VDATA (abfd)->def_idx;
-  VDATA (abfd)->ref_idx = 0;
-  VDATA (abfd)->def_idx = 0;
+  /* Now allocate space for the relocs and sections: */
+  VDATA(abfd)->nrefs = VDATA(abfd)->ref_idx;
+  VDATA(abfd)->ndefs = VDATA(abfd)->def_idx;
+  VDATA(abfd)->ref_idx = 0;
+  VDATA(abfd)->def_idx = 0;
 
-  abfd->symcount = VDATA (abfd)->nrefs + VDATA (abfd)->ndefs;
+  abfd->symcount = (VDATA(abfd)->nrefs + VDATA(abfd)->ndefs);
 
   for (i = 0; i < 16; i++)
     {
-      struct esdid *esdid = &EDATA (abfd, i);
+      struct esdid *esdid = &EDATA(abfd, i);
 
       if (esdid->section)
 	{
-	  amt = (bfd_size_type) esdid->relocs * sizeof (arelent);
-	  esdid->section->relocation = bfd_alloc (abfd, amt);
+	  amt = ((bfd_size_type)esdid->relocs * sizeof(arelent));
+	  esdid->section->relocation = (struct reloc_cache_entry *)bfd_alloc(abfd, amt);
 
 	  esdid->pc = 0;
 
@@ -525,14 +538,14 @@ versados_scan (bfd *abfd)
   abfd->symcount += nsecs;
 
   amt = abfd->symcount;
-  amt *= sizeof (asymbol);
-  VDATA (abfd)->symbols = bfd_alloc (abfd, amt);
+  amt *= sizeof(asymbol);
+  VDATA(abfd)->symbols = (asymbol *)bfd_alloc(abfd, amt);
 
-  amt = VDATA (abfd)->stringlen;
-  VDATA (abfd)->strings = bfd_alloc (abfd, amt);
+  amt = VDATA(abfd)->stringlen;
+  VDATA(abfd)->strings = (char *)bfd_alloc(abfd, amt);
 
-  if ((VDATA (abfd)->symbols == NULL && abfd->symcount > 0)
-      || (VDATA (abfd)->strings == NULL && VDATA (abfd)->stringlen > 0))
+  if (((VDATA(abfd)->symbols == NULL) && (abfd->symcount > 0))
+      || ((VDATA(abfd)->strings == NULL) && (VDATA(abfd)->stringlen > 0)))
     return FALSE;
 
   /* Actually fill in the section symbols,
@@ -624,23 +637,25 @@ versados_pass_2 (bfd *abfd)
   if (bfd_seek (abfd, (file_ptr) 0, SEEK_SET) != 0)
     return 0;
 
-  VDATA (abfd)->es_done = ES_BASE;
+  VDATA(abfd)->es_done = ES_BASE;
 
-  /* Read records till we get to where we want to be.  */
+  /* Read records until we get to where we want to be: */
   while (1)
     {
       get_record (abfd, &any);
       switch (any.header.type)
 	{
 	case VEND:
-	  VDATA (abfd)->pass_2_done = 1;
+	  VDATA(abfd)->pass_2_done = 1;
 	  return 1;
 	case VESTDEF:
-	  process_esd (abfd, &any.esd, 2);
+	  process_esd(abfd, &any.esd, 2);
 	  break;
 	case VOTR:
-	  process_otr (abfd, &any.otr, 2);
+	  process_otr(abfd, &any.otr, 2);
 	  break;
+        default:
+          break;
 	}
     }
 }
@@ -819,7 +834,7 @@ versados_canonicalize_reloc (bfd *abfd,
 
 const bfd_target versados_vec =
 {
-  "versados",			/* Name.  */
+  (char *)"versados",			/* Name.  */
   bfd_target_versados_flavour,
   BFD_ENDIAN_BIG,		/* Target byte order.  */
   BFD_ENDIAN_BIG,		/* Target headers byte order.  */

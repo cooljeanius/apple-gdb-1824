@@ -27,14 +27,14 @@
 
 #define USE_REL	1	/* CR16C uses REL relocations instead of RELA.  */
 
-/* The following definition is based on EMPTY_HOWTO macro, 
+/* The following definition is based on EMPTY_HOWTO macro,
    but also initiates the "name" field in HOWTO struct.  */
 #define ONLY_NAME_HOWTO(C) \
   HOWTO ((C), 0, 0, 0, FALSE, 0, complain_overflow_dont, NULL, \
 	  STRINGX(C), FALSE, 0, 0, FALSE)
 
 /* reloc_map_index array maps CRASM relocation type into a BFD
-   relocation enum. The array's indices are synchronized with 
+   relocation enum. The array's indices are synchronized with
    RINDEX_16C_* indices, created in include/elf/cr16c.h.
    The array is used in:
    1. elf32-cr16c.c : elf_cr16c_reloc_type_lookup().
@@ -876,13 +876,12 @@ elf32_cr16c_section_from_bfd_section (bfd *abfd ATTRIBUTE_UNUSED,
   return TRUE;
 }
 
-/* Handle the special CR16C section numbers that a symbol may use.  */
-
+/* Handle the special CR16C section numbers that a symbol may use: */
 static void
-elf32_cr16c_symbol_processing (bfd *abfd ATTRIBUTE_UNUSED,
-			       asymbol *asym)
+elf32_cr16c_symbol_processing(bfd *abfd ATTRIBUTE_UNUSED,
+                              asymbol *asym)
 {
-  elf_symbol_type *elfsym = (elf_symbol_type *) asym;
+  elf_symbol_type *elfsym = (elf_symbol_type *)asym;
   unsigned int indx;
 
   indx = elfsym->internal_elf_sym.st_shndx;
@@ -923,6 +922,8 @@ elf32_cr16c_symbol_processing (bfd *abfd ATTRIBUTE_UNUSED,
       asym->section = &cr16c_elf_ncom_section;
       asym->value = elfsym->internal_elf_sym.st_size;
       break;
+    default:
+      break;
     }
 }
 
@@ -943,14 +944,16 @@ elf32_cr16c_add_symbol_hook (bfd *abfd,
   switch (indx)
     {
     case SHN_CR16C_FCOMMON:
-      *secp = bfd_make_section_old_way (abfd, ".fcommon");
+      *secp = bfd_make_section_old_way(abfd, ".fcommon");
       (*secp)->flags |= SEC_IS_COMMON;
       *valp = sym->st_size;
       break;
     case SHN_CR16C_NCOMMON:
-      *secp = bfd_make_section_old_way (abfd, ".ncommon");
+      *secp = bfd_make_section_old_way(abfd, ".ncommon");
       (*secp)->flags |= SEC_IS_COMMON;
       *valp = sym->st_size;
+      break;
+    default:
       break;
     }
 

@@ -1,4 +1,4 @@
-/* Main header file for the bfd library -- portable access to object files.
+/* bfd.h: Main header for the bfd library: portable access to object files.
 
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998,
    1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
@@ -19,24 +19,24 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #ifndef __BFD_H_SEEN__
 #define __BFD_H_SEEN__
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 #include "ansidecl.h"
 #include "symcat.h"
-#if defined (__STDC__) || defined (ALMOST_STDC) || defined (HAVE_STRINGIZE)
+#if defined(__STDC__) || defined(ALMOST_STDC) || defined(HAVE_STRINGIZE)
 #ifndef SABER
 /* This hack is to avoid a problem with some strict ANSI C preprocessors.
-   The problem is, "32_" is not a valid preprocessing token, and we don't
-   want extra underscores (e.g., "nlm_32_").  The XCONCAT2 macro will
-   cause the inner CONCAT2 macros to be evaluated first, producing
-   still-valid pp-tokens.  Then the final concatenation can be done.  */
+ * The problem is, "32_" is not a valid preprocessing token, and we do NOT
+ * want extra underscores (e.g., "nlm_32_").  The XCONCAT2 macro will
+ * cause the inner CONCAT2 macros to be evaluated first, producing
+ * still-valid pp-tokens.  Then the final concatenation can be done.  */
 #undef CONCAT4
 #define CONCAT4(a,b,c,d) XCONCAT2(CONCAT2(a,b),CONCAT2(c,d))
 #endif
@@ -55,7 +55,7 @@ extern "C" {
    problem for example when trying to use STRING_COMMA_LEN to build
    the arguments to the strncmp() macro.  Hence this alternative
    definition of strncmp is provided here.
-   
+
    Note - these macros do NOT work if STR2 is not a constant string.  */
 #define CONST_STRNEQ(STR1,STR2) (strncmp ((STR1), (STR2), sizeof (STR2) - 1) == 0)
   /* strcpy() can have a similar problem, but since we know we are
@@ -931,3 +931,4 @@ struct coff_comdat_info
 extern struct coff_comdat_info *bfd_coff_get_comdat_section
   (bfd *, struct bfd_section *);
 
+/* End of bfd-in.h */

@@ -43,13 +43,18 @@
 
 /* Set by external programs - specifies the BFD architecture and
    machine number to be uses when creating binary BFDs.  */
-enum bfd_architecture  bfd_external_binary_architecture = bfd_arch_unknown;
-unsigned long          bfd_external_machine = 0;
+#ifdef __clang__
+extern enum bfd_architecture bfd_external_binary_architecture;
+#endif /* __clang__ */
+enum bfd_architecture bfd_external_binary_architecture = bfd_arch_unknown;
+#ifdef __clang__
+extern unsigned long bfd_external_machine;
+#endif /* __clang__ */
+unsigned long bfd_external_machine = 0UL;
 
-/* Create a binary object.  Invoked via bfd_set_format.  */
-
+/* Create a binary object.  Invoked via bfd_set_format: */
 static bfd_boolean
-binary_mkobject (bfd *abfd ATTRIBUTE_UNUSED)
+binary_mkobject(bfd *abfd ATTRIBUTE_UNUSED)
 {
   return TRUE;
 }
@@ -59,33 +64,33 @@ binary_mkobject (bfd *abfd ATTRIBUTE_UNUSED)
    being binary.  */
 
 static const bfd_target *
-binary_object_p (bfd *abfd)
+binary_object_p(bfd *abfd)
 {
   struct stat statbuf;
   asection *sec;
 
   if (abfd->target_defaulted)
     {
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
       return NULL;
     }
 
   abfd->symcount = BIN_SYMS;
 
-  /* Find the file size.  */
-  if (bfd_stat (abfd, &statbuf) < 0)
+  /* Find the file size: */
+  if (bfd_stat(abfd, &statbuf) < 0)
     {
-      bfd_set_error (bfd_error_system_call);
+      bfd_set_error(bfd_error_system_call);
       return NULL;
     }
 
-  /* One data section.  */
-  sec = bfd_make_section (abfd, ".data");
+  /* One data section: */
+  sec = bfd_make_section(abfd, ".data");
   if (sec == NULL)
     return NULL;
-  sec->flags = SEC_ALLOC | SEC_LOAD | SEC_DATA | SEC_HAS_CONTENTS;
+  sec->flags = (SEC_ALLOC | SEC_LOAD | SEC_DATA | SEC_HAS_CONTENTS);
   sec->vma = 0;
-  sec->size = statbuf.st_size;
+  sec->size = (bfd_size_type)statbuf.st_size;
   sec->filepos = 0;
 
   abfd->tdata.any = (void *) sec;
@@ -255,7 +260,7 @@ binary_set_section_contents (bfd *abfd,
 	      & (SEC_HAS_CONTENTS | SEC_LOAD | SEC_ALLOC | SEC_NEVER_LOAD))
 	     == (SEC_HAS_CONTENTS | SEC_LOAD | SEC_ALLOC))
 	    && (s->size > 0)
-	    && (! found_low || s->lma < low))
+	    && (! found_low || (s->lma < low)))
 	  {
 	    low = s->lma;
 	    found_low = TRUE;
@@ -263,14 +268,14 @@ binary_set_section_contents (bfd *abfd,
 
       for (s = abfd->sections; s != NULL; s = s->next)
 	{
-	  s->filepos = s->lma - low;
+	  s->filepos = (file_ptr)(s->lma - low);
 
 	  /* Skip following warning check for sections that will not
-	     occupy file space.  */
-	  if ((s->flags
-	       & (SEC_HAS_CONTENTS | SEC_ALLOC | SEC_NEVER_LOAD))
-	      != (SEC_HAS_CONTENTS | SEC_ALLOC)
-	      || (s->size == 0))
+	   * occupy file space: */
+	  if (((s->flags
+                & (SEC_HAS_CONTENTS | SEC_ALLOC | SEC_NEVER_LOAD))
+               != (SEC_HAS_CONTENTS | SEC_ALLOC))
+              || (s->size == 0))
 	    continue;
 
 	  /* If attempting to generate a binary file from a bfd with
@@ -300,33 +305,35 @@ binary_set_section_contents (bfd *abfd,
   return _bfd_generic_set_section_contents (abfd, sec, data, offset, size);
 }
 
-/* No space is required for header information.  */
-
+/* No space is required for header information: */
 static int
-binary_sizeof_headers (bfd *abfd ATTRIBUTE_UNUSED,
-		       bfd_boolean exec ATTRIBUTE_UNUSED)
+binary_sizeof_headers(bfd *abfd ATTRIBUTE_UNUSED,
+                      bfd_boolean exec ATTRIBUTE_UNUSED)
 {
   return 0;
 }
 
-#define binary_bfd_get_relocated_section_contents  bfd_generic_get_relocated_section_contents
-#define binary_bfd_relax_section                   bfd_generic_relax_section
-#define binary_bfd_gc_sections                     bfd_generic_gc_sections
-#define binary_bfd_merge_sections                  bfd_generic_merge_sections
-#define binary_bfd_is_group_section                bfd_generic_is_group_section
-#define binary_bfd_discard_group                   bfd_generic_discard_group
-#define binary_section_already_linked             _bfd_generic_section_already_linked
-#define binary_bfd_link_hash_table_create         _bfd_generic_link_hash_table_create
-#define binary_bfd_link_hash_table_free           _bfd_generic_link_hash_table_free
-#define binary_bfd_link_just_syms                 _bfd_generic_link_just_syms
-#define binary_bfd_link_add_symbols               _bfd_generic_link_add_symbols
-#define binary_bfd_final_link                     _bfd_generic_final_link
-#define binary_bfd_link_split_section             _bfd_generic_link_split_section
-#define binary_get_section_contents_in_window     _bfd_generic_get_section_contents_in_window
+#define binary_bfd_get_relocated_section_contents bfd_generic_get_relocated_section_contents
+#define binary_bfd_relax_section bfd_generic_relax_section
+#define binary_bfd_gc_sections bfd_generic_gc_sections
+#define binary_bfd_merge_sections bfd_generic_merge_sections
+#define binary_bfd_is_group_section bfd_generic_is_group_section
+#define binary_bfd_discard_group bfd_generic_discard_group
+#define binary_section_already_linked _bfd_generic_section_already_linked
+#define binary_bfd_link_hash_table_create _bfd_generic_link_hash_table_create
+#define binary_bfd_link_hash_table_free _bfd_generic_link_hash_table_free
+#define binary_bfd_link_just_syms _bfd_generic_link_just_syms
+#define binary_bfd_link_add_symbols _bfd_generic_link_add_symbols
+#define binary_bfd_final_link _bfd_generic_final_link
+#define binary_bfd_link_split_section _bfd_generic_link_split_section
+#define binary_get_section_contents_in_window _bfd_generic_get_section_contents_in_window
 /* APPLE LOCAL bfd */
 #define binary_get_section_contents_in_window_with_mode \
   _bfd_generic_get_section_contents_in_window_with_mode
 
+#ifdef __clang__
+extern const bfd_target binary_vec;
+#endif /* __clang__ */
 const bfd_target binary_vec =
 {
   "binary",			/* name */
@@ -378,3 +385,5 @@ const bfd_target binary_vec =
 
   NULL
 };
+
+/* EOF */

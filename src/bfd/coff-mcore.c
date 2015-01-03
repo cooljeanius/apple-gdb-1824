@@ -64,7 +64,7 @@ static bfd_boolean in_reloc_p PARAMS ((bfd *, reloc_howto_type *));
 /* The main body of code is in coffcode.h.  */
 #define COFF_DEFAULT_SECTION_ALIGNMENT_POWER 2
 
-/* In case we're on a 32-bit machine, construct a 64-bit "-1" value
+/* In case we are on a 32-bit machine, construct a 64-bit "-1" value
    from smaller values.  Start with zero, widen, *then* decrement.  */
 #define MINUS_ONE	(((bfd_vma)0) - 1)
 
@@ -219,65 +219,56 @@ mcore_hash_table;
   ((mcore_hash_table *) ((info)->hash))
 
 
-/* Add an entry to the base file.  */
-
+/* Add an entry to the base file: */
 static void
-mcore_emit_base_file_entry (info, output_bfd, input_section, reloc_offset)
-      struct bfd_link_info * info;
-      bfd *                  output_bfd;
-      asection *             input_section;
-      bfd_vma                reloc_offset;
+mcore_emit_base_file_entry(struct bfd_link_info *info, bfd *output_bfd,
+                           asection *input_section, bfd_vma reloc_offset)
 {
-  bfd_vma addr = reloc_offset
-                 - input_section->vma
-                 + input_section->output_offset
-                 + input_section->output_section->vma;
+  bfd_vma addr = (reloc_offset - input_section->vma
+                  + input_section->output_offset
+                  + input_section->output_section->vma);
 
-  if (coff_data (output_bfd)->pe)
-     addr -= pe_data (output_bfd)->pe_opthdr.ImageBase;
+  if (coff_data(output_bfd)->pe) {
+     addr -= pe_data(output_bfd)->pe_opthdr.ImageBase;
+  }
 
-  fwrite (&addr, 1, sizeof (addr), (FILE *) info->base_file);
+  fwrite(&addr, 1, sizeof(addr), (FILE *)info->base_file);
 }
 
 static bfd_reloc_status_type
-mcore_coff_unsupported_reloc (abfd, reloc_entry, symbol, data, input_section,
-			   output_bfd, error_message)
-     bfd * abfd;
-     arelent * reloc_entry;
-     asymbol * symbol ATTRIBUTE_UNUSED;
-     PTR data ATTRIBUTE_UNUSED;
-     asection * input_section ATTRIBUTE_UNUSED;
-     bfd * output_bfd ATTRIBUTE_UNUSED;
-     char ** error_message ATTRIBUTE_UNUSED;
+mcore_coff_unsupported_reloc(bfd *abfd, arelent *reloc_entry,
+                             asymbol *symbol ATTRIBUTE_UNUSED,
+                             PTR data ATTRIBUTE_UNUSED,
+                             asection *input_section ATTRIBUTE_UNUSED,
+                             bfd *output_bfd ATTRIBUTE_UNUSED,
+                             char **error_message ATTRIBUTE_UNUSED)
 {
-  BFD_ASSERT (reloc_entry->howto != (reloc_howto_type *)0);
+  BFD_ASSERT(reloc_entry->howto != (reloc_howto_type *)0);
 
-  _bfd_error_handler (_("%B: Relocation %s (%d) is not currently supported.\n"),
-		      abfd,
-		      reloc_entry->howto->name,
-		      reloc_entry->howto->type);
+  _bfd_error_handler(_("%B: Relocation %s (%d) is not currently supported.\n"),
+                     abfd, reloc_entry->howto->name,
+                     reloc_entry->howto->type);
 
   return bfd_reloc_notsupported;
 }
 
-/* A cheesy little macro to make the code a little more readable.  */
+/* A cheesy little macro to make the code a little more readable: */
 #define HOW2MAP(bfd_rtype, mcore_rtype)  \
- case bfd_rtype: return & mcore_coff_howto_table [mcore_rtype]
+ case bfd_rtype: return & mcore_coff_howto_table[mcore_rtype]
 
 static reloc_howto_type *
-mcore_coff_reloc_type_lookup (abfd, code)
-     bfd * abfd ATTRIBUTE_UNUSED;
-     bfd_reloc_code_real_type code;
+mcore_coff_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+                             bfd_reloc_code_real_type code)
 {
   switch (code)
     {
-      HOW2MAP (BFD_RELOC_32,                       IMAGE_REL_MCORE_ADDR32);
-      HOW2MAP (BFD_RELOC_MCORE_PCREL_IMM8BY4,      IMAGE_REL_MCORE_PCREL_IMM8BY4);
-      HOW2MAP (BFD_RELOC_MCORE_PCREL_IMM11BY2,     IMAGE_REL_MCORE_PCREL_IMM11BY2);
-      HOW2MAP (BFD_RELOC_MCORE_PCREL_IMM4BY2,      IMAGE_REL_MCORE_PCREL_IMM4BY2);
-      HOW2MAP (BFD_RELOC_32_PCREL,                 IMAGE_REL_MCORE_PCREL_32);
-      HOW2MAP (BFD_RELOC_MCORE_PCREL_JSR_IMM11BY2, IMAGE_REL_MCORE_PCREL_JSR_IMM11BY2);
-      HOW2MAP (BFD_RELOC_RVA,                      IMAGE_REL_MCORE_RVA);
+      HOW2MAP(BFD_RELOC_32, IMAGE_REL_MCORE_ADDR32);
+      HOW2MAP(BFD_RELOC_MCORE_PCREL_IMM8BY4, IMAGE_REL_MCORE_PCREL_IMM8BY4);
+      HOW2MAP(BFD_RELOC_MCORE_PCREL_IMM11BY2, IMAGE_REL_MCORE_PCREL_IMM11BY2);
+      HOW2MAP(BFD_RELOC_MCORE_PCREL_IMM4BY2, IMAGE_REL_MCORE_PCREL_IMM4BY2);
+      HOW2MAP(BFD_RELOC_32_PCREL, IMAGE_REL_MCORE_PCREL_32);
+      HOW2MAP(BFD_RELOC_MCORE_PCREL_JSR_IMM11BY2, IMAGE_REL_MCORE_PCREL_JSR_IMM11BY2);
+      HOW2MAP(BFD_RELOC_RVA, IMAGE_REL_MCORE_RVA);
    default:
       return NULL;
     }
@@ -290,27 +281,25 @@ mcore_coff_reloc_type_lookup (abfd, code)
   (cache_ptr)->howto = mcore_coff_howto_table + (dst)->r_type;
 
 static reloc_howto_type *
-coff_mcore_rtype_to_howto (abfd, sec, rel, h, sym, addendp)
-     bfd * abfd ATTRIBUTE_UNUSED;
-     asection * sec;
-     struct internal_reloc * rel;
-     struct coff_link_hash_entry * h ATTRIBUTE_UNUSED;
-     struct internal_syment * sym;
-     bfd_vma * addendp;
+coff_mcore_rtype_to_howto(bfd *abfd ATTRIBUTE_UNUSED, asection *sec,
+                          struct internal_reloc *rel,
+                          struct coff_link_hash_entry *h ATTRIBUTE_UNUSED,
+                          struct internal_syment *sym, bfd_vma *addendp)
 {
-  reloc_howto_type * howto;
+  reloc_howto_type *howto;
 
-  if (rel->r_type >= NUM_ELEM (mcore_coff_howto_table))
+  if (rel->r_type >= NUM_ELEM(mcore_coff_howto_table))
     return NULL;
 
   howto = mcore_coff_howto_table + rel->r_type;
 
   if (rel->r_type == IMAGE_REL_MCORE_RVA)
-    * addendp -= pe_data (sec->output_section->owner)->pe_opthdr.ImageBase;
-
+    {
+      *addendp -= pe_data(sec->output_section->owner)->pe_opthdr.ImageBase;
+    }
   else if (howto->pc_relative)
     {
-      * addendp = sec->vma - 2; /* XXX guess - is this right ? */
+      *addendp = (sec->vma - 2); /* XXX guess - is this right ? */
 
       /* If the symbol is defined, then the generic code is going to
          add back the symbol value in order to cancel out an
@@ -318,41 +307,34 @@ coff_mcore_rtype_to_howto (abfd, sec, rel, h, sym, addendp)
          to 0 at the start of this function.  We need to adjust here,
          to avoid the adjustment the generic code will make.  FIXME:
          This is getting a bit hackish.  */
-      if (sym != NULL && sym->n_scnum != 0)
-	* addendp -= sym->n_value;
+      if ((sym != NULL) && (sym->n_scnum != 0))
+	*addendp -= sym->n_value;
     }
   else
-    * addendp = 0;
+    *addendp = 0;
 
   return howto;
 }
 
-/* Return TRUE if this relocation should appear in the output .reloc section.
-   This function is referenced in pe_mkobject in peicode.h.  */
-
+/* Return TRUE if relocation should appear in the output .reloc section.
+ * This function is referenced in pe_mkobject in peicode.h.  */
 static bfd_boolean
-in_reloc_p (abfd, howto)
-     bfd * abfd ATTRIBUTE_UNUSED;
-     reloc_howto_type * howto;
+in_reloc_p(bfd *abfd ATTRIBUTE_UNUSED, reloc_howto_type *howto)
 {
-  return ! howto->pc_relative && howto->type != IMAGE_REL_MCORE_RVA;
+  return ! howto->pc_relative && (howto->type != IMAGE_REL_MCORE_RVA);
 }
 
-/* The reloc processing routine for the optimized COFF linker.  */
+/* The reloc processing routine for the optimized COFF linker: */
 static bfd_boolean
-coff_mcore_relocate_section (output_bfd, info, input_bfd, input_section,
-			   contents, relocs, syms, sections)
-     bfd * output_bfd;
-     struct bfd_link_info * info;
-     bfd * input_bfd;
-     asection * input_section;
-     bfd_byte * contents;
-     struct internal_reloc * relocs;
-     struct internal_syment * syms;
-     asection ** sections;
+coff_mcore_relocate_section(bfd *output_bfd, struct bfd_link_info *info,
+                            bfd *input_bfd, asection *input_section,
+			    bfd_byte *contents,
+                            struct internal_reloc *relocs,
+                            struct internal_syment *syms,
+                            asection **sections)
 {
-  struct internal_reloc * rel;
-  struct internal_reloc * relend;
+  struct internal_reloc *rel;
+  struct internal_reloc *relend;
   bfd_boolean hihalf;
   bfd_vma hihalf_val;
 
@@ -363,14 +345,14 @@ coff_mcore_relocate_section (output_bfd, info, input_bfd, input_section,
     return TRUE;
 
   /* Check if we have the same endianess */
-  if (   input_bfd->xvec->byteorder != output_bfd->xvec->byteorder
-      && output_bfd->xvec->byteorder != BFD_ENDIAN_UNKNOWN)
+  if ((input_bfd->xvec->byteorder != output_bfd->xvec->byteorder)
+      && (output_bfd->xvec->byteorder != BFD_ENDIAN_UNKNOWN))
     {
       (*_bfd_error_handler)
 	(_("%B: compiled for a %s system and target is %s.\n"),
 	 input_bfd,
-         bfd_big_endian (input_bfd) ? _("big endian") : _("little endian"),
-         bfd_big_endian (output_bfd) ? _("big endian") : _("little endian"));
+         bfd_big_endian(input_bfd) ? _("big endian") : _("little endian"),
+         bfd_big_endian(output_bfd) ? _("big endian") : _("little endian"));
 
       bfd_set_error (bfd_error_wrong_format);
       return FALSE;
@@ -380,23 +362,23 @@ coff_mcore_relocate_section (output_bfd, info, input_bfd, input_section,
   hihalf_val = 0;
 
   rel = relocs;
-  relend = rel + input_section->reloc_count;
+  relend = (rel + input_section->reloc_count);
 
   for (; rel < relend; rel++)
     {
-      long                           symndx;
-      struct internal_syment *       sym;
-      bfd_vma                        val;
-      bfd_vma                        addend;
-      bfd_reloc_status_type          rstat;
-      bfd_byte *                     loc;
-      unsigned short                 r_type = rel->r_type;
-      reloc_howto_type *             howto = NULL;
-      struct coff_link_hash_entry *  h;
-      const char *                   my_name;
+      long symndx;
+      struct internal_syment *sym;
+      bfd_vma val;
+      bfd_vma addend;
+      bfd_reloc_status_type rstat;
+      bfd_byte *loc;
+      unsigned short r_type = rel->r_type;
+      reloc_howto_type *howto = NULL;
+      struct coff_link_hash_entry *h;
+      const char *my_name;
 
       symndx = rel->r_symndx;
-      loc = contents + rel->r_vaddr - input_section->vma;
+      loc = (contents + rel->r_vaddr - input_section->vma);
 
       if (symndx == -1)
 	{
@@ -405,15 +387,15 @@ coff_mcore_relocate_section (output_bfd, info, input_bfd, input_section,
 	}
       else
 	{
-	  h = obj_coff_sym_hashes (input_bfd)[symndx];
-	  sym = syms + symndx;
+	  h = obj_coff_sym_hashes(input_bfd)[symndx];
+	  sym = (syms + symndx);
 	}
 
       addend = 0;
 
-      /* Get the howto and initialise the addend.  */
-      howto = bfd_coff_rtype_to_howto (input_bfd, input_section, rel, h,
-				       sym, & addend);
+      /* Get the howto and initialise the addend: */
+      howto = bfd_coff_rtype_to_howto(input_bfd, input_section, rel, h,
+                                      sym, & addend);
       if (howto == NULL)
 	return FALSE;
 
@@ -425,22 +407,21 @@ coff_mcore_relocate_section (output_bfd, info, input_bfd, input_section,
 	    my_name = "*ABS*";
 	  else
 	    {
-	      asection * sec = sections[symndx];
+	      asection *sec = sections[symndx];
 
-	      val = (sym->n_value
-		     + sec->output_section->vma
+	      val = (sym->n_value + sec->output_section->vma
 		     + sec->output_offset);
 
 	      if (sym == NULL)
 		my_name = "*unknown*";
-	      else if (   sym->_n._n_n._n_zeroes == 0
-		       && sym->_n._n_n._n_offset != 0)
-		my_name = obj_coff_strings (input_bfd) + sym->_n._n_n._n_offset;
+	      else if ((sym->_n._n_n._n_zeroes == 0)
+		       && (sym->_n._n_n._n_offset != 0))
+		my_name = (obj_coff_strings(input_bfd) + sym->_n._n_n._n_offset);
 	      else
 		{
-		  static char buf [SYMNMLEN + 1];
+		  static char buf[SYMNMLEN + 1];
 
-		  strncpy (buf, sym->_n._n_name, SYMNMLEN);
+		  strncpy(buf, sym->_n._n_name, SYMNMLEN);
 		  buf[SYMNMLEN] = '\0';
 		  my_name = buf;
 		}
@@ -448,20 +429,19 @@ coff_mcore_relocate_section (output_bfd, info, input_bfd, input_section,
 	}
       else
 	{
-	  if (   h->root.type == bfd_link_hash_defined
-	      || h->root.type == bfd_link_hash_defweak)
+	  if ((h->root.type == bfd_link_hash_defined)
+	      || (h->root.type == bfd_link_hash_defweak))
 	    {
-	      asection * sec = h->root.u.def.section;
+	      asection *sec = h->root.u.def.section;
 
-	      val = (h->root.u.def.value
-		     + sec->output_section->vma
+	      val = (h->root.u.def.value + sec->output_section->vma
 		     + sec->output_offset);
 	    }
 	  else
 	    {
-	      if (! ((*info->callbacks->undefined_symbol)
-		     (info, h->root.root.string, input_bfd, input_section,
-		      rel->r_vaddr - input_section->vma, TRUE)))
+	      if (!((*info->callbacks->undefined_symbol)
+                    (info, h->root.root.string, input_bfd, input_section,
+                     (rel->r_vaddr - input_section->vma), TRUE)))
 		return FALSE;
 	    }
 
@@ -474,9 +454,9 @@ coff_mcore_relocate_section (output_bfd, info, input_bfd, input_section,
       switch (r_type)
 	{
 	default:
-	  _bfd_error_handler (_("%B: unsupported relocation type 0x%02x"),
-			      input_bfd, r_type);
-	  bfd_set_error (bfd_error_bad_value);
+	  _bfd_error_handler(_("%B: unsupported relocation type 0x%02x"),
+                             input_bfd, r_type);
+	  bfd_set_error(bfd_error_bad_value);
 	  return FALSE;
 
 	case IMAGE_REL_MCORE_ABSOLUTE:
@@ -484,8 +464,8 @@ coff_mcore_relocate_section (output_bfd, info, input_bfd, input_section,
 	    (_("Warning: unsupported reloc %s <file %B, section %A>\n"
 	       "sym %ld (%s), r_vaddr %ld (%lx)"),
 	     input_bfd, input_section, howto->name,
-	     rel->r_symndx, my_name, (long) rel->r_vaddr,
-	     (unsigned long) rel->r_vaddr);
+	     rel->r_symndx, my_name, (long)rel->r_vaddr,
+	     (unsigned long)rel->r_vaddr);
 	  break;
 
 	case IMAGE_REL_MCORE_PCREL_IMM8BY4:
@@ -494,38 +474,39 @@ coff_mcore_relocate_section (output_bfd, info, input_bfd, input_section,
 	case IMAGE_REL_MCORE_PCREL_32:
 	case IMAGE_REL_MCORE_PCREL_JSR_IMM11BY2:
 	case IMAGE_REL_MCORE_ADDR32:
-	  /* XXX fixme - shouldn't this be like the code for the RVA reloc ? */
-	  rstat = _bfd_relocate_contents (howto, input_bfd, val, loc);
+	  /* XXX fixme - should this not be like the code for the RVA reloc? */
+	  rstat = _bfd_relocate_contents(howto, input_bfd, val, loc);
 	  break;
 
 	case IMAGE_REL_MCORE_RVA:
-	  rstat = _bfd_final_link_relocate
-	    (howto, input_bfd,
-	     input_section, contents, rel->r_vaddr - input_section->vma,
-	     val, addend);
+	  rstat =
+            _bfd_final_link_relocate(howto, input_bfd, input_section,
+                                     contents,
+                                     (rel->r_vaddr - input_section->vma),
+                                     val, addend);
 	  break;
 	}
 
       if (info->base_file)
 	{
 	  /* Emit a reloc if the backend thinks it needs it.  */
-	  if (sym && pe_data (output_bfd)->in_reloc_p (output_bfd, howto))
-            mcore_emit_base_file_entry (info, output_bfd, input_section, rel->r_vaddr);
+	  if (sym && pe_data(output_bfd)->in_reloc_p(output_bfd, howto))
+            mcore_emit_base_file_entry(info, output_bfd, input_section, rel->r_vaddr);
 	}
 
       switch (rstat)
 	{
 	default:
-	  abort ();
+	  abort();
 
 	case bfd_reloc_ok:
 	  break;
 
 	case bfd_reloc_overflow:
-	  if (! ((*info->callbacks->reloc_overflow)
-		 (info, (h ? &h->root : NULL), my_name, howto->name,
-		  (bfd_vma) 0, input_bfd,
-		  input_section, rel->r_vaddr - input_section->vma)))
+	  if (!((*info->callbacks->reloc_overflow)
+                (info, (h ? &h->root : NULL), my_name, howto->name,
+                 (bfd_vma)0, input_bfd,
+                 input_section, (rel->r_vaddr - input_section->vma))))
 	    return FALSE;
 	}
     }
@@ -555,18 +536,33 @@ coff_mcore_relocate_section (output_bfd, info, input_bfd, input_section,
 
 #ifndef TARGET_BIG_NAME
 # define TARGET_BIG_NAME "coff-mcore-big"
-#endif
+#endif /* !TARGET_BIG_NAME */
 #ifndef TARGET_LITTLE_NAME
 # define TARGET_LITTLE_NAME "coff-mcore-little"
-#endif
+#endif /* !TARGET_LITTLE_NAME */
 
-/* Forward declaration to initialise alternative_target field.  */
+/* Forward declaration to initialise alternative_target field: */
 extern const bfd_target TARGET_LITTLE_SYM;
 
-/* The transfer vectors that lead the outside world to all of the above.  */
-CREATE_BIG_COFF_TARGET_VEC (TARGET_BIG_SYM, TARGET_BIG_NAME, D_PAGED,
-			    (SEC_CODE | SEC_DATA | SEC_DEBUGGING | SEC_READONLY | SEC_LINK_ONCE | SEC_LINK_DUPLICATES),
-			    0, & TARGET_LITTLE_SYM, COFF_SWAP_TABLE)
-CREATE_LITTLE_COFF_TARGET_VEC (TARGET_LITTLE_SYM, TARGET_LITTLE_NAME, D_PAGED,
-			       (SEC_CODE | SEC_DATA | SEC_DEBUGGING | SEC_READONLY | SEC_LINK_ONCE | SEC_LINK_DUPLICATES),
-			       0, & TARGET_BIG_SYM, COFF_SWAP_TABLE)
+/* The transfer vectors that lead the outside world to all of the above: */
+CREATE_BIG_COFF_TARGET_VEC(TARGET_BIG_SYM, TARGET_BIG_NAME, D_PAGED,
+                           (SEC_CODE | SEC_DATA | SEC_DEBUGGING | SEC_READONLY | SEC_LINK_ONCE | SEC_LINK_DUPLICATES),
+                           0, & TARGET_LITTLE_SYM, COFF_SWAP_TABLE)
+CREATE_LITTLE_COFF_TARGET_VEC(TARGET_LITTLE_SYM, TARGET_LITTLE_NAME, D_PAGED,
+                              (SEC_CODE | SEC_DATA | SEC_DEBUGGING | SEC_READONLY | SEC_LINK_ONCE | SEC_LINK_DUPLICATES),
+                              0, & TARGET_BIG_SYM, COFF_SWAP_TABLE)
+
+#ifdef TOC_LOAD_ADJUSTMENT
+# undef TOC_LOAD_ADJUSTMENT
+#endif /* TOC_LOAD_ADJUSTMENT */
+#ifdef TOC_SECTION_NAME
+# undef TOC_SECTION_NAME
+#endif /* TOC_SECTION_NAME */
+#ifdef coff_mcore_hash_table
+# undef coff_mcore_hash_table
+#endif /* coff_mcore_hash_table */
+#ifdef MINUS_ONE
+# undef MINUS_ONE
+#endif /* MINUS_ONE */
+
+/* EOF */

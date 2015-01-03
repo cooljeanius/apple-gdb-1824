@@ -3970,7 +3970,7 @@ mips_elf_calculate_relocation (bfd *abfd, bfd *input_bfd,
 
   if (gnu_local_gp_p)
     symbol = gp;
-  
+
   /* Figure out what kind of relocation is being performed.  */
   switch (r_type)
     {
@@ -8719,25 +8719,25 @@ _bfd_mips_elf_set_section_contents (bfd *abfd, sec_ptr section,
 
       if (elf_section_data (section) == NULL)
 	{
-	  bfd_size_type amt = sizeof (struct bfd_elf_section_data);
-	  section->used_by_bfd = bfd_zalloc (abfd, amt);
-	  if (elf_section_data (section) == NULL)
+	  bfd_size_type amt = sizeof(struct bfd_elf_section_data);
+	  section->used_by_bfd = bfd_zalloc(abfd, amt);
+	  if (elf_section_data(section) == NULL)
 	    return FALSE;
 	}
-      c = mips_elf_section_data (section)->u.tdata;
+      c = mips_elf_section_data(section)->u.tdata;
       if (c == NULL)
 	{
-	  c = bfd_zalloc (abfd, section->size);
+	  c = (bfd_byte *)bfd_zalloc(abfd, section->size);
 	  if (c == NULL)
 	    return FALSE;
-	  mips_elf_section_data (section)->u.tdata = c;
+	  mips_elf_section_data(section)->u.tdata = c;
 	}
 
-      memcpy (c + offset, location, count);
+      memcpy(c + offset, location, count);
     }
 
-  return _bfd_elf_set_section_contents (abfd, section, location, offset,
-					count);
+  return _bfd_elf_set_section_contents(abfd, section, location, offset,
+                                       count);
 }
 
 /* This is almost identical to bfd_generic_get_... except that some
@@ -8847,7 +8847,7 @@ _bfd_elf_mips_get_relocated_section_contents
 					       input_section, relocatable,
 					       data, gp);
 	  else
-	    r = bfd_perform_relocation (input_bfd, *parent, data, 
+	    r = bfd_perform_relocation (input_bfd, *parent, data,
 					input_section,
 					relocatable ? abfd : NULL,
 					&error_message);
@@ -9001,7 +9001,7 @@ _bfd_mips_elf_final_link (bfd *abfd, struct bfd_link_info *info)
 		&& !(*bed->elf_backend_omit_section_dynsym) (abfd, info, p))
 	      ++ dynsecsymcount;
 	}
-      
+
       if (! mips_elf_sort_hash_table (info, dynsecsymcount + 1))
 	return FALSE;
 
@@ -9228,7 +9228,7 @@ _bfd_mips_elf_final_link (bfd *abfd, struct bfd_link_info *info)
 		 interesting information, try to find the symbol in
 		 the linker global hash table and save the information
 		 for the output external symbols.  */
-	      eraw_src = input_debug.external_ext;
+	      eraw_src = (char *)input_debug.external_ext;
 	      eraw_end = (eraw_src
 			  + (input_debug.symbolic_header.iextMax
 			     * input_swap->external_ext_size));
@@ -9905,31 +9905,30 @@ _bfd_mips_elf_merge_private_bfd_data (bfd *ibfd, bfd *obfd)
   return TRUE;
 }
 
-/* Function to keep MIPS specific file flags like as EF_MIPS_PIC.  */
-
+/* Function to keep MIPS specific file flags like as EF_MIPS_PIC: */
 bfd_boolean
 _bfd_mips_elf_set_private_flags (bfd *abfd, flagword flags)
 {
-  BFD_ASSERT (!elf_flags_init (abfd)
-	      || elf_elfheader (abfd)->e_flags == flags);
+  BFD_ASSERT(!elf_flags_init(abfd)
+             || (elf_elfheader(abfd)->e_flags == flags));
 
-  elf_elfheader (abfd)->e_flags = flags;
-  elf_flags_init (abfd) = TRUE;
+  elf_elfheader(abfd)->e_flags = flags;
+  elf_flags_init(abfd) = TRUE;
   return TRUE;
 }
 
 bfd_boolean
-_bfd_mips_elf_print_private_bfd_data (bfd *abfd, void *ptr)
+_bfd_mips_elf_print_private_bfd_data(bfd *abfd, void *ptr)
 {
-  FILE *file = ptr;
+  FILE *file = (FILE *)ptr;
 
-  BFD_ASSERT (abfd != NULL && ptr != NULL);
+  BFD_ASSERT(abfd != NULL && ptr != NULL);
 
-  /* Print normal ELF private data.  */
+  /* Print normal ELF private data: */
   _bfd_elf_print_private_bfd_data (abfd, ptr);
 
   /* xgettext:c-format */
-  fprintf (file, _("private flags = %lx:"), elf_elfheader (abfd)->e_flags);
+  fprintf(file, _("private flags = %lx:"), elf_elfheader(abfd)->e_flags);
 
   if ((elf_elfheader (abfd)->e_flags & EF_MIPS_ABI) == E_MIPS_ABI_O32)
     fprintf (file, _(" [abi=O32]"));

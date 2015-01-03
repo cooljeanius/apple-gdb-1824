@@ -41,15 +41,16 @@
 #include "vms.h"
 
 static int
-check_section (bfd * abfd, int size)
+check_section(bfd * abfd, int size)
 {
   bfd_size_type offset;
 
-  offset = PRIV (image_ptr) - PRIV (image_section)->contents;
-  if (offset + size > PRIV (image_section)->size)
+  offset = (PRIV(image_ptr) - PRIV(image_section)->contents);
+  if ((offset + size) > PRIV(image_section)->size)
     {
-      PRIV (image_section)->contents
-	= bfd_realloc (PRIV (image_section)->contents, offset + size);
+      PRIV(image_section)->contents
+	= (unsigned char *)bfd_realloc(PRIV(image_section)->contents,
+                                       (offset + size));
       if (PRIV (image_section)->contents == 0)
 	{
 	  (*_bfd_error_handler) (_("No Mem !"));
@@ -793,16 +794,17 @@ new_section (bfd * abfd ATTRIBUTE_UNUSED, int idx)
   char *name;
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  _bfd_vms_debug (5, "new_section %d\n", idx);
-#endif
-  sprintf (sname, SECTION_NAME_TEMPLATE, idx);
+  _bfd_vms_debug(5, "new_section %d\n", idx);
+#endif /* VMS_DEBUG */
+  sprintf(sname, SECTION_NAME_TEMPLATE, idx);
 
-  name = bfd_malloc ((bfd_size_type) strlen (sname) + 1);
-  if (name == 0)
+  name = (char *)bfd_malloc((bfd_size_type)strlen(sname) + 1);
+  if (name == 0) {
     return NULL;
-  strcpy (name, sname);
+  }
+  strcpy(name, sname);
 
-  section = bfd_malloc ((bfd_size_type) sizeof (asection));
+  section = (asection *)bfd_malloc((bfd_size_type)sizeof(asection));
   if (section == 0)
     {
 #if defined(VMS_DEBUG) && VMS_DEBUG
@@ -821,27 +823,27 @@ new_section (bfd * abfd ATTRIBUTE_UNUSED, int idx)
 }
 
 static int
-alloc_section (bfd * abfd, unsigned int idx)
+alloc_section(bfd * abfd, unsigned int idx)
 {
   bfd_size_type amt;
 
 #if defined(VMS_DEBUG) && VMS_DEBUG
-  _bfd_vms_debug (4, "alloc_section %d\n", idx);
-#endif
+  _bfd_vms_debug(4, "alloc_section %d\n", idx);
+#endif /* VMS_DEBUG */
 
-  amt = idx + 1;
-  amt *= sizeof (asection *);
-  PRIV (sections) = bfd_realloc (PRIV (sections), amt);
-  if (PRIV (sections) == 0)
+  amt = (idx + 1);
+  amt *= sizeof(asection *);
+  PRIV(sections) = (asection **)bfd_realloc(PRIV(sections), amt);
+  if (PRIV(sections) == 0)
     return -1;
 
-  while (PRIV (section_count) <= idx)
+  while (PRIV(section_count) <= idx)
     {
-      PRIV (sections)[PRIV (section_count)]
-	= new_section (abfd, (int) PRIV (section_count));
-      if (PRIV (sections)[PRIV (section_count)] == 0)
+      PRIV(sections)[PRIV(section_count)]
+	= new_section(abfd, (int)PRIV(section_count));
+      if (PRIV(sections)[PRIV(section_count)] == 0)
 	return -1;
-      PRIV (section_count)++;
+      PRIV(section_count)++;
     }
 
   return 0;
@@ -1743,26 +1745,26 @@ _bfd_vms_slurp_lnk (bfd * abfd ATTRIBUTE_UNUSED,
 {
 #if defined(VMS_DEBUG) && VMS_DEBUG
   _bfd_vms_debug (2, "LNK\n");
-#endif
+#endif /* VMS_DEBUG */
 
   return 0;
 }
 
-/* Start ETIR record for section #index at virtual addr offset.  */
-
+/* Start ETIR record for section #index_sect at virtual addr offset: */
 static void
-start_etir_record (bfd * abfd, int index, uquad offset, bfd_boolean justoffset)
+start_etir_record(bfd * abfd, int index_sect, uquad offset,
+                  bfd_boolean justoffset)
 {
   if (!justoffset)
     {
-      /* One ETIR per section.  */
-      _bfd_vms_output_begin (abfd, EOBJ_S_C_ETIR, -1);
-      _bfd_vms_output_push (abfd);
+      /* One ETIR per section: */
+      _bfd_vms_output_begin(abfd, EOBJ_S_C_ETIR, -1);
+      _bfd_vms_output_push(abfd);
     }
 
   /* Push start offset.  */
   _bfd_vms_output_begin (abfd, ETIR_S_C_STA_PQ, -1);
-  _bfd_vms_output_long (abfd, (unsigned long) index);
+  _bfd_vms_output_long (abfd, (unsigned long) index_sect);
   _bfd_vms_output_quad (abfd, (uquad) offset);
   _bfd_vms_output_flush (abfd);
 

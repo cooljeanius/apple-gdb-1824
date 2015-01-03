@@ -23,17 +23,18 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #include "libbfd.h"
 
 static bfd_boolean scan_mach
-  PARAMS ((const struct bfd_arch_info *, const char *));
+  PARAMS((const struct bfd_arch_info *, const char *));
 
 static bfd_boolean
-scan_mach (info, string)
-     const struct bfd_arch_info *info ATTRIBUTE_UNUSED;
-     const char *string;
+scan_mach(const struct bfd_arch_info *info ATTRIBUTE_UNUSED,
+          const char *string)
 {
-  if (strcmp(string,"w65") == 0)
+  if (strcmp(string, "w65") == 0) {
     return TRUE;
-  if (strcmp(string,"w65816") == 0)
+  }
+  if (strcmp(string, "w65816") == 0) {
     return TRUE;
+  }
   return FALSE;
 }
 

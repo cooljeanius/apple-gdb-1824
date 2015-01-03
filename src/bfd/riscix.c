@@ -17,14 +17,16 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* RISC iX overloads the MAGIC field to indicate more than just the usual
    [ZNO]MAGIC values.  Also included are squeezing information and
    shared library usage.  */
 
-/* The following come from the man page.  */
-#define SHLIBLEN 60
+/* The following definitions all come from the man page: */
+#ifndef SHLIBLEN
+# define SHLIBLEN 60
+#endif /* !SHLIBLEN */
 
 #define MF_IMPURE       00200
 #define MF_SQUEEZED     01000
@@ -372,7 +374,7 @@ riscix_swap_std_reloc_out (bfd *abfd,
 }
 
 static bfd_boolean
-riscix_squirt_out_relocs (bfd *abfd, asection *section)
+riscix_squirt_out_relocs(bfd *abfd, asection *section)
 {
   arelent **generic;
   unsigned char *native, *natptr;
@@ -383,10 +385,10 @@ riscix_squirt_out_relocs (bfd *abfd, asection *section)
   if (count == 0)
     return TRUE;
 
-  each_size = obj_reloc_entry_size (abfd);
+  each_size = obj_reloc_entry_size(abfd);
   natsize = each_size;
   natsize *= count;
-  native = bfd_zalloc (abfd, natsize);
+  native = (unsigned char *)bfd_zalloc(abfd, natsize);
   if (!native)
     return FALSE;
 
@@ -395,33 +397,30 @@ riscix_squirt_out_relocs (bfd *abfd, asection *section)
   for (natptr = native;
        count != 0;
        --count, natptr += each_size, ++generic)
-    riscix_swap_std_reloc_out (abfd, *generic,
-			       (struct reloc_std_external *) natptr);
+    riscix_swap_std_reloc_out(abfd, *generic,
+                              (struct reloc_std_external *)natptr);
 
-  if (bfd_bwrite ((void *) native, natsize, abfd) != natsize)
+  if (bfd_bwrite((void *)native, natsize, abfd) != natsize)
     {
-      bfd_release (abfd, native);
+      bfd_release(abfd, native);
       return FALSE;
     }
 
-  bfd_release (abfd, native);
+  bfd_release(abfd, native);
   return TRUE;
 }
 
 /* This is just like the standard aoutx.h version but we need to do our
-   own mapping of external reloc type values to howto entries.  */
-
+ * own mapping of external reloc type values to howto entries: */
 static long
-MY (canonicalize_reloc) (bfd *abfd,
-			 sec_ptr section,
-			 arelent **relptr,
-			 asymbol **symbols)
+MY(canonicalize_reloc)(bfd *abfd, sec_ptr section, arelent **relptr,
+                       asymbol **symbols)
 {
   arelent *tblptr = section->relocation;
   unsigned int count, c;
-  extern reloc_howto_type NAME (aout, std_howto_table)[];
+  extern reloc_howto_type NAME(aout, std_howto_table)[];
 
-  /* If we have already read in the relocation table, return the values.  */
+  /* If we have already read in the relocation table, return the values: */
   if (section->flags & SEC_CONSTRUCTOR)
     {
       arelent_chain *chain = section->constructor_chain;
@@ -464,15 +463,14 @@ MY (canonicalize_reloc) (bfd *abfd,
    expansions of the macro definitions.  */
 
 static const bfd_target *
-riscix_some_aout_object_p (bfd *abfd,
-			   struct internal_exec *execp,
-			   const bfd_target *(*callback_to_real_object_p) (bfd *))
+riscix_some_aout_object_p(bfd *abfd, struct internal_exec *execp,
+			  const bfd_target *(*callback_to_real_object_p)(bfd *))
 {
   struct aout_data_struct *rawptr, *oldrawptr;
   const bfd_target *result;
   bfd_size_type amt = sizeof (struct aout_data_struct);
 
-  rawptr = bfd_zalloc (abfd, amt);
+  rawptr = (struct aout_data_struct *)bfd_zalloc(abfd, amt);
 
   if (rawptr == NULL)
     return NULL;
@@ -623,15 +621,21 @@ MY (object_p) (bfd *abfd)
     return NULL;
 
 #ifdef MACHTYPE_OK
-  if (!(MACHTYPE_OK (N_MACHTYPE (exec))))
+  if (!(MACHTYPE_OK(N_MACHTYPE(exec))))
     return NULL;
-#endif
+#endif /* MACHTYPE_OK */
 
-  NAME (aout, swap_exec_header_in) (abfd, & exec_bytes, & exec);
+  NAME(aout, swap_exec_header_in)(abfd, & exec_bytes, & exec);
 
-  target = riscix_some_aout_object_p (abfd, & exec, MY (callback));
+  target = riscix_some_aout_object_p(abfd, & exec, MY(callback));
 
   return target;
 }
 
 #include "aout-target.h"
+
+#ifdef SHLIBLEN
+# undef SHLIBLEN
+#endif /* SHLIBLEN */
+
+/* EOF */

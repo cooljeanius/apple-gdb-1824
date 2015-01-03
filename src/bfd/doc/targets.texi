@@ -125,6 +125,7 @@ enum bfd_flavour
   bfd_target_oasys_flavour,
   bfd_target_tekhex_flavour,
   bfd_target_srec_flavour,
+  bfd_target_verilog_flavour,
   bfd_target_ihex_flavour,
   bfd_target_som_flavour,
   bfd_target_os9k_flavour,
@@ -143,6 +144,9 @@ enum bfd_endian @{ BFD_ENDIAN_BIG, BFD_ENDIAN_LITTLE, BFD_ENDIAN_UNKNOWN @};
 
 /* Forward declaration.  */
 typedef struct bfd_link_info _bfd_link_info;
+
+/* Forward declaration.  */
+typedef struct flag_info flag_info;
 
 typedef struct bfd_target
 @{
@@ -176,6 +180,12 @@ typedef struct bfd_target
 
   /* The maximum number of characters in an archive header.  */
   unsigned short ar_max_namelen;
+
+#if 0
+  /* How well this target matches, used to select between various
+     possible targets when more than one target matches.  */
+  unsigned char match_priority;
+#endif
 
   /* Entries for byte swapping for data. These are different from the
      other entry points, since they don't take a BFD as the first argument.

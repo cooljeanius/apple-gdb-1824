@@ -42,6 +42,13 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #define MY(OP) CONCAT2 (i386linux_,OP)
 #define TARGETNAME "a.out-i386-linux"
 
+/* this needs to go after the usage of the CONCAT* macro mentioned above,
+ * but before any other headers are included, or prototypes for functions
+ * are declared: */
+#if defined(__GNUC__) && (__GNUC__ >= 4)
+ # pragma GCC diagnostic ignored "-Wtraditional"
+#endif /* gcc 4+ */
+
 extern const bfd_target MY(vec);
 
 /* We always generate QMAGIC files in preference to ZMAGIC files.  It

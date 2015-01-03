@@ -10843,14 +10843,12 @@ ppc64_elf_relocate_section (bfd *output_bfd,
   return ret;
 }
 
-/* Adjust the value of any local symbols in opd sections.  */
-
+/* Adjust the value of any local symbols in opd sections: */
 static bfd_boolean
-ppc64_elf_output_symbol_hook (struct bfd_link_info *info,
-			      const char *name ATTRIBUTE_UNUSED,
-			      Elf_Internal_Sym *elfsym,
-			      asection *input_sec,
-			      struct elf_link_hash_entry *h)
+ppc64_elf_output_symbol_hook(struct bfd_link_info *info,
+                             const char *name ATTRIBUTE_UNUSED,
+                             Elf_Internal_Sym *elfsym, asection *input_sec,
+                             struct elf_link_hash_entry *h)
 {
   long *opd_adjust, adjust;
   bfd_vma value;
@@ -10858,7 +10856,7 @@ ppc64_elf_output_symbol_hook (struct bfd_link_info *info,
   if (h != NULL)
     return TRUE;
 
-  opd_adjust = get_opd_info (input_sec);
+  opd_adjust = (long *)get_opd_info(input_sec);
   if (opd_adjust == NULL)
     return TRUE;
 

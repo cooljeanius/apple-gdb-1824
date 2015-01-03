@@ -352,7 +352,7 @@ struct reloc_howto_struct
 The HOWTO define is horrible and will go away.
 @example
 #define HOWTO(C, R, S, B, P, BI, O, SF, NAME, INPLACE, MASKSRC, MASKDST, PC) \
-  @{ (unsigned) C, R, S, B, P, BI, O, SF, NAME, INPLACE, MASKSRC, MASKDST, PC @}
+  @{ (unsigned)C, R, S, B, P, BI, O, SF, (char *)NAME, INPLACE, MASKSRC, MASKDST, PC @}
 @end example
 
 @strong{Description}@*
@@ -2281,7 +2281,7 @@ bfd_boolean bfd_generic_relax_section
 @end example
 @strong{Description}@*
 Provides default handling for relaxing for back ends which
-don't do relaxing.
+do NOT do relaxing.
 
 @findex bfd_generic_gc_sections
 @subsubsection @code{bfd_generic_gc_sections}
@@ -2292,7 +2292,7 @@ bfd_boolean bfd_generic_gc_sections
 @end example
 @strong{Description}@*
 Provides default handling for relaxing for back ends which
-don't do section gc -- i.e., does nothing.
+do NOT do section gc -- i.e., does nothing.
 
 @findex bfd_generic_merge_sections
 @subsubsection @code{bfd_generic_merge_sections}

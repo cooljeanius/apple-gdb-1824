@@ -43,13 +43,13 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA
 #endif /* !HAVE_GETPAGESIZE */
 
 static bfd_boolean _bfd_get_file_window_mmap
-PARAMS ((bfd *abfd, ufile_ptr offset, bfd_size_type size,
-	 bfd_window *windowp, bfd_window_internal *i, bfd_boolean writable));
+  PARAMS((bfd *abfd, ufile_ptr offset, bfd_size_type size,
+          bfd_window *windowp, bfd_window_internal *i, bfd_boolean writable));
 
 #if ! HAVE_MMAP
 static bfd_boolean _bfd_get_file_window_malloc
-PARAMS ((bfd *abfd, ufile_ptr offset, bfd_size_type size,
-	 bfd_window *windowp, bfd_window_internal *i, bfd_boolean writable));
+  PARAMS((bfd *abfd, ufile_ptr offset, bfd_size_type size,
+          bfd_window *windowp, bfd_window_internal *i, bfd_boolean writable));
 #endif /* ! HAVE_MMAP */
 
 /* The idea behind the next and refcount fields is that one mapped
@@ -89,7 +89,7 @@ bfd_init_window(bfd_window *windowp)
 static int debug_windows;
 
 void
-bfd_free_window (bfd_window *windowp)
+bfd_free_window(bfd_window *windowp)
 {
   bfd_window_internal *i = windowp->i;
 
@@ -102,7 +102,8 @@ bfd_free_window (bfd_window *windowp)
   i->refcount--;
   if (debug_windows)
     fprintf(stderr, "freeing window @%p<%p,%lx,%p>\n",
-	    windowp, windowp->data, (unsigned long)windowp->size, windowp->i);
+	    windowp, windowp->data, (unsigned long)windowp->size,
+            windowp->i);
   if (i->refcount > 0)
     return;
 
@@ -132,7 +133,7 @@ bfd_free_window (bfd_window *windowp)
     BFD_ASSERT((i->mapped == 0) || (i->mapped == 1) || (i->mapped == 2));
   }
 
-  /* There should be no more references to i at this point.  */
+  /* There should be no more references to i at this point: */
   free(i);
 }
 
@@ -155,7 +156,7 @@ _bfd_get_file_window_mmap(bfd *abfd, ufile_ptr offset, bfd_size_type size,
 
   /* Make sure we know the page size, so we can be friendly to mmap: */
   if (pagesize == 0)
-    pagesize = getpagesize();
+    pagesize = (size_t)getpagesize();
   if (pagesize == 0)
     abort();
 
@@ -169,52 +170,52 @@ _bfd_get_file_window_mmap(bfd *abfd, ufile_ptr offset, bfd_size_type size,
       int fd;
       FILE *f;
 
-      /* Find the real file and the real offset into it.  */
+      /* Find the real file and the real offset into it: */
       while (abfd->my_archive != NULL)
 	{
 	  offset += abfd->origin;
 	  abfd = abfd->my_archive;
 	}
-      f = bfd_cache_lookup (abfd);
-      fd = fileno (f);
+      f = bfd_cache_lookup(abfd);
+      fd = fileno(f);
 
-      /* Compute offsets and size for mmap and for the user's data.  */
-      offset2 = offset % pagesize;
+      /* Compute offsets and size for mmap and for the user's data: */
+      offset2 = (file_ptr)(offset % pagesize);
       if (offset2 < 0)
-	abort ();
-      file_offset = offset - offset2;
-      real_size = offset + size - file_offset;
-      real_size = real_size + pagesize - 1;
-      real_size -= real_size % pagesize;
+	abort();
+      file_offset = ((file_ptr)offset - offset2);
+      real_size = (offset + size - (unsigned long)file_offset);
+      real_size = (real_size + pagesize - 1);
+      real_size -= (real_size % pagesize);
 
       /* If we are re-using a memory region, make sure it is big enough: */
-      if (i->data && i->size < size)
+      if (i->data && (i->size < size))
 	{
-	  munmap (i->data, i->size);
+	  munmap(i->data, i->size);
 	  i->data = 0;
 	}
-      i->data = mmap (i->data, real_size,
-		      writable ? PROT_WRITE | PROT_READ : PROT_READ,
-		      (writable
-		       ? MAP_FILE | MAP_PRIVATE
-		       : MAP_FILE | MAP_SHARED),
-		      fd, file_offset);
-      if (i->data == (void *) -1)
+      i->data = mmap(i->data, real_size,
+                     (writable ? (PROT_WRITE | PROT_READ) : PROT_READ),
+                     (writable
+                      ? (MAP_FILE | MAP_PRIVATE)
+                      : (MAP_FILE | MAP_SHARED)),
+                     fd, file_offset);
+      if (i->data == (void *)-1)
 	{
 	  /* An error happened.  Report it, or try using malloc, or
-	     something.  */
-	  bfd_set_error (bfd_error_system_call);
+	   * something: */
+	  bfd_set_error(bfd_error_system_call);
 	  i->data = 0;
 	  windowp->data = 0;
 	  if (debug_windows)
-	    fprintf (stderr, "\t\tmmap failed!\n");
+	    fprintf(stderr, "\t\tmmap failed!\n");
 	  return FALSE;
 	}
       if (debug_windows)
-	fprintf (stderr, "\n\tmapped %ld at %p, offset is %ld\n",
-		 (long) real_size, i->data, (long) offset2);
+	fprintf(stderr, "\n\tmapped %ld at %p, offset is %ld\n",
+                (long)real_size, i->data, (long)offset2);
       i->size = real_size;
-      windowp->data = (bfd_byte *) i->data + offset2;
+      windowp->data = ((bfd_byte *)i->data + offset2);
       windowp->size = size;
       i->mapped = 1;
       return TRUE;
@@ -222,10 +223,10 @@ _bfd_get_file_window_mmap(bfd *abfd, ufile_ptr offset, bfd_size_type size,
   else if (debug_windows)
     {
       if (ok_to_map)
-	fprintf (stderr, _("not mapping: data=%lx mapped=%d\n"),
-		 (unsigned long) i->data, (int) i->mapped);
+	fprintf(stderr, _("not mapping: data=%lx mapped=%d\n"),
+                (unsigned long)i->data, (int)i->mapped);
       else
-	fprintf (stderr, _("not mapping: env var not set\n"));
+	fprintf(stderr, _("not mapping: env var not set\n"));
     }
 # else
   ok_to_map = 0;
@@ -241,9 +242,9 @@ _bfd_get_file_window_mmap(bfd *abfd, ufile_ptr offset, bfd_size_type size,
   if (debug_windows)
     fprintf(stderr, "\n\t%s(%6ld)",
             (i->data ? "realloc" : " malloc"), (long)size_to_alloc);
-  i->data = bfd_realloc (i->data, size_to_alloc);
+  i->data = bfd_realloc(i->data, size_to_alloc);
   if (debug_windows)
-    fprintf (stderr, "\t-> %p\n", i->data);
+    fprintf(stderr, "\t-> %p\n", i->data);
   i->refcount = 1;
   if (i->data == NULL)
     {
@@ -251,7 +252,7 @@ _bfd_get_file_window_mmap(bfd *abfd, ufile_ptr offset, bfd_size_type size,
 	return TRUE;
       return FALSE;
     }
-  if (bfd_seek(abfd, offset, SEEK_SET) != 0)
+  if (bfd_seek(abfd, (file_ptr)offset, SEEK_SET) != 0)
     return FALSE;
   i->size = bfd_bread(i->data, size, abfd);
   if (i->size != size)
@@ -391,4 +392,4 @@ bfd_get_file_window(bfd *abfd, ufile_ptr offset, bfd_size_type size,
   return TRUE;
 }
 
-/* EOF */
+/* End of bfdwin.c */

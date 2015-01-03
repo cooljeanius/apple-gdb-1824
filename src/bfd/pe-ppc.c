@@ -21,7 +21,9 @@ Boston, MA 02110-1301, USA.  */
 #include "bfd.h"
 #include "sysdep.h"
 
-#define E_FILENMLEN     18
+#ifndef E_FILENMLEN
+# define E_FILENMLEN     18
+#endif /* !E_FILENMLEN */
 
 #define PPC_PE
 
@@ -41,3 +43,9 @@ Boston, MA 02110-1301, USA.  */
    coff-ppc.c and peigen.c.  */
 
 #include "coff-ppc.c"
+
+#ifdef E_FILENMLEN
+# undef E_FILENMLEN
+#endif /* E_FILENMLEN */
+
+/* EOF */

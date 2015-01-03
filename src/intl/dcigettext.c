@@ -1206,7 +1206,9 @@ static char *stpcpy(char *dest, const char *src)
 }
 #endif /* !_LIBC && !HAVE_STPCPY */
 
-#if (!defined(_LIBC) || !_LIBC) && (!defined(HAVE_MEMPCPY) || !HAVE_MEMPCPY)
+/* try to keep condition the same as the one used for its prototype: */
+#if (!defined(_LIBC) || !_LIBC) && (!defined(HAVE_MEMPCPY) || !HAVE_MEMPCPY) || \
+    (!defined(HAVE_DECL_MEMPCPY) || !HAVE_DECL_MEMPCPY)
 # if !defined(__STRICT_ANSI__)
 static
 # endif /* !__STRICT_ANSI__ */

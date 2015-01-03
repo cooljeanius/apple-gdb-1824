@@ -211,7 +211,7 @@ struct alpha_elf_link_hash_table
 #define alpha_elf_sym_hashes(abfd) \
   ((struct alpha_elf_link_hash_entry **)elf_sym_hashes(abfd))
 
-/* Should we do dynamic things to this symbol?  This differs from the 
+/* Should we do dynamic things to this symbol?  This differs from the
    generic version in that we never need to consider function pointer
    equality wrt PLT entries -- we don't create a PLT entry if a symbol's
    address is ever taken.  */
@@ -2413,7 +2413,7 @@ elf64_alpha_size_got_sections (struct bfd_link_info *info)
 	  alpha_elf_tdata(i)->got->size = 0;
 	  i = alpha_elf_tdata(i)->got_link_next;
 	  alpha_elf_tdata(cur_got_obj)->got_link_next = i;
-	  
+
 	  something_changed = 1;
 	}
       else
@@ -4722,12 +4722,12 @@ elf64_alpha_finish_dynamic_symbol (bfd *output_bfd, struct bfd_link_info *info,
 	      abort ();
 	    }
 
-	  elf64_alpha_emit_dynrel (output_bfd, info, sgot, srel, 
+	  elf64_alpha_emit_dynrel (output_bfd, info, sgot, srel,
 				   gotent->got_offset, h->dynindx,
 				   r_type, gotent->addend);
 
 	  if (gotent->reloc_type == R_ALPHA_TLSGD)
-	    elf64_alpha_emit_dynrel (output_bfd, info, sgot, srel, 
+	    elf64_alpha_emit_dynrel (output_bfd, info, sgot, srel,
 				     gotent->got_offset + 8, h->dynindx,
 				     R_ALPHA_DTPREL64, gotent->addend);
 	}
@@ -5027,7 +5027,7 @@ elf64_alpha_final_link (bfd *abfd, struct bfd_link_info *info)
 		 interesting information, try to find the symbol in
 		 the linker global hash table and save the information
 		 for the output external symbols.  */
-	      eraw_src = input_debug.external_ext;
+	      eraw_src = (char *)input_debug.external_ext;
 	      eraw_end = (eraw_src
 			  + (input_debug.symbolic_header.iextMax
 			     * input_swap->external_ext_size));

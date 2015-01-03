@@ -453,18 +453,17 @@ elf_vax_link_hash_newfunc (struct bfd_hash_entry *entry,
       ret->pcrel_relocs_copied = NULL;
     }
 
-  return (struct bfd_hash_entry *) ret;
+  return (struct bfd_hash_entry *)ret;
 }
 
-/* Create an VAX ELF linker hash table.  */
-
+/* Create an VAX ELF linker hash table: */
 static struct bfd_link_hash_table *
-elf_vax_link_hash_table_create (bfd *abfd)
+elf_vax_link_hash_table_create(bfd *abfd)
 {
   struct elf_vax_link_hash_table *ret;
-  bfd_size_type amt = sizeof (struct elf_vax_link_hash_table);
+  bfd_size_type amt = sizeof(struct elf_vax_link_hash_table);
 
-  ret = bfd_malloc (amt);
+  ret = (struct elf_vax_link_hash_table *)bfd_malloc(amt);
   if (ret == NULL)
     return NULL;
 
@@ -923,25 +922,23 @@ elf_vax_gc_sweep_hook (bfd *abfd, struct bfd_link_info *info, asection *sec,
 
 /* Adjust a symbol defined by a dynamic object and referenced by a
    regular object.  The current definition is in some section of the
-   dynamic object, but we're not including those sections.  We have to
+   dynamic object, but we are not including those sections.  We have to
    change the definition to something the rest of the link can
    understand.  */
-
 static bfd_boolean
-elf_vax_adjust_dynamic_symbol (info, h)
-     struct bfd_link_info *info;
-     struct elf_link_hash_entry *h;
+elf_vax_adjust_dynamic_symbol(struct bfd_link_info *info,
+                              struct elf_link_hash_entry *h)
 {
   bfd *dynobj;
   asection *s;
   unsigned int power_of_two;
 
-  dynobj = elf_hash_table (info)->dynobj;
+  dynobj = elf_hash_table(info)->dynobj;
 
-  /* Make sure we know what is going on here.  */
-  BFD_ASSERT (dynobj != NULL
+  /* Make sure we know what is going on here: */
+  BFD_ASSERT ((dynobj != NULL)
 	      && (h->needs_plt
-		  || h->u.weakdef != NULL
+		  || (h->u.weakdef != NULL)
 		  || (h->def_dynamic
 		      && h->ref_regular
 		      && !h->def_regular)));
@@ -949,16 +946,13 @@ elf_vax_adjust_dynamic_symbol (info, h)
   /* If this is a function, put it in the procedure linkage table.  We
      will fill in the contents of the procedure linkage table later,
      when we know the address of the .got section.  */
-  if (h->type == STT_FUNC
-      || h->needs_plt)
+  if ((h->type == STT_FUNC) || h->needs_plt)
     {
-      if (! info->shared
-	  && !h->def_dynamic
-	  && !h->ref_dynamic
+      if (! info->shared && !h->def_dynamic && !h->ref_dynamic
 	  /* We must always create the plt entry if it was referenced
 	     by a PLTxxO relocation.  In this case we already recorded
 	     it as a dynamic symbol.  */
-	  && h->dynindx == -1)
+	  && (h->dynindx == -1))
 	{
 	  /* This case can occur if we saw a PLTxx reloc in an input
 	     file, but the symbol was never referred to by a dynamic

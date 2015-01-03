@@ -1120,8 +1120,8 @@ elf_hppa_unmark_useless_dynamic_symbols(struct elf_link_hash_entry *h,
      Ultimately we should have better controls over the generic ELF BFD
      linker code.  */
   if (! info->relocatable
-      && info->unresolved_syms_in_shared_libs != RM_IGNORE
-      && h->root.type == bfd_link_hash_undefined
+      && (info->unresolved_syms_in_shared_libs != RM_IGNORE)
+      && (h->root.type == bfd_link_hash_undefined)
       && h->ref_dynamic
       && !h->ref_regular)
     {
@@ -1133,10 +1133,10 @@ elf_hppa_unmark_useless_dynamic_symbols(struct elf_link_hash_entry *h,
 }
 
 static bfd_boolean
-elf_hppa_remark_useless_dynamic_symbols (struct elf_link_hash_entry *h,
-					 void *data)
+elf_hppa_remark_useless_dynamic_symbols(struct elf_link_hash_entry *h,
+                                        void *data)
 {
-  struct bfd_link_info *info = data;
+  struct bfd_link_info *info = (struct bfd_link_info *)data;
 
   if (h->root.type == bfd_link_hash_warning)
     h = (struct elf_link_hash_entry *) h->root.u.i.link;

@@ -6,6 +6,7 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wmissing-declarations -Wimplicit -Wparentheses -Wextra -Wc++-compat \
 -Wundef -Wold-style-declaration -Wold-style-definition -Wnested-externs \
 -Wmissing-parameter-type -Wshadow -Wabi -Wmissing-include-dirs"
+WARN_DEFS="-D_FORTIFY_SOURCE=2"
 WARN_LDFLAGS=""
 
 AC_REQUIRE([AC_CANONICAL_HOST])dnl
@@ -27,15 +28,22 @@ case "${host}" in
 esac
 
 # GCC supports -Wuninitialized only with -O or -On, n != 0.
+# and also -Winit-self only with -Wuninitialized
+# others in this section are technically supported at other optimization
+# levels, but really only make sense with it on.
+opt_warnings="-Wuninitialized -Winit-self -Wvolatile-register-var \
+-Wdisabled-optimization -Waggressive-loop-optimizations \
+-Wvector-operation-performance -Wmaybe-uninitialized \
+-Wunsafe-loop-optimizations"
 if test x${CFLAGS+set} = xset; then
   case "${CFLAGS}" in
     *"-O0"* ) ;;
     *"-O"* )
-      WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Winit-self"
+      WARN_CFLAGS="${WARN_CFLAGS} ${opt_warnings}"
     ;;
   esac
 else
-  WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Winit-self"
+  WARN_CFLAGS="${WARN_CFLAGS} ${opt_warnings}"
 fi
 
 AC_ARG_ENABLE([werror],
@@ -83,27 +91,33 @@ AC_ARG_ENABLE([build-warnings],
   *)    WARN_CFLAGS=`echo "${enableval}" | sed -e "s/,/ /g"`;;
 esac])dnl
 
+BAD_WARN_CFLAGS=""
 if test "x${WARN_CFLAGS}" != "x" -a "x${GCC}" = "xyes"
 then
-    AC_MSG_CHECKING([compiler warning flags])
+    AC_MSG_CHECKING([compiler warning flags to use])
     for w in ${WARN_CFLAGS}; do
 	case ${w} in
 	*) # Check that GCC accepts it:
 	    saved_CFLAGS="${CFLAGS}"
 	    CFLAGS="${CFLAGS} ${w}"
 	    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
-                              [MY_WARN_CFLAGS="${MY_WARN_CFLAGS} ${w}"],[])
+                              [MY_WARN_CFLAGS="${MY_WARN_CFLAGS} ${w}"],
+                              [BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"])
 	    CFLAGS="${saved_CFLAGS}"
 	esac
     done
     # Have to use second variable to avoid overwriting and/or duplicates:
     WARN_CFLAGS="${MY_WARN_CFLAGS}"
-    AC_MSG_RESULT([${WARN_CFLAGS}])
+    AC_MSG_RESULT([using: ${WARN_CFLAGS}])
+    if test "x${BAD_WARN_CFLAGS}" != "x"; then
+      test -n "${BAD_WARN_CFLAGS}"
+      AC_MSG_WARN([compiler failed to accept: ${BAD_WARN_CFLAGS}])
+    fi
 fi
 
 if test "x${WARN_LDFLAGS}" != "x" -a "x${GCC}" = "xyes"
 then
-    AC_MSG_CHECKING([linker warning flags])
+    AC_MSG_CHECKING([linker warning flags to use])
     for w in ${WARN_LDFLAGS}; do
 	case ${w} in
 	*) # Check that the compiler successfully passes it to the linker.
@@ -127,6 +141,7 @@ if test x"${silent}" != x"yes" && test x"${WARN_LDFLAGS}" != x""; then
 fi
 
 AC_SUBST([WARN_CFLAGS])dnl
+AC_SUBST([WARN_DEFS])dnl
 AC_SUBST([WARN_LDFLAGS])dnl
 AC_SUBST([NO_WERROR])dnl
 ])dnl

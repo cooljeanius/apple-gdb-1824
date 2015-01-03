@@ -112,10 +112,10 @@ static const bfd_target *MY(callback)(bfd *abfd)
      SET_ARCH_MACH.  It assumes that SET_ARCH_MACH will set
      obj_reloc_entry_size correctly, if the reloc size is not
      RELOC_STD_SIZE.  */
-  obj_textsec (abfd)->reloc_count =
-    execp->a_trsize / obj_reloc_entry_size (abfd);
-  obj_datasec (abfd)->reloc_count =
-    execp->a_drsize / obj_reloc_entry_size (abfd);
+  obj_textsec(abfd)->reloc_count =
+    (execp->a_trsize / obj_reloc_entry_size(abfd));
+  obj_datasec(abfd)->reloc_count =
+    (execp->a_drsize / obj_reloc_entry_size(abfd));
 
   /* Now that we know the architecture, set the alignments of the
      sections.  This is normally done by NAME (aout,new_section_hook),

@@ -662,7 +662,7 @@ bfd_decode_symclass (asymbol *symbol)
     return 'I';
   if (symbol->flags & BSF_WEAK)
     {
-      /* If weak, determine if it's specifically an object
+      /* If weak, determine if it is specifically an object
 	 or non-object weak.  */
       if (symbol->flags & BSF_OBJECT)
 	return 'V';
@@ -672,21 +672,21 @@ bfd_decode_symclass (asymbol *symbol)
   if (!(symbol->flags & (BSF_GLOBAL | BSF_LOCAL)))
     return '?';
 
-  if (bfd_is_abs_section (symbol->section))
+  if (bfd_is_abs_section(symbol->section))
     c = 'a';
   else if (symbol->section)
     {
-      c = coff_section_type (symbol->section->name);
+      c = coff_section_type(symbol->section->name);
       if (c == '?')
-	c = decode_section_type (symbol->section);
+	c = decode_section_type(symbol->section);
     }
   else
     return '?';
   if (symbol->flags & BSF_GLOBAL)
-    c = TOUPPER (c);
+    c = (char)TOUPPER(c);
   return c;
 
-  /* We don't have to handle these cases just yet, but we will soon:
+  /* We do NOT have to handle these cases just yet, but we will soon:
      N_SETV: 'v';
      N_SETA: 'l';
      N_SETT: 'x';
@@ -729,14 +729,14 @@ SYNOPSIS
 */
 
 void
-bfd_symbol_info (asymbol *symbol, symbol_info *ret)
+bfd_symbol_info(asymbol *symbol, symbol_info *ret)
 {
-  ret->type = bfd_decode_symclass (symbol);
+  ret->type = (char)bfd_decode_symclass(symbol);
 
-  if (bfd_is_undefined_symclass (ret->type))
+  if (bfd_is_undefined_symclass(ret->type))
     ret->value = 0;
   else
-    ret->value = symbol->value + symbol->section->vma;
+    ret->value = (symbol->value + symbol->section->vma);
 
   ret->name = symbol->name;
 }
@@ -765,34 +765,31 @@ DESCRIPTION
 */
 
 /* The generic version of the function which returns mini symbols.
-   This is used when the backend does not provide a more efficient
-   version.  It just uses BFD asymbol structures as mini symbols.  */
-
+ * This is used when the backend does not provide a more efficient
+ * version.  It just uses BFD asymbol structures as mini symbols: */
 long
-_bfd_generic_read_minisymbols (bfd *abfd,
-			       bfd_boolean dynamic,
-			       void **minisymsp,
-			       unsigned int *sizep)
+_bfd_generic_read_minisymbols(bfd *abfd, bfd_boolean dynamic,
+                              void **minisymsp, unsigned int *sizep)
 {
   long storage;
-  asymbol **syms = NULL;
+  asymbol **syms = (asymbol **)NULL;
   long symcount;
 
   if (dynamic)
-    storage = bfd_get_dynamic_symtab_upper_bound (abfd);
+    storage = bfd_get_dynamic_symtab_upper_bound(abfd);
   else
-    storage = bfd_get_symtab_upper_bound (abfd);
+    storage = bfd_get_symtab_upper_bound(abfd);
   if (storage < 0)
     goto error_return;
   if (storage == 0)
     return 0;
 
-  syms = bfd_malloc (storage);
+  syms = (asymbol **)bfd_malloc((bfd_size_type)storage);
   if (syms == NULL)
     goto error_return;
 
   if (dynamic)
-    symcount = bfd_canonicalize_dynamic_symtab (abfd, syms);
+    symcount = bfd_canonicalize_dynamic_symtab(abfd, syms);
   else
     symcount = bfd_canonicalize_symtab (abfd, syms);
   if (symcount < 0)
@@ -849,13 +846,12 @@ struct indexentry
   char *function_name;
 };
 
-/* Compare two indexentry structures.  This is called via qsort.  */
-
+/* Compare two indexentry structures.  This is called via qsort: */
 static int
-cmpindexentry (const void *a, const void *b)
+cmpindexentry(const void *a, const void *b)
 {
-  const struct indexentry *contestantA = a;
-  const struct indexentry *contestantB = b;
+  const struct indexentry *contestantA = (const struct indexentry *)a;
+  const struct indexentry *contestantB = (const struct indexentry *)b;
 
   if (contestantA->val < contestantB->val)
     return -1;
@@ -865,8 +861,7 @@ cmpindexentry (const void *a, const void *b)
     return 0;
 }
 
-/* A pointer to this structure is stored in *pinfo.  */
-
+/* A pointer to this structure is stored in *pinfo: */
 struct stab_find_info
 {
   /* The .stab section.  */
@@ -918,7 +913,7 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
   bfd_boolean saw_line, saw_func;
 
   *pfound = FALSE;
-  *pfilename = bfd_get_filename (abfd);
+  *pfilename = bfd_get_filename(abfd);
   *pfnname = NULL;
   *pline = 0;
 
@@ -937,17 +932,19 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
 
 #define STRDXOFF (0)
 #define TYPEOFF (4)
-#define OTHEROFF (5)
+#ifndef OTHEROFF
+# define OTHEROFF (5)
+#endif /* !OTHEROFF */
 #define DESCOFF (6)
 #define VALOFF (8)
 #define STABSIZE (12)
 
-  info = *pinfo;
+  info = (struct stab_find_info *)*pinfo;
   if (info != NULL)
     {
-      if (info->stabsec == NULL || info->strsec == NULL)
+      if ((info->stabsec == NULL) || (info->strsec == NULL))
 	{
-	  /* No stabs debugging information.  */
+	  /* No stabs debugging information: */
 	  return TRUE;
 	}
 
@@ -965,9 +962,9 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
       int i;
       char *name;
       char *function_name;
-      bfd_size_type amt = sizeof *info;
+      bfd_size_type amt = sizeof(*info);
 
-      info = bfd_zalloc (abfd, amt);
+      info = (struct stab_find_info *)bfd_zalloc(abfd, amt);
       if (info == NULL)
 	return FALSE;
 
@@ -975,10 +972,10 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
 	 --split-by-reloc options, it is possible for the .stab and
 	 .stabstr sections to be split.  We should handle that.  */
 
-      info->stabsec = bfd_get_section_by_name (abfd, ".stab");
-      info->strsec = bfd_get_section_by_name (abfd, ".stabstr");
+      info->stabsec = bfd_get_section_by_name(abfd, ".stab");
+      info->strsec = bfd_get_section_by_name(abfd, ".stabstr");
 
-      if (info->stabsec == NULL || info->strsec == NULL)
+      if ((info->stabsec == NULL) || (info->strsec == NULL))
 	{
 	  /* No stabs debugging information.  Set *pinfo so that we
              can return quickly in the info != NULL case above.  */
@@ -995,27 +992,27 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
 
       info->stabs = (bfd_byte *)bfd_alloc(abfd, stabsize);
       info->strs = (bfd_byte *)bfd_alloc(abfd, strsize);
-      if (info->stabs == NULL || info->strs == NULL)
+      if ((info->stabs == NULL) || (info->strs == NULL))
 	return FALSE;
 
-      if (! bfd_get_section_contents (abfd, info->stabsec, info->stabs,
-				      0, stabsize)
-	  || ! bfd_get_section_contents (abfd, info->strsec, info->strs,
-					 0, strsize))
+      if (! bfd_get_section_contents(abfd, info->stabsec, info->stabs,
+                                     0, stabsize)
+	  || ! bfd_get_section_contents(abfd, info->strsec, info->strs,
+                                        0, strsize))
 	return FALSE;
 
       /* If this is a relocatable object file, we have to relocate
 	 the entries in .stab.  This should always be simple 32 bit
 	 relocations against symbols defined in this object file, so
 	 this should be no big deal.  */
-      reloc_size = bfd_get_reloc_upper_bound (abfd, info->stabsec);
+      reloc_size = bfd_get_reloc_upper_bound(abfd, info->stabsec);
       if (reloc_size < 0)
 	return FALSE;
-      reloc_vector = bfd_malloc (reloc_size);
-      if (reloc_vector == NULL && reloc_size != 0)
+      reloc_vector = (arelent **)bfd_malloc((bfd_size_type)reloc_size);
+      if ((reloc_vector == NULL) && (reloc_size != 0))
 	return FALSE;
-      reloc_count = bfd_canonicalize_reloc (abfd, info->stabsec, reloc_vector,
-					    symbols);
+      reloc_count = bfd_canonicalize_reloc(abfd, info->stabsec, reloc_vector,
+                                           symbols);
       if (reloc_count < 0)
 	{
 	  if (reloc_vector != NULL)
@@ -1106,9 +1103,9 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
 	return TRUE;
       ++info->indextablesize;
 
-      amt = info->indextablesize;
-      amt *= sizeof (struct indexentry);
-      info->indextable = bfd_alloc (abfd, amt);
+      amt = (bfd_size_type)info->indextablesize;
+      amt *= sizeof(struct indexentry);
+      info->indextable = (struct indexentry *)bfd_alloc(abfd, amt);
       if (info->indextable == NULL)
 	return FALSE;
 
@@ -1150,7 +1147,7 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
 		}
 	      saw_fun = 0;
 
-	      file_name = (char *) str + bfd_get_32 (abfd, stab + STRDXOFF);
+	      file_name = (char *)str + bfd_get_32(abfd, stab + STRDXOFF);
 	      if (*file_name == '\0')
 		{
 		  directory_name = NULL;
@@ -1178,37 +1175,44 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
 	      break;
 
 	    case N_SOL:
-	      /* The name of an include file.  */
-	      file_name = (char *) str + bfd_get_32 (abfd, stab + STRDXOFF);
+	      /* The name of an include file: */
+	      file_name = (char *)str + bfd_get_32(abfd, stab + STRDXOFF);
 	      break;
 
 	    case N_FUN:
-	      /* A function name.  */
-	      saw_fun = 1;
-	      name = (char *) str + bfd_get_32 (abfd, stab + STRDXOFF);
+              {
+                /* A function name: */
+                saw_fun = 1;
+                name = (char *)str + bfd_get_32(abfd, stab + STRDXOFF);
 
-	      if (*name == '\0')
-		name = NULL;
+                if (*name == '\0') {
+                  name = NULL;
+                }
 
-	      function_name = name;
+                function_name = name;
 
-	      if (name == NULL)
-		continue;
+                if (name == NULL) {
+                  continue;
+                }
 
-	      info->indextable[i].val = bfd_get_32 (abfd, stab + VALOFF);
-	      info->indextable[i].stab = stab;
-	      info->indextable[i].str = str;
-	      info->indextable[i].directory_name = directory_name;
-	      info->indextable[i].file_name = file_name;
-	      info->indextable[i].function_name = function_name;
-	      ++i;
+                info->indextable[i].val = bfd_get_32(abfd, stab + VALOFF);
+                info->indextable[i].stab = stab;
+                info->indextable[i].str = str;
+                info->indextable[i].directory_name = directory_name;
+                info->indextable[i].file_name = file_name;
+                info->indextable[i].function_name = function_name;
+                ++i;
+              }
 	      break;
+
+            default:
+              break;
 	    }
 	}
 
       if (saw_fun == 0)
 	{
-	  info->indextable[i].val = bfd_get_32 (abfd, last_stab + VALOFF);
+	  info->indextable[i].val = bfd_get_32(abfd, last_stab + VALOFF);
 	  info->indextable[i].stab = last_stab;
 	  info->indextable[i].str = str;
 	  info->indextable[i].directory_name = directory_name;
@@ -1217,8 +1221,8 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
 	  ++i;
 	}
 
-      info->indextable[i].val = (bfd_vma) -1;
-      info->indextable[i].stab = info->stabs + stabsize;
+      info->indextable[i].val = (bfd_vma)-1;
+      info->indextable[i].stab = (info->stabs + stabsize);
       info->indextable[i].str = str;
       info->indextable[i].directory_name = NULL;
       info->indextable[i].file_name = NULL;
@@ -1226,8 +1230,8 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
       ++i;
 
       info->indextablesize = i;
-      qsort (info->indextable, (size_t) i, sizeof (struct indexentry),
-	     cmpindexentry);
+      qsort(info->indextable, (size_t)i, sizeof(struct indexentry),
+            cmpindexentry);
 
       *pinfo = info;
     }
@@ -1295,11 +1299,11 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
       switch (stab[TYPEOFF])
 	{
 	case N_SOL:
-	  /* The name of an include file.  */
-	  val = bfd_get_32 (abfd, stab + VALOFF);
+	  /* The name of an include file: */
+	  val = bfd_get_32(abfd, stab + VALOFF);
 	  if (val <= offset)
 	    {
-	      file_name = (char *) str + bfd_get_32 (abfd, stab + STRDXOFF);
+	      file_name = (char *)str + bfd_get_32(abfd, stab + STRDXOFF);
 	      *pline = 0;
 	    }
 	  break;
@@ -1312,11 +1316,11 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
 	     value is an absolute address.  */
 	  val = ((indexentry->function_name ? indexentry->val : 0)
 		 + bfd_get_32 (abfd, stab + VALOFF));
-	  /* If this line starts before our desired offset, or if it's
-	     the first line we've been able to find, use it.  The
+	  /* If this line starts before our desired offset, or if it is
+	     the first line we have been able to find, use it.  The
 	     !saw_line check works around a bug in GCC 2.95.3, which emits
 	     the first N_SLINE late.  */
-	  if (!saw_line || val <= offset)
+	  if (!saw_line || (val <= offset))
 	    {
 	      *pline = bfd_get_16 (abfd, stab + DESCOFF);
 
@@ -1325,7 +1329,7 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
 	      info->cached_offset = val;
 	      info->cached_file_name = file_name;
 	      info->cached_indexentry = indexentry;
-#endif
+#endif /* ENABLE_CACHING */
 	    }
 	  if (val > offset)
 	    done = TRUE;
@@ -1338,6 +1342,9 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
 	    done = TRUE;
 	  saw_func = TRUE;
 	  break;
+
+        default:
+          break;
 	}
 
       if (done)
@@ -1346,7 +1353,7 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
 
   *pfound = TRUE;
 
-  if (file_name == NULL || IS_ABSOLUTE_PATH (file_name)
+  if ((file_name == NULL) || IS_ABSOLUTE_PATH(file_name)
       || directory_name == NULL)
     *pfilename = file_name;
   else
@@ -1378,11 +1385,12 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
       char *s;
 
       /* This will typically be something like main:F(0,1), so we want
-         to clobber the colon.  It is OK to change the name, since the
-         string is in our own local storage anyhow.  */
-      s = strchr (indexentry->function_name, ':');
-      if (s != NULL)
+       * to clobber the colon.  It is OK to change the name, since the
+       * string is in our own local storage anyhow: */
+      s = strchr(indexentry->function_name, ':');
+      if (s != NULL) {
 	*s = '\0';
+      }
 
       *pfnname = indexentry->function_name;
     }
@@ -1390,4 +1398,8 @@ _bfd_stab_section_find_nearest_line (bfd *abfd,
   return TRUE;
 }
 
-/* EOF */
+#ifdef OTHEROFF
+# undef OTHEROFF
+#endif /* OTHEROFF */
+
+/* End of syms.c */

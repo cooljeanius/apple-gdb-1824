@@ -346,26 +346,26 @@ nlm_swap_auxiliary_headers_in (bfd *abfd)
 	  /* If we have found a Cygnus header, process it.  Otherwise,
 	     just save the associated data without trying to interpret
 	     it.  */
-	  if (strncmp (dataStamp, "CyGnUsEx", 8) == 0)
+	  if (strncmp(dataStamp, "CyGnUsEx", 8) == 0)
 	    {
 	      file_ptr pos;
 	      bfd_byte *contents;
 	      bfd_byte *p, *pend;
 
-	      BFD_ASSERT (hdrLength == 0 && hdr == NULL);
+	      BFD_ASSERT((hdrLength == 0) && (hdr == NULL));
 
 	      pos = bfd_tell (abfd);
-	      if (bfd_seek (abfd, dataOffset, SEEK_SET) != 0)
+	      if (bfd_seek(abfd, dataOffset, SEEK_SET) != 0)
 		return FALSE;
-	      contents = bfd_alloc (abfd, dataLength);
+	      contents = (bfd_byte *)bfd_alloc(abfd, dataLength);
 	      if (contents == NULL)
 		return FALSE;
-	      if (bfd_bread (contents, dataLength, abfd) != dataLength)
+	      if (bfd_bread(contents, dataLength, abfd) != dataLength)
 		return FALSE;
-	      if (bfd_seek (abfd, pos, SEEK_SET) != 0)
+	      if (bfd_seek(abfd, pos, SEEK_SET) != 0)
 		return FALSE;
 
-	      memcpy (nlm_cygnus_ext_header (abfd), "CyGnUsEx", 8);
+	      memcpy(nlm_cygnus_ext_header(abfd), "CyGnUsEx", 8);
 	      nlm_cygnus_ext_header (abfd)->offset = dataOffset;
 	      nlm_cygnus_ext_header (abfd)->length = dataLength;
 
@@ -937,32 +937,32 @@ nlm_slurp_symbol_table (bfd *abfd)
      termination of the loop leaves the symcount correct for the symbols that
      were read.  */
 
-  set_public_section_func = nlm_set_public_section_func (abfd);
+  set_public_section_func = nlm_set_public_section_func(abfd);
   symcount = i_fxdhdrp->numberOfPublics;
   while (abfd->symcount < symcount)
     {
-      amt = sizeof (symlength);
-      if (bfd_bread ((void *) &symlength, amt, abfd) != amt)
+      amt = sizeof(symlength);
+      if (bfd_bread((void *)&symlength, amt, abfd) != amt)
 	return FALSE;
       amt = symlength;
       sym->symbol.the_bfd = abfd;
-      sym->symbol.name = bfd_alloc (abfd, amt + 1);
+      sym->symbol.name = (const char *)bfd_alloc(abfd, amt + 1);
       if (!sym->symbol.name)
 	return FALSE;
-      if (bfd_bread ((void *) sym->symbol.name, amt, abfd) != amt)
+      if (bfd_bread((void *)sym->symbol.name, amt, abfd) != amt)
 	return FALSE;
-      /* Cast away const.  */
-      ((char *) (sym->symbol.name))[symlength] = '\0';
-      amt = sizeof (temp);
-      if (bfd_bread ((void *) temp, amt, abfd) != amt)
+      /* Cast away const: */
+      ((char *)(sym->symbol.name))[symlength] = '\0';
+      amt = sizeof(temp);
+      if (bfd_bread((void *)temp, amt, abfd) != amt)
 	return FALSE;
-      sym->symbol.flags = BSF_GLOBAL | BSF_EXPORT;
-      sym->symbol.value = get_word (abfd, temp);
+      sym->symbol.flags = (BSF_GLOBAL | BSF_EXPORT);
+      sym->symbol.value = get_word(abfd, temp);
       if (set_public_section_func)
 	{
 	  /* Most backends can use the code below, but unfortunately
 	     some use a different scheme.  */
-	  if (! (*set_public_section_func) (abfd, sym))
+	  if (!(*set_public_section_func)(abfd, sym))
 	    return FALSE;
 	}
       else
@@ -994,23 +994,23 @@ nlm_slurp_symbol_table (bfd *abfd)
       while (abfd->symcount < symcount)
 	{
 	  amt = sizeof (symtype);
-	  if (bfd_bread ((void *) &symtype, amt, abfd) != amt)
+	  if (bfd_bread((void *)&symtype, amt, abfd) != amt)
 	    return FALSE;
-	  amt = sizeof (temp);
-	  if (bfd_bread ((void *) temp, amt, abfd) != amt)
+	  amt = sizeof(temp);
+	  if (bfd_bread((void *)temp, amt, abfd) != amt)
 	    return FALSE;
-	  amt = sizeof (symlength);
-	  if (bfd_bread ((void *) &symlength, amt, abfd) != amt)
+	  amt = sizeof(symlength);
+	  if (bfd_bread((void *)&symlength, amt, abfd) != amt)
 	    return FALSE;
 	  amt = symlength;
 	  sym->symbol.the_bfd = abfd;
-	  sym->symbol.name = bfd_alloc (abfd, amt + 1);
+	  sym->symbol.name = (const char *)bfd_alloc(abfd, amt + 1);
 	  if (!sym->symbol.name)
 	    return FALSE;
-	  if (bfd_bread ((void *) sym->symbol.name, amt, abfd) != amt)
+	  if (bfd_bread((void *)sym->symbol.name, amt, abfd) != amt)
 	    return FALSE;
-	  /* Cast away const.  */
-	  ((char *) (sym->symbol.name))[symlength] = '\0';
+	  /* Cast away const: */
+	  ((char *)(sym->symbol.name))[symlength] = '\0';
 	  sym->symbol.flags = BSF_LOCAL;
 	  sym->symbol.value = get_word (abfd, temp);
 
@@ -1089,38 +1089,35 @@ nlm_make_empty_symbol (bfd *abfd)
   return & new->symbol;
 }
 
-/* Get symbol information.  */
-
+/* Get symbol information: */
 void
-nlm_get_symbol_info (bfd *ignore_abfd ATTRIBUTE_UNUSED,
-		     asymbol *symbol,
-		     symbol_info *ret)
+nlm_get_symbol_info(bfd *ignore_abfd ATTRIBUTE_UNUSED, asymbol *symbol,
+                    symbol_info *ret)
 {
-  bfd_symbol_info (symbol, ret);
+  bfd_symbol_info(symbol, ret);
 }
 
-/* Print symbol information.  */
-
+/* Print symbol information: */
 void
-nlm_print_symbol (bfd *abfd,
-		  void * afile,
-		  asymbol *symbol,
-		  bfd_print_symbol_type how)
+nlm_print_symbol(bfd *abfd, void * afile, asymbol *symbol,
+                 bfd_print_symbol_type how)
 {
-  FILE *file = (FILE *) afile;
+  FILE *file = (FILE *)afile;
 
   switch (how)
     {
     case bfd_print_symbol_name:
     case bfd_print_symbol_more:
       if (symbol->name)
-	fprintf (file, "%s", symbol->name);
+	fprintf(file, "%s", symbol->name);
       break;
     case bfd_print_symbol_all:
-      bfd_print_symbol_vandf (abfd, (void *) file, symbol);
-      fprintf (file, " %-5s", symbol->section->name);
+      bfd_print_symbol_vandf(abfd, (void *)file, symbol);
+      fprintf(file, " %-5s", symbol->section->name);
       if (symbol->name)
-	fprintf (file, " %s", symbol->name);
+	fprintf(file, " %s", symbol->name);
+      break;
+    default:
       break;
     }
 }
@@ -1198,23 +1195,23 @@ nlm_get_reloc_upper_bound (bfd *abfd, asection *sec)
   if (nlm_read_reloc_func (abfd) == NULL)
     return -1;
   /* Make sure we have either the code or the data section.  */
-  if ((bfd_get_section_flags (abfd, sec) & (SEC_CODE | SEC_DATA)) == 0)
+  if ((bfd_get_section_flags(abfd, sec) & (SEC_CODE | SEC_DATA)) == 0)
     return 0;
 
-  syms = nlm_get_symbols (abfd);
+  syms = nlm_get_symbols(abfd);
   if (syms == NULL)
     {
-      if (! nlm_slurp_symbol_table (abfd))
+      if (! nlm_slurp_symbol_table(abfd))
 	return -1;
-      syms = nlm_get_symbols (abfd);
+      syms = nlm_get_symbols(abfd);
     }
 
-  ret = nlm_fixed_header (abfd)->numberOfRelocationFixups;
+  ret = (unsigned int)nlm_fixed_header(abfd)->numberOfRelocationFixups;
 
-  count = bfd_get_symcount (abfd);
+  count = bfd_get_symcount(abfd);
   while (count-- != 0)
     {
-      ret += syms->rcnt;
+      ret += (unsigned int)syms->rcnt;
       ++syms;
     }
 

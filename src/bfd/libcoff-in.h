@@ -1,4 +1,4 @@
-/* BFD COFF object file private structure.
+/* libcoff.h -- BFD COFF object file private structure.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
    2000, 2001, 2002, 2003, 2004, 2005
    Free Software Foundation, Inc.
@@ -18,12 +18,11 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #include "bfdlink.h"
 
-/* Object file tdata; access macros.  */
-
+/* Object file tdata; access macros: */
 #define coff_data(bfd)		      ((bfd)->tdata.coff_obj_data)
 #define exec_hdr(bfd)		      (coff_data (bfd)->hdr)
 #define obj_pe(bfd)                   (coff_data (bfd)->pe)
@@ -578,3 +577,5 @@ extern bfd_boolean ppc_process_before_allocation
 #ifdef	__cplusplus
 }
 #endif /* __cplusplus */
+
+/* End of libcoff-in.h */

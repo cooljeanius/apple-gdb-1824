@@ -127,7 +127,7 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 /***********************************************/
 /* provide overrides for routines in this file */
 /***********************************************/
-/* these don't use MY because that causes problems within JUMP_TABLE
+/* these do NOT use MY because that causes problems within JUMP_TABLE
    (CONCAT2 winds up being expanded recursively, which ANSI C compilers
    will not do).  */
 #define MY_canonicalize_symtab hp300hpux_canonicalize_symtab
@@ -184,7 +184,9 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 #define HP_RLENGTH_BYTE		0x00
 #define HP_RLENGTH_WORD		0x01
 #define HP_RLENGTH_LONG		0x02
-#define HP_RLENGTH_ALIGN	0x03
+#ifndef HP_RLENGTH_ALIGN
+# define HP_RLENGTH_ALIGN	0x03
+#endif /* !HP_RLENGTH_ALIGN */
 
 #define NAME(x,y) CONCAT3 (hp300hpux,_32_,y)
 #define ARCH_SIZE 32
@@ -193,28 +195,35 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 #define BMAGIC HPUX_DOT_O_MAGIC
 #define QMAGIC 0314
 
+/* this needs to go after the usage of the CONCAT* macro mentioned above,
+ * but before any other headers are included, or prototypes for functions
+ * are declared: */
+#if defined(__GNUC__) && (__GNUC__ >= 4)
+ # pragma GCC diagnostic ignored "-Wtraditional"
+#endif /* gcc 4+ */
+
 #include "aoutx.h"
 
-static const bfd_target * MY (callback)
-  PARAMS ((bfd *));
-static bfd_boolean MY (write_object_contents)
-  PARAMS ((bfd *));
+static const bfd_target *MY(callback)
+  PARAMS((bfd *));
+static bfd_boolean MY(write_object_contents)
+  PARAMS((bfd *));
 static void convert_sym_type
-  PARAMS ((struct external_nlist *, aout_symbol_type *, bfd *));
+  PARAMS((struct external_nlist *, aout_symbol_type *, bfd *));
 
-bfd_boolean MY (slurp_symbol_table)
-  PARAMS ((bfd *));
-void MY (swap_std_reloc_in)
-  PARAMS ((bfd *, struct hp300hpux_reloc *, arelent *, asymbol **,
-	   bfd_size_type));
-bfd_boolean MY (slurp_reloc_table)
-  PARAMS ((bfd *, sec_ptr, asymbol **));
-long MY (canonicalize_symtab)
-  PARAMS ((bfd *, asymbol **));
-long MY (get_symtab_upper_bound)
-  PARAMS ((bfd *));
-long MY (canonicalize_reloc)
-  PARAMS ((bfd *, sec_ptr, arelent **, asymbol **));
+bfd_boolean MY(slurp_symbol_table)
+  PARAMS((bfd *));
+void MY(swap_std_reloc_in)
+  PARAMS((bfd *, struct hp300hpux_reloc *, arelent *, asymbol **,
+          bfd_size_type));
+bfd_boolean MY(slurp_reloc_table)
+  PARAMS((bfd *, sec_ptr, asymbol **));
+long MY(canonicalize_symtab)
+  PARAMS((bfd *, asymbol **));
+long MY(get_symtab_upper_bound)
+  PARAMS((bfd *));
+long MY(canonicalize_reloc)
+  PARAMS((bfd *, sec_ptr, arelent **, asymbol **));
 
 /* Since the hpux symbol table has nlist elements interspersed with
    strings and we need to insert som strings for secondary symbols, we
@@ -225,81 +234,80 @@ long MY (canonicalize_reloc)
 #define SYM_EXTRA_BYTES   1024
 
 /* Set parameters about this a.out file that are machine-dependent.
-   This routine is called from some_aout_object_p just before it returns.  */
+ * This routine is called from some_aout_object_p before it returns: */
 static const bfd_target *
-MY (callback) (abfd)
-     bfd *abfd;
+MY(callback)(bfd *abfd)
 {
-  struct internal_exec *execp = exec_hdr (abfd);
+  struct internal_exec *execp = exec_hdr(abfd);
 
-  /* Calculate the file positions of the parts of a newly read aout header */
-  obj_textsec (abfd)->size = N_TXTSIZE (*execp);
+  /* Calculate file positions of the parts of a newly-read aout header: */
+  obj_textsec(abfd)->size = N_TXTSIZE(*execp);
 
-  /* The virtual memory addresses of the sections */
-  obj_textsec (abfd)->vma = N_TXTADDR (*execp);
-  obj_datasec (abfd)->vma = N_DATADDR (*execp);
-  obj_bsssec (abfd)->vma = N_BSSADDR (*execp);
+  /* The virtual memory addresses of the sections: */
+  obj_textsec(abfd)->vma = N_TXTADDR(*execp);
+  obj_datasec(abfd)->vma = N_DATADDR(*execp);
+  obj_bsssec(abfd)->vma = N_BSSADDR(*execp);
 
-  obj_textsec (abfd)->lma = obj_textsec (abfd)->vma;
-  obj_datasec (abfd)->lma = obj_datasec (abfd)->vma;
-  obj_bsssec (abfd)->lma = obj_bsssec (abfd)->vma;
+  obj_textsec(abfd)->lma = obj_textsec(abfd)->vma;
+  obj_datasec(abfd)->lma = obj_datasec(abfd)->vma;
+  obj_bsssec(abfd)->lma = obj_bsssec(abfd)->vma;
 
-  /* The file offsets of the sections */
-  obj_textsec (abfd)->filepos = N_TXTOFF (*execp);
-  obj_datasec (abfd)->filepos = N_DATOFF (*execp);
+  /* The file offsets of the sections: */
+  obj_textsec(abfd)->filepos = N_TXTOFF(*execp);
+  obj_datasec(abfd)->filepos = N_DATOFF(*execp);
 
-  /* The file offsets of the relocation info */
-  obj_textsec (abfd)->rel_filepos = N_TRELOFF (*execp);
-  obj_datasec (abfd)->rel_filepos = N_DRELOFF (*execp);
+  /* The file offsets of the relocation info: */
+  obj_textsec(abfd)->rel_filepos = N_TRELOFF(*execp);
+  obj_datasec(abfd)->rel_filepos = N_DRELOFF(*execp);
 
-  /* The file offsets of the string table and symbol table.  */
-  obj_sym_filepos (abfd) = N_SYMOFF (*execp);
-  obj_str_filepos (abfd) = N_STROFF (*execp);
+  /* The file offsets of the string table and symbol table: */
+  obj_sym_filepos(abfd) = N_SYMOFF(*execp);
+  obj_str_filepos(abfd) = N_STROFF(*execp);
 
-  /* Determine the architecture and machine type of the object file.  */
+  /* Determine the architecture and machine type of the object file: */
 #ifdef SET_ARCH_MACH
-  SET_ARCH_MACH (abfd, *execp);
+  SET_ARCH_MACH(abfd, *execp);
 #else
-  bfd_default_set_arch_mach (abfd, DEFAULT_ARCH, 0);
-#endif
+  bfd_default_set_arch_mach(abfd, DEFAULT_ARCH, 0);
+#endif /* SET_ARCH_MACH */
 
-  if (obj_aout_subformat (abfd) == gnu_encap_format)
+  if (obj_aout_subformat(abfd) == gnu_encap_format)
     {
-      /* The file offsets of the relocation info */
-      obj_textsec (abfd)->rel_filepos = N_GNU_TRELOFF (*execp);
-      obj_datasec (abfd)->rel_filepos = N_GNU_DRELOFF (*execp);
+      /* The file offsets of the relocation info: */
+      obj_textsec(abfd)->rel_filepos = N_GNU_TRELOFF(*execp);
+      obj_datasec(abfd)->rel_filepos = N_GNU_DRELOFF(*execp);
 
-      /* The file offsets of the string table and symbol table.  */
-      obj_sym_filepos (abfd) = N_GNU_SYMOFF (*execp);
-      obj_str_filepos (abfd) = (obj_sym_filepos (abfd) + execp->a_syms);
+      /* The file offsets of the string table and symbol table: */
+      obj_sym_filepos(abfd) = N_GNU_SYMOFF(*execp);
+      obj_str_filepos(abfd) = (obj_sym_filepos(abfd) + execp->a_syms);
 
-      abfd->flags |= HAS_LINENO | HAS_DEBUG | HAS_SYMS | HAS_LOCALS;
-      bfd_get_symcount (abfd) = execp->a_syms / 12;
-      obj_symbol_entry_size (abfd) = 12;
-      obj_reloc_entry_size (abfd) = RELOC_STD_SIZE;
+      abfd->flags |= (HAS_LINENO | HAS_DEBUG | HAS_SYMS | HAS_LOCALS);
+      bfd_get_symcount(abfd) = (execp->a_syms / 12);
+      obj_symbol_entry_size(abfd) = 12;
+      obj_reloc_entry_size(abfd) = RELOC_STD_SIZE;
     }
 
   return abfd->xvec;
 }
 
+/* FIXME: move this to a relevant header file: */
 extern bfd_boolean aout_32_write_syms
-  PARAMS ((bfd * abfd));
+  PARAMS((bfd * abfd));
 
 static bfd_boolean
-MY (write_object_contents) (abfd)
-     bfd *abfd;
+MY(write_object_contents)(bfd *abfd)
 {
   struct external_exec exec_bytes;
-  struct internal_exec *execp = exec_hdr (abfd);
+  struct internal_exec *execp = exec_hdr(abfd);
   bfd_size_type text_size;	/* dummy vars */
   file_ptr text_end;
 
-  memset (&exec_bytes, 0, sizeof (exec_bytes));
+  memset(&exec_bytes, 0, sizeof(exec_bytes));
 
-  obj_reloc_entry_size (abfd) = RELOC_STD_SIZE;
+  obj_reloc_entry_size(abfd) = RELOC_STD_SIZE;
 
-  if (adata (abfd).magic == undecided_magic)
-    NAME (aout,adjust_sizes_and_vmas) (abfd, &text_size, &text_end);
+  if (adata(abfd).magic == undecided_magic)
+    NAME(aout,adjust_sizes_and_vmas)(abfd, &text_size, &text_end);
   execp->a_syms = 0;
 
   execp->a_entry = bfd_get_start_address (abfd);
@@ -355,12 +363,9 @@ MY (write_object_contents) (abfd)
 
 /* convert the hp symbol type to be the same as aout64.h usage so we */
 /* can piggyback routines in aoutx.h.                                */
-
 static void
-convert_sym_type (sym_pointer, cache_ptr, abfd)
-     struct external_nlist *sym_pointer ATTRIBUTE_UNUSED;
-     aout_symbol_type *cache_ptr;
-     bfd *abfd ATTRIBUTE_UNUSED;
+convert_sym_type(struct external_nlist *sym_pointer ATTRIBUTE_UNUSED,
+                 aout_symbol_type *cache_ptr, bfd *abfd ATTRIBUTE_UNUSED)
 {
   int name_type;
   int new_type;
@@ -882,3 +887,9 @@ MY (canonicalize_reloc) (abfd, section, relptr, symbols)
 }
 
 #include "aout-target.h"
+
+#ifdef HP_RLENGTH_ALIGN
+# undef HP_RLENGTH_ALIGN
+#endif /* HP_RLENGTH_ALIGN */
+
+/* EOF */

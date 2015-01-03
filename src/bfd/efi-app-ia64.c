@@ -26,10 +26,18 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
 #define COFF_IMAGE_WITH_PE
 #define COFF_WITH_PE
 #define COFF_WITH_pep
-#define PCRELOFFSET TRUE
+#ifndef PCRELOFFSET
+# define PCRELOFFSET TRUE
+#endif /* !PCRELOFFSET */
 #define TARGET_UNDERSCORE '_'
 #define COFF_LONG_SECTION_NAMES
 #define PEI_TARGET_SUBSYSTEM		IMAGE_SUBSYSTEM_EFI_APPLICATION
 #define PEI_FORCE_MINIMUM_ALIGNMENT
 
 #include "coff-ia64.c"
+
+#ifdef PCRELOFFSET
+# undef PCRELOFFSET
+#endif /* PCRELOFFSET */
+
+/* EOF */

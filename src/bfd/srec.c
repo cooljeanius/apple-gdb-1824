@@ -129,11 +129,17 @@ static const char digs[] = "0123456789ABCDEF";
 /* The number of data bytes we actually fit onto a line on output.
    This variable can be modified by objcopy's --srec-len parameter.
    For a 0x75 byte record you should set --srec-len=0x70.  */
+#ifdef __clang__
+extern unsigned int Chunk;
+#endif /* __clang__ */
 unsigned int Chunk = DEFAULT_CHUNK;
 
 /* The type of srec output (free or forced to S3).
    This variable can be modified by objcopy's --srec-forceS3
    parameter.  */
+#ifdef __clang__
+extern bfd_boolean S3Forced;
+#endif /* __clang__ */
 bfd_boolean S3Forced = FALSE;
 
 /* When writing an S-record file, the S-records can not be output as
@@ -183,20 +189,19 @@ srec_init (void)
   if (! inited)
     {
       inited = TRUE;
-      hex_init ();
+      hex_init();
     }
 }
 
-/* Set up the S-record tdata information.  */
-
+/* Set up the S-record tdata information: */
 static bfd_boolean
-srec_mkobject (bfd *abfd)
+srec_mkobject(bfd *abfd)
 {
   tdata_type *tdata;
 
-  srec_init ();
+  srec_init();
 
-  tdata = bfd_alloc (abfd, sizeof (tdata_type));
+  tdata = (tdata_type *)bfd_alloc(abfd, sizeof(tdata_type));
   if (tdata == NULL)
     return FALSE;
 
@@ -262,14 +267,13 @@ srec_bad_byte (bfd *abfd,
     }
 }
 
-/* Add a new symbol found in an S-record file.  */
-
+/* Add a new symbol found in an S-record file: */
 static bfd_boolean
-srec_new_symbol (bfd *abfd, const char *name, bfd_vma val)
+srec_new_symbol(bfd *abfd, const char *name, bfd_vma val)
 {
   struct srec_symbol *n;
 
-  n = bfd_alloc (abfd, sizeof (* n));
+  n = (struct srec_symbol *)bfd_alloc(abfd, sizeof(* n));
   if (n == NULL)
     return FALSE;
 
@@ -492,7 +496,7 @@ srec_scan (bfd *abfd)
 	      case '0':
 	      case '5':
 		/* Prologue--ignore the file name, but stop building a
-		   section at this point.  */
+		 * section at this point: */
 		sec = NULL;
 		break;
 
@@ -513,8 +517,8 @@ srec_scan (bfd *abfd)
 		data += 2;
 		bytes -= 2;
 
-		if (sec != NULL
-		    && sec->vma + sec->size == address)
+		if ((sec != NULL)
+		    && ((sec->vma + sec->size) == address))
 		  {
 		    /* This data goes at the end of the section we are
 		       currently building.  */
@@ -546,22 +550,25 @@ srec_scan (bfd *abfd)
 		data += 2;
 		/* Fall through.  */
 	      case '8':
-		address = (address << 8) | HEX (data);
+		address = (address << 8) | HEX(data);
 		data += 2;
 		/* Fall through.  */
 	      case '9':
-		address = (address << 8) | HEX (data);
+		address = ((address << 8) | HEX(data));
 		data += 2;
-		address = (address << 8) | HEX (data);
+		address = ((address << 8) | HEX(data));
 		data += 2;
 
-		/* This is a termination record.  */
+		/* This is a termination record: */
 		abfd->start_address = address;
 
 		if (buf != NULL)
-		  free (buf);
+		  free(buf);
 
 		return TRUE;
+
+              default:
+                break;
 	      }
 	  }
 	  break;
@@ -890,21 +897,22 @@ srec_write_record(bfd *abfd, unsigned int type, bfd_vma address,
     {
     case 3:
     case 7:
-      TOHEX (dst, (address >> 24), check_sum);
+      TOHEX(dst, (address >> 24), check_sum);
       dst += 2;
     case 8:
     case 2:
-      TOHEX (dst, (address >> 16), check_sum);
+      TOHEX(dst, (address >> 16), check_sum);
       dst += 2;
     case 9:
     case 1:
     case 0:
-      TOHEX (dst, (address >> 8), check_sum);
+      TOHEX(dst, (address >> 8), check_sum);
       dst += 2;
-      TOHEX (dst, (address), check_sum);
+      TOHEX(dst, (address), check_sum);
       dst += 2;
       break;
-
+    default:
+      break;
     }
   for (src = data; src < end; src++)
     {
@@ -991,11 +999,11 @@ srec_write_terminator (bfd *abfd, tdata_type *tdata)
 }
 
 static bfd_boolean
-srec_write_symbols (bfd *abfd)
+srec_write_symbols(bfd *abfd)
 {
-  /* Dump out the symbols of a bfd.  */
+  /* Dump out the symbols of a bfd: */
   int i;
-  int count = bfd_get_symcount (abfd);
+  int count = (int)bfd_get_symcount(abfd);
 
   if (count)
     {
@@ -1114,7 +1122,7 @@ srec_canonicalize_symtab (bfd *abfd, asymbol **alocation)
       asymbol *c;
       struct srec_symbol *s;
 
-      csymbols = bfd_alloc (abfd, symcount * sizeof (asymbol));
+      csymbols = (asymbol *)bfd_alloc(abfd, symcount * sizeof (asymbol));
       if (csymbols == NULL && symcount != 0)
 	return 0;
       abfd->tdata.srec_data->csymbols = csymbols;
@@ -1148,23 +1156,21 @@ srec_get_symbol_info (bfd *ignore_abfd ATTRIBUTE_UNUSED,
 }
 
 static void
-srec_print_symbol (bfd *abfd,
-		   void * afile,
-		   asymbol *symbol,
-		   bfd_print_symbol_type how)
+srec_print_symbol(bfd *abfd, void * afile, asymbol *symbol,
+                  bfd_print_symbol_type how)
 {
-  FILE *file = (FILE *) afile;
+  FILE *file = (FILE *)afile;
 
   switch (how)
     {
     case bfd_print_symbol_name:
-      fprintf (file, "%s", symbol->name);
+      fprintf(file, "%s", symbol->name);
       break;
+    case bfd_print_symbol_more: /* Fall through: */
+    case bfd_print_symbol_all: /* Fall through: */
     default:
-      bfd_print_symbol_vandf (abfd, (void *) file, symbol);
-      fprintf (file, " %-5s %s",
-	       symbol->section->name,
-	       symbol->name);
+      bfd_print_symbol_vandf(abfd, (void *)file, symbol);
+      fprintf(file, " %-5s %s", symbol->section->name, symbol->name);
     }
 }
 
@@ -1201,9 +1207,12 @@ srec_print_symbol (bfd *abfd,
 #define srec_bfd_final_link                       _bfd_generic_final_link
 #define srec_bfd_link_split_section               _bfd_generic_link_split_section
 
+#ifdef __clang__
+extern const bfd_target srec_vec;
+#endif /* __clang__ */
 const bfd_target srec_vec =
 {
-  "srec",			/* Name.  */
+  (char *)"srec",			/* Name.  */
   bfd_target_srec_flavour,
   BFD_ENDIAN_UNKNOWN,		/* Target byte order.  */
   BFD_ENDIAN_UNKNOWN,		/* Target headers byte order.  */
@@ -1256,9 +1265,12 @@ const bfd_target srec_vec =
   NULL
 };
 
+#ifdef __clang__
+extern const bfd_target symbolsrec_vec;
+#endif /* __clang__ */
 const bfd_target symbolsrec_vec =
 {
-  "symbolsrec",			/* Name.  */
+  (char *)"symbolsrec",			/* Name.  */
   bfd_target_srec_flavour,
   BFD_ENDIAN_UNKNOWN,		/* Target byte order.  */
   BFD_ENDIAN_UNKNOWN,		/* Target headers byte order.  */

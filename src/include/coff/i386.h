@@ -14,7 +14,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St. - 5th Floor, Boston, MA 02110-1301, USA.
+ * Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA
  */
 
 #define L_LNNO_SIZE 2
@@ -48,10 +48,10 @@
 		        && (x).f_magic != LYNXCOFFMAGIC)
 #endif /* !I386BADMAG */
 
-#define OMAGIC          0404    /* object files, eg as output */
-#define ZMAGIC          0413    /* demand load format, eg normal ld output */
-#define STMAGIC		0401	/* target shlib */
-#define SHMAGIC		0443	/* host   shlib */
+#define OMAGIC 0404    /* object files, eg as output */
+#define ZMAGIC 0413    /* demand load format, e.g. normal ld output */
+#define STMAGIC 0401	/* target shlib */
+#define SHMAGIC 0443	/* host   shlib */
 
 /* define some NT default values */
 #ifndef NT_IMAGE_BASE
@@ -113,12 +113,13 @@ struct external_reloc
 #define _LIB     ".lib"     /* shared lib info section     */
 #define _TV      ".tv"
 
- /* For new sections we have NOT heard of before */
+ /* For new sections we have NOT heard of before: */
 #define DEFAULT_SECTION_ALIGNMENT 4
 
-/* ------------------------------------------------------------------------- */
+/* --------------------------------------------------------------------- */
 
-#if (defined(_AIX) && defined(_I386)) || defined(__i386) || defined(__i386__)
+#if (defined(_AIX) && defined(_I386)) || defined(__i386) || \
+    defined(__i386__) || defined(__x86_64) || defined(__x86_64__)
 /* -- from uinfo.h -- */
 # define UINFOSIZ 64 /* size of user info buffer */
 typedef char uinfo_t[UINFOSIZ];
@@ -203,13 +204,13 @@ typedef	struct ksigmask {	/* used in u struct */
 #   endif /* !HAVE_KSIGMASK_T */
 #  else
 #   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#    warning ksigmask_t cannot be used if _POSIX_SOURCE is defined.
+#    warning "ksigmask_t cannot be used if _POSIX_SOURCE is defined."
 #   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* !_POSIX_SOURCE */
 # else
 #  if defined(_H_SIGNAL) && !defined(HAVE_KSIGMASK_T) && !defined(ksigmask_t)
 #   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#    warning your signal header failed to define ksigmask_t properly.
+#    warning "your signal header failed to define ksigmask_t properly."
 #   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* _H_SIGNAL && !HAVE_KSIGMASK_T && !ksigmask_t */
 # endif /* (!HAVE_KSIGMASK_T || !ksigmask_t) && !_H_SIGNAL */
@@ -241,7 +242,13 @@ struct corehdr
   struct env387 cd_fpregs;       /* user-mode floating-point state */
 
   /* kernel-mode program state: */
+#if defined(__PROTOTYPES) || defined(PROTOTYPES) || \
+    (defined(__STDC__) && __STDC__)
+  int         (*cd_sig[NSIG])(void); /* disposition of signals */
+#else
   int         (*cd_sig[NSIG])();    /* disposition of signals      */
+#endif /* __PROTOTYPES || PROTOTYPES || __STDC__ */
+
   ksigmask_t  cd_sigmask;           /* signals to be blocked       */
   ksigmask_t  cd_sigpend;           /* signals currently pending   */
   long        cd_cursig;            /* signal that caused the dump */

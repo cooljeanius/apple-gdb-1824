@@ -523,7 +523,7 @@ mmo_object_p (bfd *abfd)
      important as all of the symbol information can only be 256k.  */
   abfd->tdata.mmo_data->max_symbol_length = (b[2] * 256 + b[3]) * 4;
   abfd->tdata.mmo_data->lop_stab_symbol
-    = bfd_malloc (abfd->tdata.mmo_data->max_symbol_length + 1);
+    = (char *)bfd_malloc(abfd->tdata.mmo_data->max_symbol_length + 1);
 
   if (abfd->tdata.mmo_data->lop_stab_symbol == NULL)
     {
@@ -979,21 +979,21 @@ mmo_get_spec_section (bfd *abfd, int spec_data_number)
 	goto format_error;
     }
 
-  /* We don't care to keep the name length accurate.  It's
+  /* We do NOT care to keep the name length accurate.  It is
      zero-terminated.  */
-  secname_length = bfd_get_32 (abfd, buf) * 4;
+  secname_length = bfd_get_32(abfd, buf) * 4;
 
-  /* Check section name length for sanity.  */
+  /* Check section name length for sanity: */
   if (secname_length > MAX_SECTION_NAME_SIZE)
     goto format_error;
 
-  /* This should be free'd regardless if a section is created.  */
-  secname = bfd_malloc (secname_length + 1);
+  /* This should be free'd regardless if a section is created: */
+  secname = (char *)bfd_malloc(secname_length + 1);
   secname[secname_length] = 0;
 
-  for (i = 0; i < secname_length / 4; i++)
+  for (i = 0; i < (secname_length / 4); i++)
     {
-      if (bfd_bread (secname + i * 4, 4, abfd) != 4)
+      if (bfd_bread(secname + i * 4, 4, abfd) != 4)
 	goto format_error_free;
 
       if (secname[i * 4] == (char) LOP)
@@ -1148,16 +1148,16 @@ mmo_write_byte (bfd *abfd, bfd_byte value)
 /* Create a symbol.  */
 
 static bfd_boolean
-mmo_create_symbol (bfd *abfd, const char *symname, bfd_vma addr, enum
-		   mmo_sym_type sym_type, unsigned int serno)
+mmo_create_symbol(bfd *abfd, const char *symname, bfd_vma addr,
+                  enum mmo_sym_type sym_type, unsigned int serno)
 {
   struct mmo_symbol *n;
 
-  n = (struct mmo_symbol *) bfd_alloc (abfd, sizeof (struct mmo_symbol));
+  n = (struct mmo_symbol *)bfd_alloc(abfd, sizeof(struct mmo_symbol));
   if (n == NULL)
     return FALSE;
 
-  n->name = bfd_alloc (abfd, strlen (symname) + 1);
+  n->name = (char *)bfd_alloc(abfd, strlen (symname) + 1);
   if (n->name == NULL)
     return FALSE;
 
@@ -1744,7 +1744,7 @@ mmo_scan (bfd *abfd)
 		 number.  */
 	      if (z != 0)
 		{
-		  char *fname = bfd_malloc (z * 4 + 1);
+		  char *fname = (char *)bfd_malloc(z * 4 + 1);
 
 		  if (fname == NULL)
 		    {
@@ -2842,18 +2842,18 @@ mmo_write_symbols_and_terminator (bfd *abfd)
   maintable[0] = fakemain;
   maintable[1] = NULL;
 
-  memset (&root, 0, sizeof (root));
+  memset(&root, 0, sizeof(root));
 
-  /* Make all symbols take a left turn.  */
+  /* Make all symbols take a left turn: */
   root.symchar = 0xff;
 
-  /* There must always be a ":Main", so we'll add one if there are no
+  /* There must always be a ":Main", so we shall add one if there are no
      symbols.  Make sure we have room for it.  */
-  table = bfd_alloc (abfd, (count + 1) * sizeof (asymbol *));
+  table = (asymbol **)bfd_alloc(abfd, (count + 1) * sizeof(asymbol *));
   if (table == NULL)
     return FALSE;
 
-  memcpy (table, orig_table, count * sizeof (asymbol *));
+  memcpy(table, orig_table, count * sizeof(asymbol *));
 
   /* Move :Main (if there is one) to the first position.  This is
      necessary to get the same layout of the trie-tree when linking as

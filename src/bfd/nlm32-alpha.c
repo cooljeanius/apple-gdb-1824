@@ -592,51 +592,50 @@ nlm_alpha_mangle_relocs (bfd *abfd ATTRIBUTE_UNUSED,
   return TRUE;
 }
 
-/* Read an ALPHA NLM import record.  */
-
+/* Read an ALPHA NLM import record: */
 static bfd_boolean
-nlm_alpha_read_import (bfd *abfd, nlmNAME (symbol_type) * sym)
+nlm_alpha_read_import(bfd *abfd, nlmNAME(symbol_type) * sym)
 {
-  struct nlm_relent *nlm_relocs;	/* Relocation records for symbol.  */
+  struct nlm_relent *nlm_relocs;    /* Relocation records for symbol.  */
   bfd_size_type rcount;			/* Number of relocs.  */
   bfd_byte temp[NLM_TARGET_LONG_SIZE];	/* Temporary 32-bit value.  */
   unsigned char symlength;		/* Length of symbol name.  */
   char *name;
   bfd_size_type amt;
 
-  if (bfd_bread (& symlength, (bfd_size_type) sizeof (symlength), abfd)
-      != sizeof (symlength))
+  if (bfd_bread(& symlength, (bfd_size_type)sizeof(symlength), abfd)
+      != sizeof(symlength))
     return FALSE;
-  sym -> symbol.the_bfd = abfd;
-  name = bfd_alloc (abfd, (bfd_size_type) symlength + 1);
+  sym->symbol.the_bfd = abfd;
+  name = (char *)bfd_alloc(abfd, (bfd_size_type)symlength + 1);
   if (name == NULL)
     return FALSE;
-  if (bfd_bread (name, (bfd_size_type) symlength, abfd) != symlength)
+  if (bfd_bread(name, (bfd_size_type)symlength, abfd) != symlength)
     return FALSE;
   name[symlength] = '\0';
-  sym -> symbol.name = name;
-  sym -> symbol.flags = 0;
-  sym -> symbol.value = 0;
-  sym -> symbol.section = bfd_und_section_ptr;
-  if (bfd_bread (temp, (bfd_size_type) sizeof (temp), abfd)
-      != sizeof (temp))
+  sym->symbol.name = name;
+  sym->symbol.flags = 0;
+  sym->symbol.value = 0;
+  sym->symbol.section = bfd_und_section_ptr;
+  if (bfd_bread(temp, (bfd_size_type)sizeof(temp), abfd)
+      != sizeof(temp))
     return FALSE;
-  rcount = H_GET_32 (abfd, temp);
-  amt = rcount * sizeof (struct nlm_relent);
-  nlm_relocs = bfd_alloc (abfd, amt);
+  rcount = H_GET_32(abfd, temp);
+  amt = rcount * sizeof(struct nlm_relent);
+  nlm_relocs = (struct nlm_relent *)bfd_alloc(abfd, amt);
   if (!nlm_relocs)
     return FALSE;
-  sym -> relocs = nlm_relocs;
-  sym -> rcnt = 0;
-  while (sym -> rcnt < rcount)
+  sym->relocs = nlm_relocs;
+  sym->rcnt = 0;
+  while (sym->rcnt < rcount)
     {
       asection *section;
 
-      if (! nlm_alpha_read_reloc (abfd, sym, &section, &nlm_relocs -> reloc))
+      if (! nlm_alpha_read_reloc(abfd, sym, &section, &nlm_relocs->reloc))
 	return FALSE;
-      nlm_relocs -> section = section;
+      nlm_relocs->section = section;
       nlm_relocs++;
-      sym -> rcnt++;
+      sym->rcnt++;
     }
 
   return TRUE;
@@ -661,7 +660,7 @@ nlm_alpha_write_import (bfd * abfd, asection * sec, arelent * rel)
     {
       r_vaddr = bfd_get_section_vma (abfd, sec) + rel->address;
       if ((sec->flags & SEC_CODE) == 0)
-	r_vaddr += bfd_get_section_by_name (abfd, NLM_CODE_NAME) -> size;
+	r_vaddr += bfd_get_section_by_name (abfd, NLM_CODE_NAME)->size;
       if (bfd_is_und_section (bfd_get_section (sym)))
 	{
 	  r_extern = 1;

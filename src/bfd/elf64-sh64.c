@@ -2842,11 +2842,11 @@ sh64_elf64_add_symbol_hook (bfd *abfd, struct bfd_link_info *info,
 	 right, and tweak the name when it's output.  Otherwise, we make
 	 an indirect symbol of it.  */
       flagword flags
-	= info->relocatable || info->emitrelocations
-	? BSF_GLOBAL : BSF_GLOBAL | BSF_INDIRECT;
+	= ((info->relocatable || info->emitrelocations)
+           ? BSF_GLOBAL : (BSF_GLOBAL | BSF_INDIRECT));
 
       char *dl_name
-	= bfd_malloc (strlen (*namep) + sizeof (DATALABEL_SUFFIX));
+	= (char *)bfd_malloc(strlen(*namep) + sizeof(DATALABEL_SUFFIX));
       struct elf_link_hash_entry ** sym_hash = elf_sym_hashes (abfd);
 
       BFD_ASSERT (sym_hash != NULL);

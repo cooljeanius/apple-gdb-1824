@@ -41,7 +41,7 @@
 # include <sys/types.h>
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning "libgettext.h expects <sys/types.h> to be included."
+ #  warning "libgettext.h expects <sys/types.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_TYPES_H */
 
@@ -49,7 +49,7 @@
 # include <locale.h>
 #else
 # if defined(__GNUC__) && !defined(__STRINCT_ANSI__)
-#  warning "libgettext.h expects <locale.h> to be included."
+ #  warning "libgettext.h expects <locale.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_LOCALE_H */
 

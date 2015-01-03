@@ -23,13 +23,14 @@
  * Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
  * 02110-1301, USA.  */
 
-#include "alloca-conf.h"
-#include "bfd.h"
 #ifndef BFD_SYSDEP_H
 # include "sysdep.h"
 #endif /* !BFD_SYSDEP_H */
 
-#if defined (HOST_HPPAHPUX) || defined (HOST_HPPABSD) || defined (HOST_HPPAOSF) || defined(HOST_HPPAMPEIX)
+#include "alloca-conf.h"
+#include "bfd.h"
+
+#if defined(HOST_HPPAHPUX) || defined(HOST_HPPABSD) || defined(HOST_HPPAOSF) || defined(HOST_HPPAMPEIX)
 
 #include "libbfd.h"
 #include "som.h"

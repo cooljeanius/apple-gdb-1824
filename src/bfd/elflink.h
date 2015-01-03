@@ -16,7 +16,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+   Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307 */
 
 /* ELF linker code.  */
 
@@ -95,12 +95,12 @@ elf_link_add_object_symbols(bfd *abfd, struct bfd_link_info *info)
   Elf_Internal_Sym *isymend;
   const struct elf_backend_data *bed;
   bfd_boolean dt_needed;
-  struct elf_link_hash_table * hash_table;
+  struct elf_link_hash_table *hash_table;
   bfd_size_type amt;
 
-  hash_table = elf_hash_table (info);
+  hash_table = elf_hash_table(info);
 
-  bed = get_elf_backend_data (abfd);
+  bed = get_elf_backend_data(abfd);
   add_symbol_hook = bed->elf_add_symbol_hook;
   collect = bed->collect;
 
@@ -140,9 +140,9 @@ elf_link_add_object_symbols(bfd *abfd, struct bfd_link_info *info)
 	      char *msg;
 	      bfd_size_type sz;
 	      bfd_size_type prefix_len;
-	      const char * gnu_warning_prefix = _("warning: ");
+	      const char *gnu_warning_prefix = _("warning: ");
 
-	      name += sizeof ".gnu.warning." - 1;
+	      name += (sizeof(".gnu.warning.") - 1);
 
 	      /* If this is a shared object, then look up the symbol
 		 in the hash table.  If it is there, and it is already
@@ -161,9 +161,9 @@ elf_link_add_object_symbols(bfd *abfd, struct bfd_link_info *info)
 					    FALSE, FALSE, TRUE);
 
 		  /* FIXME: What about bfd_link_hash_common?  */
-		  if (h != NULL
-		      && (h->root.type == bfd_link_hash_defined
-			  || h->root.type == bfd_link_hash_defweak))
+		  if ((h != NULL)
+		      && ((h->root.type == bfd_link_hash_defined)
+			  || (h->root.type == bfd_link_hash_defweak)))
 		    {
 		      /* We do NOT want to issue this warning.  Clobber
 			 the section size so that the warning does not
@@ -173,9 +173,9 @@ elf_link_add_object_symbols(bfd *abfd, struct bfd_link_info *info)
 		    }
 		}
 
-	      sz = bfd_section_size (abfd, s);
-	      prefix_len = strlen (gnu_warning_prefix);
-	      msg = bfd_alloc (abfd, prefix_len + sz + 1);
+	      sz = bfd_section_size(abfd, s);
+	      prefix_len = strlen(gnu_warning_prefix);
+	      msg = (char *)bfd_alloc(abfd, prefix_len + sz + 1);
 	      if (msg == NULL)
 		goto error_return;
 
@@ -721,18 +721,18 @@ elf_link_add_object_symbols(bfd *abfd, struct bfd_link_info *info)
 			}
 		    }
 
-		  namelen = strlen (name);
-		  verlen = strlen (verstr);
-		  newlen = namelen + verlen + 2;
-		  if ((iver.vs_vers & VERSYM_HIDDEN) == 0
-		      && isym->st_shndx != SHN_UNDEF)
+		  namelen = strlen(name);
+		  verlen = strlen(verstr);
+		  newlen = (namelen + verlen + 2);
+		  if (((iver.vs_vers & VERSYM_HIDDEN) == 0)
+		      && (isym->st_shndx != SHN_UNDEF))
 		    ++newlen;
 
-		  newname = bfd_alloc (abfd, newlen);
+		  newname = (char *)bfd_alloc(abfd, newlen);
 		  if (newname == NULL)
 		    goto error_free_vers;
-		  memcpy (newname, name, namelen);
-		  p = newname + namelen;
+		  memcpy(newname, name, namelen);
+		  p = (newname + namelen);
 		  *p++ = ELF_VER_CHR;
 		  /* If this is a defined non-hidden version symbol,
 		     we add another @ to the name.  This indicates the
@@ -3211,7 +3211,7 @@ elf_bfd_final_link (bfd *abfd, struct bfd_link_info *info)
      files.  */
   if (max_contents_size != 0)
     {
-      finfo.contents = bfd_malloc (max_contents_size);
+      finfo.contents = (bfd_byte *)bfd_malloc(max_contents_size);
       if (finfo.contents == NULL)
 	goto error_return;
     }

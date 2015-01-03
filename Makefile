@@ -29,7 +29,8 @@ SUBDIRS = src bin macsbug libcheckpoint
 # the platform-variables.make file exists.
 
 OS=MACOS
-SYSTEM_DEVELOPER_TOOLS_DOC_DIR=/Applications/Xcode.app/Contents/Developer/Documentation/DocSets/com.apple.ADC_Reference_Library.DeveloperTools.docset/Contents/Resources/Documents/documentation/DeveloperTools
+XCODE_APP_CONTENTS_DIR=/Applications/Xcode.app/Contents
+SYSTEM_DEVELOPER_TOOLS_DOC_DIR=$(XCODE_APP_CONTENTS_DIR)/Developer/Documentation/DocSets/com.apple.ADC_Reference_Library.DeveloperTools.docset/Contents/Resources/Documents/documentation/DeveloperTools
 
 
 ifndef RC_ARCHS
@@ -760,17 +761,24 @@ install-binutils-macosx:
 		strip -S -o $(DSTROOT)/$(LIBEXEC_BINUTILS_DIR)/$${instname} $(SYMROOT)/$(LIBEXEC_BINUTILS_DIR)/$${instname}; \
 	done
 
+# "procmod" was a new group (2005-09-27) which was not initially present on all
+# the systems, so we use a '-' prefix on that loop for now so that the errors
+# do NOT halt the build. 
 install-chmod-macosx:
-	set -e; for dstroot in $(SYMROOT) $(DSTROOT); do \
+	set -e; if [ `whoami` = 'root' ]; then \
+		for dstroot in $(SYMROOT) $(DSTROOT); do \
 			chown -R root:wheel $${dstroot}; \
 			chmod -R  u=rwX,g=rX,o=rX $${dstroot}; \
 			chmod a+x $${dstroot}/$(LIBEXEC_GDB_DIR)/*; \
 			chmod a+x $${dstroot}/$(DEVEXEC_DIR)/*; \
-		done
-	-set -e; for dstroot in $(SYMROOT) $(DSTROOT); do \
+		done; \
+	fi
+	-set -e; if [ `whoami` = 'root' ]; then \
+		for dstroot in $(SYMROOT) $(DSTROOT); do \
 			chgrp procmod $${dstroot}/$(LIBEXEC_GDB_DIR)/gdb* && chmod g+s $${dstroot}/$(LIBEXEC_GDB_DIR)/gdb*; \
 			chgrp procmod $${dstroot}/$(LIBEXEC_GDB_DIR)/plugins/MacsBug/MacsBug_plugin && chmod g+s $${dstroot}/$(LIBEXEC_GDB_DIR)/plugins/MacsBug/MacsBug_plugin; \
-		done
+		done; \
+	fi
 
 install-chmod-macosx-noprocmod:
 	set -e; for dstroot in $(SYMROOT) $(DSTROOT); do \

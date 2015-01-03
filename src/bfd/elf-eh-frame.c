@@ -1204,31 +1204,33 @@ _bfd_elf_write_section_eh_frame (bfd *abfd,
 		{
 		case DW_EH_PE_indirect:
 		case DW_EH_PE_textrel:
-		  BFD_ASSERT (hdr_info == NULL);
+		  BFD_ASSERT(hdr_info == NULL);
 		  break;
 		case DW_EH_PE_datarel:
 		  {
-		    asection *got = bfd_get_section_by_name (abfd, ".got");
+		    asection *got = bfd_get_section_by_name(abfd, ".got");
 
-		    BFD_ASSERT (got != NULL);
+		    BFD_ASSERT(got != NULL);
 		    address += got->vma;
 		  }
 		  break;
 		case DW_EH_PE_pcrel:
-		  value += ent->offset - ent->new_offset;
-		  address += sec->output_section->vma + ent->offset + 8;
+		  value += (ent->offset - ent->new_offset);
+		  address += (sec->output_section->vma + ent->offset + 8);
 		  break;
+                default:
+                  break;
 		}
 	      if (ent->cie_inf->make_relative)
-		value -= sec->output_section->vma + ent->new_offset + 8;
-	      write_value (abfd, buf, value, width);
+		value -= (sec->output_section->vma + ent->new_offset + 8);
+	      write_value(abfd, buf, value, width);
 	    }
 
 	  if (hdr_info)
 	    {
 	      hdr_info->array[hdr_info->array_count].initial_loc = address;
 	      hdr_info->array[hdr_info->array_count++].fde
-		= sec->output_section->vma + ent->new_offset;
+		= (sec->output_section->vma + ent->new_offset);
 	    }
 
 	  if ((ent->lsda_encoding & 0xf0) == DW_EH_PE_pcrel
@@ -1348,27 +1350,27 @@ _bfd_elf_write_section_eh_frame_hdr (bfd *abfd, struct bfd_link_info *info)
   bfd_boolean retval;
   bfd_vma encoded_eh_frame;
 
-  htab = elf_hash_table (info);
+  htab = elf_hash_table(info);
   hdr_info = &htab->eh_info;
   sec = hdr_info->hdr_sec;
   if (sec == NULL)
     return TRUE;
 
   size = EH_FRAME_HDR_SIZE;
-  if (hdr_info->array && hdr_info->array_count == hdr_info->fde_count)
-    size += 4 + hdr_info->fde_count * 8;
-  contents = bfd_malloc (size);
+  if (hdr_info->array && (hdr_info->array_count == hdr_info->fde_count))
+    size += (4 + hdr_info->fde_count * 8);
+  contents = (bfd_byte *)bfd_malloc(size);
   if (contents == NULL)
     return FALSE;
 
-  eh_frame_sec = bfd_get_section_by_name (abfd, ".eh_frame");
+  eh_frame_sec = bfd_get_section_by_name(abfd, ".eh_frame");
   if (eh_frame_sec == NULL)
     {
-      free (contents);
+      free(contents);
       return FALSE;
     }
 
-  memset (contents, 0, EH_FRAME_HDR_SIZE);
+  memset(contents, 0, EH_FRAME_HDR_SIZE);
   contents[0] = 1;				/* Version.  */
   contents[1] = get_elf_backend_data (abfd)->elf_backend_encode_eh_address
     (abfd, info, eh_frame_sec, 0, sec, 4,

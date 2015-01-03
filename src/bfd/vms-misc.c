@@ -327,33 +327,31 @@ _bfd_vms_get_record (bfd * abfd)
       /* Alpha.   */
       /* Extract vms record length.  */
 
-      _bfd_vms_get_header_values (abfd, vms_buf + test_start, NULL,
-				  & PRIV (rec_length));
+      _bfd_vms_get_header_values(abfd, vms_buf + test_start, NULL,
+                                 & PRIV(rec_length));
 
-      if (PRIV (rec_length) <= 0)
+      if (PRIV(rec_length) <= 0)
 	{
-	  bfd_set_error (bfd_error_file_truncated);
+	  bfd_set_error(bfd_error_file_truncated);
 	  return 0;
 	}
 
-      /* That's what the linker manual says.  */
-
-      if (PRIV (rec_length) > EOBJ_S_C_MAXRECSIZ)
+      /* That is what the linker manual says: */
+      if (PRIV(rec_length) > EOBJ_S_C_MAXRECSIZ)
 	{
-	  bfd_set_error (bfd_error_file_truncated);
+	  bfd_set_error(bfd_error_file_truncated);
 	  return 0;
 	}
 
-      /* Adjust the buffer.  */
-
-      if (PRIV (rec_length) > PRIV (buf_size))
+      /* Adjust the buffer: */
+      if (PRIV(rec_length) > PRIV(buf_size))
 	{
-	  PRIV (vms_buf) = bfd_realloc (vms_buf,
-					(bfd_size_type) PRIV (rec_length));
-	  vms_buf = PRIV (vms_buf);
+	  PRIV(vms_buf) = (unsigned char *)bfd_realloc(vms_buf,
+                                                       (bfd_size_type)PRIV(rec_length));
+	  vms_buf = PRIV(vms_buf);
 	  if (vms_buf == 0)
 	    return -1;
-	  PRIV (buf_size) = PRIV (rec_length);
+	  PRIV(buf_size) = PRIV(rec_length);
 	}
 
       /* Read the remaining record.  */
@@ -422,16 +420,16 @@ _bfd_vms_next_record (bfd * abfd)
 }
 
 /* Copy sized string (string with fixed length) to new allocated area
-   size is string length (size of record)  */
-
+ * size is string length (size of record)  */
 char *
-_bfd_vms_save_sized_string (unsigned char *str, int size)
+_bfd_vms_save_sized_string(unsigned char *str, int size)
 {
-  char *newstr = bfd_malloc ((bfd_size_type) size + 1);
+  char *newstr = (char *)bfd_malloc((bfd_size_type)size + 1);
 
-  if (newstr == NULL)
+  if (newstr == NULL) {
     return NULL;
-  strncpy (newstr, (char *) str, (size_t) size);
+  }
+  strncpy(newstr, (char *)str, (size_t)size);
   newstr[size] = 0;
 
   return newstr;
@@ -510,24 +508,28 @@ _bfd_vms_pop (bfd * abfd, int *psect)
    - forward chaining -.  */
 
 static vms_section *
-add_new_contents (bfd * abfd, sec_ptr section)
+add_new_contents(bfd * abfd, sec_ptr section)
 {
   vms_section *sptr, *newptr;
 
-  sptr = PRIV (vms_section_table)[section->index];
-  if (sptr != NULL)
+  sptr = PRIV(vms_section_table)[section->index];
+  if (sptr != NULL) {
     return sptr;
+  }
 
-  newptr = bfd_alloc (abfd, (bfd_size_type) sizeof (vms_section));
-  if (newptr == NULL)
+  newptr = (vms_section *)bfd_alloc(abfd,
+                                    (bfd_size_type)sizeof(vms_section));
+  if (newptr == NULL) {
     return NULL;
-  newptr->contents = bfd_alloc (abfd, section->size);
-  if (newptr->contents == NULL)
+  }
+  newptr->contents = (unsigned char *)bfd_alloc(abfd, section->size);
+  if (newptr->contents == NULL) {
     return NULL;
+  }
   newptr->offset = 0;
   newptr->size = section->size;
   newptr->next = 0;
-  PRIV (vms_section_table)[section->index] = newptr;
+  PRIV(vms_section_table)[section->index] = newptr;
   return newptr;
 }
 
@@ -550,25 +552,24 @@ _bfd_save_vms_section (bfd * abfd,
     }
   if (count == (bfd_size_type)0)
     return TRUE;
-  sptr = add_new_contents (abfd, section);
+  sptr = add_new_contents(abfd, section);
   if (sptr == NULL)
     return FALSE;
-  memcpy (sptr->contents + offset, data, (size_t) count);
+  memcpy(sptr->contents + offset, data, (size_t)count);
 
   return TRUE;
 }
 
-/* Get vms_section pointer to saved contents for section # index  */
-
+/* Get vms_section pointer to saved contents for section #index_sect: */
 vms_section *
-_bfd_get_vms_section (bfd * abfd, int index)
+_bfd_get_vms_section(bfd * abfd, int index_sect)
 {
-  if (index >=  VMS_SECTION_COUNT)
+  if (index_sect >= VMS_SECTION_COUNT)
     {
-      bfd_set_error (bfd_error_nonrepresentable_section);
+      bfd_set_error(bfd_error_nonrepresentable_section);
       return NULL;
     }
-  return PRIV (vms_section_table)[index];
+  return PRIV(vms_section_table)[index_sect];
 }
 
 /* Object output routines.   */

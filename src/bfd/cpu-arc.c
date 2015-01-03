@@ -53,13 +53,11 @@ const bfd_arch_info_type bfd_arc_arch =
 /* Utility routines.  */
 
 /* Given cpu type NAME, return its bfd_mach_arc_xxx value.
-   Returns -1 if not found.  */
-
-int arc_get_mach PARAMS ((char *));
+ * Returns -1 if not found.  */
+int arc_get_mach PARAMS((char *));
 
 int
-arc_get_mach (name)
-     char *name;
+arc_get_mach(char *name)
 {
   const bfd_arch_info_type *p;
 

@@ -522,24 +522,24 @@ elf_object_p (bfd *abfd)
   /* Allocate an instance of the elf_obj_tdata structure and hook it up to
      the tdata pointer in the bfd.  */
 
-  if (! (*abfd->xvec->_bfd_set_format[bfd_object]) (abfd))
+  if (!(*abfd->xvec->_bfd_set_format[bfd_object])(abfd))
     goto got_no_match;
-  preserve.marker = elf_tdata (abfd);
+  preserve.marker = elf_tdata(abfd);
 
-  /* Now that we know the byte order, swap in the rest of the header */
-  i_ehdrp = elf_elfheader (abfd);
-  elf_swap_ehdr_in (abfd, &x_ehdr, i_ehdrp);
-#if DEBUG & 1
-  elf_debug_file (i_ehdrp);
-#endif
+  /* Now that we know the byte order, swap in the rest of the header: */
+  i_ehdrp = elf_elfheader(abfd);
+  elf_swap_ehdr_in(abfd, &x_ehdr, i_ehdrp);
+#if defined(DEBUG) && (DEBUG & 1)
+  elf_debug_file(i_ehdrp);
+#endif /* DEBUG */
 
-  /* Reject ET_CORE (header indicates core file, not object file) */
+  /* Reject ET_CORE (header indicates core file, not object file): */
   if (i_ehdrp->e_type == ET_CORE)
     goto got_wrong_format_error;
 
-  /* If this is a relocatable file and there is no section header
-     table, then we're hosed.  */
-  if (i_ehdrp->e_shoff == 0 && i_ehdrp->e_type == ET_REL)
+  /* If this is a relocatable file and there is no section header table,
+   * then we are hosed: */
+  if ((i_ehdrp->e_shoff == 0) && (i_ehdrp->e_type == ET_REL))
     goto got_wrong_format_error;
 
   /* As a simple sanity check, verify that the what BFD thinks is the
@@ -676,26 +676,26 @@ elf_object_p (bfd *abfd)
       Elf_Internal_Shdr *shdrp;
       unsigned int num_sec;
 
-      amt = sizeof (*i_shdrp) * i_ehdrp->e_shnum;
-      i_shdrp = bfd_alloc (abfd, amt);
+      amt = (sizeof(*i_shdrp) * i_ehdrp->e_shnum);
+      i_shdrp = (Elf_Internal_Shdr *)bfd_alloc(abfd, amt);
       if (!i_shdrp)
 	goto got_no_match;
       num_sec = i_ehdrp->e_shnum;
       if (num_sec > SHN_LORESERVE)
-	num_sec += SHN_HIRESERVE + 1 - SHN_LORESERVE;
-      elf_numsections (abfd) = num_sec;
-      amt = sizeof (i_shdrp) * num_sec;
-      elf_elfsections (abfd) = bfd_alloc (abfd, amt);
-      if (!elf_elfsections (abfd))
+	num_sec += (SHN_HIRESERVE + 1 - SHN_LORESERVE);
+      elf_numsections(abfd) = num_sec;
+      amt = (sizeof(i_shdrp) * num_sec);
+      elf_elfsections(abfd) = bfd_alloc(abfd, amt);
+      if (!elf_elfsections(abfd))
 	goto got_no_match;
 
-      memcpy (i_shdrp, &i_shdr, sizeof (*i_shdrp));
+      memcpy(i_shdrp, &i_shdr, sizeof(*i_shdrp));
       shdrp = i_shdrp;
       shindex = 0;
       if (num_sec > SHN_LORESERVE)
 	{
 	  for ( ; shindex < SHN_LORESERVE; shindex++)
-	    elf_elfsections (abfd)[shindex] = shdrp++;
+	    elf_elfsections(abfd)[shindex] = shdrp++;
 	  for ( ; shindex < SHN_HIRESERVE + 1; shindex++)
 	    elf_elfsections (abfd)[shindex] = i_shdrp;
 	}
@@ -747,19 +747,19 @@ elf_object_p (bfd *abfd)
   else if (i_ehdrp->e_shstrndx != 0)
     goto got_wrong_format_error;
 
-  /* Read in the program headers.  */
+  /* Read in the program headers: */
   if (i_ehdrp->e_phnum == 0)
-    elf_tdata (abfd)->phdr = NULL;
+    elf_tdata(abfd)->phdr = NULL;
   else
     {
       Elf_Internal_Phdr *i_phdr;
       unsigned int i;
 
-      amt = i_ehdrp->e_phnum * sizeof (Elf_Internal_Phdr);
-      elf_tdata (abfd)->phdr = bfd_alloc (abfd, amt);
-      if (elf_tdata (abfd)->phdr == NULL)
+      amt = (i_ehdrp->e_phnum * sizeof(Elf_Internal_Phdr));
+      elf_tdata(abfd)->phdr = (Elf_Internal_Phdr *)bfd_alloc(abfd, amt);
+      if (elf_tdata(abfd)->phdr == NULL)
 	goto got_no_match;
-      if (bfd_seek (abfd, (file_ptr) i_ehdrp->e_phoff, SEEK_SET) != 0)
+      if (bfd_seek(abfd, (file_ptr)i_ehdrp->e_phoff, SEEK_SET) != 0)
 	goto got_no_match;
       i_phdr = elf_tdata (abfd)->phdr;
       for (i = 0; i < i_ehdrp->e_phnum; i++, i_phdr++)
@@ -843,15 +843,14 @@ elf_object_p (bfd *abfd)
 
 /* ELF .o/exec file writing */
 
-/* Write out the relocs.  */
-
+/* Write out the relocs: */
 void
-elf_write_relocs (bfd *abfd, asection *sec, void *data)
+elf_write_relocs(bfd *abfd, asection *sec, void *data)
 {
-  bfd_boolean *failedp = data;
+  bfd_boolean *failedp = (bfd_boolean *)data;
   Elf_Internal_Shdr *rela_hdr;
   bfd_vma addr_offset;
-  void (*swap_out) (bfd *, const Elf_Internal_Rela *, bfd_byte *);
+  void (*swap_out)(bfd *, const Elf_Internal_Rela *, bfd_byte *);
   size_t extsize;
   bfd_byte *dst_rela;
   unsigned int idx;
@@ -878,17 +877,17 @@ elf_write_relocs (bfd *abfd, asection *sec, void *data)
   if (sec->orelocation == NULL)
     return;
 
-  rela_hdr = &elf_section_data (sec)->rel_hdr;
+  rela_hdr = &elf_section_data(sec)->rel_hdr;
 
-  rela_hdr->sh_size = rela_hdr->sh_entsize * sec->reloc_count;
-  rela_hdr->contents = bfd_alloc (abfd, rela_hdr->sh_size);
+  rela_hdr->sh_size = (rela_hdr->sh_entsize * sec->reloc_count);
+  rela_hdr->contents = (unsigned char *)bfd_alloc(abfd, rela_hdr->sh_size);
   if (rela_hdr->contents == NULL)
     {
       *failedp = TRUE;
       return;
     }
 
-  /* Figure out whether the relocations are RELA or REL relocations.  */
+  /* Figure out whether the relocations are RELA or REL relocations: */
   if (rela_hdr->sh_type == SHT_RELA)
     {
       swap_out = elf_swap_reloca_out;
@@ -987,18 +986,18 @@ elf_write_shdrs_and_ehdr (bfd *abfd)
   unsigned int count;
   bfd_size_type amt;
 
-  i_ehdrp = elf_elfheader (abfd);
-  i_shdrp = elf_elfsections (abfd);
+  i_ehdrp = elf_elfheader(abfd);
+  i_shdrp = elf_elfsections(abfd);
 
   /* swap the header before spitting it out...  */
 
-#if DEBUG & 1
-  elf_debug_file (i_ehdrp);
-#endif
-  elf_swap_ehdr_out (abfd, i_ehdrp, &x_ehdr);
-  amt = sizeof (x_ehdr);
-  if (bfd_seek (abfd, (file_ptr) 0, SEEK_SET) != 0
-      || bfd_bwrite (&x_ehdr, amt, abfd) != amt)
+#if defined(DEBUG) && (DEBUG & 1)
+  elf_debug_file(i_ehdrp);
+#endif /* DEBUG */
+  elf_swap_ehdr_out(abfd, i_ehdrp, &x_ehdr);
+  amt = sizeof(x_ehdr);
+  if ((bfd_seek(abfd, (file_ptr)0, SEEK_SET) != 0)
+      || (bfd_bwrite(&x_ehdr, amt, abfd) != amt))
     return FALSE;
 
   /* Some fields in the first section header handle overflow of ehdr
@@ -1008,25 +1007,25 @@ elf_write_shdrs_and_ehdr (bfd *abfd)
   if (i_ehdrp->e_shstrndx >= SHN_LORESERVE)
     i_shdrp[0]->sh_link = i_ehdrp->e_shstrndx;
 
-  /* at this point we've concocted all the ELF sections...  */
+  /* at this point we have concocted all the ELF sections...  */
   amt = i_ehdrp->e_shnum;
-  amt *= sizeof (*x_shdrp);
-  x_shdrp = bfd_alloc (abfd, amt);
+  amt *= sizeof(*x_shdrp);
+  x_shdrp = (Elf_External_Shdr *)bfd_alloc(abfd, amt);
   if (!x_shdrp)
     return FALSE;
 
   for (count = 0; count < i_ehdrp->e_shnum; i_shdrp++, count++)
     {
-#if DEBUG & 2
-      elf_debug_section (count, *i_shdrp);
-#endif
-      elf_swap_shdr_out (abfd, *i_shdrp, x_shdrp + count);
+#if defined(DEBUG) && (DEBUG & 2)
+      elf_debug_section(count, *i_shdrp);
+#endif /* DEBUG */
+      elf_swap_shdr_out(abfd, *i_shdrp, x_shdrp + count);
 
-      if (count == SHN_LORESERVE - 1)
-	i_shdrp += SHN_HIRESERVE + 1 - SHN_LORESERVE;
+      if (count == (SHN_LORESERVE - 1))
+	i_shdrp += (SHN_HIRESERVE + 1 - SHN_LORESERVE);
     }
-  if (bfd_seek (abfd, (file_ptr) i_ehdrp->e_shoff, SEEK_SET) != 0
-      || bfd_bwrite (x_shdrp, amt, abfd) != amt)
+  if ((bfd_seek(abfd, (file_ptr) i_ehdrp->e_shoff, SEEK_SET) != 0)
+      || (bfd_bwrite(x_shdrp, amt, abfd) != amt))
     return FALSE;
 
   /* need to dump the string table too...  */
@@ -1094,14 +1093,14 @@ elf_slurp_symbol_table (bfd *abfd, asymbol **symptrs, bfd_boolean dynamic)
 	return -1;
 
       amt = symcount;
-      amt *= sizeof (elf_symbol_type);
-      symbase = bfd_zalloc (abfd, amt);
-      if (symbase == (elf_symbol_type *) NULL)
+      amt *= sizeof(elf_symbol_type);
+      symbase = (elf_symbol_type *)bfd_zalloc(abfd, amt);
+      if (symbase == (elf_symbol_type *)NULL)
 	goto error_return;
 
-      /* Read the raw ELF version symbol information.  */
-      if (verhdr != NULL
-	  && verhdr->sh_size / sizeof (Elf_External_Versym) != symcount)
+      /* Read the raw ELF version symbol information: */
+      if ((verhdr != NULL)
+	  && ((verhdr->sh_size / sizeof(Elf_External_Versym)) != symcount))
 	{
 	  (*_bfd_error_handler)
 	    (_("%s: version count (%ld) does not match symbol count (%ld)"),
@@ -1116,14 +1115,14 @@ elf_slurp_symbol_table (bfd *abfd, asymbol **symptrs, bfd_boolean dynamic)
 
       if (verhdr != NULL)
 	{
-	  if (bfd_seek (abfd, verhdr->sh_offset, SEEK_SET) != 0)
+	  if (bfd_seek(abfd, verhdr->sh_offset, SEEK_SET) != 0)
 	    goto error_return;
 
-	  xverbuf = bfd_malloc (verhdr->sh_size);
-	  if (xverbuf == NULL && verhdr->sh_size != 0)
+	  xverbuf = bfd_malloc(verhdr->sh_size);
+	  if ((xverbuf == NULL) && (verhdr->sh_size != 0))
 	    goto error_return;
 
-	  if (bfd_bread (xverbuf, verhdr->sh_size, abfd) != verhdr->sh_size)
+	  if (bfd_bread(xverbuf, verhdr->sh_size, abfd) != verhdr->sh_size)
 	    goto error_return;
 	}
 
@@ -1295,7 +1294,7 @@ elf_slurp_reloc_table_from_section (bfd *abfd,
 	  != rel_hdr->sh_size))
     goto error_return;
 
-  native_relocs = allocated;
+  native_relocs = (bfd_byte *)allocated;
 
   entsize = rel_hdr->sh_entsize;
   BFD_ASSERT (entsize == sizeof (Elf_External_Rel)
@@ -1411,27 +1410,26 @@ elf_slurp_reloc_table (bfd *abfd,
 	return TRUE;
 
       rel_hdr = &d->this_hdr;
-      reloc_count = NUM_SHDR_ENTRIES (rel_hdr);
+      reloc_count = NUM_SHDR_ENTRIES(rel_hdr);
       rel_hdr2 = NULL;
       reloc_count2 = 0;
     }
 
-  amt = (reloc_count + reloc_count2) * sizeof (arelent);
-  relents = bfd_alloc (abfd, amt);
+  amt = ((reloc_count + reloc_count2) * sizeof(arelent));
+  relents = (arelent *)bfd_alloc(abfd, amt);
   if (relents == NULL)
     return FALSE;
 
-  if (!elf_slurp_reloc_table_from_section (abfd, asect,
-					   rel_hdr, reloc_count,
-					   relents,
-					   symbols, dynamic))
+  if (!elf_slurp_reloc_table_from_section(abfd, asect, rel_hdr,
+                                          reloc_count, relents, symbols,
+                                          dynamic))
     return FALSE;
 
   if (rel_hdr2
-      && !elf_slurp_reloc_table_from_section (abfd, asect,
-					      rel_hdr2, reloc_count2,
-					      relents + reloc_count,
-					      symbols, dynamic))
+      && !elf_slurp_reloc_table_from_section(abfd, asect, rel_hdr2,
+                                             reloc_count2,
+                                             (relents + reloc_count),
+                                             symbols, dynamic))
     return FALSE;
 
   asect->relocation = relents;
@@ -1440,45 +1438,39 @@ elf_slurp_reloc_table (bfd *abfd,
 
 #ifdef DEBUG
 static void
-elf_debug_section (int num, Elf_Internal_Shdr *hdr)
+elf_debug_section(int num, Elf_Internal_Shdr *hdr)
 {
-  fprintf (stderr, "\nSection#%d '%s' 0x%.8lx\n", num,
-	   hdr->bfd_section != NULL ? hdr->bfd_section->name : "",
-	   (long) hdr);
-  fprintf (stderr,
-	   "sh_name      = %ld\tsh_type      = %ld\tsh_flags     = %ld\n",
-	   (long) hdr->sh_name,
-	   (long) hdr->sh_type,
-	   (long) hdr->sh_flags);
-  fprintf (stderr,
-	   "sh_addr      = %ld\tsh_offset    = %ld\tsh_size      = %ld\n",
-	   (long) hdr->sh_addr,
-	   (long) hdr->sh_offset,
-	   (long) hdr->sh_size);
-  fprintf (stderr,
-	   "sh_link      = %ld\tsh_info      = %ld\tsh_addralign = %ld\n",
-	   (long) hdr->sh_link,
-	   (long) hdr->sh_info,
-	   (long) hdr->sh_addralign);
-  fprintf (stderr, "sh_entsize   = %ld\n",
-	   (long) hdr->sh_entsize);
-  fflush (stderr);
+  fprintf(stderr, "\nSection#%d '%s' 0x%.8lx\n", num,
+	  ((hdr->bfd_section != NULL) ? hdr->bfd_section->name : ""),
+	  (long)hdr);
+  fprintf(stderr,
+	  "sh_name      = %ld\tsh_type      = %ld\tsh_flags     = %ld\n",
+	  (long)hdr->sh_name, (long)hdr->sh_type, (long)hdr->sh_flags);
+  fprintf(stderr,
+	  "sh_addr      = %ld\tsh_offset    = %ld\tsh_size      = %ld\n",
+	  (long)hdr->sh_addr, (long)hdr->sh_offset, (long)hdr->sh_size);
+  fprintf(stderr,
+	  "sh_link      = %ld\tsh_info      = %ld\tsh_addralign = %ld\n",
+	  (long)hdr->sh_link, (long)hdr->sh_info, (long)hdr->sh_addralign);
+  fprintf(stderr, "sh_entsize   = %ld\n",
+	  (long)hdr->sh_entsize);
+  fflush(stderr);
 }
 
 static void
-elf_debug_file (Elf_Internal_Ehdr *ehdrp)
+elf_debug_file(Elf_Internal_Ehdr *ehdrp)
 {
-  fprintf (stderr, "e_entry      = 0x%.8lx\n", (long) ehdrp->e_entry);
-  fprintf (stderr, "e_phoff      = %ld\n", (long) ehdrp->e_phoff);
-  fprintf (stderr, "e_phnum      = %ld\n", (long) ehdrp->e_phnum);
-  fprintf (stderr, "e_phentsize  = %ld\n", (long) ehdrp->e_phentsize);
-  fprintf (stderr, "e_shoff      = %ld\n", (long) ehdrp->e_shoff);
-  fprintf (stderr, "e_shnum      = %ld\n", (long) ehdrp->e_shnum);
-  fprintf (stderr, "e_shentsize  = %ld\n", (long) ehdrp->e_shentsize);
+  fprintf(stderr, "e_entry      = 0x%.8lx\n", (long)ehdrp->e_entry);
+  fprintf(stderr, "e_phoff      = %ld\n", (long)ehdrp->e_phoff);
+  fprintf(stderr, "e_phnum      = %ld\n", (long)ehdrp->e_phnum);
+  fprintf(stderr, "e_phentsize  = %ld\n", (long)ehdrp->e_phentsize);
+  fprintf(stderr, "e_shoff      = %ld\n", (long)ehdrp->e_shoff);
+  fprintf(stderr, "e_shnum      = %ld\n", (long)ehdrp->e_shnum);
+  fprintf(stderr, "e_shentsize  = %ld\n", (long)ehdrp->e_shentsize);
 }
 
 static char *
-elf_symbol_flags (flagword flags)
+elf_symbol_flags(flagword flags)
 {
   static char buffer[1024];
 
@@ -1630,28 +1622,28 @@ NAME(_bfd_elf,bfd_from_remote_memory)
   /* The file header tells where to find the program headers.
      These are what we use to actually choose what to read.  */
 
-  if (i_ehdr.e_phentsize != sizeof (Elf_External_Phdr) || i_ehdr.e_phnum == 0)
+  if ((i_ehdr.e_phentsize != sizeof(Elf_External_Phdr)) || (i_ehdr.e_phnum == 0))
     {
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
       return NULL;
     }
 
-  x_phdrs = bfd_malloc (i_ehdr.e_phnum * (sizeof *x_phdrs + sizeof *i_phdrs));
+  x_phdrs = bfd_malloc(i_ehdr.e_phnum * (sizeof(*x_phdrs) + sizeof(*i_phdrs)));
   if (x_phdrs == NULL)
     {
       bfd_set_error (bfd_error_no_memory);
       return NULL;
     }
-  err = target_read_memory (ehdr_vma + i_ehdr.e_phoff, (bfd_byte *) x_phdrs,
-			    i_ehdr.e_phnum * sizeof x_phdrs[0]);
+  err = target_read_memory(ehdr_vma + i_ehdr.e_phoff, (bfd_byte *)x_phdrs,
+                           i_ehdr.e_phnum * sizeof(x_phdrs[0]));
   if (err)
     {
-      free (x_phdrs);
-      bfd_set_error (bfd_error_system_call);
+      free(x_phdrs);
+      bfd_set_error(bfd_error_system_call);
       errno = err;
       return NULL;
     }
-  i_phdrs = (Elf_Internal_Phdr *) &x_phdrs[i_ehdr.e_phnum];
+  i_phdrs = (Elf_Internal_Phdr *)&x_phdrs[i_ehdr.e_phnum];
 
   contents_size = 0;
   last_phdr = NULL;
@@ -1700,7 +1692,7 @@ NAME(_bfd_elf,bfd_from_remote_memory)
     contents_size = last_phdr->p_offset + last_phdr->p_filesz;
 
   /* Now we know the size of the whole image we want read in.  */
-  contents = bfd_zmalloc (contents_size);
+  contents = (bfd_byte *)bfd_zmalloc(contents_size);
   if (contents == NULL)
     {
       free (x_phdrs);

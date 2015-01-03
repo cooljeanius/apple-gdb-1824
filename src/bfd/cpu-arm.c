@@ -234,20 +234,20 @@ arm_check_note (bfd *abfd,
   unsigned long namesz;
   unsigned long descsz;
   unsigned long type;
-  char *        descr;
+  char *descr;
 
-  if (buffer_size < offsetof (arm_Note, name))
+  if (buffer_size < offsetof(arm_Note, name))
     return FALSE;
 
-  /* We have to extract the values this way to allow for a
-     host whose endian-ness is different from the target.  */
-  namesz = bfd_get_32 (abfd, buffer);
-  descsz = bfd_get_32 (abfd, buffer + offsetof (arm_Note, descsz));
-  type   = bfd_get_32 (abfd, buffer + offsetof (arm_Note, type));
-  descr  = (char *) buffer + offsetof (arm_Note, name);
+  /* We have to extract the values this way to allow for a host whose
+   * endian-ness is different from the target: */
+  namesz = bfd_get_32(abfd, buffer);
+  descsz = bfd_get_32(abfd, buffer + offsetof(arm_Note, descsz));
+  type = bfd_get_32(abfd, buffer + offsetof(arm_Note, type));
+  descr = (char *)buffer + offsetof(arm_Note, name);
 
-  /* Check for buffer overflow.  */
-  if (namesz + descsz + offsetof (arm_Note, name) > buffer_size)
+  /* Check for buffer overflow: */
+  if ((namesz + descsz + offsetof(arm_Note, name)) > buffer_size)
     return FALSE;
 
   if (expected_name == NULL)
@@ -256,20 +256,26 @@ arm_check_note (bfd *abfd,
 	return FALSE;
     }
   else
-    { 
-      if (namesz != ((strlen (expected_name) + 1 + 3) & ~3))
+    {
+      if (namesz != ((strlen(expected_name) + 1 + 3) & ~3)) {
 	return FALSE;
-      
-      if (strcmp (descr, expected_name) != 0)
-	return FALSE;
+      }
 
-      descr += (namesz + 3) & ~3;
+      if (strcmp(descr, expected_name) != 0) {
+	return FALSE;
+      }
+
+      descr += ((namesz + 3) & ~3);
     }
 
-  /* FIXME: We should probably check the type as well.  */
+  /* FIXME: We should probably check the type as well: */
+  if (type != 0UL) {
+    ; /* TODO: do actual checking here */
+  }
 
-  if (description_return != NULL)
+  if (description_return != NULL) {
     * description_return = descr;
+  }
 
   return TRUE;
 }
@@ -277,13 +283,13 @@ arm_check_note (bfd *abfd,
 #define NOTE_ARCH_STRING 	"arch: "
 
 bfd_boolean
-bfd_arm_update_notes (bfd *abfd, const char *note_section)
+bfd_arm_update_notes(bfd *abfd, const char *note_section)
 {
-  asection *     arm_arch_section;
-  bfd_size_type  buffer_size;
-  bfd_byte *     buffer;
-  char *         arch_string;
-  char *         expected;
+  asection *arm_arch_section;
+  bfd_size_type buffer_size;
+  bfd_byte *buffer;
+  char *arch_string;
+  char *expected;
 
   /* Look for a note section.  If one is present check the architecture
      string encoded in it, and set it to the current architecture if it is
@@ -422,22 +428,25 @@ bfd_arm_get_mach_from_notes (bfd *abfd, const char *note_section)
 }
 
 bfd_boolean
-bfd_is_arm_special_symbol_name (const char * name, int type)
+bfd_is_arm_special_symbol_name(const char * name, int type)
 {
   /* The ARM compiler outputs several obsolete forms.  Recognize them
-     in addition to the standard $a, $t and $d.  We are somewhat loose
-     in what we accept here, since the full set is not documented.  */
-  if (!name || name[0] != '$')
+   * in addition to the standard $a, $t and $d.  We are somewhat loose
+   * in what we accept here, since the full set is not documented: */
+  if (!name || (name[0] != '$')) {
     return FALSE;
-  if (name[1] == 'a' || name[1] == 't' || name[1] == 'd')
+  }
+  if ((name[1] == 'a') || (name[1] == 't') || (name[1] == 'd')) {
     type &= BFD_ARM_SPECIAL_SYM_TYPE_MAP;
-  else if (name[1] == 'm' || name[1] == 'f' || name[1] == 'p')
+  } else if ((name[1] == 'm') || (name[1] == 'f') || (name[1] == 'p')) {
     type &= BFD_ARM_SPECIAL_SYM_TYPE_TAG;
-  else if (name[1] >= 'a' && name[1] <= 'z')
+  } else if ((name[1] >= 'a') && (name[1] <= 'z')) {
     type &= BFD_ARM_SPECIAL_SYM_TYPE_OTHER;
-  else
+  } else {
     return FALSE;
+  }
 
-  return (type != 0 && (name[2] == 0 || name[2] == '.'));
+  return ((type != 0) && ((name[2] == 0) || (name[2] == '.')));
 }
 
+/* EOF */

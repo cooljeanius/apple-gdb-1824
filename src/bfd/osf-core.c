@@ -58,17 +58,12 @@ struct osf_core_struct
 #define core_command(bfd) (core_hdr(bfd)->cmd)
 
 static asection *
-make_bfd_asection (abfd, name, flags, size, vma, filepos)
-     bfd *abfd;
-     const char *name;
-     flagword flags;
-     bfd_size_type size;
-     bfd_vma vma;
-     file_ptr filepos;
+make_bfd_asection(bfd *abfd, const char *name, flagword flags,
+                  bfd_size_type size, bfd_vma vma, file_ptr filepos)
 {
   asection *asect;
 
-  asect = bfd_make_section_anyway (abfd, name);
+  asect = bfd_make_section_anyway(abfd, name);
   if (!asect)
     return NULL;
 
@@ -81,8 +76,7 @@ make_bfd_asection (abfd, name, flags, size, vma, filepos)
   return asect;
 }
 
-static const bfd_target *osf_core_core_file_p(abfd)
-     bfd *abfd;
+static const bfd_target *osf_core_core_file_p(bfd *abfd)
 {
   int val;
   int i;
@@ -122,21 +116,27 @@ static const bfd_target *osf_core_core_file_p(abfd)
 
       switch (core_scnhdr.scntype)
 	{
+#ifdef SCNRGN
 	case SCNRGN:
 	  secname = ".data";
-	  flags = SEC_ALLOC + SEC_LOAD + SEC_HAS_CONTENTS;
+	  flags = (SEC_ALLOC + SEC_LOAD + SEC_HAS_CONTENTS);
 	  break;
+#endif /* SCNRGN */
+#ifdef SCNSTACK
 	case SCNSTACK:
 	  secname = ".stack";
-	  flags = SEC_ALLOC + SEC_LOAD + SEC_HAS_CONTENTS;
+	  flags = (SEC_ALLOC + SEC_LOAD + SEC_HAS_CONTENTS);
 	  break;
+#endif /* SCNSTACK */
+#ifdef SCNREGS
 	case SCNREGS:
 	  secname = ".reg";
 	  flags = SEC_HAS_CONTENTS;
 	  break;
+#endif /* SCNREGS */
 	default:
-	  (*_bfd_error_handler) (_("Unhandled OSF/1 core file section type %d\n"),
-				 core_scnhdr.scntype);
+	  (*_bfd_error_handler)(_("Unhandled OSF/1 core file section type %d\n"),
+                                core_scnhdr.scntype);
 	  continue;
 	}
 
@@ -152,39 +152,37 @@ static const bfd_target *osf_core_core_file_p(abfd)
   return abfd->xvec;
 
  fail:
-  bfd_release (abfd, core_hdr (abfd));
-  core_hdr (abfd) = NULL;
-  bfd_section_list_clear (abfd);
+  bfd_release(abfd, core_hdr(abfd));
+  core_hdr(abfd) = NULL;
+  bfd_section_list_clear(abfd);
   return NULL;
 }
 
 static char *
-osf_core_core_file_failing_command (abfd)
-     bfd *abfd;
+osf_core_core_file_failing_command(bfd *abfd)
 {
-  return core_command (abfd);
+  return core_command(abfd);
 }
 
 static int
-osf_core_core_file_failing_signal (abfd)
-     bfd *abfd;
+osf_core_core_file_failing_signal(bfd *abfd)
 {
-  return core_signal (abfd);
+  return core_signal(abfd);
 }
 
 static bfd_boolean
-osf_core_core_file_matches_executable_p (core_bfd, exec_bfd)
-     bfd *core_bfd ATTRIBUTE_UNUSED;
-     bfd *exec_bfd ATTRIBUTE_UNUSED;
+osf_core_core_file_matches_executable_p(bfd *core_bfd ATTRIBUTE_UNUSED,
+                                        bfd *exec_bfd ATTRIBUTE_UNUSED)
 {
-  return TRUE;		/* FIXME, We have no way of telling at this point */
+  return TRUE;	    /* FIXME, We have no way of telling at this point */
 }
 
-/* If somebody calls any byte-swapping routines, shoot them.  */
+/* If somebody calls any byte-swapping routines, then shoot them: */
 static void
-swap_abort()
+swap_abort(void)
 {
-  abort(); /* This way doesn't require any declaration for ANSI to fuck up */
+  /* This way does NOT require any declaration for ANSI to mess up (?): */
+  abort();
 }
 
 #define	NO_GET ((bfd_vma (*) (const void *)) swap_abort)

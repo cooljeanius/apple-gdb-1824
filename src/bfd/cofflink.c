@@ -579,7 +579,7 @@ coff_link_add_symbols (bfd *abfd,
 	{
 	  bfd_size_type string_offset = 0;
 	  asection *stab;
-	  
+
 	  for (stab = abfd->sections; stab; stab = stab->next)
 	    if (strncmp (".stab", stab->name, 5) == 0
 		&& (!stab->name[5]
@@ -588,7 +588,7 @@ coff_link_add_symbols (bfd *abfd,
 	      struct coff_link_hash_table *table;
 	      struct coff_section_tdata *secdata
 		= coff_section_data (abfd, stab);
-	      
+
 	      if (secdata == NULL)
 		{
 		  amt = sizeof (struct coff_section_tdata);
@@ -806,15 +806,17 @@ _bfd_coff_final_link (bfd *abfd,
 	     memory until the end of the link.  This wastes memory,
 	     but only when doing a relocatable link, which is not the
 	     common case.  */
-	  BFD_ASSERT (info->relocatable);
+	  BFD_ASSERT(info->relocatable);
 	  amt = o->reloc_count;
-	  amt *= sizeof (struct internal_reloc);
-	  finfo.section_info[o->target_index].relocs = bfd_malloc (amt);
+	  amt *= sizeof(struct internal_reloc);
+	  finfo.section_info[o->target_index].relocs =
+            (struct internal_reloc *)bfd_malloc(amt);
 	  amt = o->reloc_count;
-	  amt *= sizeof (struct coff_link_hash_entry *);
-	  finfo.section_info[o->target_index].rel_hashes = bfd_malloc (amt);
-	  if (finfo.section_info[o->target_index].relocs == NULL
-	      || finfo.section_info[o->target_index].rel_hashes == NULL)
+	  amt *= sizeof(struct coff_link_hash_entry *);
+	  finfo.section_info[o->target_index].rel_hashes =
+            (struct coff_link_hash_entry **)bfd_malloc(amt);
+	  if ((finfo.section_info[o->target_index].relocs == NULL)
+	      || (finfo.section_info[o->target_index].rel_hashes == NULL))
 	    goto error_return;
 
 	  if (o->reloc_count > max_output_reloc_count)
@@ -843,34 +845,34 @@ _bfd_coff_final_link (bfd *abfd,
 	max_sym_count = sz;
     }
 
-  /* Allocate some buffers used while linking.  */
-  amt = max_sym_count * sizeof (struct internal_syment);
-  finfo.internal_syms = bfd_malloc (amt);
-  amt = max_sym_count * sizeof (asection *);
-  finfo.sec_ptrs = bfd_malloc (amt);
-  amt = max_sym_count * sizeof (long);
-  finfo.sym_indices = bfd_malloc (amt);
-  finfo.outsyms = bfd_malloc ((max_sym_count + 1) * symesz);
-  amt = max_lineno_count * bfd_coff_linesz (abfd);
-  finfo.linenos = bfd_malloc (amt);
-  finfo.contents = bfd_malloc (max_contents_size);
-  amt = max_reloc_count * relsz;
-  finfo.external_relocs = bfd_malloc (amt);
+  /* Allocate some buffers used while linking: */
+  amt = (max_sym_count * sizeof(struct internal_syment));
+  finfo.internal_syms = (struct internal_syment *)bfd_malloc(amt);
+  amt = (max_sym_count * sizeof(asection *));
+  finfo.sec_ptrs = (asection **)bfd_malloc(amt);
+  amt = (max_sym_count * sizeof(long));
+  finfo.sym_indices = (long *)bfd_malloc(amt);
+  finfo.outsyms = (bfd_byte *)bfd_malloc((max_sym_count + 1) * symesz);
+  amt = (max_lineno_count * bfd_coff_linesz(abfd));
+  finfo.linenos = (bfd_byte *)bfd_malloc(amt);
+  finfo.contents = (bfd_byte *)bfd_malloc(max_contents_size);
+  amt = (max_reloc_count * relsz);
+  finfo.external_relocs = (bfd_byte *)bfd_malloc(amt);
   if (! info->relocatable)
     {
-      amt = max_reloc_count * sizeof (struct internal_reloc);
-      finfo.internal_relocs = bfd_malloc (amt);
+      amt = (max_reloc_count * sizeof(struct internal_reloc));
+      finfo.internal_relocs = (struct internal_reloc *)bfd_malloc(amt);
     }
-  if ((finfo.internal_syms == NULL && max_sym_count > 0)
-      || (finfo.sec_ptrs == NULL && max_sym_count > 0)
-      || (finfo.sym_indices == NULL && max_sym_count > 0)
-      || finfo.outsyms == NULL
-      || (finfo.linenos == NULL && max_lineno_count > 0)
-      || (finfo.contents == NULL && max_contents_size > 0)
-      || (finfo.external_relocs == NULL && max_reloc_count > 0)
+  if (((finfo.internal_syms == NULL) && (max_sym_count > 0))
+      || ((finfo.sec_ptrs == NULL) && (max_sym_count > 0))
+      || ((finfo.sym_indices == NULL) && (max_sym_count > 0))
+      || (finfo.outsyms == NULL)
+      || ((finfo.linenos == NULL) && (max_lineno_count > 0))
+      || ((finfo.contents == NULL) && (max_contents_size > 0))
+      || ((finfo.external_relocs == NULL) && (max_reloc_count > 0))
       || (! info->relocatable
-	  && finfo.internal_relocs == NULL
-	  && max_reloc_count > 0))
+	  && (finfo.internal_relocs == NULL)
+	  && (max_reloc_count > 0)))
     goto error_return;
 
   /* We now know the position of everything in the file, except that
@@ -1003,13 +1005,13 @@ _bfd_coff_final_link (bfd *abfd,
       finfo.outsyms = NULL;
     }
 
-  if (info->relocatable && max_output_reloc_count > 0)
+  if (info->relocatable && (max_output_reloc_count > 0))
     {
       /* Now that we have written out all the global symbols, we know
 	 the symbol indices to use for relocs against them, and we can
 	 finally write out the relocs.  */
-      amt = max_output_reloc_count * relsz;
-      external_relocs = bfd_malloc (amt);
+      amt = (max_output_reloc_count * relsz);
+      external_relocs = (bfd_byte *)bfd_malloc(amt);
       if (external_relocs == NULL)
 	goto error_return;
 
@@ -1046,7 +1048,7 @@ _bfd_coff_final_link (bfd *abfd,
 		 elsewhere. */
 	      struct internal_reloc incount;
 	      bfd_byte *excount = (bfd_byte *)bfd_malloc (relsz);
-	      
+
 	      memset (&incount, 0, sizeof (incount));
 	      incount.r_vaddr = o->reloc_count + 1;
 	      bfd_coff_swap_reloc_out (abfd, (PTR) &incount, (PTR) excount);
@@ -1622,13 +1624,13 @@ _bfd_coff_link_input_bfd (struct coff_final_link_info *finfo, bfd *input_bfd)
 	      if (*epp == NULL)
 		return FALSE;
 
-	      elename = _bfd_coff_internal_syment_name (input_bfd, islp,
-							elebuf);
+	      elename = _bfd_coff_internal_syment_name(input_bfd, islp,
+                                                       elebuf);
 	      if (elename == NULL)
 		return FALSE;
 
-	      amt = strlen (elename) + 1;
-	      name_copy = bfd_alloc (input_bfd, amt);
+	      amt = strlen(elename) + 1;
+	      name_copy = (char *)bfd_alloc(input_bfd, amt);
 	      if (name_copy == NULL)
 		return FALSE;
 	      strcpy (name_copy, elename);
@@ -2701,10 +2703,10 @@ _bfd_coff_reloc_link_order (bfd *output_bfd,
   struct internal_reloc *irel;
   struct coff_link_hash_entry **rel_hash_ptr;
 
-  howto = bfd_reloc_type_lookup (output_bfd, link_order->u.reloc.p->reloc);
+  howto = bfd_reloc_type_lookup(output_bfd, link_order->u.reloc.p->reloc);
   if (howto == NULL)
     {
-      bfd_set_error (bfd_error_bad_value);
+      bfd_set_error(bfd_error_bad_value);
       return FALSE;
     }
 
@@ -2716,8 +2718,8 @@ _bfd_coff_reloc_link_order (bfd *output_bfd,
       bfd_boolean ok;
       file_ptr loc;
 
-      size = bfd_get_reloc_size (howto);
-      buf = bfd_zmalloc (size);
+      size = bfd_get_reloc_size(howto);
+      buf = (bfd_byte *)bfd_zmalloc(size);
       if (buf == NULL)
 	return FALSE;
 

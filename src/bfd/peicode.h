@@ -17,7 +17,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /* Most of this hacked by  Steve Chamberlain,
 			sac@cygnus.com
@@ -293,8 +293,8 @@ pe_mkobject_hook (bfd * abfd,
 
   pe->coff.timestamp = internal_f->f_timdat;
 
-  obj_raw_syment_count (abfd) =
-    obj_conv_table_size (abfd) =
+  obj_raw_syment_count(abfd) =
+    obj_conv_table_size(abfd) =
       internal_f->f_nsyms;
 
   pe->real_flags = internal_f->f_flags;
@@ -853,22 +853,22 @@ pe_ILF_build_a_bfd(bfd *abfd, unsigned int magic, char *symbol_name,
       if (import_name_type != IMPORT_NAME)
 	{
 	  char c = symbol[0];
-	  if (c == '_' || c == '@' || c == '?')
+	  if ((c == '_') || (c == '@') || (c == '?'))
 	    symbol++;
 	}
 
-      len = strlen (symbol);
+      len = strlen(symbol);
       if (import_name_type == IMPORT_NAME_UNDECORATE)
 	{
 	  /* Truncate at the first '@'.  */
-	  char *at = strchr (symbol, '@');
+	  char *at = strchr(symbol, '@');
 
 	  if (at != NULL)
-	    len = at - symbol;
+	    len = (at - symbol);
 	}
 
-      id6->contents[0] = ordinal & 0xff;
-      id6->contents[1] = ordinal >> 8;
+      id6->contents[0] = (ordinal & 0xff);
+      id6->contents[1] = (ordinal >> 8);
 
       memcpy ((char *) id6->contents + 2, symbol, len);
       id6->contents[len + 2] = '\0';
@@ -992,66 +992,74 @@ pe_ILF_build_a_bfd(bfd *abfd, unsigned int magic, char *symbol_name,
       break;
 
     case IMPORT_DATA:
-      /* Nothing to do here.  */
+      /* Nothing to do here: */
       break;
 
     default:
-      /* XXX code not yet written.  */
-      abort ();
+      /* XXX code not yet written: */
+      abort();
     }
 
-  /* Point the bfd at the symbol table.  */
-  obj_symbols (abfd) = vars.sym_cache;
-  bfd_get_symcount (abfd) = vars.sym_index;
+  /* Point the bfd at the symbol table: */
+  obj_symbols(abfd) = vars.sym_cache;
+  bfd_get_symcount(abfd) = vars.sym_index;
 
-  obj_raw_syments (abfd) = vars.native_syms;
-  obj_raw_syment_count (abfd) = vars.sym_index;
+  obj_raw_syments(abfd) = vars.native_syms;
+  obj_raw_syment_count(abfd) = vars.sym_index;
 
-  obj_coff_external_syms (abfd) = (void *) vars.esym_table;
-  obj_coff_keep_syms (abfd) = TRUE;
+  obj_coff_external_syms(abfd) = (void *)vars.esym_table;
+  obj_coff_keep_syms(abfd) = TRUE;
 
-  obj_convert (abfd) = vars.sym_table;
-  obj_conv_table_size (abfd) = vars.sym_index;
+  obj_convert(abfd) = vars.sym_table;
+  obj_conv_table_size(abfd) = vars.sym_index;
 
-  obj_coff_strings (abfd) = vars.string_table;
-  obj_coff_keep_strings (abfd) = TRUE;
+  obj_coff_strings(abfd) = vars.string_table;
+  obj_coff_keep_strings(abfd) = TRUE;
 
   abfd->flags |= HAS_SYMS;
 
   return TRUE;
 }
 
+#ifdef THUMBPEMAGIC
+# if defined(TARGET_LITTLE_SYM) || defined(PEI_ARM_C)
+extern const bfd_target TARGET_LITTLE_SYM;
+# endif /* !TARGET_LITTLE_SYM || PEI_ARM_C */
+#endif /* THUMBPEMAGIC */
+
 /* We have detected a Image Library Format archive element.
-   Decode the element and return the appropriate target.  */
-
+ * Decode the element and return the appropriate target.  */
 static const bfd_target *
-pe_ILF_object_p (bfd * abfd)
+pe_ILF_object_p(bfd * abfd)
 {
-  bfd_byte        buffer[16];
-  bfd_byte *      ptr;
-  char *          symbol_name;
-  char *          source_dll;
-  unsigned int    machine;
-  bfd_size_type   size;
-  unsigned int    ordinal;
-  unsigned int    types;
-  unsigned int    magic;
+  bfd_byte buffer[16];
+  bfd_byte *ptr;
+  char *symbol_name;
+  char *source_dll;
+  unsigned int machine;
+  bfd_size_type size;
+  unsigned int ordinal;
+  unsigned int types;
+  unsigned int magic;
 
-  /* Upon entry the first four buyes of the ILF header have
-      already been read.  Now read the rest of the header.  */
-  if (bfd_bread (buffer, (bfd_size_type) 16, abfd) != 16)
+  /* Upon entry the first four buyes of the ILF header have already
+   * been read.  Now read the rest of the header: */
+  if (bfd_bread(buffer, (bfd_size_type)16, abfd) != 16) {
     return NULL;
+  }
 
   ptr = buffer;
 
-  /*  We do not bother to check the version number.
-      version = H_GET_16 (abfd, ptr);  */
+  /* We do not bother to check the version number: */
+#ifdef BOTHER_TO_CHECK_THE_VERSION_NUMBER
+  version = H_GET_16(abfd, ptr);
+#endif /* BOTHER_TO_CHECK_THE_VERSION_NUMBER */
   ptr += 2;
 
-  machine = H_GET_16 (abfd, ptr);
+  machine = H_GET_16(abfd, ptr);
   ptr += 2;
 
-  /* Check that the machine type is recognised.  */
+  /* Check that the machine type is recognized: */
   magic = 0;
 
   switch (machine)
@@ -1065,13 +1073,13 @@ pe_ILF_object_p (bfd * abfd)
     case IMAGE_FILE_MACHINE_I386:
 #ifdef I386MAGIC
       magic = I386MAGIC;
-#endif
+#endif /* I386MAGIC */
       break;
 
     case IMAGE_FILE_MACHINE_M68K:
 #ifdef MC68AGIC
       magic = MC68MAGIC;
-#endif
+#endif /* MC68MAGIC */
       break;
 
     case IMAGE_FILE_MACHINE_R3000:
@@ -1083,41 +1091,40 @@ pe_ILF_object_p (bfd * abfd)
     case IMAGE_FILE_MACHINE_MIPSFPU16:
 #ifdef MIPS_ARCH_MAGIC_WINCE
       magic = MIPS_ARCH_MAGIC_WINCE;
-#endif
+#endif /* MIPS_ARCH_MAGIC_WINCE */
       break;
 
     case IMAGE_FILE_MACHINE_SH3:
     case IMAGE_FILE_MACHINE_SH4:
 #ifdef SH_ARCH_MAGIC_WINCE
       magic = SH_ARCH_MAGIC_WINCE;
-#endif
+#endif /* SH_ARCH_MAGIC_WINCE */
       break;
 
     case IMAGE_FILE_MACHINE_ARM:
 #ifdef ARMPEMAGIC
       magic = ARMPEMAGIC;
-#endif
+#endif /* ARMPEMAGIC */
       break;
 
     case IMAGE_FILE_MACHINE_THUMB:
 #ifdef THUMBPEMAGIC
       {
-	extern const bfd_target TARGET_LITTLE_SYM;
-
-	if (abfd->xvec == & TARGET_LITTLE_SYM)
+	if (abfd->xvec == & TARGET_LITTLE_SYM) {
 	  magic = THUMBPEMAGIC;
+        }
       }
-#endif
+#endif /* THUMBPEMAGIC */
       break;
 
     case IMAGE_FILE_MACHINE_POWERPC:
-      /* We no longer support PowerPC.  */
+      /* We no longer support PowerPC, so fall through: */
     default:
       _bfd_error_handler
 	(_("%B: Unrecognised machine type (0x%x)"
 	   " in Import Library Format archive"),
 	 abfd, machine);
-      bfd_set_error (bfd_error_malformed_archive);
+      bfd_set_error(bfd_error_malformed_archive);
 
       return NULL;
       break;
@@ -1134,8 +1141,10 @@ pe_ILF_object_p (bfd * abfd)
       return NULL;
     }
 
-  /* We do not bother to check the date.
-     date = H_GET_32 (abfd, ptr);  */
+  /* We do not bother to check the date: */
+#ifdef BOTHER_TO_CHECK_THE_DATE
+  date = H_GET_32(abfd, ptr);
+#endif /* BOTHER_TO_CHECK_THE_DATE */
   ptr += 4;
 
   size = H_GET_32 (abfd, ptr);
@@ -1145,16 +1154,18 @@ pe_ILF_object_p (bfd * abfd)
     {
       _bfd_error_handler
 	(_("%B: size field is zero in Import Library Format header"), abfd);
-      bfd_set_error (bfd_error_malformed_archive);
+      bfd_set_error(bfd_error_malformed_archive);
 
       return NULL;
     }
 
-  ordinal = H_GET_16 (abfd, ptr);
+  ordinal = H_GET_16(abfd, ptr);
   ptr += 2;
 
-  types = H_GET_16 (abfd, ptr);
-  /* ptr += 2; */
+  types = H_GET_16(abfd, ptr);
+#if 0
+  ptr += 2;
+#endif /* 0 */
 
   /* Now read in the two strings that follow: */
   ptr = (bfd_byte *)bfd_alloc(abfd, size);

@@ -730,15 +730,15 @@ sparc64_plt_entry_build (bfd *output_bfd, asection *splt, bfd_vma offset,
 /* Create an entry in an SPARC ELF linker hash table.  */
 
 static struct bfd_hash_entry *
-link_hash_newfunc (struct bfd_hash_entry *entry,
-		   struct bfd_hash_table *table, const char *string)
+link_hash_newfunc(struct bfd_hash_entry *entry,
+                  struct bfd_hash_table *table, const char *string)
 {
   /* Allocate the structure if it has not already been allocated by a
      subclass.  */
   if (entry == NULL)
     {
-      entry = bfd_hash_allocate (table,
-				 sizeof (struct _bfd_sparc_elf_link_hash_entry));
+      entry = bfd_hash_allocate(table,
+                                sizeof(struct _bfd_sparc_elf_link_hash_entry));
       if (entry == NULL)
 	return entry;
     }

@@ -40,6 +40,13 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
    the tokens.  */
 #define MY(OP) CONCAT2 (mipsbsd_,OP)
 
+/* this needs to go after the usage of the CONCAT* macro mentioned above,
+ * but before any other headers are included, or prototypes for functions
+ * are declared: */
+#if defined(__GNUC__) && (__GNUC__ >= 4)
+ # pragma GCC diagnostic ignored "-Wtraditional"
+#endif /* gcc 4+ */
+
 #include "bfd.h"
 #include "sysdep.h"
 #include "libbfd.h"
@@ -54,7 +61,7 @@ static void MY(choose_reloc_size) PARAMS ((bfd *abfd));
 #define MY_write_object_contents MY(write_object_contents)
 static bfd_boolean MY(write_object_contents) PARAMS ((bfd *abfd));
 
-/* We can't use MY(x) here because it leads to a recursive call to CONCAT2
+/* We cannot use MY(x) here because it leads to a recursive call to CONCAT2
    when expanded inside JUMP_TABLE.  */
 #define MY_bfd_reloc_type_lookup mipsbsd_reloc_howto_type_lookup
 #define MY_canonicalize_reloc mipsbsd_canonicalize_reloc

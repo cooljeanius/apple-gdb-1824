@@ -18,7 +18,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 /*
 SECTION
@@ -274,6 +274,9 @@ CODE_FRAGMENT
 
 static bfd_error_type bfd_error = bfd_error_no_error;
 
+#ifdef __clang__
+extern const char *const bfd_errmsgs[];
+#endif /* __clang__ */
 const char *const bfd_errmsgs[] =
 {
   N_("No error"),
@@ -310,7 +313,7 @@ DESCRIPTION
 */
 
 bfd_error_type
-bfd_get_error (void)
+bfd_get_error(void)
 {
   return bfd_error;
 }
@@ -327,7 +330,7 @@ DESCRIPTION
 */
 
 void
-bfd_set_error (bfd_error_type error_tag)
+bfd_set_error(bfd_error_type error_tag)
 {
   bfd_error = error_tag;
 }
@@ -345,13 +348,13 @@ DESCRIPTION
 */
 
 const char *
-bfd_errmsg (bfd_error_type error_tag)
+bfd_errmsg(bfd_error_type error_tag)
 {
 #ifndef errno
   extern int errno;
-#endif
+#endif /* !errno */
   if (error_tag == bfd_error_system_call)
-    return xstrerror (errno);
+    return xstrerror(errno);
 
   if (error_tag > bfd_error_invalid_error_code)
     error_tag = bfd_error_invalid_error_code;	/* sanity check */
@@ -375,17 +378,17 @@ DESCRIPTION
 */
 
 void
-bfd_perror (const char *message)
+bfd_perror(const char *message)
 {
-  if (bfd_get_error () == bfd_error_system_call)
-    /* Must be a system error then.  */
-    perror ((char *) message);
+  if (bfd_get_error() == bfd_error_system_call)
+    /* Must be a system error then: */
+    perror((char *)message);
   else
     {
-      if (message == NULL || *message == '\0')
-	fprintf (stderr, "%s\n", bfd_errmsg (bfd_get_error ()));
+      if ((message == NULL) || (*message == '\0'))
+	fprintf(stderr, "%s\n", bfd_errmsg(bfd_get_error()));
       else
-	fprintf (stderr, "%s: %s\n", message, bfd_errmsg (bfd_get_error ()));
+	fprintf(stderr, "%s: %s\n", message, bfd_errmsg(bfd_get_error()));
     }
 }
 
@@ -417,7 +420,7 @@ static const char *_bfd_error_program_name;
  */
 
 void
-_bfd_default_error_handler (const char *fmt, ...)
+_bfd_default_error_handler(const char *fmt, ...)
 {
   va_list ap;
   char *bufp;
@@ -426,18 +429,18 @@ _bfd_default_error_handler (const char *fmt, ...)
   char buf[1000];
 
   if (_bfd_error_program_name != NULL)
-    fprintf (stderr, "%s: ", _bfd_error_program_name);
+    fprintf(stderr, "%s: ", _bfd_error_program_name);
   else
-    fprintf (stderr, "BFD: ");
+    fprintf(stderr, "BFD: ");
 
   va_start (ap, fmt);
   new_fmt = fmt;
   bufp = buf;
 
-  /* Reserve enough space for the existing format string.  */
-  avail -= strlen (fmt) + 1;
+  /* Reserve enough space for the existing format string: */
+  avail -= (strlen(fmt) + 1);
   if (avail > 1000)
-    abort ();
+    abort();
 
   p = fmt;
   while (1)
@@ -445,28 +448,28 @@ _bfd_default_error_handler (const char *fmt, ...)
       char *q;
       size_t len, extra, trim;
 
-      p = strchr (p, '%');
-      if (p == NULL || p[1] == '\0')
+      p = strchr(p, '%');
+      if ((p == NULL) || (p[1] == '\0'))
 	{
 	  if (new_fmt == buf)
 	    {
-	      len = strlen (fmt);
-	      memcpy (bufp, fmt, len + 1);
+	      len = strlen(fmt);
+	      memcpy(bufp, fmt, len + 1);
 	    }
 	  break;
 	}
 
-      if (p[1] == 'A' || p[1] == 'B')
+      if ((p[1] == 'A') || (p[1] == 'B'))
 	{
-	  len = p - fmt;
-	  memcpy (bufp, fmt, len);
+	  len = (size_t)(p - fmt);
+	  memcpy(bufp, fmt, len);
 	  bufp += len;
 	  fmt = p + 2;
 	  new_fmt = buf;
 
 	  /* If we run out of space, tough, you lose your ridiculously
-	     long file or section name.  It's not safe to try to alloc
-	     memory here;  We might be printing an out of memory message.  */
+	   * long file or section name.  It is not safe to try to alloc
+	   * memory here; we might be printing an out of memory message: */
 	  if (avail == 0)
 	    {
 	      *bufp++ = '*';
@@ -477,68 +480,68 @@ _bfd_default_error_handler (const char *fmt, ...)
 	    {
 	      if (p[1] == 'B')
 		{
-		  bfd *abfd = va_arg (ap, bfd *);
+		  bfd *abfd = va_arg(ap, bfd *);
 		  if (abfd->my_archive)
-		    snprintf (bufp, avail, "%s(%s)",
-			      abfd->my_archive->filename, abfd->filename);
+		    snprintf(bufp, avail, "%s(%s)",
+                             abfd->my_archive->filename, abfd->filename);
 		  else
-		    snprintf (bufp, avail, "%s", abfd->filename);
+		    snprintf(bufp, avail, "%s", abfd->filename);
 		}
 	      else
 		{
-		  asection *sec = va_arg (ap, asection *);
+		  asection *sec = va_arg(ap, asection *);
 		  bfd *abfd = sec->owner;
 		  const char *group = NULL;
 		  struct coff_comdat_info *ci;
 
-		  if (abfd != NULL
-		      && bfd_get_flavour (abfd) == bfd_target_elf_flavour
-		      && elf_next_in_group (sec) != NULL
-		      && (sec->flags & SEC_GROUP) == 0)
+		  if ((abfd != NULL)
+		      && (bfd_get_flavour(abfd) == bfd_target_elf_flavour)
+		      && (elf_next_in_group(sec) != NULL)
+		      && ((sec->flags & SEC_GROUP) == 0))
 		    group = elf_group_name (sec);
-		  else if (abfd != NULL
-			   && bfd_get_flavour (abfd) == bfd_target_coff_flavour
-			   && (ci = bfd_coff_get_comdat_section (sec->owner,
-								 sec)) != NULL)
+		  else if ((abfd != NULL)
+			   && (bfd_get_flavour(abfd) == bfd_target_coff_flavour)
+			   && (ci = bfd_coff_get_comdat_section(sec->owner,
+                                                                sec)) != NULL)
 		    group = ci->name;
 		  if (group != NULL)
-		    snprintf (bufp, avail, "%s[%s]", sec->name, group);
+		    snprintf(bufp, avail, "%s[%s]", sec->name, group);
 		  else
-		    snprintf (bufp, avail, "%s", sec->name);
+		    snprintf(bufp, avail, "%s", sec->name);
 		}
-	      len = strlen (bufp);
-	      avail = avail - len + 2;
+	      len = strlen(bufp);
+	      avail = (avail - len + 2);
 
-	      /* We need to replace any '%' we printed by "%%".
-		 First count how many.  */
+              /* We need to replace any '%' we printed by "%%".
+               * First count how many: */
 	      q = bufp;
 	      bufp += len;
 	      extra = 0;
-	      while ((q = strchr (q, '%')) != NULL)
+	      while ((q = strchr(q, '%')) != NULL)
 		{
 		  ++q;
 		  ++extra;
 		}
 
-	      /* If there isn't room, trim off the end of the string.  */
+	      /* If there is NOT room, then trim off the end of the
+               * string: */
 	      q = bufp;
 	      bufp += extra;
 	      if (extra > avail)
 		{
-		  trim = extra - avail;
+		  trim = (extra - avail);
 		  bufp -= trim;
-		  do
-		    {
-		      if (*--q == '%')
-			--extra;
-		    }
-		  while (--trim != 0);
+		  do {
+                    if (*--q == '%') {
+                      --extra;
+                    }
+                  } while (--trim != 0);
 		  *q = '\0';
 		  avail = extra;
 		}
 	      avail -= extra;
 
-	      /* Now double all '%' chars, shuffling the string as we go.  */
+	      /* Now double all '%' chars, shuffling the string as we go: */
 	      while (extra != 0)
 		{
 		  while ((q[extra] = *q) != '%')
@@ -551,10 +554,10 @@ _bfd_default_error_handler (const char *fmt, ...)
       p = p + 2;
     }
 
-  vfprintf (stderr, new_fmt, ap);
-  va_end (ap);
+  vfprintf(stderr, new_fmt, ap);
+  va_end(ap);
 
-  putc ('\n', stderr);
+  putc('\n', stderr);
 }
 
 /* This is a function pointer to the routine which should handle BFD
@@ -992,21 +995,21 @@ DESCRIPTION
 */
 
 bfd_vma
-bfd_scan_vma (const char *string, const char **end, int base)
+bfd_scan_vma(const char *string, const char **end, int base)
 {
   bfd_vma value;
   bfd_vma cutoff;
   unsigned int cutlim;
   int overflow;
 
-  /* Let the host do it if possible.  */
-  if (sizeof (bfd_vma) <= sizeof (unsigned long))
-    return strtoul (string, (char **) end, base);
+  /* Let the host do it if possible: */
+  if (sizeof(bfd_vma) <= sizeof(unsigned long))
+    return strtoul(string, (char **)end, base);
 
 #ifdef HAVE_STRTOULL
-  if (sizeof (bfd_vma) <= sizeof (unsigned long long))
-    return strtoull (string, (char **) end, base);
-#endif
+  if (sizeof(bfd_vma) <= sizeof(unsigned long long))
+    return strtoull(string, (char **)end, base);
+#endif /* HAVE_STRTOULL */
 
   if (base == 0)
     {
@@ -1022,39 +1025,39 @@ bfd_scan_vma (const char *string, const char **end, int base)
   if ((base < 2) || (base > 36))
     base = 10;
 
-  if (base == 16
-      && string[0] == '0'
-      && (string[1] == 'x' || string[1] == 'X')
+  if ((base == 16)
+      && (string[0] == '0')
+      && ((string[1] == 'x') || (string[1] == 'X'))
       && ISXDIGIT (string[2]))
     {
       string += 2;
     }
 
-  cutoff = (~ (bfd_vma) 0) / (bfd_vma) base;
-  cutlim = (~ (bfd_vma) 0) % (bfd_vma) base;
-  value = 0;
+  cutoff = ((~(bfd_vma)0) / (bfd_vma)base);
+  cutlim = ((~(bfd_vma)0) % (bfd_vma)base);
+  value = 0UL;
   overflow = 0;
   while (1)
     {
       unsigned int digit;
 
-      digit = *string;
-      if (ISDIGIT (digit))
-	digit = digit - '0';
-      else if (ISALPHA (digit))
-	digit = TOUPPER (digit) - 'A' + 10;
+      digit = (unsigned int)*string;
+      if (ISDIGIT(digit))
+	digit = (digit - '0');
+      else if (ISALPHA(digit))
+	digit = (TOUPPER(digit) - 'A' + 10);
       else
 	break;
-      if (digit >= (unsigned int) base)
+      if (digit >= (unsigned int)base)
 	break;
-      if (value > cutoff || (value == cutoff && digit > cutlim))
+      if ((value > cutoff) || ((value == cutoff) && (digit > cutlim)))
 	overflow = 1;
-      value = value * base + digit;
+      value = ((value * (bfd_vma)base) + digit);
       ++string;
     }
 
   if (overflow)
-    value = ~ (bfd_vma) 0;
+    value = ~(bfd_vma)0UL;
 
   if (end != NULL)
     *end = string;
@@ -1302,13 +1305,13 @@ bfd_record_phdr (bfd *abfd,
   m->p_type = type;
   m->p_flags = flags;
   m->p_paddr = at;
-  m->p_flags_valid = flags_valid;
-  m->p_paddr_valid = at_valid;
-  m->includes_filehdr = includes_filehdr;
-  m->includes_phdrs = includes_phdrs;
+  m->p_flags_valid = (unsigned int)flags_valid;
+  m->p_paddr_valid = (unsigned int)at_valid;
+  m->includes_filehdr = (unsigned int)includes_filehdr;
+  m->includes_phdrs = (unsigned int)includes_phdrs;
   m->count = count;
   if (count > 0)
-    memcpy (m->sections, secs, count * sizeof (asection *));
+    memcpy(m->sections, secs, count * sizeof(asection *));
 
   for (pm = &elf_tdata (abfd)->segment_map; *pm != NULL; pm = &(*pm)->next)
     ;
@@ -1371,7 +1374,7 @@ bfd_alt_mach_code (bfd *abfd, int alternative)
 	  break;
 
 	case 2:
-	  code = get_elf_backend_data (abfd)->elf_machine_alt2;
+	  code = get_elf_backend_data(abfd)->elf_machine_alt2;
 	  if (code == 0)
 	    return FALSE;
 	  break;
@@ -1380,7 +1383,7 @@ bfd_alt_mach_code (bfd *abfd, int alternative)
 	  return FALSE;
 	}
 
-      elf_elfheader (abfd)->e_machine = code;
+      elf_elfheader(abfd)->e_machine = (unsigned short)code;
 
       return TRUE;
     }
@@ -1464,9 +1467,9 @@ DESCRIPTION
 */
 
 void
-bfd_preserve_restore (bfd *abfd, struct bfd_preserve *preserve)
+bfd_preserve_restore(bfd *abfd, struct bfd_preserve *preserve)
 {
-  bfd_hash_table_free (&abfd->section_htab);
+  bfd_hash_table_free(&abfd->section_htab);
 
   abfd->tdata.any = preserve->tdata;
   abfd->arch_info = preserve->arch_info;
@@ -1500,13 +1503,13 @@ DESCRIPTION
 */
 
 void
-bfd_preserve_finish (bfd *abfd ATTRIBUTE_UNUSED, struct bfd_preserve *preserve)
+bfd_preserve_finish(bfd *abfd ATTRIBUTE_UNUSED, struct bfd_preserve *preserve)
 {
   /* It would be nice to be able to free more memory here, eg. old
-     tdata, but that's not possible since these blocks are sitting
+     tdata, but that is not possible since these blocks are sitting
      inside bfd_alloc'd memory.  The section hash is on a separate
      objalloc.  */
-  bfd_hash_table_free (&preserve->section_htab);
+  bfd_hash_table_free(&preserve->section_htab);
 }
 
 /*
@@ -1525,12 +1528,12 @@ DESCRIPTION
 */
 
 void
-bfd_hide_symbol (bfd *abfd,
-		 struct bfd_link_info *link_info,
-		 struct bfd_link_hash_entry *h,
-		 bfd_boolean force_local)
+bfd_hide_symbol(bfd *abfd, struct bfd_link_info *link_info,
+                struct bfd_link_hash_entry *h, bfd_boolean force_local)
 {
-  if (bfd_get_flavour (abfd) == bfd_target_elf_flavour)
-    (get_elf_backend_data (abfd)->elf_backend_hide_symbol)
-      (link_info, (struct elf_link_hash_entry *) h, force_local);
+  if (bfd_get_flavour(abfd) == bfd_target_elf_flavour)
+    (get_elf_backend_data(abfd)->elf_backend_hide_symbol)
+      (link_info, (struct elf_link_hash_entry *)h, force_local);
 }
+
+/* End of bfd.c */

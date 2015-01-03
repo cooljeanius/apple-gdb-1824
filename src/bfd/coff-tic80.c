@@ -32,7 +32,7 @@ Boston, MA 02110-1301, USA.  */
 /* Newlib-based hosts define _CONST as a STDC-safe alias for const,
   but to the tic80 toolchain it means something altogether different.
   Since sysdep.h will have pulled in stdio.h and hence _ansi.h which
-  contains this definition, we must undef it before including the 
+  contains this definition, we must undef it before including the
   tic80-specific definition. */
 #undef _CONST
 #endif /* _CONST */
@@ -42,28 +42,30 @@ Boston, MA 02110-1301, USA.  */
 
 #define COFF_DEFAULT_SECTION_ALIGNMENT_POWER (2)
 #define COFF_ALIGN_IN_SECTION_HEADER 1
-#define COFF_ALIGN_IN_SFLAGS 1
+#ifndef COFF_ALIGN_IN_SFLAGS
+# define COFF_ALIGN_IN_SFLAGS 1
+#endif /* !COFF_ALIGN_IN_SFLAGS */
 
 #define GET_SCNHDR_FLAGS H_GET_16
 #define PUT_SCNHDR_FLAGS H_PUT_16
 
 static void rtype2howto
-  PARAMS ((arelent *cache_ptr, struct internal_reloc *dst));
+  PARAMS((arelent *cache_ptr, struct internal_reloc *dst));
 static bfd_reloc_status_type ppbase_reloc
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
 static bfd_reloc_status_type glob15_reloc
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
 static bfd_reloc_status_type glob16_reloc
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
 static bfd_reloc_status_type local16_reloc
-  PARAMS ((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
+  PARAMS((bfd *, arelent *, asymbol *, PTR, asection *, bfd *, char **));
 static bfd_boolean coff_tic80_relocate_section
-  PARAMS ((bfd *, struct bfd_link_info *, bfd *, asection *, bfd_byte *,
-	   struct internal_reloc *, struct internal_syment *, asection **));
+  PARAMS((bfd *, struct bfd_link_info *, bfd *, asection *, bfd_byte *,
+          struct internal_reloc *, struct internal_syment *, asection **));
 static reloc_howto_type * coff_tic80_rtype_to_howto
-  PARAMS ((bfd *, asection *, struct internal_reloc *,
-	   struct coff_link_hash_entry *, struct internal_syment *,
-	   bfd_vma *));
+  PARAMS((bfd *, asection *, struct internal_reloc *,
+          struct coff_link_hash_entry *, struct internal_syment *,
+          bfd_vma *));
 
 static reloc_howto_type tic80_howto_table[] =
 {
@@ -724,16 +726,21 @@ coff_tic80_relocate_section (output_bfd, info, input_bfd,
 
 /* Clear the r_reserved field in relocs.  */
 #define SWAP_OUT_RELOC_EXTRA(abfd,src,dst) \
-  do \
-    { \
+  do { \
       dst->r_reserved[0] = 0; \
       dst->r_reserved[1] = 0; \
-    } \
-  while (0)
+  } while (0)
 
 #define TIC80COFF 1		/* Customize coffcode.h */
 #undef C_AUTOARG		/* Clashes with TIc80's C_UEXT */
 #undef C_LASTENT		/* Clashes with TIc80's C_STATLAB */
 #include "coffcode.h"
 
-CREATE_LITTLE_COFF_TARGET_VEC (tic80coff_vec, "coff-tic80", D_PAGED, 0, '_', NULL, COFF_SWAP_TABLE)
+CREATE_LITTLE_COFF_TARGET_VEC(tic80coff_vec, "coff-tic80", D_PAGED, 0, '_',
+                              NULL, COFF_SWAP_TABLE)
+
+#ifdef COFF_ALIGN_IN_SFLAGS
+# undef COFF_ALIGN_IN_SFLAGS
+#endif /* COFF_ALIGN_IN_SFLAGS */
+
+/* EOF */

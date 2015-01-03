@@ -24,27 +24,29 @@
 #include "libbfd.h"
 
 static bfd_boolean tic4x_scan
-    PARAMS ((const struct bfd_arch_info *, const char * ));
+    PARAMS((const struct bfd_arch_info *, const char * ));
 
-
+/* scan function for this cpu: */
 static bfd_boolean
-tic4x_scan (info, string)
-     const struct bfd_arch_info *info;
-     const char *string;
+tic4x_scan(const struct bfd_arch_info *info, const char *string)
 {
-  /* Allow strings of form [ti][Cc][34][0-9], let's not be too picky
-     about strange numbered machines in C3x or C4x series.  */
-  if (string[0] == 't' && string[1] == 'i')
+  /* Allow strings of form [ti][Cc][34][0-9]; let us not be too picky
+   * about strange numbered machines in C3x or C4x series: */
+  if ((string[0] == 't') && (string[1] == 'i')) {
     string += 2;
-  if (*string == 'C' || *string == 'c')
+  }
+  if ((*string == 'C') || (*string == 'c')) {
     string++;
-  if (string[1] < '0' && string[1] > '9')
+  }
+  if ((string[1] < '0') && (string[1] > '9')) {
     return FALSE;
+  }
 
-  if (*string == '3')
+  if (*string == '3') {
     return (info->mach == bfd_mach_tic3x);
-  else if (*string == '4')
-    return info->mach == bfd_mach_tic4x;
+  } else if (*string == '4') {
+    return (info->mach == bfd_mach_tic4x);
+  }
 
   return FALSE;
 }
@@ -82,4 +84,4 @@ const bfd_arch_info_type bfd_tic4x_arch =
     &bfd_tic3x_arch,
   };
 
-
+/* EOF */

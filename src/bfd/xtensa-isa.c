@@ -233,14 +233,14 @@ xtensa_insnbuf_from_chars (xtensa_isa isa,
 extern xtensa_isa_internal xtensa_modules;
 
 xtensa_isa
-xtensa_isa_init (xtensa_isa_status *errno_p, char **error_msg_p)
+xtensa_isa_init(xtensa_isa_status *errno_p, char **error_msg_p)
 {
   xtensa_isa_internal *isa = &xtensa_modules;
   int n, is_user;
 
-  /* Set up the opcode name lookup table.  */
+  /* Set up the opcode name lookup table: */
   isa->opname_lookup_table =
-    bfd_malloc (isa->num_opcodes * sizeof (xtensa_lookup_entry));
+    (xtensa_lookup_entry *)bfd_malloc(isa->num_opcodes * sizeof(xtensa_lookup_entry));
   CHECK_ALLOC_FOR_INIT (isa->opname_lookup_table, NULL, errno_p, error_msg_p);
   for (n = 0; n < isa->num_opcodes; n++)
     {
@@ -250,9 +250,9 @@ xtensa_isa_init (xtensa_isa_status *errno_p, char **error_msg_p)
   qsort (isa->opname_lookup_table, isa->num_opcodes,
 	 sizeof (xtensa_lookup_entry), xtensa_isa_name_compare);
 
-  /* Set up the state name lookup table.  */
+  /* Set up the state name lookup table: */
   isa->state_lookup_table =
-    bfd_malloc (isa->num_states * sizeof (xtensa_lookup_entry));
+    (xtensa_lookup_entry *)bfd_malloc(isa->num_states * sizeof(xtensa_lookup_entry));
   CHECK_ALLOC_FOR_INIT (isa->state_lookup_table, NULL, errno_p, error_msg_p);
   for (n = 0; n < isa->num_states; n++)
     {
@@ -264,7 +264,7 @@ xtensa_isa_init (xtensa_isa_status *errno_p, char **error_msg_p)
 
   /* Set up the sysreg name lookup table.  */
   isa->sysreg_lookup_table =
-    bfd_malloc (isa->num_sysregs * sizeof (xtensa_lookup_entry));
+    (xtensa_lookup_entry *)bfd_malloc(isa->num_sysregs * sizeof(xtensa_lookup_entry));
   CHECK_ALLOC_FOR_INIT (isa->sysreg_lookup_table, NULL, errno_p, error_msg_p);
   for (n = 0; n < isa->num_sysregs; n++)
     {
@@ -277,8 +277,8 @@ xtensa_isa_init (xtensa_isa_status *errno_p, char **error_msg_p)
   /* Set up the user & system sysreg number tables: */
   for ((is_user = 0); (is_user < 2); is_user++) {
       isa->sysreg_table[is_user] =
-	bfd_malloc((isa->max_sysreg_num[is_user] + 1)
-		    * sizeof(xtensa_sysreg));
+	(xtensa_sysreg *)bfd_malloc((isa->max_sysreg_num[is_user] + 1)
+                                    * sizeof(xtensa_sysreg));
       CHECK_ALLOC_FOR_INIT(isa->sysreg_table[is_user], NULL,
 			   errno_p, error_msg_p);
 
@@ -295,7 +295,7 @@ xtensa_isa_init (xtensa_isa_status *errno_p, char **error_msg_p)
 
   /* Set up the interface lookup table.  */
   isa->interface_lookup_table =
-    bfd_malloc (isa->num_interfaces * sizeof (xtensa_lookup_entry));
+    (xtensa_lookup_entry *)bfd_malloc(isa->num_interfaces * sizeof(xtensa_lookup_entry));
   CHECK_ALLOC_FOR_INIT (isa->interface_lookup_table, NULL, errno_p,
 			error_msg_p);
   for (n = 0; n < isa->num_interfaces; n++)
@@ -308,7 +308,7 @@ xtensa_isa_init (xtensa_isa_status *errno_p, char **error_msg_p)
 
   /* Set up the funcUnit lookup table.  */
   isa->funcUnit_lookup_table =
-    bfd_malloc (isa->num_funcUnits * sizeof (xtensa_lookup_entry));
+    (xtensa_lookup_entry *)bfd_malloc(isa->num_funcUnits * sizeof(xtensa_lookup_entry));
   CHECK_ALLOC_FOR_INIT (isa->funcUnit_lookup_table, NULL, errno_p,
 			error_msg_p);
   for (n = 0; n < isa->num_funcUnits; n++)
@@ -658,22 +658,24 @@ xtensa_opcode_lookup (xtensa_isa isa, const char *opname)
   if (!opname || !*opname)
     {
       xtisa_errno = xtensa_isa_bad_opcode;
-      strcpy (xtisa_error_msg, "invalid opcode name");
+      strcpy(xtisa_error_msg, "invalid opcode name");
       return XTENSA_UNDEFINED;
     }
 
   if (intisa->num_opcodes != 0)
     {
       entry.key = opname;
-      result = bsearch (&entry, intisa->opname_lookup_table,
-			intisa->num_opcodes, sizeof (xtensa_lookup_entry),
-			xtensa_isa_name_compare);
+      result =
+        (xtensa_lookup_entry *)bsearch(&entry, intisa->opname_lookup_table,
+                                       intisa->num_opcodes,
+                                       sizeof(xtensa_lookup_entry),
+                                       xtensa_isa_name_compare);
     }
 
   if (!result)
     {
       xtisa_errno = xtensa_isa_bad_opcode;
-      sprintf (xtisa_error_msg, "opcode \"%s\" not recognized", opname);
+      sprintf(xtisa_error_msg, "opcode \"%s\" not recognized", opname);
       return XTENSA_UNDEFINED;
     }
 
@@ -1015,69 +1017,69 @@ xtensa_operand_set_field (xtensa_isa isa, xtensa_opcode opc, int opnd,
 int xtensa_operand_encode(xtensa_isa isa, xtensa_opcode opc, int opnd,
 			  uint32 *valp)
 {
-  xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
+  xtensa_isa_internal *outer_intisa = (xtensa_isa_internal *)isa;
   xtensa_operand_internal *intop;
   uint32 test_val, orig_val;
 
-  intop = get_operand(intisa, opc, opnd);
+  intop = get_operand(outer_intisa, opc, opnd);
   if (!intop) return -1;
 
   if (!intop->encode) {
-      /* This is a default operand for a field. How can we tell if the value
-       * fits in the field? Write the value into the field, read it back,
-       * and then make sure we get the same value. */
-
-      xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
+      /* This is a default operand for a field.  How can we tell if the
+       * value fits in the field?  Write the value into the field, read it
+       * back, and then make sure we get the same value: */
+      xtensa_isa_internal *inner_intisa = (xtensa_isa_internal *)isa;
       static xtensa_insnbuf tmpbuf = 0;
       int slot_id;
 
       if (!tmpbuf)
 	{
-	  tmpbuf = xtensa_insnbuf_alloc (isa);
-	  CHECK_ALLOC (tmpbuf, -1);
+	  tmpbuf = xtensa_insnbuf_alloc(isa);
+	  CHECK_ALLOC(tmpbuf, -1);
 	}
 
       /* A default operand is always associated with a field,
-	 but check just to be sure....  */
+       * but check just to be sure...  */
       if (intop->field_id == XTENSA_UNDEFINED)
 	{
 	  xtisa_errno = xtensa_isa_internal_error;
-	  strcpy (xtisa_error_msg, "operand has no field");
+	  strcpy(xtisa_error_msg, "operand has no field");
 	  return -1;
 	}
 
       /* Find some slot that includes the field.  */
-      for (slot_id = 0; slot_id < intisa->num_slots; slot_id++)
+      for (slot_id = 0; slot_id < inner_intisa->num_slots; slot_id++)
 	{
 	  xtensa_get_field_fn get_fn =
-	    intisa->slots[slot_id].get_field_fns[intop->field_id];
+	    inner_intisa->slots[slot_id].get_field_fns[intop->field_id];
 	  xtensa_set_field_fn set_fn =
-	    intisa->slots[slot_id].set_field_fns[intop->field_id];
+	    inner_intisa->slots[slot_id].set_field_fns[intop->field_id];
 
 	  if (get_fn && set_fn)
 	    {
-	      (*set_fn) (tmpbuf, *valp);
-	      return ((*get_fn) (tmpbuf) != *valp);
+	      (*set_fn)(tmpbuf, *valp);
+	      return ((*get_fn)(tmpbuf) != *valp);
 	    }
 	}
 
-      /* Couldn't find any slot containing the field....  */
+      /* Could NOT find any slot containing the field... */
       xtisa_errno = xtensa_isa_no_field;
-      strcpy (xtisa_error_msg, "field does not exist in any slot");
+      strcpy(xtisa_error_msg, "field does not exist in any slot");
       return -1;
     }
 
   /* Encode the value.  In some cases, the encoding function may detect
-     errors, but most of the time the only way to determine if the value
-     was successfully encoded is to decode it and check if it matches
-     the original value.  */
+   * errors, but most of the time the only way to determine if the value
+   * was successfully encoded is to decode it and check if it matches
+   * the original value: */
   orig_val = *valp;
-  if ((*intop->encode) (valp) ||
-      (test_val = *valp, (*intop->decode) (&test_val)) ||
+  if ((*intop->encode)(valp) ||
+      (test_val = *valp, (*intop->decode)(&test_val)) ||
       test_val != orig_val)
     {
       xtisa_errno = xtensa_isa_bad_value;
-      sprintf (xtisa_error_msg, "cannot encode operand value 0x%08x", *valp);
+      sprintf(xtisa_error_msg, "cannot encode operand value 0x%08x",
+              *valp);
       return -1;
     }
 
@@ -1460,21 +1462,24 @@ xtensa_regfile_num_entries (xtensa_isa isa, xtensa_regfile rf)
 xtensa_state
 xtensa_state_lookup (xtensa_isa isa, const char *name)
 {
-  xtensa_isa_internal *intisa = (xtensa_isa_internal *) isa;
+  xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
   xtensa_lookup_entry entry, *result = 0;
 
   if (!name || !*name)
     {
       xtisa_errno = xtensa_isa_bad_state;
-      strcpy (xtisa_error_msg, "invalid state name");
+      strcpy(xtisa_error_msg, "invalid state name");
       return XTENSA_UNDEFINED;
     }
 
   if (intisa->num_states != 0)
     {
       entry.key = name;
-      result = bsearch (&entry, intisa->state_lookup_table, intisa->num_states,
-			sizeof (xtensa_lookup_entry), xtensa_isa_name_compare);
+      result =
+        (xtensa_lookup_entry *)bsearch(&entry, intisa->state_lookup_table,
+                                       intisa->num_states,
+                                       sizeof(xtensa_lookup_entry),
+                                       xtensa_isa_name_compare);
     }
 
   if (!result)
@@ -1568,9 +1573,11 @@ xtensa_sysreg_lookup_name (xtensa_isa isa, const char *name)
   if (intisa->num_sysregs != 0)
     {
       entry.key = name;
-      result = bsearch (&entry, intisa->sysreg_lookup_table,
-			intisa->num_sysregs, sizeof (xtensa_lookup_entry),
-			xtensa_isa_name_compare);
+      result =
+        (xtensa_lookup_entry *)bsearch(&entry, intisa->sysreg_lookup_table,
+                                       intisa->num_sysregs,
+                                       sizeof(xtensa_lookup_entry),
+                                       xtensa_isa_name_compare);
     }
 
   if (!result)
@@ -1614,9 +1621,7 @@ xtensa_sysreg_is_user (xtensa_isa isa, xtensa_sysreg sysreg)
 
 
 
-/* Interfaces.  */
-
-
+/* Interfaces: */
 #define CHECK_INTERFACE(INTISA,INTF,ERRVAL) \
   do { \
     if ((INTF) < 0 || (INTF) >= (INTISA)->num_interfaces) \
@@ -1629,30 +1634,33 @@ xtensa_sysreg_is_user (xtensa_isa isa, xtensa_sysreg sysreg)
 
 
 xtensa_interface
-xtensa_interface_lookup (xtensa_isa isa, const char *ifname)
+xtensa_interface_lookup(xtensa_isa isa, const char *ifname)
 {
-  xtensa_isa_internal *intisa = (xtensa_isa_internal *) isa;
+  xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
   xtensa_lookup_entry entry, *result = 0;
 
   if (!ifname || !*ifname)
     {
       xtisa_errno = xtensa_isa_bad_interface;
-      strcpy (xtisa_error_msg, "invalid interface name");
+      strcpy(xtisa_error_msg, "invalid interface name");
       return XTENSA_UNDEFINED;
     }
 
   if (intisa->num_interfaces != 0)
     {
       entry.key = ifname;
-      result = bsearch (&entry, intisa->interface_lookup_table,
-			intisa->num_interfaces, sizeof (xtensa_lookup_entry),
-			xtensa_isa_name_compare);
+      result =
+        (xtensa_lookup_entry *)bsearch(&entry,
+                                       intisa->interface_lookup_table,
+                                       intisa->num_interfaces,
+                                       sizeof(xtensa_lookup_entry),
+                                       xtensa_isa_name_compare);
     }
 
   if (!result)
     {
       xtisa_errno = xtensa_isa_bad_interface;
-      sprintf (xtisa_error_msg, "interface \"%s\" not recognized", ifname);
+      sprintf(xtisa_error_msg, "interface \"%s\" not recognized", ifname);
       return XTENSA_UNDEFINED;
     }
 
@@ -1663,26 +1671,26 @@ xtensa_interface_lookup (xtensa_isa isa, const char *ifname)
 const char *
 xtensa_interface_name (xtensa_isa isa, xtensa_interface intf)
 {
-  xtensa_isa_internal *intisa = (xtensa_isa_internal *) isa;
-  CHECK_INTERFACE (intisa, intf, NULL);
+  xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
+  CHECK_INTERFACE(intisa, intf, NULL);
   return intisa->interfaces[intf].name;
 }
 
 
 int
-xtensa_interface_num_bits (xtensa_isa isa, xtensa_interface intf)
+xtensa_interface_num_bits(xtensa_isa isa, xtensa_interface intf)
 {
-  xtensa_isa_internal *intisa = (xtensa_isa_internal *) isa;
-  CHECK_INTERFACE (intisa, intf, XTENSA_UNDEFINED);
+  xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
+  CHECK_INTERFACE(intisa, intf, XTENSA_UNDEFINED);
   return intisa->interfaces[intf].num_bits;
 }
 
 
 char
-xtensa_interface_inout (xtensa_isa isa, xtensa_interface intf)
+xtensa_interface_inout(xtensa_isa isa, xtensa_interface intf)
 {
-  xtensa_isa_internal *intisa = (xtensa_isa_internal *) isa;
-  CHECK_INTERFACE (intisa, intf, 0);
+  xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
+  CHECK_INTERFACE(intisa, intf, 0);
   return intisa->interfaces[intf].inout;
 }
 
@@ -1690,8 +1698,8 @@ xtensa_interface_inout (xtensa_isa isa, xtensa_interface intf)
 int
 xtensa_interface_has_side_effect (xtensa_isa isa, xtensa_interface intf)
 {
-  xtensa_isa_internal *intisa = (xtensa_isa_internal *) isa;
-  CHECK_INTERFACE (intisa, intf, XTENSA_UNDEFINED);
+  xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
+  CHECK_INTERFACE(intisa, intf, XTENSA_UNDEFINED);
   if ((intisa->interfaces[intf].flags & XTENSA_INTERFACE_HAS_SIDE_EFFECT) != 0)
     return 1;
   return 0;
@@ -1699,55 +1707,54 @@ xtensa_interface_has_side_effect (xtensa_isa isa, xtensa_interface intf)
 
 
 int
-xtensa_interface_class_id (xtensa_isa isa, xtensa_interface intf)
+xtensa_interface_class_id(xtensa_isa isa, xtensa_interface intf)
 {
-  xtensa_isa_internal *intisa = (xtensa_isa_internal *) isa;
-  CHECK_INTERFACE (intisa, intf, XTENSA_UNDEFINED);
+  xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
+  CHECK_INTERFACE(intisa, intf, XTENSA_UNDEFINED);
   return intisa->interfaces[intf].class_id;
 }
 
-
 
-/* Functional Units.  */
-
-
+/* Functional Units: */
 #define CHECK_FUNCUNIT(INTISA,FUN,ERRVAL) \
   do { \
-    if ((FUN) < 0 || (FUN) >= (INTISA)->num_funcUnits) \
+    if (((FUN) < 0) || ((FUN) >= (INTISA)->num_funcUnits)) \
       { \
 	xtisa_errno = xtensa_isa_bad_funcUnit; \
-	strcpy (xtisa_error_msg, "invalid functional unit specifier"); \
+	strcpy(xtisa_error_msg, "invalid functional unit specifier"); \
 	return (ERRVAL); \
       } \
   } while (0)
 
 
 xtensa_funcUnit
-xtensa_funcUnit_lookup (xtensa_isa isa, const char *fname)
+xtensa_funcUnit_lookup(xtensa_isa isa, const char *fname)
 {
-  xtensa_isa_internal *intisa = (xtensa_isa_internal *) isa;
+  xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
   xtensa_lookup_entry entry, *result = 0;
 
   if (!fname || !*fname)
     {
       xtisa_errno = xtensa_isa_bad_funcUnit;
-      strcpy (xtisa_error_msg, "invalid functional unit name");
+      strcpy(xtisa_error_msg, "invalid functional unit name");
       return XTENSA_UNDEFINED;
     }
 
   if (intisa->num_funcUnits != 0)
     {
       entry.key = fname;
-      result = bsearch (&entry, intisa->funcUnit_lookup_table,
-			intisa->num_funcUnits, sizeof (xtensa_lookup_entry),
-			xtensa_isa_name_compare);
+      result = (xtensa_lookup_entry *)bsearch(&entry,
+                                              intisa->funcUnit_lookup_table,
+                                              intisa->num_funcUnits,
+                                              sizeof(xtensa_lookup_entry),
+                                              xtensa_isa_name_compare);
     }
 
   if (!result)
     {
       xtisa_errno = xtensa_isa_bad_funcUnit;
-      sprintf (xtisa_error_msg,
-	       "functional unit \"%s\" not recognized", fname);
+      sprintf(xtisa_error_msg,
+              "functional unit \"%s\" not recognized", fname);
       return XTENSA_UNDEFINED;
     }
 
@@ -1756,19 +1763,20 @@ xtensa_funcUnit_lookup (xtensa_isa isa, const char *fname)
 
 
 const char *
-xtensa_funcUnit_name (xtensa_isa isa, xtensa_funcUnit fun)
+xtensa_funcUnit_name(xtensa_isa isa, xtensa_funcUnit fun)
 {
-  xtensa_isa_internal *intisa = (xtensa_isa_internal *) isa;
-  CHECK_FUNCUNIT (intisa, fun, NULL);
+  xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
+  CHECK_FUNCUNIT(intisa, fun, NULL);
   return intisa->funcUnits[fun].name;
 }
 
 
 int
-xtensa_funcUnit_num_copies (xtensa_isa isa, xtensa_funcUnit fun)
+xtensa_funcUnit_num_copies(xtensa_isa isa, xtensa_funcUnit fun)
 {
-  xtensa_isa_internal *intisa = (xtensa_isa_internal *) isa;
-  CHECK_FUNCUNIT (intisa, fun, XTENSA_UNDEFINED);
+  xtensa_isa_internal *intisa = (xtensa_isa_internal *)isa;
+  CHECK_FUNCUNIT(intisa, fun, XTENSA_UNDEFINED);
   return intisa->funcUnits[fun].num_copies;
 }
 
+/* EOF */

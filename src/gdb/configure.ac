@@ -956,6 +956,16 @@ AC_SUBST([LIBXML2_INCLUDES])dnl
 AC_SUBST([LIBXML2_LIBS])dnl
 # APPLE LOCAL end: Get the libxml2 headers and libraries
 
+if test "x${COMMAND_MODE}" = "xlegacy"; then
+  # APPLE LOCAL: Do NOT bother trying to make this copy of gdb work with
+  # the "new" standards-conformant header environment:
+  UNIX03_UGH_CFLAGS=-D__DARWIN_UNIX03=0
+elif test "x${COMMAND_MODE}" = "xunix2003"; then
+  # '1' is the opposite of '0':
+  UNIX03_UGH_CFLAGS=-D__DARWIN_UNIX03=1
+fi
+AC_SUBST([UNIX03_UGH_CFLAGS])dnl
+
 # We need to link with -lw to get `wctype' on Solaris before Solaris
 # 2.6.  Solaris 2.6 and beyond have this function in libc, and have a
 # libw that some versions of the GNU linker cannot hanle (GNU ld 2.9.1

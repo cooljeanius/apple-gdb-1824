@@ -49,16 +49,13 @@ reloc_howto_type apollocoff_howto_table[] =
 #endif /* !BADMAG */
 #define APOLLO_M68 1		/* Customize coffcode.h */
 
-/* Turn a howto into a reloc number.  */
-
-extern void apollo_rtype2howto PARAMS ((arelent *, int));
-extern int  apollo_howto2rtype PARAMS ((reloc_howto_type *));
+/* Turn a howto into a reloc number: */
+extern void apollo_rtype2howto PARAMS((arelent *, int));
+extern int  apollo_howto2rtype PARAMS((reloc_howto_type *));
 #ifndef ONLY_DECLARE_RELOCS
 
 void
-apollo_rtype2howto (internal, relocentry)
-     arelent *internal;
-     int relocentry;
+apollo_rtype2howto(arelent *internal, int relocentry)
 {
   switch (relocentry) {
     case R_RELBYTE:	internal->howto = apollocoff_howto_table + 0; break;
@@ -72,8 +69,7 @@ apollo_rtype2howto (internal, relocentry)
   }
 }
 
-int apollo_howto2rtype(internal)
-     reloc_howto_type *internal;
+int apollo_howto2rtype(reloc_howto_type *internal)
 {
   if (internal->pc_relative)
     {

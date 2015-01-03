@@ -21,14 +21,15 @@
 #ifndef LIBXCOFF_H
 #define LIBXCOFF_H
 
+#include "coff/xcoff.h"
+
 /* This is the backend information kept for XCOFF files.  This
    structure is constant for a particular backend.  The first element
    is the COFF backend data structure, so that XCOFF targets can use
    the generic COFF code.  */
-
 struct xcoff_backend_data_rec
 {
-  /* COFF backend information.  */
+  /* COFF backend information: */
   bfd_coff_backend_data coff;
 
   /* Magic number.  */

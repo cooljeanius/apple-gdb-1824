@@ -538,35 +538,42 @@ short __header_offset_temp;
 
 
 #ifndef MY_zmagic_contiguous
-#define MY_zmagic_contiguous 0
-#endif
+# define MY_zmagic_contiguous 0
+#endif /* !MY_zmagic_contiguous */
 #ifndef MY_text_includes_header
-#define MY_text_includes_header 0
-#endif
+# define MY_text_includes_header 0
+#endif /* !MY_text_includes_header */
 #ifndef MY_entry_is_text_address
-#define MY_entry_is_text_address 0
-#endif
+# define MY_entry_is_text_address 0
+#endif /* !MY_entry_is_text_address */
 #ifndef MY_exec_header_not_counted
-#define MY_exec_header_not_counted 1
-#endif
+# define MY_exec_header_not_counted 1
+#endif /* !MY_exec_header_not_counted */
 #ifndef MY_add_dynamic_symbols
-#define MY_add_dynamic_symbols 0
-#endif
+# define MY_add_dynamic_symbols 0
+#endif /* !MY_add_dynamic_symbols */
 #ifndef MY_add_one_symbol
-#define MY_add_one_symbol 0
-#endif
+# define MY_add_one_symbol 0
+#endif /* !MY_add_one_symbol */
 #ifndef MY_link_dynamic_object
-#define MY_link_dynamic_object 0
-#endif
+# define MY_link_dynamic_object 0
+#endif /* !MY_link_dynamic_object */
 #ifndef MY_write_dynamic_symbol
-#define MY_write_dynamic_symbol 0
-#endif
+# define MY_write_dynamic_symbol 0
+#endif /* !MY_write_dynamic_symbol */
 #ifndef MY_check_dynamic_reloc
-#define MY_check_dynamic_reloc 0
-#endif
+# define MY_check_dynamic_reloc 0
+#endif /* !MY_check_dynamic_reloc */
 #ifndef MY_finish_dynamic_link
-#define MY_finish_dynamic_link 0
-#endif
+# define MY_finish_dynamic_link 0
+#endif /* !MY_finish_dynamic_link */
+
+/* this needs to go after the usage of the CONCAT* macro mentioned above,
+ * but before any other headers are included, or prototypes for functions
+ * are declared: */
+#if defined(__GNUC__) && (__GNUC__ >= 4)
+ # pragma GCC diagnostic ignored "-Wtraditional"
+#endif /* gcc 4+ */
 
 /* prototypes from this file: */
 #if defined(__STDC__) && __STDC__
@@ -583,27 +590,28 @@ bfd_boolean encap_write_object_contents();
 # define MY_write_object_content encap_write_object_contents
 /* no "else" condition because this define might not even be necessary... */
 #endif /* !MY_write_object_content */
-/* 'encap_object_p' should be a prototype, and NOT a define, so there is no need
- * to also check if it is defined here: */
+/* 'encap_object_p' should be a prototype, and NOT a define, so there is no
+ * need to also check if it is defined here: */
 #if !defined(MY_object_p)
 # define MY_object_p encap_object_p
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning "MY_object_p should be defined here but is not"
+ #  warning "MY_object_p should be defined here but is not"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* !MY_object_p */
 #if !defined(MY_exec_hdr_flags) && defined(N_FLAGS_COFF_ENCAPSULATE)
 # define MY_exec_hdr_flags N_FLAGS_COFF_ENCAPSULATE
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning "MY_exec_hdr_flags should be defined here but is not"
+ #  warning "MY_exec_hdr_flags should be defined here but is not"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* !MY_exec_hdr_flags && N_FLAGS_COFF_ENCAPSULATE */
 
 #include "aout-target.h"
 
 #if defined(__STDC__) && __STDC__
-/* could not find a header that had these prototypes... just copy them here: */
+/* could not find a header that had these prototypes... just copy them
+ * here: */
 extern void perror_with_name(char *string);
 extern int myread(int desc, char *addr, int len);
 # ifndef __BFD_AOUT_TARGET_H__
@@ -623,8 +631,7 @@ static const bfd_target *MY(callback)();
 # endif /* !IS_OBJECT_FILE */
 #endif /* __STDC__ */
 /* Finish up the reading of an encapsulated-coff a.out file header: */
-const bfd_target *encap_real_callback(abfd)
-     bfd *abfd;
+const bfd_target *encap_real_callback(bfd *abfd)
 {
   long text_start;
   long exec_data_start;
@@ -675,8 +682,7 @@ const bfd_target *encap_real_callback(abfd)
   return abfd->xvec;
 }
 
-const bfd_target *encap_object_p(abfd)
-bfd *abfd;
+const bfd_target *encap_object_p(bfd *abfd)
 {
   unsigned char magicbuf[4]; /* Raw bytes of magic number from file */
   unsigned long magic; /* Swapped magic number */
@@ -687,7 +693,7 @@ bfd *abfd;
 
   if (bfd_bread((PTR)magicbuf, amt, abfd) != amt) {
     if (bfd_get_error() != bfd_error_system_call) {
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
     }
     return 0;
   }
@@ -714,15 +720,15 @@ bfd *abfd;
     }
     return 0;
   }
-  NAME(aout,swap_exec_header_in) (abfd, &exec_bytes, &exec);
+  NAME(aout,swap_exec_header_in)(abfd, &exec_bytes, &exec);
 
   return aout_32_some_aout_object_p(abfd, &exec, encap_real_callback);
 }
 
-/* Write an object file in Encapsulated COFF format. Section contents have
- * already been written. We write the file header, symbols, & relocation. */
-bfd_boolean encap_write_object_contents(abfd)
-     bfd *abfd;
+/* Write an object file in Encapsulated COFF format.  Section contents have
+ * already been written.  We write the file header, symbols, & relocation
+ * here: */
+bfd_boolean encap_write_object_contents(bfd *abfd)
 {
   short magic;
   bfd_size_type data_pad = 0;
@@ -733,7 +739,7 @@ bfd_boolean encap_write_object_contents(abfd)
   int local_text_size = 0;
 #endif /* !local_text_size && !GDBSTABS_H */
 
-  /* FIXME: Fragments from the old GNU LD program for dealing w/encap-coff: */
+  /* FIXME: Fragments from old GNU LD program for dealing w/encap-coff: */
   struct coffheader mycoffheader;
   int need_coff_header;
   mycoffheader.magic = 0;

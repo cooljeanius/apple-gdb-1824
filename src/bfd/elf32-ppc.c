@@ -2056,13 +2056,13 @@ ppc_elf_begin_write_processing (bfd *abfd, struct bfd_link_info *link_info)
   if (asec == NULL)
     return;
 
-  /* Allocate a buffer for the contents of the input sections.  */
-  buffer = bfd_malloc (output_section_size);
+  /* Allocate a buffer for the contents of the input sections: */
+  buffer = (char *)bfd_malloc(output_section_size);
   if (buffer == NULL)
     return;
 
   offset = 0;
-  apuinfo_list_init ();
+  apuinfo_list_init();
 
   /* Read in the input sections contents.  */
   for (ibfd = link_info->input_bfds; ibfd; ibfd = ibfd->link_next)
@@ -2154,10 +2154,9 @@ ppc_elf_write_section (bfd *abfd ATTRIBUTE_UNUSED,
 	  && strcmp (asec->name, APUINFO_SECTION_NAME) == 0);
 }
 
-/* Finally we can generate the output section.  */
-
+/* Finally we can generate the output section: */
 static void
-ppc_elf_final_write_processing (bfd *abfd, bfd_boolean linker ATTRIBUTE_UNUSED)
+ppc_elf_final_write_processing(bfd *abfd, bfd_boolean linker ATTRIBUTE_UNUSED)
 {
   bfd_byte *buffer;
   asection *asec;
@@ -2165,18 +2164,18 @@ ppc_elf_final_write_processing (bfd *abfd, bfd_boolean linker ATTRIBUTE_UNUSED)
   unsigned num_entries;
   bfd_size_type length;
 
-  asec = bfd_get_section_by_name (abfd, APUINFO_SECTION_NAME);
+  asec = bfd_get_section_by_name(abfd, APUINFO_SECTION_NAME);
   if (asec == NULL)
     return;
 
-  if (apuinfo_list_length () == 0)
+  if (apuinfo_list_length() == 0)
     return;
 
   length = asec->size;
   if (length < 20)
     return;
 
-  buffer = bfd_malloc (length);
+  buffer = (bfd_byte *)bfd_malloc(length);
   if (buffer == NULL)
     {
       (*_bfd_error_handler)
@@ -2444,7 +2443,7 @@ ppc_elf_link_hash_table_create (bfd *abfd)
   ret->plt_entry_size = 12;
   ret->plt_slot_size = 8;
   ret->plt_initial_entry_size = 72;
-  
+
   ret->is_vxworks = 0;
 
   return &ret->elf.root;
@@ -6674,7 +6673,7 @@ ppc_elf_finish_dynamic_symbol (bfd *output_bfd,
 	      {
 		bfd_vma got_offset;
 		const bfd_vma *plt_entry;
-		
+
 		/* The first three entries in .got.plt are reserved.  */
 		got_offset = (reloc_index + 3) * 4;
 
@@ -6724,7 +6723,7 @@ ppc_elf_finish_dynamic_symbol (bfd *output_bfd,
 		   low-order 16 bits of the load instruction.  */
 		/* NOTE: It appears that this is now an index rather than a
 		   prescaled offset.  */
-		bfd_put_32 (output_bfd, 
+		bfd_put_32 (output_bfd,
 			    plt_entry[4] | reloc_index,
 			    htab->plt->contents + ent->plt.offset + 16);
 		/* This instruction is a PC-relative branch whose target is
@@ -6733,8 +6732,8 @@ ppc_elf_finish_dynamic_symbol (bfd *output_bfd,
 		   The address is encoded in bits 6-29, inclusive.  The value
 		   stored is right-shifted by two bits, permitting a 26-bit
 		   offset.  */
-		bfd_put_32 (output_bfd, 
-			    (plt_entry[5] 
+		bfd_put_32 (output_bfd,
+			    (plt_entry[5]
 			     | (-(ent->plt.offset + 20) & 0x03fffffc)),
 			    htab->plt->contents + ent->plt.offset + 20);
 		bfd_put_32 (output_bfd, plt_entry[6],
@@ -6991,7 +6990,7 @@ ppc_elf_finish_dynamic_sections (bfd *output_bfd,
   dynobj = elf_hash_table (info)->dynobj;
   sdyn = bfd_get_section_by_name (dynobj, ".dynamic");
   if (htab->is_vxworks)
-    splt = bfd_get_section_by_name (dynobj, ".plt");  
+    splt = bfd_get_section_by_name (dynobj, ".plt");
   else
     splt = NULL;
 
@@ -7080,7 +7079,7 @@ ppc_elf_finish_dynamic_sections (bfd *output_bfd,
     {
       /* Use the right PLT. */
       static const bfd_vma *plt_entry = NULL;
-      plt_entry = info->shared ? 
+      plt_entry = info->shared ?
 	ppc_elf_vxworks_pic_plt0_entry : ppc_elf_vxworks_plt0_entry;
 
       if (!info->shared)
@@ -7123,7 +7122,7 @@ ppc_elf_finish_dynamic_sections (bfd *output_bfd,
 	  rela.r_addend = 0;
 	  bfd_elf32_swap_reloca_out (output_bfd, &rela, loc);
 	  loc += sizeof (Elf32_External_Rela);
-	  
+
 	  /* Output the @l relocation for the second instruction.  */
 	  rela.r_offset = (htab->plt->output_section->vma
 			   + htab->plt->output_offset

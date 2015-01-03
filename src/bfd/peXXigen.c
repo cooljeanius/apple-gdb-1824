@@ -56,9 +56,12 @@
  * on this code has a chance of getting something accomplished without
  * wasting too much time. */
 
-/* This expands into COFF_WITH_pe or COFF_WITH_pep depending on whether
- * we are compiling for straight PE or PE+ (how?). */
-#define COFF_WITH_XX
+/* This expands into COFF_WITH_pe or COFF_WITH_pep or COFF_WITH_pex64
+ * depending on whether we are compiling for straight PE or PE+ or 64-bit
+ * PE (see the Makefile for how this happens). */
+#ifndef COFF_WITH_XX
+# define COFF_WITH_XX
+#endif /* !COFF_WITH_XX */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -156,7 +159,8 @@ _bfd_XXi_swap_sym_in (bfd * abfd, void * ext1, void * in1)
 	    if (unused_section_number <= sec->target_index)
 	      unused_section_number = sec->target_index + 1;
 
-	  name = bfd_alloc (abfd, (bfd_size_type) strlen (in->n_name) + 10);
+	  name = (char *)bfd_alloc(abfd,
+                                   (bfd_size_type)strlen(in->n_name) + 10);
 	  if (name == NULL)
 	    return;
 	  strcpy (name, in->n_name);
@@ -1239,12 +1243,12 @@ pe_print_idata (bfd * abfd, void * vfile)
 	      if (ft_section == section)
 		{
 		  ft_data = data;
-		  ft_idx = first_thunk - adj;
+		  ft_idx = (first_thunk - adj);
 		}
 	      else
 		{
-		  ft_idx = first_thunk - (ft_section->vma - extra->ImageBase);
-		  ft_data = bfd_malloc (datasize);
+		  ft_idx = (first_thunk - (ft_section->vma - extra->ImageBase));
+		  ft_data = (bfd_byte *)bfd_malloc(datasize);
 		  if (ft_data == NULL)
 		    continue;
 
@@ -1362,31 +1366,31 @@ pe_print_edata (bfd * abfd, void * vfile)
 
       if (section == NULL)
 	{
-	  fprintf (file,
-		   _("\nThere is an export table, but the section containing it could not be found\n"));
+	  fprintf(file,
+                  _("\nThere is an export table, but the section containing it could not be found\n"));
 	  return TRUE;
 	}
 
-      dataoff = addr - section->vma;
+      dataoff = (addr - section->vma);
       datasize = extra->DataDirectory[0].Size;
-      if (datasize > section->size - dataoff)
+      if (datasize > (section->size - dataoff))
 	{
-	  fprintf (file,
-		   _("\nThere is an export table in %s, but it does not fit into that section\n"),
-		   section->name);
+	  fprintf(file,
+                  _("\nThere is an export table in %s, but it does not fit into that section\n"),
+                  section->name);
 	  return TRUE;
 	}
     }
 
-  fprintf (file, _("\nThere is an export table in %s at 0x%lx\n"),
-	   section->name, (unsigned long) addr);
+  fprintf(file, _("\nThere is an export table in %s at 0x%lx\n"),
+          section->name, (unsigned long)addr);
 
-  data = bfd_malloc (datasize);
+  data = (bfd_byte *)bfd_malloc(datasize);
   if (data == NULL)
     return FALSE;
 
-  if (! bfd_get_section_contents (abfd, section, data,
-				  (file_ptr) dataoff, datasize))
+  if (! bfd_get_section_contents(abfd, section, data,
+                                 (file_ptr)dataoff, datasize))
     return FALSE;
 
   /* Go get Export Directory Table.  */
@@ -2006,10 +2010,14 @@ _bfd_XXi_final_link_postscript (bfd * abfd, struct coff_final_link_info *pfinfo)
       pe_data (abfd)->pe_opthdr.DataDirectory[9].Size = 0x18;
     }
 
-  /* If we could NOT find idata$2, we either have an excessively
-     trivial program or are in DEEP trouble; we have to assume trivial
-     program....  */
+  /* If we could NOT find idata$2, we either have an excessively trivial
+   * program, or we are in DEEP trouble; we have to assume trivial
+   * program...  */
   return TRUE;
 }
+
+#ifdef COFF_WITH_XX
+# undef COFF_WITH_XX
+#endif /* COFF_WITH_XX */
 
 /* EOF */

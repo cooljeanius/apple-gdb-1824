@@ -254,30 +254,27 @@ ppcboot_get_symtab_upper_bound (abfd)
 }
 
 
-/* Create a symbol name based on the bfd's filename.  */
-
+/* Create a symbol name based on the bfd's filename: */
 static char *
-mangle_name (abfd, suffix)
-     bfd *abfd;
-     char *suffix;
+mangle_name(bfd *abfd, char *suffix)
 {
   bfd_size_type size;
   char *buf;
   char *p;
 
-  size = (strlen (bfd_get_filename (abfd))
-	  + strlen (suffix)
-	  + sizeof "_ppcboot__");
+  size = (strlen(bfd_get_filename(abfd))
+	  + strlen(suffix)
+	  + sizeof("_ppcboot__"));
 
-  buf = (char *) bfd_alloc (abfd, size);
+  buf = (char *)bfd_alloc(abfd, size);
   if (buf == NULL)
-    return "";
+    return (char *)"";
 
-  sprintf (buf, "_ppcboot_%s_%s", bfd_get_filename (abfd), suffix);
+  sprintf(buf, "_ppcboot_%s_%s", bfd_get_filename(abfd), suffix);
 
   /* Change any non-alphanumeric characters to underscores.  */
   for (p = buf; *p; p++)
-    if (! ISALNUM (*p))
+    if (! ISALNUM(*p))
       *p = '_';
 
   return buf;
@@ -497,7 +494,7 @@ ppcboot_bfd_print_private_bfd_data (abfd, farg)
 
 const bfd_target ppcboot_vec =
 {
-  "ppcboot",			/* name */
+  (char *)"ppcboot",		/* name */
   bfd_target_unknown_flavour,	/* flavour */
   BFD_ENDIAN_BIG,		/* byteorder is big endian for code */
   BFD_ENDIAN_LITTLE,		/* header_byteorder */

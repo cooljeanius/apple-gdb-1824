@@ -1,4 +1,4 @@
-/* BFD back-end for NetBSD/sparc a.out-ish binaries.
+/* sparcnetbsd.c: BFD back-end for NetBSD/sparc a.out-ish binaries.
    Copyright 1990, 1991, 1992, 1994, 1995, 1997, 1998, 2000, 2001, 2003
    Free Software Foundation, Inc.
 
@@ -16,7 +16,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #define TARGET_IS_BIG_ENDIAN_P
 
@@ -32,7 +32,16 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
    the tokens.  */
 #define MY(OP) CONCAT2 (sparcnetbsd_,OP)
 
-/* This needs to start with a.out so GDB knows it is an a.out variant.  */
+/* This needs to start with a.out so GDB knows it is an a.out variant: */
 #define TARGETNAME "a.out-sparc-netbsd"
 
+/* this needs to go after the usage of the CONCAT* macro mentioned above,
+ * but before any other headers are included, or prototypes for functions
+ * are declared: */
+#if defined(__GNUC__) && (__GNUC__ >= 4)
+ # pragma GCC diagnostic ignored "-Wtraditional"
+#endif /* gcc 4+ */
+
 #include "netbsd.h"
+
+/* EOF */

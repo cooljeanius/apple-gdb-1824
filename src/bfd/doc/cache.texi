@@ -45,21 +45,21 @@ determine when it can avoid a function call.
 @strong{Description}@*
 Check to see if the required BFD is the same as the last one
 looked up. If so, then it can use the stream in the BFD with
-impunity, since it can't have changed since the last lookup;
+impunity, since it cannot have changed since the last lookup;
 otherwise, it has to perform the complicated lookup function.
 @example
 #define bfd_cache_lookup_null(x) \
-    ((x) == bfd_last_cache ? \
-      (FILE *) (bfd_last_cache->iostream) : \
-       bfd_cache_lookup_worker (x))
+    (((x) == bfd_last_cache) ? \
+      (FILE *)(bfd_last_cache->iostream) : \
+       bfd_cache_lookup_worker(x))
 #define bfd_cache_lookup(x) \
-    ((bfd_cache_lookup_null (x) != NULL) ? \
-     (bfd_cache_lookup_null (x)) : \
-     (bfd_assert (__FILE__,__LINE__), (FILE *) NULL))
+    ((bfd_cache_lookup_null(x) != NULL) ? \
+     (bfd_cache_lookup_null(x)) : \
+     (bfd_assert(__FILE__,__LINE__), (FILE *)NULL))
 #define BFD_CACHE_ITERATOR(abfd) \
-    for (abfd = (bfd_last_cache != NULL) ? bfd_last_cache->lru_prev : NULL; \
+    for (abfd = ((bfd_last_cache != NULL) ? bfd_last_cache->lru_prev : NULL); \
          abfd != NULL; \
-         abfd = (abfd == bfd_last_cache) ? NULL : abfd->lru_prev)
+         abfd = ((abfd == bfd_last_cache) ? NULL : abfd->lru_prev))
 @end example
 
 @findex bfd_cache_init

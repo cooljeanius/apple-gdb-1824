@@ -16,14 +16,14 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA.
  */
 
 #include "bfd.h"
 #include "sysdep.h"
 
-#define TARGET_SYM	i386lynx_coff_vec
-#define TARGET_NAME	"coff-i386-lynx"
+#define TARGET_SYM  i386lynx_coff_vec
+#define TARGET_NAME "coff-i386-lynx"
 
 #define LYNXOS /* (nothing) */
 

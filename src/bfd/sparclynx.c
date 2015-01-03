@@ -68,11 +68,9 @@ static bfd_boolean NAME (aout,sparclynx_write_object_contents) PARAMS ((bfd *));
    @end table  */
 
 void
-NAME(lynx,set_arch_mach) (abfd, machtype)
-     bfd *abfd;
-     unsigned long machtype;
+NAME(lynx,set_arch_mach)(bfd *abfd, unsigned long machtype)
 {
-  /* Determine the architecture and machine type of the object file.  */
+  /* Determine the architecture and machine type of the object file: */
   enum bfd_architecture arch;
   unsigned long machine;
 
@@ -130,40 +128,36 @@ NAME(lynx,set_arch_mach) (abfd, machtype)
   NAME(lynx,set_arch_mach) (ABFD, N_MACHTYPE (EXEC)); \
   choose_reloc_size(ABFD);
 
-/* Determine the size of a relocation entry, based on the architecture.  */
-
+/* Determine the size of a relocation entry, based on the architecture: */
 static void
-choose_reloc_size (abfd)
-     bfd *abfd;
+choose_reloc_size(bfd *abfd)
 {
-  switch (bfd_get_arch (abfd))
+  switch (bfd_get_arch(abfd))
     {
     case bfd_arch_sparc:
     case bfd_arch_a29k:
-      obj_reloc_entry_size (abfd) = RELOC_EXT_SIZE;
+      obj_reloc_entry_size(abfd) = RELOC_EXT_SIZE;
       break;
     default:
-      obj_reloc_entry_size (abfd) = RELOC_STD_SIZE;
+      obj_reloc_entry_size(abfd) = RELOC_STD_SIZE;
       break;
     }
 }
 
 /* Write an object file in LynxOS format.
-  Section contents have already been written.  We write the
-  file header, symbols, and relocation.  */
-
+ * Section contents have already been written.  We write the
+ * file header, symbols, and relocation.  */
 static bfd_boolean
-NAME(aout,sparclynx_write_object_contents) (abfd)
-     bfd *abfd;
+NAME(aout,sparclynx_write_object_contents)(bfd *abfd)
 {
   struct external_exec exec_bytes;
-  struct internal_exec *execp = exec_hdr (abfd);
+  struct internal_exec *execp = exec_hdr(abfd);
 
   /* Magic number, maestro, please!  */
-  switch (bfd_get_arch (abfd))
+  switch (bfd_get_arch(abfd))
     {
     case bfd_arch_m68k:
-      switch (bfd_get_mach (abfd))
+      switch (bfd_get_mach(abfd))
 	{
 	case bfd_mach_m68010:
 	  N_SET_MACHTYPE (*execp, M_68010);
@@ -197,13 +191,12 @@ NAME(aout,sparclynx_write_object_contents) (abfd)
 }
 
 #define MY_set_sizes sparclynx_set_sizes
-static bfd_boolean sparclynx_set_sizes PARAMS ((bfd *));
+static bfd_boolean sparclynx_set_sizes PARAMS((bfd *));
 
 static bfd_boolean
-sparclynx_set_sizes (abfd)
-     bfd *abfd;
+sparclynx_set_sizes(bfd *abfd)
 {
-  switch (bfd_get_arch (abfd))
+  switch (bfd_get_arch(abfd))
     {
     default:
       return FALSE;

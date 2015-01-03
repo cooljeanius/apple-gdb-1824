@@ -296,20 +296,20 @@ htab_mod_m2 (hashval_t hash, htab_t htab)
    created hash table, or NULL if memory allocation fails.  */
 
 htab_t
-htab_create_alloc (size_t size, htab_hash hash_f, htab_eq eq_f,
-                   htab_del del_f, htab_alloc alloc_f, htab_free free_f)
+htab_create_alloc(size_t size, htab_hash hash_f, htab_eq eq_f,
+                  htab_del del_f, htab_alloc alloc_f, htab_free free_f)
 {
   htab_t result;
   unsigned int size_prime_index;
 
-  size_prime_index = higher_prime_index (size);
+  size_prime_index = higher_prime_index(size);
   size = prime_tab[size_prime_index].prime;
 
-  result = (htab_t) (*alloc_f) (1, sizeof (struct htab));
+  result = (htab_t)(*alloc_f)(1, sizeof(struct htab));
   if (result == NULL)
     return NULL;
   result->size = size;
-  result->entries = (PTR *) (*alloc_f) (size, sizeof (PTR));
+  result->entries = (PTR *)(*alloc_f)(size, sizeof(PTR));
   if (result->entries == NULL)
     {
       if (free_f != NULL)

@@ -154,30 +154,29 @@ struct ihex_data_struct
   struct ihex_data_list *tail;
 };
 
-/* Initialize by filling in the hex conversion array.  */
-
+/* Initialize by filling in the hex conversion array: */
 static void
-ihex_init (void)
+ihex_init(void)
 {
   static bfd_boolean inited;
 
   if (! inited)
     {
       inited = TRUE;
-      hex_init ();
+      hex_init();
     }
 }
 
-/* Create an ihex object.  */
-
+/* Create an ihex object: */
 static bfd_boolean
 ihex_mkobject (bfd *abfd)
 {
   struct ihex_data_struct *tdata;
 
-  tdata = bfd_alloc (abfd, sizeof (* tdata));
-  if (tdata == NULL)
+  tdata = (struct ihex_data_struct *)bfd_alloc(abfd, sizeof(* tdata));
+  if (tdata == NULL) {
     return FALSE;
+  }
 
   abfd->tdata.ihex_data = tdata;
   tdata->head = NULL;
@@ -211,17 +210,17 @@ ihex_bad_byte (bfd *abfd, unsigned int lineno, int c, bfd_boolean error)
   if (c == EOF)
     {
       if (! error)
-	bfd_set_error (bfd_error_file_truncated);
+	bfd_set_error(bfd_error_file_truncated);
     }
   else
     {
       char buf[10];
 
-      if (! ISPRINT (c))
-	sprintf (buf, "\\%03o", (unsigned int) c);
+      if (! ISPRINT(c))
+	sprintf(buf, "\\%03o", (unsigned int)c);
       else
 	{
-	  buf[0] = c;
+	  buf[0] = (char)c;
 	  buf[1] = '\0';
 	}
       (*_bfd_error_handler)
@@ -556,19 +555,25 @@ ihex_read_section(bfd *abfd, asection *section, bfd_byte *contents)
       unsigned int type;
       unsigned int i;
 
-      if ((c == '\r') || (c == '\n'))
+      if ((c == '\r') || (c == '\n')) {
 	continue;
+      }
 
-      /* This is called after ihex_scan has succeeded, so we ought to
-         know the exact format.  */
-      BFD_ASSERT (c == ':');
+      /* This is called after ihex_scan has succeeded, so we ought to know
+       * the exact format: */
+      BFD_ASSERT(c == ':');
 
-      if (bfd_bread(hdr, (bfd_size_type)8, abfd) != 8)
+      if (bfd_bread(hdr, (bfd_size_type)8, abfd) != 8) {
 	goto error_return;
+      }
 
       len = HEX2(hdr);
       addr = HEX4(hdr + 2);
       type = HEX2(hdr + 6);
+
+      if (addr == 0UL) {
+        ;
+      }
 
       /* We should only see type 0 records here: */
       if (type != 0)
@@ -582,27 +587,32 @@ ihex_read_section(bfd *abfd, asection *section, bfd_byte *contents)
       if ((len * 2) > bufsize)
 	{
 	  buf = (bfd_byte *)bfd_realloc(buf, (bfd_size_type)len * 2);
-	  if (buf == NULL)
+	  if (buf == NULL) {
 	    goto error_return;
+          }
 	  bufsize = (len * 2);
 	}
 
-      if (bfd_bread(buf, (bfd_size_type)len * 2, abfd) != (len * 2))
+      if (bfd_bread(buf, ((bfd_size_type)len * 2), abfd) != (len * 2)) {
 	goto error_return;
+      }
 
-      for (i = 0; i < len; i++)
-	*p++ = HEX2(buf + 2 * i);
+      for (i = 0; i < len; i++) {
+	*p++ = (bfd_byte)HEX2(buf + 2 * i);
+      }
       if ((bfd_size_type)(p - contents) >= section->size)
 	{
 	  /* We have read everything in the section: */
-	  if (buf != NULL)
+	  if (buf != NULL) {
 	    free(buf);
+          }
 	  return TRUE;
 	}
 
       /* Skip the checksum: */
-      if (bfd_bread(buf, (bfd_size_type)2, abfd) != 2)
+      if (bfd_bread(buf, (bfd_size_type)2, abfd) != 2) {
 	goto error_return;
+      }
     }
 
   if ((bfd_size_type)(p - contents) < section->size)
@@ -671,10 +681,10 @@ ihex_set_section_contents(bfd *abfd, asection *section,
   data = (bfd_byte *)bfd_alloc(abfd, count);
   if (data == NULL)
     return FALSE;
-  memcpy (data, location, (size_t)count);
+  memcpy(data, location, (size_t)count);
 
   n->data = data;
-  n->where = (section->lma + offset);
+  n->where = (section->lma + (bfd_vma)offset);
   n->size = count;
 
   /* Sort the records by address.  Optimize for the common case of
@@ -704,14 +714,10 @@ ihex_set_section_contents(bfd *abfd, asection *section,
   return TRUE;
 }
 
-/* Write a record out to an Intel Hex file.  */
-
+/* Write a record out to an Intel Hex file: */
 static bfd_boolean
-ihex_write_record (bfd *abfd,
-		   size_t count,
-		   unsigned int addr,
-		   unsigned int type,
-		   bfd_byte *data)
+ihex_write_record(bfd *abfd, size_t count, unsigned int addr,
+                  unsigned int type, bfd_byte *data)
 {
   static const char digs[] = "0123456789ABCDEF";
   char buf[9 + CHUNK * 2 + 4];
@@ -942,11 +948,13 @@ ihex_sizeof_headers (bfd *abfd ATTRIBUTE_UNUSED, bfd_boolean exec ATTRIBUTE_UNUS
 #define ihex_bfd_final_link                       _bfd_generic_final_link
 #define ihex_bfd_link_split_section               _bfd_generic_link_split_section
 
-/* The Intel Hex target vector.  */
-
+/* The Intel Hex target vector: */
+#ifdef __clang__
+extern const bfd_target ihex_vec;
+#endif /* __clang__ */
 const bfd_target ihex_vec =
 {
-  "ihex",			/* Name.  */
+  (char *)"ihex",			/* Name.  */
   bfd_target_ihex_flavour,
   BFD_ENDIAN_UNKNOWN,		/* Target byte order.  */
   BFD_ENDIAN_UNKNOWN,		/* Target headers byte order.  */

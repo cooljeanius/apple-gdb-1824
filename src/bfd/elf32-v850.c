@@ -1240,7 +1240,7 @@ static reloc_howto_type v850_elf_howto_table[] =
        0,                     /* Src_mask.  */
        0,                     /* Dst_mask.  */
        TRUE),                 /* PCrel_offset.  */
-  
+
   /* Simple pc-relative 32bit reloc.  */
   HOWTO (R_V850_REL32,			/* Type.  */
 	 0,				/* Rightshift.  */
@@ -2168,20 +2168,16 @@ v850_elf_fake_sections (bfd *abfd ATTRIBUTE_UNUSED,
   return TRUE;
 }
 
-/* Delete some bytes from a section while relaxing.  */
-
+/* Delete some bytes from a section while relaxing: */
 static bfd_boolean
-v850_elf_relax_delete_bytes (bfd *abfd,
-			     asection *sec,
-			     bfd_vma addr,
-			     bfd_vma toaddr,
-			     int count)
+v850_elf_relax_delete_bytes(bfd *abfd, asection *sec, bfd_vma addr,
+                            bfd_vma toaddr, int count)
 {
   Elf_Internal_Shdr *symtab_hdr;
   Elf32_External_Sym *extsyms;
   Elf32_External_Sym *esym;
   Elf32_External_Sym *esymend;
-  int index;
+  int i_index;
   unsigned int sec_shndx;
   bfd_byte *contents;
   Elf_Internal_Rela *irel;
@@ -2190,42 +2186,42 @@ v850_elf_relax_delete_bytes (bfd *abfd,
   Elf_Internal_Shdr *shndx_hdr;
   Elf_External_Sym_Shndx *shndx;
 
-  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
-  extsyms = (Elf32_External_Sym *) symtab_hdr->contents;
+  symtab_hdr = &elf_tdata(abfd)->symtab_hdr;
+  extsyms = (Elf32_External_Sym *)symtab_hdr->contents;
 
-  sec_shndx = _bfd_elf_section_from_bfd_section (abfd, sec);
+  sec_shndx = _bfd_elf_section_from_bfd_section(abfd, sec);
 
-  contents = elf_section_data (sec)->this_hdr.contents;
+  contents = elf_section_data(sec)->this_hdr.contents;
 
   /* The deletion must stop at the next ALIGN reloc for an alignment
      power larger than the number of bytes we are deleting.  */
 
-  /* Actually delete the bytes.  */
-#if (DEBUG_RELAX & 2)
-  fprintf (stderr, "relax_delete: contents: sec: %s  %p .. %p %x\n",
-	   sec->name, addr, toaddr, count );
-#endif
-  memmove (contents + addr, contents + addr + count,
-	   toaddr - addr - count);
-  memset (contents + toaddr-count, 0, count);
+  /* Actually delete the bytes: */
+#if defined(DEBUG_RELAX) && (DEBUG_RELAX & 2)
+  fprintf(stderr, "relax_delete: contents: sec: %s  %p .. %p %x\n",
+          sec->name, addr, toaddr, count );
+#endif /* DEBUG_RELAX */
+  memmove(contents + addr, contents + addr + count,
+          toaddr - addr - count);
+  memset(contents + toaddr-count, 0, count);
 
-  /* Adjust all the relocs.  */
-  irel = elf_section_data (sec)->relocs;
+  /* Adjust all the relocs: */
+  irel = elf_section_data(sec)->relocs;
   irelend = irel + sec->reloc_count;
-  shndx_hdr = &elf_tdata (abfd)->symtab_shndx_hdr;
-  shndx = (Elf_External_Sym_Shndx *) shndx_hdr->contents;
+  shndx_hdr = &elf_tdata(abfd)->symtab_shndx_hdr;
+  shndx = (Elf_External_Sym_Shndx *)shndx_hdr->contents;
 
   for (; irel < irelend; irel++)
     {
       bfd_vma raddr, paddr, symval;
       Elf_Internal_Sym isym;
 
-      /* Get the new reloc address.  */
+      /* Get the new reloc address: */
       raddr = irel->r_offset;
-      if ((raddr >= (addr + count) && raddr < toaddr))
+      if ((raddr >= (addr + count)) && (raddr < toaddr))
 	irel->r_offset -= count;
 
-      if (raddr >= addr && raddr < addr + count)
+      if ((raddr >= addr) && (raddr < (addr + count)))
 	{
 	  irel->r_info = ELF32_R_INFO (ELF32_R_SYM (irel->r_info),
 				       (int) R_V850_NONE);
@@ -2247,41 +2243,42 @@ v850_elf_relax_delete_bytes (bfd *abfd,
       if (ELF32_R_SYM (irel->r_info) < symtab_hdr->sh_info)
 	{
 	  symval = isym.st_value;
-#if (DEBUG_RELAX & 2)
+#if defined(DEBUG_RELAX) && (DEBUG_RELAX & 2)
 	  {
-	    char * name = bfd_elf_string_from_elf_section
-	                   (abfd, symtab_hdr->sh_link, isym.st_name);
-	    fprintf (stderr,
-	       "relax_delete: local: sec: %s, sym: %s (%d), value: %x + %x + %x addend %x\n",
-	       sec->name, name, isym.st_name,
-	       sec->output_section->vma, sec->output_offset,
-	       isym.st_value, irel->r_addend);
+	    char *name =
+              bfd_elf_string_from_elf_section(abfd, symtab_hdr->sh_link,
+                                              isym.st_name);
+	    fprintf(stderr,
+                    "relax_delete: local: sec: %s, sym: %s (%d), value: %x + %x + %x addend %x\n",
+                    sec->name, name, isym.st_name,
+                    sec->output_section->vma, sec->output_offset,
+                    isym.st_value, irel->r_addend);
 	  }
-#endif
+#endif /* DEBUG_RELAX */
 	}
       else
 	{
 	  unsigned long indx;
-	  struct elf_link_hash_entry * h;
+	  struct elf_link_hash_entry *h;
 
-	  /* An external symbol.  */
-	  indx = ELF32_R_SYM (irel->r_info) - symtab_hdr->sh_info;
+	  /* An external symbol: */
+	  indx = ELF32_R_SYM(irel->r_info) - symtab_hdr->sh_info;
 
-	  h = elf_sym_hashes (abfd) [indx];
-	  BFD_ASSERT (h != NULL);
+	  h = elf_sym_hashes(abfd)[indx];
+	  BFD_ASSERT(h != NULL);
 
 	  symval = h->root.u.def.value;
-#if (DEBUG_RELAX & 2)
-	  fprintf (stderr,
-		   "relax_delete: defined: sec: %s, name: %s, value: %x + %x + %x addend %x\n",
-		   sec->name, h->root.root.string, h->root.u.def.value,
-		   sec->output_section->vma, sec->output_offset, irel->r_addend);
-#endif
+#if defined(DEBUG_RELAX) && (DEBUG_RELAX & 2)
+	  fprintf(stderr,
+                  "relax_delete: defined: sec: %s, name: %s, value: %x + %x + %x addend %x\n",
+                  sec->name, h->root.root.string, h->root.u.def.value,
+                  sec->output_section->vma, sec->output_offset, irel->r_addend);
+#endif /* DEBUG_RELAX */
 	}
 
-      paddr = symval + irel->r_addend;
+      paddr = (symval + irel->r_addend);
 
-      if ( (symval >= addr + count && symval < toaddr)
+      if ((symval >= addr + count && symval < toaddr)
 	  && (paddr < addr + count || paddr >= toaddr))
 	irel->r_addend += count;
       else if (    (symval < addr + count || symval >= toaddr)
@@ -2289,7 +2286,7 @@ v850_elf_relax_delete_bytes (bfd *abfd,
 	irel->r_addend -= count;
     }
 
-  /* Adjust the local symbols defined in this section.  */
+  /* Adjust the local symbols defined in this section: */
   esym = extsyms;
   esymend = esym + symtab_hdr->sh_info;
 
@@ -2329,12 +2326,12 @@ v850_elf_relax_delete_bytes (bfd *abfd,
   esym = extsyms + symtab_hdr->sh_info;
   esymend = extsyms + (symtab_hdr->sh_size / sizeof (Elf32_External_Sym));
 
-  for (index = 0; esym < esymend; esym ++, index ++)
+  for (i_index = 0; esym < esymend; esym ++, i_index ++)
     {
       Elf_Internal_Sym isym;
 
       bfd_elf32_swap_symbol_in (abfd, esym, shndx, & isym);
-      sym_hash = elf_sym_hashes (abfd) [index];
+      sym_hash = elf_sym_hashes (abfd) [i_index];
 
       if (isym.st_shndx == sec_shndx
 	  && ((sym_hash)->root.type == bfd_link_hash_defined

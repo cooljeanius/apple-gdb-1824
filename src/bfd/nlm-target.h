@@ -65,13 +65,13 @@
 /* Forward declaration for use when initialising alternative_target field.  */
 #ifdef TARGET_LITTLE_SYM
 extern const bfd_target TARGET_LITTLE_SYM;
-#endif
+#endif /* TARGET_LITTLE_SYM */
 
 #ifdef TARGET_BIG_SYM
 const bfd_target TARGET_BIG_SYM =
 {
   /* Name: identify kind of target.  */
-  TARGET_BIG_NAME,
+  (char *)TARGET_BIG_NAME,
 
   /* Flavour: general indication about file.  */
   bfd_target_nlm_flavour,
@@ -164,7 +164,7 @@ const bfd_target TARGET_BIG_SYM =
 const bfd_target TARGET_LITTLE_SYM =
 {
   /* Name: identify kind of target.  */
-  TARGET_LITTLE_NAME,
+  (char *)TARGET_LITTLE_NAME,
 
   /* Flavour: general indication about file.  */
   bfd_target_nlm_flavour,

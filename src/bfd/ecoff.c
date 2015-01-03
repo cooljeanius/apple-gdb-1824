@@ -1564,21 +1564,21 @@ ecoff_slurp_reloc_table (bfd *abfd,
       || (section->flags & SEC_CONSTRUCTOR) != 0)
     return TRUE;
 
-  if (! _bfd_ecoff_slurp_symbol_table (abfd))
+  if (! _bfd_ecoff_slurp_symbol_table(abfd))
     return FALSE;
 
   amt = section->reloc_count;
-  amt *= sizeof (arelent);
-  internal_relocs = bfd_alloc (abfd, amt);
+  amt *= sizeof(arelent);
+  internal_relocs = (arelent *)bfd_alloc(abfd, amt);
 
   external_reloc_size = backend->external_reloc_size;
-  amt = external_reloc_size * section->reloc_count;
-  external_relocs = bfd_alloc (abfd, amt);
-  if (internal_relocs == NULL || external_relocs == NULL)
+  amt = (external_reloc_size * section->reloc_count);
+  external_relocs = (char *)bfd_alloc(abfd, amt);
+  if ((internal_relocs == NULL) || (external_relocs == NULL))
     return FALSE;
-  if (bfd_seek (abfd, section->rel_filepos, SEEK_SET) != 0)
+  if (bfd_seek(abfd, section->rel_filepos, SEEK_SET) != 0)
     return FALSE;
-  if (bfd_bread (external_relocs, amt, abfd) != amt)
+  if (bfd_bread(external_relocs, amt, abfd) != amt)
     return FALSE;
 
   for (i = 0, rptr = internal_relocs; i < section->reloc_count; i++, rptr++)
@@ -2888,23 +2888,23 @@ _bfd_ecoff_slurp_armap (bfd *abfd)
       return FALSE;
     }
 
-  /* Read in the armap.  */
+  /* Read in the armap: */
   ardata = bfd_ardata (abfd);
-  mapdata = (struct areltdata *) _bfd_read_ar_hdr (abfd);
+  mapdata = (struct areltdata *)_bfd_read_ar_hdr(abfd);
   if (mapdata == NULL)
     return FALSE;
   parsed_size = mapdata->parsed_size;
-  bfd_release (abfd, (void *) mapdata);
+  bfd_release(abfd, (void *) mapdata);
 
-  raw_armap = bfd_alloc (abfd, parsed_size);
+  raw_armap = (char *)bfd_alloc(abfd, parsed_size);
   if (raw_armap == NULL)
     return FALSE;
 
-  if (bfd_bread ((void *) raw_armap, parsed_size, abfd) != parsed_size)
+  if (bfd_bread((void *)raw_armap, parsed_size, abfd) != parsed_size)
     {
-      if (bfd_get_error () != bfd_error_system_call)
-	bfd_set_error (bfd_error_malformed_archive);
-      bfd_release (abfd, (void *) raw_armap);
+      if (bfd_get_error() != bfd_error_system_call)
+	bfd_set_error(bfd_error_malformed_archive);
+      bfd_release(abfd, (void *)raw_armap);
       return FALSE;
     }
 
@@ -3075,11 +3075,11 @@ _bfd_ecoff_write_armap (bfd *abfd,
       != sizeof (struct ar_hdr))
     return FALSE;
 
-  H_PUT_32 (abfd, hashsize, temp);
-  if (bfd_bwrite ((void *) temp, (bfd_size_type) 4, abfd) != 4)
+  H_PUT_32(abfd, hashsize, temp);
+  if (bfd_bwrite((void *)temp, (bfd_size_type)4UL, abfd) != 4)
     return FALSE;
 
-  hashtable = bfd_zalloc (abfd, symdefsize);
+  hashtable = (bfd_byte *)bfd_zalloc(abfd, symdefsize);
   if (!hashtable)
     return FALSE;
 
@@ -3546,23 +3546,23 @@ ecoff_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
   external_ext_size = ecoff_backend (abfd)->debug_swap.external_ext_size;
   esize = symhdr->iextMax * external_ext_size;
   external_ext = bfd_malloc (esize);
-  if (external_ext == NULL && esize != 0)
+  if ((external_ext == NULL) && (esize != 0))
     goto error_return;
 
-  if (bfd_seek (abfd, (file_ptr) symhdr->cbExtOffset, SEEK_SET) != 0
-      || bfd_bread (external_ext, esize, abfd) != esize)
+  if ((bfd_seek(abfd, (file_ptr)symhdr->cbExtOffset, SEEK_SET) != 0)
+      || (bfd_bread(external_ext, esize, abfd) != esize))
     goto error_return;
 
-  ssext = bfd_malloc ((bfd_size_type) symhdr->issExtMax);
-  if (ssext == NULL && symhdr->issExtMax != 0)
+  ssext = (char *)bfd_malloc((bfd_size_type) symhdr->issExtMax);
+  if ((ssext == NULL) && (symhdr->issExtMax != 0))
     goto error_return;
 
-  if (bfd_seek (abfd, (file_ptr) symhdr->cbSsExtOffset, SEEK_SET) != 0
-      || (bfd_bread (ssext, (bfd_size_type) symhdr->issExtMax, abfd)
-	  != (bfd_size_type) symhdr->issExtMax))
+  if ((bfd_seek(abfd, (file_ptr)symhdr->cbSsExtOffset, SEEK_SET) != 0)
+      || (bfd_bread(ssext, (bfd_size_type)symhdr->issExtMax, abfd)
+	  != (bfd_size_type)symhdr->issExtMax))
     goto error_return;
 
-  result = ecoff_link_add_externals (abfd, info, external_ext, ssext);
+  result = ecoff_link_add_externals(abfd, info, external_ext, ssext);
 
   if (ssext != NULL)
     free (ssext);
@@ -3610,28 +3610,28 @@ ecoff_link_check_archive_element (bfd *abfd,
 
   /* Read in the external symbols and external strings.  */
   external_ext_size = backend->debug_swap.external_ext_size;
-  esize = symhdr->iextMax * external_ext_size;
-  external_ext = bfd_malloc (esize);
-  if (external_ext == NULL && esize != 0)
+  esize = (symhdr->iextMax * external_ext_size);
+  external_ext = bfd_malloc(esize);
+  if ((external_ext == NULL) && (esize != 0))
     goto error_return;
 
-  if (bfd_seek (abfd, (file_ptr) symhdr->cbExtOffset, SEEK_SET) != 0
-      || bfd_bread (external_ext, esize, abfd) != esize)
+  if ((bfd_seek(abfd, (file_ptr)symhdr->cbExtOffset, SEEK_SET) != 0)
+      || (bfd_bread(external_ext, esize, abfd) != esize))
     goto error_return;
 
-  ssext = bfd_malloc ((bfd_size_type) symhdr->issExtMax);
-  if (ssext == NULL && symhdr->issExtMax != 0)
+  ssext = (char *)bfd_malloc((bfd_size_type)symhdr->issExtMax);
+  if ((ssext == NULL) && (symhdr->issExtMax != 0))
     goto error_return;
 
-  if (bfd_seek (abfd, (file_ptr) symhdr->cbSsExtOffset, SEEK_SET) != 0
-      || (bfd_bread (ssext, (bfd_size_type) symhdr->issExtMax, abfd)
-	  != (bfd_size_type) symhdr->issExtMax))
+  if ((bfd_seek(abfd, (file_ptr)symhdr->cbSsExtOffset, SEEK_SET) != 0)
+      || (bfd_bread(ssext, (bfd_size_type)symhdr->issExtMax, abfd)
+	  != (bfd_size_type)symhdr->issExtMax))
     goto error_return;
 
   /* Look through the external symbols to see if they define some
      symbol that is currently undefined.  */
-  ext_ptr = (char *) external_ext;
-  ext_end = ext_ptr + esize;
+  ext_ptr = (char *)external_ext;
+  ext_end = (ext_ptr + esize);
   for (; ext_ptr < ext_end; ext_ptr += external_ext_size)
     {
       EXTR esym;
@@ -3907,15 +3907,15 @@ ecoff_final_link_debug_accumulate (bfd *output_bfd,
     debug->ptr = NULL;							 \
   else									 \
     {									 \
-      bfd_size_type amt = (bfd_size_type) size * symhdr->count;		 \
-      debug->ptr = bfd_malloc (amt);					 \
+      bfd_size_type amt = ((bfd_size_type)size * symhdr->count);	 \
+      debug->ptr = (type)bfd_malloc(amt);				 \
       if (debug->ptr == NULL)						 \
 	{								 \
           ret = FALSE;							 \
           goto return_something;					 \
 	}								 \
-      if (bfd_seek (input_bfd, (file_ptr) symhdr->offset, SEEK_SET) != 0 \
-	  || bfd_bread (debug->ptr, amt, input_bfd) != amt)		 \
+      if ((bfd_seek(input_bfd, (file_ptr)symhdr->offset, SEEK_SET) != 0) \
+	  || (bfd_bread(debug->ptr, amt, input_bfd) != amt))		 \
 	{								 \
           ret = FALSE;							 \
           goto return_something;					 \
@@ -3924,19 +3924,25 @@ ecoff_final_link_debug_accumulate (bfd *output_bfd,
 
   /* If raw_syments is not NULL, then the data was already by read by
      _bfd_ecoff_slurp_symbolic_info.  */
-  if (ecoff_data (input_bfd)->raw_syments == NULL)
+  if (ecoff_data(input_bfd)->raw_syments == NULL)
     {
-      READ (line, cbLineOffset, cbLine, sizeof (unsigned char),
-	    unsigned char *);
-      READ (external_dnr, cbDnOffset, idnMax, swap->external_dnr_size, void *);
-      READ (external_pdr, cbPdOffset, ipdMax, swap->external_pdr_size, void *);
-      READ (external_sym, cbSymOffset, isymMax, swap->external_sym_size, void *);
-      READ (external_opt, cbOptOffset, ioptMax, swap->external_opt_size, void *);
-      READ (external_aux, cbAuxOffset, iauxMax, sizeof (union aux_ext),
-	    union aux_ext *);
-      READ (ss, cbSsOffset, issMax, sizeof (char), char *);
-      READ (external_fdr, cbFdOffset, ifdMax, swap->external_fdr_size, void *);
-      READ (external_rfd, cbRfdOffset, crfd, swap->external_rfd_size, void *);
+      READ(line, cbLineOffset, cbLine, sizeof(unsigned char),
+	   unsigned char *);
+      READ(external_dnr, cbDnOffset, idnMax, swap->external_dnr_size,
+           void *);
+      READ(external_pdr, cbPdOffset, ipdMax, swap->external_pdr_size,
+           void *);
+      READ(external_sym, cbSymOffset, isymMax, swap->external_sym_size,
+           void *);
+      READ(external_opt, cbOptOffset, ioptMax, swap->external_opt_size,
+           void *);
+      READ(external_aux, cbAuxOffset, iauxMax, sizeof(union aux_ext),
+	   union aux_ext *);
+      READ(ss, cbSsOffset, issMax, sizeof(char), char *);
+      READ(external_fdr, cbFdOffset, ifdMax, swap->external_fdr_size,
+           void *);
+      READ(external_rfd, cbRfdOffset, crfd, swap->external_rfd_size,
+           void *);
     }
 #undef READ
 
@@ -4143,22 +4149,20 @@ ecoff_reloc_link_order (bfd *output_bfd,
 	}
     }
 
-  /* All ECOFF relocs are in-place.  Put the addend into the object
-     file.  */
-
-  BFD_ASSERT (rel.howto->partial_inplace);
+  /* All ECOFF relocs are in-place.  Put the addend into the obj file: */
+  BFD_ASSERT(rel.howto->partial_inplace);
   if (addend != 0)
     {
       bfd_size_type size;
       bfd_reloc_status_type rstat;
       bfd_byte *buf;
 
-      size = bfd_get_reloc_size (rel.howto);
-      buf = bfd_zmalloc (size);
+      size = bfd_get_reloc_size(rel.howto);
+      buf = (bfd_byte *)bfd_zmalloc(size);
       if (buf == NULL)
 	return FALSE;
-      rstat = _bfd_relocate_contents (rel.howto, output_bfd,
-				      (bfd_vma) addend, buf);
+      rstat = _bfd_relocate_contents(rel.howto, output_bfd,
+                                     (bfd_vma)addend, buf);
       switch (rstat)
 	{
 	case bfd_reloc_ok:
@@ -4252,22 +4256,22 @@ ecoff_reloc_link_order (bfd *output_bfd,
 	    break;
 	  }
 
-      if (i == ARRAY_SIZE (section_symndx))
-	abort ();
+      if (i == ARRAY_SIZE(section_symndx))
+	abort();
 
       in.r_extern = 0;
     }
 
-  /* Let the BFD backend adjust the reloc.  */
-  (*ecoff_backend (output_bfd)->adjust_reloc_out) (output_bfd, &rel, &in);
+  /* Let the BFD backend adjust the reloc: */
+  (*ecoff_backend(output_bfd)->adjust_reloc_out)(output_bfd, &rel, &in);
 
-  /* Get some memory and swap out the reloc.  */
-  external_reloc_size = ecoff_backend (output_bfd)->external_reloc_size;
-  rbuf = bfd_malloc (external_reloc_size);
+  /* Get some memory and swap out the reloc: */
+  external_reloc_size = ecoff_backend(output_bfd)->external_reloc_size;
+  rbuf = (bfd_byte *)bfd_malloc(external_reloc_size);
   if (rbuf == NULL)
     return FALSE;
 
-  (*ecoff_backend (output_bfd)->swap_reloc_out) (output_bfd, &in, (void *) rbuf);
+  (*ecoff_backend(output_bfd)->swap_reloc_out)(output_bfd, &in, (void *)rbuf);
 
   pos = (output_section->rel_filepos
 	 + output_section->reloc_count * external_reloc_size);

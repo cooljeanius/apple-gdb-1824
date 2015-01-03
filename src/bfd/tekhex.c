@@ -86,7 +86,9 @@ static const char digs[] = "0123456789ABCDEF";
 
 static char sum_block[256];
 
-#define NOT_HEX      20
+#ifndef NOT_HEX
+# define NOT_HEX     20
+#endif /* !NOT_HEX */
 #define NIBBLE(x)    hex_value(x)
 #define HEX(buffer) ((NIBBLE ((buffer)[0]) << 4) + NIBBLE ((buffer)[1]))
 #define	ISHEX(x)    hex_p(x)
@@ -226,14 +228,13 @@ tekhex_init (void)
     }
 }
 
-/* The maximum number of bytes on a line is FF.  */
+/* The maximum number of bytes on a line is FF: */
 #define MAXCHUNK 0xff
-/* The number of bytes we fit onto a line on output.  */
+/* The number of bytes we fit onto a line on output: */
 #define CHUNK 21
 
 /* We cannot output our tekhexords as we see them, we have to glue them
-   together, this is done in this structure : */
-
+ * together, this is done in this structure: */
 struct tekhex_data_list_struct
 {
   unsigned char *data;
@@ -262,7 +263,9 @@ typedef struct tekhex_data_struct
   struct data_struct *data;
 } tdata_type;
 
-#define enda(x) (x->vma + x->size)
+#ifndef enda
+# define enda(x) (x->vma + x->size)
+#endif /* !enda */
 
 static bfd_boolean
 getvalue (char **srcp, bfd_vma *valuep)
@@ -311,18 +314,18 @@ getsym (char *dstp, char **srcp, unsigned int *lenp)
 }
 
 static struct data_struct *
-find_chunk (bfd *abfd, bfd_vma vma)
+find_chunk(bfd *abfd, bfd_vma vma)
 {
   struct data_struct *d = abfd->tdata.tekhex_data->data;
 
   vma &= ~CHUNK_MASK;
-  while (d && (d->vma) != vma)
+  while (d && ((d->vma) != vma))
     d = d->next;
 
   if (!d)
     {
-      /* No chunk for this address, so make one up.  */
-      d = bfd_zalloc (abfd, (bfd_size_type) sizeof (struct data_struct));
+      /* No chunk for this address, so make one up: */
+      d = (struct data_struct *)bfd_zalloc(abfd, (bfd_size_type)sizeof(struct data_struct));
 
       if (!d)
 	return NULL;
@@ -335,10 +338,10 @@ find_chunk (bfd *abfd, bfd_vma vma)
 }
 
 static void
-insert_byte (bfd *abfd, int value, bfd_vma addr)
+insert_byte(bfd *abfd, int value, bfd_vma addr)
 {
-  /* Find the chunk that this byte needs and put it in.  */
-  struct data_struct *d = find_chunk (abfd, addr);
+  /* Find the chunk that this byte needs and put it in: */
+  struct data_struct *d = find_chunk(abfd, addr);
 
   d->chunk_data[addr & CHUNK_MASK] = value;
   d->chunk_init[addr & CHUNK_MASK] = 1;
@@ -353,21 +356,22 @@ first_phase (bfd *abfd, int type, char *src)
   asection *section = bfd_abs_section_ptr;
   unsigned int len;
   bfd_vma val;
-  char sym[17];			/* A symbol can only be 16chars long.  */
+  /* A symbol can only be 16chars long (+1 for trailing '\0'): */
+  char sym[17];
 
   switch (type)
     {
     case '6':
-      /* Data record - read it and store it.  */
+      /* Data record - read it and store it: */
       {
 	bfd_vma addr;
 
-	if (!getvalue (&src, &addr))
+	if (!getvalue(&src, &addr))
 	  return FALSE;
 
 	while (*src)
 	  {
-	    insert_byte (abfd, HEX (src), addr);
+	    insert_byte(abfd, (int)HEX(src), addr);
 	    src += 2;
 	    addr++;
 	  }
@@ -375,18 +379,18 @@ first_phase (bfd *abfd, int type, char *src)
 
       return TRUE;
     case '3':
-      /* Symbol record, read the segment.  */
-      if (!getsym (sym, &src, &len))
+      /* Symbol record, read the segment: */
+      if (!getsym(sym, &src, &len))
 	return FALSE;
-      section = bfd_get_section_by_name (abfd, sym);
+      section = bfd_get_section_by_name(abfd, sym);
       if (section == NULL)
 	{
 	  char *n = (char *)bfd_alloc(abfd, ((bfd_size_type)len + 1));
 
 	  if (!n)
 	    return FALSE;
-	  memcpy (n, sym, len + 1);
-	  section = bfd_make_section (abfd, n);
+	  memcpy(n, sym, (size_t)(len + 1UL));
+	  section = bfd_make_section(abfd, n);
 	}
       while (*src)
 	{
@@ -394,12 +398,12 @@ first_phase (bfd *abfd, int type, char *src)
 	    {
 	    case '1':		/* Section range.  */
 	      src++;
-	      if (!getvalue (&src, &section->vma))
+	      if (!getvalue(&src, &section->vma))
 		return FALSE;
-	      if (!getvalue (&src, &val))
+	      if (!getvalue(&src, &val))
 		return FALSE;
-	      section->size = val - section->vma;
-	      section->flags = SEC_HAS_CONTENTS | SEC_LOAD | SEC_ALLOC;
+	      section->size = (val - section->vma);
+	      section->flags = (SEC_HAS_CONTENTS | SEC_LOAD | SEC_ALLOC);
 	      break;
 	    case '0':
 	    case '2':
@@ -408,11 +412,12 @@ first_phase (bfd *abfd, int type, char *src)
 	    case '6':
 	    case '7':
 	    case '8':
-	      /* Symbols, add to section.  */
+	      /* Symbols, add to section: */
 	      {
-		bfd_size_type amt = sizeof (tekhex_symbol_type);
-		tekhex_symbol_type *newsym = bfd_alloc (abfd, amt);
+		bfd_size_type amt = sizeof(tekhex_symbol_type);
+		tekhex_symbol_type *newsym = (tekhex_symbol_type *)bfd_alloc(abfd, amt);
 		char stype = (*src);
+                char *newname;
 
 		if (!newsym)
 		  return FALSE;
@@ -422,18 +427,19 @@ first_phase (bfd *abfd, int type, char *src)
 		abfd->flags |= HAS_SYMS;
 		newsym->prev = abfd->tdata.tekhex_data->symbols;
 		abfd->tdata.tekhex_data->symbols = newsym;
-		if (!getsym (sym, &src, &len))
+		if (!getsym(sym, &src, &len))
 		  return FALSE;
                 /* APPLE LOCAL: Allocate this space to a char * local var
-                   which we will copy the contents into and then point
-                   new->symbol.name at instead of casting away the cosntness
-                   of new->symbol.name and poking at the great compiler warning
-                   beastie.  */
-                char *newname = (char *)bfd_alloc(abfd, ((bfd_size_type)len + 1));
+                 * which we will copy the contents into and then point
+                 * new->symbol.name at instead of casting away the
+                 * cosntness of new->symbol.name and poking at the great
+                 * compiler warning beastie: */
+                newname = (char *)bfd_alloc(abfd,
+                                            ((bfd_size_type)len + 1));
                 newsym->symbol.name = NULL;
 		if (!newname)
 		  return FALSE;
-		memcpy(newname, sym, len + 1);
+		memcpy(newname, sym, (size_t)(len + 1UL));
                 newsym->symbol.name = newname;
 		newsym->symbol.section = section;
 		if (stype <= '4')
@@ -448,6 +454,9 @@ first_phase (bfd *abfd, int type, char *src)
 	      return FALSE;
 	    }
 	}
+
+    default:
+      break;
     }
 
   return TRUE;
@@ -522,18 +531,18 @@ tekhex_canonicalize_symtab (bfd *abfd, asymbol **table)
 }
 
 static long
-tekhex_get_symtab_upper_bound (bfd *abfd)
+tekhex_get_symtab_upper_bound(bfd *abfd)
 {
-  return (abfd->symcount + 1) * (sizeof (struct tekhex_asymbol_struct *));
+  return (abfd->symcount + 1) * (sizeof(struct tekhex_asymbol_struct *));
 
 }
 
 static bfd_boolean
-tekhex_mkobject (bfd *abfd)
+tekhex_mkobject(bfd *abfd)
 {
   tdata_type *tdata;
 
-  tdata = bfd_alloc (abfd, (bfd_size_type) sizeof (tdata_type));
+  tdata = (tdata_type *)bfd_alloc(abfd, (bfd_size_type)sizeof(tdata_type));
   if (!tdata)
     return FALSE;
   abfd->tdata.tekhex_data = tdata;
@@ -764,7 +773,7 @@ tekhex_write_object_contents (bfd *abfd)
   asection *s;
   struct data_struct *d;
 
-  tekhex_init ();
+  tekhex_init();
 
   bytes_written = 0;
 
@@ -778,12 +787,12 @@ tekhex_write_object_contents (bfd *abfd)
       const int span = 32;
       int addr;
 
-      /* Write it in blocks of 32 bytes.  */
-      for (addr = 0; addr < CHUNK_MASK + 1; addr += span)
+      /* Write it in blocks of 32 bytes: */
+      for (addr = 0; addr < (CHUNK_MASK + 1); addr += span)
 	{
 	  int need = 0;
 
-	  /* Check to see if necessary.  */
+	  /* Check to see if necessary: */
 	  for (low = 0; !need && low < span; low++)
 	    if (d->chunk_init[addr + low])
 	      need = 1;
@@ -795,10 +804,10 @@ tekhex_write_object_contents (bfd *abfd)
 	      writevalue (&dst, addr + d->vma);
 	      for (low = 0; low < span; low++)
 		{
-		  TOHEX (dst, d->chunk_data[addr + low]);
+		  TOHEX(dst, d->chunk_data[addr + low]);
 		  dst += 2;
 		}
-	      out (abfd, '6', buffer, dst);
+	      out(abfd, '6', buffer, dst);
 	    }
 	}
     }
@@ -808,27 +817,27 @@ tekhex_write_object_contents (bfd *abfd)
     {
       char *dst = buffer;
 
-      writesym (&dst, s->name);
+      writesym(&dst, s->name);
       *dst++ = '1';
-      writevalue (&dst, s->vma);
-      writevalue (&dst, s->vma + s->size);
-      out (abfd, '3', buffer, dst);
+      writevalue(&dst, s->vma);
+      writevalue(&dst, s->vma + s->size);
+      out(abfd, '3', buffer, dst);
     }
 
-  /* And the symbols.  */
+  /* And the symbols: */
   if (abfd->outsymbols)
     {
       for (p = abfd->outsymbols; *p; p++)
 	{
-	  int section_code = bfd_decode_symclass (*p);
+	  int section_code = bfd_decode_symclass(*p);
 
 	  if (section_code != '?')
 	    {
-	      /* Do not include debug symbols.  */
+	      /* Do not include debug symbols: */
 	      asymbol *sym = *p;
 	      char *dst = buffer;
 
-	      writesym (&dst, sym->section->name);
+	      writesym(&dst, sym->section->name);
 
 	      switch (section_code)
 		{
@@ -856,20 +865,26 @@ tekhex_write_object_contents (bfd *abfd)
 		  break;
 		case 'C':
 		case 'U':
-		  bfd_set_error (bfd_error_wrong_format);
+		  bfd_set_error(bfd_error_wrong_format);
 		  return FALSE;
+                default:
+                  break;
 		}
 
-	      writesym (&dst, sym->name);
-	      writevalue (&dst, sym->value + sym->section->vma);
-	      out (abfd, '3', buffer, dst);
+	      writesym(&dst, sym->name);
+	      writevalue(&dst, sym->value + sym->section->vma);
+	      out(abfd, '3', buffer, dst);
 	    }
 	}
     }
 
-  /* And the terminator.  */
-  if (bfd_bwrite ("%0781010\n", (bfd_size_type) 9, abfd) != 9)
-    abort ();
+  if (bytes_written > 0) {
+    ;
+  }
+
+  /* And the terminator: */
+  if (bfd_bwrite("%0781010\n", (bfd_size_type) 9, abfd) != 9)
+    abort();
   return TRUE;
 }
 
@@ -894,38 +909,35 @@ tekhex_make_empty_symbol(bfd *abfd)
 }
 
 static void
-tekhex_get_symbol_info (bfd *abfd ATTRIBUTE_UNUSED,
-			asymbol *symbol,
-			symbol_info *ret)
+tekhex_get_symbol_info(bfd *abfd ATTRIBUTE_UNUSED, asymbol *symbol,
+                       symbol_info *ret)
 {
-  bfd_symbol_info (symbol, ret);
+  bfd_symbol_info(symbol, ret);
 }
 
 static void
-tekhex_print_symbol (bfd *abfd,
-		     void * filep,
-		     asymbol *symbol,
-		     bfd_print_symbol_type how)
+tekhex_print_symbol(bfd *abfd, void * filep, asymbol *symbol,
+                    bfd_print_symbol_type how)
 {
-  FILE *file = (FILE *) filep;
+  FILE *file = (FILE *)filep;
 
   switch (how)
     {
     case bfd_print_symbol_name:
-      fprintf (file, "%s", symbol->name);
+      fprintf(file, "%s", symbol->name);
       break;
     case bfd_print_symbol_more:
       break;
-
     case bfd_print_symbol_all:
       {
 	const char *section_name = symbol->section->name;
 
-	bfd_print_symbol_vandf (abfd, (void *) file, symbol);
+	bfd_print_symbol_vandf(abfd, (void *)file, symbol);
 
-	fprintf (file, " %-5s %s",
-		 section_name, symbol->name);
+	fprintf(file, " %-5s %s", section_name, symbol->name);
       }
+    default:
+      break;
     }
 }
 
@@ -958,9 +970,12 @@ tekhex_print_symbol (bfd *abfd,
 #define tekhex_bfd_link_split_section               _bfd_generic_link_split_section
 #define tekhex_get_section_contents_in_window       _bfd_generic_get_section_contents_in_window
 
+#ifdef __clang__
+extern const bfd_target tekhex_vec;
+#endif /* __clang__ */
 const bfd_target tekhex_vec =
 {
-  "tekhex",			/* Name.  */
+  (char *)"tekhex",			/* Name.  */
   bfd_target_tekhex_flavour,
   BFD_ENDIAN_UNKNOWN,		/* Target byte order.  */
   BFD_ENDIAN_UNKNOWN,		/* Target headers byte order.  */
@@ -1012,3 +1027,15 @@ const bfd_target tekhex_vec =
 
   NULL
 };
+
+#ifdef enda
+# undef enda
+#endif /* enda */
+#ifdef CHUNK
+# undef CHUNK
+#endif /* CHUNK */
+#ifdef NOT_HEX
+# undef NOT_HEX
+#endif /* NOT_HEX */
+
+/* EOF */

@@ -49,5 +49,13 @@ There is also a separate directory for gdb for CodeWarrior:
 http://opensource.apple.com/tarballs/gdbforcw/
 and
 http://opensource.apple.com/source/gdbforcw/
-I cannot tell the difference between it and the main Apple gdb sources
-though.
+The releases of gdbforcw correspond to releases missing from the main
+gdb-apple releases, which would all fall between gdb-437 and gdb-477:
+
+	- gdbforcw-1 = gdb-439
+
+	- gdbforcw-3.2 = gdb-441.2
+
+	- gdbforcw-5 = gdb-443
+
+	- gdbforcw-6 = gdb-444

@@ -139,6 +139,24 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 # define MAX_CORE_SEGS 32 /* arbitrary (something in a Google search preview) */
 #endif /* !MAX_CORE_SEGS */
 
+/* in case "coff/i386.h" failed to define these for us; possibly because
+ * of ifdefs: */
+#ifndef COR_TYPE_DATA
+# define COR_TYPE_DATA    'd' /* process data segment          */
+#endif /* !COR_TYPE_DATA */
+#ifndef COR_TYPE_STACK
+# define COR_TYPE_STACK   's' /* process stack segment         */
+#endif /* !COR_TYPE_STACK */
+#ifndef COR_TYPE_LIBDATA
+# define COR_TYPE_LIBDATA 'D' /* shared lib data               */
+#endif /* !COR_TYPE_LIBDATA */
+#ifndef COR_TYPE_WRITE
+# define COR_TYPE_WRITE   'w' /* other writeable               */
+#endif /* !COR_TYPE_WRITE */
+#ifndef COR_TYPE_MSC
+# define COR_TYPE_MSC     '?' /* other, mapped in segment      */
+#endif /* !COR_TYPE_MSC */
+
 /* These are stored in the bfd's tdata: */
 struct trad_core_struct {
   struct corehdr *hdr; /* core file header */
@@ -147,11 +165,10 @@ struct trad_core_struct {
   asection *sections[MAX_CORE_SEGS];
 };
 
-static void swap_abort PARAMS ((void));
+static void swap_abort PARAMS((void));
 
 static const bfd_target *
-aix386_core_file_p(abfd)
-     bfd *abfd;
+aix386_core_file_p(bfd *abfd)
 {
   int i, n;
   unsigned char longbuf[4]; /* Raw bytes of various header fields */
@@ -282,23 +299,20 @@ aix386_core_file_p(abfd)
 }
 
 static char *
-aix386_core_file_failing_command(abfd)
-     bfd *abfd;
+aix386_core_file_failing_command(bfd *abfd)
 {
   return core_hdr(abfd)->cd_comm;
 }
 
 static int
-aix386_core_file_failing_signal(abfd)
-     bfd *abfd;
+aix386_core_file_failing_signal(bfd *abfd)
 {
   return core_hdr(abfd)->cd_cursig;
 }
 
 static bfd_boolean
-aix386_core_file_matches_executable_p(core_bfd, exec_bfd)
-     bfd *core_bfd;
-     bfd *exec_bfd;
+aix386_core_file_matches_executable_p(bfd *core_bfd ATTRIBUTE_UNUSED,
+                                      bfd *exec_bfd ATTRIBUTE_UNUSED)
 {
   /* FIXME: We have no way of telling at this point. */
   return TRUE;
@@ -306,7 +320,7 @@ aix386_core_file_matches_executable_p(core_bfd, exec_bfd)
 
 /* If somebody calls any byte-swapping routines, shoot them: */
 static void
-swap_abort()
+swap_abort(void)
 {
   /* This way does NOT require any declaration for ANSI to mess up (?). */
   abort();

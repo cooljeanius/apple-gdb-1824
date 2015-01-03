@@ -623,13 +623,13 @@ _bfd_elf_link_lookup_local_dynindx (struct bfd_link_info *info,
    via elf_link_hash_traverse.  */
 
 static bfd_boolean
-elf_link_renumber_hash_table_dynsyms (struct elf_link_hash_entry *h,
-				      void *data)
+elf_link_renumber_hash_table_dynsyms(struct elf_link_hash_entry *h,
+                                     void *data)
 {
-  size_t *count = data;
+  size_t *count = (size_t *)data;
 
   if (h->root.type == bfd_link_hash_warning)
-    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+    h = (struct elf_link_hash_entry *)h->root.u.i.link;
 
   if (h->forced_local)
     return TRUE;
@@ -645,10 +645,10 @@ elf_link_renumber_hash_table_dynsyms (struct elf_link_hash_entry *h,
    STB_LOCAL binding.  */
 
 static bfd_boolean
-elf_link_renumber_local_hash_table_dynsyms (struct elf_link_hash_entry *h,
-					    void *data)
+elf_link_renumber_local_hash_table_dynsyms(struct elf_link_hash_entry *h,
+                                           void *data)
 {
-  size_t *count = data;
+  size_t *count = (size_t *)data;
 
   if (h->root.type == bfd_link_hash_warning)
     h = (struct elf_link_hash_entry *) h->root.u.i.link;
@@ -9229,15 +9229,15 @@ bfd_elf_gc_record_vtinherit (bfd *abfd,
 	goto win;
     }
 
-  (*_bfd_error_handler) ("%B: %A+%lu: No symbol found for INHERIT",
-			 abfd, sec, (unsigned long) offset);
-  bfd_set_error (bfd_error_invalid_operation);
+  (*_bfd_error_handler)("%B: %A+%lu: No symbol found for INHERIT",
+                        abfd, sec, (unsigned long)offset);
+  bfd_set_error(bfd_error_invalid_operation);
   return FALSE;
 
  win:
   if (!child->vtable)
     {
-      child->vtable = bfd_zalloc (abfd, sizeof (*child->vtable));
+      child->vtable = bfd_zalloc(abfd, sizeof(*child->vtable));
       if (!child->vtable)
 	return FALSE;
     }

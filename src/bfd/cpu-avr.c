@@ -63,21 +63,18 @@ const bfd_arch_info_type bfd_avr_arch =
   N (16, bfd_mach_avr2, "avr", TRUE, & arch_info_struct[0]);
 
 /* This routine is provided two arch_infos and works out which AVR
-   machine which would be compatible with both and returns a pointer
-   to its info structure.  */
-
+ * machine which would be compatible with both and returns a pointer
+ * to its info structure: */
 static const bfd_arch_info_type *
-compatible (a,b)
-     const bfd_arch_info_type * a;
-     const bfd_arch_info_type * b;
+compatible(const bfd_arch_info_type *a, const bfd_arch_info_type *b)
 {
-  /* If a & b are for different architectures we can do nothing.  */
+  /* If a & b are for different architectures, then we can do nothing: */
   if (a->arch != b->arch)
     return NULL;
 
   /* Special case for ATmega[16]03 (avr:3) and ATmega83 (avr:4).  */
-  if ((a->mach == bfd_mach_avr3 && b->mach == bfd_mach_avr4)
-      || (a->mach == bfd_mach_avr4 && b->mach == bfd_mach_avr3))
+  if (((a->mach == bfd_mach_avr3) && (b->mach == bfd_mach_avr4))
+      || ((a->mach == bfd_mach_avr4) && (b->mach == bfd_mach_avr3)))
     return NULL;
 
   /* So far all newer AVR architecture cores are supersets of previous

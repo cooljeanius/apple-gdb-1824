@@ -75,41 +75,40 @@ extern void *_objalloc_alloc (struct objalloc *, unsigned long);
    gcc, because otherwise we would have to evaluate the arguments
    multiple times, or use a temporary field as obstack.h does.  */
 
-#if defined (__GNUC__) && defined (__STDC__) && __STDC__
+#if defined(__GNUC__) && defined(__STDC__) && __STDC__
 
-/* NextStep 2.0 cc is really gcc 1.93 but it defines __GNUC__ = 2 and
-   does not implement __extension__.  But that compiler doesn't define
-   __GNUC_MINOR__.  */
-#if __GNUC__ < 2 || ((defined(__NeXT__) && __NeXT__) && !__GNUC_MINOR__)
-#define __extension__
-#endif
+/* NeXTStep 2.0 cc is really gcc 1.93 but it defines __GNUC__ = 2 and
+ * does not implement __extension__.  But that compiler does NOT define
+ * __GNUC_MINOR__.  */
+# if (__GNUC__ < 2) || ((defined(__NeXT__) && __NeXT__) && !__GNUC_MINOR__)
+#  define __extension__
+# endif /* gcc pre-2 || NeXT gcc */
 
-#define objalloc_alloc(o, l)						\
-  __extension__								\
-  ({ struct objalloc *__o = (o);					\
-     unsigned long __len = (l);						\
-     if (__len == 0)							\
-       __len = 1;							\
-     __len = (__len + OBJALLOC_ALIGN - 1) &~ (OBJALLOC_ALIGN - 1);	\
-     (__len <= __o->current_space					\
-      ? (__o->current_ptr += __len,					\
-	 __o->current_space -= __len,					\
-	 (void *) (__o->current_ptr - __len))				\
-      : _objalloc_alloc (__o, __len)); })
+# define objalloc_alloc(o, l)						\
+   __extension__							\
+   ({ struct objalloc *__o = (o);					\
+      unsigned long __len = (l);					\
+      if (__len == 0UL)							\
+        __len = 1UL;							\
+      __len = (__len + OBJALLOC_ALIGN - 1UL) &~ (OBJALLOC_ALIGN - 1UL);	\
+      (__len <= __o->current_space					\
+       ? (__o->current_ptr += __len,					\
+	  __o->current_space -= __len,					\
+	  (void *)(__o->current_ptr - __len))				\
+       : _objalloc_alloc(__o, __len)); })
 
-#else /* ! __GNUC__ */
-
-#define objalloc_alloc(o, l) _objalloc_alloc ((o), (l))
-
+#else /* !__GNUC__: */
+# define objalloc_alloc(o, l) _objalloc_alloc((o), (l))
 #endif /* ! __GNUC__ */
 
-/* Free an entire objalloc structure.  */
-
-extern void objalloc_free (struct objalloc *);
+/* Free an entire objalloc structure: */
+extern void objalloc_free(struct objalloc *);
 
 /* Free a block allocated by objalloc_alloc.  This also frees all more
    recently allocated blocks.  */
 
-extern void objalloc_free_block (struct objalloc *, void *);
+extern void objalloc_free_block(struct objalloc *, void *);
 
 #endif /* OBJALLOC_H */
+
+/* EOF */

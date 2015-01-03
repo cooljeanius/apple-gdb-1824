@@ -11,7 +11,7 @@
  * (this works only for glibc, but that should be enough).  */
 #if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning "config.h should be #included before system headers"
+ #  warning "config.h should be #included before system headers"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* __GLIBC__ && !__FreeBSD_kernel__ && !__CONFIG_H__ */
 #ifndef __CONFIG_H__
@@ -67,6 +67,9 @@
 /* Define to 1 if you have the `btowc' function. */
 #undef HAVE_BTOWC
 
+/* Define to 1 if you have the `close' function. */
+#undef HAVE_CLOSE
+
 /* Define to 1 if you have the <core.h> header file. */
 #undef HAVE_CORE_H
 
@@ -79,6 +82,10 @@
 /* Define to 1 if you have the declaration of `basename', and to 0 if you
    don't. */
 #undef HAVE_DECL_BASENAME
+
+/* Define to 1 if you have the declaration of `close', and to 0 if you don't.
+   */
+#undef HAVE_DECL_CLOSE
 
 /* Define to 1 if you have the declaration of `ffs', and to 0 if you don't. */
 #undef HAVE_DECL_FFS
@@ -110,6 +117,14 @@
 /* Define to 1 if you have the declaration of `malloc', and to 0 if you don't.
    */
 #undef HAVE_DECL_MALLOC
+
+/* Define to 1 if you have the declaration of `open', and to 0 if you don't.
+   */
+#undef HAVE_DECL_OPEN
+
+/* Define to 1 if you have the declaration of `pread', and to 0 if you don't.
+   */
+#undef HAVE_DECL_PREAD
 
 /* Define to 1 if you have the declaration of `realloc', and to 0 if you
    don't. */
@@ -290,6 +305,9 @@
 /* Define if <sys/procfs.h> has lwpstatus_t.pr_context. */
 #undef HAVE_LWPSTATUS_T_PR_CONTEXT
 
+/* Define if <sys/procfs.h> has lwpstatus_t.pr_fpreg. */
+#undef HAVE_LWPSTATUS_T_PR_FPREG
+
 /* Define if <sys/procfs.h> has lwpstatus_t.pr_reg. */
 #undef HAVE_LWPSTATUS_T_PR_REG
 
@@ -353,6 +371,12 @@
 
 /* Define to 1 if you have the <nl_types.h> header file. */
 #undef HAVE_NL_TYPES_H
+
+/* Define to 1 if you have the `open' function. */
+#undef HAVE_OPEN
+
+/* Define to 1 if you have the `pread' function. */
+#undef HAVE_PREAD
 
 /* Define if <sys/procfs.h> has prpsinfo32_t. */
 #undef HAVE_PRPSINFO32_T
@@ -497,6 +521,15 @@
 /* Define to 1 if `tm_zone' is a member of `struct tm'. */
 #undef HAVE_STRUCT_TM_TM_ZONE
 
+/* Define to 1 if `u_comm' is a member of `struct user'. */
+#undef HAVE_STRUCT_USER_U_COMM
+
+/* Define to 1 if `u_dsize' is a member of `struct user'. */
+#undef HAVE_STRUCT_USER_U_DSIZE
+
+/* Define to 1 if `u_ssize' is a member of `struct user'. */
+#undef HAVE_STRUCT_USER_U_SSIZE
+
 /* Define if struct core_dumpx has member c_impl */
 #undef HAVE_ST_C_IMPL
 
@@ -506,9 +539,15 @@
 /* Define to 1 if you have the `system' function. */
 #undef HAVE_SYSTEM
 
+/* Define to 1 if you have the <sys/acl.h> header file. */
+#undef HAVE_SYS_ACL_H
+
 /* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
    */
 #undef HAVE_SYS_DIR_H
+
+/* Define to 1 if you have the <sys/errno.h> header file. */
+#undef HAVE_SYS_ERRNO_H
 
 /* Define to 1 if you have the <sys/file.h> header file. */
 #undef HAVE_SYS_FILE_H
@@ -520,11 +559,17 @@
    */
 #undef HAVE_SYS_NDIR_H
 
+/* Define to 1 if you have the <sys/paccess.h> header file. */
+#undef HAVE_SYS_PACCESS_H
+
 /* Define to 1 if you have the <sys/param.h> header file. */
 #undef HAVE_SYS_PARAM_H
 
 /* Define to 1 if you have the <sys/procfs.h> header file. */
 #undef HAVE_SYS_PROCFS_H
+
+/* Define to 1 if you have the <sys/region.h> header file. */
+#undef HAVE_SYS_REGION_H
 
 /* Define to 1 if you have the <sys/resource.h> header file. */
 #undef HAVE_SYS_RESOURCE_H
@@ -540,6 +585,9 @@
 
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <sys/user.h> header file. */
+#undef HAVE_SYS_USER_H
 
 /* Define to 1 if you have <sys/wait.h> that is POSIX.1 compatible. */
 #undef HAVE_SYS_WAIT_H
@@ -591,6 +639,9 @@
 /* Define if <sys/procfs.h> has win32_pstatus_t. */
 #undef HAVE_WIN32_PSTATUS_T
 
+/* Define to 1 if you have the <windef.h> header file. */
+#undef HAVE_WINDEF_H
+
 /* Define to 1 if you have the <windows.h> header file. */
 #undef HAVE_WINDOWS_H
 
@@ -624,6 +675,9 @@
 
 /* Define to the sub-directory where libtool stores uninstalled libraries. */
 #undef LT_OBJDIR
+
+/* Define to 1 if struct user has no u_comm member */
+#undef NO_CORE_COMMAND
 
 /* Name of package */
 #undef PACKAGE
@@ -698,6 +752,9 @@
 
 /* Use b modifier when opening binary files? */
 #undef USE_BINARY_FOPEN
+
+/* Define to 1 if we should use leading underscore on 64 bit mingw targets */
+#undef USE_MINGW64_LEADING_UNDERSCORES
 
 /* Use mmap if it is available? */
 #undef USE_MMAP

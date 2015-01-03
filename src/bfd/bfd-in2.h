@@ -2,10 +2,10 @@
    generated from "bfd-in.h", "init.c", "opncls.c", "libbfd.c", 
    "bfdio.c", "bfdwin.c", "section.c", "cache.c", "archures.c", 
    "reloc.c", "syms.c", "bfd.c", "archive.c", "corefile.c", "targets.c", 
-   "format.c", "linker.c" and "simple.c".
+   "format.c", "linker.c", "simple.c" and "compress.c".
    Run "make headers" in your build bfd/ to regenerate.  */
 
-/* Main header file for the bfd library -- portable access to object files.
+/* bfd.h: Main header for the bfd library: portable access to object files.
 
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998,
    1999, 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
@@ -26,24 +26,24 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #ifndef __BFD_H_SEEN__
 #define __BFD_H_SEEN__
 
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 #include "ansidecl.h"
 #include "symcat.h"
-#if defined (__STDC__) || defined (ALMOST_STDC) || defined (HAVE_STRINGIZE)
+#if defined(__STDC__) || defined(ALMOST_STDC) || defined(HAVE_STRINGIZE)
 #ifndef SABER
 /* This hack is to avoid a problem with some strict ANSI C preprocessors.
-   The problem is, "32_" is not a valid preprocessing token, and we don't
-   want extra underscores (e.g., "nlm_32_").  The XCONCAT2 macro will
-   cause the inner CONCAT2 macros to be evaluated first, producing
-   still-valid pp-tokens.  Then the final concatenation can be done.  */
+ * The problem is, "32_" is not a valid preprocessing token, and we do NOT
+ * want extra underscores (e.g., "nlm_32_").  The XCONCAT2 macro will
+ * cause the inner CONCAT2 macros to be evaluated first, producing
+ * still-valid pp-tokens.  Then the final concatenation can be done.  */
 #undef CONCAT4
 #define CONCAT4(a,b,c,d) XCONCAT2(CONCAT2(a,b),CONCAT2(c,d))
 #endif
@@ -62,7 +62,7 @@ extern "C" {
    problem for example when trying to use STRING_COMMA_LEN to build
    the arguments to the strncmp() macro.  Hence this alternative
    definition of strncmp is provided here.
-   
+
    Note - these macros do NOT work if STR2 is not a constant string.  */
 #define CONST_STRNEQ(STR1,STR2) (strncmp ((STR1), (STR2), sizeof (STR2) - 1) == 0)
   /* strcpy() can have a similar problem, but since we know we are
@@ -938,6 +938,7 @@ struct coff_comdat_info
 extern struct coff_comdat_info *bfd_coff_get_comdat_section
   (bfd *, struct bfd_section *);
 
+/* End of bfd-in.h */
 /* Extracted from init.c.  */
 void bfd_init (void);
 
@@ -2235,7 +2236,7 @@ struct reloc_howto_struct
 };
 
 #define HOWTO(C, R, S, B, P, BI, O, SF, NAME, INPLACE, MASKSRC, MASKDST, PC) \
-  { (unsigned) C, R, S, B, P, BI, O, SF, NAME, INPLACE, MASKSRC, MASKDST, PC }
+  { (unsigned)C, R, S, B, P, BI, O, SF, (char *)NAME, INPLACE, MASKSRC, MASKDST, PC }
 #define NEWHOWTO(FUNCTION, NAME, SIZE, REL, IN) \
   HOWTO (0, 0, SIZE, 0, REL, 0, complain_overflow_dont, FUNCTION, \
          NAME, FALSE, 0, 0, IN)
@@ -4614,6 +4615,7 @@ enum bfd_flavour
   bfd_target_oasys_flavour,
   bfd_target_tekhex_flavour,
   bfd_target_srec_flavour,
+  bfd_target_verilog_flavour,
   bfd_target_ihex_flavour,
   bfd_target_som_flavour,
   bfd_target_os9k_flavour,
@@ -4632,6 +4634,9 @@ enum bfd_endian { BFD_ENDIAN_BIG, BFD_ENDIAN_LITTLE, BFD_ENDIAN_UNKNOWN };
 
 /* Forward declaration.  */
 typedef struct bfd_link_info _bfd_link_info;
+
+/* Forward declaration.  */
+typedef struct flag_info flag_info;
 
 typedef struct bfd_target
 {
@@ -4665,6 +4670,12 @@ typedef struct bfd_target
 
   /* The maximum number of characters in an archive header.  */
   unsigned short ar_max_namelen;
+
+#if 0
+  /* How well this target matches, used to select between various
+     possible targets when more than one target matches.  */
+  unsigned char match_priority;
+#endif
 
   /* Entries for byte swapping for data. These are different from the
      other entry points, since they don't take a BFD as the first argument.
@@ -5006,6 +5017,26 @@ void bfd_section_already_linked (bfd *abfd, asection *sec);
 /* Extracted from simple.c.  */
 bfd_byte *bfd_simple_get_relocated_section_contents
    (bfd *abfd, asection *sec, bfd_byte *outbuf, asymbol **symbol_table);
+
+/* Extracted from compress.c.  */
+bfd_boolean bfd_compress_section_contents
+   (bfd *abfd, asection *section, bfd_byte *uncompressed_buffer,
+    bfd_size_type uncompressed_size);
+
+bfd_boolean bfd_get_full_section_contents
+   (bfd *abfd, asection *section, bfd_byte **ptr);
+
+void bfd_cache_section_contents
+   (asection *sec, void *contents);
+
+bfd_boolean bfd_is_section_compressed
+   (bfd *abfd, asection *section);
+
+bfd_boolean bfd_init_section_decompress_status
+   (bfd *abfd, asection *section);
+
+bfd_boolean bfd_init_section_compress_status
+   (bfd *abfd, asection *section);
 
 #ifdef __cplusplus
 }

@@ -15,9 +15,11 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
-#define SH64_ELF
+#ifndef SH64_ELF
+# define SH64_ELF
+#endif /* !SH64_ELF */
 
 #include "bfd.h"
 #include "sysdep.h"
@@ -106,7 +108,7 @@ sh64_address_in_cranges (asection *cranges, bfd_vma addr,
   if ((cranges_size % SH64_CRANGE_SIZE) != 0)
     return FALSE;
 
-  /* If this section has relocations, then we can't do anything sane.  */
+  /* If this section has relocations, then we can't do anything sane: */
   if (bfd_get_section_flags (cranges->owner, cranges) & SEC_RELOC)
     return FALSE;
 
@@ -117,38 +119,40 @@ sh64_address_in_cranges (asection *cranges, bfd_vma addr,
     cranges_contents = cranges->contents;
   else
     {
-      if (!bfd_malloc_and_get_section (cranges->owner, cranges,
-				       &cranges_contents))
+      if (!bfd_malloc_and_get_section(cranges->owner, cranges,
+                                      &cranges_contents))
 	goto error_return;
 
       /* Is it sorted?  */
-      if (elf_section_data (cranges)->this_hdr.sh_type
+      if (elf_section_data(cranges)->this_hdr.sh_type
 	  != SHT_SH5_CR_SORTED)
-	/* Nope.  Lets sort it.  */
-	qsort (cranges_contents, cranges_size / SH64_CRANGE_SIZE,
-	       SH64_CRANGE_SIZE,
-	       bfd_big_endian (cranges->owner)
-	       ? _bfd_sh64_crange_qsort_cmpb : _bfd_sh64_crange_qsort_cmpl);
+	/* Nope.  Let us sort it: */
+	qsort(cranges_contents, (cranges_size / SH64_CRANGE_SIZE),
+              SH64_CRANGE_SIZE,
+              (bfd_big_endian(cranges->owner)
+	       ? _bfd_sh64_crange_qsort_cmpb
+               : _bfd_sh64_crange_qsort_cmpl));
 
-      /* Let's keep it around.  */
+      /* Let us keep it around: */
       cranges->contents = cranges_contents;
-      bfd_set_section_flags (cranges->owner, cranges,
-			     bfd_get_section_flags (cranges->owner, cranges)
-			     | SEC_IN_MEMORY);
+      bfd_set_section_flags(cranges->owner, cranges,
+                            bfd_get_section_flags(cranges->owner, cranges)
+                            | SEC_IN_MEMORY);
 
-      /* It's sorted now.  */
+      /* It is sorted now.  */
       elf_section_data (cranges)->this_hdr.sh_type = SHT_SH5_CR_SORTED;
     }
 
-  /* Try and find a matching range.  */
+  /* Try and find a matching range: */
   found_rangep
-    = bsearch (&addr, cranges_contents, cranges_size / SH64_CRANGE_SIZE,
-	       SH64_CRANGE_SIZE,
-	       bfd_big_endian (cranges->owner)
-	       ? _bfd_sh64_crange_bsearch_cmpb
-	       : _bfd_sh64_crange_bsearch_cmpl);
+    = (bfd_byte *)bsearch(&addr, cranges_contents,
+                          (cranges_size / SH64_CRANGE_SIZE),
+                          SH64_CRANGE_SIZE,
+                          (bfd_big_endian(cranges->owner)
+                           ? _bfd_sh64_crange_bsearch_cmpb
+                           : _bfd_sh64_crange_bsearch_cmpl));
 
-  /* Fill in a few return values if we found a matching range.  */
+  /* Fill in a few return values if we found a matching range: */
   if (found_rangep)
     {
       enum sh64_elf_cr_type cr_type
@@ -229,16 +233,21 @@ sh64_get_contents_type (asection *sec, bfd_vma addr, sh64_elf_crange *rangep)
 
   /* If this call fails, we will still have CRT_NONE in rangep->cr_type
      and that will be suitable to return.  */
-  sh64_address_in_cranges (cranges, addr, rangep);
+  sh64_address_in_cranges(cranges, addr, rangep);
 
   return rangep->cr_type;
 }
 
-/* This is a simpler exported interface for the benefit of gdb et al.  */
-
+/* This is a simpler exported interface for the benefit of gdb et al: */
 bfd_boolean
-sh64_address_is_shmedia (asection *sec, bfd_vma addr)
+sh64_address_is_shmedia(asection *sec, bfd_vma addr)
 {
   sh64_elf_crange dummy;
-  return sh64_get_contents_type (sec, addr, &dummy) == CRT_SH5_ISA32;
+  return (sh64_get_contents_type(sec, addr, &dummy) == CRT_SH5_ISA32);
 }
+
+#ifdef SH64_ELF
+# undef SH64_ELF
+#endif /* SH64_ELF */
+
+/* EOF */

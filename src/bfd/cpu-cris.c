@@ -28,18 +28,16 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
    there's a compatible subset for which we provide an arch_info.  */
 
 static const bfd_arch_info_type * get_compatible
-  PARAMS ((const bfd_arch_info_type *, const bfd_arch_info_type *));
+  PARAMS((const bfd_arch_info_type *, const bfd_arch_info_type *));
 
 static const bfd_arch_info_type *
-get_compatible (a,b)
-     const bfd_arch_info_type *a;
-     const bfd_arch_info_type *b;
+get_compatible(const bfd_arch_info_type *a, const bfd_arch_info_type *b)
 {
-  /* Arches must match.  */
+  /* Arches must match: */
   if (a->arch != b->arch)
    return NULL;
 
-  /* If either is the compatible mach, return the other.  */
+  /* If either is the compatible mach, then return the other: */
   if (a->mach == bfd_mach_cris_v10_v32)
     return b;
   if (b->mach == bfd_mach_cris_v10_v32)

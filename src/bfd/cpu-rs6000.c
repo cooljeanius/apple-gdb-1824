@@ -32,12 +32,16 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
    architecture.  */
 
 static const bfd_arch_info_type *rs6000_compatible
-  PARAMS ((const bfd_arch_info_type *, const bfd_arch_info_type *));
+  PARAMS((const bfd_arch_info_type *, const bfd_arch_info_type *));
+
+#if defined(__GNUC__) && (__GNUC__ >= 4)
+ # pragma GCC diagnostic ignored "-Wswitch-enum"
+#endif /* gcc 4+ */
 
 static const bfd_arch_info_type *
 rs6000_compatible(const bfd_arch_info_type *a, const bfd_arch_info_type *b)
 {
-  BFD_ASSERT (a->arch == bfd_arch_rs6000);
+  BFD_ASSERT(a->arch == bfd_arch_rs6000);
   switch (b->arch)
     {
     default:
@@ -98,6 +102,9 @@ static const bfd_arch_info_type arch_info_struct[] =
   }
 };
 
+#ifdef __clang__
+extern const bfd_arch_info_type bfd_rs6000_arch;
+#endif /* __clang__ */
 const bfd_arch_info_type bfd_rs6000_arch =
   {
     32,	/* 32 bits in a word */

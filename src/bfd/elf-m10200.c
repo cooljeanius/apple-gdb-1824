@@ -774,12 +774,13 @@ mn10200_elf_relax_section (abfd, sec, link_info, again)
 					    irel->r_offset + 1))
 	    continue;
 
-	  /* Note that we've changed the relocs, section contents, etc.  */
-	  elf_section_data (sec)->relocs = internal_relocs;
-	  elf_section_data (sec)->this_hdr.contents = contents;
-	  symtab_hdr->contents = (unsigned char *) isymbuf;
+	  /* Note that we have changed the relocs, section contents, and
+           * so on: */
+	  elf_section_data(sec)->relocs = internal_relocs;
+	  elf_section_data(sec)->this_hdr.contents = contents;
+	  symtab_hdr->contents = (unsigned char *)isymbuf;
 
-	  /* Reverse the condition of the first branch.  */
+	  /* Reverse the condition of the first branch: */
 	  switch (code)
 	    {
 	    case 0xfc:
@@ -836,8 +837,10 @@ mn10200_elf_relax_section (abfd, sec, link_info, again)
 	    case 0xef:
 	      code = 0xee;
 	      break;
+            default:
+              break;
 	    }
-	  bfd_put_8 (abfd, code, contents + irel->r_offset - 1);
+	  bfd_put_8(abfd, code, contents + irel->r_offset - 1);
 
 	  /* Set the reloc type and symbol for the first branch
 	     from the second branch.  */

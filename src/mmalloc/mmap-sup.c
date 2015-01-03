@@ -176,7 +176,9 @@ Boston, MA 02111-1307, USA.  */
 #endif /* HAVE_IPC_IPC_TYPES_H */
 
 #if defined(HAVE_MACH_PORT_T) && !defined(HAVE_PORT_T) && !defined(port_t)
-# define port_t mach_port_t /* Not sure if this will work, but it is worth a shot... */
+/* Could just rename all instaces of port_t to mach_port_t unconditionally,
+ * as some versions do, but whatever: */
+# define port_t mach_port_t
 #endif /* HAVE_MACH_PORT_T && !HAVE_PORT_T && !port_t */
 
 #ifndef HAVE_MSYNC
@@ -344,6 +346,7 @@ __mmalloc_mmap_morecore(struct mdesc *mdp, int size)
       vm_region_basic_info_data_t r_data;
       mach_msg_type_number_t r_info_size;
       port_t r_object_name; /* TODO: find out: where is port_t declared? */
+      /* (replaced by mach_port_t in newer versions of OS X) */
       kern_return_t kret;
 
       r_start = (vm_address_t)mdp->top;

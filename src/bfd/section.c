@@ -698,22 +698,22 @@ CODE_FRAGMENT
 
 static const asymbol global_syms[] =
 {
-  GLOBAL_SYM_INIT (BFD_COM_SECTION_NAME, &bfd_com_section),
-  GLOBAL_SYM_INIT (BFD_UND_SECTION_NAME, &bfd_und_section),
-  GLOBAL_SYM_INIT (BFD_ABS_SECTION_NAME, &bfd_abs_section),
-  GLOBAL_SYM_INIT (BFD_IND_SECTION_NAME, &bfd_ind_section)
+  GLOBAL_SYM_INIT(BFD_COM_SECTION_NAME, &bfd_com_section),
+  GLOBAL_SYM_INIT(BFD_UND_SECTION_NAME, &bfd_und_section),
+  GLOBAL_SYM_INIT(BFD_ABS_SECTION_NAME, &bfd_abs_section),
+  GLOBAL_SYM_INIT(BFD_IND_SECTION_NAME, &bfd_ind_section)
 };
 
 #define STD_SECTION(SEC, FLAGS, SYM, NAME, IDX)				\
-  const asymbol * const SYM = (asymbol *) &global_syms[IDX]; 		\
+  const asymbol * const SYM = (asymbol *)&global_syms[IDX]; 		\
   asection SEC = BFD_FAKE_SECTION(SEC, FLAGS, &global_syms[IDX], &SYM,	\
 				  NAME, IDX)
 
-STD_SECTION (bfd_com_section, SEC_IS_COMMON, bfd_com_symbol,
-	     BFD_COM_SECTION_NAME, 0);
-STD_SECTION (bfd_und_section, 0, bfd_und_symbol, BFD_UND_SECTION_NAME, 1);
-STD_SECTION (bfd_abs_section, 0, bfd_abs_symbol, BFD_ABS_SECTION_NAME, 2);
-STD_SECTION (bfd_ind_section, 0, bfd_ind_symbol, BFD_IND_SECTION_NAME, 3);
+STD_SECTION(bfd_com_section, SEC_IS_COMMON, bfd_com_symbol,
+	    BFD_COM_SECTION_NAME, 0);
+STD_SECTION(bfd_und_section, 0, bfd_und_symbol, BFD_UND_SECTION_NAME, 1);
+STD_SECTION(bfd_abs_section, 0, bfd_abs_symbol, BFD_ABS_SECTION_NAME, 2);
+STD_SECTION(bfd_ind_section, 0, bfd_ind_symbol, BFD_IND_SECTION_NAME, 3);
 #undef STD_SECTION
 
 struct section_hash_entry
@@ -722,28 +722,27 @@ struct section_hash_entry
   asection section;
 };
 
-/* Initialize an entry in the section hash table.  */
-
+/* Initialize an entry in the section hash table: */
 struct bfd_hash_entry *
-bfd_section_hash_newfunc (struct bfd_hash_entry *entry,
-			  struct bfd_hash_table *table,
-			  const char *string)
+bfd_section_hash_newfunc(struct bfd_hash_entry *entry,
+                         struct bfd_hash_table *table,
+                         const char *string)
 {
   /* Allocate the structure if it has not already been allocated by a
      subclass.  */
   if (entry == NULL)
     {
       entry = (struct bfd_hash_entry *)
-	bfd_hash_allocate (table, sizeof (struct section_hash_entry));
+	bfd_hash_allocate(table, sizeof(struct section_hash_entry));
       if (entry == NULL)
 	return entry;
     }
 
-  /* Call the allocation method of the superclass.  */
-  entry = bfd_hash_newfunc (entry, table, string);
+  /* Call the allocation method of the superclass: */
+  entry = bfd_hash_newfunc(entry, table, string);
   if (entry != NULL)
-    memset (&((struct section_hash_entry *) entry)->section, 0,
-	    sizeof (asection));
+    memset(&((struct section_hash_entry *)entry)->section, 0,
+           sizeof(asection));
 
   return entry;
 }
@@ -752,21 +751,20 @@ bfd_section_hash_newfunc (struct bfd_hash_entry *entry,
   ((struct section_hash_entry *) \
    bfd_hash_lookup ((table), (string), (create), (copy)))
 
-/* Initializes a new section.  NEWSECT->NAME is already set.  */
-
+/* Initializes a new section.  NEWSECT->NAME is already set: */
 static asection *
-bfd_section_init (bfd *abfd, asection *newsect)
+bfd_section_init(bfd *abfd, asection *newsect)
 {
   static int section_id = 0x10;  /* id 0 to 3 used by STD_SECTION.  */
 
   newsect->id = section_id;
-  newsect->index = abfd->section_count;
+  newsect->index = (int)abfd->section_count;
   newsect->owner = abfd;
 
   /* Create a symbol whose only job is to point to this section.  This
      is useful for things like relocs which are relative to the base
      of a section.  */
-  newsect->symbol = bfd_make_empty_symbol (abfd);
+  newsect->symbol = bfd_make_empty_symbol(abfd);
   if (newsect->symbol == NULL)
     return NULL;
 
@@ -1329,31 +1327,28 @@ DESCRIPTION
 */
 
 bfd_boolean
-bfd_set_section_contents (bfd *abfd,
-			  sec_ptr section,
-			  const void *location,
-			  file_ptr offset,
-			  bfd_size_type count)
+bfd_set_section_contents(bfd *abfd, sec_ptr section, const void *location,
+                         file_ptr offset, bfd_size_type count)
 {
   bfd_size_type sz;
 
-  if (!(bfd_get_section_flags (abfd, section) & SEC_HAS_CONTENTS))
+  if (!(bfd_get_section_flags(abfd, section) & SEC_HAS_CONTENTS))
     {
-      bfd_set_error (bfd_error_no_contents);
+      bfd_set_error(bfd_error_no_contents);
       return FALSE;
     }
 
   sz = section->size;
-  if ((bfd_size_type) offset > sz
-      || count > sz
-      || offset + count > sz
-      || count != (size_t) count)
+  if (((bfd_size_type)offset > sz)
+      || (count > sz)
+      || (((bfd_size_type)offset + count) > sz)
+      || (count != (size_t)count))
     {
-      bfd_set_error (bfd_error_bad_value);
+      bfd_set_error(bfd_error_bad_value);
       return FALSE;
     }
 
-  if (!bfd_write_p (abfd))
+  if (!bfd_write_p(abfd))
     {
       bfd_set_error (bfd_error_invalid_operation);
       return FALSE;
@@ -1397,32 +1392,29 @@ DESCRIPTION
 
 */
 bfd_boolean
-bfd_get_section_contents (bfd *abfd,
-			  sec_ptr section,
-			  void *location,
-			  file_ptr offset,
-			  bfd_size_type count)
+bfd_get_section_contents(bfd *abfd, sec_ptr section, void *location,
+                         file_ptr offset, bfd_size_type count)
 {
   bfd_size_type sz;
 
   if (section->flags & SEC_CONSTRUCTOR)
     {
-      memset (location, 0, (size_t) count);
+      memset(location, 0, (size_t)count);
       return TRUE;
     }
 
-  sz = section->rawsize ? section->rawsize : section->size;
-  if ((bfd_size_type) offset > sz
-      || count > sz
-      || offset + count > sz
-      || count != (size_t) count)
+  sz = (section->rawsize ? section->rawsize : section->size);
+  if (((bfd_size_type)offset > sz)
+      || (count > sz)
+      || (((bfd_size_type)offset + count) > sz)
+      || (count != (size_t)count))
     {
-      bfd_set_error (bfd_error_bad_value);
+      bfd_set_error(bfd_error_bad_value);
       return FALSE;
     }
 
   if (count == 0)
-    /* Don't bother.  */
+    /* Do NOT bother: */
     return TRUE;
 
   if ((section->flags & SEC_HAS_CONTENTS) == 0)
@@ -1589,8 +1581,10 @@ DESCRIPTION
 */
 
 bfd_boolean
-bfd_generic_discard_group (bfd *abfd ATTRIBUTE_UNUSED,
-			   asection *group ATTRIBUTE_UNUSED)
+bfd_generic_discard_group(bfd *abfd ATTRIBUTE_UNUSED,
+                          asection *group ATTRIBUTE_UNUSED)
 {
   return TRUE;
 }
+
+/* End of section.c */

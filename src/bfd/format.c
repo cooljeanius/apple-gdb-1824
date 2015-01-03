@@ -115,65 +115,68 @@ DESCRIPTION
 */
 
 bfd_boolean
-bfd_check_format_matches (bfd *abfd, bfd_format format, char ***matching)
+bfd_check_format_matches(bfd *abfd, bfd_format format, char ***matching)
 {
   const bfd_target * const *target;
-  const bfd_target **matching_vector = NULL;
+  const bfd_target **matching_vector = (const bfd_target **)NULL;
   const bfd_target *save_targ, *right_targ, *ar_right_targ;
   int match_count;
   int ar_match_index;
 
-  if (!bfd_read_p (abfd)
-      || (unsigned int) abfd->format >= (unsigned int) bfd_type_end)
+  if (!bfd_read_p(abfd)
+      || ((unsigned int)abfd->format >= (unsigned int)bfd_type_end))
     {
-      bfd_set_error (bfd_error_invalid_operation);
+      bfd_set_error(bfd_error_invalid_operation);
       return FALSE;
     }
 
-  if (abfd->format != bfd_unknown)
-    return abfd->format == format;
+  if (abfd->format != bfd_unknown) {
+    return (abfd->format == format);
+  }
 
-  /* Since the target type was defaulted, check them
-     all in the hope that one will be uniquely recognized.  */
+  /* Since the target type was defaulted, check them all in the hope that
+   * one will be uniquely recognized: */
   save_targ = abfd->xvec;
   match_count = 0;
-  ar_match_index = _bfd_target_vector_entries;
+  ar_match_index = (int)_bfd_target_vector_entries;
 
   if (matching)
     {
       bfd_size_type amt;
 
       *matching = NULL;
-      amt = sizeof (*matching_vector) * 2 * _bfd_target_vector_entries;
-      matching_vector = bfd_malloc (amt);
-      if (!matching_vector)
+      amt = (sizeof(*matching_vector) * 2 * _bfd_target_vector_entries);
+      matching_vector = (const bfd_target **)bfd_malloc(amt);
+      if (!matching_vector) {
 	return FALSE;
+      }
     }
 
   right_targ = 0;
   ar_right_targ = 0;
 
-  /* Presume the answer is yes.  */
+  /* Presume the answer is yes: */
   abfd->format = format;
 
-  /* If the target type was explicitly specified, just check that target.  */
+  /* If the target type was explicitly specified, then just check that
+   * target: */
   if (!abfd->target_defaulted)
     {
-      if (bfd_seek (abfd, (file_ptr) 0, SEEK_SET) != 0)	/* rewind! */
+      if (bfd_seek(abfd, (file_ptr)0L, SEEK_SET) != 0)	/* rewind! */
 	{
 	  if (matching)
-	    free (matching_vector);
+	    free(matching_vector);
 	  return FALSE;
 	}
 
-      right_targ = BFD_SEND_FMT (abfd, _bfd_check_format, (abfd));
+      right_targ = BFD_SEND_FMT(abfd, _bfd_check_format, (abfd));
 
       if (right_targ)
 	{
 	  abfd->xvec = right_targ;	/* Set the target as returned.  */
 
 	  if (matching)
-	    free (matching_vector);
+	    free(matching_vector);
 
 	  /* If the file was opened for update, then `output_has_begun'
 	     some time ago when the file was created.  Do not recompute
@@ -183,7 +186,7 @@ bfd_check_format_matches (bfd *abfd, bfd_format format, char ***matching)
 	  if (abfd->direction == both_direction)
 	    abfd->output_has_begun = TRUE;
 
-	  return TRUE;			/* File position has moved, BTW.  */
+	  return TRUE;		    /* File position has moved, BTW.  */
 	}
 
       /* For a long time the code has dropped through to check all
@@ -198,15 +201,15 @@ bfd_check_format_matches (bfd *abfd, bfd_format format, char ***matching)
 	 actual pe-i386 archive.  Since there may be other problems of
 	 this sort, I changed this test to check only for the binary
 	 target.  */
-      if (format == bfd_archive && save_targ == &binary_vec)
+      if ((format == bfd_archive) && (save_targ == &binary_vec))
 	{
 	  abfd->xvec = save_targ;
 	  abfd->format = bfd_unknown;
 
 	  if (matching)
-	    free (matching_vector);
+	    free(matching_vector);
 
-	  bfd_set_error (bfd_error_file_not_recognized);
+	  bfd_set_error(bfd_error_file_not_recognized);
 
 	  return FALSE;
 	}
@@ -222,10 +225,10 @@ bfd_check_format_matches (bfd *abfd, bfd_format format, char ***matching)
 
       abfd->xvec = *target;	/* Change BFD's target temporarily.  */
 
-      if (bfd_seek (abfd, (file_ptr) 0, SEEK_SET) != 0)
+      if (bfd_seek(abfd, (file_ptr)0L, SEEK_SET) != 0)
 	{
 	  if (matching)
-	    free (matching_vector);
+	    free(matching_vector);
 	  return FALSE;
 	}
 
@@ -233,9 +236,9 @@ bfd_check_format_matches (bfd *abfd, bfd_format format, char ***matching)
 	 bfd_error_wrong_format.  We didn't used to even pay any
 	 attention to bfd_error, so I suspect that some
 	 _bfd_check_format might have this problem.  */
-      bfd_set_error (bfd_error_wrong_format);
+      bfd_set_error(bfd_error_wrong_format);
 
-      temp = BFD_SEND_FMT (abfd, _bfd_check_format, (abfd));
+      temp = BFD_SEND_FMT(abfd, _bfd_check_format, (abfd));
 
       if (temp)
 	{
@@ -256,8 +259,8 @@ bfd_check_format_matches (bfd *abfd, bfd_format format, char ***matching)
 
 	  match_count++;
 	}
-      else if ((err = bfd_get_error ()) == bfd_error_wrong_object_format
-	       || err == bfd_error_file_ambiguously_recognized)
+      else if (((err = bfd_get_error()) == bfd_error_wrong_object_format)
+	       || (err == bfd_error_file_ambiguously_recognized))
 	{
 	  /* An archive with objects of the wrong type, or an
 	     ambiguous match.  We want this target to match if we get
@@ -274,7 +277,7 @@ bfd_check_format_matches (bfd *abfd, bfd_format format, char ***matching)
 	  abfd->format = bfd_unknown;
 
 	  if (matching)
-	    free (matching_vector);
+	    free(matching_vector);
 
 	  return FALSE;
 	}
@@ -282,7 +285,7 @@ bfd_check_format_matches (bfd *abfd, bfd_format format, char ***matching)
 
   if (match_count == 0)
     {
-      /* Try partial matches.  */
+      /* Try partial matches: */
       right_targ = ar_right_targ;
 
       if (right_targ == bfd_default_vector[0])
@@ -291,12 +294,12 @@ bfd_check_format_matches (bfd *abfd, bfd_format format, char ***matching)
 	}
       else
 	{
-	  match_count = ar_match_index - _bfd_target_vector_entries;
+	  match_count = (int)((size_t)ar_match_index - _bfd_target_vector_entries);
 
-	  if (matching && match_count > 1)
-	    memcpy (matching_vector,
-		    matching_vector + _bfd_target_vector_entries,
-		    sizeof (*matching_vector) * match_count);
+	  if (matching && (match_count > 1))
+	    memcpy(matching_vector,
+                   (matching_vector + _bfd_target_vector_entries),
+                   (sizeof(*matching_vector) * (size_t)match_count));
 	}
     }
 
@@ -428,10 +431,10 @@ DESCRIPTION
 */
 
 const char *
-bfd_format_string (bfd_format format)
+bfd_format_string(bfd_format format)
 {
-  if (((int)format < (int) bfd_unknown)
-      || ((int)format >= (int) bfd_type_end))
+  if (((int)format < (int)bfd_unknown)
+      || ((int)format >= (int)bfd_type_end))
     return "invalid";
 
   switch (format)
@@ -442,9 +445,11 @@ bfd_format_string (bfd_format format)
       return "archive";		/* Object archive file.  */
     case bfd_core:
       return "core";		/* Core dump.  */
+    case bfd_unknown: /* Fall through: */
+    case bfd_type_end: /* Fall through: */
     default:
       return "unknown";
     }
 }
 
-/* EOF */
+/* End of format.c */

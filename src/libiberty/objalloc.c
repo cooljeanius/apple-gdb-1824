@@ -156,22 +156,21 @@ _objalloc_alloc (struct objalloc *o, unsigned long len)
       chunk->current_ptr = NULL;
 
       o->current_ptr = (char *) chunk + CHUNK_HEADER_SIZE;
-      o->current_space = CHUNK_SIZE - CHUNK_HEADER_SIZE;
+      o->current_space = (CHUNK_SIZE - CHUNK_HEADER_SIZE);
 
-      o->chunks = (PTR) chunk;
+      o->chunks = (PTR)chunk;
 
-      return objalloc_alloc (o, len);
+      return objalloc_alloc(o, len);
     }
 }
 
-/* Free an entire objalloc structure.  */
-
+/* Free an entire objalloc structure: */
 void
-objalloc_free (struct objalloc *o)
+objalloc_free(struct objalloc *o)
 {
   struct objalloc_chunk *l;
 
-  l = (struct objalloc_chunk *) o->chunks;
+  l = (struct objalloc_chunk *)o->chunks;
   while (l != NULL)
     {
       struct objalloc_chunk *next;

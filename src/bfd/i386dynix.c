@@ -43,19 +43,24 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 #define BMAGIC OMAGIC
 #define QMAGIC XMAGIC
 
+/* this needs to go after the usage of the CONCAT* macro mentioned above,
+ * but before any other headers are included, or prototypes for functions
+ * are declared: */
+#if defined(__GNUC__) && (__GNUC__ >= 4)
+ # pragma GCC diagnostic ignored "-Wtraditional"
+#endif /* gcc 4+ */
+
 #include "aoutx.h"
 
 /* (Ab)use some fields in the internal exec header to be able to read
-   executables that contain shared data.  */
-
+ * executables that contain shared data: */
 #define a_shdata a_tload
 #define a_shdrsize a_dload
 
 void
-i386dynix_32_swap_exec_header_in (abfd, raw_bytes, execp)
-     bfd *abfd;
-     struct external_exec *raw_bytes;
-     struct internal_exec *execp;
+i386dynix_32_swap_exec_header_in(bfd *abfd,
+                                 struct external_exec *raw_bytes,
+                                 struct internal_exec *execp)
 {
   struct external_exec *bytes = (struct external_exec *)raw_bytes;
 

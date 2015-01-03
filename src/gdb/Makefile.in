@@ -198,6 +198,13 @@ INTL_LDFLAGS = -L$(INTL_DIR)
 # you can try setting this to "/usr/lib/libiconv.dylib")
 LIBICONV = @LIBICONV@
 
+# APPLE LOCAL: location of libxml header files & libraries:
+LIBXML2_CFLAGS = @LIBXML2_INCLUDES@
+LIBXML2_LDFLAGS = @LIBXML2_LIBS@
+
+# APPLE LOCAL: switch over to the pre-conformance header files.
+UNIX03_UGH_CFLAGS = @UNIX03_UGH_CFLAGS@
+
 # APPLE LOCAL: location of Carbon header files and libraries
 
 # APPLE LOCAL: We need to weak link to Carbon for the "open" command, and
@@ -439,7 +446,9 @@ INTERNAL_WARN_CFLAGS = \
 	$(BFD_CFLAGS) $(INCLUDE_CFLAGS) \
 	$(MMALLOC_CFLAGS) \
 	$(INTL_CFLAGS) $(ENABLE_CFLAGS) \
+	$(LIBXML2_CFLAGS) \
 	$(MIG_CHECKING) \
+	$(UNIX03_UGH_CFLAGS) \
 	$(GDB_WARN_CFLAGS)
 INTERNAL_CFLAGS = $(INTERNAL_WARN_CFLAGS) $(GDB_WERROR_CFLAGS)
 
@@ -485,7 +494,8 @@ DIST=gdb
 LINT=/usr/5bin/lint
 LINTFLAGS= $(GDB_CFLAGS) $(OPCODES_CFLAGS) $(READLINE_CFLAGS) \
 	$(BFD_CFLAGS) $(INCLUDE_CFLAGS) \
-	$(INTL_CFLAGS) $(MIG_CHECKING)
+	$(INTL_CFLAGS) $(LIBXML2_CFLAGS) $(MIG_CHECKING) \
+	$(UNIX03_UGH_CFLAGS)
 
 RUNTEST = `if [ -f $${rootsrc}/../dejagnu/runtest ]; then \
 		echo $${rootsrc}/../dejagnu/runtest; else echo runtest; \

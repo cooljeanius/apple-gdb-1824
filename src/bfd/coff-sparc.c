@@ -63,18 +63,13 @@ bfd_coff_generic_reloc PARAMS ((bfd *, arelent *, asymbol *, PTR,
 				asection *, bfd *, char **));
 
 static bfd_reloc_status_type
-bfd_coff_generic_reloc (abfd, reloc_entry, symbol, data, input_section,
-			output_bfd, error_message)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     arelent *reloc_entry;
-     asymbol *symbol;
-     PTR data ATTRIBUTE_UNUSED;
-     asection *input_section;
-     bfd *output_bfd;
-     char **error_message ATTRIBUTE_UNUSED;
+bfd_coff_generic_reloc(bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
+                       asymbol *symbol, PTR data ATTRIBUTE_UNUSED,
+                       asection *input_section, bfd *output_bfd,
+                       char **error_message ATTRIBUTE_UNUSED)
 {
-  if (output_bfd != (bfd *) NULL
-      && (symbol->flags & BSF_SECTION_SYM) == 0)
+  if ((output_bfd != (bfd *)NULL)
+      && ((symbol->flags & BSF_SECTION_SYM) == 0))
     {
       reloc_entry->address += input_section->output_offset;
       return bfd_reloc_ok;
@@ -141,30 +136,29 @@ static const struct coff_reloc_map sparc_reloc_map[] =
   { BFD_RELOC_SPARC_JMP_SLOT, R_SPARC_JMP_SLOT },
   { BFD_RELOC_SPARC_RELATIVE, R_SPARC_RELATIVE },
   { BFD_RELOC_SPARC_WDISP22, R_SPARC_WDISP22 },
-  /*  { BFD_RELOC_SPARC_UA32, R_SPARC_UA32 }, not used?? */
+#ifdef ALLOW_UNUSED
+  { BFD_RELOC_SPARC_UA32, R_SPARC_UA32 }, /* not used?? */
+#endif /* ALLOW_UNUSED */
 };
 
 static reloc_howto_type *
-coff_sparc_reloc_type_lookup (abfd, code)
-     bfd *abfd ATTRIBUTE_UNUSED;
-     bfd_reloc_code_real_type code;
+coff_sparc_reloc_type_lookup(bfd *abfd ATTRIBUTE_UNUSED,
+                             bfd_reloc_code_real_type code)
 {
   unsigned int i;
-  for (i = 0; i < sizeof (sparc_reloc_map) / sizeof (struct coff_reloc_map); i++)
+  for (i = 0; i < (sizeof(sparc_reloc_map) / sizeof(struct coff_reloc_map)); i++)
     {
       if (sparc_reloc_map[i].bfd_reloc_val == code)
-	return &coff_sparc_howto_table[(int) sparc_reloc_map[i].coff_reloc_val];
+	return &coff_sparc_howto_table[(int)sparc_reloc_map[i].coff_reloc_val];
     }
   return 0;
 }
 #define coff_bfd_reloc_type_lookup	coff_sparc_reloc_type_lookup
 
 static void
-rtype2howto (cache_ptr, dst)
-     arelent *cache_ptr;
-     struct internal_reloc *dst;
+rtype2howto(arelent *cache_ptr, struct internal_reloc *dst)
 {
-  BFD_ASSERT (dst->r_type < (unsigned int) R_SPARC_max);
+  BFD_ASSERT(dst->r_type < (unsigned int)R_SPARC_max);
   cache_ptr->howto = &coff_sparc_howto_table[dst->r_type];
 }
 
@@ -184,9 +178,10 @@ rtype2howto (cache_ptr, dst)
 
 #define __A_MAGIC_SET__
 
-/* Enable Sparc-specific hacks in coffcode.h.  */
-
-#define COFF_SPARC
+/* Enable Sparc-specific hacks in "coffcode.h": */
+#ifndef COFF_SPARC
+# define COFF_SPARC
+#endif /* !COFF_SPARC */
 
 #include "coffcode.h"
 
@@ -206,7 +201,9 @@ rtype2howto (cache_ptr, dst)
 #if defined(CREATE_BIG_COFF_TARGET_VEC) && defined(USE_DEFINITIONS)
 CREATE_BIG_COFF_TARGET_VEC(TARGET_SYM, TARGET_NAME, D_PAGED, 0, '_', NULL, COFF_SWAP_TABLE)
 #else
-/* #define CREATE_BIG_COFF_TARGET_VEC(VAR, NAME, EXTRA_O_FLAGS, EXTRA_S_FLAGS, UNDER, ALTERNATIVE, SWAP_TABLE) */
+# if 0 && !defined(CREATE_BIG_COFF_TARGET_VEC)
+#  define CREATE_BIG_COFF_TARGET_VEC(VAR, NAME, EXTRA_O_FLAGS, EXTRA_S_FLAGS, UNDER, ALTERNATIVE, SWAP_TABLE)
+# endif /* 0 && !CREATE_BIG_COFF_TARGET_VEC */
 const bfd_target TARGET_SYM =
 {
   (char *)TARGET_NAME,
@@ -241,18 +238,22 @@ const bfd_target TARGET_SYM =
   { bfd_false, coff_write_object_contents, _bfd_write_archive_contents,
     bfd_false },
 
-  BFD_JUMP_TABLE_GENERIC (coff),
-  BFD_JUMP_TABLE_COPY (coff),
-  BFD_JUMP_TABLE_CORE (_bfd_nocore),
-  BFD_JUMP_TABLE_ARCHIVE (_bfd_archive_coff),
-  BFD_JUMP_TABLE_SYMBOLS (coff),
-  BFD_JUMP_TABLE_RELOCS (coff),
-  BFD_JUMP_TABLE_WRITE (coff),
-  BFD_JUMP_TABLE_LINK (coff),
-  BFD_JUMP_TABLE_DYNAMIC (_bfd_nodynamic),
+  BFD_JUMP_TABLE_GENERIC(coff),
+  BFD_JUMP_TABLE_COPY(coff),
+  BFD_JUMP_TABLE_CORE(_bfd_nocore),
+  BFD_JUMP_TABLE_ARCHIVE(_bfd_archive_coff),
+  BFD_JUMP_TABLE_SYMBOLS(coff),
+  BFD_JUMP_TABLE_RELOCS(coff),
+  BFD_JUMP_TABLE_WRITE(coff),
+  BFD_JUMP_TABLE_LINK(coff),
+  BFD_JUMP_TABLE_DYNAMIC(_bfd_nodynamic),
   NULL,
   COFF_SWAP_TABLE
 };
-#endif
+#endif /* CREATE_BIG_COFF_TARGET_VEC && USE_DEFINITIONS */
+
+#ifdef COFF_SPARC
+# undef COFF_SPARC
+#endif /* COFF_SPARC */
 
 /* EOF */

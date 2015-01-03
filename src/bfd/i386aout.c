@@ -39,19 +39,25 @@
 #define TARGETNAME "a.out-i386"
 #define NO_WRITE_HEADER_KLUDGE 1
 
+/* this needs to go after the usage of the CONCAT* macro mentioned above,
+ * but before any other headers are included, or prototypes for functions
+ * are declared: */
+#if defined(__GNUC__) && (__GNUC__ >= 4)
+ # pragma GCC diagnostic ignored "-Wtraditional"
+#endif /* gcc 4+ */
+
 #include "bfd.h"
 #include "sysdep.h"
 #include "libbfd.h"
 #include "aout/aout64.h"
 #include "libaout.h"
 
-/* Set the machine type correctly.  */
-
+/* Set the machine type correctly: */
 static bfd_boolean
-i386aout_write_object_contents (bfd *abfd)
+i386aout_write_object_contents(bfd *abfd)
 {
   struct external_exec exec_bytes;
-  struct internal_exec *execp = exec_hdr (abfd);
+  struct internal_exec *execp = exec_hdr(abfd);
 
   N_SET_MACHTYPE (*execp, M_386);
 
