@@ -1788,7 +1788,7 @@ if test "x${with_gmp_include}" != "x"; then
   gmpinc="-I${with_gmp_include} ${gmpinc}"
 fi
 if test "x${with_gmp_lib}" != "x"; then
-  gmplibs="-L$with_gmp_lib $gmplibs"
+  gmplibs="-L${with_gmp_lib} ${gmplibs}"
 fi
 if test "x${with_gmp}${with_gmp_include}${with_gmp_lib}" = "x" && test -d ${srcdir}/gmp; then
   gmplibs='-L$$r/$(HOST_SUBDIR)/gmp/'"${lt_cv_objdir} ${gmplibs}"

@@ -1,4 +1,4 @@
-/* MI Command Set - output generating routines.
+/* mi-out.c: MI Command Set - output generating routines.
 
    Copyright 2000, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
 
@@ -29,7 +29,7 @@
 /* This comes from the mi-main.c.  I need it because the notify
    code has to "put" the temporary notify buffer before discarding
    it. */
-   
+
 extern struct ui_file *raw_stdout;
 
 struct ui_out_data
@@ -41,39 +41,40 @@ struct ui_out_data
   };
 typedef struct ui_out_data mi_out_data;
 
-/* These are the MI output functions */
-
-static void mi_table_begin (struct ui_out *uiout, int nbrofcols,
-			    int nr_rows, const char *tblid);
-static void mi_table_body (struct ui_out *uiout);
-static void mi_table_end (struct ui_out *uiout);
-static void mi_table_header (struct ui_out *uiout, int width,
-			     enum ui_align alig, const char *col_name,
-			     const char *colhdr);
-static void mi_begin (struct ui_out *uiout, enum ui_out_type type,
-		      int level, const char *id);
-static void mi_end (struct ui_out *uiout, enum ui_out_type type, int level);
-static void mi_field_int (struct ui_out *uiout, int fldno, int width,
-			  enum ui_align alig, const char *fldname, int value);
-static void mi_field_skip (struct ui_out *uiout, int fldno, int width,
-			   enum ui_align alig, const char *fldname);
-static void mi_field_string (struct ui_out *uiout, int fldno, int width,
-			     enum ui_align alig, const char *fldname,
-			     const char *string);
-static void mi_field_fmt (struct ui_out *uiout, int fldno,
-			  int width, enum ui_align align,
-			  const char *fldname, const char *format,
-			  va_list args) ATTR_FORMAT (printf, 6, 0);
-static void mi_spaces (struct ui_out *uiout, int numspaces);
-static void mi_text (struct ui_out *uiout, const char *string);
-static void mi_text_fmt (struct ui_out *uiout, const char *format, va_list args);
-static void mi_message (struct ui_out *uiout, int verbosity,
-			const char *format, va_list args)
+/* These are the MI output functions: */
+static void mi_table_begin(struct ui_out *uiout, int nbrofcols,
+			   int nr_rows, const char *tblid);
+static void mi_table_body(struct ui_out *uiout);
+static void mi_table_end(struct ui_out *uiout);
+static void mi_table_header(struct ui_out *uiout, int width,
+			    enum ui_align alig, const char *col_name,
+			    const char *colhdr);
+static void mi_begin(struct ui_out *uiout, enum ui_out_type type,
+		     int level, const char *id);
+static void mi_end(struct ui_out *uiout, enum ui_out_type type, int level);
+static void mi_field_int(struct ui_out *uiout, int fldno, int width,
+			 enum ui_align alig, const char *fldname,
+                         int value);
+static void mi_field_skip(struct ui_out *uiout, int fldno, int width,
+			  enum ui_align alig, const char *fldname);
+static void mi_field_string(struct ui_out *uiout, int fldno, int width,
+			    enum ui_align alig, const char *fldname,
+			    const char *string);
+static void mi_field_fmt(struct ui_out *uiout, int fldno,
+			 int width, enum ui_align align,
+			 const char *fldname, const char *format,
+			 va_list args) ATTR_FORMAT (printf, 6, 0);
+static void mi_spaces(struct ui_out *uiout, int numspaces);
+static void mi_text(struct ui_out *uiout, const char *string);
+static void mi_text_fmt(struct ui_out *uiout, const char *format,
+                        va_list args);
+static void mi_message(struct ui_out *uiout, int verbosity,
+                       const char *format, va_list args)
      ATTR_FORMAT (printf, 3, 0);
-static void mi_wrap_hint (struct ui_out *uiout, const char *identstring);
-static void mi_flush (struct ui_out *uiout);
-static void mi_notify_begin (struct ui_out *uiout, char *class);
-static void mi_notify_end (struct ui_out *uiout);
+static void mi_wrap_hint(struct ui_out *uiout, const char *identstring);
+static void mi_flush(struct ui_out *uiout);
+static void mi_notify_begin(struct ui_out *uiout, char *class);
+static void mi_notify_end(struct ui_out *uiout);
 
 /* This is the MI ui-out implementation functions vector */
 
@@ -268,74 +269,76 @@ mi_field_string (struct ui_out *uiout,
   fprintf_unfiltered (data->buffer, "\"");
 }
 
-/* This is the only field function that does not align */
-
+/* This is the only field function that does not align: */
 void
-mi_field_fmt (struct ui_out *uiout, int fldno,
-	      int width, enum ui_align align,
-	      const char *fldname,
-	      const char *format,
-	      va_list args)
+mi_field_fmt(struct ui_out *uiout, int fldno, int width,
+             enum ui_align align, const char *fldname, const char *format,
+	     va_list args)
 {
-  mi_out_data *data = ui_out_data (uiout);
+  mi_out_data *data = ui_out_data(uiout);
   if (data->suppress_output)
     return;
-  field_separator (uiout);
+  field_separator(uiout);
   if (fldname)
-    fprintf_unfiltered (data->buffer, "%s=\"", fldname);
+    fprintf_unfiltered(data->buffer, "%s=\"", fldname);
   else
-    fputs_unfiltered ("\"", data->buffer);
-  vfprintf_unfiltered (data->buffer, format, args);
-  fputs_unfiltered ("\"", data->buffer);
+    fputs_unfiltered("\"", data->buffer);
+  vfprintf_unfiltered(data->buffer, format, args);
+  fputs_unfiltered("\"", data->buffer);
 }
 
 void
-mi_spaces (struct ui_out *uiout, int numspaces)
+mi_spaces(struct ui_out *uiout, int numspaces)
 {
+  return;
 }
 
 void
-mi_text (struct ui_out *uiout, const char *string)
+mi_text(struct ui_out *uiout, const char *string)
 {
+  return;
 }
 
 void
-mi_text_fmt (struct ui_out *uiout, const char *format, va_list args)
+mi_text_fmt(struct ui_out *uiout, const char *format, va_list args)
 {
+  return;
 }
 
 void
-mi_message (struct ui_out *uiout, int verbosity, const char *format, va_list args)
+mi_message(struct ui_out *uiout, int verbosity, const char *format,
+           va_list args)
 {
+  return;
 }
 
 void
-mi_wrap_hint (struct ui_out *uiout, const char *identstring)
+mi_wrap_hint(struct ui_out *uiout, const char *identstring)
 {
-  wrap_here (identstring);
+  wrap_here((char *)identstring);
 }
 
 void
 mi_flush (struct ui_out *uiout)
 {
-  mi_out_data *data = ui_out_data (uiout);
-  gdb_flush (data->buffer);
+  mi_out_data *data = ui_out_data(uiout);
+  gdb_flush(data->buffer);
 }
 
 static struct ui_file *notify_buffer;
 static struct ui_out_data notify_suspended_data;
 static int notify_suspended = 0;
 
-static void 
-mi_notify_begin (struct ui_out *uiout, char *class)
+static void
+mi_notify_begin(struct ui_out *uiout, char *class)
 {
-  struct ui_out_data *data = ui_out_data (uiout);
+  struct ui_out_data *data = ui_out_data(uiout);
   if (notify_buffer != NULL)
     {
       /* This should not happen, but try to recover... */
       if (notify_suspended)
         {
-          ui_file_delete (notify_buffer);
+          ui_file_delete(notify_buffer);
           notify_buffer = NULL;
           *data = notify_suspended_data;
           notify_suspended = 0;
@@ -343,7 +346,7 @@ mi_notify_begin (struct ui_out *uiout, char *class)
       error ("Called to start an mi notify with a notify already started.");
       return;
     }
-    
+
   notify_suspended = 1;
   notify_suspended_data = *data;
   notify_buffer = mem_fileopen();
@@ -353,12 +356,12 @@ mi_notify_begin (struct ui_out *uiout, char *class)
   fprintf_unfiltered (data->buffer, "=%s", class);
 }
 
-static void 
+static void
 mi_notify_end (struct ui_out *uiout)
 {
   struct ui_out_data *data = ui_out_data (uiout);
   mi_out_put (uiout, raw_stdout);
-  fputs_unfiltered ("\n", raw_stdout);  
+  fputs_unfiltered ("\n", raw_stdout);
   gdb_flush (raw_stdout);
 
   ui_file_delete (data->buffer);

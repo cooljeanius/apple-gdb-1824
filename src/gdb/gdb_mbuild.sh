@@ -46,6 +46,8 @@ cat <<NOTYET
 NOTYET
 }
 
+# 'these quotation marks are mis-balanced to fix the syntax highlighting"
+
 ### COMMAND LINE OPTIONS
 
 makejobs=
@@ -262,7 +264,7 @@ do
 	trap "exit 1"  1 2 15
     fi
     fail "configure failed" ! -r Makefile
- 
+
     # Build, if not built.
 
     if test ! -x gdb/gdb -a ! -x gdb/gdb.exe
@@ -276,7 +278,7 @@ do
 	) 2>&1 | log 1 Build.log
     fi
     fail "compile failed" ! -x gdb/gdb -a ! -x gdb/gdb.exe
- 
+
     # Check that the built GDB can at least print it's architecture.
 
     echo ... run ${target}

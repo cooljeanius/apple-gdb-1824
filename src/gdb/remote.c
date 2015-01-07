@@ -6282,7 +6282,7 @@ remote_macosx_get_all_image_infos_addr(void)
 
 /* APPLE LOCAL Implementation of remote_create_inferior and remote_attach.  */
 static void
-remote_macosx_complete_create_or_attach (int from_tty)
+remote_macosx_complete_create_or_attach(int from_tty)
 {
   struct remote_state *rs = get_remote_state ();
 
@@ -6532,11 +6532,11 @@ remote_macosx_create_inferior(char *exec_file, char *allargs, char **env, int fr
 }
 
 void
-remote_macosx_attach (char *args, int from_tty)
+remote_macosx_attach(char *args, int from_tty)
 {
 #if 0
   if (exec_bfd == NULL)
-    error (_("an executable must be specified before attaching to a remote-macosx target"));
+    error(_("an executable must be specified before attaching to a remote-macosx target"));
 #endif /* 0 */
   struct remote_state *rs = get_remote_state();
   char *buf = (char *)alloca(rs->remote_packet_size);

@@ -1,4 +1,4 @@
-/* MI Command Set - varobj commands.
+/* mi-cmd-var.c: MI Command Set - varobj commands.
 
    Copyright 2000, 2002, 2004, 2005 Free Software Foundation, Inc.
 
@@ -45,24 +45,25 @@ const char mi_all_values[] = "--all-values";
 extern int varobjdebug;		/* defined in varobj.c */
 
 /* This is a useful function for reporting the creation of a varobj in
-   a standard way.  */
-void mi_report_var_creation (struct ui_out *uiout, struct varobj *var, int is_root);
+ * a standard way: */
+void mi_report_var_creation(struct ui_out *uiout, struct varobj *var, int is_root);
 
-static char *typecode_as_string (struct varobj* var);
+static char *typecode_as_string(struct varobj* var);
 
 static struct ui_out *tmp_miout = NULL;
 
-static void prepare_tmp_mi_out (void);
+static void prepare_tmp_mi_out(void);
 
 static int mi_show_protections = 1;
 
-static int varobj_update_one (struct varobj *var,
-			      enum print_values print_values);
+static int varobj_update_one(struct varobj *var,
+                             enum print_values print_values);
 
-/* VAROBJ operations */
+extern void _initialize_mi_cmd_var(void);
 
+/* VAROBJ operations: */
 enum mi_cmd_result
-mi_cmd_var_create (char *command, char **argv, int argc)
+mi_cmd_var_create(char *command, char **argv, int argc)
 {
   CORE_ADDR frameaddr = 0;
   struct varobj *var;
@@ -74,7 +75,7 @@ mi_cmd_var_create (char *command, char **argv, int argc)
   struct cleanup *mi_out_cleanup;
   /* APPLE LOCAL Disable breakpoints while updating data formatters.  */
   struct cleanup *bp_cleanup;
-  enum varobj_type var_type = USE_SELECTED_FRAME;
+  volatile enum varobj_type var_type = USE_SELECTED_FRAME;
 
   if (argc != 3)
     {
@@ -110,12 +111,12 @@ mi_cmd_var_create (char *command, char **argv, int argc)
     var_type = USE_SELECTED_FRAME;
   else if (frame[0] == '+')
     {
-      /* The '+' indicates the variable is to be created by associating it with 
-         a block which can be done by address (+0x11223300) or by file:line 
+      /* The '+' indicates the variable is to be created by associating it with
+         a block which can be done by address (+0x11223300) or by file:line
          (+foo.c:12).  */
       char *block_addr = frame + 1;
       volatile struct gdb_exception except;
-      
+
       /* Check for hex digits only in the block address string.  */
       if (strspn (block_addr, "0x123456789abcdefABCDEF") == strlen (block_addr))
 	{
@@ -138,7 +139,7 @@ mi_cmd_var_create (char *command, char **argv, int argc)
 	  /* We have characters other than hex digits in the block address
 	     description so it must be a "file.ext:line" format.  */
 	  char *colon = strrchr (block_addr, ':');
-	  
+
 	  if (colon)
 	    {
 	      struct symtabs_and_lines sals = { NULL, 0 };
@@ -147,29 +148,32 @@ mi_cmd_var_create (char *command, char **argv, int argc)
 	      TRY_CATCH (except, RETURN_MASK_ALL)
 		{
 		  /* The variable 's' will be advanced by decode_line_1.  */
-		  char *s = block_addr; 
+		  char *s = block_addr;
 		  /* APPLE LOCAL begin return multiple symbols  */
-		  sals = decode_line_1 (&s, 1, (struct symtab *) NULL, 0, NULL, 
+		  sals = decode_line_1 (&s, 1, (struct symtab *) NULL, 0, NULL,
 					NULL, 0);
 		  /* APPLE LOCAL end return multiple symbols  */
 		}
 
 	      if (except.reason >= 0 && sals.nelts >= 1)
 		{
-		  old_chain = make_cleanup (xfree, sals.sals);
-		  
-		  /* Default to global scope unless we find a better match.  */
-		  var_type = NO_FRAME_NEEDED;
-		  block = BLOCKVECTOR_BLOCK (BLOCKVECTOR (sals.sals[0].symtab), 
-						 GLOBAL_BLOCK);
+                  unsigned long line;
+                  char *line_number_str;
+                  struct frame_info *selected_frame;
+		  old_chain = make_cleanup(xfree, sals.sals);
 
-		  unsigned long line = 0;
-		  char *line_number_str = colon + 1;
-		  if (strlen (line_number_str) > 0)
-		      line = strtoul (line_number_str, NULL, 0);
-		
-		  /* Get the currently selected frame for reference.  */
-		  struct frame_info *selected_frame = get_selected_frame (NULL);
+		  /* Default to global scope unless we find a better match: */
+		  var_type = NO_FRAME_NEEDED;
+		  block = BLOCKVECTOR_BLOCK(BLOCKVECTOR(sals.sals[0].symtab),
+                                            GLOBAL_BLOCK);
+
+		  line = 0UL;
+		  line_number_str = (colon + 1);
+		  if (strlen(line_number_str) > 0)
+		      line = strtoul(line_number_str, NULL, 0);
+
+		  /* Get the currently selected frame for reference: */
+		  selected_frame = get_selected_frame(NULL);
 		  if (selected_frame)
 		    {
 		      unsigned i;
@@ -181,19 +185,19 @@ mi_cmd_var_create (char *command, char **argv, int argc)
 			func_sym = get_frame_function (selected_frame);
 		      /* APPLE LOCAL end radar 6545149  */
 		      if (func_sym)
-			/* Iterate through all symtab_and_line structures 
-			   returned and find the one that has the same  
+			/* Iterate through all symtab_and_line structures
+			   returned and find the one that has the same
 			   function symbol as our frame.  */
 			for (i = 0; i < sals.nelts; i++)
 			  {
-			    struct symbol *sal_sym = 
-			      find_pc_sect_function (sals.sals[i].pc, 
+			    struct symbol *sal_sym =
+			      find_pc_sect_function (sals.sals[i].pc,
 						     sals.sals[i].section);
 
 			    if (func_sym == sal_sym)
 			      {
 				/* APPLE LOCAL begin radar 6534195  */
-				if (get_frame_type (selected_frame) == 
+				if (get_frame_type (selected_frame) ==
 				                                INLINED_FRAME
 				    && sals.sals[i].line == line
 				    && func_sym_has_inlining (func_sym,
@@ -205,18 +209,18 @@ mi_cmd_var_create (char *command, char **argv, int argc)
 				    break;
 				  }
 				/* If the requested line is less than the line
-				   found in the matching symtab_and_line 
-				   struct then we must use a global or static 
-				   as the scope since it doesn't fall within  
-				   the symtab_and_line struct that was 
+				   found in the matching symtab_and_line
+				   struct then we must use a global or static
+				   as the scope since it doesn't fall within
+				   the symtab_and_line struct that was
 				   returned.  */
 				else if (line && line < sal_sym->line)
 				/* APPLE LOCAL end radar 6534195  */
 				  {
 				    /* Use a global scope.  */
 				    var_type = NO_FRAME_NEEDED;
-				    block = BLOCKVECTOR_BLOCK 
-					      (BLOCKVECTOR (sals.sals[i].symtab), 
+				    block = BLOCKVECTOR_BLOCK
+					      (BLOCKVECTOR (sals.sals[i].symtab),
 					       GLOBAL_BLOCK);
 				  }
 				else
@@ -228,14 +232,14 @@ mi_cmd_var_create (char *command, char **argv, int argc)
 				  }
 			      }
 			  }
-		    }		    
+		    }
 		}
 	      else
 		{
 		  error ("mi_cmd_var_create: invalid file and line in block "
 			 "expression: \"%s\"", frame);
 		}
-		
+
 	      if (old_chain)
 	       do_cleanups (old_chain);
 	    }
@@ -251,12 +255,12 @@ mi_cmd_var_create (char *command, char **argv, int argc)
       var_type = USE_SPECIFIED_FRAME;
       frameaddr = string_to_core_addr (frame);
     }
-  
+
   if (varobjdebug)
     fprintf_unfiltered (gdb_stdlog,
 			"Name=\"%s\", Frame=\"%s\" (0x%s), Expression=\"%s\"\n",
 			name, frame, paddr (frameaddr), expr);
-  
+
   prepare_tmp_mi_out ();
   mi_out_cleanup = make_cleanup_restore_uiout (uiout);
   uiout = tmp_miout;
@@ -265,7 +269,7 @@ mi_cmd_var_create (char *command, char **argv, int argc)
 
   if (var == NULL)
     error ("mi_cmd_var_create: unable to create variable object");
-  
+
   mi_report_var_creation (uiout, var, 1);
 
   /* APPLE LOCAL Disable breakpoints while updating data formatters.  */
@@ -279,14 +283,14 @@ mi_cmd_var_create (char *command, char **argv, int argc)
 
 void
 mi_report_var_creation (struct ui_out *uiout, struct varobj *var, int is_root)
-{  
+{
   char *type;
   char *resolved_type_string;
 
   if (var == NULL)
     {
       ui_out_field_skip (uiout, "name");
-      
+
       /* For child variables, we print out the expression.  Put it here because
 	 that's how it is in the testsuite! */
       if (!is_root)
@@ -353,9 +357,9 @@ mi_report_var_creation (struct ui_out *uiout, struct varobj *var, int is_root)
   /* How could a newly created variable be out of scope, you ask?
      we want to be able to create varobj's for all the variables in
      a function, including those in sub-blocks in the function.  However,
-     many of these may not yet be in scope... 
+     many of these may not yet be in scope...
      Note, this is only reported for root variables.  */
-  
+
   if (is_root)
     {
       CORE_ADDR block_start, block_end;
@@ -463,7 +467,7 @@ typecode_as_string (struct varobj *var)
       break;
     case TYPE_CODE_TEMPLATE_ARG:
       type_code_as_str = "TEMPLATE_ARG";
-      break;      
+      break;
     default:
       type_code_as_str = "UNKNOWN";
     }
@@ -661,7 +665,7 @@ mi_print_value_p (struct type *type, enum print_values print_values)
 enum mi_cmd_result
 mi_cmd_var_list_children (char *command, char **argv, int argc)
 {
-  struct varobj *var = NULL; /* APPLE LOCAL: init to NULL for err detection */ 
+  struct varobj *var = NULL; /* APPLE LOCAL: init to NULL for err detection */
   struct varobj **childlist;
   struct varobj **cc;
   struct cleanup *cleanup_children;
@@ -695,7 +699,7 @@ mi_cmd_var_list_children (char *command, char **argv, int argc)
     }
 
   /* APPLE LOCAL: In our impl, arguments are reversed.  We use
-     'varobj-handle show-value', at the FSF they use 
+     'varobj-handle show-value', at the FSF they use
      'show-value varobj-handle'.  */
 
   if (argc == 0)
@@ -728,9 +732,9 @@ mi_cmd_var_list_children (char *command, char **argv, int argc)
 
   /* APPLE LOCAL: This is dumb, but we can signal the type of
      printing by anyone of one of these methods:
-       A command line option-type thing, 
+       A command line option-type thing,
        a numerial at the start, or
-       a numerial at the end.  
+       a numerial at the end.
      e.g. these are all valid:
       var-list-children --print-values var1
       var-list-children 1 var1
@@ -793,7 +797,7 @@ mi_cmd_var_list_children (char *command, char **argv, int argc)
 	    }
 	  num_fake_childs_children += varobj_get_num_children (*cc) - 1;
 	  saw_fake_child = 1;
-	} 
+	}
       cc++;
     }
 
@@ -802,7 +806,7 @@ mi_cmd_var_list_children (char *command, char **argv, int argc)
 
   if (!mi_show_fake_children)
     ui_out_field_int (uiout, "numchild", numchild + num_fake_childs_children);
-  else 
+  else
     ui_out_field_int (uiout, "numchild", numchild);
 
   cc = childlist;
@@ -821,7 +825,7 @@ mi_cmd_var_list_children (char *command, char **argv, int argc)
     {
       struct cleanup *cleanup_child;
 
-      if (varobj_is_fake_child (*cc) && !mi_show_fake_children) 
+      if (varobj_is_fake_child (*cc) && !mi_show_fake_children)
 	{
 	  struct varobj **fake_childlist, **cc2;
 	  int num_fake;
@@ -830,12 +834,12 @@ mi_cmd_var_list_children (char *command, char **argv, int argc)
 	  if (num_fake > 0)
 	    {
 	      cc2 = fake_childlist;
-	      while (*cc2 != NULL) 
+	      while (*cc2 != NULL)
 		{
 		  cleanup_child = make_cleanup_ui_out_tuple_begin_end (uiout, "child");
-		  
+
 		  mi_report_var_creation (uiout, *cc2, 0);
-		  
+
 		  if (print_values)
 		    ui_out_field_string (uiout, "value", varobj_get_value (*cc2));
 		  do_cleanups (cleanup_child);
@@ -843,13 +847,13 @@ mi_cmd_var_list_children (char *command, char **argv, int argc)
 		}
 	      xfree (fake_childlist);
 	    }
-	} 
+	}
       else
 	{
 	  cleanup_child = make_cleanup_ui_out_tuple_begin_end (uiout, "child");
-	  
+
 	  mi_report_var_creation (uiout, *cc, 0);
-	  
+
 	  if (print_values)
 	    ui_out_field_string (uiout, "value", varobj_get_value (*cc));
 	  do_cleanups (cleanup_child);
@@ -901,7 +905,7 @@ mi_cmd_var_info_path_expression (char *command, char **argv, int argc)
   var = varobj_get_handle (argv[0]);
   if (var == NULL)
     error ("mi_cmd_var_info_path_expression: Variable object not found");
-  
+
   path_expr = varobj_get_path_expr (var);
 
   ui_out_field_string (uiout, "path_expr", path_expr);
@@ -915,7 +919,7 @@ mi_cmd_var_info_block (char *command, char **argv, int argc)
   struct varobj *var;
   CORE_ADDR block_start, block_end;
   struct symtab_and_line sal;
-  
+
   if (argc != 1)
     error (_("mi_cmd_var_info_type: Usage: NAME."));
 
@@ -923,7 +927,7 @@ mi_cmd_var_info_block (char *command, char **argv, int argc)
   var = varobj_get_handle (argv[0]);
   if (var == NULL)
     error (_("mi_cmd_var_info_type: Variable object not found"));
-  
+
   varobj_get_valid_block (var, &block_start, &block_end);
 
   sal = find_pc_line (block_start, 0);
@@ -937,7 +941,7 @@ mi_cmd_var_info_block (char *command, char **argv, int argc)
     ui_out_field_int (uiout, "block_end_line", sal.line);
 
   ui_out_field_core_addr (uiout, "block_end_addr", block_end);
-  
+
   return MI_CMD_DONE;
 }
 
@@ -1019,7 +1023,7 @@ mi_cmd_var_evaluate_expression (char *command, char **argv, int argc)
   bp_cleanup = make_cleanup_enable_disable_bpts_during_operation ();
 
   /* Get varobj handle, if a valid var obj name was specified */
-  
+
   old_chain = make_cleanup (null_cleanup, NULL);
   if (unwinding_was_requested)
     make_cleanup_set_restore_unwind_on_signal (1);
@@ -1065,7 +1069,7 @@ mi_cmd_var_assign (char *command, char **argv, int argc)
 }
 
 void
-prepare_tmp_mi_out ()
+prepare_tmp_mi_out(void)
 {
   /* Make sure the tmp_mi_out that we use for suppressing error
      output from varobj_update is up to date. */
@@ -1148,7 +1152,7 @@ mi_cmd_var_update (char *command, char **argv, int argc)
 	  if (var == NULL)
 	    error ("mi_cmd_var_update: Variable object \"%s\" not found.",
 		   argv[i]);
-	  
+
 	  varobj_update_one (var, print_values);
 	}
       do_cleanups (cleanup);
@@ -1176,10 +1180,10 @@ varobj_update_one (struct varobj *var, enum print_values print_values)
 
   /* nc == 0 means that nothing has changed.
      nc == -1 means that an error occured in updating the variable.
-     nc == -2 means the variable has changed type. 
-     nc == -3 means that the variable has gone out of scope. 
+     nc == -2 means the variable has changed type.
+     nc == -3 means that the variable has gone out of scope.
      nc == -4 means that the variable has come in to scope.  */
-     
+
   if (nc == 0)
     return 1;
   else if (nc == -1 || nc == -3)
@@ -1239,13 +1243,13 @@ varobj_update_one (struct varobj *var, enum print_values print_values)
 
       typecode = typecode_as_string (var);
       ui_out_field_string (uiout, "new_typecode", typecode);
-      ui_out_field_int (uiout, "new_num_children", 
+      ui_out_field_int (uiout, "new_num_children",
 			   varobj_get_num_children(var));
       do_cleanups (cleanup);
     }
   else
     {
-      
+
       struct varobj *var;
       enum varobj_type_change type_changed;
       var = varobj_changelist_pop (changelist, &type_changed);
@@ -1263,14 +1267,14 @@ varobj_update_one (struct varobj *var, enum print_values print_values)
 	  else
 	    {
 	      ui_out_field_string (uiout, "type_changed", "true");
-	      ui_out_field_string (uiout, "new_dynamic_type", 
+	      ui_out_field_string (uiout, "new_dynamic_type",
 				   varobj_get_dynamic_type (var));
-	      ui_out_field_string (uiout, "new_resolved_type", 
+	      ui_out_field_string (uiout, "new_resolved_type",
 				   varobj_get_resolved_type (var));
-	      ui_out_field_int (uiout, "new_num_children", 
+	      ui_out_field_int (uiout, "new_num_children",
 				varobj_get_num_children(var));
 	    }
-	    
+
 	  do_cleanups (cleanup);
 	  var = varobj_changelist_pop (changelist, &type_changed);
 	}
@@ -1280,14 +1284,16 @@ varobj_update_one (struct varobj *var, enum print_values print_values)
   return 1;
 }
 
-/* APPLE LOCAL: Add a set variable for suppress or show protections.  */
+/* APPLE LOCAL: Add a set variable for suppress or show protections: */
 void
-_initialize_mi_cmd_var (void)
+_initialize_mi_cmd_var(void)
 {
-  add_setshow_boolean_cmd ("mi-show-protections", class_obscure, &mi_show_protections,
-			   _("Set whether to show \"public\", \"protected\" and \"private\" nodes in variable objects."),
-			   _("Show whether to show \"public\", \"protected\" and \"private\" nodes in variable objects."),
-			   NULL,
-			   NULL, NULL, 
-			   &setlist, &showlist);
+  add_setshow_boolean_cmd("mi-show-protections", class_obscure, &mi_show_protections,
+			  _("Set whether to show \"public\", \"protected\" and \"private\" nodes in variable objects."),
+			  _("Show whether to show \"public\", \"protected\" and \"private\" nodes in variable objects."),
+			  NULL,
+			  NULL, NULL,
+			  &setlist, &showlist);
 }
+
+/* EOF */

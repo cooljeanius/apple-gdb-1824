@@ -1,7 +1,7 @@
-/* FLEX lexer for Ada expressions, for GDB.
-   Copyright (C) 1994, 1997, 1998, 2000, 2001, 2002, 2003
-   Free Software Foundation, Inc.
-
+/* ada-lex.l: FLEX lexer for Ada expressions, for GDB.
+ * Copyright (C) 1994, 1997, 1998, 2000, 2001, 2002, 2003
+ * Free Software Foundation, Inc.  */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -43,24 +43,26 @@ POSEXP  (e"+"?{NUM10})
 
 %{
 
+/* `comment in old quoting style to fix syntax highlighting' // */
+
 #define NUMERAL_WIDTH 256
 #define LONGEST_SIGN ((ULONGEST) 1 << (sizeof(LONGEST) * HOST_CHAR_BIT - 1))
 
 /* Temporary staging for numeric literals.  */
 static char numbuf[NUMERAL_WIDTH];
- static void canonicalizeNumeral (char *s1, const char *);
-static int processInt (const char *, const char *, const char *);
-static int processReal (const char *);
-static int processId (const char *, int);
-static int processAttribute (const char *);
-static int find_dot_all (const char *);
+static void canonicalizeNumeral(char *s1, const char *);
+static int processInt(const char *, const char *, const char *);
+static int processReal(const char *);
+static int processId(const char *, int);
+static int processAttribute(const char *);
+static int find_dot_all(const char *);
 
 #undef YY_DECL
 #define YY_DECL static int yylex ( void )
 
 #undef YY_INPUT
 #define YY_INPUT(BUF, RESULT, MAX_SIZE) \
-    if ( *lexptr == '\000' ) \
+    if (*lexptr == '\000') \
       (RESULT) = YY_NULL; \
     else \
       { \
@@ -74,13 +76,17 @@ static int tempbufsize = 0;
 static int tempbuf_len;
 static struct block *left_block_context;
 
-static void resize_tempbuf (unsigned int);
+extern void lexer_init(FILE *inp);
 
-static void block_lookup (char *, char *);
+static void resize_tempbuf(unsigned int);
 
-static int name_lookup (char *, char *, int *, int);
+extern ULONGEST strtoulst(const char *num, const char **trailer, int base);
 
-static int find_dot_all (const char *);
+static void block_lookup(char *, char *);
+
+static int name_lookup(char *, char *, int *, int);
+
+static int find_dot_all(const char *);
 
 %}
 
@@ -252,21 +258,22 @@ xor		{ return XOR; }
 "."{WHITE}*all  { return DOT_ALL; }
 
 "."{WHITE}*{ID} {
-	 	  processId (yytext+1, yyleng-1);
+	 	  processId(yytext + 1, yyleng - 1);
 	          return DOT_ID;
 		}
 
 {ID}({WHITE}*"."{WHITE}*({ID}|\"{OPER}\"))*(" "*"'")?  {
-                  int all_posn = find_dot_all (yytext);
+        /* `comment in old quoting style to fix syntax highlighting' // */
+                  int all_posn = find_dot_all(yytext);
 		  int token_type, segments, k;
 		  int quote_follows;
 
-                  if (all_posn == -1 && yytext[yyleng-1] == '\'')
+                  if ((all_posn == -1) && (yytext[yyleng - 1] == '\''))
 		    {
 		      quote_follows = 1;
 		      do {
-			yyless (yyleng-1);
-		      } while (yytext[yyleng-1] == ' ');
+			yyless(yyleng - 1);
+		      } while (yytext[yyleng - 1] == ' ');
 		    }
 		  else
 		    quote_follows = 0;
@@ -275,7 +282,7 @@ xor		{ return XOR; }
 		    yyless (all_posn);
                   processId(yytext, yyleng);
                   segments = name_lookup (ada_encode (yylval.ssym.stoken.ptr),
-		                          yylval.ssym.stoken.ptr, 
+		                          yylval.ssym.stoken.ptr,
                                           &token_type,
 					  MAX_RENAMING_CHAIN_LENGTH);
 		  left_block_context = NULL;
@@ -297,12 +304,14 @@ xor		{ return XOR; }
 
 
 "'"[^']+"'"{WHITE}*:: {
-                  processId(yytext, yyleng-2);
-                  block_lookup (yylval.ssym.stoken.ptr, yylval.ssym.stoken.ptr);
+    /* ``comment in odd quoting style to fix syntax highlighting" // */
+                  processId(yytext, yyleng - 2);
+                  block_lookup(yylval.ssym.stoken.ptr, yylval.ssym.stoken.ptr);
                   return BLOCKNAME;
 		}
 
 {ID}({WHITE}*"."{WHITE}*({ID}|\"{OPER}\"))*{WHITE}*::  {
+      /* ``comment in odd quoting style to fix syntax highlighting" // */
                   processId(yytext, yyleng-2);
                   block_lookup (ada_encode (yylval.ssym.stoken.ptr),
                                 yylval.ssym.stoken.ptr);
@@ -329,27 +338,25 @@ xor		{ return XOR; }
 
 /* Initialize the lexer for processing new expression */
 void
-lexer_init (FILE *inp)
+lexer_init(FILE *inp)
 {
   BEGIN INITIAL;
-  yyrestart (inp);
+  yyrestart(inp);
 }
 
 
-/* Make sure that tempbuf points at an array at least N characters long.  */
-
+/* Make sure that tempbuf points at an array at least N characters long: */
 static void
-resize_tempbuf (unsigned int n)
+resize_tempbuf(unsigned int n)
 {
   if (tempbufsize < n)
     {
-      tempbufsize = (n+63) & ~63;
-      tempbuf = xrealloc (tempbuf, tempbufsize);
+      tempbufsize = ((n + 63) & ~63);
+      tempbuf = xrealloc(tempbuf, tempbufsize);
     }
 }
 
-/* Copy S2 to S1, removing all underscores, and downcasing all letters.  */
-
+/* Copy S2 to S1, removing all underscores, and downcasing all letters: */
 static void
 canonicalizeNumeral (char *s1, const char *s2)
 {
@@ -367,31 +374,30 @@ canonicalizeNumeral (char *s1, const char *s2)
 #define HIGH_BYTE_POSN ((sizeof (ULONGEST) - 1) * HOST_CHAR_BIT)
 
 /* True (non-zero) iff DIGIT is a valid digit in radix BASE,
-   where 2 <= BASE <= 16.  */
-
+ * where 2 <= BASE <= 16.  */
 static int
-is_digit_in_base (unsigned char digit, int base)
+is_digit_in_base(unsigned char digit, int base)
 {
-  if (!isxdigit (digit))
+  if (!isxdigit(digit))
     return 0;
   if (base <= 10)
-    return (isdigit (digit) && digit < base + '0');
+    return (isdigit(digit) && (digit < (base + '0')));
   else
-    return (isdigit (digit) || tolower (digit) < base - 10 + 'a');
+    return (isdigit(digit) || (tolower(digit) < (base - 10 + 'a')));
 }
 
 static int
-digit_to_int (unsigned char c)
+digit_to_int(unsigned char c)
 {
-  if (isdigit (c))
-    return c - '0';
+  if (isdigit(c))
+    return (c - '0');
   else
-    return tolower (c) - 'a' + 10;
+    return (tolower(c) - 'a' + 10);
 }
 
-/* As for strtoul, but for ULONGEST results.  */
+/* As for strtoul, but for ULONGEST results: */
 ULONGEST
-strtoulst (const char *num, const char **trailer, int base)
+strtoulst(const char *num, const char **trailer, int base)
 {
   unsigned int high_part;
   ULONGEST result;
@@ -494,49 +500,49 @@ processInt (const char *base0, const char *num0, const char *exp0)
       return INT;
     }
   else
-    yylval.typed_val.type = type_long_long ();
+    yylval.typed_val.type = type_long_long();
 
-  yylval.typed_val.val = (LONGEST) result;
+  yylval.typed_val.val = (LONGEST)result;
   return INT;
 }
 
-#if defined (PRINTF_HAS_LONG_DOUBLE)
-#  undef PRINTF_HAS_LONG_DOUBLE
-#  define PRINTF_HAS_LONG_DOUBLE 1
+#if defined(PRINTF_HAS_LONG_DOUBLE)
+# undef PRINTF_HAS_LONG_DOUBLE
+# define PRINTF_HAS_LONG_DOUBLE 1
 #else
-#  define PRINTF_HAS_LONG_DOUBLE 0
-#endif
+# define PRINTF_HAS_LONG_DOUBLE 0
+#endif /* PRINTF_HAS_LONG_DOUBLE */
 
 static int
 processReal (const char *num0)
 {
 #if defined (PRINTF_HAS_LONG_DOUBLE)
-  if (sizeof (DOUBLEST) > sizeof (double))
-    sscanf (num0, "%Lg", &yylval.typed_val_float.dval);
+  if (sizeof(DOUBLEST) > sizeof(double))
+    sscanf(num0, "%Lg", &yylval.typed_val_float.dval);
   else
-#endif
+#endif /* PRINTF_HAS_LONG_DOUBLE */
     {
       double temp;
-      sscanf (num0, "%lg", &temp);
+      sscanf(num0, "%lg", &temp);
       yylval.typed_val_float.dval = temp;
     }
 
-  yylval.typed_val_float.type = type_float ();
-  if (sizeof(DOUBLEST) >= TARGET_DOUBLE_BIT / TARGET_CHAR_BIT)
-    yylval.typed_val_float.type = type_double ();
-  if (sizeof(DOUBLEST) >= TARGET_LONG_DOUBLE_BIT / TARGET_CHAR_BIT)
-    yylval.typed_val_float.type = type_long_double ();
+  yylval.typed_val_float.type = type_float();
+  if (sizeof(DOUBLEST) >= (TARGET_DOUBLE_BIT / TARGET_CHAR_BIT))
+    yylval.typed_val_float.type = type_double();
+  if (sizeof(DOUBLEST) >= (TARGET_LONG_DOUBLE_BIT / TARGET_CHAR_BIT))
+    yylval.typed_val_float.type = type_long_double();
 
   return FLOAT;
 }
 
 static int
-processId (const char *name0, int len)
+processId(const char *name0, int len)
 {
-  char *name = obstack_alloc (&temp_parse_space, len + 11);
+  char *name = obstack_alloc(&temp_parse_space, len + 11);
   int i0, i;
 
-  while (len > 0 && isspace (name0[len-1]))
+  while ((len > 0) && isspace(name0[len - 1]))
     len -= 1;
   i = i0 = 0;
   while (i0 < len)
@@ -584,16 +590,16 @@ processId (const char *name0, int len)
 }
 
 static void
-block_lookup (char *name, char *err_name)
+block_lookup(char *name, char *err_name)
 {
   struct ada_symbol_info *syms;
   int nsyms;
   struct symtab *symtab;
-  nsyms = ada_lookup_symbol_list (name, left_block_context,
-				  VAR_DOMAIN, &syms);
-  if (left_block_context == NULL &&
-      (nsyms == 0 || SYMBOL_CLASS (syms[0].sym) != LOC_BLOCK))
-    symtab = lookup_symtab (name);
+  nsyms = ada_lookup_symbol_list(name, left_block_context,
+                                 VAR_DOMAIN, &syms);
+  if ((left_block_context == NULL) &&
+      ((nsyms == 0) || (SYMBOL_CLASS(syms[0].sym) != LOC_BLOCK)))
+    symtab = lookup_symtab(name);
   else
     symtab = NULL;
 
@@ -623,21 +629,21 @@ block_lookup (char *name, char *err_name)
    name if it starts with "standard__".  Calls error if no
    matches are found, using ERR_NAME in any error message.  When
    exactly one symbol match is found, it is placed in yylval.  When
-   the symbol is a renaming, follow at most DEPTH steps to find the  
+   the symbol is a renaming, follow at most DEPTH steps to find the
    ultimate definition; cause error if depth exceeded.  */
 
 static int
-name_lookup (char *name0, char *err_name, int *token_type, int depth)
+name_lookup(char *name0, char *err_name, int *token_type, int depth)
 {
   struct ada_symbol_info *syms;
   struct type *type;
-  int len0 = strlen (name0);
-  char *name = obsavestring (name0, len0, &temp_parse_space);
+  int len0 = strlen(name0);
+  char *name = obsavestring(name0, len0, &temp_parse_space);
   int nsyms;
   int segments;
 
   if (depth <= 0)
-    error ("Could not find renamed symbol \"%s\"", err_name);
+    error("Could not find renamed symbol \"%s\"", err_name);
 
   yylval.ssym.stoken.ptr = name;
   yylval.ssym.stoken.length = strlen (name);
@@ -647,20 +653,19 @@ name_lookup (char *name0, char *err_name, int *token_type, int depth)
       int i, preferred_index;
 
       if (left_block_context == NULL)
-	nsyms = ada_lookup_symbol_list (name, expression_context_block,
-					VAR_DOMAIN, &syms);
+	nsyms = ada_lookup_symbol_list(name, expression_context_block,
+                                       VAR_DOMAIN, &syms);
       else
-	nsyms = ada_lookup_symbol_list (name, left_block_context,
-					VAR_DOMAIN, &syms);
+	nsyms = ada_lookup_symbol_list(name, left_block_context,
+                                       VAR_DOMAIN, &syms);
 
 
-      /* Check for a type renaming.  */
-
-      if (nsyms == 1 && !ada_is_object_renaming (syms[0].sym))
+      /* Check for a type renaming: */
+      if ((nsyms == 1) && !ada_is_object_renaming(syms[0].sym))
         {
           struct symbol *renaming_sym =
-            ada_find_renaming_symbol (SYMBOL_LINKAGE_NAME (syms[0].sym), 
-				      syms[0].block);
+            ada_find_renaming_symbol(SYMBOL_LINKAGE_NAME(syms[0].sym),
+                                     syms[0].block);
 
           if (renaming_sym != NULL)
             syms[0].sym = renaming_sym;
@@ -745,7 +750,7 @@ name_lookup (char *name0, char *err_name, int *token_type, int depth)
 	      /* First check to see if we have a regular definition of this
 		 type that just didn't happen to have been read yet.  */
 	      struct symbol *sym;
-	      char *expanded_name = 
+	      char *expanded_name =
 		(char *) alloca (strlen (name) + sizeof ("standard__"));
 	      strcpy (expanded_name, "standard__");
 	      strcat (expanded_name, name);
@@ -753,7 +758,7 @@ name_lookup (char *name0, char *err_name, int *token_type, int depth)
 				       VAR_DOMAIN, NULL, NULL);
 	      if (sym != NULL && SYMBOL_CLASS (sym) == LOC_TYPEDEF)
 		type = SYMBOL_TYPE (sym);
-					  
+
 	      yylval.tval = type;
 	      *token_type = TYPENAME;
 	      return 0;
@@ -780,7 +785,7 @@ name_lookup (char *name0, char *err_name, int *token_type, int depth)
 	    return segments;
 	  }
 
-	if (segments == 0 
+	if (segments == 0
 	    && strncmp (name, "standard__", sizeof ("standard__") - 1) == 0)
 	  error ("No definition of \"%s\" found.", err_name);
 
@@ -887,27 +892,26 @@ attributes[] = {
 };
 
 /* Return the syntactic code corresponding to the attribute name or
-   abbreviation STR.  */
-
+ * abbreviation STR: */
 static int
-processAttribute (const char *str)
+processAttribute(const char *str)
 {
   int i, k;
 
   for (i = 0; attributes[i].code != -1; i += 1)
-    if (strcasecmp (str, attributes[i].name) == 0)
+    if (strcasecmp(str, attributes[i].name) == 0)
       return attributes[i].code;
 
   for (i = 0, k = -1; attributes[i].code != -1; i += 1)
-    if (subseqMatch (str, attributes[i].name))
+    if (subseqMatch(str, attributes[i].name))
       {
 	if (k == -1)
 	  k = i;
 	else
-	  error ("ambiguous attribute name: `%s'", str);
+	  error("ambiguous attribute name: `%s'", str);
       }
   if (k == -1)
-    error ("unrecognized attribute: `%s'", str);
+    error("unrecognized attribute: `%s'", str);
 
   return attributes[k].code;
 }
@@ -918,9 +922,11 @@ yywrap(void)
   return 1;
 }
 
-/* Dummy definition to suppress warnings about unused static definitions. */
-typedef void (*dummy_function) ();
-dummy_function ada_flex_use[] = 
-{ 
-  (dummy_function) yyunput
+/* Dummy definition to suppress warnings about unused static definitions: */
+typedef void (*dummy_function)(void);
+dummy_function ada_flex_use[] =
+{
+  (dummy_function)yyunput
 };
+
+/* End of ada-lex.l */

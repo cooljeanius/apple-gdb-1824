@@ -799,7 +799,6 @@ MMALLOC_CFLAGS
 WARN_LDFLAGS
 WERROR_CFLAGS
 WARN_CFLAGS
-acl_cv_wl
 TARGET_SYSTEM_ROOT_DEFINE
 TARGET_SYSTEM_ROOT
 CONFIG_LDFLAGS
@@ -888,6 +887,7 @@ HAVE_INTTYPES_H
 HAVE_UNSIGNED_LONG_LONG_INT
 HAVE_LONG_LONG_INT
 EXTRA_DEFS
+UNIX03_UGH_CFLAGS
 LIBXML2_LIBS
 LIBXML2_INCLUDES
 LIBXML2_CONFIG
@@ -1009,6 +1009,8 @@ nls_cv_force_use_gnu_gettext
 USE_NLS
 ALLOCA
 RANLIB
+LD_ARCHFLAGS
+acl_cv_wl
 MACH_EXC_SERVER_PREFACE
 AM_BACKSLASH
 AM_DEFAULT_VERBOSITY
@@ -6248,7 +6250,7 @@ to "yes", and re-run configure.
 END
     as_fn_error $? "Your 'rm' program is bad, sorry." "$LINENO" 5
   fi
-fi
+fi  ## make sure this is in the right place:
 if test -x ${srcdir}/missing; then
   test -e missing
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether build environment is sane" >&5
@@ -6318,8 +6320,8 @@ fi
 
 rm -f conftest.file
 
+                ## should now have it...
 fi
-
 
 CONFIG_OBS=""
 CONFIG_DEPS=""
@@ -6348,7 +6350,7 @@ $as_echo_n "checking whether we can use 64 bit mach exceptions... " >&6; }
     MACH_EXC_SERVER_PREFACE=""
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: (disabled!) no" >&5
 $as_echo "(disabled!) no" >&6; }
-
+        ## TODO: come back to this after working on aarch64 support
     ;;
   *-apple-darwin* | *-apple-macosx*)
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether we can use 64 bit mach exceptions" >&5
@@ -6372,8 +6374,8 @@ $as_echo "#define HAVE_64_BIT_MACH_EXCEPTIONS 2" >>confdefs.h
       { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
     fi
-
-;;
+        ## might also want to use this elsewhere...
+    ;;
 esac
 
 case "${host}" in
@@ -6389,7 +6391,6 @@ _ACEOF
 fi
 
 done
-
     ac_fn_c_check_decl "$LINENO" "POSIX_SPAWN_SETEXEC" "ac_cv_have_decl_POSIX_SPAWN_SETEXEC" "$ac_includes_default"
 if test "x$ac_cv_have_decl_POSIX_SPAWN_SETEXEC" = xyes; then :
   ac_have_decl=1
@@ -6433,11 +6434,11 @@ $as_echo "#define USE_POSIX_SPAWN 1" >>confdefs.h
       # Check whether --enable-arch-for-exec was given.
 if test "${enable_arch_for_exec+set}" = set; then :
   enableval=$enable_arch_for_exec; case ${enableval} in
-           yes | no)
-             enable_arch_exec="${enableval}" ;;
-           *)
-             as_fn_error $? "bad val '${enableval}' to --disable-arch-for-exec" "$LINENO" 5
-             ;;
+          yes | no)
+            enable_arch_exec="${enableval}" ;;
+          *)
+          as_fn_error $? "bad val '${enableval}' to --disable-arch-for-exec" "$LINENO" 5
+            ;;
       	 esac
 else
   enable_arch_exec=yes
@@ -6446,7 +6447,7 @@ fi
       { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether we should use arch for exec" >&5
 $as_echo_n "checking whether we should use arch for exec... " >&6; }
       if test x"${enable_arch_exec}" = x"yes"; then
-        if test -r "/usr/bin/arch"; then
+        if test -r "/usr/bin/arch" && test -x "/usr/bin/arch"; then
 
 $as_echo "#define USE_ARCH_FOR_EXEC 1" >>confdefs.h
 
@@ -6500,7 +6501,7 @@ else
   gdb_cv_stack_logging_64=no
 fi
 rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
+    conftest$ac_exeext conftest.$ac_ext    ## corresponding define:
     if test "x${gdb_cv_stack_logging_64}" = "xyes"; then
 
 $as_echo "#define HAVE_64_BIT_STACK_LOGGING 1" >>confdefs.h
@@ -6543,7 +6544,7 @@ else
   gdb_cv_stack_logging_32=no
 fi
 rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
+    conftest$ac_exeext conftest.$ac_ext        ## corresponding define:
     	if test "x${gdb_cv_stack_logging_32}" = "xyes"; then
 
 $as_echo "#define HAVE_32_BIT_STACK_LOGGING 1" >>confdefs.h
@@ -6595,7 +6596,7 @@ else
   gdb_cv_task_set_state=no
 fi
 rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
+    conftest$ac_exeext conftest.$ac_ext    ## corresponding define:
     if test "x${gdb_cv_task_set_state}" = "xyes"; then
 
 $as_echo "#define HAVE_TASK_SET_STATE 1" >>confdefs.h
@@ -6621,7 +6622,7 @@ _ACEOF
 
 
 fi
-
+    ## maybe also try it with MACH_EXC_SERVER_PREFACE in front of it...
     ;;
 esac
 
@@ -6661,6 +6662,49 @@ else
   :
 fi
   ## might not actually be necessary, but whatever...
+fi
+
+if test "x${acl_cv_wl}" = "x"; then
+  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for linker flag to verify linked libraries have the correct architecture" >&5
+$as_echo_n "checking for linker flag to verify linked libraries have the correct architecture... " >&6; }
+pre_saved_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${acl_cv_wl}-arch_errors_fatal"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  LD_ARCHFLAGS="${acl_cv_wl}-arch_errors_fatal"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LDFLAGS="${pre_saved_LDFLAGS}"
+if test "x${LD_ARCHFLAGS}" != "x"; then
+  test -n "${LD_ARCHFLAGS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${LD_ARCHFLAGS}" >&5
+$as_echo "${LD_ARCHFLAGS}" >&6; }
+  if test "x${ERROR_ON_WARNING}" = "xyes"; then
+    if test "x${WARN_LDFLAGS}" != "x"; then
+      test -n "${WARN_LDFLAGS}" && WARN_LDFLAGS="${WARN_LDFLAGS} ${LD_ARCHFLAGS}"
+    else
+      test -z "${WARN_LDFLAGS}" && WARN_LDFLAGS="${LD_ARCHFLAGS}"
+    fi
+  fi
+    ## that should be all we need to do with them for now...
+else
+  test -z "${LD_ARCHFLAGS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: none" >&5
+$as_echo "none" >&6; }
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: done with first batch of APPLE_LOCAL checks" >&5
@@ -8181,6 +8225,8 @@ else
 
     unset ac_cv_lib_intl_main
     ## neither worked:
+    PRE_INTL_LDFLAGS="${LDFLAGS}"
+    LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lintl" >&5
 $as_echo_n "checking for main in -lintl... " >&6; }
 if ${ac_cv_lib_intl_main+:} false; then :
@@ -8219,6 +8265,8 @@ _ACEOF
   LIBS="-lintl $LIBS"
 
 fi
+    ## reset:
+    LDFLAGS="${PRE_INTL_LDFLAGS}"
 
 fi
 
@@ -9064,8 +9112,7 @@ fi
 $as_echo_n "checking programs... " >&6; }
 { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
 $as_echo " " >&6; }
-
-
+  ## automake has a better check for the proper archiver:
 if test -x `which automake`; then
   test -z "${AR}"
   if test -n "$ac_tool_prefix"; then
@@ -9242,8 +9289,10 @@ esac
 else
   test -z "${AR}"
   if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}ar", so it can be a program name with args.
-set dummy ${ac_tool_prefix}ar; ac_word=$2
+  for ac_prog in ar gar
+  do
+    # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
+set dummy $ac_tool_prefix$ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
 if ${ac_cv_prog_AR+:} false; then :
@@ -9259,7 +9308,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_AR="${ac_tool_prefix}ar"
+    ac_cv_prog_AR="$ac_tool_prefix$ac_prog"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -9279,11 +9328,15 @@ $as_echo "no" >&6; }
 fi
 
 
+    test -n "$AR" && break
+  done
 fi
-if test -z "$ac_cv_prog_AR"; then
+if test -z "$AR"; then
   ac_ct_AR=$AR
-  # Extract the first word of "ar", so it can be a program name with args.
-set dummy ar; ac_word=$2
+  for ac_prog in ar gar
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
 if ${ac_cv_prog_ac_ct_AR+:} false; then :
@@ -9299,7 +9352,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_ac_ct_AR="ar"
+    ac_cv_prog_ac_ct_AR="$ac_prog"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -9318,6 +9371,10 @@ else
 $as_echo "no" >&6; }
 fi
 
+
+  test -n "$ac_ct_AR" && break
+done
+
   if test "x$ac_ct_AR" = x; then
     AR=""
   else
@@ -9329,8 +9386,6 @@ ac_tool_warned=yes ;;
 esac
     AR=$ac_ct_AR
   fi
-else
-  AR="$ac_cv_prog_AR"
 fi
 
 fi
@@ -35025,6 +35080,8 @@ fi
 esac
 
 
+PRE_M_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lm" >&5
 $as_echo_n "checking for main in -lm... " >&6; }
 if ${ac_cv_lib_m_main+:} false; then :
@@ -35063,7 +35120,8 @@ _ACEOF
   LIBS="-lm $LIBS"
 
 fi
-
+  ## reset:
+LDFLAGS="${PRE_M_LDFLAGS}"
 case "${host}" in
 *-*-nextstep*|*-apple-rhapsody*|*-apple-macos10*|*-apple-darwin*)
   # libm is present but Apple does not use it...
@@ -35178,7 +35236,11 @@ $as_echo_n "checking for libxml2 libraries... " >&6; }
   LIBXML2_LIBS=`${LIBXML2_CONFIG} --libs`
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${LIBXML2_LIBS}" >&5
 $as_echo "${LIBXML2_LIBS}" >&6; }
-  CPPFLAGS="${CPPFLAGS} ${LIBXML2_INCLUDES}"
+  if test "x${CPPFLAGS}" = "x"; then
+    test -z "${CPPFLAGS}" && CPPFLAGS="-I. ${LIBXML2_INCLUDES}"
+  else
+    test -n "${CPPFLAGS}" && CPPFLAGS="${CPPFLAGS} ${LIBXML2_INCLUDES}"
+  fi
   for ac_header in libxml/parser.h libxml/tree.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
@@ -35247,6 +35309,15 @@ $as_echo "#define LIBXML2_IS_USABLE 1" >>confdefs.h
 
 fi
 # APPLE LOCAL end: Get the libxml2 headers and libraries
+
+if test "x${COMMAND_MODE}" = "xlegacy"; then
+  # APPLE LOCAL: Do NOT bother trying to make this copy of gdb work with
+  # the "new" standards-conformant header environment:
+  UNIX03_UGH_CFLAGS=-D__DARWIN_UNIX03=0
+elif test "x${COMMAND_MODE}" = "xunix2003"; then
+  # '1' is the opposite of '0':
+  UNIX03_UGH_CFLAGS=-D__DARWIN_UNIX03=1
+fi
 
 # We need to link with -lw to get `wctype' on Solaris before Solaris
 # 2.6.  Solaris 2.6 and beyond have this function in libc, and have a
@@ -35962,7 +36033,51 @@ if test "x${ac_cv_search_tgetent}" = "xno"; then
   as_fn_error $? "no termcap library found" "$LINENO" 5
 fi
 
-# Other libraries that autoscan added to configure.scan:
+# Other misc. libraries that autoscan added to configure.scan, and such:
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for asprintf in -lasprintf" >&5
+$as_echo_n "checking for asprintf in -lasprintf... " >&6; }
+if ${ac_cv_lib_asprintf_asprintf+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lasprintf  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char asprintf ();
+int
+main ()
+{
+return asprintf ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_asprintf_asprintf=yes
+else
+  ac_cv_lib_asprintf_asprintf=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_asprintf_asprintf" >&5
+$as_echo "$ac_cv_lib_asprintf_asprintf" >&6; }
+if test "x$ac_cv_lib_asprintf_asprintf" = xyes; then :
+
+  if test "x${INTLLIBS}" != "x"; then
+    test -n "${INTLLIBS}" && export INTLLIBS="${INTLLIBS} -lasprintf"
+  fi
+
+fi
+  ## might want to ensure we find the in-tree one:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for bfd_set_reloc in -lbfd" >&5
 $as_echo_n "checking for bfd_set_reloc in -lbfd... " >&6; }
 if ${ac_cv_lib_bfd_bfd_set_reloc+:} false; then :
@@ -36008,6 +36123,8 @@ _ACEOF
 
 else
 
+  PRE_BFD_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lbfd" >&5
 $as_echo_n "checking for main in -lbfd... " >&6; }
 if ${ac_cv_lib_bfd_main+:} false; then :
@@ -36046,6 +36163,8 @@ _ACEOF
   LIBS="-lbfd $LIBS"
 
 fi
+  ## reset:
+  LDFLAGS="${PRE_BFD_LDFLAGS}"
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gl_dummy_symbol in -lgnu" >&5
@@ -36093,6 +36212,8 @@ _ACEOF
 
 else
 
+  PRE_GNU_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lgnu" >&5
 $as_echo_n "checking for main in -lgnu... " >&6; }
 if ${ac_cv_lib_gnu_main+:} false; then :
@@ -36131,6 +36252,8 @@ _ACEOF
   LIBS="-lgnu $LIBS"
 
 fi
+  ## reset:
+  LDFLAGS="${PRE_GNU_LDFLAGS}"
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for xmalloc in -liberty" >&5
@@ -36178,6 +36301,8 @@ _ACEOF
 
 else
 
+  PRE_LIBERTY_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -liberty" >&5
 $as_echo_n "checking for main in -liberty... " >&6; }
 if ${ac_cv_lib_iberty_main+:} false; then :
@@ -36216,6 +36341,8 @@ _ACEOF
   LIBS="-liberty $LIBS"
 
 fi
+  ## reset:
+  LDFLAGS="${PRE_LIBERTY_LDFLAGS}"
 
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing gettext" >&5
@@ -36273,7 +36400,8 @@ if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
 fi
-
+  ## might want to ensure we find the in-tree one:
+unset ac_cv_lib_intl_gettext
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gettext in -lintl" >&5
 $as_echo_n "checking for gettext in -lintl... " >&6; }
 if ${ac_cv_lib_intl_gettext+:} false; then :
@@ -36319,6 +36447,9 @@ _ACEOF
 
 else
 
+  unset ac_cv_lib_intl_main
+  PRE_INTL_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lintl" >&5
 $as_echo_n "checking for main in -lintl... " >&6; }
 if ${ac_cv_lib_intl_main+:} false; then :
@@ -36357,8 +36488,11 @@ _ACEOF
   LIBS="-lintl $LIBS"
 
 fi
+  ## reset:
+  LDFLAGS="${PRE_INTL_LDFLAGS}"
 
 fi
+  ## might want to ensure we find the in-tree one:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for op_cmp in -lopcodes" >&5
 $as_echo_n "checking for op_cmp in -lopcodes... " >&6; }
 if ${ac_cv_lib_opcodes_op_cmp+:} false; then :
@@ -36404,6 +36538,8 @@ _ACEOF
 
 else
 
+  PRE_OPCODES_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lopcodes" >&5
 $as_echo_n "checking for main in -lopcodes... " >&6; }
 if ${ac_cv_lib_opcodes_main+:} false; then :
@@ -36442,8 +36578,11 @@ _ACEOF
   LIBS="-lopcodes $LIBS"
 
 fi
+  ## reset:
+  LDFLAGS="${PRE_OPCODES_LDFLAGS}"
 
 fi
+  ## might want to ensure we find the in-tree one:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for rl_initialize in -lreadline" >&5
 $as_echo_n "checking for rl_initialize in -lreadline... " >&6; }
 if ${ac_cv_lib_readline_rl_initialize+:} false; then :
@@ -36532,6 +36671,7 @@ _ACEOF
   LIBS="-lsqlite3 $LIBS"
 
 fi
+  ## might want to ensure we find the in-tree one:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gzread in -lz" >&5
 $as_echo_n "checking for gzread in -lz... " >&6; }
 if ${ac_cv_lib_z_gzread+:} false; then :
@@ -37415,13 +37555,13 @@ fi
 
 if test -d ../intl; then
   if test -z "${CPPFLAGS}"; then
-    CPPFLAGS="-I../intl"
+    CPPFLAGS="-I. -I../intl"
   else
     CPPFLAGS="${CPPFLAGS} -I../intl"
   fi
 elif test -d ../libintl; then
   if test -z "${CPPFLAGS}"; then
-    CPPFLAGS="-I../libintl"
+    CPPFLAGS="-I. -I../libintl"
   else
     CPPFLAGS="${CPPFLAGS} -I../libintl"
   fi
@@ -38398,7 +38538,7 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_SYS_SIGLIST $ac_have_decl
 _ACEOF
-
+  ## end bad check for sys_siglist
 fi
 # just a plain check for sys_syglist might be wrong, so redo it:
 if test "x${ac_cv_have_decl_sys_siglist}" != "xyes"; then
@@ -38424,7 +38564,7 @@ fi
 cat >>confdefs.h <<_ACEOF
 #define HAVE_DECL_SYS_SIGLIST $ac_have_decl
 _ACEOF
-
+  ## end better check for sys_siglist
 fi
 ac_fn_c_check_decl "$LINENO" "free" "ac_cv_have_decl_free" "$ac_includes_default"
 if test "x$ac_cv_have_decl_free" = xyes; then :
@@ -38811,10 +38951,9 @@ else
   ac_cv_type_signal=void
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_type_signal" >&5
-$as_echo "$ac_cv_type_signal" >&6; }
+$as_echo "$ac_cv_type_signal" >&6; }  ## corresponding define:
 
 cat >>confdefs.h <<_ACEOF
 #define RETSIGTYPE ${ac_cv_type_signal}
@@ -39266,7 +39405,7 @@ _ACEOF
 if test "x$ac_cv_member_mach_msg_header_t_msgh_seqno" = xyes; then :
 
 fi
-
+  ## might also want to check some other members here...
 
 fi
 ac_fn_c_check_type "$LINENO" "mach_port_t" "ac_cv_type_mach_port_t" "
@@ -42002,7 +42141,7 @@ $as_echo "${gdb_cv_have_pt_getdbregs}" >&6; }
 if test "x${gdb_cv_have_pt_getdbregs}" = "xyes"; then
 
 $as_echo "#define HAVE_PT_GETDBREGS 1" >>confdefs.h
-  ## end def
+  ## end definition
 fi
 
 # See if <sys/ptrace.h> provides the PT_GETXMMREGS request:
@@ -42041,7 +42180,7 @@ $as_echo "${gdb_cv_have_pt_getxmmregs}" >&6; }
 if test "x${gdb_cv_have_pt_getxmmregs}" = "xyes"; then
 
 $as_echo "#define HAVE_PT_GETXMMREGS 1" >>confdefs.h
-  ## end def
+  ## end definition
 fi
 
 # If we are configured native on GNU/Linux, work around problems with
@@ -42094,11 +42233,11 @@ case "${host}" in
     # Check whether --enable-carbon-framework was given.
 if test "${enable_carbon_framework+set}" = set; then :
   enableval=$enable_carbon_framework; case ${enableval} in
-       yes | no)
-         enable_carbon_framework="${enableval}" ;;
-       *)
-         as_fn_error $? "bad val '${enableval}' to --disable-carbon-framework" "$LINENO" 5
-         ;;
+      yes | no)
+       enable_carbon_framework="${enableval}" ;;
+      *)
+       as_fn_error $? "bad val '${enableval}' to --disable-carbon-framework" "$LINENO" 5
+       ;;
      esac
 else
   enable_carbon_framework=no
@@ -43739,9 +43878,6 @@ if test "x${gdb_cv_c_long_long}" != "xyes"; then
   build_warnings="${build_warnings} -Wlong-long"
 fi
 
-if test "x${acl_cv_wl}" = "x"; then
-  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
-fi
 
 case "${host}" in
   *-apple-darwin* | *-apple-macos*)
@@ -43950,6 +44086,17 @@ rm -f core conftest.err conftest.$ac_objext \
 	    LDFLAGS="${saved_LDFLAGS}"
 	esac
     done
+    if test "x${WERROR_CFLAGS}" != "x"; then
+      test -n "${WERROR_CFLAGS}"
+      if test "x${LD_ARCHFLAGS}" != "x"; then
+        test -n "${LD_ARCHFLAGS}"
+        if test "x${WARN_LDFLAGS}" != "x"; then
+          test -n "${WARN_LDFLAGS}" && WARN_LDFLAGS="${WARN_LDFLAGS} ${LD_ARCHFLAGS}"
+        else
+          test -z "${WARN_LDFLAGS}" && WARN_LDFLAGS="${LD_ARCHFLAGS}"
+        fi
+      fi
+    fi
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${WARN_LDFLAGS}" >&5
 $as_echo "${WARN_LDFLAGS}" >&6; }
 fi

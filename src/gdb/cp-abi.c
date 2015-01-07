@@ -1,4 +1,4 @@
-/* Generic code for supporting multiple C++ ABI's
+/* cp-abi.c: Generic code for supporting multiple C++ ABI's
 
    Copyright 2001, 2002, 2003, 2005 Free Software Foundation, Inc.
 
@@ -168,15 +168,15 @@ set_cp_abi_as_auto_default (const char *short_name)
   /* Since we copy the current ABI into current_cp_abi instead of
      using a pointer, if auto is currently the default, we need to
      reset it.  */
-  if (strcmp (current_cp_abi.shortname, "auto") == 0)
-    switch_to_cp_abi ("auto");
+  if (strcmp(current_cp_abi.shortname, "auto") == 0)
+    switch_to_cp_abi("auto");
 }
 
 /* APPLE LOCAL begin C++ auto abi */
 int
-cp_abi_is_auto_p ()
+cp_abi_is_auto_p(void)
 {
-  if (strcmp (current_cp_abi.shortname, "auto") == 0)
+  if (strcmp(current_cp_abi.shortname, "auto") == 0)
     return 1;
   else
     return 0;

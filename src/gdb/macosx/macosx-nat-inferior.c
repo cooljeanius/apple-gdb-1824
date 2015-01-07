@@ -2135,11 +2135,11 @@ macosx_kill_inferior (void *arg)
 
   while (1)
     {
-      int signo;
+      volatile int signo;
       struct gdb_exception e;
       ptid_t stopped_ptid;
 
-      sched_yield ();
+      sched_yield();
 
       wait_status.kind = TARGET_WAITKIND_SPURIOUS;
 

@@ -15,6 +15,7 @@
 @SET_MAKE@
 
 
+
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -156,6 +157,7 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
+DATA = $(nodist_noinst_DATA)
 HEADERS = $(noinst_HEADERS)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) \
 	$(LISP)config.h.in
@@ -324,9 +326,15 @@ noinst_HEADERS = adp.h adperr.h angel.h ardi.h armdbg.h buffers.h \
 
 EXTRA_DIST = README.CYGNUS
 AM_CPPFLAGS = -DRETRANS -DARM_RELEASE='"Berkeley Licence for Cygnus"'
-AM_CFLAGS = -Wall -Wextra -Wimplicit -Wreturn-type -Wcomment -Wtrigraphs -Wformat=2 -Wparentheses -Wpointer-arith -Wunused-label -Wunused-function -Wno-unused-parameter -Wundef -Wc++-compat -Wmissing-prototypes -Wstrict-prototypes -Wmissing-declarations -Winline -Wvolatile-register-var -Woverlength-strings -Wno-pragmas -ggdb
+AM_CFLAGS = -Wall -Wextra -Wimplicit -Wreturn-type -Wcomment -Wtrigraphs \
+-Wformat=2 -Wparentheses -Wpointer-arith -Wunused-label -Wunused-function \
+-Wno-unused-parameter -Wundef -Wc++-compat -Wmissing-prototypes \
+-Wstrict-prototypes -Wmissing-declarations -Winline -Woverlength-strings \
+-Wvolatile-register-var -Wno-pragmas -ggdb
+
 DISTCLEANFILES = *~ autoscan.log
 MAINTAINERCLEANFILES = configure.scan
+nodist_noinst_DATA = @MAINT@ configure.scan
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -568,6 +576,9 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
+	$(MAKE) $(AM_MAKEFLAGS) \
+	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
+	  dist-hook
 	-test -n "$(am__skip_mode_fix)" \
 	|| find "$(distdir)" -type d ! -perm -755 \
 		-exec chmod u+rwx,go+rx {} \; -o \
@@ -702,7 +713,7 @@ distcleancheck: distclean
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-DEJAGNU
 check: check-am
-all-am: Makefile $(LIBRARIES) $(HEADERS) config.h
+all-am: Makefile $(LIBRARIES) $(DATA) $(HEADERS) config.h
 installdirs:
 install: install-am
 install-exec: install-exec-am
@@ -813,19 +824,19 @@ uninstall-am:
 .PHONY: CTAGS GTAGS TAGS all all-am am--refresh check check-DEJAGNU \
 	check-am clean clean-cscope clean-generic \
 	clean-noinstLIBRARIES cscope cscopelist-am ctags ctags-am dist \
-	dist-all dist-bzip2 dist-gzip dist-lzip dist-shar dist-tarZ \
-	dist-xz dist-zip distcheck distclean distclean-DEJAGNU \
-	distclean-compile distclean-generic distclean-hdr \
-	distclean-local distclean-tags distcleancheck distdir \
-	distuninstallcheck dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
-	tags tags-am uninstall uninstall-am
+	dist-all dist-bzip2 dist-gzip dist-hook dist-lzip dist-shar \
+	dist-tarZ dist-xz dist-zip distcheck distclean \
+	distclean-DEJAGNU distclean-compile distclean-generic \
+	distclean-hdr distclean-local distclean-tags distcleancheck \
+	distdir distuninstallcheck dvi dvi-am html html-am info \
+	info-am install install-am install-data install-data-am \
+	install-dvi install-dvi-am install-exec install-exec-am \
+	install-html install-html-am install-info install-info-am \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
+	ps ps-am tags tags-am uninstall uninstall-am
 
 
 configure.scan:
@@ -833,6 +844,13 @@ configure.scan:
 
 distclean-local:
 	rm -rfv autom4te.cache || rmdir autom4te.cache
+	$(am__post_remove_distdir)
+
+dist-hook:
+	@test -d .. && echo "avoid making distributions in subdirs" >&2
+	$(am__post_remove_distdir)
+	@exit 1 || false
+.PHONY: dist-hook
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

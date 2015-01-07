@@ -1,4 +1,4 @@
-/* MI Command Set - breakpoint and watchpoint commands.
+/* mi-cmd-break.c: MI Command Set - breakpoint and watchpoint commands.
    Copyright 2000, 2001, 2002 Free Software Foundation, Inc.
    Contributed by Cygnus Solutions (a Red Hat company).
 
@@ -65,14 +65,14 @@ enum bp_type
   };
 
 /* Insert a breakpoint. The type of breakpoint is specified by the
-   first argument: 
-   -break-insert <location> --> insert a regular breakpoint.  
-   -break-insert -t <location> --> insert a temporary breakpoint.  
-   -break-insert -h <location> --> insert an hardware breakpoint.  
+   first argument:
+   -break-insert <location> --> insert a regular breakpoint.
+   -break-insert -t <location> --> insert a temporary breakpoint.
+   -break-insert -h <location> --> insert an hardware breakpoint.
    -break-insert -t -h <location> --> insert a temporary hw bp.
-   -break-insert -f <location> --> insert a future breakpoint.  
+   -break-insert -f <location> --> insert a future breakpoint.
    -break-insert -r <regexp> --> insert a bp at functions matching
-   <regexp> 
+   <regexp>
 
    You can also specify the shared-library in which to set the breakpoint
    by passing the -s argument, as:
@@ -113,15 +113,15 @@ mi_cmd_break_insert (char *command, char **argv, int argc)
     };
   static struct mi_opt opts[] =
   {
-    {"h", HARDWARE_OPT, 0},
-    {"t", TEMP_OPT, 0},
-    {"f", FUTURE_OPT, 0},
-    {"c", CONDITION_OPT, 1},
-    {"i", IGNORE_COUNT_OPT, 1},
-    {"p", THREAD_OPT, 1},
-    {"s", SHLIB_OPT, 1},
-    {"l", LIST_OPT, 1},
-    0
+    { "h", HARDWARE_OPT, 0 },
+    { "t", TEMP_OPT, 0 },
+    { "f", FUTURE_OPT, 0 },
+    { "c", CONDITION_OPT, 1 },
+    { "i", IGNORE_COUNT_OPT, 1 },
+    { "p", THREAD_OPT, 1 },
+    { "s", SHLIB_OPT, 1 },
+    { "l", LIST_OPT, 1 },
+    { 0 }
   };
 
   /* Parse arguments. It could be -r or -h or -t, <location> or ``--''
@@ -205,7 +205,7 @@ mi_cmd_break_insert (char *command, char **argv, int argc)
 
 	    /* Since we aren't passing a number of elements, we terminate the
 	       indices by putting in a -1 element.  */
-	    
+
 	    indices[i] = -1;
 
 	    break;
@@ -228,7 +228,7 @@ mi_cmd_break_insert (char *command, char **argv, int argc)
       realpath (requested_shlib, realpath_buf);
       /* It'll be xstrdup()'ed down in the breakpoint command, so just point
          to the stack array until then. */
-      requested_shlib = realpath_buf; 
+      requested_shlib = realpath_buf;
     }
 
   /* Now we have what we need, let's insert the breakpoint! */
@@ -238,21 +238,21 @@ mi_cmd_break_insert (char *command, char **argv, int argc)
     case REG_BP:
       rc = gdb_breakpoint (address, condition,
 			   0 /*hardwareflag */ , temp_p,
-			   0 /* futureflag */, thread, 
+			   0 /* futureflag */, thread,
 			   ignore_count, indices, requested_shlib,
 			   &mi_error_message);
       break;
     case HW_BP:
       rc = gdb_breakpoint (address, condition,
 			   1 /*hardwareflag */ , temp_p,
-			   0 /* futureflag */, thread, 
+			   0 /* futureflag */, thread,
 			   ignore_count, indices, requested_shlib,
 			   &mi_error_message);
       break;
     case FUT_BP:
       rc = gdb_breakpoint (address, condition,
 			   0, temp_p,
-			   1 /* futureflag */, thread, 
+			   1 /* futureflag */, thread,
 			   ignore_count, indices, requested_shlib,
 			   &mi_error_message);
       break;
@@ -291,8 +291,8 @@ enum wp_type
 };
 
 /* Insert a watchpoint. The type of watchpoint is specified by the
-   first argument: 
-   -break-watch <expr> --> insert a regular wp.  
+   first argument:
+   -break-watch <expr> --> insert a regular wp.
    -break-watch -r <expr> --> insert a read watchpoint.
    -break-watch -a <expr> --> insert an access wp. */
 
@@ -308,10 +308,10 @@ mi_cmd_break_watch (char *command, char **argv, int argc)
     };
   static struct mi_opt opts[] =
   {
-    {"r", READ_OPT, 0},
-    {"a", ACCESS_OPT, 0},
-    {"l", LOCATION_OPT, 0},
-    0
+    { "r", READ_OPT, 0 },
+    { "a", ACCESS_OPT, 0 },
+    { "l", LOCATION_OPT, 0 },
+    { 0 }
   };
 
   /* Parse arguments. */
@@ -364,9 +364,8 @@ int mi_command_line_array_cnt;
 int mi_command_line_array_ptr;
 
 static char *
-mi_read_next_line ()
+mi_read_next_line(void)
 {
-
   if (mi_command_line_array_ptr == mi_command_line_array_cnt)
     return NULL;
   else
@@ -426,7 +425,7 @@ mi_cmd_break_commands (char *command, char **argv, int argc)
   breakpoint_add_commands (b, break_command);
 
   return MI_CMD_DONE;
-  
+
 }
 
 enum mi_cmd_result
@@ -483,7 +482,7 @@ mi_cmd_break_catch (char *command, char **argv, int argc)
 }
 
 /* APPLE LOCAL: The FSF deleted all these hooks.  Supposedly we can
-   get the same information from the gdb_events, but I am not 
+   get the same information from the gdb_events, but I am not
    convinced that when running the console interpreter under the
    mi the gdb_events will work.  FIXME: see if the gdb_events
    actually can be made to work.  */
@@ -507,7 +506,7 @@ mi_interp_create_breakpoint_hook (struct breakpoint *bpt)
   ui_out_field_string (uiout, "HOOK_TYPE", "breakpoint_create");
   gdb_breakpoint_query (uiout, bpt->number, NULL);
   do_cleanups (list_cleanup);
-  uiout = saved_ui_out; 
+  uiout = saved_ui_out;
 }
 
 void
@@ -530,7 +529,7 @@ mi_interp_modify_breakpoint_hook (struct breakpoint *bpt)
   ui_out_field_string (uiout, "HOOK_TYPE", "breakpoint_modify");
   gdb_breakpoint_query (uiout, bpt->number, NULL);
   do_cleanups (list_cleanup);
-  uiout = saved_ui_out; 
+  uiout = saved_ui_out;
 }
 
 void
@@ -552,7 +551,7 @@ mi_interp_delete_breakpoint_hook (struct breakpoint *bpt)
   ui_out_field_string (uiout, "HOOK_TYPE", "breakpoint_delete");
   ui_out_field_int (uiout, "bkptno", bpt->number);
   do_cleanups (list_cleanup);
-  uiout = saved_ui_out; 
+  uiout = saved_ui_out;
 
 }
 
@@ -566,7 +565,7 @@ mi_async_breakpoint_resolve_event (int pending_b, int new_b)
   if (pending_b <= 0)
     return;
 
-  old_chain = make_cleanup_ui_out_notify_begin_end (uiout, 
+  old_chain = make_cleanup_ui_out_notify_begin_end (uiout,
 						    "resolve-pending-breakpoint");
   ui_out_field_int (uiout, "new_bp", new_b);
   ui_out_field_int (uiout, "pended_bp", pending_b);
@@ -579,12 +578,12 @@ mi_async_breakpoint_resolve_event (int pending_b, int new_b)
   if (bpt->cond_string != NULL)
     {
       if (bpt->cond == NULL)
-	ui_out_field_int (uiout, "condition_valid", 0); 
+	ui_out_field_int (uiout, "condition_valid", 0);
       else
-	ui_out_field_int (uiout, "condition_valid", 1); 
+	ui_out_field_int (uiout, "condition_valid", 1);
     }
   /* END APPLE LOCAL  */
   gdb_breakpoint_query (uiout, new_b, NULL);
-  
+
   do_cleanups (old_chain);
 }

@@ -71,13 +71,13 @@ ptid_t get_hand_call_ptid(void)
 }
 
 static void
-do_reset_hand_call_ptid(void)
+do_reset_hand_call_ptid(void *unused ATTRIBUTE_UNUSED)
 {
   hand_call_ptid = minus_one_ptid;
 }
 
 static void
-do_unset_proceed_from_hand_call(void *unused)
+do_unset_proceed_from_hand_call(void *unused ATTRIBUTE_UNUSED)
 {
   proceed_from_hand_call = 0;
 }
@@ -415,8 +415,8 @@ handle_alarm_while_calling(int signo)
 
 struct value *
 /* APPLE LOCAL hand function call */
-hand_function_call (struct value *function, struct type *expect_type,
-                    int nargs, struct value **args, int restore_frame)
+hand_function_call(struct value *function, struct type *expect_type,
+                   int nargs, struct value **args, int restore_frame)
 {
   CORE_ADDR sp;
   CORE_ADDR dummy_addr;
@@ -927,23 +927,24 @@ You must use a pointer to function type variable. Command ignored."), arg_name);
     struct cleanup *old_cleanups = make_cleanup (null_cleanup, 0);
     int saved_async = 0;
     static int hand_call_function_timer = -1;
+    struct cleanup *hand_call_cleanup;
 
     /* If all error()s out of proceed ended up calling normal_stop
        (and perhaps they should; it already does in the special case
        of error out of resume()), then we wouldn't need this.  */
-    make_cleanup (breakpoint_auto_delete_contents, &stop_bpstat);
+    make_cleanup(breakpoint_auto_delete_contents, &stop_bpstat);
 
     disable_watchpoints_before_interactive_call_start();
     /* APPLE LOCAL checkpointing */
     begin_inferior_call_checkpoints();
     proceed_to_finish = 1;	/* We want stop_registers, please... */
     proceed_from_hand_call = 1;
-    make_cleanup (do_unset_proceed_from_hand_call, NULL);
+    make_cleanup(do_unset_proceed_from_hand_call, NULL);
 
     if (hand_call_function_hook != NULL)
       hand_call_function_hook();
 
-    struct cleanup *hand_call_cleanup =
+    hand_call_cleanup =
       start_timer(&hand_call_function_timer, "hand-call", "Starting hand-call");
 
     if (target_can_async_p())
@@ -953,7 +954,7 @@ You must use a pointer to function type variable. Command ignored."), arg_name);
        lower level proceed logic so we can prefer that over
        other stop reasons.  */
     hand_call_ptid = inferior_ptid;
-    make_cleanup (do_reset_hand_call_ptid, NULL);
+    make_cleanup(do_reset_hand_call_ptid, NULL);
 
     if (hand_call_function_timeout != 0)
       {
@@ -979,8 +980,8 @@ You must use a pointer to function type variable. Command ignored."), arg_name);
 	setitimer (ITIMER_REAL, &itval, NULL);
 	signal (SIGALRM, SIG_DFL);
 
-	if (e.reason != NO_ERROR)
-            throw_exception (e);
+	if (e.reason != (enum return_reason)NO_ERROR)
+            throw_exception(e);
       }
     else
       {

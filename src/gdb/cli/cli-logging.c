@@ -58,12 +58,12 @@ Whether logging writes commands to the log file is %s.\n"),
 
 
 void
-log_command (char *command)
+log_command(char *command)
 {
   if (!logging_commands)
     return;
   else
-    printf_unfiltered ("(gdb) %s\n", command);
+    printf_unfiltered("(gdb) %s\n", command);
 }
 
 int logging_overwrite;
@@ -165,7 +165,7 @@ set_logging_on (char *args, int from_tty)
   handle_redirections (from_tty);
 }
 
-static void 
+static void
 set_logging_off (char *args, int from_tty)
 {
   if (saved_filename == NULL)
@@ -216,7 +216,7 @@ _initialize_cli_logging (void)
 {
   static struct cmd_list_element *set_logging_cmdlist, *show_logging_cmdlist;
 
-  
+
   add_prefix_cmd ("logging", class_support, set_logging_command,
 		  _("Set logging options"), &set_logging_cmdlist,
 		  "set logging ", 0, &setlist);

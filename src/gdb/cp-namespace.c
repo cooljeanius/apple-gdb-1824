@@ -1,4 +1,4 @@
-/* Helper routines for C++ support in GDB.
+/* cp-namespace.c: Helper routines for C++ support in GDB.
    Copyright 2003, 2004 Free Software Foundation, Inc.
 
    Contributed by David Carlton and by Kealia, Inc.
@@ -111,9 +111,8 @@ struct symbol *lookup_possible_namespace_symbol (const char *name,
 static void maintenance_cplus_namespace (char *args, int from_tty);
 
 /* Set up support for dealing with C++ namespace info in the current
-   symtab.  */
-
-void cp_initialize_namespace ()
+ * symtab: */
+void cp_initialize_namespace(void)
 {
   processing_has_namespace_info = 0;
   using_list = NULL;
@@ -436,7 +435,7 @@ cp_lookup_symbol_namespace (const char *namespace,
   /* We didn't find anything by applying any of the using directives
      that are still applicable; so let's see if we've got a match
      using the current namespace.  */
-  
+
   if (namespace[0] == '\0')
     {
       return lookup_symbol_file (name, linkage_name, block,
@@ -482,7 +481,7 @@ lookup_symbol_file (const char *name,
 	 So we only search the current file's global block.  */
 
       const struct block *global_block = block_global_block (block);
-      
+
       if (global_block != NULL)
 	sym = lookup_symbol_aux_block (name, linkage_name, global_block,
 				       domain, symtab);
@@ -658,7 +657,7 @@ initialize_namespace_symtab (struct objfile *objfile)
 		      + FIRST_LOCAL_BLOCK * sizeof (struct block *));
   BLOCKVECTOR_NBLOCKS (bv) = FIRST_LOCAL_BLOCK + 1;
   BLOCKVECTOR (namespace_symtab) = bv;
-  
+
   /* Allocate empty GLOBAL_BLOCK and STATIC_BLOCK. */
 
   bl = allocate_block (&objfile->objfile_obstack);

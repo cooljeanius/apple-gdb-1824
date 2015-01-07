@@ -1,4 +1,4 @@
-/* Low level interface to ptrace, for GDB when running under Unix.
+/* inflow.c: Low level interface to ptrace for GDB when running under Unix.
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995,
    1996, 1998, 1999, 2000, 2001, 2002, 2003, 2004
    Free Software Foundation, Inc.
@@ -33,36 +33,35 @@
 #include <signal.h>
 #include <fcntl.h>
 #ifdef HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
+# include <sys/select.h>
+#endif /* HAVE_SYS_SELECT_H */
 
 #include "inflow.h"
 
 #ifdef HAVE_SYS_IOCTL_H
-#include <sys/ioctl.h>
-#endif
+# include <sys/ioctl.h>
+#endif /* HAVE_SYS_IOCTL_H */
 
 /* APPLE LOCAL: -exec-abort support */
 #include "ui-out.h"
 
 #ifndef O_NOCTTY
-#define O_NOCTTY 0
-#endif
+# define O_NOCTTY 0
+#endif /* !O_NOCTTY */
 
-#if defined (SIGIO) && defined (FASYNC) && defined (FD_SET) && defined (F_SETOWN)
-static void handle_sigio (int);
-#endif
+#if defined(SIGIO) && defined(FASYNC) && defined(FD_SET) && defined(F_SETOWN)
+static void handle_sigio(int);
+#endif /* SIGIO && FASYNC && FD_SET && F_SETOWN */
 
-extern void _initialize_inflow (void);
+extern void _initialize_inflow(void);
 
-static void pass_signal (int);
+static void pass_signal(int);
 
-static void kill_command (char *, int);
+static void kill_command(char *, int);
 
-static void terminal_ours_1 (int);
+static void terminal_ours_1(int);
 
-/* Record terminal status separately for debugger and inferior.  */
-
+/* Record terminal status separately for debugger and inferior: */
 static struct serial *stdin_serial;
 
 /* TTY state for the inferior.  We save it whenever the inferior stops, and
@@ -91,8 +90,8 @@ PROCESS_GROUP_TYPE inferior_process_group;
    we save our handlers in these two variables and set SIGINT and SIGQUIT
    to SIG_IGN.  */
 
-static void (*sigint_ours)();
-static void (*sigquit_ours)();
+static void (*sigint_ours)(int);
+static void (*sigquit_ours)(int);
 
 /* The name of the tty (from the `tty' command) that we gave to the inferior
    when it was last started.  */
@@ -110,7 +109,7 @@ enum {
 
 /* Does GDB have a terminal (on stdin)?  */
 int
-gdb_has_a_terminal (void)
+gdb_has_a_terminal(void)
 {
   switch (gdb_has_a_terminal_flag)
     {
@@ -125,8 +124,8 @@ gdb_has_a_terminal (void)
          initialized.  */
 
 #ifdef F_GETFL
-      tflags_ours = fcntl (0, F_GETFL, 0);
-#endif
+      tflags_ours = fcntl(0, F_GETFL, 0);
+#endif /* F_GETFL */
 
       gdb_has_a_terminal_flag = no;
       stdin_serial = serial_fdopen (0);
@@ -138,20 +137,20 @@ gdb_has_a_terminal (void)
 	    {
 	      gdb_has_a_terminal_flag = yes;
 #ifdef HAVE_TERMIOS
-	      our_process_group = tcgetpgrp (0);
-#endif
+	      our_process_group = tcgetpgrp(0);
+#endif /* HAVE_TERMIOS */
 #ifdef HAVE_TERMIO
-	      our_process_group = getpgrp ();
-#endif
+	      our_process_group = getpgrp();
+#endif /* HAVE_TERMIO */
 #ifdef HAVE_SGTTY
-	      ioctl (0, TIOCGPGRP, &our_process_group);
-#endif
+	      ioctl(0, TIOCGPGRP, &our_process_group);
+#endif /* HAVE_SGTTY */
 	    }
 	}
 
       return gdb_has_a_terminal_flag == yes;
     default:
-      /* "Can't happen".  */
+      /* "Cannot happen".  */
       return 0;
     }
 }
@@ -181,7 +180,7 @@ terminal_init_inferior_with_pgrp (int pgrp)
 
 #ifdef PROCESS_GROUP_TYPE
       inferior_process_group = pgrp;
-#endif
+#endif /* PROCESS_GROUP_TYPE */
 
       /* Make sure that next time we call terminal_inferior (which will be
          before the program runs, as it needs to be), we install the new
@@ -195,9 +194,9 @@ terminal_init_inferior_with_pgrp (int pgrp)
    and gdb must be able to restore it correctly.  */
 
 void
-terminal_save_ours (void)
+terminal_save_ours(void)
 {
-  if (gdb_has_a_terminal ())
+  if (gdb_has_a_terminal())
     {
       /* We could just as well copy our_ttystate (if we felt like adding
          a new function serial_copy_tty_state).  */
@@ -208,7 +207,7 @@ terminal_save_ours (void)
 }
 
 void
-terminal_init_inferior (void)
+terminal_init_inferior(void)
 {
 #ifdef PROCESS_GROUP_TYPE
   /* This is for Lynx, and should be cleaned up by having Lynx be a separate
@@ -227,20 +226,20 @@ terminal_init_inferior (void)
 void
 terminal_inferior (void)
 {
-  if (gdb_has_a_terminal () && terminal_is_ours
-      && inferior_ttystate != NULL
-      && inferior_thisrun_terminal == 0)
+  if (gdb_has_a_terminal() && terminal_is_ours
+      && (inferior_ttystate != NULL)
+      && (inferior_thisrun_terminal == 0))
     {
       int result;
 
 #ifdef F_GETFL
       /* Is there a reason this is being done twice?  It happens both
-         places we use F_SETFL, so I'm inclined to think perhaps there
+         places we use F_SETFL, so I am inclined to think perhaps there
          is some reason, however perverse.  Perhaps not though...  */
-      result = fcntl (0, F_SETFL, tflags_inferior);
-      result = fcntl (0, F_SETFL, tflags_inferior);
+      result = fcntl(0, F_SETFL, tflags_inferior);
+      result = fcntl(0, F_SETFL, tflags_inferior);
       OOPSY ("fcntl F_SETFL");
-#endif
+#endif /* F_GETFL */
 
       /* Because we were careful to not change in or out of raw mode in
          terminal_ours, we will not change in our out of raw mode with
@@ -251,10 +250,10 @@ terminal_inferior (void)
 
       if (!job_control)
 	{
-	  sigint_ours = (void (*)()) signal (SIGINT, SIG_IGN);
+	  sigint_ours = (void (*)(int))signal(SIGINT, SIG_IGN);
 #ifdef SIGQUIT
-	  sigquit_ours = (void (*)()) signal (SIGQUIT, SIG_IGN);
-#endif
+	  sigquit_ours = (void (*)(int))signal(SIGQUIT, SIG_IGN);
+#endif /* SIGQUIT */
 	}
 
       /* If attach_flag is set, we don't know whether we are sharing a
@@ -272,16 +271,16 @@ terminal_inferior (void)
       if (job_control)
 	{
 #ifdef HAVE_TERMIOS
-	  result = tcsetpgrp (0, inferior_process_group);
+	  result = tcsetpgrp(0, inferior_process_group);
 	  if (!attach_flag)
-	    OOPSY ("tcsetpgrp");
-#endif
+	    OOPSY("tcsetpgrp");
+#endif /* HAVE_TERMIO */
 
 #ifdef HAVE_SGTTY
-	  result = ioctl (0, TIOCSPGRP, &inferior_process_group);
+	  result = ioctl(0, TIOCSPGRP, &inferior_process_group);
 	  if (!attach_flag)
-	    OOPSY ("TIOCSPGRP");
-#endif
+	    OOPSY("TIOCSPGRP");
+#endif /* HAVE_SGTTY */
 	}
 
     }
@@ -297,9 +296,9 @@ terminal_inferior (void)
    should be called to get back to a normal state of affairs.  */
 
 void
-terminal_ours_for_output (void)
+terminal_ours_for_output(void)
 {
-  terminal_ours_1 (1);
+  terminal_ours_1(1);
 }
 
 /* Put our terminal settings into effect.
@@ -307,9 +306,9 @@ terminal_ours_for_output (void)
    so they can be restored properly later.  */
 
 void
-terminal_ours (void)
+terminal_ours(void)
 {
-  terminal_ours_1 (0);
+  terminal_ours_1(0);
 }
 
 /* output_only is not used, and should not be used unless we introduce
@@ -317,13 +316,13 @@ terminal_ours (void)
    flags.  */
 
 static void
-terminal_ours_1 (int output_only)
+terminal_ours_1(int output_only)
 {
   /* Checking inferior_thisrun_terminal is necessary so that
-     if GDB is running in the background, it won't block trying
+     if GDB is running in the background, it will fail to block trying
      to do the ioctl()'s below.  Checking gdb_has_a_terminal
      avoids attempting all the ioctl's when running in batch.  */
-  if (inferior_thisrun_terminal != 0 || gdb_has_a_terminal () == 0)
+  if ((inferior_thisrun_terminal != 0) || (gdb_has_a_terminal() == 0))
     return;
 
   if (!terminal_is_ours)
@@ -331,20 +330,20 @@ terminal_ours_1 (int output_only)
 #ifdef SIGTTOU
       /* Ignore this signal since it will happen when we try to set the
          pgrp.  */
-      void (*osigttou) () = NULL;
-#endif
+      void (*osigttou)(int) = NULL;
+#endif /* SIGTTOU */
       int result;
 
       terminal_is_ours = 1;
 
 #ifdef SIGTTOU
       if (job_control)
-	osigttou = (void (*)()) signal (SIGTTOU, SIG_IGN);
-#endif
+	osigttou = (void (*)(int))signal(SIGTTOU, SIG_IGN);
+#endif /* SIGTTOU */
 
       if (inferior_ttystate)
-	xfree (inferior_ttystate);
-      inferior_ttystate = serial_get_tty_state (stdin_serial);
+	xfree(inferior_ttystate);
+      inferior_ttystate = serial_get_tty_state(stdin_serial);
 
       /* FIXME: For MacOS X: if you are attaching then the most common
 	 case is that the process you are attaching to is NOT running
@@ -359,14 +358,14 @@ terminal_ours_1 (int output_only)
       if (!attach_flag)
 	{
 #ifdef HAVE_TERMIOS
-	  inferior_process_group = tcgetpgrp (0);
-#endif
+	  inferior_process_group = tcgetpgrp(0);
+#endif /* HAVE_TERMIOS */
 #ifdef HAVE_TERMIO
-	  inferior_process_group = getpgrp ();
-#endif
+	  inferior_process_group = getpgrp();
+#endif /* HAVE_TERMIO */
 #ifdef HAVE_SGTTY
-	  ioctl (0, TIOCGPGRP, &inferior_process_group);
-#endif
+	  ioctl(0, TIOCGPGRP, &inferior_process_group);
+#endif /* HAVE_SGTTY */
 	}
 
       /* Here we used to set ICANON in our ttystate, but I believe this
@@ -390,8 +389,8 @@ terminal_ours_1 (int output_only)
       if (job_control)
 	{
 #ifdef HAVE_TERMIOS
-	  result = tcsetpgrp (0, our_process_group);
-#if 0
+	  result = tcsetpgrp(0, our_process_group);
+# if 0
 	  /* This fails on Ultrix with EINVAL if you run the testsuite
 	     in the background with nohup, and then log out.  GDB never
 	     used to check for an error here, so perhaps there are other
@@ -399,11 +398,11 @@ terminal_ours_1 (int output_only)
 	  if (result == -1)
 	    fprintf_unfiltered (gdb_stderr, "[tcsetpgrp failed in terminal_ours: %s]\n",
 				safe_strerror (errno));
-#endif
+# endif /* 0 */
 #endif /* termios */
 
 #ifdef HAVE_SGTTY
-	  result = ioctl (0, TIOCSPGRP, &our_process_group);
+	  result = ioctl(0, TIOCSPGRP, &our_process_group);
 #endif
 	}
 
@@ -441,17 +440,17 @@ term_info (char *arg, int from_tty)
 }
 
 void
-child_terminal_info (char *args, int from_tty)
+child_terminal_info(char *args, int from_tty)
 {
-  if (!gdb_has_a_terminal ())
+  if (!gdb_has_a_terminal())
     {
-      printf_filtered (_("This GDB does not control a terminal.\n"));
+      printf_filtered(_("This GDB does not control a terminal.\n"));
       return;
     }
 
-  printf_filtered (_("Inferior's terminal status (currently saved by GDB):\n"));
+  printf_filtered(_("Inferior's terminal status (currently saved by GDB):\n"));
 
-  /* First the fcntl flags.  */
+  /* First the fcntl flags: */
   {
     int flags;
 
@@ -460,59 +459,59 @@ child_terminal_info (char *args, int from_tty)
     printf_filtered ("File descriptor flags = ");
 
 #ifndef O_ACCMODE
-#define O_ACCMODE (O_RDONLY | O_WRONLY | O_RDWR)
-#endif
+# define O_ACCMODE (O_RDONLY | O_WRONLY | O_RDWR)
+#endif /* !O_ACCMODE */
     /* (O_ACCMODE) parens are to avoid Ultrix header file bug */
     switch (flags & (O_ACCMODE))
       {
       case O_RDONLY:
-	printf_filtered ("O_RDONLY");
+	printf_filtered("O_RDONLY");
 	break;
       case O_WRONLY:
-	printf_filtered ("O_WRONLY");
+	printf_filtered("O_WRONLY");
 	break;
       case O_RDWR:
-	printf_filtered ("O_RDWR");
+	printf_filtered("O_RDWR");
 	break;
       }
     flags &= ~(O_ACCMODE);
 
 #ifdef O_NONBLOCK
     if (flags & O_NONBLOCK)
-      printf_filtered (" | O_NONBLOCK");
+      printf_filtered(" | O_NONBLOCK");
     flags &= ~O_NONBLOCK;
-#endif
+#endif /* O_NONBLOCK */
 
-#if defined (O_NDELAY)
+#if defined(O_NDELAY)
     /* If O_NDELAY and O_NONBLOCK are defined to the same thing, we will
        print it as O_NONBLOCK, which is good cause that is what POSIX
        has, and the flag will already be cleared by the time we get here.  */
     if (flags & O_NDELAY)
-      printf_filtered (" | O_NDELAY");
+      printf_filtered(" | O_NDELAY");
     flags &= ~O_NDELAY;
-#endif
+#endif /* O_NDELAY */
 
     if (flags & O_APPEND)
-      printf_filtered (" | O_APPEND");
+      printf_filtered(" | O_APPEND");
     flags &= ~O_APPEND;
 
-#if defined (O_BINARY)
+#if defined(O_BINARY)
     if (flags & O_BINARY)
-      printf_filtered (" | O_BINARY");
+      printf_filtered(" | O_BINARY");
     flags &= ~O_BINARY;
-#endif
+#endif /* O_BINARY */
 
     if (flags)
-      printf_filtered (" | 0x%x", flags);
-    printf_filtered ("\n");
+      printf_filtered(" | 0x%x", flags);
+    printf_filtered("\n");
   }
 
 #ifdef PROCESS_GROUP_TYPE
-  printf_filtered ("Process group = %d\n",
-		   (int) inferior_process_group);
-#endif
+  printf_filtered("Process group = %d\n",
+                  (int)inferior_process_group);
+#endif /* PROCESS_GROUP_TYPE */
 
-  serial_print_tty_state (stdin_serial, inferior_ttystate, gdb_stdout);
+  serial_print_tty_state(stdin_serial, inferior_ttystate, gdb_stdout);
 }
 
 /* NEW_TTY_PREFORK is called before forking a new child process,
@@ -525,7 +524,7 @@ child_terminal_info (char *args, int from_tty)
    the terminal specified in the NEW_TTY_PREFORK call.  */
 
 void
-new_tty_prefork (const char *ttyname)
+new_tty_prefork(const char *ttyname)
 {
   /* Save the name for later, for determining whether we and the child
      are sharing a tty.  */
@@ -533,92 +532,91 @@ new_tty_prefork (const char *ttyname)
 }
 
 void
-new_tty (void)
+new_tty(void)
 {
   int tty;
 
   if (inferior_thisrun_terminal == 0)
     return;
 #if !defined(__GO32__) && !defined(_WIN32)
-#ifdef TIOCNOTTY
+# ifdef TIOCNOTTY
   /* Disconnect the child process from our controlling terminal.  On some
      systems (SVR4 for example), this may cause a SIGTTOU, so temporarily
      ignore SIGTTOU. */
   tty = open ("/dev/tty", O_RDWR);
   if (tty > 0)
     {
-      void (*osigttou) ();
+      void (*osigttou)(int);
 
-      osigttou = (void (*)()) signal (SIGTTOU, SIG_IGN);
-      ioctl (tty, TIOCNOTTY, 0);
-      close (tty);
-      signal (SIGTTOU, osigttou);
+      osigttou = (void (*)(int))signal(SIGTTOU, SIG_IGN);
+      ioctl(tty, TIOCNOTTY, 0);
+      close(tty);
+      signal(SIGTTOU, osigttou);
     }
-#endif
+# endif /* TIOCNOTTY */
 
-  /* Now open the specified new terminal.  */
-  tty = open (inferior_thisrun_terminal, O_RDWR | O_NOCTTY);
+  /* Now open the specified new terminal: */
+  tty = open(inferior_thisrun_terminal, (O_RDWR | O_NOCTTY));
   if (tty == -1)
     {
-      print_sys_errmsg (inferior_thisrun_terminal, errno);
-      _exit (1);
+      print_sys_errmsg(inferior_thisrun_terminal, errno);
+      _exit(1);
     }
 
-  /* Avoid use of dup2; doesn't exist on all systems.  */
+  /* Avoid use of dup2; does NOT exist on all systems: */
   if (tty != 0)
     {
-      close (0);
-      dup (tty);
+      close(0);
+      dup(tty);
     }
   if (tty != 1)
     {
-      close (1);
-      dup (tty);
+      close(1);
+      dup(tty);
     }
   if (tty != 2)
     {
-      close (2);
-      dup (tty);
+      close(2);
+      dup(tty);
     }
   if (tty > 2)
-    close (tty);
+    close(tty);
 #endif /* !go32 && !win32 */
 }
 
-/* Kill the inferior process.  Make us have no inferior.  */
-
+/* Kill the inferior process.  Make us have no inferior: */
 static void
-kill_command (char *arg, int from_tty)
+kill_command(char *arg, int from_tty)
 {
   /* FIXME:  This should not really be inferior_ptid (or target_has_execution).
      It should be a distinct flag that indicates that a target is active, cuz
      some targets don't have processes! */
 
-  if (ptid_equal (inferior_ptid, null_ptid))
-    error (_("The program is not being run."));
-  /* APPLE LOCAL begin don't query if we're an MI command */
-  if (!ui_out_is_mi_like_p (uiout)
-      && !query ("Kill the program being debugged? "))
-    /* APPLE LOCAL end don't query if we're an MI command */
-    error (_("Not confirmed."));
-  target_kill ();
+  if (ptid_equal(inferior_ptid, null_ptid))
+    error(_("The program is not being run."));
+  /* APPLE LOCAL begin do NOT query if we are an MI command */
+  if (!ui_out_is_mi_like_p(uiout)
+      && !query("Kill the program being debugged? "))
+    /* APPLE LOCAL end do NOT query if we are an MI command */
+    error(_("Not confirmed."));
+  target_kill();
 
-  init_thread_list ();		/* Destroy thread info */
+  init_thread_list();		/* Destroy thread info */
 
   /* Killing off the inferior can leave us with a core file.  If so,
      print the state we are left in.  */
   if (target_has_stack)
     {
-      printf_filtered (_("In %s,\n"), target_longname);
+      printf_filtered(_("In %s,\n"), target_longname);
       if (deprecated_selected_frame == NULL)
-	fputs_filtered ("No selected stack frame.\n", gdb_stdout);
+	fputs_filtered("No selected stack frame.\n", gdb_stdout);
       else
-	print_stack_frame (get_selected_frame (NULL), 1, SRC_AND_LOC);
+	print_stack_frame(get_selected_frame(NULL), 1, SRC_AND_LOC);
     }
-  bfd_cache_close_all ();
+  bfd_cache_close_all();
   /* APPLE LOCAL begin */
   if (state_change_hook)
-    state_change_hook (STATE_INFERIOR_LOADED);
+    state_change_hook(STATE_INFERIOR_LOADED);
   /* APPLE LOCAL end */
 }
 
@@ -626,67 +624,67 @@ kill_command (char *arg, int from_tty)
    process when handling SIGINT */
 
 static void
-pass_signal (int signo)
+pass_signal(int signo)
 {
 #ifndef _WIN32
-  kill (PIDGET (inferior_ptid), SIGINT);
-#endif
+  kill(PIDGET(inferior_ptid), SIGINT);
+#endif /* !_WIN32 */
 }
 
-static void (*osig) ();
+static void (*osig)(int);
 
 void
-set_sigint_trap (void)
+set_sigint_trap(void)
 {
   if (attach_flag || inferior_thisrun_terminal)
     {
-      osig = (void (*)()) signal (SIGINT, pass_signal);
+      osig = (void (*)(int))signal(SIGINT, pass_signal);
     }
 }
 
 void
-clear_sigint_trap (void)
+clear_sigint_trap(void)
 {
   if (attach_flag || inferior_thisrun_terminal)
     {
-      signal (SIGINT, osig);
+      signal(SIGINT, osig);
     }
 }
 
-#if defined (SIGIO) && defined (FASYNC) && defined (FD_SET) && defined (F_SETOWN)
-static void (*old_sigio) ();
+#if defined(SIGIO) && defined(FASYNC) && defined(FD_SET) && defined(F_SETOWN)
+static void (*old_sigio)(int);
 
 static void
-handle_sigio (int signo)
+handle_sigio(int signo)
 {
   int numfds;
   fd_set readfds;
 
-  signal (SIGIO, handle_sigio);
+  signal(SIGIO, handle_sigio);
 
-  FD_ZERO (&readfds);
-  FD_SET (target_activity_fd, &readfds);
-  numfds = select (target_activity_fd + 1, &readfds, NULL, NULL, NULL);
-  if (numfds >= 0 && FD_ISSET (target_activity_fd, &readfds))
+  FD_ZERO(&readfds);
+  FD_SET(target_activity_fd, &readfds);
+  numfds = select((target_activity_fd + 1), &readfds, NULL, NULL, NULL);
+  if ((numfds >= 0) && FD_ISSET(target_activity_fd, &readfds))
     {
-#ifndef _WIN32
-      if ((*target_activity_function) ())
-	kill (PIDGET (inferior_ptid), SIGINT);
-#endif
+# ifndef _WIN32
+      if ((*target_activity_function)())
+	kill(PIDGET(inferior_ptid), SIGINT);
+# endif /* !_WIN32 */
     }
 }
 
 static int old_fcntl_flags;
 
 void
-set_sigio_trap (void)
+set_sigio_trap(void)
 {
   if (target_activity_function)
     {
-      old_sigio = (void (*)()) signal (SIGIO, handle_sigio);
-      fcntl (target_activity_fd, F_SETOWN, getpid ());
-      old_fcntl_flags = fcntl (target_activity_fd, F_GETFL, 0);
-      fcntl (target_activity_fd, F_SETFL, old_fcntl_flags | FASYNC);
+      old_sigio = (void (*)(int))signal(SIGIO, handle_sigio);
+      fcntl(target_activity_fd, F_SETOWN, getpid());
+      old_fcntl_flags = fcntl(target_activity_fd, F_GETFL, 0);
+      fcntl(target_activity_fd, F_SETFL, (old_fcntl_flags | FASYNC));
     }
 }
 
@@ -695,8 +693,8 @@ clear_sigio_trap (void)
 {
   if (target_activity_function)
     {
-      signal (SIGIO, old_sigio);
-      fcntl (target_activity_fd, F_SETFL, old_fcntl_flags);
+      signal(SIGIO, old_sigio);
+      fcntl(target_activity_fd, F_SETFL, old_fcntl_flags);
     }
 }
 #else /* No SIGIO.  */
@@ -704,14 +702,14 @@ void
 set_sigio_trap (void)
 {
   if (target_activity_function)
-    internal_error (__FILE__, __LINE__, _("failed internal consistency check"));
+    internal_error(__FILE__, __LINE__, _("failed internal consistency check"));
 }
 
 void
-clear_sigio_trap (void)
+clear_sigio_trap(void)
 {
   if (target_activity_function)
-    internal_error (__FILE__, __LINE__, _("failed internal consistency check"));
+    internal_error(__FILE__, __LINE__, _("failed internal consistency check"));
 }
 #endif /* No SIGIO.  */
 
@@ -726,27 +724,27 @@ clear_sigio_trap (void)
    calls setpgrp and a setpgrp which does nothing (any system with job control
    will have one or the other).  */
 int
-gdb_setpgid (void)
+gdb_setpgid(void)
 {
   int retval = 0;
 
   if (job_control)
     {
-#if defined (HAVE_TERMIOS) || defined (TIOCGPGRP)
-#ifdef HAVE_SETPGID
-      /* The call setpgid (0, 0) is supposed to work and mean the same
+#if defined(HAVE_TERMIOS) || defined(TIOCGPGRP)
+# ifdef HAVE_SETPGID
+      /* The call setpgid(0, 0) is supposed to work and mean the same
          thing as this, but on Ultrix 4.2A it fails with EPERM (and
-         setpgid (getpid (), getpid ()) succeeds).  */
-      retval = setpgid (getpid (), getpid ());
-#else
-#ifdef HAVE_SETPGRP
-#ifdef SETPGRP_VOID
-      retval = setpgrp ();
-#else
-      retval = setpgrp (getpid (), getpid ());
-#endif
-#endif /* HAVE_SETPGRP */
-#endif /* HAVE_SETPGID */
+         setpgid(getpid(), getpid()) succeeds).  */
+      retval = setpgid(getpid(), getpid());
+# else
+#  ifdef HAVE_SETPGRP
+#   ifdef SETPGRP_VOID
+      retval = setpgrp();
+#   else
+      retval = setpgrp(getpid(), getpid());
+#   endif /* SETPGRP_VOID */
+#  endif /* HAVE_SETPGRP */
+# endif /* HAVE_SETPGID */
 #endif /* defined (HAVE_TERMIOS) || defined (TIOCGPGRP) */
     }
 
@@ -756,11 +754,11 @@ gdb_setpgid (void)
 void
 _initialize_inflow (void)
 {
-  add_info ("terminal", term_info,
-	    _("Print inferior's saved terminal status."));
+  add_info("terminal", term_info,
+           _("Print inferior's saved terminal status."));
 
-  add_com ("kill", class_run, kill_command,
-	   _("Kill execution of program being debugged."));
+  add_com("kill", class_run, kill_command,
+          _("Kill execution of program being debugged."));
 
   inferior_ptid = null_ptid;
 
@@ -772,22 +770,24 @@ _initialize_inflow (void)
 #if defined (HAVE_TERMIOS)
   /* Do all systems with termios have the POSIX way of identifying job
      control?  I hope so.  */
-#ifdef _POSIX_JOB_CONTROL
+# ifdef _POSIX_JOB_CONTROL
   job_control = 1;
-#else
-#ifdef _SC_JOB_CONTROL
-  job_control = sysconf (_SC_JOB_CONTROL);
-#else
+# else
+#  ifdef _SC_JOB_CONTROL
+  job_control = sysconf(_SC_JOB_CONTROL);
+#  else
   job_control = 0;		/* have to assume the worst */
-#endif /* _SC_JOB_CONTROL */
-#endif /* _POSIX_JOB_CONTROL */
+#  endif /* _SC_JOB_CONTROL */
+# endif /* _POSIX_JOB_CONTROL */
 #endif /* HAVE_TERMIOS */
 
 #ifdef HAVE_SGTTY
-#ifdef TIOCGPGRP
+# ifdef TIOCGPGRP
   job_control = 1;
-#else
+# else
   job_control = 0;
-#endif /* TIOCGPGRP */
+# endif /* TIOCGPGRP */
 #endif /* sgtty */
 }
+
+/* EOF */

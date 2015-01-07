@@ -5546,16 +5546,16 @@ disable_user_breakpoints_before_operation (void)
    disabled by accident.  */
 
 void
-enable_user_breakpoints_after_operation (void)
+enable_user_breakpoints_after_operation(void *unused ATTRIBUTE_UNUSED)
 {
   struct breakpoint *b;
 
-  ALL_BREAKPOINTS (b)
+  ALL_BREAKPOINTS(b)
   {
     if (b->enable_state == bp_hand_call_disabled)
       {
 	b->enable_state = bp_enabled;
-	check_duplicates (b);
+	check_duplicates(b);
       }
   }
 }
@@ -5564,11 +5564,11 @@ enable_user_breakpoints_after_operation (void)
    them for updating data formatters, and other varobj operations.  */
 
 struct cleanup *
-make_cleanup_enable_disable_bpts_during_operation (void)
+make_cleanup_enable_disable_bpts_during_operation(void)
 {
-  disable_user_breakpoints_before_operation ();
-  return make_cleanup (enable_user_breakpoints_after_operation,
-		       NULL);
+  disable_user_breakpoints_before_operation();
+  return make_cleanup(enable_user_breakpoints_after_operation,
+                      NULL);
 }
 /* APPLE LOCAL end:  Disable user breakpoints while updating data
    formatters.  */

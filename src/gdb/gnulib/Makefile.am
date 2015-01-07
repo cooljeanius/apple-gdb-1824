@@ -500,6 +500,10 @@ mostlyclean-local: mostlyclean-generic
 distclean-local:
 	rm -rf autom4te.cache || rmdir autom4te.cache
 
+maintainer-clean-local:
+	-(unlink fnmatch.h || rm fnmatch.h)
+	-test -e import/Makefile || echo "no Makefile in import directory"
+
 .PHONY: all all-am all-local all-recursive
 
 pdf-local:

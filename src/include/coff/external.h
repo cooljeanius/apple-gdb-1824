@@ -91,7 +91,7 @@ struct external_scnhdr
 /********************** LINE NUMBERS **********************/
 
 #ifndef L_LNNO_SIZE
-# error L_LNNO_SIZE needs to be defined
+ # error L_LNNO_SIZE needs to be defined
 /* (either "2" or "4", depending on arch) */
 #endif /* !L_LNNO_SIZE */
 

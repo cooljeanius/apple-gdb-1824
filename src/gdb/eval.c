@@ -415,6 +415,10 @@ init_array_element(struct value *array, struct value *element,
              * this to try to silence '-Wunsafe-loop-optimizations': */
             break; /* (not enough, apparently...) */
           }
+          if (index == INFINITY) {
+            /* this way works though: */
+            break;
+          }
 	}
     }
   else

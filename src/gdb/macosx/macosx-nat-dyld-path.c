@@ -1,4 +1,4 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* macosx-nat-dyld-path.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002, 2004
    Free Software Foundation, Inc.
 
@@ -37,10 +37,11 @@
 
 extern macosx_dyld_thread_status macosx_dyld_status;
 
-#define assert CHECK_FATAL
+#ifndef assert
+# define assert CHECK_FATAL
+#endif /* !assert */
 
-/* Declarations of functions used only in this file. */
-
+/* Declarations of functions used only in this file: */
 static char *build_suffix_name (const char *name, const char *suffix);
 static char *search_for_name_in_path (const char *name, const char *path,
                                       const char *suffix);
@@ -344,6 +345,7 @@ dyld_library_basename (const char *path, const char **s, int *len,
   const char *p = NULL;
   const char *q = NULL;
   const char *dyld_image_suffix = NULL;
+  char *newstr;
 
   /* If the user specified a DYLD_IMAGE_SUFFIX, get a pointer to that string. */
   if (macosx_dyld_status.path_info.image_suffix != NULL)
@@ -384,8 +386,7 @@ dyld_library_basename (const char *path, const char **s, int *len,
   p = get_framework_pathname (path, ".bundle/", 1);
   if (p != NULL)
     {
-
-      q = strrchr (path, '/');
+      q = strrchr(path, '/');
       assert (q != NULL);
       assert (*q++ == '/');
       *s = xstrdup (q);
@@ -403,15 +404,16 @@ dyld_library_basename (const char *path, const char **s, int *len,
     }
 
   /* Not a bundle, not a framework, just a normal dylib/bundle pathname.
-     If it's something like /usr/lib/libSystem.B_debug.dylib, we want to return
-     libSystem.B.dylib.  We'll need to copy the basename const string to a 
-     writable memory buffer and move that _debug out of the way.  */
+   * If it is something like /usr/lib/libSystem.B_debug.dylib, then we want
+   * to return libSystem.B.dylib.  We shall need to copy the basename const
+   * string to a writable memory buffer, and then move that _debug out of
+   * the way: */
 
-  q = strrchr (path, '/');
+  q = strrchr(path, '/');
   if (q != NULL)
     path = ++q;
 
-  char *newstr = xstrdup (path);
+  newstr = xstrdup(path);
   if (dyld_image_suffix != NULL)
     {
       char *suffixptr = strstr (newstr, dyld_image_suffix);
@@ -421,7 +423,7 @@ dyld_library_basename (const char *path, const char **s, int *len,
 
   /* Copy anything after the suffix to a scratch buffer, then the contents
      of the scratch buffer on top of the suffix.  This is me being paranoid
-     where the stuff after suffix could be longer than the suffix 
+     where the stuff after suffix could be longer than the suffix
      ("_debug.dylibbbber") and a straight memcpy could have overlap.  */
 
       if (suffixptr != NULL)
@@ -567,7 +569,7 @@ dyld_resolve_image (const struct dyld_path_info *d, const char *dylib_name)
   if (dylib_name[0] == '@'
       && strstr (dylib_name, "@executable_path") == dylib_name)
     {
-      /* Handle the @executable_path name here... 
+      /* Handle the @executable_path name here...
          This goes after all the framework path stuff since DYLD gives
          framework path precedence over the executable path.  */
       int cookie_len = strlen ("@executable_path");
@@ -631,13 +633,13 @@ dyld_init_paths (dyld_path_info * d)
   const char *default_fallback_framework_path =
     "%s/Library/Frameworks:"
     "/Local/Library/Frameworks:"
-    "/Network/Library/Frameworks:" 
+    "/Network/Library/Frameworks:"
     "/System/Library/Frameworks";
 
   const char *default_fallback_library_path =
-    "%s/lib:" 
-    "/usr/local/lib:" 
-    "/lib:" 
+    "%s/lib:"
+    "/usr/local/lib:"
+    "/lib:"
     "/usr/lib";
 
   if (d->framework_path != NULL)
@@ -652,37 +654,37 @@ dyld_init_paths (dyld_path_info * d)
     xfree (d->image_suffix);
   if (d->insert_libraries != NULL)
     xfree (d->insert_libraries);
-  
+
   d->framework_path =
     get_in_environ (inferior_environ, "DYLD_FRAMEWORK_PATH");
   if (d->framework_path != NULL)
     d->framework_path = xstrdup (d->framework_path);
-  
+
   d->library_path =
     get_in_environ (inferior_environ, "DYLD_LIBRARY_PATH");
   if (d->library_path != NULL)
     d->library_path = xstrdup (d->library_path);
-  
+
   d->fallback_framework_path =
     get_in_environ (inferior_environ, "DYLD_FALLBACK_FRAMEWORK_PATH");
   if (d->fallback_framework_path != NULL)
     d->fallback_framework_path = xstrdup (d->fallback_framework_path);
-  
+
   d->fallback_library_path =
     get_in_environ (inferior_environ, "DYLD_FALLBACK_LIBRARY_PATH");
   if (d->fallback_library_path != NULL)
     d->fallback_library_path = xstrdup (d->fallback_library_path);
-  
+
   d->image_suffix =
     get_in_environ (inferior_environ, "DYLD_IMAGE_SUFFIX");
   if (d->image_suffix != NULL)
     d->image_suffix = xstrdup (d->image_suffix);
-  
+
   d->insert_libraries =
     get_in_environ (inferior_environ, "DYLD_INSERT_LIBRARIES");
   if (d->insert_libraries != NULL)
     d->insert_libraries = xstrdup (d->insert_libraries);
-  
+
   home = get_in_environ (inferior_environ, "HOME");
   if (home != NULL)
     home = xstrdup (home);
@@ -707,3 +709,5 @@ dyld_init_paths (dyld_path_info * d)
 
   xfree (home);
 }
+
+/* EOF */

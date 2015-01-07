@@ -51,7 +51,7 @@ typedef struct trad_user_arm_regs *trad_user_regs_ptr_t;
 typedef struct trad_user_mips_regs_struct *trad_user_regs_ptr_t;
 #  else
 #   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#    warning "Unsupported CPU ABI"
+ #    warning "Unsupported CPU ABI"
 #   endif /* __GNUC__ && !__STRICT_ANSI__ */
 typedef void *trad_user_regs_ptr_t;
 #  endif /* __mips__ */

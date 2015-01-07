@@ -46,7 +46,7 @@ Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA
 # include TRAD_HEADER
 #else
 # if defined(__GNUC__) && !defined(__STRICT_ANSI__)
-#  warning "TRAD_HEADER cannot be included because it is not defined."
+ #  warning "TRAD_HEADER cannot be included because it is not defined."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* TRAD_HEADER */
 

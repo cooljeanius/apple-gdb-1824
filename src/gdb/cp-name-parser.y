@@ -1,10 +1,10 @@
-/* YACC parser for C++ names, for GDB.
-
-   Copyright 2003, 2004, 2005
-   Free Software Foundation, Inc.
-
-   Parts of the lexer are based on c-exp.y from GDB.
-
+/* cp-name-parser.y: YACC parser for C++ names, for GDB.
+ *
+ * Copyright 2003, 2004, 2005
+ * Free Software Foundation, Inc.
+ *
+ * Parts of the lexer are based on c-exp.y from GDB.  */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -111,13 +111,13 @@ static struct demangle_component *d_binary (const char *,
 #define	yylval	cpname_lval
 #define	yychar	cpname_char
 #define	yydebug	cpname_debug
-#define	yypact	cpname_pact	
-#define	yyr1	cpname_r1			
-#define	yyr2	cpname_r2			
-#define	yydef	cpname_def		
-#define	yychk	cpname_chk		
-#define	yypgo	cpname_pgo		
-#define	yyact	cpname_act		
+#define	yypact	cpname_pact
+#define	yyr1	cpname_r1
+#define	yyr2	cpname_r2
+#define	yydef	cpname_def
+#define	yychk	cpname_chk
+#define	yypgo	cpname_pgo
+#define	yyact	cpname_act
 #define	yyexca	cpname_exca
 #define yyerrflag cpname_errflag
 #define yynerrs	cpname_nerrs
@@ -925,7 +925,7 @@ declarator_1	:	ptr_operator declarator_1
 		|	direct_declarator_1
 
 			/* Function local variable or type.  The typespec to
-			   our left is the type of the containing function. 
+			   our left is the type of the containing function.
 			   This should be OK, because function local types
 			   can not be templates, so the return types of their
 			   members will not be mangled.  If they are hopefully
@@ -1141,7 +1141,7 @@ exp	:	exp '?' exp ':' exp	%prec '?'
 						 fill_comp (DEMANGLE_COMPONENT_TRINARY_ARG2, $3, $5)));
 		}
 	;
-			  
+
 exp	:	INT
 	;
 
@@ -1154,7 +1154,7 @@ exp	:	SIZEOF '(' type ')'	%prec UNARY
 	;
 
 /* C++.  */
-exp     :       TRUEKEYWORD    
+exp     :       TRUEKEYWORD
 		{ struct demangle_component *i;
 		  i = make_name ("1", 1);
 		  $$ = fill_comp (DEMANGLE_COMPONENT_LITERAL,
@@ -1163,7 +1163,7 @@ exp     :       TRUEKEYWORD
 		}
 	;
 
-exp     :       FALSEKEYWORD   
+exp     :       FALSEKEYWORD
 		{ struct demangle_component *i;
 		  i = make_name ("0", 1);
 		  $$ = fill_comp (DEMANGLE_COMPONENT_LITERAL,
@@ -1516,7 +1516,7 @@ parse_escape (const char **string_ptr)
       lexptr += 2;					\
       yylval.opname = string;				\
       return token;					\
-    }      
+    }
 
 #define HANDLE_TOKEN3(string, token)			\
   if (lexptr[1] == string[1] && lexptr[2] == string[2])	\
@@ -1524,7 +1524,7 @@ parse_escape (const char **string_ptr)
       lexptr += 3;					\
       yylval.opname = string;				\
       return token;					\
-    }      
+    }
 
 /* Read one token, getting characters through LEXPTR.  */
 
@@ -1948,30 +1948,31 @@ char *
 cp_comp_to_string (struct demangle_component *result, int estimated_len)
 {
   char *str, *prefix = NULL, *buf;
-  size_t err = 0;
+  size_t err = 0UL;
 
-  if (result->type == GLOBAL_DESTRUCTORS)
+  if (result->type == (enum demangle_component_type)GLOBAL_DESTRUCTORS)
     {
       result = d_left (result);
       prefix = "global destructors keyed to ";
     }
-  else if (result->type == GLOBAL_CONSTRUCTORS)
+  else if (result->type == (enum demangle_component_type)GLOBAL_CONSTRUCTORS)
     {
-      result = d_left (result);
+      result = d_left(result);
       prefix = "global constructors keyed to ";
     }
 
-  str = cplus_demangle_print (DMGL_PARAMS | DMGL_ANSI, result, estimated_len, &err);
+  str = cplus_demangle_print((DMGL_PARAMS | DMGL_ANSI), result,
+                             estimated_len, &err);
   if (str == NULL)
     return NULL;
 
   if (prefix == NULL)
     return str;
 
-  buf = malloc (strlen (str) + strlen (prefix) + 1);
-  strcpy (buf, prefix);
-  strcat (buf, str);
-  free (str);
+  buf = (char *)malloc(strlen(str) + strlen(prefix) + 1UL);
+  strcpy(buf, prefix);
+  strcat(buf, str);
+  free(str);
   return (buf);
 }
 
@@ -1987,16 +1988,16 @@ cp_demangled_name_to_comp (const char *demangled_name, void **memory,
   static char errbuf[60];
   struct demangle_component *result;
 
-  int len = strlen (demangled_name);
+  int len = strlen(demangled_name);
 
-  len = len + len / 8;
+  len = (len + len / 8);
   prev_lexptr = lexptr = demangled_name;
   error_lexptr = NULL;
   global_errmsg = NULL;
 
-  demangle_info = allocate_info (len);
+  demangle_info = allocate_info(len);
 
-  if (yyparse ())
+  if (yyparse())
     {
       if (global_errmsg && errmsg)
 	{
@@ -2017,9 +2018,8 @@ cp_demangled_name_to_comp (const char *demangled_name, void **memory,
 }
 
 #ifdef TEST_CPNAMES
-
 static void
-cp_print (struct demangle_component *result)
+cp_print(struct demangle_component *result)
 {
   char *str;
   size_t err = 0;
@@ -2045,7 +2045,7 @@ cp_print (struct demangle_component *result)
 }
 
 static char
-trim_chars (char *lexptr, char **extra_chars)
+trim_chars(char *lexptr, char **extra_chars)
 {
   char *p = (char *) symbol_end (lexptr);
   char c = 0;
@@ -2061,7 +2061,7 @@ trim_chars (char *lexptr, char **extra_chars)
 }
 
 int
-main (int argc, char **argv)
+main(int argc, char **argv)
 {
   char *str2, *extra_chars, c;
   char buf[65536];
@@ -2128,5 +2128,6 @@ main (int argc, char **argv)
     }
   return 0;
 }
+#endif /* TEST_CPNAMES */
 
-#endif
+/* End of cp-name-parser.y */

@@ -1,4 +1,4 @@
-/* GDB CLI command scripting.
+/* cli-script.c: GDB CLI command scripting.
 
    Copyright 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994,
    1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2004, 2005 Free
@@ -37,29 +37,29 @@
 #include "cli/cli-script.h"
 
 /* From mi/mi-main.c */
-extern void mi_interpreter_exec_bp_cmd (char *command, 
-					char **argv, int argc);
+extern void mi_interpreter_exec_bp_cmd(char *command,
+                                       char **argv, int argc);
 
 /* From gdb/top.c */
 
-extern void dont_repeat (void);
+extern void dont_repeat(void);
 
-extern void do_restore_instream_cleanup (void *stream);
+extern void do_restore_instream_cleanup(void *stream);
 
-/* Prototypes for local functions */
-
+/* Prototypes for local functions: */
 static enum command_control_type
-	recurse_read_control_structure (char * (*read_next_line_func) (), struct command_line *current_cmd);
+recurse_read_control_structure(char *(*read_next_line_func)(void),
+                               struct command_line *current_cmd);
 
-static char *insert_args (char *line);
+static char *insert_args(char *line);
 
-static struct cleanup * setup_user_args (char *p);
+static struct cleanup *setup_user_args(char *p);
 
-static void validate_comname (char *);
+static void validate_comname(char *);
 
-static char *read_next_line ();
+static char *read_next_line(void);
 
-/* Level of control structure.  */
+/* Level of control structure: */
 static int control_level;
 
 /* Structure for arguments to user defined functions.  */
@@ -252,7 +252,7 @@ execute_cmd_post_hook (struct cmd_list_element *c)
 /* Execute the command in CMD.  */
 static void
 do_restore_user_call_depth (void * call_depth)
-{	
+{
   int * depth = call_depth;
   /* We will be returning_to_top_level() at this point, so we want to
      reset our depth. */
@@ -285,17 +285,17 @@ execute_user_command (struct cmd_list_element *c, char *args)
      user-defined function.  */
   old_chain = make_cleanup (do_restore_instream_cleanup, instream);
   instream = (FILE *) 0;
- 
-  /* We have to turn off async behavior for user defined commands, 
-     otherwise the execution of synchronous commands will get out of 
-     step with the asynchronous ones. */ 
- 
-  if (target_can_async_p ()) 
-    { 
-      gdb_set_async_override ((void *) 1); 
-      make_cleanup (gdb_set_async_override, (void *) 0); 
-    } 
- 
+
+  /* We have to turn off async behavior for user defined commands,
+     otherwise the execution of synchronous commands will get out of
+     step with the asynchronous ones. */
+
+  if (target_can_async_p ())
+    {
+      gdb_set_async_override ((void *) 1);
+      make_cleanup (gdb_set_async_override, (void *) 0);
+    }
+
   while (cmdlines)
     {
       ret = execute_control_command (cmdlines);
@@ -324,7 +324,7 @@ execute_control_command (struct command_line *cmd)
   char *new_line;
 
   /* APPLE LOCAL sigint_taken_p */
-  extern int sigint_taken_p (void); 
+  extern int sigint_taken_p (void);
 
   /* Start by assuming failure, if a problem is detected, the code
      below will simply "break" out of the switch.  */
@@ -345,12 +345,12 @@ execute_control_command (struct command_line *cmd)
        we need to use the mi interpreter-exec command to get all
        the output right.
 
-       FIXME: Two things - 
+       FIXME: Two things -
          1) We should have a way of specifying (at least for
          breakpoint commands) what interpreter they are meant
          for.
          2) We should have a generic route to another interpreter
-         command which we can use here, rather than having to 
+         command which we can use here, rather than having to
          special case interpreters as we do here. */
 
       if (ui_out_is_mi_like_p (uiout))
@@ -393,14 +393,14 @@ execute_control_command (struct command_line *cmd)
 	    int cond_result;
 
 	    /* APPLE LOCAL begin sigint_taken_p */
-	    /* We want to be user interruptible in a while loop, and QUIT 
-	       doesn't do anything unless the immediate_quit global is set. 
-	       An alternative would be to error(), but that's  
-	       equivalent to a longjmp() to the top level in this case  
-	       since this function isn't executed in a catch_errors()  
-	       environment. */ 
-	    if (sigint_taken_p ()) 
-	      async_request_quit (0); 
+	    /* We want to be user interruptible in a while loop, and QUIT
+	       doesn't do anything unless the immediate_quit global is set.
+	       An alternative would be to error(), but that's
+	       equivalent to a longjmp() to the top level in this case
+	       since this function isn't executed in a catch_errors()
+	       environment. */
+	    if (sigint_taken_p ())
+	      async_request_quit (0);
 	    /* APPLE LOCAL end sigint_taken_p */
 
 	    /* Evaluate the expression.  */
@@ -634,7 +634,7 @@ locate_arg (char *p)
 {
   while ((p = strchr (p, '$')))
     {
-      if (strncmp (p, "$arg", 4) == 0 && (p[4] == 'c' || isdigit (p[4]))) 
+      if (strncmp (p, "$arg", 4) == 0 && (p[4] == 'c' || isdigit (p[4])))
 	return p;
       p++;
     }
@@ -656,7 +656,7 @@ insert_args (char *line)
   while ((p = locate_arg (line)))
     {
       len += p - line;
-      
+
       if (p[4] == 'c')          /* $argc */
         {
           if (user_args->count > 9)
@@ -669,7 +669,7 @@ insert_args (char *line)
 	  /* APPLE LOCAL huh? */
 	  len += p - line;
 	  i = p[4] - '0';
-	  
+
 	  if (i >= user_args->count)
 	    {
 	      error (_("Missing argument %d in user function.\n"), i);
@@ -710,7 +710,7 @@ insert_args (char *line)
       else
         {
 	  i = p[4] - '0';
-	  
+
 	  len = user_args->a[i].len;
 	  if (len)
 	    {
@@ -755,18 +755,17 @@ realloc_body_list (struct command_line *command, int new_length)
 }
 
 /* Read one line from the input stream.  If the command is an "else" or
-   "end", return such an indication to the caller.  */
-
+ * "end", then return such an indication to the caller: */
 char *
-read_next_line ()
+read_next_line(void)
 {
   char *prompt_ptr, control_prompt[256];
   int i = 0;
 
   if (control_level >= 254)
-    error (_("Control nesting too deep!"));
+    error(_("Control nesting too deep!"));
 
-  /* Set a prompt based on the nesting of the control commands.  */
+  /* Set a prompt based on the nesting of the control commands: */
   if (instream == stdin || (instream == 0 && deprecated_readline_hook != NULL))
     {
       for (i = 0; i < control_level; i++)
@@ -866,14 +865,15 @@ process_next_line (char *p, struct command_line **command)
   return ok_command;
 }
 
-/* Recursively read in the control structures and create a command_line 
+/* Recursively read in the control structures and create a command_line
    structure from them.
 
    The parent_control parameter is the control structure in which the
    following commands are nested.  */
 
 static enum command_control_type
-recurse_read_control_structure (char * (*read_next_line_func) (), struct command_line *current_cmd)
+recurse_read_control_structure(char *(*read_next_line_func)(void),
+                               struct command_line *current_cmd)
 {
   int current_body, i;
   enum misc_command_type val;
@@ -1005,7 +1005,7 @@ read_command_lines (char *prompt_arg, int from_tty)
 }
 
 struct command_line *
-read_command_lines_1 (char * (*read_next_line_func) ())
+read_command_lines_1(char * (*read_next_line_func)(void))
 {
   struct command_line *head, *tail, *next;
   struct cleanup *old_chain;
@@ -1172,7 +1172,7 @@ user_defined_command (char *ignore, int from_tty)
 void
 define_command (char *comname, int from_tty)
 {
-#define MAX_TMPBUF 128   
+#define MAX_TMPBUF 128
   enum cmd_hook_type
     {
       CMD_NO_HOOK = 0,
@@ -1185,7 +1185,7 @@ define_command (char *comname, int from_tty)
   char tmpbuf[MAX_TMPBUF];
   int  hook_type      = CMD_NO_HOOK;
   int  hook_name_size = 0;
-   
+
 #define	HOOK_STRING	"hook-"
 #define	HOOK_LEN 5
 #define HOOK_POST_STRING "hookpost-"
@@ -1223,7 +1223,7 @@ define_command (char *comname, int from_tty)
       hook_type      = CMD_POST_HOOK;
       hook_name_size = HOOK_POST_LEN;
     }
-   
+
   if (hook_type != CMD_NO_HOOK)
     {
       /* Look up cmd it hooks, and verify that we got an exact match.  */

@@ -1,6 +1,6 @@
-/* GDB CLI commands.
+/* cli-cmds.c: GDB CLI commands.
 
-   Copyright 2000, 2001, 2002, 2003, 2004, 2005 Free Software Foundation, Inc.
+   Copyright 2000-2005 Free Software Foundation, Inc.
 
    This file is part of GDB.
 
@@ -243,7 +243,7 @@ complete_command (char *arg, int from_tty)
    of completions to the current uiout.  */
 
 int
-cli_interpreter_complete (void *data, char *word, char *command_buffer, 
+cli_interpreter_complete (void *data, char *word, char *command_buffer,
 			  int cursor, int limit)
 {
   char **completions;
@@ -284,7 +284,7 @@ cli_interpreter_complete (void *data, char *word, char *command_buffer,
 	  item = next_item;
 
           /* APPLE LOCAL: The mi output doesn't have the
-             ``Display all 236609 possibilities? (y or n)'' 
+             ``Display all 236609 possibilities? (y or n)''
              feature that readline gives us for free, so we
              need a facility to limit the number of matches
              returned.  */
@@ -463,7 +463,7 @@ cd_command (char *dir, int from_tty)
 
   if (from_tty)
     pwd_command ((char *) 0, 1);
-  
+
   do_cleanups (old_cleanups);
 }
 
@@ -496,7 +496,7 @@ source_command (char *args, int from_tty)
    that sources the file so that main.c can call source_file_attach with
    a filename with embedded whitespace and the argv expander won't
    expand it into multiple arguments.  I just copied Klee's scheme
-   from corefile.c and core_file_command -> core_file_attach.  
+   from corefile.c and core_file_command -> core_file_attach.
    This would more properly be up in ../top.c because it's specifically
    not the CLI command, but that would probably make FSF<->Apple merging
    more work, so here it stays.  */
@@ -506,7 +506,7 @@ source_file (char *file, int from_tty)
 {
   FILE *stream;
   /* APPLE LOCAL end refactor source command */
-  
+
   stream = fopen (file, FOPEN_RT);
   if (!stream)
     {
@@ -657,8 +657,8 @@ edit_command (char *arg, int from_tty)
       if (! sals.nelts) return;  /*  C++  */
       if (sals.nelts > 1) {
 	/* APPLE LOCAL: ambiguous_line_spec returns
-	   1 if the line spec really was ambiguous - 
-	   rather than just being many matches of the 
+	   1 if the line spec really was ambiguous -
+	   rather than just being many matches of the
 	   same line.  */
         if (ambiguous_line_spec (&sals) == 1)
 	  {
@@ -703,21 +703,21 @@ edit_command (char *arg, int from_tty)
          symbol which means no source code.  */
 
       if (sal.symtab == 0)
-        error (_("No line number known for %s."), arg);
+        error(_("No line number known for %s."), arg);
     }
 
-  if ((editor = (char *) getenv ("EDITOR")) == NULL)
-      editor = "/bin/ex";
+  if ((editor = (char *)getenv("EDITOR")) == NULL)
+    editor = "/bin/ex";  /* is this really a sane default? */
 
   /* Approximate base-10 log of line to 1 unit for digit count */
-  for(log10=32, m=0x80000000; !(sal.line & m) && log10>0; log10--, m=m>>1);
-  log10 = 1 + (int)((log10 + (0 == ((m-1) & sal.line)))/3.32192809);
+  for (log10 = 32, m = 0x80000000; !(sal.line & m) && (log10 > 0); log10--, m = (m >> 1));
+  log10 = (1 + (int)((log10 + (0 == ((m - 1) & sal.line))) / 3.32192809f));
 
-  /* If we don't already know the full absolute file name of the
-     source file, find it now.  */
+  /* If we do NOT already know the full absolute file name of the source
+   * file, then find it now: */
   if (!sal.symtab->fullname)
     {
-      fn = symtab_to_fullname (sal.symtab);
+      fn = symtab_to_fullname(sal.symtab);
       if (!fn)
 	fn = "unknown";
     }
@@ -794,8 +794,8 @@ list_command (char *arg, int from_tty)
       if (sals.nelts > 1)
 	{
 	/* APPLE LOCAL: ambiguous_line_spec returns
-	   1 if the line spec really was ambiguous - 
-	   rather than just being many matches of the 
+	   1 if the line spec really was ambiguous -
+	   rather than just being many matches of the
 	   same line.  */
         if (ambiguous_line_spec (&sals) == 1)
 	  {
@@ -837,8 +837,8 @@ list_command (char *arg, int from_tty)
 	    {
 
 	      /* APPLE LOCAL: ambiguous_line_spec returns
-		 1 if the line spec really was ambiguous - 
-		 rather than just being many matches of the 
+		 1 if the line spec really was ambiguous -
+		 rather than just being many matches of the
 		 same line.  */
 	      if (ambiguous_line_spec (&sals) == 1)
 		{
@@ -1060,7 +1060,7 @@ show_user (char *args, int from_tty)
 /* Search through names of commands and documentations for a certain
    regular expression.
 */
-void 
+void
 apropos_command (char *searchstr, int from_tty)
 {
   extern struct cmd_list_element *cmdlist; /*This is the main command list*/
@@ -1092,7 +1092,7 @@ static int
 ambiguous_line_spec (struct symtabs_and_lines *sals)
 {
   int i;
-  /* APPLE LOCAL: Look through the sals to make sure they 
+  /* APPLE LOCAL: Look through the sals to make sure they
      aren't all the same file & line.  */
 
   if (sals->sals[0].symtab != NULL)
@@ -1123,12 +1123,12 @@ ambiguous_line_spec (struct symtabs_and_lines *sals)
 	}
       if (non_matching == 0)
 	return 0;
-    } 
+    }
   /* END APPLE LOCAL  */
   for (i = 0; i < sals->nelts; ++i)
     if (sals->sals[i].symtab != 0)
       printf_filtered ("file: \"%s\", line number: %d\n",
-		       sals->sals[i].symtab->filename != NULL 
+		       sals->sals[i].symtab->filename != NULL
 		       ? sals->sals[i].symtab->filename : "<Unknown File>",
 		       sals->sals[i].line);
     else

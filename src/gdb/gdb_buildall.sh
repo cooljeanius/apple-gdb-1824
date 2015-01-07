@@ -50,6 +50,8 @@ EOF
   exit 1
 }
 
+# 'these quotation marks are mis-balanced to fix the syntax highlighting"
+
 ### Command line options.
 makejobs=
 force=false

@@ -17,7 +17,7 @@
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
+   Foundation, Inc., 51 Franklin St., 5th Floor, Boston, MA 02110-1301, USA */
 
 #ifndef _BIN_SYSDEP_H
 #define _BIN_SYSDEP_H
@@ -45,7 +45,9 @@ extern int errno;
 #ifdef HAVE_UNISTD_H
 # include <unistd.h>
 #else
-# warning sysdep.h expects <unistd.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning "sysdep.h expects <unistd.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_UNISTD_H */
 
 #ifdef STRING_WITH_STRINGS
@@ -58,16 +60,18 @@ extern int errno;
 #  ifdef HAVE_STRINGS_H
 #   include <strings.h>
 #  else
-extern char *strchr ();
-extern char *strrchr ();
+extern char *strchr();
+extern char *strrchr();
 #  endif /* HAVE_STRINGS_H */
 # endif /* HAVE_STRING_H */
-#endif
+#endif /* STRING_WITH_STRINGS */
 
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #else
-# warning sysdep.h expects <stdlib.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning "sysdep.h expects <stdlib.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_STDLIB_H */
 
 #ifdef HAVE_FCNTL_H
@@ -76,34 +80,39 @@ extern char *strrchr ();
 # ifdef HAVE_SYS_FILE_H
 #  include <sys/file.h>
 # else
-#  warning sysdep.h expects a header for file-related functions to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #   warning "sysdep.h expects a header for file-related functions to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_SYS_FILE_H */
 #endif /* HAVE_FCNTL_H */
 
 #ifdef HAVE_SYS_STAT_H
 # include <sys/stat.h>
 #else
-# warning sysdep.h expects <sys/stat.h> to be included.
+# if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #  warning "sysdep.h expects <sys/stat.h> to be included."
+# endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_SYS_STAT_H */
 
-#include "binary-io.h" /* where is this supposed to be? usually in ../include */
+/* Where is this next one supposed to be? Usually in "../include": */
+#include "binary-io.h"
 
 #if !HAVE_DECL_STPCPY
-extern char *stpcpy (char *, const char *);
+extern char *stpcpy(char *, const char *);
 #endif /* !HAVE_DECL_STPCPY */
 
 #if !HAVE_DECL_STRSTR
-extern char *strstr ();
+extern char *strstr();
 #endif /* !HAVE_DECL_STRSTR */
 
 #ifdef HAVE_SBRK
 # if !HAVE_DECL_SBRK
-extern char *sbrk ();
+extern char *sbrk();
 # endif /* !HAVE_DECL_SBRK */
 #endif /* HAVE_SBRK */
 
 #if !HAVE_DECL_GETENV
-extern char *getenv ();
+extern char *getenv();
 #endif /* !HAVE_DECL_GETENV */
 
 #if !HAVE_DECL_ENVIRON
@@ -111,7 +120,7 @@ extern char **environ;
 #endif /* !HAVE_DECL_ENVIRON */
 
 #if !HAVE_DECL_FPRINTF
-extern int fprintf (FILE *, const char *, ...);
+extern int fprintf(FILE *, const char *, ...);
 #endif /* !HAVE_DECL_FPRINTF */
 
 #if !HAVE_DECL_SNPRINTF
@@ -142,18 +151,20 @@ extern int vsnprintf(char *, size_t, const char *, va_list);
 
 #ifdef HAVE_LOCALE_H
 # ifndef ENABLE_NLS
-   /* The Solaris version of locale.h always includes libintl.h.  If we have
-      been configured with --disable-nls then ENABLE_NLS will not be defined
-      and the dummy definitions of bindtextdomain (et al) below will conflict
-      with the defintions in libintl.h. So we define these values to prevent
-      the bogus inclusion of libintl.h.  */
+/* The Solaris version of locale.h always includes libintl.h.  If we have
+ * been configured with --disable-nls then ENABLE_NLS will not be defined
+ * and the dummy definitions of bindtextdomain (et al) below will conflict
+ * with the defintions in libintl.h. So we define these values to prevent
+ * the bogus inclusion of libintl.h.  */
 #  define _LIBINTL_H
 #  define _LIBGETTEXT_H
 # endif /* !ENABLE_NLS */
 # include <locale.h>
 #else
 # ifdef ENABLE_NLS
-#  warning sysdep.h expects <locale.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #   warning "sysdep.h expects <locale.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* ENABLE_NLS */
 #endif /* HAVE_LOCALE_H */
 
@@ -161,7 +172,9 @@ extern int vsnprintf(char *, size_t, const char *, va_list);
 # ifdef HAVE_LIBINTL_H
 #  include <libintl.h>
 # else
-#  warning sysdep.h expects <libintl.h> to be included.
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #   warning "sysdep.h expects <libintl.h> to be included."
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* HAVE_LIBINTL_H */
 # define _(String) gettext (String)
 # ifdef gettext_noop
@@ -187,17 +200,21 @@ extern int vsnprintf(char *, size_t, const char *, va_list);
 # include <limits.h>
 #else
 # ifndef PATH_MAX
-#  warning sysdep.h expects <limits.h> to be included for PATH_MAX
+#  if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #   warning "sysdep.h expects <limits.h> to be included for PATH_MAX"
+#  endif /* __GNUC__ && !__STRICT_ANSI__ */
 # endif /* !PATH_MAX */
 #endif /* HAVE_LIMITS_H */
 
 #ifndef PATH_MAX
-/* For MAXPATHLEN.  */
+/* For MAXPATHLEN: */
 # ifdef HAVE_SYS_PARAM_H
 #  include <sys/param.h>
 # else
 #  ifndef MAXPATHLEN
-#   warning sysdep.h expects <sys/param.h> to be included for MAXPATHLEN
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+ #    warning "sysdep.h wants to include <sys/param.h> for MAXPATHLEN"
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
 #  endif /* !MAXPATHLEN */
 # endif /* HAVE_SYS_PARAM_H */
 # ifndef PATH_MAX
@@ -210,3 +227,5 @@ extern int vsnprintf(char *, size_t, const char *, va_list);
 #endif /* !PATH_MAX */
 
 #endif /* _BIN_SYSDEP_H */
+
+/* EOF */

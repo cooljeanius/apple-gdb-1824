@@ -1,4 +1,4 @@
-/* Native-dependent code for the i386.
+/* i386-nat.c: Native-dependent code for the i386.
 
    Copyright 2001, 2004 Free Software Foundation, Inc.
 
@@ -81,8 +81,8 @@
    functionality yet (as of March 2001).  Note that the DE flag in the
    CR4 register needs to be set to support this.  */
 #ifndef DR_RW_IORW
-#define DR_RW_IORW	(0x2)	/* Break on I/O reads or writes.  */
-#endif
+# define DR_RW_IORW	(0x2)	/* Break on I/O reads or writes.  */
+#endif /* !DR_RW_IORW */
 
 /* Watchpoint/breakpoint length fields in DR7.  The 2-bit left shift
    is so we could OR this with the read/write field defined above.  */
@@ -179,23 +179,23 @@ typedef enum { WP_INSERT, WP_REMOVE, WP_COUNT } i386_wp_op_t;
 /* Return the value of a 4-bit field for DR7 suitable for watching a
    region of LEN bytes for accesses of type TYPE.  LEN is assumed to
    have the value of 1, 2, or 4.  */
-static unsigned i386_length_and_rw_bits (int len, enum target_hw_bp_type type);
+static unsigned i386_length_and_rw_bits(int len, enum target_hw_bp_type type);
 
 /* Insert a watchpoint at address ADDR, which is assumed to be aligned
    according to the length of the region to watch.  LEN_RW_BITS is the
    value of the bit-field from DR7 which describes the length and
    access type of the region to be watched by this watchpoint.  Return
    0 on success, -1 on failure.  */
-static int i386_insert_aligned_watchpoint (CORE_ADDR addr,
-					   unsigned len_rw_bits);
+static int i386_insert_aligned_watchpoint(CORE_ADDR addr,
+                                          unsigned len_rw_bits);
 
 /* Remove a watchpoint at address ADDR, which is assumed to be aligned
    according to the length of the region to watch.  LEN_RW_BITS is the
    value of the bits from DR7 which describes the length and access
    type of the region watched by this watchpoint.  Return 0 on
    success, -1 on failure.  */
-static int i386_remove_aligned_watchpoint (CORE_ADDR addr,
-					   unsigned len_rw_bits);
+static int i386_remove_aligned_watchpoint(CORE_ADDR addr,
+                                          unsigned len_rw_bits);
 
 /* Insert or remove a (possibly non-aligned) watchpoint, or count the
    number of debug registers required to watch a region at address
@@ -203,27 +203,29 @@ static int i386_remove_aligned_watchpoint (CORE_ADDR addr,
    successful insertion or removal, a positive number when queried
    about the number of registers, or -1 on failure.  If WHAT is not a
    valid value, bombs through internal_error.  */
-static int i386_handle_nonaligned_watchpoint (i386_wp_op_t what,
-					      CORE_ADDR addr, int len,
-					      enum target_hw_bp_type type);
+static int i386_handle_nonaligned_watchpoint(i386_wp_op_t what,
+                                             CORE_ADDR addr, int len,
+                                             enum target_hw_bp_type type);
+
+#ifndef LINUX_CHILD_POST_STARTUP_INFERIOR
+extern void child_post_startup_inferior(ptid_t ptid);
+#endif /* !LINUX_CHILD_POST_STARTUP_INFERIOR */
 
 /* APPLE LOCAL: Instead of using TARGET_HAS_DR_LEN_8 to determine whether
-   this is an i386 or x86_64 gdb, use the current gdbarch setting to determine
-   the current wordsize.  */
-
+ * this is an i386 or x86_64 gdb, use the current gdbarch setting
+ * to determine the current wordsize: */
 static int
-wordsize (void)
+wordsize(void)
 {
-  return TARGET_PTR_BIT / 8;
+  return (TARGET_PTR_BIT / 8);
 }
 
 /* Implementation.  */
 
 /* Clear the reference counts and forget everything we knew about the
-   debug registers.  */
-
+ * debug registers: */
 void
-i386_cleanup_dregs (void)
+i386_cleanup_dregs(void)
 {
   int i;
 
@@ -237,16 +239,13 @@ i386_cleanup_dregs (void)
 }
 
 #ifndef LINUX_CHILD_POST_STARTUP_INFERIOR
-
 /* Reset all debug registers at each new startup to avoid missing
-   watchpoints after restart.  */
-
+ * watchpoints after restart: */
 void
-child_post_startup_inferior (ptid_t ptid)
+child_post_startup_inferior(ptid_t ptid)
 {
-  i386_cleanup_dregs ();
+  i386_cleanup_dregs();
 }
-
 #endif /* LINUX_CHILD_POST_STARTUP_INFERIOR */
 
 /* Print the values of the mirrored debug registers.  This is called
@@ -570,7 +569,7 @@ i386_region_ok_for_watchpoint (CORE_ADDR addr, int len)
 }
 
 /* If the inferior has some watchpoint that triggered, set the
-   address associated with that watchpoint and return non-zero.  
+   address associated with that watchpoint and return non-zero.
    Otherwise, return zero.  */
 
 int

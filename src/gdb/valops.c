@@ -1677,16 +1677,16 @@ search_struct_method (char *name, struct value **arg1p,
 	  else
 	    while (j >= 0)
 	      {
-		if (!typecmp (TYPE_FN_FIELD_STATIC_P (f, j),
-			      TYPE_VARARGS (TYPE_FN_FIELD_TYPE (f, j)),
-			      TYPE_NFIELDS (TYPE_FN_FIELD_TYPE (f, j)),
-			      TYPE_FN_FIELD_ARGS (f, j), args))
+		if (!typecmp(TYPE_FN_FIELD_STATIC_P(f, j),
+			     TYPE_VARARGS(TYPE_FN_FIELD_TYPE(f, j)),
+			     TYPE_NFIELDS(TYPE_FN_FIELD_TYPE(f, j)),
+			     TYPE_FN_FIELD_ARGS(f, j), args))
 		  {
-		    if (TYPE_FN_FIELD_VIRTUAL_P (f, j))
-		      return value_virtual_fn_field (arg1p, f, j, type, offset);
-		    if (TYPE_FN_FIELD_STATIC_P (f, j) && static_memfuncp)
+		    if (TYPE_FN_FIELD_VIRTUAL_P(f, j))
+		      return value_virtual_fn_field(arg1p, f, j, type, offset);
+		    if (TYPE_FN_FIELD_STATIC_P(f, j) && static_memfuncp)
 		      *static_memfuncp = 1;
-		    v = value_fn_field (arg1p, f, j, type, offset);
+		    v = value_fn_field(arg1p, f, j, type, offset);
 		    if (v != NULL)
 		      return v;
 		  }
@@ -2070,17 +2070,18 @@ find_overload_match (struct type **arg_types, int nargs, char *name, int method,
 
       if (!obj_type_name || !*obj_type_name)
         {
-          struct type *obj_type = value_type (obj);
+          struct type *obj_type = value_type(obj);
+          struct type *target_type;
           if (!obj_type)
-            error ("Could not get the type of obj in find_overload_match.");
+            error("Could not get the type of obj in find_overload_match.");
 
-          struct type *target_type = TYPE_TARGET_TYPE (obj_type);
-	  if (TYPE_CODE (obj_type) == TYPE_CODE_PTR)
+          target_type = TYPE_TARGET_TYPE(obj_type);
+	  if (TYPE_CODE(obj_type) == TYPE_CODE_PTR)
             {
               if (!target_type)
-                error ("Could not get target type of obj in find_overload_match.");
+                error("Could not get target type of obj in find_overload_match.");
 
-              obj_type_name = TYPE_NAME (target_type);
+              obj_type_name = TYPE_NAME(target_type);
             }
 
           if (!obj_type_name || !*obj_type_name)
@@ -2374,25 +2375,25 @@ find_oload_champ (struct type **arg_types, int nargs, int method,
 
       if (method)
 	{
-	  nparms = TYPE_NFIELDS (TYPE_FN_FIELD_TYPE (fns_ptr, ix));
+	  nparms = TYPE_NFIELDS(TYPE_FN_FIELD_TYPE(fns_ptr, ix));
 	}
       else
 	{
-	  /* If it's not a method, this is the proper place */
-	  nparms=TYPE_NFIELDS(SYMBOL_TYPE(oload_syms[ix]));
+	  /* If it is not a method, then this is the proper place: */
+	  nparms = TYPE_NFIELDS(SYMBOL_TYPE(oload_syms[ix]));
 	}
 
-      /* Prepare array of parameter types */
-      parm_types = (struct type **) xmalloc (nparms * (sizeof (struct type *)));
+      /* Prepare array of parameter types: */
+      parm_types = (struct type **)xmalloc(nparms * (sizeof(struct type *)));
       for (jj = 0; jj < nparms; jj++)
 	parm_types[jj] = (method
-			  ? (TYPE_FN_FIELD_ARGS (fns_ptr, ix)[jj].type)
-			  : TYPE_FIELD_TYPE (SYMBOL_TYPE (oload_syms[ix]), jj));
+			  ? (TYPE_FN_FIELD_ARGS(fns_ptr, ix)[jj].type)
+			  : TYPE_FIELD_TYPE(SYMBOL_TYPE(oload_syms[ix]), jj));
 
       /* Compare parameter types to supplied argument types.  Skip THIS for
          static methods.  */
-      bv = rank_function (parm_types, nparms, arg_types + static_offset,
-			  nargs - static_offset);
+      bv = rank_function(parm_types, nparms, (arg_types + static_offset),
+                         (nargs - static_offset));
 
       if (!*oload_champ_bv)
 	{
@@ -3200,55 +3201,55 @@ do_check_is_thread_unsafe (void *argptr)
    first 5 frames of the stack for the thread pointed to by TP.  */
 
 static int
-safe_check_is_thread_unsafe (struct thread_info *tp, void *data)
+safe_check_is_thread_unsafe(struct thread_info *tp, void *data)
 {
-  struct thread_is_safe_args *args = (struct thread_is_safe_args *) data;
-  args->tp = tp;
+  struct thread_is_safe_args *args = (struct thread_is_safe_args *)data;
   struct cleanup *old_chain;
+  args->tp = tp;
 
-  old_chain = make_cleanup_restore_current_thread (inferior_ptid, 0);
+  old_chain = make_cleanup_restore_current_thread(inferior_ptid, 0);
 
-  catch_errors ((catch_errors_ftype *) do_check_is_thread_unsafe, args,
-		"", RETURN_MASK_ERROR);
+  catch_errors((catch_errors_ftype *)do_check_is_thread_unsafe, args,
+               "", RETURN_MASK_ERROR);
 
-  do_cleanups (old_chain);
+  do_cleanups(old_chain);
 
   return 0;
 }
 
-/* Check whether it is safe to call functions.  If scheduler locking
-   is turned off, we just check whether it is safe to call on the current
-   thread, but if it is turned on we check for all threads.  */
+#ifdef NM_NEXTSTEP
+extern void macosx_prune_threads(thread_array_t, unsigned int);
+#endif /* NM_NEXTSTEP */
 
+/* Check whether it is safe to call functions.  If scheduler locking
+ * is turned off, we just check whether it is safe to call on the current
+ * thread, but if it is turned on we check for all threads.  */
 int
-check_safe_call (regex_t unsafe_functions[],
-		 int npatterns,
-		 int stack_depth,
-		 enum check_which_threads which_threads)
+check_safe_call(regex_t unsafe_functions[], int npatterns, int stack_depth,
+                enum check_which_threads which_threads)
 {
   struct thread_is_safe_args args;
-  struct frame_id old_frame_id = get_frame_id (deprecated_safe_get_selected_frame ());
+  struct frame_id old_frame_id = get_frame_id(deprecated_safe_get_selected_frame());
 
   args.unsafe_p = 0;
   args.unsafe_functions = unsafe_functions;
   args.npatterns = npatterns;
   args.stack_depth = stack_depth;
 
-  if (which_threads == CHECK_CURRENT_THREAD
-      || (which_threads == CHECK_SCHEDULER_VALUE && !scheduler_lock_on_p ()))
-    safe_check_is_thread_unsafe (NULL, &args);
+  if ((which_threads == CHECK_CURRENT_THREAD)
+      || ((which_threads == CHECK_SCHEDULER_VALUE) && !scheduler_lock_on_p()))
+    safe_check_is_thread_unsafe(NULL, &args);
   else
     {
       struct cleanup *old_cleanups;
-      old_cleanups = make_cleanup_restore_current_thread (inferior_ptid, 0);
+      old_cleanups = make_cleanup_restore_current_thread(inferior_ptid, 0);
 
-      /* Remove all the dead threads from the gdb thread list
-	 before iterating over them.  This prevents unnecessary warnings.  */
+      /* Remove all the dead threads from the gdb thread list before
+       * iterating over them.  This prevents unnecessary warnings: */
 #ifdef NM_NEXTSTEP
-      extern void macosx_prune_threads (thread_array_t, unsigned int);
-      macosx_prune_threads (NULL, 0);
+      macosx_prune_threads(NULL, 0);
 #else
-      prune_threads ();
+      prune_threads();
 #endif /* NM_NEXTSTEP */
       iterate_over_threads (safe_check_is_thread_unsafe, &args);
       do_cleanups (old_cleanups);

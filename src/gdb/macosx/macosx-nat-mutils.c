@@ -1,4 +1,4 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* macosx-nat-mutils.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -89,25 +89,28 @@ static FILE *mutils_stderr = NULL;
 static int mutils_debugflag = 0;
 
 extern macosx_inferior_status *macosx_status;
-static const char* g_macosx_protection_strs [8] = 
+
+extern void _initialize_macosx_mutils(void);
+
+static const char* g_macosx_protection_strs [8] =
 { "---", "--r", "-w-", "-wr", "x--", "x-r", "xw-", "xwr" };
 
 void
-mutils_debug (const char *fmt, ...)
+mutils_debug(const char *fmt, ...)
 {
   va_list ap;
   if (mutils_debugflag)
     {
-      va_start (ap, fmt);
-      fprintf (mutils_stderr, "[%d mutils]: ", getpid ());
-      vfprintf (mutils_stderr, fmt, ap);
-      va_end (ap);
-      fflush (mutils_stderr);
+      va_start(ap, fmt);
+      fprintf(mutils_stderr, "[%d mutils]: ", getpid ());
+      vfprintf(mutils_stderr, fmt, ap);
+      va_end(ap);
+      fflush(mutils_stderr);
     }
 }
 
 static vm_size_t
-child_get_pagesize ()
+child_get_pagesize(void)
 {
   kern_return_t status;
   static vm_size_t g_cached_child_page_size = 0;
@@ -154,7 +157,7 @@ mach_xfer_memory_remainder (CORE_ADDR memaddr, gdb_byte *myaddr,
     {
       kret = mach_vm_read (macosx_status->task, pageaddr, pagesize,
 			   &mempointer, &memcopied);
-      
+
       if (kret != KERN_SUCCESS)
 	{
 	  mutils_debug
@@ -179,7 +182,7 @@ mach_xfer_memory_remainder (CORE_ADDR memaddr, gdb_byte *myaddr,
 	     (unsigned long) memcopied, (unsigned long) pagesize);
 	  return 0;
 	}
-      
+
       memcpy (myaddr, ((unsigned char *) 0) + mempointer
               + (memaddr - pageaddr), len);
       kret = vm_deallocate (mach_task_self (), mempointer, memcopied);
@@ -202,7 +205,7 @@ mach_xfer_memory_remainder (CORE_ADDR memaddr, gdb_byte *myaddr,
 	   * we can no longer reset the execute bit. In 64 bit Leopard
 	   * apps, the execute bit has to be set or we cannot run code from
 	   * there.
-       * 
+       *
 	   * If we figure out that not writing whole pages causes problems
 	   * of its own, then we will have to revisit this.  */
       kret =
@@ -321,7 +324,7 @@ mach_xfer_memory_block (CORE_ADDR memaddr, gdb_byte *myaddr,
 
 #if defined (VM_REGION_SUBMAP_SHORT_INFO_COUNT_64)
 
-/* We probably have a Leopard based build since 
+/* We probably have a Leopard based build since
    VM_REGION_SUBMAP_SHORT_INFO_COUNT_64 was defined, so we will assign
    the functions to call for MACOSX_GET_REGION_INFO and MACOSX_VM_PROTECT.  */
 
@@ -351,16 +354,16 @@ mach_xfer_memory_block (CORE_ADDR memaddr, gdb_byte *myaddr,
     boolean_t		is_submap;	/* submap vs obj */
     vm_behavior_t		behavior;	/* access behavior hint */
     vm_offset_t		object_id;	/* obj/map name, not a handle */
-    unsigned short		user_wired_count; 
+    unsigned short		user_wired_count;
   };
-  
+
   typedef struct vm_region_submap_short_info_64	*vm_region_submap_short_info_64_t;
   typedef struct vm_region_submap_short_info_64	 vm_region_submap_short_info_data_64_t;
 
 #define VM_REGION_SUBMAP_SHORT_INFO_COUNT_64	((mach_msg_type_number_t) \
 						 (sizeof(vm_region_submap_short_info_data_64_t)/sizeof(int)))
 
-/* We probably have a Tiger based build since 
+/* We probably have a Tiger based build since
    VM_REGION_SUBMAP_SHORT_INFO_COUNT_64 was not defined, so we will assign
    the functions to call for MACOSX_GET_REGION_INFO and MACOSX_VM_PROTECT.  */
 #if defined (TARGET_ARM)
@@ -386,11 +389,11 @@ mach_xfer_memory_block (CORE_ADDR memaddr, gdb_byte *myaddr,
 #endif  /* #else defined (TARGET_ARM)  */
 
 
-/* The old Tiger code used to call mach_vm_region to get the region 
+/* The old Tiger code used to call mach_vm_region to get the region
    info, but this would return a very large region of memory and we
    would be modifying permissions on this large chunk.  */
 static kern_return_t
-macosx_vm_region (task_t task, 
+macosx_vm_region (task_t task,
 		  mach_vm_address_t addr,
 		  mach_vm_address_t *r_start,
 		  mach_vm_size_t *r_size,
@@ -401,7 +404,7 @@ macosx_vm_region (task_t task,
   kern_return_t kret;
   mach_port_t r_object_name;
   vm_region_basic_info_data_64_t r_basic_data;
- 
+
   r_info_size = VM_REGION_BASIC_INFO_COUNT_64;
   kret = mach_vm_region (macosx_status->task, r_start, r_size,
 			 VM_REGION_BASIC_INFO_64,
@@ -414,8 +417,8 @@ macosx_vm_region (task_t task,
       mutils_debug ("macosx_vm_region ( 0x%8s ): [ 0x%8s - 0x%8s ) prot = %c%c%s "
 		    "max_prot = %c%c%s\n",
 		    paddr (addr),
-		    paddr (*r_start), 
-		    paddr (*r_start + *r_size), 
+		    paddr (*r_start),
+		    paddr (*r_start + *r_size),
 		    *prot & VM_PROT_COPY ? 'c' : '-',
 		    *prot & VM_PROT_NO_CHANGE ? '!' : '-',
 		    g_macosx_protection_strs[*prot & 7],
@@ -438,7 +441,7 @@ macosx_vm_region (task_t task,
 
 
 static kern_return_t
-macosx_vm_region_recurse_long (task_t task, 
+macosx_vm_region_recurse_long (task_t task,
 			       mach_vm_address_t addr,
 			       mach_vm_address_t *r_start,
 			       mach_vm_size_t *r_size,
@@ -453,11 +456,11 @@ macosx_vm_region_recurse_long (task_t task,
   r_info_size = VM_REGION_SUBMAP_INFO_COUNT_64;
   r_depth = 1000;
   *r_start = addr;
-    
-  kret = mach_vm_region_recurse (task, 
+
+  kret = mach_vm_region_recurse (task,
 				 r_start, r_size,
 				 & r_depth,
-				 (vm_region_recurse_info_t) &r_long_data, 
+				 (vm_region_recurse_info_t) &r_long_data,
 				 &r_info_size);
   if (kret == KERN_SUCCESS)
     {
@@ -466,9 +469,9 @@ macosx_vm_region_recurse_long (task_t task,
       mutils_debug ("macosx_vm_region_recurse_long ( 0x%8s ): [ 0x%8s - 0x%8s ) "
 		    "depth = %d, prot = %c%c%s max_prot = %c%c%s\n",
 		    paddr (addr),
-		    paddr (*r_start), 
-		    paddr (*r_start + *r_size), 
-		    r_depth, 
+		    paddr (*r_start),
+		    paddr (*r_start + *r_size),
+		    r_depth,
 		    *prot & VM_PROT_COPY ? 'c' : '-',
 		    *prot & VM_PROT_NO_CHANGE ? '!' : '-',
 		    g_macosx_protection_strs[*prot & 7],
@@ -491,7 +494,7 @@ macosx_vm_region_recurse_long (task_t task,
 
 
 static kern_return_t
-macosx_vm_region_recurse_short (task_t task, 
+macosx_vm_region_recurse_short (task_t task,
 				mach_vm_address_t addr,
 				mach_vm_address_t *r_start,
 				mach_vm_size_t *r_size,
@@ -507,10 +510,10 @@ macosx_vm_region_recurse_short (task_t task,
   r_depth = 1000;
   *r_start = addr;
 
-  kret = mach_vm_region_recurse (task, 
+  kret = mach_vm_region_recurse (task,
 				 r_start, r_size,
 				 & r_depth,
-				 (vm_region_recurse_info_t) &r_short_data, 
+				 (vm_region_recurse_info_t) &r_short_data,
 				 &r_info_size);
   if (kret == KERN_SUCCESS)
     {
@@ -519,9 +522,9 @@ macosx_vm_region_recurse_short (task_t task,
       mutils_debug ("macosx_vm_region_recurse_short ( 0x%8s ): [ 0x%8s - 0x%8s ) "
 		    "depth = %d, prot = %c%c%s max_prot = %c%c%s\n",
 		    paddr (addr),
-		    paddr (*r_start), 
-		    paddr (*r_start + *r_size), 
-		    r_depth, 
+		    paddr (*r_start),
+		    paddr (*r_start + *r_size),
+		    r_depth,
 		    *prot & VM_PROT_COPY ? 'c' : '-',
 		    *prot & VM_PROT_NO_CHANGE ? '!' : '-',
 		    g_macosx_protection_strs[*prot & 7],
@@ -546,7 +549,7 @@ macosx_vm_region_recurse_short (task_t task,
 
 static kern_return_t
 macosx_vm_protect_range (task_t task,
-			 mach_vm_address_t region_start, 
+			 mach_vm_address_t region_start,
 			 mach_vm_size_t region_size,
 			 mach_vm_address_t addr,
 			 mach_vm_size_t size,
@@ -564,8 +567,8 @@ macosx_vm_protect_range (task_t task,
   kret = mach_vm_protect (task, protect_addr, protect_size, set_max, prot);
   mutils_debug ("macosx_vm_protect_range ( 0x%8s ):  [ 0x%8s - 0x%8s ) %s = %c%c%s => %s\n",
 		paddr (addr),
-		paddr (protect_addr), 
-		paddr (protect_addr + protect_size), 
+		paddr (protect_addr),
+		paddr (protect_addr + protect_size),
 		set_max ? "max_prot" : "prot",
 		prot & VM_PROT_COPY ? 'c' : '-',
 		prot & VM_PROT_NO_CHANGE ? '!' : '-',
@@ -576,7 +579,7 @@ macosx_vm_protect_range (task_t task,
 
 static kern_return_t
 macosx_vm_protect_region (task_t task,
-			  mach_vm_address_t region_start, 
+			  mach_vm_address_t region_start,
 			  mach_vm_size_t region_size,
 			  mach_vm_address_t addr,
 			  mach_vm_size_t size,
@@ -586,7 +589,7 @@ macosx_vm_protect_region (task_t task,
   kern_return_t kret;
   mach_vm_address_t protect_addr;
   mach_vm_size_t protect_size;
-  
+
   /* On Tiger we want to set protections at the region level.  */
   protect_addr = region_start;
   protect_size = region_size;
@@ -595,8 +598,8 @@ macosx_vm_protect_region (task_t task,
 
   mutils_debug ("macosx_vm_protect_region ( 0x%8s ):  [ 0x%8s - 0x%8s ) %s = %c%c%s => %s\n",
 		paddr (addr),
-		paddr (protect_addr), 
-		paddr (protect_addr + protect_size), 
+		paddr (protect_addr),
+		paddr (protect_addr + protect_size),
 		set_max ? "max_prot" : "prot",
 		prot & VM_PROT_COPY ? 'c' : '-',
 		prot & VM_PROT_NO_CHANGE ? '!' : '-',
@@ -608,7 +611,7 @@ macosx_vm_protect_region (task_t task,
 
 
 static kern_return_t
-macosx_get_region_info_both (task_t task, 
+macosx_get_region_info_both (task_t task,
 			     mach_vm_address_t addr,
 			     mach_vm_address_t *r_start,
 			     mach_vm_size_t *r_size,
@@ -618,10 +621,10 @@ macosx_get_region_info_both (task_t task,
   static int use_short_info = 1;
 
   kern_return_t kret;
-  
+
   if (use_short_info)
     {
-      kret = macosx_vm_region_recurse_short (task, addr, r_start, r_size, 
+      kret = macosx_vm_region_recurse_short (task, addr, r_start, r_size,
 					     prot, max_prot);
 
       if (kret == KERN_INVALID_ARGUMENT)
@@ -629,13 +632,13 @@ macosx_get_region_info_both (task_t task,
 	  use_short_info = 0;
 	  mutils_debug ("vm_region_submap_short_info not supported, switching"
 			" to long info.\n");
-	  kret = macosx_vm_region_recurse_long (task, addr, r_start, r_size, 
+	  kret = macosx_vm_region_recurse_long (task, addr, r_start, r_size,
 						prot, max_prot);
 	}
     }
   else
     {
-      kret = macosx_vm_region_recurse_long (task, addr, r_start, r_size, 
+      kret = macosx_vm_region_recurse_long (task, addr, r_start, r_size,
 					    prot, max_prot);
     }
 
@@ -669,15 +672,15 @@ mach_xfer_memory (CORE_ADDR memaddr, gdb_byte *myaddr,
       errno = EINVAL;
       return 0;
     }
-  
+
   if (len == 0)
     {
       return 0;
     }
-  
+
   CHECK_FATAL (myaddr != NULL);
   errno = 0;
-  
+
   /* check for case where memory available only at address greater than address specified */
   {
     kret = macosx_get_region_info (macosx_status->task, memaddr, &r_start, &r_size,
@@ -686,7 +689,7 @@ mach_xfer_memory (CORE_ADDR memaddr, gdb_byte *myaddr,
       {
         return 0;
       }
-    
+
     if (r_start > memaddr)
       {
         if ((r_start - memaddr) <= MINUS_INT_MIN)
@@ -737,7 +740,7 @@ mach_xfer_memory (CORE_ADDR memaddr, gdb_byte *myaddr,
         {
 	  /* Keep the execute permission if we modify protections.  */
 	  vm_prot_t new_prot = VM_PROT_READ | VM_PROT_WRITE;
-	  	  
+
 	  /* Do we need to modify our protections?  */
 	  if (orig_protection & VM_PROT_WRITE)
 	    {
@@ -749,23 +752,23 @@ mach_xfer_memory (CORE_ADDR memaddr, gdb_byte *myaddr,
 	    }
 	  else
 	    {
+              mach_vm_size_t prot_size;
 	      changed_protections = 1;
-	      mach_vm_size_t prot_size;
 
-	      if (cur_len < r_size - (cur_memaddr - r_start))
+	      if (cur_len < (r_size - (cur_memaddr - r_start)))
 		prot_size = cur_len;
 	      else
-		prot_size = cur_memaddr - r_start;
+		prot_size = (cur_memaddr - r_start);
 
-	      kret = macosx_vm_protect (macosx_status->task, r_start, r_size, 
-					cur_memaddr, prot_size, new_prot, 0);
+	      kret = macosx_vm_protect(macosx_status->task, r_start, r_size,
+                                       cur_memaddr, prot_size, new_prot, 0);
 
 	      if (kret != KERN_SUCCESS)
 		{
 		  mutils_debug ("Without COPY failed: %s (0x%lx)\n",
 				MACH_ERROR_STRING (kret), kret);
-		  kret = macosx_vm_protect (macosx_status->task, r_start, r_size, 
-					    cur_memaddr, prot_size, 
+		  kret = macosx_vm_protect (macosx_status->task, r_start, r_size,
+					    cur_memaddr, prot_size,
 					    VM_PROT_COPY | new_prot, 0);
 		}
 
@@ -852,8 +855,8 @@ mach_xfer_memory (CORE_ADDR memaddr, gdb_byte *myaddr,
 	      else
 		prot_size = cur_memaddr - r_start;
 
-	      kret = macosx_vm_protect (macosx_status->task, r_start, r_size, 
-					cur_memaddr, prot_size, 
+	      kret = macosx_vm_protect (macosx_status->task, r_start, r_size,
+					cur_memaddr, prot_size,
 					orig_protection, 0);
 	      if (kret != KERN_SUCCESS)
 		{
@@ -880,10 +883,9 @@ mach_xfer_memory (CORE_ADDR memaddr, gdb_byte *myaddr,
 
 
 LONGEST
-mach_xfer_partial (struct target_ops *ops,
-		   enum target_object object, const char *annex,
-		   gdb_byte *readbuf, const gdb_byte *writebuf,
-		   ULONGEST offset, LONGEST len)
+mach_xfer_partial(struct target_ops *ops, enum target_object object,
+                  const char *annex, gdb_byte *readbuf,
+                  const gdb_byte *writebuf, ULONGEST offset, LONGEST len)
 {
   switch (object)
     {
@@ -892,9 +894,10 @@ mach_xfer_partial (struct target_ops *ops,
 	ssize_t nbytes = len;
 
 	if (readbuf)
-	  nbytes = mach_xfer_memory (offset, readbuf, nbytes, 0, NULL, ops);
-	if (writebuf && nbytes > 0)
-	  nbytes = mach_xfer_memory (offset, writebuf, nbytes, 1, NULL, ops);
+	  nbytes = mach_xfer_memory(offset, readbuf, nbytes, 0, NULL, ops);
+	if (writebuf && (nbytes > 0))
+	  nbytes = mach_xfer_memory(offset, (gdb_byte *)writebuf, nbytes,
+                                    1, NULL, ops);
 	return nbytes;
       }
 
@@ -904,12 +907,12 @@ mach_xfer_partial (struct target_ops *ops,
 }
 
 int
-macosx_port_valid (mach_port_t port)
+macosx_port_valid(mach_port_t port)
 {
   mach_port_type_t ptype;
   kern_return_t ret;
 
-  ret = mach_port_type (mach_task_self (), port, &ptype);
+  ret = mach_port_type(mach_task_self(), port, &ptype);
   return (ret == KERN_SUCCESS);
 }
 
@@ -920,7 +923,7 @@ macosx_task_valid (task_t task)
   struct task_basic_info info;
   unsigned int info_count = TASK_BASIC_INFO_COUNT;
 
-  ret = task_info (task, TASK_BASIC_INFO, (task_info_t) & info, &info_count);
+  ret = task_info(task, TASK_BASIC_INFO, (task_info_t) & info, &info_count);
   return (ret == KERN_SUCCESS);
 }
 
@@ -931,7 +934,7 @@ macosx_thread_valid (task_t task, thread_t thread)
   unsigned int thread_count;
   kern_return_t kret;
 
-  unsigned int found = 0;
+  unsigned int found = 0U;
   unsigned int i;
 
   CHECK_FATAL (task != TASK_NULL);
@@ -965,7 +968,7 @@ macosx_thread_valid (task_t task, thread_t thread)
 }
 
 int
-macosx_pid_valid (int pid)
+macosx_pid_valid(int pid)
 {
   int ret;
   ret = kill (pid, 0);
@@ -975,7 +978,7 @@ macosx_pid_valid (int pid)
 }
 
 thread_t
-macosx_primary_thread_of_task (task_t task)
+macosx_primary_thread_of_task(task_t task)
 {
   thread_array_t thread_list;
   unsigned int thread_count;
@@ -1036,33 +1039,31 @@ macosx_msg_receive (mach_msg_header_t * msgin, size_t msg_size,
    should NOT be too big a deal. */
 
 CORE_ADDR
-allocate_space_in_inferior_mach (int len)
+allocate_space_in_inferior_mach(int len)
 {
   kern_return_t kret;
   vm_address_t address;
- 
-  kret = vm_allocate (macosx_status->task, &address, len, TRUE);
+
+  kret = vm_allocate(macosx_status->task, &address, len, TRUE);
   if (kret != KERN_SUCCESS)
-    error ("No memory available to program: call to vm_allocate failed");
+    error("No memory available to program: call to vm_allocate failed");
 
   return address;
 }
 
-/* Used by macosx_allocate_space_in_inferior. */
-
-struct macosx_alloc_data 
+/* Used by macosx_allocate_space_in_inferior: */
+struct macosx_alloc_data
 {
   CORE_ADDR addr;
   int len;
 };
 
-/* Used by macosx_allocate_space_in_inferior. */
-
+/* Used by macosx_allocate_space_in_inferior: */
 static int
-macosx_allocate_space_in_inferior_helper (struct ui_out *ui_out, void *args)
+macosx_allocate_space_in_inferior_helper(struct ui_out *ui_out, void *args)
 {
-  struct macosx_alloc_data *alloc = (struct macosx_alloc_data *) args;
-  alloc->addr = allocate_space_in_inferior_malloc (alloc->len);
+  struct macosx_alloc_data *alloc = (struct macosx_alloc_data *)args;
+  alloc->addr = allocate_space_in_inferior_malloc(alloc->len);
   return 0;
 }
 
@@ -1118,17 +1119,17 @@ typedef struct {
 
 #define STACK_LOGGING_ENUMERATION_PROVIDED 1 /* temporary to avoid dependencies between projects */
 
-extern kern_return_t __mach_stack_logging_enumerate_records(task_t task, 
-							    mach_vm_address_t address, 
-							    void enumerator(mach_stack_logging_record_t, void *), 
+extern kern_return_t __mach_stack_logging_enumerate_records(task_t task,
+							    mach_vm_address_t address,
+							    void enumerator(mach_stack_logging_record_t, void *),
 							    void *context);
 /* Gets all the records about address;
    If !address, gets all records */
 
-extern kern_return_t __mach_stack_logging_frames_for_uniqued_stack(task_t task, 
+extern kern_return_t __mach_stack_logging_frames_for_uniqued_stack(task_t task,
 								   uint64_t stack_identifier,
-								   mach_vm_address_t *stack_frames_buffer, 
-								   uint32_t max_stack_frames, 
+								   mach_vm_address_t *stack_frames_buffer,
+								   uint32_t max_stack_frames,
 								   uint32_t *num_frames);
 
 /* This one may not be present, so I will have to dlsym it... */
@@ -1153,17 +1154,17 @@ typedef struct {
   unsigned    address; /* disguised, to avoid confusing leaks */
 } stack_logging_record_t;
 
-extern kern_return_t stack_logging_enumerate_records(task_t task, 
-						     memory_reader_t reader, 
-						     vm_address_t address, 
-						     void enumerator(stack_logging_record_t, void *), 
+extern kern_return_t stack_logging_enumerate_records(task_t task,
+						     memory_reader_t reader,
+						     vm_address_t address,
+						     void enumerator(stack_logging_record_t, void *),
 						     void *context);
 
-extern kern_return_t stack_logging_frames_for_uniqued_stack(task_t task, 
-							    memory_reader_t reader, 
-							    unsigned uniqued_stack, 
-							    vm_address_t *stack_frames_buffer, 
-							    unsigned max_stack_frames, 
+extern kern_return_t stack_logging_frames_for_uniqued_stack(task_t task,
+							    memory_reader_t reader,
+							    unsigned uniqued_stack,
+							    vm_address_t *stack_frames_buffer,
+							    unsigned max_stack_frames,
 							    unsigned *num_frames);
 
 /* I added these ones: */
@@ -1193,10 +1194,10 @@ gdb_malloc_reader (task_t task, vm_address_t addr, vm_size_t size, void **local_
       warning ("malloc reader called with wrong task.");
       return 1;
     }
-  
+
   tmp = (struct malloc_history_chain *) xmalloc (sizeof (struct malloc_history_chain));
   tmp->buffer = (unsigned char *) xmalloc (size);
-  if (target_read_memory (addr, tmp->buffer, size) != 0) 
+  if (target_read_memory (addr, tmp->buffer, size) != 0)
     {
       warning ("malloc history request for %d bytes of memory at %s failed.",
 	       size, paddr_nz (addr));
@@ -1211,8 +1212,8 @@ gdb_malloc_reader (task_t task, vm_address_t addr, vm_size_t size, void **local_
   return 0;
 }
 
-static void 
-free_malloc_history_buffers ()
+static void
+free_malloc_history_buffers(void)
 {
   struct malloc_history_chain *tmp;
   while (malloc_history_head != NULL)
@@ -1234,30 +1235,30 @@ struct current_record_state
 /* This is the iterator function that libc uses in
    stack_logging_enumerate_records.  It calls this function for each
    uniqued stack that allocated a given address.  We just
-   print out the symbolicated version of this stack.  
-   If DATA is NULL, then just print out everything that comes in.  
+   print out the symbolicated version of this stack.
+   If DATA is NULL, then just print out everything that comes in.
    Otherwise, we use the state to keep track both of the requested
    address, and when we find a malloc that contains the given address
    we record the start block so we can match the free to this malloc
    event.  */
 
 #if HAVE_64_BIT_STACK_LOGGING
-static void 
-do_over_unique_frames (mach_stack_logging_record_t record, void *data) 
+static void
+do_over_unique_frames(mach_stack_logging_record_t record, void *data)
 {
   mach_vm_address_t frames[MAX_NUM_FRAMES];
 #elif HAVE_32_BIT_STACK_LOGGING
-static void 
-do_over_unique_frames (stack_logging_record_t record, void *data) 
+static void
+do_over_unique_frames(stack_logging_record_t record, void *data)
 {
   vm_address_t frames[MAX_NUM_FRAMES];
 #endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
   unsigned num_frames;
   struct cleanup *cleanup;
   struct symtab_and_line sal;
-  int i;
+  volatile int i;
   CORE_ADDR thread;
-  int final_return = 0;
+  volatile int final_return = 0;
   struct current_record_state *state = (struct current_record_state *) data;
 
   if (state != NULL)
@@ -1265,13 +1266,13 @@ do_over_unique_frames (stack_logging_record_t record, void *data)
       if (STACK_LOGGING_ALLOC_P (record))
 	{
 	  /* For alloc type events the "argument" field is the size of the allocation. */
-	      if (state->requested_address >= record.address 
+	      if (state->requested_address >= record.address
 		  && state->requested_address < record.address + record.argument)
 		{
-		  /* We need to record the actual address of this allocation so we can 
+		  /* We need to record the actual address of this allocation so we can
 		     match it up with the deallocation event.  */
 		  state->block_address = record.address;
-		  
+
 		}
 	      else
 		return;
@@ -1286,12 +1287,12 @@ do_over_unique_frames (stack_logging_record_t record, void *data)
     }
 
 #if HAVE_64_BIT_STACK_LOGGING
-  if (__mach_stack_logging_frames_for_uniqued_stack (macosx_status->task, 
+  if (__mach_stack_logging_frames_for_uniqued_stack (macosx_status->task,
 						     record.stack_identifier,
 						     frames, MAX_NUM_FRAMES, &num_frames))
 #elif HAVE_32_BIT_STACK_LOGGING
-  if (stack_logging_frames_for_uniqued_stack (macosx_status->task, 
-					      gdb_malloc_reader, 
+  if (stack_logging_frames_for_uniqued_stack (macosx_status->task,
+					      gdb_malloc_reader,
 					      record.uniqued_stack,
 					      frames, MAX_NUM_FRAMES, &num_frames))
 #endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
@@ -1350,7 +1351,7 @@ do_over_unique_frames (stack_logging_record_t record, void *data)
 	ui_out_text (uiout, "    ");
       else if (i < 100)
 	ui_out_text (uiout, "   ");
-      else 
+      else
 	ui_out_text (uiout, "  ");
 
       ui_out_field_int (uiout, "level", i);
@@ -1359,34 +1360,34 @@ do_over_unique_frames (stack_logging_record_t record, void *data)
       ui_out_field_fmt (uiout, "addr", "0x%s", paddr_nz (frames[i]));
 
       /* Since we are going to do pc->symbol, we should raise the load level
-	   * of the library involved before doing so.  */
+       * of the library involved before doing so.  */
 
       TRY_CATCH (e, RETURN_MASK_ERROR)
 	{
 	  pc_set_load_state (frames[i], OBJF_SYM_ALL, 1);
 	}
-      if (e.reason != NO_ERROR)
+      if (e.reason != (enum return_reason)NO_ERROR)
 	{
 	  ui_out_text (uiout, "\n");
 	  warning ("Could not raise load level for objfile at pc: 0x%s.", paddr_nz (frames[i]));
 	  continue;
 	}
 
-      TRY_CATCH (e, RETURN_MASK_ERROR)
+      TRY_CATCH(e, RETURN_MASK_ERROR)
 	{
-	  err = find_pc_partial_function_no_inlined (frames[i], &name, NULL, NULL);
+	  err = find_pc_partial_function_no_inlined(frames[i], &name, NULL, NULL);
 	}
-      if (e.reason == NO_ERROR && err != 0)
+      if ((e.reason == (enum return_reason)NO_ERROR) && (err != 0))
 	{
 	  ui_out_text(uiout, " in ");
 	  ui_out_field_string (uiout, "func", name);
 	}
 
-      TRY_CATCH (e, RETURN_MASK_ERROR)
+      TRY_CATCH(e, RETURN_MASK_ERROR)
 	{
-	  sal = find_pc_line (frames[i], 0);
+	  sal = find_pc_line(frames[i], 0);
 	}
-      if (e.reason == NO_ERROR && sal.symtab != 0)
+      if ((e.reason == (enum return_reason)NO_ERROR) && (sal.symtab != 0))
 	{
 	  ui_out_text (uiout, " at ");
 	  ui_out_field_string (uiout, "file", sal.symtab->filename);
@@ -1396,10 +1397,17 @@ do_over_unique_frames (stack_logging_record_t record, void *data)
       ui_out_text (uiout, "\n");
       do_cleanups (frame_cleanup);
     }
-  do_cleanups (cleanup);
+  do_cleanups(cleanup);
   if (final_return)
-    ui_out_text (uiout, "\n");
+    ui_out_text(uiout, "\n");
+
+  /* make sure the braces match the condition at the head of the func: */
+#if HAVE_64_BIT_STACK_LOGGING
 }
+#elif HAVE_32_BIT_STACK_LOGGING
+}
+#endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
+
 
 /* This adds the "info malloc-history" command.  Requires one argument
    (an address) and returns the malloc history for that address, as
@@ -1407,18 +1415,18 @@ do_over_unique_frames (stack_logging_record_t record, void *data)
    variable is set.  */
 
 #if HAVE_64_BIT_STACK_LOGGING
- static char malloc_path_string_buffer[2048];
- static set_logging_file_path_ptr logging_file_path_fn = NULL;
+static char malloc_path_string_buffer[2048];
+static set_logging_file_path_ptr logging_file_path_fn = NULL;
 
- void
- macosx_clear_logging_path ()
- {
-   malloc_path_string_buffer[0] = '\0';  
- }
+void
+macosx_clear_logging_path(void)
+{
+  malloc_path_string_buffer[0] = '\0';
+}
 #endif /* HAVE_64_BIT_STACK_LOGGING */
 
 void
-malloc_history_info_command (char *arg, int from_tty)
+malloc_history_info_command(char *arg, int from_tty)
 {
 #if HAVE_64_BIT_STACK_LOGGING || HAVE_32_BIT_STACK_LOGGING
 
@@ -1433,16 +1441,17 @@ malloc_history_info_command (char *arg, int from_tty)
   /* APPLE LOCAL - Make "-exact" the default, since there is no way to
      interrupt large spews that may result from using "-range".  */
   int exact = 1;
-  vm_address_t passed_addr;
-  struct current_record_state state, *passed_state;
+  volatile vm_address_t passed_addr;
+  struct current_record_state state;
+  volatile struct current_record_state *volatile passed_state;
 
   if (macosx_status == NULL)
-    error ("No target");
+    error("No target");
 
   if (arg == NULL)
-    error ("Argument required (expression to compute).");
+    error("Argument required (expression to compute).");
 
-  if (strstr (arg, "-exact") == arg)
+  if (strstr(arg, "-exact") == arg)
     {
       exact = 1;
       arg += sizeof ("-exact") - 1;
@@ -1466,7 +1475,7 @@ malloc_history_info_command (char *arg, int from_tty)
   if (!target_has_execution)
     error ("Cannot get malloc history: target is not running");
 
-  if (inferior_environ == NULL 
+  if (inferior_environ == NULL
       || get_in_environ (inferior_environ, "MallocStackLoggingNoCompact") == NULL)
     {
       warning ("MallocStackLoggingNoCompact not set in target's environment"
@@ -1510,20 +1519,20 @@ malloc_history_info_command (char *arg, int from_tty)
         {
           /* Okay, look for the symbol in question: */
 
-          struct minimal_symbol *filename_variable  
+          struct minimal_symbol *filename_variable
             = lookup_minimal_symbol (stack_log_filename_variable, NULL, NULL);
           if (filename_variable)
             {
               TRY_CATCH (except, RETURN_MASK_ERROR)
                 {
-                  CORE_ADDR string_addr 
-                    = read_memory_unsigned_integer (SYMBOL_VALUE_ADDRESS(filename_variable), 
+                  CORE_ADDR string_addr
+                    = read_memory_unsigned_integer (SYMBOL_VALUE_ADDRESS(filename_variable),
                                                     TARGET_PTR_BIT/TARGET_CHAR_BIT);
                   read_memory_string (string_addr, malloc_path_string_buffer, 2047);
                 }
-              if (except.reason == NO_ERROR)
+              if (except.reason == (volatile enum return_reason)NO_ERROR)
                 {
-                  kern_return_t kret = logging_file_path_fn (macosx_status->task, 
+                  kern_return_t kret = logging_file_path_fn (macosx_status->task,
                                                              malloc_path_string_buffer);
                   if (kret != KERN_SUCCESS)
                     {
@@ -1536,7 +1545,7 @@ malloc_history_info_command (char *arg, int from_tty)
                            "cannot set logging filepath.", stack_log_filename_variable);
                 }
             }
-          else 
+          else
             {
               warning ("Could not find variable \"%s\", so "
                        "I cannot set the logging filename.", stack_log_filename_variable);
@@ -1545,19 +1554,19 @@ malloc_history_info_command (char *arg, int from_tty)
     }
 #endif /* HAVE_64_BIT_STACK_LOGGING */
 
-  TRY_CATCH (except, RETURN_MASK_ERROR)
+  TRY_CATCH(except, RETURN_MASK_ERROR)
     {
 #if HAVE_64_BIT_STACK_LOGGING
-      kret = __mach_stack_logging_enumerate_records (macosx_status->task,
-						     passed_addr,
-						     do_over_unique_frames,
-						     passed_state);
+      kret = __mach_stack_logging_enumerate_records(macosx_status->task,
+                                                    passed_addr,
+                                                    do_over_unique_frames,
+                                                    (void *)passed_state);
 #elif HAVE_32_BIT_STACK_LOGGING
-      kret = stack_logging_enumerate_records (macosx_status->task,
-					      gdb_malloc_reader,
-					      passed_addr,
-					      do_over_unique_frames,
-					      passed_state);
+      kret = stack_logging_enumerate_records(macosx_status->task,
+                                             gdb_malloc_reader,
+                                             passed_addr,
+                                             do_over_unique_frames,
+                                             (void *)passed_state);
 #endif /* HAVE_[64|32]_BIT_STACK_LOGGING */
     }
 
@@ -1588,7 +1597,7 @@ malloc_history_info_command (char *arg, int from_tty)
    remaining offset from as far as it managed to get if it did NOT do so. */
 
 int
-build_path_to_element (struct type *type, CORE_ADDR offset, char **symbol_name)
+build_path_to_element(struct type *type, CORE_ADDR offset, char **symbol_name)
 {
   if (TYPE_CODE (type) == TYPE_CODE_STRUCT)
     {
@@ -1599,7 +1608,7 @@ build_path_to_element (struct type *type, CORE_ADDR offset, char **symbol_name)
 	  if (TYPE_FIELD_STATIC_KIND (type, i) != 0)
 	    continue;
 	  if (offset >= TYPE_FIELD_BITPOS (type, i)/8
-	      && offset < TYPE_FIELD_BITPOS (type, i)/8 
+	      && offset < TYPE_FIELD_BITPOS (type, i)/8
 	      + TYPE_LENGTH (TYPE_FIELD_TYPE (type, i)))
 	    {
 	      int orig_len;
@@ -1612,19 +1621,19 @@ build_path_to_element (struct type *type, CORE_ADDR offset, char **symbol_name)
 	      else
 		{
 		  orig_len = strlen (*symbol_name);
-		  
+
 		  /* grow the string to accomodate the dot and the field name.  */
 		  *symbol_name = xrealloc (*symbol_name, orig_len + 1
 					   + strlen (TYPE_FIELD_NAME (type, i)) + 1);
 		  (*symbol_name)[orig_len] = '.';
-	      
+
 		  strcpy (*symbol_name + orig_len + 1, TYPE_FIELD_NAME (type, i));
 		}
 	      if (TYPE_FIELD_BITPOS (type, i)/8 == offset)
 		return 0;
 	      else
-		return build_path_to_element (TYPE_FIELD_TYPE (type, i), 
-					      offset - TYPE_FIELD_BITPOS (type, i)/8, 
+		return build_path_to_element (TYPE_FIELD_TYPE (type, i),
+					      offset - TYPE_FIELD_BITPOS (type, i)/8,
 					      symbol_name);
 	    }
 	}
@@ -1640,15 +1649,14 @@ build_path_to_element (struct type *type, CORE_ADDR offset, char **symbol_name)
 }
 
 char *
-get_symbol_at_address_on_stack (CORE_ADDR stack_address, int *frame_level)
+get_symbol_at_address_on_stack(CORE_ADDR stack_address, int *frame_level)
 {
-
   char *symbol_name = NULL;
   struct frame_info *this_frame;
-  int found_frame;
+  volatile int found_frame;
   CORE_ADDR this_sp;
-  
-  this_frame = get_current_frame ();
+
+  this_frame = get_current_frame();
   found_frame = 0;
   *frame_level = -1;
 
@@ -1686,7 +1694,7 @@ get_symbol_at_address_on_stack (CORE_ADDR stack_address, int *frame_level)
 		 any symbols it would put at this address... */
 	      struct dict_iterator iter;
 	      struct symbol *sym;
-	      
+
 	      ALL_BLOCK_SYMBOLS (block, iter, sym)
 		{
 		  struct value *val = NULL;
@@ -1700,10 +1708,10 @@ get_symbol_at_address_on_stack (CORE_ADDR stack_address, int *frame_level)
 		    {
 		      val = value_of_variable (sym, block);
 		    }
-		  
+
 		  if (val == NULL)
 		    continue;
-		  
+
 		  /* Here is where we handle finding the symbol. Note that if
 		     the address lines up with a struct or array, we still
 		     pass it to build_path_to_element to get the first member
@@ -1717,9 +1725,9 @@ get_symbol_at_address_on_stack (CORE_ADDR stack_address, int *frame_level)
 		      symbol_name = xstrdup (SYMBOL_PRINT_NAME (sym));
 		      goto found_symbol;
 		    }
-		  else if (stack_address >= val_address 
-			   && ( stack_address 
-				< val_address 
+		  else if (stack_address >= val_address
+			   && ( stack_address
+				< val_address
 				+ TYPE_LENGTH (val_type)))
 		    {
 		      CORE_ADDR offset = stack_address - val_address;
@@ -1729,7 +1737,7 @@ get_symbol_at_address_on_stack (CORE_ADDR stack_address, int *frame_level)
 		      goto found_symbol;
 		    }
 		}
-	      
+
 	      if (BLOCK_FUNCTION (block))
 		{
 		  this_symbol = NULL;
@@ -1752,9 +1760,9 @@ get_symbol_at_address_on_stack (CORE_ADDR stack_address, int *frame_level)
 static char *auto_kind_strings[5] = {"global", "stack", "object", "bytes", "assoc"};
 static char *auto_kind_spacer[5] = {"", " ", "", " ", " "};
 static CORE_ADDR
-gc_print_references (CORE_ADDR list_addr, int wordsize)
+gc_print_references(volatile CORE_ADDR list_addr, int wordsize)
 {
-  int ref_index;
+  volatile int ref_index;
   LONGEST num_refs;
 
   if (safe_read_memory_integer (list_addr, 4, &num_refs) == 0)
@@ -1765,7 +1773,7 @@ gc_print_references (CORE_ADDR list_addr, int wordsize)
          uint32_t count;
          struct auto_memory_reference references[0];
        }
-       
+
        gcc wants to make sure that the array is wordsize aligned within
        the struct. So we need to step by wordsize here, even though we are
        reading a 4-byte integer out of the struct.  */
@@ -1783,9 +1791,9 @@ gc_print_references (CORE_ADDR list_addr, int wordsize)
       ULONGEST address;
       ULONGEST kind;
       ULONGEST retain_cnt;
-      
+
       ref_cleanup = make_cleanup_ui_out_tuple_begin_end (uiout, "reference");
-      
+
       if (safe_read_memory_unsigned_integer (list_addr, wordsize, &address) == 0)
 	error ("Could not read address and reference %d at %s.",
 	       ref_index, paddr_nz (list_addr));
@@ -1802,14 +1810,14 @@ gc_print_references (CORE_ADDR list_addr, int wordsize)
 	error ("Could not read retainCount and reference %d at %s.",
 	       ref_index, paddr_nz (list_addr));
       list_addr += 4;
-      
+
       if (ref_index < 10)
 	ui_out_text (uiout, "   ");
-      else 
+      else
 	ui_out_text (uiout, "  ");
 
       ui_out_field_int (uiout, "depth", ref_index);
-	  
+
       ui_out_text (uiout, " Kind: ");
 
       if (kind >= AUTO_BLOCK_GLOBAL && kind <= AUTO_BLOCK_ASSOCIATION)
@@ -1819,7 +1827,7 @@ gc_print_references (CORE_ADDR list_addr, int wordsize)
 	}
       else
 	ui_out_field_int (uiout, "kind", kind);
-      
+
       ui_out_text (uiout, "  rc: ");
       /* Cheesy spacing, if we ever get retain counts over 9999 we will NOT
 	   * space right.  */
@@ -1830,7 +1838,7 @@ gc_print_references (CORE_ADDR list_addr, int wordsize)
 
       ui_out_field_int (uiout, "retain-count", retain_cnt);
 
-      if (kind == AUTO_BLOCK_STACK) 
+      if (kind == AUTO_BLOCK_STACK)
 	{
 	  CORE_ADDR stack_address;
 	  int frame_level;
@@ -1862,7 +1870,7 @@ gc_print_references (CORE_ADDR list_addr, int wordsize)
 	      ui_out_field_string (uiout, "frame", "<unknown>");
 	    }
 	}
-      else if (kind == AUTO_BLOCK_OBJECT 
+      else if (kind == AUTO_BLOCK_OBJECT
 	       || kind == AUTO_BLOCK_ASSOCIATION)
 	{
 	  /* This is an ObjC object. */
@@ -1886,7 +1894,7 @@ gc_print_references (CORE_ADDR list_addr, int wordsize)
 
 	  TRY_CATCH (e, RETURN_MASK_ERROR)
 	    {
-	      dynamic_type = objc_target_type_from_object (address, NULL, 
+	      dynamic_type = objc_target_type_from_object (address, NULL,
                                                            wordsize,
 							   &dynamic_name);
 	    }
@@ -1900,7 +1908,7 @@ gc_print_references (CORE_ADDR list_addr, int wordsize)
 	      char *ivar_name = NULL;
 	      ui_out_text (uiout, "  Class: ");
 	      ui_out_field_string (uiout, "class", TYPE_NAME (dynamic_type));
-	      if (kind == AUTO_BLOCK_ASSOCIATION) 
+	      if (kind == AUTO_BLOCK_ASSOCIATION)
 		{
 		  ui_out_text (uiout, "  Key: ");
 		  ui_out_field_core_addr (uiout, "key", offset);
@@ -1913,7 +1921,7 @@ gc_print_references (CORE_ADDR list_addr, int wordsize)
 	      else if (offset > 0)
 		{
 		  int remaining_offset;
-		  remaining_offset = build_path_to_element (dynamic_type, offset, 
+		  remaining_offset = build_path_to_element (dynamic_type, offset,
 							    &ivar_name);
 		  if (ivar_name != NULL)
 		    {
@@ -1925,17 +1933,17 @@ gc_print_references (CORE_ADDR list_addr, int wordsize)
 		    {
 		      ui_out_text (uiout, "  Offset: ");
 		      ui_out_field_core_addr (uiout, "offset", offset);
-		    }		      
+		    }
 		}
 	    }
 	  else
 	    {
-	      if (kind == AUTO_BLOCK_ASSOCIATION) 
+	      if (kind == AUTO_BLOCK_ASSOCIATION)
 		{
 		  ui_out_text (uiout, "  Key: ");
 		  ui_out_field_core_addr (uiout, "key", offset);
-		} 
-	      else 
+		}
+	      else
 		{
 		  ui_out_text (uiout, "  Offset: ");
 		  ui_out_field_core_addr (uiout, "offset", offset);
@@ -1953,7 +1961,7 @@ gc_print_references (CORE_ADDR list_addr, int wordsize)
 	{
 	  ui_out_text (uiout, "  Address: ");
 	  ui_out_field_core_addr (uiout, "address", address);
-	  
+
 	  if (offset != 0)
 	    {
 	      ui_out_text (uiout, "  Offset: ");
@@ -1967,27 +1975,27 @@ gc_print_references (CORE_ADDR list_addr, int wordsize)
 	      the_sect = find_pc_sect_section (address, NULL);
 	      if (the_sect != NULL)
 		{
-		  msymbol 
+		  msymbol
 		    = lookup_minimal_symbol_by_pc_section (address,
 							   the_sect->the_bfd_section);
 		}
 	      ui_out_text (uiout, " Symbol: ");
-	      if (msymbol) 
+	      if (msymbol)
 		ui_out_field_string (uiout, "symbol", SYMBOL_PRINT_NAME (msymbol));
 	      else
 		ui_out_field_string (uiout, "symbol", "<unknown>");
 	    }
 	}
-      
+
       ui_out_text (uiout, "\n");
-      
+
       do_cleanups (ref_cleanup);
     }
   return list_addr;
 }
 
 static void
-gc_free_data (struct value *addr_val)
+gc_free_data(struct value *addr_val)
 {
   static struct cached_value *free_fn = NULL;
   struct cleanup *old_cleanups;
@@ -1995,19 +2003,19 @@ gc_free_data (struct value *addr_val)
   /* Finally, we need to free the root list.  */
 
   if (free_fn == NULL)
-    free_fn = create_cached_function ("Auto::aux_free", 
+    free_fn = create_cached_function ("Auto::aux_free",
 				      builtin_type_void_func_ptr);
   if (free_fn == NULL)
     error ("Could NOT find \"Auto::aux_free\" function in the inferior.\n");
-  make_cleanup_set_restore_scheduler_locking_mode 
+  make_cleanup_set_restore_scheduler_locking_mode
                       (scheduler_locking_on);
   make_cleanup_set_restore_debugger_mode (&old_cleanups, 0);
-  call_function_by_hand (lookup_cached_function (free_fn), 1, &addr_val);  
+  call_function_by_hand (lookup_cached_function (free_fn), 1, &addr_val);
   do_cleanups (old_cleanups);
 }
 
 static struct cached_value *
-get_zone_finder ()
+get_zone_finder(void)
 {
   /* We need this to return the auto_zone for the root & reference
      tracing functions.  */
@@ -2016,17 +2024,17 @@ get_zone_finder ()
   /* Make a cached version of the root tracing functions,
      auto_zone and auto_gdb_enumerate_roots.  Get the auto_zone,
      and then call the root function.  */
- 
+
   if (auto_zone_fn == NULL)
     {
-      /* objc_collectableZone is the 10.7 version of auto_zone.  
+      /* objc_collectableZone is the 10.7 version of auto_zone.
          Use it if it exists.  */
       if (lookup_minimal_symbol ("objc_collectableZone", 0, 0))
         auto_zone_fn = create_cached_function ("objc_collectableZone",
                                                builtin_type_voidptrfuncptr);
 
       if (auto_zone_fn == NULL && lookup_minimal_symbol ("auto_zone", 0, 0))
-        auto_zone_fn = create_cached_function ("auto_zone", 
+        auto_zone_fn = create_cached_function ("auto_zone",
                                                builtin_type_voidptrfuncptr);
     }
   return auto_zone_fn;
@@ -2051,7 +2059,7 @@ gc_root_tracing_command (char *arg, int from_tty)
     error ("The program is not running.");
 
   addr = parse_and_eval_address (arg);
-  
+
   /* First we have to make sure that the symbols
      for libauto.dylib are raised to all.  */
 
@@ -2059,7 +2067,7 @@ gc_root_tracing_command (char *arg, int from_tty)
       == -1)
     warning ("Could NOT raise the load level of libauto.dylib.");
 
-  
+
   /* Now we have to cons up a gdb type for the root tracing
      data structures that we will need.  */
   /* FIXME - Maybe it is easier to just grub in memory...  */
@@ -2069,17 +2077,17 @@ gc_root_tracing_command (char *arg, int from_tty)
     error ("Could NOT find \"objc_collectableZone\" or \"auto_zone\" function in inferior.");
 
   if (enumerate_root_fn == NULL)
-    enumerate_root_fn = create_cached_function ("auto_gdb_enumerate_roots", 
+    enumerate_root_fn = create_cached_function ("auto_gdb_enumerate_roots",
 					   builtin_type_voidptrfuncptr);
   if (enumerate_root_fn == NULL)
     error ("Could NOT find \"auto_gdb_enumerate_roots\" function in inferior.");
-    
+
   cleanup_chain = make_cleanup_set_restore_unwind_on_signal (1);
-  make_cleanup_set_restore_scheduler_locking_mode 
+  make_cleanup_set_restore_scheduler_locking_mode
                       (scheduler_locking_on);
   make_cleanup_set_restore_debugger_mode (NULL, 0);
-  arg_list[0] 
-    = call_function_by_hand (lookup_cached_function (zone_finder_fn), 
+  arg_list[0]
+    = call_function_by_hand (lookup_cached_function (zone_finder_fn),
 			     0, NULL);
 
   /* Okay, we have got a value for the auto_zone, now call the enumerate
@@ -2089,9 +2097,9 @@ gc_root_tracing_command (char *arg, int from_tty)
   arg_list[2] = value_from_pointer (builtin_type_void_data_ptr, read_sp ());
   /* We have got a pointer to the root list, traverse it and print
      out its contents.  */
-  
-  root_list_val 
-    = call_function_by_hand (lookup_cached_function (enumerate_root_fn), 
+
+  root_list_val
+    = call_function_by_hand (lookup_cached_function (enumerate_root_fn),
 					 3, arg_list);
   do_cleanups (cleanup_chain);
 
@@ -2119,12 +2127,12 @@ gc_root_tracing_command (char *arg, int from_tty)
          uint32_t count;
          struct auto_memory_reference_list_t references[0];
        }
-       
+
        gcc wants to make sure that the array is wordsize aligned within
        the struct. So we need to step by wordsize here, even though we are
        reading a 4-byte integer out of the struct.  */
   list_addr += wordsize;
-  
+
   for (root_index = 0; root_index < num_roots; root_index++)
     {
       struct cleanup *root_cleanup;
@@ -2136,7 +2144,7 @@ gc_root_tracing_command (char *arg, int from_tty)
       list_addr = gc_print_references (list_addr, wordsize);
 
       do_cleanups (root_cleanup);
-      
+
     }
 
   do_cleanups (cleanup_chain);
@@ -2146,7 +2154,7 @@ gc_root_tracing_command (char *arg, int from_tty)
 }
 
 void
-gc_reference_tracing_command (char *arg, int from_tty)
+gc_reference_tracing_command(char *arg, int from_tty)
 {
   static struct cached_value *enumerate_ref_fn = NULL;
   struct cached_value *zone_finder_fn;
@@ -2163,7 +2171,7 @@ gc_reference_tracing_command (char *arg, int from_tty)
     error ("The program is not running.");
 
   addr = parse_and_eval_address (arg);
-  
+
   /* First we have to make sure that the symbols
      for libauto.dylib are raised to all.  */
 
@@ -2171,7 +2179,7 @@ gc_reference_tracing_command (char *arg, int from_tty)
       == -1)
     warning ("Could NOT raise the load level of libauto.dylib.");
 
-  
+
   /* Now we have to cons up a gdb type for the root tracing
      data structures that we will need.  */
   /* FIXME - Maybe it is easier to just grub in memory...  */
@@ -2185,17 +2193,17 @@ gc_reference_tracing_command (char *arg, int from_tty)
     error ("Could NOT find \"objc_collectableZone\" or \"auto_zone\" function in inferior.");
 
   if (enumerate_ref_fn == NULL)
-    enumerate_ref_fn = create_cached_function ("auto_gdb_enumerate_references", 
+    enumerate_ref_fn = create_cached_function ("auto_gdb_enumerate_references",
 					   builtin_type_voidptrfuncptr);
   if (enumerate_ref_fn == NULL)
     error ("Could NOT find \"auto_gdb_enumerate_references\" function in inferior.");
-    
+
   cleanup_chain = make_cleanup_set_restore_unwind_on_signal (1);
-  make_cleanup_set_restore_scheduler_locking_mode 
+  make_cleanup_set_restore_scheduler_locking_mode
                       (scheduler_locking_on);
   make_cleanup_set_restore_debugger_mode (NULL, 0);
-  arg_list[0] 
-    = call_function_by_hand (lookup_cached_function (zone_finder_fn), 
+  arg_list[0]
+    = call_function_by_hand (lookup_cached_function (zone_finder_fn),
 			     0, NULL);
 
   /* Okay, we have got a value for the auto_zone, now call the enumerate
@@ -2205,9 +2213,9 @@ gc_reference_tracing_command (char *arg, int from_tty)
   arg_list[2] = value_from_pointer (builtin_type_void_data_ptr, read_sp ());
   /* We have got a pointer to the root list, traverse it and print
      out its contents.  */
-  
-  ref_list_val 
-    = call_function_by_hand (lookup_cached_function (enumerate_ref_fn), 
+
+  ref_list_val
+    = call_function_by_hand (lookup_cached_function (enumerate_ref_fn),
 					 3, arg_list);
   do_cleanups (cleanup_chain);
 
@@ -2221,15 +2229,15 @@ gc_reference_tracing_command (char *arg, int from_tty)
 	   paddr_nz (list_addr));
 
   list_addr = gc_print_references (list_addr, wordsize);
-      
+
   if (num_refs > 0)
     gc_free_data (ref_list_val);
 }
 
 void
-_initialize_macosx_mutils ()
+_initialize_macosx_mutils(void)
 {
-  mutils_stderr = fdopen (fileno (stderr), "w");
+  mutils_stderr = fdopen(fileno(stderr), "w");
 
   add_setshow_boolean_cmd ("mutils", class_obscure,
 			   &mutils_debugflag, _("\
@@ -2238,7 +2246,7 @@ Show if printing inferior memory debugging statements."), NULL,
 			   NULL, NULL,
 			   &setdebuglist, &showdebuglist);
 
-  add_info ("malloc-history", malloc_history_info_command, 
+  add_info ("malloc-history", malloc_history_info_command,
 	    "List the stack(s) where malloc or free occurred for the address\n"
 	    "resulting from expression given in the argument to the command.\n"
             "If the argument is preceeded by \"-exact\" then only malloc and free events\n"
@@ -2246,12 +2254,12 @@ Show if printing inferior memory debugging statements."), NULL,
 	    "that contains that address within its range will be reported.\n"
 	    "The default is \"-range\".\n"
 	    "Note: you must set MallocStackLoggingNoCompact in the target\n"
-	    "environment for the malloc history to be logged."); 
+	    "environment for the malloc history to be logged.");
 
-  add_info ("gc-roots", gc_root_tracing_command, 
+  add_info ("gc-roots", gc_root_tracing_command,
 	    "List the garbage collector's shortest unique roots to a given address.");
 
-  add_info ("gc-references", gc_reference_tracing_command, 
+  add_info ("gc-references", gc_reference_tracing_command,
 	    "List the garbage collectors references for a given address.");
 
 }

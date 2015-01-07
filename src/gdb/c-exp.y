@@ -1,8 +1,8 @@
-/* YACC parser for C expressions, for GDB.
-   Copyright 1986, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997,
-   1998, 1999, 2000, 2003, 2004
-   Free Software Foundation, Inc.
-
+/* c-exp.y: YACC parser for C expressions, for GDB.
+ * Copyright 1986, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997,
+ * 1998, 1999, 2000, 2003, 2004
+ * Free Software Foundation, Inc.  */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA */
 
 /* Parse a C expression from text in a string,
    and return the result as a  struct expression  pointer.
@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
    with include files (<malloc.h> and <stdlib.h> for example) just became
    too messy, particularly when such includes can be inserted at random
    times by the parser generator.  */
-   
+
 %{
 
 #include "defs.h"
@@ -69,13 +69,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #define	yylval	c_lval
 #define	yychar	c_char
 #define	yydebug	c_debug
-#define	yypact	c_pact	
-#define	yyr1	c_r1			
-#define	yyr2	c_r2			
-#define	yydef	c_def		
-#define	yychk	c_chk		
-#define	yypgo	c_pgo		
-#define	yyact	c_act		
+#define	yypact	c_pact
+#define	yyr1	c_r1
+#define	yyr2	c_r2
+#define	yydef	c_def
+#define	yychk	c_chk
+#define	yypgo	c_pgo
+#define	yyact	c_act
 #define	yyexca	c_exca
 #define yyerrflag c_errflag
 #define yynerrs	c_nerrs
@@ -180,9 +180,9 @@ static int parse_number (char *, int, int, YYSTYPE *);
 
 %token <sval> STRING
 /* APPLE LOCAL begin ObjC */
-%token <sval> OBJC_NSSTRING /* ObjC Foundation "NSString" literal */ 
-%token <sval> OBJC_SELECTOR /* ObjC "@selector" pseudo-operator   */ 
-%token <class> OBJC_CLASSNAME /* ObjC Class name */ 
+%token <sval> OBJC_NSSTRING /* ObjC Foundation "NSString" literal */
+%token <sval> OBJC_SELECTOR /* ObjC "@selector" pseudo-operator   */
+%token <class> OBJC_CLASSNAME /* ObjC Class name */
 /* APPLE LOCAL end ObjC */
 %token <ssym> NAME /* BLOCKNAME defined below to give it higher precedence. */
 %token <tsym> TYPENAME
@@ -195,7 +195,7 @@ static int parse_number (char *, int, int, YYSTYPE *);
    E.g. "c" when input_radix==16.  Depending on the parse, it will be
    turned into a name or into a number.  */
 
-%token <ssym> NAME_OR_INT 
+%token <ssym> NAME_OR_INT
 
 %token STRUCT CLASS UNION ENUM SIZEOF UNSIGNED COLONCOLON
 %token TEMPLATE
@@ -231,7 +231,7 @@ static int parse_number (char *, int, int, YYSTYPE *);
 %left '*' '/' '%'
 %right UNARY INCREMENT DECREMENT
 %right ARROW '.' '[' '('
-%token <ssym> BLOCKNAME 
+%token <ssym> BLOCKNAME
 %token <bval> FILENAME
 %type <bval> block
 %left COLONCOLON
@@ -350,7 +350,7 @@ exp	: 	'[' TYPENAME
 
 			  class = lookup_objc_class (copy_name ($2.stoken));
 			  if (class == 0)
-			    error ("%s is not an ObjC Class", 
+			    error ("%s is not an ObjC Class",
 				   copy_name ($2.stoken));
 			  write_exp_elt_opcode (OP_LONG);
 			  write_exp_elt_type (builtin_type_void_data_ptr);
@@ -361,7 +361,7 @@ exp	: 	'[' TYPENAME
 		msglist ']'
 			{ write_exp_elt_opcode (OP_OBJC_MSGCALL);
 			  end_msglist();
-			  write_exp_elt_opcode (OP_OBJC_MSGCALL); 
+			  write_exp_elt_opcode (OP_OBJC_MSGCALL);
 			}
 	;
 
@@ -376,7 +376,7 @@ exp	:	'[' OBJC_CLASSNAME
 		msglist ']'
 			{ write_exp_elt_opcode (OP_OBJC_MSGCALL);
 			  end_msglist();
-			  write_exp_elt_opcode (OP_OBJC_MSGCALL); 
+			  write_exp_elt_opcode (OP_OBJC_MSGCALL);
 			}
 	;
 
@@ -385,7 +385,7 @@ exp	:	'[' exp
 		msglist ']'
 			{ write_exp_elt_opcode (OP_OBJC_MSGCALL);
 			  end_msglist();
-			  write_exp_elt_opcode (OP_OBJC_MSGCALL); 
+			  write_exp_elt_opcode (OP_OBJC_MSGCALL);
 			}
 	;
 
@@ -406,8 +406,8 @@ msgarg	:	name ':' exp
 			{ add_msglist(0, 0);   }
 	;
 /* APPLE LOCAL end ObjC */
- 
-exp	:	exp '(' 
+
+exp	:	exp '('
 			/* This is to save the value of arglist_len
 			   being accumulated by an outer function call.  */
 			{ start_arglist (); }
@@ -539,7 +539,7 @@ exp	:	exp OROR exp
 exp	:	exp '?' exp ':' exp	%prec '?'
 			{ write_exp_elt_opcode (TERNOP_COND); }
 	;
-			  
+
 exp	:	exp '=' exp
 			{ write_exp_elt_opcode (BINOP_ASSIGN); }
 	;
@@ -583,7 +583,7 @@ exp	:	VARIABLE
 	;
 
 /* APPLE LOCAL begin ObjC */
-exp	:	OBJC_SELECTOR 
+exp	:	OBJC_SELECTOR
 			{
 			  write_exp_elt_opcode (OP_OBJC_SELECTOR);
 			  write_exp_string ($1);
@@ -632,14 +632,14 @@ exp     :	OBJC_NSSTRING	/* ObjC NextStep NSString constant
 	;
 
 /* C++.  */
-exp     :       TRUEKEYWORD    
+exp     :       TRUEKEYWORD
                         { write_exp_elt_opcode (OP_LONG);
                           write_exp_elt_type (builtin_type (current_gdbarch)->builtin_bool);
                           write_exp_elt_longcst ((LONGEST) 1);
                           write_exp_elt_opcode (OP_LONG); }
 	;
 
-exp     :       FALSEKEYWORD   
+exp     :       FALSEKEYWORD
                         { write_exp_elt_opcode (OP_LONG);
                           write_exp_elt_type (builtin_type (current_gdbarch)->builtin_bool);
                           write_exp_elt_longcst ((LONGEST) 0);
@@ -771,7 +771,7 @@ variable:	name_not_typename
 			      if (symbol_read_needs_frame (sym))
 				{
 				  if (innermost_block == 0 ||
-				      contained_in (block_found, 
+				      contained_in (block_found,
 						    innermost_block))
 				    innermost_block = block_found;
 				}
@@ -789,7 +789,7 @@ variable:	name_not_typename
 			      /* C++/ObjC: it hangs off of `this'.  Must
 			         not inadvertently convert from a method call
 				 to data ref.  */
-			      if (innermost_block == 0 || 
+			      if (innermost_block == 0 ||
 				  contained_in (block_found, innermost_block))
 				innermost_block = block_found;
 			      if (current_language->la_language == language_cplus)
@@ -843,10 +843,10 @@ cv_with_space_id : const_or_volatile space_identifier const_or_volatile
 	;
 
 const_or_volatile_or_space_identifier_noopt: cv_with_space_id
-	| const_or_volatile_noopt 
+	| const_or_volatile_noopt
 	;
 
-const_or_volatile_or_space_identifier: 
+const_or_volatile_or_space_identifier:
 		const_or_volatile_or_space_identifier_noopt
 	|
 	;
@@ -913,7 +913,7 @@ typebase  /* Implements (approximately): (type-qualifier)* type-specifier */
 	|	OBJC_CLASSNAME
 			{
 			  if ($1.type == NULL)
-			    error ("No symbol \"%s\" in current context.", 
+			    error ("No symbol \"%s\" in current context.",
 				   copy_name($1.stoken));
 			  else
 			    $$ = $1.type;
@@ -966,7 +966,7 @@ typebase  /* Implements (approximately): (type-qualifier)* type-specifier */
 			{ $$ = builtin_type (current_gdbarch)->builtin_short; }
 	|	UNSIGNED SHORT INT_KEYWORD
 			{ $$ = builtin_type (current_gdbarch)->builtin_unsigned_short; }
-	|	SHORT UNSIGNED 
+	|	SHORT UNSIGNED
 			{ $$ = builtin_type (current_gdbarch)->builtin_unsigned_short; }
 	|	SHORT UNSIGNED INT_KEYWORD
 			{ $$ = builtin_type (current_gdbarch)->builtin_unsigned_short; }
@@ -996,14 +996,14 @@ typebase  /* Implements (approximately): (type-qualifier)* type-specifier */
 			{ $$ = builtin_type (current_gdbarch)->builtin_int; }
                 /* It appears that this rule for templates is never
                    reduced; template recognition happens by lookahead
-                   in the token processing code in yylex. */         
+                   in the token processing code in yylex. */
 	|	TEMPLATE name '<' type '>'
 			{ $$ = lookup_template_type(copy_name($2), $4,
 						    expression_context_block);
 			}
-	| const_or_volatile_or_space_identifier_noopt typebase 
+	| const_or_volatile_or_space_identifier_noopt typebase
 			{ $$ = follow_types ($2); }
-	| typebase const_or_volatile_or_space_identifier_noopt 
+	| typebase const_or_volatile_or_space_identifier_noopt
 			{ $$ = follow_types ($1); }
 	| qualified_type
 	;
@@ -1073,7 +1073,7 @@ qualified_type: typebase COLONCOLON name
 		  if (new_type == NULL)
 		    error ("No type \"%s\" within class or namespace \"%s\".",
 			   ncopy, TYPE_NAME (type));
-		  
+
 		  $$ = new_type;
 		}
 	;
@@ -1121,9 +1121,9 @@ const_and_volatile: 	CONST_KEYWORD VOLATILE_KEYWORD
 	| 		VOLATILE_KEYWORD CONST_KEYWORD
 	;
 
-const_or_volatile_noopt:  	const_and_volatile 
+const_or_volatile_noopt:  	const_and_volatile
 			{ push_type (tp_const);
-			  push_type (tp_volatile); 
+			  push_type (tp_volatile);
 			}
 	| 		CONST_KEYWORD
 			{ push_type (tp_const); }
@@ -1158,11 +1158,7 @@ name_not_typename :	NAME
 /*** Needs some error checking for the float case ***/
 
 static int
-parse_number (p, len, parsed_float, putithere)
-     char *p;
-     int len;
-     int parsed_float;
-     YYSTYPE *putithere;
+parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
 {
   /* FIXME: Shouldn't these be unsigned?  We don't deal with negative values
      here, and we do kind of silly things like cast to unsigned.  */
@@ -1217,7 +1213,7 @@ parse_number (p, len, parsed_float, putithere)
       else if (num == 2)
 	{
 	  /* See if it has `f' or `l' suffix (float or long double).  */
-	  
+
 	  c = tolower (c);
 	  /* There's no way to tell, using sscanf, whether we actually
 	     did ingest all the input.  But this check will catch things
@@ -1319,7 +1315,7 @@ parse_number (p, len, parsed_float, putithere)
 	 FIXME: This check is wrong; for example it doesn't find overflow
 	 on 0x123456789 when LONGEST is 32 bits.  */
       if (c != 'l' && c != 'u' && n != 0)
-	{	
+	{
 	  if ((unsigned_p && (ULONGEST) prevn >= (ULONGEST) n))
 	    error ("Numeric constant too large.");
 	}
@@ -1378,11 +1374,11 @@ parse_number (p, len, parsed_float, putithere)
    /* If the high bit of the worked out type is set then this number
       has to be unsigned. */
 
-   if (unsigned_p || (n & high_bit)) 
+   if (unsigned_p || (n & high_bit))
      {
        putithere->typed_val_int.type = unsigned_type;
      }
-   else 
+   else
      {
        putithere->typed_val_int.type = signed_type;
      }
@@ -1427,10 +1423,15 @@ static const struct token tokentab2[] =
     {">=", GEQ, BINOP_END}
   };
 
-/* Read one token, getting characters through lexptr.  */
+/* APPLE LOCAL: from objc-lang.c: */
+extern struct symbol *lookup_struct_typedef(char *name,
+                                            struct block *block,
+                                            int noerr);
+/* end APPLE LOCAL prototype */
 
+/* Read one token, getting characters through lexptr: */
 static int
-yylex ()
+yylex(void)
 {
   int c;
   int tokchar;
@@ -1445,7 +1446,7 @@ yylex ()
   char * token_string = NULL;
   int class_prefix = 0;
   int unquoted_expr;
-   
+
  retry:
 
   /* Check if this is a macro invocation that we need to expand.  */
@@ -1609,8 +1610,8 @@ yylex ()
 	       a decimal floating point number regardless of the radix.  */
 	    else if (!got_dot && *p == '.')
 	      got_dot = 1;
-            /* APPLE LOCAL: Recognize the P formatting of floating point 
-               numbers with two hex components, e.g. 
+            /* APPLE LOCAL: Recognize the P formatting of floating point
+               numbers with two hex components, e.g.
                   1000000.53 == 0x1.e84810f5c28f60000p+19 */
             else if (got_dot && hex && (*p == 'p' || *p == 'P'))
               got_p = 1;
@@ -1627,7 +1628,7 @@ yylex ()
 				  && (*p < 'A' || *p > 'Z')))
 	      break;
 	  }
-	toktype = parse_number (tokstart, p - tokstart, got_dot|got_e|got_p, 
+	toktype = parse_number (tokstart, p - tokstart, got_dot|got_e|got_p,
                                 &yylval);
         if (toktype == ERROR)
 	  {
@@ -1793,12 +1794,12 @@ yylex ()
 	 FIXME: This mishandles `print $a<4&&$a>3'.  */
 
       if (c == '<')
-	{ 
+	{
                /* Scan ahead to get rest of the template specification.  Note
                   that we look ahead only when the '<' adjoins non-whitespace
                   characters; for comparison expressions, e.g. "a < b > c",
                   there must be spaces before the '<', etc. */
-               
+
                char * p = find_template_name_end (tokstart + namelen);
                if (p)
                  namelen = p - tokstart;
@@ -1889,7 +1890,7 @@ yylex ()
       write_dollar_variable (yylval.sval);
       return VARIABLE;
     }
-  
+
   /* Look ahead and see if we can consume more of the input
      string to get a reasonable class/namespace spec or a
      fully-qualified name.  This is a kludge to get around the
@@ -1903,17 +1904,17 @@ yylex ()
      description above.  */
   if (unquoted_expr)
     {
-      /* Only do it if not inside single quotes */ 
+      /* Only do it if not inside single quotes */
       sym_class = parse_nested_classes_for_hpacc (yylval.sval.ptr, yylval.sval.length,
                                                   &token_string, &class_prefix, &lexptr);
       if (sym_class)
         {
-          /* Replace the current token with the bigger one we found */ 
+          /* Replace the current token with the bigger one we found */
           yylval.sval.ptr = token_string;
           yylval.sval.length = strlen (token_string);
         }
     }
-  
+
   /* Use token-type BLOCKNAME for symbols that happen to be defined as
      functions or symtabs.  If this is not so, then ...
      Use token-type TYPENAME for symbols that happen to be defined
@@ -1932,7 +1933,7 @@ yylex ()
       need_this = &is_a_field_of_this;
     else
       need_this = (int *) NULL;
-    
+
     sym = lookup_symbol (tmp, expression_context_block,
 			 VAR_DOMAIN, need_this,
 			 (struct symtab **) NULL);
@@ -1972,20 +1973,19 @@ yylex ()
     if (yylval.tsym.type != NULL)
       return TYPENAME;
 
-    /* APPLE LOCAL: See if it's an ObjC classname.  This was previously inside 
-       the "if lookup_struct_typedef" block, but then we wouldn't recognize
+    /* APPLE LOCAL: See if it is an ObjC classname.  This was previously inside
+       the "if lookup_struct_typedef" block, but then we would NOT recognize
        ObjC classes that had no debug info, so it got hoisted out.  This
        results in unfortunate side-effect that gdb is calling into the
        ObjC runtime a lot to see if various no-debug-info symbols are
        classes.  */
     /* APPLE LOCAL begin avoid calling lookup_objc_class unnecessarily.  */
-    if (!sym && should_lookup_objc_class ()
-	&& square_bracket_seen)  
+    if (!sym && should_lookup_objc_class()
+	&& square_bracket_seen)
       {
-	extern struct symbol *lookup_struct_typedef ();
-        CORE_ADDR Class = lookup_objc_class (tmp);
+        CORE_ADDR Class = lookup_objc_class(tmp);
 	square_bracket_seen = 0;
-	/* APPLE LOCAL end avoid calling lookup_objc_class unnecessarily.  */
+	/* APPLE LOCAL end avoid calling lookup_objc_class unnecessarily. */
         if (Class)
 	  {
 	    sym = lookup_struct_typedef (tmp, expression_context_block, 1);
@@ -1998,11 +1998,11 @@ yylex ()
 	    return OBJC_CLASSNAME;
 	  }
       }
-    
+
     /* Input names that aren't symbols but ARE valid hex numbers,
        when the input radix permits them, can be names or numbers
        depending on the parse.  Note we support radixes > 16 here.  */
-    if (!sym && 
+    if (!sym &&
         ((tokstart[0] >= 'a' && tokstart[0] < 'a' + input_radix - 10) ||
          (tokstart[0] >= 'A' && tokstart[0] < 'A' + input_radix - 10)))
       {
@@ -2023,12 +2023,13 @@ yylex ()
   }
 }
 
-void
-yyerror (msg)
-     char *msg;
+void ATTR_NORETURN
+yyerror(char *msg)
 {
   if (prev_lexptr)
     lexptr = prev_lexptr;
 
-  error ("A %s in expression, near `%s'.", (msg ? msg : "error"), lexptr);
+  error("A %s in expression, near `%s'.", (msg ? msg : "error"), lexptr);
 }
+
+/* End of c-exp.y */

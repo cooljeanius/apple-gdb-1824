@@ -1,4 +1,4 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* macosx-nat.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -41,6 +41,8 @@
 #include "objc-lang.h"
 #include "infcall.h"
 
+#include "macosx-nat.h"
+
 #include "macosx-nat-dyld.h"
 #include "macosx-nat-dyld-info.h"
 #include "macosx-nat-inferior.h"
@@ -51,9 +53,11 @@ extern macosx_dyld_thread_status macosx_dyld_status;
 extern int inferior_auto_start_cfm_flag;
 extern int inferior_auto_start_dyld_flag;
 
+extern void _initialize_macosx_nat(void);
+
 /* classic-inferior-support
    FIXME: All of these macosx_classic_ functions belong over in
-   serial.c, but we're sticking them in here for now so as to perturb
+   serial.c, but we are sticking them in here for now so as to perturb
    things the least amount possible.  jmolenda/2005-05-02  */
 
 static void
@@ -61,7 +65,7 @@ macosx_classic_unix_close (struct serial *scb)
 {
   if (scb->fd < 0)
     return;
-    
+
   close (scb->fd);
   scb->fd = -1;
 }
@@ -74,30 +78,30 @@ macosx_classic_unix_open (struct serial *scb, const char *name)
 {
   struct sockaddr_un sockaddr;
   int n;
-    
+
   if (strncmp (name, "unix:", 5) != 0)
     return -1;
-    
+
   name += 5;
-  
+
   scb->fd = socket (PF_UNIX, SOCK_STREAM, 0);
   if (scb->fd == -1)
     return -1;
-    
+
   sockaddr.sun_family = PF_UNIX;
   strcpy (sockaddr.sun_path, name);
   sockaddr.sun_len = sizeof (sockaddr);
-    
+
   n = connect (scb->fd, (struct sockaddr *)&sockaddr, sizeof (sockaddr));
-  if (n == -1) 
+  if (n == -1)
     {
       macosx_classic_unix_close (scb);
       return -1;
     }
-    
+
   signal (SIGPIPE, SIG_IGN);
-    
-  return 0;   
+
+  return 0;
 }
 
 /* classic-inferior-support
@@ -123,9 +127,9 @@ macosx_classic_stop_inferior (void)
 
 static void
 macosx_classic_create_inferior (pid_t pid)
-{   
+{
   int kr;
-    
+
   task_t task;
   kr = task_for_pid (mach_task_self (),  pid, &task);
   if (kr != KERN_SUCCESS)
@@ -133,23 +137,23 @@ macosx_classic_create_inferior (pid_t pid)
       if (macosx_get_task_for_pid_rights () == 1)
 	kr = task_for_pid (mach_task_self (), pid, &task);
     }
-  
-  if (kr != KERN_SUCCESS) 
+
+  if (kr != KERN_SUCCESS)
     {
-      error ("task_for_pid failed for pid %d: %s", pid, 
+      error ("task_for_pid failed for pid %d: %s", pid,
              mach_error_string (kr));
-    } 
-   else 
+    }
+   else
     {
       macosx_create_inferior_for_task (macosx_status, task, pid);
-      printf_filtered ("pid %d -> mach task %d\n", macosx_status->pid, 
+      printf_filtered ("pid %d -> mach task %d\n", macosx_status->pid,
                         macosx_status->task);
       if (inferior_auto_start_dyld_flag)
         {
           int i;
           struct dyld_objfile_entry *e;
 
-          // remove all the currently cached objfiles since we've started 
+          // remove all the currently cached objfiles since we've started
           // a new session
 
           DYLD_ALL_OBJFILE_INFO_ENTRIES (&macosx_dyld_status.current_info, e, i)
@@ -169,7 +173,7 @@ macosx_classic_create_inferior (pid_t pid)
           macosx_dyld_update (1);
         }
 #if WITH_CFM
-      if (inferior_auto_start_cfm_flag) 
+      if (inferior_auto_start_cfm_flag)
         {
           macosx_cfm_thread_init (&macosx_status->cfm_status);
         }
@@ -201,9 +205,9 @@ classic_socket_exists_p (pid_t pid)
 
 /* classic-inferior-support
    Determine if PID is a classic process or not.
-   Returns 
-   1 if it's classic, 
-   0 if it's a normal process, or 
+   Returns
+   1 if it's classic,
+   0 if it's a normal process, or
    -1 if there was an error making the determination (most likely
    because the process is running under a different uid and gdb isn't
    being run by root.)  */
@@ -253,7 +257,7 @@ can_attach (pid_t target_pid)
         return 0;
     }
 
-  if (gdb_is_classic == 0) 
+  if (gdb_is_classic == 0)
     {
       if (target_is_classic == 0)
           return 1;
@@ -271,7 +275,7 @@ can_attach (pid_t target_pid)
 }
 
 /* classic-inferior-support
-   We're about to attach to the process at TARGET_PID.  If we should use the 
+   We're about to attach to the process at TARGET_PID.  If we should use the
    classic process attach process (involving the remote protocol), return 1.
 
    If this is a normal process attach, return 0. */
@@ -292,7 +296,7 @@ attaching_to_classic_process_p (pid_t target_pid)
 
   return 0;
 }
-  
+
 extern struct target_ops remote_ops;
 
 /* classic-inferior-support
@@ -300,7 +304,7 @@ extern struct target_ops remote_ops;
    Mach attach code. */
 
 void
-attach_to_classic_process (pid_t pid)
+attach_to_classic_process(pid_t pid)
 {
   char name[PATH_MAX];
   sprintf (name, "unix:/tmp/translate.gdb.%d", pid);
@@ -314,15 +318,15 @@ attach_to_classic_process (pid_t pid)
   inferior_function_calls_disabled_p = 1;
   lookup_objc_class_p = 0;
 
-  update_current_target ();
+  update_current_target();
 }
 
 void
-_initialize_macosx_nat ()
+_initialize_macosx_nat(void)
 {
   /* classic-inferior-support */
-  struct serial_ops *ops = XMALLOC (struct serial_ops);
-  memset (ops, 0, sizeof (struct serial_ops));
+  struct serial_ops *ops = XMALLOC(struct serial_ops);
+  memset(ops, 0, sizeof(struct serial_ops));
   ops->name = "unix";
   ops->next = 0;
   ops->open = macosx_classic_unix_open;
@@ -343,5 +347,7 @@ _initialize_macosx_nat ()
   ops->async = ser_base_async;
   ops->read_prim = ser_unix_read_prim;
   ops->write_prim = ser_unix_write_prim;
-  serial_add_interface (ops);
+  serial_add_interface(ops);
 }
+
+/* EOF */

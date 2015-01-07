@@ -1,4 +1,4 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* macosx-nat-dyld-info.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002, 2004
    Free Software Foundation, Inc.
 
@@ -145,8 +145,8 @@ dyld_objfile_entry_in_shared_cache (struct dyld_objfile_entry *e)
 	 DYLD_OBJFILE_ENTRY_CLEAR) then we haven't read it yet.  */
       if (e->mem_header.magic == 0)
        target_read_mach_header (e->dyld_addr, &e->mem_header);
-      
-      /* The high bit of the flags member from the in memory version of the 
+
+      /* The high bit of the flags member from the in memory version of the
          mach_header declares if this mach image is in the shared cache.  */
       if (e->mem_header.flags & 0x80000000)
 	return 1;
@@ -176,7 +176,7 @@ dyld_objfile_entry_osabi (const struct dyld_objfile_entry *e)
 
 	      case BFD_MACH_O_CPU_SUBTYPE_ARM_7:
 		return GDB_OSABI_DARWINV7;
-		    
+
 	      case BFD_MACH_O_CPU_SUBTYPE_ARM_7F:
 		return GDB_OSABI_DARWINV7F;
 
@@ -339,7 +339,7 @@ dyld_objfile_entry_compare (struct dyld_objfile_entry *a,
   COMPARE_SCALAR (mem_header.ncmds);
   COMPARE_SCALAR (mem_header.sizeofcmds);
   COMPARE_SCALAR (mem_header.flags);
-  
+
   COMPARE_STRING (dyld_name);
   COMPARE_SCALAR (dyld_name_valid);
 
@@ -509,7 +509,7 @@ dyld_objfile_entry_alloc (struct dyld_objfile_info *i)
 
 const char *
 dyld_entry_filename (const struct dyld_objfile_entry *e,
-                     const struct dyld_path_info *d, 
+                     const struct dyld_path_info *d,
                      enum dyld_entry_filename_type type)
 {
   CHECK_FATAL (e != NULL);
@@ -608,7 +608,7 @@ dyld_entry_string (struct dyld_objfile_entry *e, int print_basenames)
   char *ret;
   int maxlen = 0;
 
-  dyld_entry_info (e, print_basenames, &name, &objname, &symname, 
+  dyld_entry_info (e, print_basenames, &name, &objname, &symname,
 		   NULL, NULL, NULL,
                    &addr, &slide, &prefix);
 
@@ -1119,7 +1119,7 @@ dyld_print_entry_info (struct dyld_objfile_entry *j, int shlibnum, int baselen)
   const char *ptr;
   struct cleanup *list_cleanup;
 
-  dyld_entry_info (j, 1, &name, &objname, &symname, 
+  dyld_entry_info (j, 1, &name, &objname, &symname,
 		   &auxobjname, &auxsymname, &dsymobjname,
                    &addr, &slide, &prefix);
 
@@ -1171,7 +1171,7 @@ dyld_print_entry_info (struct dyld_objfile_entry *j, int shlibnum, int baselen)
   ui_out_spaces (uiout, 1);
 
   ui_out_field_string (uiout, "dyld-addr", addrbuf);
-  /* For a 64-bit program, the number 10 here is not correct.  
+  /* For a 64-bit program, the number 10 here is not correct.
      I don't want to change the formatting for all 32-bit but
      make sure ui_out_spaces gets a non-negative value.  */
   if (strlen (addrbuf) < 10)
@@ -1179,7 +1179,7 @@ dyld_print_entry_info (struct dyld_objfile_entry *j, int shlibnum, int baselen)
   ui_out_spaces (uiout, 1);
 
   ptr = dyld_reason_string (j->reason);
-  /* For a 64-bit program, the number 11 here is not correct.  
+  /* For a 64-bit program, the number 11 here is not correct.
      I don't want to change the formatting for all 32-bit but
      make sure ui_out_spaces gets a non-negative value.  */
   if (strlen (ptr) < 11)
@@ -1509,10 +1509,10 @@ dyld_print_shlib_info (struct dyld_objfile_info *s, unsigned int reason_mask,
     {
       int found = 0;
       struct dyld_objfile_entry *j;
-      
+
       /* Don't print out the dSYM files here.  They are printed with
 	 the objfile in dyld_print_entry_info above.  */
-      
+
       if (objfile->separate_debug_objfile_backlink != NULL)
 	{
 	  found = 1;
@@ -1530,15 +1530,15 @@ dyld_print_shlib_info (struct dyld_objfile_info *s, unsigned int reason_mask,
 
       if (!found)
 	{
-	  
+
 	  struct dyld_objfile_entry tentry;
 	  shlibnum++;
-	  
+
 	  if (!(reason_mask & dyld_reason_user))
 	    {
 	      continue;
 	    }
-	  
+
 	  if (args == NULL || dyld_entry_shlib_num_matches (shlibnum, args, 0))
 	    {
 	      dyld_convert_entry (objfile, &tentry);
@@ -1570,3 +1570,4 @@ dyld_next_allocated_shlib (struct dyld_objfile_info *info, int n)
     }
 }
 
+/* EOF */

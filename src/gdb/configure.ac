@@ -99,14 +99,20 @@ if test -f ${srcdir}/config.status; then
   rm -f ${srcdir}/config.status
 fi
 AM_INIT_AUTOMAKE([1.11 gnits dejagnu \
-                  dist-bzip2 dist-xz dist-zip dist-tarZ])
+                  dist-bzip2 dist-xz dist-zip dist-tarZ])dnl
+  ## make sure this is in the right place:
 if test -x ${srcdir}/missing; then
   test -e missing
-  AM_SANITY_CHECK
+  AM_SANITY_CHECK dnl# might as well put these here, too:
+  m4_ifdef([AC_REQUIRE_AUX_FILE],[
+    AC_REQUIRE_AUX_FILE([compile])dnl
+    AC_REQUIRE_AUX_FILE([depcomp])dnl
+    AC_REQUIRE_AUX_FILE([missing])dnl
+  ])dnl
+  ## should now have it...
 fi
 
-dnl# List of object files and targets accumulated by configure.
-
+dnl# List of object files and targets accumulated by configure:
 CONFIG_OBS=""
 CONFIG_DEPS=""
 CONFIG_SRCS=""
@@ -138,7 +144,8 @@ case "${host}" in
     AC_MSG_CHECKING([whether we can use 64 bit mach exceptions])
     MACH_EXC_SERVER_PREFACE=""
     AC_MSG_RESULT([(disabled!) no])
-    AC_SUBST([MACH_EXC_SERVER_PREFACE])
+    AC_SUBST([MACH_EXC_SERVER_PREFACE])dnl
+    ## TODO: come back to this after working on aarch64 support
     ;;
   *-apple-darwin* | *-apple-macosx*)
     AC_MSG_CHECKING([whether we can use 64 bit mach exceptions])
@@ -157,8 +164,9 @@ case "${host}" in
       MACH_EXC_SERVER_PREFACE=""
       AC_MSG_RESULT([no])
     fi
-    AC_SUBST([MACH_EXC_SERVER_PREFACE])
-;;
+    AC_SUBST([MACH_EXC_SERVER_PREFACE])dnl
+    ## might also want to use this elsewhere...
+    ;;
 esac
 
 dnl# APPLE LOCAL check for posix_spawn and the "arch" program. Note that we
@@ -168,7 +176,7 @@ dnl# current system architecture.
 case "${host}" in
   *-apple-darwin* | *-apple-macosx*)
     dnl# we are inside a conditional; no "_ONCE" allowed:
-    AC_CHECK_HEADERS([spawn.h])
+    AC_CHECK_HEADERS([spawn.h])dnl
     AC_CHECK_DECLS([POSIX_SPAWN_SETEXEC])
     AC_MSG_CHECKING([whether posix_spawn supports SETEXEC])
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
@@ -187,17 +195,17 @@ int foo = POSIX_SPAWN_SETEXEC;
       	[AS_HELP_STRING([--disable-arch-for-exec],
                         [disable use of arch for exec])],
       	[case ${enableval} in
-           yes | no) 
-             enable_arch_exec="${enableval}" ;;
-           *)
-             AC_MSG_ERROR([bad val '${enableval}' to --disable-arch-for-exec])
-             ;;
+          yes | no) 
+            enable_arch_exec="${enableval}" ;;
+          *)
+          AC_MSG_ERROR([bad val '${enableval}' to --disable-arch-for-exec])
+            ;;
       	 esac],
       	[enable_arch_exec=yes])dnl
   
       AC_MSG_CHECKING([whether we should use arch for exec])
       if test x"${enable_arch_exec}" = x"yes"; then
-        if test -r "/usr/bin/arch"; then
+        if test -r "/usr/bin/arch" && test -x "/usr/bin/arch"; then
           AC_DEFINE([USE_ARCH_FOR_EXEC],[1],
                     [Define to 1 to use the arch program instead of exec.])
           AC_MSG_RESULT([yes])
@@ -226,7 +234,8 @@ extern int __mach_stack_logging_enumerate_records();
     ]],[[
 __mach_stack_logging_enumerate_records();
     ]])],[gdb_cv_stack_logging_64=yes],
-         [gdb_cv_stack_logging_64=no])
+         [gdb_cv_stack_logging_64=no])dnl
+    ## corresponding define:
     if test "x${gdb_cv_stack_logging_64}" = "xyes"; then
       AC_DEFINE([HAVE_64_BIT_STACK_LOGGING],[1],
                 [Define to 1 to use 64 bit stack logging functions.])
@@ -241,7 +250,8 @@ extern int stack_logging_enumerate_records();
         ]],[[
 stack_logging_enumerate_records();
         ]])],[gdb_cv_stack_logging_32=yes],
-      	     [gdb_cv_stack_logging_32=no])
+      	     [gdb_cv_stack_logging_32=no])dnl
+        ## corresponding define:
     	if test "x${gdb_cv_stack_logging_32}" = "xyes"; then
       	  AC_DEFINE([HAVE_32_BIT_STACK_LOGGING],[1],
                     [Define to 1 to use 64 bit stack logging functions.])
@@ -267,7 +277,8 @@ case "${host}" in
  [mach_msg_type_number_t new_stateCnt;]
  [task_set_state(task, flavor, new_state, new_stateCnt);]])],
       [gdb_cv_task_set_state=yes],
-      [gdb_cv_task_set_state=no])
+      [gdb_cv_task_set_state=no])dnl
+    ## corresponding define:
     if test "x${gdb_cv_task_set_state}" = "xyes"; then
       AC_DEFINE([HAVE_TASK_SET_STATE],[1],
                 [Define to 1 to use task_set_state.])
@@ -281,7 +292,8 @@ case "${host}" in
 #  warning "This conftest for task_t expects <mach/task.h> to be included."
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_TASK_H */
-    ])
+    ])dnl
+    ## maybe also try it with MACH_EXC_SERVER_PREFACE in front of it...
     ;;
 esac
 
@@ -290,6 +302,34 @@ if test "x${host_vendor}" = "xapple" || test "x${host_cpu}" = "xppc"; then
                         [CFLAGS="${CFLAGS} -force_cpusubtype_ALL"],
                         [:])dnl
   ## might not actually be necessary, but whatever...
+fi
+
+if test "x${acl_cv_wl}" = "x"; then
+  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
+AC_SUBST([acl_cv_wl])dnl
+
+AC_MSG_CHECKING([for linker flag to verify linked libraries have the correct architecture])
+pre_saved_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${acl_cv_wl}-arch_errors_fatal"
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
+               [LD_ARCHFLAGS="${acl_cv_wl}-arch_errors_fatal"],[])
+LDFLAGS="${pre_saved_LDFLAGS}"
+if test "x${LD_ARCHFLAGS}" != "x"; then
+  test -n "${LD_ARCHFLAGS}"
+  AC_MSG_RESULT([${LD_ARCHFLAGS}])
+  if test "x${ERROR_ON_WARNING}" = "xyes"; then
+    if test "x${WARN_LDFLAGS}" != "x"; then
+      test -n "${WARN_LDFLAGS}" && WARN_LDFLAGS="${WARN_LDFLAGS} ${LD_ARCHFLAGS}"
+    else
+      test -z "${WARN_LDFLAGS}" && WARN_LDFLAGS="${LD_ARCHFLAGS}"
+    fi
+  fi
+  AC_SUBST([LD_ARCHFLAGS])dnl
+  ## that should be all we need to do with them for now...
+else
+  test -z "${LD_ARCHFLAGS}"
+  AC_MSG_RESULT([none])
 fi
 
 AC_MSG_NOTICE([done with first batch of APPLE_LOCAL checks])dnl
@@ -329,7 +369,11 @@ AC_CHECK_LIB([intl],[gettext],[:],[
   AC_CHECK_LIB([intl],[libintl_gettext],[:],[
     unset ac_cv_lib_intl_main
     ## neither worked:
+    PRE_INTL_LDFLAGS="${LDFLAGS}"
+    LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
     AC_CHECK_LIB([intl],[main])dnl
+    ## reset:
+    LDFLAGS="${PRE_INTL_LDFLAGS}"
   ])dnl#end case where symbols are prefixed with "libintl_"
 ])dnl#end case where symbols are unprefixed
   ## just in case:
@@ -724,14 +768,15 @@ fi
 
 AC_MSG_CHECKING([programs])
 AC_MSG_RESULT([ ])
-AN_PROGRAM([ar],[AM_PROG_AR])
-AN_MAKEVAR([AR],[AM_PROG_AR])
+AN_PROGRAM([ar],[AM_PROG_AR])dnl
+AN_MAKEVAR([AR],[AM_PROG_AR])dnl
+  ## automake has a better check for the proper archiver:
 if test -x `which automake`; then
   test -z "${AR}"
   AM_PROG_AR
 else
   test -z "${AR}"
-  AC_CHECK_TOOL([AR],[ar])
+  AC_CHECK_TOOLS([AR],[ar gar])
 fi
 if test -e ./config.cache; then
   echo "hacking ./config.cache"
@@ -914,7 +959,11 @@ AC_MSG_RESULT([ ])dnl
 
 # We might need to link with -lm; most simulators need it.
 LT_LIB_M
-AC_CHECK_LIB([m],[main])
+PRE_M_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
+AC_CHECK_LIB([m],[main])dnl
+  ## reset:
+LDFLAGS="${PRE_M_LDFLAGS}"
 case "${host}" in
 *-*-nextstep*|*-apple-rhapsody*|*-apple-macos10*|*-apple-darwin*)
   # libm is present but Apple does not use it...
@@ -942,7 +991,11 @@ then
   AC_MSG_CHECKING([for libxml2 libraries])
   LIBXML2_LIBS=`${LIBXML2_CONFIG} --libs`
   AC_MSG_RESULT([${LIBXML2_LIBS}])
-  CPPFLAGS="${CPPFLAGS} ${LIBXML2_INCLUDES}"
+  if test "x${CPPFLAGS}" = "x"; then
+    test -z "${CPPFLAGS}" && CPPFLAGS="-I. ${LIBXML2_INCLUDES}"
+  else
+    test -n "${CPPFLAGS}" && CPPFLAGS="${CPPFLAGS} ${LIBXML2_INCLUDES}"
+  fi
   AC_CHECK_HEADERS([libxml/parser.h libxml/tree.h])
   AC_CHECK_LIB([xml2],[xmlParseFile])
 fi
@@ -1066,26 +1119,58 @@ if test "x${ac_cv_search_tgetent}" = "xno"; then
   AC_MSG_ERROR([no termcap library found])
 fi
 
-# Other libraries that autoscan added to configure.scan:
+# Other misc. libraries that autoscan added to configure.scan, and such:
+AC_CHECK_LIB([asprintf],[asprintf],[
+  if test "x${INTLLIBS}" != "x"; then
+    test -n "${INTLLIBS}" && export INTLLIBS="${INTLLIBS} -lasprintf"
+  fi
+])dnl
+  ## might want to ensure we find the in-tree one:
 AC_CHECK_LIB([bfd],[bfd_set_reloc],[],[
+  PRE_BFD_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   AC_CHECK_LIB([bfd],[main])dnl
+  ## reset:
+  LDFLAGS="${PRE_BFD_LDFLAGS}"
 ])dnl
 AC_CHECK_LIB([gnu],[gl_dummy_symbol],[],[
+  PRE_GNU_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   AC_CHECK_LIB([gnu],[main],[],[])dnl
+  ## reset:
+  LDFLAGS="${PRE_GNU_LDFLAGS}"
 ])dnl
 AC_CHECK_LIB([iberty],[xmalloc],[],[
+  PRE_LIBERTY_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   AC_CHECK_LIB([iberty],[main])dnl
+  ## reset:
+  LDFLAGS="${PRE_LIBERTY_LDFLAGS}"
 ])dnl
 AC_SEARCH_LIBS([gettext],
-             [intl c gettext gnu asprintf gettextlib gettextpo gettextsrc])
+          [intl c gettext gnu asprintf gettextlib gettextpo gettextsrc])dnl
+  ## might want to ensure we find the in-tree one:
+unset ac_cv_lib_intl_gettext
 AC_CHECK_LIB([intl],[gettext],[],[
+  unset ac_cv_lib_intl_main
+  PRE_INTL_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   AC_CHECK_LIB([intl],[main],[],[])dnl
+  ## reset:
+  LDFLAGS="${PRE_INTL_LDFLAGS}"
 ])dnl
+  ## might want to ensure we find the in-tree one:
 AC_CHECK_LIB([opcodes],[op_cmp],[],[
+  PRE_OPCODES_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   AC_CHECK_LIB([opcodes],[main])dnl
+  ## reset:
+  LDFLAGS="${PRE_OPCODES_LDFLAGS}"
 ])dnl
+  ## might want to ensure we find the in-tree one:
 AC_CHECK_LIB([readline],[rl_initialize])dnl
 AC_CHECK_LIB([sqlite3],[sqlite3_initialize])dnl
+  ## might want to ensure we find the in-tree one:
 AC_CHECK_LIB([z],[gzread])dnl
 
 # ------------------------- #
@@ -1201,13 +1286,13 @@ AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_HEADER_TIME
 if test -d ../intl; then
   if test -z "${CPPFLAGS}"; then
-    CPPFLAGS="-I../intl"
+    CPPFLAGS="-I. -I../intl"
   else
     CPPFLAGS="${CPPFLAGS} -I../intl"
   fi
 elif test -d ../libintl; then
   if test -z "${CPPFLAGS}"; then
-    CPPFLAGS="-I../libintl"
+    CPPFLAGS="-I. -I../libintl"
   else
     CPPFLAGS="${CPPFLAGS} -I../libintl"
   fi
@@ -1276,11 +1361,12 @@ fi
 AC_MSG_CHECKING([declarations])
 AC_MSG_RESULT([ ])dnl
 
-dnl# just skip the first one, getting different results from the two
+dnl# just skip the first one; getting different results from the two
 dnl# conftests can lead to warnings:
 if test "x${ac_cv_have_decl_sys_siglist}" = "x" && test "x" = "Y0"; then
   test -z "${ac_cv_have_decl_sys_siglist}"
-  AC_CHECK_DECLS([sys_siglist])
+  AC_CHECK_DECLS([sys_siglist])dnl
+  ## end bad check for sys_siglist
 fi
 # just a plain check for sys_syglist might be wrong, so redo it:
 dnl# using the autoupdated version of AC\_DECL\_SYS\_SIGLIST here:
@@ -1296,7 +1382,8 @@ if test "x${ac_cv_have_decl_sys_siglist}" != "xyes"; then
 #  warning "This 2nd conftest for sys_siglist wants to include <unistd.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ && __NetBSD__ */
 #endif /* HAVE_UNISTD_H */
-  ])
+  ])dnl
+  ## end better check for sys_siglist
 fi
 AC_CHECK_DECLS([free, malloc, realloc])dnl
 AC_CHECK_DECLS([strerror, strstr])dnl
@@ -1382,8 +1469,9 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <signal.h>
 ]],[[
 return *(signal (0, 0)) (0) == 1;
-]])],[ac_cv_type_signal=int],[ac_cv_type_signal=void])
-])
+]])],[ac_cv_type_signal=int],[ac_cv_type_signal=void])dnl
+])dnl
+  ## corresponding define:
 AC_DEFINE_UNQUOTED([RETSIGTYPE],[${ac_cv_type_signal}],
          [Define as the return type of signal handlers (`int' or `void').])
 dnl# End what used to be AC\_TYPE\_SIGNAL
@@ -1489,7 +1577,8 @@ AC_CHECK_TYPES([mach_msg_header_t],[
 #  warning "This conftest for member msgh_seqno wants <mach/message.h>"
 # endif /* __GNUC__ && !__STRICT_ANSI__ */
 #endif /* HAVE_MACH_MESSAGE_H */
-  ])
+  ])dnl
+  ## might also want to check some other members here...
   ],[],[
 #ifdef HAVE_MACH_MESSAGE_H
 # include <mach/message.h>
@@ -1780,7 +1869,7 @@ AC_MSG_RESULT([${gdb_cv_have_pt_getdbregs}])
 if test "x${gdb_cv_have_pt_getdbregs}" = "xyes"; then
   AC_DEFINE([HAVE_PT_GETDBREGS],[1],
             [Define if sys/ptrace.h defines the PT_GETDBREGS request.])dnl
-  ## end def
+  ## end definition
 fi
 
 # See if <sys/ptrace.h> provides the PT_GETXMMREGS request:
@@ -1798,7 +1887,7 @@ AC_MSG_RESULT([${gdb_cv_have_pt_getxmmregs}])
 if test "x${gdb_cv_have_pt_getxmmregs}" = "xyes"; then
   AC_DEFINE([HAVE_PT_GETXMMREGS],[1],
             [Define if sys/ptrace.h defines the PT_GETXMMREGS request.])dnl
-  ## end def
+  ## end definition
 fi
 
 # If we are configured native on GNU/Linux, work around problems with
@@ -1849,11 +1938,11 @@ case "${host}" in
     [AS_HELP_STRING([--disable-carbon-framework],
                     [disable Carbon framework use even when available])],
     [case ${enableval} in
-       yes | no) 
-         enable_carbon_framework="${enableval}" ;;
-       *)
-         AC_MSG_ERROR([bad val '${enableval}' to --disable-carbon-framework])
-         ;;
+      yes | no) 
+       enable_carbon_framework="${enableval}" ;;
+      *)
+       AC_MSG_ERROR([bad val '${enableval}' to --disable-carbon-framework])
+       ;;
      esac],
     [enable_carbon_framework=no])dnl
 
@@ -2562,10 +2651,7 @@ if test "x${gdb_cv_c_long_long}" != "xyes"; then
   build_warnings="${build_warnings} -Wlong-long"
 fi
 
-if test "x${acl_cv_wl}" = "x"; then
-  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
-fi
-AC_SUBST([acl_cv_wl])dnl
+dnl# (we now ensure that 'acl_cv_wl' is set elsewhere above)
 
 case "${host}" in
   *-apple-darwin* | *-apple-macos*)
@@ -2738,6 +2824,17 @@ then
 	    LDFLAGS="${saved_LDFLAGS}"
 	esac
     done
+    if test "x${WERROR_CFLAGS}" != "x"; then
+      test -n "${WERROR_CFLAGS}"
+      if test "x${LD_ARCHFLAGS}" != "x"; then
+        test -n "${LD_ARCHFLAGS}"
+        if test "x${WARN_LDFLAGS}" != "x"; then
+          test -n "${WARN_LDFLAGS}" && WARN_LDFLAGS="${WARN_LDFLAGS} ${LD_ARCHFLAGS}"
+        else
+          test -z "${WARN_LDFLAGS}" && WARN_LDFLAGS="${LD_ARCHFLAGS}"
+        fi
+      fi
+    fi
     AC_MSG_RESULT([${WARN_LDFLAGS}])
 fi
 AC_SUBST([WARN_LDFLAGS])dnl

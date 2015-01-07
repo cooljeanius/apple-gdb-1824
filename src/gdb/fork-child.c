@@ -1,4 +1,4 @@
-/* Fork a Unix child process, and set up to debug it, for GDB.
+/* fork-child.c: Fork a Unix child process, and set up to debug it, for GDB
 
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1998, 1999,
    2000, 2001, 2004 Free Software Foundation, Inc.
@@ -38,22 +38,24 @@
 #include "osabi.h"
 #include <signal.h>
 #ifdef USE_POSIX_SPAWN
-#include <spawn.h>
-#endif
+# include <spawn.h>
+#endif /* USE_POSIX_SPAWN */
 
 char *exec_argv0 = NULL;
 char *exec_pathname = NULL;
 
-#if defined (TM_NEXTSTEP)
+#if defined(TM_NEXTSTEP)
 extern int disable_aslr_flag;
-#endif
+#endif /* TM_NEXTSTEP */
 
-/* This just gets used as a default if we can't find SHELL.  */
+/* This just gets used as a default if we cannot find SHELL: */
 #ifndef SHELL_FILE
-#define SHELL_FILE "/bin/sh"
-#endif
+# define SHELL_FILE "/bin/sh"
+#endif /* !SHELL_FILE */
 
 extern char **environ;
+
+extern void _initialize_fork_child(void);
 
 /* APPLE LOCAL: I moved breakup_args from here to utils.c.  */
 
@@ -586,10 +588,9 @@ fork_inferior (char *exec_file_arg, char *allargs, char **env,
 #endif
 }
 
-/* Accept NTRAPS traps from the inferior.  */
-
+/* Accept NTRAPS traps from the inferior: */
 void
-startup_inferior (int ntraps)
+startup_inferior(int ntraps)
 {
   int pending_execs = ntraps;
   int terminal_initted = 0;
@@ -676,12 +677,12 @@ startup_inferior (int ntraps)
   stop_soon = NO_STOP_QUIETLY;
 }
 
-/* APPLE LOCAL begin start with shell */
+/* APPLE LOCAL begin start with shell: */
 void
-_initialize_fork_child (void)
+_initialize_fork_child(void)
 {
-  exec_pathname = savestring ("", 1);
-  exec_argv0 = savestring ("", 1);
+  exec_pathname = savestring("", 1);
+  exec_argv0 = savestring("", 1);
 
   add_setshow_string_cmd ("exec-pathname", no_class,
 			  &exec_pathname, _("\

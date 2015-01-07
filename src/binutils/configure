@@ -710,6 +710,7 @@ CCASFLAGS
 CCAS
 NO_WERROR
 WARN_LDFLAGS
+WARN_DEFS
 WARN_CFLAGS
 acl_cv_wl
 RC
@@ -17202,6 +17203,7 @@ WARN_CFLAGS="-Wall -Wstrict-prototypes -Wmissing-prototypes \
 -Wmissing-declarations -Wimplicit -Wparentheses -Wextra -Wc++-compat \
 -Wundef -Wold-style-declaration -Wold-style-definition -Wnested-externs \
 -Wmissing-parameter-type -Wshadow -Wabi -Wmissing-include-dirs"
+WARN_DEFS="-D_FORTIFY_SOURCE=2"
 WARN_LDFLAGS=""
 
 
@@ -17221,15 +17223,22 @@ case "${host}" in
 esac
 
 # GCC supports -Wuninitialized only with -O or -On, n != 0.
+# and also -Winit-self only with -Wuninitialized
+# others in this section are technically supported at other optimization
+# levels, but really only make sense with it on.
+opt_warnings="-Wuninitialized -Winit-self -Wvolatile-register-var \
+-Wdisabled-optimization -Waggressive-loop-optimizations \
+-Wvector-operation-performance -Wmaybe-uninitialized \
+-Wunsafe-loop-optimizations"
 if test x${CFLAGS+set} = xset; then
   case "${CFLAGS}" in
     *"-O0"* ) ;;
     *"-O"* )
-      WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Winit-self"
+      WARN_CFLAGS="${WARN_CFLAGS} ${opt_warnings}"
     ;;
   esac
 else
-  WARN_CFLAGS="${WARN_CFLAGS} -Wuninitialized -Winit-self"
+  WARN_CFLAGS="${WARN_CFLAGS} ${opt_warnings}"
 fi
 
 # Check whether --enable-werror was given.
@@ -17278,10 +17287,11 @@ if test "${enable_build_warnings+set}" = set; then :
 esac
 fi
 
+BAD_WARN_CFLAGS=""
 if test "x${WARN_CFLAGS}" != "x" -a "x${GCC}" = "xyes"
 then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking compiler warning flags" >&5
-$as_echo_n "checking compiler warning flags... " >&6; }
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking compiler warning flags to use" >&5
+$as_echo_n "checking compiler warning flags to use... " >&6; }
     for w in ${WARN_CFLAGS}; do
 	case ${w} in
 	*) # Check that GCC accepts it:
@@ -17300,6 +17310,8 @@ main ()
 _ACEOF
 if ac_fn_c_try_compile "$LINENO"; then :
   MY_WARN_CFLAGS="${MY_WARN_CFLAGS} ${w}"
+else
+  BAD_WARN_CFLAGS="${BAD_WARN_CFLAGS} ${w}"
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 	    CFLAGS="${saved_CFLAGS}"
@@ -17307,14 +17319,19 @@ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
     done
     # Have to use second variable to avoid overwriting and/or duplicates:
     WARN_CFLAGS="${MY_WARN_CFLAGS}"
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${WARN_CFLAGS}" >&5
-$as_echo "${WARN_CFLAGS}" >&6; }
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: using: ${WARN_CFLAGS}" >&5
+$as_echo "using: ${WARN_CFLAGS}" >&6; }
+    if test "x${BAD_WARN_CFLAGS}" != "x"; then
+      test -n "${BAD_WARN_CFLAGS}"
+      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: compiler failed to accept: ${BAD_WARN_CFLAGS}" >&5
+$as_echo "$as_me: WARNING: compiler failed to accept: ${BAD_WARN_CFLAGS}" >&2;}
+    fi
 fi
 
 if test "x${WARN_LDFLAGS}" != "x" -a "x${GCC}" = "xyes"
 then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking linker warning flags" >&5
-$as_echo_n "checking linker warning flags... " >&6; }
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking linker warning flags to use" >&5
+$as_echo_n "checking linker warning flags to use... " >&6; }
     for w in ${WARN_LDFLAGS}; do
 	case ${w} in
 	*) # Check that the compiler successfully passes it to the linker.

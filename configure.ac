@@ -84,33 +84,84 @@ AC_SUBST([BUILDIT])dnl
 # Checks for libraries.
 AC_MSG_CHECKING([libraries])
 AC_MSG_RESULT([ ])
-AC_CHECK_LIB([c],[printf])
-AC_CHECK_LIB([dl],[dlopen])
-# FIXME: Replace `main' with a function in `-lgmp':
-AC_CHECK_LIB([gmp],[main])
+AC_MSG_CHECKING([for linker flag to verify linked libraries have the correct architecture])
+if test "x${acl_cv_wl}" = "x"; then
+  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
+pre_saved_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${acl_cv_wl}-arch_errors_fatal"
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],[[]])],
+               [LD_ARCHFLAGS="${acl_cv_wl}-arch_errors_fatal"],[])
+LDFLAGS="${pre_saved_LDFLAGS}"
+if test "x${LD_ARCHFLAGS}" != "x"; then
+  test -n "${LD_ARCHFLAGS}"
+  AC_MSG_RESULT([${LD_ARCHFLAGS}])
+  if test "x${ERROR_ON_WARNING}" = "xyes"; then
+    if test "x${WARN_LDFLAGS}" = "x"; then
+      test -z "${WARN_LDFLAGS}" && WARN_LDFLAGS="${LD_ARCHFLAGS}"
+    fi
+  fi
+  AC_SUBST([LD_ARCHFLAGS])dnl
+  ## that should be all we need to do with them for now...
+else
+  test -z "${LD_ARCHFLAGS}"
+  AC_MSG_RESULT([none])
+fi
+AC_CHECK_LIB([c],[printf])dnl
+AC_CHECK_LIB([dl],[dlopen])dnl
+  ## might want to pick a better symbol to check for:
+AC_CHECK_LIB([gmp],[gmp_version],[],[
+  PRE_GMP_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
+  AC_CHECK_LIB([gmp],[main])dnl
+  ## reset:
+  LDFLAGS="${PRE_GMP_LDFLAGS}"
+])dnl
+  ## might want to ensure we find the in-tree one:
 AC_CHECK_LIB([iberty],[xmalloc],[],[
+  PRE_LIBERTY_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   AC_CHECK_LIB([iberty],[main])dnl
+  ## reset:
+  LDFLAGS="${PRE_LIBERTY_LDFLAGS}"
 ])dnl
 AC_CHECK_LIB([iconv],[iconv],[],[
   AC_CHECK_LIB([iconv],[libiconv],[],[
+    PRE_ICONV_LDFLAGS="${LDFLAGS}"
+    LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
     AC_CHECK_LIB([iconv],[main])dnl
+    ## reset:
+    LDFLAGS="${PRE_ICONV_LDFLAGS}"
   ])dnl
 ])dnl
+  ## might want to ensure we find the in-tree one:
 AC_CHECK_LIB([intl],[gettext],[],[
-  AC_CHECK_LIB([intl],[main])dnl
+  PRE_INTL_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
+  AC_CHECK_LIB([intl],[main],[],[])dnl
+  ## reset:
+  LDFLAGS="${PRE_INTL_LDFLAGS}"
 ])dnl
 AC_CHECK_LIB([m],[sqrt])
 m4_ifdef([LT_LIB_M],[
   LT_LIB_M
 ],[
   LIBM=""
-  AC_CHECK_LIB([m],[cos],[LIBM=-lm])
+  AC_CHECK_LIB([m],[cos],[LIBM=-lm])dnl
   AC_SUBST([LIBM])dnl
 ])dnl
-# FIXME: Replace `main' with a function in `-lmpfr':
-AC_CHECK_LIB([mpfr],[main])
-AC_CHECK_LIB([readline],[rl_initialize])
-AC_CHECK_LIB([sqlite3],[sqlite3_initialize])
+  ## might want to pick a better symbol to check for:
+AC_CHECK_LIB([mpfr],[mpfr_get_version],[],[
+  PRE_MPFR_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
+  AC_CHECK_LIB([mpfr],[main])dnl
+  ## reset:
+  LDFLAGS="${PRE_MPFR_LDFLAGS}"
+])dnl
+  ## might want to ensure we find the in-tree one:
+AC_CHECK_LIB([readline],[rl_initialize])dnl
+AC_CHECK_LIB([sqlite3],[sqlite3_initialize])dnl
+  ## might want to ensure we find the in-tree one:
 AC_CHECK_LIB([z],[gzopen])dnl
 
 # Checks for header files.
@@ -127,7 +178,8 @@ AC_CHECK_HEADERS([ApplicationServices/ApplicationServices.h argz.h \
                   termio.h termios.h wchar.h wctype.h])
 if test "x${ac_cv_header_sys_param_h}" = "x"; then
   test -z "${ac_cv_header_sys_param_h}"
-  AC_CHECK_HEADERS([sys/param.h])
+  AC_CHECK_HEADERS([sys/param.h])dnl
+  ## should have been checked anyways, but whatever...
 fi
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -160,9 +212,12 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
 #include <signal.h>
 ]],[[
 return *(signal (0, 0)) (0) == 1;
-]])],[ac_cv_type_signal=int],[ac_cv_type_signal=void])
-])
-AC_DEFINE_UNQUOTED([RETSIGTYPE],[${ac_cv_type_signal}],[Define as the return type of signal handlers (`int' or `void').])
+]])],[ac_cv_type_signal=int],[ac_cv_type_signal=void])dnl
+])dnl
+  ## corresponding define:
+AC_DEFINE_UNQUOTED([RETSIGTYPE],[${ac_cv_type_signal}],
+                   [Define as the return type of signal handlers
+                    (`int' or `void').])
 dnl# End what used to be AC\_TYPE\_SIGNAL
 
 # Checks for library functions.

@@ -934,7 +934,7 @@ extern void allocate_cplus_struct_type (struct type *);
 #define TYPE_DECLARED_TYPE(thistype) TYPE_CPLUS_SPECIFIC_NONULL(thistype)->declared_type
 #define	TYPE_TYPE_SPECIFIC(thistype) TYPE_MAIN_TYPE(thistype)->type_specific
 #define TYPE_CPLUS_SPECIFIC(thistype) TYPE_MAIN_TYPE(thistype)->type_specific.cplus_stuff
-#define TYPE_CPLUS_SPECIFIC_NONULL(thistype) (TYPE_CPLUS_SPECIFIC(thistype) != NULL ? \
+#define TYPE_CPLUS_SPECIFIC_NONULL(thistype) ((TYPE_CPLUS_SPECIFIC(thistype) != NULL) ? \
   TYPE_CPLUS_SPECIFIC(thistype) : &cplus_struct_default)
 #define TYPE_FLOATFORMAT(thistype) TYPE_MAIN_TYPE(thistype)->type_specific.floatformat
 #define TYPE_BASECLASS(thistype,index) TYPE_MAIN_TYPE(thistype)->fields[index].type
@@ -1509,3 +1509,5 @@ int ftype_has_debug_info_p (struct type *type);
 struct type *remove_all_typedefs (struct type *type);
 
 #endif /* GDBTYPES_H */
+
+/* EOF */

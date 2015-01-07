@@ -674,11 +674,13 @@ read_dispatch_offsets(void)
 static CORE_ADDR
 get_dispatch_queue_addr (CORE_ADDR dispatch_qaddr)
 {
-  ULONGEST queue = 0;
+  ULONGEST queue = 0UL;
+  int wordsize;
+
   if (dispatch_qaddr == 0)
     return 0;
-  int wordsize = TARGET_PTR_BIT / 8;
-  if (safe_read_memory_unsigned_integer (dispatch_qaddr, wordsize, &queue) != 0)
+  wordsize = (TARGET_PTR_BIT / 8);
+  if (safe_read_memory_unsigned_integer(dispatch_qaddr, wordsize, &queue) != 0)
     return queue;
   return 0;
 }
@@ -763,46 +765,51 @@ print_thread_info (thread_t tid, int *gdb_thread_id)
   ptid_t ptid = ptid_build (macosx_status->pid, 0, tid);
   struct thread_info *tp = find_thread_pid (ptid);
   ptid_t current_ptid;
+
+  thread_identifier_info_data_t tident;
+
+  struct proc_threadinfo pth;
+  int retval;
+
   current_ptid = inferior_ptid;
 
   kret =
-    thread_info (tid, THREAD_BASIC_INFO, (thread_info_t) &info, &info_count);
-  MACH_CHECK_ERROR (kret);
+    thread_info(tid, THREAD_BASIC_INFO, (thread_info_t)&info, &info_count);
+  MACH_CHECK_ERROR(kret);
 
   if (tp == NULL)
-    app_thread_name = get_application_thread_port (tid);
+    app_thread_name = get_application_thread_port(tid);
   else
     app_thread_name = tp->private->app_thread_port;
 
   if (gdb_thread_id)
     {
-      printf_filtered ("Thread %d has current state \"%s\"\n",
-                       *gdb_thread_id, unparse_run_state (info.run_state));
-      printf_filtered ("\tMach port #0x%s (gdb port #0x%s)\n",
-                       paddr_nz (app_thread_name), paddr_nz (tid));
+      printf_filtered("Thread %d has current state \"%s\"\n",
+                      *gdb_thread_id, unparse_run_state(info.run_state));
+      printf_filtered("\tMach port #0x%s (gdb port #0x%s)\n",
+                      paddr_nz(app_thread_name), paddr_nz(tid));
     }
   else
     {
-      printf_filtered ("Port # 0x%lx (gdb port # 0x%lx) has current state \"%s\"\n",
-                       (unsigned long) app_thread_name,
-                       (unsigned long) tid, unparse_run_state (info.run_state));
+      printf_filtered("Port # 0x%lx (gdb port # 0x%lx) has current state \"%s\"\n",
+                      (unsigned long)app_thread_name,
+                      (unsigned long)tid, unparse_run_state(info.run_state));
     }
 
-    printf_filtered ("\tframe 0: ");
-    switch_to_thread (tp->ptid);
-    print_stack_frame (get_selected_frame (NULL), 0, LOCATION);
-    switch_to_thread (current_ptid);
+  printf_filtered("\tframe 0: ");
+  switch_to_thread(tp->ptid);
+  print_stack_frame(get_selected_frame(NULL), 0, LOCATION);
+  switch_to_thread(current_ptid);
 
-  thread_identifier_info_data_t tident;
   info_count = THREAD_IDENTIFIER_INFO_COUNT;
-  kret = thread_info (tid, THREAD_IDENTIFIER_INFO, (thread_info_t) &tident,
-                      &info_count);
-  MACH_CHECK_ERROR (kret);
+  kret = thread_info(tid, THREAD_IDENTIFIER_INFO, (thread_info_t)&tident,
+                     &info_count);
+  MACH_CHECK_ERROR(kret);
 
-  printf_filtered ("\tpthread ID: 0x%s\n",
-                   paddr_nz (tident.thread_handle));
-  printf_filtered ("\tsystem-wide unique thread id: 0x%s\n",
-                   paddr_nz (tident.thread_id));
+  printf_filtered("\tpthread ID: 0x%s\n",
+                  paddr_nz(tident.thread_handle));
+  printf_filtered("\tsystem-wide unique thread id: 0x%s\n",
+                  paddr_nz(tident.thread_id));
 
   /* If the pthread_self() value for this thread is 0x0, we have a thread
      that is very early in the setup process (e.g. it is in
@@ -811,77 +818,75 @@ print_thread_info (thread_t tid, int *gdb_thread_id)
      memory_error()s and just skip this processing.  */
   if (tident.thread_handle != 0)
     {
-      char *queue_name = get_dispatch_queue_name (tident.dispatch_qaddr);
-      if (queue_name && queue_name[0] != '\0')
-        printf_filtered ("\tdispatch queue name: \"%s\"\n", queue_name);
-
+      char *queue_name = get_dispatch_queue_name(tident.dispatch_qaddr);
       uint32_t queue_flags;
-      if (get_dispatch_queue_flags (tident.dispatch_qaddr, &queue_flags))
+      if (queue_name && (queue_name[0] != '\0'))
+        printf_filtered("\tdispatch queue name: \"%s\"\n", queue_name);
+
+      if (get_dispatch_queue_flags(tident.dispatch_qaddr, &queue_flags))
         {
-          printf_filtered ("\tdispatch queue flags: 0x%x", queue_flags);
+          printf_filtered("\tdispatch queue flags: 0x%x", queue_flags);
           /* Constants defined in libdispatch's src/private.h,
              dispatch_queue_flags_t */
           if (queue_flags & 0x1)
-            printf_filtered (" (concurrent)");
+            printf_filtered(" (concurrent)");
           if (queue_flags & 0x4)
-            printf_filtered (" (always locked)");
-          printf_filtered ("\n");
+            printf_filtered(" (always locked)");
+          printf_filtered("\n");
         }
     }
 
-  struct proc_threadinfo pth;
-  int retval;
-  retval = proc_pidinfo (PIDGET (ptid), PROC_PIDTHREADINFO,
-                         tident.thread_handle, &pth, sizeof (pth));
+  retval = proc_pidinfo(PIDGET(ptid), PROC_PIDTHREADINFO,
+                        tident.thread_handle, &pth, sizeof(pth));
   if (retval != 0)
     {
       if (pth.pth_name[0] != '\0')
-        printf_filtered ("\tthread name: \"%s\"\n", pth.pth_name);
+        printf_filtered("\tthread name: \"%s\"\n", pth.pth_name);
 
-      printf_filtered ("\ttotal user time: %" PRIu64 "\n", pth.pth_user_time);
-      printf_filtered ("\ttotal system time: %" PRIu64 "\n", pth.pth_system_time);
-      printf_filtered ("\tscaled cpu usage percentage: %d\n", pth.pth_cpu_usage);
-      printf_filtered ("\tscheduling policy in effect: 0x%x\n", pth.pth_policy);
-      printf_filtered ("\trun state: 0x%x", pth.pth_run_state);
+      printf_filtered("\ttotal user time: %" PRIu64 "\n", pth.pth_user_time);
+      printf_filtered("\ttotal system time: %" PRIu64 "\n", pth.pth_system_time);
+      printf_filtered("\tscaled cpu usage percentage: %d\n", pth.pth_cpu_usage);
+      printf_filtered("\tscheduling policy in effect: 0x%x\n", pth.pth_policy);
+      printf_filtered("\trun state: 0x%x", pth.pth_run_state);
       switch (pth.pth_run_state) {
-          case TH_STATE_RUNNING: printf_filtered (" (RUNNING)\n"); break;
-          case TH_STATE_STOPPED: printf_filtered (" (STOPPED)\n"); break;
-          case TH_STATE_WAITING: printf_filtered (" (WAITING)\n"); break;
-          case TH_STATE_UNINTERRUPTIBLE: printf_filtered (" (UNINTERRUPTIBLE)\n"); break;
-          case TH_STATE_HALTED: printf_filtered (" (HALTED)\n"); break;
-          default: printf_filtered ("\n");
+          case TH_STATE_RUNNING: printf_filtered(" (RUNNING)\n"); break;
+          case TH_STATE_STOPPED: printf_filtered(" (STOPPED)\n"); break;
+          case TH_STATE_WAITING: printf_filtered(" (WAITING)\n"); break;
+          case TH_STATE_UNINTERRUPTIBLE: printf_filtered(" (UNINTERRUPTIBLE)\n"); break;
+          case TH_STATE_HALTED: printf_filtered(" (HALTED)\n"); break;
+          default: printf_filtered("\n");
       }
-      printf_filtered ("\tflags: 0x%x", pth.pth_flags);
+      printf_filtered("\tflags: 0x%x", pth.pth_flags);
       switch (pth.pth_flags) {
-          case TH_FLAGS_SWAPPED: printf_filtered (" (SWAPPED)\n"); break;
-          case TH_FLAGS_IDLE: printf_filtered (" (IDLE)\n"); break;
-          default: printf_filtered ("\n");
+          case TH_FLAGS_SWAPPED: printf_filtered(" (SWAPPED)\n"); break;
+          case TH_FLAGS_IDLE: printf_filtered(" (IDLE)\n"); break;
+          default: printf_filtered("\n");
       }
-      printf_filtered ("\tnumber of seconds that thread has slept: %d\n",
-                                                   pth.pth_sleep_time);
-      printf_filtered ("\tcurrent priority: %d\n", pth.pth_priority);
-      printf_filtered ("\tmax priority: %d\n", pth.pth_maxpriority);
+      printf_filtered("\tnumber of seconds that thread has slept: %d\n",
+                      pth.pth_sleep_time);
+      printf_filtered("\tcurrent priority: %d\n", pth.pth_priority);
+      printf_filtered("\tmax priority: %d\n", pth.pth_maxpriority);
     }
 
-  printf_filtered ("\tsuspend count: %d", info.suspend_count);
+  printf_filtered("\tsuspend count: %d", info.suspend_count);
 
   if (info.sleep_time == 0)
     {
-      printf_filtered (".\n");
+      printf_filtered(".\n");
     }
   else
     {
-      printf_filtered (", and has been sleeping for %d seconds.\n",
-                       info.sleep_time);
+      printf_filtered(", and has been sleeping for %d seconds.\n",
+                      info.sleep_time);
     }
   if (tp == NULL)
-    printf_filtered ("\tCould not find the thread in gdb's internal thread list.\n");
+    printf_filtered("\tCould not find the thread in gdb's internal thread list.\n");
   else if (tp->private->gdb_dont_suspend_stepping)
-    printf_filtered ("\tSet to run while stepping.\n");
+    printf_filtered("\tSet to run while stepping.\n");
 }
 
 void
-info_task_command (char *args, int from_tty)
+info_task_command(char *args, int from_tty)
 {
   struct task_basic_info info;
   unsigned int info_count = TASK_BASIC_INFO_COUNT;
@@ -1114,79 +1119,80 @@ macosx_prune_threads(thread_array_t thread_list, unsigned int nthreads)
   ptid_list.ptids = (ptid_t *)xmalloc(nthreads * sizeof(ptid_t));
 
   for ((i = 0); (i < nthreads); i++){
-      ptid_t ptid = ptid_build (macosx_status->pid, 0, thread_list[i]);
+      ptid_t ptid = ptid_build(macosx_status->pid, 0, thread_list[i]);
       ptid_list.ptids[i] = ptid;
   }
   if (dealloc_thread_list){
       kret =
-	vm_deallocate (mach_task_self (), (vm_address_t) thread_list,
-		       (nthreads * sizeof (int)));
-      MACH_CHECK_ERROR (kret);
+	vm_deallocate(mach_task_self(), (vm_address_t)thread_list,
+                      (nthreads * sizeof (int)));
+      MACH_CHECK_ERROR(kret);
   }
 
-  iterate_over_threads (mark_dead_if_thread_is_gone, &ptid_list);
-  prune_threads ();
+  iterate_over_threads(mark_dead_if_thread_is_gone, &ptid_list);
+  prune_threads();
 }
 
 /* Print the details about a thread, intended for an MI-like interface: */
 void
 macosx_print_thread_details(struct ui_out *uiout, ptid_t ptid)
 {
-  thread_t tid = ptid_get_tid (ptid);
+  thread_t tid = ptid_get_tid(ptid);
   struct thread_basic_info info;
   unsigned int info_count = THREAD_BASIC_INFO_COUNT;
   kern_return_t kret;
   thread_t app_thread_name;
   struct thread_info *tp = find_thread_pid (ptid);
 
-  kret =
-    thread_info (tid, THREAD_BASIC_INFO, (thread_info_t) &info, &info_count);
-  MACH_CHECK_ERROR (kret);
-
-  if (tp == NULL)
-    app_thread_name = get_application_thread_port (tid);
-  else
-    app_thread_name = tp->private->app_thread_port;
-
-  ui_out_field_string (uiout, "state", unparse_run_state (info.run_state));
-  ui_out_field_fmt (uiout, "mach-port-number", "0x%s",
-                    paddr_nz (app_thread_name));
-
   thread_identifier_info_data_t tident;
-  info_count = THREAD_IDENTIFIER_INFO_COUNT;
-  kret = thread_info (tid, THREAD_IDENTIFIER_INFO, (thread_info_t) &tident,
-                      &info_count);
-  MACH_CHECK_ERROR (kret);
-
-  ui_out_field_fmt (uiout, "pthread-id", "0x%s",
-                    paddr_nz (tident.thread_handle));
-  ui_out_field_fmt (uiout, "unique-id", "0x%s",
-                    paddr_nz (tident.thread_id));
-
 
   struct proc_threadinfo pth;
   int retval;
-  retval = proc_pidinfo (PIDGET (ptid), PROC_PIDTHREADINFO,
-                         tident.thread_handle, &pth, sizeof (pth));
-  if (retval != 0 && pth.pth_name[0] != '\0')
-    ui_out_field_string (uiout, "name", pth.pth_name);
+
+  kret =
+    thread_info(tid, THREAD_BASIC_INFO, (thread_info_t)&info, &info_count);
+  MACH_CHECK_ERROR(kret);
+
+  if (tp == NULL)
+    app_thread_name = get_application_thread_port(tid);
+  else
+    app_thread_name = tp->private->app_thread_port;
+
+  ui_out_field_string(uiout, "state", unparse_run_state(info.run_state));
+  ui_out_field_fmt(uiout, "mach-port-number", "0x%s",
+                   paddr_nz(app_thread_name));
+
+  info_count = THREAD_IDENTIFIER_INFO_COUNT;
+  kret = thread_info(tid, THREAD_IDENTIFIER_INFO, (thread_info_t)&tident,
+                     &info_count);
+  MACH_CHECK_ERROR(kret);
+
+  ui_out_field_fmt(uiout, "pthread-id", "0x%s",
+                   paddr_nz (tident.thread_handle));
+  ui_out_field_fmt(uiout, "unique-id", "0x%s",
+                   paddr_nz (tident.thread_id));
+
+  retval = proc_pidinfo(PIDGET(ptid), PROC_PIDTHREADINFO,
+                        tident.thread_handle, &pth, sizeof(pth));
+  if ((retval != 0) && (pth.pth_name[0] != '\0'))
+    ui_out_field_string(uiout, "name", pth.pth_name);
 
   if (tident.thread_handle != 0) {
-      char *queue_name = get_dispatch_queue_name (tident.dispatch_qaddr);
-      if (queue_name && queue_name[0] != '\0') {
-          ui_out_field_string (uiout, "workqueue", queue_name);
+      char *queue_name = get_dispatch_queue_name(tident.dispatch_qaddr);
+      if (queue_name && (queue_name[0] != '\0')) {
           CORE_ADDR struct_addr;
-          struct_addr = get_dispatch_queue_addr (tident.dispatch_qaddr);
+          ui_out_field_string(uiout, "workqueue", queue_name);
+          struct_addr = get_dispatch_queue_addr(tident.dispatch_qaddr);
           if (struct_addr != 0)
-            ui_out_field_fmt (uiout, "workqueue_addr", "0x%s",
-                              paddr_nz (struct_addr));
+            ui_out_field_fmt(uiout, "workqueue_addr", "0x%s",
+                             paddr_nz(struct_addr));
         }
     }
 }
 
 
 void
-_initialize_threads()
+_initialize_threads(void)
 {
 #if defined (TARGET_ARM)
   arm_macosx_tdep_inf_status.macosx_half_step_pc = (CORE_ADDR)-1;

@@ -25,8 +25,15 @@
 struct value;
 struct type;
 
+extern ptid_t get_hand_call_ptid(void);
+
 extern CORE_ADDR find_function_addr (struct value *function,
 				     struct type **retval_type);
+
+extern struct value *
+/* APPLE LOCAL hand function call */
+hand_function_call(struct value *function, struct type *expect_type,
+                   int nargs, struct value **args, int restore_frame);
 
 /* Perform a function call in the inferior.
 

@@ -1,7 +1,7 @@
-/* YACC parser for Java expressions, for GDB.
-   Copyright 1997, 1998, 1999, 2000
-   Free Software Foundation, Inc.
-
+/* jv-exp.y: YACC parser for Java expressions, for GDB.
+ * Copyright 1997, 1998, 1999, 2000
+ * Free Software Foundation, Inc.  */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+Foundation, Inc., 59 Temple Pl., Suite 330, Boston, MA 02111-1307, USA */
 
 /* Parse a Java expression from text in a string,
    and return the result as a  struct expression  pointer.
@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
    with include files (<malloc.h> and <stdlib.h> for example) just became
    too messy, particularly when such includes can be inserted at random
    times by the parser generator.  */
-  
+
 %{
 
 #include "defs.h"
@@ -65,13 +65,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 #define	yylval	java_lval
 #define	yychar	java_char
 #define	yydebug	java_debug
-#define	yypact	java_pact	
-#define	yyr1	java_r1			
-#define	yyr2	java_r2			
-#define	yydef	java_def		
-#define	yychk	java_chk		
-#define	yypgo	java_pgo		
-#define	yyact	java_act		
+#define	yypact	java_pact
+#define	yyr1	java_r1
+#define	yyr2	java_r2
+#define	yydef	java_def
+#define	yychk	java_chk
+#define	yypgo	java_pgo
+#define	yyact	java_act
 #define	yyexca	java_exca
 #define yyerrflag java_errflag
 #define yynerrs	java_nerrs
@@ -169,7 +169,7 @@ static int parse_number (char *, int, int, YYSTYPE *);
    E.g. "c" when input_radix==16.  Depending on the parse, it will be
    turned into a name or into a number.  */
 
-%token <sval> NAME_OR_INT 
+%token <sval> NAME_OR_INT
 
 %token ERROR
 
@@ -515,7 +515,7 @@ UnaryExpression:
 |	'+' UnaryExpression
 |	'-' UnaryExpression
 		{ write_exp_elt_opcode (UNOP_NEG); }
-|	'*' UnaryExpression 
+|	'*' UnaryExpression
 		{ write_exp_elt_opcode (UNOP_IND); } /*FIXME not in Java  */
 |	UnaryExpressionNotPlusMinus
 ;
@@ -658,7 +658,7 @@ AssignmentExpression:
 	ConditionalExpression
 |	Assignment
 ;
-			  
+
 Assignment:
 	LeftHandSide '=' ConditionalExpression
 		{ write_exp_elt_opcode (BINOP_ASSIGN); }
@@ -690,11 +690,7 @@ Expression:
 /*** Needs some error checking for the float case ***/
 
 static int
-parse_number (p, len, parsed_float, putithere)
-     char *p;
-     int len;
-     int parsed_float;
-     YYSTYPE *putithere;
+parse_number(char *p, int len, int parsed_float, YYSTYPE *putithere)
 {
   ULONGEST n = 0;
   ULONGEST limit, limit_div_base;
@@ -860,10 +856,9 @@ static const struct token tokentab2[] =
     {">=", GEQ, BINOP_END}
   };
 
-/* Read one token, getting characters through lexptr.  */
-
+/* Read one token, getting characters through lexptr: */
 static int
-yylex ()
+yylex(void)
 {
   int c;
   int namelen;
@@ -873,7 +868,7 @@ yylex ()
   int tempbufindex;
   static char *tempbuf;
   static int tempbufsize;
-  
+
  retry:
 
   prev_lexptr = lexptr;
@@ -1127,7 +1122,7 @@ yylex ()
        c = tokstart[++namelen];
      }
 
-  /* The token "if" terminates the expression and is NOT 
+  /* The token "if" terminates the expression and is NOT
      removed from the input stream.  */
   if (namelen == 2 && tokstart[0] == 'i' && tokstart[1] == 'f')
     {
@@ -1146,7 +1141,7 @@ yylex ()
 	return BOOLEAN;
       break;
     case 6:
-      if (DEPRECATED_STREQN (tokstart, "double", 6))      
+      if (DEPRECATED_STREQN (tokstart, "double", 6))
 	return DOUBLE;
       break;
     case 5:
@@ -1208,38 +1203,34 @@ yylex ()
   return IDENTIFIER;
 }
 
-void
-yyerror (msg)
-     char *msg;
+void ATTR_NORETURN
+yyerror(char *msg)
 {
   if (prev_lexptr)
     lexptr = prev_lexptr;
 
   if (msg)
-    error (_("%s: near `%s'"), msg, lexptr);
+    error(_("%s: near `%s'"), msg, lexptr);
   else
-    error (_("error in expression, near `%s'"), lexptr);
+    error(_("error in expression, near `%s'"), lexptr);
 }
 
 static struct type *
-java_type_from_name (name)
-     struct stoken name;
- 
+java_type_from_name(struct stoken name)
 {
-  char *tmp = copy_name (name);
-  struct type *typ = java_lookup_class (tmp);
-  if (typ == NULL || TYPE_CODE (typ) != TYPE_CODE_STRUCT)
-    error (_("No class named `%s'"), tmp);
+  char *tmp = copy_name(name);
+  struct type *typ = java_lookup_class(tmp);
+  if ((typ == NULL) || (TYPE_CODE(typ) != TYPE_CODE_STRUCT))
+    error(_("No class named `%s'"), tmp);
   return typ;
 }
 
 /* If NAME is a valid variable name in this scope, push it and return 1.
-   Otherwise, return 0. */
-
+ * Otherwise, return 0. */
 static int
-push_variable (struct stoken name)
+push_variable(struct stoken name)
 {
-  char *tmp = copy_name (name);
+  char *tmp = copy_name(name);
   int is_a_field_of_this = 0;
   struct symbol *sym;
   sym = lookup_symbol (tmp, expression_context_block, VAR_DOMAIN,
@@ -1265,7 +1256,7 @@ push_variable (struct stoken name)
     {
       /* it hangs off of `this'.  Must not inadvertently convert from a
 	 method call to data ref.  */
-      if (innermost_block == 0 || 
+      if (innermost_block == 0 ||
 	  contained_in (block_found, innermost_block))
 	innermost_block = block_found;
       write_exp_elt_opcode (OP_THIS);
@@ -1283,8 +1274,7 @@ push_variable (struct stoken name)
    qualified name (has '.'), generate a field access for each part. */
 
 static void
-push_fieldnames (name)
-     struct stoken name;
+push_fieldnames(struct stoken name)
 {
   int i;
   struct stoken token;
@@ -1309,7 +1299,7 @@ push_fieldnames (name)
    Handle a qualified name, where DOT_INDEX is the index of the first '.' */
 
 static void
-push_qualified_expression_name (struct stoken name, int dot_index)
+push_qualified_expression_name(struct stoken name, int dot_index)
 {
   struct stoken token;
   char *tmp;
@@ -1345,14 +1335,14 @@ push_qualified_expression_name (struct stoken name, int dot_index)
 	  name.ptr += dot_index;
 	  name.length -= dot_index;
 	  dot_index = 0;
-	  while (dot_index < name.length && name.ptr[dot_index] != '.') 
+	  while (dot_index < name.length && name.ptr[dot_index] != '.')
 	    dot_index++;
 	  token.ptr = name.ptr;
 	  token.length = dot_index;
 	  write_exp_elt_opcode (OP_SCOPE);
 	  write_exp_elt_type (typ);
 	  write_exp_string (token);
-	  write_exp_elt_opcode (OP_SCOPE); 
+	  write_exp_elt_opcode (OP_SCOPE);
 	  if (dot_index < name.length)
 	    {
 	      dot_index++;
@@ -1375,8 +1365,7 @@ push_qualified_expression_name (struct stoken name, int dot_index)
    Handle VAR, TYPE, TYPE.FIELD1....FIELDN and VAR.FIELD1....FIELDN. */
 
 static void
-push_expression_name (name)
-     struct stoken name;
+push_expression_name(struct stoken name)
 {
   char *tmp;
   struct type *typ;
@@ -1386,14 +1375,14 @@ push_expression_name (name)
     {
       if (name.ptr[i] == '.')
 	{
-	  /* It's a Qualified Expression Name. */
+	  /* It is a Qualified Expression Name. */
 	  push_qualified_expression_name (name, i);
 	  return;
 	}
     }
 
-  /* It's a Simple Expression Name. */
-  
+  /* It is a Simple Expression Name. */
+
   if (push_variable (name))
     return;
   tmp = copy_name (name);
@@ -1433,25 +1422,21 @@ push_expression_name (name)
    into a freshly malloc'ed struct expression.  Its language_defn is set
    to null.  */
 static struct expression *
-copy_exp (expr, endpos)
-     struct expression *expr;
-     int endpos;
+copy_exp(struct expression *expr, int endpos)
 {
-  int len = length_of_subexp (expr, endpos);
+  int len = length_of_subexp(expr, endpos);
   struct expression *new
-    = (struct expression *) malloc (sizeof (*new) + EXP_ELEM_TO_BYTES (len));
+    = (struct expression *)malloc(sizeof(*new) + EXP_ELEM_TO_BYTES(len));
   new->nelts = len;
-  memcpy (new->elts, expr->elts + endpos - len, EXP_ELEM_TO_BYTES (len));
+  memcpy(new->elts, expr->elts + endpos - len, EXP_ELEM_TO_BYTES(len));
   new->language_defn = 0;
 
   return new;
 }
 
-/* Insert the expression NEW into the current expression (expout) at POS.  */
+/* Insert the expression NEW into the current expression (expout) at POS: */
 static void
-insert_exp (pos, new)
-     int pos;
-     struct expression *new;
+insert_exp(int pos, struct expression *new)
 {
   int newlen = new->nelts;
 
@@ -1471,7 +1456,9 @@ insert_exp (pos, new)
     for (i = expout_ptr - 1; i >= pos; i--)
       expout->elts[i + newlen] = expout->elts[i];
   }
-  
-  memcpy (expout->elts + pos, new->elts, EXP_ELEM_TO_BYTES (newlen));
+
+  memcpy(expout->elts + pos, new->elts, EXP_ELEM_TO_BYTES (newlen));
   expout_ptr += newlen;
 }
+
+/* End of jv-exp.y */

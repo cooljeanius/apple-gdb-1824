@@ -1,7 +1,7 @@
-/* YACC parser for Ada expressions, for GDB.
-   Copyright (C) 1986, 1989, 1990, 1991, 1993, 1994, 1997, 2000, 2003, 
-   2004 Free Software Foundation, Inc.
-
+/* ada-exp.y: YACC parser for Ada expressions, for GDB.
+ * Copyright (C) 1986, 1989-1991, 1993-1994, 1997, 2000, 2003-2004
+ * Free Software Foundation, Inc.  */
+/*
 This file is part of GDB.
 
 This program is free software; you can redistribute it and/or modify
@@ -111,37 +111,39 @@ struct name_info {
  * NULL.  */
 static struct type *type_qualifier;
 
-int yyparse (void);
+int yyparse(void);
 
-static int yylex (void);
+static int yylex(void);
 
-void yyerror (char *);
+void yyerror(char *);
 
-static struct stoken string_to_operator (struct stoken);
+static struct stoken string_to_operator(struct stoken);
 
-static void write_int (LONGEST, struct type *);
+static void write_int(LONGEST, struct type *);
 
-static void write_object_renaming (struct block *, struct symbol *, int);
+static void write_object_renaming(struct block *, struct symbol *, int);
 
-static void write_var_from_name (struct block *, struct name_info);
+static void write_var_from_name(struct block *, struct name_info);
 
-static LONGEST convert_char_literal (struct type *, LONGEST);
+static LONGEST convert_char_literal(struct type *, LONGEST);
 
-static struct type *type_int (void);
+static struct type *type_int(void);
 
-static struct type *type_long (void);
+static struct type *type_long(void);
 
-static struct type *type_long_long (void);
+static struct type *type_long_long(void);
 
-static struct type *type_float (void);
+static struct type *type_float(void);
 
-static struct type *type_double (void);
+static struct type *type_double(void);
 
-static struct type *type_long_double (void);
+static struct type *type_long_double(void);
 
-static struct type *type_char (void);
+static struct type *type_char(void);
 
-static struct type *type_system_address (void);
+static struct type *type_system_address(void);
+
+extern void _initialize_ada_exp(void);
 %}
 
 %union
@@ -507,7 +509,7 @@ exp	:	INT
 
 exp	:	CHARLIT
                   { write_int (convert_char_literal (type_qualifier, $1.val),
-			       (type_qualifier == NULL) 
+			       (type_qualifier == NULL)
 			       ? $1.type : type_qualifier);
 		  }
 	;
@@ -525,7 +527,7 @@ exp	:	NULL_PTR
 	;
 
 exp	:	STRING
-			{ 
+			{
 			  write_exp_elt_opcode (OP_STRING);
 			  write_exp_string ($1);
 			  write_exp_elt_opcode (OP_STRING);
@@ -539,11 +541,11 @@ exp	: 	NEW TYPENAME
 variable:	NAME   		{ write_var_from_name (NULL, $1); }
 	|	block NAME  	/* GDB extension */
                                 { write_var_from_name ($1, $2); }
-	|	OBJECT_RENAMING 
-		    { write_object_renaming (NULL, $1.sym, 
+	|	OBJECT_RENAMING
+		    { write_object_renaming (NULL, $1.sym,
 				             MAX_RENAMING_CHAIN_LENGTH); }
 	|	block OBJECT_RENAMING
-		    { write_object_renaming ($1, $2.sym, 
+		    { write_object_renaming ($1, $2.sym,
 					     MAX_RENAMING_CHAIN_LENGTH); }
 	;
 
@@ -606,21 +608,21 @@ static struct obstack temp_parse_space;
 #include "ada-lex.c"
 
 int
-ada_parse (void)
+ada_parse(void)
 {
-  lexer_init (yyin);		/* (Re-)initialize lexer.  */
+  lexer_init(yyin);		/* (Re-)initialize lexer.  */
   left_block_context = NULL;
   type_qualifier = NULL;
-  obstack_free (&temp_parse_space, NULL);
-  obstack_init (&temp_parse_space);
+  obstack_free(&temp_parse_space, NULL);
+  obstack_init(&temp_parse_space);
 
-  return _ada_parse ();
+  return _ada_parse();
 }
 
-void
-yyerror (char *msg)
+void ATTR_NORETURN
+yyerror(char *msg)
 {
-  error ("A %s in expression, near `%s'.", (msg ? msg : "error"), lexptr);
+  error("A %s in expression, near `%s'.", (msg ? msg : "error"), lexptr);
 }
 
 /* The operator name corresponding to operator symbol STRING (adds
@@ -723,7 +725,7 @@ write_int (LONGEST arg, struct type *type)
  * type, in the context of ORIG_LEFT_CONTEXT.  MAX_DEPTH is the maximum
  * number of cascaded renamings to allow.  */
 static void
-write_object_renaming (struct block *orig_left_context, 
+write_object_renaming (struct block *orig_left_context,
 		       struct symbol *renaming, int max_depth)
 {
   const char *qualification = SYMBOL_LINKAGE_NAME (renaming);
@@ -879,86 +881,87 @@ write_object_renaming (struct block *orig_left_context,
    Otherwise return VAL.  Hence, in an enumeration type ('A', 'B'),
    the literal 'A' (VAL == 65), returns 0.  */
 static LONGEST
-convert_char_literal (struct type *type, LONGEST val)
+convert_char_literal(struct type *type, LONGEST val)
 {
   char name[7];
   int f;
 
-  if (type == NULL || TYPE_CODE (type) != TYPE_CODE_ENUM)
+  if ((type == NULL) || (TYPE_CODE(type) != TYPE_CODE_ENUM))
     return val;
-  sprintf (name, "QU%02x", (int) val);
-  for (f = 0; f < TYPE_NFIELDS (type); f += 1)
+  sprintf(name, "QU%02x", (int)val);
+  for (f = 0; f < TYPE_NFIELDS(type); f += 1)
     {
-      if (strcmp (name, TYPE_FIELD_NAME (type, f)) == 0)
-	return TYPE_FIELD_BITPOS (type, f);
+      if (strcmp(name, TYPE_FIELD_NAME(type, f)) == 0)
+	return TYPE_FIELD_BITPOS(type, f);
     }
   return val;
 }
 
 static struct type *
-type_int (void)
+type_int(void)
 {
-  return builtin_type (current_gdbarch)->builtin_int;
+  return builtin_type(current_gdbarch)->builtin_int;
 }
 
 static struct type *
-type_long (void)
+type_long(void)
 {
-  return builtin_type (current_gdbarch)->builtin_long;
+  return builtin_type(current_gdbarch)->builtin_long;
 }
 
 static struct type *
-type_long_long (void)
+type_long_long(void)
 {
-  return builtin_type (current_gdbarch)->builtin_long_long;
+  return builtin_type(current_gdbarch)->builtin_long_long;
 }
 
 static struct type *
-type_float (void)
+type_float(void)
 {
-  return builtin_type (current_gdbarch)->builtin_float;
+  return builtin_type(current_gdbarch)->builtin_float;
 }
 
 static struct type *
-type_double (void)
+type_double(void)
 {
-  return builtin_type (current_gdbarch)->builtin_double;
+  return builtin_type(current_gdbarch)->builtin_double;
 }
 
 static struct type *
-type_long_double (void)
+type_long_double(void)
 {
-  return builtin_type (current_gdbarch)->builtin_long_double;
+  return builtin_type(current_gdbarch)->builtin_long_double;
 }
 
 static struct type *
-type_char (void)
+type_char(void)
 {
-  return language_string_char_type (current_language, current_gdbarch);
+  return language_string_char_type(current_language, current_gdbarch);
 }
 
 static struct type *
-type_system_address (void)
+type_system_address(void)
 {
-  struct type *type 
-    = language_lookup_primitive_type_by_name (current_language,
-					      current_gdbarch, 
-					      "system__address");
-  return  type != NULL ? type : lookup_pointer_type (builtin_type_void);
+  struct type *type
+    = language_lookup_primitive_type_by_name(current_language,
+                                             current_gdbarch,
+                                             "system__address");
+  return ((type != NULL) ? type : lookup_pointer_type(builtin_type_void));
 }
 
 void
-_initialize_ada_exp (void)
+_initialize_ada_exp(void)
 {
   obstack_init (&temp_parse_space);
 }
 
 /* FIXME: hilfingr/2004-10-05: Hack to remove warning.  The function
    string_to_operator is supposed to be used for cases where one
-   calls an operator function with prefix notation, as in 
+   calls an operator function with prefix notation, as in
    "+" (a, b), but at some point, this code seems to have gone
    missing. */
 
-struct stoken (*dummy_string_to_ada_operator) (struct stoken) 
+struct stoken (*dummy_string_to_ada_operator)(struct stoken)
      = string_to_operator;
 
+/* End of ada-exp.y */

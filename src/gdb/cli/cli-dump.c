@@ -1,4 +1,4 @@
-/* Dump-to-file commands, for GDB, the GNU debugger.
+/* cli-dump.c: Dump-to-file commands, for GDB, the GNU debugger.
 
    Copyright 2002, 2005 Free Software Foundation, Inc.
 
@@ -116,7 +116,7 @@ scan_filename_with_cleanup (char **cmd, const char *defname)
 
   fullname = tilde_expand (filename);
   make_cleanup (xfree, fullname);
-  
+
   return fullname;
 }
 
@@ -137,7 +137,7 @@ bfd_openr_with_cleanup (const char *filename, const char *target)
 
   ibfd = bfd_openr (filename, target);
   if (ibfd == NULL)
-    error (_("Failed to open %s: %s."), filename, 
+    error (_("Failed to open %s: %s."), filename,
 	   bfd_errmsg (bfd_get_error ()));
 
   make_cleanup_bfd_close (ibfd);
@@ -157,7 +157,7 @@ bfd_openw_with_cleanup (const char *filename, const char *target,
     {
       obfd = bfd_openw (filename, target);
       if (obfd == NULL)
-	error (_("Failed to open %s: %s."), filename, 
+	error (_("Failed to open %s: %s."), filename,
 	       bfd_errmsg (bfd_get_error ()));
       make_cleanup_bfd_close (obfd);
       if (!bfd_set_format (obfd, bfd_object))
@@ -196,7 +196,7 @@ append_command (char *cmd, int from_tty)
 }
 
 static void
-dump_binary_file (const char *filename, const char *mode, 
+dump_binary_file (const char *filename, const char *mode,
 		  const bfd_byte *buf, int len)
 {
   FILE *file;
@@ -209,8 +209,8 @@ dump_binary_file (const char *filename, const char *mode,
 }
 
 static void
-dump_bfd_file (const char *filename, const char *mode, 
-	       const char *target, CORE_ADDR vaddr, 
+dump_bfd_file (const char *filename, const char *mode,
+	       const char *target, CORE_ADDR vaddr,
 	       const bfd_byte *buf, int len)
 {
   bfd *obfd;
@@ -264,7 +264,7 @@ dump_memory_to_file (char *cmd, char *mode, char *file_format)
   buf = xmalloc (count);
   make_cleanup (xfree, buf);
   target_read_memory (lo, buf, count);
-  
+
   /* Have everything.  Open/write the data.  */
   if (file_format == NULL || strcmp (file_format, "binary") == 0)
     {
@@ -304,7 +304,7 @@ dump_value_to_file (char *cmd, char *mode, char *file_format)
   /* Have everything.  Open/write the data.  */
   if (file_format == NULL || strcmp (file_format, "binary") == 0)
     {
-      dump_binary_file (filename, mode, value_contents (val), 
+      dump_binary_file (filename, mode, value_contents (val),
 			TYPE_LENGTH (value_type (val)));
     }
   else
@@ -321,8 +321,8 @@ dump_value_to_file (char *cmd, char *mode, char *file_format)
 	  warning (_("value is not an lval: address assumed to be zero"));
 	}
 
-      dump_bfd_file (filename, mode, file_format, vaddr, 
-		     value_contents (val), 
+      dump_bfd_file (filename, mode, file_format, vaddr,
+		     value_contents (val),
 		     TYPE_LENGTH (value_type (val)));
     }
 
@@ -434,10 +434,10 @@ add_dump_command (char *name, void (*func) (char *args, char *mode),
 
   /* Replace "Dump " at start of docstring with "Append " (borrowed
      from [deleted] deprecated_add_show_from_set).  */
-  if (   c->doc[0] == 'W' 
-      && c->doc[1] == 'r' 
+  if (   c->doc[0] == 'W'
+      && c->doc[1] == 'r'
       && c->doc[2] == 'i'
-      && c->doc[3] == 't' 
+      && c->doc[3] == 't'
       && c->doc[4] == 'e'
       && c->doc[5] == ' ')
     c->doc = concat ("Append ", c->doc + 6, (char *)NULL);
@@ -473,11 +473,11 @@ restore_section_callback (bfd *ibfd, asection *isec, void *args)
     return;
 
   /* Does the section overlap with the desired restore range? */
-  if (sec_end <= data->load_start 
+  if (sec_end <= data->load_start
       || (data->load_end > 0 && sec_start >= data->load_end))
     {
       /* No, no useable data in this section. */
-      printf_filtered (_("skipping section %s...\n"), 
+      printf_filtered (_("skipping section %s...\n"),
 		       bfd_section_name (ibfd, isec));
       return;
     }
@@ -496,25 +496,25 @@ restore_section_callback (bfd *ibfd, asection *isec, void *args)
   buf = xmalloc (size);
   old_chain = make_cleanup (xfree, buf);
   if (!bfd_get_section_contents (ibfd, isec, buf, 0, size))
-    error (_("Failed to read bfd file %s: '%s'."), bfd_get_filename (ibfd), 
+    error (_("Failed to read bfd file %s: '%s'."), bfd_get_filename (ibfd),
 	   bfd_errmsg (bfd_get_error ()));
 
   printf_filtered ("Restoring section %s (0x%lx to 0x%lx)",
-		   bfd_section_name (ibfd, isec), 
-		   (unsigned long) sec_start, 
+		   bfd_section_name (ibfd, isec),
+		   (unsigned long) sec_start,
 		   (unsigned long) sec_end);
 
   if (data->load_offset != 0 || data->load_start != 0 || data->load_end != 0)
-    printf_filtered (" into memory (0x%s to 0x%s)\n", 
-		     paddr_nz ((unsigned long) sec_start 
-			       + sec_offset + data->load_offset), 
-		     paddr_nz ((unsigned long) sec_start + sec_offset 
+    printf_filtered (" into memory (0x%s to 0x%s)\n",
+		     paddr_nz ((unsigned long) sec_start
+			       + sec_offset + data->load_offset),
+		     paddr_nz ((unsigned long) sec_start + sec_offset
 		       + data->load_offset + sec_load_count));
   else
     puts_filtered ("\n");
 
   /* Write the data.  */
-  ret = target_write_memory (sec_start + sec_offset + data->load_offset, 
+  ret = target_write_memory (sec_start + sec_offset + data->load_offset,
 			     buf + sec_offset, sec_load_count);
   if (ret != 0)
     warning (_("restore: memory write failed (%s)."), safe_strerror (ret));
@@ -532,15 +532,17 @@ restore_binary_file (char *filename, struct callback_data *data)
   int len, total_file_bytes;
   int bytes_to_read_from_file;
 
-  /* Get the file size for reading.  */
-  if (fseek (file, 0, SEEK_END) == 0) 
-    total_file_bytes = ftell (file);
+  CORE_ADDR addrp;
+
+  /* Get the file size for reading: */
+  if (fseek(file, 0, SEEK_END) == 0)
+    total_file_bytes = ftell(file);
   else
-    perror_with_name (filename);
+    perror_with_name(filename);
 
   if (total_file_bytes <= data->load_start)
-    error (_("Start address is greater than length of binary file %s."), 
-	   filename);
+    error(_("Start address is greater than length of binary file %s."),
+          filename);
 
   bytes_to_read_from_file = data->load_end;
   if (bytes_to_read_from_file == 0)
@@ -551,14 +553,13 @@ restore_binary_file (char *filename, struct callback_data *data)
   if (bytes_to_read_from_file > total_file_bytes)
     bytes_to_read_from_file = total_file_bytes;
 
-  printf_filtered 
-    ("Restoring binary file %s into memory (0x%s to 0x%s)\n", 
-     filename, 
-     paddr_nz (data->load_start + data->load_offset),
-     paddr_nz (data->load_start + data->load_offset + bytes_to_read_from_file));
+  printf_filtered("Restoring binary file %s into memory (0x%s to 0x%s)\n",
+                  filename,
+                  paddr_nz(data->load_start + data->load_offset),
+                  paddr_nz(data->load_start + data->load_offset + bytes_to_read_from_file));
 
-  /* Now set the file pos to the requested load start pos.  */
-  if (fseek (file, data->load_start, SEEK_SET) != 0)
+  /* Now set the file pos to the requested load start pos: */
+  if (fseek(file, data->load_start, SEEK_SET) != 0)
     perror_with_name (filename);
 
   if (bytes_to_read_from_file > g_max_binary_file_chunk)
@@ -566,24 +567,26 @@ restore_binary_file (char *filename, struct callback_data *data)
   else
     len = bytes_to_read_from_file;
 
-  buf = xmalloc (len);
-  make_cleanup (xfree, buf);
+  buf = xmalloc(len);
+  make_cleanup(xfree, buf);
 
-  CORE_ADDR addrp = data->load_start + data->load_offset;
+  addrp = (data->load_start + data->load_offset);
   /* BYTES_TO_READ_FROM_FILE decreases each time through this loop;
      we read g_max_binary_file_chunk or less bytes at each iteration.  */
   while (bytes_to_read_from_file > 0)
     {
-      /* The last chunk we'll be reading -- at this point our LEN buffer
+      int max_errors;
+
+      /* The last chunk we shall be reading -- at this point our LEN buffer
          is larger than the remaining number of bytes to be read; cap it
-         so we don't read off the end of the file. */
+         so we do NOT read off the end of the file. */
       if (len > bytes_to_read_from_file)
         len = bytes_to_read_from_file;
 
-      if (fread (buf, 1, len, file) != len)
-	perror_with_name (filename);
-    
-      int max_errors = 2;
+      if (fread(buf, 1, len, file) != len)
+	perror_with_name(filename);
+
+      max_errors = 2;
       while (max_errors > 0)
         {
            printf_unfiltered ("Writing 0x%s bytes to 0x%s\n", paddr_nz (len),
@@ -639,12 +642,12 @@ restore_command (char *args, int from_tty)
 	}
       /* Parse offset (optional). */
       if (args != NULL && *args != '\0')
-      data.load_offset = 
+      data.load_offset =
 	parse_and_eval_long (scan_expression_with_cleanup (&args, NULL));
       if (args != NULL && *args != '\0')
 	{
 	  /* Parse start address (optional). */
-	  data.load_start = 
+	  data.load_start =
 	    parse_and_eval_long (scan_expression_with_cleanup (&args, NULL));
 	  if (args != NULL && *args != '\0')
 	    {
@@ -658,8 +661,8 @@ restore_command (char *args, int from_tty)
 
   if (info_verbose)
     printf_filtered ("Restore file %s offset 0x%lx start 0x%lx end 0x%lx\n",
-		     filename, (unsigned long) data.load_offset, 
-		     (unsigned long) data.load_start, 
+		     filename, (unsigned long) data.load_offset,
+		     (unsigned long) data.load_start,
 		     (unsigned long) data.load_end);
 
   if (binary_flag)
@@ -719,23 +722,23 @@ extern initialize_file_ftype _initialize_cli_dump; /* -Wmissing-prototypes */
 static void
 show_binary_buffer_size (char *args, int from_tty)
 {
-    printf_filtered (_("The restore binary buffer size is %ld (0x%lx).\n"), 
+    printf_filtered (_("The restore binary buffer size is %ld (0x%lx).\n"),
 		     g_max_binary_file_chunk, g_max_binary_file_chunk );
 }
 
 static void
 set_binary_buffer_size (char *args, int from_tty)
 {
-  if (args == NULL) 
+  if (args == NULL)
     {
-      printf_filtered (_("Reverting the restore binary buffer size to the default value.\n")); 
+      printf_filtered (_("Reverting the restore binary buffer size to the default value.\n"));
       g_max_binary_file_chunk = DEFAULT_MAX_BINARY_FILE_CHUNK;
     }
   else
     {
       char *end;
       long binary_file_chunk = strtol (args, &end, 0);
-      /* Make sure that the new value is larger than the the 
+      /* Make sure that the new value is larger than the the
          minimum max remote packet size so we all remote
          command packets can still function properly.  */
       if (end == NULL || *end != '\0')
@@ -773,16 +776,16 @@ _initialize_cli_dump (void)
   static struct cmd_list_element *restore_set_cmdlist;
   static struct cmd_list_element *restore_show_cmdlist;
 
-  add_prefix_cmd ("restore", no_class, set_restore_cmd, 
+  add_prefix_cmd ("restore", no_class, set_restore_cmd,
 		  _("Set restore specific command settings\n"),
 		  &restore_set_cmdlist, "set restore ",
 		  0 /* allow-unknown */, &setlist);
-  add_prefix_cmd ("restore", no_class, show_restore_cmd, 
+  add_prefix_cmd ("restore", no_class, show_restore_cmd,
 		  _("Show current restore specific command settings"),
 		  &restore_show_cmdlist, "show restore ",
 		  0 /* allow-unknown */, &showlist);
 
-  add_cmd ("binary-buffer-size", 
+  add_cmd ("binary-buffer-size",
            no_class, set_binary_buffer_size, _("\
 Set the max binary buffer size to use with the 'restore' command.\n\
 The single optional argument SIZE can be given to specify the size of the\n\
@@ -790,10 +793,10 @@ buffer in bytes. When no argument is given, the default value is restored.\n\
 When a binary file is restored to memory, SIZE bytes will be read from the\n\
 current file position and then written to appropriate target memory address.\n\
 This allows large files to be downloaded to target memory without the risk of\n\
-large allocation failures in gdb."), 
+large allocation failures in gdb."),
 	   &restore_set_cmdlist);
-  add_cmd ("binary-buffer-size", 
-           no_class, show_binary_buffer_size, 
+  add_cmd ("binary-buffer-size",
+           no_class, show_binary_buffer_size,
 	   _("Show the max binary buffer size to use with the 'restore' command."),
 	   &restore_show_cmdlist);
   /* APPLE LOCAL END: segment binary file downloads  */
@@ -821,32 +824,32 @@ the specified FILE in raw target ordered bytes.");
 
   add_prefix_cmd ("srec", all_commands, srec_dump_command, _("\
 Write target code/data to an srec file."),
-		  &srec_cmdlist, "dump srec ", 
-		  0 /*allow-unknown*/, 
+		  &srec_cmdlist, "dump srec ",
+		  0 /*allow-unknown*/,
 		  &dump_cmdlist);
 
   add_prefix_cmd ("ihex", all_commands, ihex_dump_command, _("\
 Write target code/data to an intel hex file."),
-		  &ihex_cmdlist, "dump ihex ", 
-		  0 /*allow-unknown*/, 
+		  &ihex_cmdlist, "dump ihex ",
+		  0 /*allow-unknown*/,
 		  &dump_cmdlist);
 
   add_prefix_cmd ("tekhex", all_commands, tekhex_dump_command, _("\
 Write target code/data to a tekhex file."),
-		  &tekhex_cmdlist, "dump tekhex ", 
-		  0 /*allow-unknown*/, 
+		  &tekhex_cmdlist, "dump tekhex ",
+		  0 /*allow-unknown*/,
 		  &dump_cmdlist);
 
   add_prefix_cmd ("binary", all_commands, binary_dump_command, _("\
 Write target code/data to a raw binary file."),
-		  &binary_dump_cmdlist, "dump binary ", 
-		  0 /*allow-unknown*/, 
+		  &binary_dump_cmdlist, "dump binary ",
+		  0 /*allow-unknown*/,
 		  &dump_cmdlist);
 
   add_prefix_cmd ("binary", all_commands, binary_append_command, _("\
 Append target code/data to a raw binary file."),
-		  &binary_append_cmdlist, "append binary ", 
-		  0 /*allow-unknown*/, 
+		  &binary_append_cmdlist, "append binary ",
+		  0 /*allow-unknown*/,
 		  &append_cmdlist);
 
   add_cmd ("memory", all_commands, dump_srec_memory, _("\
@@ -918,3 +921,5 @@ If START and END are given, only the file contents within that range\n\
   c->completer = filename_completer;
   /* FIXME: completers for other commands. */
 }
+
+/* EOF */

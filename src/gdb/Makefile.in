@@ -1421,12 +1421,15 @@ clean mostlyclean:: $(CONFIG_CLEAN)
 	rm -f init.c version.c
 	rm -fv gdb$(EXEEXT) core make.log
 	rm -fv gdb[0-9]$(EXEEXT)
+	rm -f stop-gdb
+	if test -e $(TUI)$(EXEEXT); then $(MAKE) clean-tui; fi
+	if test -e insight$(EXEEXT); then $(MAKE) clean-gdbtk; fi
 	rm -fv test-cp-name-parser$(EXEEXT)
 	rm -fv *.rsrc
 
 .PHONY: clean-tui
 clean-tui:
-	rm -fv $(TUI)$(EXEEXT)
+	rm -fv $(TUI)$(EXEEXT) || echo "$(TUI)$(EXEEXT) not present"
 
 # This used to depend on c-exp.c m2-exp.c TAGS
 # I believe this is wrong; the makefile standards for distclean just
@@ -1434,7 +1437,7 @@ clean-tui:
 # functionality described is if the distributed files are unmodified.
 # NB: While GDBSERVER might be configured on native systems, it is NOT
 # always included in SUBDIRS. Remove the gdbserver files explictly.
-distclean: clean
+distclean: clean clean-tui clean-gdbtk @MAINT@ clean-po
 	@$(MAKE) $(FLAGS_TO_PASS) DO=distclean "DODIRS=$(SUBDIRS)" \
 	  subdir_do
 	rm -f gdbserver/config.status gdbserver/config.log
@@ -1450,7 +1453,7 @@ distclean: clean
 maintainer-clean: local-maintainer-clean do-maintainer-clean distclean
 realclean: maintainer-clean
 
-local-maintainer-clean:
+local-maintainer-clean: mostlyclean @MAINT@ clean-tui clean-gdbtk
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
 	rm -f c-exp.c \
@@ -1461,7 +1464,10 @@ local-maintainer-clean:
 		f-exp.c m2-exp.c p-exp.c
 	rm -fv TAGS $(INFOFILES)
 	rm -fv $(YYFILES)
-	rm -f nm.h tm.h xm.h config.status
+	rm -f nm.h tm.h xm.h
+	-(test -w $(TMPDIR) && rm -fv $(TMPDIR)/cfg_stat.sh)
+	-rm -f config.status || \
+	  (test -w $(TMPDIR) && mv -vf config.status $(TMPDIR)/cfg_stat.sh)
 
 do-maintainer-clean:
 	@$(MAKE) $(FLAGS_TO_PASS) DO=maintainer-clean "DODIRS=$(SUBDIRS)" \
@@ -1472,12 +1478,21 @@ diststuff: $(DISTSTUFF) $(PACKAGE).pot $(CATALOGS)
 
 subdir_do: force
 	@for i in $(DODIRS); do \
-		if [ -f ./$${i}/Makefile ]; then \
-			if (cd ./$${i}; \
-				$(MAKE) $(FLAGS_TO_PASS) $(DO)); then \
-				echo "'$@' succeeded for '$${i}'"; \
-			else exit 1; fi; \
-		else echo "no Makefile for '$${i}'"; fi; \
+	  if [ "x$${i}" = "xgnulib" ]; then \
+	   if [ -f ./$${i}/Makefile -a -f ./$${i}/import/Makefile ]; then \
+	     if (cd ./$${i}; \
+	       $(MAKE) $(FLAGS_TO_PASS) $(DO)); then \
+	       echo "'$@' succeeded for '$${i}'"; \
+	     else exit 1; fi; \
+	   else echo "at least one Makefile missing for '$${i}'"; fi; \
+	  else \
+	    if [ -f ./$${i}/Makefile ]; then \
+	      if (cd ./$${i}; \
+	        $(MAKE) $(FLAGS_TO_PASS) $(DO)); then \
+	        echo "'$@' succeeded for '$${i}'"; \
+	      else exit 1; fi; \
+	    else echo "no Makefile for '$${i}'"; fi; \
+	  fi; \
 	done
 
 Makefile: Makefile.in config.status @frags@
@@ -1495,7 +1510,13 @@ stamp-h: config.in config.status
 	touch stamp-h
 
 config.status: configure configure.tgt configure.host
-	$(SHELL) config.status --recheck
+	if test -r config.status && test -x config.status; then \
+	  $(SHELL) config.status --recheck; \
+	else \
+	  if test -r ./configure && test -x ./configure; then \
+	    CONFIG_SHELL=$(SHELL) $(SHELL) ./configure --no-create --no-recursion; \
+	  fi; \
+	fi
 	touch config.status
 
 # a compromise between the built-in rule and the automake rule:
@@ -3049,8 +3070,10 @@ cli-utils.o: $(srcdir)/cli/cli-utils.c $(defs_h) $(cli_utils_h)
 # Need to explicitly specify the compile rule as make will do nothing
 # or try to compile the object file into the mi directory.
 
+.PHONY: all-gdbtk
 all-gdbtk: insight$(EXEEXT)
 
+.PHONY: install-gdbtk
 install-gdbtk:
 	transformed_name=`t='$(program_transform_name)'; \
 		  echo "insight" | $(SED) -e $${t}`; \
@@ -3081,6 +3104,7 @@ install-gdbtk:
 		$(INSTALL_DATA) $${i} $(DESTDIR)$(GDBTK_LIBRARY)/$${i}; \
 	  done;
 
+.PHONY: uninstall-gdbtk
 uninstall-gdbtk:
 	transformed_name=`t='$(program_transform_name)'; \
 		  echo "insight" | $(SED) -e $${t}`; \
@@ -3092,13 +3116,14 @@ uninstall-gdbtk:
 	rm -fv $(DESTDIR)$(bindir)/$${transformed_name}$(EXEEXT); \
 	rm -rfv $(DESTDIR)$(GDBTK_LIBRARY)
 
+.PHONY: clean-gdbtk
 clean-gdbtk:
-	rm -fv insight$(EXEEXT)
+	rm -fv insight$(EXEEXT) || echo "insight$(EXEEXT) not present"
 
 # Removing the old gdb first works better if it is running,
 # at least on SunOS:
 insight$(EXEEXT): gdbtk-main.o libgdb.a $(ADD_DEPS) \
-		$(CDEPS) $(TDEPLIBS)
+  $(CDEPS) $(TDEPLIBS)
 	rm -fv insight$(EXEEXT)
 	$(CC_LD) $(INTERNAL_LDFLAGS) $(WIN32LDAPP) \
 		-o insight$(EXEEXT) gdbtk-main.o libgdb.a \

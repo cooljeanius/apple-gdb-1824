@@ -173,9 +173,9 @@ mi_interpreter_resume (void *data)
 }
 
 static int
-mi_interpreter_suspend (void *data)
+mi_interpreter_suspend(void *data)
 {
-  gdb_disable_readline ();
+  gdb_disable_readline();
   return 1;
 }
 
@@ -225,17 +225,17 @@ mi_cmd_interpreter_exec (char *command, char **argv, int argc)
 				     argv[0]);
       return MI_CMD_ERROR;
     }
-  
+
   old_quiet = interp_set_quiet (interp_to_use, 1);
 
-  old_interp = interp_set (interp_to_use); 
+  old_interp = interp_set (interp_to_use);
   if (old_interp == NULL)
     {
       asprintf (&mi_error_message,
                 "Could not switch to interpreter \"%s\".", argv[0]);
       return MI_CMD_ERROR;
-    }  
-  
+    }
+
   /* Set the global mi_interp.  We need this so that the hook functions
      can leave their results in the mi interpreter, rather than dumping
      them to the console.  */
@@ -243,18 +243,18 @@ mi_cmd_interpreter_exec (char *command, char **argv, int argc)
 
   /* Insert the MI out hooks, making sure to also call the
      interpreter's hooks if it has any. */
-  /* KRS: We shouldn't need this... Events should be installed and
+  /* KRS: We should NOT need this... Events should be installed and
      they should just ALWAYS fire something out down the MI
      channel... */
 
   /* APPLE LOCAL: I disagree, how do we know the mi is going to always
      be the parent interpreter for whatever child interpreter we are
      running?  The only reason this works in the FSF version is that
-     they don't actually switch interpreters, they just hack the
+     they do NOT actually switch interpreters, they just hack the
      cli_exec command so it knows how to set just enough of itself not
      to get in the mi's way, which seems a little hacky to me.  */
 
-  mi_insert_notify_hooks ();
+  mi_insert_notify_hooks();
 
   /* Now run the code... */
 
@@ -296,28 +296,28 @@ mi_cmd_interpreter_exec (char *command, char **argv, int argc)
 
   /* APPLE LOCAL: Now do the switch...   The FSF code was rewritten to
      assume the cli's execute proc would know how to run code under the
-     cli without setting the interpreter, but this seems weak to me.  
+     cli without setting the interpreter, but this seems weak to me.
      So I backed out that change in cli-interp.c, and put the interp_set
      back here.  */
 
-  interp_set (old_interp);
+  interp_set(old_interp);
   mi_interp = NULL;
-  
-  mi_remove_notify_hooks ();
-  interp_set_quiet (interp_to_use, old_quiet);
-  
+
+  mi_remove_notify_hooks();
+  interp_set_quiet(interp_to_use, old_quiet);
+
   /* APPLE LOCAL begin subroutine inlining  */
 
-  if (argc >= 2
-      && strcmp (argv[0], "console-quoted") == 0
-      && strcmp (argv[1], "step") ==  0
+  if ((argc >= 2)
+      && (strcmp(argv[0], "console-quoted") == 0)
+      && (strcmp(argv[1], "step") ==  0)
       && stepping_into_inlined_subroutine)
     {
       stop_step = 1;
       if (current_command_token)
 	fputs_unfiltered (current_command_token, raw_stdout);
       fputs_unfiltered ("^running\n", raw_stdout);
-      
+
       ui_out_field_string (uiout, "reason",
 			   async_reason_lookup
 			   (EXEC_ASYNC_END_STEPPING_RANGE));
@@ -328,42 +328,42 @@ mi_cmd_interpreter_exec (char *command, char **argv, int argc)
 
   /* APPLE LOCAL end subroutine inlining  */
 
-  /* Okay, now let's see if the command set the inferior going...
+  /* Okay, now let us see if the command set the inferior going...
      Tricky point - have to do this AFTER resetting the interpreter, since
      changing the interpreter will clear out all the continuations for
      that interpreter... */
-  
-  /* APPLE LOCAL: The FSF version leaves out the 
-     mi_dont_register_continuation.  Maybe this hadn't been added yet when
+
+  /* APPLE LOCAL: The FSF version leaves out the
+     mi_dont_register_continuation.  Maybe this had NOT been added yet when
      they adopted the code.  */
-  
+
   if (target_can_async_p () && target_executing
       && !mi_dont_register_continuation)
     {
       struct mi_continuation_arg *cont_args =
         mi_setup_continuation_arg (NULL);
-      
+
       if (current_command_token)
         fputs_unfiltered (current_command_token, raw_stdout);
-      
+
       fputs_unfiltered ("^running\n", raw_stdout);
       add_continuation (mi_interpreter_exec_continuation,
                         (void *) cont_args);
-    }  
+    }
 
   return result;
 }
 
-/* APPLE LOCAL - For reasons I don't really understand, the FSF version
-   didn't take this function.  I find it really useful for chasing down
-   MI bugs, 'cause it means I don't have to work all the time in the MI.
+/* APPLE LOCAL - For reasons I do NOT really understand, the FSF version
+   did NOT take this function.  I find it really useful for chasing down
+   MI bugs, because it means I do NOT have to work all the time in the MI.
    So I am putting it back... */
 
 enum mi_cmd_result
 mi_cmd_interpreter_set (char *command, char **argv, int argc)
 {
   struct interp *interp;
-  
+
   if (argc != 1)
     {
       asprintf (&mi_error_message, "mi_cmd_interpreter_set: "
@@ -377,7 +377,7 @@ mi_cmd_interpreter_set (char *command, char **argv, int argc)
 		"could not find interpreter %s", argv[0]);
       return MI_CMD_ERROR;
     }
-  
+
   if (interp_set (interp) == NULL)
     {
       asprintf (&mi_error_message, "mi_cmd_interpreter_set: "
@@ -389,20 +389,20 @@ mi_cmd_interpreter_set (char *command, char **argv, int argc)
 }
 
 /* This implements the "interpreter complete command" which takes an
-   interpreter, a command string, and optionally a cursor position 
+   interpreter, a command string, and optionally a cursor position
    within the command, and completes the string based on that interpreter's
    completion function.  */
 
-enum mi_cmd_result 
+enum mi_cmd_result
 mi_cmd_interpreter_complete (char *command, char **argv, int argc)
 {
   struct interp *interp_to_use;
   int cursor;
   int limit = 200;
-  
-  if (argc < 2 || argc > 3)
+
+  if ((argc < 2) || (argc > 3))
     {
-      asprintf (&mi_error_message, 
+      asprintf (&mi_error_message,
 		"Wrong # or arguments, should be \"%s interp command <cursor>\".",
 		command);
       return MI_CMD_ERROR;
@@ -415,7 +415,7 @@ mi_cmd_interpreter_complete (char *command, char **argv, int argc)
 		"Could not find interpreter \"%s\".", argv[0]);
       return MI_CMD_ERROR;
     }
-  
+
   if (argc == 3)
     {
       cursor = atoi (argv[2]);
@@ -432,7 +432,7 @@ mi_cmd_interpreter_complete (char *command, char **argv, int argc)
 
 }
 
-/* APPLE LOCAL: FIXME - Keith removed all the mi hooks.  The 
+/* APPLE LOCAL: FIXME - Keith removed all the mi hooks.  The
    reason is he posits that all this work can be done with the
    gdb_events.  I am going to leave them in till this is proved.
    SO... FIXME: See if this really can be done with events.  */
@@ -442,7 +442,7 @@ mi_cmd_interpreter_complete (char *command, char **argv, int argc)
  * async-notify ("=") MI messages while running commands in another interpreter
  * using mi_interpreter_exec.  The canonical use for this is to allow access to
  * the gdb CLI interpreter from within the MI, while still producing MI style output
- * when actions in the CLI command change gdb's state. 
+ * when actions in the CLI command change gdb's state.
 */
 
 void
@@ -456,7 +456,9 @@ mi_insert_notify_hooks (void)
   stack_changed_hook = mi_interp_stack_changed_hook;
   deprecated_context_hook = mi_interp_context_hook;
 
-  /* command_line_input_hook = mi_interp_command_line_input; */
+#if 0
+  command_line_input_hook = mi_interp_command_line_input;
+#endif /* 0 */
   deprecated_query_hook = mi_interp_query_hook;
   command_line_input_hook = mi_interp_read_one_line_hook;
 
@@ -477,7 +479,7 @@ mi_insert_notify_hooks (void)
 }
 
 void
-mi_remove_notify_hooks ()
+mi_remove_notify_hooks(void)
 {
   deprecated_create_breakpoint_hook = NULL;
   deprecated_delete_breakpoint_hook = NULL;
@@ -487,7 +489,9 @@ mi_remove_notify_hooks ()
   stack_changed_hook = NULL;
   deprecated_context_hook = NULL;
 
-  /* command_line_input_hook = NULL; */
+#if 0
+  command_line_input_hook = NULL;
+#endif /* 0 */
   deprecated_query_hook = NULL;
   command_line_input_hook = NULL;
 
@@ -500,60 +504,60 @@ mi_remove_notify_hooks ()
   /* If we ran the target in sync mode, we will have set the
      annotation printer to "route_through_mi".  Undo that here.  */
   ui_out_set_annotation_printer (NULL);
-     
+
 }
 
 int
-mi_interp_query_hook (const char *ctlstr, va_list ap)
+mi_interp_query_hook(const char *ctlstr, va_list ap)
 {
   return 1;
 }
 
 static char *
-mi_interp_read_one_line_hook (char *prompt, int repeat, char *anno)
+mi_interp_read_one_line_hook(char *prompt, int repeat, char *anno)
 {
   static char buff[256];
-  
-  if (strlen (prompt) > 200)
-    internal_error (__FILE__, __LINE__,
-		    "Prompt \"%s\" ridiculously long.", prompt);
 
-  sprintf (buff, "read-one-line,prompt=\"%s\"", prompt);
-  mi_output_async_notification (buff);
-  
-  (void) fgets(buff, sizeof(buff), stdin);
+  if (strlen(prompt) > 200UL)
+    internal_error(__FILE__, __LINE__,
+                   "Prompt \"%s\" ridiculously long.", prompt);
+
+  sprintf(buff, "read-one-line,prompt=\"%s\"", prompt);
+  mi_output_async_notification(buff);
+
+  (void)fgets(buff, sizeof(buff), stdin);
   buff[(strlen(buff) - 1)] = 0;
-  
+
   return buff;
-  
+
 }
 
 static void
-mi0_command_loop (void)
+mi0_command_loop(void)
 {
-  mi_command_loop (0);
+  mi_command_loop(0);
 }
 
 static void
-mi1_command_loop (void)
+mi1_command_loop(void)
 {
-  mi_command_loop (1);
+  mi_command_loop(1);
 }
 
 static void
-mi2_command_loop (void)
+mi2_command_loop(void)
 {
-  mi_command_loop (2);
+  mi_command_loop(2);
 }
 
 static void
-mi3_command_loop (void)
+mi3_command_loop(void)
 {
-  mi_command_loop (3);
+  mi_command_loop(3);
 }
 
 static void
-mi_command_loop (int mi_version)
+mi_command_loop(int mi_version)
 {
   /* HACK: Force stdout/stderr to point at the console.  This avoids
      any potential side effects caused by legacy code that is still
@@ -602,7 +606,7 @@ mi_command_loop (int mi_version)
 
   /* Set the uiout to the interpreter's uiout.  */
   uiout = interp_ui_out (NULL);
-  
+
   /* Turn off 8 bit strings in quoted output.  Any character with the
      high bit set is printed using C's octal format. */
   sevenbit_strings = 1;

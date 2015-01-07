@@ -1,4 +1,4 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* macosx-nat-dyld-io.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -54,13 +54,13 @@ struct inferior_info
 };
 
 static void *
-inferior_open (bfd *abfd, void *open_closure)
+inferior_open(bfd *abfd, void *open_closure)
 {
   struct inferior_info *in = NULL;
   struct inferior_info *ret = NULL;
 
-  in = (struct inferior_info *) open_closure;
-  ret = bfd_zalloc (abfd, sizeof (struct inferior_info));
+  in = (struct inferior_info *)open_closure;
+  ret = bfd_zalloc(abfd, sizeof(struct inferior_info));
 
   *ret = *in;
 
@@ -68,36 +68,35 @@ inferior_open (bfd *abfd, void *open_closure)
 }
 
 /* The target for the inferior_bfd type may "macos-child" in the case
-   of a regular process, "remote" in the case of a translated (Rosetta) 
+   of a regular process, "remote" in the case of a translated (Rosetta)
    application where we're controlling it via remote protocol, or
-   "core-macho" for core files.  
+   "core-macho" for core files.
 
    Returns zero if the inferior bfd is not supported for the current target
    type, or non-zero if it is supported.  */
 
 static int
-valid_target_for_inferior_bfd ()
+valid_target_for_inferior_bfd(void)
 {
-  return strcmp (current_target.to_shortname, "macos-child") == 0
-      || target_is_remote ()
-      || strcmp (current_target.to_shortname, "core-macho") == 0;
+  return ((strcmp(current_target.to_shortname, "macos-child") == 0)
+          || target_is_remote()
+          || (strcmp(current_target.to_shortname, "core-macho") == 0));
 }
 
-/* Return non-zero if the bfd target is mach-o.  */
-
+/* Return non-zero if the bfd target is mach-o: */
 static int
-bfd_target_is_mach_o (bfd *abfd)
+bfd_target_is_mach_o(bfd *abfd)
 {
-  return strcmp (bfd_get_target (abfd), "mach-o-be") == 0
-      || strcmp (bfd_get_target (abfd), "mach-o-le") == 0
-      || strcmp (bfd_get_target (abfd), "mach-o") == 0;
+  return ((strcmp(bfd_get_target(abfd), "mach-o-be") == 0)
+          || (strcmp(bfd_get_target(abfd), "mach-o-le") == 0)
+          || (strcmp(bfd_get_target(abfd), "mach-o") == 0));
 }
 
 
 size_t
-inferior_read_memory_partial (CORE_ADDR addr, int nbytes, gdb_byte *mbuf)
+inferior_read_memory_partial(CORE_ADDR addr, int nbytes, gdb_byte *mbuf)
 {
-  size_t nbytes_read = 0;
+  volatile size_t nbytes_read = 0UL;
 
   volatile struct gdb_exception except;
 
@@ -180,11 +179,11 @@ inferior_read_mach_o (bfd *abfd, void *stream, void *data, file_ptr nbytes, file
 
     /* dyld may have slid this dylib within the shared cache region
       a little bit extra for this one process.  The Mach-O header
-      addresses we get from the MEM_BFD will be the system-wide generic 
-      shared cache addresses, not this process' specific slid values.  
-      Both of these differ from the on-disk addresses in the load 
+      addresses we get from the MEM_BFD will be the system-wide generic
+      shared cache addresses, not this process' specific slid values.
+      Both of these differ from the on-disk addresses in the load
       commands of the actual library file (which typically show the
-      library loading at 0x0).  
+      library loading at 0x0).
       The same slide value will be applied to all sections of the dylib
       so we determine it outside the section loop below.  */
 
@@ -204,7 +203,7 @@ inferior_read_mach_o (bfd *abfd, void *stream, void *data, file_ptr nbytes, file
               {
                 struct bfd_mach_o_segment_command *segment;
                 segment = &cmd->command.segment;
-                
+
                 if (strcmp(segment->segname, "__TEXT") == 0)
                   {
                     process_shared_cache_slide = iptr->addr - segment->vmaddr;
@@ -233,33 +232,33 @@ inferior_read_mach_o (bfd *abfd, void *stream, void *data, file_ptr nbytes, file
                 bfd_vma infaddr =
                   (segment->vmaddr + (offset - segment->fileoff));
 
-		/* If the offset (slide) is set to an invalid value, we 
+		/* If the offset (slide) is set to an invalid value, we
 		   need to figure out any rigid slides automatically. We do
-		   this by finding the __TEXT segment that gets registered 
+		   this by finding the __TEXT segment that gets registered
 		   with the bfd (as a section). The address found in this
-		   bfd section can help us to determine a single slide 
+		   bfd section can help us to determine a single slide
 		   amount by taking the difference from the address provided.
 		   This assumes that the mach header is at the beginning of
 		   the __TEXT segment which is currently true for all of our
-		   current binaries. 
-		   
+		   current binaries.
+
 		   Automatically finding the slide amount is used when we
-		   are reading an image from memory when we don't already 
+		   are reading an image from memory when we don't already
 		   know the slide amount. This can occur whilst attaching
 		   or when we have a core file and we can only read the load
 		   address from the dyld_all_image_infos array. This array
 		   contains the mach header address in memory only, and not
 		   the original load address contained in the load commands.
-		   We normally get the slide amount from dyld when we hit 
-		   the breakpoint that we set in dyld where dyld computes 
+		   We normally get the slide amount from dyld when we hit
+		   the breakpoint that we set in dyld where dyld computes
 		   this information for us.
-		   
-		   For mach images in the shared cache, all the addresses 
-		   in the mach load commands will be fixed up and the 
+
+		   For mach images in the shared cache, all the addresses
+		   in the mach load commands will be fixed up and the
 		   the header address will be the same as the __TEXT segment.
-		   Non-shared cache mach images have all segments loaded 
-		   read only, so the addresses remain as they were on disk. 
-		   The only way to know the slide amount is to read the 
+		   Non-shared cache mach images have all segments loaded
+		   read only, so the addresses remain as they were on disk.
+		   The only way to know the slide amount is to read the
 		   segment load commands. So instead of having to do a two
 		   pass solution where we must first find all of the slide
 		   amounts, the offset can be set to INVALID_ADDRESS and we
@@ -270,7 +269,7 @@ inferior_read_mach_o (bfd *abfd, void *stream, void *data, file_ptr nbytes, file
 		    /* Figure out the slide amount automatically.  */
 		    asection *text_sect;
 		    /* See if we have read the text segment yet? */
-		    text_sect = bfd_get_section_by_name (abfd, 
+		    text_sect = bfd_get_section_by_name (abfd,
 							 TEXT_SEGMENT_NAME);
 		    if (text_sect)
 		      {
@@ -278,18 +277,18 @@ inferior_read_mach_o (bfd *abfd, void *stream, void *data, file_ptr nbytes, file
 			   address (which is always at the start of the __TEXT
 			   segment) minus the __TEXT segment address in the
 			   mach load commands in memory.  */
-			bfd_vma slide = iptr->addr - 
+			bfd_vma slide = iptr->addr -
 					bfd_section_vma (abfd, text_sect);
 			infaddr = infaddr + slide;
 		      }
 		  }
 		else
 		  {
-		    /* We were given an offset (slide) when this bfd was 
+		    /* We were given an offset (slide) when this bfd was
 		       created, so we are going to use that.  */
 		    infaddr = infaddr + iptr->offset + process_shared_cache_slide;
 		  }
-		
+
 		return inferior_read_memory_partial (infaddr, nbytes, data);
               }
           }
@@ -323,7 +322,7 @@ inferior_close (bfd *abfd, void *stream)
 }
 
 static bfd *
-inferior_bfd_generic (const char *name, CORE_ADDR addr, CORE_ADDR offset, 
+inferior_bfd_generic (const char *name, CORE_ADDR addr, CORE_ADDR offset,
                       CORE_ADDR len)
 {
   struct inferior_info info;
@@ -332,7 +331,7 @@ inferior_bfd_generic (const char *name, CORE_ADDR addr, CORE_ADDR offset,
 
   info.addr = addr;
   info.offset = offset;
-  info.len = len; 
+  info.len = len;
   info.read = 0;
 
   /* If you change the string "[memory object \"" remember to go
@@ -360,7 +359,7 @@ inferior_bfd_generic (const char *name, CORE_ADDR addr, CORE_ADDR offset,
       return NULL;
     }
 
-  abfd = bfd_openr_iovec (filename, NULL, 
+  abfd = bfd_openr_iovec (filename, NULL,
 			 inferior_open, &info,
 			 inferior_read, inferior_close);
   if (abfd == NULL)
@@ -384,9 +383,9 @@ inferior_bfd_generic (const char *name, CORE_ADDR addr, CORE_ADDR offset,
 }
 
 bfd *
-inferior_bfd (const char *name, CORE_ADDR addr, CORE_ADDR offset, CORE_ADDR len)
+inferior_bfd(const char *name, CORE_ADDR addr, CORE_ADDR offset, CORE_ADDR len)
 {
-  bfd *abfd = inferior_bfd_generic (name, addr, offset, len);
+  bfd *abfd = inferior_bfd_generic(name, addr, offset, len);
   if (abfd == NULL)
     return abfd;
 
@@ -399,14 +398,16 @@ macosx_bfd_is_in_memory (bfd *abfd)
 {
   if (abfd)
     {
-      /* Is this a standard bfd where a buffer was handed to a bfd using 
+      /* Is this a standard bfd where a buffer was handed to a bfd using
          bfd_memopenr of by memory mapping it? */
       if (abfd->flags & BFD_IN_MEMORY)
 	return 1;
       /* Was this mapped as a memory object?  */
-      if (abfd->filename != NULL
-	  && strstr (abfd->filename, "[memory object") == abfd->filename)
+      if ((abfd->filename != NULL)
+	  && (strstr(abfd->filename, "[memory object") == abfd->filename))
 	return 1;
     }
   return 0;
 }
+
+/* EOF */

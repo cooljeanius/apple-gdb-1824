@@ -1,4 +1,4 @@
-/* MI Command Set - MI Option Parser.
+/* mi-getopt.c: MI Command Set - MI Option Parser.
    Copyright 2000, 2001 Free Software Foundation, Inc.
    Contributed by Cygnus Solutions (a Red Hat company).
 
@@ -24,22 +24,20 @@
 #include "gdb_string.h"
 
 int
-mi_getopt (const char *prefix,
-	   int argc, char **argv,
-	   struct mi_opt *opts,
-	   int *optind, char **optarg)
+mi_getopt(const char *prefix, int argc, char **argv, struct mi_opt *opts,
+          int *optind, char **optarg)
 {
   char *arg;
   struct mi_opt *opt;
-  /* We assume that argv/argc are ok. */
-  if (*optind > argc || *optind < 0)
-    internal_error (__FILE__, __LINE__,
-		    _("mi_getopt_long: optind out of bounds"));
+  /* We assume that argv/argc are ok: */
+  if ((*optind > argc) || (*optind < 0))
+    internal_error(__FILE__, __LINE__,
+                   _("mi_getopt_long: optind out of bounds"));
   if (*optind == argc)
     return -1;
   arg = argv[*optind];
   /* ``--''? */
-  if (strcmp (arg, "--") == 0)
+  if (strcmp(arg, "--") == 0)
     {
       *optind += 1;
       *optarg = NULL;
@@ -51,42 +49,44 @@ mi_getopt (const char *prefix,
       *optarg = NULL;
       return -1;
     }
-  /* Look the option up. */
+  /* Look the option up: */
   for (opt = opts; opt->name != NULL; opt++)
     {
-      if (strcmp (opt->name, arg + 1) != 0)
+      if (strcmp(opt->name, arg + 1) != 0)
 	continue;
       if (opt->arg_p)
 	{
-	  /* A non-simple optarg option. */
-	  if (argc < *optind + 2)
-	    error (_("%s: Option %s requires an argument"), prefix, arg);
+	  /* A non-simple optarg option: */
+	  if (argc < (*optind + 2))
+	    error(_("%s: Option %s requires an argument"), prefix, arg);
 	  *optarg = argv[(*optind) + 1];
-	  *optind = (*optind) + 2;
+	  *optind = ((*optind) + 2);
 	  return opt->index;
 	}
       else
 	{
 	  *optarg = NULL;
-	  *optind = (*optind) + 1;
+	  *optind = ((*optind) + 1);
 	  return opt->index;
 	}
     }
-  error (_("%s: Unknown option ``%s''"), prefix, arg + 1);
+  error(_("%s: Unknown option ``%s''"), prefix, arg + 1);
 }
 
-int 
-mi_valid_noargs (const char *prefix, int argc, char **argv) 
+int
+mi_valid_noargs(const char *prefix, int argc, char **argv)
 {
   int optind = 0;
   char *optarg;
   static struct mi_opt opts[] =
   {
-    0
+    { 0 }
   };
 
-  if (mi_getopt (prefix, argc, argv, opts, &optind, &optarg) == -1)
+  if (mi_getopt(prefix, argc, argv, opts, &optind, &optarg) == -1)
     return 1;
   else
     return 0;
 }
+
+/* EOF */

@@ -247,6 +247,26 @@ typedef bfd_vma CORE_ADDR;
 # define max(a, b) ((a) > (b) ? (a) : (b))
 #endif /* !max */
 
+#ifndef PATH_MAX
+/* For MAXPATHLEN: */
+# ifdef HAVE_SYS_PARAM_H
+#  include <sys/param.h>
+# else
+#  ifndef MAXPATHLEN
+#   if defined(__GNUC__) && !defined(__STRICT_ANSI__)
+#    warning "defs.h wants to include <sys/param.h> for MAXPATHLEN"
+#   endif /* __GNUC__ && !__STRICT_ANSI__ */
+#  endif /* !MAXPATHLEN */
+# endif /* HAVE_SYS_PARAM_H */
+# ifndef PATH_MAX
+#  ifdef MAXPATHLEN
+#   define PATH_MAX MAXPATHLEN
+#  else
+#   define PATH_MAX 1024
+#  endif /* MAXPATHLEN */
+# endif /* !PATH_MAX */
+#endif /* !PATH_MAX */
+
 /* Macros to do string compares.
 
    NOTE: cagney/2000-03-14:

@@ -1,27 +1,28 @@
-/* Functions for manipulating expressions designed to be executed on the agent
-   Copyright 1998, 1999, 2000 Free Software Foundation, Inc.
+/* ax-general.c: Functions for manipulating expressions designed to be
+ * executed on the agent.
+ * Copyright 1998, 1999, 2000 Free Software Foundation, Inc.  */
+/*
+This file is part of GDB.
 
-   This file is part of GDB.
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
-   (at your option) any later version.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.  */
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330,
+Boston, MA 02111-1307, USA.  */
 
 /* Despite what the above comment says about this file being part of
-   GDB, we would like to keep these functions free of GDB
-   dependencies, since we want to be able to use them in contexts
-   outside of GDB (test suites, the stub, etc.)  */
+ * GDB, we would like to keep these functions free of GDB
+ * dependencies, since we want to be able to use them in contexts
+ * outside of GDB (test suites, the stub, etc.)  */
 
 #include "defs.h"
 #include "ax.h"
@@ -29,62 +30,62 @@
 #include "value.h"
 #include "gdb_string.h"
 
-static void grow_expr (struct agent_expr *x, int n);
+static void grow_expr(struct agent_expr *x, int n);
 
-static void append_const (struct agent_expr *x, LONGEST val, int n);
+static void append_const(struct agent_expr *x, LONGEST val, int n);
 
-static LONGEST read_const (struct agent_expr *x, int o, int n);
+static LONGEST read_const(struct agent_expr *x, int o, int n);
 
-static void generic_ext (struct agent_expr *x, enum agent_op op, int n);
+static void generic_ext(struct agent_expr *x, enum agent_op op, int n);
 
 /* Functions for building expressions.  */
 
-/* Allocate a new, empty agent expression.  */
+/* Allocate a new, empty agent expression: */
 struct agent_expr *
-new_agent_expr (CORE_ADDR scope)
+new_agent_expr(CORE_ADDR scope)
 {
-  struct agent_expr *x = xmalloc (sizeof (*x));
+  struct agent_expr *x = xmalloc(sizeof(*x));
   x->len = 0;
   x->size = 1;			/* Change this to a larger value once
-				   reallocation code is tested.  */
-  x->buf = xmalloc (x->size);
+				 * reallocation code is tested.  */
+  x->buf = xmalloc(x->size);
   x->scope = scope;
 
   return x;
 }
 
-/* Free a agent expression.  */
+/* Free a agent expression: */
 void
-free_agent_expr (struct agent_expr *x)
+free_agent_expr(struct agent_expr *x)
 {
-  xfree (x->buf);
-  xfree (x);
+  xfree(x->buf);
+  xfree(x);
 }
 
 static void
-do_free_agent_expr_cleanup (void *x)
+do_free_agent_expr_cleanup(void *x)
 {
-  free_agent_expr (x);
+  free_agent_expr(x);
 }
 
 struct cleanup *
-make_cleanup_free_agent_expr (struct agent_expr *x)
+make_cleanup_free_agent_expr(struct agent_expr *x)
 {
-  return make_cleanup (do_free_agent_expr_cleanup, x);
+  return make_cleanup(do_free_agent_expr_cleanup, x);
 }
 
 
-/* Make sure that X has room for at least N more bytes.  This doesn't
+/* Make sure that X has room for at least N more bytes.  This does NOT
    affect the length, just the allocated size.  */
 static void
-grow_expr (struct agent_expr *x, int n)
+grow_expr(struct agent_expr *x, int n)
 {
-  if (x->len + n > x->size)
+  if ((x->len + n) > x->size)
     {
       x->size *= 2;
-      if (x->size < x->len + n)
-	x->size = x->len + n + 10;
-      x->buf = xrealloc (x->buf, x->size);
+      if (x->size < (x->len + n))
+	x->size = (x->len + n + 10);
+      x->buf = xrealloc(x->buf, x->size);
     }
 }
 
@@ -247,11 +248,11 @@ ax_const_l (struct agent_expr *x, LONGEST l)
 }
 
 
-void
-ax_const_d (struct agent_expr *x, LONGEST d)
+void ATTR_NORETURN
+ax_const_d(struct agent_expr *x, LONGEST d)
 {
-  /* FIXME: floating-point support not present yet.  */
-  error (_("GDB bug: ax-general.c (ax_const_d): floating point not supported yet"));
+  /* FIXME: floating-point support not present yet: */
+  error(_("GDB bug: ax-general.c (ax_const_d): floating point not supported yet"));
 }
 
 

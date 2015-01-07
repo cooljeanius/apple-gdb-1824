@@ -1,4 +1,4 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* macosx-nat-inferior-debug.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -462,7 +462,7 @@ macosx_debug_notification_message (struct macosx_inferior_status *inferior,
 }
 
 void
-_initialize_macosx_inferior_debug ()
+_initialize_macosx_inferior_debug(void)
 {
   add_setshow_boolean_cmd ("timestamps", class_obscure,
 			   &timestamps_debug_flag, _("\

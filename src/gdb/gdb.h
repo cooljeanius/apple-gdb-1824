@@ -1,4 +1,4 @@
-/* Library interface into GDB.
+/* gdb.h: Library interface into GDB.
    Copyright 1999, 2001
    Free Software Foundation, Inc.
 
@@ -73,3 +73,5 @@ enum gdb_rc gdb_list_thread_ids (struct ui_out *uiout,
 				 char **error_message);
 
 #endif /* !GDB_H */
+
+/* EOF */

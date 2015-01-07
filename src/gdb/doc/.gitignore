@@ -60,3 +60,4 @@ Doxyfile-base
 Doxyfile-gdb-api
 Doxyfile-gdb-xref
 Doxyfile-gdbserver
+version.subst

@@ -1082,24 +1082,23 @@ print_sys_errmsg (const char *string, int errcode)
   fprintf_unfiltered (gdb_stderr, "%s.\n", combined);
 }
 
-/* Control C eventually causes this to be called, at a convenient time.  */
-
-void
-quit (void)
+/* Control C eventually causes this to be called, at a convenient time: */
+void ATTR_NORETURN
+quit(void)
 {
 #ifdef __MSDOS__
   /* No steenking SIGINT will ever be coming our way when the
-     program is resumed.  Don't lie.  */
-  fatal ("Quit");
+   * program is resumed.  Do NOT lie: */
+  fatal("Quit");
 #else
   if (job_control
-      /* If there is no terminal switching for this target, then we can't
-         possibly get screwed by the lack of job control.  */
-      || current_target.to_terminal_ours == NULL)
-    fatal ("Quit");
+      /* If there is no terminal switching for this target, then we cannot
+       * possibly get screwed by the lack of job control.  */
+      || (current_target.to_terminal_ours == NULL))
+    fatal("Quit");
   else
-    fatal ("Quit (expect signal SIGINT when the program is resumed)");
-#endif
+    fatal("Quit (expect signal SIGINT when the program is resumed)");
+#endif /* __MSDOS__ */
 }
 
 /* Control C comes here: */
@@ -3194,16 +3193,20 @@ phex_nz (ULONGEST l, int sizeof_l)
 }
 
 /* APPLE LOCAL begin CHECK macro */
-void gdb_check (const char *str, const char *file, unsigned int line, const char *func)
+void ATTR_NORETURN
+gdb_check(const char *str, const char *file, unsigned int line,
+          const char *func)
 {
-  error ("assertion failure on line %u of \"%s\" in function \"%s\": %s\n",
-	 line, file, func, str);
+  error("assertion failure on line %u of \"%s\" in function \"%s\": %s\n",
+        line, file, func, str);
 }
 
-void gdb_check_fatal (const char *str, const char *file, unsigned int line, const char *func)
+void ATTR_NORETURN
+gdb_check_fatal(const char *str, const char *file, unsigned int line,
+                const char *func)
 {
-  internal_error (file, line, "assertion failure in function \"%s\": %s\n",
-		  func, str);
+  internal_error(file, line, "assertion failure in function \"%s\": %s\n",
+                 func, str);
 }
 /* APPLE LOCAL end CHECK macro */
 

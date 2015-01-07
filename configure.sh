@@ -647,6 +647,7 @@ USE_NLS
 LIBOBJS
 ALLOCA
 LIBM
+LD_ARCHFLAGS
 BUILDIT
 YFLAGS
 YACC
@@ -2724,7 +2725,6 @@ ac_config_sub="$SHELL $ac_aux_dir/config.sub"  # Please don't use this var.
 ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
-
 if test -x `which sw_vers`; then
   if test ! -z "$(sw_vers -productVersion | cut -d\. -f2 2>/dev/null)"; then
     if test "$(sw_vers -productVersion | cut -d\. -f2 2>/dev/null)" = "6"; then
@@ -3236,7 +3236,6 @@ fi
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $am_cv_prog_tar_pax" >&5
 $as_echo "$am_cv_prog_tar_pax" >&6; }
-
 
 
 
@@ -6865,13 +6864,50 @@ $as_echo "no" >&6; }
 fi
 
 
-
-
 # Checks for libraries.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking libraries" >&5
 $as_echo_n "checking libraries... " >&6; }
 { $as_echo "$as_me:${as_lineno-$LINENO}: result:  " >&5
 $as_echo " " >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for linker flag to verify linked libraries have the correct architecture" >&5
+$as_echo_n "checking for linker flag to verify linked libraries have the correct architecture... " >&6; }
+if test "x${acl_cv_wl}" = "x"; then
+  test -z "${acl_cv_wl}" && export acl_cv_wl='-Wl,'
+fi
+pre_saved_LDFLAGS="${LDFLAGS}"
+LDFLAGS="${LDFLAGS} ${acl_cv_wl}-arch_errors_fatal"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  LD_ARCHFLAGS="${acl_cv_wl}-arch_errors_fatal"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LDFLAGS="${pre_saved_LDFLAGS}"
+if test "x${LD_ARCHFLAGS}" != "x"; then
+  test -n "${LD_ARCHFLAGS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${LD_ARCHFLAGS}" >&5
+$as_echo "${LD_ARCHFLAGS}" >&6; }
+  if test "x${ERROR_ON_WARNING}" = "xyes"; then
+    if test "x${WARN_LDFLAGS}" = "x"; then
+      test -z "${WARN_LDFLAGS}" && WARN_LDFLAGS="${LD_ARCHFLAGS}"
+    fi
+  fi
+    ## that should be all we need to do with them for now...
+else
+  test -z "${LD_ARCHFLAGS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: none" >&5
+$as_echo "none" >&6; }
+fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for printf in -lc" >&5
 $as_echo_n "checking for printf in -lc... " >&6; }
 if ${ac_cv_lib_c_printf+:} false; then :
@@ -6916,7 +6952,6 @@ _ACEOF
   LIBS="-lc $LIBS"
 
 fi
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for dlopen in -ldl" >&5
 $as_echo_n "checking for dlopen in -ldl... " >&6; }
 if ${ac_cv_lib_dl_dlopen+:} false; then :
@@ -6961,9 +6996,55 @@ _ACEOF
   LIBS="-ldl $LIBS"
 
 fi
+  ## might want to pick a better symbol to check for:
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for gmp_version in -lgmp" >&5
+$as_echo_n "checking for gmp_version in -lgmp... " >&6; }
+if ${ac_cv_lib_gmp_gmp_version+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lgmp  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
 
-# FIXME: Replace `main' with a function in `-lgmp':
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lgmp" >&5
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char gmp_version ();
+int
+main ()
+{
+return gmp_version ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_gmp_gmp_version=yes
+else
+  ac_cv_lib_gmp_gmp_version=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_gmp_gmp_version" >&5
+$as_echo "$ac_cv_lib_gmp_gmp_version" >&6; }
+if test "x$ac_cv_lib_gmp_gmp_version" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBGMP 1
+_ACEOF
+
+  LIBS="-lgmp $LIBS"
+
+else
+
+  PRE_GMP_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lgmp" >&5
 $as_echo_n "checking for main in -lgmp... " >&6; }
 if ${ac_cv_lib_gmp_main+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -7001,7 +7082,11 @@ _ACEOF
   LIBS="-lgmp $LIBS"
 
 fi
+  ## reset:
+  LDFLAGS="${PRE_GMP_LDFLAGS}"
 
+fi
+  ## might want to ensure we find the in-tree one:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for xmalloc in -liberty" >&5
 $as_echo_n "checking for xmalloc in -liberty... " >&6; }
 if ${ac_cv_lib_iberty_xmalloc+:} false; then :
@@ -7047,6 +7132,8 @@ _ACEOF
 
 else
 
+  PRE_LIBERTY_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -liberty" >&5
 $as_echo_n "checking for main in -liberty... " >&6; }
 if ${ac_cv_lib_iberty_main+:} false; then :
@@ -7085,10 +7172,10 @@ _ACEOF
   LIBS="-liberty $LIBS"
 
 fi
-
+  ## reset:
+  LDFLAGS="${PRE_LIBERTY_LDFLAGS}"
 
 fi
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for iconv in -liconv" >&5
 $as_echo_n "checking for iconv in -liconv... " >&6; }
 if ${ac_cv_lib_iconv_iconv+:} false; then :
@@ -7179,6 +7266,8 @@ _ACEOF
 
 else
 
+    PRE_ICONV_LDFLAGS="${LDFLAGS}"
+    LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -liconv" >&5
 $as_echo_n "checking for main in -liconv... " >&6; }
 if ${ac_cv_lib_iconv_main+:} false; then :
@@ -7217,13 +7306,13 @@ _ACEOF
   LIBS="-liconv $LIBS"
 
 fi
-
-
-fi
-
+    ## reset:
+    LDFLAGS="${PRE_ICONV_LDFLAGS}"
 
 fi
 
+fi
+  ## might want to ensure we find the in-tree one:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gettext in -lintl" >&5
 $as_echo_n "checking for gettext in -lintl... " >&6; }
 if ${ac_cv_lib_intl_gettext+:} false; then :
@@ -7269,6 +7358,8 @@ _ACEOF
 
 else
 
+  PRE_INTL_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
   { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lintl" >&5
 $as_echo_n "checking for main in -lintl... " >&6; }
 if ${ac_cv_lib_intl_main+:} false; then :
@@ -7307,10 +7398,10 @@ _ACEOF
   LIBS="-lintl $LIBS"
 
 fi
-
+  ## reset:
+  LDFLAGS="${PRE_INTL_LDFLAGS}"
 
 fi
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for sqrt in -lm" >&5
 $as_echo_n "checking for sqrt in -lm... " >&6; }
 if ${ac_cv_lib_m_sqrt+:} false; then :
@@ -7357,7 +7448,7 @@ _ACEOF
 fi
 
 
-LIBM=
+  LIBM=
 case $host in
 *-*-beos* | *-*-cegcc* | *-*-cygwin* | *-*-haiku* | *-*-pw32* | *-*-darwin*)
   # These system don't have libm, or don't need it
@@ -7489,9 +7580,55 @@ fi
 esac
 
 
+  ## might want to pick a better symbol to check for:
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for mpfr_get_version in -lmpfr" >&5
+$as_echo_n "checking for mpfr_get_version in -lmpfr... " >&6; }
+if ${ac_cv_lib_mpfr_mpfr_get_version+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lmpfr  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
 
-# FIXME: Replace `main' with a function in `-lmpfr':
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lmpfr" >&5
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char mpfr_get_version ();
+int
+main ()
+{
+return mpfr_get_version ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_mpfr_mpfr_get_version=yes
+else
+  ac_cv_lib_mpfr_mpfr_get_version=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_mpfr_mpfr_get_version" >&5
+$as_echo "$ac_cv_lib_mpfr_mpfr_get_version" >&6; }
+if test "x$ac_cv_lib_mpfr_mpfr_get_version" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBMPFR 1
+_ACEOF
+
+  LIBS="-lmpfr $LIBS"
+
+else
+
+  PRE_MPFR_LDFLAGS="${LDFLAGS}"
+  LDFLAGS="${LDFLAGS} ${LD_ARCHFLAGS}"
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lmpfr" >&5
 $as_echo_n "checking for main in -lmpfr... " >&6; }
 if ${ac_cv_lib_mpfr_main+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -7529,7 +7666,11 @@ _ACEOF
   LIBS="-lmpfr $LIBS"
 
 fi
+  ## reset:
+  LDFLAGS="${PRE_MPFR_LDFLAGS}"
 
+fi
+  ## might want to ensure we find the in-tree one:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for rl_initialize in -lreadline" >&5
 $as_echo_n "checking for rl_initialize in -lreadline... " >&6; }
 if ${ac_cv_lib_readline_rl_initialize+:} false; then :
@@ -7574,7 +7715,6 @@ _ACEOF
   LIBS="-lreadline $LIBS"
 
 fi
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for sqlite3_initialize in -lsqlite3" >&5
 $as_echo_n "checking for sqlite3_initialize in -lsqlite3... " >&6; }
 if ${ac_cv_lib_sqlite3_sqlite3_initialize+:} false; then :
@@ -7619,7 +7759,7 @@ _ACEOF
   LIBS="-lsqlite3 $LIBS"
 
 fi
-
+  ## might want to ensure we find the in-tree one:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gzopen in -lz" >&5
 $as_echo_n "checking for gzopen in -lz... " >&6; }
 if ${ac_cv_lib_z_gzopen+:} false; then :
@@ -7664,7 +7804,6 @@ _ACEOF
   LIBS="-lz $LIBS"
 
 fi
-
 
 # Checks for header files.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking headers" >&5
@@ -7966,7 +8105,7 @@ _ACEOF
 fi
 
 done
-
+  ## should have been checked anyways, but whatever...
 fi
 
 # Checks for typedefs, structures, and compiler characteristics.
@@ -8527,7 +8666,6 @@ _ACEOF
 
 
 fi
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether struct tm is in sys/time.h or time.h" >&5
 $as_echo_n "checking whether struct tm is in sys/time.h or time.h... " >&6; }
 if ${ac_cv_struct_tm+:} false; then :
@@ -8657,10 +8795,9 @@ else
   ac_cv_type_signal=void
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_type_signal" >&5
-$as_echo "$ac_cv_type_signal" >&6; }
+$as_echo "$ac_cv_type_signal" >&6; }  ## corresponding define:
 
 cat >>confdefs.h <<_ACEOF
 #define RETSIGTYPE ${ac_cv_type_signal}
@@ -9841,7 +9978,6 @@ _ACEOF
 fi
 done
 
-
 # Gettext checks:
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking gettext" >&5
 $as_echo_n "checking gettext... " >&6; }
@@ -9863,7 +9999,7 @@ $as_echo "$USE_NLS" >&6; }
 
 
 
-      GETTEXT_MACRO_VERSION=0.18
+      GETTEXT_MACRO_VERSION=0.19
 
 
 
@@ -11911,12 +12047,10 @@ $as_echo "#define HAVE_DCGETTEXT 1" >>confdefs.h
 
 
 
-
 # Output:
 
 
 subdirs="$subdirs src"
-
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure

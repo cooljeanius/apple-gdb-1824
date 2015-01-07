@@ -1,4 +1,4 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* macosx-nat-sigthread.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002
    Free Software Foundation, Inc.
 
@@ -58,10 +58,10 @@ sigthread_debug_re (const char *fmt, ...)
     }
 }
 
-static void macosx_signal_thread (void *arg);
+static void macosx_signal_thread(void *arg);
 
 void
-macosx_signal_thread_init (macosx_signal_thread_status *s)
+macosx_signal_thread_init(macosx_signal_thread_status *s)
 {
   s->transmit_fd = -1;
   s->receive_fd = -1;
@@ -74,35 +74,36 @@ static pthread_cond_t sigthread_cond = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t sigthread_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void
-macosx_signal_thread_create (macosx_signal_thread_status *s, int pid)
+macosx_signal_thread_create(macosx_signal_thread_status *s, int pid)
 {
   int fd[2];
   int ret;
   struct gdb_exception e;
 
-  ret = pipe (fd);
-  CHECK_FATAL (ret == 0);
+  ret = pipe(fd);
+  CHECK_FATAL(ret == 0);
 
   s->transmit_fd = fd[1];
   s->receive_fd = fd[0];
 
   s->inferior_pid = pid;
 
-  pthread_mutex_lock (&sigthread_mutex);
-  TRY_CATCH (e, RETURN_MASK_ERROR)
+  pthread_mutex_lock(&sigthread_mutex);
+  TRY_CATCH(e, RETURN_MASK_ERROR)
   {
     s->signal_thread =
-      gdb_thread_fork ((gdb_thread_fn_t) &macosx_signal_thread, s);
+      gdb_thread_fork((gdb_thread_fn_t)&macosx_signal_thread, s);
   }
-  if (e.reason != NO_ERROR)
+  if (e.reason != (enum return_reason)NO_ERROR)
     {
-      pthread_mutex_unlock (&sigthread_mutex);
-      throw_exception (e);
+      pthread_mutex_unlock(&sigthread_mutex);
+      throw_exception(e);
     }
 
-  pthread_cond_wait (&sigthread_cond, &sigthread_mutex);
-  pthread_mutex_unlock (&sigthread_mutex);
+  pthread_cond_wait(&sigthread_cond, &sigthread_mutex);
+  pthread_mutex_unlock(&sigthread_mutex);
 
+  return;
 }
 
 void
@@ -184,7 +185,7 @@ macosx_signal_thread (void *arg)
           pthread_cond_broadcast (&sigthread_cond);
           pthread_mutex_unlock (&sigthread_mutex);
         }
-      
+
       pid = waitpid (s->inferior_pid, &status, 0);
 
       sigthread_debug_re
@@ -238,9 +239,9 @@ macosx_signal_thread (void *arg)
 }
 
 void
-_initialize_macosx_nat_sigthread ()
+_initialize_macosx_nat_sigthread(void)
 {
-  sigthread_stderr_re = fdopen (fileno (stderr), "w");
+  sigthread_stderr_re = fdopen(fileno(stderr), "w");
 
   add_setshow_boolean_cmd ("signals", no_class,
 			   &sigthread_debugflag, _("\

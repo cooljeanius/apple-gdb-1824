@@ -422,6 +422,7 @@ ITK_LIB_SPEC = @ITK_LIB_SPEC@
 ITK_VERSION = @ITK_VERSION@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
+LD_ARCHFLAGS = @LD_ARCHFLAGS@
 LD_CLASSIC = @LD_CLASSIC@
 LEX = @LEX@
 LEXLIB = @LEXLIB@
@@ -548,6 +549,7 @@ TK_LIB_SPEC = @TK_LIB_SPEC@
 TK_VERSION = @TK_VERSION@
 TK_XINCLUDES = @TK_XINCLUDES@
 TK_XLIBSW = @TK_XLIBSW@
+UNIX03_UGH_CFLAGS = @UNIX03_UGH_CFLAGS@
 USE_INCLUDED_LIBINTL = @USE_INCLUDED_LIBINTL@
 USE_NLS = @USE_NLS@
 VALAC = @VALAC@
@@ -1084,7 +1086,8 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
-maintainer-clean-am: distclean-am maintainer-clean-generic
+maintainer-clean-am: distclean-am maintainer-clean-generic \
+	maintainer-clean-local
 
 mostlyclean: mostlyclean-recursive
 
@@ -1116,9 +1119,10 @@ uninstall-am:
 	install-man install-pdf install-pdf-am install-ps \
 	install-ps-am install-strip installcheck installcheck-am \
 	installdirs installdirs-am maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool mostlyclean-local pdf \
-	pdf-am pdf-local ps ps-am tags tags-am uninstall uninstall-am
+	maintainer-clean-generic maintainer-clean-local mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	mostlyclean-local pdf pdf-am pdf-local ps ps-am tags tags-am \
+	uninstall uninstall-am
 
 # The link-warning.h that gets inserted into generated .h files is the same
 # as build-aux/snippet/link-warning.h, except that it has the copyright
@@ -1472,6 +1476,10 @@ mostlyclean-local: mostlyclean-generic
 
 distclean-local:
 	rm -rf autom4te.cache || rmdir autom4te.cache
+
+maintainer-clean-local:
+	-(unlink fnmatch.h || rm fnmatch.h)
+	-test -e import/Makefile || echo "no Makefile in import directory"
 
 .PHONY: all all-am all-local all-recursive
 

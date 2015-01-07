@@ -1,4 +1,4 @@
-/* Mac OS X support for GDB, the GNU debugger.
+/* macosx-nat-dyld-process.c: Mac OS X support for GDB, the GNU debugger.
    Copyright 1997, 1998, 1999, 2000, 2001, 2002, 2004
    Free Software Foundation, Inc.
 
@@ -274,8 +274,8 @@ dyld_add_image_libraries (struct dyld_objfile_info *info, bfd *abfd)
                      people who want to put breakpoints in one of these
                      dylibs will have to use a future-breakpoint instead;
                      not the end of the world.  Ditto for @loader_path.  */
-                  if (name[0] == '@' 
-		      && (strncmp (name, "@rpath", 6) == 0 
+                  if (name[0] == '@'
+		      && (strncmp (name, "@rpath", 6) == 0
 			  || strncmp (name, "@loader_path", 12) == 0))
                     {
                       xfree (name);
@@ -500,7 +500,7 @@ library_offset (struct dyld_objfile_entry *e)
     {
       if (wordsize == 4)
         CHECK_FATAL (e->dyld_addr ==
-                   ((e->image_addr + e->dyld_slide) & 0xffffffff)); 
+                   ((e->image_addr + e->dyld_slide) & 0xffffffff));
       else
         CHECK_FATAL (e->dyld_addr == e->image_addr + e->dyld_slide);
     }
@@ -723,7 +723,7 @@ dyld_default_load_flag (const struct dyld_path_info *d,
                               ((num) + 4096) & ~(4096 - 1))
 
 /* Iterate over ABFD's sections to establish the groups of memory that it
-   will require to load.  
+   will require to load.
    Does not modify MAP.
    Returns the memory footprint representation of this ABFD which must be
    xfreed by the caller.  */
@@ -737,7 +737,7 @@ scan_bfd_for_memory_groups (struct bfd *abfd, struct pre_run_memory_map *map)
   CORE_ADDR current_bucket_end_addr = (CORE_ADDR)-1;
   struct bfd_memory_footprint *fp = (struct bfd_memory_footprint *)
                                xmalloc (sizeof (struct bfd_memory_footprint));
-  fp->groups = (struct bfd_memory_footprint_group *) 
+  fp->groups = (struct bfd_memory_footprint_group *)
                      xmalloc (sizeof (struct bfd_memory_footprint_group) * 2);
   fp->num = 0;
   fp->num_allocated = 2;
@@ -761,7 +761,7 @@ scan_bfd_for_memory_groups (struct bfd *abfd, struct pre_run_memory_map *map)
       this_seg_end = this_seg_start + this_seg_len;
       this_seg_end = ALIGN_TO_4096 (this_seg_end);
 
-      /* Do NOT record a segment (or a load command) which does NOT load 
+      /* Do NOT record a segment (or a load command) which does NOT load
          into the address space at all.  */
       if (this_seg_start == 0)
         continue;
@@ -789,7 +789,7 @@ scan_bfd_for_memory_groups (struct bfd *abfd, struct pre_run_memory_map *map)
           continue;
         }
 
-      /* This segment grows the current bucket.  
+      /* This segment grows the current bucket.
        * NB: If this segment's start addr is within a single bucket range of
        * the current group's end addr, we will have two memory groups right
        * after one another - which is pointless. So if it is within a single
@@ -800,11 +800,11 @@ scan_bfd_for_memory_groups (struct bfd *abfd, struct pre_run_memory_map *map)
         {
           /* Expand current_bucket_end_addr by bucket_size increments.  */
           current_bucket_end_addr = current_bucket_start_addr +
-                     (((this_seg_end - current_bucket_start_addr) / 
+                     (((this_seg_end - current_bucket_start_addr) /
                         map->bucket_size) + 1)
                      * map->bucket_size;
-          /* Did we overflow?  We do NOT round current_bucket_start_addr down  
-             to a bucket boundary so if it is right near the top of memory,  
+          /* Did we overflow?  We do NOT round current_bucket_start_addr down
+             to a bucket boundary so if it is right near the top of memory,
              current_bucket_start_addr + bucket_size may overflow.  */
           if (current_bucket_end_addr < current_bucket_start_addr)
             current_bucket_end_addr = (CORE_ADDR) -1;
@@ -817,29 +817,29 @@ scan_bfd_for_memory_groups (struct bfd *abfd, struct pre_run_memory_map *map)
       /* Note that current_bucket_{start,end}_addr are aligned to bucket_size
          boundaries so it is evenly divisible by bucket_size and will be at
          least bucket_size in size.  */
-      fp->groups[fp->num].length = 
-                   (current_bucket_end_addr - current_bucket_start_addr) / 
+      fp->groups[fp->num].length =
+                   (current_bucket_end_addr - current_bucket_start_addr) /
                     map->bucket_size;
- 
+
       fp->num++;
 
       if (fp->num == fp->num_allocated)
         {
           fp->num_allocated *= 2;
-          fp->groups = (struct bfd_memory_footprint_group *) 
-              xrealloc (fp->groups, 
+          fp->groups = (struct bfd_memory_footprint_group *)
+              xrealloc (fp->groups,
                 sizeof (struct bfd_memory_footprint_group) * fp->num_allocated);
         }
 
       /* How many buckets between the last memory grouping and this one?  */
-      fp->groups[fp->num].offset = ((this_seg_start - current_bucket_end_addr) 
-                                    / map->bucket_size) + 1 
+      fp->groups[fp->num].offset = ((this_seg_start - current_bucket_end_addr)
+                                    / map->bucket_size) + 1
                                     + fp->groups[fp->num - 1].length;
       current_bucket_start_addr = this_seg_start;
-      current_bucket_end_addr = current_bucket_start_addr +    
+      current_bucket_end_addr = current_bucket_start_addr +
                  ((this_seg_len / map->bucket_size) + 1) * map->bucket_size;
-      /* Did we overflow?  We do NOT round current_bucket_start_addr down  
-         to a bucket boundary so if it is right near the top of memory,  
+      /* Did we overflow?  We do NOT round current_bucket_start_addr down
+         to a bucket boundary so if it is right near the top of memory,
          current_bucket_start_addr + bucket_size may overflow.  */
       if (current_bucket_end_addr < current_bucket_start_addr)
         current_bucket_end_addr = (CORE_ADDR) -1;
@@ -851,15 +851,15 @@ scan_bfd_for_memory_groups (struct bfd *abfd, struct pre_run_memory_map *map)
      least bucket_size in size.  */
   if (seg1addr_set != 0)
     {
-      fp->groups[fp->num].length = 
-                   (current_bucket_end_addr - current_bucket_start_addr) / 
+      fp->groups[fp->num].length =
+                   (current_bucket_end_addr - current_bucket_start_addr) /
                     map->bucket_size;
 
       /* Does this grouping overflow?  We do NOT round current_bucket_start_addr
-         down  to a bucket boundary so if it is right near the top of memory,  
+         down  to a bucket boundary so if it is right near the top of memory,
          current_bucket_start_addr + bucket_size may overflow.  If so, remember
          to add one to the bucket calculation.  */
-      CORE_ADDR recalculated_endaddr = current_bucket_start_addr + 
+      CORE_ADDR recalculated_endaddr = current_bucket_start_addr +
                              (map->bucket_size * fp->groups[fp->num].length);
       if (recalculated_endaddr < current_bucket_end_addr)
         fp->groups[fp->num].length += 1;
@@ -904,7 +904,7 @@ create_pre_run_memory_map (struct bfd *abfd)
   map->buckets = (int *) xmalloc (sizeof (int) * map->number_of_buckets);
   memset (map->buckets, 0, map->number_of_buckets * sizeof (int));
 
-  /* Figure out which bucket this executable will start loading at; 
+  /* Figure out which bucket this executable will start loading at;
      mark its memory areas as used.  */
   fp = scan_bfd_for_memory_groups (abfd, map);
   i = fp->seg1addr / map->bucket_size;
@@ -914,17 +914,17 @@ create_pre_run_memory_map (struct bfd *abfd)
 }
 
 /* Search the address map for the first range of free buckets that will fit
-   a given request.  
+   a given request.
    STARTING_BUCKET specifies where to start our search; this helps to reduce
    redundant searching.
-   BUCKETS specifies the number of unused buckets in a row that we need to 
-   find for a match.  
+   BUCKETS specifies the number of unused buckets in a row that we need to
+   find for a match.
    Returns the bucket index that can contain the requested group or returns
    -1 if no matching spot could be found.  */
 
 static int
-find_next_hole (struct pre_run_memory_map *map, 
-                int starting_bucket, 
+find_next_hole (struct pre_run_memory_map *map,
+                int starting_bucket,
                 int buckets)
 {
   int i;
@@ -981,7 +981,7 @@ hole_at_p (struct pre_run_memory_map *map,
   if (starting_bucket >= map->number_of_buckets)
     return 0;
 
-  while (i - starting_bucket < buckets 
+  while (i - starting_bucket < buckets
          && i < map->number_of_buckets
          && map->buckets[i] == 0)
     {
@@ -990,16 +990,16 @@ hole_at_p (struct pre_run_memory_map *map,
 
   if (i - starting_bucket == buckets)
     return 1;
-  else 
+  else
     return 0;
 }
 
 /* Given a list of memory buckets required for this bfd in FP, and a
-   starting bucket number in MAP, mark the appropriate buckets in 
+   starting bucket number in MAP, mark the appropriate buckets in
    MAP as used.  */
 
 static void
-mark_buckets_as_used (struct pre_run_memory_map *map, int startingbucket, 
+mark_buckets_as_used (struct pre_run_memory_map *map, int startingbucket,
                       struct bfd_memory_footprint *fp)
 {
   int memgrp, k;
@@ -1039,7 +1039,7 @@ free_memory_footprint (struct bfd_memory_footprint *fp)
    to ABFD's load address to keep it from overlapping with other dylibs.  */
 
 static CORE_ADDR
-slide_bfd_in_pre_run_memory_map (struct bfd *abfd, 
+slide_bfd_in_pre_run_memory_map (struct bfd *abfd,
                                  struct pre_run_memory_map *map)
 {
   int i = 0;
@@ -1081,7 +1081,7 @@ slide_bfd_in_pre_run_memory_map (struct bfd *abfd,
       if (j == -1)
         {
           free_memory_footprint (fp);
-          return 0;  
+          return 0;
         }
 
       /* If there are more than one memory groups, check to ensure that
@@ -1155,14 +1155,14 @@ dyld_load_library_from_file (const struct dyld_path_info *d,
        * disk; it is just noise to the developer and there will be many of them
        * with certain programs, e.g. Mail.app on Lion and later.
 	   */
-      if (e->mem_header.filetype == MH_BUNDLE 
+      if (e->mem_header.filetype == MH_BUNDLE
           && strcmp (name, "cl_kernels") == 0)
         {
           issue_warning = 0;
         }
 
-      /* Running natively on the phone we read everything from the 
-         shared cached and need not worry about when we are NOT able to read 
+      /* Running natively on the phone we read everything from the
+         shared cached and need not worry about when we are NOT able to read
          files from disk.  */
 #if defined (TARGET_ARM) && defined (NM_NEXTSTEP)
        issue_warning = 0;
@@ -1226,14 +1226,14 @@ dyld_load_library_from_memory (const struct dyld_path_info *d,
   CORE_ADDR length = e->dyld_length;
   if (core_bfd)
     {
-      /* If we are reading an image from core memory, pass in an invalid 
+      /* If we are reading an image from core memory, pass in an invalid
          slide amount so we the slide can be automatically determined.  */
        slide = INVALID_ADDRESS;
     }
   if (e->dyld_length == 0)
     {
-      /* If the length is zero, do not try and limit what can be read from 
-	   * memory. Entries in the shared cache can have mach headers that 
+      /* If the length is zero, do not try and limit what can be read from
+	   * memory. Entries in the shared cache can have mach headers that
 	   * contain segment load commands whose data is scattered over quite a
 	   * large area of memory and we do NOT alway know the bounds.  */
       length = INVALID_ADDRESS;
@@ -1338,7 +1338,7 @@ dyld_load_library (const struct dyld_path_info *d,
                  fact that we could NOT find them on the local system. Should we
                  ignore them altogether? This will still silently pull them down
                  over the wire which is slow... but ignoring them altogether would
-                 be a drag if we crash in one or if one of the OpenCL folks are 
+                 be a drag if we crash in one or if one of the OpenCL folks are
                  trying to debug a problem with one.  */
               if (strncmp (n, "com.apple.opencl/clprogram", strlen ("com.apple.opencl/clprogram")) != 0)
                 warning ("No copy of %s found locally, reading from memory on remote device.  This may slow down the debug session.", n);
@@ -1360,19 +1360,19 @@ dyld_load_library (const struct dyld_path_info *d,
 	{
 	  /* To speed things up in the common case where the UUID's
 	     match, we find the offset of the UUID load command in the
-	     on disk binary, and go directly to that offset in the 
+	     on disk binary, and go directly to that offset in the
 	     in memory copy.  If that is a load command, then we compare
 	     those.  If we do NOT find one there, then we have to search
-	     through the load commands in memory.  
+	     through the load commands in memory.
 	     Note: Do NOT check if e->dyld_valid is not true, since then we ONLY
 	     have a file we have read from load commands for this bfd, and do NOT
 	     have an in memory copy yet.  */
 
 	  struct mach_o_data_struct *mdata = NULL;
 	  int i;
-	  bfd_vma uuid_addr = (bfd_vma) -1;
+	  volatile bfd_vma uuid_addr = (bfd_vma)-1;
 	  unsigned char mem_uuid[16];
-	  int matches = 0;
+	  volatile int matches = 0;
 	  unsigned char file_uuid[16];
 
 	  CHECK_FATAL (bfd_mach_o_valid (e->abfd));
@@ -1395,13 +1395,13 @@ dyld_load_library (const struct dyld_path_info *d,
 	      struct gdb_exception exc;
 	      int error = 0;
 	      int found_uuid = 0;
-	      
+
 	      uuid_addr += e->dyld_addr;
 	      TRY_CATCH (exc, RETURN_MASK_ALL)
 		{
 		  error = target_read_uuid (uuid_addr, mem_uuid);
 		}
-	      
+
 	      /* Do the check with the UUID we found in the spot where it would be
 		   * if the binaries were the same. If that works, we are done. Otherwise
 		   * look through the in memory version directly for the LC_UUID.  */
@@ -1422,7 +1422,7 @@ dyld_load_library (const struct dyld_path_info *d,
 			break;
 		      if (cmd.cmd == BFD_MACH_O_LC_UUID)
 			{
-			  if (target_read_uuid (curpos, mem_uuid) == 0) 
+			  if (target_read_uuid (curpos, mem_uuid) == 0)
 			    found_uuid = 1;
 			  break;
 			}
@@ -1430,7 +1430,7 @@ dyld_load_library (const struct dyld_path_info *d,
 		    }
 		  matches = (memcmp (mem_uuid, file_uuid, sizeof (file_uuid)) == 0);
 		}
-	      
+
 	      if (!matches)
 		{
                   if (!info_verbose)
@@ -1447,7 +1447,7 @@ dyld_load_library (const struct dyld_path_info *d,
 		  if (ui_out_is_mi_like_p (uiout))
 		    {
 		      struct cleanup *notify_cleanup =
-			make_cleanup_ui_out_notify_begin_end (uiout, 
+			make_cleanup_ui_out_notify_begin_end (uiout,
 							      "uuid-mismatch-with-loaded-file");
 		      ui_out_field_string (uiout, "file", e->abfd->filename);
 		      do_cleanups (notify_cleanup);
@@ -1474,7 +1474,7 @@ dyld_load_library (const struct dyld_path_info *d,
 
   if (e->reason & dyld_reason_init && macosx_dyld_status.pre_run_memory_map)
     {
-      CORE_ADDR addr = slide_bfd_in_pre_run_memory_map (e->abfd, 
+      CORE_ADDR addr = slide_bfd_in_pre_run_memory_map (e->abfd,
                                         macosx_dyld_status.pre_run_memory_map);
       e->pre_run_slide_addr_valid = 1;
       e->pre_run_slide_addr = addr;
@@ -1490,7 +1490,7 @@ dyld_load_library (const struct dyld_path_info *d,
           e->image_addr_valid = 1;
         }
     }
-  
+
   if (e->reason & dyld_reason_executable_mask)
     symfile_objfile = e->objfile;
 }
@@ -1521,9 +1521,9 @@ void
 dyld_symfile_loaded_hook (struct objfile *o)
 {
 
-  /* I have to do this here as well as in macosx_dyld_update or 
-     this will NOT get re-initialized if you originally saw 
-     /usr/lib/libobjc.A.dylib, THEN set DYLD_LIBRARY_PATH to point to an 
+  /* I have to do this here as well as in macosx_dyld_update or
+     this will NOT get re-initialized if you originally saw
+     /usr/lib/libobjc.A.dylib, THEN set DYLD_LIBRARY_PATH to point to an
      independent copy, and THEN reran...  */
   if (o == find_libobjc_objfile ())
     {
@@ -1533,12 +1533,12 @@ dyld_symfile_loaded_hook (struct objfile *o)
 }
 
 static void
-dyld_load_symfile_internal (struct dyld_objfile_entry *e, 
+dyld_load_symfile_internal (struct dyld_objfile_entry *e,
                             int preserving_objfile_p)
 {
   struct section_addr_info *addrs;
   int i;
-  int using_orig_objfile = 0;
+  volatile int using_orig_objfile = 0;
 
   if (e->loaded_error)
     return;
@@ -1573,7 +1573,7 @@ dyld_load_symfile_internal (struct dyld_objfile_entry *e,
      to load a symfile, and to slide it.  I want a third use, which
      is reload it but reuse the objfile structures, so we can
      reload both the objfile and the commpage objfile "in place".
-     This is the only way I can think of to get ALL_OBJFILES_SAFE 
+     This is the only way I can think of to get ALL_OBJFILES_SAFE
      to work when we end up deleting an objfile AND its commpage
      objfile simultaneously.  */
 
@@ -1592,13 +1592,13 @@ dyld_load_symfile_internal (struct dyld_objfile_entry *e,
          compute the offsets -- dylibs in the shared cache have
          different slide values for different sections.  */
 
-      if (dyld_objfile_entry_in_shared_cache(e) 
+      if (dyld_objfile_entry_in_shared_cache(e)
 	  && e->dyld_section_offsets == NULL
           && e->dyld_valid)
-        e->dyld_section_offsets = 
+        e->dyld_section_offsets =
                   get_sectoffs_for_shared_cache_dylib (e, e->loaded_addr);
 
-      /* If we just have a slide then that means that the whole objfile is 
+      /* If we just have a slide then that means that the whole objfile is
 	   * sliding by the same amount.  So we make up a section_addr_info
 	   * struct, and fill each element with the slide value.  Otherwise, we
 	   * use the dyld_section_offsets.  */
@@ -1606,7 +1606,7 @@ dyld_load_symfile_internal (struct dyld_objfile_entry *e,
       if (e->dyld_section_offsets == NULL)
 	{
 	  addrs = alloc_section_addr_info (bfd_count_sections (e->abfd));
-	  
+
 	  for (i = 0; i < addrs->num_sections; i++)
 	    {
 	      addrs->other[i].name = NULL;
@@ -1616,27 +1616,24 @@ dyld_load_symfile_internal (struct dyld_objfile_entry *e,
 	        addrs->other[i].addr = e->dyld_slide;
 	      addrs->other[i].sectindex = 0;
 	    }
-	  
+
 	  addrs->addrs_are_offsets = 1;
 	}
-      else 
+      else
 	addrs = NULL;
 
       if (e->objfile == NULL)
 	{
-	  e->objfile = symbol_file_add_bfd_safe (e->abfd,
-						 0,
-						 addrs,
-						 e->dyld_section_offsets,
-						 0, 0,
-						 e->load_flag,
-						 0,
-						 e->prefix, NULL);
+	  e->objfile = symbol_file_add_bfd_safe(e->abfd, 0, addrs,
+                                                e->dyld_section_offsets,
+                                                0, 0, e->load_flag, 0,
+                                                e->prefix, NULL);
 	}
       else
 	{
 	  using_orig_objfile = 1;
-	  int i, num_offsets;
+	  int i;
+          volatile int num_offsets;
 	  struct bfd_section *this_sect;
 
           /* bfd sections are not the same as objfile sections.  */
@@ -1644,8 +1641,8 @@ dyld_load_symfile_internal (struct dyld_objfile_entry *e,
 	  if (e->dyld_section_offsets != NULL)
 	    {
 	      this_sect = e->abfd->sections;
-	      for (i = 0; 
-                   i < bfd_count_sections (e->abfd); 
+	      for (i = 0;
+                   i < bfd_count_sections (e->abfd);
                    i++, this_sect = this_sect->next)
 		{
 		  if (objfile_keeps_section (e->abfd, this_sect))
@@ -1657,13 +1654,13 @@ dyld_load_symfile_internal (struct dyld_objfile_entry *e,
 	    {
 	      e->objfile =
 		symbol_file_add_with_addrs_or_offsets_using_objfile (e->objfile,
-						   e->abfd, 
-						   0, 
-						   addrs, 
+						   e->abfd,
+						   0,
+						   addrs,
 						   e->dyld_section_offsets,
                                                    num_offsets,
-						   0, 0, 
-						   e->load_flag, 
+						   0, 0,
+						   e->load_flag,
 						   0,
 						   e->prefix, NULL);
 	    }
@@ -1722,15 +1719,15 @@ dyld_load_symfile_internal (struct dyld_objfile_entry *e,
 	      if (!using_orig_objfile)
 		{
                   /* Pass a NULL value instead of ADDRS -- we do NOT want to
-                     adjust/slide any of the comm page symbols. Their 
+                     adjust/slide any of the comm page symbols. Their
                      addresses are absolute and are already correct.  */
 		  e->commpage_objfile =
-		    symbol_file_add_bfd_safe (e->commpage_bfd, 
-					      0, 
+		    symbol_file_add_bfd_safe (e->commpage_bfd,
+					      0,
 					      NULL,
 					      0,
-					      0, 0, 
-					      e->load_flag, 
+					      0, 0,
+					      e->load_flag,
 					      0,
 					      e->prefix, NULL);
 		}
@@ -1739,16 +1736,16 @@ dyld_load_symfile_internal (struct dyld_objfile_entry *e,
 		  TRY_CATCH (exc, RETURN_MASK_ALL)
 		    {
                       /* Pass a NULL value instead of ADDRS - we do NOT want to
-                         adjust/slide any of the comm page symbols. Their 
+                         adjust/slide any of the comm page symbols. Their
                          addresses are absolute and are already correct.  */
 		      e->commpage_objfile =
 			symbol_file_add_bfd_using_objfile (e->commpage_objfile,
-							   e->commpage_bfd, 
-							   0, 
-							   NULL, 
+							   e->commpage_bfd,
 							   0,
-							   0, 0, 
-							   e->load_flag, 
+							   NULL,
+							   0,
+							   0, 0,
+							   e->load_flag,
 							   0,
 							   e->prefix);
 		    }
@@ -1771,7 +1768,7 @@ dyld_load_symfile_internal (struct dyld_objfile_entry *e,
     }
 }
 
-void 
+void
 dyld_load_symfile (struct dyld_objfile_entry *e)
 {
   dyld_load_symfile_internal (e, 0);
@@ -1974,11 +1971,11 @@ dyld_is_objfile_loaded (struct objfile *obj)
      of itself.  */
   if (obj->separate_debug_objfile_backlink != NULL)
     return dyld_is_objfile_loaded (obj->separate_debug_objfile_backlink);
-    
+
   /* A SYMS_ONLY_OBJFILE is an objfile added by the user with
-     add-symbol-file; it shadows an actually loaded & resident objfile, 
-     but breakpoints will be associated with the syms-only-objfile.  
-     So under the theory that users do NOT add-symbol-file things which 
+     add-symbol-file; it shadows an actually loaded & resident objfile,
+     but breakpoints will be associated with the syms-only-objfile.
+     So under the theory that users do NOT add-symbol-file things which
      have NOT been loaded yet, set breakpoints in this unconditionally.  */
   if (obj->syms_only_objfile == 1)
     return 1;
@@ -2086,7 +2083,7 @@ dyld_remove_objfile (struct dyld_objfile_entry *e)
 }
 
 /* dyld_clear_objfile clears the current contents of
-   the objfile contained in objfile entry E.  You 
+   the objfile contained in objfile entry E.  You
    can thereby edit it "in place".  */
 
 void
@@ -2209,7 +2206,7 @@ dyld_libraries_similar (struct dyld_path_info *d,
 
  /* Do dyld_objfile_entry OLDENT and NEWENT have the same filename?  In
     other words, are they the same dylib/bundle/executable/etc ?  */
-  
+
 int
 dyld_libraries_compatible (struct dyld_path_info *d,
                            struct dyld_objfile_entry *newent,
@@ -2217,12 +2214,12 @@ dyld_libraries_compatible (struct dyld_path_info *d,
 {
   const char *newname = NULL;
   const char *oldname = NULL;
-  
+
   CHECK_FATAL (oldent != NULL);
   CHECK_FATAL (newent != NULL);
-  
+
   /* If either prefix is non-NULL, then they must both be the same string. */
-  
+
   if (oldent->prefix != NULL || newent->prefix != NULL)
     {
 		if (oldent->prefix == NULL || newent->prefix == NULL) {
@@ -2232,7 +2229,7 @@ dyld_libraries_compatible (struct dyld_path_info *d,
 			return 0;
 		}
     }
-  
+
   newname = dyld_entry_filename (newent, d, DYLD_ENTRY_FILENAME_LOADED);
   oldname = dyld_entry_filename (oldent, d, DYLD_ENTRY_FILENAME_LOADED);
 
@@ -2245,10 +2242,10 @@ dyld_libraries_compatible (struct dyld_path_info *d,
    * store some token in the loaded_* information to provide for more
    * reliable matching.
    */
- 
+
   if (oldent->loaded_from_memory && oldent->loaded_addr == newent->dyld_addr)
     return dyld_libraries_similar (d, newent, oldent);
- 
+
   /* If either filename is non-NULL, then they must both be the same string. */
   /* Be careful, if we are loaded from memory, then the original entry just has
    * the filename from the load commands, but the made entry says "memory object...".
@@ -2273,7 +2270,7 @@ dyld_libraries_compatible (struct dyld_path_info *d,
 	    return 0;
 	}
     }
-  
+
   if (oldent->loaded_from_memory != newent->loaded_from_memory)
     {
       return 0;
@@ -2284,7 +2281,7 @@ dyld_libraries_compatible (struct dyld_path_info *d,
       both will have the same filename, but they will have different dyld_addr's
       (different load addresses).
       It is not entirely clear to me whether this is technically legal, but
-      it happens in real world use.  cf <rdar://problem/4308315> 
+      it happens in real world use.  cf <rdar://problem/4308315>
 
       When this comes up, we should say that the two libraries are not
       "compatible". This is not an error condition. Yes, that means
@@ -2293,7 +2290,7 @@ dyld_libraries_compatible (struct dyld_path_info *d,
 
   return dyld_libraries_similar (d, newent, oldent);
 }
-  
+
 /* Move the load data (whatever distinction that is -- not all the
    fields are moved) from the SRC dyld_objfile_entry into DEST.
    Upon completion, SRC will NOT have any of its load data fields set.  */
@@ -2308,7 +2305,7 @@ dyld_objfile_move_load_data (struct dyld_objfile_entry *src,
   enum gdb_osabi reload_osabi = GDB_OSABI_UNKNOWN;
   gdb_assert (dst->commpage_bfd == NULL);
 
-  /* dyld_info_process_raw will open the bfd for the objfile and it 
+  /* dyld_info_process_raw will open the bfd for the objfile and it
      so we try to reuse it.  But when the library was read at startup,
      then the old dyld_objfile_entry already has a bfd.  We will use the
      original one in SRC unless the one in DST is valid the 32/64 bit-ness
@@ -2355,8 +2352,8 @@ dyld_objfile_move_load_data (struct dyld_objfile_entry *src,
   if (reload)
     reread_symbols_for_objfile (dst->objfile, 0, reload_osabi, NULL);
 
-  if (src->dyld_valid == 0 
-      && dst->dyld_valid == 1 
+  if (src->dyld_valid == 0
+      && dst->dyld_valid == 1
       && src->pre_run_slide_addr_valid == 1
       && src->pre_run_slide_addr != 0)
     {

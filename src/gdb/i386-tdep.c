@@ -334,6 +334,10 @@ i386_find_picbase_setup (CORE_ADDR pc, CORE_ADDR *picbase_addr,
   int found_call_insn = 0;
   unsigned char op;
 
+  uint32_t rel32;
+  uint32_t offset_from;
+  struct minimal_symbol *dest;
+
   if (picbase_addr != NULL)
     *picbase_addr = -1;
 
@@ -354,17 +358,15 @@ i386_find_picbase_setup (CORE_ADDR pc, CORE_ADDR *picbase_addr,
       skip += length;
     }
 
-  /* We've hit our limit without finding a `call rel32' or we've hit
+  /* We have hit our limit without finding a `call rel32' or we have hit
      some unexpected instruction.  Give up the search.  */
   if (!found_call_insn)
     return 0;
 
   /* pc + skip is now pointing at the start of a `call rel32' instruction
-     which may be setting up the picbase. */
-
-  uint32_t rel32 = read_memory_unsigned_integer (pc + skip + 1, 4);
-  uint32_t offset_from = pc + skip + 5;
-  struct minimal_symbol *dest;
+   * which may be setting up the picbase: */
+  rel32 = read_memory_unsigned_integer(pc + skip + 1, 4);
+  offset_from = (pc + skip + 5);
 
   /* Old-style picbase setup, jumping to the next instruction and popping
      the value into the picbase reg.  */
